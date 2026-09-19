@@ -28,7 +28,7 @@ This document provides standard French translations for key project terminology 
 | 输出 | Sortie | Output/Completion | Contenu retourné par le modèle |
 | 模型倍率 | Ratio du modèle | Model Ratio | Ratio de tarification pour différents modèles |
 | 补全倍率 | Ratio de complétion | Completion Ratio | Ratio de tarification supplémentaire pour la sortie |
-| 固定价格 | Prix fixe | Price per call | Prix par appel |
+| 固定定价 | Prix fixe | Price per call | Prix par appel |
 | 按量计费 | Paiement à l'utilisation | Pay-as-you-go | Tarification basée sur l'utilisation |
 | 按次计费 | Paiement par appel | Pay-per-view | Prix fixe par appel |
 

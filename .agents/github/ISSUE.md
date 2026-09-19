@@ -36,7 +36,7 @@ accept it, point them to the right place when there is one, and **do not file**.
 - Compatibility issues from exposing a Codex endpoint as a general-purpose API through a reverse proxy
 - Codex API-specific protocol or behavior treated as standard OpenAI API behavior (confirm with the channel or API provider)
 - Pass-through mode forwarding (pass-through forwards as-is; verify upstream yourself)
-- Relay reports that only paste an upstream error, with no direct-upstream vs new-api comparison
+- Relay reports that only paste an upstream error, with no direct-upstream vs ali-router comparison
 - Third-party hosting sites, relay services, or API services (contact their operator)
 - Usage, configuration, or integration questions (answer from docs and code instead)
 
@@ -54,8 +54,8 @@ accept it, point them to the right place when there is one, and **do not file**.
 
 Search these yourself before filing. Do not send the user to "read the docs first". If this is usage, configuration, or integration: answer the user and do not file.
 
-- https://docs.newapi.ai/ — what was searched, conclusion:
-- https://deepwiki.com/QuantumNous/new-api — what was searched, conclusion:
+- https://URouters.ai/docs — what was searched, conclusion:
+- https://deepwiki.com/QuantumNous/u-routers — what was searched, conclusion:
 - README / repo docs:
 - Relevant code paths and conclusion:
 - Can the current version already do this? (required for feature requests):
@@ -63,7 +63,7 @@ Search these yourself before filing. Do not send the user to "read the docs firs
 
 ## Environment
 
-- new-api version / commit / image tag (not `latest` / `unknown`):
+- ali-router version / commit / image tag (not `latest` / `unknown`):
 - Deploy source (repo release / official image / main source / other):
 - Database (sqlite / mysql / postgres):
 
@@ -74,7 +74,7 @@ Ask the user for every item and write it down:
 - Actual behavior:
 - Impact:
 - Frequency:
-- Evidence that the problem is in new-api rather than the client or upstream:
+- Evidence that the problem is in ali-router rather than the client or upstream:
 
 ## Type-specific details
 
@@ -89,7 +89,7 @@ Fill every applicable type. Write "not applicable" for the rest. Ask the user fo
 - Pass-through enabled:
 - Evidence of upstream native support:
 - Equivalent redacted request sent directly upstream: status, body, server logs:
-- Same request through new-api: status, body, server logs:
+- Same request through ali-router: status, body, server logs:
 
 ### Billing
 
@@ -137,8 +137,8 @@ Open the docs and code. Do not write "already checked" without sources.
 
 ### Docs
 
-- https://docs.newapi.ai/ :
-- https://deepwiki.com/QuantumNous/new-api :
+- https://URouters.ai/docs :
+- https://deepwiki.com/QuantumNous/u-routers :
 - README / other repo docs:
 - Conclusions:
 
@@ -150,7 +150,7 @@ Open the docs and code. Do not write "already checked" without sources.
 
 - Command or redacted request:
 - Direct upstream result:
-- Result through new-api:
+- Result through ali-router:
 - Conclusion:
 
 ## Working theory

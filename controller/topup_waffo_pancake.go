@@ -7,12 +7,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/QuantumNous/new-api/common"
-	"github.com/QuantumNous/new-api/logger"
-	"github.com/QuantumNous/new-api/model"
-	"github.com/QuantumNous/new-api/service"
-	"github.com/QuantumNous/new-api/setting"
-	"github.com/QuantumNous/new-api/setting/operation_setting"
+	"github.com/QuantumNous/u-routers/common"
+	"github.com/QuantumNous/u-routers/logger"
+	"github.com/QuantumNous/u-routers/model"
+	"github.com/QuantumNous/u-routers/service"
+	"github.com/QuantumNous/u-routers/setting"
+	"github.com/QuantumNous/u-routers/setting/operation_setting"
 	"github.com/gin-gonic/gin"
 	"github.com/shopspring/decimal"
 	"github.com/thanhpk/randstr"
@@ -262,7 +262,7 @@ func CreateWaffoPancakeSubscriptionProduct(c *gin.Context) {
 		return
 	}
 	if strings.TrimSpace(req.Amount) == "" {
-		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "套餐价格不能为空"})
+		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "套餐定价不能为空"})
 		return
 	}
 	merchantID, privateKey := resolveWaffoPancakeAdminCreds("", "")
@@ -300,7 +300,7 @@ func CreateWaffoPancakeSubscriptionProduct(c *gin.Context) {
 
 // ListWaffoPancakeSubscriptionProductOptions returns the OnetimeProducts
 // in the saved Pancake store, for the subscription-plan dropdown. The name
-// reflects new-api's plan concept; under the hood it's still OnetimeProducts.
+// reflects ali-router's plan concept; under the hood it's still OnetimeProducts.
 func ListWaffoPancakeSubscriptionProductOptions(c *gin.Context) {
 	merchantID, privateKey := resolveWaffoPancakeAdminCreds("", "")
 	storeID := strings.TrimSpace(setting.WaffoPancakeStoreID)

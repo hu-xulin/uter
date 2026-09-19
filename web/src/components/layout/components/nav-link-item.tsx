@@ -20,6 +20,7 @@ import { Link } from '@tanstack/react-router'
 
 import { cn } from '@/lib/utils'
 
+import { fullPageAnchorProps } from '../lib/url-utils'
 import type { TopNavLink } from '../types'
 
 interface NavLinkItemProps {
@@ -42,8 +43,7 @@ export function NavLinkItem({ link, className }: NavLinkItemProps) {
     return (
       <a
         href={link.href}
-        target='_blank'
-        rel='noopener noreferrer'
+        {...fullPageAnchorProps(link.href)}
         className={linkClassName}
         aria-disabled={link.disabled}
       >

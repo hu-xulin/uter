@@ -4,13 +4,13 @@ import (
 	"context"
 	"fmt"
 
-	relaycommon "github.com/QuantumNous/new-api/relay/common"
-	"github.com/QuantumNous/new-api/relaykit/dto"
-	"github.com/QuantumNous/new-api/relaykit/relayconvert/convmeta"
-	"github.com/QuantumNous/new-api/relaykit/relayconvert/reasoning"
-	"github.com/QuantumNous/new-api/relaykit/types"
-	"github.com/QuantumNous/new-api/setting/model_setting"
-	hostreasoning "github.com/QuantumNous/new-api/setting/reasoning"
+	relaycommon "github.com/QuantumNous/u-routers/relay/common"
+	"github.com/QuantumNous/u-routers/relaykit/dto"
+	"github.com/QuantumNous/u-routers/relaykit/relayconvert/convmeta"
+	"github.com/QuantumNous/u-routers/relaykit/relayconvert/reasoning"
+	"github.com/QuantumNous/u-routers/relaykit/types"
+	"github.com/QuantumNous/u-routers/setting/model_setting"
+	hostreasoning "github.com/QuantumNous/u-routers/setting/reasoning"
 	"github.com/gin-gonic/gin"
 )
 

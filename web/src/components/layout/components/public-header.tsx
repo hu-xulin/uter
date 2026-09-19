@@ -35,6 +35,7 @@ import { cn } from '@/lib/utils'
 import { useAuthStore } from '@/stores/auth-store'
 
 import { defaultTopNavLinks } from '../config/top-nav.config'
+import { fullPageAnchorProps } from '../lib/url-utils'
 import type { TopNavLink } from '../types'
 import { HeaderLogo } from './header-logo'
 
@@ -224,7 +225,7 @@ export function PublicHeader(props: PublicHeaderProps) {
                   {logoContent}
                 </div>
                 <span
-                  className='max-w-48 truncate text-sm font-semibold tracking-tight'
+                  className='font-brand max-w-48 truncate text-lg tracking-tight'
                   title={displaySiteName}
                 >
                   {loading ? (
@@ -247,8 +248,7 @@ export function PublicHeader(props: PublicHeaderProps) {
                       key={`${link.title}:${link.href}`}
                       href={link.href}
                       title={t(link.title)}
-                      target='_blank'
-                      rel='noopener noreferrer'
+                      {...fullPageAnchorProps(link.href)}
                       aria-disabled={link.disabled}
                       tabIndex={link.disabled ? -1 : undefined}
                       onClick={(event) => handleNavLinkClick(event, link)}
@@ -379,8 +379,7 @@ export function PublicHeader(props: PublicHeaderProps) {
                   <a
                     key={`${link.title}:${link.href}`}
                     href={link.href}
-                    target='_blank'
-                    rel='noopener noreferrer'
+                    {...fullPageAnchorProps(link.href)}
                     aria-disabled={link.disabled}
                     tabIndex={link.disabled ? -1 : undefined}
                     onClick={(event) => handleNavLinkClick(event, link, true)}

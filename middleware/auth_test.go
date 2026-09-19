@@ -10,9 +10,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/QuantumNous/new-api/common"
-	"github.com/QuantumNous/new-api/model"
-	"github.com/QuantumNous/new-api/service"
+	"github.com/QuantumNous/u-routers/common"
+	"github.com/QuantumNous/u-routers/model"
+	"github.com/QuantumNous/u-routers/service"
 	"github.com/gin-gonic/gin"
 	"github.com/glebarez/sqlite"
 	"github.com/golang-jwt/jwt/v5"
@@ -48,8 +48,8 @@ func setupDashboardAuthMiddlewareTest(t *testing.T) {
 func issueExpiredDashboardAccessToken(t *testing.T, identity service.AuthIdentity) string {
 	t.Helper()
 	claims := jwt.MapClaims{
-		"iss":       "new-api",
-		"aud":       []string{"new-api-dashboard"},
+		"iss":       "ali-router",
+		"aud":       []string{"ali-router-dashboard"},
 		"sub":       fmt.Sprintf("%d", identity.UserID),
 		"token_use": "access",
 		"sid":       identity.SessionID,
@@ -60,7 +60,7 @@ func issueExpiredDashboardAccessToken(t *testing.T, identity service.AuthIdentit
 		"iat":       time.Now().Add(-2 * time.Minute).Unix(),
 	}
 	mac := hmac.New(sha256.New, []byte(common.SessionSecret))
-	_, err := mac.Write([]byte("new-api/auth/access/v1"))
+	_, err := mac.Write([]byte("ali-router/auth/access/v1"))
 	require.NoError(t, err)
 	token, err := jwt.NewWithClaims(jwt.SigningMethodHS256, claims).SignedString(mac.Sum(nil))
 	require.NoError(t, err)

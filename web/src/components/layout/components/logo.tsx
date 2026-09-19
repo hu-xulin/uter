@@ -36,8 +36,8 @@ export function Logo({
   image: SvgImage,
   name,
   version,
-  width = 24,
-  height = 24,
+  width = 32,
+  height = 32,
   showName = true,
   badge,
   ...props
@@ -54,7 +54,7 @@ export function Logo({
         aria-hidden='true'
         className='max-h-full max-w-full opacity-70'
       />
-      <span className={cn(!showName && 'sr-only')}>{name}</span>
+      <span className={cn('font-brand', !showName && 'sr-only')}>{name}</span>
       {version && <span className='text-muted-foreground'>{version}</span>}
       {badge && <Badge variant='secondary'>{badge}</Badge>}
     </div>

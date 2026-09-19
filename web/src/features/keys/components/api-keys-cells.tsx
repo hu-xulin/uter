@@ -220,7 +220,7 @@ function ApiKeyRestrictionCell(props: {
               variant='ghost'
               size='sm'
               aria-label={`${props.title}: ${props.label}`}
-              className='h-7 max-w-full justify-start px-0 text-xs font-normal underline decoration-dotted underline-offset-4'
+              className='h-7 max-w-full justify-start px-0 text-xs font-normal'
             />
           }
         >

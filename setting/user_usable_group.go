@@ -5,7 +5,7 @@ import (
 	"maps"
 	"sync"
 
-	"github.com/QuantumNous/new-api/common"
+	"github.com/QuantumNous/u-routers/common"
 )
 
 var userUsableGroups = map[string]string{

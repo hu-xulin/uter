@@ -2,13 +2,26 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/png" href="/logo.png" />
+    <!-- Bump the `?v=` below together with LOGO_ASSET_VERSION in
+         `src/lib/constants.ts` whenever `public/logo.png` is replaced.
+         The version is what evicts an already-cached copy in the browser.
+
+         Keep this the ONLY icon declaration. Rsbuild auto-detects
+         `public/favicon.{ico,png,svg}` and injects an un-versioned
+         `<link rel="icon" href="/favicon.ico">` ahead of everything here.
+         That extra URL cannot be cache-busted, so a browser that captured
+         the old bitmap for it keeps showing the stale tab icon after a
+         logo swap — the file is therefore shipped as
+         `public/favicon-legacy.ico` (still fetchable at
+         `/favicon-legacy.ico`) and deliberately not named `favicon.ico`. -->
+    <link rel="icon" type="image/png" sizes="any" href="/logo.png?v=3" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/logo.png?v=3" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="google" content="notranslate" />
 
     <!-- Primary Meta Tags -->
-    <title>New API</title>
-    <meta name="title" content="New API" />
+    <title>URouters</title>
+    <meta name="title" content="URouters" />
     <meta
       name="description"
       content="Unified AI API gateway and admin dashboard."

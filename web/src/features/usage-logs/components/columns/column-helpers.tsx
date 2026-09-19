@@ -195,7 +195,7 @@ export function createChannelColumn<T>(config: {
 }
 
 /**
- * Create a fail reason column - text-xs truncate, hover underline, dialog
+ * Create a fail reason column - text-xs truncate, hover colour, dialog
  */
 export function createFailReasonColumn<T>(config: {
   accessorKey?: string
@@ -225,7 +225,8 @@ export function createFailReasonColumn<T>(config: {
             onClick={() => setDialogOpen(true)}
             title={cellTitle}
           >
-            <span className='truncate leading-snug text-red-600 group-hover:underline dark:text-red-400'>
+            <span className='group-hover: truncate leading-snug text-red-600 dark:text-red-400'>
+              {' '}
               {failReason}
             </span>
           </button>

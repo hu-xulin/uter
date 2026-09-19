@@ -9,15 +9,15 @@ import (
 	"sync/atomic"
 	"testing"
 
-	"github.com/QuantumNous/new-api/common"
-	"github.com/QuantumNous/new-api/constant"
-	"github.com/QuantumNous/new-api/model"
-	"github.com/QuantumNous/new-api/pkg/billingexpr"
-	relaycommon "github.com/QuantumNous/new-api/relay/common"
-	"github.com/QuantumNous/new-api/relaykit/dto"
-	"github.com/QuantumNous/new-api/service"
-	"github.com/QuantumNous/new-api/setting/operation_setting"
-	"github.com/QuantumNous/new-api/types"
+	"github.com/QuantumNous/u-routers/common"
+	"github.com/QuantumNous/u-routers/constant"
+	"github.com/QuantumNous/u-routers/model"
+	"github.com/QuantumNous/u-routers/pkg/billingexpr"
+	relaycommon "github.com/QuantumNous/u-routers/relay/common"
+	"github.com/QuantumNous/u-routers/relaykit/dto"
+	"github.com/QuantumNous/u-routers/service"
+	"github.com/QuantumNous/u-routers/setting/operation_setting"
+	"github.com/QuantumNous/u-routers/types"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -46,7 +46,7 @@ func TestGetChannelDefaultBaseURLsUsesBuiltInDefaults(t *testing.T) {
 	assert.Equal(t, "https://deepseek.server.example", response.Data[constant.ChannelTypeDeepSeek])
 	assert.Equal(t, "https://api.openai.com", response.Data[constant.ChannelTypeOpenAI])
 	assert.NotContains(t, response.Data, constant.ChannelTypeAzure)
-	assert.NotContains(t, response.Data, constant.ChannelTypeNewAPI)
+	assert.NotContains(t, response.Data, constant.ChannelTypeURouter)
 	assert.NotContains(t, response.Data, constant.ChannelTypeTaskPlugin)
 }
 
@@ -85,7 +85,7 @@ func TestValidateChannelProxy(t *testing.T) {
 	}
 }
 
-func TestValidateChannelRequiresNewAPIBaseURL(t *testing.T) {
+func TestValidateChannelRequiresURoutersBaseURL(t *testing.T) {
 	tests := []struct {
 		name    string
 		baseURL *string
@@ -93,20 +93,20 @@ func TestValidateChannelRequiresNewAPIBaseURL(t *testing.T) {
 	}{
 		{name: "missing", wantErr: true},
 		{name: "blank", baseURL: common.GetPointer("  "), wantErr: true},
-		{name: "configured", baseURL: common.GetPointer("https://new-api.example")},
+		{name: "configured", baseURL: common.GetPointer("https://ali-router.example")},
 	}
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			channel := &model.Channel{
-				Type:    constant.ChannelTypeNewAPI,
+				Type:    constant.ChannelTypeURouter,
 				BaseURL: test.baseURL,
 			}
 
 			err := validateChannel(channel, false)
 
 			if test.wantErr {
-				require.ErrorContains(t, err, "New API channel base URL cannot be empty")
+				require.ErrorContains(t, err, "URouters channel base URL cannot be empty")
 				return
 			}
 			require.NoError(t, err)
@@ -114,14 +114,14 @@ func TestValidateChannelRequiresNewAPIBaseURL(t *testing.T) {
 	}
 }
 
-func TestNewAPIChannelRegistration(t *testing.T) {
-	apiType, ok := common.ChannelType2APIType(constant.ChannelTypeNewAPI)
+func TestURouterChannelRegistration(t *testing.T) {
+	apiType, ok := common.ChannelType2APIType(constant.ChannelTypeURouter)
 
 	require.True(t, ok)
-	assert.Equal(t, constant.APITypeNewAPI, apiType)
-	assert.Equal(t, "New API", constant.GetChannelTypeName(constant.ChannelTypeNewAPI))
-	require.Greater(t, len(constant.ChannelBaseURLs), constant.ChannelTypeNewAPI)
-	assert.Empty(t, constant.ChannelBaseURLs[constant.ChannelTypeNewAPI])
+	assert.Equal(t, constant.APITypeURouter, apiType)
+	assert.Equal(t, "URouters", constant.GetChannelTypeName(constant.ChannelTypeURouter))
+	require.Greater(t, len(constant.ChannelBaseURLs), constant.ChannelTypeURouter)
+	assert.Empty(t, constant.ChannelBaseURLs[constant.ChannelTypeURouter])
 }
 
 func TestResponsesCompactChannelSupport(t *testing.T) {
@@ -136,7 +136,7 @@ func TestResponsesCompactChannelSupport(t *testing.T) {
 		{name: "Codex", channelType: constant.ChannelTypeCodex, apiType: constant.APITypeCodex, want: true},
 		{name: "Advanced Custom", channelType: constant.ChannelTypeAdvancedCustom, apiType: constant.APITypeAdvancedCustom, want: true},
 		{name: "Sub2API", channelType: constant.ChannelTypeSub2API, apiType: constant.APITypeSub2API, want: true},
-		{name: "New API", channelType: constant.ChannelTypeNewAPI, apiType: constant.APITypeNewAPI, want: true},
+		{name: "URouters", channelType: constant.ChannelTypeURouter, apiType: constant.APITypeURouter, want: true},
 		{name: "Anthropic", channelType: constant.ChannelTypeAnthropic, apiType: constant.APITypeAnthropic, want: false},
 	}
 
@@ -157,7 +157,7 @@ func TestMultiprotocolGatewayEndpointTypes(t *testing.T) {
 		constant.EndpointTypeOpenAIAlphaSearch,
 	}
 
-	assert.Equal(t, want, common.GetEndpointTypesByChannelType(constant.ChannelTypeNewAPI, "gpt-5"))
+	assert.Equal(t, want, common.GetEndpointTypesByChannelType(constant.ChannelTypeURouter, "gpt-5"))
 	assert.Equal(t, want, common.GetEndpointTypesByChannelType(constant.ChannelTypeSub2API, "gpt-5"))
 }
 

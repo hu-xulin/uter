@@ -30,10 +30,7 @@ import type { RenderChildren } from './response-types'
 
 const STREAM_FADE_DELAY_VAR = '--stream-fade-delay'
 
-export function renderTextNode(
-  node: TextNode,
-  fadeRun?: FadeRun
-): ReactNode {
+export function renderTextNode(node: TextNode, fadeRun?: FadeRun): ReactNode {
   if (!fadeRun) {
     return node.content
   }
@@ -74,7 +71,7 @@ export function renderLink(
 
   return (
     <a
-      className='text-primary underline-offset-4 hover:underline'
+      className='text-primary'
       href={node.href}
       key={key}
       rel={rel}

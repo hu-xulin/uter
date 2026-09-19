@@ -136,7 +136,8 @@ function LegacyAudioPreview(props: { data: unknown }) {
           strokeWidth={2}
           aria-hidden='true'
         />
-        <span className='text-foreground leading-snug group-hover:underline'>
+        <span className='text-foreground group-hover: leading-snug'>
+          {' '}
           {t('Click to preview audio')}
         </span>
       </button>
@@ -420,7 +421,7 @@ export function TaskArtifactsCell(props: { log: TaskLog }) {
       {previewMode === 'legacy-video' ? (
         <button
           type='button'
-          className='text-foreground text-xs hover:underline'
+          className='text-foreground text-xs'
           onClick={() => setOpen(true)}
         >
           {t('Click to preview video')}

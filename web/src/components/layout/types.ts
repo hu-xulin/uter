@@ -96,6 +96,7 @@ export type TopNavLink = {
   isActive?: boolean
   disabled?: boolean
   requiresAuth?: boolean
+  /** Rendered as a plain anchor: the target is not an SPA route. */
   external?: boolean
 }
 

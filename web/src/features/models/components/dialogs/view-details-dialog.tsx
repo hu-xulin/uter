@@ -17,7 +17,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@quantumnous.com
 */
 import { useQuery } from '@tanstack/react-query'
-import { Copy, ExternalLink, Loader2, RefreshCcw } from 'lucide-react'
+import { Copy, Loader2, RefreshCcw } from 'lucide-react'
 /*
 Copyright (C) 2023-2026 QuantumNous
 
@@ -285,7 +285,6 @@ export function ViewDetailsDialog({
                             size='sm'
                             onClick={() => window.open(url, '_blank')}
                           >
-                            <ExternalLink className='mr-2 h-4 w-4' />
                             {t('Open')}
                           </Button>
                         ) : null}

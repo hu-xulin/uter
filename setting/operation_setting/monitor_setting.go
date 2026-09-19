@@ -5,7 +5,7 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/QuantumNous/new-api/setting/config"
+	"github.com/QuantumNous/u-routers/setting/config"
 )
 
 type MonitorSetting struct {

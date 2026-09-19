@@ -17,7 +17,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@quantumnous.com
 */
 import { Link, useLocation } from '@tanstack/react-router'
-import { ExternalLink, Loader2, ChevronRight } from 'lucide-react'
+import { Loader2, ChevronRight } from 'lucide-react'
 import { useMemo, useCallback, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
@@ -109,7 +109,7 @@ function ChatMenuItem({
         {loading ? (
           <Loader2 className='h-4 w-4 shrink-0 animate-spin' />
         ) : (
-          <ExternalLink className='h-4 w-4 shrink-0' />
+          <></>
         )}
       </SidebarMenuSubButton>
     </SidebarMenuSubItem>
@@ -149,7 +149,7 @@ function DropdownPresetItem({
       {loading ? (
         <Loader2 className='ml-auto h-4 w-4 animate-spin opacity-70' />
       ) : (
-        <ExternalLink className='ml-auto h-4 w-4 opacity-70' />
+        <></>
       )}
     </DropdownMenuItem>
   )

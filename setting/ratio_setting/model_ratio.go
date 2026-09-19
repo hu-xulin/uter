@@ -4,10 +4,10 @@ import (
 	"maps"
 	"strings"
 
-	"github.com/QuantumNous/new-api/common"
-	"github.com/QuantumNous/new-api/setting/operation_setting"
-	hostreasoning "github.com/QuantumNous/new-api/setting/reasoning"
-	"github.com/QuantumNous/new-api/types"
+	"github.com/QuantumNous/u-routers/common"
+	"github.com/QuantumNous/u-routers/setting/operation_setting"
+	hostreasoning "github.com/QuantumNous/u-routers/setting/reasoning"
+	"github.com/QuantumNous/u-routers/types"
 )
 
 // from songquanpeng/one-api
@@ -218,7 +218,7 @@ var defaultModelRatio = map[string]float64{
 	"SparkDesk-v4.0":                           1.2858,
 	"hunyuan":                                  7.143, // ¥0.1 / 1k tokens  // https://cloud.tencent.com/document/product/1729/97731#e0e6be58-60c8-469f-bdeb-6c264ce3b4d0
 	// https://platform.lingyiwanwu.com/docs#-计费单元
-	// 已经按照 7.2 来换算美元价格
+	// 已经按照 7.2 来换算美元定价
 	"yi-34b-chat-0205":       0.18,
 	"yi-34b-chat-200k":       0.864,
 	"yi-vl-plus":             0.432,
@@ -356,7 +356,7 @@ func UpdateModelPriceByJSONString(jsonStr string) error {
 	return types.LoadFromJsonStringWithCallback(modelPriceMap, jsonStr, InvalidateExposedDataCache)
 }
 
-// GetModelPrice 返回模型的价格，如果模型不存在则返回-1，false
+// GetModelPrice 返回模型的定价，如果模型不存在则返回-1，false
 func GetModelPrice(name string, printErr bool) (float64, bool) {
 	name = FormatMatchingModelName(name)
 
@@ -739,7 +739,7 @@ func FormatMatchingModelName(name string) string {
 	return name
 }
 
-// result: 倍率or价格， usePrice， exist
+// result: 倍率or定价， usePrice， exist
 func GetModelRatioOrPrice(model string) (float64, bool, bool) { // price or ratio
 	price, usePrice := GetModelPrice(model, false)
 	if usePrice {

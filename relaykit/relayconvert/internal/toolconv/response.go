@@ -6,9 +6,9 @@ import (
 	"strings"
 	"unicode/utf8"
 
-	"github.com/QuantumNous/new-api/relaykit/dto"
-	kitutil "github.com/QuantumNous/new-api/relaykit/relayconvert/kitutil"
-	"github.com/QuantumNous/new-api/relaykit/types"
+	"github.com/QuantumNous/u-routers/relaykit/dto"
+	kitutil "github.com/QuantumNous/u-routers/relaykit/relayconvert/kitutil"
+	"github.com/QuantumNous/u-routers/relaykit/types"
 )
 
 // InspectResponse reports protocol information that the current response

@@ -1291,7 +1291,7 @@ export function PaymentSettingsSection({
                         href='https://dashboard.stripe.com/developers'
                         target='_blank'
                         rel='noreferrer'
-                        className='underline hover:no-underline'
+                        className='hover:no-underline'
                       >
                         {t('Stripe Dashboard')}
                       </a>

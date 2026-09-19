@@ -95,7 +95,9 @@ export type StatusVariant = keyof typeof dotColorMap
 /** Controls the visual style of the badge.
  * - `badge`    — default pill with background and padding (default)
  * - `text`     — plain text, no background or padding, only color
- * - `underline`— plain text with a bottom border underline
+ * - `underline`— kept for compatibility; renders the same as `text`. It
+ *                used to draw a bottom border, which the site-wide
+ *                no-underline rule retired.
  */
 export type StatusBadgeType = 'badge' | 'text' | 'underline'
 
@@ -185,10 +187,7 @@ export function StatusBadge({
         'inline-flex w-fit max-w-full min-w-0 shrink items-center font-medium tracking-normal whitespace-nowrap transition-colors',
         isBadge
           ? cn('rounded-4xl', sizeMap[size ?? 'sm'])
-          : cn(
-              textSizeMap[size ?? 'sm'],
-              type === 'underline' && 'border-b border-current pb-px'
-            ),
+          : textSizeMap[size ?? 'sm'],
         textColorMap[computedVariant],
         pulse && 'animate-pulse',
         copyable &&

@@ -311,7 +311,7 @@ export function MultiSelect(props: MultiSelectProps) {
                           }
                           onPointerDown={(event) => event.stopPropagation()}
                           title={t('Click to copy')}
-                          className='max-w-[16rem] cursor-pointer truncate rounded-sm hover:underline'
+                          className='max-w-[16rem] cursor-pointer truncate rounded-sm'
                         >
                           {label}
                         </button>

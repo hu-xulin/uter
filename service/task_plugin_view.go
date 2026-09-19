@@ -1,9 +1,9 @@
 package service
 
 import (
-	"github.com/QuantumNous/new-api/common"
-	"github.com/QuantumNous/new-api/dto"
-	"github.com/QuantumNous/new-api/model"
+	"github.com/QuantumNous/u-routers/common"
+	"github.com/QuantumNous/u-routers/dto"
+	"github.com/QuantumNous/u-routers/model"
 )
 
 // BuildTaskPluginView converts a persisted task into the deliberately narrow

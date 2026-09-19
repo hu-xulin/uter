@@ -1,6 +1,6 @@
 package operation_setting
 
-import "github.com/QuantumNous/new-api/setting/config"
+import "github.com/QuantumNous/u-routers/setting/config"
 
 // 额度展示类型
 const (
@@ -24,7 +24,13 @@ type GeneralSetting struct {
 
 // 默认配置
 var generalSetting = GeneralSetting{
-	DocsLink:                   "https://docs.newapi.pro",
+	// Keep this locale-free: `/docs` is the SPA's docs entry route,
+	// which reads the active UI language and forwards to the matching
+	// landing served by the gateway (`/docs/zh/` for Chinese locales,
+	// `/docs/en/` for the rest). `DOCS_ENTRY_PATH` in
+	// `web/src/lib/docs-link.ts` mirrors this value so the "View docs"
+	// button, the top-nav link, and the admin default all agree.
+	DocsLink:                   "/docs",
 	PingIntervalEnabled:        false,
 	PingIntervalSeconds:        60,
 	QuotaDisplayType:           QuotaDisplayTypeUSD,

@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"slices"
 
-	"github.com/QuantumNous/new-api/common"
-	"github.com/QuantumNous/new-api/setting/config"
+	"github.com/QuantumNous/u-routers/common"
+	"github.com/QuantumNous/u-routers/setting/config"
 )
 
 const defaultGeminiSafetySetting = "OFF"

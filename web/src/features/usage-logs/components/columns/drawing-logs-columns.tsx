@@ -210,7 +210,8 @@ export function useDrawingLogsColumns(
               onClick={() => setDialogOpen(true)}
               title={t('Click to view image')}
             >
-              <span className='text-foreground truncate leading-snug group-hover:underline'>
+              <span className='text-foreground group-hover: truncate leading-snug'>
+                {' '}
                 {t('View')}
               </span>
             </button>
@@ -244,7 +245,8 @@ export function useDrawingLogsColumns(
               onClick={() => setDialogOpen(true)}
               title={t('Click to view full prompt')}
             >
-              <span className='text-muted-foreground truncate leading-snug group-hover:underline'>
+              <span className='text-muted-foreground group-hover: truncate leading-snug'>
+                {' '}
                 {prompt}
               </span>
             </button>

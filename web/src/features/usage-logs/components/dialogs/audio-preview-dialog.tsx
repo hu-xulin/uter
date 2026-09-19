@@ -16,7 +16,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
-import { ExternalLink, Copy, Music } from 'lucide-react'
+import { Copy, Music } from 'lucide-react'
 import { useState, useRef, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
@@ -113,7 +113,6 @@ function AudioClipCard({ clip }: { clip: AudioClip }) {
               className='h-7 gap-1 text-xs'
               onClick={() => window.open(audioUrl, '_blank')}
             >
-              <ExternalLink className='h-3 w-3' />
               {t('Open in new tab')}
             </Button>
             <Button

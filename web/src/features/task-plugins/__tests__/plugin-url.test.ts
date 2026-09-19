@@ -17,6 +17,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@quantumnous.com
 */
 import assert from 'node:assert/strict'
+
 import { describe, test } from 'vitest'
 
 import {
@@ -31,9 +32,9 @@ describe('plugin source URL normalization', () => {
   test('rewrites a GitHub blob URL to its raw host', () => {
     assert.equal(
       normalizePluginSourceUrl(
-        'https://github.com/QuantumNous/new-api-plugins/blob/main/plugins/tasks/doubao/1.0.0/plugin.js'
+        'https://github.com/QuantumNous/u-routers-plugins/blob/main/plugins/tasks/doubao/1.0.0/plugin.js'
       ),
-      'https://raw.githubusercontent.com/QuantumNous/new-api-plugins/main/plugins/tasks/doubao/1.0.0/plugin.js'
+      'https://raw.githubusercontent.com/QuantumNous/u-routers-plugins/main/plugins/tasks/doubao/1.0.0/plugin.js'
     )
   })
 

@@ -60,22 +60,22 @@ export const GATEWAY_FEATURES = [
 // Stats section - Default statistics
 export const DEFAULT_STATS = [
   {
-    value: '50',
+    value: '100',
     suffix: '+',
     description: 'upstream services integrated',
   },
   {
-    value: '100',
+    value: '200',
     suffix: '+',
     description: 'model billing support',
   },
   {
-    value: '50',
+    value: '80',
     suffix: '+',
     description: 'compatible API routes',
   },
   {
-    value: '10',
+    value: '30',
     suffix: '+',
     description: 'scheduling controls',
   },

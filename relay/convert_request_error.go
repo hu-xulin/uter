@@ -4,13 +4,13 @@ import (
 	"errors"
 	"net/http"
 
-	relaycommon "github.com/QuantumNous/new-api/relay/common"
-	kitreasoning "github.com/QuantumNous/new-api/relaykit/relayconvert/reasoning"
-	"github.com/QuantumNous/new-api/relaykit/types"
+	relaycommon "github.com/QuantumNous/u-routers/relay/common"
+	kitreasoning "github.com/QuantumNous/u-routers/relaykit/relayconvert/reasoning"
+	"github.com/QuantumNous/u-routers/relaykit/types"
 	"github.com/gin-gonic/gin"
 )
 
-func newConvertRequestFailedError(c *gin.Context, info *relaycommon.RelayInfo, err error) *types.NewAPIError {
+func newConvertRequestFailedError(c *gin.Context, info *relaycommon.RelayInfo, err error) *types.URouterError {
 	var loss *types.ConversionLossError
 	if errors.As(err, &loss) {
 		info.RecordConversionDiagnostics(c, loss.Diagnostics)

@@ -23,6 +23,52 @@ export default defineConfig(({ envMode }) => {
     ])
   ) as Record<string, { target: string; changeOrigin: boolean }>
 
+  // Forward the statically exported pages to the Go backend (port 3000),
+  // which embeds them at `web/dist/docs/`. There are two sections —
+  // `/docs/<lang>/*` and `/about/<lang>/*` — and both are proxied one
+  // prefix per locale. The bare `/docs` and `/about` entries are
+  // deliberately *not* proxied: those are the SPA's own routes, which
+  // choose the locale from the UI language and frame the export. Override
+  // `NEXT_DOCS_PORT` to point at the Next.js dev server for live HMR
+  // against the source.
+  //
+  // `/_next/*` is proxied too: the exported HTML references its CSS/JS
+  // assets at `/_next/static/...` (Next.js's default asset prefix).
+  // Without the proxy, rsbuild serves `index.html` for those paths
+  // and the page renders without styles.
+  //
+  // `/search-index.json` is proxied for the same reason and one more:
+  // it is not an asset the HTML references but a file the search box
+  // fetches at runtime, from both sections. Unproxied, the dev server
+  // answers it from its history fallback with `index.html` and a 200, so
+  // the fetch succeeds, `response.json()` throws, and the search
+  // silently falls back to an empty index — every query returns nothing,
+  // with no visible error.
+  const docsProxyPort = process.env.NEXT_DOCS_PORT || '3000'
+  const docsTarget = `http://localhost:${docsProxyPort}`
+  const staticLocales = ['zh', 'en']
+  const staticPrefixes = [
+    ...staticLocales.map((locale) => `/docs/${locale}`),
+    ...staticLocales.map((locale) => `/about/${locale}`),
+    // Files the docs export serves from its root rather than from a
+    // localised section — the profile's portrait, the partner logo wall,
+    // and the user guide's screenshots (which sit under
+    // `public/user-guide/<locale>/<slug>/`). Unproxied, dev answers with
+    // `index.html` and the image silently 404s as HTML.
+    '/about-assets',
+    '/img/partners',
+    '/user-guide',
+    '/apps-assets',
+    '/_next',
+    '/search-index.json',
+  ]
+  for (const prefix of staticPrefixes) {
+    devProxy[prefix] = {
+      target: docsTarget,
+      changeOrigin: true,
+    }
+  }
+
   return {
     plugins: [pluginReact(), pluginTailwindcss({ optimize: false })],
     // Rsbuild 2: replaces deprecated `performance.chunkSplit` (RSPack 2 aligned)
@@ -60,6 +106,24 @@ export default defineConfig(({ envMode }) => {
     resolve: {
       alias: {
         '@': path.resolve(__dirname, './src'),
+        // 强制单一 React 副本：devDependencies 里 use-stick-to-bottom 等包被 pnpm
+        // 解析到 react@19.3.0 的独立副本，与应用的 react@19.2.7 冲突，
+        // 导致 hooks dispatcher 错配（useRef null / Invalid hook call）。
+        // 这里把所有 react/react-dom 的导入（含 jsx-runtime 子路径）统一指向顶层那份。
+        react: path.resolve(__dirname, './node_modules/react'),
+        'react/jsx-runtime': path.resolve(
+          __dirname,
+          './node_modules/react/jsx-runtime'
+        ),
+        'react/jsx-dev-runtime': path.resolve(
+          __dirname,
+          './node_modules/react/jsx-dev-runtime'
+        ),
+        'react-dom': path.resolve(__dirname, './node_modules/react-dom'),
+        'react-dom/client': path.resolve(
+          __dirname,
+          './node_modules/react-dom/client'
+        ),
       },
     },
     html: {

@@ -1,6 +1,6 @@
-package newapi
+package URouters
 
-const ChannelName = "newapi"
+const ChannelName = "URouters"
 
 // ModelList is empty because models are fetched dynamically from upstream /v1/models.
 var ModelList = []string{}

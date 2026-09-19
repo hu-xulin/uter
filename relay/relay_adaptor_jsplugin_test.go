@@ -6,9 +6,9 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/QuantumNous/new-api/constant"
-	pluginruntime "github.com/QuantumNous/new-api/pkg/jsplugin"
-	jspluginadaptor "github.com/QuantumNous/new-api/relay/channel/task/jsplugin"
+	"github.com/QuantumNous/u-routers/constant"
+	pluginruntime "github.com/QuantumNous/u-routers/pkg/jsplugin"
+	jspluginadaptor "github.com/QuantumNous/u-routers/relay/channel/task/jsplugin"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

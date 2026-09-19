@@ -18,8 +18,8 @@ For commercial licensing, please contact support@quantumnous.com
 */
 import { createFileRoute } from '@tanstack/react-router'
 
-import { About } from '@/features/about'
+import { AboutViewer } from '@/features/about'
 
 export const Route = createFileRoute('/about/')({
-  component: About,
+  component: AboutViewer,
 })

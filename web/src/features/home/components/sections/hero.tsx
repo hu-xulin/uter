@@ -21,8 +21,10 @@ import { Link } from '@tanstack/react-router'
 import { ArrowRight, BookOpen } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
+import { fullPageAnchorProps } from '@/components/layout/lib/url-utils'
 import { Button } from '@/components/ui/button'
 import { useStatus } from '@/hooks/use-status'
+import { isBundledDocsHref, resolveDocsHref } from '@/lib/docs-link'
 
 import { HeroTerminalDemo } from '../hero-terminal-demo'
 
@@ -48,30 +50,29 @@ const MoreIcon = () => (
 export function Hero(props: HeroProps) {
   const { t } = useTranslation()
   const { status } = useStatus()
-  const docsUrl =
-    (status?.docs_link as string | undefined) || 'https://docs.newapi.pro'
+  // Admins may point this at an external knowledge base. When unset,
+  // `resolveDocsHref` returns `/docs` — the SPA's locale-free entry —
+  // and the SPA's `/docs` route frames the bundled docs export inside
+  // the app shell, picking the locale-matching landing (`/docs/zh/` for
+  // Chinese locales, `/docs/en/` for everything else) from the user's
+  // current UI language.
+  const docsUrl = resolveDocsHref(status?.docs_link)
 
   const renderDocsButton = () => {
-    const isExternal = docsUrl.startsWith('http')
-    if (isExternal) {
-      return (
-        <Button
-          variant='outline'
-          className='group border-border/50 hover:border-border hover:bg-muted/50 inline-flex h-11 items-center gap-1.5 rounded-lg px-5 text-sm font-medium'
-          render={
-            <a href={docsUrl} target='_blank' rel='noopener noreferrer' />
-          }
-        >
-          <BookOpen className='text-muted-foreground/80 group-hover:text-foreground size-4 transition-colors duration-200' />
-          <span>{t('Docs')}</span>
-        </Button>
-      )
-    }
+    // The bundled entry is an SPA route, so the button is a router link
+    // and the docs open without leaving the app. A configured target is
+    // not ours to route: a plain anchor triggers a full document load,
+    // and `fullPageAnchorProps` forces a new tab for cross-origin URLs.
+    const rendered = isBundledDocsHref(docsUrl) ? (
+      <Link to={docsUrl} />
+    ) : (
+      <a href={docsUrl} {...fullPageAnchorProps(docsUrl)} />
+    )
     return (
       <Button
         variant='outline'
         className='group border-border/50 hover:border-border hover:bg-muted/50 inline-flex h-11 items-center gap-1.5 rounded-lg px-5 text-sm font-medium'
-        render={<Link to={docsUrl} />}
+        render={rendered}
       >
         <BookOpen className='text-muted-foreground/80 group-hover:text-foreground size-4 transition-colors duration-200' />
         <span>{t('Docs')}</span>
@@ -115,11 +116,47 @@ export function Hero(props: HeroProps) {
           </div>
 
           <h1
-            className='landing-animate-fade-up text-[clamp(2.25rem,4.5vw,3.25rem)] leading-[1.15] font-bold tracking-tight'
+            className='landing-animate-fade-up text-[clamp(2.25rem,4.5vw,3.25rem)] leading-[1.5] font-bold tracking-tight'
             style={{ animationDelay: '60ms' }}
           >
-            {t('Unified API Gateway for')}
-            <br />
+            {(() => {
+              const heading = t('Unified API Gateway for')
+              // Split on the Chinese full-width comma (，) and rebuild the
+              // line break layout. We keep the empty trailing chunk (if
+              // any) so an original closing comma in the source string
+              // survives the rewrite, but only render <br />s between
+              // chunks that actually contain text — so the gap between
+              // every line is governed by a single <br /> and the same
+              // `leading` value, instead of stacking two.
+              const raw = heading.split('，').map((c) => c.trim())
+              const hasTrailingComma = raw[raw.length - 1] === ''
+              const textChunks = hasTrailingComma ? raw.slice(0, -1) : raw
+              if (textChunks.length >= 2) {
+                return (
+                  <>
+                    {textChunks.map((chunk, i) => (
+                      <span key={i}>
+                        {chunk}
+                        {i < textChunks.length - 1 || hasTrailingComma
+                          ? '，'
+                          : ''}
+                        {i < textChunks.length - 1 ? <br /> : null}
+                      </span>
+                    ))}
+                    {/* Trailing break so the gradient line (below) sits on
+                        its own line, with the same single-<br /> gap as the
+                        lines above. */}
+                    <br />
+                  </>
+                )
+              }
+              return (
+                <>
+                  {heading}
+                  <br />
+                </>
+              )
+            })()}
             <span className='bg-gradient-to-r from-blue-400 via-violet-400 to-purple-500 bg-clip-text text-transparent'>
               {t('Vast Range of AI Models')}
             </span>
@@ -180,7 +217,7 @@ export function Hero(props: HeroProps) {
               </span>
               <p className='text-muted-foreground/60 text-xs leading-relaxed'>
                 {t(
-                  'Supports one-click configuration and perfectly adapts to NewAPI multi-protocol configuration.'
+                  'Supports one-click configuration and perfectly adapts to URouters multi-protocol configuration.'
                 )}
               </p>
             </div>

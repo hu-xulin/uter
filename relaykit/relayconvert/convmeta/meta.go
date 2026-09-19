@@ -5,8 +5,8 @@
 package convmeta
 
 import (
-	"github.com/QuantumNous/new-api/relaykit/dto"
-	"github.com/QuantumNous/new-api/relaykit/types"
+	"github.com/QuantumNous/u-routers/relaykit/dto"
+	"github.com/QuantumNous/u-routers/relaykit/types"
 )
 
 // Meta is the only view of the relay session that format converters may use.

@@ -777,7 +777,7 @@ export function Markdown(props: MarkdownProps) {
         '[&_h3]:mt-4 [&_h3]:mb-2 [&_h3]:text-lg [&_h3]:font-semibold',
         '[&_h4]:mt-4 [&_h4]:mb-2 [&_h4]:font-semibold',
         '[&_p]:my-2 [&_p]:leading-relaxed [&_strong]:font-semibold [&_em]:italic',
-        '[&_a]:text-primary [&_a]:underline hover:[&_a]:text-primary/80',
+        '[&_a]:text-primary hover:[&_a]:text-primary/80',
         '[&_ol]:my-2 [&_ul]:my-2 [&_ol]:list-decimal [&_ul]:list-disc [&_ol]:pl-5 [&_ul]:pl-5 [&_li]:my-1 [&_li]:pl-1',
         '[&_blockquote]:my-3 [&_blockquote]:border-l-2 [&_blockquote]:border-primary [&_blockquote]:bg-muted/50 [&_blockquote]:py-1 [&_blockquote]:pl-4',
         '[&_code]:rounded [&_code]:bg-muted [&_code]:px-1 [&_code]:py-0.5 [&_code]:font-mono',

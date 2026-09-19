@@ -18,7 +18,6 @@ For commercial licensing, please contact support@quantumnous.com
 */
 import { zodResolver } from '@hookform/resolvers/zod'
 import axios from 'axios'
-import { ExternalLink } from 'lucide-react'
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
@@ -919,10 +918,9 @@ export function OAuthSection(props: OAuthSectionProps) {
                     href='https://connect.linux.do/'
                     target='_blank'
                     rel='noreferrer'
-                    className='text-primary inline-flex w-fit items-center gap-1 underline underline-offset-3 hover:no-underline'
+                    className='text-primary inline-flex w-fit items-center gap-1 hover:no-underline'
                   >
                     {t('Manage your LinuxDO OAuth app')}
-                    <ExternalLink className='size-3' aria-hidden='true' />
                   </a>
                 </OAuthSetupGuide>
 
