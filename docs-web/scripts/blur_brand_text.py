@@ -25,6 +25,32 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from blur_brand import blur_boxes  # noqa: E402
 from find_brand_text import hits  # noqa: E402
 
+# A brand wordmark often sits right of its logo glyph. When a text hit is
+# found, the strip this far to its left is scanned for a coloured blob and
+# blurred together with the text.
+LOGO_LOOKBACK = 110
+
+
+def _logo_left_box(path: Path, box: tuple[int, int, int, int]) -> tuple[int, int, int, int]:
+    """Extend a text hit left over an adjacent logo blob, if one is there."""
+    with Image.open(path) as source:
+        image = source.convert('RGB')
+    x0, y0, x1, y1 = box
+    zone_x0 = max(0, x0 - LOGO_LOOKBACK)
+    if zone_x0 == x0:
+        return box
+    zone = image.crop((zone_x0, y0, x0, y1)).convert('HSV')
+    px = zone.load()
+    pts = [
+        (x, y)
+        for y in range(zone.height)
+        for x in range(zone.width)
+        if px[x, y][1] >= 45 and px[x, y][2] >= 70
+    ]
+    if len(pts) < 8:
+        return box
+    return (zone_x0 + min(x for x, _ in pts), y0, x1, y1)
+
 
 def scrub_file(path: Path, max_rounds: int = 4) -> int:
     """Blur all brand text in one image. Returns rounds of blurring applied."""
@@ -41,9 +67,11 @@ def scrub_file(path: Path, max_rounds: int = 4) -> int:
         ]
         if not boxes:
             return round_index
-        # Each hit on its own: merging chains every word along a toolbar
-        # row into one strip and erases the row instead of the brand.
-        blur_boxes(path, boxes, pad=6, merge=False)
+        # Pull an adjacent logo into each text hit, then blur each region on
+        # its own: merging chains every word along a toolbar row into one
+        # strip and erases the row instead of the brand.
+        regions = [_logo_left_box(path, box) for box in boxes]
+        blur_boxes(path, regions, pad=6, merge=False)
     return max_rounds
 
 
