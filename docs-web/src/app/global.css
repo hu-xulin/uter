@@ -1,0 +1,311 @@
+@import 'tailwindcss';
+@import 'fumadocs-ui/css/neutral.css';
+@import 'fumadocs-ui/css/preset.css';
+
+/*
+ * iOS-style light/dark scheme: follow the OS preference unless the
+ * user has stored a choice via Fumadocs' theme toggle (handled in the
+ * provider).
+ *
+ * Must stay a plain `@theme` (NOT `@theme inline`). `inline` makes
+ * Tailwind bake each token's *current* value straight into every
+ * generated utility — e.g. `.bg-fd-background{background-color:
+ * var(--color-neutral-50)}` — so the `.dark` overrides below would
+ * never reach any `bg-fd-*` / `text-fd-*` class and the site would
+ * stay light even with `<html class="dark">`. With a plain `@theme`,
+ * utilities emit `var(--color-fd-background)` and follow the active
+ * theme. The light palette is unchanged because `--color-fd-*` still
+ * resolves to the same `neutral-*` steps there.
+ */
+@theme {
+  --color-fd-background: var(--color-neutral-50);
+  --color-fd-foreground: var(--color-neutral-900);
+  --color-fd-muted: var(--color-neutral-100);
+  --color-fd-muted-foreground: var(--color-neutral-500);
+  --color-fd-card: var(--color-neutral-50);
+  --color-fd-card-foreground: var(--color-neutral-900);
+  --color-fd-border: var(--color-neutral-200);
+  --color-fd-primary: var(--color-neutral-900);
+  --color-fd-primary-foreground: var(--color-neutral-50);
+  --color-fd-secondary: var(--color-neutral-100);
+  --color-fd-secondary-foreground: var(--color-neutral-900);
+  --color-fd-accent: var(--color-neutral-100);
+  --color-fd-accent-foreground: var(--color-neutral-900);
+  --color-fd-ring: var(--color-neutral-400);
+}
+
+.dark {
+  --color-fd-background: var(--color-neutral-950);
+  --color-fd-foreground: var(--color-neutral-50);
+  --color-fd-muted: var(--color-neutral-900);
+  --color-fd-muted-foreground: var(--color-neutral-400);
+  --color-fd-card: var(--color-neutral-900);
+  --color-fd-card-foreground: var(--color-neutral-50);
+  --color-fd-border: var(--color-neutral-800);
+  --color-fd-primary: var(--color-neutral-50);
+  --color-fd-primary-foreground: var(--color-neutral-900);
+  --color-fd-secondary: var(--color-neutral-900);
+  --color-fd-secondary-foreground: var(--color-neutral-50);
+  --color-fd-accent: var(--color-neutral-900);
+  --color-fd-accent-foreground: var(--color-neutral-50);
+  --color-fd-ring: var(--color-neutral-600);
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
+}
+
+body {
+  font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+}
+
+/*
+ * ── Brand accent and layout metrics ─────────────────────────────────
+ *
+ * `--urouters-accent` derives from the SPA's Sign in button — the
+ * literal declared as `--color-primary` in `web/src/styles/theme.css`.
+ * The app declares that inside an `@theme inline` block, so Tailwind
+ * bakes it into the `bg-primary` utilities at build time and it is *not*
+ * readable as a custom property at runtime: there is nothing to inherit
+ * across the frame, which is why a literal is repeated here.
+ *
+ * Both modes shift the hue's lightness so the accent stays legible as
+ * a 14px label sitting on the panel surface. The raw button colour
+ * (`#6467f0`) reached only 3.92:1 against the plain light panel, and
+ * 3.49:1 once an active entry painted its own 10% tint under the label
+ * — short of the 4.5:1 that size requires.
+ *
+ *   light  `#4b4ede` — same hue, about 25% deeper → 5.40:1 plain,
+ *                      4.67:1 on the active entry's tint
+ *   dark   `#8f91f5` — same hue, lighter → 6.4:1 on the dark panel
+ *                      (`#6467f0` managed only 4.0:1 there)
+ *
+ * Ratios measured in the framed page by compositing the panel surface
+ * and the entry's own tint on a canvas, so they reflect what is
+ * actually painted rather than the alpha value on its own. Keep the hue
+ * and move only the lightness, then re-measure if either surface
+ * changes.
+ *
+ * `--urouters-panel` is the sidebar's own surface. Fumadocs' default
+ * (`--color-fd-card`, near-white in light mode) leaves the panel
+ * indistinguishable from the page it sits beside; a slightly darker grey
+ * gives the navigation an edge without a hard divider.
+ */
+:root {
+  --urouters-accent: #4b4ede;
+  --urouters-panel: #f1f1f1;
+  --urouters-panel-hover: rgb(0 0 0 / 0.045);
+  /* Inline start padding that lines the panel's content up with the
+     SPA header's brand mark — see the note on `--fd-layout-width`.
+     The extra pixel cancels the panel's own `border-inline-end`:
+     `#nd-sidebar` is `border-box` at 268px wide, so its content box is
+     267px while Fumadocs still sizes the inner column to the full
+     268px. That column is end-aligned, so it starts one pixel left of
+     the panel edge and both blocks this inset applies to inherit the
+     shift. Measured: 31px without it, 32px with it, against the SPA
+     brand mark at 32px. */
+  --urouters-sidebar-inset: calc(2rem + 1px);
+}
+
+.dark {
+  --urouters-accent: #8f91f5;
+  --urouters-panel: var(--color-neutral-900);
+  --urouters-panel-hover: rgb(255 255 255 / 0.055);
+}
+
+/*
+ * ── Partner marks ───────────────────────────────────────────────────
+ *
+ * The model logo wall loads its artwork as `<img>` from
+ * `public/img/partners/`. An image element gets no cascade, so the marks
+ * — monochrome `currentColor` SVGs that would otherwise follow the page
+ * foreground — paint black in both themes, and black on the dark
+ * background (neutral-950) is invisible.
+ *
+ * Flatten before inverting so a coloured mark swapped in later reads as a
+ * white silhouette rather than a muddy negative.
+ *
+ * Keyed on `.dark` rather than Tailwind's `dark:` variant: that variant
+ * follows the OS preference in this project, while the site's theme is
+ * the class on `<html>`.
+ */
+.dark .partner-mark {
+  filter: brightness(0) invert(1);
+}
+
+/*
+ * ── No underlines, anywhere ────────────────────────────────────────
+ *
+ * Site-wide rule: links carry their affordance with colour and weight,
+ * never with an underline. This covers every anchor on the docs side,
+ * including the ones prose decorates on its own (`bd@urouters.com` in a
+ * contact list is a detail to copy down, not a page to visit) and any
+ * component that still asks for one with a `hover:underline` utility.
+ *
+ * Unlayered on purpose, and that is the whole point. Prose's rule sits
+ * in the `utilities` layer and carries only the specificity of a single
+ * `.prose` class — everything after it is wrapped in `:where()`, which
+ * contributes none — so a `no-underline` utility would win by source
+ * order alone and silently revert if the layers were ever emitted in a
+ * different sequence. An unlayered declaration outranks every layer
+ * outright; `.dark .partner-mark` above pulls the same lever.
+ */
+a {
+  text-decoration: none;
+}
+
+/*
+ * Fumadocs centres a fixed-width column and spends whatever is left on
+ * gutters either side of the sidebar and the table of contents; the
+ * column width comes from `--fd-layout-width`, defaulted inline to 97rem
+ * by the layout container.
+ *
+ * 80rem is not arbitrary: it is the SPA header's own `max-w-7xl`, so the
+ * two centre on exactly the same column. The header then insets its
+ * brand by `md:px-6` (24px) plus the nav's `px-2` (8px) — 32px — which
+ * `--urouters-sidebar-inset` reserves inside the panel. Because both
+ * offsets derive from the same column, the panel and the brand keep a
+ * shared left edge at every viewport width rather than only agreeing at
+ * one.
+ */
+:root {
+  --fd-layout-width: 80rem;
+}
+
+/*
+ * Fumadocs ships a default selection colour tied to its primary
+ * palette; override to match the project brand.
+ */
+::selection {
+  background-color: color-mix(in oklab, var(--urouters-accent) 25%, transparent);
+}
+
+/*
+ * ── Sidebar panel ───────────────────────────────────────────────────
+ *
+ * The accent is applied by redefining `--color-fd-primary` on the panel
+ * rather than by chasing Fumadocs' `data-[active=true]:text-fd-primary`
+ * / `bg-fd-primary/10` utilities: the panel's active entry, its accent
+ * bar and any folder highlight all resolve through that one token, so
+ * one override covers them and stays correct if the class list changes.
+ */
+#nd-sidebar,
+#nd-sidebar-mobile {
+  --color-fd-card: var(--urouters-panel);
+  --color-fd-primary: var(--urouters-accent);
+  --color-fd-primary-foreground: #fff;
+}
+
+/*
+ * The two inner blocks of the panel — the header row and the scrolling
+ * page tree — carry Fumadocs' `p-4`. Only the inline start is widened,
+ * which is what moves the panel's text under the SPA's brand without
+ * narrowing its right edge.
+ */
+#nd-sidebar > div:first-of-type {
+  padding-inline-start: var(--urouters-sidebar-inset);
+}
+
+#nd-sidebar [data-radix-scroll-area-viewport] {
+  padding-inline-start: var(--urouters-sidebar-inset);
+}
+
+/*
+ * Entry hover. Fumadocs' `hover:bg-fd-accent/50` pairs `--color-fd-accent`
+ * (neutral-100 in light mode) with 50% alpha, which is lighter than the
+ * panel and therefore nearly invisible on it. These rules set the
+ * hover surface directly; being unlayered they take precedence over the
+ * utility classes.
+ *
+ * The active entry is excluded: its surface is the accent tint from the
+ * token override above, and letting the hover rule repaint it would make
+ * the selection flicker grey under the pointer.
+ */
+#nd-sidebar a[href]:not([data-active='true']):hover,
+#nd-sidebar button:hover,
+#nd-sidebar-mobile a[href]:not([data-active='true']):hover,
+#nd-sidebar-mobile button:hover {
+  background-color: var(--urouters-panel-hover);
+}
+
+/*
+ * Folder markers. Fumadocs rotates the chevron to point right while a
+ * folder is collapsed; this site's convention is a fixed down-chevron,
+ * so the rotation is neutralised and the marker keeps its orientation
+ * whether the group is open or closed.
+ *
+ * The property is `rotate`, not `transform`: Tailwind 4 emits
+ * `.-rotate-90{rotate:-90deg}` as the standalone CSS property, which a
+ * `transform: none` reset would leave untouched.
+ */
+#nd-sidebar [data-icon],
+#nd-sidebar-mobile [data-icon] {
+  rotate: none;
+}
+
+/*
+ * ── Table of contents ───────────────────────────────────────────────
+ *
+ * The active entry, the SVG track and its travelling thumb all read the
+ * same token (`text-fd-primary` / `stroke-fd-primary` / `bg-fd-primary`),
+ * so scoping it here recolours the whole marker at once.
+ *
+ * `[data-toc-popover]` is the compact variant shown while the full column
+ * is hidden (`max-xl`); it is identified by that attribute rather than by
+ * an id, since only the full TOC gets `#nd-toc`.
+ */
+#nd-toc,
+[data-toc-popover] {
+  --color-fd-primary: var(--urouters-accent);
+}
+
+/*
+ * ── Search dialog ───────────────────────────────────────────────────
+ *
+ * Fumadocs' result list renders the query's matches as `<mark>`, which
+ * its markdown renderer maps to a `text-fd-primary` span. Scoping the
+ * token to the dialog recolours the highlights without touching anything
+ * outside it.
+ */
+[data-docs-search] {
+  --color-fd-primary: var(--urouters-accent);
+}
+
+/*
+ * Embedded mode — the site is framed by the SPA's `/docs` route.
+ *
+ * `data-docs-embed` is set by the bootstrap script in `layout.tsx`
+ * before the first paint (see the `EMBED_BOOTSTRAP` note there), so the
+ * host's top navigation is already rendered above the frame and the
+ * docs site's own bar would be a duplicate. Hiding it through CSS —
+ * rather than unmounting `DocsHeader` — keeps this file the only place
+ * that knows about embedding, and leaves the standalone site untouched.
+ *
+ * `[data-docs-embed-hide]` marks the spacer that reserves the fixed
+ * header's height (see `docs-shell.tsx`); with the header gone the
+ * content has to start at the very top of the frame.
+ */
+html[data-docs-embed='true'] #nd-docs-topnav,
+html[data-docs-embed='true'] [data-docs-embed-hide] {
+  display: none !important;
+}
+
+/* No fixed bar inside the frame, so anchor jumps only need a small
+ * offset instead of the standalone site's 5rem header allowance. */
+html[data-docs-embed='true'] {
+  scroll-padding-top: 1rem;
+}
+
+/*
+ * Below `lg`, Fumadocs keeps a second, compact bar (`#nd-subnav`, its
+ * internal id) carrying the search and sidebar triggers. It leads with
+ * the same logo + wordmark as the host's header directly above it, so
+ * in the frame the brand is dropped and the row keeps only the two
+ * controls that have nowhere else to live. The selector is a no-op if
+ * Fumadocs ever renames the node, which costs nothing but the
+ * duplicate wordmark.
+ */
+html[data-docs-embed='true'] #nd-subnav > a {
+  display: none !important;
+}

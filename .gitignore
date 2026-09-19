@@ -50,3 +50,8 @@ go.work.sum
 docs-web/out/
 docs-web/.next/
 docs-web/node_modules/
+docs-web/tsconfig.tsbuildinfo
+
+# Python bytecode (docs-web/scripts)
+__pycache__/
+*.pyc
