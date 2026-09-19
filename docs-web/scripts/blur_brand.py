@@ -51,6 +51,12 @@ PAD_X, PAD_Y = 8, 6
 # from edge to edge; their coloured icons must never be touched.
 MIN_BLUR_WIDTH = 1100
 
+# Blue→violet half of the logo gradient. The mark always carries these hues;
+# a coloured blob that has none is something else — a macOS close button is
+# rose-red only, an emoji or status dot rarely reaches blue.
+HUE_CORE_LO, HUE_CORE_HI = 140, 205
+MIN_CORE = 6
+
 
 def _brand_box(image: Image.Image) -> tuple[int, int, int, int] | None:
     """Locate logo + wordmark in the top-left band, or None if absent."""
@@ -76,6 +82,28 @@ def _brand_box(image: Image.Image) -> tuple[int, int, int, int] | None:
         if abs(x - sx) <= LOGO_SPAN_X and sy - 6 <= y <= sy + LOGO_SPAN_Y
     ]
     if len(cluster) < MIN_CLUSTER:
+        return None
+
+    # Guard 1 — the mark must carry its blue/violet half. Without this the
+    # rose-red macOS close button qualifies (hue ≈250 sits inside the
+    # rose end of the search window) and gets destroyed instead of the logo.
+    core = sum(1 for x, y in cluster if HUE_CORE_LO <= px[x, y][0] <= HUE_CORE_HI)
+    if core < MIN_CORE:
+        return None
+
+    # Guard 2 — traffic lights. A rose-red blob with yellow and green discs
+    # beside it on the same row is window chrome, never the brand.
+    yellow = green = 0
+    for y in range(max(0, sy - 10), min(band.height, sy + LOGO_SPAN_Y + 10)):
+        for x in range(sx, min(band.width, sx + 150)):
+            hue, sat = px[x, y][0], px[x, y][1]
+            if sat < SAT_MIN:
+                continue
+            if 30 <= hue <= 55:
+                yellow += 1
+            elif 70 <= hue <= 100:
+                green += 1
+    if yellow > 15 and green > 15:
         return None
 
     lx0 = min(x for x, _ in cluster)
@@ -173,11 +201,16 @@ def blur_brand_image(image: Image.Image) -> tuple[Image.Image, bool]:
     return Image.composite(blurred, image, masked), True
 
 
-def blur_boxes(path: Path, boxes: list[tuple[int, int, int, int]], pad: int = 8) -> int:
+def blur_boxes(
+    path: Path, boxes: list[tuple[int, int, int, int]], pad: int = 8, merge: bool = True
+) -> int:
     """Destroy every box (pixel coords) in the image, in place.
 
-    Overlapping boxes are merged first so nested hits don't get blurred twice.
-    Returns the number of regions destroyed.
+    Overlapping boxes are merged first so nested hits don't get blurred
+    twice — but merging is opt-out (`merge=False`): OCR word boxes sitting
+    on the same toolbar row chain-merge through the padding into one strip
+    that erases far more than the words, so text scrubbing blurs each hit
+    on its own instead. Returns the number of regions destroyed.
     """
     with Image.open(path) as source:
         image = source.convert('RGB')
@@ -186,6 +219,9 @@ def blur_boxes(path: Path, boxes: list[tuple[int, int, int, int]], pad: int = 8)
     for x0, y0, x1, y1 in boxes:
         x0, y0 = max(0, x0 - pad), max(0, y0 - pad)
         x1, y1 = min(image.width, x1 + pad), min(image.height, y1 + pad)
+        if not merge:
+            merged.append([x0, y0, x1, y1])
+            continue
         for region in merged:
             if x0 < region[2] and x1 > region[0] and y0 < region[3] and y1 > region[1]:
                 region[0] = min(region[0], x0)

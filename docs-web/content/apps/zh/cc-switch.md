@@ -1,4 +1,4 @@
-# CC Switch
+# CC Switch - AI CLI 统一管理工具
 
 > **聊天设置选项**
 >

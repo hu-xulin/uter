@@ -326,6 +326,25 @@ function apiSidebarChildren(locale: DocsLocale, prefix: string): SidebarNode[] {
   ];
 }
 
+/**
+ * Sidebar label for one AI-app entry.
+ *
+ * The catalog names every app "<app> — <what it is>" — `AionUi - 免费开源
+ * 的桌面办公Agent` — which reads well on the apps index card grid but
+ * overruns a sidebar column: each row wrapped onto a second line and the
+ * column stopped scanning as a list of names. Only the part ahead of the
+ * separator is shown here.
+ *
+ * Deliberately scoped to the sidebar: the second half is what tells a
+ * reader what the app *does*, which is what earns its place on the page
+ * itself. Cutting it everywhere would leave each page titled with a name
+ * that means nothing out of context.
+ */
+function appsSidebarTitle(title: string): string {
+  const separator = title.indexOf(' - ');
+  return separator === -1 ? title : title.slice(0, separator);
+}
+
 export function sidebarEntries(locale: DocsLocale, prefix: string): SidebarEntry[] {
   const labels = LABELS[locale];
   const guideUrl = `${prefix}/${SLUGS.guide}`;
@@ -367,7 +386,7 @@ export function sidebarEntries(locale: DocsLocale, prefix: string): SidebarEntry
       children: loadSectionNav('apps', locale)
         .filter((item) => item.id !== 'index')
         .map((item) => ({
-          title: item.title,
+          title: appsSidebarTitle(item.title),
           url: `${prefix}/${SLUGS.apps}/${item.id}`,
           anchors: [],
         })),

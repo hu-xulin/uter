@@ -1,7 +1,7 @@
 [
   {
     "id": "ai-model-audio",
-    "title": "Native Gemini Format",
+    "title": "AI Model API · Native Gemini Format",
     "category": "ai-model"
   },
   {
@@ -30,8 +30,23 @@
     "category": "ai-model"
   },
   {
+    "id": "ai-model-completions-openai",
+    "title": "AI Model API · Native OpenAI Format",
+    "category": "ai-model"
+  },
+  {
     "id": "ai-model-embeddings",
     "title": "embeddings",
+    "category": "ai-model"
+  },
+  {
+    "id": "ai-model-embeddings-openai",
+    "title": "AI Model API · Native OpenAI Format",
+    "category": "ai-model"
+  },
+  {
+    "id": "ai-model-embeddings-gemini",
+    "title": "AI Model API · Native Gemini Format",
     "category": "ai-model"
   },
   {
@@ -55,6 +70,16 @@
     "category": "ai-model"
   },
   {
+    "id": "ai-model-models-list-openai",
+    "title": "AI Model API · Native OpenAI Format",
+    "category": "ai-model"
+  },
+  {
+    "id": "ai-model-models-list-gemini",
+    "title": "AI Model API · Native Gemini Format",
+    "category": "ai-model"
+  },
+  {
     "id": "ai-model-moderations",
     "title": "AI Model API · Native OpenAI Format",
     "category": "ai-model"
@@ -67,11 +92,6 @@
   {
     "id": "ai-model-rerank",
     "title": "Document Reranking",
-    "category": "ai-model"
-  },
-  {
-    "id": "ai-model-unimplemented-files",
-    "title": "files",
     "category": "ai-model"
   },
   {

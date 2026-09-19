@@ -1,4 +1,4 @@
-# Cherry Studio
+# Cherry Studio - 桌面 AI 客户端
 
 > **聊天设置选项**
 >

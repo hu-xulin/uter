@@ -1,4 +1,4 @@
-# DeepChat
+# DeepChat - 全功能AI Agent客户端
 
 > **聊天设置选项**
 >
