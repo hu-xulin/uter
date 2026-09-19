@@ -16,12 +16,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
-import {
-  ArrowDownRight,
-  ArrowUpRight,
-  ExternalLink,
-  Trophy,
-} from 'lucide-react'
+import { ArrowDownRight, ArrowUpRight, Trophy } from 'lucide-react'
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -102,7 +97,6 @@ function AppLink(props: { app: AppRanking }) {
       className='text-foreground hover:text-primary inline-flex items-center gap-1 transition-colors'
     >
       {props.app.name}
-      <ExternalLink className='text-muted-foreground/40 size-3' />
     </a>
   )
 }

@@ -5,11 +5,11 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/QuantumNous/new-api/relay/channel"
-	"github.com/QuantumNous/new-api/relay/channel/openai"
-	relaycommon "github.com/QuantumNous/new-api/relay/common"
-	"github.com/QuantumNous/new-api/relaykit/dto"
-	"github.com/QuantumNous/new-api/relaykit/types"
+	"github.com/QuantumNous/u-routers/relay/channel"
+	"github.com/QuantumNous/u-routers/relay/channel/openai"
+	relaycommon "github.com/QuantumNous/u-routers/relay/common"
+	"github.com/QuantumNous/u-routers/relaykit/dto"
+	"github.com/QuantumNous/u-routers/relaykit/types"
 
 	"github.com/gin-gonic/gin"
 )
@@ -75,7 +75,7 @@ func (a *Adaptor) DoRequest(c *gin.Context, info *relaycommon.RelayInfo, request
 	return channel.DoApiRequest(a, c, info, requestBody)
 }
 
-func (a *Adaptor) DoResponse(c *gin.Context, resp *http.Response, info *relaycommon.RelayInfo) (usage any, err *types.NewAPIError) {
+func (a *Adaptor) DoResponse(c *gin.Context, resp *http.Response, info *relaycommon.RelayInfo) (usage any, err *types.URouterError) {
 	if info.IsStream {
 		usage, err = openai.OaiStreamHandler(c, info, resp)
 	} else {

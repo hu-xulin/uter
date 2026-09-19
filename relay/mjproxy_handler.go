@@ -11,17 +11,17 @@ import (
 	"strings"
 	"time"
 
-	"github.com/QuantumNous/new-api/common"
-	"github.com/QuantumNous/new-api/constant"
-	"github.com/QuantumNous/new-api/dto"
-	"github.com/QuantumNous/new-api/logger"
-	"github.com/QuantumNous/new-api/model"
-	relaycommon "github.com/QuantumNous/new-api/relay/common"
-	relayconstant "github.com/QuantumNous/new-api/relay/constant"
-	"github.com/QuantumNous/new-api/relay/helper"
-	"github.com/QuantumNous/new-api/service"
-	"github.com/QuantumNous/new-api/setting"
-	"github.com/QuantumNous/new-api/setting/system_setting"
+	"github.com/QuantumNous/u-routers/common"
+	"github.com/QuantumNous/u-routers/constant"
+	"github.com/QuantumNous/u-routers/dto"
+	"github.com/QuantumNous/u-routers/logger"
+	"github.com/QuantumNous/u-routers/model"
+	relaycommon "github.com/QuantumNous/u-routers/relay/common"
+	relayconstant "github.com/QuantumNous/u-routers/relay/constant"
+	"github.com/QuantumNous/u-routers/relay/helper"
+	"github.com/QuantumNous/u-routers/service"
+	"github.com/QuantumNous/u-routers/setting"
+	"github.com/QuantumNous/u-routers/setting/system_setting"
 
 	"github.com/gin-gonic/gin"
 )
@@ -271,7 +271,7 @@ func RelaySwapFace(c *gin.Context, info *relaycommon.RelayInfo) *dto.MidjourneyR
 	if billingApplied {
 		billingChannelId := midjourneyTask.GetBillingChannelId()
 		tokenName := c.GetString("token_name")
-		logContent := fmt.Sprintf("模型固定价格 %.2f，分组倍率 %.2f，操作 %s", priceData.ModelPrice, priceData.GroupRatioInfo.GroupRatio, constant.MjActionSwapFace)
+		logContent := fmt.Sprintf("模型固定定价 %.2f，分组倍率 %.2f，操作 %s", priceData.ModelPrice, priceData.GroupRatioInfo.GroupRatio, constant.MjActionSwapFace)
 		other := service.GenerateMjOtherInfo(info, priceData)
 		model.RecordConsumeLog(c, info.UserId, model.RecordConsumeLogParams{
 			ChannelId: billingChannelId,
@@ -636,7 +636,7 @@ func RelayMidjourneySubmit(c *gin.Context, relayInfo *relaycommon.RelayInfo) *dt
 	if billingApplied {
 		billingChannelId := midjourneyTask.GetBillingChannelId()
 		tokenName := c.GetString("token_name")
-		logContent := fmt.Sprintf("模型固定价格 %.2f，分组倍率 %.2f，操作 %s，ID %s", priceData.ModelPrice, priceData.GroupRatioInfo.GroupRatio, midjRequest.Action, midjResponse.Result)
+		logContent := fmt.Sprintf("模型固定定价 %.2f，分组倍率 %.2f，操作 %s，ID %s", priceData.ModelPrice, priceData.GroupRatioInfo.GroupRatio, midjRequest.Action, midjResponse.Result)
 		other := service.GenerateMjOtherInfo(relayInfo, priceData)
 		model.RecordConsumeLog(c, relayInfo.UserId, model.RecordConsumeLogParams{
 			ChannelId: billingChannelId,

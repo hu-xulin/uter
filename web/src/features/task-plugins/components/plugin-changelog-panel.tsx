@@ -17,7 +17,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@quantumnous.com
 */
 import { useQuery } from '@tanstack/react-query'
-import { ExternalLink, History } from 'lucide-react'
+import { History } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
 import { EmptyState } from '@/components/empty-state'
@@ -101,7 +101,6 @@ export function PluginChangelogPanel(props: PluginChangelogPanelProps) {
           rel='noopener noreferrer'
           className='text-muted-foreground hover:text-foreground inline-flex items-center gap-1.5 text-xs'
         >
-          <ExternalLink className='size-3.5' aria-hidden='true' />
           {t('View changelog source')}
         </a>
       </div>

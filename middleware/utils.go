@@ -3,11 +3,11 @@ package middleware
 import (
 	"fmt"
 
-	"github.com/QuantumNous/new-api/common"
-	"github.com/QuantumNous/new-api/dto"
-	"github.com/QuantumNous/new-api/logger"
-	pluginruntime "github.com/QuantumNous/new-api/pkg/jsplugin"
-	"github.com/QuantumNous/new-api/relaykit/types"
+	"github.com/QuantumNous/u-routers/common"
+	"github.com/QuantumNous/u-routers/dto"
+	"github.com/QuantumNous/u-routers/logger"
+	pluginruntime "github.com/QuantumNous/u-routers/pkg/jsplugin"
+	"github.com/QuantumNous/u-routers/relaykit/types"
 	"github.com/gin-gonic/gin"
 )
 

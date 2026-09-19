@@ -3,7 +3,7 @@ package toolconv
 import (
 	"encoding/json"
 
-	"github.com/QuantumNous/new-api/relaykit/types"
+	"github.com/QuantumNous/u-routers/relaykit/types"
 )
 
 type Kind string

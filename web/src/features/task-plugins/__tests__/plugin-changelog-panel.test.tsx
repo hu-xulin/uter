@@ -61,7 +61,7 @@ const chinese = english
     'locale: en\ntranslations:\n  zh-CN: CHANGELOG.zh-CN.md',
     'locale: zh-CN'
   )
-  .replace('Configure resolution prices.', '配置分辨率价格。')
+  .replace('Configure resolution prices.', '配置分辨率定价。')
 const clients: QueryClient[] = []
 
 function renderPanel() {
@@ -132,7 +132,7 @@ test('changing language chooses Chinese when declared and otherwise displays Eng
   renderPanel()
   expect(await screen.findByText('Configure resolution prices.')).toBeVisible()
   await act(() => i18next.changeLanguage('zhCN'))
-  expect(await screen.findByText('配置分辨率价格。')).toBeVisible()
+  expect(await screen.findByText('配置分辨率定价。')).toBeVisible()
   await act(() => i18next.changeLanguage('fr'))
   expect(
     await screen.findByText(
@@ -140,7 +140,7 @@ test('changing language chooses Chinese when declared and otherwise displays Eng
     )
   ).toBeVisible()
   expect(screen.getByText('Configure resolution prices.')).toBeVisible()
-  expect(screen.queryByText('配置分辨率价格。')).not.toBeInTheDocument()
+  expect(screen.queryByText('配置分辨率定价。')).not.toBeInTheDocument()
 })
 
 test('a release without a changelog shows the shared empty state', async () => {

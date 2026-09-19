@@ -6,10 +6,10 @@ import (
 	"strings"
 	"unicode/utf8"
 
-	"github.com/QuantumNous/new-api/relaykit/dto"
-	"github.com/QuantumNous/new-api/relaykit/reasonmap"
-	sharedclaude "github.com/QuantumNous/new-api/relaykit/relayconvert/internal/shared/claude"
-	kitutil "github.com/QuantumNous/new-api/relaykit/relayconvert/kitutil"
+	"github.com/QuantumNous/u-routers/relaykit/dto"
+	"github.com/QuantumNous/u-routers/relaykit/reasonmap"
+	sharedclaude "github.com/QuantumNous/u-routers/relaykit/relayconvert/internal/shared/claude"
+	kitutil "github.com/QuantumNous/u-routers/relaykit/relayconvert/kitutil"
 	"github.com/tidwall/gjson"
 	"github.com/tidwall/sjson"
 )

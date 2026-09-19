@@ -35,19 +35,16 @@ type ModelLinkProps = EntityLinkBaseProps & {
  * page (`/pricing/{modelName}`). Renders the model name itself by
  * default; pass `children` to wrap arbitrary content.
  *
- * A subtle persistent underline acts as the link affordance (so
- * clickability is obvious in lists with dozens of entries) and brightens
- * on hover.
+ * The site-wide no-underline rule removed the underline that used to act
+ * as the affordance, so hover now changes the text colour instead —
+ * clickability still has to be obvious in lists with dozens of entries.
  */
 export function ModelLink(props: ModelLinkProps) {
   return (
     <Link
       to='/pricing/$modelId'
       params={{ modelId: props.modelName }}
-      className={cn(
-        'decoration-foreground/30 hover:decoration-foreground underline decoration-1 underline-offset-4 transition-colors',
-        props.className
-      )}
+      className={cn('transition-colors hover:text-primary', props.className)}
     >
       {props.children ?? props.modelName}
     </Link>
@@ -62,19 +59,15 @@ type VendorLinkProps = EntityLinkBaseProps & {
 /**
  * Link wrapping a vendor name. Navigates to the pricing page filtered by
  * that vendor (`/pricing?vendor={vendor}`). Renders the vendor name
- * itself by default. Uses the same subtle persistent underline as
- * {@link ModelLink}, scaled for the smaller secondary text it usually
- * wraps.
+ * itself by default. Brightens on hover like {@link ModelLink}, scaled
+ * for the smaller secondary text it usually wraps.
  */
 export function VendorLink(props: VendorLinkProps) {
   return (
     <Link
       to='/pricing'
       search={{ vendor: props.vendor }}
-      className={cn(
-        'hover:text-foreground underline decoration-current/40 decoration-1 underline-offset-2 transition-colors hover:decoration-current',
-        props.className
-      )}
+      className={cn('transition-colors hover:text-foreground', props.className)}
     >
       {props.children ?? props.vendor}
     </Link>

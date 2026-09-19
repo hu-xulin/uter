@@ -54,7 +54,7 @@ function TaskDetailsCell(props: {
       <div className='flex max-w-[220px] flex-col items-start gap-1'>
         <button
           type='button'
-          className='text-foreground inline-flex items-center gap-1 text-xs font-medium hover:underline'
+          className='text-foreground inline-flex items-center gap-1 text-xs font-medium'
           onClick={() => setDialogOpen(true)}
         >
           <HugeiconsIcon
@@ -152,7 +152,8 @@ export function useTaskLogsColumns(
                   {sensitiveVisible ? getUserAvatarFallback(displayName) : '•'}
                 </AvatarFallback>
               </Avatar>
-              <span className='text-muted-foreground truncate text-sm hover:underline'>
+              <span className='text-muted-foreground truncate text-sm'>
+                {' '}
                 {sensitiveVisible ? displayName : '••••'}
               </span>
             </button>

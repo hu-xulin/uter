@@ -9,12 +9,12 @@ import (
 	"sync"
 	"time"
 
-	"github.com/QuantumNous/new-api/common"
-	"github.com/QuantumNous/new-api/constant"
-	"github.com/QuantumNous/new-api/dto"
-	"github.com/QuantumNous/new-api/logger"
-	kitdto "github.com/QuantumNous/new-api/relaykit/dto"
-	"github.com/QuantumNous/new-api/setting/ratio_setting"
+	"github.com/QuantumNous/u-routers/common"
+	"github.com/QuantumNous/u-routers/constant"
+	"github.com/QuantumNous/u-routers/dto"
+	"github.com/QuantumNous/u-routers/logger"
+	kitdto "github.com/QuantumNous/u-routers/relaykit/dto"
+	"github.com/QuantumNous/u-routers/setting/ratio_setting"
 )
 
 var group2model2channels map[string]map[string][]int // enabled channel

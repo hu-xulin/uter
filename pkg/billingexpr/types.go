@@ -4,7 +4,7 @@ import (
 	"crypto/sha256"
 	"fmt"
 
-	"github.com/QuantumNous/new-api/common"
+	"github.com/QuantumNous/u-routers/common"
 )
 
 type RequestInput struct {

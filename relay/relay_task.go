@@ -9,21 +9,21 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/QuantumNous/new-api/common"
-	"github.com/QuantumNous/new-api/constant"
-	"github.com/QuantumNous/new-api/dto"
-	"github.com/QuantumNous/new-api/logger"
-	"github.com/QuantumNous/new-api/model"
-	"github.com/QuantumNous/new-api/pkg/billingexpr"
-	"github.com/QuantumNous/new-api/pkg/jsplugin"
-	"github.com/QuantumNous/new-api/relay/channel"
-	"github.com/QuantumNous/new-api/relay/channel/task/taskcommon"
-	relaycommon "github.com/QuantumNous/new-api/relay/common"
-	relayconstant "github.com/QuantumNous/new-api/relay/constant"
-	"github.com/QuantumNous/new-api/relay/helper"
-	"github.com/QuantumNous/new-api/service"
-	"github.com/QuantumNous/new-api/setting/billing_setting"
-	"github.com/QuantumNous/new-api/types"
+	"github.com/QuantumNous/u-routers/common"
+	"github.com/QuantumNous/u-routers/constant"
+	"github.com/QuantumNous/u-routers/dto"
+	"github.com/QuantumNous/u-routers/logger"
+	"github.com/QuantumNous/u-routers/model"
+	"github.com/QuantumNous/u-routers/pkg/billingexpr"
+	"github.com/QuantumNous/u-routers/pkg/jsplugin"
+	"github.com/QuantumNous/u-routers/relay/channel"
+	"github.com/QuantumNous/u-routers/relay/channel/task/taskcommon"
+	relaycommon "github.com/QuantumNous/u-routers/relay/common"
+	relayconstant "github.com/QuantumNous/u-routers/relay/constant"
+	"github.com/QuantumNous/u-routers/relay/helper"
+	"github.com/QuantumNous/u-routers/service"
+	"github.com/QuantumNous/u-routers/setting/billing_setting"
+	"github.com/QuantumNous/u-routers/types"
 	"github.com/gin-gonic/gin"
 )
 
@@ -193,7 +193,7 @@ func ApplyOriginTaskAffinity(c *gin.Context, info *relaycommon.RelayInfo) *dto.T
 
 // RelayTaskSubmit 完成 task 提交的全部流程（每次尝试调用一次）：
 // 刷新渠道元数据 → 确定 platform/adaptor → 验证请求 →
-// 估算计费(EstimateBilling) → 计算价格 → 预扣费（仅首次）→
+// 估算计费(EstimateBilling) → 计算定价 → 预扣费（仅首次）→
 // 构建/发送/解析上游请求 → 提交后计费调整(AdjustBillingOnSubmit)。
 // 共享控制器编排负责未落库退款、最终额度预留、落库和结算。
 func RelayTaskSubmit(c *gin.Context, info *relaycommon.RelayInfo) (*TaskSubmitResult, *dto.TaskError) {
@@ -246,7 +246,7 @@ func RelayTaskSubmit(c *gin.Context, info *relaycommon.RelayInfo) (*TaskSubmitRe
 		}
 	}
 
-	// 4. 价格计算：基础模型价格
+	// 4. 定价计算：基础模型定价
 	info.OriginModelName = modelName
 	var priceData types.PriceData
 	var err error
@@ -411,7 +411,7 @@ func RelayTaskSubmit(c *gin.Context, info *relaycommon.RelayInfo) (*TaskSubmitRe
 // recalcQuotaFromRatios 根据 adjustedRatios 重新计算 quota。
 // 公式: baseQuota × ∏(ratio) — 其中 baseQuota 是不含 OtherRatios 的基础额度。
 func recalcQuotaFromRatios(info *relaycommon.RelayInfo, ratios map[string]float64) (int, bool) {
-	// 从 PriceData 获取不含 OtherRatios 的基础价格
+	// 从 PriceData 获取不含 OtherRatios 的基础定价
 	baseQuota := info.PriceData.RemoveOtherRatiosFromFloat(float64(info.PriceData.Quota))
 	priceData := info.PriceData
 	if !priceData.ReplaceOtherRatios(ratios) {

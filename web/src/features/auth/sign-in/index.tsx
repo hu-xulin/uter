@@ -41,10 +41,7 @@ export function SignIn() {
             status?.register_enabled !== false && (
               <p className='text-muted-foreground text-left text-sm sm:text-base'>
                 {t("Don't have an account?")}{' '}
-                <Link
-                  to='/sign-up'
-                  className='hover:text-primary font-medium underline underline-offset-4'
-                >
+                <Link to='/sign-up' className='hover:text-primary font-medium'>
                   {t('Sign up')}
                 </Link>
                 .

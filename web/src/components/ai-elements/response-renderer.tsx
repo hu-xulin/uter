@@ -218,7 +218,6 @@ function renderNode(
     return (
       <sup className='text-primary mx-0.5 text-xs' key={key}>
         <a
-          className='underline-offset-2 hover:underline'
           href={`#footnote-${String(node.id)}`}
           id={`footnote-ref-${String(node.id)}`}
         >

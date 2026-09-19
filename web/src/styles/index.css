@@ -27,6 +27,7 @@ For commercial licensing, please contact support@quantumnous.com
  * with no FOUT once the variable is fetched. */
 @import '@fontsource-variable/lora';
 
+@import './alibaba-font.css';
 @import './theme.css';
 @import './theme-presets.css';
 
@@ -98,13 +99,32 @@ For commercial licensing, please contact support@quantumnous.com
     @apply bg-background text-foreground has-[div[data-variant='inset']]:bg-sidebar min-h-svh w-full;
     /* Font is driven by the theme's font axis via `--font-body`
      * (defined in theme.css, swapped by `[data-theme-font='...']` blocks
-     * in theme-presets.css). Defaults to the project's humanist sans. */
+     * in theme-presets.css). Defaults to Alibaba PuHuiTi 3.0 Medium. */
     font-family: var(--font-body);
+    font-weight: 500;
   }
 
   /* Keep sticky headers stable while primitives lock body scrolling. */
   body[data-scroll-locked] {
     overflow: unset !important;
+  }
+
+  /* Headings and bold elements use Alibaba PuHuiTi 3.0 Bold (700). */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  [data-slot='sheet-title'],
+  [data-slot='dialog-title'],
+  [data-slot='alert-dialog-title'],
+  [data-slot='drawer-title'],
+  [data-slot='card-title'],
+  strong,
+  b,
+  .font-bold {
+    font-weight: 700;
   }
 
   /* Cursor pointer for buttons */
@@ -729,4 +749,18 @@ For commercial licensing, please contact support@quantumnous.com
   .auto-group-flow-border {
     display: none;
   }
+}
+
+/*
+ * ── No underlines, anywhere ────────────────────────────────────────
+ *
+ * Site-wide rule: links carry their affordance with colour and weight,
+ * never with an underline. Unlayered on purpose — this file is unlayered,
+ * so it outranks every Tailwind layer regardless of specificity, which
+ * is what retires the `hover:underline` utilities still reachable from
+ * third-party component recipes and the typography preset's own `a`
+ * rule. Shiki's syntax colours above opt back in with `!important`.
+ */
+a {
+  text-decoration: none;
 }

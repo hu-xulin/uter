@@ -3,7 +3,7 @@ package controller
 import (
 	"net/http"
 
-	"github.com/QuantumNous/new-api/common"
+	"github.com/QuantumNous/u-routers/common"
 	"github.com/gin-gonic/gin"
 )
 

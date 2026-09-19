@@ -2,7 +2,7 @@
 # 中文（简体）翻译文件
 
 # Task plugin messages
-task_plugin.unknown_meta_field: '插件元数据包含未知字段“{{.Field}}”。如果插件来自官方市场，可能需要更高版本的 new-api。请尝试更新 new-api 后重新安装插件。'
+task_plugin.unknown_meta_field: '插件元数据包含未知字段“{{.Field}}”。如果插件来自官方市场，可能需要更高版本的 ali-router。请尝试更新 ali-router 后重新安装插件。'
 
 # Common messages
 common.invalid_params: "无效的参数"
@@ -123,8 +123,8 @@ quota.threshold_gt_zero: "预警阈值必须大于0"
 # Subscription messages
 subscription.not_enabled: "套餐未启用"
 subscription.title_empty: "套餐标题不能为空"
-subscription.price_negative: "价格不能为负数"
-subscription.price_max: "价格不能超过9999"
+subscription.price_negative: "定价不能为负数"
+subscription.price_max: "定价不能超过9999"
 subscription.purchase_limit_negative: "购买上限不能为负数"
 subscription.quota_negative: "总额度不能为负数"
 subscription.group_not_exists: "升级分组不存在"

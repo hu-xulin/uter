@@ -8,16 +8,16 @@ import (
 	"strings"
 	"time"
 
-	"github.com/QuantumNous/new-api/common"
-	"github.com/QuantumNous/new-api/constant"
-	"github.com/QuantumNous/new-api/pkg/billingexpr"
-	relayconstant "github.com/QuantumNous/new-api/relay/constant"
-	"github.com/QuantumNous/new-api/relaykit/dto"
-	"github.com/QuantumNous/new-api/relaykit/relayconvert/convmeta"
-	kitreasoning "github.com/QuantumNous/new-api/relaykit/relayconvert/reasoning"
-	"github.com/QuantumNous/new-api/relaykit/types"
-	"github.com/QuantumNous/new-api/setting/model_setting"
-	hosttypes "github.com/QuantumNous/new-api/types"
+	"github.com/QuantumNous/u-routers/common"
+	"github.com/QuantumNous/u-routers/constant"
+	"github.com/QuantumNous/u-routers/pkg/billingexpr"
+	relayconstant "github.com/QuantumNous/u-routers/relay/constant"
+	"github.com/QuantumNous/u-routers/relaykit/dto"
+	"github.com/QuantumNous/u-routers/relaykit/relayconvert/convmeta"
+	kitreasoning "github.com/QuantumNous/u-routers/relaykit/relayconvert/reasoning"
+	"github.com/QuantumNous/u-routers/relaykit/types"
+	"github.com/QuantumNous/u-routers/setting/model_setting"
+	hosttypes "github.com/QuantumNous/u-routers/types"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
@@ -159,7 +159,7 @@ type RelayInfo struct {
 	IsClaudeBetaQuery                     bool // /v1/messages?beta=true
 	IsChannelTest                         bool // channel test request
 	RetryIndex                            int
-	LastError                             *types.NewAPIError
+	LastError                             *types.URouterError
 	RuntimeHeadersOverride                map[string]any
 	UseRuntimeHeadersOverride             bool
 	ParamOverrideAudit                    []string
@@ -409,7 +409,7 @@ var streamSupportedChannels = map[int]bool{
 	constant.ChannelTypeSiliconFlow:    true,
 	constant.ChannelTypeAdvancedCustom: true,
 	constant.ChannelTypeSub2API:        true,
-	constant.ChannelTypeNewAPI:         true,
+	constant.ChannelTypeURouter:         true,
 	constant.ChannelTypeTencent:        true,
 }
 

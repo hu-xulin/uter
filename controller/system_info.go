@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/QuantumNous/new-api/common"
-	"github.com/QuantumNous/new-api/model"
+	"github.com/QuantumNous/u-routers/common"
+	"github.com/QuantumNous/u-routers/model"
 
 	"github.com/gin-gonic/gin"
 )

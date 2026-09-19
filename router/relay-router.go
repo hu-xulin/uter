@@ -1,11 +1,11 @@
 package router
 
 import (
-	"github.com/QuantumNous/new-api/constant"
-	"github.com/QuantumNous/new-api/controller"
-	"github.com/QuantumNous/new-api/middleware"
-	"github.com/QuantumNous/new-api/relay"
-	"github.com/QuantumNous/new-api/relaykit/types"
+	"github.com/QuantumNous/u-routers/constant"
+	"github.com/QuantumNous/u-routers/controller"
+	"github.com/QuantumNous/u-routers/middleware"
+	"github.com/QuantumNous/u-routers/relay"
+	"github.com/QuantumNous/u-routers/relaykit/types"
 
 	"github.com/gin-gonic/gin"
 )

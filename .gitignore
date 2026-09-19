@@ -55,3 +55,9 @@ docs-web/tsconfig.tsbuildinfo
 # Python bytecode (docs-web/scripts)
 __pycache__/
 *.pyc
+
+# Compiled binary and local tooling caches (never commit)
+u-routers-bin
+node_modules/
+.playwright-cli/
+.workbuddy/

@@ -22,7 +22,6 @@ import {
   Edit,
   Power,
   PowerOff,
-  ExternalLink,
   ArrowRightLeft,
   Copy,
   Link,
@@ -277,11 +276,7 @@ export function DataTableRowActions<TData>({
                   onClick={() => handleOpenChatPreset(preset)}
                 >
                   {preset.name}
-                  {preset.type !== 'web' && (
-                    <DropdownMenuShortcut>
-                      <ExternalLink size={16} />
-                    </DropdownMenuShortcut>
-                  )}
+                  {preset.type !== 'web' && null}
                 </DropdownMenuItem>
               ))}
             </DropdownMenuSubContent>

@@ -3,9 +3,9 @@ package moonshot
 import (
 	"testing"
 
-	"github.com/QuantumNous/new-api/common"
-	relaycommon "github.com/QuantumNous/new-api/relay/common"
-	"github.com/QuantumNous/new-api/relaykit/dto"
+	"github.com/QuantumNous/u-routers/common"
+	relaycommon "github.com/QuantumNous/u-routers/relay/common"
+	"github.com/QuantumNous/u-routers/relaykit/dto"
 	"github.com/stretchr/testify/require"
 )
 

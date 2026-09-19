@@ -369,7 +369,7 @@ export function PasskeySection(props: PasskeySectionProps) {
                 <FormLabel>{t('Passkey display name')}</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder={t('e.g. New API Console')}
+                    placeholder={t('e.g. URouters Console')}
                     value={field.value ?? ''}
                     onChange={(event) => field.onChange(event.target.value)}
                     name={field.name}
@@ -434,7 +434,7 @@ export function PasskeySection(props: PasskeySectionProps) {
                       type='button'
                       variant='link'
                       size='sm'
-                      className='h-auto p-0 font-semibold text-inherit underline underline-offset-4'
+                      className='h-auto p-0 font-semibold text-inherit'
                     >
                       {t('Why set this?')}
                     </Button>

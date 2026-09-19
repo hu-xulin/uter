@@ -45,7 +45,7 @@ export function PluginAuthorLink(props: PluginAuthorLinkProps) {
         href={authorUrl}
         target='_blank'
         rel='noopener noreferrer'
-        className='inline-flex min-w-0 items-center gap-1 hover:underline'
+        className='inline-flex min-w-0 items-center gap-1'
       >
         <span className='truncate'>{authorName}</span>
         <HugeiconsIcon

@@ -1,7 +1,7 @@
 package dify
 
 import (
-	"github.com/QuantumNous/new-api/relaykit/dto"
+	"github.com/QuantumNous/u-routers/relaykit/dto"
 )
 
 type DifyChatRequest struct {

@@ -21,8 +21,23 @@ For commercial licensing, please contact support@quantumnous.com
  */
 
 // System Configuration Defaults
-export const DEFAULT_SYSTEM_NAME = 'New API'
-export const DEFAULT_LOGO = '/logo.png'
+export const DEFAULT_SYSTEM_NAME = 'URouters'
+
+/**
+ * Asset version for the bundled logo. Bump it whenever
+ * `web/public/logo.png` is replaced.
+ *
+ * The logo is served from a stable URL, so a browser that already cached the
+ * previous file keeps rendering it until that entry expires or the URL
+ * changes. The `?v=` suffix makes the new file a different cache entry, which
+ * is the only way to evict an already-stored copy — changing the response
+ * headers cannot reach back into a browser's cache.
+ *
+ * Keep this in sync with the `link rel="icon"` href in `web/index.html`,
+ * which is a static template and cannot import this constant.
+ */
+export const LOGO_ASSET_VERSION = '3'
+export const DEFAULT_LOGO = `/logo.png?v=${LOGO_ASSET_VERSION}`
 
 // LocalStorage Keys
 export const STORAGE_KEYS = {

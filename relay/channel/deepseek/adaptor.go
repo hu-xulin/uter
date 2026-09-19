@@ -7,16 +7,16 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/QuantumNous/new-api/common"
-	"github.com/QuantumNous/new-api/relay/channel"
-	"github.com/QuantumNous/new-api/relay/channel/claude"
-	"github.com/QuantumNous/new-api/relay/channel/openai"
-	relaycommon "github.com/QuantumNous/new-api/relay/common"
-	"github.com/QuantumNous/new-api/relay/constant"
-	"github.com/QuantumNous/new-api/relaykit/dto"
-	"github.com/QuantumNous/new-api/relaykit/types"
-	"github.com/QuantumNous/new-api/setting/model_setting"
-	"github.com/QuantumNous/new-api/setting/reasoning"
+	"github.com/QuantumNous/u-routers/common"
+	"github.com/QuantumNous/u-routers/relay/channel"
+	"github.com/QuantumNous/u-routers/relay/channel/claude"
+	"github.com/QuantumNous/u-routers/relay/channel/openai"
+	relaycommon "github.com/QuantumNous/u-routers/relay/common"
+	"github.com/QuantumNous/u-routers/relay/constant"
+	"github.com/QuantumNous/u-routers/relaykit/dto"
+	"github.com/QuantumNous/u-routers/relaykit/types"
+	"github.com/QuantumNous/u-routers/setting/model_setting"
+	"github.com/QuantumNous/u-routers/setting/reasoning"
 	"github.com/gin-gonic/gin"
 )
 
@@ -203,7 +203,7 @@ func (a *Adaptor) DoRequest(c *gin.Context, info *relaycommon.RelayInfo, request
 	return channel.DoApiRequest(a, c, info, requestBody)
 }
 
-func (a *Adaptor) DoResponse(c *gin.Context, resp *http.Response, info *relaycommon.RelayInfo) (usage any, err *types.NewAPIError) {
+func (a *Adaptor) DoResponse(c *gin.Context, resp *http.Response, info *relaycommon.RelayInfo) (usage any, err *types.URouterError) {
 	switch info.RelayFormat {
 	case types.RelayFormatClaude:
 		adaptor := claude.Adaptor{}

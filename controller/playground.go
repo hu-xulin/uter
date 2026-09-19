@@ -4,16 +4,16 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/QuantumNous/new-api/middleware"
-	"github.com/QuantumNous/new-api/model"
-	relaycommon "github.com/QuantumNous/new-api/relay/common"
-	"github.com/QuantumNous/new-api/relaykit/types"
+	"github.com/QuantumNous/u-routers/middleware"
+	"github.com/QuantumNous/u-routers/model"
+	relaycommon "github.com/QuantumNous/u-routers/relay/common"
+	"github.com/QuantumNous/u-routers/relaykit/types"
 
 	"github.com/gin-gonic/gin"
 )
 
 func Playground(c *gin.Context) {
-	var newAPIError *types.NewAPIError
+	var newAPIError *types.URouterError
 
 	defer func() {
 		if newAPIError != nil {

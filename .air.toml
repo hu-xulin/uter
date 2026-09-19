@@ -1,0 +1,92 @@
+# ali-router 专属 air 配置(Go 1.27 + workspace + web embed)
+# 用法:
+#   air                       # 启动监听 + 自动编译 + 自动重启
+#   air -d                    # 调试模式(更详细日志)
+#
+# 配合 scripts/dev-watch.sh:它会先确认 air 已装,再调起 air。
+#
+# 关键约束(来自 AGENTS.md):
+#   - 必须 GOWORK=off 才能正确构建根模块 + 子模块
+#   - ldflags 必须注入 Version(common.Version),否则启动日志里 Version= 空
+#   - 改了 web/ 不会触发此配置重 build 前端;
+#     想前端热更新请另起一个终端跑 `cd web && pnpm run dev`
+#
+# 参考:https://github.com/air-verse/air
+
+root = "."
+test_data_dir = "testdata"
+tmp_dir = "tmp"
+
+[build]
+# 预编译后端;失败不重启(--build_only ?),看自己需要
+pre_cmd = []
+# 主编译命令 — 含 VERSION 注入
+build_args = [
+  "-trimpath",
+  "-ldflags",
+  "-s -w -X 'github.com/QuantumNous/u-routers/common.Version=$(cat VERSION)'",
+  "-o",
+  "./tmp/ali-router",
+  "."
+]
+# bin 文件路径
+bin = "./tmp/ali-router"
+# 完整启动命令(相对 root)
+cmd = "./tmp/ali-router --port 3000"
+# 仅在 cmd/bin 任一变化时重启(防抖)
+delay = 600
+# 启动后到第一次 rebuild 的额外等待(让监听 socket 起来)
+stop_on_error = true
+# 出错就停,不刷屏
+send_interrupt = false
+# 发 SIGTERM 让进程优雅退出
+kill_signal = "SIGTERM"
+# 给进程的最大存活秒数,0 表示不限(默认就 0)
+keep_alive = 0
+
+[build.env]
+# 让 Go 用模块缓存中的版本;开发机有 /Users/lincolnhu/go
+GOWORK = "off"
+GOFLAGS = "-mod=mod"
+
+# 哪些文件变化触发 rebuild
+include_ext = ["go", "tpl", "tmpl", "html", "yaml", "yml", "json"]
+# 哪些路径/文件不监听(忽略 web/dist / 第三方依赖 / 临时构建产物)
+exclude_dir = [
+  "assets",
+  "tmp",
+  "vendor",
+  "frontend/node_modules",
+  "web/node_modules",
+  "web/dist",
+  ".git",
+  ".idea",
+  ".vscode",
+  "bin",
+  "e2e",
+  "scripts",
+]
+exclude_file = []
+exclude_regex = [
+  "_test\\.go$",       # 测试文件单独跑,不触发服务重启
+  "\\.pb\\.go$",
+  "/\\..+\\.(swp|swo|swx|swn)$",
+  "/\\.DS_Store$",
+]
+# 文件全路径包含下面这些字串就不监听(子目录也算)
+include_dir = ["common", "controller", "middleware", "model", "relay", "relaykit", "router", "service", "setting", "types", "main.go"]
+# 不在监听范围的(基本等于 include_dir 的反向,但更稳)
+exclude_regex_dir = []
+
+[log]
+# 时间前缀
+time = true
+
+[misc]
+# 启动时清屏
+clean_on_exit = true
+
+[screen]
+clear_on_rebuild = false
+keep_scroll = true
+fifo_dir = "/tmp"

@@ -13,12 +13,12 @@ import (
 	"sync"
 	"sync/atomic"
 
-	"github.com/QuantumNous/new-api/common"
-	"github.com/QuantumNous/new-api/constant"
-	"github.com/QuantumNous/new-api/controller"
-	"github.com/QuantumNous/new-api/logger"
-	"github.com/QuantumNous/new-api/middleware"
-	"github.com/QuantumNous/new-api/pkg/jsplugin"
+	"github.com/QuantumNous/u-routers/common"
+	"github.com/QuantumNous/u-routers/constant"
+	"github.com/QuantumNous/u-routers/controller"
+	"github.com/QuantumNous/u-routers/logger"
+	"github.com/QuantumNous/u-routers/middleware"
+	"github.com/QuantumNous/u-routers/pkg/jsplugin"
 	"github.com/gin-gonic/gin"
 )
 

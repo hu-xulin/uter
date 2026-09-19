@@ -6,15 +6,15 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/QuantumNous/new-api/common"
-	"github.com/QuantumNous/new-api/constant"
-	"github.com/QuantumNous/new-api/relay/channel"
-	openaichannel "github.com/QuantumNous/new-api/relay/channel/openai"
-	relaycommon "github.com/QuantumNous/new-api/relay/common"
-	relayconstant "github.com/QuantumNous/new-api/relay/constant"
-	"github.com/QuantumNous/new-api/relaykit/dto"
-	"github.com/QuantumNous/new-api/relaykit/types"
-	"github.com/QuantumNous/new-api/service"
+	"github.com/QuantumNous/u-routers/common"
+	"github.com/QuantumNous/u-routers/constant"
+	"github.com/QuantumNous/u-routers/relay/channel"
+	openaichannel "github.com/QuantumNous/u-routers/relay/channel/openai"
+	relaycommon "github.com/QuantumNous/u-routers/relay/common"
+	relayconstant "github.com/QuantumNous/u-routers/relay/constant"
+	"github.com/QuantumNous/u-routers/relaykit/dto"
+	"github.com/QuantumNous/u-routers/relaykit/types"
+	"github.com/QuantumNous/u-routers/service"
 
 	"github.com/gin-gonic/gin"
 )
@@ -72,7 +72,7 @@ func applySystemPromptIfNeeded(c *gin.Context, info *relaycommon.RelayInfo, requ
 	}
 }
 
-func textRequestViaResponses(c *gin.Context, info *relaycommon.RelayInfo, adaptor channel.Adaptor, request any) (*dto.Usage, *types.NewAPIError) {
+func textRequestViaResponses(c *gin.Context, info *relaycommon.RelayInfo, adaptor channel.Adaptor, request any) (*dto.Usage, *types.URouterError) {
 	paramOverrideApplied := false
 	if chatRequest, ok := request.(*dto.GeneralOpenAIRequest); ok {
 		chatJSON, err := common.Marshal(chatRequest)
@@ -111,7 +111,7 @@ func textRequestViaResponses(c *gin.Context, info *relaycommon.RelayInfo, adapto
 	return relayResponsesRequest(c, info, adaptor, responsesReq, paramOverrideApplied)
 }
 
-func relayResponsesRequest(c *gin.Context, info *relaycommon.RelayInfo, adaptor channel.Adaptor, responsesReq *dto.OpenAIResponsesRequest, paramOverrideApplied bool) (*dto.Usage, *types.NewAPIError) {
+func relayResponsesRequest(c *gin.Context, info *relaycommon.RelayInfo, adaptor channel.Adaptor, responsesReq *dto.OpenAIResponsesRequest, paramOverrideApplied bool) (*dto.Usage, *types.URouterError) {
 	savedRelayMode := info.RelayMode
 	savedRequestURLPath := info.RequestURLPath
 	defer func() {

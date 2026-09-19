@@ -8,14 +8,14 @@ import (
 	"math"
 	"strings"
 
-	"github.com/QuantumNous/new-api/common"
-	"github.com/QuantumNous/new-api/constant"
-	"github.com/QuantumNous/new-api/logger"
-	"github.com/QuantumNous/new-api/model"
-	"github.com/QuantumNous/new-api/pkg/billingexpr"
-	relaycommon "github.com/QuantumNous/new-api/relay/common"
-	"github.com/QuantumNous/new-api/setting/ratio_setting"
-	"github.com/QuantumNous/new-api/types"
+	"github.com/QuantumNous/u-routers/common"
+	"github.com/QuantumNous/u-routers/constant"
+	"github.com/QuantumNous/u-routers/logger"
+	"github.com/QuantumNous/u-routers/model"
+	"github.com/QuantumNous/u-routers/pkg/billingexpr"
+	relaycommon "github.com/QuantumNous/u-routers/relay/common"
+	"github.com/QuantumNous/u-routers/setting/ratio_setting"
+	"github.com/QuantumNous/u-routers/types"
 	"github.com/gin-gonic/gin"
 )
 
@@ -340,9 +340,9 @@ func RecalculateTaskQuotaByTokens(ctx context.Context, task *model.Task, totalTo
 
 	modelName := taskModelName(task)
 
-	// 获取模型价格和倍率
+	// 获取模型定价和倍率
 	modelRatio, hasRatioSetting, _ := ratio_setting.GetModelRatio(modelName)
-	// 只有配置了倍率(非固定价格)时才按 token 重新计费
+	// 只有配置了倍率(非固定定价)时才按 token 重新计费
 	if !hasRatioSetting || modelRatio <= 0 {
 		return false
 	}

@@ -1,8 +1,8 @@
 <div align="center">
 
-![new-api](/web/public/logo.png)
+![ali-router](/web/public/logo.png)
 
-# New API
+# URouters
 
 🍥 **Next-Generation LLM Gateway and AI Asset Management System**
 
@@ -15,31 +15,31 @@
 </p>
 
 <p align="center">
-  <a href="https://raw.githubusercontent.com/Calcium-Ion/new-api/main/LICENSE">
-    <img src="https://img.shields.io/github/license/Calcium-Ion/new-api?color=brightgreen" alt="license">
+  <a href="https://raw.githubusercontent.com/Calcium-Ion/ali-router/main/LICENSE">
+    <img src="https://img.shields.io/github/license/Calcium-Ion/ali-router?color=brightgreen" alt="license">
   </a><!--
-  --><a href="https://github.com/Calcium-Ion/new-api/releases/latest">
-    <img src="https://img.shields.io/github/v/release/Calcium-Ion/new-api?color=brightgreen&include_prereleases" alt="release">
+  --><a href="https://github.com/Calcium-Ion/ali-router/releases/latest">
+    <img src="https://img.shields.io/github/v/release/Calcium-Ion/ali-router?color=brightgreen&include_prereleases" alt="release">
   </a><!--
-  --><a href="https://hub.docker.com/r/CalciumIon/new-api">
+  --><a href="https://hub.docker.com/r/CalciumIon/ali-router">
     <img src="https://img.shields.io/badge/docker-dockerHub-blue" alt="docker">
   </a>
-  <a href="https://atomgit.com/QuantumNous/new-api" target="_blank">
-    <img alt="AtomGit G-Star" src="https://atomgit.com/QuantumNous/new-api/star/badge.svg"/>
+  <a href="https://atomgit.com/QuantumNous/u-routers" target="_blank">
+    <img alt="AtomGit G-Star" src="https://atomgit.com/QuantumNous/u-routers/star/badge.svg"/>
   </a>
 </p>
 
 <p align="center">
   <a href="https://trendshift.io/repositories/20180" target="_blank">
-    <img src="https://trendshift.io/api/badge/repositories/20180" alt="QuantumNous%2Fnew-api | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/>
+    <img src="https://trendshift.io/api/badge/repositories/20180" alt="QuantumNous%2Fali-router | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/>
   </a>
   <br>
-  <a href="https://hellogithub.com/repository/QuantumNous/new-api" target="_blank">
+  <a href="https://hellogithub.com/repository/QuantumNous/u-routers" target="_blank">
     <img src="https://api.hellogithub.com/v1/widgets/recommend.svg?rid=539ac4217e69431684ad4a0bab768811&claim_uid=tbFPfKIDHpc4TzR" alt="Featured｜HelloGitHub" style="width: 250px; height: 54px;" width="250" height="54" />
   </a><!--
   -->
-  <a href="https://atomgit.com/QuantumNous/new-api" target="_blank">
-    <img alt="AtomGit G-Star" src="https://atomgit.com/QuantumNous/new-api/star/new_badge.svg" width="250" height="55" />
+  <a href="https://atomgit.com/QuantumNous/u-routers" target="_blank">
+    <img alt="AtomGit G-Star" src="https://atomgit.com/QuantumNous/u-routers/star/new_badge.svg" width="250" height="55" />
   </a>
 </p>
 
@@ -79,7 +79,7 @@
   --><a href="https://bda.pku.edu.cn/" target="_blank">
     <img src="./docs/images/pku.png" alt="Peking University" height="80" />
   </a><!--
-  --><a href="https://www.compshare.cn/?ytag=GPU_yy_gh_newapi" target="_blank">
+  --><a href="https://www.compshare.cn/?ytag=GPU_yy_gh_URouters" target="_blank">
     <img src="./docs/images/ucloud.png" alt="UCloud" height="80" />
   </a><!--
   --><a href="https://www.aliyun.com/" target="_blank">
@@ -95,13 +95,13 @@
 ## 🙏 Special Thanks
 
 <p align="center">
-  <a href="https://www.jetbrains.com/?from=new-api" target="_blank">
+  <a href="https://www.jetbrains.com/?from=ali-router" target="_blank">
     <img src="https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.png" alt="JetBrains Logo" width="120" />
   </a>
 </p>
 
 <p align="center">
-  <strong>Thanks to <a href="https://www.jetbrains.com/?from=new-api">JetBrains</a> for providing free open-source development license for this project</strong>
+  <strong>Thanks to <a href="https://www.jetbrains.com/?from=ali-router">JetBrains</a> for providing free open-source development license for this project</strong>
 </p>
 
 ---
@@ -112,8 +112,8 @@
 
 ```bash
 # Clone the project
-git clone https://github.com/QuantumNous/new-api.git
-cd new-api
+git clone https://github.com/QuantumNous/u-routers.git
+cd ali-router
 
 # Edit docker-compose.yml configuration
 nano docker-compose.yml
@@ -127,22 +127,22 @@ docker-compose up -d
 
 ```bash
 # Pull the latest image
-docker pull calciumion/new-api:latest
+docker pull calciumion/ali-router:latest
 
 # Using SQLite (default)
-docker run --name new-api -d --restart always \
+docker run --name ali-router -d --restart always \
   -p 3000:3000 \
   -e TZ=Asia/Shanghai \
   -v ./data:/data \
-  calciumion/new-api:latest
+  calciumion/ali-router:latest
 
 # Using MySQL
-docker run --name new-api -d --restart always \
+docker run --name ali-router -d --restart always \
   -p 3000:3000 \
   -e SQL_DSN="root:123456@tcp(localhost:3306)/oneapi" \
   -e TZ=Asia/Shanghai \
   -v ./data:/data \
-  calciumion/new-api:latest
+  calciumion/ali-router:latest
 ```
 
 > **💡 Tip:** `-v ./data:/data` will save data in the `data` folder of the current directory, you can also change it to an absolute path like `-v /your/custom/path:/data`
@@ -156,7 +156,7 @@ docker run --name new-api -d --restart always \
 > [!WARNING]
 > When operating this project as a public generative AI service or API resale service, users should first complete all required filing, licensing, content safety, real-name verification, log retention, tax, payment, and upstream authorization obligations.
 
-📖 For more deployment methods, please refer to [Deployment Guide](https://docs.newapi.pro/en/docs/installation)
+📖 For more deployment methods, please refer to [Deployment Guide](https://URouters.ai/docsen/docs/installation)
 
 ---
 
@@ -164,7 +164,7 @@ docker run --name new-api -d --restart always \
 
 <div align="center">
 
-### 📖 [Official Documentation](https://docs.newapi.pro/en/docs) | [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/QuantumNous/new-api)
+### 📖 [Official Documentation](https://URouters.ai/docsen/docs) | [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/QuantumNous/u-routers)
 
 </div>
 
@@ -172,17 +172,17 @@ docker run --name new-api -d --restart always \
 
 | Category | Link |
 |------|------|
-| 🚀 Deployment Guide | [Installation Documentation](https://docs.newapi.pro/en/docs/installation) |
-| ⚙️ Environment Configuration | [Environment Variables](https://docs.newapi.pro/en/docs/installation/config-maintenance/environment-variables) |
-| 📡 API Documentation | [API Documentation](https://docs.newapi.pro/en/docs/api) |
-| ❓ FAQ | [FAQ](https://docs.newapi.pro/en/docs/support/faq) |
-| 💬 Community Interaction | [Communication Channels](https://docs.newapi.pro/en/docs/support/community-interaction) |
+| 🚀 Deployment Guide | [Installation Documentation](https://URouters.ai/docsen/docs/installation) |
+| ⚙️ Environment Configuration | [Environment Variables](https://URouters.ai/docsen/docs/installation/config-maintenance/environment-variables) |
+| 📡 API Documentation | [API Documentation](https://URouters.ai/docsen/docs/api) |
+| ❓ FAQ | [FAQ](https://URouters.ai/docsen/docs/support/faq) |
+| 💬 Community Interaction | [Communication Channels](https://URouters.ai/docsen/docs/support/community-interaction) |
 
 ---
 
 ## ✨ Key Features
 
-> For detailed features, please refer to [Features Introduction](https://docs.newapi.pro/en/docs/guide/wiki/basic-concepts/features-introduction)
+> For detailed features, please refer to [Features Introduction](https://URouters.ai/docsen/docs/guide/wiki/basic-concepts/features-introduction)
 
 ### 🎨 Core Functions
 
@@ -207,16 +207,16 @@ docker run --name new-api -d --restart always \
 - 🤖 LinuxDO authorization login
 - 📱 Telegram authorization login
 - 🔑 OIDC unified authentication
-- 🔍 Key quota query usage (with [new-api-key-tool](https://github.com/Calcium-Ion/new-api-key-tool))
+- 🔍 Key quota query usage (with [ali-router-key-tool](https://github.com/Calcium-Ion/ali-router-key-tool))
 
 ### 🚀 Advanced Features
 
 **API Format Support:**
-- ⚡ [OpenAI Responses](https://docs.newapi.pro/en/docs/api/ai-model/chat/openai/create-response)
-- ⚡ [OpenAI Realtime API](https://docs.newapi.pro/en/docs/api/ai-model/realtime/create-realtime-session) (including Azure)
-- ⚡ [Claude Messages](https://docs.newapi.pro/en/docs/api/ai-model/chat/create-message)
-- ⚡ [Google Gemini](https://doc.newapi.pro/en/api/google-gemini-chat)
-- 🔄 [Rerank Models](https://docs.newapi.pro/en/docs/api/ai-model/rerank/create-rerank) (Cohere, Jina)
+- ⚡ [OpenAI Responses](https://URouters.ai/docsen/docs/api/ai-model/chat/openai/create-response)
+- ⚡ [OpenAI Realtime API](https://URouters.ai/docsen/docs/api/ai-model/realtime/create-realtime-session) (including Azure)
+- ⚡ [Claude Messages](https://URouters.ai/docsen/docs/api/ai-model/chat/create-message)
+- ⚡ [Google Gemini](https://doc.URouters.ai/en/api/google-gemini-chat)
+- 🔄 [Rerank Models](https://URouters.ai/docsen/docs/api/ai-model/rerank/create-rerank) (Cohere, Jina)
 
 **Intelligent Routing:**
 - ⚖️ Channel weighted random
@@ -259,17 +259,17 @@ docker run --name new-api -d --restart always \
 
 ## 🤖 Model Support
 
-> For details, please refer to [API Documentation - Gateway Interface](https://docs.newapi.pro/en/docs/api)
+> For details, please refer to [API Documentation - Gateway Interface](https://URouters.ai/docsen/docs/api)
 
 | Model Type | Description | Documentation |
 |---------|------|------|
-| 🤖 OpenAI-Compatible | OpenAI compatible models | [Documentation](https://docs.newapi.pro/en/docs/api/ai-model/chat/openai/createchatcompletion) |
-| 🤖 OpenAI Responses | OpenAI Responses format | [Documentation](https://docs.newapi.pro/en/docs/api/ai-model/chat/openai/createresponse) |
-| 🎨 Midjourney-Proxy | [Midjourney-Proxy(Plus)](https://github.com/novicezk/midjourney-proxy) | [Documentation](https://doc.newapi.pro/api/midjourney-proxy-image) |
-| 🎵 Suno-API | [Suno API](https://github.com/Suno-API/Suno-API) | [Documentation](https://doc.newapi.pro/api/suno-music) |
-| 🔄 Rerank | Cohere, Jina | [Documentation](https://docs.newapi.pro/en/docs/api/ai-model/rerank/creatererank) |
-| 💬 Claude | Messages format | [Documentation](https://docs.newapi.pro/en/docs/api/ai-model/chat/createmessage) |
-| 🌐 Gemini | Google Gemini format | [Documentation](https://docs.newapi.pro/en/docs/api/ai-model/chat/gemini/geminirelayv1beta) |
+| 🤖 OpenAI-Compatible | OpenAI compatible models | [Documentation](https://URouters.ai/docsen/docs/api/ai-model/chat/openai/createchatcompletion) |
+| 🤖 OpenAI Responses | OpenAI Responses format | [Documentation](https://URouters.ai/docsen/docs/api/ai-model/chat/openai/createresponse) |
+| 🎨 Midjourney-Proxy | [Midjourney-Proxy(Plus)](https://github.com/novicezk/midjourney-proxy) | [Documentation](https://doc.URouters.ai/api/midjourney-proxy-image) |
+| 🎵 Suno-API | [Suno API](https://github.com/Suno-API/Suno-API) | [Documentation](https://doc.URouters.ai/api/suno-music) |
+| 🔄 Rerank | Cohere, Jina | [Documentation](https://URouters.ai/docsen/docs/api/ai-model/rerank/creatererank) |
+| 💬 Claude | Messages format | [Documentation](https://URouters.ai/docsen/docs/api/ai-model/chat/createmessage) |
+| 🌐 Gemini | Google Gemini format | [Documentation](https://URouters.ai/docsen/docs/api/ai-model/chat/gemini/geminirelayv1beta) |
 | 🔧 Dify | ChatFlow mode | - |
 | 🎯 Custom upstream | Supports configuring legally authorized upstream endpoints | - |
 
@@ -278,16 +278,16 @@ docker run --name new-api -d --restart always \
 <details>
 <summary>View complete interface list</summary>
 
-- [Chat Interface (Chat Completions)](https://docs.newapi.pro/en/docs/api/ai-model/chat/openai/createchatcompletion)
-- [Response Interface (Responses)](https://docs.newapi.pro/en/docs/api/ai-model/chat/openai/createresponse)
-- [Image Interface (Image)](https://docs.newapi.pro/en/docs/api/ai-model/images/openai/post-v1-images-generations)
-- [Audio Interface (Audio)](https://docs.newapi.pro/en/docs/api/ai-model/audio/openai/create-transcription)
-- [Video Interface (Video)](https://docs.newapi.pro/en/docs/api/ai-model/videos/sora/createvideo)
-- [Embedding Interface (Embeddings)](https://docs.newapi.pro/en/docs/api/ai-model/embeddings/createembedding)
-- [Rerank Interface (Rerank)](https://docs.newapi.pro/en/docs/api/ai-model/rerank/creatererank)
-- [Realtime Conversation (Realtime)](https://docs.newapi.pro/en/docs/api/ai-model/realtime/createrealtimesession)
-- [Claude Chat](https://docs.newapi.pro/en/docs/api/ai-model/chat/createmessage)
-- [Google Gemini Chat](https://docs.newapi.pro/en/docs/api/ai-model/chat/gemini/geminirelayv1beta)
+- [Chat Interface (Chat Completions)](https://URouters.ai/docsen/docs/api/ai-model/chat/openai/createchatcompletion)
+- [Response Interface (Responses)](https://URouters.ai/docsen/docs/api/ai-model/chat/openai/createresponse)
+- [Image Interface (Image)](https://URouters.ai/docsen/docs/api/ai-model/images/openai/post-v1-images-generations)
+- [Audio Interface (Audio)](https://URouters.ai/docsen/docs/api/ai-model/audio/openai/create-transcription)
+- [Video Interface (Video)](https://URouters.ai/docsen/docs/api/ai-model/videos/sora/createvideo)
+- [Embedding Interface (Embeddings)](https://URouters.ai/docsen/docs/api/ai-model/embeddings/createembedding)
+- [Rerank Interface (Rerank)](https://URouters.ai/docsen/docs/api/ai-model/rerank/creatererank)
+- [Realtime Conversation (Realtime)](https://URouters.ai/docsen/docs/api/ai-model/realtime/createrealtimesession)
+- [Claude Chat](https://URouters.ai/docsen/docs/api/ai-model/chat/createmessage)
+- [Google Gemini Chat](https://URouters.ai/docsen/docs/api/ai-model/chat/gemini/geminirelayv1beta)
 
 </details>
 
@@ -296,7 +296,7 @@ docker run --name new-api -d --restart always \
 ## 🚢 Deployment
 
 > [!TIP]
-> **Latest Docker image:** `calciumion/new-api:latest`
+> **Latest Docker image:** `calciumion/ali-router:latest`
 
 ### 📋 Deployment Requirements
 
@@ -334,14 +334,14 @@ docker run --name new-api -d --restart always \
 | `AZURE_DEFAULT_API_VERSION` | Azure API version | `2025-04-01-preview` |
 | `ERROR_LOG_ENABLED` | Error log switch | `false` |
 | `PYROSCOPE_URL` | Pyroscope server address | - |
-| `PYROSCOPE_APP_NAME` | Pyroscope application name | `new-api` |
+| `PYROSCOPE_APP_NAME` | Pyroscope application name | `ali-router` |
 | `PYROSCOPE_BASIC_AUTH_USER` | Pyroscope basic auth user | - |
 | `PYROSCOPE_BASIC_AUTH_PASSWORD` | Pyroscope basic auth password | - |
 | `PYROSCOPE_MUTEX_RATE` | Pyroscope mutex sampling rate | `5` |
 | `PYROSCOPE_BLOCK_RATE` | Pyroscope block sampling rate | `5` |
-| `HOSTNAME` | Hostname tag for Pyroscope | `new-api` |
+| `HOSTNAME` | Hostname tag for Pyroscope | `ali-router` |
 
-📖 **Complete configuration:** [Environment Variables Documentation](https://docs.newapi.pro/en/docs/installation/config-maintenance/environment-variables)
+📖 **Complete configuration:** [Environment Variables Documentation](https://URouters.ai/docsen/docs/installation/config-maintenance/environment-variables)
 
 </details>
 
@@ -352,8 +352,8 @@ docker run --name new-api -d --restart always \
 
 ```bash
 # Clone the project
-git clone https://github.com/QuantumNous/new-api.git
-cd new-api
+git clone https://github.com/QuantumNous/u-routers.git
+cd ali-router
 
 # Edit configuration
 nano docker-compose.yml
@@ -369,21 +369,21 @@ docker-compose up -d
 
 **Using SQLite:**
 ```bash
-docker run --name new-api -d --restart always \
+docker run --name ali-router -d --restart always \
   -p 3000:3000 \
   -e TZ=Asia/Shanghai \
   -v ./data:/data \
-  calciumion/new-api:latest
+  calciumion/ali-router:latest
 ```
 
 **Using MySQL:**
 ```bash
-docker run --name new-api -d --restart always \
+docker run --name ali-router -d --restart always \
   -p 3000:3000 \
   -e SQL_DSN="root:123456@tcp(localhost:3306)/oneapi" \
   -e TZ=Asia/Shanghai \
   -v ./data:/data \
-  calciumion/new-api:latest
+  calciumion/ali-router:latest
 ```
 
 > **💡 Path explanation:**
@@ -444,8 +444,8 @@ See [User authentication and login sessions](./docs/authentication.md) for the t
 
 | Project | Description |
 |------|------|
-| [new-api-key-tool](https://github.com/Calcium-Ion/new-api-key-tool) | Key quota query tool |
-| [new-api-horizon](https://github.com/Calcium-Ion/new-api-horizon) | New API high-performance optimized version |
+| [ali-router-key-tool](https://github.com/Calcium-Ion/ali-router-key-tool) | Key quota query tool |
+| [ali-router-horizon](https://github.com/Calcium-Ion/ali-router-horizon) | URouters high-performance optimized version |
 
 ---
 
@@ -455,10 +455,10 @@ See [User authentication and login sessions](./docs/authentication.md) for the t
 
 | Resource | Link |
 |------|------|
-| 📘 FAQ | [FAQ](https://docs.newapi.pro/en/docs/support/faq) |
-| 💬 Community Interaction | [Communication Channels](https://docs.newapi.pro/en/docs/support/community-interaction) |
-| 🐛 Issue Feedback | [Issue Feedback](https://docs.newapi.pro/en/docs/support/feedback-issues) |
-| 📚 Complete Documentation | [Official Documentation](https://docs.newapi.pro/en/docs) |
+| 📘 FAQ | [FAQ](https://URouters.ai/docsen/docs/support/faq) |
+| 💬 Community Interaction | [Communication Channels](https://URouters.ai/docsen/docs/support/community-interaction) |
+| 🐛 Issue Feedback | [Issue Feedback](https://URouters.ai/docsen/docs/support/feedback-issues) |
+| 📚 Complete Documentation | [Official Documentation](https://URouters.ai/docsen/docs) |
 
 ### 🤝 Contribution Guide
 
@@ -476,12 +476,12 @@ Welcome all forms of contribution!
 This project is licensed under the [GNU Affero General Public License v3.0 (AGPLv3)](./LICENSE).
 
 Additional terms under AGPLv3 Section 7 apply. Modified versions must preserve
-the author attribution notice `Frontend design and development by New API
+the author attribution notice `Frontend design and development by URouters
 contributors.` in the appropriate legal notices and in any prominent about,
 legal, footer, or attribution location presented by the user interface.
 
 Modified versions that present a user interface must also preserve a visible
-link to the original project: <https://github.com/QuantumNous/new-api>.
+link to the original project: <https://github.com/QuantumNous/u-routers>.
 
 This is an open-source project developed based on [One API](https://github.com/songquanpeng/one-api) (MIT License).
 
@@ -493,7 +493,7 @@ If your organization's policies do not permit the use of AGPLv3-licensed softwar
 
 <div align="center">
 
-[![Star History Chart](https://api.star-history.com/svg?repos=Calcium-Ion/new-api&type=Date)](https://star-history.com/#Calcium-Ion/new-api&Date)
+[![Star History Chart](https://api.star-history.com/svg?repos=Calcium-Ion/ali-router&type=Date)](https://star-history.com/#Calcium-Ion/ali-router&Date)
 
 </div>
 
@@ -501,11 +501,11 @@ If your organization's policies do not permit the use of AGPLv3-licensed softwar
 
 <div align="center">
 
-### 💖 Thank you for using New API
+### 💖 Thank you for using URouters
 
 If this project is helpful to you, welcome to give us a ⭐️ Star！
 
-**[Official Documentation](https://docs.newapi.pro/en/docs)** • **[Issue Feedback](https://github.com/Calcium-Ion/new-api/issues)** • **[Latest Release](https://github.com/Calcium-Ion/new-api/releases)**
+**[Official Documentation](https://URouters.ai/docsen/docs)** • **[Issue Feedback](https://github.com/Calcium-Ion/ali-router/issues)** • **[Latest Release](https://github.com/Calcium-Ion/ali-router/releases)**
 
 <sub>Built with ❤️ by QuantumNous</sub>
 

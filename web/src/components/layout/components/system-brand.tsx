@@ -51,7 +51,7 @@ export function SystemBrand(props: SystemBrandProps) {
   const { logo } = useSystemConfig()
 
   const variant = props.variant ?? 'sidebar'
-  const name = status?.system_name || props.defaultName || 'New API'
+  const name = status?.system_name || props.defaultName || 'URouters'
   const version =
     status?.version || props.defaultVersion || t('Unknown version')
 
@@ -61,7 +61,7 @@ export function SystemBrand(props: SystemBrandProps) {
         to='/'
         aria-label={t('Go to home')}
         className={cn(
-          'text-foreground inline-flex h-7 min-w-0 items-center gap-1.5 rounded-md px-1.5 text-sm font-medium transition-colors outline-none select-none',
+          'text-foreground inline-flex h-7 min-w-0 items-center gap-1.5 rounded-md px-1.5 text-lg font-medium transition-colors outline-none select-none',
           'hover:bg-accent focus-visible:ring-ring/40 focus-visible:ring-2'
         )}
       >
@@ -72,7 +72,7 @@ export function SystemBrand(props: SystemBrandProps) {
             className='size-full rounded-md object-cover'
           />
         </div>
-        <span className='max-w-[12rem] truncate'>{name}</span>
+        <span className='font-brand max-w-[12rem] truncate'>{name}</span>
       </Link>
     )
   }
@@ -93,7 +93,7 @@ export function SystemBrand(props: SystemBrandProps) {
             />
           </div>
           <div className='grid flex-1 text-start text-sm leading-tight group-data-[collapsible=icon]:hidden'>
-            <span className='truncate font-semibold'>{name}</span>
+            <span className='font-brand truncate'>{name}</span>
             <span className='truncate text-xs'>{version}</span>
           </div>
         </SidebarMenuButton>

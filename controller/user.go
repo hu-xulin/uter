@@ -9,18 +9,18 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/QuantumNous/new-api/common"
-	"github.com/QuantumNous/new-api/i18n"
-	"github.com/QuantumNous/new-api/logger"
-	"github.com/QuantumNous/new-api/middleware"
-	"github.com/QuantumNous/new-api/model"
-	"github.com/QuantumNous/new-api/relaykit/dto"
-	"github.com/QuantumNous/new-api/service"
-	"github.com/QuantumNous/new-api/service/authz"
-	"github.com/QuantumNous/new-api/setting"
-	"github.com/QuantumNous/new-api/setting/operation_setting"
+	"github.com/QuantumNous/u-routers/common"
+	"github.com/QuantumNous/u-routers/i18n"
+	"github.com/QuantumNous/u-routers/logger"
+	"github.com/QuantumNous/u-routers/middleware"
+	"github.com/QuantumNous/u-routers/model"
+	"github.com/QuantumNous/u-routers/relaykit/dto"
+	"github.com/QuantumNous/u-routers/service"
+	"github.com/QuantumNous/u-routers/service/authz"
+	"github.com/QuantumNous/u-routers/setting"
+	"github.com/QuantumNous/u-routers/setting/operation_setting"
 
-	"github.com/QuantumNous/new-api/constant"
+	"github.com/QuantumNous/u-routers/constant"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -559,7 +559,7 @@ func generateDefaultSidebarConfig(userRole int) string {
 		"chat":       true,
 	}
 
-	// 控制台区域 - 所有用户都可以访问
+	// 管理区域 - 所有用户都可以访问
 	defaultConfig["console"] = map[string]any{
 		"enabled":    true,
 		"detail":     true,

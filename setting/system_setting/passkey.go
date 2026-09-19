@@ -7,8 +7,8 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/QuantumNous/new-api/common"
-	"github.com/QuantumNous/new-api/setting/config"
+	"github.com/QuantumNous/u-routers/common"
+	"github.com/QuantumNous/u-routers/setting/config"
 	"golang.org/x/net/idna"
 	"golang.org/x/net/publicsuffix"
 )
@@ -154,7 +154,7 @@ func GetPasskeySettings() *PasskeySettings {
 func (s PasskeySettings) WithDefaults(serverAddress string) PasskeySettings {
 	if s.RPID == "" && serverAddress != "" {
 		// 从ServerAddress提取域名作为RPID
-		// ServerAddress可能是 "https://newapi.pro" 这种格式
+		// ServerAddress可能是 "https://URouters.ai" 这种格式
 		serverAddr := strings.TrimSpace(serverAddress)
 		if parsed, err := url.Parse(serverAddr); err == nil && parsed.Host != "" {
 			s.RPID = parsed.Host

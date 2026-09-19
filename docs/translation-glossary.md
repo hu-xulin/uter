@@ -8,10 +8,10 @@ This document provides standard translation references for key terminology in th
 
 | 中文 | English | 说明 | Description |
 |------|---------|------|-------------|
-| 倍率 | Ratio | 用于计算价格的乘数因子 | Multiplier factor used for price calculation |
+| 倍率 | Ratio | 用于计算定价的乘数因子 | Multiplier factor used for price calculation |
 | 令牌 | Token | API访问凭证，也指模型处理的文本单元 | API access credentials or text units processed by models |
 | 渠道 | Channel | API服务提供商的接入通道 | Access channel for API service providers |
-| 分组 | Group | 用户或令牌的分类，影响价格倍率 | Classification of users or tokens, affecting price ratios |
+| 分组 | Group | 用户或令牌的分类，影响定价倍率 | Classification of users or tokens, affecting price ratios |
 | 额度 | Quota | 用户可用的服务额度 | Available service quota for users |
 
 ## 模型相关 (Model Related)
@@ -24,9 +24,9 @@ This document provides standard translation references for key terminology in th
 | 输出 | Output/Completion | 模型返回的内容 | Content returned by the model |
 | 模型倍率 | Model Ratio | 不同模型的计费倍率 | Billing ratio for different models |
 | 补全倍率 | Completion Ratio | 输出内容的额外计费倍率 | Additional billing ratio for output content |
-| 固定价格 | Price per call | 按次计费的价格 | Fixed price per call |
+| 固定定价 | Price per call | 按次计费的定价 | Fixed price per call |
 | 按量计费 | Pay-as-you-go | 根据使用量计费 | Billing based on usage |
-| 按次计费 | Pay-per-view | 每次调用固定价格 | Fixed price per invocation |
+| 按次计费 | Pay-per-view | 每次调用固定定价 | Fixed price per invocation |
 
 ## 用户管理 (User Management)
 
@@ -65,14 +65,14 @@ This document provides standard translation references for key terminology in th
 
 | 中文 | English | 说明 | Description |
 |------|---------|------|-------------|
-| 倍率 | Ratio | 价格计算的乘数因子 | Multiplier factor used for price calculation |
-| 倍率 | Multiplier | 价格计算的乘数因子（同义词） | Multiplier factor used for price calculation (synonym) |
+| 倍率 | Ratio | 定价计算的乘数因子 | Multiplier factor used for price calculation |
+| 倍率 | Multiplier | 定价计算的乘数因子（同义词） | Multiplier factor used for price calculation (synonym) |
 
 ## 翻译注意事项 (Translation Guidelines)
 
 - **提示 (Prompt)** = 模型输入内容 / Model input content
 - **补全 (Completion)** = 模型输出内容 / Model output content
-- **倍率 (Ratio)** = 价格计算的乘数因子 / Multiplier factor for price calculation
+- **倍率 (Ratio)** = 定价计算的乘数因子 / Multiplier factor for price calculation
 - **额度 (Quota)** = 可用的用户服务额度，有时也翻译为 Credit / Available service quota for users, sometimes also translated as Credit
 - **Token** = 根据上下文可能指 / Depending on context, may refer to:
   - API访问令牌 (API Token)

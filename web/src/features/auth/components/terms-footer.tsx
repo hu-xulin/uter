@@ -69,10 +69,7 @@ export function TermsFooter({
     <p className={cn('text-muted-foreground text-center text-xs', className)}>
       {text}{' '}
       {firstLink && (
-        <a
-          href={firstLink.href}
-          className='hover:text-primary underline underline-offset-4'
-        >
+        <a href={firstLink.href} className='hover:text-primary'>
           {firstLink.label}
         </a>
       )}
@@ -80,10 +77,7 @@ export function TermsFooter({
         <>
           {' '}
           {t('and')}{' '}
-          <a
-            href={secondLink.href}
-            className='hover:text-primary underline underline-offset-4'
-          >
+          <a href={secondLink.href} className='hover:text-primary'>
             {secondLink.label}
           </a>
         </>

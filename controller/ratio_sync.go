@@ -16,13 +16,13 @@ import (
 	"sync"
 	"time"
 
-	"github.com/QuantumNous/new-api/common"
-	"github.com/QuantumNous/new-api/logger"
+	"github.com/QuantumNous/u-routers/common"
+	"github.com/QuantumNous/u-routers/logger"
 
-	"github.com/QuantumNous/new-api/model"
-	"github.com/QuantumNous/new-api/relaykit/dto"
-	"github.com/QuantumNous/new-api/setting/billing_setting"
-	"github.com/QuantumNous/new-api/setting/ratio_setting"
+	"github.com/QuantumNous/u-routers/model"
+	"github.com/QuantumNous/u-routers/relaykit/dto"
+	"github.com/QuantumNous/u-routers/setting/billing_setting"
+	"github.com/QuantumNous/u-routers/setting/ratio_setting"
 	"github.com/samber/lo"
 
 	"github.com/gin-gonic/gin"
@@ -38,7 +38,7 @@ const (
 	officialRatioPresetName     = "官方倍率预设"
 	officialRatioPresetBaseURL  = "https://basellm.github.io"
 	modelsDevPresetID           = -101
-	modelsDevPresetName         = "models.dev 价格预设"
+	modelsDevPresetName         = "models.dev 定价预设"
 	modelsDevPresetBaseURL      = "https://models.dev"
 	modelsDevHost               = "models.dev"
 	modelsDevPath               = "/api.json"

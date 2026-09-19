@@ -70,7 +70,7 @@ const chinese = english
   )
   .replace(
     "Configure the new resolution tier's price.",
-    '配置新分辨率档位的价格。'
+    '配置新分辨率档位的定价。'
   )
 
 function load(language = 'en', signal = new AbortController().signal) {
@@ -93,7 +93,7 @@ describe('changelog path and language resolution', () => {
     expect(
       resolvePluginChangelogUrl(GITHUB_MARKETPLACE_INDEX_URL, plugin, '1.2.0')
     ).toBe(
-      'https://raw.githubusercontent.com/QuantumNous/new-api-plugins/main/plugins/tasks/demo/1.2.0/CHANGELOG.md'
+      'https://raw.githubusercontent.com/QuantumNous/u-routers-plugins/main/plugins/tasks/demo/1.2.0/CHANGELOG.md'
     )
     expect(resolvePluginChangelogUrl(indexUrl, plugin, '9.0.0')).toBeNull()
   })
@@ -110,7 +110,7 @@ describe('changelog path and language resolution', () => {
         '1.2.0'
       )
     ).toBe(
-      'https://raw.githubusercontent.com/QuantumNous/new-api-plugins/main/plugins/tasks/demo/1.2.0/CHANGELOG.md'
+      'https://raw.githubusercontent.com/QuantumNous/u-routers-plugins/main/plugins/tasks/demo/1.2.0/CHANGELOG.md'
     )
     expect(
       resolvePluginChangelogUrl(
@@ -249,7 +249,7 @@ describe('changelog downloads', () => {
     vi.stubGlobal('fetch', fetchMock)
     const result = await load('zhCN')
     expect(result?.locale).toBe('zh-CN')
-    expect(result?.sections[1].markdown).toContain('配置新分辨率档位的价格。')
+    expect(result?.sections[1].markdown).toContain('配置新分辨率档位的定价。')
     expect(fetchMock).toHaveBeenLastCalledWith(
       sourceUrl.replace('CHANGELOG.md', 'CHANGELOG.zh-CN.md'),
       expect.objectContaining({

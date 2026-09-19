@@ -5,18 +5,18 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/QuantumNous/new-api/common"
-	"github.com/QuantumNous/new-api/logger"
-	relaycommon "github.com/QuantumNous/new-api/relay/common"
-	"github.com/QuantumNous/new-api/relay/helper"
-	"github.com/QuantumNous/new-api/relaykit/dto"
-	"github.com/QuantumNous/new-api/relaykit/relayconvert"
-	"github.com/QuantumNous/new-api/relaykit/types"
-	"github.com/QuantumNous/new-api/service"
+	"github.com/QuantumNous/u-routers/common"
+	"github.com/QuantumNous/u-routers/logger"
+	relaycommon "github.com/QuantumNous/u-routers/relay/common"
+	"github.com/QuantumNous/u-routers/relay/helper"
+	"github.com/QuantumNous/u-routers/relaykit/dto"
+	"github.com/QuantumNous/u-routers/relaykit/relayconvert"
+	"github.com/QuantumNous/u-routers/relaykit/types"
+	"github.com/QuantumNous/u-routers/service"
 	"github.com/gin-gonic/gin"
 )
 
-func ClaudeResponsesStreamHandler(c *gin.Context, resp *http.Response, info *relaycommon.RelayInfo) (*dto.Usage, *types.NewAPIError) {
+func ClaudeResponsesStreamHandler(c *gin.Context, resp *http.Response, info *relaycommon.RelayInfo) (*dto.Usage, *types.URouterError) {
 	responseID := helper.GetResponseID(c)
 	created := common.GetTimestamp()
 	state, err := relayconvert.NewResponseStreamState(types.RelayFormatClaude, types.RelayFormatOpenAIResponses, relayconvert.ResponseStreamOptions{
@@ -37,7 +37,7 @@ func ClaudeResponsesStreamHandler(c *gin.Context, resp *http.Response, info *rel
 		ResponseText: strings.Builder{},
 		Usage:        &dto.Usage{},
 	}
-	var streamErr *types.NewAPIError
+	var streamErr *types.URouterError
 	// streamFailed means a Responses-native terminal error was sent successfully.
 	// In that case the scanner stops without a transport error and the partial
 	// upstream usage remains billable.

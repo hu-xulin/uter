@@ -21,13 +21,13 @@ export function sendToFluent(apiKey: string, serverAddress?: string): boolean {
     return false
   }
 
-  const container = document.getElementById('fluent-new-api-container')
+  const container = document.getElementById('fluent-ali-router-container')
   if (!container) {
     return false
   }
 
   const payload = {
-    id: 'new-api',
+    id: 'ali-router',
     baseUrl: serverAddress || window.location.origin,
     apiKey: `sk-${apiKey}`,
   }

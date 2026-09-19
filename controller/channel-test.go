@@ -14,20 +14,20 @@ import (
 	"sync"
 	"time"
 
-	"github.com/QuantumNous/new-api/common"
-	"github.com/QuantumNous/new-api/constant"
-	"github.com/QuantumNous/new-api/middleware"
-	"github.com/QuantumNous/new-api/model"
-	"github.com/QuantumNous/new-api/pkg/billingexpr"
-	"github.com/QuantumNous/new-api/relay"
-	relaycommon "github.com/QuantumNous/new-api/relay/common"
-	relayconstant "github.com/QuantumNous/new-api/relay/constant"
-	"github.com/QuantumNous/new-api/relay/helper"
-	"github.com/QuantumNous/new-api/relaykit/dto"
-	"github.com/QuantumNous/new-api/relaykit/types"
-	"github.com/QuantumNous/new-api/service"
-	"github.com/QuantumNous/new-api/setting/operation_setting"
-	hosttypes "github.com/QuantumNous/new-api/types"
+	"github.com/QuantumNous/u-routers/common"
+	"github.com/QuantumNous/u-routers/constant"
+	"github.com/QuantumNous/u-routers/middleware"
+	"github.com/QuantumNous/u-routers/model"
+	"github.com/QuantumNous/u-routers/pkg/billingexpr"
+	"github.com/QuantumNous/u-routers/relay"
+	relaycommon "github.com/QuantumNous/u-routers/relay/common"
+	relayconstant "github.com/QuantumNous/u-routers/relay/constant"
+	"github.com/QuantumNous/u-routers/relay/helper"
+	"github.com/QuantumNous/u-routers/relaykit/dto"
+	"github.com/QuantumNous/u-routers/relaykit/types"
+	"github.com/QuantumNous/u-routers/service"
+	"github.com/QuantumNous/u-routers/setting/operation_setting"
+	hosttypes "github.com/QuantumNous/u-routers/types"
 
 	"github.com/samber/lo"
 	"github.com/tidwall/gjson"
@@ -38,7 +38,7 @@ import (
 type testResult struct {
 	context     *gin.Context
 	localErr    error
-	newAPIError *types.NewAPIError
+	newAPIError *types.URouterError
 }
 
 func normalizeChannelTestEndpoint(channel *model.Channel, endpointType string) string {
@@ -420,7 +420,7 @@ func testChannel(ctx context.Context, channel *model.Channel, testUserID int, te
 				return testResult{
 					context:     c,
 					localErr:    fixedErr,
-					newAPIError: relaycommon.NewAPIErrorFromParamOverride(fixedErr),
+					newAPIError: relaycommon.URouterErrorFromParamOverride(fixedErr),
 				}
 			}
 			return testResult{

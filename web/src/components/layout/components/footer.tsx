@@ -22,6 +22,7 @@ import { useTranslation } from 'react-i18next'
 
 import { useStatus } from '@/hooks/use-status'
 import { useSystemConfig } from '@/hooks/use-system-config'
+import { DEFAULT_LOGO } from '@/lib/constants'
 import { cn } from '@/lib/utils'
 
 interface FooterLink {
@@ -129,12 +130,12 @@ function ProjectAttribution(props: { currentYear: number; inline?: boolean }) {
     <span className='text-muted-foreground/45'>
       &copy; {props.currentYear}{' '}
       <a
-        href='https://github.com/QuantumNous/new-api'
+        href='https://URouters.ai'
         target='_blank'
         rel='noopener noreferrer'
         className='text-foreground/70 hover:text-foreground font-medium transition-colors'
       >
-        {t('New API')}
+        {t('URouters')}
       </a>
       . {t(NEW_API_FOOTER_ATTRIBUTION_KEY)}
     </span>
@@ -158,8 +159,8 @@ export function Footer(props: FooterProps) {
     demoSiteEnabled,
   } = useSystemConfig()
 
-  const displayLogo = systemLogo || props.logo || '/logo.png'
-  const displayName = systemName || props.name || 'New API'
+  const displayLogo = systemLogo || props.logo || DEFAULT_LOGO
+  const displayName = systemName || props.name || 'URouters'
   const isDemoSiteMode = Boolean(demoSiteEnabled)
   const currentYear = new Date().getFullYear()
 
@@ -170,15 +171,15 @@ export function Footer(props: FooterProps) {
         links: [
           {
             text: t('footer.columns.about.links.aboutProject'),
-            href: 'https://docs.newapi.pro/wiki/project-introduction/',
+            href: 'https://URouters.ai/docswiki/project-introduction/',
           },
           {
             text: t('footer.columns.about.links.contact'),
-            href: 'https://docs.newapi.pro/support/community-interaction/',
+            href: 'https://URouters.ai/docssupport/community-interaction/',
           },
           {
             text: t('footer.columns.about.links.features'),
-            href: 'https://docs.newapi.pro/wiki/features-introduction/',
+            href: 'https://URouters.ai/docswiki/features-introduction/',
           },
         ],
       },
@@ -187,15 +188,15 @@ export function Footer(props: FooterProps) {
         links: [
           {
             text: t('footer.columns.docs.links.quickStart'),
-            href: 'https://docs.newapi.pro/getting-started/',
+            href: 'https://URouters.ai/docsgetting-started/',
           },
           {
             text: t('footer.columns.docs.links.installation'),
-            href: 'https://docs.newapi.pro/installation/',
+            href: 'https://URouters.ai/docsinstallation/',
           },
           {
             text: t('footer.columns.docs.links.apiDocs'),
-            href: 'https://docs.newapi.pro/api/',
+            href: 'https://URouters.ai/docsapi/',
           },
         ],
       },
@@ -204,15 +205,15 @@ export function Footer(props: FooterProps) {
         links: [
           {
             text: t('footer.columns.related.links.oneApi'),
-            href: 'https://github.com/songquanpeng/one-api',
+            href: 'https://URouters.ai',
           },
           {
             text: t('footer.columns.related.links.midjourney'),
-            href: 'https://github.com/novicezk/midjourney-proxy',
+            href: 'https://URouters.ai',
           },
           {
             text: t('footer.columns.related.links.newApiKeyTool'),
-            href: 'https://github.com/Calcium-Ion/new-api-key-tool',
+            href: 'https://URouters.ai',
           },
         ],
       },
@@ -260,7 +261,7 @@ export function Footer(props: FooterProps) {
                 alt={displayName}
                 className='size-7 rounded-lg object-contain'
               />
-              <span className='text-sm font-semibold tracking-tight'>
+              <span className='font-brand text-sm tracking-tight'>
                 {displayName}
               </span>
             </Link>

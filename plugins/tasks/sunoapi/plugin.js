@@ -188,7 +188,7 @@ function artifactData(ctx) {
 }
 
 function artifactKey(type, song) {
-  return type + "-" + utils.hmacSHA256(String(song.id), "new-api:suno:artifact-key");
+  return type + "-" + utils.hmacSHA256(String(song.id), "ali-router:suno:artifact-key");
 }
 
 export function listArtifacts(task) {

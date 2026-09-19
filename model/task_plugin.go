@@ -7,8 +7,8 @@ import (
 	"sort"
 	"time"
 
-	"github.com/QuantumNous/new-api/common"
-	"github.com/QuantumNous/new-api/constant"
+	"github.com/QuantumNous/u-routers/common"
+	"github.com/QuantumNous/u-routers/constant"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )

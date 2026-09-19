@@ -5,10 +5,10 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/QuantumNous/new-api/common"
-	"github.com/QuantumNous/new-api/model"
-	"github.com/QuantumNous/new-api/setting/operation_setting"
-	"github.com/QuantumNous/new-api/setting/ratio_setting"
+	"github.com/QuantumNous/u-routers/common"
+	"github.com/QuantumNous/u-routers/model"
+	"github.com/QuantumNous/u-routers/setting/operation_setting"
+	"github.com/QuantumNous/u-routers/setting/ratio_setting"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
@@ -154,11 +154,11 @@ func AdminCreateSubscriptionPlan(c *gin.Context) {
 		return
 	}
 	if req.Plan.PriceAmount < 0 {
-		common.ApiErrorMsg(c, "价格不能为负数")
+		common.ApiErrorMsg(c, "定价不能为负数")
 		return
 	}
 	if req.Plan.PriceAmount > 9999 {
-		common.ApiErrorMsg(c, "价格不能超过9999")
+		common.ApiErrorMsg(c, "定价不能超过9999")
 		return
 	}
 	if req.Plan.Currency == "" {
@@ -233,11 +233,11 @@ func AdminUpdateSubscriptionPlan(c *gin.Context) {
 		return
 	}
 	if req.Plan.PriceAmount < 0 {
-		common.ApiErrorMsg(c, "价格不能为负数")
+		common.ApiErrorMsg(c, "定价不能为负数")
 		return
 	}
 	if req.Plan.PriceAmount > 9999 {
-		common.ApiErrorMsg(c, "价格不能超过9999")
+		common.ApiErrorMsg(c, "定价不能超过9999")
 		return
 	}
 	req.Plan.Id = id

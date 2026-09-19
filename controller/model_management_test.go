@@ -13,17 +13,17 @@ import (
 	"sync/atomic"
 	"testing"
 
-	"github.com/QuantumNous/new-api/common"
-	"github.com/QuantumNous/new-api/constant"
-	"github.com/QuantumNous/new-api/model"
-	"github.com/QuantumNous/new-api/pkg/billingexpr"
-	"github.com/QuantumNous/new-api/pkg/jsplugin"
-	"github.com/QuantumNous/new-api/relaykit/dto"
-	"github.com/QuantumNous/new-api/relaykit/types"
-	"github.com/QuantumNous/new-api/service"
-	"github.com/QuantumNous/new-api/setting/billing_setting"
-	"github.com/QuantumNous/new-api/setting/config"
-	"github.com/QuantumNous/new-api/setting/ratio_setting"
+	"github.com/QuantumNous/u-routers/common"
+	"github.com/QuantumNous/u-routers/constant"
+	"github.com/QuantumNous/u-routers/model"
+	"github.com/QuantumNous/u-routers/pkg/billingexpr"
+	"github.com/QuantumNous/u-routers/pkg/jsplugin"
+	"github.com/QuantumNous/u-routers/relaykit/dto"
+	"github.com/QuantumNous/u-routers/relaykit/types"
+	"github.com/QuantumNous/u-routers/service"
+	"github.com/QuantumNous/u-routers/setting/billing_setting"
+	"github.com/QuantumNous/u-routers/setting/config"
+	"github.com/QuantumNous/u-routers/setting/ratio_setting"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -955,7 +955,7 @@ export function parseTaskResult() { return {}; }
 				var revision atomic.Int32
 				var failVendors atomic.Bool
 				upstream := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-					assert.Contains(t, r.URL.Path, "/api/i18n/zh/newapi/")
+					assert.Contains(t, r.URL.Path, "/api/i18n/zh/URouters/")
 					var payload any
 					if strings.HasSuffix(r.URL.Path, "vendors.json") {
 						if failVendors.Load() {

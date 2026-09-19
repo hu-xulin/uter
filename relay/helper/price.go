@@ -4,20 +4,20 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/QuantumNous/new-api/common"
-	"github.com/QuantumNous/new-api/constant"
-	"github.com/QuantumNous/new-api/logger"
-	"github.com/QuantumNous/new-api/model"
-	"github.com/QuantumNous/new-api/pkg/billingexpr"
-	relaycommon "github.com/QuantumNous/new-api/relay/common"
-	"github.com/QuantumNous/new-api/relaykit/dto"
-	"github.com/QuantumNous/new-api/relaykit/relayconvert/reasoning"
-	"github.com/QuantumNous/new-api/relaykit/types"
-	"github.com/QuantumNous/new-api/setting/billing_setting"
-	"github.com/QuantumNous/new-api/setting/operation_setting"
-	"github.com/QuantumNous/new-api/setting/ratio_setting"
-	hostreasoning "github.com/QuantumNous/new-api/setting/reasoning"
-	hosttypes "github.com/QuantumNous/new-api/types"
+	"github.com/QuantumNous/u-routers/common"
+	"github.com/QuantumNous/u-routers/constant"
+	"github.com/QuantumNous/u-routers/logger"
+	"github.com/QuantumNous/u-routers/model"
+	"github.com/QuantumNous/u-routers/pkg/billingexpr"
+	relaycommon "github.com/QuantumNous/u-routers/relay/common"
+	"github.com/QuantumNous/u-routers/relaykit/dto"
+	"github.com/QuantumNous/u-routers/relaykit/relayconvert/reasoning"
+	"github.com/QuantumNous/u-routers/relaykit/types"
+	"github.com/QuantumNous/u-routers/setting/billing_setting"
+	"github.com/QuantumNous/u-routers/setting/operation_setting"
+	"github.com/QuantumNous/u-routers/setting/ratio_setting"
+	hostreasoning "github.com/QuantumNous/u-routers/setting/reasoning"
+	hosttypes "github.com/QuantumNous/u-routers/types"
 
 	"github.com/gin-gonic/gin"
 )
@@ -25,13 +25,13 @@ import (
 func modelPriceNotConfiguredError(modelName string, userId int) error {
 	if model.IsAdmin(userId) {
 		return fmt.Errorf(
-			"模型 %s 的价格未配置。请前往「系统设置 → 运营设置」开启自用模式，或在「系统设置 → 分组与模型定价设置」中为该模型配置价格；"+
+			"模型 %s 的定价未配置。请前往「系统设置 → 运营设置」开启自用模式，或在「系统设置 → 分组与模型定价设置」中为该模型配置定价；"+
 				"Model %s price not configured. Go to System Settings → Operation Settings to enable self-use mode, or configure the model price in System Settings → Group & Model Pricing.",
 			modelName, modelName,
 		)
 	}
 	return fmt.Errorf(
-		"模型 %s 的价格尚未由管理员配置，暂时无法使用，请联系站点管理员开启该模型；"+
+		"模型 %s 的定价尚未由管理员配置，暂时无法使用，请联系站点管理员开启该模型；"+
 			"Model %s has not been priced by the administrator yet. Please contact the site administrator to enable this model.",
 		modelName, modelName,
 	)
@@ -122,7 +122,7 @@ func ModelPriceHelper(c *gin.Context, info *relaycommon.RelayInfo, promptTokens 
 		cacheRatio, _ = ratio_setting.GetCacheRatio(billingModelName)
 		cacheCreationRatio, _ = ratio_setting.GetCreateCacheRatio(billingModelName)
 		cacheCreationRatio5m = cacheCreationRatio
-		// 固定1h和5min缓存写入价格的比例
+		// 固定1h和5min缓存写入定价的比例
 		cacheCreationRatio1h = cacheCreationRatio * claudeCacheCreation1hMultiplier
 		imageRatio, _ = ratio_setting.GetImageRatio(billingModelName)
 		audioRatio = ratio_setting.GetAudioRatio(billingModelName)

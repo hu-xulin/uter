@@ -9,8 +9,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/QuantumNous/new-api/common"
-	"github.com/QuantumNous/new-api/relaykit/types"
+	"github.com/QuantumNous/u-routers/common"
+	"github.com/QuantumNous/u-routers/relaykit/types"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/require"
 )
@@ -54,7 +54,7 @@ func TestResetStatusCode(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 
-			newAPIError := &types.NewAPIError{
+			newAPIError := &types.URouterError{
 				StatusCode: tc.statusCode,
 			}
 			ResetStatusCode(newAPIError, tc.statusCodeConfig)

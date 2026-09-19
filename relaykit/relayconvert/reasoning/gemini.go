@@ -5,7 +5,7 @@ import (
 	"math"
 	"strings"
 
-	"github.com/QuantumNous/new-api/relaykit/dto"
+	"github.com/QuantumNous/u-routers/relaykit/dto"
 )
 
 type GeminiRender struct {

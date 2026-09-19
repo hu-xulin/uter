@@ -160,7 +160,7 @@ export function GrokSettingsCard(props: Props) {
                       href={XAI_VIOLATION_FEE_DOC_URL}
                       target='_blank'
                       rel='noreferrer'
-                      className='underline'
+                      className='text-primary font-medium'
                     >
                       {t('Official documentation')}
                     </a>

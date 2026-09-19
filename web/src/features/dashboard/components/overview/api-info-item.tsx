@@ -16,7 +16,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
-import { Zap, ExternalLink, Gauge } from 'lucide-react'
+import { Zap, Gauge } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
 import { CopyButton } from '@/components/copy-button'
@@ -132,9 +132,7 @@ export function ApiInfoItemComponent(props: ApiInfoItemProps) {
             className='hidden size-7 p-0 sm:inline-flex'
             title={t('Open in New Tab')}
             render={<a href={item.url} target='_blank' rel='noreferrer' />}
-          >
-            <ExternalLink className='size-3.5' />
-          </Button>
+          ></Button>
         </div>
       </div>
     </div>

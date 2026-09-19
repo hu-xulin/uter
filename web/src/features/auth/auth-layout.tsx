@@ -50,7 +50,7 @@ export function AuthLayout({ children }: AuthLayoutProps) {
         {loading ? (
           <Skeleton className='h-6 w-24' />
         ) : (
-          <h1 className='text-xl font-medium'>{systemName}</h1>
+          <h1 className='font-brand text-xl'>{systemName}</h1>
         )}
       </Link>
       <div className='container flex items-center pt-16 sm:pt-0'>

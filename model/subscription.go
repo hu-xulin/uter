@@ -8,8 +8,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/QuantumNous/new-api/common"
-	"github.com/QuantumNous/new-api/pkg/cachex"
+	"github.com/QuantumNous/u-routers/common"
+	"github.com/QuantumNous/u-routers/pkg/cachex"
 	"github.com/samber/hot"
 	"github.com/shopspring/decimal"
 	"gorm.io/gorm"
@@ -39,8 +39,8 @@ var (
 )
 
 const (
-	subscriptionPlanCacheNamespace     = "new-api:subscription_plan:v1"
-	subscriptionPlanInfoCacheNamespace = "new-api:subscription_plan_info:v1"
+	subscriptionPlanCacheNamespace     = "ali-router:subscription_plan:v1"
+	subscriptionPlanInfoCacheNamespace = "ali-router:subscription_plan_info:v1"
 )
 
 var (
@@ -771,7 +771,7 @@ func PurchaseSubscriptionWithBalance(userId int, planId int) error {
 			return errors.New("套餐未启用")
 		}
 		if plan.PriceAmount < 0 {
-			return errors.New("套餐价格不能为负数")
+			return errors.New("套餐定价不能为负数")
 		}
 		if plan.AllowBalancePay != nil && !*plan.AllowBalancePay {
 			return errors.New("该套餐不允许使用余额兑换")
