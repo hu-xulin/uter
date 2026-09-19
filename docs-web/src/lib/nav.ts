@@ -354,7 +354,12 @@ export function sidebarEntries(locale: DocsLocale, prefix: string): SidebarEntry
     {
       title: labels.guide,
       url: guideUrl,
-      defaultOpen: true,
+      /*
+       * Collapsed by default: the row only expands when the user clicks
+       * the chevron, or when the current page is a guide chapter
+       * (folderContainsCurrent opens ancestors automatically).
+       */
+      defaultOpen: false,
       children: USER_GUIDE_CHAPTER_SLUGS.map((slug) => ({
         title: userGuideChapterTitle(locale, slug) ?? slug,
         url: userGuideChapterUrl(locale, slug),
