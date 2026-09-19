@@ -1,0 +1,217 @@
+[
+  {
+    "id": "ai-model-audio",
+    "title": "音频（Audio）",
+    "category": "ai-model"
+  },
+  {
+    "id": "ai-model-audio-openai",
+    "title": "音频（Audio） · 原生OpenAI格式",
+    "category": "ai-model"
+  },
+  {
+    "id": "ai-model-chat",
+    "title": "聊天（Chat）",
+    "category": "ai-model"
+  },
+  {
+    "id": "ai-model-chat-gemini",
+    "title": "聊天（Chat） · 原生Gemini格式",
+    "category": "ai-model"
+  },
+  {
+    "id": "ai-model-chat-openai",
+    "title": "聊天（Chat） · 原生OpenAI格式",
+    "category": "ai-model"
+  },
+  {
+    "id": "ai-model-completions",
+    "title": "补全（Completions）",
+    "category": "ai-model"
+  },
+  {
+    "id": "ai-model-completions-openai",
+    "title": "AI 模型接口 · 原生OpenAI格式",
+    "category": "ai-model"
+  },
+  {
+    "id": "ai-model-embeddings",
+    "title": "嵌入（Embeddings）",
+    "category": "ai-model"
+  },
+  {
+    "id": "ai-model-embeddings-openai",
+    "title": "AI 模型接口 · 原生OpenAI格式",
+    "category": "ai-model"
+  },
+  {
+    "id": "ai-model-embeddings-gemini",
+    "title": "AI 模型接口 · 原生Gemini格式",
+    "category": "ai-model"
+  },
+  {
+    "id": "ai-model-images-gemini",
+    "title": "图像（Images） · 原生Gemini格式",
+    "category": "ai-model"
+  },
+  {
+    "id": "ai-model-images-openai",
+    "title": "图像（Images） · 原生OpenAI格式",
+    "category": "ai-model"
+  },
+  {
+    "id": "ai-model-images-qwen",
+    "title": "通义千问OpenAI格式",
+    "category": "ai-model"
+  },
+  {
+    "id": "ai-model-models-list",
+    "title": "列出模型",
+    "category": "ai-model"
+  },
+  {
+    "id": "ai-model-models-list-openai",
+    "title": "模型（Models） · 原生OpenAI格式",
+    "category": "ai-model"
+  },
+  {
+    "id": "ai-model-models-list-gemini",
+    "title": "模型（Models） · 原生Gemini格式",
+    "category": "ai-model"
+  },
+  {
+    "id": "ai-model-moderations",
+    "title": "审查（Moderations）",
+    "category": "ai-model"
+  },
+  {
+    "id": "ai-model-realtime",
+    "title": "实时语音（Realtime）",
+    "category": "ai-model"
+  },
+  {
+    "id": "ai-model-rerank",
+    "title": "重排序（Rerank）",
+    "category": "ai-model"
+  },
+  {
+    "id": "ai-model-unimplemented-fine-tuning",
+    "title": "微调（Fine-tuning）",
+    "category": "ai-model"
+  },
+  {
+    "id": "ai-model-videos",
+    "title": "视频（Videos）",
+    "category": "ai-model"
+  },
+  {
+    "id": "ai-model-videos-jimeng",
+    "title": "即梦格式",
+    "category": "ai-model"
+  },
+  {
+    "id": "ai-model-videos-kling",
+    "title": "可灵格式",
+    "category": "ai-model"
+  },
+  {
+    "id": "ai-model-videos-sora",
+    "title": "Sora格式",
+    "category": "ai-model"
+  },
+  {
+    "id": "management-auth",
+    "title": "鉴权体系说明（Auth）",
+    "category": "management"
+  },
+  {
+    "id": "management-channel-management",
+    "title": "渠道管理",
+    "category": "management"
+  },
+  {
+    "id": "management-default",
+    "title": "使用兑换码",
+    "category": "management"
+  },
+  {
+    "id": "management-groups",
+    "title": "分组",
+    "category": "management"
+  },
+  {
+    "id": "management-logs",
+    "title": "日志",
+    "category": "management"
+  },
+  {
+    "id": "management-model-management",
+    "title": "模型管理",
+    "category": "management"
+  },
+  {
+    "id": "management-oauth",
+    "title": "OAuth",
+    "category": "management"
+  },
+  {
+    "id": "management-payment",
+    "title": "充值",
+    "category": "management"
+  },
+  {
+    "id": "management-redemption",
+    "title": "兑换码",
+    "category": "management"
+  },
+  {
+    "id": "management-security-verification",
+    "title": "安全验证",
+    "category": "management"
+  },
+  {
+    "id": "management-statistics",
+    "title": "数据统计",
+    "category": "management"
+  },
+  {
+    "id": "management-system",
+    "title": "系统",
+    "category": "management"
+  },
+  {
+    "id": "management-system-settings",
+    "title": "系统设置",
+    "category": "management"
+  },
+  {
+    "id": "management-tasks",
+    "title": "任务",
+    "category": "management"
+  },
+  {
+    "id": "management-token-management",
+    "title": "令牌管理",
+    "category": "management"
+  },
+  {
+    "id": "management-two-factor-auth",
+    "title": "两步验证",
+    "category": "management"
+  },
+  {
+    "id": "management-user-auth",
+    "title": "用户登陆注册",
+    "category": "management"
+  },
+  {
+    "id": "management-user-management",
+    "title": "用户管理",
+    "category": "management"
+  },
+  {
+    "id": "management-vendors",
+    "title": "供应商",
+    "category": "management"
+  }
+]

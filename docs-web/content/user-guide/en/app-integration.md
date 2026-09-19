@@ -1,0 +1,76 @@
+# Chat Application Integration
+
+* URouters supports quickly importing configurations into various AI chat applications, facilitating testing and daily use.
+
+## Chat Integration Methods
+
+* URouters offers three chat integration methods:
+
+1. **One-click import of chat presets**
+2. **One-click import of API key configurations**
+3. **Manually configure chat applications**
+
+### Preparation Before Use
+
+1. Log in to URouters and create a key on the 'API Key' page.
+2. Ensure the key is enabled, has sufficient quota, is not expired, and that current IP, group, and model restrictions allow the call.
+
+<Callout type="info">
+  **For detailed steps on creating and using API keys, please refer to the [API Key](../api-keys/) page.**
+</Callout>
+
+### One-click Import of Chat Presets
+
+1. Click 'Chat' in the left sidebar to expand the platform's configured chat presets.
+2. Click the target chat preset.
+3. The browser will attempt to launch the installed external application in a new window.
+4. The system automatically jumps to the target application and populates the configuration information.
+
+<img alt="聊天预设一键导入配置页" src="01-chat-presets-configuration-import.webp" />
+
+<Callout type="info">
+  Root users can maintain and manage chat presets in 'System Settings' → 'Console Content' → 'Chat'.
+</Callout>
+
+### One-click Import of API Key Configurations
+
+1. Click to enter 'API Key' in the left sidebar.
+2. Select the API key to use.
+3. Next to the selected key, click '...' → 'Chat' → 'Target Chat Application'.
+4. Quickly jump to the corresponding application and use the selected key to import the configuration with one click.
+
+<img alt="API密钥一键导入配置页" src="02-api-key-configuration-import.webp" />
+
+### Manually Configure Chat Applications
+
+For applications that do not support one-click import, you can configure them manually:
+
+* Obtain the following configuration information from URouters:
+
+| Configuration Item | Description              | Location to Obtain                                                              |
+| ------------------ | ------------------------ | ------------------------------------------------------------------------------- |
+| API Base URL       | API Endpoint Address     | URouters address, e.g., `https://api.example.com/v1`                             |
+| API Key            | API Key                  | API Key page                                                                    |
+| Available Models   | List of supported models | Filter and view available models under the key's group in the Model Marketplace |
+
+* General Configuration Steps
+
+1. In the target application, find the 'Settings' or 'Configuration' entry.
+2. Locate the 'Custom API' or 'OpenAI Compatible Interface' configuration area.
+3. Fill in the API Base URL and API Key.
+4. Save the configuration to start using it.
+
+<Callout type="info">
+  1) Most applications supporting OpenAI API compatible interfaces can integrate with URouters by filling in a custom API address.
+  2) If the application requires a full endpoint, use `https://api.example.com/v1/chat/completions`; refer to the application's specific configuration instructions to supplement the path.
+  3) **Most mainstream AI applications can be connected through the custom API described above; follow each application's own configuration guide.**
+</Callout>
+
+## Frequently Asked Questions
+
+* **No chat presets in the sidebar**: Confirm that the 'Chat' module is enabled in 'Profile' → 'Left Sidebar Personal Settings'.
+* **No available key prompt**: Create or enable an API key, and check the quota, expiration time, model restrictions, and IP whitelist.
+* **Desktop application not launching**: First, install the target application and confirm that the operating system has registered the corresponding custom protocol; the browser may also ask for confirmation to open an external application.
+* **Web preset blank or refused to load**: The target site might prohibit iframes via CSP or `X-Frame-Options`. In this case, switch to manual configuration for that application.
+* **FluentRead key invalid after connection**: Confirm that the extension is installed and active on the current page; the current version might have key prefix compatibility differences, if it still fails, switch to manual configuration or another preset.
+* **Request returns unauthorized or forbidden access**: Check the authentication header format, model name, key status, group permissions, and IP restrictions; for Claude and Gemini requests, also confirm that the correct paths and request headers are used.
