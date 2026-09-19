@@ -1,0 +1,90 @@
+# AionUi - Free Open-Source Desktop Office Agent
+
+> 🚀 AionUi is a free, local, open-source Cowork, supporting various AI agents such as Gemini CLI, Claude Code, Codex, OpenCode, Qwen Code, Goose CLI, Auggie. It provides a complete GUI interface and WebUI remote access functionality, serving as an open-source alternative to Cowork.
+
+- Official Website: [https://www.aionui.com](https://www.aionui.com)
+- GitHub Repository: [https://github.com/iOfficeAI/AionUi](https://github.com/iOfficeAI/AionUi)
+- Download Link: [https://github.com/iOfficeAI/AionUi/releases](https://github.com/iOfficeAI/AionUi/releases)
+
+![AionUi Logo](/apps-assets/aionui/aionui-logo.webp)
+
+## Core Features
+
+### 💬 Multi-Session Chat
+- **Multi-session + Independent Context** - Allows opening multiple chat sessions simultaneously, each with its own independent context memory.
+- **Local Storage** - All conversation data is stored locally in an SQLite database and will not be lost.
+
+### 🤖 Multi-Model Support
+- **Multi-Platform Support** - Supports mainstream models like Gemini, OpenAI, Claude, Qwen, with flexible switching.
+- **Local Model Support** - Supports local model deployment via Ollama, LM Studio, etc.
+
+### 🤝 Multi-Agent Mode
+- **Run Multiple AI Agents Simultaneously** - Allows running multiple AI agents concurrently (e.g., Gemini CLI, Claude Code, Codex, OpenCode, Qwen Code, Goose CLI, Auggie, etc.).
+- **Unified MCP Management** - Unified management and configuration of all agents via Model Context Protocol (MCP), simplifying operation.
+- **Skills Configuration** - Supports configuring exclusive Skills for different agents to extend their capabilities.
+- **Assistant Customization** - Supports custom assistant configurations to create personalized AI workflows.
+- **Independent Configuration** - Each agent can be configured and used independently without interference.
+- **Flexible Switching** - Seamlessly switch between different agents to meet various scenario requirements.
+
+### 🗂️ File Management
+- **File Tree Browsing + Drag-and-Drop Upload** - Browse files like a folder, supports drag-and-drop of files or folders for one-click import.
+- **Smart Organization** - AI can help organize folders and automatically categorize them.
+
+### 📄 Preview Panel
+- **9+ Format Preview** - Supports formats like PDF, Word, Excel, PPT, code, Markdown, images, etc.
+- **Real-time Tracking + Editable** - Automatically tracks file changes, supports real-time editing and debugging of Markdown, code, HTML.
+
+### 🎨 AI Image Generation and Editing
+- **Smart Image Generation** - Supports various image generation models such as Gemini 2.5 Flash Image Preview, Nano, Banana, etc.
+- **Image Recognition and Editing** - AI-powered image analysis and editing features.
+
+### 🌐 Multi-Channel Access
+- **WebUI Remote Access** - Accessible via browser from any device on the network, supports mobile devices.
+- **Telegram Integration** - Supports interaction via Telegram bots.
+- **Feishu Integration** - Supports access and interaction via Feishu.
+- **Local Data Security** - All data is stored in a local SQLite database, suitable for server deployment.
+
+## URouters Integration Method
+
+### Parameter Entry
+
+Provider Type: Types supported by URouters
+API Key: Obtained from URouters
+API Address: URouters site address (e.g., `https://<your-newapi-domain>/v1`)
+
+Please use your self-deployed URouters, or ensure that the service provider offers URouters services with legitimate upstream authorization and compliance obligations. Do not connect API addresses or keys from unknown sources to a production environment.
+
+### Configuration Steps
+
+1.  **Copy API key in URouters**
+    ![Copy API Key](/apps-assets/aionui/copy_apikey.webp)
+
+2.  **Open AionUi Settings**
+    - Go to the settings page in AionUi
+    - Find the Model Configuration Tab
+    - Click "Add Model"
+    ![Open Settings](/apps-assets/aionui/add-model-1.webp)
+
+3.  **Add New Provider**
+    - Click "Add Model"
+    - Select URouters
+    ![Add URouters Provider](/apps-assets/aionui/newapi_provider.webp)
+
+4.  **Configure API Information**
+    - API Address: Enter your URouters site address (format: `https://<your-newapi-domain>/v1`)
+    - API Key: Paste the API Key copied from the URouters console
+
+5.  **Add Model**
+    - Select the model to add from the dropdown
+    - The model name should match the model name configured in URouters
+    - Select the appropriate request protocol
+
+6.  **Start Using**
+    - Return to the chat page
+    - Select the configured URouters model to start a conversation
+
+## Related Links
+
+- [GitHub Repository](https://github.com/iOfficeAI/AionUi)
+- [Complete Usage Guide](https://github.com/iOfficeAI/AionUi#-detailed-usage-guide)
+- [FAQ Frequently Asked Questions](https://github.com/iOfficeAI/AionUi#-support--help)

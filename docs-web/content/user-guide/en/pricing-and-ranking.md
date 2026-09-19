@@ -1,0 +1,37 @@
+# Model Marketplace and Leaderboard
+
+## Model Marketplace
+
+* Click "Model Marketplace" in the top right corner or visit `/pricing` to enter the Model Marketplace. The page displays prices publicly available to users on the platform, which may not be the same as the original prices from upstream service providers.
+* The Model Marketplace is used to browse AI models enabled on the platform, compare providers, billing prices, performance, and operational status of different models, helping users choose models suitable for their business scenarios.
+
+1. **Model Search**: Supports quickly finding target models based on model name, provider, endpoint, or tags.
+2. **Model Filtering**: Supports filtering models by conditions such as Group, provider, model type, and tags, and can also reset all filter conditions.
+3. **Price Viewing**: Displays input, output, and cache prices of models, and indicates billing methods such as pay-as-you-go.
+4. **Pricing Toggle**: Supports switching between standard prices and top-up prices, and allows viewing prices per 1M Tokens or per 1K Tokens.
+5. **Model Sorting**: Supports adjusting the display order of models based on conditions such as model name.
+6. **Display Mode**: Supports switching between grid view and list view.
+7. **Performance Information**: Displays model latency, throughput, and current operational status, facilitating evaluation of model availability and responsiveness.
+8. **Model Details**: Click "Details" to view the model's complete introduction, capabilities, and related configuration information.
+9. **Copy Model Name**: Click the copy button to quickly copy the model name, convenient for use in API calls or system configurations.
+
+<img alt="模型广场页" src="01-model-marketplace.webp" />
+
+## Leaderboard
+
+* Click "Leaderboard" in the top right corner or visit `/rankings` to enter the Leaderboard.
+* The Leaderboard is used to view usage rankings and trends of platform models and providers, with data updated in real-time based on Token usage.
+
+1. **Time Range Toggle**: Supports viewing ranking data for different time ranges by Today, This Week, This Month, and This Year.
+2. **Popular Models**: Displays daily Token usage for each model via charts, facilitating comparison of model popularity.
+3. **LLM Leaderboard**: Displays the most popular models on the platform and their rankings based on Token usage.
+4. **Market Share**: Displays the proportion of Token usage for different model providers and daily changes.
+5. **Model Provider Ranking**: Ranks model providers based on total Token usage, facilitating understanding of each provider's usage scale.
+6. **Upward Trend**: Displays models with improving rankings and their rank changes.
+7. **Downward Trend**: Displays models with declining rankings and their rank changes.
+
+<img alt="排行榜页" src="02-leaderboard.webp" />
+
+<Callout type="info">
+  Root (system administrator) can configure the display status and access permissions of "Model Marketplace" and "Leaderboard" in the top navigation.
+</Callout>
