@@ -222,7 +222,8 @@ function folderContainsCurrent(
  */
 const ITEM_CLASS =
   'relative flex flex-row items-center gap-2 rounded-lg p-2 text-start text-fd-muted-foreground ' +
-  'wrap-anywhere [&_svg]:size-4 [&_svg]:shrink-0 ' +
+  'wrap-anywhere cursor-pointer ' +
+  "[&_svg]:size-4 [&_svg]:shrink-0 " +
   "data-[active=true]:bg-fd-primary/10 data-[active=true]:text-fd-primary";
 
 /** Extra marker the layout draws beside a nested active entry. */
