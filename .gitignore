@@ -51,6 +51,7 @@ docs-web/out/
 docs-web/.next/
 docs-web/node_modules/
 docs-web/tsconfig.tsbuildinfo
+docs-web/next-env.d.ts
 
 # Python bytecode (docs-web/scripts)
 __pycache__/
