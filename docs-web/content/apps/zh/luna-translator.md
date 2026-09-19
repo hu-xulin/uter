@@ -1,4 +1,4 @@
-# LunaTranslator
+# LunaTranslator - 开源 GalGame 翻译器
 
 > **聊天设置选项**
 >

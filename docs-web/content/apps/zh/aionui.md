@@ -1,4 +1,4 @@
-# AionUi
+# AionUi - 免费开源的桌面办公Agent
 
 > 🚀 AionUi 是一款免费、本地、开源的Cowork，支持 Gemini CLI、Claude Code、Codex、OpenCode、Qwen Code、Goose CLI、Auggie 等多种 AI 代理。它提供了完整的 GUI 界面和 WebUI 远程访问功能，是 Cowork 的开源替代方案。
 

@@ -1,4 +1,4 @@
-# FluentRead
+# 流畅阅读 (FluentRead) - 开源翻译插件
 
 > **聊天设置选项**
 >

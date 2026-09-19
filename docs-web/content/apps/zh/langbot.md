@@ -1,4 +1,4 @@
-# LangBot
+# LangBot - 即时通信机器人开发平台
 
 > LangBot
 >   是一个开源的即时通信机器人开发平台，支持多种即时通信平台，如飞书、钉钉、微信、QQ、Telegram、Discord、Slack

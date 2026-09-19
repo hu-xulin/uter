@@ -396,9 +396,9 @@
 |---|---|
 | 个人信息保护负责人 | privacy@urouters.com |
 | 个人信息权利行使与投诉 | privacy@urouters.com |
-| 服务与技术支持 | support@urouters.com |
+| 服务与技术支持 | tech@urouters.com |
 | 滥用与违规举报 | abuse@urouters.com |
-| 商务与合同 | sales@urouters.com |
+| 商务与合同 | bd@urouters.com |
 | 通信地址 | 中国广东省深圳市 ▢▢▢▢▢▢（待补全） |
 
 我们将在收到您的问题或投诉后 **15 个工作日**内予以答复。

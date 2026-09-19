@@ -563,9 +563,9 @@ If any provision of this Agreement is deemed invalid or unenforceable, it shall 
 
 16.3 Notices you send to us should be sent to:
 
-- Service and technical support: support@urouters.com
+- Service and technical support: tech@urouters.com
 - Legal and compliance matters: legal@urouters.com
-- Business and contract matters: sales@urouters.com
+- Business and contract matters: bd@urouters.com
 - Abuse reporting: abuse@urouters.com
 
 16.4 For notices concerning service termination, account freezing or material clause changes, we will use two or more means of service simultaneously.

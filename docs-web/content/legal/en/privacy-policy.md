@@ -396,9 +396,9 @@ The output of large language models is probabilistic and non-deterministic, and 
 |---|---|
 | Personal Information Protection Officer | privacy@urouters.com |
 | Exercise of Personal Information Rights and Complaints | privacy@urouters.com |
-| Service and Technical Support | support@urouters.com |
+| Service and Technical Support | tech@urouters.com |
 | Abuse and Violation Reporting | abuse@urouters.com |
-| Business and Contracts | sales@urouters.com |
+| Business and Contracts | bd@urouters.com |
 | Mailing Address | Shenzhen, Guangdong Province, the People's Republic of China ▢▢▢▢▢▢ (to be completed) |
 
 We will respond within **15 business days** of receiving your question or complaint.

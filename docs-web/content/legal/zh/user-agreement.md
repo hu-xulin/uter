@@ -563,9 +563,9 @@ SLA 未达标时，我们将以**服务抵扣券**形式补偿，补偿上限为
 
 16.3 您向我们发出的通知，应发送至：
 
-- 服务与技术支持：support@urouters.com
+- 服务与技术支持：tech@urouters.com
 - 法务与合规事务：legal@urouters.com
-- 商务与合同事务：sales@urouters.com
+- 商务与合同事务：bd@urouters.com
 - 滥用举报：abuse@urouters.com
 
 16.4 涉及服务终止、账户冻结、重大条款变更的通知，我们将同时采用两种以上方式送达。

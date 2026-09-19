@@ -1,4 +1,4 @@
-# OpenClaw
+# OpenClaw - 自托管 AI 智能助手平台
 
 > **项目介绍**
 >

@@ -18,6 +18,8 @@ import sys
 from collections import defaultdict
 from pathlib import Path
 
+from PIL import Image
+
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from blur_brand import blur_boxes  # noqa: E402
@@ -28,9 +30,20 @@ def scrub_file(path: Path, max_rounds: int = 4) -> int:
     """Blur all brand text in one image. Returns rounds of blurring applied."""
     for round_index in range(max_rounds):
         boxes = [box for _, box in hits(path)]
+        # A hit far larger than the words it names is an OCR misread;
+        # blurring it would erase a whole region of content for nothing.
+        with Image.open(path) as image:
+            limit_w, limit_h = image.width * 0.3, image.height * 0.2
+        boxes = [
+            box
+            for box in boxes
+            if box[2] - box[0] <= limit_w and box[3] - box[1] <= limit_h
+        ]
         if not boxes:
             return round_index
-        blur_boxes(path, boxes)
+        # Each hit on its own: merging chains every word along a toolbar
+        # row into one strip and erases the row instead of the brand.
+        blur_boxes(path, boxes, pad=6, merge=False)
     return max_rounds
 
 
