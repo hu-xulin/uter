@@ -8,8 +8,8 @@ import (
 	"testing"
 	"time"
 
-	relaycommon "github.com/QuantumNous/u-routers/relay/common"
-	"github.com/QuantumNous/u-routers/setting/operation_setting"
+	relaycommon "github.com/QuantumNous/uter/relay/common"
+	"github.com/QuantumNous/uter/setting/operation_setting"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/require"
 )

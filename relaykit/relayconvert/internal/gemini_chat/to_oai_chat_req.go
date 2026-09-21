@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/QuantumNous/u-routers/relaykit/dto"
-	"github.com/QuantumNous/u-routers/relaykit/relayconvert/convmeta"
-	"github.com/QuantumNous/u-routers/relaykit/relayconvert/internal/jsonutil"
-	kitutil "github.com/QuantumNous/u-routers/relaykit/relayconvert/kitutil"
-	"github.com/QuantumNous/u-routers/relaykit/relayconvert/reasoning"
+	"github.com/QuantumNous/uter/relaykit/dto"
+	"github.com/QuantumNous/uter/relaykit/relayconvert/convmeta"
+	"github.com/QuantumNous/uter/relaykit/relayconvert/internal/jsonutil"
+	kitutil "github.com/QuantumNous/uter/relaykit/relayconvert/kitutil"
+	"github.com/QuantumNous/uter/relaykit/relayconvert/reasoning"
 )
 
 func GeminiGenerateContentRequestToOpenAIChat(geminiRequest *dto.GeminiChatRequest, info convmeta.Meta) (*dto.GeneralOpenAIRequest, error) {

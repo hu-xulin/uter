@@ -3,8 +3,8 @@ package controller
 import (
 	"net/http"
 
-	"github.com/QuantumNous/u-routers/setting/billing_setting"
-	"github.com/QuantumNous/u-routers/setting/ratio_setting"
+	"github.com/QuantumNous/uter/setting/billing_setting"
+	"github.com/QuantumNous/uter/setting/ratio_setting"
 
 	"github.com/gin-gonic/gin"
 )

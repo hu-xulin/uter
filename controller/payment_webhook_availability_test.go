@@ -3,8 +3,8 @@ package controller
 import (
 	"testing"
 
-	"github.com/QuantumNous/u-routers/setting"
-	"github.com/QuantumNous/u-routers/setting/operation_setting"
+	"github.com/QuantumNous/uter/setting"
+	"github.com/QuantumNous/uter/setting/operation_setting"
 	"github.com/stretchr/testify/require"
 )
 

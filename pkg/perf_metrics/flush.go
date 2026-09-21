@@ -5,9 +5,9 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/QuantumNous/u-routers/common"
-	"github.com/QuantumNous/u-routers/model"
-	"github.com/QuantumNous/u-routers/setting/perf_metrics_setting"
+	"github.com/QuantumNous/uter/common"
+	"github.com/QuantumNous/uter/model"
+	"github.com/QuantumNous/uter/setting/perf_metrics_setting"
 )
 
 func flushLoop() {

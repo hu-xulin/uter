@@ -7,13 +7,13 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/QuantumNous/u-routers/common"
-	"github.com/QuantumNous/u-routers/pkg/billingexpr"
-	"github.com/QuantumNous/u-routers/pkg/jsplugin"
-	relaycommon "github.com/QuantumNous/u-routers/relay/common"
-	"github.com/QuantumNous/u-routers/relaykit/dto"
-	"github.com/QuantumNous/u-routers/setting/config"
-	"github.com/QuantumNous/u-routers/setting/ratio_setting"
+	"github.com/QuantumNous/uter/common"
+	"github.com/QuantumNous/uter/pkg/billingexpr"
+	"github.com/QuantumNous/uter/pkg/jsplugin"
+	relaycommon "github.com/QuantumNous/uter/relay/common"
+	"github.com/QuantumNous/uter/relaykit/dto"
+	"github.com/QuantumNous/uter/setting/config"
+	"github.com/QuantumNous/uter/setting/ratio_setting"
 	"github.com/samber/lo"
 )
 

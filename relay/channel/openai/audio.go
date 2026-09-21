@@ -7,14 +7,14 @@ import (
 	"math"
 	"net/http"
 
-	"github.com/QuantumNous/u-routers/common"
-	"github.com/QuantumNous/u-routers/constant"
-	"github.com/QuantumNous/u-routers/logger"
-	relaycommon "github.com/QuantumNous/u-routers/relay/common"
-	"github.com/QuantumNous/u-routers/relay/helper"
-	"github.com/QuantumNous/u-routers/relaykit/dto"
-	"github.com/QuantumNous/u-routers/relaykit/types"
-	"github.com/QuantumNous/u-routers/service"
+	"github.com/QuantumNous/uter/common"
+	"github.com/QuantumNous/uter/constant"
+	"github.com/QuantumNous/uter/logger"
+	relaycommon "github.com/QuantumNous/uter/relay/common"
+	"github.com/QuantumNous/uter/relay/helper"
+	"github.com/QuantumNous/uter/relaykit/dto"
+	"github.com/QuantumNous/uter/relaykit/types"
+	"github.com/QuantumNous/uter/service"
 	"github.com/gin-gonic/gin"
 )
 
@@ -115,7 +115,7 @@ func OpenaiTTSHandler(c *gin.Context, resp *http.Response, info *relaycommon.Rel
 	return usage
 }
 
-func OpenaiSTTHandler(c *gin.Context, resp *http.Response, info *relaycommon.RelayInfo, responseFormat string) (*types.URouterError, *dto.Usage) {
+func OpenaiSTTHandler(c *gin.Context, resp *http.Response, info *relaycommon.RelayInfo, responseFormat string) (*types.UterError, *dto.Usage) {
 	defer service.CloseResponseBodyGracefully(resp)
 
 	responseBody, err := io.ReadAll(resp.Body)

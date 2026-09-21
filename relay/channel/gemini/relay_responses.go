@@ -6,19 +6,19 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/QuantumNous/u-routers/common"
-	"github.com/QuantumNous/u-routers/constant"
-	"github.com/QuantumNous/u-routers/logger"
-	relaycommon "github.com/QuantumNous/u-routers/relay/common"
-	"github.com/QuantumNous/u-routers/relay/helper"
-	"github.com/QuantumNous/u-routers/relaykit/dto"
-	"github.com/QuantumNous/u-routers/relaykit/relayconvert"
-	"github.com/QuantumNous/u-routers/relaykit/types"
-	"github.com/QuantumNous/u-routers/service"
+	"github.com/QuantumNous/uter/common"
+	"github.com/QuantumNous/uter/constant"
+	"github.com/QuantumNous/uter/logger"
+	relaycommon "github.com/QuantumNous/uter/relay/common"
+	"github.com/QuantumNous/uter/relay/helper"
+	"github.com/QuantumNous/uter/relaykit/dto"
+	"github.com/QuantumNous/uter/relaykit/relayconvert"
+	"github.com/QuantumNous/uter/relaykit/types"
+	"github.com/QuantumNous/uter/service"
 	"github.com/gin-gonic/gin"
 )
 
-func GeminiResponsesHandler(c *gin.Context, info *relaycommon.RelayInfo, resp *http.Response) (*dto.Usage, *types.URouterError) {
+func GeminiResponsesHandler(c *gin.Context, info *relaycommon.RelayInfo, resp *http.Response) (*dto.Usage, *types.UterError) {
 	defer service.CloseResponseBodyGracefully(resp)
 
 	responseBody, err := io.ReadAll(resp.Body)
@@ -75,7 +75,7 @@ func GeminiResponsesHandler(c *gin.Context, info *relaycommon.RelayInfo, resp *h
 	return &usage, nil
 }
 
-func GeminiResponsesStreamHandler(c *gin.Context, info *relaycommon.RelayInfo, resp *http.Response) (*dto.Usage, *types.URouterError) {
+func GeminiResponsesStreamHandler(c *gin.Context, info *relaycommon.RelayInfo, resp *http.Response) (*dto.Usage, *types.UterError) {
 	responseID := helper.GetResponseID(c)
 	created := common.GetTimestamp()
 	state, err := relayconvert.NewResponseStreamState(types.RelayFormatGemini, types.RelayFormatOpenAIResponses, relayconvert.ResponseStreamOptions{
@@ -88,7 +88,7 @@ func GeminiResponsesStreamHandler(c *gin.Context, info *relaycommon.RelayInfo, r
 		return nil, types.NewOpenAIError(err, types.ErrorCodeBadResponse, http.StatusInternalServerError)
 	}
 	hostedBridge := relayconvert.NewGeminiHostedStreamBridge()
-	var streamErr *types.URouterError
+	var streamErr *types.UterError
 
 	sendEvent := func(event relayconvert.ChatToResponsesStreamEvent) bool {
 		data, err := common.Marshal(event.Payload)

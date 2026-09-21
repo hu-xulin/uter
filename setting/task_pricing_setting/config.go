@@ -3,7 +3,7 @@ package task_pricing_setting
 import (
 	"strings"
 
-	"github.com/QuantumNous/u-routers/setting/config"
+	"github.com/QuantumNous/uter/setting/config"
 	"github.com/samber/lo"
 )
 

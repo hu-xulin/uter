@@ -1,6 +1,6 @@
 package model_setting
 
-import "github.com/QuantumNous/u-routers/setting/config"
+import "github.com/QuantumNous/uter/setting/config"
 
 // GrokSettings defines Grok model configuration.
 type GrokSettings struct {

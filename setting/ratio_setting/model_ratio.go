@@ -4,10 +4,10 @@ import (
 	"maps"
 	"strings"
 
-	"github.com/QuantumNous/u-routers/common"
-	"github.com/QuantumNous/u-routers/setting/operation_setting"
-	hostreasoning "github.com/QuantumNous/u-routers/setting/reasoning"
-	"github.com/QuantumNous/u-routers/types"
+	"github.com/QuantumNous/uter/common"
+	"github.com/QuantumNous/uter/setting/operation_setting"
+	hostreasoning "github.com/QuantumNous/uter/setting/reasoning"
+	"github.com/QuantumNous/uter/types"
 )
 
 // from songquanpeng/one-api

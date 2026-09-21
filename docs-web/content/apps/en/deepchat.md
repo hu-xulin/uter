@@ -2,7 +2,7 @@
 
 > **Chat Settings Options**
 >
-> In the URouters console, go to System Settings -> Chat Settings and add the
+> In the Uter console, go to System Settings -> Chat Settings and add the
 >   following shortcut option. It lets users fill DeepChat from the token
 >   management page with one click:
 
@@ -19,11 +19,11 @@
 - GitHub Repository: [https://github.com/ThinkInAIXYZ/deepchat](https://github.com/ThinkInAIXYZ/deepchat)
 - Download Address: [https://deepchat.thinkinai.xyz/#/download](https://deepchat.thinkinai.xyz/#/download)
 
-## URouters Integration Method
+## Uter Integration Method
 
 ### Method 1: One-Click Import
 
-1. In the URouters console sidebar, open **Token Management** and find the token you want to use
+1. In the Uter console sidebar, open **Token Management** and find the token you want to use
 
 2. Select **DeepChat** from the token actions
 
@@ -33,18 +33,18 @@
 4. Confirm the configuration in DeepChat's Provider import preview
    ![Confirm DeepChat Configuration](/apps-assets/deepchat/4-deepchat-ok.webp)
 
-5. Open the model list and select a URouters model to start using it
+5. Open the model list and select a Uter model to start using it
    ![Open Model List](/apps-assets/deepchat/5-open-models.webp)
 
 ### Method 2: Manual Import
 
-1. Copy the API Key and site address from the URouters console
-   ![URouters Manual Configuration Guide](/apps-assets/deepchat/7-new-api-manual-guidance.webp)
+1. Copy the API Key and site address from the Uter console
+   ![Uter Manual Configuration Guide](/apps-assets/deepchat/7-new-api-manual-guidance.webp)
 
-2. In DeepChat settings, add or edit the URouters Provider, then fill in the API address and API Key
+2. In DeepChat settings, add or edit the Uter Provider, then fill in the API address and API Key
    ![DeepChat Manual Configuration Guide](/apps-assets/deepchat/6-deepchat-manual-guidance.webp)
 
-3. Open the model list and select a URouters model to start using it
+3. Open the model list and select a Uter model to start using it
    ![Open Model List](/apps-assets/deepchat/5-open-models.webp)
 
 ## Related Links

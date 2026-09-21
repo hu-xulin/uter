@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/QuantumNous/u-routers/logger"
-	"github.com/QuantumNous/u-routers/relaykit/types"
+	"github.com/QuantumNous/uter/logger"
+	"github.com/QuantumNous/uter/relaykit/types"
 	"github.com/gin-gonic/gin"
 )
 

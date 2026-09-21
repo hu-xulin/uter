@@ -3,7 +3,7 @@ package reasonmap
 import (
 	"strings"
 
-	"github.com/QuantumNous/u-routers/relaykit/types"
+	"github.com/QuantumNous/uter/relaykit/types"
 )
 
 func ClaudeStopReasonToOpenAIFinishReason(stopReason string) string {

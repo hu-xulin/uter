@@ -3,8 +3,8 @@ package relay
 import (
 	"testing"
 
-	"github.com/QuantumNous/u-routers/constant"
-	pluginruntime "github.com/QuantumNous/u-routers/pkg/jsplugin"
+	"github.com/QuantumNous/uter/constant"
+	pluginruntime "github.com/QuantumNous/uter/pkg/jsplugin"
 	"github.com/stretchr/testify/assert"
 )
 

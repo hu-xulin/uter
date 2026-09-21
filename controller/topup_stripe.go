@@ -10,11 +10,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/QuantumNous/u-routers/common"
-	"github.com/QuantumNous/u-routers/logger"
-	"github.com/QuantumNous/u-routers/model"
-	"github.com/QuantumNous/u-routers/setting"
-	"github.com/QuantumNous/u-routers/setting/operation_setting"
+	"github.com/QuantumNous/uter/common"
+	"github.com/QuantumNous/uter/logger"
+	"github.com/QuantumNous/uter/model"
+	"github.com/QuantumNous/uter/setting"
+	"github.com/QuantumNous/uter/setting/operation_setting"
 
 	"github.com/gin-gonic/gin"
 	"github.com/shopspring/decimal"
@@ -106,7 +106,7 @@ func (*StripeAdaptor) RequestPay(c *gin.Context, req *StripePayRequest) {
 		return
 	}
 
-	reference := fmt.Sprintf("ali-router-ref-%d-%d-%s", user.Id, time.Now().UnixMilli(), randstr.String(4))
+	reference := fmt.Sprintf("uter-ref-%d-%d-%s", user.Id, time.Now().UnixMilli(), randstr.String(4))
 	referenceId := "ref_" + common.Sha1([]byte(reference))
 
 	payLink, err := genStripeLink(referenceId, user.StripeCustomer, user.Email, req.Amount, req.SuccessURL, req.CancelURL)

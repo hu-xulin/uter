@@ -10,12 +10,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/QuantumNous/u-routers/common"
-	"github.com/QuantumNous/u-routers/logger"
-	relaycommon "github.com/QuantumNous/u-routers/relay/common"
-	"github.com/QuantumNous/u-routers/relaykit/dto"
-	"github.com/QuantumNous/u-routers/relaykit/types"
-	"github.com/QuantumNous/u-routers/service"
+	"github.com/QuantumNous/uter/common"
+	"github.com/QuantumNous/uter/logger"
+	relaycommon "github.com/QuantumNous/uter/relay/common"
+	"github.com/QuantumNous/uter/relaykit/dto"
+	"github.com/QuantumNous/uter/relaykit/types"
+	"github.com/QuantumNous/uter/service"
 
 	"github.com/gin-gonic/gin"
 )
@@ -292,7 +292,7 @@ func responseAli2OpenAIImage(c *gin.Context, response *AliResponse, originBody [
 	return &imageResponse
 }
 
-func aliImageHandler(a *Adaptor, c *gin.Context, resp *http.Response, info *relaycommon.RelayInfo) (*types.URouterError, *dto.Usage) {
+func aliImageHandler(a *Adaptor, c *gin.Context, resp *http.Response, info *relaycommon.RelayInfo) (*types.UterError, *dto.Usage) {
 	responseFormat := ""
 	if imageReq, ok := info.Request.(*dto.ImageRequest); ok {
 		responseFormat = imageReq.ResponseFormat

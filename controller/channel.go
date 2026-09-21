@@ -10,17 +10,17 @@ import (
 	"strings"
 	"time"
 
-	"github.com/QuantumNous/u-routers/common"
-	"github.com/QuantumNous/u-routers/constant"
-	"github.com/QuantumNous/u-routers/i18n"
-	"github.com/QuantumNous/u-routers/model"
-	"github.com/QuantumNous/u-routers/pkg/jsplugin"
-	relaychannel "github.com/QuantumNous/u-routers/relay/channel"
-	"github.com/QuantumNous/u-routers/relay/channel/ollama"
-	relaycommon "github.com/QuantumNous/u-routers/relay/common"
-	"github.com/QuantumNous/u-routers/relaykit/dto"
-	"github.com/QuantumNous/u-routers/service"
-	"github.com/QuantumNous/u-routers/service/authz"
+	"github.com/QuantumNous/uter/common"
+	"github.com/QuantumNous/uter/constant"
+	"github.com/QuantumNous/uter/i18n"
+	"github.com/QuantumNous/uter/model"
+	"github.com/QuantumNous/uter/pkg/jsplugin"
+	relaychannel "github.com/QuantumNous/uter/relay/channel"
+	"github.com/QuantumNous/uter/relay/channel/ollama"
+	relaycommon "github.com/QuantumNous/uter/relay/common"
+	"github.com/QuantumNous/uter/relaykit/dto"
+	"github.com/QuantumNous/uter/service"
+	"github.com/QuantumNous/uter/service/authz"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -492,8 +492,8 @@ func validateChannel(channel *model.Channel, isAdd bool) error {
 		}
 	}
 
-	if channel.Type == constant.ChannelTypeURouter && strings.TrimSpace(channel.GetBaseURL()) == "" {
-		return fmt.Errorf("URouters channel base URL cannot be empty")
+	if channel.Type == constant.ChannelTypeUter && strings.TrimSpace(channel.GetBaseURL()) == "" {
+		return fmt.Errorf("Uter channel base URL cannot be empty")
 	}
 
 	// 如果是添加操作，检查 channel 和 key 是否为空

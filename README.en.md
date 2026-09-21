@@ -1,8 +1,8 @@
 <div align="center">
 
-![ali-router](/web/public/logo.png)
+![uter](/web/public/logo.png)
 
-# URouters
+# Uter
 
 🍥 **Next-Generation Large Model Gateway and AI Asset Management System**
 
@@ -14,33 +14,33 @@
 </p>
 
 <p align="center">
-  <a href="https://raw.githubusercontent.com/Calcium-Ion/ali-router/main/LICENSE">
-    <img src="https://img.shields.io/github/license/Calcium-Ion/ali-router?color=brightgreen" alt="license">
+  <a href="https://raw.githubusercontent.com/Calcium-Ion/uter/main/LICENSE">
+    <img src="https://img.shields.io/github/license/Calcium-Ion/uter?color=brightgreen" alt="license">
   </a>
-  <a href="https://github.com/Calcium-Ion/ali-router/releases/latest">
-    <img src="https://img.shields.io/github/v/release/Calcium-Ion/ali-router?color=brightgreen&include_prereleases" alt="release">
+  <a href="https://github.com/Calcium-Ion/uter/releases/latest">
+    <img src="https://img.shields.io/github/v/release/Calcium-Ion/uter?color=brightgreen&include_prereleases" alt="release">
   </a>
-  <a href="https://github.com/users/Calcium-Ion/packages/container/package/ali-router">
+  <a href="https://github.com/users/Calcium-Ion/packages/container/package/uter">
     <img src="https://img.shields.io/badge/docker-ghcr.io-blue" alt="docker">
   </a>
-  <a href="https://hub.docker.com/r/CalciumIon/ali-router">
+  <a href="https://hub.docker.com/r/CalciumIon/uter">
     <img src="https://img.shields.io/badge/docker-dockerHub-blue" alt="docker">
   </a>
-  <a href="https://atomgit.com/QuantumNous/u-routers" target="_blank">
-    <img alt="AtomGit G-Star" src="https://atomgit.com/QuantumNous/u-routers/star/badge.svg"/>
+  <a href="https://atomgit.com/QuantumNous/uter" target="_blank">
+    <img alt="AtomGit G-Star" src="https://atomgit.com/QuantumNous/uter/star/badge.svg"/>
   </a>
 </p>
 
 <p align="center">
   <a href="https://trendshift.io/repositories/20180" target="_blank">
-    <img src="https://trendshift.io/api/badge/repositories/20180" alt="QuantumNous%2Fali-router | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/>
+    <img src="https://trendshift.io/api/badge/repositories/20180" alt="QuantumNous%2Futer | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/>
   </a>
   <br>
-  <a href="https://hellogithub.com/repository/QuantumNous/u-routers" target="_blank">
+  <a href="https://hellogithub.com/repository/QuantumNous/uter" target="_blank">
     <img src="https://api.hellogithub.com/v1/widgets/recommend.svg?rid=539ac4217e69431684ad4a0bab768811&claim_uid=tbFPfKIDHpc4TzR" alt="Featured｜HelloGitHub" style="width: 250px; height: 54px;" width="250" height="54" />
   </a>
-  <a href="https://atomgit.com/QuantumNous/u-routers" target="_blank">
-    <img alt="AtomGit G-Star" src="https://atomgit.com/QuantumNous/u-routers/star/new_badge.svg" width="250" height="55" />
+  <a href="https://atomgit.com/QuantumNous/uter" target="_blank">
+    <img alt="AtomGit G-Star" src="https://atomgit.com/QuantumNous/uter/star/new_badge.svg" width="250" height="55" />
   </a>
 </p>
 
@@ -80,7 +80,7 @@
   <a href="https://bda.pku.edu.cn/" target="_blank">
     <img src="./docs/images/pku.png" alt="Peking University" height="80" />
   </a>
-  <a href="https://www.compshare.cn/?ytag=GPU_yy_gh_URouters" target="_blank">
+  <a href="https://www.compshare.cn/?ytag=GPU_yy_gh_Uter" target="_blank">
     <img src="./docs/images/ucloud.png" alt="UCloud" height="80" />
   </a>
   <a href="https://www.aliyun.com/" target="_blank">
@@ -96,13 +96,13 @@
 ## 🙏 Special Thanks
 
 <p align="center">
-  <a href="https://www.jetbrains.com/?from=ali-router" target="_blank">
+  <a href="https://www.jetbrains.com/?from=uter" target="_blank">
     <img src="https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.png" alt="JetBrains Logo" width="120" />
   </a>
 </p>
 
 <p align="center">
-  <strong>Thanks to <a href="https://www.jetbrains.com/?from=ali-router">JetBrains</a> for providing free open-source development license for this project</strong>
+  <strong>Thanks to <a href="https://www.jetbrains.com/?from=uter">JetBrains</a> for providing free open-source development license for this project</strong>
 </p>
 
 ---
@@ -113,8 +113,8 @@
 
 ```bash
 # Clone the project
-git clone https://github.com/QuantumNous/u-routers.git
-cd ali-router
+git clone https://github.com/QuantumNous/uter.git
+cd uter
 
 # Edit docker-compose.yml configuration
 nano docker-compose.yml
@@ -128,22 +128,22 @@ docker-compose up -d
 
 ```bash
 # Pull the latest image
-docker pull calciumion/ali-router:latest
+docker pull calciumion/uter:latest
 
 # Using SQLite (default)
-docker run --name ali-router -d --restart always \
+docker run --name uter -d --restart always \
   -p 3000:3000 \
   -e TZ=Asia/Shanghai \
   -v ./data:/data \
-  calciumion/ali-router:latest
+  calciumion/uter:latest
 
 # Using MySQL
-docker run --name ali-router -d --restart always \
+docker run --name uter -d --restart always \
   -p 3000:3000 \
   -e SQL_DSN="root:123456@tcp(localhost:3306)/oneapi" \
   -e TZ=Asia/Shanghai \
   -v ./data:/data \
-  calciumion/ali-router:latest
+  calciumion/uter:latest
 ```
 
 > **💡 Tip:** `-v ./data:/data` will save data in the `data` folder of the current directory, you can also change it to an absolute path like `-v /your/custom/path:/data`
@@ -157,7 +157,7 @@ docker run --name ali-router -d --restart always \
 > [!WARNING]
 > When operating this project as a public generative AI service or API resale service, users should first complete all required filing, licensing, content safety, real-name verification, log retention, tax, payment, and upstream authorization obligations.
 
-📖 For more deployment methods, please refer to [Deployment Guide](https://URouters.ai/docsen/docs/installation)
+📖 For more deployment methods, please refer to [Deployment Guide](https://uter.ai/docsen/docs/installation)
 
 ---
 
@@ -165,7 +165,7 @@ docker run --name ali-router -d --restart always \
 
 <div align="center">
 
-### 📖 [Official Documentation](https://URouters.ai/docsen/docs) | [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/QuantumNous/u-routers)
+### 📖 [Official Documentation](https://uter.ai/docsen/docs) | [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/QuantumNous/uter)
 
 </div>
 
@@ -173,17 +173,17 @@ docker run --name ali-router -d --restart always \
 
 | Category | Link |
 |------|------|
-| 🚀 Deployment Guide | [Installation Documentation](https://URouters.ai/docsen/docs/installation) |
-| ⚙️ Environment Configuration | [Environment Variables](https://URouters.ai/docsen/docs/installation/config-maintenance/environment-variables) |
-| 📡 API Documentation | [API Documentation](https://URouters.ai/docsen/docs/api) |
-| ❓ FAQ | [FAQ](https://URouters.ai/docsen/docs/support/faq) |
-| 💬 Community Interaction | [Communication Channels](https://URouters.ai/docsen/docs/support/community-interaction) |
+| 🚀 Deployment Guide | [Installation Documentation](https://uter.ai/docsen/docs/installation) |
+| ⚙️ Environment Configuration | [Environment Variables](https://uter.ai/docsen/docs/installation/config-maintenance/environment-variables) |
+| 📡 API Documentation | [API Documentation](https://uter.ai/docsen/docs/api) |
+| ❓ FAQ | [FAQ](https://uter.ai/docsen/docs/support/faq) |
+| 💬 Community Interaction | [Communication Channels](https://uter.ai/docsen/docs/support/community-interaction) |
 
 ---
 
 ## ✨ Key Features
 
-> For detailed features, please refer to [Features Introduction](https://URouters.ai/docsen/docs/guide/wiki/basic-concepts/features-introduction)
+> For detailed features, please refer to [Features Introduction](https://uter.ai/docsen/docs/guide/wiki/basic-concepts/features-introduction)
 
 ### 🎨 Core Functions
 
@@ -212,11 +212,11 @@ docker run --name ali-router -d --restart always \
 ### 🚀 Advanced Features
 
 **API Format Support:**
-- ⚡ [OpenAI Responses](https://URouters.ai/docsen/docs/api/ai-model/chat/openai/create-response)
-- ⚡ [OpenAI Realtime API](https://URouters.ai/docsen/docs/api/ai-model/realtime/create-realtime-session) (including Azure)
-- ⚡ [Claude Messages](https://URouters.ai/docsen/docs/api/ai-model/chat/create-message)
-- ⚡ [Google Gemini](https://doc.URouters.ai/en/api/google-gemini-chat)
-- 🔄 [Rerank Models](https://URouters.ai/docsen/docs/api/ai-model/rerank/create-rerank) (Cohere, Jina)
+- ⚡ [OpenAI Responses](https://uter.ai/docsen/docs/api/ai-model/chat/openai/create-response)
+- ⚡ [OpenAI Realtime API](https://uter.ai/docsen/docs/api/ai-model/realtime/create-realtime-session) (including Azure)
+- ⚡ [Claude Messages](https://uter.ai/docsen/docs/api/ai-model/chat/create-message)
+- ⚡ [Google Gemini](https://doc.Uter.ai/en/api/google-gemini-chat)
+- 🔄 [Rerank Models](https://uter.ai/docsen/docs/api/ai-model/rerank/create-rerank) (Cohere, Jina)
 
 **Intelligent Routing:**
 - ⚖️ Channel weighted random
@@ -259,16 +259,16 @@ docker run --name ali-router -d --restart always \
 
 ## 🤖 Model Support
 
-> For details, please refer to [API Documentation - Gateway Interface](https://URouters.ai/docsen/docs/api)
+> For details, please refer to [API Documentation - Gateway Interface](https://uter.ai/docsen/docs/api)
 
 | Model Type | Description | Documentation |
 |---------|------|------|
 | 🤖 OpenAI GPTs | gpt-4-gizmo-* series | - |
-| 🎨 Midjourney-Proxy | [Midjourney-Proxy(Plus)](https://github.com/novicezk/midjourney-proxy) | [Documentation](https://doc.URouters.ai/en/api/midjourney-proxy-image) |
-| 🎵 Suno-API | [Suno API](https://github.com/Suno-API/Suno-API) | [Documentation](https://doc.URouters.ai/en/api/suno-music) |
-| 🔄 Rerank | Cohere, Jina | [Documentation](https://URouters.ai/docsen/docs/api/ai-model/rerank/create-rerank) |
-| 💬 Claude | Messages format | [Documentation](https://URouters.ai/docsen/docs/api/ai-model/chat/create-message) |
-| 🌐 Gemini | Google Gemini format | [Documentation](https://doc.URouters.ai/en/api/google-gemini-chat) |
+| 🎨 Midjourney-Proxy | [Midjourney-Proxy(Plus)](https://github.com/novicezk/midjourney-proxy) | [Documentation](https://doc.Uter.ai/en/api/midjourney-proxy-image) |
+| 🎵 Suno-API | [Suno API](https://github.com/Suno-API/Suno-API) | [Documentation](https://doc.Uter.ai/en/api/suno-music) |
+| 🔄 Rerank | Cohere, Jina | [Documentation](https://uter.ai/docsen/docs/api/ai-model/rerank/create-rerank) |
+| 💬 Claude | Messages format | [Documentation](https://uter.ai/docsen/docs/api/ai-model/chat/create-message) |
+| 🌐 Gemini | Google Gemini format | [Documentation](https://doc.Uter.ai/en/api/google-gemini-chat) |
 | 🔧 Dify | ChatFlow mode | - |
 | 🎯 Custom upstream | Supports configuring legally authorized upstream endpoints | - |
 
@@ -277,16 +277,16 @@ docker run --name ali-router -d --restart always \
 <details>
 <summary>View complete interface list</summary>
 
-- [Chat Interface (Chat Completions)](https://URouters.ai/docsen/docs/api/ai-model/chat/openai/create-chat-completion)
-- [Response Interface (Responses)](https://URouters.ai/docsen/docs/api/ai-model/chat/openai/create-response)
-- [Image Interface (Image)](https://URouters.ai/docsen/docs/api/ai-model/images/openai/v1-images-generations--post)
-- [Audio Interface (Audio)](https://URouters.ai/docsen/docs/api/ai-model/audio/openai/create-transcription)
-- [Video Interface (Video)](https://URouters.ai/docsen/docs/api/ai-model/videos/sora/createvideo)
-- [Embedding Interface (Embeddings)](https://URouters.ai/docsen/docs/api/ai-model/embeddings/create-embedding)
-- [Rerank Interface (Rerank)](https://URouters.ai/docsen/docs/api/ai-model/rerank/create-rerank)
-- [Realtime Conversation (Realtime)](https://URouters.ai/docsen/docs/api/ai-model/realtime/create-realtime-session)
-- [Claude Chat](https://URouters.ai/docsen/docs/api/ai-model/chat/create-message)
-- [Google Gemini Chat](https://doc.URouters.ai/en/api/google-gemini-chat)
+- [Chat Interface (Chat Completions)](https://uter.ai/docsen/docs/api/ai-model/chat/openai/create-chat-completion)
+- [Response Interface (Responses)](https://uter.ai/docsen/docs/api/ai-model/chat/openai/create-response)
+- [Image Interface (Image)](https://uter.ai/docsen/docs/api/ai-model/images/openai/v1-images-generations--post)
+- [Audio Interface (Audio)](https://uter.ai/docsen/docs/api/ai-model/audio/openai/create-transcription)
+- [Video Interface (Video)](https://uter.ai/docsen/docs/api/ai-model/videos/sora/createvideo)
+- [Embedding Interface (Embeddings)](https://uter.ai/docsen/docs/api/ai-model/embeddings/create-embedding)
+- [Rerank Interface (Rerank)](https://uter.ai/docsen/docs/api/ai-model/rerank/create-rerank)
+- [Realtime Conversation (Realtime)](https://uter.ai/docsen/docs/api/ai-model/realtime/create-realtime-session)
+- [Claude Chat](https://uter.ai/docsen/docs/api/ai-model/chat/create-message)
+- [Google Gemini Chat](https://doc.Uter.ai/en/api/google-gemini-chat)
 
 </details>
 
@@ -295,7 +295,7 @@ docker run --name ali-router -d --restart always \
 ## 🚢 Deployment
 
 > [!TIP]
-> **Latest Docker image:** `calciumion/ali-router:latest`
+> **Latest Docker image:** `calciumion/uter:latest`
 
 ### 📋 Deployment Requirements
 
@@ -331,14 +331,14 @@ docker run --name ali-router -d --restart always \
 | `AZURE_DEFAULT_API_VERSION` | Azure API version | `2025-04-01-preview` |
 | `ERROR_LOG_ENABLED` | Error log switch | `false` |
 | `PYROSCOPE_URL` | Pyroscope server address | - |
-| `PYROSCOPE_APP_NAME` | Pyroscope application name | `ali-router` |
+| `PYROSCOPE_APP_NAME` | Pyroscope application name | `uter` |
 | `PYROSCOPE_BASIC_AUTH_USER` | Pyroscope basic auth user | - |
 | `PYROSCOPE_BASIC_AUTH_PASSWORD` | Pyroscope basic auth password | - |
 | `PYROSCOPE_MUTEX_RATE` | Pyroscope mutex sampling rate | `5` |
 | `PYROSCOPE_BLOCK_RATE` | Pyroscope block sampling rate | `5` |
-| `HOSTNAME` | Hostname tag for Pyroscope | `ali-router` |
+| `HOSTNAME` | Hostname tag for Pyroscope | `uter` |
 
-📖 **Complete configuration:** [Environment Variables Documentation](https://URouters.ai/docsen/docs/installation/config-maintenance/environment-variables)
+📖 **Complete configuration:** [Environment Variables Documentation](https://uter.ai/docsen/docs/installation/config-maintenance/environment-variables)
 
 </details>
 
@@ -349,8 +349,8 @@ docker run --name ali-router -d --restart always \
 
 ```bash
 # Clone the project
-git clone https://github.com/QuantumNous/u-routers.git
-cd ali-router
+git clone https://github.com/QuantumNous/uter.git
+cd uter
 
 # Edit configuration
 nano docker-compose.yml
@@ -366,21 +366,21 @@ docker-compose up -d
 
 **Using SQLite:**
 ```bash
-docker run --name ali-router -d --restart always \
+docker run --name uter -d --restart always \
   -p 3000:3000 \
   -e TZ=Asia/Shanghai \
   -v ./data:/data \
-  calciumion/ali-router:latest
+  calciumion/uter:latest
 ```
 
 **Using MySQL:**
 ```bash
-docker run --name ali-router -d --restart always \
+docker run --name uter -d --restart always \
   -p 3000:3000 \
   -e SQL_DSN="root:123456@tcp(localhost:3306)/oneapi" \
   -e TZ=Asia/Shanghai \
   -v ./data:/data \
-  calciumion/ali-router:latest
+  calciumion/uter:latest
 ```
 
 > **💡 Path explanation:** 
@@ -441,8 +441,8 @@ See [User authentication and login sessions](./docs/authentication.md) for the t
 
 | Project | Description |
 |------|------|
-| [ali-router-key-tool](https://github.com/Calcium-Ion/ali-router-key-tool) | Key quota query tool |
-| [ali-router-horizon](https://github.com/Calcium-Ion/ali-router-horizon) | URouters high-performance optimized version |
+| [uter-key-tool](https://github.com/Calcium-Ion/uter-key-tool) | Key quota query tool |
+| [uter-horizon](https://github.com/Calcium-Ion/uter-horizon) | Uter high-performance optimized version |
 
 ---
 
@@ -452,10 +452,10 @@ See [User authentication and login sessions](./docs/authentication.md) for the t
 
 | Resource | Link |
 |------|------|
-| 📘 FAQ | [FAQ](https://URouters.ai/docsen/docs/support/faq) |
-| 💬 Community Interaction | [Communication Channels](https://URouters.ai/docsen/docs/support/community-interaction) |
-| 🐛 Issue Feedback | [Issue Feedback](https://URouters.ai/docsen/docs/support/feedback-issues) |
-| 📚 Complete Documentation | [Official Documentation](https://URouters.ai/docsen/docs) |
+| 📘 FAQ | [FAQ](https://uter.ai/docsen/docs/support/faq) |
+| 💬 Community Interaction | [Communication Channels](https://uter.ai/docsen/docs/support/community-interaction) |
+| 🐛 Issue Feedback | [Issue Feedback](https://uter.ai/docsen/docs/support/feedback-issues) |
+| 📚 Complete Documentation | [Official Documentation](https://uter.ai/docsen/docs) |
 
 ### 🤝 Contribution Guide
 
@@ -472,7 +472,7 @@ Welcome all forms of contribution!
 
 <div align="center">
 
-[![Star History Chart](https://api.star-history.com/svg?repos=Calcium-Ion/ali-router&type=Date)](https://star-history.com/#Calcium-Ion/ali-router&Date)
+[![Star History Chart](https://api.star-history.com/svg?repos=Calcium-Ion/uter&type=Date)](https://star-history.com/#Calcium-Ion/uter&Date)
 
 </div>
 
@@ -480,11 +480,11 @@ Welcome all forms of contribution!
 
 <div align="center">
 
-### 💖 Thank you for using URouters
+### 💖 Thank you for using Uter
 
 If this project is helpful to you, welcome to give us a ⭐️ Star！
 
-**[Official Documentation](https://URouters.ai/docsen/docs)** • **[Issue Feedback](https://github.com/Calcium-Ion/ali-router/issues)** • **[Latest Release](https://github.com/Calcium-Ion/ali-router/releases)**
+**[Official Documentation](https://uter.ai/docsen/docs)** • **[Issue Feedback](https://github.com/Calcium-Ion/uter/issues)** • **[Latest Release](https://github.com/Calcium-Ion/uter/releases)**
 
 <sub>Built with ❤️ by QuantumNous</sub>
 

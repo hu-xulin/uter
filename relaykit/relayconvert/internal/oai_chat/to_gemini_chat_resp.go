@@ -5,9 +5,9 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/QuantumNous/u-routers/relaykit/dto"
-	"github.com/QuantumNous/u-routers/relaykit/relayconvert/convmeta"
-	kitutil "github.com/QuantumNous/u-routers/relaykit/relayconvert/kitutil"
+	"github.com/QuantumNous/uter/relaykit/dto"
+	"github.com/QuantumNous/uter/relaykit/relayconvert/convmeta"
+	kitutil "github.com/QuantumNous/uter/relaykit/relayconvert/kitutil"
 )
 
 type ChatToGeminiStreamState struct {

@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"html"
 
-	"github.com/QuantumNous/u-routers/common"
-	"github.com/QuantumNous/u-routers/model"
-	"github.com/QuantumNous/u-routers/oauth"
-	"github.com/QuantumNous/u-routers/setting/system_setting"
+	"github.com/QuantumNous/uter/common"
+	"github.com/QuantumNous/uter/model"
+	"github.com/QuantumNous/uter/oauth"
+	"github.com/QuantumNous/uter/setting/system_setting"
 )
 
 func UnbindAccountOAuth(identity AuthIdentity, providerID int) error {

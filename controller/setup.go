@@ -3,10 +3,10 @@ package controller
 import (
 	"time"
 
-	"github.com/QuantumNous/u-routers/common"
-	"github.com/QuantumNous/u-routers/constant"
-	"github.com/QuantumNous/u-routers/model"
-	"github.com/QuantumNous/u-routers/setting/operation_setting"
+	"github.com/QuantumNous/uter/common"
+	"github.com/QuantumNous/uter/constant"
+	"github.com/QuantumNous/uter/model"
+	"github.com/QuantumNous/uter/setting/operation_setting"
 	"github.com/gin-gonic/gin"
 )
 

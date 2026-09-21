@@ -1,5 +1,5 @@
 /**
- * Next.js config for the URouters docs site.
+ * Next.js config for the Uter docs site.
  *
  * URL strategy:
  *  - No `basePath` — the docs site is mounted at the Go backend's root,

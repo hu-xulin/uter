@@ -3,7 +3,7 @@ package middleware
 import (
 	"context"
 
-	"github.com/QuantumNous/u-routers/common"
+	"github.com/QuantumNous/uter/common"
 	"github.com/gin-gonic/gin"
 )
 

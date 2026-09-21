@@ -3,7 +3,7 @@ package zhipu
 import (
 	"time"
 
-	"github.com/QuantumNous/u-routers/relaykit/dto"
+	"github.com/QuantumNous/uter/relaykit/dto"
 )
 
 type ZhipuMessage struct {

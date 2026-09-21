@@ -11,9 +11,9 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/QuantumNous/u-routers/common"
-	kitreasoning "github.com/QuantumNous/u-routers/relaykit/relayconvert/reasoning"
-	"github.com/QuantumNous/u-routers/relaykit/types"
+	"github.com/QuantumNous/uter/common"
+	kitreasoning "github.com/QuantumNous/uter/relaykit/relayconvert/reasoning"
+	"github.com/QuantumNous/uter/relaykit/types"
 	"github.com/samber/lo"
 	"github.com/tidwall/gjson"
 	"github.com/tidwall/sjson"
@@ -102,7 +102,7 @@ func AsParamOverrideReturnError(err error) (*ParamOverrideReturnError, bool) {
 	return nil, false
 }
 
-func URouterErrorFromParamOverride(err *ParamOverrideReturnError) *types.URouterError {
+func UterErrorFromParamOverride(err *ParamOverrideReturnError) *types.UterError {
 	if err == nil {
 		return types.NewError(
 			errors.New("param override return error is nil"),
@@ -131,7 +131,7 @@ func URouterErrorFromParamOverride(err *ParamOverrideReturnError) *types.URouter
 		message = "request blocked by param override"
 	}
 
-	opts := make([]types.URouterErrorOptions, 0, 1)
+	opts := make([]types.UterErrorOptions, 0, 1)
 	if err.SkipRetry {
 		opts = append(opts, types.ErrOptionWithSkipRetry())
 	}

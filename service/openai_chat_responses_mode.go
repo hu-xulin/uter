@@ -4,7 +4,7 @@ import (
 	"regexp"
 	"sync"
 
-	"github.com/QuantumNous/u-routers/setting/model_setting"
+	"github.com/QuantumNous/uter/setting/model_setting"
 )
 
 // Chat→Responses upgrade policy is host routing logic (it decides *whether*

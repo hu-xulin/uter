@@ -1,6 +1,6 @@
 package dto
 
-import "github.com/QuantumNous/u-routers/relaykit/types"
+import "github.com/QuantumNous/uter/relaykit/types"
 
 const (
 	RealtimeEventTypeError              = "error"

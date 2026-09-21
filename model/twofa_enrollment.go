@@ -5,7 +5,7 @@ import (
 	"errors"
 	"time"
 
-	"github.com/QuantumNous/u-routers/common"
+	"github.com/QuantumNous/uter/common"
 	"gorm.io/gorm"
 )
 

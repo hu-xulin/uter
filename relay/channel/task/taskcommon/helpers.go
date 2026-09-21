@@ -4,10 +4,10 @@ import (
 	"encoding/base64"
 	"fmt"
 
-	"github.com/QuantumNous/u-routers/common"
-	"github.com/QuantumNous/u-routers/model"
-	relaycommon "github.com/QuantumNous/u-routers/relay/common"
-	"github.com/QuantumNous/u-routers/setting/system_setting"
+	"github.com/QuantumNous/uter/common"
+	"github.com/QuantumNous/uter/model"
+	relaycommon "github.com/QuantumNous/uter/relay/common"
+	"github.com/QuantumNous/uter/setting/system_setting"
 	"github.com/gin-gonic/gin"
 )
 

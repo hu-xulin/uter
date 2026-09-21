@@ -39,15 +39,15 @@ sudo docker compose up -d
 
 After startup, visit `http://localhost:8082`. Default credentials: `admin` / `admin123`.
 
-## URouters Integration
+## Uter Integration
 
-Memoh supports any OpenAI-compatible model provider, allowing you to use URouters to centrally manage and access various AI model services.
+Memoh supports any OpenAI-compatible model provider, allowing you to use Uter to centrally manage and access various AI model services.
 
 ### Configuration Steps
 
-#### Obtain a URouters API Key
+#### Obtain a Uter API Key
 
-After registering and logging in to URouters, click "Console" in the top navigation bar, then click "Token Management", and click the "Add Token" button to create a new API Key. Select the appropriate permissions and click "Create".
+After registering and logging in to Uter, click "Console" in the top navigation bar, then click "Token Management", and click the "Add Token" button to create a new API Key. Select the appropriate permissions and click "Create".
 
 Once created, click the copy button to copy the generated API Key.
 
@@ -55,14 +55,14 @@ Once created, click the copy button to copy the generated API Key.
 
 #### Add a Model Provider in Memoh
 
-Log in to the Memoh Web dashboard, go to the provider management page, and click URouters.
+Log in to the Memoh Web dashboard, go to the provider management page, and click Uter.
 
 ![switch-to-newapi-provider](/apps-assets/memoh/switch_to_newapi_provider.webp)
 
 Fill in the following information on the configuration page:
 
-- **API Base URL**: Enter the URouters endpoint URL, e.g. `https://api.example.com/v1` (use `http://localhost:3000/v1` for local deployments)
-- **API Key**: Paste the API Key copied from URouters
+- **API Base URL**: Enter the Uter endpoint URL, e.g. `https://api.example.com/v1` (use `http://localhost:3000/v1` for local deployments)
+- **API Key**: Paste the API Key copied from Uter
 
 Click Save to complete the provider configuration.
 
@@ -72,8 +72,8 @@ After configuring the provider, go to the model management page and click auto-i
 
 #### Configure a Model for Your Bot
 
-Go to the bot settings page, find the model configuration section, switch the default chat model to the one added via the URouters provider, and click Save.
+Go to the bot settings page, find the model configuration section, switch the default chat model to the one added via the Uter provider, and click Save.
 
 ![set_chat_model](/apps-assets/memoh/set_chat_model.webp)
 
-You have now successfully configured URouters as the model provider for Memoh. You can chat with AI bots through any of Memoh's channels (Telegram, Discord, Lark, etc.), and all requests will be routed through URouters.
+You have now successfully configured Uter as the model provider for Memoh. You can chat with AI bots through any of Memoh's channels (Telegram, Discord, Lark, etc.), and all requests will be routed through Uter.

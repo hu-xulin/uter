@@ -130,12 +130,12 @@ function ProjectAttribution(props: { currentYear: number; inline?: boolean }) {
     <span className='text-muted-foreground/45'>
       &copy; {props.currentYear}{' '}
       <a
-        href='https://URouters.ai'
+        href='https://uter.ai'
         target='_blank'
         rel='noopener noreferrer'
         className='text-foreground/70 hover:text-foreground font-medium transition-colors'
       >
-        {t('URouters')}
+        {t('Uter')}
       </a>
       . {t(NEW_API_FOOTER_ATTRIBUTION_KEY)}
     </span>
@@ -160,7 +160,7 @@ export function Footer(props: FooterProps) {
   } = useSystemConfig()
 
   const displayLogo = systemLogo || props.logo || DEFAULT_LOGO
-  const displayName = systemName || props.name || 'URouters'
+  const displayName = systemName || props.name || 'Uter'
   const isDemoSiteMode = Boolean(demoSiteEnabled)
   const currentYear = new Date().getFullYear()
 
@@ -171,15 +171,15 @@ export function Footer(props: FooterProps) {
         links: [
           {
             text: t('footer.columns.about.links.aboutProject'),
-            href: 'https://URouters.ai/docswiki/project-introduction/',
+            href: 'https://uter.ai/docswiki/project-introduction/',
           },
           {
             text: t('footer.columns.about.links.contact'),
-            href: 'https://URouters.ai/docssupport/community-interaction/',
+            href: 'https://uter.ai/docssupport/community-interaction/',
           },
           {
             text: t('footer.columns.about.links.features'),
-            href: 'https://URouters.ai/docswiki/features-introduction/',
+            href: 'https://uter.ai/docswiki/features-introduction/',
           },
         ],
       },
@@ -188,15 +188,15 @@ export function Footer(props: FooterProps) {
         links: [
           {
             text: t('footer.columns.docs.links.quickStart'),
-            href: 'https://URouters.ai/docsgetting-started/',
+            href: 'https://uter.ai/docsgetting-started/',
           },
           {
             text: t('footer.columns.docs.links.installation'),
-            href: 'https://URouters.ai/docsinstallation/',
+            href: 'https://uter.ai/docsinstallation/',
           },
           {
             text: t('footer.columns.docs.links.apiDocs'),
-            href: 'https://URouters.ai/docsapi/',
+            href: 'https://uter.ai/docsapi/',
           },
         ],
       },
@@ -205,15 +205,15 @@ export function Footer(props: FooterProps) {
         links: [
           {
             text: t('footer.columns.related.links.oneApi'),
-            href: 'https://URouters.ai',
+            href: 'https://uter.ai',
           },
           {
             text: t('footer.columns.related.links.midjourney'),
-            href: 'https://URouters.ai',
+            href: 'https://uter.ai',
           },
           {
             text: t('footer.columns.related.links.newApiKeyTool'),
-            href: 'https://URouters.ai',
+            href: 'https://uter.ai',
           },
         ],
       },

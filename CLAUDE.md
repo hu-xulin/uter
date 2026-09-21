@@ -1,4 +1,4 @@
-# CLAUDE.md — Project Conventions for ali-router
+# CLAUDE.md — Project Conventions for uter
 
 ## MANDATORY: Read AGENTS.md with the Read tool
 

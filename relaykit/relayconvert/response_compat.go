@@ -3,12 +3,12 @@ package relayconvert
 import (
 	"fmt"
 
-	"github.com/QuantumNous/u-routers/relaykit/dto"
-	"github.com/QuantumNous/u-routers/relaykit/relayconvert/convmeta"
-	claudemessages "github.com/QuantumNous/u-routers/relaykit/relayconvert/internal/claude_messages"
-	geminichat "github.com/QuantumNous/u-routers/relaykit/relayconvert/internal/gemini_chat"
-	oaichat "github.com/QuantumNous/u-routers/relaykit/relayconvert/internal/oai_chat"
-	oairesponses "github.com/QuantumNous/u-routers/relaykit/relayconvert/internal/oai_responses"
+	"github.com/QuantumNous/uter/relaykit/dto"
+	"github.com/QuantumNous/uter/relaykit/relayconvert/convmeta"
+	claudemessages "github.com/QuantumNous/uter/relaykit/relayconvert/internal/claude_messages"
+	geminichat "github.com/QuantumNous/uter/relaykit/relayconvert/internal/gemini_chat"
+	oaichat "github.com/QuantumNous/uter/relaykit/relayconvert/internal/oai_chat"
+	oairesponses "github.com/QuantumNous/uter/relaykit/relayconvert/internal/oai_responses"
 )
 
 type ClaudeResponseInfo = claudemessages.ClaudeResponseInfo

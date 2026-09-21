@@ -260,7 +260,7 @@ def build_markdown(mdx: str, files: dict[int, str], brand: str) -> str:
     return text.strip() + '\n'
 
 
-BRAND = {'zh': '优特斯', 'en': 'URouters'}
+BRAND = {'zh': '优特智能', 'en': 'Uter.ai'}
 
 
 def main() -> None:

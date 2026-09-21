@@ -8,10 +8,10 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/QuantumNous/u-routers/common"
-	"github.com/QuantumNous/u-routers/common/limiter"
-	"github.com/QuantumNous/u-routers/constant"
-	"github.com/QuantumNous/u-routers/setting"
+	"github.com/QuantumNous/uter/common"
+	"github.com/QuantumNous/uter/common/limiter"
+	"github.com/QuantumNous/uter/constant"
+	"github.com/QuantumNous/uter/setting"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis/v8"

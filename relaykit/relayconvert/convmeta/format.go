@@ -1,8 +1,8 @@
 package convmeta
 
 import (
-	"github.com/QuantumNous/u-routers/relaykit/dto"
-	"github.com/QuantumNous/u-routers/relaykit/types"
+	"github.com/QuantumNous/uter/relaykit/dto"
+	"github.com/QuantumNous/uter/relaykit/types"
 )
 
 // GuessRelayFormatFromRequest infers the relay format from a request DTO's

@@ -5,7 +5,7 @@ import (
 	"maps"
 	"slices"
 
-	"github.com/QuantumNous/u-routers/common"
+	"github.com/QuantumNous/uter/common"
 )
 
 const (

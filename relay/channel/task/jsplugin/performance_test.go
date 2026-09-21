@@ -11,10 +11,10 @@ import (
 	"sync/atomic"
 	"testing"
 
-	"github.com/QuantumNous/u-routers/common"
-	pluginruntime "github.com/QuantumNous/u-routers/pkg/jsplugin"
-	"github.com/QuantumNous/u-routers/plugins"
-	relaycommon "github.com/QuantumNous/u-routers/relay/common"
+	"github.com/QuantumNous/uter/common"
+	pluginruntime "github.com/QuantumNous/uter/pkg/jsplugin"
+	"github.com/QuantumNous/uter/plugins"
+	relaycommon "github.com/QuantumNous/uter/relay/common"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/require"
 )

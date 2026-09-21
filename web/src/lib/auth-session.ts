@@ -322,7 +322,7 @@ async function performRefreshWithBrowserLock(
       return runRefresh(refreshEpoch)
     }
     return navigator.locks.request(
-      'ali-router:auth-refresh',
+      'uter:auth-refresh',
       { mode: 'exclusive' },
       () => runRefresh(refreshEpoch)
     )

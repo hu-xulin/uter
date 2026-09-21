@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/QuantumNous/u-routers/common"
-	"github.com/QuantumNous/u-routers/controller"
-	"github.com/QuantumNous/u-routers/middleware"
+	"github.com/QuantumNous/uter/common"
+	"github.com/QuantumNous/uter/controller"
+	"github.com/QuantumNous/uter/middleware"
 	"github.com/gin-contrib/gzip"
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"

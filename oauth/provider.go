@@ -3,7 +3,7 @@ package oauth
 import (
 	"context"
 
-	"github.com/QuantumNous/u-routers/model"
+	"github.com/QuantumNous/uter/model"
 	"github.com/gin-gonic/gin"
 )
 

@@ -4,8 +4,8 @@ import (
 	"errors"
 	"time"
 
-	"github.com/QuantumNous/u-routers/common"
-	"github.com/QuantumNous/u-routers/model"
+	"github.com/QuantumNous/uter/common"
+	"github.com/QuantumNous/uter/model"
 
 	webauthn "github.com/go-webauthn/webauthn/webauthn"
 	"gorm.io/gorm"

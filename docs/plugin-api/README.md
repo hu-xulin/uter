@@ -99,8 +99,8 @@ Keep deterministic cases for every exported hook, its main error branch, batch
 behavior, renderers, usage, and content requests. Run a fixture locally with:
 
 ```sh
-ali-router plugin lint plugin.js
-ali-router plugin test plugin.js --fixture golden.json
+uter plugin lint plugin.js
+uter plugin test plugin.js --fixture golden.json
 ```
 
 Root administrators can open the plugin detail Sandbox tab, choose a hook, and

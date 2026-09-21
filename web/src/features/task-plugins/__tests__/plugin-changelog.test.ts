@@ -93,7 +93,7 @@ describe('changelog path and language resolution', () => {
     expect(
       resolvePluginChangelogUrl(GITHUB_MARKETPLACE_INDEX_URL, plugin, '1.2.0')
     ).toBe(
-      'https://raw.githubusercontent.com/QuantumNous/u-routers-plugins/main/plugins/tasks/demo/1.2.0/CHANGELOG.md'
+      'https://raw.githubusercontent.com/QuantumNous/uter-plugins/main/plugins/tasks/demo/1.2.0/CHANGELOG.md'
     )
     expect(resolvePluginChangelogUrl(indexUrl, plugin, '9.0.0')).toBeNull()
   })
@@ -110,7 +110,7 @@ describe('changelog path and language resolution', () => {
         '1.2.0'
       )
     ).toBe(
-      'https://raw.githubusercontent.com/QuantumNous/u-routers-plugins/main/plugins/tasks/demo/1.2.0/CHANGELOG.md'
+      'https://raw.githubusercontent.com/QuantumNous/uter-plugins/main/plugins/tasks/demo/1.2.0/CHANGELOG.md'
     )
     expect(
       resolvePluginChangelogUrl(

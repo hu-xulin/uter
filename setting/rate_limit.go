@@ -5,7 +5,7 @@ import (
 	"math"
 	"sync"
 
-	"github.com/QuantumNous/u-routers/common"
+	"github.com/QuantumNous/uter/common"
 )
 
 // maxRateLimitDurationSeconds is the largest window the count cap is computed

@@ -1,6 +1,6 @@
 package relayconvert
 
-import relaymedia "github.com/QuantumNous/u-routers/relaykit/relayconvert/internal/media"
+import relaymedia "github.com/QuantumNous/uter/relaykit/relayconvert/internal/media"
 
 type MediaResolver = relaymedia.MediaResolver
 

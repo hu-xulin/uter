@@ -5,12 +5,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/QuantumNous/u-routers/common"
-	"github.com/QuantumNous/u-routers/logger"
-	"github.com/QuantumNous/u-routers/model"
-	relaycommon "github.com/QuantumNous/u-routers/relay/common"
-	"github.com/QuantumNous/u-routers/relaykit/types"
-	"github.com/QuantumNous/u-routers/setting/model_setting"
+	"github.com/QuantumNous/uter/common"
+	"github.com/QuantumNous/uter/logger"
+	"github.com/QuantumNous/uter/model"
+	relaycommon "github.com/QuantumNous/uter/relay/common"
+	"github.com/QuantumNous/uter/relaykit/types"
+	"github.com/QuantumNous/uter/setting/model_setting"
 
 	"github.com/shopspring/decimal"
 
@@ -27,7 +27,7 @@ func IsViolationFeeCode(code types.ErrorCode) bool {
 	return strings.HasPrefix(string(code), ViolationFeeCodePrefix)
 }
 
-func HasCSAMViolationMarker(err *types.URouterError) bool {
+func HasCSAMViolationMarker(err *types.UterError) bool {
 	if err == nil {
 		return false
 	}
@@ -38,7 +38,7 @@ func HasCSAMViolationMarker(err *types.URouterError) bool {
 	return strings.Contains(msg, CSAMViolationMarker) || strings.Contains(err.Error(), ContentViolatesUsageMarker)
 }
 
-func WrapAsViolationFeeGrokCSAM(err *types.URouterError) *types.URouterError {
+func WrapAsViolationFeeGrokCSAM(err *types.UterError) *types.UterError {
 	if err == nil {
 		return nil
 	}
@@ -53,7 +53,7 @@ func WrapAsViolationFeeGrokCSAM(err *types.URouterError) *types.URouterError {
 // - if error.code already has the violation-fee prefix, skip-retry is enabled.
 //
 // It must be called before retry decision logic.
-func NormalizeViolationFeeError(err *types.URouterError) *types.URouterError {
+func NormalizeViolationFeeError(err *types.UterError) *types.UterError {
 	if err == nil {
 		return nil
 	}
@@ -70,7 +70,7 @@ func NormalizeViolationFeeError(err *types.URouterError) *types.URouterError {
 	return err
 }
 
-func shouldChargeViolationFee(err *types.URouterError) bool {
+func shouldChargeViolationFee(err *types.UterError) bool {
 	if err == nil {
 		return false
 	}
@@ -100,7 +100,7 @@ func calcViolationFeeQuota(amount, groupRatio float64) int {
 
 // ChargeViolationFeeIfNeeded charges an additional fee after the normal flow finishes (including refund).
 // It uses Grok fee settings as the fee policy.
-func ChargeViolationFeeIfNeeded(ctx *gin.Context, relayInfo *relaycommon.RelayInfo, apiErr *types.URouterError) bool {
+func ChargeViolationFeeIfNeeded(ctx *gin.Context, relayInfo *relaycommon.RelayInfo, apiErr *types.UterError) bool {
 	if ctx == nil || relayInfo == nil || apiErr == nil {
 		return false
 	}

@@ -1,6 +1,6 @@
 package operation_setting
 
-import "github.com/QuantumNous/u-routers/setting/config"
+import "github.com/QuantumNous/uter/setting/config"
 
 // CheckinSetting 签到功能配置
 type CheckinSetting struct {

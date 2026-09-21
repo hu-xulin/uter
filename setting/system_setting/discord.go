@@ -1,6 +1,6 @@
 package system_setting
 
-import "github.com/QuantumNous/u-routers/setting/config"
+import "github.com/QuantumNous/uter/setting/config"
 
 type DiscordSettings struct {
 	Enabled      bool   `json:"enabled"`

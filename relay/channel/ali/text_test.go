@@ -3,7 +3,7 @@ package ali
 import (
 	"testing"
 
-	"github.com/QuantumNous/u-routers/relaykit/dto"
+	"github.com/QuantumNous/uter/relaykit/dto"
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 )

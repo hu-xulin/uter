@@ -1,7 +1,7 @@
 package dto
 
 import (
-	"github.com/QuantumNous/u-routers/relaykit/types"
+	"github.com/QuantumNous/uter/relaykit/types"
 	"net/http"
 )
 

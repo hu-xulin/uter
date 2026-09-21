@@ -11,14 +11,14 @@ import (
 	"strings"
 	"time"
 
-	"github.com/QuantumNous/u-routers/common"
-	"github.com/QuantumNous/u-routers/constant"
-	"github.com/QuantumNous/u-routers/dto"
-	"github.com/QuantumNous/u-routers/logger"
-	"github.com/QuantumNous/u-routers/model"
-	relaycommon "github.com/QuantumNous/u-routers/relay/common"
-	relayconstant "github.com/QuantumNous/u-routers/relay/constant"
-	"github.com/QuantumNous/u-routers/setting"
+	"github.com/QuantumNous/uter/common"
+	"github.com/QuantumNous/uter/constant"
+	"github.com/QuantumNous/uter/dto"
+	"github.com/QuantumNous/uter/logger"
+	"github.com/QuantumNous/uter/model"
+	relaycommon "github.com/QuantumNous/uter/relay/common"
+	relayconstant "github.com/QuantumNous/uter/relay/constant"
+	"github.com/QuantumNous/uter/setting"
 
 	"github.com/gin-gonic/gin"
 )

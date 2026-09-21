@@ -9,24 +9,24 @@ import (
 	"strings"
 	"time"
 
-	"github.com/QuantumNous/u-routers/common"
-	"github.com/QuantumNous/u-routers/constant"
-	taskdto "github.com/QuantumNous/u-routers/dto"
-	"github.com/QuantumNous/u-routers/logger"
-	"github.com/QuantumNous/u-routers/middleware"
-	"github.com/QuantumNous/u-routers/model"
-	pluginruntime "github.com/QuantumNous/u-routers/pkg/jsplugin"
-	perfmetrics "github.com/QuantumNous/u-routers/pkg/perf_metrics"
-	"github.com/QuantumNous/u-routers/relay"
-	"github.com/QuantumNous/u-routers/relay/channel/task/taskcommon"
-	relaycommon "github.com/QuantumNous/u-routers/relay/common"
-	relayconstant "github.com/QuantumNous/u-routers/relay/constant"
-	"github.com/QuantumNous/u-routers/relay/helper"
-	"github.com/QuantumNous/u-routers/relaykit/dto"
-	"github.com/QuantumNous/u-routers/relaykit/types"
-	"github.com/QuantumNous/u-routers/service"
-	"github.com/QuantumNous/u-routers/setting"
-	"github.com/QuantumNous/u-routers/setting/operation_setting"
+	"github.com/QuantumNous/uter/common"
+	"github.com/QuantumNous/uter/constant"
+	taskdto "github.com/QuantumNous/uter/dto"
+	"github.com/QuantumNous/uter/logger"
+	"github.com/QuantumNous/uter/middleware"
+	"github.com/QuantumNous/uter/model"
+	pluginruntime "github.com/QuantumNous/uter/pkg/jsplugin"
+	perfmetrics "github.com/QuantumNous/uter/pkg/perf_metrics"
+	"github.com/QuantumNous/uter/relay"
+	"github.com/QuantumNous/uter/relay/channel/task/taskcommon"
+	relaycommon "github.com/QuantumNous/uter/relay/common"
+	relayconstant "github.com/QuantumNous/uter/relay/constant"
+	"github.com/QuantumNous/uter/relay/helper"
+	"github.com/QuantumNous/uter/relaykit/dto"
+	"github.com/QuantumNous/uter/relaykit/types"
+	"github.com/QuantumNous/uter/service"
+	"github.com/QuantumNous/uter/setting"
+	"github.com/QuantumNous/uter/setting/operation_setting"
 
 	"github.com/bytedance/gopkg/util/gopool"
 	"github.com/samber/lo"
@@ -35,8 +35,8 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-func relayHandler(c *gin.Context, info *relaycommon.RelayInfo) *types.URouterError {
-	var err *types.URouterError
+func relayHandler(c *gin.Context, info *relaycommon.RelayInfo) *types.UterError {
+	var err *types.UterError
 	switch info.RelayMode {
 	case relayconstant.RelayModeImagesGenerations, relayconstant.RelayModeImagesEdits:
 		err = relay.ImageHelper(c, info)
@@ -60,8 +60,8 @@ func relayHandler(c *gin.Context, info *relaycommon.RelayInfo) *types.URouterErr
 	return err
 }
 
-func geminiRelayHandler(c *gin.Context, info *relaycommon.RelayInfo) *types.URouterError {
-	var err *types.URouterError
+func geminiRelayHandler(c *gin.Context, info *relaycommon.RelayInfo) *types.UterError {
+	var err *types.UterError
 	if strings.Contains(c.Request.URL.Path, "embed") {
 		err = relay.GeminiEmbeddingHandler(c, info)
 	} else {
@@ -77,7 +77,7 @@ func Relay(c *gin.Context, relayFormat types.RelayFormat) {
 	//originalModel := common.GetContextKeyString(c, constant.ContextKeyOriginalModel)
 
 	var (
-		newAPIError *types.URouterError
+		newAPIError *types.UterError
 		ws          *websocket.Conn
 	)
 
@@ -331,7 +331,7 @@ func fastTokenCountMetaForPricing(request dto.Request) *types.TokenCountMeta {
 	return meta
 }
 
-func getChannel(c *gin.Context, info *relaycommon.RelayInfo, retryParam *service.RetryParam) (*model.Channel, *types.URouterError) {
+func getChannel(c *gin.Context, info *relaycommon.RelayInfo, retryParam *service.RetryParam) (*model.Channel, *types.UterError) {
 	if info.ChannelMeta == nil {
 		autoBan := c.GetBool("auto_ban")
 		autoBanInt := 1
@@ -362,7 +362,7 @@ func getChannel(c *gin.Context, info *relaycommon.RelayInfo, retryParam *service
 	return channel, nil
 }
 
-func shouldRetry(c *gin.Context, openaiErr *types.URouterError, retryTimes int) bool {
+func shouldRetry(c *gin.Context, openaiErr *types.UterError, retryTimes int) bool {
 	if openaiErr == nil {
 		return false
 	}
@@ -394,7 +394,7 @@ func shouldRetry(c *gin.Context, openaiErr *types.URouterError, retryTimes int) 
 	return operation_setting.ShouldRetryByStatusCode(code)
 }
 
-func processChannelError(c *gin.Context, channelError types.ChannelError, err *types.URouterError, relayInfo *relaycommon.RelayInfo) {
+func processChannelError(c *gin.Context, channelError types.ChannelError, err *types.UterError, relayInfo *relaycommon.RelayInfo) {
 	logger.LogError(c, fmt.Sprintf("channel error (channel #%d, status code: %d): %s", channelError.ChannelId, err.StatusCode, common.LocalLogPreview(err.Error())))
 	// 不要使用context获取渠道信息，异步处理时可能会出现渠道信息不一致的情况
 	// do not use context to get channel info, there may be inconsistent channel info when processing asynchronously
@@ -641,7 +641,7 @@ func executeTaskSubmissionWith(
 				}
 			}
 		} else {
-			var channelErr *types.URouterError
+			var channelErr *types.UterError
 			channel, channelErr = getChannel(c, relayInfo, retryParam)
 			if channelErr != nil {
 				logger.LogError(c, channelErr.Error())

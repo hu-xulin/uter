@@ -317,10 +317,10 @@ export function indexHasIntegrityHashes(index: MarketplaceIndex): boolean {
 }
 
 export const DEFAULT_MARKETPLACE_INDEX_URL =
-  'https://www.URouters.ai/api/v1/plugins/index.json'
+  'https://www.uter.ai/api/v1/plugins/index.json'
 
 export const GITHUB_MARKETPLACE_INDEX_URL =
-  'https://raw.githubusercontent.com/QuantumNous/u-routers-plugins/main/index.json'
+  'https://raw.githubusercontent.com/QuantumNous/uter-plugins/main/index.json'
 
 /**
  * Both built-in indexes are maintained by the project. Other configured

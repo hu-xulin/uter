@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"time"
 
-	"github.com/QuantumNous/u-routers/relaykit/dto"
+	"github.com/QuantumNous/uter/relaykit/dto"
 )
 
 type BaiduMessage struct {

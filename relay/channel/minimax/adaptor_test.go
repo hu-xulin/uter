@@ -8,9 +8,9 @@ import (
 	"testing"
 	"time"
 
-	relaycommon "github.com/QuantumNous/u-routers/relay/common"
-	relayconstant "github.com/QuantumNous/u-routers/relay/constant"
-	"github.com/QuantumNous/u-routers/relaykit/dto"
+	relaycommon "github.com/QuantumNous/uter/relay/common"
+	relayconstant "github.com/QuantumNous/uter/relay/constant"
+	"github.com/QuantumNous/uter/relaykit/dto"
 
 	"github.com/gin-gonic/gin"
 )

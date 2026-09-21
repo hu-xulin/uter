@@ -49,14 +49,14 @@ const NAV_LINKS_EN = [
 
 const COPY = {
   zh: {
-    brand: 'URouters',
+    brand: 'Uter',
     signIn: '登录',
     toggleMenu: '切换导航菜单',
     toggleTheme: '切换主题',
     chooseLanguage: '选择语言',
   },
   en: {
-    brand: 'URouters',
+    brand: 'Uter',
     signIn: 'Sign in',
     toggleMenu: 'Toggle navigation menu',
     toggleTheme: 'Toggle theme',

@@ -10,7 +10,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/QuantumNous/u-routers/common"
+	"github.com/QuantumNous/uter/common"
 )
 
 const (
@@ -62,7 +62,7 @@ func fetchLatestCodexClientVersion(ctx context.Context, client *http.Client, rel
 		return "", err
 	}
 	req.Header.Set("Accept", "application/vnd.github+json")
-	req.Header.Set("User-Agent", "ali-router")
+	req.Header.Set("User-Agent", "uter")
 
 	resp, err := client.Do(req)
 	if err != nil {

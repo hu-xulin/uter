@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"strings"
 
-	kitutil "github.com/QuantumNous/u-routers/relaykit/relayconvert/kitutil"
+	kitutil "github.com/QuantumNous/uter/relaykit/relayconvert/kitutil"
 )
 
 type OpenAIError struct {
@@ -26,7 +26,7 @@ type ClaudeError struct {
 type ErrorType string
 
 const (
-	ErrorTypeURouterError     ErrorType = "new_api_error"
+	ErrorTypeUterError     ErrorType = "new_api_error"
 	ErrorTypeOpenAIError     ErrorType = "openai_error"
 	ErrorTypeClaudeError     ErrorType = "claude_error"
 	ErrorTypeMidjourneyError ErrorType = "midjourney_error"
@@ -87,7 +87,7 @@ const (
 	ErrorCodePreConsumeTokenQuotaFailed ErrorCode = "pre_consume_token_quota_failed"
 )
 
-type URouterError struct {
+type UterError struct {
 	Err            error
 	RelayError     any
 	skipRetry      bool
@@ -98,29 +98,29 @@ type URouterError struct {
 	Metadata       json.RawMessage
 }
 
-// Unwrap enables errors.Is / errors.As to work with URouterError by exposing the underlying error.
-func (e *URouterError) Unwrap() error {
+// Unwrap enables errors.Is / errors.As to work with UterError by exposing the underlying error.
+func (e *UterError) Unwrap() error {
 	if e == nil {
 		return nil
 	}
 	return e.Err
 }
 
-func (e *URouterError) GetErrorCode() ErrorCode {
+func (e *UterError) GetErrorCode() ErrorCode {
 	if e == nil {
 		return ""
 	}
 	return e.errorCode
 }
 
-func (e *URouterError) GetErrorType() ErrorType {
+func (e *UterError) GetErrorType() ErrorType {
 	if e == nil {
 		return ""
 	}
 	return e.errorType
 }
 
-func (e *URouterError) Error() string {
+func (e *UterError) Error() string {
 	if e == nil {
 		return ""
 	}
@@ -131,7 +131,7 @@ func (e *URouterError) Error() string {
 	return e.Err.Error()
 }
 
-func (e *URouterError) ErrorWithStatusCode() string {
+func (e *UterError) ErrorWithStatusCode() string {
 	if e == nil {
 		return ""
 	}
@@ -145,7 +145,7 @@ func (e *URouterError) ErrorWithStatusCode() string {
 	return fmt.Sprintf("status_code=%d, %s", e.StatusCode, msg)
 }
 
-func (e *URouterError) MaskSensitiveError() string {
+func (e *UterError) MaskSensitiveError() string {
 	if e == nil {
 		return ""
 	}
@@ -159,7 +159,7 @@ func (e *URouterError) MaskSensitiveError() string {
 	return kitutil.MaskSensitiveInfo(errStr)
 }
 
-func (e *URouterError) MaskSensitiveErrorWithStatusCode() string {
+func (e *UterError) MaskSensitiveErrorWithStatusCode() string {
 	if e == nil {
 		return ""
 	}
@@ -173,11 +173,11 @@ func (e *URouterError) MaskSensitiveErrorWithStatusCode() string {
 	return fmt.Sprintf("status_code=%d, %s", e.StatusCode, msg)
 }
 
-func (e *URouterError) SetMessage(message string) {
+func (e *UterError) SetMessage(message string) {
 	e.Err = errors.New(message)
 }
 
-func (e *URouterError) ToOpenAIError() OpenAIError {
+func (e *UterError) ToOpenAIError() OpenAIError {
 	var result OpenAIError
 	switch e.errorType {
 	case ErrorTypeOpenAIError:
@@ -210,7 +210,7 @@ func (e *URouterError) ToOpenAIError() OpenAIError {
 	return result
 }
 
-func (e *URouterError) ToClaudeError() ClaudeError {
+func (e *UterError) ToClaudeError() ClaudeError {
 	var result ClaudeError
 	switch e.errorType {
 	case ErrorTypeOpenAIError:
@@ -239,10 +239,10 @@ func (e *URouterError) ToClaudeError() ClaudeError {
 	return result
 }
 
-type URouterErrorOptions func(*URouterError)
+type UterErrorOptions func(*UterError)
 
-func NewError(err error, errorCode ErrorCode, ops ...URouterErrorOptions) *URouterError {
-	var newErr *URouterError
+func NewError(err error, errorCode ErrorCode, ops ...UterErrorOptions) *UterError {
+	var newErr *UterError
 	// 保留深层传递的 new err
 	if errors.As(err, &newErr) {
 		for _, op := range ops {
@@ -250,10 +250,10 @@ func NewError(err error, errorCode ErrorCode, ops ...URouterErrorOptions) *URout
 		}
 		return newErr
 	}
-	e := &URouterError{
+	e := &UterError{
 		Err:        err,
 		RelayError: nil,
-		errorType:  ErrorTypeURouterError,
+		errorType:  ErrorTypeUterError,
 		StatusCode: http.StatusInternalServerError,
 		errorCode:  errorCode,
 	}
@@ -263,8 +263,8 @@ func NewError(err error, errorCode ErrorCode, ops ...URouterErrorOptions) *URout
 	return e
 }
 
-func NewOpenAIError(err error, errorCode ErrorCode, statusCode int, ops ...URouterErrorOptions) *URouterError {
-	var newErr *URouterError
+func NewOpenAIError(err error, errorCode ErrorCode, statusCode int, ops ...UterErrorOptions) *UterError {
+	var newErr *UterError
 	// 保留深层传递的 new err
 	if errors.As(err, &newErr) {
 		if newErr.RelayError == nil {
@@ -288,7 +288,7 @@ func NewOpenAIError(err error, errorCode ErrorCode, statusCode int, ops ...URout
 	return WithOpenAIError(openaiError, statusCode, ops...)
 }
 
-func InitOpenAIError(errorCode ErrorCode, statusCode int, ops ...URouterErrorOptions) *URouterError {
+func InitOpenAIError(errorCode ErrorCode, statusCode int, ops ...UterErrorOptions) *UterError {
 	openaiError := OpenAIError{
 		Type: string(errorCode),
 		Code: errorCode,
@@ -296,14 +296,14 @@ func InitOpenAIError(errorCode ErrorCode, statusCode int, ops ...URouterErrorOpt
 	return WithOpenAIError(openaiError, statusCode, ops...)
 }
 
-func NewErrorWithStatusCode(err error, errorCode ErrorCode, statusCode int, ops ...URouterErrorOptions) *URouterError {
-	e := &URouterError{
+func NewErrorWithStatusCode(err error, errorCode ErrorCode, statusCode int, ops ...UterErrorOptions) *UterError {
+	e := &UterError{
 		Err: err,
 		RelayError: OpenAIError{
 			Message: err.Error(),
 			Type:    string(errorCode),
 		},
-		errorType:  ErrorTypeURouterError,
+		errorType:  ErrorTypeUterError,
 		StatusCode: statusCode,
 		errorCode:  errorCode,
 	}
@@ -314,7 +314,7 @@ func NewErrorWithStatusCode(err error, errorCode ErrorCode, statusCode int, ops 
 	return e
 }
 
-func WithOpenAIError(openAIError OpenAIError, statusCode int, ops ...URouterErrorOptions) *URouterError {
+func WithOpenAIError(openAIError OpenAIError, statusCode int, ops ...UterErrorOptions) *UterError {
 	code, ok := openAIError.Code.(string)
 	if !ok {
 		if openAIError.Code != nil {
@@ -326,7 +326,7 @@ func WithOpenAIError(openAIError OpenAIError, statusCode int, ops ...URouterErro
 	if openAIError.Type == "" {
 		openAIError.Type = "upstream_error"
 	}
-	e := &URouterError{
+	e := &UterError{
 		RelayError: openAIError,
 		errorType:  ErrorTypeOpenAIError,
 		StatusCode: statusCode,
@@ -346,11 +346,11 @@ func WithOpenAIError(openAIError OpenAIError, statusCode int, ops ...URouterErro
 	return e
 }
 
-func WithClaudeError(claudeError ClaudeError, statusCode int, ops ...URouterErrorOptions) *URouterError {
+func WithClaudeError(claudeError ClaudeError, statusCode int, ops ...UterErrorOptions) *UterError {
 	if claudeError.Type == "" {
 		claudeError.Type = "upstream_error"
 	}
-	e := &URouterError{
+	e := &UterError{
 		RelayError: claudeError,
 		errorType:  ErrorTypeClaudeError,
 		StatusCode: statusCode,
@@ -363,14 +363,14 @@ func WithClaudeError(claudeError ClaudeError, statusCode int, ops ...URouterErro
 	return e
 }
 
-func IsChannelError(err *URouterError) bool {
+func IsChannelError(err *UterError) bool {
 	if err == nil {
 		return false
 	}
 	return strings.HasPrefix(string(err.errorCode), "channel:")
 }
 
-func IsSkipRetryError(err *URouterError) bool {
+func IsSkipRetryError(err *UterError) bool {
 	if err == nil {
 		return false
 	}
@@ -378,26 +378,26 @@ func IsSkipRetryError(err *URouterError) bool {
 	return err.skipRetry
 }
 
-func ErrOptionWithSkipRetry() URouterErrorOptions {
-	return func(e *URouterError) {
+func ErrOptionWithSkipRetry() UterErrorOptions {
+	return func(e *UterError) {
 		e.skipRetry = true
 	}
 }
 
-func ErrOptionWithNoRecordErrorLog() URouterErrorOptions {
-	return func(e *URouterError) {
+func ErrOptionWithNoRecordErrorLog() UterErrorOptions {
+	return func(e *UterError) {
 		e.recordErrorLog = kitutil.GetPointer(false)
 	}
 }
 
-func ErrOptionWithStatusCode(statusCode int) URouterErrorOptions {
-	return func(e *URouterError) {
+func ErrOptionWithStatusCode(statusCode int) UterErrorOptions {
+	return func(e *UterError) {
 		e.StatusCode = statusCode
 	}
 }
 
-func ErrOptionWithHideErrMsg(replaceStr string) URouterErrorOptions {
-	return func(e *URouterError) {
+func ErrOptionWithHideErrMsg(replaceStr string) UterErrorOptions {
+	return func(e *UterError) {
 		if kitutil.Debug.Load() {
 			fmt.Printf("ErrOptionWithHideErrMsg: %s, origin error: %s", replaceStr, e.Err)
 		}
@@ -405,7 +405,7 @@ func ErrOptionWithHideErrMsg(replaceStr string) URouterErrorOptions {
 	}
 }
 
-func IsRecordErrorLog(e *URouterError) bool {
+func IsRecordErrorLog(e *UterError) bool {
 	if e == nil {
 		return false
 	}

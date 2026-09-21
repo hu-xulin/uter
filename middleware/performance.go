@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/QuantumNous/u-routers/common"
-	"github.com/QuantumNous/u-routers/relaykit/types"
+	"github.com/QuantumNous/uter/common"
+	"github.com/QuantumNous/uter/relaykit/types"
 	"github.com/gin-gonic/gin"
 )
 
@@ -38,7 +38,7 @@ func SystemPerformanceCheck() gin.HandlerFunc {
 }
 
 // checkSystemPerformance 检查系统性能是否超过阈值
-func checkSystemPerformance() *types.URouterError {
+func checkSystemPerformance() *types.UterError {
 	config := common.GetPerformanceMonitorConfig()
 	if !config.Enabled {
 		return nil

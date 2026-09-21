@@ -9,7 +9,7 @@ import (
 	"strings"
 	"unicode"
 
-	"github.com/QuantumNous/u-routers/common"
+	"github.com/QuantumNous/uter/common"
 )
 
 const (

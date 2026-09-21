@@ -6,10 +6,10 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/QuantumNous/u-routers/logger"
-	"github.com/QuantumNous/u-routers/middleware"
-	"github.com/QuantumNous/u-routers/model"
-	"github.com/QuantumNous/u-routers/service"
+	"github.com/QuantumNous/uter/logger"
+	"github.com/QuantumNous/uter/middleware"
+	"github.com/QuantumNous/uter/model"
+	"github.com/QuantumNous/uter/service"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )

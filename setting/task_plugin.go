@@ -5,15 +5,15 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/QuantumNous/u-routers/common"
+	"github.com/QuantumNous/uter/common"
 )
 
 const (
 	TaskPluginMarketplaceSourcesKey  = "TaskPluginMarketplaceSources"
 	TaskPluginDisabledFactoryKeysKey = "TaskPluginDisabledFactoryKeys"
 
-	officialTaskPluginMarketplaceIndexURL = "https://www.URouters.ai/api/v1/plugins/index.json"
-	githubTaskPluginMarketplaceIndexURL   = "https://raw.githubusercontent.com/QuantumNous/u-routers-plugins/main/index.json"
+	officialTaskPluginMarketplaceIndexURL = "https://www.uter.ai/api/v1/plugins/index.json"
+	githubTaskPluginMarketplaceIndexURL   = "https://raw.githubusercontent.com/QuantumNous/uter-plugins/main/index.json"
 )
 
 type TaskPluginMarketplaceSource struct {

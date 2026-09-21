@@ -6,12 +6,12 @@ import (
 
 	"context"
 
-	"github.com/QuantumNous/u-routers/relaykit/dto"
-	"github.com/QuantumNous/u-routers/relaykit/relayconvert/convmeta"
-	relaymedia "github.com/QuantumNous/u-routers/relaykit/relayconvert/internal/media"
-	sharedgemini "github.com/QuantumNous/u-routers/relaykit/relayconvert/internal/shared/gemini"
-	kitutil "github.com/QuantumNous/u-routers/relaykit/relayconvert/kitutil"
-	"github.com/QuantumNous/u-routers/relaykit/relayconvert/reasoning"
+	"github.com/QuantumNous/uter/relaykit/dto"
+	"github.com/QuantumNous/uter/relaykit/relayconvert/convmeta"
+	relaymedia "github.com/QuantumNous/uter/relaykit/relayconvert/internal/media"
+	sharedgemini "github.com/QuantumNous/uter/relaykit/relayconvert/internal/shared/gemini"
+	kitutil "github.com/QuantumNous/uter/relaykit/relayconvert/kitutil"
+	"github.com/QuantumNous/uter/relaykit/relayconvert/reasoning"
 )
 
 func convertOpenAIResponsesRequestToGeminiChat(c context.Context, info convmeta.Meta, request any) (any, error) {

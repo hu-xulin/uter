@@ -11,12 +11,12 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/QuantumNous/u-routers/common"
-	"github.com/QuantumNous/u-routers/pkg/billingexpr"
-	"github.com/QuantumNous/u-routers/pkg/jsplugin"
-	"github.com/QuantumNous/u-routers/setting/billing_setting"
-	"github.com/QuantumNous/u-routers/setting/operation_setting"
-	"github.com/QuantumNous/u-routers/setting/ratio_setting"
+	"github.com/QuantumNous/uter/common"
+	"github.com/QuantumNous/uter/pkg/billingexpr"
+	"github.com/QuantumNous/uter/pkg/jsplugin"
+	"github.com/QuantumNous/uter/setting/billing_setting"
+	"github.com/QuantumNous/uter/setting/operation_setting"
+	"github.com/QuantumNous/uter/setting/ratio_setting"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )

@@ -11,8 +11,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/QuantumNous/u-routers/common"
-	"github.com/QuantumNous/u-routers/dto"
+	"github.com/QuantumNous/uter/common"
+	"github.com/QuantumNous/uter/dto"
 )
 
 const (

@@ -1,6 +1,6 @@
-# URouters Electron Desktop App
+# Uter Electron Desktop App
 
-This directory contains the Electron wrapper for URouters, providing a native desktop application with system tray support for Windows, macOS, and Linux.
+This directory contains the Electron wrapper for Uter, providing a native desktop application with system tray support for Windows, macOS, and Linux.
 
 ## Prerequisites
 
@@ -9,8 +9,8 @@ The Electron app requires the compiled Go binary to function. You have two optio
 
 **Option A: Use existing binary (without Go installed)**
 ```bash
-# If you have a pre-built binary (e.g., ali-router-macos)
-cp ../ali-router-macos ../ali-router
+# If you have a pre-built binary (e.g., uter-macos)
+cp ../uter-macos ../uter
 ```
 
 **Option B: Build from source (requires Go)**
@@ -41,7 +41,7 @@ This will:
 - Use the Rsbuild frontend development server on port 5173
 - Open an Electron window with DevTools enabled
 - Create a system tray icon (menu bar on macOS)
-- Store database in `../data/ali-router.db`
+- Store database in `../data/uter.db`
 
 ## Building for Production
 
@@ -74,8 +74,8 @@ const PORT = 3000; // Change to desired port
 ```
 
 ### Database Location
-- **Development**: `../data/ali-router.db` (project directory)
+- **Development**: `../data/uter.db` (project directory)
 - **Production**:
-  - macOS: `~/Library/Application Support/URouters/data/`
-  - Windows: `%APPDATA%/URouters/data/`
-  - Linux: `~/.config/URouters/data/`
+  - macOS: `~/Library/Application Support/Uter/data/`
+  - Windows: `%APPDATA%/Uter/data/`
+  - Linux: `~/.config/Uter/data/`

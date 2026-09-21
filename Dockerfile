@@ -25,7 +25,7 @@ RUN go mod download
 
 COPY . .
 COPY --from=builder /build/web/dist ./web/dist
-RUN go build -ldflags "-s -w -X 'github.com/QuantumNous/u-routers/common.Version=$(cat VERSION)'" -o ali-router
+RUN go build -ldflags "-s -w -X 'github.com/QuantumNous/uter/common.Version=$(cat VERSION)'" -o uter
 
 FROM debian:bookworm-slim@sha256:f06537653ac770703bc45b4b113475bd402f451e85223f0f2837acbf89ab020a
 
@@ -34,8 +34,8 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/* \
     && update-ca-certificates
 
-COPY --from=builder2 /build/ali-router /
+COPY --from=builder2 /build/uter /
 COPY LICENSE NOTICE THIRD-PARTY-LICENSES.md /licenses/
 EXPOSE 3000
 WORKDIR /data
-ENTRYPOINT ["/ali-router"]
+ENTRYPOINT ["/uter"]

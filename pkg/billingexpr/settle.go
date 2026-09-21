@@ -3,7 +3,7 @@ package billingexpr
 import (
 	"fmt"
 
-	"github.com/QuantumNous/u-routers/common"
+	"github.com/QuantumNous/uter/common"
 )
 
 // quotaConversion converts raw expression output to quota based on the

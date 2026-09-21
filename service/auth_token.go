@@ -10,8 +10,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/QuantumNous/u-routers/common"
-	"github.com/QuantumNous/u-routers/model"
+	"github.com/QuantumNous/uter/common"
+	"github.com/QuantumNous/uter/model"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 )
@@ -23,8 +23,8 @@ const (
 	RefreshReplayWindow   = 30 * time.Second
 	accessTokenUse        = "access"
 	securityProofTokenUse = "security_proof"
-	authTokenIssuer       = "ali-router"
-	authTokenAudience     = "ali-router-dashboard"
+	authTokenIssuer       = "uter"
+	authTokenAudience     = "uter-dashboard"
 )
 
 var (
@@ -53,7 +53,7 @@ type authClaims struct {
 
 func authSigningKey(purpose string) []byte {
 	mac := hmac.New(sha256.New, []byte(common.SessionSecret))
-	_, _ = mac.Write([]byte("ali-router/auth/" + purpose + "/v1"))
+	_, _ = mac.Write([]byte("uter/auth/" + purpose + "/v1"))
 	return mac.Sum(nil)
 }
 
@@ -99,7 +99,7 @@ func ParseAccessToken(raw string) (AuthIdentity, error) {
 	}, nil
 }
 
-// ParseDashboardAccessToken distinguishes ali-router dashboard JWTs from opaque
+// ParseDashboardAccessToken distinguishes uter dashboard JWTs from opaque
 // credentials. A token carrying the dashboard issuer, audience and a known
 // token use is always treated as internal, even when its signature, lifetime
 // or requested purpose is invalid, so it can never fall through to PAT or

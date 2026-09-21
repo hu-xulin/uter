@@ -22,13 +22,13 @@ import (
 	"testing"
 	"time"
 
-	"github.com/QuantumNous/u-routers/common"
-	"github.com/QuantumNous/u-routers/i18n"
-	"github.com/QuantumNous/u-routers/middleware"
-	"github.com/QuantumNous/u-routers/model"
-	"github.com/QuantumNous/u-routers/oauth"
-	"github.com/QuantumNous/u-routers/service"
-	"github.com/QuantumNous/u-routers/setting/system_setting"
+	"github.com/QuantumNous/uter/common"
+	"github.com/QuantumNous/uter/i18n"
+	"github.com/QuantumNous/uter/middleware"
+	"github.com/QuantumNous/uter/model"
+	"github.com/QuantumNous/uter/oauth"
+	"github.com/QuantumNous/uter/service"
+	"github.com/QuantumNous/uter/setting/system_setting"
 	"github.com/fxamacker/cbor/v2"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
@@ -78,7 +78,7 @@ func setupSecurityEnrollmentTest(t *testing.T) (*model.User, service.AuthIdentit
 	common.PasswordLoginEncryptionEnabled = false
 	common.RedisEnabled = false
 	common.SessionSecret = "security-enrollment-test-secret"
-	*system_setting.GetPasskeySettings() = system_setting.PasskeySettings{Enabled: true, RPID: "example.com", Origins: "https://example.com", RPDisplayName: "ali-router"}
+	*system_setting.GetPasskeySettings() = system_setting.PasskeySettings{Enabled: true, RPID: "example.com", Origins: "https://example.com", RPDisplayName: "uter"}
 	t.Cleanup(func() {
 		model.DB, model.LOG_DB = previousDB, previousLogDB
 		common.SetDatabaseTypes(previousMain, previousLog)

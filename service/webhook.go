@@ -9,9 +9,9 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/QuantumNous/u-routers/common"
-	"github.com/QuantumNous/u-routers/relaykit/dto"
-	"github.com/QuantumNous/u-routers/setting/system_setting"
+	"github.com/QuantumNous/uter/common"
+	"github.com/QuantumNous/uter/relaykit/dto"
+	"github.com/QuantumNous/uter/setting/system_setting"
 )
 
 // WebhookPayload webhook 通知的负载数据

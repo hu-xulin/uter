@@ -162,7 +162,7 @@ export function resolveChatUrl({
 
   if (url.includes('{cherryConfig}')) {
     const payload = {
-      id: 'ali-router',
+      id: 'uter',
       baseUrl: safeServerAddress,
       apiKey: safeApiKey,
     }
@@ -172,7 +172,7 @@ export function resolveChatUrl({
 
   if (url.includes('{aionuiConfig}')) {
     const payload = {
-      platform: 'ali-router',
+      platform: 'uter',
       baseUrl: safeServerAddress,
       apiKey: safeApiKey,
     }
@@ -182,7 +182,7 @@ export function resolveChatUrl({
 
   if (url.includes('{deepchatConfig}')) {
     const payload = {
-      id: 'ali-router',
+      id: 'uter',
       baseUrl: safeServerAddress,
       apiKey: safeApiKey,
     }
@@ -192,7 +192,7 @@ export function resolveChatUrl({
 
   if (url.includes('{aqbotConfig}')) {
     const query = [
-      `name=${encodeURIComponent('URouters')}`,
+      `name=${encodeURIComponent('Uter')}`,
       `baseurl=${encodeURIComponent(safeServerAddress)}`,
       `apikey=${encodeURIComponent(safeApiKey)}`,
       'type=openai',

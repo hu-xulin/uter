@@ -1,8 +1,8 @@
 <div align="center">
 
-![ali-router](/web/public/logo.png)
+![uter](/web/public/logo.png)
 
-# URouters
+# Uter
 
 🍥 **次世代大規模モデルゲートウェイとAI資産管理システム**
 
@@ -15,31 +15,31 @@
 </p>
 
 <p align="center">
-  <a href="https://raw.githubusercontent.com/Calcium-Ion/ali-router/main/LICENSE">
-    <img src="https://img.shields.io/github/license/Calcium-Ion/ali-router?color=brightgreen" alt="license">
+  <a href="https://raw.githubusercontent.com/Calcium-Ion/uter/main/LICENSE">
+    <img src="https://img.shields.io/github/license/Calcium-Ion/uter?color=brightgreen" alt="license">
   </a><!--
-  --><a href="https://github.com/Calcium-Ion/ali-router/releases/latest">
-    <img src="https://img.shields.io/github/v/release/Calcium-Ion/ali-router?color=brightgreen&include_prereleases" alt="release">
+  --><a href="https://github.com/Calcium-Ion/uter/releases/latest">
+    <img src="https://img.shields.io/github/v/release/Calcium-Ion/uter?color=brightgreen&include_prereleases" alt="release">
   </a><!--
-  --><a href="https://hub.docker.com/r/CalciumIon/ali-router">
+  --><a href="https://hub.docker.com/r/CalciumIon/uter">
     <img src="https://img.shields.io/badge/docker-dockerHub-blue" alt="docker">
   </a>
-  <a href="https://atomgit.com/QuantumNous/u-routers" target="_blank">
-    <img alt="AtomGit G-Star" src="https://atomgit.com/QuantumNous/u-routers/star/badge.svg"/>
+  <a href="https://atomgit.com/QuantumNous/uter" target="_blank">
+    <img alt="AtomGit G-Star" src="https://atomgit.com/QuantumNous/uter/star/badge.svg"/>
   </a>
 </p>
 
 <p align="center">
   <a href="https://trendshift.io/repositories/20180" target="_blank">
-    <img src="https://trendshift.io/api/badge/repositories/20180" alt="QuantumNous%2Fali-router | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/>
+    <img src="https://trendshift.io/api/badge/repositories/20180" alt="QuantumNous%2Futer | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/>
   </a>
   <br>
-  <a href="https://hellogithub.com/repository/QuantumNous/u-routers" target="_blank">
+  <a href="https://hellogithub.com/repository/QuantumNous/uter" target="_blank">
     <img src="https://api.hellogithub.com/v1/widgets/recommend.svg?rid=539ac4217e69431684ad4a0bab768811&claim_uid=tbFPfKIDHpc4TzR" alt="Featured｜HelloGitHub" style="width: 250px; height: 54px;" width="250" height="54" />
   </a><!--
   -->
-  <a href="https://atomgit.com/QuantumNous/u-routers" target="_blank">
-    <img alt="AtomGit G-Star" src="https://atomgit.com/QuantumNous/u-routers/star/new_badge.svg" width="250" height="55" />
+  <a href="https://atomgit.com/QuantumNous/uter" target="_blank">
+    <img alt="AtomGit G-Star" src="https://atomgit.com/QuantumNous/uter/star/new_badge.svg" width="250" height="55" />
   </a>
 </p>
 
@@ -79,7 +79,7 @@
   --><a href="https://bda.pku.edu.cn/" target="_blank">
     <img src="./docs/images/pku.png" alt="北京大学" height="80" />
   </a><!--
-  --><a href="https://www.compshare.cn/?ytag=GPU_yy_gh_URouters" target="_blank">
+  --><a href="https://www.compshare.cn/?ytag=GPU_yy_gh_Uter" target="_blank">
     <img src="./docs/images/ucloud.png" alt="UCloud 優刻得" height="80" />
   </a><!--
   --><a href="https://www.aliyun.com/" target="_blank">
@@ -95,13 +95,13 @@
 ## 🙏 特別な感謝
 
 <p align="center">
-  <a href="https://www.jetbrains.com/?from=ali-router" target="_blank">
+  <a href="https://www.jetbrains.com/?from=uter" target="_blank">
     <img src="https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.png" alt="JetBrains Logo" width="120" />
   </a>
 </p>
 
 <p align="center">
-  <strong>感謝 <a href="https://www.jetbrains.com/?from=ali-router">JetBrains</a> が本プロジェクトに無料のオープンソース開発ライセンスを提供してくれたことに感謝します</strong>
+  <strong>感謝 <a href="https://www.jetbrains.com/?from=uter">JetBrains</a> が本プロジェクトに無料のオープンソース開発ライセンスを提供してくれたことに感謝します</strong>
 </p>
 
 ---
@@ -112,8 +112,8 @@
 
 ```bash
 # プロジェクトをクローン
-git clone https://github.com/QuantumNous/u-routers.git
-cd ali-router
+git clone https://github.com/QuantumNous/uter.git
+cd uter
 
 # docker-compose.yml 設定を編集
 nano docker-compose.yml
@@ -127,22 +127,22 @@ docker-compose up -d
 
 ```bash
 # 最新のイメージをプル
-docker pull calciumion/ali-router:latest
+docker pull calciumion/uter:latest
 
 # SQLiteを使用（デフォルト）
-docker run --name ali-router -d --restart always \
+docker run --name uter -d --restart always \
   -p 3000:3000 \
   -e TZ=Asia/Shanghai \
   -v ./data:/data \
-  calciumion/ali-router:latest
+  calciumion/uter:latest
 
 # MySQLを使用
-docker run --name ali-router -d --restart always \
+docker run --name uter -d --restart always \
   -p 3000:3000 \
   -e SQL_DSN="root:123456@tcp(localhost:3306)/oneapi" \
   -e TZ=Asia/Shanghai \
   -v ./data:/data \
-  calciumion/ali-router:latest
+  calciumion/uter:latest
 ```
 
 > **💡 ヒント:** `-v ./data:/data` は現在のディレクトリの `data` フォルダにデータを保存します。絶対パスに変更することもできます：`-v /your/custom/path:/data`
@@ -156,7 +156,7 @@ docker run --name ali-router -d --restart always \
 > [!WARNING]
 > 本プロジェクトを公衆向け生成 AI サービスまたは API 再販サービスとして運営する場合、ユーザーは届出、コンテンツセキュリティ、本人確認、ログ保持、税務、決済、上流認可などの必要なコンプライアンス義務を先に完了してください。
 
-📖 その他のデプロイ方法については[デプロイガイド](https://URouters.ai/docsja/docs/installation)を参照してください。
+📖 その他のデプロイ方法については[デプロイガイド](https://uter.ai/docsja/docs/installation)を参照してください。
 
 ---
 
@@ -164,7 +164,7 @@ docker run --name ali-router -d --restart always \
 
 <div align="center">
 
-### 📖 [公式ドキュメント](https://URouters.ai/docsja/docs) | [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/QuantumNous/u-routers)
+### 📖 [公式ドキュメント](https://uter.ai/docsja/docs) | [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/QuantumNous/uter)
 
 </div>
 
@@ -172,17 +172,17 @@ docker run --name ali-router -d --restart always \
 
 | カテゴリ | リンク |
 |------|------|
-| 🚀 デプロイガイド | [インストールドキュメント](https://URouters.ai/docsja/docs/installation) |
-| ⚙️ 環境設定 | [環境変数](https://URouters.ai/docsja/docs/installation/config-maintenance/environment-variables) |
-| 📡 APIドキュメント | [APIドキュメント](https://URouters.ai/docsja/docs/api) |
-| ❓ よくある質問 | [FAQ](https://URouters.ai/docsja/docs/support/faq) |
-| 💬 コミュニティ交流 | [交流チャネル](https://URouters.ai/docsja/docs/support/community-interaction) |
+| 🚀 デプロイガイド | [インストールドキュメント](https://uter.ai/docsja/docs/installation) |
+| ⚙️ 環境設定 | [環境変数](https://uter.ai/docsja/docs/installation/config-maintenance/environment-variables) |
+| 📡 APIドキュメント | [APIドキュメント](https://uter.ai/docsja/docs/api) |
+| ❓ よくある質問 | [FAQ](https://uter.ai/docsja/docs/support/faq) |
+| 💬 コミュニティ交流 | [交流チャネル](https://uter.ai/docsja/docs/support/community-interaction) |
 
 ---
 
 ## ✨ 主な機能
 
-> 詳細な機能については[機能説明](https://URouters.ai/docsja/docs/guide/wiki/basic-concepts/features-introduction)を参照してください。
+> 詳細な機能については[機能説明](https://uter.ai/docsja/docs/guide/wiki/basic-concepts/features-introduction)を参照してください。
 
 ### 🎨 コア機能
 
@@ -207,18 +207,18 @@ docker run --name ali-router -d --restart always \
 - 🤖 LinuxDO認証ログイン
 - 📱 Telegram認証ログイン
 - 🔑 OIDC統一認証
-- 🔍 Key使用量クォータ照会（[ali-router-key-tool](https://github.com/Calcium-Ion/ali-router-key-tool)と併用）
+- 🔍 Key使用量クォータ照会（[uter-key-tool](https://github.com/Calcium-Ion/uter-key-tool)と併用）
 
 
 
 ### 🚀 高度な機能
 
 **APIフォーマットサポート:**
-- ⚡ [OpenAI Responses](https://URouters.ai/docsja/docs/api/ai-model/chat/openai/create-response)
-- ⚡ [OpenAI Realtime API](https://URouters.ai/docsja/docs/api/ai-model/realtime/create-realtime-session)（Azureを含む）
-- ⚡ [Claude Messages](https://URouters.ai/docsja/docs/api/ai-model/chat/create-message)
-- ⚡ [Google Gemini](https://doc.URouters.ai/ja/api/google-gemini-chat)
-- 🔄 [Rerankモデル](https://URouters.ai/docsja/docs/api/ai-model/rerank/create-rerank)（Cohere、Jina）
+- ⚡ [OpenAI Responses](https://uter.ai/docsja/docs/api/ai-model/chat/openai/create-response)
+- ⚡ [OpenAI Realtime API](https://uter.ai/docsja/docs/api/ai-model/realtime/create-realtime-session)（Azureを含む）
+- ⚡ [Claude Messages](https://uter.ai/docsja/docs/api/ai-model/chat/create-message)
+- ⚡ [Google Gemini](https://doc.Uter.ai/ja/api/google-gemini-chat)
+- 🔄 [Rerankモデル](https://uter.ai/docsja/docs/api/ai-model/rerank/create-rerank)（Cohere、Jina）
 
 **インテリジェントルーティング:**
 - ⚖️ チャネル重み付けランダム
@@ -261,17 +261,17 @@ docker run --name ali-router -d --restart always \
 
 ## 🤖 モデルサポート
 
-> 詳細については[APIドキュメント - ゲートウェイインターフェース](https://URouters.ai/docsja/docs/api)
+> 詳細については[APIドキュメント - ゲートウェイインターフェース](https://uter.ai/docsja/docs/api)
 
 | モデルタイプ | 説明 | ドキュメント |
 |---------|------|------|
-| 🤖 OpenAI-Compatible | OpenAI互換モデル | [ドキュメント](https://URouters.ai/docsja/docs/api/ai-model/chat/openai/createchatcompletion) |
-| 🤖 OpenAI Responses | OpenAI Responsesフォーマット | [ドキュメント](https://URouters.ai/docsja/docs/api/ai-model/chat/openai/createresponse) |
-| 🎨 Midjourney-Proxy | [Midjourney-Proxy(Plus)](https://github.com/novicezk/midjourney-proxy) | [ドキュメント](https://doc.URouters.ai/api/midjourney-proxy-image) |
-| 🎵 Suno-API | [Suno API](https://github.com/Suno-API/Suno-API) | [ドキュメント](https://doc.URouters.ai/api/suno-music) |
-| 🔄 Rerank | Cohere、Jina | [ドキュメント](https://URouters.ai/docsja/docs/api/ai-model/rerank/creatererank) |
-| 💬 Claude | Messagesフォーマット | [ドキュメント](https://URouters.ai/docsja/docs/api/ai-model/chat/createmessage) |
-| 🌐 Gemini | Google Geminiフォーマット | [ドキュメント](https://URouters.ai/docsja/docs/api/ai-model/chat/gemini/geminirelayv1beta) |
+| 🤖 OpenAI-Compatible | OpenAI互換モデル | [ドキュメント](https://uter.ai/docsja/docs/api/ai-model/chat/openai/createchatcompletion) |
+| 🤖 OpenAI Responses | OpenAI Responsesフォーマット | [ドキュメント](https://uter.ai/docsja/docs/api/ai-model/chat/openai/createresponse) |
+| 🎨 Midjourney-Proxy | [Midjourney-Proxy(Plus)](https://github.com/novicezk/midjourney-proxy) | [ドキュメント](https://doc.Uter.ai/api/midjourney-proxy-image) |
+| 🎵 Suno-API | [Suno API](https://github.com/Suno-API/Suno-API) | [ドキュメント](https://doc.Uter.ai/api/suno-music) |
+| 🔄 Rerank | Cohere、Jina | [ドキュメント](https://uter.ai/docsja/docs/api/ai-model/rerank/creatererank) |
+| 💬 Claude | Messagesフォーマット | [ドキュメント](https://uter.ai/docsja/docs/api/ai-model/chat/createmessage) |
+| 🌐 Gemini | Google Geminiフォーマット | [ドキュメント](https://uter.ai/docsja/docs/api/ai-model/chat/gemini/geminirelayv1beta) |
 | 🔧 Dify | ChatFlowモード | - |
 | 🎯 カスタム上流 | 合法的に許可された上流エンドポイントの設定をサポート | - |
 
@@ -280,16 +280,16 @@ docker run --name ali-router -d --restart always \
 <details>
 <summary>完全なインターフェースリストを表示</summary>
 
-- [チャットインターフェース (Chat Completions)](https://URouters.ai/docsja/docs/api/ai-model/chat/openai/createchatcompletion)
-- [レスポンスインターフェース (Responses)](https://URouters.ai/docsja/docs/api/ai-model/chat/openai/createresponse)
-- [イメージインターフェース (Image)](https://URouters.ai/docsja/docs/api/ai-model/images/openai/post-v1-images-generations)
-- [オーディオインターフェース (Audio)](https://URouters.ai/docsja/docs/api/ai-model/audio/openai/create-transcription)
-- [ビデオインターフェース (Video)](https://URouters.ai/docsja/docs/api/ai-model/videos/sora/createvideo)
-- [エンベッドインターフェース (Embeddings)](https://URouters.ai/docsja/docs/api/ai-model/embeddings/createembedding)
-- [再ランク付けインターフェース (Rerank)](https://URouters.ai/docsja/docs/api/ai-model/rerank/creatererank)
-- [リアルタイム対話インターフェース (Realtime)](https://URouters.ai/docsja/docs/api/ai-model/realtime/createrealtimesession)
-- [Claudeチャット](https://URouters.ai/docsja/docs/api/ai-model/chat/createmessage)
-- [Google Geminiチャット](https://URouters.ai/docsja/docs/api/ai-model/chat/gemini/geminirelayv1beta)
+- [チャットインターフェース (Chat Completions)](https://uter.ai/docsja/docs/api/ai-model/chat/openai/createchatcompletion)
+- [レスポンスインターフェース (Responses)](https://uter.ai/docsja/docs/api/ai-model/chat/openai/createresponse)
+- [イメージインターフェース (Image)](https://uter.ai/docsja/docs/api/ai-model/images/openai/post-v1-images-generations)
+- [オーディオインターフェース (Audio)](https://uter.ai/docsja/docs/api/ai-model/audio/openai/create-transcription)
+- [ビデオインターフェース (Video)](https://uter.ai/docsja/docs/api/ai-model/videos/sora/createvideo)
+- [エンベッドインターフェース (Embeddings)](https://uter.ai/docsja/docs/api/ai-model/embeddings/createembedding)
+- [再ランク付けインターフェース (Rerank)](https://uter.ai/docsja/docs/api/ai-model/rerank/creatererank)
+- [リアルタイム対話インターフェース (Realtime)](https://uter.ai/docsja/docs/api/ai-model/realtime/createrealtimesession)
+- [Claudeチャット](https://uter.ai/docsja/docs/api/ai-model/chat/createmessage)
+- [Google Geminiチャット](https://uter.ai/docsja/docs/api/ai-model/chat/gemini/geminirelayv1beta)
 
 </details>
 
@@ -298,7 +298,7 @@ docker run --name ali-router -d --restart always \
 ## 🚢 デプロイ
 
 > [!TIP]
-> **最新のDockerイメージ:** `calciumion/ali-router:latest`
+> **最新のDockerイメージ:** `calciumion/uter:latest`
 
 ### 📋 デプロイ要件
 
@@ -334,14 +334,14 @@ docker run --name ali-router -d --restart always \
 | `AZURE_DEFAULT_API_VERSION` | Azure APIバージョン | `2025-04-01-preview` |
 | `ERROR_LOG_ENABLED` | エラーログスイッチ | `false` |
 | `PYROSCOPE_URL` | Pyroscopeサーバーのアドレス | - |
-| `PYROSCOPE_APP_NAME` | Pyroscopeアプリ名 | `ali-router` |
+| `PYROSCOPE_APP_NAME` | Pyroscopeアプリ名 | `uter` |
 | `PYROSCOPE_BASIC_AUTH_USER` | Pyroscope Basic Authユーザー | - |
 | `PYROSCOPE_BASIC_AUTH_PASSWORD` | Pyroscope Basic Authパスワード | - |
 | `PYROSCOPE_MUTEX_RATE` | Pyroscope mutexサンプリング率 | `5` |
 | `PYROSCOPE_BLOCK_RATE` | Pyroscope blockサンプリング率 | `5` |
-| `HOSTNAME` | Pyroscope用のホスト名タグ | `ali-router` |
+| `HOSTNAME` | Pyroscope用のホスト名タグ | `uter` |
 
-📖 **完全な設定:** [環境変数ドキュメント](https://URouters.ai/docsja/docs/installation/config-maintenance/environment-variables)
+📖 **完全な設定:** [環境変数ドキュメント](https://uter.ai/docsja/docs/installation/config-maintenance/environment-variables)
 
 </details>
 
@@ -352,8 +352,8 @@ docker run --name ali-router -d --restart always \
 
 ```bash
 # プロジェクトをクローン
-git clone https://github.com/QuantumNous/u-routers.git
-cd ali-router
+git clone https://github.com/QuantumNous/uter.git
+cd uter
 
 # 設定を編集
 nano docker-compose.yml
@@ -369,21 +369,21 @@ docker-compose up -d
 
 **SQLiteを使用:**
 ```bash
-docker run --name ali-router -d --restart always \
+docker run --name uter -d --restart always \
   -p 3000:3000 \
   -e TZ=Asia/Shanghai \
   -v ./data:/data \
-  calciumion/ali-router:latest
+  calciumion/uter:latest
 ```
 
 **MySQLを使用:**
 ```bash
-docker run --name ali-router -d --restart always \
+docker run --name uter -d --restart always \
   -p 3000:3000 \
   -e SQL_DSN="root:123456@tcp(localhost:3306)/oneapi" \
   -e TZ=Asia/Shanghai \
   -v ./data:/data \
-  calciumion/ali-router:latest
+  calciumion/uter:latest
 ```
 
 > **💡 パス説明:**
@@ -442,8 +442,8 @@ Token、Origin 検証、PAT の契約については[ユーザー認証とログ
 
 | プロジェクト | 説明 |
 |------|------|
-| [ali-router-key-tool](https://github.com/Calcium-Ion/ali-router-key-tool) | キー使用量クォータ照会ツール |
-| [ali-router-horizon](https://github.com/Calcium-Ion/ali-router-horizon) | URouters高性能最適化版 |
+| [uter-key-tool](https://github.com/Calcium-Ion/uter-key-tool) | キー使用量クォータ照会ツール |
+| [uter-horizon](https://github.com/Calcium-Ion/uter-horizon) | Uter高性能最適化版 |
 
 ---
 
@@ -453,10 +453,10 @@ Token、Origin 検証、PAT の契約については[ユーザー認証とログ
 
 | リソース | リンク |
 |------|------|
-| 📘 よくある質問 | [FAQ](https://URouters.ai/docsja/docs/support/faq) |
-| 💬 コミュニティ交流 | [交流チャネル](https://URouters.ai/docsja/docs/support/community-interaction) |
-| 🐛 問題のフィードバック | [問題フィードバック](https://URouters.ai/docsja/docs/support/feedback-issues) |
-| 📚 完全なドキュメント | [公式ドキュメント](https://URouters.ai/docsja/docs) |
+| 📘 よくある質問 | [FAQ](https://uter.ai/docsja/docs/support/faq) |
+| 💬 コミュニティ交流 | [交流チャネル](https://uter.ai/docsja/docs/support/community-interaction) |
+| 🐛 問題のフィードバック | [問題フィードバック](https://uter.ai/docsja/docs/support/feedback-issues) |
+| 📚 完全なドキュメント | [公式ドキュメント](https://uter.ai/docsja/docs) |
 
 ### 🤝 貢献ガイド
 
@@ -483,7 +483,7 @@ Token、Origin 検証、PAT の契約については[ユーザー認証とログ
 
 <div align="center">
 
-[![スター履歴チャート](https://api.star-history.com/svg?repos=Calcium-Ion/ali-router&type=Date)](https://star-history.com/#Calcium-Ion/ali-router&Date)
+[![スター履歴チャート](https://api.star-history.com/svg?repos=Calcium-Ion/uter&type=Date)](https://star-history.com/#Calcium-Ion/uter&Date)
 
 </div>
 
@@ -491,11 +491,11 @@ Token、Origin 検証、PAT の契約については[ユーザー認証とログ
 
 <div align="center">
 
-### 💖 URoutersをご利用いただきありがとうございます
+### 💖 Uterをご利用いただきありがとうございます
 
 このプロジェクトがあなたのお役に立てたなら、ぜひ ⭐️ スターをください！
 
-**[公式ドキュメント](https://URouters.ai/docsja/docs)** • **[問題フィードバック](https://github.com/Calcium-Ion/ali-router/issues)** • **[最新リリース](https://github.com/Calcium-Ion/ali-router/releases)**
+**[公式ドキュメント](https://uter.ai/docsja/docs)** • **[問題フィードバック](https://github.com/Calcium-Ion/uter/issues)** • **[最新リリース](https://github.com/Calcium-Ion/uter/releases)**
 
 <sub>❤️ で構築された QuantumNous</sub>
 

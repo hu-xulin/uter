@@ -4,10 +4,10 @@ import (
 	"errors"
 	"fmt"
 
-	rootcommon "github.com/QuantumNous/u-routers/common"
-	relaycommon "github.com/QuantumNous/u-routers/relay/common"
-	"github.com/QuantumNous/u-routers/relaykit/dto"
-	hostreasoning "github.com/QuantumNous/u-routers/setting/reasoning"
+	rootcommon "github.com/QuantumNous/uter/common"
+	relaycommon "github.com/QuantumNous/uter/relay/common"
+	"github.com/QuantumNous/uter/relaykit/dto"
+	hostreasoning "github.com/QuantumNous/uter/setting/reasoning"
 	"github.com/gin-gonic/gin"
 )
 

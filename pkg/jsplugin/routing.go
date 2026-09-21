@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/QuantumNous/u-routers/constant"
+	"github.com/QuantumNous/uter/constant"
 )
 
 type RouteType string

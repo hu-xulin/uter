@@ -4,8 +4,8 @@
 # 覆盖所有前后端产物并重启服务，保证任何改动都生效：
 #   1. web/       React SPA        → rsbuild build    （产出 web/dist）
 #   2. docs-web/  Next.js 文档站   → npm run build    （postbuild 自动拷贝到 web/dist/docs）
-#   3. Go 后端    //go:embed       → go build -o u-routers-bin .（内嵌新前端）
-#   4. 重启       杀掉旧进程后以独立会话启动 u-routers-bin，并做端口 + HTTP 体检
+#   3. Go 后端    //go:embed       → go build -o uter-bin .（内嵌新前端）
+#   4. 重启       杀掉旧进程后以独立会话启动 uter-bin，并做端口 + HTTP 体检
 #
 # 关键约束（改动前先读）：
 #   - 顺序不可换：rsbuild 会清空整个 web/dist（含 dist/docs），所以必须
@@ -34,8 +34,8 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PORT=3000
-BIN="$ROOT/u-routers-bin"
-LOG=/tmp/u-routers-console.log
+BIN="$ROOT/uter-bin"
+LOG=/tmp/uter-console.log
 GO=/usr/local/go/bin/go
 NODE_DIR=/Users/lincolnhu/.workbuddy/binaries/node/versions/22.22.2-3/bin
 PYTHON=/usr/bin/python3
@@ -118,7 +118,7 @@ fi
 
 echo "==> [4/5] 重启服务 (端口 $PORT)"
 
-# 4.1 停掉旧进程（可能是 u-routers-bin，也可能是 go run 的临时二进制）
+# 4.1 停掉旧进程（可能是 uter-bin，也可能是 go run 的临时二进制）
 old_pids="$(lsof -nP -iTCP:$PORT -sTCP:LISTEN -t 2>/dev/null || true)"
 if [ -n "$old_pids" ]; then
   echo "    停止旧进程: $(echo $old_pids | tr '\n' ' ')"
@@ -147,6 +147,8 @@ fi
 pid="$(lsof -nP -iTCP:$PORT -sTCP:LISTEN -t 2>/dev/null | head -1 || true)"
 echo "✓ 后端已重启（同时提供 API 与前端 SPA）: pid=$pid  http://127.0.0.1:$PORT/  (HTTP $code)"
 echo "  日志: $LOG"
+echo "  说明: 本项目生产形态是单端口 $PORT —— SPA 与文档站已内嵌进 Go 二进制，"
+echo "        没有独立前端端口。改前端源码后想热更新调试，用 $0 --dev（3001/3100）。"
 
 if [ "$DEV" = 0 ]; then exit 0; fi
 
@@ -162,7 +164,7 @@ echo "==> [5/5] 启动前端开发服务（HMR）"
 DOCS_DEV_PORT="$PORT"
 if [ "$NO_DOCS" = 0 ]; then
   DOCS_DEV_PORT="$(pick_port 3100)"
-  DOCS_DEV_LOG=/tmp/u-routers-docs-dev.log
+  DOCS_DEV_LOG=/tmp/uter-docs-dev.log
   [ -x "$ROOT/docs-web/node_modules/.bin/next" ] || fail "docs-web/node_modules 缺失，先跑 $0 --install"
   spawn "$DOCS_DEV_LOG" "$ROOT/docs-web" "$ROOT/docs-web/node_modules/.bin/next" dev --port "$DOCS_DEV_PORT"
   docs_code="$(wait_http "$DOCS_DEV_PORT" 60 || echo 000)"
@@ -171,7 +173,7 @@ if [ "$NO_DOCS" = 0 ]; then
 fi
 
 WEB_DEV_PORT="$(pick_port 3001)"
-WEB_DEV_LOG=/tmp/u-routers-web-dev.log
+WEB_DEV_LOG=/tmp/uter-web-dev.log
 [ -x "$ROOT/web/node_modules/.bin/rsbuild" ] || fail "web/node_modules 缺失，先跑 $0 --install"
 spawn "$WEB_DEV_LOG" "$ROOT/web" env NEXT_DOCS_PORT="$DOCS_DEV_PORT" \
   "$ROOT/web/node_modules/.bin/rsbuild" dev --port "$WEB_DEV_PORT"

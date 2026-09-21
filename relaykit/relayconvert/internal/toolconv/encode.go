@@ -6,11 +6,11 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/QuantumNous/u-routers/relaykit/dto"
-	"github.com/QuantumNous/u-routers/relaykit/relayconvert/convmeta"
-	sharedgemini "github.com/QuantumNous/u-routers/relaykit/relayconvert/internal/shared/gemini"
-	kitutil "github.com/QuantumNous/u-routers/relaykit/relayconvert/kitutil"
-	"github.com/QuantumNous/u-routers/relaykit/types"
+	"github.com/QuantumNous/uter/relaykit/dto"
+	"github.com/QuantumNous/uter/relaykit/relayconvert/convmeta"
+	sharedgemini "github.com/QuantumNous/uter/relaykit/relayconvert/internal/shared/gemini"
+	kitutil "github.com/QuantumNous/uter/relaykit/relayconvert/kitutil"
+	"github.com/QuantumNous/uter/relaykit/types"
 )
 
 func AttachRequest(format types.RelayFormat, request any, set Set, options *convmeta.Options) (any, []types.ConversionDiagnostic, error) {

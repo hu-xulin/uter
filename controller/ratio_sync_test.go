@@ -3,11 +3,11 @@ package controller
 import (
 	"testing"
 
-	"github.com/QuantumNous/u-routers/common"
-	"github.com/QuantumNous/u-routers/relaykit/dto"
-	"github.com/QuantumNous/u-routers/setting/billing_setting"
-	"github.com/QuantumNous/u-routers/setting/config"
-	"github.com/QuantumNous/u-routers/setting/ratio_setting"
+	"github.com/QuantumNous/uter/common"
+	"github.com/QuantumNous/uter/relaykit/dto"
+	"github.com/QuantumNous/uter/setting/billing_setting"
+	"github.com/QuantumNous/uter/setting/config"
+	"github.com/QuantumNous/uter/setting/ratio_setting"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

@@ -3,7 +3,7 @@ package billingexpr_test
 import (
 	"testing"
 
-	"github.com/QuantumNous/u-routers/pkg/billingexpr"
+	"github.com/QuantumNous/uter/pkg/billingexpr"
 	"github.com/stretchr/testify/assert"
 )
 

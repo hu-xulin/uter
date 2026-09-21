@@ -1,7 +1,7 @@
 package ratio_setting
 
 import (
-	"github.com/QuantumNous/u-routers/types"
+	"github.com/QuantumNous/uter/types"
 )
 
 const (

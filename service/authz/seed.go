@@ -3,7 +3,7 @@ package authz
 import (
 	"fmt"
 
-	"github.com/QuantumNous/u-routers/model"
+	"github.com/QuantumNous/uter/model"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )

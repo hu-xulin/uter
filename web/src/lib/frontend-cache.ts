@@ -17,7 +17,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@quantumnous.com
 */
 const FRONTEND_CACHE_VERSION = 'default-v1'
-const FRONTEND_CACHE_VERSION_KEY = 'URouters:default:cache-version'
+const FRONTEND_CACHE_VERSION_KEY = 'Uter:default:cache-version'
 const PRESERVED_LOCAL_STORAGE_KEYS = new Set([
   FRONTEND_CACHE_VERSION_KEY,
   'user',

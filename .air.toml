@@ -1,4 +1,4 @@
-# ali-router 专属 air 配置(Go 1.27 + workspace + web embed)
+# uter 专属 air 配置(Go 1.27 + workspace + web embed)
 # 用法:
 #   air                       # 启动监听 + 自动编译 + 自动重启
 #   air -d                    # 调试模式(更详细日志)
@@ -24,15 +24,15 @@ pre_cmd = []
 build_args = [
   "-trimpath",
   "-ldflags",
-  "-s -w -X 'github.com/QuantumNous/u-routers/common.Version=$(cat VERSION)'",
+  "-s -w -X 'github.com/QuantumNous/uter/common.Version=$(cat VERSION)'",
   "-o",
-  "./tmp/ali-router",
+  "./tmp/uter",
   "."
 ]
 # bin 文件路径
-bin = "./tmp/ali-router"
+bin = "./tmp/uter"
 # 完整启动命令(相对 root)
-cmd = "./tmp/ali-router --port 3000"
+cmd = "./tmp/uter --port 3000"
 # 仅在 cmd/bin 任一变化时重启(防抖)
 delay = 600
 # 启动后到第一次 rebuild 的额外等待(让监听 socket 起来)

@@ -1,6 +1,6 @@
 package console_setting
 
-import "github.com/QuantumNous/u-routers/setting/config"
+import "github.com/QuantumNous/uter/setting/config"
 
 type ConsoleSetting struct {
 	ApiInfo              string `json:"api_info"`              // 管理 API 信息 (JSON 数组字符串)

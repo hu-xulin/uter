@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/QuantumNous/u-routers/common"
-	"github.com/QuantumNous/u-routers/logger"
+	"github.com/QuantumNous/uter/common"
+	"github.com/QuantumNous/uter/logger"
 
 	"gorm.io/gorm"
 )

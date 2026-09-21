@@ -16,13 +16,13 @@ import (
 	"sync"
 	"time"
 
-	"github.com/QuantumNous/u-routers/common"
-	"github.com/QuantumNous/u-routers/logger"
+	"github.com/QuantumNous/uter/common"
+	"github.com/QuantumNous/uter/logger"
 
-	"github.com/QuantumNous/u-routers/model"
-	"github.com/QuantumNous/u-routers/relaykit/dto"
-	"github.com/QuantumNous/u-routers/setting/billing_setting"
-	"github.com/QuantumNous/u-routers/setting/ratio_setting"
+	"github.com/QuantumNous/uter/model"
+	"github.com/QuantumNous/uter/relaykit/dto"
+	"github.com/QuantumNous/uter/setting/billing_setting"
+	"github.com/QuantumNous/uter/setting/ratio_setting"
 	"github.com/samber/lo"
 
 	"github.com/gin-gonic/gin"

@@ -20,19 +20,19 @@ export type UserGuideContent = {
 
 const ZH_CONTENT: UserGuideContent = {
   title: '用户指南',
-  description: 'URouters 使用指南：从注册登录到模型调用、聊天应用集成与日志审计',
+  description: 'Uter 使用指南：从注册登录到模型调用、聊天应用集成与日志审计',
   sections: [
     {
       heading: '注册与登录',
       paragraphs: [
-        '在开始使用 URouters 之前，您需要先注册一个账号。',
+        '在开始使用 Uter 之前，您需要先注册一个账号。',
         '管理员可以在系统设置中配置是否允许新用户注册，以及允许哪些第三方登录方式。',
       ],
       subSections: [
         {
           heading: '注册流程',
           paragraphs: [
-            '访问 URouters 首页，点击右上角的「注册」按钮，进入注册页面。',
+            '访问 Uter 首页，点击右上角的「注册」按钮，进入注册页面。',
             '填写用户名、邮箱、密码等必要信息后提交即可完成注册。',
             '如果系统启用了邮箱验证，注册完成后还需要登录邮箱完成验证。',
           ],
@@ -40,7 +40,7 @@ const ZH_CONTENT: UserGuideContent = {
         {
           heading: '登录方式',
           paragraphs: [
-            'URouters 支持以下登录方式：',
+            'Uter 支持以下登录方式：',
           ],
           list: [
             '账号密码登录',
@@ -63,7 +63,7 @@ const ZH_CONTENT: UserGuideContent = {
     {
       heading: '概览与数据看板',
       paragraphs: [
-        '登录后，URouters 会自动跳转到管理首页，展示当前账号的概览信息。',
+        '登录后，Uter 会自动跳转到管理首页，展示当前账号的概览信息。',
         '管理员可以在管理中查看系统整体运行情况，普通用户可以查看自己账号的使用统计。',
       ],
       subSections: [
@@ -129,7 +129,7 @@ const ZH_CONTENT: UserGuideContent = {
     {
       heading: 'API 密钥',
       paragraphs: [
-        '令牌（Token）是调用 URouters AI 接口的凭证，每个令牌独立计费、独立限流。',
+        '令牌（Token）是调用 Uter AI 接口的凭证，每个令牌独立计费、独立限流。',
         '您可以为不同的应用、不同的团队创建不同的令牌，便于权限隔离和用量追踪。',
       ],
       subSections: [
@@ -172,14 +172,14 @@ const ZH_CONTENT: UserGuideContent = {
     {
       heading: '使用 API 与游乐场',
       paragraphs: [
-        'URouters 提供与 OpenAI 完全兼容的 API 接口，可以使用任何支持 OpenAI 协议的客户端连接。',
+        'Uter 提供与 OpenAI 完全兼容的 API 接口，可以使用任何支持 OpenAI 协议的客户端连接。',
         '同时内置「游乐场」（Playground）功能，可以在 Web 上直接测试模型。',
       ],
       subSections: [
         {
           heading: 'API 基础调用',
           paragraphs: [
-            '将客户端的 base_url 设置为 URouters 的 API 地址，请求头带上 Authorization: Bearer YOUR_TOKEN 即可。',
+            '将客户端的 base_url 设置为 Uter 的 API 地址，请求头带上 Authorization: Bearer YOUR_TOKEN 即可。',
             '示例（cURL）：',
           ],
           list: [
@@ -208,7 +208,7 @@ const ZH_CONTENT: UserGuideContent = {
           heading: '自定义请求头',
           paragraphs: [
             '部分上游渠道支持自定义请求头（如用户标识、组织标识）。',
-            'URouters 允许在创建令牌时设置附加请求头，会在转发请求时自动带上。',
+            'Uter 允许在创建令牌时设置附加请求头，会在转发请求时自动带上。',
           ],
         },
       ],
@@ -216,8 +216,8 @@ const ZH_CONTENT: UserGuideContent = {
     {
       heading: '聊天应用集成',
       paragraphs: [
-        'URouters 兼容 OpenAI 接口协议，可以无缝接入 Cherry Studio、ChatBox、Claude Code 等 14+ 客户端。',
-        '只需在客户端中将 base_url 配置为 URouters 的 API 入口、API key 配置为您的令牌即可。',
+        'Uter 兼容 OpenAI 接口协议，可以无缝接入 Cherry Studio、ChatBox、Claude Code 等 14+ 客户端。',
+        '只需在客户端中将 base_url 配置为 Uter 的 API 入口、API key 配置为您的令牌即可。',
       ],
       subSections: [
         {
@@ -226,9 +226,9 @@ const ZH_CONTENT: UserGuideContent = {
             '在 Cherry Studio 的设置中，添加自定义服务商：',
           ],
           list: [
-            '服务商名称：URouters',
-            'API 地址：URouters 的 API base_url',
-            'API 密钥：您在 URouters 创建的令牌',
+            '服务商名称：Uter',
+            'API 地址：Uter 的 API base_url',
+            'API 密钥：您在 Uter 创建的令牌',
             '模型列表：在 Cherry Studio 中选择需要的模型',
           ],
         },
@@ -238,22 +238,22 @@ const ZH_CONTENT: UserGuideContent = {
             'Claude Code 支持自定义 OpenAI 兼容的 endpoint，配置步骤：',
           ],
           list: [
-            '设置环境变量 ANTHROPIC_BASE_URL 为 URouters API 地址',
+            '设置环境变量 ANTHROPIC_BASE_URL 为 Uter API 地址',
             '设置环境变量 ANTHROPIC_AUTH_TOKEN 为您的令牌',
-            '在 Claude Code 配置中选择 URouters 支持的模型',
+            '在 Claude Code 配置中选择 Uter 支持的模型',
           ],
         },
         {
           heading: 'Cline / Continue / Roo Code 等 IDE 插件',
           paragraphs: [
             '这些 VS Code AI 插件都支持自定义 OpenAI 兼容服务。',
-            '在插件设置中填入 URouters 的 API 地址和令牌即可使用，模型按 URouters 中已配置的可用模型列出。',
+            '在插件设置中填入 Uter 的 API 地址和令牌即可使用，模型按 Uter 中已配置的可用模型列出。',
           ],
         },
         {
           heading: '其他常见客户端',
           paragraphs: [
-            'URouters 同时兼容：',
+            'Uter 同时兼容：',
           ],
           list: [
             'ChatBox',
@@ -269,7 +269,7 @@ const ZH_CONTENT: UserGuideContent = {
     {
       heading: '日志与异步任务',
       paragraphs: [
-        'URouters 记录所有 API 请求的详细日志，便于排查问题、审计调用、计费核对。',
+        'Uter 记录所有 API 请求的详细日志，便于排查问题、审计调用、计费核对。',
         '管理员还可以查看所有管理操作的审计日志。',
       ],
       subSections: [
@@ -321,7 +321,7 @@ const ZH_CONTENT: UserGuideContent = {
     {
       heading: '钱包与订阅',
       paragraphs: [
-        'URouters 支持预付费（充值）与订阅两种计费模式。',
+        'Uter 支持预付费（充值）与订阅两种计费模式。',
         '普通用户可以通过钱包余额调用 API；订阅用户可以使用包月 / 包年套餐，享受折扣定价。',
       ],
       subSections: [
@@ -365,7 +365,7 @@ const ZH_CONTENT: UserGuideContent = {
     {
       heading: '定价和排行',
       paragraphs: [
-        '定价展示 URouters 中所有可用的模型，包含模型简介、定价、上下文长度、可用渠道数等信息。',
+        '定价展示 Uter 中所有可用的模型，包含模型简介、定价、上下文长度、可用渠道数等信息。',
         '排行展示按调用次数、消耗金额、错误率等维度排序的热门模型与活跃用户。',
       ],
       subSections: [
@@ -414,19 +414,19 @@ const ZH_CONTENT: UserGuideContent = {
 
 const EN_CONTENT: UserGuideContent = {
   title: 'User Guide',
-  description: 'URouters user guide: from registration and login to model invocation, app integration, and log auditing',
+  description: 'Uter user guide: from registration and login to model invocation, app integration, and log auditing',
   sections: [
     {
       heading: 'Registration & Login',
       paragraphs: [
-        'Before you can use URouters, you need to register an account.',
+        'Before you can use Uter, you need to register an account.',
         'Administrators can configure whether new users are allowed to register, and which third-party login methods are enabled.',
       ],
       subSections: [
         {
           heading: 'Registration',
           paragraphs: [
-            'Visit the URouters home page and click the "Sign up" button in the top right corner.',
+            'Visit the Uter home page and click the "Sign up" button in the top right corner.',
             'Fill in the required information such as username, email, and password to complete the registration.',
             'If email verification is enabled, you also need to verify your email address.',
           ],
@@ -434,7 +434,7 @@ const EN_CONTENT: UserGuideContent = {
         {
           heading: 'Login Methods',
           paragraphs: [
-            'URouters supports the following login methods:',
+            'Uter supports the following login methods:',
           ],
           list: [
             'Username and password',
@@ -523,7 +523,7 @@ const EN_CONTENT: UserGuideContent = {
     {
       heading: 'API Keys',
       paragraphs: [
-        'Tokens are the credentials used to call URouters APIs. Each token is billed and rate-limited independently.',
+        'Tokens are the credentials used to call Uter APIs. Each token is billed and rate-limited independently.',
         'You can create separate tokens for different applications or teams to isolate permissions and track usage.',
       ],
       subSections: [
@@ -566,14 +566,14 @@ const EN_CONTENT: UserGuideContent = {
     {
       heading: 'Using the API & Playground',
       paragraphs: [
-        'URouters exposes APIs fully compatible with OpenAI, so any OpenAI-compatible client can connect.',
+        'Uter exposes APIs fully compatible with OpenAI, so any OpenAI-compatible client can connect.',
         'A built-in Playground lets you test models directly on the web.',
       ],
       subSections: [
         {
           heading: 'Basic API Calls',
           paragraphs: [
-            'Point the client base_url at URouters and add Authorization: Bearer YOUR_TOKEN to the headers.',
+            'Point the client base_url at Uter and add Authorization: Bearer YOUR_TOKEN to the headers.',
             'Available endpoints:',
           ],
           list: [
@@ -602,7 +602,7 @@ const EN_CONTENT: UserGuideContent = {
           heading: 'Custom Headers',
           paragraphs: [
             'Some upstream channels accept custom request headers.',
-            'URouters lets you set extra headers on the token — they are attached automatically when forwarding.',
+            'Uter lets you set extra headers on the token — they are attached automatically when forwarding.',
           ],
         },
       ],
@@ -610,8 +610,8 @@ const EN_CONTENT: UserGuideContent = {
     {
       heading: 'App Integration',
       paragraphs: [
-        'URouters is OpenAI-compatible, so it integrates seamlessly with Cherry Studio, ChatBox, Claude Code and 14+ other clients.',
-        'Just set the base_url to URouters and the API key to your token in the client.',
+        'Uter is OpenAI-compatible, so it integrates seamlessly with Cherry Studio, ChatBox, Claude Code and 14+ other clients.',
+        'Just set the base_url to Uter and the API key to your token in the client.',
       ],
       subSections: [
         {
@@ -620,9 +620,9 @@ const EN_CONTENT: UserGuideContent = {
             'Add a custom provider in Cherry Studio settings:',
           ],
           list: [
-            'Provider name: URouters',
-            'API base URL: URouters API base_url',
-            'API key: the token you created in URouters',
+            'Provider name: Uter',
+            'API base URL: Uter API base_url',
+            'API key: the token you created in Uter',
             'Model list: pick the models you need',
           ],
         },
@@ -632,22 +632,22 @@ const EN_CONTENT: UserGuideContent = {
             'Claude Code supports custom OpenAI-compatible endpoints:',
           ],
           list: [
-            'Set ANTHROPIC_BASE_URL to URouters API base URL',
+            'Set ANTHROPIC_BASE_URL to Uter API base URL',
             'Set ANTHROPIC_AUTH_TOKEN to your token',
-            'Pick an URouters-supported model in Claude Code',
+            'Pick an Uter-supported model in Claude Code',
           ],
         },
         {
           heading: 'IDE Plugins (Cline / Continue / Roo Code)',
           paragraphs: [
             'These VS Code AI plugins support custom OpenAI-compatible services.',
-            'Just configure URouters base URL and token in the plugin settings.',
+            'Just configure Uter base URL and token in the plugin settings.',
           ],
         },
         {
           heading: 'Other Popular Clients',
           paragraphs: [
-            'URouters is also compatible with:',
+            'Uter is also compatible with:',
           ],
           list: [
             'ChatBox',
@@ -663,7 +663,7 @@ const EN_CONTENT: UserGuideContent = {
     {
       heading: 'Logs & Async Tasks',
       paragraphs: [
-        'URouters records every request in detail, so you can debug, audit and reconcile billing easily.',
+        'Uter records every request in detail, so you can debug, audit and reconcile billing easily.',
         'Administrators can also see all admin operations in the audit log.',
       ],
       subSections: [
@@ -715,7 +715,7 @@ const EN_CONTENT: UserGuideContent = {
     {
       heading: 'Wallet & Subscription',
       paragraphs: [
-        'URouters supports prepaid wallet top-ups and recurring subscriptions.',
+        'Uter supports prepaid wallet top-ups and recurring subscriptions.',
         'Regular users pay per request from their wallet balance; subscription users enjoy monthly quotas or discounts.',
       ],
       subSections: [

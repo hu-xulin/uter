@@ -2,7 +2,7 @@
 
 > **Chat Settings Option**
 >
-> In the URouters console under System Settings -> Chat Settings, you can add the following shortcut to enable one-click fill for CC Switch from the token management page:
+> In the Uter console under System Settings -> Chat Settings, you can add the following shortcut to enable one-click fill for CC Switch from the token management page:
 
     ```json
     { "CC Switch": "ccswitch" }
@@ -38,13 +38,13 @@
 - **Web version** — Browser-accessible interface for headless servers / SSH environments
 - **CLI version** — Both interactive menu-driven and command-line modes
 
-## URouters Integration
+## Uter Integration
 
-CC Switch supports the `ccswitch://` Deep Link protocol, allowing one-click provider config import from the URouters token management page.
+CC Switch supports the `ccswitch://` Deep Link protocol, allowing one-click provider config import from the Uter token management page.
 
 ### Configuration Steps
 
-1. **On the URouters token management page, click the dropdown menu for the corresponding token**
+1. **On the Uter token management page, click the dropdown menu for the corresponding token**
    Select the **CC Switch** option from the menu. The system will automatically launch CC Switch and open the configuration dialog.
 
 2. **Complete the configuration in the dialog**

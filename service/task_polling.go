@@ -10,13 +10,13 @@ import (
 	"sync"
 	"time"
 
-	"github.com/QuantumNous/u-routers/common"
-	"github.com/QuantumNous/u-routers/constant"
-	taskdto "github.com/QuantumNous/u-routers/dto"
-	"github.com/QuantumNous/u-routers/logger"
-	"github.com/QuantumNous/u-routers/model"
-	"github.com/QuantumNous/u-routers/relay/channel/task/taskcommon"
-	relaycommon "github.com/QuantumNous/u-routers/relay/common"
+	"github.com/QuantumNous/uter/common"
+	"github.com/QuantumNous/uter/constant"
+	taskdto "github.com/QuantumNous/uter/dto"
+	"github.com/QuantumNous/uter/logger"
+	"github.com/QuantumNous/uter/model"
+	"github.com/QuantumNous/uter/relay/channel/task/taskcommon"
+	relaycommon "github.com/QuantumNous/uter/relay/common"
 
 	"github.com/bytedance/gopkg/util/gopool"
 	"github.com/samber/lo"
@@ -515,7 +515,7 @@ func updateVideoSingleTask(ctx context.Context, adaptor TaskPollingAdaptor, ch *
 	}
 
 	taskResult := &relaycommon.TaskInfo{}
-	// try parse as URouters response format
+	// try parse as Uter response format
 	var responseItems taskdto.TaskResponse[model.Task]
 	if err = common.Unmarshal(responseBody, &responseItems); err == nil && responseItems.IsSuccess() {
 		logger.LogDebug(ctx, "updateVideoSingleTask parsed as new api response format: %+v", responseItems)

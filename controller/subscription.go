@@ -5,10 +5,10 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/QuantumNous/u-routers/common"
-	"github.com/QuantumNous/u-routers/model"
-	"github.com/QuantumNous/u-routers/setting/operation_setting"
-	"github.com/QuantumNous/u-routers/setting/ratio_setting"
+	"github.com/QuantumNous/uter/common"
+	"github.com/QuantumNous/uter/model"
+	"github.com/QuantumNous/uter/setting/operation_setting"
+	"github.com/QuantumNous/uter/setting/ratio_setting"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )

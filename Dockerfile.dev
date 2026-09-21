@@ -22,7 +22,7 @@ COPY . .
 RUN mkdir -p web/dist && \
     echo '<!doctype html><html><head><title>dev</title></head><body>use frontend dev server</body></html>' > web/dist/index.html
 
-RUN go build -ldflags "-s -w -X 'github.com/QuantumNous/u-routers/common.Version=$(cat VERSION)'" -o ali-router
+RUN go build -ldflags "-s -w -X 'github.com/QuantumNous/uter/common.Version=$(cat VERSION)'" -o uter
 
 FROM debian:bookworm-slim
 
@@ -31,8 +31,8 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/* \
     && update-ca-certificates
 
-COPY --from=builder /build/ali-router /
+COPY --from=builder /build/uter /
 COPY LICENSE NOTICE THIRD-PARTY-LICENSES.md /licenses/
 EXPOSE 3000
 WORKDIR /data
-ENTRYPOINT ["/ali-router"]
+ENTRYPOINT ["/uter"]

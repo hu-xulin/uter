@@ -11,10 +11,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/QuantumNous/u-routers/common"
-	"github.com/QuantumNous/u-routers/i18n"
-	"github.com/QuantumNous/u-routers/logger"
-	"github.com/QuantumNous/u-routers/model"
+	"github.com/QuantumNous/uter/common"
+	"github.com/QuantumNous/uter/i18n"
+	"github.com/QuantumNous/uter/logger"
+	"github.com/QuantumNous/uter/model"
 	"github.com/gin-gonic/gin"
 )
 

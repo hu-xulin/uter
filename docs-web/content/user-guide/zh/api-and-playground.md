@@ -92,8 +92,8 @@ curl "https://your-platform.com/v1beta/models/gemini-1.5-pro:generateContent?key
 | 内容审核            | `POST /v1/moderations`                 | 对文本或其他输入执行内容审核；未提供模型时会使用默认审核模型候选。                                                               |
 | Responses API   | `POST /v1/responses`                   | OpenAI Responses 格式接口，支持输入、工具和响应事件等能力。                                                          |
 | Responses 压缩    | `POST /v1/responses/compact`           | 对 Responses 请求上下文执行压缩处理。                                                                        |
-| Codex 网页搜索      | `POST /v1/alpha/search`                | Codex 独立网页搜索格式接口，目前仅允许支持该能力的 Sub2API、优特斯、Codex 和高级自定义渠道处理。                                  |
-| Claude Messages | `POST /v1/messages`                    | Anthropic Claude Messages 兼容接口，要求提供 `model` 和消息内容，必要时由 优特斯 转换为上游协议。                         |
+| Codex 网页搜索      | `POST /v1/alpha/search`                | Codex 独立网页搜索格式接口，目前仅允许支持该能力的 Sub2API、优特、Codex 和高级自定义渠道处理。                                  |
+| Claude Messages | `POST /v1/messages`                    | Anthropic Claude Messages 兼容接口，要求提供 `model` 和消息内容，必要时由 优特 转换为上游协议。                         |
 | 实时对话            | `GET /v1/realtime`（WebSocket）          | OpenAI Realtime 风格的双向实时通信接口，模型通常通过查询参数传入，API 密钥可通过 Bearer Token 或 WebSocket 子协议传递。              |
 | Gemini 原生模型调用   | `POST /v1beta/models/{model}:{action}` | Gemini 原生格式接口，支持模型操作路径，例如 `generateContent`、`streamGenerateContent` 和嵌入相关操作。                    |
 | Gemini 兼容模型调用   | `POST /v1/models/{model}:{action}`     | 以 `/v1` 前缀承接 Gemini 风格的模型操作请求，由 Gemini Relay 负责解析和转换。                                           |

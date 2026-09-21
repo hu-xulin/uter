@@ -1,6 +1,6 @@
 package xunfei
 
-import "github.com/QuantumNous/u-routers/relaykit/dto"
+import "github.com/QuantumNous/uter/relaykit/dto"
 
 type XunfeiMessage struct {
 	Role    string `json:"role"`
