@@ -13,11 +13,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/QuantumNous/u-routers/common"
-	"github.com/QuantumNous/u-routers/i18n"
-	"github.com/QuantumNous/u-routers/middleware"
-	"github.com/QuantumNous/u-routers/model"
-	"github.com/QuantumNous/u-routers/service/authz"
+	"github.com/QuantumNous/uter/common"
+	"github.com/QuantumNous/uter/i18n"
+	"github.com/QuantumNous/uter/middleware"
+	"github.com/QuantumNous/uter/model"
+	"github.com/QuantumNous/uter/service/authz"
 	"github.com/alicebob/miniredis/v2"
 	"github.com/go-redis/redis/v8"
 

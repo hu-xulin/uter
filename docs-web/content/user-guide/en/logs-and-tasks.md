@@ -1,6 +1,6 @@
 # Logs and Asynchronous Tasks
 
-* URouters saves request details, drawing records, and asynchronous tasks like video and music separately.
+* Uter saves request details, drawing records, and asynchronous tasks like video and music separately.
 * After logging in, you can access "Usage Logs" or "Task Logs" from the left navigation.
 * This page uniformly explains the three data partitions, task statuses, and API query methods.
 
@@ -29,7 +29,7 @@ Available filter options for usage log record queries are as follows:
 | Group                        | Filter by the group used in the request.                                                        |
 | Log Type                     | All Types, Recharge, Consumption, Management, System, Error, Refund, Login.                     |
 | API Key Name                 | Filter by API key name.                                                                         |
-| Request ID                   | Locate a request by URouters Request ID.                                                         |
+| Request ID                   | Locate a request by Uter Request ID.                                                         |
 | Upstream Request ID          | Locate a request by the Request ID returned or recorded by the upstream service.                |
 | Username (Admin/Root Only)   | Filter by username in the administrator view.                                                   |
 | Channel ID (Admin/Root Only) | Filter by Channel ID in the administrator view.                                                 |
@@ -91,7 +91,7 @@ Drawing logs support filtering by the following conditions:
 ## Task Logs (Asynchronous Task Logs)
 
 * Click "Task Logs" → "Asynchronous Task Logs" in the left sidebar or visit `/usage-logs/task` to view asynchronous task logs. Regular users can only view their own tasks; the Admin/Root view will also display Channel ID and User.
-* Asynchronous APIs for video, music, etc., do not return final results immediately upon request submission. After successful submission, URouters returns a publicly accessible Task ID and saves the task record, then the backend polls the upstream service to update the status, progress, and results.
+* Asynchronous APIs for video, music, etc., do not return final results immediately upon request submission. After successful submission, Uter returns a publicly accessible Task ID and saves the task record, then the backend polls the upstream service to update the status, progress, and results.
 
 ### Filtering Tasks
 

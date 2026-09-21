@@ -107,7 +107,7 @@ python3 scripts/sync-newapi-user-guide.py      # 需要 Pillow 与 curl
 
 ```bash
 cd docs-web && npm run build      # postbuild 会把产物同步进 web/dist/docs
-cd .. && go build -o u-routers-bin .
+cd .. && go build -o uter-bin .
 ```
 
 （顺序不能反：`web/` 的 rsbuild 构建会清空整个 `web/dist`。）

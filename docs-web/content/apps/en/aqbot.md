@@ -2,7 +2,7 @@
 
 > **Chat Settings Options**
 >
-> In the URouters console, go to System Settings -> Chat Settings and add the
+> In the Uter console, go to System Settings -> Chat Settings and add the
 >   following shortcut option. It lets users fill AQBot from the token
 >   management page with one click:
 
@@ -27,37 +27,37 @@
 - **Agent** — In-chat Agent (uses your configured provider APIs) plus an ACP Agent workbench
 - **Local data** — App state lives in `~/.aqbot/`; user files live in `~/Documents/aqbot/`
 
-See the [AQBot website](https://app.aqbot.top) for the full feature set. This page covers URouters integration only.
+See the [AQBot website](https://app.aqbot.top) for the full feature set. This page covers Uter integration only.
 
-## URouters Integration Method
+## Uter Integration Method
 
-Please use your self-deployed URouters, or ensure that the service provider has a URouters service with legal upstream authorization and compliance obligations. Do not integrate API addresses or keys from unknown sources into a production environment.
+Please use your self-deployed Uter, or ensure that the service provider has a Uter service with legal upstream authorization and compliance obligations. Do not integrate API addresses or keys from unknown sources into a production environment.
 
 ### Method 1: One-Click Import (Recommended)
 
 1. Install AQBot and open it at least once so the system registers the `aqbot://` protocol
-2. In the URouters console, add the JSON above under **System Settings → Chat Settings**
+2. In the Uter console, add the JSON above under **System Settings → Chat Settings**
 3. Open **Token Management** and choose **AQBot** from the token actions
 4. The browser launches AQBot. Confirm the provider name, API host, type `openai`, and key prefix
 5. After confirmation, AQBot opens **Settings → Provider Management**. It reuses a provider with the same API host + type, or creates a new one
 6. Open that provider, click **Sync Models**, then return to chat and select a model
 
-`{address}` is the URouters site root (for example `https://your-newapi.example`), with no query string. For the OpenAI type, AQBot appends `/v1` automatically. Import does not validate the key or sync models.
+`{address}` is the Uter site root (for example `https://your-newapi.example`), with no query string. For the OpenAI type, AQBot appends `/v1` automatically. Import does not validate the key or sync models.
 
 ### Method 2: Manual Configuration
 
-1. Copy the API Key from URouters Token Management
+1. Copy the API Key from Uter Token Management
 2. In AQBot, go to **Settings → Provider Management → Add Provider**
 3. Fill in:
 
 | Field | Value |
 | --- | --- |
-| Provider Name | For example `URouters` |
+| Provider Name | For example `Uter` |
 | Provider Type | `OpenAI` (recommended) |
-| API Host | URouters site address, such as `https://your-newapi.example` |
-| API Key | Your URouters token |
+| API Host | Uter site address, such as `https://your-newapi.example` |
+| API Key | Your Uter token |
 
-4. Click **Sync Models** to pull the models currently exposed by URouters
+4. Click **Sync Models** to pull the models currently exposed by Uter
 5. Return to chat and select a synced model
 
 ![Switch model](/apps-assets/aqbot/switch-model.webp)
@@ -70,7 +70,7 @@ Please use your self-deployed URouters, or ensure that the service provider has 
 
 ### Optional: Native Protocols
 
-If URouters also exposes Claude or Gemini native APIs, add another provider:
+If Uter also exposes Claude or Gemini native APIs, add another provider:
 
 | Use | Provider Type | API Host |
 | --- | --- | --- |
@@ -83,7 +83,7 @@ Change `type` in the one-click template to `anthropic` or `gemini`. The same API
 ## FAQ
 
 - **Clicking AQBot does not open the app**: Install and launch the desktop app first. Opening only the website or a Vite dev server does not register `aqbot://`
-- **Import succeeds but chat fails**: Click **Sync Models**, and make sure the model ID matches the name URouters actually exposes
+- **Import succeeds but chat fails**: Click **Sync Models**, and make sure the model ID matches the name Uter actually exposes
 - **macOS says the app is damaged or the developer cannot be verified**: Follow the [AQBot README](https://github.com/AQBot-Desktop/AQBot) and [Getting Started](https://app.aqbot.top/guide/getting-started) to allow this app. You do not need to turn Gatekeeper off
 - **The one-click link contains an API key**: Generate it only on the signed-in token page. Do not post URLs that embed a real key
 

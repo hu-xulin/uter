@@ -30,7 +30,7 @@ import { getChannelTypeIcon, getKeyPromptForType } from '../channel-utils'
 function newAPIForm(baseUrl: string) {
   return {
     ...CHANNEL_FORM_DEFAULT_VALUES,
-    name: 'URouters upstream',
+    name: 'Uter upstream',
     type: CHANNEL_TYPE_NEW_API,
     base_url: baseUrl,
     key: 'test-key',
@@ -38,7 +38,7 @@ function newAPIForm(baseUrl: string) {
   }
 }
 
-describe('URouters channel', () => {
+describe('Uter channel', () => {
   test('registers selection, ordering, model discovery, and icon metadata', () => {
     const option = CHANNEL_TYPE_OPTIONS.find(
       (item) => item.value === CHANNEL_TYPE_NEW_API
@@ -46,7 +46,7 @@ describe('URouters channel', () => {
 
     expect(option).toEqual({
       value: CHANNEL_TYPE_NEW_API,
-      label: 'URouters',
+      label: 'Uter',
     })
     expect(
       CHANNEL_TYPE_OPTIONS.findIndex(
@@ -54,11 +54,11 @@ describe('URouters channel', () => {
       ) + 1
     ).toBe(CHANNEL_TYPE_OPTIONS.findIndex((item) => item.value === 58))
     expect(MODEL_FETCHABLE_TYPES.has(CHANNEL_TYPE_NEW_API)).toBe(true)
-    expect(getChannelTypeIcon(CHANNEL_TYPE_NEW_API)).toBe('URouters')
+    expect(getChannelTypeIcon(CHANNEL_TYPE_NEW_API)).toBe('Uter')
     expect(getKeyPromptForType(CHANNEL_TYPE_NEW_API)).toBe(
       'Enter API key for this channel'
     )
-    expect(getChannelTypeConfig(CHANNEL_TYPE_NEW_API).icon).toBe('URouters')
+    expect(getChannelTypeConfig(CHANNEL_TYPE_NEW_API).icon).toBe('Uter')
   })
 
   test('requires a non-blank Base URL', () => {
@@ -76,7 +76,7 @@ describe('URouters channel', () => {
     }
 
     expect(
-      channelFormSchema.safeParse(newAPIForm('https://ali-router.example'))
+      channelFormSchema.safeParse(newAPIForm('https://uter.example'))
         .success
     ).toBe(true)
   })

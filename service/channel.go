@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/QuantumNous/u-routers/common"
-	"github.com/QuantumNous/u-routers/model"
-	"github.com/QuantumNous/u-routers/relaykit/dto"
-	"github.com/QuantumNous/u-routers/relaykit/types"
-	"github.com/QuantumNous/u-routers/setting/operation_setting"
+	"github.com/QuantumNous/uter/common"
+	"github.com/QuantumNous/uter/model"
+	"github.com/QuantumNous/uter/relaykit/dto"
+	"github.com/QuantumNous/uter/relaykit/types"
+	"github.com/QuantumNous/uter/setting/operation_setting"
 )
 
 func formatNotifyType(channelId int, status int) string {
@@ -42,7 +42,7 @@ func EnableChannel(channelId int, usingKey string, channelName string) {
 	}
 }
 
-func ShouldDisableChannel(err *types.URouterError) bool {
+func ShouldDisableChannel(err *types.UterError) bool {
 	if !common.AutomaticDisableChannelEnabled {
 		return false
 	}
@@ -64,7 +64,7 @@ func ShouldDisableChannel(err *types.URouterError) bool {
 	return search
 }
 
-func ShouldEnableChannel(newAPIError *types.URouterError, status int) bool {
+func ShouldEnableChannel(newAPIError *types.UterError, status int) bool {
 	if !common.AutomaticEnableChannelEnabled {
 		return false
 	}

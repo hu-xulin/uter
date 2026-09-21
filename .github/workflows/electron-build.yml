@@ -55,13 +55,13 @@ jobs:
       #   if: runner.os != 'Windows'
       #   run: |
       #     go mod download
-      #     go build -ldflags "-s -w -X 'ali-router/common.Version=$(git describe --tags)' -extldflags '-static'" -o ali-router
+      #     go build -ldflags "-s -w -X 'uter/common.Version=$(git describe --tags)' -extldflags '-static'" -o uter
 
       - name: Build Go binary (Windows)
         if: runner.os == 'Windows'
         run: |
           go mod download
-          go build -ldflags "-s -w -X 'ali-router/common.Version=$(git describe --tags)'" -o ali-router.exe
+          go build -ldflags "-s -w -X 'uter/common.Version=$(git describe --tags)'" -o uter.exe
 
       - name: Update Electron version
         run: |

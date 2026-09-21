@@ -15,23 +15,23 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/QuantumNous/u-routers/common"
-	"github.com/QuantumNous/u-routers/constant"
-	"github.com/QuantumNous/u-routers/controller"
-	"github.com/QuantumNous/u-routers/i18n"
-	"github.com/QuantumNous/u-routers/logger"
-	"github.com/QuantumNous/u-routers/middleware"
-	"github.com/QuantumNous/u-routers/model"
-	"github.com/QuantumNous/u-routers/oauth"
-	"github.com/QuantumNous/u-routers/pkg/jsplugin"
-	perfmetrics "github.com/QuantumNous/u-routers/pkg/perf_metrics"
-	"github.com/QuantumNous/u-routers/relay"
-	kitutil "github.com/QuantumNous/u-routers/relaykit/relayconvert/kitutil"
-	"github.com/QuantumNous/u-routers/router"
-	"github.com/QuantumNous/u-routers/service"
-	"github.com/QuantumNous/u-routers/service/authz"
-	_ "github.com/QuantumNous/u-routers/setting/performance_setting"
-	"github.com/QuantumNous/u-routers/setting/ratio_setting"
+	"github.com/QuantumNous/uter/common"
+	"github.com/QuantumNous/uter/constant"
+	"github.com/QuantumNous/uter/controller"
+	"github.com/QuantumNous/uter/i18n"
+	"github.com/QuantumNous/uter/logger"
+	"github.com/QuantumNous/uter/middleware"
+	"github.com/QuantumNous/uter/model"
+	"github.com/QuantumNous/uter/oauth"
+	"github.com/QuantumNous/uter/pkg/jsplugin"
+	perfmetrics "github.com/QuantumNous/uter/pkg/perf_metrics"
+	"github.com/QuantumNous/uter/relay"
+	kitutil "github.com/QuantumNous/uter/relaykit/relayconvert/kitutil"
+	"github.com/QuantumNous/uter/router"
+	"github.com/QuantumNous/uter/service"
+	"github.com/QuantumNous/uter/service/authz"
+	_ "github.com/QuantumNous/uter/setting/performance_setting"
+	"github.com/QuantumNous/uter/setting/ratio_setting"
 
 	"github.com/bytedance/gopkg/util/gopool"
 	"github.com/gin-gonic/gin"
@@ -67,7 +67,7 @@ func main() {
 		return
 	}
 
-	common.SysLog("URouters " + common.Version + " started")
+	common.SysLog("Uter " + common.Version + " started")
 	if os.Getenv("GIN_MODE") != "debug" {
 		gin.SetMode(gin.ReleaseMode)
 	}
@@ -190,7 +190,7 @@ func main() {
 		common.SysLog(fmt.Sprintf("panic detected: %v", err))
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": gin.H{
-				"message": fmt.Sprintf("Panic detected, error: %v. Please submit a issue here: https://github.com/Calcium-Ion/ali-router", err),
+				"message": fmt.Sprintf("Panic detected, error: %v. Please submit a issue here: https://github.com/Calcium-Ion/uter", err),
 				"type":    "new_api_panic",
 			},
 		})

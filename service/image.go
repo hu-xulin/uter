@@ -10,8 +10,8 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/QuantumNous/u-routers/common"
-	"github.com/QuantumNous/u-routers/constant"
+	"github.com/QuantumNous/uter/common"
+	"github.com/QuantumNous/uter/constant"
 
 	"golang.org/x/image/webp"
 )

@@ -16,9 +16,9 @@ import (
 	"regexp"
 	"testing"
 
-	"github.com/QuantumNous/u-routers/relaykit/dto"
-	"github.com/QuantumNous/u-routers/relaykit/relayconvert/convmeta"
-	"github.com/QuantumNous/u-routers/relaykit/types"
+	"github.com/QuantumNous/uter/relaykit/dto"
+	"github.com/QuantumNous/uter/relaykit/relayconvert/convmeta"
+	"github.com/QuantumNous/uter/relaykit/types"
 	"github.com/stretchr/testify/require"
 )
 
@@ -92,7 +92,7 @@ func checkStreamEventsGolden(t *testing.T, name string, events []any) {
 	require.Equal(t, string(want), string(got), "conversion events drifted from golden snapshot %s", path)
 }
 
-// goldenInfo mirrors the host's default converter options (ali-router's
+// goldenInfo mirrors the host's default converter options (uter's
 // model_setting defaults at the time the snapshots were recorded) so the
 // golden files stay comparable across the extraction.
 func goldenInfo() convmeta.Meta {

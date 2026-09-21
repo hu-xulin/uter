@@ -21,8 +21,8 @@ import { useEffect, useLayoutEffect, useRef } from 'react';
  *    its own URL (`/docs?p=/docs/zh/...`) so a reload or a shared link
  *    reopens the same page.
  */
-const THEME_MESSAGE = 'urouters:docs:theme';
-const ROUTE_MESSAGE = 'urouters:docs:route';
+const THEME_MESSAGE = 'Uter:docs:theme';
+const ROUTE_MESSAGE = 'Uter:docs:route';
 
 /** Attribute `global.css` keys the embedded layout off. */
 const EMBED_ATTRIBUTE = 'data-docs-embed';

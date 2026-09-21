@@ -6,8 +6,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/QuantumNous/u-routers/common"
-	"github.com/QuantumNous/u-routers/middleware"
+	"github.com/QuantumNous/uter/common"
+	"github.com/QuantumNous/uter/middleware"
 
 	"github.com/gin-gonic/gin"
 )

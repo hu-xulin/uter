@@ -8,7 +8,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/QuantumNous/u-routers/model"
+	"github.com/QuantumNous/uter/model"
 )
 
 const (

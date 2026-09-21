@@ -21,7 +21,7 @@ For commercial licensing, please contact support@quantumnous.com
  */
 
 // System Configuration Defaults
-export const DEFAULT_SYSTEM_NAME = 'URouters'
+export const DEFAULT_SYSTEM_NAME = 'Uter'
 
 /**
  * Asset version for the bundled logo. Bump it whenever

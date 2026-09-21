@@ -3,10 +3,10 @@ package model
 import (
 	"testing"
 
-	"github.com/QuantumNous/u-routers/common"
-	"github.com/QuantumNous/u-routers/constant"
-	"github.com/QuantumNous/u-routers/dto"
-	kitdto "github.com/QuantumNous/u-routers/relaykit/dto"
+	"github.com/QuantumNous/uter/common"
+	"github.com/QuantumNous/uter/constant"
+	"github.com/QuantumNous/uter/dto"
+	kitdto "github.com/QuantumNous/uter/relaykit/dto"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

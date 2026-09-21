@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"testing"
 
-	kitutil "github.com/QuantumNous/u-routers/relaykit/relayconvert/kitutil"
+	kitutil "github.com/QuantumNous/uter/relaykit/relayconvert/kitutil"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/tidwall/gjson"

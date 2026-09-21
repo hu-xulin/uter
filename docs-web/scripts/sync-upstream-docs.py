@@ -44,14 +44,16 @@ RAW = 'https://raw.githubusercontent.com/QuantumNous/new-api-docs-v1/main'
 LOCALES = ('zh', 'en')
 
 # Brand: the upstream product name never appears in our documentation.
-BRAND = {'zh': '优特斯', 'en': 'URouters'}
+# 中文品牌全称「优特智能」，英文品牌全称「Uter.ai」（2026-09-20 定）。
+BRAND = {'zh': '优特智能', 'en': 'Uter.ai'}
 
 # Legal documents are our own; they live with the rest of the brand material.
+# ⚠️ 只有中文源。英文法务页（content/legal/en/**）是独立人工译稿，见 sync_legal()。
 LEGAL_SOURCE = {
     'user-agreement': Path.home()
-    / 'WorkBuddy/2026-09-18-11-15-09/legal/优特斯大模型服务平台用户协议.md',
+    / 'WorkBuddy/2026-09-18-11-15-09/legal/优特智能大模型服务平台用户协议.md',
     'privacy-policy': Path.home()
-    / 'WorkBuddy/2026-09-18-11-15-09/legal/优特斯大模型服务平台隐私政策.md',
+    / 'WorkBuddy/2026-09-18-11-15-09/legal/优特智能大模型服务平台隐私政策.md',
 }
 
 MAX_WIDTH = 1600
@@ -224,11 +226,11 @@ def apply_brand(text: str, brand: str) -> str:
         return f'{bang}[{BRAND_PATTERN.sub(brand, label)}]({url})'
 
     out = LINK_PATTERN.sub(sub, rename(text))
-    if brand == '优特斯':
-        # "New API 提供完整的…" becomes "优特斯 提供完整的…"; Chinese sets
+    if brand.startswith('优特'):
+        # "New API 提供完整的…" becomes "优特智能 提供完整的…"; Chinese sets
         # the next word without a space, so the one the English name needed
         # is dropped when what follows is Chinese.
-        out = re.sub(r'优特斯\s+(?=[\u4e00-\u9fff（【])', '优特斯', out)
+        out = re.sub(rf'{re.escape(brand)}\s+(?=[\u4e00-\u9fff（【])', brand, out)
     return out
 
 
@@ -671,14 +673,21 @@ def sync_api(upstream: Path, texts: list) -> None:
 
 
 def sync_legal() -> None:
+    """法务页只有中文源。
+
+    ⚠️ 英文（content/legal/en/**）是**独立人工译稿**，不是源文件的中文副本：
+    早期版本曾把中文源同时写进 zh 与 en，等于用中文覆盖英文页。这里只写 zh，
+    en 若已存在一律保持不动。
+    """
     for doc, source in LEGAL_SOURCE.items():
         if not source.exists():
             print(f'  legal/{doc}: 源文件缺失，跳过 ({source})')
             continue
         text = source.read_text(encoding='utf-8').strip() + '\n'
-        for locale in LOCALES:
-            write(DOCS / f'content/legal/{locale}/{doc}.md', text)
-        print(f'  legal/{doc}: {len(text)} 字符 × {len(LOCALES)} 语')
+        write(DOCS / f'content/legal/zh/{doc}.md', text)
+        en = DOCS / f'content/legal/en/{doc}.md'
+        note = 'en 为独立译稿，保持不动' if en.exists() else 'en 缺失，需补译稿'
+        print(f'  legal/{doc}: zh 已更新（{len(text)} 字符）；{note}')
 
 
 # ── main ───────────────────────────────────────────────────────────────

@@ -1,20 +1,20 @@
-# URouters Large Model Service Platform Privacy Policy
+# Uter Large Model Service Platform Privacy Policy
 
 | Item | Content |
 |---|---|
-| Service Brand | **Urouters 优特斯** |
-| Platform Name | **URouters Large Model Service Platform** |
-| Official Website | https://urouters.com |
-| Document Name | URouters Large Model Service Platform Privacy Policy |
+| Service Brand | **Uter.ai 优特智能** |
+| Platform Name | **Uter Large Model Service Platform** |
+| Official Website | https://uter.ai |
+| Document Name | Uter Large Model Service Platform Privacy Policy |
 | Version | V1.0 |
 | Effective Date | August 8, 2026 |
 | Last Updated | August 8, 2026 |
-| Personal Information Processor | **Shenzhen Urouters Intelligent Co., Ltd.** |
+| Personal Information Processor | **Shenzhen Uter Network Co., Ltd.** |
 | Registered Address | Shenzhen, Guangdong Province, the People's Republic of China |
-| Personal Information Protection Officer Email | privacy@urouters.com |
-| Customer Service Email | support@urouters.com |
+| Personal Information Protection Officer Email | privacy@uter.ai |
+| Customer Service Email | support@uter.ai |
 
-> **This Policy, together with the URouters Large Model Service Platform Terms of Service, constitutes the complete agreement between you and Shenzhen Urouters Intelligent Co., Ltd.** This Policy is a part of that Agreement; its rules on the processing of personal information supplement Article 8 (Data, Content and Personal Information Protection) of the Terms of Service; in the event of any inconsistency with respect to the processing of personal information, **this Policy shall prevail.**
+> **This Policy, together with the Uter Large Model Service Platform Terms of Service, constitutes the complete agreement between you and Shenzhen Uter Network Co., Ltd.** This Policy is a part of that Agreement; its rules on the processing of personal information supplement Article 8 (Data, Content and Personal Information Protection) of the Terms of Service; in the event of any inconsistency with respect to the processing of personal information, **this Policy shall prevail.**
 
 ---
 
@@ -29,7 +29,7 @@ To help you understand quickly, we first summarize the core of this Policy in on
 | Will you use my data to train models? | **No.** We do not train large models ourselves, nor do we use your request content for any model training, fine-tuning or improvement purposes. |
 | Will my data go overseas? | Only when **you actively choose to call overseas model nodes** will the request content be transmitted to overseas upstream services in real time, and it is not retained domestically. See Chapter 4; such transfer is actively instructed and initiated by you. |
 | What if my end users submit personal information to my application? | **You are the processor, and we are the entrusted processor.** We process only upon your instructions and not for our own purposes. See Chapter 2. |
-| How do I delete my data? | You may delete it yourself in the console; or email privacy@urouters.com, and we will respond within **15 business days**. |
+| How do I delete my data? | You may delete it yourself in the console; or email privacy@uter.ai, and we will respond within **15 business days**. |
 
 ---
 
@@ -55,11 +55,11 @@ To help you understand quickly, we first summarize the core of this Policy in on
 
 **1.1 Who We Are**
 
-The URouters Large Model Service Platform (hereinafter the "Platform") is operated by **Shenzhen Urouters Intelligent Co., Ltd.** (hereinafter "we" or "优特斯"). Registered in Shenzhen, Guangdong Province, the People's Republic of China, we are the **personal information processor** of the personal information collected by this Platform.
+The Uter Large Model Service Platform (hereinafter the "Platform") is operated by **Shenzhen Uter Network Co., Ltd.** (hereinafter "we" or "优特"). Registered in Shenzhen, Guangdong Province, the People's Republic of China, we are the **personal information processor** of the personal information collected by this Platform.
 
 **1.2 Scope of this Policy**
 
-1.2.1 This Policy applies to our processing of your personal information when you use the Platform's services through the official website urouters.com, the console, developer documentation, SDK and API interfaces.
+1.2.1 This Policy applies to our processing of your personal information when you use the Platform's services through the official website Uter.ai, the console, developer documentation, SDK and API interfaces.
 
 1.2.2 **This Policy does not apply to the following circumstances**:
 
@@ -153,7 +153,7 @@ Pursuant to Article 13 of the Personal Information Protection Law (PIPL), we may
 
 3.6.1 We use an automated risk-control system to identify abnormal calling behavior (such as API Key resale, malicious traffic inflation, region-restriction bypass). Such automated decisions are **used only for service security and compliance purposes and will not be used for credit evaluation of you or differentiated pricing**.
 
-3.6.2 Pursuant to Article 24 of the PIPL, if such automated decision-making has a significant impact on your rights and interests (such as restricting or terminating the Service), **you have the right to request an explanation from us and to refuse a decision made solely by automated means**. You may do so via privacy@urouters.com.
+3.6.2 Pursuant to Article 24 of the PIPL, if such automated decision-making has a significant impact on your rights and interests (such as restricting or terminating the Service), **you have the right to request an explanation from us and to refuse a decision made solely by automated means**. You may do so via privacy@uter.ai.
 
 ---
 
@@ -296,11 +296,11 @@ Pursuant to Chapter 4 of the PIPL, you enjoy the following rights regarding your
 | **Portability** | Email request | Where conditions prescribed by the national cyberspace authority are met, we provide a portability channel |
 | **Restrict or Refuse Processing** | Email request | E.g., refuse a decision made solely by automated means that has a major impact on you |
 | **Explanation** | Email request | You have the right to request an explanation of this Policy and the personal information processing rules |
-| **Complaint and Report** | privacy@urouters.com | We will respond within 15 business days |
+| **Complaint and Report** | privacy@uter.ai | We will respond within 15 business days |
 
 **7.1 Request Acceptance Channel**
 
-- Email: privacy@urouters.com
+- Email: privacy@uter.ai
 - Console: Account Settings → Privacy and Data → Exercise of Rights
 - We may need you to provide necessary information to verify your identity; **verification is used only for identity confirmation and will not additionally expand the scope of information collection**.
 
@@ -330,11 +330,11 @@ If you believe our processing activities infringe your legitimate rights and int
 
 ## Chapter 9 Protection of Minors
 
-9.1 This Platform **does not provide services to minors**. Pursuant to Article 1.5 of the URouters Large Model Service Platform Terms of Service, users should be at least **18 years of age** and have full capacity for civil conduct.
+9.1 This Platform **does not provide services to minors**. Pursuant to Article 1.5 of the Uter Large Model Service Platform Terms of Service, users should be at least **18 years of age** and have full capacity for civil conduct.
 
 9.2 We will not actively collect minors' personal information, nor require minors to provide any personal information. If you are a minor, please do not register for or use this Platform's services.
 
-9.3 Pursuant to Article 31 of the PIPL, **the personal information of minors under the age of 14 is sensitive personal information**. If we discover that we have mistakenly collected a minor's personal information, we will delete it immediately; guardians are welcome to contact us via privacy@urouters.com.
+9.3 Pursuant to Article 31 of the PIPL, **the personal information of minors under the age of 14 is sensitive personal information**. If we discover that we have mistakenly collected a minor's personal information, we will delete it immediately; guardians are welcome to contact us via privacy@uter.ai.
 
 9.4 **Note for users who are developers**: If the application you develop based on this Platform is directed at minors or may be used by minors, **you should obtain the separate consent of their guardians on your own**, and design dedicated information processing rules and content security measures for minors. This obligation is borne by you; this Platform does not intervene in the legal relationship between you and your end users.
 
@@ -394,11 +394,11 @@ The output of large language models is probabilistic and non-deterministic, and 
 
 | Matter | Contact |
 |---|---|
-| Personal Information Protection Officer | privacy@urouters.com |
-| Exercise of Personal Information Rights and Complaints | privacy@urouters.com |
-| Service and Technical Support | tech@urouters.com |
-| Abuse and Violation Reporting | abuse@urouters.com |
-| Business and Contracts | bd@urouters.com |
+| Personal Information Protection Officer | privacy@uter.ai |
+| Exercise of Personal Information Rights and Complaints | privacy@uter.ai |
+| Service and Technical Support | tech@uter.ai |
+| Abuse and Violation Reporting | abuse@uter.ai |
+| Business and Contracts | bd@uter.ai |
 | Mailing Address | T2, Ali Center, Nanshan District, Shenzhen, Guangdong Province, the People's Republic of China |
 
 We will respond within **15 business days** of receiving your question or complaint.

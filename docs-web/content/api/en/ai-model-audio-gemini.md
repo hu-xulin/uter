@@ -2,7 +2,7 @@
 
 The native Gemini audio generation endpoint. Synthesize speech directly with models such as `gemini-2.5-flash-preview-tts`, returning audio in PCM / WAV and other formats.
 
-Unlike the "Native OpenAI Format", this endpoint follows Google Gemini's `v1beta` protocol: you submit content to the `generateContent` endpoint and control the output modality and voice via `generationConfig`. URouters unifies access to the Gemini family of models — keys, quotas and billing all use the platform account system.
+Unlike the "Native OpenAI Format", this endpoint follows Google Gemini's `v1beta` protocol: you submit content to the `generateContent` endpoint and control the output modality and voice via `generationConfig`. Uter unifies access to the Gemini family of models — keys, quotas and billing all use the platform account system.
 
 ## Authorization
 
@@ -44,8 +44,8 @@ Authenticate with a Bearer token.
 ### Request example
 
 ```bash
-curl -X POST "https://urouters.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent" \
-  -H "Authorization: Bearer $URouters_API_KEY" \
+curl -X POST "https://uter.ai/v1beta/models/gemini-2.5-flash-preview-tts:generateContent" \
+  -H "Authorization: Bearer $Uter_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
     "contents": [

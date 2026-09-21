@@ -1,6 +1,6 @@
 package constant
 
-import "github.com/QuantumNous/u-routers/relaykit/types"
+import "github.com/QuantumNous/uter/relaykit/types"
 
 // Finish reasons moved to types with the conversion kit.
 var (

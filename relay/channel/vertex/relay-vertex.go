@@ -1,6 +1,6 @@
 package vertex
 
-import "github.com/QuantumNous/u-routers/common"
+import "github.com/QuantumNous/uter/common"
 
 func GetModelRegion(other string, localModelName string) string {
 	// if other is json string

@@ -5,9 +5,9 @@ import (
 	"errors"
 	"io"
 
-	"github.com/QuantumNous/u-routers/model"
-	"github.com/QuantumNous/u-routers/setting/system_setting"
-	"github.com/QuantumNous/u-routers/types"
+	"github.com/QuantumNous/uter/model"
+	"github.com/QuantumNous/uter/setting/system_setting"
+	"github.com/QuantumNous/uter/types"
 	"github.com/gin-gonic/gin"
 )
 

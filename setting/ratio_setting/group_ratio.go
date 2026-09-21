@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"errors"
 
-	"github.com/QuantumNous/u-routers/common"
-	"github.com/QuantumNous/u-routers/setting/config"
-	"github.com/QuantumNous/u-routers/types"
+	"github.com/QuantumNous/uter/common"
+	"github.com/QuantumNous/uter/setting/config"
+	"github.com/QuantumNous/uter/types"
 )
 
 var defaultGroupRatio = map[string]float64{

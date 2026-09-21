@@ -62,6 +62,18 @@ export default defineConfig(({ envMode }) => {
     '/_next',
     '/search-index.json',
   ]
+  // The Next dev server hydrates the page only after its HMR websocket
+  // (`ws://<origin>/_next/hmr`) is connected. The generic `/_next` proxy
+  // above forwards plain HTTP but not the `Upgrade` handshake, so the
+  // socket hangs forever: the proxied docs page loads and renders with no
+  // console error — and never hydrates, leaving every sidebar toggle dead.
+  // `ws: true` makes the dev server forward the upgrade. Must be declared
+  // before `/_next` so the more specific path matches first.
+  devProxy['/_next/hmr'] = {
+    target: docsTarget.replace('http', 'ws'),
+    ws: true,
+    changeOrigin: true,
+  }
   for (const prefix of staticPrefixes) {
     devProxy[prefix] = {
       target: docsTarget,

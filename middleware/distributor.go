@@ -9,18 +9,18 @@ import (
 	"strings"
 	"time"
 
-	"github.com/QuantumNous/u-routers/common"
-	"github.com/QuantumNous/u-routers/constant"
-	taskdto "github.com/QuantumNous/u-routers/dto"
-	"github.com/QuantumNous/u-routers/i18n"
-	"github.com/QuantumNous/u-routers/logger"
-	"github.com/QuantumNous/u-routers/model"
-	"github.com/QuantumNous/u-routers/pkg/jsplugin"
-	relayconstant "github.com/QuantumNous/u-routers/relay/constant"
-	"github.com/QuantumNous/u-routers/relaykit/dto"
-	"github.com/QuantumNous/u-routers/relaykit/types"
-	"github.com/QuantumNous/u-routers/service"
-	"github.com/QuantumNous/u-routers/setting/ratio_setting"
+	"github.com/QuantumNous/uter/common"
+	"github.com/QuantumNous/uter/constant"
+	taskdto "github.com/QuantumNous/uter/dto"
+	"github.com/QuantumNous/uter/i18n"
+	"github.com/QuantumNous/uter/logger"
+	"github.com/QuantumNous/uter/model"
+	"github.com/QuantumNous/uter/pkg/jsplugin"
+	relayconstant "github.com/QuantumNous/uter/relay/constant"
+	"github.com/QuantumNous/uter/relaykit/dto"
+	"github.com/QuantumNous/uter/relaykit/types"
+	"github.com/QuantumNous/uter/service"
+	"github.com/QuantumNous/uter/setting/ratio_setting"
 
 	"github.com/gin-gonic/gin"
 	"github.com/tidwall/gjson"
@@ -610,7 +610,7 @@ func getTaskOriginModelName(c *gin.Context) string {
 	return ""
 }
 
-func SetupContextForSelectedChannel(c *gin.Context, channel *model.Channel, modelName string) *types.URouterError {
+func SetupContextForSelectedChannel(c *gin.Context, channel *model.Channel, modelName string) *types.UterError {
 	c.Set("original_model", modelName) // for retry
 	expectedPlugin := c.GetString("expected_task_plugin_key")
 	if channel == nil {

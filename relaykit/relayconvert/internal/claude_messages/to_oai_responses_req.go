@@ -6,10 +6,10 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/QuantumNous/u-routers/relaykit/dto"
-	"github.com/QuantumNous/u-routers/relaykit/relayconvert/convmeta"
-	kitutil "github.com/QuantumNous/u-routers/relaykit/relayconvert/kitutil"
-	"github.com/QuantumNous/u-routers/relaykit/relayconvert/reasoning"
+	"github.com/QuantumNous/uter/relaykit/dto"
+	"github.com/QuantumNous/uter/relaykit/relayconvert/convmeta"
+	kitutil "github.com/QuantumNous/uter/relaykit/relayconvert/kitutil"
+	"github.com/QuantumNous/uter/relaykit/relayconvert/reasoning"
 )
 
 func ClaudeMessagesRequestToOpenAIResponses(claudeRequest dto.ClaudeRequest, info convmeta.Meta) (*dto.OpenAIResponsesRequest, error) {
@@ -51,7 +51,7 @@ func ClaudeMessagesRequestToOpenAIResponses(claudeRequest dto.ClaudeRequest, inf
 		TopP:              claudeRequest.TopP,
 	}
 	if info != nil && !convmeta.OptionsOf(info).OpenRouterDialect {
-		// Keep the outgoing -thinking suffix so a cascaded downstream ali-router
+		// Keep the outgoing -thinking suffix so a cascaded downstream uter
 		// can recover reasoning intent from the model name. This is an
 		// emission-side policy, not converter-side suffix parsing.
 		thinkingSuffix := "-thinking"

@@ -26,7 +26,7 @@ import {
 
 const defaultSiteSettings: SiteSettings = {
   Notice: '',
-  SystemName: 'URouters',
+  SystemName: 'Uter',
   Logo: '',
   Footer: '',
   About: '',

@@ -82,7 +82,7 @@ export function isBundledDocsHref(href: string): boolean {
 }
 
 /**
- * Entry path of the URouters docs site for a given locale. The docs
+ * Entry path of the Uter docs site for a given locale. The docs
  * site is mounted at `/docs/<lang>/` by the Go gateway; the rest of
  * the path is just the `docs` prefix concatenated with the locale.
  *

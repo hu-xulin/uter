@@ -5,9 +5,9 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/QuantumNous/u-routers/relaykit/dto"
-	"github.com/QuantumNous/u-routers/relaykit/relayconvert/convmeta"
-	"github.com/QuantumNous/u-routers/relaykit/relayconvert/reasoning"
+	"github.com/QuantumNous/uter/relaykit/dto"
+	"github.com/QuantumNous/uter/relaykit/relayconvert/convmeta"
+	"github.com/QuantumNous/uter/relaykit/relayconvert/reasoning"
 )
 
 var SupportedMimeTypes = map[string]bool{

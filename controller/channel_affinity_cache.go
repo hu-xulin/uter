@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/QuantumNous/u-routers/service"
+	"github.com/QuantumNous/uter/service"
 	"github.com/gin-gonic/gin"
 )
 

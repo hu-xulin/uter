@@ -18,7 +18,7 @@ export type FeaturesContent = {
 
 const ZH_CONTENT: FeaturesContent = {
   title: '特性说明',
-  description: 'URouters 的完整特性列表',
+  description: 'Uter 的完整特性列表',
   featuresHeading: '全部特性',
   features: [
     '全新的 UI 界面',
@@ -74,7 +74,7 @@ const ZH_CONTENT: FeaturesContent = {
 
 const EN_CONTENT: FeaturesContent = {
   title: 'Features',
-  description: 'Complete feature list of URouters',
+  description: 'Complete feature list of Uter',
   featuresHeading: 'All Features',
   features: [
     'Brand new UI interface (some interfaces still being updated)',

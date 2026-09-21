@@ -6,7 +6,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	relayconstant "github.com/QuantumNous/u-routers/relay/constant"
+	relayconstant "github.com/QuantumNous/uter/relay/constant"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/require"
 )

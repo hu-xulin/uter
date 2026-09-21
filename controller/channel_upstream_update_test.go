@@ -8,10 +8,10 @@ import (
 	"net/url"
 	"testing"
 
-	"github.com/QuantumNous/u-routers/common"
-	"github.com/QuantumNous/u-routers/constant"
-	"github.com/QuantumNous/u-routers/model"
-	"github.com/QuantumNous/u-routers/relaykit/dto"
+	"github.com/QuantumNous/uter/common"
+	"github.com/QuantumNous/uter/constant"
+	"github.com/QuantumNous/uter/model"
+	"github.com/QuantumNous/uter/relaykit/dto"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -394,10 +394,10 @@ func TestFetchModelsUsesSharedChannelFetchBehavior(t *testing.T) {
 	require.JSONEq(t, `{"success":true,"message":"","data":["claude-sonnet"]}`, recorder.Body.String())
 }
 
-func TestFetchURoutersModelsUsesOpenAIContract(t *testing.T) {
+func TestFetchUterModelsUsesOpenAIContract(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, "/v1/models", r.URL.Path)
-		assert.Equal(t, "Bearer ali-router-key", r.Header.Get("Authorization"))
+		assert.Equal(t, "Bearer uter-key", r.Header.Get("Authorization"))
 		w.Header().Set("Content-Type", "application/json")
 		_, err := w.Write([]byte(`{"data":[{"id":"gpt-5"},{"id":" gpt-5-mini "}]}`))
 		assert.NoError(t, err)
@@ -406,8 +406,8 @@ func TestFetchURoutersModelsUsesOpenAIContract(t *testing.T) {
 
 	baseURL := server.URL
 	channel := &model.Channel{
-		Type:    constant.ChannelTypeURouter,
-		Key:     "ali-router-key",
+		Type:    constant.ChannelTypeUter,
+		Key:     "uter-key",
 		BaseURL: &baseURL,
 	}
 

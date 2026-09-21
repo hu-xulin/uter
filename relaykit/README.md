@@ -1,8 +1,8 @@
 # RelayKit
 
-RelayKit 是从 [ali-router](https://github.com/QuantumNous/u-routers) 中拆分出的独立 Go 模块，提供常用大模型文本协议的 DTO、请求转换、响应转换和流式事件转换。
+RelayKit 是从 [uter](https://github.com/QuantumNous/uter) 中拆分出的独立 Go 模块，提供常用大模型文本协议的 DTO、请求转换、响应转换和流式事件转换。
 
-它只负责协议层的数据建模与语义转换，不包含 HTTP 服务、上游请求发送、渠道调度、鉴权、计费或数据库逻辑。因此可以脱离 ali-router 主模块，嵌入其他 Go 网关或代理服务。
+它只负责协议层的数据建模与语义转换，不包含 HTTP 服务、上游请求发送、渠道调度、鉴权、计费或数据库逻辑。因此可以脱离 uter 主模块，嵌入其他 Go 网关或代理服务。
 
 ## 能力
 
@@ -11,7 +11,7 @@ RelayKit 是从 [ali-router](https://github.com/QuantumNous/u-routers) 中拆分
 - 自动根据 DTO 类型识别源协议，并选择内置的直接或多跳转换路径
 - 返回转换器 ID、质量等级、实际转换步骤和统一 usage，方便审计与调试
 - 支持常用的文本、多模态内容、工具调用、推理内容和 usage 映射
-- 作为独立 Go module 构建，不依赖 ali-router 主模块、Gin、数据库或全局设置
+- 作为独立 Go module 构建，不依赖 uter 主模块、Gin、数据库或全局设置
 
 ## 支持矩阵
 
@@ -37,7 +37,7 @@ RelayKit 是从 [ali-router](https://github.com/QuantumNous/u-routers) 中拆分
 RelayKit 要求 Go 1.25.1 或更高版本。
 
 ```bash
-go get github.com/QuantumNous/u-routers/relaykit@latest
+go get github.com/QuantumNous/uter/relaykit@latest
 ```
 
 主要包：
@@ -61,10 +61,10 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/QuantumNous/u-routers/relaykit/dto"
-	"github.com/QuantumNous/u-routers/relaykit/relayconvert"
-	"github.com/QuantumNous/u-routers/relaykit/relayconvert/convmeta"
-	"github.com/QuantumNous/u-routers/relaykit/types"
+	"github.com/QuantumNous/uter/relaykit/dto"
+	"github.com/QuantumNous/uter/relaykit/relayconvert"
+	"github.com/QuantumNous/uter/relaykit/relayconvert/convmeta"
+	"github.com/QuantumNous/uter/relaykit/types"
 )
 
 func main() {
@@ -250,4 +250,4 @@ RelayKit 当前使用 `v0.x` 版本。公开 API 和 DTO 仍可能在小版本�
 
 ## 许可证
 
-RelayKit 是 ali-router 项目的一部分，遵循项目根目录中的 [GNU Affero General Public License v3.0](../LICENSE)。
+RelayKit 是 uter 项目的一部分，遵循项目根目录中的 [GNU Affero General Public License v3.0](../LICENSE)。

@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import re
 import sys
+import tempfile
 from pathlib import Path
 
 import Vision
@@ -65,13 +66,32 @@ def to_pixels(norm: tuple[float, float, float, float], width: int, height: int) 
 
 
 def hits(path: Path) -> list[tuple[str, tuple[int, int, int, int]]]:
-    """Brand text occurrences in this image, as pixel boxes."""
+    """Brand text occurrences in this image, as pixel boxes.
+
+    Runs OCR at 1x, and again at 2x when 1x comes up empty: small provider
+    names and help text are regularly invisible to Vision at native scale
+    but readable once upscaled. Normalised boxes are resolution-independent,
+    so the two passes share coordinate math.
+    """
     with Image.open(path) as image:
         width, height = image.size
     found = []
     for text, norm in recognize(path):
         if PATTERN.search(text):
             found.append((text, to_pixels(norm, width, height)))
+    if found:
+        return found
+    scaled = Image.open(path).convert('RGB')
+    scaled = scaled.resize((width * 2, height * 2), Image.LANCZOS)
+    with tempfile.NamedTemporaryFile(suffix='.png', delete=False) as handle:
+        tmp = Path(handle.name)
+    try:
+        scaled.save(tmp)
+        for text, norm in recognize(tmp):
+            if PATTERN.search(text):
+                found.append((text, to_pixels(norm, width, height)))
+    finally:
+        tmp.unlink(missing_ok=True)
     return found
 
 

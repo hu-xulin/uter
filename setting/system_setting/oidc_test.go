@@ -3,7 +3,7 @@ package system_setting
 import (
 	"testing"
 
-	"github.com/QuantumNous/u-routers/setting/config"
+	"github.com/QuantumNous/uter/setting/config"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

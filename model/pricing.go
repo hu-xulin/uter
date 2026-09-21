@@ -6,13 +6,13 @@ import (
 	"sync"
 	"time"
 
-	"github.com/QuantumNous/u-routers/common"
-	"github.com/QuantumNous/u-routers/constant"
-	"github.com/QuantumNous/u-routers/pkg/jsplugin"
-	"github.com/QuantumNous/u-routers/relaykit/dto"
-	"github.com/QuantumNous/u-routers/setting/billing_setting"
-	"github.com/QuantumNous/u-routers/setting/ratio_setting"
-	"github.com/QuantumNous/u-routers/types"
+	"github.com/QuantumNous/uter/common"
+	"github.com/QuantumNous/uter/constant"
+	"github.com/QuantumNous/uter/pkg/jsplugin"
+	"github.com/QuantumNous/uter/relaykit/dto"
+	"github.com/QuantumNous/uter/setting/billing_setting"
+	"github.com/QuantumNous/uter/setting/ratio_setting"
+	"github.com/QuantumNous/uter/types"
 )
 
 type PricingPluginVariant struct {

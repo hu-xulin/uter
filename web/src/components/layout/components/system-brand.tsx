@@ -51,7 +51,7 @@ export function SystemBrand(props: SystemBrandProps) {
   const { logo } = useSystemConfig()
 
   const variant = props.variant ?? 'sidebar'
-  const name = status?.system_name || props.defaultName || 'URouters'
+  const name = status?.system_name || props.defaultName || 'Uter'
   const version =
     status?.version || props.defaultVersion || t('Unknown version')
 

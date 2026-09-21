@@ -44,19 +44,19 @@
 - **Feishu Integration** - Supports access and interaction via Feishu.
 - **Local Data Security** - All data is stored in a local SQLite database, suitable for server deployment.
 
-## URouters Integration Method
+## Uter Integration Method
 
 ### Parameter Entry
 
-Provider Type: Types supported by URouters
-API Key: Obtained from URouters
-API Address: URouters site address (e.g., `https://<your-newapi-domain>/v1`)
+Provider Type: Types supported by Uter
+API Key: Obtained from Uter
+API Address: Uter site address (e.g., `https://<your-newapi-domain>/v1`)
 
-Please use your self-deployed URouters, or ensure that the service provider offers URouters services with legitimate upstream authorization and compliance obligations. Do not connect API addresses or keys from unknown sources to a production environment.
+Please use your self-deployed Uter, or ensure that the service provider offers Uter services with legitimate upstream authorization and compliance obligations. Do not connect API addresses or keys from unknown sources to a production environment.
 
 ### Configuration Steps
 
-1.  **Copy API key in URouters**
+1.  **Copy API key in Uter**
     ![Copy API Key](/apps-assets/aionui/copy_apikey.webp)
 
 2.  **Open AionUi Settings**
@@ -67,21 +67,21 @@ Please use your self-deployed URouters, or ensure that the service provider offe
 
 3.  **Add New Provider**
     - Click "Add Model"
-    - Select URouters
-    ![Add URouters Provider](/apps-assets/aionui/newapi_provider.webp)
+    - Select Uter
+    ![Add Uter Provider](/apps-assets/aionui/newapi_provider.webp)
 
 4.  **Configure API Information**
-    - API Address: Enter your URouters site address (format: `https://<your-newapi-domain>/v1`)
-    - API Key: Paste the API Key copied from the URouters console
+    - API Address: Enter your Uter site address (format: `https://<your-newapi-domain>/v1`)
+    - API Key: Paste the API Key copied from the Uter console
 
 5.  **Add Model**
     - Select the model to add from the dropdown
-    - The model name should match the model name configured in URouters
+    - The model name should match the model name configured in Uter
     - Select the appropriate request protocol
 
 6.  **Start Using**
     - Return to the chat page
-    - Select the configured URouters model to start a conversation
+    - Select the configured Uter model to start a conversation
 
 ## Related Links
 

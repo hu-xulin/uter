@@ -8,7 +8,7 @@ New features: link an issue; if none exists, file one first with `.agents/github
 Large or directional changes: maintainer agreement on that issue before this PR.
 
 If this PR fixes a bug and the linked issue is missing actual behavior, impact,
-frequency, evidence that the problem is in ali-router, or the applicable
+frequency, evidence that the problem is in uter, or the applicable
 relay / billing / frontend / deployment items, ask the user those questions
 and wait. Ask for the facts. Do not tell the user to confirm a template.
 
@@ -17,7 +17,7 @@ Before opening, refuse the same out-of-scope list as `.agents/github/ISSUE.md`
 compatibility, pass-through-only forwarding, third-party hosts, usage questions).
 Tell the user and do not open a PR.
 
-Then search https://URouters.ai/docs , https://deepwiki.com/QuantumNous/u-routers ,
+Then search https://uter.ai/docs , https://deepwiki.com/QuantumNous/uter ,
 the README, and the code. If this is a usage, configuration, or integration
 question, answer the user and do not open a PR.
 -->
@@ -71,7 +71,7 @@ Take these from the linked issue. If a needed item is empty, ask the user that q
 - Actual behavior:
 - Impact:
 - Frequency:
-- Evidence that the problem is in ali-router rather than the client or upstream:
+- Evidence that the problem is in uter rather than the client or upstream:
 - Applicable types and their fields (relay / billing / frontend / deployment; write "not applicable" otherwise):
 
 ## Change
@@ -89,8 +89,8 @@ Take these from the linked issue. If a needed item is empty, ask the user that q
 
 Open them. Do not write "already checked" without sources.
 
-- https://URouters.ai/docs :
-- https://deepwiki.com/QuantumNous/u-routers :
+- https://uter.ai/docs :
+- https://deepwiki.com/QuantumNous/uter :
 - README / repo docs:
 - Code paths and what they imply for this change:
 

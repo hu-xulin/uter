@@ -31,7 +31,7 @@ If the platform has enabled online payments, the top-up area of the wallet will 
 <Callout type="warn">
   1) The project code supports payment gateways such as EPay, Stripe, Creem, Waffo, and Waffo Pancake, but only enabled, fully configured, and currently available payment methods will be displayed. Different gateways may also have additional amount or payment restrictions; please refer to the page prompts. If no payment methods are available, please contact the platform administrator.
   2) Successful payment requires a third-party payment callback to confirm the order; the balance may not update immediately after payment. If payment is successful but the balance has not changed, please keep the order number and contact the administrator; do not make duplicate payments.
-  3) Payment methods, minimum top-up amounts, discounts, exchange rates, and preset amounts are not fixed values for URouters; you cannot infer the rules of the current instance based on other instances or example pages.
+  3) Payment methods, minimum top-up amounts, discounts, exchange rates, and preset amounts are not fixed values for Uter; you cannot infer the rules of the current instance based on other instances or example pages.
 </Callout>
 
 ## Redemption Codes

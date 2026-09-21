@@ -1,11 +1,11 @@
 package sub2api
 
 import (
-	"github.com/QuantumNous/u-routers/relay/channel/URouters"
+	"github.com/QuantumNous/uter/relay/channel/Uter"
 )
 
 type Adaptor struct {
-	URouters.Adaptor
+	Uter.Adaptor
 }
 
 func (a *Adaptor) GetModelList() []string {

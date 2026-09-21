@@ -1,6 +1,6 @@
 package common
 
-import "github.com/QuantumNous/u-routers/constant"
+import "github.com/QuantumNous/uter/constant"
 
 // EndpointInfo 描述单个端点的默认请求信息
 // path: 上游路径

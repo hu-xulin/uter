@@ -6,7 +6,7 @@
 #   3. Open http://localhost:5173 (Rsbuild dev server, API auto-proxied to :3000)
 #
 # Rebuild backend after Go code changes:
-#   docker compose -f docker-compose.dev.yml up -d --build ali-router
+#   docker compose -f docker-compose.dev.yml up -d --build uter
 #
 # Stop:
 #   docker compose -f docker-compose.dev.yml down
@@ -15,19 +15,19 @@
 #   docker compose -f docker-compose.dev.yml down -v
 
 services:
-  ali-router:
+  uter:
     build:
       context: .
       dockerfile: Dockerfile.dev
-    image: ali-router-dev:local
-    container_name: ali-router-dev
+    image: uter-dev:local
+    container_name: uter-dev
     restart: unless-stopped
     ports:
       - "3000:3000"
     volumes:
       - dev_data:/data
     environment:
-      - SQL_DSN=postgresql://root:123456@postgres:5432/ali-router
+      - SQL_DSN=postgresql://root:123456@postgres:5432/uter
       - REDIS_CONN_STRING=redis://redis
       - TZ=Asia/Shanghai
       - BATCH_UPDATE_ENABLED=true
@@ -46,25 +46,25 @@ services:
 
   redis:
     image: redis:7-alpine
-    container_name: ali-router-dev-redis
+    container_name: uter-dev-redis
     restart: unless-stopped
     networks:
       - dev-network
 
   postgres:
     image: postgres:15-alpine
-    container_name: ali-router-dev-pg
+    container_name: uter-dev-pg
     restart: unless-stopped
     environment:
       POSTGRES_USER: root
       POSTGRES_PASSWORD: 123456
-      POSTGRES_DB: ali-router
+      POSTGRES_DB: uter
     volumes:
       - dev_pg_data:/var/lib/postgresql/data
     networks:
       - dev-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U root -d ali-router"]
+      test: ["CMD-SHELL", "pg_isready -U root -d uter"]
       interval: 5s
       timeout: 3s
       retries: 5

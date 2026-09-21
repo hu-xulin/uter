@@ -8,14 +8,14 @@ import (
 	"math"
 	"strings"
 
-	"github.com/QuantumNous/u-routers/common"
-	"github.com/QuantumNous/u-routers/constant"
-	"github.com/QuantumNous/u-routers/logger"
-	"github.com/QuantumNous/u-routers/model"
-	"github.com/QuantumNous/u-routers/pkg/billingexpr"
-	relaycommon "github.com/QuantumNous/u-routers/relay/common"
-	"github.com/QuantumNous/u-routers/setting/ratio_setting"
-	"github.com/QuantumNous/u-routers/types"
+	"github.com/QuantumNous/uter/common"
+	"github.com/QuantumNous/uter/constant"
+	"github.com/QuantumNous/uter/logger"
+	"github.com/QuantumNous/uter/model"
+	"github.com/QuantumNous/uter/pkg/billingexpr"
+	relaycommon "github.com/QuantumNous/uter/relay/common"
+	"github.com/QuantumNous/uter/setting/ratio_setting"
+	"github.com/QuantumNous/uter/types"
 	"github.com/gin-gonic/gin"
 )
 

@@ -1021,7 +1021,7 @@ export function ChannelMutateDrawer({
     const timer = setTimeout(() => {
       toast.warning(
         t(
-          'Warning: Base URL should not end with /v1. URouters will handle it automatically. This may cause request failures.'
+          'Warning: Base URL should not end with /v1. Uter will handle it automatically. This may cause request failures.'
         ),
         { duration: 5000 }
       )
@@ -3610,7 +3610,7 @@ export function ChannelMutateDrawer({
                     {currentType !== CHANNEL_TYPE_TASK_PLUGIN && (
                       <FormDescription>
                         {t(
-                          'Custom API base URL. For official channels, URouters has built-in addresses. Only fill this for third-party proxy sites or special endpoints. Do not add /v1 or trailing slash.'
+                          'Custom API base URL. For official channels, Uter has built-in addresses. Only fill this for third-party proxy sites or special endpoints. Do not add /v1 or trailing slash.'
                         )}
                       </FormDescription>
                     )}

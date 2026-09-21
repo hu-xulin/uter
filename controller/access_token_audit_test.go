@@ -16,11 +16,11 @@ import (
 	sqlmysql "github.com/go-sql-driver/mysql"
 	"gorm.io/driver/clickhouse"
 
-	"github.com/QuantumNous/u-routers/common"
-	"github.com/QuantumNous/u-routers/middleware"
-	"github.com/QuantumNous/u-routers/model"
-	"github.com/QuantumNous/u-routers/service"
-	"github.com/QuantumNous/u-routers/service/authz"
+	"github.com/QuantumNous/uter/common"
+	"github.com/QuantumNous/uter/middleware"
+	"github.com/QuantumNous/uter/model"
+	"github.com/QuantumNous/uter/service"
+	"github.com/QuantumNous/uter/service/authz"
 	"github.com/gin-gonic/gin"
 	"github.com/glebarez/sqlite"
 	"github.com/stretchr/testify/assert"
@@ -443,7 +443,7 @@ func newAuditTestDatabase(t *testing.T, kind, dsn string) (*gorm.DB, string) {
 		return db, path
 	}
 	require.NotEmpty(t, dsn)
-	name := fmt.Sprintf("URouters_audit_%d", time.Now().UnixNano())
+	name := fmt.Sprintf("Uter_audit_%d", time.Now().UnixNano())
 	var original, isolated gorm.Dialector
 	var newDSN string
 	if kind == "mysql" {

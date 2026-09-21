@@ -1,4 +1,4 @@
-module github.com/QuantumNous/u-routers/relaykit
+module github.com/QuantumNous/uter/relaykit
 
 go 1.25.1
 

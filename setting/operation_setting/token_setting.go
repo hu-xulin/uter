@@ -1,6 +1,6 @@
 package operation_setting
 
-import "github.com/QuantumNous/u-routers/setting/config"
+import "github.com/QuantumNous/uter/setting/config"
 
 // TokenSetting 令牌相关配置
 type TokenSetting struct {

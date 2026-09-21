@@ -1,6 +1,6 @@
 package system_setting
 
-import "github.com/QuantumNous/u-routers/common"
+import "github.com/QuantumNous/uter/common"
 
 const (
 	DefaultTaskArtifactInvalidRateLimitPerMinute = 60

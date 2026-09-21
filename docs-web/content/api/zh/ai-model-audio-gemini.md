@@ -2,7 +2,7 @@
 
 Gemini 原生音频生成接口。可直接使用 `gemini-2.5-flash-preview-tts` 等模型进行语音合成，返回 PCM / WAV 等格式的音频数据。
 
-与「原生 OpenAI 格式」不同，本接口遵循 Google Gemini 的 `v1beta` 协议：以 `generateContent` 端点提交内容，由 `generationConfig` 控制输出模态与音色。优特斯对 Gemini 系列模型做了统一接入，密钥、配额与计费均沿用平台账户体系。
+与「原生 OpenAI 格式」不同，本接口遵循 Google Gemini 的 `v1beta` 协议：以 `generateContent` 端点提交内容，由 `generationConfig` 控制输出模态与音色。优特对 Gemini 系列模型做了统一接入，密钥、配额与计费均沿用平台账户体系。
 
 ## 鉴权
 
@@ -44,8 +44,8 @@ Gemini 原生音频生成接口。可直接使用 `gemini-2.5-flash-preview-tts`
 ### 请求示例
 
 ```bash
-curl -X POST "https://urouters.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent" \
-  -H "Authorization: Bearer $URouters_API_KEY" \
+curl -X POST "https://uter.ai/v1beta/models/gemini-2.5-flash-preview-tts:generateContent" \
+  -H "Authorization: Bearer $Uter_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
     "contents": [

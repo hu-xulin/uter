@@ -15,7 +15,7 @@ const DEV_FRONTEND_PORT = 5173; // Rsbuild dev server port
 function saveAndOpenErrorLog() {
   try {
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-    const logFileName = `ali-router-crash-${timestamp}.log`;
+    const logFileName = `uter-crash-${timestamp}.log`;
     const logDir = app.getPath('logs');
     const logFilePath = path.join(logDir, logFileName);
     
@@ -25,7 +25,7 @@ function saveAndOpenErrorLog() {
     }
     
     // 写入日志
-    const logContent = `URouters 崩溃日志
+    const logContent = `Uter 崩溃日志
 生成时间: ${new Date().toLocaleString('zh-CN')}
 平台: ${process.platform}
 架构: ${process.arch}
@@ -72,7 +72,7 @@ function analyzeError(errorLogs) {
       type: '端口被占用',
       title: '端口 ' + PORT + ' 被占用',
       message: '无法启动服务器，端口已被其他程序占用',
-      solution: `可能的解决方案：\n\n1. 关闭占用端口 ${PORT} 的其他程序\n2. 检查是否已经运行了另一个 URouters 实例\n3. 使用以下命令查找占用端口的进程：\n   Mac/Linux: lsof -i :${PORT}\n   Windows: netstat -ano | findstr :${PORT}\n4. 重启电脑以释放端口`
+      solution: `可能的解决方案：\n\n1. 关闭占用端口 ${PORT} 的其他程序\n2. 检查是否已经运行了另一个 Uter 实例\n3. 使用以下命令查找占用端口的进程：\n   Mac/Linux: lsof -i :${PORT}\n   Windows: netstat -ano | findstr :${PORT}\n4. 重启电脑以释放端口`
     };
   }
   
@@ -83,7 +83,7 @@ function analyzeError(errorLogs) {
       type: '数据文件被占用',
       title: '无法访问数据文件',
       message: '应用的数据文件正被其他程序占用',
-      solution: '可能的解决方案：\n\n1. 检查是否已经打开了另一个 URouters 窗口\n   - 查看任务栏/Dock 中是否有其他 URouters 图标\n   - 查看系统托盘（Windows）或菜单栏（Mac）中是否有 URouters 图标\n\n2. 如果刚刚关闭过应用，请等待 10 秒后再试\n\n3. 重启电脑以释放被占用的文件\n\n4. 如果问题持续，可以尝试：\n   - 退出所有 URouters 实例\n   - 删除数据目录中的临时文件（.db-shm 和 .db-wal）\n   - 重新启动应用'
+      solution: '可能的解决方案：\n\n1. 检查是否已经打开了另一个 Uter 窗口\n   - 查看任务栏/Dock 中是否有其他 Uter 图标\n   - 查看系统托盘（Windows）或菜单栏（Mac）中是否有 Uter 图标\n\n2. 如果刚刚关闭过应用，请等待 10 秒后再试\n\n3. 重启电脑以释放被占用的文件\n\n4. 如果问题持续，可以尝试：\n   - 退出所有 Uter 实例\n   - 删除数据目录中的临时文件（.db-shm 和 .db-wal）\n   - 重新启动应用'
     };
   }
   
@@ -152,23 +152,23 @@ function getBinaryPath() {
   const platform = process.platform;
 
   if (isDev) {
-    const binaryName = platform === 'win32' ? 'ali-router.exe' : 'ali-router';
+    const binaryName = platform === 'win32' ? 'uter.exe' : 'uter';
     return path.join(__dirname, '..', binaryName);
   }
 
   let binaryName;
   switch (platform) {
     case 'win32':
-      binaryName = 'ali-router.exe';
+      binaryName = 'uter.exe';
       break;
     case 'darwin':
-      binaryName = 'ali-router';
+      binaryName = 'uter';
       break;
     case 'linux':
-      binaryName = 'ali-router';
+      binaryName = 'uter';
       break;
     default:
-      binaryName = 'ali-router';
+      binaryName = 'uter';
   }
 
   return path.join(process.resourcesPath, 'bin', binaryName);
@@ -261,7 +261,7 @@ function startServer() {
       fs.mkdirSync(dataDir, { recursive: true });
     }
 
-    env.SQLITE_PATH = path.join(dataDir, 'ali-router.db');
+    env.SQLITE_PATH = path.join(dataDir, 'uter.db');
     
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
     console.log('📁 您的数据存储位置：');
@@ -397,7 +397,7 @@ function createWindow() {
       nodeIntegration: false,
       contextIsolation: true
     },
-    title: 'URouters',
+    title: 'Uter',
     icon: path.join(__dirname, 'icon.png')
   });
 
@@ -436,7 +436,7 @@ function createTray() {
 
   const contextMenu = Menu.buildFromTemplate([
     {
-      label: 'Show URouters',
+      label: 'Show Uter',
       click: () => {
         if (mainWindow === null) {
           createWindow();
@@ -458,7 +458,7 @@ function createTray() {
     }
   ]);
 
-  tray.setToolTip('URouters');
+  tray.setToolTip('Uter');
   tray.setContextMenu(contextMenu);
 
   // On macOS, clicking the tray icon shows the window

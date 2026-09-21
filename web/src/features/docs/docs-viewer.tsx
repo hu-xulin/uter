@@ -41,8 +41,8 @@ import {
  *
  * See `docs-web/src/lib/docs-embed-bridge.tsx` for the other half.
  */
-const THEME_MESSAGE = 'urouters:docs:theme'
-const ROUTE_MESSAGE = 'urouters:docs:route'
+const THEME_MESSAGE = 'Uter:docs:theme'
+const ROUTE_MESSAGE = 'Uter:docs:route'
 
 /**
  * Height of `PublicHeader` in its unscrolled form (`h-16`). The frame

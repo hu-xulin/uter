@@ -1,8 +1,8 @@
 package router
 
 import (
-	"github.com/QuantumNous/u-routers/controller"
-	"github.com/QuantumNous/u-routers/middleware"
+	"github.com/QuantumNous/uter/controller"
+	"github.com/QuantumNous/uter/middleware"
 
 	"github.com/gin-gonic/gin"
 )

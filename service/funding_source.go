@@ -4,7 +4,7 @@ import (
 	"errors"
 	"time"
 
-	"github.com/QuantumNous/u-routers/model"
+	"github.com/QuantumNous/uter/model"
 )
 
 // ---------------------------------------------------------------------------

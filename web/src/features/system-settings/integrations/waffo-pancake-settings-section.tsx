@@ -61,8 +61,8 @@ interface Props {
 }
 
 const PANCAKE_DASHBOARD_URL = 'https://pancake.waffo.ai/merchant/dashboard'
-const DEFAULT_NEW_STORE_NAME = 'ali-router-store'
-const DEFAULT_NEW_PRODUCT_NAME = 'ali-router-charge-product'
+const DEFAULT_NEW_STORE_NAME = 'uter-store'
+const DEFAULT_NEW_PRODUCT_NAME = 'uter-charge-product'
 const DEFAULT_NEW_PAIR_NAME = `${DEFAULT_NEW_STORE_NAME} + ${DEFAULT_NEW_PRODUCT_NAME}`
 
 export function WaffoPancakeSettingsSection({
@@ -480,12 +480,12 @@ export function WaffoPancakeSettingsSection({
             <ul className='list-inside list-disc space-y-1'>
               <li>
                 {t(
-                  'The bound Store is the parent container for every Pancake product ali-router creates from this admin — both the wallet top-up product and any subscription-plan products. One store is enough; pin a different one only if you genuinely run separate Pancake catalogs.'
+                  'The bound Store is the parent container for every Pancake product uter creates from this admin — both the wallet top-up product and any subscription-plan products. One store is enough; pin a different one only if you genuinely run separate Pancake catalogs.'
                 )}
               </li>
               <li>
                 {t(
-                  'The bound Product powers wallet top-ups: when a user enters any amount, ali-router runs the checkout against this single Pancake product and overrides the price per session — no need to pre-create $1 / $5 / $10 SKUs.'
+                  'The bound Product powers wallet top-ups: when a user enters any amount, uter runs the checkout against this single Pancake product and overrides the price per session — no need to pre-create $1 / $5 / $10 SKUs.'
                 )}
               </li>
               <li>

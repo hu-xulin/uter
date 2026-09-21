@@ -1,6 +1,6 @@
 package siliconflow
 
-import "github.com/QuantumNous/u-routers/relaykit/dto"
+import "github.com/QuantumNous/uter/relaykit/dto"
 
 type SFTokens struct {
 	InputTokens  int `json:"input_tokens"`

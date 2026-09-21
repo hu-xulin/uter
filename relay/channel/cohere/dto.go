@@ -1,6 +1,6 @@
 package cohere
 
-import "github.com/QuantumNous/u-routers/relaykit/dto"
+import "github.com/QuantumNous/uter/relaykit/dto"
 
 type CohereRequest struct {
 	Model       string        `json:"model"`

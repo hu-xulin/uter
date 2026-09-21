@@ -1,8 +1,8 @@
 package common
 
 import (
-	"github.com/QuantumNous/u-routers/relaykit/relayconvert/convmeta"
-	"github.com/QuantumNous/u-routers/relaykit/types"
+	"github.com/QuantumNous/uter/relaykit/relayconvert/convmeta"
+	"github.com/QuantumNous/uter/relaykit/types"
 )
 
 // GuessRelayFormatFromRequest moved to convmeta with the converters; the

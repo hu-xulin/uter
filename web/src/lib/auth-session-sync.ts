@@ -24,8 +24,8 @@ export type AuthSessionSyncEvent = {
   timestamp: number
 }
 
-const AUTH_SYNC_CHANNEL = 'ali-router:auth-session'
-const AUTH_SYNC_STORAGE_KEY = 'ali-router:auth-session:event'
+const AUTH_SYNC_CHANNEL = 'uter:auth-session'
+const AUTH_SYNC_STORAGE_KEY = 'uter:auth-session:event'
 
 function randomIdentifier(): string {
   if (typeof globalThis.crypto?.randomUUID === 'function') {

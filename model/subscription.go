@@ -8,8 +8,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/QuantumNous/u-routers/common"
-	"github.com/QuantumNous/u-routers/pkg/cachex"
+	"github.com/QuantumNous/uter/common"
+	"github.com/QuantumNous/uter/pkg/cachex"
 	"github.com/samber/hot"
 	"github.com/shopspring/decimal"
 	"gorm.io/gorm"
@@ -39,8 +39,8 @@ var (
 )
 
 const (
-	subscriptionPlanCacheNamespace     = "ali-router:subscription_plan:v1"
-	subscriptionPlanInfoCacheNamespace = "ali-router:subscription_plan_info:v1"
+	subscriptionPlanCacheNamespace     = "uter:subscription_plan:v1"
+	subscriptionPlanInfoCacheNamespace = "uter:subscription_plan_info:v1"
 )
 
 var (

@@ -11,10 +11,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/QuantumNous/u-routers/common"
-	relaycommon "github.com/QuantumNous/u-routers/relay/common"
-	"github.com/QuantumNous/u-routers/relaykit/dto"
-	relaytypes "github.com/QuantumNous/u-routers/relaykit/types"
+	"github.com/QuantumNous/uter/common"
+	relaycommon "github.com/QuantumNous/uter/relay/common"
+	"github.com/QuantumNous/uter/relaykit/dto"
+	relaytypes "github.com/QuantumNous/uter/relaykit/types"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/aws/protocol/eventstream"
 	"github.com/aws/aws-sdk-go-v2/aws/protocol/eventstream/eventstreamapi"
@@ -261,7 +261,7 @@ func TestAwsHandlersCancelSdkRequestAndSkipRetry(t *testing.T) {
 	tests := []struct {
 		name    string
 		request any
-		handle  func(*gin.Context, *relaycommon.RelayInfo, *Adaptor) (*relaytypes.URouterError, *dto.Usage)
+		handle  func(*gin.Context, *relaycommon.RelayInfo, *Adaptor) (*relaytypes.UterError, *dto.Usage)
 	}{
 		{name: "non-stream", request: newAwsInvokeModelInput(), handle: awsHandler},
 		{name: "stream", request: newAwsStreamInput(), handle: awsStreamHandler},
@@ -284,7 +284,7 @@ func TestAwsHandlersCancelSdkRequestAndSkipRetry(t *testing.T) {
 			info := newAwsTestRelayInfo()
 
 			type handlerResult struct {
-				err   *relaytypes.URouterError
+				err   *relaytypes.UterError
 				usage *dto.Usage
 			}
 			results := make(chan handlerResult, 1)
@@ -405,7 +405,7 @@ func TestAwsStreamHandlerStopsAtClientCancellation(t *testing.T) {
 	adaptor := &Adaptor{AwsClient: client, AwsReq: newAwsStreamInput()}
 
 	type handlerResult struct {
-		err   *relaytypes.URouterError
+		err   *relaytypes.UterError
 		usage *dto.Usage
 	}
 	results := make(chan handlerResult, 1)

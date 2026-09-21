@@ -3,11 +3,11 @@ package service
 import (
 	"strings"
 
-	"github.com/QuantumNous/u-routers/common"
-	"github.com/QuantumNous/u-routers/constant"
-	"github.com/QuantumNous/u-routers/model"
-	"github.com/QuantumNous/u-routers/setting"
-	"github.com/QuantumNous/u-routers/setting/ratio_setting"
+	"github.com/QuantumNous/uter/common"
+	"github.com/QuantumNous/uter/constant"
+	"github.com/QuantumNous/uter/model"
+	"github.com/QuantumNous/uter/setting"
+	"github.com/QuantumNous/uter/setting/ratio_setting"
 	"github.com/gin-gonic/gin"
 )
 

@@ -2,7 +2,7 @@
 
 > **Chat Settings Options**
 >
-> In the URouters
+> In the Uter
 >   console's System Settings -> Chat Settings, you can add the following quick options for one-click filling into
 >   Cherry Studio on the token management page:
 
@@ -17,19 +17,19 @@
 - Download Link: [https://cherry-ai.com/download](https://cherry-ai.com/download)
 - Official Documentation: [https://docs.cherry-ai.com](https://docs.cherry-ai.com)
 
-## URouters Integration Method
+## Uter Integration Method
 
 ### Parameter Configuration
 
-Provider Type: Types supported by URouters
-API Key: Obtained from URouters
-API Address: URouters Site Address
+Provider Type: Types supported by Uter
+API Key: Obtained from Uter
+API Address: Uter Site Address
 
-Please use your self-deployed URouters, or ensure that the service provider has a URouters service with legal upstream authorization and compliance obligations. Do not integrate API addresses or keys from unknown sources into a production environment.
+Please use your self-deployed Uter, or ensure that the service provider has a Uter service with legal upstream authorization and compliance obligations. Do not integrate API addresses or keys from unknown sources into a production environment.
 
 ### Graphical Guide
 
-1. Copy API key in URouters
+1. Copy API key in Uter
    ![Copy API Key](/apps-assets/cherry_studio/copy_api_key.webp)
 
 2. Add Provider
@@ -41,7 +41,7 @@ Please use your self-deployed URouters, or ensure that the service provider has 
 4. Return to Chat Page
    ![Switch to Chat Page](/apps-assets/cherry_studio/back_to_chat.webp)
 
-5. Switch URouters Model
+5. Switch Uter Model
    ![Switch Model](/apps-assets/cherry_studio/switch_model.webp)
 
 ## Drawing in Cherry Studio

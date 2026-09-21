@@ -2,7 +2,7 @@
 
 > **Chat Settings Options**
 >
-> In the URouters
+> In the Uter
 >   console's System Settings -> Chat Settings, you can add the following shortcut option for one-click population into
 >   LunaTranslator from the Token Management page:
 
@@ -38,13 +38,13 @@
 
 Download and install from [LunaTranslator Documentation - Download & Launch & Update](https://docs.lunatranslator.org/en/README.html)
 
-## Integrating URouters into LunaTranslator
+## Integrating Uter into LunaTranslator
 
-LunaTranslator supports integration with locally deployed URouters. Please use your own deployed URouters, or ensure that the service provider has legitimate upstream authorization and compliance obligations for their URouters service. Do not connect API addresses or keys from unknown sources to production environments.
+LunaTranslator supports integration with locally deployed Uter. Please use your own deployed Uter, or ensure that the service provider has legitimate upstream authorization and compliance obligations for their Uter service. Do not connect API addresses or keys from unknown sources to production environments.
 
 ### One-Click Configuration
 
-1.  In the URouters console's `System Settings` -> `Chat Settings`, add the following shortcut option:
+1.  In the Uter console's `System Settings` -> `Chat Settings`, add the following shortcut option:
 
     ```json
     { "LunaTranslator": "lunatranslator://llmapi/base64?data={cheryConfig}" }
@@ -52,7 +52,7 @@ LunaTranslator supports integration with locally deployed URouters. Please use y
 
     ![add_config](/apps-assets/luna_translator/add_config.webp)
 
-2.  In the **`URouters`** -> `Console` -> `Token Management` tab, select the token you want to use in LunaTranslator, click the dropdown option next to the chat button, choose `LunaTranslator`, and you will be redirected to LunaTranslator with the API address and API Key automatically configured.
+2.  In the **`Uter`** -> `Console` -> `Token Management` tab, select the token you want to use in LunaTranslator, click the dropdown option next to the chat button, choose `LunaTranslator`, and you will be redirected to LunaTranslator with the API address and API Key automatically configured.
 
     ![跳转到 LunaTranslator](/apps-assets/luna_translator/jump_to_app.webp)
 
@@ -60,7 +60,7 @@ LunaTranslator supports integration with locally deployed URouters. Please use y
 
     ![设置api](/apps-assets/luna_translator/api_setting.webp)
 
-4.  Click the refresh button next to the **model** dropdown to retrieve the URouters platform's model list, select or enter the model name, then click OK to save.
+4.  Click the refresh button next to the **model** dropdown to retrieve the Uter platform's model list, select or enter the model name, then click OK to save.
 
     ![设置模型](/apps-assets/luna_translator/setting_model.webp)
 
@@ -70,7 +70,7 @@ LunaTranslator supports integration with locally deployed URouters. Please use y
 
 ### Manual Configuration
 
-1.  In the **`URouters`** -> `Console` -> `Token Management` tab, obtain the API Key.
+1.  In the **`Uter`** -> `Console` -> `Token Management` tab, obtain the API Key.
 
     ![获取 API Key](/apps-assets/luna_translator/copy_api_key.webp)
 
@@ -88,11 +88,11 @@ LunaTranslator supports integration with locally deployed URouters. Please use y
 
     ![设置 API2](/apps-assets/luna_translator/setting_api2.webp)
 
-5.  Click the refresh button next to the **model** dropdown to retrieve the URouters platform's model list, select or enter the model name, then click OK to save.
+5.  Click the refresh button next to the **model** dropdown to retrieve the Uter platform's model list, select or enter the model name, then click OK to save.
 
     ![设置 API3](/apps-assets/luna_translator/setting_api3.webp)
 
-6.  Click the toggle switch next to **URouters** to enable the interface and start using it.
+6.  Click the toggle switch next to **Uter** to enable the interface and start using it.
 
     ![打开API](/apps-assets/luna_translator/open_api.webp)
 

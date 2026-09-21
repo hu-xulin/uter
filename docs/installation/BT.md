@@ -1,8 +1,8 @@
 # 宝塔面板部署教程
 
-本文档提供使用宝塔面板 Docker 功能部署 URouters 的图文教程。
+本文档提供使用宝塔面板 Docker 功能部署 Uter 的图文教程。
 
-> 📖 官方文档：[宝塔面板部署](https://URouters.ai/docszh/docs/installation/deployment-methods/bt-docker-installation)
+> 📖 官方文档：[宝塔面板部署](https://uter.ai/docszh/docs/installation/deployment-methods/bt-docker-installation)
 
 ***
 
@@ -32,7 +32,7 @@
 
 ***
 
-## 步骤三：安装 URouters
+## 步骤三：安装 Uter
 
 ### 方法一：使用宝塔应用商店（推荐）
 
@@ -40,7 +40,7 @@
 2. 搜索并找到 **New-API**
 3. 点击 **安装**
 4. 配置以下基本选项：
-   - **容器名称**：可自定义，默认为 `ali-router`
+   - **容器名称**：可自定义，默认为 `uter`
    - **端口映射**：默认为 `3000:3000`
    - **环境变量**：
      - `SESSION_SECRET`：会话密钥（**必填**，多机部署时必须一致）
@@ -50,15 +50,15 @@
 
 ### 方法二：使用 Docker Compose
 
-1. 在宝塔面板中创建网站目录，如 `/www/wwwroot/ali-router`
+1. 在宝塔面板中创建网站目录，如 `/www/wwwroot/uter`
 2. 创建 `docker-compose.yml` 文件：
 
 ```yaml
 version: '3'
 services:
-  ali-router:
-    image: calciumion/ali-router:latest
-    container_name: ali-router
+  uter:
+    image: calciumion/uter:latest
+    container_name: uter
     restart: always
     ports:
       - "3000:3000"
@@ -72,7 +72,7 @@ services:
 1. 在终端中进入目录并启动：
 
 ```bash
-cd /www/wwwroot/ali-router
+cd /www/wwwroot/uter
 docker-compose up -d
 ```
 
@@ -126,7 +126,7 @@ volumes:
 
 ```bash
 # 拉取最新镜像
-docker pull calciumion/ali-router:latest
+docker pull calciumion/uter:latest
 
 # 重启容器
 docker-compose down && docker-compose up -d
@@ -136,10 +136,10 @@ docker-compose down && docker-compose up -d
 
 ## 相关链接
 
-- [官方文档](https://URouters.ai/docszh/docs/installation)
-- [环境变量配置](https://URouters.ai/docszh/docs/installation/config-maintenance/environment-variables)
-- [常见问题](https://URouters.ai/docszh/docs/support/faq)
-- [GitHub 仓库](https://github.com/QuantumNous/u-routers)
+- [官方文档](https://uter.ai/docszh/docs/installation)
+- [环境变量配置](https://uter.ai/docszh/docs/installation/config-maintenance/environment-variables)
+- [常见问题](https://uter.ai/docszh/docs/support/faq)
+- [GitHub 仓库](https://github.com/QuantumNous/uter)
 
 ***
 

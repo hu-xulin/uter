@@ -1,12 +1,12 @@
 package controller
 
 import (
-	"github.com/QuantumNous/u-routers/dto"
-	"github.com/QuantumNous/u-routers/logger"
-	"github.com/QuantumNous/u-routers/model"
-	pluginruntime "github.com/QuantumNous/u-routers/pkg/jsplugin"
-	"github.com/QuantumNous/u-routers/relay"
-	relaycommon "github.com/QuantumNous/u-routers/relay/common"
+	"github.com/QuantumNous/uter/dto"
+	"github.com/QuantumNous/uter/logger"
+	"github.com/QuantumNous/uter/model"
+	pluginruntime "github.com/QuantumNous/uter/pkg/jsplugin"
+	"github.com/QuantumNous/uter/relay"
+	relaycommon "github.com/QuantumNous/uter/relay/common"
 	"github.com/gin-gonic/gin"
 )
 

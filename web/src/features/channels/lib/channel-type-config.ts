@@ -129,7 +129,7 @@ export const CHANNEL_TYPE_CONFIGS: Record<number, ChannelTypeConfig> = {
   58: {
     id: 58,
     name: CHANNEL_TYPES[58],
-    icon: 'URouters',
+    icon: 'Uter',
     hints: {
       baseUrl: 'Fallback base URL',
       key: 'Used by route auth templates',
@@ -149,7 +149,7 @@ export const CHANNEL_TYPE_CONFIGS: Record<number, ChannelTypeConfig> = {
   60: {
     id: 60,
     name: CHANNEL_TYPES[60],
-    icon: 'URouters',
+    icon: 'Uter',
     hints: {
       baseUrl: 'Base URL is required for this channel type',
       key: 'Enter API key for this channel',

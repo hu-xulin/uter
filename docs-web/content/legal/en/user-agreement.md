@@ -1,16 +1,16 @@
-# URouters Large Model Service Platform Terms of Service
+# Uter Large Model Service Platform Terms of Service
 
 | Item | Content |
 |---|---|
-| Service Brand | **Urouters 优特斯** |
-| Platform Name | **URouters Large Model Service Platform** |
-| Official Website | https://urouters.com |
-| Document Name | URouters Large Model Service Platform Terms of Service |
+| Service Brand | **Uter.ai 优特智能** |
+| Platform Name | **Uter Large Model Service Platform** |
+| Official Website | https://uter.ai |
+| Document Name | Uter Large Model Service Platform Terms of Service |
 | Version | V1.0 |
 | Effective Date | August 8, 2026 |
 | Last Updated | August 8, 2026 |
-| Contracting Entity | **Shenzhen Urouters Intelligent Co., Ltd.** (the sole contracting entity for the services under this Agreement) |
-| Applicable To | Individual and enterprise users who register for and use the URouters Large Model Service Platform (urouters.com) |
+| Contracting Entity | **Shenzhen Uter Network Co., Ltd.** (the sole contracting entity for the services under this Agreement) |
+| Applicable To | Individual and enterprise users who register for and use the Uter Large Model Service Platform (Uter.ai) |
 
 > **Important Notice:** This Agreement is a standard-form contract. Before registering for or using this Service, please read all provisions of this Agreement carefully and in full, **especially the clauses highlighted in bold that exempt or limit our liabilities, restrict your rights, and govern dispute resolution and governing law.** If you do not agree to any part of this Agreement, please immediately stop registering for or using this Service. Checking the acceptance box, completing registration, or actually calling any API interface shall be deemed as your full understanding and acceptance of all terms of this Agreement.
 
@@ -44,10 +44,10 @@
 
 **1.1 Contracting Entity**
 
-This Agreement is entered into between you (hereinafter "User" or "you") and **Shenzhen Urouters Intelligent Co., Ltd.** (hereinafter collectively "Urouters 优特斯", "优特斯" or "we").
+This Agreement is entered into between you (hereinafter "User" or "you") and **Shenzhen Uter Network Co., Ltd.** (hereinafter collectively "Uter.ai 优特智能", "优特" or "we").
 
-- **Contracting Entity**: **Shenzhen Urouters Intelligent Co., Ltd.**, registered in Shenzhen, Guangdong Province, the People's Republic of China, holding an ICP license, algorithm filing and generative AI service filing. The company operates the **URouters Large Model Service Platform** (official website: urouters.com, hereinafter the "Platform"), providing this Service to users within **the territory of the People's Republic of China (excluding the Hong Kong, Macao and Taiwan regions of China)**.
-- **Single Entity**: The **sole contracting entity for the services under this Agreement is Shenzhen Urouters Intelligent Co., Ltd.** We do not currently provide services to you through any overseas affiliated entity. Should we provide services through an overseas affiliated entity in the future, we will execute a separate service agreement and notify you in advance.
+- **Contracting Entity**: **Shenzhen Uter Network Co., Ltd.**, registered in Shenzhen, Guangdong Province, the People's Republic of China, holding an ICP license, algorithm filing and generative AI service filing. The company operates the **Uter Large Model Service Platform** (official website: Uter.ai, hereinafter the "Platform"), providing this Service to users within **the territory of the People's Republic of China (excluding the Hong Kong, Macao and Taiwan regions of China)**.
+- **Single Entity**: The **sole contracting entity for the services under this Agreement is Shenzhen Uter Network Co., Ltd.** We do not currently provide services to you through any overseas affiliated entity. Should we provide services through an overseas affiliated entity in the future, we will execute a separate service agreement and notify you in advance.
 
 **1.2 Composition of the Agreement**
 
@@ -95,8 +95,8 @@ Unless the context otherwise requires, the following terms have the meanings set
 
 | Term | Definition |
 |---|---|
-| **Service** | The services provided by the URouters Large Model Service Platform to users through its official website (urouters.com) and unified API gateway, including multi-model aggregation calling, routing and scheduling, usage metering, and account management |
-| **Platform** | The URouters Large Model Service Platform, collectively the Urouters official website (urouters.com), console, developer documentation, SDK and API interfaces |
+| **Service** | The services provided by the Uter Large Model Service Platform to users through its official website (Uter.ai) and unified API gateway, including multi-model aggregation calling, routing and scheduling, usage metering, and account management |
+| **Platform** | The Uter Large Model Service Platform, collectively the Uter official website (Uter.ai), console, developer documentation, SDK and API interfaces |
 | **API Key** | The calling credential issued by us to users for identity authentication and metering/billing (including keys, tokens, temporary credentials and all equivalent forms) |
 | **Token** | The smallest billing unit for processing text by a large language model. Input Tokens (Prompt Tokens) and Output Tokens (Completion Tokens) are billed separately |
 | **Upstream Model Provider** | A third party that actually provides model inference capability, including but not limited to OpenAI, Anthropic, Google, Microsoft Azure, Amazon AWS Bedrock, and domestic model vendors |
@@ -396,11 +396,11 @@ The Platform may contain links to third-party websites or resources. We are not 
 
 **10.1 Platform Intellectual Property**
 
-The intellectual property rights of the software, gateway programs, interface design, documentation, trademarks (including the Chinese and English brand names and graphic logos of **Urouters** and **优特斯**), domain name (urouters.com), technical solutions and algorithm strategies of this Service all belong to us or the respective right holders. Without written permission, you may not copy, modify, disseminate, reverse engineer or use them for any commercial purpose.
+The intellectual property rights of the software, gateway programs, interface design, documentation, trademarks (including the Chinese and English brand names and graphic logos of **Uter** and **优特**), domain name (Uter.ai), technical solutions and algorithm strategies of this Service all belong to us or the respective right holders. Without written permission, you may not copy, modify, disseminate, reverse engineer or use them for any commercial purpose.
 
 **10.2 Trademark Use**
 
-Without prior written consent, you may not use the Chinese or English names, trademarks or logos of "Urouters" or "优特斯" in any promotional materials or product interfaces, or otherwise imply a cooperation, endorsement or affiliation with us.
+Without prior written consent, you may not use the Chinese or English names, trademarks or logos of "Uter" or "优特" in any promotional materials or product interfaces, or otherwise imply a cooperation, endorsement or affiliation with us.
 
 **10.3 Risk Notice for Generated Content**
 
@@ -498,7 +498,7 @@ We will adopt handling measures in proportion to the breach and give rectificati
 
 **13.3 Appeal Channel**
 
-If you disagree with the handling result, you may submit an appeal to support@urouters.com. We will respond within **10 business days**. The appeal does not affect the execution of the handling measure.
+If you disagree with the handling result, you may submit an appeal to support@uter.ai. We will respond within **10 business days**. The appeal does not affect the execution of the handling measure.
 
 ---
 
@@ -541,7 +541,7 @@ You shall cooperate with us and the Upstream Model Providers in compliance inves
 
 15.2.1 Any dispute arising from or relating to this Agreement shall first be resolved through friendly negotiation between the parties.
 
-15.2.2 If negotiation fails, either party may file a lawsuit with the **people's court with jurisdiction over the domicile of Shenzhen Urouters Intelligent Co., Ltd. (Shenzhen)**; the court of first instance is the people's court of the district where it is registered; where the subject matter exceeds the first-instance jurisdictional standard of the basic people's court, the Shenzhen Intermediate People's Court has jurisdiction.
+15.2.2 If negotiation fails, either party may file a lawsuit with the **people's court with jurisdiction over the domicile of Shenzhen Uter Network Co., Ltd. (Shenzhen)**; the court of first instance is the people's court of the district where it is registered; where the subject matter exceeds the first-instance jurisdictional standard of the basic people's court, the Shenzhen Intermediate People's Court has jurisdiction.
 
 15.2.3 During dispute resolution, except for the dispute itself, both parties shall continue to perform the other provisions of this Agreement.
 
@@ -563,10 +563,10 @@ If any provision of this Agreement is deemed invalid or unenforceable, it shall 
 
 16.3 Notices you send to us should be sent to:
 
-- Service and technical support: tech@urouters.com
-- Legal and compliance matters: legal@urouters.com
-- Business and contract matters: bd@urouters.com
-- Abuse reporting: abuse@urouters.com
+- Service and technical support: tech@uter.ai
+- Legal and compliance matters: legal@uter.ai
+- Business and contract matters: bd@uter.ai
+- Abuse reporting: abuse@uter.ai
 
 16.4 For notices concerning service termination, account freezing or material clause changes, we will use two or more means of service simultaneously.
 

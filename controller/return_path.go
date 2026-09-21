@@ -3,7 +3,7 @@ package controller
 import (
 	"strings"
 
-	"github.com/QuantumNous/u-routers/setting/system_setting"
+	"github.com/QuantumNous/uter/setting/system_setting"
 )
 
 func paymentReturnPath(suffix string) string {

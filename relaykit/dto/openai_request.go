@@ -7,8 +7,8 @@ import (
 	"strings"
 	"time"
 
-	kitutil "github.com/QuantumNous/u-routers/relaykit/relayconvert/kitutil"
-	"github.com/QuantumNous/u-routers/relaykit/types"
+	kitutil "github.com/QuantumNous/uter/relaykit/relayconvert/kitutil"
+	"github.com/QuantumNous/uter/relaykit/types"
 	"github.com/samber/lo"
 )
 

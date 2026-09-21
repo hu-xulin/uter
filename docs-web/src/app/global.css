@@ -63,7 +63,7 @@ body {
 /*
  * ── Brand accent and layout metrics ─────────────────────────────────
  *
- * `--urouters-accent` derives from the SPA's Sign in button — the
+ * `--Uter-accent` derives from the SPA's Sign in button — the
  * literal declared as `--color-primary` in `web/src/styles/theme.css`.
  * The app declares that inside an `@theme inline` block, so Tailwind
  * bakes it into the `bg-primary` utilities at build time and it is *not*
@@ -87,15 +87,15 @@ body {
  * and move only the lightness, then re-measure if either surface
  * changes.
  *
- * `--urouters-panel` is the sidebar's own surface. Fumadocs' default
+ * `--Uter-panel` is the sidebar's own surface. Fumadocs' default
  * (`--color-fd-card`, near-white in light mode) leaves the panel
  * indistinguishable from the page it sits beside; a slightly darker grey
  * gives the navigation an edge without a hard divider.
  */
 :root {
-  --urouters-accent: #4b4ede;
-  --urouters-panel: #f1f1f1;
-  --urouters-panel-hover: rgb(0 0 0 / 0.045);
+  --Uter-accent: #4b4ede;
+  --Uter-panel: #f1f1f1;
+  --Uter-panel-hover: rgb(0 0 0 / 0.045);
   /* Inline start padding that lines the panel's content up with the
      SPA header's brand mark — see the note on `--fd-layout-width`.
      The extra pixel cancels the panel's own `border-inline-end`:
@@ -105,13 +105,13 @@ body {
      the panel edge and both blocks this inset applies to inherit the
      shift. Measured: 31px without it, 32px with it, against the SPA
      brand mark at 32px. */
-  --urouters-sidebar-inset: calc(2rem + 1px);
+  --Uter-sidebar-inset: calc(2rem + 1px);
 }
 
 .dark {
-  --urouters-accent: #8f91f5;
-  --urouters-panel: var(--color-neutral-900);
-  --urouters-panel-hover: rgb(255 255 255 / 0.055);
+  --Uter-accent: #8f91f5;
+  --Uter-panel: var(--color-neutral-900);
+  --Uter-panel-hover: rgb(255 255 255 / 0.055);
 }
 
 /*
@@ -139,7 +139,7 @@ body {
  *
  * Site-wide rule: links carry their affordance with colour and weight,
  * never with an underline. This covers every anchor on the docs side,
- * including the ones prose decorates on its own (`bd@urouters.com` in a
+ * including the ones prose decorates on its own (`bd@uter.ai` in a
  * contact list is a detail to copy down, not a page to visit) and any
  * component that still asks for one with a `hover:underline` utility.
  *
@@ -164,7 +164,7 @@ a {
  * 80rem is not arbitrary: it is the SPA header's own `max-w-7xl`, so the
  * two centre on exactly the same column. The header then insets its
  * brand by `md:px-6` (24px) plus the nav's `px-2` (8px) — 32px — which
- * `--urouters-sidebar-inset` reserves inside the panel. Because both
+ * `--Uter-sidebar-inset` reserves inside the panel. Because both
  * offsets derive from the same column, the panel and the brand keep a
  * shared left edge at every viewport width rather than only agreeing at
  * one.
@@ -178,7 +178,7 @@ a {
  * palette; override to match the project brand.
  */
 ::selection {
-  background-color: color-mix(in oklab, var(--urouters-accent) 25%, transparent);
+  background-color: color-mix(in oklab, var(--Uter-accent) 25%, transparent);
 }
 
 /*
@@ -192,8 +192,8 @@ a {
  */
 #nd-sidebar,
 #nd-sidebar-mobile {
-  --color-fd-card: var(--urouters-panel);
-  --color-fd-primary: var(--urouters-accent);
+  --color-fd-card: var(--Uter-panel);
+  --color-fd-primary: var(--Uter-accent);
   --color-fd-primary-foreground: #fff;
 }
 
@@ -204,11 +204,11 @@ a {
  * narrowing its right edge.
  */
 #nd-sidebar > div:first-of-type {
-  padding-inline-start: var(--urouters-sidebar-inset);
+  padding-inline-start: var(--Uter-sidebar-inset);
 }
 
 #nd-sidebar [data-radix-scroll-area-viewport] {
-  padding-inline-start: var(--urouters-sidebar-inset);
+  padding-inline-start: var(--Uter-sidebar-inset);
 }
 
 /*
@@ -226,7 +226,7 @@ a {
 #nd-sidebar button:hover,
 #nd-sidebar-mobile a[href]:not([data-active='true']):hover,
 #nd-sidebar-mobile button:hover {
-  background-color: var(--urouters-panel-hover);
+  background-color: var(--Uter-panel-hover);
 }
 
 /*
@@ -257,7 +257,7 @@ a {
  */
 #nd-toc,
 [data-toc-popover] {
-  --color-fd-primary: var(--urouters-accent);
+  --color-fd-primary: var(--Uter-accent);
 }
 
 /*
@@ -269,7 +269,7 @@ a {
  * outside it.
  */
 [data-docs-search] {
-  --color-fd-primary: var(--urouters-accent);
+  --color-fd-primary: var(--Uter-accent);
 }
 
 /*

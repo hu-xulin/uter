@@ -5,12 +5,12 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/QuantumNous/u-routers/common"
-	"github.com/QuantumNous/u-routers/model"
-	relaycommon "github.com/QuantumNous/u-routers/relay/common"
-	"github.com/QuantumNous/u-routers/relaykit/dto"
-	"github.com/QuantumNous/u-routers/relaykit/types"
-	hosttypes "github.com/QuantumNous/u-routers/types"
+	"github.com/QuantumNous/uter/common"
+	"github.com/QuantumNous/uter/model"
+	relaycommon "github.com/QuantumNous/uter/relay/common"
+	"github.com/QuantumNous/uter/relaykit/dto"
+	"github.com/QuantumNous/uter/relaykit/types"
+	hosttypes "github.com/QuantumNous/uter/types"
 
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/require"

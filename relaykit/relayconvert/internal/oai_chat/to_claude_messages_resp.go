@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/QuantumNous/u-routers/relaykit/dto"
-	"github.com/QuantumNous/u-routers/relaykit/reasonmap"
-	"github.com/QuantumNous/u-routers/relaykit/relayconvert/convmeta"
-	sharedclaude "github.com/QuantumNous/u-routers/relaykit/relayconvert/internal/shared/claude"
-	kitutil "github.com/QuantumNous/u-routers/relaykit/relayconvert/kitutil"
+	"github.com/QuantumNous/uter/relaykit/dto"
+	"github.com/QuantumNous/uter/relaykit/reasonmap"
+	"github.com/QuantumNous/uter/relaykit/relayconvert/convmeta"
+	sharedclaude "github.com/QuantumNous/uter/relaykit/relayconvert/internal/shared/claude"
+	kitutil "github.com/QuantumNous/uter/relaykit/relayconvert/kitutil"
 )
 
 func generateStopBlock(index int) *dto.ClaudeResponse {

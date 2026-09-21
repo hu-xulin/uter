@@ -3,9 +3,9 @@ package tencent
 import (
 	"testing"
 
-	"github.com/QuantumNous/u-routers/constant"
-	"github.com/QuantumNous/u-routers/relay/channel/openai"
-	relaycommon "github.com/QuantumNous/u-routers/relay/common"
+	"github.com/QuantumNous/uter/constant"
+	"github.com/QuantumNous/uter/relay/channel/openai"
+	relaycommon "github.com/QuantumNous/uter/relay/common"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

@@ -10,7 +10,7 @@
 >   - Project Documentation: [https://docs.openclaw.ai](https://docs.openclaw.ai)
 >   - GitHub: [https://github.com/openclaw/openclaw](https://github.com/openclaw/openclaw)
 
-OpenClaw is completely open-source. You can browse the source code, submit issues, or contribute on [OpenClaw's GitHub repository](https://github.com/openclaw/openclaw). This tutorial covers the complete steps for installing, configuring, and integrating OpenClaw with URouters.
+OpenClaw is completely open-source. You can browse the source code, submit issues, or contribute on [OpenClaw's GitHub repository](https://github.com/openclaw/openclaw). This tutorial covers the complete steps for installing, configuring, and integrating OpenClaw with Uter.
 
 ## 🌟 Core Features
 
@@ -40,11 +40,11 @@ OpenClaw is completely open-source. You can browse the source code, submit issue
 > **Preparation Information**
 >
 > - Node.js 22 or higher
->   - An available URouters address (usually ending with `/v1`)
->   - An available URouters API Key
->   - Please use your own deployed URouters, or confirm that the service provider has legitimate upstream authorization and compliance obligations for their URouters service. Do not connect unknown API addresses or keys to production environments.
+>   - An available Uter address (usually ending with `/v1`)
+>   - An available Uter API Key
+>   - Please use your own deployed Uter, or confirm that the service provider has legitimate upstream authorization and compliance obligations for their Uter service. Do not connect unknown API addresses or keys to production environments.
 
-Before integrating URouters, it's recommended to first get the Gateway and Control UI running according to OpenClaw's official current recommended process. This makes it easier to distinguish whether OpenClaw itself is not starting or if the model provider configuration is incorrect when troubleshooting later.
+Before integrating Uter, it's recommended to first get the Gateway and Control UI running according to OpenClaw's official current recommended process. This makes it easier to distinguish whether OpenClaw itself is not starting or if the model provider configuration is incorrect when troubleshooting later.
 
 ### 1. Install OpenClaw (macOS/Linux)
 
@@ -60,7 +60,7 @@ For other installation methods, refer to the OpenClaw official documentation: [G
 openclaw onboard --install-daemon
 ```
 
-This wizard will complete basic authentication, Gateway setup, and optional channel initialization. The goal here is to get OpenClaw running first, then switch the default model to URouters later.
+This wizard will complete basic authentication, Gateway setup, and optional channel initialization. The goal here is to get OpenClaw running first, then switch the default model to Uter later.
 
 ### 3. Check Gateway and Control UI
 
@@ -88,21 +88,21 @@ OpenClaw's configuration file is usually located at `~/.openclaw/openclaw.json`.
 >
 >   For detailed instructions, see the official environment variables documentation: [Environment Variables](https://docs.openclaw.ai/help/environment).
 
-## 🚀 Using URouters as a Model Provider
+## 🚀 Using Uter as a Model Provider
 
-OpenClaw supports integrating custom or OpenAI-compatible model gateways via `models.providers`. For URouters, the most common approach is to add it as a custom provider to the configuration, then point the default model to `newapi/model-ID`.
+OpenClaw supports integrating custom or OpenAI-compatible model gateways via `models.providers`. For Uter, the most common approach is to add it as a custom provider to the configuration, then point the default model to `newapi/model-ID`.
 
 ### Integration Approach
 
 1. Declare a `newapi` provider under `models.providers`.
-2. Point `baseUrl` to your URouters address, ensuring it includes `/v1`.
+2. Point `baseUrl` to your Uter address, ensuring it includes `/v1`.
 3. Set `api` to `openai-completions`.
 4. List the model IDs you want OpenClaw to use in `models`.
 5. Switch the default model in `agents.defaults.model.primary` to `newapi/...`.
 
 ### Recommended Practice: Store API Key in Environment Variables
 
-First, provide your URouters key in the current shell, service environment, or an `.env` file readable by OpenClaw:
+First, provide your Uter key in the current shell, service environment, or an `.env` file readable by OpenClaw:
 
 ```bash
 export NEWAPI_API_KEY="sk-your-newapi-key"
@@ -142,17 +142,17 @@ Then, add or modify the following snippet in `openclaw.json`:
 }
 ```
 
-This is not a complete configuration that must be copied exactly, but rather the most critical part for integrating URouters. As long as the `provider`, model IDs, and default model references are correct, OpenClaw will be able to call your exposed model resources via URouters.
+This is not a complete configuration that must be copied exactly, but rather the most critical part for integrating Uter. As long as the `provider`, model IDs, and default model references are correct, OpenClaw will be able to call your exposed model resources via Uter.
 
 ### Key Configuration Details
 
 | Configuration Item | Description |
 | --- | --- |
 | `models.mode` | Recommended to set to `merge`, appending `newapi` while retaining OpenClaw's built-in providers |
-| `models.providers.newapi.baseUrl` | Your URouters address, usually needs to include `/v1` |
-| `models.providers.newapi.apiKey` | URouters key, recommended to inject via `${NEWAPI_API_KEY}` |
-| `models.providers.newapi.api` | For OpenAI-compatible gateways like URouters, use `openai-completions` |
-| `models.providers.newapi.models` | The model IDs listed here must match the actual model names exposed by your URouters |
+| `models.providers.newapi.baseUrl` | Your Uter address, usually needs to include `/v1` |
+| `models.providers.newapi.apiKey` | Uter key, recommended to inject via `${NEWAPI_API_KEY}` |
+| `models.providers.newapi.api` | For OpenAI-compatible gateways like Uter, use `openai-completions` |
+| `models.providers.newapi.models` | The model IDs listed here must match the actual model names exposed by your Uter |
 | `agents.defaults.model.primary` | Default primary model, format must be `provider/model-id` |
 | `agents.defaults.model.fallbacks` | List of fallback models, automatically switches if the primary model fails |
 | `agents.defaults.models` | Optional, used to create aliases for models, convenient for referencing in UI or sessions |

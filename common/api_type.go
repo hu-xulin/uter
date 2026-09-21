@@ -1,6 +1,6 @@
 package common
 
-import "github.com/QuantumNous/u-routers/constant"
+import "github.com/QuantumNous/uter/constant"
 
 func ChannelType2APIType(channelType int) (int, bool) {
 	apiType := -1
@@ -79,8 +79,8 @@ func ChannelType2APIType(channelType int) (int, bool) {
 		apiType = constant.APITypeAdvancedCustom
 	case constant.ChannelTypeSub2API:
 		apiType = constant.APITypeSub2API
-	case constant.ChannelTypeURouter:
-		apiType = constant.APITypeURouter
+	case constant.ChannelTypeUter:
+		apiType = constant.APITypeUter
 	}
 	if apiType == -1 {
 		// Task plugin channels are served by the task relay and must never
@@ -99,7 +99,7 @@ func SupportsResponsesCompact(channelType, apiType int) bool {
 		constant.APITypeCodex,
 		constant.APITypeAdvancedCustom,
 		constant.APITypeSub2API,
-		constant.APITypeURouter:
+		constant.APITypeUter:
 		return true
 	default:
 		return false

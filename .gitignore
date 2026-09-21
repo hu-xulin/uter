@@ -58,7 +58,7 @@ __pycache__/
 *.pyc
 
 # Compiled binary and local tooling caches (never commit)
-u-routers-bin
+uter-bin
 node_modules/
 .playwright-cli/
 .workbuddy/

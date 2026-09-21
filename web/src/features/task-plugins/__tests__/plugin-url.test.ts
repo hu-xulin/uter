@@ -32,9 +32,9 @@ describe('plugin source URL normalization', () => {
   test('rewrites a GitHub blob URL to its raw host', () => {
     assert.equal(
       normalizePluginSourceUrl(
-        'https://github.com/QuantumNous/u-routers-plugins/blob/main/plugins/tasks/doubao/1.0.0/plugin.js'
+        'https://github.com/QuantumNous/uter-plugins/blob/main/plugins/tasks/doubao/1.0.0/plugin.js'
       ),
-      'https://raw.githubusercontent.com/QuantumNous/u-routers-plugins/main/plugins/tasks/doubao/1.0.0/plugin.js'
+      'https://raw.githubusercontent.com/QuantumNous/uter-plugins/main/plugins/tasks/doubao/1.0.0/plugin.js'
     )
   })
 

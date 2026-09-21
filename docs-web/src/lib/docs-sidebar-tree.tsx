@@ -33,7 +33,7 @@ import { useSyncExternalStore, type FC, type ReactNode } from 'react';
 /* ── Current location ───────────────────────────────────────────────── */
 
 /** Custom event announced after a programmatic history update. */
-const LOCATION_CHANGE = 'urouters:docs:location';
+const LOCATION_CHANGE = 'Uter:docs:location';
 
 let historyPatched = false;
 

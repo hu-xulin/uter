@@ -8,8 +8,8 @@ import (
 	"strings"
 	"sync/atomic"
 
-	"github.com/QuantumNous/u-routers/common"
-	"github.com/QuantumNous/u-routers/setting/config"
+	"github.com/QuantumNous/uter/common"
+	"github.com/QuantumNous/uter/setting/config"
 )
 
 // ---------------------------------------------------------------------------

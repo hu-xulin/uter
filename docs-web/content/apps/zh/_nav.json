@@ -7,71 +7,71 @@
   {
     "id": "aionui",
     "title": "AionUi - 免费开源的桌面办公Agent",
-    "description": "AionUi 教程 — 免费开源桌面办公 Agent，支持 Gemini CLI、Claude Code、Codex 等多种 AI 代理。对接 优特斯实现多模型工作流。"
+    "description": "AionUi 教程 — 免费开源桌面办公 Agent，支持 Gemini CLI、Claude Code、Codex 等多种 AI 代理。对接 优特实现多模型工作流。"
   },
   {
     "id": "aqbot",
     "title": "AQBot - 本地优先的桌面 AI 工作台",
-    "description": "AQBot 教程 — 将本地优先桌面 AI 工作台对接 优特斯。支持 aqbot:// 一键导入，以及 OpenAI / Claude / Gemini 协议手动配置。"
+    "description": "AQBot 教程 — 将本地优先桌面 AI 工作台对接 优特。支持 aqbot:// 一键导入，以及 OpenAI / Claude / Gemini 协议手动配置。"
   },
   {
     "id": "cc-switch",
     "title": "CC Switch - AI CLI 统一管理工具",
-    "description": "CC Switch 教程 — 跨平台 AI CLI 管理工具，统一管理 Claude Code、Codex、Gemini CLI 的 Provider 配置、MCP 服务器与系统提示词。对接 优特斯一键填入。"
+    "description": "CC Switch 教程 — 跨平台 AI CLI 管理工具，统一管理 Claude Code、Codex、Gemini CLI 的 Provider 配置、MCP 服务器与系统提示词。对接 优特一键填入。"
   },
   {
     "id": "cherry-studio",
     "title": "Cherry Studio - 桌面 AI 客户端",
-    "description": "Cherry Studio 教程 — 将桌面 AI 客户端对接 优特斯，一键填入 API Key。内置 30+ 专业 AI 助手，覆盖多种工作场景。"
+    "description": "Cherry Studio 教程 — 将桌面 AI 客户端对接 优特，一键填入 API Key。内置 30+ 专业 AI 助手，覆盖多种工作场景。"
   },
   {
     "id": "deepchat",
     "title": "DeepChat - 全功能AI Agent客户端",
-    "description": "DeepChat 教程 — 将全功能AI Agent客户端对接 优特斯，并通过 DeepLink 一键导入 DeepChat 配置。"
+    "description": "DeepChat 教程 — 将全功能AI Agent客户端对接 优特，并通过 DeepLink 一键导入 DeepChat 配置。"
   },
   {
     "id": "memoh",
     "title": "Memoh - 容器化 AI 智能体平台",
-    "description": "Memoh 对接教程 — 将自托管容器化 AI 智能体平台对接 优特斯，为 Telegram、Discord、飞书、QQ、微信等渠道创建具有长期记忆的 AI 机器人。"
+    "description": "Memoh 对接教程 — 将自托管容器化 AI 智能体平台对接 优特，为 Telegram、Discord、飞书、QQ、微信等渠道创建具有长期记忆的 AI 机器人。"
   },
   {
     "id": "fluent-read",
     "title": "流畅阅读 (FluentRead) - 开源翻译插件",
-    "description": "FluentRead 教程 — 开源浏览器翻译插件，支持 20+ 翻译引擎与 AI 大模型翻译。对接 优特斯实现沉浸式双语阅读体验。"
+    "description": "FluentRead 教程 — 开源浏览器翻译插件，支持 20+ 翻译引擎与 AI 大模型翻译。对接 优特实现沉浸式双语阅读体验。"
   },
   {
     "id": "openclaw",
     "title": "OpenClaw - 自托管 AI 智能助手平台",
-    "description": "OpenClaw 教程 — 安装 OpenClaw、对接 优特斯，快速搭建自托管 AI 助手。开源项目，支持 Telegram、Discord、WhatsApp 等多渠道集成。"
+    "description": "OpenClaw 教程 — 安装 OpenClaw、对接 优特，快速搭建自托管 AI 助手。开源项目，支持 Telegram、Discord、WhatsApp 等多渠道集成。"
   },
   {
     "id": "langbot",
     "title": "LangBot - 即时通信机器人开发平台",
-    "description": "LangBot 对接教程 — 面向飞书、钉钉、Telegram、Discord 等平台的 AI 聊天机器人开发框架。支持知识库、Agent、MCP，兼容 优特斯。"
+    "description": "LangBot 对接教程 — 面向飞书、钉钉、Telegram、Discord 等平台的 AI 聊天机器人开发框架。支持知识库、Agent、MCP，兼容 优特。"
   },
   {
     "id": "astrbot",
     "title": "AstrBot - Agent 聊天机器人",
-    "description": "AstrBot 配置教程 — 将开源 Agent 聊天机器人平台对接 优特斯，为 QQ、飞书、钉钉、企业微信等即时通讯注入 AI 能力。"
+    "description": "AstrBot 配置教程 — 将开源 Agent 聊天机器人平台对接 优特，为 QQ、飞书、钉钉、企业微信等即时通讯注入 AI 能力。"
   },
   {
     "id": "luna-translator",
     "title": "LunaTranslator - 开源 GalGame 翻译器",
-    "description": "LunaTranslator 教程 — 开源 GalGame / 视觉小说翻译器，支持 HOOK、OCR 与 AI 翻译引擎。对接 优特斯提升翻译质量。"
+    "description": "LunaTranslator 教程 — 开源 GalGame / 视觉小说翻译器，支持 HOOK、OCR 与 AI 翻译引擎。对接 优特提升翻译质量。"
   },
   {
     "id": "claude-code",
     "title": "Claude Code",
-    "description": "Claude Code 教程 — 将 Anthropic 的终端编程助手对接 优特斯。支持代码理解、多文件编辑，集成 VS Code 与 JetBrains IDE。"
+    "description": "Claude Code 教程 — 将 Anthropic 的终端编程助手对接 优特。支持代码理解、多文件编辑，集成 VS Code 与 JetBrains IDE。"
   },
   {
     "id": "codex-cli",
     "title": "OpenAI Codex CLI",
-    "description": "OpenAI Codex CLI 安装教程 — 在 Windows、macOS、Linux 上安装终端 AI 编程助手，对接 优特斯。支持沙箱策略与原子补丁编辑。"
+    "description": "OpenAI Codex CLI 安装教程 — 在 Windows、macOS、Linux 上安装终端 AI 编程助手，对接 优特。支持沙箱策略与原子补丁编辑。"
   },
   {
     "id": "factory-droid-cli",
     "title": "Factory Droid CLI",
-    "description": "Factory Droid CLI 教程 — 安装并配置 AI 软件工程助手，对接 优特斯。从规划到测试的全流程自动化开发。"
+    "description": "Factory Droid CLI 教程 — 安装并配置 AI 软件工程助手，对接 优特。从规划到测试的全流程自动化开发。"
   }
 ]

@@ -1,6 +1,6 @@
 package model
 
-import "github.com/QuantumNous/u-routers/common"
+import "github.com/QuantumNous/uter/common"
 
 // GetDBTimestamp returns a UNIX timestamp from database time.
 // Falls back to application time on error.

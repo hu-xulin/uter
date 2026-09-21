@@ -1,6 +1,6 @@
 package dto
 
-import "github.com/QuantumNous/u-routers/relaykit/types"
+import "github.com/QuantumNous/uter/relaykit/types"
 
 // 这里不好动就不动了，本来想独立出来的（
 type OpenAIModels struct {

@@ -3,7 +3,7 @@ package reasoning
 import (
 	"testing"
 
-	"github.com/QuantumNous/u-routers/setting/model_setting"
+	"github.com/QuantumNous/uter/setting/model_setting"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

@@ -70,10 +70,10 @@ export const STATIC_I18N_KEYS = [
   'Access hosted model predictions through Replicate',
   'Access Codex using ChatGPT subscription credentials',
   'Configure endpoint routing, authentication and protocol conversion for different upstream services',
-  "URouters's flexible channel lets you configure upstream addresses and authentication per endpoint, choose native forwarding or supported protocol conversions, and configure model listing and balance queries independently",
+  "Uter's flexible channel lets you configure upstream addresses and authentication per endpoint, choose native forwarding or supported protocol conversions, and configure model listing and balance queries independently",
   'Flexible integration',
   'Connect to model services through a Sub2API gateway',
-  'Connect to model services from another URouters instance',
+  'Connect to model services from another Uter instance',
 
   'Price per image',
   'Per image',

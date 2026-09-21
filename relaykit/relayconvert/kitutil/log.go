@@ -61,5 +61,5 @@ func LogSystemError(message string) {
 }
 
 // Debug reports whether verbose kit diagnostics are enabled. The host sets
-// this once at startup (ali-router mirrors common.DebugEnabled into it).
+// this once at startup (uter mirrors common.DebugEnabled into it).
 var Debug atomic.Bool

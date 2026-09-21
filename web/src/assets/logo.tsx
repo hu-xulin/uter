@@ -23,7 +23,7 @@ import { cn } from '@/lib/utils'
 export function Logo({ className, ...props }: SVGProps<SVGSVGElement>) {
   return (
     <svg
-      id='URouters-logo'
+      id='Uter-logo'
       viewBox='0 0 24 24'
       xmlns='http://www.w3.org/2000/svg'
       height='24'
@@ -36,7 +36,7 @@ export function Logo({ className, ...props }: SVGProps<SVGSVGElement>) {
       className={cn('size-6', className)}
       {...props}
     >
-      <title>URouters</title>
+      <title>Uter</title>
       <path
         d='M86.6484 106.996C92.2349 106.996 97.621 106.092 102.683 104.416L128.088 86.214C134.332 78.1151 138.467 68.1499 139.616 57.2394C140.54 48.4565 148.07 42.1232 156.434 43.0936C164.799 44.0639 170.831 51.9705 169.906 60.7534C167.581 82.8481 157.478 102.478 142.534 116.55L116.425 133.275C107.174 136.971 97.1368 138.995 86.6484 138.995C53.7309 138.995 25.2809 119.049 11.594 90.1136C7.85047 82.1992 10.9258 72.5974 18.4628 68.6669C25.9999 64.7363 35.1446 67.9653 38.8881 75.8796C47.6291 94.3579 65.7504 106.996 86.6484 106.996Z'
         fill='#FA9D3B'

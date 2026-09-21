@@ -57,7 +57,7 @@ const (
 	ChannelTypeCodex          = 57
 	ChannelTypeAdvancedCustom = 58
 	ChannelTypeSub2API        = 59
-	ChannelTypeURouter        = 60
+	ChannelTypeUter        = 60
 	ChannelTypeTaskPlugin     = 61
 	ChannelTypeDummy          // this one is only for count, do not add any channel after this
 
@@ -194,7 +194,7 @@ var ChannelTypeNames = map[int]string{
 	ChannelTypeCodex:          "ChatGPT Subscription (Codex)",
 	ChannelTypeAdvancedCustom: "Advanced Custom",
 	ChannelTypeSub2API:        "Sub2API",
-	ChannelTypeURouter:        "URouters",
+	ChannelTypeUter:        "Uter",
 	ChannelTypeTaskPlugin:     "Task Plugin",
 }
 

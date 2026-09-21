@@ -2,7 +2,7 @@
 
 > **Chat Settings Options**
 >
-> In the System Settings -> Chat Settings of the URouters console, you can add
+> In the System Settings -> Chat Settings of the Uter console, you can add
 >   the following shortcut options for easy one-click population to FluentRead on
 >   the Token Management page:
 
@@ -47,9 +47,9 @@
 
 ## 🚀 Configuration Methods
 
-### Import Configuration from URouters Console (Recommended)
+### Import Configuration from Uter Console (Recommended)
 
-After the FluentRead plugin is installed in your browser, opening the URouters console -> Token Management page will display a prompt to add FluentRead.
+After the FluentRead plugin is installed in your browser, opening the Uter console -> Token Management page will display a prompt to add FluentRead.
 
 ![添加提示](/apps-assets/fluentread/hint.webp)
 
@@ -57,7 +57,7 @@ After selecting a model, click 'One-click fill to FluentRead', and a confirmatio
 
 ![确认](/apps-assets/fluentread/confirm.webp)
 
-After confirming the import, the URouters configuration in FluentRead will be enabled.
+After confirming the import, the Uter configuration in FluentRead will be enabled.
 
 ![配置结果](/apps-assets/fluentread/fluentread.webp)
 
@@ -67,8 +67,8 @@ After confirming the import, the URouters configuration in FluentRead will be en
 
 | Configuration Item  | Content                                 |
 | ------------------- | --------------------------------------- |
-| Translation Service | URouters                                  |
-| Access Token        | URouters Key                              |
-| URouters Endpoint     | URouters Deployment Address (without /v1) |
+| Translation Service | Uter                                  |
+| Access Token        | Uter Key                              |
+| Uter Endpoint     | Uter Deployment Address (without /v1) |
 | Model               | Select from list, or custom model       |
 | Custom Model        | Model Name                              |

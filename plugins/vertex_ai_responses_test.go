@@ -3,10 +3,10 @@ package plugins_test
 import (
 	"testing"
 
-	"github.com/QuantumNous/u-routers/common"
-	"github.com/QuantumNous/u-routers/pkg/jsplugin"
-	builtinplugins "github.com/QuantumNous/u-routers/plugins"
-	"github.com/QuantumNous/u-routers/relay"
+	"github.com/QuantumNous/uter/common"
+	"github.com/QuantumNous/uter/pkg/jsplugin"
+	builtinplugins "github.com/QuantumNous/uter/plugins"
+	"github.com/QuantumNous/uter/relay"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

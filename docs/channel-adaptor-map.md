@@ -99,7 +99,7 @@
 | 57 | Codex | `relay/channel/codex/` | `adaptor.go` + `oauth_key.go` |
 | 58 | AdvancedCustom | `relay/channel/advancedcustom/` | `adaptor.go`(JS 任务插件) |
 | 59 | Sub2API | `relay/channel/sub2api/` | `adaptor.go` |
-| 60 | URouter | `relay/channel/URouters/` | `adaptor.go` |
+| 60 | Uter | `relay/channel/Uter/` | `adaptor.go` |
 | 61 | TaskPlugin | — | 占位,实际走 `taskPluginKeys` |
 | (62) | Dummy | — | 哨兵值,禁止在它之后再加新渠道 |
 
@@ -150,7 +150,7 @@
 | 34 | Codex | 57 | `relay/channel/codex` |
 | 35 | AdvancedCustom | 58 | `relay/channel/advancedcustom` |
 | 36 | Sub2API | 59 | `relay/channel/sub2api` |
-| 37 | URouter | 60 | `relay/channel/URouters` |
+| 37 | Uter | 60 | `relay/channel/Uter` |
 | 38 | Dummy | — | 哨兵值 |
 
 > ⚠️ 数据库存的 `channel.Type` 是 **ChannelType 编号**;**APIType 仅用于 `GetAdaptor` 派发**,数据库里没这个字段。两者通过前端"添加渠道"表单的"API 风格"映射(`web/src/.../channel-form.tsx` 等)间接关联。
@@ -198,7 +198,7 @@ func GetAdaptor(apiType int) channel.Adaptor {
     case constant.APITypeCodex:         return &codex.Adaptor{}
     case constant.APITypeAdvancedCustom:return &advancedcustom.Adaptor{}
     case constant.APITypeSub2API:       return &sub2api.Adaptor{}
-    case constant.APITypeURouter:       return &URouters.Adaptor{}
+    case constant.APITypeUter:       return &Uter.Adaptor{}
     }
     return nil
 }
@@ -298,7 +298,7 @@ relay/channel/
 ├── task/                   # 任务型渠道(含 jsplugin 子包)
 │   └── jsplugin/           # 把 JS 插件包成 channel.TaskAdaptor
 ├── tencent/                # APIType=8(ChannelType=23) 腾讯混元(含 dispatch.go 按模型再派发)
-├── URouters/                # APIType=37(ChannelType=60) ali-router 自身
+├── Uter/                # APIType=37(ChannelType=60) uter 自身
 ├── vertex/                 # APIType=19(ChannelType=41) Google Vertex AI
 ├── volcengine/             # APIType=23(ChannelType=45) 火山引擎(豆包)
 ├── xai/                    # APIType=27(ChannelType=48) xAI(Grok)

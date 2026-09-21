@@ -6,8 +6,8 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/QuantumNous/u-routers/common"
-	"github.com/QuantumNous/u-routers/pkg/jsplugin"
+	"github.com/QuantumNous/uter/common"
+	"github.com/QuantumNous/uter/pkg/jsplugin"
 )
 
 // TaskAliasTarget is one mapping-derived alias after cross-channel aggregation.

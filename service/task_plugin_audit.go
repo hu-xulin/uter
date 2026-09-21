@@ -1,9 +1,9 @@
 package service
 
 import (
-	"github.com/QuantumNous/u-routers/common"
-	"github.com/QuantumNous/u-routers/model"
-	pluginruntime "github.com/QuantumNous/u-routers/pkg/jsplugin"
+	"github.com/QuantumNous/uter/common"
+	"github.com/QuantumNous/uter/model"
+	pluginruntime "github.com/QuantumNous/uter/pkg/jsplugin"
 	"github.com/gin-gonic/gin"
 )
 

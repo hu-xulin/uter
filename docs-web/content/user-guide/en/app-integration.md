@@ -1,10 +1,10 @@
 # Chat Application Integration
 
-* URouters supports quickly importing configurations into various AI chat applications, facilitating testing and daily use.
+* Uter supports quickly importing configurations into various AI chat applications, facilitating testing and daily use.
 
 ## Chat Integration Methods
 
-* URouters offers three chat integration methods:
+* Uter offers three chat integration methods:
 
 1. **One-click import of chat presets**
 2. **One-click import of API key configurations**
@@ -12,7 +12,7 @@
 
 ### Preparation Before Use
 
-1. Log in to URouters and create a key on the 'API Key' page.
+1. Log in to Uter and create a key on the 'API Key' page.
 2. Ensure the key is enabled, has sufficient quota, is not expired, and that current IP, group, and model restrictions allow the call.
 
 <Callout type="info">
@@ -45,11 +45,11 @@
 
 For applications that do not support one-click import, you can configure them manually:
 
-* Obtain the following configuration information from URouters:
+* Obtain the following configuration information from Uter:
 
 | Configuration Item | Description              | Location to Obtain                                                              |
 | ------------------ | ------------------------ | ------------------------------------------------------------------------------- |
-| API Base URL       | API Endpoint Address     | URouters address, e.g., `https://api.example.com/v1`                             |
+| API Base URL       | API Endpoint Address     | Uter address, e.g., `https://api.example.com/v1`                             |
 | API Key            | API Key                  | API Key page                                                                    |
 | Available Models   | List of supported models | Filter and view available models under the key's group in the Model Marketplace |
 
@@ -61,7 +61,7 @@ For applications that do not support one-click import, you can configure them ma
 4. Save the configuration to start using it.
 
 <Callout type="info">
-  1) Most applications supporting OpenAI API compatible interfaces can integrate with URouters by filling in a custom API address.
+  1) Most applications supporting OpenAI API compatible interfaces can integrate with Uter by filling in a custom API address.
   2) If the application requires a full endpoint, use `https://api.example.com/v1/chat/completions`; refer to the application's specific configuration instructions to supplement the path.
   3) **Most mainstream AI applications can be connected through the custom API described above; follow each application's own configuration guide.**
 </Callout>

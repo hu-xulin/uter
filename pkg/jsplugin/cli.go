@@ -8,11 +8,11 @@ import (
 	"strings"
 )
 
-// RunCLI implements the `ali-router plugin` subcommand: linting a plugin source
+// RunCLI implements the `uter plugin` subcommand: linting a plugin source
 // and replaying a golden fixture against it. It returns a process exit code.
 func RunCLI(args []string, stdout, stderr io.Writer) int {
 	if len(args) < 2 {
-		fmt.Fprintln(stderr, "usage: ali-router plugin lint <plugin.js> | ali-router plugin test <plugin.js> --fixture <fixture.json>")
+		fmt.Fprintln(stderr, "usage: uter plugin lint <plugin.js> | uter plugin test <plugin.js> --fixture <fixture.json>")
 		return 2
 	}
 	command, sourcePath := args[0], args[1]
@@ -25,7 +25,7 @@ func RunCLI(args []string, stdout, stderr io.Writer) int {
 	switch command {
 	case "lint":
 		if len(args) != 2 {
-			fmt.Fprintln(stderr, "usage: ali-router plugin lint <plugin.js>")
+			fmt.Fprintln(stderr, "usage: uter plugin lint <plugin.js>")
 			return 2
 		}
 		plugin, compileErr := NewRegistry().Register(string(source), Options{Key: sourcePath, Version: "lint"})
@@ -38,7 +38,7 @@ func RunCLI(args []string, stdout, stderr io.Writer) int {
 		return 0
 	case "test":
 		if len(args) != 4 || args[2] != "--fixture" || strings.TrimSpace(args[3]) == "" {
-			fmt.Fprintln(stderr, "usage: ali-router plugin test <plugin.js> --fixture <fixture.json>")
+			fmt.Fprintln(stderr, "usage: uter plugin test <plugin.js> --fixture <fixture.json>")
 			return 2
 		}
 		fixture, readErr := os.ReadFile(args[3])

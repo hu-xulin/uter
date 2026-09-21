@@ -11,13 +11,13 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/QuantumNous/u-routers/common"
-	"github.com/QuantumNous/u-routers/constant"
-	"github.com/QuantumNous/u-routers/i18n"
-	"github.com/QuantumNous/u-routers/model"
-	"github.com/QuantumNous/u-routers/pkg/jsplugin"
-	"github.com/QuantumNous/u-routers/plugins"
-	"github.com/QuantumNous/u-routers/setting"
+	"github.com/QuantumNous/uter/common"
+	"github.com/QuantumNous/uter/constant"
+	"github.com/QuantumNous/uter/i18n"
+	"github.com/QuantumNous/uter/model"
+	"github.com/QuantumNous/uter/pkg/jsplugin"
+	"github.com/QuantumNous/uter/plugins"
+	"github.com/QuantumNous/uter/setting"
 	"github.com/gin-gonic/gin"
 	"github.com/glebarez/sqlite"
 	"github.com/stretchr/testify/assert"
@@ -910,9 +910,9 @@ func TestUploadTaskPluginLocalizesUnknownMetaField(t *testing.T) {
 		language string
 		message  string
 	}{
-		{"en", `Plugin metadata contains an unknown field "futureField". If this plugin was downloaded from the official marketplace, it may require a newer version of ali-router. Try updating ali-router and installing the plugin again.`},
-		{"zh-CN", "插件元数据包含未知字段“futureField”。如果插件来自官方市场，可能需要更高版本的 ali-router。请尝试更新 ali-router 后重新安装插件。"},
-		{"zh-TW", "外掛中繼資料包含未知欄位「futureField」。如果外掛來自官方市集，可能需要較新版本的 ali-router。請嘗試更新 ali-router 後重新安裝外掛。"},
+		{"en", `Plugin metadata contains an unknown field "futureField". If this plugin was downloaded from the official marketplace, it may require a newer version of uter. Try updating uter and installing the plugin again.`},
+		{"zh-CN", "插件元数据包含未知字段“futureField”。如果插件来自官方市场，可能需要更高版本的 uter。请尝试更新 uter 后重新安装插件。"},
+		{"zh-TW", "外掛中繼資料包含未知欄位「futureField」。如果外掛來自官方市集，可能需要較新版本的 uter。請嘗試更新 uter 後重新安裝外掛。"},
 	} {
 		t.Run(tc.language, func(t *testing.T) {
 			recorder := httptest.NewRecorder()
@@ -1100,8 +1100,8 @@ func TestGetTaskPluginMarketplaceSourcesDefaultWhenUnset(t *testing.T) {
 	require.NoError(t, common.Unmarshal(recorder.Body.Bytes(), &response))
 	require.True(t, response.Success)
 	require.Equal(t, []setting.TaskPluginMarketplaceSource{
-		{Name: "Official", IndexURL: "https://www.URouters.ai/api/v1/plugins/index.json"},
-		{Name: "GitHub", IndexURL: "https://raw.githubusercontent.com/QuantumNous/u-routers-plugins/main/index.json"},
+		{Name: "Official", IndexURL: "https://www.uter.ai/api/v1/plugins/index.json"},
+		{Name: "GitHub", IndexURL: "https://raw.githubusercontent.com/QuantumNous/uter-plugins/main/index.json"},
 	}, response.Data)
 	var count int64
 	require.NoError(t, model.DB.Model(&model.Option{}).Where("key = ?", setting.TaskPluginMarketplaceSourcesKey).Count(&count).Error)
@@ -1112,7 +1112,7 @@ func TestUpdateTaskPluginMarketplaceSourcesRoundTrip(t *testing.T) {
 	setupTaskPluginMarketplaceSourcesTest(t)
 	payload := []setting.TaskPluginMarketplaceSource{
 		{Name: "Mirror", IndexURL: "https://example.com/plugins/index.json"},
-		{Name: "Official", IndexURL: "https://www.URouters.ai/api/v1/plugins/index.json"},
+		{Name: "Official", IndexURL: "https://www.uter.ai/api/v1/plugins/index.json"},
 	}
 	body, err := common.Marshal(payload)
 	require.NoError(t, err)

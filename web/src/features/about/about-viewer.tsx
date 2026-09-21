@@ -31,7 +31,7 @@ import { aboutPathFor, resolveDocsLocaleCode } from '@/lib/docs-link'
  * from the same Next.js export and carries the same bridge, so the two
  * sides already agree on it.
  */
-const THEME_MESSAGE = 'urouters:docs:theme'
+const THEME_MESSAGE = 'Uter:docs:theme'
 
 /**
  * Height of `PublicHeader` in its unscrolled form (`h-16`), leaving the

@@ -3,10 +3,10 @@ package controller
 import (
 	"net/http"
 
-	"github.com/QuantumNous/u-routers/model"
-	"github.com/QuantumNous/u-routers/service"
-	"github.com/QuantumNous/u-routers/setting"
-	"github.com/QuantumNous/u-routers/setting/ratio_setting"
+	"github.com/QuantumNous/uter/model"
+	"github.com/QuantumNous/uter/service"
+	"github.com/QuantumNous/uter/setting"
+	"github.com/QuantumNous/uter/setting/ratio_setting"
 
 	"github.com/gin-gonic/gin"
 )

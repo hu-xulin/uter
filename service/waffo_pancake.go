@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/QuantumNous/u-routers/model"
-	"github.com/QuantumNous/u-routers/setting"
+	"github.com/QuantumNous/uter/model"
+	"github.com/QuantumNous/uter/setting"
 	pancake "github.com/waffo-com/waffo-pancake-sdk-go"
 )
 
@@ -30,7 +30,7 @@ type WaffoPancakeCreateSessionParams struct {
 
 // WaffoPancakeCheckoutSession is the response of CreateWaffoPancakeCheckoutSession.
 // CheckoutURL already carries the `#token=...` fragment; Token / TokenExpiresAt
-// are exposed separately for self-service flows driven from ali-router's own UI.
+// are exposed separately for self-service flows driven from uter's own UI.
 type WaffoPancakeCheckoutSession struct {
 	SessionID      string
 	CheckoutURL    string
@@ -156,7 +156,7 @@ func optionalString(s string) *string {
 // for checkout. Webhook handlers compare against the value rendered here to
 // reject identity mismatches, so both call sites must use this function.
 func WaffoPancakeBuyerIdentityFromUserID(userID int) string {
-	return fmt.Sprintf("ali-router-user-%d", userID)
+	return fmt.Sprintf("uter-user-%d", userID)
 }
 
 // VerifyConfiguredWaffoPancakeWebhook verifies the signature header. The SDK
@@ -251,8 +251,8 @@ func ResolveWaffoPancakeSubscriptionTradeNo(event *WaffoPancakeWebhookEvent) (st
 // Deterministic default names for "+ Create": stable bodies mean stable
 // X-Idempotency-Key, which lets Pancake dedupe retries server-side.
 const (
-	defaultWaffoPancakeStoreName   = "ali-router-store"
-	defaultWaffoPancakeProductName = "ali-router-charge-product"
+	defaultWaffoPancakeStoreName   = "uter-store"
+	defaultWaffoPancakeProductName = "uter-charge-product"
 )
 
 // CreateWaffoPancakePrimaryStore creates a Pancake Store using in-flight
@@ -275,8 +275,8 @@ func CreateWaffoPancakePrimaryStore(ctx context.Context, merchantID, privateKey 
 // OnetimeProduct priced at `amount` USD, used as a subscription plan's
 // SubscriptionPlan.WaffoPancakeProductId.
 //
-// OnetimeProduct (not SubscriptionProduct) because ali-router has no renewal-
-// event handling; Pancake auto-renewing without ali-router extending user
+// OnetimeProduct (not SubscriptionProduct) because uter has no renewal-
+// event handling; Pancake auto-renewing without uter extending user
 // access would be a UX divergence. Revisit if renewal handling is added.
 func CreateWaffoPancakeProductForPlan(ctx context.Context, merchantID, privateKey, storeID, name, amount, returnURL string) (string, error) {
 	storeID = strings.TrimSpace(storeID)
