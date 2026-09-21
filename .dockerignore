@@ -10,3 +10,18 @@ docs
 /web/node_modules
 /web/dist
 !THIRD-PARTY-LICENSES.md
+
+# 运行时 / 非构建内容：排除后可避免把 .workbuddy(614M)、docs-web/node_modules(465M)、
+# db、logs、bin 等打进镜像构建上下文，否则 docker build 首次会极慢甚至卡死。
+# 说明：web/ 前端由 Dockerfile 在 builder 内 bun install 重新安装，无需宿主 node_modules；
+# docs-web/ 是独立 Next.js 文档站，不在主镜像内，可整体排除。
+.workbuddy
+logs
+data
+bin
+node_modules
+docs-web
+electron
+*.db
+*.db-wal
+*.db-shm
