@@ -19,7 +19,7 @@ For commercial licensing, please contact support@Uter.ai.com
 import { describe, expect, test } from 'vitest'
 
 import {
-  CHANNEL_TYPE_NEW_API,
+  CHANNEL_TYPE_UTER,
   CHANNEL_TYPE_OPTIONS,
   MODEL_FETCHABLE_TYPES,
 } from '../../constants'
@@ -27,11 +27,11 @@ import { CHANNEL_FORM_DEFAULT_VALUES, channelFormSchema } from '../channel-form'
 import { getChannelTypeConfig } from '../channel-type-config'
 import { getChannelTypeIcon, getKeyPromptForType } from '../channel-utils'
 
-function newAPIForm(baseUrl: string) {
+function uterForm(baseUrl: string) {
   return {
     ...CHANNEL_FORM_DEFAULT_VALUES,
     name: 'Uter upstream',
-    type: CHANNEL_TYPE_NEW_API,
+    type: CHANNEL_TYPE_UTER,
     base_url: baseUrl,
     key: 'test-key',
     models: 'gpt-5',
@@ -41,28 +41,28 @@ function newAPIForm(baseUrl: string) {
 describe('Uter channel', () => {
   test('registers selection, ordering, model discovery, and icon metadata', () => {
     const option = CHANNEL_TYPE_OPTIONS.find(
-      (item) => item.value === CHANNEL_TYPE_NEW_API
+      (item) => item.value === CHANNEL_TYPE_UTER
     )
 
     expect(option).toEqual({
-      value: CHANNEL_TYPE_NEW_API,
+      value: CHANNEL_TYPE_UTER,
       label: 'Uter',
     })
     expect(
       CHANNEL_TYPE_OPTIONS.findIndex(
-        (item) => item.value === CHANNEL_TYPE_NEW_API
+        (item) => item.value === CHANNEL_TYPE_UTER
       ) + 1
     ).toBe(CHANNEL_TYPE_OPTIONS.findIndex((item) => item.value === 58))
-    expect(MODEL_FETCHABLE_TYPES.has(CHANNEL_TYPE_NEW_API)).toBe(true)
-    expect(getChannelTypeIcon(CHANNEL_TYPE_NEW_API)).toBe('Uter')
-    expect(getKeyPromptForType(CHANNEL_TYPE_NEW_API)).toBe(
+    expect(MODEL_FETCHABLE_TYPES.has(CHANNEL_TYPE_UTER)).toBe(true)
+    expect(getChannelTypeIcon(CHANNEL_TYPE_UTER)).toBe('Uter')
+    expect(getKeyPromptForType(CHANNEL_TYPE_UTER)).toBe(
       'Enter API key for this channel'
     )
-    expect(getChannelTypeConfig(CHANNEL_TYPE_NEW_API).icon).toBe('Uter')
+    expect(getChannelTypeConfig(CHANNEL_TYPE_UTER).icon).toBe('Uter')
   })
 
   test('requires a non-blank Base URL', () => {
-    const blankResult = channelFormSchema.safeParse(newAPIForm('  '))
+    const blankResult = channelFormSchema.safeParse(uterForm('  '))
 
     expect(blankResult.success).toBe(false)
     if (!blankResult.success) {
@@ -76,14 +76,14 @@ describe('Uter channel', () => {
     }
 
     expect(
-      channelFormSchema.safeParse(newAPIForm('https://uter.example'))
+      channelFormSchema.safeParse(uterForm('https://uter.example'))
         .success
     ).toBe(true)
   })
 
   test('keeps Sub2API Base URL validation unchanged', () => {
     const result = channelFormSchema.safeParse({
-      ...newAPIForm(''),
+      ...uterForm(''),
       type: 59,
     })
 

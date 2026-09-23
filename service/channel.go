@@ -65,11 +65,11 @@ func ShouldDisableChannel(err *types.UterError) bool {
 	return search
 }
 
-func ShouldEnableChannel(newAPIError *types.UterError, status int) bool {
+func ShouldEnableChannel(uterError *types.UterError, status int) bool {
 	if !common.AutomaticEnableChannelEnabled {
 		return false
 	}
-	if newAPIError != nil {
+	if uterError != nil {
 		return false
 	}
 	if status != common.ChannelStatusAutoDisabled {

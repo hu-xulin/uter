@@ -95,7 +95,7 @@
 > **一键修改 Codex CLI 配置文件**
 >
 > ```powershell
->   iex (irm 'https://raw.githubusercontent.com/Uter.ai/new-api-docs/refs/heads/main/helper/codex-cli-setup.ps1')
+>   iex (irm 'https://raw.githubusercontent.com/Uter.ai/uter-docs/refs/heads/main/helper/codex-cli-setup.ps1')
 >   ```
 
 ![windows-configure](/apps-assets/codex/windows_configure.webp)
@@ -242,7 +242,7 @@ Homebrew 是 macOS 缺失的软件包的管理器。
 > **一键修改 Codex CLI 配置文件**
 >
 > ```bash
->   curl -fsSL https://raw.githubusercontent.com/Uter.ai/new-api-docs/refs/heads/main/helper/codex-cli-setup.sh | bash
+>   curl -fsSL https://raw.githubusercontent.com/Uter.ai/uter-docs/refs/heads/main/helper/codex-cli-setup.sh | bash
 >   ```
 
 ![macos-configure](/apps-assets/codex/macos_configure.webp)
@@ -376,7 +376,7 @@ Codex CLI 需要 Node.js 环境才能运行。
 > **一键修改 Codex CLI 配置文件**
 >
 > ```bash
->   curl -fsSL https://raw.githubusercontent.com/Uter.ai/new-api-docs/refs/heads/main/helper/codex-cli-setup.sh | bash
+>   curl -fsSL https://raw.githubusercontent.com/Uter.ai/uter-docs/refs/heads/main/helper/codex-cli-setup.sh | bash
 >   ```
 
 ![macos-configure](/apps-assets/codex/macos_configure.webp)

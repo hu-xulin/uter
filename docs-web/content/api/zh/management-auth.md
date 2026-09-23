@@ -27,7 +27,7 @@ Token 可在「个人设置 - 安全设置 - 系统访问令牌」中生成。
 部分接口要求携带用户标识请求头：
 
 ```text
-New-Api-User: {user_id}
+Uter-User: {user_id}
 ```
 
 其中 `{user_id}` 必须与当前登录用户匹配。

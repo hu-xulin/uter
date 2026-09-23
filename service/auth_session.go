@@ -14,11 +14,11 @@ import (
 	"github.com/google/uuid"
 )
 
-const RefreshCookieName = "new_api_refresh"
+const RefreshCookieName = "uter_refresh"
 
 // SessionHintCookieName is the script-readable companion to RefreshCookieName.
 // See writeSessionHintCookie for why it exists and what it is not.
-const SessionHintCookieName = "new_api_has_session"
+const SessionHintCookieName = "uter_has_session"
 
 // SessionHintCookieValue is the only value the hint ever carries.
 const SessionHintCookieValue = "1"

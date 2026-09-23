@@ -89,7 +89,7 @@ func textRequestViaResponses(c *gin.Context, info *relaycommon.RelayInfo, adapto
 		if len(info.ParamOverride) > 0 {
 			chatJSON, err = relaycommon.ApplyParamOverrideWithRelayInfo(chatJSON, info)
 			if err != nil {
-				return nil, newAPIErrorFromParamOverride(err)
+				return nil, uterErrorFromParamOverride(err)
 			}
 			paramOverrideApplied = true
 		}
@@ -141,7 +141,7 @@ func relayResponsesRequest(c *gin.Context, info *relaycommon.RelayInfo, adaptor 
 	if !paramOverrideApplied && len(info.ParamOverride) > 0 {
 		jsonData, err = relaycommon.ApplyParamOverrideWithRelayInfo(jsonData, info)
 		if err != nil {
-			return nil, newAPIErrorFromParamOverride(err)
+			return nil, uterErrorFromParamOverride(err)
 		}
 	}
 
@@ -169,33 +169,33 @@ func relayResponsesRequest(c *gin.Context, info *relaycommon.RelayInfo, adaptor 
 	upstreamStream := isResponsesEventStreamContentType(httpResp.Header.Get("Content-Type"))
 	info.IsStream = clientStream || upstreamStream
 	if httpResp.StatusCode != http.StatusOK {
-		newApiErr := service.RelayErrorHandler(c.Request.Context(), httpResp, false)
-		service.ResetStatusCode(newApiErr, statusCodeMappingStr)
-		return nil, newApiErr
+		uterErr := service.RelayErrorHandler(c.Request.Context(), httpResp, false)
+		service.ResetStatusCode(uterErr, statusCodeMappingStr)
+		return nil, uterErr
 	}
 
 	if upstreamStream && clientStream {
-		usage, newApiErr := openaichannel.OaiResponsesToChatStreamHandler(c, info, httpResp)
-		if newApiErr != nil {
-			service.ResetStatusCode(newApiErr, statusCodeMappingStr)
-			return nil, newApiErr
+		usage, uterErr := openaichannel.OaiResponsesToChatStreamHandler(c, info, httpResp)
+		if uterErr != nil {
+			service.ResetStatusCode(uterErr, statusCodeMappingStr)
+			return nil, uterErr
 		}
 		return usage, nil
 	}
 	if upstreamStream {
 		info.IsStream = false
-		usage, newApiErr := openaichannel.OaiResponsesToChatBufferedStreamHandler(c, info, httpResp)
-		if newApiErr != nil {
-			service.ResetStatusCode(newApiErr, statusCodeMappingStr)
-			return nil, newApiErr
+		usage, uterErr := openaichannel.OaiResponsesToChatBufferedStreamHandler(c, info, httpResp)
+		if uterErr != nil {
+			service.ResetStatusCode(uterErr, statusCodeMappingStr)
+			return nil, uterErr
 		}
 		return usage, nil
 	}
 
-	usage, newApiErr := openaichannel.OaiResponsesToChatHandler(c, info, httpResp)
-	if newApiErr != nil {
-		service.ResetStatusCode(newApiErr, statusCodeMappingStr)
-		return nil, newApiErr
+	usage, uterErr := openaichannel.OaiResponsesToChatHandler(c, info, httpResp)
+	if uterErr != nil {
+		service.ResetStatusCode(uterErr, statusCodeMappingStr)
+		return nil, uterErr
 	}
 	return usage, nil
 }

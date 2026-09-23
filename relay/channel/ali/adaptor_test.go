@@ -310,8 +310,8 @@ func TestAliImageHandlerHonorsRequestResponseFormat(t *testing.T) {
 				Body:       io.NopCloser(strings.NewReader(responseBody)),
 			}
 
-			newAPIError, usage := aliImageHandler(&Adaptor{IsSyncImageModel: true}, c, resp, info)
-			require.Nil(t, newAPIError)
+			uterError, usage := aliImageHandler(&Adaptor{IsSyncImageModel: true}, c, resp, info)
+			require.Nil(t, uterError)
 			require.NotNil(t, usage)
 
 			var imageResponse dto.ImageResponse

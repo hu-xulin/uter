@@ -43,9 +43,9 @@ interface FooterProps {
   className?: string
 }
 
-const NEW_API_FOOTER_ATTRIBUTION_KEY = [
+const UTER_FOOTER_ATTRIBUTION_KEY = [
   'footer',
-  'new' + 'api',
+  'uter',
   'projectAttributionSuffix',
 ].join('.')
 
@@ -137,7 +137,7 @@ function ProjectAttribution(props: { currentYear: number; inline?: boolean }) {
       >
         {t('Uter')}
       </a>
-      . {t(NEW_API_FOOTER_ATTRIBUTION_KEY)}
+      . {t(UTER_FOOTER_ATTRIBUTION_KEY)}
     </span>
   )
   if (props.inline) {
@@ -212,7 +212,7 @@ export function Footer(props: FooterProps) {
             href: 'https://uter.ai',
           },
           {
-            text: t('footer.columns.related.links.newApiKeyTool'),
+            text: t('footer.columns.related.links.uterKeyTool'),
             href: 'https://uter.ai',
           },
         ],

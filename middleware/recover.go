@@ -19,7 +19,7 @@ func RelayPanicRecover() gin.HandlerFunc {
 				c.JSON(http.StatusInternalServerError, gin.H{
 					"error": gin.H{
 						"message": fmt.Sprintf("Panic detected, error: %v. Please submit a issue here: https://github.com/Calcium-Ion/uter", err),
-						"type":    "new_api_panic",
+						"type":    "uter_panic",
 					},
 				})
 				c.Abort()

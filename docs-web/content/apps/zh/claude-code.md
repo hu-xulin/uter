@@ -145,7 +145,7 @@ Claude Code 需要 Node.js 环境才能运行。
 > 为了让 Claude Code 连接到你的中转服务，需要设置多个环境变量：
 
 ```powershell
-iex (irm 'https://raw.githubusercontent.com/Uter.ai/new-api-docs/refs/heads/main/helper/claude-cli-setup.ps1')
+iex (irm 'https://raw.githubusercontent.com/Uter.ai/uter-docs/refs/heads/main/helper/claude-cli-setup.ps1')
 ```
 
 ![windows-configure](/apps-assets/claude_code/windows_configure.webp)
@@ -231,7 +231,7 @@ iex (irm 'https://raw.githubusercontent.com/Uter.ai/new-api-docs/refs/heads/main
 > 输入命令：
 >
 >   ```bash
->   curl -fsSL https://raw.githubusercontent.com/Uter.ai/new-api-docs/refs/heads/main/helper/claude-cli-setup.sh | bash
+>   curl -fsSL https://raw.githubusercontent.com/Uter.ai/uter-docs/refs/heads/main/helper/claude-cli-setup.sh | bash
 >   ```
 
 ![macos-configure](/apps-assets/claude_code/macos_configure.webp)
@@ -347,7 +347,7 @@ iex (irm 'https://raw.githubusercontent.com/Uter.ai/new-api-docs/refs/heads/main
 > 输入命令：
 >
 >   ```bash
->   curl -fsSL https://raw.githubusercontent.com/Uter.ai/new-api-docs/refs/heads/main/helper/claude-cli-setup.sh | bash
+>   curl -fsSL https://raw.githubusercontent.com/Uter.ai/uter-docs/refs/heads/main/helper/claude-cli-setup.sh | bash
 >   ```
 
 ![macos-configure](/apps-assets/claude_code/macos_configure.webp)

@@ -90,22 +90,22 @@ OpenClaw 的配置文件通常位于 `~/.openclaw/openclaw.json`，你可以在�
 
 ## 🚀 使用 优特作为模型提供商
 
-OpenClaw 支持通过 `models.providers` 接入自定义或兼容 OpenAI 接口的模型网关。对于 优特，最常见的做法是把它作为一个自定义 provider 加进配置里，再把默认模型指向 `newapi/模型ID`。
+OpenClaw 支持通过 `models.providers` 接入自定义或兼容 OpenAI 接口的模型网关。对于 优特，最常见的做法是把它作为一个自定义 provider 加进配置里，再把默认模型指向 `uter/模型ID`。
 
 ### 接入思路
 
-1. 在 `models.providers` 下声明一个 `newapi` provider
+1. 在 `models.providers` 下声明一个 `uter` provider
 2. 将 `baseUrl` 指向你的 优特地址，并确保包含 `/v1`
 3. 将 `api` 设为 `openai-completions`
 4. 在 `models` 中列出你希望 OpenClaw 使用的模型 ID
-5. 在 `agents.defaults.model.primary` 中把默认模型切到 `newapi/...`
+5. 在 `agents.defaults.model.primary` 中把默认模型切到 `uter/...`
 
 ### 推荐做法：用环境变量保存密钥
 
 先在当前 shell、服务环境，或 OpenClaw 可读取的 `.env` 中提供你的 优特密钥：
 
 ```bash
-export NEWAPI_API_KEY="sk-your-newapi-key"
+export UTER_API_KEY="sk-your-uter-key"
 ```
 
 然后在 `openclaw.json` 里补充或修改以下片段：
@@ -115,9 +115,9 @@ export NEWAPI_API_KEY="sk-your-newapi-key"
   models: {
     mode: "merge",
     providers: {
-      newapi: {
-        baseUrl: "https://<your-newapi-domain>/v1",
-        apiKey: "${NEWAPI_API_KEY}",
+      uter: {
+        baseUrl: "https://<your-uter-domain>/v1",
+        apiKey: "${UTER_API_KEY}",
         api: "openai-completions",
         models: [
           { id: "gemini-2.5-flash", name: "Gemini 2.5 Flash" },
@@ -130,12 +130,12 @@ export NEWAPI_API_KEY="sk-your-newapi-key"
   agents: {
     defaults: {
       model: {
-        primary: "newapi/gemini-2.5-flash",
-        fallbacks: ["newapi/kimi-k2.5"],
+        primary: "uter/gemini-2.5-flash",
+        fallbacks: ["uter/kimi-k2.5"],
       },
       models: {
-        "newapi/gemini-2.5-flash": { alias: "flash" },
-        "newapi/kimi-k2.5": { alias: "kimi" },
+        "uter/gemini-2.5-flash": { alias: "flash" },
+        "uter/kimi-k2.5": { alias: "kimi" },
       },
     },
   },
@@ -148,11 +148,11 @@ export NEWAPI_API_KEY="sk-your-newapi-key"
 
 | 配置项 | 说明 |
 | --- | --- |
-| `models.mode` | 建议设为 `merge`，在保留 OpenClaw 内置 provider 的同时追加 `newapi` |
-| `models.providers.newapi.baseUrl` | 你的 优特地址，通常需要带上 `/v1` |
-| `models.providers.newapi.apiKey` | 优特密钥，推荐通过 `${NEWAPI_API_KEY}` 注入 |
-| `models.providers.newapi.api` | 对于 优特这类 OpenAI 兼容网关，使用 `openai-completions` |
-| `models.providers.newapi.models` | 这里列出的模型 ID 必须与你的 优特实际暴露的模型名称一致 |
+| `models.mode` | 建议设为 `merge`，在保留 OpenClaw 内置 provider 的同时追加 `uter` |
+| `models.providers.uter.baseUrl` | 你的 优特地址，通常需要带上 `/v1` |
+| `models.providers.uter.apiKey` | 优特密钥，推荐通过 `${UTER_API_KEY}` 注入 |
+| `models.providers.uter.api` | 对于 优特这类 OpenAI 兼容网关，使用 `openai-completions` |
+| `models.providers.uter.models` | 这里列出的模型 ID 必须与你的 优特实际暴露的模型名称一致 |
 | `agents.defaults.model.primary` | 默认主模型，格式必须是 `provider/model-id` |
 | `agents.defaults.model.fallbacks` | 备选模型列表，主模型失败时自动切换 |
 | `agents.defaults.models` | 可选，用来给模型起别名，方便在 UI 或会话里引用 |
@@ -165,17 +165,17 @@ export NEWAPI_API_KEY="sk-your-newapi-key"
 openclaw dashboard
 ```
 
-如果你能在 OpenClaw 中正常发起对话，并且默认模型已经变成 `newapi/...`，说明接入成功。你也可以使用：
+如果你能在 OpenClaw 中正常发起对话，并且默认模型已经变成 `uter/...`，说明接入成功。你也可以使用：
 
 ```bash
 openclaw models list
 ```
 
-确认 `newapi/` 前缀的模型已经出现在可选列表中。
+确认 `uter/` 前缀的模型已经出现在可选列表中。
 
 ### 常见问题
 
 - `baseUrl` 没带 `/v1`：这是最常见的接入错误之一。
-- 模型 ID 填错：`primary` 和 `fallbacks` 必须与 `models.providers.newapi.models` 里的 `id` 对应。
-- 密钥只在当前终端生效：如果 Gateway 以后台服务运行，请确保服务进程也能读取 `NEWAPI_API_KEY`。
+- 模型 ID 填错：`primary` 和 `fallbacks` 必须与 `models.providers.uter.models` 里的 `id` 对应。
+- 密钥只在当前终端生效：如果 Gateway 以后台服务运行，请确保服务进程也能读取 `UTER_API_KEY`。
 - 想前台排障：可使用官方前台运行方式 `openclaw gateway --port 18789` 观察日志与报错。

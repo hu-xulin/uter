@@ -64,7 +64,7 @@ LunaTranslator supports integration with locally deployed Uter. Please use your 
 
     ![设置模型](/apps-assets/luna_translator/setting_model.webp)
 
-5.  Check if the toggle switch next to the **new_api** large model interface configuration is turned on. If not enabled, enable the interface to start using it.
+5.  Check if the toggle switch next to the **uter** large model interface configuration is turned on. If not enabled, enable the interface to start using it.
 
     ![开启配置](/apps-assets/luna_translator/open_config.webp)
 

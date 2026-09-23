@@ -608,10 +608,10 @@ func TestAdaptorResponsesToGeminiUsesResponsesBridge(t *testing.T) {
 	body, err := common.Marshal(payload)
 	require.NoError(t, err)
 
-	usage, newAPIError := adaptor.DoResponse(c, &http.Response{
+	usage, uterError := adaptor.DoResponse(c, &http.Response{
 		Body: io.NopCloser(bytes.NewReader(body)),
 	}, info)
-	require.Nil(t, newAPIError)
+	require.Nil(t, uterError)
 	require.NotNil(t, usage)
 
 	got := recorder.Body.String()

@@ -6,7 +6,7 @@ import (
 	"github.com/Uter-AI/Uter/relaykit/types"
 )
 
-func newAPIErrorFromParamOverride(err error) *types.UterError {
+func uterErrorFromParamOverride(err error) *types.UterError {
 	if fixedErr, ok := relaycommon.AsParamOverrideReturnError(err); ok {
 		return relaycommon.UterErrorFromParamOverride(fixedErr)
 	}

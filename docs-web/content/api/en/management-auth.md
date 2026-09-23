@@ -27,7 +27,7 @@ Tokens can be generated in "Personal Settings - Security Settings - System Acces
 Some interfaces require carrying a user identification request header:
 
 ```text
-New-Api-User: {user_id}
+Uter-User: {user_id}
 ```
 
 Where `{user_id}` must match the currently logged-in user.

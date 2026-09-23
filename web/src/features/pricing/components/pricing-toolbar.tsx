@@ -49,6 +49,12 @@ import { getSortLabels, type SortOption, type ViewMode } from '../constants'
 import type { PricingModel, PricingVendor, TokenUnit } from '../types'
 import { PricingSidebar } from './pricing-sidebar'
 
+// 选中态配色对齐「卡片/表格视图」切换按钮（Button variant='default' = bg-primary）。
+// 标准/充值、/1M//1K 这两个 outline 分段控件原本选中为 aria-pressed:bg-muted，这里统一改成品牌主色。
+// 注意：Base UI 的 Toggle 实际输出 aria-pressed / data-pressed，并非 data-state=on（后者在本项目是死选择器，写它不生效）。
+const primarySelectedToggleClass =
+  'aria-pressed:border-primary aria-pressed:bg-primary aria-pressed:text-primary-foreground aria-pressed:shadow-none aria-pressed:hover:bg-primary/90 aria-pressed:hover:text-primary-foreground'
+
 export interface PricingToolbarProps {
   filteredCount: number
   totalCount?: number
@@ -131,8 +137,12 @@ export function PricingToolbar(props: PricingToolbarProps) {
             size='sm'
             aria-label={t('Price display mode')}
           >
-            <ToggleGroupItem value='standard'>{t('Standard')}</ToggleGroupItem>
-            <ToggleGroupItem value='recharge'>{t('Recharge')}</ToggleGroupItem>
+            <ToggleGroupItem value='standard' className={primarySelectedToggleClass}>
+              {t('Standard')}
+            </ToggleGroupItem>
+            <ToggleGroupItem value='recharge' className={primarySelectedToggleClass}>
+              {t('Recharge')}
+            </ToggleGroupItem>
           </ToggleGroup>
           <ToggleGroup
             value={[props.tokenUnit]}
@@ -145,8 +155,12 @@ export function PricingToolbar(props: PricingToolbarProps) {
             size='sm'
             aria-label={t('Token unit')}
           >
-            <ToggleGroupItem value='M'>/1M</ToggleGroupItem>
-            <ToggleGroupItem value='K'>/1K</ToggleGroupItem>
+            <ToggleGroupItem value='M' className={primarySelectedToggleClass}>
+              /1M
+            </ToggleGroupItem>
+            <ToggleGroupItem value='K' className={primarySelectedToggleClass}>
+              /1K
+            </ToggleGroupItem>
           </ToggleGroup>
 
           <DropdownMenu>

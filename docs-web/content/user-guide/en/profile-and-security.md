@@ -96,13 +96,13 @@ You can set your interface language preference, which will be synchronized acros
 
   1. On the profile page, find the "Security Settings" area.
   2. Click "Access Tokens" → "Regenerate".
-  3. After confirming the operation, the system will generate a new API access token.
+  3. After confirming the operation, the system will generate a uter access token.
   4. The old API access token will become invalid immediately, and all services using the old API access token will need to be reconfigured with a new one.
 </Callout>
 
 <Callout type="warn">
   * Access tokens are used for account management interfaces and are different from API keys used for calling models; they should not be entered into third-party AI clients.
-  * After resetting an API access token, all existing API access tokens will become invalid, and new API access tokens will need to be recreated.
+  * After resetting an API access token, all existing API access tokens will become invalid, and uter access tokens will need to be recreated.
 </Callout>
 
 ## Enable or Disable Two-Factor Authentication (2FA)

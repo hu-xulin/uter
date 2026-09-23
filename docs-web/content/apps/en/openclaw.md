@@ -90,22 +90,22 @@ OpenClaw's configuration file is usually located at `~/.openclaw/openclaw.json`.
 
 ## 🚀 Using Uter as a Model Provider
 
-OpenClaw supports integrating custom or OpenAI-compatible model gateways via `models.providers`. For Uter, the most common approach is to add it as a custom provider to the configuration, then point the default model to `newapi/model-ID`.
+OpenClaw supports integrating custom or OpenAI-compatible model gateways via `models.providers`. For Uter, the most common approach is to add it as a custom provider to the configuration, then point the default model to `uter/model-ID`.
 
 ### Integration Approach
 
-1. Declare a `newapi` provider under `models.providers`.
+1. Declare a `uter` provider under `models.providers`.
 2. Point `baseUrl` to your Uter address, ensuring it includes `/v1`.
 3. Set `api` to `openai-completions`.
 4. List the model IDs you want OpenClaw to use in `models`.
-5. Switch the default model in `agents.defaults.model.primary` to `newapi/...`.
+5. Switch the default model in `agents.defaults.model.primary` to `uter/...`.
 
 ### Recommended Practice: Store API Key in Environment Variables
 
 First, provide your Uter key in the current shell, service environment, or an `.env` file readable by OpenClaw:
 
 ```bash
-export NEWAPI_API_KEY="sk-your-newapi-key"
+export UTER_API_KEY="sk-your-uter-key"
 ```
 
 Then, add or modify the following snippet in `openclaw.json`:
@@ -115,9 +115,9 @@ Then, add or modify the following snippet in `openclaw.json`:
   models: {
     mode: "merge",
     providers: {
-      newapi: {
-        baseUrl: "https://<your-newapi-domain>/v1",
-        apiKey: "${NEWAPI_API_KEY}",
+      uter: {
+        baseUrl: "https://<your-uter-domain>/v1",
+        apiKey: "${UTER_API_KEY}",
         api: "openai-completions",
         models: [
           { id: "gemini-2.5-flash", name: "Gemini 2.5 Flash" },
@@ -130,12 +130,12 @@ Then, add or modify the following snippet in `openclaw.json`:
   agents: {
     defaults: {
       model: {
-        primary: "newapi/gemini-2.5-flash",
-        fallbacks: ["newapi/kimi-k2.5"],
+        primary: "uter/gemini-2.5-flash",
+        fallbacks: ["uter/kimi-k2.5"],
       },
       models: {
-        "newapi/gemini-2.5-flash": { alias: "flash" },
-        "newapi/kimi-k2.5": { alias: "kimi" },
+        "uter/gemini-2.5-flash": { alias: "flash" },
+        "uter/kimi-k2.5": { alias: "kimi" },
       },
     },
   },
@@ -148,11 +148,11 @@ This is not a complete configuration that must be copied exactly, but rather the
 
 | Configuration Item | Description |
 | --- | --- |
-| `models.mode` | Recommended to set to `merge`, appending `newapi` while retaining OpenClaw's built-in providers |
-| `models.providers.newapi.baseUrl` | Your Uter address, usually needs to include `/v1` |
-| `models.providers.newapi.apiKey` | Uter key, recommended to inject via `${NEWAPI_API_KEY}` |
-| `models.providers.newapi.api` | For OpenAI-compatible gateways like Uter, use `openai-completions` |
-| `models.providers.newapi.models` | The model IDs listed here must match the actual model names exposed by your Uter |
+| `models.mode` | Recommended to set to `merge`, appending `uter` while retaining OpenClaw's built-in providers |
+| `models.providers.uter.baseUrl` | Your Uter address, usually needs to include `/v1` |
+| `models.providers.uter.apiKey` | Uter key, recommended to inject via `${UTER_API_KEY}` |
+| `models.providers.uter.api` | For OpenAI-compatible gateways like Uter, use `openai-completions` |
+| `models.providers.uter.models` | The model IDs listed here must match the actual model names exposed by your Uter |
 | `agents.defaults.model.primary` | Default primary model, format must be `provider/model-id` |
 | `agents.defaults.model.fallbacks` | List of fallback models, automatically switches if the primary model fails |
 | `agents.defaults.models` | Optional, used to create aliases for models, convenient for referencing in UI or sessions |
@@ -165,17 +165,17 @@ After completing the configuration, return to the Control UI or reopen it:
 openclaw dashboard
 ```
 
-If you can initiate conversations normally in OpenClaw and the default model has become `newapi/...`, then the integration is successful. You can also use:
+If you can initiate conversations normally in OpenClaw and the default model has become `uter/...`, then the integration is successful. You can also use:
 
 ```bash
 openclaw models list
 ```
 
-to confirm that models with the `newapi/` prefix appear in the selectable list.
+to confirm that models with the `uter/` prefix appear in the selectable list.
 
 ### Common Issues
 
 - `baseUrl` missing `/v1`: This is one of the most common integration errors.
-- Incorrect model ID: `primary` and `fallbacks` must correspond to the `id` in `models.providers.newapi.models`.
-- API key only effective in the current terminal: If Gateway runs as a background service, ensure the service process can also read `NEWAPI_API_KEY`.
+- Incorrect model ID: `primary` and `fallbacks` must correspond to the `id` in `models.providers.uter.models`.
+- API key only effective in the current terminal: If Gateway runs as a background service, ensure the service process can also read `UTER_API_KEY`.
 - For foreground troubleshooting: Use the official foreground running method `openclaw gateway --port 18789` to observe logs and errors.

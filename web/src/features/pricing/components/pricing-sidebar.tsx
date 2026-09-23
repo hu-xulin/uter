@@ -100,7 +100,7 @@ function FilterChip(props: {
   return (
     <Button
       type='button'
-      variant={props.active ? 'secondary' : 'outline'}
+      variant={props.active ? 'default' : 'outline'}
       size='sm'
       onClick={props.onClick}
       aria-pressed={props.active}
@@ -115,9 +115,11 @@ function FilterChip(props: {
         <span
           className={cn(
             'rounded-md px-1.5 py-0.5 text-[12px]',
-            props.active
-              ? 'bg-background text-foreground'
-              : 'bg-muted text-muted-foreground'
+            props.option.suffix
+              ? 'bg-green-600/80 text-white'
+              : props.active
+                ? 'bg-background text-foreground'
+                : 'bg-muted text-muted-foreground'
           )}
         >
           {props.option.suffix ?? props.option.count}

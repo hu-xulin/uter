@@ -49,10 +49,10 @@ func TestGeminiResponsesHandlerReturnsOpenAIResponsesJSON(t *testing.T) {
 	body, err := common.Marshal(payload)
 	require.NoError(t, err)
 
-	usage, newAPIError := GeminiResponsesHandler(c, info, &http.Response{
+	usage, uterError := GeminiResponsesHandler(c, info, &http.Response{
 		Body: io.NopCloser(bytes.NewReader(body)),
 	})
-	require.Nil(t, newAPIError)
+	require.Nil(t, uterError)
 	require.NotNil(t, usage)
 	assert.Equal(t, 2, usage.PromptTokens)
 	assert.Equal(t, 3, usage.CompletionTokens)
@@ -76,10 +76,10 @@ func TestGeminiResponsesHandlerClosesBodyOnReadError(t *testing.T) {
 	c.Set(common.RequestIdKey, "gemini-responses-read-error-test")
 
 	body := &failingReadCloser{}
-	usage, newAPIError := GeminiResponsesHandler(c, newGeminiResponsesRelayInfo(false), &http.Response{Body: body})
+	usage, uterError := GeminiResponsesHandler(c, newGeminiResponsesRelayInfo(false), &http.Response{Body: body})
 
 	require.Nil(t, usage)
-	require.NotNil(t, newAPIError)
+	require.NotNil(t, uterError)
 	assert.True(t, body.closed)
 }
 
@@ -142,10 +142,10 @@ func TestGeminiResponsesStreamHandlerReturnsOpenAIResponsesSSE(t *testing.T) {
 		"",
 	}, "\n")
 
-	usage, newAPIError := GeminiResponsesStreamHandler(c, info, &http.Response{
+	usage, uterError := GeminiResponsesStreamHandler(c, info, &http.Response{
 		Body: io.NopCloser(strings.NewReader(streamBody)),
 	})
-	require.Nil(t, newAPIError)
+	require.Nil(t, uterError)
 	require.NotNil(t, usage)
 	assert.Equal(t, 5, usage.TotalTokens)
 

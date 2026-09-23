@@ -120,6 +120,36 @@
     "category": "ai-model"
   },
   {
+    "id": "ai-model-videos-happyhorse",
+    "title": "HappyHorse格式",
+    "category": "ai-model"
+  },
+  {
+    "id": "ai-model-videos-minimax",
+    "title": "MiniMax格式",
+    "category": "ai-model"
+  },
+  {
+    "id": "ai-model-videos-wanx",
+    "title": "万相格式",
+    "category": "ai-model"
+  },
+  {
+    "id": "ai-model-videos-veo",
+    "title": "谷歌Veo格式",
+    "category": "ai-model"
+  },
+  {
+    "id": "ai-model-videos-pixverse",
+    "title": "PixVerse格式",
+    "category": "ai-model"
+  },
+  {
+    "id": "ai-model-videos-seedance",
+    "title": "Seedance格式",
+    "category": "ai-model"
+  },
+  {
     "id": "management-auth",
     "title": "鉴权体系说明（Auth）",
     "category": "management"

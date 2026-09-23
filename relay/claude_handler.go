@@ -20,7 +20,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func ClaudeHelper(c *gin.Context, info *relaycommon.RelayInfo) (newAPIError *types.UterError) {
+func ClaudeHelper(c *gin.Context, info *relaycommon.RelayInfo) (uterError *types.UterError) {
 
 	info.InitChannelMeta(c)
 
@@ -77,9 +77,9 @@ func ClaudeHelper(c *gin.Context, info *relaycommon.RelayInfo) (newAPIError *typ
 	if !model_setting.GetGlobalSettings().PassThroughRequestEnabled &&
 		!info.ChannelSetting.PassThroughBodyEnabled &&
 		service.ShouldChatCompletionsUseResponsesGlobal(info.ChannelId, info.ChannelType, info.OriginModelName) {
-		usage, newApiErr := textRequestViaResponses(c, info, adaptor, request)
-		if newApiErr != nil {
-			return newApiErr
+		usage, uterErr := textRequestViaResponses(c, info, adaptor, request)
+		if uterErr != nil {
+			return uterErr
 		}
 
 		service.PostTextConsumeQuota(c, info, usage, nil)
@@ -114,7 +114,7 @@ func ClaudeHelper(c *gin.Context, info *relaycommon.RelayInfo) (newAPIError *typ
 		if len(info.ParamOverride) > 0 {
 			jsonData, err = relaycommon.ApplyParamOverrideWithRelayInfo(jsonData, info)
 			if err != nil {
-				return newAPIErrorFromParamOverride(err)
+				return uterErrorFromParamOverride(err)
 			}
 		}
 
@@ -139,18 +139,18 @@ func ClaudeHelper(c *gin.Context, info *relaycommon.RelayInfo) (newAPIError *typ
 		httpResp = resp.(*http.Response)
 		info.IsStream = info.IsStream || strings.HasPrefix(httpResp.Header.Get("Content-Type"), "text/event-stream")
 		if httpResp.StatusCode != http.StatusOK {
-			newAPIError = service.RelayErrorHandler(c.Request.Context(), httpResp, false)
+			uterError = service.RelayErrorHandler(c.Request.Context(), httpResp, false)
 			// reset status code 重置状态码
-			service.ResetStatusCode(newAPIError, statusCodeMappingStr)
-			return newAPIError
+			service.ResetStatusCode(uterError, statusCodeMappingStr)
+			return uterError
 		}
 	}
 
-	usage, newAPIError := adaptor.DoResponse(c, httpResp, info)
-	if newAPIError != nil {
+	usage, uterError := adaptor.DoResponse(c, httpResp, info)
+	if uterError != nil {
 		// reset status code 重置状态码
-		service.ResetStatusCode(newAPIError, statusCodeMappingStr)
-		return newAPIError
+		service.ResetStatusCode(uterError, statusCodeMappingStr)
+		return uterError
 	}
 
 	service.PostTextConsumeQuota(c, info, usage.(*dto.Usage), nil)

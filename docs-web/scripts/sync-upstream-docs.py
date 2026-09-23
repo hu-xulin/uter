@@ -5,7 +5,7 @@ Generate the docs site's "features / apps / api / legal" content from the
 upstream documentation repository.
 
 Upstream publishes its documentation sources in a public Git repository
-(Uter.ai/new-api-docs-v1). That repository is a far better source than
+(Uter.ai/uter-docs-v1). That repository is a far better source than
 the rendered site: the API reference's parameter tables are generated at
 request time from OpenAPI documents that the site never serves as HTML, so
 scraping the site yields endpoint pages with empty bodies. The repository
@@ -40,7 +40,7 @@ HERE = Path(__file__).resolve().parent
 DOCS = HERE.parent
 UPSTREAM_DEFAULT = Path(os.environ.get('UPSTREAM_SRC', '/tmp/upstream'))
 CACHE = Path(os.environ.get('UPSTREAM_CACHE', '/tmp/upstream-cache'))
-RAW = 'https://raw.githubusercontent.com/Uter.ai/new-api-docs-v1/main'
+RAW = 'https://raw.githubusercontent.com/Uter.ai/uter-docs-v1/main'
 LOCALES = ('zh', 'en')
 
 # Brand: the upstream product name never appears in our documentation.
@@ -169,7 +169,7 @@ def rewrite_links(text: str, locale: str) -> str:
         # playground — is not part of this site. Keeping the words and
         # dropping the address leaves a sentence that still reads, rather
         # than a link that leaves the reader on someone else's product.
-        if 'newapi' in url.lower():
+        if 'uter' in url.lower():
             return label
         if not url.startswith('/'):
             return match.group(0)
@@ -187,10 +187,10 @@ def rewrite_links(text: str, locale: str) -> str:
     return re.sub(r'(!?)\[([^\]]*)\]\(([^)]+)\)', replace, text)
 
 
-# Deliberately does not match a lowercase hyphenated `new-api`: that is
-# part of third-party project names (`new-api-key-tool`) and of the
+# Deliberately does not match a lowercase hyphenated `uter`: that is
+# part of third-party project names (`uter-key-tool`) and of the
 # upstream repository's own URL, none of which are the product.
-BRAND_PATTERN = re.compile(r'New\s?API|NewAPI|New-API')
+BRAND_PATTERN = re.compile(r'New\s?API|Uter|Uter')
 LINK_PATTERN = re.compile(r'(!?)\[([^\]]*)\]\(([^)]*)\)')
 URL_PATTERN = re.compile(r'https?://\S+')
 
@@ -199,8 +199,8 @@ def apply_brand(text: str, brand: str) -> str:
     """Rename the upstream product.
 
     Applied to prose and to link *labels*, never to addresses: the upstream
-    domain appears in screenshot filenames (`new-api-manual-guidance.png`)
-    and in third-party project URLs (`new-api-key-tool`), both of which
+    domain appears in screenshot filenames (`uter-manual-guidance.png`)
+    and in third-party project URLs (`uter-key-tool`), both of which
     have to keep their real names to keep pointing at the same thing.
     """
 
@@ -227,7 +227,7 @@ def apply_brand(text: str, brand: str) -> str:
 
     out = LINK_PATTERN.sub(sub, rename(text))
     if brand.startswith('优特'):
-        # "New API 提供完整的…" becomes "优特智能 提供完整的…"; Chinese sets
+        # "Uter 提供完整的…" becomes "优特智能 提供完整的…"; Chinese sets
         # the next word without a space, so the one the English name needed
         # is dropped when what follows is Chinese.
         out = re.sub(rf'{re.escape(brand)}\s+(?=[\u4e00-\u9fff（【])', brand, out)

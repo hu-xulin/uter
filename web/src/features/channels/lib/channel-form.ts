@@ -20,7 +20,7 @@ import { z } from 'zod'
 
 import {
   CLAUDE_FIELD_PASSTHROUGH_TYPES,
-  CHANNEL_TYPE_NEW_API,
+  CHANNEL_TYPE_UTER,
   CHANNEL_TYPE_TASK_PLUGIN,
   CHANNEL_STATUS,
   ERROR_MESSAGES,
@@ -287,7 +287,7 @@ export const channelFormSchema = z
   })
   .superRefine((data, ctx) => {
     if (
-      [3, 8, 36, 45, CHANNEL_TYPE_NEW_API, CHANNEL_TYPE_TASK_PLUGIN].includes(
+      [3, 8, 36, 45, CHANNEL_TYPE_UTER, CHANNEL_TYPE_TASK_PLUGIN].includes(
         data.type
       ) &&
       !data.base_url?.trim()
