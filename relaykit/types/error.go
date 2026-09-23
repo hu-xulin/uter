@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"strings"
 
-	kitutil "github.com/QuantumNous/uter/relaykit/relayconvert/kitutil"
+	kitutil "https://github.com/Uter-AI/Uter/relaykit/relayconvert/kitutil"
 )
 
 type OpenAIError struct {
@@ -26,7 +26,7 @@ type ClaudeError struct {
 type ErrorType string
 
 const (
-	ErrorTypeUterError     ErrorType = "new_api_error"
+	ErrorTypeUterError       ErrorType = "new_api_error"
 	ErrorTypeOpenAIError     ErrorType = "openai_error"
 	ErrorTypeClaudeError     ErrorType = "claude_error"
 	ErrorTypeMidjourneyError ErrorType = "midjourney_error"

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/QuantumNous/uter/common"
+	"https://github.com/Uter-AI/Uter/common"
 
 	"gorm.io/gorm"
 )

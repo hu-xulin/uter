@@ -3,7 +3,8 @@ package service
 import (
 	"sync"
 
-	"github.com/QuantumNous/uter/common"
+	"https://github.com/Uter-AI/Uter/common"
+
 	"github.com/tiktoken-go/tokenizer"
 	"github.com/tiktoken-go/tokenizer/codec"
 )

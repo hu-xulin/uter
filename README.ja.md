@@ -112,7 +112,7 @@
 
 ```bash
 # プロジェクトをクローン
-git clone https://github.com/QuantumNous/uter.git
+git clone github.com/Uter-AI/Uter.git
 cd uter
 
 # docker-compose.yml 設定を編集
@@ -352,7 +352,7 @@ docker run --name uter -d --restart always \
 
 ```bash
 # プロジェクトをクローン
-git clone https://github.com/QuantumNous/uter.git
+git clone github.com/Uter-AI/Uter.git
 cd uter
 
 # 設定を編集

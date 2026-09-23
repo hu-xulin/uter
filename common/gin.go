@@ -11,7 +11,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/QuantumNous/uter/constant"
+	"https://github.com/Uter-AI/Uter/constant"
+
 	"github.com/pkg/errors"
 
 	"github.com/gin-gonic/gin"

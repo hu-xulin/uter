@@ -1,6 +1,6 @@
 package common
 
-import "github.com/QuantumNous/uter/constant"
+import "https://github.com/Uter-AI/Uter/constant"
 
 func ChannelType2APIType(channelType int) (int, bool) {
 	apiType := -1

@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/QuantumNous/uter/common"
+	"https://github.com/Uter-AI/Uter/common"
 )
 
 func getTokenCacheKey(key string) string {

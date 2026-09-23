@@ -1,4 +1,4 @@
-module github.com/QuantumNous/uter/relaykit
+module github.com/Uter-AI/Uter/relaykit
 
 go 1.25.1
 

@@ -3,7 +3,7 @@ package service
 import (
 	"strings"
 
-	"github.com/QuantumNous/uter/setting/system_setting"
+	"https://github.com/Uter-AI/Uter/setting/system_setting"
 )
 
 func PaymentReturnURL(suffix string) string {

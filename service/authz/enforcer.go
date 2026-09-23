@@ -5,7 +5,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/QuantumNous/uter/common"
+	"https://github.com/Uter-AI/Uter/common"
+
 	"github.com/casbin/casbin/v2"
 	casbinmodel "github.com/casbin/casbin/v2/model"
 	"gorm.io/gorm"

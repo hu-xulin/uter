@@ -3,7 +3,7 @@ package controller
 import (
 	"net/http"
 
-	"github.com/QuantumNous/uter/model"
+	"https://github.com/Uter-AI/Uter/model"
 
 	"github.com/gin-gonic/gin"
 )

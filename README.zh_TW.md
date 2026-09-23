@@ -111,7 +111,7 @@
 
 ```bash
 # 複製項目
-git clone https://github.com/QuantumNous/uter.git
+git clone github.com/Uter-AI/Uter.git
 cd uter
 
 # 編輯 docker-compose.yml 配置
@@ -349,7 +349,7 @@ docker run --name uter -d --restart always \
 
 ```bash
 # 複製項目
-git clone https://github.com/QuantumNous/uter.git
+git clone github.com/Uter-AI/Uter.git
 cd uter
 
 # 編輯配置

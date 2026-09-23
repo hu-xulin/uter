@@ -3,7 +3,8 @@ package ali
 import (
 	"testing"
 
-	"github.com/QuantumNous/uter/relaykit/dto"
+	"https://github.com/Uter-AI/Uter/relaykit/dto"
+
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 )

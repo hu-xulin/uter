@@ -1,6 +1,6 @@
 package operation_setting
 
-import "github.com/QuantumNous/uter/setting/config"
+import "https://github.com/Uter-AI/Uter/setting/config"
 
 type ChannelAffinityKeySource struct {
 	Type string `json:"type"` // context_int, context_string, request_header, gjson

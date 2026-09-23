@@ -5,6 +5,9 @@
 #   1. web/       React SPA        → rsbuild build    （产出 web/dist）
 #   2. docs-web/  Next.js 文档站   → npm run build    （postbuild 自动拷贝到 web/dist/docs）
 #   3. Go 后端    //go:embed       → go build -o uter-bin .（内嵌新前端）
+#      构建时通过 -ldflags -X 注入仓库根 VERSION 文件里的版本号；
+#      构建成功后自动把 patch 位 +1 写回 VERSION，下次构建即递进
+#      （v1.0.0 → v1.0.1 → v1.0.2 ...），首页 logo 旁即显示该版本。
 #   4. 重启       杀掉旧进程后以独立会话启动 uter-bin，并做端口 + HTTP 体检
 #
 # 关键约束（改动前先读）：
@@ -83,6 +86,17 @@ with open(log, 'a') as f:
 PY
 }
 
+# 版本自增：读 VERSION，把最后一个数字（patch）+1 后写回。
+# 约定 VERSION 形如 vMAJOR.MINOR.PATCH；缺段时按 0 处理。
+bump_version() {
+  local v maj min pat
+  v="$(cat "$ROOT/VERSION" 2>/dev/null | tr -d '[:space:]' | sed 's/^v//')"
+  IFS='.' read -r maj min pat <<< "$v"
+  maj="${maj:-0}"; min="${min:-0}"; pat="${pat:-0}"
+  pat=$((pat + 1))
+  printf 'v%d.%d.%d\n' "$maj" "$min" "$pat" > "$ROOT/VERSION"
+}
+
 if [ "$NO_BUILD" = 1 ]; then
   echo "==> 跳过构建（--no-build），直接用现有 web/dist 与 $BIN"
 else
@@ -108,7 +122,14 @@ fi
 
 echo "==> [3/5] 编译 Go 后端（内嵌 web/dist）"
 cd "$ROOT"
-"$GO" build -o "$BIN" . || fail "go build 失败"
+# 读取 VERSION 用于本次构建（与 Dockerfile 注入方式一致：-X 'pkg=Version'）。
+# 构建成功后 patch+1 写回，下次构建自动 +1（v1.0.0 → v1.0.1 → v1.0.2 ...）。
+BUILD_VERSION="$(cat "$ROOT/VERSION" 2>/dev/null | tr -d '[:space:]')"
+[ -n "$BUILD_VERSION" ] || BUILD_VERSION="v0.0.0"
+echo "    本次版本: $BUILD_VERSION（构建成功后将自增 patch，下次构建自动 +1）"
+"$GO" build -ldflags "-s -w -X 'github.com/Uter-AI/Uter/common.Version=$BUILD_VERSION'" -o "$BIN" . || fail "go build 失败"
+bump_version
+echo "    VERSION 已自增为: $(cat "$ROOT/VERSION")"
 fi
 
 if [ "$NO_RESTART" = 1 ]; then

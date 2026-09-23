@@ -1,12 +1,12 @@
 package router
 
 import (
-	"github.com/QuantumNous/uter/controller"
-	"github.com/QuantumNous/uter/middleware"
-	"github.com/QuantumNous/uter/service/authz"
+	"https://github.com/Uter-AI/Uter/controller"
+	"github.com/Uter-AI/Uter/middleware"
+	"github.com/Uter-AI/Uter/service/authz"
 
 	// Import oauth package to register providers via init()
-	_ "github.com/QuantumNous/uter/oauth"
+	_ "github.com/Uter-AI/Uter/oauth"
 
 	"github.com/gin-contrib/gzip"
 	"github.com/gin-gonic/gin"

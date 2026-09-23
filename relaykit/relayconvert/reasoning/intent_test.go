@@ -3,7 +3,8 @@ package reasoning
 import (
 	"testing"
 
-	"github.com/QuantumNous/uter/relaykit/dto"
+	"https://github.com/Uter-AI/Uter/relaykit/dto"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

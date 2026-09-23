@@ -1,6 +1,6 @@
 package convmeta
 
-import "github.com/QuantumNous/uter/relaykit/types"
+import "https://github.com/Uter-AI/Uter/relaykit/types"
 
 // Options is the per-request snapshot of host configuration that converters
 // consult. The host fills it from its settings system when constructing the

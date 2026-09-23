@@ -8,7 +8,7 @@ package model
 import (
 	"strings"
 
-	"github.com/QuantumNous/uter/relaykit/dto"
+	"https://github.com/Uter-AI/Uter/relaykit/dto"
 )
 
 func legacyDallePricingRules(name string) []LegacyPricingRule {

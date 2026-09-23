@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/QuantumNous/uter/constant"
+	"https://github.com/Uter-AI/Uter/constant"
 )
 
 type RouteType string

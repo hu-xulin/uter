@@ -6,7 +6,7 @@ This file is the old version of the payment settings file. If you need to add ne
 package operation_setting
 
 import (
-	"github.com/QuantumNous/uter/common"
+	"https://github.com/Uter-AI/Uter/common"
 )
 
 var PayAddress = ""

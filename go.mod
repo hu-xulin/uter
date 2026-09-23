@@ -1,4 +1,4 @@
-module github.com/QuantumNous/uter
+module github.com/Uter-AI/Uter
 
 // +heroku goVersion go1.18
 go 1.25.1
@@ -173,7 +173,7 @@ require (
 
 require (
 	github.com/ClickHouse/clickhouse-go/v2 v2.46.0
-	github.com/QuantumNous/uter/relaykit v0.0.0
+	github.com/Uter-AI/Uter/relaykit v0.0.0
 )
 
-replace github.com/QuantumNous/uter/relaykit => ./relaykit
+replace github.com/Uter-AI/Uter/relaykit => ./relaykit

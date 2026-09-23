@@ -3,7 +3,7 @@ package zhipu
 import (
 	"time"
 
-	"github.com/QuantumNous/uter/relaykit/dto"
+	"https://github.com/Uter-AI/Uter/relaykit/dto"
 )
 
 type ZhipuMessage struct {

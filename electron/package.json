@@ -21,7 +21,7 @@
   "author": "QuantumNous",
   "repository": {
     "type": "git",
-    "url": "https://github.com/QuantumNous/uter"
+    "url": "github.com/Uter-AI/Uter"
   },
   "devDependencies": {
     "cross-env": "^7.0.3",
