@@ -4,7 +4,7 @@
 `blur_brand.py` destroys the capture's own top-left chrome. This module
 handles the second surface: brand text *inside* the picture — a provider
 entry in a third-party app's form, a terminal command, an example URL. It
-reads the image with macOS Vision OCR, blurs every "Uter" / "uter"
+reads the image with macOS Vision OCR, blurs every "New API" / "new-api"
 occurrence (pixelated + blurred, feathered back), and re-scans until a full
 pass finds nothing left — a single pass is not enough because OCR reads
 different subsets of a region once it has been blurred.
