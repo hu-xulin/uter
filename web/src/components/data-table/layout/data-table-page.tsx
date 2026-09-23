@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2023-2026 QuantumNous
+Copyright (C) 2023-2026 Uter.ai
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as
@@ -22,7 +22,7 @@ import type {
   Table as TanstackTable,
 } from '@tanstack/react-table'
 /*
-Copyright (C) 2023-2026 QuantumNous
+Copyright (C) 2023-2026 Uter.ai
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as

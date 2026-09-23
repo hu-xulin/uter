@@ -2,7 +2,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { cleanup, fireEvent, render, waitFor } from '@testing-library/react'
 import { AxiosError, type AxiosAdapter } from 'axios'
 /*
-Copyright (C) 2023-2026 QuantumNous
+Copyright (C) 2023-2026 Uter.ai
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as
