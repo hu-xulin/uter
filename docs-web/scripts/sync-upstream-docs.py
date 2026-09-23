@@ -190,7 +190,7 @@ def rewrite_links(text: str, locale: str) -> str:
 # Deliberately does not match a lowercase hyphenated `uter`: that is
 # part of third-party project names (`uter-key-tool`) and of the
 # upstream repository's own URL, none of which are the product.
-BRAND_PATTERN = re.compile(r'New\s?API|Uter|Uter')
+BRAND_PATTERN = re.compile(r'New\s?-?API')
 LINK_PATTERN = re.compile(r'(!?)\[([^\]]*)\]\(([^)]*)\)')
 URL_PATTERN = re.compile(r'https?://\S+')
 
