@@ -11,9 +11,10 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/QuantumNous/uter/common"
-	kitreasoning "github.com/QuantumNous/uter/relaykit/relayconvert/reasoning"
-	"github.com/QuantumNous/uter/relaykit/types"
+	"https://github.com/Uter-AI/Uter/common"
+
+	kitreasoning "github.com/Uter-AI/Uter/relaykit/relayconvert/reasoning"
+	"github.com/Uter-AI/Uter/relaykit/types"
 	"github.com/samber/lo"
 	"github.com/tidwall/gjson"
 	"github.com/tidwall/sjson"

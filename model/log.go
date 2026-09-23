@@ -7,9 +7,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/QuantumNous/uter/common"
-	"github.com/QuantumNous/uter/logger"
-	"github.com/QuantumNous/uter/types"
+	"https://github.com/Uter-AI/Uter/common"
+
+	"github.com/Uter-AI/Uter/logger"
+	"github.com/Uter-AI/Uter/types"
 
 	"github.com/gin-gonic/gin"
 

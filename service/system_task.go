@@ -7,9 +7,10 @@ import (
 	"sync"
 	"time"
 
-	"github.com/QuantumNous/uter/common"
-	"github.com/QuantumNous/uter/logger"
-	"github.com/QuantumNous/uter/model"
+	"https://github.com/Uter-AI/Uter/common"
+
+	"github.com/Uter-AI/Uter/logger"
+	"github.com/Uter-AI/Uter/model"
 
 	"github.com/bytedance/gopkg/util/gopool"
 )

@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"https://github.com/Uter-AI/Uter/common"
+	"github.com/Uter-AI/Uter/common"
 )
 
 // AuditOther is the structured metadata stored with an audit event. Privileged

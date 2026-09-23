@@ -7,11 +7,12 @@ import (
 	"strconv"
 	"time"
 
+	"https://github.com/Uter-AI/Uter/common"
+
 	"github.com/Calcium-Ion/go-epay/epay"
-	"github.com/QuantumNous/uter/common"
-	"github.com/QuantumNous/uter/model"
-	"github.com/QuantumNous/uter/service"
-	"github.com/QuantumNous/uter/setting/operation_setting"
+	"github.com/Uter-AI/Uter/model"
+	"github.com/Uter-AI/Uter/service"
+	"github.com/Uter-AI/Uter/setting/operation_setting"
 	"github.com/gin-gonic/gin"
 	"github.com/samber/lo"
 )

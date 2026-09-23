@@ -6,7 +6,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	relayconstant "https://github.com/Uter-AI/Uter/relay/constant"
+	relayconstant "github.com/Uter-AI/Uter/relay/constant"
 
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/require"

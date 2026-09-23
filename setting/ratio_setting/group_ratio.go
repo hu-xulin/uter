@@ -4,9 +4,10 @@ import (
 	"encoding/json"
 	"errors"
 
-	"github.com/QuantumNous/uter/common"
-	"github.com/QuantumNous/uter/setting/config"
-	"github.com/QuantumNous/uter/types"
+	"https://github.com/Uter-AI/Uter/common"
+
+	"github.com/Uter-AI/Uter/setting/config"
+	"github.com/Uter-AI/Uter/types"
 )
 
 var defaultGroupRatio = map[string]float64{

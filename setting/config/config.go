@@ -7,7 +7,7 @@ import (
 	"strings"
 	"sync"
 
-	"https://github.com/Uter-AI/Uter/common"
+	"github.com/Uter-AI/Uter/common"
 )
 
 // ConfigManager 统一管理所有配置

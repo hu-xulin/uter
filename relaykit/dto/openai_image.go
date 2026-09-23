@@ -6,8 +6,9 @@ import (
 	"net/http"
 	"reflect"
 
-	kitutil "github.com/QuantumNous/uter/relaykit/relayconvert/kitutil"
-	"github.com/QuantumNous/uter/relaykit/types"
+	kitutil "https://github.com/Uter-AI/Uter/relaykit/relayconvert/kitutil"
+
+	"github.com/Uter-AI/Uter/relaykit/types"
 )
 
 // MaxImageN caps the image generation count. Without this bound a huge or

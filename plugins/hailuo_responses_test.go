@@ -4,13 +4,14 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/QuantumNous/uter/common"
-	"github.com/QuantumNous/uter/model"
-	"github.com/QuantumNous/uter/pkg/jsplugin"
-	builtinplugins "github.com/QuantumNous/uter/plugins"
-	"github.com/QuantumNous/uter/relay/channel"
-	taskplugin "github.com/QuantumNous/uter/relay/channel/task/jsplugin"
-	relaycommon "github.com/QuantumNous/uter/relay/common"
+	"https://github.com/Uter-AI/Uter/common"
+
+	"github.com/Uter-AI/Uter/model"
+	"github.com/Uter-AI/Uter/pkg/jsplugin"
+	builtinplugins "github.com/Uter-AI/Uter/plugins"
+	"github.com/Uter-AI/Uter/relay/channel"
+	taskplugin "github.com/Uter-AI/Uter/relay/channel/task/jsplugin"
+	relaycommon "github.com/Uter-AI/Uter/relay/common"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

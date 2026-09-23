@@ -4,9 +4,10 @@ import (
 	"errors"
 	"net/http"
 
-	relaycommon "github.com/QuantumNous/uter/relay/common"
-	kitreasoning "github.com/QuantumNous/uter/relaykit/relayconvert/reasoning"
-	"github.com/QuantumNous/uter/relaykit/types"
+	relaycommon "https://github.com/Uter-AI/Uter/relay/common"
+
+	kitreasoning "github.com/Uter-AI/Uter/relaykit/relayconvert/reasoning"
+	"github.com/Uter-AI/Uter/relaykit/types"
 	"github.com/gin-gonic/gin"
 )
 

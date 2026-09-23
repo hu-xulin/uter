@@ -1,6 +1,6 @@
 package cohere
 
-import "https://github.com/Uter-AI/Uter/relaykit/dto"
+import "github.com/Uter-AI/Uter/relaykit/dto"
 
 type CohereRequest struct {
 	Model       string        `json:"model"`

@@ -1,6 +1,6 @@
 package perf_metrics_setting
 
-import "https://github.com/Uter-AI/Uter/setting/config"
+import "github.com/Uter-AI/Uter/setting/config"
 
 type PerfMetricsSetting struct {
 	Enabled       bool   `json:"enabled"`

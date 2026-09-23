@@ -4,10 +4,11 @@ import (
 	"encoding/json"
 	"time"
 
-	"github.com/QuantumNous/uter/common"
-	"github.com/QuantumNous/uter/model"
-	"github.com/QuantumNous/uter/service"
-	passkeysvc "github.com/QuantumNous/uter/service/passkey"
+	"https://github.com/Uter-AI/Uter/common"
+
+	"github.com/Uter-AI/Uter/model"
+	"github.com/Uter-AI/Uter/service"
+	passkeysvc "github.com/Uter-AI/Uter/service/passkey"
 	"github.com/gin-gonic/gin"
 	"github.com/go-webauthn/webauthn/protocol"
 	webauthnlib "github.com/go-webauthn/webauthn/webauthn"

@@ -1,6 +1,6 @@
 package billingexpr
 
-import "https://github.com/Uter-AI/Uter/common"
+import "github.com/Uter-AI/Uter/common"
 
 // QuotaRound converts a float64 quota value to int using half-away-from-zero
 // rounding with int32 saturation. Every tiered billing path (pre-consume,

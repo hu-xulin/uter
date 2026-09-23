@@ -16,13 +16,14 @@ import (
 	"sync"
 	"time"
 
-	"github.com/QuantumNous/uter/common"
-	"github.com/QuantumNous/uter/logger"
+	"https://github.com/Uter-AI/Uter/common"
 
-	"github.com/QuantumNous/uter/model"
-	"github.com/QuantumNous/uter/relaykit/dto"
-	"github.com/QuantumNous/uter/setting/billing_setting"
-	"github.com/QuantumNous/uter/setting/ratio_setting"
+	"github.com/Uter-AI/Uter/logger"
+
+	"github.com/Uter-AI/Uter/model"
+	"github.com/Uter-AI/Uter/relaykit/dto"
+	"github.com/Uter-AI/Uter/setting/billing_setting"
+	"github.com/Uter-AI/Uter/setting/ratio_setting"
 	"github.com/samber/lo"
 
 	"github.com/gin-gonic/gin"

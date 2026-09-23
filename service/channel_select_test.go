@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/QuantumNous/uter/constant"
-	"github.com/QuantumNous/uter/pkg/jsplugin"
+	"https://github.com/Uter-AI/Uter/constant"
+
+	"github.com/Uter-AI/Uter/pkg/jsplugin"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

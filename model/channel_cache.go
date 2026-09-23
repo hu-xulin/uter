@@ -9,12 +9,13 @@ import (
 	"sync"
 	"time"
 
-	"github.com/QuantumNous/uter/common"
-	"github.com/QuantumNous/uter/constant"
-	"github.com/QuantumNous/uter/dto"
-	"github.com/QuantumNous/uter/logger"
-	kitdto "github.com/QuantumNous/uter/relaykit/dto"
-	"github.com/QuantumNous/uter/setting/ratio_setting"
+	"https://github.com/Uter-AI/Uter/common"
+
+	"github.com/Uter-AI/Uter/constant"
+	"github.com/Uter-AI/Uter/dto"
+	"github.com/Uter-AI/Uter/logger"
+	kitdto "github.com/Uter-AI/Uter/relaykit/dto"
+	"github.com/Uter-AI/Uter/setting/ratio_setting"
 )
 
 var group2model2channels map[string]map[string][]int // enabled channel

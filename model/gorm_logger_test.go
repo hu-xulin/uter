@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"testing"
 
-	"https://github.com/Uter-AI/Uter/common"
+	"github.com/Uter-AI/Uter/common"
 
 	"github.com/ClickHouse/clickhouse-go/v2/lib/proto"
 	"github.com/glebarez/sqlite"

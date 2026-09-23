@@ -6,9 +6,10 @@ import (
 	"sync"
 	"time"
 
-	"github.com/QuantumNous/uter/common"
-	pluginruntime "github.com/QuantumNous/uter/pkg/jsplugin"
-	vertexcore "github.com/QuantumNous/uter/relay/channel/vertex"
+	"https://github.com/Uter-AI/Uter/common"
+
+	pluginruntime "github.com/Uter-AI/Uter/pkg/jsplugin"
+	vertexcore "github.com/Uter-AI/Uter/relay/channel/vertex"
 )
 
 type cachedAuth struct {

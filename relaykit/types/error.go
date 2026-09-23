@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"strings"
 
-	kitutil "https://github.com/Uter-AI/Uter/relaykit/relayconvert/kitutil"
+	kitutil "github.com/Uter-AI/Uter/relaykit/relayconvert/kitutil"
 )
 
 type OpenAIError struct {

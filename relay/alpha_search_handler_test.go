@@ -3,7 +3,7 @@ package relay
 import (
 	"testing"
 
-	"https://github.com/Uter-AI/Uter/common"
+	"github.com/Uter-AI/Uter/common"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

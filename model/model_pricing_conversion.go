@@ -7,13 +7,14 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/QuantumNous/uter/common"
-	"github.com/QuantumNous/uter/constant"
-	"github.com/QuantumNous/uter/pkg/jsplugin"
-	"github.com/QuantumNous/uter/setting/billing_setting"
-	"github.com/QuantumNous/uter/setting/operation_setting"
-	"github.com/QuantumNous/uter/setting/ratio_setting"
-	hostreasoning "github.com/QuantumNous/uter/setting/reasoning"
+	"https://github.com/Uter-AI/Uter/common"
+
+	"github.com/Uter-AI/Uter/constant"
+	"github.com/Uter-AI/Uter/pkg/jsplugin"
+	"github.com/Uter-AI/Uter/setting/billing_setting"
+	"github.com/Uter-AI/Uter/setting/operation_setting"
+	"github.com/Uter-AI/Uter/setting/ratio_setting"
+	hostreasoning "github.com/Uter-AI/Uter/setting/reasoning"
 	"github.com/shopspring/decimal"
 )
 

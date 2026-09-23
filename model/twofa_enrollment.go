@@ -5,7 +5,7 @@ import (
 	"errors"
 	"time"
 
-	"https://github.com/Uter-AI/Uter/common"
+	"github.com/Uter-AI/Uter/common"
 
 	"gorm.io/gorm"
 )

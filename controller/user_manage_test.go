@@ -13,11 +13,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/QuantumNous/uter/common"
-	"github.com/QuantumNous/uter/i18n"
-	"github.com/QuantumNous/uter/middleware"
-	"github.com/QuantumNous/uter/model"
-	"github.com/QuantumNous/uter/service/authz"
+	"https://github.com/Uter-AI/Uter/common"
+
+	"github.com/Uter-AI/Uter/i18n"
+	"github.com/Uter-AI/Uter/middleware"
+	"github.com/Uter-AI/Uter/model"
+	"github.com/Uter-AI/Uter/service/authz"
 	"github.com/alicebob/miniredis/v2"
 	"github.com/go-redis/redis/v8"
 

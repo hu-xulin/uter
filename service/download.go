@@ -7,8 +7,9 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/QuantumNous/uter/common"
-	"github.com/QuantumNous/uter/setting/system_setting"
+	"https://github.com/Uter-AI/Uter/common"
+
+	"github.com/Uter-AI/Uter/setting/system_setting"
 )
 
 // WorkerRequest Worker请求的数据结构

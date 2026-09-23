@@ -8,16 +8,17 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/QuantumNous/uter/common"
-	"github.com/QuantumNous/uter/constant"
-	"github.com/QuantumNous/uter/dto"
-	"github.com/QuantumNous/uter/middleware"
-	"github.com/QuantumNous/uter/model"
-	"github.com/QuantumNous/uter/relay"
-	relaychannel "github.com/QuantumNous/uter/relay/channel"
-	relaycommon "github.com/QuantumNous/uter/relay/common"
-	"github.com/QuantumNous/uter/service"
-	"github.com/QuantumNous/uter/types"
+	"https://github.com/Uter-AI/Uter/common"
+
+	"github.com/Uter-AI/Uter/constant"
+	"github.com/Uter-AI/Uter/dto"
+	"github.com/Uter-AI/Uter/middleware"
+	"github.com/Uter-AI/Uter/model"
+	"github.com/Uter-AI/Uter/relay"
+	relaychannel "github.com/Uter-AI/Uter/relay/channel"
+	relaycommon "github.com/Uter-AI/Uter/relay/common"
+	"github.com/Uter-AI/Uter/service"
+	"github.com/Uter-AI/Uter/types"
 	"github.com/gin-gonic/gin"
 )
 

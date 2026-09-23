@@ -3,7 +3,7 @@ package model
 import (
 	"fmt"
 
-	"https://github.com/Uter-AI/Uter/common"
+	"github.com/Uter-AI/Uter/common"
 
 	"gorm.io/gorm"
 )

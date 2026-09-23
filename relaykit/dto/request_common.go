@@ -1,8 +1,9 @@
 package dto
 
 import (
-	"https://github.com/Uter-AI/Uter/relaykit/types"
 	"net/http"
+
+	"github.com/Uter-AI/Uter/relaykit/types"
 )
 
 type Request interface {

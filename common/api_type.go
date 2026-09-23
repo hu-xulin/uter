@@ -1,6 +1,6 @@
 package common
 
-import "https://github.com/Uter-AI/Uter/constant"
+import "github.com/Uter-AI/Uter/constant"
 
 func ChannelType2APIType(channelType int) (int, bool) {
 	apiType := -1

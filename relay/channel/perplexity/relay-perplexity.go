@@ -1,6 +1,6 @@
 package perplexity
 
-import "https://github.com/Uter-AI/Uter/relaykit/dto"
+import "github.com/Uter-AI/Uter/relaykit/dto"
 
 func requestOpenAI2Perplexity(request dto.GeneralOpenAIRequest) *dto.GeneralOpenAIRequest {
 	messages := make([]dto.Message, 0, len(request.Messages))

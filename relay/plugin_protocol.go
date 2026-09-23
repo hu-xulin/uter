@@ -11,8 +11,9 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/QuantumNous/uter/common"
-	"github.com/QuantumNous/uter/dto"
+	"https://github.com/Uter-AI/Uter/common"
+
+	"github.com/Uter-AI/Uter/dto"
 )
 
 const (

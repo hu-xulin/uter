@@ -1,8 +1,9 @@
 package performance_setting
 
 import (
-	"github.com/QuantumNous/uter/common"
-	"github.com/QuantumNous/uter/setting/config"
+	"https://github.com/Uter-AI/Uter/common"
+
+	"github.com/Uter-AI/Uter/setting/config"
 )
 
 // PerformanceSetting 性能设置配置

@@ -4,9 +4,10 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/QuantumNous/uter/common"
-	"github.com/QuantumNous/uter/i18n"
-	"github.com/QuantumNous/uter/model"
+	"https://github.com/Uter-AI/Uter/common"
+
+	"github.com/Uter-AI/Uter/i18n"
+	"github.com/Uter-AI/Uter/model"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )

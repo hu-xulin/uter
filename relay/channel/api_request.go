@@ -11,14 +11,15 @@ import (
 	"sync"
 	"time"
 
-	common2 "github.com/QuantumNous/uter/common"
-	"github.com/QuantumNous/uter/logger"
-	"github.com/QuantumNous/uter/relay/common"
-	"github.com/QuantumNous/uter/relay/constant"
-	"github.com/QuantumNous/uter/relay/helper"
-	"github.com/QuantumNous/uter/relaykit/types"
-	"github.com/QuantumNous/uter/service"
-	"github.com/QuantumNous/uter/setting/operation_setting"
+	common2 "https://github.com/Uter-AI/Uter/common"
+
+	"github.com/Uter-AI/Uter/logger"
+	"github.com/Uter-AI/Uter/relay/common"
+	"github.com/Uter-AI/Uter/relay/constant"
+	"github.com/Uter-AI/Uter/relay/helper"
+	"github.com/Uter-AI/Uter/relaykit/types"
+	"github.com/Uter-AI/Uter/service"
+	"github.com/Uter-AI/Uter/setting/operation_setting"
 
 	"github.com/bytedance/gopkg/util/gopool"
 	"github.com/gin-gonic/gin"

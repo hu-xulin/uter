@@ -7,9 +7,10 @@ import (
 	"fmt"
 	"strings"
 
+	"https://github.com/Uter-AI/Uter/common"
+
 	"github.com/ClickHouse/clickhouse-go/v2"
-	"github.com/QuantumNous/uter/common"
-	"github.com/QuantumNous/uter/logger"
+	"github.com/Uter-AI/Uter/logger"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )

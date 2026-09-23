@@ -1,8 +1,9 @@
 package setting
 
 import (
-	"github.com/QuantumNous/uter/common"
-	"github.com/QuantumNous/uter/constant"
+	"https://github.com/Uter-AI/Uter/common"
+
+	"github.com/Uter-AI/Uter/constant"
 )
 
 var (

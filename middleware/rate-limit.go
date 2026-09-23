@@ -7,8 +7,9 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/QuantumNous/uter/common"
-	"github.com/QuantumNous/uter/logger"
+	"https://github.com/Uter-AI/Uter/common"
+
+	"github.com/Uter-AI/Uter/logger"
 	"github.com/gin-gonic/gin"
 )
 

@@ -4,7 +4,7 @@ import (
 	"errors"
 	"time"
 
-	"https://github.com/Uter-AI/Uter/model"
+	"github.com/Uter-AI/Uter/model"
 )
 
 // ---------------------------------------------------------------------------

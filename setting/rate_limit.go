@@ -5,7 +5,7 @@ import (
 	"math"
 	"sync"
 
-	"https://github.com/Uter-AI/Uter/common"
+	"github.com/Uter-AI/Uter/common"
 )
 
 // maxRateLimitDurationSeconds is the largest window the count cap is computed

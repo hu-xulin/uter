@@ -1,8 +1,9 @@
 package service
 
 import (
-	"github.com/QuantumNous/uter/setting/operation_setting"
-	"github.com/QuantumNous/uter/setting/system_setting"
+	"https://github.com/Uter-AI/Uter/setting/operation_setting"
+
+	"github.com/Uter-AI/Uter/setting/system_setting"
 )
 
 func GetCallbackAddress() string {

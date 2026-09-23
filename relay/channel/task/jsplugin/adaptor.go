@@ -21,16 +21,17 @@ import (
 	"time"
 	"unicode/utf8"
 
-	"github.com/QuantumNous/uter/common"
-	"github.com/QuantumNous/uter/constant"
-	"github.com/QuantumNous/uter/dto"
-	"github.com/QuantumNous/uter/logger"
-	"github.com/QuantumNous/uter/model"
-	pluginruntime "github.com/QuantumNous/uter/pkg/jsplugin"
-	"github.com/QuantumNous/uter/relay/channel"
-	relaycommon "github.com/QuantumNous/uter/relay/common"
-	kitdto "github.com/QuantumNous/uter/relaykit/dto"
-	"github.com/QuantumNous/uter/service"
+	"https://github.com/Uter-AI/Uter/common"
+
+	"github.com/Uter-AI/Uter/constant"
+	"github.com/Uter-AI/Uter/dto"
+	"github.com/Uter-AI/Uter/logger"
+	"github.com/Uter-AI/Uter/model"
+	pluginruntime "github.com/Uter-AI/Uter/pkg/jsplugin"
+	"github.com/Uter-AI/Uter/relay/channel"
+	relaycommon "github.com/Uter-AI/Uter/relay/common"
+	kitdto "github.com/Uter-AI/Uter/relaykit/dto"
+	"github.com/Uter-AI/Uter/service"
 	"github.com/gin-gonic/gin"
 )
 

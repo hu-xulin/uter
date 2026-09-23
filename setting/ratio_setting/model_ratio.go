@@ -4,10 +4,11 @@ import (
 	"maps"
 	"strings"
 
-	"github.com/QuantumNous/uter/common"
-	"github.com/QuantumNous/uter/setting/operation_setting"
-	hostreasoning "github.com/QuantumNous/uter/setting/reasoning"
-	"github.com/QuantumNous/uter/types"
+	"https://github.com/Uter-AI/Uter/common"
+
+	"github.com/Uter-AI/Uter/setting/operation_setting"
+	hostreasoning "github.com/Uter-AI/Uter/setting/reasoning"
+	"github.com/Uter-AI/Uter/types"
 )
 
 // from songquanpeng/one-api

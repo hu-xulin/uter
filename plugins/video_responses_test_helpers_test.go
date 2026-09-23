@@ -4,10 +4,11 @@ import (
 	"sort"
 	"testing"
 
-	"github.com/QuantumNous/uter/common"
-	"github.com/QuantumNous/uter/pkg/jsplugin"
-	builtinplugins "github.com/QuantumNous/uter/plugins"
-	"github.com/QuantumNous/uter/relay"
+	"https://github.com/Uter-AI/Uter/common"
+
+	"github.com/Uter-AI/Uter/pkg/jsplugin"
+	builtinplugins "github.com/Uter-AI/Uter/plugins"
+	"github.com/Uter-AI/Uter/relay"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

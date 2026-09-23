@@ -5,9 +5,10 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/QuantumNous/uter/relaykit/dto"
-	"github.com/QuantumNous/uter/relaykit/relayconvert/convmeta"
-	kitutil "github.com/QuantumNous/uter/relaykit/relayconvert/kitutil"
+	"https://github.com/Uter-AI/Uter/relaykit/dto"
+
+	"github.com/Uter-AI/Uter/relaykit/relayconvert/convmeta"
+	kitutil "github.com/Uter-AI/Uter/relaykit/relayconvert/kitutil"
 )
 
 type ChatToGeminiStreamState struct {

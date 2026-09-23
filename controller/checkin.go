@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"time"
 
-	"https://github.com/Uter-AI/Uter/common"
+	"github.com/Uter-AI/Uter/common"
 	"github.com/Uter-AI/Uter/logger"
 	"github.com/Uter-AI/Uter/model"
 	"github.com/Uter-AI/Uter/setting/operation_setting"

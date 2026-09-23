@@ -1,6 +1,6 @@
 package dto
 
-import "https://github.com/Uter-AI/Uter/relaykit/types"
+import "github.com/Uter-AI/Uter/relaykit/types"
 
 // 这里不好动就不动了，本来想独立出来的（
 type OpenAIModels struct {

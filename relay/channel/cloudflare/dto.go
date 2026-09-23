@@ -1,6 +1,6 @@
 package cloudflare
 
-import "https://github.com/Uter-AI/Uter/relaykit/dto"
+import "github.com/Uter-AI/Uter/relaykit/dto"
 
 type CfRequest struct {
 	Messages    []dto.Message `json:"messages,omitempty"`

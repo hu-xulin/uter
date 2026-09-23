@@ -5,11 +5,12 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/QuantumNous/uter/relaykit/dto"
-	"github.com/QuantumNous/uter/relaykit/relayconvert/convmeta"
-	geminichat "github.com/QuantumNous/uter/relaykit/relayconvert/internal/gemini_chat"
-	kitutil "github.com/QuantumNous/uter/relaykit/relayconvert/kitutil"
-	"github.com/QuantumNous/uter/relaykit/types"
+	"https://github.com/Uter-AI/Uter/relaykit/dto"
+
+	"github.com/Uter-AI/Uter/relaykit/relayconvert/convmeta"
+	geminichat "github.com/Uter-AI/Uter/relaykit/relayconvert/internal/gemini_chat"
+	kitutil "github.com/Uter-AI/Uter/relaykit/relayconvert/kitutil"
+	"github.com/Uter-AI/Uter/relaykit/types"
 )
 
 type HostedResponseItem struct {

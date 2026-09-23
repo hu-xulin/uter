@@ -15,8 +15,9 @@ import (
 	"time"
 	"unicode/utf8"
 
-	"github.com/QuantumNous/uter/common"
-	"github.com/QuantumNous/uter/relaykit/relayconvert/kitutil"
+	"https://github.com/Uter-AI/Uter/common"
+
+	"github.com/Uter-AI/Uter/relaykit/relayconvert/kitutil"
 	"github.com/gin-gonic/gin"
 	jsoniter "github.com/json-iterator/go"
 	"github.com/stretchr/testify/assert"

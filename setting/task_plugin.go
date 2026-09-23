@@ -5,7 +5,7 @@ import (
 	"sort"
 	"strings"
 
-	"https://github.com/Uter-AI/Uter/common"
+	"github.com/Uter-AI/Uter/common"
 )
 
 const (

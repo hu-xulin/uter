@@ -6,10 +6,11 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/QuantumNous/uter/logger"
-	"github.com/QuantumNous/uter/middleware"
-	"github.com/QuantumNous/uter/model"
-	"github.com/QuantumNous/uter/service"
+	"https://github.com/Uter-AI/Uter/logger"
+
+	"github.com/Uter-AI/Uter/middleware"
+	"github.com/Uter-AI/Uter/model"
+	"github.com/Uter-AI/Uter/service"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )

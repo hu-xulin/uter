@@ -6,15 +6,16 @@ import (
 	"strings"
 	"time"
 
-	"github.com/QuantumNous/uter/common"
-	"github.com/QuantumNous/uter/constant"
-	"github.com/QuantumNous/uter/pkg/jsplugin"
-	"github.com/QuantumNous/uter/setting"
-	"github.com/QuantumNous/uter/setting/config"
-	"github.com/QuantumNous/uter/setting/operation_setting"
-	"github.com/QuantumNous/uter/setting/performance_setting"
-	"github.com/QuantumNous/uter/setting/ratio_setting"
-	"github.com/QuantumNous/uter/setting/system_setting"
+	"https://github.com/Uter-AI/Uter/common"
+
+	"github.com/Uter-AI/Uter/constant"
+	"github.com/Uter-AI/Uter/pkg/jsplugin"
+	"github.com/Uter-AI/Uter/setting"
+	"github.com/Uter-AI/Uter/setting/config"
+	"github.com/Uter-AI/Uter/setting/operation_setting"
+	"github.com/Uter-AI/Uter/setting/performance_setting"
+	"github.com/Uter-AI/Uter/setting/ratio_setting"
+	"github.com/Uter-AI/Uter/setting/system_setting"
 	"gorm.io/gorm"
 )
 

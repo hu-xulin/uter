@@ -6,9 +6,10 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/QuantumNous/uter/constant"
-	pluginruntime "github.com/QuantumNous/uter/pkg/jsplugin"
-	jspluginadaptor "github.com/QuantumNous/uter/relay/channel/task/jsplugin"
+	"https://github.com/Uter-AI/Uter/constant"
+
+	pluginruntime "github.com/Uter-AI/Uter/pkg/jsplugin"
+	jspluginadaptor "github.com/Uter-AI/Uter/relay/channel/task/jsplugin"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

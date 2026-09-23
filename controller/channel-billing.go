@@ -11,16 +11,17 @@ import (
 	"strings"
 	"time"
 
-	"github.com/QuantumNous/uter/common"
-	"github.com/QuantumNous/uter/constant"
-	"github.com/QuantumNous/uter/model"
-	"github.com/QuantumNous/uter/relay/channel/advancedcustom"
-	relaycommon "github.com/QuantumNous/uter/relay/common"
-	relayconstant "github.com/QuantumNous/uter/relay/constant"
-	"github.com/QuantumNous/uter/relaykit/dto"
-	"github.com/QuantumNous/uter/relaykit/types"
-	"github.com/QuantumNous/uter/service"
-	"github.com/QuantumNous/uter/setting/operation_setting"
+	"https://github.com/Uter-AI/Uter/common"
+
+	"github.com/Uter-AI/Uter/constant"
+	"github.com/Uter-AI/Uter/model"
+	"github.com/Uter-AI/Uter/relay/channel/advancedcustom"
+	relaycommon "github.com/Uter-AI/Uter/relay/common"
+	relayconstant "github.com/Uter-AI/Uter/relay/constant"
+	"github.com/Uter-AI/Uter/relaykit/dto"
+	"github.com/Uter-AI/Uter/relaykit/types"
+	"github.com/Uter-AI/Uter/service"
+	"github.com/Uter-AI/Uter/setting/operation_setting"
 
 	"github.com/shopspring/decimal"
 

@@ -3,10 +3,11 @@ package controller
 import (
 	"maps"
 
-	"github.com/QuantumNous/uter/common"
-	"github.com/QuantumNous/uter/model"
-	"github.com/QuantumNous/uter/service"
-	"github.com/QuantumNous/uter/setting/ratio_setting"
+	"https://github.com/Uter-AI/Uter/common"
+
+	"github.com/Uter-AI/Uter/model"
+	"github.com/Uter-AI/Uter/service"
+	"github.com/Uter-AI/Uter/setting/ratio_setting"
 
 	"github.com/gin-gonic/gin"
 )

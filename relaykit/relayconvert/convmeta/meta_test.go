@@ -3,7 +3,7 @@ package convmeta
 import (
 	"testing"
 
-	"https://github.com/Uter-AI/Uter/relaykit/types"
+	"github.com/Uter-AI/Uter/relaykit/types"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

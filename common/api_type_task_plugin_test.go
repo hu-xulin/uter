@@ -3,7 +3,7 @@ package common
 import (
 	"testing"
 
-	"https://github.com/Uter-AI/Uter/constant"
+	"github.com/Uter-AI/Uter/constant"
 
 	"github.com/stretchr/testify/assert"
 )

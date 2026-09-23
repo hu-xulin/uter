@@ -3,7 +3,7 @@ package controller
 import (
 	"net/http"
 
-	"https://github.com/Uter-AI/Uter/service/authz"
+	"github.com/Uter-AI/Uter/service/authz"
 
 	"github.com/gin-gonic/gin"
 )

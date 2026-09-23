@@ -3,7 +3,7 @@ package setting
 import (
 	"encoding/json"
 
-	"https://github.com/Uter-AI/Uter/common"
+	"github.com/Uter-AI/Uter/common"
 )
 
 var Chats = []map[string]string{

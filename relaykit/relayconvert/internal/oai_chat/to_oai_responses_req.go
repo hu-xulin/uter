@@ -6,9 +6,10 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/QuantumNous/uter/relaykit/dto"
-	kitutil "github.com/QuantumNous/uter/relaykit/relayconvert/kitutil"
-	"github.com/QuantumNous/uter/relaykit/relayconvert/reasoning"
+	"https://github.com/Uter-AI/Uter/relaykit/dto"
+
+	kitutil "github.com/Uter-AI/Uter/relaykit/relayconvert/kitutil"
+	"github.com/Uter-AI/Uter/relaykit/relayconvert/reasoning"
 	"github.com/samber/lo"
 )
 

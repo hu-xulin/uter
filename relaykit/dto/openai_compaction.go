@@ -3,7 +3,7 @@ package dto
 import (
 	"encoding/json"
 
-	"https://github.com/Uter-AI/Uter/relaykit/types"
+	"github.com/Uter-AI/Uter/relaykit/types"
 )
 
 type OpenAIResponsesCompactionResponse struct {

@@ -1,12 +1,13 @@
 package controller
 
 import (
-	"github.com/QuantumNous/uter/dto"
-	"github.com/QuantumNous/uter/logger"
-	"github.com/QuantumNous/uter/model"
-	pluginruntime "github.com/QuantumNous/uter/pkg/jsplugin"
-	"github.com/QuantumNous/uter/relay"
-	relaycommon "github.com/QuantumNous/uter/relay/common"
+	"https://github.com/Uter-AI/Uter/dto"
+
+	"github.com/Uter-AI/Uter/logger"
+	"github.com/Uter-AI/Uter/model"
+	pluginruntime "github.com/Uter-AI/Uter/pkg/jsplugin"
+	"github.com/Uter-AI/Uter/relay"
+	relaycommon "github.com/Uter-AI/Uter/relay/common"
 	"github.com/gin-gonic/gin"
 )
 

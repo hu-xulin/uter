@@ -7,15 +7,16 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/QuantumNous/uter/common"
-	channelconstant "github.com/QuantumNous/uter/constant"
-	"github.com/QuantumNous/uter/relay/channel"
-	"github.com/QuantumNous/uter/relay/channel/claude"
-	"github.com/QuantumNous/uter/relay/channel/openai"
-	relaycommon "github.com/QuantumNous/uter/relay/common"
-	"github.com/QuantumNous/uter/relay/constant"
-	"github.com/QuantumNous/uter/relaykit/dto"
-	"github.com/QuantumNous/uter/relaykit/types"
+	"https://github.com/Uter-AI/Uter/common"
+
+	channelconstant "github.com/Uter-AI/Uter/constant"
+	"github.com/Uter-AI/Uter/relay/channel"
+	"github.com/Uter-AI/Uter/relay/channel/claude"
+	"github.com/Uter-AI/Uter/relay/channel/openai"
+	relaycommon "github.com/Uter-AI/Uter/relay/common"
+	"github.com/Uter-AI/Uter/relay/constant"
+	"github.com/Uter-AI/Uter/relaykit/dto"
+	"github.com/Uter-AI/Uter/relaykit/types"
 
 	"github.com/gin-gonic/gin"
 )

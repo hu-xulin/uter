@@ -4,10 +4,11 @@ import (
 	"context"
 	"fmt"
 
-	relaycommon "github.com/QuantumNous/uter/relay/common"
-	"github.com/QuantumNous/uter/relaykit/dto"
-	"github.com/QuantumNous/uter/relaykit/relayconvert"
-	"github.com/QuantumNous/uter/relaykit/types"
+	relaycommon "https://github.com/Uter-AI/Uter/relay/common"
+
+	"github.com/Uter-AI/Uter/relaykit/dto"
+	"github.com/Uter-AI/Uter/relaykit/relayconvert"
+	"github.com/Uter-AI/Uter/relaykit/types"
 	"github.com/gin-gonic/gin"
 )
 

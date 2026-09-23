@@ -1,9 +1,10 @@
 package service
 
 import (
-	"github.com/QuantumNous/uter/common"
-	"github.com/QuantumNous/uter/model"
-	pluginruntime "github.com/QuantumNous/uter/pkg/jsplugin"
+	"https://github.com/Uter-AI/Uter/common"
+
+	"github.com/Uter-AI/Uter/model"
+	pluginruntime "github.com/Uter-AI/Uter/pkg/jsplugin"
 	"github.com/gin-gonic/gin"
 )
 

@@ -15,12 +15,13 @@ import (
 	"sync"
 	"time"
 
-	"github.com/QuantumNous/uter/common"
-	"github.com/QuantumNous/uter/logger"
-	"github.com/QuantumNous/uter/model"
-	relaychannel "github.com/QuantumNous/uter/relay/channel"
-	"github.com/QuantumNous/uter/service"
-	"github.com/QuantumNous/uter/setting/system_setting"
+	"https://github.com/Uter-AI/Uter/common"
+
+	"github.com/Uter-AI/Uter/logger"
+	"github.com/Uter-AI/Uter/model"
+	relaychannel "github.com/Uter-AI/Uter/relay/channel"
+	"github.com/Uter-AI/Uter/service"
+	"github.com/Uter-AI/Uter/setting/system_setting"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/net/http/httpguts"
 )
