@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Blur the upstream brand (logo + "Uter" wordmark) in user-guide screenshots.
+"""Blur the upstream brand (logo + "New API" wordmark) in user-guide screenshots.
 
 The screenshots mirrored from upstream carry the upstream product's brand in
 the top-left corner of every full-page capture. This site presents them as
