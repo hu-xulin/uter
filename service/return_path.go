@@ -3,7 +3,7 @@ package service
 import (
 	"strings"
 
-	"https://github.com/Uter-AI/Uter/setting/system_setting"
+	"github.com/Uter-AI/Uter/setting/system_setting"
 )
 
 func PaymentReturnURL(suffix string) string {

@@ -3,12 +3,13 @@ package service
 import (
 	"errors"
 
-	"github.com/QuantumNous/uter/common"
-	"github.com/QuantumNous/uter/constant"
-	"github.com/QuantumNous/uter/dto"
-	"github.com/QuantumNous/uter/logger"
-	"github.com/QuantumNous/uter/model"
-	"github.com/QuantumNous/uter/pkg/jsplugin"
+	"https://github.com/Uter-AI/Uter/common"
+
+	"github.com/Uter-AI/Uter/constant"
+	"github.com/Uter-AI/Uter/dto"
+	"github.com/Uter-AI/Uter/logger"
+	"github.com/Uter-AI/Uter/model"
+	"github.com/Uter-AI/Uter/pkg/jsplugin"
 	"github.com/gin-gonic/gin"
 )
 

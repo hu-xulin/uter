@@ -3,8 +3,9 @@ package model
 import (
 	"slices"
 
-	"github.com/QuantumNous/uter/common"
-	"github.com/QuantumNous/uter/setting/ratio_setting"
+	"https://github.com/Uter-AI/Uter/common"
+
+	"github.com/Uter-AI/Uter/setting/ratio_setting"
 )
 
 func IsChannelEnabledForGroupModel(group string, modelName string, channelID int) bool {

@@ -3,7 +3,7 @@ package oaichat
 import (
 	"testing"
 
-	"https://github.com/Uter-AI/Uter/relaykit/dto"
+	"github.com/Uter-AI/Uter/relaykit/dto"
 
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"

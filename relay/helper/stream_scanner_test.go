@@ -13,9 +13,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/QuantumNous/uter/constant"
-	relaycommon "github.com/QuantumNous/uter/relay/common"
-	"github.com/QuantumNous/uter/setting/operation_setting"
+	"https://github.com/Uter-AI/Uter/constant"
+
+	relaycommon "github.com/Uter-AI/Uter/relay/common"
+	"github.com/Uter-AI/Uter/setting/operation_setting"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

@@ -6,9 +6,10 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/QuantumNous/uter/dto"
-	"github.com/QuantumNous/uter/service"
-	"github.com/QuantumNous/uter/relaykit/types"
+	"https://github.com/Uter-AI/Uter/dto"
+
+	"github.com/Uter-AI/Uter/relaykit/types"
+	"github.com/Uter-AI/Uter/service"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

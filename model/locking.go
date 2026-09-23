@@ -1,7 +1,7 @@
 package model
 
 import (
-	"https://github.com/Uter-AI/Uter/common"
+	"github.com/Uter-AI/Uter/common"
 
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"

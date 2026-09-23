@@ -1,10 +1,11 @@
 package controller
 
 import (
-	"github.com/QuantumNous/uter/common"
-	"github.com/QuantumNous/uter/model"
-	"github.com/QuantumNous/uter/relaykit/types"
-	"github.com/QuantumNous/uter/setting/operation_setting"
+	"https://github.com/Uter-AI/Uter/common"
+
+	"github.com/Uter-AI/Uter/model"
+	"github.com/Uter-AI/Uter/relaykit/types"
+	"github.com/Uter-AI/Uter/setting/operation_setting"
 	"github.com/gin-gonic/gin"
 )
 

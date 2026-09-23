@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"https://github.com/Uter-AI/Uter/relaykit/dto"
+	"github.com/Uter-AI/Uter/relaykit/dto"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/stretchr/testify/assert"

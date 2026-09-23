@@ -6,12 +6,13 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/QuantumNous/uter/relay/channel"
-	"github.com/QuantumNous/uter/relay/channel/claude"
-	relaycommon "github.com/QuantumNous/uter/relay/common"
-	"github.com/QuantumNous/uter/relaykit/dto"
-	"github.com/QuantumNous/uter/relaykit/types"
-	"github.com/QuantumNous/uter/service"
+	"https://github.com/Uter-AI/Uter/relay/channel"
+
+	"github.com/Uter-AI/Uter/relay/channel/claude"
+	relaycommon "github.com/Uter-AI/Uter/relay/common"
+	"github.com/Uter-AI/Uter/relaykit/dto"
+	"github.com/Uter-AI/Uter/relaykit/types"
+	"github.com/Uter-AI/Uter/service"
 	"github.com/aws/aws-sdk-go-v2/service/bedrockruntime"
 	"github.com/pkg/errors"
 

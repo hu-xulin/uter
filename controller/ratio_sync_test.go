@@ -3,16 +3,17 @@ package controller
 import (
 	"testing"
 
-	"github.com/QuantumNous/uter/common"
-	"github.com/QuantumNous/uter/relaykit/dto"
-	"github.com/QuantumNous/uter/setting/billing_setting"
-	"github.com/QuantumNous/uter/setting/config"
-	"github.com/QuantumNous/uter/setting/ratio_setting"
+	"https://github.com/Uter-AI/Uter/common"
+	"net/http"
+	"net/http/httptest"
+
+	"github.com/Uter-AI/Uter/relaykit/dto"
+	"github.com/Uter-AI/Uter/setting/billing_setting"
+	"github.com/Uter-AI/Uter/setting/config"
+	"github.com/Uter-AI/Uter/setting/ratio_setting"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"net/http"
-	"net/http/httptest"
 )
 
 func TestPricingSyncExpressionPriority(t *testing.T) {

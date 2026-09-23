@@ -9,7 +9,7 @@ import (
 	"strings"
 	"unsafe"
 
-	kitutil "https://github.com/Uter-AI/Uter/relaykit/relayconvert/kitutil"
+	kitutil "github.com/Uter-AI/Uter/relaykit/relayconvert/kitutil"
 
 	"github.com/samber/lo"
 )

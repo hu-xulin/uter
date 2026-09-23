@@ -9,7 +9,7 @@ import (
 	"time"
 	"unicode/utf16"
 
-	"https://github.com/Uter-AI/Uter/common"
+	"github.com/Uter-AI/Uter/common"
 )
 
 var (

@@ -3,8 +3,9 @@ package relay
 import (
 	"testing"
 
-	"github.com/QuantumNous/uter/constant"
-	pluginruntime "github.com/QuantumNous/uter/pkg/jsplugin"
+	"https://github.com/Uter-AI/Uter/constant"
+
+	pluginruntime "github.com/Uter-AI/Uter/pkg/jsplugin"
 	"github.com/stretchr/testify/assert"
 )
 

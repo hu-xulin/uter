@@ -13,10 +13,11 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/QuantumNous/uter/common"
-	"github.com/QuantumNous/uter/constant"
-	"github.com/QuantumNous/uter/logger"
-	"github.com/QuantumNous/uter/relaykit/types"
+	"https://github.com/Uter-AI/Uter/common"
+
+	"github.com/Uter-AI/Uter/constant"
+	"github.com/Uter-AI/Uter/logger"
+	"github.com/Uter-AI/Uter/relaykit/types"
 
 	"github.com/gin-gonic/gin"
 	"golang.org/x/image/webp"

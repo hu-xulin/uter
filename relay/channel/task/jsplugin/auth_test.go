@@ -8,10 +8,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/QuantumNous/uter/common"
-	pluginruntime "github.com/QuantumNous/uter/pkg/jsplugin"
-	vertexcore "github.com/QuantumNous/uter/relay/channel/vertex"
-	relaycommon "github.com/QuantumNous/uter/relay/common"
+	"https://github.com/Uter-AI/Uter/common"
+
+	pluginruntime "github.com/Uter-AI/Uter/pkg/jsplugin"
+	vertexcore "github.com/Uter-AI/Uter/relay/channel/vertex"
+	relaycommon "github.com/Uter-AI/Uter/relay/common"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

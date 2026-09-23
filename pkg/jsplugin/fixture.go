@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"https://github.com/Uter-AI/Uter/common"
+	"github.com/Uter-AI/Uter/common"
 )
 
 // Fixture describes deterministic calls into a plugin. Arguments and expected

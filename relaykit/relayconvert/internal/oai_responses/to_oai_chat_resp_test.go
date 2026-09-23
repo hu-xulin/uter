@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	"https://github.com/Uter-AI/Uter/relaykit/dto"
+	"github.com/Uter-AI/Uter/relaykit/dto"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

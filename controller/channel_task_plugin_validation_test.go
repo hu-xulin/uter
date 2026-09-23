@@ -4,9 +4,10 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/QuantumNous/uter/constant"
-	"github.com/QuantumNous/uter/model"
-	"github.com/QuantumNous/uter/pkg/jsplugin"
+	"https://github.com/Uter-AI/Uter/constant"
+
+	"github.com/Uter-AI/Uter/model"
+	"github.com/Uter-AI/Uter/pkg/jsplugin"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

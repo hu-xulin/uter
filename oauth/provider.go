@@ -3,7 +3,7 @@ package oauth
 import (
 	"context"
 
-	"https://github.com/Uter-AI/Uter/model"
+	"github.com/Uter-AI/Uter/model"
 
 	"github.com/gin-gonic/gin"
 )

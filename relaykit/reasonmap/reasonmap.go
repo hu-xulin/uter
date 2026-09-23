@@ -3,7 +3,7 @@ package reasonmap
 import (
 	"strings"
 
-	"https://github.com/Uter-AI/Uter/relaykit/types"
+	"github.com/Uter-AI/Uter/relaykit/types"
 )
 
 func ClaudeStopReasonToOpenAIFinishReason(stopReason string) string {

@@ -8,9 +8,10 @@ import (
 	"os"
 	"testing"
 
-	"github.com/QuantumNous/uter/common"
-	"github.com/QuantumNous/uter/middleware"
-	"github.com/QuantumNous/uter/model"
+	"https://github.com/Uter-AI/Uter/common"
+
+	"github.com/Uter-AI/Uter/middleware"
+	"github.com/Uter-AI/Uter/model"
 	"github.com/gin-gonic/gin"
 	"github.com/glebarez/sqlite"
 	"github.com/stretchr/testify/assert"

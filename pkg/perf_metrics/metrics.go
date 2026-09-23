@@ -8,10 +8,11 @@ import (
 	"sync"
 	"time"
 
-	"github.com/QuantumNous/uter/common"
-	"github.com/QuantumNous/uter/model"
-	relaycommon "github.com/QuantumNous/uter/relay/common"
-	"github.com/QuantumNous/uter/setting/perf_metrics_setting"
+	"https://github.com/Uter-AI/Uter/common"
+
+	"github.com/Uter-AI/Uter/model"
+	relaycommon "github.com/Uter-AI/Uter/relay/common"
+	"github.com/Uter-AI/Uter/setting/perf_metrics_setting"
 )
 
 var hotBuckets sync.Map

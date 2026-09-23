@@ -4,8 +4,9 @@ import (
 	"errors"
 	"strings"
 
-	"github.com/QuantumNous/uter/relaykit/dto"
-	"github.com/QuantumNous/uter/setting"
+	"https://github.com/Uter-AI/Uter/relaykit/dto"
+
+	"github.com/Uter-AI/Uter/setting"
 )
 
 func CheckSensitiveMessages(messages []dto.Message) ([]string, error) {

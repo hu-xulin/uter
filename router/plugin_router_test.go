@@ -12,11 +12,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/QuantumNous/uter/common"
-	"github.com/QuantumNous/uter/constant"
-	"github.com/QuantumNous/uter/middleware"
-	"github.com/QuantumNous/uter/model"
-	"github.com/QuantumNous/uter/pkg/jsplugin"
+	"https://github.com/Uter-AI/Uter/common"
+
+	"github.com/Uter-AI/Uter/constant"
+	"github.com/Uter-AI/Uter/middleware"
+	"github.com/Uter-AI/Uter/model"
+	"github.com/Uter-AI/Uter/pkg/jsplugin"
 	"github.com/gin-contrib/gzip"
 	"github.com/gin-gonic/gin"
 	"github.com/glebarez/sqlite"

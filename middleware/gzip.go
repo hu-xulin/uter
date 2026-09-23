@@ -5,7 +5,7 @@ import (
 	"io"
 	"net/http"
 
-	"https://github.com/Uter-AI/Uter/constant"
+	"github.com/Uter-AI/Uter/constant"
 
 	"github.com/andybalholm/brotli"
 	"github.com/gin-gonic/gin"

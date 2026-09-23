@@ -9,11 +9,12 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/QuantumNous/uter/common"
-	"github.com/QuantumNous/uter/constant"
-	"github.com/QuantumNous/uter/logger"
-	"github.com/QuantumNous/uter/relaykit/dto"
-	"github.com/QuantumNous/uter/relaykit/types"
+	"https://github.com/Uter-AI/Uter/common"
+
+	"github.com/Uter-AI/Uter/constant"
+	"github.com/Uter-AI/Uter/logger"
+	"github.com/Uter-AI/Uter/relaykit/dto"
+	"github.com/Uter-AI/Uter/relaykit/types"
 
 	"github.com/samber/lo"
 	"gorm.io/gorm"

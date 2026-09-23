@@ -5,12 +5,13 @@ import (
 	"fmt"
 	"math"
 
-	"github.com/QuantumNous/uter/relaykit/dto"
-	"github.com/QuantumNous/uter/relaykit/relayconvert/convmeta"
-	"github.com/QuantumNous/uter/relaykit/relayconvert/internal/convdiag"
-	kitutil "github.com/QuantumNous/uter/relaykit/relayconvert/kitutil"
-	"github.com/QuantumNous/uter/relaykit/relayconvert/reasoning"
-	"github.com/QuantumNous/uter/relaykit/types"
+	"https://github.com/Uter-AI/Uter/relaykit/dto"
+
+	"github.com/Uter-AI/Uter/relaykit/relayconvert/convmeta"
+	"github.com/Uter-AI/Uter/relaykit/relayconvert/internal/convdiag"
+	kitutil "github.com/Uter-AI/Uter/relaykit/relayconvert/kitutil"
+	"github.com/Uter-AI/Uter/relaykit/relayconvert/reasoning"
+	"github.com/Uter-AI/Uter/relaykit/types"
 )
 
 func ApplyReasoning(ctx context.Context, req *dto.ClaudeRequest, info convmeta.Meta, source reasoning.Intent, crossProtocol bool) error {

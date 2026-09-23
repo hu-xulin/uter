@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"slices"
 
-	"github.com/QuantumNous/uter/common"
-	"github.com/QuantumNous/uter/setting/config"
+	"https://github.com/Uter-AI/Uter/common"
+
+	"github.com/Uter-AI/Uter/setting/config"
 )
 
 const defaultGeminiSafetySetting = "OFF"

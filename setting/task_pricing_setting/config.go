@@ -3,7 +3,7 @@ package task_pricing_setting
 import (
 	"strings"
 
-	"https://github.com/Uter-AI/Uter/setting/config"
+	"github.com/Uter-AI/Uter/setting/config"
 
 	"github.com/samber/lo"
 )

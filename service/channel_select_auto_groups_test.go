@@ -6,11 +6,12 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/QuantumNous/uter/common"
-	"github.com/QuantumNous/uter/constant"
-	"github.com/QuantumNous/uter/model"
-	"github.com/QuantumNous/uter/setting"
-	"github.com/QuantumNous/uter/setting/ratio_setting"
+	"https://github.com/Uter-AI/Uter/common"
+
+	"github.com/Uter-AI/Uter/constant"
+	"github.com/Uter-AI/Uter/model"
+	"github.com/Uter-AI/Uter/setting"
+	"github.com/Uter-AI/Uter/setting/ratio_setting"
 	"github.com/gin-gonic/gin"
 	"github.com/glebarez/sqlite"
 	"github.com/stretchr/testify/assert"

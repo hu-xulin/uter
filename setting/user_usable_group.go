@@ -5,7 +5,7 @@ import (
 	"maps"
 	"sync"
 
-	"https://github.com/Uter-AI/Uter/common"
+	"github.com/Uter-AI/Uter/common"
 )
 
 var userUsableGroups = map[string]string{

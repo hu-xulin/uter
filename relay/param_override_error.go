@@ -1,8 +1,9 @@
 package relay
 
 import (
-	relaycommon "github.com/QuantumNous/uter/relay/common"
-	"github.com/QuantumNous/uter/relaykit/types"
+	relaycommon "https://github.com/Uter-AI/Uter/relay/common"
+
+	"github.com/Uter-AI/Uter/relaykit/types"
 )
 
 func newAPIErrorFromParamOverride(err error) *types.UterError {

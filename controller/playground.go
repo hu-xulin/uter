@@ -4,10 +4,11 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/QuantumNous/uter/middleware"
-	"github.com/QuantumNous/uter/model"
-	relaycommon "github.com/QuantumNous/uter/relay/common"
-	"github.com/QuantumNous/uter/relaykit/types"
+	"https://github.com/Uter-AI/Uter/middleware"
+
+	"github.com/Uter-AI/Uter/model"
+	relaycommon "github.com/Uter-AI/Uter/relay/common"
+	"github.com/Uter-AI/Uter/relaykit/types"
 
 	"github.com/gin-gonic/gin"
 )

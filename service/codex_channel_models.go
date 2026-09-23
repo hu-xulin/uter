@@ -7,8 +7,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/QuantumNous/uter/constant"
-	"github.com/QuantumNous/uter/model"
+	"https://github.com/Uter-AI/Uter/constant"
+
+	"github.com/Uter-AI/Uter/model"
 )
 
 func FetchCodexChannelModels(channel *model.Channel) ([]string, error) {

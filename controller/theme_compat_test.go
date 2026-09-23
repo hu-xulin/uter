@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"https://github.com/Uter-AI/Uter/common"
+	"github.com/Uter-AI/Uter/common"
 
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"

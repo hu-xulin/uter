@@ -7,11 +7,12 @@ import (
 	"encoding/json"
 	"time"
 
-	"github.com/QuantumNous/uter/common"
-	"github.com/QuantumNous/uter/constant"
-	"github.com/QuantumNous/uter/pkg/billingexpr"
-	commonRelay "github.com/QuantumNous/uter/relay/common"
-	"github.com/QuantumNous/uter/relaykit/dto"
+	"https://github.com/Uter-AI/Uter/common"
+
+	"github.com/Uter-AI/Uter/constant"
+	"github.com/Uter-AI/Uter/pkg/billingexpr"
+	commonRelay "github.com/Uter-AI/Uter/relay/common"
+	"github.com/Uter-AI/Uter/relaykit/dto"
 )
 
 type TaskStatus string

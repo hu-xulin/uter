@@ -3,7 +3,7 @@ package controller
 import (
 	"strings"
 
-	"https://github.com/Uter-AI/Uter/setting/system_setting"
+	"github.com/Uter-AI/Uter/setting/system_setting"
 )
 
 func paymentReturnPath(suffix string) string {

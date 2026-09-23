@@ -5,8 +5,9 @@ import (
 	"maps"
 	"sync"
 
-	"github.com/QuantumNous/uter/common"
-	"github.com/QuantumNous/uter/model"
+	"https://github.com/Uter-AI/Uter/common"
+
+	"github.com/Uter-AI/Uter/model"
 )
 
 var (

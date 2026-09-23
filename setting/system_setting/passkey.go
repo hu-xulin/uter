@@ -7,8 +7,9 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/QuantumNous/uter/common"
-	"github.com/QuantumNous/uter/setting/config"
+	"https://github.com/Uter-AI/Uter/common"
+
+	"github.com/Uter-AI/Uter/setting/config"
 	"golang.org/x/net/idna"
 	"golang.org/x/net/publicsuffix"
 )

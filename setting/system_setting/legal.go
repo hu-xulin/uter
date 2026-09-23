@@ -1,6 +1,6 @@
 package system_setting
 
-import "https://github.com/Uter-AI/Uter/setting/config"
+import "github.com/Uter-AI/Uter/setting/config"
 
 type LegalSettings struct {
 	UserAgreement string `json:"user_agreement"`

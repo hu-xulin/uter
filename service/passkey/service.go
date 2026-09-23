@@ -10,8 +10,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/QuantumNous/uter/common"
-	"github.com/QuantumNous/uter/setting/system_setting"
+	"https://github.com/Uter-AI/Uter/common"
+
+	"github.com/Uter-AI/Uter/setting/system_setting"
 
 	"github.com/go-webauthn/webauthn/protocol"
 	webauthn "github.com/go-webauthn/webauthn/webauthn"

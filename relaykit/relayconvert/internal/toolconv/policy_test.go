@@ -3,10 +3,11 @@ package toolconv
 import (
 	"testing"
 
-	"github.com/QuantumNous/uter/relaykit/dto"
-	"github.com/QuantumNous/uter/relaykit/relayconvert/convmeta"
-	kitutil "github.com/QuantumNous/uter/relaykit/relayconvert/kitutil"
-	"github.com/QuantumNous/uter/relaykit/types"
+	"https://github.com/Uter-AI/Uter/relaykit/dto"
+
+	"github.com/Uter-AI/Uter/relaykit/relayconvert/convmeta"
+	kitutil "github.com/Uter-AI/Uter/relaykit/relayconvert/kitutil"
+	"github.com/Uter-AI/Uter/relaykit/types"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

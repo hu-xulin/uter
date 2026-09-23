@@ -8,16 +8,17 @@ import (
 	"strings"
 	"time"
 
-	"github.com/QuantumNous/uter/common"
-	"github.com/QuantumNous/uter/constant"
-	"github.com/QuantumNous/uter/pkg/billingexpr"
-	relayconstant "github.com/QuantumNous/uter/relay/constant"
-	"github.com/QuantumNous/uter/relaykit/dto"
-	"github.com/QuantumNous/uter/relaykit/relayconvert/convmeta"
-	kitreasoning "github.com/QuantumNous/uter/relaykit/relayconvert/reasoning"
-	"github.com/QuantumNous/uter/relaykit/types"
-	"github.com/QuantumNous/uter/setting/model_setting"
-	hosttypes "github.com/QuantumNous/uter/types"
+	"https://github.com/Uter-AI/Uter/common"
+
+	"github.com/Uter-AI/Uter/constant"
+	"github.com/Uter-AI/Uter/pkg/billingexpr"
+	relayconstant "github.com/Uter-AI/Uter/relay/constant"
+	"github.com/Uter-AI/Uter/relaykit/dto"
+	"github.com/Uter-AI/Uter/relaykit/relayconvert/convmeta"
+	kitreasoning "github.com/Uter-AI/Uter/relaykit/relayconvert/reasoning"
+	"github.com/Uter-AI/Uter/relaykit/types"
+	"github.com/Uter-AI/Uter/setting/model_setting"
+	hosttypes "github.com/Uter-AI/Uter/types"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
@@ -409,7 +410,7 @@ var streamSupportedChannels = map[int]bool{
 	constant.ChannelTypeSiliconFlow:    true,
 	constant.ChannelTypeAdvancedCustom: true,
 	constant.ChannelTypeSub2API:        true,
-	constant.ChannelTypeUter:         true,
+	constant.ChannelTypeUter:           true,
 	constant.ChannelTypeTencent:        true,
 }
 

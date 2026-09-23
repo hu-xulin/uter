@@ -3,10 +3,11 @@ package model
 import (
 	"testing"
 
-	"github.com/QuantumNous/uter/common"
-	"github.com/QuantumNous/uter/constant"
-	"github.com/QuantumNous/uter/pkg/jsplugin"
-	"github.com/QuantumNous/uter/setting"
+	"https://github.com/Uter-AI/Uter/common"
+
+	"github.com/Uter-AI/Uter/constant"
+	"github.com/Uter-AI/Uter/pkg/jsplugin"
+	"github.com/Uter-AI/Uter/setting"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

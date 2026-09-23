@@ -6,8 +6,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/QuantumNous/uter/relaykit/dto"
-	kitutil "github.com/QuantumNous/uter/relaykit/relayconvert/kitutil"
+	"https://github.com/Uter-AI/Uter/relaykit/dto"
+
+	kitutil "github.com/Uter-AI/Uter/relaykit/relayconvert/kitutil"
 )
 
 type ResponsesToChatStreamState struct {

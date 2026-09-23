@@ -10,12 +10,13 @@ import (
 	"sync"
 	"time"
 
-	"github.com/QuantumNous/uter/common"
-	"github.com/QuantumNous/uter/constant"
-	"github.com/QuantumNous/uter/logger"
-	relaycommon "github.com/QuantumNous/uter/relay/common"
-	"github.com/QuantumNous/uter/service"
-	"github.com/QuantumNous/uter/setting/operation_setting"
+	"https://github.com/Uter-AI/Uter/common"
+
+	"github.com/Uter-AI/Uter/constant"
+	"github.com/Uter-AI/Uter/logger"
+	relaycommon "github.com/Uter-AI/Uter/relay/common"
+	"github.com/Uter-AI/Uter/service"
+	"github.com/Uter-AI/Uter/setting/operation_setting"
 
 	"github.com/bytedance/gopkg/util/gopool"
 

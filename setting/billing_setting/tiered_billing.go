@@ -7,13 +7,14 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/QuantumNous/uter/common"
-	"github.com/QuantumNous/uter/pkg/billingexpr"
-	"github.com/QuantumNous/uter/pkg/jsplugin"
-	relaycommon "github.com/QuantumNous/uter/relay/common"
-	"github.com/QuantumNous/uter/relaykit/dto"
-	"github.com/QuantumNous/uter/setting/config"
-	"github.com/QuantumNous/uter/setting/ratio_setting"
+	"https://github.com/Uter-AI/Uter/common"
+
+	"github.com/Uter-AI/Uter/pkg/billingexpr"
+	"github.com/Uter-AI/Uter/pkg/jsplugin"
+	relaycommon "github.com/Uter-AI/Uter/relay/common"
+	"github.com/Uter-AI/Uter/relaykit/dto"
+	"github.com/Uter-AI/Uter/setting/config"
+	"github.com/Uter-AI/Uter/setting/ratio_setting"
 	"github.com/samber/lo"
 )
 

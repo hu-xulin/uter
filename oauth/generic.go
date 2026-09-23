@@ -14,11 +14,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/QuantumNous/uter/common"
-	"github.com/QuantumNous/uter/i18n"
-	"github.com/QuantumNous/uter/logger"
-	"github.com/QuantumNous/uter/model"
-	"github.com/QuantumNous/uter/setting/system_setting"
+	"https://github.com/Uter-AI/Uter/common"
+
+	"github.com/Uter-AI/Uter/i18n"
+	"github.com/Uter-AI/Uter/logger"
+	"github.com/Uter-AI/Uter/model"
+	"github.com/Uter-AI/Uter/setting/system_setting"
 	"github.com/gin-gonic/gin"
 	"github.com/samber/lo"
 	"github.com/tidwall/gjson"

@@ -10,8 +10,9 @@ import (
 	"net/url"
 	"strings"
 
-	relaycommon "github.com/QuantumNous/uter/relay/common"
-	"github.com/QuantumNous/uter/service"
+	relaycommon "https://github.com/Uter-AI/Uter/relay/common"
+
+	"github.com/Uter-AI/Uter/service"
 
 	"github.com/bytedance/gopkg/cache/asynccache"
 	"github.com/golang-jwt/jwt/v5"

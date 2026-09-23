@@ -3,7 +3,7 @@ package controller
 import (
 	"testing"
 
-	"https://github.com/Uter-AI/Uter/setting/system_setting"
+	"github.com/Uter-AI/Uter/setting/system_setting"
 
 	"github.com/stretchr/testify/assert"
 )

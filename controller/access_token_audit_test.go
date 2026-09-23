@@ -16,11 +16,12 @@ import (
 	sqlmysql "github.com/go-sql-driver/mysql"
 	"gorm.io/driver/clickhouse"
 
-	"github.com/QuantumNous/uter/common"
-	"github.com/QuantumNous/uter/middleware"
-	"github.com/QuantumNous/uter/model"
-	"github.com/QuantumNous/uter/service"
-	"github.com/QuantumNous/uter/service/authz"
+	"https://github.com/Uter-AI/Uter/common"
+
+	"github.com/Uter-AI/Uter/middleware"
+	"github.com/Uter-AI/Uter/model"
+	"github.com/Uter-AI/Uter/service"
+	"github.com/Uter-AI/Uter/service/authz"
 	"github.com/gin-gonic/gin"
 	"github.com/glebarez/sqlite"
 	"github.com/stretchr/testify/assert"

@@ -1,6 +1,6 @@
 package operation_setting
 
-import "https://github.com/Uter-AI/Uter/setting/config"
+import "github.com/Uter-AI/Uter/setting/config"
 
 type PaymentSetting struct {
 	AmountOptions  []int           `json:"amount_options"`

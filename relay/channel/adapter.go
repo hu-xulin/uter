@@ -4,12 +4,13 @@ import (
 	"io"
 	"net/http"
 
-	taskdto "github.com/QuantumNous/uter/dto"
-	"github.com/QuantumNous/uter/model"
-	relaycommon "github.com/QuantumNous/uter/relay/common"
-	"github.com/QuantumNous/uter/relaykit/dto"
-	"github.com/QuantumNous/uter/relaykit/types"
-	hosttypes "github.com/QuantumNous/uter/types"
+	taskdto "https://github.com/Uter-AI/Uter/dto"
+
+	"github.com/Uter-AI/Uter/model"
+	relaycommon "github.com/Uter-AI/Uter/relay/common"
+	"github.com/Uter-AI/Uter/relaykit/dto"
+	"github.com/Uter-AI/Uter/relaykit/types"
+	hosttypes "github.com/Uter-AI/Uter/types"
 
 	"github.com/gin-gonic/gin"
 )

@@ -4,10 +4,11 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/QuantumNous/uter/relaykit/dto"
-	"github.com/QuantumNous/uter/relaykit/relayconvert/convmeta"
-	kitutil "github.com/QuantumNous/uter/relaykit/relayconvert/kitutil"
-	"github.com/QuantumNous/uter/relaykit/relayconvert/reasoning"
+	"https://github.com/Uter-AI/Uter/relaykit/dto"
+
+	"github.com/Uter-AI/Uter/relaykit/relayconvert/convmeta"
+	kitutil "github.com/Uter-AI/Uter/relaykit/relayconvert/kitutil"
+	"github.com/Uter-AI/Uter/relaykit/relayconvert/reasoning"
 )
 
 const (

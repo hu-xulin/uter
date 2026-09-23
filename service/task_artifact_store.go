@@ -5,9 +5,10 @@ import (
 	"errors"
 	"io"
 
-	"github.com/QuantumNous/uter/model"
-	"github.com/QuantumNous/uter/setting/system_setting"
-	"github.com/QuantumNous/uter/types"
+	"https://github.com/Uter-AI/Uter/model"
+
+	"github.com/Uter-AI/Uter/setting/system_setting"
+	"github.com/Uter-AI/Uter/types"
 	"github.com/gin-gonic/gin"
 )
 

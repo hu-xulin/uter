@@ -14,13 +14,14 @@ import (
 	"sync"
 	"time"
 
-	"github.com/QuantumNous/uter/common"
-	"github.com/QuantumNous/uter/i18n"
-	"github.com/QuantumNous/uter/logger"
-	"github.com/QuantumNous/uter/model"
-	"github.com/QuantumNous/uter/pkg/jsplugin"
-	"github.com/QuantumNous/uter/plugins"
-	"github.com/QuantumNous/uter/setting"
+	"https://github.com/Uter-AI/Uter/common"
+
+	"github.com/Uter-AI/Uter/i18n"
+	"github.com/Uter-AI/Uter/logger"
+	"github.com/Uter-AI/Uter/model"
+	"github.com/Uter-AI/Uter/pkg/jsplugin"
+	"github.com/Uter-AI/Uter/plugins"
+	"github.com/Uter-AI/Uter/setting"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )

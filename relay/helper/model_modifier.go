@@ -6,10 +6,11 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/QuantumNous/uter/common"
-	"github.com/QuantumNous/uter/relaykit/dto"
-	"github.com/QuantumNous/uter/relaykit/relayconvert/reasoning"
-	"github.com/QuantumNous/uter/relaykit/types"
+	"https://github.com/Uter-AI/Uter/common"
+
+	"github.com/Uter-AI/Uter/relaykit/dto"
+	"github.com/Uter-AI/Uter/relaykit/relayconvert/reasoning"
+	"github.com/Uter-AI/Uter/relaykit/types"
 )
 
 type parsedModelModifiers struct {

@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"https://github.com/Uter-AI/Uter/relaykit/types"
+	"github.com/Uter-AI/Uter/relaykit/types"
 )
 
 // AlphaSearchRequest is the Codex standalone web search request.

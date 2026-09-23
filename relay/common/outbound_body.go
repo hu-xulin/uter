@@ -3,7 +3,7 @@ package common
 import (
 	"io"
 
-	"https://github.com/Uter-AI/Uter/common"
+	"github.com/Uter-AI/Uter/common"
 )
 
 // NewOutboundJSONBody wraps the already-marshaled upstream request body into a

@@ -4,8 +4,9 @@ import (
 	"net/http"
 	"strconv"
 
-	perfmetrics "github.com/QuantumNous/uter/pkg/perf_metrics"
-	"github.com/QuantumNous/uter/setting/ratio_setting"
+	perfmetrics "https://github.com/Uter-AI/Uter/pkg/perf_metrics"
+
+	"github.com/Uter-AI/Uter/setting/ratio_setting"
 
 	"github.com/gin-gonic/gin"
 	"github.com/samber/lo"

@@ -11,14 +11,15 @@ import (
 	"strings"
 	"time"
 
-	"github.com/QuantumNous/uter/common"
-	"github.com/QuantumNous/uter/constant"
-	"github.com/QuantumNous/uter/dto"
-	"github.com/QuantumNous/uter/logger"
-	"github.com/QuantumNous/uter/model"
-	relaycommon "github.com/QuantumNous/uter/relay/common"
-	relayconstant "github.com/QuantumNous/uter/relay/constant"
-	"github.com/QuantumNous/uter/setting"
+	"https://github.com/Uter-AI/Uter/common"
+
+	"github.com/Uter-AI/Uter/constant"
+	"github.com/Uter-AI/Uter/dto"
+	"github.com/Uter-AI/Uter/logger"
+	"github.com/Uter-AI/Uter/model"
+	relaycommon "github.com/Uter-AI/Uter/relay/common"
+	relayconstant "github.com/Uter-AI/Uter/relay/constant"
+	"github.com/Uter-AI/Uter/setting"
 
 	"github.com/gin-gonic/gin"
 )

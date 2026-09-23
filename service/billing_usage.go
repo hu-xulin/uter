@@ -1,8 +1,9 @@
 package service
 
 import (
-	"github.com/QuantumNous/uter/model"
-	"github.com/QuantumNous/uter/relaykit/dto"
+	"https://github.com/Uter-AI/Uter/model"
+
+	"github.com/Uter-AI/Uter/relaykit/dto"
 )
 
 const (

@@ -8,10 +8,11 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/QuantumNous/uter/common"
-	"github.com/QuantumNous/uter/common/limiter"
-	"github.com/QuantumNous/uter/constant"
-	"github.com/QuantumNous/uter/setting"
+	"https://github.com/Uter-AI/Uter/common"
+
+	"github.com/Uter-AI/Uter/common/limiter"
+	"github.com/Uter-AI/Uter/constant"
+	"github.com/Uter-AI/Uter/setting"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis/v8"

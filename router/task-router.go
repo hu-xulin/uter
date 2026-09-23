@@ -1,8 +1,9 @@
 package router
 
 import (
-	"github.com/QuantumNous/uter/controller"
-	"github.com/QuantumNous/uter/middleware"
+	"https://github.com/Uter-AI/Uter/controller"
+
+	"github.com/Uter-AI/Uter/middleware"
 	"github.com/gin-gonic/gin"
 )
 

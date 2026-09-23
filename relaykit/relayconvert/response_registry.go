@@ -8,15 +8,16 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/QuantumNous/uter/relaykit/dto"
-	"github.com/QuantumNous/uter/relaykit/relayconvert/convmeta"
-	claudemessages "github.com/QuantumNous/uter/relaykit/relayconvert/internal/claude_messages"
-	geminichat "github.com/QuantumNous/uter/relaykit/relayconvert/internal/gemini_chat"
-	oaichat "github.com/QuantumNous/uter/relaykit/relayconvert/internal/oai_chat"
-	oairesponses "github.com/QuantumNous/uter/relaykit/relayconvert/internal/oai_responses"
-	"github.com/QuantumNous/uter/relaykit/relayconvert/internal/toolconv"
-	kitutil "github.com/QuantumNous/uter/relaykit/relayconvert/kitutil"
-	"github.com/QuantumNous/uter/relaykit/types"
+	"https://github.com/Uter-AI/Uter/relaykit/dto"
+
+	"github.com/Uter-AI/Uter/relaykit/relayconvert/convmeta"
+	claudemessages "github.com/Uter-AI/Uter/relaykit/relayconvert/internal/claude_messages"
+	geminichat "github.com/Uter-AI/Uter/relaykit/relayconvert/internal/gemini_chat"
+	oaichat "github.com/Uter-AI/Uter/relaykit/relayconvert/internal/oai_chat"
+	oairesponses "github.com/Uter-AI/Uter/relaykit/relayconvert/internal/oai_responses"
+	"github.com/Uter-AI/Uter/relaykit/relayconvert/internal/toolconv"
+	kitutil "github.com/Uter-AI/Uter/relaykit/relayconvert/kitutil"
+	"github.com/Uter-AI/Uter/relaykit/types"
 )
 
 type ResponseConverterFunc func(c context.Context, info convmeta.Meta, response any) (any, *dto.Usage, error)

@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"time"
 
-	"https://github.com/Uter-AI/Uter/relaykit/dto"
+	"github.com/Uter-AI/Uter/relaykit/dto"
 )
 
 type BaiduMessage struct {

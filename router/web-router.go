@@ -5,9 +5,10 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/QuantumNous/uter/common"
-	"github.com/QuantumNous/uter/controller"
-	"github.com/QuantumNous/uter/middleware"
+	"https://github.com/Uter-AI/Uter/common"
+
+	"github.com/Uter-AI/Uter/controller"
+	"github.com/Uter-AI/Uter/middleware"
 	"github.com/gin-contrib/gzip"
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"

@@ -8,10 +8,11 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/QuantumNous/uter/common"
-	relaycommon "github.com/QuantumNous/uter/relay/common"
-	relayconstant "github.com/QuantumNous/uter/relay/constant"
-	"github.com/QuantumNous/uter/relaykit/dto"
+	"https://github.com/Uter-AI/Uter/common"
+
+	relaycommon "github.com/Uter-AI/Uter/relay/common"
+	relayconstant "github.com/Uter-AI/Uter/relay/constant"
+	"github.com/Uter-AI/Uter/relaykit/dto"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/require"
 )

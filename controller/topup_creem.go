@@ -9,13 +9,14 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/QuantumNous/uter/common"
-	"github.com/QuantumNous/uter/logger"
-	"github.com/QuantumNous/uter/model"
-	"github.com/QuantumNous/uter/setting"
+	"https://github.com/Uter-AI/Uter/common"
 	"io"
 	"net/http"
 	"time"
+
+	"github.com/Uter-AI/Uter/logger"
+	"github.com/Uter-AI/Uter/model"
+	"github.com/Uter-AI/Uter/setting"
 
 	"github.com/gin-gonic/gin"
 	"github.com/shopspring/decimal"

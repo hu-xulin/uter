@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"https://github.com/Uter-AI/Uter/common"
+	"github.com/Uter-AI/Uter/common"
 
 	"github.com/gin-gonic/gin"
 )

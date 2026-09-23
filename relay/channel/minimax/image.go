@@ -7,11 +7,12 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/QuantumNous/uter/common"
-	relaycommon "github.com/QuantumNous/uter/relay/common"
-	"github.com/QuantumNous/uter/relaykit/dto"
-	"github.com/QuantumNous/uter/relaykit/types"
-	"github.com/QuantumNous/uter/service"
+	"https://github.com/Uter-AI/Uter/common"
+
+	relaycommon "github.com/Uter-AI/Uter/relay/common"
+	"github.com/Uter-AI/Uter/relaykit/dto"
+	"github.com/Uter-AI/Uter/relaykit/types"
+	"github.com/Uter-AI/Uter/service"
 
 	"github.com/gin-gonic/gin"
 )

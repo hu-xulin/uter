@@ -3,11 +3,12 @@ package middleware
 import (
 	"fmt"
 
-	"github.com/QuantumNous/uter/common"
-	"github.com/QuantumNous/uter/dto"
-	"github.com/QuantumNous/uter/logger"
-	pluginruntime "github.com/QuantumNous/uter/pkg/jsplugin"
-	"github.com/QuantumNous/uter/relaykit/types"
+	"https://github.com/Uter-AI/Uter/common"
+
+	"github.com/Uter-AI/Uter/dto"
+	"github.com/Uter-AI/Uter/logger"
+	pluginruntime "github.com/Uter-AI/Uter/pkg/jsplugin"
+	"github.com/Uter-AI/Uter/relaykit/types"
 	"github.com/gin-gonic/gin"
 )
 

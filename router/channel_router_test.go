@@ -6,8 +6,9 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/QuantumNous/uter/controller"
-	"github.com/QuantumNous/uter/service/authz"
+	"https://github.com/Uter-AI/Uter/controller"
+
+	"github.com/Uter-AI/Uter/service/authz"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
