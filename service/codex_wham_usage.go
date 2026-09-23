@@ -8,7 +8,8 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/QuantumNous/uter/common"
+	"https://github.com/Uter-AI/Uter/common"
+
 	"github.com/google/uuid"
 )
 

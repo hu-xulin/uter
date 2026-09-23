@@ -5,7 +5,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/QuantumNous/uter/pkg/jsplugin"
+	"https://github.com/Uter-AI/Uter/pkg/jsplugin"
+
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 )

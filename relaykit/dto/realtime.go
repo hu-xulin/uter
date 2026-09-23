@@ -1,6 +1,6 @@
 package dto
 
-import "github.com/QuantumNous/uter/relaykit/types"
+import "https://github.com/Uter-AI/Uter/relaykit/types"
 
 const (
 	RealtimeEventTypeError              = "error"

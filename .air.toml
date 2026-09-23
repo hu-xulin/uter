@@ -24,7 +24,7 @@ pre_cmd = []
 build_args = [
   "-trimpath",
   "-ldflags",
-  "-s -w -X 'github.com/QuantumNous/uter/common.Version=$(cat VERSION)'",
+  "-s -w -X 'github.com/Uter-AI/Uter/common.Version=$(cat VERSION)'",
   "-o",
   "./tmp/uter",
   "."

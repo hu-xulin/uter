@@ -5,7 +5,7 @@ import (
 	"maps"
 	"slices"
 
-	"github.com/QuantumNous/uter/common"
+	"https://github.com/Uter-AI/Uter/common"
 )
 
 const (

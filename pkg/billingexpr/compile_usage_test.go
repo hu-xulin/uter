@@ -3,7 +3,8 @@ package billingexpr_test
 import (
 	"testing"
 
-	"github.com/QuantumNous/uter/pkg/billingexpr"
+	"https://github.com/Uter-AI/Uter/pkg/billingexpr"
+
 	"github.com/stretchr/testify/assert"
 )
 

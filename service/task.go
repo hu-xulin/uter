@@ -3,7 +3,7 @@ package service
 import (
 	"strings"
 
-	"github.com/QuantumNous/uter/constant"
+	"https://github.com/Uter-AI/Uter/constant"
 )
 
 func CoverTaskActionToModelName(platform constant.TaskPlatform, action string) string {

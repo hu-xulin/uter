@@ -112,7 +112,7 @@
 
 ```bash
 # Cloner le projet
-git clone https://github.com/QuantumNous/uter.git
+git clone github.com/Uter-AI/Uter.git
 cd uter
 
 # Modifier la configuration docker-compose.yml
@@ -350,7 +350,7 @@ docker run --name uter -d --restart always \
 
 ```bash
 # Cloner le projet
-git clone https://github.com/QuantumNous/uter.git
+git clone github.com/Uter-AI/Uter.git
 cd uter
 
 # Modifier la configuration

@@ -4,7 +4,8 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/QuantumNous/uter/service"
+	"https://github.com/Uter-AI/Uter/service"
+
 	"github.com/gin-gonic/gin"
 )
 

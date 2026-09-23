@@ -1,6 +1,6 @@
 package controller
 
-import "github.com/QuantumNous/uter/model"
+import "https://github.com/Uter-AI/Uter/model"
 
 func channelHasSensitiveChanges(channel *PatchChannel, origin *model.Channel, requestData map[string]any) bool {
 	if _, ok := requestData["type"]; ok && channel.Type != origin.Type {

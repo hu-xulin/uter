@@ -5,7 +5,7 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/QuantumNous/uter/constant"
+	"https://github.com/Uter-AI/Uter/constant"
 )
 
 // ValidateRedirectURL validates that a redirect URL is safe to use.

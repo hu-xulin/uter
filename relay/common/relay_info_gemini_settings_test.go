@@ -3,7 +3,8 @@ package common
 import (
 	"testing"
 
-	"github.com/QuantumNous/uter/setting/model_setting"
+	"https://github.com/Uter-AI/Uter/setting/model_setting"
+
 	"github.com/stretchr/testify/assert"
 )
 

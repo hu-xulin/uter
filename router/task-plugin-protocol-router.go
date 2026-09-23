@@ -3,10 +3,10 @@ package router
 import (
 	"fmt"
 
-	"github.com/QuantumNous/uter/controller"
-	"github.com/QuantumNous/uter/middleware"
-	pluginruntime "github.com/QuantumNous/uter/pkg/jsplugin"
-	"github.com/QuantumNous/uter/relaykit/types"
+	"github.com/Uter-AI/Uter/controller"
+	"github.com/Uter-AI/Uter/middleware"
+	pluginruntime "github.com/Uter-AI/Uter/pkg/jsplugin"
+	"github.com/Uter-AI/Uter/relaykit/types"
 	"github.com/gin-gonic/gin"
 )
 

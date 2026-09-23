@@ -8,7 +8,8 @@ import (
 	"strings"
 	"unicode/utf8"
 
-	"github.com/QuantumNous/uter/common"
+	"https://github.com/Uter-AI/Uter/common"
+
 	"github.com/grafana/sobek"
 )
 

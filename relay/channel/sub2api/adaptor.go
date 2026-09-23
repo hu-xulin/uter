@@ -1,7 +1,7 @@
 package sub2api
 
 import (
-	"github.com/QuantumNous/uter/relay/channel/Uter"
+	"https://github.com/Uter-AI/Uter/relay/channel/Uter"
 )
 
 type Adaptor struct {

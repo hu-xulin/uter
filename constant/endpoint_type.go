@@ -1,6 +1,6 @@
 package constant
 
-import "github.com/QuantumNous/uter/relaykit/types"
+import "https://github.com/Uter-AI/Uter/relaykit/types"
 
 // EndpointType moved to types with the conversion kit; aliases keep host
 // code compiling unchanged.

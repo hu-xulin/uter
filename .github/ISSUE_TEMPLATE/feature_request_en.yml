@@ -30,7 +30,7 @@ body:
     attributes:
       label: Submission Checks
       options:
-        - label: "**Non-duplicate issue:** I have searched existing [Issues](https://github.com/QuantumNous/uter/issues?q=is%3Aissue) and confirmed there are no similar issues."
+        - label: "**Non-duplicate issue:** I have searched existing [Issues](github.com/Uter-AI/Uter/issues?q=is%3Aissue) and confirmed there are no similar issues."
           required: true
         - label: "**Read this first:** I have fully read the section above, reviewed the docs at https://uter.ai/docs and the project README, and asked AI first, confirming this is not a usage, configuration, or integration question, and that the current version cannot meet my needs."
           required: true

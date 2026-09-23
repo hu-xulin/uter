@@ -6,7 +6,8 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/QuantumNous/uter/common"
+	"https://github.com/Uter-AI/Uter/common"
+
 	"github.com/go-redis/redis/v8"
 )
 

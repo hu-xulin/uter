@@ -1,6 +1,6 @@
 package authz
 
-import "github.com/QuantumNous/uter/common"
+import "https://github.com/Uter-AI/Uter/common"
 
 // resolveSubjectRoles returns the role keys assigned to a subject. The mapping
 // is derived from the caller's system role.

@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/QuantumNous/uter/model"
+	"https://github.com/Uter-AI/Uter/model"
 
 	webauthn "github.com/go-webauthn/webauthn/webauthn"
 )

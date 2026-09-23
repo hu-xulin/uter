@@ -1,7 +1,8 @@
 package middleware
 
 import (
-	"github.com/QuantumNous/uter/common"
+	"https://github.com/Uter-AI/Uter/common"
+
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )

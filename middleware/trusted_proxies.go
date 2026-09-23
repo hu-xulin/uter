@@ -4,7 +4,8 @@ import (
 	"log"
 	"os"
 
-	"github.com/QuantumNous/uter/common"
+	"https://github.com/Uter-AI/Uter/common"
+
 	"github.com/gin-gonic/gin"
 )
 

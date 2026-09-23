@@ -3,7 +3,8 @@ package task_pricing_setting
 import (
 	"testing"
 
-	"github.com/QuantumNous/uter/setting/config"
+	"https://github.com/Uter-AI/Uter/setting/config"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

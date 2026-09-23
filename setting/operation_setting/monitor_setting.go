@@ -5,7 +5,7 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/QuantumNous/uter/setting/config"
+	"https://github.com/Uter-AI/Uter/setting/config"
 )
 
 type MonitorSetting struct {

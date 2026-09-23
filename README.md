@@ -112,7 +112,7 @@
 
 ```bash
 # Clone the project
-git clone https://github.com/QuantumNous/uter.git
+git clone github.com/Uter-AI/Uter.git
 cd uter
 
 # Edit docker-compose.yml configuration
@@ -352,7 +352,7 @@ docker run --name uter -d --restart always \
 
 ```bash
 # Clone the project
-git clone https://github.com/QuantumNous/uter.git
+git clone github.com/Uter-AI/Uter.git
 cd uter
 
 # Edit configuration
@@ -481,7 +481,7 @@ contributors.` in the appropriate legal notices and in any prominent about,
 legal, footer, or attribution location presented by the user interface.
 
 Modified versions that present a user interface must also preserve a visible
-link to the original project: <https://github.com/QuantumNous/uter>.
+link to the original project: <github.com/Uter-AI/Uter>.
 
 This is an open-source project developed based on [One API](https://github.com/songquanpeng/one-api) (MIT License).
 

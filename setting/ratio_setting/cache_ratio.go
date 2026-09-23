@@ -1,7 +1,7 @@
 package ratio_setting
 
 import (
-	"github.com/QuantumNous/uter/types"
+	"https://github.com/Uter-AI/Uter/types"
 )
 
 const (

@@ -1,6 +1,6 @@
 package relayconvert
 
-import relaymedia "github.com/QuantumNous/uter/relaykit/relayconvert/internal/media"
+import relaymedia "https://github.com/Uter-AI/Uter/relaykit/relayconvert/internal/media"
 
 type MediaResolver = relaymedia.MediaResolver
 

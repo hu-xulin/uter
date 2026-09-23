@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/QuantumNous/uter/relaykit/dto"
+	"https://github.com/Uter-AI/Uter/relaykit/dto"
 
 	"github.com/expr-lang/expr"
 	"github.com/expr-lang/expr/vm"
