@@ -8,7 +8,7 @@ export const meta = {
     zh: "火山引擎豆包 Seedance 视频生成（文生视频、图生视频、视频生视频）",
   },
   version: "1.0.2",
-  author: { name: "QuantumNous" },
+  author: { name: "Uter.ai" },
   channelTypes: [54, 45], // VolcEngine-type channels serve Ark video models with the same wire format
   models: [
     "doubao-seedance-1-0-pro-250528",

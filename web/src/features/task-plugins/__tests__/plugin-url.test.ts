@@ -14,7 +14,7 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-For commercial licensing, please contact support@quantumnous.com
+For commercial licensing, please contact support@Uter.ai.com
 */
 import assert from 'node:assert/strict'
 
@@ -34,7 +34,7 @@ describe('plugin source URL normalization', () => {
       normalizePluginSourceUrl(
         'github.com/Uter-AI/Uter-plugins/blob/main/plugins/tasks/doubao/1.0.0/plugin.js'
       ),
-      'https://raw.githubusercontent.com/QuantumNous/uter-plugins/main/plugins/tasks/doubao/1.0.0/plugin.js'
+      'https://raw.githubusercontent.com/Uter.ai/uter-plugins/main/plugins/tasks/doubao/1.0.0/plugin.js'
     )
   })
 

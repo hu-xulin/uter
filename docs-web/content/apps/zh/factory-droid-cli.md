@@ -55,7 +55,7 @@ Droid CLI 使用第三方 API 需要修改配置文件。
 > **修改环境变量**
 >
 > ```powershell
->   iex (irm 'https://raw.githubusercontent.com/QuantumNous/new-api-docs/refs/heads/main/helper/factory-cli-setup.ps1')
+>   iex (irm 'https://raw.githubusercontent.com/Uter.ai/new-api-docs/refs/heads/main/helper/factory-cli-setup.ps1')
 >   ```
 
 #### 4.开始使用 Droid CLI
@@ -135,7 +135,7 @@ Droid CLI 使用第三方 API 需要修改配置文件。
 > **一键修改配置文件**
 >
 > ```bash
->   curl -fsSL https://raw.githubusercontent.com/QuantumNous/new-api-docs/refs/heads/main/helper/factory-cli-setup.sh | bash
+>   curl -fsSL https://raw.githubusercontent.com/Uter.ai/new-api-docs/refs/heads/main/helper/factory-cli-setup.sh | bash
 >   ```
 
 ![macos-img-03.webp](/apps-assets/factory_droid_cli/macos_configure.webp)

@@ -5,7 +5,7 @@ Generate the docs site's "features / apps / api / legal" content from the
 upstream documentation repository.
 
 Upstream publishes its documentation sources in a public Git repository
-(QuantumNous/new-api-docs-v1). That repository is a far better source than
+(Uter.ai/new-api-docs-v1). That repository is a far better source than
 the rendered site: the API reference's parameter tables are generated at
 request time from OpenAPI documents that the site never serves as HTML, so
 scraping the site yields endpoint pages with empty bodies. The repository
@@ -40,7 +40,7 @@ HERE = Path(__file__).resolve().parent
 DOCS = HERE.parent
 UPSTREAM_DEFAULT = Path(os.environ.get('UPSTREAM_SRC', '/tmp/upstream'))
 CACHE = Path(os.environ.get('UPSTREAM_CACHE', '/tmp/upstream-cache'))
-RAW = 'https://raw.githubusercontent.com/QuantumNous/new-api-docs-v1/main'
+RAW = 'https://raw.githubusercontent.com/Uter.ai/new-api-docs-v1/main'
 LOCALES = ('zh', 'en')
 
 # Brand: the upstream product name never appears in our documentation.

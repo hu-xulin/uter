@@ -14,7 +14,7 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-For commercial licensing, please contact support@quantumnous.com
+For commercial licensing, please contact support@Uter.ai.com
 */
 import { spawnSync } from 'node:child_process'
 import { readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs'
@@ -49,7 +49,7 @@ const headerExtensions = new Set([
   '.tsx',
 ])
 const protectedHeaderPattern =
-  /^\/\*\nCopyright \(C\)[\s\S]*?QuantumNous[\s\S]*?\*\/\n+/
+  /^\/\*\nCopyright \(C\)[\s\S]*?Uter.ai[\s\S]*?\*\/\n+/
 
 function extensionOf(path) {
   const index = path.lastIndexOf('.')

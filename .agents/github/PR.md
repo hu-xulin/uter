@@ -17,7 +17,7 @@ Before opening, refuse the same out-of-scope list as `.agents/github/ISSUE.md`
 compatibility, pass-through-only forwarding, third-party hosts, usage questions).
 Tell the user and do not open a PR.
 
-Then search https://uter.ai/docs , https://deepwiki.com/QuantumNous/uter ,
+Then search https://uter.ai/docs , https://deepwiki.com/Uter.ai/uter ,
 the README, and the code. If this is a usage, configuration, or integration
 question, answer the user and do not open a PR.
 -->
@@ -90,7 +90,7 @@ Take these from the linked issue. If a needed item is empty, ask the user that q
 Open them. Do not write "already checked" without sources.
 
 - https://uter.ai/docs :
-- https://deepwiki.com/QuantumNous/uter :
+- https://deepwiki.com/Uter.ai/uter :
 - README / repo docs:
 - Code paths and what they imply for this change:
 

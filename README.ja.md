@@ -24,22 +24,22 @@
   --><a href="https://hub.docker.com/r/CalciumIon/uter">
     <img src="https://img.shields.io/badge/docker-dockerHub-blue" alt="docker">
   </a>
-  <a href="https://atomgit.com/QuantumNous/uter" target="_blank">
-    <img alt="AtomGit G-Star" src="https://atomgit.com/QuantumNous/uter/star/badge.svg"/>
+  <a href="https://atomgit.com/Uter.ai/uter" target="_blank">
+    <img alt="AtomGit G-Star" src="https://atomgit.com/Uter.ai/uter/star/badge.svg"/>
   </a>
 </p>
 
 <p align="center">
   <a href="https://trendshift.io/repositories/20180" target="_blank">
-    <img src="https://trendshift.io/api/badge/repositories/20180" alt="QuantumNous%2Futer | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/>
+    <img src="https://trendshift.io/api/badge/repositories/20180" alt="Uter.ai%2Futer | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/>
   </a>
   <br>
-  <a href="https://hellogithub.com/repository/QuantumNous/uter" target="_blank">
+  <a href="https://hellogithub.com/repository/Uter.ai/uter" target="_blank">
     <img src="https://api.hellogithub.com/v1/widgets/recommend.svg?rid=539ac4217e69431684ad4a0bab768811&claim_uid=tbFPfKIDHpc4TzR" alt="Featured｜HelloGitHub" style="width: 250px; height: 54px;" width="250" height="54" />
   </a><!--
   -->
-  <a href="https://atomgit.com/QuantumNous/uter" target="_blank">
-    <img alt="AtomGit G-Star" src="https://atomgit.com/QuantumNous/uter/star/new_badge.svg" width="250" height="55" />
+  <a href="https://atomgit.com/Uter.ai/uter" target="_blank">
+    <img alt="AtomGit G-Star" src="https://atomgit.com/Uter.ai/uter/star/new_badge.svg" width="250" height="55" />
   </a>
 </p>
 
@@ -164,7 +164,7 @@ docker run --name uter -d --restart always \
 
 <div align="center">
 
-### 📖 [公式ドキュメント](https://uter.ai/docsja/docs) | [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/QuantumNous/uter)
+### 📖 [公式ドキュメント](https://uter.ai/docsja/docs) | [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/Uter.ai/uter)
 
 </div>
 
@@ -475,7 +475,7 @@ Token、Origin 検証、PAT の契約については[ユーザー認証とログ
 
 本プロジェクトは、[One API](https://github.com/songquanpeng/one-api)（MITライセンス）をベースに開発されたオープンソースプロジェクトです。
 
-お客様の組織のポリシーがAGPLv3ライセンスのソフトウェアの使用を許可していない場合、またはAGPLv3のオープンソース義務を回避したい場合は、こちらまでお問い合わせください：[support@quantumnous.com](mailto:support@quantumnous.com)
+お客様の組織のポリシーがAGPLv3ライセンスのソフトウェアの使用を許可していない場合、またはAGPLv3のオープンソース義務を回避したい場合は、こちらまでお問い合わせください：[support@Uter.ai.com](mailto:support@Uter.ai.com)
 
 ---
 
@@ -497,6 +497,6 @@ Token、Origin 検証、PAT の契約については[ユーザー認証とログ
 
 **[公式ドキュメント](https://uter.ai/docsja/docs)** • **[問題フィードバック](https://github.com/Calcium-Ion/uter/issues)** • **[最新リリース](https://github.com/Calcium-Ion/uter/releases)**
 
-<sub>❤️ で構築された QuantumNous</sub>
+<sub>❤️ で構築された Uter.ai</sub>
 
 </div>

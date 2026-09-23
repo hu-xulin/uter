@@ -8,7 +8,7 @@ export const meta = {
     zh: "生数 Vidu 视频生成（文生视频、图生视频、首尾帧、参考生视频）",
   },
   version: "1.0.2",
-  author: { name: "QuantumNous" },
+  author: { name: "Uter.ai" },
   channelTypes: [52],
   models: ["viduq2", "viduq1", "vidu2.0", "vidu1.5"],
   fetchMode: "per_task",

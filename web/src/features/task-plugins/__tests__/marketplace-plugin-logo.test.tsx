@@ -14,7 +14,7 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-For commercial licensing, please contact support@quantumnous.com
+For commercial licensing, please contact support@Uter.ai.com
 */
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, waitFor } from '@testing-library/react'
@@ -28,7 +28,7 @@ vi.mock('@/lib/lobe-icon', () => ({
 }))
 
 const INDEX_URL =
-  'https://raw.githubusercontent.com/QuantumNous/uter-plugins/main/index.json'
+  'https://raw.githubusercontent.com/Uter.ai/uter-plugins/main/index.json'
 
 function plugin(overrides?: Partial<MarketplacePlugin>): MarketplacePlugin {
   return {
@@ -84,7 +84,7 @@ describe('marketplace card logo', () => {
       )
     })
     expect(fetchMock).toHaveBeenCalledWith(
-      'https://raw.githubusercontent.com/QuantumNous/uter-plugins/main/plugins/tasks/incho/icon.svg'
+      'https://raw.githubusercontent.com/Uter.ai/uter-plugins/main/plugins/tasks/incho/icon.svg'
     )
   })
 

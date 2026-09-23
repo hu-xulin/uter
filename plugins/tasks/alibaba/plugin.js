@@ -74,7 +74,7 @@ export const meta = {
     zh: "阿里云百炼万相图片与视频生成",
   },
   version: "1.3.0",
-  author: { name: "QuantumNous" },
+  author: { name: "Uter.ai" },
   channelTypes: [17],
   // Literal metadata also supports the dashboard's static script preview.
   models: [
