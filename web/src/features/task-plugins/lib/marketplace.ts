@@ -14,7 +14,7 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-For commercial licensing, please contact support@quantumnous.com
+For commercial licensing, please contact support@Uter.ai.com
 */
 import type {
   MarketplaceIndex,
@@ -320,7 +320,7 @@ export const DEFAULT_MARKETPLACE_INDEX_URL =
   'https://www.uter.ai/api/v1/plugins/index.json'
 
 export const GITHUB_MARKETPLACE_INDEX_URL =
-  'https://raw.githubusercontent.com/QuantumNous/uter-plugins/main/index.json'
+  'https://raw.githubusercontent.com/Uter.ai/uter-plugins/main/index.json'
 
 /**
  * Both built-in indexes are maintained by the project. Other configured

@@ -26,21 +26,21 @@
   <a href="https://hub.docker.com/r/CalciumIon/uter">
     <img src="https://img.shields.io/badge/docker-dockerHub-blue" alt="docker">
   </a>
-  <a href="https://atomgit.com/QuantumNous/uter" target="_blank">
-    <img alt="AtomGit G-Star" src="https://atomgit.com/QuantumNous/uter/star/badge.svg"/>
+  <a href="https://atomgit.com/Uter.ai/uter" target="_blank">
+    <img alt="AtomGit G-Star" src="https://atomgit.com/Uter.ai/uter/star/badge.svg"/>
   </a>
 </p>
 
 <p align="center">
   <a href="https://trendshift.io/repositories/20180" target="_blank">
-    <img src="https://trendshift.io/api/badge/repositories/20180" alt="QuantumNous%2Futer | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/>
+    <img src="https://trendshift.io/api/badge/repositories/20180" alt="Uter.ai%2Futer | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/>
   </a>
   <br>
-  <a href="https://hellogithub.com/repository/QuantumNous/uter" target="_blank">
+  <a href="https://hellogithub.com/repository/Uter.ai/uter" target="_blank">
     <img src="https://api.hellogithub.com/v1/widgets/recommend.svg?rid=539ac4217e69431684ad4a0bab768811&claim_uid=tbFPfKIDHpc4TzR" alt="Featured｜HelloGitHub" style="width: 250px; height: 54px;" width="250" height="54" />
   </a>
-  <a href="https://atomgit.com/QuantumNous/uter" target="_blank">
-    <img alt="AtomGit G-Star" src="https://atomgit.com/QuantumNous/uter/star/new_badge.svg" width="250" height="55" />
+  <a href="https://atomgit.com/Uter.ai/uter" target="_blank">
+    <img alt="AtomGit G-Star" src="https://atomgit.com/Uter.ai/uter/star/new_badge.svg" width="250" height="55" />
   </a>
 </p>
 
@@ -165,7 +165,7 @@ docker run --name uter -d --restart always \
 
 <div align="center">
 
-### 📖 [Official Documentation](https://uter.ai/docsen/docs) | [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/QuantumNous/uter)
+### 📖 [Official Documentation](https://uter.ai/docsen/docs) | [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/Uter.ai/uter)
 
 </div>
 
@@ -486,6 +486,6 @@ If this project is helpful to you, welcome to give us a ⭐️ Star！
 
 **[Official Documentation](https://uter.ai/docsen/docs)** • **[Issue Feedback](https://github.com/Calcium-Ion/uter/issues)** • **[Latest Release](https://github.com/Calcium-Ion/uter/releases)**
 
-<sub>Built with ❤️ by QuantumNous</sub>
+<sub>Built with ❤️ by Uter.ai</sub>
 
 </div>

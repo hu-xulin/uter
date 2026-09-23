@@ -13,7 +13,7 @@ const (
 	TaskPluginDisabledFactoryKeysKey = "TaskPluginDisabledFactoryKeys"
 
 	officialTaskPluginMarketplaceIndexURL = "https://www.uter.ai/api/v1/plugins/index.json"
-	githubTaskPluginMarketplaceIndexURL   = "https://raw.githubusercontent.com/QuantumNous/uter-plugins/main/index.json"
+	githubTaskPluginMarketplaceIndexURL   = "https://raw.githubusercontent.com/Uter.ai/uter-plugins/main/index.json"
 )
 
 type TaskPluginMarketplaceSource struct {

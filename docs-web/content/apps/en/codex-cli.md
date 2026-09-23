@@ -112,7 +112,7 @@ For optimal performance on Windows, please install and use Windows Subsystem for
 > **One-Click Modification of Codex CLI Configuration File**
 >
 > ```powershell
->   iex (irm 'https://raw.githubusercontent.com/QuantumNous/new-api-docs/refs/heads/main/helper/codex-cli-setup.ps1')
+>   iex (irm 'https://raw.githubusercontent.com/Uter.ai/new-api-docs/refs/heads/main/helper/codex-cli-setup.ps1')
 >   ```
 
 ![windows-configure](/apps-assets/codex/windows_configure.webp)
@@ -259,7 +259,7 @@ Official Website: https://brew.sh
 > **One-Click Modification of Codex CLI Configuration File**
 >
 > ```bash
->   curl -fsSL https://raw.githubusercontent.com/QuantumNous/new-api-docs/refs/heads/main/helper/codex-cli-setup.sh | bash
+>   curl -fsSL https://raw.githubusercontent.com/Uter.ai/new-api-docs/refs/heads/main/helper/codex-cli-setup.sh | bash
 >   ```
 
 ![macos-configure](/apps-assets/codex/macos_configure.webp)
@@ -393,7 +393,7 @@ Codex CLI requires a Node.js environment to run.
 > **One-Click Modification of Codex CLI Configuration File**
 >
 > ```bash
->   curl -fsSL https://raw.githubusercontent.com/QuantumNous/new-api-docs/refs/heads/main/helper/codex-cli-setup.sh | bash
+>   curl -fsSL https://raw.githubusercontent.com/Uter.ai/new-api-docs/refs/heads/main/helper/codex-cli-setup.sh | bash
 >   ```
 
 ![macos-configure](/apps-assets/codex/macos_configure.webp)

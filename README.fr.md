@@ -24,22 +24,22 @@
   --><a href="https://hub.docker.com/r/CalciumIon/uter">
     <img src="https://img.shields.io/badge/docker-dockerHub-blue" alt="docker">
   </a>
-  <a href="https://atomgit.com/QuantumNous/uter" target="_blank">
-    <img alt="AtomGit G-Star" src="https://atomgit.com/QuantumNous/uter/star/badge.svg"/>
+  <a href="https://atomgit.com/Uter.ai/uter" target="_blank">
+    <img alt="AtomGit G-Star" src="https://atomgit.com/Uter.ai/uter/star/badge.svg"/>
   </a>
 </p>
 
 <p align="center">
   <a href="https://trendshift.io/repositories/20180" target="_blank">
-    <img src="https://trendshift.io/api/badge/repositories/20180" alt="QuantumNous%2Futer | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/>
+    <img src="https://trendshift.io/api/badge/repositories/20180" alt="Uter.ai%2Futer | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/>
   </a>
   <br>
-  <a href="https://hellogithub.com/repository/QuantumNous/uter" target="_blank">
+  <a href="https://hellogithub.com/repository/Uter.ai/uter" target="_blank">
     <img src="https://api.hellogithub.com/v1/widgets/recommend.svg?rid=539ac4217e69431684ad4a0bab768811&claim_uid=tbFPfKIDHpc4TzR" alt="Featured｜HelloGitHub" style="width: 250px; height: 54px;" width="250" height="54" />
   </a><!--
   -->
-  <a href="https://atomgit.com/QuantumNous/uter" target="_blank">
-    <img alt="AtomGit G-Star" src="https://atomgit.com/QuantumNous/uter/star/new_badge.svg" width="250" height="55" />
+  <a href="https://atomgit.com/Uter.ai/uter" target="_blank">
+    <img alt="AtomGit G-Star" src="https://atomgit.com/Uter.ai/uter/star/new_badge.svg" width="250" height="55" />
   </a>
 </p>
 
@@ -164,7 +164,7 @@ docker run --name uter -d --restart always \
 
 <div align="center">
 
-### 📖 [Documentation officielle](https://uter.ai/docsen/docs) | [![Demander à DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/QuantumNous/uter)
+### 📖 [Documentation officielle](https://uter.ai/docsen/docs) | [![Demander à DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/Uter.ai/uter)
 
 </div>
 
@@ -475,7 +475,7 @@ Ce projet est sous licence [GNU Affero General Public License v3.0 (AGPLv3)](./L
 
 Il s'agit d'un projet open-source développé sur la base de [One API](https://github.com/songquanpeng/one-api) (licence MIT).
 
-Si les politiques de votre organisation ne permettent pas l'utilisation de logiciels sous licence AGPLv3, ou si vous souhaitez éviter les obligations open-source de l'AGPLv3, veuillez nous contacter à : [support@quantumnous.com](mailto:support@quantumnous.com)
+Si les politiques de votre organisation ne permettent pas l'utilisation de logiciels sous licence AGPLv3, ou si vous souhaitez éviter les obligations open-source de l'AGPLv3, veuillez nous contacter à : [support@Uter.ai.com](mailto:support@Uter.ai.com)
 
 ---
 
@@ -497,6 +497,6 @@ Si ce projet vous est utile, bienvenue à nous donner une ⭐️ Étoile！
 
 **[Documentation officielle](https://uter.ai/docsen/docs)** • **[Commentaires sur les problèmes](https://github.com/Calcium-Ion/uter/issues)** • **[Dernière version](https://github.com/Calcium-Ion/uter/releases)**
 
-<sub>Construit avec ❤️ par QuantumNous</sub>
+<sub>Construit avec ❤️ par Uter.ai</sub>
 
 </div>
