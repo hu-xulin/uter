@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"https://github.com/Uter-AI/Uter/common"
+	"github.com/Uter-AI/Uter/common"
 
 	"github.com/Uter-AI/Uter/pkg/jsplugin"
 	relaycommon "github.com/Uter-AI/Uter/relay/common"

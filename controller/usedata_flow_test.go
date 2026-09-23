@@ -5,7 +5,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"https://github.com/Uter-AI/Uter/common"
+	"github.com/Uter-AI/Uter/common"
 
 	"github.com/Uter-AI/Uter/model"
 	"github.com/gin-gonic/gin"

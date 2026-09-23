@@ -6,7 +6,7 @@ import (
 	"strings"
 	"unicode/utf8"
 
-	"https://github.com/Uter-AI/Uter/relaykit/dto"
+	"github.com/Uter-AI/Uter/relaykit/dto"
 
 	"github.com/Uter-AI/Uter/relaykit/reasonmap"
 	sharedclaude "github.com/Uter-AI/Uter/relaykit/relayconvert/internal/shared/claude"

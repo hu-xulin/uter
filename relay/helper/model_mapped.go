@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 
-	rootcommon "https://github.com/Uter-AI/Uter/common"
+	rootcommon "github.com/Uter-AI/Uter/common"
 
 	relaycommon "github.com/Uter-AI/Uter/relay/common"
 	"github.com/Uter-AI/Uter/relaykit/dto"

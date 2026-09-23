@@ -11,7 +11,7 @@ import (
 	"strings"
 	"testing"
 
-	"https://github.com/Uter-AI/Uter/common"
+	"github.com/Uter-AI/Uter/common"
 
 	"github.com/Uter-AI/Uter/constant"
 	"github.com/Uter-AI/Uter/i18n"
@@ -1102,7 +1102,7 @@ func TestGetTaskPluginMarketplaceSourcesDefaultWhenUnset(t *testing.T) {
 	require.True(t, response.Success)
 	require.Equal(t, []setting.TaskPluginMarketplaceSource{
 		{Name: "Official", IndexURL: "https://www.uter.ai/api/v1/plugins/index.json"},
-		{Name: "GitHub", IndexURL: "https://raw.githubusercontent.com/Uter.ai/uter-plugins/main/index.json"},
+		{Name: "GitHub", IndexURL: "https://raw.githubusercontent.com/Uter-AI/uter-plugins/main/index.json"},
 	}, response.Data)
 	var count int64
 	require.NoError(t, model.DB.Model(&model.Option{}).Where("key = ?", setting.TaskPluginMarketplaceSourcesKey).Count(&count).Error)

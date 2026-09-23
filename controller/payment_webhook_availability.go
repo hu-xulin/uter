@@ -3,7 +3,7 @@ package controller
 import (
 	"strings"
 
-	"https://github.com/Uter-AI/Uter/setting"
+	"github.com/Uter-AI/Uter/setting"
 
 	"github.com/Uter-AI/Uter/setting/operation_setting"
 )

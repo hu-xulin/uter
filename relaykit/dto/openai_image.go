@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"reflect"
 
-	kitutil "https://github.com/Uter-AI/Uter/relaykit/relayconvert/kitutil"
+	kitutil "github.com/Uter-AI/Uter/relaykit/relayconvert/kitutil"
 
 	"github.com/Uter-AI/Uter/relaykit/types"
 )

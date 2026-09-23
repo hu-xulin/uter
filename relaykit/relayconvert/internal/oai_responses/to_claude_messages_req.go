@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"https://github.com/Uter-AI/Uter/relaykit/dto"
+	"github.com/Uter-AI/Uter/relaykit/dto"
 
 	"github.com/Uter-AI/Uter/relaykit/relayconvert/convmeta"
 	relaymedia "github.com/Uter-AI/Uter/relaykit/relayconvert/internal/media"

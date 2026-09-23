@@ -4,7 +4,7 @@ import (
 	"io"
 	"net/http"
 
-	"https://github.com/Uter-AI/Uter/common"
+	"github.com/Uter-AI/Uter/common"
 
 	"github.com/Uter-AI/Uter/relaykit/dto"
 	"github.com/Uter-AI/Uter/relaykit/types"

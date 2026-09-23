@@ -3,7 +3,7 @@ package middleware
 import (
 	"fmt"
 
-	"https://github.com/Uter-AI/Uter/common"
+	"github.com/Uter-AI/Uter/common"
 
 	"github.com/Uter-AI/Uter/dto"
 	"github.com/Uter-AI/Uter/logger"

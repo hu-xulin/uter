@@ -6,7 +6,7 @@ import (
 	"strings"
 	"sync"
 
-	"https://github.com/Uter-AI/Uter/logger"
+	"github.com/Uter-AI/Uter/logger"
 
 	"github.com/Uter-AI/Uter/relaykit/dto"
 )

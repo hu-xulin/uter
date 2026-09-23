@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"testing"
 
-	"https://github.com/Uter-AI/Uter/constant"
+	"github.com/Uter-AI/Uter/constant"
 
 	pluginruntime "github.com/Uter-AI/Uter/pkg/jsplugin"
 	jspluginadaptor "github.com/Uter-AI/Uter/relay/channel/task/jsplugin"

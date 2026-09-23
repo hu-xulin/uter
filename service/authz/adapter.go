@@ -3,7 +3,7 @@ package authz
 import (
 	"fmt"
 
-	"https://github.com/Uter-AI/Uter/common"
+	"github.com/Uter-AI/Uter/common"
 
 	"github.com/Uter-AI/Uter/model"
 	casbinmodel "github.com/casbin/casbin/v2/model"

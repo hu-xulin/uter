@@ -1,7 +1,7 @@
 package router
 
 import (
-	"https://github.com/Uter-AI/Uter/constant"
+	"github.com/Uter-AI/Uter/constant"
 
 	"github.com/Uter-AI/Uter/controller"
 	"github.com/Uter-AI/Uter/middleware"

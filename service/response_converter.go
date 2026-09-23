@@ -1,7 +1,7 @@
 package service
 
 import (
-	relaycommon "https://github.com/Uter-AI/Uter/relay/common"
+	relaycommon "github.com/Uter-AI/Uter/relay/common"
 
 	"github.com/Uter-AI/Uter/relaykit/relayconvert"
 	"github.com/Uter-AI/Uter/relaykit/types"

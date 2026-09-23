@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"strconv"
 
-	perfmetrics "https://github.com/Uter-AI/Uter/pkg/perf_metrics"
+	perfmetrics "github.com/Uter-AI/Uter/pkg/perf_metrics"
 
 	"github.com/Uter-AI/Uter/setting/ratio_setting"
 

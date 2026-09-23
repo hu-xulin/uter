@@ -4,7 +4,7 @@ import (
 	"io/fs"
 	"testing"
 
-	"https://github.com/Uter-AI/Uter/common"
+	"github.com/Uter-AI/Uter/common"
 
 	"github.com/Uter-AI/Uter/pkg/jsplugin"
 	"github.com/stretchr/testify/assert"

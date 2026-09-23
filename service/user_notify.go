@@ -7,7 +7,7 @@ import (
 	"net/url"
 	"strings"
 
-	"https://github.com/Uter-AI/Uter/common"
+	"github.com/Uter-AI/Uter/common"
 
 	"github.com/Uter-AI/Uter/model"
 	"github.com/Uter-AI/Uter/relaykit/dto"

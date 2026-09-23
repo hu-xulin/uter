@@ -3,7 +3,7 @@ package authz
 import (
 	"testing"
 
-	"https://github.com/Uter-AI/Uter/common"
+	"github.com/Uter-AI/Uter/common"
 
 	"github.com/Uter-AI/Uter/model"
 	"github.com/glebarez/sqlite"

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"https://github.com/Uter-AI/Uter/common"
+	"github.com/Uter-AI/Uter/common"
 
 	"github.com/Uter-AI/Uter/setting/console_setting"
 	"gorm.io/gorm"

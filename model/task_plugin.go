@@ -7,7 +7,7 @@ import (
 	"sort"
 	"time"
 
-	"https://github.com/Uter-AI/Uter/common"
+	"github.com/Uter-AI/Uter/common"
 
 	"github.com/Uter-AI/Uter/constant"
 	"gorm.io/gorm"

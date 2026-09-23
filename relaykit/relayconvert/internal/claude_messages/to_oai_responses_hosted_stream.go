@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"https://github.com/Uter-AI/Uter/relaykit/dto"
+	"github.com/Uter-AI/Uter/relaykit/dto"
 
 	oaichat "github.com/Uter-AI/Uter/relaykit/relayconvert/internal/oai_chat"
 	kitutil "github.com/Uter-AI/Uter/relaykit/relayconvert/kitutil"

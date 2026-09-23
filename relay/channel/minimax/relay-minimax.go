@@ -3,7 +3,7 @@ package minimax
 import (
 	"fmt"
 
-	channelconstant "https://github.com/Uter-AI/Uter/constant"
+	channelconstant "github.com/Uter-AI/Uter/constant"
 
 	relaycommon "github.com/Uter-AI/Uter/relay/common"
 	"github.com/Uter-AI/Uter/relay/constant"

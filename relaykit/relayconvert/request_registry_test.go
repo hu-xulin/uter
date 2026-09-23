@@ -3,7 +3,7 @@ package relayconvert
 import (
 	"testing"
 
-	"https://github.com/Uter-AI/Uter/relaykit/dto"
+	"github.com/Uter-AI/Uter/relaykit/dto"
 
 	"github.com/Uter-AI/Uter/relaykit/relayconvert/convmeta"
 	sharedgemini "github.com/Uter-AI/Uter/relaykit/relayconvert/internal/shared/gemini"

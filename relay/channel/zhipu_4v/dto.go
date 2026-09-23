@@ -3,7 +3,7 @@ package zhipu_4v
 import (
 	"time"
 
-	"https://github.com/Uter-AI/Uter/relaykit/dto"
+	"github.com/Uter-AI/Uter/relaykit/dto"
 
 	"github.com/Uter-AI/Uter/relaykit/types"
 )

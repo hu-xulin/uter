@@ -34,7 +34,7 @@ describe('plugin source URL normalization', () => {
       normalizePluginSourceUrl(
         'github.com/Uter-AI/Uter-plugins/blob/main/plugins/tasks/doubao/1.0.0/plugin.js'
       ),
-      'https://raw.githubusercontent.com/Uter.ai/uter-plugins/main/plugins/tasks/doubao/1.0.0/plugin.js'
+      'https://raw.githubusercontent.com/Uter-AI/uter-plugins/main/plugins/tasks/doubao/1.0.0/plugin.js'
     )
   })
 

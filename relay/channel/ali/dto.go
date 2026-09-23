@@ -3,7 +3,7 @@ package ali
 import (
 	"strings"
 
-	"https://github.com/Uter-AI/Uter/logger"
+	"github.com/Uter-AI/Uter/logger"
 
 	"github.com/Uter-AI/Uter/relaykit/dto"
 	"github.com/Uter-AI/Uter/service"

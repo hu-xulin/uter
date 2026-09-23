@@ -1,7 +1,7 @@
 package service
 
 import (
-	"https://github.com/Uter-AI/Uter/model"
+	"github.com/Uter-AI/Uter/model"
 
 	"github.com/Uter-AI/Uter/relaykit/dto"
 )

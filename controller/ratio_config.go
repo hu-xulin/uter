@@ -3,7 +3,7 @@ package controller
 import (
 	"net/http"
 
-	"https://github.com/Uter-AI/Uter/setting/billing_setting"
+	"github.com/Uter-AI/Uter/setting/billing_setting"
 
 	"github.com/Uter-AI/Uter/setting/ratio_setting"
 

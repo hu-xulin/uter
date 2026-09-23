@@ -3,7 +3,7 @@ package service
 import (
 	"net/http"
 
-	"https://github.com/Uter-AI/Uter/common"
+	"github.com/Uter-AI/Uter/common"
 
 	"github.com/Uter-AI/Uter/pkg/billingexpr"
 	relaycommon "github.com/Uter-AI/Uter/relay/common"

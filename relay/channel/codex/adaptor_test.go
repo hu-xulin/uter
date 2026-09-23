@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"testing"
 
-	"https://github.com/Uter-AI/Uter/constant"
+	"github.com/Uter-AI/Uter/constant"
 
 	relaycommon "github.com/Uter-AI/Uter/relay/common"
 	relayconstant "github.com/Uter-AI/Uter/relay/constant"

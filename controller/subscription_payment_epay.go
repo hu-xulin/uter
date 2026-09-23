@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"time"
 
-	"https://github.com/Uter-AI/Uter/common"
+	"github.com/Uter-AI/Uter/common"
 
 	"github.com/Calcium-Ion/go-epay/epay"
 	"github.com/Uter-AI/Uter/model"

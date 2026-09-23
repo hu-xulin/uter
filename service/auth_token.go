@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"https://github.com/Uter-AI/Uter/common"
+	"github.com/Uter-AI/Uter/common"
 
 	"github.com/Uter-AI/Uter/model"
 	"github.com/golang-jwt/jwt/v5"

@@ -4,7 +4,7 @@ import (
 	"errors"
 	"strings"
 
-	"https://github.com/Uter-AI/Uter/relaykit/dto"
+	"github.com/Uter-AI/Uter/relaykit/dto"
 
 	"github.com/Uter-AI/Uter/setting"
 )

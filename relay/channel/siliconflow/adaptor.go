@@ -6,7 +6,7 @@ import (
 	"io"
 	"net/http"
 
-	"https://github.com/Uter-AI/Uter/common"
+	"github.com/Uter-AI/Uter/common"
 
 	"github.com/Uter-AI/Uter/relay/channel"
 	"github.com/Uter-AI/Uter/relay/channel/openai"

@@ -3,7 +3,7 @@ package model
 import (
 	"testing"
 
-	"https://github.com/Uter-AI/Uter/constant"
+	"github.com/Uter-AI/Uter/constant"
 
 	"github.com/Uter-AI/Uter/relaykit/dto"
 	"github.com/stretchr/testify/assert"

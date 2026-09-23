@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	relaycommon "https://github.com/Uter-AI/Uter/relay/common"
+	relaycommon "github.com/Uter-AI/Uter/relay/common"
 
 	relayconstant "github.com/Uter-AI/Uter/relay/constant"
 	"github.com/Uter-AI/Uter/relaykit/dto"

@@ -11,7 +11,7 @@ import (
 	"sync/atomic"
 	"testing"
 
-	"https://github.com/Uter-AI/Uter/common"
+	"github.com/Uter-AI/Uter/common"
 
 	pluginruntime "github.com/Uter-AI/Uter/pkg/jsplugin"
 	"github.com/Uter-AI/Uter/plugins"

@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"strings"
 
-	"https://github.com/Uter-AI/Uter/common"
+	"github.com/Uter-AI/Uter/common"
 
 	"github.com/Uter-AI/Uter/constant"
 	"github.com/Uter-AI/Uter/i18n"

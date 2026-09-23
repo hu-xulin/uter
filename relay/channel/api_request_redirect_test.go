@@ -9,7 +9,7 @@ import (
 	"sync/atomic"
 	"testing"
 
-	relaycommon "https://github.com/Uter-AI/Uter/relay/common"
+	relaycommon "github.com/Uter-AI/Uter/relay/common"
 
 	"github.com/Uter-AI/Uter/service"
 	"github.com/gin-gonic/gin"

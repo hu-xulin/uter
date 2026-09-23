@@ -13,7 +13,7 @@ import (
 	"sync/atomic"
 	"testing"
 
-	"https://github.com/Uter-AI/Uter/common"
+	"github.com/Uter-AI/Uter/common"
 
 	"github.com/Uter-AI/Uter/constant"
 	"github.com/Uter-AI/Uter/model"

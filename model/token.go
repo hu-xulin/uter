@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"https://github.com/Uter-AI/Uter/common"
+	"github.com/Uter-AI/Uter/common"
 
 	"github.com/Uter-AI/Uter/setting/operation_setting"
 	"github.com/bytedance/gopkg/util/gopool"

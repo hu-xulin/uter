@@ -13,7 +13,7 @@ import (
 	"testing"
 	"time"
 
-	"https://github.com/Uter-AI/Uter/constant"
+	"github.com/Uter-AI/Uter/constant"
 
 	relaycommon "github.com/Uter-AI/Uter/relay/common"
 	"github.com/Uter-AI/Uter/setting/operation_setting"

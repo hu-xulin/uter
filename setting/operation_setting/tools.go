@@ -8,7 +8,7 @@ import (
 	"strings"
 	"sync/atomic"
 
-	"https://github.com/Uter-AI/Uter/common"
+	"github.com/Uter-AI/Uter/common"
 
 	"github.com/Uter-AI/Uter/setting/config"
 )

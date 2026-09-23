@@ -9,7 +9,7 @@ import (
 	"net/http"
 	"time"
 
-	"https://github.com/Uter-AI/Uter/common"
+	"github.com/Uter-AI/Uter/common"
 
 	"github.com/Uter-AI/Uter/relaykit/dto"
 	"github.com/Uter-AI/Uter/setting/system_setting"

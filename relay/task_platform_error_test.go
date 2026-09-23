@@ -3,7 +3,7 @@ package relay
 import (
 	"testing"
 
-	"https://github.com/Uter-AI/Uter/constant"
+	"github.com/Uter-AI/Uter/constant"
 
 	pluginruntime "github.com/Uter-AI/Uter/pkg/jsplugin"
 	"github.com/stretchr/testify/assert"

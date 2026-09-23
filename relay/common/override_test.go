@@ -6,7 +6,7 @@ import (
 	"reflect"
 	"testing"
 
-	common2 "https://github.com/Uter-AI/Uter/common"
+	common2 "github.com/Uter-AI/Uter/common"
 
 	"github.com/Uter-AI/Uter/relaykit/types"
 

@@ -9,7 +9,7 @@ import (
 	"net/http"
 	"strings"
 
-	"https://github.com/Uter-AI/Uter/common"
+	"github.com/Uter-AI/Uter/common"
 
 	relaycommon "github.com/Uter-AI/Uter/relay/common"
 	"github.com/Uter-AI/Uter/relay/helper"

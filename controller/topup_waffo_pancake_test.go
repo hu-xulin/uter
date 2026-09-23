@@ -4,7 +4,7 @@ import (
 	"maps"
 	"testing"
 
-	"https://github.com/Uter-AI/Uter/common"
+	"github.com/Uter-AI/Uter/common"
 
 	"github.com/Uter-AI/Uter/setting"
 	"github.com/Uter-AI/Uter/setting/operation_setting"

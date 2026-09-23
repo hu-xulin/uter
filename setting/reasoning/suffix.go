@@ -6,7 +6,7 @@ package reasoning
 import (
 	"strings"
 
-	kitreasoning "https://github.com/Uter-AI/Uter/relaykit/relayconvert/reasoning"
+	kitreasoning "github.com/Uter-AI/Uter/relaykit/relayconvert/reasoning"
 
 	"github.com/Uter-AI/Uter/setting/model_setting"
 )
