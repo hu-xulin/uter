@@ -64,7 +64,7 @@ LunaTranslator 支持接入本地部署的 优特。请使用您自己部署的 
 
    ![设置模型](/apps-assets/luna_translator/setting_model.webp)
 
-5. 检查 **new_api** 大模型接口配置旁边的开关按钮是否打开，若未启用则启用接口即可开始使用
+5. 检查 **uter** 大模型接口配置旁边的开关按钮是否打开，若未启用则启用接口即可开始使用
 
    ![开启配置](/apps-assets/luna_translator/open_config.webp)
 

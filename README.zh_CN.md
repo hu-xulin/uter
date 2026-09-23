@@ -394,7 +394,7 @@ docker run --name uter -d --restart always \
 <summary><strong>方式 3：宝塔面板</strong></summary>
 
 1. 安装宝塔面板（≥ 9.2.0 版本）
-2. 在应用商店搜索 **New-API**
+2. 在应用商店搜索 **Uter**
 3. 一键安装
 
 📖 [图文教程](./docs/installation/BT.md)

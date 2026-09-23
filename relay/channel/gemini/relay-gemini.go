@@ -376,34 +376,34 @@ func GeminiChatHandler(c *gin.Context, info *relaycommon.RelayInfo, resp *http.R
 	if len(geminiResponse.Candidates) == 0 {
 		usage := buildUsageFromGeminiResponse(c, info, &geminiResponse)
 
-		var newAPIError *types.UterError
+		var uterError *types.UterError
 		if geminiResponse.PromptFeedback != nil && geminiResponse.PromptFeedback.BlockReason != nil {
 			common.SetContextKey(c, constant.ContextKeyAdminRejectReason, fmt.Sprintf("gemini_block_reason=%s", *geminiResponse.PromptFeedback.BlockReason))
-			newAPIError = types.NewOpenAIError(
+			uterError = types.NewOpenAIError(
 				errors.New("request blocked by Gemini API: "+*geminiResponse.PromptFeedback.BlockReason),
 				types.ErrorCodePromptBlocked,
 				http.StatusBadRequest,
 			)
 		} else {
 			common.SetContextKey(c, constant.ContextKeyAdminRejectReason, "gemini_empty_candidates")
-			newAPIError = types.NewOpenAIError(
+			uterError = types.NewOpenAIError(
 				errors.New("empty response from Gemini API"),
 				types.ErrorCodeEmptyResponse,
 				http.StatusInternalServerError,
 			)
 		}
 
-		service.ResetStatusCode(newAPIError, c.GetString("status_code_mapping"))
+		service.ResetStatusCode(uterError, c.GetString("status_code_mapping"))
 
 		switch info.RelayFormat {
 		case types.RelayFormatClaude:
-			c.JSON(newAPIError.StatusCode, gin.H{
+			c.JSON(uterError.StatusCode, gin.H{
 				"type":  "error",
-				"error": newAPIError.ToClaudeError(),
+				"error": uterError.ToClaudeError(),
 			})
 		default:
-			c.JSON(newAPIError.StatusCode, gin.H{
-				"error": newAPIError.ToOpenAIError(),
+			c.JSON(uterError.StatusCode, gin.H{
+				"error": uterError.ToOpenAIError(),
 			})
 		}
 		return &usage, nil

@@ -393,7 +393,7 @@ docker run --name uter -d --restart always \
 <summary><strong>Method 3: BaoTa Panel</strong></summary>
 
 1. Install BaoTa Panel (≥ 9.2.0 version)
-2. Search for **New-API** in the application store
+2. Search for **Uter** in the application store
 3. One-click installation
 
 📖 [Tutorial with images](./docs/BT.md)

@@ -120,6 +120,36 @@
     "category": "ai-model"
   },
   {
+    "id": "ai-model-videos-happyhorse",
+    "title": "HappyHorse Format",
+    "category": "ai-model"
+  },
+  {
+    "id": "ai-model-videos-minimax",
+    "title": "MiniMax Format",
+    "category": "ai-model"
+  },
+  {
+    "id": "ai-model-videos-wanx",
+    "title": "Wanx Format",
+    "category": "ai-model"
+  },
+  {
+    "id": "ai-model-videos-veo",
+    "title": "Google Veo Format",
+    "category": "ai-model"
+  },
+  {
+    "id": "ai-model-videos-pixverse",
+    "title": "PixVerse Format",
+    "category": "ai-model"
+  },
+  {
+    "id": "ai-model-videos-seedance",
+    "title": "Seedance Format",
+    "category": "ai-model"
+  },
+  {
     "id": "management-auth",
     "title": "Authentication System Description (Auth)",
     "category": "management"

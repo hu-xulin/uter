@@ -21,7 +21,7 @@ export default defineConfig(({ envMode }) => {
       key,
       { target: serverUrl, changeOrigin: true },
     ])
-  ) as Record<string, { target: string; changeOrigin: boolean }>
+  ) as Record<string, { target: string; changeOrigin: boolean; ws?: boolean }>
 
   // Forward the statically exported pages to the Go backend (port 3000),
   // which embeds them at `web/dist/docs/`. There are two sections —

@@ -43,7 +43,7 @@
 5. 确认后 AQBot 会进入 **设置 → 服务商管理**；按 API 地址 + 类型复用已有服务商，否则新建
 6. 打开该服务商，点击 **同步模型**，再回到对话页选择模型开始使用
 
-`{address}` 是 优特站点根地址（例如 `https://your-newapi.example`），不要带 query。AQBot 对 OpenAI 类型会自动补上 `/v1`。导入后不会自动验证密钥，也不会自动同步模型。
+`{address}` 是 优特站点根地址（例如 `https://your-uter.example`），不要带 query。AQBot 对 OpenAI 类型会自动补上 `/v1`。导入后不会自动验证密钥，也不会自动同步模型。
 
 ### 方式二：手动配置
 
@@ -55,7 +55,7 @@
 | --- | --- |
 | 服务商名称 | 例如 `优特` |
 | 服务商类型 | `OpenAI`（推荐） |
-| API 地址 | 优特站点地址，如 `https://your-newapi.example` |
+| API 地址 | 优特站点地址，如 `https://your-uter.example` |
 | API 密钥 | 优特令牌 |
 
 4. 点击 **同步模型**，拉取 优特当前可用的模型

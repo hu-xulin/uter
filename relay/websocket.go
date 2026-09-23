@@ -13,7 +13,7 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-func WssHelper(c *gin.Context, info *relaycommon.RelayInfo) (newAPIError *types.UterError) {
+func WssHelper(c *gin.Context, info *relaycommon.RelayInfo) (uterError *types.UterError) {
 	info.InitChannelMeta(c)
 
 	adaptor := GetAdaptor(info.ApiType)
@@ -36,11 +36,11 @@ func WssHelper(c *gin.Context, info *relaycommon.RelayInfo) (newAPIError *types.
 		defer info.TargetWs.Close()
 	}
 
-	usage, newAPIError := adaptor.DoResponse(c, nil, info)
-	if newAPIError != nil {
+	usage, uterError := adaptor.DoResponse(c, nil, info)
+	if uterError != nil {
 		// reset status code 重置状态码
-		service.ResetStatusCode(newAPIError, statusCodeMappingStr)
-		return newAPIError
+		service.ResetStatusCode(uterError, statusCodeMappingStr)
+		return uterError
 	}
 	service.PostWssConsumeQuota(c, info, info.UpstreamModelName, usage.(*dto.RealtimeUsage), "")
 	return nil

@@ -66,21 +66,21 @@ public/user-guide/zh/auth/
 图片还没放进去时，页面会画一个带说明文字的虚线占位框，不会出现破图——
 正文可以先上，截图后面补。
 
-## 从上游文档同步（`scripts/sync-newapi-user-guide.py`）
+## 从上游文档同步（`scripts/sync-uter-user-guide.py`）
 
 这九章的内容与截图来自上游开源文档仓库（见 `scripts/sync-upstream-docs.py` 顶部
 的 `RAW`）。同步脚本把这条链路固定下来：
 
 ```bash
 cd docs-web
-python3 scripts/sync-newapi-user-guide.py      # 需要 Pillow 与 curl
+python3 scripts/sync-uter-user-guide.py      # 需要 Pillow 与 curl
 ```
 
 它对每个章节做四件事：
 
-1. 从 `docs2.newapi.pro/<locale>/llms.mdx/guide/feature-guide/user/<源页>` 取 MDX 正文
+1. 从 `docs2.uter.pro/<locale>/llms.mdx/guide/feature-guide/user/<源页>` 取 MDX 正文
    （该站是 fumadocs，这个端点直接返回未渲染的 MDX 源）。
-2. 从 `docs.newapi.pro/<locale>/docs/...` 取渲染后的 HTML，在 `<article>` 里按 **alt 文本**
+2. 从 `docs.uter.pro/<locale>/docs/...` 取渲染后的 HTML，在 `<article>` 里按 **alt 文本**
    把每张截图与 MDX 的 `__imgN` 对上——这是两边唯一共有的标识。
 3. 下载原图（`/_next/static/media/*.png`，URL 藏在 `next/image` 的 `?url=` 参数里），
    缩到 1600px 宽、转 WebP，落到 `public/user-guide/<locale>/<slug>/NN-<名字>.webp`。
@@ -90,7 +90,7 @@ python3 scripts/sync-newapi-user-guide.py      # 需要 Pillow 与 curl
 
 刻意改动的几处内容（不是原样搬运）：
 
-- **正文里不出现上游域名**：本站文档一律不指向 `docs.newapi.pro`。
+- **正文里不出现上游域名**：本站文档一律不指向 `docs.uter.pro`。
   - 站点内链 `/zh/docs/guide/feature-guide/user/token` → 站内相对链接 `../api-keys/`；
   - 指向上游「管理端设置」的 `[查看设置文档 →](...)` 属**纯跳转指针**，整条删掉——
     句子本身已经把事实说完，指向不存在页面的链接比没有链接更糟；
@@ -99,7 +99,7 @@ python3 scripts/sync-newapi-user-guide.py      # 需要 Pillow 与 curl
     具体以各应用官方的配置说明为准。」——两条都写在脚本的 `DEVIATIONS` 里。
 - 原文认证示例里的令牌字面量换成占位符 `YOUR_API_KEY`。
 
-缓存落在 `/tmp/newapi-cache`（可用 `NEWAPI_CACHE` 覆盖），重跑不会重新下载。
+缓存落在 `/tmp/uter-cache`（可用 `UTER_CACHE` 覆盖），重跑不会重新下载。
 
 ## 改完要重新构建
 

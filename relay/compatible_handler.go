@@ -23,7 +23,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func TextHelper(c *gin.Context, info *relaycommon.RelayInfo) (newAPIError *types.UterError) {
+func TextHelper(c *gin.Context, info *relaycommon.RelayInfo) (uterError *types.UterError) {
 	info.InitChannelMeta(c)
 
 	textReq, ok := info.Request.(*dto.GeneralOpenAIRequest)
@@ -80,9 +80,9 @@ func TextHelper(c *gin.Context, info *relaycommon.RelayInfo) (newAPIError *types
 		!info.ChannelSetting.PassThroughBodyEnabled &&
 		service.ShouldChatCompletionsUseResponsesGlobal(info.ChannelId, info.ChannelType, info.OriginModelName) {
 		applySystemPromptIfNeeded(c, info, request)
-		usage, newApiErr := textRequestViaResponses(c, info, adaptor, request)
-		if newApiErr != nil {
-			return newApiErr
+		usage, uterErr := textRequestViaResponses(c, info, adaptor, request)
+		if uterErr != nil {
+			return uterErr
 		}
 
 		var containAudioTokens = usage.CompletionTokenDetails.AudioTokens > 0 || usage.PromptTokensDetails.AudioTokens > 0
@@ -135,7 +135,7 @@ func TextHelper(c *gin.Context, info *relaycommon.RelayInfo) (newAPIError *types
 		if len(info.ParamOverride) > 0 {
 			jsonData, err = relaycommon.ApplyParamOverrideWithRelayInfo(jsonData, info)
 			if err != nil {
-				return newAPIErrorFromParamOverride(err)
+				return uterErrorFromParamOverride(err)
 			}
 		}
 
@@ -162,18 +162,18 @@ func TextHelper(c *gin.Context, info *relaycommon.RelayInfo) (newAPIError *types
 		httpResp = resp.(*http.Response)
 		info.IsStream = info.IsStream || strings.HasPrefix(httpResp.Header.Get("Content-Type"), "text/event-stream")
 		if httpResp.StatusCode != http.StatusOK {
-			newApiErr := service.RelayErrorHandler(c.Request.Context(), httpResp, false)
+			uterErr := service.RelayErrorHandler(c.Request.Context(), httpResp, false)
 			// reset status code 重置状态码
-			service.ResetStatusCode(newApiErr, statusCodeMappingStr)
-			return newApiErr
+			service.ResetStatusCode(uterErr, statusCodeMappingStr)
+			return uterErr
 		}
 	}
 
-	usage, newApiErr := adaptor.DoResponse(c, httpResp, info)
-	if newApiErr != nil {
+	usage, uterErr := adaptor.DoResponse(c, httpResp, info)
+	if uterErr != nil {
 		// reset status code 重置状态码
-		service.ResetStatusCode(newApiErr, statusCodeMappingStr)
-		return newApiErr
+		service.ResetStatusCode(uterErr, statusCodeMappingStr)
+		return uterErr
 	}
 
 	var containAudioTokens = usage.(*dto.Usage).CompletionTokenDetails.AudioTokens > 0 || usage.(*dto.Usage).PromptTokensDetails.AudioTokens > 0

@@ -87,7 +87,7 @@ export function buildSubmitRequest(){return {}} export function parseSubmitRespo
 		"data":{"task_id":"task_public"},
 		"upstream":{"task_id":"upstream_private"}
 	}`, recorder.Body.String())
-	assert.JSONEq(t, `{"seconds":5}`, recorder.Header().Get("X-New-Api-Other-Ratios"))
+	assert.JSONEq(t, `{"seconds":5}`, recorder.Header().Get("X-Uter-Other-Ratios"))
 }
 
 func TestPresentTaskSubmissionFallbackUsesPersistedPublicID(t *testing.T) {

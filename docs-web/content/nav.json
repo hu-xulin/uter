@@ -1,0 +1,153 @@
+{
+  "sections": [
+    {
+      "id": "features",
+      "path": "guide/wiki/basic-concepts/features-introduction",
+      "label": { "zh": "特性说明", "en": "Features" },
+      "summary": {
+        "zh": "平台能力总览：模型接入、计费方式与额度控制。",
+        "en": "What the platform does: model access, billing and quota control."
+      }
+    },
+    {
+      "id": "guide",
+      "path": "guide/wiki/user-guide",
+      "label": { "zh": "用户指南", "en": "User Guide" },
+      "summary": {
+        "zh": "从注册、创建令牌到发起第一次调用的操作路径。",
+        "en": "From sign-up and creating a token to your first API call."
+      },
+      "children": { "source": "chapters" }
+    },
+    {
+      "id": "api",
+      "path": "api",
+      "label": { "zh": "API 参考", "en": "API Reference" },
+      "summary": {
+        "zh": "按协议分组的接口文档，含请求参数与响应字段。",
+        "en": "Endpoint reference grouped by protocol, with parameters and responses."
+      },
+      "noIndex": true,
+      "children": {
+        "source": "navigation",
+        "navigation": "api",
+        "categories": [
+          {
+            "id": "ai-model",
+            "label": { "zh": "AI 模型接口", "en": "AI Model APIs" },
+            "open": true,
+            "groups": [
+              {
+                "id": "ai-model-audio",
+                "label": { "zh": "音频（Audio）", "en": "Audio" },
+                "pages": [
+                  { "id": "ai-model-audio-openai", "label": { "zh": "原生OpenAI格式", "en": "OpenAI Format" } },
+                  { "id": "ai-model-audio-gemini", "label": { "zh": "原生Gemini格式", "en": "Native Gemini Format" } }
+                ]
+              },
+              {
+                "id": "ai-model-chat",
+                "label": { "zh": "聊天（Chat）", "en": "Chat" },
+                "pages": [
+                  { "id": "ai-model-chat-openai", "label": { "zh": "原生OpenAI格式", "en": "OpenAI Format" } },
+                  { "id": "ai-model-chat-gemini", "label": { "zh": "原生Gemini格式", "en": "Native Gemini Format" } }
+                ]
+              },
+              {
+                "id": "ai-model-completions",
+                "label": { "zh": "补全（Completions）", "en": "Completions" },
+                "pages": [
+                  { "id": "ai-model-completions-openai", "label": { "zh": "原生OpenAI格式", "en": "OpenAI Format" } }
+                ]
+              },
+              {
+                "id": "ai-model-embeddings",
+                "label": { "zh": "嵌入（Embeddings）", "en": "Embeddings" },
+                "pages": [
+                  { "id": "ai-model-embeddings-openai", "label": { "zh": "原生OpenAI格式", "en": "OpenAI Format" } },
+                  { "id": "ai-model-embeddings-gemini", "label": { "zh": "原生Gemini格式", "en": "Native Gemini Format" } }
+                ]
+              },
+              {
+                "id": "ai-model-images",
+                "label": { "zh": "图像（Images）", "en": "Images" },
+                "pages": [
+                  { "id": "ai-model-images-openai", "label": { "zh": "原生OpenAI格式", "en": "OpenAI Format" } },
+                  { "id": "ai-model-images-gemini", "label": { "zh": "原生Gemini格式", "en": "Native Gemini Format" } },
+                  { "id": "ai-model-images-qwen", "label": { "zh": "通义千问OpenAI格式", "en": "Qwen OpenAI Format" } }
+                ]
+              },
+              {
+                "id": "ai-model-models-list",
+                "label": { "zh": "模型（Models）", "en": "Models" },
+                "pages": [
+                  { "id": "ai-model-models-list-openai", "label": { "zh": "原生OpenAI格式", "en": "OpenAI Format" } },
+                  { "id": "ai-model-models-list-gemini", "label": { "zh": "原生Gemini格式", "en": "Native Gemini Format" } }
+                ]
+              },
+              {
+                "id": "ai-model-videos",
+                "label": { "zh": "视频（Videos）", "en": "Videos" },
+                "pages": [
+                  { "id": "ai-model-videos-jimeng", "label": { "zh": "即梦格式", "en": "Jimeng Format" } },
+                  { "id": "ai-model-videos-kling", "label": { "zh": "可灵格式", "en": "Kling Format" } },
+                  { "id": "ai-model-videos-sora", "label": { "zh": "Sora格式", "en": "Sora Format" } },
+                  { "id": "ai-model-videos-happyhorse", "label": { "zh": "HappyHorse格式", "en": "HappyHorse Format" } },
+                  { "id": "ai-model-videos-minimax", "label": { "zh": "MiniMax格式", "en": "MiniMax Format" } },
+                  { "id": "ai-model-videos-wanx", "label": { "zh": "万相格式", "en": "Wanx Format" } },
+                  { "id": "ai-model-videos-veo", "label": { "zh": "谷歌Veo格式", "en": "Google Veo Format" } },
+                  { "id": "ai-model-videos-pixverse", "label": { "zh": "PixVerse格式", "en": "PixVerse Format" } },
+                  { "id": "ai-model-videos-seedance", "label": { "zh": "Seedance格式", "en": "Seedance Format" } }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "management",
+            "label": { "zh": "管理接口", "en": "Management APIs" }
+          }
+        ],
+        "hidden": [
+          "ai-model-unimplemented-fine-tuning",
+          "management-auth",
+          "management-default"
+        ]
+      }
+    },
+    {
+      "id": "apps",
+      "path": "apps",
+      "label": { "zh": "AI 应用", "en": "AI Apps" },
+      "summary": {
+        "zh": "已适配平台的第三方客户端与工具的配置说明。",
+        "en": "Configuring the third-party clients and tools that already support the platform."
+      },
+      "children": {
+        "source": "navigation",
+        "navigation": "apps",
+        "skip": ["index"],
+        "shortenAt": " - "
+      }
+    },
+    {
+      "id": "user-agreement",
+      "path": "legal/user-agreement",
+      "collection": "legal",
+      "label": { "zh": "用户协议", "en": "Terms of Service" },
+      "summary": {
+        "zh": "服务条款、账号使用规范与双方权利义务。",
+        "en": "Terms of service, account rules and the rights of both sides."
+      }
+    },
+    {
+      "id": "privacy-policy",
+      "path": "legal/privacy-policy",
+      "collection": "legal",
+      "label": { "zh": "隐私政策", "en": "Privacy Policy" },
+      "summary": {
+        "zh": "数据收集范围、使用方式与保护措施。",
+        "en": "What data is collected, how it is used and how it is protected."
+      }
+    }
+  ]
+}

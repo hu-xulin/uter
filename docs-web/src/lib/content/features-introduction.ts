@@ -2,7 +2,7 @@ import type { DocsLocale } from '../i18n';
 
 /**
  * Content for the "Features Introduction" page.
- * Adapted from NewAPI's features-introduction page.
+ * Adapted from Uter's features-introduction page.
  */
 export type FeaturesContent = {
   title: string;
@@ -25,7 +25,7 @@ const ZH_CONTENT: FeaturesContent = {
     '多语言支持',
     '添加 Midjourney-Proxy(Plus) 接口支持（使用前需确认第三方项目和上游服务授权、内容安全和服务条款要求）',
     '支持合法授权部署中的内部余额、成本分摊或企业客户账务管理，可在系统设置中设置：易支付',
-    '支持查询合法授权渠道的用量或余额信息：配合项目 new-api-key-tool 可实现用 key 查询使用',
+    '支持查询合法授权渠道的用量或余额信息：配合项目 uter-key-tool 可实现用 key 查询使用',
     '分页支持选择每页显示数量',
     '支持 SQLite 数据库存储，开箱即用，轻量便捷',
     '支持组织内部成本核算或企业客户账务计量，可在系统设置-运营设置中设置',
@@ -81,7 +81,7 @@ const EN_CONTENT: FeaturesContent = {
     'Multi-language support (to be improved)',
     'Added Midjourney-Proxy(Plus) interface support (verify third-party project and upstream service authorization, content safety, and terms of service before use)',
     'Support for internal balance, cost allocation, or enterprise billing in authorized deployments, configurable in system settings: EasyPay',
-    'Support for querying usage or balance of authorized channels: use with new-api-key-tool to query usage by key',
+    'Support for querying usage or balance of authorized channels: use with uter-key-tool to query usage by key',
     'Pagination supports selecting items per page',
     'Support for SQLite database storage, out of the box, lightweight and convenient',
     'Support for organizational cost accounting or enterprise billing, configurable in System Settings - Operations Settings',

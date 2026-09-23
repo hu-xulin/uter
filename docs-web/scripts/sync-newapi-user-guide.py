@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Mirror the New API user-guide pages into docs-web as Markdown chapters.
+"""Mirror the Uter user-guide pages into docs-web as Markdown chapters.
 
 For each chapter it fetches the rendered HTML (for the real image files) and
 the MDX source (for the prose), downloads the screenshots the page uses,
@@ -19,9 +19,9 @@ from PIL import Image
 from blur_brand import blur_brand_image
 
 DOCS = Path(__file__).resolve().parent.parent
-CACHE = Path(os.environ.get('NEWAPI_CACHE', '/tmp/newapi-cache'))
-SITE = 'https://docs.newapi.pro'
-MDX_SITE = 'https://docs2.newapi.pro'
+CACHE = Path(os.environ.get('UTER_CACHE', '/tmp/uter-cache'))
+SITE = 'https://docs.uter.pro'
+MDX_SITE = 'https://docs2.uter.pro'
 
 # our chapter slug -> the source page slug under guide/feature-guide/user/
 MAPPING = [
@@ -220,7 +220,7 @@ def apply_brand(text: str, brand: str) -> str:
 
     The upstream name appears only as a way of referring to the platform
     itself, so every occurrence is a rename. Deliberately case-sensitive:
-    `new-api-key-tool` and similar third-party project names are not the
+    `uter-key-tool` and similar third-party project names are not the
     product and keep their spelling.
     """
     return re.sub(r'New\s?API', brand, text)

@@ -14,7 +14,7 @@ AstrBot supports integrating Uter as a model provider, allowing users to access 
 
 #### Obtain Uter API Key
 
-After registering and logging into Uter, click 'Console' in the top navigation bar, then click 'Token Management', and then click the 'Add Token' button to create a new API Key. Select the appropriate permissions and click 'Create'.
+After registering and logging into Uter, click 'Console' in the top navigation bar, then click 'Token Management', and then click the 'Add Token' button to create a uter Key. Select the appropriate permissions and click 'Create'.
 
 ![create-api-key](/apps-assets/astrbot/image.webp)
 

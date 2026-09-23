@@ -42,7 +42,7 @@ Please use your self-deployed Uter, or ensure that the service provider has a Ut
 5. After confirmation, AQBot opens **Settings → Provider Management**. It reuses a provider with the same API host + type, or creates a new one
 6. Open that provider, click **Sync Models**, then return to chat and select a model
 
-`{address}` is the Uter site root (for example `https://your-newapi.example`), with no query string. For the OpenAI type, AQBot appends `/v1` automatically. Import does not validate the key or sync models.
+`{address}` is the Uter site root (for example `https://your-uter.example`), with no query string. For the OpenAI type, AQBot appends `/v1` automatically. Import does not validate the key or sync models.
 
 ### Method 2: Manual Configuration
 
@@ -54,7 +54,7 @@ Please use your self-deployed Uter, or ensure that the service provider has a Ut
 | --- | --- |
 | Provider Name | For example `Uter` |
 | Provider Type | `OpenAI` (recommended) |
-| API Host | Uter site address, such as `https://your-newapi.example` |
+| API Host | Uter site address, such as `https://your-uter.example` |
 | API Key | Your Uter token |
 
 4. Click **Sync Models** to pull the models currently exposed by Uter

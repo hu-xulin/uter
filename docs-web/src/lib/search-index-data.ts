@@ -18,6 +18,7 @@ import {
 } from '@/lib/content/user-guide';
 import { planHeadings } from '@/lib/docs-toc';
 import { SUPPORTED_DOCS_LOCALES, type DocsLocale } from '@/lib/i18n';
+import { collectionDocuments } from '@/lib/nav';
 
 /**
  * Builds the static search index the docs site ships with.
@@ -247,16 +248,21 @@ function markdownPages(locale: DocsLocale, prefix: string, docsLabel: string): S
     });
   }
 
-  for (const [doc, label] of [
-    ['user-agreement', '用户协议'],
-    ['privacy-policy', '隐私政策'],
-  ] as const) {
-    const page = loadMarkdownPage(`legal/${locale}/${doc}.md`);
+  /*
+   * The legal documents are listed in the outline (`content/nav.json`),
+   * which is also where the sidebar and the landing page get them — and
+   * where each one's label is written per locale. Reading the list here
+   * rather than repeating it keeps a document from being added to the
+   * sidebar and left out of the search index, and the breadcrumb in the
+   * right language.
+   */
+  for (const document of collectionDocuments('legal', locale)) {
+    const page = loadMarkdownPage(`legal/${locale}/${document.id}.md`);
     if (!page) continue;
     pages.push({
       title: page.title,
-      url: `${prefix}/legal/${doc}/`,
-      breadcrumbs: [docsLabel, label],
+      url: `${prefix}/legal/${document.id}/`,
+      breadcrumbs: [docsLabel, document.label],
       entries: markdownPageEntries(page),
     });
   }

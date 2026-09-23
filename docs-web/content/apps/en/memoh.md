@@ -47,7 +47,7 @@ Memoh supports any OpenAI-compatible model provider, allowing you to use Uter to
 
 #### Obtain a Uter API Key
 
-After registering and logging in to Uter, click "Console" in the top navigation bar, then click "Token Management", and click the "Add Token" button to create a new API Key. Select the appropriate permissions and click "Create".
+After registering and logging in to Uter, click "Console" in the top navigation bar, then click "Token Management", and click the "Add Token" button to create a uter Key. Select the appropriate permissions and click "Create".
 
 Once created, click the copy button to copy the generated API Key.
 
@@ -57,7 +57,7 @@ Once created, click the copy button to copy the generated API Key.
 
 Log in to the Memoh Web dashboard, go to the provider management page, and click Uter.
 
-![switch-to-newapi-provider](/apps-assets/memoh/switch_to_newapi_provider.webp)
+![switch-to-uter-provider](/apps-assets/memoh/switch_to_uter_provider.webp)
 
 Fill in the following information on the configuration page:
 

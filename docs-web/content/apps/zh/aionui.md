@@ -50,7 +50,7 @@
 
 提供商类型：优特支持的类型  
 API 密钥：于 优特获取  
-API 地址：优特站点地址（例如：`https://<your-newapi-domain>/v1`）
+API 地址：优特站点地址（例如：`https://<your-uter-domain>/v1`）
 
 请使用您自己部署的 优特，或确认服务方具备合法上游授权和合规义务的 优特服务。不要将来源不明的 API 地址或密钥接入生产环境。
 
@@ -68,10 +68,10 @@ API 地址：优特站点地址（例如：`https://<your-newapi-domain>/v1`）
 3. **添加新的提供商**
    - 点击"添加模型"
    - 选择 优特
-   ![添加 优特提供商](/apps-assets/aionui/newapi_provider.webp)
+   ![添加 优特提供商](/apps-assets/aionui/uter_provider.webp)
 
 4. **配置 API 信息**
-   - API 地址：填写您的 优特站点地址（格式：`https://<your-newapi-domain>/v1`）
+   - API 地址：填写您的 优特站点地址（格式：`https://<your-uter-domain>/v1`）
    - API 密钥：粘贴从 优特控制台复制的 API Key
 
 5. **添加模型**

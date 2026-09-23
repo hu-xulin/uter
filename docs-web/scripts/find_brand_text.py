@@ -22,7 +22,7 @@ import Vision
 from Foundation import NSURL
 from PIL import Image
 
-# "New API" as a product name, in any case or spacing the renderer produced.
+# "Uter" as a product name, in any case or spacing the renderer produced.
 # The trailing character is a character class, not a literal: Vision OCR
 # regularly misreads the final "I" as "l" (New APl) or "1", and the pattern
 # must survive that or the hit is silently dropped.

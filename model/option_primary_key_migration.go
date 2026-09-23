@@ -13,7 +13,7 @@ import (
 
 const (
 	optionPrimaryKeyTmpTable = "options_pk_tmp"
-	optionPrimaryKeyLockName = "new_api_options_pk"
+	optionPrimaryKeyLockName = "uter_options_pk"
 	optionPrimaryKeyLockID   = 75820193
 	optionLegacyTablePrefix  = "options_legacy_"
 )

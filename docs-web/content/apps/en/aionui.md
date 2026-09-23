@@ -50,7 +50,7 @@
 
 Provider Type: Types supported by Uter
 API Key: Obtained from Uter
-API Address: Uter site address (e.g., `https://<your-newapi-domain>/v1`)
+API Address: Uter site address (e.g., `https://<your-uter-domain>/v1`)
 
 Please use your self-deployed Uter, or ensure that the service provider offers Uter services with legitimate upstream authorization and compliance obligations. Do not connect API addresses or keys from unknown sources to a production environment.
 
@@ -68,10 +68,10 @@ Please use your self-deployed Uter, or ensure that the service provider offers U
 3.  **Add New Provider**
     - Click "Add Model"
     - Select Uter
-    ![Add Uter Provider](/apps-assets/aionui/newapi_provider.webp)
+    ![Add Uter Provider](/apps-assets/aionui/uter_provider.webp)
 
 4.  **Configure API Information**
-    - API Address: Enter your Uter site address (format: `https://<your-newapi-domain>/v1`)
+    - API Address: Enter your Uter site address (format: `https://<your-uter-domain>/v1`)
     - API Key: Paste the API Key copied from the Uter console
 
 5.  **Add Model**

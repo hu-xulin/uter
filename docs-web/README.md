@@ -1,7 +1,7 @@
 # Uter Docs
 
 Next.js + Fumadocs landing page that mirrors the style of
-[docs.newapi.pro/docs/zh](https://docs.newapi.pro/docs/zh). The page
+[docs.uter.pro/docs/zh](https://docs.uter.pro/docs/zh). The page
 sits at `/docs/zh/` and is the target of every "View documentation"
 link in the SPA dashboard.
 
