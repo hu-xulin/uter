@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"strings"
 
-	"https://github.com/Uter-AI/Uter/common"
+	"github.com/Uter-AI/Uter/common"
 
 	"github.com/ClickHouse/clickhouse-go/v2"
 	"github.com/Uter-AI/Uter/logger"

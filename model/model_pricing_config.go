@@ -11,7 +11,7 @@ import (
 	"strings"
 	"sync"
 
-	"https://github.com/Uter-AI/Uter/common"
+	"github.com/Uter-AI/Uter/common"
 
 	"github.com/Uter-AI/Uter/pkg/billingexpr"
 	"github.com/Uter-AI/Uter/pkg/jsplugin"

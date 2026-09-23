@@ -124,9 +124,11 @@ echo "==> [3/5] 编译 Go 后端（内嵌 web/dist）"
 cd "$ROOT"
 # 读取 VERSION 用于本次构建（与 Dockerfile 注入方式一致：-X 'pkg=Version'）。
 # 构建成功后 patch+1 写回，下次构建自动 +1（v1.0.0 → v1.0.1 → v1.0.2 ...）。
+set +u
 BUILD_VERSION="$(cat "$ROOT/VERSION" 2>/dev/null | tr -d '[:space:]')"
 [ -n "$BUILD_VERSION" ] || BUILD_VERSION="v0.0.0"
 echo "    本次版本: $BUILD_VERSION（构建成功后将自增 patch，下次构建自动 +1）"
+set -u
 "$GO" build -ldflags "-s -w -X 'github.com/Uter-AI/Uter/common.Version=$BUILD_VERSION'" -o "$BIN" . || fail "go build 失败"
 bump_version
 echo "    VERSION 已自增为: $(cat "$ROOT/VERSION")"

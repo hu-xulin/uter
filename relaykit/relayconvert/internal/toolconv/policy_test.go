@@ -3,7 +3,7 @@ package toolconv
 import (
 	"testing"
 
-	"https://github.com/Uter-AI/Uter/relaykit/dto"
+	"github.com/Uter-AI/Uter/relaykit/dto"
 
 	"github.com/Uter-AI/Uter/relaykit/relayconvert/convmeta"
 	kitutil "github.com/Uter-AI/Uter/relaykit/relayconvert/kitutil"

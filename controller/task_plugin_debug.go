@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"https://github.com/Uter-AI/Uter/dto"
+	"github.com/Uter-AI/Uter/dto"
 
 	"github.com/Uter-AI/Uter/logger"
 	"github.com/Uter-AI/Uter/model"

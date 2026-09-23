@@ -4,7 +4,7 @@ import (
 	"errors"
 	"net/http"
 
-	relaycommon "https://github.com/Uter-AI/Uter/relay/common"
+	relaycommon "github.com/Uter-AI/Uter/relay/common"
 
 	kitreasoning "github.com/Uter-AI/Uter/relaykit/relayconvert/reasoning"
 	"github.com/Uter-AI/Uter/relaykit/types"

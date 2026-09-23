@@ -8,7 +8,7 @@ import (
 	"os"
 	"testing"
 
-	"https://github.com/Uter-AI/Uter/common"
+	"github.com/Uter-AI/Uter/common"
 
 	"github.com/Uter-AI/Uter/middleware"
 	"github.com/Uter-AI/Uter/model"

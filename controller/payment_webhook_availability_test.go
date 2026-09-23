@@ -3,7 +3,7 @@ package controller
 import (
 	"testing"
 
-	"https://github.com/Uter-AI/Uter/setting"
+	"github.com/Uter-AI/Uter/setting"
 
 	"github.com/Uter-AI/Uter/setting/operation_setting"
 	"github.com/stretchr/testify/require"

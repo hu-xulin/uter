@@ -6,7 +6,7 @@ import (
 	"io"
 	"net/http"
 
-	channelconstant "https://github.com/Uter-AI/Uter/constant"
+	channelconstant "github.com/Uter-AI/Uter/constant"
 
 	"github.com/Uter-AI/Uter/relay/channel"
 	"github.com/Uter-AI/Uter/relay/channel/claude"

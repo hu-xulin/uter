@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	"https://github.com/Uter-AI/Uter/model"
+	"github.com/Uter-AI/Uter/model"
 
 	"github.com/Uter-AI/Uter/types"
 	"github.com/gin-gonic/gin"

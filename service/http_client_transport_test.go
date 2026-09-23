@@ -12,7 +12,7 @@ import (
 	"sync/atomic"
 	"testing"
 
-	"https://github.com/Uter-AI/Uter/common"
+	"github.com/Uter-AI/Uter/common"
 
 	"github.com/Uter-AI/Uter/relaykit/dto"
 	"github.com/stretchr/testify/assert"

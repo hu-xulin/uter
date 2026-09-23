@@ -6,7 +6,7 @@ import (
 	"reflect"
 	"testing"
 
-	"https://github.com/Uter-AI/Uter/controller"
+	"github.com/Uter-AI/Uter/controller"
 
 	"github.com/Uter-AI/Uter/service/authz"
 	"github.com/gin-gonic/gin"

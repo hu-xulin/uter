@@ -10,7 +10,7 @@ import (
 	"sync"
 	"testing"
 
-	"https://github.com/Uter-AI/Uter/constant"
+	"github.com/Uter-AI/Uter/constant"
 
 	"github.com/Uter-AI/Uter/pkg/billingexpr"
 	relaycommon "github.com/Uter-AI/Uter/relay/common"

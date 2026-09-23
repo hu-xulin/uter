@@ -5,7 +5,7 @@ import (
 	"math/rand"
 	"time"
 
-	"https://github.com/Uter-AI/Uter/common"
+	"github.com/Uter-AI/Uter/common"
 
 	"github.com/Uter-AI/Uter/setting/operation_setting"
 	"gorm.io/gorm"

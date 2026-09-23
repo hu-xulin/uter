@@ -6,7 +6,7 @@ import (
 	"io"
 	"net/http"
 
-	"https://github.com/Uter-AI/Uter/relay/channel"
+	"github.com/Uter-AI/Uter/relay/channel"
 
 	relaycommon "github.com/Uter-AI/Uter/relay/common"
 	"github.com/Uter-AI/Uter/relay/constant"

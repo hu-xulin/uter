@@ -3,7 +3,7 @@ package plugins_test
 import (
 	"testing"
 
-	"https://github.com/Uter-AI/Uter/common"
+	"github.com/Uter-AI/Uter/common"
 
 	"github.com/Uter-AI/Uter/pkg/jsplugin"
 	builtinplugins "github.com/Uter-AI/Uter/plugins"

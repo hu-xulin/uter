@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"https://github.com/Uter-AI/Uter/logger"
+	"github.com/Uter-AI/Uter/logger"
 
 	relaycommon "github.com/Uter-AI/Uter/relay/common"
 	"github.com/Uter-AI/Uter/relay/helper"

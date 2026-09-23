@@ -8,7 +8,7 @@ import (
 	"sync"
 
 	"context"
-	"https://github.com/Uter-AI/Uter/relaykit/dto"
+	"github.com/Uter-AI/Uter/relaykit/dto"
 
 	"github.com/Uter-AI/Uter/relaykit/relayconvert/convmeta"
 	claudemessages "github.com/Uter-AI/Uter/relaykit/relayconvert/internal/claude_messages"

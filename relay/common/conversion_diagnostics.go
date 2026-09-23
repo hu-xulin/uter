@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"https://github.com/Uter-AI/Uter/logger"
+	"github.com/Uter-AI/Uter/logger"
 
 	"github.com/Uter-AI/Uter/relaykit/types"
 	"github.com/gin-gonic/gin"

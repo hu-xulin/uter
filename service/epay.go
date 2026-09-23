@@ -1,7 +1,7 @@
 package service
 
 import (
-	"https://github.com/Uter-AI/Uter/setting/operation_setting"
+	"github.com/Uter-AI/Uter/setting/operation_setting"
 
 	"github.com/Uter-AI/Uter/setting/system_setting"
 )

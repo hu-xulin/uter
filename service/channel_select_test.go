@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"https://github.com/Uter-AI/Uter/constant"
+	"github.com/Uter-AI/Uter/constant"
 
 	"github.com/Uter-AI/Uter/pkg/jsplugin"
 	"github.com/gin-gonic/gin"

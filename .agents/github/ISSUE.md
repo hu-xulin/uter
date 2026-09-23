@@ -55,7 +55,7 @@ accept it, point them to the right place when there is one, and **do not file**.
 Search these yourself before filing. Do not send the user to "read the docs first". If this is usage, configuration, or integration: answer the user and do not file.
 
 - https://uter.ai/docs — what was searched, conclusion:
-- https://deepwiki.com/Uter.ai/uter — what was searched, conclusion:
+- https://deepwiki.com/Uter-AI/Uter — what was searched, conclusion:
 - README / repo docs:
 - Relevant code paths and conclusion:
 - Can the current version already do this? (required for feature requests):
@@ -138,7 +138,7 @@ Open the docs and code. Do not write "already checked" without sources.
 ### Docs
 
 - https://uter.ai/docs :
-- https://deepwiki.com/Uter.ai/uter :
+- https://deepwiki.com/Uter-AI/Uter :
 - README / other repo docs:
 - Conclusions:
 

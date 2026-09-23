@@ -3,7 +3,7 @@ package model
 import (
 	"slices"
 
-	"https://github.com/Uter-AI/Uter/constant"
+	"github.com/Uter-AI/Uter/constant"
 
 	"github.com/Uter-AI/Uter/dto"
 )

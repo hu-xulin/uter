@@ -137,7 +137,7 @@ describe('administrator update entry', () => {
       expect(fetchMock).toHaveBeenCalledTimes(1)
       const [url, options] = fetchMock.mock.calls[0]
       expect(String(url)).toBe(
-        'https://api.github.com/repos/Uter.ai/uter/releases?per_page=100'
+        'https://api.github.com/repos/Uter-AI/Uter/releases?per_page=100'
       )
       expect(options?.credentials).toBe('omit')
       expect(options?.headers).toEqual({

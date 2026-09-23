@@ -1,7 +1,7 @@
 package performance_setting
 
 import (
-	"https://github.com/Uter-AI/Uter/common"
+	"github.com/Uter-AI/Uter/common"
 
 	"github.com/Uter-AI/Uter/setting/config"
 )

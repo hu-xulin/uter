@@ -3,7 +3,7 @@ package tencent
 import (
 	"strings"
 
-	"https://github.com/Uter-AI/Uter/constant"
+	"github.com/Uter-AI/Uter/constant"
 
 	"github.com/Uter-AI/Uter/relay/channel"
 	"github.com/Uter-AI/Uter/relay/channel/openai"

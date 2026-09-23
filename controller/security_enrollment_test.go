@@ -22,7 +22,7 @@ import (
 	"testing"
 	"time"
 
-	"https://github.com/Uter-AI/Uter/common"
+	"github.com/Uter-AI/Uter/common"
 
 	"github.com/Uter-AI/Uter/i18n"
 	"github.com/Uter-AI/Uter/middleware"

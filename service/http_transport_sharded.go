@@ -8,7 +8,7 @@ import (
 	"sync"
 	"sync/atomic"
 
-	"https://github.com/Uter-AI/Uter/common"
+	"github.com/Uter-AI/Uter/common"
 
 	"github.com/Uter-AI/Uter/logger"
 	"github.com/Uter-AI/Uter/relaykit/dto"

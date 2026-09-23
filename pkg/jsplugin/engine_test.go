@@ -15,7 +15,7 @@ import (
 	"time"
 	"unicode/utf8"
 
-	"https://github.com/Uter-AI/Uter/common"
+	"github.com/Uter-AI/Uter/common"
 
 	"github.com/Uter-AI/Uter/relaykit/relayconvert/kitutil"
 	"github.com/gin-gonic/gin"

@@ -1,7 +1,7 @@
 package common
 
 import (
-	"https://github.com/Uter-AI/Uter/relaykit/relayconvert/convmeta"
+	"github.com/Uter-AI/Uter/relaykit/relayconvert/convmeta"
 
 	"github.com/Uter-AI/Uter/relaykit/types"
 )

@@ -4,7 +4,7 @@ import (
 	"encoding/base64"
 	"fmt"
 
-	"https://github.com/Uter-AI/Uter/common"
+	"github.com/Uter-AI/Uter/common"
 
 	"github.com/Uter-AI/Uter/model"
 	relaycommon "github.com/Uter-AI/Uter/relay/common"

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"https://github.com/Uter-AI/Uter/relaykit/dto"
+	"github.com/Uter-AI/Uter/relaykit/dto"
 
 	sharedclaude "github.com/Uter-AI/Uter/relaykit/relayconvert/internal/shared/claude"
 	kitutil "github.com/Uter-AI/Uter/relaykit/relayconvert/kitutil"

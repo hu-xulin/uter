@@ -16,7 +16,7 @@ import (
 	"regexp"
 	"testing"
 
-	"https://github.com/Uter-AI/Uter/relaykit/dto"
+	"github.com/Uter-AI/Uter/relaykit/dto"
 
 	"github.com/Uter-AI/Uter/relaykit/relayconvert/convmeta"
 	"github.com/Uter-AI/Uter/relaykit/types"

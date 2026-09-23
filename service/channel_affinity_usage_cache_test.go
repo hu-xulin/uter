@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"https://github.com/Uter-AI/Uter/relaykit/dto"
+	"github.com/Uter-AI/Uter/relaykit/dto"
 
 	"github.com/Uter-AI/Uter/relaykit/types"
 	"github.com/gin-gonic/gin"

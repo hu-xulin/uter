@@ -4,7 +4,7 @@ import (
 	"io"
 	"net/http"
 
-	taskdto "https://github.com/Uter-AI/Uter/dto"
+	taskdto "github.com/Uter-AI/Uter/dto"
 
 	"github.com/Uter-AI/Uter/model"
 	relaycommon "github.com/Uter-AI/Uter/relay/common"

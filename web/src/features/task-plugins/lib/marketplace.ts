@@ -320,7 +320,7 @@ export const DEFAULT_MARKETPLACE_INDEX_URL =
   'https://www.uter.ai/api/v1/plugins/index.json'
 
 export const GITHUB_MARKETPLACE_INDEX_URL =
-  'https://raw.githubusercontent.com/Uter.ai/uter-plugins/main/index.json'
+  'https://raw.githubusercontent.com/Uter-AI/uter-plugins/main/index.json'
 
 /**
  * Both built-in indexes are maintained by the project. Other configured

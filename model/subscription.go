@@ -8,7 +8,7 @@ import (
 	"sync"
 	"time"
 
-	"https://github.com/Uter-AI/Uter/common"
+	"github.com/Uter-AI/Uter/common"
 
 	"github.com/Uter-AI/Uter/pkg/cachex"
 	"github.com/samber/hot"

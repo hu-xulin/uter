@@ -7,7 +7,7 @@ import (
 	"sync"
 	"time"
 
-	"https://github.com/Uter-AI/Uter/service"
+	"github.com/Uter-AI/Uter/service"
 
 	"github.com/Uter-AI/Uter/setting/system_setting"
 	"github.com/gin-gonic/gin"

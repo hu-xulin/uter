@@ -5,7 +5,7 @@ import (
 	"errors"
 	"io"
 
-	"https://github.com/Uter-AI/Uter/model"
+	"github.com/Uter-AI/Uter/model"
 
 	"github.com/Uter-AI/Uter/setting/system_setting"
 	"github.com/Uter-AI/Uter/types"

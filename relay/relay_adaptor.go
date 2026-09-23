@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strconv"
 
-	"https://github.com/Uter-AI/Uter/constant"
+	"github.com/Uter-AI/Uter/constant"
 
 	pluginruntime "github.com/Uter-AI/Uter/pkg/jsplugin"
 	_ "github.com/Uter-AI/Uter/plugins"

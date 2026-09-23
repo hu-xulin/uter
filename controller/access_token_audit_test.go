@@ -16,7 +16,7 @@ import (
 	sqlmysql "github.com/go-sql-driver/mysql"
 	"gorm.io/driver/clickhouse"
 
-	"https://github.com/Uter-AI/Uter/common"
+	"github.com/Uter-AI/Uter/common"
 
 	"github.com/Uter-AI/Uter/middleware"
 	"github.com/Uter-AI/Uter/model"

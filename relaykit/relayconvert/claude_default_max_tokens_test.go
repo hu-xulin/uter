@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"https://github.com/Uter-AI/Uter/relaykit/dto"
+	"github.com/Uter-AI/Uter/relaykit/dto"
 
 	"github.com/Uter-AI/Uter/relaykit/relayconvert/convmeta"
 	sharedclaude "github.com/Uter-AI/Uter/relaykit/relayconvert/internal/shared/claude"

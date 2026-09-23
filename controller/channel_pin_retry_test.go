@@ -6,7 +6,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"https://github.com/Uter-AI/Uter/dto"
+	"github.com/Uter-AI/Uter/dto"
 
 	"github.com/Uter-AI/Uter/relaykit/types"
 	"github.com/Uter-AI/Uter/service"

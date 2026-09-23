@@ -1,7 +1,7 @@
 package service
 
 import (
-	"https://github.com/Uter-AI/Uter/common"
+	"github.com/Uter-AI/Uter/common"
 
 	"github.com/Uter-AI/Uter/model"
 	pluginruntime "github.com/Uter-AI/Uter/pkg/jsplugin"

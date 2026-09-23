@@ -4,7 +4,7 @@ import (
 	"maps"
 	"strings"
 
-	"https://github.com/Uter-AI/Uter/common"
+	"github.com/Uter-AI/Uter/common"
 
 	"github.com/Uter-AI/Uter/setting/operation_setting"
 	hostreasoning "github.com/Uter-AI/Uter/setting/reasoning"

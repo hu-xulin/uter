@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"time"
 
-	"https://github.com/Uter-AI/Uter/common"
+	"github.com/Uter-AI/Uter/common"
 
 	"github.com/Uter-AI/Uter/common/limiter"
 	"github.com/Uter-AI/Uter/constant"
