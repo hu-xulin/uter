@@ -32,19 +32,27 @@ import { useBillingTime } from '../hooks/use-billing-time'
 import {
   getCardExamplePrice,
   getDynamicDisplayGroupRatio,
-  getDynamicPriceUnitLabelKey,
   getDynamicPricingSummary,
   isUnconfiguredTaskUsageModel,
+  type DynamicPriceEntry,
 } from '../lib/dynamic-price'
 import { parseTags } from '../lib/filters'
-import { isTokenBasedModel } from '../lib/model-helpers'
-import { getOfficialReferenceRatio } from '../lib/price'
-import { taskPriceLabel, taskUsageUnitLabel } from '../lib/task-price-display'
+import { getDisplayGroupRatio, isTokenBasedModel } from '../lib/model-helpers'
+import { getBillingModeLabelKey } from '../lib/billing-mode'
+import {
+  formatOfficialPrice,
+  formatOfficialPriceAtRatio,
+  formatOfficialRequestPrice,
+  formatPrice,
+  formatRequestPrice,
+  getOfficialReferenceRatio,
+  getTokenPriceUSD,
+} from '../lib/price'
+import { taskPriceLabel } from '../lib/task-price-display'
 import type { PricingModel, PriceType, TokenUnit } from '../types'
 import { DiscountTag } from './discount-tag'
 import { ModelBillingModeBadge } from './model-billing-mode-badge'
 import { ModelPerfBadge, type ModelPerfBadgeData } from './model-perf-badge'
-import { PriceMetricOfficial } from './price-with-official'
 
 export interface ModelCardProps {
   model: PricingModel
@@ -71,6 +79,12 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
   const showRechargePrice = props.showRechargePrice ?? false
   const isTokenBased = isTokenBasedModel(props.model)
   const tokenUnitLabel = tokenUnit === 'K' ? '1K' : '1M'
+  const billingMode = getBillingModeLabelKey(props.model)
+  const tokenUnitSuffix = `${tokenUnitLabel} Tokens`
+  // Only token-priced modes (dynamic & token-based) append the
+  // "/ 1M Tokens" unit suffix to the billing-mode badge.
+  const showTokenSuffix =
+    billingMode === 'Dynamic Pricing' || billingMode === 'Token-based'
   const tags = parseTags(props.model.tags)
   const groups = props.model.enable_groups || []
   const endpoints = props.model.supported_endpoint_types || []
@@ -81,12 +95,6 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
   const billingTime = useBillingTime(props.model.billing_expr)
   const currency = useSystemConfigStore((state) => state.config.currency)
   const officialRatio = getOfficialReferenceRatio(props.model, props.officialPrices)
-  const sourceLabel =
-    props.pricingSource === 'channel'
-      ? props.isSuperAdmin
-        ? t('Platform price')
-        : t('Price')
-      : t('Official price')
   const dynamicPriceOptions = useMemo(
     () => ({
       now: billingTime === undefined ? undefined : new Date(billingTime),
@@ -144,64 +152,74 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
           </code>
         </div>
       )
-    } else if (dynamicSummary.primaryEntries.length > 0) {
+    } else if (dynamicSummary.entries.length > 0) {
+      const dims = dynamicSummary.entries
+      const groupRatio = getDisplayGroupRatio(props.model, props.selectedGroup)
+      const isDiscount = groupRatio > 0 && groupRatio < 1
+      const discountPercent = isDiscount
+        ? Math.round((1 - groupRatio) * 100)
+        : 0
+      const uterLabel = i18n.language?.startsWith('zh') ? '优特' : 'Uter'
+      const officialEntries = officialSummary?.entries ?? []
+      const getLabel = (e: DynamicPriceEntry): ReactNode =>
+        e.labelKind !== 'schema'
+          ? t(e.shortLabel)
+          : taskPriceLabel(e.description, e.shortLabel, i18n.language)
+      const officialFor = (key: string) =>
+        officialEntries.find((e) => e.key === key)
       priceSummary = (
         <>
-          {dynamicSummary.primaryEntries
-            .slice(0, dynamicSummary.providerCount ? 2 : undefined)
-            .map((entry) => {
-              const unitLabelKey = getDynamicPriceUnitLabelKey(entry)
-              const unitLabel = taskUsageUnitLabel(
-                entry,
-                i18n.language,
-                unitLabelKey ? t(unitLabelKey) : tokenUnitLabel
-              )
-              let label: ReactNode = null
-              if (entry.labelKind !== 'schema') {
-                label = t(entry.shortLabel)
-              } else {
-                label = taskPriceLabel(
-                  entry.description,
-                  entry.shortLabel,
-                  i18n.language
-                )
-              }
-              return (
-                <div
-                  key={entry.key}
-                  className={cn(
-                    'flex min-w-0 flex-col gap-1',
-                    dynamicSummary.isTaskUsage && 'col-span-full'
-                  )}
-                >
-                  {label && (
-                    <span className='text-muted-foreground text-xs break-words whitespace-normal'>
-                      {label}
-                    </span>
-                  )}
-                  <span className='flex flex-wrap items-baseline gap-x-1 font-mono text-sm font-semibold tabular-nums'>
-                    <span>{entry.formattedRange ?? entry.formatted}</span>
-                    <span className='text-muted-foreground text-xs font-normal whitespace-nowrap'>
-                      {' '}
-                      / {unitLabel}
-                    </span>
-                  </span>
-              </div>
-            )
-            })}
-          {officialSummary?.primaryEntries.length ? (
-            <span className='text-muted-foreground col-span-full text-xs tabular-nums'>
-              {t('Official')}:{' '}
-              {officialSummary.primaryEntries
-                .slice(0, 2)
-                .map((e) =>
-                  e.labelKind === 'schema'
-                    ? `${e.shortLabel} ${e.formattedRange ?? e.formatted}`
-                    : `${t(e.shortLabel)} ${e.formattedRange ?? e.formatted}`
-                )
-                .join(' · ')}
+          <div
+            className='col-span-full grid min-w-0 items-baseline gap-x-4 gap-y-1.5'
+            style={{
+              gridTemplateColumns: `max-content repeat(${dims.length}, minmax(64px, 1fr))`,
+            }}
+          >
+            <span aria-hidden />
+            {dims.map((entry) => (
+              <span
+                key={`h-${entry.key}`}
+                className='text-muted-foreground text-xs whitespace-nowrap'
+              >
+                {getLabel(entry)}
+              </span>
+            ))}
+            <span className='text-xs font-semibold whitespace-nowrap'>
+              {uterLabel}
             </span>
-          ) : null}
+            {dims.map((entry) => (
+              <span
+                key={`u-${entry.key}`}
+                className='font-mono text-sm font-semibold tabular-nums'
+              >
+                {entry.formattedRange ?? entry.formatted}
+              </span>
+            ))}
+            <span className='text-muted-foreground text-xs whitespace-nowrap'>
+              {t('Official')}
+            </span>
+            {dims.map((entry) => {
+              const off = officialFor(entry.key)
+              const offText = off
+                ? off.formattedRange ?? off.formatted
+                : '-'
+              return (
+                <span
+                  key={`o-${entry.key}`}
+                  className='text-muted-foreground font-mono text-xs tabular-nums whitespace-nowrap'
+                >
+                  <span className={cn(isDiscount && 'line-through')}>
+                    {offText}
+                  </span>
+                  {isDiscount && (
+                    <span className='text-emerald-600 ml-1 font-bold'>
+                      -{discountPercent}%
+                    </span>
+                  )}
+                </span>
+              )
+            })}
+          </div>
           {dynamicSummary.isTimePricing && (
             <span className='text-muted-foreground col-span-full text-xs'>
               {t('Current period price')}
@@ -244,43 +262,198 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
       </span>
     )
   } else if (isTokenBased) {
-    const prices: { type: PriceType; label: string }[] = [
+    const displayRatio = getDisplayGroupRatio(props.model, props.selectedGroup)
+    const baselineRatio = officialRatio ?? 1
+    const dimTypes: { type: PriceType; label: string }[] = [
       { type: 'input', label: t('Input') },
       { type: 'output', label: t('Output') },
-      ...(props.model.cache_ratio != null
-        ? [{ type: 'cache' as const, label: t('Cached') }]
-        : []),
+      { type: 'cache', label: t('Cache Read') },
+      { type: 'create_cache', label: t('Cache Write') },
+      { type: 'image', label: t('Image') },
+      { type: 'audio_input', label: t('Audio Input') },
+      { type: 'audio_output', label: t('Audio Output') },
     ]
-    priceSummary = prices.map((price) => (
-      <PriceMetricOfficial
-        key={price.type}
-        model={props.model}
-        type={price.type}
-        label={price.label}
-        unit={tokenUnitLabel}
-        tokenUnit={tokenUnit}
-        showRechargePrice={showRechargePrice}
-        priceRate={priceRate}
-        usdExchangeRate={usdExchangeRate}
-        selectedGroup={props.selectedGroup}
-        officialRatio={officialRatio}
-      />
-    ))
+    const dims = dimTypes
+      .map(({ type, label }) => {
+        const uterVal = getTokenPriceUSD(props.model, type, displayRatio)
+        const officialVal = getTokenPriceUSD(props.model, type, baselineRatio)
+        if (!Number.isFinite(uterVal) && !Number.isFinite(officialVal)) {
+          return null
+        }
+        const isDiscount =
+          Number.isFinite(uterVal) &&
+          Number.isFinite(officialVal) &&
+          officialVal > 0 &&
+          uterVal < officialVal - 1e-12
+        const percent = isDiscount
+          ? Math.round((1 - uterVal / officialVal) * 100)
+          : 0
+        return {
+          type,
+          label,
+          uter: formatPrice(
+            props.model,
+            type,
+            tokenUnit,
+            showRechargePrice,
+            priceRate,
+            usdExchangeRate,
+            props.selectedGroup
+          ),
+          official:
+            officialRatio != null
+              ? formatOfficialPriceAtRatio(
+                  props.model,
+                  type,
+                  officialRatio,
+                  tokenUnit,
+                  showRechargePrice,
+                  priceRate,
+                  usdExchangeRate
+                )
+              : formatOfficialPrice(
+                  props.model,
+                  type,
+                  tokenUnit,
+                  showRechargePrice,
+                  priceRate,
+                  usdExchangeRate
+                ),
+          isDiscount,
+          percent,
+        }
+      })
+      .filter((d) => d != null)
+    priceSummary = dims.length > 0 && (
+      <div
+        className='grid min-w-0 items-baseline gap-x-4 gap-y-1.5'
+        style={{
+          gridTemplateColumns: `max-content repeat(${dims.length}, minmax(64px, 1fr))`,
+        }}
+      >
+        <span aria-hidden />
+        {dims.map((d) => (
+          <span
+            key={`h-${d.type}`}
+            className='text-muted-foreground text-xs whitespace-nowrap'
+          >
+            {d.label}
+          </span>
+        ))}
+        <span className='text-xs font-semibold whitespace-nowrap'>
+          {i18n.language?.startsWith('zh') ? '优特' : 'Uter'}
+        </span>
+        {dims.map((d) => (
+          <span
+            key={`u-${d.type}`}
+            className='font-mono text-sm font-semibold tabular-nums'
+          >
+            {d.uter}
+          </span>
+        ))}
+        <span className='text-muted-foreground text-xs whitespace-nowrap'>
+          {t('Official')}
+        </span>
+        {dims.map((d) => (
+          <span
+            key={`o-${d.type}`}
+            className='text-muted-foreground font-mono text-xs tabular-nums whitespace-nowrap'
+          >
+            <span className={cn(d.isDiscount && 'line-through')}>
+              {d.official}
+            </span>
+            {d.isDiscount && (
+              <span className='text-emerald-600 ml-1 font-bold'>
+                -{d.percent}%
+              </span>
+            )}
+          </span>
+        ))}
+      </div>
+    )
   } else {
+    // Per-request (and non-dynamic task-usage) billing: a single "Per-request"
+    // dimension compared against the official list price, using the same
+    // 优特/官方 grid as the token & dynamic cards.
+    const displayRatio = getDisplayGroupRatio(props.model, props.selectedGroup)
+    const uterVal = (props.model.model_price || 0) * displayRatio
+    const officialVal = props.model.model_price || 0
+    const isDiscount =
+      Number.isFinite(uterVal) &&
+      Number.isFinite(officialVal) &&
+      officialVal > 0 &&
+      uterVal < officialVal - 1e-12
+    const percent = isDiscount
+      ? Math.round((1 - uterVal / officialVal) * 100)
+      : 0
+    const uterLabel = i18n.language?.startsWith('zh') ? '优特' : 'Uter'
+    const dims = [
+      {
+        key: 'request',
+        label: t('Per-request'),
+        uter: formatRequestPrice(
+          props.model,
+          showRechargePrice,
+          priceRate,
+          usdExchangeRate,
+          props.selectedGroup
+        ),
+        official: formatOfficialRequestPrice(
+          props.model,
+          showRechargePrice,
+          priceRate,
+          usdExchangeRate
+        ),
+        isDiscount,
+        percent,
+      },
+    ]
     priceSummary = (
-      <PriceMetricOfficial
-        model={props.model}
-        type='request'
-        label={t('Per-request')}
-        unit={t('request')}
-        tokenUnit={tokenUnit}
-        showRechargePrice={showRechargePrice}
-        priceRate={priceRate}
-        usdExchangeRate={usdExchangeRate}
-        selectedGroup={props.selectedGroup}
-        officialRatio={officialRatio}
-        className='col-span-full'
-      />
+      <div
+        className='grid min-w-0 items-baseline gap-x-4 gap-y-1.5'
+        style={{
+          gridTemplateColumns: `max-content repeat(${dims.length}, minmax(64px, 1fr))`,
+        }}
+      >
+        <span aria-hidden />
+        {dims.map((d) => (
+          <span
+            key={`h-${d.key}`}
+            className='text-muted-foreground text-xs whitespace-nowrap'
+          >
+            {d.label}
+          </span>
+        ))}
+        <span className='text-xs font-semibold whitespace-nowrap'>
+          {uterLabel}
+        </span>
+        {dims.map((d) => (
+          <span
+            key={`u-${d.key}`}
+            className='font-mono text-sm font-semibold tabular-nums'
+          >
+            {d.uter}
+          </span>
+        ))}
+        <span className='text-muted-foreground text-xs whitespace-nowrap'>
+          {t('Official')}
+        </span>
+        {dims.map((d) => (
+          <span
+            key={`o-${d.key}`}
+            className='text-muted-foreground font-mono text-xs tabular-nums whitespace-nowrap'
+          >
+            <span className={cn(d.isDiscount && 'line-through')}>
+              {d.official}
+            </span>
+            {d.isDiscount && (
+              <span className='text-emerald-600 ml-1 font-bold'>
+                -{d.percent}%
+              </span>
+            )}
+          </span>
+        ))}
+      </div>
     )
   }
 
@@ -356,9 +529,11 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
         >
           <div className='flex flex-wrap items-center gap-1.5'>
             <ModelBillingModeBadge model={props.model} appearance='caption' />
-            <span className='rounded bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground'>
-              {sourceLabel}
-            </span>
+            {showTokenSuffix && (
+              <span className='text-muted-foreground text-xs whitespace-nowrap'>
+                （/ {tokenUnitSuffix}）
+              </span>
+            )}
           </div>
           {dynamicSummary?.providerCount && (
             <span className='text-muted-foreground text-xs break-words'>

@@ -136,9 +136,7 @@ export function PricingSourceSection({
               render={({ field }) => (
                 <FormItem>
                   <FormDescription>
-                    {t(
-                      'Choose the pricing source displayed in the model square.'
-                    )}
+                    {t('Pricing source usage hint')}
                   </FormDescription>
                   <FormControl>
                     <RadioGroup

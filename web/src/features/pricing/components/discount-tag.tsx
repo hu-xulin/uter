@@ -15,7 +15,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program; see <https://www.gnu.org/licenses/>.
 */
 import { memo } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import { cn } from '@/lib/utils'
 
@@ -34,7 +33,6 @@ export type DiscountTagProps = {
  * than the official preset price. e.g. ratio 0.9 -> "9折", 0.85 -> "8.5折".
  */
 export const DiscountTag = memo(function DiscountTag(props: DiscountTagProps) {
-  const { t } = useTranslation()
   const info = getDiscountInfo(props.model, props.officialPrices, props.selectedGroup)
   if (!info.hasDiscount) return null
 
@@ -48,10 +46,10 @@ export const DiscountTag = memo(function DiscountTag(props: DiscountTagProps) {
   return (
     <span
       className={cn(
-        'inline-flex items-center rounded px-1.5 py-0.5 text-[11px] font-semibold leading-none text-white bg-emerald-600',
+        'inline-flex items-center rounded px-1.5 py-[5px] text-[11px] font-semibold leading-none text-white bg-emerald-600',
         props.className
       )}
-      title={t('Save {{percent}}%', { percent: Math.round(info.percent) })}
+      title={`-${Math.round(info.percent)}%`}
     >
       {label}
     </span>

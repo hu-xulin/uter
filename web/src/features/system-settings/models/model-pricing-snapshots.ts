@@ -145,14 +145,20 @@ export const getPriceDetail = (
     row.completionRatio &&
       `${t('Output')} $${ratioToPrice(row.completionRatio, inputPrice)}`,
     row.cacheRatio &&
-      `${t('Cache')} $${ratioToPrice(row.cacheRatio, inputPrice)}`,
+      `${t('Cache Read')} $${ratioToPrice(row.cacheRatio, inputPrice)}`,
     row.createCacheRatio &&
       `${t('Cache write')} $${ratioToPrice(row.createCacheRatio, inputPrice)}`,
+    row.imageRatio &&
+      `${t('Image input')} $${ratioToPrice(row.imageRatio, inputPrice)}`,
+    row.audioRatio &&
+      `${t('Audio input')} $${ratioToPrice(row.audioRatio, inputPrice)}`,
+    row.audioCompletionRatio &&
+      `${t('Audio output')} $${ratioToPrice(row.audioCompletionRatio, inputPrice)}`,
   ]
     .filter(Boolean)
-    .slice(0, 2)
+    .join(' · ')
 
-  return details.length > 0 ? details.join(' · ') : t('Base input price only')
+  return details.length > 0 ? details : t('Base input price only')
 }
 
 export const buildModelSnapshots = ({

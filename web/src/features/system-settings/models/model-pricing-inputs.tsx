@@ -31,6 +31,15 @@ import {
   SettingsControlGroup,
   SettingsSwitchField,
 } from '../components/settings-form-layout'
+import type { DiscountTone } from './model-pricing-core'
+
+export type PriceReferenceInfo = {
+  /** Pre-formatted official reference price, e.g. "官方定价: $3.00". */
+  officialLabel: string
+  /** Pre-formatted discount badge, e.g. "-10% · 9折". */
+  discountLabel: string
+  discountTone: DiscountTone
+}
 
 export function PriceInput(props: {
   currency?: PricingCurrency
@@ -41,28 +50,34 @@ export function PriceInput(props: {
   placeholder?: string
   disabled?: boolean
   onChange: (value: string) => void
+  reference?: PriceReferenceInfo
 }) {
   return (
-    <InputGroup className='has-[[data-pricing-error]]:h-auto has-[[data-pricing-error]]:flex-wrap'>
-      <InputGroupAddon>
-        {(props.currency ?? USD_PRICING_CURRENCY).symbol}
-      </InputGroupAddon>
-      <PricingAmountInput
-        grouped
-        currency={props.currency}
-        id={props.id}
-        aria-label={props['aria-label']}
-        aria-describedby={props['aria-describedby']}
-        inputMode='decimal'
-        value={props.value}
-        placeholder={props.placeholder}
-        disabled={props.disabled}
-        onChange={props.onChange}
-      />
-      <InputGroupAddon align='inline-end'>
-        {(props.currency ?? USD_PRICING_CURRENCY).symbol}/1M
-      </InputGroupAddon>
-    </InputGroup>
+    <div className='space-y-1.5'>
+      <InputGroup className='has-[[data-pricing-error]]:h-auto has-[[data-pricing-error]]:flex-wrap'>
+        <InputGroupAddon>
+          {(props.currency ?? USD_PRICING_CURRENCY).symbol}
+        </InputGroupAddon>
+        <PricingAmountInput
+          grouped
+          currency={props.currency}
+          id={props.id}
+          aria-label={props['aria-label']}
+          aria-describedby={props['aria-describedby']}
+          inputMode='decimal'
+          value={props.value}
+          placeholder={props.placeholder}
+          disabled={props.disabled}
+          onChange={props.onChange}
+        />
+        <InputGroupAddon align='inline-end'>
+          {(props.currency ?? USD_PRICING_CURRENCY).symbol}/1M
+        </InputGroupAddon>
+      </InputGroup>
+      {props.reference && (
+        <PriceReferenceFootnote reference={props.reference} />
+      )}
+    </div>
   )
 }
 
@@ -78,6 +93,7 @@ export function PriceLane(props: {
   disabledReason?: string
   onEnabledChange: (checked: boolean) => void
   onChange: (value: string) => void
+  reference?: PriceReferenceInfo
 }) {
   const { t } = useTranslation()
   const controlId = useId()
@@ -110,6 +126,7 @@ export function PriceLane(props: {
         placeholder={props.placeholder}
         disabled={effectiveDisabled}
         onChange={props.onChange}
+        reference={props.reference}
       />
       {!props.compact && (
         <p className='text-muted-foreground text-xs'>
@@ -121,5 +138,22 @@ export function PriceLane(props: {
         </p>
       )}
     </SettingsControlGroup>
+  )
+}
+
+export function PriceReferenceFootnote(props: { reference: PriceReferenceInfo }) {
+  let toneClass = 'text-muted-foreground'
+  if (props.reference.discountTone === 'discount') {
+    toneClass = 'text-emerald-600'
+  } else if (props.reference.discountTone === 'markup') {
+    toneClass = 'text-amber-600'
+  }
+  return (
+    <div className='flex flex-wrap items-center gap-x-2 text-xs tabular-nums'>
+      <span className='text-muted-foreground'>{props.reference.officialLabel}</span>
+      <span className={cn('font-medium', toneClass)}>
+        {props.reference.discountLabel}
+      </span>
+    </div>
   )
 }

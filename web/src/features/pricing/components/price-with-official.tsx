@@ -141,8 +141,8 @@ export const PriceMetricOfficial = memo(function PriceMetricOfficial(
           {props.unit}
         </span>
         {isDiscount && (
-          <span className='text-emerald-600 text-xs font-medium'>
-            · {t('Save {{percent}}%', { percent: discountPercent })}
+          <span className='text-emerald-600 text-xs font-bold'>
+            · -{discountPercent}%
           </span>
         )}
       </span>

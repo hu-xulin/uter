@@ -103,6 +103,19 @@ function hasRatio(value: number | null | undefined): boolean {
 }
 
 /**
+ * Numeric token price in USD for a given group ratio (before the token-unit
+ * divisor and currency formatting). Returns NaN when the dimension is not
+ * configured for the model, so callers can skip that dimension.
+ */
+export function getTokenPriceUSD(
+  model: PricingModel,
+  type: PriceType,
+  ratio: number
+): number {
+  return calculateTokenPrice(model, type, ratio)
+}
+
+/**
  * Apply recharge rate to price
  *
  * priceRate represents how much users need to recharge (in the display currency)
@@ -397,6 +410,11 @@ export type DiscountInfo = {
  * Compare the platform price (model_ratio adjusted by the viewer's group
  * ratio) against the official preset price. A discount exists when the
  * platform price is lower than the official price.
+ *
+ * When the selected pricing preset has no entry for this model, fall back to
+ * comparing the group-adjusted price against the platform list price
+ * (group_ratio = 1), so models discounted only via group ratio still show
+ * the "xx折" badge.
  */
 export function getDiscountInfo(
   model: PricingModel,
@@ -405,24 +423,39 @@ export function getDiscountInfo(
 ): DiscountInfo {
   const official = getOfficialReferenceRatio(model, officialPrices)
   const platform = model.model_ratio
-  if (
-    official == null ||
-    !Number.isFinite(official) ||
-    official <= 0 ||
-    !Number.isFinite(platform) ||
-    platform <= 0
-  ) {
-    return { hasDiscount: false, percent: 0, zhe: 10 }
-  }
   const displayRatio = getDisplayGroupRatio(model, selectedGroup)
-  const effectivePlatform = platform * displayRatio
-  if (effectivePlatform >= official - 1e-9) {
+
+  if (
+    official != null &&
+    Number.isFinite(official) &&
+    official > 0 &&
+    Number.isFinite(platform) &&
+    platform > 0
+  ) {
+    const effectivePlatform = platform * displayRatio
+    if (effectivePlatform < official - 1e-9) {
+      const ratio = effectivePlatform / official
+      return {
+        hasDiscount: true,
+        percent: (1 - ratio) * 100,
+        zhe: ratio * 10,
+      }
+    }
     return { hasDiscount: false, percent: 0, zhe: 10 }
   }
-  const ratio = effectivePlatform / official
-  return {
-    hasDiscount: true,
-    percent: (1 - ratio) * 100,
-    zhe: ratio * 10,
+
+  if (
+    Number.isFinite(platform) &&
+    platform > 0 &&
+    displayRatio > 0 &&
+    displayRatio < 1
+  ) {
+    return {
+      hasDiscount: true,
+      percent: (1 - displayRatio) * 100,
+      zhe: displayRatio * 10,
+    }
   }
+
+  return { hasDiscount: false, percent: 0, zhe: 10 }
 }

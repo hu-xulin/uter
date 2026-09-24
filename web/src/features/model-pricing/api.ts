@@ -171,6 +171,41 @@ export function useSaveModelPricing() {
   })
 }
 
+export type OfficialPricingReference = {
+  /** model -> field -> ratio, the official preset's reference prices. */
+  officialPrices: Record<string, Record<string, number>>
+  /** Selected plaza pricing source: 'official' | 'models.dev' | 'channel'. */
+  pricingSource: string
+}
+
+/**
+ * Fetches the official preset reference prices used by the plaza discount
+ * comparison. These are the read-only "official" prices the admin's own
+ * ("Uter") prices are compared against per dimension.
+ */
+export async function getOfficialPricingReference(): Promise<OfficialPricingReference> {
+  const res = await api.get('/api/pricing')
+  if (!res.data.success) {
+    throw createServerError(res.data, t('Failed to load model pricing'))
+  }
+  return {
+    officialPrices:
+      (res.data.data?.official_prices as Record<string, Record<string, number>>) ??
+      {},
+    pricingSource: (res.data.data?.pricing_source as string) ?? 'official',
+  }
+}
+
+export function useOfficialPricingReference() {
+  return useQuery({
+    queryKey: ['official-pricing-reference'],
+    queryFn: getOfficialPricingReference,
+    staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
+    meta: { errorToast: false },
+  })
+}
+
 // Only dirty model fields are applied to stored configuration. Display-only
 // built-in expressions for other models never become administrator overrides.
 export function buildPricingChanges(

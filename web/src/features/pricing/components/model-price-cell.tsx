@@ -145,11 +145,11 @@ export function ModelPriceCell(props: {
         </span>
       )
     }
-    const hasRequestPrice = dynamic.primaryEntries.some(
+    const allEntries = dynamic.entries
+    const hasRequestPrice = allEntries.some(
       (entry) => entry.unit === 'request' || entry.unit === 'image'
     )
-    metrics = dynamic.primaryEntries
-      .slice(0, hasRequestPrice ? 3 : 2)
+    metrics = allEntries
       .map((entry) => {
         const unit = getDynamicPriceUnitLabelKey(entry)
         const unitLabel = taskUsageUnitLabel(
@@ -158,7 +158,7 @@ export function ModelPriceCell(props: {
           unit ? t(unit) : ''
         )
         let suffix = unitLabel ? `/${unitLabel}` : ''
-        if (hasRequestPrice && entry.unit === 'token') {
+        if (entry.unit === 'token') {
           suffix = `/${t('{{unit}} tokens', { unit: tokenUnitLabel })}`
         }
         return {
@@ -306,11 +306,10 @@ export function ModelPriceCell(props: {
           ))}
         </span>
       )}
-      {officialDynamic?.primaryEntries.length ? (
+      {officialDynamic?.entries.length ? (
         <span className='text-muted-foreground block text-xs font-normal tabular-nums'>
           {t('Official')}:{' '}
-          {officialDynamic.primaryEntries
-            .slice(0, 2)
+          {officialDynamic.entries
             .map((e) =>
               e.labelKind === 'schema'
                 ? `${e.shortLabel} ${e.formattedRange ?? e.formatted}`
