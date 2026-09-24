@@ -29,6 +29,7 @@ import type {
 } from '@/features/model-pricing/pricing'
 import { combineBillingExpr } from '@/features/pricing/lib/billing-expr'
 import { formatBillingCondition } from '@/features/pricing/lib/billing-expression/condition-display'
+import type { VisualPrice } from '@/features/pricing/lib/billing-expression/visual'
 
 import { formatPricingNumber } from './pricing-format'
 
@@ -234,7 +235,21 @@ export function officialDimensionPriceUSD(
   ) {
     return null
   }
-  return modelRatio * 2 * dimRatio
+  let price = modelRatio * 2 * dimRatio
+  if (dimension === 'audioOutput') {
+    // The billing engine prices audio output as
+    // base × audio_ratio × audio_completion_ratio (relay quota semantics).
+    const audioRatio = official['audio_ratio']
+    if (
+      typeof audioRatio !== 'number' ||
+      !Number.isFinite(audioRatio) ||
+      audioRatio <= 0
+    ) {
+      return null
+    }
+    price *= audioRatio
+  }
+  return price
 }
 
 /**
@@ -250,6 +265,127 @@ export function officialRequestPriceUSD(
     return null
   }
   return price
+}
+
+/**
+ * Official USD price per 1M tokens for a visual tier pricing variable,
+ * following the plaza/billing-engine semantics (base = model_ratio × 2):
+ * p=base, c=base×completion, cr=base×cache, cc=base×create_cache,
+ * img=base×image, ai=base×audio, ao=base×audio×audio_completion.
+ * Returns null when the preset has no usable ratio for the variable
+ * (cc1h / img_cr / img_o have no official preset counterpart).
+ */
+export function officialTierVariablePriceUSD(
+  official: OfficialRatios | undefined,
+  variable: VisualPrice['variable']
+): number | null {
+  if (!official) return null
+  const modelRatio = official['model_ratio']
+  if (
+    typeof modelRatio !== 'number' ||
+    !Number.isFinite(modelRatio) ||
+    modelRatio <= 0
+  ) {
+    return null
+  }
+  const base = modelRatio * 2
+  const ratioOf = (key: string): number | null => {
+    const value = official[key]
+    return typeof value === 'number' && Number.isFinite(value) && value > 0
+      ? value
+      : null
+  }
+  switch (variable) {
+    case 'p':
+      return base
+    case 'c': {
+      const completion = ratioOf('completion_ratio')
+      return completion == null ? null : base * completion
+    }
+    case 'cr': {
+      const cache = ratioOf('cache_ratio')
+      return cache == null ? null : base * cache
+    }
+    case 'cc': {
+      const createCache = ratioOf('create_cache_ratio')
+      return createCache == null ? null : base * createCache
+    }
+    case 'img': {
+      const image = ratioOf('image_ratio')
+      return image == null ? null : base * image
+    }
+    case 'ai': {
+      const audio = ratioOf('audio_ratio')
+      return audio == null ? null : base * audio
+    }
+    case 'ao': {
+      const audio = ratioOf('audio_ratio')
+      const audioCompletion = ratioOf('audio_completion_ratio')
+      return audio == null || audioCompletion == null
+        ? null
+        : base * audio * audioCompletion
+    }
+    default:
+      return null
+  }
+}
+
+/** The custom-channel (platform) price fields exposed by /api/pricing. */
+export type PlatformModelPricing = {
+  model_name: string
+  quota_type: number
+  model_ratio: number
+  model_price: number
+  completion_ratio: number
+  cache_ratio?: number
+  create_cache_ratio?: number
+  image_ratio?: number
+  audio_ratio?: number
+  audio_completion_ratio?: number
+}
+
+/**
+ * Platform (自定义渠道) USD prices per 1M tokens for a visual tier pricing
+ * variable, using the same engine semantics as officialTierVariablePriceUSD.
+ * Returns undefined for variables the entry has no usable ratio for.
+ */
+export function platformTierVariablePricesUSD(
+  entry: PlatformModelPricing
+): Partial<Record<VisualPrice['variable'], number>> {
+  const official: OfficialRatios = {
+    model_ratio: entry.model_ratio,
+    completion_ratio: entry.completion_ratio,
+  }
+  for (const key of [
+    'cache_ratio',
+    'create_cache_ratio',
+    'image_ratio',
+    'audio_ratio',
+    'audio_completion_ratio',
+  ] as const) {
+    const value = entry[key]
+    if (typeof value === 'number') official[key] = value
+  }
+  const variables: VisualPrice['variable'][] = [
+    'p',
+    'c',
+    'cr',
+    'cc',
+    'img',
+    'ai',
+    'ao',
+  ]
+  const result: Partial<Record<VisualPrice['variable'], number>> = {}
+  for (const variable of variables) {
+    const price = officialTierVariablePriceUSD(official, variable)
+    if (price != null) result[variable] = price
+  }
+  return result
+}
+
+/** Formats a generated USD price without trailing zeros or precision noise. */
+export function formatGeneratedPriceUSD(value: number): string {
+  return String(Number(value.toFixed(6)))
 }
 
 /**

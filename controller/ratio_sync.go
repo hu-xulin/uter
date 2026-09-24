@@ -1182,8 +1182,8 @@ type presetRatioCacheEntry struct {
 }
 
 var (
-	presetRatioCacheMu sync.Mutex
-	presetRatioCache   = map[int]*presetRatioCacheEntry{}
+	presetRatioCacheMu  sync.Mutex
+	presetRatioCache    = map[int]*presetRatioCacheEntry{}
 	presetRatioCacheTTL = 10 * time.Minute
 )
 
@@ -1215,6 +1215,30 @@ func RefreshPresetModelRatios(presetID int) {
 	presetRatioCacheMu.Lock()
 	delete(presetRatioCache, presetID)
 	presetRatioCacheMu.Unlock()
+}
+
+// GetPresetPrices returns a built-in pricing preset's per-model reference
+// ratios for the admin pricing editor: `preset=official` (官方定价预设, -100)
+// or `preset=models.dev` (models.dev 定价预设, -101). Pass `refresh=1` to
+// force a re-fetch from upstream instead of serving the cached copy.
+// GET /api/ratio_sync/preset_prices?preset=official|models.dev[&refresh=1]
+func GetPresetPrices(c *gin.Context) {
+	presetID := officialRatioPresetID
+	presetName := "official"
+	if c.Query("preset") == "models.dev" {
+		presetID = modelsDevPresetID
+		presetName = "models.dev"
+	}
+	if c.Query("refresh") == "1" {
+		RefreshPresetModelRatios(presetID)
+	}
+	c.JSON(200, gin.H{
+		"success": true,
+		"data": gin.H{
+			"preset": presetName,
+			"prices": GetPresetModelRatios(presetID),
+		},
+	})
 }
 
 func fetchPresetModelRatios(presetID int) map[string]map[string]float64 {

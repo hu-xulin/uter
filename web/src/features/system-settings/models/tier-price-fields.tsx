@@ -16,12 +16,14 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@Uter.ai.com
 */
-import { ChevronDown } from 'lucide-react'
+import { ChevronDown, RefreshCw } from 'lucide-react'
 import { useEffect, useId, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { toast } from 'sonner'
 
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
+import { InputGroup, InputGroupAddon } from '@/components/ui/input-group'
 import { Label } from '@/components/ui/label'
 import {
   Select,
@@ -32,7 +34,15 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import type { PricingCurrency } from '@/features/model-pricing/currency'
+import {
+  getOfficialPricingReference,
+  getPresetPrices,
+  type PresetPriceSource,
+} from '@/features/model-pricing/api'
+import {
+  formatPricingAmount,
+  type PricingCurrency,
+} from '@/features/model-pricing/currency'
 import { PricingAmountInput } from '@/features/model-pricing/pricing-amount-input'
 import { BILLING_EXTRA_VARS } from '@/features/pricing/lib/billing-expr'
 import type { VisualPrice } from '@/features/pricing/lib/billing-expression/visual'
@@ -42,6 +52,15 @@ import {
   type CacheMode,
 } from '@/features/pricing/lib/tier-expr'
 import { cn } from '@/lib/utils'
+
+import {
+  computeDimensionDiscount,
+  formatGeneratedPriceUSD,
+  officialRequestPriceUSD,
+  officialTierVariablePriceUSD,
+  platformTierVariablePricesUSD,
+  toNumberOrNull,
+} from './model-pricing-core'
 
 const PRICE_VARS = BILLING_EXTRA_VARS.map((variable) => ({
   ...variable,
@@ -110,6 +129,7 @@ function PriceField({
 }
 
 type TierPriceFieldsProps = {
+  modelName?: string
   billingUnit?: 'token' | 'request'
   fixedPrice?: string
   onBillingUnitChange?: (unit: 'token' | 'request') => void
@@ -118,12 +138,157 @@ type TierPriceFieldsProps = {
   prices: Partial<Record<VisualPrice['variable'], number | string>>
   onChange: (variable: VisualPrice['variable'], value: string) => void
   onInclude?: (variable: VisualPrice['variable'], included: boolean) => void
+  /** Applies several variable prices at once, including missing ones. */
+  onApplyPrices?: (
+    updates: Partial<Record<VisualPrice['variable'], string>>
+  ) => void
   cacheMode?: CacheMode
   onCacheModeChange?: (mode: CacheMode) => void
   invalidVariables?: string[]
 }
+
+const PRESET_SOURCE_OPTIONS: { value: PresetPriceSource; label: string }[] = [
+  { value: 'official', label: 'Official pricing preset' },
+  { value: 'models.dev', label: 'models.dev pricing preset' },
+]
+
+/** Formats a per-dimension discount for display under a Uter price input. */
+function discountHintText(
+  discount: ReturnType<typeof computeDimensionDiscount>
+): string | undefined {
+  if (!discount || discount.tone === 'flat') return undefined
+  if (discount.tone === 'markup') return `+${Math.round(discount.percent)}%`
+  const zhe = discount.zhe ?? 10
+  const zheStr =
+    Math.abs(zhe - Math.round(zhe)) < 1e-6
+      ? String(Math.round(zhe))
+      : zhe.toFixed(1)
+  return `-${Math.round(discount.percent)}% · ${zheStr}折`
+}
+
 export function TierPriceFields(props: TierPriceFieldsProps) {
   const { t } = useTranslation()
+  const modelName = props.modelName?.trim() ?? ''
+  const showReference = modelName !== ''
+  const [officialSource, setOfficialSource] =
+    useState<PresetPriceSource>('official')
+  const [officialPrices, setOfficialPrices] = useState<
+    Record<string, Record<string, number>> | undefined
+  >(undefined)
+  const [officialLoading, setOfficialLoading] = useState(false)
+  const [officialError, setOfficialError] = useState(false)
+  const [discountText, setDiscountText] = useState('')
+  const [fetchingChannel, setFetchingChannel] = useState(false)
+  const officialRatios = officialPrices?.[modelName]
+
+  useEffect(() => {
+    if (!showReference) return
+    let cancelled = false
+    setOfficialLoading(true)
+    void getPresetPrices(officialSource)
+      .then((prices) => {
+        if (!cancelled) {
+          setOfficialPrices(prices)
+          setOfficialError(false)
+        }
+      })
+      .catch(() => {
+        if (!cancelled) setOfficialError(true)
+      })
+      .finally(() => {
+        if (!cancelled) setOfficialLoading(false)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [showReference, officialSource, modelName])
+
+  const handleSyncOfficialPrices = async () => {
+    if (!showReference) return
+    setOfficialLoading(true)
+    try {
+      const prices = await getPresetPrices(officialSource, true)
+      setOfficialPrices(prices)
+      setOfficialError(false)
+      toast.success(t('Official prices synced.'))
+    } catch {
+      setOfficialError(true)
+      toast.error(t('Failed to sync prices'))
+    } finally {
+      setOfficialLoading(false)
+    }
+  }
+
+  /** Generates Uter prices = official price × discount for priced dimensions. */
+  const applyDiscountPrices = (discount: number) => {
+    if (!officialRatios) return
+    const updates: Partial<Record<VisualPrice['variable'], string>> = {}
+    for (const variable of PRICE_VARS) {
+      const officialUSD = officialTierVariablePriceUSD(
+        officialRatios,
+        variable.key
+      )
+      if (officialUSD == null) continue
+      const isCore = variable.key === 'p' || variable.key === 'c'
+      const included = props.onInclude
+        ? props.prices[variable.key] !== undefined
+        : true
+      if (!isCore && !included) continue
+      updates[variable.key] = formatGeneratedPriceUSD(officialUSD * discount)
+    }
+    if (Object.keys(updates).length > 0) props.onApplyPrices?.(updates)
+  }
+
+  const handleDiscountChange = (text: string) => {
+    setDiscountText(text)
+    const value = Number(text)
+    if (text.trim() === '' || !Number.isFinite(value) || value <= 0) return
+    applyDiscountPrices(value)
+  }
+
+  /** Prefills Uter prices from the platform's own (自定义渠道) pricing. */
+  const handleFetchFromChannel = async () => {
+    if (!showReference) return
+    setFetchingChannel(true)
+    try {
+      const { platformPrices } = await getOfficialPricingReference()
+      const entry = platformPrices[modelName]
+      const usdPrices = entry ? platformTierVariablePricesUSD(entry) : undefined
+      if (!usdPrices || Object.keys(usdPrices).length === 0) {
+        toast.error(
+          t('No custom channel pricing found for {{model}}.', {
+            model: modelName,
+          })
+        )
+        return
+      }
+      const updates: Partial<Record<VisualPrice['variable'], string>> = {}
+      for (const [variable, usd] of Object.entries(usdPrices)) {
+        const isCore = variable === 'p' || variable === 'c'
+        const included = props.onInclude
+          ? props.prices[variable as VisualPrice['variable']] !== undefined
+          : true
+        if (!isCore && !included) continue
+        updates[variable as VisualPrice['variable']] = formatGeneratedPriceUSD(
+          usd as number
+        )
+      }
+      if (Object.keys(updates).length > 0) {
+        props.onApplyPrices?.(updates)
+      } else {
+        toast.error(
+          t('No custom channel pricing found for {{model}}.', {
+            model: modelName,
+          })
+        )
+      }
+    } catch {
+      toast.error(t('Failed to load model pricing'))
+    } finally {
+      setFetchingChannel(false)
+    }
+  }
+
   const hasMediaPricing = MEDIA_PRICE_VARS.some((variable) =>
     props.onInclude
       ? props.prices[variable.key] !== undefined
@@ -136,28 +301,40 @@ export function TierPriceFields(props: TierPriceFieldsProps) {
   const renderPriceVariable = (variable: {
     key: VisualPrice['variable']
     label: string
-  }) => (
-    <PriceField
-      key={variable.key}
-      currency={props.currency}
-      label={
-        variable.key === 'cc' && props.prices.cc1h !== undefined
-          ? t('Cache Creation (5m)')
-          : t(variable.label)
-      }
-      value={props.prices[variable.key] ?? 0}
-      onChange={(value) => props.onChange(variable.key, value)}
-      included={
-        props.onInclude ? props.prices[variable.key] !== undefined : undefined
-      }
-      onInclude={
-        props.onInclude
-          ? (included) => props.onInclude?.(variable.key, included)
-          : undefined
-      }
-      invalid={props.invalidVariables?.includes(variable.key)}
-    />
-  )
+  }) => {
+    const officialUSD = showReference
+      ? officialTierVariablePriceUSD(officialRatios, variable.key)
+      : null
+    const discount = showReference
+      ? computeDimensionDiscount(
+          toNumberOrNull(props.prices[variable.key]),
+          officialUSD
+        )
+      : null
+    return (
+      <PriceField
+        key={variable.key}
+        currency={props.currency}
+        label={
+          variable.key === 'cc' && props.prices.cc1h !== undefined
+            ? t('Cache Creation (5m)')
+            : t(variable.label)
+        }
+        value={props.prices[variable.key] ?? 0}
+        onChange={(value) => props.onChange(variable.key, value)}
+        included={
+          props.onInclude ? props.prices[variable.key] !== undefined : undefined
+        }
+        onInclude={
+          props.onInclude
+            ? (included) => props.onInclude?.(variable.key, included)
+            : undefined
+        }
+        invalid={props.invalidVariables?.includes(variable.key)}
+        hint={discountHintText(discount)}
+      />
+    )
+  }
   const billingControl = props.onBillingUnitChange && (
     <Select
       items={[
@@ -187,6 +364,20 @@ export function TierPriceFields(props: TierPriceFieldsProps) {
     </Select>
   )
   if (props.billingUnit === 'request') {
+    const officialUSD = showReference
+      ? officialRequestPriceUSD(officialRatios)
+      : null
+    const discount = showReference
+      ? computeDimensionDiscount(
+          toNumberOrNull(props.fixedPrice),
+          officialUSD
+        )
+      : null
+    const discountHint = discountHintText(discount)
+    const officialHint =
+      officialUSD != null
+        ? `${t('Official price')}: ${formatPricingAmount(officialUSD, props.currency)}`
+        : undefined
     return (
       <>
         {billingControl}
@@ -195,7 +386,10 @@ export function TierPriceFields(props: TierPriceFieldsProps) {
           label={t('Price per request')}
           value={props.fixedPrice ?? ''}
           onChange={(value) => props.onFixedPriceChange?.(value)}
-          hint={`${props.currency.symbol}/${t('request')}`}
+          hint={
+            [officialHint, discountHint].filter(Boolean).join(' · ') ||
+            `${props.currency.symbol}/${t('request')}`
+          }
           invalid={props.invalidVariables?.includes('fixed')}
         />
       </>
@@ -204,12 +398,124 @@ export function TierPriceFields(props: TierPriceFieldsProps) {
   return (
     <>
       {billingControl}
+      {/* Token official prices (read-only reference from a pricing preset) */}
+      <div className='space-y-2'>
+        <div className='flex flex-wrap items-center justify-between gap-2'>
+          <Label className='text-sm font-semibold'>
+            {t('Token official prices')}
+          </Label>
+          {showReference && (
+            <div className='flex items-center gap-2'>
+              <Select
+                items={PRESET_SOURCE_OPTIONS}
+                value={officialSource}
+                onValueChange={(value) => {
+                  if (value === 'official' || value === 'models.dev') {
+                    setOfficialSource(value)
+                  }
+                }}
+              >
+                <SelectTrigger
+                  aria-label={t('Official pricing preset')}
+                  size='sm'
+                  className='w-full sm:w-52'
+                >
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent alignItemWithTrigger={false}>
+                  <SelectGroup>
+                    {PRESET_SOURCE_OPTIONS.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {t(option.label)}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+              <Button
+                type='button'
+                variant='outline'
+                size='sm'
+                disabled={officialLoading}
+                onClick={handleSyncOfficialPrices}
+              >
+                <RefreshCw
+                  className={cn('h-3.5 w-3.5', officialLoading && 'animate-spin')}
+                />
+                {t('Sync prices')}
+              </Button>
+            </div>
+          )}
+        </div>
+        {showReference && (
+          <div className='text-muted-foreground flex flex-wrap gap-x-4 gap-y-1 text-xs tabular-nums'>
+            {PRICE_VARS.map((variable) => {
+              const officialUSD = officialTierVariablePriceUSD(
+                officialRatios,
+                variable.key
+              )
+              return (
+                <span key={variable.key}>
+                  {t(variable.label)}:{' '}
+                  {officialUSD != null
+                    ? formatPricingAmount(officialUSD, props.currency)
+                    : '—'}
+                </span>
+              )
+            })}
+            {officialError && (
+              <span role='alert' className='text-destructive'>
+                {t('Failed to load model pricing')}
+              </span>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* Discount ratio: regenerates the Uter prices from official prices */}
+      {showReference && (
+        <div className='flex flex-wrap items-center gap-2'>
+          <Label className='text-sm font-semibold'>
+            {t('Discount ratio')}
+          </Label>
+          <InputGroup className='w-28'>
+            <InputGroupAddon>x</InputGroupAddon>
+            <PricingAmountInput
+              aria-label={t('Discount ratio')}
+              inputMode='decimal'
+              value={discountText}
+              placeholder='0.85'
+              onChange={handleDiscountChange}
+            />
+          </InputGroup>
+          <span className='text-muted-foreground text-xs'>
+            {t('Uter price = official price × discount ratio.')}
+          </span>
+        </div>
+      )}
+
+      {/* Token Uter prices (editable) */}
       <div className='space-y-2'>
         <div className='flex items-center justify-between gap-3'>
-          <Label className='text-sm font-semibold'>{t('Token prices')}</Label>
-          <span className='bg-muted text-muted-foreground rounded-md px-2 py-1 text-xs'>
-            {props.currency.symbol}/{t('1M token')}
-          </span>
+          <Label className='text-sm font-semibold'>
+            {t('Token Uter prices')}
+          </Label>
+          <div className='flex items-center gap-2'>
+            {showReference && (
+              <Button
+                type='button'
+                variant='outline'
+                size='sm'
+                disabled={fetchingChannel}
+                onClick={handleFetchFromChannel}
+              >
+                {t('Fetch from custom channel')}
+              </Button>
+            )}
+            <span className='bg-muted text-muted-foreground rounded-md px-2 py-1 text-xs'>
+              {props.currency.symbol}/{t('1M token')}
+            </span>
+          </div>
         </div>
 
         <div className='space-y-3'>
