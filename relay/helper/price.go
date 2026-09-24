@@ -15,6 +15,7 @@ import (
 	"github.com/Uter-AI/Uter/relaykit/relayconvert/reasoning"
 	"github.com/Uter-AI/Uter/relaykit/types"
 	"github.com/Uter-AI/Uter/setting/billing_setting"
+	"github.com/Uter-AI/Uter/setting/custom_pricing"
 	"github.com/Uter-AI/Uter/setting/operation_setting"
 	"github.com/Uter-AI/Uter/setting/ratio_setting"
 	hostreasoning "github.com/Uter-AI/Uter/setting/reasoning"
@@ -72,7 +73,56 @@ func HandleGroupRatio(ctx *gin.Context, relayInfo *relaycommon.RelayInfo) hostty
 		groupRatioInfo.GroupRatio = ratio_setting.GetGroupRatio(relayInfo.UsingGroup)
 	}
 
+	applyCustomPricing(ctx, relayInfo, &groupRatioInfo)
+
 	return groupRatioInfo
+}
+
+// applyCustomPricing folds 渠道定价 and 用户定价 into the group ratio, which is
+// the single multiplier shared by every billing path (per-token, per-request and
+// tiered expressions). Both features are off by default, in which case this is
+// a cheap no-op.
+func applyCustomPricing(
+	ctx *gin.Context,
+	relayInfo *relaycommon.RelayInfo,
+	groupRatioInfo *hosttypes.GroupRatioInfo,
+) {
+	if !custom_pricing.ChannelPricingEnabled() && !custom_pricing.UserPricingEnabled() {
+		return
+	}
+	if relayInfo == nil {
+		return
+	}
+
+	modelName := relayInfo.GetBillingModelName()
+	baseValue, usePrice, exists := ratio_setting.GetModelRatioOrPrice(modelName)
+	if !exists {
+		baseValue, usePrice = 0, false
+	}
+	channelId := common.GetContextKeyInt(ctx, constant.ContextKeyChannelId)
+
+	multiplier, applied := custom_pricing.EffectiveMultiplier(custom_pricing.ChargeContext{
+		ChannelId:  channelId,
+		UserId:     relayInfo.UserId,
+		ModelName:  modelName,
+		BaseRatio:  baseValue,
+		UsePrice:   usePrice,
+		MonthlyUSD: monthlyUSDForUser(relayInfo.UserId),
+	})
+	if applied {
+		groupRatioInfo.GroupRatio *= multiplier
+		logger.LogDebug(ctx, "custom pricing: channel=%d user=%d model=%s multiplier=%.6f groupRatio=%.6f",
+			channelId, relayInfo.UserId, modelName, multiplier, groupRatioInfo.GroupRatio)
+	}
+}
+
+// monthlyUSDForUser resolves the user's month-to-date spend, but only touches
+// the log store when user-tier pricing is actually enabled.
+func monthlyUSDForUser(userId int) float64 {
+	if !custom_pricing.UserPricingEnabled() || userId <= 0 {
+		return 0
+	}
+	return model.GetUserMonthConsumedUSD(userId)
 }
 
 func ModelPriceHelper(c *gin.Context, info *relaycommon.RelayInfo, promptTokens int, meta *types.TokenCountMeta) (hosttypes.PriceData, error) {

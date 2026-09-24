@@ -18,7 +18,7 @@ For commercial licensing, please contact support@Uter.ai.com
 */
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { CheckSquare, RefreshCcw } from 'lucide-react'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 
@@ -38,7 +38,7 @@ import {
   createServerError,
 } from '@/lib/server-error-message'
 
-import { fetchUpstreamRatios, getUpstreamChannels } from '../api'
+import { fetchUpstreamRatios, getSystemOptions, getUpstreamChannels } from '../api'
 import type {
   DifferencesMap,
   PricingSyncModels,
@@ -75,6 +75,110 @@ function getDefaultEndpointForChannel(channel: UpstreamChannel): string {
   return DEFAULT_ENDPOINT
 }
 
+// ----------------------------------------------------------------------------
+// Channel price source
+//
+// The operator can also price models through the "Channel Pricing" billing
+// setting (a multiplier or an absolute price per channel+model). When syncing
+// model prices we surface those configured prices as additional, selectable
+// sources named "Channel price · #{id}". They are derived from the current
+// model price (fetched upstream) so the operator can pick Official price OR
+// their own channel price per model and apply it.
+// ----------------------------------------------------------------------------
+
+const CHANNEL_PRICE_NUMERIC_FIELDS = [
+  'model_ratio',
+  'completion_ratio',
+  'cache_ratio',
+  'create_cache_ratio',
+  'image_ratio',
+  'audio_ratio',
+  'audio_completion_ratio',
+  'model_price',
+] as const
+
+type ChannelPriceRule = { mode: string; value: number }
+
+/**
+ * Apply a single channel-price rule to the current model pricing and return the
+ * resulting pricing values, or null when it can't be derived (e.g. the current
+ * model uses an expression, or the rule is malformed).
+ *
+ * - ratio mode multiplies every numeric price field (mirrors what billing does
+ *   at request time).
+ * - price mode sets an absolute price: for token models the input price is
+ *   `value` USD / 1M tokens, which maps to model_ratio = value / 2 (new-api's
+ *   $2-per-1M baseline), and the other ratios are scaled by the same factor to
+ *   preserve their relationship; for request models model_price is set.
+ */
+function applyChannelRuleToCurrent(
+  current: PricingSyncValues,
+  rule: ChannelPriceRule
+): PricingSyncValues | null {
+  if (typeof current.billing_expr === 'string' && current.billing_expr.trim()) {
+    // Expression-mode prices can't be derived by scaling ratios.
+    return null
+  }
+  const value = Number(rule.value)
+  if (!Number.isFinite(value) || value < 0) return null
+  const next: PricingSyncValues = { ...current }
+  if (rule.mode === 'ratio') {
+    for (const field of CHANNEL_PRICE_NUMERIC_FIELDS) {
+      const existing = current[field]
+      if (typeof existing === 'number') next[field] = existing * value
+    }
+    return next
+  }
+  if (rule.mode === 'price') {
+    if (typeof current.model_ratio === 'number') {
+      const factor = value / 2 / current.model_ratio
+      for (const field of CHANNEL_PRICE_NUMERIC_FIELDS) {
+        const existing = current[field]
+        if (typeof existing === 'number') next[field] = existing * factor
+      }
+      return next
+    }
+    if (typeof current.model_price === 'number') {
+      next.model_price = value
+      for (const field of CHANNEL_PRICE_NUMERIC_FIELDS) {
+        if (field !== 'model_price') delete next[field]
+      }
+      return next
+    }
+    return null
+  }
+  return null
+}
+
+/**
+ * Fold every configured "Channel price" source into the fetched price table so
+ * each appears as an additional selectable column beside the official / preset
+ * sources. Models without a matching channel rule are left untouched.
+ */
+function mergeChannelPrices(
+  prices: PricingSyncModels,
+  sources: { sourceName: string; byModel: Record<string, ChannelPriceRule> }[]
+): PricingSyncModels {
+  if (!sources.length) return prices
+  const next: PricingSyncModels = {}
+  for (const [model, row] of Object.entries(prices)) {
+    const upstreams: Record<string, PricingSyncValues> = { ...row.upstreams }
+    let changed = false
+    for (const src of sources) {
+      const rule = src.byModel[model]
+      if (!rule) continue
+      const derived = applyChannelRuleToCurrent(row.current, rule)
+      if (!derived) continue
+      upstreams[src.sourceName] = derived
+      changed = true
+    }
+    next[model] = changed
+      ? { current: row.current, upstreams }
+      : row
+  }
+  return next
+}
+
 export function UpstreamRatioSync() {
   const { t } = useTranslation()
   const queryClient = useQueryClient()
@@ -95,9 +199,56 @@ export function UpstreamRatioSync() {
   const { data: channelsData } = useQuery({
     queryKey: ['upstream-channels'],
     queryFn: async () => requireServerSuccess(await getUpstreamChannels()),
-    enabled: channelDialogOpen,
+    enabled: true,
   })
   const channels = useMemo(() => channelsData?.data ?? [], [channelsData?.data])
+  const { data: optionsRes } = useQuery({
+    queryKey: ['system-options-channel-price'],
+    queryFn: () => getSystemOptions(),
+    staleTime: 60_000,
+  })
+  const channelPriceSetting = useMemo(() => {
+    const arr = optionsRes?.data
+    if (!Array.isArray(arr)) return undefined
+    return arr.find((option) => option.key === 'ChannelPriceSetting')?.value
+  }, [optionsRes])
+  // Channels that have a configured Channel Pricing override become selectable
+  // "Channel price" sources in the table.
+  const channelPriceSources = useMemo(() => {
+    if (!channelPriceSetting) return []
+    let parsed: {
+      enabled?: boolean
+      channels?: Record<string, { enabled?: boolean; models?: Record<string, ChannelPriceRule> }>
+    }
+    try {
+      parsed = JSON.parse(channelPriceSetting)
+    } catch {
+      return []
+    }
+    if (parsed.enabled !== true) return []
+    const nameById = new Map(channels.map((channel) => [String(channel.id), channel.name]))
+    const out: { sourceName: string; byModel: Record<string, ChannelPriceRule> }[] = []
+    for (const [channelId, config] of Object.entries(parsed.channels ?? {})) {
+      if (!config || config.enabled === false) continue
+      const byModel: Record<string, ChannelPriceRule> = {}
+      for (const [model, rule] of Object.entries(config.models ?? {})) {
+        if (!model || !rule) continue
+        byModel[model] = rule
+      }
+      if (Object.keys(byModel).length) {
+        out.push({
+          sourceName: `${t('Channel price source')} · #${channelId} ${nameById.get(channelId) ?? ''}`.trim(),
+          byModel,
+        })
+      }
+    }
+    return out
+  }, [channelPriceSetting, channels, t])
+
+  // Keep the latest channel price sources available inside the fetch mutation
+  // callback without re-creating the mutation whenever they change.
+  const channelPriceSourcesRef = useRef(channelPriceSources)
+  channelPriceSourcesRef.current = channelPriceSources
   useEffect(() => {
     if (!channels.length) return
     setChannelEndpoints((previous) => {
@@ -162,7 +313,12 @@ export function UpstreamRatioSync() {
         )
       }
       setDifferences(response.data.differences)
-      setPrices(response.data.prices)
+      setPrices(
+        mergeChannelPrices(
+          response.data.prices,
+          channelPriceSourcesRef.current
+        )
+      )
       if (!Object.keys(response.data.prices).length) {
         toast.success(t('No price differences found'))
       }

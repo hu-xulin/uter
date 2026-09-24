@@ -64,9 +64,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import {
   previewModelPricing,
   previewModelPricingConversion,
+  useOfficialPricingReference,
   type ModelPricingPluginVariant,
 } from '@/features/model-pricing/api'
 import {
+  formatPricingAmount,
   getSitePricingCurrency,
   isValidPricingCurrency,
   USD_PRICING_CURRENCY,
@@ -96,18 +98,27 @@ import {
   EMPTY_LANE_ENABLED,
   EMPTY_LANE_PRICES,
   buildPreviewRows,
+  computeDimensionDiscount,
   createInitialLaneState,
   createModelPricingSchema,
   hasValue,
   laneConfigs,
+  officialDimensionPriceUSD,
+  officialRequestPriceUSD,
   ratioFieldByLane,
   toNumberOrNull,
+  type DiscountTone,
   type LaneKey,
   type ModelPricingFormValues,
   type ModelRatioData,
   type PricingMode,
 } from './model-pricing-core'
-import { PriceInput, PriceLane } from './model-pricing-inputs'
+import {
+  PriceInput,
+  PriceLane,
+  PriceReferenceFootnote,
+  type PriceReferenceInfo,
+} from './model-pricing-inputs'
 import { formatPricingNumber } from './pricing-format'
 import { TaskPluginPricingEditor } from './task-plugin-pricing-editor'
 import { TaskUsagePricingEditor } from './task-usage-pricing-editor'
@@ -331,6 +342,82 @@ export const ModelPricingEditorPanel = forwardRef<
   const taskUsageExamples =
     usageExamplesByModel.get(watchedValues.name.trim()) ??
     pluginVariants?.find((variant) => !variant.stale)?.usage_examples
+  const officialReference = useOfficialPricingReference()
+  const officialRatios = useMemo(
+    () =>
+      (officialReference.data?.officialPrices ?? {})[
+        watchedValues.name.trim()
+      ] ?? undefined,
+    [officialReference.data, watchedValues.name]
+  )
+
+  /**
+   * Build the per-dimension official reference footnote (official price + live
+   * discount = Uter price ÷ official price). Returns undefined when the preset
+   * has no usable official price for the dimension.
+   */
+  const buildPriceReference = (
+    dimension: 'input' | LaneKey,
+    uterUSD: number | null
+  ): PriceReferenceInfo | undefined => {
+    const officialUSD = officialDimensionPriceUSD(officialRatios, dimension)
+    if (officialUSD == null) return undefined
+    const discount = computeDimensionDiscount(uterUSD, officialUSD)
+    const officialLabel = `${t('Official price')}: ${formatPricingAmount(
+      officialUSD,
+      currency
+    )}`
+    let discountLabel = ''
+    let discountTone: DiscountTone = 'flat'
+    if (discount) {
+      discountTone = discount.tone
+      if (discount.tone === 'discount') {
+        const zhe = discount.zhe ?? 10
+        const zheStr =
+          Math.abs(zhe - Math.round(zhe)) < 1e-6
+            ? String(Math.round(zhe))
+            : zhe.toFixed(1)
+        discountLabel = `-${Math.round(discount.percent)}% · ${zheStr}折`
+      } else if (discount.tone === 'markup') {
+        discountLabel = `+${Math.round(discount.percent)}%`
+      } else {
+        discountLabel = t('At par with official')
+      }
+    }
+    return { officialLabel, discountLabel, discountTone }
+  }
+
+  const requestReference = useMemo(() => {
+    const officialUSD = officialRequestPriceUSD(officialRatios)
+    if (officialUSD == null) return undefined
+    const discount = computeDimensionDiscount(
+      toNumberOrNull(watchedValues.price),
+      officialUSD
+    )
+    const officialLabel = `${t('Official price')}: ${formatPricingAmount(
+      officialUSD,
+      currency
+    )}`
+    let discountLabel = ''
+    let discountTone: DiscountTone = 'flat'
+    if (discount) {
+      discountTone = discount.tone
+      if (discount.tone === 'discount') {
+        const zhe = discount.zhe ?? 10
+        const zheStr =
+          Math.abs(zhe - Math.round(zhe)) < 1e-6
+            ? String(Math.round(zhe))
+            : zhe.toFixed(1)
+        discountLabel = `-${Math.round(discount.percent)}% · ${zheStr}折`
+      } else if (discount.tone === 'markup') {
+        discountLabel = `+${Math.round(discount.percent)}%`
+      } else {
+        discountLabel = t('At par with official')
+      }
+    }
+    return { officialLabel, discountLabel, discountTone }
+  }, [officialRatios, watchedValues.price, currency, t])
+
   const defaultTaskBillingExpr = useMemo(
     () =>
       taskUsageSchema
@@ -1026,6 +1113,11 @@ export const ModelPricingEditorPanel = forwardRef<
                           'Unset legacy prices use the billing engine defaults.'
                         )}
                       </p>
+                      <p className='bg-muted/40 text-muted-foreground rounded-md border px-3 py-2 text-xs'>
+                        {t(
+                          'Token pricing is split into the official price (read-only reference) and the Uter price (editable). The discount per dimension is Uter price ÷ official price, computed live as you type.'
+                        )}
+                      </p>
                       <div
                         className={cn(
                           'grid min-w-0 gap-3',
@@ -1056,6 +1148,10 @@ export const ModelPricingEditorPanel = forwardRef<
                             value={promptPrice}
                             placeholder='3'
                             onChange={handlePromptPriceChange}
+                            reference={buildPriceReference(
+                              'input',
+                              toNumberOrNull(promptPrice)
+                            )}
                           />
                         </Field>
 
@@ -1087,6 +1183,14 @@ export const ModelPricingEditorPanel = forwardRef<
                               }
                               onChange={(value) =>
                                 handleLanePriceChange(lane.key, value)
+                              }
+                              reference={
+                                laneEnabled[lane.key]
+                                  ? buildPriceReference(
+                                      lane.key,
+                                      toNumberOrNull(lanePrices[lane.key])
+                                    )
+                                  : undefined
                               }
                             />
                           )
@@ -1128,6 +1232,11 @@ export const ModelPricingEditorPanel = forwardRef<
                                   )}
                                 </FormDescription>
                                 <FormMessage />
+                                {requestReference && (
+                                  <PriceReferenceFootnote
+                                    reference={requestReference}
+                                  />
+                                )}
                               </Field>
                             </FormItem>
                           )}

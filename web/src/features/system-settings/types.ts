@@ -311,6 +311,12 @@ export type BillingSettings = {
   'tool_price_setting.prices': string
   /** Global model plaza pricing source: official | models.dev | channel. */
   PricingSource: string
+  /** Per-channel model pricing overrides (JSON). See setting/custom_pricing. */
+  ChannelPriceSetting: string
+  /** Per-(channel, model) routing weight & priority overrides (JSON). See setting/channel_weight. */
+  ChannelModelWeight: string
+  /** Per-user monthly consumption tier multipliers (JSON). */
+  UserPriceSetting: string
   TopupGroupRatio: string
   GroupRatio: string
   UserUsableGroups: string

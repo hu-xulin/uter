@@ -11,6 +11,7 @@ import (
 
 	"github.com/Uter-AI/Uter/dto"
 
+	"github.com/Uter-AI/Uter/setting/channel_weight"
 	"github.com/samber/lo"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
@@ -214,6 +215,24 @@ func identityFilterRequiresKey(filters []dto.ChannelFilter) bool {
 	return false
 }
 
+// effectiveChannelPriority returns the per-model priority override for
+// (channel, model) when configured, otherwise the channel-level priority.
+func effectiveChannelPriority(channel *Channel, model string) *int64 {
+	if p, ok := channel_weight.GetChannelModelPriority(channel.Id, model); ok {
+		return &p
+	}
+	return channel.Priority
+}
+
+// effectiveChannelWeight returns the per-model weight override for
+// (channel, model) when configured, otherwise the channel-level weight.
+func effectiveChannelWeight(channel *Channel, model string) int {
+	if w, ok := channel_weight.GetChannelModelWeight(channel.Id, model); ok {
+		return w
+	}
+	return channel.GetWeight()
+}
+
 func (channel *Channel) AddAbilities(tx *gorm.DB) error {
 	models_ := strings.Split(channel.Models, ",")
 	groups_ := strings.Split(channel.Group, ",")
@@ -231,8 +250,8 @@ func (channel *Channel) AddAbilities(tx *gorm.DB) error {
 				Model:     model,
 				ChannelId: channel.Id,
 				Enabled:   channel.Status == common.ChannelStatusEnabled,
-				Priority:  channel.Priority,
-				Weight:    uint(channel.GetWeight()),
+				Priority:  effectiveChannelPriority(channel, model),
+				Weight:    uint(effectiveChannelWeight(channel, model)),
 				Tag:       channel.Tag,
 			}
 			abilities = append(abilities, ability)
@@ -303,8 +322,8 @@ func (channel *Channel) UpdateAbilities(tx *gorm.DB) error {
 				Model:     model,
 				ChannelId: channel.Id,
 				Enabled:   channel.Status == common.ChannelStatusEnabled,
-				Priority:  channel.Priority,
-				Weight:    uint(channel.GetWeight()),
+				Priority:  effectiveChannelPriority(channel, model),
+				Weight:    uint(effectiveChannelWeight(channel, model)),
 				Tag:       channel.Tag,
 			}
 			abilities = append(abilities, ability)

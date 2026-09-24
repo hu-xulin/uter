@@ -25,7 +25,10 @@ import { PaymentSettingsSection } from '../integrations/payment-settings-section
 import { RatioSettingsCard } from '../models/ratio-settings-card'
 import type { BillingSettings } from '../types'
 import { createSectionRegistry } from '../utils/section-registry'
+import { ChannelPricingSection } from './channel-pricing-section'
+import { ChannelModelWeightSection } from './channel-model-weight-section'
 import { PricingSourceSection } from './pricing-source-section'
+import { UserPricingSection } from './user-pricing-section'
 
 const getModelDefaults = (settings: BillingSettings) => ({
   ModelPrice: settings.ModelPrice,
@@ -105,39 +108,6 @@ const BILLING_SECTIONS = [
     ),
   },
   {
-    id: 'pricing-source',
-    titleKey: 'Pricing Source',
-    build: (settings: BillingSettings) => (
-      <PricingSourceSection defaultSource={settings.PricingSource} />
-    ),
-  },
-  {
-    id: 'model-pricing',
-    titleKey: 'Model Pricing',
-    build: (settings: BillingSettings) => (
-      <RatioSettingsCard
-        titleKey='Model Pricing'
-        modelDefaults={getModelDefaults(settings)}
-        groupDefaults={getGroupDefaults(settings)}
-        toolPricesDefault={settings['tool_price_setting.prices']}
-        visibleTabs={['models', 'unset-models', 'tool-prices', 'upstream-sync']}
-      />
-    ),
-  },
-  {
-    id: 'group-pricing',
-    titleKey: 'Group Pricing',
-    build: (settings: BillingSettings) => (
-      <RatioSettingsCard
-        titleKey='Group Pricing'
-        modelDefaults={getModelDefaults(settings)}
-        groupDefaults={getGroupDefaults(settings)}
-        toolPricesDefault={settings['tool_price_setting.prices']}
-        visibleTabs={['groups']}
-      />
-    ),
-  },
-  {
     id: 'payment',
     titleKey: 'Payment Gateway',
     build: (settings: BillingSettings) => (
@@ -208,6 +178,60 @@ const BILLING_SECTIONS = [
           maxQuota: settings['checkin_setting.max_quota'],
         }}
       />
+    ),
+  },
+  {
+    id: 'model-pricing',
+    titleKey: 'Model Pricing',
+    build: (settings: BillingSettings) => (
+      <RatioSettingsCard
+        titleKey='Model Pricing'
+        modelDefaults={getModelDefaults(settings)}
+        groupDefaults={getGroupDefaults(settings)}
+        toolPricesDefault={settings['tool_price_setting.prices']}
+        visibleTabs={['models', 'unset-models', 'tool-prices', 'upstream-sync']}
+      />
+    ),
+  },
+  {
+    id: 'group-pricing',
+    titleKey: 'Group Pricing',
+    build: (settings: BillingSettings) => (
+      <RatioSettingsCard
+        titleKey='Group Pricing'
+        modelDefaults={getModelDefaults(settings)}
+        groupDefaults={getGroupDefaults(settings)}
+        toolPricesDefault={settings['tool_price_setting.prices']}
+        visibleTabs={['groups']}
+      />
+    ),
+  },
+  {
+    id: 'channel-pricing',
+    titleKey: 'Channel Pricing',
+    build: (settings: BillingSettings) => (
+      <ChannelPricingSection defaultSetting={settings.ChannelPriceSetting} />
+    ),
+  },
+  {
+    id: 'user-pricing',
+    titleKey: 'User Pricing',
+    build: (settings: BillingSettings) => (
+      <UserPricingSection defaultSetting={settings.UserPriceSetting} />
+    ),
+  },
+  {
+    id: 'channel-model-weight',
+    titleKey: 'Channel Model Weight',
+    build: (settings: BillingSettings) => (
+      <ChannelModelWeightSection defaultSetting={settings.ChannelModelWeight} />
+    ),
+  },
+  {
+    id: 'pricing-source',
+    titleKey: 'Pricing Source',
+    build: (settings: BillingSettings) => (
+      <PricingSourceSection defaultSource={settings.PricingSource} />
     ),
   },
 ] as const

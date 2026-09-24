@@ -166,6 +166,124 @@ export function toNumberOrNull(value: unknown): number | null {
   return Number.isFinite(num) ? num : null
 }
 
+// ----------------------------------------------------------------------------
+// Official price reference & discount
+//
+// The public pricing plaza exposes an "official price" preset (selected via the
+// PricingSource option) as `official_prices`: a `model -> field -> ratio` map
+// carrying the same ratio fields used by the platform (model_ratio,
+// completion_ratio, cache_ratio, ...). The platform's own (editable) price is
+// the "Uter price" (优特定价). The discount per dimension is the Uter price
+// divided by the official price — i.e. the ratio of the two ratio products,
+// which is currency-independent because the $2-per-1M baseline cancels out.
+// ----------------------------------------------------------------------------
+
+export type OfficialRatios = Record<string, number>
+
+/**
+ * Maps each editable price dimension (the input price plus every lane) to the
+ * snake_case ratio field used by the official preset.
+ */
+export const DIMENSION_OFFICIAL_FIELD: Record<
+  'input' | LaneKey,
+  keyof OfficialRatios
+> = {
+  input: 'model_ratio',
+  completion: 'completion_ratio',
+  cache: 'cache_ratio',
+  createCache: 'create_cache_ratio',
+  image: 'image_ratio',
+  audioInput: 'audio_ratio',
+  audioOutput: 'audio_completion_ratio',
+}
+
+export type DiscountTone = 'discount' | 'markup' | 'flat'
+
+export type DimensionDiscount = {
+  tone: DiscountTone
+  /** Percentage difference vs official: positive when Uter is cheaper. */
+  percent: number
+  /** Chinese "zhe" multiplier (×10), e.g. 9 for 9折. Only for discounts. */
+  zhe?: number
+}
+
+/**
+ * Official token price in USD per 1M tokens for a dimension, derived from the
+ * official preset ratios. Token prices follow new-api's $2-per-1M baseline:
+ * base = model_ratio * 2, dimension price = base * dimension_ratio. Returns
+ * null when the preset has no usable ratio for the dimension.
+ */
+export function officialDimensionPriceUSD(
+  official: OfficialRatios | undefined,
+  dimension: keyof typeof DIMENSION_OFFICIAL_FIELD
+): number | null {
+  if (!official) return null
+  const modelRatio = official['model_ratio']
+  if (
+    typeof modelRatio !== 'number' ||
+    !Number.isFinite(modelRatio) ||
+    modelRatio <= 0
+  ) {
+    return null
+  }
+  const dimRatio = official[DIMENSION_OFFICIAL_FIELD[dimension]]
+  if (
+    typeof dimRatio !== 'number' ||
+    !Number.isFinite(dimRatio) ||
+    dimRatio <= 0
+  ) {
+    return null
+  }
+  return modelRatio * 2 * dimRatio
+}
+
+/**
+ * Official fixed (per-request) price in USD, taken directly from the preset's
+ * model_price. Returns null when the preset has no usable value.
+ */
+export function officialRequestPriceUSD(
+  official: OfficialRatios | undefined
+): number | null {
+  if (!official) return null
+  const price = official['model_price']
+  if (typeof price !== 'number' || !Number.isFinite(price) || price <= 0) {
+    return null
+  }
+  return price
+}
+
+/**
+ * Discount of a Uter price vs the official price for the same dimension.
+ * Returns null when either side is missing or the official price is zero.
+ */
+export function computeDimensionDiscount(
+  uterPrice: number | null,
+  officialPrice: number | null
+): DimensionDiscount | null {
+  if (
+    uterPrice == null ||
+    officialPrice == null ||
+    !Number.isFinite(uterPrice) ||
+    !Number.isFinite(officialPrice) ||
+    officialPrice <= 0
+  ) {
+    return null
+  }
+  if (uterPrice <= 0) {
+    return { tone: 'flat', percent: 0 }
+  }
+  const ratio = uterPrice / officialPrice
+  if (Math.abs(ratio - 1) < 1e-9) return { tone: 'flat', percent: 0 }
+  if (ratio < 1) {
+    return {
+      tone: 'discount',
+      percent: (1 - ratio) * 100,
+      zhe: ratio * 10,
+    }
+  }
+  return { tone: 'markup', percent: (ratio - 1) * 100 }
+}
+
 function ratioToBasePrice(ratio: unknown): string {
   const num = toNumberOrNull(ratio)
   if (num === null) return ''

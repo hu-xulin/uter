@@ -15,6 +15,7 @@ import (
 	"github.com/Uter-AI/Uter/dto"
 	"github.com/Uter-AI/Uter/logger"
 	kitdto "github.com/Uter-AI/Uter/relaykit/dto"
+	"github.com/Uter-AI/Uter/setting/channel_weight"
 	"github.com/Uter-AI/Uter/setting/ratio_setting"
 )
 
@@ -149,10 +150,23 @@ func GetRandomSatisfiedChannel(
 		return nil, fmt.Errorf("数据库一致性错误，渠道# %d 不存在，请联系管理员修复", channels[0])
 	}
 
+	effPriority := func(ch *Channel) int64 {
+		if p, ok := channel_weight.GetChannelModelPriority(ch.Id, model); ok {
+			return p
+		}
+		return ch.GetPriority()
+	}
+	effWeight := func(ch *Channel) int {
+		if w, ok := channel_weight.GetChannelModelWeight(ch.Id, model); ok {
+			return w
+		}
+		return ch.GetWeight()
+	}
+
 	uniquePriorities := make(map[int]bool)
 	for _, channelId := range channels {
 		if channel, ok := channelsIDM[channelId]; ok {
-			uniquePriorities[int(channel.GetPriority())] = true
+			uniquePriorities[int(effPriority(channel))] = true
 		} else {
 			return nil, fmt.Errorf("数据库一致性错误，渠道# %d 不存在，请联系管理员修复", channelId)
 		}
@@ -173,8 +187,8 @@ func GetRandomSatisfiedChannel(
 	var targetChannels []*Channel
 	for _, channelId := range channels {
 		if channel, ok := channelsIDM[channelId]; ok {
-			if channel.GetPriority() == targetPriority {
-				sumWeight += channel.GetWeight()
+			if effPriority(channel) == targetPriority {
+				sumWeight += effWeight(channel)
 				targetChannels = append(targetChannels, channel)
 			}
 		} else {
@@ -208,7 +222,7 @@ func GetRandomSatisfiedChannel(
 
 	// Find a channel based on its weight
 	for _, channel := range targetChannels {
-		randomWeight -= channel.GetWeight()*smoothingFactor + smoothingAdjustment
+		randomWeight -= effWeight(channel)*smoothingFactor + smoothingAdjustment
 		if randomWeight < 0 {
 			return channel, nil
 		}

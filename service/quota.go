@@ -15,6 +15,7 @@ import (
 	perfmetrics "github.com/Uter-AI/Uter/pkg/perf_metrics"
 	relaycommon "github.com/Uter-AI/Uter/relay/common"
 	"github.com/Uter-AI/Uter/relaykit/dto"
+	"github.com/Uter-AI/Uter/setting/custom_pricing"
 	"github.com/Uter-AI/Uter/setting/ratio_setting"
 	"github.com/Uter-AI/Uter/types"
 
@@ -119,6 +120,20 @@ func PreWssConsumeQuota(ctx *gin.Context, relayInfo *relaycommon.RelayInfo, usag
 	userGroupRatio, ok := ratio_setting.GetGroupGroupRatio(relayInfo.UserGroup, relayInfo.UsingGroup)
 	if ok {
 		actualGroupRatio = userGroupRatio
+	}
+
+	// Keep this path aligned with HandleGroupRatio: per-channel and per-user
+	// tier pricing are billed on the pre-consume path, so realtime follow-up
+	// consumption must use the same multiplier.
+	if multiplier, applied := custom_pricing.EffectiveMultiplier(custom_pricing.ChargeContext{
+		ChannelId:  common.GetContextKeyInt(ctx, constant.ContextKeyChannelId),
+		UserId:     relayInfo.UserId,
+		ModelName:  modelName,
+		BaseRatio:  modelRatio,
+		UsePrice:   false,
+		MonthlyUSD: monthToDateUSD(relayInfo.UserId),
+	}); applied {
+		actualGroupRatio *= multiplier
 	}
 
 	quotaInfo := QuotaInfo{

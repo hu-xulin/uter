@@ -34,9 +34,9 @@ import { aboutPathFor, resolveDocsLocaleCode } from '@/lib/docs-link'
 const THEME_MESSAGE = 'Uter:docs:theme'
 
 /**
- * Height of `PublicHeader` in its unscrolled form (`h-16`), leaving the
- * frame to fill the rest of the viewport so the framed sidebar and table
- * of contents stay sticky inside it.
+ * Height of the static `PublicHeader` (`h-16`), leaving the frame to fill
+ * the rest of the viewport so the framed sidebar and table of contents
+ * stay sticky inside it.
  */
 const SPA_HEADER_HEIGHT = '4rem'
 

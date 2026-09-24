@@ -45,10 +45,10 @@ const THEME_MESSAGE = 'Uter:docs:theme'
 const ROUTE_MESSAGE = 'Uter:docs:route'
 
 /**
- * Height of `PublicHeader` in its unscrolled form (`h-16`). The frame
- * fills the rest of the viewport, which keeps the docs' own sidebar and
- * table of contents sticky inside the frame instead of scrolling away
- * with a page-level scroll.
+ * Height of the static `PublicHeader` (`h-16`). The frame fills the rest
+ * of the viewport, which keeps the docs' own sidebar and table of
+ * contents sticky inside the frame instead of scrolling away with a
+ * page-level scroll.
  */
 const SPA_HEADER_HEIGHT = '4rem'
 

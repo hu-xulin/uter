@@ -216,6 +216,7 @@ import {
   ChannelEditorLoadingState,
   ChannelModelsSection,
 } from './sections'
+import { ChannelModelWeightInline } from './sections/channel-model-weight-inline'
 
 type ChannelMutateDrawerProps = {
   open: boolean
@@ -2748,6 +2749,10 @@ export function ChannelMutateDrawer({
                       copyChipOnClick
                     />
                   </FormControl>
+                  <ChannelModelWeightInline
+                    channelId={channelId}
+                    models={currentModelsArray}
+                  />
                   {canBindTaskPlugin &&
                     canHavePluginExtensions &&
                     !showProviderPicker && (

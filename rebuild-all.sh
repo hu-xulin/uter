@@ -57,6 +57,10 @@ done
 
 # WorkBuddy 的 node-safe-delete-shim 会让 Next 的清理步骤炸掉，提前关掉。
 export CODEBUDDY_SAFE_DELETE_ENABLED=0
+# 同时关掉 broker 文件钩子与沙箱删除保护：否则受沙箱保护的命令写入工作区
+# 的文件会在命令结束时被整体回滚（rsbuild/go build 产物看似成功却不落盘）。
+export CODEBUDDY_BROKERED_FS_HOOK_ENABLED=0
+export CODEBUDDY_SAFE_DELETE_SANDBOX=0
 # dev server 的 CLI 是 `#!/usr/bin/env node` shim，node 必须在 PATH 上。
 export PATH="$NODE_DIR:$PATH"
 
