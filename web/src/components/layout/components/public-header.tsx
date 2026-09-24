@@ -30,6 +30,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { SystemUpdateAction } from '@/features/system-update/system-update-action'
 import { useNotifications } from '@/hooks/use-notifications'
 import { useSystemConfig } from '@/hooks/use-system-config'
+import { useScrolled } from '@/hooks/use-scrolled'
 import { useTopNavLinks } from '@/hooks/use-top-nav-links'
 import { cn } from '@/lib/utils'
 import { useAuthStore } from '@/stores/auth-store'
@@ -93,6 +94,7 @@ export function PublicHeader(props: PublicHeaderProps) {
   const notifications = useNotifications()
   const routerState = useRouterState()
   const pathname = routerState.location.pathname
+  const scrolled = useScrolled()
 
   const user = auth.user
   const isAuthenticated = !!user
@@ -193,12 +195,18 @@ export function PublicHeader(props: PublicHeaderProps) {
   return (
     <>
       {/*
-        Static public header: constant height, full width, no scroll-driven
-        morphing — same behaviour as the app header on the admin pages. The
-        bar carries its own background so content scrolling underneath stays
-        legible behind it.
+        Public header: constant height, full width. Transparent while the
+        page sits at the top so a hero bleeds through; gains a solid, blurred
+        background once the user scrolls — no height change, no morphing.
       */}
-      <header className='bg-background/85 fixed inset-x-0 top-0 z-50 backdrop-blur-xl'>
+      <header
+        className={cn(
+          'fixed inset-x-0 top-0 z-50 transition-[background-color,box-shadow,border-color,backdrop-filter] duration-300',
+          scrolled
+            ? 'bg-background/85 border-b border-border/60 shadow-sm backdrop-blur-xl'
+            : 'border-b border-transparent bg-transparent'
+        )}
+      >
         <div className='mx-auto max-w-7xl px-4 md:px-6'>
           <nav className='flex h-16 items-center justify-between gap-2 px-2'>
             {/* Logo */}

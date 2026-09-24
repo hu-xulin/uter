@@ -1248,7 +1248,185 @@ func fetchPresetModelRatios(presetID int) map[string]map[string]float64 {
 			fmt.Sprintf("fetch preset %d failed: %v", presetID, err))
 		return map[string]map[string]float64{}
 	}
-	return normalizePresetRatios(raw)
+	result := normalizePresetRatios(raw)
+	mergeExprDerivedRatios(raw, result)
+	return result
+}
+
+// exprPriceVars lists billing-expression variables that have an official
+// price counterpart in ratio space. Variables without a ratio field
+// (cc1h, img_cr, img_o) are not collected.
+var exprPriceVars = map[string]bool{
+	"p": true, "c": true, "cr": true, "cc": true,
+	"img": true, "ai": true, "ao": true,
+}
+
+// firstTierCostExpression returns the cost expression of the first tier(...)
+// call in a billing expression. Ternary branches are evaluated in order, so
+// the first branch (typically the short-context tier) provides the reference
+// coefficients.
+func firstTierCostExpression(expr string) (string, bool) {
+	start := strings.Index(expr, "tier(")
+	if start < 0 {
+		return "", false
+	}
+	open := start + len("tier(")
+	depth := 1
+	for i := open; i < len(expr); i++ {
+		switch expr[i] {
+		case '(':
+			depth++
+		case ')':
+			depth--
+			if depth == 0 {
+				return expr[open:i], true
+			}
+		}
+	}
+	return "", false
+}
+
+// splitTopLevel splits s on sep at parenthesis depth zero.
+func splitTopLevel(s string, sep byte) []string {
+	parts := []string{}
+	depth := 0
+	last := 0
+	for i := 0; i < len(s); i++ {
+		switch s[i] {
+		case '(':
+			depth++
+		case ')':
+			depth--
+		case sep:
+			if depth == 0 {
+				parts = append(parts, s[last:i])
+				last = i + 1
+			}
+		}
+	}
+	return append(parts, s[last:])
+}
+
+// termCoefficient extracts the variable coefficient from one additive term
+// of a tier cost expression ("p * 0.57", "0.57 * p", or a bare variable).
+func termCoefficient(term string) (string, float64, bool) {
+	term = strings.TrimSpace(term)
+	if term == "" {
+		return "", 0, false
+	}
+	factor, rest, found := strings.Cut(term, "*")
+	if !found {
+		if exprPriceVars[term] {
+			return term, 1, true
+		}
+		return "", 0, false
+	}
+	factor = strings.TrimSpace(factor)
+	rest = strings.TrimSpace(rest)
+	if v, err := strconv.ParseFloat(factor, 64); err == nil && exprPriceVars[rest] {
+		return rest, v, true
+	}
+	if v, err := strconv.ParseFloat(rest, 64); err == nil && exprPriceVars[factor] {
+		return factor, v, true
+	}
+	return "", 0, false
+}
+
+// deriveExprPriceRatios converts a tiered billing expression (coefficients
+// are USD per 1M tokens) into new-api ratio-space fields so expression-based
+// presets still expose per-dimension official prices. Following the
+// $2-per-1M baseline: model_ratio = p/2 and each dimension ratio is the
+// dimension coefficient divided by the input coefficient, so that
+// base×dimension_ratio reproduces the coefficient. A fixed(amount) expression
+// maps directly to model_price.
+func deriveExprPriceRatios(expr string) map[string]float64 {
+	trimmed := strings.TrimSpace(expr)
+	if trimmed == "" {
+		return nil
+	}
+	if _, rest, found := strings.Cut(trimmed, "fixed("); found {
+		arg, _, found := strings.Cut(rest, ")")
+		if found {
+			if v, err := strconv.ParseFloat(strings.TrimSpace(arg), 64); err == nil && v > 0 {
+				return map[string]float64{"model_price": v}
+			}
+		}
+	}
+	tierArg, ok := firstTierCostExpression(trimmed)
+	if !ok {
+		return nil
+	}
+	parts := splitTopLevel(tierArg, ',')
+	if len(parts) < 2 {
+		return nil
+	}
+	costExpr := strings.Join(parts[1:], ",")
+	coefficients := map[string]float64{}
+	for _, term := range splitTopLevel(costExpr, '+') {
+		name, value, ok := termCoefficient(term)
+		if ok && value > 0 {
+			coefficients[name] = value
+		}
+	}
+	input := coefficients["p"]
+	if input <= 0 {
+		return nil
+	}
+	derived := map[string]float64{"model_ratio": input / 2}
+	for _, pair := range []struct{ variable, field string }{
+		{"c", "completion_ratio"},
+		{"cr", "cache_ratio"},
+		{"cc", "create_cache_ratio"},
+		{"img", "image_ratio"},
+		{"ai", "audio_ratio"},
+	} {
+		if v := coefficients[pair.variable]; v > 0 {
+			derived[pair.field] = v / input
+		}
+	}
+	// The billing engine prices audio output as
+	// base × audio_ratio × audio_completion_ratio, so the ratio must make
+	// that product reproduce the ao coefficient.
+	if ai := coefficients["ai"]; ai > 0 {
+		if ao := coefficients["ao"]; ao > 0 {
+			derived["audio_completion_ratio"] = ao / ai
+		}
+	}
+	return derived
+}
+
+// mergeExprDerivedRatios fills in ratio fields derived from billing_expr for
+// models without a numeric model_ratio in the raw preset (the official
+// preset ships expression-based pricing only). Numeric fields already
+// present in the normalized preset always win.
+func mergeExprDerivedRatios(raw map[string]any, result map[string]map[string]float64) {
+	exprMap, ok := raw["billing_expr"].(map[string]any)
+	if !ok {
+		return
+	}
+	for name, value := range exprMap {
+		expr, ok := value.(string)
+		if !ok {
+			continue
+		}
+		entry := result[name]
+		if entry != nil && entry["model_ratio"] != 0 {
+			continue
+		}
+		derived := deriveExprPriceRatios(expr)
+		if len(derived) == 0 {
+			continue
+		}
+		if entry == nil {
+			entry = map[string]float64{}
+		}
+		for field, v := range derived {
+			if _, exists := entry[field]; !exists {
+				entry[field] = v
+			}
+		}
+		result[name] = entry
+	}
 }
 
 func fetchPresetRaw(presetID int) (map[string]any, error) {
@@ -1266,7 +1444,17 @@ func fetchPresetRaw(presetID int) (map[string]any, error) {
 	}
 	resp, err := client.Do(req)
 	if err != nil {
-		return nil, err
+		// The server process may inherit a stale proxy configuration
+		// (proxyconnect refused / handshake timeout). Retry once with a
+		// direct connection — these preset endpoints are public URLs.
+		direct := &http.Client{
+			Timeout:   defaultTimeoutSeconds * time.Second,
+			Transport: &http.Transport{Proxy: nil},
+		}
+		resp, err = direct.Do(req)
+		if err != nil {
+			return nil, err
+		}
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {

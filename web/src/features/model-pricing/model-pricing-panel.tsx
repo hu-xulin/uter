@@ -30,11 +30,13 @@ import { isDynamicPricingModel } from '@/features/pricing/lib/dynamic-price'
 import {
   buildPreviewRows,
   createInitialLaneState,
+  officialTierVariablePriceUSD,
 } from '@/features/system-settings/models/model-pricing-core'
 import {
   ModelPricingEditorPanel,
   type ModelPricingEditorPanelHandle,
 } from '@/features/system-settings/models/model-pricing-sheet'
+import { useOfficialPrices } from '@/features/system-settings/models/use-official-prices'
 import { handleServerError } from '@/lib/handle-server-error'
 import { usePricingPreferencesStore } from '@/stores/pricing-preferences-store'
 import { useSystemConfigStore } from '@/stores/system-config-store'
@@ -49,8 +51,25 @@ import {
   getSitePricingCurrency,
   isValidPricingCurrency,
   USD_PRICING_CURRENCY,
+  type PricingCurrency,
 } from './currency'
 import { modelPricingDisplay, pricingFromDraft, pricingRow } from './pricing'
+
+/**
+ * Detects the optimistic-concurrency conflict returned by the model pricing
+ * PATCH endpoint ("model pricing changed; reload before saving: <model>").
+ * The message text is server-defined and stable, so a substring match is the
+ * most reliable client-side signal (no structured error code is exposed).
+ */
+function isModelPricingConflict(error: unknown): boolean {
+  let message = ''
+  if (error instanceof Error) {
+    message = error.message
+  } else if (typeof error === 'string') {
+    message = error
+  }
+  return /reload before saving|model pricing changed/i.test(message)
+}
 
 export function ModelPricingPanel(props: {
   modelName: string
@@ -89,28 +108,52 @@ export function ModelPricingPanel(props: {
 
   const persist = async (reset = false) => {
     if (!entry) return
-    try {
+    // Submits the current editor draft using the given expected version. The
+    // draft is read live from the form, so the user's edits survive retries.
+    const submit = async (version: string) => {
       const draft = reset ? null : await editor.current?.commitDraft()
       if (!reset && !draft) return
       await save.mutateAsync([
         {
           model_name: entry.model_name,
-          expected_version: entry.version,
+          expected_version: version,
           pricing: draft ? pricingFromDraft(draft) : {},
           reset,
         },
       ])
-      const refreshed = await query.refetch()
-      setEntry(
-        refreshed.data?.entries.find(
-          (item) => item.model_name === props.modelName
-        ) ?? null
-      )
-      setResetOpen(false)
-      toast.success(t('Model pricing saved'))
-    } catch (error) {
-      handleServerError(error)
     }
+    try {
+      await submit(entry.version)
+    } catch (error) {
+      // The pricing changed on the server after this editor loaded (e.g. a
+      // price sync ran, or another tab saved). Reload the latest version and
+      // re-apply the user's draft once instead of forcing a manual reload.
+      if (!isModelPricingConflict(error)) {
+        handleServerError(error)
+        return
+      }
+      try {
+        const refreshed = await query.refetch()
+        const loaded = refreshed.data?.entries.find(
+          (item) => item.model_name === props.modelName
+        )
+        if (!loaded) throw error
+        // Use the fresh version without replacing `entry`: replacing it would
+        // reset the form and discard the discount ratio the user just typed.
+        await submit(loaded.version)
+      } catch (retryError) {
+        handleServerError(retryError)
+        return
+      }
+    }
+    const refreshed = await query.refetch()
+    setEntry(
+      refreshed.data?.entries.find((item) => item.model_name === props.modelName) ??
+        null
+    )
+    setResetOpen(false)
+    save.reset()
+    toast.success(t('Model pricing saved'))
   }
 
   if (!canEdit) {
@@ -135,6 +178,99 @@ export function ModelPricingPanel(props: {
     currencyPreference === 'site' && isValidPricingCurrency(siteCurrency)
       ? siteCurrency
       : USD_PRICING_CURRENCY
+  return (
+    <div className='flex min-h-0 min-w-0 flex-1 flex-col gap-3'>
+      <ModelPricingEditorPanel
+        embedded
+        ref={editor}
+        editData={editData}
+        usageSchema={entry.usage_schema}
+        pluginVariants={entry.plugin_variants}
+        onDirtyChange={props.onDirtyChange}
+        onSave={() => persist()}
+        isSaving={save.isPending}
+        className='rounded-none border-0'
+        scrollHeader={
+          <CurrentBillingSection
+            entry={entry}
+            effectivePricing={effectivePricing}
+            currency={currency}
+            onResetOpen={() => setResetOpen(true)}
+            saveIsPending={save.isPending}
+            saveIsError={save.isError}
+            saveError={save.isError ? save.error : undefined}
+            onReloadPricing={async () => {
+              const refreshed = await query.refetch()
+              const loaded = refreshed.data?.entries.find(
+                (item) => item.model_name === props.modelName
+              )
+              if (loaded) {
+                setEntry(loaded)
+                save.reset()
+              }
+            }}
+          />
+        }
+      />
+      <ConfirmDialog
+        open={resetOpen}
+        onOpenChange={setResetOpen}
+        title={t('Restore default pricing')}
+        desc={t(
+          'Remove this model’s custom pricing and use the built-in defaults. A model without a default may become unpriced.'
+        )}
+        confirmText={t('Restore defaults')}
+        isLoading={save.isPending}
+        handleConfirm={() => void persist(true)}
+      />
+    </div>
+  )
+}
+
+/**
+ * The "Current Billing" summary above the editor. Renders the effective
+ * pricing card with a Uter/official two-column layout for expression-priced
+ * models; official reference prices come from the selected official preset so
+ * they stay stable when the Uter prices are recalculated.
+ */
+function CurrentBillingSection(props: {
+  entry: ModelPricingEntry
+  effectivePricing: ReturnType<typeof modelPricingDisplay>
+  currency: PricingCurrency
+  onResetOpen: () => void
+  saveIsPending: boolean
+  saveIsError: boolean
+  saveError?: Error | null
+  onReloadPricing: () => Promise<void>
+}) {
+  const { t } = useTranslation()
+  const { entry, effectivePricing, currency } = props
+  const { prices: presetPrices } = useOfficialPrices({
+    enabled: isDynamicPricingModel(effectivePricing),
+  })
+  const officialPricesByVariable = useMemo(() => {
+    const ratios = presetPrices?.[entry.model_name]
+    if (!ratios) return undefined
+    const map: Record<string, number | null> = {}
+    for (const key of [
+      'p',
+      'c',
+      'cr',
+      'cc',
+      'cc1h',
+      'img',
+      'img_cr',
+      'img_o',
+      'ai',
+      'ao',
+    ]) {
+      map[key] = officialTierVariablePriceUSD(
+        ratios,
+        key as Parameters<typeof officialTierVariablePriceUSD>[1]
+      )
+    }
+    return map
+  }, [presetPrices, entry.model_name])
   const current = pricingRow(entry.model_name, entry.effective)
   const currentLanes = createInitialLaneState(current)
   const details = buildPreviewRows(
@@ -158,110 +294,73 @@ export function ModelPricingPanel(props: {
   )
 
   return (
-    <div className='flex min-h-0 min-w-0 flex-1 flex-col gap-3'>
-      <ModelPricingEditorPanel
-        embedded
-        ref={editor}
-        editData={editData}
-        usageSchema={entry.usage_schema}
-        pluginVariants={entry.plugin_variants}
-        onDirtyChange={props.onDirtyChange}
-        onSave={() => persist()}
-        isSaving={save.isPending}
-        className='rounded-none border-0'
-        scrollHeader={
-          <>
-            <div className='flex flex-wrap items-center justify-between gap-2'>
-              <div className='min-w-0 flex-1 break-words'>
-                <p className='text-muted-foreground text-xs'>
-                  {Object.keys(entry.configured).length
-                    ? t('Stored configuration with effective defaults')
-                    : t('Using built-in or default pricing')}
-                </p>
-              </div>
-              <Button
-                variant='outline'
-                size='sm'
-                onClick={() => setResetOpen(true)}
-                disabled={save.isPending}
-              >
-                {t('Restore default pricing')}
-              </Button>
-            </div>
-            <section
-              aria-label={t('Current Billing')}
-              className='space-y-3 border-b pb-3'
-            >
-              <h3 className='text-muted-foreground text-xs'>
-                {t('Current Billing')}
-              </h3>
-              <div className='max-w-xs'>
-                <ModelPriceCell
-                  model={effectivePricing}
-                  options={{ tokenUnit: 'M' }}
-                  showExpression={false}
-                />
-              </div>
-              {isDynamicPricingModel(effectivePricing) ? (
-                <DynamicPricingBreakdown
-                  compact
-                  billingExpr={effectivePricing.billing_expr}
-                  usageSchema={entry.usage_schema}
-                />
-              ) : (
-                effectivePricing.quota_type === 0 &&
-                Number.isFinite(effectivePricing.model_ratio) && (
-                  <dl className='grid grid-cols-2 gap-x-4 gap-y-2 text-xs sm:grid-cols-3'>
-                    {details.map((row) => (
-                      <div key={row.key}>
-                        <dt className='text-muted-foreground'>{row.label}</dt>
-                        <dd className='mt-1 font-mono tabular-nums'>
-                          {row.value}
-                          {row.unit !== 'none' && ' / 1M'}
-                        </dd>
-                      </div>
-                    ))}
-                  </dl>
-                )
-              )}
-            </section>
-            {save.isError && (
-              <div>
-                <p role='alert' className='text-destructive mb-2 text-sm'>
-                  {save.error?.message}
-                </p>
-                <Button
-                  variant='outline'
-                  size='sm'
-                  onClick={async () => {
-                    const refreshed = await query.refetch()
-                    const loaded = refreshed.data?.entries.find(
-                      (item) => item.model_name === props.modelName
-                    )
-                    if (loaded) {
-                      setEntry(loaded)
-                      save.reset()
-                    }
-                  }}
-                >
-                  {t('Reload pricing')}
-                </Button>
-              </div>
-            )}
-          </>
-        }
-      />
-      <ConfirmDialog
-        open={resetOpen}
-        onOpenChange={setResetOpen}
-        title={t('Restore default pricing')}
-        desc={t(
-          'Remove this model’s custom pricing and use the built-in defaults. A model without a default may become unpriced.'
+    <>
+      <div className='flex flex-wrap items-center justify-between gap-2'>
+        <div className='min-w-0 flex-1 break-words'>
+          <p className='text-muted-foreground text-xs'>
+            {Object.keys(entry.configured).length
+              ? t('Stored configuration with effective defaults')
+              : t('Using built-in or default pricing')}
+          </p>
+        </div>
+        <Button
+          variant='outline'
+          size='sm'
+          onClick={props.onResetOpen}
+          disabled={props.saveIsPending}
+        >
+          {t('Restore default pricing')}
+        </Button>
+      </div>
+      <section aria-label={t('Current Billing')} className='space-y-3 border-b pb-3'>
+        <h3 className='text-muted-foreground text-xs'>{t('Current Billing')}</h3>
+        <div className='max-w-md'>
+          <ModelPriceCell
+            model={effectivePricing}
+            options={{
+              tokenUnit: 'M',
+              officialPricesByVariable,
+            }}
+            showExpression={false}
+          />
+        </div>
+        {isDynamicPricingModel(effectivePricing) ? (
+          <DynamicPricingBreakdown
+            compact
+            billingExpr={effectivePricing.billing_expr}
+            usageSchema={entry.usage_schema}
+          />
+        ) : (
+          effectivePricing.quota_type === 0 &&
+          Number.isFinite(effectivePricing.model_ratio) && (
+            <dl className='grid grid-cols-2 gap-x-4 gap-y-2 text-xs sm:grid-cols-3'>
+              {details.map((row) => (
+                <div key={row.key}>
+                  <dt className='text-muted-foreground'>{row.label}</dt>
+                  <dd className='mt-1 font-mono tabular-nums'>
+                    {row.value}
+                    {row.unit !== 'none' && ' / 1M'}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          )
         )}
-        confirmText={t('Restore defaults')}
-        isLoading={save.isPending}
-        handleConfirm={() => void persist(true)}
-      />
-    </div>
+      </section>
+      {props.saveIsError && (
+        <div>
+          <p role='alert' className='text-destructive mb-2 text-sm'>
+            {props.saveError?.message}
+          </p>
+          <Button
+            variant='outline'
+            size='sm'
+            onClick={() => void props.onReloadPricing()}
+          >
+            {t('Reload pricing')}
+          </Button>
+        </div>
+      )}
+    </>
   )
 }

@@ -44,6 +44,12 @@ export type ModelPriceCellOptions = {
   selectedGroup?: string
   /** Per-model official reference ratios from the selected preset. */
   officialPrices?: Record<string, Record<string, number>>
+  /**
+   * Official preset USD prices keyed by visual variable (`p`, `c`, `cr`, ...).
+   * When provided, dynamic (expression) pricing renders the Uter/official
+   * columns dimension by dimension instead of the group-ratio footnote.
+   */
+  officialPricesByVariable?: Record<string, number | null>
 }
 
 export function ModelPriceCell(props: {
@@ -110,7 +116,12 @@ export function ModelPriceCell(props: {
       currency,
     ]
   )
-  let metrics: Array<{ label: string; value: string }> = []
+  let metrics: Array<{
+    label: string
+    value: string
+    variableKey?: string
+    rawValue?: number
+  }> = []
   let priceNodes: ReactNode | null = null
   const providerCaption = dynamic?.providerCount
     ? t('{{count}} providers', { count: dynamic.providerCount })
@@ -167,6 +178,8 @@ export function ModelPriceCell(props: {
               ? entry.shortLabel
               : t(entry.shortLabel),
           value: `${entry.formattedRange ?? entry.formatted}${suffix}`,
+          variableKey: entry.variable?.key,
+          rawValue: entry.value,
         }
       })
     if (metrics.length === 0) {
@@ -279,34 +292,95 @@ export function ModelPriceCell(props: {
       caption = `${currencyLabel} / ${t('request')}`
     }
   }
+  const officialByVar = options.officialPricesByVariable
+  const hasPresetOfficial =
+    Boolean(officialByVar) &&
+    metrics.some(
+      (metric) =>
+        metric.variableKey != null &&
+        Number.isFinite(officialByVar?.[metric.variableKey])
+    )
   return (
     <span className='block w-full max-w-full min-w-0 space-y-1.5'>
       {priceNodes ?? (
-        <span
-          className={metrics.length > 1 ? 'grid grid-cols-2 gap-x-4' : 'grid'}
-        >
-          {metrics.map((metric) => (
-            <span
-              key={metric.label}
-              className='flex min-w-0 flex-col items-start gap-y-0.5 sm:flex-row sm:flex-wrap sm:items-baseline sm:gap-x-1.5'
-            >
+        hasPresetOfficial ? (
+          <span className='grid grid-cols-2 gap-x-4 gap-y-2'>
+            {metrics.map((metric) => {
+              const official =
+                metric.variableKey != null
+                  ? officialByVar?.[metric.variableKey]
+                  : null
+              const isDiscount =
+                official != null &&
+                Number.isFinite(official) &&
+                official > 0 &&
+                metric.rawValue != null &&
+                Number.isFinite(metric.rawValue) &&
+                metric.rawValue < official - 1e-9
+              const discountPercent =
+                isDiscount && official && metric.rawValue != null
+                  ? Math.round((1 - metric.rawValue / official) * 100)
+                  : 0
+              return (
+                <span
+                  key={metric.label}
+                  className='flex min-w-0 flex-col gap-y-0.5'
+                >
+                  <span
+                    className='text-muted-foreground min-w-0 truncate text-xs font-normal'
+                    title={metric.label}
+                  >
+                    {metric.label}
+                  </span>
+                  <span
+                    className='min-w-0 font-mono text-sm break-words whitespace-normal font-semibold tabular-nums'
+                    title={metric.value}
+                  >
+                    {metric.value}
+                    {isDiscount && (
+                      <span className='text-emerald-600 text-xs font-bold'>
+                        {' '}
+                        · -{discountPercent}%
+                      </span>
+                    )}
+                  </span>
+                  <span className='text-muted-foreground text-xs font-normal tabular-nums'>
+                    {t('Official')}:{' '}
+                    {official != null && Number.isFinite(official)
+                      ? String(Number(official.toFixed(6)))
+                      : '—'}
+                  </span>
+                </span>
+              )
+            })}
+          </span>
+        ) : (
+          <span
+            className={metrics.length > 1 ? 'grid grid-cols-2 gap-x-4' : 'grid'}
+          >
+            {metrics.map((metric) => (
               <span
-                className='text-muted-foreground min-w-0 truncate text-xs font-normal'
-                title={metric.label}
+                key={metric.label}
+                className='flex min-w-0 flex-col items-start gap-y-0.5 sm:flex-row sm:flex-wrap sm:items-baseline sm:gap-x-1.5'
               >
-                {metric.label}
+                <span
+                  className='text-muted-foreground min-w-0 truncate text-xs font-normal'
+                  title={metric.label}
+                >
+                  {metric.label}
+                </span>
+                <span
+                  className='min-w-0 font-mono text-sm break-words whitespace-normal tabular-nums'
+                  title={metric.value}
+                >
+                  {metric.value}
+                </span>
               </span>
-              <span
-                className='min-w-0 font-mono text-sm break-words whitespace-normal tabular-nums'
-                title={metric.value}
-              >
-                {metric.value}
-              </span>
-            </span>
-          ))}
-        </span>
+            ))}
+          </span>
+        )
       )}
-      {officialDynamic?.entries.length ? (
+      {officialDynamic?.entries.length && !hasPresetOfficial ? (
         <span className='text-muted-foreground block text-xs font-normal tabular-nums'>
           {t('Official')}:{' '}
           {officialDynamic.entries
