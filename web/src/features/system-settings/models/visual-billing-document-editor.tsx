@@ -44,6 +44,7 @@ import {
   type VisualBillingIssue,
   type VisualPricingNode,
   type VisualCondition,
+  type VisualPrice,
 } from '@/features/pricing/lib/billing-expression/visual'
 
 import { TierPriceFields } from './tier-price-fields'
@@ -53,6 +54,7 @@ type PricingNodeProps = {
   node: VisualPricingNode
   source: string
   currency: PricingCurrency
+  modelName?: string
   issues: VisualBillingIssue[]
   onChange: (node: VisualPricingNode) => void
 }
@@ -108,6 +110,7 @@ function PricingTierFields(
       </div>
       <TierPriceFields
         currency={props.currency}
+        modelName={props.modelName}
         billingUnit={node.billingUnit}
         fixedPrice={node.fixedPrice}
         onBillingUnitChange={(billingUnit) =>
@@ -148,6 +151,21 @@ function PricingTierFields(
               : node.prices.filter((price) => price.variable !== variable),
           })
         }
+        onApplyPrices={(updates) => {
+          const next = node.prices.map((price) =>
+            updates[price.variable] !== undefined
+              ? { ...price, value: updates[price.variable] as string }
+              : price
+          )
+          const existing = new Set(node.prices.map((price) => price.variable))
+          for (const [variable, value] of Object.entries(updates)) {
+            if (value === undefined) continue
+            if (!existing.has(variable as VisualPrice['variable'])) {
+              next.push({ variable: variable as VisualPrice['variable'], value })
+            }
+          }
+          props.onChange({ ...node, prices: next })
+        }}
       />
       {issues.map((issue) => (
         <p
@@ -376,6 +394,7 @@ function PricingRuleList(props: PricingNodeProps & { prefix: string }) {
 export function VisualBillingDocumentEditor(props: {
   document: VisualBillingDocument
   currency: PricingCurrency
+  modelName?: string
   issues: VisualBillingIssue[]
   onChange: (document: VisualBillingDocument) => void
 }) {
@@ -394,6 +413,7 @@ export function VisualBillingDocumentEditor(props: {
         prefix=''
         source={props.document.source}
         currency={props.currency}
+        modelName={props.modelName}
         issues={props.issues}
         onChange={(root) => props.onChange({ ...props.document, root })}
       />

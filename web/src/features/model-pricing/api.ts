@@ -33,6 +33,7 @@ import { api } from '@/lib/api'
 import { ROLE } from '@/lib/roles'
 import { createServerError } from '@/lib/server-error-message'
 import { useAuthStore } from '@/stores/auth-store'
+import type { PlatformModelPricing } from '@/features/system-settings/models/model-pricing-core'
 
 import {
   PRICING_KEYS,
@@ -176,6 +177,8 @@ export type OfficialPricingReference = {
   officialPrices: Record<string, Record<string, number>>
   /** Selected plaza pricing source: 'official' | 'models.dev' | 'channel'. */
   pricingSource: string
+  /** model -> platform (自定义渠道) pricing entry, from /api/pricing data. */
+  platformPrices: Record<string, PlatformModelPricing>
 }
 
 /**
@@ -188,11 +191,21 @@ export async function getOfficialPricingReference(): Promise<OfficialPricingRefe
   if (!res.data.success) {
     throw createServerError(res.data, t('Failed to load model pricing'))
   }
+  const entries = res.data.data?.data
+  const platformPrices: OfficialPricingReference['platformPrices'] = {}
+  if (Array.isArray(entries)) {
+    for (const entry of entries) {
+      if (entry && typeof entry.model_name === 'string') {
+        platformPrices[entry.model_name] = entry
+      }
+    }
+  }
   return {
     officialPrices:
       (res.data.data?.official_prices as Record<string, Record<string, number>>) ??
       {},
     pricingSource: (res.data.data?.pricing_source as string) ?? 'official',
+    platformPrices,
   }
 }
 
@@ -204,6 +217,28 @@ export function useOfficialPricingReference() {
     refetchOnWindowFocus: false,
     meta: { errorToast: false },
   })
+}
+
+export type PresetPriceSource = 'official' | 'models.dev'
+
+/**
+ * Fetches a built-in pricing preset's per-model reference ratios
+ * (官方定价预设 or models.dev 定价预设). `refresh` forces the backend to
+ * re-fetch from upstream instead of serving its cached copy.
+ */
+export async function getPresetPrices(
+  source: PresetPriceSource,
+  refresh = false
+): Promise<Record<string, Record<string, number>>> {
+  const params = new URLSearchParams({ preset: source })
+  if (refresh) params.set('refresh', '1')
+  const res = await api.get('/api/ratio_sync/preset_prices', { params })
+  if (!res.data.success) {
+    throw createServerError(res.data, t('Failed to load model pricing'))
+  }
+  return (
+    (res.data.data?.prices as Record<string, Record<string, number>>) ?? {}
+  )
 }
 
 // Only dirty model fields are applied to stored configuration. Display-only

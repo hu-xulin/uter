@@ -1215,6 +1215,7 @@ export const TieredPricingEditor = memo(function TieredPricingEditor({
           <VisualBillingDocumentEditor
             document={visualDocument}
             currency={currency}
+            modelName={modelName}
             issues={serialized && !serialized.ok ? serialized.issues : []}
             onChange={handleDocumentChange}
           />
