@@ -36,7 +36,6 @@ import {
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import {
   getOfficialPricingReference,
-  getPresetPrices,
   type PresetPriceSource,
 } from '@/features/model-pricing/api'
 import {
@@ -60,7 +59,9 @@ import {
   officialTierVariablePriceUSD,
   platformTierVariablePricesUSD,
   toNumberOrNull,
+  type OfficialRatios,
 } from './model-pricing-core'
+import { useOfficialPrices } from './use-official-prices'
 
 const PRICE_VARS = BILLING_EXTRA_VARS.map((variable) => ({
   ...variable,
@@ -76,6 +77,15 @@ const MEDIA_PRICE_VARS = PRICE_VARS.filter(
   (left, right) =>
     MEDIA_PRICE_ORDER.indexOf(left.key) - MEDIA_PRICE_ORDER.indexOf(right.key)
 )
+/**
+ * Every discountable price dimension: the base input/output variables (`p`,
+ * `c`) are not part of BILLING_EXTRA_VARS but must be discounted too.
+ */
+const CALC_VAR_KEYS: VisualPrice['variable'][] = [
+  'p',
+  'c',
+  ...PRICE_VARS.map((variable) => variable.key),
+]
 type PriceFieldProps = {
   currency: PricingCurrency
   label: string
@@ -128,6 +138,28 @@ function PriceField({
   )
 }
 
+/** Read-only official reference price rendered like an editable price field. */
+function OfficialPriceField(props: {
+  currency: PricingCurrency
+  label: string
+  usd: number | null
+}) {
+  return (
+    <div className='w-36 space-y-0.5'>
+      <Label className='text-muted-foreground text-xs'>{props.label}</Label>
+      <PricingAmountInput
+        currency={props.currency}
+        aria-label={props.label}
+        value={props.usd ?? ''}
+        placeholder='—'
+        disabled
+        onChange={() => {}}
+        className='h-8 w-full'
+      />
+    </div>
+  )
+}
+
 type TierPriceFieldsProps = {
   modelName?: string
   billingUnit?: 'token' | 'request'
@@ -166,84 +198,81 @@ function discountHintText(
   return `-${Math.round(discount.percent)}% · ${zheStr}折`
 }
 
+/**
+ * Summary of a discount ratio (e.g. 0.86 → "-14% · 8.6折") shown next to the
+ * Calculate button. Returns '' for ratios >= 1 (no discount to display).
+ */
+function discountSummaryText(ratio: number): string {
+  if (!Number.isFinite(ratio) || ratio <= 0 || ratio >= 1) return ''
+  const percent = (1 - ratio) * 100
+  const zhe = ratio * 10
+  const zheStr =
+    Math.abs(zhe - Math.round(zhe)) < 1e-6
+      ? String(Math.round(zhe))
+      : zhe.toFixed(1)
+  return `-${Math.round(percent)}% · ${zheStr}折`
+}
+
 export function TierPriceFields(props: TierPriceFieldsProps) {
   const { t } = useTranslation()
   const modelName = props.modelName?.trim() ?? ''
   const showReference = modelName !== ''
-  const [officialSource, setOfficialSource] =
-    useState<PresetPriceSource>('official')
-  const [officialPrices, setOfficialPrices] = useState<
-    Record<string, Record<string, number>> | undefined
-  >(undefined)
-  const [officialLoading, setOfficialLoading] = useState(false)
-  const [officialError, setOfficialError] = useState(false)
   const [discountText, setDiscountText] = useState('')
+  const [appliedDiscount, setAppliedDiscount] = useState<number | null>(null)
   const [fetchingChannel, setFetchingChannel] = useState(false)
+  const {
+    source: officialSource,
+    setSource: setOfficialSource,
+    prices: officialPrices,
+    loading: officialLoading,
+    error: officialError,
+    sync: syncOfficialPrices,
+  } = useOfficialPrices({ enabled: showReference })
   const officialRatios = officialPrices?.[modelName]
 
-  useEffect(() => {
-    if (!showReference) return
-    let cancelled = false
-    setOfficialLoading(true)
-    void getPresetPrices(officialSource)
-      .then((prices) => {
-        if (!cancelled) {
-          setOfficialPrices(prices)
-          setOfficialError(false)
-        }
-      })
-      .catch(() => {
-        if (!cancelled) setOfficialError(true)
-      })
-      .finally(() => {
-        if (!cancelled) setOfficialLoading(false)
-      })
-    return () => {
-      cancelled = true
-    }
-  }, [showReference, officialSource, modelName])
-
-  const handleSyncOfficialPrices = async () => {
-    if (!showReference) return
-    setOfficialLoading(true)
-    try {
-      const prices = await getPresetPrices(officialSource, true)
-      setOfficialPrices(prices)
-      setOfficialError(false)
-      toast.success(t('Official prices synced.'))
-    } catch {
-      setOfficialError(true)
-      toast.error(t('Failed to sync prices'))
-    } finally {
-      setOfficialLoading(false)
-    }
-  }
-
   /** Generates Uter prices = official price × discount for priced dimensions. */
-  const applyDiscountPrices = (discount: number) => {
-    if (!officialRatios) return
+  const generateDiscountPrices = (
+    official: OfficialRatios | undefined,
+    discount: number
+  ) => {
+    if (!official) return
     const updates: Partial<Record<VisualPrice['variable'], string>> = {}
-    for (const variable of PRICE_VARS) {
-      const officialUSD = officialTierVariablePriceUSD(
-        officialRatios,
-        variable.key
-      )
+    for (const key of CALC_VAR_KEYS) {
+      const officialUSD = officialTierVariablePriceUSD(official, key)
       if (officialUSD == null) continue
-      const isCore = variable.key === 'p' || variable.key === 'c'
+      const isCore = key === 'p' || key === 'c'
       const included = props.onInclude
-        ? props.prices[variable.key] !== undefined
+        ? props.prices[key] !== undefined
         : true
       if (!isCore && !included) continue
-      updates[variable.key] = formatGeneratedPriceUSD(officialUSD * discount)
+      updates[key] = formatGeneratedPriceUSD(officialUSD * discount)
     }
     if (Object.keys(updates).length > 0) props.onApplyPrices?.(updates)
   }
 
+  /** Syncs the official prices into the editable Uter input/output fields. */
+  const handleSync = async () => {
+    const data = await syncOfficialPrices()
+    if (!data) return
+    const ratios = modelName ? data[modelName] : undefined
+    generateDiscountPrices(ratios, 1)
+    setAppliedDiscount(null)
+  }
+
   const handleDiscountChange = (text: string) => {
     setDiscountText(text)
-    const value = Number(text)
-    if (text.trim() === '' || !Number.isFinite(value) || value <= 0) return
-    applyDiscountPrices(value)
+    setAppliedDiscount(null)
+  }
+
+  /** Computes Uter prices = official price × discount ratio. */
+  const handleCalculate = () => {
+    const value = Number(discountText)
+    if (discountText.trim() === '' || !Number.isFinite(value) || value <= 0) {
+      toast.error(t('Enter a valid discount ratio greater than 0.'))
+      return
+    }
+    generateDiscountPrices(officialRatios, value)
+    setAppliedDiscount(value)
   }
 
   /** Prefills Uter prices from the platform's own (自定义渠道) pricing. */
@@ -437,7 +466,7 @@ export function TierPriceFields(props: TierPriceFieldsProps) {
                 variant='outline'
                 size='sm'
                 disabled={officialLoading}
-                onClick={handleSyncOfficialPrices}
+                onClick={() => void handleSync()}
               >
                 <RefreshCw
                   className={cn('h-3.5 w-3.5', officialLoading && 'animate-spin')}
@@ -448,26 +477,50 @@ export function TierPriceFields(props: TierPriceFieldsProps) {
           )}
         </div>
         {showReference && (
-          <div className='text-muted-foreground flex flex-wrap gap-x-4 gap-y-1 text-xs tabular-nums'>
-            {PRICE_VARS.map((variable) => {
-              const officialUSD = officialTierVariablePriceUSD(
-                officialRatios,
-                variable.key
-              )
-              return (
-                <span key={variable.key}>
-                  {t(variable.label)}:{' '}
-                  {officialUSD != null
-                    ? formatPricingAmount(officialUSD, props.currency)
-                    : '—'}
+          <div className='space-y-3'>
+            <div className='flex flex-wrap gap-x-4 gap-y-2'>
+              <OfficialPriceField
+                currency={props.currency}
+                label={t('Input price')}
+                usd={officialTierVariablePriceUSD(officialRatios, 'p')}
+              />
+              <OfficialPriceField
+                currency={props.currency}
+                label={t('Output price')}
+                usd={officialTierVariablePriceUSD(officialRatios, 'c')}
+              />
+            </div>
+            <div className='flex flex-wrap gap-x-4 gap-y-2'>
+              {CACHE_PRICE_VARS.map((variable) => {
+                if (
+                  variable.key === 'cc1h' &&
+                  props.onCacheModeChange &&
+                  props.cacheMode !== CACHE_MODE_TIMED
+                ) {
+                  return null
+                }
+                return (
+                  <OfficialPriceField
+                    key={variable.key}
+                    currency={props.currency}
+                    label={
+                      variable.key === 'cc' && props.prices.cc1h !== undefined
+                        ? t('Cache Creation (5m)')
+                        : t(variable.label)
+                    }
+                    usd={officialTierVariablePriceUSD(
+                      officialRatios,
+                      variable.key
+                    )}
+                  />
+                )
+              })}
+              {officialError && (
+                <span role='alert' className='text-destructive text-xs'>
+                  {t('Failed to load model pricing')}
                 </span>
-              )
-            })}
-            {officialError && (
-              <span role='alert' className='text-destructive'>
-                {t('Failed to load model pricing')}
-              </span>
-            )}
+              )}
+            </div>
           </div>
         )}
       </div>
@@ -481,6 +534,7 @@ export function TierPriceFields(props: TierPriceFieldsProps) {
           <InputGroup className='w-28'>
             <InputGroupAddon>x</InputGroupAddon>
             <PricingAmountInput
+              grouped
               aria-label={t('Discount ratio')}
               inputMode='decimal'
               value={discountText}
@@ -488,6 +542,20 @@ export function TierPriceFields(props: TierPriceFieldsProps) {
               onChange={handleDiscountChange}
             />
           </InputGroup>
+          <Button
+            type='button'
+            variant='outline'
+            size='sm'
+            disabled={!officialRatios || discountText.trim() === ''}
+            onClick={handleCalculate}
+          >
+            {t('Calculate')}
+          </Button>
+          {appliedDiscount != null && discountSummaryText(appliedDiscount) !== '' && (
+            <span className='bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300 rounded-md px-2 py-1 text-xs font-medium tabular-nums'>
+              {discountSummaryText(appliedDiscount)}
+            </span>
+          )}
           <span className='text-muted-foreground text-xs'>
             {t('Uter price = official price × discount ratio.')}
           </span>
@@ -585,8 +653,37 @@ export function TierPriceFields(props: TierPriceFieldsProps) {
           {t('Media pricing')}
         </Button>
         {mediaOpen && (
-          <div className='flex flex-wrap gap-x-4 gap-y-2'>
-            {MEDIA_PRICE_VARS.map(renderPriceVariable)}
+          <div className='space-y-3'>
+            {showReference && (
+              <div className='space-y-1.5'>
+                <p className='text-muted-foreground text-xs font-medium'>
+                  {t('Official prices')}
+                </p>
+                <div className='flex flex-wrap gap-x-4 gap-y-2'>
+                  {MEDIA_PRICE_VARS.map((variable) => (
+                    <OfficialPriceField
+                      key={variable.key}
+                      currency={props.currency}
+                      label={t(variable.label)}
+                      usd={officialTierVariablePriceUSD(
+                        officialRatios,
+                        variable.key
+                      )}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+            <div className='space-y-1.5'>
+              {showReference && (
+                <p className='text-muted-foreground text-xs font-medium'>
+                  {t('Uter prices')}
+                </p>
+              )}
+              <div className='flex flex-wrap gap-x-4 gap-y-2'>
+                {MEDIA_PRICE_VARS.map(renderPriceVariable)}
+              </div>
+            </div>
           </div>
         )}
       </div>

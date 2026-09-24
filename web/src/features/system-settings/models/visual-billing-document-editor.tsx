@@ -34,7 +34,7 @@ import {
   formatPricingAmount,
   type PricingCurrency,
 } from '@/features/model-pricing/currency'
-import { BILLING_VARS } from '@/features/pricing/lib/billing-expr'
+import { BILLING_EXTRA_VARS } from '@/features/pricing/lib/billing-expr'
 import { formatBillingCondition } from '@/features/pricing/lib/billing-expression/condition-display'
 import {
   visualConditionExpression,
@@ -48,6 +48,11 @@ import {
 } from '@/features/pricing/lib/billing-expression/visual'
 
 import { TierPriceFields } from './tier-price-fields'
+import { useOfficialPrices } from './use-official-prices'
+import {
+  officialRequestPriceUSD,
+  officialTierVariablePriceUSD,
+} from './model-pricing-core'
 import { VisualConditionTree } from './visual-condition-tree'
 
 type PricingNodeProps = {
@@ -191,6 +196,42 @@ function PricingRuleCard(
   const node = props.node
   const [open, setOpen] = useState(props.first)
   const tier = node.kind === 'tier' ? node : node.yes
+  const modelName = props.modelName?.trim() ?? ''
+  const showReference = modelName !== ''
+  const { prices: officialPrices } = useOfficialPrices({
+    enabled: showReference,
+  })
+  const officialRatios = showReference
+    ? officialPrices?.[modelName]
+    : undefined
+  // Collapsed-card summary: one row of official prices and one row of Uter
+  // prices, dimension by dimension, in canonical variable order. The base
+  // input/output dimensions (`p`/`c`) are not part of BILLING_EXTRA_VARS but
+  // must be listed too; a dimension is shown when either side has a price.
+  const summaryBaseVars: { key: VisualPrice['variable']; shortLabel: string }[] =
+    [
+      { key: 'p', shortLabel: 'Input' },
+      { key: 'c', shortLabel: 'Output' },
+    ]
+  const summaryExtraVars = BILLING_EXTRA_VARS.map((variable) => ({
+    ...variable,
+    key: variable.key as VisualPrice['variable'],
+  }))
+  const summaryDims =
+    tier.kind === 'tier' && tier.billingUnit !== 'request'
+      ? [...summaryBaseVars, ...summaryExtraVars].filter(
+          (variable) =>
+            tier.kind === 'tier' &&
+            (tier.prices.some((price) => price.variable === variable.key) ||
+              officialTierVariablePriceUSD(officialRatios, variable.key) !=
+                null)
+        )
+      : []
+  const uterValueByKey = new Map<VisualPrice['variable'], string>(
+    tier.kind === 'tier'
+      ? tier.prices.map((price) => [price.variable, price.value])
+      : []
+  )
   const name =
     tier.kind === 'tier'
       ? tier.label
@@ -264,36 +305,65 @@ function PricingRuleCard(
             <span className='text-muted-foreground block text-sm break-words'>
               {matchDescription}
             </span>
-            {tier.kind === 'tier' && (
-              <span className='flex flex-wrap gap-x-4 gap-y-1 text-xs tabular-nums'>
-                {tier.billingUnit === 'request' ? (
+            {tier.kind === 'tier' &&
+              (tier.billingUnit === 'request' ? (
+                <span className='flex flex-wrap gap-x-4 gap-y-1 text-xs tabular-nums'>
+                  {(() => {
+                    const officialUSD = officialRequestPriceUSD(officialRatios)
+                    return officialUSD != null ? (
+                      <span className='text-muted-foreground'>
+                        {t('Official prices')}:{' '}
+                        {formatPricingAmount(officialUSD, props.currency) ||
+                          '—'}
+                        /{t('request')}
+                      </span>
+                    ) : null
+                  })()}
                   <span>
                     {t('Price per request')}:{' '}
                     {formatPricingAmount(tier.fixedPrice, props.currency) ||
                       '—'}
                     /{t('request')}
                   </span>
-                ) : (
-                  <>
-                    {tier.prices.map((price) => (
-                      <span key={price.variable}>
-                        {t(
-                          BILLING_VARS.find(
-                            (variable) => variable.key === price.variable
-                          )?.shortLabel ?? price.variable
-                        )}
-                        :{' '}
-                        {formatPricingAmount(price.value, props.currency) ||
-                          '—'}
+                </span>
+              ) : (
+                <span className='block space-y-1 text-xs tabular-nums'>
+                  <span className='text-muted-foreground flex flex-wrap gap-x-3 gap-y-1'>
+                    <span>{t('Official prices')}:</span>
+                    {summaryDims.map((variable) => {
+                      const officialUSD = officialTierVariablePriceUSD(
+                        officialRatios,
+                        variable.key
+                      )
+                      return (
+                        <span key={variable.key}>
+                          {t(variable.shortLabel)}:{' '}
+                          {officialUSD != null
+                            ? formatPricingAmount(
+                                officialUSD,
+                                props.currency
+                              ) || '—'
+                            : '—'}
+                        </span>
+                      )
+                    })}
+                    <span>/{t('1M token')}</span>
+                  </span>
+                  <span className='flex flex-wrap gap-x-3 gap-y-1'>
+                    <span>{t('Uter prices')}:</span>
+                    {summaryDims.map((variable) => (
+                      <span key={variable.key}>
+                        {t(variable.shortLabel)}:{' '}
+                        {formatPricingAmount(
+                          uterValueByKey.get(variable.key) ?? '',
+                          props.currency
+                        ) || '—'}
                       </span>
                     ))}
-                    <span className='text-muted-foreground'>
-                      /{t('1M token')}
-                    </span>
-                  </>
-                )}
-              </span>
-            )}
+                    <span>/{t('1M token')}</span>
+                  </span>
+                </span>
+              ))}
           </span>
           <ChevronDown
             aria-hidden='true'

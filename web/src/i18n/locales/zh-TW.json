@@ -1801,6 +1801,8 @@
     "Discount rate must be greater than 0": "折扣率必須大於 0",
     "Discount Rate:": "折扣率：",
     "Discount ratio": "折扣比例",
+    "Calculate": "計算",
+    "Enter a valid discount ratio greater than 0.": "請輸入大於 0 的有效折扣比例。",
     "Discount ratio for cache hits.": "緩存命中時的折扣比例。",
     "Discouraged": "不推薦",
     "Discover curated AI models, compare pricing and capabilities, and choose the right model for every scenario.": "探索精選 AI 模型，清晰比較價格與能力，為不同場景選擇合適的模型。",

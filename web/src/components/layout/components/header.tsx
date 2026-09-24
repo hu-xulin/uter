@@ -17,15 +17,20 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@Uter.ai.com
 */
 import { SidebarTrigger } from '@/components/ui/sidebar'
+import { useScrolled } from '@/hooks/use-scrolled'
 import { cn } from '@/lib/utils'
 
 type HeaderProps = React.HTMLAttributes<HTMLElement>
 
 export function Header({ className, children, ...props }: HeaderProps) {
+  const scrolled = useScrolled()
   return (
     <header
       className={cn(
-        'sticky top-0 z-40 h-[var(--app-header-height,3rem)] w-full shrink-0 bg-transparent',
+        'sticky top-0 z-40 h-[var(--app-header-height,3rem)] w-full shrink-0 transition-[background-color,box-shadow,border-color,backdrop-filter] duration-300',
+        scrolled
+          ? 'bg-background/85 border-b border-border/60 backdrop-blur-xl'
+          : 'border-b border-transparent bg-transparent',
         className
       )}
       {...props}
