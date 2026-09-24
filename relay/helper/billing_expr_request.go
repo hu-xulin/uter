@@ -2,7 +2,10 @@ package helper
 
 import (
 	"maps"
+	"strconv"
 	"strings"
+
+	"github.com/tidwall/gjson"
 
 	"github.com/Uter-AI/Uter/common"
 
@@ -66,6 +69,42 @@ func ResolveImageBillingRequestInput(c *gin.Context, info *relaycommon.RelayInfo
 	input.Body = encoded
 	input.ImageCount = &count
 	return input, nil
+}
+
+// ResolveDurationBillingRequestInput extracts the media duration (in seconds)
+// referenced by the `duration` billing variable. It reads the request body for
+// a `duration` or `seconds` field (number or numeric string); when absent the
+// caller-supplied request.Duration is left untouched so the engine can fall
+// back to a zero value. This mirrors ResolveImageBillingRequestInput but for
+// time-based pricing (e.g. generated video length).
+func ResolveDurationBillingRequestInput(c *gin.Context, info *relaycommon.RelayInfo, input billingexpr.RequestInput) (billingexpr.RequestInput, error) {
+	if dur := durationFromBody(input.Body); dur != nil {
+		input.Duration = dur
+	}
+	return input, nil
+}
+
+// durationFromBody parses a `duration`/`seconds` field from a JSON request body.
+func durationFromBody(body []byte) *float64 {
+	if len(body) == 0 {
+		return nil
+	}
+	for _, key := range []string{"duration", "seconds"} {
+		value := gjson.GetBytes(body, key)
+		if !value.Exists() {
+			continue
+		}
+		switch value.Type {
+		case gjson.Number:
+			f := value.Float()
+			return &f
+		case gjson.String:
+			if n, err := strconv.ParseFloat(value.String(), 64); err == nil {
+				return &n
+			}
+		}
+	}
+	return nil
 }
 
 func BuildBillingExprRequestInputFromRequest(request dto.Request, headers map[string]string) (billingexpr.RequestInput, error) {

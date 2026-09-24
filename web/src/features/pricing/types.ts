@@ -130,6 +130,10 @@ export type PricingData = {
   usable_group: Record<string, { desc: string; ratio: number }>
   supported_endpoint: Record<string, string>
   auto_groups: string[]
+  /** Which reference price the model plaza shows: "official" | "models.dev" | "channel" */
+  pricing_source?: string
+  /** Per-model official reference ratios keyed by model name then price type */
+  official_prices?: Record<string, Record<string, number>>
 }
 
 export type TokenUnit = 'M' | 'K'

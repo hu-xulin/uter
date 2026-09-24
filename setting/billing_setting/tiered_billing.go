@@ -355,10 +355,17 @@ func usageSmokeCombinationCount(dimensions []usageSmokeDimension, stopAfter int)
 	return count
 }
 
+// smokeTestDurationSeconds is the sample media duration (in seconds) injected
+// into every smoke-test request so expressions that reference the `duration`
+// variable evaluate against a realistic, non-nil value instead of failing.
+const smokeTestDurationSeconds = 10.0
+
 func billingExprSmokeRequests() []billingexpr.RequestInput {
+	duration := smokeTestDurationSeconds
 	return []billingexpr.RequestInput{
-		{},
+		{Duration: &duration},
 		{
+			Duration: &duration,
 			Headers: map[string]string{
 				"anthropic-beta": "fast-mode-2026-02-01",
 			},

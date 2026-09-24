@@ -31,6 +31,7 @@ import { getLobeIcon } from '@/lib/lobe-icon'
 import { parseTags } from '../lib/filters'
 import type { PricingModel } from '../types'
 import { CachedPriceCell } from './cached-price-cell'
+import { DiscountTag } from './discount-tag'
 import { ModelBillingModeBadge } from './model-billing-mode-badge'
 import { ModelPriceCell, type ModelPriceCellOptions } from './model-price-cell'
 
@@ -38,12 +39,26 @@ import { ModelPriceCell, type ModelPriceCellOptions } from './model-price-cell'
 // Pricing Table Columns
 // ----------------------------------------------------------------------------
 
-export type PricingColumnsOptions = ModelPriceCellOptions
+export type PricingColumnsOptions = ModelPriceCellOptions & {
+  /** Selected plaza pricing source (official / models.dev / channel). */
+  pricingSource?: string
+  /** Per-model official reference ratios from the selected preset. */
+  officialPrices?: Record<string, Record<string, number>>
+  /** Whether the viewer is a super administrator (affects source label). */
+  isSuperAdmin?: boolean
+}
 
 export function usePricingColumns(
   options: PricingColumnsOptions = {}
 ): ColumnDef<PricingModel>[] {
   const { t } = useTranslation()
+
+  const sourceLabel =
+    options.pricingSource === 'channel'
+      ? options.isSuperAdmin
+        ? t('Platform price')
+        : t('Price')
+      : t('Official price')
 
   return [
     // Model column
@@ -64,6 +79,12 @@ export function usePricingColumns(
             <span className='truncate font-mono text-sm font-medium'>
               {model.model_name}
             </span>
+            <DiscountTag
+              model={model}
+              officialPrices={options.officialPrices}
+              selectedGroup={options.selectedGroup}
+              className='shrink-0'
+            />
           </div>
         )
       },
@@ -86,7 +107,12 @@ export function usePricingColumns(
       accessorKey: 'price',
       meta: { label: t('Price') },
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title={t('Price')} />
+        <div className='flex flex-col items-start gap-0.5'>
+          <DataTableColumnHeader column={column} title={t('Price')} />
+          <span className='rounded bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground'>
+            {sourceLabel}
+          </span>
+        </div>
       ),
       cell: ({ row }) => (
         <ModelPriceCell model={row.original} options={options} />

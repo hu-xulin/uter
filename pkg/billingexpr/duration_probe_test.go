@@ -2,34 +2,38 @@ package billingexpr
 
 import (
 	"testing"
-
-	"github.com/expr-lang/expr"
 )
 
-func TestProbeDurationIdentifier(t *testing.T) {
+// TestDurationVariableSupported verifies that the `duration` variable is a
+// first-class billing variable: it compiles, runs against a supplied duration,
+// and falls back to zero when no duration is provided. This guards the fix for
+// upstream-synced pricing expressions such as `tier("base", duration * 0.13)`
+// that previously failed with "invalid operation: <nil> * float64".
+func TestDurationVariableSupported(t *testing.T) {
 	exprStr := `tier("base", duration * 0.13)`
-	// Mimic compile.go: compile with the v1 prototype env and AsFloat64.
-	_, err := expr.Compile(exprStr, expr.Env(compileEnvPrototypeV1), expr.AsFloat64())
-	t.Logf("compile error (nil means OK): %v", err)
 
-	// Now try Run with a runtime env that has NO duration key.
-	prog, cerr := expr.Compile(exprStr, expr.Env(compileEnvPrototypeV1), expr.AsFloat64())
-	if cerr != nil {
-		t.Logf("compile failed, cannot run: %v", cerr)
-		return
+	// 1) It must compile without an "unknown name" error.
+	if _, err := CompileFromCache(exprStr); err != nil {
+		t.Fatalf("compile failed: %v", err)
 	}
-	// build a runtime env like runProgram but without "duration"
-	env := map[string]any{
-		"p":     float64(0),
-		"c":     float64(0),
-		"len":   float64(0),
-		"tier":  func(string, float64) float64 { return 0 },
-		"max":   func(a, b float64) float64 { if a > b { return a }; return b },
-		"min":   func(a, b float64) float64 { if a < b { return a }; return b },
-		"abs":   func(float64) float64 { return 0 },
-		"ceil":  func(float64) float64 { return 0 },
-		"floor": func(float64) float64 { return 0 },
+
+	// 2) With an explicit duration it should evaluate and use the value.
+	dur := 10.0
+	out, _, err := RunExprWithRequest(exprStr, TokenParams{}, RequestInput{Duration: &dur})
+	if err != nil {
+		t.Fatalf("run with duration failed: %v", err)
 	}
-	_, rerr := expr.Run(prog, env)
-	t.Logf("run error (nil means OK): %v", rerr)
+	want := 10.0 * 0.13
+	if out != want {
+		t.Fatalf("duration not applied: got %v want %v", out, want)
+	}
+
+	// 3) With nil duration it falls back to zero (no nil-pointer crash).
+	out, _, err = RunExprWithRequest(exprStr, TokenParams{}, RequestInput{})
+	if err != nil {
+		t.Fatalf("run with nil duration failed: %v", err)
+	}
+	if out != 0 {
+		t.Fatalf("expected 0 for nil duration, got %v", out)
+	}
 }

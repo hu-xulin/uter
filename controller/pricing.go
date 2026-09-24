@@ -65,6 +65,23 @@ func GetPricing(c *gin.Context) {
 		}
 	}
 
+	// Plaza pricing source: which reference price the model plaza shows.
+	// "official" / "models.dev" -> the preset's reference price (官方价格);
+	// "channel" -> the platform's own price (平台价格 / 价格).
+	pricingSource := common.OptionMap["PricingSource"]
+	if pricingSource != "official" && pricingSource != "models.dev" &&
+		pricingSource != "channel" {
+		pricingSource = "official"
+	}
+	referencePresetID := officialRatioPresetID
+	if pricingSource == "models.dev" {
+		referencePresetID = modelsDevPresetID
+	}
+	// When the source is a preset, that preset doubles as the official
+	// reference for the discount comparison. When the source is the platform
+	// channel, the canonical official preset (-100) is the reference.
+	officialPrices := GetPresetModelRatios(referencePresetID)
+
 	c.JSON(200, gin.H{
 		"success":            true,
 		"data":               pricing,
@@ -73,6 +90,8 @@ func GetPricing(c *gin.Context) {
 		"usable_group":       usableGroup,
 		"supported_endpoint": model.GetSupportedEndpointMap(),
 		"auto_groups":        service.GetUserAutoGroup(group),
+		"pricing_source":     pricingSource,
+		"official_prices":    officialPrices,
 		"pricing_version":    "a42d372ccf0b5dd13ecf71203521f9d2",
 	})
 }

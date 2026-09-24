@@ -38,6 +38,7 @@ const (
 	officialRatioPresetID       = -100
 	officialRatioPresetName     = "官方倍率预设"
 	officialRatioPresetBaseURL  = "https://basellm.github.io"
+	officialRatioPresetEndpoint = "/llm-metadata/api/newapi/ratio_config-v1-base.json"
 	modelsDevPresetID           = -101
 	modelsDevPresetName         = "models.dev 定价预设"
 	modelsDevPresetBaseURL      = "https://models.dev"
@@ -936,16 +937,25 @@ type modelsDevModel struct {
 }
 
 type modelsDevCost struct {
-	Input     *float64 `json:"input"`
-	Output    *float64 `json:"output"`
-	CacheRead *float64 `json:"cache_read"`
+	Input       *float64 `json:"input"`
+	Output      *float64 `json:"output"`
+	CacheRead   *float64 `json:"cache_read"`
+	CacheWrite  *float64 `json:"cache_write"`
+	InputAudio  *float64 `json:"input_audio"`
+	OutputAudio *float64 `json:"output_audio"`
+	// reasoning, context_over_200k and tiers from models.dev have no
+	// counterpart in the local ratio pricing model and are intentionally
+	// not mapped to a ratio field.
 }
 
 type modelsDevCandidate struct {
-	Provider  string
-	Input     float64
-	Output    *float64
-	CacheRead *float64
+	Provider    string
+	Input       float64
+	Output      *float64
+	CacheRead   *float64
+	CacheWrite  *float64
+	InputAudio  *float64
+	OutputAudio *float64
 }
 
 func cloneFloatPtr(v *float64) *float64 {
@@ -991,11 +1001,29 @@ func buildModelsDevCandidate(provider string, cost modelsDevCost) (modelsDevCand
 		cacheRead = cloneFloatPtr(cost.CacheRead)
 	}
 
+	var cacheWrite *float64
+	if cost.CacheWrite != nil && isValidNonNegativeCost(*cost.CacheWrite) {
+		cacheWrite = cloneFloatPtr(cost.CacheWrite)
+	}
+
+	var inputAudio *float64
+	if cost.InputAudio != nil && isValidNonNegativeCost(*cost.InputAudio) {
+		inputAudio = cloneFloatPtr(cost.InputAudio)
+	}
+
+	var outputAudio *float64
+	if cost.OutputAudio != nil && isValidNonNegativeCost(*cost.OutputAudio) {
+		outputAudio = cloneFloatPtr(cost.OutputAudio)
+	}
+
 	return modelsDevCandidate{
-		Provider:  provider,
-		Input:     input,
-		Output:    output,
-		CacheRead: cacheRead,
+		Provider:    provider,
+		Input:       input,
+		Output:      output,
+		CacheRead:   cacheRead,
+		CacheWrite:  cacheWrite,
+		InputAudio:  inputAudio,
+		OutputAudio: outputAudio,
 	}, true
 }
 
@@ -1017,11 +1045,15 @@ func shouldReplaceModelsDevCandidate(current, next modelsDevCandidate) bool {
 // provider pricing metadata into local ratio format.
 // models.dev costs are USD per 1M tokens:
 //
-//	model_ratio = input_cost_per_1M / 2
-//	completion_ratio = output_cost / input_cost
-//	cache_ratio = cache_read_cost / input_cost
+//	model_ratio             = input_cost_per_1M / 2
+//	completion_ratio        = output_cost / input_cost
+//	cache_ratio             = cache_read_cost / input_cost
+//	create_cache_ratio      = cache_write_cost / input_cost
+//	audio_ratio             = input_audio_cost / input_cost
+//	audio_completion_ratio  = output_audio_cost / input_audio_cost
 //
-// Duplicate model keys across providers are resolved by selecting the
+// reasoning, context_over_200k and tiers have no local ratio field and are
+// dropped. Duplicate model keys across providers are resolved by selecting the
 // cheapest non-zero input cost. If only zero-priced candidates exist,
 // a zero ratio is kept.
 func convertModelsDevToRatioData(reader io.Reader) (map[string]any, error) {
@@ -1071,6 +1103,9 @@ func convertModelsDevToRatioData(reader io.Reader) (map[string]any, error) {
 	modelRatioMap := make(map[string]any)
 	completionRatioMap := make(map[string]any)
 	cacheRatioMap := make(map[string]any)
+	createCacheRatioMap := make(map[string]any)
+	audioRatioMap := make(map[string]any)
+	audioCompletionRatioMap := make(map[string]any)
 
 	for modelName, candidate := range selectedCandidates {
 		if candidate.Input == 0 {
@@ -1090,6 +1125,23 @@ func convertModelsDevToRatioData(reader io.Reader) (map[string]any, error) {
 			cacheRatio := *candidate.CacheRead / candidate.Input
 			cacheRatioMap[modelName] = roundRatioValue(cacheRatio)
 		}
+
+		if candidate.CacheWrite != nil {
+			createCacheRatio := *candidate.CacheWrite / candidate.Input
+			createCacheRatioMap[modelName] = roundRatioValue(createCacheRatio)
+		}
+
+		// Audio prices are USD per 1M tokens like the text dimensions. The
+		// local model relates audio output to audio input, so
+		// audio_completion_ratio is derived from output_audio/input_audio.
+		if candidate.InputAudio != nil {
+			audioRatio := *candidate.InputAudio / candidate.Input
+			audioRatioMap[modelName] = roundRatioValue(audioRatio)
+			if candidate.OutputAudio != nil && *candidate.InputAudio > 0 {
+				audioCompletionRatio := *candidate.OutputAudio / *candidate.InputAudio
+				audioCompletionRatioMap[modelName] = roundRatioValue(audioCompletionRatio)
+			}
+		}
 	}
 
 	converted := make(map[string]any)
@@ -1102,7 +1154,171 @@ func convertModelsDevToRatioData(reader io.Reader) (map[string]any, error) {
 	if len(cacheRatioMap) > 0 {
 		converted["cache_ratio"] = cacheRatioMap
 	}
+	if len(createCacheRatioMap) > 0 {
+		converted["create_cache_ratio"] = createCacheRatioMap
+	}
+	if len(audioRatioMap) > 0 {
+		converted["audio_ratio"] = audioRatioMap
+	}
+	if len(audioCompletionRatioMap) > 0 {
+		converted["audio_completion_ratio"] = audioCompletionRatioMap
+	}
 	return converted, nil
+}
+
+// ---------------------------------------------------------------------------
+// Plaza official-price reference
+//
+// The model plaza shows a "pricing source" (official preset / models.dev
+// preset / custom channel). To render the discount badge it needs the
+// official reference price next to the platform price. These helpers fetch
+// a built-in preset's per-model ratio map once and cache it, so /api/pricing
+// can attach the official reference without hitting upstream on every call.
+// ---------------------------------------------------------------------------
+
+type presetRatioCacheEntry struct {
+	data      map[string]map[string]float64
+	fetchedAt time.Time
+}
+
+var (
+	presetRatioCacheMu sync.Mutex
+	presetRatioCache   = map[int]*presetRatioCacheEntry{}
+	presetRatioCacheTTL = 10 * time.Minute
+)
+
+// GetPresetModelRatios returns normalized per-model ratio maps for a built-in
+// pricing preset (official -100 or models.dev -101): model -> field -> ratio.
+// Results are cached for presetRatioCacheTTL. A failed fetch returns an empty
+// map (fail-soft) so the plaza still renders platform prices.
+func GetPresetModelRatios(presetID int) map[string]map[string]float64 {
+	presetRatioCacheMu.Lock()
+	if entry, ok := presetRatioCache[presetID]; ok &&
+		time.Since(entry.fetchedAt) < presetRatioCacheTTL {
+		data := entry.data
+		presetRatioCacheMu.Unlock()
+		return data
+	}
+	presetRatioCacheMu.Unlock()
+
+	data := fetchPresetModelRatios(presetID)
+
+	presetRatioCacheMu.Lock()
+	presetRatioCache[presetID] = &presetRatioCacheEntry{data: data, fetchedAt: time.Now()}
+	presetRatioCacheMu.Unlock()
+	return data
+}
+
+// RefreshPresetModelRatios forces a re-fetch on the next call (used by the
+// admin "sync" action so the plaza reflects the latest upstream prices).
+func RefreshPresetModelRatios(presetID int) {
+	presetRatioCacheMu.Lock()
+	delete(presetRatioCache, presetID)
+	presetRatioCacheMu.Unlock()
+}
+
+func fetchPresetModelRatios(presetID int) map[string]map[string]float64 {
+	raw, err := fetchPresetRaw(presetID)
+	if err != nil {
+		logger.LogWarn(context.Background(),
+			fmt.Sprintf("fetch preset %d failed: %v", presetID, err))
+		return map[string]map[string]float64{}
+	}
+	return normalizePresetRatios(raw)
+}
+
+func fetchPresetRaw(presetID int) (map[string]any, error) {
+	var endpoint string
+	if presetID == modelsDevPresetID {
+		endpoint = modelsDevPresetBaseURL + modelsDevPath
+	} else {
+		endpoint = officialRatioPresetBaseURL + officialRatioPresetEndpoint
+	}
+
+	client := &http.Client{Timeout: defaultTimeoutSeconds * time.Second}
+	req, err := http.NewRequest(http.MethodGet, endpoint, nil)
+	if err != nil {
+		return nil, err
+	}
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("preset %d returned %s", presetID, resp.Status)
+	}
+	limited := io.LimitReader(resp.Body, maxRatioConfigBytes)
+	bodyBytes, err := io.ReadAll(limited)
+	if err != nil {
+		return nil, err
+	}
+
+	if presetID == modelsDevPresetID {
+		return convertModelsDevToRatioData(bytes.NewReader(bodyBytes))
+	}
+	return parseOfficialRatioConfig(bodyBytes)
+}
+
+func parseOfficialRatioConfig(bodyBytes []byte) (map[string]any, error) {
+	var type1Data map[string]any
+	if err := common.Unmarshal(bodyBytes, &type1Data); err == nil && isRatioFieldMap(type1Data) {
+		return type1Data, nil
+	}
+	// Some endpoints wrap the ratio map in { success, data }.
+	var wrapped struct {
+		Success bool            `json:"success"`
+		Data    json.RawMessage `json:"data"`
+		Message string          `json:"message"`
+	}
+	if err := common.DecodeJson(bytes.NewReader(bodyBytes), &wrapped); err != nil {
+		return nil, err
+	}
+	if err := common.Unmarshal(wrapped.Data, &type1Data); err != nil {
+		return nil, err
+	}
+	if !isRatioFieldMap(type1Data) {
+		return nil, fmt.Errorf("official preset has no ratio fields")
+	}
+	return type1Data, nil
+}
+
+func isRatioFieldMap(data map[string]any) bool {
+	for _, field := range pricingSyncFields {
+		if _, ok := data[field]; ok {
+			return true
+		}
+	}
+	return false
+}
+
+func normalizePresetRatios(raw map[string]any) map[string]map[string]float64 {
+	result := map[string]map[string]float64{}
+	for field, value := range raw {
+		modelMap, ok := value.(map[string]any)
+		if !ok {
+			if mm, ok2 := value.(map[string]float64); ok2 {
+				for model, ratio := range mm {
+					if _, exists := result[model]; !exists {
+						result[model] = map[string]float64{}
+					}
+					result[model][field] = ratio
+				}
+			}
+			continue
+		}
+		for model, ratioVal := range modelMap {
+			ratio, ok := asFloat64(ratioVal)
+			if !ok {
+				continue
+			}
+			if _, exists := result[model]; !exists {
+				result[model] = map[string]float64{}
+			}
+			result[model][field] = ratio
+		}
+	}
+	return result
 }
 
 func GetSyncableChannels(c *gin.Context) {

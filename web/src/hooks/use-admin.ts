@@ -29,3 +29,13 @@ export function useIsAdmin(): boolean {
   const { user } = useAuthStore((state) => state.auth)
   return (user?.role ?? 0) >= ROLE.ADMIN
 }
+
+/**
+ * Check if current user is a super administrator. Used to decide whether the
+ * plaza shows the internal "平台价格" label (super admin) versus the public
+ * "价格" label (frontend visitors).
+ */
+export function useIsSuperAdmin(): boolean {
+  const { user } = useAuthStore((state) => state.auth)
+  return (user?.role ?? 0) >= ROLE.SUPER_ADMIN
+}

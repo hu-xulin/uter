@@ -36,6 +36,7 @@ import { useTranslation } from 'react-i18next'
 import { CopyButton } from '@/components/copy-button'
 import { StaticDataTable } from '@/components/data-table'
 import { sideDrawerContentClassName } from '@/components/drawer-layout'
+import { useIsSuperAdmin } from '@/hooks/use-admin'
 import { GroupBadge } from '@/components/group-badge'
 import { PublicLayout } from '@/components/layout'
 import { Button } from '@/components/ui/button'
@@ -80,7 +81,12 @@ import {
 import { parseTags } from '../lib/filters'
 import { getAvailableGroups, isTokenBasedModel } from '../lib/model-helpers'
 import { withPluginPricing } from '../lib/plugin-pricing'
-import { formatFixedPrice, formatGroupPrice } from '../lib/price'
+import {
+  formatFixedPrice,
+  formatGroupPrice,
+  formatOfficialPrice,
+  formatOfficialRequestPrice,
+} from '../lib/price'
 import {
   evaluateTaskUsageExamples,
   getTaskEnumFields,
@@ -100,6 +106,7 @@ import type {
   TokenUnit,
 } from '../types'
 import { DynamicPricingBreakdown } from './dynamic-pricing-breakdown'
+import { DiscountTag } from './discount-tag'
 import { ModelBillingModeBadge } from './model-billing-mode-badge'
 import { ModelDetailsApi } from './model-details-api'
 import { ModelDetailsPerformance } from './model-details-performance'
@@ -614,12 +621,24 @@ function ModelBackendDetailsSection(props: { model: PricingModel }) {
 // Model header (always visible above the detail sections)
 // ----------------------------------------------------------------------------
 
-function ModelHeader(props: { model: PricingModel }) {
+function ModelHeader(props: {
+  model: PricingModel
+  officialPrices?: Record<string, Record<string, number>>
+  pricingSource?: string
+  isSuperAdmin?: boolean
+}) {
   const { t } = useTranslation()
   const model = props.model
   const modelIconKey = model.icon || model.vendor_icon
   const modelIcon = modelIconKey ? getLobeIcon(modelIconKey, 20) : null
   const description = model.description || model.vendor_description || null
+
+  const sourceLabel =
+    props.pricingSource === 'channel'
+      ? props.isSuperAdmin
+        ? t('Platform price')
+        : t('Price')
+      : t('Official price')
 
   return (
     <header className='pb-4'>
@@ -627,6 +646,11 @@ function ModelHeader(props: { model: PricingModel }) {
         {modelIcon}
         <h1 className='font-mono text-xl font-bold tracking-tight sm:text-2xl'>
           {model.model_name}
+          <DiscountTag
+            model={model}
+            officialPrices={props.officialPrices}
+            className='ml-1.5 align-middle'
+          />
         </h1>
         <CopyButton
           value={model.model_name || ''}
@@ -643,6 +667,9 @@ function ModelHeader(props: { model: PricingModel }) {
         )}
         <span className='text-muted-foreground/30'>·</span>
         <ModelBillingModeBadge model={model} />
+        <span className='rounded bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground'>
+          {sourceLabel}
+        </span>
       </div>
       {description && (
         <p className='text-muted-foreground mt-2 text-sm leading-relaxed'>
@@ -1135,6 +1162,15 @@ function ProviderGroupPricingSection(
       (tier) => !('unitPrices' in tier) && tier.billingUnit === 'request'
     )
 
+    const officialDynamicSummary = getDynamicPricingSummary(props.model, {
+      tokenUnit: props.tokenUnit,
+      showRechargePrice,
+      priceRate: props.priceRate,
+      usdExchangeRate: props.usdExchangeRate,
+      groupRatioMultiplier: 1,
+      usageSchema: props.model.billing_usage_schema,
+    })
+
     if (dynamicTiers.length === 0) {
       return (
         <section>
@@ -1200,6 +1236,19 @@ function ProviderGroupPricingSection(
           <SectionTitle>{t('Pricing by Group')}</SectionTitle>
         )}
         <AutoGroupChain model={props.model} autoGroups={props.autoGroups} />
+        {officialDynamicSummary?.primaryEntries.length ? (
+          <p className='text-muted-foreground/60 text-[11px] tabular-nums'>
+            {t('Official price (1x)')}:{' '}
+            {officialDynamicSummary.primaryEntries
+              .slice(0, 2)
+              .map((e) =>
+                e.labelKind === 'schema'
+                  ? `${e.shortLabel} ${e.formattedRange ?? e.formatted}`
+                  : `${t(e.shortLabel)} ${e.formattedRange ?? e.formatted}`
+              )
+              .join(' · ')}
+          </p>
+        ) : null}
         <div className='space-y-3'>
           {availableGroups.map((group) => {
             const ratio = props.groupRatio[group] || 1
@@ -1389,6 +1438,40 @@ function ProviderGroupPricingSection(
     <section>
       {!props.hideTitle && <SectionTitle>{t('Pricing by Group')}</SectionTitle>}
       <AutoGroupChain model={props.model} autoGroups={props.autoGroups} />
+      {isTokenBased ? (
+        <p className='text-muted-foreground/60 text-[11px] tabular-nums'>
+          {t('Official price (1x)')}: {t('Input')}{' '}
+          {formatOfficialPrice(
+            props.model,
+            'input',
+            props.tokenUnit,
+            showRechargePrice,
+            props.priceRate,
+            props.usdExchangeRate
+          )}{' '}
+          · {t('Output')}{' '}
+          {formatOfficialPrice(
+            props.model,
+            'output',
+            props.tokenUnit,
+            showRechargePrice,
+            props.priceRate,
+            props.usdExchangeRate
+          )}{' '}
+          / {tokenUnitLabel}
+        </p>
+      ) : (
+        <p className='text-muted-foreground/60 text-[11px] tabular-nums'>
+          {t('Official price (1x)')}:{' '}
+          {formatOfficialRequestPrice(
+            props.model,
+            showRechargePrice,
+            props.priceRate,
+            props.usdExchangeRate
+          )}{' '}
+          / {t('request')}
+        </p>
+      )}
       <StaticDataTable
         className='-mx-4 rounded-none border-0 sm:mx-0'
         tableClassName='text-sm'
@@ -1478,6 +1561,12 @@ export interface ModelDetailsContentProps {
   usdExchangeRate: number
   tokenUnit: TokenUnit
   showRechargePrice?: boolean
+  /** Selected plaza pricing source (official / models.dev / channel). */
+  pricingSource?: string
+  /** Per-model official reference ratios from the selected preset. */
+  officialPrices?: Record<string, Record<string, number>>
+  /** Whether the viewer is a super administrator (affects source label). */
+  isSuperAdmin?: boolean
 }
 
 export function ModelDetailsContent(props: ModelDetailsContentProps) {
@@ -1500,7 +1589,12 @@ export function ModelDetailsContent(props: ModelDetailsContentProps) {
 
   return (
     <div className='@container/details space-y-4'>
-      <ModelHeader model={props.model} />
+      <ModelHeader
+        model={props.model}
+        officialPrices={props.officialPrices}
+        pricingSource={props.pricingSource}
+        isSuperAdmin={props.isSuperAdmin}
+      />
 
       <Tabs defaultValue='overview' className='gap-4'>
         <TabsList className='bg-muted/60 grid w-full grid-cols-3 gap-1 rounded-lg p-1 group-data-horizontal/tabs:h-auto'>
@@ -1622,7 +1716,11 @@ export function ModelDetails() {
     isLoading,
     priceRate,
     usdExchangeRate,
+    pricingSource,
+    officialPrices,
   } = usePricingData()
+
+  const isSuperAdmin = useIsSuperAdmin()
 
   const tokenUnit: TokenUnit =
     search.tokenUnit === 'K' ? 'K' : DEFAULT_TOKEN_UNIT
@@ -1701,6 +1799,9 @@ export function ModelDetails() {
           usdExchangeRate={usdExchangeRate ?? 1}
           tokenUnit={tokenUnit}
           showRechargePrice={search.rechargePrice ?? false}
+          pricingSource={pricingSource}
+          officialPrices={officialPrices}
+          isSuperAdmin={isSuperAdmin}
           endpointMap={
             (endpointMap as Record<
               string,

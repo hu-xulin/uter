@@ -64,6 +64,12 @@ export function usePricingData(enabled = true) {
     })
   }, [data])
 
+  const officialPrices = useMemo(() => {
+    const raw = data?.official_prices
+    if (!raw || typeof raw !== 'object') return {} as Record<string, Record<string, number>>
+    return raw as Record<string, Record<string, number>>
+  }, [data])
+
   return {
     models,
     vendors: data?.vendors ?? [],
@@ -71,6 +77,8 @@ export function usePricingData(enabled = true) {
     usableGroup: data?.usable_group ?? {},
     endpointMap: data?.supported_endpoint ?? {},
     autoGroups: data?.auto_groups ?? [],
+    pricingSource: (data?.pricing_source as string) ?? 'official',
+    officialPrices,
     isLoading,
     error,
     refetch,

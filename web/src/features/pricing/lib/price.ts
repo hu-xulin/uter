@@ -274,3 +274,155 @@ export function formatRequestPrice(
     abbreviate: false,
   })
 }
+
+/**
+ * Official (standard) price — the model's list price at `group_ratio = 1`,
+ * i.e. before any user-group discount/markup is applied. This is the upstream
+ * official price the platform owner configured in the ratio table. No backend
+ * change required: `model_ratio` already carries this value.
+ */
+export function formatOfficialPrice(
+  model: PricingModel,
+  type: PriceType,
+  tokenUnit: TokenUnit,
+  showWithRecharge = false,
+  priceRate = 1,
+  usdExchangeRate = 1,
+  showCurrencySymbol = true
+): string {
+  if (model.quota_type === QUOTA_TYPE_VALUES.REQUEST) {
+    return '-'
+  }
+
+  const priceInUSD = calculateTokenPrice(model, type, 1)
+
+  const price = applyRechargeRate(
+    priceInUSD,
+    showWithRecharge,
+    priceRate,
+    usdExchangeRate
+  )
+
+  return formatBillingCurrencyFromUSD(price / TOKEN_UNIT_DIVISORS[tokenUnit], {
+    showSymbol: showCurrencySymbol,
+    digitsLarge: 4,
+    digitsSmall: 6,
+    abbreviate: false,
+  })
+}
+
+/**
+ * Official (standard) price for pay-per-request models at `group_ratio = 1`.
+ */
+export function formatOfficialRequestPrice(
+  model: PricingModel,
+  showWithRecharge = false,
+  priceRate = 1,
+  usdExchangeRate = 1,
+  showCurrencySymbol = true
+): string {
+  if (model.quota_type !== QUOTA_TYPE_VALUES.REQUEST) {
+    return '-'
+  }
+
+  const priceInUSD = (model.model_price || 0) * 1
+
+  const price = applyRechargeRate(
+    priceInUSD,
+    showWithRecharge,
+    priceRate,
+    usdExchangeRate
+  )
+
+  return formatBillingCurrencyFromUSD(price, {
+    showSymbol: showCurrencySymbol,
+    digitsLarge: 4,
+    digitsSmall: 4,
+    abbreviate: false,
+  })
+}
+
+/**
+ * Official price for token models at an explicit reference ratio (e.g. the
+ * selected pricing preset's model_ratio), used by the plaza discount badge.
+ */
+export function formatOfficialPriceAtRatio(
+  model: PricingModel,
+  type: PriceType,
+  ratio: number,
+  tokenUnit: TokenUnit,
+  showWithRecharge = false,
+  priceRate = 1,
+  usdExchangeRate = 1,
+  showCurrencySymbol = true
+): string {
+  if (model.quota_type === QUOTA_TYPE_VALUES.REQUEST) {
+    return '-'
+  }
+  const priceInUSD = calculateTokenPrice(model, type, ratio)
+  const price = applyRechargeRate(priceInUSD, showWithRecharge, priceRate, usdExchangeRate)
+  return formatBillingCurrencyFromUSD(price / TOKEN_UNIT_DIVISORS[tokenUnit], {
+    showSymbol: showCurrencySymbol,
+    digitsLarge: 4,
+    digitsSmall: 6,
+    abbreviate: false,
+  })
+}
+
+/**
+ * Official reference ratio (model_ratio) for a model from the selected pricing
+ * preset. Used by the plaza discount badge. Returns undefined when the preset
+ * has no entry for the model.
+ */
+export function getOfficialReferenceRatio(
+  model: PricingModel,
+  officialPrices?: Record<string, Record<string, number>>
+): number | undefined {
+  const ref = officialPrices?.[model.model_name]
+  if (ref && typeof ref.model_ratio === 'number' && Number.isFinite(ref.model_ratio)) {
+    return ref.model_ratio
+  }
+  return undefined
+}
+
+export type DiscountInfo = {
+  hasDiscount: boolean
+  /** Percentage saved vs official, e.g. 10 for "省 10%". */
+  percent: number
+  /** Chinese "zhe" multiplier, e.g. 9 for "9折". */
+  zhe: number
+}
+
+/**
+ * Compare the platform price (model_ratio adjusted by the viewer's group
+ * ratio) against the official preset price. A discount exists when the
+ * platform price is lower than the official price.
+ */
+export function getDiscountInfo(
+  model: PricingModel,
+  officialPrices?: Record<string, Record<string, number>>,
+  selectedGroup?: string
+): DiscountInfo {
+  const official = getOfficialReferenceRatio(model, officialPrices)
+  const platform = model.model_ratio
+  if (
+    official == null ||
+    !Number.isFinite(official) ||
+    official <= 0 ||
+    !Number.isFinite(platform) ||
+    platform <= 0
+  ) {
+    return { hasDiscount: false, percent: 0, zhe: 10 }
+  }
+  const displayRatio = getDisplayGroupRatio(model, selectedGroup)
+  const effectivePlatform = platform * displayRatio
+  if (effectivePlatform >= official - 1e-9) {
+    return { hasDiscount: false, percent: 0, zhe: 10 }
+  }
+  const ratio = effectivePlatform / official
+  return {
+    hasDiscount: true,
+    percent: (1 - ratio) * 100,
+    zhe: ratio * 10,
+  }
+}
