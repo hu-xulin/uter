@@ -16,7 +16,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@Uter.ai.com
 */
-import { useMemo } from 'react'
+import { useMemo, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { getCurrencyLabel } from '@/lib/currency'
@@ -31,9 +31,10 @@ import {
   isUnconfiguredTaskUsageModel,
 } from '../lib/dynamic-price'
 import { isTokenBasedModel } from '../lib/model-helpers'
-import { formatPrice, formatRequestPrice } from '../lib/price'
+import { getOfficialReferenceRatio } from '../lib/price'
 import { taskUsageUnitLabel } from '../lib/task-price-display'
-import type { PricingModel, TokenUnit } from '../types'
+import { PriceMetricOfficial } from './price-with-official'
+import type { PricingModel, PriceType, TokenUnit } from '../types'
 
 export type ModelPriceCellOptions = {
   tokenUnit?: TokenUnit
@@ -41,6 +42,8 @@ export type ModelPriceCellOptions = {
   usdExchangeRate?: number
   showRechargePrice?: boolean
   selectedGroup?: string
+  /** Per-model official reference ratios from the selected preset. */
+  officialPrices?: Record<string, Record<string, number>>
 }
 
 export function ModelPriceCell(props: {
@@ -83,7 +86,32 @@ export function ModelPriceCell(props: {
       currency,
     ]
   )
-  let metrics: Array<{ label: string; value: string }>
+  const officialDynamic = useMemo(
+    () =>
+      getDynamicPricingSummary(props.model, {
+        priceRate: options.priceRate,
+        usdExchangeRate: options.usdExchangeRate,
+        showRechargePrice: options.showRechargePrice,
+        now: billingTime === undefined ? undefined : new Date(billingTime),
+        tokenUnit,
+        showCurrencySymbol: false,
+        groupRatioMultiplier: 1,
+      }),
+    // Currency is read indirectly by the price formatter.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [
+      props.model,
+      tokenUnit,
+      options.priceRate,
+      options.usdExchangeRate,
+      options.showRechargePrice,
+      options.selectedGroup,
+      billingTime,
+      currency,
+    ]
+  )
+  let metrics: Array<{ label: string; value: string }> = []
+  let priceNodes: ReactNode | null = null
   const providerCaption = dynamic?.providerCount
     ? t('{{count}} providers', { count: dynamic.providerCount })
     : ''
@@ -187,77 +215,110 @@ export function ModelPriceCell(props: {
         </span>
       )
     }
+    const officialRatio = getOfficialReferenceRatio(
+      props.model,
+      options.officialPrices
+    )
     if (tokenBased) {
-      metrics = [
-        {
-          label: t('Input'),
-          value: formatPrice(
-            props.model,
-            'input',
-            tokenUnit,
-            options.showRechargePrice,
-            options.priceRate,
-            options.usdExchangeRate,
-            options.selectedGroup,
-            false
-          ),
-        },
-        {
-          label: t('Output'),
-          value: formatPrice(
-            props.model,
-            'output',
-            tokenUnit,
-            options.showRechargePrice,
-            options.priceRate,
-            options.usdExchangeRate,
-            options.selectedGroup,
-            false
-          ),
-        },
+      const m = props.model
+      const hasRatio = (value?: number | null) =>
+        typeof value === 'number' && Number.isFinite(value)
+      const tokenDims: Array<{ type: PriceType; label: string }> = [
+        { type: 'input', label: t('Input') },
+        { type: 'output', label: t('Output') },
       ]
+      if (hasRatio(m.cache_ratio)) {
+        tokenDims.push({ type: 'cache', label: t('Cache Read') })
+      }
+      if (hasRatio(m.create_cache_ratio)) {
+        tokenDims.push({ type: 'create_cache', label: t('Cache write') })
+      }
+      if (hasRatio(m.image_ratio)) {
+        tokenDims.push({ type: 'image', label: t('Image input') })
+      }
+      if (hasRatio(m.audio_ratio)) {
+        tokenDims.push({ type: 'audio_input', label: t('Audio input') })
+      }
+      if (hasRatio(m.audio_ratio) && hasRatio(m.audio_completion_ratio)) {
+        tokenDims.push({ type: 'audio_output', label: t('Audio output') })
+      }
+      priceNodes = (
+        <>
+          {tokenDims.map((dim) => (
+            <PriceMetricOfficial
+              key={dim.type}
+              model={m}
+              type={dim.type}
+              label={dim.label}
+              unit={tokenUnitLabel}
+              tokenUnit={tokenUnit}
+              showRechargePrice={options.showRechargePrice}
+              priceRate={options.priceRate}
+              usdExchangeRate={options.usdExchangeRate}
+              selectedGroup={options.selectedGroup}
+              officialRatio={officialRatio}
+            />
+          ))}
+        </>
+      )
     } else {
-      metrics = [
-        {
-          label: t('Per-request'),
-          value: formatRequestPrice(
-            props.model,
-            options.showRechargePrice,
-            options.priceRate,
-            options.usdExchangeRate,
-            options.selectedGroup,
-            false
-          ),
-        },
-      ]
+      priceNodes = (
+        <PriceMetricOfficial
+          model={props.model}
+          type='request'
+          label={t('Per-request')}
+          unit={t('request')}
+          tokenUnit={tokenUnit}
+          showRechargePrice={options.showRechargePrice}
+          priceRate={options.priceRate}
+          usdExchangeRate={options.usdExchangeRate}
+          selectedGroup={options.selectedGroup}
+          officialRatio={officialRatio}
+        />
+      )
       caption = `${currencyLabel} / ${t('request')}`
     }
   }
   return (
     <span className='block w-full max-w-full min-w-0 space-y-1.5'>
-      <span
-        className={metrics.length > 1 ? 'grid grid-cols-2 gap-x-4' : 'grid'}
-      >
-        {metrics.map((metric) => (
-          <span
-            key={metric.label}
-            className='flex min-w-0 flex-col items-start gap-y-0.5 sm:flex-row sm:flex-wrap sm:items-baseline sm:gap-x-1.5'
-          >
+      {priceNodes ?? (
+        <span
+          className={metrics.length > 1 ? 'grid grid-cols-2 gap-x-4' : 'grid'}
+        >
+          {metrics.map((metric) => (
             <span
-              className='text-muted-foreground min-w-0 truncate text-xs font-normal'
-              title={metric.label}
+              key={metric.label}
+              className='flex min-w-0 flex-col items-start gap-y-0.5 sm:flex-row sm:flex-wrap sm:items-baseline sm:gap-x-1.5'
             >
-              {metric.label}
+              <span
+                className='text-muted-foreground min-w-0 truncate text-xs font-normal'
+                title={metric.label}
+              >
+                {metric.label}
+              </span>
+              <span
+                className='min-w-0 font-mono text-sm break-words whitespace-normal tabular-nums'
+                title={metric.value}
+              >
+                {metric.value}
+              </span>
             </span>
-            <span
-              className='min-w-0 font-mono text-sm break-words whitespace-normal tabular-nums'
-              title={metric.value}
-            >
-              {metric.value}
-            </span>
-          </span>
-        ))}
-      </span>
+          ))}
+        </span>
+      )}
+      {officialDynamic?.primaryEntries.length ? (
+        <span className='text-muted-foreground block text-xs font-normal tabular-nums'>
+          {t('Official')}:{' '}
+          {officialDynamic.primaryEntries
+            .slice(0, 2)
+            .map((e) =>
+              e.labelKind === 'schema'
+                ? `${e.shortLabel} ${e.formattedRange ?? e.formatted}`
+                : `${t(e.shortLabel)} ${e.formattedRange ?? e.formatted}`
+            )
+            .join(' · ')}
+        </span>
+      ) : null}
       <span
         className='text-muted-foreground block text-xs font-normal break-words whitespace-normal sm:truncate'
         title={caption}

@@ -39,6 +39,12 @@ export interface PricingTableProps {
   tokenUnit?: TokenUnit
   showRechargePrice?: boolean
   selectedGroup?: string
+  /** Selected plaza pricing source (official / models.dev / channel). */
+  pricingSource?: string
+  /** Per-model official reference ratios from the selected preset. */
+  officialPrices?: Record<string, Record<string, number>>
+  /** Whether the viewer is a super administrator (affects source label). */
+  isSuperAdmin?: boolean
   onModelClick?: (modelName: string) => void
 }
 
@@ -52,6 +58,9 @@ export function PricingTable(props: PricingTableProps) {
     tokenUnit = DEFAULT_TOKEN_UNIT,
     showRechargePrice = false,
     selectedGroup,
+    pricingSource,
+    officialPrices,
+    isSuperAdmin,
     onModelClick,
   } = props
 
@@ -66,6 +75,9 @@ export function PricingTable(props: PricingTableProps) {
     usdExchangeRate,
     showRechargePrice,
     selectedGroup,
+    pricingSource,
+    officialPrices,
+    isSuperAdmin,
   })
 
   const { table } = useDataTable({

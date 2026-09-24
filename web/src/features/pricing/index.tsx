@@ -21,6 +21,7 @@ import { useTranslation } from 'react-i18next'
 
 import { PublicLayout } from '@/components/layout'
 import { PageTransition } from '@/components/page-transition'
+import { useIsSuperAdmin } from '@/hooks/use-admin'
 
 import {
   LoadingSkeleton,
@@ -52,7 +53,11 @@ export function Pricing() {
     isLoading,
     priceRate,
     usdExchangeRate,
+    pricingSource,
+    officialPrices,
   } = usePricingData()
+
+  const isSuperAdmin = useIsSuperAdmin()
 
   const {
     searchInput,
@@ -131,6 +136,9 @@ export function Pricing() {
           tokenUnit={tokenUnit}
           showRechargePrice={showRechargePrice}
           selectedGroup={groupFilter}
+          pricingSource={pricingSource}
+          officialPrices={officialPrices}
+          isSuperAdmin={isSuperAdmin}
         />
       )
     }
@@ -143,6 +151,9 @@ export function Pricing() {
         tokenUnit={tokenUnit}
         showRechargePrice={showRechargePrice}
         selectedGroup={groupFilter}
+        pricingSource={pricingSource}
+        officialPrices={officialPrices}
+        isSuperAdmin={isSuperAdmin}
         onModelClick={handleModelClick}
       />
     )
@@ -280,6 +291,9 @@ export function Pricing() {
               usdExchangeRate={usdExchangeRate ?? 1}
               tokenUnit={tokenUnit}
               showRechargePrice={showRechargePrice}
+              pricingSource={pricingSource}
+              officialPrices={officialPrices}
+              isSuperAdmin={isSuperAdmin}
             />
           )}
         </PageTransition>

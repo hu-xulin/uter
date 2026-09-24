@@ -67,8 +67,17 @@ func runProgram(prog *vm.Program, requestRules []RequestRuleTrace, usedVars map[
 		trace.ImageCount = &imageCount
 	}
 
+	durationVal := 0.0
+	if request.Duration != nil {
+		durationVal = *request.Duration
+		if durationVal < 0 {
+			durationVal = 0
+		}
+	}
+
 	env := map[string]any{
 		"image_count": float64(imageCount),
+		"duration":    durationVal,
 		"p":           params.P,
 		"c":           params.C,
 		"len":         params.Len,

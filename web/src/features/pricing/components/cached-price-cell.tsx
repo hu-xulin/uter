@@ -28,8 +28,8 @@ import {
   getDynamicPricingSummary,
   isUnconfiguredTaskUsageModel,
 } from '../lib/dynamic-price'
-import { isTokenBasedModel } from '../lib/model-helpers'
-import { formatPrice, stripTrailingZeros } from '../lib/price'
+import { getDisplayGroupRatio, isTokenBasedModel } from '../lib/model-helpers'
+import { formatOfficialPrice, formatPrice, stripTrailingZeros } from '../lib/price'
 import type { PricingModel } from '../types'
 import type { ModelPriceCellOptions } from './model-price-cell'
 
@@ -139,6 +139,18 @@ export function CachedPriceCell(props: {
       selectedGroup
     )
   )
+  const cacheRatio = getDisplayGroupRatio(model, selectedGroup)
+  const cacheDiscounted = cacheRatio > 0 && cacheRatio < 1
+  const officialCache = stripTrailingZeros(
+    formatOfficialPrice(
+      model,
+      'cache',
+      tokenUnit,
+      showRechargePrice,
+      priceRate,
+      usdExchangeRate
+    )
+  )
 
   return (
     <div className='max-w-full min-w-0'>
@@ -146,6 +158,12 @@ export function CachedPriceCell(props: {
       <div className='text-muted-foreground/50 text-[10px]'>
         / {tokenUnitLabel}
       </div>
+      {cacheDiscounted && (
+        <div className='text-muted-foreground/50 text-[10px] tabular-nums'>
+          {t('Official')}:{' '}
+          <span className='line-through'>{officialCache}</span> / {tokenUnitLabel}
+        </div>
+      )}
     </div>
   )
 }

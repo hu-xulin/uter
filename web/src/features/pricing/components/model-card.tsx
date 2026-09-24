@@ -38,11 +38,13 @@ import {
 } from '../lib/dynamic-price'
 import { parseTags } from '../lib/filters'
 import { isTokenBasedModel } from '../lib/model-helpers'
-import { formatPrice, formatRequestPrice } from '../lib/price'
+import { getOfficialReferenceRatio } from '../lib/price'
 import { taskPriceLabel, taskUsageUnitLabel } from '../lib/task-price-display'
 import type { PricingModel, PriceType, TokenUnit } from '../types'
+import { DiscountTag } from './discount-tag'
 import { ModelBillingModeBadge } from './model-billing-mode-badge'
 import { ModelPerfBadge, type ModelPerfBadgeData } from './model-perf-badge'
+import { PriceMetricOfficial } from './price-with-official'
 
 export interface ModelCardProps {
   model: PricingModel
@@ -53,6 +55,12 @@ export interface ModelCardProps {
   showRechargePrice?: boolean
   selectedGroup?: string
   perf?: ModelPerfBadgeData
+  /** Selected plaza pricing source (official / models.dev / channel). */
+  pricingSource?: string
+  /** Per-model official reference ratios from the selected preset. */
+  officialPrices?: Record<string, Record<string, number>>
+  /** Whether the viewer is a super administrator (affects source label). */
+  isSuperAdmin?: boolean
 }
 
 export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
@@ -72,6 +80,13 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
   const isUnconfiguredTaskUsage = isUnconfiguredTaskUsageModel(props.model)
   const billingTime = useBillingTime(props.model.billing_expr)
   const currency = useSystemConfigStore((state) => state.config.currency)
+  const officialRatio = getOfficialReferenceRatio(props.model, props.officialPrices)
+  const sourceLabel =
+    props.pricingSource === 'channel'
+      ? props.isSuperAdmin
+        ? t('Platform price')
+        : t('Price')
+      : t('Official price')
   const dynamicPriceOptions = useMemo(
     () => ({
       now: billingTime === undefined ? undefined : new Date(billingTime),
@@ -96,6 +111,16 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
   )
   const dynamicSummary = useMemo(
     () => getDynamicPricingSummary(props.model, dynamicPriceOptions),
+    // Currency is read indirectly by the price formatter.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [props.model, dynamicPriceOptions, currency]
+  )
+  const officialSummary = useMemo(
+    () =>
+      getDynamicPricingSummary(props.model, {
+        ...dynamicPriceOptions,
+        groupRatioMultiplier: 1,
+      }),
     // Currency is read indirectly by the price formatter.
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [props.model, dynamicPriceOptions, currency]
@@ -161,9 +186,22 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
                       / {unitLabel}
                     </span>
                   </span>
-                </div>
-              )
+              </div>
+            )
             })}
+          {officialSummary?.primaryEntries.length ? (
+            <span className='text-muted-foreground col-span-full text-xs tabular-nums'>
+              {t('Official')}:{' '}
+              {officialSummary.primaryEntries
+                .slice(0, 2)
+                .map((e) =>
+                  e.labelKind === 'schema'
+                    ? `${e.shortLabel} ${e.formattedRange ?? e.formatted}`
+                    : `${t(e.shortLabel)} ${e.formattedRange ?? e.formatted}`
+                )
+                .join(' · ')}
+            </span>
+          ) : null}
           {dynamicSummary.isTimePricing && (
             <span className='text-muted-foreground col-span-full text-xs'>
               {t('Current period price')}
@@ -214,42 +252,35 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
         : []),
     ]
     priceSummary = prices.map((price) => (
-      <div key={price.type} className='flex min-w-0 flex-col gap-1'>
-        <span className='text-muted-foreground text-xs'>{price.label}</span>
-        <span className='font-mono text-sm font-semibold tabular-nums'>
-          {formatPrice(
-            props.model,
-            price.type,
-            tokenUnit,
-            showRechargePrice,
-            priceRate,
-            usdExchangeRate,
-            props.selectedGroup
-          )}
-          <span className='text-muted-foreground text-xs font-normal'>
-            {' '}
-            / {tokenUnitLabel}
-          </span>
-        </span>
-      </div>
+      <PriceMetricOfficial
+        key={price.type}
+        model={props.model}
+        type={price.type}
+        label={price.label}
+        unit={tokenUnitLabel}
+        tokenUnit={tokenUnit}
+        showRechargePrice={showRechargePrice}
+        priceRate={priceRate}
+        usdExchangeRate={usdExchangeRate}
+        selectedGroup={props.selectedGroup}
+        officialRatio={officialRatio}
+      />
     ))
   } else {
     priceSummary = (
-      <div className='col-span-full flex min-w-0 flex-col gap-1'>
-        <span className='font-mono text-sm font-semibold tabular-nums'>
-          {formatRequestPrice(
-            props.model,
-            showRechargePrice,
-            priceRate,
-            usdExchangeRate,
-            props.selectedGroup
-          )}
-          <span className='text-muted-foreground text-xs font-normal'>
-            {' '}
-            / {t('request')}
-          </span>
-        </span>
-      </div>
+      <PriceMetricOfficial
+        model={props.model}
+        type='request'
+        label={t('Per-request')}
+        unit={t('request')}
+        tokenUnit={tokenUnit}
+        showRechargePrice={showRechargePrice}
+        priceRate={priceRate}
+        usdExchangeRate={usdExchangeRate}
+        selectedGroup={props.selectedGroup}
+        officialRatio={officialRatio}
+        className='col-span-full'
+      />
     )
   }
 
@@ -272,6 +303,12 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
             title={props.model.model_name}
           >
             {props.model.model_name}
+            <DiscountTag
+              model={props.model}
+              officialPrices={props.officialPrices}
+              selectedGroup={props.selectedGroup}
+              className='ml-1.5 align-middle'
+            />
           </h3>
           {props.model.vendor_name && (
             <p
@@ -317,7 +354,12 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
           aria-label={t('Pricing')}
           className='mt-auto flex min-w-0 flex-col gap-1.5'
         >
-          <ModelBillingModeBadge model={props.model} appearance='caption' />
+          <div className='flex flex-wrap items-center gap-1.5'>
+            <ModelBillingModeBadge model={props.model} appearance='caption' />
+            <span className='rounded bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground'>
+              {sourceLabel}
+            </span>
+          </div>
           {dynamicSummary?.providerCount && (
             <span className='text-muted-foreground text-xs break-words'>
               {t('{{count}} providers', {

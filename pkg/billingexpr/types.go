@@ -14,6 +14,10 @@ type RequestInput struct {
 	// ImageCount is a validated billing quantity, separate from the frozen
 	// request's n. Settlement can replace it with the actual returned count.
 	ImageCount *int
+	// Duration is the media duration in seconds (e.g. generated video length),
+	// used by expressions that reference the `duration` variable. A nil value
+	// means the caller did not supply one and the engine falls back to zero.
+	Duration *float64
 }
 
 // TokenParams holds all token dimensions passed into an Expr evaluation.

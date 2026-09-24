@@ -38,6 +38,12 @@ export interface ModelCardGridProps {
   tokenUnit?: TokenUnit
   showRechargePrice?: boolean
   selectedGroup?: string
+  /** Selected plaza pricing source (official / models.dev / channel). */
+  pricingSource?: string
+  /** Per-model official reference ratios from the selected preset. */
+  officialPrices?: Record<string, Record<string, number>>
+  /** Whether the viewer is a super administrator (affects source label). */
+  isSuperAdmin?: boolean
 }
 
 export function ModelCardGrid(props: ModelCardGridProps) {
@@ -85,6 +91,9 @@ export function ModelCardGrid(props: ModelCardGridProps) {
             showRechargePrice={props.showRechargePrice}
             selectedGroup={props.selectedGroup}
             perf={perfMap.get(model.model_name || '')}
+            pricingSource={props.pricingSource}
+            officialPrices={props.officialPrices}
+            isSuperAdmin={props.isSuperAdmin}
             onClick={() => props.onModelClick(model.model_name || '')}
           />
         ))}
