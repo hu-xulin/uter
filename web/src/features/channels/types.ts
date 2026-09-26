@@ -114,6 +114,23 @@ export interface ChannelOtherSettings {
 
 export interface AdvancedCustomConfig {
   advanced_routes?: AdvancedCustomRoute[]
+  /**
+   * Optional display name shown on channel cards instead of the default
+   * "Advanced Custom" type label. Empty = use the default label.
+   */
+  display_name?: string
+  /**
+   * Optional logo (image URL or data URL) rendered before the display name.
+   * Empty = use the default type icon.
+   */
+  logo?: string
+  /**
+   * Optional dark-theme logo. When set, it is rendered instead of `logo` in
+   * dark mode so the mark stays visible (e.g. a white-stroke SVG on a dark
+   * surface). Empty = fall back to `logo`. We store it explicitly rather than
+   * recoloring at render time so the exact SVG the user provided is used.
+   */
+  logo_dark?: string
 }
 
 export interface AdvancedCustomRoute {

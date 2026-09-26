@@ -81,6 +81,21 @@ func GetPricing(c *gin.Context) {
 	// reference for the discount comparison. When the source is the platform
 	// channel, the canonical official preset (-100) is the reference.
 	officialPrices := GetPresetModelRatios(referencePresetID)
+	// The two built-in presets have complementary model coverage (e.g. the
+	// basellm official preset lacks many Alibaba/Qwen entries that models.dev
+	// has). Fill the gaps from the other preset so every model with a known
+	// upstream list price keeps an official reference; otherwise the plaza
+	// would fall back to the platform's own (possibly discounted) prices and
+	// show the discount as the "official" price.
+	fallbackPresetID := modelsDevPresetID
+	if referencePresetID == modelsDevPresetID {
+		fallbackPresetID = officialRatioPresetID
+	}
+	for modelName, ratios := range GetPresetModelRatios(fallbackPresetID) {
+		if _, ok := officialPrices[modelName]; !ok {
+			officialPrices[modelName] = ratios
+		}
+	}
 
 	c.JSON(200, gin.H{
 		"success":            true,

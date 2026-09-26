@@ -456,7 +456,7 @@ func fetchAdvancedCustomBalance(channel *model.Channel) (channelBalanceResult, e
 }
 
 func updateChannelBalance(channel *model.Channel) (channelBalanceResult, error) {
-	if channel.Type == constant.ChannelTypeAdvancedCustom {
+	if constant.IsAdvancedCustomChannelType(channel.Type) {
 		return fetchAdvancedCustomBalance(channel)
 	}
 	balance, err := updateStandardChannelBalance(channel)

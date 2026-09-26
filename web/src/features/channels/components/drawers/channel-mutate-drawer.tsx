@@ -155,7 +155,7 @@ import {
 import { useChannelMutateForm } from '../../hooks/use-channel-mutate-form'
 import {
   CHANNEL_FORM_DEFAULT_VALUES,
-  CHANNEL_TYPE_ADVANCED_CUSTOM,
+  isAdvancedCustomLikeChannelType,
   channelFormSchema,
   channelsQueryKeys,
   getAdvancedCustomStats,
@@ -190,11 +190,15 @@ import {
   assessBaseUrlTrust,
   nextTaskPluginBaseUrl,
 } from '../../lib/task-plugin-base-url'
-import type { Channel } from '../../types'
+import type { AdvancedCustomConfig, Channel } from '../../types'
 import { ChannelPluginExtensions } from '../channel-plugin-extensions'
 import { ChannelTypeLogo } from '../channel-type-badge'
 import { useChannels } from '../channels-provider'
 import { AdvancedCustomEditorDialog } from '../dialogs/advanced-custom-editor-dialog'
+import {
+  createAdvancedCustomRoute,
+  stringifyAdvancedCustomConfig,
+} from '../../lib/advanced-custom'
 import { ConfigureModelsDialog } from '../dialogs/configure-models-dialog'
 import {
   MissingModelsConfirmationDialog,
@@ -716,18 +720,26 @@ export function ChannelMutateDrawer({
 
   const selectProvider = useCallback(
     (target: ChannelProviderTarget) => {
-      if (!canEditSensitive) return
-      if (
-        (target.kind === 'builtin' &&
-          providerTarget?.kind === 'builtin' &&
-          target.type === providerTarget.type) ||
-        (target.kind === 'plugin' &&
-          providerTarget?.kind === 'plugin' &&
-          target.key === providerTarget.key)
-      ) {
-        setChoosingProvider(false)
-        return
-      }
+    if (!canEditSensitive) return
+    // Two providers are "the same" only when their identity matches. For
+    // builtin providers the identity includes the branded preset, because
+    // every branded shortcut (共享渠道 / 聚合渠道 / 代理渠道) is a distinct type
+    // (62/63/64) but may still carry a different preset; comparing by type
+    // alone could skip re-applying a different preset, leaving the channel
+    // without its logo / display name.
+    const sameBuiltinProvider =
+      target.kind === 'builtin' &&
+      providerTarget?.kind === 'builtin' &&
+      target.type === providerTarget.type &&
+      (target.presetDisplayName || '') === (providerTarget.presetDisplayName || '')
+    const samePluginProvider =
+      target.kind === 'plugin' &&
+      providerTarget?.kind === 'plugin' &&
+      target.key === providerTarget.key
+    if (sameBuiltinProvider || samePluginProvider) {
+      setChoosingProvider(false)
+      return
+    }
       if (target.kind === 'plugin') {
         if (!canBindTaskPlugin) return
         const plugin = taskPluginOptionsQuery.data?.find(
@@ -767,7 +779,32 @@ export function ChannelMutateDrawer({
           return
         }
         form.setValue('type', target.type, { shouldDirty: true })
-        if (!isEditing && !providerTarget && !form.getValues('name').trim()) {
+        if (
+          target.presetDisplayName ||
+          target.presetLogo ||
+          target.presetLogoDark
+        ) {
+          // Branded shortcut of an existing type (e.g. 共享渠道 / 聚合渠道 /
+          // 代理渠道 built on "Advanced Custom"). Seed the per-channel display
+          // name and logo so the channel card renders with the brand, while
+          // every other aspect stays identical to the base type. Always
+          // re-seed when (re)selecting a branded provider so switching presets
+          // of the same base type updates the channel identity.
+          const brandedConfig: AdvancedCustomConfig = {
+            advanced_routes: [createAdvancedCustomRoute()],
+            display_name: target.presetDisplayName,
+            logo: target.presetLogo,
+            logo_dark: target.presetLogoDark,
+          }
+          form.setValue(
+            'advanced_custom',
+            stringifyAdvancedCustomConfig(brandedConfig),
+            { shouldDirty: true }
+          )
+          if (target.presetDisplayName) {
+            form.setValue('name', target.presetDisplayName)
+          }
+        } else if (!isEditing && !form.getValues('name').trim()) {
           const label = CHANNEL_TYPE_OPTIONS.find(
             (option) => option.value === target.type
           )?.label
@@ -1094,7 +1131,7 @@ export function ChannelMutateDrawer({
   // preview path, which reuses the saved credential on the server.
   const previewModels =
     !isEditing ||
-    (currentType === CHANNEL_TYPE_ADVANCED_CUSTOM && canEditSensitive)
+    (isAdvancedCustomLikeChannelType(currentType) && canEditSensitive)
   const canDiscoverModels = previewModels ? canEditSensitive : canOperateChannel
   const previewKey = isEditing ? undefined : currentKey
   const previewRequest = useMemo<ChannelModelDiscoveryRequest>(
@@ -1146,7 +1183,7 @@ export function ChannelMutateDrawer({
     }
     if (
       !isEditing &&
-      type !== CHANNEL_TYPE_ADVANCED_CUSTOM &&
+      !isAdvancedCustomLikeChannelType(type) &&
       !form.getValues('key')?.trim()
     ) {
       form.setError('key', {
@@ -3682,7 +3719,7 @@ export function ChannelMutateDrawer({
               />
             )}
 
-            {currentType === CHANNEL_TYPE_ADVANCED_CUSTOM && (
+            {isAdvancedCustomLikeChannelType(currentType) && (
               <FormField
                 control={form.control}
                 name='advanced_custom'

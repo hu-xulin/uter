@@ -26,6 +26,7 @@ import {
   ChevronRight,
   CircleDollarSign,
   Code2,
+  ImageUp,
   Info,
   ListTree,
   Plus,
@@ -100,6 +101,9 @@ import {
   getAdvancedCustomTemplateConfig,
   getAdvancedCustomUpstreamPathPlaceholder,
   getDefaultAdvancedCustomIncomingPath,
+  ADVANCED_CUSTOM_LOGO_MAX_BYTES,
+  getAdvancedCustomLogo,
+  getAdvancedCustomDisplayName,
   isAdvancedCustomIncomingPathAllowed,
   isAdvancedCustomManagementPath,
   normalizeAdvancedCustomConfig,
@@ -124,7 +128,12 @@ type AdvancedCustomEditorDialogProps = {
   onSave: (value: string) => void
 }
 
-type AdvancedCustomEditorTab = 'forwarding' | 'models' | 'balance' | 'json'
+type AdvancedCustomEditorTab =
+  | 'forwarding'
+  | 'models'
+  | 'balance'
+  | 'display'
+  | 'json'
 
 const longSelectContentClass = 'w-[360px] max-w-[calc(100vw-2rem)]'
 const longSelectItemClass =
@@ -140,6 +149,7 @@ const advancedCustomTabs = new Set<AdvancedCustomEditorTab>([
   'forwarding',
   'models',
   'balance',
+  'display',
   'json',
 ])
 
@@ -688,7 +698,7 @@ export function AdvancedCustomEditorDialog({
         className='min-w-0 gap-0'
       >
         <div className='border-b px-4 py-3'>
-          <TabsList className='grid h-auto w-full grid-cols-2 gap-1 sm:grid-cols-4'>
+          <TabsList className='grid h-auto w-full grid-cols-2 gap-1 sm:grid-cols-5'>
             <TabsTrigger value='forwarding'>
               <ListTree className='size-4' aria-hidden='true' />
               {t('Forwarding Routes')}
@@ -706,6 +716,16 @@ export function AdvancedCustomEditorDialog({
               {t('Balance Query')}
               <Badge variant='outline'>
                 {balanceRoute ? t('Configured') : t('Not configured')}
+              </Badge>
+            </TabsTrigger>
+            <TabsTrigger value='display'>
+              <ImageUp className='size-4' aria-hidden='true' />
+              {t('Display')}
+              <Badge variant='outline'>
+                {getAdvancedCustomDisplayName(normalizedConfig) ||
+                getAdvancedCustomLogo(normalizedConfig)
+                  ? t('Configured')
+                  : t('Default')}
               </Badge>
             </TabsTrigger>
             <TabsTrigger value='json'>
@@ -919,6 +939,19 @@ export function AdvancedCustomEditorDialog({
           />
         </TabsContent>
 
+        <TabsContent value='display' className='p-4'>
+          <AdvancedCustomDisplayEditor
+            displayName={config.display_name || ''}
+            logo={config.logo || ''}
+            onDisplayNameChange={(value) =>
+              setConfig((current) => ({ ...current, display_name: value }))
+            }
+            onLogoChange={(value) =>
+              setConfig((current) => ({ ...current, logo: value }))
+            }
+          />
+        </TabsContent>
+
         <TabsContent value='json' className='p-4'>
           <JsonCodeEditor
             value={jsonText}
@@ -955,6 +988,161 @@ export function AdvancedCustomEditorDialog({
         handleConfirm={applySelectedTemplate}
       />
     </Dialog>
+  )
+}
+
+function AdvancedCustomDisplayEditor(props: {
+  displayName: string
+  logo: string
+  onDisplayNameChange: (value: string) => void
+  onLogoChange: (value: string) => void
+}) {
+  const { t } = useTranslation()
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const logo = props.logo.trim()
+  const maxLogoKB = Math.round(ADVANCED_CUSTOM_LOGO_MAX_BYTES / 1024)
+
+  const handleLogoFile = (file: File | undefined | null) => {
+    if (!file) return
+    if (!file.type.startsWith('image/')) {
+      toast.error(t('Please select an image file'))
+      return
+    }
+    if (file.size > ADVANCED_CUSTOM_LOGO_MAX_BYTES) {
+      toast.error(
+        t('Image is too large. Maximum size is {{size}} KB.', {
+          size: maxLogoKB,
+        })
+      )
+      return
+    }
+    const reader = new FileReader()
+    reader.addEventListener('load', () => {
+      const dataUrl = String(reader.result || '')
+      if (dataUrl) {
+        props.onLogoChange(dataUrl)
+      }
+    })
+    reader.readAsDataURL(file)
+  }
+
+  return (
+    <div className='flex flex-col gap-4 rounded-lg border p-4'>
+      <div>
+        <p className='font-medium'>{t('Channel display')}</p>
+        <p className='text-muted-foreground mt-1 text-sm'>
+          {t(
+            'Customize the name and logo shown on channel cards. Leave empty to use the defaults.'
+          )}
+        </p>
+      </div>
+      <FieldBlock
+        label={
+          <span className='inline-flex items-center gap-1'>
+            {t('Channel display name')}
+            <DisplayPreviewBadge
+              logo={logo}
+              label={props.displayName.trim()}
+              fallbackLabel={t('Advanced Custom')}
+            />
+          </span>
+        }
+      >
+        <Input
+          value={props.displayName}
+          onChange={(event) => props.onDisplayNameChange(event.target.value)}
+          placeholder={t('Advanced Custom')}
+          maxLength={50}
+        />
+        <p className='text-muted-foreground text-xs'>
+          {t(
+            'Shown on channel cards and lists. Leave empty to use the default type name.'
+          )}
+        </p>
+      </FieldBlock>
+      <FieldBlock label={t('Logo image')}>
+        <div className='flex flex-wrap items-center gap-2'>
+          <Input
+            value={props.logo}
+            onChange={(event) => props.onLogoChange(event.target.value)}
+            placeholder='https://example.com/logo.png'
+            className='min-w-0 flex-1 sm:w-auto sm:min-w-64'
+            inputMode='url'
+          />
+          <input
+            ref={fileInputRef}
+            type='file'
+            accept='image/*'
+            className='hidden'
+            onChange={(event) => {
+              handleLogoFile(event.target.files?.[0])
+              event.target.value = ''
+            }}
+          />
+          <Button
+            type='button'
+            variant='outline'
+            size='sm'
+            onClick={() => fileInputRef.current?.click()}
+          >
+            <ImageUp data-icon='inline-start' />
+            {t('Upload image')}
+          </Button>
+          {logo && (
+            <Button
+              type='button'
+              variant='ghost'
+              size='sm'
+              onClick={() => props.onLogoChange('')}
+            >
+              <Trash2 data-icon='inline-start' />
+              {t('Remove logo')}
+            </Button>
+          )}
+        </div>
+        <p className='text-muted-foreground text-xs'>
+          {t(
+            'Paste an image URL or upload a local image (up to {{size}} KB). Leave empty to use the default logo.',
+            { size: maxLogoKB }
+          )}
+        </p>
+      </FieldBlock>
+    </div>
+  )
+}
+
+function DisplayPreviewBadge(props: {
+  logo: string
+  label: string
+  fallbackLabel: string
+}) {
+  const { t } = useTranslation()
+  const [logoBroken, setLogoBroken] = useState(false)
+  const label = props.label || props.fallbackLabel
+  const showLogo = props.logo.trim() !== '' && !logoBroken
+
+  useEffect(() => {
+    setLogoBroken(false)
+  }, [props.logo])
+
+  return (
+    <span className='bg-muted text-muted-foreground ml-1 inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-normal'>
+      {showLogo ? (
+        <img
+          src={props.logo}
+          alt=''
+          aria-hidden='true'
+          className='size-4 rounded-full object-cover'
+          onError={() => setLogoBroken(true)}
+        />
+      ) : (
+        <span className='bg-background inline-flex size-4 items-center justify-center rounded-full text-[10px] font-medium'>
+          {label.slice(0, 1).toUpperCase()}
+        </span>
+      )}
+      <span className='max-w-40 truncate'>{label}</span>
+      <span className='sr-only'>{t('Preview')}</span>
+    </span>
   )
 }
 

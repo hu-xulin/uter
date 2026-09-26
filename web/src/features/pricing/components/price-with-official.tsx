@@ -23,10 +23,14 @@ import { DEFAULT_TOKEN_UNIT } from '../constants'
 import { getDisplayGroupRatio } from '../lib/model-helpers'
 import {
   formatOfficialPrice,
-  formatOfficialPriceAtRatio,
   formatOfficialRequestPrice,
   formatPrice,
   formatRequestPrice,
+  formatUSDRequestPrice,
+  formatUSDTokenPrice,
+  getOfficialPresetRequestUSD,
+  getOfficialPresetTokenUSD,
+  getTokenPriceUSD,
 } from '../lib/price'
 import type { PricingModel, PriceType, TokenUnit } from '../types'
 
@@ -41,11 +45,12 @@ export type PriceMetricOfficialProps = {
   usdExchangeRate?: number
   selectedGroup?: string
   /**
-   * Optional official reference ratio (model_ratio) from the selected pricing
-   * preset. When provided, the discount compares the platform price (model
-   * ratio adjusted by the viewer's group ratio) against this official ratio.
+   * Official preset ratio entry (官方价格) for this model from the selected
+   * pricing preset. The platform's own price data may carry an admin-applied
+   * discount, so the official reference must derive from the preset's ratio
+   * fields — never from the platform's own prices.
    */
-  officialRatio?: number
+  officialPreset?: Record<string, number>
   className?: string
 }
 
@@ -53,8 +58,8 @@ export type PriceMetricOfficialProps = {
  * Renders a single price metric with both the viewer's actual (discounted)
  * price and the official list price as a reference line.
  *
- * When `officialRatio` is provided (preset official price), the discount is
- * computed against that preset ratio; otherwise it falls back to the standard
+ * When `officialPreset` is provided (preset official price), the discount is
+ * computed against that preset price; otherwise it falls back to the standard
  * list price (group_ratio = 1). When the viewer's effective price is lower
  * than the official price, the official price is struck through and a
  * "Save X%" badge is shown.
@@ -85,51 +90,62 @@ export const PriceMetricOfficial = memo(function PriceMetricOfficial(
         )
 
   const displayRatio = getDisplayGroupRatio(props.model, props.selectedGroup)
-  const hasPresetOfficial =
-    props.type !== 'request' &&
-    typeof props.officialRatio === 'number' &&
-    Number.isFinite(props.officialRatio) &&
-    props.officialRatio > 0
+  const presetUSD =
+    props.type === 'request'
+      ? getOfficialPresetRequestUSD(props.officialPreset)
+      : getOfficialPresetTokenUSD(props.officialPreset, props.type)
+  const hasPresetUSD = Number.isFinite(presetUSD)
 
-  const official =
-    props.type !== 'request' && hasPresetOfficial && props.officialRatio != null
-      ? formatOfficialPriceAtRatio(
-          props.model,
-          props.type,
-          props.officialRatio,
+  const uterVal =
+    props.type === 'request'
+      ? (props.model.model_price || 0) * displayRatio
+      : getTokenPriceUSD(props.model, props.type, displayRatio)
+  const fallbackOfficialVal =
+    props.type === 'request'
+      ? (props.model.model_price || 0)
+      : getTokenPriceUSD(props.model, props.type, 1)
+  const officialVal = hasPresetUSD ? presetUSD : fallbackOfficialVal
+  const isDiscount =
+    Number.isFinite(uterVal) &&
+    Number.isFinite(officialVal) &&
+    officialVal > 0 &&
+    uterVal < officialVal - 1e-12
+  const discountPercent = isDiscount
+    ? Math.round((1 - uterVal / officialVal) * 100)
+    : 0
+
+  const presetOfficialText =
+    props.type === 'request'
+      ? formatUSDRequestPrice(
+          presetUSD,
+          props.showRechargePrice,
+          props.priceRate,
+          props.usdExchangeRate
+        )
+      : formatUSDTokenPrice(
+          presetUSD,
           tokenUnit,
           props.showRechargePrice,
           props.priceRate,
           props.usdExchangeRate
         )
-      : props.type === 'request'
-        ? formatOfficialRequestPrice(
-            props.model,
-            props.showRechargePrice,
-            props.priceRate,
-            props.usdExchangeRate
-          )
-        : formatOfficialPrice(
-            props.model,
-            props.type,
-            tokenUnit,
-            props.showRechargePrice,
-            props.priceRate,
-            props.usdExchangeRate
-          )
-
-  let isDiscount = false
-  let discountPercent = 0
-  if (hasPresetOfficial && props.officialRatio != null) {
-    const effectivePlatform = props.model.model_ratio * displayRatio
-    if (effectivePlatform < props.officialRatio - 1e-9) {
-      isDiscount = true
-      discountPercent = Math.round((1 - effectivePlatform / props.officialRatio) * 100)
-    }
-  } else {
-    isDiscount = displayRatio > 0 && displayRatio < 1
-    discountPercent = isDiscount ? Math.round((1 - displayRatio) * 100) : 0
-  }
+  const fallbackOfficialText =
+    props.type === 'request'
+      ? formatOfficialRequestPrice(
+          props.model,
+          props.showRechargePrice,
+          props.priceRate,
+          props.usdExchangeRate
+        )
+      : formatOfficialPrice(
+          props.model,
+          props.type,
+          tokenUnit,
+          props.showRechargePrice,
+          props.priceRate,
+          props.usdExchangeRate
+        )
+  const official = hasPresetUSD ? presetOfficialText : fallbackOfficialText
 
   return (
     <div className={cn('flex min-w-0 flex-col gap-1', props.className)}>

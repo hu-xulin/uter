@@ -38,6 +38,7 @@ import { AutoGroupFlowBorder } from '@/features/keys/components/auto-group-visua
 import { PluginIcon } from '@/features/task-plugins/components/plugin-icon'
 import { useMediaQuery } from '@/hooks/use-media-query'
 import { resolveLocalizedText } from '@/lib/localized-text'
+import { useTheme } from '@/context/theme-provider'
 
 import type { TaskPluginOption } from '../../api'
 import {
@@ -47,7 +48,11 @@ import {
   CHANNEL_TYPE_TASK_PLUGIN,
   type ChannelProviderPresentation,
 } from '../../constants'
-import { CHANNEL_TYPE_ADVANCED_CUSTOM } from '../../lib/advanced-custom'
+import {
+  CHANNEL_TYPE_ADVANCED_CUSTOM,
+  isAdvancedCustomLikeChannelType,
+} from '../../lib/advanced-custom'
+import { BRANDED_ADVANCED_CUSTOM_PROVIDERS } from '../../lib/branded-channel-providers'
 import type { ChannelProviderTarget } from '../../lib/channel-configuration'
 import {
   getChannelPluginExtensions,
@@ -69,6 +74,7 @@ type ChannelProviderPickerProps = {
 
 export function ChannelProviderPicker(props: ChannelProviderPickerProps) {
   const { t, i18n } = useTranslation()
+  const { resolvedTheme } = useTheme()
   const shouldReduceMotion = useMediaQuery('(prefers-reduced-motion: reduce)')
   const [search, setSearch] = useState('')
   const [selectedFilter, setSelectedFilter] = useState('all')
@@ -111,6 +117,8 @@ export function ChannelProviderPicker(props: ChannelProviderPickerProps) {
       extensionNames?: string
       extensionSummary?: string
       badge?: ChannelProviderPresentation['badge']
+      logo?: string
+      logoDark?: string
       searchText: string
     }> = []
     for (const option of CHANNEL_TYPE_OPTIONS) {
@@ -172,6 +180,30 @@ export function ChannelProviderPicker(props: ChannelProviderPickerProps) {
           extensionNames: extensions.map((plugin) => plugin.name).join(' · '),
           extensionSummary,
           searchText: `${option.value} ${option.label} ${t(option.label)} ${extensions.map((plugin) => `${plugin.name} ${plugin.key}`).join(' ')}`,
+        })
+      }
+    }
+    // Branded shortcuts that are first-class variants of the "Advanced Custom"
+    // channel, each with its own distinct type number (62/63/64). They behave
+    // exactly like an Advanced Custom channel; the only difference is the preset
+    // display name and logo seeded at creation time. They surface under the same
+    // filters as Advanced Custom (all + custom).
+    if (filter !== 'plugin' && filter !== 'builtin' && filter !== 'gateway') {
+      for (const provider of BRANDED_ADVANCED_CUSTOM_PROVIDERS) {
+        entries.push({
+          id: `branded:${provider.id}`,
+          label: t(provider.labelKey),
+          target: {
+            kind: 'builtin',
+            type: provider.type,
+            presetDisplayName: provider.displayName,
+            presetLogo: provider.logo,
+            presetLogoDark: provider.logoDark,
+          },
+          description: t(provider.descriptionKey),
+          logo: provider.logo,
+          logoDark: provider.logoDark,
+          searchText: `${provider.id} ${provider.displayName} ${t(provider.labelKey)} ${provider.labelKey}`,
         })
       }
     }
@@ -258,7 +290,38 @@ export function ChannelProviderPicker(props: ChannelProviderPickerProps) {
           <CommandList className='mt-3 max-h-none min-h-0 flex-1'>
             <CommandEmpty>{t('No matching provider')}</CommandEmpty>
             <CommandGroup className='p-1 [&_[cmdk-group-items]]:grid [&_[cmdk-group-items]]:gap-2.5 md:[&_[cmdk-group-items]]:grid-cols-2 xl:[&_[cmdk-group-items]]:grid-cols-3'>
-              {options.map((option) => (
+              {options.map((option) => {
+                const leadingIcon = (() => {
+                  if (option.logo) {
+                    // Use the theme-matched logo when available: dark-themed
+                    // (white) variant in dark mode, otherwise the light variant.
+                    const logoSrc =
+                      resolvedTheme === 'dark' && option.logoDark
+                        ? option.logoDark
+                        : option.logo
+                    return (
+                      <img
+                        src={logoSrc}
+                        alt={option.label}
+                        className='size-5 rounded-md border border-border/60 bg-background object-contain'
+                      />
+                    )
+                  }
+                  if (option.plugin) {
+                    return <PluginIcon plugin={option.plugin} size={20} />
+                  }
+                  return (
+                    <ChannelTypeLogo
+                      type={
+                        option.target.kind === 'builtin'
+                          ? option.target.type
+                          : CHANNEL_TYPE_TASK_PLUGIN
+                      }
+                      size={20}
+                    />
+                  )
+                })()
+                return (
                 <CommandItem
                   key={option.id}
                   value={option.id}
@@ -287,7 +350,7 @@ export function ChannelProviderPicker(props: ChannelProviderPickerProps) {
                   className='data-selected:border-primary/50 data-selected:bg-primary/5 min-h-24 flex-col items-stretch justify-between gap-2.5 rounded-lg border p-3 md:min-h-32 [&>svg]:hidden'
                 >
                   {option.target.kind === 'builtin' &&
-                    option.target.type === CHANNEL_TYPE_ADVANCED_CUSTOM && (
+                    isAdvancedCustomLikeChannelType(option.target.type) && (
                       <AutoGroupFlowBorder
                         shouldReduceMotion={
                           shouldReduceMotion || props.disabled
@@ -295,20 +358,7 @@ export function ChannelProviderPicker(props: ChannelProviderPickerProps) {
                       />
                     )}
                   <span className='flex min-w-0 items-start gap-2.5'>
-                    <span className='shrink-0'>
-                      {option.plugin ? (
-                        <PluginIcon plugin={option.plugin} size={20} />
-                      ) : (
-                        <ChannelTypeLogo
-                          type={
-                            option.target.kind === 'builtin'
-                              ? option.target.type
-                              : CHANNEL_TYPE_TASK_PLUGIN
-                          }
-                          size={20}
-                        />
-                      )}
-                    </span>
+                    <span className='shrink-0'>{leadingIcon}</span>
                     <span className='min-w-0 flex-1'>
                       <span className='flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1'>
                         <span
@@ -392,7 +442,8 @@ export function ChannelProviderPicker(props: ChannelProviderPickerProps) {
                     )}
                   </span>
                 </CommandItem>
-              ))}
+                )
+              })}
               {canUseCustomType && (
                 <CommandItem
                   value={`custom:${customType}`}

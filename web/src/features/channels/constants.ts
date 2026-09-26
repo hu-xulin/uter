@@ -84,6 +84,9 @@ export const CHANNEL_TYPES = {
   59: 'Sub2API',
   60: 'Uter',
   61: 'Task Plugin',
+  62: 'Shared Channel',
+  63: 'Aggregate Channel',
+  64: 'Proxy Channel',
 } as const
 
 export type ChannelProviderPresentation = {
@@ -162,6 +165,21 @@ export const CHANNEL_PROVIDER_PRESENTATION: Partial<
   59: { descriptionKey: 'Connect to model services through a Sub2API gateway' },
   60: {
     descriptionKey: 'Connect to model services from another Uter instance',
+  },
+  62: {
+    descriptionKey: 'Shared channel description',
+    detailKey:
+      'Branded Advanced Custom channel — route requests across shared upstreams',
+  },
+  63: {
+    descriptionKey: 'Aggregate channel description',
+    detailKey:
+      'Branded Advanced Custom channel — combine multiple providers into one endpoint',
+  },
+  64: {
+    descriptionKey: 'Proxy channel description',
+    detailKey:
+      'Branded Advanced Custom channel — forward traffic to an upstream proxy',
   },
 } satisfies Record<
   Exclude<keyof typeof CHANNEL_TYPES, 0 | typeof CHANNEL_TYPE_TASK_PLUGIN>,
@@ -485,7 +503,7 @@ export const FIELD_DESCRIPTIONS = {
 
 export const MODEL_FETCHABLE_TYPES = new Set([
   1, 4, 14, 17, 20, 23, 24, 25, 26, 27, 31, 34, 35, 40, 42, 43, 47, 48, 57, 58,
-  59, 60,
+  59, 60, 62, 63, 64,
 ])
 
 export const FIELD_PASSTHROUGH_TYPES = new Set([
@@ -495,6 +513,9 @@ export const FIELD_PASSTHROUGH_TYPES = new Set([
   58,
   59,
   CHANNEL_TYPE_UTER,
+  62,
+  63,
+  64,
 ])
 
 export const OPENAI_FIELD_PASSTHROUGH_TYPES = new Set([
@@ -503,6 +524,9 @@ export const OPENAI_FIELD_PASSTHROUGH_TYPES = new Set([
   58,
   59,
   CHANNEL_TYPE_UTER,
+  62,
+  63,
+  64,
 ])
 
 export const CLAUDE_FIELD_PASSTHROUGH_TYPES = new Set([
@@ -510,6 +534,9 @@ export const CLAUDE_FIELD_PASSTHROUGH_TYPES = new Set([
   58,
   59,
   CHANNEL_TYPE_UTER,
+  62,
+  63,
+  64,
 ])
 
 export const TYPE_TO_KEY_PROMPT: Record<number, string> = {

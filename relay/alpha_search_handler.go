@@ -26,7 +26,10 @@ func AlphaSearchHelper(c *gin.Context, info *relaycommon.RelayInfo) (uterError *
 	case constant.ChannelTypeSub2API,
 		constant.ChannelTypeUter,
 		constant.ChannelTypeCodex,
-		constant.ChannelTypeAdvancedCustom:
+		constant.ChannelTypeAdvancedCustom,
+		constant.ChannelTypeBrandedShared,
+		constant.ChannelTypeBrandedAggregate,
+		constant.ChannelTypeBrandedProxy:
 	default:
 		// Allow retry onto another channel that may support this endpoint.
 		return types.NewError(

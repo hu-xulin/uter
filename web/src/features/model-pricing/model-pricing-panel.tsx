@@ -314,12 +314,14 @@ function CurrentBillingSection(props: {
       </div>
       <section aria-label={t('Current Billing')} className='space-y-3 border-b pb-3'>
         <h3 className='text-muted-foreground text-xs'>{t('Current Billing')}</h3>
-        <div className='max-w-md'>
+        <div className='max-w-2xl'>
           <ModelPriceCell
             model={effectivePricing}
             options={{
               tokenUnit: 'M',
               officialPricesByVariable,
+              // Two aligned rows: Uter prices on top, official prices below.
+              layout: 'rows',
             }}
             showExpression={false}
           />
