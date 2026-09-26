@@ -25,6 +25,31 @@ import type {
 } from '../types'
 
 export const CHANNEL_TYPE_ADVANCED_CUSTOM = 58
+
+// First-class branded variants of the "Advanced Custom" channel. They behave
+// exactly like type 58 (routing / billing / pricing / model preview / constraints
+// on the backend all treat them identically); the only difference is the preset
+// display name and logo seeded at creation time. We give them distinct type
+// numbers so they do not collide with Advanced Custom (58) in the channel list.
+export const CHANNEL_TYPE_BRANDED_SHARED = 62
+export const CHANNEL_TYPE_BRANDED_AGGREGATE = 63
+export const CHANNEL_TYPE_BRANDED_PROXY = 64
+
+/**
+ * Whether a channel type behaves like an "Advanced Custom" channel (type 58).
+ * The branded types (62/63/64) are variants of Advanced Custom and must be
+ * handled identically across the UI (advanced_custom editor, type column
+ * override, model discovery, etc.).
+ */
+export function isAdvancedCustomLikeChannelType(type: number): boolean {
+  return (
+    type === CHANNEL_TYPE_ADVANCED_CUSTOM ||
+    type === CHANNEL_TYPE_BRANDED_SHARED ||
+    type === CHANNEL_TYPE_BRANDED_AGGREGATE ||
+    type === CHANNEL_TYPE_BRANDED_PROXY
+  )
+}
+
 export const ADVANCED_CUSTOM_MODEL_LIST_PATH = '/v1/models'
 export const ADVANCED_CUSTOM_MODEL_LIST_LABEL = 'OpenAI Models'
 export const ADVANCED_CUSTOM_BALANCE_PATH =
@@ -556,9 +581,41 @@ export function normalizeAdvancedCustomConfig(
     ? config.advanced_routes.map(normalizeAdvancedCustomRoute)
     : []
 
-  return {
-    advanced_routes: routes,
+  const normalized: AdvancedCustomConfig = { advanced_routes: routes }
+  const displayName = config.display_name?.trim()
+  if (displayName) {
+    normalized.display_name = displayName
   }
+  const logo = config.logo?.trim()
+  if (logo) {
+    normalized.logo = logo
+  }
+  const logoDark = config.logo_dark?.trim()
+  if (logoDark) {
+    normalized.logo_dark = logoDark
+  }
+  return normalized
+}
+
+/** Max byte size for an uploaded logo stored as a data URL in channel settings. */
+export const ADVANCED_CUSTOM_LOGO_MAX_BYTES = 512 * 1024
+
+export function getAdvancedCustomDisplayName(
+  config: AdvancedCustomConfig | null | undefined
+): string {
+  return config?.display_name?.trim() || ''
+}
+
+export function getAdvancedCustomLogo(
+  config: AdvancedCustomConfig | null | undefined
+): string {
+  return config?.logo?.trim() || ''
+}
+
+export function getAdvancedCustomLogoDark(
+  config: AdvancedCustomConfig | null | undefined
+): string {
+  return config?.logo_dark?.trim() || ''
 }
 
 export function parseAdvancedCustomRouteModels(value: string): string[] {

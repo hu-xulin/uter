@@ -30,6 +30,8 @@ import { useSystemConfigStore } from '@/stores/system-config-store'
 import { DEFAULT_TOKEN_UNIT } from '../constants'
 import { useBillingTime } from '../hooks/use-billing-time'
 import {
+  formatDynamicUnitPrice,
+  formatTaskUsageUnitPrice,
   getCardExamplePrice,
   getDynamicDisplayGroupRatio,
   getDynamicPricingSummary,
@@ -41,15 +43,22 @@ import { getDisplayGroupRatio, isTokenBasedModel } from '../lib/model-helpers'
 import { getBillingModeLabelKey } from '../lib/billing-mode'
 import {
   formatOfficialPrice,
-  formatOfficialPriceAtRatio,
   formatOfficialRequestPrice,
   formatPrice,
   formatRequestPrice,
-  getOfficialReferenceRatio,
+  formatUSDRequestPrice,
+  formatUSDTokenPrice,
+  getOfficialPresetRequestUSD,
+  getOfficialPresetTokenUSD,
   getTokenPriceUSD,
 } from '../lib/price'
 import { taskPriceLabel } from '../lib/task-price-display'
 import type { PricingModel, PriceType, TokenUnit } from '../types'
+import {
+  officialRequestPriceUSD,
+  officialTierVariablePriceUSD,
+} from '@/features/system-settings/models/model-pricing-core'
+import type { VisualPrice } from '@/features/pricing/lib/billing-expression/visual'
 import { DiscountTag } from './discount-tag'
 import { ModelBillingModeBadge } from './model-billing-mode-badge'
 import { ModelPerfBadge, type ModelPerfBadgeData } from './model-perf-badge'
@@ -94,7 +103,6 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
   const isUnconfiguredTaskUsage = isUnconfiguredTaskUsageModel(props.model)
   const billingTime = useBillingTime(props.model.billing_expr)
   const currency = useSystemConfigStore((state) => state.config.currency)
-  const officialRatio = getOfficialReferenceRatio(props.model, props.officialPrices)
   const dynamicPriceOptions = useMemo(
     () => ({
       now: billingTime === undefined ? undefined : new Date(billingTime),
@@ -139,6 +147,35 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [props.model, dynamicPriceOptions, currency]
   )
+  // Official preset entry (官方价格) from the selected pricing preset. The
+  // platform's own price data may carry an admin-applied discount baked into
+  // model_ratio / billing_expr, so the "official" row must derive from the
+  // preset's ratio fields — never from the platform's own prices.
+  const officialRatios = props.officialPrices?.[props.model.model_name]
+  const officialFormatOptions = useMemo(
+    () => ({ ...dynamicPriceOptions, groupRatioMultiplier: 1 }),
+    [dynamicPriceOptions]
+  )
+  /**
+   * Official preset USD price behind a dynamic pricing entry, or null when
+   * the preset has no counterpart for that dimension (the official cell then
+   * renders "—" instead of the platform's own discounted price).
+   */
+  const presetOfficialUSDFor = (
+    entry: DynamicPriceEntry
+  ): { usd: number; perRequest: boolean } | null => {
+    if (!officialRatios) return null
+    if (entry.unit === 'request' || entry.unit === 'image') {
+      if (entry.key !== 'fixed' && entry.key !== 'modelPrice') return null
+      const requestUSD = officialRequestPriceUSD(officialRatios)
+      return requestUSD != null ? { usd: requestUSD, perRequest: true } : null
+    }
+    const usd = officialTierVariablePriceUSD(
+      officialRatios,
+      entry.key as VisualPrice['variable']
+    )
+    return usd != null ? { usd, perRequest: false } : null
+  }
   let priceSummary: ReactNode
   if (dynamicSummary) {
     if (dynamicSummary.isSpecialExpression) {
@@ -199,6 +236,48 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
               {t('Official')}
             </span>
             {dims.map((entry) => {
+              const preset = presetOfficialUSDFor(entry)
+              if (preset) {
+                const offText = preset.perRequest
+                  ? formatTaskUsageUnitPrice(preset.usd, officialFormatOptions)
+                  : formatDynamicUnitPrice(preset.usd, officialFormatOptions)
+                const uterUSD =
+                  entry.value * (dynamicPriceOptions.groupRatioMultiplier ?? 1)
+                const dimDiscount =
+                  Number.isFinite(uterUSD) &&
+                  uterUSD > 0 &&
+                  uterUSD < preset.usd - 1e-9
+                const dimPercent = dimDiscount
+                  ? Math.round((1 - uterUSD / preset.usd) * 100)
+                  : 0
+                return (
+                  <span
+                    key={`o-${entry.key}`}
+                    className='text-muted-foreground font-mono text-xs tabular-nums whitespace-nowrap'
+                  >
+                    <span className={cn(dimDiscount && 'line-through')}>
+                      {offText}
+                    </span>
+                    {dimDiscount && (
+                      <span className='text-emerald-600 ml-1 font-bold'>
+                        -{dimPercent}%
+                      </span>
+                    )}
+                  </span>
+                )
+              }
+              if (officialRatios) {
+                // Preset exists but has no counterpart for this dimension —
+                // never fall back to the platform's own (discounted) price.
+                return (
+                  <span
+                    key={`o-${entry.key}`}
+                    className='text-muted-foreground font-mono text-xs tabular-nums whitespace-nowrap'
+                  >
+                    -
+                  </span>
+                )
+              }
               const off = officialFor(entry.key)
               const offText = off
                 ? off.formattedRange ?? off.formatted
@@ -263,7 +342,6 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
     )
   } else if (isTokenBased) {
     const displayRatio = getDisplayGroupRatio(props.model, props.selectedGroup)
-    const baselineRatio = officialRatio ?? 1
     const dimTypes: { type: PriceType; label: string }[] = [
       { type: 'input', label: t('Input') },
       { type: 'output', label: t('Output') },
@@ -276,7 +354,13 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
     const dims = dimTypes
       .map(({ type, label }) => {
         const uterVal = getTokenPriceUSD(props.model, type, displayRatio)
-        const officialVal = getTokenPriceUSD(props.model, type, baselineRatio)
+        // Official list price comes from the pricing preset when available;
+        // the platform's own ratios may carry the admin discount.
+        const presetUSD = getOfficialPresetTokenUSD(officialRatios, type)
+        const hasPresetUSD = Number.isFinite(presetUSD)
+        const officialVal = hasPresetUSD
+          ? presetUSD
+          : getTokenPriceUSD(props.model, type, 1)
         if (!Number.isFinite(uterVal) && !Number.isFinite(officialVal)) {
           return null
         }
@@ -300,25 +384,22 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
             usdExchangeRate,
             props.selectedGroup
           ),
-          official:
-            officialRatio != null
-              ? formatOfficialPriceAtRatio(
-                  props.model,
-                  type,
-                  officialRatio,
-                  tokenUnit,
-                  showRechargePrice,
-                  priceRate,
-                  usdExchangeRate
-                )
-              : formatOfficialPrice(
-                  props.model,
-                  type,
-                  tokenUnit,
-                  showRechargePrice,
-                  priceRate,
-                  usdExchangeRate
-                ),
+          official: hasPresetUSD
+            ? formatUSDTokenPrice(
+                presetUSD,
+                tokenUnit,
+                showRechargePrice,
+                priceRate,
+                usdExchangeRate
+              )
+            : formatOfficialPrice(
+                props.model,
+                type,
+                tokenUnit,
+                showRechargePrice,
+                priceRate,
+                usdExchangeRate
+              ),
           isDiscount,
           percent,
         }
@@ -377,7 +458,11 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
     // 优特/官方 grid as the token & dynamic cards.
     const displayRatio = getDisplayGroupRatio(props.model, props.selectedGroup)
     const uterVal = (props.model.model_price || 0) * displayRatio
-    const officialVal = props.model.model_price || 0
+    const presetRequestUSD = getOfficialPresetRequestUSD(officialRatios)
+    const hasPresetRequest = Number.isFinite(presetRequestUSD)
+    const officialVal = hasPresetRequest
+      ? presetRequestUSD
+      : props.model.model_price || 0
     const isDiscount =
       Number.isFinite(uterVal) &&
       Number.isFinite(officialVal) &&
@@ -398,12 +483,19 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
           usdExchangeRate,
           props.selectedGroup
         ),
-        official: formatOfficialRequestPrice(
-          props.model,
-          showRechargePrice,
-          priceRate,
-          usdExchangeRate
-        ),
+        official: hasPresetRequest
+          ? formatUSDRequestPrice(
+              presetRequestUSD,
+              showRechargePrice,
+              priceRate,
+              usdExchangeRate
+            )
+          : formatOfficialRequestPrice(
+              props.model,
+              showRechargePrice,
+              priceRate,
+              usdExchangeRate
+            ),
         isDiscount,
         percent,
       },

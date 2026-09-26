@@ -57,11 +57,26 @@ const (
 	ChannelTypeCodex          = 57
 	ChannelTypeAdvancedCustom = 58
 	ChannelTypeSub2API        = 59
-	ChannelTypeUter        = 60
-	ChannelTypeTaskPlugin     = 61
-	ChannelTypeDummy          // this one is only for count, do not add any channel after this
+	ChannelTypeUter           = 60
+	ChannelTypeTaskPlugin      = 61
+	ChannelTypeBrandedShared    = 62
+	ChannelTypeBrandedAggregate = 63
+	ChannelTypeBrandedProxy     = 64
+	ChannelTypeDummy            // this one is only for count, do not add any channel after this
 
 )
+
+// IsAdvancedCustomChannelType reports whether the channel type behaves like an
+// "Advanced Custom" channel (type 58) for routing, billing, pricing, model
+// preview and constraint purposes. The branded channel types (62/63/64) are
+// first-class variants of Advanced Custom that only differ by their preset
+// display name and logo; they must be handled identically everywhere.
+func IsAdvancedCustomChannelType(channelType int) bool {
+	return channelType == ChannelTypeAdvancedCustom ||
+		channelType == ChannelTypeBrandedShared ||
+		channelType == ChannelTypeBrandedAggregate ||
+		channelType == ChannelTypeBrandedProxy
+}
 
 // ChannelBaseURLs 保存各渠道类型的内置默认 Base URL。
 // 非空值会通过 /api/channel/default_base_urls 下发到前端，作为渠道表单的 API 地址占位提示。
@@ -128,6 +143,10 @@ var ChannelBaseURLs = []string{
 	"",                                          //59
 	"",                                          //60
 	"",                                          //61
+	"",                                          //62 Branded Shared
+	"",                                          //63 Branded Aggregate
+	"",                                          //64 Branded Proxy
+	"",                                          //65 Dummy (count sentinel)
 }
 
 func GetChannelBaseURL(channelType int) string {
@@ -194,8 +213,11 @@ var ChannelTypeNames = map[int]string{
 	ChannelTypeCodex:          "ChatGPT Subscription (Codex)",
 	ChannelTypeAdvancedCustom: "Advanced Custom",
 	ChannelTypeSub2API:        "Sub2API",
-	ChannelTypeUter:        "Uter",
+	ChannelTypeUter:           "Uter",
 	ChannelTypeTaskPlugin:     "Task Plugin",
+	ChannelTypeBrandedShared:    "Branded Shared",
+	ChannelTypeBrandedAggregate: "Branded Aggregate",
+	ChannelTypeBrandedProxy:     "Branded Proxy",
 }
 
 func GetChannelTypeName(channelType int) string {

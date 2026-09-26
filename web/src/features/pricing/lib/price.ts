@@ -20,6 +20,7 @@ import { formatBillingCurrencyFromUSD } from '@/lib/currency'
 
 import { QUOTA_TYPE_VALUES, TOKEN_UNIT_DIVISORS } from '../constants'
 import type { PricingModel, TokenUnit, PriceType } from '../types'
+import { getDynamicPricingTiers } from './dynamic-price'
 import { getConfiguredGroupRatio, getDisplayGroupRatio } from './model-helpers'
 
 // ----------------------------------------------------------------------------
@@ -398,6 +399,124 @@ export function getOfficialReferenceRatio(
   return undefined
 }
 
+// ----------------------------------------------------------------------------
+// Official preset (官方价格) helpers
+//
+// The platform's own price data may carry an admin-applied discount (the
+// editor bakes the折后价 into model_ratio / billing_expr), so the plaza's
+// "official" row must be derived from the pricing preset's ratio fields —
+// never from the platform's own prices.
+// ----------------------------------------------------------------------------
+
+/** USD price per 1M tokens for a plaza price type, from preset ratios. */
+export function getOfficialPresetTokenUSD(
+  entry: Record<string, number> | undefined,
+  type: PriceType
+): number {
+  if (!entry) return Number.NaN
+  const modelRatio = entry.model_ratio
+  if (
+    typeof modelRatio !== 'number' ||
+    !Number.isFinite(modelRatio) ||
+    modelRatio <= 0
+  ) {
+    return Number.NaN
+  }
+  const base = modelRatio * 2
+  const ratioOf = (key: string): number => {
+    const value = entry[key]
+    return typeof value === 'number' && Number.isFinite(value) && value > 0
+      ? value
+      : Number.NaN
+  }
+  switch (type) {
+    case 'input':
+      return base
+    case 'output':
+      return base * ratioOf('completion_ratio')
+    case 'cache':
+      return base * ratioOf('cache_ratio')
+    case 'create_cache':
+      return base * ratioOf('create_cache_ratio')
+    case 'image':
+      return base * ratioOf('image_ratio')
+    case 'audio_input':
+      return base * ratioOf('audio_ratio')
+    case 'audio_output': {
+      const audio = ratioOf('audio_ratio')
+      const audioCompletion = ratioOf('audio_completion_ratio')
+      return audio * audioCompletion
+    }
+  }
+}
+
+/** USD price per request from the preset's model_price. NaN when absent. */
+export function getOfficialPresetRequestUSD(
+  entry: Record<string, number> | undefined
+): number {
+  const price = entry?.model_price
+  return typeof price === 'number' && Number.isFinite(price) && price > 0
+    ? price
+    : Number.NaN
+}
+
+/** Format a USD per-1M-token price with the plaza's display semantics. */
+export function formatUSDTokenPrice(
+  usdPerMillionTokens: number,
+  tokenUnit: TokenUnit,
+  showWithRecharge = false,
+  priceRate = 1,
+  usdExchangeRate = 1,
+  showCurrencySymbol = true
+): string {
+  const price = applyRechargeRate(
+    usdPerMillionTokens,
+    showWithRecharge,
+    priceRate,
+    usdExchangeRate
+  )
+  return formatBillingCurrencyFromUSD(price / TOKEN_UNIT_DIVISORS[tokenUnit], {
+    showSymbol: showCurrencySymbol,
+    digitsLarge: 4,
+    digitsSmall: 6,
+    abbreviate: false,
+  })
+}
+
+/** Format a USD per-request price with the plaza's display semantics. */
+export function formatUSDRequestPrice(
+  usd: number,
+  showWithRecharge = false,
+  priceRate = 1,
+  usdExchangeRate = 1,
+  showCurrencySymbol = true
+): string {
+  const price = applyRechargeRate(usd, showWithRecharge, priceRate, usdExchangeRate)
+  return formatBillingCurrencyFromUSD(price, {
+    showSymbol: showCurrencySymbol,
+    digitsLarge: 4,
+    digitsSmall: 4,
+    abbreviate: false,
+  })
+}
+
+/**
+ * Cheapest token-tier input price (USD per 1M) encoded in the model's
+ * billing expression, or null when the model is not expression-billed with
+ * token tiers. Request-only tiers are ignored.
+ */
+function getDynamicInputPriceUSD(model: PricingModel): number | null {
+  if (!model.billing_expr) return null
+  const values: number[] = []
+  for (const tier of getDynamicPricingTiers(model)) {
+    if ('unitPrices' in tier) continue
+    if (tier.billingUnit === 'request') continue
+    const value = Number(tier.inputPrice)
+    if (Number.isFinite(value) && value >= 0) values.push(value)
+  }
+  return values.length > 0 ? Math.min(...values) : null
+}
+
 export type DiscountInfo = {
   hasDiscount: boolean
   /** Percentage saved vs official, e.g. 10 for "省 10%". */
@@ -424,6 +543,33 @@ export function getDiscountInfo(
   const official = getOfficialReferenceRatio(model, officialPrices)
   const platform = model.model_ratio
   const displayRatio = getDisplayGroupRatio(model, selectedGroup)
+
+  // Expression-billed models keep the admin discount inside billing_expr
+  // (model_ratio is not the effective price), so compare the cheapest token
+  // tier's input price against the preset's input price instead.
+  const dynamicInputUSD = getDynamicInputPriceUSD(model)
+  if (
+    official != null &&
+    Number.isFinite(official) &&
+    official > 0 &&
+    dynamicInputUSD != null
+  ) {
+    const officialInputUSD = official * 2
+    const effectiveInputUSD = dynamicInputUSD * displayRatio
+    if (
+      Number.isFinite(effectiveInputUSD) &&
+      effectiveInputUSD > 0 &&
+      effectiveInputUSD < officialInputUSD - 1e-9
+    ) {
+      const ratio = effectiveInputUSD / officialInputUSD
+      return {
+        hasDiscount: true,
+        percent: (1 - ratio) * 100,
+        zhe: ratio * 10,
+      }
+    }
+    return { hasDiscount: false, percent: 0, zhe: 10 }
+  }
 
   if (
     official != null &&

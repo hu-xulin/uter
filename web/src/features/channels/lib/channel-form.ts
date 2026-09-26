@@ -30,13 +30,14 @@ import {
 } from '../constants'
 import type { Channel } from '../types'
 import {
-  CHANNEL_TYPE_ADVANCED_CUSTOM,
+  isAdvancedCustomLikeChannelType,
   advancedCustomConfigUsesRelativeUpstreamPath,
   hasValidAdvancedCustomModelListRoute,
   parseAdvancedCustomConfig,
   stringifyAdvancedCustomConfig,
   validateAdvancedCustomConfig,
 } from './advanced-custom'
+import { BRANDED_ADVANCED_CUSTOM_PROVIDERS } from './branded-channel-providers'
 
 // ============================================================================
 // Form Validation Schema
@@ -305,7 +306,7 @@ export const channelFormSchema = z
       addRequiredIssue(ctx, 'task_plugin_key', 'Task plugin is required')
     }
 
-    if (data.type === CHANNEL_TYPE_ADVANCED_CUSTOM) {
+    if (isAdvancedCustomLikeChannelType(data.type)) {
       const advancedCustomConfig = parseAdvancedCustomConfig(
         data.advanced_custom
       )
@@ -769,11 +770,29 @@ function buildSettingsJSON(formData: ChannelFormValues): string {
     }
   }
 
-  if (formData.type === CHANNEL_TYPE_ADVANCED_CUSTOM) {
+  if (isAdvancedCustomLikeChannelType(formData.type)) {
     const advancedCustomConfig = parseAdvancedCustomConfig(
       formData.advanced_custom
     )
     if (advancedCustomConfig) {
+      // Branded channel types (62/63/64) carry a preset display name and logo
+      // seeded at creation time. Persist them even when the preset selection
+      // or the advanced-custom route editor did not write them back, so the
+      // channel card always renders with its brand identity.
+      const branded = BRANDED_ADVANCED_CUSTOM_PROVIDERS.find(
+        (provider) => provider.type === formData.type
+      )
+      if (branded) {
+        if (!advancedCustomConfig.display_name?.trim()) {
+          advancedCustomConfig.display_name = branded.displayName
+        }
+        if (!advancedCustomConfig.logo?.trim()) {
+          advancedCustomConfig.logo = branded.logo
+        }
+        if (!advancedCustomConfig.logo_dark?.trim()) {
+          advancedCustomConfig.logo_dark = branded.logoDark
+        }
+      }
       settingsObj.advanced_custom = advancedCustomConfig
     }
   } else if ('advanced_custom' in settingsObj) {

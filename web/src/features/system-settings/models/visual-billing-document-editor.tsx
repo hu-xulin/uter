@@ -204,8 +204,8 @@ function PricingRuleCard(
   const officialRatios = showReference
     ? officialPrices?.[modelName]
     : undefined
-  // Collapsed-card summary: one row of official prices and one row of Uter
-  // prices, dimension by dimension, in canonical variable order. The base
+  // Collapsed-card summary: a Uter price row above an official price row,
+  // dimension by dimension, in canonical variable order. The base
   // input/output dimensions (`p`/`c`) are not part of BILLING_EXTRA_VARS but
   // must be listed too; a dimension is shown when either side has a price.
   const summaryBaseVars: { key: VisualPrice['variable']; shortLabel: string }[] =
@@ -305,9 +305,15 @@ function PricingRuleCard(
             <span className='text-muted-foreground block text-sm break-words'>
               {matchDescription}
             </span>
-            {tier.kind === 'tier' &&
+            {              tier.kind === 'tier' &&
               (tier.billingUnit === 'request' ? (
                 <span className='flex flex-wrap gap-x-4 gap-y-1 text-xs tabular-nums'>
+                  <span>
+                    {t('Price per request')}:{' '}
+                    {formatPricingAmount(tier.fixedPrice, props.currency) ||
+                      '—'}
+                    /{t('request')}
+                  </span>
                   {(() => {
                     const officialUSD = officialRequestPriceUSD(officialRatios)
                     return officialUSD != null ? (
@@ -319,15 +325,22 @@ function PricingRuleCard(
                       </span>
                     ) : null
                   })()}
-                  <span>
-                    {t('Price per request')}:{' '}
-                    {formatPricingAmount(tier.fixedPrice, props.currency) ||
-                      '—'}
-                    /{t('request')}
-                  </span>
                 </span>
               ) : (
                 <span className='block space-y-1 text-xs tabular-nums'>
+                  <span className='flex flex-wrap gap-x-3 gap-y-1'>
+                    <span>{t('Uter prices')}:</span>
+                    {summaryDims.map((variable) => (
+                      <span key={variable.key}>
+                        {t(variable.shortLabel)}:{' '}
+                        {formatPricingAmount(
+                          uterValueByKey.get(variable.key) ?? '',
+                          props.currency
+                        ) || '—'}
+                      </span>
+                    ))}
+                    <span>/{t('1M token')}</span>
+                  </span>
                   <span className='text-muted-foreground flex flex-wrap gap-x-3 gap-y-1'>
                     <span>{t('Official prices')}:</span>
                     {summaryDims.map((variable) => {
@@ -347,19 +360,6 @@ function PricingRuleCard(
                         </span>
                       )
                     })}
-                    <span>/{t('1M token')}</span>
-                  </span>
-                  <span className='flex flex-wrap gap-x-3 gap-y-1'>
-                    <span>{t('Uter prices')}:</span>
-                    {summaryDims.map((variable) => (
-                      <span key={variable.key}>
-                        {t(variable.shortLabel)}:{' '}
-                        {formatPricingAmount(
-                          uterValueByKey.get(variable.key) ?? '',
-                          props.currency
-                        ) || '—'}
-                      </span>
-                    ))}
                     <span>/{t('1M token')}</span>
                   </span>
                 </span>

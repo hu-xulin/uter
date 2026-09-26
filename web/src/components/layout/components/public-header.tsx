@@ -33,6 +33,7 @@ import { useSystemConfig } from '@/hooks/use-system-config'
 import { useScrolled } from '@/hooks/use-scrolled'
 import { useTopNavLinks } from '@/hooks/use-top-nav-links'
 import { cn } from '@/lib/utils'
+import { localizedBrandName } from '@/lib/brand'
 import { useAuthStore } from '@/stores/auth-store'
 
 import { defaultTopNavLinks } from '../config/top-nav.config'
@@ -70,13 +71,12 @@ export function PublicHeader(props: PublicHeaderProps) {
     showThemeSwitch = true,
     showLanguageSwitcher = true,
     logo: customLogo,
-    siteName: customSiteName,
     homeUrl = '/',
     showAuthButtons = true,
     showNotifications = true,
   } = props
 
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const navigate = useNavigate()
   const [mobileOpen, setMobileOpen] = useState(false)
   const [authPromptTarget, setAuthPromptTarget] =
@@ -85,7 +85,6 @@ export function PublicHeader(props: PublicHeaderProps) {
     useState(AUTH_PROMPT_SECONDS)
   const { auth } = useAuthStore()
   const {
-    systemName,
     logo: systemLogo,
     loading,
     logoLoaded,
@@ -98,7 +97,7 @@ export function PublicHeader(props: PublicHeaderProps) {
 
   const user = auth.user
   const isAuthenticated = !!user
-  const displaySiteName = customSiteName || systemName
+  const brandName = localizedBrandName(i18n.language)
   const links = dynamicLinks.length > 0 ? dynamicLinks : navLinks
 
   let logoContent: ReactNode = (
@@ -220,12 +219,12 @@ export function PublicHeader(props: PublicHeaderProps) {
                 </div>
                 <span
                   className='font-brand max-w-48 truncate text-lg tracking-tight'
-                  title={displaySiteName}
+                  title={brandName}
                 >
                   {loading ? (
                     <Skeleton className='h-4 w-16' />
                   ) : (
-                    displaySiteName
+                    brandName
                   )}
                 </span>
               </Link>

@@ -20,6 +20,7 @@ import { useMemo, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { getCurrencyLabel } from '@/lib/currency'
+import { cn } from '@/lib/utils'
 import { useSystemConfigStore } from '@/stores/system-config-store'
 
 import { DEFAULT_TOKEN_UNIT } from '../constants'
@@ -31,7 +32,6 @@ import {
   isUnconfiguredTaskUsageModel,
 } from '../lib/dynamic-price'
 import { isTokenBasedModel } from '../lib/model-helpers'
-import { getOfficialReferenceRatio } from '../lib/price'
 import { taskUsageUnitLabel } from '../lib/task-price-display'
 import { PriceMetricOfficial } from './price-with-official'
 import type { PricingModel, PriceType, TokenUnit } from '../types'
@@ -50,6 +50,14 @@ export type ModelPriceCellOptions = {
    * columns dimension by dimension instead of the group-ratio footnote.
    */
   officialPricesByVariable?: Record<string, number | null>
+  /**
+   * Comparison layout when official preset prices are available:
+   * - 'stacked' (default): each dimension is a column with the official
+   *   price rendered underneath the Uter price (table cells).
+   * - 'rows': a Uter price row above an aligned official price row
+   *   (current-billing summary).
+   */
+  layout?: 'stacked' | 'rows'
 }
 
 export function ModelPriceCell(props: {
@@ -228,10 +236,7 @@ export function ModelPriceCell(props: {
         </span>
       )
     }
-    const officialRatio = getOfficialReferenceRatio(
-      props.model,
-      options.officialPrices
-    )
+    const officialPreset = options.officialPrices?.[props.model.model_name]
     if (tokenBased) {
       const m = props.model
       const hasRatio = (value?: number | null) =>
@@ -269,7 +274,7 @@ export function ModelPriceCell(props: {
               priceRate={options.priceRate}
               usdExchangeRate={options.usdExchangeRate}
               selectedGroup={options.selectedGroup}
-              officialRatio={officialRatio}
+              officialPreset={officialPreset}
             />
           ))}
         </>
@@ -286,7 +291,7 @@ export function ModelPriceCell(props: {
           priceRate={options.priceRate}
           usdExchangeRate={options.usdExchangeRate}
           selectedGroup={options.selectedGroup}
-          officialRatio={officialRatio}
+          officialPreset={officialPreset}
         />
       )
       caption = `${currencyLabel} / ${t('request')}`
@@ -300,68 +305,107 @@ export function ModelPriceCell(props: {
         metric.variableKey != null &&
         Number.isFinite(officialByVar?.[metric.variableKey])
     )
-  return (
-    <span className='block w-full max-w-full min-w-0 space-y-1.5'>
-      {priceNodes ?? (
-        hasPresetOfficial ? (
-          <span className='grid grid-cols-2 gap-x-4 gap-y-2'>
-            {metrics.map((metric) => {
-              const official =
-                metric.variableKey != null
-                  ? officialByVar?.[metric.variableKey]
-                  : null
-              const isDiscount =
-                official != null &&
-                Number.isFinite(official) &&
-                official > 0 &&
-                metric.rawValue != null &&
-                Number.isFinite(metric.rawValue) &&
-                metric.rawValue < official - 1e-9
-              const discountPercent =
-                isDiscount && official && metric.rawValue != null
-                  ? Math.round((1 - metric.rawValue / official) * 100)
-                  : 0
-              return (
-                <span
-                  key={metric.label}
-                  className='flex min-w-0 flex-col gap-y-0.5'
-                >
-                  <span
-                    className='text-muted-foreground min-w-0 truncate text-xs font-normal'
-                    title={metric.label}
-                  >
-                    {metric.label}
-                  </span>
-                  <span
-                    className='min-w-0 font-mono text-sm break-words whitespace-normal font-semibold tabular-nums'
-                    title={metric.value}
-                  >
-                    {metric.value}
-                    {isDiscount && (
-                      <span className='text-emerald-600 text-xs font-bold'>
-                        {' '}
-                        · -{discountPercent}%
-                      </span>
-                    )}
-                  </span>
-                  <span className='text-muted-foreground text-xs font-normal tabular-nums'>
-                    {t('Official')}:{' '}
-                    {official != null && Number.isFinite(official)
-                      ? String(Number(official.toFixed(6)))
-                      : '—'}
-                  </span>
-                </span>
-              )
-            })}
+  const uterRowLabel = i18n.language?.startsWith('zh') ? '优特' : 'Uter'
+
+  const officialText = (official: number | null | undefined) =>
+    official != null && Number.isFinite(official)
+      ? String(Number(official.toFixed(6)))
+      : '—'
+
+  const renderMetricGrid = () => {
+    if (hasPresetOfficial && options.layout === 'rows') {
+      // Two aligned rows: Uter prices on top, official prices below.
+      return (
+        <span
+          className='grid min-w-0 items-baseline gap-x-4 gap-y-1'
+          style={{
+            gridTemplateColumns: `max-content repeat(${metrics.length}, minmax(56px, 1fr))`,
+          }}
+        >
+          <span aria-hidden />
+          {metrics.map((metric) => (
+            <span
+              key={`h-${metric.label}`}
+              className='text-muted-foreground text-xs whitespace-nowrap'
+              title={metric.label}
+            >
+              {metric.label}
+            </span>
+          ))}
+          <span className='text-xs font-semibold whitespace-nowrap'>
+            {uterRowLabel}
           </span>
-        ) : (
-          <span
-            className={metrics.length > 1 ? 'grid grid-cols-2 gap-x-4' : 'grid'}
-          >
-            {metrics.map((metric) => (
+          {metrics.map((metric) => (
+            <span
+              key={`u-${metric.label}`}
+              className='font-mono text-sm font-semibold tabular-nums whitespace-nowrap'
+              title={metric.value}
+            >
+              {metric.value}
+            </span>
+          ))}
+          <span className='text-muted-foreground text-xs whitespace-nowrap'>
+            {t('Official')}
+          </span>
+          {metrics.map((metric) => {
+            const official =
+              metric.variableKey != null
+                ? officialByVar?.[metric.variableKey]
+                : null
+            const isDiscount =
+              official != null &&
+              Number.isFinite(official) &&
+              official > 0 &&
+              metric.rawValue != null &&
+              Number.isFinite(metric.rawValue) &&
+              metric.rawValue < official - 1e-9
+            const discountPercent =
+              isDiscount && official && metric.rawValue != null
+                ? Math.round((1 - metric.rawValue / official) * 100)
+                : 0
+            return (
+              <span
+                key={`o-${metric.label}`}
+                className='text-muted-foreground font-mono text-xs tabular-nums whitespace-nowrap'
+                title={officialText(official)}
+              >
+                <span className={cn(isDiscount && 'line-through')}>
+                  {officialText(official)}
+                </span>
+                {isDiscount && (
+                  <span className='text-emerald-600 ml-1 font-bold'>
+                    -{discountPercent}%
+                  </span>
+                )}
+              </span>
+            )
+          })}
+        </span>
+      )
+    }
+    if (hasPresetOfficial) {
+      return (
+        <span className='grid grid-cols-2 gap-x-4 gap-y-2'>
+          {metrics.map((metric) => {
+            const official =
+              metric.variableKey != null
+                ? officialByVar?.[metric.variableKey]
+                : null
+            const isDiscount =
+              official != null &&
+              Number.isFinite(official) &&
+              official > 0 &&
+              metric.rawValue != null &&
+              Number.isFinite(metric.rawValue) &&
+              metric.rawValue < official - 1e-9
+            const discountPercent =
+              isDiscount && official && metric.rawValue != null
+                ? Math.round((1 - metric.rawValue / official) * 100)
+                : 0
+            return (
               <span
                 key={metric.label}
-                className='flex min-w-0 flex-col items-start gap-y-0.5 sm:flex-row sm:flex-wrap sm:items-baseline sm:gap-x-1.5'
+                className='flex min-w-0 flex-col gap-y-0.5'
               >
                 <span
                   className='text-muted-foreground min-w-0 truncate text-xs font-normal'
@@ -370,16 +414,55 @@ export function ModelPriceCell(props: {
                   {metric.label}
                 </span>
                 <span
-                  className='min-w-0 font-mono text-sm break-words whitespace-normal tabular-nums'
+                  className='min-w-0 font-mono text-sm break-words whitespace-normal font-semibold tabular-nums'
                   title={metric.value}
                 >
                   {metric.value}
+                  {isDiscount && (
+                    <span className='text-emerald-600 text-xs font-bold'>
+                      {' '}
+                      · -{discountPercent}%
+                    </span>
+                  )}
+                </span>
+                <span className='text-muted-foreground text-xs font-normal tabular-nums'>
+                  {t('Official')}: {officialText(official)}
                 </span>
               </span>
-            ))}
+            )
+          })}
+        </span>
+      )
+    }
+    return (
+      <span
+        className={metrics.length > 1 ? 'grid grid-cols-2 gap-x-4' : 'grid'}
+      >
+        {metrics.map((metric) => (
+          <span
+            key={metric.label}
+            className='flex min-w-0 flex-col items-start gap-y-0.5 sm:flex-row sm:flex-wrap sm:items-baseline sm:gap-x-1.5'
+          >
+            <span
+              className='text-muted-foreground min-w-0 truncate text-xs font-normal'
+              title={metric.label}
+            >
+              {metric.label}
+            </span>
+            <span
+              className='min-w-0 font-mono text-sm break-words whitespace-normal tabular-nums'
+              title={metric.value}
+            >
+              {metric.value}
+            </span>
           </span>
-        )
-      )}
+        ))}
+      </span>
+    )
+  }
+  return (
+    <span className='block w-full max-w-full min-w-0 space-y-1.5'>
+      {priceNodes ?? renderMetricGrid()}
       {officialDynamic?.entries.length && !hasPresetOfficial ? (
         <span className='text-muted-foreground block text-xs font-normal tabular-nums'>
           {t('Official')}:{' '}

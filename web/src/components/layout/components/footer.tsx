@@ -23,6 +23,7 @@ import { useTranslation } from 'react-i18next'
 import { useStatus } from '@/hooks/use-status'
 import { useSystemConfig } from '@/hooks/use-system-config'
 import { DEFAULT_LOGO } from '@/lib/constants'
+import { localizedBrandName } from '@/lib/brand'
 import { cn } from '@/lib/utils'
 
 interface FooterLink {
@@ -124,7 +125,11 @@ function LegalLinks(props: { leadingSeparator?: boolean }) {
 
 // inline=true returns just the inner span for composition in a parent flex
 // row. inline=false wraps in a centered/right-aligned div (default).
-function ProjectAttribution(props: { currentYear: number; inline?: boolean }) {
+function ProjectAttribution(props: {
+  currentYear: number
+  inline?: boolean
+  brandName?: string
+}) {
   const { t } = useTranslation()
   const content = (
     <span className='text-muted-foreground/45'>
@@ -135,7 +140,7 @@ function ProjectAttribution(props: { currentYear: number; inline?: boolean }) {
         rel='noopener noreferrer'
         className='text-foreground/70 hover:text-foreground font-medium transition-colors'
       >
-        {t('Uter')}
+        {props.brandName ?? t('Uter')}
       </a>
       . {t(UTER_FOOTER_ATTRIBUTION_KEY)}
     </span>
@@ -151,16 +156,15 @@ function ProjectAttribution(props: { currentYear: number; inline?: boolean }) {
 }
 
 export function Footer(props: FooterProps) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const {
-    systemName,
     logo: systemLogo,
     footerHtml,
     demoSiteEnabled,
   } = useSystemConfig()
 
   const displayLogo = systemLogo || props.logo || DEFAULT_LOGO
-  const displayName = systemName || props.name || 'Uter'
+  const brandName = localizedBrandName(i18n.language)
   const isDemoSiteMode = Boolean(demoSiteEnabled)
   const currentYear = new Date().getFullYear()
 
@@ -239,7 +243,11 @@ export function Footer(props: FooterProps) {
             />
             <div className='border-border/60 text-muted-foreground/45 flex w-full flex-wrap items-center justify-center gap-x-3 gap-y-1 border-t pt-4 text-xs sm:w-auto sm:justify-end sm:border-t-0 sm:border-l sm:pt-0 sm:pl-5'>
               <LegalLinks />
-              <ProjectAttribution currentYear={currentYear} inline />
+              <ProjectAttribution
+                currentYear={currentYear}
+                inline
+                brandName={brandName}
+              />
             </div>
           </div>
         </div>
@@ -258,11 +266,11 @@ export function Footer(props: FooterProps) {
             <Link to='/' className='group flex items-center gap-2.5'>
               <img
                 src={displayLogo}
-                alt={displayName}
+                alt={brandName}
                 className='size-7 rounded-lg object-contain'
               />
               <span className='font-brand text-sm tracking-tight'>
-                {displayName}
+                {brandName}
               </span>
             </Link>
             <p className='text-muted-foreground/60 mt-3 max-w-[200px] text-xs leading-relaxed'>
@@ -296,12 +304,12 @@ export function Footer(props: FooterProps) {
         <div className='border-border/30 mt-12 flex flex-col items-center justify-between gap-x-3 gap-y-2 border-t pt-6 sm:flex-row'>
           <div className='text-muted-foreground/40 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-xs sm:justify-start'>
             <span>
-              &copy; {currentYear} {displayName}.{' '}
+              &copy; {currentYear} {brandName}.{' '}
               {props.copyright ?? t('footer.defaultCopyright')}
             </span>
             <LegalLinks leadingSeparator />
           </div>
-          <ProjectAttribution currentYear={currentYear} />
+          <ProjectAttribution currentYear={currentYear} brandName={brandName} />
         </div>
       </div>
     </footer>

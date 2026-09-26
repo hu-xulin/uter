@@ -35,6 +35,7 @@ import { ConfirmDialog } from '@/components/confirm-dialog'
 import { BadgeListCell } from '@/components/data-table'
 import { GroupBadge } from '@/components/group-badge'
 import { ProviderBadge } from '@/components/provider-badge'
+import { useTheme } from '@/context/theme-provider'
 import { StatusBadge, type StatusBadgeProps } from '@/components/status-badge'
 import { TableId } from '@/components/table-id'
 import { TruncatedText } from '@/components/truncated-text'
@@ -63,6 +64,7 @@ import {
   CHANNEL_TYPE_TASK_PLUGIN,
   MODEL_FETCHABLE_TYPES,
 } from '../constants'
+import { isAdvancedCustomLikeChannelType } from '../lib/advanced-custom'
 import {
   formatRelativeTime,
   formatResponseTime,
@@ -74,6 +76,7 @@ import {
   parseModelsList,
   parseGroupsList,
   parseChannelSettings,
+  parseChannelOtherSettings,
   channelsQueryKeys,
   handleUpdateChannelField,
   handleUpdateTagField,
@@ -779,11 +782,27 @@ export function useChannelsColumns(
             )
           }
 
+          const { resolvedTheme } = useTheme()
           const type = row.getValue('type') as number
           const typeNameKey = getChannelTypeLabel(type)
-          const typeName = t(typeNameKey)
-          const iconName = getChannelTypeIcon(type)
           const channel = row.original as Channel
+          // Advanced Custom and its branded variants may override the type
+          // label and logo with the per-channel display_name / logo.
+          const advancedCustomDisplay = isAdvancedCustomLikeChannelType(type)
+            ? parseChannelOtherSettings(channel.settings)?.advanced_custom
+            : undefined
+          const customDisplayName =
+            advancedCustomDisplay?.display_name?.trim() || ''
+          // In dark mode prefer the dedicated dark-theme logo (the white-stroke
+          // SVG the user provided); otherwise use the light logo. No CSS filter
+          // is applied — we render the exact SVG for each theme.
+          const isDark = resolvedTheme === 'dark'
+          const customLogo =
+            (isDark
+              ? advancedCustomDisplay?.logo_dark?.trim()
+              : advancedCustomDisplay?.logo?.trim()) || ''
+          const typeName = customDisplayName || t(typeNameKey)
+          const iconName = getChannelTypeIcon(type)
           const isMultiKey = isMultiKeyChannel(channel)
           const multiKeyMode = channel.channel_info?.multi_key_mode ?? 'random'
           const MultiKeyModeIcon =
@@ -833,7 +852,17 @@ export function useChannelsColumns(
                       }
                     >
                       <ProviderBadge
-                        iconKey={`${iconName}.Color`}
+                        iconNode={
+                          customLogo ? (
+                            <img
+                              src={customLogo}
+                              alt=''
+                              aria-hidden='true'
+                              className='size-[18px] rounded-full object-cover'
+                            />
+                          ) : undefined
+                        }
+                        iconKey={customLogo ? null : `${iconName}.Color`}
                         iconSize={18}
                         label={typeName}
                         colorText={false}
