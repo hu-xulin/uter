@@ -22,7 +22,17 @@ import type { DocsLocale } from '@/lib/i18n';
  * Labels and URLs mirror the SPA's `useTopNavLinks()` output, and the
  * strings match the SPA's `zh` / `en` i18next entries for the same
  * keys (`Home`, `Console`, `Model Square`, `Rankings`, `Docs`,
- * `About`) so both headers read identically.
+ * `About`) so both headers read identically. The literals below are
+ * copies, not imports — when one of those entries changes, read the new
+ * value out of `web/src/i18n/locales/<lang>.json` (keyed by the English
+ * source string) and update it here, or the bars drift apart.
+ *
+ * The brand block is part of the same contract: `BRAND_NAME` mirrors the
+ * SPA's `localizedBrandName`, and `.Uter-brand-mark` /
+ * `.Uter-brand-wordmark` in `global.css` reproduce the mark's radius and
+ * the wordmark's face. The two sites are separate Tailwind builds with
+ * different scales, so those cannot be expressed by reusing the app's
+ * utility classes.
  *
  * The links are rendered as plain `<a href>` elements so the browser
  * performs a full document navigation — Fumadocs' `<Link>` wrapper
@@ -30,11 +40,11 @@ import type { DocsLocale } from '@/lib/i18n';
  * cross-app targets.
  */
 const NAV_LINKS_ZH = [
-  { title: '主页', href: '/' },
+  { title: '首页', href: '/' },
   { title: '管理', href: '/dashboard' },
   { title: '定价', href: '/pricing' },
   { title: '排行', href: '/rankings' },
-  { title: '查看文档', href: '/docs' },
+  { title: '文档', href: '/docs' },
   { title: '关于', href: '/about' },
 ] as const;
 
@@ -47,16 +57,31 @@ const NAV_LINKS_EN = [
   { title: 'About', href: '/about' },
 ] as const;
 
+/**
+ * Wordmark shown next to the mark, per docs locale.
+ *
+ * A copy of the SPA's `localizedBrandName` (`web/src/lib/brand.ts`)
+ * rather than a shared import: the docs site is a separate build and has
+ * no dependency on the app's `src/`. The two must agree character for
+ * character — the lockup sits in the same place, at the same size, in
+ * bars that are otherwise identical, so a difference here is the most
+ * visible kind of drift. The app shows a bilingual form in Chinese and
+ * the short mark everywhere else. Add a row when a locale is added to
+ * `SUPPORTED_DOCS_LOCALES` (the app's Hant form is `Uter.ai 優特智能`).
+ */
+const BRAND_NAME: Record<DocsLocale, string> = {
+  zh: 'Uter.ai 优特智能',
+  en: 'Uter.ai',
+};
+
 const COPY = {
   zh: {
-    brand: 'Uter',
     signIn: '登录',
     toggleMenu: '切换导航菜单',
     toggleTheme: '切换主题',
     chooseLanguage: '选择语言',
   },
   en: {
-    brand: 'Uter',
     signIn: 'Sign in',
     toggleMenu: 'Toggle navigation menu',
     toggleTheme: 'Toggle theme',
@@ -97,7 +122,7 @@ function DocsThemeToggle({ label }: { label: string }) {
       type='button'
       aria-label={label}
       onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
-      className='relative inline-flex size-9 items-center justify-center rounded-lg text-fd-muted-foreground transition-colors duration-200 hover:bg-fd-accent hover:text-fd-accent-foreground'
+      className='Uter-brand-radius relative inline-flex size-9 items-center justify-center text-fd-muted-foreground transition-colors duration-200 hover:bg-fd-accent hover:text-fd-accent-foreground'
     >
       <Sun className='size-[1.2rem] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90' />
       <Moon className='absolute size-[1.2rem] scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0' />
@@ -131,6 +156,7 @@ export function DocsHeader({ locale }: { locale: DocsLocale }) {
   const pathname = usePathname();
   const links = locale === 'zh' ? NAV_LINKS_ZH : NAV_LINKS_EN;
   const copy = COPY[locale];
+  const brand = BRAND_NAME[locale];
 
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -161,10 +187,10 @@ export function DocsHeader({ locale }: { locale: DocsLocale }) {
   const logo: ReactNode = (
     <Image
       src='/logo.png?v=3'
-      alt={copy.brand}
+      alt={brand}
       width={28}
       height={28}
-      className='size-full rounded-lg object-contain'
+      className='Uter-brand-mark size-full object-contain'
     />
   );
 
@@ -195,10 +221,10 @@ export function DocsHeader({ locale }: { locale: DocsLocale }) {
                   {logo}
                 </div>
                 <span
-                  className='max-w-48 truncate text-lg tracking-tight'
-                  title={copy.brand}
+                  className='Uter-brand-wordmark max-w-48 truncate text-lg tracking-tight'
+                  title={brand}
                 >
-                  {copy.brand}
+                  {brand}
                 </span>
               </a>
             </div>
@@ -211,7 +237,7 @@ export function DocsHeader({ locale }: { locale: DocsLocale }) {
                   href={link.href}
                   title={link.title}
                   className={cx(
-                    'min-w-0 truncate rounded-lg px-3 py-1.5 text-sm font-medium transition-colors duration-200',
+                    'Uter-brand-radius min-w-0 truncate px-3 py-1.5 text-sm font-medium transition-colors duration-200',
                     isActive(link.href)
                       ? 'text-fd-foreground'
                       : 'text-fd-muted-foreground hover:text-fd-foreground'
@@ -224,7 +250,7 @@ export function DocsHeader({ locale }: { locale: DocsLocale }) {
               <div className='bg-fd-border/40 mx-2 h-4 w-px' />
 
               <LanguageSelect
-                className='size-9'
+                className='Uter-brand-radius size-9'
                 aria-label={copy.chooseLanguage}
               >
                 <Languages className='size-[1.2rem]' />
@@ -236,7 +262,7 @@ export function DocsHeader({ locale }: { locale: DocsLocale }) {
 
               <a
                 href='/sign-in'
-                className='bg-fd-primary text-fd-primary-foreground inline-flex h-8 items-center rounded-lg px-3.5 text-xs font-medium transition-opacity duration-200 hover:opacity-90'
+                className='Uter-brand-cta inline-flex h-8 items-center px-3.5 text-xs font-medium transition-colors duration-200'
               >
                 {copy.signIn}
               </a>
@@ -250,7 +276,7 @@ export function DocsHeader({ locale }: { locale: DocsLocale }) {
                 below `lg` — the desktop block renders its own.
               */}
               <LanguageSelect
-                className='size-9'
+                className='Uter-brand-radius size-9'
                 aria-label={copy.chooseLanguage}
               >
                 <Languages className='size-[1.2rem]' />
@@ -261,7 +287,7 @@ export function DocsHeader({ locale }: { locale: DocsLocale }) {
                 onClick={() => setMobileOpen((v) => !v)}
                 aria-label={copy.toggleMenu}
                 aria-expanded={mobileOpen}
-                className='inline-flex size-9 items-center justify-center rounded-lg text-fd-foreground transition-colors duration-200 hover:bg-fd-accent'
+                className='Uter-brand-radius inline-flex size-9 items-center justify-center text-fd-foreground transition-colors duration-200 hover:bg-fd-accent'
               >
                 <div className='relative size-4'>
                   <span
@@ -335,7 +361,7 @@ export function DocsHeader({ locale }: { locale: DocsLocale }) {
             <a
               href='/sign-in'
               onClick={() => setMobileOpen(false)}
-              className='bg-fd-foreground text-fd-background inline-flex h-10 items-center justify-center rounded-lg text-sm font-medium transition-opacity hover:opacity-90 active:opacity-80'
+              className='Uter-brand-radius bg-fd-foreground text-fd-background inline-flex h-10 items-center justify-center text-sm font-medium transition-opacity hover:opacity-90 active:opacity-80'
             >
               {copy.signIn}
             </a>
