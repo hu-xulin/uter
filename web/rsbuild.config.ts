@@ -52,13 +52,19 @@ export default defineConfig(({ envMode }) => {
     ...staticLocales.map((locale) => `/about/${locale}`),
     // Files the docs export serves from its root rather than from a
     // localised section — the profile's portrait, the partner logo wall,
-    // and the user guide's screenshots (which sit under
-    // `public/user-guide/<locale>/<slug>/`). Unproxied, dev answers with
-    // `index.html` and the image silently 404s as HTML.
+    // the user guide's screenshots (which sit under
+    // `public/user-guide/<locale>/<slug>/`), and the subset brand font the
+    // docs header sets its wordmark in. Unproxied, dev answers with
+    // `index.html` and the asset silently fails, or 404s as HTML.
+    //
+    // `brand-assets` is deliberately not `fonts`: that path is the SPA's
+    // own font directory and the dev server serves it locally, so pointing
+    // it at the docs server would take the app's faces with it.
     '/about-assets',
     '/img/partners',
     '/user-guide',
     '/apps-assets',
+    '/brand-assets',
     '/_next',
     '/search-index.json',
   ]
