@@ -16,6 +16,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@Uter.ai.com
 */
+import { Link } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 
 import { Checkbox } from '@/components/ui/checkbox'
@@ -31,6 +32,19 @@ interface LegalConsentProps {
   className?: string
 }
 
+/**
+ * Consent checkbox beside the sign-in / sign-up form, with links to the
+ * documents being consented to.
+ *
+ * The links are router links so their destination is the canonical in-app
+ * route rather than a hand-written path, but they deliberately keep
+ * `target='_blank'`. Everything the reader has typed lives in this form's
+ * local state — including a sign-up verification code that may already have
+ * been sent — so navigating in place to read a document would discard it.
+ * Opening a new tab leaves the half-filled form untouched. `_blank` also means
+ * the router does not intercept the click at all, so this stays a real anchor
+ * that a middle-click or a "copy link address" behaves normally on.
+ */
 export function LegalConsent({
   status,
   checked,
@@ -69,25 +83,25 @@ export function LegalConsent({
         <span>
           {t('I have read and agree to the')}{' '}
           {hasUserAgreement && (
-            <a
-              href='/user-agreement'
+            <Link
+              to='/user-agreement'
               target='_blank'
               rel='noopener noreferrer'
               className='text-primary'
             >
               {t('User Agreement')}
-            </a>
+            </Link>
           )}
-          {hasUserAgreement && hasPrivacyPolicy && ' and the '}
+          {hasUserAgreement && hasPrivacyPolicy && <> {t('and')} </>}
           {hasPrivacyPolicy && (
-            <a
-              href='/privacy-policy'
+            <Link
+              to='/privacy-policy'
               target='_blank'
               rel='noopener noreferrer'
               className='text-primary'
             >
               {t('Privacy Policy')}
-            </a>
+            </Link>
           )}
           .
         </span>

@@ -16,6 +16,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@Uter.ai.com
 */
+import { Link } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 
 import { cn } from '@/lib/utils'
@@ -28,6 +29,16 @@ interface TermsFooterProps {
   status?: SystemStatus | null
 }
 
+/**
+ * Consent footnote under the sign-in / sign-up card.
+ *
+ * The two document names are router links, not bare anchors. Both targets are
+ * in-app routes (`/user-agreement`, `/privacy-policy`) that are already part of
+ * this bundle, so a bare `<a href>` only bought a full document reload — the
+ * SPA booting again from scratch — to reach a page the router could render in
+ * place. The labels go through `t()` so the document names match the language
+ * of the document they open, as they do in the site footer.
+ */
 export function TermsFooter({
   variant = 'sign-in',
   className,
@@ -46,41 +57,19 @@ export function TermsFooter({
     return null
   }
 
-  const agreementLink = {
-    label: 'User Agreement',
-    href: '/user-agreement',
-  }
-  const privacyLink = {
-    label: 'Privacy Policy',
-    href: '/privacy-policy',
-  }
-
-  const activeLinks =
-    hasUserAgreement || hasPrivacyPolicy
-      ? ([
-          hasUserAgreement ? agreementLink : null,
-          hasPrivacyPolicy ? privacyLink : null,
-        ].filter(Boolean) as Array<{ label: string; href: string }>)
-      : [agreementLink, privacyLink]
-
-  const [firstLink, secondLink] = activeLinks
-
   return (
     <p className={cn('text-muted-foreground text-center text-xs', className)}>
       {text}{' '}
-      {firstLink && (
-        <a href={firstLink.href} className='hover:text-primary'>
-          {firstLink.label}
-        </a>
+      {hasUserAgreement && (
+        <Link to='/user-agreement' className='hover:text-primary'>
+          {t('User Agreement')}
+        </Link>
       )}
-      {secondLink && (
-        <>
-          {' '}
-          {t('and')}{' '}
-          <a href={secondLink.href} className='hover:text-primary'>
-            {secondLink.label}
-          </a>
-        </>
+      {hasUserAgreement && hasPrivacyPolicy && <> {t('and')} </>}
+      {hasPrivacyPolicy && (
+        <Link to='/privacy-policy' className='hover:text-primary'>
+          {t('Privacy Policy')}
+        </Link>
       )}
       .
     </p>
