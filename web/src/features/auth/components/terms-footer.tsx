@@ -38,6 +38,12 @@ interface TermsFooterProps {
  * SPA booting again from scratch — to reach a page the router could render in
  * place. The labels go through `t()` so the document names match the language
  * of the document they open, as they do in the site footer.
+ *
+ * The lead-in and the sentence's full stop are keys too. The stop is a key
+ * rather than a literal `.` because Chinese and Japanese end the sentence with
+ * `。`, and a literal ASCII stop after CJK text is a visible blemish. The
+ * locale files already carry punctuation as keys (`，`, `、`), so this follows
+ * the established convention.
  */
 export function TermsFooter({
   variant = 'sign-in',
@@ -45,10 +51,11 @@ export function TermsFooter({
   status,
 }: TermsFooterProps) {
   const { t } = useTranslation()
-  const text =
+  const text = t(
     variant === 'sign-in'
       ? 'By clicking sign in, you agree to our'
       : 'By creating an account, you agree to our'
+  )
 
   const hasUserAgreement = Boolean(status?.user_agreement_enabled)
   const hasPrivacyPolicy = Boolean(status?.privacy_policy_enabled)
@@ -71,7 +78,7 @@ export function TermsFooter({
           {t('Privacy Policy')}
         </Link>
       )}
-      .
+      {t('.')}
     </p>
   )
 }
