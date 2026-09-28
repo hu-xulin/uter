@@ -44,6 +44,9 @@ interface LegalConsentProps {
  * Opening a new tab leaves the half-filled form untouched. `_blank` also means
  * the router does not intercept the click at all, so this stays a real anchor
  * that a middle-click or a "copy link address" behaves normally on.
+ *
+ * The sentence's full stop comes from `t('.')` rather than a literal `.` so
+ * Chinese and Japanese end on `。` instead of an ASCII stop after CJK text.
  */
 export function LegalConsent({
   status,
@@ -103,7 +106,7 @@ export function LegalConsent({
               {t('Privacy Policy')}
             </Link>
           )}
-          .
+          {t('.')}
         </span>
       </Label>
     </div>
