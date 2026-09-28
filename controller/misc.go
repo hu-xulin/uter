@@ -126,6 +126,7 @@ func GetStatus(c *gin.Context) {
 		"setup":                       constant.Setup,
 		"user_agreement_enabled":      legalSetting.UserAgreement != "",
 		"privacy_policy_enabled":      legalSetting.PrivacyPolicy != "",
+		"recharge_agreement_enabled":  legalSetting.RechargeAgreement != "",
 		"checkin_enabled":             operation_setting.GetCheckinSetting().Enabled,
 	}
 
@@ -196,6 +197,10 @@ func GetUserAgreement(c *gin.Context) {
 
 func GetPrivacyPolicy(c *gin.Context) {
 	serveRevalidatedJSON(c, system_setting.GetLegalSettings().PrivacyPolicy)
+}
+
+func GetRechargeAgreement(c *gin.Context) {
+	serveRevalidatedJSON(c, system_setting.GetLegalSettings().RechargeAgreement)
 }
 
 func GetMidjourney(c *gin.Context) {

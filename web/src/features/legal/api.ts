@@ -38,3 +38,10 @@ export async function getPrivacyPolicy(): Promise<LegalDocumentResponse> {
   })
   return res.data
 }
+
+export async function getRechargeAgreement(): Promise<LegalDocumentResponse> {
+  const res = await api.get<LegalDocumentResponse>('/api/recharge-agreement', {
+    headers: { 'Cache-Control': null },
+  })
+  return res.data
+}

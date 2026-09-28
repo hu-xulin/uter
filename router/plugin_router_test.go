@@ -219,7 +219,10 @@ func TestWebCacheHeadersDoNotLeakOntoPluginRoutes(t *testing.T) {
 	assert.Empty(t, pluginResponse.Header().Get("Cache-Version"))
 
 	fallbackResponse := performPluginRequest(outer, http.MethodGet, "/unknown")
-	assert.Equal(t, "max-age=604800", fallbackResponse.Header().Get("Cache-Control"))
+	// Only fingerprinted build artifacts (`/static/…`, `/_next/static/…`) are
+	// cached for a week; every other path revalidates — a replaced logo.png
+	// stayed invisible for a week under the long max-age (middleware/cache.go).
+	assert.Equal(t, "no-cache", fallbackResponse.Header().Get("Cache-Control"))
 	assert.NotEmpty(t, fallbackResponse.Header().Get("Cache-Version"))
 }
 

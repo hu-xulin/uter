@@ -19,7 +19,7 @@ Writes into this repository:
     content/features/<locale>.md           特性说明
     content/apps/<locale>/<slug>.md        AI 应用，附 _nav.json
     content/api/<locale>/<group>.md        API 参考（每组一页），附 _nav.json
-    content/legal/<locale>/<doc>.md        用户协议 / 隐私政策
+    content/legal/<locale>/<doc>.md        用户协议 / 隐私政策 / 充值协议
     public/apps-assets/**                  AI 应用截图（转 WebP）
 
 Re-running is safe: output is derived from the upstream sources alone.
@@ -54,7 +54,14 @@ LEGAL_SOURCE = {
     / 'WorkBuddy/2026-09-18-11-15-09/legal/优特智能大模型服务平台用户协议.md',
     'privacy-policy': Path.home()
     / 'WorkBuddy/2026-09-18-11-15-09/legal/优特智能大模型服务平台隐私政策.md',
+    'recharge-agreement': Path.home()
+    / 'WorkBuddy/2026-09-18-11-15-09/legal/优特智能大模型服务平台充值协议.md',
 }
+
+# 法务中文源同时充当内部工作母本：正文之后挂有「待确认事项清单（内部用）」
+# 附录与草案免责声明，绝不能出现在公开页面。发布前一律剥离，源文件保持完整。
+INTERNAL_HEADING = re.compile(r'^##\s+附录\s*待确认事项清单（内部用', re.M)
+INTERNAL_TOC = re.compile(r'^- 附录.*（内部用.*）[ \t]*$\n?', re.M)
 
 MAX_WIDTH = 1600
 WEBP_QUALITY = 84
@@ -672,6 +679,21 @@ def sync_api(upstream: Path, texts: list) -> None:
         print(f'  api/{locale}: {len(nav)} 组 + 概览')
 
 
+def strip_internal(text: str) -> str:
+    """Drop internal-only working notes before publishing.
+
+    The Chinese legal sources carry a 「待确认事项清单（内部用）」 appendix and
+    a draft disclaimer at the end. Cut from the `---` separator that introduces
+    that heading to the end of the file, and drop the matching TOC bullet.
+    """
+    match = INTERNAL_HEADING.search(text)
+    if match:
+        cut = text.rfind('\n---\n', 0, match.start())
+        text = text[: cut + 1] if cut != -1 else text[: match.start()]
+    text = INTERNAL_TOC.sub('', text)
+    return re.sub(r'\n{3,}', '\n\n', text).strip() + '\n'
+
+
 def sync_legal() -> None:
     """法务页只有中文源。
 
@@ -683,7 +705,7 @@ def sync_legal() -> None:
         if not source.exists():
             print(f'  legal/{doc}: 源文件缺失，跳过 ({source})')
             continue
-        text = source.read_text(encoding='utf-8').strip() + '\n'
+        text = strip_internal(source.read_text(encoding='utf-8'))
         write(DOCS / f'content/legal/zh/{doc}.md', text)
         en = DOCS / f'content/legal/en/{doc}.md'
         note = 'en 为独立译稿，保持不动' if en.exists() else 'en 缺失，需补译稿'
@@ -705,12 +727,16 @@ def main() -> None:
     args = parser.parse_args()
 
     upstream = args.upstream
-    if not (upstream / 'content/docs/zh/api').exists():
+    chosen = args.only.split(',') if args.only else ['features', 'apps', 'api', 'legal']
+    # Only the features/apps/api sections read the upstream cache. The legal
+    # sources are local files named in LEGAL_SOURCE, so `--only legal` must not
+    # be refused just because no upstream cache happens to be checked out.
+    needs_upstream = any(section in chosen for section in ('features', 'apps', 'api'))
+    if needs_upstream and not (upstream / 'content/docs/zh/api').exists():
         raise SystemExit(f'上游缓存不存在: {upstream}')
 
     print('同步上游文档 →', DOCS)
     texts: list[str] = []
-    chosen = args.only.split(',') if args.only else ['features', 'apps', 'api', 'legal']
     if 'features' in chosen:
         sync_features(upstream, texts)
     if 'apps' in chosen:

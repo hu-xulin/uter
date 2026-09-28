@@ -18,3 +18,4 @@ For commercial licensing, please contact support@Uter.ai.com
 */
 export { UserAgreement } from './user-agreement'
 export { PrivacyPolicy } from './privacy-policy'
+export { RechargeAgreement } from './recharge-agreement'

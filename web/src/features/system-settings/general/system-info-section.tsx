@@ -57,6 +57,7 @@ const _systemInfoSchema = z.object({
   legal: z.object({
     user_agreement: z.string().optional(),
     privacy_policy: z.string().optional(),
+    recharge_agreement: z.string().optional(),
   }),
 })
 
@@ -86,6 +87,9 @@ export function SystemInfoSection({ defaultValues }: SystemInfoSectionProps) {
     legal: {
       user_agreement: normalizeValue(defaultValues.legal?.user_agreement),
       privacy_policy: normalizeValue(defaultValues.legal?.privacy_policy),
+      recharge_agreement: normalizeValue(
+        defaultValues.legal?.recharge_agreement
+      ),
     },
   }
 
@@ -107,6 +111,7 @@ export function SystemInfoSection({ defaultValues }: SystemInfoSectionProps) {
     legal: z.object({
       user_agreement: z.string().optional(),
       privacy_policy: z.string().optional(),
+      recharge_agreement: z.string().optional(),
     }),
   })
 
@@ -341,6 +346,31 @@ export function SystemInfoSection({ defaultValues }: SystemInfoSectionProps) {
                     <FormDescription>
                       {t(
                         'Leave empty to disable the privacy policy requirement. Supports Markdown, HTML, or a full URL to redirect users.'
+                      )}
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name='legal.recharge_agreement'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('Recharge Agreement')}</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder={t(
+                          'Provide Markdown, HTML, or an external URL for the recharge agreement'
+                        )}
+                        rows={6}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      {t(
+                        'Leave empty to hide the recharge agreement link. Supports Markdown, HTML, or a full URL to redirect users.'
                       )}
                     </FormDescription>
                     <FormMessage />

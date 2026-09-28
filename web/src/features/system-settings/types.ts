@@ -143,6 +143,7 @@ export type SiteSettings = {
   TaskPublicAddress: string
   'legal.user_agreement': string
   'legal.privacy_policy': string
+  'legal.recharge_agreement': string
   HeaderNavModules: string
   SidebarModulesAdmin: string
 }

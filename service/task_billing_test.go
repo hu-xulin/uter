@@ -44,6 +44,11 @@ func TestMain(m *testing.M) {
 	common.RedisEnabled = false
 	common.BatchUpdateEnabled = false
 	common.LogConsumeEnabled = true
+	// Assigning DB directly skips InitDB, which is what normally fills in the
+	// dialect-quoted column names; without this every query built from
+	// commonKeyCol (GetTokenByKey, channel lookups) fails with a SQL syntax
+	// error.
+	model.InitColumnNames()
 
 	if err := db.AutoMigrate(
 		&model.Task{},

@@ -384,11 +384,17 @@ func NewBillingSession(c *gin.Context, relayInfo *relaycommon.RelayInfo, preCons
 
 	// 钱包路径需要先检查用户额度
 	tryWallet := func() (*BillingSession, *types.UterError) {
-		userQuota, err := model.GetUserQuota(relayInfo.UserId, false)
+		// Settlement deducts without a lower bound (a failed request still
+		// consumed upstream tokens, and the consume log must match the balance),
+		// so admission is the only place the overdraw can be bounded. The read
+		// is the one that re-checks the database inside the at-risk band —
+		// a plain cached read would let a concurrent burst through before any
+		// of those requests had settled.
+		userQuota, err := model.GetUserQuotaForAdmission(relayInfo.UserId)
 		if err != nil {
 			return nil, types.NewError(err, types.ErrorCodeQueryDataError, types.ErrOptionWithSkipRetry())
 		}
-		if userQuota <= 0 {
+		if userQuota <= common.GetWalletDebtFloorQuota() {
 			return nil, types.NewErrorWithStatusCode(
 				fmt.Errorf("用户额度不足, 剩余额度: %s", logger.FormatQuota(userQuota)),
 				types.ErrorCodeInsufficientUserQuota, http.StatusForbidden,

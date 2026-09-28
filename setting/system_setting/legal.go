@@ -3,13 +3,15 @@ package system_setting
 import "github.com/Uter-AI/Uter/setting/config"
 
 type LegalSettings struct {
-	UserAgreement string `json:"user_agreement"`
-	PrivacyPolicy string `json:"privacy_policy"`
+	UserAgreement     string `json:"user_agreement"`
+	PrivacyPolicy     string `json:"privacy_policy"`
+	RechargeAgreement string `json:"recharge_agreement"`
 }
 
 var defaultLegalSettings = LegalSettings{
-	UserAgreement: "",
-	PrivacyPolicy: "",
+	UserAgreement:     "",
+	PrivacyPolicy:     "",
+	RechargeAgreement: "",
 }
 
 func init() {

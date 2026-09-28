@@ -422,6 +422,53 @@ func TestModelPriceHelperHonorsCustomClaudeThinkingAlias(t *testing.T) {
 	assert.Equal(t, 3.0, priceData.ModelRatio)
 }
 
+// The ratio pre-consume has to round exactly like the settlement path, and a
+// ratio small enough to still round to zero has to keep a minimum billable
+// amount. Truncating here put pre-charge and settlement on different integer
+// grids, and a zero pre-charge short-circuits the token reservation (it returns
+// early on a zero amount), after which settlement deducted the real amount
+// unconditionally — pushing the token past its hard limit.
+func TestRatioPreConsumeRoundsAndKeepsBillableFloor(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+
+	savedRatios := ratio_setting.ModelRatio2JSONString()
+	t.Cleanup(func() {
+		require.NoError(t, ratio_setting.UpdateModelRatioByJSONString(savedRatios))
+	})
+	ratios := ratio_setting.GetModelRatioCopy()
+	// 1000 prompt tokens against each ratio, with the default group ratio 1.
+	ratios["half-quota-ratio-model"] = 0.0015 // 1.5  -> rounds to 2 (truncation gave 1)
+	ratios["sub-quota-ratio-model"] = 0.0005  // 0.5  -> rounds to 1 (truncation gave 0)
+	ratios["tiny-ratio-model"] = 0.0001       // 0.1  -> rounds to 0, floor lifts it to 1
+	ratioJSON, err := common.Marshal(ratios)
+	require.NoError(t, err)
+	require.NoError(t, ratio_setting.UpdateModelRatioByJSONString(string(ratioJSON)))
+
+	for _, tc := range []struct {
+		name  string
+		model string
+		want  int
+	}{
+		{"rounds half away from zero", "half-quota-ratio-model", 2},
+		{"rounds a fractional quota up", "sub-quota-ratio-model", 1},
+		{"keeps the billable floor", "tiny-ratio-model", 1},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			ctx, _ := gin.CreateTestContext(httptest.NewRecorder())
+			ctx.Set("group", "default")
+			info := &relaycommon.RelayInfo{
+				OriginModelName: tc.model,
+				UserGroup:       "default",
+				UsingGroup:      "default",
+			}
+			priceData, err := ModelPriceHelper(ctx, info, 1000, &types.TokenCountMeta{})
+			require.NoError(t, err)
+			require.False(t, priceData.UsePrice)
+			assert.Equal(t, tc.want, priceData.QuotaToPreConsume)
+		})
+	}
+}
+
 func TestModelPriceHelperCanonicalBillingLadder(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 

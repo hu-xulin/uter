@@ -179,9 +179,21 @@ func ModelPriceHelper(c *gin.Context, info *relaycommon.RelayInfo, promptTokens 
 		audioRatio = ratio_setting.GetAudioRatio(billingModelName)
 		audioCompletionRatio = ratio_setting.GetAudioCompletionRatio(billingModelName)
 		ratio := modelRatio * groupRatioInfo.GroupRatio
-		quota, err := common.QuotaFromFloatStrict(float64(preConsumedTokens) * ratio)
+		// Same rounding rule as the settlement path (half away from zero):
+		// truncating here while settlement rounds left the two on different
+		// integer grids, and — for a ratio small enough to truncate to 0 — a
+		// zero pre-charge skips the token reservation entirely (it short
+		// circuits on a zero amount), after which settlement deducted the real
+		// amount unconditionally and could push a token past its hard limit.
+		quota, err := common.QuotaRoundStrict(float64(preConsumedTokens) * ratio)
 		if err != nil {
 			return hosttypes.PriceData{}, err
+		}
+		// Billable work costs at least one quota. Same floor the realtime
+		// audio path applies, and what keeps the admission checks meaningful
+		// for models priced too low to round up to 1.
+		if quota == 0 && ratio != 0 {
+			quota = 1
 		}
 		preConsumedQuota = quota
 		if _, image := info.Request.(*dto.ImageRequest); image {

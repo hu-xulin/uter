@@ -256,7 +256,7 @@ We may adjust service prices based on upstream price changes, exchange rate fluc
 
 6.3.3 **Refund Rules**:
 
-- For un-consumed top-up balances, you may apply for a refund, but the fees charged by third-party payment channels and the taxes corresponding to invoices already issued will be deducted; the review period is **10 business days**.
+- For un-consumed top-up balances, you may apply for a refund, but the fees charged by third-party payment channels and the taxes corresponding to invoices already issued will be deducted; the review period is **7 business days**. The method of calculating the refund amount and the refund process follow the Recharge Agreement.
 - **Consumed Token fees are non-refundable**, regardless of whether you actually used the output (e.g., you abandoned use due to poor prompt design, changed requirements or dissatisfaction with results).
 - Where account termination is caused by your violation of this Agreement, the balance, after deduction of payable fees and possible third-party claims, may be refunded; where serious illegality is constituted, we may lawfully defer the refund and cooperate with competent authorities.
 
@@ -473,7 +473,7 @@ After termination: your API Key becomes invalid immediately; the un-consumed bal
 
 **12.4 Our Right to Early Termination**
 
-For services with no fixed term agreed, we may terminate this Agreement with **30 calendar days'** advance notice. In this case, we will refund the full un-consumed balance (excluding consumed portions).
+For services with no fixed term agreed, we may terminate this Agreement with **30 calendar days'** advance notice. In this case, we will refund the full un-consumed balance (excluding consumed portions), **without deducting third-party payment channel fees or taxes**.
 
 ---
 

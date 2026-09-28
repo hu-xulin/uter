@@ -121,6 +121,31 @@ export function docsLandingPathFor(locale: DocsLocaleCode): string {
 }
 
 /**
+ * Path of a legal document in the bundled docs site, for a given
+ * locale — e.g. `/docs/en/legal/recharge-agreement/`.
+ *
+ * The legal documents are authored once, in
+ * `docs-web/content/legal/<locale>/<doc>.md`, and that docs page is the
+ * one the SPA shows: the copy in System Settings, which `/api/<doc>`
+ * serves, is a single untranslated text and is only kept as the fallback
+ * for when `docs_link` points outside the bundled docs. Rendering the
+ * configured text directly would show the same language to every reader,
+ * because the settings copy has no per-language variants to switch
+ * between.
+ *
+ * `docId` matches the docs filename and the `content/nav.json` entry
+ * (`user-agreement`, `privacy-policy`, `recharge-agreement`); the ids
+ * are locale-neutral, which is what lets a language switch land on the
+ * same document in the other language.
+ */
+export function legalDocsPathFor(
+  locale: DocsLocaleCode,
+  docId: string
+): string {
+  return `${docsPathFor(locale)}legal/${docId}/`
+}
+
+/**
  * Entry path of the About page for a given locale.
  *
  * About is the second static page the gateway serves from the same
