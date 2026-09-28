@@ -106,6 +106,8 @@ const BRAND_AND_LITERAL_KEYS = new Set([
   'Xinference',
   'Xunfei',
   'Zhipu V4',
+  'Zhipu GLM',
+  'github.com/Uter-AI/Uter',
   '"default": "us-central1", "claude-3-5-sonnet-20240620": "europe-west1"',
   'edit_this',
   'footer.columns.related.links.midjourney',
@@ -227,7 +229,7 @@ function isLikelyUntranslated({ locale, baseValue, value }) {
   if (!/[A-Za-z]{3,}/.test(s)) return false
 
   // For locales with non-latin scripts, equality with EN is a strong signal.
-  if (locale === 'ja' || locale === 'zh') return true
+  if (locale === 'ja' || locale === 'zh' || locale === 'zh-TW') return true
   if (locale === 'ru') return true
 
   // For fr/vi: still useful but noisier; keep it conservative.
