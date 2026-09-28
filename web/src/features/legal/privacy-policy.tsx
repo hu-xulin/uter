@@ -27,6 +27,7 @@ export function PrivacyPolicy() {
     <LegalDocument
       title={t('Privacy Policy')}
       queryKey='privacy-policy'
+      docsDocId='privacy-policy'
       fetchDocument={getPrivacyPolicy}
       emptyMessage={t(
         'The administrator has not configured a privacy policy yet.'

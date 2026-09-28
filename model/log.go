@@ -99,9 +99,76 @@ func ensureLogRequestId(log *Log) {
 	}
 }
 
+// logWriteAttempts bounds the insert retries for a single log record. The
+// consume/refund logs are the only record of a quota movement that already
+// happened (the charge lands in the main database, the log in LOG_DB, so the
+// two cannot share a transaction), which makes a lost write an accounting
+// divergence rather than a missing audit line.
+const logWriteAttempts = 3
+
+// isMoneyLogType reports whether a log type records a quota movement. These
+// are the ones whose loss breaks the balance/ledger correspondence.
+func isMoneyLogType(logType int) bool {
+	switch logType {
+	case LogTypeConsume, LogTypeRefund, LogTypeTopup:
+		return true
+	default:
+		return false
+	}
+}
+
+// reportLogWriteFailure escalates a write that failed on every attempt. The
+// record itself supplies the type, so a caller cannot report one type while
+// writing another — passing the type separately is how a consume log ends up
+// downgraded to a plain log line while an error log is escalated as money.
+// Money logs are reported as errors so they surface in the error log (and the
+// admin error view) instead of being buried in the general log stream.
+func reportLogWriteFailure(log *Log, err error) {
+	if isMoneyLogType(log.Type) {
+		common.SysError(fmt.Sprintf("failed to persist quota log (type=%d): %s", log.Type, err.Error()))
+		return
+	}
+	common.SysLog("failed to record log: " + err.Error())
+}
+
+// logAlreadyPersisted reports whether a row with the same (request_id, type)
+// is already in the log store. It is only consulted after an insert failed, to
+// tell "the write never reached the database" apart from "the write committed
+// but the acknowledgement was lost" — retrying the second case would double
+// the record, and this table is summed for spend reports.
+func logAlreadyPersisted(log *Log) bool {
+	if log.RequestId == "" {
+		return false
+	}
+	var count int64
+	err := LOG_DB.Model(&Log{}).
+		Where("request_id = ? AND type = ?", log.RequestId, log.Type).
+		Count(&count).Error
+	return err == nil && count > 0
+}
+
 func createLog(log *Log) error {
 	ensureLogRequestId(log)
-	return LOG_DB.Create(log).Error
+	var err error
+	for attempt := range logWriteAttempts {
+		if createErr := LOG_DB.Create(log).Error; createErr == nil {
+			return nil
+		} else {
+			err = createErr
+		}
+		if attempt == logWriteAttempts-1 {
+			break
+		}
+		if logAlreadyPersisted(log) {
+			common.SysLog("log insert returned an error but the record is already stored, treating as written: " + err.Error())
+			return nil
+		}
+		// A failed insert can still have allocated the primary key; clear it so
+		// the retry is a fresh insert rather than a duplicate-key collision.
+		log.Id = 0
+		time.Sleep(time.Duration(50*(attempt+1)) * time.Millisecond)
+	}
+	return err
 }
 
 func clickHouseLogOrder(prefix string) string {
@@ -162,7 +229,7 @@ func RecordLog(userId int, logType int, content string) {
 	}
 	err := createLog(log)
 	if err != nil {
-		common.SysLog("failed to record log: " + err.Error())
+		reportLogWriteFailure(log, err)
 	}
 }
 
@@ -204,7 +271,7 @@ func RecordLogWithAdminInfo(userId int, logType int, content string, adminInfo *
 		log.Other = string(data)
 	}
 	if err := createLog(log); err != nil {
-		common.SysLog("failed to record log: " + err.Error())
+		reportLogWriteFailure(log, err)
 	}
 }
 
@@ -272,7 +339,7 @@ func RecordTopupLog(userId int, content string, callerIp string, paymentMethod s
 	}
 	err := createLog(log)
 	if err != nil {
-		common.SysLog("failed to record topup log: " + err.Error())
+		reportLogWriteFailure(log, err)
 	}
 }
 
@@ -319,6 +386,7 @@ func RecordErrorLog(c *gin.Context, userId int, channelId int, modelName string,
 	err := createLog(log)
 	if err != nil {
 		logger.LogError(c, "failed to record log: "+err.Error())
+		reportLogWriteFailure(log, err)
 	}
 }
 
@@ -383,6 +451,7 @@ func RecordConsumeLog(c *gin.Context, userId int, params RecordConsumeLogParams)
 	err := createLog(log)
 	if err != nil {
 		logger.LogError(c, "failed to record log: "+err.Error())
+		reportLogWriteFailure(log, err)
 	}
 	if common.DataExportEnabled {
 		LogQuotaData(QuotaDataLogParams{
@@ -441,7 +510,7 @@ func RecordTaskBillingLog(params RecordTaskBillingLogParams) {
 	}
 	err := createLog(log)
 	if err != nil {
-		common.SysLog("failed to record task billing log: " + err.Error())
+		reportLogWriteFailure(log, err)
 	}
 	if params.LogType == LogTypeConsume && common.DataExportEnabled {
 		nodeName := params.NodeName

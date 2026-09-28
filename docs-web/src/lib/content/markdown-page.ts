@@ -31,6 +31,12 @@ export type MarkdownHeading = { depth: number; text: string; id: string };
 export type MarkdownPage = {
   /** The document's `h1`, promoted to the page title. */
   title: string;
+  /**
+   * First paragraph of the body, as plain text, for the page's meta
+   * description. Empty when the document opens with something other than a
+   * paragraph (a list, a table, a code fence).
+   */
+  description: string;
   /** Body HTML, without the `h1`. */
   html: string;
   headings: MarkdownHeading[];
@@ -40,11 +46,69 @@ export type MarkdownPage = {
 
 const CONTENT_ROOT = path.join(process.cwd(), 'content');
 
-/** Plain text of a heading's inline content. */
+/**
+ * Longest meta description kept, in characters, and the shortest paragraph
+ * that may be used as one.
+ *
+ * The minimum matters: these documents open with a metadata table and a table
+ * of contents, whose entries are paragraphs too — "1.1 缔约主体" is the first
+ * thing a naive walk finds, and it reads as a broken search result. A paragraph
+ * long enough to be a sentence is the first one that describes the document.
+ */
+const MAX_DESCRIPTION_LENGTH = 200;
+const MIN_DESCRIPTION_LENGTH = 40;
+
+/**
+ * Plain text of a node's inline content. `break` renders as a space rather
+ * than nothing so a wrapped line does not glue two words together.
+ */
 function headingText(node: unknown): string {
   const anyNode = node as { type?: string; value?: string; children?: unknown[] };
+  if (anyNode.type === 'break') return ' ';
   if (typeof anyNode.value === 'string') return anyNode.value;
   return (anyNode.children ?? []).map(headingText).join('');
+}
+
+/**
+ * Meta description for a Markdown body: its first substantial paragraph,
+ * flattened to one line.
+ *
+ * The walk is in document order and recurses, because the sentence that
+ * describes the document often sits inside a blockquote (the 重要提示 of the
+ * legal texts) rather than at the top level. Tables are skipped outright — the
+ * metadata table every legal document opens with is a grid of short labels,
+ * never a description — and paragraphs shorter than
+ * {@link MIN_DESCRIPTION_LENGTH} are skipped too (table-of-contents entries
+ * are paragraphs). The first paragraph seen is kept as a fallback for a
+ * document whose every paragraph is short.
+ *
+ * The leading `h1` and anything before it are already gone by the time this
+ * runs.
+ */
+function firstParagraphText(nodes: unknown[]): string {
+  let fallback = '';
+
+  const visit = (list: unknown[]): string => {
+    for (const raw of list) {
+      const node = raw as { type?: string; children?: unknown[] };
+      if (node.type === 'table') continue;
+      if (node.type === 'paragraph') {
+        const text = headingText(node).replace(/\s+/g, ' ').trim();
+        if (text.length >= MIN_DESCRIPTION_LENGTH) return text;
+        if (text !== '' && fallback === '') fallback = text;
+        continue;
+      }
+      if (Array.isArray(node.children)) {
+        const found = visit(node.children);
+        if (found !== '') return found;
+      }
+    }
+    return '';
+  };
+
+  const text = visit(nodes) || fallback;
+  if (text.length <= MAX_DESCRIPTION_LENGTH) return text;
+  return `${text.slice(0, MAX_DESCRIPTION_LENGTH - 1).trimEnd()}…`;
 }
 
 /**
@@ -85,6 +149,7 @@ function assignAnchors(tree: unknown, headings: MarkdownHeading[]): void {
 /** Parse one Markdown source into a page. */
 export function renderMarkdown(source: string): MarkdownPage {
   const headings: MarkdownHeading[] = [];
+  let description = '';
 
   const processor = unified()
     .use(remarkParse)
@@ -106,6 +171,7 @@ export function renderMarkdown(source: string): MarkdownPage {
         children.splice(0, at + 1);
       }
       file.data.title = title;
+      description = firstParagraphText(children);
       assignAnchors(tree, headings);
     })
     .use(remarkRehype)
@@ -116,6 +182,7 @@ export function renderMarkdown(source: string): MarkdownPage {
 
   return {
     title,
+    description,
     html: String(file.value ?? ''),
     headings,
     toc: headings.map((heading) => ({

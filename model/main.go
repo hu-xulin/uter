@@ -64,6 +64,15 @@ func initCol() {
 	}
 }
 
+// InitColumnNames sets the dialect-quoted column names the SQL builders
+// interpolate (commonKeyCol and friends). InitDB calls it; a test that assigns
+// DB/LOG_DB directly must call it too, because an empty column name produces
+// `WHERE  = ?` and every query built from it then fails with a SQL syntax
+// error rather than a useful message.
+func InitColumnNames() {
+	initCol()
+}
+
 var DB *gorm.DB
 
 var LOG_DB *gorm.DB

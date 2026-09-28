@@ -148,6 +148,16 @@
         "zh": "数据收集范围、使用方式与保护措施。",
         "en": "What data is collected, how it is used and how it is protected."
       }
+    },
+    {
+      "id": "recharge-agreement",
+      "path": "legal/recharge-agreement",
+      "collection": "legal",
+      "label": { "zh": "充值协议", "en": "Recharge Agreement" },
+      "summary": {
+        "zh": "充值、额度折算、分批到账、未消耗余额退还与共管账户安排。",
+        "en": "Recharges, credit conversion, staged payment, refunds of unconsumed balance and jointly controlled accounts."
+      }
     }
   ]
 }

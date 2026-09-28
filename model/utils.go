@@ -22,13 +22,24 @@ const (
 	BatchUpdateTypeCount // if you add a new type, you need to add a new map and a new lock
 )
 
+// maxBatchUpdateRetries bounds how many consecutive failures a single pending
+// delta may accumulate before it is dropped. Without a bound a permanently
+// failing row (deleted user, constraint violation) would be re-queued for ever
+// and the queue would grow without limit.
+const maxBatchUpdateRetries = 5
+
 var batchUpdateStores []map[int]int
 var batchUpdateLocks []sync.Mutex
+
+// batchUpdateRetries counts consecutive persistence failures per (type, id) so
+// a failed flush can be re-queued instead of silently dropping the delta.
+var batchUpdateRetries []map[int]int
 
 func init() {
 	for range BatchUpdateTypeCount {
 		batchUpdateStores = append(batchUpdateStores, make(map[int]int))
 		batchUpdateLocks = append(batchUpdateLocks, sync.Mutex{})
+		batchUpdateRetries = append(batchUpdateRetries, make(map[int]int))
 	}
 }
 
@@ -95,12 +106,19 @@ func batchUpdate() {
 		for key, value := range store {
 			switch i {
 			case BatchUpdateTypeTokenQuota:
-				err := increaseTokenQuota(key, value)
-				if err != nil {
-					common.SysLog("failed to batch update token quota: " + err.Error())
+				if err := increaseTokenQuota(key, value); err != nil {
+					common.SysLog("failed to batch update token quota, requeueing: " + err.Error())
+					requeueBatchUpdate(i, key, value)
+					continue
 				}
+				clearBatchUpdateRetries(i, key)
 			case BatchUpdateTypeChannelUsedQuota:
-				updateChannelUsedQuota(key, value)
+				if err := updateChannelUsedQuota(key, value); err != nil {
+					common.SysLog("failed to batch update channel quota, requeueing: " + err.Error())
+					requeueBatchUpdate(i, key, value)
+					continue
+				}
+				clearBatchUpdateRetries(i, key)
 			}
 		}
 	}
@@ -120,9 +138,54 @@ func batchUpdate() {
 		userIDs[key] = struct{}{}
 	}
 	for key := range userIDs {
-		updateUserQuotaUsedQuotaAndRequestCount(key, userQuotaStore[key], usedQuotaStore[key], requestCountStore[key])
+		quota := userQuotaStore[key]
+		usedQuota := usedQuotaStore[key]
+		requestCount := requestCountStore[key]
+		if err := updateUserQuotaUsedQuotaAndRequestCount(key, quota, usedQuota, requestCount); err != nil {
+			// The cache already moved for this user, so dropping the delta
+			// would leave the database permanently behind: put the same three
+			// deltas back on the queue and try again on the next tick.
+			common.SysLog("failed to batch update user quota, used quota and request count, requeueing: " + err.Error())
+			requeueBatchUpdate(BatchUpdateTypeUserQuota, key, quota)
+			requeueBatchUpdate(BatchUpdateTypeUsedQuota, key, usedQuota)
+			requeueBatchUpdate(BatchUpdateTypeRequestCount, key, requestCount)
+			continue
+		}
+		clearBatchUpdateRetries(BatchUpdateTypeUserQuota, key)
+		clearBatchUpdateRetries(BatchUpdateTypeUsedQuota, key)
+		clearBatchUpdateRetries(BatchUpdateTypeRequestCount, key)
 	}
 	common.SysLog("batch update finished")
+}
+
+// requeueBatchUpdate puts a delta that failed to persist back on the queue so
+// the next flush retries it. A delta is dropped only after
+// maxBatchUpdateRetries consecutive failures, and that drop is reported as an
+// error — a permanently unpersistable delta is an accounting divergence the
+// operator has to know about, not a log line to bury.
+func requeueBatchUpdate(type_ int, id int, value int) {
+	if value == 0 {
+		return
+	}
+	batchUpdateLocks[type_].Lock()
+	attempts := batchUpdateRetries[type_][id] + 1
+	if attempts > maxBatchUpdateRetries {
+		delete(batchUpdateRetries[type_], id)
+		batchUpdateLocks[type_].Unlock()
+		common.SysError(fmt.Sprintf(
+			"dropping batch update after %d failed attempts: type=%d id=%d value=%d",
+			maxBatchUpdateRetries, type_, id, value))
+		return
+	}
+	batchUpdateRetries[type_][id] = attempts
+	batchUpdateLocks[type_].Unlock()
+	addNewRecord(type_, id, value)
+}
+
+func clearBatchUpdateRetries(type_ int, id int) {
+	batchUpdateLocks[type_].Lock()
+	delete(batchUpdateRetries[type_], id)
+	batchUpdateLocks[type_].Unlock()
 }
 
 func RecordExist(err error) (bool, error) {

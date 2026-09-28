@@ -1,0 +1,13 @@
+User-agent: *
+Allow: /
+
+# The gateway's API namespace and the client-rendered application shell carry
+# nothing a search result should point at: the API answers JSON, and the SPA
+# routes render from it. The documentation under /docs/<lang>/ is the part of
+# this host that is meant to be found.
+Disallow: /api/
+Disallow: /v1/
+Disallow: /dashboard
+Disallow: /panel
+
+Sitemap: https://uter.ai/sitemap.xml

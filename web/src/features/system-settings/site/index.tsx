@@ -35,6 +35,7 @@ const defaultSiteSettings: SiteSettings = {
   TaskPublicAddress: '',
   'legal.user_agreement': '',
   'legal.privacy_policy': '',
+  'legal.recharge_agreement': '',
   HeaderNavModules: '',
   SidebarModulesAdmin: '',
 }

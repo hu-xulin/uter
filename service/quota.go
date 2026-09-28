@@ -162,6 +162,24 @@ func PreWssConsumeQuota(ctx *gin.Context, relayInfo *relaycommon.RelayInfo, usag
 		return fmt.Errorf("token quota is not enough, token remain quota: %s, need quota: %s", logger.FormatQuota(token.RemainQuota), logger.FormatQuota(quota))
 	}
 
+	// This increment belongs to the session that was pre-charged before the
+	// socket opened, and PostWssConsumeQuota settles that session against the
+	// whole session total. Taking the money straight out of the wallet here
+	// (the legacy PostConsumeQuota path) leaves the settlement with no record
+	// of it: it deducts the total a second time, so a realtime session was
+	// billed twice over. Growing the reservation instead keeps the two in step
+	// — the settlement then only adjusts the difference, exactly as it does for
+	// text relays.
+	if relayInfo.Billing != nil {
+		if err := relayInfo.Billing.Reserve(relayInfo.Billing.GetPreConsumedQuota() + quota); err != nil {
+			return err
+		}
+		logger.LogInfo(ctx, "realtime streaming consume quota success, quota: "+fmt.Sprintf("%d", quota))
+		return nil
+	}
+
+	// No session (settlement will use the legacy path): charge the increment
+	// on its own.
 	err = PostConsumeQuota(relayInfo, quota, 0, false)
 	if err != nil {
 		return err

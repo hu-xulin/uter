@@ -75,14 +75,29 @@ func ResetUserMonthQuotaCache() {
 	monthlyQuotaMu.Unlock()
 }
 
+// sumConsumedQuotaSince returns the user's net spend since startTimestamp.
+//
+// Refund logs (LogTypeRefund) carry the refunded amount as a positive quota —
+// see `RefundTaskQuota` and `RecalculateTaskQuota` — so they have to be
+// subtracted here. Counting only consume logs left the month-to-date figure
+// inflated by every refund, which pushed users into a higher 用户定价 tier and
+// made every later request that month more expensive.
 func sumConsumedQuotaSince(userId int, startTimestamp int64) int64 {
 	if LOG_DB == nil {
 		return 0
 	}
 	var total int64
+	// The refund branch is inlined rather than bound with a placeholder: GORM
+	// orders bound arguments by clause, not by their position in the final SQL,
+	// so a placeholder inside the SELECT expression is matched against the
+	// WHERE arguments and silently shifts every binding. LogTypeRefund is a
+	// compile-time integer constant, so inlining it carries no injection risk.
+	selectExpr := "COALESCE(sum(CASE WHEN type = " + strconv.Itoa(LogTypeRefund) +
+		" THEN -quota ELSE quota END), 0) as total"
 	err := LOG_DB.Table("logs").
-		Select("COALESCE(sum(quota), 0) as total").
-		Where("user_id = ? and type = ? and created_at >= ?", userId, LogTypeConsume, startTimestamp).
+		Select(selectExpr).
+		Where("user_id = ? AND type IN ? AND created_at >= ?",
+			userId, []int{LogTypeConsume, LogTypeRefund}, startTimestamp).
 		Scan(&total).Error
 	if err != nil {
 		common.SysError("failed to sum consumed quota for user " + strconv.Itoa(userId) + ": " + err.Error())

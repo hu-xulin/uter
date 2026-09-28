@@ -14,6 +14,7 @@ import { Route as authRouteRouteImport } from './routes/(auth)/route'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as DocsRouteImport } from './routes/docs'
 import { Route as PrivacyPolicyRouteImport } from './routes/privacy-policy'
+import { Route as RechargeAgreementRouteImport } from './routes/recharge-agreement'
 import { Route as UserAgreementRouteImport } from './routes/user-agreement'
 import { Route as authForgotPasswordRouteImport } from './routes/(auth)/forgot-password'
 import { Route as authOauthRouteImport } from './routes/(auth)/oauth'
@@ -93,6 +94,11 @@ const DocsRoute = DocsRouteImport.update({
 const PrivacyPolicyRoute = PrivacyPolicyRouteImport.update({
   id: '/privacy-policy',
   path: '/privacy-policy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RechargeAgreementRoute = RechargeAgreementRouteImport.update({
+  id: '/recharge-agreement',
+  path: '/recharge-agreement',
   getParentRoute: () => rootRouteImport,
 } as any)
 const UserAgreementRoute = UserAgreementRouteImport.update({
@@ -418,6 +424,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/docs': typeof DocsRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
+  '/recharge-agreement': typeof RechargeAgreementRoute
   '/user-agreement': typeof UserAgreementRoute
   '/system-settings': typeof AuthenticatedSystemSettingsRouteRouteWithChildren
   '/forgot-password': typeof authForgotPasswordRoute
@@ -480,6 +487,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/docs': typeof DocsRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
+  '/recharge-agreement': typeof RechargeAgreementRoute
   '/user-agreement': typeof UserAgreementRoute
   '/forgot-password': typeof authForgotPasswordRoute
   '/oauth': typeof authOauthRoute
@@ -544,6 +552,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/docs': typeof DocsRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
+  '/recharge-agreement': typeof RechargeAgreementRoute
   '/user-agreement': typeof UserAgreementRoute
   '/_authenticated/system-settings': typeof AuthenticatedSystemSettingsRouteRouteWithChildren
   '/(auth)/forgot-password': typeof authForgotPasswordRoute
@@ -608,6 +617,7 @@ export interface FileRouteTypes {
     | '/'
     | '/docs'
     | '/privacy-policy'
+    | '/recharge-agreement'
     | '/user-agreement'
     | '/system-settings'
     | '/forgot-password'
@@ -670,6 +680,7 @@ export interface FileRouteTypes {
     | '/'
     | '/docs'
     | '/privacy-policy'
+    | '/recharge-agreement'
     | '/user-agreement'
     | '/forgot-password'
     | '/oauth'
@@ -733,6 +744,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/docs'
     | '/privacy-policy'
+    | '/recharge-agreement'
     | '/user-agreement'
     | '/_authenticated/system-settings'
     | '/(auth)/forgot-password'
@@ -798,6 +810,7 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   DocsRoute: typeof DocsRoute
   PrivacyPolicyRoute: typeof PrivacyPolicyRoute
+  RechargeAgreementRoute: typeof RechargeAgreementRoute
   UserAgreementRoute: typeof UserAgreementRoute
   errors401Route: typeof errors401Route
   errors403Route: typeof errors403Route
@@ -847,6 +860,13 @@ declare module '@tanstack/react-router' {
       path: '/privacy-policy'
       fullPath: '/privacy-policy'
       preLoaderRoute: typeof PrivacyPolicyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/recharge-agreement': {
+      id: '/recharge-agreement'
+      path: '/recharge-agreement'
+      fullPath: '/recharge-agreement'
+      preLoaderRoute: typeof RechargeAgreementRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/user-agreement': {
@@ -1395,6 +1415,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   DocsRoute: DocsRoute,
   PrivacyPolicyRoute: PrivacyPolicyRoute,
+  RechargeAgreementRoute: RechargeAgreementRoute,
   UserAgreementRoute: UserAgreementRoute,
   errors401Route: errors401Route,
   errors403Route: errors403Route,

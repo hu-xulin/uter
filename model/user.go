@@ -1263,6 +1263,44 @@ func GetUserQuota(id int, fromDB bool) (quota int, err error) {
 	return quota, nil
 }
 
+// GetUserQuotaForAdmission returns the balance an admission decision may be
+// based on.
+//
+// Reading only the cache is what let a wallet overdraw without bound:
+// settlement deductions are applied to the cache asynchronously (and, in batch
+// mode, only queued), so a burst of concurrent requests all reads the same
+// pre-deduction balance and every one of them is admitted. The cached value is
+// therefore trusted only while it sits comfortably above the debt floor — the
+// band in which staleness cannot change the outcome. Inside that band the
+// database is consulted as well and the smaller of the two is used, so a stale
+// cache can never admit a request the authoritative balance would reject.
+//
+// When the database is unreachable the cached value is returned rather than
+// failing every request: an unavailable database is a different failure mode
+// from an overdraw, and it must not turn into a total outage.
+func GetUserQuotaForAdmission(id int) (int, error) {
+	cached, cacheErr := GetUserQuota(id, false)
+	if cacheErr != nil {
+		return GetUserQuota(id, true)
+	}
+	if cached > admissionQuotaLowWater() {
+		return cached, nil
+	}
+	authoritative, dbErr := GetUserQuota(id, true)
+	if dbErr != nil {
+		return cached, nil
+	}
+	return min(cached, authoritative), nil
+}
+
+// admissionQuotaLowWater is the balance below which the cached balance is
+// re-checked against the database. It matches the trust threshold: above it a
+// reader is in the trust bypass anyway, and the floor can only be crossed by a
+// burst larger than the remaining headroom.
+func admissionQuotaLowWater() int {
+	return common.GetTrustQuota()
+}
+
 func GetUserUsedQuota(id int) (quota int, err error) {
 	err = DB.Model(&User{}).Where("id = ?", id).Select("used_quota").Find(&quota).Error
 	return quota, err
@@ -1476,9 +1514,14 @@ func updateUserUsedQuotaAndRequestCount(id int, quota int, count int) {
 	//}
 }
 
-func updateUserQuotaUsedQuotaAndRequestCount(id int, quota int, usedQuota int, requestCount int) {
+// updateUserQuotaUsedQuotaAndRequestCount applies one user's queued deltas in a
+// single UPDATE. It returns the database error instead of only logging it so
+// the batch flusher can put the deltas back on the queue — the cache has
+// already moved by the time this runs, so a silently dropped delta would leave
+// the database permanently behind the cache.
+func updateUserQuotaUsedQuotaAndRequestCount(id int, quota int, usedQuota int, requestCount int) error {
 	if quota == 0 && usedQuota == 0 && requestCount == 0 {
-		return
+		return nil
 	}
 
 	err := DB.Model(&User{}).Where("id = ?", id).Updates(
@@ -1489,8 +1532,9 @@ func updateUserQuotaUsedQuotaAndRequestCount(id int, quota int, usedQuota int, r
 		},
 	).Error
 	if err != nil {
-		common.SysLog("failed to batch update user quota, used quota and request count: " + err.Error())
+		return err
 	}
+	return nil
 }
 
 // GetUsernameById gets username from Redis first, falls back to DB if needed

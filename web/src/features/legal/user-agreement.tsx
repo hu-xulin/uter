@@ -27,6 +27,7 @@ export function UserAgreement() {
     <LegalDocument
       title={t('User Agreement')}
       queryKey='user-agreement'
+      docsDocId='user-agreement'
       fetchDocument={getUserAgreement}
       emptyMessage={t(
         'The administrator has not configured a user agreement yet.'

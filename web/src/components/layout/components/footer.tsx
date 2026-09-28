@@ -24,6 +24,13 @@ import { useStatus } from '@/hooks/use-status'
 import { useSystemConfig } from '@/hooks/use-system-config'
 import { DEFAULT_LOGO } from '@/lib/constants'
 import { localizedBrandName } from '@/lib/brand'
+import {
+  isBundledDocsHref,
+  legalDocsPathFor,
+  resolveDocsHref,
+  resolveDocsLocaleCode,
+  type DocsLocaleCode,
+} from '@/lib/docs-link'
 import { cn } from '@/lib/utils'
 
 interface FooterLink {
@@ -78,25 +85,48 @@ function FooterLinkItem(props: { link: FooterLink }) {
   )
 }
 
-// Renders User Agreement / Privacy Policy links inline with the parent's
-// copyright row when either is configured in System Settings → Site. Emits
-// fragmented siblings so the parent flex container's gap controls spacing.
+// Renders User Agreement / Privacy Policy / Recharge Agreement links inline
+// with the parent's copyright row when they are configured in System
+// Settings → Site. Emits fragmented siblings so the parent flex container's
+// gap controls spacing.
+//
+// The links point at the bundled docs site — `/docs/<locale>/legal/<doc>/` —
+// rather than at the SPA routes that frame it. Those are the real,
+// statically-exported pages: a crawler or anyone the reader shares the link
+// with gets a page that resolves on its own, on the same domain, in the
+// language the reader had selected. The SPA routes stay reachable (they are
+// what the sign-up consent links to) but they are a client-rendered shell, so
+// they are the wrong thing to hand outward.
+//
+// When an admin repoints `docs_link` at an external knowledge base there is no
+// bundled page to link to and the SPA routes fall back to the configured text,
+// so the footer follows them there instead of sending the reader into a docs
+// page that is no longer ours.
 function LegalLinks(props: { leadingSeparator?: boolean }) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const { status } = useStatus()
+  const docsLocale = resolveDocsLocaleCode(i18n.language)
+  const useDocsPages = isBundledDocsHref(resolveDocsHref(status?.docs_link))
   const items: { key: string; label: string; href: string }[] = []
   if (status?.user_agreement_enabled) {
     items.push({
       key: 'user-agreement',
       label: t('User Agreement'),
-      href: '/user-agreement',
+      href: legalPageHref('user-agreement', useDocsPages, docsLocale),
     })
   }
   if (status?.privacy_policy_enabled) {
     items.push({
       key: 'privacy-policy',
       label: t('Privacy Policy'),
-      href: '/privacy-policy',
+      href: legalPageHref('privacy-policy', useDocsPages, docsLocale),
+    })
+  }
+  if (status?.recharge_agreement_enabled) {
+    items.push({
+      key: 'recharge-agreement',
+      label: t('Recharge Agreement'),
+      href: legalPageHref('recharge-agreement', useDocsPages, docsLocale),
     })
   }
   if (items.length === 0) {
@@ -111,16 +141,28 @@ function LegalLinks(props: { leadingSeparator?: boolean }) {
               ·
             </span>
           )}
-          <Link
-            to={item.href}
+          <a
+            href={item.href}
             className='hover:text-foreground transition-colors duration-200'
           >
             {item.label}
-          </Link>
+          </a>
         </Fragment>
       ))}
     </>
   )
+}
+
+/**
+ * Destination of one legal link: the docs page for the current locale, or the
+ * SPA route when the bundled docs site is not the configured docs target.
+ */
+function legalPageHref(
+  docId: string,
+  useDocsPages: boolean,
+  docsLocale: DocsLocaleCode
+): string {
+  return useDocsPages ? legalDocsPathFor(docsLocale, docId) : `/${docId}`
 }
 
 // inline=true returns just the inner span for composition in a parent flex

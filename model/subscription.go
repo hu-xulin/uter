@@ -259,6 +259,15 @@ type UserSubscription struct {
 	AmountTotal int64 `json:"amount_total" gorm:"type:bigint;not null;default:0"`
 	AmountUsed  int64 `json:"amount_used" gorm:"type:bigint;not null;default:0"`
 
+	// RefundCarryOver parks refunds that could not be subtracted from
+	// AmountUsed because the amount was already zero. A periodic reset zeroes
+	// AmountUsed while a request is still in flight: that request pre-consumed
+	// P from the closed period and later settles with a smaller actual amount,
+	// so its refund arrives against an AmountUsed of 0. Clamping the result to
+	// zero used to drop that refund on the floor; carrying it forward means the
+	// next period's usage is reduced by it instead.
+	RefundCarryOver int64 `json:"refund_carry_over" gorm:"type:bigint;not null;default:0"`
+
 	StartTime int64  `json:"start_time" gorm:"bigint"`
 	EndTime   int64  `json:"end_time" gorm:"bigint;index;index:idx_user_sub_active,priority:3"`
 	Status    string `json:"status" gorm:"type:varchar(32);index;index:idx_user_sub_active,priority:2"` // active/expired/cancelled
@@ -1353,7 +1362,9 @@ func PreConsumeUserSubscription(requestId string, userId int, modelName string, 
 			}
 			usedBefore := sub.AmountUsed
 			if sub.AmountTotal > 0 {
-				remain := sub.AmountTotal - usedBefore
+				// Parked refunds are spendable: they were subtracted from the
+				// balance of a period that has since been reset.
+				remain := sub.AmountTotal - usedBefore + sub.RefundCarryOver
 				if remain < amount {
 					continue
 				}
@@ -1380,7 +1391,16 @@ func PreConsumeUserSubscription(requestId string, userId int, modelName string, 
 				}
 				return err
 			}
-			sub.AmountUsed += amount
+			// Spend any parked refund first so the request settles against the
+			// net amount. PreConsumed stays the full `amount`, which is what
+			// the settlement delta is computed against.
+			charged := amount
+			if sub.RefundCarryOver > 0 {
+				applied := min(charged, sub.RefundCarryOver)
+				sub.RefundCarryOver -= applied
+				charged -= applied
+			}
+			sub.AmountUsed += charged
 			if err := tx.Save(&sub).Error; err != nil {
 				return err
 			}
@@ -1507,7 +1527,13 @@ func GetSubscriptionPlanInfoByUserSubscriptionId(userSubscriptionId int) (*Subsc
 	return info, nil
 }
 
-// Update subscription used amount by delta (positive consume more, negative refund).
+// Update subscription used amount by delta (positive consume more, negative
+// refund).
+//
+// A refund that outruns the current usage — the normal shape when the period
+// boundary fell between a request's pre-consume and its settlement — is not
+// clamped away: the surplus is parked in RefundCarryOver and applied to the
+// next consume, so a cross-reset refund still reaches the user.
 func PostConsumeUserSubscriptionDelta(userSubscriptionId int, delta int64) error {
 	if userSubscriptionId <= 0 {
 		return errors.New("invalid userSubscriptionId")
@@ -1522,7 +1548,16 @@ func PostConsumeUserSubscriptionDelta(userSubscriptionId int, delta int64) error
 			First(&sub).Error; err != nil {
 			return err
 		}
-		newUsed := max(sub.AmountUsed+delta, 0)
+		newUsed := sub.AmountUsed + delta
+		if newUsed < 0 {
+			sub.RefundCarryOver += -newUsed
+			newUsed = 0
+		}
+		if sub.RefundCarryOver > 0 && newUsed > 0 {
+			applied := min(newUsed, sub.RefundCarryOver)
+			newUsed -= applied
+			sub.RefundCarryOver -= applied
+		}
 		if sub.AmountTotal > 0 && newUsed > sub.AmountTotal {
 			return fmt.Errorf("subscription used exceeds total, used=%d total=%d", newUsed, sub.AmountTotal)
 		}

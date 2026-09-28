@@ -20,28 +20,89 @@ import { useQuery } from '@tanstack/react-query'
 import { FileWarning } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
+import { DocsExportFrame } from '@/components/docs-export-frame'
 import { PublicLayout } from '@/components/layout'
 import { RichContent } from '@/components/rich-content'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
+import { useStatus } from '@/hooks/use-status'
 import { isHttpUrl, isLikelyHtml } from '@/lib/content-format'
+import {
+  isBundledDocsHref,
+  legalDocsPathFor,
+  resolveDocsHref,
+  resolveDocsLocaleCode,
+} from '@/lib/docs-link'
 
 import type { LegalDocumentResponse } from './types'
 
 type LegalDocumentProps = {
   title: string
   queryKey: string
+  /**
+   * Id of the same document in the docs site — the `content/nav.json`
+   * `legal` entry and the `content/legal/<lang>/<doc>.md` filename
+   * (`user-agreement`, `privacy-policy`, `recharge-agreement`).
+   *
+   * Locale-neutral by design: it is what lets a language switch land
+   * on the same document in the other language.
+   */
+  docsDocId: string
   fetchDocument: () => Promise<LegalDocumentResponse>
   emptyMessage: string
 }
 
+/**
+ * Public page for one legal document.
+ *
+ * The document is rendered as a page of the bundled docs site, framed
+ * under the SPA's own public shell: the same sidebar and table of
+ * contents as the rest of the documentation, in whichever language the
+ * reader has the app set to.
+ *
+ * The docs site is the only place these texts are authored per
+ * language (`docs-web/content/legal/<lang>/<doc>.md`). The copy held in
+ * System Settings — what `/api/<doc>` serves — is a single text with no
+ * translation, so rendering that here showed the same language whatever
+ * the reader picked, and switching language appeared to do nothing to
+ * the document.
+ *
+ * The frame is only used while the bundled docs site is the target: an
+ * admin who repoints `docs_link` at an external knowledge base leaves
+ * the SPA with nothing to frame, so the configured text (or the link to
+ * that knowledge base) is shown instead of a dead frame.
+ */
 export function LegalDocument({
+  docsDocId,
+  title,
+  ...rest
+}: LegalDocumentProps) {
+  const { i18n } = useTranslation()
+  const { status } = useStatus()
+
+  if (isBundledDocsHref(resolveDocsHref(status?.docs_link))) {
+    return (
+      <DocsExportFrame
+        src={legalDocsPathFor(resolveDocsLocaleCode(i18n.language), docsDocId)}
+        title={title}
+      />
+    )
+  }
+
+  return <ConfiguredLegalDocument title={title} {...rest} />
+}
+
+/**
+ * The document exactly as configured in System Settings → Site: a
+ * Markdown/HTML body, or a full URL the reader is sent to.
+ */
+function ConfiguredLegalDocument({
   title,
   queryKey,
   fetchDocument,
   emptyMessage,
-}: LegalDocumentProps) {
+}: Omit<LegalDocumentProps, 'docsDocId'>) {
   const { t } = useTranslation()
   const { data, isLoading } = useQuery({
     queryKey: [queryKey],
