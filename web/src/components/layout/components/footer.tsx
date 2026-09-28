@@ -16,7 +16,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@Uter.ai.com
 */
-import { Link } from '@tanstack/react-router'
+import { Link, useNavigate } from '@tanstack/react-router'
 import { Fragment, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -85,57 +85,91 @@ function FooterLinkItem(props: { link: FooterLink }) {
   )
 }
 
+/**
+ * In-app route of each legal document.
+ *
+ * A footer legal link has to land where the top nav's 文档 link lands: on the
+ * SPA route, which frames the exported docs page under the app's own
+ * `PublicHeader`. Sending the reader to the exported page directly
+ * (`/docs/<locale>/legal/<doc>/`) leaves the app behind and hands the top of
+ * the screen to the docs site's own header — a bar that collapses into a
+ * centred floating capsule once the page scrolls, instead of the app's
+ * full-width solid one. The same document then appeared under two different
+ * chromes depending on where it was opened from.
+ */
+const LEGAL_ROUTES = {
+  'user-agreement': '/user-agreement',
+  'privacy-policy': '/privacy-policy',
+  'recharge-agreement': '/recharge-agreement',
+} as const
+
+type LegalDocId = keyof typeof LEGAL_ROUTES
+
 // Renders User Agreement / Privacy Policy / Recharge Agreement links inline
 // with the parent's copyright row when they are configured in System
 // Settings → Site. Emits fragmented siblings so the parent flex container's
 // gap controls spacing.
 //
-// The links point at the bundled docs site — `/docs/<locale>/legal/<doc>/` —
-// rather than at the SPA routes that frame it. Those are the real,
-// statically-exported pages: a crawler or anyone the reader shares the link
-// with gets a page that resolves on its own, on the same domain, in the
-// language the reader had selected. The SPA routes stay reachable (they are
-// what the sign-up consent links to) but they are a client-rendered shell, so
-// they are the wrong thing to hand outward.
+// Each link keeps a real, independently resolvable destination as its `href`
+// — the bundled docs page, `/docs/<locale>/legal/<doc>/` — but a plain left
+// click is routed in-app through {@link LEGAL_ROUTES}, so the reader stays
+// under the app shell. The `href` is what a crawler, a link unfurler or
+// anyone the reader shares the URL with follows; modified clicks (middle
+// click, ⌘/Ctrl-click, "open in new tab") are left to the browser and open
+// that standalone page.
 //
 // When an admin repoints `docs_link` at an external knowledge base there is no
 // bundled page to link to and the SPA routes fall back to the configured text,
-// so the footer follows them there instead of sending the reader into a docs
-// page that is no longer ours.
+// so the `href` becomes the SPA route itself.
 function LegalLinks(props: { leadingSeparator?: boolean }) {
   const { t, i18n } = useTranslation()
   const { status } = useStatus()
+  const navigate = useNavigate()
   const docsLocale = resolveDocsLocaleCode(i18n.language)
   const useDocsPages = isBundledDocsHref(resolveDocsHref(status?.docs_link))
-  const items: { key: string; label: string; href: string }[] = []
+  const items: { id: LegalDocId; label: string; href: string }[] = []
   if (status?.user_agreement_enabled) {
     items.push({
-      key: 'user-agreement',
+      id: 'user-agreement',
       label: t('User Agreement'),
       href: legalPageHref('user-agreement', useDocsPages, docsLocale),
     })
   }
   if (status?.privacy_policy_enabled) {
     items.push({
-      key: 'privacy-policy',
+      id: 'privacy-policy',
       label: t('Privacy Policy'),
       href: legalPageHref('privacy-policy', useDocsPages, docsLocale),
     })
   }
   if (status?.recharge_agreement_enabled) {
     items.push({
-      key: 'recharge-agreement',
+      id: 'recharge-agreement',
       label: t('Recharge Agreement'),
       href: legalPageHref('recharge-agreement', useDocsPages, docsLocale),
     })
   }
+
+  // Modified clicks and non-primary buttons stay with the browser, so the
+  // standalone docs page remains one keystroke away; everything else is
+  // handled by the router and never reloads the document.
+  const openInApp = (
+    event: React.MouseEvent<HTMLAnchorElement>,
+    id: LegalDocId
+  ) => {
+    if (event.defaultPrevented || event.button !== 0) return
+    if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return
+    event.preventDefault()
+    navigate({ to: LEGAL_ROUTES[id] })
+  }
+
   if (items.length === 0) {
     return null
   }
   return (
     <>
       {items.map((item, index) => (
-        <Fragment key={item.key}>
+        <Fragment key={item.id}>
           {(props.leadingSeparator || index > 0) && (
             <span aria-hidden='true' className='text-muted-foreground/30'>
               ·
@@ -143,6 +177,7 @@ function LegalLinks(props: { leadingSeparator?: boolean }) {
           )}
           <a
             href={item.href}
+            onClick={(event) => openInApp(event, item.id)}
             className='hover:text-foreground transition-colors duration-200'
           >
             {item.label}
@@ -154,11 +189,13 @@ function LegalLinks(props: { leadingSeparator?: boolean }) {
 }
 
 /**
- * Destination of one legal link: the docs page for the current locale, or the
- * SPA route when the bundled docs site is not the configured docs target.
+ * `href` of one legal link: the bundled docs page for the current locale, or
+ * the SPA route when the bundled docs site is not the configured docs target.
+ * This is the link's outward-facing destination — the page a click is routed
+ * away from, never the one it lands on.
  */
 function legalPageHref(
-  docId: string,
+  docId: LegalDocId,
   useDocsPages: boolean,
   docsLocale: DocsLocaleCode
 ): string {
