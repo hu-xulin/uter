@@ -18,12 +18,16 @@ For commercial licensing, please contact support@Uter.ai.com
 */
 import { Link, createFileRoute, redirect } from '@tanstack/react-router'
 import { Loader2, MessageCircleWarning } from 'lucide-react'
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
-import { useActiveChatKey } from '@/features/chat/hooks/use-active-chat-key'
+import { ChatKeyDialog } from '@/features/chat/components/chat-key-dialog'
+import {
+  useActiveChatKey,
+  NoActiveChatKeyError,
+} from '@/features/chat/hooks/use-active-chat-key'
 import { useChatPresets } from '@/features/chat/hooks/use-chat-presets'
 import {
   chatLinkRequiresApiKey,
@@ -50,6 +54,7 @@ function ChatRouteComponent() {
   }, [chatId, chatPresets])
 
   const isWebLink = preset?.type === 'web'
+  const [keyDialogOpen, setKeyDialogOpen] = useState(false)
 
   const requiresActiveKey = useMemo(() => {
     if (!preset || !isWebLink) return false
@@ -119,6 +124,27 @@ function ChatRouteComponent() {
         <p className='text-muted-foreground text-sm'>
           {t('Preparing your chat link…')}
         </p>
+      </div>
+    )
+  }
+
+  // No enabled key yet: offer to create one instead of dead-ending.
+  if (requiresActiveKey && error instanceof NoActiveChatKeyError) {
+    return (
+      <div className='flex h-full flex-col items-center justify-center gap-4 p-6 text-center'>
+        <MessageCircleWarning className='text-muted-foreground h-12 w-12' />
+        <div className='space-y-1'>
+          <h2 className='text-lg font-semibold'>{t('Unable to open chat')}</h2>
+          <p className='text-muted-foreground'>
+            {t(
+              'This client needs an API key to be filled in automatically. Create one now?'
+            )}
+          </p>
+        </div>
+        <Button onClick={() => setKeyDialogOpen(true)}>
+          {t('Create and continue')}
+        </Button>
+        <ChatKeyDialog open={keyDialogOpen} onOpenChange={setKeyDialogOpen} />
       </div>
     )
   }

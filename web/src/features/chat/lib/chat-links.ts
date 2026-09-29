@@ -46,6 +46,8 @@ export type ActiveApiKey = {
 }
 
 const HTTP_REGEX = /^https?:\/\//i
+const SCHEME_REGEX = /^[a-z][a-z0-9+.-]*:/i
+const API_VERSION_SUFFIX = '/v1'
 
 function toBase64(value: string) {
   if (typeof window !== 'undefined' && typeof window.btoa === 'function') {
@@ -150,6 +152,52 @@ function normalizeApiKey(apiKey: string): string {
   return trimmed.startsWith('sk-') ? trimmed : `sk-${trimmed}`
 }
 
+/**
+ * Chat clients speak the OpenAI-compatible API, which is served under `/v1`.
+ * `serverAddress` is the site root (it is also used to build OAuth callbacks
+ * and passkey origins), so it must never be handed to a client verbatim.
+ */
+export function toApiBaseUrl(serverAddress: string): string {
+  const base = (serverAddress ?? '').trim().replace(/\/+$/, '')
+  if (!base) return ''
+  return base.endsWith(API_VERSION_SUFFIX)
+    ? base
+    : `${base}${API_VERSION_SUFFIX}`
+}
+
+/**
+ * A preset template is only launchable when it carries a scheme. A bare word
+ * such as `ccswitch` would otherwise be resolved against the current origin
+ * and land on a 404 page instead of reaching the client.
+ */
+export function isLaunchableChatUrl(url: string): boolean {
+  return SCHEME_REGEX.test(url)
+}
+
+/**
+ * `window.open()` cannot hand a custom scheme to the operating system: the
+ * browser opens a real tab at that URL and renders ERR_UNKNOWN_URL_SCHEME (or
+ * nothing at all). Only a top-level navigation triggers the external
+ * application handoff, so custom protocols are dispatched through a synthetic
+ * link click rather than `open()`.
+ */
+export function launchChatUrl(url: string): void {
+  if (typeof window === 'undefined' || !url) return
+
+  if (HTTP_REGEX.test(url)) {
+    window.open(url, '_blank', 'noopener,noreferrer')
+    return
+  }
+
+  const anchor = document.createElement('a')
+  anchor.href = url
+  anchor.rel = 'noopener'
+  anchor.style.display = 'none'
+  document.body.appendChild(anchor)
+  anchor.click()
+  anchor.remove()
+}
+
 export function resolveChatUrl({
   template,
   apiKey,
@@ -157,13 +205,16 @@ export function resolveChatUrl({
 }: ResolveChatUrlParams): string {
   let url = template
   const safeServerAddress = serverAddress || ''
+  const apiBaseUrl = toApiBaseUrl(safeServerAddress)
 
   const safeApiKey = normalizeApiKey(apiKey || '')
 
   if (url.includes('{cherryConfig}')) {
     const payload = {
       id: 'uter',
-      baseUrl: safeServerAddress,
+      name: 'Uter',
+      type: 'openai',
+      baseUrl: apiBaseUrl,
       apiKey: safeApiKey,
     }
     const encoded = encodeURIComponent(toBase64(JSON.stringify(payload)))
@@ -173,7 +224,7 @@ export function resolveChatUrl({
   if (url.includes('{aionuiConfig}')) {
     const payload = {
       platform: 'uter',
-      baseUrl: safeServerAddress,
+      baseUrl: apiBaseUrl,
       apiKey: safeApiKey,
     }
     const encoded = encodeURIComponent(toBase64(JSON.stringify(payload)))
@@ -183,7 +234,7 @@ export function resolveChatUrl({
   if (url.includes('{deepchatConfig}')) {
     const payload = {
       id: 'uter',
-      baseUrl: safeServerAddress,
+      baseUrl: apiBaseUrl,
       apiKey: safeApiKey,
     }
     const encoded = encodeURIComponent(toBase64(JSON.stringify(payload)))
@@ -193,11 +244,15 @@ export function resolveChatUrl({
   if (url.includes('{aqbotConfig}')) {
     const query = [
       `name=${encodeURIComponent('Uter')}`,
-      `baseurl=${encodeURIComponent(safeServerAddress)}`,
+      `baseurl=${encodeURIComponent(apiBaseUrl)}`,
       `apikey=${encodeURIComponent(safeApiKey)}`,
       'type=openai',
     ].join('&')
     return replaceToken(url, '{aqbotConfig}', query)
+  }
+
+  if (apiBaseUrl) {
+    url = replaceToken(url, '{apiBase}', encodeURIComponent(apiBaseUrl))
   }
 
   if (safeServerAddress) {
