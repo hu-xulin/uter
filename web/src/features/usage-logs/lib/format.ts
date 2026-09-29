@@ -27,6 +27,7 @@ import {
 
 import type { UsageLog } from '../data/schema'
 import type { LogOtherData } from '../types'
+import { formatUserId } from '@/lib/format'
 import { buildQuotaAuditOperation } from './quota-audit-operation'
 
 export { normalizeTierLabel }
@@ -600,5 +601,16 @@ export function renderAuditContent(
     return `${quotaOperation.summary} · ${quotaOperation.description}`
   }
   const params = { ...op.params }
+  // 用户类审计的占位符 {{id}} 与订阅重置的 {{target_user_id}} 是用户 ID，
+  // 渲染为对外编号 uter…，渠道类 {{id}} 保持原样（渠道 ID）。
+  if (op.action.startsWith('user.') && typeof params.id === 'number') {
+    params.id = formatUserId(params.id)
+  }
+  if (
+    op.action === 'subscription.user_plan_reset' &&
+    typeof params.target_user_id === 'number'
+  ) {
+    params.target_user_id = formatUserId(params.target_user_id)
+  }
   return t(template, params)
 }

@@ -50,6 +50,7 @@ import type {
   OrgRole,
   Organization,
 } from './types'
+import { formatUserId } from '@/lib/format'
 
 const ROLE_LABEL_KEY: Record<OrgRole, string> = {
   '': 'Member',
@@ -70,6 +71,9 @@ export function OrganizationPage() {
   const [loading, setLoading] = useState(true)
   const [org, setOrg] = useState<Organization | null>(null)
   const [myRole, setMyRole] = useState<OrgRole>('')
+  const [canViewBudget, setCanViewBudget] = useState(false)
+  const [mySubQuota, setMySubQuota] = useState(0)
+  const [myUsedQuota, setMyUsedQuota] = useState(0)
   const [stats, setStats] = useState<{
     used_quota: number
     remaining: number
@@ -107,7 +111,14 @@ export function OrganizationPage() {
         if (res.success && res.data?.organization) {
           setOrg(res.data.organization)
           setMyRole(res.data.role ?? 'member')
-          await loadAll(res.data.organization.id, 1)
+          setCanViewBudget(res.data.can_view_budget ?? false)
+          setMySubQuota(res.data.my_sub_quota_limit ?? 0)
+          setMyUsedQuota(res.data.my_used_quota ?? 0)
+          // 普通成员（can_view_budget=false）不加载组织总预算与成员列表，
+          // 仅查看自己被分配的额度（MyQuotaCard）。
+          if (res.data.can_view_budget) {
+            await loadAll(res.data.organization.id, 1)
+          }
         } else {
           setOrg(null)
         }
@@ -140,59 +151,69 @@ export function OrganizationPage() {
       </SectionPageLayout.Title>
       <SectionPageLayout.Content>
         <div className='flex flex-col gap-6'>
-          <OrgOverviewCard
-            org={org}
-            stats={stats}
-            memberCount={total}
-            isOwner={isOwner}
-            onUpdated={(updated) => setOrg(updated)}
-          />
-          <AddMemberCard
-            orgId={org.id}
-            canManage={canManage}
-            onAdded={() => loadAll(org.id, 1)}
-          />
-          <MembersCard
-            org={org}
-            members={members}
-            total={total}
-            page={page}
-            isOwner={isOwner}
-            canManage={canManage}
-            onRoleChange={async (uid, role) => {
-              const r = await updateOrganizationMember(org.id, uid, {
-                org_role: role,
-              })
-              if (r.success) {
-                toast.success(t('Settings updated'))
-                await loadAll(org.id, page)
-              } else {
-                toast.error(r.message || t('Failed to update'))
-              }
-            }}
-            onSubQuotaChange={async (uid, subQuota) => {
-              const r = await updateOrganizationMember(org.id, uid, {
-                sub_quota_limit: subQuota,
-              })
-              if (r.success) {
-                toast.success(t('Sub-quota updated'))
-                await loadAll(org.id, page)
-              } else {
-                toast.error(r.message || t('Failed to update'))
-              }
-            }}
-            onRemove={async (uid) => {
-              if (!window.confirm(t('Confirm remove this member?'))) return
-              const r = await removeOrganizationMember(org.id, uid)
-              if (r.success) {
-                toast.success(t('Member removed'))
-                await loadAll(org.id, page)
-              } else {
-                toast.error(r.message || t('Failed to remove'))
-              }
-            }}
-            onPageChange={(p) => loadAll(org.id, p)}
-          />
+          {!canViewBudget ? (
+            <MyQuotaCard
+              org={org}
+              mySubQuota={mySubQuota}
+              myUsedQuota={myUsedQuota}
+            />
+          ) : (
+            <>
+              <OrgOverviewCard
+                org={org}
+                stats={stats}
+                memberCount={total}
+                isOwner={isOwner}
+                onUpdated={(updated) => setOrg(updated)}
+              />
+              <AddMemberCard
+                orgId={org.id}
+                canManage={canManage}
+                onAdded={() => loadAll(org.id, 1)}
+              />
+              <MembersCard
+                org={org}
+                members={members}
+                total={total}
+                page={page}
+                isOwner={isOwner}
+                canManage={canManage}
+                onRoleChange={async (uid, role) => {
+                  const r = await updateOrganizationMember(org.id, uid, {
+                    org_role: role,
+                  })
+                  if (r.success) {
+                    toast.success(t('Settings updated'))
+                    await loadAll(org.id, page)
+                  } else {
+                    toast.error(r.message || t('Failed to update'))
+                  }
+                }}
+                onSubQuotaChange={async (uid, subQuota) => {
+                  const r = await updateOrganizationMember(org.id, uid, {
+                    sub_quota_limit: subQuota,
+                  })
+                  if (r.success) {
+                    toast.success(t('Sub-quota updated'))
+                    await loadAll(org.id, page)
+                  } else {
+                    toast.error(r.message || t('Failed to update'))
+                  }
+                }}
+                onRemove={async (uid) => {
+                  if (!window.confirm(t('Confirm remove this member?'))) return
+                  const r = await removeOrganizationMember(org.id, uid)
+                  if (r.success) {
+                    toast.success(t('Member removed'))
+                    await loadAll(org.id, page)
+                  } else {
+                    toast.error(r.message || t('Failed to remove'))
+                  }
+                }}
+                onPageChange={(p) => loadAll(org.id, p)}
+              />
+            </>
+          )}
         </div>
       </SectionPageLayout.Content>
     </SectionPageLayout>
@@ -278,6 +299,58 @@ function CreateOrganizationCard({ onCreated }: { onCreated: () => void }) {
         </Card>
       </SectionPageLayout.Content>
     </SectionPageLayout>
+  )
+}
+
+// ----------------------------------------------------------------------------
+
+function MyQuotaCard({
+  org,
+  mySubQuota,
+  myUsedQuota,
+}: {
+  org: Organization
+  mySubQuota: number
+  myUsedQuota: number
+}) {
+  const { t } = useTranslation()
+  const used = myUsedQuota
+  const limit = mySubQuota
+  const pct = limit > 0 ? Math.min(100, (used / limit) * 100) : 0
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>{org.name}</CardTitle>
+        <CardDescription>
+          {t(
+            'You belong to this organization. Your consumption is billed to the organization budget; you can only view your own data.'
+          )}
+        </CardDescription>
+      </CardHeader>
+      <CardContent className='flex flex-col gap-3'>
+        <div className='grid grid-cols-1 gap-3 sm:grid-cols-2'>
+          <div className='flex flex-col gap-1'>
+            <span className='text-sm text-muted-foreground'>
+              {t('Your Quota Limit')}
+            </span>
+            <span className='text-lg font-semibold'>
+              {limit > 0 ? fmtQuota(limit) : t('Unlimited')}
+            </span>
+          </div>
+          <div className='flex flex-col gap-1'>
+            <span className='text-sm text-muted-foreground'>
+              {t('Your Used Quota')}
+            </span>
+            <span className='text-lg font-semibold'>{fmtQuota(used)}</span>
+          </div>
+        </div>
+        {limit > 0 && (
+          <div className='h-2 w-full overflow-hidden rounded-full bg-muted'>
+            <div className='h-full bg-primary' style={{ width: `${pct}%` }} />
+          </div>
+        )}
+      </CardContent>
+    </Card>
   )
 }
 
@@ -408,7 +481,7 @@ function AddMemberCard({
   const { t } = useTranslation()
   const [userIds, setUserIds] = useState('')
   const [subQuota, setSubQuota] = useState('')
-  const [deptId, setDeptId] = useState('')
+  const [deptName, setDeptName] = useState('')
   const [submitting, setSubmitting] = useState(false)
 
   if (!canManage) return null
@@ -427,7 +500,7 @@ function AddMemberCard({
       const r = await addOrganizationMembers(orgId, {
         user_ids: ids,
         sub_quota_limit: subQuota ? Number(subQuota) : 0,
-        department_id: deptId ? Number(deptId) : 0,
+        department_name: deptName || undefined,
       })
       if (r.success) {
         toast.success(t('Member added'))
@@ -467,12 +540,11 @@ function AddMemberCard({
           />
         </div>
         <div className='flex flex-col gap-2'>
-          <Label>{t('Department ID')}</Label>
+          <Label>{t('Department')}</Label>
           <Input
-            type='number'
-            value={deptId}
-            onChange={(e) => setDeptId(e.target.value)}
-            placeholder='0'
+            value={deptName}
+            onChange={(e) => setDeptName(e.target.value)}
+            placeholder={t('Department name')}
           />
         </div>
         <div className='flex items-end'>
@@ -527,8 +599,10 @@ function MembersCard({
           <table className='w-full text-sm'>
             <thead>
               <tr className='border-b text-left text-muted-foreground'>
+                <th className='px-2 py-2'>{t('User ID')}</th>
                 <th className='px-2 py-2'>{t('Username')}</th>
                 <th className='px-2 py-2'>{t('Display Name')}</th>
+                <th className='px-2 py-2'>{t('Department')}</th>
                 <th className='px-2 py-2 text-right'>{t('Used Quota')}</th>
                 <th className='px-2 py-2 text-right'>{t('Sub-quota Limit')}</th>
                 <th className='px-2 py-2'>{t('Role')}</th>
@@ -538,8 +612,12 @@ function MembersCard({
             <tbody>
               {members.map((m) => (
                 <tr key={m.id} className='border-b'>
+                  <td className='px-2 py-2 font-mono tabular-nums text-muted-foreground'>
+                    {formatUserId(m.id)}
+                  </td>
                   <td className='px-2 py-2 font-medium'>{m.username}</td>
                   <td className='px-2 py-2'>{m.display_name || '-'}</td>
+                  <td className='px-2 py-2'>{m.department_name || '-'}</td>
                   <td className='px-2 py-2 text-right'>
                     {fmtQuota(m.used_quota)}
                   </td>
@@ -599,7 +677,7 @@ function MembersCard({
               {members.length === 0 && (
                 <tr>
                   <td
-                    colSpan={6}
+                    colSpan={7}
                     className='px-2 py-6 text-center text-muted-foreground'
                   >
                     {t('No organization yet')}

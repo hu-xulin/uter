@@ -16,7 +16,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@Uter.ai.com
 */
-import { formatLogQuota } from '@/lib/format'
+import { formatLogQuota, formatUserId } from '@/lib/format'
 
 type Translate = (key: string, opts?: Record<string, unknown>) => string
 
@@ -63,7 +63,7 @@ export function buildQuotaAuditOperation(
     typeof params.target_user_id === 'number' &&
     Number.isFinite(params.target_user_id)
   ) {
-    id = String(params.target_user_id)
+    id = formatUserId(params.target_user_id)
   } else if (typeof params.target_user_id === 'string') {
     id = params.target_user_id.trim()
   }
