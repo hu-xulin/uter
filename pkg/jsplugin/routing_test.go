@@ -82,7 +82,33 @@ func TestRegistryIndexesSharedEndpointCandidatesForDistinctLegacyProviders(t *te
 func TestSupportsRegisteredHostProtocols(t *testing.T) {
 	assert.True(t, SupportsHostProtocol("openai_responses"))
 	assert.True(t, SupportsHostProtocol("openai_video"))
+	// Regression guard: the uter fork had dropped openai_image from the host
+	// protocol table, which blocked installing marketplace plugins (e.g.
+	// Alibaba Bailian) that claim it. See routing.go hostProtocols.
+	assert.True(t, SupportsHostProtocol("openai_image"))
 	assert.False(t, SupportsHostProtocol("plugin_owned_wire"))
+}
+
+// TestOpenAIImageProtocolClaimWithoutSupportsCompiles mirrors how the
+// Alibaba Bailian marketplace plugin declares openai_image: a claim with a
+// models list but no `supports` field. The protocol defines no modes, so the
+// claim is valid without supports and must compile.
+func TestOpenAIImageProtocolClaimWithoutSupportsCompiles(t *testing.T) {
+	plugin, err := CompilePlugin(routingTestPluginSource(
+		"image-claim",
+		0,
+		`["image-model-a", "image-model-b"]`,
+		`protocols: [{name: "openai_image", models: ["image-model-a", "image-model-b"]}],`,
+		`export const protocols = {openai_image: {
+			decodeRequest: function(ctx) { return {kind: "submit", model: ctx.model, requestBody: ctx.body.value}; },
+			render: function(ctx, task) { return task; }
+		}};`,
+	), Options{})
+	require.NoError(t, err)
+	assert.Equal(t, "image-claim", plugin.Meta.Key)
+	definition, ok := HostProtocol("openai_image")
+	require.True(t, ok)
+	assert.Len(t, definition.Operations, 2)
 }
 
 func TestLookupHostProtocolOperationExcludesRetrieveWithoutModelField(t *testing.T) {
