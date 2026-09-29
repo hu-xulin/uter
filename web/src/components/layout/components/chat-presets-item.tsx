@@ -45,6 +45,7 @@ import { ChatKeyDialog } from '@/features/chat/components/chat-key-dialog'
 import {
   fetchActiveChatKey,
   NoActiveChatKeyError,
+  useActiveChatKey,
 } from '@/features/chat/hooks/use-active-chat-key'
 import { useChatPresets } from '@/features/chat/hooks/use-chat-presets'
 import {
@@ -162,6 +163,11 @@ export function ChatPresetsItem({ item }: { item: NavChatPresets }) {
   const { t } = useTranslation()
   const { chatPresets, serverAddress } = useChatPresets()
   const { state, isMobile, setOpenMobile } = useSidebar()
+  // Prefetch the active key so the custom-protocol navigation can happen
+  // synchronously inside the click gesture. Navigating after an `await`
+  // loses the transient user activation and Chrome silently blocks the
+  // deep link, which is why every client preset appeared to do nothing.
+  const { data: activeChatKey } = useActiveChatKey(true)
   const href = useLocation({ select: (location) => location.href })
   const [loadingPresetId, setLoadingPresetId] = useState<string | null>(null)
   const loadingPresetIdRef = useRef<string | null>(null)
@@ -202,6 +208,18 @@ export function ChatPresetsItem({ item }: { item: NavChatPresets }) {
         return
       }
 
+      // Key already cached → resolve + launch synchronously so the deep link
+      // fires inside the user gesture. This is the common path once the
+      // sidebar has mounted and the key query has settled.
+      if (activeChatKey) {
+        openPreset(preset, activeChatKey)
+        return
+      }
+
+      // No cached key yet: fetch it. The navigation that follows an `await`
+      // may be blocked by the browser for custom protocols; the only keyless
+      // outcome is the create-key dialog, whose own button click is a fresh
+      // gesture and therefore navigates fine.
       if (loadingPresetIdRef.current) {
         toast.info(t('Preparing your chat link, please try again in a moment.'))
         return
@@ -228,7 +246,7 @@ export function ChatPresetsItem({ item }: { item: NavChatPresets }) {
         setLoadingPresetId(null)
       }
     },
-    [openPreset, t]
+    [openPreset, activeChatKey, t]
   )
 
   const handleKeyCreated = useCallback(
