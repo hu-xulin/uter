@@ -17,12 +17,17 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@Uter.ai.com
 */
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { Loader2 } from 'lucide-react'
-import { useEffect, useMemo } from 'react'
+import { Loader2, MessageCircleWarning } from 'lucide-react'
+import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 
-import { useActiveChatKey } from '@/features/chat/hooks/use-active-chat-key'
+import { Button } from '@/components/ui/button'
+import { ChatKeyDialog } from '@/features/chat/components/chat-key-dialog'
+import {
+  useActiveChatKey,
+  NoActiveChatKeyError,
+} from '@/features/chat/hooks/use-active-chat-key'
 import { useChatPresets } from '@/features/chat/hooks/use-chat-presets'
 import { resolveChatUrl } from '@/features/chat/lib/chat-links'
 import { handleServerError } from '@/lib/handle-server-error'
@@ -35,6 +40,7 @@ function Chat2LinkPage() {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const { chatPresets, serverAddress } = useChatPresets()
+  const [keyDialogOpen, setKeyDialogOpen] = useState(false)
 
   const firstWebPreset = useMemo(
     () => chatPresets.find((p) => p.type === 'web'),
@@ -54,6 +60,9 @@ function Chat2LinkPage() {
     }
 
     if (activeKey === undefined && !keyError) return
+
+    // No enabled key: keep the user here so they can create one and continue.
+    if (keyError instanceof NoActiveChatKeyError) return
 
     if (keyError || !activeKey) {
       const message =
@@ -83,6 +92,26 @@ function Chat2LinkPage() {
     navigate,
     t,
   ])
+
+  if (keyError instanceof NoActiveChatKeyError) {
+    return (
+      <div className='flex h-full flex-col items-center justify-center gap-4 p-6 text-center'>
+        <MessageCircleWarning className='text-muted-foreground h-12 w-12' />
+        <div className='space-y-1'>
+          <h2 className='text-lg font-semibold'>{t('Unable to open chat')}</h2>
+          <p className='text-muted-foreground'>
+            {t(
+              'This client needs an API key to be filled in automatically. Create one now?'
+            )}
+          </p>
+        </div>
+        <Button onClick={() => setKeyDialogOpen(true)}>
+          {t('Create and continue')}
+        </Button>
+        <ChatKeyDialog open={keyDialogOpen} onOpenChange={setKeyDialogOpen} />
+      </div>
+    )
+  }
 
   return (
     <div className='flex h-full flex-col items-center justify-center gap-3'>
