@@ -23,12 +23,12 @@ type FlowQuotaData struct {
 	Quota       int    `json:"quota" gorm:"column:quota"`
 }
 
-func GetFlowQuotaData(startTime int64, endTime int64, username string, userID int, role int) ([]*FlowQuotaData, error) {
+func GetFlowQuotaData(startTime int64, endTime int64, username string, userID int, role int, orgUsernames ...string) ([]*FlowQuotaData, error) {
 	switch {
 	case role >= common.RoleRootUser:
-		return getRootFlowQuotaData(startTime, endTime, username)
+		return getRootFlowQuotaData(startTime, endTime, username, orgUsernames...)
 	case role >= common.RoleAdminUser:
-		return getAdminFlowQuotaData(startTime, endTime, username)
+		return getAdminFlowQuotaData(startTime, endTime, username, orgUsernames...)
 	default:
 		return getSelfFlowQuotaData(startTime, endTime, userID)
 	}
@@ -55,12 +55,15 @@ func getSelfFlowQuotaData(startTime int64, endTime int64, userID int) ([]*FlowQu
 	return rows, fillFlowTokenNames(rows)
 }
 
-func getAdminFlowQuotaData(startTime int64, endTime int64, username string) ([]*FlowQuotaData, error) {
+func getAdminFlowQuotaData(startTime int64, endTime int64, username string, orgUsernames ...string) ([]*FlowQuotaData, error) {
 	rows := make([]*FlowQuotaData, 0)
 	query := flowQuotaBaseQuery(startTime, endTime).
 		Select("user_id, username, use_group, model_name, channel_id, sum(count) as count, sum(quota) as quota, sum(token_used) as token_used")
 	if username != "" {
 		query = query.Where("username = ?", username)
+	}
+	if len(orgUsernames) > 0 {
+		query = query.Where("username IN ?", orgUsernames)
 	}
 	err := query.
 		Group("user_id, username, use_group, model_name, channel_id").
@@ -72,12 +75,15 @@ func getAdminFlowQuotaData(startTime int64, endTime int64, username string) ([]*
 	return rows, fillFlowChannelNames(rows)
 }
 
-func getRootFlowQuotaData(startTime int64, endTime int64, username string) ([]*FlowQuotaData, error) {
+func getRootFlowQuotaData(startTime int64, endTime int64, username string, orgUsernames ...string) ([]*FlowQuotaData, error) {
 	rows := make([]*FlowQuotaData, 0)
 	query := flowQuotaBaseQuery(startTime, endTime).
 		Select("user_id, username, node_name, token_id, use_group, model_name, channel_id, sum(count) as count, sum(quota) as quota, sum(token_used) as token_used")
 	if username != "" {
 		query = query.Where("username = ?", username)
+	}
+	if len(orgUsernames) > 0 {
+		query = query.Where("username IN ?", orgUsernames)
 	}
 	err := query.
 		Group("user_id, username, node_name, token_id, use_group, model_name, channel_id").

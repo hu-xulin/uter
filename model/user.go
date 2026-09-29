@@ -104,6 +104,10 @@ type User struct {
 	AffQuota             int                        `json:"aff_quota" gorm:"type:int;default:0;column:aff_quota"`           // 邀请剩余额度
 	AffHistoryQuota      int                        `json:"aff_history_quota" gorm:"type:int;default:0;column:aff_history"` // 邀请历史额度
 	InviterId            int                        `json:"inviter_id" gorm:"type:int;column:inviter_id;index"`
+	OrganizationId       int                        `json:"organization_id" gorm:"type:int;default:0;column:organization_id;index"` // 所属组织，0=平台直管
+	SubQuotaLimit        int64                      `json:"sub_quota_limit" gorm:"type:bigint;default:0;column:sub_quota_limit"`     // 员工子额度上限，0=不限(跟随组织总池)
+	DepartmentId         int                        `json:"department_id" gorm:"type:int;default:0;column:department_id;index"`       // 所属部门，0=未分部门
+	OrgRole              string                     `json:"org_role" gorm:"type:varchar(32);default:'';column:org_role"`             // 组织内角色：owner/admin/department_admin/member
 	DeletedAt            gorm.DeletedAt             `gorm:"index"`
 	LinuxDOId            string                     `json:"linux_do_id" gorm:"column:linux_do_id;index"`
 	Setting              string                     `json:"setting" gorm:"type:text;column:setting"`
@@ -122,8 +126,13 @@ func (user *User) ToBaseUser() *UserBase {
 		Quota:       user.Quota,
 		Status:      user.Status,
 		Role:        user.Role,
-		Username:    user.Username,
-		Setting:     user.Setting,
+		Username:        user.Username,
+		Setting:         user.Setting,
+		OrganizationId:  user.OrganizationId,
+		DepartmentId:    user.DepartmentId,
+		OrgRole:         user.OrgRole,
+		UsedQuota:       user.UsedQuota,
+		SubQuotaLimit:   user.SubQuotaLimit,
 		Email:       user.Email,
 		AuthVersion: user.AuthVersion,
 		CacheSchema: userCacheSchemaVersion,
@@ -415,7 +424,7 @@ func GetMaxUserId() int {
 	return user.Id
 }
 
-func GetAllUsers(pageInfo *common.PageInfo, sortOptions ...UserSortOptions) (users []*User, total int64, err error) {
+func GetAllUsers(orgId int, deptId int, pageInfo *common.PageInfo, sortOptions ...UserSortOptions) (users []*User, total int64, err error) {
 	// Start transaction
 	tx := DB.Begin()
 	if tx.Error != nil {
@@ -428,7 +437,16 @@ func GetAllUsers(pageInfo *common.PageInfo, sortOptions ...UserSortOptions) (use
 	}()
 
 	// Get total count within transaction
-	err = tx.Unscoped().Model(&User{}).Count(&total).Error
+	query := tx.Unscoped().Model(&User{})
+	if orgId > 0 {
+		// 组织范围管理员：仅看本组织（本部门）成员
+		query = query.Where("organization_id = ?", orgId)
+		if deptId > 0 {
+			query = query.Where("department_id = ?", deptId)
+		}
+	}
+	// orgId==0 表示平台管理员/Root：可见全部用户（含各组织成员），不加组织过滤
+	err = query.Count(&total).Error
 	if err != nil {
 		tx.Rollback()
 		return nil, 0, err
@@ -436,7 +454,7 @@ func GetAllUsers(pageInfo *common.PageInfo, sortOptions ...UserSortOptions) (use
 
 	// Get paginated users within same transaction
 	order := resolveUserSortOptions(sortOptions)
-	err = order.Apply(tx.Unscoped()).Limit(pageInfo.GetPageSize()).Offset(pageInfo.GetStartIdx()).Omit("password", "access_token").Find(&users).Error
+	err = order.Apply(query).Limit(pageInfo.GetPageSize()).Offset(pageInfo.GetStartIdx()).Omit("password", "access_token").Find(&users).Error
 	if err != nil {
 		tx.Rollback()
 		return nil, 0, err
@@ -451,6 +469,12 @@ func GetAllUsers(pageInfo *common.PageInfo, sortOptions ...UserSortOptions) (use
 }
 
 func SearchUsers(keyword string, group string, role *int, status *int, startIdx int, num int, sortOptions ...UserSortOptions) ([]*User, int64, error) {
+	return SearchUsersScoped(keyword, group, role, status, startIdx, num, 0, 0, sortOptions...)
+}
+
+// SearchUsersScoped 与 SearchUsers 相同，但支持按组织/部门范围过滤。
+// orgId==0 表示平台视角（仅未加入组织的用户）；orgId>0 表示组织管理员视角。
+func SearchUsersScoped(keyword string, group string, role *int, status *int, startIdx int, num int, orgId int, deptId int, sortOptions ...UserSortOptions) ([]*User, int64, error) {
 	var users []*User
 	var total int64
 	var err error
@@ -468,6 +492,13 @@ func SearchUsers(keyword string, group string, role *int, status *int, startIdx 
 
 	// 构建基础查询
 	query := tx.Unscoped().Model(&User{})
+	if orgId > 0 {
+		query = query.Where("organization_id = ?", orgId)
+		if deptId > 0 {
+			query = query.Where("department_id = ?", deptId)
+		}
+	}
+	// orgId==0 表示平台管理员/Root：可见全部用户，不加组织过滤
 
 	// 构建搜索条件
 	likeCondition := "username LIKE ? OR email LIKE ? OR display_name LIKE ?"

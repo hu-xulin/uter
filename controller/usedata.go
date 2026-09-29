@@ -6,6 +6,8 @@ import (
 
 	"github.com/Uter-AI/Uter/common"
 
+	"github.com/Uter-AI/Uter/middleware"
+
 	"github.com/Uter-AI/Uter/model"
 
 	"github.com/gin-gonic/gin"
@@ -33,7 +35,12 @@ func GetAllQuotaDates(c *gin.Context) {
 	startTimestamp, _ := strconv.ParseInt(c.Query("start_timestamp"), 10, 64)
 	endTimestamp, _ := strconv.ParseInt(c.Query("end_timestamp"), 10, 64)
 	username := c.Query("username")
-	dates, err := model.GetAllQuotaDates(startTimestamp, endTimestamp, username)
+	orgId, _ := middleware.RequestOrgScope(c)
+	var orgUsernames []string
+	if orgId > 0 {
+		orgUsernames, _ = model.GetOrgMemberUsernames(orgId)
+	}
+	dates, err := model.GetAllQuotaDates(startTimestamp, endTimestamp, username, orgUsernames...)
 	if err != nil {
 		common.ApiError(c, err)
 		return
@@ -49,7 +56,12 @@ func GetAllQuotaDates(c *gin.Context) {
 func GetQuotaDatesByUser(c *gin.Context) {
 	startTimestamp, _ := strconv.ParseInt(c.Query("start_timestamp"), 10, 64)
 	endTimestamp, _ := strconv.ParseInt(c.Query("end_timestamp"), 10, 64)
-	dates, err := model.GetQuotaDataGroupByUser(startTimestamp, endTimestamp)
+	orgId, _ := middleware.RequestOrgScope(c)
+	var orgUsernames []string
+	if orgId > 0 {
+		orgUsernames, _ = model.GetOrgMemberUsernames(orgId)
+	}
+	dates, err := model.GetQuotaDataGroupByUser(startTimestamp, endTimestamp, orgUsernames...)
 	if err != nil {
 		common.ApiError(c, err)
 		return
@@ -92,7 +104,12 @@ func GetAllFlowQuotaDates(c *gin.Context) {
 		return
 	}
 	username := c.Query("username")
-	dates, err := model.GetFlowQuotaData(startTimestamp, endTimestamp, username, 0, c.GetInt("role"))
+	orgId, _ := middleware.RequestOrgScope(c)
+	var orgUsernames []string
+	if orgId > 0 {
+		orgUsernames, _ = model.GetOrgMemberUsernames(orgId)
+	}
+	dates, err := model.GetFlowQuotaData(startTimestamp, endTimestamp, username, 0, c.GetInt("role"), orgUsernames...)
 	if err != nil {
 		common.ApiError(c, err)
 		return

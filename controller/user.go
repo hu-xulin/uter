@@ -336,7 +336,8 @@ func Register(c *gin.Context) {
 func GetAllUsers(c *gin.Context) {
 	pageInfo := common.GetPageQuery(c)
 	sortOptions := model.NewUserSortOptions(c.Query("sort_by"), c.Query("sort_order"))
-	users, total, err := model.GetAllUsers(pageInfo, sortOptions)
+	orgId, deptId := middleware.RequestOrgScope(c)
+	users, total, err := model.GetAllUsers(orgId, deptId, pageInfo, sortOptions)
 	if err != nil {
 		common.ApiError(c, err)
 		return
@@ -366,7 +367,8 @@ func SearchUsers(c *gin.Context) {
 	}
 	pageInfo := common.GetPageQuery(c)
 	sortOptions := model.NewUserSortOptions(c.Query("sort_by"), c.Query("sort_order"))
-	users, total, err := model.SearchUsers(keyword, group, role, status, pageInfo.GetStartIdx(), pageInfo.GetPageSize(), sortOptions)
+	orgId, deptId := middleware.RequestOrgScope(c)
+	users, total, err := model.SearchUsersScoped(keyword, group, role, status, pageInfo.GetStartIdx(), pageInfo.GetPageSize(), orgId, deptId, sortOptions)
 	if err != nil {
 		common.ApiError(c, err)
 		return
@@ -1074,6 +1076,19 @@ func ManageUser(c *gin.Context) {
 	if !canManageTargetRole(myRole, user.Role) {
 		common.ApiErrorI18n(c, i18n.MsgUserNoPermissionHigherLevel)
 		return
+	}
+	// 组织范围管理员只能管理本组织（本部门）成员，杜绝越权看/改别家公司员工
+	if myOrg := c.GetInt("organization_id"); myOrg > 0 {
+		if user.OrganizationId != myOrg {
+			common.ApiErrorI18n(c, i18n.MsgUserNoPermissionHigherLevel)
+			return
+		}
+		if c.GetString("org_role") == model.OrgRoleDepartmentAdmin {
+			if myDept := c.GetInt("department_id"); myDept > 0 && user.DepartmentId != myDept {
+				common.ApiErrorI18n(c, i18n.MsgUserNoPermissionHigherLevel)
+				return
+			}
+		}
 	}
 	switch req.Action {
 	case "disable":
