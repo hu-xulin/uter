@@ -84,6 +84,7 @@ import {
   getUser,
   getGroups,
   getPermissionCatalog,
+  listOrganizations,
 } from '../api'
 import { BINDING_FIELDS, ERROR_MESSAGES, SUCCESS_MESSAGES } from '../constants'
 import {
@@ -93,7 +94,7 @@ import {
   transformFormDataToPayload,
   transformUserToFormDefaults,
 } from '../lib'
-import type { User } from '../types'
+import type { User, OrgSummary } from '../types'
 import { UserQuotaDialog } from './user-quota-dialog'
 import { useUsers } from './users-provider'
 
@@ -114,6 +115,10 @@ export function UsersMutateDrawer({
   const currentUser = useAuthStore((s) => s.auth.user)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [quotaDialogOpen, setQuotaDialogOpen] = useState(false)
+  // 创建用户时的账号类型：普通用户 / 组织 / 管理员（仅超管可选择「组织」）。
+  const [accountKind, setAccountKind] = useState<'user' | 'organization' | 'admin'>(
+    'user'
+  )
 
   // Fetch groups
   const { data: groupsData } = useQuery({
@@ -130,6 +135,15 @@ export function UsersMutateDrawer({
     queryFn: async () => requireServerSuccess(await getPermissionCatalog()),
     staleTime: 5 * 60 * 1000,
   })
+
+  // 组织列表（仅超管选择「组织」角色时用于归属下拉）
+  const { data: orgsData } = useQuery({
+    queryKey: ['organizations-list'],
+    queryFn: async () => requireServerSuccess(await listOrganizations()),
+    enabled: currentUser?.role === ROLE.SUPER_ADMIN,
+    staleTime: 5 * 60 * 1000,
+  })
+  const orgs: OrgSummary[] = orgsData?.data ?? []
 
   const form = useForm<UserFormValues>({
     resolver: zodResolver(userFormSchema),
@@ -152,6 +166,7 @@ export function UsersMutateDrawer({
     } else if (open && !isUpdate) {
       // For create, reset to defaults
       form.reset(USER_FORM_DEFAULT_VALUES)
+      setAccountKind('user')
     }
   }, [open, isUpdate, currentRow, form, t])
 
@@ -173,6 +188,15 @@ export function UsersMutateDrawer({
         })
         return
       }
+    }
+
+    // 选择「组织」角色时必须指定归属组织，否则退回普通用户逻辑无意义。
+    if (accountKind === 'organization' && !(data.organization_id && data.organization_id > 0)) {
+      form.setError('organization_id', {
+        type: 'manual',
+        message: t('Please select an organization'),
+      })
+      return
     }
 
     setIsSubmitting(true)
@@ -280,14 +304,29 @@ export function UsersMutateDrawer({
                         <FormLabel>{t('Role')}</FormLabel>
                         <Select
                           items={[
-                            { value: '1', label: t('Common User') },
-                            { value: '10', label: t('Admin') },
+                            { value: 'user', label: t('Common User') },
+                            ...(canEditAdminPermissions
+                              ? [{ value: 'organization', label: t('Organization') }]
+                              : []),
+                            { value: 'admin', label: t('Admin') },
                           ]}
-                          onValueChange={(value) =>
-                            value !== null &&
-                            field.onChange(Number.parseInt(value))
-                          }
-                          value={String(field.value)}
+                          onValueChange={(value) => {
+                            if (value === 'organization') {
+                              field.onChange(ROLE.USER)
+                              setAccountKind('organization')
+                            } else if (value === 'admin') {
+                              field.onChange(ROLE.ADMIN)
+                              setAccountKind('admin')
+                              form.setValue('organization_id', 0)
+                              form.setValue('org_role', '')
+                            } else {
+                              field.onChange(ROLE.USER)
+                              setAccountKind('user')
+                              form.setValue('organization_id', 0)
+                              form.setValue('org_role', '')
+                            }
+                          }}
+                          value={accountKind}
                         >
                           <FormControl>
                             <SelectTrigger>
@@ -296,16 +335,108 @@ export function UsersMutateDrawer({
                           </FormControl>
                           <SelectContent alignItemWithTrigger={false}>
                             <SelectGroup>
-                              <SelectItem value='1'>
+                              <SelectItem value='user'>
                                 {t('Common User')}
                               </SelectItem>
-                              <SelectItem value='10'>{t('Admin')}</SelectItem>
+                              {canEditAdminPermissions && (
+                                <SelectItem value='organization'>
+                                  {t('Organization')}
+                                </SelectItem>
+                              )}
+                              <SelectItem value='admin'>{t('Admin')}</SelectItem>
                             </SelectGroup>
                           </SelectContent>
                         </Select>
                         <FormDescription>
                           {t("Set the user's role (cannot be Root)")}
                         </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
+
+                {!isUpdate && accountKind === 'organization' && (
+                  <FormField
+                    control={form.control}
+                    name='organization_id'
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t('Select an organization')}</FormLabel>
+                        <Select
+                          items={orgs.map((o) => ({
+                            value: String(o.id),
+                            label: o.name,
+                          }))}
+                          onValueChange={(value) =>
+                            value !== null &&
+                            field.onChange(Number.parseInt(value))
+                          }
+                          value={field.value ? String(field.value) : ''}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue
+                                placeholder={t('Select an organization')}
+                              />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent alignItemWithTrigger={false}>
+                            <SelectGroup>
+                              {orgs.map((o) => (
+                                <SelectItem key={o.id} value={String(o.id)}>
+                                  {o.name}
+                                </SelectItem>
+                              ))}
+                            </SelectGroup>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
+
+                {!isUpdate && accountKind === 'organization' && (
+                  <FormField
+                    control={form.control}
+                    name='org_role'
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t('Organization Role')}</FormLabel>
+                        <Select
+                          items={[
+                            { value: 'owner', label: t('Owner') },
+                            { value: 'admin', label: t('Admin') },
+                            {
+                              value: 'department_admin',
+                              label: t('Department Admin'),
+                            },
+                            { value: 'member', label: t('Member') },
+                          ]}
+                          onValueChange={(value) =>
+                            value !== null && field.onChange(value)
+                          }
+                          value={field.value || 'member'}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue
+                                placeholder={t('Organization Role')}
+                              />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent alignItemWithTrigger={false}>
+                            <SelectGroup>
+                              <SelectItem value='owner'>{t('Owner')}</SelectItem>
+                              <SelectItem value='admin'>{t('Admin')}</SelectItem>
+                              <SelectItem value='department_admin'>
+                                {t('Department Admin')}
+                              </SelectItem>
+                              <SelectItem value='member'>{t('Member')}</SelectItem>
+                            </SelectGroup>
+                          </SelectContent>
+                        </Select>
                         <FormMessage />
                       </FormItem>
                     )}
