@@ -34,11 +34,11 @@ import {
   CommandList,
 } from '@/components/ui/command'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { useTheme } from '@/context/theme-provider'
 import { AutoGroupFlowBorder } from '@/features/keys/components/auto-group-visuals'
 import { PluginIcon } from '@/features/task-plugins/components/plugin-icon'
 import { useMediaQuery } from '@/hooks/use-media-query'
 import { resolveLocalizedText } from '@/lib/localized-text'
-import { useTheme } from '@/context/theme-provider'
 
 import type { TaskPluginOption } from '../../api'
 import {
@@ -50,6 +50,9 @@ import {
 } from '../../constants'
 import {
   CHANNEL_TYPE_ADVANCED_CUSTOM,
+  CHANNEL_TYPE_BRANDED_AGGREGATE,
+  CHANNEL_TYPE_BRANDED_PROXY,
+  CHANNEL_TYPE_BRANDED_SHARED,
   isAdvancedCustomLikeChannelType,
 } from '../../lib/advanced-custom'
 import { BRANDED_ADVANCED_CUSTOM_PROVIDERS } from '../../lib/branded-channel-providers'
@@ -144,6 +147,17 @@ export function ChannelProviderPicker(props: ChannelProviderPickerProps) {
         if (props.isCreating && option.value === 16) continue
         if (props.isCreating && option.value === 7) continue
         if (replacedTypes.has(option.value)) continue
+        // The branded Advanced Custom variants (62/63/64) are surfaced below as
+        // dedicated provider cards with their own logos. Skipping them here
+        // avoids duplicate cards that look identical except for the generic Uter
+        // logo used by the raw channel-type entries.
+        if (
+          option.value === CHANNEL_TYPE_BRANDED_SHARED ||
+          option.value === CHANNEL_TYPE_BRANDED_AGGREGATE ||
+          option.value === CHANNEL_TYPE_BRANDED_PROXY
+        ) {
+          continue
+        }
         const isCustom =
           option.value === 8 || option.value === CHANNEL_TYPE_ADVANCED_CUSTOM
         const isGateway =
@@ -303,7 +317,7 @@ export function ChannelProviderPicker(props: ChannelProviderPickerProps) {
                       <img
                         src={logoSrc}
                         alt={option.label}
-                        className='size-5 rounded-md border border-border/60 bg-background object-contain'
+                        className='border-border/60 bg-background size-5 rounded-md border object-contain'
                       />
                     )
                   }
@@ -322,126 +336,126 @@ export function ChannelProviderPicker(props: ChannelProviderPickerProps) {
                   )
                 })()
                 return (
-                <CommandItem
-                  key={option.id}
-                  value={option.id}
-                  aria-current={
-                    option.id === currentProviderId ? true : undefined
-                  }
-                  data-checked={option.id === currentProviderId}
-                  aria-label={
-                    option.target.kind === 'builtin'
-                      ? `${option.label} ${t('Built-in')} #${option.target.type}`
-                      : `${option.label} ${t('Plugin')} ${option.target.key}`
-                  }
-                  aria-description={
-                    [
-                      option.badge && t(option.badge.labelKey),
-                      option.detail || option.description,
-                      option.extensionSummary &&
-                        t('Supports plugin extensions'),
-                      option.extensionSummary,
-                    ]
-                      .filter(Boolean)
-                      .join(' · ') || undefined
-                  }
-                  disabled={props.disabled}
-                  onSelect={() => props.onSelect(option.target)}
-                  className='data-selected:border-primary/50 data-selected:bg-primary/5 min-h-24 flex-col items-stretch justify-between gap-2.5 rounded-lg border p-3 md:min-h-32 [&>svg]:hidden'
-                >
-                  {option.target.kind === 'builtin' &&
-                    isAdvancedCustomLikeChannelType(option.target.type) && (
-                      <AutoGroupFlowBorder
-                        shouldReduceMotion={
-                          shouldReduceMotion || props.disabled
-                        }
-                      />
-                    )}
-                  <span className='flex min-w-0 items-start gap-2.5'>
-                    <span className='shrink-0'>{leadingIcon}</span>
-                    <span className='min-w-0 flex-1'>
-                      <span className='flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1'>
-                        <span
-                          className='max-w-full truncate font-medium'
-                          title={option.label}
-                        >
-                          {option.label}
+                  <CommandItem
+                    key={option.id}
+                    value={option.id}
+                    aria-current={
+                      option.id === currentProviderId ? true : undefined
+                    }
+                    data-checked={option.id === currentProviderId}
+                    aria-label={
+                      option.target.kind === 'builtin'
+                        ? `${option.label} ${t('Built-in')} #${option.target.type}`
+                        : `${option.label} ${t('Plugin')} ${option.target.key}`
+                    }
+                    aria-description={
+                      [
+                        option.badge && t(option.badge.labelKey),
+                        option.detail || option.description,
+                        option.extensionSummary &&
+                          t('Supports plugin extensions'),
+                        option.extensionSummary,
+                      ]
+                        .filter(Boolean)
+                        .join(' · ') || undefined
+                    }
+                    disabled={props.disabled}
+                    onSelect={() => props.onSelect(option.target)}
+                    className='data-selected:border-primary/50 data-selected:bg-primary/5 min-h-24 flex-col items-stretch justify-between gap-2.5 rounded-lg border p-3 md:min-h-32 [&>svg]:hidden'
+                  >
+                    {option.target.kind === 'builtin' &&
+                      isAdvancedCustomLikeChannelType(option.target.type) && (
+                        <AutoGroupFlowBorder
+                          shouldReduceMotion={
+                            shouldReduceMotion || props.disabled
+                          }
+                        />
+                      )}
+                    <span className='flex min-w-0 items-start gap-2.5'>
+                      <span className='shrink-0'>{leadingIcon}</span>
+                      <span className='min-w-0 flex-1'>
+                        <span className='flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1'>
+                          <span
+                            className='max-w-full truncate font-medium'
+                            title={option.label}
+                          >
+                            {option.label}
+                          </span>
+                          {option.badge && (
+                            <StatusBadge
+                              label={t(option.badge.labelKey)}
+                              variant={
+                                option.badge.tone === 'warning'
+                                  ? 'warning'
+                                  : 'info'
+                              }
+                              copyable={false}
+                              size='sm'
+                              className={
+                                option.badge.tone === 'warning'
+                                  ? 'bg-warning/10 text-xs text-[color-mix(in_oklab,var(--warning)_50%,var(--foreground))]'
+                                  : 'bg-primary/10 text-xs text-[color-mix(in_oklab,var(--primary)_50%,var(--foreground))]'
+                              }
+                            />
+                          )}
                         </span>
-                        {option.badge && (
-                          <StatusBadge
-                            label={t(option.badge.labelKey)}
-                            variant={
-                              option.badge.tone === 'warning'
-                                ? 'warning'
-                                : 'info'
-                            }
-                            copyable={false}
-                            size='sm'
-                            className={
-                              option.badge.tone === 'warning'
-                                ? 'bg-warning/10 text-xs text-[color-mix(in_oklab,var(--warning)_50%,var(--foreground))]'
-                                : 'bg-primary/10 text-xs text-[color-mix(in_oklab,var(--primary)_50%,var(--foreground))]'
-                            }
-                          />
+                        {option.description && (
+                          <span
+                            className='text-muted-foreground mt-1 line-clamp-2 text-xs leading-relaxed break-words'
+                            title={option.detail || option.description}
+                          >
+                            {option.description}
+                          </span>
                         )}
                       </span>
-                      {option.description && (
+                    </span>
+                    <span className='flex min-w-0 items-center gap-2'>
+                      <Badge
+                        variant={
+                          option.id === currentProviderId
+                            ? 'default'
+                            : 'secondary'
+                        }
+                        className='shrink-0 rounded-md px-1.5 py-0 text-[10px] font-normal'
+                      >
+                        {option.id === currentProviderId && t('Current')}
+                        {option.id !== currentProviderId &&
+                          (option.plugin ? t('Plugin') : t('Built-in'))}
+                      </Badge>
+                      {option.extensionNames && (
                         <span
-                          className='text-muted-foreground mt-1 line-clamp-2 text-xs leading-relaxed break-words'
-                          title={option.detail || option.description}
+                          aria-label={t('Plugin extensions')}
+                          title={option.extensionSummary}
+                          className='text-muted-foreground flex min-w-0 items-center gap-1 text-xs'
                         >
-                          {option.description}
+                          <Puzzle className='size-3' aria-hidden='true' />
+                          <span className='truncate'>
+                            {option.extensionNames}
+                          </span>
+                        </span>
+                      )}
+                      {option.plugin && (
+                        <span
+                          className='text-muted-foreground min-w-0 truncate text-xs'
+                          title={option.plugin.key}
+                        >
+                          {option.plugin.key}
+                        </span>
+                      )}
+                      {option.target.kind === 'builtin' && (
+                        <span className='text-muted-foreground ml-auto shrink-0 text-[11px] tabular-nums'>
+                          #{option.target.type}
+                        </span>
+                      )}
+                      {option.plugin && (
+                        <span className='text-muted-foreground ml-auto shrink-0 text-[11px]'>
+                          {t('{{count}} models', {
+                            count: option.plugin.models.length,
+                          })}
                         </span>
                       )}
                     </span>
-                  </span>
-                  <span className='flex min-w-0 items-center gap-2'>
-                    <Badge
-                      variant={
-                        option.id === currentProviderId
-                          ? 'default'
-                          : 'secondary'
-                      }
-                      className='shrink-0 rounded-md px-1.5 py-0 text-[10px] font-normal'
-                    >
-                      {option.id === currentProviderId && t('Current')}
-                      {option.id !== currentProviderId &&
-                        (option.plugin ? t('Plugin') : t('Built-in'))}
-                    </Badge>
-                    {option.extensionNames && (
-                      <span
-                        aria-label={t('Plugin extensions')}
-                        title={option.extensionSummary}
-                        className='text-muted-foreground flex min-w-0 items-center gap-1 text-xs'
-                      >
-                        <Puzzle className='size-3' aria-hidden='true' />
-                        <span className='truncate'>
-                          {option.extensionNames}
-                        </span>
-                      </span>
-                    )}
-                    {option.plugin && (
-                      <span
-                        className='text-muted-foreground min-w-0 truncate text-xs'
-                        title={option.plugin.key}
-                      >
-                        {option.plugin.key}
-                      </span>
-                    )}
-                    {option.target.kind === 'builtin' && (
-                      <span className='text-muted-foreground ml-auto shrink-0 text-[11px] tabular-nums'>
-                        #{option.target.type}
-                      </span>
-                    )}
-                    {option.plugin && (
-                      <span className='text-muted-foreground ml-auto shrink-0 text-[11px]'>
-                        {t('{{count}} models', {
-                          count: option.plugin.models.length,
-                        })}
-                      </span>
-                    )}
-                  </span>
-                </CommandItem>
+                  </CommandItem>
                 )
               })}
               {canUseCustomType && (
