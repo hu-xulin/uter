@@ -30,8 +30,8 @@ export type RoleValue = (typeof ROLE)[keyof typeof ROLE]
 const DEFAULT_ROLE = ROLE.GUEST
 
 const ROLE_LABEL_KEYS: Record<RoleValue, string> = {
-  [ROLE.SUPER_ADMIN]: 'Super Admin',
-  [ROLE.ADMIN]: 'Admin',
+  [ROLE.SUPER_ADMIN]: 'Uter Root',
+  [ROLE.ADMIN]: 'Uter Admin',
   [ROLE.USER]: 'User',
   [ROLE.GUEST]: 'Guest',
 }
