@@ -54,6 +54,8 @@ export const userSchema = z.object({
   linux_do_id: z.string().optional(),
   status: userStatusSchema,
   role: userRoleSchema,
+  organization_id: z.number().optional(),
+  org_role: z.string().optional(),
   created_at: z.number().optional(),
   updated_at: z.number().optional(),
   last_login_at: z.number().optional(),
