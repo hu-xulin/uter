@@ -43,6 +43,10 @@ func (w *WalletFunding) PreConsume(amount int) error {
 	if amount <= 0 {
 		return nil
 	}
+	// 组织成员由组织预算出资，跳过个人钱包预扣（组织预算闸门已在 PreConsumeTokenQuota 的 EnforceOrgQuota 执行）。
+	if orgId, err := model.OrgIdOfUser(w.userId); err == nil && orgId > 0 {
+		return nil
+	}
 	reserved, err := model.TryReserveUserQuota(w.userId, amount)
 	if err != nil {
 		return err
@@ -58,6 +62,12 @@ func (w *WalletFunding) Settle(delta int) error {
 	if delta == 0 {
 		return nil
 	}
+	// 组织成员：消耗由组织预算出资，组织 used_quota 账本按 delta 增减，个人钱包不动。
+	if orgId, err := model.OrgIdOfUser(w.userId); err == nil && orgId > 0 {
+	_ = model.IncrOrgUsedQuota(orgId, int64(delta))
+	model.UpdateUserUsedQuota(w.userId, delta)
+		return nil
+	}
 	if delta > 0 {
 		return model.DecreaseUserQuota(w.userId, delta, false)
 	}
@@ -66,6 +76,11 @@ func (w *WalletFunding) Settle(delta int) error {
 
 func (w *WalletFunding) Refund() error {
 	if w.consumed <= 0 {
+		return nil
+	}
+	// 组织成员：预扣在组织预算账本上，按 consumed 回减组织 used_quota。
+	if orgId, err := model.OrgIdOfUser(w.userId); err == nil && orgId > 0 {
+		_ = model.IncrOrgUsedQuota(orgId, int64(-w.consumed))
 		return nil
 	}
 	// IncreaseUserQuota 是 quota += N 的非幂等操作，不能重试，否则会多退额度。
