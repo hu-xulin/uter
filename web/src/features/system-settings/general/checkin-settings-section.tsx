@@ -17,7 +17,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@Uter.ai.com
 */
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useForm, type Resolver } from 'react-hook-form'
+import { useForm, useWatch, type Resolver } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { z } from 'zod'
@@ -92,6 +92,11 @@ export function CheckinSettingsSection({
 
   const { isDirty, isSubmitting } = form.formState
   const enabled = form.watch('enabled')
+
+  // Watched live so the USD-equivalent hint recomputes on every keystroke,
+  // independent of validation timing.
+  const minQuota = useWatch({ control: form.control, name: 'minQuota' })
+  const maxQuota = useWatch({ control: form.control, name: 'maxQuota' })
 
   async function onSubmit(values: Values) {
     const updates: Array<{ key: string; value: string }> = []
@@ -186,7 +191,7 @@ export function CheckinSettingsSection({
                     <FormDescription>
                       {t(
                         'Minimum quota amount awarded for check-in (≈ {{amount}})',
-                        { amount: formatQuotaHint(field.value) }
+                        { amount: formatQuotaHint(minQuota) }
                       )}
                     </FormDescription>
                     <FormMessage />
@@ -215,7 +220,7 @@ export function CheckinSettingsSection({
                     <FormDescription>
                       {t(
                         'Maximum quota amount awarded for check-in (≈ {{amount}})',
-                        { amount: formatQuotaHint(field.value) }
+                        { amount: formatQuotaHint(maxQuota) }
                       )}
                     </FormDescription>
                     <FormMessage />
