@@ -33,7 +33,11 @@ export type DiscountTagProps = {
  * than the official preset price. e.g. ratio 0.9 -> "9折", 0.85 -> "8.5折".
  */
 export const DiscountTag = memo(function DiscountTag(props: DiscountTagProps) {
-  const info = getDiscountInfo(props.model, props.officialPrices, props.selectedGroup)
+  const info = getDiscountInfo(
+    props.model,
+    props.officialPrices,
+    props.selectedGroup
+  )
   if (!info.hasDiscount) return null
 
   const zhe = info.zhe
@@ -46,7 +50,7 @@ export const DiscountTag = memo(function DiscountTag(props: DiscountTagProps) {
   return (
     <span
       className={cn(
-        'inline-flex items-center rounded px-1.5 py-[5px] text-[11px] font-semibold leading-none text-white bg-emerald-600',
+        'inline-flex items-center rounded-[0.6rem] px-1.5 py-[5px] text-[11px] font-semibold leading-none text-white bg-emerald-600/80',
         props.className
       )}
       title={`-${Math.round(info.percent)}%`}
