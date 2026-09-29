@@ -129,6 +129,17 @@ export function useSidebarData(): SidebarData {
         ],
       },
       {
+        id: 'organization',
+        title: t('Organization'),
+        items: [
+          {
+            title: t('Organization'),
+            url: '/organization',
+            icon: Users,
+          },
+        ],
+      },
+      {
         id: 'admin',
         title: t('Admin'),
         items: [

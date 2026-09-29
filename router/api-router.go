@@ -165,6 +165,34 @@ func SetApiRouter(router *gin.Engine) {
 			}
 		}
 
+		// Organization management (公司负责人/组织管理员监督下属 Token 消耗)
+		// 创建与「查看我的组织」对任意登录用户开放；其余接口由 OrgAdminAuth 约束：
+		// 仅超管或「属于某组织且 org_role 为 owner/admin/department_admin」的用户可访问，
+		// 且 per-handler 再校验只看本组织——公司负责人【不会】获得全局 Admin 权限。
+		organizationRoute := apiRouter.Group("/organization")
+		organizationRoute.Use(middleware.UserAuth())
+		{
+			organizationRoute.POST("/", controller.CreateOrganization)
+			organizationRoute.POST("", controller.CreateOrganization)
+			organizationRoute.GET("/self", controller.GetMyOrganization)
+		}
+		orgAdminRoute := apiRouter.Group("/organization")
+		orgAdminRoute.Use(middleware.OrgAdminAuth())
+		{
+			orgAdminRoute.GET("/:id", controller.GetOrganization)
+			orgAdminRoute.GET("/:id/stats", controller.GetOrganizationStats)
+			orgAdminRoute.GET("/:id/members", controller.GetOrganizationMembers)
+			orgAdminRoute.POST("/:id/members", controller.AddOrganizationMembers)
+			orgAdminRoute.PUT("/:id/members/:uid", controller.UpdateOrganizationMember)
+			orgAdminRoute.DELETE("/:id/members/:uid", controller.RemoveOrganizationMember)
+			orgAdminRoute.PUT("/:id", controller.UpdateOrganization)
+			orgAdminRoute.GET("/:id/logs", controller.GetOrganizationLogs)
+			orgAdminRoute.GET("/:id/logs/stat", controller.GetOrganizationLogsStat)
+			orgAdminRoute.GET("/:id/quota-dates", controller.GetOrganizationQuotaDates)
+			orgAdminRoute.GET("/:id/quota-dates/users", controller.GetOrganizationQuotaDatesByUser)
+			orgAdminRoute.GET("/:id/flow", controller.GetOrganizationFlow)
+		}
+
 		// Subscription billing (plans, purchase, admin management)
 		subscriptionRoute := apiRouter.Group("/subscription")
 		subscriptionRoute.Use(middleware.UserAuth())
