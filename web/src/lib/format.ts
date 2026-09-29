@@ -284,6 +284,25 @@ export function parseTimestampFromInput(value: string): number {
 }
 
 // ============================================================================
+// User ID Display
+// ============================================================================
+
+/**
+ * 后台展示用用户 ID 的偏移基数：数据库自增 id=1 显示为对外编号 uter100000001。
+ * 仅用于界面展示，业务/接口层仍使用原始数字 id。
+ */
+export const USER_ID_DISPLAY_BASE = 100_000_000
+
+/**
+ * 把数据库自增 user id 转成后台展示用的「对外编号」，例如 id=1 -> "uter100000001"。
+ * 纯展示用途，不要把它当作接口参数使用。
+ */
+export function formatUserId(id: number): string {
+  if (!Number.isFinite(id)) return String(id)
+  return `uter${USER_ID_DISPLAY_BASE + id}`
+}
+
+// ============================================================================
 // Color Generation
 // ============================================================================
 

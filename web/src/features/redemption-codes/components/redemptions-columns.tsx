@@ -28,7 +28,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
-import { formatQuota, formatTimestampToDate } from '@/lib/format'
+import { formatQuota, formatTimestampToDate, formatUserId } from '@/lib/format'
 
 import { REDEMPTION_FILTER_EXPIRED, REDEMPTION_STATUSES } from '../constants'
 import { isRedemptionExpired, isTimestampExpired } from '../lib'
@@ -227,7 +227,7 @@ export function useRedemptionsColumns(): ColumnDef<Redemption>[] {
             <TooltipTrigger
               render={
                 <StatusBadge
-                  label={t('User {{id}}', { id: userId })}
+                  label={t('User {{id}}', { id: formatUserId(userId) })}
                   variant='neutral'
                   copyable={false}
                   className='cursor-help'
@@ -237,7 +237,7 @@ export function useRedemptionsColumns(): ColumnDef<Redemption>[] {
             <TooltipContent>
               <div className='space-y-1 text-xs'>
                 <div>
-                  {t('User ID:')} {userId}
+                  {t('User ID:')} {formatUserId(userId)}
                 </div>
                 {redemption.redeemed_time > 0 && (
                   <div>

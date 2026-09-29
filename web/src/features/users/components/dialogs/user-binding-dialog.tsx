@@ -45,6 +45,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
+import { formatUserId } from '@/lib/format'
 import { handleServerError } from '@/lib/handle-server-error'
 import { indexCustomOAuthBindings, type CustomOAuthBinding } from '@/lib/oauth'
 import { requireServerSuccess } from '@/lib/server-error-message'
@@ -334,7 +335,7 @@ export function UserBindingDialog(props: Props) {
             <div className='flex items-center justify-between'>
               {user && (
                 <p className='text-muted-foreground text-sm'>
-                  {user.username} (ID: {user.id})
+                  {user.username} (ID: {formatUserId(user.id)})
                 </p>
               )}
               <TooltipProvider>
