@@ -181,6 +181,12 @@ func UpdateOrganizationMember(c *gin.Context) {
 	}
 	// 角色/部门变更后刷新认证缓存，侧栏与后端鉴权立即生效（见 model.CreateOrganization 注释）。
 	_, _ = model.BumpUserAuthVersion(uid)
+	// 被设为组织所有者：强制吊销其全部客户端会话（含当前），要求重新登录——高危权限变更的安全卫生。
+	if req.OrgRole == model.OrgRoleOwner {
+		if _, rerr := model.RevokeAllUserSessions(uid, "organization owner role granted"); rerr != nil {
+			common.SysLog("failed to revoke sessions for new org owner " + strconv.Itoa(uid) + ": " + rerr.Error())
+		}
+	}
 	common.ApiSuccess(c, gin.H{"success": true})
 }
 
