@@ -15,16 +15,21 @@ import (
 const userCacheSchemaVersion = 2
 
 type UserBase struct {
-	Id          int    `json:"id"`
-	Group       string `json:"group"`
-	Email       string `json:"email"`
-	Quota       int    `json:"quota"`
-	Status      int    `json:"status"`
-	Role        int    `json:"role"`
-	Username    string `json:"username"`
-	Setting     string `json:"setting"`
-	AuthVersion int64  `json:"-"`
-	CacheSchema int    `json:"-"`
+	Id            int    `json:"id"`
+	Group         string `json:"group"`
+	Email         string `json:"email"`
+	Quota         int    `json:"quota"`
+	Status        int    `json:"status"`
+	Role          int    `json:"role"`
+	Username      string `json:"username"`
+	Setting       string `json:"setting"`
+	OrganizationId int    `json:"organization_id"`
+	DepartmentId  int    `json:"department_id"`
+	OrgRole       string `json:"org_role"`
+	UsedQuota     int    `json:"used_quota"`
+	SubQuotaLimit int64  `json:"sub_quota_limit"`
+	AuthVersion   int64  `json:"-"`
+	CacheSchema   int    `json:"-"`
 }
 
 func (user *UserBase) WriteContext(c *gin.Context) {
@@ -34,6 +39,9 @@ func (user *UserBase) WriteContext(c *gin.Context) {
 	common.SetContextKey(c, constant.ContextKeyUserEmail, user.Email)
 	common.SetContextKey(c, constant.ContextKeyUserName, user.Username)
 	common.SetContextKey(c, constant.ContextKeyUserSetting, user.GetSetting())
+	c.Set("organization_id", user.OrganizationId)
+	c.Set("department_id", user.DepartmentId)
+	c.Set("org_role", user.OrgRole)
 }
 
 func (user *UserBase) GetSetting() dto.UserSetting {

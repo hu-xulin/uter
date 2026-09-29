@@ -162,6 +162,11 @@ func PreWssConsumeQuota(ctx *gin.Context, relayInfo *relaycommon.RelayInfo, usag
 		return fmt.Errorf("token quota is not enough, token remain quota: %s, need quota: %s", logger.FormatQuota(token.RemainQuota), logger.FormatQuota(quota))
 	}
 
+	// 组织共享钱包闸门（实时通道）：仅对组织成员生效。
+	if err := model.EnforceOrgQuota(relayInfo.UserId, int64(quota)); err != nil {
+		return err
+	}
+
 	// This increment belongs to the session that was pre-charged before the
 	// socket opened, and PostWssConsumeQuota settles that session against the
 	// whole session total. Taking the money straight out of the wallet here
@@ -434,6 +439,10 @@ func PreConsumeTokenQuota(relayInfo *relaycommon.RelayInfo, quota int) error {
 	if relayInfo.IsPlayground {
 		return nil
 	}
+	// 组织共享钱包闸门：仅对组织成员生效，校验组织预算与员工子额度上限。
+	if err := model.EnforceOrgQuota(relayInfo.UserId, int64(quota)); err != nil {
+		return err
+	}
 	// 原子预扣：检查与扣减在同一操作中完成，并发请求不可能同时通过检查后超扣。
 	reserved, err := model.TryReserveTokenQuota(relayInfo.TokenId, relayInfo.TokenKey, quota, relayInfo.TokenUnlimited)
 	if err != nil {
@@ -485,6 +494,13 @@ func postConsumeQuotaWithResult(relayInfo *relaycommon.RelayInfo, quota int, pre
 		}
 	}
 	result.FundingApplied = true
+
+	// 组织共享钱包账本：扣费成功后累加组织已用额度（仅组织成员）。
+	if quota > 0 && relayInfo != nil && relayInfo.UserId > 0 {
+		if cache, e := model.GetUserCache(relayInfo.UserId); e == nil && cache.OrganizationId > 0 {
+			_ = model.IncrOrgUsedQuota(cache.OrganizationId, int64(quota))
+		}
+	}
 
 	if !relayInfo.IsPlayground {
 		if quota > 0 {

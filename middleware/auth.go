@@ -253,6 +253,29 @@ func WssAuth(c *gin.Context) {
 
 }
 
+// RequestOrgScope returns the organization/department scope an admin may see.
+// Returns (0,0) when the caller is a platform super-admin/root or a platform
+// admin (organization_id == 0), i.e. no filtering — they see every user.
+// Org-scoped admins are constrained to their organization; department admins
+// are further constrained to their department.
+//
+// This is the single choke point that realizes "复用 Admin + 范围过滤": an
+// admin whose user.organization_id > 0 can never escape their own org.
+func RequestOrgScope(c *gin.Context) (orgId int, deptId int) {
+	role := c.GetInt("role")
+	if role >= common.RoleRootUser {
+		return 0, 0
+	}
+	orgId = c.GetInt("organization_id")
+	if orgId == 0 {
+		return 0, 0
+	}
+	if c.GetString("org_role") == model.OrgRoleDepartmentAdmin {
+		deptId = c.GetInt("department_id")
+	}
+	return orgId, deptId
+}
+
 // TokenOrUserAuth allows either session-based user auth or API token auth.
 // Used for endpoints that need to be accessible from both the dashboard and API clients.
 func TokenOrUserAuth() func(c *gin.Context) {
