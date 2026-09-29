@@ -45,7 +45,7 @@ export interface OrgMember {
   used_quota: number
   status: number
   organization_id: number
-  department_id: number
+  department_name: string
   org_role: OrgRole
   sub_quota_limit: number
 }
@@ -67,6 +67,12 @@ export interface MyOrgResponse {
   data?: {
     organization: Organization | null
     role?: OrgRole
+    /** 是否能查看组织总预算（owner/admin/department_admin 为 true，普通成员为 false） */
+    can_view_budget?: boolean
+    /** 自己被分配的额度上限（0=不限） */
+    my_sub_quota_limit?: number
+    /** 自己的已用额度 */
+    my_used_quota?: number
   }
 }
 
