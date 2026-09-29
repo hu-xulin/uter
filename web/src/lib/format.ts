@@ -295,10 +295,10 @@ export const USER_ID_DISPLAY_BASE = 100_000_000
 
 /**
  * 把数据库自增 user id 转成后台展示用的「对外编号」，例如 id=1 -> "uter100000001"。
- * 纯展示用途，不要把它当作接口参数使用。
+ * 纯展示用途，不要把它当作接口参数使用。id<=0（无用户）按原值返回。
  */
 export function formatUserId(id: number): string {
-  if (!Number.isFinite(id)) return String(id)
+  if (!Number.isFinite(id) || id <= 0) return String(id)
   return `uter${USER_ID_DISPLAY_BASE + id}`
 }
 

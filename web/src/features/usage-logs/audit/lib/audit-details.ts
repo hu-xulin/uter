@@ -19,6 +19,7 @@ For commercial licensing, please contact support@Uter.ai.com
 import type { TFunction } from 'i18next'
 
 import { loginMethodLabel } from '@/features/security/components/login-session-utils'
+import { formatUserId } from '@/lib/format'
 import { ROLE } from '@/lib/roles'
 
 import { renderAuditContent } from '../../lib/format'
@@ -397,7 +398,13 @@ export function buildAuditDetails(entry: AuditLog, t: TFunction) {
       : entry.user_id
   let actor = actorName
   if (actorId) {
-    actor = actorName ? `${actorName} (ID: ${actorId})` : `ID: ${actorId}`
+    const actorDisplay =
+      typeof actorId === 'number' && actorId > 0
+        ? formatUserId(actorId)
+        : actorId
+    actor = actorName
+      ? `${actorName} (ID: ${actorDisplay})`
+      : `ID: ${actorDisplay}`
   }
   let actorRole = ''
   if ([1, 10, 100].includes(entry.actor_role)) {
@@ -420,7 +427,14 @@ export function buildAuditDetails(entry: AuditLog, t: TFunction) {
       : undefined
   let target = targetName
   if (targetId !== undefined) {
-    target = targetName ? `${targetName} (ID: ${targetId})` : `ID: ${targetId}`
+    // 用户类操作的 ${id} 是用户 ID，渲染为对外编号；渠道类 ${id} 是渠道 ID，保持原样。
+    const displayId =
+      action.startsWith('user.') && typeof targetId === 'number'
+        ? formatUserId(targetId)
+        : targetId
+    target = targetName
+      ? `${targetName} (ID: ${displayId})`
+      : `ID: ${displayId}`
   }
   if (target) {
     delete params.id
@@ -472,7 +486,11 @@ export function buildAuditDetails(entry: AuditLog, t: TFunction) {
     delete params.total
   }
   for (const [key, value] of Object.entries(params)) {
-    fields.push({ label: auditFieldLabel(key, t), value })
+    let displayValue = value
+    if (key === 'target_user_id' && typeof value === 'number') {
+      displayValue = formatUserId(value)
+    }
+    fields.push({ label: auditFieldLabel(key, t), value: displayValue })
   }
   if (
     typeof metadata.login_method === 'string' &&
