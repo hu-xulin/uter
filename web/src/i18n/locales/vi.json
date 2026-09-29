@@ -6581,6 +6581,18 @@
     "Failed to create organization": "Failed to create organization",
     "Organization created": "Organization created",
     "Members": "Members",
-    ".": "."
+    "Organization area": "Khu vực Tổ chức",
+    "Organization and team management, visible to organization members.": "Quản lý tổ chức và nhóm, chỉ thành viên tổ chức mới thấy.",
+    "Manage your organization, members and shared quota.": "Quản lý tổ chức, thành viên và hạn mức chia sẻ của bạn.",
+    "Member": "Thành viên",
+    "Select an organization": "Chọn một tổ chức",
+    "Organization Role": "Vai trò trong tổ chức",
+    "Please select an organization": "Vui lòng chọn một tổ chức",
+    ".": ".",
+    "You belong to this organization. Your consumption is billed to the organization budget; you can only view your own data.": "You belong to this organization. Your consumption is billed to the organization budget; you can only view your own data.",
+    "Your Quota Limit": "Your Quota Limit",
+    "Your Used Quota": "Your Used Quota",
+    "Department": "Department",
+    "Department name": "Department name"
   }
 }

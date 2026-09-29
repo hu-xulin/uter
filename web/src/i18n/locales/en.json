@@ -6581,6 +6581,18 @@
     "Failed to create organization": "Failed to create organization",
     "Organization created": "Organization created",
     "Members": "Members",
-    ".": "."
+    "Organization area": "Organization area",
+    "Organization and team management, visible to organization members.": "Organization and team management, visible to organization members.",
+    "Manage your organization, members and shared quota.": "Manage your organization, members and shared quota.",
+    "Member": "Member",
+    "Select an organization": "Select an organization",
+    "Organization Role": "Organization Role",
+    "Please select an organization": "Please select an organization",
+    ".": ".",
+    "You belong to this organization. Your consumption is billed to the organization budget; you can only view your own data.": "You belong to this organization. Your consumption is billed to the organization budget; you can only view your own data.",
+    "Your Quota Limit": "Your Quota Limit",
+    "Your Used Quota": "Your Used Quota",
+    "Department": "Department",
+    "Department name": "Department name"
   }
 }

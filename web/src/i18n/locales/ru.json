@@ -6581,6 +6581,18 @@
     "Failed to create organization": "Failed to create organization",
     "Organization created": "Organization created",
     "Members": "Members",
-    ".": "."
+    "Organization area": "Область организации",
+    "Organization and team management, visible to organization members.": "Управление организацией и командой, видно участникам организации.",
+    "Manage your organization, members and shared quota.": "Управляйте организацией, участниками и общей квотой.",
+    "Member": "Участник",
+    "Select an organization": "Выбрать организацию",
+    "Organization Role": "Роль в организации",
+    "Please select an organization": "Пожалуйста, выберите организацию",
+    ".": ".",
+    "You belong to this organization. Your consumption is billed to the organization budget; you can only view your own data.": "You belong to this organization. Your consumption is billed to the organization budget; you can only view your own data.",
+    "Your Quota Limit": "Your Quota Limit",
+    "Your Used Quota": "Your Used Quota",
+    "Department": "Department",
+    "Department name": "Department name"
   }
 }
