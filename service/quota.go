@@ -95,6 +95,11 @@ func PreWssConsumeQuota(ctx *gin.Context, relayInfo *relaycommon.RelayInfo, usag
 	if err != nil {
 		return err
 	}
+	// 组织成员由组织预算出资，跳过个人钱包余额检查（组织预算闸门已在 EnforceOrgQuota 执行）。
+	isOrgMember := false
+	if c, e := model.GetUserCache(relayInfo.UserId); e == nil {
+		isOrgMember = c.OrganizationId > 0
+	}
 
 	token, err := model.GetTokenByKey(strings.TrimPrefix(relayInfo.TokenKey, "sk-"), false)
 	if err != nil {
@@ -154,7 +159,7 @@ func PreWssConsumeQuota(ctx *gin.Context, relayInfo *relaycommon.RelayInfo, usag
 	quota, clamp := calculateAudioQuota(quotaInfo)
 	noteQuotaClamp(relayInfo, clamp)
 
-	if userQuota < quota {
+	if !isOrgMember && userQuota < quota {
 		return fmt.Errorf("user quota is not enough, user quota: %s, need quota: %s", logger.FormatQuota(userQuota), logger.FormatQuota(quota))
 	}
 
@@ -484,7 +489,18 @@ func postConsumeQuotaWithResult(relayInfo *relaycommon.RelayInfo, quota int, pre
 		}
 	} else {
 		// Wallet
-		if quota > 0 {
+		orgId := 0
+		if relayInfo != nil && relayInfo.UserId > 0 {
+			if id, e := model.OrgIdOfUser(relayInfo.UserId); e == nil {
+				orgId = id
+			}
+		}
+		if orgId > 0 {
+			// 组织成员：消耗由组织预算出资（used_quota 累加，余额 = quota - used_quota 自然递减），
+			// 个人钱包不再扣减；同时累加成员自身 used_quota 供组织内按用户统计。
+			_ = model.IncrOrgUsedQuota(orgId, int64(quota))
+			model.UpdateUserUsedQuota(relayInfo.UserId, quota)
+		} else if quota > 0 {
 			err = model.DecreaseUserQuota(relayInfo.UserId, quota, false)
 		} else {
 			err = model.IncreaseUserQuota(relayInfo.UserId, -quota, false)
@@ -494,13 +510,6 @@ func postConsumeQuotaWithResult(relayInfo *relaycommon.RelayInfo, quota int, pre
 		}
 	}
 	result.FundingApplied = true
-
-	// 组织共享钱包账本：扣费成功后累加组织已用额度（仅组织成员）。
-	if quota > 0 && relayInfo != nil && relayInfo.UserId > 0 {
-		if cache, e := model.GetUserCache(relayInfo.UserId); e == nil && cache.OrganizationId > 0 {
-			_ = model.IncrOrgUsedQuota(cache.OrganizationId, int64(quota))
-		}
-	}
 
 	if !relayInfo.IsPlayground {
 		if quota > 0 {

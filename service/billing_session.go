@@ -268,7 +268,11 @@ func (s *BillingSession) reserveFunding(delta int, requireAvailableQuota bool) e
 		// 全额无条件扣减，余额不足的部分记为欠费（余额可为负），不中断请求，
 		// 保证日志记录的预扣额度与用户余额的实际变动始终对账一致。
 		// DecreaseUserQuota 仅在数据库错误时失败。
-		if err := model.DecreaseUserQuota(funding.userId, delta, false); err != nil {
+		// 组织成员：消耗由组织预算出资，组织 used_quota 账本按 delta 增减，个人钱包不动。
+		if orgId, err := model.OrgIdOfUser(funding.userId); err == nil && orgId > 0 {
+		_ = model.IncrOrgUsedQuota(orgId, int64(delta))
+		model.UpdateUserUsedQuota(funding.userId, delta)
+		} else if err := model.DecreaseUserQuota(funding.userId, delta, false); err != nil {
 			return types.NewError(err, types.ErrorCodeUpdateDataError, types.ErrOptionWithSkipRetry())
 		}
 		funding.consumed += delta

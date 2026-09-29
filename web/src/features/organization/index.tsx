@@ -506,7 +506,7 @@ function AddMemberCard({
         toast.success(t('Member added'))
         setUserIds('')
         setSubQuota('')
-        setDeptId('')
+        setDeptName('')
         onAdded()
       } else {
         toast.error(r.message || t('Failed to add member'))
