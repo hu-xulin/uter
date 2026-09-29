@@ -126,6 +126,19 @@ export interface UserFormData {
   group?: string // Only used when updating user
   remark?: string // Only used when updating user
   admin_permissions?: AdminPermissionMatrix
+  organization_id?: number // 组织归属（仅超管创建时设置，系统角色仍为普通用户）
+  org_role?: string // 组织内角色：owner/admin/department_admin/member
+}
+
+/** 组织概要，供「添加用户」按组织归属下拉选择。 */
+export interface OrgSummary {
+  id: number
+  name: string
+  owner_user_id: number
+  quota: number
+  used_quota: number
+  member_limit: number
+  status: number
 }
 
 export type ManageUserAction =

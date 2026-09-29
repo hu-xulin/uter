@@ -30,6 +30,7 @@ import type {
   ManageUserAction,
   ManageUserQuotaPayload,
   ApiResponse,
+  OrgSummary,
 } from './types'
 
 // ============================================================================
@@ -161,6 +162,15 @@ export async function resetUserTwoFA(id: number): Promise<ApiResponse> {
  */
 export async function getGroups(): Promise<ApiResponse<string[]>> {
   const res = await api.get('/api/group/')
+  return res.data
+}
+
+/**
+ * List all organizations (root only). Used by the "Add User" form to assign a
+ * newly created account to an organization.
+ */
+export async function listOrganizations(): Promise<ApiResponse<OrgSummary[]>> {
+  const res = await api.get('/api/organizations')
   return res.data
 }
 
