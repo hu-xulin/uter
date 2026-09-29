@@ -179,6 +179,8 @@ func UpdateOrganizationMember(c *gin.Context) {
 			return
 		}
 	}
+	// 角色/部门变更后刷新认证缓存，侧栏与后端鉴权立即生效（见 model.CreateOrganization 注释）。
+	_, _ = model.BumpUserAuthVersion(uid)
 	common.ApiSuccess(c, gin.H{"success": true})
 }
 

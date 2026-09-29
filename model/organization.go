@@ -83,6 +83,9 @@ func CreateOrganization(name string, ownerUserId int, quota int64) (*Organizatio
 	}).Error; err != nil {
 		return nil, err
 	}
+	// 组织归属/角色变更必须刷新 Redis 用户认证缓存：登录会话与后端 OrgAdminAuth
+	// 都从缓存读 organization_id，若不失效则仍读旧值 0 —— 侧栏组织模块不显示、组织接口 403。
+	_, _ = BumpUserAuthVersion(ownerUserId)
 	return org, nil
 }
 
@@ -143,23 +146,35 @@ func (org *Organization) AddMember(userIds []int, departmentName string, subQuot
 			return ErrOrgMemberLimit
 		}
 	}
-	return DB.Model(&User{}).Where("id IN ?", userIds).Updates(map[string]any{
+	if err := DB.Model(&User{}).Where("id IN ?", userIds).Updates(map[string]any{
 		"organization_id":  org.Id,
 		"department_name":  departmentName,
 		"org_role":         OrgRoleMember,
 		"sub_quota_limit":  subQuotaLimit,
-	}).Error
+	}).Error; err != nil {
+		return err
+	}
+	// 见 CreateOrganization 注释：成员加入后刷新各自认证缓存，使侧栏与后端鉴权立即生效。
+	for _, uid := range userIds {
+		_, _ = BumpUserAuthVersion(uid)
+	}
+	return nil
 }
 
 // RemoveMember 把用户移出组织（变回平台直管普通用户）。
 func (org *Organization) RemoveMember(userId int) error {
-	return DB.Model(&User{}).Where("id = ?", userId).Updates(map[string]any{
+	if err := DB.Model(&User{}).Where("id = ?", userId).Updates(map[string]any{
 		"organization_id": 0,
 		"department_id":   0,
 		"department_name": "",
 		"org_role":        "",
 		"sub_quota_limit": 0,
-	}).Error
+	}).Error; err != nil {
+		return err
+	}
+	// 移出组织后刷新缓存，避免旧 organization_id 残留导致侧栏/接口仍按组织成员放行。
+	_, _ = BumpUserAuthVersion(userId)
+	return nil
 }
 
 // SetMemberSubQuotaLimit 设置成员子额度上限（0=不限，跟随组织总池）。
