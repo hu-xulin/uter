@@ -64,6 +64,11 @@ export CODEBUDDY_SAFE_DELETE_SANDBOX=0
 # dev server 的 CLI 是 `#!/usr/bin/env node` shim，node 必须在 PATH 上。
 export PATH="$NODE_DIR:$PATH"
 
+# 登录会话活跃上限：默认拉到 200，防止多设备/多浏览器把超管锁在门外
+# （配合 auth_session.go 的「淘汰最旧 idle 会话」逻辑，硬上限只作兜底）。
+# 仍可被环境变量 USER_SESSION_ACTIVE_LIMIT 覆盖（例如临时调回 50）。
+export USER_SESSION_ACTIVE_LIMIT="${USER_SESSION_ACTIVE_LIMIT:-200}"
+
 fail() { echo "✗ $1" >&2; exit 1; }
 stat_line() { stat -f '%Sm  %8z  %N' -t '%F %T' "$1" 2>/dev/null || echo "    缺失: $1"; }
 port_in_use() { lsof -nP -iTCP:"$1" -sTCP:LISTEN -t >/dev/null 2>&1; }
