@@ -33,6 +33,10 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Switch } from '@/components/ui/switch'
+import {
+  formatBillingCurrencyFromUSD,
+  getCurrencyDisplay,
+} from '@/lib/currency'
 
 import {
   SettingsForm,
@@ -50,6 +54,20 @@ const schema = z.object({
 })
 
 type Values = z.infer<typeof schema>
+
+/**
+ * Check-in rewards are stored in raw quota units — the same integer unit as
+ * `users.quota`, where `quotaPerUnit` (500,000 by default) equals 1 USD. They
+ * are *not* dollars, so a value of 1000 is 1000 tokens ≈ $0.002, not $1000.
+ *
+ * The hint is rendered as money (even when the site is configured to display
+ * balances as tokens) so an admin can sanity-check the amount they typed.
+ */
+function formatQuotaHint(quota: number): string {
+  if (!Number.isFinite(quota)) return '-'
+  const { config } = getCurrencyDisplay()
+  return formatBillingCurrencyFromUSD(quota / config.quotaPerUnit)
+}
 
 export function CheckinSettingsSection({
   defaultValues,
@@ -152,7 +170,11 @@ export function CheckinSettingsSection({
                 name='minQuota'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('Minimum check-in quota')}</FormLabel>
+                    <FormLabel>
+                      {t('Minimum check-in quota ({{unit}})', {
+                        unit: t('Tokens'),
+                      })}
+                    </FormLabel>
                     <FormControl>
                       <Input
                         type='number'
@@ -162,7 +184,10 @@ export function CheckinSettingsSection({
                       />
                     </FormControl>
                     <FormDescription>
-                      {t('Minimum quota amount awarded for check-in')}
+                      {t(
+                        'Minimum quota amount awarded for check-in (≈ {{amount}})',
+                        { amount: formatQuotaHint(field.value) }
+                      )}
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -174,7 +199,11 @@ export function CheckinSettingsSection({
                 name='maxQuota'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('Maximum check-in quota')}</FormLabel>
+                    <FormLabel>
+                      {t('Maximum check-in quota ({{unit}})', {
+                        unit: t('Tokens'),
+                      })}
+                    </FormLabel>
                     <FormControl>
                       <Input
                         type='number'
@@ -184,7 +213,10 @@ export function CheckinSettingsSection({
                       />
                     </FormControl>
                     <FormDescription>
-                      {t('Maximum quota amount awarded for check-in')}
+                      {t(
+                        'Maximum quota amount awarded for check-in (≈ {{amount}})',
+                        { amount: formatQuotaHint(field.value) }
+                      )}
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
