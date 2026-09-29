@@ -33,6 +33,11 @@ type Route struct {
 	// canonical top-level "model" body field before any JS hook runs; empty
 	// means unrestricted. Must be a subset of meta.models.
 	Models []string `json:"models,omitempty"`
+	// RetainResult, when true, asks the client to keep this route's rendered
+	// result persisted for the task instead of treating it as transient. It is
+	// a newer official-marketplace field; the backend accepts and forwards it
+	// (the host UI consumes it) rather than rejecting the whole plugin.
+	RetainResult bool `json:"retainResult,omitempty"`
 }
 
 // ProtocolClaim is one entry of meta.protocols. Models narrows the protocol's

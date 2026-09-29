@@ -349,6 +349,49 @@ func TestRouteModelsDecodeAndValidation(t *testing.T) {
 	}
 }
 
+func TestRouteRetainResultField(t *testing.T) {
+	routeExports := `export const native = {
+		decodeJob: function(ctx) { return {kind: "submit", model: "gpt-5.5", requestBody: ctx.body.value}; },
+		jobCreated: function(ctx, task) { return task; }
+	};`
+	for _, testCase := range []struct {
+		name        string
+		metaFields  string
+		errContains string
+		want        bool
+	}{
+		{
+			name:       "retainResult true is accepted and parsed",
+			metaFields: `routes: [{method: "POST", path: "/v1/batch", type: "submit", models: ["gpt-5.5"], decode: "decodeJob", render: "jobCreated", retainResult: true}],`,
+			want:       true,
+		},
+		{
+			name:       "retainResult absent defaults to false",
+			metaFields: `routes: [{method: "POST", path: "/v1/batch", type: "submit", models: ["gpt-5.5"], decode: "decodeJob", render: "jobCreated"}],`,
+			want:       false,
+		},
+		{
+			name:        "retainResult non-boolean is rejected",
+			metaFields:  `routes: [{method: "POST", path: "/v1/batch", type: "submit", models: ["gpt-5.5"], decode: "decodeJob", render: "jobCreated", retainResult: "yes"}],`,
+			errContains: "retainResult must be a boolean",
+		},
+	} {
+		t.Run(testCase.name, func(t *testing.T) {
+			plugin, err := CompilePlugin(
+				routingTestPluginSource("route-retain", 0, `["gpt-5.5"]`, testCase.metaFields, routeExports),
+				Options{},
+			)
+			if testCase.errContains != "" {
+				require.ErrorContains(t, err, testCase.errContains)
+				return
+			}
+			require.NoError(t, err)
+			require.Len(t, plugin.Meta.Routes, 1)
+			assert.Equal(t, testCase.want, plugin.Meta.Routes[0].RetainResult)
+		})
+	}
+}
+
 func TestRouteRequestContextClonesFormAndMultipartValuesPerDecoder(t *testing.T) {
 	tests := []struct {
 		name   string

@@ -1730,7 +1730,7 @@ func decodeRoutes(value any) ([]Route, error) {
 		}
 		for key := range object {
 			switch key {
-			case "method", "path", "type", "action", "decode", "render", "taskIdParam", "models":
+			case "method", "path", "type", "action", "decode", "render", "taskIdParam", "models", "retainResult":
 			default:
 				return nil, fmt.Errorf("plugin meta route %d has unknown field %q", index, key)
 			}
@@ -1759,6 +1759,9 @@ func decodeRoutes(value any) ([]Route, error) {
 		}
 		if route.TaskIDParam, err = stringMetaField(object, "taskIdParam"); err != nil {
 			return nil, err
+		}
+		if route.RetainResult, err = boolMetaField(object, "retainResult"); err != nil {
+			return nil, fmt.Errorf("plugin meta route %d: %w", index, err)
 		}
 		if _, exists := object["models"]; exists {
 			if route.Models, err = strictStringSlice(object, "models"); err != nil {
@@ -1971,6 +1974,18 @@ func stringMetaField(object map[string]any, name string) (string, error) {
 		return "", fmt.Errorf("plugin meta %s must be a string", name)
 	}
 	return text, nil
+}
+
+func boolMetaField(object map[string]any, name string) (bool, error) {
+	value, exists := object[name]
+	if !exists {
+		return false, nil
+	}
+	flag, ok := value.(bool)
+	if !ok {
+		return false, fmt.Errorf("plugin meta %s must be a boolean", name)
+	}
+	return flag, nil
 }
 
 func localizedTextMetaField(object map[string]any, name string, maxRunes int) (LocalizedText, error) {
