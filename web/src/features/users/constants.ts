@@ -76,7 +76,7 @@ export const USER_ROLE = {
 export const ORG_ROLE_LABEL_KEYS: Record<string, string> = {
   owner: 'Organization Owner',
   admin: 'Organization Admin',
-  department_admin: 'Organization User',
+  department_admin: 'Department Admin',
   member: 'Organization User',
 }
 
