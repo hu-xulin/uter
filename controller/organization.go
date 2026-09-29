@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"net/http"
 	"strconv"
 
 	"github.com/Uter-AI/Uter/common"
@@ -235,16 +236,162 @@ func GetOrganizationStats(c *gin.Context) {
 		common.ApiError(c, err)
 		return
 	}
-	memberUsed, err := model.GetOrgUsedQuota(orgId)
+	common.ApiSuccess(c, gin.H{
+		"organization": org,
+		"used_quota":   org.UsedQuota,
+		"remaining":    org.Quota - org.UsedQuota,
+	})
+}
+
+// GetOrganization 返回指定组织（owner / 组织管理员 / 部门管理员 / 超管可见）。
+func GetOrganization(c *gin.Context) {
+	orgId, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		common.ApiErrorI18n(c, i18n.MsgInvalidParams)
+		return
+	}
+	if !canViewOrganization(c, orgId) {
+		common.ApiErrorI18n(c, i18n.MsgUserNoPermissionHigherLevel)
+		return
+	}
+	org, err := model.GetOrganizationById(orgId)
 	if err != nil {
 		common.ApiError(c, err)
 		return
 	}
-	common.ApiSuccess(c, gin.H{
-		"organization": org,
-		"used_quota":   memberUsed,
-		"remaining":    org.Quota - org.UsedQuota,
-	})
+	common.ApiSuccess(c, org)
+}
+
+// GetOrganizationLogs 返回组织内成员的日志（组织管理员可见，仅含本组织成员）。
+func GetOrganizationLogs(c *gin.Context) {
+	orgId, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		common.ApiErrorI18n(c, i18n.MsgInvalidParams)
+		return
+	}
+	if !canViewOrganization(c, orgId) {
+		common.ApiErrorI18n(c, i18n.MsgUserNoPermissionHigherLevel)
+		return
+	}
+	pageInfo := common.GetPageQuery(c)
+	logType, _ := strconv.Atoi(c.Query("type"))
+	startTimestamp, _ := strconv.ParseInt(c.Query("start_timestamp"), 10, 64)
+	endTimestamp, _ := strconv.ParseInt(c.Query("end_timestamp"), 10, 64)
+	username := c.Query("username")
+	tokenName := c.Query("token_name")
+	modelName := c.Query("model_name")
+	channel, _ := strconv.Atoi(c.Query("channel"))
+	group := c.Query("group")
+	requestId := c.Query("request_id")
+	upstreamRequestId := c.Query("upstream_request_id")
+	orgUsernames, _ := model.GetOrgMemberUsernames(orgId)
+	logs, total, err := model.GetAllLogs(logType, startTimestamp, endTimestamp, modelName, username, tokenName, pageInfo.GetStartIdx(), pageInfo.GetPageSize(), channel, group, requestId, upstreamRequestId, orgUsernames...)
+	if err != nil {
+		common.ApiError(c, err)
+		return
+	}
+	model.FormatAdminLogs(logs)
+	pageInfo.SetTotal(int(total))
+	pageInfo.SetItems(logs)
+	common.ApiSuccess(c, pageInfo)
+}
+
+// GetOrganizationLogsStat 返回组织内成员的消耗汇总（组织管理员可见）。
+func GetOrganizationLogsStat(c *gin.Context) {
+	orgId, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		common.ApiErrorI18n(c, i18n.MsgInvalidParams)
+		return
+	}
+	if !canViewOrganization(c, orgId) {
+		common.ApiErrorI18n(c, i18n.MsgUserNoPermissionHigherLevel)
+		return
+	}
+	logType, _ := strconv.Atoi(c.Query("type"))
+	startTimestamp, _ := strconv.ParseInt(c.Query("start_timestamp"), 10, 64)
+	endTimestamp, _ := strconv.ParseInt(c.Query("end_timestamp"), 10, 64)
+	tokenName := c.Query("token_name")
+	username := c.Query("username")
+	modelName := c.Query("model_name")
+	channel, _ := strconv.Atoi(c.Query("channel"))
+	group := c.Query("group")
+	orgUsernames, _ := model.GetOrgMemberUsernames(orgId)
+	stat, err := model.SumUsedQuota(logType, startTimestamp, endTimestamp, modelName, username, tokenName, channel, group, orgUsernames...)
+	if err != nil {
+		common.ApiError(c, err)
+		return
+	}
+	common.ApiSuccess(c, stat)
+}
+
+// GetOrganizationQuotaDates 返回组织成员按时间聚合的额度消耗（组织管理员可见）。
+func GetOrganizationQuotaDates(c *gin.Context) {
+	orgId, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		common.ApiErrorI18n(c, i18n.MsgInvalidParams)
+		return
+	}
+	if !canViewOrganization(c, orgId) {
+		common.ApiErrorI18n(c, i18n.MsgUserNoPermissionHigherLevel)
+		return
+	}
+	startTimestamp, _ := strconv.ParseInt(c.Query("start_timestamp"), 10, 64)
+	endTimestamp, _ := strconv.ParseInt(c.Query("end_timestamp"), 10, 64)
+	username := c.Query("username")
+	orgUsernames, _ := model.GetOrgMemberUsernames(orgId)
+	dates, err := model.GetAllQuotaDates(startTimestamp, endTimestamp, username, orgUsernames...)
+	if err != nil {
+		common.ApiError(c, err)
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"success": true, "message": "", "data": dates})
+}
+
+// GetOrganizationQuotaDatesByUser 返回组织成员按用户聚合的额度消耗（组织管理员可见）。
+func GetOrganizationQuotaDatesByUser(c *gin.Context) {
+	orgId, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		common.ApiErrorI18n(c, i18n.MsgInvalidParams)
+		return
+	}
+	if !canViewOrganization(c, orgId) {
+		common.ApiErrorI18n(c, i18n.MsgUserNoPermissionHigherLevel)
+		return
+	}
+	startTimestamp, _ := strconv.ParseInt(c.Query("start_timestamp"), 10, 64)
+	endTimestamp, _ := strconv.ParseInt(c.Query("end_timestamp"), 10, 64)
+	orgUsernames, _ := model.GetOrgMemberUsernames(orgId)
+	dates, err := model.GetQuotaDataGroupByUser(startTimestamp, endTimestamp, orgUsernames...)
+	if err != nil {
+		common.ApiError(c, err)
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"success": true, "message": "", "data": dates})
+}
+
+// GetOrganizationFlow 返回组织成员流量（按模型/日期）汇总（组织管理员可见）。
+func GetOrganizationFlow(c *gin.Context) {
+	orgId, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		common.ApiErrorI18n(c, i18n.MsgInvalidParams)
+		return
+	}
+	if !canViewOrganization(c, orgId) {
+		common.ApiErrorI18n(c, i18n.MsgUserNoPermissionHigherLevel)
+		return
+	}
+	startTimestamp, endTimestamp, ok := parseFlowQuotaTimeRange(c)
+	if !ok {
+		return
+	}
+	username := c.Query("username")
+	orgUsernames, _ := model.GetOrgMemberUsernames(orgId)
+	dates, err := model.GetFlowQuotaData(startTimestamp, endTimestamp, username, 0, c.GetInt("role"), orgUsernames...)
+	if err != nil {
+		common.ApiError(c, err)
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"success": true, "message": "", "data": dates})
 }
 
 // canViewOrganization 仅允许组织 owner / 组织管理员 / 部门管理员查看本组织。

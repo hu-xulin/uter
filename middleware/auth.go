@@ -276,6 +276,68 @@ func RequestOrgScope(c *gin.Context) (orgId int, deptId int) {
 	return orgId, deptId
 }
 
+// OrgAdminAuth 组织范围管理员鉴权。
+//
+// 设计要点（安全性）：组织归属与系统角色（common.Role*）正交。公司负责人/组织管理员
+// 只是「属于某组织且 org_role 为 owner/admin/department_admin」的普通用户（role 仍为
+// common.RoleCommonUser），【不会】被晋升为全局 Admin。这样他们只能访问组织范围接口，
+// 无法触及平台级 Admin 接口（如删除任意用户、渠道管理）。
+//
+// 放行条件：
+//   - 超级管理员（role >= RoleRootUser）：可视化所有组织；
+//   - 否则必须 organization_id > 0 且 org_role ∈ {owner, admin, department_admin}。
+//
+// 平台级管理员（organization_id == 0）不属于任何组织，会被拒绝——他们应使用全局
+// Admin 接口而非组织接口。
+func OrgAdminAuth() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		if _, started := c.Get(accessTokenAuditContextKey); !started {
+			defer finishAccessTokenAudit(c)
+		}
+		user, identity, useAccessToken, err := authenticateDashboardRequest(c)
+		if err != nil {
+			writeDashboardAuthError(c, err)
+			return
+		}
+		if user.Status != common.UserStatusEnabled {
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"success": false, "code": "AUTH_USER_DISABLED", "message": common.TranslateMessage(c, i18n.MsgAuthUserBanned)})
+			return
+		}
+		if !validUserInfo(user.Username, user.Role) {
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"success": false, "code": "AUTH_USER_INVALID", "message": common.TranslateMessage(c, i18n.MsgAuthUserInfoInvalid)})
+			return
+		}
+		// 超管放行（可视化所有组织）。
+		if user.Role >= common.RoleRootUser {
+			setDashboardAuthContext(c, user, identity, useAccessToken)
+			c.Next()
+			return
+		}
+		// 非超管：必须是某组织的 owner/admin/department_admin。
+		if user.OrganizationId == 0 {
+			abortOrgForbidden(c)
+			return
+		}
+		switch user.OrgRole {
+		case model.OrgRoleOwner, model.OrgRoleAdmin, model.OrgRoleDepartmentAdmin:
+			setDashboardAuthContext(c, user, identity, useAccessToken)
+			c.Next()
+			return
+		default:
+			abortOrgForbidden(c)
+			return
+		}
+	}
+}
+
+func abortOrgForbidden(c *gin.Context) {
+	c.AbortWithStatusJSON(http.StatusForbidden, gin.H{
+		"success": false,
+		"code":    "AUTH_ORG_FORBIDDEN",
+		"message": common.TranslateMessage(c, i18n.MsgUserNoPermissionHigherLevel),
+	})
+}
+
 // TokenOrUserAuth allows either session-based user auth or API token auth.
 // Used for endpoints that need to be accessible from both the dashboard and API clients.
 func TokenOrUserAuth() func(c *gin.Context) {
