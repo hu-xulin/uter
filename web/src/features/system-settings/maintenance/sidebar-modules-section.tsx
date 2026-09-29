@@ -77,6 +77,12 @@ export function SidebarModulesSection({
       title: t('Personal area'),
       description: t('Wallet management and personal preferences.'),
     },
+    organization: {
+      title: t('Organization area'),
+      description: t(
+        'Organization and team management, visible to organization members.'
+      ),
+    },
     admin: {
       title: t('Admin area'),
       description: t('Global configuration and administrative tools.'),
@@ -137,6 +143,14 @@ export function SidebarModulesSection({
         description: t('Manage your security settings and account access'),
       },
     },
+    organization: {
+      organization: {
+        title: t('Organization'),
+        description: t(
+          'Manage your organization, members and shared quota.'
+        ),
+      },
+    },
     admin: {
       channel: {
         title: t('Channels'),
@@ -190,7 +204,19 @@ export function SidebarModulesSection({
     form.reset(SIDEBAR_MODULES_DEFAULT)
   }
 
-  const sections = Object.entries(config)
+  // 固定区域顺序：组织区域始终位于管理员区域上方（与需求一致）。
+  const SECTION_ORDER = [
+    'chat',
+    'console',
+    'personal',
+    'organization',
+    'admin',
+  ]
+  const sections = Object.entries(config).sort((a, b) => {
+    const ia = SECTION_ORDER.indexOf(a[0])
+    const ib = SECTION_ORDER.indexOf(b[0])
+    return (ia === -1 ? 999 : ia) - (ib === -1 ? 999 : ib)
+  })
 
   return (
     <SettingsSection title={t('Sidebar modules')}>
