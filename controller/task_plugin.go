@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"maps"
 	"net/http"
 	"net/url"
@@ -630,6 +631,95 @@ func UpdateTaskPluginMarketplaceSources(c *gin.Context) {
 		return
 	}
 	common.ApiSuccess(c, sources)
+}
+
+// FetchTaskPluginMarketplaceIndex lets the browser retrieve a marketplace
+// index through the gateway instead of a direct cross-origin fetch, which the
+// plugin host usually blocks with CORS (the original browser-only fetch failed
+// with "Failed to fetch" because the host returned no Access-Control-Allow-Origin).
+//
+// The gateway only follows URLs that are already configured marketplace
+// sources, so this endpoint cannot be abused as an open proxy or SSRF vector.
+// Redirects are not followed so a configured URL cannot bounce to an internal
+// endpoint.
+func FetchTaskPluginMarketplaceIndex(c *gin.Context) {
+	rawURL := strings.TrimSpace(c.Query("url"))
+	if rawURL == "" {
+		common.ApiErrorMsg(c, "marketplace index url is required")
+		return
+	}
+	parsed, err := url.Parse(rawURL)
+	if err != nil ||
+		!parsed.IsAbs() ||
+		parsed.Host == "" ||
+		(!strings.EqualFold(parsed.Scheme, "http") &&
+			!strings.EqualFold(parsed.Scheme, "https")) {
+		common.ApiErrorMsg(c, "marketplace index url must be an absolute http(s) URL")
+		return
+	}
+
+	// Only allow fetching a URL the administrator has already configured as a
+	// marketplace source.
+	allowed := false
+	for _, source := range setting.GetTaskPluginMarketplaceSources() {
+		if source.IndexURL == rawURL {
+			allowed = true
+			break
+		}
+	}
+	if !allowed {
+		common.ApiErrorMsg(c, "marketplace index url is not a configured source")
+		return
+	}
+
+	ctx, cancel := context.WithTimeout(c.Request.Context(), 20*time.Second)
+	defer cancel()
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, rawURL, nil)
+	if err != nil {
+		common.ApiError(c, err)
+		return
+	}
+	req.Header.Set("User-Agent", "Uter-Plugin-Marketplace/1.0")
+	client := &http.Client{
+		// Bound end-to-end so a slow host cannot hang the request.
+		Timeout: 20 * time.Second,
+		// Do not follow redirects: a configured URL must not bounce to an
+		// internal endpoint and become an SSRF pivot.
+		CheckRedirect: func(_ *http.Request, _ []*http.Request) error {
+			return http.ErrUseLastResponse
+		},
+	}
+	resp, err := client.Do(req)
+	if err != nil {
+		common.ApiErrorMsg(c, "failed to reach marketplace index: "+err.Error())
+		return
+	}
+	defer func() { _ = resp.Body.Close() }()
+	if resp.StatusCode != http.StatusOK {
+		common.ApiErrorMsg(
+			c,
+			fmt.Sprintf("marketplace index returned HTTP %d", resp.StatusCode),
+		)
+		return
+	}
+
+	limited := io.LimitReader(resp.Body, int64(maxTaskPluginSourceBytes)+1)
+	body, err := io.ReadAll(limited)
+	if err != nil {
+		common.ApiError(c, err)
+		return
+	}
+	if len(body) > maxTaskPluginSourceBytes {
+		common.ApiErrorMsg(c, "marketplace index exceeds size limit")
+		return
+	}
+
+	var index any
+	if err := json.Unmarshal(body, &index); err != nil {
+		common.ApiErrorMsg(c, "marketplace index is not valid JSON: "+err.Error())
+		return
+	}
+	common.ApiSuccess(c, index)
 }
 
 func GetTaskPluginOptions(c *gin.Context) {

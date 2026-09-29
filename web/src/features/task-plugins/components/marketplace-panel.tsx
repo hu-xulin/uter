@@ -33,12 +33,11 @@ import {
 import { Skeleton } from '@/components/ui/skeleton'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 
-import { listMarketplaceSources, listTaskPlugins } from '../api'
+import { fetchMarketplaceIndex, listMarketplaceSources, listTaskPlugins } from '../api'
 import {
   deriveInstallState,
   indexHasIntegrityHashes,
   isDefaultMarketplaceSource,
-  parseMarketplaceIndex,
 } from '../lib/marketplace'
 import type { MarketplaceIndex, MarketplaceSource } from '../types'
 import {
@@ -77,15 +76,7 @@ export function MarketplacePanel() {
     meta: { errorToast: false },
     queryFn: async (): Promise<MarketplaceIndex> => {
       if (!selectedSource) throw new Error('marketplace source is not selected')
-      const response = await fetch(selectedSource.index_url)
-      if (!response.ok) {
-        throw new Error(
-          t('Index request failed with HTTP {{status}}', {
-            status: response.status,
-          })
-        )
-      }
-      return parseMarketplaceIndex(await response.json())
+      return fetchMarketplaceIndex(selectedSource.index_url)
     },
   })
 

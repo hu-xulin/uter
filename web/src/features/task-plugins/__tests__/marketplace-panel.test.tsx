@@ -28,16 +28,9 @@ import {
 } from '../lib/marketplace'
 import type { MarketplaceIndex, MarketplaceSource } from '../types'
 
-vi.mock('../components/marketplace-install-dialog', () => ({
-  MarketplaceInstallDialog: () => null,
-}))
-vi.mock('../components/marketplace-plugin-card', () => ({
-  MarketplacePluginCard: () => null,
-}))
-vi.mock('../components/marketplace-sources-dialog', () => ({
-  MarketplaceSourcesDialog: () => null,
-}))
-
+// The index is no longer fetched by the browser directly (that triggered CORS
+// "Failed to fetch"); it goes through the gateway via `fetchMarketplaceIndex`.
+// Mock the API layer so the panel test stays decoupled from transport.
 const officialSource: MarketplaceSource = {
   name: 'Official',
   index_url: DEFAULT_MARKETPLACE_INDEX_URL,
@@ -57,6 +50,30 @@ const githubIndex: MarketplaceIndex = {
   name: 'GitHub catalog',
   plugins: [],
 }
+
+const fetchMarketplaceIndexMock = vi.fn(
+  async (indexUrl: string): Promise<MarketplaceIndex> => {
+    if (indexUrl === GITHUB_MARKETPLACE_INDEX_URL) return githubIndex
+    return officialIndex
+  }
+)
+
+vi.mock('../api', () => ({
+  listMarketplaceSources: vi.fn(async () => [officialSource, githubSource]),
+  listTaskPlugins: vi.fn(async () => []),
+  fetchMarketplaceIndex: (indexUrl: string) =>
+    fetchMarketplaceIndexMock(indexUrl),
+}))
+
+vi.mock('../components/marketplace-install-dialog', () => ({
+  MarketplaceInstallDialog: () => null,
+}))
+vi.mock('../components/marketplace-plugin-card', () => ({
+  MarketplacePluginCard: () => null,
+}))
+vi.mock('../components/marketplace-sources-dialog', () => ({
+  MarketplaceSourcesDialog: () => null,
+}))
 
 const queryClients: QueryClient[] = []
 
@@ -81,29 +98,17 @@ function renderPanel(): QueryClient {
   return queryClient
 }
 
-function installIndexFetchMock() {
-  const fetchMock = vi.fn(async (input: RequestInfo | URL) => {
-    const url = String(input)
-    const index =
-      url === GITHUB_MARKETPLACE_INDEX_URL ? githubIndex : officialIndex
-    return new Response(JSON.stringify(index), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' },
-    })
-  })
-  vi.stubGlobal('fetch', fetchMock)
-  return fetchMock
-}
-
 afterEach(() => {
   for (const queryClient of queryClients) queryClient.clear()
   queryClients.length = 0
-  vi.unstubAllGlobals()
+  fetchMarketplaceIndexMock.mockReset()
+  fetchMarketplaceIndexMock.mockImplementation(async (indexUrl: string) =>
+    indexUrl === GITHUB_MARKETPLACE_INDEX_URL ? githubIndex : officialIndex
+  )
 })
 
 describe('MarketplacePanel source switch', () => {
   test('selects only the official source by default and hides both URLs', async () => {
-    const fetchMock = installIndexFetchMock()
     renderPanel()
 
     expect(
@@ -117,17 +122,22 @@ describe('MarketplacePanel source switch', () => {
       'aria-pressed',
       'true'
     )
-    expect(fetchMock).toHaveBeenCalledWith(DEFAULT_MARKETPLACE_INDEX_URL)
-    expect(fetchMock).not.toHaveBeenCalledWith(GITHUB_MARKETPLACE_INDEX_URL)
+    expect(fetchMarketplaceIndexMock).toHaveBeenCalledWith(
+      DEFAULT_MARKETPLACE_INDEX_URL
+    )
+    expect(fetchMarketplaceIndexMock).not.toHaveBeenCalledWith(
+      GITHUB_MARKETPLACE_INDEX_URL
+    )
   })
 
   test('loads GitHub only after the administrator switches to it', async () => {
-    const fetchMock = installIndexFetchMock()
     const user = userEvent.setup()
     renderPanel()
     await screen.findByRole('heading', { name: officialIndex.name })
 
-    expect(fetchMock).not.toHaveBeenCalledWith(GITHUB_MARKETPLACE_INDEX_URL)
+    expect(fetchMarketplaceIndexMock).not.toHaveBeenCalledWith(
+      GITHUB_MARKETPLACE_INDEX_URL
+    )
 
     await user.click(screen.getByRole('button', { name: 'GitHub' }))
 
@@ -141,24 +151,28 @@ describe('MarketplacePanel source switch', () => {
       'aria-pressed',
       'true'
     )
-    expect(fetchMock).toHaveBeenCalledWith(GITHUB_MARKETPLACE_INDEX_URL)
+    expect(fetchMarketplaceIndexMock).toHaveBeenCalledWith(
+      GITHUB_MARKETPLACE_INDEX_URL
+    )
   })
 
   test('does not request GitHub automatically when the official source fails', async () => {
-    const fetchMock = vi.fn(async (input: RequestInfo | URL) => {
-      const url = String(input)
-      if (url === DEFAULT_MARKETPLACE_INDEX_URL) {
-        return new Response('', { status: 503 })
+    fetchMarketplaceIndexMock.mockImplementation(async (indexUrl: string) => {
+      if (indexUrl === DEFAULT_MARKETPLACE_INDEX_URL) {
+        throw new Error('failed to fetch')
       }
-      return new Response(JSON.stringify(githubIndex), { status: 200 })
+      return githubIndex
     })
-    vi.stubGlobal('fetch', fetchMock)
     renderPanel()
 
     expect(
       await screen.findByText('Could not load this source')
     ).toBeInTheDocument()
-    expect(fetchMock).toHaveBeenCalledWith(DEFAULT_MARKETPLACE_INDEX_URL)
-    expect(fetchMock).not.toHaveBeenCalledWith(GITHUB_MARKETPLACE_INDEX_URL)
+    expect(fetchMarketplaceIndexMock).toHaveBeenCalledWith(
+      DEFAULT_MARKETPLACE_INDEX_URL
+    )
+    expect(fetchMarketplaceIndexMock).not.toHaveBeenCalledWith(
+      GITHUB_MARKETPLACE_INDEX_URL
+    )
   })
 })
