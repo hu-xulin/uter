@@ -6,6 +6,7 @@ import (
 
 	"gorm.io/gorm"
 
+	"github.com/Uter-AI/Uter/common"
 	"github.com/Uter-AI/Uter/logger"
 )
 
@@ -17,6 +18,15 @@ const (
 	OrgRoleDepartmentAdmin = "department_admin" // 部门管理员，仅能管理本部门成员
 	OrgRoleMember         = "member"          // 普通成员
 )
+
+// IsValidOrgRole 校验组织内角色字符串合法。
+func IsValidOrgRole(role string) bool {
+	switch role {
+	case OrgRoleOwner, OrgRoleAdmin, OrgRoleDepartmentAdmin, OrgRoleMember:
+		return true
+	}
+	return false
+}
 
 // Organization 表示一个公司/租户。Quota 为共享总钱包预算，UsedQuota 为已消耗。
 type Organization struct {
@@ -124,8 +134,8 @@ func UpdateOrganization(id int, name string, quota int64, memberLimit int, statu
 	return DB.Model(&Organization{}).Where("id = ?", id).Updates(updates).Error
 }
 
-// AddMember 把用户加入组织，可指定部门与子额度上限。
-func (org *Organization) AddMember(userIds []int, departmentId int, subQuotaLimit int64) error {
+// AddMember 把用户加入组织，可指定部门名称与子额度上限。
+func (org *Organization) AddMember(userIds []int, departmentName string, subQuotaLimit int64) error {
 	if org.MemberLimit > 0 {
 		var count int64
 		DB.Model(&User{}).Where("organization_id = ? AND deleted_at IS NULL", org.Id).Count(&count)
@@ -135,9 +145,9 @@ func (org *Organization) AddMember(userIds []int, departmentId int, subQuotaLimi
 	}
 	return DB.Model(&User{}).Where("id IN ?", userIds).Updates(map[string]any{
 		"organization_id":  org.Id,
-		"department_id":    departmentId,
-		"org_role":        OrgRoleMember,
-		"sub_quota_limit": subQuotaLimit,
+		"department_name":  departmentName,
+		"org_role":         OrgRoleMember,
+		"sub_quota_limit":  subQuotaLimit,
 	}).Error
 }
 
@@ -146,6 +156,7 @@ func (org *Organization) RemoveMember(userId int) error {
 	return DB.Model(&User{}).Where("id = ?", userId).Updates(map[string]any{
 		"organization_id": 0,
 		"department_id":   0,
+		"department_name": "",
 		"org_role":        "",
 		"sub_quota_limit": 0,
 	}).Error
@@ -205,6 +216,24 @@ func EnforceOrgQuota(userId int, quota int64) error {
 	return nil
 }
 
+// OrgIdOfUser 返回用户所属组织 id（0=平台直管）。优先读缓存，缺失回退 DB。
+// 用于计费时判断「是否由组织钱包出资」。
+func OrgIdOfUser(userId int) (int, error) {
+	if userId <= 0 {
+		return 0, nil
+	}
+	if common.RedisEnabled {
+		if c, err := GetUserCache(userId); err == nil && c != nil {
+			return c.OrganizationId, nil
+		}
+	}
+	u, err := GetUserById(userId, false)
+	if err != nil {
+		return 0, err
+	}
+	return u.OrganizationId, nil
+}
+
 // IncrOrgUsedQuota 在扣费成功后累加组织已用额度（原子自增）。
 func IncrOrgUsedQuota(orgId int, amount int64) error {
 	if orgId == 0 || amount == 0 {
@@ -213,13 +242,13 @@ func IncrOrgUsedQuota(orgId int, amount int64) error {
 	return DB.Model(&Organization{}).Where("id = ?", orgId).Update("used_quota", gorm.Expr("used_quota + ?", amount)).Error
 }
 
-// GetOrgMembers 分页读取组织内成员。departmentId>0 时仅返回该部门。
-func GetOrgMembers(orgId int, departmentId int, keyword string, startIdx int, num int) ([]*User, int64, error) {
+// GetOrgMembers 分页读取组织内成员。departmentName 非空时仅返回该部门。
+func GetOrgMembers(orgId int, departmentName string, keyword string, startIdx int, num int) ([]*User, int64, error) {
 	var users []*User
 	var total int64
 	query := DB.Model(&User{}).Where("organization_id = ? AND deleted_at IS NULL", orgId)
-	if departmentId > 0 {
-		query = query.Where("department_id = ?", departmentId)
+	if departmentName != "" {
+		query = query.Where("department_name = ?", departmentName)
 	}
 	if keyword != "" {
 		query = query.Where("username LIKE ? OR email LIKE ? OR display_name LIKE ?",

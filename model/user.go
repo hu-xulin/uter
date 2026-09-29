@@ -106,7 +106,8 @@ type User struct {
 	InviterId            int                        `json:"inviter_id" gorm:"type:int;column:inviter_id;index"`
 	OrganizationId       int                        `json:"organization_id" gorm:"type:int;default:0;column:organization_id;index"` // 所属组织，0=平台直管
 	SubQuotaLimit        int64                      `json:"sub_quota_limit" gorm:"type:bigint;default:0;column:sub_quota_limit"`     // 员工子额度上限，0=不限(跟随组织总池)
-	DepartmentId         int                        `json:"department_id" gorm:"type:int;default:0;column:department_id;index"`       // 所属部门，0=未分部门
+	DepartmentId         int                        `json:"department_id" gorm:"type:int;default:0;column:department_id;index"`       // 所属部门，0=未分部门（保留兼容，前端改用 department_name）
+	DepartmentName        string                     `json:"department_name" gorm:"type:varchar(128);default:'';column:department_name"` // 所属部门名称（按需求「部门用名称不用ID」）
 	OrgRole              string                     `json:"org_role" gorm:"type:varchar(32);default:'';column:org_role"`             // 组织内角色：owner/admin/department_admin/member
 	DeletedAt            gorm.DeletedAt             `gorm:"index"`
 	LinuxDOId            string                     `json:"linux_do_id" gorm:"column:linux_do_id;index"`
