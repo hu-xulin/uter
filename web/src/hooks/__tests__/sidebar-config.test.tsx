@@ -26,6 +26,7 @@ import {
   parseSidebarModulesAdmin,
   serializeSidebarModulesAdmin,
 } from '@/features/system-settings/maintenance/config'
+import { ROLE } from '@/lib/roles'
 import { useAuthStore } from '@/stores/auth-store'
 
 import { useSidebarConfig } from '../use-sidebar-config'
@@ -45,7 +46,13 @@ afterEach(() => {
   useAuthStore.getState().auth.reset()
 })
 
-function sidebarFor(admin?: object, user?: object, canConfigure = true) {
+function sidebarFor(
+  admin?: object,
+  user?: object,
+  canConfigure = true,
+  organizationId?: number,
+  role = 1
+) {
   const client = new QueryClient({
     defaultOptions: { queries: { retry: false } },
   })
@@ -55,7 +62,8 @@ function sidebarFor(admin?: object, user?: object, canConfigure = true) {
   useAuthStore.getState().auth.setUser({
     id: 1,
     username: 'alice',
-    role: 1,
+    role,
+    organization_id: organizationId,
     permissions: { sidebar_settings: canConfigure },
     sidebar_modules: user ? JSON.stringify(user) : '',
   })
@@ -117,6 +125,50 @@ describe('security sidebar visibility', () => {
         .flatMap((group) => group.items)
         .some((item) => item.title === 'Security & Access')
     ).toBe(true)
+  })
+})
+
+describe('organization sidebar visibility', () => {
+  it('organization members see the organization group', () => {
+    const { result } = sidebarFor(undefined, undefined, true, 1)
+    expect(
+      result.current.some((group) => group.id === 'organization')
+    ).toBe(true)
+  })
+
+  it.each([[0], [undefined]])(
+    'users without an organization never see the organization group (%s)',
+    (organizationId) => {
+      const { result } = sidebarFor(undefined, undefined, true, organizationId)
+      expect(
+        result.current.some((group) => group.id === 'organization')
+      ).toBe(false)
+    }
+  )
+
+  it('super admins see the organization group without org membership', () => {
+    const { result } = sidebarFor(
+      undefined,
+      undefined,
+      true,
+      undefined,
+      ROLE.SUPER_ADMIN
+    )
+    expect(
+      result.current.some((group) => group.id === 'organization')
+    ).toBe(true)
+  })
+
+  it('admin disablement hides the organization group even for members', () => {
+    const { result } = sidebarFor(
+      { organization: { enabled: false, organization: true } },
+      undefined,
+      true,
+      1
+    )
+    expect(
+      result.current.some((group) => group.id === 'organization')
+    ).toBe(false)
   })
 })
 
