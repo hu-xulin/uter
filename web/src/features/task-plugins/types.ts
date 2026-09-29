@@ -58,6 +58,7 @@ export type TaskPluginMeta = {
   channelTypes?: number[] | null
   models: string[] | null
   fetchMode: string
+  upstreams?: string[] | null
   routes?: TaskPluginRoute[]
   protocols?: TaskPluginProtocolClaim[]
   usageSchema?: BillingUsageSchema

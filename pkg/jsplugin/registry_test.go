@@ -823,6 +823,30 @@ func TestLocalizedTextContract(t *testing.T) {
 		assert.Equal(t, 512, len([]rune(plugin.Meta.Description["en"])))
 	})
 
+	t.Run("upstreams field is accepted and parsed", func(t *testing.T) {
+		plugin, err := CompilePlugin(
+			routingTestPluginSource(
+				"upstreams-ok",
+				0,
+				`["model"]`,
+				`upstreams: ["vendor", "new_api"],`,
+				"",
+			),
+			Options{},
+		)
+		require.NoError(t, err)
+		assert.Equal(t, []string{"vendor", "new_api"}, plugin.Meta.Upstreams)
+	})
+
+	t.Run("upstreams may be omitted", func(t *testing.T) {
+		plugin, err := CompilePlugin(
+			routingTestPluginSource("upstreams-absent", 0, `["model"]`, ``, ""),
+			Options{},
+		)
+		require.NoError(t, err)
+		assert.Empty(t, plugin.Meta.Upstreams)
+	})
+
 	for _, testCase := range []struct {
 		name          string
 		mutate        func(*Meta)

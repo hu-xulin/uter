@@ -101,6 +101,7 @@ type Meta struct {
 	Models               []string                    `json:"models"`
 	FetchMode            string                      `json:"fetchMode"`
 	AllowedHosts         []string                    `json:"allowedHosts"`
+	Upstreams            []string                    `json:"upstreams,omitempty"`
 	Routes               []Route                     `json:"routes"`
 	Protocols            []ProtocolClaim             `json:"protocols"`
 	UsageSchema          map[string]UsageFieldSchema `json:"usageSchema,omitempty"`
@@ -976,7 +977,7 @@ func decodeMeta(value any) (Meta, error) {
 	}
 	for field := range object {
 		switch field {
-		case "requiredCapabilities", "submitResponseTypes", "sortPriority", "website", "apiVersion", "key", "name", "icon", "description", "version", "author", "baseUrl", "channelTypes", "channelType", "compatibleChannelTypes", "models", "fetchMode", "allowedHosts", "routes", "protocols", "usageSchema", "usageExamples", "usageProfiles", "auth", "endpoints", "submitPaths", "actions":
+		case "requiredCapabilities", "submitResponseTypes", "sortPriority", "website", "apiVersion", "key", "name", "icon", "description", "version", "author", "baseUrl", "channelTypes", "channelType", "compatibleChannelTypes", "models", "fetchMode", "allowedHosts", "upstreams", "routes", "protocols", "usageSchema", "usageExamples", "usageProfiles", "auth", "endpoints", "submitPaths", "actions":
 		default:
 			return Meta{}, &UnknownMetaFieldError{Field: field}
 		}
@@ -1069,6 +1070,10 @@ func decodeMeta(value any) (Meta, error) {
 		return Meta{}, err
 	}
 	meta.AllowedHosts, err = strictStringSlice(object, "allowedHosts")
+	if err != nil {
+		return Meta{}, err
+	}
+	meta.Upstreams, err = strictStringSlice(object, "upstreams")
 	if err != nil {
 		return Meta{}, err
 	}
