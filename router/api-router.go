@@ -193,6 +193,13 @@ func SetApiRouter(router *gin.Engine) {
 			orgAdminRoute.GET("/:id/flow", controller.GetOrganizationFlow)
 		}
 
+		// 列出全部组织（仅超管）：后台「添加用户」按组织归属账号时选择。
+		organizationRootRoute := apiRouter.Group("/organizations")
+		organizationRootRoute.Use(middleware.RootAuth())
+		{
+			organizationRootRoute.GET("", controller.ListOrganizations)
+		}
+
 		// Subscription billing (plans, purchase, admin management)
 		subscriptionRoute := apiRouter.Group("/subscription")
 		subscriptionRoute.Use(middleware.UserAuth())

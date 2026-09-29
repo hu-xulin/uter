@@ -45,7 +45,13 @@ func GetMyOrganization(c *gin.Context) {
 	uid := c.GetInt("id")
 	// owner 视角
 	if org, err := model.GetOrganizationByOwner(uid); err == nil {
-		common.ApiSuccess(c, gin.H{"organization": org, "role": model.OrgRoleOwner})
+		common.ApiSuccess(c, gin.H{
+			"organization":        org,
+			"role":                model.OrgRoleOwner,
+			"can_view_budget":     true,
+			"my_sub_quota_limit":  int64(0),
+			"my_used_quota":       int64(0),
+		})
 		return
 	}
 	// 普通成员视角：读自己的 organization_id
@@ -63,24 +69,36 @@ func GetMyOrganization(c *gin.Context) {
 		common.ApiError(c, err)
 		return
 	}
-	common.ApiSuccess(c, gin.H{"organization": org, "role": me.OrgRole})
+	// 普通成员不可见组织总预算：屏蔽 quota/used_quota，仅暴露自己被分配的额度。
+	canViewBudget := me.OrgRole != model.OrgRoleMember
+	if !canViewBudget {
+		org.Quota = 0
+		org.UsedQuota = 0
+	}
+	common.ApiSuccess(c, gin.H{
+		"organization":        org,
+		"role":                me.OrgRole,
+		"can_view_budget":     canViewBudget,
+		"my_sub_quota_limit":  me.SubQuotaLimit,
+		"my_used_quota":       me.UsedQuota,
+	})
 }
 
-// GetOrganizationMembers 分页列出组织成员（组织管理员/老板可见）。
+// GetOrganizationMembers 分页列出组织成员（仅组织管理员/老板/部门管理员可见）。
 func GetOrganizationMembers(c *gin.Context) {
 	orgId, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		common.ApiErrorI18n(c, i18n.MsgInvalidParams)
 		return
 	}
-	if !canViewOrganization(c, orgId) {
+	if !canViewAllOrgData(c, orgId) {
 		common.ApiErrorI18n(c, i18n.MsgUserNoPermissionHigherLevel)
 		return
 	}
-	deptId, _ := strconv.Atoi(c.Query("department_id"))
+	departmentName := c.Query("department")
 	keyword := c.Query("keyword")
 	page := common.GetPageQuery(c)
-	members, total, err := model.GetOrgMembers(orgId, deptId, keyword, page.GetStartIdx(), page.GetPageSize())
+	members, total, err := model.GetOrgMembers(orgId, departmentName, keyword, page.GetStartIdx(), page.GetPageSize())
 	if err != nil {
 		common.ApiError(c, err)
 		return
@@ -102,15 +120,15 @@ func AddOrganizationMembers(c *gin.Context) {
 		return
 	}
 	var req struct {
-		UserIds        []int `json:"user_ids"`
-		DepartmentId   int   `json:"department_id"`
-		SubQuotaLimit  int64 `json:"sub_quota_limit"`
+		UserIds        []int  `json:"user_ids"`
+		DepartmentName string `json:"department_name"`
+		SubQuotaLimit  int64  `json:"sub_quota_limit"`
 	}
 	if err := common.DecodeJson(c.Request.Body, &req); err != nil || len(req.UserIds) == 0 {
 		common.ApiErrorI18n(c, i18n.MsgInvalidParams)
 		return
 	}
-	if err := org.AddMember(req.UserIds, req.DepartmentId, req.SubQuotaLimit); err != nil {
+	if err := org.AddMember(req.UserIds, req.DepartmentName, req.SubQuotaLimit); err != nil {
 		common.ApiError(c, err)
 		return
 	}
@@ -134,9 +152,9 @@ func UpdateOrganizationMember(c *gin.Context) {
 		return
 	}
 	var req struct {
-		SubQuotaLimit int64  `json:"sub_quota_limit"`
-		DepartmentId  int    `json:"department_id"`
-		OrgRole       string `json:"org_role"`
+		SubQuotaLimit  int64  `json:"sub_quota_limit"`
+		DepartmentName string `json:"department_name"`
+		OrgRole        string `json:"org_role"`
 	}
 	if err := common.DecodeJson(c.Request.Body, &req); err != nil {
 		common.ApiErrorI18n(c, i18n.MsgInvalidParams)
@@ -149,8 +167,8 @@ func UpdateOrganizationMember(c *gin.Context) {
 		}
 	}
 	updates := map[string]any{}
-	if req.DepartmentId >= 0 {
-		updates["department_id"] = req.DepartmentId
+	if req.DepartmentName != "" {
+		updates["department_name"] = req.DepartmentName
 	}
 	if req.OrgRole != "" {
 		updates["org_role"] = req.OrgRole
@@ -227,7 +245,7 @@ func GetOrganizationStats(c *gin.Context) {
 		common.ApiErrorI18n(c, i18n.MsgInvalidParams)
 		return
 	}
-	if !canViewOrganization(c, orgId) {
+	if !canViewAllOrgData(c, orgId) {
 		common.ApiErrorI18n(c, i18n.MsgUserNoPermissionHigherLevel)
 		return
 	}
@@ -250,7 +268,7 @@ func GetOrganization(c *gin.Context) {
 		common.ApiErrorI18n(c, i18n.MsgInvalidParams)
 		return
 	}
-	if !canViewOrganization(c, orgId) {
+	if !canViewAllOrgData(c, orgId) {
 		common.ApiErrorI18n(c, i18n.MsgUserNoPermissionHigherLevel)
 		return
 	}
@@ -269,7 +287,7 @@ func GetOrganizationLogs(c *gin.Context) {
 		common.ApiErrorI18n(c, i18n.MsgInvalidParams)
 		return
 	}
-	if !canViewOrganization(c, orgId) {
+	if !canViewAllOrgData(c, orgId) {
 		common.ApiErrorI18n(c, i18n.MsgUserNoPermissionHigherLevel)
 		return
 	}
@@ -303,7 +321,7 @@ func GetOrganizationLogsStat(c *gin.Context) {
 		common.ApiErrorI18n(c, i18n.MsgInvalidParams)
 		return
 	}
-	if !canViewOrganization(c, orgId) {
+	if !canViewAllOrgData(c, orgId) {
 		common.ApiErrorI18n(c, i18n.MsgUserNoPermissionHigherLevel)
 		return
 	}
@@ -331,7 +349,7 @@ func GetOrganizationQuotaDates(c *gin.Context) {
 		common.ApiErrorI18n(c, i18n.MsgInvalidParams)
 		return
 	}
-	if !canViewOrganization(c, orgId) {
+	if !canViewAllOrgData(c, orgId) {
 		common.ApiErrorI18n(c, i18n.MsgUserNoPermissionHigherLevel)
 		return
 	}
@@ -354,7 +372,7 @@ func GetOrganizationQuotaDatesByUser(c *gin.Context) {
 		common.ApiErrorI18n(c, i18n.MsgInvalidParams)
 		return
 	}
-	if !canViewOrganization(c, orgId) {
+	if !canViewAllOrgData(c, orgId) {
 		common.ApiErrorI18n(c, i18n.MsgUserNoPermissionHigherLevel)
 		return
 	}
@@ -376,7 +394,7 @@ func GetOrganizationFlow(c *gin.Context) {
 		common.ApiErrorI18n(c, i18n.MsgInvalidParams)
 		return
 	}
-	if !canViewOrganization(c, orgId) {
+	if !canViewAllOrgData(c, orgId) {
 		common.ApiErrorI18n(c, i18n.MsgUserNoPermissionHigherLevel)
 		return
 	}
@@ -405,6 +423,19 @@ func canViewOrganization(c *gin.Context, orgId int) bool {
 	return false
 }
 
+// canViewAllOrgData 仅允许超管 / 组织 owner / 组织管理员 / 部门管理员查看本组织
+// 全部成员数据（成员列表、统计、日志）。普通成员（org_role=member）不在内——
+// 他们只能查看自己的消耗与调用（通过标准 self 接口），看不到组织总预算与其他成员。
+func canViewAllOrgData(c *gin.Context, orgId int) bool {
+	if c.GetInt("role") >= common.RoleRootUser {
+		return true
+	}
+	if c.GetInt("organization_id") != orgId {
+		return false
+	}
+	return c.GetString("org_role") != model.OrgRoleMember
+}
+
 // loadEditableOrg 校验调用者是否可管理该组织（owner 或组织管理员），返回组织对象。
 func loadEditableOrg(c *gin.Context, orgId int) (*model.Organization, bool) {
 	org, err := model.GetOrganizationById(orgId)
@@ -424,4 +455,15 @@ func loadEditableOrg(c *gin.Context, orgId int) (*model.Organization, bool) {
 	}
 	common.ApiErrorI18n(c, i18n.MsgUserNoPermissionHigherLevel)
 	return nil, false
+}
+
+// ListOrganizations 列出全部组织（仅超管）。供后台「添加用户」按组织归属账号时，
+// 在角色下拉选择「组织」后填充组织选择器使用。
+func ListOrganizations(c *gin.Context) {
+	var orgs []model.Organization
+	if err := model.DB.Order("id asc").Find(&orgs).Error; err != nil {
+		common.ApiError(c, err)
+		return
+	}
+	common.ApiSuccess(c, orgs)
 }
