@@ -21,6 +21,7 @@ import { useMemo } from 'react'
 import type { NavGroup, NavItem } from '@/components/layout/types'
 import { useStatus } from '@/hooks/use-status'
 import { useAuthStore } from '@/stores/auth-store'
+import { ROLE } from '@/lib/roles'
 
 type SidebarSectionConfig = {
   enabled: boolean
@@ -56,6 +57,10 @@ const DEFAULT_SIDEBAR_MODULES: SidebarModulesAdminConfig = {
     topup: true,
     personal: true,
     security: true,
+  },
+  organization: {
+    enabled: true,
+    organization: true,
   },
   admin: {
     enabled: true,
@@ -120,6 +125,7 @@ const URL_TO_CONFIG_MAP: Record<string, { section: string; module: string }> = {
   '/subscriptions': { section: 'admin', module: 'subscription' },
   '/system-settings': { section: 'admin', module: 'setting' },
   '/system-settings/site': { section: 'admin', module: 'setting' },
+  '/organization': { section: 'organization', module: 'organization' },
 }
 
 /**
@@ -300,6 +306,13 @@ export function useSidebarConfig(navGroups: NavGroup[]): NavGroup[] {
     return parseUserSidebarConfig(auth?.user?.sidebar_modules)
   }, [auth?.user?.permissions?.sidebar_settings, auth?.user?.sidebar_modules])
 
+  const user = auth?.user
+  // 组织模块可见性：开关（admin 配置）与「是否属于组织」共同决定。
+  // 普通用户无论开关是否打开都看不到；组织成员 + 开关打开可见；超管始终可见（与组织管理权限一致）。
+  const isSuperAdmin = (user?.role ?? 0) >= ROLE.SUPER_ADMIN
+  const isOrgMember = (user?.organization_id ?? 0) > 0
+  const canSeeOrganization = isSuperAdmin || isOrgMember
+
   const filteredNavGroups = useMemo(
     () =>
       navGroups
@@ -307,8 +320,12 @@ export function useSidebarConfig(navGroups: NavGroup[]): NavGroup[] {
           ...group,
           items: filterNavItems(group.items, adminConfig, userConfig),
         }))
-        .filter((group) => group.items.length > 0), // Only show navigation groups with visible items
-    [navGroups, adminConfig, userConfig]
+        .filter(
+          (group) =>
+            group.items.length > 0 && // Only show navigation groups with visible items
+            !(group.id === 'organization' && !canSeeOrganization)
+        ),
+    [navGroups, adminConfig, userConfig, canSeeOrganization]
   )
 
   return filteredNavGroups

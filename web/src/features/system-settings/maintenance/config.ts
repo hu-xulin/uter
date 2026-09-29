@@ -74,6 +74,10 @@ export const SIDEBAR_MODULES_DEFAULT: SidebarModulesAdminConfig = {
     personal: true,
     security: true,
   },
+  organization: {
+    enabled: true,
+    organization: true,
+  },
   admin: {
     enabled: true,
     channel: true,
