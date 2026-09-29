@@ -93,7 +93,20 @@ var hostProtocols = []HostProtocolDefinition{
 		{Name: "retrieve", Methods: []string{http.MethodGet}, Path: "/v1/videos/:task_id", BodyKinds: []BodyKind{BodyNone}, RequiredProtocolMembers: []string{"render"}},
 		{Name: "content", Methods: []string{http.MethodGet, http.MethodHead}, Path: "/v1/videos/:task_id/content", BodyKinds: []BodyKind{BodyNone}, RequiredDriverHooks: []string{"listArtifacts", "buildContentRequest"}},
 	}},
+	// The OpenAI Images API is synchronous: both operations create a task and
+	// the host answers with the rendered image response once the task is
+	// complete. Ported from the new-api upstream routing definitions; the
+	// uter fork had dropped this entry, which blocked installing marketplace
+	// plugins (e.g. Alibaba Bailian) that claim the openai_image protocol.
+	{Name: "openai_image", Operations: []HostProtocolOperation{
+		{Name: "generate", Methods: []string{http.MethodPost}, Path: "/v1/images/generations", BodyKinds: []BodyKind{BodyJSON}, ModelField: "model", RequiredProtocolMembers: []string{"decodeRequest", "render"}},
+		{Name: "edit", Methods: []string{http.MethodPost}, Path: "/v1/images/edits", BodyKinds: []BodyKind{BodyJSON, BodyMultipart}, ModelField: "model", RequiredProtocolMembers: []string{"decodeRequest", "render"}},
+	}},
 }
+
+// ProtocolOpenAIImage is the host protocol that serves the OpenAI Images API
+// (`POST /v1/images/generations` and `POST /v1/images/edits`) from a plugin.
+const ProtocolOpenAIImage = "openai_image"
 
 func HostProtocol(name string) (HostProtocolDefinition, bool) {
 	for _, definition := range hostProtocols {
