@@ -198,6 +198,52 @@ test('only uses plugin-level index hints for the latest version and marks fallba
   })
 })
 
+test('resolves computed meta built from module-level consts via concat and Object.keys', () => {
+  // Mirrors the official alibaba plugin, whose meta reuses shared const lists
+  // through `.concat(...)` and `Object.keys(...)` instead of inline literals.
+  const source = `const IMAGE_MODEL_SNAPSHOTS = ["qwen-image-plus-2026-01-09"];
+const WAN_MODELS = { "wan2.7-t2v": {}, "wan2.6-t2v": {} };
+const QWEN_IMAGE_LIMITS = { "qwen-image": {}, "qwen-image-2.0": {} };
+export const meta = {
+  key: "alibaba",
+  models: ["wan2.7-t2v"].concat(IMAGE_MODEL_SNAPSHOTS),
+  protocols: [
+    { name: "openai_video", models: Object.keys(WAN_MODELS).concat(["wan2.7-t2v-2026-04-25"]) },
+    { name: "openai_image", models: Object.keys(WAN_MODELS) },
+  ],
+  routes: [
+    { method: "POST", path: "/ali/x", type: "submit", models: ["a"].concat(Object.keys(QWEN_IMAGE_LIMITS), IMAGE_MODEL_SNAPSHOTS) },
+  ],
+};`
+  const preview = parsePluginMetaPreview(source)
+  expect(preview.status).toBe('parsed')
+  expect(preview.fields.models).toEqual({
+    state: 'value',
+    origin: 'source',
+    value: ['wan2.7-t2v', 'qwen-image-plus-2026-01-09'],
+  })
+  expect(preview.fields.protocols).toEqual({
+    state: 'value',
+    origin: 'source',
+    value: [
+      { name: 'openai_video', models: ['wan2.7-t2v', 'wan2.6-t2v', 'wan2.7-t2v-2026-04-25'] },
+      { name: 'openai_image', models: ['wan2.7-t2v', 'wan2.6-t2v'] },
+    ],
+  })
+  expect(preview.fields.routes).toEqual({
+    state: 'value',
+    origin: 'source',
+    value: [
+      {
+        method: 'POST',
+        path: '/ali/x',
+        type: 'submit',
+        models: ['a', 'qwen-image', 'qwen-image-2.0', 'qwen-image-plus-2026-01-09'],
+      },
+    ],
+  })
+})
+
 test('preserves valid protocol declarations and empty model lists from the marketplace index', () => {
   const index = parseMarketplaceIndex({
     indexVersion: 1,
