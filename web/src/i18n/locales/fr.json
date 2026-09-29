@@ -6581,6 +6581,18 @@
     "Failed to create organization": "Failed to create organization",
     "Organization created": "Organization created",
     "Members": "Members",
-    ".": "."
+    "Organization area": "Espace Organisation",
+    "Organization and team management, visible to organization members.": "Gestion de l'organisation et de l'équipe, visible par les membres de l'organisation.",
+    "Manage your organization, members and shared quota.": "Gérez votre organisation, vos membres et le quota partagé.",
+    "Member": "Membre",
+    "Select an organization": "Sélectionner une organisation",
+    "Organization Role": "Rôle dans l'organisation",
+    "Please select an organization": "Veuillez sélectionner une organisation",
+    ".": ".",
+    "You belong to this organization. Your consumption is billed to the organization budget; you can only view your own data.": "You belong to this organization. Your consumption is billed to the organization budget; you can only view your own data.",
+    "Your Quota Limit": "Your Quota Limit",
+    "Your Used Quota": "Your Used Quota",
+    "Department": "Department",
+    "Department name": "Department name"
   }
 }

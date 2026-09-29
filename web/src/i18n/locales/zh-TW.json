@@ -6581,6 +6581,18 @@
     "Failed to create organization": "創建組織失敗",
     "Organization created": "組織已創建",
     "Members": "成員",
-    ".": "。"
+    "Organization area": "組織區域",
+    "Organization and team management, visible to organization members.": "組織與團隊管理區域，僅組織成員可見。",
+    "Manage your organization, members and shared quota.": "管理你的組織、成員與共享額度。",
+    "Member": "成員",
+    "Select an organization": "選擇組織",
+    "Organization Role": "組織內角色",
+    "Please select an organization": "請選擇組織",
+    ".": ".",
+    "You belong to this organization. Your consumption is billed to the organization budget; you can only view your own data.": "您屬於該組織。您的消耗計入組織預算，僅可檢視本人資料。",
+    "Your Quota Limit": "您的額度上限",
+    "Your Used Quota": "您的已用額度",
+    "Department": "部門",
+    "Department name": "部門名稱"
   }
 }

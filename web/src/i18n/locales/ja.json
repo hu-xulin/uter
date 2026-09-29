@@ -6581,6 +6581,18 @@
     "Failed to create organization": "Failed to create organization",
     "Organization created": "Organization created",
     "Members": "Members",
-    ".": "。"
+    "Organization area": "組織エリア",
+    "Organization and team management, visible to organization members.": "組織とチームの管理エリア。組織メンバーのみ表示。",
+    "Manage your organization, members and shared quota.": "組織、メンバー、共有クォータを管理します。",
+    "Member": "メンバー",
+    "Select an organization": "組織を選択",
+    "Organization Role": "組織内ロール",
+    "Please select an organization": "組織を選択してください",
+    ".": ".",
+    "You belong to this organization. Your consumption is billed to the organization budget; you can only view your own data.": "You belong to this organization. Your consumption is billed to the organization budget; you can only view your own data.",
+    "Your Quota Limit": "Your Quota Limit",
+    "Your Used Quota": "Your Used Quota",
+    "Department": "Department",
+    "Department name": "Department name"
   }
 }
