@@ -21,7 +21,7 @@ import { useMemo } from 'react'
 import type { NavGroup, NavItem } from '@/components/layout/types'
 import { useStatus } from '@/hooks/use-status'
 import { useAuthStore } from '@/stores/auth-store'
-import { ROLE } from '@/lib/roles'
+import { canManageOrganization } from '@/lib/roles'
 
 type SidebarSectionConfig = {
   enabled: boolean
@@ -307,14 +307,10 @@ export function useSidebarConfig(navGroups: NavGroup[]): NavGroup[] {
   }, [auth?.user?.permissions?.sidebar_settings, auth?.user?.sidebar_modules])
 
   const user = auth?.user
-  // 组织模块可见性：开关（admin 配置）与「是否属于组织」共同决定。
-  // 普通用户无论开关是否打开都看不到；组织成员 + 开关打开可见；超管始终可见（与组织管理权限一致）。
-  const isSuperAdmin = (user?.role ?? 0) >= ROLE.SUPER_ADMIN
-  // 组织归属可能只写入了 organization_id 或 org_role 其中之一（历史数据/手工改库），
-  // 两者任一成立即视为组织成员，避免半写入状态把组织模块隐藏。
-  const isOrgMember =
-    (user?.organization_id ?? 0) > 0 || Boolean(user?.org_role)
-  const canSeeOrganization = isSuperAdmin || isOrgMember
+  // 组织模块可见性：站点开关（admin 配置）与「是否拥有组织管理权限」共同决定。
+  // 判定必须与后端 middleware.OrgAdminAuth 一致：超管 + 组织 owner/admin/
+  // department_admin 可见；组织普通成员（member）与不属于组织的账号恒不可见。
+  const canSeeOrganization = canManageOrganization(user)
 
   const filteredNavGroups = useMemo(
     () =>

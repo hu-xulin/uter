@@ -16,10 +16,23 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@Uter.ai.com
 */
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, redirect } from '@tanstack/react-router'
 
 import { OrganizationPage } from '@/features/organization'
+import { canManageOrganization } from '@/lib/roles'
+import { useAuthStore } from '@/stores/auth-store'
 
 export const Route = createFileRoute('/_authenticated/organization/')({
+  // 直接使用 URL 访问时同样受权：判定与后端 middleware.OrgAdminAuth 一致，
+  // 组织普通成员（member）与不属于组织的账号一律跳 403。
+  beforeLoad: () => {
+    const { auth } = useAuthStore.getState()
+
+    if (!canManageOrganization(auth.user)) {
+      throw redirect({
+        to: '/403',
+      })
+    }
+  },
   component: OrganizationPage,
 })
