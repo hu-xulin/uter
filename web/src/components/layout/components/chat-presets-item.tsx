@@ -16,8 +16,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@Uter.ai.com
 */
-import { Link, useLocation } from '@tanstack/react-router'
-import { Loader2, ChevronRight } from 'lucide-react'
+import { Link, useLocation, useNavigate } from '@tanstack/react-router'
+import { Loader2, ChevronRight, CircleHelp } from 'lucide-react'
 import { useMemo, useCallback, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
@@ -55,10 +55,82 @@ import {
   resolveChatUrl,
   type ChatPreset,
 } from '@/features/chat/lib/chat-links'
+import {
+  DOCS_ENTRY_PATH,
+  docsPathFor,
+  resolveDocsLocaleCode,
+} from '@/lib/docs-link'
 import { handleServerError } from '@/lib/handle-server-error'
 
 import { normalizeHref } from '../lib/url-utils'
 import type { NavChatPresets } from '../types'
+
+/**
+ * Maps a chat preset (by its backend name) to the slug of its page under the
+ * docs "AI 应用" (AI Applications) section. Presets without a dedicated page
+ * fall back to the section index when the help icon is clicked.
+ */
+const PRESET_DOC_SLUG: Record<string, string> = {
+  'Cherry Studio': 'cherry-studio',
+  AionUi: 'aionui',
+  'CC Switch': 'cc-switch',
+  DeepChat: 'deepchat',
+  AQBot: 'aqbot',
+}
+
+/**
+ * True only on a local development host. Custom-protocol deep links cannot be
+ * observed by the page, so when no desktop client is installed the click
+ * looks like it did nothing. The dev-only clipboard fallback below is gated
+ * on this so production deployments never surface it.
+ */
+function isLocalDevHost(): boolean {
+  if (typeof window === 'undefined') return false
+  const host = window.location.hostname
+  return (
+    host === 'localhost' ||
+    host === '127.0.0.1' ||
+    host === '::1' ||
+    host === '0.0.0.0'
+  )
+}
+
+/**
+ * Circle-with-question-mark trigger rendered after each preset label. It
+ * points the reader at the matching docs page and must not also open the
+ * preset, so the click is both stopped and its default suppressed.
+ */
+function PresetHelpLink({
+  preset,
+  onHelp,
+}: {
+  preset: ChatPreset
+  onHelp: (preset: ChatPreset) => void
+}) {
+  return (
+    <span
+      role='button'
+      tabIndex={0}
+      title='Docs'
+      aria-label='Docs'
+      className='ml-1 inline-flex h-4 w-4 shrink-0 cursor-pointer items-center justify-center rounded-full text-muted-foreground transition-colors hover:text-foreground'
+      onClick={(e) => {
+        e.preventDefault()
+        e.stopPropagation()
+        onHelp(preset)
+      }}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault()
+          e.stopPropagation()
+          onHelp(preset)
+        }
+      }}
+    >
+      <CircleHelp className='h-3.5 w-3.5' />
+    </span>
+  )
+}
 
 /**
  * Sub-menu item for a single chat preset
@@ -69,6 +141,7 @@ function ChatMenuItem({
   loading,
   onOpen,
   onNavigate,
+  onHelp,
   preload,
 }: {
   preset: ChatPreset
@@ -76,6 +149,7 @@ function ChatMenuItem({
   loading: boolean
   onOpen: (preset: ChatPreset) => void | Promise<void>
   onNavigate: () => void
+  onHelp: (preset: ChatPreset) => void
   preload?: false
 }) {
   if (preset.type === 'web') {
@@ -95,6 +169,7 @@ function ChatMenuItem({
           <span className='min-w-0 flex-1 truncate whitespace-nowrap'>
             {preset.name}
           </span>
+          <PresetHelpLink preset={preset} onHelp={onHelp} />
         </SidebarMenuSubButton>
       </SidebarMenuSubItem>
     )
@@ -113,6 +188,7 @@ function ChatMenuItem({
         <span className='min-w-0 flex-1 truncate whitespace-nowrap'>
           {preset.name}
         </span>
+        <PresetHelpLink preset={preset} onHelp={onHelp} />
         {loading ? <Loader2 className='h-4 w-4 shrink-0 animate-spin' /> : null}
       </SidebarMenuSubButton>
     </SidebarMenuSubItem>
@@ -126,10 +202,12 @@ function DropdownPresetItem({
   preset,
   loading,
   onOpen,
+  onHelp,
 }: {
   preset: ChatPreset
   loading: boolean
   onOpen: (preset: ChatPreset) => void | Promise<void>
+  onHelp: (preset: ChatPreset) => void
 }) {
   if (preset.type === 'web') {
     return (
@@ -137,6 +215,7 @@ function DropdownPresetItem({
         render={<Link to='/chat/$chatId' params={{ chatId: preset.id }} />}
       >
         {preset.name}
+        <PresetHelpLink preset={preset} onHelp={onHelp} />
       </DropdownMenuItem>
     )
   }
@@ -149,6 +228,7 @@ function DropdownPresetItem({
       }}
     >
       {preset.name}
+      <PresetHelpLink preset={preset} onHelp={onHelp} />
       {loading ? (
         <Loader2 className='ml-auto h-4 w-4 animate-spin opacity-70' />
       ) : null}
@@ -160,9 +240,10 @@ function DropdownPresetItem({
  * Dynamic chat presets navigation item
  */
 export function ChatPresetsItem({ item }: { item: NavChatPresets }) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const { chatPresets, serverAddress } = useChatPresets()
   const { state, isMobile, setOpenMobile } = useSidebar()
+  const navigate = useNavigate()
   // Prefetch the active key so the custom-protocol navigation can happen
   // synchronously inside the click gesture. Navigating after an `await`
   // loses the transient user activation and Chrome silently blocks the
@@ -195,8 +276,32 @@ export function ChatPresetsItem({ item }: { item: NavChatPresets }) {
 
       launchChatUrl(url)
       setOpenMobile(false)
+
+      // Local dev only: a custom-protocol deep link is invisible to the page,
+      // so with no desktop client installed the click appears dead. Copy the
+      // resolved link to the clipboard and surface a hint so the developer can
+      // paste it into the installed client. Gated to localhost so production
+      // (real domains) keeps the silent, correct behaviour.
+      if (!/^https?:/i.test(url) && isLocalDevHost()) {
+        navigator.clipboard?.writeText(url).catch(() => {})
+        toast.info(
+          'Deep link copied to clipboard. No local client detected — paste it into the installed app to test.'
+        )
+      }
     },
     [serverAddress, setOpenMobile, t]
+  )
+
+  const handleHelp = useCallback(
+    (preset: ChatPreset) => {
+      const locale = resolveDocsLocaleCode(i18n.language)
+      const slug = PRESET_DOC_SLUG[preset.name]
+      const target = slug
+        ? `${docsPathFor(locale)}apps/${slug}/`
+        : `${docsPathFor(locale)}apps/`
+      navigate({ to: DOCS_ENTRY_PATH, search: { p: target } })
+    },
+    [i18n.language, navigate]
   )
 
   const handleOpenExternal = useCallback(
@@ -295,6 +400,7 @@ export function ChatPresetsItem({ item }: { item: NavChatPresets }) {
                   preset={preset}
                   loading={loadingPresetId === preset.id}
                   onOpen={handleOpenExternal}
+                  onHelp={handleHelp}
                 />
               ))}
             </DropdownMenuContent>
@@ -330,6 +436,7 @@ export function ChatPresetsItem({ item }: { item: NavChatPresets }) {
                 active={normalizedHref === `/chat/${preset.id}`}
                 loading={loadingPresetId === preset.id}
                 onOpen={handleOpenExternal}
+                onHelp={handleHelp}
                 onNavigate={() => setOpenMobile(false)}
                 preload={isMobile ? false : undefined}
               />
