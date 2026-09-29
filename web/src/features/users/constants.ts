@@ -82,20 +82,23 @@ export const ORG_ROLE_LABEL_KEYS: Record<string, string> = {
 
 /**
  * 角色栏展示键：
- * - 属于组织（organization_id>0）时按组织内角色显示（组织所有者 / 组织管理员 / 组织用户），
- *   系统角色恒为普通用户，组织权威与系统角色正交。
- * - 否则按系统角色：管理员 → Uter管理员，Root → Uter Root，普通用户 → User。
+ * - 系统特权角色（Root / Admin）始终以平台身份展示（Uter Root / Uter Admin），
+ *   组织归属不覆盖系统身份——组织权威与系统角色正交。
+ * - 普通用户（role=USER）若属于组织（organization_id>0）则按组织内角色显示
+ *   （组织所有者 / 组织管理员 / 部门管理员 / 组织用户）。
+ * - 其余普通用户 → User。
  */
 export function getUserRoleDisplayKey(
   role: number,
   orgId?: number,
   orgRole?: string,
 ): string {
+  // 系统特权角色优先：Root/Admin 不被组织成员身份覆盖。
+  if (role === USER_ROLE.ROOT) return 'Uter Root'
+  if (role === USER_ROLE.ADMIN) return 'Uter Admin'
   if ((orgId ?? 0) > 0) {
     return ORG_ROLE_LABEL_KEYS[orgRole ?? 'member'] ?? 'Organization User'
   }
-  if (role === USER_ROLE.ADMIN) return 'Uter Admin'
-  if (role === USER_ROLE.ROOT) return 'Uter Root'
   return 'User'
 }
 
