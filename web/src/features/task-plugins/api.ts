@@ -19,8 +19,11 @@ For commercial licensing, please contact support@Uter.ai.com
 import { api, type ApiRequestConfig } from '@/lib/api'
 import { createServerError } from '@/lib/server-error-message'
 
+import { parseMarketplaceIndex } from './lib/marketplace'
+
 import type {
   ApiResponse,
+  MarketplaceIndex,
   MarketplaceSource,
   TaskPluginDetail,
   TaskPluginListItem,
@@ -135,6 +138,23 @@ export async function listMarketplaceSources() {
     '/api/plugin/task/marketplace/sources'
   )
   return requireSuccess(response.data) ?? []
+}
+
+/**
+ * Fetches a marketplace index through the gateway (same-origin) instead of a
+ * direct browser fetch. The plugin host (e.g. uter.ai, raw.githubusercontent.com)
+ * does not send CORS headers, so a browser-side `fetch` fails with
+ * "Failed to fetch". The backend validates that `url` is a configured source and
+ * proxies the request, returning the parsed index.
+ */
+export async function fetchMarketplaceIndex(
+  indexUrl: string
+): Promise<MarketplaceIndex> {
+  const response = await api.get<ApiResponse<MarketplaceIndex>>(
+    '/api/plugin/task/marketplace/fetch',
+    { params: { url: indexUrl } }
+  )
+  return parseMarketplaceIndex(requireSuccess(response.data))
 }
 
 export async function updateMarketplaceSources(sources: MarketplaceSource[]) {
