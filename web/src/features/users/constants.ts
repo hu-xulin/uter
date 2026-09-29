@@ -72,6 +72,33 @@ export const USER_ROLE = {
   ROOT: 100,
 } as const
 
+/** 组织内角色 → 角色栏展示键（组织成员系统角色恒为普通用户，组织权威与系统角色正交）。 */
+export const ORG_ROLE_LABEL_KEYS: Record<string, string> = {
+  owner: 'Organization Owner',
+  admin: 'Organization Admin',
+  department_admin: 'Organization User',
+  member: 'Organization User',
+}
+
+/**
+ * 角色栏展示键：
+ * - 属于组织（organization_id>0）时按组织内角色显示（组织所有者 / 组织管理员 / 组织用户），
+ *   系统角色恒为普通用户，组织权威与系统角色正交。
+ * - 否则按系统角色：管理员 → Uter管理员，Root → Uter Root，普通用户 → User。
+ */
+export function getUserRoleDisplayKey(
+  role: number,
+  orgId?: number,
+  orgRole?: string,
+): string {
+  if ((orgId ?? 0) > 0) {
+    return ORG_ROLE_LABEL_KEYS[orgRole ?? 'member'] ?? 'Organization User'
+  }
+  if (role === USER_ROLE.ADMIN) return 'Uter Admin'
+  if (role === USER_ROLE.ROOT) return 'Uter Root'
+  return 'User'
+}
+
 export const USER_ROLES = {
   [USER_ROLE.USER]: {
     labelKey: 'User',
@@ -79,12 +106,12 @@ export const USER_ROLES = {
     icon: User,
   },
   [USER_ROLE.ADMIN]: {
-    labelKey: 'Admin',
+    labelKey: 'Uter Admin',
     value: USER_ROLE.ADMIN,
     icon: Users,
   },
   [USER_ROLE.ROOT]: {
-    labelKey: 'Root',
+    labelKey: 'Uter Root',
     value: USER_ROLE.ROOT,
     icon: Shield,
   },
@@ -92,8 +119,8 @@ export const USER_ROLES = {
 
 export const getUserRoleOptions = (t: (key: string) => string) => [
   { label: t('User'), value: String(USER_ROLE.USER), icon: User },
-  { label: t('Admin'), value: String(USER_ROLE.ADMIN), icon: Users },
-  { label: t('Root'), value: String(USER_ROLE.ROOT), icon: Shield },
+  { label: t('Uter Admin'), value: String(USER_ROLE.ADMIN), icon: Users },
+  { label: t('Uter Root'), value: String(USER_ROLE.ROOT), icon: Shield },
 ]
 
 // ============================================================================

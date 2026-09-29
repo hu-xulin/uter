@@ -38,7 +38,7 @@ import { useSystemConfigStore } from '@/stores/system-config-store'
 import {
   USER_STATUS,
   USER_STATUSES,
-  USER_ROLES,
+  getUserRoleDisplayKey,
   isUserDeleted,
 } from '../constants'
 import type { User } from '../types'
@@ -211,14 +211,14 @@ export function useUsersColumns(): ColumnDef<User>[] {
       accessorKey: 'role',
       header: t('Role'),
       cell: ({ row }) => {
-        const roleValue = row.getValue('role') as number
-        const roleConfig = USER_ROLES[roleValue as keyof typeof USER_ROLES]
+        const user = row.original
+        const key = getUserRoleDisplayKey(
+          user.role,
+          user.organization_id,
+          user.org_role,
+        )
 
-        if (!roleConfig) {
-          return null
-        }
-
-        return <span className='text-sm'>{t(roleConfig.labelKey)}</span>
+        return <span className='text-sm'>{t(key)}</span>
       },
       filterFn: (row, id, value) => {
         return value.includes(String(row.getValue(id)))
