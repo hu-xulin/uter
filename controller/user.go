@@ -519,6 +519,9 @@ func buildSelfUserData(user *model.User) map[string]any {
 		"setting":           user.Setting,
 		"stripe_customer":   user.StripeCustomer,
 		"sidebar_modules":   userSetting.SidebarModules, // 正确提取sidebar_modules字段
+		"organization_id":   user.OrganizationId,
+		"org_role":          user.OrgRole,
+		"department_id":     user.DepartmentId,
 		"permissions":       permissions,
 	}
 }
