@@ -23,6 +23,11 @@ const (
 	userSessionRevokeBatchSize  = 500
 	userSessionCleanupScanLimit = 1000
 	userSessionCleanupBatchSize = 500
+
+	// UserSessionLimitEvictionReason is recorded as the revoke reason when a
+	// login reaches the active-session ceiling and the oldest idle session is
+	// evicted to free a slot, instead of the new login being rejected.
+	UserSessionLimitEvictionReason = "active_session_limit_evicted"
 )
 
 var (
@@ -779,6 +784,55 @@ func revokeUserSessions(userID int, excludedSID, reason string) (int64, error) {
 			}
 		}
 	}
+}
+
+// EvictOldestIdleUserSessions revokes the least-recently-active active login
+// sessions for a user until at most `keep` remain active. It is the graceful
+// alternative to hard-rejecting a login once UserSessionActiveLimit is reached:
+// rather than failing with ErrUserSessionLimit, the device that has been idle
+// longest is signed out to make room for the new login. This mirrors the
+// "kick the oldest device" behavior of mainstream SaaS and prevents the
+// super-admin lockout a fixed ceiling can cause.
+//
+// Sessions are ordered by last_active_at ASC then created_at ASC, so the
+// session with the oldest activity is evicted first; ties are broken
+// deterministically by creation time. Each candidate is revoked through the
+// standard RevokeUserSession path (deny fence + transactional status flip),
+// which re-validates liveness and is therefore safe under concurrent logins.
+// It returns the number of sessions actually revoked.
+func EvictOldestIdleUserSessions(userID int, keep int64, reason string) (int64, error) {
+	if userID <= 0 || keep < 0 {
+		return 0, ErrUserSessionInvalid
+	}
+	now := time.Now().Unix()
+	activeCount, err := CountActiveUserSessions(userID, now)
+	if err != nil {
+		return 0, err
+	}
+	toEvict := activeCount - keep
+	if toEvict <= 0 {
+		return 0, nil
+	}
+	if toEvict > int64(userSessionRevokeBatchSize) {
+		toEvict = int64(userSessionRevokeBatchSize)
+	}
+	var candidates []UserSession
+	if err := DB.Where("user_id = ? AND status = ? AND expires_at > ?", userID, UserSessionStatusActive, now).
+		Order("last_active_at ASC").Order("created_at ASC").
+		Limit(int(toEvict)).Find(&candidates).Error; err != nil {
+		return 0, err
+	}
+	var totalRevoked int64
+	for i := range candidates {
+		revoked, rerr := RevokeUserSession(userID, candidates[i].SID, reason)
+		if rerr != nil {
+			return totalRevoked, rerr
+		}
+		if revoked {
+			totalRevoked++
+		}
+	}
+	return totalRevoked, nil
 }
 
 func DeleteExpiredUserSessions(now int64) error {

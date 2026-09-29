@@ -78,7 +78,17 @@ func createLoginSession(userID int, expectedAuthVersion int64, loginMethod, ip, 
 		return nil, err
 	}
 	if activeCount >= int64(common.UserSessionActiveLimit) {
-		return nil, model.ErrUserSessionLimit
+		// Graceful eviction: instead of hard-rejecting the login, sign out the
+		// least-recently-active existing session(s) so a slot opens for this new
+		// login. Mirrors the "kick the oldest device" behavior of mainstream SaaS
+		// and prevents the super-admin lockout a fixed ceiling can cause.
+		evicted, evErr := model.EvictOldestIdleUserSessions(userID, int64(common.UserSessionActiveLimit)-1, model.UserSessionLimitEvictionReason)
+		if evErr != nil {
+			return nil, evErr
+		}
+		if evicted > 0 {
+			common.SysLog(fmt.Sprintf("user %d reached the active login-session limit (%d); evicted %d oldest idle session(s) to allow the new login", userID, common.UserSessionActiveLimit, evicted))
+		}
 	}
 	issuanceCount, err := model.CountUserSessionsCreatedSince(userID, now-common.UserSessionIssuanceWindowSeconds)
 	if err != nil {

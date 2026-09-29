@@ -499,6 +499,69 @@ func TestRevokeUserSessionsReturnsCumulativeProgressAndSupportsRetry(t *testing.
 	assert.Zero(t, activeCount)
 }
 
+func TestEvictOldestIdleUserSessionsRevokesLeastRecentlyActiveFirst(t *testing.T) {
+	setupUserSessionTest(t)
+	now := time.Now().Unix()
+	createUserSessionTestUser(t, 2001, 1)
+	// Three active sessions. A larger idle value means longer since the last
+	// activity, i.e. an "older" idle session. evict-0 is most recent (idle 100s),
+	// evict-2 is the oldest idle (idle 300s).
+	for i, idle := range []int64{100, 200, 300} {
+		s := newTestUserSession(fmt.Sprintf("evict-%d", i), 2001, now-int64(idle)*30)
+		s.LastActiveAt = now - idle
+		s.CreatedAt = now - idle
+		require.NoError(t, DB.Create(s).Error)
+	}
+
+	// keep=1 → evict the two OLDEST idle sessions (evict-2 idle 300s, then
+	// evict-1 idle 200s), leaving the most recently active (evict-0) alive.
+	revoked, err := EvictOldestIdleUserSessions(2001, 1, UserSessionLimitEvictionReason)
+	require.NoError(t, err)
+	assert.Equal(t, int64(2), revoked)
+
+	var evict0, evict1, evict2 UserSession
+	require.NoError(t, DB.Where("sid = ?", "evict-0").First(&evict0).Error)
+	require.NoError(t, DB.Where("sid = ?", "evict-1").First(&evict1).Error)
+	require.NoError(t, DB.Where("sid = ?", "evict-2").First(&evict2).Error)
+	assert.Equal(t, UserSessionStatusActive, evict0.Status, "most recently active must survive")
+	assert.Equal(t, UserSessionStatusRevoked, evict1.Status, "older idle must be evicted")
+	assert.Equal(t, UserSessionStatusRevoked, evict2.Status, "oldest idle must be evicted first")
+	assert.Equal(t, UserSessionLimitEvictionReason, evict2.RevokedReason)
+
+	// A second call when only one active remains frees nothing.
+	revoked, err = EvictOldestIdleUserSessions(2001, 1, UserSessionLimitEvictionReason)
+	require.NoError(t, err)
+	assert.Zero(t, revoked)
+}
+
+func TestEvictOldestIdleUserSessionsIgnoresRevokedAndExpired(t *testing.T) {
+	setupUserSessionTest(t)
+	now := time.Now().Unix()
+	createUserSessionTestUser(t, 2002, 1)
+	require.NoError(t, DB.Create(&UserSession{
+		SID: "already-revoked", UserID: 2002, Version: 1, UserAuthVersion: 1,
+		Status: UserSessionStatusRevoked, RefreshHash: "h", LoginMethod: "password",
+		CreatedAt: now - 100, LastActiveAt: now - 100, ExpiresAt: now + 3600, RevokedAt: now - 50,
+	}).Error)
+	require.NoError(t, DB.Create(&UserSession{
+		SID: "already-expired", UserID: 2002, Version: 1, UserAuthVersion: 1,
+		Status: UserSessionStatusActive, RefreshHash: "h", LoginMethod: "password",
+		CreatedAt: now - 100, LastActiveAt: now - 100, ExpiresAt: now - 1,
+	}).Error)
+	require.NoError(t, DB.Create(newTestUserSession("live", 2002, now)).Error)
+
+	// Only the single live session counts as active, so keep=0 evicts exactly it.
+	revoked, err := EvictOldestIdleUserSessions(2002, 0, UserSessionLimitEvictionReason)
+	require.NoError(t, err)
+	assert.Equal(t, int64(1), revoked)
+	var live UserSession
+	require.NoError(t, DB.Where("sid = ?", "live").First(&live).Error)
+	assert.Equal(t, UserSessionStatusRevoked, live.Status)
+	var revokedRow UserSession
+	require.NoError(t, DB.Where("sid = ?", "already-revoked").First(&revokedRow).Error)
+	assert.Equal(t, UserSessionStatusRevoked, revokedRow.Status, "already-revoked row must be untouched by eviction")
+}
+
 func TestDeleteExpiredUserSessionsLoopsInChunksAndRechecksPredicate(t *testing.T) {
 	setupUserSessionTest(t)
 	now := time.Now().Unix()

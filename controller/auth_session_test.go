@@ -108,7 +108,7 @@ func TestWriteAuthSessionErrorMapsSessionGrowthLimits(t *testing.T) {
 	}
 }
 
-func TestSessionLimitDoesNotRecordRejectedLoginAsSuccessful(t *testing.T) {
+func TestActiveSessionLimitEvictsOldestSessionThenSucceeds(t *testing.T) {
 	previousDB := model.DB
 	previousRedis := common.RedisEnabled
 	previousActiveLimit := common.UserSessionActiveLimit
@@ -149,8 +149,19 @@ func TestSessionLimitDoesNotRecordRejectedLoginAsSuccessful(t *testing.T) {
 	c.Request = httptest.NewRequest(http.MethodPost, "/api/user/login", nil)
 	setupLogin(user, c)
 
-	assert.Equal(t, http.StatusConflict, recorder.Code)
+	assert.Equal(t, http.StatusOK, recorder.Code)
 	var stored model.User
 	require.NoError(t, db.First(&stored, user.Id).Error)
-	assert.Equal(t, previousLastLoginAt, stored.LastLoginAt)
+	assert.NotEqual(t, previousLastLoginAt, stored.LastLoginAt, "evict-then-login should record a successful login")
+
+	// The previously-existing session must have been revoked to make room.
+	evicted, err := model.GetUserSessionBySID("existing-active-session")
+	require.NoError(t, err)
+	assert.Equal(t, model.UserSessionStatusRevoked, evicted.Status)
+	assert.Equal(t, model.UserSessionLimitEvictionReason, evicted.RevokedReason)
+
+	// Exactly one active session remains (the brand new one).
+	active, err := model.CountActiveUserSessions(user.Id, time.Now().Unix())
+	require.NoError(t, err)
+	assert.Equal(t, int64(1), active)
 }

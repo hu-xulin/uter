@@ -96,41 +96,98 @@ func cachedLoginSessionKey(t *testing.T, server *miniredis.Miniredis) string {
 	return ""
 }
 
-func TestCreateLoginSessionEnforcesActiveLimitAcrossAuthVersions(t *testing.T) {
+func TestCreateLoginSessionEvictsOldestIdleSessionAtActiveLimit(t *testing.T) {
 	useTestSessionSecret(t)
 	user := setupAuthSessionTestDB(t)
-	common.UserSessionActiveLimit = 50
+	common.UserSessionActiveLimit = 3
 	common.UserSessionIssuanceLimit = 100
+	common.UserSessionIssuanceWindowSeconds = int64(common.DefaultUserSessionIssuanceWindowSeconds)
 	now := time.Now().Unix()
-	rows := make([]model.UserSession, 0, 49)
-	for i := range 49 {
-		authVersion := user.AuthVersion
-		if i == 0 {
-			authVersion++
-		}
+	rows := make([]model.UserSession, 0, 3)
+	for i := 0; i < 3; i++ {
+		// i=0 is the oldest idle, i=2 the most recently active.
 		rows = append(rows, model.UserSession{
 			SID:             fmt.Sprintf("active-limit-%02d", i),
 			UserID:          user.Id,
 			Version:         1,
-			UserAuthVersion: authVersion,
+			UserAuthVersion: user.AuthVersion,
 			Status:          model.UserSessionStatusActive,
 			RefreshHash:     fmt.Sprintf("hash-%02d", i),
 			LoginMethod:     "password",
-			CreatedAt:       now - int64(i),
-			LastActiveAt:    now - int64(i),
+			CreatedAt:       now - int64(3-i),
+			LastActiveAt:    now - int64(3-i),
 			ExpiresAt:       now + 3600,
 		})
 	}
 	require.NoError(t, model.DB.Create(&rows).Error)
 
-	_, err := CreateLoginSession(user.Id, "password", "127.0.0.1", "test-agent")
-	require.NoError(t, err, "49 active sessions must allow creation of the 50th")
+	// The login that reaches the active limit must evict the oldest idle
+	// session and succeed, not reject with ErrUserSessionLimit.
+	bundle, err := CreateLoginSession(user.Id, "password", "127.0.0.1", "test-agent")
+	require.NoError(t, err, "login at the active limit must evict the oldest idle session, not reject")
+	require.NotEmpty(t, bundle.Session.SID)
 
-	_, err = CreateLoginSession(user.Id, "password", "127.0.0.1", "test-agent")
-	assert.ErrorIs(t, err, model.ErrUserSessionLimit)
-	var count int64
-	require.NoError(t, model.DB.Model(&model.UserSession{}).Count(&count).Error)
-	assert.Equal(t, int64(50), count)
+	// Exactly `limit` active sessions remain: 2 untouched originals + the new one.
+	active, err := model.CountActiveUserSessions(user.Id, time.Now().Unix())
+	require.NoError(t, err)
+	assert.Equal(t, int64(3), active)
+
+	// The oldest idle session was revoked with the eviction reason.
+	var oldest model.UserSession
+	require.NoError(t, model.DB.Where("sid = ?", "active-limit-00").First(&oldest).Error)
+	assert.Equal(t, model.UserSessionStatusRevoked, oldest.Status)
+	assert.Equal(t, model.UserSessionLimitEvictionReason, oldest.RevokedReason)
+
+	// The other two original sessions are still active and the new one is active.
+	for _, sid := range []string{"active-limit-01", "active-limit-02"} {
+		var s model.UserSession
+		require.NoError(t, model.DB.Where("sid = ?", sid).First(&s).Error)
+		assert.Equal(t, model.UserSessionStatusActive, s.Status, sid+" should remain active")
+	}
+	var created model.UserSession
+	require.NoError(t, model.DB.Where("sid = ?", bundle.Session.SID).First(&created).Error)
+	assert.Equal(t, model.UserSessionStatusActive, created.Status)
+}
+
+func TestCreateLoginSessionEvictsEnoughOldestIdleSessionsToOpenOneSlot(t *testing.T) {
+	useTestSessionSecret(t)
+	user := setupAuthSessionTestDB(t)
+	common.UserSessionActiveLimit = 2
+	common.UserSessionIssuanceLimit = 100
+	common.UserSessionIssuanceWindowSeconds = int64(common.DefaultUserSessionIssuanceWindowSeconds)
+	now := time.Now().Unix()
+	rows := make([]model.UserSession, 0, 2)
+	for i := 0; i < 2; i++ {
+		rows = append(rows, model.UserSession{
+			SID:             fmt.Sprintf("multi-limit-%02d", i),
+			UserID:          user.Id,
+			Version:         1,
+			UserAuthVersion: user.AuthVersion,
+			Status:          model.UserSessionStatusActive,
+			RefreshHash:     fmt.Sprintf("hash-%02d", i),
+			LoginMethod:     "password",
+			CreatedAt:       now - int64(2-i),
+			LastActiveAt:    now - int64(2-i),
+			ExpiresAt:       now + 3600,
+		})
+	}
+	require.NoError(t, model.DB.Create(&rows).Error)
+
+	// Limit reached (2 active). A burst of 3 new logins must all succeed, each
+	// evicting one oldest idle session, and the active count must stay at the limit.
+	for i := 0; i < 3; i++ {
+		bundle, err := CreateLoginSession(user.Id, "password", "127.0.0.1", "test-agent")
+		require.NoError(t, err, "login %d at the active limit must evict instead of reject", i+1)
+		require.NotEmpty(t, bundle.Session.SID)
+		active, cErr := model.CountActiveUserSessions(user.Id, time.Now().Unix())
+		require.NoError(t, cErr)
+		assert.Equal(t, int64(2), active, "active session count must stay pinned at the limit")
+	}
+	// After 3 evictions the two oldest original sessions are gone; the two most
+	// recent (multi-limit-01 plus the 3 newest) survive.
+	var gone model.UserSession
+	require.NoError(t, model.DB.Where("sid = ?", "multi-limit-00").First(&gone).Error)
+	assert.Equal(t, model.UserSessionStatusRevoked, gone.Status)
 }
 
 func TestCreateLoginSessionEnforcesIssuanceLimitAcrossAllStatuses(t *testing.T) {
