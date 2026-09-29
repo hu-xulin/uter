@@ -1038,6 +1038,13 @@ func CreateUser(c *gin.Context) {
 	}
 	cleanUser.FinishInsert(0)
 
+	// 新建账号即被设为组织所有者：强制吊销其全部客户端会话（新账号无会话时为无害空操作），要求重新登录。
+	if cleanUser.OrganizationId > 0 && cleanUser.OrgRole == model.OrgRoleOwner {
+		if _, rerr := model.RevokeAllUserSessions(cleanUser.Id, "organization owner role granted"); rerr != nil {
+			common.SysLog("failed to revoke sessions for new org owner " + strconv.Itoa(cleanUser.Id) + ": " + rerr.Error())
+		}
+	}
+
 	recordManageAuditFor(c, cleanUser.Id, "user.create", map[string]any{
 		"username":        cleanUser.Username,
 		"role":            cleanUser.Role,
