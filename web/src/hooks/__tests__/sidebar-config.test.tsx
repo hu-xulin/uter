@@ -51,7 +51,8 @@ function sidebarFor(
   user?: object,
   canConfigure = true,
   organizationId?: number,
-  role = 1
+  role = 1,
+  orgRole?: string
 ) {
   const client = new QueryClient({
     defaultOptions: { queries: { retry: false } },
@@ -64,6 +65,7 @@ function sidebarFor(
     username: 'alice',
     role,
     organization_id: organizationId,
+    org_role: orgRole,
     permissions: { sidebar_settings: canConfigure },
     sidebar_modules: user ? JSON.stringify(user) : '',
   })
@@ -129,17 +131,50 @@ describe('security sidebar visibility', () => {
 })
 
 describe('organization sidebar visibility', () => {
-  it('organization members see the organization group', () => {
-    const { result } = sidebarFor(undefined, undefined, true, 1)
+  // 组织管理角色可与后端 middleware.OrgAdminAuth 的放行清单保持一致。
+  it.each(['owner', 'admin', 'department_admin'])(
+    'organization "%s" sees the organization group',
+    (orgRole) => {
+      const { result } = sidebarFor(
+        undefined,
+        undefined,
+        true,
+        1,
+        ROLE.USER,
+        orgRole
+      )
+      expect(
+        result.current.some((group) => group.id === 'organization')
+      ).toBe(true)
+    }
+  )
+
+  // 普通组织成员在后端会被 OrgAdminAuth 拒为 403，前端也不应展示入口。
+  it('plain organization members never see the organization group', () => {
+    const { result } = sidebarFor(
+      undefined,
+      undefined,
+      true,
+      1,
+      ROLE.USER,
+      'member'
+    )
     expect(
       result.current.some((group) => group.id === 'organization')
-    ).toBe(true)
+    ).toBe(false)
   })
 
-  it.each([[0], [undefined]])(
-    'users without an organization never see the organization group (%s)',
-    (organizationId) => {
-      const { result } = sidebarFor(undefined, undefined, true, organizationId)
+  it.each([[0, undefined], [undefined, undefined], [0, 'member']])(
+    'users without organization management authority never see it (%s, %s)',
+    (organizationId, orgRole) => {
+      const { result } = sidebarFor(
+        undefined,
+        undefined,
+        true,
+        organizationId,
+        ROLE.USER,
+        orgRole
+      )
       expect(
         result.current.some((group) => group.id === 'organization')
       ).toBe(false)
@@ -159,12 +194,14 @@ describe('organization sidebar visibility', () => {
     ).toBe(true)
   })
 
-  it('admin disablement hides the organization group even for members', () => {
+  it('admin disablement hides the organization group even for owners', () => {
     const { result } = sidebarFor(
       { organization: { enabled: false, organization: true } },
       undefined,
       true,
-      1
+      1,
+      ROLE.USER,
+      'owner'
     )
     expect(
       result.current.some((group) => group.id === 'organization')
