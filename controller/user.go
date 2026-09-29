@@ -996,6 +996,28 @@ func CreateUser(c *gin.Context) {
 		DisplayName: user.DisplayName,
 		Role:        user.Role, // 保持管理员设置的角色
 	}
+
+	// 组织归属（仅超管可设）：把新账号直接挂到某组织，系统角色仍为普通用户，
+	// 组织权威与系统角色正交（公司负责人不会因此晋升为全局 Admin）。
+	if c.GetInt("role") == common.RoleRootUser && user.OrganizationId > 0 {
+		org, oerr := model.GetOrganizationById(user.OrganizationId)
+		if oerr != nil {
+			common.ApiErrorI18n(c, i18n.MsgInvalidParams)
+			return
+		}
+		orgRole := user.OrgRole
+		if orgRole == "" {
+			orgRole = model.OrgRoleMember
+		}
+		if !model.IsValidOrgRole(orgRole) {
+			common.ApiErrorI18n(c, i18n.MsgInvalidParams)
+			return
+		}
+		cleanUser.OrganizationId = org.Id
+		cleanUser.OrgRole = orgRole
+		cleanUser.SubQuotaLimit = user.SubQuotaLimit
+		cleanUser.Role = common.RoleCommonUser
+	}
 	authzTouched := false
 	if err := model.DB.Transaction(func(tx *gorm.DB) error {
 		if err := cleanUser.InsertWithTx(tx, 0); err != nil {
@@ -1017,8 +1039,10 @@ func CreateUser(c *gin.Context) {
 	cleanUser.FinishInsert(0)
 
 	recordManageAuditFor(c, cleanUser.Id, "user.create", map[string]any{
-		"username": cleanUser.Username,
-		"role":     cleanUser.Role,
+		"username":        cleanUser.Username,
+		"role":            cleanUser.Role,
+		"organization_id": cleanUser.OrganizationId,
+		"org_role":        cleanUser.OrgRole,
 	})
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
