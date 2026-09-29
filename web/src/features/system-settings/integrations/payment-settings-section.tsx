@@ -46,6 +46,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { Switch } from '@/components/ui/switch'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { formatUserId } from '@/lib/format'
 import { handleServerError } from '@/lib/handle-server-error'
 import { cn } from '@/lib/utils'
 
@@ -839,7 +840,9 @@ export function PaymentSettingsSection({
                     complianceDefaults.confirmedAt * 1000
                   ).toLocaleString()
                 : '-',
-              userId: complianceDefaults.confirmedBy || '-',
+              userId: complianceDefaults.confirmedBy
+                ? formatUserId(complianceDefaults.confirmedBy)
+                : '-',
             })}
           </AlertDescription>
         </Alert>

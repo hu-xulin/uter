@@ -32,7 +32,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip'
 import { getCurrencyDisplay } from '@/lib/currency'
-import { formatQuota } from '@/lib/format'
+import { formatQuota, formatUserId } from '@/lib/format'
 import { useSystemConfigStore } from '@/stores/system-config-store'
 
 import {
@@ -80,12 +80,12 @@ export function useUsersColumns(): ColumnDef<User>[] {
       cell: ({ row }) => {
         return (
           <TableId
-            value={row.getValue('id') as number}
-            className='w-[60px] [font-family:inherit] text-sm'
+            value={formatUserId(row.getValue('id') as number)}
+            className='w-[120px] [font-family:inherit] text-sm'
           />
         )
       },
-      size: 80,
+      size: 120,
       meta: { mobileOrder: 10 },
     },
     {
