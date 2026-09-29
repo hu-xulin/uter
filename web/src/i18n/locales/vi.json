@@ -6593,6 +6593,11 @@
     "Your Quota Limit": "Your Quota Limit",
     "Your Used Quota": "Your Used Quota",
     "Department": "Department",
-    "Department name": "Department name"
+    "Department name": "Department name",
+    "Uter Admin": "Uter Admin",
+    "Uter Root": "Uter Root",
+    "Organization Owner": "Chủ sở hữu tổ chức",
+    "Organization Admin": "Quản trị viên tổ chức",
+    "Organization User": "Người dùng tổ chức"
   }
 }

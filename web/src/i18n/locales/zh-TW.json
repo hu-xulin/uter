@@ -6593,6 +6593,11 @@
     "Your Quota Limit": "您的額度上限",
     "Your Used Quota": "您的已用額度",
     "Department": "部門",
-    "Department name": "部門名稱"
+    "Department name": "部門名稱",
+    "Uter Admin": "Uter管理員",
+    "Uter Root": "Uter Root",
+    "Organization Owner": "組織所有者",
+    "Organization Admin": "組織管理員",
+    "Organization User": "組織用戶"
   }
 }

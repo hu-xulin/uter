@@ -6593,6 +6593,11 @@
     "Your Quota Limit": "Your Quota Limit",
     "Your Used Quota": "Your Used Quota",
     "Department": "Department",
-    "Department name": "Department name"
+    "Department name": "Department name",
+    "Uter Admin": "Uter Admin",
+    "Uter Root": "Uter Root",
+    "Organization Owner": "Propriétaire de l'organisation",
+    "Organization Admin": "Administrateur de l'organisation",
+    "Organization User": "Utilisateur de l'organisation"
   }
 }
