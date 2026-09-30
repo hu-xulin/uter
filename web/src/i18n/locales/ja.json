@@ -6598,6 +6598,8 @@
     "Uter Root": "Uter Root",
     "Organization Owner": "組織の所有者",
     "Organization Admin": "組織の管理者",
-    "Organization User": "組織のユーザー"
+    "Organization User": "組織のユーザー",
+    "Organization creation is handled by the platform administrator.": "組織の作成はプラットフォーム管理者が行います。",
+    "Only the platform administrator can change the budget and status.": "予算とステータスを変更できるのはプラットフォーム管理者のみです。"
   }
 }

@@ -51,6 +51,8 @@ import type {
   Organization,
 } from './types'
 import { formatUserId } from '@/lib/format'
+import { ROLE } from '@/lib/roles'
+import { useAuthStore } from '@/stores/auth-store'
 
 const ROLE_LABEL_KEY: Record<OrgRole, string> = {
   '': 'Member',
@@ -68,6 +70,9 @@ function fmtQuota(n: number): string {
 
 export function OrganizationPage() {
   const { t } = useTranslation()
+  const authUser = useAuthStore((s) => s.auth.user)
+  const myUserId = authUser?.id ?? 0
+  const isSuperAdmin = (authUser?.role ?? 0) >= ROLE.SUPER_ADMIN
   const [loading, setLoading] = useState(true)
   const [org, setOrg] = useState<Organization | null>(null)
   const [myRole, setMyRole] = useState<OrgRole>('')
@@ -83,7 +88,15 @@ export function OrganizationPage() {
   const [page, setPage] = useState(1)
 
   const isOwner = myRole === 'owner'
-  const canManage = myRole === 'owner' || myRole === 'admin'
+  // 与后端 controller.orgAuthorityOf 的分级逐字对齐：
+  //   组织管理者（owner/admin，或超管）→ 可增删成员、改角色、改部门、调额度；
+  //   部门管理员                        → 只能读本部门、并在本部门内调额度与
+  //                                       授予/撤销 department_admin；
+  //   普通成员 / 组织外账号             → 无任何写权限（由后端 403 兜底）。
+  const canManageMembers = isSuperAdmin || myRole === 'owner' || myRole === 'admin'
+  const canAdjustSubQuota = canManageMembers || myRole === 'department_admin'
+  // 授予 owner 仅超管或当前所有者（与后端 UpdateOrganizationMember 的判据一致）。
+  const canGrantOwner = isSuperAdmin || isOwner
 
   async function loadAll(orgId: number, targetPage = 1) {
     const [statsRes, membersRes] = await Promise.all([
@@ -141,7 +154,13 @@ export function OrganizationPage() {
   }
 
   if (!org) {
-    return <CreateOrganizationCard onCreated={() => location.reload()} />
+    // 组织是受控租户（预算 0 = 不限量），创建权限仅限超管：
+    // 普通用户不得自助开通，否则等于绕过个人钱包计费。
+    return isSuperAdmin ? (
+      <CreateOrganizationCard onCreated={() => location.reload()} />
+    ) : (
+      <NoOrganizationCard />
+    )
   }
 
   return (
@@ -164,11 +183,12 @@ export function OrganizationPage() {
                 stats={stats}
                 memberCount={total}
                 isOwner={isOwner}
+                isSuperAdmin={isSuperAdmin}
                 onUpdated={(updated) => setOrg(updated)}
               />
               <AddMemberCard
                 orgId={org.id}
-                canManage={canManage}
+                canManage={canManageMembers}
                 onAdded={() => loadAll(org.id, 1)}
               />
               <MembersCard
@@ -176,8 +196,10 @@ export function OrganizationPage() {
                 members={members}
                 total={total}
                 page={page}
-                isOwner={isOwner}
-                canManage={canManage}
+                myUserId={myUserId}
+                canManageMembers={canManageMembers}
+                canAdjustSubQuota={canAdjustSubQuota}
+                canGrantOwner={canGrantOwner}
                 onRoleChange={async (uid, role) => {
                   const r = await updateOrganizationMember(org.id, uid, {
                     org_role: role,
@@ -304,6 +326,35 @@ function CreateOrganizationCard({ onCreated }: { onCreated: () => void }) {
 
 // ----------------------------------------------------------------------------
 
+/**
+ * 未归属组织的非超管账号看到的占位页。
+ *
+ * 组织由平台侧开通并指定负责人，普通用户不能自助创建，因此这里只给出说明，
+ * 不提供任何创建入口。
+ */
+function NoOrganizationCard() {
+  const { t } = useTranslation()
+  return (
+    <SectionPageLayout>
+      <SectionPageLayout.Title>{t('Organization')}</SectionPageLayout.Title>
+      <SectionPageLayout.Content>
+        <Card className='mx-auto max-w-xl'>
+          <CardHeader>
+            <CardTitle>{t('No organization yet')}</CardTitle>
+            <CardDescription>
+              {t(
+                'Organization creation is handled by the platform administrator.'
+              )}
+            </CardDescription>
+          </CardHeader>
+        </Card>
+      </SectionPageLayout.Content>
+    </SectionPageLayout>
+  )
+}
+
+// ----------------------------------------------------------------------------
+
 function MyQuotaCard({
   org,
   mySubQuota,
@@ -361,12 +412,14 @@ function OrgOverviewCard({
   stats,
   memberCount,
   isOwner,
+  isSuperAdmin,
   onUpdated,
 }: {
   org: Organization
   stats: { used_quota: number; remaining: number } | null
   memberCount: number
   isOwner: boolean
+  isSuperAdmin: boolean
   onUpdated: (o: Organization) => void
 }) {
   const { t } = useTranslation()
@@ -380,21 +433,32 @@ function OrgOverviewCard({
   const remaining = stats?.remaining ?? org.quota - org.used_quota
   const pct = org.quota > 0 ? Math.min(100, (used / org.quota) * 100) : 0
 
+  // 预算（quota）是平台售出的额度，仅超管可改：若组织负责人能自行上调，
+  // 「组织预算」就不再有约束力（设为 0 即不限量）。名称与成员上限可由
+  // 组织负责人修改 —— 与后端 UpdateOrganization 的分级一致。
+  const canEditMeta = isSuperAdmin || isOwner
+  const canEditBudget = isSuperAdmin
+
   async function save() {
     setSaving(true)
     try {
+      // 后端 model.UpdateOrganization 用负数作为「不修改」哨兵（见其实现）：
+      //   - quota/status 仅超管可提交，其余角色必须显式传 -1，
+      //     否则 controller 的 `req.Quota >= 0` 鉴权判据会直接 403。
+      //   - 这不只是文案问题：早期实现传 `quota: 0`，组织负责人永远存不了设置。
       const r = await updateOrganization(org.id, {
         name: name.trim(),
-        quota: Number(quota) || 0,
-        member_limit: memberLimit ? Number(memberLimit) : 0,
+        quota: canEditBudget ? Number(quota) || 0 : -1,
+        member_limit: Number(memberLimit) || 0,
+        status: -1,
       })
       if (r.success) {
         toast.success(t('Settings updated'))
         onUpdated({
           ...org,
           name: name.trim(),
-          quota: Number(quota) || 0,
-          member_limit: memberLimit ? Number(memberLimit) : 0,
+          quota: canEditBudget ? Number(quota) || 0 : org.quota,
+          member_limit: Number(memberLimit) || 0,
         })
         setEditing(false)
       } else {
@@ -416,7 +480,7 @@ function OrgOverviewCard({
             {t('Members')}: {memberCount}
           </CardDescription>
         </div>
-        {isOwner && (
+        {canEditMeta && (
           <Button
             variant='outline'
             size='sm'
@@ -441,6 +505,7 @@ function OrgOverviewCard({
               <Input
                 type='number'
                 value={quota}
+                disabled={!canEditBudget}
                 onChange={(e) => setQuota(e.target.value)}
               />
             </div>
@@ -452,6 +517,11 @@ function OrgOverviewCard({
                 onChange={(e) => setMemberLimit(e.target.value)}
               />
             </div>
+            {!canEditBudget && (
+              <p className='text-xs text-muted-foreground sm:col-span-3'>
+                {t('Only the platform administrator can change the budget and status.')}
+              </p>
+            )}
             <div className='flex items-end gap-2 sm:col-span-3'>
               <Button onClick={save} disabled={saving}>
                 {t('Save')}
@@ -564,8 +634,10 @@ function MembersCard({
   members,
   total,
   page,
-  isOwner,
-  canManage,
+  myUserId,
+  canManageMembers,
+  canAdjustSubQuota,
+  canGrantOwner,
   onRoleChange,
   onSubQuotaChange,
   onRemove,
@@ -575,8 +647,10 @@ function MembersCard({
   members: OrgMember[]
   total: number
   page: number
-  isOwner: boolean
-  canManage: boolean
+  myUserId: number
+  canManageMembers: boolean
+  canAdjustSubQuota: boolean
+  canGrantOwner: boolean
   onRoleChange: (uid: number, role: OrgRole) => void
   onSubQuotaChange: (uid: number, subQuota: number) => void
   onRemove: (uid: number) => void
@@ -584,10 +658,36 @@ function MembersCard({
 }) {
   const { t } = useTranslation()
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE))
-  const roleOptions: OrgRole[] = useMemo(
-    () => (isOwner ? ['admin', 'department_admin', 'member'] : ['member']),
-    [isOwner]
-  )
+
+  // 可授予的角色集合，与后端判据逐字对齐：
+  //   超管/所有者 → 可授予 owner + 组织级角色；
+  //   组织管理员   → 可授予 admin / department_admin / member（不可授予 owner）；
+  //   部门管理员   → 仅可在本部门内授予 department_admin / member。
+  const roleOptions: OrgRole[] = useMemo(() => {
+    if (canGrantOwner) return ['owner', 'admin', 'department_admin', 'member']
+    if (canManageMembers) return ['admin', 'department_admin', 'member']
+    if (canAdjustSubQuota) return ['department_admin', 'member']
+    return []
+  }, [canGrantOwner, canManageMembers, canAdjustSubQuota])
+
+  // 某一行的角色下拉是否可交互。部门管理员只能改本部门有权限改的行：
+  // 不能动自己，也不能动组织所有者/组织管理员（后端同样拒绝，避免权限倒挂）。
+  function canEditRoleOf(m: OrgMember): boolean {
+    if (!roleOptions.length) return false
+    if (canManageMembers) return m.id !== org.owner_user_id
+    return (
+      m.id !== myUserId &&
+      m.org_role !== 'owner' &&
+      m.org_role !== 'admin'
+    )
+  }
+
+  function canEditSubQuotaOf(m: OrgMember): boolean {
+    if (!canAdjustSubQuota) return false
+    if (canManageMembers) return true
+    // 部门管理员不得改写上级的额度。
+    return m.org_role !== 'owner' && m.org_role !== 'admin'
+  }
 
   return (
     <Card>
@@ -622,7 +722,7 @@ function MembersCard({
                     {fmtQuota(m.used_quota)}
                   </td>
                   <td className='px-2 py-2 text-right'>
-                    {canManage ? (
+                    {canEditSubQuotaOf(m) ? (
                       <input
                         type='number'
                         className='h-8 w-28 rounded-md border border-border bg-background px-2 text-right text-sm'
@@ -641,7 +741,7 @@ function MembersCard({
                     )}
                   </td>
                   <td className='px-2 py-2'>
-                    {canManage && m.id !== org.owner_user_id ? (
+                    {canEditRoleOf(m) ? (
                       <select
                         className='h-8 rounded-md border border-border bg-background px-2 text-sm'
                         defaultValue={m.org_role || 'member'}
@@ -662,7 +762,7 @@ function MembersCard({
                     )}
                   </td>
                   <td className='px-2 py-2 text-right'>
-                    {canManage && m.id !== org.owner_user_id && (
+                    {canManageMembers && m.id !== org.owner_user_id && (
                       <Button
                         variant='destructive'
                         size='sm'
@@ -677,7 +777,7 @@ function MembersCard({
               {members.length === 0 && (
                 <tr>
                   <td
-                    colSpan={7}
+                    colSpan={8}
                     className='px-2 py-6 text-center text-muted-foreground'
                   >
                     {t('No organization yet')}

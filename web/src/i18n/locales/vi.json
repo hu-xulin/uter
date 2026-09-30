@@ -6598,6 +6598,8 @@
     "Uter Root": "Uter Root",
     "Organization Owner": "Chủ sở hữu tổ chức",
     "Organization Admin": "Quản trị viên tổ chức",
-    "Organization User": "Người dùng tổ chức"
+    "Organization User": "Người dùng tổ chức",
+    "Organization creation is handled by the platform administrator.": "Việc tạo tổ chức do quản trị viên nền tảng thực hiện.",
+    "Only the platform administrator can change the budget and status.": "Chỉ quản trị viên nền tảng mới có thể thay đổi ngân sách và trạng thái."
   }
 }

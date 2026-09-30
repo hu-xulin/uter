@@ -6598,6 +6598,8 @@
     "Uter Root": "Uter Root",
     "Organization Owner": "Владелец организации",
     "Organization Admin": "Администратор организации",
-    "Organization User": "Пользователь организации"
+    "Organization User": "Пользователь организации",
+    "Organization creation is handled by the platform administrator.": "Создание организации выполняет администратор платформы.",
+    "Only the platform administrator can change the budget and status.": "Изменять бюджет и статус может только администратор платформы."
   }
 }
