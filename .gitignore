@@ -62,3 +62,6 @@ uter-bin*
 node_modules/
 .playwright-cli/
 .workbuddy/
+
+# Local audit / analysis reports (deliverables for review, not source)
+_reports/
