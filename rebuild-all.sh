@@ -40,7 +40,18 @@ PORT=3000
 BIN="$ROOT/uter-bin"
 LOG=/tmp/uter-console.log
 GO=/usr/local/go/bin/go
-NODE_DIR=/Users/lincolnhu/.workbuddy/binaries/node/versions/22.22.2-3/bin
+# managed node 目录不写死版本号：WorkBuddy 升级 node 时会改写 versions/current
+# 指针，这里跟指针走，必要时回退到目录里版本号最高的那个，避免路径失效。
+NODE_BASE=/Users/lincolnhu/.workbuddy/binaries/node/versions
+NODE_VER="$(cat "$NODE_BASE/current" 2>/dev/null | tr -d '[:space:]')"
+if [ -z "$NODE_VER" ] || [ ! -d "$NODE_BASE/$NODE_VER/bin" ]; then
+  NODE_VER="$(ls -d "$NODE_BASE"/*/ 2>/dev/null | sed 's#.*/##; s#/$##' | sort -V | tail -1)"
+fi
+NODE_DIR="$NODE_BASE/$NODE_VER/bin"
+if [ ! -x "$NODE_DIR/npm" ]; then
+  echo "✗ managed node 运行时缺失: $NODE_DIR/npm（请确认 WorkBuddy 已安装 node 运行时）" >&2
+  exit 1
+fi
 PYTHON=/usr/bin/python3
 
 NO_RESTART=0; NO_DOCS=0; INSTALL=0; DEV=0; NO_BUILD=0
