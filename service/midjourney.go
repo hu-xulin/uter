@@ -101,7 +101,15 @@ func RefundMidjourneyQuota(ctx context.Context, task *model.Midjourney, reason s
 		return true
 	}
 
-	if err := model.IncreaseUserQuota(task.UserId, quota, false); err != nil {
+	// 与扣费端（WalletFunding / postConsumeQuotaWithResult 的组织分支）对称：
+	// 组织成员的消耗记在组织账本上，退款也必须回组织账本，否则组织 used_quota
+	// 永不回减，同时个人钱包被凭空加款。
+	if orgId, orgErr := model.OrgIdOfUser(task.UserId); orgErr == nil && orgId > 0 {
+		if err := model.IncrOrgUsedQuota(orgId, -int64(quota)); err != nil {
+			logger.LogWarn(ctx, fmt.Sprintf("退还 Midjourney 组织额度失败 task %s: %s", task.MjId, err.Error()))
+			return false
+		}
+	} else if err := model.IncreaseUserQuota(task.UserId, quota, false); err != nil {
 		logger.LogWarn(ctx, fmt.Sprintf("退还 Midjourney 用户额度失败 task %s: %s", task.MjId, err.Error()))
 		return false
 	}

@@ -1084,6 +1084,30 @@ type ManageRequest struct {
 	Mode   string `json:"mode"`
 }
 
+// canManageTargetUser 判定调用者是否可以管理目标用户：角色等级 + 组织/部门范围。
+//
+// 任何「改动他人」的动作都必须先过这一关，包括额度调整。原实现中 add_quota 在加载
+// 目标用户与这两项校验之前就 return，等于留了一条绕过「只能管理本组织成员」的通道。
+func canManageTargetUser(c *gin.Context, target *model.User) bool {
+	if !canManageTargetRole(c.GetInt("role"), target.Role) {
+		return false
+	}
+	// 组织范围管理员只能管理本组织（本部门）成员，杜绝越权改别家公司员工。
+	myOrg := c.GetInt("organization_id")
+	if myOrg == 0 {
+		return true
+	}
+	if target.OrganizationId != myOrg {
+		return false
+	}
+	if c.GetString("org_role") == model.OrgRoleDepartmentAdmin {
+		if myDept := c.GetInt("department_id"); myDept > 0 && target.DepartmentId != myDept {
+			return false
+		}
+	}
+	return true
+}
+
 // ManageUser Only admin user can do this
 func ManageUser(c *gin.Context) {
 	var req ManageRequest
@@ -1094,6 +1118,11 @@ func ManageUser(c *gin.Context) {
 		return
 	}
 	if req.Action == "add_quota" {
+		// 注意：add_quota 必须在这里分派（早于目标用户加载）。manageUserQuota 自身
+		// 承担「一次请求一条审计」的职责，且要用 AdjustUserQuota 返回的哨兵错误来
+		// 区分 invalid_parameters / target_not_found / database_error 等失败原因；
+		// 在这里提前 return 会让这些失败无审计记录。它的权限与组织范围门禁在
+		// manageUserQuota 内部补上（见该函数注释）。
 		manageUserQuota(c, req)
 		return
 	}
@@ -1106,23 +1135,9 @@ func ManageUser(c *gin.Context) {
 		common.ApiErrorI18n(c, i18n.MsgUserNotExists)
 		return
 	}
-	myRole := c.GetInt("role")
-	if !canManageTargetRole(myRole, user.Role) {
+	if !canManageTargetUser(c, &user) {
 		common.ApiErrorI18n(c, i18n.MsgUserNoPermissionHigherLevel)
 		return
-	}
-	// 组织范围管理员只能管理本组织（本部门）成员，杜绝越权看/改别家公司员工
-	if myOrg := c.GetInt("organization_id"); myOrg > 0 {
-		if user.OrganizationId != myOrg {
-			common.ApiErrorI18n(c, i18n.MsgUserNoPermissionHigherLevel)
-			return
-		}
-		if c.GetString("org_role") == model.OrgRoleDepartmentAdmin {
-			if myDept := c.GetInt("department_id"); myDept > 0 && user.DepartmentId != myDept {
-				common.ApiErrorI18n(c, i18n.MsgUserNoPermissionHigherLevel)
-				return
-			}
-		}
 	}
 	switch req.Action {
 	case "disable":
@@ -1161,7 +1176,7 @@ func ManageUser(c *gin.Context) {
 		})
 		return
 	case "promote":
-		if myRole != common.RoleRootUser {
+		if c.GetInt("role") != common.RoleRootUser {
 			common.ApiErrorI18n(c, i18n.MsgUserAdminCannotPromote)
 			return
 		}

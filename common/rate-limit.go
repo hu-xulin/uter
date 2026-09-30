@@ -41,6 +41,24 @@ func (l *InMemoryRateLimiter) clearExpiredItems() {
 	}
 }
 
+// Refund 撤销一次已记录的请求（滑动窗口退一格）。
+//
+// 用途见 middleware.rateLimitFactoryWithExemption：先计数、后判定豁免，命中豁免时必须
+// 把刚才那次计数抹掉，否则豁免流量会持续把窗口顶满，连累同一来源的其它调用方。
+// 退掉的总是最近一次记录（调用方刚刚写入的那条）。
+func (l *InMemoryRateLimiter) Refund(key string) {
+	l.mutex.Lock()
+	defer l.mutex.Unlock()
+	queue, ok := l.store[key]
+	if !ok || len(*queue) == 0 {
+		return
+	}
+	*queue = (*queue)[:len(*queue)-1]
+	if len(*queue) == 0 {
+		delete(l.store, key)
+	}
+}
+
 // Request parameter duration's unit is seconds
 func (l *InMemoryRateLimiter) Request(key string, maxRequestNum int, duration int64) bool {
 	l.mutex.Lock()

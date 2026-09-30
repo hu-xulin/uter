@@ -23,6 +23,15 @@ For commercial licensing, please contact support@Uter.ai.com
 
 export type OrgRole = '' | 'owner' | 'admin' | 'department_admin' | 'member'
 
+/**
+ * 组织状态取值，与后端 model.OrgStatus* 逐字对应。
+ *
+ * 从 1 开始而不是 0：0 是 int 的零值，后端用它当「不修改」哨兵之外没有任何合法语义，
+ * 因此前端也绝不可把 0 当成状态提交（后端会直接拒绝）。
+ */
+export const ORG_STATUS_ENABLED = 1
+export const ORG_STATUS_DISABLED = 2
+
 /** 共享总钱包预算（额度单位，与用户 quota 同单位） */
 export interface Organization {
   id: number
@@ -31,6 +40,7 @@ export interface Organization {
   quota: number
   used_quota: number
   member_limit: number
+  /** 1=启用 2=停用，见 ORG_STATUS_* */
   status: number
   created_at: number
   updated_at: number

@@ -196,9 +196,13 @@ func SetRelayRouter(router *gin.Engine) {
 }
 
 func registerMjRouterGroup(relayMjRouter *gin.RouterGroup) {
-	relayMjRouter.GET("/image/:id", relay.RelayMidjourneyImage)
+	// 所有路由都必须注册在 Use(TokenAuth(), Distribute()) **之后**：Gin 的
+	// RouterGroup.Use 只作用于之后注册的路由，写在前面的路由拿不到中间件。
+	// 原先 /image/:id 注册在 Use 之前，等于一个完全匿名的图片代理（可枚举
+	// mj_id 下载他人生成内容），这里移进分组内。
 	relayMjRouter.Use(middleware.TokenAuth(), middleware.Distribute())
 	{
+		relayMjRouter.GET("/image/:id", relay.RelayMidjourneyImage)
 		relayMjRouter.POST("/submit/action", controller.RelayMidjourney)
 		relayMjRouter.POST("/submit/shorten", controller.RelayMidjourney)
 		relayMjRouter.POST("/submit/modal", controller.RelayMidjourney)

@@ -46,6 +46,7 @@ import type {
   DashboardChartPreferences,
   DashboardFilters,
 } from '@/features/dashboard/types'
+import { formatUserId, parseUserId } from '@/lib/format'
 import { getRollingDateRange, type TimeGranularity } from '@/lib/time'
 import { cn } from '@/lib/utils'
 import { useAuthStore } from '@/stores/auth-store'
@@ -110,6 +111,13 @@ export function ModelsFilter(props: ModelsFilterProps) {
   const [selectedRange, setSelectedRange] = useState<number | null>(() =>
     detectQuickRangeDays(props.currentFilters)
   )
+  // 用户 ID 用受控字符串保存原始输入，只在 apply 时归一成数字：
+  // 用户可以输入 "uter100000001" 或 "1"，直接受控成数字会把前者吃掉。
+  const [userIdInput, setUserIdInput] = useState<string>(() =>
+    props.currentFilters?.user_id
+      ? formatUserId(props.currentFilters.user_id)
+      : ''
+  )
 
   const handleOpenChange = (nextOpen: boolean) => {
     // Sync the editing state from the applied filters every time the dialog
@@ -119,15 +127,18 @@ export function ModelsFilter(props: ModelsFilterProps) {
         props.currentFilters ?? buildDefaultDashboardFilters(props.preferences)
       setFilters(applied)
       setSelectedRange(detectQuickRangeDays(applied))
+      setUserIdInput(applied.user_id ? formatUserId(applied.user_id) : '')
     }
     setOpen(nextOpen)
   }
 
   const handleApply = () => {
+    const parsedUserId = parseUserId(userIdInput)
     props.onFilterChange(
-      cleanFilters(
-        filters as unknown as Record<string, unknown>
-      ) as typeof filters
+      cleanFilters({
+        ...(filters as unknown as Record<string, unknown>),
+        user_id: parsedUserId > 0 ? parsedUserId : undefined,
+      }) as typeof filters
     )
     setOpen(false)
   }
@@ -141,6 +152,7 @@ export function ModelsFilter(props: ModelsFilterProps) {
       end_timestamp: end,
     })
     setSelectedRange(days)
+    setUserIdInput('')
     props.onReset()
     setOpen(false)
   }
@@ -150,8 +162,9 @@ export function ModelsFilter(props: ModelsFilterProps) {
     value: Date | string | undefined
   ) => {
     setFilters((prev) => ({ ...prev, [field]: value }))
-    if (field === 'start_timestamp' || field === 'end_timestamp')
+    if (field === 'start_timestamp' || field === 'end_timestamp') {
       setSelectedRange(null)
+    }
   }
 
   const handleQuickRange = (days: number) => {
@@ -257,12 +270,10 @@ export function ModelsFilter(props: ModelsFilterProps) {
           <div className='grid gap-2'>
             <Label htmlFor='time_granularity'>{t('Time Granularity')}</Label>
             <Select
-              items={[
-                ...TIME_GRANULARITY_OPTIONS.map((option) => ({
-                  value: option.value,
-                  label: t(option.label),
-                })),
-              ]}
+              items={TIME_GRANULARITY_OPTIONS.map((option) => ({
+                value: option.value,
+                label: t(option.label),
+              }))}
               value={filters.time_granularity}
               onValueChange={(value) =>
                 handleChange('time_granularity', value as TimeGranularity)
@@ -296,6 +307,21 @@ export function ModelsFilter(props: ModelsFilterProps) {
                   value={filters.username}
                   onChange={(e) => handleChange('username', e.target.value)}
                 />
+              </div>
+
+              <div className='grid gap-2'>
+                <Label htmlFor='user_id'>{t('User ID')}</Label>
+                <Input
+                  id='user_id'
+                  inputMode='numeric'
+                  autoComplete='off'
+                  placeholder={t('Filter by user ID')}
+                  value={userIdInput}
+                  onChange={(e) => setUserIdInput(e.target.value)}
+                />
+                <p className='text-muted-foreground text-xs'>
+                  {t('Accepts a raw user ID or the displayed uter… number.')}
+                </p>
               </div>
             </>
           )}

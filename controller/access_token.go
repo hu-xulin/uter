@@ -71,11 +71,29 @@ func GetAuditLogs(c *gin.Context) {
 		return
 	}
 	filter := model.AuditLogFilter{Username: c.Query("username"), Category: c.Query("category"), TokenRef: c.Query("token_ref"), ExcludeTokenRef: c.Query("exclude_token_ref"), RequestId: c.Query("request_id")}
+	if raw := c.Query("user_id"); raw != "" {
+		parsed, err := strconv.Atoi(raw)
+		if err != nil || parsed < 0 {
+			common.ApiErrorMsg(c, "Invalid audit user id")
+			return
+		}
+		filter.UserId = parsed
+	}
 	viewerRole := c.GetInt("role")
 	if c.FullPath() == "/api/audit/self" {
 		filter.UserId = c.GetInt("id")
 		filter.Username = ""
 		filter.SelfView = true
+	} else if scope := middleware.RequestOrgScope(c); !scope.IsPlatformScope() {
+		// 与「使用日志 / 数据看板」口径一致：非平台视角（属于某组织）的调用者
+		// 只能看到本组织 / 本部门成员的审计记录。空范围由 Usernames() 换成哨兵，
+		// 不会退化成「看全站」。
+		names, err := scope.Usernames()
+		if err != nil {
+			common.ApiError(c, err)
+			return
+		}
+		filter.Usernames = names
 	}
 	if !model.ValidAuditCategory(filter.Category) || !model.ValidTokenFingerprint(filter.TokenRef) || !model.ValidTokenFingerprint(filter.ExcludeTokenRef) {
 		common.ApiErrorMsg(c, "Invalid audit filters")

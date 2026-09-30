@@ -148,7 +148,12 @@ func (s *BillingSession) needsRefundLocked() bool {
 }
 
 // GetPreConsumedQuota 返回实际预扣的额度。
+//
+// 必须持锁读取：preConsumedQuota 由 Reserve / preConsume 在 s.mu 下写入，而本方法
+// 常由 relay 侧的日志/补扣路径并发调用，无锁读会构成数据竞争（-race 可复现）。
 func (s *BillingSession) GetPreConsumedQuota() int {
+	s.mu.Lock()
+	defer s.mu.Unlock()
 	return s.preConsumedQuota
 }
 

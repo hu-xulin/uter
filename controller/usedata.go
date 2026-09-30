@@ -35,12 +35,16 @@ func GetAllQuotaDates(c *gin.Context) {
 	startTimestamp, _ := strconv.ParseInt(c.Query("start_timestamp"), 10, 64)
 	endTimestamp, _ := strconv.ParseInt(c.Query("end_timestamp"), 10, 64)
 	username := c.Query("username")
+	userIds, ok := QueryUserIds(c)
+	if !ok {
+		return
+	}
 	orgUsernames, err := middleware.RequestOrgScope(c).Usernames()
 	if err != nil {
 		common.ApiError(c, err)
 		return
 	}
-	dates, err := model.GetAllQuotaDates(startTimestamp, endTimestamp, username, orgUsernames...)
+	dates, err := model.GetAllQuotaDates(startTimestamp, endTimestamp, username, orgUsernames, userIds...)
 	if err != nil {
 		common.ApiError(c, err)
 		return
@@ -56,12 +60,16 @@ func GetAllQuotaDates(c *gin.Context) {
 func GetQuotaDatesByUser(c *gin.Context) {
 	startTimestamp, _ := strconv.ParseInt(c.Query("start_timestamp"), 10, 64)
 	endTimestamp, _ := strconv.ParseInt(c.Query("end_timestamp"), 10, 64)
+	userIds, ok := QueryUserIds(c)
+	if !ok {
+		return
+	}
 	orgUsernames, err := middleware.RequestOrgScope(c).Usernames()
 	if err != nil {
 		common.ApiError(c, err)
 		return
 	}
-	dates, err := model.GetQuotaDataGroupByUser(startTimestamp, endTimestamp, orgUsernames...)
+	dates, err := model.GetQuotaDataGroupByUser(startTimestamp, endTimestamp, orgUsernames, userIds...)
 	if err != nil {
 		common.ApiError(c, err)
 		return
@@ -104,12 +112,16 @@ func GetAllFlowQuotaDates(c *gin.Context) {
 		return
 	}
 	username := c.Query("username")
+	userIds, ok := QueryUserIds(c)
+	if !ok {
+		return
+	}
 	orgUsernames, err := middleware.RequestOrgScope(c).Usernames()
 	if err != nil {
 		common.ApiError(c, err)
 		return
 	}
-	dates, err := model.GetFlowQuotaData(startTimestamp, endTimestamp, username, 0, c.GetInt("role"), orgUsernames...)
+	dates, err := model.GetFlowQuotaData(startTimestamp, endTimestamp, username, 0, c.GetInt("role"), orgUsernames, userIds...)
 	if err != nil {
 		common.ApiError(c, err)
 		return
@@ -135,7 +147,7 @@ func GetUserFlowQuotaDates(c *gin.Context) {
 		})
 		return
 	}
-	dates, err := model.GetFlowQuotaData(startTimestamp, endTimestamp, "", userId, common.RoleCommonUser)
+	dates, err := model.GetFlowQuotaData(startTimestamp, endTimestamp, "", userId, common.RoleCommonUser, nil)
 	if err != nil {
 		common.ApiError(c, err)
 		return

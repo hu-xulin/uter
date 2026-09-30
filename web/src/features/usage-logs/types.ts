@@ -42,6 +42,11 @@ export interface CommonFilters {
   startTime?: Date
   endTime?: Date
   channel?: string
+  /**
+   * 用户维度过滤（数据库自增 user id）。
+   * 只有能查看他人数据的角色（管理员 / 超管）才会渲染该输入框。
+   */
+  userId?: number
 }
 
 /**

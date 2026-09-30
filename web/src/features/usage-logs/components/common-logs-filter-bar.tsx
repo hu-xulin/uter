@@ -42,6 +42,7 @@ import {
 import { getGroups } from '@/features/users/api'
 import { useMediaQuery } from '@/hooks'
 import { getUserGroups } from '@/lib/api'
+import { formatUserId, parseUserId } from '@/lib/format'
 import { requireServerSuccess } from '@/lib/server-error-message'
 
 import { LOG_TYPE_ALL_VALUE, LOG_TYPE_FILTERS } from '../constants'
@@ -91,6 +92,7 @@ function buildSearchSourceKey(values: {
   token?: unknown
   group?: unknown
   username?: unknown
+  userId?: unknown
   requestId?: unknown
   upstreamRequestId?: unknown
   type?: unknown
@@ -103,6 +105,7 @@ function buildSearchSourceKey(values: {
     values.token,
     values.group,
     values.username,
+    values.userId,
     values.requestId,
     values.upstreamRequestId,
     Array.isArray(values.type) ? values.type.join(',') : values.type,
@@ -155,6 +158,7 @@ export function CommonLogsFilterBar<TData>(
       token: searchParams.token,
       group: searchParams.group,
       username: searchParams.username,
+      userId: searchParams.userId,
       requestId: searchParams.requestId,
       upstreamRequestId: searchParams.upstreamRequestId,
       type: searchParams.type,
@@ -169,6 +173,7 @@ export function CommonLogsFilterBar<TData>(
       token: searchParams.token || undefined,
       group: searchParams.group || undefined,
       username: searchParams.username || undefined,
+      userId: searchParams.userId || undefined,
       requestId: searchParams.requestId || undefined,
       upstreamRequestId: searchParams.upstreamRequestId || undefined,
     }
@@ -185,6 +190,7 @@ export function CommonLogsFilterBar<TData>(
     searchParams.token,
     searchParams.group,
     searchParams.username,
+    searchParams.userId,
     searchParams.requestId,
     searchParams.upstreamRequestId,
     searchParams.type,
@@ -194,6 +200,13 @@ export function CommonLogsFilterBar<TData>(
     draft.sourceKey === searchState.sourceKey ? draft : searchState
   const filters = activeDraft.filters
   const logType = activeDraft.logType
+
+  // 用户 ID 允许两种写法（原始 id 或对外展示的 uter…），因此保留一份**原始字符串**，
+  // null 表示「跟随当前 filters 渲染」。与 activeDraft 同构：URL 变化后丢弃本地草稿。
+  const [userIdRaw, setUserIdRaw] = useState<string | null>(null)
+  const rawIsCurrent = draft.sourceKey === searchState.sourceKey
+  const userIdInput = (rawIsCurrent ? userIdRaw : null) ??
+    (filters.userId ? formatUserId(filters.userId) : '')
 
   const handleChange = useCallback(
     (field: keyof CommonLogFilters, value: Date | string | undefined) => {
@@ -212,7 +225,12 @@ export function CommonLogsFilterBar<TData>(
 
   const handleApply = useCallback(
     (nextFilters: CommonLogFilters = filters) => {
-      const filterParams = buildSearchParams(nextFilters, 'common')
+      const parsedUserId = parseUserId(userIdInput)
+      const merged: CommonLogFilters = {
+        ...nextFilters,
+        userId: parsedUserId > 0 ? parsedUserId : undefined,
+      }
+      const filterParams = buildSearchParams(merged, 'common')
       navigate({
         to: '/usage-logs/$section',
         params: { section: 'common' },
@@ -225,7 +243,7 @@ export function CommonLogsFilterBar<TData>(
       queryClient.invalidateQueries({ queryKey: ['logs'] })
       queryClient.invalidateQueries({ queryKey: ['usage-logs-stats'] })
     },
-    [filters, logType, navigate, queryClient]
+    [filters, logType, navigate, queryClient, userIdInput]
   )
 
   const handleReset = useCallback(() => {
@@ -241,6 +259,7 @@ export function CommonLogsFilterBar<TData>(
       filters: resetFilters,
       logType: LOG_TYPE_ALL_VALUE,
     })
+    setUserIdRaw(null)
 
     navigate({
       to: '/usage-logs/$section',
@@ -264,6 +283,7 @@ export function CommonLogsFilterBar<TData>(
   const hasExpandedFilters =
     !!filters.token ||
     !!filters.username ||
+    !!filters.userId ||
     !!filters.channel ||
     !!filters.requestId ||
     !!filters.upstreamRequestId
@@ -275,6 +295,7 @@ export function CommonLogsFilterBar<TData>(
   const expandedFilterCount = [
     filters.token,
     isAdmin ? filters.username : undefined,
+    isAdmin ? filters.userId : undefined,
     isAdmin ? filters.channel : undefined,
     filters.requestId,
     filters.upstreamRequestId,
@@ -449,6 +470,18 @@ export function CommonLogsFilterBar<TData>(
             className={sensitiveInputClass}
             value={filters.username || ''}
             onChange={(e) => handleChange('username', e.target.value)}
+            onKeyDown={handleKeyDown}
+          />
+        </LogsFilterField>
+      )}
+      {isAdmin && (
+        <LogsFilterField>
+          <LogsFilterInput
+            aria-label={t('User ID')}
+            placeholder={t('User ID')}
+            inputMode='numeric'
+            value={userIdInput}
+            onChange={(e) => setUserIdRaw(e.target.value)}
             onKeyDown={handleKeyDown}
           />
         </LogsFilterField>

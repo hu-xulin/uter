@@ -372,11 +372,56 @@ func taskArtifactClientHeaders(headers http.Header) map[string]string {
 	Artifact projection is confined to the explicit endpoints above.
 */
 
+// intersectUserIds 把调用方显式指定的 user_id 过滤与调用者的可见范围取交集。
+//
+// 两个入参都为 nil/空时表示对应维度「不施加过滤」。交集为空时必须返回
+// model.NoOrgMemberId 哨兵而不是空切片：模型层把空切片解释为「不施加过滤」，
+// 直接传空切片会让一次「过滤到越权用户」的请求静默退化成「看全量」。
+func intersectUserIds(scopeIds []int, filterIds []int) []int {
+	switch {
+	case len(filterIds) == 0:
+		return scopeIds
+	case len(scopeIds) == 0:
+		return filterIds
+	}
+	allowed := make(map[int]struct{}, len(scopeIds))
+	for _, id := range scopeIds {
+		allowed[id] = struct{}{}
+	}
+	result := make([]int, 0, len(filterIds))
+	for _, id := range filterIds {
+		if _, ok := allowed[id]; ok {
+			result = append(result, id)
+		}
+	}
+	if len(result) == 0 {
+		return []int{model.NoOrgMemberId}
+	}
+	return result
+}
+
 func GetAllTask(c *gin.Context) {
 	pageInfo := common.GetPageQuery(c)
 	startTimestamp, _ := strconv.ParseInt(c.Query("start_timestamp"), 10, 64)
 	endTimestamp, _ := strconv.ParseInt(c.Query("end_timestamp"), 10, 64)
 	queryParams := model.SyncTaskQueryParams{Platform: constant.TaskPlatform(c.Query("platform")), TaskID: c.Query("task_id"), Status: c.Query("status"), Action: c.Query("action"), StartTimestamp: startTimestamp, EndTimestamp: endTimestamp, ChannelID: c.Query("channel_id")}
+	userIds, ok := QueryUserIds(c)
+	if !ok {
+		return
+	}
+	// 任务日志此前完全没有组织范围过滤，这里与「使用日志 / 数据看板」对齐：
+	// 非平台视角的调用者只能看到本组织（或本部门）成员的任务。
+	scope := middleware.RequestOrgScope(c)
+	if !scope.IsPlatformScope() {
+		scopeIds, err := scope.UserIDs()
+		if err != nil {
+			common.ApiError(c, err)
+			return
+		}
+		queryParams.UserIDs = intersectUserIds(scopeIds, userIds)
+	} else {
+		queryParams.UserIDs = userIds
+	}
 	items := model.TaskGetAllTasks(pageInfo.GetStartIdx(), pageInfo.GetPageSize(), queryParams)
 	pageInfo.SetTotal(int(model.TaskCountAllTasks(queryParams)))
 	pageInfo.SetItems(tasksToDto(items, true, c.GetInt("role")))

@@ -180,9 +180,22 @@ func SetWebRouter(router *gin.Engine, assets WebAssets, pluginDispatcher gin.Han
 		// remaining gzip stream as text — the whole SPA shell comes out as
 		// mojibake. Keep gzip registered exactly once, in `router.Use`.
 		middleware.AccessTokenAudit(),
+		// 先把请求交给静态文件系统，命中真实文件即返回，**不经过**下面的
+		// GlobalWebRateLimit。
+		//
+		// 顺序很重要：默认的 120 次 / 180 秒配额是按客户端 IP 计的，而一次冷启动
+		// （首次打开、硬刷新、新标签页）会拉取 index.html + 主包 + 若干异步分片 +
+		// 字体，轻易就是几十个请求。若把这些带内容哈希、可长期缓存的静态资源一并计入，
+		// 两三次冷启动就触顶，之后连 index.html 本身都返回 429 —— 用户看到的是空白页
+		// 或加载失败，而服务端其实毫无压力。
+		//
+		// 静态资源的缓存策略已由全局的 middleware.Cache 处理（不可变资源长缓存、
+		// /logo.png 等 no-cache 校验），把它们排除在限流之外不会引入新的放大面；
+		// 真正需要兜住的是**未命中文件、回落到 SPA 外壳**的导航请求，那才是每次都会
+		// 渲染整个应用的开销所在。
+		static.Serve("/", frontendFS),
 		middleware.GlobalWebRateLimit(),
 		middleware.Cache(),
-		static.Serve("/", frontendFS),
 		func(c *gin.Context) {
 			// Unknown `/docs/<lang>/<x>` paths are part of the docs section
 			// but the static export didn't emit them. Redirecting to

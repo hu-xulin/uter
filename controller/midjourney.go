@@ -12,6 +12,7 @@ import (
 
 	"github.com/Uter-AI/Uter/dto"
 	"github.com/Uter-AI/Uter/logger"
+	"github.com/Uter-AI/Uter/middleware"
 	"github.com/Uter-AI/Uter/model"
 	"github.com/Uter-AI/Uter/service"
 	"github.com/Uter-AI/Uter/setting"
@@ -282,12 +283,29 @@ func checkMjTaskNeedUpdate(oldTask *model.Midjourney, newTask dto.MidjourneyDto)
 func GetAllMidjourney(c *gin.Context) {
 	pageInfo := common.GetPageQuery(c)
 
+	userIds, ok := QueryUserIds(c)
+	if !ok {
+		return
+	}
+	// 与「使用日志 / 任务日志」口径一致：非平台视角的调用者只能看到本组织（或本部门）
+	// 成员的绘图记录。绘图日志此前完全没有组织范围过滤，这里一并补齐。
+	scope := middleware.RequestOrgScope(c)
+	if !scope.IsPlatformScope() {
+		scopeIds, err := scope.UserIDs()
+		if err != nil {
+			common.ApiError(c, err)
+			return
+		}
+		userIds = intersectUserIds(scopeIds, userIds)
+	}
+
 	// 解析其他查询参数
 	queryParams := model.TaskQueryParams{
 		ChannelID:      c.Query("channel_id"),
 		MjID:           c.Query("mj_id"),
 		StartTimestamp: c.Query("start_timestamp"),
 		EndTimestamp:   c.Query("end_timestamp"),
+		UserIDs:        userIds,
 	}
 
 	items := model.GetAllTasks(pageInfo.GetStartIdx(), pageInfo.GetPageSize(), queryParams)

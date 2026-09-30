@@ -1,5 +1,7 @@
 package model
 
+import "gorm.io/gorm"
+
 type Midjourney struct {
 	Id          int    `json:"id"`
 	Code        int    `json:"code"`
@@ -34,6 +36,19 @@ type TaskQueryParams struct {
 	MjID           string
 	StartTimestamp string
 	EndTimestamp   string
+	// UserIDs 是绘图日志的「用户维度」过滤（nil 表示不过滤）。用集合而不是单值：
+	// 组织范围可能包含多个成员，单值等值过滤会静默只显示其中一个人的记录。
+	UserIDs []int
+}
+
+// applyTaskQueryUserFilter 施加用户维度过滤。空集合表示「不施加」；
+// 组织范围为空时调用方会传入 model.NoOrgMemberId 哨兵，因此「过滤到范围外的用户」
+// 只会得到空集，不会退化成看全量。
+func applyTaskQueryUserFilter(query *gorm.DB, userIDs []int) *gorm.DB {
+	if len(userIDs) == 0 {
+		return query
+	}
+	return query.Where("user_id IN ?", userIDs)
 }
 
 func GetAllUserTask(userId int, startIdx int, num int, queryParams TaskQueryParams) []*Midjourney {
@@ -83,6 +98,7 @@ func GetAllTasks(startIdx int, num int, queryParams TaskQueryParams) []*Midjourn
 	if queryParams.EndTimestamp != "" {
 		query = query.Where("submit_time <= ?", queryParams.EndTimestamp)
 	}
+	query = applyTaskQueryUserFilter(query, queryParams.UserIDs)
 
 	// 获取数据
 	err = query.Order("id desc").Limit(num).Offset(startIdx).Find(&tasks).Error
@@ -227,6 +243,7 @@ func CountAllTasks(queryParams TaskQueryParams) int64 {
 	if queryParams.EndTimestamp != "" {
 		query = query.Where("submit_time <= ?", queryParams.EndTimestamp)
 	}
+	query = applyTaskQueryUserFilter(query, queryParams.UserIDs)
 	_ = query.Count(&total).Error
 	return total
 }

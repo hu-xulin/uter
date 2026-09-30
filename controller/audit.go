@@ -4,9 +4,11 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"strconv"
 	"strings"
 
 	"github.com/Uter-AI/Uter/common"
+	"github.com/Uter-AI/Uter/i18n"
 
 	"github.com/Uter-AI/Uter/constant"
 	"github.com/Uter-AI/Uter/model"
@@ -237,4 +239,94 @@ func tokenBatchAuditParams(c *gin.Context, ids []int) model.AuditFields {
 		params["requested_ids_truncated"] = true
 	}
 	return params
+}
+
+// GetOrganizationAuditLogs 返回组织内成员的审计日志（组织所有者 / 组织管理员 / 部门管理员）。
+//
+// 与 /api/audit（平台视角）不同：
+//   - 调用者必须属于目标组织（loadOrgForAuthority 校验）；
+//   - 范围被收窄到该组织（或在部门管理员视角下：本部门）—— 这是硬约束，
+//     通过 AuditLogFilter.Usernames 下推到 SQL，而不是事后过滤；
+//   - 仅 RoleCommonUser / RoleAdminUser 角色的记录可被看到，避免泄漏超管的内部操作；
+//   - user_id 过滤与范围取交集：越权的用户 id 只会得到空集。
+func GetOrganizationAuditLogs(c *gin.Context) {
+	orgId, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		common.ApiErrorI18n(c, i18n.MsgInvalidParams)
+		return
+	}
+	org, _, ok := loadOrgForAuthority(c, orgId)
+	if !ok {
+		return
+	}
+	page := common.GetPageQuery(c)
+	if page.Page < 1 || page.PageSize < 1 || page.Page > 100000000 {
+		common.ApiErrorMsg(c, "Invalid audit pagination")
+		return
+	}
+	userIds, ok := QueryUserIds(c)
+	if !ok {
+		return
+	}
+	filter := model.AuditLogFilter{Username: c.Query("username"), Category: c.Query("category"), TokenRef: c.Query("token_ref"), ExcludeTokenRef: c.Query("exclude_token_ref"), RequestId: c.Query("request_id")}
+	if len(userIds) > 0 {
+		filter.UserId = userIds[0]
+	}
+	if raw := c.Query("success"); raw != "" {
+		if raw != "true" && raw != "false" {
+			common.ApiErrorMsg(c, "Invalid audit result")
+			return
+		}
+		success := raw == "true"
+		filter.Success = &success
+	}
+	for name, target := range map[string]*int64{"start_timestamp": &filter.StartTimestamp, "end_timestamp": &filter.EndTimestamp} {
+		if raw := c.Query(name); raw != "" {
+			parsed, err := strconv.ParseInt(raw, 10, 64)
+			if err != nil || parsed < 0 {
+				common.ApiErrorMsg(c, "Invalid audit time range")
+				return
+			}
+			*target = parsed
+		}
+	}
+	if filter.EndTimestamp > 0 && filter.EndTimestamp < filter.StartTimestamp {
+		common.ApiErrorMsg(c, "Invalid audit time range")
+		return
+	}
+	if !model.ValidAuditCategory(filter.Category) || !model.ValidTokenFingerprint(filter.TokenRef) || !model.ValidTokenFingerprint(filter.ExcludeTokenRef) {
+		common.ApiErrorMsg(c, "Invalid audit filters")
+		return
+	}
+	usernames, err := orgAuditUsernames(c, org)
+	if err != nil {
+		common.ApiError(c, err)
+		return
+	}
+	// 空范围必须换成「不可能匹配」的哨兵：model.GetAuditLogs 把空切片解释为
+	// 「不施加过滤」，直接传空切片会让「本组织没有成员」退化成「看全站审计日志」。
+	if len(usernames) == 0 {
+		usernames = []string{model.NoOrgMemberUsername}
+	}
+	filter.Usernames = usernames
+	// 非超管只能看到普通用户 / 平台管理员的操作日志：viewerRole 传 RoleAdminUser，
+	// model.GetAuditLogs 据此把超管自身的记录滤掉，此处只控制行级可见性。
+	logs, total, err := model.GetAuditLogs(filter, page.GetStartIdx(), page.GetPageSize(), common.RoleAdminUser)
+	if err != nil {
+		common.ApiError(c, err)
+		return
+	}
+	page.SetItems(logs)
+	page.SetTotal(int(total))
+	common.ApiSuccess(c, page)
+}
+
+// orgAuditUsernames 返回组织/部门范围内可见成员的 username，用于审计日志过滤。
+// 部门管理员只看本部门；未分配部门时返回哨兵（空集）。
+func orgAuditUsernames(c *gin.Context, org *model.Organization) ([]string, error) {
+	authority := orgAuthorityOf(c.GetInt("role"), c.GetInt("id"), c.GetInt("organization_id"), c.GetString("org_role"), org)
+	if authority == orgAuthorityDepartmentAdmin {
+		return model.GetOrgMemberUsernamesInDepartment(org.Id, c.GetString("department_name"))
+	}
+	return model.GetOrgMemberUsernames(org.Id)
 }

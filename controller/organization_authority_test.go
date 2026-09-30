@@ -39,7 +39,7 @@ func TestOrgAuthorityOf(t *testing.T) {
 		{
 			name:       "organization admin manages own organization",
 			callerRole: common.RoleCommonUser, callerUserId: 101, callerOrgId: 7, callerOrgRole: model.OrgRoleAdmin,
-			org: org, want: orgAuthorityOrgManager,
+			org: org, want: orgAuthorityOrgAdmin,
 		},
 		{
 			name:       "department admin is limited to own department",
@@ -90,7 +90,9 @@ func TestOrgAuthorityOf(t *testing.T) {
 
 // 只有「组织管理者」级别才允许增删成员 / 改角色；部门管理员必须被挡在这些操作之外。
 func TestOrgAuthorityLevelOrdering(t *testing.T) {
-	if !(orgAuthorityNone < orgAuthorityDepartmentAdmin && orgAuthorityDepartmentAdmin < orgAuthorityOrgManager) {
+	if !(orgAuthorityNone < orgAuthorityDepartmentAdmin &&
+		orgAuthorityDepartmentAdmin < orgAuthorityOrgAdmin &&
+		orgAuthorityOrgAdmin < orgAuthorityOrgManager) {
 		t.Fatal("authority levels must be ordered so that stricter checks cannot be bypassed")
 	}
 }

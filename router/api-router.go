@@ -74,8 +74,8 @@ func SetApiRouter(router *gin.Engine) {
 
 		userRoute := apiRouter.Group("/user")
 		{
-			userRoute.POST("/auth/refresh", middleware.SessionCookieOriginGuard(), middleware.SessionRefreshRateLimit(service.RefreshCookieName), middleware.DisableCache(), controller.RefreshAuth)
-			userRoute.POST("/auth/logout", middleware.SessionCookieOriginGuard(), middleware.SessionRefreshRateLimit(service.RefreshCookieName), middleware.DisableCache(), controller.AuthLogout)
+			userRoute.POST("/auth/refresh", middleware.SessionCookieOriginGuard(), middleware.SessionRateLimit(service.RefreshCookieName, middleware.SessionRateLimitRefresh), middleware.DisableCache(), controller.RefreshAuth)
+			userRoute.POST("/auth/logout", middleware.SessionCookieOriginGuard(), middleware.SessionRateLimit(service.RefreshCookieName, middleware.SessionRateLimitLogout), middleware.DisableCache(), controller.AuthLogout)
 			userRoute.POST("/register", middleware.CriticalRateLimit(), anonymousRequestBodyLimit, middleware.TurnstileCheck(), controller.Register)
 			userRoute.GET("/login/encryption-key", middleware.DisableCache(), controller.GetPasswordEncryptionKey)
 			userRoute.POST("/login", middleware.CriticalRateLimit(), middleware.DisableCache(), anonymousRequestBodyLimit, middleware.TurnstileCheck(), controller.Login)
@@ -194,6 +194,7 @@ func SetApiRouter(router *gin.Engine) {
 			orgAdminRoute.GET("/:id/quota-dates", controller.GetOrganizationQuotaDates)
 			orgAdminRoute.GET("/:id/quota-dates/users", controller.GetOrganizationQuotaDatesByUser)
 			orgAdminRoute.GET("/:id/flow", controller.GetOrganizationFlow)
+			orgAdminRoute.GET("/:id/audit", controller.GetOrganizationAuditLogs)
 		}
 
 		// 组织创建与全员列表（仅超管）。创建放在 RootAuth 组，避免任何普通账号
