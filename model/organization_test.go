@@ -185,12 +185,43 @@ func TestAddMemberRejectsUserFromAnotherOrganization(t *testing.T) {
 	insertOrgForTest(t, 2, 0)
 	insertOrgUserForTest(t, 7, 2, OrgRoleMember, 0, 0, "")
 
-	err := orgA.AddMember([]int{7}, "研发", 0)
+	err := orgA.AddMembers([]OrgMemberAdd{{UserId: 7, SubQuotaLimit: 0}}, "研发")
 	require.ErrorIs(t, err, ErrOrgMemberForeign)
 
 	var user User
 	require.NoError(t, DB.Select("organization_id").Where("id = ?", 7).First(&user).Error)
 	assert.Equal(t, 2, user.OrganizationId, "跨组织加入必须被拒绝且不改动归属")
+}
+
+// TestGetOrgMembersExcludesRoles 验证「组织管理员看不到所有者、部门管理员看不到所有者与管理员」
+// 的可见性过滤。过滤发生在数据层（GetOrgMembers 的 org_role NOT IN 条件），后端控制器据此
+// 把对应角色从成员列表与细分数据中剔除，前端列表自动不再渲染这些行。
+func TestGetOrgMembersExcludesRoles(t *testing.T) {
+	truncateTables(t)
+	org := insertOrgForTest(t, 10, 0)
+	insertOrgUserForTest(t, 101, org.Id, OrgRoleOwner, 0, 0, "")
+	insertOrgUserForTest(t, 102, org.Id, OrgRoleAdmin, 0, 0, "")
+	insertOrgUserForTest(t, 103, org.Id, OrgRoleDepartmentAdmin, 0, 0, "研发")
+	insertOrgUserForTest(t, 104, org.Id, OrgRoleMember, 0, 0, "研发")
+	insertOrgUserForTest(t, 105, org.Id, OrgRoleMember, 0, 0, "销售")
+
+	// 组织管理员视角：排除所有者，但仍可见其他管理员与成员（含其他部门）。
+	admMembers, total, err := GetOrgMembers(org.Id, "", "", 0, 100, OrgRoleOwner)
+	require.NoError(t, err)
+	assert.Equal(t, int64(4), total)
+	admIDs := collectUserIDs(admMembers)
+	assert.NotContains(t, admIDs, 101, "组织管理员不应看到所有者")
+	assert.Contains(t, admIDs, 102, "组织管理员应看到其他管理员")
+	assert.Contains(t, admIDs, 105, "组织管理员应看到其他部门成员")
+
+	// 部门管理员视角（本部门=研发）：排除所有者与管理员，仅本部门成员可见。
+	deptMembers, _, err := GetOrgMembers(org.Id, "研发", "", 0, 100, OrgRoleOwner, OrgRoleAdmin)
+	require.NoError(t, err)
+	deptIDs := collectUserIDs(deptMembers)
+	assert.NotContains(t, deptIDs, 101, "部门管理员不应看到所有者")
+	assert.NotContains(t, deptIDs, 102, "部门管理员不应看到组织管理员")
+	assert.Contains(t, deptIDs, 104, "部门管理员应看到本部门成员")
+	assert.NotContains(t, deptIDs, 105, "部门管理员不应看到其他部门成员")
 }
 
 // 移出成员只能作用于本组织：不能重置其它组织成员的归属。

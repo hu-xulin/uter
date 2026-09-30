@@ -322,11 +322,13 @@ func GetOrganizationAuditLogs(c *gin.Context) {
 }
 
 // orgAuditUsernames 返回组织/部门范围内可见成员的 username，用于审计日志过滤。
-// 部门管理员只看本部门；未分配部门时返回哨兵（空集）。
+// 部门管理员只看本部门；未分配部门时返回哨兵（空集）。组织管理员/部门管理员视角会
+// 隐去其无权查看的角色（所有者 / 管理员），与成员列表、日志、额度统计的可见性口径一致。
 func orgAuditUsernames(c *gin.Context, org *model.Organization) ([]string, error) {
 	authority := orgAuthorityOf(c.GetInt("role"), c.GetInt("id"), c.GetInt("organization_id"), c.GetString("org_role"), org)
+	excludeRoles := orgVisibilityExcludeRoles(authority)
 	if authority == orgAuthorityDepartmentAdmin {
-		return model.GetOrgMemberUsernamesInDepartment(org.Id, c.GetString("department_name"))
+		return model.GetOrgMemberUsernamesInDepartment(org.Id, c.GetString("department_name"), excludeRoles...)
 	}
-	return model.GetOrgMemberUsernames(org.Id)
+	return model.GetOrgMemberUsernames(org.Id, excludeRoles...)
 }

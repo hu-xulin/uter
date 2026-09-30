@@ -87,6 +87,8 @@ var (
 	ErrOrgSuspended = errors.New("organization is suspended")
 	// ErrOrgStatusCodeInvalid 状态取值非法（只接受 1/2；不修改请用 OrgStatusUnchanged）。
 	ErrOrgStatusCodeInvalid = errors.New("invalid organization status code")
+	// ErrOrgNoValidMember 批量加入组织时没有任何合法的用户 id（全部解析失败或为空）。
+	ErrOrgNoValidMember = errors.New("no valid member to add")
 )
 
 // CreateOrganization 创建组织并把创建者设为 owner。
@@ -175,42 +177,69 @@ func UpdateOrganization(id int, name string, quota int64, memberLimit int, statu
 	return DB.Model(&Organization{}).Where("id = ?", id).Updates(updates).Error
 }
 
-// AddMember 把用户加入组织，可指定部门名称与子额度上限。
+// OrgMemberAdd 描述一次「加入组织」请求中的单个成员及其专属子额度上限。
+// 同一批次里每个用户可以有不同的 sub_quota_limit，满足「给不同成员单独设上限」的需求。
+type OrgMemberAdd struct {
+	UserId        int
+	SubQuotaLimit int64
+}
+
+// AddMembers 批量把用户加入组织，支持为每个成员单独指定子额度上限。
 // 已归属其它组织的账号一律拒绝：组织归属是租户边界，跨组织搬迁必须由平台超管
 // 显式操作，否则任意组织管理员都能把别家客户/平台用户「拉」进自己的租户。
-func (org *Organization) AddMember(userIds []int, departmentName string, subQuotaLimit int64) error {
+func (org *Organization) AddMembers(members []OrgMemberAdd, departmentName string) error {
 	// 停用组织不得继续纳新：停用通常意味着欠费/合规问题，此时把新成员挂进来会立即
 	// 得到一批「一上线就被拒绝」的账号。
 	if org.IsOrgSuspended() {
 		return ErrOrgSuspended
 	}
+	ids := make([]int, 0, len(members))
+	quotaByID := make(map[int]int64, len(members))
+	for _, m := range members {
+		if m.UserId <= 0 {
+			continue
+		}
+		if _, seen := quotaByID[m.UserId]; !seen {
+			ids = append(ids, m.UserId)
+		}
+		quotaByID[m.UserId] = m.SubQuotaLimit
+	}
+	if len(ids) == 0 {
+		return ErrOrgNoValidMember
+	}
 	if org.MemberLimit > 0 {
 		var count int64
 		DB.Model(&User{}).Where("organization_id = ? AND deleted_at IS NULL", org.Id).Count(&count)
-		if int(count)+len(userIds) > org.MemberLimit {
+		if int(count)+len(ids) > org.MemberLimit {
 			return ErrOrgMemberLimit
 		}
 	}
 	var foreign int64
 	if err := DB.Model(&User{}).
-		Where("id IN ? AND organization_id <> 0 AND organization_id <> ?", userIds, org.Id).
+		Where("id IN ? AND organization_id <> 0 AND organization_id <> ?", ids, org.Id).
 		Count(&foreign).Error; err != nil {
 		return err
 	}
 	if foreign > 0 {
 		return ErrOrgMemberForeign
 	}
-	if err := DB.Model(&User{}).Where("id IN ?", userIds).Updates(map[string]any{
+	// 全批量统一挂到组织并标记为基础成员；子额度随后按成员逐个写入。
+	if err := DB.Model(&User{}).Where("id IN ?", ids).Updates(map[string]any{
 		"organization_id": org.Id,
 		"department_name": departmentName,
 		"org_role":        OrgRoleMember,
-		"sub_quota_limit": subQuotaLimit,
 	}).Error; err != nil {
 		return err
 	}
+	for _, id := range ids {
+		if err := DB.Model(&User{}).Where("id = ? AND organization_id = ?", id, org.Id).
+			Update("sub_quota_limit", quotaByID[id]).Error; err != nil {
+			return err
+		}
+	}
 	// 见 CreateOrganization 注释：成员加入后刷新各自认证缓存，使侧栏与后端鉴权立即生效。
-	for _, uid := range userIds {
-		_, _ = BumpUserAuthVersion(uid)
+	for _, id := range ids {
+		_, _ = BumpUserAuthVersion(id)
 	}
 	return nil
 }
@@ -413,13 +442,17 @@ func IncrOrgUsedQuota(orgId int, amount int64) error {
 	return DB.Model(&Organization{}).Where("id = ?", orgId).Update("used_quota", gorm.Expr("used_quota + ?", amount)).Error
 }
 
-// GetOrgMembers 分页读取组织内成员。departmentName 非空时仅返回该部门。
-func GetOrgMembers(orgId int, departmentName string, keyword string, startIdx int, num int) ([]*User, int64, error) {
+// GetOrgMembers 分页读取组织内成员。departmentName 非空时仅返回该部门；
+// excludeRoles 用于按调用者权限隐藏特定角色（如组织管理员看不到所有者、部门管理员看不到所有者与管理员）。
+func GetOrgMembers(orgId int, departmentName string, keyword string, startIdx int, num int, excludeRoles ...string) ([]*User, int64, error) {
 	var users []*User
 	var total int64
 	query := DB.Model(&User{}).Where("organization_id = ? AND deleted_at IS NULL", orgId)
 	if departmentName != "" {
 		query = query.Where("department_name = ?", departmentName)
+	}
+	if len(excludeRoles) > 0 {
+		query = query.Where("org_role NOT IN ?", excludeRoles)
 	}
 	if keyword != "" {
 		query = query.Where("username LIKE ? OR email LIKE ? OR display_name LIKE ?",
@@ -443,10 +476,14 @@ func GetOrgUsedQuota(orgId int) (int64, error) {
 }
 
 // GetOrgMemberUsernames 返回组织内全部成员的 username，供日志/额度范围过滤使用。
-func GetOrgMemberUsernames(orgId int) ([]string, error) {
+// excludeRoles 非空时排除指定角色（如组织管理员视角排除所有者），实现「看不到某人数据」的可见性控制。
+func GetOrgMemberUsernames(orgId int, excludeRoles ...string) ([]string, error) {
+	query := DB.Model(&User{}).Where("organization_id = ? AND deleted_at IS NULL", orgId)
+	if len(excludeRoles) > 0 {
+		query = query.Where("org_role NOT IN ?", excludeRoles)
+	}
 	var names []string
-	err := DB.Model(&User{}).Where("organization_id = ? AND deleted_at IS NULL", orgId).
-		Pluck("username", &names).Error
+	err := query.Pluck("username", &names).Error
 	return names, err
 }
 
@@ -484,14 +521,18 @@ func GetOrgMemberIdsInDepartment(orgId int, departmentName string) ([]int, error
 }
 
 // GetOrgMemberUsernamesInDepartment 返回组织内指定部门成员的 username。
-// 部门按名称匹配（department_id 列已废弃，从不写入）。
-func GetOrgMemberUsernamesInDepartment(orgId int, departmentName string) ([]string, error) {
+// 部门按名称匹配（department_id 列已废弃，从不写入）。excludeRoles 非空时排除指定角色
+// （如部门管理员视角排除所有者与管理员）。
+func GetOrgMemberUsernamesInDepartment(orgId int, departmentName string, excludeRoles ...string) ([]string, error) {
 	if departmentName == "" {
 		return []string{NoOrgMemberUsername}, nil
 	}
+	query := DB.Model(&User{}).
+		Where("organization_id = ? AND department_name = ? AND deleted_at IS NULL", orgId, departmentName)
+	if len(excludeRoles) > 0 {
+		query = query.Where("org_role NOT IN ?", excludeRoles)
+	}
 	var names []string
-	err := DB.Model(&User{}).
-		Where("organization_id = ? AND department_name = ? AND deleted_at IS NULL", orgId, departmentName).
-		Pluck("username", &names).Error
+	err := query.Pluck("username", &names).Error
 	return names, err
 }

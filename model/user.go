@@ -426,7 +426,7 @@ func GetMaxUserId() int {
 	return user.Id
 }
 
-func GetAllUsers(orgId int, departmentName string, pageInfo *common.PageInfo, sortOptions ...UserSortOptions) (users []*User, total int64, err error) {
+func GetAllUsers(orgId int, departmentName string, excludeRoles []int, pageInfo *common.PageInfo, sortOptions ...UserSortOptions) (users []*User, total int64, err error) {
 	// Start transaction
 	tx := DB.Begin()
 	if tx.Error != nil {
@@ -447,6 +447,10 @@ func GetAllUsers(orgId int, departmentName string, pageInfo *common.PageInfo, so
 		if departmentName != "" {
 			query = query.Where("department_name = ?", departmentName)
 		}
+	}
+	// 平台管理员（role < RootUser）看不到 Root 账号：excludeRoles 由调用方传入 [RoleRootUser]。
+	if len(excludeRoles) > 0 {
+		query = query.Where("role NOT IN ?", excludeRoles)
 	}
 	// orgId==0 表示平台管理员/Root：可见全部用户（含各组织成员），不加组织过滤
 	err = query.Count(&total).Error
@@ -472,13 +476,14 @@ func GetAllUsers(orgId int, departmentName string, pageInfo *common.PageInfo, so
 }
 
 func SearchUsers(keyword string, group string, role *int, status *int, startIdx int, num int, sortOptions ...UserSortOptions) ([]*User, int64, error) {
-	return SearchUsersScoped(keyword, group, role, status, startIdx, num, 0, "", sortOptions...)
+	return SearchUsersScoped(keyword, group, role, status, startIdx, num, 0, "", nil, sortOptions...)
 }
 
 // SearchUsersScoped 与 SearchUsers 相同，但支持按组织/部门范围过滤。
 // orgId==0 表示平台视角（不加组织过滤）；orgId>0 表示组织管理员视角，
 // departmentName 非空时进一步限制到该部门（按名称，department_id 已废弃）。
-func SearchUsersScoped(keyword string, group string, role *int, status *int, startIdx int, num int, orgId int, departmentName string, sortOptions ...UserSortOptions) ([]*User, int64, error) {
+// excludeRoles 非空时排除指定系统角色（如平台管理员视角排除 Root）。
+func SearchUsersScoped(keyword string, group string, role *int, status *int, startIdx int, num int, orgId int, departmentName string, excludeRoles []int, sortOptions ...UserSortOptions) ([]*User, int64, error) {
 	var users []*User
 	var total int64
 	var err error
@@ -501,6 +506,10 @@ func SearchUsersScoped(keyword string, group string, role *int, status *int, sta
 		if departmentName != "" {
 			query = query.Where("department_name = ?", departmentName)
 		}
+	}
+	// 平台管理员（role < RootUser）看不到 Root 账号：excludeRoles 由调用方传入 [RoleRootUser]。
+	if len(excludeRoles) > 0 {
+		query = query.Where("role NOT IN ?", excludeRoles)
 	}
 	// orgId==0 表示平台管理员/Root：可见全部用户，不加组织过滤
 

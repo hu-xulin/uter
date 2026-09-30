@@ -337,7 +337,12 @@ func GetAllUsers(c *gin.Context) {
 	pageInfo := common.GetPageQuery(c)
 	sortOptions := model.NewUserSortOptions(c.Query("sort_by"), c.Query("sort_order"))
 	scope := middleware.RequestOrgScope(c)
-	users, total, err := model.GetAllUsers(scope.OrgID, scope.DepartmentFilter(), pageInfo, sortOptions)
+	var excludeRoles []int
+	if c.GetInt("role") < common.RoleRootUser {
+		// 平台管理员看不到 Root 账号（保留 Root 的最高权限与不可见性）。
+		excludeRoles = []int{common.RoleRootUser}
+	}
+	users, total, err := model.GetAllUsers(scope.OrgID, scope.DepartmentFilter(), excludeRoles, pageInfo, sortOptions)
 	if err != nil {
 		common.ApiError(c, err)
 		return
@@ -368,7 +373,11 @@ func SearchUsers(c *gin.Context) {
 	pageInfo := common.GetPageQuery(c)
 	sortOptions := model.NewUserSortOptions(c.Query("sort_by"), c.Query("sort_order"))
 	scope := middleware.RequestOrgScope(c)
-	users, total, err := model.SearchUsersScoped(keyword, group, role, status, pageInfo.GetStartIdx(), pageInfo.GetPageSize(), scope.OrgID, scope.DepartmentFilter(), sortOptions)
+	var excludeRoles []int
+	if c.GetInt("role") < common.RoleRootUser {
+		excludeRoles = []int{common.RoleRootUser}
+	}
+	users, total, err := model.SearchUsersScoped(keyword, group, role, status, pageInfo.GetStartIdx(), pageInfo.GetPageSize(), scope.OrgID, scope.DepartmentFilter(), excludeRoles, sortOptions)
 	if err != nil {
 		common.ApiError(c, err)
 		return
@@ -381,7 +390,12 @@ func SearchUsers(c *gin.Context) {
 }
 
 func canManageTargetRole(myRole int, targetRole int) bool {
-	return myRole == common.RoleRootUser || myRole > targetRole
+	if myRole == common.RoleRootUser {
+		return true
+	}
+	// 平台管理员可管理除 Root 之外的所有账号（含其他平台管理员与组织所有者）；
+	// Root 账号始终不可被非 Root 操作。
+	return myRole >= targetRole && targetRole != common.RoleRootUser
 }
 
 func GetUser(c *gin.Context) {

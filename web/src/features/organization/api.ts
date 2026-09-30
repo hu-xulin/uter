@@ -80,7 +80,10 @@ export async function getOrganizationMembers(
 
 export async function addOrganizationMembers(
   id: number,
-  payload: { user_ids: number[]; department_name?: string; sub_quota_limit?: number }
+  payload: {
+    members: { user_id: number; sub_quota_limit: number }[]
+    department_name?: string
+  }
 ): Promise<ApiResult> {
   const res = await api.post(`/api/organization/${id}/members`, payload)
   return res.data
