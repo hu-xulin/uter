@@ -1,9 +1,14 @@
 package model
 
 import (
+	"fmt"
+	"sync"
 	"testing"
 
 	"github.com/Uter-AI/Uter/common"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 // ---------------------------------------------------------------------------
@@ -62,4 +67,165 @@ func TestEnforceOrgQuotaNonOrgUserPasses(t *testing.T) {
 		t.Errorf("EnforceOrgQuota(0, ...) should pass, got %v", err)
 	}
 	_ = common.RoleRootUser // ensure common import is used
+}
+
+// ---------------------------------------------------------------------------
+// 组织共享预算的原子预扣、子额度上限与租户边界
+// ---------------------------------------------------------------------------
+
+func insertOrgForTest(t *testing.T, id int, quota int64) *Organization {
+	t.Helper()
+	org := &Organization{Id: id, Name: "org-test", Quota: quota, Status: 1}
+	require.NoError(t, DB.Create(org).Error)
+	return org
+}
+
+func insertOrgUserForTest(t *testing.T, id, orgId int, orgRole string, usedQuota int, subQuotaLimit int64, department string) *User {
+	t.Helper()
+	user := &User{
+		Id:             id,
+		Username:       fmt.Sprintf("orguser%d", id),
+		AffCode:        fmt.Sprintf("aff%d", id),
+		Status:         common.UserStatusEnabled,
+		OrganizationId: orgId,
+		OrgRole:        orgRole,
+		UsedQuota:      usedQuota,
+		SubQuotaLimit:  subQuotaLimit,
+		DepartmentName: department,
+	}
+	require.NoError(t, DB.Create(user).Error)
+	return user
+}
+
+func orgUsedQuotaForTest(t *testing.T, id int) int64 {
+	t.Helper()
+	var org Organization
+	require.NoError(t, DB.Select("used_quota").Where("id = ?", id).First(&org).Error)
+	return org.UsedQuota
+}
+
+// 预扣必须在数据库里原子完成：预算刚好用尽后，下一笔立刻被拒，且账本不再变动。
+func TestReserveOrgQuotaEnforcesBudgetAtomically(t *testing.T) {
+	truncateTables(t)
+	insertOrgForTest(t, 1, 1_000)
+	insertOrgUserForTest(t, 1, 1, OrgRoleMember, 0, 0, "研发")
+
+	require.NoError(t, ReserveOrgQuota(1, 1, 600))
+	require.Equal(t, int64(600), orgUsedQuotaForTest(t, 1))
+
+	err := ReserveOrgQuota(1, 1, 600)
+	require.ErrorIs(t, err, ErrOrgBudgetExceeded, "超出预算的预扣必须失败")
+	assert.Equal(t, int64(600), orgUsedQuotaForTest(t, 1), "失败的预扣不得改动账本")
+
+	require.NoError(t, ReserveOrgQuota(1, 1, 400), "恰好用完剩余预算应放行")
+	assert.Equal(t, int64(1_000), orgUsedQuotaForTest(t, 1))
+}
+
+// 并发预扣不得突破预算：单条带条件的 UPDATE 让「检查+扣减」原子化。
+func TestReserveOrgQuotaIsAtomicUnderConcurrency(t *testing.T) {
+	truncateTables(t)
+	insertOrgForTest(t, 1, 1_000)
+	insertOrgUserForTest(t, 1, 1, OrgRoleMember, 0, 0, "")
+
+	const attempts = 30
+	var (
+		wg        sync.WaitGroup
+		mu        sync.Mutex
+		succeeded int
+	)
+	for range attempts {
+		wg.Go(func() {
+			err := ReserveOrgQuota(1, 1, 100)
+			if err == nil {
+				mu.Lock()
+				succeeded++
+				mu.Unlock()
+			}
+		})
+	}
+	wg.Wait()
+
+	assert.Equal(t, 10, succeeded, "预算 1000 / 每笔 100：只应有 10 笔成功")
+	assert.Equal(t, int64(1_000), orgUsedQuotaForTest(t, 1), "组织账本不得超过预算")
+}
+
+// 子额度上限按数据库权威值判定，且拒绝时不得扣减组织账本。
+func TestReserveOrgQuotaEnforcesSubQuotaLimit(t *testing.T) {
+	truncateTables(t)
+	insertOrgForTest(t, 1, 1_000_000)
+	insertOrgUserForTest(t, 1, 1, OrgRoleMember, 900, 1_000, "研发")
+
+	err := ReserveOrgQuota(1, 1, 200)
+	require.ErrorIs(t, err, ErrOrgSubQuotaExceeded, "已用 900 + 200 超过子额度 1000")
+	assert.Equal(t, int64(0), orgUsedQuotaForTest(t, 1), "子额度拒绝不得扣减组织账本")
+
+	require.NoError(t, ReserveOrgQuota(1, 1, 100), "恰好用完子额度应放行")
+	assert.Equal(t, int64(100), orgUsedQuotaForTest(t, 1))
+}
+
+// 组织未设预算上限（quota<=0）时不限制额度，但仍受子额度约束。
+func TestReserveOrgQuotaTreatsUnsetBudgetAsUnlimited(t *testing.T) {
+	truncateTables(t)
+	insertOrgForTest(t, 1, 0)
+	insertOrgUserForTest(t, 1, 1, OrgRoleMember, 0, 0, "")
+
+	require.NoError(t, ReserveOrgQuota(1, 1, 1_000_000))
+	assert.Equal(t, int64(1_000_000), orgUsedQuotaForTest(t, 1))
+
+	remaining, unlimited, err := OrgRemainingQuota(1)
+	require.NoError(t, err)
+	assert.True(t, unlimited)
+	assert.Zero(t, remaining)
+}
+
+// 组织归属是租户边界：不能把已属于其它组织的账号「拉」进自己组织。
+func TestAddMemberRejectsUserFromAnotherOrganization(t *testing.T) {
+	truncateTables(t)
+	orgA := insertOrgForTest(t, 1, 0)
+	insertOrgForTest(t, 2, 0)
+	insertOrgUserForTest(t, 7, 2, OrgRoleMember, 0, 0, "")
+
+	err := orgA.AddMember([]int{7}, "研发", 0)
+	require.ErrorIs(t, err, ErrOrgMemberForeign)
+
+	var user User
+	require.NoError(t, DB.Select("organization_id").Where("id = ?", 7).First(&user).Error)
+	assert.Equal(t, 2, user.OrganizationId, "跨组织加入必须被拒绝且不改动归属")
+}
+
+// 移出成员只能作用于本组织：不能重置其它组织成员的归属。
+func TestRemoveMemberOnlyAffectsOwnOrganization(t *testing.T) {
+	truncateTables(t)
+	orgA := insertOrgForTest(t, 1, 0)
+	insertOrgForTest(t, 2, 0)
+	insertOrgUserForTest(t, 8, 2, OrgRoleMember, 0, 0, "")
+
+	require.Error(t, orgA.RemoveMember(8))
+
+	var user User
+	require.NoError(t, DB.Select("organization_id", "org_role").Where("id = ?", 8).First(&user).Error)
+	assert.Equal(t, 2, user.OrganizationId)
+	assert.Equal(t, OrgRoleMember, user.OrgRole)
+}
+
+// 部门范围的成员用户名按部门名称解析（department_id 已废弃）。
+func TestGetOrgMemberUsernamesInDepartment(t *testing.T) {
+	truncateTables(t)
+	insertOrgForTest(t, 1, 0)
+	insertOrgUserForTest(t, 11, 1, OrgRoleMember, 0, 0, "研发")
+	insertOrgUserForTest(t, 12, 1, OrgRoleMember, 0, 0, "研发")
+	insertOrgUserForTest(t, 13, 1, OrgRoleMember, 0, 0, "销售")
+
+	names, err := GetOrgMemberUsernamesInDepartment(1, "研发")
+	require.NoError(t, err)
+	assert.ElementsMatch(t, []string{"orguser11", "orguser12"}, names)
+
+	// 空部门名必须落到哨兵值（不匹配任何用户名），不能退化成「不过滤」。
+	empty, err := GetOrgMemberUsernamesInDepartment(1, "")
+	require.NoError(t, err)
+	assert.Equal(t, []string{NoOrgMemberUsername}, empty)
+
+	all, err := GetOrgMemberUsernames(1)
+	require.NoError(t, err)
+	assert.Len(t, all, 3)
 }
