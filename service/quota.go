@@ -490,16 +490,25 @@ func postConsumeQuotaWithResult(relayInfo *relaycommon.RelayInfo, quota int, pre
 	} else {
 		// Wallet
 		orgId := 0
-		if relayInfo != nil && relayInfo.UserId > 0 {
-			if id, e := model.OrgIdOfUser(relayInfo.UserId); e == nil {
-				orgId = id
+		if relayInfo != nil {
+			// 优先复用计费会话已解析的组织归属；只有在会话未建立（旧路径）时才回查。
+			orgId = relayInfo.OrganizationId
+			if orgId == 0 && relayInfo.UserId > 0 {
+				if id, e := model.OrgIdOfUser(relayInfo.UserId); e == nil {
+					orgId = id
+					// 回写缓存，使 checkAndSendQuotaNotify 的后台 goroutine 无需查库
+					// （见 RelayInfo.OrganizationId 的说明）。
+					relayInfo.OrganizationId = id
+				}
 			}
 		}
 		if orgId > 0 {
-			// 组织成员：消耗由组织预算出资（used_quota 累加，余额 = quota - used_quota 自然递减），
-			// 个人钱包不再扣减；同时累加成员自身 used_quota 供组织内按用户统计。
-			_ = model.IncrOrgUsedQuota(orgId, int64(quota))
-			model.UpdateUserUsedQuota(relayInfo.UserId, quota)
+			// 组织成员：消耗由组织共享预算出资（used_quota 累加，余额 = quota - used_quota
+			// 自然递减），个人钱包不扣减。成员自身的 users.used_quota 由调用方的
+			// UpdateUserUsedQuotaAndRequestCount 统一累加，这里再写一次会重复计账。
+			if err := model.IncrOrgUsedQuota(orgId, int64(quota)); err != nil {
+				return result, err
+			}
 		} else if quota > 0 {
 			err = model.DecreaseUserQuota(relayInfo.UserId, quota, false)
 		} else {
@@ -533,7 +542,19 @@ func postConsumeQuotaWithResult(relayInfo *relaycommon.RelayInfo, quota int, pre
 }
 
 func checkAndSendQuotaNotify(relayInfo *relaycommon.RelayInfo, quota int, preConsumedQuota int) {
+	// 组织归属必须在进入后台 goroutine 之前读取：goroutine 里不得访问数据库
+	// （会与请求 goroutine 争用连接池；SQLite `:memory:` 下新连接会打开空库）。
+	orgId := 0
+	if relayInfo != nil {
+		orgId = relayInfo.OrganizationId
+	}
 	gopool.Go(func() {
+		// 组织成员的出资方是组织共享预算，个人钱包余额与其消耗无关：
+		// 用个人余额做阈值判断只会给成员发一堆无意义的「额度即将用尽」提醒。
+		// 组织预算水位由组织侧（组织总览）呈现。
+		if orgId > 0 {
+			return
+		}
 		userSetting := relayInfo.UserSetting
 		threshold := common.QuotaRemindThreshold
 		if userSetting.QuotaWarningThreshold != 0 {

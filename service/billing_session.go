@@ -269,9 +269,12 @@ func (s *BillingSession) reserveFunding(delta int, requireAvailableQuota bool) e
 		// 保证日志记录的预扣额度与用户余额的实际变动始终对账一致。
 		// DecreaseUserQuota 仅在数据库错误时失败。
 		// 组织成员：消耗由组织预算出资，组织 used_quota 账本按 delta 增减，个人钱包不动。
+		// 成员自身的 users.used_quota 不在这里写：它由结算点的
+		// UpdateUserUsedQuotaAndRequestCount 统一累加，重复写入会把用量记成 actual + delta。
 		if orgId, err := model.OrgIdOfUser(funding.userId); err == nil && orgId > 0 {
-		_ = model.IncrOrgUsedQuota(orgId, int64(delta))
-		model.UpdateUserUsedQuota(funding.userId, delta)
+			if err := model.IncrOrgUsedQuota(orgId, int64(delta)); err != nil {
+				return types.NewError(err, types.ErrorCodeUpdateDataError, types.ErrOptionWithSkipRetry())
+			}
 		} else if err := model.DecreaseUserQuota(funding.userId, delta, false); err != nil {
 			return types.NewError(err, types.ErrorCodeUpdateDataError, types.ErrOptionWithSkipRetry())
 		}
@@ -296,6 +299,16 @@ func (s *BillingSession) reserveFunding(delta int, requireAvailableQuota bool) e
 func (s *BillingSession) rollbackFundingReserve(delta int) {
 	switch funding := s.funding.(type) {
 	case *WalletFunding:
+		// 组织成员的预扣记在组织账本上，回滚必须回到同一本账；
+		// IncreaseUserQuota 会把额度错记到个人钱包（并永久虚增余额）。
+		if orgId, err := model.OrgIdOfUser(funding.userId); err == nil && orgId > 0 {
+			if err := model.IncrOrgUsedQuota(orgId, -int64(delta)); err != nil {
+				common.SysLog("error rolling back organization funding reserve: " + err.Error())
+			} else {
+				funding.consumed -= delta
+			}
+			return
+		}
 		if err := model.IncreaseUserQuota(funding.userId, delta, false); err != nil {
 			common.SysLog("error rolling back wallet funding reserve: " + err.Error())
 		} else {
@@ -322,6 +335,13 @@ func (s *BillingSession) reserveToken(delta int) error {
 func (s *BillingSession) shouldTrust(c *gin.Context) bool {
 	// 异步任务（ForcePreConsume=true）必须预扣全额，不允许信任旁路
 	if s.relayInfo.ForcePreConsume {
+		return false
+	}
+
+	// 组织成员不享信任旁路。信任旁路会把 effectiveQuota 归零，从而跳过
+	// PreConsumeTokenQuota 里的 EnforceOrgQuota —— 组织预算上限与成员子额度上限
+	// 会同时失守（余额越大的成员反而越不受约束，方向恰好相反）。
+	if orgId, err := model.OrgIdOfUser(s.relayInfo.UserId); err == nil && orgId > 0 {
 		return false
 	}
 
@@ -388,6 +408,32 @@ func NewBillingSession(c *gin.Context, relayInfo *relaycommon.RelayInfo, preCons
 
 	// 钱包路径需要先检查用户额度
 	tryWallet := func() (*BillingSession, *types.UterError) {
+		// 组织成员：出资方是组织共享预算，个人钱包余额不参与扣费。准入必须以
+		// 「组织剩余预算 + 成员子额度」为准（EnforceOrgQuota 读数据库权威值）。
+		// 用个人钱包做闸门会造成两种相反的错误：额度为 0 的成员被全面拒绝，
+		// 余额充足的成员则因为余额永不被扣减而变成事实上的无限额度。
+		if orgId, orgErr := model.OrgIdOfUser(relayInfo.UserId); orgErr == nil && orgId > 0 {
+			// 缓存出资组织，供请求路径后续判断复用（尤其是后台 goroutine ——
+			// 那里不得再访问数据库，见 RelayInfo.OrganizationId 的说明）。
+			relayInfo.OrganizationId = orgId
+			if gateErr := model.EnforceOrgQuota(relayInfo.UserId, int64(preConsumedQuota)); gateErr != nil {
+				return nil, types.NewErrorWithStatusCode(gateErr, types.ErrorCodeInsufficientUserQuota, http.StatusForbidden,
+					types.ErrOptionWithSkipRetry(), types.ErrOptionWithNoRecordErrorLog())
+			}
+			if remaining, unlimited, remainingErr := model.OrgRemainingQuota(orgId); remainingErr == nil && !unlimited {
+				// 让额度提醒/日志反映真正的出资方余额。
+				relayInfo.UserQuota = int(remaining)
+			}
+			session := &BillingSession{
+				relayInfo: relayInfo,
+				funding:   &WalletFunding{userId: relayInfo.UserId},
+			}
+			if apiErr := session.preConsume(c, preConsumedQuota); apiErr != nil {
+				return nil, apiErr
+			}
+			return session, nil
+		}
+
 		// Settlement deducts without a lower bound (a failed request still
 		// consumed upstream tokens, and the consume log must match the balance),
 		// so admission is the only place the overdraw can be bounded. The read
@@ -442,6 +488,13 @@ func NewBillingSession(c *gin.Context, relayInfo *relaycommon.RelayInfo, preCons
 			return nil, apiErr
 		}
 		return session, nil
+	}
+
+	// 组织成员的出资方恒为组织共享预算：个人钱包与订阅都不参与扣费，
+	// 因此计费偏好（subscription_first / wallet_first …）对成员不适用，
+	// 直接走组织钱包路径，避免「组织成员却先扣订阅/个人钱包」的口径分裂。
+	if orgId, orgErr := model.OrgIdOfUser(relayInfo.UserId); orgErr == nil && orgId > 0 {
+		return tryWallet()
 	}
 
 	switch pref {
