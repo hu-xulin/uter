@@ -3,6 +3,7 @@ package router
 import (
 	"github.com/Uter-AI/Uter/controller"
 	"github.com/Uter-AI/Uter/middleware"
+	"github.com/Uter-AI/Uter/service"
 	"github.com/Uter-AI/Uter/service/authz"
 
 	// Import oauth package to register providers via init()
@@ -73,8 +74,8 @@ func SetApiRouter(router *gin.Engine) {
 
 		userRoute := apiRouter.Group("/user")
 		{
-			userRoute.POST("/auth/refresh", middleware.SessionCookieOriginGuard(), middleware.CriticalRateLimit(), middleware.DisableCache(), controller.RefreshAuth)
-			userRoute.POST("/auth/logout", middleware.SessionCookieOriginGuard(), middleware.CriticalRateLimit(), middleware.DisableCache(), controller.AuthLogout)
+			userRoute.POST("/auth/refresh", middleware.SessionCookieOriginGuard(), middleware.SessionRefreshRateLimit(service.RefreshCookieName), middleware.DisableCache(), controller.RefreshAuth)
+			userRoute.POST("/auth/logout", middleware.SessionCookieOriginGuard(), middleware.SessionRefreshRateLimit(service.RefreshCookieName), middleware.DisableCache(), controller.AuthLogout)
 			userRoute.POST("/register", middleware.CriticalRateLimit(), anonymousRequestBodyLimit, middleware.TurnstileCheck(), controller.Register)
 			userRoute.GET("/login/encryption-key", middleware.DisableCache(), controller.GetPasswordEncryptionKey)
 			userRoute.POST("/login", middleware.CriticalRateLimit(), middleware.DisableCache(), anonymousRequestBodyLimit, middleware.TurnstileCheck(), controller.Login)
