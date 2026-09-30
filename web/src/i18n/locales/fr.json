@@ -6598,6 +6598,8 @@
     "Uter Root": "Uter Root",
     "Organization Owner": "Propriétaire de l'organisation",
     "Organization Admin": "Administrateur de l'organisation",
-    "Organization User": "Utilisateur de l'organisation"
+    "Organization User": "Utilisateur de l'organisation",
+    "Organization creation is handled by the platform administrator.": "La création d'une organisation est gérée par l'administrateur de la plateforme.",
+    "Only the platform administrator can change the budget and status.": "Seul l'administrateur de la plateforme peut modifier le budget et le statut."
   }
 }

@@ -6598,6 +6598,8 @@
     "Uter Root": "Uter Root",
     "Organization Owner": "组织所有者",
     "Organization Admin": "组织管理员",
-    "Organization User": "组织用户"
+    "Organization User": "组织用户",
+    "Organization creation is handled by the platform administrator.": "组织由平台管理员创建并分配，请联系平台管理员。",
+    "Only the platform administrator can change the budget and status.": "仅平台管理员可修改预算与状态。"
   }
 }

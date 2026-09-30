@@ -38,12 +38,19 @@ export async function getMyOrganization(): Promise<MyOrgResponse> {
   return res.data
 }
 
+/**
+ * 创建组织。
+ *
+ * 仅超管可用：组织是受控租户（预算 0 = 不限量），自助创建等于开放免费通道。
+ * 后端路由为 `POST /api/organizations`（RootAuth），与只读的 `/api/organization/*` 区分。
+ * 组织列表复用 `@/features/users/api#listOrganizations`，不在此重复定义。
+ */
 export async function createOrganization(payload: {
   name: string
   quota: number
   member_limit?: number
 }): Promise<MyOrgResponse> {
-  const res = await api.post('/api/organization/', payload)
+  const res = await api.post('/api/organizations', payload)
   return res.data
 }
 
