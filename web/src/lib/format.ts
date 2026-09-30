@@ -302,6 +302,28 @@ export function formatUserId(id: number): string {
   return `uter${USER_ID_DISPLAY_BASE + id}`
 }
 
+/**
+ * 把对外编号 uter100000001 反解成数据库 id=1；同时兼容裸数字 id（id<=0 返回 0）。
+ * 接受多种写法："uter100000001"、"UTER100000001"、两侧带空格、"100000001"、"1"（无前缀也会按展示格式回退）。
+ */
+export function parseUserId(value: string | number): number {
+  if (typeof value === 'number') {
+    return Number.isFinite(value) && value > 0 ? Math.trunc(value) : 0
+  }
+  const trimmed = String(value).trim()
+  if (!trimmed) return 0
+  const lowered = trimmed.toLowerCase()
+  const match = /^uter(\d+)$/.exec(lowered)
+  if (match) {
+    const raw = Number(match[1])
+    return Number.isFinite(raw) && raw > USER_ID_DISPLAY_BASE
+      ? Math.trunc(raw - USER_ID_DISPLAY_BASE)
+      : 0
+  }
+  const numeric = Number(lowered)
+  return Number.isFinite(numeric) && numeric > 0 ? Math.trunc(numeric) : 0
+}
+
 // ============================================================================
 // Color Generation
 // ============================================================================

@@ -189,6 +189,11 @@ export interface DashboardFilters {
   end_timestamp?: Date
   time_granularity?: TimeGranularity
   username?: string
+  /**
+   * 用户维度过滤：数据库自增 user id。
+   * 输入框接受原始 id（1）或对外展示编号（uter100000001），由 parseUserId 归一。
+   */
+  user_id?: number
 }
 
 export type ConsumptionDistributionChartType = 'bar' | 'area'

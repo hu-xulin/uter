@@ -31,8 +31,17 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { NativeSelect, NativeSelectOption } from '@/components/ui/native-select'
 import { SectionPageLayout } from '@/components/layout'
 
 import {
@@ -50,7 +59,8 @@ import type {
   OrgRole,
   Organization,
 } from './types'
-import { formatUserId } from '@/lib/format'
+import { ORG_STATUS_DISABLED, ORG_STATUS_ENABLED } from './types'
+import { formatUserId, parseUserId } from '@/lib/format'
 import { ROLE } from '@/lib/roles'
 import { useAuthStore } from '@/stores/auth-store'
 
@@ -88,12 +98,16 @@ export function OrganizationPage() {
   const [page, setPage] = useState(1)
 
   const isOwner = myRole === 'owner'
+  const isAdmin = myRole === 'admin'
   // 与后端 controller.orgAuthorityOf 的分级逐字对齐：
-  //   组织管理者（owner/admin，或超管）→ 可增删成员、改角色、改部门、调额度；
-  //   部门管理员                        → 只能读本部门、并在本部门内调额度与
+  //   超管                              → 可读写本组织任何成员（含 owner / admin）；
+  //   组织所有者（owner）              → 可读写本组织任何成员（admin / dept_admin / 员工）；
+  //   组织管理员（admin）              → 可读写本组织的部门管理员与员工，**不能**作用于
+  //                                       组织所有者或其他组织管理员（防越权互踢）；
+  //   部门管理员（department_admin）   → 只能读本部门、并在本部门内调额度与
   //                                       授予/撤销 department_admin；
   //   普通成员 / 组织外账号             → 无任何写权限（由后端 403 兜底）。
-  const canManageMembers = isSuperAdmin || myRole === 'owner' || myRole === 'admin'
+  const canManageMembers = isSuperAdmin || isOwner || isAdmin
   const canAdjustSubQuota = canManageMembers || myRole === 'department_admin'
   // 授予 owner 仅超管或当前所有者（与后端 UpdateOrganizationMember 的判据一致）。
   const canGrantOwner = isSuperAdmin || isOwner
@@ -200,6 +214,7 @@ export function OrganizationPage() {
                 canManageMembers={canManageMembers}
                 canAdjustSubQuota={canAdjustSubQuota}
                 canGrantOwner={canGrantOwner}
+                isOrgAdmin={isAdmin}
                 onRoleChange={async (uid, role) => {
                   const r = await updateOrganizationMember(org.id, uid, {
                     org_role: role,
@@ -230,6 +245,16 @@ export function OrganizationPage() {
                     await loadAll(org.id, page)
                   } else {
                     toast.error(r.message || t('Failed to remove'))
+                  }
+                }}
+                onEditMember={async (uid, payload) => {
+                  const r = await updateOrganizationMember(org.id, uid, payload)
+                  if (r.success) {
+                    toast.success(t('Member updated'))
+                    await loadAll(org.id, page)
+                  } else {
+                    toast.error(r.message || t('Failed to update'))
+                    throw new Error(r.message || 'Failed to update')
                   }
                 }}
                 onPageChange={(p) => loadAll(org.id, p)}
@@ -427,8 +452,10 @@ function OrgOverviewCard({
   const [name, setName] = useState(org.name)
   const [quota, setQuota] = useState(String(org.quota))
   const [memberLimit, setMemberLimit] = useState(String(org.member_limit))
+  const [status, setStatus] = useState(String(org.status))
   const [saving, setSaving] = useState(false)
 
+  const suspended = org.status === ORG_STATUS_DISABLED
   const used = stats?.used_quota ?? org.used_quota
   const remaining = stats?.remaining ?? org.quota - org.used_quota
   const pct = org.quota > 0 ? Math.min(100, (used / org.quota) * 100) : 0
@@ -442,15 +469,15 @@ function OrgOverviewCard({
   async function save() {
     setSaving(true)
     try {
-      // 后端 model.UpdateOrganization 用负数作为「不修改」哨兵（见其实现）：
-      //   - quota/status 仅超管可提交，其余角色必须显式传 -1，
-      //     否则 controller 的 `req.Quota >= 0` 鉴权判据会直接 403。
-      //   - 这不只是文案问题：早期实现传 `quota: 0`，组织负责人永远存不了设置。
+      // quota/status 仅超管可提交；其余角色**完全省略**这两个字段。
+      // 后端把它们声明为指针，语义是「没传 = 不修改」：若这里传 0，会被解码成
+      // 「把预算改成不限量 / 把状态写成非法值」并被拒绝（见 controller.UpdateOrganization）。
       const r = await updateOrganization(org.id, {
         name: name.trim(),
-        quota: canEditBudget ? Number(quota) || 0 : -1,
+        ...(canEditBudget
+          ? { quota: Number(quota) || 0, status: Number(status) }
+          : {}),
         member_limit: Number(memberLimit) || 0,
-        status: -1,
       })
       if (r.success) {
         toast.success(t('Settings updated'))
@@ -459,6 +486,7 @@ function OrgOverviewCard({
           name: name.trim(),
           quota: canEditBudget ? Number(quota) || 0 : org.quota,
           member_limit: Number(memberLimit) || 0,
+          status: canEditBudget ? Number(status) : org.status,
         })
         setEditing(false)
       } else {
@@ -473,7 +501,12 @@ function OrgOverviewCard({
     <Card>
       <CardHeader className='flex-row items-start justify-between'>
         <div>
-          <CardTitle>{org.name}</CardTitle>
+          <div className='flex items-center gap-2'>
+            <CardTitle>{org.name}</CardTitle>
+            {suspended && (
+              <Badge variant='destructive'>{t('Organization Disabled')}</Badge>
+            )}
+          </div>
           <CardDescription>
             {t('Total Budget')}: {fmtQuota(org.quota)} · {t('Used')}:{' '}
             {fmtQuota(used)} · {t('Remaining')}: {fmtQuota(remaining)} ·{' '}
@@ -495,7 +528,7 @@ function OrgOverviewCard({
           <div className='h-full bg-primary' style={{ width: `${pct}%` }} />
         </div>
         {editing && (
-          <div className='grid grid-cols-1 gap-3 sm:grid-cols-3'>
+          <div className='grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4'>
             <div className='flex flex-col gap-2'>
               <Label>{t('Organization Name')}</Label>
               <Input value={name} onChange={(e) => setName(e.target.value)} />
@@ -517,12 +550,27 @@ function OrgOverviewCard({
                 onChange={(e) => setMemberLimit(e.target.value)}
               />
             </div>
+            <div className='flex flex-col gap-2'>
+              <Label>{t('Status')}</Label>
+              <NativeSelect
+                value={status}
+                disabled={!canEditBudget}
+                onChange={(e) => setStatus(e.target.value)}
+              >
+                <NativeSelectOption value={String(ORG_STATUS_ENABLED)}>
+                  {t('Enabled')}
+                </NativeSelectOption>
+                <NativeSelectOption value={String(ORG_STATUS_DISABLED)}>
+                  {t('Disabled')}
+                </NativeSelectOption>
+              </NativeSelect>
+            </div>
             {!canEditBudget && (
-              <p className='text-xs text-muted-foreground sm:col-span-3'>
+              <p className='text-xs text-muted-foreground sm:col-span-2 lg:col-span-4'>
                 {t('Only the platform administrator can change the budget and status.')}
               </p>
             )}
-            <div className='flex items-end gap-2 sm:col-span-3'>
+            <div className='flex items-end gap-2 sm:col-span-2 lg:col-span-4'>
               <Button onClick={save} disabled={saving}>
                 {t('Save')}
               </Button>
@@ -557,9 +605,10 @@ function AddMemberCard({
   if (!canManage) return null
 
   async function submit() {
+    // 输入支持展示格式 uter100000001 与裸数字 id（兼容老用法）。
     const ids = userIds
       .split(/[\s,]+/)
-      .map((s) => Number(s.trim()))
+      .map((s) => parseUserId(s.trim()))
       .filter((n) => n > 0)
     if (ids.length === 0) {
       toast.error(t('User IDs (comma separated) is required'))
@@ -597,7 +646,7 @@ function AddMemberCard({
           <Input
             value={userIds}
             onChange={(e) => setUserIds(e.target.value)}
-            placeholder='1, 2, 3'
+            placeholder={t('uter100000001, uter100000002')}
           />
         </div>
         <div className='flex flex-col gap-2'>
@@ -638,9 +687,11 @@ function MembersCard({
   canManageMembers,
   canAdjustSubQuota,
   canGrantOwner,
+  isOrgAdmin,
   onRoleChange,
   onSubQuotaChange,
   onRemove,
+  onEditMember,
   onPageChange,
 }: {
   org: Organization
@@ -651,13 +702,19 @@ function MembersCard({
   canManageMembers: boolean
   canAdjustSubQuota: boolean
   canGrantOwner: boolean
+  isOrgAdmin: boolean
   onRoleChange: (uid: number, role: OrgRole) => void
   onSubQuotaChange: (uid: number, subQuota: number) => void
   onRemove: (uid: number) => void
+  onEditMember: (
+    uid: number,
+    payload: { department_name: string; sub_quota_limit: number }
+  ) => Promise<void>
   onPageChange: (p: number) => void
 }) {
   const { t } = useTranslation()
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE))
+  const [editingMember, setEditingMember] = useState<OrgMember | null>(null)
 
   // 可授予的角色集合，与后端判据逐字对齐：
   //   超管/所有者 → 可授予 owner + 组织级角色；
@@ -687,6 +744,20 @@ function MembersCard({
     if (canManageMembers) return true
     // 部门管理员不得改写上级的额度。
     return m.org_role !== 'owner' && m.org_role !== 'admin'
+  }
+
+  // 操作栏的「编辑/移除」按钮可见性。
+  // 组织管理员（isOrgAdmin=true 且非 owner、非超管）只能作用于部门管理员与普通成员。
+  function canEditMemberOf(m: OrgMember): boolean {
+    if (!canManageMembers) return false
+    if (isOrgAdmin) {
+      return m.id !== org.owner_user_id && m.org_role !== 'admin'
+    }
+    return m.id !== org.owner_user_id
+  }
+
+  function canRemoveMemberOf(m: OrgMember): boolean {
+    return canEditMemberOf(m)
   }
 
   return (
@@ -762,15 +833,26 @@ function MembersCard({
                     )}
                   </td>
                   <td className='px-2 py-2 text-right'>
-                    {canManageMembers && m.id !== org.owner_user_id && (
-                      <Button
-                        variant='destructive'
-                        size='sm'
-                        onClick={() => onRemove(m.id)}
-                      >
-                        {t('Remove')}
-                      </Button>
-                    )}
+                    <div className='flex justify-end gap-2'>
+                      {canEditMemberOf(m) && (
+                        <Button
+                          variant='outline'
+                          size='sm'
+                          onClick={() => setEditingMember(m)}
+                        >
+                          {t('Edit')}
+                        </Button>
+                      )}
+                      {canRemoveMemberOf(m) && (
+                        <Button
+                          variant='destructive'
+                          size='sm'
+                          onClick={() => onRemove(m.id)}
+                        >
+                          {t('Remove')}
+                        </Button>
+                      )}
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -811,7 +893,107 @@ function MembersCard({
           </div>
         </div>
       </CardContent>
+      {editingMember && (
+        <EditMemberDialog
+          member={editingMember}
+          onClose={() => setEditingMember(null)}
+          onSubmit={async (payload) => {
+            await onEditMember(editingMember.id, payload)
+            setEditingMember(null)
+          }}
+        />
+      )}
     </Card>
+  )
+}
+
+function EditMemberDialog({
+  member,
+  onClose,
+  onSubmit,
+}: {
+  member: OrgMember
+  onClose: () => void
+  onSubmit: (payload: {
+    department_name: string
+    sub_quota_limit: number
+  }) => Promise<void>
+}) {
+  const { t } = useTranslation()
+  const [departmentName, setDepartmentName] = useState(
+    member.department_name || ''
+  )
+  const [subQuota, setSubQuota] = useState<string>(
+    member.sub_quota_limit ? String(member.sub_quota_limit) : ''
+  )
+  const [submitting, setSubmitting] = useState(false)
+  const [open, setOpen] = useState(true)
+
+  async function submit() {
+    setSubmitting(true)
+    try {
+      await onSubmit({
+        department_name: departmentName.trim(),
+        sub_quota_limit: subQuota ? Number(subQuota) || 0 : 0,
+      })
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  return (
+    <Dialog
+      open={open}
+      onOpenChange={(next) => {
+        if (!next) {
+          setOpen(false)
+          onClose()
+        }
+      }}
+    >
+      <DialogContent className='sm:max-w-md'>
+        <DialogHeader>
+          <DialogTitle>{t('Edit Member')}</DialogTitle>
+          <DialogDescription>
+            {t('Username')}: {member.username} ({formatUserId(member.id)})
+          </DialogDescription>
+        </DialogHeader>
+        <div className='flex flex-col gap-3'>
+          <div className='flex flex-col gap-2'>
+            <Label>{t('Department')}</Label>
+            <Input
+              value={departmentName}
+              onChange={(e) => setDepartmentName(e.target.value)}
+              placeholder={t('Department name')}
+            />
+          </div>
+          <div className='flex flex-col gap-2'>
+            <Label>{t('Sub-quota Limit')}</Label>
+            <Input
+              type='number'
+              value={subQuota}
+              onChange={(e) => setSubQuota(e.target.value)}
+              placeholder={t('Unlimited')}
+            />
+          </div>
+        </div>
+        <DialogFooter>
+          <Button
+            variant='outline'
+            onClick={() => {
+              setOpen(false)
+              onClose()
+            }}
+            disabled={submitting}
+          >
+            {t('Cancel')}
+          </Button>
+          <Button onClick={submit} disabled={submitting}>
+            {t('Save')}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   )
 }
 

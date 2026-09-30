@@ -531,7 +531,7 @@ func RecordTaskBillingLog(params RecordTaskBillingLogParams) {
 	}
 }
 
-func GetAllLogs(logType int, startTimestamp int64, endTimestamp int64, modelName string, username string, tokenName string, startIdx int, num int, channel int, group string, requestId string, upstreamRequestId string, orgUsernames ...string) (logs []*Log, total int64, err error) {
+func GetAllLogs(logType int, startTimestamp int64, endTimestamp int64, modelName string, username string, tokenName string, startIdx int, num int, channel int, group string, requestId string, upstreamRequestId string, orgUsernames []string, userIds ...int) (logs []*Log, total int64, err error) {
 	var tx *gorm.DB
 	if logType == LogTypeUnknown {
 		tx = LOG_DB
@@ -568,6 +568,9 @@ func GetAllLogs(logType int, startTimestamp int64, endTimestamp int64, modelName
 	}
 	if len(orgUsernames) > 0 {
 		tx = tx.Where("logs.username IN ?", orgUsernames)
+	}
+	if len(userIds) > 0 {
+		tx = tx.Where("logs.user_id IN ?", userIds)
 	}
 	err = tx.Model(&Log{}).Count(&total).Error
 	if err != nil {
@@ -684,7 +687,12 @@ type Stat struct {
 	Tpm   int `json:"tpm"`
 }
 
-func SumUsedQuota(logType int, startTimestamp int64, endTimestamp int64, modelName string, username string, tokenName string, channel int, group string, orgUsernames ...string) (stat Stat, err error) {
+// SumUsedQuota 统计消费类日志的额度 / RPM / TPM。
+//
+// orgUsernames 是组织/部门范围（nil 表示平台视角，不施加过滤）；
+// userIds 是调用方显式指定的「用户维度」过滤，最终结果与范围过滤取交集，
+// 因此越权传入范围外的用户 id 只会得到空集，不会泄漏数据。
+func SumUsedQuota(logType int, startTimestamp int64, endTimestamp int64, modelName string, username string, tokenName string, channel int, group string, orgUsernames []string, userIds ...int) (stat Stat, err error) {
 	tx := LOG_DB.Table("logs").Select("COALESCE(sum(quota), 0) quota")
 
 	// 为rpm和tpm创建单独的查询
@@ -723,6 +731,10 @@ func SumUsedQuota(logType int, startTimestamp int64, endTimestamp int64, modelNa
 	if len(orgUsernames) > 0 {
 		tx = tx.Where("username IN ?", orgUsernames)
 		rpmTpmQuery = rpmTpmQuery.Where("username IN ?", orgUsernames)
+	}
+	if len(userIds) > 0 {
+		tx = tx.Where("user_id IN ?", userIds)
+		rpmTpmQuery = rpmTpmQuery.Where("user_id IN ?", userIds)
 	}
 
 	tx = tx.Where("type = ?", LogTypeConsume)

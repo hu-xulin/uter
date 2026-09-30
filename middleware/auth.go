@@ -330,6 +330,31 @@ func (s OrgDataScope) Usernames() ([]string, error) {
 	return names, nil
 }
 
+// UserIDs 返回该范围内可见成员的 user id，供以 user_id 为过滤维度的查询
+// （任务日志等）使用。语义与 Usernames 完全一致：平台视角返回 nil，范围为空时
+// 返回 model.NoOrgMemberId 哨兵以避免「空列表 = 不过滤」的静默越权。
+func (s OrgDataScope) UserIDs() ([]int, error) {
+	if s.OrgID == 0 {
+		return nil, nil
+	}
+	var (
+		ids []int
+		err error
+	)
+	if s.Department == "" {
+		ids, err = model.GetOrgMemberIds(s.OrgID)
+	} else {
+		ids, err = model.GetOrgMemberIdsInDepartment(s.OrgID, s.Department)
+	}
+	if err != nil {
+		return nil, err
+	}
+	if len(ids) == 0 {
+		return []int{model.NoOrgMemberId}, nil
+	}
+	return ids, nil
+}
+
 // OrgAdminAuth 组织范围管理员鉴权。
 //
 // 设计要点（安全性）：组织归属与系统角色（common.Role*）正交。公司负责人/组织管理员

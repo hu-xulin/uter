@@ -13,6 +13,24 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// QueryUserIds 解析 ?user_id= 这一「用户维度」过滤参数。
+//
+// 未传时返回 nil（不施加过滤）；传了但非法（非数字 / <= 0）时写错误响应并返回
+// ok=false，由调用方直接 return。注意这里**不做**任何可见性判断——越权的用户 id
+// 会在查询里与组织范围取交集，自然退化为空集，不需要在此处重复实现授权逻辑。
+func QueryUserIds(c *gin.Context) (userIds []int, ok bool) {
+	raw := c.Query("user_id")
+	if raw == "" {
+		return nil, true
+	}
+	parsed, err := strconv.Atoi(raw)
+	if err != nil || parsed <= 0 {
+		common.ApiErrorMsg(c, "Invalid user id")
+		return nil, false
+	}
+	return []int{parsed}, true
+}
+
 func GetAllLogs(c *gin.Context) {
 	pageInfo := common.GetPageQuery(c)
 	logType, _ := strconv.Atoi(c.Query("type"))
@@ -25,12 +43,16 @@ func GetAllLogs(c *gin.Context) {
 	group := c.Query("group")
 	requestId := c.Query("request_id")
 	upstreamRequestId := c.Query("upstream_request_id")
+	userIds, ok := QueryUserIds(c)
+	if !ok {
+		return
+	}
 	orgUsernames, err := middleware.RequestOrgScope(c).Usernames()
 	if err != nil {
 		common.ApiError(c, err)
 		return
 	}
-	logs, total, err := model.GetAllLogs(logType, startTimestamp, endTimestamp, modelName, username, tokenName, pageInfo.GetStartIdx(), pageInfo.GetPageSize(), channel, group, requestId, upstreamRequestId, orgUsernames...)
+	logs, total, err := model.GetAllLogs(logType, startTimestamp, endTimestamp, modelName, username, tokenName, pageInfo.GetStartIdx(), pageInfo.GetPageSize(), channel, group, requestId, upstreamRequestId, orgUsernames, userIds...)
 	if err != nil {
 		common.ApiError(c, err)
 		return
@@ -117,12 +139,16 @@ func GetLogsStat(c *gin.Context) {
 	modelName := c.Query("model_name")
 	channel, _ := strconv.Atoi(c.Query("channel"))
 	group := c.Query("group")
+	userIds, ok := QueryUserIds(c)
+	if !ok {
+		return
+	}
 	orgUsernames, err := middleware.RequestOrgScope(c).Usernames()
 	if err != nil {
 		common.ApiError(c, err)
 		return
 	}
-	stat, err := model.SumUsedQuota(logType, startTimestamp, endTimestamp, modelName, username, tokenName, channel, group, orgUsernames...)
+	stat, err := model.SumUsedQuota(logType, startTimestamp, endTimestamp, modelName, username, tokenName, channel, group, orgUsernames, userIds...)
 	if err != nil {
 		common.ApiError(c, err)
 		return
@@ -149,7 +175,7 @@ func GetLogsSelfStat(c *gin.Context) {
 	modelName := c.Query("model_name")
 	channel, _ := strconv.Atoi(c.Query("channel"))
 	group := c.Query("group")
-	quotaNum, err := model.SumUsedQuota(logType, startTimestamp, endTimestamp, modelName, username, tokenName, channel, group)
+	quotaNum, err := model.SumUsedQuota(logType, startTimestamp, endTimestamp, modelName, username, tokenName, channel, group, nil)
 	if err != nil {
 		common.ApiError(c, err)
 		return

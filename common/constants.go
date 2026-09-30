@@ -215,6 +215,15 @@ var (
 	GlobalWebRateLimitNum      int
 	GlobalWebRateLimitDuration int64
 
+	// GlobalApiRateLimitOrgWhitelist 是「不受 GlobalAPIRateLimit 约束」的组织 id 白名单
+	// （见 GLOBAL_API_RATE_LIMIT_ORG_WHITELIST）。默认空 = 不豁免任何人。
+	//
+	// 为什么需要它：GlobalAPIRateLimit 按客户端 IP 计数，一个组织的员工通常同处一个 NAT
+	// 出口，整栋楼共用同一份配额（默认 360 次 / 180 秒）。对把平台当作内部生产力工具的
+	// 企业客户来说，这个上限会把办公室整体挡住，而按 IP 逐条放行既不可维护也无法识别。
+	// 白名单按「组织」放行：请求者若属于白名单组织且身份校验通过，则跳过本档限流。
+	GlobalApiRateLimitOrgWhitelist []int
+
 	CriticalRateLimitEnable   bool
 	CriticalRateLimitNum            = 20
 	CriticalRateLimitDuration int64 = 20 * 60
@@ -230,6 +239,44 @@ var (
 	SearchRateLimitNum            = 10
 	SearchRateLimitDuration int64 = 60
 )
+
+// globalApiRateLimitOrgWhitelistSet 是 GlobalApiRateLimitOrgWhitelist 的 O(1) 查找副本。
+var globalApiRateLimitOrgWhitelistSet = map[int]struct{}{}
+
+// SetGlobalApiRateLimitOrgWhitelist 覆盖组织白名单（启动时由 env 解析调用）。
+// 非法项（<=0）被忽略而不是报错：白名单是「放宽」类配置，错误的条目最多不生效，
+// 不应因为一个笔误让整个进程启动失败。
+func SetGlobalApiRateLimitOrgWhitelist(orgIds []int) {
+	set := make(map[int]struct{}, len(orgIds))
+	cleaned := make([]int, 0, len(orgIds))
+	for _, id := range orgIds {
+		if id <= 0 {
+			continue
+		}
+		if _, dup := set[id]; dup {
+			continue
+		}
+		set[id] = struct{}{}
+		cleaned = append(cleaned, id)
+	}
+	globalApiRateLimitOrgWhitelistSet = set
+	GlobalApiRateLimitOrgWhitelist = cleaned
+}
+
+// IsGlobalApiRateLimitOrgWhitelistConfigured 报告是否配置了组织白名单。
+// 限流热路径用它做短路：未配置时完全不触碰身份解析，避免给所有请求增加开销。
+func IsGlobalApiRateLimitOrgWhitelistConfigured() bool {
+	return len(globalApiRateLimitOrgWhitelistSet) > 0
+}
+
+// IsOrgExemptFromGlobalApiRateLimit 判定某组织是否在白名单内。
+func IsOrgExemptFromGlobalApiRateLimit(orgId int) bool {
+	if orgId <= 0 {
+		return false
+	}
+	_, ok := globalApiRateLimitOrgWhitelistSet[orgId]
+	return ok
+}
 
 var RateLimitKeyExpirationDuration = 20 * time.Minute
 

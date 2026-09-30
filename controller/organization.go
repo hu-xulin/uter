@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"errors"
 	"net/http"
 	"strconv"
 
@@ -134,7 +135,7 @@ func AddOrganizationMembers(c *gin.Context) {
 	if !ok {
 		return
 	}
-	if authority != orgAuthorityOrgManager {
+	if authority != orgAuthorityOrgManager && authority != orgAuthorityOrgAdmin {
 		common.ApiErrorI18n(c, i18n.MsgUserNoPermissionHigherLevel)
 		return
 	}
@@ -193,11 +194,31 @@ func deptAdminMayUpdateMember(callerUserId int, callerDepartment string, target 
 	return true
 }
 
+// orgAdminMayModifyMember 判定组织管理员（不是所有者）对某成员的写/删操作是否在授权范围内。
+//
+// 需求上组织管理员「只能对组织员工和部门管理员进行管理」，故排除：
+//   - 组织所有者（owner）：绝对不可被组织管理员写/删；
+//   - 同级别的其他组织管理员：否则可越权把同事踢出或降级；
+//   - 目标用户位于其他组织（理论上 controller 层 loadOrgForAuthority 已经挡住了，但防御性再判一次）。
+//
+// 与部门管理员的限制不同，组织管理员可以跨部门操作，也允许迁移到任意部门、调整任意
+// 普通成员与部门管理员的子额度上限。`req` 仅用于语义提示；目前没有字段级别的细化限制。
+func orgAdminMayModifyMember(target *model.User) bool {
+	if target == nil {
+		return false
+	}
+	if target.OrgRole == model.OrgRoleOwner || target.OrgRole == model.OrgRoleAdmin {
+		return false
+	}
+	return true
+}
+
 // UpdateOrganizationMember 设置成员的子额度上限 / 部门 / 角色。
 //
 // 分级授权：
-//   - 组织所有者/组织管理员：可修改本组织成员的三项属性；但「授予 owner」只有
-//     超管或当前所有者可以执行，避免组织管理员把任何人（含自己）提为所有者。
+//   - 组织所有者：可修改本组织成员的三项属性；只有超管或当前所有者可授予 owner。
+//   - 组织管理员：可修改本组织成员与部门管理员的三项属性，但**不能**作用于
+//     组织所有者或其他组织管理员，也不能把任何人（含自己）提为 owner。
 //   - 部门管理员：仅可作用于**本部门**成员，且角色改动只允许在 member 与
 //     department_admin 之间（见 deptAdminMayUpdateMember）；不得改部门、不得改自己。
 func UpdateOrganizationMember(c *gin.Context) {
@@ -225,8 +246,14 @@ func UpdateOrganizationMember(c *gin.Context) {
 		common.ApiErrorI18n(c, i18n.MsgUserNotExists)
 		return
 	}
-	if authority == orgAuthorityDepartmentAdmin {
+	switch authority {
+	case orgAuthorityDepartmentAdmin:
 		if !deptAdminMayUpdateMember(c.GetInt("id"), c.GetString("department_name"), &target, req) {
+			common.ApiErrorI18n(c, i18n.MsgUserNoPermissionHigherLevel)
+			return
+		}
+	case orgAuthorityOrgAdmin:
+		if !orgAdminMayModifyMember(&target) {
 			common.ApiErrorI18n(c, i18n.MsgUserNoPermissionHigherLevel)
 			return
 		}
@@ -281,6 +308,9 @@ func UpdateOrganizationMember(c *gin.Context) {
 }
 
 // RemoveOrganizationMember 将成员移出组织（仅组织所有者/组织管理员；超管亦可）。
+//
+// 组织管理员（orgAuthorityOrgAdmin）不能删除组织所有者或其他组织管理员 ——
+// 防止同级别同事互相踢人。
 func RemoveOrganizationMember(c *gin.Context) {
 	orgId, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -296,13 +326,24 @@ func RemoveOrganizationMember(c *gin.Context) {
 	if !ok {
 		return
 	}
-	if authority != orgAuthorityOrgManager {
+	if authority != orgAuthorityOrgManager && authority != orgAuthorityOrgAdmin {
 		common.ApiErrorI18n(c, i18n.MsgUserNoPermissionHigherLevel)
 		return
 	}
 	if c.GetInt("role") < common.RoleRootUser && uid == org.OwnerUserId {
 		common.ApiErrorI18n(c, i18n.MsgUserNoPermissionHigherLevel)
 		return
+	}
+	if authority == orgAuthorityOrgAdmin {
+		var target model.User
+		if err := model.DB.Where("id = ? AND organization_id = ?", uid, orgId).First(&target).Error; err != nil {
+			common.ApiErrorI18n(c, i18n.MsgUserNotExists)
+			return
+		}
+		if !orgAdminMayModifyMember(&target) {
+			common.ApiErrorI18n(c, i18n.MsgUserNoPermissionHigherLevel)
+			return
+		}
 	}
 	if err := org.RemoveMember(uid); err != nil {
 		common.ApiError(c, err)
@@ -316,6 +357,12 @@ func RemoveOrganizationMember(c *gin.Context) {
 // 预算（quota）与状态变更仅限超管：预算是平台售出的额度，若组织所有者能自行上调，
 // 「组织预算」就不再是任何有约束力的东西（设为 0 即为不限量）。组织所有者/组织管理员
 // 只能修改名称与成员上限。
+//
+// 关于「不修改」的表达方式：quota 与 status 用**指针**而不是负数哨兵。两者的 JSON 零值
+// 都是「危险的合法值」—— quota 的 0 表示不限量、status 的 0 是非法状态；如果沿用
+// `int + 负数哨兵`，调用方漏传字段就会被解码成 0，一次「只想改名字」的请求会顺手把预算
+// 改成不限量、或把状态写成非法值。指针能区分「没传」与「传了 0/非法值」：没传 = 不改，
+// 传了 0 → 明确报错而不是静默降级。
 func UpdateOrganization(c *gin.Context) {
 	orgId, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -338,20 +385,37 @@ func UpdateOrganization(c *gin.Context) {
 		}
 	}
 	var req struct {
-		Name        string `json:"name"`
-		Quota       int64  `json:"quota"`
-		MemberLimit int    `json:"member_limit"`
-		Status      int    `json:"status"`
+		Name        string  `json:"name"`
+		Quota       *int64  `json:"quota"`
+		MemberLimit *int    `json:"member_limit"`
+		Status      *int    `json:"status"`
 	}
 	if err := common.DecodeJson(c.Request.Body, &req); err != nil {
 		common.ApiErrorI18n(c, i18n.MsgInvalidParams)
 		return
 	}
-	if !isRoot && (req.Quota >= 0 || req.Status >= 0) {
+	// 非超管不得提交预算或状态：指针非 nil 即为「提交了」。
+	if !isRoot && (req.Quota != nil || req.Status != nil) {
 		common.ApiErrorI18n(c, i18n.MsgUserNoPermissionHigherLevel)
 		return
 	}
-	if err := model.UpdateOrganization(orgId, req.Name, req.Quota, req.MemberLimit, req.Status); err != nil {
+	quota := int64(model.OrgStatusUnchanged)
+	if req.Quota != nil {
+		quota = *req.Quota
+	}
+	status := model.OrgStatusUnchanged
+	if req.Status != nil {
+		status = *req.Status
+	}
+	memberLimit := model.OrgStatusUnchanged
+	if req.MemberLimit != nil {
+		memberLimit = *req.MemberLimit
+	}
+	if err := model.UpdateOrganization(orgId, req.Name, quota, memberLimit, status); err != nil {
+		if errors.Is(err, model.ErrOrgStatusCodeInvalid) {
+			common.ApiErrorI18n(c, i18n.MsgInvalidParams)
+			return
+		}
 		common.ApiError(c, err)
 		return
 	}
@@ -420,12 +484,16 @@ func GetOrganizationLogs(c *gin.Context) {
 	group := c.Query("group")
 	requestId := c.Query("request_id")
 	upstreamRequestId := c.Query("upstream_request_id")
+	userIds, ok := QueryUserIds(c)
+	if !ok {
+		return
+	}
 	orgUsernames, err := orgLogUsernames(c, orgId, authority)
 	if err != nil {
 		common.ApiError(c, err)
 		return
 	}
-	logs, total, err := model.GetAllLogs(logType, startTimestamp, endTimestamp, modelName, username, tokenName, pageInfo.GetStartIdx(), pageInfo.GetPageSize(), channel, group, requestId, upstreamRequestId, orgUsernames...)
+	logs, total, err := model.GetAllLogs(logType, startTimestamp, endTimestamp, modelName, username, tokenName, pageInfo.GetStartIdx(), pageInfo.GetPageSize(), channel, group, requestId, upstreamRequestId, orgUsernames, userIds...)
 	if err != nil {
 		common.ApiError(c, err)
 		return
@@ -455,12 +523,16 @@ func GetOrganizationLogsStat(c *gin.Context) {
 	modelName := c.Query("model_name")
 	channel, _ := strconv.Atoi(c.Query("channel"))
 	group := c.Query("group")
+	userIds, ok := QueryUserIds(c)
+	if !ok {
+		return
+	}
 	orgUsernames, err := orgLogUsernames(c, orgId, authority)
 	if err != nil {
 		common.ApiError(c, err)
 		return
 	}
-	stat, err := model.SumUsedQuota(logType, startTimestamp, endTimestamp, modelName, username, tokenName, channel, group, orgUsernames...)
+	stat, err := model.SumUsedQuota(logType, startTimestamp, endTimestamp, modelName, username, tokenName, channel, group, orgUsernames, userIds...)
 	if err != nil {
 		common.ApiError(c, err)
 		return
@@ -482,12 +554,16 @@ func GetOrganizationQuotaDates(c *gin.Context) {
 	startTimestamp, _ := strconv.ParseInt(c.Query("start_timestamp"), 10, 64)
 	endTimestamp, _ := strconv.ParseInt(c.Query("end_timestamp"), 10, 64)
 	username := c.Query("username")
+	userIds, ok := QueryUserIds(c)
+	if !ok {
+		return
+	}
 	orgUsernames, err := orgLogUsernames(c, orgId, authority)
 	if err != nil {
 		common.ApiError(c, err)
 		return
 	}
-	dates, err := model.GetAllQuotaDates(startTimestamp, endTimestamp, username, orgUsernames...)
+	dates, err := model.GetAllQuotaDates(startTimestamp, endTimestamp, username, orgUsernames, userIds...)
 	if err != nil {
 		common.ApiError(c, err)
 		return
@@ -508,12 +584,16 @@ func GetOrganizationQuotaDatesByUser(c *gin.Context) {
 	}
 	startTimestamp, _ := strconv.ParseInt(c.Query("start_timestamp"), 10, 64)
 	endTimestamp, _ := strconv.ParseInt(c.Query("end_timestamp"), 10, 64)
+	userIds, ok := QueryUserIds(c)
+	if !ok {
+		return
+	}
 	orgUsernames, err := orgLogUsernames(c, orgId, authority)
 	if err != nil {
 		common.ApiError(c, err)
 		return
 	}
-	dates, err := model.GetQuotaDataGroupByUser(startTimestamp, endTimestamp, orgUsernames...)
+	dates, err := model.GetQuotaDataGroupByUser(startTimestamp, endTimestamp, orgUsernames, userIds...)
 	if err != nil {
 		common.ApiError(c, err)
 		return
@@ -537,12 +617,16 @@ func GetOrganizationFlow(c *gin.Context) {
 		return
 	}
 	username := c.Query("username")
+	userIds, ok := QueryUserIds(c)
+	if !ok {
+		return
+	}
 	orgUsernames, err := orgLogUsernames(c, orgId, authority)
 	if err != nil {
 		common.ApiError(c, err)
 		return
 	}
-	dates, err := model.GetFlowQuotaData(startTimestamp, endTimestamp, username, 0, c.GetInt("role"), orgUsernames...)
+	dates, err := model.GetFlowQuotaData(startTimestamp, endTimestamp, username, 0, c.GetInt("role"), orgUsernames, userIds...)
 	if err != nil {
 		common.ApiError(c, err)
 		return
@@ -558,7 +642,10 @@ const (
 	orgAuthorityNone orgAuthority = iota
 	// orgAuthorityDepartmentAdmin 部门管理员：仅可读本部门数据、调整本部门成员的子额度。
 	orgAuthorityDepartmentAdmin
-	// orgAuthorityOrgManager 组织所有者/组织管理员：可管理本组织全部成员与部门。
+	// orgAuthorityOrgAdmin 组织管理员：可读写本组织全员与部门数据，但不能作用于
+	// 组织所有者或其他组织管理员，避免「管理员越权把同级别同事踢出/降级」。
+	orgAuthorityOrgAdmin
+	// orgAuthorityOrgManager 组织所有者：可管理本组织全部成员与部门（含授予/撤销所有者）。
 	orgAuthorityOrgManager
 )
 
@@ -566,7 +653,9 @@ const (
 //
 // 与需求逐条对应的边界：
 //   - 超级管理员：全部组织、全权；
-//   - 组织所有者 / 组织管理员：本组织全权；
+//   - 组织所有者：本组织全权（含改角色、改组织所有权）；
+//   - 组织管理员：本组织范围内可读写成员/部门，但**不能**作用于组织所有者或其他组织管理员，
+//     也**不能**把任何人（含自己）提为 owner；
 //   - 部门管理员：本组织内**仅本部门**，且只能调整成员子额度 ——
 //     不得改角色、不得改部门、不得增删成员（否则可以把本部门成员提为 owner 自升权）；
 //   - 普通成员 / 其他组织成员 / 平台管理员（organization_id==0）：无权限。
@@ -584,8 +673,10 @@ func orgAuthorityOf(callerRole, callerUserId, callerOrgId int, callerOrgRole str
 		return orgAuthorityNone
 	}
 	switch callerOrgRole {
-	case model.OrgRoleOwner, model.OrgRoleAdmin:
+	case model.OrgRoleOwner:
 		return orgAuthorityOrgManager
+	case model.OrgRoleAdmin:
+		return orgAuthorityOrgAdmin
 	case model.OrgRoleDepartmentAdmin:
 		return orgAuthorityDepartmentAdmin
 	}

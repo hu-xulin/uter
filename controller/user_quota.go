@@ -45,6 +45,30 @@ func manageUserQuota(c *gin.Context, req ManageRequest) {
 		markAuditLogged(c)
 	}()
 
+	// 权限与组织范围门禁。
+	//
+	// 为什么放在这里而不是 ManageUser 里：add_quota 是 ManageUser 中最早分派的分支
+	// （早于目标用户加载与 canManageTargetUser 校验），若门禁只写在 ManageUser 的
+	// 后半段，额度调整就成了一条绕过「只能管理本组织成员」约束的通道。
+	//
+	// model.AdjustUserQuota 只比较 role 大小，不看 organization_id / department，
+	// 因此组织边界必须由本函数显式施加。
+	if req.Id > 0 {
+		var target model.User
+		if err := model.DB.Unscoped().
+			Select("id", "role", "organization_id", "department_id").
+			Where("id = ?", req.Id).First(&target).Error; err == nil {
+			if !canManageTargetUser(c, &target) {
+				params["failure_reason"] = "permission_denied"
+				common.ApiErrorI18n(c, i18n.MsgUserNoPermissionHigherLevel)
+				return
+			}
+		}
+		// 读取失败时**不**在这里返回：交给下面的 AdjustUserQuota —— 它在事务内重新
+		// 读取，能给出准确的失败原因（database_error / target_not_found），
+		// 从而保住「一次请求一条审计且失败原因正确」的约定。
+	}
+
 	adjustment, err := model.AdjustUserQuota(req.Id, c.GetInt("role"), req.Mode, req.Value)
 	if err != nil {
 		switch {

@@ -28,6 +28,28 @@ func IsValidOrgRole(role string) bool {
 	return false
 }
 
+// 组织状态取值。与 common.UserStatus* 一样从 1 开始：0 是 int 的零值，必须能被区分出来，
+// 否则「忘记赋值」会被静默当成一个合法状态。
+const (
+	// OrgStatusEnabled 组织正常可用。
+	OrgStatusEnabled = 1
+	// OrgStatusDisabled 组织已停用：成员不能再消耗额度，也不能再被加入。
+	OrgStatusDisabled = 2
+	// OrgStatusUnchanged 是 UpdateOrganization 的「不修改」哨兵。
+	// 调用方不打算改动状态时必须显式传它，而不是传 0。
+	OrgStatusUnchanged = -1
+)
+
+// IsValidOrgStatus 校验组织状态取值是否合法（仅 1/2）。
+func IsValidOrgStatus(status int) bool {
+	return status == OrgStatusEnabled || status == OrgStatusDisabled
+}
+
+// IsOrgSuspended 报告组织是否处于停用状态。nil 组织视为未停用（调用方应另有判空）。
+func (org *Organization) IsOrgSuspended() bool {
+	return org != nil && org.Status == OrgStatusDisabled
+}
+
 // Organization 表示一个公司/租户。Quota 为共享总钱包预算，UsedQuota 为已消耗。
 type Organization struct {
 	Id          int    `json:"id" gorm:"primaryKey"`
@@ -36,7 +58,7 @@ type Organization struct {
 	Quota       int64  `json:"quota" gorm:"type:bigint;default:0"`      // 共享总钱包预算（额度单位）
 	UsedQuota   int64  `json:"used_quota" gorm:"type:bigint;default:0"` // 已消耗额度
 	MemberLimit int    `json:"member_limit" gorm:"type:int;default:0"`  // 成员上限，0=不限
-	Status      int    `json:"status" gorm:"type:int;default:1"`        // 1=启用 2=禁用
+	Status      int    `json:"status" gorm:"type:int;default:1"`        // 1=启用 2=禁用，见 OrgStatus*
 	CreatedAt   int64  `json:"created_at" gorm:"autoCreateTime"`
 	UpdatedAt   int64  `json:"updated_at" gorm:"autoUpdateTime"`
 }
@@ -61,6 +83,10 @@ var (
 	ErrOrgSubQuotaExceeded = errors.New("organization member sub-quota exceeded")
 	// ErrOrgMemberForeign 目标用户已归属其它组织；加入组织不得跨租户搬迁账号。
 	ErrOrgMemberForeign = errors.New("user already belongs to another organization")
+	// ErrOrgSuspended 组织已被平台停用，其成员不得消耗额度、不得被加入。
+	ErrOrgSuspended = errors.New("organization is suspended")
+	// ErrOrgStatusCodeInvalid 状态取值非法（只接受 1/2；不修改请用 OrgStatusUnchanged）。
+	ErrOrgStatusCodeInvalid = errors.New("invalid organization status code")
 )
 
 // CreateOrganization 创建组织并把创建者设为 owner。
@@ -74,7 +100,7 @@ func CreateOrganization(name string, ownerUserId int, quota int64) (*Organizatio
 		Quota:       quota,
 		UsedQuota:   0,
 		MemberLimit: 0,
-		Status:      1,
+		Status:      OrgStatusEnabled,
 	}
 	if err := DB.Create(org).Error; err != nil {
 		return nil, err
@@ -123,7 +149,13 @@ func GetOrganizationByOwner(ownerUserId int) (*Organization, error) {
 }
 
 // UpdateOrganization 更新组织元数据与预算。
+// 所有「不修改」维度都传负数哨兵（见 OrgStatusUnchanged）；status 只接受 1/2，
+// 传入 0 或其它值一律拒绝 —— 0 是 int 零值，一旦写库就会得到一个既非启用也非停用的
+// 幽灵状态，而 IsOrgSuspended 之类的读取点只认 OrgStatusDisabled，会静默放行。
 func UpdateOrganization(id int, name string, quota int64, memberLimit int, status int) error {
+	if status >= 0 && !IsValidOrgStatus(status) {
+		return fmt.Errorf("%w: %d", ErrOrgStatusCodeInvalid, status)
+	}
 	updates := map[string]any{}
 	if name != "" {
 		updates["name"] = name
@@ -147,6 +179,11 @@ func UpdateOrganization(id int, name string, quota int64, memberLimit int, statu
 // 已归属其它组织的账号一律拒绝：组织归属是租户边界，跨组织搬迁必须由平台超管
 // 显式操作，否则任意组织管理员都能把别家客户/平台用户「拉」进自己的租户。
 func (org *Organization) AddMember(userIds []int, departmentName string, subQuotaLimit int64) error {
+	// 停用组织不得继续纳新：停用通常意味着欠费/合规问题，此时把新成员挂进来会立即
+	// 得到一批「一上线就被拒绝」的账号。
+	if org.IsOrgSuspended() {
+		return ErrOrgSuspended
+	}
 	if org.MemberLimit > 0 {
 		var count int64
 		DB.Model(&User{}).Where("organization_id = ? AND deleted_at IS NULL", org.Id).Count(&count)
@@ -231,6 +268,11 @@ func PreConsumeOrgQuota(org *Organization, amount int64) bool {
 // 这是共享钱包的「只读闸门」：不动任何账本，只判断本次预扣额能否通过。真正的原子预扣
 // 由 ReserveOrgQuota 完成（见 service.WalletFunding.PreConsume）。
 //
+// 停用组织（Status == OrgStatusDisabled）在此**一律拒绝**：这是 organizations.status 的
+// 主要读取点，也是「停用」真正生效的地方 —— 否则该字段只是一个装饰。
+// 注意这里与其它分支的取向相反：缓存/数据库抖动时我们会 fail-open（不误判越权），
+// 但「组织已停用」是明确读到的业务事实，必须 fail-closed。
+//
 // 两处数值都取数据库权威值：
 //   - 组织预算：读 organizations 行（缓存里根本没有组织账本）；
 //   - 成员子额度：读 users.used_quota。**不能**用 GetUserCache 的 UsedQuota —— 该字段只在
@@ -249,6 +291,9 @@ func EnforceOrgQuota(userId int, quota int64) error {
 	org, err := GetOrganizationById(orgId)
 	if err != nil {
 		return nil
+	}
+	if org.IsOrgSuspended() {
+		return fmt.Errorf("%w: org %d", ErrOrgSuspended, org.Id)
 	}
 	if !PreConsumeOrgQuota(org, quota) {
 		return fmt.Errorf("%w: used %s / budget %s", ErrOrgBudgetExceeded,
@@ -284,8 +329,8 @@ func GetOrgMemberSubQuotaState(orgId int, userId int) (subQuotaLimit int64, used
 // ReserveOrgQuota 在组织共享账本上原子预扣 amount：
 //  1. 先按数据库权威值校验成员子额度上限；
 //  2. 再以单条带条件的 UPDATE 原子自增 organizations.used_quota，条件为
-//     「预算未设置上限 或 已用+本次 <= 预算」。并发请求不可能同时通过检查后超扣，
-//     这解决了只读闸门（EnforceOrgQuota）与落账之间的 TOCTOU 窗口。
+//     「预算未设置上限 或 已用+本次 <= 预算」且「组织未停用」。并发请求不可能同时通过
+//     检查后超扣，这解决了只读闸门（EnforceOrgQuota）与落账之间的 TOCTOU 窗口。
 //
 // 组织预算为 0/负数时表示不限量（平台侧未给该组织设上限），此时只校验子额度。
 func ReserveOrgQuota(orgId int, userId int, amount int64) error {
@@ -300,16 +345,25 @@ func ReserveOrgQuota(orgId int, userId int, amount int64) error {
 		return fmt.Errorf("%w: used %s / limit %s", ErrOrgSubQuotaExceeded,
 			logger.FormatQuota(usedQuota), logger.FormatQuota(int(subQuotaLimit)))
 	}
+	// 停用组织由条件里的 COALESCE(status, 1) <> OrgStatusDisabled 拒绝（见下方注释），
+	// 不额外查一次库：这是每个中转请求都要走的热路径。
 	res := DB.Model(&Organization{}).
-		Where("id = ? AND (quota <= 0 OR used_quota + ? <= quota)", orgId, amount).
+		Where("id = ? AND (quota <= 0 OR used_quota + ? <= quota) AND COALESCE(status, ?) <> ?",
+			orgId, amount, OrgStatusEnabled, OrgStatusDisabled).
 		Update("used_quota", gorm.Expr("used_quota + ?", amount))
 	if res.Error != nil {
 		return res.Error
 	}
 	if res.RowsAffected == 0 {
+		// 单条 UPDATE 未命中只可能是「预算不足」或「组织已停用」；读回原始行给出准确原因
+		// （只有失败路径才付这次查询）。status 为 NULL 的历史行按未停用处理，与
+		// IsOrgSuspended 只认 OrgStatusDisabled 的口径一致。
 		org, err := GetOrganizationById(orgId)
 		if err != nil {
 			return ErrOrgBudgetExceeded
+		}
+		if org.IsOrgSuspended() {
+			return fmt.Errorf("%w: org %d", ErrOrgSuspended, org.Id)
 		}
 		return fmt.Errorf("%w: used %s / budget %s", ErrOrgBudgetExceeded,
 			logger.FormatQuota(int(org.UsedQuota)), logger.FormatQuota(int(org.Quota)))
@@ -403,7 +457,31 @@ func GetOrgMemberUsernames(orgId int) ([]string, error) {
 const (
 	NoOrgMemberUsername = "\x00no-org-member"
 	NoDepartmentFilter  = "\x00no-department"
+	// NoOrgMemberId 是 user_id 维度上的「不可能匹配」哨兵。任务日志等查询以
+	// `user_id IN (?)` 施加范围，空切片会被解释为「不施加过滤」，因此范围为空时
+	// 必须显式传 -1（数据库自增 id 从 1 开始）而不是空切片。
+	NoOrgMemberId = -1
 )
+
+// GetOrgMemberIds 返回组织内全部成员的 user id，供以 user_id 为过滤维度的查询使用。
+func GetOrgMemberIds(orgId int) ([]int, error) {
+	var ids []int
+	err := DB.Model(&User{}).Where("organization_id = ? AND deleted_at IS NULL", orgId).
+		Pluck("id", &ids).Error
+	return ids, err
+}
+
+// GetOrgMemberIdsInDepartment 返回组织内指定部门成员的 user id（部门按名称匹配）。
+func GetOrgMemberIdsInDepartment(orgId int, departmentName string) ([]int, error) {
+	if departmentName == "" {
+		return []int{NoOrgMemberId}, nil
+	}
+	var ids []int
+	err := DB.Model(&User{}).
+		Where("organization_id = ? AND department_name = ? AND deleted_at IS NULL", orgId, departmentName).
+		Pluck("id", &ids).Error
+	return ids, err
+}
 
 // GetOrgMemberUsernamesInDepartment 返回组织内指定部门成员的 username。
 // 部门按名称匹配（department_id 列已废弃，从不写入）。

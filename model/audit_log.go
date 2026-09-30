@@ -50,6 +50,10 @@ type AuditLogFilter struct {
 	SelfView        bool // Server-selected metadata projection, independent of the viewer's actual role.
 	UserId          int
 	Username        string
+	// Usernames 是「可见范围」过滤：非空时只返回这些 username 的记录。
+	// 调用方必须保证它来自可信的范围解析（如组织/部门成员列表）；范围为空时应传
+	// NoOrgMemberUsername 哨兵，因为空切片在这里同样表示「不施加过滤」。
+	Usernames       []string
 	Category        string
 	TokenRef        string
 	ExcludeTokenRef string
@@ -155,6 +159,9 @@ func GetAuditLogs(filter AuditLogFilter, start, limit, viewerRole int) ([]*Audit
 	}
 	if filter.Username != "" {
 		query = query.Where("username = ?", filter.Username)
+	}
+	if len(filter.Usernames) > 0 {
+		query = query.Where("username IN ?", filter.Usernames)
 	}
 	if filter.Category != "" {
 		query = query.Where("category = ?", filter.Category)

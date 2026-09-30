@@ -139,12 +139,16 @@ func increaseQuotaData(quotaData *QuotaData) {
 	}
 }
 
-func GetQuotaDataByUsername(username string, startTime int64, endTime int64) (quotaData []*QuotaData, err error) {
+func GetQuotaDataByUsername(username string, startTime int64, endTime int64, userIds ...int) (quotaData []*QuotaData, err error) {
 	var quotaDatas []*QuotaData
 	// 从quota_data表中查询数据
-	err = DB.Table("quota_data").
+	query := DB.Table("quota_data").
 		Select("user_id, username, model_name, created_at, sum(count) as count, sum(quota) as quota, sum(token_used) as token_used").
-		Where("username = ? and created_at >= ? and created_at <= ?", username, startTime, endTime).
+		Where("username = ? and created_at >= ? and created_at <= ?", username, startTime, endTime)
+	if len(userIds) > 0 {
+		query = query.Where("user_id IN ?", userIds)
+	}
+	err = query.
 		Group("user_id, username, model_name, created_at").
 		Find(&quotaDatas).Error
 	return quotaDatas, err
@@ -161,7 +165,7 @@ func GetQuotaDataByUserId(userId int, startTime int64, endTime int64) (quotaData
 	return quotaDatas, err
 }
 
-func GetQuotaDataGroupByUser(startTime int64, endTime int64, orgUsernames ...string) (quotaData []*QuotaData, err error) {
+func GetQuotaDataGroupByUser(startTime int64, endTime int64, orgUsernames []string, userIds ...int) (quotaData []*QuotaData, err error) {
 	var quotaDatas []*QuotaData
 	query := DB.Table("quota_data").
 		Select("username, created_at, sum(count) as count, sum(quota) as quota, sum(token_used) as token_used").
@@ -169,20 +173,29 @@ func GetQuotaDataGroupByUser(startTime int64, endTime int64, orgUsernames ...str
 	if len(orgUsernames) > 0 {
 		query = query.Where("username IN ?", orgUsernames)
 	}
+	if len(userIds) > 0 {
+		query = query.Where("user_id IN ?", userIds)
+	}
 	err = query.
 		Group("username, created_at").
 		Find(&quotaDatas).Error
 	return quotaDatas, err
 }
 
-func GetAllQuotaDates(startTime int64, endTime int64, username string, orgUsernames ...string) (quotaData []*QuotaData, err error) {
+// GetAllQuotaDates 返回按模型/时间聚合的额度消耗。
+//
+// userIds 是「用户维度」过滤，与 orgUsernames 范围过滤取交集：越权的 id 只会得到空集。
+func GetAllQuotaDates(startTime int64, endTime int64, username string, orgUsernames []string, userIds ...int) (quotaData []*QuotaData, err error) {
 	if username != "" {
-		return GetQuotaDataByUsername(username, startTime, endTime)
+		return GetQuotaDataByUsername(username, startTime, endTime, userIds...)
 	}
 	var quotaDatas []*QuotaData
 	query := DB.Table("quota_data").Select("model_name, sum(count) as count, sum(quota) as quota, sum(token_used) as token_used, created_at").Where("created_at >= ? and created_at <= ?", startTime, endTime)
 	if len(orgUsernames) > 0 {
 		query = query.Where("username IN ?", orgUsernames)
+	}
+	if len(userIds) > 0 {
+		query = query.Where("user_id IN ?", userIds)
 	}
 	err = query.Group("model_name, created_at").Find(&quotaDatas).Error
 	return quotaDatas, err

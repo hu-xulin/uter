@@ -31,13 +31,21 @@ import (
 // sessionRefreshTestCookie 与 service.RefreshCookieName 保持一致（router 传入的就是它）。
 const sessionRefreshTestCookie = "uter_refresh"
 
-const (
-	sessionTierKeyPrefix = redisRateLimitNamespace + ":subject:" + sessionRefreshRateLimitMark + ":"
-	ipTierKeyPrefix      = redisRateLimitNamespace + ":ip:" + sessionRefreshRateLimitMark + "IP:"
+// 键前缀由 SessionRateLimitRefresh.mark() 派生，而不是在测试里再硬编码一份 "CR"：
+// 两者一旦漂移，下面的断言会静默失效（键前缀对不上 ⇒ 计数恒为 0 ⇒ 测试假绿）。
+var (
+	sessionTierKeyPrefix = redisRateLimitNamespace + ":subject:" + SessionRateLimitRefresh.mark() + ":"
+	ipTierKeyPrefix      = redisRateLimitNamespace + ":ip:" + SessionRateLimitRefresh.mark() + "IP:"
 )
 
+// refreshSessionQuota 返回续期档的单会话配额：临界配额 × sessionRefreshRateLimitMultiplier。
+// 用例一律通过它推导循环次数，避免把倍数硬编码进断言后随实现漂移。
+func refreshSessionQuota() int {
+	return common.CriticalRateLimitNum * sessionRefreshRateLimitMultiplier
+}
+
 // withCriticalRateLimit 临时收紧临界限流配额，使用例无需真实打满 20 次即可观察行为。
-// 单会话档用该配额，来源 IP 档为其 refreshIPRateLimitMultiplier 倍。
+// 单会话档用该配额，来源 IP 档为其 sessionIPRateLimitMultiplier 倍。
 func withCriticalRateLimit(t *testing.T, maximum int) {
 	t.Helper()
 	previousEnable := common.CriticalRateLimitEnable
@@ -101,7 +109,7 @@ func TestSessionRefreshRateLimitKeysBySessionNotClientIP(t *testing.T) {
 	redisServer, _ := useRateLimitMiniRedis(t)
 	withCriticalRateLimit(t, 3)
 
-	router := newSessionRefreshRouter(SessionRefreshRateLimit(sessionRefreshTestCookie))
+	router := newSessionRefreshRouter(SessionRateLimit(sessionRefreshTestCookie, SessionRateLimitRefresh))
 
 	// 同一 NAT 出口、5 个不同会话，各续期一次：全部必须放行。
 	const sharedIP = "203.0.113.9:44321"
@@ -124,8 +132,10 @@ func TestSessionRefreshRateLimitKeysBySessionNotClientIP(t *testing.T) {
 	assert.Equal(t, 1, countKeysWithPrefix(keys, ipTierKeyPrefix), "来源 IP 回退档应恰好一个键")
 
 	// 同一会话在自己的窗口内超过配额，仍然要被拒绝。
+	// 续期档的配额是临界配额的 sessionRefreshRateLimitMultiplier 倍（整页加载也会消耗
+	// 一次续期），因此这里按实际配额循环，而不是照抄一个会随倍数漂移的魔法数。
 	const repeatedSID = "99999999-0000-4000-8000-000000000000"
-	for attempt := range 3 {
+	for attempt := range refreshSessionQuota() {
 		token := refreshSessionTestToken(repeatedSID, "secretA")
 		require.Equal(t, http.StatusNoContent,
 			performSessionRefreshRequest(router, sharedIP, token).Code, "第 %d 次续期仍在配额内", attempt+1)
@@ -149,21 +159,23 @@ func TestSessionRefreshRateLimitSurvivesTokenRotation(t *testing.T) {
 	redisServer, _ := useRateLimitMiniRedis(t)
 	withCriticalRateLimit(t, 3)
 
-	router := newSessionRefreshRouter(SessionRefreshRateLimit(sessionRefreshTestCookie))
+	router := newSessionRefreshRouter(SessionRateLimit(sessionRefreshTestCookie, SessionRateLimitRefresh))
 
 	const sharedIP = "203.0.113.9:44321"
 	const sid = "0f8fad5b-d9cb-469f-a165-70867728950e"
 
-	// 连续 3 次续期，secret 逐次变化（模拟令牌轮换链），每次都必须放行。
-	for attempt := range 3 {
+	quota := refreshSessionQuota()
+	// 连续 quota 次续期，secret 逐次变化（模拟令牌轮换链），每次都必须放行。
+	for attempt := range quota {
 		token := refreshSessionTestToken(sid, fmt.Sprintf("rotated-secret-%d", attempt))
 		require.Equal(t, http.StatusNoContent,
 			performSessionRefreshRequest(router, sharedIP, token).Code,
 			"轮换后的第 %d 次续期仍在配额内", attempt+1)
 	}
 
-	// 第 4 次（再次轮换后的新 secret）必须被拒绝：计数归属 SID，不随 secret 重置。
-	limited := performSessionRefreshRequest(router, sharedIP, refreshSessionTestToken(sid, "rotated-secret-3"))
+	// 配额用尽后的下一次（又是轮换后的新 secret）必须被拒绝：计数归属 SID，不随 secret 重置。
+	limited := performSessionRefreshRequest(router, sharedIP,
+		refreshSessionTestToken(sid, fmt.Sprintf("rotated-secret-%d", quota)))
 	require.Equal(t, http.StatusTooManyRequests, limited.Code,
 		"令牌轮换不得重置单会话计数，否则限流形同虚设")
 
@@ -179,7 +191,7 @@ func TestSessionRefreshRateLimitSkipsSessionTierWithoutParsableToken(t *testing.
 	redisServer, _ := useRateLimitMiniRedis(t)
 	withCriticalRateLimit(t, 1) // 单会话档 1 次；来源 IP 档 1×100=100 次。
 
-	router := newSessionRefreshRouter(SessionRefreshRateLimit(sessionRefreshTestCookie))
+	router := newSessionRefreshRouter(SessionRateLimit(sessionRefreshTestCookie, SessionRateLimitRefresh))
 
 	const source = "198.51.100.7:5555"
 	// 无 Cookie：远超过单会话档的 1 次，但因为跳过了该档，仍然放行。
@@ -196,9 +208,9 @@ func TestSessionRefreshRateLimitSkipsSessionTierWithoutParsableToken(t *testing.
 	assert.Zero(t, countKeysWithPrefix(keys, sessionTierKeyPrefix), "无法解析会话时不得产生单会话计数键")
 	assert.Equal(t, 1, countKeysWithPrefix(keys, ipTierKeyPrefix), "来源 IP 档仍然生效")
 
-	// 来源 IP 档的额度是单会话档的 refreshIPRateLimitMultiplier 倍，超出后仍会被拒绝。
+	// 来源 IP 档的额度是单会话档的 sessionIPRateLimitMultiplier 倍，超出后仍会被拒绝。
 	const alreadyAllowed = 3 + 1 // 上方 3 次无凭据 + 1 次非法令牌
-	limit := common.CriticalRateLimitNum * refreshIPRateLimitMultiplier
+	limit := common.CriticalRateLimitNum * sessionIPRateLimitMultiplier
 	for range limit - alreadyAllowed {
 		require.Equal(t, http.StatusNoContent,
 			performSessionRefreshRequest(router, source, "").Code)
@@ -210,6 +222,48 @@ func TestSessionRefreshRateLimitSkipsSessionTierWithoutParsableToken(t *testing.
 	// 另一个来源不受影响：回退键按来源隔离。
 	assert.Equal(t, http.StatusNoContent,
 		performSessionRefreshRequest(router, "198.51.100.8:5555", "").Code)
+}
+
+// TestSessionRefreshRateLimitAllowsRepeatedColdLoads 锁定本次修复的场景：
+// 一次「冷启动」（整页刷新 / 直达链接 / 新标签页）必然消耗一次续期，因为内存里的访问
+// 令牌随页面卸载丢失。曾经的 20 次 / 20 分钟配额只够 20 次整页加载，打满后续期返回
+// 429，冷启动后的路由守卫拿不到访问令牌就把仍处登录态的用户送去登录页。
+//
+// 这里用真实的默认配额（而非 withCriticalRateLimit 收紧值）验证：默认配置下单会话
+// 至少能承受 60 次整页加载而不被限流。
+func TestSessionRefreshRateLimitAllowsRepeatedColdLoads(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	useRateLimitMiniRedis(t)
+	withDefaultCriticalRateLimit(t)
+
+	router := newSessionRefreshRouter(SessionRateLimit(sessionRefreshTestCookie, SessionRateLimitRefresh))
+	token := refreshSessionTestToken(refreshSessionTestSID(7), "secretA")
+
+	const coldLoads = 60
+	require.LessOrEqual(t, coldLoads, refreshSessionQuota(),
+		"默认配额必须覆盖 %d 次整页加载，否则重度使用者仍会被登出", coldLoads)
+	for attempt := range coldLoads {
+		require.Equal(t, http.StatusNoContent,
+			performSessionRefreshRequest(router, "203.0.113.20:44321", token).Code,
+			"第 %d 次冷启动续期不得被限流", attempt+1)
+	}
+}
+
+// withDefaultCriticalRateLimit 恢复为仓库默认配置（20 次 / 20 分钟），用于验证
+// 「默认配额下的真实体验」而不是被用例收紧后的行为。
+func withDefaultCriticalRateLimit(t *testing.T) {
+	t.Helper()
+	previousEnable := common.CriticalRateLimitEnable
+	previousNum := common.CriticalRateLimitNum
+	previousDuration := common.CriticalRateLimitDuration
+	common.CriticalRateLimitEnable = true
+	common.CriticalRateLimitNum = 20
+	common.CriticalRateLimitDuration = 1200
+	t.Cleanup(func() {
+		common.CriticalRateLimitEnable = previousEnable
+		common.CriticalRateLimitNum = previousNum
+		common.CriticalRateLimitDuration = previousDuration
+	})
 }
 
 // 对照组：证明修复前的配置（按 IP 计数）在同一场景下确实会连带封禁整个出口。
@@ -240,7 +294,7 @@ func TestSessionRefreshRateLimitDisabledPassesThrough(t *testing.T) {
 	common.CriticalRateLimitEnable = false
 	t.Cleanup(func() { common.CriticalRateLimitEnable = previousEnable })
 
-	router := newSessionRefreshRouter(SessionRefreshRateLimit(sessionRefreshTestCookie))
+	router := newSessionRefreshRouter(SessionRateLimit(sessionRefreshTestCookie, SessionRateLimitRefresh))
 	token := refreshSessionTestToken(refreshSessionTestSID(1), "secretA")
 	for range 25 {
 		require.Equal(t, http.StatusNoContent,

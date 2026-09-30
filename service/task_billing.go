@@ -111,6 +111,11 @@ func taskAdjustFunding(task *model.Task, delta int) error {
 	if taskIsSubscription(task) {
 		return model.PostConsumeUserSubscriptionDelta(task.PrivateData.SubscriptionId, int64(delta))
 	}
+	// 组织成员的资金来源是组织共享预算：提交端按组织出资预扣，这里的退款/差额结算
+	// 必须对称地回到组织账本。退到个人钱包会让组织 used_quota 永不回减，对账破裂。
+	if orgId, err := model.OrgIdOfUser(task.UserId); err == nil && orgId > 0 {
+		return model.IncrOrgUsedQuota(orgId, int64(delta))
+	}
 	if delta > 0 {
 		return model.DecreaseUserQuota(task.UserId, delta, false)
 	}

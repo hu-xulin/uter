@@ -53,6 +53,8 @@ export interface AuditFilters {
   exclude_token_ref?: string
   username?: string
   request_id?: string
+  /** 用户维度过滤：数据库自增 user id（管理员视角可用）。 */
+  user_id?: number
 }
 export async function getAuditLogs(
   scope: 'all' | 'self',

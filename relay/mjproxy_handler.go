@@ -27,9 +27,14 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// RelayMidjourneyImage 代理返回绘图任务的成品图。
+//
+// 安全约束：必须按调用者身份取任务（GetByMJId 带 user_id 条件），不能只用 mj_id。
+// 该路由原先注册在 TokenAuth 之前且按 mj_id 全表查询，等于任何人枚举 id 就能下载
+// 其他用户生成的图片。现在路由已移进鉴权分组，这里再按 user_id 收口做纵深防御。
 func RelayMidjourneyImage(c *gin.Context) {
 	taskId := c.Param("id")
-	midjourneyTask := model.GetByOnlyMJId(taskId)
+	midjourneyTask := model.GetByMJId(c.GetInt("id"), taskId)
 	if midjourneyTask == nil {
 		c.JSON(400, gin.H{
 			"error": "midjourney_task_not_found",

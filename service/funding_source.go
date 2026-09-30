@@ -33,8 +33,14 @@ type FundingSource interface {
 var ErrInsufficientWalletQuota = errors.New("wallet quota insufficient")
 
 type WalletFunding struct {
-	userId   int
-	consumed int // 实际预扣的用户额度
+	userId int
+	// consumed 是该资金来源**累计**预扣的额度，Refund 按它整体回退。
+	//
+	// 必须是累加而不是赋值：一次请求里 PreConsume 会被调用多次——先由
+	// BillingSession.preConsume 预扣 P，图片请求再经 Reserve 的
+	// requireAvailableQuota 分支补扣 (Q−P)。若这里写成赋值，后一次会把前一次的
+	// P 覆盖掉，失败时 Refund 只退 (Q−P)，用户永久损失 P。
+	consumed int
 }
 
 func (w *WalletFunding) Source() string { return BillingSourceWallet }
@@ -51,7 +57,7 @@ func (w *WalletFunding) PreConsume(amount int) error {
 		if err := model.ReserveOrgQuota(orgId, w.userId, int64(amount)); err != nil {
 			return err
 		}
-		w.consumed = amount
+		w.consumed += amount
 		return nil
 	}
 	reserved, err := model.TryReserveUserQuota(w.userId, amount)
@@ -61,7 +67,7 @@ func (w *WalletFunding) PreConsume(amount int) error {
 	if !reserved {
 		return ErrInsufficientWalletQuota
 	}
-	w.consumed = amount
+	w.consumed += amount
 	return nil
 }
 

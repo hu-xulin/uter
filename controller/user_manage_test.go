@@ -228,7 +228,7 @@ func TestManageUserQuotaRecordsTopupAndAudit(t *testing.T) {
 			require.NoError(t, db.First(&user, user.Id).Error)
 			assert.Equal(t, tc.wantQuota, user.Quota)
 
-			logs, total, err := model.GetAllLogs(model.LogTypeTopup, 0, 0, "", "", "", 0, 20, 0, "", "", "")
+			logs, total, err := model.GetAllLogs(model.LogTypeTopup, 0, 0, "", "", "", 0, 20, 0, "", "", "", nil)
 			require.NoError(t, err)
 			assert.EqualValues(t, 1, total)
 			require.Len(t, logs, 1)
@@ -361,6 +361,79 @@ func TestManageUserQuotaLogFailureKeepsSuccessfulAdjustment(t *testing.T) {
 			}
 		})
 	}
+}
+
+// TestManageUserQuotaRespectsOrganizationBoundary 固化一条安全不变量：
+// 「额度调整」同样受组织/部门范围约束。
+//
+// 缺陷背景：ManageUser 里 add_quota 在加载目标用户与组织范围校验**之前**就 return，
+// 直接进 manageUserQuota → model.AdjustUserQuota，而后者只比较 role 大小、不看
+// organization_id。于是「改余额」成为唯一一条不受组织边界约束的用户管理动作。
+//
+// 门禁现在放在 manageUserQuota 内部（而不是 ManageUser 的后半段），这样既能覆盖
+// 早退分支，又不破坏「一次失败请求仍留一条带具体 failure_reason 的审计」这一约定。
+// quotaOf 查询用户当前余额。每次都用全新的 model.User —— 复用同一个结构体时
+// GORM 会把上一轮的自增主键带进 WHERE，导致 `id = X AND id = Y` 查不到行。
+func quotaOf(t *testing.T, db *gorm.DB, id int) int {
+	t.Helper()
+	var user model.User
+	require.NoError(t, db.First(&user, id).Error)
+	return user.Quota
+}
+
+func TestManageUserQuotaRespectsOrganizationBoundary(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	db := setupManageUserTestDB(t)
+
+	// 操作者：属于组织 7 的平台管理员（organization_id > 0）。
+	createQuotaTestOperator(t, db, common.RoleAdminUser)
+	require.NoError(t, db.Model(&model.User{}).Where("id = ?", 9999).
+		Update("organization_id", 7).Error)
+
+	inside := model.User{
+		Username: "inside-org", Role: common.RoleCommonUser, Quota: 1000,
+		OrganizationId: 7, AffCode: "inside-org-aff",
+	}
+	outside := model.User{
+		Username: "outside-org", Role: common.RoleCommonUser, Quota: 1000,
+		OrganizationId: 8, AffCode: "outside-org-aff",
+	}
+	require.NoError(t, db.Create(&inside).Error)
+	require.NoError(t, db.Create(&outside).Error)
+
+	manageAs := func(t *testing.T, targetID int) *httptest.ResponseRecorder {
+		t.Helper()
+		recorder := httptest.NewRecorder()
+		c, _ := gin.CreateTestContext(recorder)
+		c.Request = httptest.NewRequest(http.MethodPost, "/api/user/manage",
+			strings.NewReader(fmt.Sprintf(`{"id":%d,"action":"add_quota","mode":"add","value":500}`, targetID)))
+		c.Request.Header.Set("Content-Type", "application/json")
+		c.Set("id", 9999)
+		c.Set("role", common.RoleAdminUser)
+		c.Set("organization_id", 7)
+		c.Set("username", "root-operator")
+		c.Set(common.RequestIdKey, "org-scope-quota-request")
+		ManageUser(c)
+		return recorder
+	}
+
+	// 本组织成员：允许。
+	require.Contains(t, manageAs(t, inside.Id).Body.String(), `"success":true`)
+	assert.Equal(t, 1500, quotaOf(t, db, inside.Id))
+
+	// 其他组织成员：拒绝，且余额纹丝不动。
+	recorder := manageAs(t, outside.Id)
+	require.Contains(t, recorder.Body.String(), `"success":false`)
+	assert.Equal(t, 1000, quotaOf(t, db, outside.Id), "越权加额度不得改变目标用户余额")
+
+	// 拒绝也要留下一条审计（与其余失败分支口径一致）。
+	var audit model.AuditLog
+	require.NoError(t, model.LOG_DB.Where("request_id = ?", "org-scope-quota-request").
+		Order("id DESC").First(&audit).Error)
+	assert.False(t, audit.Success)
+	params, err := common.Marshal(audit.Other.Op.Params)
+	require.NoError(t, err)
+	assert.Contains(t, string(params), `"failure_reason":"permission_denied"`)
 }
 
 func TestManageUserQuotaTargetsAndWalletBounds(t *testing.T) {

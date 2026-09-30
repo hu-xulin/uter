@@ -190,6 +190,7 @@
     "About pricing currency": "關於定價貨幣",
     "Accept Unpriced Models": "接受未定價模型",
     "Accepts a JSON array of model identifiers that support the Imagine API.": "接受支援 Imagine API 的模型標識符的 JSON 陣列。",
+    "Accepts a raw user ID or the displayed uter… number.": "支援原始使用者 ID 或頁面顯示的 uter… 編號。",
     "Accepts comma-separated status codes and inclusive ranges.": "接受逗號分隔的狀態碼和包含性範圍。",
     "Access a vast selection of models via a standard, unified API protocol. Power AI applications, manage digital assets, and connect the Future.": "Uter.ai 优特智能大模型服務平台，為企業級 AI 應用提供統一接入、智能調度與成本最優解。一次接入，全球大模型隨取隨用。",
     "Access Baidu Qianfan models through the legacy API": "透過百度千帆舊版 API 接入模型服務",
@@ -2511,6 +2512,7 @@
     "Filter by request ID": "按請求 ID 篩選",
     "Filter by task ID": "按任務 ID 篩選",
     "Filter by token name": "按 Token 名稱篩選",
+    "Filter by user ID": "按使用者 ID 篩選",
     "Filter by username": "按用戶名篩選",
     "Filter by username, name or email...": "按用戶名、姓名或電郵篩選...",
     "Filter Dashboard Models": "篩選儀表板模型",
@@ -6600,6 +6602,7 @@
     "Organization Admin": "組織管理員",
     "Organization User": "組織用戶",
     "Organization creation is handled by the platform administrator.": "組織由平台管理員建立並分配，請聯繫平台管理員。",
+    "Organization Disabled": "組織已停用",
     "Only the platform administrator can change the budget and status.": "僅平台管理員可修改預算與狀態。"
   }
 }

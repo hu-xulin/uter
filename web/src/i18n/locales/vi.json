@@ -190,6 +190,7 @@
     "About pricing currency": "Về tiền tệ định giá",
     "Accept Unpriced Models": "Chấp nhận các Mô hình chưa định giá",
     "Accepts a JSON array of model identifiers that support the Imagine API.": "Chấp nhận một mảng JSON gồm các mã định danh mô hình hỗ trợ API Imagine.",
+    "Accepts a raw user ID or the displayed uter… number.": "Chấp nhận ID người dùng gốc hoặc số uter… hiển thị.",
     "Accepts comma-separated status codes and inclusive ranges.": "Chấp nhận mã trạng thái phân cách bằng dấu phẩy và phạm vi bao gồm.",
     "Access a vast selection of models via a standard, unified API protocol. Power AI applications, manage digital assets, and connect the Future.": "Truy cập số lượng lớn các mô hình thông qua giao thức API chuẩn hóa và thống nhất. Thúc đẩy các ứng dụng AI, quản lý tài sản kỹ thuật số và kết nối tương lai.",
     "Access Baidu Qianfan models through the legacy API": "Truy cập mô hình Baidu Qianfan qua API cũ",
@@ -2511,6 +2512,7 @@
     "Filter by request ID": "Lọc theo ID yêu cầu",
     "Filter by task ID": "Lọc theo ID nhiệm vụ",
     "Filter by token name": "Lọc theo tên token",
+    "Filter by user ID": "Lọc theo ID người dùng",
     "Filter by username": "Lọc theo tên người dùng",
     "Filter by username, name or email...": "Lọc theo tên người dùng, tên hoặc email...",
     "Filter Dashboard Models": "Lọc Mô hình Bảng điều khiển",
@@ -6600,6 +6602,7 @@
     "Organization Admin": "Quản trị viên tổ chức",
     "Organization User": "Người dùng tổ chức",
     "Organization creation is handled by the platform administrator.": "Việc tạo tổ chức do quản trị viên nền tảng thực hiện.",
+    "Organization Disabled": "Tổ chức đã bị tắt",
     "Only the platform administrator can change the budget and status.": "Chỉ quản trị viên nền tảng mới có thể thay đổi ngân sách và trạng thái."
   }
 }

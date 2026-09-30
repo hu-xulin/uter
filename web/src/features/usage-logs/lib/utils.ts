@@ -147,6 +147,7 @@ export function buildBaseParams(config: {
           channel_id: String(searchParams.channel),
         }
       : {}),
+    ...(searchParams.userId ? { user_id: Number(searchParams.userId) } : {}),
     ...buildTimeRangeParams(searchParams, useMilliseconds),
   }
 }
@@ -192,6 +193,9 @@ export function buildApiParams(config: {
       : {}),
     ...(isAdmin && searchParams.username
       ? { username: String(searchParams.username) }
+      : {}),
+    ...(isAdmin && searchParams.userId
+      ? { user_id: Number(searchParams.userId) }
       : {}),
     ...(searchParams.requestId
       ? { request_id: String(searchParams.requestId) }

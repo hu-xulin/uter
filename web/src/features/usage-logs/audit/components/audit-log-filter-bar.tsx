@@ -17,9 +17,11 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@Uter.ai.com
 */
 import type { Table } from '@tanstack/react-table'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { Combobox } from '@/components/ui/combobox'
+import { formatUserId, parseUserId } from '@/lib/format'
 
 import { CompactDateTimeRangePicker } from '../../components/compact-date-time-range-picker'
 import {
@@ -64,6 +66,12 @@ export function AuditLogFilterBar(props: {
   onReset: () => void
 }) {
   const { t } = useTranslation()
+  // 用户 ID 输入框保留原始字符串（同时接受 "1" 与展示编号 "uter100000001"），
+  // null 表示「跟随已应用的 filters 渲染」；父组件 Reset 时清空。
+  const [userIdRaw, setUserIdRaw] = useState<string | null>(null)
+  const userIdInput =
+    userIdRaw ??
+    (props.filters.user_id ? formatUserId(props.filters.user_id) : '')
   const dateFilter = (
     <LogsFilterField wide>
       <CompactDateTimeRangePicker
@@ -169,16 +177,32 @@ export function AuditLogFilterBar(props: {
           </>
         )}
         {props.scope === 'all' && (
-          <LogsFilterField>
-            <LogsFilterInput
-              aria-label={t('Username')}
-              placeholder={t('Username')}
-              value={props.filters.username ?? ''}
-              onChange={(event) =>
-                props.onChange({ username: event.target.value || undefined })
-              }
-            />
-          </LogsFilterField>
+          <>
+            <LogsFilterField>
+              <LogsFilterInput
+                aria-label={t('Username')}
+                placeholder={t('Username')}
+                value={props.filters.username ?? ''}
+                onChange={(event) =>
+                  props.onChange({ username: event.target.value || undefined })
+                }
+              />
+            </LogsFilterField>
+            <LogsFilterField>
+              <LogsFilterInput
+                aria-label={t('User ID')}
+                placeholder={t('User ID')}
+                inputMode='numeric'
+                value={userIdInput}
+                onChange={(event) => {
+                  const raw = event.target.value
+                  setUserIdRaw(raw)
+                  const parsed = parseUserId(raw)
+                  props.onChange({ user_id: parsed > 0 ? parsed : undefined })
+                }}
+              />
+            </LogsFilterField>
+          </>
         )}
       </>
     ) : undefined
@@ -186,6 +210,7 @@ export function AuditLogFilterBar(props: {
     props.filters.token_ref,
     props.filters.request_id,
     props.filters.username,
+    props.filters.user_id,
   ].filter(Boolean).length
   const filterCount =
     advancedCount +
@@ -221,7 +246,10 @@ export function AuditLogFilterBar(props: {
       hasAdvancedActiveFilters={advancedCount > 0}
       searchLoading={props.isFetching}
       onSearch={props.onSearch}
-      onReset={props.onReset}
+      onReset={() => {
+        setUserIdRaw(null)
+        props.onReset()
+      }}
     />
   )
 }
