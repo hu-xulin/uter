@@ -43,6 +43,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { NativeSelect, NativeSelectOption } from '@/components/ui/native-select'
 import { SectionPageLayout } from '@/components/layout'
+import { Textarea } from '@/components/ui/textarea'
 
 import {
   addOrganizationMembers,
@@ -54,12 +55,13 @@ import {
   updateOrganization,
   updateOrganizationMember,
 } from './api'
-import type {
-  OrgMember,
-  OrgRole,
-  Organization,
+import {
+  ORG_STATUS_DISABLED,
+  ORG_STATUS_ENABLED,
+  type OrgMember,
+  type OrgRole,
+  type Organization,
 } from './types'
-import { ORG_STATUS_DISABLED, ORG_STATUS_ENABLED } from './types'
 import { formatUserId, parseUserId } from '@/lib/format'
 import { ROLE } from '@/lib/roles'
 import { useAuthStore } from '@/stores/auth-store'
@@ -597,35 +599,54 @@ function AddMemberCard({
   onAdded: () => void
 }) {
   const { t } = useTranslation()
-  const [userIds, setUserIds] = useState('')
-  const [subQuota, setSubQuota] = useState('')
+  const [userIdsText, setUserIdsText] = useState('')
+  const [defaultSubQuota, setDefaultSubQuota] = useState('')
   const [deptName, setDeptName] = useState('')
   const [submitting, setSubmitting] = useState(false)
 
   if (!canManage) return null
 
   async function submit() {
-    // 输入支持展示格式 uter100000001 与裸数字 id（兼容老用法）。
-    const ids = userIds
-      .split(/[\s,]+/)
-      .map((s) => parseUserId(s.trim()))
-      .filter((n) => n > 0)
-    if (ids.length === 0) {
-      toast.error(t('User IDs (comma separated) is required'))
+    // 每行格式：uter编号 [子额度]，例如 `uter100000001 50000`。
+    // 子额度可选：缺省时回退到上方的「默认子额度上限」。
+    const lines = userIdsText.split('\n')
+    const members: { user_id: number; sub_quota_limit: number }[] = []
+    const skipped: string[] = []
+    const fallback = defaultSubQuota ? Number(defaultSubQuota) || 0 : 0
+    for (const raw of lines) {
+      const line = raw.trim()
+      if (!line) continue
+      const parts = line.split(/\s+/)
+      const userId = parseUserId(parts[0])
+      if (userId <= 0) {
+        skipped.push(line)
+        continue
+      }
+      const subQuota =
+        parts[1] !== undefined ? Number(parts[1]) || 0 : fallback
+      members.push({ user_id: userId, sub_quota_limit: subQuota })
+    }
+    if (members.length === 0) {
+      toast.error(t('User IDs (one per line) is required'))
       return
     }
     setSubmitting(true)
     try {
       const r = await addOrganizationMembers(orgId, {
-        user_ids: ids,
-        sub_quota_limit: subQuota ? Number(subQuota) : 0,
+        members,
         department_name: deptName || undefined,
       })
       if (r.success) {
         toast.success(t('Member added'))
-        setUserIds('')
-        setSubQuota('')
+        setUserIdsText('')
+        setDefaultSubQuota('')
         setDeptName('')
+        // 部分行无法解析（纯文本/非法编号）时提示，但仍把可解析的加入。
+        if (skipped.length > 0) {
+          toast.warning(
+            t('Some user IDs could not be parsed and were skipped.')
+          )
+        }
         onAdded()
       } else {
         toast.error(r.message || t('Failed to add member'))
@@ -641,20 +662,28 @@ function AddMemberCard({
         <CardTitle>{t('Add Member')}</CardTitle>
       </CardHeader>
       <CardContent className='grid grid-cols-1 gap-3 sm:grid-cols-4'>
-        <div className='flex flex-col gap-2 sm:col-span-2'>
-          <Label>{t('User IDs (comma separated)')}</Label>
-          <Input
-            value={userIds}
-            onChange={(e) => setUserIds(e.target.value)}
-            placeholder={t('uter100000001, uter100000002')}
+        <div className='flex flex-col gap-2 sm:col-span-4'>
+          <Label>
+            {t(
+              'Add members (one user ID per line, optional sub-quota: uter100000001 50000)'
+            )}
+          </Label>
+          <Textarea
+            value={userIdsText}
+            onChange={(e) => setUserIdsText(e.target.value)}
+            placeholder={'uter100000001 50000\nuter100000002'}
+            rows={5}
           />
+          <p className='text-xs text-muted-foreground'>
+            {t('Lines without a number use the default sub-quota above.')}
+          </p>
         </div>
         <div className='flex flex-col gap-2'>
           <Label>{t('Sub-quota Limit')}</Label>
           <Input
             type='number'
-            value={subQuota}
-            onChange={(e) => setSubQuota(e.target.value)}
+            value={defaultSubQuota}
+            onChange={(e) => setDefaultSubQuota(e.target.value)}
             placeholder='0'
           />
         </div>
@@ -708,7 +737,11 @@ function MembersCard({
   onRemove: (uid: number) => void
   onEditMember: (
     uid: number,
-    payload: { department_name: string; sub_quota_limit: number }
+    payload: {
+      department_name: string
+      sub_quota_limit: number
+      org_role?: OrgRole
+    }
   ) => Promise<void>
   onPageChange: (p: number) => void
 }) {
@@ -896,6 +929,8 @@ function MembersCard({
       {editingMember && (
         <EditMemberDialog
           member={editingMember}
+          roleOptions={roleOptions}
+          canEditRole={canEditRoleOf(editingMember)}
           onClose={() => setEditingMember(null)}
           onSubmit={async (payload) => {
             await onEditMember(editingMember.id, payload)
@@ -909,14 +944,19 @@ function MembersCard({
 
 function EditMemberDialog({
   member,
+  roleOptions,
+  canEditRole,
   onClose,
   onSubmit,
 }: {
   member: OrgMember
+  roleOptions: OrgRole[]
+  canEditRole: boolean
   onClose: () => void
   onSubmit: (payload: {
     department_name: string
     sub_quota_limit: number
+    org_role?: OrgRole
   }) => Promise<void>
 }) {
   const { t } = useTranslation()
@@ -926,16 +966,27 @@ function EditMemberDialog({
   const [subQuota, setSubQuota] = useState<string>(
     member.sub_quota_limit ? String(member.sub_quota_limit) : ''
   )
+  const [orgRole, setOrgRole] = useState<OrgRole>(member.org_role || 'member')
   const [submitting, setSubmitting] = useState(false)
   const [open, setOpen] = useState(true)
 
   async function submit() {
     setSubmitting(true)
     try {
-      await onSubmit({
+      const payload: {
+        department_name: string
+        sub_quota_limit: number
+        org_role?: OrgRole
+      } = {
         department_name: departmentName.trim(),
         sub_quota_limit: subQuota ? Number(subQuota) || 0 : 0,
-      })
+      }
+      // 仅当当前用户对该成员有改角色权限时才提交 org_role，
+      // 否则只改部门与子额度（后端亦会兜底拒绝越权改角色）。
+      if (canEditRole) {
+        payload.org_role = orgRole
+      }
+      await onSubmit(payload)
     } finally {
       setSubmitting(false)
     }
@@ -976,6 +1027,21 @@ function EditMemberDialog({
               placeholder={t('Unlimited')}
             />
           </div>
+          {canEditRole && (
+            <div className='flex flex-col gap-2'>
+              <Label>{t('Role')}</Label>
+              <NativeSelect
+                value={orgRole}
+                onChange={(e) => setOrgRole(e.target.value as OrgRole)}
+              >
+                {roleOptions.map((r) => (
+                  <NativeSelectOption key={r} value={r}>
+                    {t(ROLE_LABEL_KEY[r])}
+                  </NativeSelectOption>
+                ))}
+              </NativeSelect>
+            </div>
+          )}
         </div>
         <DialogFooter>
           <Button

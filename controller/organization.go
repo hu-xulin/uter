@@ -105,7 +105,8 @@ func GetOrganizationMembers(c *gin.Context) {
 	}
 	keyword := c.Query("keyword")
 	page := common.GetPageQuery(c)
-	members, total, err := model.GetOrgMembers(orgId, departmentName, keyword, page.GetStartIdx(), page.GetPageSize())
+	excludeRoles := orgVisibilityExcludeRoles(authority)
+	members, total, err := model.GetOrgMembers(orgId, departmentName, keyword, page.GetStartIdx(), page.GetPageSize(), excludeRoles...)
 	if err != nil {
 		common.ApiError(c, err)
 		return
@@ -140,15 +141,21 @@ func AddOrganizationMembers(c *gin.Context) {
 		return
 	}
 	var req struct {
-		UserIds        []int  `json:"user_ids"`
+		Members []struct {
+			UserId        int   `json:"user_id"`
+			SubQuotaLimit int64 `json:"sub_quota_limit"`
+		} `json:"members"`
 		DepartmentName string `json:"department_name"`
-		SubQuotaLimit  int64  `json:"sub_quota_limit"`
 	}
-	if err := common.DecodeJson(c.Request.Body, &req); err != nil || len(req.UserIds) == 0 {
+	if err := common.DecodeJson(c.Request.Body, &req); err != nil || len(req.Members) == 0 {
 		common.ApiErrorI18n(c, i18n.MsgInvalidParams)
 		return
 	}
-	if err := org.AddMember(req.UserIds, req.DepartmentName, req.SubQuotaLimit); err != nil {
+	items := make([]model.OrgMemberAdd, 0, len(req.Members))
+	for _, m := range req.Members {
+		items = append(items, model.OrgMemberAdd{UserId: m.UserId, SubQuotaLimit: m.SubQuotaLimit})
+	}
+	if err := org.AddMembers(items, req.DepartmentName); err != nil {
 		common.ApiError(c, err)
 		return
 	}
@@ -703,13 +710,29 @@ func loadOrgForAuthority(c *gin.Context, orgId int) (*model.Organization, orgAut
 	return org, authority, true
 }
 
+// orgVisibilityExcludeRoles 返回某权限级别在「组织成员列表 / 细分数据」中必须隐藏的角色：
+//   - 组织管理员：看不到组织所有者（但仍可见其他管理员与成员）；
+//   - 部门管理员：看不到组织所有者与组织管理员（仅见本部门成员）；
+//   - 所有者 / 超管：无隐藏。
+func orgVisibilityExcludeRoles(authority orgAuthority) []string {
+	switch authority {
+	case orgAuthorityOrgAdmin:
+		return []string{model.OrgRoleOwner}
+	case orgAuthorityDepartmentAdmin:
+		return []string{model.OrgRoleOwner, model.OrgRoleAdmin}
+	}
+	return nil
+}
+
 // orgLogUsernames 返回该组织范围内可见成员的用户名，用于日志/统计过滤。
 // 部门管理员只看本部门；未分配部门时返回哨兵值（空集，而不是全组织）。
+// 组织管理员与部门管理员视角会隐去其无权查看的角色（所有者 / 管理员）。
 func orgLogUsernames(c *gin.Context, orgId int, authority orgAuthority) ([]string, error) {
+	excludeRoles := orgVisibilityExcludeRoles(authority)
 	if authority == orgAuthorityDepartmentAdmin {
-		return model.GetOrgMemberUsernamesInDepartment(orgId, c.GetString("department_name"))
+		return model.GetOrgMemberUsernamesInDepartment(orgId, c.GetString("department_name"), excludeRoles...)
 	}
-	return model.GetOrgMemberUsernames(orgId)
+	return model.GetOrgMemberUsernames(orgId, excludeRoles...)
 }
 
 // ListOrganizations 列出全部组织（仅超管）。供后台「添加用户」按组织归属账号时，
