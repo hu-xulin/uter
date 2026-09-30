@@ -25,10 +25,10 @@ func GetAllLogs(c *gin.Context) {
 	group := c.Query("group")
 	requestId := c.Query("request_id")
 	upstreamRequestId := c.Query("upstream_request_id")
-	orgId, _ := middleware.RequestOrgScope(c)
-	var orgUsernames []string
-	if orgId > 0 {
-		orgUsernames, _ = model.GetOrgMemberUsernames(orgId)
+	orgUsernames, err := middleware.RequestOrgScope(c).Usernames()
+	if err != nil {
+		common.ApiError(c, err)
+		return
 	}
 	logs, total, err := model.GetAllLogs(logType, startTimestamp, endTimestamp, modelName, username, tokenName, pageInfo.GetStartIdx(), pageInfo.GetPageSize(), channel, group, requestId, upstreamRequestId, orgUsernames...)
 	if err != nil {
@@ -117,10 +117,10 @@ func GetLogsStat(c *gin.Context) {
 	modelName := c.Query("model_name")
 	channel, _ := strconv.Atoi(c.Query("channel"))
 	group := c.Query("group")
-	orgId, _ := middleware.RequestOrgScope(c)
-	var orgUsernames []string
-	if orgId > 0 {
-		orgUsernames, _ = model.GetOrgMemberUsernames(orgId)
+	orgUsernames, err := middleware.RequestOrgScope(c).Usernames()
+	if err != nil {
+		common.ApiError(c, err)
+		return
 	}
 	stat, err := model.SumUsedQuota(logType, startTimestamp, endTimestamp, modelName, username, tokenName, channel, group, orgUsernames...)
 	if err != nil {

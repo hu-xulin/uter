@@ -77,7 +77,7 @@ redis.call('HSET', KEYS[1],
   'Status', ARGV[5], 'Role', ARGV[6], 'Username', ARGV[7],
   'Setting', ARGV[8], 'AuthVersion', ARGV[1], 'CacheSchema', ARGV[9],
   'OrganizationId', ARGV[13], 'DepartmentId', ARGV[14], 'OrgRole', ARGV[15],
-  'UsedQuota', ARGV[16], 'SubQuotaLimit', ARGV[17])
+  'UsedQuota', ARGV[16], 'SubQuotaLimit', ARGV[17], 'DepartmentName', ARGV[18])
 if ARGV[10] == '1' and redis.call('HEXISTS', KEYS[1], 'Quota') == 0 then
   redis.call('HSET', KEYS[1], 'Quota', ARGV[11])
 end
@@ -88,6 +88,7 @@ return 1`
 		user.AuthVersion, user.Id, user.Group, user.Email, user.Status, user.Role,
 		user.Username, user.Setting, user.CacheSchema, includeQuotaArg, user.Quota, ttl,
 		user.OrganizationId, user.DepartmentId, user.OrgRole, user.UsedQuota, user.SubQuotaLimit,
+		user.DepartmentName,
 	).Int()
 	if err != nil {
 		return err

@@ -35,10 +35,10 @@ func GetAllQuotaDates(c *gin.Context) {
 	startTimestamp, _ := strconv.ParseInt(c.Query("start_timestamp"), 10, 64)
 	endTimestamp, _ := strconv.ParseInt(c.Query("end_timestamp"), 10, 64)
 	username := c.Query("username")
-	orgId, _ := middleware.RequestOrgScope(c)
-	var orgUsernames []string
-	if orgId > 0 {
-		orgUsernames, _ = model.GetOrgMemberUsernames(orgId)
+	orgUsernames, err := middleware.RequestOrgScope(c).Usernames()
+	if err != nil {
+		common.ApiError(c, err)
+		return
 	}
 	dates, err := model.GetAllQuotaDates(startTimestamp, endTimestamp, username, orgUsernames...)
 	if err != nil {
@@ -56,10 +56,10 @@ func GetAllQuotaDates(c *gin.Context) {
 func GetQuotaDatesByUser(c *gin.Context) {
 	startTimestamp, _ := strconv.ParseInt(c.Query("start_timestamp"), 10, 64)
 	endTimestamp, _ := strconv.ParseInt(c.Query("end_timestamp"), 10, 64)
-	orgId, _ := middleware.RequestOrgScope(c)
-	var orgUsernames []string
-	if orgId > 0 {
-		orgUsernames, _ = model.GetOrgMemberUsernames(orgId)
+	orgUsernames, err := middleware.RequestOrgScope(c).Usernames()
+	if err != nil {
+		common.ApiError(c, err)
+		return
 	}
 	dates, err := model.GetQuotaDataGroupByUser(startTimestamp, endTimestamp, orgUsernames...)
 	if err != nil {
@@ -104,10 +104,10 @@ func GetAllFlowQuotaDates(c *gin.Context) {
 		return
 	}
 	username := c.Query("username")
-	orgId, _ := middleware.RequestOrgScope(c)
-	var orgUsernames []string
-	if orgId > 0 {
-		orgUsernames, _ = model.GetOrgMemberUsernames(orgId)
+	orgUsernames, err := middleware.RequestOrgScope(c).Usernames()
+	if err != nil {
+		common.ApiError(c, err)
+		return
 	}
 	dates, err := model.GetFlowQuotaData(startTimestamp, endTimestamp, username, 0, c.GetInt("role"), orgUsernames...)
 	if err != nil {

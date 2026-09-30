@@ -336,8 +336,8 @@ func Register(c *gin.Context) {
 func GetAllUsers(c *gin.Context) {
 	pageInfo := common.GetPageQuery(c)
 	sortOptions := model.NewUserSortOptions(c.Query("sort_by"), c.Query("sort_order"))
-	orgId, deptId := middleware.RequestOrgScope(c)
-	users, total, err := model.GetAllUsers(orgId, deptId, pageInfo, sortOptions)
+	scope := middleware.RequestOrgScope(c)
+	users, total, err := model.GetAllUsers(scope.OrgID, scope.DepartmentFilter(), pageInfo, sortOptions)
 	if err != nil {
 		common.ApiError(c, err)
 		return
@@ -367,8 +367,8 @@ func SearchUsers(c *gin.Context) {
 	}
 	pageInfo := common.GetPageQuery(c)
 	sortOptions := model.NewUserSortOptions(c.Query("sort_by"), c.Query("sort_order"))
-	orgId, deptId := middleware.RequestOrgScope(c)
-	users, total, err := model.SearchUsersScoped(keyword, group, role, status, pageInfo.GetStartIdx(), pageInfo.GetPageSize(), orgId, deptId, sortOptions)
+	scope := middleware.RequestOrgScope(c)
+	users, total, err := model.SearchUsersScoped(keyword, group, role, status, pageInfo.GetStartIdx(), pageInfo.GetPageSize(), scope.OrgID, scope.DepartmentFilter(), sortOptions)
 	if err != nil {
 		common.ApiError(c, err)
 		return
