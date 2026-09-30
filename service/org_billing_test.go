@@ -54,6 +54,9 @@ func seedOrganization(t *testing.T, id int, quota int64) {
 
 // seedOrgMember 建一个归属组织的用户，并显式给出个人钱包余额 —— 用于证明
 // 个人余额不参与组织成员的准入与扣减。
+//
+// AffCode 必须显式给唯一值：users.aff_code 上有唯一索引，而空串在 SQLite 中
+// 不视为 NULL，同一用例里建第二个成员就会撞 UNIQUE 约束。
 func seedOrgMember(t *testing.T, id, orgId int, orgRole string, walletQuota int, subQuotaLimit int64) {
 	t.Helper()
 	user := &model.User{
@@ -61,6 +64,7 @@ func seedOrgMember(t *testing.T, id, orgId int, orgRole string, walletQuota int,
 		Username:       fmt.Sprintf("orguser%d", id),
 		Quota:          walletQuota,
 		Status:         common.UserStatusEnabled,
+		AffCode:        fmt.Sprintf("aff%d", id),
 		OrganizationId: orgId,
 		OrgRole:        orgRole,
 		SubQuotaLimit:  subQuotaLimit,
