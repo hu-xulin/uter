@@ -142,8 +142,9 @@ func AddOrganizationMembers(c *gin.Context) {
 	}
 	var req struct {
 		Members []struct {
-			UserId        int   `json:"user_id"`
-			SubQuotaLimit int64 `json:"sub_quota_limit"`
+			UserId         int    `json:"user_id"`
+			SubQuotaLimit  int64  `json:"sub_quota_limit"`
+			DepartmentName string `json:"department_name"`
 		} `json:"members"`
 		DepartmentName string `json:"department_name"`
 	}
@@ -153,9 +154,18 @@ func AddOrganizationMembers(c *gin.Context) {
 	}
 	items := make([]model.OrgMemberAdd, 0, len(req.Members))
 	for _, m := range req.Members {
-		items = append(items, model.OrgMemberAdd{UserId: m.UserId, SubQuotaLimit: m.SubQuotaLimit})
+		// 单行若未填部门，回退到请求级的 department_name（兼容旧的前端形态）。
+		dept := m.DepartmentName
+		if dept == "" {
+			dept = req.DepartmentName
+		}
+		items = append(items, model.OrgMemberAdd{
+			UserId:         m.UserId,
+			SubQuotaLimit:  m.SubQuotaLimit,
+			DepartmentName: dept,
+		})
 	}
-	if err := org.AddMembers(items, req.DepartmentName); err != nil {
+	if err := org.AddMembers(items); err != nil {
 		common.ApiError(c, err)
 		return
 	}

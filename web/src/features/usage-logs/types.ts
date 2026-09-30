@@ -474,6 +474,8 @@ export interface FetchLogsConfig {
   pageSize: number
   searchParams: Record<string, unknown>
   columnFilters: Array<{ id: string; value: unknown }>
+  /** 组织管理者视角：非 0 时以组织接口范围查询（仅对非平台管理员生效）。 */
+  orgId?: number
 }
 
 // ============================================================================

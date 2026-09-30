@@ -104,6 +104,21 @@ export const getUserMidjourneyLogs = (params: GetMidjourneyLogsParams) =>
   fetchLogs('/api/mj', params, false)
 
 // ============================================================================
+// Organization-scoped Log APIs (组织管理者视角)
+// ============================================================================
+
+// 组织管理者查看本组织成员的日志 / 统计 / 流量，范围由后端按角色收敛
+// （admin 看不到 owner、部门 admin 只看本部门）。username / userIds 用于在下拉里
+// 进一步筛选单个成员。
+export const getOrganizationLogs = (orgId: number, params: GetLogsParams) =>
+  fetchLogs(`/api/organization/${orgId}/logs`, params, true)
+
+export const getOrganizationLogStats = (
+  orgId: number,
+  params: GetLogStatsParams
+) => fetchLogStats(`/api/organization/${orgId}/logs`, params, true)
+
+// ============================================================================
 // Task Logs API
 // ============================================================================
 

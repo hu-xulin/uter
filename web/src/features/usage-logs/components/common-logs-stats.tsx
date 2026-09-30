@@ -25,7 +25,7 @@ import { formatLogQuota } from '@/lib/format'
 import { requireServerSuccess } from '@/lib/server-error-message'
 import { cn } from '@/lib/utils'
 
-import { getLogStats, getUserLogStats } from '../api'
+import { getLogStats, getUserLogStats, getOrganizationLogStats } from '../api'
 import { DEFAULT_LOG_STATS } from '../constants'
 import { buildApiParams } from '../lib/utils'
 import { useLogsViewScope, useUsageLogsContext } from './usage-logs-provider'
@@ -50,12 +50,12 @@ function StatBadge(props: {
 
 export function CommonLogsStats() {
   const { t } = useTranslation()
-  const { isAdminView: isAdmin } = useLogsViewScope()
+  const { isAdminView: isAdmin, orgId } = useLogsViewScope()
   const searchParams = route.useSearch()
   const { sensitiveVisible } = useUsageLogsContext()
 
   const { data: stats, isLoading } = useQuery({
-    queryKey: ['usage-logs-stats', isAdmin, searchParams],
+    queryKey: ['usage-logs-stats', isAdmin, orgId, searchParams],
     queryFn: async () => {
       const params = buildApiParams({
         page: 1,
@@ -63,11 +63,18 @@ export function CommonLogsStats() {
         searchParams,
         columnFilters: [],
         isAdmin,
+        orgId,
       })
 
-      const result = isAdmin
-        ? requireServerSuccess(await getLogStats(params))
-        : requireServerSuccess(await getUserLogStats(params))
+      let apiCall
+      if (orgId) {
+        apiCall = getOrganizationLogStats(orgId, params)
+      } else if (isAdmin) {
+        apiCall = getLogStats(params)
+      } else {
+        apiCall = getUserLogStats(params)
+      }
+      const result = requireServerSuccess(await apiCall)
 
       return result.success
         ? result.data || DEFAULT_LOG_STATS

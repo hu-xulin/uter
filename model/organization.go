@@ -177,17 +177,19 @@ func UpdateOrganization(id int, name string, quota int64, memberLimit int, statu
 	return DB.Model(&Organization{}).Where("id = ?", id).Updates(updates).Error
 }
 
-// OrgMemberAdd 描述一次「加入组织」请求中的单个成员及其专属子额度上限。
-// 同一批次里每个用户可以有不同的 sub_quota_limit，满足「给不同成员单独设上限」的需求。
+// OrgMemberAdd 描述一次「加入组织」请求中的单个成员及其专属子额度上限与部门。
+// 同一批次里每个用户可以有不同的 sub_quota_limit 与 department_name，
+// 满足「给不同成员单独设上限 / 单独归到不同部门」的需求。
 type OrgMemberAdd struct {
-	UserId        int
-	SubQuotaLimit int64
+	UserId         int
+	SubQuotaLimit  int64
+	DepartmentName string
 }
 
-// AddMembers 批量把用户加入组织，支持为每个成员单独指定子额度上限。
+// AddMembers 批量把用户加入组织，支持为每个成员单独指定子额度上限与部门。
 // 已归属其它组织的账号一律拒绝：组织归属是租户边界，跨组织搬迁必须由平台超管
 // 显式操作，否则任意组织管理员都能把别家客户/平台用户「拉」进自己的租户。
-func (org *Organization) AddMembers(members []OrgMemberAdd, departmentName string) error {
+func (org *Organization) AddMembers(members []OrgMemberAdd) error {
 	// 停用组织不得继续纳新：停用通常意味着欠费/合规问题，此时把新成员挂进来会立即
 	// 得到一批「一上线就被拒绝」的账号。
 	if org.IsOrgSuspended() {
@@ -195,6 +197,7 @@ func (org *Organization) AddMembers(members []OrgMemberAdd, departmentName strin
 	}
 	ids := make([]int, 0, len(members))
 	quotaByID := make(map[int]int64, len(members))
+	quotaByDept := make(map[int]string, len(members))
 	for _, m := range members {
 		if m.UserId <= 0 {
 			continue
@@ -203,6 +206,7 @@ func (org *Organization) AddMembers(members []OrgMemberAdd, departmentName strin
 			ids = append(ids, m.UserId)
 		}
 		quotaByID[m.UserId] = m.SubQuotaLimit
+		quotaByDept[m.UserId] = m.DepartmentName
 	}
 	if len(ids) == 0 {
 		return ErrOrgNoValidMember
@@ -223,13 +227,20 @@ func (org *Organization) AddMembers(members []OrgMemberAdd, departmentName strin
 	if foreign > 0 {
 		return ErrOrgMemberForeign
 	}
-	// 全批量统一挂到组织并标记为基础成员；子额度随后按成员逐个写入。
+	// 每个成员可归属不同部门：先统一挂到组织并标记为基础成员，
+	// 随后按成员逐个写入各自的 department_name 与 sub_quota_limit。
 	if err := DB.Model(&User{}).Where("id IN ?", ids).Updates(map[string]any{
 		"organization_id": org.Id,
-		"department_name": departmentName,
 		"org_role":        OrgRoleMember,
 	}).Error; err != nil {
 		return err
+	}
+	for _, id := range ids {
+		dept := quotaByDept[id]
+		if err := DB.Model(&User{}).Where("id = ? AND organization_id = ?", id, org.Id).
+			Update("department_name", dept).Error; err != nil {
+			return err
+		}
 	}
 	for _, id := range ids {
 		if err := DB.Model(&User{}).Where("id = ? AND organization_id = ?", id, org.Id).
