@@ -166,14 +166,16 @@ func SetApiRouter(router *gin.Engine) {
 		}
 
 		// Organization management (公司负责人/组织管理员监督下属 Token 消耗)
-		// 创建与「查看我的组织」对任意登录用户开放；其余接口由 OrgAdminAuth 约束：
+		// 仅「查看我的组织」对任意登录用户开放；其余接口由 OrgAdminAuth 约束：
 		// 仅超管或「属于某组织且 org_role 为 owner/admin/department_admin」的用户可访问，
-		// 且 per-handler 再校验只看本组织——公司负责人【不会】获得全局 Admin 权限。
+		// 且 per-handler 再按调用者的组织/部门归属做分级授权——公司负责人【不会】获得
+		// 全局 Admin 权限，部门管理员也只能看到/调整本部门成员。
+		//
+		// 创建组织仅限超管（平台侧开通租户）：组织预算 0 表示不限量，
+		// 若允许任意用户自助建组织，就等于开放了一条绕过个人钱包的免费通道。
 		organizationRoute := apiRouter.Group("/organization")
 		organizationRoute.Use(middleware.UserAuth())
 		{
-			organizationRoute.POST("/", controller.CreateOrganization)
-			organizationRoute.POST("", controller.CreateOrganization)
 			organizationRoute.GET("/self", controller.GetMyOrganization)
 		}
 		orgAdminRoute := apiRouter.Group("/organization")
@@ -193,11 +195,13 @@ func SetApiRouter(router *gin.Engine) {
 			orgAdminRoute.GET("/:id/flow", controller.GetOrganizationFlow)
 		}
 
-		// 列出全部组织（仅超管）：后台「添加用户」按组织归属账号时选择。
+		// 组织创建与全员列表（仅超管）。创建放在 RootAuth 组，避免任何普通账号
+		// 通过 POST /api/organization 自助获得一个「预算不限」的组织钱包。
 		organizationRootRoute := apiRouter.Group("/organizations")
 		organizationRootRoute.Use(middleware.RootAuth())
 		{
 			organizationRootRoute.GET("", controller.ListOrganizations)
+			organizationRootRoute.POST("", controller.CreateOrganization)
 		}
 
 		// Subscription billing (plans, purchase, admin management)
@@ -292,9 +296,9 @@ func SetApiRouter(router *gin.Engine) {
 			taskPluginRoute.POST("", controller.UploadTaskPlugin)
 			taskPluginRoute.PUT("", controller.UploadTaskPlugin)
 			taskPluginRoute.GET("/runtime/status", controller.GetTaskPluginRuntime)
-		taskPluginRoute.GET("/marketplace/sources", controller.GetTaskPluginMarketplaceSources)
-		taskPluginRoute.PUT("/marketplace/sources", controller.UpdateTaskPluginMarketplaceSources)
-		taskPluginRoute.GET("/marketplace/fetch", controller.FetchTaskPluginMarketplaceIndex)
+			taskPluginRoute.GET("/marketplace/sources", controller.GetTaskPluginMarketplaceSources)
+			taskPluginRoute.PUT("/marketplace/sources", controller.UpdateTaskPluginMarketplaceSources)
+			taskPluginRoute.GET("/marketplace/fetch", controller.FetchTaskPluginMarketplaceIndex)
 			taskPluginRoute.GET("/:key", controller.GetTaskPlugin)
 			taskPluginRoute.GET("/:key/icon", controller.GetTaskPluginIcon)
 			taskPluginRoute.GET("/:key/versions", controller.GetTaskPluginVersions)

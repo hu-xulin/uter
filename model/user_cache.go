@@ -12,24 +12,28 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-const userCacheSchemaVersion = 2
+// 版本 3：新增 DepartmentName。部门管理员的数据可见范围按部门【名称】判定
+// （department_id 列已废弃、从不写入），旧哈希缺少该字段会让部门范围失效，
+// 因此必须让旧版本哈希整体失效并重新水合。
+const userCacheSchemaVersion = 3
 
 type UserBase struct {
-	Id            int    `json:"id"`
-	Group         string `json:"group"`
-	Email         string `json:"email"`
-	Quota         int    `json:"quota"`
-	Status        int    `json:"status"`
-	Role          int    `json:"role"`
-	Username      string `json:"username"`
-	Setting       string `json:"setting"`
+	Id             int    `json:"id"`
+	Group          string `json:"group"`
+	Email          string `json:"email"`
+	Quota          int    `json:"quota"`
+	Status         int    `json:"status"`
+	Role           int    `json:"role"`
+	Username       string `json:"username"`
+	Setting        string `json:"setting"`
 	OrganizationId int    `json:"organization_id"`
-	DepartmentId  int    `json:"department_id"`
-	OrgRole       string `json:"org_role"`
-	UsedQuota     int    `json:"used_quota"`
-	SubQuotaLimit int64  `json:"sub_quota_limit"`
-	AuthVersion   int64  `json:"-"`
-	CacheSchema   int    `json:"-"`
+	DepartmentId   int    `json:"department_id"`
+	DepartmentName string `json:"department_name"`
+	OrgRole        string `json:"org_role"`
+	UsedQuota      int    `json:"used_quota"`
+	SubQuotaLimit  int64  `json:"sub_quota_limit"`
+	AuthVersion    int64  `json:"-"`
+	CacheSchema    int    `json:"-"`
 }
 
 func (user *UserBase) WriteContext(c *gin.Context) {
@@ -41,6 +45,7 @@ func (user *UserBase) WriteContext(c *gin.Context) {
 	common.SetContextKey(c, constant.ContextKeyUserSetting, user.GetSetting())
 	c.Set("organization_id", user.OrganizationId)
 	c.Set("department_id", user.DepartmentId)
+	c.Set("department_name", user.DepartmentName)
 	c.Set("org_role", user.OrgRole)
 }
 

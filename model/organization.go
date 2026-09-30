@@ -13,10 +13,10 @@ import (
 // OrgRole 是用户在所属组织内的角色，与系统角色（common.Role*）正交。
 // 平台直管用户（organization_id == 0）的 OrgRole 为空。
 const (
-	OrgRoleOwner          = "owner"           // 组织创建者/老板，拥有组织全部管理权
-	OrgRoleAdmin          = "admin"           // 组织管理员，可管理本组织成员
+	OrgRoleOwner           = "owner"            // 组织创建者/老板，拥有组织全部管理权
+	OrgRoleAdmin           = "admin"            // 组织管理员，可管理本组织成员
 	OrgRoleDepartmentAdmin = "department_admin" // 部门管理员，仅能管理本部门成员
-	OrgRoleMember         = "member"          // 普通成员
+	OrgRoleMember          = "member"           // 普通成员
 )
 
 // IsValidOrgRole 校验组织内角色字符串合法。
@@ -32,7 +32,7 @@ func IsValidOrgRole(role string) bool {
 type Organization struct {
 	Id          int    `json:"id" gorm:"primaryKey"`
 	Name        string `json:"name" gorm:"type:varchar(128);not null"`
-	OwnerUserId int    `json:"owner_user_id" gorm:"index"` // 老板用户 id
+	OwnerUserId int    `json:"owner_user_id" gorm:"index"`              // 老板用户 id
 	Quota       int64  `json:"quota" gorm:"type:bigint;default:0"`      // 共享总钱包预算（额度单位）
 	UsedQuota   int64  `json:"used_quota" gorm:"type:bigint;default:0"` // 已消耗额度
 	MemberLimit int    `json:"member_limit" gorm:"type:int;default:0"`  // 成员上限，0=不限
@@ -50,11 +50,17 @@ type OrganizationMemberSummary struct {
 }
 
 var (
-	ErrOrgNotFound       = errors.New("organization not found")
-	ErrOrgNameRequired   = errors.New("organization name is required")
-	ErrOrgMemberLimit    = errors.New("organization member limit reached")
-	ErrOrgAlreadyMember  = errors.New("user already belongs to an organization")
-	ErrOrgNotOwner       = errors.New("only the organization owner can perform this action")
+	ErrOrgNotFound      = errors.New("organization not found")
+	ErrOrgNameRequired  = errors.New("organization name is required")
+	ErrOrgMemberLimit   = errors.New("organization member limit reached")
+	ErrOrgAlreadyMember = errors.New("user already belongs to an organization")
+	ErrOrgNotOwner      = errors.New("only the organization owner can perform this action")
+	// ErrOrgBudgetExceeded 组织共享预算已被本次消费耗尽（准入失败，未发生扣减）。
+	ErrOrgBudgetExceeded = errors.New("organization budget exceeded")
+	// ErrOrgSubQuotaExceeded 成员子额度上限不足（准入失败，未发生扣减）。
+	ErrOrgSubQuotaExceeded = errors.New("organization member sub-quota exceeded")
+	// ErrOrgMemberForeign 目标用户已归属其它组织；加入组织不得跨租户搬迁账号。
+	ErrOrgMemberForeign = errors.New("user already belongs to another organization")
 )
 
 // CreateOrganization 创建组织并把创建者设为 owner。
@@ -138,6 +144,8 @@ func UpdateOrganization(id int, name string, quota int64, memberLimit int, statu
 }
 
 // AddMember 把用户加入组织，可指定部门名称与子额度上限。
+// 已归属其它组织的账号一律拒绝：组织归属是租户边界，跨组织搬迁必须由平台超管
+// 显式操作，否则任意组织管理员都能把别家客户/平台用户「拉」进自己的租户。
 func (org *Organization) AddMember(userIds []int, departmentName string, subQuotaLimit int64) error {
 	if org.MemberLimit > 0 {
 		var count int64
@@ -146,11 +154,20 @@ func (org *Organization) AddMember(userIds []int, departmentName string, subQuot
 			return ErrOrgMemberLimit
 		}
 	}
+	var foreign int64
+	if err := DB.Model(&User{}).
+		Where("id IN ? AND organization_id <> 0 AND organization_id <> ?", userIds, org.Id).
+		Count(&foreign).Error; err != nil {
+		return err
+	}
+	if foreign > 0 {
+		return ErrOrgMemberForeign
+	}
 	if err := DB.Model(&User{}).Where("id IN ?", userIds).Updates(map[string]any{
-		"organization_id":  org.Id,
-		"department_name":  departmentName,
-		"org_role":         OrgRoleMember,
-		"sub_quota_limit":  subQuotaLimit,
+		"organization_id": org.Id,
+		"department_name": departmentName,
+		"org_role":        OrgRoleMember,
+		"sub_quota_limit": subQuotaLimit,
 	}).Error; err != nil {
 		return err
 	}
@@ -162,15 +179,21 @@ func (org *Organization) AddMember(userIds []int, departmentName string, subQuot
 }
 
 // RemoveMember 把用户移出组织（变回平台直管普通用户）。
+// 必须同时限定 organization_id，否则调用方只要拿到 uid 就能重置任意其他组织成员
+// 的归属（跨租户破坏）。
 func (org *Organization) RemoveMember(userId int) error {
-	if err := DB.Model(&User{}).Where("id = ?", userId).Updates(map[string]any{
+	res := DB.Model(&User{}).Where("id = ? AND organization_id = ?", userId, org.Id).Updates(map[string]any{
 		"organization_id": 0,
 		"department_id":   0,
 		"department_name": "",
 		"org_role":        "",
 		"sub_quota_limit": 0,
-	}).Error; err != nil {
-		return err
+	})
+	if res.Error != nil {
+		return res.Error
+	}
+	if res.RowsAffected == 0 {
+		return ErrOrgNotFound
 	}
 	// 移出组织后刷新缓存，避免旧 organization_id 残留导致侧栏/接口仍按组织成员放行。
 	_, _ = BumpUserAuthVersion(userId)
@@ -205,30 +228,109 @@ func PreConsumeOrgQuota(org *Organization, amount int64) bool {
 
 // EnforceOrgQuota 在扣费前校验用户所属组织的预算与员工子额度上限。
 // 仅对 organization_id>0 的用户生效，普通用户直接放行；校验失败返回错误以拒绝请求。
-// 这是共享钱包的「硬闸门」：不动现有用户钱包引擎，只在组织层叠加预算/子额度约束。
+// 这是共享钱包的「只读闸门」：不动任何账本，只判断本次预扣额能否通过。真正的原子预扣
+// 由 ReserveOrgQuota 完成（见 service.WalletFunding.PreConsume）。
+//
+// 两处数值都取数据库权威值：
+//   - 组织预算：读 organizations 行（缓存里根本没有组织账本）；
+//   - 成员子额度：读 users.used_quota。**不能**用 GetUserCache 的 UsedQuota —— 该字段只在
+//     整份哈希写入时刷新，Redis 下最长可陈旧一个 TTL（默认 60s），而 used_quota 的累加
+//     路径只写数据库，会让子额度上限在一整个 TTL 内失去约束。
 func EnforceOrgQuota(userId int, quota int64) error {
 	if userId <= 0 || quota <= 0 {
 		return nil
 	}
-	cache, err := GetUserCache(userId)
-	if err != nil {
-		// 缓存缺失不阻断普通请求；若确属组织用户，后续钱包扣费会自然失败
+	orgId, err := OrgIdOfUser(userId)
+	if err != nil || orgId == 0 {
+		// 取不到归属时按「非组织用户」放行：缓存/数据库抖动不应把成员误判成越权，
+		// 真正落账时的 ReserveOrgQuota 仍会按数据库中的归属重新判定。
 		return nil
 	}
-	if cache.OrganizationId == 0 {
-		return nil
-	}
-	org, err := GetOrganizationById(cache.OrganizationId)
+	org, err := GetOrganizationById(orgId)
 	if err != nil {
 		return nil
 	}
 	if !PreConsumeOrgQuota(org, quota) {
-		return fmt.Errorf("organization budget exceeded: used %s / budget %s", logger.FormatQuota(int(org.UsedQuota)), logger.FormatQuota(int(org.Quota)))
+		return fmt.Errorf("%w: used %s / budget %s", ErrOrgBudgetExceeded,
+			logger.FormatQuota(int(org.UsedQuota)), logger.FormatQuota(int(org.Quota)))
 	}
-	if cache.SubQuotaLimit > 0 && int64(cache.UsedQuota)+quota > cache.SubQuotaLimit {
-		return fmt.Errorf("employee sub-quota limit exceeded: used %s / limit %s", logger.FormatQuota(int(cache.UsedQuota)), logger.FormatQuota(int(cache.SubQuotaLimit)))
+	subQuotaLimit, usedQuota, err := GetOrgMemberSubQuotaState(orgId, userId)
+	if err != nil {
+		return nil
+	}
+	if subQuotaLimit > 0 && int64(usedQuota)+quota > subQuotaLimit {
+		return fmt.Errorf("%w: used %s / limit %s", ErrOrgSubQuotaExceeded,
+			logger.FormatQuota(usedQuota), logger.FormatQuota(int(subQuotaLimit)))
 	}
 	return nil
+}
+
+// GetOrgMemberSubQuotaState 读取成员在组织内的子额度上限与已用额度（数据库权威值）。
+func GetOrgMemberSubQuotaState(orgId int, userId int) (subQuotaLimit int64, usedQuota int, err error) {
+	var member struct {
+		SubQuotaLimit int64
+		UsedQuota     int
+	}
+	err = DB.Model(&User{}).
+		Where("id = ? AND organization_id = ?", userId, orgId).
+		Select("sub_quota_limit", "used_quota").
+		Take(&member).Error
+	if err != nil {
+		return 0, 0, err
+	}
+	return member.SubQuotaLimit, member.UsedQuota, nil
+}
+
+// ReserveOrgQuota 在组织共享账本上原子预扣 amount：
+//  1. 先按数据库权威值校验成员子额度上限；
+//  2. 再以单条带条件的 UPDATE 原子自增 organizations.used_quota，条件为
+//     「预算未设置上限 或 已用+本次 <= 预算」。并发请求不可能同时通过检查后超扣，
+//     这解决了只读闸门（EnforceOrgQuota）与落账之间的 TOCTOU 窗口。
+//
+// 组织预算为 0/负数时表示不限量（平台侧未给该组织设上限），此时只校验子额度。
+func ReserveOrgQuota(orgId int, userId int, amount int64) error {
+	if orgId <= 0 || amount <= 0 {
+		return nil
+	}
+	subQuotaLimit, usedQuota, err := GetOrgMemberSubQuotaState(orgId, userId)
+	if err != nil {
+		return err
+	}
+	if subQuotaLimit > 0 && int64(usedQuota)+amount > subQuotaLimit {
+		return fmt.Errorf("%w: used %s / limit %s", ErrOrgSubQuotaExceeded,
+			logger.FormatQuota(usedQuota), logger.FormatQuota(int(subQuotaLimit)))
+	}
+	res := DB.Model(&Organization{}).
+		Where("id = ? AND (quota <= 0 OR used_quota + ? <= quota)", orgId, amount).
+		Update("used_quota", gorm.Expr("used_quota + ?", amount))
+	if res.Error != nil {
+		return res.Error
+	}
+	if res.RowsAffected == 0 {
+		org, err := GetOrganizationById(orgId)
+		if err != nil {
+			return ErrOrgBudgetExceeded
+		}
+		return fmt.Errorf("%w: used %s / budget %s", ErrOrgBudgetExceeded,
+			logger.FormatQuota(int(org.UsedQuota)), logger.FormatQuota(int(org.Quota)))
+	}
+	return nil
+}
+
+// OrgRemainingQuota 返回组织共享预算的剩余额度。unlimited 为 true 时表示未设上限
+// （organizations.quota <= 0），此时 remaining 返回 0，调用方不得据此判定「已耗尽」。
+func OrgRemainingQuota(orgId int) (remaining int64, unlimited bool, err error) {
+	if orgId <= 0 {
+		return 0, true, nil
+	}
+	org, err := GetOrganizationById(orgId)
+	if err != nil {
+		return 0, false, err
+	}
+	if org.Quota <= 0 {
+		return 0, true, nil
+	}
+	return org.Quota - org.UsedQuota, false, nil
 }
 
 // OrgIdOfUser 返回用户所属组织 id（0=平台直管）。优先读缓存，缺失回退 DB。
@@ -290,6 +392,28 @@ func GetOrgUsedQuota(orgId int) (int64, error) {
 func GetOrgMemberUsernames(orgId int) ([]string, error) {
 	var names []string
 	err := DB.Model(&User{}).Where("organization_id = ? AND deleted_at IS NULL", orgId).
+		Pluck("username", &names).Error
+	return names, err
+}
+
+// NoOrgMemberUsername 与 NoDepartmentFilter 是「不可能匹配」的哨兵值。
+// 日志/统计/用户列表查询都把「空字符串 / 空列表」解释为「不施加该维度过滤」，
+// 因此当调用者的范围实际为空（例如部门管理员未分配部门）时必须显式传入哨兵值，
+// 否则范围查询会静默退化成「看全站」。
+const (
+	NoOrgMemberUsername = "\x00no-org-member"
+	NoDepartmentFilter  = "\x00no-department"
+)
+
+// GetOrgMemberUsernamesInDepartment 返回组织内指定部门成员的 username。
+// 部门按名称匹配（department_id 列已废弃，从不写入）。
+func GetOrgMemberUsernamesInDepartment(orgId int, departmentName string) ([]string, error) {
+	if departmentName == "" {
+		return []string{NoOrgMemberUsername}, nil
+	}
+	var names []string
+	err := DB.Model(&User{}).
+		Where("organization_id = ? AND department_name = ? AND deleted_at IS NULL", orgId, departmentName).
 		Pluck("username", &names).Error
 	return names, err
 }

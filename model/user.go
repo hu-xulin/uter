@@ -104,11 +104,11 @@ type User struct {
 	AffQuota             int                        `json:"aff_quota" gorm:"type:int;default:0;column:aff_quota"`           // 邀请剩余额度
 	AffHistoryQuota      int                        `json:"aff_history_quota" gorm:"type:int;default:0;column:aff_history"` // 邀请历史额度
 	InviterId            int                        `json:"inviter_id" gorm:"type:int;column:inviter_id;index"`
-	OrganizationId       int                        `json:"organization_id" gorm:"type:int;default:0;column:organization_id;index"` // 所属组织，0=平台直管
-	SubQuotaLimit        int64                      `json:"sub_quota_limit" gorm:"type:bigint;default:0;column:sub_quota_limit"`     // 员工子额度上限，0=不限(跟随组织总池)
-	DepartmentId         int                        `json:"department_id" gorm:"type:int;default:0;column:department_id;index"`       // 所属部门，0=未分部门（保留兼容，前端改用 department_name）
-	DepartmentName        string                     `json:"department_name" gorm:"type:varchar(128);default:'';column:department_name"` // 所属部门名称（按需求「部门用名称不用ID」）
-	OrgRole              string                     `json:"org_role" gorm:"type:varchar(32);default:'';column:org_role"`             // 组织内角色：owner/admin/department_admin/member
+	OrganizationId       int                        `json:"organization_id" gorm:"type:int;default:0;column:organization_id;index"`     // 所属组织，0=平台直管
+	SubQuotaLimit        int64                      `json:"sub_quota_limit" gorm:"type:bigint;default:0;column:sub_quota_limit"`        // 员工子额度上限，0=不限(跟随组织总池)
+	DepartmentId         int                        `json:"department_id" gorm:"type:int;default:0;column:department_id;index"`         // 所属部门，0=未分部门（保留兼容，前端改用 department_name）
+	DepartmentName       string                     `json:"department_name" gorm:"type:varchar(128);default:'';column:department_name"` // 所属部门名称（按需求「部门用名称不用ID」）
+	OrgRole              string                     `json:"org_role" gorm:"type:varchar(32);default:'';column:org_role"`                // 组织内角色：owner/admin/department_admin/member
 	DeletedAt            gorm.DeletedAt             `gorm:"index"`
 	LinuxDOId            string                     `json:"linux_do_id" gorm:"column:linux_do_id;index"`
 	Setting              string                     `json:"setting" gorm:"type:text;column:setting"`
@@ -122,21 +122,22 @@ type User struct {
 
 func (user *User) ToBaseUser() *UserBase {
 	cache := &UserBase{
-		Id:          user.Id,
-		Group:       user.Group,
-		Quota:       user.Quota,
-		Status:      user.Status,
-		Role:        user.Role,
-		Username:        user.Username,
-		Setting:         user.Setting,
-		OrganizationId:  user.OrganizationId,
-		DepartmentId:    user.DepartmentId,
-		OrgRole:         user.OrgRole,
-		UsedQuota:       user.UsedQuota,
-		SubQuotaLimit:   user.SubQuotaLimit,
-		Email:       user.Email,
-		AuthVersion: user.AuthVersion,
-		CacheSchema: userCacheSchemaVersion,
+		Id:             user.Id,
+		Group:          user.Group,
+		Quota:          user.Quota,
+		Status:         user.Status,
+		Role:           user.Role,
+		Username:       user.Username,
+		Setting:        user.Setting,
+		OrganizationId: user.OrganizationId,
+		DepartmentId:   user.DepartmentId,
+		DepartmentName: user.DepartmentName,
+		OrgRole:        user.OrgRole,
+		UsedQuota:      user.UsedQuota,
+		SubQuotaLimit:  user.SubQuotaLimit,
+		Email:          user.Email,
+		AuthVersion:    user.AuthVersion,
+		CacheSchema:    userCacheSchemaVersion,
 	}
 	return cache
 }
@@ -425,7 +426,7 @@ func GetMaxUserId() int {
 	return user.Id
 }
 
-func GetAllUsers(orgId int, deptId int, pageInfo *common.PageInfo, sortOptions ...UserSortOptions) (users []*User, total int64, err error) {
+func GetAllUsers(orgId int, departmentName string, pageInfo *common.PageInfo, sortOptions ...UserSortOptions) (users []*User, total int64, err error) {
 	// Start transaction
 	tx := DB.Begin()
 	if tx.Error != nil {
@@ -440,10 +441,11 @@ func GetAllUsers(orgId int, deptId int, pageInfo *common.PageInfo, sortOptions .
 	// Get total count within transaction
 	query := tx.Unscoped().Model(&User{})
 	if orgId > 0 {
-		// 组织范围管理员：仅看本组织（本部门）成员
+		// 组织范围管理员：仅看本组织（本部门）成员。
+		// 部门按名称过滤：department_id 列已废弃、从不写入，按它过滤等于不过滤。
 		query = query.Where("organization_id = ?", orgId)
-		if deptId > 0 {
-			query = query.Where("department_id = ?", deptId)
+		if departmentName != "" {
+			query = query.Where("department_name = ?", departmentName)
 		}
 	}
 	// orgId==0 表示平台管理员/Root：可见全部用户（含各组织成员），不加组织过滤
@@ -470,12 +472,13 @@ func GetAllUsers(orgId int, deptId int, pageInfo *common.PageInfo, sortOptions .
 }
 
 func SearchUsers(keyword string, group string, role *int, status *int, startIdx int, num int, sortOptions ...UserSortOptions) ([]*User, int64, error) {
-	return SearchUsersScoped(keyword, group, role, status, startIdx, num, 0, 0, sortOptions...)
+	return SearchUsersScoped(keyword, group, role, status, startIdx, num, 0, "", sortOptions...)
 }
 
 // SearchUsersScoped 与 SearchUsers 相同，但支持按组织/部门范围过滤。
-// orgId==0 表示平台视角（仅未加入组织的用户）；orgId>0 表示组织管理员视角。
-func SearchUsersScoped(keyword string, group string, role *int, status *int, startIdx int, num int, orgId int, deptId int, sortOptions ...UserSortOptions) ([]*User, int64, error) {
+// orgId==0 表示平台视角（不加组织过滤）；orgId>0 表示组织管理员视角，
+// departmentName 非空时进一步限制到该部门（按名称，department_id 已废弃）。
+func SearchUsersScoped(keyword string, group string, role *int, status *int, startIdx int, num int, orgId int, departmentName string, sortOptions ...UserSortOptions) ([]*User, int64, error) {
 	var users []*User
 	var total int64
 	var err error
@@ -495,8 +498,8 @@ func SearchUsersScoped(keyword string, group string, role *int, status *int, sta
 	query := tx.Unscoped().Model(&User{})
 	if orgId > 0 {
 		query = query.Where("organization_id = ?", orgId)
-		if deptId > 0 {
-			query = query.Where("department_id = ?", deptId)
+		if departmentName != "" {
+			query = query.Where("department_name = ?", departmentName)
 		}
 	}
 	// orgId==0 表示平台管理员/Root：可见全部用户，不加组织过滤

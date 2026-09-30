@@ -253,27 +253,81 @@ func WssAuth(c *gin.Context) {
 
 }
 
-// RequestOrgScope returns the organization/department scope an admin may see.
-// Returns (0,0) when the caller is a platform super-admin/root or a platform
-// admin (organization_id == 0), i.e. no filtering — they see every user.
-// Org-scoped admins are constrained to their organization; department admins
-// are further constrained to their department.
+// OrgDataScope 描述一次「组织范围查询」的可见边界，是组织内数据隔离的唯一表达。
 //
-// This is the single choke point that realizes "复用 Admin + 范围过滤": an
-// admin whose user.organization_id > 0 can never escape their own org.
-func RequestOrgScope(c *gin.Context) (orgId int, deptId int) {
-	role := c.GetInt("role")
-	if role >= common.RoleRootUser {
-		return 0, 0
+//   - OrgID == 0            ：调用者是超管或平台管理员，不做组织过滤（可见全量）。
+//   - OrgID > 0             ：调用者属于某组织，只可见该组织的成员数据。
+//   - Department != ""      ：进一步只可见该部门的成员数据（部门管理员）。
+//   - NoDepartment == true  ：调用者是部门管理员但没有被分配部门。此时**没有任何可见数据**，
+//     必须 fail-closed —— 退化成「看整个组织」等于让部门管理员越权看到全公司数据。
+//
+// 部门判定一律使用部门**名称**：users.department_id 列已废弃且从不写入，
+// 曾经按 department_id 过滤的实现会让部门管理员实际看到整个组织。
+type OrgDataScope struct {
+	OrgID        int
+	Department   string
+	NoDepartment bool
+}
+
+// IsPlatformScope 表示调用者不受组织边界约束（超管/平台管理员）。
+func (s OrgDataScope) IsPlatformScope() bool { return s.OrgID == 0 }
+
+// DepartmentFilter 返回用于部门过滤的取值。NoDepartment 时返回不可能匹配的哨兵，
+// 保证「未分配部门的部门管理员」看到的是空集，而不是整个组织。
+func (s OrgDataScope) DepartmentFilter() string {
+	if s.NoDepartment {
+		return model.NoDepartmentFilter
 	}
-	orgId = c.GetInt("organization_id")
+	return s.Department
+}
+
+// RequestOrgScope 解析当前请求的组织/部门数据范围。
+func RequestOrgScope(c *gin.Context) OrgDataScope {
+	if c.GetInt("role") >= common.RoleRootUser {
+		return OrgDataScope{}
+	}
+	orgId := c.GetInt("organization_id")
 	if orgId == 0 {
-		return 0, 0
+		return OrgDataScope{}
 	}
-	if c.GetString("org_role") == model.OrgRoleDepartmentAdmin {
-		deptId = c.GetInt("department_id")
+	if c.GetString("org_role") != model.OrgRoleDepartmentAdmin {
+		return OrgDataScope{OrgID: orgId}
 	}
-	return orgId, deptId
+	department := c.GetString("department_name")
+	if department == "" {
+		// 未分配部门的部门管理员：无可见数据（fail-closed）。
+		return OrgDataScope{OrgID: orgId, NoDepartment: true}
+	}
+	return OrgDataScope{OrgID: orgId, Department: department}
+}
+
+// Usernames 返回该范围内可见成员的用户名，供日志/统计查询做过滤。
+//
+//	平台视角       -> nil（调用方据此不施加过滤）
+//	组织/部门范围  -> 范围内的用户名列表
+//
+// 范围为空时返回 model.NoOrgMemberUsername 哨兵：这些查询把「空列表」解释为
+// 「不施加过滤」，直接传空列表会让范围查询退化成看全站。
+func (s OrgDataScope) Usernames() ([]string, error) {
+	if s.OrgID == 0 {
+		return nil, nil
+	}
+	var (
+		names []string
+		err   error
+	)
+	if s.Department == "" {
+		names, err = model.GetOrgMemberUsernames(s.OrgID)
+	} else {
+		names, err = model.GetOrgMemberUsernamesInDepartment(s.OrgID, s.Department)
+	}
+	if err != nil {
+		return nil, err
+	}
+	if len(names) == 0 {
+		return []string{model.NoOrgMemberUsername}, nil
+	}
+	return names, nil
 }
 
 // OrgAdminAuth 组织范围管理员鉴权。
