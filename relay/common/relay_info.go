@@ -83,12 +83,19 @@ type TokenCountMeta struct {
 }
 
 type RelayInfo struct {
-	TokenId           int
-	TokenKey          string
-	TokenGroup        string
-	UserId            int
-	UsingGroup        string // 使用的分组，当auto跨分组重试时，会变动
-	UserGroup         string // 用户所在分组
+	TokenId    int
+	TokenKey   string
+	TokenGroup string
+	UserId     int
+	UsingGroup string // 使用的分组，当auto跨分组重试时，会变动
+	UserGroup  string // 用户所在分组
+	// OrganizationId 是本次请求计费出资组织的 ID（0 = 平台直管用户，由个人钱包出资）。
+	// 在创建计费会话时解析一次并缓存于此，供请求路径后续判断复用。
+	//
+	// 之所以要缓存而不是随用随查：额度提醒是在后台 goroutine 里执行的，在那里查询
+	// 数据库会与请求 goroutine 争用连接池；对 SQLite `:memory:` 这类单库多连接的
+	// 场景，新连接会打开一个**空库**，直接导致「no such table」式的测试随机失败。
+	OrganizationId    int
 	TokenUnlimited    bool
 	StartTime         time.Time
 	FirstResponseTime time.Time
@@ -390,31 +397,31 @@ func (info *RelayInfo) ToString() string {
 
 // 定义支持流式选项的通道类型
 var streamSupportedChannels = map[int]bool{
-	constant.ChannelTypeOpenAI:         true,
-	constant.ChannelTypeAnthropic:      true,
-	constant.ChannelTypeAws:            true,
-	constant.ChannelTypeGemini:         true,
-	constant.ChannelCloudflare:         true,
-	constant.ChannelTypeAzure:          true,
-	constant.ChannelTypeVolcEngine:     true,
-	constant.ChannelTypeOllama:         true,
-	constant.ChannelTypeXai:            true,
-	constant.ChannelTypeDeepSeek:       true,
-	constant.ChannelTypeBaiduV2:        true,
-	constant.ChannelTypeZhipu_v4:       true,
-	constant.ChannelTypeAli:            true,
-	constant.ChannelTypeSubmodel:       true,
-	constant.ChannelTypeCodex:          true,
-	constant.ChannelTypeMoonshot:       true,
-	constant.ChannelTypeMiniMax:        true,
-	constant.ChannelTypeSiliconFlow:    true,
-	constant.ChannelTypeAdvancedCustom: true,
+	constant.ChannelTypeOpenAI:           true,
+	constant.ChannelTypeAnthropic:        true,
+	constant.ChannelTypeAws:              true,
+	constant.ChannelTypeGemini:           true,
+	constant.ChannelCloudflare:           true,
+	constant.ChannelTypeAzure:            true,
+	constant.ChannelTypeVolcEngine:       true,
+	constant.ChannelTypeOllama:           true,
+	constant.ChannelTypeXai:              true,
+	constant.ChannelTypeDeepSeek:         true,
+	constant.ChannelTypeBaiduV2:          true,
+	constant.ChannelTypeZhipu_v4:         true,
+	constant.ChannelTypeAli:              true,
+	constant.ChannelTypeSubmodel:         true,
+	constant.ChannelTypeCodex:            true,
+	constant.ChannelTypeMoonshot:         true,
+	constant.ChannelTypeMiniMax:          true,
+	constant.ChannelTypeSiliconFlow:      true,
+	constant.ChannelTypeAdvancedCustom:   true,
 	constant.ChannelTypeBrandedShared:    true,
 	constant.ChannelTypeBrandedAggregate: true,
 	constant.ChannelTypeBrandedProxy:     true,
-	constant.ChannelTypeSub2API:        true,
-	constant.ChannelTypeUter:           true,
-	constant.ChannelTypeTencent:        true,
+	constant.ChannelTypeSub2API:          true,
+	constant.ChannelTypeUter:             true,
+	constant.ChannelTypeTencent:          true,
 }
 
 func GenRelayInfoWs(c *gin.Context, ws *websocket.Conn) *RelayInfo {

@@ -43,8 +43,15 @@ func (w *WalletFunding) PreConsume(amount int) error {
 	if amount <= 0 {
 		return nil
 	}
-	// 组织成员由组织预算出资，跳过个人钱包预扣（组织预算闸门已在 PreConsumeTokenQuota 的 EnforceOrgQuota 执行）。
+	// 组织成员由组织共享预算出资：在【预扣点】就把额度记到组织账本上，与个人钱包
+	// 路径（TryReserveUserQuota 立刻扣减）保持同一时序。否则预扣额度从未落账，
+	// 结算时只补 delta = actual − preConsumed，组织被系统性少收一整笔预扣额。
+	// ReserveOrgQuota 内部以单条条件 UPDATE 同时完成预算上限与成员子额度校验。
 	if orgId, err := model.OrgIdOfUser(w.userId); err == nil && orgId > 0 {
+		if err := model.ReserveOrgQuota(orgId, w.userId, int64(amount)); err != nil {
+			return err
+		}
+		w.consumed = amount
 		return nil
 	}
 	reserved, err := model.TryReserveUserQuota(w.userId, amount)
@@ -62,11 +69,11 @@ func (w *WalletFunding) Settle(delta int) error {
 	if delta == 0 {
 		return nil
 	}
-	// 组织成员：消耗由组织预算出资，组织 used_quota 账本按 delta 增减，个人钱包不动。
+	// 组织成员：只调整组织账本。成员的 users.used_quota 由结算点的
+	// UpdateUserUsedQuotaAndRequestCount(userId, actual) 统一累加 —— 在这里再写一次
+	// 会把成员用量记成 actual + delta（多记一笔）。
 	if orgId, err := model.OrgIdOfUser(w.userId); err == nil && orgId > 0 {
-	_ = model.IncrOrgUsedQuota(orgId, int64(delta))
-	model.UpdateUserUsedQuota(w.userId, delta)
-		return nil
+		return model.IncrOrgUsedQuota(orgId, int64(delta))
 	}
 	if delta > 0 {
 		return model.DecreaseUserQuota(w.userId, delta, false)
@@ -78,10 +85,9 @@ func (w *WalletFunding) Refund() error {
 	if w.consumed <= 0 {
 		return nil
 	}
-	// 组织成员：预扣在组织预算账本上，按 consumed 回减组织 used_quota。
+	// 组织成员：预扣记在组织预算账本上，按 consumed 回减组织 used_quota。
 	if orgId, err := model.OrgIdOfUser(w.userId); err == nil && orgId > 0 {
-		_ = model.IncrOrgUsedQuota(orgId, int64(-w.consumed))
-		return nil
+		return model.IncrOrgUsedQuota(orgId, -int64(w.consumed))
 	}
 	// IncreaseUserQuota 是 quota += N 的非幂等操作，不能重试，否则会多退额度。
 	// 订阅的 RefundSubscriptionPreConsume 有 requestId 幂等保护所以可以重试。
