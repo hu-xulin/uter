@@ -19,7 +19,7 @@ For commercial licensing, please contact support@Uter.ai.com
 /* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useState, type ReactNode } from 'react'
 
-import { ROLE } from '@/lib/roles'
+import { ROLE, canManageOrganization } from '@/lib/roles'
 import { useAuthStore } from '@/stores/auth-store'
 
 import type { ChannelAffinityInfo } from '../types'
@@ -103,11 +103,21 @@ export function useUsageLogsContext() {
  */
 export function useLogsViewScope() {
   const role = useAuthStore((state) => state.auth.user?.role ?? ROLE.GUEST)
+  const authUser = useAuthStore((state) => state.auth.user)
   const { viewScope, setViewScope } = useUsageLogsContext()
   const canManageScope = role >= ROLE.ADMIN
   const viewAccess = resolveLogsViewAccess(role, viewScope)
   const isAdminView = viewAccess !== 'self'
   const isRootView = viewAccess === 'root'
+
+  // 组织管理者视角：组织归属 + 管理角色（owner/admin/department_admin）。
+  // 该值用于把日志/看板查询路由到组织接口，并展示组织内成员下拉。
+  // 注意：仅当「非平台管理员」时才启用组织视角——平台管理员即使属于某组织，
+  // 也走全局接口而非组织接口（组织管理者按约定是普通用户，二者正交）。
+  const isOrgManager = canManageOrganization(authUser)
+  const orgId = isOrgManager && !canManageScope
+    ? (authUser?.organization_id ?? 0)
+    : 0
 
   return {
     canManageScope,
@@ -116,5 +126,7 @@ export function useLogsViewScope() {
     isAdminView,
     isRootView,
     viewAccess,
+    isOrgManager,
+    orgId,
   }
 }

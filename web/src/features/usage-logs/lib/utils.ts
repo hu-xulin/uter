@@ -26,6 +26,7 @@ import {
   getUserMidjourneyLogs,
   getAllTaskLogs,
   getUserTaskLogs,
+  getOrganizationLogs,
 } from '../api'
 import {
   LOG_TYPES,
@@ -161,8 +162,11 @@ export function buildApiParams(config: {
   searchParams: Record<string, unknown>
   columnFilters?: Array<{ id: string; value: unknown }>
   isAdmin: boolean
+  /** 组织管理者视角：非 0 时以组织接口范围查询，并允许按 username/user_id 过滤。 */
+  orgId?: number
 }): GetLogsParams {
-  const { page, pageSize, searchParams, columnFilters = [], isAdmin } = config
+  const { page, pageSize, searchParams, columnFilters = [], isAdmin, orgId } =
+    config
 
   // Helper to process type parameter (single value from array)
   const processType = (value: unknown): number | undefined => {
@@ -191,10 +195,10 @@ export function buildApiParams(config: {
     ...(isAdmin && searchParams.channel
       ? { channel: Number(searchParams.channel) || 0 }
       : {}),
-    ...(isAdmin && searchParams.username
+    ...((isAdmin || orgId) && searchParams.username
       ? { username: String(searchParams.username) }
       : {}),
-    ...(isAdmin && searchParams.userId
+    ...((isAdmin || orgId) && searchParams.userId
       ? { user_id: Number(searchParams.userId) }
       : {}),
     ...(searchParams.requestId
@@ -228,7 +232,8 @@ export function buildApiParams(config: {
           if (isAdmin) params.channel = Number(value) || 0
           break
         case 'username':
-          if (isAdmin) params.username = String(value)
+          // 平台管理员与组织管理者都可在自己范围内按用户名过滤。
+          if (isAdmin || orgId) params.username = String(value)
           break
       }
     })
@@ -257,7 +262,12 @@ export async function fetchLogsByCategory(
       searchParams,
       columnFilters,
       isAdmin,
+      orgId: config.orgId,
     })
+    // 组织管理者：走组织接口，范围由后端按角色收敛。
+    if (config.orgId) {
+      return await getOrganizationLogs(config.orgId, params)
+    }
     return isAdmin ? await getAllLogs(params) : await getUserLogs(params)
   }
 

@@ -39,6 +39,8 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
+import { OrgUserFilter } from '@/features/organization/org-user-filter'
+import { useOrgManagerScope } from '@/features/organization/use-org-manager'
 import { getGroups } from '@/features/users/api'
 import { useMediaQuery } from '@/hooks'
 import { getUserGroups } from '@/lib/api'
@@ -128,6 +130,10 @@ export function CommonLogsFilterBar<TData>(
   const searchParams = route.useSearch()
   const { isAdminView: isAdmin } = useLogsViewScope()
   const { sensitiveVisible, setSensitiveVisible } = useUsageLogsContext()
+  const { isOrgManager, members, isLoading: membersLoading } =
+    useOrgManagerScope()
+  // 组织管理者（非平台管理员）用「用户名 / 用户ID」双下拉替代平台管理员的文本输入。
+  const showOrgUserFilter = isOrgManager && !isAdmin
   const fetchingLogs = useIsFetching({ queryKey: ['logs'] })
   const { data: adminGroups } = useQuery({
     queryKey: ['groups'],
@@ -209,7 +215,7 @@ export function CommonLogsFilterBar<TData>(
     (filters.userId ? formatUserId(filters.userId) : '')
 
   const handleChange = useCallback(
-    (field: keyof CommonLogFilters, value: Date | string | undefined) => {
+    (field: keyof CommonLogFilters, value: Date | string | number | undefined) => {
       setDraft((current) => {
         const base =
           current.sourceKey === searchState.sourceKey ? current : searchState
@@ -294,8 +300,8 @@ export function CommonLogsFilterBar<TData>(
 
   const expandedFilterCount = [
     filters.token,
-    isAdmin ? filters.username : undefined,
-    isAdmin ? filters.userId : undefined,
+    isAdmin || showOrgUserFilter ? filters.username : undefined,
+    isAdmin || showOrgUserFilter ? filters.userId : undefined,
     isAdmin ? filters.channel : undefined,
     filters.requestId,
     filters.upstreamRequestId,
@@ -485,6 +491,16 @@ export function CommonLogsFilterBar<TData>(
             onKeyDown={handleKeyDown}
           />
         </LogsFilterField>
+      )}
+      {showOrgUserFilter && (
+        <OrgUserFilter
+          members={members}
+          username={filters.username}
+          userId={filters.userId}
+          disabled={membersLoading}
+          onUsernameChange={(value) => handleChange('username', value)}
+          onUserIdChange={(value) => handleChange('userId', value)}
+        />
       )}
       {isAdmin && (
         <LogsFilterField>

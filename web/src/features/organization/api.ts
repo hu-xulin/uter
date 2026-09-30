@@ -81,7 +81,11 @@ export async function getOrganizationMembers(
 export async function addOrganizationMembers(
   id: number,
   payload: {
-    members: { user_id: number; sub_quota_limit: number }[]
+    members: {
+      user_id: number
+      sub_quota_limit: number
+      department_name?: string
+    }[]
     department_name?: string
   }
 ): Promise<ApiResult> {

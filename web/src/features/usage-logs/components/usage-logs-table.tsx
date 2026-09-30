@@ -83,6 +83,7 @@ export function UsageLogsTable({ logCategory }: UsageLogsTableProps) {
     isAdminView: isAdmin,
     isRootView: isRoot,
     viewAccess,
+    orgId,
   } = useLogsViewScope()
   const isMobile = useMediaQuery('(max-width: 640px)')
   const searchParams = route.useSearch()
@@ -130,6 +131,7 @@ export function UsageLogsTable({ logCategory }: UsageLogsTableProps) {
       'logs',
       logCategory,
       viewAccess,
+      orgId,
       pagination.pageIndex + 1,
       pagination.pageSize,
       columnFilters,
@@ -140,6 +142,7 @@ export function UsageLogsTable({ logCategory }: UsageLogsTableProps) {
       const result = await fetchLogsByCategory({
         logCategory,
         isAdmin,
+        orgId,
         page: pagination.pageIndex + 1,
         pageSize: pagination.pageSize,
         searchParams,

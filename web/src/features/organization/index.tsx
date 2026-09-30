@@ -43,7 +43,6 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { NativeSelect, NativeSelectOption } from '@/components/ui/native-select'
 import { SectionPageLayout } from '@/components/layout'
-import { Textarea } from '@/components/ui/textarea'
 
 import {
   addOrganizationMembers,
@@ -599,60 +598,90 @@ function AddMemberCard({
   onAdded: () => void
 }) {
   const { t } = useTranslation()
-  const [userIdsText, setUserIdsText] = useState('')
-  const [defaultSubQuota, setDefaultSubQuota] = useState('')
-  const [deptName, setDeptName] = useState('')
-  const [submitting, setSubmitting] = useState(false)
+
+  type RowStatus = 'idle' | 'submitting' | 'added' | 'error'
+  interface AddRow {
+    key: number
+    userId: string
+    subLimit: string
+    dept: string
+    status: RowStatus
+    errorMsg?: string
+  }
+
+  const [rows, setRows] = useState<AddRow[]>([{
+    key: 1,
+    userId: '',
+    subLimit: '',
+    dept: '',
+    status: 'idle',
+  }])
+  const [nextKey, setNextKey] = useState(2)
 
   if (!canManage) return null
 
-  async function submit() {
-    // 每行格式：uter编号 [子额度]，例如 `uter100000001 50000`。
-    // 子额度可选：缺省时回退到上方的「默认子额度上限」。
-    const lines = userIdsText.split('\n')
-    const members: { user_id: number; sub_quota_limit: number }[] = []
-    const skipped: string[] = []
-    const fallback = defaultSubQuota ? Number(defaultSubQuota) || 0 : 0
-    for (const raw of lines) {
-      const line = raw.trim()
-      if (!line) continue
-      const parts = line.split(/\s+/)
-      const userId = parseUserId(parts[0])
-      if (userId <= 0) {
-        skipped.push(line)
-        continue
-      }
-      const subQuota =
-        parts[1] !== undefined ? Number(parts[1]) || 0 : fallback
-      members.push({ user_id: userId, sub_quota_limit: subQuota })
-    }
-    if (members.length === 0) {
-      toast.error(t('User IDs (one per line) is required'))
+  function updateRow(key: number, patch: Partial<AddRow>) {
+    setRows((prev) =>
+      prev.map((r) => (r.key === key ? { ...r, ...patch } : r))
+    )
+  }
+
+  function addRow() {
+    setRows((prev) => [
+      ...prev,
+      { key: nextKey, userId: '', subLimit: '', dept: '', status: 'idle' },
+    ])
+    setNextKey((k) => k + 1)
+  }
+
+  function removeRow(key: number) {
+    setRows((prev) => prev.filter((r) => r.key !== key))
+    // 删光后补一行空行，保证始终有可填的行。
+    setRows((prev) =>
+      prev.length === 0
+        ? [{ key: nextKey, userId: '', subLimit: '', dept: '', status: 'idle' }]
+        : prev
+    )
+    if (rows.length === 0) setNextKey((k) => k + 1)
+  }
+
+  async function submitRow(row: AddRow) {
+    const userId = parseUserId(row.userId)
+    if (userId <= 0) {
+      updateRow(row.key, {
+        status: 'error',
+        errorMsg: t('Invalid user ID'),
+      })
       return
     }
-    setSubmitting(true)
+    updateRow(row.key, { status: 'submitting', errorMsg: undefined })
     try {
       const r = await addOrganizationMembers(orgId, {
-        members,
-        department_name: deptName || undefined,
+        members: [
+          {
+            user_id: userId,
+            sub_quota_limit: row.subLimit ? Number(row.subLimit) || 0 : 0,
+            department_name: row.dept || undefined,
+          },
+        ],
       })
       if (r.success) {
+        // 成功后该按钮变为「已添加」并禁用，避免重复加入同一成员。
+        updateRow(row.key, { status: 'added' })
         toast.success(t('Member added'))
-        setUserIdsText('')
-        setDefaultSubQuota('')
-        setDeptName('')
-        // 部分行无法解析（纯文本/非法编号）时提示，但仍把可解析的加入。
-        if (skipped.length > 0) {
-          toast.warning(
-            t('Some user IDs could not be parsed and were skipped.')
-          )
-        }
         onAdded()
       } else {
-        toast.error(r.message || t('Failed to add member'))
+        updateRow(row.key, {
+          status: 'error',
+          errorMsg: r.message || t('Failed to add member'),
+        })
+        if (r.message) toast.error(r.message)
       }
-    } finally {
-      setSubmitting(false)
+    } catch (e) {
+      updateRow(row.key, {
+        status: 'error',
+        errorMsg: t('Failed to add member'),
+      })
     }
   }
 
@@ -660,44 +689,77 @@ function AddMemberCard({
     <Card>
       <CardHeader>
         <CardTitle>{t('Add Member')}</CardTitle>
+        <CardDescription>
+          {t(
+            'Each row adds one member with its own sub-quota limit and department.'
+          )}
+        </CardDescription>
       </CardHeader>
-      <CardContent className='grid grid-cols-1 gap-3 sm:grid-cols-4'>
-        <div className='flex flex-col gap-2 sm:col-span-4'>
-          <Label>
-            {t(
-              'Add members (one user ID per line, optional sub-quota: uter100000001 50000)'
-            )}
-          </Label>
-          <Textarea
-            value={userIdsText}
-            onChange={(e) => setUserIdsText(e.target.value)}
-            placeholder={'uter100000001 50000\nuter100000002'}
-            rows={5}
-          />
-          <p className='text-xs text-muted-foreground'>
-            {t('Lines without a number use the default sub-quota above.')}
-          </p>
+      <CardContent className='flex flex-col gap-3'>
+        <div className='hidden grid-cols-[1fr_1fr_1fr_auto_auto] gap-2 px-1 text-xs text-muted-foreground sm:grid'>
+          <span>{t('User ID')}</span>
+          <span>{t('Sub-quota Limit')}</span>
+          <span>{t('Department')}</span>
+          <span />
+          <span />
         </div>
-        <div className='flex flex-col gap-2'>
-          <Label>{t('Sub-quota Limit')}</Label>
-          <Input
-            type='number'
-            value={defaultSubQuota}
-            onChange={(e) => setDefaultSubQuota(e.target.value)}
-            placeholder='0'
-          />
-        </div>
-        <div className='flex flex-col gap-2'>
-          <Label>{t('Department')}</Label>
-          <Input
-            value={deptName}
-            onChange={(e) => setDeptName(e.target.value)}
-            placeholder={t('Department name')}
-          />
-        </div>
-        <div className='flex items-end'>
-          <Button onClick={submit} disabled={submitting}>
-            {t('Add Member')}
+        {rows.map((row) => {
+          const disabled = row.status === 'added' || row.status === 'submitting'
+          return (
+            <div
+              key={row.key}
+              className='grid grid-cols-1 items-start gap-2 sm:grid-cols-[1fr_1fr_1fr_auto_auto]'
+            >
+              <div className='flex flex-col gap-1'>
+                <Input
+                  value={row.userId}
+                  disabled={disabled}
+                  onChange={(e) => updateRow(row.key, { userId: e.target.value })}
+                  placeholder='uter100000001'
+                />
+              </div>
+              <Input
+                type='number'
+                value={row.subLimit}
+                disabled={disabled}
+                onChange={(e) => updateRow(row.key, { subLimit: e.target.value })}
+                placeholder='0'
+              />
+              <Input
+                value={row.dept}
+                disabled={disabled}
+                onChange={(e) => updateRow(row.key, { dept: e.target.value })}
+                placeholder={t('Department name')}
+              />
+              <Button
+                onClick={() => submitRow(row)}
+                disabled={disabled}
+                variant={row.status === 'added' ? 'secondary' : 'default'}
+              >
+                {row.status === 'added'
+                  ? t('Added')
+                  : row.status === 'submitting'
+                    ? t('Adding...')
+                    : t('Add Member')}
+              </Button>
+              <Button
+                variant='outline'
+                onClick={() => removeRow(row.key)}
+                disabled={row.status === 'submitting'}
+              >
+                {t('Delete')}
+              </Button>
+              {row.status === 'error' && row.errorMsg && (
+                <p className='col-span-full text-xs text-destructive'>
+                  {row.errorMsg}
+                </p>
+              )}
+            </div>
+          )
+        })}
+        <div className='flex items-center gap-2 pt-1'>
+          <Button variant='outline' onClick={addRow}>
+            {t('Add a row')}
           </Button>
         </div>
       </CardContent>

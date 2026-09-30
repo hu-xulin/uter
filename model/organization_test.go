@@ -185,7 +185,7 @@ func TestAddMemberRejectsUserFromAnotherOrganization(t *testing.T) {
 	insertOrgForTest(t, 2, 0)
 	insertOrgUserForTest(t, 7, 2, OrgRoleMember, 0, 0, "")
 
-	err := orgA.AddMembers([]OrgMemberAdd{{UserId: 7, SubQuotaLimit: 0}}, "研发")
+	err := orgA.AddMembers([]OrgMemberAdd{{UserId: 7, SubQuotaLimit: 0, DepartmentName: "研发"}})
 	require.ErrorIs(t, err, ErrOrgMemberForeign)
 
 	var user User
