@@ -46,6 +46,7 @@ import {
   SidebarMenuSubItem,
   useSidebar,
 } from '@/components/ui/sidebar'
+import { cn } from '@/lib/utils'
 
 import { checkIsActive } from '../lib/url-utils'
 import type {
@@ -122,12 +123,18 @@ function NavBadge({ children }: { children: ReactNode }) {
  */
 function SidebarMenuLink({ item, href }: { item: NavLink; href: string }) {
   const { isMobile, setOpenMobile } = useSidebar()
+  const isActive = checkIsActive(href, item)
   return (
     <SidebarMenuItem>
       <SidebarMenuButton
-        isActive={checkIsActive(href, item)}
+        isActive={isActive}
         tooltip={item.title}
-        className='font-medium'
+        // The active row is called out twice over: the theme already swaps
+        // its colour (`data-active:text-primary`), and it is also bumped one
+        // weight up (500 → 600) so the selection survives without colour —
+        // the same 首页 logic the public header uses. Inactive rows stay at
+        // 500, so the whole column keeps one even texture.
+        className={cn('font-medium', isActive && 'font-semibold')}
         render={
           <Link
             to={item.url}
@@ -178,7 +185,17 @@ function SidebarMenuCollapsible({
       <CollapsibleTrigger
         className='group/collapsible-trigger'
         render={
-          <SidebarMenuButton tooltip={item.title} className='font-medium' />
+          <SidebarMenuButton
+            tooltip={item.title}
+            className={cn(
+              'font-medium',
+              // No `isActive` here: the parent row deliberately keeps its
+              // plain background (only the child that matches gets the
+              // highlight), but it still takes the selected weight when one
+              // of its sub-items is the current page.
+              isSubItemActive && 'font-semibold'
+            )}
+          />
         }
       >
         {item.icon && <item.icon className='shrink-0' />}
@@ -188,25 +205,30 @@ function SidebarMenuCollapsible({
       </CollapsibleTrigger>
       <CollapsibleContent className='CollapsibleContent'>
         <SidebarMenuSub>
-          {item.items.map((subItem) => (
-            <SidebarMenuSubItem key={subItem.title}>
-              <SidebarMenuSubButton
-                isActive={checkIsActive(href, subItem)}
-                className='font-medium'
-                render={
-                  <Link
-                    to={subItem.url}
-                    preload={isMobile ? false : undefined}
-                    onClick={() => setOpenMobile(false)}
-                  />
-                }
-              >
-                {subItem.icon && <subItem.icon className='shrink-0' />}
-                <span className='min-w-0 flex-1 truncate'>{subItem.title}</span>
-                {subItem.badge && <NavBadge>{subItem.badge}</NavBadge>}
-              </SidebarMenuSubButton>
-            </SidebarMenuSubItem>
-          ))}
+          {item.items.map((subItem) => {
+            const isSubActive = checkIsActive(href, subItem)
+            return (
+              <SidebarMenuSubItem key={subItem.title}>
+                <SidebarMenuSubButton
+                  isActive={isSubActive}
+                  className={cn('font-medium', isSubActive && 'font-semibold')}
+                  render={
+                    <Link
+                      to={subItem.url}
+                      preload={isMobile ? false : undefined}
+                      onClick={() => setOpenMobile(false)}
+                    />
+                  }
+                >
+                  {subItem.icon && <subItem.icon className='shrink-0' />}
+                  <span className='min-w-0 flex-1 truncate'>
+                    {subItem.title}
+                  </span>
+                  {subItem.badge && <NavBadge>{subItem.badge}</NavBadge>}
+                </SidebarMenuSubButton>
+              </SidebarMenuSubItem>
+            )
+          })}
         </SidebarMenuSub>
       </CollapsibleContent>
     </Collapsible>
@@ -223,6 +245,7 @@ function SidebarMenuCollapsedDropdown({
   item: NavCollapsible
   href: string
 }) {
+  const isActive = checkIsActive(href, item)
   return (
     <SidebarMenuItem>
       <DropdownMenu>
@@ -231,8 +254,8 @@ function SidebarMenuCollapsedDropdown({
           render={
             <SidebarMenuButton
               tooltip={item.title}
-              isActive={checkIsActive(href, item)}
-              className='font-medium'
+              isActive={isActive}
+              className={cn('font-medium', isActive && 'font-semibold')}
             />
           }
         >
