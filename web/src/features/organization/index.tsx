@@ -17,7 +17,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@Uter.ai.com
 */
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
@@ -609,14 +609,22 @@ function AddMemberCard({
     errorMsg?: string
   }
 
-  const [rows, setRows] = useState<AddRow[]>([{
-    key: 1,
-    userId: '',
-    subLimit: '',
-    dept: '',
-    status: 'idle',
-  }])
-  const [nextKey, setNextKey] = useState(2)
+  // 行 key 用 ref 单调递增生成，保证全局唯一、永不复用，
+  // 避免并发点击/删空补行导致的重复 key 让 React 复用错 DOM（表现为「有时删不掉当前行」）。
+  const keyRef = useRef(1)
+  const [rows, setRows] = useState<AddRow[]>(() => {
+    const firstKey = keyRef.current
+    keyRef.current += 1
+    return [
+      {
+        key: firstKey,
+        userId: '',
+        subLimit: '',
+        dept: '',
+        status: 'idle',
+      },
+    ]
+  })
 
   if (!canManage) return null
 
@@ -634,22 +642,16 @@ function AddMemberCard({
   }
 
   function addRow() {
+    const k = keyRef.current
+    keyRef.current += 1
     setRows((prev) => [
       ...prev,
-      { key: nextKey, userId: '', subLimit: '', dept: '', status: 'idle' },
+      { key: k, userId: '', subLimit: '', dept: '', status: 'idle' },
     ])
-    setNextKey((k) => k + 1)
   }
 
   function removeRow(key: number) {
     setRows((prev) => prev.filter((r) => r.key !== key))
-    // 删光后补一行空行，保证始终有可填的行。
-    setRows((prev) =>
-      prev.length === 0
-        ? [{ key: nextKey, userId: '', subLimit: '', dept: '', status: 'idle' }]
-        : prev
-    )
-    if (rows.length === 0) setNextKey((k) => k + 1)
   }
 
   async function submitRow(row: AddRow) {
@@ -710,7 +712,7 @@ function AddMemberCard({
           <span />
           <span />
         </div>
-        {rows.map((row) => {
+        {rows.map((row, index) => {
           const disabled = row.status === 'added' || row.status === 'submitting'
           return (
             <div
@@ -745,13 +747,15 @@ function AddMemberCard({
       >
         {ADD_MEMBER_LABEL[row.status]}
       </Button>
-              <Button
-                variant='outline'
-                onClick={() => removeRow(row.key)}
-                disabled={row.status === 'submitting'}
-              >
-                {t('Delete')}
-              </Button>
+              {index !== 0 && (
+                <Button
+                  variant='outline'
+                  onClick={() => removeRow(row.key)}
+                  disabled={row.status === 'submitting'}
+                >
+                  {t('Delete Row')}
+                </Button>
+              )}
               {row.status === 'error' && row.errorMsg && (
                 <p className='col-span-full text-xs text-destructive'>
                   {row.errorMsg}
