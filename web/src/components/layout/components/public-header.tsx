@@ -218,7 +218,7 @@ export function PublicHeader(props: PublicHeaderProps) {
                   {logoContent}
                 </div>
                 <span
-                  className='font-brand max-w-48 truncate text-lg tracking-tight'
+                  className='font-brand max-w-48 truncate text-lg font-semibold tracking-tight'
                   title={brandName}
                 >
                   {loading ? (

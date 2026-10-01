@@ -348,7 +348,7 @@ export function Footer(props: FooterProps) {
                 alt={brandName}
                 className='size-7 rounded-lg object-contain'
               />
-              <span className='font-brand text-sm tracking-tight'>
+              <span className='font-brand text-sm font-semibold tracking-tight'>
                 {brandName}
               </span>
             </Link>
