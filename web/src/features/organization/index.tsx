@@ -620,6 +620,13 @@ function AddMemberCard({
 
   if (!canManage) return null
 
+  const ADD_MEMBER_LABEL: Record<RowStatus, string> = {
+    idle: t('Add Member'),
+    submitting: t('Adding...'),
+    added: t('Added'),
+    error: t('Add Member'),
+  }
+
   function updateRow(key: number, patch: Partial<AddRow>) {
     setRows((prev) =>
       prev.map((r) => (r.key === key ? { ...r, ...patch } : r))
@@ -677,7 +684,7 @@ function AddMemberCard({
         })
         if (r.message) toast.error(r.message)
       }
-    } catch (e) {
+    } catch {
       updateRow(row.key, {
         status: 'error',
         errorMsg: t('Failed to add member'),
@@ -731,17 +738,13 @@ function AddMemberCard({
                 onChange={(e) => updateRow(row.key, { dept: e.target.value })}
                 placeholder={t('Department name')}
               />
-              <Button
-                onClick={() => submitRow(row)}
-                disabled={disabled}
-                variant={row.status === 'added' ? 'secondary' : 'default'}
-              >
-                {row.status === 'added'
-                  ? t('Added')
-                  : row.status === 'submitting'
-                    ? t('Adding...')
-                    : t('Add Member')}
-              </Button>
+      <Button
+        onClick={() => submitRow(row)}
+        disabled={disabled}
+        variant={row.status === 'added' ? 'secondary' : 'default'}
+      >
+        {ADD_MEMBER_LABEL[row.status]}
+      </Button>
               <Button
                 variant='outline'
                 onClick={() => removeRow(row.key)}
@@ -870,7 +873,7 @@ function MembersCard({
                 <th className='px-2 py-2'>{t('Display Name')}</th>
                 <th className='px-2 py-2'>{t('Department')}</th>
                 <th className='px-2 py-2 text-right'>{t('Used Quota')}</th>
-                <th className='px-2 py-2 text-right'>{t('Sub-quota Limit')}</th>
+                <th className='px-2 py-2'>{t('Sub-quota Limit')}</th>
                 <th className='px-2 py-2'>{t('Role')}</th>
                 <th className='px-2 py-2 text-right'>{t('Actions')}</th>
               </tr>
@@ -891,7 +894,7 @@ function MembersCard({
                     {canEditSubQuotaOf(m) ? (
                       <input
                         type='number'
-                        className='h-8 w-28 rounded-md border border-border bg-background px-2 text-right text-sm'
+                        className='h-8 w-28 rounded-md border border-border bg-background px-2 text-left text-sm'
                         defaultValue={m.sub_quota_limit}
                         placeholder={t('Unlimited')}
                         onBlur={(e) =>
@@ -908,19 +911,18 @@ function MembersCard({
                   </td>
                   <td className='px-2 py-2'>
                     {canEditRoleOf(m) ? (
-                      <select
-                        className='h-8 rounded-md border border-border bg-background px-2 text-sm'
+                      <NativeSelect
                         defaultValue={m.org_role || 'member'}
                         onChange={(e) =>
                           onRoleChange(m.id, e.target.value as OrgRole)
                         }
                       >
                         {roleOptions.map((r) => (
-                          <option key={r} value={r}>
+                          <NativeSelectOption key={r} value={r}>
                             {t(ROLE_LABEL_KEY[r])}
-                          </option>
+                          </NativeSelectOption>
                         ))}
-                      </select>
+                      </NativeSelect>
                     ) : (
                       <Badge variant='secondary'>
                         {t(ROLE_LABEL_KEY[m.org_role] || 'Member')}
