@@ -81,7 +81,7 @@ export function ApiInfoItemComponent(props: ApiInfoItemProps) {
               variant='success'
               label={`${status.latency}${t('ms')}`}
               className={cn(
-                'font-mono font-medium',
+                'font-medium tabular-nums',
                 getLatencyColorClass(status.latency)
               )}
               copyable={false}

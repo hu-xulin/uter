@@ -85,38 +85,16 @@ export type ThemeScale = 'default' | 'sm' | 'lg' | 'xl'
 export type ContentLayout = 'full' | 'centered'
 
 /**
- * Font axis for the theme.
- *
- * - `default` — resolve at runtime from the active preset
- *   (see `PRESET_DEFAULT_FONT`). The shipped `default` preset resolves to
- *   `inter` (the project's primary UI typeface); `anthropic` resolves to
- *   `serif`. Other named color presets fall back to `inter` unless they
- *   list a different choice. Mirrors how `radius: 'default'` defers to a
- *   per-preset hint.
- * - `inter` — Inter (variable, see `--font-inter` in theme.css): the
- *   project's default UI voice, with the same OS + CJK + emoji fallback
- *   ladder as the system stack. Full 400/500/600/700 weight range.
- * - `sans` — GitHub-style system font stack (see `--font-sans` in
- *   theme.css): OS UI face first, explicit CJK fallbacks. An opt-in axis
- *   for users who prefer the OS-native face; full 400/500/600 weight
- *   range native on every platform.
- * - `serif` — editorial serif (Lora + CJK fallbacks), the project's
- *   "soul" typography. Inherits across the whole UI; monospace contexts
- *   keep their own family via Tailwind preflight and `.font-mono`.
+ * ⚠️ The font axis has been REMOVED — the product is locked to a single
+ * typeface (Inter + Noto Sans SC for CJK; see `--font-ui` in theme.css).
+ * There is no `font` field, no `theme_font` cookie and no
+ * `data-theme-font` attribute any more, so nothing can fall back to the OS
+ * system stack or to the Lora serif. Do not reintroduce one without also
+ * restoring the `[data-theme-font='...']` cascade in theme-presets.css.
  */
-export type ThemeFont = 'default' | 'inter' | 'sans' | 'serif'
-
-/**
- * The resolved (non-`default`) font value applied to the DOM. The provider
- * always sets `data-theme-font` to one of these concrete values so CSS only
- * needs simple attribute selectors (no `:not()` gymnastics, no per-preset
- * font branches).
- */
-export type ResolvedThemeFont = Exclude<ThemeFont, 'default'>
 
 export type ThemeCustomization = {
   preset: ThemePreset
-  font: ThemeFont
   radius: ThemeRadius
   scale: ThemeScale
   contentLayout: ContentLayout
@@ -124,7 +102,6 @@ export type ThemeCustomization = {
 
 export const DEFAULT_THEME_CUSTOMIZATION: ThemeCustomization = {
   preset: 'default',
-  font: 'default',
   radius: 'default',
   scale: 'default',
   contentLayout: 'full',
@@ -133,13 +110,6 @@ export const DEFAULT_THEME_CUSTOMIZATION: ThemeCustomization = {
 export const THEME_PRESET_VALUES = new Set(
   THEME_PRESETS.map((p) => p.value)
 ) as ReadonlySet<ThemePreset>
-
-export const THEME_FONT_VALUES: ReadonlySet<ThemeFont> = new Set([
-  'default',
-  'inter',
-  'sans',
-  'serif',
-])
 
 export const THEME_RADIUS_VALUES: ReadonlySet<ThemeRadius> = new Set([
   'default',
@@ -164,43 +134,7 @@ export const CONTENT_LAYOUT_VALUES: ReadonlySet<ContentLayout> = new Set([
 
 export const THEME_COOKIE_KEYS = {
   preset: 'theme_preset',
-  font: 'theme_font',
   radius: 'theme_radius',
   scale: 'theme_scale',
   contentLayout: 'theme_content_layout',
 } as const
-
-/**
- * Preset → default font mapping. Used by the provider to resolve the user's
- * `font: 'default'` preference against the active preset.
- *
- * Co-located with the preset registry so a preset's signature typography
- * is declared in one place. Presets not listed here fall back to the
- * `resolveThemeFont` default of `inter`. The shipped `default` preset
- * opts into `inter` (the project's primary UI typeface) so the product
- * opens in Inter; `anthropic` keeps the editorial Lora serif for its
- * brand mood. Vivid color presets also stay on Inter so their accents
- * read clearly without competing with the body type.
- */
-export const PRESET_DEFAULT_FONT: Partial<
-  Record<ThemePreset, ResolvedThemeFont>
-> = {
-  default: 'inter',
-  anthropic: 'serif',
-}
-
-/**
- * Resolve a user font preference + active preset into the concrete font that
- * should drive the DOM. Pure function so it's safe to call inside both the
- * effect that applies the attribute and the UI preview that hints at what
- * `default` will render as.
- */
-export function resolveThemeFont(
-  font: ThemeFont,
-  preset: ThemePreset
-): ResolvedThemeFont {
-  if (font === 'default') {
-    return PRESET_DEFAULT_FONT[preset] ?? 'sans'
-  }
-  return font
-}

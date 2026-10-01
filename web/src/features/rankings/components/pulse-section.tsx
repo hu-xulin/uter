@@ -128,7 +128,7 @@ function MoverRow(props: { row: RankingMover; intent: 'up' | 'down' }) {
       </div>
       <span
         className={cn(
-          'inline-flex shrink-0 items-center gap-0.5 font-mono text-xs font-semibold tabular-nums',
+          'inline-flex shrink-0 items-center gap-0.5 text-xs font-semibold tabular-nums',
           props.intent === 'up'
             ? 'text-emerald-600 dark:text-emerald-400'
             : 'text-rose-600 dark:text-rose-400'

@@ -106,7 +106,7 @@ export function CachedPriceCell(props: {
                   : t('Cache Read')}
               </span>
             )}
-            <span className='font-mono text-sm tabular-nums'>
+            <span className='text-sm tabular-nums'>
               {stripTrailingZeros(entry.formatted)}
             </span>
           </div>
@@ -154,7 +154,7 @@ export function CachedPriceCell(props: {
 
   return (
     <div className='max-w-full min-w-0'>
-      <span className='font-mono text-sm tabular-nums'>{cachedPrice}</span>
+      <span className='text-sm tabular-nums'>{cachedPrice}</span>
       <div className='text-muted-foreground/50 text-[10px]'>
         / {tokenUnitLabel}
       </div>

@@ -259,7 +259,7 @@ function StartStepItem(props: {
           </span>
           <span className='flex min-w-0 flex-col gap-0.5'>
             <span className='flex items-center gap-2 text-sm font-medium'>
-              <span className='text-muted-foreground font-mono text-xs tabular-nums'>
+              <span className='text-muted-foreground text-xs tabular-nums'>
                 {props.index + 1}.
               </span>
               <span className='truncate'>{props.step.title}</span>

@@ -58,7 +58,7 @@ function StatCard(props: {
       </span>
       <span
         className={cn(
-          'text-foreground font-mono text-lg font-semibold tabular-nums',
+          'text-foreground text-lg font-semibold tabular-nums',
           props.valueClassName
         )}
       >

@@ -305,7 +305,7 @@ export function SummaryCards() {
               </span>
             </div>
 
-            <div className='font-mono text-xl font-semibold tracking-tight sm:text-2xl'>
+            <div className='text-xl font-semibold tracking-tight tabular-nums sm:text-2xl'>
               {formatQuota(remainQuota)}
             </div>
 

@@ -134,7 +134,7 @@ export function UptimePanel() {
                   <h4 className='text-muted-foreground text-xs font-semibold tracking-wider uppercase'>
                     {group.categoryName}
                   </h4>
-                  <span className='text-muted-foreground/40 font-mono text-xs tabular-nums'>
+                  <span className='text-muted-foreground/40 text-xs tabular-nums'>
                     {group.monitors?.length || 0}
                   </span>
                 </div>
@@ -162,7 +162,7 @@ export function UptimePanel() {
                         </span>
                       )}
                     </div>
-                    <span className='text-foreground shrink-0 font-mono text-sm font-semibold tabular-nums'>
+                    <span className='text-foreground shrink-0 text-sm font-semibold tabular-nums'>
                       {((monitor.uptime ?? 0) * 100).toFixed(2)}%
                     </span>
                   </div>

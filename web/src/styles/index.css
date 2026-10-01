@@ -19,18 +19,21 @@ For commercial licensing, please contact support@Uter.ai.com
 @import 'tailwindcss';
 @import 'tw-animate-css';
 @import 'shadcn/tailwind.css';
-@import '@fontsource-variable/public-sans';
-/* Editorial serif (Lora) backing the `serif` font axis and the Anthropic
- * preset's default typography. See `--font-serif` in theme.css for the
- * full Latin + CJK fallback stack and `theme-presets.css` for the cascade
- * that activates it. Loaded globally so font-switching is instantaneous
- * with no FOUT once the variable is fetched. */
-@import '@fontsource-variable/lora';
-/* Primary UI typeface — Inter (variable). This is the project's default
- * body face. See `--font-inter` in theme.css for the full Latin + CJK
- * fallback stack. Loaded globally so the product opens in Inter with no
- * FOUT. */
+/* Project typefaces — English/digits in Inter, Chinese in 思源黑体.
+ *
+ * Inter covers Latin / Greek / Cyrillic only: it has NO CJK glyphs, so
+ * every Chinese codepoint falls through to Source Han Sans (思源黑体).
+ * Fontsource has no `source-han-sans` package, so the CJK half is served
+ * by `@fontsource-variable/noto-sans-sc` — the same typeface, shipped by
+ * Google (Noto Sans CJK is glyph-identical to Adobe's Source Han Sans;
+ * both are generated from one shared source). `--font-ui` in theme.css is
+ * the single place the stack is declared; see the note there on ordering.
+ *
+ * Noto Sans SC ships as 101 `unicode-range` slices, so the browser fetches
+ * only the blocks a page actually needs rather than the whole ~4.9 MB.
+ * Loaded globally so the product opens in Inter with no FOUT. */
 @import '@fontsource-variable/inter';
+@import '@fontsource-variable/noto-sans-sc';
 
 @import './theme.css';
 @import './theme-presets.css';
@@ -97,13 +100,14 @@ For commercial licensing, please contact support@Uter.ai.com
     scrollbar-color: var(--border) transparent;
   }
   html {
-    @apply overflow-x-hidden font-sans;
+    @apply overflow-x-hidden font-inter;
   }
   body {
     @apply bg-background text-foreground has-[div[data-variant='inset']]:bg-sidebar min-h-svh w-full;
-    /* Font is driven by the theme's font axis via `--font-body`
-     * (defined in theme.css, swapped by `[data-theme-font='...']` blocks
-     * in theme-presets.css). Defaults to the GitHub system stack.
+    /* The product is locked to one typeface: Inter for Latin/digits,
+     * 思源黑体 (Source Han Sans) for Chinese. `--font-body` is a fixed
+     * alias of `--font-ui` (declared in theme.css) — the font switcher
+     * has been removed, so there is nothing left to swap.
      * Body uses GitHub's base size (14px) and regular weight (400). */
     font-family: var(--font-body);
     font-size: var(--text-sm);

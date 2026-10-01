@@ -46,6 +46,7 @@ import type {
 } from '@/features/dashboard/types'
 import { requireServerSuccess } from '@/lib/server-error-message'
 import { getRollingDateRange, type TimeGranularity } from '@/lib/time'
+import { applyChartTheme } from '@/lib/use-chart-theme'
 import { VCHART_OPTION } from '@/lib/vchart'
 
 let themeManagerPromise: Promise<
@@ -136,7 +137,7 @@ export function UserCharts(props: UserChartsProps) {
       }
       const ThemeManager = await themeManagerPromise
       themeManagerRef.current = ThemeManager
-      ThemeManager.setCurrentTheme(resolvedTheme === 'dark' ? 'dark' : 'light')
+      applyChartTheme(ThemeManager, resolvedTheme)
       setThemeReady(true)
     }
     updateTheme()

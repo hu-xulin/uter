@@ -552,7 +552,7 @@ export function DynamicPricingBreakdown({
                           </div>
                           <div
                             className={cn(
-                              'break-words font-mono',
+                              'break-words tabular-nums',
                               compact ? 'text-xs' : 'text-sm font-semibold'
                             )}
                           >
@@ -668,7 +668,7 @@ export function DynamicPricingBreakdown({
                   compact && 'h-8'
                 ),
                 cellClassName: cn(
-                  'text-right align-top font-mono',
+                  'text-right align-top tabular-nums',
                   compact ? 'py-2' : 'py-2.5'
                 ),
                 cell: (tier: BreakdownTier) => {
