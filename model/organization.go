@@ -446,11 +446,30 @@ func OrgIdOfUser(userId int) (int, error) {
 }
 
 // IncrOrgUsedQuota 在扣费成功后累加组织已用额度（原子自增）。
+//
+// 与 ReserveOrgQuota 采用同一预算口径：quota<=0 表示不限量（平台未给该组织设上限），
+// 此时只累加、不卡上限；否则用单条「条件 UPDATE」保证 used_quota + amount <= quota，
+// 把预算硬上限延伸到「结算补扣 / 实时增量 / 退款回滚」这些 ReserveOrgQuota 之外的写入路径。
+//
+// 背景：ReserveOrgQuota 已在初始预扣时原子校验过预算，但实时语音/流式请求的实际消耗可能
+// 远大于初始预估，差额通过本函数补记。若此处不卡上限，成员可以用一次超长会话把组织账本
+// 推过已付预算（Uter 已垫付上游成本却收不回），即「组织预算超支」类免费 API 漏洞。
 func IncrOrgUsedQuota(orgId int, amount int64) error {
 	if orgId == 0 || amount == 0 {
 		return nil
 	}
-	return DB.Model(&Organization{}).Where("id = ?", orgId).Update("used_quota", gorm.Expr("used_quota + ?", amount)).Error
+	res := DB.Model(&Organization{}).
+		Where("id = ? AND (quota <= 0 OR used_quota + ? <= quota)", orgId, amount).
+		Update("used_quota", gorm.Expr("used_quota + ?", amount))
+	if res.Error != nil {
+		return res.Error
+	}
+	if res.RowsAffected == 0 {
+		// 仅当组织设了硬预算且本次补记会突破上限时才会命中：实际用量已发生（请求已渲染），
+		// 这里只保证账本不被推过预算上限，避免组织预算被静默突破。
+		return fmt.Errorf("%w: org %d over budget on quota delta=%d", ErrOrgBudgetExceeded, orgId, amount)
+	}
+	return nil
 }
 
 // GetOrgMembers 分页读取组织内成员。departmentName 非空时仅返回该部门；

@@ -193,6 +193,33 @@ func TestAddMemberRejectsUserFromAnotherOrganization(t *testing.T) {
 	assert.Equal(t, 2, user.OrganizationId, "跨组织加入必须被拒绝且不改动归属")
 }
 
+// 结算补扣（IncrOrgUsedQuota）也必须遵守组织预算硬上限：实时语音/流式请求的实际消耗常远大于
+// 初始预估，差额通过本函数补记；若不卡上限，成员可用一次超长会话把组织账本推过已付预算。
+func TestIncrOrgUsedQuotaRespectsBudget(t *testing.T) {
+	truncateTables(t)
+	insertOrgForTest(t, 1, 1_000)
+	insertOrgUserForTest(t, 1, 1, OrgRoleMember, 0, 0, "")
+
+	require.NoError(t, IncrOrgUsedQuota(1, 600))
+	assert.Equal(t, int64(600), orgUsedQuotaForTest(t, 1))
+
+	// 再补 600 会突破 1000 上限，必须失败且账本停在 600。
+	err := IncrOrgUsedQuota(1, 600)
+	require.ErrorIs(t, err, ErrOrgBudgetExceeded)
+	assert.Equal(t, int64(600), orgUsedQuotaForTest(t, 1), "超额补扣不得改动账本")
+
+	// 恰好补到上限放行。
+	require.NoError(t, IncrOrgUsedQuota(1, 400))
+	assert.Equal(t, int64(1_000), orgUsedQuotaForTest(t, 1))
+
+	// 不限量组织（quota<=0）不受上限约束。
+	truncateTables(t)
+	insertOrgForTest(t, 2, 0)
+	insertOrgUserForTest(t, 2, 2, OrgRoleMember, 0, 0, "")
+	require.NoError(t, IncrOrgUsedQuota(2, 10_000_000))
+	assert.Equal(t, int64(10_000_000), orgUsedQuotaForTest(t, 2))
+}
+
 // TestGetOrgMembersExcludesRoles 验证「组织管理员看不到所有者、部门管理员看不到所有者与管理员」
 // 的可见性过滤。过滤发生在数据层（GetOrgMembers 的 org_role NOT IN 条件），后端控制器据此
 // 把对应角色从成员列表与细分数据中剔除，前端列表自动不再渲染这些行。
