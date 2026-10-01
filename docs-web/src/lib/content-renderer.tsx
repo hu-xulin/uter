@@ -39,17 +39,17 @@ export function ContentSection({
     <section className='mt-8'>
       <h2
         id={id}
-        className='mb-4 text-2xl font-bold tracking-tight text-fd-foreground'
+        className='mb-4 text-doc-h2 font-semibold tracking-tight text-fd-foreground'
       >
         {heading}
       </h2>
       {paragraphs.map((p, i) => (
-        <p key={i} className='mb-3 text-sm leading-relaxed text-fd-muted-foreground'>
+        <p key={i} className='mb-3 text-doc-body leading-relaxed text-fd-muted-foreground'>
           {p}
         </p>
       ))}
       {list ? (
-        <ul className='mb-4 ml-6 list-disc space-y-1.5 text-sm text-fd-muted-foreground'>
+        <ul className='mb-4 ml-6 list-disc space-y-1.5 text-doc-body text-fd-muted-foreground'>
           {list.map((item, i) => (
             <li key={i}>{item}</li>
           ))}
@@ -59,17 +59,17 @@ export function ContentSection({
         <div key={i} className='mt-6'>
           <h3
             id={subIds?.[i]}
-            className='mb-3 text-lg font-semibold text-fd-foreground'
+            className='mb-3 text-doc-h2 font-semibold text-fd-foreground'
           >
             {sub.heading}
           </h3>
           {sub.paragraphs.map((p, j) => (
-            <p key={j} className='mb-2 text-sm leading-relaxed text-fd-muted-foreground'>
+            <p key={j} className='mb-2 text-doc-body leading-relaxed text-fd-muted-foreground'>
               {p}
             </p>
           ))}
           {sub.list ? (
-            <ul className='mb-4 ml-6 list-disc space-y-1.5 text-sm text-fd-muted-foreground'>
+            <ul className='mb-4 ml-6 list-disc space-y-1.5 text-doc-body text-fd-muted-foreground'>
               {sub.list.map((item, k) => (
                 <li key={k}>{item}</li>
               ))}
@@ -111,7 +111,7 @@ export function AboutChapterBody({
         <div key={i} className='mt-6'>
           <h3
             id={subIds?.[i]}
-            className='mb-3 text-lg font-semibold text-fd-foreground'
+            className='mb-3 text-doc-h2 font-semibold text-fd-foreground'
           >
             {sub.heading}
           </h3>
@@ -139,10 +139,10 @@ export function AboutChapterBody({
                 />
               ) : null}
               <div className='flex min-w-0 flex-col gap-0.5'>
-                <span className='text-base font-semibold text-fd-foreground'>
+                <span className='text-doc-body font-semibold text-fd-foreground'>
                   {sub.profile.name}
                 </span>
-                <span className='text-sm text-fd-muted-foreground'>
+                <span className='text-doc-body text-fd-muted-foreground'>
                   {sub.profile.role}
                 </span>
               </div>
@@ -151,7 +151,7 @@ export function AboutChapterBody({
           {sub.paragraphs?.map((paragraph, j) => (
             <p
               key={j}
-              className='mb-2 text-sm leading-relaxed text-fd-muted-foreground'
+              className='mb-2 text-doc-body leading-relaxed text-fd-muted-foreground'
             >
               {paragraph}
             </p>
@@ -163,10 +163,10 @@ export function AboutChapterBody({
                   key={k}
                   className='rounded-lg border border-fd-border bg-fd-card/40 p-4'
                 >
-                  <dt className='text-sm font-semibold text-fd-foreground'>
+                  <dt className='text-doc-body font-semibold text-fd-foreground'>
                     {entry.label}
                   </dt>
-                  <dd className='mt-1 text-sm leading-relaxed text-fd-muted-foreground'>
+                  <dd className='mt-1 text-doc-body leading-relaxed text-fd-muted-foreground'>
                     {entry.value}
                   </dd>
                 </div>
@@ -176,7 +176,7 @@ export function AboutChapterBody({
           {sub.email ? (
             <a
               href={`mailto:${sub.email}`}
-              className='text-sm font-medium text-fd-primary'
+              className='text-doc-body font-medium text-fd-primary'
             >
               {sub.email}
             </a>
@@ -184,7 +184,7 @@ export function AboutChapterBody({
         </div>
       ))}
       {section.closing?.map((paragraph, i) => (
-        <p key={i} className='mt-4 text-sm leading-relaxed text-fd-muted-foreground'>
+        <p key={i} className='mt-4 text-doc-body leading-relaxed text-fd-muted-foreground'>
           {paragraph}
         </p>
       ))}
@@ -226,7 +226,7 @@ function PartnerWall({
 
         return (
           <div key={group} className='mt-5 first:mt-0'>
-            <h4 className='mb-3 text-sm font-semibold text-fd-foreground'>
+            <h4 className='mb-3 text-doc-body font-semibold text-fd-foreground'>
               {PARTNER_GROUP_LABELS[group][locale]}
             </h4>
             <ul className='grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4'>
@@ -239,7 +239,7 @@ function PartnerWall({
                   >
                     <PartnerLogo id={partner.id} monogram={monogram(name)} />
                     <span className='flex min-w-0 flex-col'>
-                      <span className='truncate text-sm font-medium text-fd-foreground'>
+                      <span className='truncate text-doc-body font-medium text-fd-foreground'>
                         {name}
                       </span>
                       <span className='truncate text-xs text-fd-muted-foreground'>
@@ -293,11 +293,11 @@ export function ContentCardGrid({
             href={item.url}
             className='flex h-full flex-col rounded-lg border border-fd-border bg-fd-card/40 p-4 transition-colors hover:border-fd-primary/40 hover:bg-fd-primary/5'
           >
-            <span className='text-base font-semibold text-fd-foreground'>
+            <span className='text-doc-body font-semibold text-fd-foreground'>
               {item.title}
             </span>
             {item.teaser ? (
-              <span className='mt-2 text-sm leading-relaxed text-fd-muted-foreground'>
+              <span className='mt-2 text-doc-body leading-relaxed text-fd-muted-foreground'>
                 {item.teaser}
               </span>
             ) : null}
@@ -334,14 +334,14 @@ export function FeatureList({
       {heading ? (
         <h2
           id={headingId}
-          className='mt-8 mb-4 text-2xl font-bold tracking-tight text-fd-foreground'
+          className='mt-8 mb-4 text-doc-h2 font-semibold tracking-tight text-fd-foreground'
         >
           {heading}
         </h2>
       ) : null}
       <ol className='mt-6 space-y-3'>
         {features.map((feature, i) => (
-          <li key={i} className='text-sm leading-relaxed text-fd-muted-foreground'>
+          <li key={i} className='text-doc-body leading-relaxed text-fd-muted-foreground'>
             <span className='mr-2 font-semibold text-fd-foreground'>{i + 1}.</span>
             {feature}
           </li>
@@ -351,12 +351,12 @@ export function FeatureList({
         <div key={i} className='mt-6 rounded-lg border border-fd-border bg-fd-card/40 p-4'>
           <h3
             id={detailIds?.[i]}
-            className='mb-2 text-sm font-semibold text-fd-foreground'
+            className='mb-2 text-doc-body font-semibold text-fd-foreground'
           >
             {detail.text}
           </h3>
           {detail.subItems ? (
-            <ol className='ml-6 list-decimal space-y-1.5 text-sm text-fd-muted-foreground'>
+            <ol className='ml-6 list-decimal space-y-1.5 text-doc-body text-fd-muted-foreground'>
               {detail.subItems.map((item, j) => (
                 <li key={j}>{item}</li>
               ))}
@@ -437,7 +437,7 @@ function BlockView({ block, locale }: { block: Block; locale: DocsLocale }) {
   switch (block.kind) {
     case 'paragraph':
       return (
-        <p className='mb-3 text-sm leading-relaxed text-fd-muted-foreground'>
+        <p className='mb-3 text-doc-body leading-relaxed text-fd-muted-foreground'>
           <InlineRuns nodes={block.children} />
         </p>
       );
@@ -448,7 +448,7 @@ function BlockView({ block, locale }: { block: Block; locale: DocsLocale }) {
           <InlineRuns nodes={item} />
         </li>
       ));
-      const className = 'mb-4 ml-6 space-y-1.5 text-sm text-fd-muted-foreground';
+      const className = 'mb-4 ml-6 space-y-1.5 text-doc-body text-fd-muted-foreground';
 
       return block.ordered ? (
         <ol className={`${className} list-decimal`}>{items}</ol>
@@ -512,7 +512,7 @@ function BlockView({ block, locale }: { block: Block; locale: DocsLocale }) {
     case 'table':
       return (
         <div className='not-prose my-4 overflow-x-auto rounded-lg border border-fd-border'>
-          <table className='w-full border-collapse text-sm'>
+          <table className='w-full border-collapse text-doc-body'>
             <thead className='bg-fd-card/40'>
               <tr>
                 {block.head.map((cell, i) => (
@@ -599,7 +599,7 @@ export function BlockSection({
     <section className='mt-8 first:mt-0'>
       <h2
         id={id}
-        className='mb-4 text-2xl font-bold tracking-tight text-fd-foreground'
+        className='mb-4 text-doc-h2 font-semibold tracking-tight text-fd-foreground'
       >
         {heading}
       </h2>
@@ -608,7 +608,7 @@ export function BlockSection({
         <div key={i} className='mt-6'>
           <h3
             id={subIds?.[i]}
-            className='mb-3 text-lg font-semibold text-fd-foreground'
+            className='mb-3 text-doc-h2 font-semibold text-fd-foreground'
           >
             {sub.heading}
           </h3>

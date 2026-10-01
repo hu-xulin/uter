@@ -52,6 +52,31 @@
   --color-fd-ring: var(--color-neutral-400);
 }
 
+/*
+ * ── Docs / About content type scale — GitHub-aligned 3 tiers ───────
+ *
+ * The documentation and about pages standardized on three steps, taken
+ * from GitHub's markdown scale (h1 = 2em, h2 = 1.5em, body = 1em on a
+ * 16px base):
+ *
+ *   --text-doc-h1  一级标题 (page title) … 32px
+ *   --text-doc-h2  二级标题 (h2 / h3) ……… 24px
+ *   --text-doc-body 正文 (p / li / td / …)  16px
+ *
+ * These generate the `text-doc-*` utilities used by `content-renderer`
+ * and the prose override at the end of this file. Weights stay out of
+ * the tokens: headings are 600 (semibold) and body 400, matching the
+ * SPA's GitHub vocabulary.
+ */
+@theme {
+  --text-doc-h1: 2rem;
+  --text-doc-h1--line-height: 2.5rem;
+  --text-doc-h2: 1.5rem;
+  --text-doc-h2--line-height: 2rem;
+  --text-doc-body: 1rem;
+  --text-doc-body--line-height: 1.625rem;
+}
+
 .dark {
   --color-fd-background: var(--color-neutral-950);
   --color-fd-foreground: var(--color-neutral-50);
@@ -457,4 +482,46 @@ html[data-docs-embed='true'] {
  */
 html[data-docs-embed='true'] #nd-subnav > a {
   display: none !important;
+}
+
+/*
+ * ── Docs & About content typography — bind to the 3-tier scale ─────
+ *
+ * The brief: the documentation and about pages used an ad-hoc mix of
+ * sizes (text-2xl/font-bold on h2, text-lg on h3, text-base on cards,
+ * text-sm on body). This pins every content page to the three GitHub
+ * steps declared in the `@theme` block above:
+ *
+ *   一级标题  `#nd-page > h1` (the DocsTitle) … 32px, weight 600
+ *   二级标题  `.prose :is(h2, h3)` …………………… 24px, weight 600
+ *   正文      `.prose :is(p, li, td, …)` …………… 16px, weight 400
+ *
+ * The headings follow GitHub's markdown weight (600, not 700) so the
+ * framed docs read with the same voice as the SPA. The prose rules win
+ * over Fumadocs' defaults because those ship inside `:where()` (zero
+ * specificity); `#nd-page > h1` is unlayered and outranks the title's
+ * own `text-[1.75em]` utility. Code fences and image captions keep
+ * their smaller meta size — they are not content headings or body.
+ */
+#nd-page > h1 {
+  font-size: var(--text-doc-h1);
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+}
+
+.prose {
+  font-size: var(--text-doc-body);
+  line-height: 1.625;
+}
+
+.prose :is(h2, h3) {
+  font-size: var(--text-doc-h2);
+  font-weight: 600;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+}
+
+.prose :is(p, li, td, th, blockquote, dd, dt) {
+  font-size: var(--text-doc-body);
 }
