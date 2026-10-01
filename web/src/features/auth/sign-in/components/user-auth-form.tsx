@@ -308,7 +308,7 @@ export function UserAuthForm({
             variant='outline'
             disabled={passkeyButtonDisabled}
             onClick={handlePasskeyLogin}
-            className='h-11 w-full justify-center gap-2 rounded-lg'
+            className='h-11 w-full justify-center gap-2 rounded-lg hover:bg-primary hover:text-primary-foreground hover:border-transparent dark:hover:bg-primary dark:hover:text-primary-foreground dark:hover:border-transparent hover:[&_svg]:text-primary-foreground dark:hover:[&_svg]:text-primary-foreground'
           >
             {isPasskeyLoading ? (
               <Loader2 className='h-4 w-4 animate-spin' />

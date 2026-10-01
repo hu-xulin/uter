@@ -47,6 +47,7 @@ type ProviderButton = {
   onClick: () => void
   icon?: ReactNode
   disabled?: boolean
+  hoverClassName?: string
 }
 
 export function OAuthProviders({
@@ -89,6 +90,8 @@ export function OAuthProviders({
       onClick: handleGitHubLogin,
       icon: <IconGithub className='h-4 w-4' />,
       disabled: githubButtonDisabled,
+      hoverClassName:
+        'hover:bg-primary hover:text-primary-foreground hover:border-transparent dark:hover:bg-primary dark:hover:text-primary-foreground dark:hover:border-transparent hover:[&_svg]:text-primary-foreground dark:hover:[&_svg]:text-primary-foreground',
     })
   }
 
@@ -159,14 +162,17 @@ export function OAuthProviders({
 
       <div className='flex flex-col gap-2'>
         {providerButtons.map(
-          ({ key, label, onClick, icon, disabled: extraDisabled }) => (
+          ({ key, label, onClick, icon, disabled: extraDisabled, hoverClassName }) => (
             <Button
               key={key}
               variant='outline'
               type='button'
               disabled={disabled || isLoading || extraDisabled}
               onClick={onClick}
-              className='h-11 w-full justify-center gap-2 rounded-lg'
+              className={cn(
+                'h-11 w-full justify-center gap-2 rounded-lg',
+                hoverClassName
+              )}
             >
               {icon}
               {label}
