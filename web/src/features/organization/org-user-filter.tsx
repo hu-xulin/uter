@@ -40,7 +40,7 @@ interface OrgUserFilterProps {
  * 样式与站内「分组」筛选一致（Combobox：选中值显示于框、点击展开、选中项带对号），
  * 两个下拉各自独立、均不可输入（未启用 allowCustomValue），数据源为当前用户可见的
  * 组织成员（后端已按角色做可见性收敛：admin 看不到 owner、部门 admin 仅本部门）。
- * 选「All users」即清空对应维度过滤。
+ * 选默认项（「Username」/「User ID」）即清空对应维度过滤。
  */
 export function OrgUserFilter({
   members,
@@ -52,11 +52,11 @@ export function OrgUserFilter({
 }: OrgUserFilterProps) {
   const { t } = useTranslation()
   const usernameOptions = [
-    { value: '', label: t('All users') },
+    { value: '', label: t('Username') },
     ...members.map((m) => ({ value: m.username, label: m.username })),
   ]
   const userIdOptions = [
-    { value: '', label: t('All users') },
+    { value: '', label: t('User ID') },
     ...members.map((m) => ({
       value: String(m.id),
       label: formatUserId(m.id),
