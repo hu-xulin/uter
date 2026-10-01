@@ -180,7 +180,7 @@ func resolveOrigins(r *http.Request, settings *system_setting.PasskeySettings) (
 			// 如果配置了Origins但过滤后为空，使用自动推导
 			goto autoDetect
 		}
-		return origins, nil
+		return appendLoopbackOriginIfNeeded(r, origins), nil
 	}
 
 autoDetect:
@@ -207,7 +207,7 @@ autoDetect:
 		scheme = "https"
 	}
 	origin := fmt.Sprintf("%s://%s", scheme, host)
-	return []string{origin}, nil
+	return appendLoopbackOriginIfNeeded(r, []string{origin}), nil
 }
 
 func resolveRPID(r *http.Request, settings *system_setting.PasskeySettings, origins []string) (string, error) {
@@ -216,7 +216,9 @@ func resolveRPID(r *http.Request, settings *system_setting.PasskeySettings, orig
 	// 不匹配会让本地开发环境永远无法注册 Passkey（originsForRPID 过滤后为空 ->
 	// ErrRPIDUnavailable）。仅当请求或配置的 Origin 为回环地址时生效，生产 https
 	// 场景不受影响。
-	if isLoopbackOrigin(r.Header.Get("Origin")) {
+	// 同源请求浏览器不会发送 Origin 头，因此不能只依赖 Origin 头判断回环。
+	// 改用请求 host 本身：localhost:3000 等回环 host 一律归到 localhost RP ID。
+	if isLoopbackOrigin(r.Host) || isLoopbackOrigin(r.Header.Get("Origin")) {
 		return "localhost", nil
 	}
 	for _, origin := range origins {
@@ -249,6 +251,36 @@ func isLoopbackOrigin(origin string) bool {
 	}
 	host := strings.ToLower(parsed.Hostname())
 	return host == "localhost" || host == "127.0.0.1" || host == "::1"
+}
+
+// appendLoopbackOriginIfNeeded 在访问方位于回环地址（localhost / 127.0.0.1）时，
+// 把当前请求的回环 Origin 追加进允许列表。WebAuthn 把回环视为 secure context，
+// 因此本地开发（如 http://localhost:3000）注册的 localhost Passkey 必须可用，
+// 即使 ServerAddress 指向生产域名、Origins 被默认钉成生产地址导致匹配不上。
+// 非回环（真实）域名不受影响，Origins 配置原样返回。
+func appendLoopbackOriginIfNeeded(r *http.Request, origins []string) []string {
+	if r == nil || r.Host == "" {
+		return origins
+	}
+	host := r.Host
+	if h, _, err := net.SplitHostPort(host); err == nil {
+		host = h
+	}
+	host = strings.ToLower(host)
+	if host != "localhost" && host != "127.0.0.1" && host != "::1" {
+		return origins
+	}
+	scheme := detectScheme(r)
+	if scheme == "" {
+		scheme = "http"
+	}
+	loopOrigin := fmt.Sprintf("%s://%s", scheme, r.Host)
+	for _, o := range origins {
+		if strings.EqualFold(strings.TrimSpace(o), loopOrigin) {
+			return origins
+		}
+	}
+	return append(origins, loopOrigin)
 }
 
 func hostWithoutPort(host string) string {
