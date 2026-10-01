@@ -255,16 +255,17 @@ export function ChatPresetsItem({ item }: { item: NavChatPresets }) {
   const href = useLocation({ select: (location) => location.href })
   const normalizedHref = normalizeHref(href)
   // 「聊天」没有可导航的 /chat 索引路由 —— 点击父项只是展开子预设列表，
-  // 路径不变。所以选中态改由展开状态驱动：展开即高亮并保持，收起且不在
-  // 聊天页时才取消；否则点击后只会留下 CSS :active 的一闪就回落成未选中。
+  // 路径不变。因此「选中态」只能由路由驱动：当前在 /chat/* 下才高亮，与侧栏
+  // 其它条目互斥，保证任意时刻只有一个选中项。单纯展开（open）仅控制子列表
+  // 显隐，不再作为高亮依据，否则停留在其它页面（如 /playground）展开聊天时，
+  // 会出现「游乐场 + 聊天」同时高亮的错误。
   const [open, setOpen] = useState(() => normalizedHref.startsWith('/chat'))
-  // 路径一旦变化就把展开态同步为「是否在聊天区」：进入 /chat 自动展开并
-  // 选中，离开（例如点了「概览」）则收起并取消选中。依赖是 normalizedHref，
-  // 所以路径不变时不会覆盖用户手动展开/收起的结果。
+  // 路径变化且确实进入 / 离开聊天区时自动展开 / 收起；路径不变时不覆盖用户
+  // 手动展开 / 收起的结果。
   useEffect(() => {
     setOpen(normalizedHref.startsWith('/chat'))
   }, [normalizedHref])
-  const chatActive = normalizedHref.startsWith('/chat') || open
+  const chatActive = normalizedHref.startsWith('/chat')
   const [loadingPresetId, setLoadingPresetId] = useState<string | null>(null)
   const loadingPresetIdRef = useRef<string | null>(null)
   const [pendingPreset, setPendingPreset] = useState<ChatPreset | null>(null)
