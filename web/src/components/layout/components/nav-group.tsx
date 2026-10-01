@@ -46,7 +46,6 @@ import {
   SidebarMenuSubItem,
   useSidebar,
 } from '@/components/ui/sidebar'
-import { cn } from '@/lib/utils'
 
 import { checkIsActive } from '../lib/url-utils'
 import type {
@@ -129,12 +128,12 @@ function SidebarMenuLink({ item, href }: { item: NavLink; href: string }) {
       <SidebarMenuButton
         isActive={isActive}
         tooltip={item.title}
-        // The active row is called out twice over: the theme already swaps
-        // its colour (`data-active:text-primary`), and it is also bumped one
-        // weight up (500 → 600) so the selection survives without colour —
-        // the same 首页 logic the public header uses. Inactive rows stay at
-        // 500, so the whole column keeps one even texture.
-        className={cn('font-medium', isActive && 'font-semibold')}
+        // The active row is called out by colour only — the theme swaps its
+        // colour via `data-active:text-primary`. Its weight stays at 500, the
+        // same as every other row, so the whole column keeps one even texture.
+        // (The top nav, by contrast, also bolds its active item — that is the
+        // 首页 logic, and it lives in top-nav / public-header.)
+        className='font-medium'
         render={
           <Link
             to={item.url}
@@ -184,19 +183,16 @@ function SidebarMenuCollapsible({
     >
       <CollapsibleTrigger
         className='group/collapsible-trigger'
-        render={
-          <SidebarMenuButton
-            tooltip={item.title}
-            className={cn(
-              'font-medium',
+          render={
+            <SidebarMenuButton
+              tooltip={item.title}
               // No `isActive` here: the parent row deliberately keeps its
-              // plain background (only the child that matches gets the
-              // highlight), but it still takes the selected weight when one
-              // of its sub-items is the current page.
-              isSubItemActive && 'font-semibold'
-            )}
-          />
-        }
+              // plain background — only the matching child gets the colour
+              // highlight. Weight stays at 500 either way, matching the rest
+              // of the column.
+              className='font-medium'
+            />
+          }
       >
         {item.icon && <item.icon className='shrink-0' />}
         <span className='min-w-0 flex-1 truncate'>{item.title}</span>
@@ -211,7 +207,7 @@ function SidebarMenuCollapsible({
               <SidebarMenuSubItem key={subItem.title}>
                 <SidebarMenuSubButton
                   isActive={isSubActive}
-                  className={cn('font-medium', isSubActive && 'font-semibold')}
+                  className='font-medium'
                   render={
                     <Link
                       to={subItem.url}
@@ -255,7 +251,7 @@ function SidebarMenuCollapsedDropdown({
             <SidebarMenuButton
               tooltip={item.title}
               isActive={isActive}
-              className={cn('font-medium', isActive && 'font-semibold')}
+              className='font-medium'
             />
           }
         >
