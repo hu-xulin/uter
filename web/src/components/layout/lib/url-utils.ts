@@ -48,6 +48,18 @@ function docsPathFor(locale: DocsLocaleCode): string {
 }
 
 /**
+ * In-app legal document routes rendered inside the docs shell. The footer
+ * (see `footer.tsx#LEGAL_ROUTES`) routes these left-clicks here so the reader
+ * stays under the app chrome; they must highlight the 文档 (Docs) top-nav
+ * entry, so the Docs link claims them via `activeUrls`.
+ */
+export const DOCS_LEGAL_ROUTE_PATHS = [
+  '/user-agreement',
+  '/privacy-policy',
+  '/recharge-agreement',
+] as const
+
+/**
  * Convert LinkProps['to'] to string
  * Handles both string URLs and object URLs (e.g., { pathname, search })
  */
@@ -201,6 +213,9 @@ export function isTopNavLinkActive(
   pathname: string,
   link: TopNavLink
 ): boolean {
+  // Explicitly associated routes (e.g. legal docs under the Docs area) light
+  // up this link even when `href` itself is external.
+  if (link.activeUrls?.includes(pathname)) return true
   if (link.external) return false
   const href = link.href
   return pathname === href || (href !== '/' && pathname.startsWith(`${href}/`))
