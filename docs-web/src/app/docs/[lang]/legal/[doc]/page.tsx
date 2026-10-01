@@ -67,7 +67,12 @@ export default async function LegalPage(props: {
 
   return (
     <DocsShell locale={locale} title={page.title} toc={page.toc}>
-      <MarkdownBody html={page.html} />
+      {/* `legal-doc` scopes the metadata-table nowrap rule in global.css so
+          the opening 项目/内容 table stays on one line, matching the user
+          agreement. Only the first table (the metadata block) is targeted. */}
+      <div className="legal-doc">
+        <MarkdownBody html={page.html} />
+      </div>
     </DocsShell>
   );
 }

@@ -525,3 +525,28 @@ html[data-docs-embed='true'] #nd-subnav > a {
 .prose :is(p, li, td, th, blockquote, dd, dt) {
   font-size: var(--text-doc-body);
 }
+
+/*
+ * ── Legal metadata table — single-line 项目/内容 ─────────────────────
+ *
+ * Every legal page opens with the same `| 项目 | 内容 |` metadata table
+ * (it is the first `<table>` on the page). The recharge agreement's
+ * opening table must read exactly like the user agreement's — each cell on
+ * one line, no wrapping — so the 缔约主体 / 适用对象 / 配套文件 rows stay
+ * compact and aligned. `white-space: nowrap` forces a single line per
+ * cell; the `display: block` + `max-width: 100%` + `overflow-x: auto`
+ * trio lets an over-long cell scroll sideways instead of breaking the
+ * column layout. The `:first-of-type` guard keeps the recharge
+ * agreement's second table (the 摘要 Q&A block) wrapping normally.
+ */
+.legal-doc .prose table:first-of-type {
+  display: block;
+  width: max-content;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.legal-doc .prose table:first-of-type th,
+.legal-doc .prose table:first-of-type td {
+  white-space: nowrap;
+}
