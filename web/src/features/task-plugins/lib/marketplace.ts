@@ -338,3 +338,51 @@ export function isDefaultMarketplaceSource(indexUrl: string): boolean {
     normalized === GITHUB_MARKETPLACE_INDEX_URL
   )
 }
+
+/**
+ * The gateway ships its own plugin index under /plugins, so an index served
+ * from the same origin as this UI belongs to the deployment itself rather than
+ * to a third party.
+ */
+export function isSelfHostedMarketplaceSource(indexUrl: string): boolean {
+  if (typeof window === 'undefined') return false
+  try {
+    return (
+      new URL(indexUrl, window.location.origin).origin ===
+      window.location.origin
+    )
+  } catch {
+    return false
+  }
+}
+
+/**
+ * Official sources are the built-in indexes plus the index this gateway serves
+ * itself. Everything else is third-party.
+ */
+export function isOfficialMarketplaceSource(indexUrl: string): boolean {
+  return (
+    isDefaultMarketplaceSource(indexUrl) ||
+    isSelfHostedMarketplaceSource(indexUrl)
+  )
+}
+
+/** Heading shown for indexes published by the project. */
+export const MARKETPLACE_OFFICIAL_INDEX_NAME = 'Uter Official Plugins'
+
+/**
+ * An index name comes from whoever hosts the index, so a remote one can still
+ * carry the previous project name. Official sources always render the current
+ * brand name; other sources keep their own name with the legacy brand renamed.
+ */
+export function marketplaceIndexDisplayName(args: {
+  indexName?: string
+  sourceName: string
+  isOfficial: boolean
+}): string {
+  if (args.isOfficial) return MARKETPLACE_OFFICIAL_INDEX_NAME
+  const raw = args.indexName?.trim() || args.sourceName
+  return raw
+    .replaceAll(/\bNew API\b/g, 'Uter')
+    .replaceAll(/\bUter\.ai\b/g, 'Uter')
+}

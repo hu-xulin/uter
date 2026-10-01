@@ -33,11 +33,16 @@ import {
 import { Skeleton } from '@/components/ui/skeleton'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 
-import { fetchMarketplaceIndex, listMarketplaceSources, listTaskPlugins } from '../api'
+import {
+  fetchMarketplaceIndex,
+  listMarketplaceSources,
+  listTaskPlugins,
+} from '../api'
 import {
   deriveInstallState,
   indexHasIntegrityHashes,
-  isDefaultMarketplaceSource,
+  isOfficialMarketplaceSource,
+  marketplaceIndexDisplayName,
 } from '../lib/marketplace'
 import type { MarketplaceIndex, MarketplaceSource } from '../types'
 import {
@@ -190,7 +195,7 @@ type MarketplaceSourceSectionProps = {
 
 function MarketplaceSourceSection(props: MarketplaceSourceSectionProps) {
   const { t } = useTranslation()
-  const isOfficial = isDefaultMarketplaceSource(props.source.index_url)
+  const isOfficial = isOfficialMarketplaceSource(props.source.index_url)
   const missingHashes = props.index
     ? !indexHasIntegrityHashes(props.index)
     : false
@@ -199,15 +204,13 @@ function MarketplaceSourceSection(props: MarketplaceSourceSectionProps) {
     <section className='space-y-3'>
       <div className='flex flex-wrap items-center gap-2'>
         <h3 className='text-sm font-semibold'>
-          {props.index?.name || props.source.name}
+          {marketplaceIndexDisplayName({
+            indexName: props.index?.name,
+            sourceName: props.source.name,
+            isOfficial,
+          })}
         </h3>
-        {isOfficial ? (
-          <Badge variant='secondary'>{t('Official')}</Badge>
-        ) : (
-          <Badge variant='destructive'>
-            {t('Third-party — use at your own risk')}
-          </Badge>
-        )}
+        {isOfficial && <Badge variant='secondary'>{t('Official')}</Badge>}
         {missingHashes && (
           <Badge variant='destructive'>
             <TriangleAlert aria-hidden='true' />

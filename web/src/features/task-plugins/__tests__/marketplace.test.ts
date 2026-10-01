@@ -26,8 +26,11 @@ import {
   GITHUB_MARKETPLACE_INDEX_URL,
   indexHasIntegrityHashes,
   isDefaultMarketplaceSource,
+  isOfficialMarketplaceSource,
   isStaleFactoryOverride,
+  MARKETPLACE_OFFICIAL_INDEX_NAME,
   marketplaceBuiltInVersion,
+  marketplaceIndexDisplayName,
   parseMarketplaceIndex,
   resolvePluginSourceUrl,
 } from '../lib/marketplace'
@@ -694,5 +697,67 @@ describe('marketplace display metadata', () => {
     })
     assert.equal(index.plugins.length, 1)
     assert.equal(index.plugins[0].website, undefined)
+  })
+})
+
+describe('marketplace source branding', () => {
+  test('built-in indexes are official', () => {
+    assert.equal(isOfficialMarketplaceSource(OFFICIAL_INDEX_URL), true)
+    assert.equal(
+      isOfficialMarketplaceSource(GITHUB_MARKETPLACE_INDEX_URL),
+      true
+    )
+  })
+
+  test('an unrelated index is not official', () => {
+    assert.equal(
+      isOfficialMarketplaceSource('https://example.com/index.json'),
+      false
+    )
+  })
+
+  test('official sources always render the current brand name', () => {
+    // Indexes are published remotely, so an official one can still carry the
+    // previous project name; the UI must not display it.
+    assert.equal(
+      marketplaceIndexDisplayName({
+        indexName: 'New API Official Plugins',
+        sourceName: 'GitHub',
+        isOfficial: true,
+      }),
+      MARKETPLACE_OFFICIAL_INDEX_NAME
+    )
+    assert.equal(MARKETPLACE_OFFICIAL_INDEX_NAME, 'Uter Official Plugins')
+  })
+
+  test('other sources keep their own name with the legacy brand renamed', () => {
+    assert.equal(
+      marketplaceIndexDisplayName({
+        indexName: 'New API Official Plugins',
+        sourceName: 'Mirror',
+        isOfficial: false,
+      }),
+      'Uter Official Plugins'
+    )
+    assert.equal(
+      marketplaceIndexDisplayName({
+        indexName: 'Uter.ai Community Plugins',
+        sourceName: 'Mirror',
+        isOfficial: false,
+      }),
+      'Uter Community Plugins'
+    )
+    assert.equal(
+      marketplaceIndexDisplayName({
+        indexName: 'Acme Plugins',
+        sourceName: 'Acme',
+        isOfficial: false,
+      }),
+      'Acme Plugins'
+    )
+    assert.equal(
+      marketplaceIndexDisplayName({ sourceName: 'Acme', isOfficial: false }),
+      'Acme'
+    )
   })
 })
