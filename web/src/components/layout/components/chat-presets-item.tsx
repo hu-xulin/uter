@@ -254,11 +254,13 @@ export function ChatPresetsItem({ item }: { item: NavChatPresets }) {
   const { data: activeChatKey } = useActiveChatKey(true)
   const href = useLocation({ select: (location) => location.href })
   const normalizedHref = normalizeHref(href)
-  // 「聊天」没有可导航的 /chat 索引路由 —— 点击父项只是展开子预设列表，
-  // 路径不变。因此「选中态」只能由路由驱动：当前在 /chat/* 下才高亮，与侧栏
-  // 其它条目互斥，保证任意时刻只有一个选中项。单纯展开（open）仅控制子列表
-  // 显隐，不再作为高亮依据，否则停留在其它页面（如 /playground）展开聊天时，
-  // 会出现「游乐场 + 聊天」同时高亮的错误。
+  // 「聊天」没有可导航的 /chat 索引路由 —— 选中态只能由路由驱动：当前在
+  // /chat/* 下才高亮，与侧栏其它条目互斥，保证任意时刻只有一个选中项。单纯
+  // 展开（open）仅控制子列表显隐，不作为高亮依据，否则停留在其它页面
+  // （如 /playground）展开聊天时会出现「游乐场 + 聊天」同时高亮的错误。
+  // 但反过来：当停留在 /playground 等非聊天页面时，点击聊天父项必须真正
+  // 导航到首个 web 预设（见 handleParentActivate），否则父项永远无法被选中、
+  // 游乐场也始终高亮。导航后路由进入 /chat/*，高亮随之切换，互斥关系不变。
   const [open, setOpen] = useState(() => normalizedHref.startsWith('/chat'))
   // 路径变化且确实进入 / 离开聊天区时自动展开 / 收起；路径不变时不覆盖用户
   // 手动展开 / 收起的结果。
@@ -274,6 +276,23 @@ export function ChatPresetsItem({ item }: { item: NavChatPresets }) {
     () => chatPresets.filter((preset) => preset.type !== 'fluent'),
     [chatPresets]
   )
+
+  // 点击「聊天」父项时应落到的默认页面：优先首个 web 预设（可在站内 iframe
+  // 渲染），否则退回到第一个预设，保证父项一定能被“选中”（路由进入 /chat/*）。
+  const firstChatId = useMemo(() => {
+    const web = chatPresets.find((preset) => preset.type === 'web')
+    const target = web ?? chatPresets[0]
+    return target?.id ?? null
+  }, [chatPresets])
+
+  // 仅当当前不在 /chat/* 下才导航：点击父项即“选中”聊天，并取消游乐场等其它
+  // 条目的高亮（选中态由路由驱动）。已进入 /chat/* 时交给 Collapsible 自带
+  // 的展开 / 收起逻辑，避免重复导航。
+  const handleParentActivate = useCallback(() => {
+    if (chatActive || firstChatId == null) return
+    navigate({ to: '/chat/$chatId', params: { chatId: firstChatId } })
+    setOpenMobile(false)
+  }, [chatActive, firstChatId, navigate, setOpenMobile])
 
   const openPreset = useCallback(
     (preset: ChatPreset, apiKey?: string) => {
@@ -442,6 +461,7 @@ export function ChatPresetsItem({ item }: { item: NavChatPresets }) {
       >
         <CollapsibleTrigger
           className='group/collapsible-trigger'
+          onClick={handleParentActivate}
           render={
             <SidebarMenuButton
               isActive={chatActive}
