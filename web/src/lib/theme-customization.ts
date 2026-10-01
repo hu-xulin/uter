@@ -89,21 +89,22 @@ export type ContentLayout = 'full' | 'centered'
  *
  * - `default` — resolve at runtime from the active preset
  *   (see `PRESET_DEFAULT_FONT`). The shipped `default` preset resolves to
- *   `sans` (the GitHub-style system stack, now the default UI voice);
- *   `anthropic` resolves to `serif`. Other named color presets fall back
- *   to `sans` unless they list a different choice. Mirrors how
- *   `radius: 'default'` defers to a per-preset hint.
+ *   `inter` (the project's primary UI typeface); `anthropic` resolves to
+ *   `serif`. Other named color presets fall back to `inter` unless they
+ *   list a different choice. Mirrors how `radius: 'default'` defers to a
+ *   per-preset hint.
+ * - `inter` — Inter (variable, see `--font-inter` in theme.css): the
+ *   project's default UI voice, with the same OS + CJK + emoji fallback
+ *   ladder as the system stack. Full 400/500/600/700 weight range.
  * - `sans` — GitHub-style system font stack (see `--font-sans` in
- *   theme.css): OS UI face first, explicit CJK fallbacks. The default UI
- *   font; full 400/500/600 weight range native on every platform.
+ *   theme.css): OS UI face first, explicit CJK fallbacks. An opt-in axis
+ *   for users who prefer the OS-native face; full 400/500/600 weight
+ *   range native on every platform.
  * - `serif` — editorial serif (Lora + CJK fallbacks), the project's
  *   "soul" typography. Inherits across the whole UI; monospace contexts
  *   keep their own family via Tailwind preflight and `.font-mono`.
- * - `alibaba` — brand display face (Alibaba PuHuiTi 3.0, see
- *   `--font-alibaba`). Kept available as an opt-in axis so users can
- *   return the product to the original brand typeface.
  */
-export type ThemeFont = 'default' | 'sans' | 'serif' | 'alibaba'
+export type ThemeFont = 'default' | 'inter' | 'sans' | 'serif'
 
 /**
  * The resolved (non-`default`) font value applied to the DOM. The provider
@@ -135,9 +136,9 @@ export const THEME_PRESET_VALUES = new Set(
 
 export const THEME_FONT_VALUES: ReadonlySet<ThemeFont> = new Set([
   'default',
+  'inter',
   'sans',
   'serif',
-  'alibaba',
 ])
 
 export const THEME_RADIUS_VALUES: ReadonlySet<ThemeRadius> = new Set([
@@ -175,16 +176,16 @@ export const THEME_COOKIE_KEYS = {
  *
  * Co-located with the preset registry so a preset's signature typography
  * is declared in one place. Presets not listed here fall back to the
- * `resolveThemeFont` default of `sans`. The shipped `default` preset
- * opts into `sans` (the GitHub system stack) so the product opens on the
- * OS-native UI voice; `anthropic` keeps the editorial Lora serif for its
- * brand mood. Vivid color presets also stay on the humanist sans so their
- * accents read clearly without competing with the body type.
+ * `resolveThemeFont` default of `inter`. The shipped `default` preset
+ * opts into `inter` (the project's primary UI typeface) so the product
+ * opens in Inter; `anthropic` keeps the editorial Lora serif for its
+ * brand mood. Vivid color presets also stay on Inter so their accents
+ * read clearly without competing with the body type.
  */
 export const PRESET_DEFAULT_FONT: Partial<
   Record<ThemePreset, ResolvedThemeFont>
 > = {
-  default: 'sans',
+  default: 'inter',
   anthropic: 'serif',
 }
 

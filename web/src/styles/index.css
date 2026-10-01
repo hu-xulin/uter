@@ -26,8 +26,12 @@ For commercial licensing, please contact support@Uter.ai.com
  * that activates it. Loaded globally so font-switching is instantaneous
  * with no FOUT once the variable is fetched. */
 @import '@fontsource-variable/lora';
+/* Primary UI typeface — Inter (variable). This is the project's default
+ * body face. See `--font-inter` in theme.css for the full Latin + CJK
+ * fallback stack. Loaded globally so the product opens in Inter with no
+ * FOUT. */
+@import '@fontsource-variable/inter';
 
-@import './alibaba-font.css';
 @import './theme.css';
 @import './theme-presets.css';
 

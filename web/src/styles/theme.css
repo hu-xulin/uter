@@ -26,20 +26,14 @@ For commercial licensing, please contact support@Uter.ai.com
    * platform), then walk through explicit CJK faces so Chinese/Japanese/
    * Korean glyphs resolve deterministically instead of falling to the
    * browser's generic pick. Emoji faces are listed last so they only catch
-   * emoji codepoints. This is the *default* body face; the brand Alibaba
-   * PuHuiTi 3.0 is preserved as a switchable font-axis option
-   * (`[data-theme-font='alibaba']`, see theme-presets.css). */
+   * emoji codepoints. Inter (`--font-inter`) is the project's default
+   * UI typeface; this system stack remains the `sans` font-axis fallback
+   * and the base for the CJK/emoji walk used by every face. */
   --font-sans:
     system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans',
     'Helvetica Neue', Arial, 'PingFang SC', 'Hiragino Sans GB',
     'Microsoft YaHei', 'Noto Sans SC', 'Source Han Sans SC',
     sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
-  /* Brand display face — Alibaba PuHuiTi 3.0. Kept as its own axis so the
-   * wordmark and brand surfaces stay on the loaded face; falls back to the
-   * system stack for any missing glyph. */
-  --font-alibaba:
-    'Alibaba PuHuiTi 3.0', system-ui, -apple-system, 'Segoe UI',
-    'PingFang SC', 'Microsoft YaHei', 'Noto Sans SC', sans-serif;
   /* Editorial serif token — the body face used by the `serif` font axis
    * and by presets that opt in (currently Anthropic). Lora carries only
    * Latin glyphs, so the stack walks through CJK serifs (Noto / Source Han
@@ -53,9 +47,16 @@ For commercial licensing, please contact support@Uter.ai.com
     'Songti SC', 'STSong', 'STSongti-SC-Regular', 'PingFang SC', 'SimSun',
     'NSimSun', '宋体', 'FangSong', '仿宋', 'KaiTi', '楷体', Georgia,
     'Times New Roman', Cambria, 'Liberation Serif', serif;
+  /* Primary UI typeface — Inter (variable). The project's default body
+   * face. Leads with the loaded `Inter Variable` family, then walks the
+   * same OS + CJK + emoji fallback ladder as `--font-sans` so Chinese,
+   * Japanese and Korean glyphs resolve deterministically instead of
+   * falling to the browser's generic pick. */
   --font-inter:
-    -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
-    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    'Inter Variable', 'Inter', system-ui, -apple-system, BlinkMacSystemFont,
+    'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, 'PingFang SC',
+    'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans SC', 'Source Han Sans SC',
+    sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
   --font-manrope:
     -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
     'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
@@ -120,10 +121,11 @@ For commercial licensing, please contact support@Uter.ai.com
   /* Static build-channel fallback consumed when JS hasn't booted yet. */
   --app-rev: '2k6e8r7p';
   /* Currently active body font. The font axis swaps this between
-   * `--font-sans` and `--font-serif` via `[data-theme-font='...']` blocks
-   * in theme-presets.css. Default mirrors `--font-sans` so behavior is
-   * identical when no font preference is set. */
-  --font-body: var(--font-sans);
+   * `--font-inter`, `--font-sans` and `--font-serif` via
+   * `[data-theme-font='...']` blocks in theme-presets.css. Default is
+   * `--font-inter` so the product opens in Inter with no font preference
+   * set. */
+  --font-body: var(--font-inter);
 
   /* ── Type scale — GitHub 8-step ladder ───────────────────────────────
    * rem values assume a 16px root. Mirrors GitHub's type scale
