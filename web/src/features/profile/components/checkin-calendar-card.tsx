@@ -339,24 +339,24 @@ export function CheckinCalendarCard({
           <>
             {/* Stats */}
             <div className='grid grid-cols-3 gap-px border-b'>
-              <div className='bg-card p-3 text-center sm:p-5'>
-                <div className='text-xl font-semibold tracking-tight tabular-nums sm:text-2xl'>
+              <div className='bg-card p-3 text-center sm:p-4'>
+                <div className='text-lg font-semibold tracking-tight tabular-nums sm:text-xl'>
                   {checkinData?.stats?.total_checkins || 0}
                 </div>
                 <div className='text-muted-foreground mt-0.5 text-[10px] font-medium sm:mt-1 sm:text-xs'>
                   {t('Total check-ins')}
                 </div>
               </div>
-              <div className='bg-card p-3 text-center sm:p-5'>
-                <div className='text-xl font-semibold tracking-tight tabular-nums sm:text-2xl'>
+              <div className='bg-card p-3 text-center sm:p-4'>
+                <div className='text-lg font-semibold tracking-tight tabular-nums sm:text-xl'>
                   {formatQuotaWithCurrency(monthlyQuota, { digitsLarge: 0 })}
                 </div>
                 <div className='text-muted-foreground mt-0.5 text-[10px] font-medium sm:mt-1 sm:text-xs'>
                   {t('This month')}
                 </div>
               </div>
-              <div className='bg-card p-3 text-center sm:p-5'>
-                <div className='text-xl font-semibold tracking-tight tabular-nums sm:text-2xl'>
+              <div className='bg-card p-3 text-center sm:p-4'>
+                <div className='text-lg font-semibold tracking-tight tabular-nums sm:text-xl'>
                   {formatQuotaWithCurrency(
                     checkinData?.stats?.total_quota || 0,
                     {
