@@ -341,9 +341,24 @@ export function OAuthSection(props: OAuthSectionProps) {
     }
 
     const normalized = normalizeFormValues(finalValues)
+    // Provider "enable" switches must be persisted AFTER their credentials.
+    // The backend guard for an enable flag reads the in-memory client id/secret
+    // (common.GitHubClientId etc.), which is only refreshed once the credential
+    // option is saved. Saving enable first would trip the "fill in client id/
+    // secret first" error and abort the batch before credentials are written.
+    const enableKeys = new Set<string>([
+      'GitHubOAuthEnabled',
+      'discord.enabled',
+      'oidc.enabled',
+      'TelegramOAuthEnabled',
+      'LinuxDOOAuthEnabled',
+      'WeChatAuthEnabled',
+    ])
     const changedKeys = (
       Object.keys(normalized) as Array<keyof FlatOAuthDefaults>
-    ).filter((key) => normalized[key] !== baselineRef.current[key])
+    )
+      .filter((key) => normalized[key] !== baselineRef.current[key])
+      .sort((a, b) => Number(enableKeys.has(a)) - Number(enableKeys.has(b)))
 
     if (changedKeys.length === 0) {
       toast.info(t('No changes to save'))
