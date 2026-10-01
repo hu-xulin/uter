@@ -22,6 +22,7 @@ import { useTranslation } from 'react-i18next'
 import { useStatus } from '@/hooks/use-status'
 import { isBundledDocsHref, resolveDocsHref } from '@/lib/docs-link'
 import { parseHeaderNavModulesFromStatus } from '@/lib/nav-modules'
+import { DOCS_LEGAL_ROUTE_PATHS } from '@/components/layout/lib/url-utils'
 import { useAuthStore } from '@/stores/auth-store'
 
 export type TopNavLink = {
@@ -31,6 +32,11 @@ export type TopNavLink = {
   requiresAuth?: boolean
   /** Rendered as a plain anchor: the target is not an SPA route. */
   external?: boolean
+  /**
+   * Extra SPA paths that light up this link even when not descendants of
+   * `href` (see `TopNavLink` in layout/types for full docs).
+   */
+  activeUrls?: string[]
   /**
    * Marks the link as the console / management entry (管理 / Console). It
    * represents the whole management area rather than a single route, so it
@@ -109,6 +115,10 @@ export function useTopNavLinks(): TopNavLink[] {
       title: t('Docs'),
       href: docsLink,
       external: !isBundledDocsHref(docsLink),
+      // Legal docs (/user-agreement, /privacy-policy, /recharge-agreement)
+      // render inside the docs shell but under their own top-level path, so
+      // they must light up the Docs entry rather than fall through to 管理.
+      activeUrls: [...DOCS_LEGAL_ROUTE_PATHS],
     })
   }
 

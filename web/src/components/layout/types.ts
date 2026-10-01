@@ -16,8 +16,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@Uter.ai.com
 */
-import { type LinkProps } from '@tanstack/react-router'
-import { type TFunction } from 'i18next'
+import type { LinkProps } from '@tanstack/react-router'
+import type { TFunction } from 'i18next'
 
 /**
  * Base navigation item type
@@ -98,6 +98,14 @@ export type TopNavLink = {
   requiresAuth?: boolean
   /** Rendered as a plain anchor: the target is not an SPA route. */
   external?: boolean
+  /**
+   * Extra SPA paths that should light up this link, even though they are not
+   * descendants of `href`. Used by the Docs entry to claim the in-app legal
+   * document routes (`/user-agreement`, `/privacy-policy`,
+   * `/recharge-agreement`) which render inside the docs shell but live under
+   * their own top-level path rather than `/docs/`.
+   */
+  activeUrls?: string[]
   /**
    * Marks the link as the console / management entry (管理 / Console). It
    * represents the whole management area rather than a single route, so it
