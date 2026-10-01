@@ -340,6 +340,21 @@ export function isDefaultMarketplaceSource(indexUrl: string): boolean {
 }
 
 /**
+ * Indexes published by the upstream project before the rename. Deployments
+ * configured before the rebrand still point at these URLs, and they are what
+ * the UI currently has to render, so they are treated as official as well.
+ */
+const LEGACY_UPSTREAM_MARKETPLACE_INDEX_URLS = new Set([
+  'https://www.newapi.ai/api/v1/plugins/index.json',
+  'https://raw.githubusercontent.com/QuantumNous/new-api-plugins/main/index.json',
+  'https://cdn.jsdelivr.net/gh/QuantumNous/new-api-plugins@main/index.json',
+])
+
+export function isLegacyUpstreamMarketplaceSource(indexUrl: string): boolean {
+  return LEGACY_UPSTREAM_MARKETPLACE_INDEX_URLS.has(indexUrl.trim())
+}
+
+/**
  * The gateway ships its own plugin index under /plugins, so an index served
  * from the same origin as this UI belongs to the deployment itself rather than
  * to a third party.
@@ -357,18 +372,20 @@ export function isSelfHostedMarketplaceSource(indexUrl: string): boolean {
 }
 
 /**
- * Official sources are the built-in indexes plus the index this gateway serves
+ * Official sources are the built-in indexes, the indexes published by the
+ * upstream project before the rename, and the index this gateway serves
  * itself. Everything else is third-party.
  */
 export function isOfficialMarketplaceSource(indexUrl: string): boolean {
   return (
     isDefaultMarketplaceSource(indexUrl) ||
+    isLegacyUpstreamMarketplaceSource(indexUrl) ||
     isSelfHostedMarketplaceSource(indexUrl)
   )
 }
 
 /** Heading shown for indexes published by the project. */
-export const MARKETPLACE_OFFICIAL_INDEX_NAME = 'Uter Official Plugins'
+export const MARKETPLACE_OFFICIAL_INDEX_NAME = 'Uter.ai Official Plugins'
 
 /**
  * An index name comes from whoever hosts the index, so a remote one can still
@@ -383,6 +400,6 @@ export function marketplaceIndexDisplayName(args: {
   if (args.isOfficial) return MARKETPLACE_OFFICIAL_INDEX_NAME
   const raw = args.indexName?.trim() || args.sourceName
   return raw
-    .replaceAll(/\bNew API\b/g, 'Uter')
-    .replaceAll(/\bUter\.ai\b/g, 'Uter')
+    .replaceAll(/\bNew API\b/g, 'Uter.ai')
+    .replaceAll(/\bnew-api\b/gi, 'Uter.ai')
 }
