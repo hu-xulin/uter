@@ -65,7 +65,7 @@ export function TopNav({ className, links, ...props }: TopNavProps) {
           </DropdownMenuTrigger>
           <DropdownMenuContent side='bottom' align='start'>
             {normalizedLinks.map(({ title, href, disabled, external }) => {
-              const isActive = !external && pathname === href
+              const isActive = !external && (pathname === href || (href !== '/' && pathname.startsWith(`${href}/`)))
               return (
                 <DropdownMenuItem
                   key={`${title}-${href}`}
@@ -109,7 +109,7 @@ export function TopNav({ className, links, ...props }: TopNavProps) {
         {...props}
       >
         {normalizedLinks.map(({ title, href, disabled, external }) => {
-          const isActive = !external && pathname === href
+          const isActive = !external && (pathname === href || (href !== '/' && pathname.startsWith(`${href}/`)))
           if (external) {
             return (
               <a
