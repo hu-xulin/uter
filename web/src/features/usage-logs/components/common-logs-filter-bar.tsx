@@ -40,6 +40,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip'
 import { useOrgManagerScope } from '@/features/organization/use-org-manager'
+import { OrgUserFilter } from '@/features/organization/org-user-filter'
 import { getGroups } from '@/features/users/api'
 import { useMediaQuery } from '@/hooks'
 import { getUserGroups } from '@/lib/api'
@@ -129,8 +130,11 @@ export function CommonLogsFilterBar<TData>(
   const searchParams = route.useSearch()
   const { isAdminView: isAdmin } = useLogsViewScope()
   const { sensitiveVisible, setSensitiveVisible } = useUsageLogsContext()
-  const { isOrgManager } = useOrgManagerScope()
-  // 组织管理者（非平台管理员）与平台管理员一样，用内联「用户名 / 用户ID」文本输入。
+  const { isOrgManager, members: orgMembers, isLoading: orgMembersLoading } =
+    useOrgManagerScope()
+  // 平台管理员：内联「用户名 / 用户ID」文本输入（可见全部用户，下拉不可行）。
+  // 组织管理者（非平台管理员）：改为组织内成员双下拉（OrgUserFilter），仅可在
+  // 自己权限范围内（owner/admin 看全组织，部门 admin 仅本部门）下拉筛选，不可手动输入。
   const showOrgUserFilter = isOrgManager && !isAdmin
   const fetchingLogs = useIsFetching({ queryKey: ['logs'] })
   const { data: adminGroups } = useQuery({
@@ -497,27 +501,42 @@ export function CommonLogsFilterBar<TData>(
     </>
   )
   // 用户名 / 用户ID：与「分组」「所有类型」同模式，常驻主筛选区（仅管理员 / 组织管理者可见）。
+  // 平台管理员保留文本输入；组织管理者改为组织内成员双下拉，仅可在权限范围内下拉筛选、不可手动输入。
   const userDimensionPrimaryFilters = (isAdmin || showOrgUserFilter) && (
     <>
-      <LogsFilterField>
-        <LogsFilterInput
-          placeholder={t('Username')}
-          className={sensitiveInputClass}
-          value={filters.username || ''}
-          onChange={(e) => handleChange('username', e.target.value)}
-          onKeyDown={handleKeyDown}
+      {isAdmin && (
+        <>
+          <LogsFilterField>
+            <LogsFilterInput
+              placeholder={t('Username')}
+              className={sensitiveInputClass}
+              value={filters.username || ''}
+              onChange={(e) => handleChange('username', e.target.value)}
+              onKeyDown={handleKeyDown}
+            />
+          </LogsFilterField>
+          <LogsFilterField>
+            <LogsFilterInput
+              aria-label={t('User ID')}
+              placeholder={t('User ID')}
+              inputMode='numeric'
+              value={userIdInput}
+              onChange={(e) => setUserIdRaw(e.target.value)}
+              onKeyDown={handleKeyDown}
+            />
+          </LogsFilterField>
+        </>
+      )}
+      {showOrgUserFilter && (
+        <OrgUserFilter
+          members={orgMembers}
+          username={filters.username}
+          userId={filters.userId}
+          onUsernameChange={(value) => handleChange('username', value)}
+          onUserIdChange={(value) => handleChange('userId', value)}
+          disabled={orgMembersLoading}
         />
-      </LogsFilterField>
-      <LogsFilterField>
-        <LogsFilterInput
-          aria-label={t('User ID')}
-          placeholder={t('User ID')}
-          inputMode='numeric'
-          value={userIdInput}
-          onChange={(e) => setUserIdRaw(e.target.value)}
-          onKeyDown={handleKeyDown}
-        />
-      </LogsFilterField>
+      )}
     </>
   )
 
