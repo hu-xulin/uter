@@ -22,6 +22,8 @@ import { useTranslation } from 'react-i18next'
 
 import { Combobox } from '@/components/ui/combobox'
 import { formatUserId, parseUserId } from '@/lib/format'
+import { useOrgManagerScope } from '@/features/organization/use-org-manager'
+import { OrgUserFilter } from '@/features/organization/org-user-filter'
 
 import { CompactDateTimeRangePicker } from '../../components/compact-date-time-range-picker'
 import {
@@ -72,6 +74,10 @@ export function AuditLogFilterBar(props: {
   const userIdInput =
     userIdRaw ??
     (props.filters.user_id ? formatUserId(props.filters.user_id) : '')
+  // 组织管理者（scope === 'org'）视角的可见成员列表，供「用户名 / 用户ID」双下拉使用。
+  // 后端已按角色收敛：owner/admin 看全组织，部门 admin 仅本部门。
+  const { members: orgMembers, isLoading: orgMembersLoading } =
+    useOrgManagerScope()
   const dateFilter = (
     <LogsFilterField wide>
       <CompactDateTimeRangePicker
@@ -146,41 +152,56 @@ export function AuditLogFilterBar(props: {
         />
       )}
       {/* 用户名 / 用户ID：与「结果」「分类」同模式，常驻主筛选区；
-          仅平台管理员（all）或组织管理者（org）可见，普通用户（self）只看自己无需此筛选。 */}
-      {props.scope === 'all' || props.scope === 'org' ? (
+          仅平台管理员（all）或组织管理者（org）可见，普通用户（self）只看自己无需此筛选。
+          平台管理员（all）保留文本输入（可见全部用户）；组织管理者（org）改为组织内成员双下拉，
+          仅可在权限范围内下拉筛选、不可手动输入。 */}
+      {(props.scope === 'all' || props.scope === 'org') && (
         <>
-          <LogsFilterField>
-            <LogsFilterInput
-              aria-label={t('Username')}
-              placeholder={t('Username')}
-              value={props.filters.username ?? ''}
-              onChange={(event) =>
-                props.onChange({ username: event.target.value || undefined })
-              }
+          {props.scope === 'all' && (
+            <>
+              <LogsFilterField>
+                <LogsFilterInput
+                  aria-label={t('Username')}
+                  placeholder={t('Username')}
+                  value={props.filters.username ?? ''}
+                  onChange={(event) =>
+                    props.onChange({ username: event.target.value || undefined })
+                  }
+                />
+              </LogsFilterField>
+              <LogsFilterField>
+                <LogsFilterInput
+                  aria-label={t('User ID')}
+                  placeholder={t('User ID')}
+                  inputMode='numeric'
+                  value={userIdInput}
+                  onChange={(event) => {
+                    const raw = event.target.value
+                    setUserIdRaw(raw)
+                    const parsed = parseUserId(raw)
+                    props.onChange({ user_id: parsed > 0 ? parsed : undefined })
+                  }}
+                />
+              </LogsFilterField>
+            </>
+          )}
+          {props.scope === 'org' && (
+            <OrgUserFilter
+              members={orgMembers}
+              username={props.filters.username}
+              userId={props.filters.user_id}
+              onUsernameChange={(value) => props.onChange({ username: value })}
+              onUserIdChange={(value) => props.onChange({ user_id: value })}
+              disabled={orgMembersLoading}
             />
-          </LogsFilterField>
-          <LogsFilterField>
-            <LogsFilterInput
-              aria-label={t('User ID')}
-              placeholder={t('User ID')}
-              inputMode='numeric'
-              value={userIdInput}
-              onChange={(event) => {
-                const raw = event.target.value
-                setUserIdRaw(raw)
-                const parsed = parseUserId(raw)
-                props.onChange({ user_id: parsed > 0 ? parsed : undefined })
-              }}
-            />
-          </LogsFilterField>
+          )}
         </>
-      ) : null}
+      )}
     </>
   )
   const advancedFilters =
-    !props.accessOnly || props.scope === 'all' || props.scope === 'org' ? (
-      <>
-        {!props.accessOnly && (
+    !props.accessOnly || props.scope === 'all' || props.scope === 'org'
+      ? !props.accessOnly && (
           <>
             <LogsFilterField>
               <LogsFilterInput
@@ -205,9 +226,8 @@ export function AuditLogFilterBar(props: {
               />
             </LogsFilterField>
           </>
-        )}
-      </>
-    ) : undefined
+        )
+      : undefined
   const advancedCount = [
     props.filters.token_ref,
     props.filters.request_id,
