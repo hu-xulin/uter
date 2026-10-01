@@ -60,7 +60,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
-import { getFlowQuotaDates } from '@/features/dashboard/api'
+import { getFlowQuotaDates, getOrgFlowQuotaDates } from '@/features/dashboard/api'
 import {
   buildDashboardFlowData,
   buildFlowSankeySpec,
@@ -70,6 +70,7 @@ import {
   getDefaultDays,
   getFlowStages,
 } from '@/features/dashboard/lib'
+import { useDashboardScope } from '@/features/dashboard/hooks/use-dashboard-scope'
 import {
   compactFlowSelectionLabel,
   flowDisplayState,
@@ -260,10 +261,13 @@ export function FlowCharts(props: FlowChartsProps) {
   const user = useAuthStore((state) => state.auth.user)
   const isRoot = Boolean(user?.role && user.role >= ROLE.SUPER_ADMIN)
   const isAdmin = Boolean(user?.role && user.role >= ROLE.ADMIN)
+  const { orgId, isOrgManager } = useDashboardScope()
+  // 组织管理者（非平台管理员）按组织接口拉取数据，但看板列（阶段）按管理员口径展示，
+  // 以便看到 user/Model/Channel 等维度；数据范围仍由后端按角色收敛。
   let flowRole: FlowRole = 'user'
   if (isRoot) {
     flowRole = 'root'
-  } else if (isAdmin) {
+  } else if (isAdmin || isOrgManager) {
     flowRole = 'admin'
   }
   const [metric, setMetric] = useState<FlowMetric>('quota')
@@ -336,9 +340,13 @@ export function FlowCharts(props: FlowChartsProps) {
     isError,
     isLoading,
   } = useQuery({
-    queryKey: ['dashboard', 'flow', flowQueryParams, flowRole],
+    queryKey: ['dashboard', 'flow', flowQueryParams, flowRole, orgId],
     queryFn: async () =>
-      requireServerSuccess(await getFlowQuotaDates(flowQueryParams, isAdmin)),
+      requireServerSuccess(
+        await (orgId
+          ? getOrgFlowQuotaDates(orgId, flowQueryParams)
+          : getFlowQuotaDates(flowQueryParams, isAdmin))
+      ),
     select: (res) =>
       requireSuccessfulFlowRows(res, t('Please try again later.')),
     staleTime: 60_000,
@@ -645,7 +653,7 @@ export function FlowCharts(props: FlowChartsProps) {
         </div>
 
         <div className='flex min-w-0 items-center gap-2 xl:justify-end'>
-          {isAdmin && (
+          {isAdmin || isOrgManager ? (
             <div className='flex min-w-0 flex-col gap-2 sm:flex-row xl:w-[min(24rem,34vw)]'>
               <MultiSelect
                 options={userFilterOptions}
@@ -659,7 +667,7 @@ export function FlowCharts(props: FlowChartsProps) {
                 }
               />
             </div>
-          )}
+          ) : null}
           {isLoading && (
             <Loader2 className='text-muted-foreground size-4 animate-spin' />
           )}

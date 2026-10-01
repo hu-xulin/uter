@@ -511,23 +511,31 @@ const (
 	NoOrgMemberId = -1
 )
 
-// GetOrgMemberIds 返回组织内全部成员的 user id，供以 user_id 为过滤维度的查询使用。
-func GetOrgMemberIds(orgId int) ([]int, error) {
+// GetOrgMemberIds 返回组织内成员的 user id，供以 user_id 为过滤维度的查询使用。
+// excludeRoles 非空时排除指定角色（如组织管理员视角排除所有者），与 orgLogUsernames 对称。
+func GetOrgMemberIds(orgId int, excludeRoles ...string) ([]int, error) {
+	query := DB.Model(&User{}).Where("organization_id = ? AND deleted_at IS NULL", orgId)
+	if len(excludeRoles) > 0 {
+		query = query.Where("org_role NOT IN ?", excludeRoles)
+	}
 	var ids []int
-	err := DB.Model(&User{}).Where("organization_id = ? AND deleted_at IS NULL", orgId).
-		Pluck("id", &ids).Error
+	err := query.Pluck("id", &ids).Error
 	return ids, err
 }
 
 // GetOrgMemberIdsInDepartment 返回组织内指定部门成员的 user id（部门按名称匹配）。
-func GetOrgMemberIdsInDepartment(orgId int, departmentName string) ([]int, error) {
+// excludeRoles 非空时排除指定角色（如部门管理员视角排除所有者与管理员）。
+func GetOrgMemberIdsInDepartment(orgId int, departmentName string, excludeRoles ...string) ([]int, error) {
 	if departmentName == "" {
 		return []int{NoOrgMemberId}, nil
 	}
+	query := DB.Model(&User{}).
+		Where("organization_id = ? AND department_name = ? AND deleted_at IS NULL", orgId, departmentName)
+	if len(excludeRoles) > 0 {
+		query = query.Where("org_role NOT IN ?", excludeRoles)
+	}
 	var ids []int
-	err := DB.Model(&User{}).
-		Where("organization_id = ? AND department_name = ? AND deleted_at IS NULL", orgId, departmentName).
-		Pluck("id", &ids).Error
+	err := query.Pluck("id", &ids).Error
 	return ids, err
 }
 

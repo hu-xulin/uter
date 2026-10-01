@@ -140,3 +140,20 @@ export async function getTaskArtifacts(taskId: string) {
   )
   return parseTaskArtifactsResponse(response.data)
 }
+
+// ============================================================================
+// Organization-scoped Task / Drawing Log APIs (组织管理者视角)
+// ============================================================================
+
+// 组织管理者查看本组织成员的任务日志 / 绘图日志；范围由后端按角色收敛
+// （admin 看不到 owner、部门 admin 只看本部门）。username / user_id 用于在下拉里
+// 进一步筛选单个成员。
+export const getOrganizationTasks = (
+  orgId: number,
+  params: GetTaskLogsParams
+) => fetchLogs(`/api/organization/${orgId}/tasks`, params, true)
+
+export const getOrganizationMidjourney = (
+  orgId: number,
+  params: GetMidjourneyLogsParams
+) => fetchLogs(`/api/organization/${orgId}/drawings`, params, true)

@@ -26,11 +26,15 @@ import { IconBadge } from '@/components/ui/icon-badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useTheme } from '@/context/theme-provider'
-import { getUserQuotaDataByUsers } from '@/features/dashboard/api'
+import {
+  getOrgQuotaDatesByUsers,
+  getUserQuotaDataByUsers,
+} from '@/features/dashboard/api'
 import {
   TIME_GRANULARITY_OPTIONS,
   TIME_RANGE_PRESETS,
 } from '@/features/dashboard/constants'
+import { useDashboardScope } from '@/features/dashboard/hooks/use-dashboard-scope'
 import {
   getDefaultDays,
   saveGranularity,
@@ -75,6 +79,7 @@ interface UserChartsProps {
 export function UserCharts(props: UserChartsProps) {
   const { t } = useTranslation()
   const { resolvedTheme } = useTheme()
+  const { orgId } = useDashboardScope()
   const [themeReady, setThemeReady] = useState(false)
   const themeManagerRef = useRef<
     (typeof import('@visactor/vchart'))['ThemeManager'] | null
@@ -138,9 +143,13 @@ export function UserCharts(props: UserChartsProps) {
   }, [resolvedTheme])
 
   const { data: userData, isLoading } = useQuery({
-    queryKey: ['dashboard', 'user-quota', timeRange],
+    queryKey: ['dashboard', 'user-quota', timeRange, orgId],
     queryFn: async () =>
-      requireServerSuccess(await getUserQuotaDataByUsers(timeRange)),
+      requireServerSuccess(
+        await (orgId
+          ? getOrgQuotaDatesByUsers(orgId, timeRange)
+          : getUserQuotaDataByUsers(timeRange))
+      ),
     select: (res) => (res.success ? res.data : []),
     staleTime: 60_000,
   })

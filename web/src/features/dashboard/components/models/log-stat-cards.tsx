@@ -21,8 +21,9 @@ import { useTranslation } from 'react-i18next'
 
 import { IconBadge } from '@/components/ui/icon-badge'
 import { Skeleton } from '@/components/ui/skeleton'
-import { getUserQuotaDates } from '@/features/dashboard/api'
+import { getOrgQuotaDates, getUserQuotaDates } from '@/features/dashboard/api'
 import { useModelStatCardsConfig } from '@/features/dashboard/hooks/use-dashboard-config'
+import { useDashboardScope } from '@/features/dashboard/hooks/use-dashboard-scope'
 import {
   buildQueryParams,
   calculateDashboardStats,
@@ -63,6 +64,7 @@ export function LogStatCards(props: LogStatCardsProps) {
   const statCardsConfig = useModelStatCardsConfig()
   const user = useAuthStore((state) => state.auth.user)
   const isAdmin = !!(user?.role && user.role >= 10)
+  const { orgId } = useDashboardScope()
   const [stats, setStats] = useState<{
     totalQuota: number
     totalCount: number
@@ -91,8 +93,10 @@ export function LogStatCards(props: LogStatCardsProps) {
     const timeDiff = (timeRange.end_timestamp - timeRange.start_timestamp) / 60
     setTimeRangeMinutes(timeDiff)
 
-    void getUserQuotaDates(buildQueryParams(timeRange, filters), isAdmin)
-      .then((res) => {
+    void (orgId
+      ? getOrgQuotaDates(orgId, buildQueryParams(timeRange, filters))
+      : getUserQuotaDates(buildQueryParams(timeRange, filters), isAdmin)
+    ).then((res) => {
         if (abortController.signal.aborted) return
         const data = res?.data || []
         setStats(calculateDashboardStats(data))
@@ -113,7 +117,7 @@ export function LogStatCards(props: LogStatCardsProps) {
     return () => {
       abortController.abort()
     }
-  }, [filters, isAdmin, onDataUpdate])
+  }, [filters, isAdmin, orgId, onDataUpdate])
 
   const adaptedStats = {
     rpm: stats?.totalCount ?? 0,
