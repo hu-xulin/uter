@@ -29,6 +29,16 @@ import (
 
 const maxTaskPluginSourceBytes = 1024 * 1024
 
+// marketplaceIndexTimeout bounds one marketplace index fetch. The handler may
+// spend two attempts inside this window: the proxied attempt and, if that one
+// fails, a direct one.
+const marketplaceIndexTimeout = 20 * time.Second
+
+// marketplaceIndexAttemptTimeout bounds a single fetch attempt so a stalled
+// connection still leaves room for the direct fallback inside
+// marketplaceIndexTimeout.
+const marketplaceIndexAttemptTimeout = 10 * time.Second
+
 func taskPluginCompileError(c *gin.Context, err error) {
 	var unknownField *jsplugin.UnknownMetaFieldError
 	if errors.As(err, &unknownField) {
@@ -672,41 +682,18 @@ func FetchTaskPluginMarketplaceIndex(c *gin.Context) {
 		return
 	}
 
-	ctx, cancel := context.WithTimeout(c.Request.Context(), 20*time.Second)
+	ctx, cancel := context.WithTimeout(c.Request.Context(), marketplaceIndexTimeout)
 	defer cancel()
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, rawURL, nil)
-	if err != nil {
-		common.ApiError(c, err)
-		return
-	}
-	req.Header.Set("User-Agent", "Uter-Plugin-Marketplace/1.0")
-	client := &http.Client{
-		// Bound end-to-end so a slow host cannot hang the request.
-		Timeout: 20 * time.Second,
-		// Do not follow redirects: a configured URL must not bounce to an
-		// internal endpoint and become an SSRF pivot.
-		CheckRedirect: func(_ *http.Request, _ []*http.Request) error {
-			return http.ErrUseLastResponse
-		},
-	}
-	resp, err := client.Do(req)
+	body, statusCode, err := fetchMarketplaceIndex(ctx, rawURL)
 	if err != nil {
 		common.ApiErrorMsg(c, "failed to reach marketplace index: "+err.Error())
 		return
 	}
-	defer func() { _ = resp.Body.Close() }()
-	if resp.StatusCode != http.StatusOK {
+	if statusCode != http.StatusOK {
 		common.ApiErrorMsg(
 			c,
-			fmt.Sprintf("marketplace index returned HTTP %d", resp.StatusCode),
+			fmt.Sprintf("marketplace index returned HTTP %d", statusCode),
 		)
-		return
-	}
-
-	limited := io.LimitReader(resp.Body, int64(maxTaskPluginSourceBytes)+1)
-	body, err := io.ReadAll(limited)
-	if err != nil {
-		common.ApiError(c, err)
 		return
 	}
 	if len(body) > maxTaskPluginSourceBytes {
@@ -720,6 +707,121 @@ func FetchTaskPluginMarketplaceIndex(c *gin.Context) {
 		return
 	}
 	common.ApiSuccess(c, index)
+}
+
+// newMarketplaceHTTPClient builds one HTTP client for an outbound marketplace
+// fetch. When direct is true the client ignores every proxy and dials the host
+// itself.
+//
+// The gateway inherits HTTP_PROXY/HTTPS_PROXY from whatever shell started it.
+// Those variables often point at a short-lived local port (dev machines, tool
+// sandboxes); when that port dies the gateway keeps running but every outbound
+// request fails with "proxyconnect tcp: dial tcp <port>: connect: connection
+// refused" even though the target host is reachable directly. Being able to
+// bypass the proxy keeps the marketplace usable in that situation.
+func newMarketplaceHTTPClient(direct bool) *http.Client {
+	transport := &http.Transport{Proxy: http.ProxyFromEnvironment}
+	if defaultTransport, ok := http.DefaultTransport.(*http.Transport); ok &&
+		defaultTransport != nil {
+		transport = defaultTransport.Clone()
+	}
+	if direct {
+		transport.Proxy = nil
+	}
+	return &http.Client{
+		// Bound per attempt so one stalled connection cannot exhaust the
+		// whole handler budget before the fallback runs.
+		Timeout:   marketplaceIndexAttemptTimeout,
+		Transport: transport,
+		// Do not follow redirects: a configured URL must not bounce to an
+		// internal endpoint and become an SSRF pivot.
+		CheckRedirect: func(_ *http.Request, _ []*http.Request) error {
+			return http.ErrUseLastResponse
+		},
+	}
+}
+
+// marketplaceRequestUsesProxy reports whether an outbound request to rawURL
+// would be routed through a proxy from the environment. When it would not,
+// retrying the request "without a proxy" would repeat the identical request.
+func marketplaceRequestUsesProxy(rawURL string) bool {
+	req, err := http.NewRequest(http.MethodGet, rawURL, nil)
+	if err != nil {
+		return false
+	}
+	proxyURL, err := http.ProxyFromEnvironment(req)
+	return err == nil && proxyURL != nil
+}
+
+// fetchMarketplaceIndexOnce performs a single fetch and returns the body
+// together with the HTTP status code. A non-2xx response is not an error: the
+// caller reports the status to the client, so a failing host is never retried
+// unnecessarily.
+func fetchMarketplaceIndexOnce(
+	ctx context.Context,
+	client *http.Client,
+	rawURL string,
+) ([]byte, int, error) {
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, rawURL, nil)
+	if err != nil {
+		return nil, 0, err
+	}
+	req.Header.Set("User-Agent", "Uter-Plugin-Marketplace/1.0")
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, 0, err
+	}
+	defer func() { _ = resp.Body.Close() }()
+	if resp.StatusCode != http.StatusOK {
+		return nil, resp.StatusCode, nil
+	}
+	// Cap the read so a hostile or broken index cannot exhaust memory; the
+	// caller turns an oversized body into a size-limit error.
+	limited := io.LimitReader(resp.Body, int64(maxTaskPluginSourceBytes)+1)
+	body, err := io.ReadAll(limited)
+	if err != nil {
+		return nil, resp.StatusCode, err
+	}
+	return body, resp.StatusCode, nil
+}
+
+// fetchMarketplaceIndex fetches a configured marketplace index, retrying once
+// without a proxy when the proxied attempt fails. A dead proxy inherited from
+// the starting shell is the common case this recovers from; a deployment that
+// really needs its proxy is unaffected because the proxied attempt is still
+// tried first.
+func fetchMarketplaceIndex(
+	ctx context.Context,
+	rawURL string,
+) ([]byte, int, error) {
+	clients := []*http.Client{newMarketplaceHTTPClient(false)}
+	if marketplaceRequestUsesProxy(rawURL) {
+		clients = append(clients, newMarketplaceHTTPClient(true))
+	}
+	var lastErr error
+	for i, client := range clients {
+		if err := ctx.Err(); err != nil {
+			if lastErr != nil {
+				return nil, 0, lastErr
+			}
+			return nil, 0, err
+		}
+		attemptCtx, cancel := context.WithTimeout(ctx, marketplaceIndexAttemptTimeout)
+		body, statusCode, err := fetchMarketplaceIndexOnce(attemptCtx, client, rawURL)
+		cancel()
+		if err == nil {
+			return body, statusCode, nil
+		}
+		lastErr = err
+		if i < len(clients)-1 {
+			logger.LogWarn(
+				ctx,
+				"marketplace index fetch through proxy failed, retrying without proxy: %v",
+				err,
+			)
+		}
+	}
+	return nil, 0, lastErr
 }
 
 func GetTaskPluginOptions(c *gin.Context) {
