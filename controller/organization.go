@@ -7,8 +7,11 @@ import (
 
 	"github.com/Uter-AI/Uter/common"
 
+	"github.com/Uter-AI/Uter/constant"
 	"github.com/Uter-AI/Uter/i18n"
 	"github.com/Uter-AI/Uter/model"
+	"github.com/Uter-AI/Uter/setting"
+	"github.com/Uter-AI/Uter/setting/system_setting"
 
 	"github.com/gin-gonic/gin"
 )
@@ -743,6 +746,101 @@ func orgLogUsernames(c *gin.Context, orgId int, authority orgAuthority) ([]strin
 		return model.GetOrgMemberUsernamesInDepartment(orgId, c.GetString("department_name"), excludeRoles...)
 	}
 	return model.GetOrgMemberUsernames(orgId, excludeRoles...)
+}
+
+// orgMemberIds 与 orgLogUsernames 对称：返回该组织范围内可见成员的 user id，
+// 供以 `user_id IN (?)` 施加范围过滤的任务 / 绘图日志使用。部门管理员只看本部门；
+// 组织管理员与部门管理员视角隐去其无权查看的角色（所有者 / 管理员）。
+// 范围为空（如部门管理员未分配部门）时返回 [model.NoOrgMemberId] 哨兵，避免静默退化为看全站。
+func orgMemberIds(c *gin.Context, orgId int, authority orgAuthority) ([]int, error) {
+	excludeRoles := orgVisibilityExcludeRoles(authority)
+	if authority == orgAuthorityDepartmentAdmin {
+		return model.GetOrgMemberIdsInDepartment(orgId, c.GetString("department_name"), excludeRoles...)
+	}
+	return model.GetOrgMemberIds(orgId, excludeRoles...)
+}
+
+// GetOrganizationTasks 返回组织内成员的任务日志（组织管理者看全组织，部门管理员只看本部门）。
+// 与 GetAllTask 对齐：范围由 orgMemberIds 收敛，下拉筛选 user_id 经 QueryUserIds 取交集。
+func GetOrganizationTasks(c *gin.Context) {
+	orgId, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		common.ApiErrorI18n(c, i18n.MsgInvalidParams)
+		return
+	}
+	_, authority, ok := loadOrgForAuthority(c, orgId)
+	if !ok {
+		return
+	}
+	pageInfo := common.GetPageQuery(c)
+	startTimestamp, _ := strconv.ParseInt(c.Query("start_timestamp"), 10, 64)
+	endTimestamp, _ := strconv.ParseInt(c.Query("end_timestamp"), 10, 64)
+	queryParams := model.SyncTaskQueryParams{
+		Platform:       constant.TaskPlatform(c.Query("platform")),
+		TaskID:         c.Query("task_id"),
+		Status:         c.Query("status"),
+		Action:         c.Query("action"),
+		StartTimestamp: startTimestamp,
+		EndTimestamp:   endTimestamp,
+		ChannelID:      c.Query("channel_id"),
+	}
+	filterUserIds, ok := QueryUserIds(c)
+	if !ok {
+		return
+	}
+	memberIds, err := orgMemberIds(c, orgId, authority)
+	if err != nil {
+		common.ApiError(c, err)
+		return
+	}
+	queryParams.UserIDs = intersectUserIds(memberIds, filterUserIds)
+	items := model.TaskGetAllTasks(pageInfo.GetStartIdx(), pageInfo.GetPageSize(), queryParams)
+	pageInfo.SetTotal(int(model.TaskCountAllTasks(queryParams)))
+	// fillUser=true 让前端能看到成员用户名；viewerRole 取调用者真实角色（组织管理者为普通用户），
+	// 因此不会泄露平台级 AdminInfo / RootInfo。
+	pageInfo.SetItems(tasksToDto(items, true, c.GetInt("role")))
+	common.ApiSuccess(c, pageInfo)
+}
+
+// GetOrganizationMidjourney 返回组织内成员的绘图日志（组织管理者看全组织，部门管理员只看本部门）。
+func GetOrganizationMidjourney(c *gin.Context) {
+	orgId, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		common.ApiErrorI18n(c, i18n.MsgInvalidParams)
+		return
+	}
+	_, authority, ok := loadOrgForAuthority(c, orgId)
+	if !ok {
+		return
+	}
+	pageInfo := common.GetPageQuery(c)
+	filterUserIds, ok := QueryUserIds(c)
+	if !ok {
+		return
+	}
+	memberIds, err := orgMemberIds(c, orgId, authority)
+	if err != nil {
+		common.ApiError(c, err)
+		return
+	}
+	queryParams := model.TaskQueryParams{
+		ChannelID:      c.Query("channel_id"),
+		MjID:           c.Query("mj_id"),
+		StartTimestamp: c.Query("start_timestamp"),
+		EndTimestamp:   c.Query("end_timestamp"),
+		UserIDs:        intersectUserIds(memberIds, filterUserIds),
+	}
+	items := model.GetAllTasks(pageInfo.GetStartIdx(), pageInfo.GetPageSize(), queryParams)
+	total := model.CountAllTasks(queryParams)
+	if setting.MjForwardUrlEnabled {
+		for i, midjourney := range items {
+			midjourney.ImageUrl = system_setting.ServerAddress + "/mj/image/" + midjourney.MjId
+			items[i] = midjourney
+		}
+	}
+	pageInfo.SetTotal(int(total))
+	pageInfo.SetItems(items)
+	common.ApiSuccess(c, pageInfo)
 }
 
 // ListOrganizations 列出全部组织（仅超管）。供后台「添加用户」按组织归属账号时，
