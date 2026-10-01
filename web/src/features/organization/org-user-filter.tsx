@@ -8,8 +8,8 @@ License, or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-Affero General Public License for more details.
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Affero General Public License for more details.
 
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
@@ -17,11 +17,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import { useTranslation } from 'react-i18next'
 
-import { Label } from '@/components/ui/label'
-import {
-  NativeSelect,
-  NativeSelectOption,
-} from '@/components/ui/native-select'
+import { Combobox } from '@/components/ui/combobox'
 import { formatUserId } from '@/lib/format'
 
 import type { OrgMember } from './types'
@@ -41,9 +37,10 @@ interface OrgUserFilterProps {
 /**
  * 组织管理者视角的「用户名 / 用户ID」双下拉筛选。
  *
- * 两个下拉各自独立、均不可输入（NativeSelect），数据源为当前用户可见的组织成员
- * （后端已按角色做可见性收敛：admin 看不到 owner、部门 admin 只看本部门）。
- * 选「全部」即清空对应维度过滤。
+ * 样式与站内「分组」筛选一致（Combobox：选中值显示于框、点击展开、选中项带对号），
+ * 两个下拉各自独立、均不可输入（未启用 allowCustomValue），数据源为当前用户可见的
+ * 组织成员（后端已按角色做可见性收敛：admin 看不到 owner、部门 admin 仅本部门）。
+ * 选「All users」即清空对应维度过滤。
  */
 export function OrgUserFilter({
   members,
@@ -54,40 +51,41 @@ export function OrgUserFilter({
   disabled,
 }: OrgUserFilterProps) {
   const { t } = useTranslation()
+  const usernameOptions = [
+    { value: '', label: t('All users') },
+    ...members.map((m) => ({ value: m.username, label: m.username })),
+  ]
+  const userIdOptions = [
+    { value: '', label: t('All users') },
+    ...members.map((m) => ({
+      value: String(m.id),
+      label: formatUserId(m.id),
+    })),
+  ]
   return (
     <>
-      <div className='flex flex-col gap-1'>
-        <Label>{t('Username')}</Label>
-        <NativeSelect
-          value={username ?? ''}
-          disabled={disabled}
-          onChange={(e) => onUsernameChange(e.target.value || undefined)}
-        >
-          <NativeSelectOption value=''>{t('All users')}</NativeSelectOption>
-          {members.map((m) => (
-            <NativeSelectOption key={m.id} value={m.username}>
-              {m.username}
-            </NativeSelectOption>
-          ))}
-        </NativeSelect>
-      </div>
-      <div className='flex flex-col gap-1'>
-        <Label>{t('User ID')}</Label>
-        <NativeSelect
-          value={userId ? String(userId) : ''}
-          disabled={disabled}
-          onChange={(e) =>
-            onUserIdChange(e.target.value ? Number(e.target.value) : undefined)
-          }
-        >
-          <NativeSelectOption value=''>{t('All users')}</NativeSelectOption>
-          {members.map((m) => (
-            <NativeSelectOption key={m.id} value={String(m.id)}>
-              {formatUserId(m.id)}
-            </NativeSelectOption>
-          ))}
-        </NativeSelect>
-      </div>
+      <Combobox
+        options={usernameOptions}
+        aria-label={t('Username')}
+        placeholder={t('Username')}
+        emptyText={t('No user found.')}
+        className='h-8 min-w-0 text-sm leading-5'
+        disabled={disabled}
+        value={username ?? ''}
+        onValueChange={(value) => onUsernameChange(value || undefined)}
+      />
+      <Combobox
+        options={userIdOptions}
+        aria-label={t('User ID')}
+        placeholder={t('User ID')}
+        emptyText={t('No user found.')}
+        className='h-8 min-w-0 text-sm leading-5'
+        disabled={disabled}
+        value={userId ? String(userId) : ''}
+        onValueChange={(value) =>
+          onUserIdChange(value ? Number(value) : undefined)
+        }
+      />
     </>
   )
 }
