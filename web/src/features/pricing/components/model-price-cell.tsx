@@ -338,7 +338,7 @@ export function ModelPriceCell(props: {
           {metrics.map((metric) => (
             <span
               key={`u-${metric.label}`}
-              className='font-mono text-sm font-semibold tabular-nums whitespace-nowrap'
+              className='text-sm font-semibold tabular-nums whitespace-nowrap'
               title={metric.value}
             >
               {metric.value}
@@ -366,7 +366,7 @@ export function ModelPriceCell(props: {
             return (
               <span
                 key={`o-${metric.label}`}
-                className='text-muted-foreground font-mono text-xs tabular-nums whitespace-nowrap'
+                className='text-muted-foreground text-xs tabular-nums whitespace-nowrap'
                 title={officialText(official)}
               >
                 <span className={cn(isDiscount && 'line-through')}>
@@ -414,7 +414,7 @@ export function ModelPriceCell(props: {
                   {metric.label}
                 </span>
                 <span
-                  className='min-w-0 font-mono text-sm break-words whitespace-normal font-semibold tabular-nums'
+                  className='min-w-0 text-sm break-words whitespace-normal font-semibold tabular-nums'
                   title={metric.value}
                 >
                   {metric.value}
@@ -450,7 +450,7 @@ export function ModelPriceCell(props: {
               {metric.label}
             </span>
             <span
-              className='min-w-0 font-mono text-sm break-words whitespace-normal tabular-nums'
+              className='min-w-0 text-sm break-words whitespace-normal tabular-nums'
               title={metric.value}
             >
               {metric.value}

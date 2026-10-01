@@ -29,6 +29,59 @@ let themeManagerPromise: Promise<
   (typeof import('@visactor/vchart'))['ThemeManager']
 > | null = null
 
+/**
+ * VChart paints its text (axis numbers, legends, labels — including
+ * Chinese) into a <canvas>, so it does NOT inherit the CSS font stack the
+ * way DOM text does: the family has to be handed to it explicitly.
+ *
+ * These themes are clones of VChart's built-in `light` / `dark` themes with
+ * `fontFamily` pinned to the project typeface. The value is read from
+ * `--font-ui`, which is declared on `:root` in `styles/theme.css` and is
+ * therefore readable at runtime — unlike the `@theme inline` tokens, which
+ * Tailwind bakes straight into utilities and never emits as variables.
+ */
+const UTER_LIGHT_THEME = 'uter-light'
+const UTER_DARK_THEME = 'uter-dark'
+
+/** Used only if `--font-ui` cannot be read (SSR, very early paint). */
+const CHART_FONT_FAMILY_FALLBACK =
+  "'Inter Variable', 'Inter', 'Source Han Sans SC', 'Source Han Sans CN', 'Noto Sans SC Variable', 'Noto Sans SC', sans-serif"
+
+function resolveChartFontFamily(): string {
+  if (typeof globalThis.getComputedStyle !== 'function') {
+    return CHART_FONT_FAMILY_FALLBACK
+  }
+  return (
+    globalThis
+      .getComputedStyle(document.documentElement)
+      .getPropertyValue('--font-ui')
+      .trim() || CHART_FONT_FAMILY_FALLBACK
+  )
+}
+
+/**
+ * Register (once) and activate the Inter-pinned theme for the given mode.
+ * Falls back to VChart's built-in theme if registration fails, so a chart
+ * never ends up unstyled.
+ */
+export function applyChartTheme(
+  ThemeManager: (typeof import('@visactor/vchart'))['ThemeManager'],
+  resolvedTheme: 'light' | 'dark' | string
+) {
+  const isDark = resolvedTheme === 'dark'
+  const name = isDark ? UTER_DARK_THEME : UTER_LIGHT_THEME
+  const builtin = isDark ? 'dark' : 'light'
+  try {
+    ThemeManager.registerTheme(name, {
+      ...ThemeManager.getTheme(builtin),
+      fontFamily: resolveChartFontFamily(),
+    })
+    ThemeManager.setCurrentTheme(name)
+  } catch {
+    ThemeManager.setCurrentTheme(builtin)
+  }
+}
+
 export function useChartTheme() {
   const { resolvedTheme } = useTheme()
   const [themeReady, setThemeReady] = useState(false)
@@ -48,7 +101,7 @@ export function useChartTheme() {
       const ThemeManager = await themeManagerPromise
       if (cancelled) return
       themeRef.current = ThemeManager
-      ThemeManager.setCurrentTheme(resolvedTheme === 'dark' ? 'dark' : 'light')
+      applyChartTheme(ThemeManager, resolvedTheme)
       setThemeReady(true)
     }
     updateTheme()

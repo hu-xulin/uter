@@ -227,7 +227,7 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
             {dims.map((entry) => (
               <span
                 key={`u-${entry.key}`}
-                className='font-mono text-sm font-semibold tabular-nums'
+                className='text-sm font-semibold tabular-nums'
               >
                 {entry.formattedRange ?? entry.formatted}
               </span>
@@ -253,7 +253,7 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
                 return (
                   <span
                     key={`o-${entry.key}`}
-                    className='text-muted-foreground font-mono text-xs tabular-nums whitespace-nowrap'
+                    className='text-muted-foreground text-xs tabular-nums whitespace-nowrap'
                   >
                     <span className={cn(dimDiscount && 'line-through')}>
                       {offText}
@@ -272,7 +272,7 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
                 return (
                   <span
                     key={`o-${entry.key}`}
-                    className='text-muted-foreground font-mono text-xs tabular-nums whitespace-nowrap'
+                    className='text-muted-foreground text-xs tabular-nums whitespace-nowrap'
                   >
                     -
                   </span>
@@ -285,7 +285,7 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
               return (
                 <span
                   key={`o-${entry.key}`}
-                  className='text-muted-foreground font-mono text-xs tabular-nums whitespace-nowrap'
+                  className='text-muted-foreground text-xs tabular-nums whitespace-nowrap'
                 >
                   <span className={cn(isDiscount && 'line-through')}>
                     {offText}
@@ -427,7 +427,7 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
         {dims.map((d) => (
           <span
             key={`u-${d.type}`}
-            className='font-mono text-sm font-semibold tabular-nums'
+            className='text-sm font-semibold tabular-nums'
           >
             {d.uter}
           </span>
@@ -438,7 +438,7 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
         {dims.map((d) => (
           <span
             key={`o-${d.type}`}
-            className='text-muted-foreground font-mono text-xs tabular-nums whitespace-nowrap'
+            className='text-muted-foreground text-xs tabular-nums whitespace-nowrap'
           >
             <span className={cn(d.isDiscount && 'line-through')}>
               {d.official}
@@ -522,7 +522,7 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
         {dims.map((d) => (
           <span
             key={`u-${d.key}`}
-            className='font-mono text-sm font-semibold tabular-nums'
+            className='text-sm font-semibold tabular-nums'
           >
             {d.uter}
           </span>
@@ -533,7 +533,7 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
         {dims.map((d) => (
           <span
             key={`o-${d.key}`}
-            className='text-muted-foreground font-mono text-xs tabular-nums whitespace-nowrap'
+            className='text-muted-foreground text-xs tabular-nums whitespace-nowrap'
           >
             <span className={cn(d.isDiscount && 'line-through')}>
               {d.official}

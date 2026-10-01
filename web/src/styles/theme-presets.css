@@ -555,10 +555,9 @@ For commercial licensing, please contact support@Uter.ai.com
 
   --radius: 0.625rem;
 
-  /* Default typography for the Anthropic preset is the editorial serif.
-   * Users can override this with the Font axis (`data-theme-font='sans'`).
-   * The `--font-serif` token itself is declared once in theme.css. */
-  --font-body: var(--font-serif);
+  /* The product is locked to Inter — the font axis (Sans / Serif) has been
+   * removed, so this preset no longer opts into the editorial serif. It
+   * inherits `--font-body` (Inter + Noto Sans SC) like every other preset. */
 }
 .dark [data-theme-preset='anthropic'] {
   /* Warm near-black product surfaces, not pure black — keeps the editorial
@@ -612,76 +611,6 @@ For commercial licensing, please contact support@Uter.ai.com
 
   --skeleton-base: oklch(0.305 0.004 60);
   --skeleton-highlight: oklch(0.41 0.004 60);
-}
-
-/* ── Font axis ────────────────────────────────────────────────────────────
- * Mirrors how `data-theme-radius` overrides a preset's default radius:
- * presets may set `--font-body` (Anthropic → serif), and the user's
- * explicit Font choice wins because these blocks sit AFTER preset blocks.
- *
- * The provider resolves `font: 'default'` → `'inter' | 'sans' | 'serif'`
- * against the active preset before writing the attribute, so the DOM always
- * carries a concrete value and CSS only needs the simple
- * `[data-theme-font='...']` selectors below (no `:not()`, no per-preset
- * branches). */
-[data-theme-font='inter'] {
-  --font-body: var(--font-inter);
-}
-[data-theme-font='sans'] {
-  --font-body: var(--font-sans);
-}
-[data-theme-font='serif'] {
-  --font-body: var(--font-serif);
-}
-
-/* ── Serif typography refinements ────────────────────────────────────────
- * When the body runs in serif, three things happen:
- *   1. Editorial OpenType features (kern/liga + tabular numerals so numeric
- *      columns stay grid-aligned even with proportional serif glyphs).
- *   2. Every UI surface inherits the editorial voice — buttons, inputs,
- *      tabs, sidebar, table headers, badges, pagination, popovers — all
- *      through Tailwind preflight's `button, input, ... { font: inherit }`
- *      rule plus natural HTML inheritance. We intentionally do NOT carry
- *      a per-slot opt-out list: it adds maintenance cost and only blunts
- *      the Anthropic editorial intent. Monospace contexts are excluded
- *      automatically because:
- *        - `<code>`, `<kbd>`, `<pre>`, `<samp>` are typed monospace by
- *          Tailwind preflight (specificity wins over body inheritance).
- *        - `.font-mono` and `.tabular-nums` utilities declare their own
- *          font-family / font-variant-numeric on the element itself.
- *   3. Headings adopt the Anthropic display setting (medium weight, slight
- *      negative tracking).
- *
- * All keyed off `[data-theme-font='serif']` so they apply to any preset
- * paired with the serif font — not just Anthropic. */
-[data-theme-font='serif'] {
-  font-feature-settings:
-    'kern' 1,
-    'liga' 1,
-    'calt' 1,
-    'tnum' 1;
-}
-
-/* Heading tuning — applies to <h*> tags and the shadcn title slots so
- * card/sheet/dialog titles read with the same authoritative voice as
- * page headers. */
-[data-theme-font='serif'] :is(h1, h2, h3, h4, h5, h6),
-[data-theme-font='serif'] [data-slot='sheet-title'],
-[data-theme-font='serif'] [data-slot='dialog-title'],
-[data-theme-font='serif'] [data-slot='alert-dialog-title'],
-[data-theme-font='serif'] [data-slot='drawer-title'],
-[data-theme-font='serif'] [data-slot='card-title'] {
-  font-weight: 600;
-  letter-spacing: -0.012em;
-}
-
-/* Larger displays earn tighter tracking, matching Copernicus/Tiempos
- * editorial display setting (~ -0.02em at 30px+). */
-[data-theme-font='serif'] h1,
-[data-theme-font='serif'] .text-3xl,
-[data-theme-font='serif'] .text-4xl,
-[data-theme-font='serif'] .text-5xl {
-  letter-spacing: -0.02em;
 }
 
 /* ── Border radius ────────────────────────────────────────────────────── */

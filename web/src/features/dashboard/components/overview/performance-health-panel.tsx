@@ -164,7 +164,7 @@ export function PerformanceHealthPanel() {
                       />
                       <span
                         className={cn(
-                          'font-mono text-[11px] font-semibold tabular-nums',
+                          'text-[11px] font-semibold tabular-nums',
                           getSuccessRateTextClass(model.success_rate)
                         )}
                       >
@@ -204,7 +204,7 @@ function MetricCell(props: {
       ) : (
         <div
           className={cn(
-            'mt-1.5 font-mono text-sm font-semibold tabular-nums',
+            'mt-1.5 text-sm font-semibold tabular-nums',
             props.valueClassName
           )}
         >

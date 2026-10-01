@@ -260,7 +260,7 @@ function OverviewMetric(props: {
         </div>
         <div
           className={cn(
-            'text-foreground truncate font-mono text-sm font-semibold tabular-nums',
+            'text-foreground truncate text-sm font-semibold tabular-nums',
             props.valueClassName
           )}
         >
@@ -821,7 +821,7 @@ function PriceSection(props: {
                   <div className='text-muted-foreground text-xs'>
                     <DynamicPriceEntryLabel entry={entry} />
                   </div>
-                  <div className='text-foreground mt-1 font-mono text-base font-semibold tabular-nums'>
+                  <div className='text-foreground mt-1 text-base font-semibold tabular-nums'>
                     {entry.formattedRange ?? entry.formatted}
                     <span className='text-muted-foreground/40 ml-1 text-xs font-normal'>
                       / {unitLabel}
@@ -856,7 +856,7 @@ function PriceSection(props: {
                     <span className='text-muted-foreground/70 text-sm'>
                       <DynamicPriceEntryLabel entry={entry} />
                     </span>
-                    <span className='text-muted-foreground font-mono text-sm tabular-nums'>
+                    <span className='text-muted-foreground text-sm tabular-nums'>
                       {entry.formattedRange ?? entry.formatted}
                       <span className='text-muted-foreground/40 ml-1 text-xs font-normal'>
                         / {unitLabel}
@@ -889,7 +889,7 @@ function PriceSection(props: {
           <span className='text-muted-foreground text-sm'>
             {t('Per request')}
           </span>
-          <span className='text-foreground font-mono text-sm font-semibold tabular-nums'>
+          <span className='text-foreground text-sm font-semibold tabular-nums'>
             {formatFixedPrice(
               props.model,
               baseGroupKey,
@@ -930,7 +930,7 @@ function PriceSection(props: {
         {primaryPriceTypes.map((item) => (
           <div key={item.type} className='bg-muted/20 rounded-lg border p-3'>
             <div className='text-muted-foreground text-xs'>{item.label}</div>
-            <div className='text-foreground mt-1 font-mono text-base font-semibold tabular-nums'>
+            <div className='text-foreground mt-1 text-base font-semibold tabular-nums'>
               {renderPrice(item.type)}
             </div>
           </div>
@@ -947,7 +947,7 @@ function PriceSection(props: {
                 <span className='text-muted-foreground/70 text-sm'>
                   {item.label}
                 </span>
-                <span className='text-muted-foreground font-mono text-sm tabular-nums'>
+                <span className='text-muted-foreground text-sm tabular-nums'>
                   {renderPrice(item.type)}
                 </span>
               </div>
@@ -1260,7 +1260,7 @@ function ProviderGroupPricingSection(
               <div key={group} className='overflow-hidden rounded-lg border'>
                 <div className='bg-muted/20 flex items-center justify-between gap-3 border-b px-3 py-2'>
                   <GroupBadge group={group} size='sm' />
-                  <span className='text-muted-foreground font-mono text-xs'>
+                  <span className='text-muted-foreground tabular-nums text-xs'>
                     {ratio}x
                   </span>
                 </div>
@@ -1337,7 +1337,7 @@ function ProviderGroupPricingSection(
                           fieldLabel
                         ),
                         className: `${thClass} text-right`,
-                        cellClassName: 'py-2.5 text-right font-mono',
+                        cellClassName: 'py-2.5 text-right tabular-nums',
                         cell: (tier: (typeof dynamicTiers)[number]) =>
                           formattedPricesByTier
                             .get(tier)
@@ -1369,7 +1369,7 @@ function ProviderGroupPricingSection(
                           id: 'price',
                           header: t('Example price'),
                           className: `${thClass} text-right`,
-                          cellClassName: 'py-2.5 text-right font-mono',
+                          cellClassName: 'py-2.5 text-right tabular-nums',
                           cell: (row) =>
                             `≈ ${formatTaskUsageUnitPrice(row.total, {
                               tokenUnit: props.tokenUnit,
@@ -1490,7 +1490,7 @@ function ProviderGroupPricingSection(
             id: 'ratio',
             header: t('Ratio'),
             className: thClass,
-            cellClassName: 'text-muted-foreground py-2.5 font-mono',
+            cellClassName: 'text-muted-foreground py-2.5 tabular-nums',
             cell: (group) => `${props.groupRatio[group] || 1}x`,
           },
           ...(isTokenBased
@@ -1499,21 +1499,21 @@ function ProviderGroupPricingSection(
                   id: 'input',
                   header: t('Input'),
                   className: `${thClass} text-right`,
-                  cellClassName: 'py-2.5 text-right font-mono',
+                  cellClassName: 'py-2.5 text-right tabular-nums',
                   cell: (group: string) => renderGroupPrice(group, 'input'),
                 },
                 {
                   id: 'output',
                   header: t('Output'),
                   className: `${thClass} text-right`,
-                  cellClassName: 'py-2.5 text-right font-mono',
+                  cellClassName: 'py-2.5 text-right tabular-nums',
                   cell: (group: string) => renderGroupPrice(group, 'output'),
                 },
                 ...extraPriceTypes.map((ep) => ({
                   id: ep.type,
                   header: ep.label,
                   className: `${thClass} text-right`,
-                  cellClassName: 'py-2.5 text-right font-mono',
+                  cellClassName: 'py-2.5 text-right tabular-nums',
                   cell: (group: string) => renderGroupPrice(group, ep.type),
                 })),
               ]
@@ -1522,7 +1522,7 @@ function ProviderGroupPricingSection(
                   id: 'price',
                   header: t('Price'),
                   className: `${thClass} text-right`,
-                  cellClassName: 'py-2.5 text-right font-mono',
+                  cellClassName: 'py-2.5 text-right tabular-nums',
                   cell: renderFixedGroupPrice,
                 },
               ]),

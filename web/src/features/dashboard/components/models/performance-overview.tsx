@@ -196,7 +196,7 @@ function InlineMetric(props: {
       <span className='text-muted-foreground text-[11px]'>{props.label}</span>
       <span
         className={cn(
-          'font-mono text-xs font-semibold tabular-nums',
+          'text-xs font-semibold tabular-nums',
           props.valueClassName
         )}
       >
@@ -223,7 +223,7 @@ function ModelBadge(props: { model: PerfModelSummary }) {
       />
       <span
         className={cn(
-          'font-mono text-[11px] font-semibold tabular-nums',
+          'text-[11px] font-semibold tabular-nums',
           getSuccessRateTextClass(model.success_rate)
         )}
       >

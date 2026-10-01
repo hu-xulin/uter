@@ -1,9 +1,17 @@
 @import 'tailwindcss';
 @import 'fumadocs-ui/css/neutral.css';
 @import 'fumadocs-ui/css/preset.css';
-/* Project primary UI typeface — Inter (variable). Loaded globally so the
- * docs body and the brand wordmark read in the same face as the SPA. */
+/* Project typefaces — English/digits in Inter, Chinese in 思源黑体.
+ *
+ * Inter covers Latin / Greek / Cyrillic only, so Chinese falls through to
+ * Source Han Sans (思源黑体). Fontsource ships no `source-han-sans`
+ * package, so the CJK half is served by `@fontsource-variable/noto-sans-sc`
+ * — the same typeface: Noto Sans CJK and Source Han Sans are generated
+ * from one shared Adobe/Google source and are glyph-identical. Loaded
+ * globally so the docs body and the brand wordmark read in the same face
+ * as the SPA. */
 @import '@fontsource-variable/inter';
+@import '@fontsource-variable/noto-sans-sc';
 
 /*
  * ── Brand wordmark face ─────────────────────────────────────────────
@@ -14,10 +22,10 @@
  * `--Uter-brand-font` below — so the lockup reads identically here and in
  * the SPA header it mirrors, and no bespoke subset is needed. The ASCII
  * lockup ("Uter.ai") is covered by Inter, while the Hant/Hans forms
- * ("優特智能" / "优特智能") fall through to the system CJK face — the same
- * path the SPA brand text takes. The SPA no longer ships the Alibaba
- * PuHuiTi family, so this site has dropped its Ali-derived wordmark
- * subset (`public/brand-assets/uter-wordmark.woff2`) in favour of Inter.
+ * ("優特智能" / "优特智能") fall through to 思源黑体 — the same path the
+ * SPA brand text takes. The SPA no longer ships the Alibaba PuHuiTi
+ * family, so this site has dropped its Ali-derived wordmark subset
+ * (`public/brand-assets/uter-wordmark.woff2`) in favour of Inter.
  */
 
 /*
@@ -102,19 +110,23 @@ html {
 /*
  * ── Body typeface — match the SPA ───────────────────────────────────
  *
- * Fumadocs ships its own stack; this pins the docs body to the same
- * GitHub-style system font stack the SPA uses (`--font-sans` in
- * `web/src/styles/theme.css`) so the framed site and the app read with one
- * voice. CJK faces are listed before the generic fallback so Chinese
- * glyphs resolve deterministically; emoji faces last. Body weight stays
- * regular (400), matching the SPA's GitHub-aligned vocabulary.
+ * Fumadocs ships its own stack; this pins the docs body to the same stack
+ * the SPA uses (`--font-ui` in `web/src/styles/theme.css`) so the framed
+ * site and the app read with one voice: Inter for Latin/digits, 思源黑体
+ * (Source Han Sans) for Chinese. The CJK faces are named before the
+ * generic fallback so Chinese glyphs resolve deterministically instead of
+ * drifting to PingFang (macOS) / YaHei (Windows); emoji faces last. Body
+ * weight stays regular (400), matching the SPA's GitHub-aligned
+ * vocabulary. Monospace is untouched: `font-mono` keeps the platform
+ * monospace face so code stays aligned.
  */
 body {
   font-family:
-    'Inter Variable', 'Inter', system-ui, -apple-system, BlinkMacSystemFont,
-    'Segoe UI', 'Noto Sans', 'Helvetica Neue', Arial, 'PingFang SC',
-    'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans SC',
-    'Source Han Sans SC', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
+    'Inter Variable', 'Inter', 'Source Han Sans SC', 'Source Han Sans CN',
+    '思源黑体', 'Noto Sans SC Variable', 'Noto Sans SC', 'Noto Sans CJK SC',
+    'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', system-ui,
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial,
+    sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
   font-weight: 400;
   font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
 }
@@ -173,10 +185,12 @@ body {
    * `--Uter-brand-font` is the face declared at the top of this file.
    */
   --Uter-brand-radius: 1rem;
-  --Uter-brand-font: 'Inter Variable', 'Inter', system-ui, -apple-system,
-    BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, 'PingFang SC',
-    'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans SC',
-    'Source Han Sans SC', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
+  --Uter-brand-font: 'Inter Variable', 'Inter', 'Source Han Sans SC',
+    'Source Han Sans CN', '思源黑体', 'Noto Sans SC Variable', 'Noto Sans SC',
+    'Noto Sans CJK SC', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei',
+    system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    'Helvetica Neue', Arial, sans-serif, 'Apple Color Emoji',
+    'Segoe UI Emoji';
 
   /*
    * The header's primary CTA — the app's Sign in button. A literal for

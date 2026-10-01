@@ -150,7 +150,7 @@ export const PriceMetricOfficial = memo(function PriceMetricOfficial(
   return (
     <div className={cn('flex min-w-0 flex-col gap-1', props.className)}>
       <span className='text-muted-foreground text-xs'>{props.label}</span>
-      <span className='flex flex-wrap items-baseline gap-x-1 font-mono text-sm font-semibold tabular-nums'>
+      <span className='flex flex-wrap items-baseline gap-x-1 text-sm font-semibold tabular-nums'>
         <span>{current}</span>
         <span className='text-muted-foreground text-xs font-normal whitespace-nowrap'>
           {' '}

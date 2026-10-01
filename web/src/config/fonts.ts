@@ -17,24 +17,19 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@Uter.ai.com
 */
 /**
- * List of available font names (visit the url `/settings/appearance`).
- * This array is used to generate dynamic font classes (e.g., `font-inter`, `font-manrope`).
+ * The single UI typeface shipped by the product: Inter for Latin letters
+ * and digits, paired with 思源黑体 (Source Han Sans) for Chinese.
  *
- * 📝 How to Add a New Font (Tailwind v4+):
- * 1. Add the font name here.
- * 2. Install the `@fontsource-variable/<name>` package and `@import` it in
- *    'styles/index.css' (Inter, Public Sans and Lora already follow this
- *    pattern).
- * 3. Add the new font family to 'theme.css' using the `@theme inline` and
- *    `font-family` CSS variable.
+ * The font switcher has been removed — `web/src/styles/theme.css` maps
+ * `--font-inter` / `--font-sans` / `--font-manrope` all to one stack
+ * (`--font-ui`), so every value here resolves to the same face. The array
+ * is kept (rather than deleted) because `FontProvider` still reads a
+ * `font` cookie and mirrors it onto `<html>` as `font-<name>`; listing
+ * only `inter` makes a stale `manrope` / `system` cookie fall back to it,
+ * so a user who once picked another font cannot end up on an OS face.
  *
- * Example:
- * fonts.ts           → Add 'roboto' to this array.
- * index.css          → `@import '@fontsource-variable/roboto';`
- * theme.css          → Add the new font in the CSS, e.g.:
- *   @theme inline {
- *      // ... other font families
- *      --font-roboto: 'Roboto Variable', var(--font-sans);
- *   }
+ * Adding a face back is a two-step change: install + `@import` the
+ * `@fontsource-variable/<name>` package in `styles/index.css`, then give
+ * it its own `--font-<name>` token in `theme.css`.
  */
-export const fonts = ['inter', 'manrope', 'system'] as const
+export const fonts = ['inter'] as const

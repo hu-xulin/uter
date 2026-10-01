@@ -113,7 +113,7 @@ export function UptimeSparkline(props: UptimeSparklineProps) {
                 aria-hidden
               />
             </TooltipTrigger>
-            <TooltipContent side='top' className='font-mono text-xs'>
+            <TooltipContent side='top' className='tabular-nums text-xs'>
               <div className='font-medium'>{day.date}</div>
               <div>{day.uptime_pct.toFixed(2)}%</div>
               {day.outage_minutes > 0 && (
@@ -128,7 +128,7 @@ export function UptimeSparkline(props: UptimeSparklineProps) {
       {showOverall && (
         <span
           className={cn(
-            'font-mono text-sm font-semibold tabular-nums',
+            'text-sm font-semibold tabular-nums',
             getSuccessRateTextClass(overall)
           )}
         >

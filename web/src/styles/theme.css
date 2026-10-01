@@ -19,47 +19,31 @@ For commercial licensing, please contact support@Uter.ai.com
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  /* Default sans — GitHub-style system font stack.
+  /* ── Typeface ─────────────────────────────────────────────────────────
+   * The product is locked to ONE UI typeface: Inter, paired with Noto
+   * Sans SC for Chinese.
    *
-   * Mirrors GitHub's own `--font-stack` discipline: lean on the OS UI face
-   * first (crisp, zero FOUT, full 400/500/600 weight range native on every
-   * platform), then walk through explicit CJK faces so Chinese/Japanese/
-   * Korean glyphs resolve deterministically instead of falling to the
-   * browser's generic pick. Emoji faces are listed last so they only catch
-   * emoji codepoints. Inter (`--font-inter`) is the project's default
-   * UI typeface; this system stack remains the `sans` font-axis fallback
-   * and the base for the CJK/emoji walk used by every face. */
-  --font-sans:
-    system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans',
-    'Helvetica Neue', Arial, 'PingFang SC', 'Hiragino Sans GB',
-    'Microsoft YaHei', 'Noto Sans SC', 'Source Han Sans SC',
-    sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
-  /* Editorial serif token — the body face used by the `serif` font axis
-   * and by presets that opt in (currently Anthropic). Lora carries only
-   * Latin glyphs, so the stack walks through CJK serifs (Noto / Source Han
-   * / Songti / SimSun) before the generic `serif` fallback. Without these
-   * explicit CJK fonts the browser's generic-serif pick on Windows is
-   * non-deterministic at small sizes and often appears sans-like. */
-  --font-serif:
-    'Lora Variable', 'Lora', 'Source Serif Pro', 'Source Serif 4',
-    'Noto Serif SC', 'Noto Serif TC', 'Noto Serif JP', 'Noto Serif KR',
-    'Source Han Serif SC', 'Source Han Serif TC', 'Source Han Serif',
-    'Songti SC', 'STSong', 'STSongti-SC-Regular', 'PingFang SC', 'SimSun',
-    'NSimSun', '宋体', 'FangSong', '仿宋', 'KaiTi', '楷体', Georgia,
-    'Times New Roman', Cambria, 'Liberation Serif', serif;
-  /* Primary UI typeface — Inter (variable). The project's default body
-   * face. Leads with the loaded `Inter Variable` family, then walks the
-   * same OS + CJK + emoji fallback ladder as `--font-sans` so Chinese,
-   * Japanese and Korean glyphs resolve deterministically instead of
-   * falling to the browser's generic pick. */
-  --font-inter:
-    'Inter Variable', 'Inter', system-ui, -apple-system, BlinkMacSystemFont,
-    'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, 'PingFang SC',
-    'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans SC', 'Source Han Sans SC',
-    sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
-  --font-manrope:
-    -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
-    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+   * ⚠️ Inter has NO CJK glyphs (Latin / Greek / Cyrillic only). Chinese
+   * therefore always renders from the next family in the stack that does
+   * cover it — 思源黑体 (Source Han Sans), bundled as the `noto-sans-sc`
+   * webfont (101 `unicode-range` slices, so the browser fetches only the
+   * blocks a page actually needs) rather than whatever the OS happens to
+   * ship. That is what makes 中文 identical on macOS (PingFang) and
+   * Windows (YaHei) instead of drifting per platform. PingFang / YaHei
+   * stay as last-resort fallbacks in case the webfont fails to load.
+   *
+   * The literal lives ONCE, in `--font-ui` on `:root`, because `@theme
+   * inline` bakes values straight into utilities and is NOT readable as a
+   * custom property at runtime — `--font-ui` is what VChart reads (canvas
+   * text does not inherit CSS). Keep them in sync when editing.
+   *
+   * The font axis (Sans / Serif switcher) has been removed; `font-sans`
+   * and `font-manrope` survive only because components and the legacy
+   * FontProvider still reference them, and now alias the same stack so
+   * nothing can fall back to an OS face. */
+  --font-inter: var(--font-ui);
+  --font-sans: var(--font-ui);
+  --font-manrope: var(--font-ui);
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -120,12 +104,55 @@ For commercial licensing, please contact support@Uter.ai.com
   --app-header-height: 3rem;
   /* Static build-channel fallback consumed when JS hasn't booted yet. */
   --app-rev: '2k6e8r7p';
-  /* Currently active body font. The font axis swaps this between
-   * `--font-inter`, `--font-sans` and `--font-serif` via
-   * `[data-theme-font='...']` blocks in theme-presets.css. Default is
-   * `--font-inter` so the product opens in Inter with no font preference
-   * set. */
-  --font-body: var(--font-inter);
+  /* ── The one UI typeface ──────────────────────────────────────────────
+   * Single source of truth for the font stack. Declared on `:root` (NOT
+   * inside `@theme inline`) so it is readable as a custom property at
+   * runtime — VChart reads it to draw canvas text, which does not inherit
+   * CSS. Everything else references this variable.
+   *
+   * Order matters and is deliberate:
+   *   1. Inter first — Latin letters and digits always render in it.
+   *   2. Source Han Sans (思源黑体) next — Inter has no CJK glyphs, so
+   *      every Chinese codepoint lands here. The locally installed
+   *      families are named before the webfont so a machine that already
+   *      has 思源黑体 uses it; everyone else gets the bundled
+   *      `noto-sans-sc` webfont, which is the *same* typeface (Adobe and
+   *      Google ship one shared source — Source Han Sans / Noto Sans CJK
+   *      are glyph-identical), so 中文 renders identically on macOS and
+   *      Windows instead of drifting to PingFang / YaHei per platform.
+   *   3. OS CJK faces last as a safety net if the webfont fails.
+   *   4. Emoji faces at the very end so only emoji codepoints land there.
+   *
+   * Monospace is NOT part of this stack: `font-mono` / `--font-mono`
+   * keeps the platform monospace face so code, keys and IDs stay aligned. */
+  --font-ui:
+    'Inter Variable', 'Inter', 'Source Han Sans SC', 'Source Han Sans CN',
+    '思源黑体', 'Noto Sans SC Variable', 'Noto Sans SC', 'Noto Sans CJK SC',
+    'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', system-ui,
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial,
+    sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
+  /* Active body font. The font axis (Sans / Serif) has been removed — the
+   * product is locked to Inter — so this is a fixed alias, kept as a
+   * variable only so the existing `body` rule and the `[font-family:
+   * var(--font-body)]` call sites keep working. */
+  --font-body: var(--font-ui);
+  /* ── Monospace ────────────────────────────────────────────────────────
+   * Code, API keys, model IDs, JSON and paths keep the platform monospace
+   * face — that is what makes columns line up and keeps 0/O and 1/l
+   * distinguishable, and it is deliberately left alone.
+   *
+   * The CJK families are appended AFTER the generic `monospace` keyword:
+   * the mono faces carry no Chinese glyphs, so without them Chinese inside
+   * a mono context (a code comment, a quoted error, a Chinese model name)
+   * resolved to whatever CJK face the OS happened to pick. Because CJK
+   * fonts do ship Latin glyphs, they must come last — Latin/digits still
+   * resolve at `monospace` and stay monospaced; only the missing CJK
+   * codepoints fall through to 思源黑体. */
+  --font-mono:
+    ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Monaco, Consolas,
+    'Liberation Mono', 'Courier New', monospace, 'Source Han Sans SC',
+    'Source Han Sans CN', '思源黑体', 'Noto Sans SC Variable', 'Noto Sans SC',
+    'PingFang SC', 'Microsoft YaHei', sans-serif;
 
   /* ── Type scale — GitHub 8-step ladder ───────────────────────────────
    * rem values assume a 16px root. Mirrors GitHub's type scale
