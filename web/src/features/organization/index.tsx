@@ -747,7 +747,18 @@ function AddMemberCard({
       >
         {ADD_MEMBER_LABEL[row.status]}
       </Button>
-              {index !== 0 && (
+              {index === 0 ? (
+                // 首行预留「删除行」按钮占位：让第 5 列(auto)从一开始就持有删除按钮宽度，
+                // 避免新增行后前 3 个 1fr 列收缩、把「添加成员」按钮左推，导致首行与后续行按钮不对齐。
+                <Button
+                  variant='outline'
+                  className='invisible pointer-events-none'
+                  tabIndex={-1}
+                  aria-hidden
+                >
+                  {t('Delete Row')}
+                </Button>
+              ) : (
                 <Button
                   variant='outline'
                   onClick={() => removeRow(row.key)}
