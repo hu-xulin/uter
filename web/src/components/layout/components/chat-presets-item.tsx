@@ -61,7 +61,6 @@ import {
   resolveDocsLocaleCode,
 } from '@/lib/docs-link'
 import { handleServerError } from '@/lib/handle-server-error'
-import { cn } from '@/lib/utils'
 
 import { normalizeHref } from '../lib/url-utils'
 import type { NavChatPresets } from '../types'
@@ -158,9 +157,9 @@ function ChatMenuItem({
       <SidebarMenuSubItem>
         <SidebarMenuSubButton
           isActive={active}
-          // Selected preset is bumped one weight up (500 → 600), matching
-          // the 首页 header's active-link treatment.
-          className={cn('font-medium', active && 'font-semibold')}
+          // Selected preset is called out by colour only (`data-active:text-primary`);
+          // its weight stays at 500 like the rest of the column.
+          className='font-medium'
           render={
             <Link
               to='/chat/$chatId'
@@ -405,7 +404,7 @@ export function ChatPresetsItem({ item }: { item: NavChatPresets }) {
                 <SidebarMenuButton
                   tooltip={item.title}
                   isActive={chatActive}
-                  className={cn('font-medium', chatActive && 'font-semibold')}
+                  className='font-medium'
                 />
               }
             >
@@ -445,7 +444,7 @@ export function ChatPresetsItem({ item }: { item: NavChatPresets }) {
           render={
             <SidebarMenuButton
               isActive={chatActive}
-              className={cn('font-medium', chatActive && 'font-semibold')}
+              className='font-medium'
             />
           }
         >
