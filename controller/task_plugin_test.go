@@ -2,6 +2,7 @@ package controller
 
 import (
 	"bytes"
+	"context"
 	"crypto/sha256"
 	"encoding/base64"
 	"fmt"
@@ -1175,6 +1176,52 @@ func TestUpdateTaskPluginMarketplaceSourcesValidation(t *testing.T) {
 			assert.Zero(t, count)
 		})
 	}
+}
+
+func TestNewMarketplaceHTTPClientProxyHandling(t *testing.T) {
+	proxied := newMarketplaceHTTPClient(false)
+	direct := newMarketplaceHTTPClient(true)
+
+	proxiedTransport, ok := proxied.Transport.(*http.Transport)
+	require.True(t, ok, "proxied client should use an *http.Transport")
+	directTransport, ok := direct.Transport.(*http.Transport)
+	require.True(t, ok, "direct client should use an *http.Transport")
+
+	// The proxied attempt must keep whatever the environment provides, so a
+	// deployment that genuinely needs its proxy is unaffected.
+	assert.NotNil(t, proxiedTransport.Proxy)
+	// The fallback must bypass the proxy entirely: the gateway often inherits
+	// a dead local proxy port and would otherwise fail every outbound fetch.
+	assert.Nil(t, directTransport.Proxy)
+
+	// Both clients must keep the SSRF guard and the per-attempt timeout.
+	for name, client := range map[string]*http.Client{
+		"proxied": proxied,
+		"direct":  direct,
+	} {
+		require.NotNil(t, client.CheckRedirect, "%s client must keep the redirect guard", name)
+		assert.ErrorIs(t, client.CheckRedirect(nil, nil), http.ErrUseLastResponse)
+		assert.Equal(t, marketplaceIndexAttemptTimeout, client.Timeout)
+	}
+}
+
+func TestFetchMarketplaceIndexOnceSurfacesHTTPStatus(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(
+		writer http.ResponseWriter,
+		_ *http.Request,
+	) {
+		writer.WriteHeader(http.StatusBadGateway)
+	}))
+	defer server.Close()
+
+	body, statusCode, err := fetchMarketplaceIndexOnce(
+		context.Background(),
+		newMarketplaceHTTPClient(true),
+		server.URL,
+	)
+	require.NoError(t, err, "a non-2xx response is not a transport error")
+	assert.Empty(t, body)
+	assert.Equal(t, http.StatusBadGateway, statusCode)
 }
 
 func TestTaskPluginDisplayOrderAndMetadata(t *testing.T) {
