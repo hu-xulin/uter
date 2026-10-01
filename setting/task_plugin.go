@@ -13,7 +13,12 @@ const (
 	TaskPluginDisabledFactoryKeysKey = "TaskPluginDisabledFactoryKeys"
 
 	officialTaskPluginMarketplaceIndexURL = "https://www.uter.ai/api/v1/plugins/index.json"
-	githubTaskPluginMarketplaceIndexURL   = "https://raw.githubusercontent.com/Uter-AI/uter-plugins/main/index.json"
+	// The plugin repository is hosted on GitHub, but raw.githubusercontent.com
+	// is unreachable from mainland China (the connection is reset), which made
+	// this built-in source unusable there. The same repository is served through
+	// the jsDelivr CDN, which is reachable from mainland China and serves
+	// identical contents, so the built-in source points at the CDN instead.
+	githubTaskPluginMarketplaceIndexURL = "https://cdn.jsdelivr.net/gh/Uter-AI/uter-plugins@main/index.json"
 )
 
 type TaskPluginMarketplaceSource struct {

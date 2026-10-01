@@ -319,8 +319,13 @@ export function indexHasIntegrityHashes(index: MarketplaceIndex): boolean {
 export const DEFAULT_MARKETPLACE_INDEX_URL =
   'https://www.uter.ai/api/v1/plugins/index.json'
 
+// The plugin repository is hosted on GitHub, but raw.githubusercontent.com is
+// unreachable from mainland China (the connection is reset), which made this
+// built-in source unusable there. The same repository is served through the
+// jsDelivr CDN, which is reachable from mainland China and serves identical
+// contents. Keep in sync with setting/task_plugin.go.
 export const GITHUB_MARKETPLACE_INDEX_URL =
-  'https://raw.githubusercontent.com/Uter-AI/uter-plugins/main/index.json'
+  'https://cdn.jsdelivr.net/gh/Uter-AI/uter-plugins@main/index.json'
 
 /**
  * Both built-in indexes are maintained by the project. Other configured
