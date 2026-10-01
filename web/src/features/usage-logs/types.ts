@@ -44,9 +44,14 @@ export interface CommonFilters {
   channel?: string
   /**
    * 用户维度过滤（数据库自增 user id）。
-   * 只有能查看他人数据的角色（管理员 / 超管）才会渲染该输入框。
+   * 只有能查看他人数据的角色（管理员 / 超管 / 组织管理者）才会渲染该输入框。
    */
   userId?: number
+  /**
+   * 用户维度过滤（用户名精确匹配）。任务 / 使用日志的组织接口与管理员接口均支持；
+   * 与 userId 取交集，越权的用户名只会得到空集。
+   */
+  username?: string
 }
 
 /**

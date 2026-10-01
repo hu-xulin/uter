@@ -220,6 +220,8 @@ type SyncTaskQueryParams struct {
 	ChannelID      string
 	TaskID         string
 	UserID         string
+	// Username 按用户名精确过滤；与 UserIDs（组织/部门范围）取交集，越权用户名只会得到空集。
+	Username       string
 	Action         string
 	Status         string
 	StartTimestamp int64
@@ -330,6 +332,9 @@ func TaskGetAllTasks(startIdx int, num int, queryParams SyncTaskQueryParams) []*
 	}
 	if queryParams.Status != "" {
 		query = query.Where("status = ?", queryParams.Status)
+	}
+	if queryParams.Username != "" {
+		query = query.Where("username = ?", queryParams.Username)
 	}
 	if queryParams.StartTimestamp != 0 {
 		query = query.Where("submit_time >= ?", queryParams.StartTimestamp)
@@ -582,6 +587,9 @@ func TaskCountAllTasks(queryParams SyncTaskQueryParams) int64 {
 	}
 	if queryParams.Status != "" {
 		query = query.Where("status = ?", queryParams.Status)
+	}
+	if queryParams.Username != "" {
+		query = query.Where("username = ?", queryParams.Username)
 	}
 	if queryParams.StartTimestamp != 0 {
 		query = query.Where("submit_time >= ?", queryParams.StartTimestamp)

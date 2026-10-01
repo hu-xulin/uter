@@ -28,7 +28,7 @@ import {
   ADMIN_PERMISSION_ACTIONS,
   hasPermission,
 } from '@/lib/admin-permissions'
-import { ROLE } from '@/lib/roles'
+import { ROLE, canManageOrganization } from '@/lib/roles'
 import { useAuthStore } from '@/stores/auth-store'
 
 import { AuditLogViewer } from './components/audit-log-viewer'
@@ -37,8 +37,6 @@ export function AuditLogs() {
   const { t } = useTranslation()
   const user = useAuthStore((state) => state.auth.user)
   const queryClient = useQueryClient()
-  const [scope, setScope] = useState<'all' | 'self'>('all')
-  const [accessRevoked, setAccessRevoked] = useState(false)
   const canReadAll =
     !!user &&
     user.role >= ROLE.ADMIN &&
@@ -47,11 +45,22 @@ export function AuditLogs() {
       ADMIN_PERMISSION_RESOURCES.AUDIT,
       ADMIN_PERMISSION_ACTIONS.READ
     )
-  const effectiveScope = canReadAll && !accessRevoked ? scope : 'self'
+  // 组织管理者（所有者 / 管理员 / 部门管理员）走组织级审计视图，后端按角色
+  // 收窄到本组织（部门管理员仅本部门）。
+  const orgScoped =
+    !!user && canManageOrganization(user) && (user.organization_id ?? 0) > 0
+  const orgId = orgScoped ? (user.organization_id ?? 0) : 0
+  // viewSelf 表示「只看自己」；否则取宽口径：平台管理员看全部，组织管理者看本组织。
+  const [viewSelf, setViewSelf] = useState(false)
+  const [accessRevoked, setAccessRevoked] = useState(false)
+  const canViewWide = (canReadAll || orgScoped) && !accessRevoked
+  const wideScope: 'all' | 'self' | 'org' = canReadAll ? 'all' : 'org'
+  const effectiveScope: 'all' | 'self' | 'org' =
+    !canViewWide || viewSelf ? 'self' : wideScope
   const userId = user?.id
   const handleAccessDenied = useCallback(async () => {
     setAccessRevoked(true)
-    setScope('self')
+    setViewSelf(true)
     const current = useAuthStore.getState().auth.user
     if (current && current.id === userId) {
       useAuthStore.getState().auth.setUser({
@@ -91,15 +100,15 @@ export function AuditLogs() {
     <SectionPageLayout fixedContent>
       <SectionPageLayout.Title>{t('Audit Logs')}</SectionPageLayout.Title>
       <SectionPageLayout.Actions>
-        {canReadAll && !accessRevoked && (
+        {canViewWide && (
           <Tabs
-            value={scope}
-            onValueChange={(value) =>
-              setScope(value === 'all' ? 'all' : 'self')
-            }
+            value={viewSelf ? 'self' : 'wide'}
+            onValueChange={(value) => setViewSelf(value === 'self')}
           >
             <TabsList aria-label={t('View scope')}>
-              <TabsTrigger value='all'>{t('All')}</TabsTrigger>
+              <TabsTrigger value='wide'>
+                {canReadAll ? t('All') : t('Organization')}
+              </TabsTrigger>
               <TabsTrigger value='self'>{t('Only Mine')}</TabsTrigger>
             </TabsList>
           </Tabs>
@@ -114,8 +123,9 @@ export function AuditLogs() {
           )}
           <div className='min-h-0 flex-1'>
             <AuditLogViewer
-              key={`${userId}:${effectiveScope}`}
+              key={`${userId}:${effectiveScope}:${orgId}`}
               scope={effectiveScope}
+              orgId={orgId}
               onAccessDenied={handleAccessDenied}
             />
           </div>

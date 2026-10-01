@@ -68,3 +68,21 @@ export async function getAuditLogs(
   }
   return response.data.data
 }
+
+/**
+ * 组织级审计日志（组织所有者 / 管理员 / 部门管理员）。范围由后端按调用者角色
+ * 收窄到本组织（部门管理员仅本部门），前端只传组织 id；用户名 / 用户ID 作为
+ * 可选的进一步过滤，与组织范围取交集。
+ */
+export async function getOrganizationAuditLogs(
+  orgId: number,
+  params: AuditFilters
+): Promise<{ items: AuditLog[]; total: number }> {
+  const response = await api.get<
+    ApiResponse<{ items: AuditLog[]; total: number }>
+  >(`/api/organization/${orgId}/audit`, { params })
+  if (!response.data.success || !response.data.data) {
+    throw createServerError(response.data, t('Failed to load audit records'))
+  }
+  return response.data.data
+}

@@ -27,14 +27,16 @@ import { Button } from '@/components/ui/button'
 import { requireServerSuccess } from '@/lib/server-error-message'
 import { useAuthStore } from '@/stores/auth-store'
 
-import { getAuditLogs, type AuditFilters, type AuditLog } from '../api'
+import { getAuditLogs, getOrganizationAuditLogs, type AuditFilters, type AuditLog } from '../api'
 import { useAuditLogColumns } from './audit-log-columns'
 import { AuditLogFilterBar } from './audit-log-filter-bar'
 
 const EMPTY_LOGS: AuditLog[] = []
 
 export function AuditLogViewer(props: {
-  scope: 'all' | 'self'
+  scope: 'all' | 'self' | 'org'
+  /** 组织级作用域（scope === 'org'）时必填，作为组织审计接口的路径参数。 */
+  orgId?: number
   accessOnly?: boolean
   currentTokenRef?: string
   onAccessDenied?: () => Promise<void>
@@ -58,9 +60,15 @@ export function AuditLogViewer(props: {
     filters.end_timestamp !== undefined &&
     filters.start_timestamp > filters.end_timestamp
   const query = useQuery({
-    queryKey: ['audit', userId, props.scope, params],
-    queryFn: async () =>
-      requireServerSuccess(await getAuditLogs(props.scope, params)),
+    queryKey: ['audit', userId, props.scope, props.orgId, params],
+    queryFn: async () => {
+      if (props.scope === 'org') {
+        return requireServerSuccess(
+          await getOrganizationAuditLogs(props.orgId ?? 0, params)
+        )
+      }
+      return requireServerSuccess(await getAuditLogs(props.scope, params))
+    },
     enabled: canQuery && !invalidRange,
     retry: false,
   })

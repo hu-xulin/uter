@@ -783,6 +783,7 @@ func GetOrganizationTasks(c *gin.Context) {
 		StartTimestamp: startTimestamp,
 		EndTimestamp:   endTimestamp,
 		ChannelID:      c.Query("channel_id"),
+		Username:       c.Query("username"),
 	}
 	filterUserIds, ok := QueryUserIds(c)
 	if !ok {
