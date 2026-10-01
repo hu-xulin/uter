@@ -312,6 +312,10 @@ func (s *BillingSession) rollbackFundingReserve(delta int) {
 			} else {
 				funding.consumed -= delta
 			}
+			// 撤销预扣点在成员子额度账本上的原子预留，与组织账本回滚保持一致。
+			if err := model.IncrUserUsedQuotaClamped(funding.userId, -delta); err != nil {
+				common.SysLog("error rolling back member sub-quota reserve: " + err.Error())
+			}
 			return
 		}
 		if err := model.IncreaseUserQuota(funding.userId, delta, false); err != nil {

@@ -366,35 +366,45 @@ func GetOrgMemberSubQuotaState(orgId int, userId int) (subQuotaLimit int64, used
 	return member.SubQuotaLimit, member.UsedQuota, nil
 }
 
-// ReserveOrgQuota 在组织共享账本上原子预扣 amount：
-//  1. 先按数据库权威值校验成员子额度上限；
+// ReserveOrgQuota 在成员子额度账本与组织共享账本上原子预扣 amount：
+//  1. 先用单条带条件的 UPDATE 原子预留成员子额度：闸门（used_quota+amount<=sub_quota_limit）
+//     与记账（used_quota += amount）在同一条语句中完成，并发请求不可能同时通过检查后超扣。
+//     这关闭了原先「EnforceOrgQuota 只读校验 + 结算点才写 used_quota」之间的 TOCTOU 窗口——
+//     旧实现下同一成员的并发请求会全部通过只读校验，结算时集体突破子额度上限，成员可白嫖
+//     远超其配额的共享钱包用量。
 //  2. 再以单条带条件的 UPDATE 原子自增 organizations.used_quota，条件为
-//     「预算未设置上限 或 已用+本次 <= 预算」且「组织未停用」。并发请求不可能同时通过
-//     检查后超扣，这解决了只读闸门（EnforceOrgQuota）与落账之间的 TOCTOU 窗口。
+//     「预算未设置上限 或 已用+本次 <= 预算」且「组织未停用」。
+//  3. 任一步骤失败都回滚已完成的步骤，保证账本不被留下半截痕迹。
 //
-// 组织预算为 0/负数时表示不限量（平台侧未给该组织设上限），此时只校验子额度。
+// 子额度上限 sub_quota_limit<=0 表示不限量（组织未给该成员设上限），此时只校验组织预算；
+// 组织预算 quota<=0 同理表示不限量。
 func ReserveOrgQuota(orgId int, userId int, amount int64) error {
 	if orgId <= 0 || amount <= 0 {
 		return nil
 	}
-	subQuotaLimit, usedQuota, err := GetOrgMemberSubQuotaState(orgId, userId)
-	if err != nil {
-		return err
+	// 1) 原子预留成员子额度：闸门与记账同一条条件 UPDATE。
+	mres := DB.Model(&User{}).
+		Where("id = ? AND organization_id = ? AND (sub_quota_limit <= 0 OR used_quota + ? <= sub_quota_limit)",
+			userId, orgId, amount).
+		Update("used_quota", gorm.Expr("used_quota + ?", amount))
+	if mres.Error != nil {
+		return mres.Error
 	}
-	if subQuotaLimit > 0 && int64(usedQuota)+amount > subQuotaLimit {
-		return fmt.Errorf("%w: used %s / limit %s", ErrOrgSubQuotaExceeded,
-			logger.FormatQuota(usedQuota), logger.FormatQuota(int(subQuotaLimit)))
+	if mres.RowsAffected == 0 {
+		return fmt.Errorf("%w: org %d member %d over sub-quota limit on reserve %d",
+			ErrOrgSubQuotaExceeded, orgId, userId, amount)
 	}
-	// 停用组织由条件里的 COALESCE(status, 1) <> OrgStatusDisabled 拒绝（见下方注释），
-	// 不额外查一次库：这是每个中转请求都要走的热路径。
-	res := DB.Model(&Organization{}).
+	// 2) 原子预留组织预算（与成员预留同口径）。
+	ores := DB.Model(&Organization{}).
 		Where("id = ? AND (quota <= 0 OR used_quota + ? <= quota) AND COALESCE(status, ?) <> ?",
 			orgId, amount, OrgStatusEnabled, OrgStatusDisabled).
 		Update("used_quota", gorm.Expr("used_quota + ?", amount))
-	if res.Error != nil {
-		return res.Error
+	if ores.Error != nil {
+		reserveOrgQuotaRollbackMember(orgId, userId, amount)
+		return ores.Error
 	}
-	if res.RowsAffected == 0 {
+	if ores.RowsAffected == 0 {
+		reserveOrgQuotaRollbackMember(orgId, userId, amount)
 		// 单条 UPDATE 未命中只可能是「预算不足」或「组织已停用」；读回原始行给出准确原因
 		// （只有失败路径才付这次查询）。status 为 NULL 的历史行按未停用处理，与
 		// IsOrgSuspended 只认 OrgStatusDisabled 的口径一致。
@@ -409,6 +419,16 @@ func ReserveOrgQuota(orgId int, userId int, amount int64) error {
 			logger.FormatQuota(int(org.UsedQuota)), logger.FormatQuota(int(org.Quota)))
 	}
 	return nil
+}
+
+// reserveOrgQuotaRollbackMember 撤销 ReserveOrgQuota 已记入成员子额度账本的预留，
+// 仅用于组织预算预留失败时的回滚（钳制在 0，避免并发回滚把用量记成负数）。
+func reserveOrgQuotaRollbackMember(orgId int, userId int, amount int64) {
+	if err := DB.Model(&User{}).Where("id = ? AND organization_id = ?", userId, orgId).
+		Update("used_quota", gorm.Expr("CASE WHEN used_quota - ? < 0 THEN 0 ELSE used_quota - ? END", amount, amount)).Error; err != nil {
+		common.SysLog(fmt.Sprintf("reserveOrgQuota rollback member used_quota failed (org=%d, user=%d, amount=%d): %s",
+			orgId, userId, amount, err.Error()))
+	}
 }
 
 // OrgRemainingQuota 返回组织共享预算的剩余额度。unlimited 为 true 时表示未设上限

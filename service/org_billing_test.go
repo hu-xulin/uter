@@ -137,8 +137,10 @@ func TestOrgMemberBillingChargesOrganizationLedgerExactly(t *testing.T) {
 
 			require.Nil(t, PreConsumeBilling(fx.ctx, testCase.preConsume, fx.relayInfo))
 
-			// 与真实结算点一致：先记成员用量，再结算资金来源。
-			model.UpdateUserUsedQuotaAndRequestCount(userId, testCase.actual)
+			// 与真实结算点一致：先记成员请求计数，再结算资金来源。
+			// 成员 used_quota 由 WalletFunding.Settle 按「实际 - 预扣」差额并入（F2 修复后），
+			// 这里不能再直接累加 used_quota，否则与结算差额重复计账。
+			model.UpdateUserRequestCount(userId)
 			require.NoError(t, SettleBilling(fx.ctx, fx.relayInfo, testCase.actual))
 
 			assert.Equal(t, int64(testCase.expectedQuota), getOrgUsedQuota(t, orgId),
@@ -261,7 +263,9 @@ func TestOrgMemberIgnoresSubscriptionBillingPreference(t *testing.T) {
 	fx.relayInfo.UserSetting = dto.UserSetting{BillingPreference: "subscription_first"}
 
 	require.Nil(t, PreConsumeBilling(fx.ctx, preConsume, fx.relayInfo))
-	model.UpdateUserUsedQuotaAndRequestCount(userId, actual)
+	// 成员 used_quota 由 WalletFunding.Settle 按「实际 - 预扣」差额并入（F2 修复后）；
+	// 这里只累加请求计数，避免与结算差额重复计账。
+	model.UpdateUserRequestCount(userId)
 	require.NoError(t, SettleBilling(fx.ctx, fx.relayInfo, actual))
 
 	assert.Equal(t, int64(actual), getOrgUsedQuota(t, orgId), "组织成员必须由组织预算出资")

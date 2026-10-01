@@ -1541,6 +1541,36 @@ func UpdateUserUsedQuota(id int, quota int) {
 	}
 }
 
+// IncrUserUsedQuotaClamped 原子增减成员已用额度，下限钳制在 0。
+// 用于组织子额度：预扣点在 ReserveOrgQuota 已把预扣额原子记入 used_quota，
+// 结算时按「实际 - 预扣」差额并入，或退款/回滚时整体撤销预留；钳制避免并发回滚把
+// 用量记成负数。
+func IncrUserUsedQuotaClamped(id int, delta int) error {
+	if delta == 0 {
+		return nil
+	}
+	err := DB.Model(&User{}).Where("id = ?", id).
+		Update("used_quota", gorm.Expr("CASE WHEN used_quota + ? < 0 THEN 0 ELSE used_quota + ? END", delta, delta)).Error
+	if err != nil {
+		common.SysLog("failed to adjust user used quota: " + err.Error())
+	}
+	return err
+}
+
+// UpdateUserRequestCount 仅递增请求计数，不改变已用额度。
+// 组织成员的已用额度由 WalletFunding.Settle 在结算时按差额并入，避免在结算写入点与
+// 预扣点的原子预留重复计账（重复写入会把用量记成 actual + delta）。
+func UpdateUserRequestCount(id int) {
+	if common.BatchUpdateEnabled {
+		addNewRecord(BatchUpdateTypeRequestCount, id, 1)
+		return
+	}
+	if err := DB.Model(&User{}).Where("id = ?", id).
+		Update("request_count", gorm.Expr("request_count + ?", 1)).Error; err != nil {
+		common.SysLog("failed to update user request count: " + err.Error())
+	}
+}
+
 func updateUserUsedQuotaAndRequestCount(id int, quota int, count int) {
 	err := DB.Model(&User{}).Where("id = ?", id).Updates(
 		map[string]any{

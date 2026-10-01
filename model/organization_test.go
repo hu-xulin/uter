@@ -287,3 +287,58 @@ func TestGetOrgMemberUsernamesInDepartment(t *testing.T) {
 	require.NoError(t, err)
 	assert.Len(t, all, 3)
 }
+
+// 成员子额度上限必须原子强制：即使并发预扣，账本也不得超过子额度上限。
+//
+// 这正是 F2 修复的 TOCTOU 竞态——修复前 ReserveOrgQuota 只用只读校验（GetOrgMemberSubQuotaState）
+// 判定子额度，真正的 used_quota 自增发生在结算点；同成员的并发请求会全部通过只读校验，
+// 结算时集体突破子额度上限，成员可白嫖远超其配额的共享钱包用量。修复后闸门与记账在同一条
+// 条件 UPDATE 中完成，并发请求不可能同时通过检查后超扣。
+func TestReserveOrgQuotaEnforcesSubQuotaAtomicallyUnderConcurrency(t *testing.T) {
+	truncateTables(t)
+	insertOrgForTest(t, 1, 0)                                  // 组织不限量，隔离出「仅成员子额度」这一维
+	insertOrgUserForTest(t, 1, 1, OrgRoleMember, 0, 1_000, "") // 子额度上限 1000
+
+	const perRequest = 100
+	const attempts = 30
+	var (
+		wg        sync.WaitGroup
+		mu        sync.Mutex
+		succeeded int
+	)
+	for range attempts {
+		wg.Go(func() {
+			err := ReserveOrgQuota(1, 1, perRequest)
+			if err == nil {
+				mu.Lock()
+				succeeded++
+				mu.Unlock()
+			}
+		})
+	}
+	wg.Wait()
+
+	assert.Equal(t, 10, succeeded, "子额度 1000 / 每笔 100：只应有 10 笔成功")
+	var u User
+	require.NoError(t, DB.Select("used_quota").Where("id = ?", 1).First(&u).Error)
+	assert.Equal(t, int64(1_000), int64(u.UsedQuota), "成员 used_quota 不得超过子额度上限（原子强制）")
+}
+
+// 预扣成功、结算实际消耗小于预扣时，成员 used_quota 必须收敛到实际消耗而非叠加预扣额
+// （net = 预扣额 + (实际 - 预扣) = 实际），且不得因结算再重复计账。
+func TestReserveThenSettleReconcilesMemberUsage(t *testing.T) {
+	truncateTables(t)
+	insertOrgForTest(t, 1, 0)
+	insertOrgUserForTest(t, 1, 1, OrgRoleMember, 0, 1_000_000, "")
+
+	// 预扣 800，结算实际 500：差额 -300 并入后 used_quota 应为 500。
+	require.NoError(t, ReserveOrgQuota(1, 1, 800))
+	var u User
+	require.NoError(t, DB.Select("used_quota").Where("id = ?", 1).First(&u).Error)
+	assert.Equal(t, int64(800), int64(u.UsedQuota), "预扣阶段 used_quota 应原子记入")
+
+	// 模拟 WalletFunding.Settle(delta) 的结算差额并入（delta = 实际 - 预扣）。
+	require.NoError(t, IncrUserUsedQuotaClamped(1, 500-800))
+	require.NoError(t, DB.Select("used_quota").Where("id = ?", 1).First(&u).Error)
+	assert.Equal(t, int64(500), int64(u.UsedQuota), "结算后 used_quota 应等于实际消耗，不得叠加预扣额")
+}
