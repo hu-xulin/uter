@@ -28,6 +28,8 @@ import { buildSearchParams } from '../lib/filter'
 import { getDefaultTimeRange } from '../lib/utils'
 import type { DrawingLogFilters, LogCategory, TaskLogFilters } from '../types'
 import { CompactDateTimeRangePicker } from './compact-date-time-range-picker'
+import { OrgUserFilter } from '@/features/organization/org-user-filter'
+import { useOrgManagerScope } from '@/features/organization/use-org-manager'
 import {
   LogsFilterField,
   LogsFilterInput,
@@ -72,6 +74,10 @@ export function TaskLogsFilterBar<TData>(props: TaskLogsFilterBarProps<TData>) {
   const queryClient = useQueryClient()
   const searchParams = route.useSearch()
   const { isAdminView: isAdmin } = useLogsViewScope()
+  // 组织管理者（非平台管理员）：用「用户名 / 用户ID」双下拉替代平台管理员的用户ID文本输入。
+  const { isOrgManager, members, isLoading: membersLoading } =
+    useOrgManagerScope()
+  const showOrgUserFilter = isOrgManager && !isAdmin
   const fetchingLogs = useIsFetching({ queryKey: ['logs'] })
 
   const [filters, setFilters] = useState<TaskLogsFilters>(() => {
@@ -80,6 +86,9 @@ export function TaskLogsFilterBar<TData>(props: TaskLogsFilterBarProps<TData>) {
   })
   // 用户 ID 输入框保留原始字符串（允许 "uter…" 写法），null 表示跟随 URL 渲染。
   const [userIdRaw, setUserIdRaw] = useState<string | null>(null)
+  // 组织管理者走下拉：直接记录选中的数字 user_id / username（不可输入）。
+  const [orgUserId, setOrgUserId] = useState<number | undefined>(undefined)
+  const [orgUsername, setOrgUsername] = useState<string | undefined>(undefined)
 
   useEffect(() => {
     const { start, end } = getDefaultTimeRange()
@@ -126,7 +135,10 @@ export function TaskLogsFilterBar<TData>(props: TaskLogsFilterBarProps<TData>) {
   )
 
   const handleApply = useCallback(() => {
-    const parsedUserId = parseUserId(userIdInput)
+    // 平台管理员用文本输入（可输入 uter… 形式），组织管理者走下拉直接取数字 user_id。
+    const parsedUserId = showOrgUserFilter
+      ? (orgUserId ?? 0)
+      : parseUserId(userIdInput)
     const merged: TaskLogsFilters = {
       ...filters,
       userId: parsedUserId > 0 ? parsedUserId : undefined,
@@ -141,7 +153,15 @@ export function TaskLogsFilterBar<TData>(props: TaskLogsFilterBarProps<TData>) {
       },
     })
     queryClient.invalidateQueries({ queryKey: ['logs'] })
-  }, [filters, navigate, props.logCategory, queryClient, userIdInput])
+  }, [
+    filters,
+    navigate,
+    props.logCategory,
+    queryClient,
+    userIdInput,
+    showOrgUserFilter,
+    orgUserId,
+  ])
 
   const handleReset = useCallback(() => {
     const { start, end } = getDefaultTimeRange()
@@ -215,6 +235,7 @@ export function TaskLogsFilterBar<TData>(props: TaskLogsFilterBarProps<TData>) {
       />
     </LogsFilterField>
   ) : null
+  // 平台管理员：用户ID 文本输入；组织管理者：用户名 / 用户ID 双下拉（不可输入）。
   const userIdFilter = isAdmin ? (
     <LogsFilterField>
       <LogsFilterInput
@@ -227,6 +248,16 @@ export function TaskLogsFilterBar<TData>(props: TaskLogsFilterBarProps<TData>) {
       />
     </LogsFilterField>
   ) : null
+  const orgUserFilter = showOrgUserFilter ? (
+    <OrgUserFilter
+      members={members}
+      username={orgUsername}
+      userId={orgUserId}
+      disabled={membersLoading}
+      onUsernameChange={setOrgUsername}
+      onUserIdChange={setOrgUserId}
+    />
+  ) : null
 
   return (
     <LogsFilterToolbar
@@ -236,6 +267,7 @@ export function TaskLogsFilterBar<TData>(props: TaskLogsFilterBarProps<TData>) {
           {dateRangeFilter}
           {taskIdFilter}
           {userIdFilter}
+          {orgUserFilter}
           {channelFilter}
         </>
       }
@@ -244,11 +276,16 @@ export function TaskLogsFilterBar<TData>(props: TaskLogsFilterBarProps<TData>) {
         <>
           {taskIdFilter}
           {userIdFilter}
+          {orgUserFilter}
           {channelFilter}
         </>
       }
       mobileFilterCount={
-        [filterValue, filters.userId, filters.channel].filter(Boolean).length
+        [
+          filterValue,
+          showOrgUserFilter ? orgUserId : filters.userId,
+          filters.channel,
+        ].filter(Boolean).length
       }
       hasActiveFilters={hasAdditionalFilters}
       onSearch={handleApply}

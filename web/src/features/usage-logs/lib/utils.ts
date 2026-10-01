@@ -27,6 +27,8 @@ import {
   getAllTaskLogs,
   getUserTaskLogs,
   getOrganizationLogs,
+  getOrganizationTasks,
+  getOrganizationMidjourney,
 } from '../api'
 import {
   LOG_TYPES,
@@ -290,12 +292,25 @@ export async function fetchLogsByCategory(
   }
 
   if (logCategory === 'drawing') {
+    // 组织管理者：走组织接口，范围由后端按角色收敛。
+    if (config.orgId) {
+      return await getOrganizationMidjourney(
+        config.orgId,
+        paramsWithFilter as GetMidjourneyLogsParams
+      )
+    }
     return isAdmin
       ? await getAllMidjourneyLogs(paramsWithFilter as GetMidjourneyLogsParams)
       : await getUserMidjourneyLogs(paramsWithFilter as GetMidjourneyLogsParams)
   }
 
   // task logs
+  if (config.orgId) {
+    return await getOrganizationTasks(
+      config.orgId,
+      paramsWithFilter as GetTaskLogsParams
+    )
+  }
   return isAdmin
     ? await getAllTaskLogs(paramsWithFilter as GetTaskLogsParams)
     : await getUserTaskLogs(paramsWithFilter as GetTaskLogsParams)

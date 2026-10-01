@@ -91,3 +91,61 @@ export async function getUptimeStatus() {
   )
   return res.data
 }
+
+// ============================================================================
+// Organization-scoped Dashboard APIs (组织管理者视角)
+// ============================================================================
+
+// 组织管理者查看本组织成员按时间聚合的额度消耗；范围由后端按角色收敛
+// （admin 看不到 owner、部门 admin 只看本部门）。
+export async function getOrgQuotaDates(
+  orgId: number,
+  params: {
+    start_timestamp: number
+    end_timestamp: number
+    default_time?: string
+    username?: string
+    user_id?: number
+  }
+) {
+  const res = await api.get<{ success: boolean; data: QuotaDataItem[] }>(
+    `/api/organization/${orgId}/quota-dates`,
+    { params }
+  )
+  return res.data
+}
+
+// 组织管理者查看本组织成员流量（按模型/日期）汇总。
+export async function getOrgFlowQuotaDates(
+  orgId: number,
+  params: {
+    start_timestamp: number
+    end_timestamp: number
+    default_time?: string
+    username?: string
+    user_id?: number
+  }
+) {
+  const res = await api.get<{
+    success: boolean
+    data?: FlowQuotaDataItem[]
+    message?: string
+  }>(`/api/organization/${orgId}/flow`, { params })
+  return res.data
+}
+
+// 组织管理者查看本组织成员按用户聚合的额度消耗（用户分析分区）。
+export async function getOrgQuotaDatesByUsers(
+  orgId: number,
+  params: {
+    start_timestamp: number
+    end_timestamp: number
+    user_id?: number
+  }
+) {
+  const res = await api.get<{ success: boolean; data: QuotaDataItem[] }>(
+    `/api/organization/${orgId}/quota-dates/users`,
+    { params }
+  )
+  return res.data
+}

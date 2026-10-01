@@ -34,6 +34,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { OrgUserFilter } from '@/features/organization/org-user-filter'
+import { useOrgManagerScope } from '@/features/organization/use-org-manager'
 import {
   TIME_GRANULARITY_OPTIONS,
   TIME_RANGE_PRESETS,
@@ -102,6 +104,12 @@ export function ModelsFilter(props: ModelsFilterProps) {
   // 使用已缓存的用户数据，避免重复调用 API
   const user = useAuthStore((state) => state.auth.user)
   const isAdmin = user?.role && user.role >= 10
+  // 组织管理者（owner / admin / department_admin，且非平台管理员）：用「用户名 / 用户ID」
+  // 双下拉替代平台管理员的纯文本输入；成员列表已由后端按角色收敛（admin 看不到 owner、
+  // 部门 admin 只看本部门）。
+  const { isOrgManager, members, isLoading: membersLoading } =
+    useOrgManagerScope()
+  const showOrgUserFilter = isOrgManager && !isAdmin
 
   const [open, setOpen] = useState(false)
   const [filters, setFilters] = useState<DashboardFilters>(
@@ -133,7 +141,10 @@ export function ModelsFilter(props: ModelsFilterProps) {
   }
 
   const handleApply = () => {
-    const parsedUserId = parseUserId(userIdInput)
+    // 平台管理员用文本输入（可输入 uter… 形式），组织管理者走下拉直接写数字 user_id。
+    const parsedUserId = isAdmin
+      ? parseUserId(userIdInput)
+      : (filters.user_id ?? 0)
     props.onFilterChange(
       cleanFilters({
         ...(filters as unknown as Record<string, unknown>),
@@ -211,7 +222,7 @@ export function ModelsFilter(props: ModelsFilterProps) {
       }
     >
       <ScrollArea className='h-full pr-3 sm:pr-4'>
-        <div className='grid gap-2.5 py-2'>
+        <div className='grid gap-2.5 py-2 text-start'>
           {/* Quick time range selection */}
           <div className='grid gap-2'>
             <Label className='flex items-center gap-2'>
@@ -293,6 +304,24 @@ export function ModelsFilter(props: ModelsFilterProps) {
               </SelectContent>
             </Select>
           </div>
+
+          {/* 组织管理者（非平台管理员）：在「筛选时间粒度」下方提供用户名 / 用户ID 双下拉，
+              数据源为后端按角色收敛后的可见成员（admin 看不到 owner、部门 admin 只看本部门），不可输入。 */}
+          {showOrgUserFilter && (
+            <OrgUserFilter
+              members={members}
+              username={filters.username}
+              userId={filters.user_id}
+              disabled={membersLoading}
+              onUsernameChange={(value) =>
+                setFilters((prev) => ({ ...prev, username: value }))
+              }
+              onUserIdChange={(value) => {
+                setFilters((prev) => ({ ...prev, user_id: value }))
+                setUserIdInput('')
+              }}
+            />
+          )}
 
           {/* Admin-only fields */}
           {isAdmin && (

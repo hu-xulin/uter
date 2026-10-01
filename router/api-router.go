@@ -193,8 +193,10 @@ func SetApiRouter(router *gin.Engine) {
 			orgAdminRoute.GET("/:id/logs/stat", controller.GetOrganizationLogsStat)
 			orgAdminRoute.GET("/:id/quota-dates", controller.GetOrganizationQuotaDates)
 			orgAdminRoute.GET("/:id/quota-dates/users", controller.GetOrganizationQuotaDatesByUser)
-			orgAdminRoute.GET("/:id/flow", controller.GetOrganizationFlow)
-			orgAdminRoute.GET("/:id/audit", controller.GetOrganizationAuditLogs)
+		orgAdminRoute.GET("/:id/flow", controller.GetOrganizationFlow)
+		orgAdminRoute.GET("/:id/tasks", controller.GetOrganizationTasks)
+		orgAdminRoute.GET("/:id/drawings", controller.GetOrganizationMidjourney)
+		orgAdminRoute.GET("/:id/audit", controller.GetOrganizationAuditLogs)
 		}
 
 		// 组织创建与全员列表（仅超管）。创建放在 RootAuth 组，避免任何普通账号

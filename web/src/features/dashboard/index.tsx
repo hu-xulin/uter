@@ -34,6 +34,7 @@ import {
 import { ROLE } from '@/lib/roles'
 import { cn } from '@/lib/utils'
 import { useAuthStore } from '@/stores/auth-store'
+import { useDashboardScope } from './hooks/use-dashboard-scope'
 
 import { ModelsChartPreferences } from './components/models/models-chart-preferences'
 import { ModelsFilter } from './components/models/models-filter-dialog'
@@ -245,12 +246,14 @@ export function Dashboard() {
 
   const meta = SECTION_META[activeSection] ?? SECTION_META.overview
   const isAdmin = Boolean(userRole && userRole >= ROLE.ADMIN)
+  const { isOrgManager } = useDashboardScope()
   const visibleSections = useMemo(
     () =>
       DASHBOARD_SECTION_IDS.filter(
-        (section) => section !== 'overview' && (section !== 'users' || isAdmin)
+        (section) =>
+          section !== 'overview' && (section !== 'users' || isAdmin || isOrgManager)
       ),
-    [isAdmin]
+    [isAdmin, isOrgManager]
   )
   const handleSectionChange = useCallback(
     (section: string) => {
