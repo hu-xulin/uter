@@ -116,7 +116,7 @@ export function Hero(props: HeroProps) {
           </div>
 
           <h1
-            className='landing-animate-fade-up text-[3rem] leading-[1.5] font-bold tracking-tight'
+            className='landing-animate-fade-up text-[1.75rem] md:text-[3rem] leading-[1.5] font-bold tracking-tight'
             style={{ animationDelay: '60ms' }}
           >
             {(() => {
