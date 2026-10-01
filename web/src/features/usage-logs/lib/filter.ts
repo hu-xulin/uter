@@ -67,6 +67,7 @@ export function buildSearchParams(
       const drawingFilters = filters as DrawingLogFilters
       return {
         ...baseParams,
+        ...(drawingFilters.username && { username: drawingFilters.username }),
         ...(drawingFilters.mjId && { filter: drawingFilters.mjId }),
       }
     }
@@ -74,6 +75,7 @@ export function buildSearchParams(
       const taskFilters = filters as TaskLogFilters
       return {
         ...baseParams,
+        ...(taskFilters.username && { username: taskFilters.username }),
         ...(taskFilters.taskId && { filter: taskFilters.taskId }),
       }
     }

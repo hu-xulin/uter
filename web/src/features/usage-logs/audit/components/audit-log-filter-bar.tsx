@@ -56,7 +56,7 @@ export function AuditLogFilterBar(props: {
   table: Table<AuditLog>
   filters: AuditFilters
   onChange: (patch: Partial<AuditFilters>) => void
-  scope: 'all' | 'self'
+  scope: 'all' | 'self' | 'org'
   accessOnly?: boolean
   tokenScope: string
   currentTokenRef?: string
@@ -145,10 +145,40 @@ export function AuditLogFilterBar(props: {
           }
         />
       )}
+      {/* 用户名 / 用户ID：与「结果」「分类」同模式，常驻主筛选区；
+          仅平台管理员（all）或组织管理者（org）可见，普通用户（self）只看自己无需此筛选。 */}
+      {props.scope === 'all' || props.scope === 'org' ? (
+        <>
+          <LogsFilterField>
+            <LogsFilterInput
+              aria-label={t('Username')}
+              placeholder={t('Username')}
+              value={props.filters.username ?? ''}
+              onChange={(event) =>
+                props.onChange({ username: event.target.value || undefined })
+              }
+            />
+          </LogsFilterField>
+          <LogsFilterField>
+            <LogsFilterInput
+              aria-label={t('User ID')}
+              placeholder={t('User ID')}
+              inputMode='numeric'
+              value={userIdInput}
+              onChange={(event) => {
+                const raw = event.target.value
+                setUserIdRaw(raw)
+                const parsed = parseUserId(raw)
+                props.onChange({ user_id: parsed > 0 ? parsed : undefined })
+              }}
+            />
+          </LogsFilterField>
+        </>
+      ) : null}
     </>
   )
   const advancedFilters =
-    !props.accessOnly || props.scope === 'all' ? (
+    !props.accessOnly || props.scope === 'all' || props.scope === 'org' ? (
       <>
         {!props.accessOnly && (
           <>
@@ -176,41 +206,11 @@ export function AuditLogFilterBar(props: {
             </LogsFilterField>
           </>
         )}
-        {props.scope === 'all' && (
-          <>
-            <LogsFilterField>
-              <LogsFilterInput
-                aria-label={t('Username')}
-                placeholder={t('Username')}
-                value={props.filters.username ?? ''}
-                onChange={(event) =>
-                  props.onChange({ username: event.target.value || undefined })
-                }
-              />
-            </LogsFilterField>
-            <LogsFilterField>
-              <LogsFilterInput
-                aria-label={t('User ID')}
-                placeholder={t('User ID')}
-                inputMode='numeric'
-                value={userIdInput}
-                onChange={(event) => {
-                  const raw = event.target.value
-                  setUserIdRaw(raw)
-                  const parsed = parseUserId(raw)
-                  props.onChange({ user_id: parsed > 0 ? parsed : undefined })
-                }}
-              />
-            </LogsFilterField>
-          </>
-        )}
       </>
     ) : undefined
   const advancedCount = [
     props.filters.token_ref,
     props.filters.request_id,
-    props.filters.username,
-    props.filters.user_id,
   ].filter(Boolean).length
   const filterCount =
     advancedCount +

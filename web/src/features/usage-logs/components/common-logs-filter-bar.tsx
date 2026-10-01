@@ -39,7 +39,6 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
-import { OrgUserFilter } from '@/features/organization/org-user-filter'
 import { useOrgManagerScope } from '@/features/organization/use-org-manager'
 import { getGroups } from '@/features/users/api'
 import { useMediaQuery } from '@/hooks'
@@ -130,9 +129,8 @@ export function CommonLogsFilterBar<TData>(
   const searchParams = route.useSearch()
   const { isAdminView: isAdmin } = useLogsViewScope()
   const { sensitiveVisible, setSensitiveVisible } = useUsageLogsContext()
-  const { isOrgManager, members, isLoading: membersLoading } =
-    useOrgManagerScope()
-  // 组织管理者（非平台管理员）用「用户名 / 用户ID」双下拉替代平台管理员的文本输入。
+  const { isOrgManager } = useOrgManagerScope()
+  // 组织管理者（非平台管理员）与平台管理员一样，用内联「用户名 / 用户ID」文本输入。
   const showOrgUserFilter = isOrgManager && !isAdmin
   const fetchingLogs = useIsFetching({ queryKey: ['logs'] })
   const { data: adminGroups } = useQuery({
@@ -288,20 +286,21 @@ export function CommonLogsFilterBar<TData>(
 
   const hasExpandedFilters =
     !!filters.token ||
-    !!filters.username ||
-    !!filters.userId ||
     !!filters.channel ||
     !!filters.requestId ||
     !!filters.upstreamRequestId
 
   const hasTypeFilter = logType !== LOG_TYPE_ALL_VALUE
+  const hasUserDimension = !!filters.username || !!filters.userId
   const hasAdditionalFilters =
-    !!filters.model || !!filters.group || hasTypeFilter || hasExpandedFilters
+    !!filters.model ||
+    !!filters.group ||
+    hasTypeFilter ||
+    hasExpandedFilters ||
+    hasUserDimension
 
   const expandedFilterCount = [
     filters.token,
-    isAdmin || showOrgUserFilter ? filters.username : undefined,
-    isAdmin || showOrgUserFilter ? filters.userId : undefined,
     isAdmin ? filters.channel : undefined,
     filters.requestId,
     filters.upstreamRequestId,
@@ -472,39 +471,6 @@ export function CommonLogsFilterBar<TData>(
       {isAdmin && (
         <LogsFilterField>
           <LogsFilterInput
-            placeholder={t('Username')}
-            className={sensitiveInputClass}
-            value={filters.username || ''}
-            onChange={(e) => handleChange('username', e.target.value)}
-            onKeyDown={handleKeyDown}
-          />
-        </LogsFilterField>
-      )}
-      {isAdmin && (
-        <LogsFilterField>
-          <LogsFilterInput
-            aria-label={t('User ID')}
-            placeholder={t('User ID')}
-            inputMode='numeric'
-            value={userIdInput}
-            onChange={(e) => setUserIdRaw(e.target.value)}
-            onKeyDown={handleKeyDown}
-          />
-        </LogsFilterField>
-      )}
-      {showOrgUserFilter && (
-        <OrgUserFilter
-          members={members}
-          username={filters.username}
-          userId={filters.userId}
-          disabled={membersLoading}
-          onUsernameChange={(value) => handleChange('username', value)}
-          onUserIdChange={(value) => handleChange('userId', value)}
-        />
-      )}
-      {isAdmin && (
-        <LogsFilterField>
-          <LogsFilterInput
             placeholder={t('Channel ID')}
             value={filters.channel || ''}
             onChange={(e) => handleChange('channel', e.target.value)}
@@ -530,6 +496,30 @@ export function CommonLogsFilterBar<TData>(
       </LogsFilterField>
     </>
   )
+  // 用户名 / 用户ID：与「分组」「所有类型」同模式，常驻主筛选区（仅管理员 / 组织管理者可见）。
+  const userDimensionPrimaryFilters = (isAdmin || showOrgUserFilter) && (
+    <>
+      <LogsFilterField>
+        <LogsFilterInput
+          placeholder={t('Username')}
+          className={sensitiveInputClass}
+          value={filters.username || ''}
+          onChange={(e) => handleChange('username', e.target.value)}
+          onKeyDown={handleKeyDown}
+        />
+      </LogsFilterField>
+      <LogsFilterField>
+        <LogsFilterInput
+          aria-label={t('User ID')}
+          placeholder={t('User ID')}
+          inputMode='numeric'
+          value={userIdInput}
+          onChange={(e) => setUserIdRaw(e.target.value)}
+          onKeyDown={handleKeyDown}
+        />
+      </LogsFilterField>
+    </>
+  )
 
   return (
     <LogsFilterToolbar
@@ -543,6 +533,7 @@ export function CommonLogsFilterBar<TData>(
           {modelFilter}
           {groupFilter}
           {typeFilter}
+          {userDimensionPrimaryFilters}
         </>
       }
       advancedFilters={advancedFilters}
@@ -552,12 +543,14 @@ export function CommonLogsFilterBar<TData>(
           {modelFilter}
           {groupFilter}
           {typeFilter}
+          {userDimensionPrimaryFilters}
           {advancedFilters}
         </>
       }
       mobileFilterCount={
         [filters.model, filters.group, hasTypeFilter].filter(Boolean).length +
-        expandedFilterCount
+        expandedFilterCount +
+        (hasUserDimension ? 1 : 0)
       }
       hasAdvancedActiveFilters={hasExpandedFilters}
       advancedFilterCount={expandedFilterCount}

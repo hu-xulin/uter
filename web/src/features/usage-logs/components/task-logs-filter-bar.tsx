@@ -28,7 +28,6 @@ import { buildSearchParams } from '../lib/filter'
 import { getDefaultTimeRange } from '../lib/utils'
 import type { DrawingLogFilters, LogCategory, TaskLogFilters } from '../types'
 import { CompactDateTimeRangePicker } from './compact-date-time-range-picker'
-import { OrgUserFilter } from '@/features/organization/org-user-filter'
 import { useOrgManagerScope } from '@/features/organization/use-org-manager'
 import {
   LogsFilterField,
@@ -74,9 +73,8 @@ export function TaskLogsFilterBar<TData>(props: TaskLogsFilterBarProps<TData>) {
   const queryClient = useQueryClient()
   const searchParams = route.useSearch()
   const { isAdminView: isAdmin } = useLogsViewScope()
-  // 组织管理者（非平台管理员）：用「用户名 / 用户ID」双下拉替代平台管理员的用户ID文本输入。
-  const { isOrgManager, members, isLoading: membersLoading } =
-    useOrgManagerScope()
+  // 组织管理者（非平台管理员）：与平台管理员一样使用内联「用户名 / 用户ID」文本输入。
+  const { isOrgManager } = useOrgManagerScope()
   const showOrgUserFilter = isOrgManager && !isAdmin
   const fetchingLogs = useIsFetching({ queryKey: ['logs'] })
 
@@ -86,9 +84,6 @@ export function TaskLogsFilterBar<TData>(props: TaskLogsFilterBarProps<TData>) {
   })
   // 用户 ID 输入框保留原始字符串（允许 "uter…" 写法），null 表示跟随 URL 渲染。
   const [userIdRaw, setUserIdRaw] = useState<string | null>(null)
-  // 组织管理者走下拉：直接记录选中的数字 user_id / username（不可输入）。
-  const [orgUserId, setOrgUserId] = useState<number | undefined>(undefined)
-  const [orgUsername, setOrgUsername] = useState<string | undefined>(undefined)
 
   useEffect(() => {
     const { start, end } = getDefaultTimeRange()
@@ -106,10 +101,16 @@ export function TaskLogsFilterBar<TData>(props: TaskLogsFilterBarProps<TData>) {
       props.logCategory === 'drawing'
         ? {
             ...baseFilters,
+            ...(searchParams.username
+              ? { username: String(searchParams.username) }
+              : {}),
             ...(searchParams.filter ? { mjId: searchParams.filter } : {}),
           }
         : {
             ...baseFilters,
+            ...(searchParams.username
+              ? { username: String(searchParams.username) }
+              : {}),
             ...(searchParams.filter ? { taskId: searchParams.filter } : {}),
           }
 
@@ -122,6 +123,7 @@ export function TaskLogsFilterBar<TData>(props: TaskLogsFilterBarProps<TData>) {
     searchParams.channel,
     searchParams.filter,
     searchParams.userId,
+    searchParams.username,
   ])
 
   const userIdInput =
@@ -135,10 +137,8 @@ export function TaskLogsFilterBar<TData>(props: TaskLogsFilterBarProps<TData>) {
   )
 
   const handleApply = useCallback(() => {
-    // 平台管理员用文本输入（可输入 uter… 形式），组织管理者走下拉直接取数字 user_id。
-    const parsedUserId = showOrgUserFilter
-      ? (orgUserId ?? 0)
-      : parseUserId(userIdInput)
+    // 平台管理员与组织管理者都走内联文本输入：直接解析 userIdInput（支持 uter… 形式）。
+    const parsedUserId = parseUserId(userIdInput)
     const merged: TaskLogsFilters = {
       ...filters,
       userId: parsedUserId > 0 ? parsedUserId : undefined,
@@ -159,8 +159,6 @@ export function TaskLogsFilterBar<TData>(props: TaskLogsFilterBarProps<TData>) {
     props.logCategory,
     queryClient,
     userIdInput,
-    showOrgUserFilter,
-    orgUserId,
   ])
 
   const handleReset = useCallback(() => {
@@ -201,7 +199,7 @@ export function TaskLogsFilterBar<TData>(props: TaskLogsFilterBarProps<TData>) {
       ? t('Filter by MjProxy task ID')
       : t('Filter by task ID')
   const hasAdditionalFilters =
-    !!filterValue || !!filters.channel || !!filters.userId
+    !!filterValue || !!filters.channel || !!filters.userId || !!filters.username
   const dateRangeFilter = (
     <LogsFilterField wide>
       <CompactDateTimeRangePicker
@@ -235,28 +233,29 @@ export function TaskLogsFilterBar<TData>(props: TaskLogsFilterBarProps<TData>) {
       />
     </LogsFilterField>
   ) : null
-  // 平台管理员：用户ID 文本输入；组织管理者：用户名 / 用户ID 双下拉（不可输入）。
-  const userIdFilter = isAdmin ? (
-    <LogsFilterField>
-      <LogsFilterInput
-        aria-label={t('User ID')}
-        placeholder={t('User ID')}
-        inputMode='numeric'
-        value={userIdInput}
-        onChange={(e) => setUserIdRaw(e.target.value)}
-        onKeyDown={handleKeyDown}
-      />
-    </LogsFilterField>
-  ) : null
-  const orgUserFilter = showOrgUserFilter ? (
-    <OrgUserFilter
-      members={members}
-      username={orgUsername}
-      userId={orgUserId}
-      disabled={membersLoading}
-      onUsernameChange={setOrgUsername}
-      onUserIdChange={setOrgUserId}
-    />
+  // 平台管理员 / 组织管理者：内联「用户名 / 用户ID」文本输入（与分组、所有类型同一模式）。
+  const userDimensionFilter = isAdmin || showOrgUserFilter ? (
+    <>
+      <LogsFilterField>
+        <LogsFilterInput
+          aria-label={t('Username')}
+          placeholder={t('Username')}
+          value={filters.username || ''}
+          onChange={(e) => handleChange('username', e.target.value)}
+          onKeyDown={handleKeyDown}
+        />
+      </LogsFilterField>
+      <LogsFilterField>
+        <LogsFilterInput
+          aria-label={t('User ID')}
+          placeholder={t('User ID')}
+          inputMode='numeric'
+          value={userIdInput}
+          onChange={(e) => setUserIdRaw(e.target.value)}
+          onKeyDown={handleKeyDown}
+        />
+      </LogsFilterField>
+    </>
   ) : null
 
   return (
@@ -266,8 +265,7 @@ export function TaskLogsFilterBar<TData>(props: TaskLogsFilterBarProps<TData>) {
         <>
           {dateRangeFilter}
           {taskIdFilter}
-          {userIdFilter}
-          {orgUserFilter}
+          {userDimensionFilter}
           {channelFilter}
         </>
       }
@@ -275,17 +273,14 @@ export function TaskLogsFilterBar<TData>(props: TaskLogsFilterBarProps<TData>) {
       mobileFilters={
         <>
           {taskIdFilter}
-          {userIdFilter}
-          {orgUserFilter}
+          {userDimensionFilter}
           {channelFilter}
         </>
       }
       mobileFilterCount={
-        [
-          filterValue,
-          showOrgUserFilter ? orgUserId : filters.userId,
-          filters.channel,
-        ].filter(Boolean).length
+        [filterValue, filters.userId, filters.username, filters.channel].filter(
+          Boolean
+        ).length
       }
       hasActiveFilters={hasAdditionalFilters}
       onSearch={handleApply}
