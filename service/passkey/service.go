@@ -211,6 +211,19 @@ autoDetect:
 }
 
 func resolveRPID(r *http.Request, settings *system_setting.PasskeySettings, origins []string) (string, error) {
+	// 回环 Origin（localhost / 127.0.0.1）的 RP ID 必须取 "localhost"：WebAuthn 规范
+	// 把 loopback 视为 secure context，且 RP ID 须等于该 host，否则与正式域名 RP ID
+	// 不匹配会让本地开发环境永远无法注册 Passkey（originsForRPID 过滤后为空 ->
+	// ErrRPIDUnavailable）。仅当请求或配置的 Origin 为回环地址时生效，生产 https
+	// 场景不受影响。
+	if isLoopbackOrigin(r.Header.Get("Origin")) {
+		return "localhost", nil
+	}
+	for _, origin := range origins {
+		if isLoopbackOrigin(origin) {
+			return "localhost", nil
+		}
+	}
 	rpID := strings.TrimSpace(settings.RPID)
 	if rpID != "" {
 		return hostWithoutPort(rpID), nil

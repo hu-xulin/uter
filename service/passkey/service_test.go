@@ -97,3 +97,45 @@ func TestResolveOriginsAutoDetectLoopbackAllowed(t *testing.T) {
 		t.Fatalf("unexpected origins: %#v", origins)
 	}
 }
+
+func TestResolveRPIDLoopbackRequestUsesLocalhost(t *testing.T) {
+	// 本地开发：访问 Origin 为回环地址，但 RP ID 被 ServerAddress 推导成正式域名。
+	// 必须自动派生为 "localhost"，否则与正式域名不匹配导致 ErrRPIDUnavailable。
+	req := httptest.NewRequest(http.MethodGet, "http://localhost:3000/", nil)
+	req.Header.Set("Origin", "http://localhost:3000")
+	settings := &system_setting.PasskeySettings{RPID: "uter.ai", Origins: "http://localhost:3000"}
+	rpID, err := resolveRPID(req, settings, []string{"http://localhost:3000"})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if rpID != "localhost" {
+		t.Fatalf("resolveRPID loopback request = %q, want %q", rpID, "localhost")
+	}
+}
+
+func TestResolveRPIDLoopbackInOriginsListUsesLocalhost(t *testing.T) {
+	// 退化路径：请求不带 Origin 头，但配置的 Origins 列表含回环地址。
+	req := httptest.NewRequest(http.MethodGet, "http://localhost:3000/", nil)
+	settings := &system_setting.PasskeySettings{RPID: "uter.ai", Origins: "http://localhost:3000"}
+	rpID, err := resolveRPID(req, settings, []string{"http://localhost:3000"})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if rpID != "localhost" {
+		t.Fatalf("resolveRPID loopback origins list = %q, want %q", rpID, "localhost")
+	}
+}
+
+func TestResolveRPIDProductionUsesConfiguredRPID(t *testing.T) {
+	// 生产 https 场景：回环豁免不触发，RP ID 沿用配置值，不受本次修改影响。
+	req := httptest.NewRequest(http.MethodGet, "https://uter.ai/", nil)
+	req.Header.Set("Origin", "https://uter.ai")
+	settings := &system_setting.PasskeySettings{RPID: "uter.ai", Origins: "https://uter.ai"}
+	rpID, err := resolveRPID(req, settings, []string{"https://uter.ai"})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if rpID != "uter.ai" {
+		t.Fatalf("resolveRPID production = %q, want %q", rpID, "uter.ai")
+	}
+}
