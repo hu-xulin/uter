@@ -30,6 +30,7 @@ import {
 import { cn } from '@/lib/utils'
 
 import type { TopNavLink } from '../types'
+import { getTopNavActive } from '../lib/url-utils'
 
 type TopNavProps = React.HTMLAttributes<HTMLElement> & {
   links: TopNavLink[]
@@ -64,8 +65,9 @@ export function TopNav({ className, links, ...props }: TopNavProps) {
             <Menu />
           </DropdownMenuTrigger>
           <DropdownMenuContent side='bottom' align='start'>
-            {normalizedLinks.map(({ title, href, disabled, external }) => {
-              const isActive = !external && (pathname === href || (href !== '/' && pathname.startsWith(`${href}/`)))
+            {normalizedLinks.map((link) => {
+              const { title, href, disabled, external } = link
+              const isActive = getTopNavActive(pathname, link, normalizedLinks)
               return (
                 <DropdownMenuItem
                   key={`${title}-${href}`}
@@ -108,8 +110,9 @@ export function TopNav({ className, links, ...props }: TopNavProps) {
         )}
         {...props}
       >
-        {normalizedLinks.map(({ title, href, disabled, external }) => {
-          const isActive = !external && (pathname === href || (href !== '/' && pathname.startsWith(`${href}/`)))
+        {normalizedLinks.map((link) => {
+          const { title, href, disabled, external } = link
+          const isActive = getTopNavActive(pathname, link, normalizedLinks)
           if (external) {
             return (
               <a
