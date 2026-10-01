@@ -887,10 +887,10 @@ function MembersCard({
                   <td className='px-2 py-2 font-medium'>{m.username}</td>
                   <td className='px-2 py-2'>{m.display_name || '-'}</td>
                   <td className='px-2 py-2'>{m.department_name || '-'}</td>
-                  <td className='px-2 py-2 text-right'>
+                  <td className='px-2 py-2'>
                     {fmtQuota(m.used_quota)}
                   </td>
-                  <td className='px-2 py-2 text-right'>
+                  <td className='px-2 py-2'>
                     {canEditSubQuotaOf(m) ? (
                       <input
                         type='number'
@@ -929,8 +929,8 @@ function MembersCard({
                       </Badge>
                     )}
                   </td>
-                  <td className='px-2 py-2 text-right'>
-                    <div className='flex justify-end gap-2'>
+                  <td className='px-2 py-2'>
+                    <div className='flex justify-start gap-2'>
                       {canEditMemberOf(m) && (
                         <Button
                           variant='outline'
