@@ -24,7 +24,7 @@ import {
   type DocsLocaleCode,
 } from '@/lib/docs-link'
 
-import type { NavItem, NavCollapsible } from '../types'
+import type { NavItem, NavCollapsible, TopNavLink } from '../types'
 
 /**
  * Cache the docs-site prefixes so `isServerRenderedHref` doesn't have
@@ -155,8 +155,9 @@ export function checkIsActive(
         }
         return false
       })
-    )
+    ) {
       return true
+    }
   }
 
   // For regular link items, check the item's URL
@@ -187,4 +188,45 @@ export function checkIsActive(
   }
 
   return false
+}
+
+/**
+ * Prefix-aware active test for a single top-nav link.
+ *
+ * A link is active for its own path and any descendant path — so `/dashboard`
+ * lights up on `/dashboard/overview` — but the home link `/` matches only
+ * exactly, never as a prefix, otherwise it would claim every route.
+ */
+export function isTopNavLinkActive(
+  pathname: string,
+  link: TopNavLink
+): boolean {
+  if (link.external) return false
+  const href = link.href
+  return pathname === href || (href !== '/' && pathname.startsWith(`${href}/`))
+}
+
+/**
+ * Active state for a top-nav link, with the `console` (管理 / Console) entry
+ * treated specially.
+ *
+ * The Console link points at `/dashboard`, but it represents the *entire*
+ * management console — not just its index page. It must stay highlighted for
+ * every route that lives inside the console, i.e. whenever no other top-nav
+ * destination (Home, Pricing, Rankings, Docs, About, …) claims the current
+ * path. This is what makes "管理" light up when you open *any* left-panel item
+ * (Users, Channels, API Keys, …), so the top nav always echoes the active
+ * console section.
+ */
+export function getTopNavActive(
+  pathname: string,
+  link: TopNavLink,
+  allLinks: TopNavLink[]
+): boolean {
+  if (link.area === 'console') {
+    return !allLinks.some(
+      (other) => other !== link && isTopNavLinkActive(pathname, other)
+    )
+  }
+  return isTopNavLinkActive(pathname, link)
 }

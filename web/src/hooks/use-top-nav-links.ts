@@ -31,6 +31,12 @@ export type TopNavLink = {
   requiresAuth?: boolean
   /** Rendered as a plain anchor: the target is not an SPA route. */
   external?: boolean
+  /**
+   * Marks the link as the console / management entry (管理 / Console). It
+   * represents the whole management area rather than a single route, so it
+   * stays highlighted for every console route — not just its own href.
+   */
+  area?: 'console'
 }
 
 /**
@@ -76,7 +82,7 @@ export function useTopNavLinks(): TopNavLink[] {
 
   // Console -> /dashboard (new console path)
   if (modules?.console !== false) {
-    links.push({ title: t('Console'), href: '/dashboard' })
+    links.push({ title: t('Console'), href: '/dashboard', area: 'console' })
   }
 
   // Pricing
