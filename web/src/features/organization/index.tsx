@@ -872,10 +872,10 @@ function MembersCard({
                 <th className='px-2 py-2'>{t('Username')}</th>
                 <th className='px-2 py-2'>{t('Display Name')}</th>
                 <th className='px-2 py-2'>{t('Department')}</th>
-                <th className='px-2 py-2 text-right'>{t('Used Quota')}</th>
+                <th className='px-2 py-2'>{t('Used Quota')}</th>
                 <th className='px-2 py-2'>{t('Sub-quota Limit')}</th>
                 <th className='px-2 py-2'>{t('Role')}</th>
-                <th className='px-2 py-2 text-right'>{t('Actions')}</th>
+                <th className='px-2 py-2'>{t('Actions')}</th>
               </tr>
             </thead>
             <tbody>
