@@ -93,16 +93,85 @@ wait_http() { # $1=port $2=重试次数；成功打印 HTTP 码
   done
   return 1
 }
-spawn() { # $1=日志 $2=cwd $3..=命令；以独立会话派生，终端退出也不被回收
+# spawn：以独立会话派生，终端退出也不被回收。
+#
+# 派生前会清理「指向本机但已经连不上」的代理环境变量（HTTP_PROXY/HTTPS_PROXY/
+# ALL_PROXY/FTP_PROXY 及其小写形式）。
+#
+# 背景：本机的 agent/沙箱会话经常注入 HTTP_PROXY=http://127.0.0.1:<随机端口>，
+# 而该代理是临时的、随会话结束即退出。uter-bin 用 Go 默认 transport，出站请求
+# 走 ProxyFromEnvironment，一旦继承到这种「已死」的代理，所有对外 HTTPS 都会
+# 报 `proxyconnect tcp: dial tcp 127.0.0.1:<port>: connect: connection refused`
+# （插件市场拉索引、上游渠道回调等都会挂）。
+#
+# 只清理「本机 + 端口连不通」的代理，因此不会误伤常驻的本机代理（例如 Clash
+# 的 7890）：能连上就保留，直连可用性和代理可用性两者兼得。
+# 需要原样继承时设 KEEP_PROXY=1。
+spawn() { # $1=日志 $2=cwd $3..=命令
   local log="$1" cwd="$2"; shift 2
   : >> "$log"
   echo "---- start $(date '+%F %T') ----" >> "$log"
   "$PYTHON" - "$log" "$cwd" "$@" <<'PY'
-import subprocess, sys
+import os, socket, subprocess, sys
+from urllib.parse import urlsplit
+
 log, cwd = sys.argv[1], sys.argv[2]
+
+PROXY_VARS = ('HTTP_PROXY', 'HTTPS_PROXY', 'FTP_PROXY', 'ALL_PROXY',
+              'http_proxy', 'https_proxy', 'ftp_proxy', 'all_proxy')
+LOOPBACK = frozenset(('localhost', '127.0.0.1', '::1', '0.0.0.0'))
+
+
+def endpoint(value):
+    """Return (host, port) for a proxy URL, or None when unparseable."""
+    raw = (value or '').strip()
+    if not raw:
+        return None
+    try:
+        parts = urlsplit(raw if '://' in raw else 'http://' + raw)
+        host = (parts.hostname or '').strip('[]').lower()
+        if not host:
+            return None
+        port = parts.port or (443 if parts.scheme == 'https' else 80)
+        return host, port
+    except ValueError:
+        return None
+
+
+def reachable(value):
+    target = endpoint(value)
+    if target is None:
+        return False
+    try:
+        with socket.create_connection(target, timeout=0.5):
+            return True
+    except OSError:
+        return False
+
+
+env = dict(os.environ)
+dropped, kept = [], []
+if os.environ.get('KEEP_PROXY') != '1':
+    for key in PROXY_VARS:
+        value = env.get(key)
+        if not value:
+            continue
+        target = endpoint(value)
+        # Only loopback proxies are suspect; a remote proxy is deliberate.
+        if not target or target[0] not in LOOPBACK:
+            continue
+        if reachable(value):
+            kept.append(key + '=' + value)
+        else:
+            dropped.append(key + '=' + env.pop(key))
+
 with open(log, 'a') as f:
-    subprocess.Popen(sys.argv[3:], cwd=cwd, stdout=f, stderr=subprocess.STDOUT,
-                     start_new_session=True)
+    for item in dropped:
+        f.write('---- spawn: dropped dead loopback proxy %s ----\n' % item)
+    for item in kept:
+        f.write('---- spawn: kept live loopback proxy %s ----\n' % item)
+    subprocess.Popen(sys.argv[3:], cwd=cwd, env=env, stdout=f,
+                     stderr=subprocess.STDOUT, start_new_session=True)
 PY
 }
 
