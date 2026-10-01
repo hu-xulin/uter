@@ -142,30 +142,27 @@ export function TaskLogsFilterBar<TData>(props: TaskLogsFilterBarProps<TData>) {
     []
   )
 
-  const handleApply = useCallback(() => {
-    // 平台管理员与组织管理者都走内联文本输入：直接解析 userIdInput（支持 uter… 形式）。
-    const parsedUserId = parseUserId(userIdInput)
-    const merged: TaskLogsFilters = {
-      ...filters,
-      userId: parsedUserId > 0 ? parsedUserId : undefined,
-    }
-    const filterParams = buildSearchParams(merged, props.logCategory)
-    navigate({
-      to: '/usage-logs/$section',
-      params: { section: props.logCategory },
-      search: {
-        ...filterParams,
-        page: 1,
-      },
-    })
-    queryClient.invalidateQueries({ queryKey: ['logs'] })
-  }, [
-    filters,
-    navigate,
-    props.logCategory,
-    queryClient,
-    userIdInput,
-  ])
+  const handleApply = useCallback(
+    (nextFilters: TaskLogsFilters = filters) => {
+      // 平台管理员与组织管理者都走内联文本输入：直接解析 userIdInput（支持 uter… 形式）。
+      const parsedUserId = parseUserId(userIdInput)
+      const merged: TaskLogsFilters = {
+        ...nextFilters,
+        userId: parsedUserId > 0 ? parsedUserId : undefined,
+      }
+      const filterParams = buildSearchParams(merged, props.logCategory)
+      navigate({
+        to: '/usage-logs/$section',
+        params: { section: props.logCategory },
+        search: {
+          ...filterParams,
+          page: 1,
+        },
+      })
+      queryClient.invalidateQueries({ queryKey: ['logs'] })
+    },
+    [filters, navigate, props.logCategory, queryClient, userIdInput]
+  )
 
   const handleReset = useCallback(() => {
     const { start, end } = getDefaultTimeRange()
@@ -214,6 +211,9 @@ export function TaskLogsFilterBar<TData>(props: TaskLogsFilterBarProps<TData>) {
         onChange={({ start, end }) => {
           handleChange('startTime', start)
           handleChange('endTime', end)
+          // 选日期范围（预设或手动确认）后立即应用，否则表格仍按默认
+          // 「今天」区间请求，表现为「选了最近7天仍只显示当天的数据」。
+          handleApply({ ...filters, startTime: start, endTime: end })
         }}
       />
     </LogsFilterField>
