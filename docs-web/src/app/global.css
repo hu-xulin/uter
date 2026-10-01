@@ -1,54 +1,24 @@
 @import 'tailwindcss';
 @import 'fumadocs-ui/css/neutral.css';
 @import 'fumadocs-ui/css/preset.css';
+/* Project primary UI typeface — Inter (variable). Loaded globally so the
+ * docs body and the brand wordmark read in the same face as the SPA. */
+@import '@fontsource-variable/inter';
 
 /*
  * ── Brand wordmark face ─────────────────────────────────────────────
  *
- * The header's wordmark is set in the app's brand face — Alibaba PuHuiTi
- * 3.0 Bold, the family `web/src/styles/alibaba-font.css` loads as
- * `.font-brand` — so the lockup reads identically here and in the SPA
- * header it mirrors.
- *
- * The app ships the full CJK face (5.4 MB) because it is the site's body
- * font. This site only ever sets the wordmark in it, so the file is a
- * subset: printable ASCII plus the glyphs of "Uter.ai 优特智能" / the
- * Hant form, which comes to ~10 KB instead of pulling the whole family
- * onto every page. The `unicode-range` below states exactly which
- * characters it may be used for, so no other text can land in a face that
- * lacks its glyphs and fall back mid-word.
- *
- * Regenerate — the list must stay in step with the `unicode-range`, and
- * a new brand name or locale needs its new glyphs added to both:
- *
- *   pyftsubset web/public/fonts/AlibabaPuHuiTi-3-85-Bold.woff2 \
- *     --output-file=docs-web/public/brand-assets/uter-wordmark.woff2 \
- *     --flavor=woff2 --no-hinting --desubroutinize \
- *     --unicodes="U+0020-007E,U+00B7,U+2014,U+2018-201D,U+2026,\
- *                 U+4F18,U+512A,U+667A,U+7279,U+80FD,U+FF0C,U+FF0E"
- *
- * The file lives in `public/brand-assets/` and is addressed from the site
- * root (`/brand-assets/…`): `docs-web/public/` is copied into
- * `web/dist/docs/`, which the Go router mounts at `/` — the same
- * arrangement as the partner marks in `public/img/`.
- *
- * A directory of its own, rather than the app's `/fonts/`, because that
- * path is already the SPA's own font directory: the rsbuild dev server
- * serves those files itself, and routing `/fonts` to the docs proxy would
- * take the app's own faces with it. Any new root-level directory here also
- * has to be added to `staticPrefixes` in `web/rsbuild.config.ts`, or the
- * docs page silently loads its font as `index.html` in dev.
+ * The header's wordmark is set in the project's primary UI typeface —
+ * Inter (the same face the SPA body uses, loaded by
+ * `@fontsource-variable/inter`) with the CJK fallback ladder declared in
+ * `--Uter-brand-font` below — so the lockup reads identically here and in
+ * the SPA header it mirrors, and no bespoke subset is needed. The ASCII
+ * lockup ("Uter.ai") is covered by Inter, while the Hant/Hans forms
+ * ("優特智能" / "优特智能") fall through to the system CJK face — the same
+ * path the SPA brand text takes. The SPA no longer ships the Alibaba
+ * PuHuiTi family, so this site has dropped its Ali-derived wordmark
+ * subset (`public/brand-assets/uter-wordmark.woff2`) in favour of Inter.
  */
-@font-face {
-  font-family: 'Uter Wordmark';
-  font-style: normal;
-  font-weight: 700;
-  font-display: swap;
-  src: url('/brand-assets/uter-wordmark.woff2') format('woff2');
-  unicode-range:
-    U+0020-007E, U+00B7, U+2014, U+2018-201D, U+2026, U+4F18, U+512A,
-    U+667A, U+7279, U+80FD, U+FF0C, U+FF0E;
-}
 
 /*
  * iOS-style light/dark scheme: follow the OS preference unless the
@@ -116,10 +86,10 @@ html {
  */
 body {
   font-family:
-    system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans',
-    'Helvetica Neue', Arial, 'PingFang SC', 'Hiragino Sans GB',
-    'Microsoft YaHei', 'Noto Sans SC', 'Source Han Sans SC', sans-serif,
-    'Apple Color Emoji', 'Segoe UI Emoji';
+    'Inter Variable', 'Inter', system-ui, -apple-system, BlinkMacSystemFont,
+    'Segoe UI', 'Noto Sans', 'Helvetica Neue', Arial, 'PingFang SC',
+    'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans SC',
+    'Source Han Sans SC', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
   font-weight: 400;
   font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
 }
@@ -178,7 +148,10 @@ body {
    * `--Uter-brand-font` is the face declared at the top of this file.
    */
   --Uter-brand-radius: 1rem;
-  --Uter-brand-font: 'Uter Wordmark', 'Alibaba PuHuiTi 3.0', sans-serif;
+  --Uter-brand-font: 'Inter Variable', 'Inter', system-ui, -apple-system,
+    BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, 'PingFang SC',
+    'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans SC',
+    'Source Han Sans SC', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
 
   /*
    * The header's primary CTA — the app's Sign in button. A literal for

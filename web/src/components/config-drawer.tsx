@@ -309,7 +309,7 @@ function PresetConfig() {
  * `Auto` deliberately leaves `fontFamily` undefined so the preview inherits
  * the currently active body font — that way the user sees what `Auto` will
  * actually look like for the active preset (Anthropic → serif glyphs,
- * everything else → sans glyphs) without us having to duplicate the
+ * everything else → Inter glyphs) without us having to duplicate the
  * preset-default mapping in the UI.
  */
 const FONT_OPTIONS: {
@@ -320,8 +320,8 @@ const FONT_OPTIONS: {
   preview?: string
 }[] = [
   { value: 'default', label: 'Auto', preview: undefined },
+  { value: 'inter', label: 'Inter', preview: 'var(--font-inter)' },
   { value: 'sans', label: 'Sans', preview: 'var(--font-sans)' },
-  { value: 'alibaba', label: 'Alibaba', preview: 'var(--font-alibaba)' },
   { value: 'serif', label: 'Serif', preview: 'var(--font-serif)' },
 ]
 
