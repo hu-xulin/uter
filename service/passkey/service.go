@@ -168,7 +168,10 @@ func resolveOrigins(r *http.Request, settings *system_setting.PasskeySettings) (
 			if trimmed == "" {
 				continue
 			}
-			if !settings.AllowInsecureOrigin && strings.HasPrefix(strings.ToLower(trimmed), "http://") {
+			// 显式配置的 Origin 与自动推导保持一致：localhost / 127.0.0.1 等回环地址
+			// 在 WebAuthn 规范中属于 secure context，即使未开启 AllowInsecureOrigin 也放行；
+			// 仅拒绝非回环的 http Origin。否则在本地开发环境填入「当前站点」后会无法注册。
+			if !settings.AllowInsecureOrigin && strings.HasPrefix(strings.ToLower(trimmed), "http://") && !isLoopbackOrigin(trimmed) {
 				return nil, fmt.Errorf("Passkey 不允许使用不安全的 Origin: %s", trimmed)
 			}
 			origins = append(origins, trimmed)
@@ -220,6 +223,19 @@ func resolveRPID(r *http.Request, settings *system_setting.PasskeySettings, orig
 		return "", fmt.Errorf("无法解析 Passkey Origin: %w", err)
 	}
 	return hostWithoutPort(parsed.Host), nil
+}
+
+// isLoopbackOrigin reports whether the origin's host is a loopback address
+// (localhost or 127.0.0.1 with or without a port). WebAuthn treats loopback
+// origins as secure contexts even over plain http, so they are exempt from the
+// insecure-origin restriction.
+func isLoopbackOrigin(origin string) bool {
+	parsed, err := url.Parse(origin)
+	if err != nil {
+		return false
+	}
+	host := strings.ToLower(parsed.Hostname())
+	return host == "localhost" || host == "127.0.0.1" || host == "::1"
 }
 
 func hostWithoutPort(host string) string {
