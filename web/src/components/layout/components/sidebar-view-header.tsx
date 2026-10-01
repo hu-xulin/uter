@@ -53,7 +53,7 @@ export function SidebarViewHeader(props: SidebarViewHeaderProps) {
             tooltip={t(props.view.parent.label)}
             className={cn(
               'text-muted-foreground hover:text-foreground',
-              'gap-1.5 font-medium'
+              'gap-1.5 font-semibold'
             )}
             render={
               <Link
