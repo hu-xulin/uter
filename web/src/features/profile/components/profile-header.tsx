@@ -25,7 +25,11 @@ import { Card, CardContent } from '@/components/ui/card'
 import { IconBadge, type IconBadgeTone } from '@/components/ui/icon-badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { getUserAvatarFallback, getUserAvatarStyle } from '@/lib/avatar'
-import { formatCompactNumber, formatQuota } from '@/lib/format'
+import {
+  formatCompactNumber,
+  formatQuota,
+  formatUserId,
+} from '@/lib/format'
 import { getRoleLabel } from '@/lib/roles'
 
 import { getDisplayName } from '../lib'
@@ -138,9 +142,9 @@ export function ProfileHeader({ profile, loading }: ProfileHeaderProps) {
                 copyable={false}
               />
               <StatusBadge
-                label={`${t('User ID')} ${profile.id}`}
+                label={`${t('User ID')} ${formatUserId(profile.id)}`}
                 variant='info'
-                copyText={String(profile.id)}
+                copyText={formatUserId(profile.id)}
               />
             </div>
 
