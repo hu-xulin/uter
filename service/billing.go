@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/Uter-AI/Uter/logger"
+	"github.com/Uter-AI/Uter/model"
 
 	relaycommon "github.com/Uter-AI/Uter/relay/common"
 	"github.com/Uter-AI/Uter/relaykit/types"
@@ -93,4 +94,20 @@ func SettleBilling(ctx *gin.Context, relayInfo *relaycommon.RelayInfo, actualQuo
 		return PostConsumeQuota(relayInfo, quotaDelta, relayInfo.FinalPreConsumedQuota, true)
 	}
 	return nil
+}
+
+// recordMemberUsage 在结算点记录成员用量。组织成员的实际 used_quota 已由 WalletFunding.Settle
+// 按「实际 - 预扣」差额并入（与预扣点的原子预留对账），这里只负责请求计数；其余情况
+// （非组织成员、或走旧路径无 BillingSession）仍按原逻辑累加 used_quota + request_count。
+//
+// 注意：不可在组织分支里再调 UpdateUserUsedQuotaAndRequestCount(userId, quota)，否则会与
+// WalletFunding.Settle 的差额并入重复计账（used_quota 会变成 actual + delta）。
+func recordMemberUsage(relayInfo *relaycommon.RelayInfo, quota int) {
+	if relayInfo != nil && relayInfo.Billing != nil {
+		if orgId, err := model.OrgIdOfUser(relayInfo.UserId); err == nil && orgId > 0 {
+			model.UpdateUserRequestCount(relayInfo.UserId)
+			return
+		}
+	}
+	model.UpdateUserUsedQuotaAndRequestCount(relayInfo.UserId, quota)
 }

@@ -4,6 +4,7 @@ import (
 	"errors"
 	"time"
 
+	"github.com/Uter-AI/Uter/common"
 	"github.com/Uter-AI/Uter/model"
 )
 
@@ -75,11 +76,15 @@ func (w *WalletFunding) Settle(delta int) error {
 	if delta == 0 {
 		return nil
 	}
-	// 组织成员：只调整组织账本。成员的 users.used_quota 由结算点的
-	// UpdateUserUsedQuotaAndRequestCount(userId, actual) 统一累加 —— 在这里再写一次
-	// 会把成员用量记成 actual + delta（多记一笔）。
 	if orgId, err := model.OrgIdOfUser(w.userId); err == nil && orgId > 0 {
-		return model.IncrOrgUsedQuota(orgId, int64(delta))
+		// 组织账本按差额 true-up（受 IncrOrgUsedQuota 的预算硬上限约束，见 F1 修复）。
+		if err := model.IncrOrgUsedQuota(orgId, int64(delta)); err != nil {
+			return err
+		}
+		// 成员子额度已在预扣点由 ReserveOrgQuota 原子记入 used_quota（闸门+记账合一）。
+		// 这里把「实际 - 预扣」差额并入，使 used_quota 最终等于实际消耗，且不会与预扣点的
+		// 预留重复计账（净效果 = 预扣额 + 差额 = 实际消耗）。钳制在 0 以防差额为负时记成负数。
+		return model.IncrUserUsedQuotaClamped(w.userId, delta)
 	}
 	if delta > 0 {
 		return model.DecreaseUserQuota(w.userId, delta, false)
@@ -91,9 +96,16 @@ func (w *WalletFunding) Refund() error {
 	if w.consumed <= 0 {
 		return nil
 	}
-	// 组织成员：预扣记在组织预算账本上，按 consumed 回减组织 used_quota。
+	// 组织成员：预扣同时记在组织预算账本与成员子额度账本上，按 consumed 一并回减。
 	if orgId, err := model.OrgIdOfUser(w.userId); err == nil && orgId > 0 {
-		return model.IncrOrgUsedQuota(orgId, -int64(w.consumed))
+		if err := model.IncrOrgUsedQuota(orgId, -int64(w.consumed)); err != nil {
+			common.SysLog("error rolling back organization funding reserve: " + err.Error())
+		}
+		// 撤销预扣点在 members.used_quota 上的原子预留，避免成员用量被永久多记。
+		if err := model.IncrUserUsedQuotaClamped(w.userId, -w.consumed); err != nil {
+			common.SysLog("error rolling back member sub-quota reserve: " + err.Error())
+		}
+		return nil
 	}
 	// IncreaseUserQuota 是 quota += N 的非幂等操作，不能重试，否则会多退额度。
 	// 订阅的 RefundSubscriptionPreConsume 有 requestId 幂等保护所以可以重试。
