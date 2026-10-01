@@ -106,15 +106,21 @@ with open(log, 'a') as f:
 PY
 }
 
-# 版本自增：读 VERSION，把最后一个数字（patch）+1 后写回。
+# 版本进位：读 VERSION，按「patch 满 100 进位到 minor、patch 归 1（2 位补零）」写回。
 # 约定 VERSION 形如 vMAJOR.MINOR.PATCH；缺段时按 0 处理。
+# 例：v1.0.99 → v1.0.100 → v1.1.01；v1.0.116（已 ≥100）直接进位到 v1.1.01。
 bump_version() {
   local v maj min pat
   v="$(cat "$ROOT/VERSION" 2>/dev/null | tr -d '[:space:]' | sed 's/^v//')"
   IFS='.' read -r maj min pat <<< "$v"
   maj="${maj:-0}"; min="${min:-0}"; pat="${pat:-0}"
-  pat=$((pat + 1))
-  printf 'v%d.%d.%d\n' "$maj" "$min" "$pat" > "$ROOT/VERSION"
+  if [ "$pat" -ge 100 ]; then
+    min=$((min + 1))
+    pat=1
+  else
+    pat=$((pat + 1))
+  fi
+  printf 'v%d.%d.%02d\n' "$maj" "$min" "$pat" > "$ROOT/VERSION"
 }
 
 if [ "$NO_BUILD" = 1 ]; then
@@ -143,11 +149,11 @@ fi
 echo "==> [3/5] 编译 Go 后端（内嵌 web/dist）"
 cd "$ROOT"
 # 读取 VERSION 用于本次构建（与 Dockerfile 注入方式一致：-X 'pkg=Version'）。
-# 构建成功后 patch+1 写回，下次构建自动 +1（v1.0.0 → v1.0.1 → v1.0.2 ...）。
+# 构建成功后按进位规则写回：patch 满 100 进位 minor（v1.0.99 → v1.0.100 → v1.1.01 ...）。
 set +u
 BUILD_VERSION="$(cat "$ROOT/VERSION" 2>/dev/null | tr -d '[:space:]')"
 [ -n "$BUILD_VERSION" ] || BUILD_VERSION="v0.0.0"
-echo "    本次版本: $BUILD_VERSION（构建成功后将自增 patch，下次构建自动 +1）"
+echo "    本次版本: $BUILD_VERSION（构建成功后将按进位规则自增：patch 满 100 进位 minor）"
 set -u
 "$GO" build -ldflags "-s -w -X 'github.com/Uter-AI/Uter/common.Version=$BUILD_VERSION'" -o "$BIN" . || fail "go build 失败"
 bump_version
