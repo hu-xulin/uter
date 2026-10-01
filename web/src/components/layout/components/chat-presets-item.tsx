@@ -18,7 +18,7 @@ For commercial licensing, please contact support@Uter.ai.com
 */
 import { Link, useLocation, useNavigate } from '@tanstack/react-router'
 import { Loader2, ChevronRight, CircleHelp } from 'lucide-react'
-import { useMemo, useCallback, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 
@@ -251,6 +251,15 @@ export function ChatPresetsItem({ item }: { item: NavChatPresets }) {
   // deep link, which is why every client preset appeared to do nothing.
   const { data: activeChatKey } = useActiveChatKey(true)
   const href = useLocation({ select: (location) => location.href })
+  const normalizedHref = normalizeHref(href)
+  // 「聊天」没有可导航的 /chat 索引路由 —— 点击父项只是展开子预设列表，
+  // 路径不变。所以选中态改由展开状态驱动：展开即高亮并保持，收起且不在
+  // 聊天页时才取消；否则点击后只会留下 CSS :active 的一闪就回落成未选中。
+  const [open, setOpen] = useState(() => normalizedHref.startsWith('/chat'))
+  useEffect(() => {
+    if (normalizedHref.startsWith('/chat')) setOpen(true)
+  }, [normalizedHref])
+  const chatActive = normalizedHref.startsWith('/chat') || open
   const [loadingPresetId, setLoadingPresetId] = useState<string | null>(null)
   const loadingPresetIdRef = useRef<string | null>(null)
   const [pendingPreset, setPendingPreset] = useState<ChatPreset | null>(null)
@@ -374,8 +383,6 @@ export function ChatPresetsItem({ item }: { item: NavChatPresets }) {
     />
   )
 
-  const normalizedHref = normalizeHref(href)
-
   // Don't render if no visible presets
   if (visiblePresets.length === 0) {
     return null
@@ -391,7 +398,7 @@ export function ChatPresetsItem({ item }: { item: NavChatPresets }) {
               render={
                 <SidebarMenuButton
                   tooltip={item.title}
-                  isActive={normalizedHref.startsWith('/chat')}
+                  isActive={chatActive}
                   className='font-medium'
                 />
               }
@@ -422,7 +429,8 @@ export function ChatPresetsItem({ item }: { item: NavChatPresets }) {
   return (
     <>
       <Collapsible
-        defaultOpen={normalizedHref.startsWith('/chat')}
+        open={open}
+        onOpenChange={setOpen}
         className='group/collapsible'
         render={<SidebarMenuItem />}
       >
@@ -430,7 +438,7 @@ export function ChatPresetsItem({ item }: { item: NavChatPresets }) {
           className='group/collapsible-trigger'
           render={
             <SidebarMenuButton
-              isActive={normalizedHref.startsWith('/chat')}
+              isActive={chatActive}
               className='font-medium'
             />
           }
