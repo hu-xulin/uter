@@ -16,7 +16,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@Uter.ai.com
 */
-import { Link } from '@tanstack/react-router'
+import { Link, useLocation } from '@tanstack/react-router'
 import { Menu } from 'lucide-react'
 import { useMemo } from 'react'
 
@@ -29,7 +29,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { cn } from '@/lib/utils'
 
-import { type TopNavLink } from '../types'
+import type { TopNavLink } from '../types'
 
 type TopNavProps = React.HTMLAttributes<HTMLElement> & {
   links: TopNavLink[]
@@ -44,13 +44,14 @@ export function TopNav({ className, links, ...props }: TopNavProps) {
   const normalizedLinks = useMemo(
     () =>
       links.map((link) => ({
-        isActive: false,
         disabled: false,
         external: false,
         ...link,
       })),
     [links]
   )
+  // 选中态由当前路径决定；外链（如外部知识库文档）不参与匹配
+  const pathname = useLocation({ select: (location) => location.pathname })
 
   return (
     <>
@@ -63,8 +64,9 @@ export function TopNav({ className, links, ...props }: TopNavProps) {
             <Menu />
           </DropdownMenuTrigger>
           <DropdownMenuContent side='bottom' align='start'>
-            {normalizedLinks.map(
-              ({ title, href, isActive, disabled, external }) => (
+            {normalizedLinks.map(({ title, href, disabled, external }) => {
+              const isActive = !external && pathname === href
+              return (
                 <DropdownMenuItem
                   key={`${title}-${href}`}
                   render={
@@ -73,23 +75,27 @@ export function TopNav({ className, links, ...props }: TopNavProps) {
                         href={href}
                         target='_blank'
                         rel='noopener noreferrer'
-                        className={!isActive ? 'text-muted-foreground' : ''}
+                        className='text-muted-foreground font-medium'
                       >
                         {title}
                       </a>
                     ) : (
                       <Link
                         to={href}
-                        className={!isActive ? 'text-muted-foreground' : ''}
+                        className={cn(
+                          isActive
+                            ? 'text-black font-semibold dark:text-white'
+                            : 'text-muted-foreground font-medium'
+                        )}
                         disabled={disabled}
                       >
                         {title}
                       </Link>
                     )
                   }
-                ></DropdownMenuItem>
+                />
               )
-            )}
+            })}
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
@@ -102,28 +108,37 @@ export function TopNav({ className, links, ...props }: TopNavProps) {
         )}
         {...props}
       >
-        {normalizedLinks.map(({ title, href, isActive, disabled, external }) =>
-          external ? (
-            <a
-              key={`${title}-${href}`}
-              href={href}
-              target='_blank'
-              rel='noopener noreferrer'
-              className={`hover:text-primary text-sm font-medium transition-colors ${isActive ? '' : 'text-muted-foreground'}`}
-            >
-              {title}
-            </a>
-          ) : (
+        {normalizedLinks.map(({ title, href, disabled, external }) => {
+          const isActive = !external && pathname === href
+          if (external) {
+            return (
+              <a
+                key={`${title}-${href}`}
+                href={href}
+                target='_blank'
+                rel='noopener noreferrer'
+                className='hover:text-primary text-muted-foreground text-sm font-medium transition-colors'
+              >
+                {title}
+              </a>
+            )
+          }
+          return (
             <Link
               key={`${title}-${href}`}
               to={href}
               disabled={disabled}
-              className={`hover:text-primary text-sm font-medium transition-colors ${isActive ? '' : 'text-muted-foreground'}`}
+              className={cn(
+                'hover:text-primary text-sm transition-colors',
+                isActive
+                  ? 'text-black font-semibold dark:text-white'
+                  : 'text-muted-foreground font-medium'
+              )}
             >
               {title}
             </Link>
           )
-        )}
+        })}
       </nav>
     </>
   )

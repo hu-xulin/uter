@@ -66,7 +66,7 @@ export function NavGroup({ title, items }: NavGroupProps) {
 
   return (
     <SidebarGroup className='px-2 py-1'>
-      <SidebarGroupLabel className='text-muted-foreground/70 px-2 text-[11px] font-medium tracking-wider uppercase'>
+      <SidebarGroupLabel className='text-muted-foreground/70 px-2 text-[11px] font-semibold tracking-wider uppercase'>
         {title}
       </SidebarGroupLabel>
       <SidebarMenu>
@@ -127,6 +127,7 @@ function SidebarMenuLink({ item, href }: { item: NavLink; href: string }) {
       <SidebarMenuButton
         isActive={checkIsActive(href, item)}
         tooltip={item.title}
+        className='font-medium'
         render={
           <Link
             to={item.url}
@@ -176,7 +177,9 @@ function SidebarMenuCollapsible({
     >
       <CollapsibleTrigger
         className='group/collapsible-trigger'
-        render={<SidebarMenuButton tooltip={item.title} />}
+        render={
+          <SidebarMenuButton tooltip={item.title} className='font-medium' />
+        }
       >
         {item.icon && <item.icon className='shrink-0' />}
         <span className='min-w-0 flex-1 truncate'>{item.title}</span>
@@ -189,6 +192,7 @@ function SidebarMenuCollapsible({
             <SidebarMenuSubItem key={subItem.title}>
               <SidebarMenuSubButton
                 isActive={checkIsActive(href, subItem)}
+                className='font-medium'
                 render={
                   <Link
                     to={subItem.url}
@@ -228,6 +232,7 @@ function SidebarMenuCollapsedDropdown({
             <SidebarMenuButton
               tooltip={item.title}
               isActive={checkIsActive(href, item)}
+              className='font-medium'
             />
           }
         >

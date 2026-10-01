@@ -262,10 +262,10 @@ export function PublicHeader(props: PublicHeaderProps) {
                     disabled={link.disabled}
                     onClick={(event) => handleNavLinkClick(event, link)}
                     className={cn(
-                      'min-w-0 truncate rounded-lg px-3 py-1.5 text-sm font-medium transition-colors duration-200',
+                      'min-w-0 truncate rounded-lg px-3 py-1.5 text-sm transition-colors duration-200',
                       isActive
-                        ? 'text-foreground'
-                        : 'text-muted-foreground hover:text-foreground',
+                        ? 'text-black font-semibold dark:text-white'
+                        : 'text-muted-foreground font-medium hover:text-foreground',
                       link.disabled && 'pointer-events-none opacity-50'
                     )}
                   >
@@ -357,11 +357,13 @@ export function PublicHeader(props: PublicHeaderProps) {
             {links.map((link, i) => {
               const isActive = pathname === link.href
               const linkClassName = cn(
-                'flex items-center gap-3 py-3 text-base font-medium tracking-tight transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]',
+                'flex items-center gap-3 py-3 text-base tracking-tight transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]',
                 mobileOpen
                   ? 'translate-y-0 opacity-100'
                   : 'translate-y-4 opacity-0',
-                isActive ? 'text-foreground' : 'text-muted-foreground',
+                isActive
+                  ? 'text-black font-semibold dark:text-white'
+                  : 'text-muted-foreground font-medium',
                 link.disabled && 'pointer-events-none opacity-50'
               )
               const transitionStyle = {
