@@ -124,8 +124,11 @@ func GetStatus(c *gin.Context) {
 		"passkey_user_verification":   passkeySetting.UserVerification,
 		"passkey_attachment":          passkeySetting.AttachmentPreference,
 		"setup":                       constant.Setup,
-		"user_agreement_enabled":      legalSetting.UserAgreement != "",
-		"privacy_policy_enabled":      legalSetting.PrivacyPolicy != "",
+		// 用户协议/隐私政策默认启用：留空时由前端 legal-document 回退到内置
+		// docs 文档（content/legal/<lang>/<doc>.md），与充值协议表现一致；
+		// 管理员在系统信息填入自定义 Markdown/HTML/URL 时则走 DB 内容。
+		"user_agreement_enabled":      true,
+		"privacy_policy_enabled":      true,
 		"recharge_agreement_enabled":  legalSetting.RechargeAgreement != "",
 		"checkin_enabled":             operation_setting.GetCheckinSetting().Enabled,
 	}

@@ -320,7 +320,7 @@ export function SystemInfoSection({ defaultValues }: SystemInfoSectionProps) {
                     </FormControl>
                     <FormDescription>
                       {t(
-                        'Leave empty to disable the agreement requirement. Supports Markdown, HTML, or a full URL to redirect users.'
+                        'Leave empty to use the default built-in user agreement. Entering Markdown, HTML, or a full URL overrides it for all users.'
                       )}
                     </FormDescription>
                     <FormMessage />
@@ -345,7 +345,7 @@ export function SystemInfoSection({ defaultValues }: SystemInfoSectionProps) {
                     </FormControl>
                     <FormDescription>
                       {t(
-                        'Leave empty to disable the privacy policy requirement. Supports Markdown, HTML, or a full URL to redirect users.'
+                        'Leave empty to use the default built-in privacy policy. Entering Markdown, HTML, or a full URL overrides it for all users.'
                       )}
                     </FormDescription>
                     <FormMessage />
