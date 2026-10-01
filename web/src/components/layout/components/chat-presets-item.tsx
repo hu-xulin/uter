@@ -157,6 +157,7 @@ function ChatMenuItem({
       <SidebarMenuSubItem>
         <SidebarMenuSubButton
           isActive={active}
+          className='font-medium'
           render={
             <Link
               to='/chat/$chatId'
@@ -183,7 +184,7 @@ function ChatMenuItem({
         }}
         aria-disabled={loading ? 'true' : undefined}
         isActive={false}
-        className='justify-between'
+        className='justify-between font-medium'
       >
         <span className='min-w-0 flex-1 truncate whitespace-nowrap'>
           {preset.name}
@@ -387,7 +388,13 @@ export function ChatPresetsItem({ item }: { item: NavChatPresets }) {
         <SidebarMenuItem>
           <DropdownMenu>
             <DropdownMenuTrigger
-              render={<SidebarMenuButton tooltip={item.title} />}
+              render={
+                <SidebarMenuButton
+                  tooltip={item.title}
+                  isActive={normalizedHref.startsWith('/chat')}
+                  className='font-medium'
+                />
+              }
             >
               {item.icon && <item.icon className='h-4 w-4 shrink-0' />}
               <span className='min-w-0 flex-1 truncate'>{item.title}</span>
@@ -421,7 +428,12 @@ export function ChatPresetsItem({ item }: { item: NavChatPresets }) {
       >
         <CollapsibleTrigger
           className='group/collapsible-trigger'
-          render={<SidebarMenuButton />}
+          render={
+            <SidebarMenuButton
+              isActive={normalizedHref.startsWith('/chat')}
+              className='font-medium'
+            />
+          }
         >
           {item.icon && <item.icon className='shrink-0' />}
           <span className='min-w-0 flex-1 truncate'>{item.title}</span>
