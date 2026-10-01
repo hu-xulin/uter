@@ -113,7 +113,10 @@ bump_version() {
   local v maj min pat
   v="$(cat "$ROOT/VERSION" 2>/dev/null | tr -d '[:space:]' | sed 's/^v//')"
   IFS='.' read -r maj min pat <<< "$v"
-  maj="${maj:-0}"; min="${min:-0}"; pat="${pat:-0}"
+  # Force base 10: the `%02d` padding below can write a leading-zero
+  # patch (e.g. `08`), and bash treats `08` as octal in `$(( ))` / `-ge`,
+  # which would abort the bump and corrupt VERSION to `vMAJOR.MINOR.00`.
+  maj=$((10#${maj:-0})); min=$((10#${min:-0})); pat=$((10#${pat:-0}))
   if [ "$pat" -ge 100 ]; then
     min=$((min + 1))
     pat=1
