@@ -88,16 +88,22 @@ export type ContentLayout = 'full' | 'centered'
  * Font axis for the theme.
  *
  * - `default` — resolve at runtime from the active preset
- *   (see `PRESET_DEFAULT_FONT`). The shipped `default` and `anthropic`
- *   presets resolve to serif; other named color presets fall back to
- *   sans unless they list a different choice. Mirrors how
+ *   (see `PRESET_DEFAULT_FONT`). The shipped `default` preset resolves to
+ *   `sans` (the GitHub-style system stack, now the default UI voice);
+ *   `anthropic` resolves to `serif`. Other named color presets fall back
+ *   to `sans` unless they list a different choice. Mirrors how
  *   `radius: 'default'` defers to a per-preset hint.
- * - `sans` — humanist sans (Public Sans), the project's UI fallback.
+ * - `sans` — GitHub-style system font stack (see `--font-sans` in
+ *   theme.css): OS UI face first, explicit CJK fallbacks. The default UI
+ *   font; full 400/500/600 weight range native on every platform.
  * - `serif` — editorial serif (Lora + CJK fallbacks), the project's
  *   "soul" typography. Inherits across the whole UI; monospace contexts
  *   keep their own family via Tailwind preflight and `.font-mono`.
+ * - `alibaba` — brand display face (Alibaba PuHuiTi 3.0, see
+ *   `--font-alibaba`). Kept available as an opt-in axis so users can
+ *   return the product to the original brand typeface.
  */
-export type ThemeFont = 'default' | 'sans' | 'serif'
+export type ThemeFont = 'default' | 'sans' | 'serif' | 'alibaba'
 
 /**
  * The resolved (non-`default`) font value applied to the DOM. The provider
@@ -131,6 +137,7 @@ export const THEME_FONT_VALUES: ReadonlySet<ThemeFont> = new Set([
   'default',
   'sans',
   'serif',
+  'alibaba',
 ])
 
 export const THEME_RADIUS_VALUES: ReadonlySet<ThemeRadius> = new Set([
@@ -169,8 +176,9 @@ export const THEME_COOKIE_KEYS = {
  * Co-located with the preset registry so a preset's signature typography
  * is declared in one place. Presets not listed here fall back to the
  * `resolveThemeFont` default of `sans`. The shipped `default` preset
- * opts into serif so the editorial Lora voice is the out-of-the-box
- * experience; vivid color presets stay on the humanist sans so their
+ * opts into `sans` (the GitHub system stack) so the product opens on the
+ * OS-native UI voice; `anthropic` keeps the editorial Lora serif for its
+ * brand mood. Vivid color presets also stay on the humanist sans so their
  * accents read clearly without competing with the body type.
  */
 export const PRESET_DEFAULT_FONT: Partial<

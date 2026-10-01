@@ -19,7 +19,27 @@ For commercial licensing, please contact support@Uter.ai.com
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --font-sans: 'Alibaba PuHuiTi 3.0', 'Public Sans', sans-serif;
+  /* Default sans — GitHub-style system font stack.
+   *
+   * Mirrors GitHub's own `--font-stack` discipline: lean on the OS UI face
+   * first (crisp, zero FOUT, full 400/500/600 weight range native on every
+   * platform), then walk through explicit CJK faces so Chinese/Japanese/
+   * Korean glyphs resolve deterministically instead of falling to the
+   * browser's generic pick. Emoji faces are listed last so they only catch
+   * emoji codepoints. This is the *default* body face; the brand Alibaba
+   * PuHuiTi 3.0 is preserved as a switchable font-axis option
+   * (`[data-theme-font='alibaba']`, see theme-presets.css). */
+  --font-sans:
+    system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans',
+    'Helvetica Neue', Arial, 'PingFang SC', 'Hiragino Sans GB',
+    'Microsoft YaHei', 'Noto Sans SC', 'Source Han Sans SC',
+    sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
+  /* Brand display face — Alibaba PuHuiTi 3.0. Kept as its own axis so the
+   * wordmark and brand surfaces stay on the loaded face; falls back to the
+   * system stack for any missing glyph. */
+  --font-alibaba:
+    'Alibaba PuHuiTi 3.0', system-ui, -apple-system, 'Segoe UI',
+    'PingFang SC', 'Microsoft YaHei', 'Noto Sans SC', sans-serif;
   /* Editorial serif token — the body face used by the `serif` font axis
    * and by presets that opt in (currently Anthropic). Lora carries only
    * Latin glyphs, so the stack walks through CJK serifs (Noto / Source Han
@@ -104,6 +124,44 @@ For commercial licensing, please contact support@Uter.ai.com
    * in theme-presets.css. Default mirrors `--font-sans` so behavior is
    * identical when no font preference is set. */
   --font-body: var(--font-sans);
+
+  /* ── Type scale — GitHub 8-step ladder ───────────────────────────────
+   * rem values assume a 16px root. Mirrors GitHub's type scale
+   * (12 / 14 / 16 / 20 / 24 / 32 / 40 / 48, with 56/64 for hero display).
+   * 14px (`--text-sm`) is GitHub's UI base size. Each step carries its
+   * GitHub line-height as the `--text-<size>--line-height` companion so the
+   * `text-*` utilities inherit a consistent vertical rhythm (1.5 at body,
+   * tightening toward display sizes). Overridden per density by the
+   * `[data-theme-scale='...']` blocks in theme-presets.css. */
+  --text-xs: 0.75rem; /* 12px */
+  --text-xs--line-height: 1.125rem; /* 18px */
+  --text-sm: 0.875rem; /* 14px — GitHub UI base */
+  --text-sm--line-height: 1.3125rem; /* 21px */
+  --text-base: 1rem; /* 16px */
+  --text-base--line-height: 1.5rem; /* 24px */
+  --text-lg: 1.25rem; /* 20px */
+  --text-lg--line-height: 1.75rem; /* 28px */
+  --text-xl: 1.5rem; /* 24px */
+  --text-xl--line-height: 2rem; /* 32px */
+  --text-2xl: 2rem; /* 32px */
+  --text-2xl--line-height: 2.5rem; /* 40px */
+  --text-3xl: 2.5rem; /* 40px */
+  --text-3xl--line-height: 3rem; /* 48px */
+  --text-4xl: 3rem; /* 48px */
+  --text-4xl--line-height: 3.5rem; /* 56px */
+  --text-5xl: 3.5rem; /* 56px */
+  --text-5xl--line-height: 4rem; /* 64px */
+  --text-6xl: 4rem; /* 64px */
+  --text-6xl--line-height: 4.5rem; /* 72px */
+
+  /* ── Font-weight vocabulary — GitHub discipline ──────────────────────
+   * Only three weights are used app-wide: 400 (body), 500 (medium
+   * emphasis), 600 (headings / strong). 700 is reserved for deliberate
+   * `.font-bold` emphasis and the brand mark. */
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
