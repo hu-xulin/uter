@@ -99,9 +99,11 @@ For commercial licensing, please contact support@Uter.ai.com
     @apply bg-background text-foreground has-[div[data-variant='inset']]:bg-sidebar min-h-svh w-full;
     /* Font is driven by the theme's font axis via `--font-body`
      * (defined in theme.css, swapped by `[data-theme-font='...']` blocks
-     * in theme-presets.css). Defaults to Alibaba PuHuiTi 3.0 Medium. */
+     * in theme-presets.css). Defaults to the GitHub system stack.
+     * Body uses GitHub's base size (14px) and regular weight (400). */
     font-family: var(--font-body);
-    font-weight: 500;
+    font-size: var(--text-sm);
+    font-weight: 400;
   }
 
   /* Keep sticky headers stable while primitives lock body scrolling. */
@@ -109,7 +111,9 @@ For commercial licensing, please contact support@Uter.ai.com
     overflow: unset !important;
   }
 
-  /* Headings and bold elements use Alibaba PuHuiTi 3.0 Bold (700). */
+  /* Headings and bold elements use GitHub's semibold (600) — the single
+   * authoritative heading weight. `.font-bold` (700) is intentionally left
+   * to Tailwind's utility for deliberate emphasis only. */
   h1,
   h2,
   h3,
@@ -122,9 +126,8 @@ For commercial licensing, please contact support@Uter.ai.com
   [data-slot='drawer-title'],
   [data-slot='card-title'],
   strong,
-  b,
-  .font-bold {
-    font-weight: 700;
+  b {
+    font-weight: 600;
   }
 
   /* Cursor pointer for buttons */

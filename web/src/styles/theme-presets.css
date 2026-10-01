@@ -343,13 +343,15 @@ For commercial licensing, please contact support@Uter.ai.com
   --skeleton-highlight: oklch(0.97 0 0);
 
   --radius: 0.5rem;
-  --text-xs: 0.9rem;
-  --text-sm: 1rem;
-  --text-base: 1.125rem;
-  --text-lg: 1.25rem;
-  --text-xl: 1.45rem;
-  --text-2xl: 1.75rem;
-  --text-3xl: 2.15rem;
+  /* Large-font preset — sits above the `xl` density: ~1.18× the GitHub base. */
+  --text-xs: 0.9375rem; /* 15px */
+  --text-sm: 1.0625rem; /* 17px */
+  --text-base: 1.1875rem; /* 19px */
+  --text-lg: 1.4375rem; /* 23px */
+  --text-xl: 1.6875rem; /* 27px */
+  --text-2xl: 2.375rem; /* 38px */
+  --text-3xl: 2.875rem; /* 46px */
+  --text-4xl: 3.375rem; /* 54px */
   --spacing: 0.3rem;
 }
 .dark [data-theme-preset='simple-large'] {
@@ -617,15 +619,48 @@ For commercial licensing, please contact support@Uter.ai.com
  * presets may set `--font-body` (Anthropic → serif), and the user's
  * explicit Font choice wins because these blocks sit AFTER preset blocks.
  *
- * The provider resolves `font: 'default'` → `'sans' | 'serif'` against the
- * active preset before writing the attribute, so the DOM always carries a
- * concrete value and CSS only needs the simple `[data-theme-font='serif']`
- * selector below (no `:not()`, no per-preset branches). */
+ * The provider resolves `font: 'default'` → `'sans' | 'serif' | 'alibaba'`
+ * against the active preset before writing the attribute, so the DOM always
+ * carries a concrete value and CSS only needs the simple
+ * `[data-theme-font='...']` selectors below (no `:not()`, no per-preset
+ * branches). */
 [data-theme-font='sans'] {
   --font-body: var(--font-sans);
 }
+[data-theme-font='alibaba'] {
+  /* Brand display face. Alibaba PuHuiTi 3.0 only ships 500/700/900, so the
+   * GitHub 400/500/600 vocabulary resolves to 500 (body) / 700 (headings)
+   * below — see the weight-pinning block. */
+  --font-body: var(--font-alibaba);
+}
 [data-theme-font='serif'] {
   --font-body: var(--font-serif);
+}
+
+/* ── Alibaba weight pinning ────────────────────────────────────────────────
+ * The global base rule sets body 400 / headings 600 (GitHub vocabulary).
+ * Alibaba PuHuiTi 3.0 has no 400 or 600 face, so without pinning the
+ * browser would synthesise or snap to its nearest loaded weight
+ * (500 / 700) unpredictably. Pin to its real faces so the brand axis reads
+ * with the same crisp, intentional contrast as the system stack. */
+[data-theme-font='alibaba'] body {
+  font-weight: 500;
+}
+[data-theme-font='alibaba']
+  :is(
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    [data-slot='sheet-title'],
+    [data-slot='dialog-title'],
+    [data-slot='alert-dialog-title'],
+    [data-slot='drawer-title'],
+    [data-slot='card-title']
+  ) {
+  font-weight: 700;
 }
 
 /* ── Serif typography refinements ────────────────────────────────────────
@@ -665,7 +700,7 @@ For commercial licensing, please contact support@Uter.ai.com
 [data-theme-font='serif'] [data-slot='alert-dialog-title'],
 [data-theme-font='serif'] [data-slot='drawer-title'],
 [data-theme-font='serif'] [data-slot='card-title'] {
-  font-weight: 500;
+  font-weight: 600;
   letter-spacing: -0.012em;
 }
 
@@ -698,33 +733,36 @@ For commercial licensing, please contact support@Uter.ai.com
 /* ── Density scale ────────────────────────────────────────────────────── */
 /* `sm` = compact UI; `lg` = comfortable; `xl` = extra readable. Default keeps Tailwind defaults. */
 [data-theme-scale='sm'] {
-  --text-xs: 0.7rem;
-  --text-sm: 0.78rem;
-  --text-base: 0.88rem;
-  --text-lg: 1rem;
-  --text-xl: 1.13rem;
-  --text-2xl: 1.38rem;
-  --text-3xl: 1.7rem;
+  /* Compact — ~0.9× the GitHub base. */
+  --text-xs: 0.6875rem; /* 11px */
+  --text-sm: 0.8125rem; /* 13px */
+  --text-base: 0.875rem; /* 14px */
+  --text-lg: 1.125rem; /* 18px */
+  --text-xl: 1.375rem; /* 22px */
+  --text-2xl: 1.75rem; /* 28px */
+  --text-3xl: 2.25rem; /* 36px */
   --spacing: 0.225rem;
 }
 [data-theme-scale='lg'] {
-  --text-xs: 0.84rem;
-  --text-sm: 0.95rem;
-  --text-base: 1.075rem;
-  --text-lg: 1.2rem;
-  --text-xl: 1.35rem;
-  --text-2xl: 1.65rem;
-  --text-3xl: 2rem;
+  /* Comfortable — ~1.05× the GitHub base. */
+  --text-xs: 0.8125rem; /* 13px */
+  --text-sm: 0.9375rem; /* 15px */
+  --text-base: 1.0625rem; /* 17px */
+  --text-lg: 1.3125rem; /* 21px */
+  --text-xl: 1.5625rem; /* 25px */
+  --text-2xl: 2.125rem; /* 34px */
+  --text-3xl: 2.625rem; /* 42px */
   --spacing: 0.28rem;
 }
 [data-theme-scale='xl'] {
-  --text-xs: 0.9rem;
-  --text-sm: 1rem;
-  --text-base: 1.125rem;
-  --text-lg: 1.25rem;
-  --text-xl: 1.45rem;
-  --text-2xl: 1.75rem;
-  --text-3xl: 2.15rem;
+  /* Extra readable — ~1.1× the GitHub base. */
+  --text-xs: 0.875rem; /* 14px */
+  --text-sm: 1rem; /* 16px */
+  --text-base: 1.125rem; /* 18px */
+  --text-lg: 1.375rem; /* 22px */
+  --text-xl: 1.625rem; /* 26px */
+  --text-2xl: 2.25rem; /* 36px */
+  --text-3xl: 2.75rem; /* 44px */
   --spacing: 0.3rem;
 }
 

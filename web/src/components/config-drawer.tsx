@@ -321,6 +321,7 @@ const FONT_OPTIONS: {
 }[] = [
   { value: 'default', label: 'Auto', preview: undefined },
   { value: 'sans', label: 'Sans', preview: 'var(--font-sans)' },
+  { value: 'alibaba', label: 'Alibaba', preview: 'var(--font-alibaba)' },
   { value: 'serif', label: 'Serif', preview: 'var(--font-serif)' },
 ]
 
