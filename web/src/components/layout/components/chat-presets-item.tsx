@@ -256,8 +256,11 @@ export function ChatPresetsItem({ item }: { item: NavChatPresets }) {
   // 路径不变。所以选中态改由展开状态驱动：展开即高亮并保持，收起且不在
   // 聊天页时才取消；否则点击后只会留下 CSS :active 的一闪就回落成未选中。
   const [open, setOpen] = useState(() => normalizedHref.startsWith('/chat'))
+  // 路径一旦变化就把展开态同步为「是否在聊天区」：进入 /chat 自动展开并
+  // 选中，离开（例如点了「概览」）则收起并取消选中。依赖是 normalizedHref，
+  // 所以路径不变时不会覆盖用户手动展开/收起的结果。
   useEffect(() => {
-    if (normalizedHref.startsWith('/chat')) setOpen(true)
+    setOpen(normalizedHref.startsWith('/chat'))
   }, [normalizedHref])
   const chatActive = normalizedHref.startsWith('/chat') || open
   const [loadingPresetId, setLoadingPresetId] = useState<string | null>(null)
