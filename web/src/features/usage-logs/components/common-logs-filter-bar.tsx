@@ -42,7 +42,6 @@ import {
 import { useOrgManagerScope } from '@/features/organization/use-org-manager'
 import { OrgUserFilter } from '@/features/organization/org-user-filter'
 import { getGroups } from '@/features/users/api'
-import { useMediaQuery } from '@/hooks'
 import { getUserGroups } from '@/lib/api'
 import { formatUserId, parseUserId } from '@/lib/format'
 import { requireServerSuccess } from '@/lib/server-error-message'
@@ -124,7 +123,6 @@ export function CommonLogsFilterBar<TData>(
   props: CommonLogsFilterBarProps<TData>
 ) {
   const { t } = useTranslation()
-  const isMobile = useMediaQuery('(max-width: 640px)')
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const searchParams = route.useSearch()
@@ -356,9 +354,10 @@ export function CommonLogsFilterBar<TData>(
         onChange={({ start, end }) => {
           handleChange('startTime', start)
           handleChange('endTime', end)
-          if (isMobile) {
-            handleApply({ ...filters, startTime: start, endTime: end })
-          }
+          // 选日期范围（预设或手动确认）后无论何种视口都立即应用：
+          // 否则桌面端只更新本地草稿、不触发查询，表格仍按默认「今天」
+          // 区间请求，表现为「选了最近7天仍只显示当天的数据」。
+          handleApply({ ...filters, startTime: start, endTime: end })
         }}
       />
     </LogsFilterField>
