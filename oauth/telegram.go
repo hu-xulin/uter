@@ -86,7 +86,7 @@ type TelegramProvider struct {
 }
 
 func init() {
-	Register("telegram", NewTelegramProvider(&http.Client{Timeout: 20 * time.Second}))
+	Register("telegram", NewTelegramProvider(newOAuthHTTPClient(20 * time.Second)))
 }
 
 // NewTelegramProvider shares the HTTP client with a long-lived, cached JWKS
