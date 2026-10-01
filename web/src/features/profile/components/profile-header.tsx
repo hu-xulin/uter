@@ -142,7 +142,7 @@ export function ProfileHeader({ profile, loading }: ProfileHeaderProps) {
                 copyable={false}
               />
               <StatusBadge
-                label={`${t('User ID')} ${formatUserId(profile.id)}`}
+                label={`${t('User ID:')}${formatUserId(profile.id)}`}
                 variant='info'
                 copyText={formatUserId(profile.id)}
               />
