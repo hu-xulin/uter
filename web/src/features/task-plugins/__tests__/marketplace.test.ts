@@ -727,7 +727,39 @@ describe('marketplace source branding', () => {
       }),
       MARKETPLACE_OFFICIAL_INDEX_NAME
     )
-    assert.equal(MARKETPLACE_OFFICIAL_INDEX_NAME, 'Uter Official Plugins')
+    assert.equal(MARKETPLACE_OFFICIAL_INDEX_NAME, 'Uter.ai Official Plugins')
+  })
+
+  test('upstream indexes published before the rename are official', () => {
+    // Deployments configured before the rebrand still point at these, and the
+    // upstream index still reports the previous project name.
+    assert.equal(
+      isOfficialMarketplaceSource(
+        'https://www.newapi.ai/api/v1/plugins/index.json'
+      ),
+      true
+    )
+    assert.equal(
+      isOfficialMarketplaceSource(
+        'https://raw.githubusercontent.com/QuantumNous/new-api-plugins/main/index.json'
+      ),
+      true
+    )
+  })
+
+  test('the upstream index renders the current brand name', () => {
+    // The upstream index reports "New API Official Plugins"; the UI must show
+    // the current brand instead.
+    assert.equal(
+      marketplaceIndexDisplayName({
+        indexName: 'New API Official Plugins',
+        sourceName: 'GitHub',
+        isOfficial: isOfficialMarketplaceSource(
+          'https://raw.githubusercontent.com/QuantumNous/new-api-plugins/main/index.json'
+        ),
+      }),
+      'Uter.ai Official Plugins'
+    )
   })
 
   test('other sources keep their own name with the legacy brand renamed', () => {
@@ -737,7 +769,7 @@ describe('marketplace source branding', () => {
         sourceName: 'Mirror',
         isOfficial: false,
       }),
-      'Uter Official Plugins'
+      'Uter.ai Official Plugins'
     )
     assert.equal(
       marketplaceIndexDisplayName({
@@ -745,7 +777,7 @@ describe('marketplace source branding', () => {
         sourceName: 'Mirror',
         isOfficial: false,
       }),
-      'Uter Community Plugins'
+      'Uter.ai Community Plugins'
     )
     assert.equal(
       marketplaceIndexDisplayName({
