@@ -43,9 +43,23 @@ import { SettingsPageFormActions } from '../components/settings-page-context'
 import { SettingsSection } from '../components/settings-section'
 import { useUpdateOption } from '../hooks/use-update-option'
 
-// ============================================================================
-// Alipay (官方直连 / 当面付) settings section
-// ============================================================================
+export type CnOfficialPaymentValues = {
+  alipay: {
+    enabled: boolean
+    appId: string
+    privateKey: string
+    publicKey: string
+  }
+  wechatPay: {
+    enabled: boolean
+    mchId: string
+    appId: string
+    apiV3Key: string
+    serialNo: string
+    privateKey: string
+    platformCert: string
+  }
+}
 
 const alipaySchema = z.object({
   enabled: z.boolean(),
@@ -54,47 +68,96 @@ const alipaySchema = z.object({
   publicKey: z.string().optional(),
 })
 
-type AlipayValues = z.input<typeof alipaySchema>
+const wechatPaySchema = z.object({
+  enabled: z.boolean(),
+  mchId: z.string().optional(),
+  appId: z.string().optional(),
+  apiV3Key: z.string().optional(),
+  serialNo: z.string().optional(),
+  privateKey: z.string().optional(),
+  platformCert: z.string().optional(),
+})
 
-export function AlipaySettingsSection({
+const cnOfficialSchema = z.object({
+  alipay: alipaySchema,
+  wechatPay: wechatPaySchema,
+})
+
+type FormValues = z.input<typeof cnOfficialSchema>
+
+export function CnOfficialPaymentSettingsSection({
   defaultValues,
 }: {
-  defaultValues: {
-    enabled: boolean
-    appId: string
-    privateKey: string
-    publicKey: string
-  }
+  defaultValues: CnOfficialPaymentValues
 }) {
   const { t } = useTranslation()
   const updateOption = useUpdateOption()
 
-  const form = useForm<AlipayValues>({
-    resolver: zodResolver(alipaySchema),
+  const form = useForm<FormValues>({
+    resolver: zodResolver(cnOfficialSchema),
     defaultValues: {
-      enabled: defaultValues.enabled,
-      appId: defaultValues.appId ?? '',
-      privateKey: defaultValues.privateKey ?? '',
-      publicKey: defaultValues.publicKey ?? '',
+      alipay: {
+        enabled: defaultValues.alipay.enabled,
+        appId: defaultValues.alipay.appId ?? '',
+        privateKey: defaultValues.alipay.privateKey ?? '',
+        publicKey: defaultValues.alipay.publicKey ?? '',
+      },
+      wechatPay: {
+        enabled: defaultValues.wechatPay.enabled,
+        mchId: defaultValues.wechatPay.mchId ?? '',
+        appId: defaultValues.wechatPay.appId ?? '',
+        apiV3Key: defaultValues.wechatPay.apiV3Key ?? '',
+        serialNo: defaultValues.wechatPay.serialNo ?? '',
+        privateKey: defaultValues.wechatPay.privateKey ?? '',
+        platformCert: defaultValues.wechatPay.platformCert ?? '',
+      },
     },
   })
 
   const { isDirty, isSubmitting } = form.formState
-  const enabled = form.watch('enabled')
+  const alipayEnabled = form.watch('alipay.enabled')
+  const wechatPayEnabled = form.watch('wechatPay.enabled')
 
-  async function onSubmit(values: AlipayValues) {
+  async function onSubmit(values: FormValues) {
     const updates: Array<{ key: string; value: string }> = []
-    if (values.enabled !== defaultValues.enabled) {
-      updates.push({ key: 'AlipayEnabled', value: String(values.enabled) })
+
+    const a = values.alipay
+    const d = defaultValues.alipay
+    if (a.enabled !== d.enabled) {
+      updates.push({ key: 'AlipayEnabled', value: String(a.enabled) })
     }
-    if ((values.appId ?? '') !== (defaultValues.appId ?? '')) {
-      updates.push({ key: 'AlipayAppId', value: values.appId ?? '' })
+    if ((a.appId ?? '') !== (d.appId ?? '')) {
+      updates.push({ key: 'AlipayAppId', value: a.appId ?? '' })
     }
-    if ((values.privateKey ?? '') !== (defaultValues.privateKey ?? '')) {
-      updates.push({ key: 'AlipayPrivateKey', value: values.privateKey ?? '' })
+    if ((a.privateKey ?? '') !== (d.privateKey ?? '')) {
+      updates.push({ key: 'AlipayPrivateKey', value: a.privateKey ?? '' })
     }
-    if ((values.publicKey ?? '') !== (defaultValues.publicKey ?? '')) {
-      updates.push({ key: 'AlipayPublicKey', value: values.publicKey ?? '' })
+    if ((a.publicKey ?? '') !== (d.publicKey ?? '')) {
+      updates.push({ key: 'AlipayPublicKey', value: a.publicKey ?? '' })
+    }
+
+    const w = values.wechatPay
+    const wd = defaultValues.wechatPay
+    if (w.enabled !== wd.enabled) {
+      updates.push({ key: 'WechatPayEnabled', value: String(w.enabled) })
+    }
+    if ((w.mchId ?? '') !== (wd.mchId ?? '')) {
+      updates.push({ key: 'WechatPayMchId', value: w.mchId ?? '' })
+    }
+    if ((w.appId ?? '') !== (wd.appId ?? '')) {
+      updates.push({ key: 'WechatPayAppId', value: w.appId ?? '' })
+    }
+    if ((w.apiV3Key ?? '') !== (wd.apiV3Key ?? '')) {
+      updates.push({ key: 'WechatPayApiV3Key', value: w.apiV3Key ?? '' })
+    }
+    if ((w.serialNo ?? '') !== (wd.serialNo ?? '')) {
+      updates.push({ key: 'WechatPaySerialNo', value: w.serialNo ?? '' })
+    }
+    if ((w.privateKey ?? '') !== (wd.privateKey ?? '')) {
+      updates.push({ key: 'WechatPayPrivateKey', value: w.privateKey ?? '' })
+    }
+    if ((w.platformCert ?? '') !== (wd.platformCert ?? '')) {
+      updates.push({ key: 'WechatPayPlatformCert', value: w.platformCert ?? '' })
     }
 
     if (updates.length === 0) {
@@ -109,18 +172,19 @@ export function AlipaySettingsSection({
   }
 
   return (
-    <SettingsSection title={t('Alipay (Official)')}>
-      <Form {...form}>
-        <SettingsForm onSubmit={form.handleSubmit(onSubmit)} autoComplete='off'>
-          <SettingsPageFormActions
-            onSave={form.handleSubmit(onSubmit)}
-            isSaving={updateOption.isPending || isSubmitting}
-            isSaveDisabled={!isDirty}
-            saveLabel={t('Save Alipay settings')}
-          />
+    <Form {...form}>
+      <SettingsForm onSubmit={form.handleSubmit(onSubmit)} autoComplete='off'>
+        <SettingsPageFormActions
+          onSave={form.handleSubmit(onSubmit)}
+          isSaving={updateOption.isPending || isSubmitting}
+          isSaveDisabled={!isDirty}
+          saveLabel={t('Save all settings')}
+        />
+
+        <SettingsSection title={t('Alipay (Official)')}>
           <FormField
             control={form.control}
-            name='enabled'
+            name='alipay.enabled'
             render={({ field }) => (
               <SettingsSwitchItem>
                 <SettingsSwitchContent>
@@ -140,11 +204,11 @@ export function AlipaySettingsSection({
             )}
           />
 
-          {enabled ? (
+          {alipayEnabled ? (
             <>
               <FormField
                 control={form.control}
-                name='appId'
+                name='alipay.appId'
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>{t('App ID')}</FormLabel>
@@ -164,7 +228,7 @@ export function AlipaySettingsSection({
               />
               <FormField
                 control={form.control}
-                name='privateKey'
+                name='alipay.privateKey'
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>{t('Application Private Key')}</FormLabel>
@@ -184,7 +248,7 @@ export function AlipaySettingsSection({
               />
               <FormField
                 control={form.control}
-                name='publicKey'
+                name='alipay.publicKey'
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>{t('Alipay Public Key')}</FormLabel>
@@ -217,111 +281,12 @@ export function AlipaySettingsSection({
               </Alert>
             </>
           ) : null}
-        </SettingsForm>
-      </Form>
-    </SettingsSection>
-  )
-}
+        </SettingsSection>
 
-// ============================================================================
-// WeChat Pay (官方直连 / APIv3 Native) settings section
-// ============================================================================
-
-const wechatSchema = z.object({
-  enabled: z.boolean(),
-  mchId: z.string().optional(),
-  appId: z.string().optional(),
-  apiV3Key: z.string().optional(),
-  serialNo: z.string().optional(),
-  privateKey: z.string().optional(),
-  platformCert: z.string().optional(),
-})
-
-type WechatValues = z.input<typeof wechatSchema>
-
-export function WechatPaySettingsSection({
-  defaultValues,
-}: {
-  defaultValues: {
-    enabled: boolean
-    mchId: string
-    appId: string
-    apiV3Key: string
-    serialNo: string
-    privateKey: string
-    platformCert: string
-  }
-}) {
-  const { t } = useTranslation()
-  const updateOption = useUpdateOption()
-
-  const form = useForm<WechatValues>({
-    resolver: zodResolver(wechatSchema),
-    defaultValues: {
-      enabled: defaultValues.enabled,
-      mchId: defaultValues.mchId ?? '',
-      appId: defaultValues.appId ?? '',
-      apiV3Key: defaultValues.apiV3Key ?? '',
-      serialNo: defaultValues.serialNo ?? '',
-      privateKey: defaultValues.privateKey ?? '',
-      platformCert: defaultValues.platformCert ?? '',
-    },
-  })
-
-  const { isDirty, isSubmitting } = form.formState
-  const enabled = form.watch('enabled')
-
-  async function onSubmit(values: WechatValues) {
-    const updates: Array<{ key: string; value: string }> = []
-    if (values.enabled !== defaultValues.enabled) {
-      updates.push({ key: 'WechatPayEnabled', value: String(values.enabled) })
-    }
-    if ((values.mchId ?? '') !== (defaultValues.mchId ?? '')) {
-      updates.push({ key: 'WechatPayMchId', value: values.mchId ?? '' })
-    }
-    if ((values.appId ?? '') !== (defaultValues.appId ?? '')) {
-      updates.push({ key: 'WechatPayAppId', value: values.appId ?? '' })
-    }
-    if ((values.apiV3Key ?? '') !== (defaultValues.apiV3Key ?? '')) {
-      updates.push({ key: 'WechatPayApiV3Key', value: values.apiV3Key ?? '' })
-    }
-    if ((values.serialNo ?? '') !== (defaultValues.serialNo ?? '')) {
-      updates.push({ key: 'WechatPaySerialNo', value: values.serialNo ?? '' })
-    }
-    if ((values.privateKey ?? '') !== (defaultValues.privateKey ?? '')) {
-      updates.push({ key: 'WechatPayPrivateKey', value: values.privateKey ?? '' })
-    }
-    if ((values.platformCert ?? '') !== (defaultValues.platformCert ?? '')) {
-      updates.push({
-        key: 'WechatPayPlatformCert',
-        value: values.platformCert ?? '',
-      })
-    }
-
-    if (updates.length === 0) {
-      toast.info(t('No changes to save'))
-      return
-    }
-    for (const update of updates) {
-      await updateOption.mutateAsync(update)
-    }
-    form.reset(values)
-    toast.success(t('Settings saved'))
-  }
-
-  return (
-    <SettingsSection title={t('WeChat Pay (Official)')}>
-      <Form {...form}>
-        <SettingsForm onSubmit={form.handleSubmit(onSubmit)} autoComplete='off'>
-          <SettingsPageFormActions
-            onSave={form.handleSubmit(onSubmit)}
-            isSaving={updateOption.isPending || isSubmitting}
-            isSaveDisabled={!isDirty}
-            saveLabel={t('Save WeChat Pay settings')}
-          />
+        <SettingsSection title={t('WeChat Pay (Official)')}>
           <FormField
             control={form.control}
-            name='enabled'
+            name='wechatPay.enabled'
             render={({ field }) => (
               <SettingsSwitchItem>
                 <SettingsSwitchContent>
@@ -341,25 +306,31 @@ export function WechatPaySettingsSection({
             )}
           />
 
-          {enabled ? (
+          {wechatPayEnabled ? (
             <>
               <FormField
                 control={form.control}
-                name='mchId'
+                name='wechatPay.mchId'
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>{t('Merchant ID')}</FormLabel>
                     <FormControl>
-                      <Input placeholder='1900000000' autoComplete='off' {...field} />
+                      <Input
+                        placeholder='1900000000'
+                        autoComplete='off'
+                        {...field}
+                      />
                     </FormControl>
-                    <FormDescription>{t('WeChat Pay merchant ID')}</FormDescription>
+                    <FormDescription>
+                      {t('WeChat Pay merchant ID')}
+                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
               />
               <FormField
                 control={form.control}
-                name='appId'
+                name='wechatPay.appId'
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>{t('App ID')}</FormLabel>
@@ -379,7 +350,7 @@ export function WechatPaySettingsSection({
               />
               <FormField
                 control={form.control}
-                name='apiV3Key'
+                name='wechatPay.apiV3Key'
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>{t('APIv3 Key')}</FormLabel>
@@ -395,7 +366,7 @@ export function WechatPaySettingsSection({
               />
               <FormField
                 control={form.control}
-                name='serialNo'
+                name='wechatPay.serialNo'
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>{t('Certificate Serial No')}</FormLabel>
@@ -411,7 +382,7 @@ export function WechatPaySettingsSection({
               />
               <FormField
                 control={form.control}
-                name='privateKey'
+                name='wechatPay.privateKey'
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>{t('Merchant Private Key')}</FormLabel>
@@ -431,7 +402,7 @@ export function WechatPaySettingsSection({
               />
               <FormField
                 control={form.control}
-                name='platformCert'
+                name='wechatPay.platformCert'
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>{t('WeChat Pay Platform Certificate')}</FormLabel>
@@ -453,7 +424,9 @@ export function WechatPaySettingsSection({
                 <AlertTitle>{t('Setup notes')}</AlertTitle>
                 <AlertDescription>
                   <ul className='list-disc space-y-1 pl-5'>
-                    <li>{t('Enable Native payment in WeChat Pay merchant')}</li>
+                    <li>
+                      {t('Enable Native payment in WeChat Pay merchant')}
+                    </li>
                     <li>
                       {t(
                         'Async callback URL is registered automatically by the server'
@@ -464,8 +437,8 @@ export function WechatPaySettingsSection({
               </Alert>
             </>
           ) : null}
-        </SettingsForm>
-      </Form>
-    </SettingsSection>
+        </SettingsSection>
+      </SettingsForm>
+    </Form>
   )
 }
