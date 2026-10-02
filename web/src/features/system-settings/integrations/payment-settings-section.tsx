@@ -60,6 +60,10 @@ import { SettingsPageFormActions } from '../components/settings-page-context'
 import { SettingsSection } from '../components/settings-section'
 import { useUpdateOption } from '../hooks/use-update-option'
 import { safeNumberFieldProps } from '../utils/numeric-field'
+import {
+  AlipaySettingsSection,
+  type AlipaySettingsValues,
+} from './alipay-settings-section'
 import { AmountDiscountVisualEditor } from './amount-discount-visual-editor'
 import { AmountOptionsVisualEditor } from './amount-options-visual-editor'
 import { CreemProductsVisualEditor } from './creem-products-visual-editor'
@@ -82,9 +86,9 @@ import {
   type WaffoSettingsValues,
 } from './waffo-settings-section'
 import {
-  CnOfficialPaymentSettingsSection,
-  type CnOfficialPaymentValues,
-} from './cn-pay-settings-sections'
+  WechatPaySettingsSection,
+  type WechatPaySettingsValues,
+} from './wechat-pay-settings-section'
 
 function isHttpOriginUrl(value: string) {
   const trimmed = value.trim()
@@ -207,7 +211,8 @@ type PaymentSettingsSectionProps = {
   waffoPancakeDefaultValues: WaffoPancakeSettingsValues
   waffoPancakeProvisionedStoreID?: string
   waffoPancakeProvisionedProductID?: string
-  cnOfficialDefaultValues: CnOfficialPaymentValues
+  alipayDefaultValues: AlipaySettingsValues
+  wechatPayDefaultValues: WechatPaySettingsValues
   complianceDefaults: PaymentComplianceDefaults
 }
 
@@ -226,7 +231,8 @@ export function PaymentSettingsSection({
   waffoPancakeDefaultValues,
   waffoPancakeProvisionedStoreID,
   waffoPancakeProvisionedProductID,
-  cnOfficialDefaultValues,
+  alipayDefaultValues,
+  wechatPayDefaultValues,
   complianceDefaults,
 }: PaymentSettingsSectionProps) {
   const { t } = useTranslation()
@@ -888,14 +894,15 @@ export function PaymentSettingsSection({
           />
           <Tabs defaultValue='general' className='min-w-0'>
             <div className='overflow-x-auto pb-1'>
-              <TabsList className='grid min-w-[56rem] grid-cols-7'>
+              <TabsList className='grid min-w-[64rem] grid-cols-8'>
                 <TabsTrigger value='general'>{t('General')}</TabsTrigger>
+                <TabsTrigger value='alipay'>{t('Alipay')}</TabsTrigger>
+                <TabsTrigger value='wechat'>{t('WeChat Pay')}</TabsTrigger>
                 <TabsTrigger value='epay'>Epay</TabsTrigger>
                 <TabsTrigger value='stripe'>{t('Stripe')}</TabsTrigger>
                 <TabsTrigger value='creem'>Creem</TabsTrigger>
-                <TabsTrigger value='cn_official'>{t('Alipay & WeChat Pay')}</TabsTrigger>
-                <TabsTrigger value='waffo-pancake'>Waffo Pancake</TabsTrigger>
                 <TabsTrigger value='waffo'>Waffo</TabsTrigger>
+                <TabsTrigger value='waffo-pancake'>Waffo Pancake</TabsTrigger>
               </TabsList>
             </div>
 
@@ -1144,6 +1151,16 @@ export function PaymentSettingsSection({
                   />
                 </div>
               </div>
+            </TabsContent>
+
+            <TabsContent value='alipay' className={paymentTabContentClassName}>
+              <AlipaySettingsSection defaultValues={alipayDefaultValues} />
+            </TabsContent>
+
+            <TabsContent value='wechat' className={paymentTabContentClassName}>
+              <WechatPaySettingsSection
+                defaultValues={wechatPayDefaultValues}
+              />
             </TabsContent>
 
             <TabsContent value='epay' className={paymentTabContentClassName}>
@@ -1614,12 +1631,6 @@ export function PaymentSettingsSection({
                   )}
                 />
               </div>
-            </TabsContent>
-
-            <TabsContent value='cn_official' className={paymentTabContentClassName}>
-              <CnOfficialPaymentSettingsSection
-                defaultValues={cnOfficialDefaultValues}
-              />
             </TabsContent>
 
             <TabsContent
