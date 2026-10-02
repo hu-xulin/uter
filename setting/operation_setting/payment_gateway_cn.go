@@ -40,17 +40,21 @@ var (
 	WechatPayGateway      = "https://api.mch.weixin.qq.com"
 )
 
-// IsAlipayEnabled 支付宝当面付是否可对外提供。
+// IsAlipayEnabled 支付宝小程序支付是否可对外提供。
 func IsAlipayEnabled() bool {
 	return AlipayEnabled && AlipayAppId != "" && AlipayPrivateKey != "" && AlipayPublicKey != ""
 }
 
 // IsWechatPayEnabled 微信支付是否可对外提供。
+// WechatPaySerialNo（商户 API 证书序列号）是 v3 请求签名 Authorization 头的必填字段，
+// 缺失时下单必然被微信支付拒绝，因此纳入启用判定，避免"界面显示已启用但下单 100% 失败"。
 func IsWechatPayEnabled() bool {
 	return WechatPayEnabled &&
 		WechatPayMchId != "" &&
 		WechatPayAppId != "" &&
 		WechatPayApiV3Key != "" &&
+		len(WechatPayApiV3Key) == 32 &&
+		WechatPaySerialNo != "" &&
 		WechatPayPrivateKey != "" &&
 		WechatPayPlatformCert != ""
 }

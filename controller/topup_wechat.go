@@ -263,15 +263,51 @@ func WechatPayNotify(c *gin.Context) {
 	var dec struct {
 		OutTradeNo string `json:"out_trade_no"`
 		TradeState string `json:"trade_state"`
+		Mchid      string `json:"mchid"`
+		Appid      string `json:"appid"`
+		Amount     struct {
+			Total int64 `json:"total"`
+		} `json:"amount"`
 	}
 	if err := json.Unmarshal([]byte(plaintext), &dec); err != nil {
 		c.JSON(http.StatusOK, gin.H{"code": "FAIL", "message": "解密内容解析失败"})
 		return
 	}
 
+	// 身份校验：确认回执属于本商户/本小程序。平台证书为微信支付全局共用，
+	// 若平台证书配置错误或与他人共用，解密内容可能属于其它商户，
+	// 必须校验 mchid / appid 后再入账，否则可能为无关订单入账。
+	if dec.Mchid != operation_setting.WechatPayMchId {
+		logger.LogWarn(c.Request.Context(), fmt.Sprintf("微信支付 webhook 商户号不匹配 trade_no=%s mchid=%s client_ip=%s", dec.OutTradeNo, dec.Mchid, c.ClientIP()))
+		c.JSON(http.StatusOK, gin.H{"code": "FAIL", "message": "商户号不匹配"})
+		return
+	}
+	if dec.Appid != operation_setting.WechatPayAppId {
+		logger.LogWarn(c.Request.Context(), fmt.Sprintf("微信支付 webhook appid 不匹配 trade_no=%s appid=%s client_ip=%s", dec.OutTradeNo, dec.Appid, c.ClientIP()))
+		c.JSON(http.StatusOK, gin.H{"code": "FAIL", "message": "appid 不匹配"})
+		return
+	}
+
 	if dec.TradeState != "SUCCESS" {
 		logger.LogInfo(c.Request.Context(), fmt.Sprintf("微信支付 webhook 忽略事件 trade_no=%s trade_state=%s", dec.OutTradeNo, dec.TradeState))
 		c.JSON(http.StatusOK, gin.H{"code": "SUCCESS", "message": "成功"})
+		return
+	}
+
+	// 金额校验：回调金额必须与本地订单应付金额一致。
+	// 缺失此校验时，只要 trade_no 存在且验签通过即按本地订单金额入账，
+	// 与支付网关实际扣款金额脱钩，存在少付多充的风险。
+	topUp := model.GetTopUpByTradeNo(dec.OutTradeNo)
+	if topUp == nil {
+		logger.LogWarn(c.Request.Context(), fmt.Sprintf("微信支付回调订单不存在 trade_no=%s client_ip=%s", dec.OutTradeNo, c.ClientIP()))
+		c.JSON(http.StatusOK, gin.H{"code": "FAIL", "message": "处理失败"})
+		return
+	}
+	// 微信以分为单位下发 total，本地 Money 以元为单位。
+	expectedCents := decimal.NewFromFloat(topUp.Money).Mul(decimal.NewFromInt(100)).Round(0).IntPart()
+	if dec.Amount.Total <= 0 || dec.Amount.Total != expectedCents {
+		logger.LogWarn(c.Request.Context(), fmt.Sprintf("微信支付回调金额不匹配 trade_no=%s 回调金额(分)=%d 本地应付(分)=%d client_ip=%s", dec.OutTradeNo, dec.Amount.Total, expectedCents, c.ClientIP()))
+		c.JSON(http.StatusOK, gin.H{"code": "FAIL", "message": "金额不匹配"})
 		return
 	}
 
