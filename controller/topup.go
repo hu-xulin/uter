@@ -97,12 +97,56 @@ func GetTopUpInfo(c *gin.Context) {
 		}
 	}
 
+	// 支付宝当面付（官方直连）
+	enableAlipay := isAlipayTopUpEnabled()
+	if enableAlipay {
+		hasAlipay := false
+		for _, method := range payMethods {
+			if method["type"] == model.PaymentMethodAlipay {
+				hasAlipay = true
+				break
+			}
+		}
+		if !hasAlipay {
+			payMethods = append(payMethods, map[string]string{
+				"name":      "支付宝",
+				"type":      model.PaymentMethodAlipay,
+				"icon":      "SiAlipay",
+				"color":     "#1677FF",
+				"min_topup": strconv.Itoa(operation_setting.MinTopUp),
+			})
+		}
+	}
+
+	// 微信支付（官方直连）
+	enableWechatPay := isWechatPayTopUpEnabled()
+	if enableWechatPay {
+		hasWechatPay := false
+		for _, method := range payMethods {
+			if method["type"] == model.PaymentMethodWechatPay {
+				hasWechatPay = true
+				break
+			}
+		}
+		if !hasWechatPay {
+			payMethods = append(payMethods, map[string]string{
+				"name":      "微信支付",
+				"type":      model.PaymentMethodWechatPay,
+				"icon":      "SiWechat",
+				"color":     "#07C160",
+				"min_topup": strconv.Itoa(operation_setting.MinTopUp),
+			})
+		}
+	}
+
 	data := gin.H{
 		"enable_online_topup":              isEpayTopUpEnabled(),
 		"enable_stripe_topup":              isStripeTopUpEnabled(),
 		"enable_creem_topup":               isCreemTopUpEnabled(),
 		"enable_waffo_topup":               enableWaffo,
 		"enable_waffo_pancake_topup":       enableWaffoPancake,
+		"enable_alipay_topup":              enableAlipay,
+		"enable_wechat_pay_topup":          enableWechatPay,
 		"enable_redemption":                complianceConfirmed,
 		"payment_compliance_confirmed":     complianceConfirmed,
 		"payment_compliance_terms_version": operation_setting.CurrentComplianceTermsVersion,

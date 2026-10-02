@@ -18,7 +18,7 @@ For commercial licensing, please contact support@Uter.ai.com
 */
 import i18next from 'i18next'
 import { CreditCard, Landmark } from 'lucide-react'
-import { type ReactNode } from 'react'
+import type { ReactNode } from 'react'
 import { SiAlipay, SiWechat, SiStripe } from 'react-icons/si'
 
 import { ReactIconByName } from '@/components/react-icon-by-name'
@@ -131,6 +131,22 @@ export function getPaymentIcon(
         <CreditCard
           className={className}
           style={{ color: PAYMENT_ICON_COLORS[PAYMENT_TYPES.WAFFO] }}
+        />
+      )
+    case PAYMENT_TYPES.ALIPAY_OFFICIAL:
+      return (
+        <SiAlipay
+          className={className}
+          style={{ color: PAYMENT_ICON_COLORS[PAYMENT_TYPES.ALIPAY_OFFICIAL] }}
+        />
+      )
+    case PAYMENT_TYPES.WECHAT_PAY_OFFICIAL:
+      return (
+        <SiWechat
+          className={className}
+          style={{
+            color: PAYMENT_ICON_COLORS[PAYMENT_TYPES.WECHAT_PAY_OFFICIAL],
+          }}
         />
       )
     case PAYMENT_TYPES.WAFFO_PANCAKE:

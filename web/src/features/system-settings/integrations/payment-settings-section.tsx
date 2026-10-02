@@ -81,6 +81,10 @@ import {
   WaffoSettingsSection,
   type WaffoSettingsValues,
 } from './waffo-settings-section'
+import {
+  AlipaySettingsSection,
+  WechatPaySettingsSection,
+} from './cn-pay-settings-sections'
 
 function isHttpOriginUrl(value: string) {
   const trimmed = value.trim()
@@ -203,6 +207,21 @@ type PaymentSettingsSectionProps = {
   waffoPancakeDefaultValues: WaffoPancakeSettingsValues
   waffoPancakeProvisionedStoreID?: string
   waffoPancakeProvisionedProductID?: string
+  alipayDefaultValues: {
+    enabled: boolean
+    appId: string
+    privateKey: string
+    publicKey: string
+  }
+  wechatPayDefaultValues: {
+    enabled: boolean
+    mchId: string
+    appId: string
+    apiV3Key: string
+    serialNo: string
+    privateKey: string
+    platformCert: string
+  }
   complianceDefaults: PaymentComplianceDefaults
 }
 
@@ -221,6 +240,8 @@ export function PaymentSettingsSection({
   waffoPancakeDefaultValues,
   waffoPancakeProvisionedStoreID,
   waffoPancakeProvisionedProductID,
+  alipayDefaultValues,
+  wechatPayDefaultValues,
   complianceDefaults,
 }: PaymentSettingsSectionProps) {
   const { t } = useTranslation()
@@ -882,11 +903,13 @@ export function PaymentSettingsSection({
           />
           <Tabs defaultValue='general' className='min-w-0'>
             <div className='overflow-x-auto pb-1'>
-              <TabsList className='grid min-w-[44rem] grid-cols-6'>
+              <TabsList className='grid min-w-[56rem] grid-cols-8'>
                 <TabsTrigger value='general'>{t('General')}</TabsTrigger>
                 <TabsTrigger value='epay'>Epay</TabsTrigger>
                 <TabsTrigger value='stripe'>{t('Stripe')}</TabsTrigger>
                 <TabsTrigger value='creem'>Creem</TabsTrigger>
+                <TabsTrigger value='alipay'>{t('Alipay')}</TabsTrigger>
+                <TabsTrigger value='wechat_pay'>{t('WeChat Pay')}</TabsTrigger>
                 <TabsTrigger value='waffo-pancake'>Waffo Pancake</TabsTrigger>
                 <TabsTrigger value='waffo'>Waffo</TabsTrigger>
               </TabsList>
@@ -1607,6 +1630,17 @@ export function PaymentSettingsSection({
                   )}
                 />
               </div>
+            </TabsContent>
+
+            <TabsContent value='alipay' className={paymentTabContentClassName}>
+              <AlipaySettingsSection defaultValues={alipayDefaultValues} />
+            </TabsContent>
+
+            <TabsContent
+              value='wechat_pay'
+              className={paymentTabContentClassName}
+            >
+              <WechatPaySettingsSection defaultValues={wechatPayDefaultValues} />
             </TabsContent>
 
             <TabsContent

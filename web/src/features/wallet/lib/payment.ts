@@ -93,6 +93,31 @@ export function isWaffoPancakePayment(paymentType: string): boolean {
   return paymentType === PAYMENT_TYPES.WAFFO_PANCAKE
 }
 
+/**
+ * Check if payment method is official Alipay (当面付, precreate QR).
+ */
+export function isAlipayOfficialPayment(paymentType: string): boolean {
+  return paymentType === PAYMENT_TYPES.ALIPAY_OFFICIAL
+}
+
+/**
+ * Check if payment method is official WeChat Pay (Native QR).
+ */
+export function isWechatPayOfficialPayment(paymentType: string): boolean {
+  return paymentType === PAYMENT_TYPES.WECHAT_PAY_OFFICIAL
+}
+
+/**
+ * Check if payment method is an official China payment that requires a
+ * scan-to-pay QR dialog (instead of a redirect / form submission).
+ */
+export function isCnOfficialQrPayment(paymentType: string): boolean {
+  return (
+    isAlipayOfficialPayment(paymentType) ||
+    isWechatPayOfficialPayment(paymentType)
+  )
+}
+
 export interface PaymentProcessors {
   regular: (topupAmount: number, paymentType: string) => Promise<boolean>
   waffo: (topupAmount: number, payMethodIndex: number) => Promise<boolean>
