@@ -115,7 +115,7 @@ func RequestAlipay(c *gin.Context) {
 	}
 	params["sign"] = sign
 
-	resp, err := http.PostForm(operation_setting.AlipayGateway, toUrlValues(params))
+	resp, err := cnPayHTTPClient.PostForm(operation_setting.AlipayGateway, toUrlValues(params))
 	if err != nil {
 		logger.LogError(c.Request.Context(), fmt.Sprintf("支付宝下单请求失败 user_id=%d trade_no=%s error=%q", id, tradeNo, err.Error()))
 		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "创建订单失败"})
@@ -187,6 +187,14 @@ func AlipayNotify(c *gin.Context) {
 	if !service.AlipayVerifySign(params, operation_setting.AlipayPublicKey, sign) {
 		logger.LogWarn(c.Request.Context(), fmt.Sprintf("支付宝 webhook 验签失败 path=%q client_ip=%s", c.Request.RequestURI, c.ClientIP()))
 		c.String(http.StatusOK, "failure")
+		return
+	}
+
+	// 防御性校验：确认回调属于本应用的 app_id（app_id 在签名载荷内，验签已通过即内容可信；
+	// 此处仅作为二次确认，防止配置错乱时误处理其他应用的回执）。不匹配则忽略并回 success 避免重试风暴。
+	if appID := params["app_id"]; appID != "" && appID != operation_setting.AlipayAppId {
+		logger.LogWarn(c.Request.Context(), fmt.Sprintf("支付宝 webhook app_id 不匹配 path=%q client_ip=%s app_id=%s", c.Request.RequestURI, c.ClientIP(), appID))
+		c.String(http.StatusOK, "success")
 		return
 	}
 

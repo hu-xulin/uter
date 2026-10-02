@@ -36,6 +36,9 @@ import (
 	"github.com/shopspring/decimal"
 )
 
+// cnPayHTTPClient 带超时的共享 HTTP 客户端，避免向下游支付网关请求时因连接挂起而耗尽 goroutine。
+var cnPayHTTPClient = &http.Client{Timeout: 30 * time.Second}
+
 func isWechatPayTopUpEnabled() bool {
 	return operation_setting.IsWechatPayEnabled()
 }
@@ -86,7 +89,8 @@ func RequestWechatPay(c *gin.Context) {
 	tradeNo := fmt.Sprintf("USR%dNO%s%s", id, common.GetRandomString(8), strconv.FormatInt(time.Now().Unix(), 10))
 	callBackAddress := service.GetCallbackAddress()
 	notifyUrl := callBackAddress + "/api/user/wechat/notify"
-	totalCents := int64(payMoney*100 + 0.5)
+	// 用 decimal 精确换算成分，避免 float64 * 100 的取整误差导致与微信侧金额偏差 1 分。
+	totalCents := decimal.NewFromFloat(payMoney).Mul(decimal.NewFromInt(100)).Round(0).IntPart()
 
 	bodyMap := map[string]any{
 		"mchid":        operation_setting.WechatPayMchId,
@@ -123,7 +127,7 @@ func RequestWechatPay(c *gin.Context) {
 	httpReq.Header.Set("Accept", "application/json")
 	httpReq.Header.Set("User-Agent", "Uter/1.0")
 
-	resp, err := http.DefaultClient.Do(httpReq)
+	resp, err := cnPayHTTPClient.Do(httpReq)
 	if err != nil {
 		logger.LogError(c.Request.Context(), fmt.Sprintf("微信支付下单请求失败 user_id=%d trade_no=%s error=%q", id, tradeNo, err.Error()))
 		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "创建订单失败"})
@@ -182,6 +186,19 @@ func WechatPayNotify(c *gin.Context) {
 		return
 	}
 	bodyStr := string(bodyBytes)
+
+	// 防重放：微信支付要求回调时间戳与服务器当前时间偏差不超过 5 分钟。
+	if ts, perr := strconv.ParseInt(timestamp, 10, 64); perr != nil {
+		c.JSON(http.StatusOK, gin.H{"code": "FAIL", "message": "时间戳解析失败"})
+		return
+	} else {
+		now := time.Now().Unix()
+		if now-ts > 300 || ts-now > 300 {
+			logger.LogWarn(c.Request.Context(), fmt.Sprintf("微信支付 webhook 时间戳异常 path=%q client_ip=%s timestamp=%s", c.Request.RequestURI, c.ClientIP(), timestamp))
+			c.JSON(http.StatusOK, gin.H{"code": "FAIL", "message": "时间戳异常"})
+			return
+		}
+	}
 
 	if !service.WechatPayVerifyNotify(timestamp, nonce, bodyStr, signature, operation_setting.WechatPayPlatformCert) {
 		logger.LogWarn(c.Request.Context(), fmt.Sprintf("微信支付 webhook 验签失败 path=%q client_ip=%s", c.Request.RequestURI, c.ClientIP()))
