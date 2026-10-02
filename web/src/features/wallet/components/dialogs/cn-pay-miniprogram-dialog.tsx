@@ -11,13 +11,12 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 GNU Affero General Public License for more details.
 
-You should have received a copy of the GNU Affero General Public License
-along with this program. If not, see <https://www.gnu.org/licenses/>.
+You should have received a copy of the GNU Affero General License
+along with this program. Not found? See <https://www.gnu.org/licenses/>.
 */
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Loader2, QrCode, XCircle } from 'lucide-react'
-import { QRCodeSVG } from 'qrcode.react'
+import { Loader2, Smartphone } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { getSelf } from '@/lib/api'
@@ -32,16 +31,10 @@ import {
 } from '@/components/ui/alert-dialog'
 import { formatLocalCurrencyAmount } from '@/lib/currency'
 
-import {
-  requestAlipayPayment,
-  requestWechatPayment,
-  isApiSuccess,
-} from '../../api'
-import { handleServerError } from '@/lib/handle-server-error'
-import { isAlipayOfficialPayment } from '../../lib'
+import { isAlipayMiniProgramPayment } from '../../lib'
 import type { PaymentMethod } from '../../types'
 
-interface CnPayQrDialogProps {
+interface CnPayMiniProgramDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   /** Quota amount the user is topping up. */
@@ -55,9 +48,9 @@ interface CnPayQrDialogProps {
 }
 
 const POLL_INTERVAL_MS = 3000
-const POLL_TIMEOUT_MS = 120_000
+const POLL_TIMEOUT_MS = 180_000
 
-export function CnPayQrDialog({
+export function CnPayMiniProgramDialog({
   open,
   onOpenChange,
   topupAmount,
@@ -65,11 +58,9 @@ export function CnPayQrDialog({
   initialQuota,
   paymentMethod,
   onSuccess,
-}: CnPayQrDialogProps) {
+}: CnPayMiniProgramDialogProps) {
   const { t } = useTranslation()
-  const [qrContent, setQrContent] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
   const [done, setDone] = useState(false)
 
   const initialQuotaRef = useRef(initialQuota)
@@ -79,67 +70,23 @@ export function CnPayQrDialog({
   initialQuotaRef.current = initialQuota
   onSuccessRef.current = onSuccess
 
-  const isAlipay = isAlipayOfficialPayment(paymentMethod?.type ?? '')
-
-  // Create the order and fetch the QR code when the dialog opens.
-  useEffect(() => {
-    if (!open) return
-    let cancelled = false
-    setQrContent(null)
-    setError(null)
-    setDone(false)
-    doneRef.current = false
-
-    const createOrder = async () => {
-      if (!paymentMethod) return
-      setLoading(true)
-      try {
-        const response = isAlipay
-          ? await requestAlipayPayment({
-              amount: Math.floor(topupAmount),
-              payment_method: paymentMethod.type,
-            })
-          : await requestWechatPayment({
-              amount: Math.floor(topupAmount),
-              payment_method: paymentMethod.type,
-            })
-
-        if (cancelled) return
-        if (!isApiSuccess(response) || !response.data) {
-          setError(t('Failed to create payment order'))
-          return
-        }
-        const content =
-          response.data.qr_code || response.data.code_url || response.url || ''
-        if (!content) {
-          setError(t('Failed to create payment order'))
-          return
-        }
-        setQrContent(content)
-      } catch (err) {
-        if (cancelled) return
-        setError(t('Failed to create payment order'))
-        handleServerError(err, t('Failed to create payment order'))
-      } finally {
-        if (!cancelled) setLoading(false)
-      }
-    }
-
-    void createOrder()
-    return () => {
-      cancelled = true
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open, paymentMethod?.type])
+  const isAlipay = isAlipayMiniProgramPayment(paymentMethod?.type ?? '')
+  const providerName = isAlipay ? t('Alipay') : t('WeChat Pay')
 
   // Poll wallet balance until it increases (payment success) or timeout.
+  // The actual order is created and paid inside the mini-program; on success the
+  // async callback recharges this same user account, which we detect here.
   useEffect(() => {
-    if (!open || !qrContent || doneRef.current) return
+    if (!open) return
+    setLoading(true)
+    setDone(false)
+    doneRef.current = false
     let elapsed = 0
     const timer = setInterval(async () => {
       elapsed += POLL_INTERVAL_MS
       if (elapsed >= POLL_TIMEOUT_MS) {
         clearInterval(timer)
+        setLoading(false)
         return
       }
       try {
@@ -150,6 +97,7 @@ export function CnPayQrDialog({
             clearInterval(timer)
             doneRef.current = true
             setDone(true)
+            setLoading(false)
             toast.success(t('Payment successful'))
             setTimeout(() => onSuccessRef.current(), 600)
           }
@@ -160,7 +108,7 @@ export function CnPayQrDialog({
     }, POLL_INTERVAL_MS)
     return () => clearInterval(timer)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open, qrContent])
+  }, [open])
 
   const handleClose = (next: boolean) => {
     if (loading && !done) return
@@ -172,10 +120,12 @@ export function CnPayQrDialog({
       <AlertDialogContent className='max-sm:w-[calc(100vw-1.5rem)] sm:max-w-sm'>
         <AlertDialogHeader>
           <AlertDialogTitle className='text-xl font-semibold'>
-            {isAlipay ? t('Alipay Payment') : t('WeChat Pay')}
+            {providerName}
           </AlertDialogTitle>
           <AlertDialogDescription>
-            {t('Scan the QR code with your app to complete the payment')}
+            {t('Complete payment in the {{provider}} mini-program', {
+              provider: providerName,
+            })}
           </AlertDialogDescription>
         </AlertDialogHeader>
 
@@ -201,21 +151,13 @@ export function CnPayQrDialog({
             </span>
           </div>
 
-          <div className='flex items-center justify-center rounded-lg border bg-white p-4'>
-            {loading && !qrContent && (
-              <div className='flex h-48 w-48 items-center justify-center'>
-                <Loader2 className='h-8 w-8 animate-spin text-muted-foreground' />
-              </div>
-            )}
-            {error && !loading && (
-              <div className='flex h-48 w-48 flex-col items-center justify-center gap-2 text-center text-destructive'>
-                <XCircle className='h-8 w-8' />
-                <span className='text-xs'>{error}</span>
-              </div>
-            )}
-            {qrContent && !error && (
-              <QRCodeSVG value={qrContent} size={192} level='M' />
-            )}
+          <div className='flex w-full flex-col items-center gap-3 rounded-lg border bg-muted/30 p-4 text-center'>
+            <Smartphone className='h-8 w-8 text-muted-foreground' />
+            <p className='text-sm text-muted-foreground'>
+              {t(
+                'Open the Uter mini-program, go to Wallet → Top up, then this page detects the successful top-up automatically.'
+              )}
+            </p>
           </div>
 
           {done && (
@@ -223,10 +165,10 @@ export function CnPayQrDialog({
               {t('Payment successful')}
             </div>
           )}
-          {!done && qrContent && !error && (
+          {!done && loading && (
             <div className='flex items-center gap-1.5 text-xs text-muted-foreground'>
-              <QrCode className='h-3.5 w-3.5' />
-              {t('Waiting for payment confirmation...')}
+              <Loader2 className='h-3.5 w-3.5 animate-spin' />
+              {t('Waiting for payment confirmation in the mini-program...')}
             </div>
           )}
         </div>

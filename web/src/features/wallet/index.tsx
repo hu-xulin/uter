@@ -28,7 +28,7 @@ import { AffiliateRewardsCard } from './components/affiliate-rewards-card'
 import { BillingHistoryDialog } from './components/dialogs/billing-history-dialog'
 import { CreemConfirmDialog } from './components/dialogs/creem-confirm-dialog'
 import { PaymentConfirmDialog } from './components/dialogs/payment-confirm-dialog'
-import { CnPayQrDialog } from './components/dialogs/cn-pay-qr-dialog'
+import { CnPayMiniProgramDialog } from './components/dialogs/cn-pay-miniprogram-dialog'
 import { TransferDialog } from './components/dialogs/transfer-dialog'
 import { RechargeFormCard } from './components/recharge-form-card'
 import { SubscriptionPlansCard } from './components/subscription-plans-card'
@@ -47,7 +47,7 @@ import {
   getDefaultPaymentType,
   getMinTopupAmount,
   dispatchSelectedPayment,
-  isCnOfficialQrPayment,
+  isCnMiniProgramPayment,
 } from './lib'
 import type {
   UserWalletData,
@@ -198,9 +198,9 @@ export function Wallet(props: WalletProps) {
   const handlePaymentConfirm = async () => {
     if (!selectedPaymentMethod) return
 
-    // Official China payments (Alipay 当面付 / WeChat Pay Native) open a
-    // scan-to-pay QR dialog instead of a redirect / form submission.
-    if (isCnOfficialQrPayment(selectedPaymentMethod.type)) {
+    // Official China payments (Alipay / WeChat mini-program) must be completed
+    // inside the mini-program; open the guidance + balance-poll dialog.
+    if (isCnMiniProgramPayment(selectedPaymentMethod.type)) {
       setCnPayMethod(selectedPaymentMethod)
       setCnPayOpen(true)
       setConfirmDialogOpen(false)
@@ -399,7 +399,7 @@ export function Wallet(props: WalletProps) {
         processing={creemProcessing}
       />
 
-      <CnPayQrDialog
+      <CnPayMiniProgramDialog
         open={cnPayOpen}
         onOpenChange={setCnPayOpen}
         topupAmount={topupAmount}

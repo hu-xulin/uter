@@ -61,14 +61,36 @@ export type WaffoPancakePaymentResponse = ApiResponse<
 >
 
 /**
- * Official China payment (Alipay 当面付 / WeChat Pay Native) response.
- * The server returns a scannable string: Alipay -> data.qr_code,
- * WeChat -> data.code_url. `url` mirrors that value for convenience.
+ * Official China payment (Alipay / WeChat mini-program) response.
+ * - Alipay mini-program: data.trade_no (pass to my.tradePay).
+ * - WeChat mini-program: data.appId / timeStamp / nonceStr / package /
+ *   signType / paySign (pass to wx.requestPayment).
+ * `url` mirrors the primary identifier for convenience.
  */
 export type CnPayPaymentResponse = ApiResponse<{
-  qr_code?: string
-  code_url?: string
+  trade_no?: string
+  appId?: string
+  timeStamp?: string
+  nonceStr?: string
+  package?: string
+  signType?: string
+  paySign?: string
 }> & { url?: string }
+
+/**
+ * Mini-program payment request. openid (WeChat) / buyer_id (Alipay) is obtained
+ * by the mini-program after login and sent to the server to create the order.
+ */
+export interface CnMiniProgramPaymentRequest {
+  /** Topup amount */
+  amount: number
+  /** Payment method identifier (alipay_miniprogram / wechat_miniprogram) */
+  payment_method: string
+  /** WeChat mini-program user openid */
+  openid?: string
+  /** Alipay mini-program user user_id (buyer_id) */
+  buyer_id?: string
+}
 
 /**
  * Creem product configuration

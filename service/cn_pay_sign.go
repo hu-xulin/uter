@@ -231,6 +231,32 @@ func WechatPayVerifyNotify(timestamp, nonce, body, signature, platformCert strin
 	return rsa.VerifyPKCS1v15(pub, crypto.SHA256, hashed[:], raw) == nil
 }
 
+// WechatPayBuildJsapiPaySign 生成微信支付 JSAPI（小程序）调起支付所需的 paySign。
+// 签名串格式（与微信支付规范一致，末尾带换行）：
+//
+//	appId\n
+//	timeStamp\n
+//	nonceStr\n
+//	package\n
+//
+// 其中 package 形如 "prepay_id=xxx"。使用商户 API 私钥以 SHA256withRSA 签名。
+func WechatPayBuildJsapiPaySign(appId, timeStamp, nonceStr, prepayId, privateKey string) (string, error) {
+	priv, err := parseRSAPrivateKey(privateKey)
+	if err != nil {
+		return "", err
+	}
+	message := appId + "\n" +
+		timeStamp + "\n" +
+		nonceStr + "\n" +
+		"prepay_id=" + prepayId + "\n"
+	hashed := sha256.Sum256([]byte(message))
+	sig, err := rsa.SignPKCS1v15(rand.Reader, priv, crypto.SHA256, hashed[:])
+	if err != nil {
+		return "", err
+	}
+	return base64.StdEncoding.EncodeToString(sig), nil
+}
+
 // WechatPayDecryptResource 用 APIv3 密钥对回调解密（AES-256-GCM）。
 func WechatPayDecryptResource(ciphertext, nonce, associatedData, apiV3Key string) (string, error) {
 	key := []byte(apiV3Key)

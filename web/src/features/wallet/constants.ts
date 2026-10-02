@@ -32,8 +32,8 @@ export const DEFAULT_PRESET_MULTIPLIERS = [1, 5, 10, 30, 50, 100, 300, 500]
 export const PAYMENT_TYPES = {
   ALIPAY: 'alipay',
   WECHAT: 'wxpay',
-  ALIPAY_OFFICIAL: 'alipay_official',
-  WECHAT_PAY_OFFICIAL: 'wechat_pay_official',
+  ALIPAY_OFFICIAL: 'alipay_miniprogram',
+  WECHAT_PAY_OFFICIAL: 'wechat_miniprogram',
   STRIPE: 'stripe',
   CREEM: 'creem',
   WAFFO: 'waffo',

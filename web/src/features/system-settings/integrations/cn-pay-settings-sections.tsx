@@ -190,7 +190,7 @@ export function CnOfficialPaymentSettingsSection({
                 <SettingsSwitchContent>
                   <FormLabel>{t('Enable Alipay payments')}</FormLabel>
                   <FormDescription>
-                    {t('Enable official Alipay (当面付) direct payment')}
+                    {t('Enable official Alipay mini-program payment')}
                   </FormDescription>
                 </SettingsSwitchContent>
                 <FormControl>
@@ -270,7 +270,11 @@ export function CnOfficialPaymentSettingsSection({
                 <AlertTitle>{t('Setup notes')}</AlertTitle>
                 <AlertDescription>
                   <ul className='list-disc space-y-1 pl-5'>
-                    <li>{t('Enable 当面付 in Alipay open platform')}</li>
+                    <li>
+                      {t(
+                        'Enable 小程序支付 (alipay.trade.create) in Alipay open platform'
+                      )}
+                    </li>
                     <li>
                       {t(
                         'Async callback URL is registered automatically by the server'
@@ -291,9 +295,9 @@ export function CnOfficialPaymentSettingsSection({
               <SettingsSwitchItem>
                 <SettingsSwitchContent>
                   <FormLabel>{t('Enable WeChat Pay')}</FormLabel>
-                  <FormDescription>
-                    {t('Enable official WeChat Pay (Native) direct payment')}
-                  </FormDescription>
+                    <FormDescription>
+                      {t('Enable official WeChat Pay mini-program payment')}
+                    </FormDescription>
                 </SettingsSwitchContent>
                 <FormControl>
                   <Switch
@@ -342,7 +346,7 @@ export function CnOfficialPaymentSettingsSection({
                       />
                     </FormControl>
                     <FormDescription>
-                      {t('Bound public account / mini program AppID')}
+                      {t('Bound mini-program AppID')}
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -425,7 +429,9 @@ export function CnOfficialPaymentSettingsSection({
                 <AlertDescription>
                   <ul className='list-disc space-y-1 pl-5'>
                     <li>
-                      {t('Enable Native payment in WeChat Pay merchant')}
+                      {t(
+                        'Enable JSAPI (mini-program) payment in WeChat Pay merchant'
+                      )}
                     </li>
                     <li>
                       {t(
