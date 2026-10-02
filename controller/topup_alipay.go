@@ -208,11 +208,29 @@ func AlipayNotify(c *gin.Context) {
 		return
 	}
 
-	// 防御性校验：确认回调属于本应用的 app_id（验签已通过即内容可信；
-	// 此处仅作为二次确认，防止配置错乱时误处理其他应用的回执）。
-	if appID := params["app_id"]; appID != "" && appID != operation_setting.AlipayAppId {
+	// 归属校验：app_id 必须存在且与本应用一致。
+	// 支付宝公钥为应用级，若公钥配置错乱，可能收到其它应用或无归属的回执，
+	// 因此 app_id 缺失或不一致都必须拒绝，不得"空值即放行"。
+	appID := params["app_id"]
+	if appID == "" {
+		logger.LogWarn(c.Request.Context(), fmt.Sprintf("支付宝 webhook 缺少 app_id path=%q client_ip=%s", c.Request.RequestURI, c.ClientIP()))
+		c.String(http.StatusOK, "failure")
+		return
+	}
+	if appID != operation_setting.AlipayAppId {
 		logger.LogWarn(c.Request.Context(), fmt.Sprintf("支付宝 webhook app_id 不匹配 path=%q client_ip=%s app_id=%s", c.Request.RequestURI, c.ClientIP(), appID))
-		c.String(http.StatusOK, "success")
+		c.String(http.StatusOK, "failure")
+		return
+	}
+
+	// 金额校验：total_amount 必须与本地订单应付金额一致。
+	// 缺失此校验时，只要 out_trade_no 存在且验签通过即按本地订单金额入账，
+	// 与支付宝实际扣款金额脱钩，存在少付多充的风险。
+	totalAmount := params["total_amount"]
+	paidAmount, parseErr := decimal.NewFromString(totalAmount)
+	if parseErr != nil {
+		logger.LogWarn(c.Request.Context(), fmt.Sprintf("支付宝 webhook total_amount 非法 trade_no=%s total_amount=%q client_ip=%s", params["out_trade_no"], totalAmount, c.ClientIP()))
+		c.String(http.StatusOK, "failure")
 		return
 	}
 
@@ -221,6 +239,18 @@ func AlipayNotify(c *gin.Context) {
 	if tradeStatus != "TRADE_SUCCESS" && tradeStatus != "TRADE_FINISHED" {
 		logger.LogInfo(c.Request.Context(), fmt.Sprintf("支付宝 webhook 忽略事件 trade_no=%s trade_status=%s", tradeNo, tradeStatus))
 		c.String(http.StatusOK, "success")
+		return
+	}
+
+	topUp := model.GetTopUpByTradeNo(tradeNo)
+	if topUp == nil {
+		logger.LogWarn(c.Request.Context(), fmt.Sprintf("支付宝回调订单不存在 trade_no=%s client_ip=%s", tradeNo, c.ClientIP()))
+		c.String(http.StatusOK, "failure")
+		return
+	}
+	if paidAmount.LessThanOrEqual(decimal.Zero) || !paidAmount.Equal(decimal.NewFromFloat(topUp.Money).Round(2)) {
+		logger.LogWarn(c.Request.Context(), fmt.Sprintf("支付宝回调金额不匹配 trade_no=%s 回调金额=%s 本地应付=%.2f client_ip=%s", tradeNo, totalAmount, topUp.Money, c.ClientIP()))
+		c.String(http.StatusOK, "failure")
 		return
 	}
 
