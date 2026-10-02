@@ -90,6 +90,17 @@ func InitOptionMap() {
 	common.OptionMap["CustomCallbackAddress"] = ""
 	common.OptionMap["EpayId"] = ""
 	common.OptionMap["EpayKey"] = ""
+	common.OptionMap["AlipayEnabled"] = "false"
+	common.OptionMap["AlipayAppId"] = ""
+	common.OptionMap["AlipayPrivateKey"] = ""
+	common.OptionMap["AlipayPublicKey"] = ""
+	common.OptionMap["WechatPayEnabled"] = "false"
+	common.OptionMap["WechatPayMchId"] = ""
+	common.OptionMap["WechatPayAppId"] = ""
+	common.OptionMap["WechatPayApiV3Key"] = ""
+	common.OptionMap["WechatPaySerialNo"] = ""
+	common.OptionMap["WechatPayPrivateKey"] = ""
+	common.OptionMap["WechatPayPlatformCert"] = ""
 	common.OptionMap["Price"] = strconv.FormatFloat(operation_setting.Price, 'f', -1, 64)
 	common.OptionMap["USDExchangeRate"] = strconv.FormatFloat(operation_setting.USDExchangeRate, 'f', -1, 64)
 	common.OptionMap["MinTopUp"] = strconv.Itoa(operation_setting.MinTopUp)
@@ -465,6 +476,28 @@ func updateOptionMap(key string, value string) (err error) {
 		operation_setting.EpayId = value
 	case "EpayKey":
 		operation_setting.EpayKey = value
+	case "AlipayEnabled":
+		operation_setting.AlipayEnabled = value == "true"
+	case "AlipayAppId":
+		operation_setting.AlipayAppId = value
+	case "AlipayPrivateKey":
+		operation_setting.AlipayPrivateKey = value
+	case "AlipayPublicKey":
+		operation_setting.AlipayPublicKey = value
+	case "WechatPayEnabled":
+		operation_setting.WechatPayEnabled = value == "true"
+	case "WechatPayMchId":
+		operation_setting.WechatPayMchId = value
+	case "WechatPayAppId":
+		operation_setting.WechatPayAppId = value
+	case "WechatPayApiV3Key":
+		operation_setting.WechatPayApiV3Key = value
+	case "WechatPaySerialNo":
+		operation_setting.WechatPaySerialNo = value
+	case "WechatPayPrivateKey":
+		operation_setting.WechatPayPrivateKey = value
+	case "WechatPayPlatformCert":
+		operation_setting.WechatPayPlatformCert = value
 	case "Price":
 		operation_setting.Price, _ = strconv.ParseFloat(value, 64)
 	case "USDExchangeRate":

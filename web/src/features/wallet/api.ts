@@ -39,6 +39,7 @@ import type {
   WaffoPaymentResponse,
   WaffoPancakePaymentRequest,
   WaffoPancakePaymentResponse,
+  CnPayPaymentResponse,
 } from './types'
 
 // ============================================================================
@@ -179,6 +180,38 @@ export async function requestWaffoPancakePayment(
     skipBusinessError: true,
   } as Record<string, unknown>)
   return res.data
+}
+
+/**
+ * Request official Alipay (当面付 / precreate) payment.
+ * Returns a scannable QR code string in data.qr_code.
+ */
+export async function requestAlipayPayment(
+  request: PaymentRequest
+): Promise<CnPayPaymentResponse> {
+  const res = await api.post('/api/user/alipay/pay', request, {
+    skipBusinessError: true,
+  } as Record<string, unknown>)
+  return {
+    ...res.data,
+    url: (res.data as { url?: string }).url,
+  }
+}
+
+/**
+ * Request official WeChat Pay (Native) payment.
+ * Returns a scannable code_url string in data.code_url.
+ */
+export async function requestWechatPayment(
+  request: PaymentRequest
+): Promise<CnPayPaymentResponse> {
+  const res = await api.post('/api/user/wechat/pay', request, {
+    skipBusinessError: true,
+  } as Record<string, unknown>)
+  return {
+    ...res.data,
+    url: (res.data as { url?: string }).url,
+  }
 }
 
 /**

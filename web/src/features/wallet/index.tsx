@@ -28,6 +28,7 @@ import { AffiliateRewardsCard } from './components/affiliate-rewards-card'
 import { BillingHistoryDialog } from './components/dialogs/billing-history-dialog'
 import { CreemConfirmDialog } from './components/dialogs/creem-confirm-dialog'
 import { PaymentConfirmDialog } from './components/dialogs/payment-confirm-dialog'
+import { CnPayQrDialog } from './components/dialogs/cn-pay-qr-dialog'
 import { TransferDialog } from './components/dialogs/transfer-dialog'
 import { RechargeFormCard } from './components/recharge-form-card'
 import { SubscriptionPlansCard } from './components/subscription-plans-card'
@@ -46,6 +47,7 @@ import {
   getDefaultPaymentType,
   getMinTopupAmount,
   dispatchSelectedPayment,
+  isCnOfficialQrPayment,
 } from './lib'
 import type {
   UserWalletData,
@@ -79,6 +81,8 @@ export function Wallet(props: WalletProps) {
   const [selectedCreemProduct, setSelectedCreemProduct] =
     useState<CreemProduct | null>(null)
   const [showSubscriptionPanel, setShowSubscriptionPanel] = useState(true)
+  const [cnPayOpen, setCnPayOpen] = useState(false)
+  const [cnPayMethod, setCnPayMethod] = useState<PaymentMethod | undefined>()
 
   const { status } = useStatus()
   const { currency } = useSystemConfig()
@@ -193,6 +197,15 @@ export function Wallet(props: WalletProps) {
   // Handle payment confirmation
   const handlePaymentConfirm = async () => {
     if (!selectedPaymentMethod) return
+
+    // Official China payments (Alipay 当面付 / WeChat Pay Native) open a
+    // scan-to-pay QR dialog instead of a redirect / form submission.
+    if (isCnOfficialQrPayment(selectedPaymentMethod.type)) {
+      setCnPayMethod(selectedPaymentMethod)
+      setCnPayOpen(true)
+      setConfirmDialogOpen(false)
+      return
+    }
 
     const success = await dispatchSelectedPayment(
       selectedPaymentMethod,
@@ -384,6 +397,20 @@ export function Wallet(props: WalletProps) {
         onConfirm={handleCreemConfirm}
         product={selectedCreemProduct}
         processing={creemProcessing}
+      />
+
+      <CnPayQrDialog
+        open={cnPayOpen}
+        onOpenChange={setCnPayOpen}
+        topupAmount={topupAmount}
+        paymentAmount={paymentAmount}
+        initialQuota={user?.quota ?? 0}
+        paymentMethod={cnPayMethod}
+        onSuccess={() => {
+          setCnPayOpen(false)
+          setCnPayMethod(undefined)
+          void fetchUser()
+        }}
       />
     </>
   )

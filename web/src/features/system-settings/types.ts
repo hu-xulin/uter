@@ -372,6 +372,18 @@ export type BillingSettings = {
   // section (saved via /api/option/waffo-pancake/save).
   WaffoPancakeStoreID: string
   WaffoPancakeProductID: string
+  // Official China payments (Alipay 当面付 / WeChat Pay Native)
+  AlipayEnabled: boolean
+  AlipayAppId: string
+  AlipayPrivateKey: string
+  AlipayPublicKey: string
+  WechatPayEnabled: boolean
+  WechatPayMchId: string
+  WechatPayAppId: string
+  WechatPayApiV3Key: string
+  WechatPaySerialNo: string
+  WechatPayPrivateKey: string
+  WechatPayPlatformCert: string
   'checkin_setting.enabled': boolean
   'checkin_setting.min_quota': number
   'checkin_setting.max_quota': number

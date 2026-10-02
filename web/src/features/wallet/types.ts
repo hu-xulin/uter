@@ -61,6 +61,16 @@ export type WaffoPancakePaymentResponse = ApiResponse<
 >
 
 /**
+ * Official China payment (Alipay 当面付 / WeChat Pay Native) response.
+ * The server returns a scannable string: Alipay -> data.qr_code,
+ * WeChat -> data.code_url. `url` mirrors that value for convenience.
+ */
+export type CnPayPaymentResponse = ApiResponse<{
+  qr_code?: string
+  code_url?: string
+}> & { url?: string }
+
+/**
  * Creem product configuration
  */
 export interface CreemProduct {

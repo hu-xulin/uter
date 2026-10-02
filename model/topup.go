@@ -32,6 +32,8 @@ const (
 	PaymentMethodWaffo        = "waffo"
 	PaymentMethodWaffoPancake = "waffo_pancake"
 	PaymentMethodBalance      = "balance"
+	PaymentMethodAlipay       = "alipay_official"
+	PaymentMethodWechatPay    = "wechat_pay_official"
 )
 
 const (
@@ -41,6 +43,8 @@ const (
 	PaymentProviderWaffo        = "waffo"
 	PaymentProviderWaffoPancake = "waffo_pancake"
 	PaymentProviderBalance      = "balance"
+	PaymentProviderAlipay       = "alipay_official"
+	PaymentProviderWechatPay    = "wechat_pay_official"
 )
 
 var (
@@ -231,6 +235,78 @@ func RechargeEpay(tradeNo string, actualPaymentMethod string, callerIp string) (
 	common.SysLog(fmt.Sprintf("易支付充值成功 trade_no=%s user_id=%d quota_to_add=%d money=%.2f", topUp.TradeNo, topUp.UserId, quotaToAdd, topUp.Money))
 	RecordTopupLog(topUp.UserId, fmt.Sprintf("使用在线充值成功，充值金额: %v，支付金额：%f", logger.LogQuota(quotaToAdd), topUp.Money), callerIp, topUp.PaymentMethod, PaymentProviderEpay)
 	return false, nil
+}
+
+// rechargeOfficial 原子完成官方直连支付网关（支付宝/微信）订单的充值入账。
+// 逻辑与 RechargeEpay 完全一致：订单行锁 + 状态校验 + 成功更新 + 用户额度增加，
+// 同一订单的并发/重复回调（含多实例部署）最多充值一次。
+func rechargeOfficial(tradeNo string, provider string, actualMethod string, callerIp string) (alreadyDone bool, err error) {
+	if tradeNo == "" {
+		return false, errors.New("未提供支付单号")
+	}
+
+	refCol := "`trade_no`"
+	if common.UsingMainDatabase(common.DatabaseTypePostgreSQL) {
+		refCol = `"trade_no"`
+	}
+
+	var quotaToAdd int
+	topUp := &TopUp{}
+	err = DB.Transaction(func(tx *gorm.DB) error {
+		if err := lockForUpdate(tx).Where(refCol+" = ?", tradeNo).First(topUp).Error; err != nil {
+			return ErrTopUpNotFound
+		}
+		if topUp.PaymentProvider != provider {
+			return ErrPaymentMethodMismatch
+		}
+		if topUp.Status == common.TopUpStatusSuccess {
+			alreadyDone = true
+			return nil
+		}
+		if topUp.Status != common.TopUpStatusPending {
+			return ErrTopUpStatusInvalid
+		}
+		if actualMethod != "" && topUp.PaymentMethod != actualMethod {
+			topUp.PaymentMethod = actualMethod
+		}
+		var quotaErr error
+		quotaToAdd, quotaErr = common.WalletQuotaFromDecimalStrict(
+			decimal.NewFromInt(topUp.Amount).Mul(decimal.NewFromFloat(common.QuotaPerUnit)),
+		)
+		if quotaErr != nil || quotaToAdd <= 0 {
+			return ErrInvalidTopUpQuota
+		}
+		topUp.CompleteTime = common.GetTimestamp()
+		topUp.Status = common.TopUpStatusSuccess
+		if err := tx.Save(topUp).Error; err != nil {
+			return err
+		}
+		return creditTopUpQuota(tx, topUp.UserId, quotaToAdd, nil)
+	})
+	if err != nil {
+		if !errors.Is(err, ErrTopUpNotFound) && !errors.Is(err, ErrPaymentMethodMismatch) && !errors.Is(err, ErrTopUpStatusInvalid) {
+			common.SysError(fmt.Sprintf("%s topup failed: %s", provider, err.Error()))
+		}
+		return false, err
+	}
+	if alreadyDone {
+		return true, nil
+	}
+	syncCreditUserQuotaCache(topUp.UserId, quotaToAdd, provider+" topup")
+
+	common.SysLog(fmt.Sprintf("%s 充值成功 trade_no=%s user_id=%d quota_to_add=%d money=%.2f", provider, topUp.TradeNo, topUp.UserId, quotaToAdd, topUp.Money))
+	RecordTopupLog(topUp.UserId, fmt.Sprintf("使用在线充值成功，充值金额: %v，支付金额：%f", logger.LogQuota(quotaToAdd), topUp.Money), callerIp, topUp.PaymentMethod, provider)
+	return false, nil
+}
+
+// RechargeAlipay 完成一笔支付宝当面付订单的充值入账。
+func RechargeAlipay(tradeNo string, actualPaymentMethod string, callerIp string) (alreadyDone bool, err error) {
+	return rechargeOfficial(tradeNo, PaymentProviderAlipay, actualPaymentMethod, callerIp)
+}
+
+// RechargeWechatPay 完成一笔微信支付订单的充值入账。
+func RechargeWechatPay(tradeNo string, actualPaymentMethod string, callerIp string) (alreadyDone bool, err error) {
+	return rechargeOfficial(tradeNo, PaymentProviderWechatPay, actualPaymentMethod, callerIp)
 }
 
 func Recharge(referenceId string, customerId string, callerIp string) (err error) {
