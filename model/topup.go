@@ -32,8 +32,8 @@ const (
 	PaymentMethodWaffo        = "waffo"
 	PaymentMethodWaffoPancake = "waffo_pancake"
 	PaymentMethodBalance      = "balance"
-	PaymentMethodAlipay       = "alipay_official"
-	PaymentMethodWechatPay    = "wechat_pay_official"
+	PaymentMethodAlipay       = "alipay_miniprogram"
+	PaymentMethodWechatPay    = "wechat_miniprogram"
 )
 
 const (

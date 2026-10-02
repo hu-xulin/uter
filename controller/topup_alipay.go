@@ -12,7 +12,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 GNU Affero General Public License for more details.
 
 You should have received a copy of the GNU Affero General License
-along with this program. If not, see <https://www.gnu.org/licenses/>.
+along with this program. Not found? See <https://www.gnu.org/licenses/>.
 */
 
 package controller
@@ -23,6 +23,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"regexp"
 	"strconv"
 	"time"
 
@@ -35,6 +36,21 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/shopspring/decimal"
 )
+
+// alipayBuyerIdRe 校验小程序支付所需的 buyer_id（支付宝用户 user_id，纯数字）。
+var alipayBuyerIdRe = regexp.MustCompile(`^[0-9]{16,32}$`)
+
+// CnMiniProgramRequest 小程序支付下单请求。
+// openid / buyer_id 由小程序客户端在登录后获取并传入，仅用于构造对应支付方订单，
+// 充值入账始终绑定到当前登录用户（c.GetInt("id")）。
+type CnMiniProgramRequest struct {
+	Amount        int64  `json:"amount"`
+	PaymentMethod string `json:"payment_method"`
+	// WeChat 小程序：微信用户 openid（同一 appid 下）。
+	Openid string `json:"openid"`
+	// 支付宝小程序：支付宝用户 user_id（buyer_id）。
+	BuyerId string `json:"buyer_id"`
+}
 
 func isAlipayTopUpEnabled() bool {
 	return operation_setting.IsAlipayEnabled()
@@ -49,9 +65,10 @@ func alipayAmountForStorage(amount int64) int64 {
 	return amount
 }
 
-// RequestAlipay 创建支付宝当面付（alipay.trade.precreate）预下单，返回扫码支付二维码内容。
-func RequestAlipay(c *gin.Context) {
-	var req EpayRequest
+// RequestAlipayMiniProgram 创建支付宝小程序支付（alipay.trade.create）预下单。
+// 需要小程序端传入 buyer_id（支付宝用户 user_id），返回 tradeNO 供 my.tradePay 调起。
+func RequestAlipayMiniProgram(c *gin.Context) {
+	var req CnMiniProgramRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "参数错误"})
 		return
@@ -62,6 +79,10 @@ func RequestAlipay(c *gin.Context) {
 	}
 	if req.PaymentMethod != model.PaymentMethodAlipay {
 		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "支付方式不存在"})
+		return
+	}
+	if req.BuyerId == "" || !alipayBuyerIdRe.MatchString(req.BuyerId) {
+		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "缺少有效的支付宝用户标识（buyer_id）"})
 		return
 	}
 	if req.Amount < getMinTopup() {
@@ -86,25 +107,23 @@ func RequestAlipay(c *gin.Context) {
 	tradeNo := fmt.Sprintf("USR%dNO%s%s", id, common.GetRandomString(8), strconv.FormatInt(time.Now().Unix(), 10))
 	callBackAddress := service.GetCallbackAddress()
 	notifyUrl := callBackAddress + "/api/user/alipay/notify"
-	returnUrl, _ := url.Parse(paymentReturnPath("/usage-logs"))
 
 	bizContent := map[string]string{
 		"out_trade_no": tradeNo,
 		"total_amount": strconv.FormatFloat(payMoney, 'f', 2, 64),
 		"subject":      fmt.Sprintf("Uter 充值 %d", req.Amount),
-		"product_code": "FACE_TO_FACE_PAYMENT",
+		"buyer_id":     req.BuyerId,
 	}
 	bizBytes, _ := json.Marshal(bizContent)
 	params := map[string]string{
-		"app_id":      operation_setting.AlipayAppId,
-		"method":      "alipay.trade.precreate",
-		"format":      "JSON",
-		"charset":     "utf-8",
-		"sign_type":   "RSA2",
-		"timestamp":   time.Now().Format("2006-01-02 15:04:05"),
-		"version":     "1.0",
-		"notify_url":  notifyUrl,
-		"return_url":  returnUrl.String(),
+		"app_id":     operation_setting.AlipayAppId,
+		"method":     "alipay.trade.create",
+		"format":     "JSON",
+		"charset":    "utf-8",
+		"sign_type":  "RSA2",
+		"timestamp":  time.Now().Format("2006-01-02 15:04:05"),
+		"version":    "1.0",
+		"notify_url": notifyUrl,
 		"biz_content": string(bizBytes),
 	}
 	sign, err := service.AlipayBuildSign(params, operation_setting.AlipayPrivateKey)
@@ -125,21 +144,20 @@ func RequestAlipay(c *gin.Context) {
 	body, _ := io.ReadAll(resp.Body)
 
 	var alipayResp struct {
-		AlipayTradePrecreateResponse struct {
-			Code       string `json:"code"`
-			Msg        string `json:"msg"`
-			SubMsg     string `json:"sub_msg"`
-			OutTradeNo string `json:"out_trade_no"`
-			QrCode     string `json:"qr_code"`
-		} `json:"alipay_trade_precreate_response"`
+		AlipayTradeCreateResponse struct {
+			Code    string `json:"code"`
+			Msg     string `json:"msg"`
+			SubMsg  string `json:"sub_msg"`
+			TradeNo string `json:"trade_no"`
+		} `json:"alipay_trade_create_response"`
 	}
 	if err := json.Unmarshal(body, &alipayResp); err != nil {
 		logger.LogError(c.Request.Context(), fmt.Sprintf("支付宝响应解析失败 user_id=%d trade_no=%s body=%q error=%q", id, tradeNo, string(body), err.Error()))
 		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "创建订单失败"})
 		return
 	}
-	r := alipayResp.AlipayTradePrecreateResponse
-	if r.Code != "10000" || r.QrCode == "" {
+	r := alipayResp.AlipayTradeCreateResponse
+	if r.Code != "10000" || r.TradeNo == "" {
 		logger.LogWarn(c.Request.Context(), fmt.Sprintf("支付宝下单失败 user_id=%d trade_no=%s code=%s msg=%s sub=%s", id, tradeNo, r.Code, r.Msg, r.SubMsg))
 		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "创建订单失败：" + r.Msg})
 		return
@@ -160,11 +178,11 @@ func RequestAlipay(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "创建订单失败"})
 		return
 	}
-	logger.LogInfo(c.Request.Context(), fmt.Sprintf("支付宝充值订单创建成功 user_id=%d trade_no=%s amount=%d money=%.2f", id, tradeNo, req.Amount, payMoney))
+	logger.LogInfo(c.Request.Context(), fmt.Sprintf("支付宝小程序充值订单创建成功 user_id=%d trade_no=%s amount=%d money=%.2f", id, tradeNo, req.Amount, payMoney))
 	c.JSON(http.StatusOK, gin.H{
 		"message": "success",
-		"data":    map[string]string{"qr_code": r.QrCode},
-		"url":     r.QrCode,
+		"data":    map[string]string{"trade_no": r.TradeNo},
+		"url":     r.TradeNo,
 	})
 }
 
@@ -190,8 +208,8 @@ func AlipayNotify(c *gin.Context) {
 		return
 	}
 
-	// 防御性校验：确认回调属于本应用的 app_id（app_id 在签名载荷内，验签已通过即内容可信；
-	// 此处仅作为二次确认，防止配置错乱时误处理其他应用的回执）。不匹配则忽略并回 success 避免重试风暴。
+	// 防御性校验：确认回调属于本应用的 app_id（验签已通过即内容可信；
+	// 此处仅作为二次确认，防止配置错乱时误处理其他应用的回执）。
 	if appID := params["app_id"]; appID != "" && appID != operation_setting.AlipayAppId {
 		logger.LogWarn(c.Request.Context(), fmt.Sprintf("支付宝 webhook app_id 不匹配 path=%q client_ip=%s app_id=%s", c.Request.RequestURI, c.ClientIP(), appID))
 		c.String(http.StatusOK, "success")

@@ -12,7 +12,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 GNU Affero General Public License for more details.
 
 You should have received a copy of the GNU Affero General License
-along with this program. If not, see <https://www.gnu.org/licenses/>.
+along with this program. Not found? See <https://www.gnu.org/licenses/>.
 */
 
 package controller
@@ -23,6 +23,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"regexp"
 	"strconv"
 	"time"
 
@@ -39,6 +40,9 @@ import (
 // cnPayHTTPClient 带超时的共享 HTTP 客户端，避免向下游支付网关请求时因连接挂起而耗尽 goroutine。
 var cnPayHTTPClient = &http.Client{Timeout: 30 * time.Second}
 
+// wechatOpenidRe 校验小程序支付所需的 openid（微信用户标识）。
+var wechatOpenidRe = regexp.MustCompile(`^[A-Za-z0-9_\-]{1,128}$`)
+
 func isWechatPayTopUpEnabled() bool {
 	return operation_setting.IsWechatPayEnabled()
 }
@@ -52,9 +56,10 @@ func wechatAmountForStorage(amount int64) int64 {
 	return amount
 }
 
-// RequestWechatPay 创建微信支付 Native 扫码订单，返回 code_url 供前端生成二维码。
-func RequestWechatPay(c *gin.Context) {
-	var req EpayRequest
+// RequestWechatPayMiniProgram 创建微信支付小程序支付（JSAPI）预下单。
+// 需要小程序端传入 openid，返回 wx.requestPayment 所需的全部参数。
+func RequestWechatPayMiniProgram(c *gin.Context) {
+	var req CnMiniProgramRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "参数错误"})
 		return
@@ -65,6 +70,10 @@ func RequestWechatPay(c *gin.Context) {
 	}
 	if req.PaymentMethod != model.PaymentMethodWechatPay {
 		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "支付方式不存在"})
+		return
+	}
+	if req.Openid == "" || !wechatOpenidRe.MatchString(req.Openid) {
+		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "缺少有效的微信用户标识（openid）"})
 		return
 	}
 	if req.Amount < getMinTopup() {
@@ -102,12 +111,15 @@ func RequestWechatPay(c *gin.Context) {
 			"total":    totalCents,
 			"currency": "CNY",
 		},
+		"payer": map[string]any{
+			"openid": req.Openid,
+		},
 	}
 	bodyBytes, _ := json.Marshal(bodyMap)
 	bodyStr := string(bodyBytes)
 
 	auth, err := service.WechatPayBuildAuthHeader(
-		"POST", "/v3/pay/transactions/native", bodyStr,
+		"POST", "/v3/pay/transactions/jsapi", bodyStr,
 		operation_setting.WechatPayMchId, operation_setting.WechatPaySerialNo, operation_setting.WechatPayPrivateKey,
 	)
 	if err != nil {
@@ -116,7 +128,7 @@ func RequestWechatPay(c *gin.Context) {
 		return
 	}
 
-	fullURL := operation_setting.WechatPayGateway + "/v3/pay/transactions/native"
+	fullURL := operation_setting.WechatPayGateway + "/v3/pay/transactions/jsapi"
 	httpReq, err := http.NewRequest("POST", fullURL, bytes.NewReader(bodyBytes))
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "创建订单失败"})
@@ -143,9 +155,9 @@ func RequestWechatPay(c *gin.Context) {
 	}
 
 	var wxResp struct {
-		CodeURL string `json:"code_url"`
+		PrepayId string `json:"prepay_id"`
 	}
-	if err := json.Unmarshal(respBody, &wxResp); err != nil || wxResp.CodeURL == "" {
+	if err := json.Unmarshal(respBody, &wxResp); err != nil || wxResp.PrepayId == "" {
 		logger.LogError(c.Request.Context(), fmt.Sprintf("微信支付响应解析失败 user_id=%d trade_no=%s body=%q error=%q", id, tradeNo, string(respBody), err))
 		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "创建订单失败"})
 		return
@@ -166,11 +178,31 @@ func RequestWechatPay(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "创建订单失败"})
 		return
 	}
-	logger.LogInfo(c.Request.Context(), fmt.Sprintf("微信支付充值订单创建成功 user_id=%d trade_no=%s amount=%d money=%.2f", id, tradeNo, req.Amount, payMoney))
+
+	// 构造小程序调起支付参数（wx.requestPayment）。
+	timeStamp := strconv.FormatInt(time.Now().Unix(), 10)
+	nonceStr := common.GetRandomString(32)
+	paySign, err := service.WechatPayBuildJsapiPaySign(
+		operation_setting.WechatPayAppId, timeStamp, nonceStr, wxResp.PrepayId,
+		operation_setting.WechatPayPrivateKey,
+	)
+	if err != nil {
+		logger.LogError(c.Request.Context(), fmt.Sprintf("微信支付 paySign 生成失败 user_id=%d trade_no=%s error=%q", id, tradeNo, err.Error()))
+		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "创建订单失败"})
+		return
+	}
+
+	logger.LogInfo(c.Request.Context(), fmt.Sprintf("微信小程序充值订单创建成功 user_id=%d trade_no=%s amount=%d money=%.2f", id, tradeNo, req.Amount, payMoney))
 	c.JSON(http.StatusOK, gin.H{
 		"message": "success",
-		"data":    map[string]string{"code_url": wxResp.CodeURL},
-		"url":     wxResp.CodeURL,
+		"data": map[string]string{
+			"appId":     operation_setting.WechatPayAppId,
+			"timeStamp": timeStamp,
+			"nonceStr":  nonceStr,
+			"package":   "prepay_id=" + wxResp.PrepayId,
+			"signType":  "RSA",
+			"paySign":   paySign,
+		},
 	})
 }
 

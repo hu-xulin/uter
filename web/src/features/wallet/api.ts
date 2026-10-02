@@ -40,6 +40,7 @@ import type {
   WaffoPancakePaymentRequest,
   WaffoPancakePaymentResponse,
   CnPayPaymentResponse,
+  CnMiniProgramPaymentRequest,
 } from './types'
 
 // ============================================================================
@@ -183,11 +184,12 @@ export async function requestWaffoPancakePayment(
 }
 
 /**
- * Request official Alipay (当面付 / precreate) payment.
- * Returns a scannable QR code string in data.qr_code.
+ * Request official Alipay mini-program payment (alipay.trade.create).
+ * The mini-program obtains buyer_id after login and passes it here. The server
+ * returns data.trade_no, which the mini-program forwards to my.tradePay.
  */
-export async function requestAlipayPayment(
-  request: PaymentRequest
+export async function requestAlipayMiniProgramPayment(
+  request: CnMiniProgramPaymentRequest
 ): Promise<CnPayPaymentResponse> {
   const res = await api.post('/api/user/alipay/pay', request, {
     skipBusinessError: true,
@@ -199,11 +201,12 @@ export async function requestAlipayPayment(
 }
 
 /**
- * Request official WeChat Pay (Native) payment.
- * Returns a scannable code_url string in data.code_url.
+ * Request official WeChat Pay mini-program payment (JSAPI).
+ * The mini-program obtains openid after login and passes it here. The server
+ * returns the full wx.requestPayment parameter set in data.
  */
-export async function requestWechatPayment(
-  request: PaymentRequest
+export async function requestWechatMiniProgramPayment(
+  request: CnMiniProgramPaymentRequest
 ): Promise<CnPayPaymentResponse> {
   const res = await api.post('/api/user/wechat/pay', request, {
     skipBusinessError: true,
