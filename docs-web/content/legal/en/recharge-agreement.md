@@ -200,7 +200,7 @@ The Company undertakes that, for a staged recharge, **before each instalment arr
 
 (2) Refunds are returned **via the original payment route** as a matter of principle, that is, to the original paying account. If that account is closed or unavailable, you may request payment to a bank account **whose verified identity matches your Platform account**, supported by the necessary evidence.
 
-(3) Refund requests are submitted through the console or sent to **bill@uter.ai**.
+(3) Refund requests are submitted through the console or sent to **finance@uter.ai**.
 
 **Article 16　[Calculation of the refund amount]**
 
@@ -357,7 +357,7 @@ where "total credit after conversion" is the total available credit for that rec
 
 (2) Notices concerning **discount adjustments, suspension of service, refund verification or material amendments to this Agreement** are served by **two or more** means at the same time.
 
-(3) You are obliged to keep your registered email address and mobile number valid. Notices from you to the Company should be sent to **bill@uter.ai** (funds and accounts), **legal@uter.ai** (legal and compliance) or **bd@uter.ai** (commercial and contracts).
+(3) You are obliged to keep your registered email address and mobile number valid. Notices from you to the Company should be sent to **finance@uter.ai** (funds and accounts), **legal@uter.ai** (legal and compliance) or **bd@uter.ai** (commercial and contracts).
 
 **Article 30　[Governing law and dispute resolution]**
 
