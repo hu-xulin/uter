@@ -213,6 +213,33 @@ func writeLoginResponse(c *gin.Context, user *model.User, bundle *service.AuthBu
 	})
 }
 
+// enforcePasswordPolicy rejects a password that breaks the account password
+// policy and reports the concrete reason through i18n. It returns true when the
+// request has already been answered, in which case the caller must return.
+//
+// username and email let the policy reject passwords derived from the account
+// identifier itself; either may be empty. The password itself is never echoed
+// back and never logged.
+func enforcePasswordPolicy(c *gin.Context, password, username, email string) bool {
+	messageKey := ""
+	switch common.ValidatePasswordStrength(password, username, email) {
+	case common.PasswordTooShort:
+		messageKey = i18n.MsgUserPasswordTooShort
+	case common.PasswordTooLong:
+		messageKey = i18n.MsgUserPasswordTooLong
+	case common.PasswordTooSimple:
+		messageKey = i18n.MsgUserPasswordTooSimple
+	case common.PasswordTooCommon:
+		messageKey = i18n.MsgUserPasswordTooCommon
+	case common.PasswordContainsAccount:
+		messageKey = i18n.MsgUserPasswordContainsAccount
+	default:
+		return false
+	}
+	common.ApiErrorI18n(c, messageKey)
+	return true
+}
+
 func Register(c *gin.Context) {
 	if !common.RegisterEnabled {
 		common.ApiErrorI18n(c, i18n.MsgUserRegisterDisabled)
@@ -236,6 +263,9 @@ func Register(c *gin.Context) {
 	}
 	if err := common.Validate.Struct(&user); err != nil {
 		common.ApiErrorI18n(c, i18n.MsgUserInputInvalid, map[string]any{"Error": err.Error()})
+		return
+	}
+	if enforcePasswordPolicy(c, user.Password, user.Username, user.Email) {
 		return
 	}
 	if common.EmailVerificationEnabled {
@@ -881,6 +911,9 @@ func UpdateSelf(c *gin.Context) {
 			return
 		}
 		firstPassword := current.Password == ""
+		if enforcePasswordPolicy(c, user.Password, current.Username, current.Email) {
+			return
+		}
 		scope := service.VerificationScopePasswordChange
 		if firstPassword {
 			scope = service.VerificationScopePasswordSet
@@ -894,7 +927,7 @@ func UpdateSelf(c *gin.Context) {
 			return
 		}
 		succeeded = true
-		notificationFailed = service.NotifyAccountSecurityChange(current.Email, "Password updated") != nil
+		notificationFailed = service.NotifyAccountSecurityChange(current.Email, "登录密码已更新") != nil
 		if err := model.PublishUserAuthCache(cleanUser.Id); err != nil {
 			writeSecurityOperationError(c, err)
 			return
@@ -996,6 +1029,9 @@ func CreateUser(c *gin.Context) {
 	}
 	if err := common.Validate.Struct(&user); err != nil {
 		common.ApiErrorI18n(c, i18n.MsgUserInputInvalid, map[string]any{"Error": err.Error()})
+		return
+	}
+	if enforcePasswordPolicy(c, user.Password, user.Username, user.Email) {
 		return
 	}
 	if user.DisplayName == "" {

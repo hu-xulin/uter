@@ -3,6 +3,7 @@ package service
 import (
 	"bytes"
 	"fmt"
+	"html"
 	"net/http"
 	"net/url"
 	"strings"
@@ -112,7 +113,10 @@ func sendEmailNotify(userEmail string, data dto.Notify) error {
 	for _, value := range data.Values {
 		content = strings.Replace(content, dto.ContentValueParam, fmt.Sprintf("%v", value), 1)
 	}
-	return common.SendEmail(data.Title, userEmail, content)
+	return common.SendEmail(common.BrandEmailSubject(data.Title), userEmail, common.BuildBrandEmailHTML(common.BrandEmail{
+		Heading:    html.EscapeString(data.Title),
+		Paragraphs: []string{content},
+	}))
 }
 
 func sendBarkNotify(barkURL string, data dto.Notify) error {

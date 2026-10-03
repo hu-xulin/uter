@@ -100,8 +100,8 @@ func EmailBind(c *gin.Context) {
 		return
 	}
 	succeeded = true
-	notificationFailed = service.NotifyAccountSecurityChange(state.CurrentEmail, "Email address changed") != nil
-	if err := service.NotifyAccountSecurityChange(state.Email, "Email address confirmed"); err != nil {
+	notificationFailed = service.NotifyAccountSecurityChange(state.CurrentEmail, "邮箱地址已变更") != nil
+	if err := service.NotifyAccountSecurityChange(state.Email, "已确认新邮箱地址"); err != nil {
 		notificationFailed = true
 	}
 	if err := model.PublishUserAuthCache(identity.UserID); err != nil {

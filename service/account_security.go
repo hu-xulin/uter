@@ -36,7 +36,13 @@ func NotifyAccountSecurityChange(email, event string) error {
 	if email == "" {
 		return nil
 	}
-	subject := common.SystemName + " — Account security notification"
-	content := fmt.Sprintf("<p>Your account security settings have changed: %s.</p><p>If you did not make this change, open your account security settings, revoke other login sessions, and contact your administrator.</p>", html.EscapeString(event))
+	subject := common.BrandEmailSubject("安全提醒")
+	content := common.BuildBrandEmailHTML(common.BrandEmail{
+		Heading: "安全提醒",
+		Paragraphs: []string{
+			fmt.Sprintf("您的 Uter.ai 帐号发生了安全相关变更：%s。", html.EscapeString(event)),
+			"如果这不是您本人的操作，请立即前往帐号安全设置，撤销其他登录会话并联系管理员。",
+		},
+	})
 	return common.SendEmail(subject, email, content)
 }

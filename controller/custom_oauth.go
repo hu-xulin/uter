@@ -559,7 +559,7 @@ func UnbindCustomOAuth(c *gin.Context) {
 		writeSecurityOperationError(c, err)
 		return
 	}
-	notificationFailed = service.NotifyAccountSecurityChange(user.Email, "Login account unlinked") != nil
+	notificationFailed = service.NotifyAccountSecurityChange(user.Email, "解除了登录方式绑定") != nil
 
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
