@@ -88,6 +88,7 @@ func InitOptionMap() {
 	common.OptionMap["WorkerAllowHttpImageRequestEnabled"] = strconv.FormatBool(system_setting.WorkerAllowHttpImageRequestEnabled)
 	common.OptionMap["PayAddress"] = ""
 	common.OptionMap["CustomCallbackAddress"] = ""
+	common.OptionMap["PaymentSiteAddress"] = operation_setting.PaymentSiteAddress
 	common.OptionMap["EpayId"] = ""
 	common.OptionMap["EpayKey"] = ""
 	common.OptionMap["AlipayEnabled"] = "false"
@@ -472,6 +473,8 @@ func updateOptionMap(key string, value string) (err error) {
 		err = setting.UpdateMaxTokenAutoGroups(value)
 	case "CustomCallbackAddress":
 		operation_setting.CustomCallbackAddress = value
+	case "PaymentSiteAddress":
+		operation_setting.PaymentSiteAddress = strings.TrimSpace(value)
 	case "EpayId":
 		operation_setting.EpayId = value
 	case "EpayKey":

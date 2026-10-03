@@ -120,6 +120,12 @@ const paymentSchema = z.object({
       isHttpOriginUrl,
       'Enter only a top-level callback domain, for example https://api.example.com, without any path.'
     ),
+  PaymentSiteAddress: z
+    .string()
+    .refine(
+      isHttpOriginUrl,
+      'Enter only the site origin, for example https://pay.example.com, without any path.'
+    ),
   PayMethods: z.string().superRefine((value, ctx) => {
     const error = getJsonError(value)
     if (error) {
@@ -438,6 +444,7 @@ export function PaymentSettingsSection({
       Price: values.Price,
       MinTopUp: values.MinTopUp,
       CustomCallbackAddress: removeTrailingSlash(values.CustomCallbackAddress),
+      PaymentSiteAddress: removeTrailingSlash(values.PaymentSiteAddress),
       PayMethods: values.PayMethods.trim(),
       AmountOptions: values.AmountOptions.trim(),
       AmountDiscount: values.AmountDiscount.trim(),
@@ -481,6 +488,9 @@ export function PaymentSettingsSection({
       MinTopUp: initialRef.current.MinTopUp,
       CustomCallbackAddress: removeTrailingSlash(
         initialRef.current.CustomCallbackAddress
+      ),
+      PaymentSiteAddress: removeTrailingSlash(
+        initialRef.current.PaymentSiteAddress
       ),
       PayMethods: initialRef.current.PayMethods.trim(),
       AmountOptions: initialRef.current.AmountOptions.trim(),
@@ -546,6 +556,13 @@ export function PaymentSettingsSection({
       updates.push({
         key: 'CustomCallbackAddress',
         value: sanitized.CustomCallbackAddress,
+      })
+    }
+
+    if (sanitized.PaymentSiteAddress !== initial.PaymentSiteAddress) {
+      updates.push({
+        key: 'PaymentSiteAddress',
+        value: sanitized.PaymentSiteAddress,
       })
     }
 
@@ -966,6 +983,31 @@ export function PaymentSettingsSection({
                     )}
                   />
                 </div>
+
+                <FormField
+                  control={form.control}
+                  name='PaymentSiteAddress'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('Payment site address')}</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder={t('https://gateway.example.com')}
+                          {...field}
+                          onChange={(event) =>
+                            field.onChange(event.target.value)
+                          }
+                        />
+                      </FormControl>
+                      <FormDescription>
+                        {t(
+                          'Site origin where users pay and are redirected to after payment, for example https://pay.example.com. Mainland China gateways (Alipay / WeChat Pay) require this domain to be ICP filed. Leave blank to use the server address.'
+                        )}
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
                 <FormField
                   control={form.control}

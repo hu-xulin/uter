@@ -307,6 +307,11 @@ export function WechatPaySettingsSection({
                         'Async callback URL is registered automatically by the server'
                       )}
                     </li>
+                    <li>
+                      {t(
+                        'Set the payment site address in the General tab when the payment domain differs from the server address.'
+                      )}
+                    </li>
                   </ul>
                 </AlertDescription>
               </Alert>
