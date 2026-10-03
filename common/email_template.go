@@ -1,6 +1,7 @@
 package common
 
 import (
+	"regexp"
 	"strings"
 )
 
@@ -23,6 +24,25 @@ type BrandEmail struct {
 }
 
 const brandEmailFont = "Roboto,'Helvetica Neue',Arial,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif"
+
+// linkStyleRe 匹配正文里的 <a> 标签，用于统一去掉邮件客户端默认给链接加的下划线。
+var linkStyleRe = regexp.MustCompile(`(?i)<a\b[^>]*>`)
+
+// ensureLinkNoUnderline 保证正文里每个 <a> 链接都不带下划线：
+// 邮件客户端（Gmail/Outlook 等）默认会给 <a> 加下划线，这里强制内联
+// text-decoration:none 以去除，并对链接统一着色；若调用方已自行控制则跳过。
+func ensureLinkNoUnderline(html string) string {
+	return linkStyleRe.ReplaceAllStringFunc(html, func(tag string) string {
+		lower := strings.ToLower(tag)
+		// 调用方已处理（例如已显式设置 text-decoration），不再覆盖，避免重复 style 属性
+		if strings.Contains(lower, "text-decoration") {
+			return tag
+		}
+		closeIdx := strings.LastIndex(tag, ">")
+		style := ` style="text-decoration:none;color:#1a73e8;"`
+		return tag[:closeIdx] + style + tag[closeIdx:]
+	})
+}
 
 // brandEmailLogoBase64 是品牌头部 logo，直接使用品牌提供的 logo.png
 // （u 记号 + Uter.ai 字标合成图，126x132 原图，base64 内嵌按 61x64 显示；
@@ -51,7 +71,7 @@ func BuildBrandEmailHTML(email BrandEmail) string {
 	}
 
 	var b strings.Builder
-	b.WriteString(`<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>`)
+	b.WriteString(`<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style type="text/css">a{color:#1a73e8;text-decoration:none!important;}</style></head>`)
 	b.WriteString(`<body style="margin:0;padding:0;background:#ffffff;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#ffffff;"><tr><td align="center" style="padding:32px 16px;font-family:` + brandEmailFont + `;">`)
 	// 卡片
 	b.WriteString(`<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:600px;background:#ffffff;border:1px solid #dadce0;border-radius:8px;"><tr><td style="padding:40px 48px 36px;">`)
@@ -61,8 +81,8 @@ func BuildBrandEmailHTML(email BrandEmail) string {
 	b.WriteString(`<h1 style="margin:24px 0 0;text-align:center;font-size:26px;font-weight:400;line-height:1.4;color:#202124;">` + email.Heading + `</h1>`)
 	// 细分隔线
 	b.WriteString(`<div style="margin-top:28px;border-top:1px solid #e8eaed;"></div>`)
-	// 正文区
-	b.WriteString(`<div style="padding-top:28px;">` + body.String() + codeBlock + noteBlock + `</div>`)
+	// 正文区：统一去除链接下划线（兼容各邮件客户端）
+	b.WriteString(`<div style="padding-top:28px;">` + ensureLinkNoUnderline(body.String()+codeBlock+noteBlock) + `</div>`)
 	b.WriteString(`</td></tr></table>`)
 	// 页脚
 	b.WriteString(`<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:600px;"><tr><td style="padding-top:24px;">`)
