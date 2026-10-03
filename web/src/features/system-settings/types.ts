@@ -332,6 +332,7 @@ export type BillingSettings = {
   Price: number
   MinTopUp: number
   CustomCallbackAddress: string
+  PaymentSiteAddress: string
   PayMethods: string
   'payment_setting.amount_options': string
   'payment_setting.amount_discount': string
