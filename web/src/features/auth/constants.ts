@@ -18,7 +18,10 @@ For commercial licensing, please contact support@Uter.ai.com
 */
 import { z } from 'zod'
 
-import { accountPasswordSchema } from '@/lib/password-policy'
+import {
+  accountPasswordSchema,
+  inspectAccountPassword,
+} from '@/lib/password-policy'
 
 // ============================================================================
 // Form Schemas
@@ -36,9 +39,24 @@ export const registerFormSchema = z
     password: accountPasswordSchema,
     confirmPassword: z.string().min(1, 'Please confirm your password'),
   })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords don't match.",
-    path: ['confirmPassword'],
+  .superRefine((data, ctx) => {
+    if (data.password !== data.confirmPassword) {
+      ctx.addIssue({
+        code: 'custom',
+        message: "Passwords don't match.",
+        path: ['confirmPassword'],
+      })
+    }
+    // accountPasswordSchema already checks length and character variety; this
+    // second pass adds the rules that need the rest of the form: the password
+    // must not embed the username or the email local part.
+    const issue = inspectAccountPassword(data.password, {
+      username: data.username,
+      email: data.email,
+    })
+    if (issue) {
+      ctx.addIssue({ code: 'custom', message: issue, path: ['password'] })
+    }
   })
 
 export const forgotPasswordFormSchema = z.object({

@@ -349,7 +349,7 @@ func TestSecurityAccountRequiresProofBeforeMutation(t *testing.T) {
 		name, path, body string
 		handler          gin.HandlerFunc
 	}{
-		{"password", "/api/user/self", `{"password":"account-password!42","original_password":"enrollment-password"}`, UpdateSelf},
+		{"password", "/api/user/self", `{"password":"Zq7#mKp2!LwRx4","original_password":"enrollment-password"}`, UpdateSelf},
 		{"oauth binding", "/api/oauth/state", `{"provider":"security-account-test","intent":"bind"}`, GenerateOAuthCode},
 	} {
 		t.Run(test.name, func(t *testing.T) {
@@ -383,7 +383,7 @@ func TestSecurityAccountPasswordRequiresCurrentPassword(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			user, identity := setupSecurityEnrollmentTest(t)
 			proof := issueSecurityEnrollmentProof(t, identity, service.VerificationOperation{Scope: service.VerificationScopePasswordChange}, service.VerificationMethodPassword)
-			request, err := common.Marshal(map[string]string{"password": "password123", "original_password": test.original})
+			request, err := common.Marshal(map[string]string{"password": "Zq7#mKp2!LwRx4", "original_password": test.original})
 			require.NoError(t, err)
 			response := securityEnrollmentRequest(http.MethodPut, "/api/user/self", string(request), proof, identity, UpdateSelf)
 			var result securityEnrollmentResponse
@@ -392,7 +392,7 @@ func TestSecurityAccountPasswordRequiresCurrentPassword(t *testing.T) {
 			stored, err := model.GetUserById(user.Id, true)
 			require.NoError(t, err)
 			if test.success {
-				assert.True(t, common.ValidatePasswordAndHash("password123", stored.Password))
+				assert.True(t, common.ValidatePasswordAndHash("Zq7#mKp2!LwRx4", stored.Password))
 				assert.True(t, strings.HasPrefix(stored.Password, "$argon2id$"))
 			} else {
 				assert.Equal(t, "CURRENT_PASSWORD_INVALID", result.Code)
@@ -796,7 +796,7 @@ func TestSecurityAccountFirstPasswordRace(t *testing.T) {
 	require.NoError(t, model.DB.Model(user).Update("password", "").Error)
 	require.NoError(t, model.DB.Create(&model.PasskeyCredential{UserID: user.Id, CredentialID: "existing-key", PublicKey: "public-key"}).Error)
 	proof := issueSecurityEnrollmentProof(t, identity, service.VerificationOperation{Scope: service.VerificationScopePasswordSet}, service.VerificationMethodPasskey)
-	request := `{"password":"initial-account-password!42"}`
+	request := `{"password":"Zq7#mKp2!LwRx4"}`
 	response := securityEnrollmentRequest("PUT", "/api/user/self", request, proof, identity, UpdateSelf)
 	var result securityEnrollmentResponse
 	require.NoError(t, common.Unmarshal(response.Body.Bytes(), &result))
