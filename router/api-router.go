@@ -124,6 +124,8 @@ func SetApiRouter(router *gin.Engine) {
 			selfRoute.POST("/creem/pay", middleware.CriticalRateLimit(), controller.RequestCreemPay)
 			selfRoute.POST("/alipay/pay", middleware.CriticalRateLimit(), controller.RequestAlipayMiniProgram)
 			selfRoute.POST("/wechat/pay", middleware.CriticalRateLimit(), controller.RequestWechatPayMiniProgram)
+			selfRoute.POST("/alipay/webpay", middleware.CriticalRateLimit(), controller.RequestAlipayWeb)
+			selfRoute.POST("/wechat/webpay", middleware.CriticalRateLimit(), controller.RequestWechatPayWeb)
 				selfRoute.POST("/waffo/amount", controller.RequestWaffoAmount)
 				selfRoute.POST("/waffo/pay", middleware.CriticalRateLimit(), controller.RequestWaffoPay)
 				selfRoute.POST("/waffo-pancake/amount", controller.RequestWaffoPancakeAmount)

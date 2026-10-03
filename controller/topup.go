@@ -97,7 +97,7 @@ func GetTopUpInfo(c *gin.Context) {
 		}
 	}
 
-	// 支付宝当面付（官方直连）
+	// 支付宝网站支付（PC 扫码 / 手机网站）
 	enableAlipay := isAlipayTopUpEnabled()
 	if enableAlipay {
 		hasAlipay := false
@@ -118,7 +118,7 @@ func GetTopUpInfo(c *gin.Context) {
 		}
 	}
 
-	// 微信支付（官方直连）
+	// 微信支付网站支付（PC Native 扫码 / 手机 H5）
 	enableWechatPay := isWechatPayTopUpEnabled()
 	if enableWechatPay {
 		hasWechatPay := false

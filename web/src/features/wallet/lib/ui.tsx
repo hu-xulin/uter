@@ -133,19 +133,21 @@ export function getPaymentIcon(
           style={{ color: PAYMENT_ICON_COLORS[PAYMENT_TYPES.WAFFO] }}
         />
       )
-    case PAYMENT_TYPES.ALIPAY_OFFICIAL:
+    case PAYMENT_TYPES.ALIPAY_WEB:
+    case PAYMENT_TYPES.ALIPAY_MINIPROGRAM:
       return (
         <SiAlipay
           className={className}
-          style={{ color: PAYMENT_ICON_COLORS[PAYMENT_TYPES.ALIPAY_OFFICIAL] }}
+          style={{ color: PAYMENT_ICON_COLORS[PAYMENT_TYPES.ALIPAY_WEB] }}
         />
       )
-    case PAYMENT_TYPES.WECHAT_PAY_OFFICIAL:
+    case PAYMENT_TYPES.WECHAT_PAY_WEB:
+    case PAYMENT_TYPES.WECHAT_PAY_MINIPROGRAM:
       return (
         <SiWechat
           className={className}
           style={{
-            color: PAYMENT_ICON_COLORS[PAYMENT_TYPES.WECHAT_PAY_OFFICIAL],
+            color: PAYMENT_ICON_COLORS[PAYMENT_TYPES.WECHAT_PAY_WEB],
           }}
         />
       )

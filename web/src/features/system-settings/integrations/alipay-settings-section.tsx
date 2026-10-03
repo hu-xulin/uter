@@ -122,7 +122,7 @@ export function AlipaySettingsSection({
           <div>
             <h3 className='text-lg font-medium'>{t('Alipay Gateway')}</h3>
             <p className='text-muted-foreground text-sm'>
-              {t('Configuration for Alipay mini-program payment integration')}
+              {t('Configuration for Alipay website payment integration')}
             </p>
           </div>
 
@@ -134,7 +134,7 @@ export function AlipaySettingsSection({
                 <SettingsSwitchContent>
                   <FormLabel>{t('Enable Alipay payments')}</FormLabel>
                   <FormDescription>
-                    {t('Enable official Alipay mini-program payment')}
+                    {t('Enable official Alipay website payment')}
                   </FormDescription>
                 </SettingsSwitchContent>
                 <FormControl>
@@ -216,7 +216,12 @@ export function AlipaySettingsSection({
                   <ul className='list-disc space-y-1 pl-5'>
                     <li>
                       {t(
-                        'Enable 小程序支付 (alipay.trade.create) in Alipay open platform'
+                        'Enable Alipay face-to-face (PC QR) and mobile website payment products'
+                      )}
+                    </li>
+                    <li>
+                      {t(
+                        'Register the ICP-filed payment domain in the merchant platform'
                       )}
                     </li>
                     <li>

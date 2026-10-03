@@ -26,9 +26,10 @@ import { getSelf } from '@/lib/api'
 
 import { AffiliateRewardsCard } from './components/affiliate-rewards-card'
 import { BillingHistoryDialog } from './components/dialogs/billing-history-dialog'
+import { CnPayMiniProgramDialog } from './components/dialogs/cn-pay-miniprogram-dialog'
+import { CnPayWebDialog } from './components/dialogs/cn-pay-web-dialog'
 import { CreemConfirmDialog } from './components/dialogs/creem-confirm-dialog'
 import { PaymentConfirmDialog } from './components/dialogs/payment-confirm-dialog'
-import { CnPayMiniProgramDialog } from './components/dialogs/cn-pay-miniprogram-dialog'
 import { TransferDialog } from './components/dialogs/transfer-dialog'
 import { RechargeFormCard } from './components/recharge-form-card'
 import { SubscriptionPlansCard } from './components/subscription-plans-card'
@@ -48,6 +49,7 @@ import {
   getMinTopupAmount,
   dispatchSelectedPayment,
   isCnMiniProgramPayment,
+  isCnWebPayment,
 } from './lib'
 import type {
   UserWalletData,
@@ -83,6 +85,10 @@ export function Wallet(props: WalletProps) {
   const [showSubscriptionPanel, setShowSubscriptionPanel] = useState(true)
   const [cnPayOpen, setCnPayOpen] = useState(false)
   const [cnPayMethod, setCnPayMethod] = useState<PaymentMethod | undefined>()
+  const [cnWebPayOpen, setCnWebPayOpen] = useState(false)
+  const [cnWebPayMethod, setCnWebPayMethod] = useState<
+    PaymentMethod | undefined
+  >()
 
   const { status } = useStatus()
   const { currency } = useSystemConfig()
@@ -197,6 +203,16 @@ export function Wallet(props: WalletProps) {
   // Handle payment confirmation
   const handlePaymentConfirm = async () => {
     if (!selectedPaymentMethod) return
+
+    // Official China website payments (Alipay / WeChat web cashier): the dialog
+    // creates the order and renders a QR (PC) or redirects to the provider
+    // cashier (mobile), then polls the wallet balance until it is credited.
+    if (isCnWebPayment(selectedPaymentMethod.type)) {
+      setCnWebPayMethod(selectedPaymentMethod)
+      setCnWebPayOpen(true)
+      setConfirmDialogOpen(false)
+      return
+    }
 
     // Official China payments (Alipay / WeChat mini-program) must be completed
     // inside the mini-program; open the guidance + balance-poll dialog.
@@ -397,6 +413,20 @@ export function Wallet(props: WalletProps) {
         onConfirm={handleCreemConfirm}
         product={selectedCreemProduct}
         processing={creemProcessing}
+      />
+
+      <CnPayWebDialog
+        open={cnWebPayOpen}
+        onOpenChange={setCnWebPayOpen}
+        topupAmount={topupAmount}
+        paymentAmount={paymentAmount}
+        initialQuota={user?.quota ?? 0}
+        paymentMethod={cnWebPayMethod}
+        onSuccess={() => {
+          setCnWebPayOpen(false)
+          setCnWebPayMethod(undefined)
+          void fetchUser()
+        }}
       />
 
       <CnPayMiniProgramDialog

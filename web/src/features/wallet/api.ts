@@ -41,6 +41,8 @@ import type {
   WaffoPancakePaymentResponse,
   CnPayPaymentResponse,
   CnMiniProgramPaymentRequest,
+  CnWebPaymentRequest,
+  CnWebPaymentResponse,
 } from './types'
 
 // ============================================================================
@@ -209,6 +211,40 @@ export async function requestWechatMiniProgramPayment(
   request: CnMiniProgramPaymentRequest
 ): Promise<CnPayPaymentResponse> {
   const res = await api.post('/api/user/wechat/pay', request, {
+    skipBusinessError: true,
+  } as Record<string, unknown>)
+  return {
+    ...res.data,
+    url: (res.data as { url?: string }).url,
+  }
+}
+
+/**
+ * Request official Alipay website payment.
+ * PC → alipay.trade.precreate returns data.qr_code (render as QR).
+ * Mobile → alipay.trade.wap.pay returns data.pay_url (redirect the browser).
+ */
+export async function requestAlipayWebPayment(
+  request: CnWebPaymentRequest
+): Promise<CnWebPaymentResponse> {
+  const res = await api.post('/api/user/alipay/webpay', request, {
+    skipBusinessError: true,
+  } as Record<string, unknown>)
+  return {
+    ...res.data,
+    url: (res.data as { url?: string }).url,
+  }
+}
+
+/**
+ * Request official WeChat Pay website payment.
+ * PC → Native returns data.code_url (render as QR).
+ * Mobile → H5 returns data.h5_url (redirect the browser).
+ */
+export async function requestWechatWebPayment(
+  request: CnWebPaymentRequest
+): Promise<CnWebPaymentResponse> {
+  const res = await api.post('/api/user/wechat/webpay', request, {
     skipBusinessError: true,
   } as Record<string, unknown>)
   return {

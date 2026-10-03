@@ -25,6 +25,7 @@ import (
 	"crypto/x509"
 	"encoding/base64"
 	"encoding/pem"
+	"strings"
 	"testing"
 )
 
@@ -66,7 +67,7 @@ func TestAlipaySignVerifyRoundTrip(t *testing.T) {
 		t.Fatal("expected non-empty sign")
 	}
 
-	// 验签时不应包含 sign / sign_type，且空值需排除。
+	// 验签时同样只包含 sign_type（不含 sign 本身），空值排除。
 	verifyParams := map[string]string{
 		"app_id":     params["app_id"],
 		"method":     params["method"],
@@ -93,6 +94,39 @@ func TestAlipaySignVerifyRoundTrip(t *testing.T) {
 	}
 	if AlipayVerifySign(bad, mustPKCS1PubPEM(t, pub), sign) {
 		t.Fatal("AlipayVerifySign must fail after tampering")
+	}
+}
+
+// TestAlipaySignContentIncludesSignType 锁定「sign_type 参与签名」这一硬约束。
+//
+// 支付宝开放平台「请求参数签名」的官方示例待签名串明确包含 sign_type：
+//
+//	app_id=...&biz_content=...&charset=...&method=...&sign_type=RSA&timestamp=...&version=1.0
+//
+// 网关验签时把 sign_type 计入待签串。若本地签名把它剔除，两边字符串不一致，
+// 所有下单与回调都会报 invalid-signature（未配置参数时不会暴露，填参后才爆发）。
+func TestAlipaySignContentIncludesSignType(t *testing.T) {
+	params := map[string]string{
+		"app_id":    "2021000000000000",
+		"method":    "alipay.trade.precreate",
+		"charset":   "utf-8",
+		"sign_type": "RSA2",
+		"timestamp": "2026-01-01 00:00:00",
+		"version":   "1.0",
+		"sign":      "SHOULD-BE-EXCLUDED",
+		"empty":     "",
+	}
+	content, err := alipaySignContent(params)
+	if err != nil {
+		t.Fatalf("alipaySignContent: %v", err)
+	}
+	want := "app_id=2021000000000000&charset=utf-8&method=alipay.trade.precreate" +
+		"&sign_type=RSA2&timestamp=2026-01-01 00:00:00&version=1.0"
+	if content != want {
+		t.Fatalf("unexpected sign content:\n got: %q\nwant: %q", content, want)
+	}
+	if strings.Contains(content, "SHOULD-BE-EXCLUDED") {
+		t.Fatal("sign must be excluded from the sign content")
 	}
 }
 
