@@ -88,7 +88,7 @@ func StartEmailBinding(identity AuthIdentity, authorization *model.AuthFlowAutho
 	}
 	data := emailBindingData(token, flow, &state)
 	if state.CurrentEmail != "" && !requireOld {
-		data.NotificationWarning = NotifyAccountSecurityChange(state.CurrentEmail, "A change of your email address was requested") != nil
+		data.NotificationWarning = NotifyAccountSecurityChange(state.CurrentEmail, "有人请求更改您帐号的邮箱地址") != nil
 	}
 	return data, nil
 }
@@ -179,14 +179,30 @@ func generateEmailBindingCodes(requireOld bool) (emailBindingCodes, error) {
 }
 
 func sendEmailBindingCodes(state model.EmailBindingState, codes emailBindingCodes) error {
-	subject := common.SystemName + " — Confirm your email address"
-	content := fmt.Sprintf("<p>Confirm linking this email address to your account.</p><p>Verification code: <strong>%s</strong></p><p>This code expires in 10 minutes. If you did not request this change, do not share this code.</p>", html.EscapeString(codes.New))
+	subject := common.BrandEmailSubject(fmt.Sprintf("邮箱绑定验证码： %s", codes.New))
+	content := common.BuildBrandEmailHTML(common.BrandEmail{
+		Heading: "确认您的邮箱地址",
+		Paragraphs: []string{
+			fmt.Sprintf("Uter.ai 收到了将 <strong>%s</strong> 绑定到您帐号的请求。", html.EscapeString(state.Email)),
+			"请使用此验证码完成邮箱绑定：",
+		},
+		Code: codes.New,
+		Note: "此验证码将在 10 分钟后失效。如果这不是您发起的操作，请不要分享此验证码。",
+	})
 	if err := common.SendEmail(subject, state.Email, content); err != nil {
 		return err
 	}
 	if codes.Old != "" {
-		content = fmt.Sprintf("<p>A change to your account email address was requested. Confirm replacing your current address.</p><p>Verification code: <strong>%s</strong></p><p>This code expires in 10 minutes. If you did not request this change, do not share this code and contact your administrator.</p>", html.EscapeString(codes.Old))
-		return common.SendEmail(subject, state.CurrentEmail, content)
+		oldSubject := common.BrandEmailSubject(fmt.Sprintf("邮箱绑定验证码： %s", codes.Old))
+		oldContent := common.BuildBrandEmailHTML(common.BrandEmail{
+			Heading: "确认更换您的邮箱地址",
+			Paragraphs: []string{
+				"有人请求更换您帐号的邮箱地址，请使用此验证码确认替换当前邮箱：",
+			},
+			Code: codes.Old,
+			Note: "此验证码将在 10 分钟后失效。如果这不是您发起的操作，请不要分享此验证码并联系管理员。",
+		})
+		return common.SendEmail(oldSubject, state.CurrentEmail, oldContent)
 	}
 	return nil
 }

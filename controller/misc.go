@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"html"
 	"net/http"
 
 	"github.com/Uter-AI/Uter/common"
@@ -127,10 +128,10 @@ func GetStatus(c *gin.Context) {
 		// 用户协议/隐私政策默认启用：留空时由前端 legal-document 回退到内置
 		// docs 文档（content/legal/<lang>/<doc>.md），与充值协议表现一致；
 		// 管理员在系统信息填入自定义 Markdown/HTML/URL 时则走 DB 内容。
-		"user_agreement_enabled":      true,
-		"privacy_policy_enabled":      true,
-		"recharge_agreement_enabled":  legalSetting.RechargeAgreement != "",
-		"checkin_enabled":             operation_setting.GetCheckinSetting().Enabled,
+		"user_agreement_enabled":     true,
+		"privacy_policy_enabled":     true,
+		"recharge_agreement_enabled": legalSetting.RechargeAgreement != "",
+		"checkin_enabled":            operation_setting.GetCheckinSetting().Enabled,
 	}
 
 	// 根据启用状态注入可选内容
@@ -235,12 +236,23 @@ func SendEmailVerification(c *gin.Context) {
 		common.ApiErrorI18n(c, i18n.MsgUserEmailAlreadyTaken)
 		return
 	}
-	code := common.GenerateVerificationCode(6)
+	code, err := common.GenerateNumericCode(6)
+	if err != nil {
+		logger.LogError(c.Request.Context(), fmt.Sprintf("failed to generate email verification code for %s: %s", common.MaskEmail(email), err.Error()))
+		common.ApiErrorI18n(c, i18n.MsgGenerateFailed)
+		return
+	}
 	common.RegisterVerificationCodeWithKey(email, code, common.EmailVerificationPurpose)
-	subject := fmt.Sprintf("%s邮箱验证邮件", common.SystemName)
-	content := fmt.Sprintf("<p>您好，你正在进行%s邮箱验证。</p>"+
-		"<p>您的验证码为: <strong>%s</strong></p>"+
-		"<p>验证码 %d 分钟内有效，如果不是本人操作，请忽略。</p>", common.SystemName, code, common.VerificationValidMinutes)
+	subject := common.BrandEmailSubject(fmt.Sprintf("电子邮件验证码： %s", code))
+	content := common.BuildBrandEmailHTML(common.BrandEmail{
+		Heading: "请验证您的邮箱地址",
+		Paragraphs: []string{
+			fmt.Sprintf("Uter.ai 收到了将 <strong>%s</strong> 用作 Uter.ai 帐号的请求。", html.EscapeString(email)),
+			"请使用此验证码完成邮箱验证：",
+		},
+		Code: code,
+		Note: fmt.Sprintf("此验证码将在 %d 分钟后失效。如果这不是您发起的操作，可以放心地忽略这封电子邮件。", common.VerificationValidMinutes),
+	})
 	err = common.SendEmail(subject, email, content)
 	if err != nil {
 		common.ApiError(c, err)
@@ -263,11 +275,16 @@ func SendPasswordResetEmail(c *gin.Context) {
 		code := common.GenerateVerificationCode(0)
 		common.RegisterVerificationCodeWithKey(email, code, common.PasswordResetPurpose)
 		link := fmt.Sprintf("%s/user/reset?email=%s&token=%s", system_setting.ServerAddress, email, code)
-		subject := fmt.Sprintf("%s密码重置", common.SystemName)
-		content := fmt.Sprintf("<p>您好，你正在进行%s密码重置。</p>"+
-			"<p>点击 <a href='%s'>此处</a> 进行密码重置。</p>"+
-			"<p>如果链接无法点击，请尝试点击下面的链接或将其复制到浏览器中打开：<br> %s </p>"+
-			"<p>重置链接 %d 分钟内有效，如果不是本人操作，请忽略。</p>", common.SystemName, link, link, common.VerificationValidMinutes)
+		subject := common.BrandEmailSubject("密码重置")
+		content := common.BuildBrandEmailHTML(common.BrandEmail{
+			Heading: "重置您的密码",
+			Paragraphs: []string{
+				fmt.Sprintf("Uter.ai 收到了重置帐号 <strong>%s</strong> 密码的请求。", html.EscapeString(email)),
+				fmt.Sprintf("点击 <a href='%s' style=\"color:#1a73e8;text-decoration:none;\">此处</a> 进行密码重置。如果链接无法点击，请将下面的链接复制到浏览器中打开：", html.EscapeString(link)),
+				fmt.Sprintf("<span style=\"color:#5f6368;word-break:break-all;\">%s</span>", html.EscapeString(link)),
+			},
+			Note: fmt.Sprintf("重置链接将在 %d 分钟后失效。如果这不是您发起的操作，可以放心地忽略这封电子邮件，您的密码不会被更改。", common.VerificationValidMinutes),
+		})
 		err := common.SendEmail(subject, email, content)
 		if err != nil {
 			logger.LogError(c.Request.Context(), fmt.Sprintf("failed to send password reset email to %s: %s", email, err.Error()))

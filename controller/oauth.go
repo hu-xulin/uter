@@ -400,7 +400,7 @@ func handleOAuthBind(c *gin.Context, providerName string, provider oauth.Provide
 		writeSecurityOperationError(c, err)
 		return true, true
 	}
-	notificationFailed := service.NotifyAccountSecurityChange(user.Email, "Login account linked: "+provider.GetName()) != nil
+	notificationFailed := service.NotifyAccountSecurityChange(user.Email, "绑定了新的登录方式："+provider.GetName()) != nil
 	common.ApiSuccessI18n(c, i18n.MsgOAuthBindSuccess, gin.H{"action": "bind", "notification_warning": notificationFailed})
 	return true, notificationFailed
 }

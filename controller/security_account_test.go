@@ -317,7 +317,8 @@ func (mailbox *securityMailbox) code(t *testing.T, receiver string) string {
 	mailbox.mutex.Lock()
 	defer mailbox.mutex.Unlock()
 	for index := len(mailbox.mail[receiver]) - 1; index >= 0; index-- {
-		match := regexp.MustCompile(`<strong>([0-9]{6})</strong>`).FindStringSubmatch(mailbox.mail[receiver][index])
+		// 验证码可能渲染为行内强调（旧排版）或品牌卡片中的大号独立段落（Google 风格排版）
+		match := regexp.MustCompile(`(?:<strong>|>)(\d{6})(?:</strong>|</p>)`).FindStringSubmatch(mailbox.mail[receiver][index])
 		if len(match) == 2 {
 			return match[1]
 		}
