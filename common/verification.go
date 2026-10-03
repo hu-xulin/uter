@@ -1,6 +1,9 @@
 package common
 
 import (
+	"crypto/rand"
+	"fmt"
+	"math/big"
 	"strings"
 	"sync"
 	"time"
@@ -30,6 +33,31 @@ func GenerateVerificationCode(length int) string {
 		return code
 	}
 	return code[:length]
+}
+
+// GenerateNumericCode returns a cryptographically random code made of exactly
+// length digits, keeping leading zeros (e.g. "000123" for length 6).
+//
+// It exists because GenerateVerificationCode slices a UUID hex string and
+// therefore emits hexadecimal letters; user-facing codes must be typeable on a
+// numeric keypad and must not be confusable ("0"/"O", "1"/"l"). This function
+// is only meant for short human-entered codes - never use it for tokens,
+// secrets or generated passwords, whose entropy must stay much higher.
+func GenerateNumericCode(length int) (string, error) {
+	if length <= 0 {
+		return "", fmt.Errorf("invalid verification code length: %d", length)
+	}
+	limit := new(big.Int).Exp(big.NewInt(10), big.NewInt(int64(length)), nil)
+	number, err := rand.Int(rand.Reader, limit)
+	if err != nil {
+		return "", fmt.Errorf("failed to generate verification code: %w", err)
+	}
+	// number.Text(10) never pads, so very small draws keep their leading zeros.
+	code := number.Text(10)
+	if missing := length - len(code); missing > 0 {
+		code = strings.Repeat("0", missing) + code
+	}
+	return code, nil
 }
 
 func RegisterVerificationCodeWithKey(key string, code string, purpose string) {

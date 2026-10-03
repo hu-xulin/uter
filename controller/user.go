@@ -261,6 +261,11 @@ func Register(c *gin.Context) {
 		common.ApiErrorI18n(c, i18n.MsgInvalidParams)
 		return
 	}
+	// Checked before the struct validator: its min/max tags would otherwise
+	// surface a raw "failed on the 'min' tag" instead of an actionable message.
+	if enforcePasswordPolicy(c, user.Password, user.Username, user.Email) {
+		return
+	}
 	if err := common.Validate.Struct(&user); err != nil {
 		common.ApiErrorI18n(c, i18n.MsgUserInputInvalid, map[string]any{"Error": err.Error()})
 		return
@@ -911,14 +916,16 @@ func UpdateSelf(c *gin.Context) {
 			return
 		}
 		firstPassword := current.Password == ""
-		if enforcePasswordPolicy(c, user.Password, current.Username, current.Email) {
-			return
-		}
 		scope := service.VerificationScopePasswordChange
 		if firstPassword {
 			scope = service.VerificationScopePasswordSet
 		}
+		// Authorisation gates first: without a valid proof the caller is told
+		// to re-verify rather than being given a hint about password rules.
 		if middleware.RequireSecurityProof(c, service.VerificationOperation{Scope: scope}) == nil {
+			return
+		}
+		if enforcePasswordPolicy(c, user.Password, current.Username, current.Email) {
 			return
 		}
 		cleanUser.OriginalPassword = user.OriginalPassword
@@ -1027,11 +1034,11 @@ func CreateUser(c *gin.Context) {
 		common.ApiErrorI18n(c, i18n.MsgInvalidParams)
 		return
 	}
-	if err := common.Validate.Struct(&user); err != nil {
-		common.ApiErrorI18n(c, i18n.MsgUserInputInvalid, map[string]any{"Error": err.Error()})
+	if enforcePasswordPolicy(c, user.Password, user.Username, user.Email) {
 		return
 	}
-	if enforcePasswordPolicy(c, user.Password, user.Username, user.Email) {
+	if err := common.Validate.Struct(&user); err != nil {
+		common.ApiErrorI18n(c, i18n.MsgUserInputInvalid, map[string]any{"Error": err.Error()})
 		return
 	}
 	if user.DisplayName == "" {
