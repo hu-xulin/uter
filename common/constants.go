@@ -12,7 +12,12 @@ import (
 
 var StartTime = time.Now().Unix() // unit: second
 var Version = "v0.0.0"            // this hard coding will be replaced automatically when building, no need to manually change
-var SystemName = "Uter"
+var SystemName = "Uter.ai"
+
+// EmailSenderName 是系统对外发送邮件时 From 头的显示名（发件人姓名），
+// 固定为品牌英文名 "Uter.ai"，与可在系统设置中配置的产品名 SystemName 解耦，
+// 避免改产品名时连带改动邮件发件人。
+var EmailSenderName = "Uter.ai"
 var Footer = ""
 var Logo = ""
 var TopUpLink = ""
