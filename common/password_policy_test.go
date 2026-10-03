@@ -130,5 +130,5 @@ func TestValidatePasswordStrengthRejectsAccountIdentifiers(t *testing.T) {
 // the contract both sides compile against.
 func TestValidatePasswordStrengthBoundsMatchFrontend(t *testing.T) {
 	require.Equal(t, 8, PasswordMinLength)
-	require.Equal(t, 128, PasswordMaxLength)
+	require.Equal(t, 18, PasswordMaxLength)
 }

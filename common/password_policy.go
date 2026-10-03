@@ -11,7 +11,7 @@ import (
 // The upper bound also protects bcrypt-like hashing from very long inputs.
 const (
 	PasswordMinLength = 8
-	PasswordMaxLength = 128
+	PasswordMaxLength = 18
 )
 
 // PasswordPolicyViolation identifies which rule a password breaks, so callers
