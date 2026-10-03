@@ -94,17 +94,17 @@ export function isWaffoPancakePayment(paymentType: string): boolean {
 }
 
 /**
- * Check if payment method is official Alipay (mini-program, alipay.trade.create).
+ * Check if payment method is official Alipay mini-program (alipay.trade.create).
  */
 export function isAlipayMiniProgramPayment(paymentType: string): boolean {
-  return paymentType === PAYMENT_TYPES.ALIPAY_OFFICIAL
+  return paymentType === PAYMENT_TYPES.ALIPAY_MINIPROGRAM
 }
 
 /**
- * Check if payment method is official WeChat Pay (mini-program JSAPI).
+ * Check if payment method is official WeChat Pay mini-program (JSAPI).
  */
 export function isWechatPayMiniProgramPayment(paymentType: string): boolean {
-  return paymentType === PAYMENT_TYPES.WECHAT_PAY_OFFICIAL
+  return paymentType === PAYMENT_TYPES.WECHAT_PAY_MINIPROGRAM
 }
 
 /**
@@ -116,6 +116,52 @@ export function isCnMiniProgramPayment(paymentType: string): boolean {
     isAlipayMiniProgramPayment(paymentType) ||
     isWechatPayMiniProgramPayment(paymentType)
   )
+}
+
+/**
+ * Check if payment method is official Alipay website payment
+ * (alipay.trade.precreate on PC / alipay.trade.wap.pay on mobile).
+ */
+export function isAlipayWebPayment(paymentType: string): boolean {
+  return paymentType === PAYMENT_TYPES.ALIPAY_WEB
+}
+
+/**
+ * Check if payment method is official WeChat Pay website payment
+ * (Native QR on PC / H5 on mobile).
+ */
+export function isWechatPayWebPayment(paymentType: string): boolean {
+  return paymentType === PAYMENT_TYPES.WECHAT_PAY_WEB
+}
+
+/**
+ * Check if payment method is an official China website payment settled in a
+ * web cashier (QR code on PC, app/H5 redirect on mobile).
+ *
+ * This is the main channel for web top-ups: payment happens in a browser, so
+ * it is not subject to Apple IAP (mini-program virtual goods are charged 12%
+ * on iOS), keeping the effective rate around 0.6%.
+ */
+export function isCnWebPayment(paymentType: string): boolean {
+  return isAlipayWebPayment(paymentType) || isWechatPayWebPayment(paymentType)
+}
+
+/**
+ * Detect the cashier form factor for the China website payment gateways.
+ *
+ * Mobile browsers must use the redirect cashier (Alipay wap / WeChat H5) so the
+ * provider app can be launched; desktops get the QR code cashier. The server
+ * whitelists the value anyway, so a wrong guess only degrades UX, never safety.
+ */
+export function detectPayClient(): 'pc' | 'mobile' {
+  if (typeof window === 'undefined' || typeof navigator === 'undefined') {
+    return 'pc'
+  }
+  const mobileUA =
+    /Android|iPhone|iPad|iPod|Windows Phone|HarmonyOS|Mobile/i.test(
+      navigator.userAgent
+    )
+  return mobileUA || window.innerWidth < 768 ? 'mobile' : 'pc'
 }
 
 export interface PaymentProcessors {

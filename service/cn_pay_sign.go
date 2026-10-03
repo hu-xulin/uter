@@ -127,7 +127,7 @@ func cnRandomString(n int) string {
 // ---------------------------------------------------------------------------
 
 // AlipayBuildSign 对参数按 key 字典序拼接后做 RSA2 签名。
-// 规则遵循支付宝规范：跳过 sign / sign_type，空值不参与签名。
+// 规则遵循支付宝规范：仅跳过 sign 本身，sign_type 必须参与签名，空值不参与签名。
 func AlipayBuildSign(params map[string]string, privateKey string) (string, error) {
 	message, err := alipaySignContent(params)
 	if err != nil {
@@ -145,10 +145,17 @@ func AlipayBuildSign(params map[string]string, privateKey string) (string, error
 	return base64.StdEncoding.EncodeToString(sig), nil
 }
 
+// alipaySignContent 构造支付宝待签名/待验签串：
+// 只排除 sign 本身与空值参数。
+//
+// ⚠️ sign_type 必须参与签名：支付宝开放平台「请求参数签名」的官方示例待签名串
+// 明确包含 sign_type（...&method=...&sign_type=RSA&timestamp=...）。网关验签时把
+// sign_type 计入，若本地签名把它剔除，两边待签串不一致，必然报 invalid-signature。
+// 下单签名与异步回调验签共用此函数，两侧口径必须一致。
 func alipaySignContent(params map[string]string) (string, error) {
 	keys := make([]string, 0, len(params))
 	for k := range params {
-		if k == "sign" || k == "sign_type" {
+		if k == "sign" {
 			continue
 		}
 		if params[k] == "" {

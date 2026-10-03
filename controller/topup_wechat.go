@@ -23,6 +23,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"regexp"
 	"strconv"
 	"time"
@@ -68,7 +69,7 @@ func RequestWechatPayMiniProgram(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "当前未启用微信支付"})
 		return
 	}
-	if req.PaymentMethod != model.PaymentMethodWechatPay {
+	if req.PaymentMethod != model.PaymentMethodWechatPayMiniProgram {
 		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "支付方式不存在"})
 		return
 	}
@@ -168,7 +169,7 @@ func RequestWechatPayMiniProgram(c *gin.Context) {
 		Amount:          wechatAmountForStorage(req.Amount),
 		Money:           payMoney,
 		TradeNo:         tradeNo,
-		PaymentMethod:   model.PaymentMethodWechatPay,
+		PaymentMethod:   model.PaymentMethodWechatPayMiniProgram,
 		PaymentProvider: model.PaymentProviderWechatPay,
 		CreateTime:      time.Now().Unix(),
 		Status:          common.TopUpStatusPending,
@@ -204,6 +205,188 @@ func RequestWechatPayMiniProgram(c *gin.Context) {
 			"paySign":   paySign,
 		},
 	})
+}
+
+// RequestWechatPayWeb 创建微信支付网站支付订单。
+//
+// 收银台形态由 req.Client 决定（服务端收敛，未知值降级为 pc）：
+//   - pc     → /v3/pay/transactions/native（Native 扫码），返回 code_url
+//   - mobile → /v3/pay/transactions/h5（H5 支付），返回 h5_url，前端直接跳转
+//
+// 共用同一套异步回调与入账链路（/api/user/wechat/notify）。
+// 开通前提：商户平台已开通 Native 支付与 H5 支付，且已在「开发配置」登记支付域名。
+func RequestWechatPayWeb(c *gin.Context) {
+	var req CnWebPaymentRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "参数错误"})
+		return
+	}
+	if !isWechatPayTopUpEnabled() {
+		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "当前未启用微信支付"})
+		return
+	}
+	if req.PaymentMethod != model.PaymentMethodWechatPay {
+		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "支付方式不存在"})
+		return
+	}
+	if req.Amount < getMinTopup() {
+		c.JSON(http.StatusOK, gin.H{"message": "error", "data": fmt.Sprintf("充值数量不能小于 %d", getMinTopup())})
+		return
+	}
+	id := c.GetInt("id")
+	if rejectInvalidTopUpQuota(c, id, req.Amount) {
+		return
+	}
+	group, err := model.GetUserGroup(id, true)
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "获取用户分组失败"})
+		return
+	}
+	payMoney := getPayMoney(req.Amount, group)
+	if payMoney < 0.01 {
+		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "充值金额过低"})
+		return
+	}
+
+	client := normalizePayClient(req.Client)
+	apiPath := "/v3/pay/transactions/native"
+	if client == "mobile" {
+		apiPath = "/v3/pay/transactions/h5"
+	}
+
+	tradeNo := fmt.Sprintf("USR%dNO%s%s", id, common.GetRandomString(8), strconv.FormatInt(time.Now().Unix(), 10))
+	notifyUrl := service.GetCallbackAddress() + "/api/user/wechat/notify"
+	// 用 decimal 精确换算成分，避免 float64 * 100 的取整误差导致与微信侧金额偏差 1 分。
+	totalCents := decimal.NewFromFloat(payMoney).Mul(decimal.NewFromInt(100)).Round(0).IntPart()
+
+	bodyMap := map[string]any{
+		"mchid":        operation_setting.WechatPayMchId,
+		"appid":        operation_setting.WechatPayAppId,
+		"description":  fmt.Sprintf("Uter 充值 %d", req.Amount),
+		"out_trade_no": tradeNo,
+		"notify_url":   notifyUrl,
+		"amount": map[string]any{
+			"total":    totalCents,
+			"currency": "CNY",
+		},
+	}
+	if client == "mobile" {
+		// H5 支付必填 scene_info：payer_client_ip 必须是用户真实终端 IP，
+		// 微信会用它做风控与归属判断，填错会直接下单失败。
+		bodyMap["scene_info"] = map[string]any{
+			"payer_client_ip": c.ClientIP(),
+			"h5_info": map[string]any{
+				"type":     "Wap",
+				"wap_url":  paymentReturnPath("/wallet"),
+				"wap_name": "Uter",
+			},
+		}
+	}
+	bodyBytes, _ := json.Marshal(bodyMap)
+	bodyStr := string(bodyBytes)
+
+	auth, err := service.WechatPayBuildAuthHeader(
+		"POST", apiPath, bodyStr,
+		operation_setting.WechatPayMchId, operation_setting.WechatPaySerialNo, operation_setting.WechatPayPrivateKey,
+	)
+	if err != nil {
+		logger.LogError(c.Request.Context(), fmt.Sprintf("微信支付签名失败 user_id=%d trade_no=%s error=%q", id, tradeNo, err.Error()))
+		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "创建订单失败"})
+		return
+	}
+
+	httpReq, err := http.NewRequest("POST", operation_setting.WechatPayGateway+apiPath, bytes.NewReader(bodyBytes))
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "创建订单失败"})
+		return
+	}
+	httpReq.Header.Set("Authorization", auth)
+	httpReq.Header.Set("Content-Type", "application/json")
+	httpReq.Header.Set("Accept", "application/json")
+	httpReq.Header.Set("User-Agent", "Uter/1.0")
+
+	resp, err := cnPayHTTPClient.Do(httpReq)
+	if err != nil {
+		logger.LogError(c.Request.Context(), fmt.Sprintf("微信支付下单请求失败 user_id=%d trade_no=%s error=%q", id, tradeNo, err.Error()))
+		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "创建订单失败"})
+		return
+	}
+	defer resp.Body.Close()
+	respBody, _ := io.ReadAll(resp.Body)
+
+	if resp.StatusCode != http.StatusOK {
+		logger.LogError(c.Request.Context(), fmt.Sprintf("微信支付下单失败 user_id=%d trade_no=%s path=%s status=%d body=%q", id, tradeNo, apiPath, resp.StatusCode, string(respBody)))
+		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "创建订单失败"})
+		return
+	}
+
+	var wxResp struct {
+		CodeUrl string `json:"code_url"`
+		H5Url   string `json:"h5_url"`
+	}
+	if err := json.Unmarshal(respBody, &wxResp); err != nil {
+		logger.LogError(c.Request.Context(), fmt.Sprintf("微信支付响应解析失败 user_id=%d trade_no=%s body=%q error=%q", id, tradeNo, string(respBody), err))
+		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "创建订单失败"})
+		return
+	}
+
+	var data map[string]string
+	switch client {
+	case "mobile":
+		if wxResp.H5Url == "" {
+			logger.LogError(c.Request.Context(), fmt.Sprintf("微信支付未返回 h5_url user_id=%d trade_no=%s body=%q", id, tradeNo, string(respBody)))
+			c.JSON(http.StatusOK, gin.H{"message": "error", "data": "创建订单失败"})
+			return
+		}
+		// h5_url 是微信中间页链接，5 分钟有效；只允许在其后覆盖 redirect_url
+		// （不得篡改其它参数），用于支付完成后跳回本站。
+		payUrl := withH5RedirectUrl(wxResp.H5Url, paymentReturnPath("/wallet?pay=success"))
+		data = map[string]string{"trade_no": tradeNo, "h5_url": payUrl}
+	default:
+		if wxResp.CodeUrl == "" {
+			logger.LogError(c.Request.Context(), fmt.Sprintf("微信支付未返回 code_url user_id=%d trade_no=%s body=%q", id, tradeNo, string(respBody)))
+			c.JSON(http.StatusOK, gin.H{"message": "error", "data": "创建订单失败"})
+			return
+		}
+		data = map[string]string{"trade_no": tradeNo, "code_url": wxResp.CodeUrl}
+	}
+
+	topUp := &model.TopUp{
+		UserId:          id,
+		Amount:          wechatAmountForStorage(req.Amount),
+		Money:           payMoney,
+		TradeNo:         tradeNo,
+		PaymentMethod:   model.PaymentMethodWechatPay,
+		PaymentProvider: model.PaymentProviderWechatPay,
+		CreateTime:      time.Now().Unix(),
+		Status:          common.TopUpStatusPending,
+	}
+	if err := topUp.Insert(); err != nil {
+		logger.LogError(c.Request.Context(), fmt.Sprintf("微信支付创建充值订单失败 user_id=%d trade_no=%s error=%q", id, tradeNo, err.Error()))
+		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "创建订单失败"})
+		return
+	}
+
+	logger.LogInfo(c.Request.Context(), fmt.Sprintf("微信支付%s订单创建成功 user_id=%d trade_no=%s amount=%d money=%.2f", apiPath, id, tradeNo, req.Amount, payMoney))
+	c.JSON(http.StatusOK, gin.H{
+		"message": "success",
+		"data":    data,
+		"url":     data["h5_url"] + data["code_url"],
+	})
+}
+
+// withH5RedirectUrl 在微信 H5 中间页链接上覆盖 redirect_url 参数。
+// 微信规定该链接只能追加/替换 redirect_url，不得改动其它参数；
+// 解析失败时原样返回，避免破坏链接导致支付无法拉起。
+func withH5RedirectUrl(h5Url, redirectUrl string) string {
+	parsed, err := url.Parse(h5Url)
+	if err != nil {
+		return h5Url
+	}
+	q := parsed.Query()
+	q.Set("redirect_url", redirectUrl)
+	parsed.RawQuery = q.Encode()
+	return parsed.String()
 }
 
 // WechatPayNotify 微信支付 APIv3 异步回调：验签 → AES-GCM 解密 → 校验交易状态 → 充值入账。
@@ -313,7 +496,9 @@ func WechatPayNotify(c *gin.Context) {
 
 	LockOrder(dec.OutTradeNo)
 	defer UnlockOrder(dec.OutTradeNo)
-	alreadyDone, err := model.RechargeWechatPay(dec.OutTradeNo, model.PaymentMethodWechatPay, c.ClientIP())
+	// actualMethod 传空字符串：回调无法区分该订单是网站支付还是小程序支付，
+	// 因此保留下单时写入的 payment_method，不用回调去覆盖。
+	alreadyDone, err := model.RechargeWechatPay(dec.OutTradeNo, "", c.ClientIP())
 	if err != nil {
 		switch {
 		case err == model.ErrTopUpNotFound:

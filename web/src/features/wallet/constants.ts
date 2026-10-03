@@ -32,8 +32,12 @@ export const DEFAULT_PRESET_MULTIPLIERS = [1, 5, 10, 30, 50, 100, 300, 500]
 export const PAYMENT_TYPES = {
   ALIPAY: 'alipay',
   WECHAT: 'wxpay',
-  ALIPAY_OFFICIAL: 'alipay_miniprogram',
-  WECHAT_PAY_OFFICIAL: 'wechat_miniprogram',
+  // 官方直连 · 网站支付（Web 收银台：PC 扫码 / 移动端跳转 App）
+  ALIPAY_WEB: 'alipay_web',
+  WECHAT_PAY_WEB: 'wechat_web',
+  // 官方直连 · 小程序支付：保留给小程序客户端，Web 不下发
+  ALIPAY_MINIPROGRAM: 'alipay_miniprogram',
+  WECHAT_PAY_MINIPROGRAM: 'wechat_miniprogram',
   STRIPE: 'stripe',
   CREEM: 'creem',
   WAFFO: 'waffo',
@@ -51,8 +55,10 @@ export const DEFAULT_PAYMENT_TYPE = PAYMENT_TYPES.ALIPAY
 export const PAYMENT_ICON_COLORS = {
   [PAYMENT_TYPES.ALIPAY]: '#1677FF',
   [PAYMENT_TYPES.WECHAT]: '#07C160',
-  [PAYMENT_TYPES.ALIPAY_OFFICIAL]: '#1677FF',
-  [PAYMENT_TYPES.WECHAT_PAY_OFFICIAL]: '#07C160',
+  [PAYMENT_TYPES.ALIPAY_WEB]: '#1677FF',
+  [PAYMENT_TYPES.WECHAT_PAY_WEB]: '#07C160',
+  [PAYMENT_TYPES.ALIPAY_MINIPROGRAM]: '#1677FF',
+  [PAYMENT_TYPES.WECHAT_PAY_MINIPROGRAM]: '#07C160',
   [PAYMENT_TYPES.STRIPE]: '#635BFF',
   [PAYMENT_TYPES.CREEM]: '#6366F1',
   [PAYMENT_TYPES.WAFFO]: '#2563EB',

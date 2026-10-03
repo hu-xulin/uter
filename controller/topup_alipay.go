@@ -25,6 +25,7 @@ import (
 	"net/url"
 	"regexp"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/Uter-AI/Uter/common"
@@ -52,6 +53,26 @@ type CnMiniProgramRequest struct {
 	BuyerId string `json:"buyer_id"`
 }
 
+// CnWebPaymentRequest 网站支付（Web 收银台）下单请求。
+// client 决定收银台形态，由前端按视口/UA 传入；服务端只接受白名单值，
+// 未知值一律降级为 pc，避免客户端下发任意字符串影响下单参数。
+type CnWebPaymentRequest struct {
+	Amount        int64  `json:"amount"`
+	PaymentMethod string `json:"payment_method"`
+	// Client 取值："pc"（扫码）或 "mobile"（跳转 App / H5 收银台）。
+	Client string `json:"client"`
+}
+
+// normalizePayClient 收敛客户端类型，仅返回 "pc" 或 "mobile"。
+func normalizePayClient(client string) string {
+	switch strings.ToLower(strings.TrimSpace(client)) {
+	case "mobile", "h5", "wap", "m":
+		return "mobile"
+	default:
+		return "pc"
+	}
+}
+
 func isAlipayTopUpEnabled() bool {
 	return operation_setting.IsAlipayEnabled()
 }
@@ -77,7 +98,7 @@ func RequestAlipayMiniProgram(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "当前未启用支付宝支付"})
 		return
 	}
-	if req.PaymentMethod != model.PaymentMethodAlipay {
+	if req.PaymentMethod != model.PaymentMethodAlipayMiniProgram {
 		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "支付方式不存在"})
 		return
 	}
@@ -168,7 +189,7 @@ func RequestAlipayMiniProgram(c *gin.Context) {
 		Amount:          alipayAmountForStorage(req.Amount),
 		Money:           payMoney,
 		TradeNo:         tradeNo,
-		PaymentMethod:   model.PaymentMethodAlipay,
+		PaymentMethod:   model.PaymentMethodAlipayMiniProgram,
 		PaymentProvider: model.PaymentProviderAlipay,
 		CreateTime:      time.Now().Unix(),
 		Status:          common.TopUpStatusPending,
@@ -183,6 +204,192 @@ func RequestAlipayMiniProgram(c *gin.Context) {
 		"message": "success",
 		"data":    map[string]string{"trade_no": r.TradeNo},
 		"url":     r.TradeNo,
+	})
+}
+
+// RequestAlipayWeb 创建支付宝网站支付订单。
+//
+// 收银台形态由 req.Client 决定（服务端收敛，未知值降级为 pc）：
+//   - pc     → alipay.trade.precreate（当面付扫码），返回 qr_code 供前端渲染二维码
+//   - mobile → alipay.trade.wap.pay（手机网站支付），返回 pay_url 供前端直接跳转
+//
+// 两者共用同一套异步回调与入账链路（/api/user/alipay/notify）。
+// 开通前提：支付宝开放平台已签约「当面付」（precreate）与「手机网站支付」（wap）。
+func RequestAlipayWeb(c *gin.Context) {
+	var req CnWebPaymentRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "参数错误"})
+		return
+	}
+	if !isAlipayTopUpEnabled() {
+		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "当前未启用支付宝支付"})
+		return
+	}
+	if req.PaymentMethod != model.PaymentMethodAlipay {
+		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "支付方式不存在"})
+		return
+	}
+	if req.Amount < getMinTopup() {
+		c.JSON(http.StatusOK, gin.H{"message": "error", "data": fmt.Sprintf("充值数量不能小于 %d", getMinTopup())})
+		return
+	}
+	id := c.GetInt("id")
+	if rejectInvalidTopUpQuota(c, id, req.Amount) {
+		return
+	}
+	group, err := model.GetUserGroup(id, true)
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "获取用户分组失败"})
+		return
+	}
+	payMoney := getPayMoney(req.Amount, group)
+	if payMoney < 0.01 {
+		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "充值金额过低"})
+		return
+	}
+
+	tradeNo := fmt.Sprintf("USR%dNO%s%s", id, common.GetRandomString(8), strconv.FormatInt(time.Now().Unix(), 10))
+	callBackAddress := service.GetCallbackAddress()
+	notifyUrl := callBackAddress + "/api/user/alipay/notify"
+	client := normalizePayClient(req.Client)
+
+	// 公共请求参数（两个接口共用）。
+	appId := operation_setting.AlipayAppId
+	timestamp := time.Now().Format("2006-01-02 15:04:05")
+
+	if client == "mobile" {
+		// 手机网站支付：alipay.trade.wap.pay 是页面跳转类接口，服务端只负责
+		// 生成带签名的完整跳转 URL，由前端 window.location 跳转。
+		bizContent := map[string]string{
+			"out_trade_no": tradeNo,
+			"total_amount": strconv.FormatFloat(payMoney, 'f', 2, 64),
+			"subject":      fmt.Sprintf("Uter 充值 %d", req.Amount),
+			"product_code": "QUICK_WAP_WAY",
+			// 用户中途退出支付时回到的页面。
+			"quit_url": paymentReturnPath("/wallet"),
+		}
+		bizBytes, _ := json.Marshal(bizContent)
+		params := map[string]string{
+			"app_id":      appId,
+			"method":      "alipay.trade.wap.pay",
+			"format":      "JSON",
+			"charset":     "utf-8",
+			"sign_type":   "RSA2",
+			"timestamp":   timestamp,
+			"version":     "1.0",
+			"notify_url":  notifyUrl,
+			"return_url":  paymentReturnPath("/wallet?pay=success"),
+			"biz_content": string(bizBytes),
+		}
+		sign, err := service.AlipayBuildSign(params, operation_setting.AlipayPrivateKey)
+		if err != nil {
+			logger.LogError(c.Request.Context(), fmt.Sprintf("支付宝签名失败 user_id=%d trade_no=%s client=mobile error=%q", id, tradeNo, err.Error()))
+			c.JSON(http.StatusOK, gin.H{"message": "error", "data": "创建订单失败"})
+			return
+		}
+		params["sign"] = sign
+
+		topUp := &model.TopUp{
+			UserId:          id,
+			Amount:          alipayAmountForStorage(req.Amount),
+			Money:           payMoney,
+			TradeNo:         tradeNo,
+			PaymentMethod:   model.PaymentMethodAlipay,
+			PaymentProvider: model.PaymentProviderAlipay,
+			CreateTime:      time.Now().Unix(),
+			Status:          common.TopUpStatusPending,
+		}
+		if err := topUp.Insert(); err != nil {
+			logger.LogError(c.Request.Context(), fmt.Sprintf("支付宝创建充值订单失败 user_id=%d trade_no=%s error=%q", id, tradeNo, err.Error()))
+			c.JSON(http.StatusOK, gin.H{"message": "error", "data": "创建订单失败"})
+			return
+		}
+		payUrl := operation_setting.AlipayGateway + "?" + toUrlValues(params).Encode()
+		logger.LogInfo(c.Request.Context(), fmt.Sprintf("支付宝手机网站支付订单创建成功 user_id=%d trade_no=%s amount=%d money=%.2f", id, tradeNo, req.Amount, payMoney))
+		c.JSON(http.StatusOK, gin.H{
+			"message": "success",
+			"data":    map[string]string{"trade_no": tradeNo, "pay_url": payUrl},
+			"url":     payUrl,
+		})
+		return
+	}
+
+	// PC：当面付扫码支付 alipay.trade.precreate，返回 qr_code。
+	bizContent := map[string]string{
+		"out_trade_no": tradeNo,
+		"total_amount": strconv.FormatFloat(payMoney, 'f', 2, 64),
+		"subject":      fmt.Sprintf("Uter 充值 %d", req.Amount),
+	}
+	bizBytes, _ := json.Marshal(bizContent)
+	params := map[string]string{
+		"app_id":      appId,
+		"method":      "alipay.trade.precreate",
+		"format":      "JSON",
+		"charset":     "utf-8",
+		"sign_type":   "RSA2",
+		"timestamp":   timestamp,
+		"version":     "1.0",
+		"notify_url":  notifyUrl,
+		"biz_content": string(bizBytes),
+	}
+	sign, err := service.AlipayBuildSign(params, operation_setting.AlipayPrivateKey)
+	if err != nil {
+		logger.LogError(c.Request.Context(), fmt.Sprintf("支付宝签名失败 user_id=%d trade_no=%s client=pc error=%q", id, tradeNo, err.Error()))
+		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "创建订单失败"})
+		return
+	}
+	params["sign"] = sign
+
+	resp, err := cnPayHTTPClient.PostForm(operation_setting.AlipayGateway, toUrlValues(params))
+	if err != nil {
+		logger.LogError(c.Request.Context(), fmt.Sprintf("支付宝下单请求失败 user_id=%d trade_no=%s error=%q", id, tradeNo, err.Error()))
+		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "创建订单失败"})
+		return
+	}
+	defer resp.Body.Close()
+	body, _ := io.ReadAll(resp.Body)
+
+	var alipayResp struct {
+		AlipayTradePrecreateResponse struct {
+			Code    string `json:"code"`
+			Msg     string `json:"msg"`
+			SubMsg  string `json:"sub_msg"`
+			QrCode  string `json:"qr_code"`
+			TradeNo string `json:"out_trade_no"`
+		} `json:"alipay_trade_precreate_response"`
+	}
+	if err := json.Unmarshal(body, &alipayResp); err != nil {
+		logger.LogError(c.Request.Context(), fmt.Sprintf("支付宝响应解析失败 user_id=%d trade_no=%s body=%q error=%q", id, tradeNo, string(body), err.Error()))
+		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "创建订单失败"})
+		return
+	}
+	r := alipayResp.AlipayTradePrecreateResponse
+	if r.Code != "10000" || r.QrCode == "" {
+		logger.LogWarn(c.Request.Context(), fmt.Sprintf("支付宝下单失败 user_id=%d trade_no=%s code=%s msg=%s sub=%s", id, tradeNo, r.Code, r.Msg, r.SubMsg))
+		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "创建订单失败：" + r.Msg})
+		return
+	}
+
+	topUp := &model.TopUp{
+		UserId:          id,
+		Amount:          alipayAmountForStorage(req.Amount),
+		Money:           payMoney,
+		TradeNo:         tradeNo,
+		PaymentMethod:   model.PaymentMethodAlipay,
+		PaymentProvider: model.PaymentProviderAlipay,
+		CreateTime:      time.Now().Unix(),
+		Status:          common.TopUpStatusPending,
+	}
+	if err := topUp.Insert(); err != nil {
+		logger.LogError(c.Request.Context(), fmt.Sprintf("支付宝创建充值订单失败 user_id=%d trade_no=%s error=%q", id, tradeNo, err.Error()))
+		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "创建订单失败"})
+		return
+	}
+	logger.LogInfo(c.Request.Context(), fmt.Sprintf("支付宝扫码支付订单创建成功 user_id=%d trade_no=%s amount=%d money=%.2f", id, tradeNo, req.Amount, payMoney))
+	c.JSON(http.StatusOK, gin.H{
+		"message": "success",
+		"data":    map[string]string{"trade_no": tradeNo, "qr_code": r.QrCode},
+		"url":     r.QrCode,
 	})
 }
 
@@ -256,7 +463,9 @@ func AlipayNotify(c *gin.Context) {
 
 	LockOrder(tradeNo)
 	defer UnlockOrder(tradeNo)
-	alreadyDone, err := model.RechargeAlipay(tradeNo, model.PaymentMethodAlipay, c.ClientIP())
+	// actualMethod 传空字符串：回调无法区分该订单是网站支付还是小程序支付，
+	// 因此保留下单时写入的 payment_method，不用回调去覆盖。
+	alreadyDone, err := model.RechargeAlipay(tradeNo, "", c.ClientIP())
 	if err != nil {
 		switch {
 		case err == model.ErrTopUpNotFound:

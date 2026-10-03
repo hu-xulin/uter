@@ -17,8 +17,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 package operation_setting
 
-// 支付宝当面付（官方直连）配置。
-// 启用前提：已在支付宝开放平台开通「当面付」产品，并取得以下参数。
+// 支付宝（官方直连）配置。
+// 启用前提：已在支付宝开放平台开通「当面付」（PC 扫码，alipay.trade.precreate）
+// 与「手机网站支付」（移动端，alipay.trade.wap.pay），并取得以下参数。
+// ⚠️ 签约时支付宝要求支付域名已完成 ICP 备案且备案主体与商户主体一致。
 var (
 	AlipayEnabled    = false
 	AlipayAppId      = ""
@@ -27,8 +29,10 @@ var (
 	AlipayGateway    = "https://openapi.alipay.com/gateway.do"
 )
 
-// 微信支付（官方直连，APIv3 Native 扫码）配置。
-// 启用前提：已申请微信支付商户号并配置 APIv3 密钥与平台证书。
+// 微信支付（官方直连，APIv3）配置。
+// 启用前提：已申请微信支付商户号并开通「Native 支付」（PC 扫码）与「H5 支付」（移动端），
+// 在商户平台「开发配置」登记已备案的支付域名，并配置 APIv3 密钥与平台证书。
+// ⚠️ 经营性网站还需 ICP 许可证；备案主体须与商户号主体一致。
 var (
 	WechatPayEnabled      = false
 	WechatPayMchId        = ""

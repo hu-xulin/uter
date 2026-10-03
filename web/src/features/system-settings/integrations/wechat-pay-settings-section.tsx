@@ -146,7 +146,7 @@ export function WechatPaySettingsSection({
           <div>
             <h3 className='text-lg font-medium'>{t('WeChat Pay Gateway')}</h3>
             <p className='text-muted-foreground text-sm'>
-              {t('Configuration for WeChat Pay mini-program integration')}
+              {t('Configuration for WeChat Pay website payment integration')}
             </p>
           </div>
 
@@ -158,7 +158,7 @@ export function WechatPaySettingsSection({
                 <SettingsSwitchContent>
                   <FormLabel>{t('Enable WeChat Pay')}</FormLabel>
                   <FormDescription>
-                    {t('Enable official WeChat Pay mini-program payment')}
+                    {t('Enable official WeChat Pay website payment')}
                   </FormDescription>
                 </SettingsSwitchContent>
                 <FormControl>
@@ -208,7 +208,7 @@ export function WechatPaySettingsSection({
                       />
                     </FormControl>
                     <FormDescription>
-                      {t('Bound mini-program AppID')}
+                      {t('Bound website payment AppID')}
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -294,7 +294,12 @@ export function WechatPaySettingsSection({
                   <ul className='list-disc space-y-1 pl-5'>
                     <li>
                       {t(
-                        'Enable JSAPI (mini-program) payment in WeChat Pay merchant'
+                        'Enable WeChat Pay Native (PC QR) and H5 (mobile) payment products'
+                      )}
+                    </li>
+                    <li>
+                      {t(
+                        'Register the ICP-filed payment domain in the merchant platform'
                       )}
                     </li>
                     <li>

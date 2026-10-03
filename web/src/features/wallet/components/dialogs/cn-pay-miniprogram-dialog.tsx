@@ -14,13 +14,11 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General License
 along with this program. Not found? See <https://www.gnu.org/licenses/>.
 */
+import { Loader2, Smartphone } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Loader2, Smartphone } from 'lucide-react'
 import { toast } from 'sonner'
 
-import { getSelf } from '@/lib/api'
-import { Button } from '@/components/ui/button'
 import {
   AlertDialog,
   AlertDialogContent,
@@ -29,6 +27,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
+import { Button } from '@/components/ui/button'
+import { getSelf } from '@/lib/api'
 import { formatLocalCurrencyAmount } from '@/lib/currency'
 
 import { isAlipayMiniProgramPayment } from '../../lib'
@@ -151,9 +151,9 @@ export function CnPayMiniProgramDialog({
             </span>
           </div>
 
-          <div className='flex w-full flex-col items-center gap-3 rounded-lg border bg-muted/30 p-4 text-center'>
-            <Smartphone className='h-8 w-8 text-muted-foreground' />
-            <p className='text-sm text-muted-foreground'>
+          <div className='bg-muted/30 flex w-full flex-col items-center gap-3 rounded-lg border p-4 text-center'>
+            <Smartphone className='text-muted-foreground h-8 w-8' />
+            <p className='text-muted-foreground text-sm'>
               {t(
                 'Open the Uter mini-program, go to Wallet → Top up, then this page detects the successful top-up automatically.'
               )}
@@ -166,7 +166,7 @@ export function CnPayMiniProgramDialog({
             </div>
           )}
           {!done && loading && (
-            <div className='flex items-center gap-1.5 text-xs text-muted-foreground'>
+            <div className='text-muted-foreground flex items-center gap-1.5 text-xs'>
               <Loader2 className='h-3.5 w-3.5 animate-spin' />
               {t('Waiting for payment confirmation in the mini-program...')}
             </div>

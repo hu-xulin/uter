@@ -31,9 +31,16 @@ const (
 	PaymentMethodCreem        = "creem"
 	PaymentMethodWaffo        = "waffo"
 	PaymentMethodWaffoPancake = "waffo_pancake"
-	PaymentMethodBalance      = "balance"
-	PaymentMethodAlipay       = "alipay_miniprogram"
-	PaymentMethodWechatPay    = "wechat_miniprogram"
+	PaymentMethodBalance = "balance"
+	// 网站支付（Web 收银台）：PC 走扫码、移动端跳转支付方 App / H5 收银台。
+	// 这是面向 Web 站点的主通道——支付发生在浏览器中，不受 Apple IAP 约束，费率约 0.6%。
+	PaymentMethodAlipay    = "alipay_web"
+	PaymentMethodWechatPay = "wechat_web"
+	// 小程序支付：保留给小程序客户端（需 openid / buyer_id）。
+	// ⚠️ 微信小程序自 2026-04-01 起对虚拟商品强制 wx.requestVirtualPayment（iOS 12% 抽成），
+	// 因此小程序不作为额度充值的主收款口；这两个方法默认不在 Web 支付方式列表中下发。
+	PaymentMethodAlipayMiniProgram    = "alipay_miniprogram"
+	PaymentMethodWechatPayMiniProgram = "wechat_miniprogram"
 )
 
 const (

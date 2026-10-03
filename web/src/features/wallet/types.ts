@@ -93,6 +93,33 @@ export interface CnMiniProgramPaymentRequest {
 }
 
 /**
+ * Website payment (web cashier) request.
+ * `client` selects the cashier form: "pc" (QR code) or "mobile" (redirect).
+ * The server whitelists the value and falls back to "pc" for anything unknown.
+ */
+export interface CnWebPaymentRequest {
+  /** Topup amount */
+  amount: number
+  /** Payment method identifier (alipay_web / wechat_web) */
+  payment_method: string
+  /** Client form factor hint: "pc" or "mobile" */
+  client?: 'pc' | 'mobile'
+}
+
+/**
+ * Website payment response.
+ * - PC: `qr_code` (Alipay precreate) or `code_url` (WeChat Native) → render QR.
+ * - Mobile: `pay_url` (Alipay wap) or `h5_url` (WeChat H5) → redirect the browser.
+ */
+export type CnWebPaymentResponse = ApiResponse<{
+  trade_no?: string
+  qr_code?: string
+  code_url?: string
+  pay_url?: string
+  h5_url?: string
+}> & { url?: string }
+
+/**
  * Creem product configuration
  */
 export interface CreemProduct {
