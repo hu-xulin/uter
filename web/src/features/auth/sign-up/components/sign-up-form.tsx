@@ -51,6 +51,7 @@ import {
 } from '@/features/auth/lib/storage'
 import { useStatus } from '@/hooks/use-status'
 import { handleServerError } from '@/lib/handle-server-error'
+import { inspectAccountPassword } from '@/lib/password-policy'
 import { AuthOperationError } from '@/lib/secure-verification'
 import { createServerError } from '@/lib/server-error-message'
 import { cn } from '@/lib/utils'
@@ -99,6 +100,8 @@ export function SignUpForm({
   })
 
   const emailValue = form.watch('email')
+  const passwordValue = form.watch('password')
+  const usernameValue = form.watch('username')
   const emailVerificationRequired = !!status?.email_verification
   const hasUserAgreement = Boolean(status?.user_agreement_enabled)
   const hasPrivacyPolicy = Boolean(status?.privacy_policy_enabled)
@@ -109,6 +112,30 @@ export function SignUpForm({
     true
   const hasWeChatLogin = Boolean(status?.wechat_login)
   const turnstileReady = !isTurnstileEnabled || Boolean(turnstileToken)
+
+  // Password guidance shown inline right after the "Password" label. By default
+  // (empty) it reminds the user of the core rule in muted text; once they type a
+  // value that breaks the policy it turns red and names the exact failing rule.
+  // Mirrors the server-side common/password_policy.go check.
+  const passwordPolicyResult = useMemo(
+    () =>
+      inspectAccountPassword(passwordValue ?? '', {
+        username: usernameValue,
+        email: emailValue,
+      }),
+    [passwordValue, usernameValue, emailValue]
+  )
+  const passwordTyped = (passwordValue ?? '').length > 0
+  const passwordHintIsError = passwordTyped && passwordPolicyResult !== null
+  // Show the persistent hint whenever the password is empty (default rule) or
+  // invalid, but not while the field already shows a submit-time FormMessage
+  // for the same issue (avoids duplicate text).
+  const showPasswordHint =
+    !form.formState.errors.password &&
+    (!passwordTyped || passwordPolicyResult !== null)
+  const passwordHintText = passwordHintIsError
+    ? (passwordPolicyResult as string)
+    : 'Password must include at least two of the following: letters, numbers, and special characters.'
 
   const wechatQrCodeUrl = useMemo(() => {
     return (
@@ -272,7 +299,21 @@ export function SignUpForm({
           name='password'
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t('Password')}</FormLabel>
+              <FormLabel className='flex flex-wrap items-center gap-x-2'>
+                <span>{t('Password')}</span>
+                {showPasswordHint && (
+                  <span
+                    className={cn(
+                      'text-xs font-normal',
+                      passwordHintIsError
+                        ? 'text-destructive'
+                        : 'text-muted-foreground'
+                    )}
+                  >
+                    {t(passwordHintText)}
+                  </span>
+                )}
+              </FormLabel>
               <FormControl>
                 <PasswordInput
                   placeholder={t('Enter password (8–128 characters)')}
