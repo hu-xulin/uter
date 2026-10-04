@@ -311,7 +311,7 @@ export function SSRFSection({ defaultValues }: SSRFSectionProps) {
                 </FormLabel>
                 <FormControl>
                   <Textarea
-                    placeholder={t('example.com&#10;blocked-site.com')}
+                    placeholder={t('example.com\nblocked-site.com')}
                     rows={4}
                     {...field}
                   />
@@ -375,7 +375,7 @@ export function SSRFSection({ defaultValues }: SSRFSectionProps) {
                 </FormLabel>
                 <FormControl>
                   <Textarea
-                    placeholder={t('192.168.1.1&#10;10.0.0.0/8')}
+                    placeholder={t('192.168.1.1\n10.0.0.0/8')}
                     rows={4}
                     {...field}
                   />

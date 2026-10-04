@@ -248,7 +248,7 @@ export function BasicAuthSection({ defaultValues }: BasicAuthSectionProps) {
                 <FormLabel>{t('Email Domain Whitelist')}</FormLabel>
                 <FormControl>
                   <Textarea
-                    placeholder={t('example.com&#10;company.com')}
+                    placeholder={t('example.com\ncompany.com')}
                     rows={4}
                     {...field}
                   />
