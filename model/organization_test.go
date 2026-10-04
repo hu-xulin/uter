@@ -193,9 +193,16 @@ func TestAddMemberRejectsUserFromAnotherOrganization(t *testing.T) {
 	assert.Equal(t, 2, user.OrganizationId, "跨组织加入必须被拒绝且不改动归属")
 }
 
-// 结算补扣（IncrOrgUsedQuota）也必须遵守组织预算硬上限：实时语音/流式请求的实际消耗常远大于
-// 初始预估，差额通过本函数补记；若不卡上限，成员可用一次超长会话把组织账本推过已付预算。
-func TestIncrOrgUsedQuotaRespectsBudget(t *testing.T) {
+// 结算补扣（IncrOrgUsedQuota）必须如实记账，不做截断。
+//
+// 旧实现在这里用条件 UPDATE 把突破预算的补扣「整笔丢弃」。看上去守住了上限，实际
+// 后果相反：请求已渲染、上游成本已发生，丢弃写入收不回钱；而账本停在预扣额附近，
+// used_quota 永远追不上 quota，准入闸门永远放行 —— 组织预算形同虚设，成员可无限白嫖，
+// 且消费日志与账本系统性脱节。
+//
+// 现在的契约：如实累加（允许 used_quota 越过 quota 以暴露超支），预算防线下沉到准入
+// （ReserveOrgQuota / EnforceOrgQuota）—— 一旦账本越过预算，后续请求必然被拒。
+func TestIncrOrgUsedQuotaRecordsActualConsumption(t *testing.T) {
 	truncateTables(t)
 	insertOrgForTest(t, 1, 1_000)
 	insertOrgUserForTest(t, 1, 1, OrgRoleMember, 0, 0, "")
@@ -203,16 +210,18 @@ func TestIncrOrgUsedQuotaRespectsBudget(t *testing.T) {
 	require.NoError(t, IncrOrgUsedQuota(1, 600))
 	assert.Equal(t, int64(600), orgUsedQuotaForTest(t, 1))
 
-	// 再补 600 会突破 1000 上限，必须失败且账本停在 600。
-	err := IncrOrgUsedQuota(1, 600)
-	require.ErrorIs(t, err, ErrOrgBudgetExceeded)
-	assert.Equal(t, int64(600), orgUsedQuotaForTest(t, 1), "超额补扣不得改动账本")
+	// 再补 600 会突破 1000 预算：仍必须如实记账，账本与已发生的消耗对齐。
+	require.NoError(t, IncrOrgUsedQuota(1, 600))
+	assert.Equal(t, int64(1_200), orgUsedQuotaForTest(t, 1), "超支必须如实记账，不得截断")
 
-	// 恰好补到上限放行。
-	require.NoError(t, IncrOrgUsedQuota(1, 400))
+	// 负 delta（退款回滚）照常回减。
+	require.NoError(t, IncrOrgUsedQuota(1, -200))
 	assert.Equal(t, int64(1_000), orgUsedQuotaForTest(t, 1))
 
-	// 不限量组织（quota<=0）不受上限约束。
+	// 账本已顶到预算：准入闸门必须拒绝该成员的进一步消耗。
+	require.ErrorIs(t, ReserveOrgQuota(1, 1, 500), ErrOrgBudgetExceeded)
+
+	// 不限量组织（quota<=0）不受约束。
 	truncateTables(t)
 	insertOrgForTest(t, 2, 0)
 	insertOrgUserForTest(t, 2, 2, OrgRoleMember, 0, 0, "")

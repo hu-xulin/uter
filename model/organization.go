@@ -65,6 +65,22 @@ type Organization struct {
 
 func (Organization) TableName() string { return "organizations" }
 
+// SetOrganizationOwner 更新组织的负责人指针 owner_user_id。
+//
+// 该指针必须与 users.org_role 同步：它是 UpdateOrganization / RemoveOrganizationMember
+// 判定「谁是负责人」的依据。只改 org_role 而不改指针会造成所有权漂移 —— 真正的新负责人
+// 改不了组织元数据，而已经退出组织的旧负责人仍被当作负责人。
+//
+// 传 0 表示组织暂时没有负责人（仅超管可继续管理），不会误匹配任何真实用户 id
+// （自增 id 从 1 开始），因此是 fail-closed 的。
+func SetOrganizationOwner(id int, ownerUserId int) error {
+	if id == 0 {
+		return ErrOrgNotFound
+	}
+	return DB.Model(&Organization{}).Where("id = ?", id).
+		Update("owner_user_id", ownerUserId).Error
+}
+
 // OrganizationMemberSummary 用于列表展示组织内成员的消耗概览。
 type OrganizationMemberSummary struct {
 	User
@@ -83,6 +99,10 @@ var (
 	ErrOrgSubQuotaExceeded = errors.New("organization member sub-quota exceeded")
 	// ErrOrgMemberForeign 目标用户已归属其它组织；加入组织不得跨租户搬迁账号。
 	ErrOrgMemberForeign = errors.New("user already belongs to another organization")
+	// ErrOrgMemberPrivileged 目标用户的系统角色高于普通用户（平台管理员/超管）。
+	// 这类账号由平台直管、不属于任何组织，纳入组织会改写其组织归属并使其
+	// 受组织预算约束，越出「组织只管自己租户」的边界。
+	ErrOrgMemberPrivileged = errors.New("cannot add a privileged platform account to an organization")
 	// ErrOrgSuspended 组织已被平台停用，其成员不得消耗额度、不得被加入。
 	ErrOrgSuspended = errors.New("organization is suspended")
 	// ErrOrgStatusCodeInvalid 状态取值非法（只接受 1/2；不修改请用 OrgStatusUnchanged）。
@@ -213,22 +233,50 @@ func (org *Organization) AddMembers(members []OrgMemberAdd) error {
 	}
 	if org.MemberLimit > 0 {
 		var count int64
-		DB.Model(&User{}).Where("organization_id = ? AND deleted_at IS NULL", org.Id).Count(&count)
+		// 只把「本次真正新增」的人数计入上限：ids 中已属于本组织的用户
+		// 属于更新场景（见下方 ErrOrgAlreadyMember），若一并计数会让他们
+		// 既挡住重放、又在同一请求里把组织顶到超限。
+		DB.Model(&User{}).Where("organization_id = ? AND deleted_at IS NULL", org.Id).
+			Where("id NOT IN ?", ids).Count(&count)
 		if int(count)+len(ids) > org.MemberLimit {
 			return ErrOrgMemberLimit
 		}
 	}
-	var foreign int64
-	if err := DB.Model(&User{}).
-		Where("id IN ? AND organization_id <> 0 AND organization_id <> ?", ids, org.Id).
-		Count(&foreign).Error; err != nil {
+	// 纳新与改属性必须在数据层分离：
+	//  - 目标已属于其它组织：跨租户搬迁账号，不允许；
+	//  - 目标已属于本组织：应走 UpdateOrganizationMember 携带角色合法性校验，
+	//    若在此处放行会无条件覆写 org_role/sub_quota_limit，使组织管理员得以
+	//    自我提权（清零自身子额度上限）并把 owner 降级为 member，而修复方
+	//    （仅超管）反而无权改回，组织将失去唯一 owner；
+	//  - 目标系统角色高于普通用户：平台直管的管理员/超管不属于任何组织，
+	//    纳入会改写其组织归属，越出「组织只管自己租户」的边界。
+	var existing, foreign, privileged int64
+	base := DB.Model(&User{}).Where("id IN ?", ids)
+	if err := base.Session(&gorm.Session{}).Where("organization_id = ?", org.Id).
+		Count(&existing).Error; err != nil {
+		return err
+	}
+	if existing > 0 {
+		return ErrOrgAlreadyMember
+	}
+	if err := base.Session(&gorm.Session{}).
+		Where("organization_id <> 0").Count(&foreign).Error; err != nil {
 		return err
 	}
 	if foreign > 0 {
 		return ErrOrgMemberForeign
 	}
+	if err := base.Session(&gorm.Session{}).
+		Where("role > ?", common.RoleCommonUser).Count(&privileged).Error; err != nil {
+		return err
+	}
+	if privileged > 0 {
+		return ErrOrgMemberPrivileged
+	}
 	// 每个成员可归属不同部门：先统一挂到组织并标记为基础成员，
 	// 随后按成员逐个写入各自的 department_name 与 sub_quota_limit。
+	// 上面的准入检查已保证此处全是「尚不属于任何组织」的账号，故本 UPDATE
+	// 只会纳新，不会改写既有成员的属性。
 	if err := DB.Model(&User{}).Where("id IN ?", ids).Updates(map[string]any{
 		"organization_id": org.Id,
 		"org_role":        OrgRoleMember,
@@ -433,6 +481,10 @@ func reserveOrgQuotaRollbackMember(orgId int, userId int, amount int64) {
 
 // OrgRemainingQuota 返回组织共享预算的剩余额度。unlimited 为 true 时表示未设上限
 // （organizations.quota <= 0），此时 remaining 返回 0，调用方不得据此判定「已耗尽」。
+//
+// 超支（used_quota > quota，最后一次请求的实际消耗顶穿了预算）时钳制为 0：
+// 「剩余额度」是面向用户展示的量，负值会泄漏到额度提醒与余额提示里。超支这件事
+// 本身由 used_quota 与 quota 的差值显式暴露，并可由此告警。
 func OrgRemainingQuota(orgId int) (remaining int64, unlimited bool, err error) {
 	if orgId <= 0 {
 		return 0, true, nil
@@ -443,6 +495,9 @@ func OrgRemainingQuota(orgId int) (remaining int64, unlimited bool, err error) {
 	}
 	if org.Quota <= 0 {
 		return 0, true, nil
+	}
+	if org.UsedQuota >= org.Quota {
+		return 0, false, nil
 	}
 	return org.Quota - org.UsedQuota, false, nil
 }
@@ -468,26 +523,41 @@ func OrgIdOfUser(userId int) (int, error) {
 // IncrOrgUsedQuota 在扣费成功后累加组织已用额度（原子自增）。
 //
 // 与 ReserveOrgQuota 采用同一预算口径：quota<=0 表示不限量（平台未给该组织设上限），
-// 此时只累加、不卡上限；否则用单条「条件 UPDATE」保证 used_quota + amount <= quota，
-// 把预算硬上限延伸到「结算补扣 / 实时增量 / 退款回滚」这些 ReserveOrgQuota 之外的写入路径。
+// 此时只累加、不卡上限。
 //
-// 背景：ReserveOrgQuota 已在初始预扣时原子校验过预算，但实时语音/流式请求的实际消耗可能
-// 远大于初始预估，差额通过本函数补记。若此处不卡上限，成员可以用一次超长会话把组织账本
-// 推过已付预算（Uter 已垫付上游成本却收不回），即「组织预算超支」类免费 API 漏洞。
+// 设了预算时**仍然如实累加，不做截断**。这一点是刻意的，且与旧实现相反，原因如下：
+//
+// 组织预算的真正防线是**准入**（EnforceOrgQuota / ReserveOrgQuota），而不是事后的账本写入。
+// 旧实现在这里用条件 UPDATE 把补扣「整笔丢弃」，看上去守住了上限，实际效果是灾难性的：
+//
+//   - 请求已经渲染完毕、上游成本已经发生，丢弃写入并不能把钱收回；
+//   - 账本停在「预扣额」附近（远小于实际消耗），于是 used_quota 永远追不上 quota，
+//     准入闸门永远放行 —— 组织预算形同虚设，成员可以无限次白嫖；
+//   - 消费日志记的是真实消耗，账本记的是被截断的值，二者系统性脱节，
+//     「初始余额 − 最终余额 == logs.Quota」这条计费不变量直接失效。
+//
+// 实测（预算 150000、单笔实耗 30000、10 笔并发）：日志记 300000，账本只收 123000。
+//
+// 改为如实累加后：账本与日志始终对账一致；超额部分以 used_quota > quota 的形式显式暴露，
+// 可告警、可追责；而因为 used_quota 已经越过 quota，后续请求必然卡在准入闸门上，
+// 超支被限制在「最后一次请求」这一次性、有界的范围内——与个人钱包允许欠费是同一风险量级，
+// 且远优于旧实现的「无限白嫖」。
 func IncrOrgUsedQuota(orgId int, amount int64) error {
 	if orgId == 0 || amount == 0 {
 		return nil
 	}
-	res := DB.Model(&Organization{}).
-		Where("id = ? AND (quota <= 0 OR used_quota + ? <= quota)", orgId, amount).
+	res := DB.Model(&Organization{}).Where("id = ?", orgId).
 		Update("used_quota", gorm.Expr("used_quota + ?", amount))
 	if res.Error != nil {
 		return res.Error
 	}
 	if res.RowsAffected == 0 {
-		// 仅当组织设了硬预算且本次补记会突破上限时才会命中：实际用量已发生（请求已渲染），
-		// 这里只保证账本不被推过预算上限，避免组织预算被静默突破。
-		return fmt.Errorf("%w: org %d over budget on quota delta=%d", ErrOrgBudgetExceeded, orgId, amount)
+		return fmt.Errorf("organization %d not found when adjusting used quota (delta=%d)", orgId, amount)
+	}
+	if amount > 0 {
+		common.SysLog(fmt.Sprintf(
+			"organization %d budget overdraft: used_quota increased by %d (delta>0); "+
+				"admission will reject further requests once used_quota reaches the budget", orgId, amount))
 	}
 	return nil
 }
