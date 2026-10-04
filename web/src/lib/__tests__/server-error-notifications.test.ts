@@ -31,7 +31,11 @@ import { afterEach, expect, it, vi } from 'vitest'
 import { saveModelPricing } from '@/features/model-pricing/api'
 import { useUpdateOption } from '@/features/system-settings/hooks/use-update-option'
 import { handleServerError } from '@/lib/handle-server-error'
-import { api } from '@/lib/http-client'
+import {
+  api,
+  resetSessionExpiredNotice,
+  shouldNotifySessionExpired,
+} from '@/lib/http-client'
 import { createAppQueryClient } from '@/lib/query-client'
 import { AuthOperationError } from '@/lib/secure-verification'
 import {
@@ -46,7 +50,57 @@ afterEach(() => {
   api.defaults.adapter = originalAdapter
   vi.restoreAllMocks()
   useAuthStore.getState().auth.reset()
+  resetSessionExpiredNotice()
   window.history.replaceState({}, '', '/')
+})
+
+it('reports a session expiry once for a burst of parallel 401s and re-arms on the next session', () => {
+  const notify = vi.spyOn(toast, 'error').mockReturnValue('session-expired')
+  const error = new AxiosError(
+    'Request failed with status code 401',
+    'ERR_BAD_REQUEST',
+    { headers: new AxiosHeaders() } as never,
+    undefined,
+    {
+      data: { message: 'unauthorized' },
+      status: 401,
+      statusText: 'Unauthorized',
+      headers: {},
+      config: { headers: new AxiosHeaders() },
+    }
+  )
+
+  // Signing out clears the store, so every in-flight request now 401s at once.
+  useAuthStore.getState().auth.reset()
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    if (shouldNotifySessionExpired()) {
+      handleServerError({
+        message: 'Session expired!',
+        cause: error,
+      })
+    }
+  }
+  expect(notify).toHaveBeenCalledTimes(1)
+
+  // A later, genuine expiry after signing back in must still be reported.
+  useAuthStore.getState().auth.setBundle({
+    access_token: 'next-access',
+    token_type: 'Bearer',
+    access_expires_at: 2_000_000_000,
+    user: { id: 1, username: 'test-user', role: 1 },
+    session: {
+      sid: 'next-session',
+      current: true,
+      login_method: 'password',
+      ip: '',
+      user_agent: '',
+      created_at: 1,
+      last_active_at: 1,
+      expires_at: 2_000_000_000,
+    },
+  })
+  expect(shouldNotifySessionExpired()).toBe(true)
+  expect(shouldNotifySessionExpired()).toBe(false)
 })
 
 it('reports the pricing rejection once when the request error reaches multiple handlers', async () => {
