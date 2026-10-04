@@ -33,6 +33,11 @@
 #   ./rebuild-all.sh --install       # 构建前先 npm install 两个前端
 #   ./rebuild-all.sh --dev           # 构建+重启后，再拉起前端 HMR 开发服务
 #   ./rebuild-all.sh --dev --no-build  # 不重新构建，只重启后端 + 拉起 dev 服务
+#
+# 出站代理：启动时默认剔除所有指向 127.0.0.1/::1 的 HTTP(S)_PROXY 等变量
+# （会话注入的临时代理会让渠道测试间歇性报 connection refused，详见 spawn 说明）。
+#   KEEP_LOOPBACK_PROXY=1 ./rebuild-all.sh   # 只保留启动时仍存活的回环代理
+#   KEEP_PROXY=1 ./rebuild-all.sh            # 原样继承，一个都不剔除
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -95,18 +100,25 @@ wait_http() { # $1=port $2=重试次数；成功打印 HTTP 码
 }
 # spawn：以独立会话派生，终端退出也不被回收。
 #
-# 派生前会清理「指向本机但已经连不上」的代理环境变量（HTTP_PROXY/HTTPS_PROXY/
-# ALL_PROXY/FTP_PROXY 及其小写形式）。
+# 派生前会剔除所有「指向本机回环地址」的代理环境变量（HTTP_PROXY/HTTPS_PROXY/
+# ALL_PROXY/FTP_PROXY 及其小写形式），无论当时能否连上。
 #
 # 背景：本机的 agent/沙箱会话经常注入 HTTP_PROXY=http://127.0.0.1:<随机端口>，
 # 而该代理是临时的、随会话结束即退出。uter-bin 用 Go 默认 transport，出站请求
-# 走 ProxyFromEnvironment，一旦继承到这种「已死」的代理，所有对外 HTTPS 都会
-# 报 `proxyconnect tcp: dial tcp 127.0.0.1:<port>: connect: connection refused`
-# （插件市场拉索引、上游渠道回调等都会挂）。
+# 走 ProxyFromEnvironment，一旦继承到这种代理，所有对外 HTTPS 都会报
+# `proxyconnect tcp: dial tcp 127.0.0.1:<port>: connect: connection refused`
+# （插件市场拉索引、上游渠道测试、渠道回调等都会挂）。
 #
-# 只清理「本机 + 端口连不通」的代理，因此不会误伤常驻的本机代理（例如 Clash
-# 的 7890）：能连上就保留，直连可用性和代理可用性两者兼得。
-# 需要原样继承时设 KEEP_PROXY=1。
+# 为什么连「启动时还活着」的一律丢弃：只判存活是治标不治本。代理在 spawn 那一刻
+# 监听着，之后会话结束就退出，而服务进程会一直活着 —— 于是渠道测试在启动后
+# 一段时间内正常，随后突然全量报 connection refused。存活探测只能过滤掉
+# 「启动前已死」，过滤不掉「启动后退出」。回环代理对本机出站没有不可替代的价值
+# （直连本来就通），所以默认全部剔除，一劳永逸。
+#
+# 开关：
+#   KEEP_LOOPBACK_PROXY=1  仅保留启动时仍存活的回环代理（例如常驻 Clash 7890）
+#   KEEP_PROXY=1           原样继承，一个都不动
+# 远程代理（非回环地址）始终保留：那是显式配置，不是会话注入的临时产物。
 spawn() { # $1=日志 $2=cwd $3..=命令
   local log="$1" cwd="$2"; shift 2
   : >> "$log"
@@ -152,6 +164,7 @@ def reachable(value):
 env = dict(os.environ)
 dropped, kept = [], []
 if os.environ.get('KEEP_PROXY') != '1':
+    keep_live_loopback = os.environ.get('KEEP_LOOPBACK_PROXY') == '1'
     for key in PROXY_VARS:
         value = env.get(key)
         if not value:
@@ -160,14 +173,22 @@ if os.environ.get('KEEP_PROXY') != '1':
         # Only loopback proxies are suspect; a remote proxy is deliberate.
         if not target or target[0] not in LOOPBACK:
             continue
-        if reachable(value):
+        # Probe once and reuse the result: a second probe can disagree (a
+        # single-connection listener is already drained by the first), which
+        # would mislabel a live proxy as dead.
+        was_live = reachable(value)
+        if keep_live_loopback and was_live:
             kept.append(key + '=' + value)
         else:
-            dropped.append(key + '=' + env.pop(key))
+            # Note "was live at spawn" explicitly: that is the case a liveness
+            # probe alone cannot catch, since the proxy dies after startup.
+            dropped.append('%s=%s (%s)' % (
+                key, env.pop(key),
+                'was live at spawn' if was_live else 'already dead'))
 
 with open(log, 'a') as f:
     for item in dropped:
-        f.write('---- spawn: dropped dead loopback proxy %s ----\n' % item)
+        f.write('---- spawn: dropped loopback proxy %s ----\n' % item)
     for item in kept:
         f.write('---- spawn: kept live loopback proxy %s ----\n' % item)
     subprocess.Popen(sys.argv[3:], cwd=cwd, env=env, stdout=f,
