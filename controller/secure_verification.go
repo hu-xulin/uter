@@ -45,8 +45,12 @@ func writeSecurityOperationError(c *gin.Context, err error) {
 		code, message = "PASSKEY_RP_ID_UNAVAILABLE", i18n.T(c, i18n.MsgPasskeyRPIDUnavailable)
 	case errors.Is(err, system_setting.ErrPasskeyRPIDInvalid):
 		code, message = "PASSKEY_RP_ID_INVALID", i18n.T(c, i18n.MsgPasskeyRPIDInvalid)
-	case errors.Is(err, service.ErrAccountEmailInvalid), errors.Is(err, service.ErrAccountEmailRestricted):
+	case errors.Is(err, service.ErrAccountEmailInvalid):
 		code, message = "EMAIL_ADDRESS_REJECTED", err.Error()
+	case errors.Is(err, service.ErrAccountEmailDomainRestricted):
+		code, message = "EMAIL_DOMAIN_NOT_SUPPORTED", err.Error()
+	case errors.Is(err, service.ErrAccountEmailAliasRestricted):
+		code, message = "EMAIL_ALIAS_NOT_SUPPORTED", err.Error()
 	case errors.Is(err, model.ErrEmailAlreadyTaken):
 		code, message = "EMAIL_ALREADY_TAKEN", "This email address is already in use."
 	case errors.Is(err, service.ErrEmailBindingDelivery):
