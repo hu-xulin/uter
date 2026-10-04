@@ -36,6 +36,7 @@ import {
   resetSessionExpiredNotice,
   shouldNotifySessionExpired,
 } from '@/lib/http-client'
+import { setAuthTeardownInProgress } from '@/lib/auth-session'
 import { createAppQueryClient } from '@/lib/query-client'
 import { AuthOperationError } from '@/lib/secure-verification'
 import {
@@ -51,6 +52,7 @@ afterEach(() => {
   vi.restoreAllMocks()
   useAuthStore.getState().auth.reset()
   resetSessionExpiredNotice()
+  setAuthTeardownInProgress(false)
   window.history.replaceState({}, '', '/')
 })
 
@@ -275,6 +277,30 @@ it('keeps cancellations silent even after wrapping them in another error', () =>
     handleServerError(new Error('Request failed', { cause: error }))
   }
   expect(notify).not.toHaveBeenCalled()
+})
+
+it('stays silent during the sign-out teardown so late 401/403 errors do not override "Signed out"', () => {
+  const notify = vi.spyOn(toast, 'error').mockReturnValue('error')
+  const error = new AxiosError(
+    'Request failed with status code 403',
+    'ERR_BAD_REQUEST',
+    { headers: new AxiosHeaders() } as never,
+    undefined,
+    {
+      data: { message: 'No permission to perform this action' },
+      status: 403,
+      statusText: 'Forbidden',
+      headers: {},
+      config: { headers: new AxiosHeaders() },
+    }
+  )
+  setAuthTeardownInProgress(true)
+  handleServerError(error)
+  handleServerError({ message: 'Session expired!', cause: error })
+  expect(notify).not.toHaveBeenCalled()
+  setAuthTeardownInProgress(false)
+  handleServerError(error)
+  expect(notify).toHaveBeenCalledTimes(1)
 })
 
 it.each([

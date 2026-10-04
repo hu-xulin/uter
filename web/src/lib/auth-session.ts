@@ -153,6 +153,8 @@ export function applyAuthBundle(
 ): void {
   const previousSID = useAuthStore.getState().auth.session?.sid
   authEpoch += 1
+  // 新会话建立即结束销毁过渡，恢复正常错误提示。
+  setAuthTeardownInProgress(false)
   useAuthStore.getState().auth.setBundle(bundle)
   if (synchronizeTabs && previousSID !== bundle.session.sid) {
     publishAuthSessionEvent('authenticated', bundle.session.sid)
@@ -196,12 +198,29 @@ export function clearAuthentication(
   }
 }
 
+// 退出登录/会话被注销的短暂过渡期内，正在途的请求会因会话失效而回包
+// 401/403 或业务错误（如"无权进行此操作"）。这些"迟到"的错误不应再弹给用户，
+// 只保留退出流程自身的"退出登录"提示。该开关由 clearAuthenticatedClientState
+// 在进入销毁时开启、过渡结束后复位；新会话建立时也会立即复位。
+let authTeardownInProgress = false
+
+export function setAuthTeardownInProgress(value: boolean): void {
+  authTeardownInProgress = value
+}
+
+export function isAuthTeardownInProgress(): boolean {
+  return authTeardownInProgress
+}
+
 export function clearAuthenticatedClientState(
   queryClient: QueryClient,
   synchronizeTabs = true
 ): void {
+  setAuthTeardownInProgress(true)
   queryClient.clear()
   clearAuthentication(synchronizeTabs)
+  // 给在途请求足够时间回包并被静默；之后恢复正常错误提示。
+  setTimeout(() => setAuthTeardownInProgress(false), 1500)
 }
 
 function waitForRefreshRace(delay: number): Promise<void> {
