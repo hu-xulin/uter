@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"github.com/Uter-AI/Uter/i18n"
 	"maps"
 
 	"github.com/Uter-AI/Uter/common"
@@ -131,6 +132,6 @@ func ResetModelRatio(c *gin.Context) {
 	}
 	c.JSON(200, gin.H{
 		"success": true,
-		"message": "重置模型倍率成功",
+		"message": i18n.T(c, i18n.MsgPricingReset_ratio_success),
 	})
 }

@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"github.com/Uter-AI/Uter/i18n"
 	"net/http"
 
 	"github.com/Uter-AI/Uter/setting/billing_setting"
@@ -14,7 +15,7 @@ func GetRatioConfig(c *gin.Context) {
 	if !ratio_setting.IsExposeRatioEnabled() {
 		c.JSON(http.StatusForbidden, gin.H{
 			"success": false,
-			"message": "倍率配置接口未启用",
+			"message": i18n.T(c, i18n.MsgRatioConfig_disabled),
 		})
 		return
 	}

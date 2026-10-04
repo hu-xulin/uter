@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"fmt"
+	"github.com/Uter-AI/Uter/i18n"
 	"net/http"
 
 	"github.com/Uter-AI/Uter/common"
@@ -49,7 +50,7 @@ func memoryEmailVerificationRateLimiter(c *gin.Context) {
 	if !inMemoryRateLimiter.Request(key, EmailVerificationMaxRequests, EmailVerificationDuration) {
 		c.JSON(http.StatusTooManyRequests, gin.H{
 			"success": false,
-			"message": "发送过于频繁，请稍后再试",
+			"message": i18n.T(c, i18n.MsgRate_limitToo_frequent),
 		})
 		c.Abort()
 		return

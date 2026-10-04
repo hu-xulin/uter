@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"github.com/Uter-AI/Uter/i18n"
 	"strconv"
 
 	"github.com/Uter-AI/Uter/common"
@@ -29,7 +30,7 @@ func CreatePrefillGroup(c *gin.Context) {
 		return
 	}
 	if g.Name == "" || g.Type == "" {
-		common.ApiErrorMsg(c, "组名称和类型不能为空")
+		common.ApiErrorI18n(c, i18n.MsgGroupName_type_required)
 		return
 	}
 	// 创建前检查名称
@@ -37,7 +38,7 @@ func CreatePrefillGroup(c *gin.Context) {
 		common.ApiError(c, err)
 		return
 	} else if dup {
-		common.ApiErrorMsg(c, "组名称已存在")
+		common.ApiErrorI18n(c, i18n.MsgGroupName_exists)
 		return
 	}
 
@@ -56,7 +57,7 @@ func UpdatePrefillGroup(c *gin.Context) {
 		return
 	}
 	if g.Id == 0 {
-		common.ApiErrorMsg(c, "缺少组 ID")
+		common.ApiErrorI18n(c, i18n.MsgGroupMissing_id)
 		return
 	}
 	// 名称冲突检查
@@ -64,7 +65,7 @@ func UpdatePrefillGroup(c *gin.Context) {
 		common.ApiError(c, err)
 		return
 	} else if dup {
-		common.ApiErrorMsg(c, "组名称已存在")
+		common.ApiErrorI18n(c, i18n.MsgGroupName_exists)
 		return
 	}
 

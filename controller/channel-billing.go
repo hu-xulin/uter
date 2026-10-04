@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/Uter-AI/Uter/i18n"
 	"io"
 	"math"
 	"net/http"
@@ -546,7 +547,7 @@ func UpdateChannelBalance(c *gin.Context) {
 	if channel.ChannelInfo.IsMultiKey {
 		c.JSON(http.StatusOK, gin.H{
 			"success": false,
-			"message": "多密钥渠道不支持余额查询",
+			"message": i18n.T(c, i18n.MsgChannelMulti_key_balance_unsupported),
 		})
 		return
 	}

@@ -12,6 +12,7 @@ import (
 	"github.com/Uter-AI/Uter/common"
 
 	"github.com/Uter-AI/Uter/constant"
+	"github.com/Uter-AI/Uter/i18n"
 	"github.com/Uter-AI/Uter/model"
 	"github.com/Uter-AI/Uter/pkg/billingexpr"
 	relaycommon "github.com/Uter-AI/Uter/relay/common"
@@ -478,6 +479,7 @@ func TestRunChannelTestWorkersStopsAfterCancellation(t *testing.T) {
 }
 
 func TestTestAllChannelsRejectsExistingActiveTask(t *testing.T) {
+	_ = i18n.Init()
 	db := setupModelListControllerTestDB(t)
 	require.NoError(t, db.AutoMigrate(&model.SystemTask{}, &model.SystemTaskLock{}))
 
@@ -492,5 +494,5 @@ func TestTestAllChannelsRejectsExistingActiveTask(t *testing.T) {
 
 	require.Equal(t, http.StatusConflict, recorder.Code)
 	require.Contains(t, recorder.Body.String(), existing.TaskID)
-	require.Contains(t, recorder.Body.String(), "已有通道测试任务正在运行或等待中")
+	require.Contains(t, recorder.Body.String(), "A channel-test task is already running or queued")
 }

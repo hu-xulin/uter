@@ -2,6 +2,7 @@ package controller
 
 import (
 	"fmt"
+	"github.com/Uter-AI/Uter/i18n"
 	"net/http"
 	"strings"
 	"time"
@@ -28,7 +29,7 @@ func SubscriptionRequestStripePay(c *gin.Context) {
 
 	var req SubscriptionStripePayRequest
 	if err := c.ShouldBindJSON(&req); err != nil || req.PlanId <= 0 {
-		common.ApiErrorMsg(c, "参数错误")
+		common.ApiErrorI18n(c, i18n.MsgCommonInvalid_param)
 		return
 	}
 
@@ -38,19 +39,19 @@ func SubscriptionRequestStripePay(c *gin.Context) {
 		return
 	}
 	if !plan.Enabled {
-		common.ApiErrorMsg(c, "套餐未启用")
+		common.ApiErrorI18n(c, i18n.MsgSubscriptionPlan_disabled)
 		return
 	}
 	if plan.StripePriceId == "" {
-		common.ApiErrorMsg(c, "该套餐未配置 StripePriceId")
+		common.ApiErrorI18n(c, i18n.MsgSubscriptionStripe_price_missing)
 		return
 	}
 	if !strings.HasPrefix(setting.StripeApiSecret, "sk_") && !strings.HasPrefix(setting.StripeApiSecret, "rk_") {
-		common.ApiErrorMsg(c, "Stripe 未配置或密钥无效")
+		common.ApiErrorI18n(c, i18n.MsgSubscriptionStripe_not_configured)
 		return
 	}
 	if setting.StripeWebhookSecret == "" {
-		common.ApiErrorMsg(c, "Stripe Webhook 未配置")
+		common.ApiErrorI18n(c, i18n.MsgSubscriptionStripe_webhook_missing)
 		return
 	}
 
@@ -61,7 +62,7 @@ func SubscriptionRequestStripePay(c *gin.Context) {
 		return
 	}
 	if user == nil {
-		common.ApiErrorMsg(c, "用户不存在")
+		common.ApiErrorI18n(c, i18n.MsgCommonUser_not_found)
 		return
 	}
 
@@ -72,7 +73,7 @@ func SubscriptionRequestStripePay(c *gin.Context) {
 			return
 		}
 		if count >= int64(plan.MaxPurchasePerUser) {
-			common.ApiErrorMsg(c, "已达到该套餐购买上限")
+			common.ApiErrorI18n(c, i18n.MsgSubscriptionPurchase_limit_reached)
 			return
 		}
 	}

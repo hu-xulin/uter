@@ -23,74 +23,48 @@ import i18next from 'i18next'
 export const safeServerErrorMessage = Symbol('safeServerErrorMessage')
 
 const serverErrorMessageKeys = {
-  TELEGRAM_OAUTH_NOT_CONFIGURED:
-    'Telegram OAuth is not configured or enabled. Please contact your administrator.',
-  TELEGRAM_OAUTH_CONFLICT:
-    'The telegram OAuth provider name is reserved. Ask your administrator to rename the conflicting custom provider.',
-  TELEGRAM_OAUTH_FAILED: 'Telegram authorization failed. Please try again.',
-  TELEGRAM_ACCOUNT_NOT_BOUND:
-    'This Telegram account is not linked. Sign in using another method and link it first.',
-  TELEGRAM_LEGACY_AUTH_REMOVED:
-    'Telegram login has changed. Reload the page and start Telegram OAuth again.',
-  AUTH_INTERNAL_ERROR: 'Please try again later.',
-  EMAIL_DOMAIN_NOT_SUPPORTED:
-    'This email domain is not supported. Please use an email address from another domain.',
-  EMAIL_ALIAS_NOT_SUPPORTED:
-    'Email aliases are not supported. Please use an email address without +, -, _ or . in the part before @, then try again.',
-  EMAIL_ADDRESS_REJECTED: 'Please enter a valid email address',
-  EMAIL_ALREADY_TAKEN: 'This email address is already in use.',
-  EMAIL_BINDING_DELIVERY_FAILED:
-    'Verification email could not be sent. Start email verification again.',
+  TELEGRAM_OAUTH_NOT_CONFIGURED: 'Telegram login isn\'t set up. Ask your administrator to turn it on.',
+  TELEGRAM_OAUTH_CONFLICT: 'That provider name is reserved by Telegram. Ask your administrator to rename the conflicting custom provider.',
+  TELEGRAM_OAUTH_FAILED: 'Telegram sign-in failed. Please try again.',
+  TELEGRAM_ACCOUNT_NOT_BOUND: 'This Telegram account isn\'t linked yet. Sign in another way and link it first.',
+  TELEGRAM_LEGACY_AUTH_REMOVED: 'Telegram login changed. Refresh the page and start Telegram sign-in again.',
+  AUTH_INTERNAL_ERROR: 'Something went wrong on our side. Please try again later.',
+  EMAIL_DOMAIN_NOT_SUPPORTED: 'That email domain isn\'t allowed. Use an email from a supported domain.',
+  EMAIL_ALIAS_NOT_SUPPORTED: 'Email aliases aren\'t supported. Use an address without +, -, _ or . before the @, then try again.',
+  EMAIL_ADDRESS_REJECTED: 'Please enter a valid email address.',
+  EMAIL_ALREADY_TAKEN: 'That email is already in use.',
+  EMAIL_BINDING_DELIVERY_FAILED: 'We couldn\'t send the verification email. Start email verification again.',
   SECURITY_VERIFICATION_FAILED: 'Verification failed. Please try again.',
-  PASSKEY_RP_ID_UNAVAILABLE:
-    'This Passkey domain is not available on this website. Use its original website or another verification method.',
-  PASSKEY_RP_ID_INVALID:
-    'Invalid Passkey domain. Enter a domain without a scheme, port, path or wildcard.',
-  SECURITY_VERIFICATION_FLOW_REQUIRED:
-    'This verification method requires its dedicated verification flow.',
-  SECURITY_VERIFICATION_LOCKED:
-    'Two-factor authentication is temporarily locked.',
-  OAUTH_ACCOUNT_MISMATCH:
-    'The OAuth account does not match the account linked to your profile.',
-  TWOFA_CODE_INVALID: 'The authenticator code is incorrect.',
-  TWOFA_ALREADY_ENABLED: 'Two-factor authentication is already enabled.',
-  TWOFA_NOT_ENABLED: 'Two-factor authentication is not enabled.',
-  PASSKEY_NOT_FOUND: 'No Passkey is registered.',
-  AUTH_FLOW_INVALID: 'Verification flow expired',
-  SECURITY_PROOF_REQUIRED: 'Additional verification required',
-  SECURITY_PROOF_EXPIRED:
-    'Security verification has expired. Please verify again.',
-  SECURITY_PROOF_INVALID:
-    'Security verification is no longer valid. Please verify again.',
-  SECURITY_PROOF_SCOPE_MISMATCH: 'Verification does not match this action.',
-  SECURITY_PROOF_CONSUMED:
-    'This verification has already been used. Please verify again.',
-  SECURITY_PROOF_CONTEXT_MISMATCH:
-    "Verification does not match this action's details. Please verify again.",
-  SECURITY_CONTEXT_INVALID: 'The action details are invalid.',
-  SECURITY_ACTION_FORBIDDEN:
-    'You do not have permission to perform this action.',
-  SECURITY_PROOF_METHOD_MISMATCH:
-    'This verification method is not allowed for this action.',
-  SECURITY_METHOD_UNAVAILABLE:
-    'This verification method is currently unavailable.',
-  TWOFA_SETUP_INVALID:
-    'The two-factor setup has expired or changed. Start setup again.',
-
-  AUTH_SESSION_LIMIT:
-    'Too many active login sessions. On a device where you are already signed in, open Login sessions and use “Sign out other sessions” to revoke them. If you cannot access a signed-in device, reset your password to sign out all sessions.',
-  AUTH_SESSION_ISSUANCE_LIMIT:
-    'Too many login sessions were created recently. Please wait for the rolling window to pass, then try again.',
-  TELEGRAM_BIND_DISABLED: 'Telegram binding is disabled.',
-  TELEGRAM_BIND_INVALID_REQUEST:
-    'The Telegram authorization request is invalid or expired.',
-  TELEGRAM_BIND_FLOW_INVALID:
-    'This Telegram binding request has expired or has already been used.',
-  TELEGRAM_BIND_SESSION_INVALID:
-    'The login session that started this Telegram binding is no longer valid.',
-  TELEGRAM_BIND_ALREADY_BOUND: 'This Telegram account is already bound.',
-  TELEGRAM_BIND_USER_DELETED: 'This user account no longer exists.',
-  TELEGRAM_BIND_USER_DISABLED: 'This user account is disabled.',
+  PASSKEY_RP_ID_UNAVAILABLE: 'This Passkey domain isn\'t available here. Use its original site or another sign-in method.',
+  PASSKEY_RP_ID_INVALID: 'That Passkey domain isn\'t valid. Enter a domain with no scheme, port, path or wildcard.',
+  SECURITY_VERIFICATION_FLOW_REQUIRED: 'This step needs its own verification flow.',
+  SECURITY_VERIFICATION_LOCKED: 'Two-step verification is temporarily locked. Try again later.',
+  OAUTH_ACCOUNT_MISMATCH: 'This OAuth account doesn\'t match the one linked to your profile.',
+  TWOFA_CODE_INVALID: 'That authenticator code is wrong.',
+  TWOFA_ALREADY_ENABLED: 'Two-step verification is already on.',
+  TWOFA_NOT_ENABLED: 'Two-step verification isn\'t enabled yet.',
+  PASSKEY_NOT_FOUND: 'You don\'t have a Passkey yet.',
+  AUTH_FLOW_INVALID: 'This verification step has expired.',
+  SECURITY_PROOF_REQUIRED: 'Extra verification is needed.',
+  SECURITY_PROOF_EXPIRED: 'Verification expired. Please verify again.',
+  SECURITY_PROOF_INVALID: 'Verification is no longer valid. Please verify again.',
+  SECURITY_PROOF_SCOPE_MISMATCH: 'Verification doesn\'t match this action.',
+  SECURITY_PROOF_CONSUMED: 'This verification was already used. Please verify again.',
+  SECURITY_PROOF_CONTEXT_MISMATCH: 'Verification doesn\'t match this action\'s details. Please verify again.',
+  SECURITY_CONTEXT_INVALID: 'Those action details aren\'t valid.',
+  SECURITY_ACTION_FORBIDDEN: 'You don\'t have permission to do this.',
+  SECURITY_PROOF_METHOD_MISMATCH: 'This verification method isn\'t allowed for this action.',
+  SECURITY_METHOD_UNAVAILABLE: 'This verification method is unavailable right now.',
+  TWOFA_SETUP_INVALID: 'The two-step setup expired or changed. Start setup again.',
+  AUTH_SESSION_LIMIT: 'You have too many active sessions. On a signed-in device, open Login sessions and sign out the others. If you can\'t, reset your password to sign out everywhere.',
+  AUTH_SESSION_ISSUANCE_LIMIT: 'Too many sessions were created recently. Wait a bit, then try again.',
+  TELEGRAM_BIND_DISABLED: 'Telegram binding is turned off.',
+  TELEGRAM_BIND_INVALID_REQUEST: 'This Telegram sign-in request is invalid or expired.',
+  TELEGRAM_BIND_FLOW_INVALID: 'This Telegram binding request expired or was already used.',
+  TELEGRAM_BIND_SESSION_INVALID: 'The session that started this Telegram binding is no longer valid.',
+  TELEGRAM_BIND_ALREADY_BOUND: 'This Telegram account is already linked.',
+  TELEGRAM_BIND_USER_DELETED: 'This account no longer exists.',
+  TELEGRAM_BIND_USER_DISABLED: 'This account is disabled.',
   TELEGRAM_BIND_INTERNAL_ERROR: 'Telegram binding failed. Please try again.',
 } as const
 

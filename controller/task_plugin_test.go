@@ -912,9 +912,9 @@ func TestUploadTaskPluginLocalizesUnknownMetaField(t *testing.T) {
 		language string
 		message  string
 	}{
-		{"en", `Plugin metadata contains an unknown field "futureField". If this plugin was downloaded from the official marketplace, it may require a newer version of uter. Try updating uter and installing the plugin again.`},
-		{"zh-CN", "插件元数据包含未知字段“futureField”。如果插件来自官方市场，可能需要更高版本的 uter。请尝试更新 uter 后重新安装插件。"},
-		{"zh-TW", "外掛中繼資料包含未知欄位「futureField」。如果外掛來自官方市集，可能需要較新版本的 uter。請嘗試更新 uter 後重新安裝外掛。"},
+		{"en", `This plugin has an option "futureField" that your version of uter doesn’t recognize. Update uter and reinstall the plugin.`},
+		{"zh-CN", "这个插件带了一个 uter 还不认识的设置项“futureField”。请升级 uter 后重新安装该插件。"},
+		{"zh-TW", "這個外掛帶了一個 uter 還不認識的設定項「futureField」。請升級 uter 後重新安裝該外掛。"},
 	} {
 		t.Run(tc.language, func(t *testing.T) {
 			recorder := httptest.NewRecorder()

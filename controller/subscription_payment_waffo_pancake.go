@@ -2,6 +2,7 @@ package controller
 
 import (
 	"fmt"
+	"github.com/Uter-AI/Uter/i18n"
 	"net/http"
 	"strings"
 	"time"
@@ -28,7 +29,7 @@ func SubscriptionRequestWaffoPancakePay(c *gin.Context) {
 
 	var req SubscriptionWaffoPancakePayRequest
 	if err := c.ShouldBindJSON(&req); err != nil || req.PlanId <= 0 {
-		common.ApiErrorMsg(c, "参数错误")
+		common.ApiErrorI18n(c, i18n.MsgCommonInvalid_param)
 		return
 	}
 
@@ -38,18 +39,18 @@ func SubscriptionRequestWaffoPancakePay(c *gin.Context) {
 		return
 	}
 	if !plan.Enabled {
-		common.ApiErrorMsg(c, "套餐未启用")
+		common.ApiErrorI18n(c, i18n.MsgSubscriptionPlan_disabled)
 		return
 	}
 	if strings.TrimSpace(plan.WaffoPancakeProductId) == "" {
-		common.ApiErrorMsg(c, "该套餐未配置 WaffoPancakeProductId")
+		common.ApiErrorI18n(c, i18n.MsgSubscriptionWaffo_product_missing)
 		return
 	}
 	// Plan targets its own Pancake product, so we only require credentials
 	// here — not the gateway-level WaffoPancakeProductID.
 	if strings.TrimSpace(setting.WaffoPancakeMerchantID) == "" ||
 		strings.TrimSpace(setting.WaffoPancakePrivateKey) == "" {
-		common.ApiErrorMsg(c, "Waffo Pancake 未配置或密钥无效")
+		common.ApiErrorI18n(c, i18n.MsgSubscriptionWaffo_not_configured)
 		return
 	}
 
@@ -60,7 +61,7 @@ func SubscriptionRequestWaffoPancakePay(c *gin.Context) {
 		return
 	}
 	if user == nil {
-		common.ApiErrorMsg(c, "用户不存在")
+		common.ApiErrorI18n(c, i18n.MsgCommonUser_not_found)
 		return
 	}
 
@@ -71,7 +72,7 @@ func SubscriptionRequestWaffoPancakePay(c *gin.Context) {
 			return
 		}
 		if count >= int64(plan.MaxPurchasePerUser) {
-			common.ApiErrorMsg(c, "已达到该套餐购买上限")
+			common.ApiErrorI18n(c, i18n.MsgSubscriptionPurchase_limit_reached)
 			return
 		}
 	}

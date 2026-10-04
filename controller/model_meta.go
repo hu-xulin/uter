@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"github.com/Uter-AI/Uter/i18n"
 	"net/http"
 	"sort"
 	"strconv"
@@ -112,7 +113,7 @@ func CreateModelMeta(c *gin.Context) {
 		return
 	}
 	if m.ModelName == "" {
-		common.ApiErrorMsg(c, "模型名称不能为空")
+		common.ApiErrorI18n(c, i18n.MsgModelName_required)
 		return
 	}
 	if err := model.ValidateMetadataValues(model.MetadataValues{Endpoints: m.Endpoints, Status: m.Status, NameRule: m.NameRule}); err != nil {
@@ -124,7 +125,7 @@ func CreateModelMeta(c *gin.Context) {
 		common.ApiError(c, err)
 		return
 	} else if dup {
-		common.ApiErrorMsg(c, "模型名称已存在")
+		common.ApiErrorI18n(c, i18n.MsgModelName_exists)
 		return
 	}
 
@@ -147,7 +148,7 @@ func UpdateModelMeta(c *gin.Context) {
 		return
 	}
 	if m.Id == 0 {
-		common.ApiErrorMsg(c, "缺少模型 ID")
+		common.ApiErrorI18n(c, i18n.MsgCommonMissing_model_id)
 		return
 	}
 
@@ -163,7 +164,7 @@ func UpdateModelMeta(c *gin.Context) {
 		}
 	} else {
 		if strings.TrimSpace(m.ModelName) == "" {
-			common.ApiErrorMsg(c, "模型名称不能为空")
+			common.ApiErrorI18n(c, i18n.MsgModelName_required)
 			return
 		}
 		if err := model.ValidateMetadataValues(model.MetadataValues{Endpoints: m.Endpoints, Status: m.Status, NameRule: m.NameRule}); err != nil {
@@ -175,7 +176,7 @@ func UpdateModelMeta(c *gin.Context) {
 			common.ApiError(c, err)
 			return
 		} else if dup {
-			common.ApiErrorMsg(c, "模型名称已存在")
+			common.ApiErrorI18n(c, i18n.MsgModelName_exists)
 			return
 		}
 

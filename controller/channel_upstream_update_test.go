@@ -11,6 +11,7 @@ import (
 	"github.com/Uter-AI/Uter/common"
 
 	"github.com/Uter-AI/Uter/constant"
+	"github.com/Uter-AI/Uter/i18n"
 	"github.com/Uter-AI/Uter/model"
 	"github.com/Uter-AI/Uter/relaykit/dto"
 	"github.com/gin-gonic/gin"
@@ -589,6 +590,7 @@ func TestShouldSendUpstreamModelUpdateNotification(t *testing.T) {
 }
 
 func TestDetectAllChannelUpstreamModelUpdatesRejectsExistingActiveTask(t *testing.T) {
+	_ = i18n.Init()
 	db := setupModelListControllerTestDB(t)
 	require.NoError(t, db.AutoMigrate(&model.SystemTask{}, &model.SystemTaskLock{}))
 
@@ -603,5 +605,5 @@ func TestDetectAllChannelUpstreamModelUpdatesRejectsExistingActiveTask(t *testin
 
 	require.Equal(t, http.StatusConflict, recorder.Code)
 	require.Contains(t, recorder.Body.String(), existing.TaskID)
-	require.Contains(t, recorder.Body.String(), "已有模型更新任务正在运行或等待中")
+	require.Contains(t, recorder.Body.String(), "A model-update task is already running or queued")
 }
