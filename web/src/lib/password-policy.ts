@@ -30,7 +30,7 @@ import { z } from 'zod'
 /** Mirrors common.PasswordMinLength. */
 export const ACCOUNT_PASSWORD_MIN_LENGTH = 8
 /** Mirrors common.PasswordMaxLength. */
-export const ACCOUNT_PASSWORD_MAX_LENGTH = 128
+export const ACCOUNT_PASSWORD_MAX_LENGTH = 18
 
 // These English strings double as i18next keys: FormMessage renders validation
 // messages with t(), so each one must exist in every locale file and must stay
@@ -38,7 +38,7 @@ export const ACCOUNT_PASSWORD_MAX_LENGTH = 128
 export const PasswordIssueTooShort =
   'Password must be at least 8 characters long.'
 export const PasswordIssueTooLong =
-  'Password cannot be longer than 128 characters.'
+  'Password cannot be longer than 18 characters.'
 export const PasswordIssueTooSimple =
   'Password must include at least two of the following: letters, numbers, and special characters.'
 export const PasswordIssueTooCommon =
