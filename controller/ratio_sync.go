@@ -8,7 +8,6 @@ import (
 	"github.com/Uter-AI/Uter/i18n"
 	"io"
 	"math"
-	"net"
 	"net/http"
 	"net/url"
 	"sort"
@@ -23,6 +22,7 @@ import (
 
 	"github.com/Uter-AI/Uter/model"
 	"github.com/Uter-AI/Uter/relaykit/dto"
+	"github.com/Uter-AI/Uter/service"
 	"github.com/Uter-AI/Uter/setting/billing_setting"
 	"github.com/Uter-AI/Uter/setting/ratio_setting"
 	"github.com/samber/lo"
@@ -268,26 +268,9 @@ func FetchUpstreamRatios(c *gin.Context) {
 
 	sem := make(chan struct{}, maxConcurrentFetches)
 
-	dialer := &net.Dialer{Timeout: 10 * time.Second}
-	transport := &http.Transport{MaxIdleConns: 100, IdleConnTimeout: 90 * time.Second, TLSHandshakeTimeout: 10 * time.Second, ExpectContinueTimeout: 1 * time.Second, ResponseHeaderTimeout: 10 * time.Second}
-	if common.TLSInsecureSkipVerify {
-		transport.TLSClientConfig = common.InsecureTLSConfig
-	}
-	transport.DialContext = func(ctx context.Context, network, addr string) (net.Conn, error) {
-		host, _, err := net.SplitHostPort(addr)
-		if err != nil {
-			host = addr
-		}
-		// 对 github.io 优先尝试 IPv4，失败则回退 IPv6
-		if strings.HasSuffix(host, "github.io") {
-			if conn, err := dialer.DialContext(ctx, "tcp4", addr); err == nil {
-				return conn, nil
-			}
-			return dialer.DialContext(ctx, "tcp6", addr)
-		}
-		return dialer.DialContext(ctx, network, addr)
-	}
-	client := &http.Client{Transport: transport}
+	// 使用受 SSRF 防护的客户端：在拨号时校验目标 IP，拦截内网/云元数据等私网地址。
+	// 原先自建的 http.Transport + 自定义 DialContext 完全绕过了私网过滤，构成 SSRF 漏洞。
+	client := service.GetSSRFProtectedHTTPClient()
 
 	for _, chn := range upstreams {
 		wg.Add(1)

@@ -232,8 +232,9 @@ func SendEmailVerification(c *gin.Context) {
 		return
 	}
 
+	// 不暴露邮箱是否已注册（防账号枚举）：统一返回成功，已注册邮箱不发送验证码。
 	if model.IsEmailAlreadyTaken(email) {
-		common.ApiErrorI18n(c, i18n.MsgUserEmailAlreadyTaken)
+		c.JSON(http.StatusOK, gin.H{"success": true, "message": ""})
 		return
 	}
 	code, err := common.GenerateNumericCode(6)
@@ -255,7 +256,9 @@ func SendEmailVerification(c *gin.Context) {
 	})
 	err = common.SendEmail(subject, email, content)
 	if err != nil {
-		common.ApiError(c, err)
+		// 仅记录内部错误，不向匿名客户端回显 SMTP/服务端细节
+		logger.LogError(c.Request.Context(), fmt.Sprintf("failed to send email verification to %s: %s", common.MaskEmail(email), err.Error()))
+		common.ApiErrorI18n(c, i18n.MsgCommonSystem_error)
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{
@@ -307,7 +310,7 @@ func ResetPassword(c *gin.Context) {
 	var req PasswordResetRequest
 	err := json.NewDecoder(c.Request.Body).Decode(&req)
 	if err != nil {
-		common.ApiError(c, err)
+		common.ApiErrorI18n(c, i18n.MsgCommonInvalid_param_format)
 		return
 	}
 	req.Email = model.NormalizeEmail(req.Email)
@@ -319,14 +322,21 @@ func ResetPassword(c *gin.Context) {
 		common.ApiErrorI18n(c, i18n.MsgUserPasswordResetLinkInvalid)
 		return
 	}
-	password := common.GenerateVerificationCode(12)
+	// 临时口令使用密码学安全随机源，熵从 48 bit 提升至约 119 bit
+	password, err := common.GenerateRandomCharsKey(20)
+	if err != nil {
+		common.ApiErrorI18n(c, i18n.MsgCommonSystem_error)
+		return
+	}
 	err = model.ResetUserPasswordByEmail(req.Email, password)
 	if err != nil {
 		if errors.Is(err, model.ErrEmailNotFound) || errors.Is(err, model.ErrEmailAmbiguous) {
 			common.ApiErrorI18n(c, i18n.MsgUserPasswordResetLinkInvalid)
 			return
 		}
-		common.ApiError(c, err)
+		// 仅记录内部错误，不向匿名客户端回显数据库细节
+		logger.LogError(c.Request.Context(), fmt.Sprintf("failed to reset password for %s: %s", common.MaskEmail(req.Email), err.Error()))
+		common.ApiErrorI18n(c, i18n.MsgCommonSystem_error)
 		return
 	}
 	common.DeleteKey(req.Email, common.PasswordResetPurpose)

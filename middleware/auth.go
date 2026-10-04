@@ -389,7 +389,9 @@ func OrgAdminAuth() gin.HandlerFunc {
 		// 超管放行（可视化所有组织）。
 		if user.Role >= common.RoleRootUser {
 			setDashboardAuthContext(c, user, identity, useAccessToken)
+			auditWriter := beginAdminAudit(c)
 			c.Next()
+			finishAdminAudit(c, auditWriter)
 			return
 		}
 		// 非超管：必须是某组织的 owner/admin/department_admin。
@@ -400,7 +402,12 @@ func OrgAdminAuth() gin.HandlerFunc {
 		switch user.OrgRole {
 		case model.OrgRoleOwner, model.OrgRoleAdmin, model.OrgRoleDepartmentAdmin:
 			setDashboardAuthContext(c, user, identity, useAccessToken)
+			// 组织写操作审计兜底：组织 owner / org admin / 部门管理员的
+			// 纳新、改角色、改子额度、踢人、改组织信息等敏感写操作此前完全无审计
+			// 留痕，这里与 AdminAuth/RootAuth 一致地包裹写方法（对应审计项 P2-1）。
+			auditWriter := beginAdminAudit(c)
 			c.Next()
+			finishAdminAudit(c, auditWriter)
 			return
 		default:
 			abortOrgForbidden(c)

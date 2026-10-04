@@ -365,6 +365,16 @@ func AdminBindSubscription(c *gin.Context) {
 		common.ApiErrorI18n(c, i18n.MsgCommonInvalid_param)
 		return
 	}
+	// 角色 / 组织范围门禁（对应审计项 P1-2）：平台管理员不得操作超管账号，组织管理员不得跨租户操作。
+	targetUser, err := model.GetUserById(req.UserId, false)
+	if err != nil {
+		common.ApiError(c, err)
+		return
+	}
+	if !canManageTargetUser(c, targetUser) {
+		common.ApiErrorI18n(c, i18n.MsgUserNoPermissionHigherLevel)
+		return
+	}
 	msg, err := model.AdminBindSubscription(req.UserId, req.PlanId, "")
 	if err != nil {
 		common.ApiError(c, err)
@@ -383,6 +393,16 @@ func AdminListUserSubscriptions(c *gin.Context) {
 	userId, _ := strconv.Atoi(c.Param("id"))
 	if userId <= 0 {
 		common.ApiErrorI18n(c, i18n.MsgCommonInvalid_user_id)
+		return
+	}
+	// 角色 / 组织范围门禁（对应审计项 P1-2）。
+	targetUser, err := model.GetUserById(userId, false)
+	if err != nil {
+		common.ApiError(c, err)
+		return
+	}
+	if !canManageTargetUser(c, targetUser) {
+		common.ApiErrorI18n(c, i18n.MsgUserNoPermissionHigherLevel)
 		return
 	}
 	subs, err := model.GetAllUserSubscriptions(userId)
@@ -430,6 +450,16 @@ func AdminCreateUserSubscription(c *gin.Context) {
 		common.ApiErrorI18n(c, i18n.MsgCommonInvalid_user_id)
 		return
 	}
+	// 角色 / 组织范围门禁（对应审计项 P1-2）。
+	targetUser, err := model.GetUserById(userId, false)
+	if err != nil {
+		common.ApiError(c, err)
+		return
+	}
+	if !canManageTargetUser(c, targetUser) {
+		common.ApiErrorI18n(c, i18n.MsgUserNoPermissionHigherLevel)
+		return
+	}
 	var req AdminCreateUserSubscriptionRequest
 	if err := c.ShouldBindJSON(&req); err != nil || req.PlanId <= 0 {
 		common.ApiErrorI18n(c, i18n.MsgCommonInvalid_param)
@@ -451,6 +481,16 @@ func AdminResetUserSubscriptionsByPlan(c *gin.Context) {
 	userId, _ := strconv.Atoi(c.Param("id"))
 	if userId <= 0 {
 		common.ApiErrorI18n(c, i18n.MsgCommonInvalid_user_id)
+		return
+	}
+	// 角色 / 组织范围门禁（对应审计项 P1-2）。
+	targetUser, err := model.GetUserById(userId, false)
+	if err != nil {
+		common.ApiError(c, err)
+		return
+	}
+	if !canManageTargetUser(c, targetUser) {
+		common.ApiErrorI18n(c, i18n.MsgUserNoPermissionHigherLevel)
 		return
 	}
 	var req AdminResetSubscriptionRequest
@@ -517,6 +557,21 @@ func AdminInvalidateUserSubscription(c *gin.Context) {
 		common.ApiErrorI18n(c, i18n.MsgCommonInvalid_subscription_id)
 		return
 	}
+	// 角色 / 组织范围门禁（对应审计项 P1-2）：先按 subId 反查归属用户再校验。
+	ownerId, err := model.GetUserSubscriptionUserID(subId)
+	if err != nil {
+		common.ApiError(c, err)
+		return
+	}
+	targetUser, err := model.GetUserById(ownerId, false)
+	if err != nil {
+		common.ApiError(c, err)
+		return
+	}
+	if !canManageTargetUser(c, targetUser) {
+		common.ApiErrorI18n(c, i18n.MsgUserNoPermissionHigherLevel)
+		return
+	}
 	msg, err := model.AdminInvalidateUserSubscription(subId)
 	if err != nil {
 		common.ApiError(c, err)
@@ -534,6 +589,21 @@ func AdminDeleteUserSubscription(c *gin.Context) {
 	subId, _ := strconv.Atoi(c.Param("id"))
 	if subId <= 0 {
 		common.ApiErrorI18n(c, i18n.MsgCommonInvalid_subscription_id)
+		return
+	}
+	// 角色 / 组织范围门禁（对应审计项 P1-2）：先按 subId 反查归属用户再校验。
+	ownerId, err := model.GetUserSubscriptionUserID(subId)
+	if err != nil {
+		common.ApiError(c, err)
+		return
+	}
+	targetUser, err := model.GetUserById(ownerId, false)
+	if err != nil {
+		common.ApiError(c, err)
+		return
+	}
+	if !canManageTargetUser(c, targetUser) {
+		common.ApiErrorI18n(c, i18n.MsgUserNoPermissionHigherLevel)
 		return
 	}
 	msg, err := model.AdminDeleteUserSubscription(subId)

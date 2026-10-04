@@ -1100,6 +1100,10 @@ func deleteUserAuthenticationData(tx *gorm.DB, userId int) error {
 	return deleteUserOAuthBindingsByUserId(tx, userId)
 }
 
+// dummyTimingHash 是一段固定的 bcrypt 哈希，用于在「用户不存在」时执行等价的
+// 伪哈希计算以消除登录时序侧信道（详见 ValidateAndFill）。它不对应任何真实口令。
+const dummyTimingHash = "$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZd9qJ6jFm"
+
 // ValidateAndFill check password & user status
 func (user *User) ValidateAndFill() (err error) {
 	// When querying with struct, GORM will only query with non-zero fields,
@@ -1114,6 +1118,9 @@ func (user *User) ValidateAndFill() (err error) {
 	err = DB.Where("username = ? OR email = ?", username, username).First(user).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
+			// 用户不存在：执行一次等价的伪哈希计算，使响应耗时与「密码错误」路径一致，
+			// 消除时序侧信道（避免通过响应时间枚举账号是否存在）。
+			common.ValidatePasswordAndHash(password, dummyTimingHash)
 			return ErrInvalidCredentials
 		}
 		return fmt.Errorf("%w: %v", ErrDatabase, err)

@@ -2,6 +2,7 @@ package service
 
 import (
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/Uter-AI/Uter/common"
@@ -81,10 +82,10 @@ func (w *WalletFunding) Settle(delta int) error {
 		if err := model.IncrOrgUsedQuota(orgId, int64(delta)); err != nil {
 			return err
 		}
-		// 成员子额度已在预扣点由 ReserveOrgQuota 原子记入 used_quota（闸门+记账合一）。
-		// 这里把「实际 - 预扣」差额并入，使 used_quota 最终等于实际消耗，且不会与预扣点的
-		// 预留重复计账（净效果 = 预扣额 + 差额 = 实际消耗）。钳制在 0 以防差额为负时记成负数。
-		return model.IncrUserUsedQuotaClamped(w.userId, delta)
+		// 成员子额度硬约束（对应审计项 P1-1）：把结算差额并入成员 used_quota 时钳制在
+		// sub_quota_limit 上限，杜绝实时/分层计费顶额静默突破每成员配额上限。组织预算仍由
+		// IncrOrgUsedQuota 如实累加，二者口径一致（成员侧不允许超界，组织侧如实反映真实消耗）。
+		return model.IncrOrgMemberUsedQuotaBounded(orgId, w.userId, int64(delta))
 	}
 	if delta > 0 {
 		return model.DecreaseUserQuota(w.userId, delta, false)
@@ -109,7 +110,13 @@ func (w *WalletFunding) Refund() error {
 	}
 	// IncreaseUserQuota 是 quota += N 的非幂等操作，不能重试，否则会多退额度。
 	// 订阅的 RefundSubscriptionPreConsume 有 requestId 幂等保护所以可以重试。
-	return model.IncreaseUserQuota(w.userId, w.consumed, false)
+	// 成功后将 consumed 归零，使本对象的二次 Refund（如 defer + 显式调用并存）成为空操作，
+	// 与 BillingSession.refunded 标志形成双重幂等保护。
+	if err := model.IncreaseUserQuota(w.userId, w.consumed, false); err != nil {
+		return err
+	}
+	w.consumed = 0
+	return nil
 }
 
 // ---------------------------------------------------------------------------
@@ -154,7 +161,19 @@ func (s *SubscriptionFunding) Settle(delta int) error {
 	if delta == 0 {
 		return nil
 	}
-	return model.PostConsumeUserSubscriptionDelta(s.subscriptionId, int64(delta))
+	overflow, err := model.PostConsumeUserSubscriptionDeltaCapped(s.subscriptionId, int64(delta))
+	if err != nil {
+		return err
+	}
+	if overflow > 0 {
+		// 订阅结算超额：订阅已封顶到总额，超出部分转为用户钱包欠费，避免平台少收。
+		common.SysLog(fmt.Sprintf("subscription settled over total, charging wallet overflow (userId=%d, subscriptionId=%d, overflow=%d)", s.userId, s.subscriptionId, overflow))
+		if werr := model.DecreaseUserQuota(s.userId, int(overflow), false); werr != nil {
+			// 钱包欠费记账失败：订阅侧已封顶，平台仍少收 overflow，必须告警对账。
+			return fmt.Errorf("subscription overflow wallet charge failed (userId=%d, subscriptionId=%d, overflow=%d): %w", s.userId, s.subscriptionId, overflow, werr)
+		}
+	}
+	return nil
 }
 
 func (s *SubscriptionFunding) Refund() error {

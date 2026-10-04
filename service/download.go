@@ -32,7 +32,13 @@ func DoWorkerRequest(req *WorkerRequest) (*http.Response, error) {
 
 	// SSRF防护：验证请求URL
 	fetchSetting := system_setting.GetFetchSetting()
-	if err := common.ValidateURLWithFetchSetting(req.URL, fetchSetting.EnableSSRFProtection, fetchSetting.AllowPrivateIp, fetchSetting.DomainFilterMode, fetchSetting.IpFilterMode, fetchSetting.DomainList, fetchSetting.IpList, fetchSetting.AllowedPorts, fetchSetting.ApplyIPFilterForDomain); err != nil {
+	// Worker 模式：真正的取流在 Worker 侧完成，网关侧拨号时 IP 校验不参与，
+	// 因此强制 ApplyIPFilterForDomain=true，由网关在转发前拦掉私网目标（含 DNS 重绑定）。
+	applyIPFilter := fetchSetting.ApplyIPFilterForDomain
+	if !applyIPFilter {
+		applyIPFilter = true
+	}
+	if err := common.ValidateURLWithFetchSetting(req.URL, fetchSetting.EnableSSRFProtection, fetchSetting.AllowPrivateIp, fetchSetting.DomainFilterMode, fetchSetting.IpFilterMode, fetchSetting.DomainList, fetchSetting.IpList, fetchSetting.AllowedPorts, applyIPFilter); err != nil {
 		return nil, fmt.Errorf("request reject: %v", err)
 	}
 

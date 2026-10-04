@@ -3,7 +3,6 @@ package model
 import (
 	"errors"
 	"fmt"
-	"math"
 	"sync"
 	"time"
 
@@ -64,10 +63,12 @@ func addNewRecord(type_ int, id int, value int) {
 	sum := old + value
 	if (value > 0 && sum < old) || (value < 0 && sum > old) {
 		common.SysError(fmt.Sprintf("batch update overflow: type=%d id=%d old=%d value=%d", type_, id, old, value))
+		// 与钱包域上界保持一致（common.MaxWalletQuota = 1<<53-1），
+		// 避免累加器以 int64 上限饱和后与 DB 层 MaxWalletQuota 校验口径分裂。
 		if value > 0 {
-			sum = math.MaxInt
+			sum = common.MaxWalletQuota
 		} else {
-			sum = math.MinInt
+			sum = -common.MaxWalletQuota
 		}
 	}
 	batchUpdateStores[type_][id] = sum

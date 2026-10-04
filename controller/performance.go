@@ -324,6 +324,19 @@ func CleanupLogFiles(c *gin.Context) {
 	var failedFiles []string
 	for _, f := range toDelete {
 		fullPath := filepath.Join(*common.LogDir, f.Name)
+		// 防御性校验：确保待删文件仍在日志目录内，且不是符号链接，
+		// 防止目录列举 basename 之外的任何逃逸把删除指向目录外文件。
+		if rel, rerr := filepath.Rel(*common.LogDir, fullPath); rerr != nil || rel == ".." ||
+			strings.HasPrefix(rel, ".."+string(filepath.Separator)) || filepath.IsAbs(rel) {
+			common.SysLog("skipping log deletion that escapes log dir: " + fullPath)
+			failedFiles = append(failedFiles, f.Name)
+			continue
+		}
+		if fi, lerr := os.Lstat(fullPath); lerr == nil && fi.Mode()&os.ModeSymlink != 0 {
+			common.SysLog("skipping log deletion of symlink: " + fullPath)
+			failedFiles = append(failedFiles, f.Name)
+			continue
+		}
 		if err := os.Remove(fullPath); err != nil {
 			failedFiles = append(failedFiles, f.Name)
 			continue

@@ -16,6 +16,7 @@ import (
 	"net/url"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"runtime"
 	"runtime/debug"
 	"strconv"
@@ -318,8 +319,10 @@ func Any2Type[T any](data any) (T, error) {
 }
 
 // SaveTmpFile saves data to a temporary file. The filename would be apppended with a random string.
+// filename 仅作为 CreateTemp 的 pattern 前缀：若包含路径分隔符（如 "../"）可逃逸临时目录，
+// 这里先用 filepath.Base 截断到 basename，确保文件始终落在 os.TempDir() 内。
 func SaveTmpFile(filename string, data io.Reader) (string, error) {
-	f, err := os.CreateTemp(os.TempDir(), filename)
+	f, err := os.CreateTemp(os.TempDir(), filepath.Base(filename))
 	if err != nil {
 		return "", errors.Wrapf(err, "failed to create temporary file %s", filename)
 	}

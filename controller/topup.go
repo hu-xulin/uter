@@ -13,6 +13,7 @@ import (
 	"github.com/Uter-AI/Uter/common"
 
 	"github.com/Uter-AI/Uter/logger"
+	"github.com/Uter-AI/Uter/middleware"
 	"github.com/Uter-AI/Uter/model"
 	"github.com/Uter-AI/Uter/service"
 	"github.com/Uter-AI/Uter/setting"
@@ -588,15 +589,23 @@ func GetAllTopUps(c *gin.Context) {
 	pageInfo := common.GetPageQuery(c)
 	keyword := c.Query("keyword")
 
+	// 组织范围收敛（对应审计项 P2-3）：组织 / 部门管理员只看到本租户成员的订单，
+	// 平台管理员 scope.OrgID==0 时 UserIDs() 返回 nil 表示不过滤。
+	scope := middleware.RequestOrgScope(c)
+	userIds, err := scope.UserIDs()
+	if err != nil {
+		common.ApiError(c, err)
+		return
+	}
+
 	var (
 		topups []*model.TopUp
 		total  int64
-		err    error
 	)
 	if keyword != "" {
-		topups, total, err = model.SearchAllTopUps(keyword, pageInfo)
+		topups, total, err = model.SearchAllTopUps(keyword, pageInfo, userIds)
 	} else {
-		topups, total, err = model.GetAllTopUps(pageInfo)
+		topups, total, err = model.GetAllTopUps(pageInfo, userIds)
 	}
 	if err != nil {
 		common.ApiError(c, err)
@@ -623,6 +632,33 @@ func AdminCompleteTopUp(c *gin.Context) {
 	// 订单级互斥，防止并发补单
 	LockOrder(req.TradeNo)
 	defer UnlockOrder(req.TradeNo)
+
+	// 组织范围门禁（对应审计项 P2-3）：组织 / 部门管理员只能补本租户成员的订单，
+	// 平台管理员（scope.OrgID==0）跳过此校验。
+	scope := middleware.RequestOrgScope(c)
+	if scope.OrgID != 0 {
+		ownerId, oerr := model.GetTopUpUserIDByTradeNo(req.TradeNo)
+		if oerr != nil {
+			common.ApiError(c, oerr)
+			return
+		}
+		ids, ierr := scope.UserIDs()
+		if ierr != nil {
+			common.ApiError(c, ierr)
+			return
+		}
+		inScope := false
+		for _, id := range ids {
+			if id == ownerId {
+				inScope = true
+				break
+			}
+		}
+		if !inScope {
+			common.ApiErrorI18n(c, i18n.MsgUserNoPermissionHigherLevel)
+			return
+		}
+	}
 
 	if err := model.ManualCompleteTopUp(req.TradeNo, c.ClientIP()); err != nil {
 		common.ApiError(c, err)

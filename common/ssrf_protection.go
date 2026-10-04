@@ -77,6 +77,8 @@ var privateIPv6Nets = func() []net.IPNet {
 		"::/128",        // 未指定地址
 		"::1/128",       // 回环
 		"::ffff:0:0/96", // IPv4-mapped
+		"2002::/16",     // 6to4（可嵌入 IPv4 内网地址，如 2002:7f00:1:: -> 127.0.0.1）
+		"::/96",         // IPv4-compatible（已废弃，::a.b.c.d 可嵌入内网）
 		"64:ff9b::/96",  // IPv4/IPv6 translation
 		"100::/64",      // Discard-Only
 		"2001::/23",     // IETF Protocol Assignments
@@ -125,6 +127,15 @@ func isPrivateIP(ip net.IP) bool {
 	for _, privateNet := range privateIPv6Nets {
 		if privateNet.Contains(ip) {
 			return true
+		}
+	}
+	// 兜底：任何「内嵌 IPv4」的 IPv6 写法（如 6in4/ISATAP/Teredo 变体）都按 IPv4 私有表再核一次
+	if embedded := ip.To16()[12:16]; ip.To4() == nil && (embedded[0] != 0 || embedded[1] != 0 || embedded[2] != 0 || embedded[3] != 0) {
+		v4 := net.IP(embedded)
+		for _, privateNet := range privateIPv4Nets {
+			if privateNet.Contains(v4) {
+				return true
+			}
 		}
 	}
 	// 兜底: Go 标准库识别的其他私有地址
