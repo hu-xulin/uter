@@ -1,6 +1,6 @@
 # 用户指南内容源
 
-用户指南每一章一个页面，正文来自这里的 Markdown 文件。九章已全部迁移到 Markdown。
+用户指南每一章一个页面，正文来自这里的 Markdown 文件。十章已全部迁移到 Markdown。
 
 ## 放文件
 
@@ -39,6 +39,7 @@ public/user-guide/zh/auth/
 | `logs-and-tasks` | 日志与异步任务 | Logs & Async Tasks |
 | `wallet-and-subscription` | 钱包与订阅 | Wallet & Subscription |
 | `pricing-and-ranking` | 定价和排行 | Model Hub & Leaderboard |
+| `model-testing` | 模型测试 | Model Testing |
 
 标题取自 `src/lib/content/user-guide.ts` 里的章节表，**不是** Markdown 里的 `# 一级标题`——
 这样侧栏在两种语言下都能显示，且某一语言的文件还没写时不至于没有名字。
