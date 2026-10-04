@@ -1,85 +1,85 @@
 # two-factor-auth
 
-## Regenerate Backup Codes
+## Régénérer les codes de secours
 
-🔐 需要登录（User权限）
+🔐 Nécessite une connexion (permission User)
 
 `POST` `/api/user/2fa/backup_codes`
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-## Disable 2FA
+## Désactiver la 2FA
 
-🔐 需要登录（User权限）
+🔐 Nécessite une connexion (permission User)
 
 `POST` `/api/user/2fa/disable`
 
-### 请求体（`application/json`）
+### Corps de la requête (`application/json`)
 
-| 字段 | 类型 | 必填 | 说明 |
+| Champ | Type | Requis | Description |
 |---|---|---|---|
-| `code` | string | 否 | — |
+| `code` | string | Non | — |
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-## Enable 2FA
+## Activer la 2FA
 
-🔐 需要登录（User权限）
+🔐 Nécessite une connexion (permission User)
 
 `POST` `/api/user/2fa/enable`
 
-### 请求体（`application/json`）
+### Corps de la requête (`application/json`)
 
-| 字段 | 类型 | 必填 | 说明 |
+| Champ | Type | Requis | Description |
 |---|---|---|---|
-| `code` | string | 否 | — |
+| `code` | string | Non | — |
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-## Set Up 2FA
+## Configurer la 2FA
 
-🔐 需要登录（User权限）
+🔐 Nécessite une connexion (permission User)
 
 `POST` `/api/user/2fa/setup`
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-## Get 2FA Statistics
+## Récupérer les statistiques 2FA
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 Nécessite des privilèges d'administrateur (Admin)
 
 `GET` `/api/user/2fa/stats`
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-## Get 2FA Status
+## Récupérer le statut 2FA
 
-🔐 需要登录（User权限）
+🔐 Nécessite une connexion (permission User)
 
 `GET` `/api/user/2fa/status`
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |

@@ -1,50 +1,50 @@
-# LangBot - Instant Messaging Bot Development Platform
+# LangBot - インスタントメッセージング ボット開発プラットフォーム
 
-> LangBot is an open-source instant messaging bot development platform that
->   supports various instant messaging platforms such as Feishu, DingTalk, WeChat,
->   QQ, Telegram, Discord, Slack, etc. It integrates with mainstream global AI
->   models, supports various AI application capabilities like Knowledge Base,
->   Agent, MCP, and is perfectly compatible with Uter.
+> LangBot は、Feishu、DingTalk、WeChat、QQ、Telegram、Discord、Slack など、さまざまな
+>   インスタントメッセージング プラットフォームをサポートするオープンソースの
+>   インスタントメッセージング ボット開発プラットフォームです。主流のグローバル AI
+>   モデルと統合し、ナレッジベース、エージェント、MCP などのさまざまな AI アプリケーション能力を
+>   サポートし、Uter と完全に互換性があります。
 
-- Official Website: [https://langbot.app](https://langbot.app/)
-- Download Address: [https://github.com/langbot-app/LangBot/releases](https://github.com/langbot-app/LangBot/releases)
-- Official Documentation: [https://docs.langbot.app](https://docs.langbot.app/)
-- Open Source Address: [https://github.com/langbot-app/LangBot](https://github.com/langbot-app/LangBot)
+- 公式サイト: [https://langbot.app](https://langbot.app/)
+- ダウンロードアドレス: [https://github.com/langbot-app/LangBot/releases](https://github.com/langbot-app/LangBot/releases)
+- 公式ドキュメント: [https://docs.langbot.app](https://docs.langbot.app/)
+- オープンソースアドレス: [https://github.com/langbot-app/LangBot](https://github.com/langbot-app/LangBot)
 
-## Integrating Uter
+## Uter の統合
 
-LangBot supports integrating with locally deployed Uter and third-party Uter services built using Uter.
+LangBot は、ローカルに導入した Uter や、Uter を使用して構築されたサードパーティの Uter サービスとの統合をサポートしています。
 
-### Usage
+### 使い方
 
-1.  Obtain an API key from Uter
-    ![获取 API key](/apps-assets/langbot/get_api_key.webp)
+1.  Uter から API キーを取得
+    ![API キーの取得](/apps-assets/langbot/get_api_key.webp)
 
-        If Uter is deployed locally, please configure the API address yourself (refer to [Container Network Connection](https://docs.langbot.app/en/workshop/network-details.html)). If using a third-party Uter service, you can copy the address from the page. Note that `/v1` needs to be appended to the address.
+        Uter をローカルに導入した場合は、ご自身で API アドレスを設定してください（[コンテナネットワーク接続](https://docs.langbot.app/en/workshop/network-details.html) 参照）。サードパーティの Uter サービスを利用する場合は、ページからアドレスをコピーできます。アドレスには `/v1` を付加する必要がある点に注意してください。
 
-2.  Add a model in LangBot, select Uter as the provider, and fill in the corresponding API key and API address
-    ![添加 Uter 模型](/apps-assets/langbot/add_uter_model.webp)
+2.  LangBot でモデルを追加し、プロバイダとして Uter を選択し、対応する API キーと API アドレスを入力
+    ![Uter モデルの追加](/apps-assets/langbot/add_uter_model.webp)
 
-3.  Select the model to use in the pipeline
+3.  パイプラインで使用するモデルを選択
 
-    ![选择模型](/apps-assets/langbot/select_model.webp)
+    ![モデルの選択](/apps-assets/langbot/select_model.webp)
 
-4.  Use it by chatting in conversation debugging or by chatting with a bot bound to the pipeline
+4.  会話デバッグでチャットするか、パイプラインに紐付けられたボットとチャットして利用
 
-    ![对话](/apps-assets/langbot/debug_chat.webp)
+    ![会話](/apps-assets/langbot/debug_chat.webp)
 
-    ![微信对话](/apps-assets/langbot/wechat.webp)
+    ![WeChat での会話](/apps-assets/langbot/wechat.webp)
 
-    For deploying and configuring bots, please refer to [Deploying Bots](https://docs.langbot.app/en/deploy/platforms/readme.html).
+    ボットの導入と設定については、[ボットの導入](https://docs.langbot.app/en/deploy/platforms/readme.html) を参照してください。
 
-### Using LangBot Knowledge Base
+### LangBot ナレッジベースの利用
 
-LangBot supports using Uter's embedding models and utilizing them as vector models for the knowledge base.
+LangBot は Uter の埋め込み（embedding）モデルを使用し、それをナレッジベースのベクトルモデルとして利用できます。
 
-1. Add an embedding model in LangBot, select Uter as the provider
-   ![添加嵌入模型](/apps-assets/langbot/add_embedding_model.webp)
+1. LangBot で埋め込みモデルを追加し、プロバイダとして Uter を選択
+   ![埋め込みモデルの追加](/apps-assets/langbot/add_embedding_model.webp)
 
-2. Select the embedding model when creating a new knowledge base
-   ![使用嵌入模型](/apps-assets/langbot/use_embedding_model.webp)
+2. 新しいナレッジベース作成時に埋め込みモデルを選択
+   ![埋め込みモデルの使用](/apps-assets/langbot/use_embedding_model.webp)
 
-For more usage instructions, please refer to the LangBot official documentation: [https://docs.langbot.app](https://docs.langbot.app/)
+その他の使い方については、LangBot 公式ドキュメントを参照してください: [https://docs.langbot.app](https://docs.langbot.app/)

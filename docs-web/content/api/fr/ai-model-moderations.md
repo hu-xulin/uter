@@ -1,26 +1,26 @@
-# Native OpenAI Format
+# Format OpenAI natif
 
-## Native OpenAI Format
+## Format OpenAI natif
 
-检查文本内容是否违反使用政策
+Vérifie si le contenu textuel viole la politique d'utilisation.
 
 `POST` `/v1/moderations`
 
-### 请求体（`application/json`）
+### Corps de la requête (`application/json`)
 
-| 字段 | 类型 | 必填 | 说明 |
+| Champ | Type | Requis | Description |
 |---|---|---|---|
-| `model` | string | 否 | — |
+| `model` | string | Non | — |
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功审核 |
+| `200` | Modération réussie |
 
-#### `200` 响应字段
+#### Champs de la réponse `200`
 
-| 字段 | 类型 | 说明 |
+| Champ | Type | Description |
 |---|---|---|
 | `id` | string | — |
 | `model` | string | — |

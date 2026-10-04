@@ -1,61 +1,61 @@
 # Claude Code
 
-> **Project Introduction**
+> **Présentation du projet**
 >
-> Unleash Claude's raw power directly in your terminal. Search million-line codebases instantly. Turn hours-long workflows into a single command. Your tools. Your workflow. Your codebase, evolving at thought speed.
+> Libérez la puissance brute de Claude directement dans votre terminal. Recherchez des bases de code de plusieurs millions de lignes instantanément. Transformez des flux de travail de plusieurs heures en une seule commande. Vos outils. Votre flux de travail. Votre base de code, qui évolue à la vitesse de la pensée.
 >
->   - Official Homepage: [https://www.anthropic.com/claude-code](https://www.anthropic.com/claude-code)
+>   - Site officiel : [https://www.anthropic.com/claude-code](https://www.anthropic.com/claude-code)
 
-## Demo
+## Démonstration
 
 ![introduce-01.webp](/apps-assets/claude_code/introduce-01.webp)
 
 ![introduce-02.webp](/apps-assets/claude_code/introduce-02.webp)
 
-### Features
+### Fonctionnalités
 
-| **Category**                       | **Feature**                                                                                                        |
+| **Catégorie** | **Fonctionnalité** |
 | ---------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| **Code Understanding**             | Deep codebase analysis, utilizing intelligent agents to search and understand project structure and dependencies |
-|                                    | Automatically generates high-level code overviews, quickly helping users understand the codebase                 |
-| **Code Editing**                   | Supports multi-file collaborative editing, suitable for complex code modifications                               |
-|                                    | Provides practical and usable code suggestions that align with project patterns and architecture                 |
-| **Integration Capabilities**       | Supports direct execution in the terminal, eliminating context switching                                         |
-|                                    | Seamless integration with VS Code and JetBrains IDEs, no copy-pasting required                                   |
-| **Code Generation & Optimization** | Automatically generates code, creates tests, fixes bugs, supporting the complete process from concept to commit  |
-|                                    | Optimized for code generation and understanding, combining advanced models like Claude Opus 4                    |
-| **Security & Flexibility**         | Changes require explicit user authorization, ensuring safer file and command operations                          |
-|                                    | Adapts to user code standards, supports custom configurations                                                    |
-| **Toolchain Integration**          | Supports integration with tools like GitHub and GitLab to achieve automated workflows                            |
-|                                    | Integrates with test suites and build systems, enhancing existing development tools                              |
-| **Cross-Platform & Extensibility** | Supports Windows, macOS, and Linux operating systems                                                             |
-|                                    | Configurable to run in SDKs or GitHub Actions, flexibly adapting to different needs                              |
-| **Key Application Scenarios**      | Codebase onboarding and understanding, quick ramp-up for new members                                             |
-|                                    | Code issue fixing and optimization processes, from problem analysis to PR submission                             |
-|                                    | Project code refactoring and new feature implementation                                                          |
-| **User Feedback Highlights**       | Improves daily development efficiency, saving time spent on routine tasks                                        |
-|                                    | Excellent performance in handling complex multi-step tasks, expanding development possibilities                  |
+| **Compréhension du code** | Analyse approfondie de la base de code, utilisant des agents intelligents pour rechercher et comprendre la structure et les dépendances du projet |
+| | Génère automatiquement des aperçus de code de haut niveau, aidant rapidement les utilisateurs à comprendre la base de code |
+| **Édition de code** | Prend en charge l'édition collaborative multi-fichiers, adaptée aux modifications de code complexes |
+| | Fournit des suggestions de code pratiques et utilisables, conformes aux modèles et à l'architecture du projet |
+| **Capacités d'intégration** | Prend en charge l'exécution directe dans le terminal, supprimant les changements de contexte |
+| | Intégration transparente avec VS Code et les IDE JetBrains, sans copier-coller |
+| **Génération et optimisation de code** | Génère automatiquement du code, crée des tests, corrige les bugs, prenant en charge le processus complet de la conception au commit |
+| | Optimisé pour la génération et la compréhension de code, combinant des modèles avancés comme Claude Opus 4 |
+| **Sécurité et flexibilité** | Les modifications nécessitent une autorisation explicite de l'utilisateur, garantissant des opérations de fichiers et de commandes plus sûres |
+| | S'adapte aux normes de code de l'utilisateur, prend en charge des configurations personnalisées |
+| **Intégration de la chaîne d'outils** | Prend en charge l'intégration avec des outils comme GitHub et GitLab pour réaliser des flux de travail automatisés |
+| | S'intègre aux suites de tests et aux systèmes de build, améliorant les outils de développement existants |
+| **Multiplateforme et extensibilité** | Prend en charge les systèmes d'exploitation Windows, macOS et Linux |
+| | Configurable pour s'exécuter dans des SDK ou GitHub Actions, s'adaptant flexiblement à différents besoins |
+| **Scénarios d'application clés** | Intégration et compréhension de la base de code, montée en compétence rapide pour les nouveaux membres |
+| | Processus de correction et d'optimisation de problèmes de code, de l'analyse du problème à la soumission de PR |
+| | Refactorisation du code du projet et implémentation de nouvelles fonctionnalités |
+| **Points forts des retours utilisateurs** | Améliore l'efficacité de développement quotidien, économisant le temps passé aux tâches répétitives |
+| | Excellente performance dans la gestion de tâches complexes multi-étapes, élargissant les possibilités de développement |
 
-## AI Model Configuration Method
+## Méthode de configuration du modèle IA
 
-### Windows Graphical Guide
+### Guide illustré Windows
 
-#### 1. Install Node.js Environment
+#### 1. Installer l'environnement Node.js
 
-Claude Code requires a Node.js environment to run.
+Claude Code nécessite un environnement Node.js pour fonctionner.
 
-> **Node.js Environment Installation Steps**
+> **Étapes d'installation de l'environnement Node.js**
 >
-> - Open your browser and visit https://nodejs.org/
->   - Click the "LTS" version to download (Long Term Support version recommended)
->   - After downloading, double-click the .msi file
->   - Follow the installation wizard to complete the installation, keeping default settings
+> - Ouvrez votre navigateur et visitez https://nodejs.org/
+>   - Cliquez sur la version « LTS » pour télécharger (version Long Term Support recommandée)
+>   - Après le téléchargement, double-cliquez sur le fichier .msi
+>   - Suivez l'assistant d'installation pour terminer l'installation, en conservant les paramètres par défaut
 
-> **Windows Notes**
+> **Notes Windows**
 >
-> - It is recommended to use PowerShell instead of CMD
->   - If you encounter permission issues, try running as administrator
->   - Some antivirus software may report false positives; you may need to add an exception
+> - Il est recommandé d'utiliser PowerShell plutôt que CMD
+>   - En cas de problème de permission, essayez de lancer en tant qu'administrateur
+>   - Certains logiciels antivirus peuvent signaler de faux positifs ; vous devrez peut-être ajouter une exception
 
 ![windows-img-01.webp](/apps-assets/claude_code/windows-img-01.webp)
 
@@ -67,29 +67,29 @@ Claude Code requires a Node.js environment to run.
 
 ![windows-img-05.webp](/apps-assets/claude_code/windows-img-05.webp)
 
-> **Verify Installation Success**
+> **Vérifier la réussite de l'installation**
 >
-> After installation, open PowerShell or CMD and enter the following commands:
+> Après l'installation, ouvrez PowerShell ou CMD et saisissez les commandes suivantes :
 >
 >   ```bash
 >   node --version
 >   npm --version
 >   ```
 >
->   If version numbers are displayed, the installation was successful.
+>   Si des numéros de version s'affichent, l'installation a réussi.
 
-#### 2. Install Git Bash
+#### 2. Installer Git Bash
 
-> **Windows Notes**
+> **Notes Windows**
 >
-> In a Windows environment, Git Bash is required to install Claude Code. After installation, environment variable setup and using Claude Code will still be done in regular PowerShell or CMD.
+> Dans un environnement Windows, Git Bash est requis pour installer Claude Code. Après l'installation, la configuration des variables d'environnement et l'utilisation de Claude Code se feront toujours dans PowerShell ou CMD classiques.
 
-> **Download and Install Git for Windows**
+> **Télécharger et installer Git for Windows**
 >
-> - Visit https://git-scm.com/downloads/win
->   - Click "Download for Windows" to download the installer
->   - Run the downloaded .exe installation file
->   - Keep default settings during installation, and click "Next" to complete the installation
+> - Visitez https://git-scm.com/downloads/win
+>   - Cliquez sur « Download for Windows » pour télécharger l'installateur
+>   - Exécutez le fichier d'installation .exe téléchargé
+>   - Conservez les paramètres par défaut pendant l'installation, et cliquez sur « Next » pour terminer l'installation
 
 ![windows-img-06.webp](/apps-assets/claude_code/windows-img-06.webp)
 
@@ -97,51 +97,51 @@ Claude Code requires a Node.js environment to run.
 
 ![windows-img-08.webp](/apps-assets/claude_code/windows-img-08.webp)
 
-> **Verify Git Bash Installation**
+> **Vérifier l'installation de Git Bash**
 >
-> After installation, open Git Bash and enter the following command to verify:
+> Après l'installation, ouvrez Git Bash et saisissez la commande suivante pour vérifier :
 >
 >   ```bash
 >   git --version
 >   ```
 >
->   If a version number is displayed, the installation was successful.
+>   Si un numéro de version s'affiche, l'installation a réussi.
 
-#### 3. Install Claude Code
+#### 3. Installer Claude Code
 
-> **Install Claude Code**
+> **Installer Claude Code**
 >
-> Open PowerShell and run the following command:
+> Ouvrez PowerShell et exécutez la commande suivante :
 >
 >   ```bash
 >   npm install -g @anthropic-ai/claude-code
 >   ```
 >
->   This command will download and install the latest version of Claude Code from the official npm repository.
+>   Cette commande téléchargera et installera la dernière version de Claude Code depuis le dépôt npm officiel.
 
 ![windows-img-09.webp](/apps-assets/claude_code/windows-img-09.webp)
 
-> **Add ~/.local/bin to PATH (only if prompted)**
+> **Ajouter ~/.local/bin au PATH (uniquement si demandé)**
 >
 > ```powershell
 >   [Environment]::SetEnvironmentVariable('Path', ([Environment]::GetEnvironmentVariable('Path','User') + ";$HOME\.local\bin"), 'User')
 >   ```
 
-> **Verify Claude Code Installation**
+> **Vérifier l'installation de Claude Code**
 >
-> After installation, enter the following command to check if it was successfully installed:
+> Après l'installation, saisissez la commande suivante pour vérifier si elle a été installée avec succès :
 >
 >   ```bash
 >   claude --version
 >   ```
 >
->   If a version number is displayed, congratulations! Claude Code has been successfully installed.
+>   Si un numéro de version s'affiche, félicitations ! Claude Code a été installé avec succès.
 
-#### 4. Set Environment Variables
+#### 4. Définir les variables d'environnement
 
-> **One-Click Setup Command (Windows System)**
+> **Commande de configuration en un clic (système Windows)**
 >
-> To allow Claude Code to connect to your relay service, you need to set multiple environment variables:
+> Pour permettre à Claude Code de se connecter à votre service de relais, vous devez définir plusieurs variables d'environnement :
 
 ```powershell
 iex (irm 'https://raw.githubusercontent.com/Uter.ai/uter-docs/refs/heads/main/helper/claude-cli-setup.ps1')
@@ -149,19 +149,19 @@ iex (irm 'https://raw.githubusercontent.com/Uter.ai/uter-docs/refs/heads/main/he
 
 ![windows-configure](/apps-assets/claude_code/windows_configure.webp)
 
-#### 5. Start Using Claude Code
+#### 5. Commencer à utiliser Claude Code
 
-You can now start using Claude Code!
+Vous pouvez maintenant commencer à utiliser Claude Code !
 
-> **Launch Claude Code**
+> **Lancer Claude Code**
 >
-> Open PowerShell and launch Claude Code directly:
+> Ouvrez PowerShell et lancez Claude Code directement :
 >
 >   ```bash
 >   claude
 >   ```
 >
->   To use in a specific project:
+>   Pour l'utiliser dans un projet spécifique :
 >
 >   ```bash
 >   # Navigate to your project directory
@@ -181,39 +181,39 @@ You can now start using Claude Code!
 
 ![windows-img-15.webp](/apps-assets/claude_code/windows-img-15.webp)
 
-> **Select Model**
+> **Sélectionner un modèle**
 >
-> Enter the command:
+> Saisissez la commande :
 >
 >   ```bash
 >   /model
 >   ```
 >
->   Press Enter to select a model; usually, the default settings are sufficient.
+>   Appuyez sur Entrée pour sélectionner un modèle ; généralement, les paramètres par défaut suffisent.
 
 ![windows-img-16.webp](/apps-assets/claude_code/windows-img-16.webp)
 
 ![windows-img-17.webp](/apps-assets/claude_code/windows-img-17.webp)
 
-> Note: After modifying environment variables, all models (including officially preset models) will call the custom access point instead of using official account quotas.
+> Note : Après modification des variables d'environnement, tous les modèles (y compris les modèles prédéfinis officiellement) appelleront le point d'accès personnalisé au lieu d'utiliser les quotas du compte officiel.
 
-### macOS Graphical Guide
+### Guide illustré macOS
 
-#### 1. Install Claude Code CLI
+#### 1. Installer l'interface CLI Claude Code
 
-Open Terminal
+Ouvrez le Terminal
 
 ![macos-img-01.webp](/apps-assets/claude_code/macos-img-01.webp)
 
-> **Install Claude Code**
+> **Installer Claude Code**
 >
-> Open Terminal and run the following command:
+> Ouvrez le Terminal et exécutez la commande suivante :
 >
 >   ```bash
 >   curl -fsSL https://claude.ai/install.sh | bash
 >   ```
 >
->   Optional: Run the provided command when prompted
+>   Facultatif : exécutez la commande fournie lorsque demandé
 >
 >   ```bash
 >   echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc && source ~/.bashrc
@@ -221,13 +221,13 @@ Open Terminal
 
 ![macos-img-02.webp](/apps-assets/claude_code/macos-img-02.webp)
 
-#### 2. Set Environment Variables
+#### 2. Définir les variables d'environnement
 
-To allow Claude Code to connect to a third-party relay service, you need to set environment variables:
+Pour permettre à Claude Code de se connecter à un service de relais tiers, vous devez définir des variables d'environnement :
 
-> **One-Click Setup for Claude Code Environment Variables**
+> **Configuration en un clic des variables d'environnement Claude Code**
 >
-> Enter the command:
+> Saisissez la commande :
 >
 >   ```bash
 >   curl -fsSL https://raw.githubusercontent.com/Uter.ai/uter-docs/refs/heads/main/helper/claude-cli-setup.sh | bash
@@ -235,29 +235,29 @@ To allow Claude Code to connect to a third-party relay service, you need to set 
 
 ![macos-configure](/apps-assets/claude_code/macos_configure.webp)
 
-> **Verify Claude Code Installation**
+> **Vérifier l'installation de Claude Code**
 >
-> After installation, enter the following command to check if it was successfully installed:
+> Après l'installation, saisissez la commande suivante pour vérifier si elle a été installée avec succès :
 >
 >   ```bash
 >   claude --version
 >   ```
 >
->   If a version number is displayed, congratulations! Claude Code has been successfully installed.
+>   Si un numéro de version s'affiche, félicitations ! Claude Code a été installé avec succès.
 
-#### 3. Start Using Claude Code
+#### 3. Commencer à utiliser Claude Code
 
-You can now start using Claude Code!
+Vous pouvez maintenant commencer à utiliser Claude Code !
 
-> **Launch Claude Code**
+> **Lancer Claude Code**
 >
-> Launch Claude Code directly:
+> Lancez Claude Code directement :
 >
 >   ```bash
 >   claude
 >   ```
 >
->   To use in a specific project:
+>   Pour l'utiliser dans un projet spécifique :
 >
 >   ```bash
 >   # Navigate to your project directory
@@ -277,15 +277,15 @@ You can now start using Claude Code!
 
 ![macos-img-08.webp](/apps-assets/claude_code/macos-img-08.webp)
 
-> **Select Model (Optional)**
+> **Sélectionner un modèle (facultatif)**
 >
-> Enter the command:
+> Saisissez la commande :
 >
 >   ```bash
 >   /model
 >   ```
 >
->   Press Enter to select an official model; usually, the default model is sufficient.
+>   Appuyez sur Entrée pour sélectionner un modèle officiel ; généralement, le modèle par défaut suffit.
 
 ![macos-img-09.webp](/apps-assets/claude_code/macos-img-09.webp)
 
@@ -293,33 +293,33 @@ You can now start using Claude Code!
 
 ![macos-img-11.webp](/apps-assets/claude_code/macos-img-11.webp)
 
-> Note: After modifying the `ANTHROPIC_BASE_URL` environment variable, all models (including officially preset models) will call the custom access point instead of using official account quotas.
+> Note : Après modification de la variable d'environnement `ANTHROPIC_BASE_URL`, tous les modèles (y compris les modèles prédéfinis officiellement) appelleront le point d'accès personnalisé au lieu d'utiliser les quotas du compte officiel.
 
-#### 4. macOS Common Issues
+#### 4. Problèmes courants macOS
 
-> **macOS Security Settings Preventing Execution**
+> **Paramètres de sécurité macOS empêchant l'exécution**
 >
-> If the system prevents Claude Code from running:
+> Si le système empêche Claude Code de s'exécuter :
 >
->   - Open "System Preferences" → "Security & Privacy"
->   - Click "Open Anyway" or "Allow"
->   - Or run in Terminal: `sudo spctl --master-disable`
+>   - Ouvrez « System Preferences » → « Security & Privacy »
+>   - Cliquez sur « Open Anyway » ou « Allow »
+>   - Ou exécutez dans le Terminal : `sudo spctl --master-disable`
 
-### Linux Graphical Guide
+### Guide illustré Linux
 
-#### 1. Install Claude Code
+#### 1. Installer Claude Code
 
 ![linux-img-01.webp](/apps-assets/claude_code/linux-img-01.webp)
 
-> **Install Claude Code**
+> **Installer Claude Code**
 >
-> Open Terminal and run the following command:
+> Ouvrez le Terminal et exécutez la commande suivante :
 >
 >   ```bash
 >   curl -fsSL https://claude.ai/install.sh | bash
 >   ```
 >
->   If you encounter permission issues, you can use sudo:
+>   Si vous rencontrez des problèmes de permission, vous pouvez utiliser sudo :
 >
 >   ```bash
 >   sudo curl -fsSL https://claude.ai/install.sh | bash
@@ -327,23 +327,23 @@ You can now start using Claude Code!
 
 ![linux-img-03.webp](/apps-assets/claude_code/linux-img-03.webp)
 
-> **Verify Claude Code Installation**
+> **Vérifier l'installation de Claude Code**
 >
-> After installation, enter the following command to check if it was successfully installed:
+> Après l'installation, saisissez la commande suivante pour vérifier si elle a été installée avec succès :
 >
 >   ```bash
 >   claude --version
 >   ```
 >
->   If a version number is displayed, congratulations! Claude Code has been successfully installed.
+>   Si un numéro de version s'affiche, félicitations ! Claude Code a été installé avec succès.
 
-#### 2. Set Environment Variables
+#### 2. Définir les variables d'environnement
 
-To allow Claude Code to connect to your relay service, you need to set two environment variables:
+Pour permettre à Claude Code de se connecter à votre service de relais, vous devez définir deux variables d'environnement :
 
-> **One-Click Environment Variable Modification**
+> **Modification en un clic des variables d'environnement**
 >
-> Enter the command:
+> Saisissez la commande :
 >
 >   ```bash
 >   curl -fsSL https://raw.githubusercontent.com/Uter.ai/uter-docs/refs/heads/main/helper/claude-cli-setup.sh | bash
@@ -351,19 +351,19 @@ To allow Claude Code to connect to your relay service, you need to set two envir
 
 ![macos-configure](/apps-assets/claude_code/macos_configure.webp)
 
-#### 3. Start Using Claude Code
+#### 3. Commencer à utiliser Claude Code
 
-You can now start using Claude Code!
+Vous pouvez maintenant commencer à utiliser Claude Code !
 
-> **Launch Claude Code**
+> **Lancer Claude Code**
 >
-> Launch Claude Code directly:
+> Lancez Claude Code directement :
 >
 >   ```bash
 >   claude
 >   ```
 >
->   To use in a specific project:
+>   Pour l'utiliser dans un projet spécifique :
 >
 >   ```bash
 >   # Navigate to your project directory
@@ -379,15 +379,15 @@ You can now start using Claude Code!
 
 ![linux-img-05.webp](/apps-assets/claude_code/linux-img-05.webp)
 
-> **Select Model**
+> **Sélectionner un modèle**
 >
-> Enter the command:
+> Saisissez la commande :
 >
 >   ```bash
 >   /model
 >   ```
 >
->   Press Enter to select an official model; usually, the default model is sufficient.
+>   Appuyez sur Entrée pour sélectionner un modèle officiel ; généralement, le modèle par défaut suffit.
 
 ![linux-img-06.webp](/apps-assets/claude_code/linux-img-06.webp)
 
@@ -397,13 +397,13 @@ You can now start using Claude Code!
 
 ![linux-img-09.webp](/apps-assets/claude_code/linux-img-09.webp)
 
-> Note: After modifying the `ANTHROPIC_BASE_URL` environment variable, all models (including officially preset models) will call the custom access point instead of using official account quotas.
+> Note : Après modification de la variable d'environnement `ANTHROPIC_BASE_URL`, tous les modèles (y compris les modèles prédéfinis officiellement) appelleront le point d'accès personnalisé au lieu d'utiliser les quotas du compte officiel.
 
-#### 4. Linux Common Issues
+#### 4. Problèmes courants Linux
 
-> **Missing Dependency Libraries**
+> **Bibliothèques de dépendances manquantes**
 >
-> Some Linux distributions require additional dependencies to be installed:
+> Certaines distributions Linux nécessitent l'installation de dépendances supplémentaires :
 >
 >   ```bash
 >   # Ubuntu/Debian
@@ -413,10 +413,10 @@ You can now start using Claude Code!
 >   sudo dnf groupinstall "Development Tools"
 >   ```
 
-> **Environment Variables Not Taking Effect**
+> **Les variables d'environnement ne prennent pas effet**
 >
-> Check the following points:
+> Vérifiez les points suivants :
 >
->   - Confirm that you modified the correct configuration file (`.bashrc` or `.zshrc`)
->   - Restart the terminal or run `source ~/.bashrc`
->   - Verify settings: `echo $ANTHROPIC_BASE_URL`
+>   - Confirmez que vous avez modifié le fichier de configuration correct (`.bashrc` ou `.zshrc`)
+>   - Redémarrez le terminal ou exécutez `source ~/.bashrc`
+>   - Vérifiez les paramètres : `echo $ANTHROPIC_BASE_URL`

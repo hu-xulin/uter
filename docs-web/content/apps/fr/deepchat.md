@@ -1,53 +1,54 @@
-# DeepChat - Commercial-Friendly Full-Featured AI Agent Client
+# DeepChat - Client agent IA complet et commercialement friendly
 
-> **Chat Settings Options**
+> **Options des paramètres de conversation**
 >
-> In the Uter console, go to System Settings -> Chat Settings and add the
->   following shortcut option. It lets users fill DeepChat from the token
->   management page with one click:
+> Dans la console Uter, accédez à System Settings -> Chat Settings et ajoutez
+>   l'option de raccourci suivante. Elle permet aux utilisateurs de remplir DeepChat
+>   depuis la page de gestion des jetons en un clic :
 
     ```json
     { "DeepChat": "deepchat://provider/install?v=1&data={deepchatConfig}" }
     ```
 
-> DeepChat is an open-source, cross-platform, commercial-friendly full-featured
->   AI Agent client. It supports cloud and local models, MCP tool calls, Skills,
->   ACP, Agent integration, and remote-control workflows, making it suitable for
->   users who need unified Provider management and advanced AI Agents.
+> DeepChat est un client agent IA open-source, multiplateforme et
+>   commercialement friendly, complet. Il prend en charge les modèles cloud et
+>   locaux, les appels d'outils MCP, les Skills, l'ACP, l'intégration d'agents et
+>   les flux de travail de contrôle à distance, ce qui le rend adapté aux
+>   utilisateurs ayant besoin d'une gestion unifiée des fournisseurs et d'agents IA avancés.
 
-- Official Website: [https://deepchat.thinkinai.xyz](https://deepchat.thinkinai.xyz)
-- GitHub Repository: [https://github.com/ThinkInAIXYZ/deepchat](https://github.com/ThinkInAIXYZ/deepchat)
-- Download Address: [https://deepchat.thinkinai.xyz/#/download](https://deepchat.thinkinai.xyz/#/download)
+- Site officiel : [https://deepchat.thinkinai.xyz](https://deepchat.thinkinai.xyz)
+- Dépôt GitHub : [https://github.com/ThinkInAIXYZ/deepchat](https://github.com/ThinkInAIXYZ/deepchat)
+- Adresse de téléchargement : [https://deepchat.thinkinai.xyz/#/download](https://deepchat.thinkinai.xyz/#/download)
 
-## Uter Integration Method
+## Méthode d'intégration Uter
 
-### Method 1: One-Click Import
+### Méthode 1 : Import en un clic
 
-1. In the Uter console sidebar, open **Token Management** and find the token you want to use
+1. Dans la barre latérale de la console Uter, ouvrez **Token Management** et trouvez le jeton à utiliser
 
-2. Select **DeepChat** from the token actions
+2. Sélectionnez **DeepChat** dans les actions du jeton
 
-3. Let the browser launch DeepChat and confirm opening the app
-   ![Open DeepChat](/apps-assets/deepchat/3-open-deepchat.webp)
+3. Laissez le navigateur lancer DeepChat et confirmez l'ouverture de l'application
+   ![Ouvrir DeepChat](/apps-assets/deepchat/3-open-deepchat.webp)
 
-4. Confirm the configuration in DeepChat's Provider import preview
-   ![Confirm DeepChat Configuration](/apps-assets/deepchat/4-deepchat-ok.webp)
+4. Confirmez la configuration dans l'aperçu d'import du fournisseur de DeepChat
+   ![Confirmer la configuration DeepChat](/apps-assets/deepchat/4-deepchat-ok.webp)
 
-5. Open the model list and select a Uter model to start using it
-   ![Open Model List](/apps-assets/deepchat/5-open-models.webp)
+5. Ouvrez la liste des modèles et sélectionnez un modèle Uter pour commencer à l'utiliser
+   ![Ouvrir la liste des modèles](/apps-assets/deepchat/5-open-models.webp)
 
-### Method 2: Manual Import
+### Méthode 2 : Import manuel
 
-1. Copy the API Key and site address from the Uter console
-   ![Uter Manual Configuration Guide](/apps-assets/deepchat/7-uter-manual-guidance.webp)
+1. Copiez la clé API et l'adresse du site depuis la console Uter
+   ![Guide de configuration manuelle Uter](/apps-assets/deepchat/7-uter-manual-guidance.webp)
 
-2. In DeepChat settings, add or edit the Uter Provider, then fill in the API address and API Key
-   ![DeepChat Manual Configuration Guide](/apps-assets/deepchat/6-deepchat-manual-guidance.webp)
+2. Dans les paramètres de DeepChat, ajoutez ou modifiez le fournisseur Uter, puis renseignez l'adresse API et la clé API
+   ![Guide de configuration manuelle DeepChat](/apps-assets/deepchat/6-deepchat-manual-guidance.webp)
 
-3. Open the model list and select a Uter model to start using it
-   ![Open Model List](/apps-assets/deepchat/5-open-models.webp)
+3. Ouvrez la liste des modèles et sélectionnez un modèle Uter pour commencer à l'utiliser
+   ![Ouvrir la liste des modèles](/apps-assets/deepchat/5-open-models.webp)
 
-## Related Links
+## Liens associés
 
-- [DeepChat GitHub Repository](https://github.com/ThinkInAIXYZ/deepchat)
-- [DeepChat Download Page](https://deepchat.thinkinai.xyz/#/download)
+- [Dépôt GitHub DeepChat](https://github.com/ThinkInAIXYZ/deepchat)
+- [Page de téléchargement DeepChat](https://deepchat.thinkinai.xyz/#/download)

@@ -1,42 +1,42 @@
-# Native OpenAI Format
+# 原生OpenAI格式
 
-获取当前可用的模型列表。
+獲取當前可用的模型列表。
 
-根据请求头自动识别返回格式：
-- 包含 `x-api-key` 和 `anthropic-version` 头时返回 Anthropic 格式
-- 包含 `x-goog-api-key` 头或 `key` 查询参数时返回 Gemini 格式
-- 其他情况返回 OpenAI 格式
+根據請求頭自動識別返回格式：
+- 包含 `x-api-key` 和 `anthropic-version` 頭時返回 Anthropic 格式
+- 包含 `x-goog-api-key` 頭或 `key` 查詢引數時返回 Gemini 格式
+- 其他情況返回 OpenAI 格式
 
 `GET` `/v1/models`
 
-### 请求参数
+### 請求引數
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| 引數名 | 位置 | 型別 | 必填 | 說明 |
 |---|---|---|---|---|
-| `key` | query | string | 否 | Google API Key (用于 Gemini 格式) |
-| `x-api-key` | header | string | 否 | Anthropic API Key (用于 Claude 格式) |
+| `key` | query | string | 否 | Google API Key (用於 Gemini 格式) |
+| `x-api-key` | header | string | 否 | Anthropic API Key (用於 Claude 格式) |
 | `anthropic-version` | header | string | 否 | Anthropic API 版本 |
-| `x-goog-api-key` | header | string | 否 | Google API Key (用于 Gemini 格式) |
+| `x-goog-api-key` | header | string | 否 | Google API Key (用於 Gemini 格式) |
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
-| `200` | 成功获取模型列表 |
-| `401` | 认证失败 |
+| `200` | 成功獲取模型列表 |
+| `401` | 認證失敗 |
 
-#### `200` 响应字段
+#### `200` 響應欄位
 
-| 字段 | 类型 | 说明 |
+| 欄位 | 型別 | 說明 |
 |---|---|---|
 | `object` | string | — |
 | `data` | array&lt;object&gt; | — |
 
-#### `401` 响应字段
+#### `401` 響應欄位
 
-| 字段 | 类型 | 说明 |
+| 欄位 | 型別 | 說明 |
 |---|---|---|
-| `error.message` | string | 错误信息 |
-| `error.type` | string | 错误类型 |
-| `error.param` | string | 相关参数 |
-| `error.code` | string | 错误代码 |
+| `error.message` | string | 錯誤資訊 |
+| `error.type` | string | 錯誤型別 |
+| `error.param` | string | 相關引數 |
+| `error.code` | string | 錯誤程式碼 |

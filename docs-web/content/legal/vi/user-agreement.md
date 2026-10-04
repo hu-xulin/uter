@@ -1,621 +1,621 @@
-# Uter Large Model Service Platform Terms of Service
+# Điều khoản sử dụng của Nền tảng dịch vụ mô hình lớn Uter
 
-| Item | Content |
+| Mục | Nội dung |
 |---|---|
-| Service Brand | **Uter.ai 优特智能** |
-| Platform Name | **Uter Large Model Service Platform** |
-| Official Website | https://uter.ai |
-| Document Name | Uter Large Model Service Platform Terms of Service |
-| Version | V1.0 |
-| Effective Date | August 8, 2026 |
-| Last Updated | August 8, 2026 |
-| Contracting Entity | **Shenzhen Uter Network Co., Ltd.** (the sole contracting entity for the services under this Agreement) |
-| Applicable To | Individual and enterprise users who register for and use the Uter Large Model Service Platform (Uter.ai) |
+| Thương hiệu dịch vụ | **Uter.ai** |
+| Tên nền tảng | **Nền tảng dịch vụ mô hình lớn Uter** |
+| Trang web chính thức | https://uter.ai |
+| Tên tài liệu | Điều khoản sử dụng của Nền tảng dịch vụ mô hình lớn Uter |
+| Phiên bản | V1.0 |
+| Ngày có hiệu lực | August 8, 2026 |
+| Cập nhật lần cuối | August 8, 2026 |
+| Bên ký kết | **Công ty TNHH Uter Network, Thâm Quyến** (bên ký kết duy nhất đối với các dịch vụ theo Hợp đồng này) |
+| Áp dụng cho | Cá nhân và doanh nghiệp đăng ký và sử dụng Nền tảng dịch vụ mô hình lớn Uter (Uter.ai) |
 
-> **Important Notice:** This Agreement is a standard-form contract. Before registering for or using this Service, please read all provisions of this Agreement carefully and in full, **especially the clauses highlighted in bold that exempt or limit our liabilities, restrict your rights, and govern dispute resolution and governing law.** If you do not agree to any part of this Agreement, please immediately stop registering for or using this Service. Checking the acceptance box, completing registration, or actually calling any API interface shall be deemed as your full understanding and acceptance of all terms of this Agreement.
-
----
-
-## Table of Contents
-
-1. General Provisions and Acceptance
-2. Definitions
-3. Account Registration, Verification and Security
-4. Service Scope and Content
-5. Usage Rules and Prohibited Conduct
-6. Top-up, Billing and Settlement
-7. Service Levels, Quotas and Availability
-8. Data, Content and Personal Information Protection
-9. Third-Party Services and Upstream Model Terms
-10. Intellectual Property Rights
-11. Disclaimers and Limitation of Liability
-12. Changes, Suspension and Termination of Service
-13. Breach and Handling
-14. Export Control, Sanctions and Cross-Border Compliance
-15. Governing Law and Dispute Resolution
-16. Notices and Service of Documents
-17. Miscellaneous
-- Appendix A Core Prohibited List of the Acceptable Use Policy (AUP)
-- Appendix B List of Upstream Model Providers and Sub-processors
+> **Thông báo quan trọng:** Hợp đồng này là một hợp đồng theo mẫu. Trước khi đăng ký hoặc sử dụng Dịch vụ này, vui lòng đọc cẩn thận và toàn bộ các điều khoản của Hợp đồng này, **đặc biệt là các điều khoản được in đậm miễn trừ hoặc giới hạn trách nhiệm của chúng tôi, hạn chế quyền của bạn, và điều chỉnh việc giải quyết tranh chấp và luật áp dụng.** Nếu bạn không đồng ý với bất kỳ phần nào của Hợp đồng này, vui lòng ngừng đăng ký hoặc sử dụng Dịch vụ này ngay lập tức. Việc bạn đánh dấu vào ô chấp nhận, hoàn tất đăng ký, hoặc thực tế gọi bất kỳ giao diện API nào sẽ được coi là bạn đã hiểu và chấp nhận toàn bộ các điều khoản của Hợp đồng này.
 
 ---
 
-## Article 1 General Provisions and Acceptance
+## Mục lục
 
-**1.1 Contracting Entity**
-
-This Agreement is entered into between you (hereinafter "User" or "you") and **Shenzhen Uter Network Co., Ltd.** (hereinafter collectively "Uter.ai 优特智能", "优特" or "we").
-
-- **Contracting Entity**: **Shenzhen Uter Network Co., Ltd.**, registered in Shenzhen, Guangdong Province, the People's Republic of China, holding an ICP license, algorithm filing and generative AI service filing. The company operates the **Uter Large Model Service Platform** (official website: Uter.ai, hereinafter the "Platform"), providing this Service to users within **the territory of the People's Republic of China (excluding the Hong Kong, Macao and Taiwan regions of China)**.
-- **Single Entity**: The **sole contracting entity for the services under this Agreement is Shenzhen Uter Network Co., Ltd.** We do not currently provide services to you through any overseas affiliated entity. Should we provide services through an overseas affiliated entity in the future, we will execute a separate service agreement and notify you in advance.
-
-**1.2 Composition of the Agreement**
-
-This Agreement, together with the following documents, constitutes the complete agreement and has the same legal effect as the main text of this Agreement; in the event of any inconsistency between an appendix and the main text, the main text shall prevail, except where the appendix imposes stricter obligations on a specific matter:
-
-1. the Privacy Policy;
-2. the Acceptable Use Policy (see Appendix A);
-3. the Service Level Agreement (SLA);
-4. the Pricing Page, Model Catalog and Rate-Limiting Rules published on the Platform;
-5. written documents separately executed between you and us, such as the Enterprise Service Agreement, Data Processing Agreement (DPA) and Order Confirmation.
-
-**1.3 Modes of Acceptance**
-
-You shall be deemed to have fully and unconditionally accepted this Agreement upon any of the following:
-
-- Checking "I have read and agree to the Terms of Service" on the registration page;
-- Completing account registration, enterprise identity verification or top-up;
-- Initiating any model call request using an API Key (or equivalent credential) issued by us.
-
-**1.4 Amendment of the Agreement**
-
-1.4.1 We may amend this Agreement as necessitated by changes in laws and regulations, regulatory requirements, adjustments to upstream model providers' policies, or product iteration. The amended Agreement will be prominently published on the Platform, with at least **7 calendar days'** advance notice (for clauses that materially affect you, such as billing rules, limitation of liability and dispute resolution, **15 calendar days'** advance notice).
-
-1.4.2 Upon expiry of the publication period, your continued use of this Service shall be deemed as acceptance of the amendments. If you do not accept them, you have the right to stop using the Service before the publication period expires and apply for settlement of your account balance.
-
-1.4.3 We recommend that you check the latest version of this Agreement periodically. The Platform will retain historical versions for traceability.
-
-**1.5 User Eligibility**
-
-1.5.1 If you are a **natural person**, you should be at least **18 years of age** and have full capacity for civil conduct. If you are under 18, you should read this Agreement in the company of a guardian and use this Service only with the guardian's consent.
-
-1.5.2 If you register in the name of an **enterprise, institution, social organization or other organization**, you represent and warrant that you are duly authorized by that organization, have the right to accept this Agreement on its behalf and assume the corresponding obligations, and that the qualification documents you submit to us (business license, power of attorney, etc.) are true, lawful and valid.
-
-1.5.3 You undertake that you are not a sanctioned or restricted subject under Article 14 of this Agreement.
-
-**1.6 Effectiveness**
-
-This Agreement takes effect on **August 8, 2026**. For users who registered before the effectiveness of this Agreement, this Agreement applies from the date of its effectiveness.
+1. Quy định chung và Chấp nhận
+2. Định nghĩa
+3. Đăng ký tài khoản, xác minh và bảo mật
+4. Phạm vi và nội dung Dịch vụ
+5. Quy tắc sử dụng và hành vi bị cấm
+6. Nạp tiền, tính phí và quyết toán
+7. Mức độ Dịch vụ, Hạn mức và khả năng sử dụng
+8. Dữ liệu, nội dung và bảo vệ Thông tin cá nhân
+9. Dịch vụ của bên thứ ba và điều khoản mô hình thượng nguồn
+10. Quyền sở hữu trí tuệ
+11. Miễn trừ bảo đảm và giới hạn trách nhiệm
+12. Thay đổi, tạm ngừng và chấm dứt Dịch vụ
+13. Vi phạm và xử lý
+14. Kiểm soát xuất khẩu, trừng phạt và tuân thủ xuyên biên giới
+15. Luật áp dụng và Giải quyết tranh chấp
+16. Thông báo và việc gửi văn bản
+17. Quy định khác
+- Phụ lục A Danh sách cấm cốt lõi của Chính sách sử dụng chấp nhận được (AUP)
+- Phụ lục B Danh sách nhà cung cấp mô hình thượng nguồn và bên xử lý phụ
 
 ---
 
-## Article 2 Definitions
+## Điều 1. Quy định chung và Chấp nhận
 
-Unless the context otherwise requires, the following terms have the meanings set out below:
+**1.1 Bên ký kết**
 
-| Term | Definition |
+Hợp đồng này được ký kết giữa bạn (sau đây gọi là «Người dùng» hoặc «bạn») và **Công ty TNHH Uter Network, Thâm Quyến** (sau đây gọi chung là «Uter.ai», «Uter» hoặc «chúng tôi»).
+
+- **Bên ký kết**: **Công ty TNHH Uter Network, Thâm Quyến**, đăng ký tại Thâm Quyến, tỉnh Quảng Đông, Cộng hòa Nhân dân Trung Hoa, sở hữu giấy phép ICP, hồ sơ đăng ký thuật toán và hồ sơ đăng ký dịch vụ trí tuệ nhân tạo. Công ty vận hành **Nền tảng dịch vụ mô hình lớn Uter** (trang web chính thức: Uter.ai, sau đây gọi là «Nền tảng»), cung cấp Dịch vụ này cho người dùng tại **lãnh thổ Cộng hòa Nhân dân Trung Hoa (không bao gồm các khu vực Hồng Kông, Macao và Đài Loan của Trung Quốc)**.
+- **Thực thể duy nhất**: **Bên ký kết duy nhất đối với các dịch vụ theo Hợp đồng này là Công ty TNHH Uter Network, Thâm Quyến.** Hiện chúng tôi không cung cấp dịch vụ cho bạn thông qua bất kỳ thực thể liên kết nào ở nước ngoài. Nếu sau này chúng tôi cung cấp dịch vụ thông qua một thực thể liên kết ở nước ngoài, chúng tôi sẽ ký kết một hợp đồng dịch vụ riêng và thông báo trước cho bạn.
+
+**1.2 Thành phần của Hợp đồng**
+
+Hợp đồng này, cùng với các tài liệu sau đây, tạo thành toàn bộ thỏa thuận và có hiệu lực pháp lý ngang với phần chính của Hợp đồng này; trong trường hợp có bất khắc biệt giữa một phụ lục và phần chính thì phần chính được ưu tiên, trừ khi phụ lục đặt ra nghĩa vụ nghiêm ngặt hơn đối với một vấn đề cụ thể:
+
+1. Chính sách bảo mật;
+2. Chính sách sử dụng chấp nhận được (xem Phụ lục A);
+3. Hợp đồng mức độ dịch vụ (SLA);
+4. Trang bảng giá, Danh mục mô hình và Quy tắc giới hạn tốc độ được công bố trên Nền tảng;
+5. các tài liệu bằng văn bản được ký kết riêng giữa bạn và chúng tôi, chẳng hạn như Hợp đồng dịch vụ doanh nghiệp, Hợp đồng xử lý dữ liệu (DPA) và Xác nhận đơn hàng.
+
+**1.3 Hình thức chấp nhận**
+
+Bạn được coi là đã chấp nhận toàn bộ và không điều kiện Hợp đồng này khi thực hiện bất kỳ hành động nào sau đây:
+
+- Đánh dấu vào ô «Tôi đã đọc và đồng ý với Điều khoản sử dụng» trên trang đăng ký;
+- Hoàn tất đăng ký tài khoản, xác minh danh tính doanh nghiệp hoặc nạp tiền;
+- Khởi tạo bất kỳ yêu cầu gọi mô hình nào bằng API Key (hoặc thông tin xác thực tương đương) do chúng tôi cấp.
+
+**1.4 Sửa đổi Hợp đồng**
+
+1.4.1 Chúng tôi có thể sửa đổi Hợp đồng này khi cần thiết do thay đổi pháp luật và quy định, yêu cầu của cơ quan quản lý, điều chỉnh chính sách của nhà cung cấp mô hình thượng nguồn, hoặc phát triển sản phẩm. Hợp đồng đã sửa đổi sẽ được công bố nổi bật trên Nền tảng, với thông báo trước ít nhất **7 ngày lịch** (đối với các điều khoản ảnh hưởng trọng yếu đến bạn, chẳng hạn như quy tắc tính phí, giới hạn trách nhiệm và giải quyết tranh chấp, **15 ngày lịch**).
+
+1.4.2 Khi thời hạn công bố kết thúc, việc bạn tiếp tục sử dụng Dịch vụ này được coi là chấp nhận các nội dung sửa đổi. Nếu không đồng ý, bạn có quyền ngừng sử dụng Dịch vụ trước khi thời hạn công bố kết thúc và yêu cầu quyết toán số dư tài khoản của mình.
+
+1.4.3 Chúng tôi khuyến nghị bạn định kỳ kiểm tra phiên bản mới nhất của Hợp đồng này. Nền tảng sẽ lưu giữ các phiên bản lịch sử để phục vụ việc tra cứu.
+
+**1.5 Tư cách của Người dùng**
+
+1.5.1 Nếu bạn là **cá nhân**, bạn phải từ **18 tuổi trở lên** và có năng lực đầy đủ về hành vi dân sự. Nếu dưới 18 tuổi, bạn nên đọc Hợp đồng này cùng với người giám hộ và chỉ sử dụng Dịch vụ này khi có sự đồng ý của người giám hộ.
+
+1.5.2 Nếu bạn đăng ký bằng tên của một **doanh nghiệp, cơ quan, tổ chức xã hội hoặc tổ chức khác**, bạn cam kết và bảo đảm rằng bạn đã được tổ chức đó ủy quyền đầy đủ, có quyền chấp nhận Hợp đồng này thay mặt cho tổ chức và gánh vác nghĩa vụ tương ứng, đồng thời các tài liệu chứng minh tư cách mà bạn nộp cho chúng tôi (giấy chứng nhận đăng ký doanh nghiệp, giấy ủy quyền, v.v.) là đúng, hợp pháp và còn hiệu lực.
+
+1.5.3 Bạn cam kết rằng bạn không phải là chủ thể bị trừng phạt hoặc bị hạn chế theo Điều 14 của Hợp đồng này.
+
+**1.6 Hiệu lực**
+
+Hợp đồng này có hiệu lực kể từ **August 8, 2026**. Đối với người dùng đã đăng ký trước thời điểm Hợp đồng này có hiệu lực, Hợp đồng này áp dụng kể từ ngày có hiệu lực của nó.
+
+---
+
+## Điều 2. Định nghĩa
+
+Trừ khi ngữ cảnh có yêu cầu khác, các thuật ngữ sau đây có nghĩa như sau:
+
+| Thuật ngữ | Định nghĩa |
 |---|---|
-| **Service** | The services provided by the Uter Large Model Service Platform to users through its official website (Uter.ai) and unified API gateway, including multi-model aggregation calling, routing and scheduling, usage metering, and account management |
-| **Platform** | The Uter Large Model Service Platform, collectively the Uter official website (Uter.ai), console, developer documentation, SDK and API interfaces |
-| **API Key** | The calling credential issued by us to users for identity authentication and metering/billing (including keys, tokens, temporary credentials and all equivalent forms) |
-| **Token** | The smallest billing unit for processing text by a large language model. Input Tokens (Prompt Tokens) and Output Tokens (Completion Tokens) are billed separately |
-| **Upstream Model Provider** | A third party that actually provides model inference capability, including but not limited to OpenAI, Anthropic, Google, Microsoft Azure, Amazon AWS Bedrock, and domestic model vendors |
-| **Upstream Service** | The model inference interface and its supporting services provided by an Upstream Model Provider |
-| **Routing** | The mechanism by which the Platform distributes user requests to the corresponding upstream service based on model identifier, availability, latency and cost strategy |
-| **User Content** | The input content (prompts, files, images, etc.) submitted by the user through this Service and the output content returned by the Service |
-| **Enterprise User** | A user who registers in the name of an organization and completes enterprise verification |
-| **Account Balance** | The available fund quota that the user has pre-charged but not yet consumed |
-| **Metering Data** | The log data recorded and generated by the Platform for billing purposes, such as Token consumption, request counts and latency |
+| **Dịch vụ** | Các dịch vụ do Nền tảng dịch vụ mô hình lớn Uter cung cấp cho người dùng thông qua trang web chính thức (Uter.ai) và cổng kết nối API hợp nhất, bao gồm gọi tổng hợp đa mô hình, định tuyến và lập lịch, đo lường mức sử dụng, và quản lý tài khoản |
+| **Nền tảng** | Nền tảng dịch vụ mô hình lớn Uter, gồm trang web chính thức của Uter (Uter.ai), bảng điều khiển, tài liệu dành cho nhà phát triển, SDK và các giao diện API |
+| **API Key** | Thông tin xác thực gọi do chúng tôi cấp cho người dùng để xác thực danh tính và đo lường/tính phí (bao gồm khóa, token, thông tin xác thực tạm thời và mọi hình thức tương đương) |
+| **Token** | Đơn vị tính phí nhỏ nhất để xử lý văn bản bằng mô hình ngôn ngữ lớn. Token đầu vào (Prompt Token) và Token đầu ra (Completion Token) được tính phí riêng biệt |
+| **Nhà cung cấp mô hình thượng nguồn** | Bên thứ ba thực sự cung cấp năng lực suy luận mô hình, bao gồm nhưng không giới hạn ở OpenAI, Anthropic, Google, Microsoft Azure, Amazon AWS Bedrock và các nhà cung cấp mô hình trong nước |
+| **Dịch vụ thượng nguồn** | Giao diện suy luận mô hình và các dịch vụ hỗ trợ do Nhà cung cấp mô hình thượng nguồn cung cấp |
+| **Định tuyến** | Cơ chế để Nền tảng phân phối yêu cầu của người dùng tới dịch vụ thượng nguồn tương ứng, dựa trên mã định danh mô hình, khả năng sử dụng, độ trễ và chiến lược chi phí |
+| **Nội dung người dùng** | Nội dung đầu vào (câu lệnh, tệp, hình ảnh, v.v.) do người dùng gửi qua Dịch vụ này và nội dung đầu ra do Dịch vụ trả về |
+| **Người dùng doanh nghiệp** | Người dùng đăng ký bằng tên của một tổ chức và hoàn tất xác minh doanh nghiệp |
+| **Số dư tài khoản** | Hạn mức quỹ khả dụng mà người dùng đã nạp trước nhưng chưa tiêu thụ |
+| **Dữ liệu đo lường** | Dữ liệu nhật ký được Nền tảng ghi lại và tạo ra cho mục đích tính phí, chẳng hạn như mức tiêu thụ Token, số lần gọi và độ trễ |
 
 ---
 
-## Article 3 Account Registration, Verification and Security
+## Điều 3. Đăng ký tài khoản, xác minh và bảo mật
 
-**3.1 Obligation of Truthful Information**
+**3.1 Nghĩa vụ cung cấp thông tin trung thực**
 
-3.1.1 You shall provide true, accurate, complete and valid registration and verification information, and update it within **5 business days** of any change.
+3.1.1 Bạn phải cung cấp thông tin đăng ký và xác minh đúng, chính xác, đầy đủ và hợp lệ, đồng thời cập nhật trong vòng **5 ngày làm việc** kể từ khi có bất kỳ thay đổi nào.
 
-3.1.2 You shall bear the consequences (including but not limited to service suspension, account freezing, inability to refund the balance, and third-party claims) arising from false, invalid or impersonated information caused by you.
+3.1.2 Bạn phải gánh chịu các hậu quả (bao gồm nhưng không giới hạn ở tạm ngừng dịch vụ, đóng băng tài khoản, không thể hoàn tiền số dư, và các yêu cầu từ bên thứ ba) phát sinh từ thông tin sai, không hợp lệ hoặc mạo danh do bạn gây ra.
 
-**3.2 Identity Verification**
+**3.2 Xác minh danh tính**
 
-3.2.1 Pursuant to the Cybersecurity Law of the PRC, the Administrative Measures for Internet Information Services, the Interim Measures for the Management of Generative AI Services and other regulations, users of domestic services must complete **identity verification** (identity verification for natural persons; business license verification for enterprises) before calling the Service.
+3.2.1 Theo Luật An ninh mạng của Cộng hòa Nhân dân Trung Hoa, Biện pháp quản lý dịch vụ thông tin Internet, Biện pháp tạm thời về quản lý dịch vụ trí tuệ nhân tạo và các quy định khác, người dùng dịch vụ trong nước phải hoàn tất **xác minh danh tính** (xác minh danh tính đối với cá nhân; xác minh giấy chứng nhận đăng ký doanh nghiệp đối với doanh nghiệp) trước khi gọi Dịch vụ.
 
-3.2.2 We may, as required by regulators, require you to submit additional industry qualifications, application scenario descriptions, content security management systems and other materials, and may refuse to activate the Service before approval.
+3.2.2 Chúng tôi có thể, theo yêu cầu của cơ quan quản lý, yêu cầu bạn nộp thêm tư cách ngành, mô tả kịch bản ứng dụng, hệ thống quản lý an toàn nội dung và các tài liệu khác, và có thể từ chối kích hoạt Dịch vụ cho đến khi được phê duyệt.
 
-**3.3 Account Security**
+**3.3 Bảo mật tài khoản**
 
-3.3.1 **You bear full responsibility for the safekeeping of all account credentials, including account name, password, API Key and two-factor authentication credentials. Once issued, an API Key is equivalent to your identity credential.**
+3.3.1 **Bạn hoàn toàn chịu trách nhiệm về việc giữ gìn mọi thông tin xác thực tài khoản, bao gồm tên tài khoản, mật khẩu, API Key và thông tin xác thực hai yếu tố. Khi đã được cấp, API Key tương đương với giấy tờ tùy thân của bạn.**
 
-3.3.2 You should at least take the following measures: do not hard-code API Keys in client code or public code repositories; issue independent Keys for different applications; rotate them regularly; configure IP allowlists and usage alerts; revoke immediately in the console upon discovering a leak.
+3.3.2 Bạn nên tối thiểu thực hiện các biện pháp sau: không viết cứng API Key trong mã phía máy khách hoặc trong kho mã công khai; cấp khóa riêng biệt cho các ứng dụng khác nhau; xoay vòng định kỳ; cấu hình danh sách cho phép IP và cảnh báo mức sử dụng; thu hồi ngay trên bảng điều khiển khi phát hiện rò rỉ.
 
-3.3.3 **You bear all call volume and fees arising from your poor safekeeping, device intrusion, Key leakage or use by third parties.** We are not liable for fee losses caused by Key leakage. You should notify us immediately upon discovering a leak, and we will assist in revoking the credential; fees already incurred before your notice will not be refunded.
+3.3.3 **Bạn chịu toàn bộ khối lượng gọi và chi phí phát sinh từ việc giữ gìn không tốt, thiết bị bị xâm nhập, rò rỉ khóa hoặc bị bên thứ ba sử dụng.** Chúng tôi không chịu trách nhiệm đối với các thiệt hại chi phí do rò rỉ khóa. Bạn nên thông báo ngay cho chúng tôi khi phát hiện rò rỉ, và chúng tôi sẽ hỗ trợ thu hồi thông tin xác thực đó; các khoản phí đã phát sinh trước thông báo của bạn sẽ không được hoàn lại.
 
-**3.4 Uniqueness and Transfer Restrictions of Accounts**
+**3.4 Tính duy nhất và hạn chế chuyển nhượng tài khoản**
 
-3.4.1 One account is limited to use by one legal entity. **Without our prior written consent, you may not rent, lend, sell, gift or transfer the account or API Key in any form.**
+3.4.1 Một tài khoản chỉ được một pháp nhân duy nhất sử dụng. **Không có sự đồng ý trước bằng văn bản của chúng tôi, bạn không được cho thuê, cho vay, bán, tặng hoặc chuyển nhượng tài khoản hoặc API Key dưới bất kỳ hình thức nào.**
 
-3.4.2 We may identify account sharing or resale based on login IP, device fingerprint, calling characteristics, etc., and take the measures under Article 13 of this Agreement.
+3.4.2 Chúng tôi có thể nhận diện việc dùng chung hoặc bán lại tài khoản dựa trên IP đăng nhập, dấu vân thiết bị, đặc trưng gọi, v.v., và áp dụng các biện pháp theo Điều 13 của Hợp đồng này.
 
-**3.5 Account Cancellation**
+**3.5 Hủy tài khoản**
 
-You may apply to cancel your account in the console at any time. Before cancellation, you should settle all payable amounts and back up your own data. After cancellation, we will delete or anonymize your personal information as required by laws and regulations, except for transaction records that must be retained by law.
+Bạn có thể yêu cầu hủy tài khoản của mình bất cứ lúc nào trên bảng điều khiển. Trước khi hủy, bạn nên thanh toán toàn bộ các khoản phải trả và sao lưu dữ liệu của mình. Sau khi hủy, chúng tôi sẽ xóa hoặc ẩn danh thông tin cá nhân của bạn theo pháp luật và quy định, trừ các bản ghi giao dịch mà pháp luật bắt buộc phải lưu giữ.
 
 ---
 
-## Article 4 Service Scope and Content
+## Điều 4. Phạm vi và nội dung Dịch vụ
 
-**4.1 Service Content**
+**4.1 Nội dung Dịch vụ**
 
-4.1.1 We provide an **aggregation and forwarding service for model invocation capability**. Specifically:
+4.1.1 Chúng tôi cung cấp **dịch vụ tổng hợp và chuyển tiếp năng lực gọi mô hình**. Cụ thể là:
 
-- Unified API protocol access (compatible with OpenAI format and mainstream SDKs);
-- Intelligent routing and failover across multiple models and upstreams;
-- Prepaid account system, usage metering, billing and invoicing;
-- Console management, usage monitoring, alerting and log query;
-- Optional value-added services: content security review, dedicated instances, private deployment, model fine-tuning, compliance consulting.
+- Truy cập giao thức API hợp nhất (tương thích với định dạng OpenAI và các SDK chính thống);
+- Định tuyến thông minh và chuyển đổi dự phòng trên nhiều mô hình và nhiều thượng nguồn;
+- Hệ thống tài khoản trả trước, đo lường mức sử dụng, tính phí và xuất hóa đơn;
+- Quản lý bảng điều khiển, giám sát mức sử dụng, cảnh báo và truy vấn nhật ký;
+- Các dịch vụ giá trị gia tăng tùy chọn: rà soát an toàn nội dung, phiên bản riêng, triển khai riêng tư, tinh chỉnh mô hình, tư vấn tuân thủ.
 
-4.1.2 **We are not the developer or owner of the models themselves.** Except for services explicitly labeled "self-developed models", all model capabilities involved in this Service are provided by Upstream Model Providers. Our role in this Service is that of an **integrator and reseller of the Service**, not the original provider of the models.
+4.1.2 **Chúng tôi không phải là nhà phát triển hay chủ sở hữu của chính các mô hình đó.** Trừ các dịch vụ được ghi nhãn rõ ràng là «mô hình tự phát triển», mọi năng lực mô hình liên quan đến Dịch vụ này đều do Nhà cung cấp mô hình thượng nguồn cung cấp. Vai trò của chúng tôi trong Dịch vụ này là **bên tích hợp và đại lý phân phối Dịch vụ**, chứ không phải nhà cung cấp gốc của mô hình.
 
-**4.2 Service Forms**
+**4.2 Hình thức Dịch vụ**
 
-| Form | Description | Billing |
+| Hình thức | Mô tả | Cách tính phí |
 |---|---|---|
-| Public Cloud API | Multi-tenant shared resource pool, postpaid settlement by Token | Pay-as-you-go |
-| Dedicated Instance | Exclusive compute quota, guaranteed latency and concurrency | Subscription + pay-as-you-go |
-| Private Deployment | Deployed in the user's own environment, data does not leave the domain | Project-based + annual maintenance |
-| Developer Edition | Includes free trial quota, for individual developers | Pay-as-you-go |
+| API đám mây công cộng | Nhóm tài nguyên dùng chung cho nhiều khách hàng, thanh toán sau theo Token | Trả theo mức sử dụng |
+| Phiên bản riêng | Hạn mức tài nguyên tính toán độc quyền, bảo đảm độ trễ và số lượng đồng thời | Gói đăng ký + trả theo mức sử dụng |
+| Triển khai riêng tư | Triển khai trong môi trường riêng của bạn, dữ liệu không ra khỏi miền | Theo dự án + bảo trì hằng năm |
+| Phiên bản nhà phát triển | Bao gồm hạn mức dùng thử miễn phí, dành cho nhà phát triển cá nhân | Trả theo mức sử dụng |
 
-**4.3 Service Regions**
+**4.3 Khu vực Dịch vụ**
 
-4.3.1 We may open different model catalogs to users in different registration regions based on Upstream Model Providers' regional authorization restrictions, export control requirements and local laws.
+4.3.1 Chúng tôi có thể mở các danh mục mô hình khác nhau cho người dùng ở các khu vực đăng ký khác nhau, tùy theo các hạn chế cấp quyền theo khu vực của Nhà cung cấp mô hình thượng nguồn, yêu cầu kiểm soát xuất khẩu và pháp luật địa phương.
 
-4.3.2 **You may not use technical means to bypass regional restrictions to call models not opened to your region.** We may intercept and handle abnormal cross-border calling behavior.
+4.3.2 **Bạn không được sử dụng các biện pháp kỹ thuật để vượt qua hạn chế khu vực nhằm gọi các mô hình không được mở cho khu vực của bạn.** Chúng tôi có thể chặn bắt và xử lý các hành vi gọi xuyên biên giới bất thường.
 
-**4.4 Model On/Off-boarding**
+**4.4 Đưa mô hình vào và khỏi danh mục**
 
-4.4.1 Upstream Model Providers may add, update, discontinue or deprecate specific models at any time. We will notify you in advance to the extent reasonably feasible and suggest alternative models.
+4.4.1 Nhà cung cấp mô hình thượng nguồn có thể bổ sung, cập nhật, ngừng cung cấp hoặc loại bỏ các mô hình cụ thể bất cứ lúc nào. Chúng tôi sẽ thông báo trước cho bạn trong phạm vi hợp lý khả thi và gợi ý các mô hình thay thế.
 
-4.4.2 **Service adjustments caused by upstream model off-boarding, capability changes or price adjustments do not constitute a breach by us.** We will endeavor to provide a migration window of at least **30 calendar days**, but where the upstream's transition period is shorter, the actual upstream arrangement shall prevail.
+4.4.2 **Các điều chỉnh Dịch vụ do việc mô hình thượng nguồn bị loại khỏi danh mục, thay đổi năng lực hoặc điều chỉnh giá không cấu thành hành vi vi phạm của chúng tôi.** Chúng tôi sẽ nỗ lực cung cấp thời gian chuyển đổi ít nhất **30 ngày lịch**, nhưng nếu thời gian chuyển tiếp phía thượng nguồn ngắn hơn thì cách sắp xếp thực tế của thượng nguồn sẽ được ưu tiên.
 
-**4.5 Free Quota and Trials**
+**4.5 Hạn mức miễn phí và thử nghiệm**
 
-Free quota is for evaluation and testing only. We may adjust the quota, restrict available models or terminate trials at any time, and make no commitment regarding the availability of services within the free quota. The free quota is non-refundable, non-transferable and non-cashable.
-
----
-
-## Article 5 Usage Rules and Prohibited Conduct
-
-**5.1 General Compliance**
-
-You undertake to use this Service only for lawful and legitimate purposes, to comply with the laws and regulations of the PRC, those of your location and of the place of service use, and all applicable policies of Upstream Model Providers. **You bear sole and full legal liability for all content submitted through this Service and the consequences arising therefrom.**
-
-**5.2 Content-Level Prohibitions**
-
-You may not use this Service to generate, store, disseminate or otherwise process the following content:
-
-1. Content that opposes the basic principles established by the Constitution, endangers national security, honor and interests, incites subversion of state power or overthrow of the socialist system;
-2. Content that incites division of the country, undermines national unity, advocates terrorism or extremism, incites ethnic hatred or discrimination, or undermines ethnic solidarity;
-3. Content that undermines national religious policy, or advocates cults and feudal superstition;
-4. Content that spreads rumors or false information and disrupts economic or social order;
-5. Content that insults or slanders others, or infringes upon others' rights of reputation, portrait, privacy or personal information;
-6. Obscene, pornographic, gambling, violent, murderous, terrorist or crime-instructing content;
-7. **Any content involving the sexual exploitation of or sexualization of minors** — upon discovery, we will immediately terminate the Service and report to the competent authority, with no grace period;
-8. Content that infringes upon others' intellectual property rights, trade secrets or other lawful rights and interests;
-9. Content that, in violation of the Interim Measures for the Management of Generative AI Services and the Provisions on the Administration of Deep Synthesis of Internet Information Services, fails to label generated content as required by law;
-10. Use for illegal activities such as telecom network fraud, money laundering, illegal fundraising, pyramid selling, illegal stock recommendation or illegal lending.
-
-**5.3 Technical-Level Prohibitions**
-
-You may not engage in the following, nor assist or incite others to do so:
-
-1. Reverse engineering, decompiling or disassembling this Service or the Upstream Service, or attempting to obtain source code, model weights or system prompts;
-2. Using automated scripts, crawlers or bulk registration to maliciously register accounts, scrape free quota or obtain benefits;
-3. **Reselling, sub-licensing or re-distributing this Service or API Keys to third parties in any form** (except channel agents authorized in writing by us);
-4. Circumventing, evading or destroying our rate-limiting, content review, authentication, regional restriction or billing metering technical measures;
-5. Conducting stress testing, penetration testing or denial-of-service attacks against the Service, or using abnormally high concurrent requests that affect the Platform and other users;
-6. Concealing the true source of calls through forged request characteristics, tampered Headers or proxy pools;
-7. Using this Service to train models that directly compete with upstream models (Distillation or model distillation) unless explicitly authorized by the upstream provider;
-8. Extracting, caching or mirroring upstream model outputs to build datasets or services substantially identical to this Service.
-
-**5.4 Additional Requirements for Specific Scenarios**
-
-5.4.1 **Public-facing application scenarios**: If you integrate this Service into a generative AI application open to the public (including websites, Apps, mini-programs, smart hardware), you should complete the required **algorithm filing, generative AI service filing** and content labeling obligations on your own, and obtain our separate written confirmation. We may provide compliance guidance but do not assume your filing obligations thereby.
-
-5.4.2 **High-risk decision scenarios**: You may not use the output of this Service as the **sole** basis for decisions in high-risk scenarios such as medical diagnosis, legal opinions, financial investment decisions, judicial adjudication or personnel recruitment. Such scenarios should be reviewed by qualified professionals.
-
-5.4.3 **Minor-related products**: If your product is directed at minors or may be used by minors, you should obtain guardian consent in accordance with law and implement additional content security measures.
-
-5.4.4 **Sensitive personal information**: Without lawful authorization, you may not submit through this Service others' sensitive personal information, biometric information, medical and health information, financial account information or other specially protected data.
-
-**5.5 Violation Handling**
-
-If you violate this Article, we may, at our discretion and depending on the circumstances, take one or more of the following measures without bearing breach liability: warning and requiring rectification within a time limit; restricting call rate or quota; suspending part or all of the Service; freezing the account; terminating this Agreement; deleting violating content; reporting to and cooperating with regulators or competent authorities in investigation; pursuing your breach and tort liabilities.
+Hạn mức miễn phí chỉ dành cho mục đích đánh giá và kiểm thử. Chúng tôi có thể bất cứ lúc nào điều chỉnh hạn mức, giới hạn các mô hình khả dụng hoặc chấm dứt việc thử nghiệm, và không cam kết gì về khả năng sử dụng của dịch vụ trong phạm vi hạn mức miễn phí. Hạn mức miễn phí không được hoàn tiền, không chuyển nhượng và không quy đổi thành tiền mặt.
 
 ---
 
-## Article 6 Top-up, Billing and Settlement
+## Điều 5. Quy tắc sử dụng và hành vi bị cấm
 
-**6.1 Billing Unit and Basis**
+**5.1 Tuân thủ chung**
 
-6.1.1 This Service uses **Token** as the basic billing unit, billing **Input Tokens** and **Output Tokens** separately, with prices subject to the Platform's Pricing Page.
+Bạn cam kết chỉ sử dụng Dịch vụ này cho các mục đích hợp pháp và chính đáng, tuân thủ pháp luật và quy định của Cộng hòa Nhân dân Trung Hoa, pháp luật và quy định nơi cư trú của bạn và nơi sử dụng Dịch vụ, cùng mọi chính sách áp dụng của Nhà cung cấp mô hình thượng nguồn. **Bạn hoàn toàn và duy nhất chịu trách nhiệm pháp lý đối với toàn bộ nội dung gửi qua Dịch vụ này và các hậu quả phát sinh từ đó.**
 
-6.1.2 **Metering is based on our Platform's metering data.** We record the model identifier, input/output Token counts, timestamps and result status of each request, and generate the bill accordingly. You may query details in the console.
+**5.2 Cấm đối với nội dung**
 
-6.1.3 Prices may differ for the same model across different routing paths and different upstream providers; we bill according to the **actual routing result** and list the corresponding price tiers on the Pricing Page.
+Bạn không được sử dụng Dịch vụ này để tạo, lưu trữ, phát tán hoặc xử lý bằng cách khác các nội dung sau:
 
-**6.2 Price Adjustment**
+1. Nội dung chống lại các nguyên tắc cơ bản do Hiến pháp xác lập, nguy hại đối với an ninh, danh dự và lợi ích quốc gia, kích động lật đổ quyền nhà nước hoặc lật đổ chế độ xã hội chủ nghĩa;
+2. Nội dung kích động chia rẽ đất nước, làm suy giảm đoàn kết quốc gia, tuyên truyền khủng bố hoặc cực đoan, kích động thù hận hoặc phân biệt đối xử sắc tộc, hoặc làm suy giảm sự đoàn kết sắc tộc;
+3. Nội dung phá hoại chính sách tôn giáo quốc gia, hoặc tuyên truyền giáo dịch và mê tín phong kiến;
+4. Nội dung tung tin giả hoặc thông tin sai lệch làm gián đoạn trật tự kinh tế hoặc xã hội;
+5. Nội dung xúc phạm hoặc vu khống người khác, hoặc xâm phạm quyền danh dự, quyền chân dung, quyền riêng tư hoặc quyền đối với thông tin cá nhân của người khác;
+6. Nội dung khiêu dâm, tình dục, cờ bạc, bạo lực, giết người, khủng bố hoặc hướng dẫn tội phạm;
+7. **Bất kỳ nội dung nào liên quan đến việc khai thác tình dục hoặc tình dục hóa người chưa thành niên** — khi phát hiện, chúng tôi sẽ lập tức chấm dứt Dịch vụ và báo cáo với cơ quan có thẩm quyền, không có thời hạn gia hạn;
+8. Nội dung xâm phạm quyền sở hữu trí tuệ, bí mật thương mại hoặc quyền và lợi ích hợp pháp khác của người khác;
+9. Nội dung vi phạm Biện pháp tạm thời về quản lý dịch vụ trí tuệ nhân tạo và Quy định về quản lý công nghệ chuyên sâu tổng hợp thông tin Internet mà không gắn nhãn nội dung được tạo ra theo yêu cầu của pháp luật;
+10. Sử dụng cho các hoạt động phi pháp như lừa đảo viễn thông trên mạng, rửa tiền, quyên góp trái phép, bán hàng đa cấp, khuyến nghị cổ phiếu trái phép hoặc cho vay trái phép.
 
-We may adjust service prices based on upstream price changes, exchange rate fluctuations and cost structure changes. Price adjustments will be published **15 calendar days** in advance; adjustments are not retroactive, and usage before publication is settled at the original price.
+**5.3 Cấm đối với kỹ thuật**
 
-**6.3 Prepayment and Account Balance**
+Bạn không được thực hiện các hành vi sau, cũng không được hỗ trợ hoặc xúi giục người khác thực hiện:
 
-6.3.1 This Service adopts a **prepaid model**: you should first top up to form an account balance, which is deducted in real time upon calling. When the balance is insufficient, the Service will automatically stop; we do not provide credit advances (except enterprise users with separate written arrangements).
+1. Phân tích ngược, giải mã hoặc tháo rời Dịch vụ này hoặc Dịch vụ thượng nguồn, hoặc cố gắng thu được mã nguồn, trọng số mô hình hoặc lời nhắc hệ thống;
+2. Sử dụng kịch bản tự động, chương trình thu thập dữ liệu hoặc đăng ký hàng loạt để đăng ký tài khoản độc hại, quét hạn mức miễn phí hoặc nhận lợi ích;
+3. **Bán lại, cấp phép lại hoặc phân phối lại Dịch vụ này hoặc API Key cho bên thứ ba dưới bất kỳ hình thức nào** (trừ các đại lý kênh được chúng tôi ủy quyền bằng văn bản);
+4. Vượt qua, tránh hoặc phá hủy các biện pháp kỹ thuật giới hạn tốc độ, rà soát nội dung, xác thực, hạn chế khu vực hoặc đo lường tính phí của chúng tôi;
+5. Tiến hành kiểm thử tải, kiểm thử xâm nhập hoặc tấn công từ chối dịch vụ đối với Dịch vụ, hoặc sử dụng số lượng yêu cầu đồng thời bất thường cao ảnh hưởng đến Nền tảng và người dùng khác;
+6. Che giấu nguồn gốc thật của các lời gọi thông qua đặc trưng yêu cầu giả mạo, sửa đổi Header hoặc dùng pool proxy;
+7. Sử dụng Dịch vụ này để huấn luyện các mô hình cạnh tranh trực tiếp với mô hình thượng nguồn (chưng cất hoặc chưng cất mô hình), trừ khi được nhà cung cấp thượng nguồn cho phép rõ ràng;
+8. Trích xuất, lưu đệm hoặc sao chép kết quả đầu ra của mô hình thượng nguồn để xây dựng tập dữ liệu hoặc dịch vụ về cơ bản giống hệt Dịch vụ này.
 
-6.3.2 **Account Balance is non-transferable, non-cashable and may not be used for purposes other than this Service.**
+**5.4 Yêu cầu bổ sung đối với các kịch bản cụ thể**
 
-6.3.3 **Refund Rules**:
+5.4.1 **Kịch bản ứng dụng hướng đến công chúng**: Nếu bạn tích hợp Dịch vụ này vào một ứng dụng trí tuệ nhân tạo mở cho công chúng (bao gồm trang web, ứng dụng, mini-program, thiết bị thông minh), bạn phải tự hoàn thành nghĩa vụ **đăng ký thuật toán, đăng ký dịch vụ trí tuệ nhân tạo** và gắn nhãn nội dung theo quy định, đồng thời nhận được xác nhận riêng bằng văn bản từ chúng tôi. Chúng tôi có thể cung cấp hướng dẫn tuân thủ nhưng không vì thế mà gánh vác nghĩa vụ đăng ký thay bạn.
 
-- For un-consumed top-up balances, you may apply for a refund, but the fees charged by third-party payment channels and the taxes corresponding to invoices already issued will be deducted; the review period is **7 business days**. The method of calculating the refund amount and the refund process follow the Recharge Agreement.
-- **Consumed Token fees are non-refundable**, regardless of whether you actually used the output (e.g., you abandoned use due to poor prompt design, changed requirements or dissatisfaction with results).
-- Where account termination is caused by your violation of this Agreement, the balance, after deduction of payable fees and possible third-party claims, may be refunded; where serious illegality is constituted, we may lawfully defer the refund and cooperate with competent authorities.
+5.4.2 **Kịch bản ra quyết định rủi ro cao**: Bạn không được sử dụng kết quả đầu ra của Dịch vụ này làm cơ sở **duy nhất** để ra quyết định trong các kịch bản rủi ro cao như chẩn đoán y tế, tư vấn pháp lý, quyết định đầu tư tài chính, xét xử tư pháp hoặc tuyển dụng nhân sự. Các kịch bản như vậy cần được chuyên gia có thẩm quyền xem xét.
 
-6.3.4 The balance is valid for **12 months** from the top-up date. Before expiry we will remind you via in-site message/email; unused balances after expiry may be reactivated upon application; if unused continuously for **3 months**, we may handle it after deducting reasonable management fees.
+5.4.3 **Sản phẩm liên quan đến người chưa thành niên**: Nếu sản phẩm của bạn hướng đến người chưa thành niên hoặc có thể được người chưa thành niên sử dụng, bạn nên thu được sự đồng ý của người giám hộ theo pháp luật và thực hiện thêm các biện pháp bảo vệ an toàn nội dung.
 
-**6.4 Failed Requests and Billing**
+5.4.4 **Thông tin cá nhân nhạy cảm**: Không có sự ủy quyền hợp pháp, bạn không được gửi qua Dịch vụ này thông tin cá nhân nhạy cảm, thông tin sinh trắc học, thông tin y tế và sức khỏe, thông tin tài khoản tài chính hoặc dữ liệu được bảo vệ đặc biệt khác của người khác.
 
-6.4.1 Requests that fail due to **our** platform errors (gateway exceptions, routing failures that did not reach upstream) are not billed, and any deducted fees are automatically returned.
+**5.5 Xử lý vi phạm**
 
-6.4.2 **Requests for which an Upstream Model Provider returned an error, timeout, or content intercepted by the upstream safety policy (Refusal / Content Filter) and that already incurred upstream consumption are still billed according to actual consumption**:
-
-- Where the upstream has returned a content filtering result (e.g., safety interception, refusal), input Token consumption typically still occurs and is billed as Input Tokens;
-- Where the upstream returned a `5xx` error or timeout, it is generally not billed; if the upstream has billed, we will return the equivalent amount after verification;
-- You may submit a billing dispute through the console; the dispute acceptance period is **30 calendar days** from bill generation, after which the bill is deemed accepted.
-
-6.4.3 Streaming requests interrupted are metered by the Tokens actually transmitted.
-
-**6.5 Discounts and Offers**
-
-Prompt Caching, Batch, off-peak calling, etc. may enjoy discounts; the specific discount rates are subject to the Pricing Page and upstream policies. **Discounts vary with upstream policies and do not constitute a long-term commitment.**
-
-**6.6 Invoicing and Taxation**
-
-We issue VAT invoices (special or general VAT invoices, depending on your taxpayer qualification) based on your actual consumption amount. Invoice applications must be submitted within the calendar year to which the bill belongs; cross-year re-issuance is not provided. Costs of re-issuance or cancellation due to incorrect invoicing information you provided are borne by you.
-
-**6.7 Arrears Handling**
-
-After the balance is exhausted, the Service will be suspended. For enterprise users on a monthly post-settlement model, if payment is overdue by more than **15 calendar days**, we may suspend the Service; if overdue by more than **30 calendar days**, we may terminate the Service, pursue breach liability, and charge a late penalty of **0.05% per day**.
+Nếu bạn vi phạm Điều này, chúng tôi có thể, tùy theo quyền quyết định của mình và tùy theo hoàn cảnh cụ thể, áp dụng một hoặc nhiều biện pháp sau mà không chịu trách nhiệm vi phạm: cảnh cáo và yêu cầu khắc phục trong một khoảng thời gian; giới hạn tốc độ gọi hoặc hạn mức; tạm ngừng một phần hoặc toàn bộ Dịch vụ; đóng băng tài khoản; chấm dứt Hợp đồng này; xóa nội dung vi phạm; báo cáo và phối hợp với cơ quan quản lý hoặc cơ quan có thẩm quyền trong quá trình điều tra; truy trách nhiệm vỡ nợ và trách nhiệm ngoài hợp đồng của bạn.
 
 ---
 
-## Article 7 Service Levels, Quotas and Availability
+## Điều 6. Nạp tiền, tính phí và quyết toán
 
-**7.1 Availability Target**
+**6.1 Đơn vị và cơ sở tính phí**
 
-7.1.1 We commit to a monthly availability of no less than **99.9%** for the **Platform gateway** (authentication, routing, metering modules); the specific calculation method and compensation standard are detailed in the Service Level Agreement (SLA).
+6.1.1 Dịch vụ này sử dụng **Token** làm đơn vị tính phí cơ bản, tính phí riêng biệt **Token đầu vào** và **Token đầu ra**, với giá theo Trang bảng giá của Nền tảng.
 
-7.1.2 **The above commitment does not cover the availability of the Upstream Model Providers themselves.** The availability of upstream services is indirectly guaranteed by the upstream provider to **you** (as the end user) under its own SLA; we do not assume guarantee liability for the upstream SLA.
+6.1.2 **Việc đo lường dựa trên dữ liệu đo lường của Nền tảng chúng tôi.** Chúng tôi ghi lại mã định danh mô hình, số lượng Token đầu vào/đầu ra, dấu thời gian và trạng thái kết quả của từng yêu cầu, và tạo hóa đơn theo đó. Bạn có thể truy vấn chi tiết trên bảng điều khiển.
 
-**7.2 SLA Exclusions**
+6.1.3 Giá có thể khác nhau đối với cùng một mô hình giữa các tuyến định tuyến và các nhà cung cấp thượng nguồn khác nhau; chúng tôi tính phí theo **kết quả định tuyến thực tế** và niêm yết các bậc giá tương ứng trên Trang bảng giá.
 
-The following circumstances are not counted as downtime: upstream model provider failures, rate-limiting or policy changes; Internet backbone failures, DNS pollution, cross-border link congestion; your own application, network or configuration issues; our planned maintenance (72 hours' notice, no more than 4 hours each); force majeure; bans due to your violation.
+**6.2 Điều chỉnh giá**
 
-**7.3 SLA Compensation**
+Chúng tôi có thể điều chỉnh giá dịch vụ dựa trên thay đổi giá thượng nguồn, biến động tỷ giá và thay đổi cơ cấu chi phí. Việc điều chỉnh giá sẽ được công bố trước **15 ngày lịch**; việc điều chỉnh không có hiệu lực hồi tố, và mức sử dụng trước thời điểm công bố được quyết toán theo giá cũ.
 
-When the SLA is not met, we will compensate in the form of **service credit vouchers**, with the compensation cap at **100% of your actual consumption amount in the month**, and **no cash refund is provided**. Service credit vouchers are non-transferable, non-cashable, and valid for 6 months.
+**6.3 Trả trước và Số dư tài khoản**
 
-**7.4 Quotas and Rate-Limiting**
+6.3.1 Dịch vụ này áp dụng **mô hình trả trước**: bạn phải nạp tiền trước để tạo thành số dư tài khoản, và số dư này bị trừ theo thời gian thực khi gọi. Khi số dư không đủ, Dịch vụ sẽ tự động dừng; chúng tôi không cung cấp tín dụng ứng trước (trừ người dùng doanh nghiệp có thỏa thuận riêng bằng văn bản).
 
-7.4.1 We set rate limits (RPM: requests per minute; TPM: Tokens per minute) and concurrency caps by account tier; specific quotas are published in the console and can be requested for increase.
+6.3.2 **Số dư tài khoản không chuyển nhượng, không quy đổi thành tiền mặt và không được sử dụng cho các mục đích khác ngoài Dịch vụ này.**
 
-7.4.2 When a single request exceeds the model's context length limit, the request will be rejected; we are not responsible for effect loss due to truncation or chunking.
+6.3.3 **Quy tắc Hoàn tiền**:
 
-7.4.3 To ensure overall Platform stability, we may implement global scheduling, degradation or temporary rate-limiting. If degradation is needed, we will prioritize protecting higher-tier users and paid dedicated instances.
+- Đối với số dư nạp tiền chưa tiêu thụ, bạn có thể yêu cầu hoàn tiền, nhưng các khoản phí do kênh thanh toán của bên thứ ba thu và khoản thuế tương ứng với hóa đơn đã phát hành sẽ được khấu trừ; thời gian xét duyệt là **7 ngày làm việc**. Cách tính số tiền hoàn tiền và quy trình hoàn tiền tuân theo Hợp đồng nạp tiền.
+- **Phí Token đã tiêu thụ không được hoàn lại**, bất kể bạn có thực sự sử dụng kết quả đầu ra hay không (ví dụ, bạn từ bỏ sử dụng do thiết kế câu lệnh kém, thay đổi yêu cầu hoặc không hài lòng về kết quả).
+- Trường hợp việc chấm dứt tài khoản là do bạn vi phạm Hợp đồng này, số dư sau khi khấu trừ các khoản phí phải trả và các khoản yêu cầu bồi thường có thể của bên thứ ba có thể được hoàn lại; trường hợp có hành vi vi phạm pháp luật nghiêm trọng, chúng tôi có thể hợp pháp trì hoãn việc hoàn tiền và phối hợp với cơ quan có thẩm quyền.
+
+6.3.4 Số dư có hiệu lực trong **12 tháng** kể từ ngày nạp tiền. Trước khi hết hạn, chúng tôi sẽ nhắc nhở bạn qua tin nhắn trong ứng dụng hoặc email; số dư chưa sử dụng sau khi hết hạn có thể được kích hoạt lại theo yêu cầu; nếu không sử dụng liên tục trong **3 tháng**, chúng tôi có thể xử lý sau khi khấu trừ khoản phí quản lý hợp lý.
+
+**6.4 Yêu cầu thất bại và tính phí**
+
+6.4.1 Các yêu cầu thất bại do lỗi **Nền tảng của chúng tôi** (sự cố cổng kết nối, định tuyến thất bại không tới thượng nguồn) sẽ không bị tính phí, và mọi khoản phí đã bị trừ sẽ được hoàn trả tự động.
+
+6.4.2 **Các yêu cầu mà Nhà cung cấp mô hình thượng nguồn trả về lỗi, hết thời gian hoặc nội dung bị thượng nguồn chặn theo chính sách an toàn (Từ chối / Bộ lọc nội dung) và đã phát sinh tiêu thụ phía thượng nguồn vẫn được tính phí theo mức tiêu thụ thực tế**:
+
+- Khi thượng nguồn trả về kết quả lọc nội dung (ví dụ: chặn an toàn, từ chối), mức tiêu thụ Token đầu vào thường vẫn xảy ra và được tính phí như Token đầu vào;
+- Khi thượng nguồn trả về lỗi `5xx` hoặc hết thời gian, nhìn chung sẽ không bị tính phí; nếu thượng nguồn đã tính phí, chúng tôi sẽ hoàn trả số tiền tương đương sau khi xác minh;
+- Bạn có thể gửi tranh chấp tính phí qua bảng điều khiển; thời hạn tiếp nhận tranh chấp là **30 ngày lịch** kể từ khi phát sinh hóa đơn, sau đó hóa đơn được coi là đã chấp nhận.
+
+6.4.3 Các yêu cầu truyền trực tuyến bị gián đoạn được đo lường theo số Token thực sự được truyền đi.
+
+**6.5 Giảm giá và ưu đãi**
+
+Prompt Caching, Batch, gọi vào khung giờ thấp điểm, v.v. có thể được hưởng mức giảm giá; mức giảm giá cụ thể tùy thuộc vào Trang bảng giá và chính sách thượng nguồn. **Mức giảm giá thay đổi theo chính sách thượng nguồn và không cấu thành cam kết dài hạn.**
+
+**6.6 Hóa đơn và thuế**
+
+Chúng tôi xuất hóa đơn giá trị gia tăng (hóa đơn đặc biệt hoặc hóa đơn thường, tùy thuộc vào tư cách người nộp thuế của bạn) dựa trên số tiền tiêu thụ thực tế của bạn. Yêu cầu hóa đơn phải được gửi trong năm dương lịch thuộc về hóa đơn đó; chúng tôi không cung cấp việc cấp lại xuyên năm. Chi phí cấp lại hoặc hủy hóa đơn do bạn cung cấp thông tin hóa đơn không chính xác do bạn chịu.
+
+**6.7 Xử lý nợ quá hạn**
+
+Sau khi số dư cạn kiệt, Dịch vụ sẽ bị tạm ngừng. Đối với người dùng doanh nghiệp theo mô hình thanh toán sau mỗi tháng, nếu thanh toán trễ hạn quá **15 ngày lịch**, chúng tôi có thể tạm ngừng Dịch vụ; nếu trễ hạn quá **30 ngày lịch**, chúng tôi có thể chấm dứt Dịch vụ, truy trách nhiệm vi phạm và tính phí phạt trễ hạn **0.05% mỗi ngày**.
 
 ---
 
-## Article 8 Data, Content and Personal Information Protection
+## Điều 7. Mức độ Dịch vụ, Hạn mức và khả năng sử dụng
 
-**8.1 Ownership of User Content**
+**7.1 Cam kết về khả năng sử dụng**
 
-The input content you submit through this Service, and the output content generated by the Service based on that input, belong to **you or your lawful authorizer**. We do not claim any ownership of User Content.
+7.1.1 Chúng tôi cam kết khả năng sử dụng hằng tháng không thấp hơn **99.9%** đối với **cổng kết nối của Nền tảng** (xác thực, định tuyến, mô-đun đo lường); phương pháp tính cụ thể và tiêu chuẩn bồi thường được quy định chi tiết trong Hợp đồng mức độ dịch vụ (SLA).
 
-**8.2 Data Processing Role**
+7.1.2 **Cam kết nêu trên không bao gồm khả năng sử dụng của chính các Nhà cung cấp mô hình thượng nguồn.** Khả năng sử dụng của dịch vụ thượng nguồn được bảo đảm gián tiếp bởi nhà cung cấp thượng nguồn đối với **bạn** (với tư cách người dùng cuối) theo SLA của chính họ; chúng tôi không chịu trách nhiệm bảo đảm đối với SLA của thượng nguồn.
 
-In providing this Service, with respect to the personal-information-containing data you submit through the Service:
+**7.2 Ngoại lệ đối với SLA**
 
-- **You are the personal information processor**, bearing full responsibility for the legal basis (notice and consent, contract necessity, etc.);
-- **We are the entrusted processor**, processing data only upon your instructions and not using it for purposes beyond this Agreement.
+Các trường hợp sau đây không được tính là thời gian gián đoạn: sự cố của nhà cung cấp mô hình thượng nguồn, giới hạn tốc độ hoặc thay đổi chính sách; sự cố của xương sống Internet, nhiễm DNS, tắc nghẽn đường liên kết xuyên biên giới; sự cố ứng dụng, mạng hoặc cấu hình của chính bạn; bảo trì theo kế hoạch của chúng tôi (thông báo trước 72 giờ, mỗi lần không quá 4 giờ); bất khả kháng; cấm truy cập do bạn vi phạm.
 
-Enterprise users may separately execute a Data Processing Agreement (DPA) with us, specifying the processing purpose, period, method, security measures and audit rights.
+**7.3 Bồi thường SLA**
 
-**8.3 Data Retention Policy**
+Khi không đạt SLA, chúng tôi sẽ bồi thường dưới hình thức **phiếu tín dụng dịch vụ**, với mức bồi thường tối đa bằng **100% số tiền tiêu thụ thực tế của bạn trong tháng**, và **không cung cấp hoàn tiền mặt**. Phiếu tín dụng dịch vụ không chuyển nhượng, không quy đổi thành tiền mặt và có hiệu lực trong 6 tháng.
 
-| Data Type | Default Retention | Purpose |
+**7.4 Hạn mức và giới hạn tốc độ**
+
+7.4.1 Chúng tôi áp dụng giới hạn tốc độ (RPM: số yêu cầu mỗi phút; TPM: số Token mỗi phút) và trần số lượng đồng thời theo cấp tài khoản; hạn mức cụ thể được công bố trên bảng điều khiển và có thể được yêu cầu tăng.
+
+7.4.2 Khi một yêu cầu đơn lẻ vượt quá giới hạn độ dài ngữ cảnh của mô hình, yêu cầu đó sẽ bị từ chối; chúng tôi không chịu trách nhiệm về việc mất hiệu quả do cắt bớt hoặc phân mảnh.
+
+7.4.3 Để bảo đảm sự ổn định chung của Nền tảng, chúng tôi có thể áp dụng lập lịch toàn cục, giảm cấp dịch vụ hoặc giới hạn tốc độ tạm thời. Nếu cần giảm cấp dịch vụ, chúng tôi sẽ ưu tiên bảo vệ người dùng ở cấp cao hơn và các phiên bản riêng trả phí.
+
+---
+
+## Điều 8. Dữ liệu, nội dung và bảo vệ Thông tin cá nhân
+
+**8.1 Quyền sở hữu Nội dung người dùng**
+
+Nội dung đầu vào bạn gửi qua Dịch vụ này và nội dung đầu ra do Dịch vụ tạo ra dựa trên nội dung đầu vào đó thuộc về **bạn hoặc người được bạn ủy quyền hợp pháp**. Chúng tôi không tuyên bố quyền sở hữu đối với bất kỳ Nội dung người dùng nào.
+
+**8.2 Vai trò xử lý dữ liệu**
+
+Trong quá trình cung cấp Dịch vụ này, đối với dữ liệu có chứa thông tin cá nhân mà bạn gửi qua Dịch vụ:
+
+- **Bạn là Bên kiểm soát thông tin cá nhân**, chịu toàn bộ trách nhiệm về cơ sở pháp lý (thông báo và sự đồng ý, sự cần thiết của hợp đồng, v.v.);
+- **Chúng tôi là Bên xử lý được ủy thác**, chỉ xử lý dữ liệu theo chỉ dẫn của bạn và không sử dụng cho mục đích nào ngoài Hợp đồng này.
+
+Người dùng doanh nghiệp có thể ký kết riêng Hợp đồng xử lý dữ liệu (DPA) với chúng tôi, quy định mục đích, thời hạn, phương thức xử lý, biện pháp bảo mật và quyền kiểm toán.
+
+**8.3 Chính sách lưu giữ dữ liệu**
+
+| Loại dữ liệu | Thời gian lưu giữ mặc định | Mục đích |
 |---|---|---|
-| Request/response body content | **Not retained by default** (enterprise users may separately agree to disable logs) | Real-time forwarding only |
-| Request metadata (time, model, Token count, status code, latency) | 12 months | Billing, reconciliation, security audit |
-| Account and verification information | Duration of account + legally required period | Identity recognition, real-name compliance |
-| Security audit logs | 6 months | Retention as required by the Cybersecurity Law |
+| Nội dung thân yêu cầu/phản hồi | **Mặc định không lưu giữ** (người dùng doanh nghiệp có thể thỏa thuận riêng về việc tắt nhật ký) | Chỉ chuyển tiếp theo thời gian thực |
+| Siêu dữ liệu yêu cầu (thời gian, mô hình, số Token, mã trạng thái, độ trễ) | 12 tháng | Tính phí, đối soát, kiểm toát an ninh |
+| Thông tin tài khoản và xác minh | Thời gian tồn tại của tài khoản + thời hạn bắt buộc theo pháp luật | Nhận diện danh tính, tuân thủ quy định tên thật |
+| Nhật ký kiểm toát an ninh | 6 tháng | Lưu giữ theo yêu cầu của Luật An ninh mạng |
 
-> Note: If you use upstream official-channel models, the body content will inevitably be transmitted to the Upstream Model Provider, whose retention policy is governed by the upstream privacy policy.
+> Lưu ý: Nếu bạn sử dụng mô hình từ kênh chính thức của thượng nguồn, nội dung sẽ không tránh khỏi việc được truyền đến Nhà cung cấp mô hình thượng nguồn, và chính sách lưu giữ của họ chịu sự chi phối của chính sách bảo mật phía thượng nguồn.
 
-**8.4 Cross-Border Data Transfer**
+**8.4 Chuyển dữ liệu xuyên biên giới**
 
-8.4.1 When using overseas model nodes, your input content will be transmitted to overseas upstream services and may be processed and stored overseas.
+8.4.1 Khi sử dụng các nút mô hình ở nước ngoài, nội dung đầu vào của bạn sẽ được truyền đến dịch vụ thượng nguồn ở nước ngoài và có thể được xử lý và lưu trữ ở nước ngoài.
 
-8.4.2 **Before using such models, you should complete the compliance procedures required for data export on your own** (where applicable, including filing of the standard contract for cross-border personal information transfer, security assessment or certification), and fulfill sufficient notice obligations to your end users in your privacy policy. Your act of selecting an overseas model at the Platform constitutes your explicit instruction for such cross-border transfer.
+8.4.2 **Trước khi sử dụng các mô hình như vậy, bạn phải tự hoàn thành các thủ tục tuân thủ bắt buộc đối với việc xuất dữ liệu** (khi áp dụng, bao gồm đăng ký hợp đồng tiêu chuẩn cho việc chuyển thông tin cá nhân xuyên biên giới, đánh giá an toàn hoặc chứng nhận), và thực hiện đầy đủ nghĩa vụ thông báo đối với người dùng cuối của bạn trong chính sách bảo mật của bạn. Việc bạn chọn một mô hình ở nước ngoài trên Nền tảng cấu thành chỉ dẫn rõ ràng của bạn đối với việc chuyển dữ liệu xuyên biên giới đó.
 
-8.4.3 We recommend and support you in achieving data non-export through "domestic nodes + domestic models"; you may also reduce export risk through server-side data masking, field replacement and other technical means.
+8.4.3 Chúng tôi khuyến nghị và hỗ trợ bạn đạt được việc không xuất dữ liệu thông qua phương án «nút trong nước + mô hình trong nước»; bạn cũng có thể giảm rủi ro xuất khẩu thông qua che dữ liệu phía máy chủ, thay thế trường và các biện pháp kỹ thuật khác.
 
-**8.5 Security Measures**
+**8.5 Biện pháp bảo mật**
 
-We adopt security measures including but not limited to: transport-layer encryption (TLS 1.3), static data encryption, least-privilege access control, key escrow and rotation, intrusion detection, log audit, and employee confidentiality agreements. We conduct regular security assessments and penetration testing.
+Chúng tôi áp dụng các biện pháp bảo mật bao gồm nhưng không giới hạn ở: mã hóa tầng truyền tải (TLS 1.3), mã hóa dữ liệu lưu trữ, kiểm soát truy cập theo nguyên tắc đặc quyền tối thiểu, lưu ký và xoay vòng khóa, phát hiện xâm nhập, kiểm toán nhật ký, và hợp đồng bảo mật với nhân viên. Chúng tôi thực hiện đánh giá bảo mật và kiểm thử xâm nhập định kỳ.
 
-**8.6 Security Incident Notice**
+**8.6 Thông báo sự cố an ninh**
 
-When a data breach, tampering, loss or other security incident occurs or is likely to occur, we will promptly take remedial measures, report to regulators as required by laws and regulations, and notify you via in-site message or email.
+Khi xảy ra hoặc có khả năng xảy ra việc rò rỉ dữ liệu, sửa đổi dữ liệu, mất dữ liệu hoặc sự cố an ninh khác, chúng tôi sẽ kịp thời thực hiện biện pháp khắc phục, báo cáo với cơ quan quản lý theo pháp luật và quy định, và thông báo cho bạn qua tin nhắn trong ứng dụng hoặc email.
 
-**8.7 Personal Information Protection**
+**8.7 Bảo vệ Thông tin cá nhân**
 
-The collection, use, storage, sharing of personal information and the exercise of your rights are detailed in the Privacy Policy. **The Privacy Policy is an inseparable part of this Agreement.**
-
----
-
-## Article 9 Third-Party Services and Upstream Model Terms
-
-**9.1 Pass-through of Upstream Terms**
-
-9.1.1 **You acknowledge and agree that when you call upstream models through this Service, you must also comply with the usage policies, terms and acceptable use policies of the Upstream Model Providers**, including but not limited to OpenAI Usage Policies, Anthropic Usage Policies, Google Generative AI Prohibited Use Policy, Microsoft Azure Acceptable Use Policy, Amazon AWS Acceptable Use Policy, and the service specifications of various domestic model vendors.
-
-9.1.2 The substance of the above upstream terms is summarized in Article 5 of this Agreement and can be consulted at the links listed in Appendix B. Where the superior terms conflict with this Agreement, for the part concerning upstream model services, **the stricter one shall prevail**.
-
-9.1.3 Your violation of upstream policies also constitutes a breach under this Agreement.
-
-**9.2 Impact of Upstream Policy and Authorization Changes**
-
-9.2.1 Upstream Model Providers may change policies, adjust prices, restrict regions, restrict uses or terminate authorization to us at any time.
-
-9.2.2 **Unavailability of specific models, need to switch to alternative models or restricted service caused by upstream changes does not constitute a breach by us.** We will make reasonable efforts to notify in advance and provide a migration plan.
-
-**9.3 Liability Boundary for Upstream Interruptions**
-
-**Any failure, rate-limiting, ban, content interception, data breach or breach by an Upstream Model Provider is not our fault. We do not bear joint liability for the acts or omissions of upstream parties, but will make reasonable efforts to assist you in communicating with upstream and taking remedial measures.**
-
-**9.4 Resale Authorization Statement**
-
-We declare that our provision of upstream model invocation capability to you is based on lawful authorization arrangements with upstream providers or their authorized distributors. **We do not provide unlimited assurance of the continuing validity of upstream authorization.** If authorization terminates, we will notify you in advance to the extent permitted by regulations and upstream requirements, and assist with migration or refund according to the un-consumed balance.
-
-**9.5 Third-Party Links and Content**
-
-The Platform may contain links to third-party websites or resources. We are not responsible for the accuracy, legality or availability of third-party content.
+Việc thu thập, sử dụng, lưu trữ, chia sẻ thông tin cá nhân và việc thực hiện quyền của bạn được quy định chi tiết trong Chính sách bảo mật. **Chính sách bảo mật là một phần không tách rời của Hợp đồng này.**
 
 ---
 
-## Article 10 Intellectual Property Rights
+## Điều 9. Dịch vụ của bên thứ ba và điều khoản mô hình thượng nguồn
 
-**10.1 Platform Intellectual Property**
+**9.1 Chuyển tiếp điều khoản của thượng nguồn**
 
-The intellectual property rights of the software, gateway programs, interface design, documentation, trademarks (including the Chinese and English brand names and graphic logos of **Uter** and **优特**), domain name (Uter.ai), technical solutions and algorithm strategies of this Service all belong to us or the respective right holders. Without written permission, you may not copy, modify, disseminate, reverse engineer or use them for any commercial purpose.
+9.1.1 **Bạn thừa nhận và đồng ý rằng khi gọi các mô hình thượng nguồn qua Dịch vụ này, bạn cũng phải tuân thủ các chính sách sử dụng, điều khoản và chính sách sử dụng chấp nhận được của Nhà cung cấp mô hình thượng nguồn**, bao gồm nhưng không giới hạn ở Chính sách sử dụng của OpenAI, Chính sách sử dụng của Anthropic, Chính sách sử dụng bị cấm của Google Generative AI, Chính sách sử dụng chấp nhận được của Microsoft Azure, Chính sách sử dụng chấp nhận được của Amazon AWS, và các đặc tả dịch vụ của các nhà cung cấp mô hình trong nước.
 
-**10.2 Trademark Use**
+9.1.2 Nội dung cốt lõi của các điều khoản thượng nguồn nêu trên được tóm tắt tại Điều 5 của Hợp đồng này và có thể tra cứu tại các liên kết được liệt kê trong Phụ lục B. Khi các điều khoản ưu tiên mâu thuẫn với Hợp đồng này, đối với phần liên quan đến dịch vụ mô hình thượng nguồn thì **điều khoản nghiêm ngặt hơn sẽ được ưu tiên**.
 
-Without prior written consent, you may not use the Chinese or English names, trademarks or logos of "Uter" or "优特" in any promotional materials or product interfaces, or otherwise imply a cooperation, endorsement or affiliation with us.
+9.1.3 Việc bạn vi phạm chính sách thượng nguồn cũng cấu thành hành vi vi phạm theo Hợp đồng này.
 
-**10.3 Risk Notice for Generated Content**
+**9.2 Tác động của việc thay đổi chính sách và cấp quyền phía thượng nguồn**
 
-10.3.1 Large language model outputs are **probabilistic and non-deterministic**. **We make no express or implied warranty as to the accuracy, completeness, timeliness, applicability or non-infringement of the outputs.**
+9.2.1 Nhà cung cấp mô hình thượng nguồn có thể bất cứ lúc nào thay đổi chính sách, điều chỉnh giá, giới hạn khu vực, giới hạn mục đích sử dụng hoặc chấm dứt việc cấp quyền cho chúng tôi.
 
-10.3.2 **Content generated by large models may be similar to prior works of others.** We cannot guarantee that generated content is original or will not infringe third-party intellectual property rights. You should complete rights clearance on your own before commercial use of generated content.
+9.2.2 **Việc một mô hình cụ thể không còn khả dụng, cần chuyển sang mô hình thay thế hoặc bị hạn chế dịch vụ do những thay đổi phía thượng nguồn không cấu thành hành vi vi phạm của chúng tôi.** Chúng tôi sẽ nỗ lực hợp lý để thông báo trước và cung cấp kế hoạch chuyển đổi.
 
-10.3.3 **You may not claim exclusive rights to the output content for the same prompt.**
+**9.3 Ranh giới trách nhiệm đối với gián đoạn phía thượng nguồn**
 
-**10.4 Feedback**
+**Bất kỳ sự cố, giới hạn tốc độ, cấm truy cập, chặn nội dung, rò rỉ dữ liệu hoặc hành vi vi phạm nào của Nhà cung cấp mô hình thượng nguồn đều không phải lỗi của chúng tôi. Chúng tôi không chịu trách nhiệm liên đới đối với hành vi hoặc hành động thiếu sót của các bên thượng nguồn, nhưng sẽ nỗ lực hợp lý để hỗ trợ bạn trong việc liên lạc với bên thượng nguồn và thực hiện các biện pháp khắc phục.**
 
-Any product suggestions, defect reports, improvement opinions, etc. you submit to us ("Feedback") are deemed to grant us a perpetual, irrevocable, royalty-free right to use, modify and integrate such Feedback worldwide without paying consideration to you. The Feedback does not contain your confidential information.
+**9.4 Tuyên bố về quyền bán lại**
 
----
+Chúng tôi tuyên bố rằng việc cung cấp năng lực gọi mô hình thượng nguồn cho bạn được thực hiện trên cơ sở các sắp xếp ủy quyền hợp pháp với các nhà cung cấp thượng nguồn hoặc nhà phân phối được ủy quyền của họ. **Chúng tôi không đưa ra bảo đảm không giới hạn về tính còn hiệu lực của việc cấp quyền phía thượng nguồn.** Nếu việc cấp quyền chấm dứt, chúng tôi sẽ thông báo trước cho bạn trong phạm vi được phép theo quy định và yêu cầu phía thượng nguồn, đồng thời hỗ trợ chuyển đổi hoặc hoàn tiền theo số dư chưa tiêu thụ.
 
-## Article 11 Disclaimers and Limitation of Liability
+**9.5 Liên kết và nội dung của bên thứ ba**
 
-**11.1 Service Provided "As Is" and "As Available"**
-
-To the maximum extent permitted by applicable law, we provide this Service on an "AS IS" and "AS AVAILABLE" basis, **making no express or implied warranties**, including but not limited to warranties of merchantability, fitness for a particular purpose, uninterrupted use, error-free operation, virus-free, or accurate results.
-
-**11.2 Non-Professional Advice**
-
-Any content output by this Service does not constitute medical, legal, tax, accounting or investment advice. **You should not use the output as a substitute for professional advice.** Any decisions and consequences arising from reliance on the output are borne by you.
-
-**11.3 Exclusion of Damages**
-
-To the maximum extent permitted by applicable law, **we are not liable for any of the following losses**: loss of profit, loss of revenue, loss of goodwill, loss of data, loss of anticipated savings, business interruption, cost of procuring substitute services, and any indirect, incidental, special, punitive or consequential loss — **whether or not such loss was foreseeable, and whether or not we were advised of the possibility of such loss**.
-
-**11.4 Cap on Aggregate Liability**
-
-**To the maximum extent permitted by applicable law, our aggregate liability to you for all claims under or relating to this Agreement shall not exceed the total service fees actually paid by you and not refunded in the 12 months preceding the event giving rise to the claim.**
-
-**11.5 Exceptions**
-
-The limitations in Articles 11.3 and 11.4 do not apply to the following: personal injury or property damage caused by our intentional misconduct or gross negligence; our infringement of your intellectual property rights; liabilities that mandatory law prohibits limiting or excluding.
-
-**11.6 Force Majeure**
-
-Where service interruption or non-performance is caused by force majeure (including natural disasters, war, epidemic, government acts, regulatory directives, large-scale cyber attacks, global outage of an Upstream Model Provider, Internet infrastructure failures, etc.), we are exempted to the extent of the facts, but will make reasonable efforts to reduce the impact and notify you.
-
-**11.7 User Indemnification Obligation**
-
-**If, due to your violation of this Agreement, violation of laws and regulations, or infringement of third-party rights, we are claimed by a third party, punished by a regulator, held liable by an Upstream Model Provider or suffer other losses, you shall fully indemnify us for all such losses (including but not limited to compensation, fines, attorney fees, litigation/arbitration fees, notarization fees and reasonable investigation costs), and shall actively cooperate with our defense.**
+Nền tảng có thể chứa liên kết đến các trang web hoặc tài nguyên của bên thứ ba. Chúng tôi không chịu trách nhiệm về tính chính xác, hợp pháp hoặc khả năng sử dụng của nội dung của bên thứ ba.
 
 ---
 
-## Article 12 Changes, Suspension and Termination of Service
+## Điều 10. Quyền sở hữu trí tuệ
 
-**12.1 Your Right to Terminate**
+**10.1 Quyền sở hữu trí tuệ của Nền tảng**
 
-You may stop using this Service and apply to cancel your account at any time. After termination, you should settle fees, handle the balance and back up data as agreed in Article 6.
+Quyền sở hữu trí tuệ đối với phần mềm, chương trình cổng kết nối, thiết kế giao diện, tài liệu, nhãn hiệu (bao gồm tên thương hiệu tiếng Trung và tiếng Anh cùng biểu trưng đồ họa của **Uter**), tên miền (Uter.ai), giải pháp kỹ thuật và chiến lược thuật toán của Dịch vụ này đều thuộc về chúng tôi hoặc chủ sở hữu quyền tương ứng. Không có sự cho phép bằng văn bản, bạn không được sao chép, sửa đổi, phát tán, phân tích ngược hoặc sử dụng chúng cho bất kỳ mục đích thương mại nào.
 
-**12.2 Our Right to Suspend and Terminate**
+**10.2 Sử dụng nhãn hiệu**
 
-12.2.1 We have the right to **immediately suspend or terminate** the Service to you without bearing breach liability under any of the following circumstances:
+Không có sự đồng ý trước bằng văn bản, bạn không được sử dụng tên tiếng Trung hoặc tiếng Anh, nhãn hiệu hoặc biểu trưng của «Uter» trong bất kỳ tài liệu quảng bá hoặc giao diện sản phẩm nào, hoặc bằng bất kỳ cách nào khác gợi ý rằng có sự hợp tác, sự bảo trợ hoặc mối liên kết với chúng tôi.
 
-1. You violate Article 5 (Usage Rules and Prohibited Conduct) or Article 14 (Export Control and Sanctions) of this Agreement;
-2. You fail to pass or maintain identity verification;
-3. You fail to pay fees beyond the agreed period;
-4. Your usage behavior exposes the Platform to regulatory risk, upstream ban risk or major security risk;
-5. You enter bankruptcy, liquidation, dissolution proceedings, or lose performance capacity;
-6. Laws and regulations, regulators or Upstream Model Providers require us to stop providing Service to you.
+**10.3 Cảnh báo rủi ro về nội dung được tạo ra**
 
-12.2.2 For items 1, 4 and 6 of Article 12.2.1, we may simultaneously **freeze the account balance** until the relevant risk or dispute is resolved.
+10.3.1 Kết quả đầu ra của mô hình ngôn ngữ lớn có **tính xác suất và không tất định**. **Chúng tôi không đưa ra bất kỳ bảo đảm rõ ràng hay ngụ ý nào về tính chính xác, đầy đủ, kịp thời, khả năng áp dụng hoặc không vi phạm quyền của kết quả đầu ra.**
 
-**12.3 Consequences of Termination**
+10.3.2 **Nội dung được tạo ra bởi mô hình lớn có thể tương tự với các tác phẩm trước đó của người khác.** Chúng tôi không thể bảo đảm rằng nội dung được tạo ra là nguyên bản hoặc không vi phạm quyền sở hữu trí tuệ của bên thứ ba. Bạn nên tự hoàn tất việc làm rõ quyền trước khi sử dụng thương mại nội dung được tạo ra.
 
-After termination: your API Key becomes invalid immediately; the un-consumed balance is handled as agreed in Article 6; we delete or anonymize your data as required by Article 8 and laws and regulations; Articles 8, 10, 11, 13, 14, 15, 17 and other provisions that should continue to be effective by their nature continue to be effective.
+10.3.3 **Bạn không được tuyên bố quyền độc quyền đối với nội dung đầu ra của cùng một câu lệnh.**
 
-**12.4 Our Right to Early Termination**
+**10.4 Phản hồi**
 
-For services with no fixed term agreed, we may terminate this Agreement with **30 calendar days'** advance notice. In this case, we will refund the full un-consumed balance (excluding consumed portions), **without deducting third-party payment channel fees or taxes**.
+Mọi góp ý sản phẩm, báo cáo lỗi, ý kiến cải tiến, v.v. mà bạn gửi cho chúng tôi («Phản hồi») đều được coi là bạn trao cho chúng tôi quyền vĩnh viễn, không thể hủy bỏ, không phải trả phí để sử dụng, sửa đổi và tích hợp Phản hồi đó trên toàn thế giới mà không phải trả bất kỳ khoản đền bù nào cho bạn. Phản hồi không chứa thông tin mật của bạn.
 
 ---
 
-## Article 13 Breach and Handling
+## Điều 11. Miễn trừ bảo đảm và giới hạn trách nhiệm
 
-**13.1 Gradient of Handling Measures**
+**11.1 Dịch vụ được cung cấp «NGUYÊN TRẠNG» và «TÙY THEO KHẢ NĂNG SẴN CÓ»**
 
-We will adopt handling measures in proportion to the breach and give rectification opportunities where possible:
+Trong phạm vi tối đa mà pháp luật áp dụng cho phép, chúng tôi cung cấp Dịch vụ này trên cơ sở «NGUYÊN TRẠNG» và «TÙY THEO KHẢ NĂNG SẴN CÓ», **không đưa ra bất kỳ bảo đảm rõ ràng hay ngụ ý nào**, bao gồm nhưng không giới hạn ở bảo đảm khả năng thương mại, sự phù hợp cho một mục đích cụ thể, sử dụng không bị gián đoạn, vận hành không lỗi, không có virus, hoặc kết quả chính xác.
 
-| Severity | Typical Scenario | Handling Measure |
+**11.2 Tư vấn không thuộc chuyên môn**
+
+Bất kỳ nội dung nào do Dịch vụ này xuất ra đều không cấu thành tư vấn y tế, pháp lý, thuế, kế toán hoặc đầu tư. **Bạn không được sử dụng kết quả đầu ra để thay thế tư vấn chuyên môn.** Mọi quyết định và hậu quả phát sinh từ việc dựa vào kết quả đầu ra do bạn tự chịu trách nhiệm.
+
+**11.3 Loại trừ thiệt hại**
+
+Trong phạm vi tối đa mà pháp luật áp dụng cho phép, **chúng tôi không chịu trách nhiệm đối với bất kỳ khoản tổn thất nào sau đây**: mất lợi nhuận, mất doanh thu, mất uy tín, mất dữ liệu, mất khoản tiết kiệm dự kiến, gián đoạn hoạt động kinh doanh, chi phí thuê dịch vụ thay thế, và bất kỳ tổn thất gián tiếp, ngẫu nhiên, đặc biệt, mang tính xử phạt hoặc hệ quả nào — **dù tổn thất đó có hay không thể được dự đoán trước, và dù chúng tôi có hay không được thông báo về khả năng xảy ra tổn thất đó**.
+
+**11.4 Giới hạn tổng trách nhiệm**
+
+**Trong phạm vi tối đa mà pháp luật áp dụng cho phép, tổng trách nhiệm của chúng tôi đối với bạn đối với tất cả các khiếu nại phát sinh từ hoặc liên quan đến Hợp đồng này sẽ không vượt quá tổng phí dịch vụ mà bạn đã thực sự thanh toán và chưa được hoàn lại trong 12 tháng trước sự kiện gây ra khiếu nại.**
+
+**11.5 Ngoại lệ**
+
+Các giới hạn tại Điều 11.3 và Điều 11.4 không áp dụng đối với: thương tích hoặc thiệt hại tài sản do hành vi cố ý hoặc sơ suất nghiêm trọng của chúng tôi; việc chúng tôi xâm phạm quyền sở hữu trí tuệ của bạn; các trách nhiệm mà luật bắt buộc cấm giới hạn hoặc loại trừ.
+
+**11.6 Bất khả kháng**
+
+Khi việc gián đoạn hoặc không thực hiện Dịch vụ là do bất khả kháng gây ra (bao gồm thiên tai, chiến tranh, dịch bệnh, hành động của chính phủ, chỉ thị của cơ quan quản lý, tấn công mạng quy mô lớn, sự cố toàn cầu của Nhà cung cấp mô hình thượng nguồn, sự cố hạ tầng Internet, v.v.), chúng tôi được miễn trừ trong phạm vi của sự kiện đó, nhưng sẽ nỗ lực hợp lý để giảm thiểu tác động và thông báo cho bạn.
+
+**11.7 Nghĩa vụ bồi thường của Người dùng**
+
+**Nếu do bạn vi phạm Hợp đồng này, vi phạm pháp luật và quy định, hoặc xâm phạm quyền của bên thứ ba, khiến chúng tôi bị bên thứ ba khiếu nại, bị cơ quan quản lý xử phạt, bị Nhà cung cấp mô hình thượng nguồn yêu cầu chịu trách nhiệm, hoặc chịu tổn thất khác, bạn phải bồi thường toàn bộ cho chúng tôi mọi tổn thất đó (bao gồm nhưng không giới hạn ở tiền bồi thường, tiền phạt, phí luật sư, phí tố tụng/trọng tài, phí công chứng và chi phí điều tra hợp lý), đồng thời phải tích cực phối hợp với hoạt động bảo vệ của chúng tôi.**
+
+---
+
+## Điều 12. Thay đổi, tạm ngừng và chấm dứt Dịch vụ
+
+**12.1 Quyền chấm dứt của bạn**
+
+Bạn có thể ngừng sử dụng Dịch vụ này và yêu cầu hủy tài khoản của mình bất cứ lúc nào. Sau khi chấm dứt, bạn nên thanh toán phí, xử lý số dư và sao lưu dữ liệu theo thỏa thuận tại Điều 6.
+
+**12.2 Quyền tạm ngừng và chấm dứt của chúng tôi**
+
+12.2.1 Chúng tôi có quyền **tạm ngừng hoặc chấm dứt ngay lập tức** Dịch vụ đối với bạn mà không chịu trách nhiệm vi phạm trong bất kỳ trường hợp nào sau đây:
+
+1. Bạn vi phạm Điều 5 (Quy tắc sử dụng và hành vi bị cấm) hoặc Điều 14 (Kiểm soát xuất khẩu và trừng phạt) của Hợp đồng này;
+2. Bạn không vượt qua hoặc không duy trì được việc xác minh danh tính;
+3. Bạn không thanh toán phí quá thời hạn đã thỏa thuận;
+4. Hành vi sử dụng của bạn khiến Nền tảng phải đối mặt với rủi ro quản lý, rủi ro bị thượng nguồn cấm truy cập hoặc rủi ro an ninh nghiêm trọng;
+5. Bạn phá sản, thanh lý, giải thể hoặc mất khả năng thi hành nghĩa vụ;
+6. Pháp luật và quy định, cơ quan quản lý hoặc Nhà cung cấp mô hình thượng nguồn yêu cầu chúng tôi ngừng cung cấp Dịch vụ cho bạn.
+
+12.2.2 Đối với các khoản 1, 4 và 6 nêu tại Điều 12.2.1, chúng tôi có thể đồng thời **đóng băng số dư tài khoản** cho đến khi rủi ro hoặc tranh chấp liên quan được giải quyết.
+
+**12.3 Hậu quả của việc chấm dứt**
+
+Sau khi chấm dứt: API Key của bạn trở nên không hợp lệ ngay lập tức; số dư chưa tiêu thụ được xử lý theo thỏa thuận tại Điều 6; chúng tôi xóa hoặc ẩn danh dữ liệu của bạn theo Điều 8 và theo pháp luật và quy định; các Điều 8, 10, 11, 13, 14, 15, 17 và các quy định khác vốn dĩ phải tiếp tục có hiệu lực vẫn tiếp tục có hiệu lực.
+
+**12.4 Quyền chấm dứt sớm của chúng tôi**
+
+Đối với các dịch vụ không có thời hạn cố định đã thỏa thuận, chúng tôi có thể chấm dứt Hợp đồng này với thông báo trước **30 ngày lịch**. Trong trường hợp đó, chúng tôi sẽ hoàn lại toàn bộ số dư chưa tiêu thụ (không tính phần đã tiêu thụ), **không khấu trừ phí kênh thanh toán của bên thứ ba hay thuế**.
+
+---
+
+## Điều 13. Vi phạm và xử lý
+
+**13.1 Mức độ của các biện pháp xử lý**
+
+Chúng tôi sẽ áp dụng biện pháp xử lý tương xứng với mức độ vi phạm và tạo cơ hội khắc phục khi có thể:
+
+| Mức độ | Tình huống điển hình | Biện pháp xử lý |
 |---|---|---|
-| General breach | First minor rate excess, information not updated in time | In-site reminder, rectification within time limit |
-| Serious breach | Repeated rate excess, minor content violation, late payment | Rate-limiting, service suspension, quota freeze |
-| Severe breach | Reselling API Keys, malicious quota scraping, bypassing risk control, major content violation | Immediate service termination, account freeze, liability pursuit |
-| Suspected illegality | Minor sexual exploitation, fraud, terrorism, sanction violation | Immediate termination, evidence preservation, report to competent authority |
+| Vi phạm nhẹ | Lần đầu vượt tốc độ ở mức nhỏ, không cập nhật thông tin kịp thời | Nhắc nhở trong ứng dụng, khắc phục trong thời hạn |
+| Vi phạm nghiêm trọng | Vượt tốc độ lặp lại, vi phạm nội dung ở mức nhỏ, thanh toán chậm | Giới hạn tốc độ, tạm ngừng dịch vụ, đóng băng hạn mức |
+| Vi phạm rất nghiêm trọng | Bán lại API Key, quét hạn mức độc hại, vượt kiểm soát rủi ro, vi phạm nội dung nghiêm trọng | Chấm dứt dịch vụ ngay lập tức, đóng băng tài khoản, truy trách nhiệm |
+| Nghi vấn vi phạm pháp luật | Khai thác tình dục người chưa thành niên, lừa đảo, khủng bố, vi phạm trừng phạt | Chấm dứt ngay lập tức, bảo toàn chứng cứ, báo cáo cơ quan có thẩm quyền |
 
-**13.2 Investigation and Defense**
+**13.2 Điều tra và phản biện**
 
-13.2.1 Before making a major handling decision, we will (where the circumstances permit and do not affect the investigation) inform you of the reason via in-site message or email and give you a **5 business day** defense period.
+13.2.1 Trước khi đưa ra một quyết định xử lý lớn, chúng tôi sẽ (trong trường hợp hoàn cảnh cho phép và không ảnh hưởng đến việc điều tra) thông báo lý do cho bạn qua tin nhắn trong ứng dụng hoặc email và dành cho bạn **5 ngày làm việc** để phản biện.
 
-13.2.2 Where it concerns public safety, minor protection, sanction compliance or explicit regulatory requirements, we have the right to **execute first and inform later**.
+13.2.2 Khi liên quan đến an toàn công cộng, bảo vệ người chưa thành niên, tuân thủ trừng phạt hoặc yêu cầu quản lý rõ ràng, chúng tôi có quyền **thực thi trước và thông báo sau**.
 
-**13.3 Appeal Channel**
+**13.3 Kênh khiếu nại**
 
-If you disagree with the handling result, you may submit an appeal to support@uter.ai. We will respond within **10 business days**. The appeal does not affect the execution of the handling measure.
-
----
-
-## Article 14 Export Control, Sanctions and Cross-Border Compliance
-
-**14.1 Your Representations and Warranties**
-
-You represent, warrant and undertake that:
-
-1. You and your affiliates, actual controllers and ultimate beneficial owners **are not** subjects sanctioned or restricted by any competent authority such as the United Nations, the PRC, the United States (OFAC SDN List) or the European Union;
-2. You are not located in, established in, or actually operating from a comprehensively sanctioned country or region;
-3. You will not use the output or capability of this Service for **weapons development, military use, nuclear/biological/chemical proliferation, missile technology** or other export-controlled uses;
-4. You will not, directly or indirectly through this Service, transship, resell or transfer any controlled technology, data or service to sanctioned subjects or sanctioned regions.
-
-**14.2 Compliance Review Rights**
-
-We have the right (but no obligation) to conduct compliance screening of users' registration location, billing address, payment source and calling characteristics. Upon discovering suspected violations, we may suspend the Service, require compliance explanations or supplementary materials.
-
-**14.3 Cooperation Obligations**
-
-You shall cooperate with us and the Upstream Model Providers in compliance investigations and provide the required evidence within **5 business days**. Refusal to cooperate entitles us to terminate the Service.
-
-**14.4 Special Notice**
-
-**The export control and sanctions lists are dynamically changing. You should continuously verify your own compliance status during your use of this Service. Even if we have not conducted screening or screening found no issues, it does not relieve you of your obligations and liabilities under Article 14.1.**
+Nếu không đồng ý với kết quả xử lý, bạn có thể gửi khiếu nại đến support@uter.ai. Chúng tôi sẽ phản hồi trong vòng **10 ngày làm việc**. Việc khiếu nại không ảnh hưởng đến việc thực thi biện pháp xử lý.
 
 ---
 
-## Article 15 Governing Law and Dispute Resolution
+## Điều 14. Kiểm soát xuất khẩu, trừng phạt và tuân thủ xuyên biên giới
 
-**15.1 Governing Law**
+**14.1 Cam kết và bảo đảm của bạn**
 
-15.1.1 The formation, validity, interpretation, performance and dispute resolution of this Agreement are governed by the **laws of the People's Republic of China** (excluding conflict-of-laws rules).
+Bạn cam kết, bảo đảm và tự nguyện rằng:
 
-15.1.2 For the model services under this Agreement, the legal relationship between us and the Upstream Model Providers is governed by the laws of the corresponding jurisdiction; such arrangement does not affect the application of the laws of the PRC to this Agreement.
+1. Bạn và các bên liên kết, người kiểm soát thực tế và chủ sở hữu lợi ích cuối cùng của bạn **không** thuộc các chủ thể bị trừng phạt hoặc bị hạn chế bởi bất kỳ cơ quan có thẩm quyền nào, chẳng hạn như Liên Hợp Quốc, Cộng hòa Nhân dân Trung Hoa, Hoa Kỳ (Danh sách SDN của OFAC) hoặc Liên minh châu Âu;
+2. Bạn không trú quán, không thành lập, cũng không thực tế hoạt động từ một quốc gia hoặc khu vực bị trừng phạt toàn diện;
+3. Bạn sẽ không sử dụng kết quả đầu ra hoặc năng lực của Dịch vụ này cho **phát triển vũ khí, sử dụng quân sự, phát tán hạt nhân/sinh học/hóa học, công nghệ tên lửa** hoặc cho các mục đích sử dụng bị kiểm soát xuất khẩu khác;
+4. Bạn sẽ không, trực tiếp hoặc gián tiếp thông qua Dịch vụ này, vận chuyển, bán lại hoặc chuyển nhượng bất kỳ công nghệ, dữ liệu hoặc dịch vụ nào bị kiểm soát cho các chủ thể hoặc khu vực bị trừng phạt.
 
-15.1.3 Where the laws of the PRC contain mandatory provisions on specific matters (such as personal information protection, management of generative AI services), such provisions prevail.
+**14.2 Quyền rà soát tuân thủ**
 
-**15.2 Dispute Resolution**
+Chúng tôi có quyền (nhưng không có nghĩa vụ) thực hiện sàng lọc tuân thủ đối với địa điểm đăng ký, địa chỉ thanh toán, nguồn thanh toán và đặc trưng gọi của người dùng. Khi phát hiện nghi vấn vi phạm, chúng tôi có thể tạm ngừng Dịch vụ, yêu cầu giải trình về tuân thủ hoặc cung cấp tài liệu bổ sung.
 
-15.2.1 Any dispute arising from or relating to this Agreement shall first be resolved through friendly negotiation between the parties.
+**14.3 Nghĩa vụ phối hợp**
 
-15.2.2 If negotiation fails, either party may file a lawsuit with the **people's court with jurisdiction over the domicile of Shenzhen Uter Network Co., Ltd. (Shenzhen)**; the court of first instance is the people's court of the district where it is registered; where the subject matter exceeds the first-instance jurisdictional standard of the basic people's court, the Shenzhen Intermediate People's Court has jurisdiction.
+Bạn phải phối hợp với chúng tôi và các Nhà cung cấp mô hình thượng nguồn trong các cuộc điều tra tuân thủ và cung cấp chứng cứ cần thiết trong vòng **5 ngày làm việc**. Từ chối phối hợp cho chúng tôi quyền chấm dứt Dịch vụ.
 
-15.2.3 During dispute resolution, except for the dispute itself, both parties shall continue to perform the other provisions of this Agreement.
+**14.4 Thông báo đặc biệt**
 
-**15.3 Language Version**
-
-This Agreement is governed by the **Chinese version**. We may provide English or other language translations for reference only; in the event of any conflict between the translation and the Chinese version, **the Chinese version shall prevail**.
-
-**15.4 Severability**
-
-If any provision of this Agreement is deemed invalid or unenforceable, it shall not affect the validity of the other provisions. The parties shall replace it with a valid provision closest to the original commercial purpose.
+**Danh sách kiểm soát xuất khẩu và trừng phạt thay đổi theo thời gian. Bạn nên liên tục xác minh tình trạng tuân thủ của mình trong quá trình sử dụng Dịch vụ này. Ngay cả khi chúng tôi chưa thực hiện sàng lọc hoặc sàng lọc không phát hiện vấn đề, điều đó cũng không miễn trừ cho bạn khỏi nghĩa vụ và trách nhiệm theo Điều 14.1.**
 
 ---
 
-## Article 16 Notices and Service of Documents
+## Điều 15. Luật áp dụng và Giải quyết tranh chấp
 
-16.1 Notices we send to you may be served by any of the following means, deemed served upon dispatch: in-site message (served upon sending), registered email (deemed served 24 hours after sending), console announcement (served upon publication), SMS (deemed served upon sending).
+**15.1 Luật áp dụng**
 
-16.2 **You are obligated to keep your registered email and mobile number valid and check notices promptly.** Consequences arising from your failure to check notices in time are borne by you.
+15.1.1 Việc hình thành, hiệu lực, giải thích, thực hiện và giải quyết tranh chấp của Hợp đồng này được điều chỉnh bởi **pháp luật Cộng hòa Nhân dân Trung Hoa** (không bao gồm quy tắc xung đột pháp luật).
 
-16.3 Notices you send to us should be sent to:
+15.1.2 Đối với các dịch vụ mô hình theo Hợp đồng này, quan hệ pháp lý giữa chúng tôi và Nhà cung cấp mô hình thượng nguồn được điều chỉnh bởi pháp luật của thẩm quyền tương ứng; sắp xếp đó không ảnh hưởng đến việc áp dụng pháp luật Cộng hòa Nhân dân Trung Hoa đối với Hợp đồng này.
 
-- Service and technical support: tech@uter.ai
-- Legal and compliance matters: legal@uter.ai
-- Business and contract matters: bd@uter.ai
-- Abuse reporting: abuse@uter.ai
+15.1.3 Trường hợp pháp luật Cộng hòa Nhân dân Trung Hoa có các quy định bắt buộc về những vấn đề cụ thể (chẳng hạn như bảo vệ thông tin cá nhân, quản lý dịch vụ trí tuệ nhân tạo) thì các quy định đó được ưu tiên.
 
-16.4 For notices concerning service termination, account freezing or material clause changes, we will use two or more means of service simultaneously.
+**15.2 Giải quyết tranh chấp**
 
----
+15.2.1 Mọi tranh chấp phát sinh từ hoặc liên quan đến Hợp đồng này trước hết phải được giải quyết thông qua thương lượng thiện chí giữa các bên.
 
-## Article 17 Miscellaneous
+15.2.2 Nếu thương lượng không thành, bất kỳ bên nào có thể nộp đơn kiện tại **tòa án nhân dân có thẩm quyền xét xử với trụ sở của Công ty TNHH Uter Network, Thâm Quyến (Thâm Quyến)**; tòa án sơ thẩm là tòa án nhân dân cấp huyện nơi công ty đăng ký; trường hợp giá trị vụ án vượt quá tiêu chuẩn thẩm quyền sơ thẩm của tòa án nhân dân cấp xã thì Tòa án nhân dân trung cấp Thâm Quyến có thẩm quyền xét xử.
 
-17.1 **Entire Agreement**: This Agreement (including all appendices and incorporated documents) constitutes the entire agreement between the parties regarding this Service, superseding all prior oral or written communications and representations.
+15.2.3 Trong quá trình giải quyết tranh chấp, trừ chính tranh chấp đó, các bên vẫn tiếp tục thực hiện các quy định khác của Hợp đồng này.
 
-17.2 **Assignment**: Without our prior written consent, you may not assign your rights and obligations under this Agreement. We may assign this Agreement to an affiliate in the event of merger, reorganization, asset sale or affiliate adjustment, with prior notice to you.
+**15.3 Phiên bản ngôn ngữ**
 
-17.3 **No Waiver**: Our failure or delay in exercising any right under this Agreement does not constitute a waiver of that right.
+Hợp đồng này được điều chỉnh bởi **phiên bản tiếng Trung**. Chúng tôi có thể cung cấp bản dịch tiếng Anh hoặc ngôn ngữ khác chỉ để tham khảo; trong trường hợp có bất khắc biệt giữa bản dịch và phiên bản tiếng Trung thì **phiên bản tiếng Trung được ưu tiên**.
 
-17.4 **Independent Parties**: The parties are independent contracting parties; this Agreement does not constitute any agency, partnership, joint venture or employment relationship.
+**15.4 Khả năng tách bạch**
 
-17.5 **Headings**: The headings of the articles are for ease of reading only and do not affect the interpretation of the articles.
-
-17.6 **Survival**: After termination of this Agreement, provisions that should continue to be effective by their nature (such as intellectual property, confidentiality, limitation of liability, dispute resolution) continue to be effective.
+Nếu bất kỳ quy định nào của Hợp đồng này bị coi là vô hiệu hoặc không thi hành được, điều đó không ảnh hưởng đến hiệu lực của các quy định khác. Các bên sẽ thay thế quy định đó bằng một quy định hợp lệ gần nhất với mục đích thương mại ban đầu.
 
 ---
 
-## Appendix A Core Prohibited List of the Acceptable Use Policy (AUP)
+## Điều 16. Thông báo và việc gửi văn bản
 
-The following are absolutely prohibited uses, which upon discovery will result in **immediate service termination, no appeal, and reporting to the competent authority in accordance with law**:
+16.1 Các thông báo chúng tôi gửi cho bạn có thể được gửi bằng bất kỳ phương thức nào sau đây và được coi là đã gửi khi phát đi: tin nhắn trong ứng dụng (coi là đã gửi khi gửi đi), email đăng ký (coi là đã gửi sau 24 giờ kể từ khi gửi), thông báo trên bảng điều khiển (coi là đã gửi khi công bố), tin nhắn SMS (coi là đã gửi khi gửi đi).
 
-| No. | Prohibited Use |
+16.2 **Bạn có nghĩa vụ duy trì email đã đăng ký và số điện thoại di động của mình luôn hợp lệ và kiểm tra thông báo kịp thời.** Hậu quả phát sinh từ việc bạn không kiểm tra thông báo đúng thời hạn do bạn tự gánh chịu.
+
+16.3 Các thông báo bạn gửi cho chúng tôi nên được gửi đến:
+
+- Dịch vụ và hỗ trợ kỹ thuật: tech@uter.ai
+- Pháp lý và tuân thủ: legal@uter.ai
+- Kinh doanh và hợp đồng: bd@uter.ai
+- Báo cáo lạm dụng: abuse@uter.ai
+
+16.4 Đối với các thông báo về chấm dứt dịch vụ, đóng băng tài khoản hoặc thay đổi điều khoản trọng yếu, chúng tôi sẽ đồng thời sử dụng hai hoặc nhiều hơn phương thức gửi.
+
+---
+
+## Điều 17. Quy định khác
+
+17.1 **Toàn bộ thỏa thuận**: Hợp đồng này (bao gồm mọi phụ lục và tài liệu được viện dẫn) tạo thành toàn bộ thỏa thuận giữa các bên về Dịch vụ này, thay thế mọi trao đổi và tuyên bố bằng miệng hoặc bằng văn bản trước đó.
+
+17.2 **Chuyển nhượng**: Không có sự đồng ý trước bằng văn bản của chúng tôi, bạn không được chuyển nhượng quyền và nghĩa vụ của mình theo Hợp đồng này. Chúng tôi có thể chuyển nhượng Hợp đồng này cho một bên liên kết trong trường hợp sáp nhập, tái tổ chức, chuyển nhượng tài sản hoặc điều chỉnh bên liên kết, với thông báo trước cho bạn.
+
+17.3 **Không từ bỏ quyền**: Việc chúng tôi không thực hiện hoặc chậm trễ việc thực hiện bất kỳ quyền nào theo Hợp đồng này không cấu thành việc từ bỏ quyền đó.
+
+17.4 **Các bên độc lập**: Các bên là những bên ký kết độc lập; Hợp đồng này không tạo thành bất kỳ quan hệ đại diện, hợp tác, liên doanh hay quan hệ lao động nào.
+
+17.5 **Tiêu đề**: Tiêu đề các điều chỉ nhằm thuận tiện cho việc đọc và không ảnh hưởng đến việc giải thích các điều khoản.
+
+17.6 **Tồn tại sau khi chấm dứt**: Sau khi Hợp đồng này chấm dứt, các quy định vốn dĩ phải tiếp tục có hiệu lực (chẳng hạn như sở hữu trí tuệ, bảo mật, giới hạn trách nhiệm, giải quyết tranh chấp) vẫn tiếp tục có hiệu lực.
+
+---
+
+## Phụ lục A Danh sách cấm cốt lõi của Chính sách sử dụng chấp nhận được (AUP)
+
+Các mục sử dụng sau đây bị cấm tuyệt đối, và khi phát hiện sẽ dẫn đến **chấm dứt dịch vụ ngay lập tức, không được khiếu nại, và báo cáo cơ quan có thẩm quyền theo pháp luật**:
+
+| Số | Hành vi bị cấm |
 |---|---|
-| 1 | Any generation or dissemination of content involving the sexual exploitation or sexualization of minors |
-| 2 | Generation, acquisition or dissemination of Child Sexual Abuse Material (CSAM) |
-| 3 | Assisting in terrorist activities or violent extremism |
-| 4 | Operational guidance for manufacturing weapons, explosives, hazardous chemicals or biological agents |
-| 5 | Conducting telecom network fraud, phishing attacks, malware writing and dissemination |
-| 6 | Money laundering, terrorist financing, sanction evasion |
-| 7 | Unauthorized facial recognition, biometric collection and identity impersonation |
-| 8 | Large-scale generation of false information, automated manipulation of public opinion or traffic inflation |
-| 9 | Generation of non-consensual deepfake content for deceptive purposes |
-| 10 | Any use violating the acceptable use policies of Upstream Model Providers |
+| 1 | Tạo hoặc phát tán bất kỳ nội dung nào liên quan đến việc khai thác tình dục hoặc tình dục hóa người chưa thành niên |
+| 2 | Tạo, thu thập hoặc phát tán Tài liệu xâm hại tình dục trẻ em (CSAM) |
+| 3 | Hỗ trợ các hoạt động khủng bố hoặc chủ nghĩa cực đoan bạo lực |
+| 4 | Hướng dẫn thực hành chế tạo vũ khí, vật nổ, hóa chất nguy hại hoặc tác nhân sinh học |
+| 5 | Thực hiện lừa đảo viễn thông trên mạng, tấn công giả mạo, viết và phát tán phần mềm độc hại |
+| 6 | Rửa tiền, tài trợ khủng bố, né tránh trừng phạt |
+| 7 | Nhận dạng khuôn mặt không được phép, thu thập sinh trắc học và mạo danh danh tính |
+| 8 | Tạo thông tin sai lệch quy mô lớn, thao túng dư luận tự động hoặc bơm lưu lượng |
+| 9 | Tạo nội dung giả mạo sâu (deepfake) không có sự đồng ý cho mục đích lừa dối |
+| 10 | Bất kỳ hành vi sử dụng nào vi phạm chính sách sử dụng chấp nhận được của Nhà cung cấp mô hình thượng nguồn |
 
 ---
 
-## Appendix B List of Upstream Model Providers and Sub-processors
+## Phụ lục B Danh sách nhà cung cấp mô hình thượng nguồn và bên xử lý phụ
 
-| Provider | Cloud Platform / Channel | Typical Models | Policy Link |
+| Nhà cung cấp | Nền tảng đám mây / Kênh | Mô hình tiêu biểu | Liên kết chính sách |
 |---|---|---|---|
-| OpenAI | Azure OpenAI Service | GPT series | openai.com/policies/usage-policies |
-| Anthropic | Amazon Bedrock / Official API | Claude series | anthropic.com/legal/aup |
-| Google | Vertex AI | Gemini series | policies.google.com/terms/generative-ai/use-policy |
-| xAI | Official API | Grok series | x.ai/legal |
-| Mistral AI | Official API | Mistral series | mistral.ai/terms |
-| Domestic Vendors | Official API | Tongyi / Doubao / Hunyuan / DeepSeek / Zhipu / Kimi, etc. | Each vendor's official publication |
+| OpenAI | Azure OpenAI Service | Dòng GPT | openai.com/policies/usage-policies |
+| Anthropic | Amazon Bedrock / API chính thức | Dòng Claude | anthropic.com/legal/aup |
+| Google | Vertex AI | Dòng Gemini | policies.google.com/terms/generative-ai/use-policy |
+| xAI | API chính thức | Dòng Grok | x.ai/legal |
+| Mistral AI | API chính thức | Dòng Mistral | mistral.ai/terms |
+| Nhà cung cấp trong nước | API chính thức | Tongyi / Doubao / Hunyuan / DeepSeek / Zhipu / Kimi, v.v. | Công bố chính thức của từng nhà cung cấp |
 
-> We may add, replace or remove Upstream Providers. Changes to the list will be published on the Platform; material changes will be notified separately.
+> Chúng tôi có thể bổ sung, thay thế hoặc loại bỏ các Nhà cung cấp thượng nguồn. Các thay đổi đối với danh sách sẽ được công bố trên Nền tảng; các thay đổi trọng yếu sẽ được thông báo riêng.

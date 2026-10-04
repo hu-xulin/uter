@@ -1,68 +1,68 @@
-# gemini
+# Gemini
 
-## Gemini Native Format
+## Định dạng Native Gemini
 
-Gemini 图片生成
+Tạo ảnh Gemini.
 
 `POST` `/v1beta/models/{model}:generateContent/`
 
-### 请求参数
+### Tham số yêu cầu
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| Tên tham số | Vị trí | Kiểu | Bắt buộc | Mô tả |
 |---|---|---|---|---|
-| `model` | path | string | 是 | 模型名称 |
+| `model` | path | string | Có | Tên mô hình |
 
-### 请求体（`application/json`）
+### Thân yêu cầu (`application/json`)
 
-| 字段 | 类型 | 必填 | 说明 |
+| Trường | Kiểu | Bắt buộc | Mô tả |
 |---|---|---|---|
-| `contents` | array&lt;object&gt; | 是 | — |
-| `generationConfig.thinkingConfig.includeThoughts` | boolean | 否 | 是否返回思考内容 |
-| `generationConfig.responseModalities` | array&lt;string&gt; | 否 | — |
-| `generationConfig.imageConfig.aspectRatio` | string | 否 | — |
-| `generationConfig.imageConfig.imageSize` | string | 否 | — |
+| `contents` | array&lt;object&gt; | Có | — |
+| `generationConfig.thinkingConfig.includeThoughts` | boolean | Không | Có trả về nội dung suy nghĩ hay không |
+| `generationConfig.responseModalities` | array&lt;string&gt; | Không | — |
+| `generationConfig.imageConfig.aspectRatio` | string | Không | — |
+| `generationConfig.imageConfig.imageSize` | string | Không | — |
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-#### `200` 响应字段
+#### Trường phản hồi `200`
 
-| 字段 | 类型 | 说明 |
+| Trường | Kiểu | Mô tả |
 |---|---|---|
 | `candidates` | array&lt;object&gt; | — |
 | `usageMetadata.promptTokenCount` | integer | — |
 | `usageMetadata.candidatesTokenCount` | integer | — |
 | `usageMetadata.totalTokenCount` | integer | — |
 
-## OpenAI Chat Format
+## Định dạng OpenAI Chat
 
-Gemini 图片生成
+Tạo ảnh Gemini.
 
 `POST` `/v1/chat/completions`
 
-### 请求体（`application/json`）
+### Thân yêu cầu (`application/json`)
 
-| 字段 | 类型 | 必填 | 说明 |
+| Trường | Kiểu | Bắt buộc | Mô tả |
 |---|---|---|---|
-| `model` | string | 是 | — |
-| `stream` | boolean | 是 | — |
-| `messages` | array&lt;object&gt; | 是 | — |
-| `extra_body.google.image_config.aspect_ratio` | string | 否 | — |
-| `extra_body.google.image_config.image_size` | string | 否 | — |
-| `contents` | array&lt;object&gt; | 是 | — |
+| `model` | string | Có | — |
+| `stream` | boolean | Có | — |
+| `messages` | array&lt;object&gt; | Có | — |
+| `extra_body.google.image_config.aspect_ratio` | string | Không | — |
+| `extra_body.google.image_config.image_size` | string | Không | — |
+| `contents` | array&lt;object&gt; | Có | — |
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-#### `200` 响应字段
+#### Trường phản hồi `200`
 
-| 字段 | 类型 | 说明 |
+| Trường | Kiểu | Mô tả |
 |---|---|---|
 | `id` | string | — |
 | `model` | string | — |

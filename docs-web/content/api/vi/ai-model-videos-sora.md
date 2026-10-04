@@ -1,88 +1,88 @@
-# sora
+# Sora
 
-## Create Video 
+## Tạo video (Create Video)
 
-OpenAI 兼容的视频生成接口。
+Giao diện tạo video tương thích OpenAI.
 
-参考文档: https://platform.openai.com/docs/api-reference/videos/create
+Tài liệu tham khảo: https://platform.openai.com/docs/api-reference/videos/create
 
 `POST` `/v1/videos`
 
-### 请求体（`multipart/form-data`）
+### Thân yêu cầu (`multipart/form-data`)
 
-| 字段 | 类型 | 必填 | 说明 |
+| Trường | Kiểu | Bắt buộc | Mô tả |
 |---|---|---|---|
-| `model` | string | 否 | 模型/风格 ID |
-| `prompt` | string | 否 | 文本描述提示词 |
-| `image` | string | 否 | 图片输入 (URL 或 Base64) |
-| `duration` | number | 否 | 视频时长（秒） |
-| `width` | integer | 否 | 视频宽度 |
-| `height` | integer | 否 | 视频高度 |
-| `fps` | integer | 否 | 视频帧率 |
-| `seed` | integer | 否 | 随机种子 |
-| `n` | integer | 否 | 生成视频数量 |
-| `response_format` | string | 否 | 响应格式 |
-| `user` | string | 否 | 用户标识 |
-| `metadata` | object | 否 | 扩展参数 (如 negative_prompt, style, quality_level 等) |
+| `model` | string | Không | ID mô hình/phong cách |
+| `prompt` | string | Không | Prompt mô tả văn bản |
+| `image` | string | Không | Đầu vào hình ảnh (URL hoặc Base64) |
+| `duration` | number | Không | Thời lượng video (giây) |
+| `width` | integer | Không | Chiều rộng video |
+| `height` | integer | Không | Chiều cao video |
+| `fps` | integer | Không | Tốc độ khung hình video |
+| `seed` | integer | Không | Hạt ngẫu nhiên |
+| `n` | integer | Không | Số lượng video tạo ra |
+| `response_format` | string | Không | Định dạng phản hồi |
+| `user` | string | Không | Định danh người dùng |
+| `metadata` | object | Không | Tham số mở rộng (ví dụ negative_prompt, style, quality_level, v.v.) |
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功创建视频任务 |
-| `400` | 请求参数错误 |
+| `200` | Tạo tác vụ video thành công |
+| `400` | Tham số yêu cầu lỗi |
 
-#### `200` 响应字段
+#### Trường phản hồi `200`
 
-| 字段 | 类型 | 说明 |
+| Trường | Kiểu | Mô tả |
 |---|---|---|
-| `id` | string | 视频 ID |
-| `object` | string | 对象类型 |
-| `model` | string | 使用的模型 |
-| `status` | string | 任务状态 |
-| `progress` | integer | 进度百分比 |
-| `created_at` | integer | 创建时间戳 |
-| `seconds` | string | 视频时长 |
-| `completed_at` | integer | 完成时间戳 |
-| `expires_at` | integer | 过期时间戳 |
-| `size` | string | 视频尺寸 |
-| `error.message` | string | 错误信息 |
-| `error.code` | string | 错误码 |
-| `metadata` | object | 额外元数据 |
+| `id` | string | ID video |
+| `object` | string | Loại đối tượng |
+| `model` | string | Mô hình được sử dụng |
+| `status` | string | Trạng thái tác vụ |
+| `progress` | integer | Phần trăm tiến độ |
+| `created_at` | integer | Dấu thời gian tạo |
+| `seconds` | string | Thời lượng video |
+| `completed_at` | integer | Dấu thời gian hoàn thành |
+| `expires_at` | integer | Dấu thời gian hết hạn |
+| `size` | string | Kích thước video |
+| `error.message` | string | Thông báo lỗi |
+| `error.code` | string | Mã lỗi |
+| `metadata` | object | Siêu dữ liệu bổ sung |
 
-#### `400` 响应字段
+#### Trường phản hồi `400`
 
-| 字段 | 类型 | 说明 |
+| Trường | Kiểu | Mô tả |
 |---|---|---|
-| `error.message` | string | 错误信息 |
-| `error.type` | string | 错误类型 |
-| `error.param` | string | 相关参数 |
-| `error.code` | string | 错误代码 |
+| `error.message` | string | Thông báo lỗi |
+| `error.type` | string | Loại lỗi |
+| `error.param` | string | Tham số liên quan |
+| `error.code` | string | Mã lỗi |
 
-## Get Video Task Status 
+## Lấy trạng thái tác vụ video (Get Video Task Status)
 
-OpenAI 兼容的视频任务状态查询接口。
+Giao diện truy vấn trạng thái tác vụ video tương thích OpenAI.
 
-返回视频任务的详细状态信息。
+Trả về thông tin trạng thái chi tiết của tác vụ video.
 
 `GET` `/v1/videos/{task_id}`
 
-### 请求参数
+### Tham số yêu cầu
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| Tên tham số | Vị trí | Kiểu | Bắt buộc | Mô tả |
 |---|---|---|---|---|
-| `task_id` | path | string | 是 | 视频任务 ID |
+| `task_id` | path | string | Có | ID tác vụ video |
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功获取视频任务状态 |
-| `404` | 任务不存在 |
+| `200` | Lấy trạng thái tác vụ video thành công |
+| `404` | Tác vụ không tồn tại |
 
-#### `200` 响应字段
+#### Trường phản hồi `200`
 
-| 字段 | 类型 | 说明 |
+| Trường | Kiểu | Mô tả |
 |---|---|---|
 | `id` | string | — |
 | `object` | string | — |
@@ -92,41 +92,41 @@ OpenAI 兼容的视频任务状态查询接口。
 | `created_at` | integer | — |
 | `seconds` | string | — |
 
-#### `404` 响应字段
+#### Trường phản hồi `404`
 
-| 字段 | 类型 | 说明 |
+| Trường | Kiểu | Mô tả |
 |---|---|---|
-| `error.message` | string | 错误信息 |
-| `error.type` | string | 错误类型 |
-| `error.param` | string | 相关参数 |
-| `error.code` | string | 错误代码 |
+| `error.message` | string | Thông báo lỗi |
+| `error.type` | string | Loại lỗi |
+| `error.param` | string | Tham số liên quan |
+| `error.code` | string | Mã lỗi |
 
-## Get Video Content
+## Lấy nội dung video (Get Video Content)
 
-获取已完成视频任务的视频文件内容。
+Lấy nội dung tệp video của tác vụ video đã hoàn thành.
 
-此接口会代理返回视频文件流。
+Giao diện này sẽ proxy trả về luồng tệp video.
 
 `GET` `/v1/videos/{task_id}/content`
 
-### 请求参数
+### Tham số yêu cầu
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| Tên tham số | Vị trí | Kiểu | Bắt buộc | Mô tả |
 |---|---|---|---|---|
-| `task_id` | path | string | 是 | 视频任务 ID |
+| `task_id` | path | string | Có | ID tác vụ video |
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功获取视频内容 |
-| `404` | 视频不存在或未完成 |
+| `200` | Lấy nội dung video thành công |
+| `404` | Video không tồn tại hoặc chưa hoàn thành |
 
-#### `404` 响应字段
+#### Trường phản hồi `404`
 
-| 字段 | 类型 | 说明 |
+| Trường | Kiểu | Mô tả |
 |---|---|---|
-| `error.message` | string | 错误信息 |
-| `error.type` | string | 错误类型 |
-| `error.param` | string | 相关参数 |
-| `error.code` | string | 错误代码 |
+| `error.message` | string | Thông báo lỗi |
+| `error.type` | string | Loại lỗi |
+| `error.param` | string | Tham số liên quan |
+| `error.code` | string | Mã lỗi |

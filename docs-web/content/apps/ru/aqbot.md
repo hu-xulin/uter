@@ -1,94 +1,94 @@
-# AQBot - Local-First Desktop AI Workbench
+# AQBot — локальный настольный ИИ-воркбенч (Local-First Desktop AI Workbench)
 
-> **Chat Settings Options**
+> **Параметры настроек чата**
 >
-> In the Uter console, go to System Settings -> Chat Settings and add the
->   following shortcut option. It lets users fill AQBot from the token
->   management page with one click:
+> В консоли Uter перейдите в «Системные настройки» → «Настройки чата» и добавьте
+> следующий параметр быстрого доступа. Он позволяет пользователям заполнить AQBot
+> со страницы управления токенами в один клик:
 
     ```json
     { "AQBot": "aqbot://providers?name=New%20API&baseurl={address}&apikey={key}&type=openai" }
     ```
 
-> AQBot is a local-first, open-source desktop AI workbench (AGPL-3.0). It
->   unifies multi-provider chat, ACP agents, knowledge bases, MCP tools, and a
->   local API gateway, while keeping app data and user files on the machine.
+> AQBot — это локальный, открытый настольный ИИ-воркбенч (AGPL-3.0). Он объединяет
+> чат с несколькими провайдерами, агентов ACP, базы знаний, инструменты MCP и
+> локальный API-шлюз, сохраняя данные приложения и пользовательские файлы на устройстве.
 
-- Official Website: [https://app.aqbot.top](https://app.aqbot.top)
+- Официальный сайт: [https://app.aqbot.top](https://app.aqbot.top)
 - GitHub: [https://github.com/AQBot-Desktop/AQBot](https://github.com/AQBot-Desktop/AQBot)
-- Download: [GitHub Releases](https://github.com/AQBot-Desktop/AQBot/releases)
-- Official Docs: [Getting Started](https://app.aqbot.top/guide/getting-started)
+- Загрузка: [GitHub Releases](https://github.com/AQBot-Desktop/AQBot/releases)
+- Официальная документация: [Начало работы](https://app.aqbot.top/guide/getting-started)
 
-## Core Features
+## Основные возможности
 
-- **Multi-provider chat** — Connect OpenAI, Claude, Gemini, DeepSeek, Qwen, and any OpenAI-compatible endpoint
-- **Provider import** — Import a provider from an `aqbot://` link after confirmation
-- **Model management** — Sync remote model lists, capability tags, and latency tests
-- **Agent** — In-chat Agent (uses your configured provider APIs) plus an ACP Agent workbench
-- **Local data** — App state lives in `~/.aqbot/`; user files live in `~/Documents/aqbot/`
+- **Чат с несколькими провайдерами** — Подключайте OpenAI, Claude, Gemini, DeepSeek, Qwen и любую совместимую с OpenAI конечную точку
+- **Импорт провайдера** — Импортируйте провайдера по ссылке `aqbot://` после подтверждения
+- **Управление моделями** — Синхронизация удалённых списков моделей, тегов возможностей и тестов задержки
+- **Агент** — Агент в чате (использует ваши настроенные API провайдеров), а также воркбенч агентов ACP
+- **Локальные данные** — Состояние приложения хранится в `~/.aqbot/`; пользовательские файлы — в `~/Documents/aqbot/`
 
-See the [AQBot website](https://app.aqbot.top) for the full feature set. This page covers Uter integration only.
+Полный перечень возможностей см. на [сайте AQBot](https://app.aqbot.top). Эта страница охватывает только интеграцию с Uter.
 
-## Uter Integration Method
+## Способ интеграции с Uter
 
-Please use your self-deployed Uter, or ensure that the service provider has a Uter service with legal upstream authorization and compliance obligations. Do not integrate API addresses or keys from unknown sources into a production environment.
+Используйте свой собственный развёрнутый экземпляр Uter или убедитесь, что поставщик услуг предоставляет сервис Uter с легитимной апстрим-авторизацией и обязательствами по соответствию. Не интегрируйте адреса API или ключи из неизвестных источников в производственную среду.
 
-### Method 1: One-Click Import (Recommended)
+### Способ 1: импорт в один клик (рекомендуется)
 
-1. Install AQBot and open it at least once so the system registers the `aqbot://` protocol
-2. In the Uter console, add the JSON above under **System Settings → Chat Settings**
-3. Open **Token Management** and choose **AQBot** from the token actions
-4. The browser launches AQBot. Confirm the provider name, API host, type `openai`, and key prefix
-5. After confirmation, AQBot opens **Settings → Provider Management**. It reuses a provider with the same API host + type, or creates a new one
-6. Open that provider, click **Sync Models**, then return to chat and select a model
+1. Установите AQBot и откройте его хотя бы один раз, чтобы система зарегистрировала протокол `aqbot://`
+2. В консоли Uter добавьте приведённый выше JSON в разделе **Системные настройки → Настройки чата**
+3. Откройте **Управление токенами** и выберите **AQBot** в действиях с токеном
+4. Браузер запускает AQBot. Подтвердите имя провайдера, хост API, тип `openai` и префикс ключа
+5. После подтверждения AQBot открывает **Настройки → Управление провайдерами**. Он повторно использует провайдера с тем же хостом API и типом или создаёт нового
+6. Откройте этого провайдера, нажмите **Синхронизировать модели**, затем вернитесь в чат и выберите модель
 
-`{address}` is the Uter site root (for example `https://your-uter.example`), with no query string. For the OpenAI type, AQBot appends `/v1` automatically. Import does not validate the key or sync models.
+`{address}` — это корень сайта Uter (например, `https://your-uter.example`) без строки запроса. Для типа OpenAI AQBot автоматически добавляет `/v1`. Импорт не проверяет ключ и не синхронизирует модели.
 
-### Method 2: Manual Configuration
+### Способ 2: ручная настройка
 
-1. Copy the API Key from Uter Token Management
-2. In AQBot, go to **Settings → Provider Management → Add Provider**
-3. Fill in:
+1. Скопируйте API-ключ из управления токенами Uter
+2. В AQBot перейдите в **Настройки → Управление провайдерами → Добавить провайдера**
+3. Заполните:
 
-| Field | Value |
+| Поле | Значение |
 | --- | --- |
-| Provider Name | For example `Uter` |
-| Provider Type | `OpenAI` (recommended) |
-| API Host | Uter site address, such as `https://your-uter.example` |
-| API Key | Your Uter token |
+| Имя провайдера | Например, `Uter` |
+| Тип провайдера | `OpenAI` (рекомендуется) |
+| Хост API | Адрес сайта Uter, например `https://your-uter.example` |
+| API Key | Ваш токен Uter |
 
-4. Click **Sync Models** to pull the models currently exposed by Uter
-5. Return to chat and select a synced model
+4. Нажмите **Синхронизировать модели**, чтобы получить модели, доступные в Uter
+5. Вернитесь в чат и выберите синхронизированную модель
 
-![Switch model](/apps-assets/aqbot/switch-model.webp)
+![Переключение модели](/apps-assets/aqbot/switch-model.webp)
 
-### API Host Notes
+### Примечания к хосту API
 
-- Prefer the site root and let AQBot append `/v1`
-- If the host already ends with `/v1`, AQBot will not append another one
-- Add a trailing `!` only when you must disable automatic completion
+- Используйте корень сайта и позвольте AQBot добавить `/v1`
+- Если хост уже заканчивается на `/v1`, AQBot не добавит его повторно
+- Добавляйте завершающий символ `!` только когда нужно отключить автоматическое дополнение
 
-### Optional: Native Protocols
+### Дополнительно: нативные протоколы
 
-If Uter also exposes Claude or Gemini native APIs, add another provider:
+Если Uter также предоставляет нативные API Claude или Gemini, добавьте ещё одного провайдера:
 
-| Use | Provider Type | API Host |
+| Назначение | Тип провайдера | Хост API |
 | --- | --- | --- |
-| Chat Completions (default) | OpenAI | Site root |
-| Claude native `/v1/messages` | Anthropic | Site root |
-| Gemini native | Gemini | Site root |
+| Chat Completions (по умолчанию) | OpenAI | Корень сайта |
+| Нативный Claude `/v1/messages` | Anthropic | Корень сайта |
+| Нативный Gemini | Gemini | Корень сайта |
 
-Change `type` in the one-click template to `anthropic` or `gemini`. The same API key can back multiple providers.
+Измените `type` в шаблоне одного клика на `anthropic` или `gemini`. Один и тот же API-ключ может обслуживать несколько провайдеров.
 
-## FAQ
+## Часто задаваемые вопросы (FAQ)
 
-- **Clicking AQBot does not open the app**: Install and launch the desktop app first. Opening only the website or a Vite dev server does not register `aqbot://`
-- **Import succeeds but chat fails**: Click **Sync Models**, and make sure the model ID matches the name Uter actually exposes
-- **macOS says the app is damaged or the developer cannot be verified**: Follow the [AQBot README](https://github.com/AQBot-Desktop/AQBot) and [Getting Started](https://app.aqbot.top/guide/getting-started) to allow this app. You do not need to turn Gatekeeper off
-- **The one-click link contains an API key**: Generate it only on the signed-in token page. Do not post URLs that embed a real key
+- **При нажатии AQBot приложение не открывается**: сначала установите и запустите десктопное приложение. Открытие только сайта или dev-сервера Vite не регистрирует `aqbot://`
+- **Импорт выполнен, но чат не работает**: нажмите **Синхронизировать модели** и убедитесь, что ID модели совпадает с именем, которое реально предоставляет Uter
+- **macOS сообщает, что приложение повреждено или разработчик не может быть проверен**: следуйте [AQBot README](https://github.com/AQBot-Desktop/AQBot) и [Началу работы](https://app.aqbot.top/guide/getting-started), чтобы разрешить это приложение. Отключать Gatekeeper не требуется
+- **Ссылка одного клика содержит API-ключ**: генерируйте её только на странице авторизованного токена. Не публикуйте URL, содержащие реальный ключ
 
-## Related Links
+## Связанные ссылки
 
-- [AQBot GitHub](https://github.com/AQBot-Desktop/AQBot)
-- [Configure Providers (official docs)](https://app.aqbot.top/guide/providers)
-- [Download](https://github.com/AQBot-Desktop/AQBot/releases)
+- [AQBot на GitHub](https://github.com/AQBot-Desktop/AQBot)
+- [Настройка провайдеров (официальная документация)](https://app.aqbot.top/guide/providers)
+- [Загрузка](https://github.com/AQBot-Desktop/AQBot/releases)

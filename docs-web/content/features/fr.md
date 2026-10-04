@@ -1,35 +1,35 @@
-# Features Description
+# Description des fonctionnalités
 
-1. 🎨 Brand new UI interface (some interfaces are yet to be updated)
-2. 🌍 Multi-language support (to be improved)
-3. 🎨 Added [Midjourney-Proxy(Plus)](https://github.com/novicezk/midjourney-proxy) API support (Before use, please confirm third-party project and upstream service authorization, content security, and terms of service requirements)
-4. 💰 Supports internal balance, cost allocation, or enterprise customer account management in legally authorized deployments, configurable in system settings:
+1. 🎨 Interface UI entièrement nouvelle (certaines interfaces restent à mettre à jour)
+2. 🌍 Prise en charge multilingue (à améliorer)
+3. 🎨 Ajout de la prise en charge de l'API [Midjourney-Proxy(Plus)](https://github.com/novicezk/midjourney-proxy) (Avant utilisation, veuillez confirmer l'autorisation du projet tiers et du service amont, la sécurité du contenu et les conditions de service)
+4. 💰 Prend en charge le solde interne, la répartition des coûts ou la gestion de compte client entreprise dans des déploiements légalement autorisés, configurable dans les paramètres système :
    - [x] Epay
-5. 🔍 Supports querying usage or balance information of legally authorized channels
-6. 📑 Pagination supports selecting the number of items displayed per page
-7. 🔄 Supports SQLite database storage, out-of-the-box, lightweight and convenient
-8. 💵 Supports internal cost accounting or enterprise customer billing, configurable in System Settings - Operations Settings
-9. ⚖️ Supports channel **Weighted Random**
-10. 📈 Data Dashboard (Console)
-11. 🔒 Can set models that a token can call
-12. 🤖 Supports Telegram authorized login
-13. 🎵 Added [Suno API](https://github.com/Suno-API/Suno-API) API support (Before use, please confirm third-party project and upstream service authorization, content security, and terms of service requirements)
-14. 🔄 Supports Rerank models, currently compatible with Cohere and Jina, and can be integrated with Dify
-15. ⚡ **[OpenAI Realtime API](https://platform.openai.com/docs/guides/realtime/integration)** - Supports OpenAI's Realtime API, supports Azure channels
-16. Supports using the route /chat2link to enter the chat interface
-17. 🧠 Supports setting reasoning effort via model name suffix:
-    1. OpenAI o-series models
-       - Add suffix `-high` to set as high reasoning effort (e.g., `o3-mini-high`)
-       - Add suffix `-medium` to set as medium reasoning effort (e.g., `o3-mini-medium`)
-       - Add suffix `-low` to set as low reasoning effort (e.g., `o3-mini-low`)
-    2. Claude thinking models
-       - Add suffix `-thinking` to enable thinking mode (e.g., `claude-3-7-sonnet-20250219-thinking`)
-18. 🔄 Thinking to Content: Supports setting the `thinking_to_content` option in `Channel - Edit - Channel Extra Settings`. Default is `false`. When enabled, it will convert the thinking content `reasoning_content` into a `<think>` tag and append it to the returned content.
-19. 🔄 Model Rate Limiting: Supports setting model rate limiting in `System Settings - Rate Limit Settings`, including total request limit and successful request limit.
-20. 💰 Cache Billing Support: When enabled, billing can be performed according to the set ratio upon cache hit:
-    1. Set the `Prompt Cache Ratio` option in `System Settings - Operations Settings`.
-    2. Set the `Prompt Cache Ratio` in the channel, range 0-1. For example, setting it to 0.5 means billing at 50% upon cache hit.
-    3. Supported channels:
+5. 🔍 Prend en charge la consultation des informations d'utilisation ou de solde des canaux légalement autorisés
+6. 📑 La pagination prend en charge la sélection du nombre d'éléments affichés par page
+7. 🔄 Prend en charge le stockage en base de données SQLite, prêt à l'emploi, léger et pratique
+8. 💵 Prend en charge la comptabilité analytique interne ou la facturation client entreprise, configurable dans Paramètres système - Paramètres d'exploitation
+9. ⚖️ Prend en charge la **sélection aléatoire pondérée** des canaux
+10. 📈 Tableau de bord des données (Console)
+11. 🔒 Peut définir les modèles qu'un token peut appeler
+12. 🤖 Prend en charge la connexion autorisée Telegram
+13. 🎵 Ajout de la prise en charge de l'API [Suno API](https://github.com/Suno-API/Suno-API) (Avant utilisation, veuillez confirmer l'autorisation du projet tiers et du service amont, la sécurité du contenu et les conditions de service)
+14. 🔄 Prend en charge les modèles Rerank, actuellement compatibles avec Cohere et Jina, et pouvant être intégrés avec Dify
+15. ⚡ **[OpenAI Realtime API](https://platform.openai.com/docs/guides/realtime/integration)** - Prend en charge l'API Realtime d'OpenAI, prend en charge les canaux Azure
+16. Prend en charge l'utilisation de la route /chat2link pour accéder à l'interface de chat
+17. 🧠 Prend en charge le réglage de l'effort de raisonnement via le suffixe du nom du modèle :
+    1. Modèles de la série OpenAI o
+       - Ajouter le suffixe `-high` pour définir un effort de raisonnement élevé (par exemple, `o3-mini-high`)
+       - Ajouter le suffixe `-medium` pour définir un effort de raisonnement moyen (par exemple, `o3-mini-medium`)
+       - Ajouter le suffixe `-low` pour définir un effort de raisonnement faible (par exemple, `o3-mini-low`)
+    2. Modèles de réflexion Claude
+       - Ajouter le suffixe `-thinking` pour activer le mode de réflexion (par exemple, `claude-3-7-sonnet-20250219-thinking`)
+18. 🔄 Thinking to Content : Prend en charge le réglage de l'option `thinking_to_content` dans `Channel - Edit - Channel Extra Settings`. Par défaut, la valeur est `false`. Lorsqu'elle est activée, elle convertit le contenu de réflexion `reasoning_content` en une balise `<think>` et l'ajoute au contenu renvoyé.
+19. 🔄 Limitation de débit des modèles : Prend en charge le réglage de la limitation de débit des modèles dans `System Settings - Rate Limit Settings`, incluant la limite totale de requêtes et la limite de requêtes réussies.
+20. 💰 Prise en charge de la facturation par cache : Lorsqu'elle est activée, la facturation peut être effectuée selon le ratio défini en cas de succès du cache :
+    1. Définir l'option `Prompt Cache Ratio` dans `System Settings - Operations Settings`.
+    2. Définir le `Prompt Cache Ratio` dans le canal, plage 0-1. Par exemple, le régler sur 0.5 signifie une facturation à 50 % en cas de succès du cache.
+    3. Canaux pris en charge :
     - [x] OpenAI
     - [x] Azure
     - [x] DeepSeek

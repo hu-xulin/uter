@@ -1,47 +1,47 @@
-# Native Gemini Format
+# Нативный формат Gemini
 
-The native Gemini audio generation endpoint. Synthesize speech directly with models such as `gemini-2.5-flash-preview-tts`, returning audio in PCM / WAV and other formats.
+Нативная конечная точка генерации аудио Gemini. Синтезирует речь напрямую с помощью таких моделей, как `gemini-2.5-flash-preview-tts`, возвращая аудио в форматах PCM / WAV и других.
 
-Unlike the "Native OpenAI Format", this endpoint follows Google Gemini's `v1beta` protocol: you submit content to the `generateContent` endpoint and control the output modality and voice via `generationConfig`. Uter unifies access to the Gemini family of models — keys, quotas and billing all use the platform account system.
+В отличие от «Нативного формата OpenAI», эта конечная точка следует протоколу `v1beta` Google Gemini: вы отправляете содержимое в конечную точку `generateContent` и управляете выходной модальностью и голосом через `generationConfig`. Uter унифицирует доступ к семейству моделей Gemini — ключи, квоты и биллинг используют систему учётных записей платформы.
 
-## Authorization
+## Авторизация
 
-Authenticate with a Bearer token.
+Аутентификация с помощью Bearer-токена.
 
 `Authorization: Bearer <token>`
 
-| Parameter | In | Description |
+| Параметр | Расположение | Описание |
 |---|---|---|
-| `Authorization` | header | Bearer token, format `Bearer sk-xxxxxx` |
+| `Authorization` | header | Bearer-токен, формат `Bearer sk-xxxxxx` |
 
-## Path Parameters
+## Параметры пути
 
-| Parameter | Type | Required | Description |
+| Параметр | Тип | Обязательно | Описание |
 |---|---|---|---|
-| `model` | string | yes | Model name, e.g. `gemini-2.5-flash-preview-tts` |
+| `model` | string | да | Название модели, напр. `gemini-2.5-flash-preview-tts` |
 
-## Request Body
+## Тело запроса
 
 `Content-Type: application/json`
 
-| Field | Type | Required | Description |
+| Поле | Тип | Обязательно | Описание |
 |---|---|---|---|
-| `contents` | array&lt;object&gt; | yes | Conversation content; each entry is one input turn |
-| `generationConfig` | object | yes | Generation configuration controlling output modality and voice |
+| `contents` | array&lt;object&gt; | да | Содержимое диалога; каждая запись — один входной шаг |
+| `generationConfig` | object | да | Конфигурация генерации, управляющая выходной модальностью и голосом |
 
-### generationConfig fields
+### Поля generationConfig
 
-| Field | Type | Required | Description |
+| Поле | Тип | Обязательно | Описание |
 |---|---|---|---|
-| `responseModalities` | array&lt;string&gt; | no | Output modalities; audio use cases must include `AUDIO` |
-| `speechConfig` | object | no | Speech configuration |
-| `speechConfig.voiceConfig.prebuiltVoiceConfig.voiceName` | string | no | Prebuilt voice name, e.g. `Kore` |
+| `responseModalities` | array&lt;string&gt; | нет | Выходные модальности; для аудио должно быть указано `AUDIO` |
+| `speechConfig` | object | нет | Конфигурация речи |
+| `speechConfig.voiceConfig.prebuiltVoiceConfig.voiceName` | string | нет | Имя встроенного голоса, напр. `Kore` |
 
-## Response
+## Ответ
 
-`200` the request succeeded and JSON is returned. The generated audio is inlined in `candidates[].content.parts[]`.
+`200` запрос выполнен успешно и возвращён JSON. Сгенерированное аудио встроено в `candidates[].content.parts[]`.
 
-### Request example
+### Пример запроса
 
 ```bash
 curl -X POST "https://uter.ai/v1beta/models/gemini-2.5-flash-preview-tts:generateContent" \
@@ -68,7 +68,7 @@ curl -X POST "https://uter.ai/v1beta/models/gemini-2.5-flash-preview-tts:generat
   }'
 ```
 
-### Response example
+### Пример ответа
 
 ```json
 {
@@ -92,4 +92,4 @@ curl -X POST "https://uter.ai/v1beta/models/gemini-2.5-flash-preview-tts:generat
 }
 ```
 
-> Tip: the audio is inlined as base64 in `inlineData.data`; decode it according to `inlineData.mimeType` to play. Billing is based on input tokens — the synthesized audio is not billed as extra tokens.
+> Совет: аудио встроено в base64 в `inlineData.data`; декодируйте его в соответствии с `inlineData.mimeType` для воспроизведения. Биллинг основан на входных токенах — синтезированное аудио не тарифицируется как дополнительные токены.

@@ -1,62 +1,62 @@
 # list
 
-## Native OpenAI Format
+## Нативный формат OpenAI
 
-获取当前可用的模型列表。
+Получает список доступных в данный момент моделей.
 
-根据请求头自动识别返回格式：
-- 包含 `x-api-key` 和 `anthropic-version` 头时返回 Anthropic 格式
-- 包含 `x-goog-api-key` 头或 `key` 查询参数时返回 Gemini 格式
-- 其他情况返回 OpenAI 格式
+Формат ответа определяется автоматически по заголовкам запроса:
+- при наличии заголовков `x-api-key` и `anthropic-version` возвращается формат Anthropic
+- при наличии заголовка `x-goog-api-key` или параметра запроса `key` возвращается формат Gemini
+- в остальных случаях возвращается формат OpenAI
 
 `GET` `/v1/models`
 
-### 请求参数
+### Параметры запроса
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| Параметр | Расположение | Тип | Обязательно | Описание |
 |---|---|---|---|---|
-| `key` | query | string | 否 | Google API Key (用于 Gemini 格式) |
-| `x-api-key` | header | string | 否 | Anthropic API Key (用于 Claude 格式) |
-| `anthropic-version` | header | string | 否 | Anthropic API 版本 |
-| `x-goog-api-key` | header | string | 否 | Google API Key (用于 Gemini 格式) |
+| `key` | query | string | нет | Google API Key (для формата Gemini) |
+| `x-api-key` | header | string | нет | Anthropic API Key (для формата Claude) |
+| `anthropic-version` | header | string | нет | Версия Anthropic API |
+| `x-goog-api-key` | header | string | нет | Google API Key (для формата Gemini) |
 
-### 响应
+### Ответ
 
-| 状态码 | 说明 |
+| Код статуса | Описание |
 |---|---|
-| `200` | 成功获取模型列表 |
-| `401` | 认证失败 |
+| `200` | Список моделей успешно получен |
+| `401` | Ошибка аутентификации |
 
-#### `200` 响应字段
+#### Поля ответа `200`
 
-| 字段 | 类型 | 说明 |
+| Поле | Тип | Описание |
 |---|---|---|
 | `object` | string | — |
 | `data` | array&lt;object&gt; | — |
 
-#### `401` 响应字段
+#### Поля ответа `401`
 
-| 字段 | 类型 | 说明 |
+| Поле | Тип | Описание |
 |---|---|---|
-| `error.message` | string | 错误信息 |
-| `error.type` | string | 错误类型 |
-| `error.param` | string | 相关参数 |
-| `error.code` | string | 错误代码 |
+| `error.message` | string | Текст ошибки |
+| `error.type` | string | Тип ошибки |
+| `error.param` | string | Связанный параметр |
+| `error.code` | string | Код ошибки |
 
-## Native Gemini Format
+## Нативный формат Gemini
 
-以 Gemini API 格式返回可用模型列表
+Возвращает список доступных моделей в формате Gemini API.
 
 `GET` `/v1beta/models`
 
-### 响应
+### Ответ
 
-| 状态码 | 说明 |
+| Код статуса | Описание |
 |---|---|
-| `200` | 成功获取模型列表 |
+| `200` | Список моделей успешно получен |
 
-#### `200` 响应字段
+#### Поля ответа `200`
 
-| 字段 | 类型 | 说明 |
+| Поле | Тип | Описание |
 |---|---|---|
 | `models` | array&lt;object&gt; | — |

@@ -1,68 +1,69 @@
-# OpenClaw - Self-hosted AI Assistant Platform
+# OpenClaw - セルフホスト型 AI アシスタントプラットフォーム
 
-> **Project Introduction**
+> **プロジェクト紹介**
 >
-> OpenClaw is an open-source, self-hosted personal AI
->   assistant platform that connects messaging apps to AI
->   agents running on your own hardware. Designed for developers and advanced users, it allows you to have an autonomous AI assistant without giving up control of your data.
+> OpenClaw は、メッセージングアプリをご自身のハードウェアで動作する AI
+>   エージェントに接続する、オープンソースのセルフホスト型パーソナル AI
+>   アシスタントプラットフォームです。開発者および上級ユーザー向けに設計されており、
+>   データの管理を手放すことなく自律型 AI アシスタントを利用できます。
 >
->   - Official Homepage: [https://openclaw.ai](https://openclaw.ai)
->   - Project Documentation: [https://docs.openclaw.ai](https://docs.openclaw.ai)
+>   - 公式ホームページ: [https://openclaw.ai](https://openclaw.ai)
+>   - プロジェクトドキュメント: [https://docs.openclaw.ai](https://docs.openclaw.ai)
 >   - GitHub: [https://github.com/openclaw/openclaw](https://github.com/openclaw/openclaw)
 
-OpenClaw is completely open-source. You can browse the source code, submit issues, or contribute on [OpenClaw's GitHub repository](https://github.com/openclaw/openclaw). This tutorial covers the complete steps for installing, configuring, and integrating OpenClaw with Uter.
+OpenClaw は完全にオープンソースです。[OpenClaw の GitHub リポジトリ](https://github.com/openclaw/openclaw) でソースコードの閲覧、Issue の投稿、または貢献ができます。本チュートリアルでは、OpenClaw のインストール、設定、および Uter との統合の完全な手順を解説します。
 
-## 🌟 Core Features
+## 🌟 主要機能
 
-### Multi-channel Integration
+### マルチチャネル統合
 
-- **Multi-channel Integration**: Supports various messaging channels like Telegram, Discord, WhatsApp, iMessage, and can be extended to more platforms via plugins.
-- **Single Gateway**: Unified management of all channels through a single Gateway process.
-- **Voice Support**: Supports macOS/iOS/Android voice interaction.
-- **Canvas Interface**: Can render interactive Canvas interfaces.
+- **マルチチャネル統合**: Telegram、Discord、WhatsApp、iMessage などのさまざまなメッセージングチャネルをサポートし、プラグインでさらに多くのプラットフォームに拡張可能。
+- **単一ゲートウェイ**: 単一の Gateway プロセスで全チャネルを一元管理。
+- **音声対応**: macOS/iOS/Android の音声対話をサポート。
+- **Canvas インターフェース**: インタラクティブな Canvas インターフェースを描画可能。
 
-### Self-hosting and Data Security
+### セルフホストとデータセキュリティ
 
-- **Fully Self-hosted**: Runs on your own machine or server.
-- **Open Source Transparency**: MIT open-source license, completely transparent code.
-- **Local Data**: Context and skills are stored on your local computer, not in the cloud.
+- **完全セルフホスト**: ご自身のマシンまたはサーバーで動作。
+- **オープンソースの透明性**: MIT オープンソースライセンス、完全に透明なコード。
+- **ローカルデータ**: コンテキストとスキルはクラウドではなくローカルコンピュータに保存。
 
-### Intelligent Agent Capabilities
+### インテリジェントエージェント機能
 
-- **Continuous Operation**: Supports persistent background operation with long-term memory.
-- **Scheduled Tasks**: Supports cron scheduled tasks.
-- **Session Isolation**: Isolates sessions by agent/workspace/sender.
-- **Multi-agent Routing**: Supports collaborative work among multiple agents.
-- **Tool Calling**: Native support for tool calling and code execution.
+- **継続稼働**: 長期メモリを備えた永続的なバックグラウンド動作をサポート。
+- **スケジュールされたタスク**: cron スケジュールタスクをサポート。
+- **セッション分離**: エージェント/ワークスペース/送信者ごとにセッションを分離。
+- **マルチエージェントルーティング**: 複数エージェント間の協調動作をサポート。
+- **ツール呼び出し**: ツール呼び出しとコード実行をネイティブサポート。
 
-## 📦 Preparation Before Integration
+## 📦 統合前の準備
 
-> **Preparation Information**
+> **準備情報**
 >
-> - Node.js 22 or higher
->   - An available Uter address (usually ending with `/v1`)
->   - An available Uter API Key
->   - Please use your own deployed Uter, or confirm that the service provider has legitimate upstream authorization and compliance obligations for their Uter service. Do not connect unknown API addresses or keys to production environments.
+> - Node.js 22 以上
+>   - 利用可能な Uter アドレス（通常は `/v1` で終わる）
+>   - 利用可能な Uter API キー
+>   - ご自身で導入した Uter を使用するか、サービス提供者がその Uter サービスに対して正当な上流認可とコンプライアンス義務を負っていることを確認してください。出所不明の API アドレスやキーを本番環境に接続しないでください。
 
-Before integrating Uter, it's recommended to first get the Gateway and Control UI running according to OpenClaw's official current recommended process. This makes it easier to distinguish whether OpenClaw itself is not starting or if the model provider configuration is incorrect when troubleshooting later.
+Uter を統合する前に、OpenClaw の公式で現在推奨されている手順に従って、まず Gateway と Control UI を起動しておくことをお勧めします。これにより、後でトラブルシューティングする際に、OpenClaw 自体が起動しないのか、モデルプロバイダの設定が誤っているのかを区別しやすくなります。
 
-### 1. Install OpenClaw (macOS/Linux)
+### 1. OpenClaw をインストール（macOS/Linux）
 
 ```bash
 curl -fsSL https://openclaw.ai/install.sh | bash
 ```
 
-For other installation methods, refer to the OpenClaw official documentation: [Getting Started](https://docs.openclaw.ai/start/getting-started).
+その他のインストール方法については、OpenClaw 公式ドキュメントを参照: [Getting Started](https://docs.openclaw.ai/start/getting-started)。
 
-### 2. Run the Onboarding Wizard
+### 2. オンボーディングウィザードを実行
 
 ```bash
 openclaw onboard --install-daemon
 ```
 
-This wizard will complete basic authentication, Gateway setup, and optional channel initialization. The goal here is to get OpenClaw running first, then switch the default model to Uter later.
+このウィザードは、基本認証、Gateway のセットアップ、およびオプションのチャネル初期化を完了します。ここでの目的はまず OpenClaw を動作させ、その後でデフォルトモデルを Uter に切り替えることです。
 
-### 3. Check Gateway and Control UI
+### 3. Gateway と Control UI を確認
 
 ```bash
 openclaw gateway status
@@ -72,43 +73,43 @@ openclaw gateway status
 openclaw dashboard
 ```
 
-If the browser can open the Control UI, it means OpenClaw's basic operation is normal. At this stage, there's no need to configure Telegram, Discord, Feishu, or other messaging channels yet.
+ブラウザで Control UI を開ける場合、OpenClaw の基本動作は正常です。この段階では、Telegram、Discord、Feishu、その他のメッセージングチャネルを設定する必要はありません。
 
-### 4. Locate the Configuration File
+### 4. 設定ファイルの場所
 
-OpenClaw's configuration file is usually located at `~/.openclaw/openclaw.json`. You can continue to modify it based on what the onboarding wizard generated.
+OpenClaw の設定ファイルは通常 `~/.openclaw/openclaw.json` にあります。オンボーディングウィザードが生成した内容を基に変更を続けられます。
 
-> **Path-related Environment Variables**
+> **パス関連の環境変数**
 >
-> If you run OpenClaw under a dedicated service account, or wish to customize the configuration/state directory, you can use:
+> 専用のサービスアカウント配下で OpenClaw を実行する場合、または設定/状態ディレクトリをカスタマイズしたい場合は、次を使用できます：
 >
 >   - `OPENCLAW_HOME`
 >   - `OPENCLAW_STATE_DIR`
 >   - `OPENCLAW_CONFIG_PATH`
 >
->   For detailed instructions, see the official environment variables documentation: [Environment Variables](https://docs.openclaw.ai/help/environment).
+>   詳細な手順は、公式の環境変数ドキュメントを参照: [Environment Variables](https://docs.openclaw.ai/help/environment)。
 
-## 🚀 Using Uter as a Model Provider
+## 🚀 モデルプロバイダとして Uter を使用
 
-OpenClaw supports integrating custom or OpenAI-compatible model gateways via `models.providers`. For Uter, the most common approach is to add it as a custom provider to the configuration, then point the default model to `uter/model-ID`.
+OpenClaw は `models.providers` を通じて、カスタムまたは OpenAI 互換のモデルゲートウェイの統合をサポートしています。Uter の場合、最も一般的な方法は設定にカスタムプロバイダとして追加し、その後デフォルトモデルを `uter/model-ID` に向けることです。
 
-### Integration Approach
+### 統合手順
 
-1. Declare a `uter` provider under `models.providers`.
-2. Point `baseUrl` to your Uter address, ensuring it includes `/v1`.
-3. Set `api` to `openai-completions`.
-4. List the model IDs you want OpenClaw to use in `models`.
-5. Switch the default model in `agents.defaults.model.primary` to `uter/...`.
+1. `models.providers` の配下に `uter` プロバイダを宣言。
+2. `baseUrl` を Uter アドレスに向け、`/v1` を含めることを確認。
+3. `api` を `openai-completions` に設定。
+4. `models` に OpenClaw で使用したいモデル ID を列挙。
+5. `agents.defaults.model.primary` のデフォルトモデルを `uter/...` に切り替え。
 
-### Recommended Practice: Store API Key in Environment Variables
+### 推奨される実践：API キーを環境変数に保存
 
-First, provide your Uter key in the current shell, service environment, or an `.env` file readable by OpenClaw:
+まず、現在のシェル、サービス環境、または OpenClaw から読み取り可能な `.env` ファイルで Uter キーを提供します：
 
 ```bash
 export UTER_API_KEY="sk-your-uter-key"
 ```
 
-Then, add or modify the following snippet in `openclaw.json`:
+次に、`openclaw.json` に次のスニペットを追加または変更します：
 
 ```json5
 {
@@ -142,40 +143,40 @@ Then, add or modify the following snippet in `openclaw.json`:
 }
 ```
 
-This is not a complete configuration that must be copied exactly, but rather the most critical part for integrating Uter. As long as the `provider`, model IDs, and default model references are correct, OpenClaw will be able to call your exposed model resources via Uter.
+これはそのままコピーすべき完全な設定ではなく、Uter を統合する上で最も重要な部分です。`provider`、モデル ID、およびデフォルトモデルの参照さえ正しければ、OpenClaw は Uter を通じて公開されているモデルリソースを呼び出せるようになります。
 
-### Key Configuration Details
+### 主要な設定の詳細
 
-| Configuration Item | Description |
+| 設定項目 | 説明 |
 | --- | --- |
-| `models.mode` | Recommended to set to `merge`, appending `uter` while retaining OpenClaw's built-in providers |
-| `models.providers.uter.baseUrl` | Your Uter address, usually needs to include `/v1` |
-| `models.providers.uter.apiKey` | Uter key, recommended to inject via `${UTER_API_KEY}` |
-| `models.providers.uter.api` | For OpenAI-compatible gateways like Uter, use `openai-completions` |
-| `models.providers.uter.models` | The model IDs listed here must match the actual model names exposed by your Uter |
-| `agents.defaults.model.primary` | Default primary model, format must be `provider/model-id` |
-| `agents.defaults.model.fallbacks` | List of fallback models, automatically switches if the primary model fails |
-| `agents.defaults.models` | Optional, used to create aliases for models, convenient for referencing in UI or sessions |
+| `models.mode` | `merge` に設定することを推奨。OpenClaw 内蔵のプロバイダを保持したまま `uter` を追加 |
+| `models.providers.uter.baseUrl` | Uter アドレス。通常は `/v1` を含める必要あり |
+| `models.providers.uter.apiKey` | Uter キー。`${UTER_API_KEY}` で注入することを推奨 |
+| `models.providers.uter.api` | Uter のような OpenAI 互換ゲートウェイには `openai-completions` を使用 |
+| `models.providers.uter.models` | ここに列挙するモデル ID は、Uter が実際に公開しているモデル名と一致している必要あり |
+| `agents.defaults.model.primary` | デフォルトのプライマリモデル。形式は `provider/model-id` である必要あり |
+| `agents.defaults.model.fallbacks` | フォールバックモデルのリスト。プライマリが失敗した場合自動的に切り替え |
+| `agents.defaults.models` | オプション。モデルのエイリアスを作成し、UI やセッションからの参照を容易に |
 
-### Verify Successful Integration
+### 統合成功の確認
 
-After completing the configuration, return to the Control UI or reopen it:
+設定完了後、Control UI に戻るか再び開きます：
 
 ```bash
 openclaw dashboard
 ```
 
-If you can initiate conversations normally in OpenClaw and the default model has become `uter/...`, then the integration is successful. You can also use:
+OpenClaw で正常に会話を開始でき、デフォルトモデルが `uter/...` になっていれば統合は成功です。また、次を使用できます：
 
 ```bash
 openclaw models list
 ```
 
-to confirm that models with the `uter/` prefix appear in the selectable list.
+`uter/` プレフィックス付きのモデルが選択可能なリストに表示されることを確認。
 
-### Common Issues
+### よくある問題
 
-- `baseUrl` missing `/v1`: This is one of the most common integration errors.
-- Incorrect model ID: `primary` and `fallbacks` must correspond to the `id` in `models.providers.uter.models`.
-- API key only effective in the current terminal: If Gateway runs as a background service, ensure the service process can also read `UTER_API_KEY`.
-- For foreground troubleshooting: Use the official foreground running method `openclaw gateway --port 18789` to observe logs and errors.
+- `baseUrl` に `/v1` が欠落: これは最も一般的な統合エラーの一つ。
+- モデル ID が不正: `primary` と `fallbacks` は `models.providers.uter.models` の `id` に対応している必要あり。
+- API キーが現在のターミナルでのみ有効: Gateway がバックグラウンドサービスとして動作する場合、サービスプロセスも `UTER_API_KEY` を読めることを確認。
+- フォアグラウンドでのトラブルシューティング: 公式のフォアグラウンド実行方法 `openclaw gateway --port 18789` を使用してログとエラーを観察。

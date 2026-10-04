@@ -1,25 +1,25 @@
-# statistics
+# Thống kê (statistics)
 
-## Get All Quota Data
+## Lấy tất cả dữ liệu hạn ngạch (Get All Quota Data)
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 Yêu cầu quyền quản trị viên (Admin)
 
 `GET` `/api/data/`
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Get Personal Quota Data
+## Lấy dữ liệu hạn ngạch cá nhân (Get Personal Quota Data)
 
-🔐 需要登录（User权限）
+🔐 Yêu cầu đăng nhập (quyền User)
 
 `GET` `/api/data/self`
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |

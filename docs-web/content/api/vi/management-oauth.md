@@ -1,140 +1,140 @@
-# oauth
+# OAuth
 
-## Discord OAuth Login
+## Đăng nhập Discord OAuth (Discord OAuth Login)
 
-🔓 无需鉴权（OAuth回调）
+🔓 Không cần xác thực (callback OAuth)
 
 `GET` `/api/oauth/discord`
 
-### 请求参数
+### Tham số yêu cầu
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| Tên tham số | Vị trí | Kiểu | Bắt buộc | Mô tả |
 |---|---|---|---|---|
-| `code` | query | string | 否 | — |
+| `code` | query | string | Không | — |
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Bind Email
+## Liên kết Email (Bind Email)
 
-🔓 无需鉴权
+🔓 Không cần xác thực
 
 `GET` `/api/oauth/email/bind`
 
-### 请求参数
+### Tham số yêu cầu
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| Tên tham số | Vị trí | Kiểu | Bắt buộc | Mô tả |
 |---|---|---|---|---|
-| `email` | query | string | 否 | — |
-| `code` | query | string | 否 | — |
+| `email` | query | string | Không | — |
+| `code` | query | string | Không | — |
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## GitHub OAuth Login
+## Đăng nhập GitHub OAuth (GitHub OAuth Login)
 
-🔓 无需鉴权（OAuth回调）
+🔓 Không cần xác thực (callback OAuth)
 
 `GET` `/api/oauth/github`
 
-### 请求参数
+### Tham số yêu cầu
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| Tên tham số | Vị trí | Kiểu | Bắt buộc | Mô tả |
 |---|---|---|---|---|
-| `code` | query | string | 否 | — |
+| `code` | query | string | Không | — |
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## LinuxDO OAuth Login
+## Đăng nhập LinuxDO OAuth (LinuxDO OAuth Login)
 
-🔓 无需鉴权（OAuth回调）
+🔓 Không cần xác thực (callback OAuth)
 
 `GET` `/api/oauth/linuxdo`
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## OIDC Login
+## Đăng nhập OIDC (OIDC Login)
 
-🔓 无需鉴权（OAuth回调）
+🔓 Không cần xác thực (callback OAuth)
 
 `GET` `/api/oauth/oidc`
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Generate OAuth State
+## Tạo OAuth State (Generate OAuth State)
 
-🔓 无需鉴权
+🔓 Không cần xác thực
 
 `GET` `/api/oauth/state`
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Bind Telegram
+## Liên kết Telegram (Bind Telegram)
 
-🔓 无需鉴权
+🔓 Không cần xác thực
 
 `GET` `/api/oauth/telegram/bind`
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Telegram Login
+## Đăng nhập Telegram (Telegram Login)
 
-🔓 无需鉴权（OAuth回调）
+🔓 Không cần xác thực (callback OAuth)
 
 `GET` `/api/oauth/telegram/login`
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Bind WeChat
+## Liên kết WeChat (Bind WeChat)
 
-🔓 无需鉴权
+🔓 Không cần xác thực
 
 `GET` `/api/oauth/wechat/bind`
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## WeChat OAuth Login
+## Đăng nhập WeChat OAuth (WeChat OAuth Login)
 
-🔓 无需鉴权（OAuth回调）
+🔓 Không cần xác thực (callback OAuth)
 
 `GET` `/api/oauth/wechat`
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |

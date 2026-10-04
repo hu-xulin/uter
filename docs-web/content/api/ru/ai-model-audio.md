@@ -1,34 +1,34 @@
-# Native Gemini Format
+# Нативный формат Gemini
 
-## Native Gemini Format
+## Нативный формат Gemini
 
-Gemini 音频生成接口。
-可使用gemini-2.5-flash-preview-tts等模型
+Интерфейс генерации аудио Gemini.
+Можно использовать такие модели, как gemini-2.5-flash-preview-tts.
 
 `POST` `/v1beta/models/{model}:generateContent`
 
-### 请求参数
+### Параметры запроса
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| Параметр | Расположение | Тип | Обязательно | Описание |
 |---|---|---|---|---|
-| `model` | path | string | 是 | 模型名称 |
+| `model` | path | string | да | Название модели |
 
-### 请求体（`application/json`）
+### Тело запроса (`application/json`)
 
-| 字段 | 类型 | 必填 | 说明 |
+| Поле | Тип | Обязательно | Описание |
 |---|---|---|---|
-| `contents` | array&lt;object&gt; | 是 | — |
-| `generationConfig.responseModalities` | array&lt;string&gt; | 否 | — |
+| `contents` | array&lt;object&gt; | да | — |
+| `generationConfig.responseModalities` | array&lt;string&gt; | нет | — |
 
-### 响应
+### Ответ
 
-| 状态码 | 说明 |
+| Код статуса | Описание |
 |---|---|
-| `200` | 成功 |
+| `200` | Успешно |
 
-#### `200` 响应字段
+#### Поля ответа `200`
 
-| 字段 | 类型 | 说明 |
+| Поле | Тип | Описание |
 |---|---|---|
 | `candidates` | array&lt;object&gt; | — |
 | `usageMetadata.promptTokenCount` | integer | — |

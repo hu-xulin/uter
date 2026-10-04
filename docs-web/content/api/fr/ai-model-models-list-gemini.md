@@ -1,17 +1,17 @@
-# Native Gemini Format
+# Format Gemini natif
 
-以 Gemini API 格式返回可用模型列表
+Renvoie la liste des modèles disponibles au format Gemini API.
 
 `GET` `/v1beta/models`
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功获取模型列表 |
+| `200` | Liste des modèles récupérée avec succès |
 
-#### `200` 响应字段
+#### Champs de la réponse `200`
 
-| 字段 | 类型 | 说明 |
+| Champ | Type | Description |
 |---|---|---|
 | `models` | array&lt;object&gt; | — |

@@ -1,137 +1,137 @@
-# MiniMax Format
+# Формат MiniMax
 
-MiniMax H3 (`MiniMax-H3`) video generation: call MiniMax H3 through an asynchronous task API, supporting text-to-video, image-to-video and reference-to-video, billed precisely against upstream usage.
+Генерация видео MiniMax H3 (`MiniMax-H3`): обращение к MiniMax H3 через асинхронный API задач; поддерживаются генерация по тексту, по изображению и по эталонам; тарификация производится точно по фактическому upstream-использованию.
 
-## Model and Capabilities
+## Модель и возможности
 
-There is a single model name, `MiniMax-H3`. **The generation mode is decided automatically by which media inputs the request carries:**
+Существует единственное название модели — `MiniMax-H3`. **Режим генерации определяется автоматически по тому, какие медиавходы несёт запрос:**
 
-| Mode | Trigger | Media input |
+| Режим | Триггер | Медиаввод |
 |---|---|---|
-| Text-to-video (t2v) | Only `prompt` | None |
-| Image-to-video (i2v) | A first-frame image (optional last-frame image) | `input_reference` / `images` |
-| Reference-to-video (r2v) | Reference image / video / audio | Top-level `media[]` array |
+| Генерация по тексту (t2v) | Только `prompt` | Нет |
+| Изображение в видео (i2v) | Первый кадр (необязательно последний кадр) | `input_reference` / `images` |
+| По эталонам (r2v) | Эталонное изображение / видео / аудио | Верхуровневый массив `media[]` |
 
-In every mode, `prompt` is **always required**.
+В каждом режиме `prompt` **всегда обязателен**.
 
-## Create Video
+## Создание видео
 
 `POST` `/v1/video/generations`
 
-### Request Headers
+### Заголовки запроса
 
-| Header | Required | Description |
+| Заголовок | Обязательно | Описание |
 |---|---|---|
-| `Authorization` | Yes | `Bearer sk-your-api-key` |
-| `Content-Type` | Yes | `application/json` |
+| `Authorization` | Да | `Bearer sk-your-api-key` |
+| `Content-Type` | Да | `application/json` |
 
-### Request Body (`application/json`)
+### Тело запроса (`application/json`)
 
-| Field | Type | Required | Description |
+| Поле | Тип | Обязательно | Описание |
 |---|---|---|---|
-| `model` | string | Yes | Fixed to `MiniMax-H3` |
-| `prompt` | string | Yes | Text prompt |
-| `resolution` | string | No | Resolution; currently only `2K` (default `2K`) |
-| `duration` | int | No | Video length in seconds, `4`–`15`, default `6` |
-| `ratio` | string | No | Aspect ratio: `16:9` / `9:16` / `1:1` / `adaptive`. Defaults to `16:9` for t2v and `adaptive` (follows the first frame) for i2v |
-| `input_reference` | string | No | i2v first-frame image URL (public, or base64) |
-| `images` | string[] | No | i2v image array: the 1st is the first frame, the 2nd is the last frame |
-| `media` | object[] | No | Structured media input for reference-to-video, see below |
+| `model` | string | Да | Фиксировано `MiniMax-H3` |
+| `prompt` | string | Да | Текстовая подсказка |
+| `resolution` | string | Нет | Разрешение; в настоящее время только `2K` (по умолчанию `2K`) |
+| `duration` | int | Нет | Длительность видео в секундах, `4`–`15`, по умолчанию `6` |
+| `ratio` | string | Нет | Соотношение сторон: `16:9` / `9:16` / `1:1` / `adaptive`. По умолчанию `16:9` для t2v и `adaptive` (следует за первым кадром) для i2v |
+| `input_reference` | string | Нет | URL первого кадра для i2v (публичный или base64) |
+| `images` | string[] | Нет | Массив изображений для i2v: 1-й — первый кадр, 2-й — последний кадр |
+| `media` | object[] | Нет | Структурированный медиаввод для генерации по эталонам, см. ниже |
 
-### `media[]` Elements
+### Элементы `media[]`
 
-Used for reference-to-video (r2v) to specify each reference asset's role precisely:
+Используются для генерации по эталонам (r2v) для точного указания роли каждого эталонного ассета:
 
-| `type` | Role | Purpose |
+| `type` | Роль | Назначение |
 |---|---|---|
-| `reference_image` | Reference image | Reference picture(s) |
-| `reference_video` | Reference video | Reference video (its billable duration counts toward total seconds) |
-| `reference_audio` | Reference audio | Reference audio |
-| `first_frame` / `last_frame` | First / last frame | i2v first / last frame images |
+| `reference_image` | Эталонное изображение | Эталонные изображения |
+| `reference_video` | Эталонное видео | Эталонное видео (его тарифицируемая длительность учитывается в общем числе секунд) |
+| `reference_audio` | Эталонное аудио | Эталонное аудио |
+| `first_frame` / `last_frame` | Первый / последний кадр | Изображения первого / последнего кадра для i2v |
 
-When structured `media` is omitted, Uter infers assets from `images` / `input_reference` by extension and order: video → reference video, audio → reference audio, 1st image → first frame, 2nd image → last frame. Use `media[]` when you need precise role control.
+Когда структурированный `media` опущен, Uter выводит ассеты из `images` / `input_reference` по расширению и порядку: видео → эталонное видео, аудио → эталонное аудио, 1-е изображение → первый кадр, 2-е изображение → последний кадр. Используйте `media[]`, когда нужен точный контроль ролей.
 
-> Reference audio (`reference_audio`) is currently limited by upstream support: in testing the upstream returns task failure (Uter refunds in full automatically). Text-to-video, image-to-video (first frame / first+last frame) and reference image/video generation all work normally.
+> Эталонное аудио (`reference_audio`) в настоящее время ограничено поддержкой upstream: при тестировании upstream возвращает сбой задачи (Uter автоматически полностью возвращает средства). Генерация по тексту, по изображению (первый кадр / первый+последний кадр) и по эталонным изображениям/видео работают нормально.
 
-### Response
+### Ответ
 
-| Status | Description |
+| Статус | Описание |
 |---|---|
-| `200` | Video task created successfully |
-| `400` | Invalid request parameters |
+| `200` | Задача видео успешно создана |
+| `400` | Недопустимые параметры запроса |
 
-#### `200` Response Fields
+#### Поля ответа `200`
 
-| Field | Type | Description |
+| Поле | Тип | Описание |
 |---|---|---|
-| `id` / `task_id` | string | Public task ID (`task_` prefix) used for subsequent queries |
-| `object` | string | Object type (`video`) |
-| `model` | string | Model used |
-| `status` | string | Task status (`queued` right after submission) |
-| `progress` | integer | Progress percentage |
-| `created_at` | integer | Creation timestamp |
+| `id` / `task_id` | string | Публичный ID задачи (префикс `task_`) для последующих запросов |
+| `object` | string | Тип объекта (`video`) |
+| `model` | string | Использованная модель |
+| `status` | string | Состояние задачи (сразу после отправки — `queued`) |
+| `progress` | integer | Прогресс в процентах |
+| `created_at` | integer | Временная метка создания |
 
-> `id` / `task_id` is generated by Uter and is not the upstream MiniMax task_id.
+> `id` / `task_id` генерируется Uter и не является upstream-идентификатором задачи MiniMax.
 
-## Get Video Task Status
+## Получение состояния задачи видео
 
 `GET` `/v1/video/generations/{task_id}`
 
-The response uses Uter's unified `{code, message, data}` envelope.
+Ответ использует единый конверт Uter `{code, message, data}`.
 
-### Request Parameters
+### Параметры запроса
 
-| Name | In | Type | Required | Description |
+| Имя | Расположение | Тип | Обязательно | Описание |
 |---|---|---|---|---|
-| `task_id` | path | string | Yes | Video task ID |
+| `task_id` | path | string | Да | ID задачи видео |
 
-### Response
+### Ответ
 
-| Status | Description |
+| Статус | Описание |
 |---|---|
-| `200` | Task status retrieved successfully |
-| `404` | Task not found |
+| `200` | Состояние задачи успешно получено |
+| `404` | Задача не найдена |
 
-#### `200` Response Fields (`data`)
+#### Поля ответа `200` (`data`)
 
-| Field | Type | Description |
+| Поле | Тип | Описание |
 |---|---|---|
-| `data.task_id` | string | Public task ID |
-| `data.status` | string | Task status: `QUEUED` / `IN_PROGRESS` / `SUCCESS` / `FAILURE` |
-| `data.result_url` | string | Video result URL (non-empty only on `SUCCESS`) |
-| `data.quota` | int | Final quota charged (already settled against actual usage) |
-| `data.data.task.usage` | object | Precise upstream usage, the billing basis (`total_seconds` / `input_seconds` / `output_seconds` / `input_image_count`) |
+| `data.task_id` | string | Публичный ID задачи |
+| `data.status` | string | Состояние задачи: `QUEUED` / `IN_PROGRESS` / `SUCCESS` / `FAILURE` |
+| `data.result_url` | string | URL результата видео (непустой только при `SUCCESS`) |
+| `data.quota` | int | Итоговая списанная квота (уже учтена по фактическому использованию) |
+| `data.data.task.usage` | object | Точное upstream-использование, база для тарификации (`total_seconds` / `input_seconds` / `output_seconds` / `input_image_count`) |
 
-#### Status Enum
+#### Перечисление статусов
 
-| Unified status | MiniMax status | Description |
+| Единый статус | Статус MiniMax | Описание |
 |---|---|---|
-| `QUEUED` | `queued` / `preparing` | Queued |
-| `IN_PROGRESS` | `running` | Generating |
-| `SUCCESS` | `succeeded` | Completed; `result_url` holds the video |
-| `FAILURE` | `failed` / `cancelled` / `expired` | Failed; `fail_reason` explains why |
+| `QUEUED` | `queued` / `preparing` | В очереди |
+| `IN_PROGRESS` | `running` | Генерация |
+| `SUCCESS` | `succeeded` | Завершено; `result_url` содержит видео |
+| `FAILURE` | `failed` / `cancelled` / `expired` | Сбой; `fail_reason` объясняет причину |
 
-## Billing
+## Тарификация
 
-MiniMax H3 bills against the **actual upstream usage**:
+MiniMax H3 тарифицируется по **фактическому upstream-использованию**:
 
 ```
 cost(USD) = total_billed_seconds × resolution_price + billable_reference_images × $0.04
 where: total_billed_seconds = input_reference_video_seconds + generated_video_seconds
 ```
 
-| Resolution | Price |
+| Разрешение | Цена |
 |---|---|
-| `2K` | $0.13 / second |
-| `768P` | $0.09 / second (not yet available) |
+| `2K` | $0.13 / секунду |
+| `768P` | $0.09 / секунду (пока недоступно) |
 
-Key points:
+Ключевые моменты:
 
-- **Input reference video is billed too**: for r2v, a reference video's billable duration is counted at the output resolution's price.
-- **Reference images are billed separately**: $0.04 per billable reference image.
-- **Pre-charged on submit, settled on completion**: a provisional charge is taken at submit time, then Uter recomputes precisely from the upstream `usage` on success, refunding or charging the difference.
+- **Входное эталонное видео также тарифицируется**: для r2v тарифицируемая длительность эталонного видео учитывается по цене выходного разрешения.
+- **Эталонные изображения тарифицируются отдельно**: $0.04 за тарифицируемое эталонное изображение.
+- **Предварительное списание при отправке, расчёт при завершении**: при отправке берётся условное списание, затем Uter точно пересчитывает по upstream-`usage` при успехе, возвращая или списывая разницу.
 
-## Full Example
+## Полный пример
 
 ```bash
 # Step 1: submit the task
@@ -153,7 +153,7 @@ curl https://uter.ai/v1/video/generations/task_xxx \
 # Step 3: once data.status == "SUCCESS", download from data.result_url
 ```
 
-Reference-to-video using the top-level `media[]` array:
+Генерация по эталонам с использованием верхуровневого массива `media[]`:
 
 ```bash
 curl -X POST https://uter.ai/v1/video/generations \
@@ -171,11 +171,11 @@ curl -X POST https://uter.ai/v1/video/generations \
   }'
 ```
 
-## Status Codes and Errors
+## Коды состояния и ошибки
 
-| Case | Description |
+| Случай | Описание |
 |---|---|
-| Missing `prompt` | `400`, `prompt is required` (rejected before submission, no charge) |
-| `401` / `403` | API key invalid / not allowed to access this model |
-| `402` | Insufficient balance (`insufficient user quota`); top up in the Uter console |
-| Task `FAILURE` | Upstream generation failed, see `fail_reason`; Uter refunds automatically |
+| Отсутствует `prompt` | `400`, `prompt is required` (отклоняется до отправки, списание не производится) |
+| `401` / `403` | Недействительный API-ключ / нет доступа к этой модели |
+| `402` | Недостаточный баланс (`insufficient user quota`); пополните в консоли Uter |
+| Задача `FAILURE` | Генерация upstream не удалась, см. `fail_reason`; Uter автоматически возвращает средства |

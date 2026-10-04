@@ -1,110 +1,110 @@
 # redemption
 
-## Get All Redemption Codes
+## すべての引換コードの取得
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 管理者権限が必要（Admin）
 
 `GET` `/api/redemption/`
 
-### 请求参数
+### リクエストパラメータ
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| パラメータ名 | 位置 | 型 | 必須 | 説明 |
 |---|---|---|---|---|
-| `p` | query | integer | 否 | — |
-| `page_size` | query | integer | 否 | — |
+| `p` | query | integer | いいえ | — |
+| `page_size` | query | integer | いいえ | — |
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-## Delete Redemption Code
+## 引換コードの削除
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 管理者権限が必要（Admin）
 
 `DELETE` `/api/redemption/{id}`
 
-### 请求参数
+### リクエストパラメータ
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| パラメータ名 | 位置 | 型 | 必須 | 説明 |
 |---|---|---|---|---|
-| `id` | path | integer | 是 | — |
+| `id` | path | integer | はい | — |
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-## Get Specific Redemption Code
+## 特定の引換コードの取得
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 管理者権限が必要（Admin）
 
 `GET` `/api/redemption/{id}`
 
-### 请求参数
+### リクエストパラメータ
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| パラメータ名 | 位置 | 型 | 必須 | 説明 |
 |---|---|---|---|---|
-| `id` | path | integer | 是 | — |
+| `id` | path | integer | はい | — |
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-## Delete Invalid Redemption Codes
+## 無効な引換コードの削除
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 管理者権限が必要（Admin）
 
 `DELETE` `/api/redemption/invalid`
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-## Create Redemption Code
+## 引換コードの作成
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 管理者権限が必要（Admin）
 
 `POST` `/api/redemption/`
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-## Update Redemption Code
+## 引換コードの更新
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 管理者権限が必要（Admin）
 
 `PUT` `/api/redemption/`
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-## Search Redemption Codes
+## 引換コードの検索
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 管理者権限が必要（Admin）
 
 `GET` `/api/redemption/search`
 
-### 请求参数
+### リクエストパラメータ
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| パラメータ名 | 位置 | 型 | 必須 | 説明 |
 |---|---|---|---|---|
-| `keyword` | query | string | 否 | — |
+| `keyword` | query | string | いいえ | — |
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |

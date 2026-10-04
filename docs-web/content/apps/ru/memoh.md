@@ -1,79 +1,79 @@
-# Memoh - Containerized AI Agent Platform
+# Memoh — контейнеризованная платформа ИИ-агентов
 
-> Memoh is an open-source, self-hosted AI agent platform where each bot runs in
->   its own isolated container with persistent memory and a dedicated filesystem.
->   It supports 9 channels including Telegram, Discord, Lark (Feishu), QQ, Matrix,
->   WeCom, WeChat, Email, and a built-in Web UI, along with MCP tool calling,
->   browser automation, scheduled tasks, and other rich agent capabilities.
+> Memoh — это открытая, самостоятельно размещаемая платформа ИИ-агентов, где каждый бот
+> запускается в собственном изолированном контейнере с постоянной памятью и выделенной
+> файловой системой. Она поддерживает 9 каналов, включая Telegram, Discord, Lark (Feishu),
+> QQ, Matrix, WeCom, WeChat, Email и встроенный веб-интерфейс, а также вызов инструментов MCP,
+> автоматизацию браузера, запланированные задачи и другие богатые возможности агентов.
 
-- Website: [https://memoh.sh](https://memoh.sh)
-- Documentation: [https://docs.memoh.ai](https://docs.memoh.ai)
+- Веб-сайт: [https://memoh.sh](https://memoh.sh)
+- Документация: [https://docs.memoh.ai](https://docs.memoh.ai)
 - GitHub: [https://github.com/memohai/Memoh](https://github.com/memohai/Memoh)
 
-## Key Features
+## Ключевые возможности
 
-- **Containerized Isolation**: Each bot runs in its own containerd container with a dedicated filesystem and network, supporting snapshots and data import/export
-- **Memory Engine**: LLM-driven fact extraction, hybrid retrieval (dense + sparse + BM25), 24-hour context loading, memory compaction and rebuild
-- **Multi-Channel Support**: Telegram, Discord, Lark (Feishu), QQ, Matrix, WeCom, WeChat, Email, Web UI
-- **MCP Support**: Full MCP protocol support (HTTP / SSE / Stdio / OAuth), with independent MCP connection management per bot
-- **Browser Automation**: Built-in headless browser powered by Playwright, supporting web browsing, form filling, screenshots, and more
-- **Web Dashboard**: Modern management interface built with Vue 3 + Tailwind CSS, featuring streaming chat, tool call visualization, file management, and more
+- **Контейнерная изоляция**: Каждый бот запускается в собственном контейнере containerd с выделенной файловой системой и сетью, поддерживает снимки и импорт/экспорт данных
+- **Движок памяти**: Извлечение фактов на базе LLM, гибридный поиск (плотный + разреженный + BM25), загрузка контекста за 24 часа, уплотнение и перестроение памяти
+- **Поддержка нескольких каналов**: Telegram, Discord, Lark (Feishu), QQ, Matrix, WeCom, WeChat, Email, веб-интерфейс
+- **Поддержка MCP**: Полная поддержка протокола MCP (HTTP / SSE / Stdio / OAuth) с независимым управлением MCP-соединениями для каждого бота
+- **Автоматизация браузера**: Встроенный headless-браузер на базе Playwright, поддерживает веб-сёрфинг, заполнение форм, скриншоты и многое другое
+- **Веб-панель управления**: Современный интерфейс управления на базе Vue 3 + Tailwind CSS с потоковым чатом, визуализацией вызовов инструментов, управлением файлами и многим другим
 
-## Quick Installation
+## Быстрая установка
 
-Memoh is deployed via Docker. One-click install (requires Docker):
+Memoh развёртывается через Docker. Установка в один клик (требуется Docker):
 
 ```bash
 curl -fsSL https://memoh.sh | sudo sh
 ```
 
-Or install manually:
+Или установите вручную:
 
 ```bash
 git clone --depth 1 https://github.com/memohai/Memoh.git
 cd Memoh
 cp conf/app.docker.toml config.toml
-# Edit the config.toml configuration file
+# Отредактируйте конфигурационный файл config.toml
 sudo docker compose up -d
 ```
 
-After startup, visit `http://localhost:8082`. Default credentials: `admin` / `admin123`.
+После запуска откройте `http://localhost:8082`. Учётные данные по умолчанию: `admin` / `admin123`.
 
-## Uter Integration
+## Интеграция с Uter
 
-Memoh supports any OpenAI-compatible model provider, allowing you to use Uter to centrally manage and access various AI model services.
+Memoh поддерживает любого провайдера моделей, совместимого с OpenAI, позволяя использовать Uter для централизованного управления и доступа к различным сервисам ИИ-моделей.
 
-### Configuration Steps
+### Шаги настройки
 
-#### Obtain a Uter API Key
+#### Получение API-ключа Uter
 
-After registering and logging in to Uter, click "Console" in the top navigation bar, then click "Token Management", and click the "Add Token" button to create a uter Key. Select the appropriate permissions and click "Create".
+После регистрации и входа в Uter нажмите «Console» в верхней панели навигации, затем нажмите «Token Management», а затем кнопку «Add Token», чтобы создать ключ Uter. Выберите соответствующие разрешения и нажмите «Create».
 
-Once created, click the copy button to copy the generated API Key.
+После создания нажмите кнопку копирования, чтобы скопировать сгенерированный API-ключ.
 
 ![copy-api-key](/apps-assets/memoh/copy_api_key.webp)
 
-#### Add a Model Provider in Memoh
+#### Добавление провайдера моделей в Memoh
 
-Log in to the Memoh Web dashboard, go to the provider management page, and click Uter.
+Войдите в веб-панель управления Memoh, перейдите на страницу управления провайдерами и нажмите Uter.
 
 ![switch-to-uter-provider](/apps-assets/memoh/switch_to_uter_provider.webp)
 
-Fill in the following information on the configuration page:
+Заполните следующую информацию на странице конфигурации:
 
-- **API Base URL**: Enter the Uter endpoint URL, e.g. `https://api.example.com/v1` (use `http://localhost:3000/v1` for local deployments)
-- **API Key**: Paste the API Key copied from Uter
+- **API Base URL**: Введите URL конечной точки Uter, напр. `https://api.example.com/v1` (для локальных развёртываний используйте `http://localhost:3000/v1`)
+- **API Key**: Вставьте API-ключ, скопированный из Uter
 
-Click Save to complete the provider configuration.
+Нажмите Save, чтобы завершить настройку провайдера.
 
-#### Import Models
+#### Импорт моделей
 
-After configuring the provider, go to the model management page and click auto-import or manually add the models you need.
+После настройки провайдера перейдите на страницу управления моделями и нажмите автоимпорт или вручную добавьте нужные модели.
 
-#### Configure a Model for Your Bot
+#### Настройка модели для вашего бота
 
-Go to the bot settings page, find the model configuration section, switch the default chat model to the one added via the Uter provider, and click Save.
+Перейдите на страницу настроек бота, найдите раздел конфигурации модели, переключите модель чата по умолчанию на добавленную через провайдера Uter и нажмите Save.
 
 ![set_chat_model](/apps-assets/memoh/set_chat_model.webp)
 
-You have now successfully configured Uter as the model provider for Memoh. You can chat with AI bots through any of Memoh's channels (Telegram, Discord, Lark, etc.), and all requests will be routed through Uter.
+Теперь вы успешно настроили Uter в качестве провайдера моделей для Memoh. Вы можете общаться с ИИ-ботами через любой из каналов Memoh (Telegram, Discord, Lark и др.), и все запросы будут маршрутизироваться через Uter.

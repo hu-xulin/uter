@@ -1,68 +1,69 @@
-# OpenClaw - Self-hosted AI Assistant Platform
+# OpenClaw - Nền tảng trợ lý AI tự lưu trữ
 
-> **Project Introduction**
+> **Giới thiệu dự án**
 >
-> OpenClaw is an open-source, self-hosted personal AI
->   assistant platform that connects messaging apps to AI
->   agents running on your own hardware. Designed for developers and advanced users, it allows you to have an autonomous AI assistant without giving up control of your data.
+> OpenClaw là một nền tảng trợ lý AI cá nhân tự lưu trữ, mã nguồn mở, kết nối
+>   các ứng dụng nhắn tin với các tác nhân AI chạy trên phần cứng của chính bạn.
+>   Được thiết kế cho nhà phát triển và người dùng nâng cao, nó cho phép bạn có một
+>   trợ lý AI tự chủ mà không phải từ bỏ quyền kiểm soát dữ liệu của mình.
 >
->   - Official Homepage: [https://openclaw.ai](https://openclaw.ai)
->   - Project Documentation: [https://docs.openclaw.ai](https://docs.openclaw.ai)
+>   - Trang chủ chính thức: [https://openclaw.ai](https://openclaw.ai)
+>   - Tài liệu dự án: [https://docs.openclaw.ai](https://docs.openclaw.ai)
 >   - GitHub: [https://github.com/openclaw/openclaw](https://github.com/openclaw/openclaw)
 
-OpenClaw is completely open-source. You can browse the source code, submit issues, or contribute on [OpenClaw's GitHub repository](https://github.com/openclaw/openclaw). This tutorial covers the complete steps for installing, configuring, and integrating OpenClaw with Uter.
+OpenClaw hoàn toàn là mã nguồn mở. Bạn có thể duyệt mã nguồn, gửi issue hoặc đóng góp trên [kho GitHub của OpenClaw](https://github.com/openclaw/openclaw). Hướng dẫn này bao gồm các bước đầy đủ để cài đặt, cấu hình và tích hợp OpenClaw với Uter.
 
-## 🌟 Core Features
+## 🌟 Tính năng cốt lõi
 
-### Multi-channel Integration
+### Tích hợp đa kênh
 
-- **Multi-channel Integration**: Supports various messaging channels like Telegram, Discord, WhatsApp, iMessage, and can be extended to more platforms via plugins.
-- **Single Gateway**: Unified management of all channels through a single Gateway process.
-- **Voice Support**: Supports macOS/iOS/Android voice interaction.
-- **Canvas Interface**: Can render interactive Canvas interfaces.
+- **Tích hợp đa kênh**: Hỗ trợ nhiều kênh nhắn tin như Telegram, Discord, WhatsApp, iMessage, và có thể mở rộng sang nhiều nền tảng hơn qua plugin.
+- **Cổng đơn**: Quản lý thống nhất tất cả kênh thông qua một tiến trình Gateway duy nhất.
+- **Hỗ trợ giọng nói**: Hỗ trợ tương tác giọng nói trên macOS/iOS/Android.
+- **Giao diện Canvas**: Có thể hiển thị các giao diện Canvas tương tác.
 
-### Self-hosting and Data Security
+### Tự lưu trữ và bảo mật dữ liệu
 
-- **Fully Self-hosted**: Runs on your own machine or server.
-- **Open Source Transparency**: MIT open-source license, completely transparent code.
-- **Local Data**: Context and skills are stored on your local computer, not in the cloud.
+- **Tự lưu trữ hoàn toàn**: Chạy trên máy hoặc máy chủ của riêng bạn.
+- **Minh bạch mã nguồn mở**: Giấy phép mã nguồn mở MIT, mã nguồn hoàn toàn minh bạch.
+- **Dữ liệu cục bộ**: Ngữ cảnh và kỹ năng được lưu trên máy tính cục bộ của bạn, không phải trên đám mây.
 
-### Intelligent Agent Capabilities
+### Năng lực tác nhân thông minh
 
-- **Continuous Operation**: Supports persistent background operation with long-term memory.
-- **Scheduled Tasks**: Supports cron scheduled tasks.
-- **Session Isolation**: Isolates sessions by agent/workspace/sender.
-- **Multi-agent Routing**: Supports collaborative work among multiple agents.
-- **Tool Calling**: Native support for tool calling and code execution.
+- **Hoạt động liên tục**: Hỗ trợ hoạt động nền bền vững với bộ nhớ dài hạn.
+- **Tác vụ lập lịch**: Hỗ trợ tác vụ lập lịch cron.
+- **Cách ly phiên**: Cách ly phiên theo tác nhân/workspace/người gửi.
+- **Định tuyến đa tác nhân**: Hỗ trợ làm việc cộng tác giữa nhiều tác nhân.
+- **Gọi công cụ**: Hỗ trợ nguyên sinh cho việc gọi công cụ và thực thi mã.
 
-## 📦 Preparation Before Integration
+## 📦 Chuẩn bị trước khi tích hợp
 
-> **Preparation Information**
+> **Thông tin chuẩn bị**
 >
-> - Node.js 22 or higher
->   - An available Uter address (usually ending with `/v1`)
->   - An available Uter API Key
->   - Please use your own deployed Uter, or confirm that the service provider has legitimate upstream authorization and compliance obligations for their Uter service. Do not connect unknown API addresses or keys to production environments.
+> - Node.js 22 trở lên
+>   - Một địa chỉ Uter khả dụng (thường kết thúc bằng `/v1`)
+>   - Một API Key Uter khả dụng
+>   - Vui lòng sử dụng Uter do chính bạn triển khai, hoặc xác nhận rằng nhà cung cấp dịch vụ có ủy quyền upstream hợp pháp và các nghĩa vụ tuân thủ cho dịch vụ Uter của họ. Không kết nối địa chỉ API hoặc khóa không xác định vào môi trường sản xuất.
 
-Before integrating Uter, it's recommended to first get the Gateway and Control UI running according to OpenClaw's official current recommended process. This makes it easier to distinguish whether OpenClaw itself is not starting or if the model provider configuration is incorrect when troubleshooting later.
+Trước khi tích hợp Uter, khuyên bạn nên chạy thử Gateway và Control UI theo quy trình khuyến nghị hiện tại của OpenClaw. Việc này giúp dễ dàng phân biệt sau này là OpenClaw tự nó không khởi chạy hay là cấu hình nhà cung cấp mô hình bị sai khi gỡ lỗi.
 
-### 1. Install OpenClaw (macOS/Linux)
+### 1. Cài đặt OpenClaw (macOS/Linux)
 
 ```bash
 curl -fsSL https://openclaw.ai/install.sh | bash
 ```
 
-For other installation methods, refer to the OpenClaw official documentation: [Getting Started](https://docs.openclaw.ai/start/getting-started).
+Để biết các phương thức cài đặt khác, tham khảo tài liệu chính thức của OpenClaw: [Bắt đầu](https://docs.openclaw.ai/start/getting-started).
 
-### 2. Run the Onboarding Wizard
+### 2. Chạy trình hướng dẫn khởi tạo
 
 ```bash
 openclaw onboard --install-daemon
 ```
 
-This wizard will complete basic authentication, Gateway setup, and optional channel initialization. The goal here is to get OpenClaw running first, then switch the default model to Uter later.
+Trình hướng dẫn này sẽ hoàn tất xác thực cơ bản, thiết lập Gateway và khởi tạo kênh tùy chọn. Mục tiêu ở đây là để OpenClaw chạy trước, sau đó chuyển mô hình mặc định sang Uter sau.
 
-### 3. Check Gateway and Control UI
+### 3. Kiểm tra Gateway và Control UI
 
 ```bash
 openclaw gateway status
@@ -72,43 +73,43 @@ openclaw gateway status
 openclaw dashboard
 ```
 
-If the browser can open the Control UI, it means OpenClaw's basic operation is normal. At this stage, there's no need to configure Telegram, Discord, Feishu, or other messaging channels yet.
+Nếu trình duyệt có thể mở Control UI, nghĩa là hoạt động cơ bản của OpenClaw bình thường. Ở giai đoạn này, chưa cần cấu hình Telegram, Discord, Feishu hay các kênh nhắn tin khác.
 
-### 4. Locate the Configuration File
+### 4. Định vị tệp cấu hình
 
-OpenClaw's configuration file is usually located at `~/.openclaw/openclaw.json`. You can continue to modify it based on what the onboarding wizard generated.
+Tệp cấu hình của OpenClaw thường nằm tại `~/.openclaw/openclaw.json`. Bạn có thể tiếp tục chỉnh sửa dựa trên những gì trình hướng dẫn khởi tạo đã tạo ra.
 
-> **Path-related Environment Variables**
+> **Biến môi trường liên quan đến đường dẫn**
 >
-> If you run OpenClaw under a dedicated service account, or wish to customize the configuration/state directory, you can use:
+> Nếu bạn chạy OpenClaw dưới một tài khoản dịch vụ chuyên dụng, hoặc muốn tùy chỉnh thư mục cấu hình/trạng thái, bạn có thể sử dụng:
 >
 >   - `OPENCLAW_HOME`
 >   - `OPENCLAW_STATE_DIR`
 >   - `OPENCLAW_CONFIG_PATH`
 >
->   For detailed instructions, see the official environment variables documentation: [Environment Variables](https://docs.openclaw.ai/help/environment).
+>   Để biết hướng dẫn chi tiết, xem tài liệu biến môi trường chính thức: [Biến môi trường](https://docs.openclaw.ai/help/environment).
 
-## 🚀 Using Uter as a Model Provider
+## 🚀 Sử dụng Uter làm nhà cung cấp mô hình
 
-OpenClaw supports integrating custom or OpenAI-compatible model gateways via `models.providers`. For Uter, the most common approach is to add it as a custom provider to the configuration, then point the default model to `uter/model-ID`.
+OpenClaw hỗ trợ tích hợp các cổng mô hình tùy chỉnh hoặc tương thích OpenAI qua `models.providers`. Đối với Uter, cách tiếp cận phổ biến nhất là thêm nó như một nhà cung cấp tùy chỉnh vào cấu hình, sau đó trỏ mô hình mặc định đến `uter/model-ID`.
 
-### Integration Approach
+### Cách tiếp cận tích hợp
 
-1. Declare a `uter` provider under `models.providers`.
-2. Point `baseUrl` to your Uter address, ensuring it includes `/v1`.
-3. Set `api` to `openai-completions`.
-4. List the model IDs you want OpenClaw to use in `models`.
-5. Switch the default model in `agents.defaults.model.primary` to `uter/...`.
+1. Khai báo một nhà cung cấp `uter` dưới `models.providers`.
+2. Trỏ `baseUrl` đến địa chỉ Uter của bạn, đảm bảo bao gồm `/v1`.
+3. Đặt `api` thành `openai-completions`.
+4. Liệt kê các ID mô hình bạn muốn OpenClaw sử dụng trong `models`.
+5. Chuyển mô hình mặc định trong `agents.defaults.model.primary` thành `uter/...`.
 
-### Recommended Practice: Store API Key in Environment Variables
+### Thực hành khuyên dùng: Lưu API Key vào biến môi trường
 
-First, provide your Uter key in the current shell, service environment, or an `.env` file readable by OpenClaw:
+Đầu tiên, cung cấp key Uter của bạn trong shell hiện tại, môi trường dịch vụ, hoặc một tệp `.env` mà OpenClaw có thể đọc:
 
 ```bash
 export UTER_API_KEY="sk-your-uter-key"
 ```
 
-Then, add or modify the following snippet in `openclaw.json`:
+Sau đó, thêm hoặc sửa đổi đoạn mã sau trong `openclaw.json`:
 
 ```json5
 {
@@ -142,40 +143,40 @@ Then, add or modify the following snippet in `openclaw.json`:
 }
 ```
 
-This is not a complete configuration that must be copied exactly, but rather the most critical part for integrating Uter. As long as the `provider`, model IDs, and default model references are correct, OpenClaw will be able to call your exposed model resources via Uter.
+Đây không phải là một cấu hình hoàn chỉnh cần sao chép chính xác, mà là phần quan trọng nhất để tích hợp Uter. Miễn là `provider`, ID mô hình và tham chiếu mô hình mặc định là đúng, OpenClaw sẽ có thể gọi các tài nguyên mô hình bạn đã hiển thị qua Uter.
 
-### Key Configuration Details
+### Chi tiết cấu hình chính
 
-| Configuration Item | Description |
+| Mục cấu hình | Mô tả |
 | --- | --- |
-| `models.mode` | Recommended to set to `merge`, appending `uter` while retaining OpenClaw's built-in providers |
-| `models.providers.uter.baseUrl` | Your Uter address, usually needs to include `/v1` |
-| `models.providers.uter.apiKey` | Uter key, recommended to inject via `${UTER_API_KEY}` |
-| `models.providers.uter.api` | For OpenAI-compatible gateways like Uter, use `openai-completions` |
-| `models.providers.uter.models` | The model IDs listed here must match the actual model names exposed by your Uter |
-| `agents.defaults.model.primary` | Default primary model, format must be `provider/model-id` |
-| `agents.defaults.model.fallbacks` | List of fallback models, automatically switches if the primary model fails |
-| `agents.defaults.models` | Optional, used to create aliases for models, convenient for referencing in UI or sessions |
+| `models.mode` | Khuyên đặt thành `merge`, thêm `uter` trong khi giữ lại các nhà cung cấp tích hợp sẵn của OpenClaw |
+| `models.providers.uter.baseUrl` | Địa chỉ Uter của bạn, thường cần bao gồm `/v1` |
+| `models.providers.uter.apiKey` | Key Uter, khuyên tiêm qua `${UTER_API_KEY}` |
+| `models.providers.uter.api` | Với các cổng tương thích OpenAI như Uter, dùng `openai-completions` |
+| `models.providers.uter.models` | Các ID mô hình được liệt kê ở đây phải khớp với tên mô hình thực tế mà Uter của bạn hiển thị |
+| `agents.defaults.model.primary` | Mô hình chính mặc định, định dạng phải là `provider/model-id` |
+| `agents.defaults.model.fallbacks` | Danh sách mô hình dự phòng, tự động chuyển đổi nếu mô hình chính thất bại |
+| `agents.defaults.models` | Tùy chọn, dùng để tạo bí danh cho mô hình, tiện lợi khi tham chiếu trong UI hoặc phiên |
 
-### Verify Successful Integration
+### Xác minh tích hợp thành công
 
-After completing the configuration, return to the Control UI or reopen it:
+Sau khi hoàn tất cấu hình, quay lại Control UI hoặc mở lại nó:
 
 ```bash
 openclaw dashboard
 ```
 
-If you can initiate conversations normally in OpenClaw and the default model has become `uter/...`, then the integration is successful. You can also use:
+Nếu bạn có thể bắt đầu hội thoại bình thường trong OpenClaw và mô hình mặc định đã trở thành `uter/...`, thì tích hợp thành công. Bạn cũng có thể dùng:
 
 ```bash
 openclaw models list
 ```
 
-to confirm that models with the `uter/` prefix appear in the selectable list.
+để xác nhận rằng các mô hình có tiền tố `uter/` xuất hiện trong danh sách có thể chọn.
 
-### Common Issues
+### Các vấn đề thường gặp
 
-- `baseUrl` missing `/v1`: This is one of the most common integration errors.
-- Incorrect model ID: `primary` and `fallbacks` must correspond to the `id` in `models.providers.uter.models`.
-- API key only effective in the current terminal: If Gateway runs as a background service, ensure the service process can also read `UTER_API_KEY`.
-- For foreground troubleshooting: Use the official foreground running method `openclaw gateway --port 18789` to observe logs and errors.
+- `baseUrl` thiếu `/v1`: Đây là một trong những lỗi tích hợp phổ biến nhất.
+- ID mô hình không chính xác: `primary` và `fallbacks` phải tương ứng với `id` trong `models.providers.uter.models`.
+- API key chỉ có hiệu lực trong terminal hiện tại: Nếu Gateway chạy như một dịch vụ nền, hãy đảm bảo tiến trình dịch vụ cũng có thể đọc `UTER_API_KEY`.
+- Để gỡ lỗi tiền cảnh: Sử dụng phương thức chạy tiền cảnh chính thức `openclaw gateway --port 18789` để quan sát log và lỗi.

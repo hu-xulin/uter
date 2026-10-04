@@ -1,164 +1,164 @@
 # user-auth
 
-## Send Password Reset Email
+## Envoyer l'e-mail de réinitialisation du mot de passe
 
-🔓 无需鉴权
+🔓 Aucune authentification requise
 
 `GET` `/api/reset_password`
 
-### 请求参数
+### Paramètres de requête
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| Nom du paramètre | Position | Type | Requis | Description |
 |---|---|---|---|---|
-| `email` | query | string | 是 | — |
+| `email` | query | string | Oui | — |
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-## Get User Group List
+## Récupérer la liste des groupes d'utilisateurs
 
-🔓 无需鉴权
+🔓 Aucune authentification requise
 
 `GET` `/api/user/groups`
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-## Two-Factor Authentication Login
+## Connexion par authentification à deux facteurs
 
-🔓 无需鉴权（登录流程）
+🔓 Aucune authentification requise (processus de connexion)
 
 `POST` `/api/user/login/2fa`
 
-### 请求体（`application/json`）
+### Corps de la requête (`application/json`)
 
-| 字段 | 类型 | 必填 | 说明 |
+| Champ | Type | Requis | Description |
 |---|---|---|---|
-| `code` | string | 否 | — |
+| `code` | string | Non | — |
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-## User Login
+## Connexion utilisateur
 
-🔓 无需鉴权
+🔓 Aucune authentification requise
 
 `POST` `/api/user/login`
 
-### 请求体（`application/json`）
+### Corps de la requête (`application/json`)
 
-| 字段 | 类型 | 必填 | 说明 |
+| Champ | Type | Requis | Description |
 |---|---|---|---|
-| `username` | string | 否 | — |
-| `password` | string | 否 | — |
+| `username` | string | Non | — |
+| `password` | string | Non | — |
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-## User Logout
+## Déconnexion utilisateur
 
-🔓 无需鉴权
+🔓 Aucune authentification requise
 
 `GET` `/api/user/logout`
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-## Start Passkey Login
+## Démarrer la connexion par clé d'accès (passkey)
 
-🔓 无需鉴权
+🔓 Aucune authentification requise
 
 `POST` `/api/user/passkey/login/begin`
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-## Complete Passkey Login
+## Terminer la connexion par clé d'accès
 
-🔓 无需鉴权
+🔓 Aucune authentification requise
 
 `POST` `/api/user/passkey/login/finish`
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-## User Registration
+## Inscription utilisateur
 
-🔓 无需鉴权
+🔓 Aucune authentification requise
 
 `POST` `/api/user/register`
 
-### 请求体（`application/json`）
+### Corps de la requête (`application/json`)
 
-| 字段 | 类型 | 必填 | 说明 |
+| Champ | Type | Requis | Description |
 |---|---|---|---|
-| `username` | string | 否 | — |
-| `password` | string | 否 | — |
-| `email` | string | 否 | — |
-| `verification_code` | string | 否 | — |
-| `aff_code` | string | 否 | — |
+| `username` | string | Non | — |
+| `password` | string | Non | — |
+| `email` | string | Non | — |
+| `verification_code` | string | Non | — |
+| `aff_code` | string | Non | — |
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-## Reset Password
+## Réinitialiser le mot de passe
 
-🔓 无需鉴权
+🔓 Aucune authentification requise
 
 `POST` `/api/user/reset`
 
-### 请求体（`application/json`）
+### Corps de la requête (`application/json`)
 
-| 字段 | 类型 | 必填 | 说明 |
+| Champ | Type | Requis | Description |
 |---|---|---|---|
-| `email` | string | 否 | — |
-| `token` | string | 否 | — |
-| `password` | string | 否 | — |
+| `email` | string | Non | — |
+| `token` | string | Non | — |
+| `password` | string | Non | — |
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-## Send Email Verification Code
+## Envoyer le code de vérification par e-mail
 
-🔓 无需鉴权
+🔓 Aucune authentification requise
 
 `GET` `/api/verification`
 
-### 请求参数
+### Paramètres de requête
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| Nom du paramètre | Position | Type | Requis | Description |
 |---|---|---|---|---|
-| `email` | query | string | 是 | — |
+| `email` | query | string | Oui | — |
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |

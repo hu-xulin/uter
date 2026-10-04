@@ -1,40 +1,40 @@
-# Authentication System Description (Auth)
+# Описание системы аутентификации (Auth)
 
-## Description
+## Описание
 
-Backend management interfaces adopt a multi-level authentication mechanism, commonly: **Public**, **User**, **Admin**, **Root**.
+Интерфейсы backend-управления используют многоуровневый механизм аутентификации: обычно **Public**, **User**, **Admin**, **Root**.
 
-## Authentication Methods (Choose One)
+## Способы аутентификации (выберите один)
 
-### Session
+### Сессия
 
-Obtain Session via the login interface:
+Получите Session через интерфейс входа:
 
 - `POST /api/user/login`
 
-### Access Token (Recommended)
+### Токен доступа (рекомендуется)
 
-Carry in the request header:
+Передавайте в заголовке запроса:
 
 ```text
 Authorization: Bearer {token}
 ```
 
-Tokens can be generated in "Personal Settings - Security Settings - System Access Tokens".
+Токены можно сгенерировать в разделе «Личные настройки — Настройки безопасности — Системные токены доступа».
 
-## Required Request Headers
+## Обязательные заголовки запроса
 
-Some interfaces require carrying a user identification request header:
+Некоторые интерфейсы требуют передачи заголовка идентификации пользователя:
 
 ```text
 Uter-User: {user_id}
 ```
 
-Where `{user_id}` must match the currently logged-in user.
+Где `{user_id}` должен соответствовать текущему вошедшему пользователю.
 
-## Permission Levels
+## Уровни прав доступа
 
-- **Public**: No authentication required
-- **User**: Requires login or Access Token
-- **Admin**: Requires administrator privileges
-- **Root**: Highest privilege
+- **Public**: Аутентификация не требуется
+- **User**: Требуется вход или токен доступа
+- **Admin**: Требуются права администратора
+- **Root**: Наивысшие привилегии

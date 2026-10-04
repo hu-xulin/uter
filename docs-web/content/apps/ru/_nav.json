@@ -1,77 +1,77 @@
 [
   {
     "id": "index",
-    "title": "AI Applications",
-    "description": "Supported AI applications and integration solutions"
+    "title": "Приложения ИИ",
+    "description": "Поддерживаемые приложения ИИ и решения для интеграции"
   },
   {
     "id": "aionui",
-    "title": "AionUi - Free Open-Source Desktop Office Agent",
-    "description": "AionUi Tutorial — A free open-source desktop office agent supporting various AI agents like Gemini CLI, Claude Code, Codex, and more. Integrates with Uter to enable multi-model workflows."
+    "title": "AionUi — бесплатный открытый настольный офисный агент",
+    "description": "Руководство по AionUi — бесплатный открытый настольный офисный агент, поддерживающий различные ИИ-агенты, такие как Gemini CLI, Claude Code, Codex и другие. Интегрируется с Uter для обеспечения мультимодельных рабочих процессов."
   },
   {
     "id": "aqbot",
-    "title": "AQBot - Local-First Desktop AI Workbench",
-    "description": "AQBot guide — connect this local-first desktop AI workbench to Uter. Import with aqbot:// in one click, or configure OpenAI / Claude / Gemini protocols manually."
+    "title": "AQBot — локальная настольная ИИ-рабочая среда",
+    "description": "Руководство по AQBot — подключите эту локальную настольную ИИ-рабочую среду к Uter. Импортируйте через aqbot:// в один клик или настройте протоколы OpenAI / Claude / Gemini вручную."
   },
   {
     "id": "cc-switch",
-    "title": "CC Switch - All-in-One AI CLI Management Tool",
-    "description": "CC Switch tutorial — a cross-platform tool for unified management of Claude Code, Codex & Gemini CLI provider configs, MCP servers, and system prompts. One-click import from Uter."
+    "title": "CC Switch — универсальный инструмент управления ИИ CLI",
+    "description": "Руководство по CC Switch — кроссплатформенный инструмент для единого управления конфигурациями провайдеров Claude Code, Codex и Gemini CLI, серверами MCP и системными подсказками. Импорт из Uter в один клик."
   },
   {
     "id": "cherry-studio",
-    "title": "Cherry Studio - Desktop AI Client",
-    "description": "Cherry Studio Tutorial — Connecting the desktop AI client to Uter, one-click API Key entry. Built-in 30+ professional AI assistants, covering various work scenarios."
+    "title": "Cherry Studio — настольный ИИ-клиент",
+    "description": "Руководство по Cherry Studio — подключение настольного ИИ-клиента к Uter, ввод API Key в один клик. Встроено 30+ профессиональных ИИ-ассистентов, охватывающих различные рабочие сценарии."
   },
   {
     "id": "deepchat",
-    "title": "DeepChat - Commercial-Friendly Full-Featured AI Agent Client",
-    "description": "DeepChat guide — connect this open-source, commercial-friendly full-featured AI Agent client to Uter and import DeepChat configuration with DeepLink in one click."
+    "title": "DeepChat — полнофункциональный ИИ-агент-клиент, дружественный к коммерции",
+    "description": "Руководство по DeepChat — подключите этот открытый, дружественный к коммерции полнофункциональный ИИ-агент-клиент к Uter и импортируйте конфигурацию DeepChat через DeepLink в один клик."
   },
   {
     "id": "fluent-read",
-    "title": "FluentRead - Open Source Translation Plugin",
-    "description": "FluentRead configuration guide — open-source browser translation plugin with 20+ engines and AI model support. Connect to Uter for immersive bilingual reading."
+    "title": "FluentRead — открытый плагин перевода",
+    "description": "Руководство по настройке FluentRead — открытый плагин перевода для браузера с 20+ движками и поддержкой ИИ-моделей. Подключитесь к Uter для погружающего двуязычного чтения."
   },
   {
     "id": "memoh",
-    "title": "Memoh - Containerized AI Agent Platform",
-    "description": "Memoh integration guide — Connect the self-hosted containerized AI agent platform to Uter, creating AI bots with long-term memory for Telegram, Discord, Lark, QQ, WeChat, and more."
+    "title": "Memoh — контейнеризированная платформа ИИ-агентов",
+    "description": "Руководство по интеграции Memoh — подключите self-hosted контейнеризированную платформу ИИ-агентов к Uter, создавая ИИ-ботов с долговременной памятью для Telegram, Discord, Lark, QQ, WeChat и других."
   },
   {
     "id": "openclaw",
-    "title": "OpenClaw - Self-hosted AI Assistant Platform",
-    "description": "OpenClaw Tutorial — Install OpenClaw, integrate Uter, and quickly set up a self-hosted AI assistant. Open-source project, supporting multi-channel integration like Telegram, Discord, WhatsApp."
+    "title": "OpenClaw — self-hosted платформа ИИ-ассистентов",
+    "description": "Руководство по OpenClaw — установите OpenClaw, интегрируйте Uter и быстро настройте self-hosted ИИ-ассистента. Открытый проект с поддержкой многоканальной интеграции, такой как Telegram, Discord, WhatsApp."
   },
   {
     "id": "langbot",
-    "title": "LangBot - Instant Messaging Bot Development Platform",
-    "description": "LangBot integration guide — build AI-powered chatbots for Feishu, DingTalk, Telegram, Discord, and more. Supports Knowledge Base, Agent, and MCP with Uter."
+    "title": "LangBot — платформа разработки ботов мгновенных сообщений",
+    "description": "Руководство по интеграции LangBot — создавайте чат-ботов на базе ИИ для Feishu, DingTalk, Telegram, Discord и других. Поддерживает базу знаний, агента и MCP с Uter."
   },
   {
     "id": "luna-translator",
-    "title": "LunaTranslator - Open Source GalGame Translator",
-    "description": "LunaTranslator Tutorial — An open-source GalGame / visual novel translator that supports HOOK, OCR, and AI translation engines. Integrates with Uter to improve translation quality."
+    "title": "LunaTranslator — открытый переводчик GalGame",
+    "description": "Руководство по LunaTranslator — открытый переводчик GalGame / визуальных новелл, поддерживающий движки HOOK, OCR и ИИ-перевода. Интегрируется с Uter для повышения качества перевода."
   },
   {
     "id": "astrbot",
-    "title": "AstrBot - Agent Chatbot",
-    "description": "AstrBot Configuration Tutorial — Integrating the open-source Agent chatbot platform with Uter to inject AI capabilities into instant messaging platforms like QQ, Feishu, DingTalk, and WeChat Work."
+    "title": "AstrBot — агент-чатбот",
+    "description": "Руководство по настройке AstrBot — интеграция открытой платформы агент-чатботов с Uter для внедрения ИИ-возможностей в платформы мгновенных сообщений, такие как QQ, Feishu, DingTalk и WeChat Work."
   },
   {
     "id": "claude-code",
     "title": "Claude Code",
-    "description": "Claude Code configuration guide — use Anthropic's terminal-based coding agent with Uter. Supports code understanding, multi-file editing, and IDE integration."
+    "description": "Руководство по настройке Claude Code — используйте терминального кодинг-агента Anthropic с Uter. Поддерживает понимание кода, многофайловое редактирование и интеграцию с IDE."
   },
   {
     "id": "codex-cli",
     "title": "OpenAI Codex CLI",
-    "description": "OpenAI Codex CLI Installation Tutorial — Install a terminal AI coding assistant on Windows, macOS, Linux, connecting to Uter. Supports sandbox policies and atomic patch editing."
+    "description": "Руководство по установке OpenAI Codex CLI — установите терминального ИИ-помощника по коду на Windows, macOS, Linux с подключением к Uter. Поддерживает политики песочницы и атомарное редактирование патчей."
   },
   {
     "id": "factory-droid-cli",
     "title": "Factory Droid CLI",
-    "description": "Factory Droid CLI setup guide — install and configure this AI software engineering agent with Uter. Supports end-to-end development from planning to testing."
+    "description": "Руководство по настройке Factory Droid CLI — установите и настройте этого ИИ-агента программной инженерии с Uter. Поддерживает сквозную разработку от планирования до тестирования."
   }
 ]

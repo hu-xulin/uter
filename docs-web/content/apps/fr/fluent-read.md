@@ -1,74 +1,74 @@
-# FluentRead - Open Source Translation Plugin
+# FluentRead - Plugin de traduction open-source
 
-> **Chat Settings Options**
+> **Options des paramètres de conversation**
 >
-> In the System Settings -> Chat Settings of the Uter console, you can add
->   the following shortcut options for easy one-click population to FluentRead on
->   the Token Management page:
+> Dans les Paramètres système -> Paramètres de conversation de la console Uter, vous pouvez ajouter
+>   l'option de raccourci suivante pour un remplissage en un clic vers FluentRead sur
+>   la page Gestion des jetons :
 
     ```json
     { "流畅阅读": "fluentread" }
     ```
 
-> 🌊 FluentRead is an open-source browser translation plugin dedicated to
->   providing a native-like reading experience.
+> 🌊 FluentRead est un plugin de traduction pour navigateur open-source, dédié à
+>   offrir une expérience de lecture quasi native.
 
-- Project Address: [https://github.com/Bistutu/FluentRead](https://github.com/Bistutu/FluentRead)
+- Adresse du projet : [https://github.com/Bistutu/FluentRead](https://github.com/Bistutu/FluentRead)
 
-## 🌟 Core Features
+## 🌟 Fonctionnalités principales
 
-### Smart Translation Engine
+### Moteur de traduction intelligent
 
-- **Multi-Engine Support**: Supports 20+ translation engines
-- **Traditional Translation**: Microsoft Translate, Google Translate, DeepL Translate, etc.
-- **AI Large Models**: OpenAI, DeepSeek, Kimi, Ollama, etc.
-- **Custom Engine**: Supports custom translation service configuration
+- **Prise en charge multi-moteurs** : prend en charge plus de 20 moteurs de traduction
+- **Traduction traditionnelle** : Microsoft Translate, Google Translate, DeepL Translate, etc.
+- **Grands modèles IA** : OpenAI, DeepSeek, Kimi, Ollama, etc.
+- **Moteur personnalisé** : prend en charge la configuration d'un service de traduction personnalisé
 
-### Immersive Reading Experience
+### Expérience de lecture immersive
 
-- **Bilingual Comparison**: Original and translated text displayed side-by-side for easier reading
-- **Selection Translation**: Select any text to get instant translation results
-- **One-Click Copy**: Quickly copy translated text to improve reading efficiency
-- **Full-Page Translation**: One-click translation of the entire webpage with a floating button, no page refresh required
+- **Comparaison bilingue** : texte original et traduit affichés côte à côte pour une lecture facilitée
+- **Traduction par sélection** : sélectionnez n'importe quel texte pour obtenir instantanément une traduction
+- **Copie en un clic** : copiez rapidement le texte traduit pour améliorer l'efficacité de lecture
+- **Traduction de la page entière** : traduction en un clic de toute la page web via un bouton flottant, sans rechargement de la page
 
-### Privacy and Customization
+### Confidentialité et personnalisation
 
-- **Privacy Protection**: All data stored locally, open-source and transparent code
-- **High Customization**: Rich customization options to meet different scenario needs
-- **Completely Free**: Open-source and free, non-commercial project
+- **Protection de la vie privée** : toutes les données sont stockées localement, code open-source et transparent
+- **Haute personnalisation** : riches options de personnalisation pour répondre aux besoins de différents scénarios
+- **Entièrement gratuit** : projet open-source et gratuit, non commercial
 
-## 📦 Installation Methods
+## 📦 Méthodes d'installation
 
-| Browser     | Installation Method                                                                                                                                                                                                                                   |
-| ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Chrome**  | [Chrome Web Store](https://chromewebstore.google.com/detail/%E6%B5%81%E7%95%85%E9%98%85%E8%AF%BB/djnlaiohfaaifbibleebjggkghlmcpcj?hl=zh-CN&authuser=0) \| [Domestic Mirror](https://www.crxsoso.com/webstore/detail/djnlaiohfaaifbibleebjggkghlmcpcj) |
-| **Edge**    | [Edge Add-ons Store](https://microsoftedge.microsoft.com/addons/detail/%E6%B5%81%E7%95%85%E9%98%85%E8%AF%BB/kakgmllfpjldjhcnkghpplmlbnmcoflp?hl=zh-CN)                                                                                                |
-| **Firefox** | [Firefox Add-ons Store](https://addons.mozilla.org/zh-CN/firefox/addon/%E6%B5%81%E7%95%85%E9%98%85%E8%AF%BB/)                                                                                                                                         |
+| Navigateur   | Méthode d'installation                                                                                                                                                                                                                                  |
+| ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Chrome**   | [Chrome Web Store](https://chromewebstore.google.com/detail/%E6%B5%81%E7%95%85%E9%98%85%E8%AF%BB/djnlaiohfaaifbibleebjggkghlmcpcj?hl=zh-CN&authuser=0) \| [Miroir national](https://www.crxsoso.com/webstore/detail/djnlaiohfaaifbibleebjggkghlmcpcj) |
+| **Edge**     | [Edge Add-ons Store](https://microsoftedge.microsoft.com/addons/detail/%E6%B5%81%E7%95%85%E9%98%85%E8%AF%BB/kakgmllfpjldjhcnkghpplmlbnmcoflp?hl=zh-CN)                                                                                                 |
+| **Firefox**  | [Firefox Add-ons Store](https://addons.mozilla.org/zh-CN/firefox/addon/%E6%B5%81%E7%95%85%E9%98%85%E8%AF%BB/)                                                                                                                                          |
 
-## 🚀 Configuration Methods
+## 🚀 Méthodes de configuration
 
-### Import Configuration from Uter Console (Recommended)
+### Importer la configuration depuis la console Uter (recommandé)
 
-After the FluentRead plugin is installed in your browser, opening the Uter console -> Token Management page will display a prompt to add FluentRead.
+Une fois le plugin FluentRead installé dans votre navigateur, l'ouverture de la console Uter -> page Gestion des jetons affichera une invite pour ajouter FluentRead.
 
-![添加提示](/apps-assets/fluentread/hint.webp)
+![add-hint](/apps-assets/fluentread/hint.webp)
 
-After selecting a model, click 'One-click fill to FluentRead', and a confirmation window will pop up. Check if the corresponding information is correct.
+Après avoir sélectionné un modèle, cliquez sur « Remplir en un clic vers FluentRead », et une fenêtre de confirmation s'affichera. Vérifiez que les informations correspondantes sont correctes.
 
-![确认](/apps-assets/fluentread/confirm.webp)
+![confirm](/apps-assets/fluentread/confirm.webp)
 
-After confirming the import, the Uter configuration in FluentRead will be enabled.
+Après confirmation de l'import, la configuration Uter dans FluentRead sera activée.
 
-![配置结果](/apps-assets/fluentread/fluentread.webp)
+![config-result](/apps-assets/fluentread/fluentread.webp)
 
-### Manually Fill in Configuration in FluentRead
+### Remplir manuellement la configuration dans FluentRead
 
-![手动配置](/apps-assets/fluentread/configuration.webp)
+![manual-config](/apps-assets/fluentread/configuration.webp)
 
-| Configuration Item  | Content                                 |
-| ------------------- | --------------------------------------- |
-| Translation Service | Uter                                  |
-| Access Token        | Uter Key                              |
-| Uter Endpoint     | Uter Deployment Address (without /v1) |
-| Model               | Select from list, or custom model       |
-| Custom Model        | Model Name                              |
+| Élément de configuration | Contenu                                       |
+| ------------------------ | --------------------------------------------- |
+| Service de traduction    | Uter                                          |
+| Jeton d'accès            | Clé Uter                                      |
+| Point de terminaison Uter | Adresse de déploiement Uter (sans /v1)       |
+| Modèle                   | Sélectionner dans la liste, ou modèle personnalisé |
+| Modèle personnalisé      | Nom du modèle                                 |

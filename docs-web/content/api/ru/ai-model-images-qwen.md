@@ -1,62 +1,62 @@
 # qwen
 
-## Generate Images
+## Генерация изображений
 
-百炼qwen-image系列图片生成
+Генерация изображений серии 百炼 qwen-image.
 
 `POST` `/v1/images/generations`
 
-### 请求体（`application/json`）
+### Тело запроса (`application/json`)
 
-| 字段 | 类型 | 必填 | 说明 |
+| Поле | Тип | Обязательно | Описание |
 |---|---|---|---|
-| `model` | string | 是 | — |
-| `input.messages` | array&lt;object&gt; | 否 | — |
-| `parameters.negative_prompt` | string | 否 | — |
-| `parameters.prompt_extend` | boolean | 否 | — |
-| `parameters.watermark` | boolean | 否 | — |
-| `parameters.size` | string | 否 | — |
+| `model` | string | да | — |
+| `input.messages` | array&lt;object&gt; | нет | — |
+| `parameters.negative_prompt` | string | нет | — |
+| `parameters.prompt_extend` | boolean | нет | — |
+| `parameters.watermark` | boolean | нет | — |
+| `parameters.size` | string | нет | — |
 
-### 响应
+### Ответ
 
-| 状态码 | 说明 |
+| Код статуса | Описание |
 |---|---|
-| `200` | 成功生成图像 |
+| `200` | Изображение успешно сгенерировано |
 
-#### `200` 响应字段
+#### Поля ответа `200`
 
-| 字段 | 类型 | 说明 |
+| Поле | Тип | Описание |
 |---|---|---|
 | `created` | integer | — |
 | `data` | array&lt;object&gt; | — |
 
-## Edit Image
+## Редактирование изображения
 
-百炼qwen-image系列图片编辑
+Редактирование изображений серии 百炼 qwen-image.
 
 `POST` `/v1/images/edits`
 
-### 请求体（`application/json`）
+### Тело запроса (`application/json`)
 
-| 字段 | 类型 | 必填 | 说明 |
+| Поле | Тип | Обязательно | Описание |
 |---|---|---|---|
-| `model` | string | 是 | — |
-| `input.messages` | array&lt;object&gt; | 否 | — |
-| `parameters.n` | integer | 否 | — |
-| `parameters.negative_prompt` | string | 否 | — |
-| `parameters.prompt_extend` | boolean | 否 | — |
-| `parameters.watermark` | boolean | 否 | — |
-| `parameters.size` | string | 否 | — |
+| `model` | string | да | — |
+| `input.messages` | array&lt;object&gt; | нет | — |
+| `parameters.n` | integer | нет | — |
+| `parameters.negative_prompt` | string | нет | — |
+| `parameters.prompt_extend` | boolean | нет | — |
+| `parameters.watermark` | boolean | нет | — |
+| `parameters.size` | string | нет | — |
 
-### 响应
+### Ответ
 
-| 状态码 | 说明 |
+| Код статуса | Описание |
 |---|---|
-| `200` | 成功生成图像 |
+| `200` | Изображение успешно сгенерировано |
 
-#### `200` 响应字段
+#### Поля ответа `200`
 
-| 字段 | 类型 | 说明 |
+| Поле | Тип | Описание |
 |---|---|---|
 | `created` | integer | — |
 | `data` | array&lt;object&gt; | — |

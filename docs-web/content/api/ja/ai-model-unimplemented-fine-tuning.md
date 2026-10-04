@@ -1,124 +1,124 @@
 # fine-tuning
 
-## Cancel Fine-tuning Task (Unimplemented)
+## ファインチューニングタスクのキャンセル（未実装）
 
-此接口尚未实现
+このインターフェースは未実装です。
 
 `POST` `/v1/fine-tunes/{fine_tune_id}/cancel`
 
-### 请求参数
+### リクエストパラメータ
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| パラメータ名 | 位置 | 型 | 必須 | 説明 |
 |---|---|---|---|---|
-| `fine_tune_id` | path | string | 是 | — |
+| `fine_tune_id` | path | string | 必須 | — |
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
-| `501` | 未实现 |
+| `501` | 未実装 |
 
-#### `501` 响应字段
+#### `501` レスポンスフィールド
 
-| 字段 | 类型 | 说明 |
+| フィールド | 型 | 説明 |
 |---|---|---|
-| `error.message` | string | 错误信息 |
-| `error.type` | string | 错误类型 |
-| `error.param` | string | 相关参数 |
-| `error.code` | string | 错误代码 |
+| `error.message` | string | エラーメッセージ |
+| `error.type` | string | エラータイプ |
+| `error.param` | string | 関連パラメータ |
+| `error.code` | string | エラーコード |
 
-## Create Fine-tuning Task (Unimplemented)
+## ファインチューニングタスクの作成（未実装）
 
-此接口尚未实现
+このインターフェースは未実装です。
 
 `POST` `/v1/fine-tunes`
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
-| `501` | 未实现 |
+| `501` | 未実装 |
 
-#### `501` 响应字段
+#### `501` レスポンスフィールド
 
-| 字段 | 类型 | 说明 |
+| フィールド | 型 | 説明 |
 |---|---|---|
-| `error.message` | string | 错误信息 |
-| `error.type` | string | 错误类型 |
-| `error.param` | string | 相关参数 |
-| `error.code` | string | 错误代码 |
+| `error.message` | string | エラーメッセージ |
+| `error.type` | string | エラータイプ |
+| `error.param` | string | 関連パラメータ |
+| `error.code` | string | エラーコード |
 
-## Get Fine-tune Job Events (Unimplemented)
+## ファインチューニングジョブイベントの取得（未実装）
 
-此接口尚未实现
+このインターフェースは未実装です。
 
 `GET` `/v1/fine-tunes/{fine_tune_id}/events`
 
-### 请求参数
+### リクエストパラメータ
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| パラメータ名 | 位置 | 型 | 必須 | 説明 |
 |---|---|---|---|---|
-| `fine_tune_id` | path | string | 是 | — |
+| `fine_tune_id` | path | string | 必須 | — |
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
-| `501` | 未实现 |
+| `501` | 未実装 |
 
-#### `501` 响应字段
+#### `501` レスポンスフィールド
 
-| 字段 | 类型 | 说明 |
+| フィールド | 型 | 説明 |
 |---|---|---|
-| `error.message` | string | 错误信息 |
-| `error.type` | string | 错误类型 |
-| `error.param` | string | 相关参数 |
-| `error.code` | string | 错误代码 |
+| `error.message` | string | エラーメッセージ |
+| `error.type` | string | エラータイプ |
+| `error.param` | string | 関連パラメータ |
+| `error.code` | string | エラーコード |
 
-## List Fine-tuning Jobs (Unimplemented)
+## ファインチューニングジョブの一覧（未実装）
 
-此接口尚未实现
+このインターフェースは未実装です。
 
 `GET` `/v1/fine-tunes`
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
-| `501` | 未实现 |
+| `501` | 未実装 |
 
-#### `501` 响应字段
+#### `501` レスポンスフィールド
 
-| 字段 | 类型 | 说明 |
+| フィールド | 型 | 説明 |
 |---|---|---|
-| `error.message` | string | 错误信息 |
-| `error.type` | string | 错误类型 |
-| `error.param` | string | 相关参数 |
-| `error.code` | string | 错误代码 |
+| `error.message` | string | エラーメッセージ |
+| `error.type` | string | エラータイプ |
+| `error.param` | string | 関連パラメータ |
+| `error.code` | string | エラーコード |
 
-## Get Fine-tuning Job Details (Unimplemented)
+## ファインチューニングジョブ詳細の取得（未実装）
 
-此接口尚未实现
+このインターフェースは未実装です。
 
 `GET` `/v1/fine-tunes/{fine_tune_id}`
 
-### 请求参数
+### リクエストパラメータ
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| パラメータ名 | 位置 | 型 | 必須 | 説明 |
 |---|---|---|---|---|
-| `fine_tune_id` | path | string | 是 | — |
+| `fine_tune_id` | path | string | 必須 | — |
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
-| `501` | 未实现 |
+| `501` | 未実装 |
 
-#### `501` 响应字段
+#### `501` レスポンスフィールド
 
-| 字段 | 类型 | 说明 |
+| フィールド | 型 | 説明 |
 |---|---|---|
-| `error.message` | string | 错误信息 |
-| `error.type` | string | 错误类型 |
-| `error.param` | string | 相关参数 |
-| `error.code` | string | 错误代码 |
+| `error.message` | string | エラーメッセージ |
+| `error.type` | string | エラータイプ |
+| `error.param` | string | 関連パラメータ |
+| `error.code` | string | エラーコード |

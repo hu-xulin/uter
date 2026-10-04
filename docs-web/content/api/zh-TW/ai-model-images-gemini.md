@@ -1,51 +1,51 @@
-# gemini
+# 原生Gemini格式
 
-## Gemini Native Format
+## Gemini原生格式
 
-Gemini 图片生成
+Gemini 圖片生成
 
 `POST` `/v1beta/models/{model}:generateContent/`
 
-### 请求参数
+### 請求引數
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| 引數名 | 位置 | 型別 | 必填 | 說明 |
 |---|---|---|---|---|
-| `model` | path | string | 是 | 模型名称 |
+| `model` | path | string | 是 | 模型名稱 |
 
-### 请求体（`application/json`）
+### 請求體（`application/json`）
 
-| 字段 | 类型 | 必填 | 说明 |
+| 欄位 | 型別 | 必填 | 說明 |
 |---|---|---|---|
 | `contents` | array&lt;object&gt; | 是 | — |
-| `generationConfig.thinkingConfig.includeThoughts` | boolean | 否 | 是否返回思考内容 |
+| `generationConfig.thinkingConfig.includeThoughts` | boolean | 否 | 是否返回思考內容 |
 | `generationConfig.responseModalities` | array&lt;string&gt; | 否 | — |
 | `generationConfig.imageConfig.aspectRatio` | string | 否 | — |
 | `generationConfig.imageConfig.imageSize` | string | 否 | — |
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |
 
-#### `200` 响应字段
+#### `200` 響應欄位
 
-| 字段 | 类型 | 说明 |
+| 欄位 | 型別 | 說明 |
 |---|---|---|
 | `candidates` | array&lt;object&gt; | — |
 | `usageMetadata.promptTokenCount` | integer | — |
 | `usageMetadata.candidatesTokenCount` | integer | — |
 | `usageMetadata.totalTokenCount` | integer | — |
 
-## OpenAI Chat Format
+## OpenAI聊天格式
 
-Gemini 图片生成
+Gemini 圖片生成
 
 `POST` `/v1/chat/completions`
 
-### 请求体（`application/json`）
+### 請求體（`application/json`）
 
-| 字段 | 类型 | 必填 | 说明 |
+| 欄位 | 型別 | 必填 | 說明 |
 |---|---|---|---|
 | `model` | string | 是 | — |
 | `stream` | boolean | 是 | — |
@@ -54,15 +54,15 @@ Gemini 图片生成
 | `extra_body.google.image_config.image_size` | string | 否 | — |
 | `contents` | array&lt;object&gt; | 是 | — |
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |
 
-#### `200` 响应字段
+#### `200` 響應欄位
 
-| 字段 | 类型 | 说明 |
+| 欄位 | 型別 | 說明 |
 |---|---|---|
 | `id` | string | — |
 | `model` | string | — |

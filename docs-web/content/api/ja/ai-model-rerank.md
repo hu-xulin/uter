@@ -2,29 +2,29 @@
 
 ## Document Reranking
 
-根据查询对文档列表进行相关性重排序
+クエリに基づいてドキュメントリストの関連性を再ランキングします。
 
 `POST` `/v1/rerank`
 
-### 请求体（`application/json`）
+### リクエストボディ（`application/json`）
 
-| 字段 | 类型 | 必填 | 说明 |
+| フィールド | 型 | 必須 | 説明 |
 |---|---|---|---|
-| `model` | string | 是 | — |
-| `query` | string | 是 | 查询文本 |
-| `documents` | array&lt;string&gt; | 是 | 要重排序的文档列表 |
-| `top_n` | integer | 否 | 返回前 N 个结果 |
-| `return_documents` | boolean | 否 | — |
+| `model` | string | 必須 | — |
+| `query` | string | 必須 | クエリテキスト |
+| `documents` | array&lt;string&gt; | 必須 | 再ランキングするドキュメントリスト |
+| `top_n` | integer | 任意 | 上位 N 件の結果を返す |
+| `return_documents` | boolean | 任意 | — |
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
-| `200` | 成功重排序 |
+| `200` | 再ランキングに成功 |
 
-#### `200` 响应字段
+#### `200` レスポンスフィールド
 
-| 字段 | 类型 | 说明 |
+| フィールド | 型 | 説明 |
 |---|---|---|
 | `id` | string | — |
 | `results` | array&lt;object&gt; | — |

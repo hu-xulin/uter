@@ -2,32 +2,32 @@
 
 ## Native OpenAI Format
 
-建立 WebSocket 连接用于实时对话。
+リアルタイム対話のための WebSocket 接続を確立します。
 
-**注意**: 这是一个 WebSocket 端点，需要使用 WebSocket 协议连接。
+**注意**: これは WebSocket エンドポイントであり、WebSocket プロトコルでの接続が必要です。
 
-连接 URL 示例: `wss://api.example.com/v1/realtime?model=gpt-4o-realtime`
+接続 URL の例: `wss://api.example.com/v1/realtime?model=gpt-4o-realtime`
 
 `GET` `/v1/realtime`
 
-### 请求参数
+### リクエストパラメータ
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| パラメータ名 | 位置 | 型 | 必須 | 説明 |
 |---|---|---|---|---|
-| `model` | query | string | 否 | 要使用的模型 |
+| `model` | query | string | 任意 | 使用するモデル |
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
-| `101` | WebSocket 协议切换 |
-| `400` | 请求错误 |
+| `101` | WebSocket プロトコル切り替え |
+| `400` | リクエストエラー |
 
-#### `400` 响应字段
+#### `400` レスポンスフィールド
 
-| 字段 | 类型 | 说明 |
+| フィールド | 型 | 説明 |
 |---|---|---|
-| `error.message` | string | 错误信息 |
-| `error.type` | string | 错误类型 |
-| `error.param` | string | 相关参数 |
-| `error.code` | string | 错误代码 |
+| `error.message` | string | エラーメッセージ |
+| `error.type` | string | エラータイプ |
+| `error.param` | string | 関連パラメータ |
+| `error.code` | string | エラーコード |

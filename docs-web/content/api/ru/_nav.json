@@ -1,7 +1,7 @@
 [
   {
     "id": "ai-model-audio",
-    "title": "AI Model API · Native Gemini Format",
+    "title": "AI Model API · Нативный формат Gemini",
     "category": "ai-model"
   },
   {
@@ -11,7 +11,7 @@
   },
   {
     "id": "ai-model-chat",
-    "title": "Native Claude Format",
+    "title": "Нативный формат Claude",
     "category": "ai-model"
   },
   {
@@ -26,12 +26,12 @@
   },
   {
     "id": "ai-model-completions",
-    "title": "AI Model API · Native OpenAI Format",
+    "title": "AI Model API · Нативный формат OpenAI",
     "category": "ai-model"
   },
   {
     "id": "ai-model-completions-openai",
-    "title": "AI Model API · Native OpenAI Format",
+    "title": "AI Model API · Нативный формат OpenAI",
     "category": "ai-model"
   },
   {
@@ -41,12 +41,12 @@
   },
   {
     "id": "ai-model-embeddings-openai",
-    "title": "AI Model API · Native OpenAI Format",
+    "title": "AI Model API · Нативный формат OpenAI",
     "category": "ai-model"
   },
   {
     "id": "ai-model-embeddings-gemini",
-    "title": "AI Model API · Native Gemini Format",
+    "title": "AI Model API · Нативный формат Gemini",
     "category": "ai-model"
   },
   {
@@ -66,47 +66,47 @@
   },
   {
     "id": "ai-model-models-list",
-    "title": "list",
+    "title": "список",
     "category": "ai-model"
   },
   {
     "id": "ai-model-models-list-openai",
-    "title": "AI Model API · Native OpenAI Format",
+    "title": "AI Model API · Нативный формат OpenAI",
     "category": "ai-model"
   },
   {
     "id": "ai-model-models-list-gemini",
-    "title": "AI Model API · Native Gemini Format",
+    "title": "AI Model API · Нативный формат Gemini",
     "category": "ai-model"
   },
   {
     "id": "ai-model-moderations",
-    "title": "AI Model API · Native OpenAI Format",
+    "title": "AI Model API · Нативный формат OpenAI",
     "category": "ai-model"
   },
   {
     "id": "ai-model-realtime",
-    "title": "AI Model API · Native OpenAI Format",
+    "title": "AI Model API · Нативный формат OpenAI",
     "category": "ai-model"
   },
   {
     "id": "ai-model-rerank",
-    "title": "Document Reranking",
+    "title": "Переранжирование документов",
     "category": "ai-model"
   },
   {
     "id": "ai-model-unimplemented-fine-tuning",
-    "title": "fine-tuning",
+    "title": "дообучение (fine-tuning)",
     "category": "ai-model"
   },
   {
     "id": "ai-model-videos",
-    "title": "videos",
+    "title": "видео",
     "category": "ai-model"
   },
   {
     "id": "ai-model-videos-jimeng",
-    "title": "Jimeng Video Generation",
+    "title": "Генерация видео Jimeng",
     "category": "ai-model"
   },
   {
@@ -121,127 +121,127 @@
   },
   {
     "id": "ai-model-videos-happyhorse",
-    "title": "HappyHorse Format",
+    "title": "Формат HappyHorse",
     "category": "ai-model"
   },
   {
     "id": "ai-model-videos-minimax",
-    "title": "MiniMax Format",
+    "title": "Формат MiniMax",
     "category": "ai-model"
   },
   {
     "id": "ai-model-videos-wanx",
-    "title": "Wanx Format",
+    "title": "Формат Wanx",
     "category": "ai-model"
   },
   {
     "id": "ai-model-videos-veo",
-    "title": "Google Veo Format",
+    "title": "Формат Google Veo",
     "category": "ai-model"
   },
   {
     "id": "ai-model-videos-pixverse",
-    "title": "PixVerse Format",
+    "title": "Формат PixVerse",
     "category": "ai-model"
   },
   {
     "id": "ai-model-videos-seedance",
-    "title": "Seedance Format",
+    "title": "Формат Seedance",
     "category": "ai-model"
   },
   {
     "id": "management-auth",
-    "title": "Authentication System Description (Auth)",
+    "title": "Описание системы аутентификации (Auth)",
     "category": "management"
   },
   {
     "id": "management-channel-management",
-    "title": "channel-management",
+    "title": "Управление каналами",
     "category": "management"
   },
   {
     "id": "management-default",
-    "title": "Redeem Code",
+    "title": "Промокод",
     "category": "management"
   },
   {
     "id": "management-groups",
-    "title": "groups",
+    "title": "группы",
     "category": "management"
   },
   {
     "id": "management-logs",
-    "title": "logs",
+    "title": "журналы",
     "category": "management"
   },
   {
     "id": "management-model-management",
-    "title": "model-management",
+    "title": "Управление моделями",
     "category": "management"
   },
   {
     "id": "management-oauth",
-    "title": "oauth",
+    "title": "OAuth",
     "category": "management"
   },
   {
     "id": "management-payment",
-    "title": "payment",
+    "title": "Оплата",
     "category": "management"
   },
   {
     "id": "management-redemption",
-    "title": "redemption",
+    "title": "Промокоды",
     "category": "management"
   },
   {
     "id": "management-security-verification",
-    "title": "security-verification",
+    "title": "Проверка безопасности",
     "category": "management"
   },
   {
     "id": "management-statistics",
-    "title": "statistics",
+    "title": "Статистика",
     "category": "management"
   },
   {
     "id": "management-system",
-    "title": "system",
+    "title": "Система",
     "category": "management"
   },
   {
     "id": "management-system-settings",
-    "title": "system-settings",
+    "title": "Системные настройки",
     "category": "management"
   },
   {
     "id": "management-tasks",
-    "title": "tasks",
+    "title": "Задачи",
     "category": "management"
   },
   {
     "id": "management-token-management",
-    "title": "token-management",
+    "title": "Управление токенами",
     "category": "management"
   },
   {
     "id": "management-two-factor-auth",
-    "title": "two-factor-auth",
+    "title": "Двухфакторная аутентификация",
     "category": "management"
   },
   {
     "id": "management-user-auth",
-    "title": "user-auth",
+    "title": "Аутентификация пользователя",
     "category": "management"
   },
   {
     "id": "management-user-management",
-    "title": "user-management",
+    "title": "Управление пользователями",
     "category": "management"
   },
   {
     "id": "management-vendors",
-    "title": "vendors",
+    "title": "Поставщики",
     "category": "management"
   }
 ]

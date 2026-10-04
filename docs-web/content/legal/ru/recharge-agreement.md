@@ -1,384 +1,384 @@
-# Uter Smart Large Model Service Platform Recharge Agreement
+# Соглашение о пополнении Платформы больших языковых моделей Uter Smart
 
-| Item | Content |
+| Элемент | Содержание |
 |---|---|
-| Service brand | **Uter.ai** |
-| Platform | **Uter Smart Large Model Service Platform** |
-| Official website | https://uter.ai |
-| Document | Uter Smart Large Model Service Platform Recharge Agreement |
-| Version | V1.0 |
-| Effective date | September 28, 2026 |
-| Last updated | September 28, 2026 |
-| Contracting entity | **Shenzhen Uter Network Technology Co., Ltd.** (the sole contracting entity for the recharge service and related fund-management matters under this Agreement) |
-| Applies to | Individual and enterprise users who make prepayments on the Platform |
-| Governing law | The laws of the People's Republic of China (excluding conflict-of-law rules) |
-| Related documents | Uter Smart Large Model Service Platform User Agreement; Uter Smart Large Model Service Platform Privacy Policy |
+| Бренд Сервиса | **Uter.ai** |
+| Платформа | **Платформа больших языковых моделей Uter Smart** |
+| Официальный сайт | https://uter.ai |
+| Документ | Соглашение о пополнении Платформы больших языковых моделей Uter Smart |
+| Версия | V1.0 |
+| Дата вступления в силу | September 28, 2026 |
+| Последнее обновление | September 28, 2026 |
+| Сторона по договору | **Shenzhen Uter Network Technology Co., Ltd.** (единственная сторона по договору в отношении сервиса пополнения и связанных с ним вопросов управления средствами в рамках настоящего Соглашения) |
+| Применимо к | Физическим и юридическим лицам, вносящим предоплату на Платформе |
+| Применимое право | Законодательство Китайской Народной Республики (за исключением коллизиционных норм) |
+| Связанные документы | Соглашение о пополнении Платформы больших языковых моделей Uter Smart; Политика конфиденциальности Платформы больших языковых моделей Uter Smart |
 
-> **Important notice**: This Agreement is a set of standard terms and forms part of the Uter Smart Large Model Service Platform User Agreement. Before making any recharge, please read all of its terms completely and carefully — **in particular the terms shown in bold that exclude or limit our liability, that limit your rights, and the terms on refund conditions and dispute resolution**. By completing any recharge, or by ticking your agreement to this Agreement, you are deemed to have fully understood and accepted all of its terms. If you do not agree with any part of this Agreement, please do not make a recharge.
+> **Важное уведомление**: настоящее Соглашение представляет собой стандартные условия и является частью Соглашения о пополнении Платформы больших языковых моделей Uter Smart. До внесения любого пополнения просим полностью и внимательно ознакомиться со всеми его условиями — **в частности с условиями, обозначенными полужирным шрифтом, которые исключают или ограничивают нашу ответственность, ограничивают Ваши права, а также с условиями о порядке возврата средств и разрешения споров**. Осуществляя любое пополнение либо отмечая согласие с настоящим Соглашением, Вы считаетесь полностью ознакомившимися со всеми его условиями и принявшими их. Если Вы не согласны ни с одним из положений настоящего Соглашения, просим не вносить пополнение.
 
 ---
 
-## Summary
+## Резюме
 
-**This summary does not replace the main text; the full text governs all rights and obligations.**
+**Настоящее резюме не заменяет основной текст; полный текст определяет все права и обязанности.**
 
-| What you most want to know | Our answer |
+| Что Вас больше всего интересует | Наш ответ |
 |---|---|
-| How is my credit calculated after a recharge? | Your available credit is converted from the amount paid using the **conversion rate** agreed between us or published on the Platform. The conversion is itemised on the recharge confirmation page and in the monthly statement. |
-| Can I get back money I have not used? | **Yes.** Any unconsumed balance may be refunded on request at any time. The fees actually charged by **third-party payment channels** and the **taxes** corresponding to invoices already issued are deducted; beyond those deductions we **charge no refund handling fee**, and the funds are returned via the original payment route within **7 business days** of receiving a qualifying refund request. |
-| Is a large recharge protected any further? | For a single or cumulative recharge reaching **RMB 300,000**, you may open a **jointly controlled account** with us. Neither party may withdraw from it without the other's confirmation. |
-| Does a staged recharge reduce my discount? | **No.** The discount is locked to the tier corresponding to the total contract amount and is not downgraded because the funds arrive in stages. |
-| Will the service stop abruptly when the balance runs low? | **No.** We notify you when the available credit falls below **110%** of the estimated consumption for the current month; if a suspension is genuinely necessary, we give you **48 hours'** notice beforehand. |
-| How do I reconcile my account? | We deliver the previous month's statement by the **5th** of each month; you may raise objections within **10 days** of receipt, after which the statement is deemed confirmed. |
-| What happens to my balance if the company runs into trouble? | Unconsumed balance is a **liability for services prepaid**, recorded on the Platform **separately and not commingled with the company's own funds**. On liquidation it is handled under the Enterprise Bankruptcy Law of the PRC and ranks ahead of shareholder distributions. |
+| Как после пополнения рассчитывается мой лимит? | Доступный лимит пересчитывается из внесённой суммы по **коэффициенту конвертации**, согласованному между нами либо опубликованному на Платформе. Расчёт приводится построчно на странице подтверждения пополнения и в ежемесячной выписке. |
+| Могу ли я вернуть неиспользованные средства? | **Да.** Любой не израсходованный остаток может быть возвращён по заявлению в любой момент. Удерживаются фактически взимаемые **сторонними платёжными каналами** комиссии и **налоги**, соответствующие уже выставленным счетам; сверх этих удержаний мы **не взимаем комиссию за возврат средств**, а средства возвращаются по исходному платёжному маршруту в течение **7 рабочих дней** с момента получения заявления о возврате, отвечающего установленным требованиям. |
+| Крупное пополнение защищено дополнительно? | При разовом или совокупном пополнении на сумму **RMB 300,000** Вы можете открыть совместно с нами **совместно управляемый счёт**. Ни одна из сторон не вправе вывести средства из него без подтверждения другой стороны. |
+| Снижает ли поэтапное пополнение мою скидку? | **Нет.** Скидка фиксируется на уровне, соответствующем общей сумме договора, и не понижается в связи с поступлением средств частями. |
+| Прекратится ли внезапно Сервис при низком остатке? | **Нет.** Мы уведомляем Вас, когда доступный лимит опускается ниже **110%** предполагаемого потребления за текущий месяц; если приостановление действительно необходимо, мы предварительно уведомляем Вас за **48 часов**. |
+| Как сверять расчёты по моему аккаунту? | Мы направляем выписку за предыдущий месяц **5-го числа** каждого месяца; Вы можете высказать возражения в течение **10 дней** с момента получения, после чего выписка считается подтверждённой. |
+| Что произойдёт с моим остатком, если у компании возникнут финансовые трудности? | Не израсходованный остаток представляет собой **обязательство по предоплаченным услугам**, учитываемое на Платформе **отдельно и не смешиваемое с собственными средствами компании**. При ликвидации он рассматривается в соответствии с Законом КНР о банкротстве предприятий и имеет приоритет перед распределениями акционерам. |
 
 ---
 
-## Contents
+## Содержание
 
-1. General provisions and scope of application
-2. Recharge, credit conversion and receipts
-3. Staged recharge
-4. Metering, consumption and credit alerts
-5. Refund of unconsumed balance
-6. Reconciliation and fund security
-7. Jointly controlled account (for large recharges)
-8. Rights and obligations of the parties; limitation of liability
-9. Miscellaneous
-
----
-
-## Chapter 1　General provisions and scope of application
-
-**Article 1　[Purpose]**
-
-This Agreement sets out the rights and obligations between you and Shenzhen Uter Network Technology Co., Ltd. ("we", "us" or "the Company") in respect of your prepayment to the Uter Smart Large Model Service Platform (the "Platform"), and of the stages that prepaid funds pass through — arrival, conversion, consumption, reconciliation and refund — so that prepaid funds are **secure, verifiable and refundable**.
-
-**Article 2　[Scope of application]**
-
-This Agreement applies to the following conduct on the Platform:
-
-(1) **Large recharges**: a single recharge, or cumulative recharges from your first recharge onward, reaching **RMB 300,000** (inclusive);
-
-(2) **Staged recharges**: recharges individually below RMB 300,000 where you and the Company separately agree to split the total contract amount into several instalments arriving on an agreed schedule;
-
-(3) **Other prepayments**: for prepayments outside the two categories above, Chapter 5 (refund of unconsumed balance) applies and the remaining matters follow the User Agreement.
-
-**Article 3　[Definitions]**
-
-Unless the context requires otherwise, the following terms have the meanings below:
-
-(1) **Recharge balance**: funds prepaid to the Platform that have not yet been consumed in full in accordance with actual usage;
-
-(2) **Available credit**: the credit available to offset service fees, being the amount paid converted at the conversion rate;
-
-(3) **Conversion rate**: the rate at which the amount paid is converted into available credit, as agreed in writing between the parties or published on the Platform. The conversion rate is **not lower than 1.00**; that is, a recharge attracts no additional charge of any kind;
-
-(4) **Consumption**: the fees actually incurred by your use of the Platform's API services under the billing rules published on the Platform;
-
-(5) **Staged recharge**: a recharge arrangement as defined in paragraph (2) of Article 2;
-
-(6) **Jointly controlled account**: a corporate bank account opened jointly by the Company and you at a bank under Chapter 7 of this Agreement and supervised by both parties;
-
-(7) **Statement**: the monthly written record delivered by the Company showing the opening balance, that month's consumption, recharges received, closing balance and refund records;
-
-(8) **Business day**: a statutory business day in the People's Republic of China; **calendar day**: a calendar day, including statutory holidays.
-
-**Article 4　[Relationship with the User Agreement]**
-
-(1) This Agreement forms part of the Uter Smart Large Model Service Platform User Agreement (the "User Agreement") and has the same effect as the User Agreement.
-
-(2) On matters concerning **prepaid funds and their management**, where this Agreement and the User Agreement differ, **this Agreement prevails**; matters not addressed here follow the User Agreement.
-
-(3) Where neither this Agreement nor the User Agreement addresses a matter, the rules published on the Platform and the laws and regulations of the People's Republic of China currently in force apply.
+1. Общие положения и область применения
+2. Пополнение, конвертация лимита и чеки
+3. Поэтапное пополнение
+4. Учёт, потребление и уведомления о лимите
+5. Возврат не израсходованного остатка
+6. Сверка и безопасность средств
+7. Совместно управляемый счёт (для крупных пополнений)
+8. Права и обязанности сторон; ограничение ответственности
+9. Прочие положения
 
 ---
 
-## Chapter 2　Recharge, credit conversion and receipts
+## Раздел 1. Общие положения и область применения
 
-**Article 5　[Payment channels and arrival of funds]**
+**Статья 1. [Цель]**
 
-(1) You shall make recharges through the channels published on the Platform, namely **corporate bank transfer** and **online payment**.
+Настоящее Соглашение определяет права и обязанности между Вами и Shenzhen Uter Network Technology Co., Ltd. («мы», «нас» или «Компания») в отношении Вашей предоплаты Платформе больших языковых моделей Uter Smart (далее — «Платформа»), а также стадий, через которые проходят предоплаченные средства, — зачисление, конвертация, потребление, сверка и возврат, — чтобы предоплаченные средства были **защищены, проверяемы и подлежали возврату**.
 
-(2) **You shall pay using an entity whose verified identity matches your Platform account.** Where payment is made by a third party on your behalf, the Company may require you to explain the source and purpose of the funds and may withhold credit conversion until verification is complete.
+**Статья 2. [Область применения]**
 
-(3) The time of arrival is the time the funds are actually credited by the bank or third-party payment institution. **Online payments normally arrive immediately upon successful payment; corporate transfers normally arrive within the same business day**, subject to delay for interbank processing or statutory holidays.
+Настоящее Соглашение применяется к следующим видам действий на Платформе:
 
-(4) Once a recharge arrives, the Platform converts available credit under Article 6 and issues you with a **receipt for the equivalent amount**.
+(1) **Крупные пополнения**: разовое пополнение либо совокупные пополнения, начиная с первого пополнения, достигающие **RMB 300,000** (включительно);
 
-**Article 6　[Credit conversion]**
+(2) **Поэтапные пополнения**: пополнения, каждое из которых составляет менее RMB 300,000, при условии, что Вы и Компания отдельно согласуете разделение общей суммы договора на несколько частей, поступающих в согласованные сроки;
 
-(1) Available credit is calculated as follows:
+(3) **Иные предоплаты**: для предоплат, не относящихся к двум указанным выше категориям, применяется Раздел 5 (возврат не израсходованного остатка), а остальные вопросы регулируются Соглашением о пополнении.
 
-> **Available credit = Amount paid × Conversion rate**
+**Статья 3. [Определения]**
 
-(2) The conversion rate is agreed in writing between the parties or published on the Platform. For example, at a conversion rate of **1.10**, RMB 100 paid converts into RMB 110 of available credit.
+Если из контекста не следует иное, следующие термины имеют указанное ниже значение:
 
-(3) **The conversion rule and its result are itemised on the recharge confirmation page and in that month's statement** so that you can verify them. Once applied, the conversion rate applies to the whole of the available credit corresponding to that recharge and is **not adjusted for later usage volume, arrival instalments or routing outcomes**.
+(1) **Остаток пополнения**: средства, предоплаченные на Платформе, которые ещё не израсходованы полностью в соответствии с фактическим использованием;
 
-(4) Unless otherwise agreed in writing, the Company **charges no handling fee, management fee or service fee for a recharge**. **Fees charged to the Company by the payment channel for the movement of funds are deducted on a cost basis under Article 16 when a refund occurs.**
+(2) **Доступный лимит**: лимит, доступный для списания платы за Сервис, представляющий собой сумму, пересчитанную по коэффициенту конвертации;
 
-**Article 7　[Receipts and invoices]**
+(3) **Коэффициент конвертации**: коэффициент, по которому внесённая сумма пересчитывается в доступный лимит, согласованный сторонами в письменной форме или опубликованный на Платформе. Коэффициент конвертации **не может быть ниже 1,00**; иными словами, пополнение не влечёт никаких дополнительных начислений;
 
-(1) Once a recharge arrives, the Platform issues a **recharge receipt** stating the amount paid, the conversion rate, the available credit, the time of arrival and the transaction number.
+(4) **Потребление**: плата, фактически понесённая в результате Вашего использования сервисов API Платформы в соответствии с правилами тарификации, опубликованными на Платформе;
 
-(2) You may request a value-added tax invoice (special or ordinary, depending on your taxpayer status) for service consumption actually incurred. **Invoices are not issued for the recharge itself; they are issued on the amount actually consumed.**
+(5) **Поэтапное пополнение**: схема пополнения в значении пункта (2) Статьи 2;
 
-(3) Invoice requests shall be made within the calendar year in which the corresponding consumption occurs; in principle no invoice can be issued for a prior year. Where incorrect invoicing details provided by you cause re-issuance or cancellation, you bear the associated cost.
+(6) **Совместно управляемый счёт**: корпоративный банковский счёт, открытый совместно Компанией и Вами в банке в соответствии с Разделом 7 настоящего Соглашения и контролируемый обеими сторонами;
 
-(4) On a refund, **for any portion already invoiced you shall return the original invoice or process a red-letter reversal**. Until that is completed, the Company may withhold the corresponding tax from the refund and return it without interest once the reversal is complete.
+(7) **Выписка**: ежемесячный письменный документ, предоставляемый Компанией и содержащий остаток на начало периода, потребление за соответствующий месяц, поступившие пополнения, остаток на конец периода и записи о возвратах средств;
 
----
+(8) **Рабочий день**: установленный нормативный рабочий день в Китайской Народной Республике; **календарный день**: календарный день, включая установленные праздничные дни.
 
-## Chapter 3　Staged recharge
+**Статья 4. [Соотношение с Соглашением о пополнении]**
 
-**Article 8　[Arrangement]**
+(1) Настоящее Соглашение является частью Соглашения о пополнении Платформы больших языковых моделей Uter Smart (далее — «Соглашение о пополнении») и имеет такую же силу, как Соглашение о пополнении.
 
-(1) You may agree with the Company in writing on a staged recharge, splitting the total contract amount into **four instalments arriving one instalment per week**, with the amounts and timing as confirmed in writing by both parties.
+(2) По вопросам, касающимся **предоплаченных средств и управления ими**, в случае расхождения между настоящим Соглашением и Соглашением о пополнении **применяется настоящее Соглашение**; вопросы, не урегулированные здесь, регулируются Соглашением о пополнении.
 
-(2) The schedule, instalment amounts and conversion rate are specified in a **recharge confirmation or supplementary agreement signed separately** by the parties. In the absence of such specification, the total is divided equally into four instalments arriving on the same day of each week from the agreed start date.
-
-**Article 9　[Effect of a staged recharge]**
-
-(1) The contract discount is locked to the tier corresponding to the **total contract amount across all instalments** and is **not downgraded because the funds arrive in stages**.
-
-(2) On arrival of any instalment, the discount for that instalment takes effect immediately and applies to the whole of the available credit.
-
-(3) **You may top up later instalments early according to your actual usage**; an early arrival does not affect the remaining instalments on the original schedule and does not change the locked discount tier.
-
-(4) If you fail to pay an instalment on schedule, the Company may give written notice. **If payment is still outstanding 15 days after that notice**, the Company may adjust the discount on the amount already received to the tier **corresponding to the amount received** and settle the difference, which is applied as an adjustment of available credit rather than collected in cash.
-
-**Article 10　[Consideration protection for staged recharges]**
-
-The Company undertakes that, for a staged recharge, **before each instalment arrives it will not restrict your service by reference to the total contract amount not yet received**. The available credit corresponding to amounts you have already paid may be used normally under this Agreement, **regardless of whether later instalments arrive on schedule**.
-
-**Article 11　[Failure to pay on schedule]**
-
-(1) Where the Company adjusts the discount tier under Article 9(4), it shall give you **5 business days'** written notice with the revised settlement details.
-
-(2) If you pay the outstanding instalments within **5 business days** of receiving that notice, the Company shall restore the original contract discount tier and retroactively adjust the available credit from the date of adjustment.
-
-(3) For reasonable costs the Company has already incurred because of the missed schedule (for example, upstream procurement commitments already locked in), the Company may claim against you after itemising them in writing, **limited to amounts actually incurred and verifiable**.
+(3) Если ни настоящее Соглашение, ни Соглашение о пополнении не регулирует какой-либо вопрос, применяются правила, опубликованные на Платформе, и действующее законодательство и нормативные акты Китайской Народной Республики.
 
 ---
 
-## Chapter 4　Metering, consumption and credit alerts
+## Раздел 2. Пополнение, конвертация лимита и чеки
 
-**Article 12　[Metered billing and measurement basis]**
+**Статья 5. [Платёжные каналы и зачисление средств]**
 
-(1) Available credit is deducted in real time according to **actual API usage** under the billing rules published on the Platform.
+(1) Пополнение производится через каналы, опубликованные на Платформе, а именно **банковский перевод от юридического лица** и **онлайн-платеж**.
 
-(2) **Measurements are based on data recorded by the Platform.** The Platform records the time, model identifier, input/output token counts, status code and latency of each request and generates fee details and statements from that data.
+(2) **Платёж должен осуществляться юридическим лицом, чья подтверждённая личность соответствует Вашему аккаунту на Платформе.** Если платёж производится третьим лицом от Вашего имени, Компания вправе потребовать от Вас объяснения источника и цели средств и вправе приостановить зачисление лимита до завершения проверки.
 
-(3) The same model may be priced differently across routing paths and upstream model providers. The Platform bills according to the **actual routing outcome** and lists the corresponding tiers on the pricing page.
+(3) Моментом зачисления является время фактического зачисления средств банком или сторонним платёжным учреждением. **Онлайн-платежи, как правило, зачисляются немедленно после успешной оплаты; банковские переводы от юридических лиц, как правило, зачисляются в течение того же рабочего дня**, с учётом возможных задержек в межбанковской обработке или в установленные праздничные дни.
 
-**Article 13　[Usage details and enquiries]**
+(4) После зачисления пополнения Платформа конвертирует доступный лимит в соответствии со Статьёй 6 и выдаёт Вам **чек на соответствующую сумму**.
 
-(1) Billing details are **available in real time**. You may export usage and fee details for any period from the console, and an export record may serve as the basis for reconciliation.
+**Статья 6. [Конвертация лимита]**
 
-(2) Detail data is retained for **no less than 12 months** from the date it is generated.
+(1) Доступный лимит рассчитывается следующим образом:
 
-**Article 14　[Credit alerts and suspension of service]**
+> **Доступный лимит = Внесённая сумма × Коэффициент конвертации**
 
-(1) **Alert**: when available credit falls below **110%** of the estimated consumption for the current month, the Platform notifies you by the method agreed between the parties (in-app message, email or SMS).
+(2) Коэффициент конвертации согласовывается сторонами в письменной форме или публикуется на Платформе. Например, при коэффициенте конвертации **1,10** внесённая сумма RMB 100 пересчитывается в доступный лимит RMB 110.
 
-(2) **Suspension**: if available credit is exhausted, the Platform may suspend the service. **Except where you have breached the usage rules or are in arrears, the Platform gives you 48 hours' written notice (including email and in-app message) before a suspension.**
+(3) **Правило конвертации и его результат приводятся построчно на странице подтверждения пополнения и в выписке за соответствующий месяц**, чтобы Вы могли их проверить. После применения коэффициент конвертации распространяется на весь доступный лимит, соответствующий данному пополнению, и **не корректируется впоследствии в зависимости от объёма использования, числа поступающих частей или результатов маршрутизации**.
 
-(3) **Effect of suspension**: a suspension **does not affect** the retention of your data, your access to usage details, or your right to a refund of unconsumed balance. Service resumes immediately once you top up.
+(4) Если иное не согласовано в письменной форме, Компания **не взимает за пополнение комиссию за обработку, сбор за администрирование или сервисный сбор**. **Комиссии, взимаемые платёжным каналом с Компании за движение средств, удерживаются по себестоимости в соответствии со Статьёй 16 при возврате средств.**
 
-(4) **Consumed fees are not refunded**: fees for tokens actually consumed are not refunded, whether or not you actually used the output (for example where you abandoned use because of prompt design, changed requirements or unsatisfactory results).
+**Статья 7. [Чеки и счета]**
 
-(5) Where a request fails because of **an error on the Platform's side** (gateway failure, or routing failure where the request never reached the upstream), it is not billed and any deducted amount is returned automatically.
+(1) После зачисления пополнения Платформа выдаёт **чек о пополнении**, в котором указываются внесённая сумма, коэффициент конвертации, доступный лимит, момент зачисления и номер транзакции.
 
----
+(2) Вы вправе запросить счёт-фактуру налога на добавленную стоимость (специальную либо обычную в зависимости от Вашего налогового статуса) за фактически понесённое потребление Сервиса. **Счета-фактуры выставляются не на само пополнение, а на фактически израсходованную сумму.**
 
-## Chapter 5　Refund of unconsumed balance
+(3) Заявления на выставление счёта подаются в течение календарного года, в котором произошло соответствующее потребление; в принципе счёт-фактура за предыдущий год не может быть выставлена. Если вследствие неверных выставляемых Вами реквизитов требуется повторное выставление счёта или его отмена, связанные с этим расходы несёте Вы.
 
-**Article 15　[Right to a refund]**
-
-(1) **You may request a refund of the unconsumed part of your recharge balance at any time. The fees actually charged by third-party payment channels and the taxes corresponding to invoices already issued are deducted from the refund; beyond those deductions the Company charges no refund handling fee.**
-
-(2) Refunds are returned **via the original payment route** as a matter of principle, that is, to the original paying account. If that account is closed or unavailable, you may request payment to a bank account **whose verified identity matches your Platform account**, supported by the necessary evidence.
-
-(3) Refund requests are submitted through the console or sent to **finance@uter.ai**.
-
-**Article 16　[Calculation of the refund amount]**
-
-(1) The **base refundable amount** is calculated as follows:
-
-1. Where the conversion rate is **1.00** (that is, the amount paid equals the available credit):
-
-> **Base refundable amount = Amount paid − Amount actually consumed**
-
-2. Where the conversion rate is **greater than 1.00** (that is, credit was converted at a discount or with bonus credit):
-
-> **Base refundable amount = Amount paid × (1 − Amount actually consumed ÷ Total credit after conversion)**
-
-where "total credit after conversion" is the total available credit for that recharge after conversion. The effect of this formula is that the **amount paid is refunded in proportion to the unconsumed credit out of the total credit after conversion**; bonus credit is not converted into cash.
-
-(2) The **refundable amount** is the base refundable amount less the following items actually incurred:
-
-> **Refundable amount = Base refundable amount − Third-party payment channel fees − Taxes corresponding to invoices already issued**
-
-1. **Third-party payment channel fees**: the fees actually charged to the Company by the payment channel for the movement of funds, deducted on a cost basis; the Company will provide a breakdown of the amount on your request.
-2. **Taxes corresponding to invoices already issued**: handled under Article 7(4); where the original invoice should be returned or a red-letter reversal made but has not been completed, the corresponding tax is deducted on a cost basis.
-
-(3) Where an account holds several recharges with different conversion rates, the base refundable amount is calculated **first-in, first-out** for each, and the refund is paid after the deductions under paragraph (2) are combined.
-
-(4) Where a **termination by the Company** or **force majeure** requires a full refund under the User Agreement, the deductions in paragraph (2) do not apply.
-
-**Article 17　[Refund process and timelines]**
-
-(1) Within **7 business days** of receiving a refund request that meets the requirements of this Agreement, the Company calculates the refundable amount under Article 16 and completes the refund via the original payment route. Delays caused by the processing times of banks or third-party payment institutions are not counted towards that period.
-
-(2) To meet anti-money-laundering and fund-security obligations, the Company may require you to provide identification, source-of-funds and purpose-of-funds information in any of the following cases; the refund period is extended accordingly, **by no more than 15 business days**:
-
-1. the same account requests refunds cumulatively exceeding **RMB 500,000** within 30 days **without any actual consumption**;
-2. the recharge funds come from a third party whose verified identity does not match the Platform account;
-3. other cases where verification is required by law, regulation or a competent authority.
-
-(3) If verification shows that **none** of the above applies, the Company shall immediately resume counting the refund period. **If verification fails or you decline to cooperate**, the Company may decline that refund, handle the matter under the User Agreement and, where necessary, report to the competent authority.
-
-**Article 18　[Amounts not refundable]**
-
-(1) Fees for services actually consumed;
-
-(2) Bonus credit, coupons, trial credit and other portions **not paid in cash**;
-
-(3) Third-party payment channel fees and the taxes corresponding to invoices already issued, which are deducted on a cost basis under Article 16(2);
-
-(4) Where your account is terminated under the User Agreement and there are payable fees, liquidated damages or compensation confirmed by an effective legal instrument, the remaining balance after deduction is still refundable — **except in cases of serious unlawful conduct**.
+(4) При возврате средств **по любой части, по которой уже выставлен счёт-фактура, Вы обязаны возвратить первоначальный счёт-фактуру или оформить сторно**. До завершения указанных действий Компания вправе удержать соответствующий налог из возвращаемой суммы и выплатить его без процентов после оформления сторно.
 
 ---
 
-## Chapter 6　Reconciliation and fund security
+## Раздел 3. Поэтапное пополнение
 
-**Article 19　[Monthly statement]**
+**Статья 8. [Схема]**
 
-(1) The Company delivers the previous month's statement by the **5th of each month**, stating the **opening balance, a summary of that month's consumption details, recharges received that month, the closing balance and refund records**.
+(1) Вы вправе согласовать с Компанией в письменной форме поэтапное пополнение, разделив общую сумму договора на **четыре части, поступающие по одной части в неделю**, при этом суммы и сроки подтверждаются обеими сторонами в письменной форме.
 
-(2) **You shall raise any objection to the statement in writing within 10 days of receipt**; if you do not, the statement is deemed confirmed. A confirmed statement is the basis for settlement and for transfers from the jointly controlled account.
+(2) График, суммы частей и коэффициент конвертации устанавливаются **подтверждением пополнения или дополнительным соглашением, отдельно подписанным** сторонами. При отсутствии такого определения общая сумма делится поровну на четыре части, поступающие в один и тот же день каждой недели начиная с согласованной даты старта.
 
-(3) If an objection is verified and an error exists, the Company shall correct and re-deliver the statement within **3 business days** of verification; the correction does not affect the undisputed parts.
+**Статья 9. [Последствия поэтапного пополнения]**
 
-**Article 20　[Separate recording of balances and priority on liquidation]**
+(1) Договорная скидка фиксируется на уровне, соответствующем **общей сумме договора по всем частям**, и **не понижается в связи с поступлением средств частями**.
 
-(1) **The Company shall record each customer's recharge balance truthfully and separately in its reconciliation system, and shall not commingle it with the Company's own funds.**
+(2) При поступлении любой части скидка на эту часть вступает в силу немедленно и применяется ко всему доступному лимиту.
 
-(2) If the Company is dissolved, liquidated or becomes bankrupt, your unconsumed balance is a **liability for prepaid services**, and its ranking is determined under the Enterprise Bankruptcy Law of the People's Republic of China, **ahead of shareholder distributions**.
+(3) **Вы вправе пополнить последующие части досрочно исходя из Вашего фактического использования**; досрочное поступление не влияет на оставшиеся части по исходному графику и не изменяет зафиксированный уровень скидки.
 
-(3) If the Company merges, splits, changes control or undergoes a major business change, it shall give you **30 calendar days'** notice; the transferee or successor shall assume the balance obligations under this Agreement, **failing which you may require the unconsumed balance to be refunded in full**.
+(4) Если Вы не вносите часть в установленный срок, Компания вправе направить письменное уведомление. **Если платёж остаётся невнесённым по истечении 15 дней с такого уведомления**, Компания вправе пересчитать скидку на уже полученную сумму по уровню, **соответствующему полученной сумме**, и произвести расчёт разницы, которая применяется в качестве корректировки доступного лимита, а не взыскивается в денежной форме.
 
----
+**Статья 10. [Защита встречного предоставления при поэтапном пополнении]**
 
-## Chapter 7　Jointly controlled account (for large recharges)
+Компания обязуется, что при поэтапном пополнении **до поступления каждой части она не будет ограничивать Ваш Сервис со ссылкой на общую сумму договора, которая ещё не получена**. Доступный лимит, соответствующий уже внесённым Вами суммам, может использоваться в обычном порядке в соответствии с настоящим Соглашением, **независимо от того, поступают ли последующие части в установленные сроки**.
 
-**Article 21　[Availability and opening]**
+**Статья 11. [Невнесение платежа в срок]**
 
-(1) A customer whose single or cumulative recharge reaches **RMB 300,000** may open a **jointly controlled account** with the Company at a bank; for a large-recharge customer, cooperating in opening the account is **an obligation of the Company**.
+(1) Если Компания пересчитывает уровень скидки в соответствии с пунктом (4) Статьи 9, она направляет Вам **письменное уведомление за 5 рабочих дней** с указанием скорректированных расчётных данных.
 
-(2) The account is managed by **both parties' specimen seals** or by **two-person authorisation on online banking**; **neither party may withdraw from it unilaterally**.
+(2) Если Вы вносите неоплаченные части в течение **5 рабочих дней** с момента получения такого уведомления, Компания восстанавливает исходный договорный уровень скидки и корректирует ретроактивно доступный лимит начиная с даты корректировки.
 
-(3) The cost of opening and maintaining the account is **borne by the Company**; additional costs caused by your own circumstances (for example, changing the account-holding entity or frequently changing specimen seals) are borne by you.
-
-(4) The detailed operating rules of the account follow the **Jointly Controlled Account Supervision Agreement** signed by you, the Company and the bank. To the extent that agreement and this Agreement differ on the operation of the account, the Supervision Agreement prevails.
-
-**Article 22　[Arrival of funds and monthly transfers]**
-
-(1) If you choose the jointly controlled account model, **recharge funds go directly into that account and not into the Company's operating account**.
-
-(2) Within **5 business days** after both parties confirm the monthly statement, the Company transfers the confirmed amount actually consumed from the jointly controlled account to the Company's operating account for upstream resource procurement and service delivery.
-
-(3) **No one may transfer funds out of the jointly controlled account without joint confirmation by both parties.**
-
-(4) If the parties dispute the amount to be transferred, the disputed portion is **not transferred** pending resolution; the undisputed portion is transferred normally and service delivery is unaffected.
-
-**Article 23　[Refund route and closing the account]**
-
-(1) On a refund request, the unconsumed balance is **returned directly from the jointly controlled account via the original payment route**, without passing through the Company's operating account.
-
-(2) If you end the cooperation or this Agreement is terminated, **all untransferred balance in the jointly controlled account is returned to you** and the account may be closed; both parties shall cooperate in the closing formalities within **10 business days**.
-
-**Article 24　[Disclosure of use of funds]**
-
-(1) To build trust, **the Company may, on your written request**, provide the names of the principal suppliers in its current upstream resource procurement together with summaries of payment vouchers (commercially sensitive details may be redacted) to evidence the actual use of transferred funds.
-
-(2) Such disclosure is available no more than once per calendar quarter, and the Company shall reply within **10 business days** of the written request. Where information involves trade secrets or may not lawfully be disclosed, the Company may decline and explain why.
+(3) Компания вправе взыскать с Вас разумные расходы, уже понесённые ею вследствие нарушения графика (например, принятые обязательства по закупке ресурсов апстрима), после их письменной детализации, **в пределах фактически понесённых и подтверждаемых сумм**.
 
 ---
 
-## Chapter 8　Rights and obligations of the parties; limitation of liability
+## Раздел 4. Учёт, потребление и уведомления о лимите
 
-**Article 25　[Obligations of the Company]**
+**Статья 12. [Тарификация по учёту и основание измерения]**
 
-(1) To record and keep your recharge balance and consumption details truthfully, ensuring the accounts are verifiable, exportable and traceable;
+(1) Доступный лимит списывается в реальном времени в соответствии с **фактическим использованием API** по правилам тарификации, опубликованным на Платформе.
 
-(2) To perform its alert, notice, reconciliation and refund obligations under this Agreement;
+(2) **Измерения основываются на данных, зафиксированных Платформой.** Платформа фиксирует время, идентификатор модели, количество входящих и исходящих токенов, код статуса и задержку каждого запроса и формирует на основе этих данных детализацию платы и выписки.
 
-(3) To adopt technical and organisational measures consistent with industry standards to protect the integrity and confidentiality of funds and account data;
+(3) Одна и та же модель может иметь разные цены по различным маршрутам и у различных апстрим-поставщиков моделей. Платформа тарифицирует в соответствии с **фактическим результатом маршрутизации** и указывает соответствующие уровни на странице цен.
 
-(4) Not to use your recharge balance for any purpose other than those set out in this Agreement.
+**Статья 13. [Детализация использования и запросы]**
 
-**Article 26　[Your obligations]**
+(1) Детализация начислений **доступна в реальном времени**. Вы можете экспортировать сведения об использовании и начислениях за любой период из консоли, и такая выгрузка может служить основанием для сверки.
 
-(1) To make recharges using an entity whose verified identity matches your Platform account, and to ensure the funds come from lawful sources;
+(2) Детальные данные хранятся **не менее 12 месяцев** с даты их формирования.
 
-(2) **Not to use prepaid funds for money laundering, cash-out, collection and payment on behalf of others, or the transfer of unlawful funds, or for any other unlawful or irregular activity**;
+**Статья 14. [Уведомления о лимите и приостановление сервиса]**
 
-(3) To check notices promptly and to raise objections to statements within the agreed period;
+(1) **Уведомление**: когда доступный лимит опускается ниже **110%** предполагаемого потребления за текущий месяц, Платформа уведомляет Вас согласованным сторонами способом (сообщение в приложении, электронная почта или SMS).
 
-(4) To bear the consequences of failed or delayed refunds caused by account details you supplied incorrectly.
+(2) **Приостановление**: если доступный лимит исчерпан, Платформа вправе приостановить сервис. **За исключением случаев, когда Вы нарушили правила использования или допустили просрочку оплаты, Платформа направляет Вам письменное уведомление за 48 часов (включая электронную почту и сообщение в приложении) до приостановления.**
 
-**Article 27　[Limitation of liability]**
+(3) **Последствия приостановления**: приостановление **не влияет** на хранение Ваших данных, доступ к детализации использования и Ваше право на возврат не израсходованного остатка. Сервис возобновляется немедленно после пополнения.
 
-(1) **To the maximum extent permitted by law, the Company's liability for compensation under this Agreement is limited to the amount you have actually paid and not consumed.**
+(4) **Израсходованные средства возврату не подлежат**: плата за фактически потреблённые токены возврату не подлежит независимо от того, воспользовались ли Вы фактически результатом (например, прекратили использование по причине неудачной формулировки запроса, изменения требований или неудовлетворённости результатом).
 
-(2) The limitation above does not apply to: **the Company's wilful misconduct or gross negligence; the Company's breach of its balance-custody obligations under Article 25; or any other case in which liability may not lawfully be limited or excluded.**
-
-(3) The Company is not liable for breach where service is suspended or delayed for reasons **beyond its reasonable control**, such as force majeure, governmental action, cross-border link interruption or changes in upstream model provider policies; however it shall notify you promptly and **refund the unconsumed balance in full**.
+(5) Если запрос не выполнен вследствие **ошибки на стороне Платформы** (сбой шлюза либо сбой маршрутизации, при котором запрос не достиг апстрима), он не тарифицируется, а любая удержанная сумма возвращается автоматически.
 
 ---
 
-## Chapter 9　Miscellaneous
+## Раздел 5. Возврат не израсходованного остатка
 
-**Article 28　[Amendment and effectiveness]**
+**Статья 15. [Право на возврат средств]**
 
-(1) This Agreement takes effect for you when you **complete a recharge** or **sign a recharge confirmation separately**, whichever is later.
+(1) **Вы вправе в любой момент потребовать возврата не израсходованной части остатка пополнения. Из возвращаемой суммы удерживаются фактически взимаемые третьими платёжными каналами комиссии и налоги, соответствующие уже выставленным счетам; сверх этих удержаний Компания не взимает комиссию за возврат средств.**
 
-(2) The Company may revise this Agreement as necessary to reflect laws and regulations, regulatory requirements, payment-channel rules or product iteration. Revised versions are published on the Platform and **notified to you at least 7 calendar days in advance**; for terms with a material impact on you — such as refund conditions, limitation of liability or dispute resolution — **15 calendar days'** notice is given.
+(2) Возврат средств осуществляется, как правило, **по исходному платёжному маршруту**, то есть на первоначальный платёжный счёт. Если этот счёт закрыт или недоступен, Вы вправе потребовать выплату на банковский счёт, **подтверждённая личность владельца которого соответствует Вашему аккаунту на Платформе**, при условии представления необходимых подтверждающих документов.
 
-(3) **A published revision applies to recharges made after the revision; a recharge balance existing before the revision remains governed by the version in force at the time of that recharge.** This rule ensures that a revision cannot reduce the refundable amount of, or raise the exit threshold for, your existing balance.
+(3) Заявления о возврате средств направляются через консоль либо на адрес **finance@uter.ai**.
 
-(4) The Platform keeps historical versions of this Agreement for traceability.
+**Статья 16. [Расчёт суммы возврата]**
 
-**Article 29　[Notices and service]**
+(1) **Базовая подлежащая возврату сумма** рассчитывается следующим образом:
 
-(1) Notices from the Company may be served by any of the following means and are deemed served on dispatch: **in-app message (deemed served on sending), registered email (deemed served 24 hours after sending), console announcement (deemed served on publication), SMS (deemed served on sending)**.
+1. Если коэффициент конвертации составляет **1,00** (то есть внесённая сумма равна доступному лимиту):
 
-(2) Notices concerning **discount adjustments, suspension of service, refund verification or material amendments to this Agreement** are served by **two or more** means at the same time.
+> **Базовая подлежащая возврату сумма = Внесённая сумма − Фактически израсходованная сумма**
 
-(3) You are obliged to keep your registered email address and mobile number valid. Notices from you to the Company should be sent to **finance@uter.ai** (funds and accounts), **legal@uter.ai** (legal and compliance) or **bd@uter.ai** (commercial and contracts).
+2. Если коэффициент конвертации **больше 1,00** (то есть лимит был пересчитан со скидкой или с начислением бонусного лимита):
 
-**Article 30　[Governing law and dispute resolution]**
+> **Базовая подлежащая возврату сумма = Внесённая сумма × (1 − Фактически израсходованная сумма ÷ Общий лимит после конвертации)**
 
-(1) The formation, validity, interpretation, performance and dispute resolution of this Agreement are governed by **the laws of the People's Republic of China** (excluding conflict-of-law rules).
+где «общий лимит после конвертации» — это весь доступный лимит по данному пополнению после конвертации. Смысл этой формулы состоит в том, что **внесённая сумма возвращается пропорционально доле не израсходованного лимита в общем лимите после конвертации**; бонусный лимит в денежные средства не конвертируется.
 
-(2) Any dispute arising out of or in connection with this Agreement shall first be resolved through friendly negotiation; failing that, either party may bring proceedings before **the competent people's court in the place where Shenzhen Uter Network Technology Co., Ltd. is domiciled (Shenzhen)**.
+(2) **Подлежащая возврату сумма** равна базовой подлежащей возврату сумме за вычетом следующих фактически понесённых позиций:
 
-(3) During dispute resolution, the parties shall continue to perform the other terms of this Agreement; **the Company shall not suspend your normal service for the undisputed portion because of the dispute**.
+> **Подлежащая возврату сумма = Базовая подлежащая возврату сумма − Комиссии сторонних платёжных каналов − Налоги, соответствующие уже выставленным счетам**
 
-**Article 31　[Other terms]**
+1. **Комиссии сторонних платёжных каналов**: комиссии, фактически взимаемые платёжным каналом с Компании за движение средств, удерживаемые по себестоимости; Компания предоставит Вам детализацию суммы по Вашему запросу.
+2. **Налоги, соответствующие уже выставленным счетам**: применяется порядок Статьи 7(4); если первоначальный счёт-фактуру надлежит вернуть либо оформить сторно, но это не сделано, соответствующий налог удерживается по себестоимости.
 
-(1) **Entire agreement**: this Agreement and the User Agreement together constitute the entire agreement between the parties on prepaid funds.
+(3) Если на счёте имеется несколько пополнений с различными коэффициентами конвертации, базовая подлежащая возврату сумма рассчитывается по каждому из них методом «первым поступил — первым списан», а возврат средств осуществляется после объединения удержаний, предусмотренных пунктом (2).
 
-(2) **Severability**: if any term of this Agreement is held invalid or unenforceable, the remaining terms remain in effect.
+(4) Если **прекращение со стороны Компании** или **форс-мажор** требуют полного возврата в соответствии с Соглашением о пополнении, удержания, предусмотренные пунктом (2), не применяются.
 
-(3) **Assignment**: you may not assign your rights and obligations under this Agreement without the Company's written consent; the Company may assign this Agreement in the event of a merger, restructuring or adjustment among affiliates, with prior notice to you.
+**Статья 17. [Процедура и сроки возврата]**
 
-(4) **No waiver**: the Company's failure or delay in exercising any right under this Agreement does not constitute a waiver of that right.
+(1) В течение **7 рабочих дней** с момента получения заявления о возврате, отвечающего требованиям настоящего Соглашения, Компания рассчитывает подлежащую возврату сумму в соответствии со Статьёй 16 и осуществляет возврат по исходному платёжному маршруту. Задержки, обусловленные сроками обработки в банках или сторонних платёжных учреждениях, в этот срок не засчитываются.
 
-(5) **Headings**: article headings are for ease of reading only and do not affect interpretation.
+(2) Для выполнения обязанностей по противодействию отмыванию денежных средств и обеспечению безопасности средств Компания вправе потребовать от Вас сведения о личности, источнике и назначении средств в любом из следующих случаев; срок возврата средств соответственно продлевается, **но не более чем на 15 рабочих дней**:
 
-(6) **Language**: the **Chinese version** of this Agreement prevails. English or other translations are provided for understanding only; where a translation conflicts with the Chinese version, **the Chinese version prevails**.
+1. один и тот же счёт запрашивает возвраты средств совокупно на сумму свыше **RMB 500,000** в течение 30 дней **при отсутствии какого-либо фактического потребления**;
+2. средства пополнения поступают от третьего лица, подтверждённая личность которого не соответствует аккаунту на Платформе;
+3. иные случаи, когда проверка требуется в силу закона, нормативного акта или требования компетентного органа.
 
-(7) **Survival**: after termination of this Agreement, terms that by their nature should survive (such as refund of balance, limitation of liability and dispute resolution) continue in effect.
+(3) Если проверка показывает, что **ни один** из указанных случаев не имеет места, Компания немедленно возобновляет течение срока возврата средств. **Если проверка не пройдена либо Вы отказываетесь от сотрудничества**, Компания вправе отказать в таком возврате, урегулировать вопрос в соответствии с Соглашением о пополнении и, при необходимости, направить сообщение в компетентный орган.
+
+**Статья 18. [Суммы, не подлежащие возврату]**
+
+(1) Плата за фактически потребленные услуги;
+
+(2) бонусный лимит, купоны, пробный лимит и иные части, **не оплаченные денежными средствами**;
+
+(3) комиссии сторонних платёжных каналов и налоги, соответствующие уже выставленным счетам, удерживаемые по себестоимости в соответствии со Статьёй 16(2);
+
+(4) если Ваш аккаунт прекращён в соответствии с Соглашением о пополнении и имеется задолженность, неустойка или возмещение, подтверждённые вступившим в силу юридическим актом, остаток за вычетом удержаний всё равно подлежит возврату, — **за исключением случаев серьёзного противоправного поведения**.
+
+---
+
+## Раздел 6. Сверка и безопасность средств
+
+**Статья 19. [Ежемесячная выписка]**
+
+(1) Компания направляет выписку за предыдущий месяц **5-го числа каждого месяца**, содержащую **остаток на начало периода, сводку детализации потребления за соответствующий месяц, поступившие за этот месяц пополнения, остаток на конец периода и записи о возвратах средств**.
+
+(2) **Вы обязаны высказать возражения по выписке в письменной форме в течение 10 дней с момента её получения**; в противном случае выписка считается подтверждённой. Подтверждённая выписка является основанием для расчётов и для перечислений с совместно управляемого счёта.
+
+(3) Если возражение подтверждено и обнаружена ошибка, Компания вносит исправление и повторно направляет выписку в течение **3 рабочих дней** с момента подтверждения; исправление не затрагивает бесспорные части.
+
+**Статья 20. [Раздельный учёт остатков и приоритет при ликвидации]**
+
+(1) **Компания обязана достоверно и раздельно учитывать остаток пополнения каждого клиента в своей системе сверки и не смешивать его с собственными средствами Компании.**
+
+(2) В случае ликвидации, прекращения деятельности Компании или её банкротства Ваш не израсходованный остаток представляет собой **обязательство по предоплаченным услугам**, и его очерёдность определяется в соответствии с Законом Китайской Народной Республики о банкротстве предприятий, **с приоритетом перед распределениями акционерам**.
+
+(3) В случае слияния Компании, разделения, смены контроля или существенного изменения бизнеса она направляет Вам уведомление за **30 календарных дней**; правопреемник или преемник принимает обязательства по остатку в соответствии с настоящим Соглашением, **в противном случае Вы вправе потребовать полного возврата не израсходованного остатка**.
+
+---
+
+## Раздел 7. Совместно управляемый счёт (для крупных пополнений)
+
+**Статья 21. [Доступность и открытие]**
+
+(1) Клиент, разовое или совокупное пополнение которого достигает **RMB 300,000**, вправе открыть совместно с Компанией в банке **совместно управляемый счёт**; для клиента с крупным пополнением содействие в открытии счёта является **обязанностью Компании**.
+
+(2) Счёт управляется **печатями обеих сторон** либо посредством **двухстороннего подтверждения в онлайн-банке**; **ни одна из сторон не вправе единолично выводить средства**.
+
+(3) Расходы на открытие и ведение счёта **несёт Компания**; дополнительные расходы, вызванные Вашими собственными обстоятельствами (например, сменой держателя счёта или частой сменой печатей), несёте Вы.
+
+(4) Детальные правила ведения счёта определяются **Соглашением о надзоре за совместно управляемым счётом**, подписанным Вами, Компанией и банком. В той мере, в какой такое соглашение и настоящее Соглашение расходятся в части ведения счёта, преимущественную силу имеет Соглашение о надзоре.
+
+**Статья 22. [Зачисление средств и ежемесячные перечисления]**
+
+(1) Если Вы выбираете модель совместно управляемого счёта, **средства пополнения поступают непосредственно на этот счёт, а не на операционный счёт Компании**.
+
+(2) В течение **5 рабочих дней** с момента подтверждения выписки ежемесячного расчёта обеими сторонами Компания перечисляет с совместно управляемого счёта на свой операционный счёт подтверждённую фактически израсходованную сумму для закупки апстрим-ресурсов и предоставления Сервиса.
+
+(3) **Никто не вправе перечислять средства с совместно управляемого счёта без совместного подтверждения обеих сторон.**
+
+(4) В случае спора сторон о подлежащей перечислению сумме оспариваемая часть **не перечисляется** до разрешения спора; бесспорная часть перечисляется в обычном порядке, а предоставление Сервиса не нарушается.
+
+**Статья 23. [Маршрут возврата и закрытие счёта]**
+
+(1) При поступлении заявления о возврате средств не израсходованный остаток **возвращается непосредственно с совместно управляемого счёта по исходному платёжному маршруту**, без прохождения через операционный счёт Компании.
+
+(2) В случае прекращения сотрудничества или расторжения настоящего Соглашения **весь неперечисленный остаток совместно управляемого счёта возвращается Вам**, и счёт может быть закрыт; обе стороны обязаны сотрудничать при закрытии счёта в течение **10 рабочих дней**.
+
+**Статья 24. [Раскрытие информации об использовании средств]**
+
+(1) В целях формирования доверия **Компания вправе по Вашему письменному запросу** предоставить наименования основных поставщиков при осуществлении текущих закупок апстрим-ресурсов вместе с копиями платёжных документов с засекречиванием коммерчески чувствительных деталей в подтверждение фактического использования перечисленных средств.
+
+(2) Такое раскрытие предоставляется не более одного раза в календарный квартал, и Компания обязана ответить в течение **10 рабочих дней** с момента получения письменного запроса. Если информация затрагивает коммерческую тайну или не может быть раскрыта в силу закона, Компания вправе отказать с объяснением причин.
+
+---
+
+## Раздел 8. Права и обязанности сторон; ограничение ответственности
+
+**Статья 25. [Обязанности Компании]**
+
+(1) Достоверно учитывать и хранить остаток Вашего пополнения и детализацию потребления, обеспечивая проверяемость, выгружаемость и отслеживаемость расчётов;
+
+(2) Исполнять свои обязанности по уведомлениям, сверке и возврату средств, установленные настоящим Соглашением;
+
+(3) Принимать технические и организационные меры, соответствующие отраслевым стандартам, для защиты целостности и конфиденциальности средств и данных аккаунта;
+
+(4) Не использовать Ваш остаток пополнения ни в каких целях, кроме предусмотренных настоящим Соглашением.
+
+**Статья 26. [Ваши обязанности]**
+
+(1) Вносить пополнения с использованием юридического лица, подтверждённая личность которого соответствует Вашему аккаунту на Платформе, и обеспечивать законность источника средств;
+
+(2) **Не использовать предоплаченные средства для отмывания денежных средств, обналичивания, приёма и перевода платежей за других лиц, перевода незаконных средств либо для иной незаконной или ненормативной деятельности**;
+
+(3) Своевременно проверять уведомления и высказывать возражения по выписке в согласованный срок;
+
+(4) Несёте последствия несостоявшихся или задержанных возвратов вследствие неточно предоставленных Вами платёжных реквизитов аккаунта.
+
+**Статья 27. [Ограничение ответственности]**
+
+(1) **В максимально допустимом законом объёме ответственность Компании по возмещению убытков по настоящему Соглашению ограничивается внесённой Вами и не израсходованной суммой.**
+
+(2) Указанное ограничение не применяется к следующим случаям: **умышленное противоправное действие или грубая неосторожность Компании; нарушение Компанией своих обязанностей по хранению остатка согласно Статье 25; а также любые иные случаи, в которых ответственность не может быть ограничена или исключена в силу закона.**
+
+(3) Компания не несёт ответственности за нарушение договора в случае приостановления или задержки Сервиса по причинам **вне её разумного контроля**, таким как форс-мажор, действия государственных органов, перебои трансграничных каналов или изменения политик апстрим-поставщиков моделей; однако она обязана оперативно уведомить Вас и **полностью вернуть не израсходованный остаток**.
+
+---
+
+## Раздел 9. Прочие положения
+
+**Статья 28. [Изменение и вступление в силу]**
+
+(1) Настоящее Соглашение вступает в силу для Вас в момент, когда Вы **вносите пополнение** либо **отдельно подписываете подтверждение пополнения**, в зависимости от того, что наступит позднее.
+
+(2) Компания вправе изменять настоящее Соглашение по мере необходимости с учётом законодательства и нормативных актов, требований регуляторов, правил платёжных каналов или развития продукта. Изменённые редакции публикуются на Платформе и **доводятся до Вашего сведения не менее чем за 7 календарных дней**; для условий, оказывающих на Вас существенное влияние, таких как условия возврата средств, ограничение ответственности или разрешение споров, предоставляется **15 календарных дней**.
+
+(3) **Опубликованная редакция применяется к пополнениям, совершённым после её публикации; остаток пополнения, существовавший до редакции, регулируется редакцией, действовавшей на момент соответствующего пополнения.** Такое правило гарантирует, что редакция не может уменьшить подлежащую возврату сумму существующего у Вас остатка или повысить порог выхода из него.
+
+(4) Платформа сохраняет исторические редакции настоящего Соглашения для возможности отслеживания.
+
+**Статья 29. [Уведомления и вручение]**
+
+(1) Уведомления Компании могут вручаться любым из следующих способов и считаются вручёнными с момента отправки: **сообщение в приложении (считается вручённым с момента отправки), заказное письмо по электронной почте (считается вручённым по истечении 24 часов с момента отправки), объявление в консоли (считается вручённым с момента публикации), SMS-сообщение (считается вручённым с момента отправки)**.
+
+(2) Уведомления, касающиеся **корректировки скидок, приостановления сервиса, проверки возврата средств или существенных изменений настоящего Соглашения**, вручаются **двумя или более** способами одновременно.
+
+(3) Вы обязаны обеспечивать актуальность зарегистрированного адреса электронной почты и номера мобильного телефона. Уведомления от Вас в Компанию следует направлять на адрес **finance@uter.ai** (средства и счета), **legal@uter.ai** (юридические вопросы и соответствие требованиям) или **bd@uter.ai** (коммерческие вопросы и договоры).
+
+**Статья 30. [Применимое право и разрешение споров]**
+
+(1) Заключение, действительность, толкование, исполнение и разрешение споров по настоящему Соглашению регулируются **законодательством Китайской Народной Республики** (за исключением коллизиционных норм).
+
+(2) Любой спор, возникающий из настоящего Соглашения или связанный с ним, подлежит первоначальному разрешению путём переговоров; в случае недостижения согласия любая из сторон вправе обратиться за защитой в **компетентный народный суд по месту нахождения Shenzhen Uter Network Technology Co., Ltd. (Шэньчжэнь)**.
+
+(3) В ходе разрешения спора стороны продолжают исполнять остальные условия настоящего Соглашения; **Компания не вправе приостановить Ваш обычный сервис в части бесспорных требований из-за наличия спора**.
+
+**Статья 31. [Иные условия]**
+
+(1) **Полнота соглашения**: настоящее Соглашение и Соглашение о пополнении образуют полное соглашение между сторонами в отношении предоплаченных средств.
+
+(2) **Делимость положений**: если какое-либо условие настоящего Соглашения признано недействительным или неисполнимым, остальные условия сохраняют силу.
+
+(3) **Уступка**: без письменного согласия Компании Вы не вправе уступать свои права и обязанности по настоящему Соглашению; Компания вправе уступить настоящее Соглашение в случае слияния, реорганизации или изменения структуры аффилированных лиц с предварительным уведомлением Вас.
+
+(4) **Отсутствие отказа от права**: неосуществление или задержка Компанией в осуществлении какого-либо права по настоящему Соглашению не являются отказом от такого права.
+
+(5) **Заголовки**: заголовки статей приведены исключительно для удобства чтения и не влияют на толкование.
+
+(6) **Язык**: **китайская редакция** настоящего Соглашения имеет приоритет. Английский перевод и иные переводы предоставляются только для ознакомления; в случае противоречия между переводом и китайской редакцией **применяется китайская редакция**.
+
+(7) **Сохранение действия**: после расторжения настоящего Соглашения условия, которые по своей природе должны сохранять силу (такие как возврат остатка, ограничение ответственности и разрешение споров), продолжают действовать.

@@ -1,88 +1,88 @@
-# sora
+# Sora格式
 
-## Create Video 
+## 建立影片 
 
-OpenAI 兼容的视频生成接口。
+OpenAI 相容的影片生成介面。
 
-参考文档: https://platform.openai.com/docs/api-reference/videos/create
+參考文件: https://platform.openai.com/docs/api-reference/videos/create
 
 `POST` `/v1/videos`
 
-### 请求体（`multipart/form-data`）
+### 請求體（`multipart/form-data`）
 
-| 字段 | 类型 | 必填 | 说明 |
+| 欄位 | 型別 | 必填 | 說明 |
 |---|---|---|---|
-| `model` | string | 否 | 模型/风格 ID |
-| `prompt` | string | 否 | 文本描述提示词 |
-| `image` | string | 否 | 图片输入 (URL 或 Base64) |
-| `duration` | number | 否 | 视频时长（秒） |
-| `width` | integer | 否 | 视频宽度 |
-| `height` | integer | 否 | 视频高度 |
-| `fps` | integer | 否 | 视频帧率 |
-| `seed` | integer | 否 | 随机种子 |
-| `n` | integer | 否 | 生成视频数量 |
-| `response_format` | string | 否 | 响应格式 |
-| `user` | string | 否 | 用户标识 |
-| `metadata` | object | 否 | 扩展参数 (如 negative_prompt, style, quality_level 等) |
+| `model` | string | 否 | 模型/風格 ID |
+| `prompt` | string | 否 | 文字描述提示詞 |
+| `image` | string | 否 | 圖片輸入 (URL 或 Base64) |
+| `duration` | number | 否 | 影片時長（秒） |
+| `width` | integer | 否 | 影片寬度 |
+| `height` | integer | 否 | 影片高度 |
+| `fps` | integer | 否 | 影片幀率 |
+| `seed` | integer | 否 | 隨機種子 |
+| `n` | integer | 否 | 生成影片數量 |
+| `response_format` | string | 否 | 響應格式 |
+| `user` | string | 否 | 使用者標識 |
+| `metadata` | object | 否 | 擴充套件引數 (如 negative_prompt, style, quality_level 等) |
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
-| `200` | 成功创建视频任务 |
-| `400` | 请求参数错误 |
+| `200` | 成功建立影片任務 |
+| `400` | 請求引數錯誤 |
 
-#### `200` 响应字段
+#### `200` 響應欄位
 
-| 字段 | 类型 | 说明 |
+| 欄位 | 型別 | 說明 |
 |---|---|---|
-| `id` | string | 视频 ID |
-| `object` | string | 对象类型 |
+| `id` | string | 影片 ID |
+| `object` | string | 物件型別 |
 | `model` | string | 使用的模型 |
-| `status` | string | 任务状态 |
-| `progress` | integer | 进度百分比 |
-| `created_at` | integer | 创建时间戳 |
-| `seconds` | string | 视频时长 |
-| `completed_at` | integer | 完成时间戳 |
-| `expires_at` | integer | 过期时间戳 |
-| `size` | string | 视频尺寸 |
-| `error.message` | string | 错误信息 |
-| `error.code` | string | 错误码 |
-| `metadata` | object | 额外元数据 |
+| `status` | string | 任務狀態 |
+| `progress` | integer | 進度百分比 |
+| `created_at` | integer | 建立時間戳 |
+| `seconds` | string | 影片時長 |
+| `completed_at` | integer | 完成時間戳 |
+| `expires_at` | integer | 過期時間戳 |
+| `size` | string | 影片尺寸 |
+| `error.message` | string | 錯誤資訊 |
+| `error.code` | string | 錯誤碼 |
+| `metadata` | object | 額外後設資料 |
 
-#### `400` 响应字段
+#### `400` 響應欄位
 
-| 字段 | 类型 | 说明 |
+| 欄位 | 型別 | 說明 |
 |---|---|---|
-| `error.message` | string | 错误信息 |
-| `error.type` | string | 错误类型 |
-| `error.param` | string | 相关参数 |
-| `error.code` | string | 错误代码 |
+| `error.message` | string | 錯誤資訊 |
+| `error.type` | string | 錯誤型別 |
+| `error.param` | string | 相關引數 |
+| `error.code` | string | 錯誤程式碼 |
 
-## Get Video Task Status 
+## 獲取影片任務狀態 
 
-OpenAI 兼容的视频任务状态查询接口。
+OpenAI 相容的影片任務狀態查詢介面。
 
-返回视频任务的详细状态信息。
+返回影片任務的詳細狀態資訊。
 
 `GET` `/v1/videos/{task_id}`
 
-### 请求参数
+### 請求引數
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| 引數名 | 位置 | 型別 | 必填 | 說明 |
 |---|---|---|---|---|
-| `task_id` | path | string | 是 | 视频任务 ID |
+| `task_id` | path | string | 是 | 影片任務 ID |
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
-| `200` | 成功获取视频任务状态 |
-| `404` | 任务不存在 |
+| `200` | 成功獲取影片任務狀態 |
+| `404` | 任務不存在 |
 
-#### `200` 响应字段
+#### `200` 響應欄位
 
-| 字段 | 类型 | 说明 |
+| 欄位 | 型別 | 說明 |
 |---|---|---|
 | `id` | string | — |
 | `object` | string | — |
@@ -92,41 +92,41 @@ OpenAI 兼容的视频任务状态查询接口。
 | `created_at` | integer | — |
 | `seconds` | string | — |
 
-#### `404` 响应字段
+#### `404` 響應欄位
 
-| 字段 | 类型 | 说明 |
+| 欄位 | 型別 | 說明 |
 |---|---|---|
-| `error.message` | string | 错误信息 |
-| `error.type` | string | 错误类型 |
-| `error.param` | string | 相关参数 |
-| `error.code` | string | 错误代码 |
+| `error.message` | string | 錯誤資訊 |
+| `error.type` | string | 錯誤型別 |
+| `error.param` | string | 相關引數 |
+| `error.code` | string | 錯誤程式碼 |
 
-## Get Video Content
+## 獲取影片內容
 
-获取已完成视频任务的视频文件内容。
+獲取已完成影片任務的影片檔案內容。
 
-此接口会代理返回视频文件流。
+此介面會代理返回影片檔案流。
 
 `GET` `/v1/videos/{task_id}/content`
 
-### 请求参数
+### 請求引數
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| 引數名 | 位置 | 型別 | 必填 | 說明 |
 |---|---|---|---|---|
-| `task_id` | path | string | 是 | 视频任务 ID |
+| `task_id` | path | string | 是 | 影片任務 ID |
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
-| `200` | 成功获取视频内容 |
-| `404` | 视频不存在或未完成 |
+| `200` | 成功獲取影片內容 |
+| `404` | 影片不存在或未完成 |
 
-#### `404` 响应字段
+#### `404` 響應欄位
 
-| 字段 | 类型 | 说明 |
+| 欄位 | 型別 | 說明 |
 |---|---|---|
-| `error.message` | string | 错误信息 |
-| `error.type` | string | 错误类型 |
-| `error.param` | string | 相关参数 |
-| `error.code` | string | 错误代码 |
+| `error.message` | string | 錯誤資訊 |
+| `error.type` | string | 錯誤型別 |
+| `error.param` | string | 相關引數 |
+| `error.code` | string | 錯誤程式碼 |

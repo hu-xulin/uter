@@ -1,71 +1,75 @@
-# CC Switch - All-in-One AI CLI Management Tool
+# CC Switch — универсальный инструмент управления ИИ-CLI
 
-> **Chat Settings Option**
+> **Параметр настроек чата**
 >
-> In the Uter console under System Settings -> Chat Settings, you can add the following shortcut to enable one-click fill for CC Switch from the token management page:
+> В консоли Uter в разделе «Системные настройки» → «Настройки чата» вы можете добавить следующий ярлык, чтобы включить заполнение в один клик для CC Switch со страницы управления токенами:
 
     ```json
     { "CC Switch": "ccswitch" }
     ```
 
-> 🔀 CC Switch is an open-source, cross-platform all-in-one AI CLI management tool. It supports
->   one-click provider switching for Claude Code, Codex and Gemini CLI, unified MCP server management,
->   system prompts management, and Skills extension management — letting you freely switch between
->   multiple AI coding assistants without manually editing config files.
+> 🔀 CC Switch — это открытый кроссплатформенный универсальный инструмент управления ИИ-CLI. Он поддерживает
+> мгновенное переключение провайдеров для Claude Code, Codex и Gemini CLI, единое управление MCP-серверами,
+> управление системными промптами и управление расширениями Skills — позволяя свободно переключаться между
+> несколькими ИИ-помощниками по программированию без ручного редактирования конфигурационных файлов.
 
-- GitHub Repository: [https://github.com/farion1231/cc-switch](https://github.com/farion1231/cc-switch)
-- Download: [GitHub Releases](https://github.com/farion1231/cc-switch/releases)
+- Репозиторий на GitHub: [https://github.com/farion1231/cc-switch](https://github.com/farion1231/cc-switch)
+- Загрузка: [GitHub Releases](https://github.com/farion1231/cc-switch/releases)
 
-## Key Features
+## Ключевые возможности
 
-### 🔌 Provider Management
-- **One-click switching** — Switch between Claude Code, Codex, and Gemini API configs instantly, no manual env vars or config file editing
-- **Multi-endpoint support** — Configure multiple endpoints per provider with API key management and latency speed tests
-- **4-tier model config** — Granular model selection across Haiku / Sonnet / Opus / Custom tiers
+### 🔌 Управление провайдерами
 
-### 🛠️ MCP Server Management
-- **Unified cross-app management** — Manage MCP servers for Claude / Codex / Gemini from a single panel
-- **Three transport types** — Supports stdio, HTTP, and SSE (Server-Sent Events)
-- **Auto sync** — Unified import/export with bidirectional synchronization
+- **Переключение в один клик** — Мгновенное переключение между конфигурациями API Claude Code, Codex и Gemini без ручной настройки переменных среды или редактирования конфигурационных файлов
+- **Поддержка нескольких конечных точек** — Настройка нескольких конечных точек для каждого провайдера с управлением API-ключами и тестами скорости задержки
+- **Конфигурация моделей 4 уровней** — Детальный выбор моделей по уровням Haiku / Sonnet / Opus / Custom
 
-### 💬 Prompts Management
-- **Multi-preset system prompts** — Unlimited presets with quick switching
-- **Cross-app support** — Claude (`CLAUDE.md`), Codex (`AGENTS.md`), Gemini (`GEMINI.md`)
-- **Markdown editor** — CodeMirror 6 with live preview
+### 🛠️ Управление MCP-серверами
 
-### 🌐 Multi-platform Support
-- **Desktop app** — Native installers for Windows, macOS, and Linux
-- **Web version** — Browser-accessible interface for headless servers / SSH environments
-- **CLI version** — Both interactive menu-driven and command-line modes
+- **Единое кросс-приложное управление** — Управляйте MCP-серверами для Claude / Codex / Gemini из единой панели
+- **Три типа транспорта** — Поддерживает stdio, HTTP и SSE (Server-Sent Events)
+- **Автосинхронизация** — Единый импорт/экспорт с двунаправленной синхронизацией
 
-## Uter Integration
+### 💬 Управление промптами
 
-CC Switch supports the `ccswitch://` Deep Link protocol, allowing one-click provider config import from the Uter token management page.
+- **Множественные пресеты системных промптов** — Неограниченное число пресетов с быстрым переключением
+- **Кросс-приложная поддержка** — Claude (`CLAUDE.md`), Codex (`AGENTS.md`), Gemini (`GEMINI.md`)
+- **Редактор Markdown** — CodeMirror 6 с предпросмотром в реальном времени
 
-### Configuration Steps
+### 🌐 Кроссплатформенная поддержка
 
-1. **On the Uter token management page, click the dropdown menu for the corresponding token**
-   Select the **CC Switch** option from the menu. The system will automatically launch CC Switch and open the configuration dialog.
+- **Десктопное приложение** — Нативные установщики для Windows, macOS и Linux
+- **Веб-версия** — Интерфейс, доступный через браузер, для headless-серверов / SSH-сред
+- **CLI-версия** — Как интерактивный меню-управляемый, так и командный режимы
 
-2. **Complete the configuration in the dialog**
-   ![CC Switch Configuration Dialog](/apps-assets/cc_switch/fill_dialog.webp)
+## Интеграция с Uter
 
-   Field descriptions:
-   - **Application**: Switch app type at the top — **Claude** / **Codex** / **Gemini**, select the target application as needed
-   - **Name**: Enter a name for this config (e.g. `My Claude`) to easily identify and switch in CC Switch later
-   - **Main Model** (required) — The primary model to use by default
-   - **Haiku Model** — Lightweight, fast model
-   - **Sonnet Model** — Balanced model
-   - **Opus Model** — Most capable model
+CC Switch поддерживает протокол глубоких ссылок `ccswitch://`, позволяющий импортировать конфигурацию провайдера в один клик со страницы управления токенами Uter.
 
-   All models are dropdown selections; unselected fields show "Please select model".
+### Шаги настройки
 
-3. **Finish**
-   Click **"Open CC Switch"** to import the config into CC Switch and start using it; click **"Cancel"** to discard.
+1. **На странице управления токенами Uter нажмите раскрывающееся меню для соответствующего токена**
+   Выберите пункт **CC Switch** в меню. Система автоматически запустит CC Switch и откроет диалог настройки.
 
-## Installation
+2. **Заполните конфигурацию в диалоге**
+   ![Диалог настройки CC Switch](/apps-assets/cc_switch/fill_dialog.webp)
 
-### macOS (Homebrew recommended)
+   Описание полей:
+   - **Application**: переключатель типа приложения вверху — **Claude** / **Codex** / **Gemini**, выберите нужное целевое приложение
+   - **Name**: введите имя для этой конфигурации (например, `My Claude`), чтобы позже легко идентифицировать и переключать в CC Switch
+   - **Main Model** (обязательно) — Основная модель, используемая по умолчанию
+   - **Haiku Model** — Лёгкая, быстрая модель
+   - **Sonnet Model** — Сбалансированная модель
+   - **Opus Model** — Самая производительная модель
+
+   Все модели выбираются из выпадающего списка; невыбранные поля показывают «Please select model».
+
+3. **Завершение**
+   Нажмите **«Open CC Switch»**, чтобы импортировать конфигурацию в CC Switch и начать использовать; нажмите **«Cancel»**, чтобы отменить.
+
+## Установка
+
+### macOS (рекомендуется Homebrew)
 
 ```shell
 brew tap farion1231/ccswitch
@@ -74,19 +78,19 @@ brew install --cask cc-switch
 
 ### Windows
 
-Download the `.msi` installer or portable `.zip` from [Releases](https://github.com/farion1231/cc-switch/releases).
+Загрузите установщик `.msi` или переносимый `.zip` из [Releases](https://github.com/farion1231/cc-switch/releases).
 
 ### Linux
 
-Download the `.deb` package or `.AppImage` from [Releases](https://github.com/farion1231/cc-switch/releases).
+Загрузите пакет `.deb` или `.AppImage` из [Releases](https://github.com/farion1231/cc-switch/releases).
 
-ArchLinux users:
+Для пользователей ArchLinux:
 
 ```shell
 paru -S cc-switch-bin
 ```
 
-### Web Version (Headless / SSH Servers)
+### Веб-версия (headless / SSH-серверы)
 
 ```shell
 wget https://github.com/farion1231/cc-switch/releases/latest/download/cc-switch-web-linux-x64.tar.gz
@@ -95,11 +99,11 @@ cd cc-switch-web/
 ./cc-switch-web
 ```
 
-Default port `17666`, access via browser at `http://localhost:17666`.
+Порт по умолчанию `17666`, доступ через браузер по адресу `http://localhost:17666`.
 
-## Related Links
+## Связанные ссылки
 
-- [GitHub Repository](https://github.com/farion1231/cc-switch)
-- [Changelog](https://github.com/farion1231/cc-switch/blob/main/CHANGELOG.md)
-- [Web Version Repository](https://github.com/cp-yu/cc-switch-web)
-- [CLI Version Repository](https://github.com/thomas-jack/cc-switch-cli)
+- [Репозиторий на GitHub](https://github.com/farion1231/cc-switch)
+- [Журнал изменений](https://github.com/farion1231/cc-switch/blob/main/CHANGELOG.md)
+- [Репозиторий веб-версии](https://github.com/cp-yu/cc-switch-web)
+- [Репозиторий CLI-версии](https://github.com/thomas-jack/cc-switch-cli)

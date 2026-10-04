@@ -1,164 +1,164 @@
-# user-auth
+# Xác thực người dùng (user-auth)
 
-## Send Password Reset Email
+## Gửi email đặt lại mật khẩu (Send Password Reset Email)
 
-🔓 无需鉴权
+🔓 Không cần xác thực
 
 `GET` `/api/reset_password`
 
-### 请求参数
+### Tham số yêu cầu
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| Tên tham số | Vị trí | Kiểu | Bắt buộc | Mô tả |
 |---|---|---|---|---|
-| `email` | query | string | 是 | — |
+| `email` | query | string | Có | — |
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Get User Group List
+## Lấy danh sách nhóm người dùng (Get User Group List)
 
-🔓 无需鉴权
+🔓 Không cần xác thực
 
 `GET` `/api/user/groups`
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Two-Factor Authentication Login
+## Đăng nhập xác thực hai yếu tố (Two-Factor Authentication Login)
 
-🔓 无需鉴权（登录流程）
+🔓 Không cần xác thực (quy trình đăng nhập)
 
 `POST` `/api/user/login/2fa`
 
-### 请求体（`application/json`）
+### Thân yêu cầu (`application/json`)
 
-| 字段 | 类型 | 必填 | 说明 |
+| Trường | Kiểu | Bắt buộc | Mô tả |
 |---|---|---|---|
-| `code` | string | 否 | — |
+| `code` | string | Không | — |
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## User Login
+## Đăng nhập người dùng (User Login)
 
-🔓 无需鉴权
+🔓 Không cần xác thực
 
 `POST` `/api/user/login`
 
-### 请求体（`application/json`）
+### Thân yêu cầu (`application/json`)
 
-| 字段 | 类型 | 必填 | 说明 |
+| Trường | Kiểu | Bắt buộc | Mô tả |
 |---|---|---|---|
-| `username` | string | 否 | — |
-| `password` | string | 否 | — |
+| `username` | string | Không | — |
+| `password` | string | Không | — |
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## User Logout
+## Đăng xuất người dùng (User Logout)
 
-🔓 无需鉴权
+🔓 Không cần xác thực
 
 `GET` `/api/user/logout`
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Start Passkey Login
+## Bắt đầu đăng nhập Passkey (Start Passkey Login)
 
-🔓 无需鉴权
+🔓 Không cần xác thực
 
 `POST` `/api/user/passkey/login/begin`
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Complete Passkey Login
+## Hoàn tất đăng nhập Passkey (Complete Passkey Login)
 
-🔓 无需鉴权
+🔓 Không cần xác thực
 
 `POST` `/api/user/passkey/login/finish`
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## User Registration
+## Đăng ký người dùng (User Registration)
 
-🔓 无需鉴权
+🔓 Không cần xác thực
 
 `POST` `/api/user/register`
 
-### 请求体（`application/json`）
+### Thân yêu cầu (`application/json`)
 
-| 字段 | 类型 | 必填 | 说明 |
+| Trường | Kiểu | Bắt buộc | Mô tả |
 |---|---|---|---|
-| `username` | string | 否 | — |
-| `password` | string | 否 | — |
-| `email` | string | 否 | — |
-| `verification_code` | string | 否 | — |
-| `aff_code` | string | 否 | — |
+| `username` | string | Không | — |
+| `password` | string | Không | — |
+| `email` | string | Không | — |
+| `verification_code` | string | Không | — |
+| `aff_code` | string | Không | — |
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Reset Password
+## Đặt lại mật khẩu (Reset Password)
 
-🔓 无需鉴权
+🔓 Không cần xác thực
 
 `POST` `/api/user/reset`
 
-### 请求体（`application/json`）
+### Thân yêu cầu (`application/json`)
 
-| 字段 | 类型 | 必填 | 说明 |
+| Trường | Kiểu | Bắt buộc | Mô tả |
 |---|---|---|---|
-| `email` | string | 否 | — |
-| `token` | string | 否 | — |
-| `password` | string | 否 | — |
+| `email` | string | Không | — |
+| `token` | string | Không | — |
+| `password` | string | Không | — |
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Send Email Verification Code
+## Gửi mã xác thực email (Send Email Verification Code)
 
-🔓 无需鉴权
+🔓 Không cần xác thực
 
 `GET` `/api/verification`
 
-### 请求参数
+### Tham số yêu cầu
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| Tên tham số | Vị trí | Kiểu | Bắt buộc | Mô tả |
 |---|---|---|---|---|
-| `email` | query | string | 是 | — |
+| `email` | query | string | Có | — |
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |

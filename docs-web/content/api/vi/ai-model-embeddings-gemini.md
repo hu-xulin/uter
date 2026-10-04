@@ -1,32 +1,32 @@
-# Native Gemini Format
+# Định dạng Native Gemini
 
-使用指定引擎/模型创建嵌入
+Tạo embedding bằng engine/mô hình được chỉ định.
 
 `POST` `/v1/engines/{model}/embeddings`
 
-### 请求参数
+### Tham số yêu cầu
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| Tên tham số | Vị trí | Kiểu | Bắt buộc | Mô tả |
 |---|---|---|---|---|
-| `model` | path | string | 是 | 模型/引擎 ID |
+| `model` | path | string | Có | ID mô hình/engine |
 
-### 请求体（`application/json`）
+### Thân yêu cầu (`application/json`)
 
-| 字段 | 类型 | 必填 | 说明 |
+| Trường | Kiểu | Bắt buộc | Mô tả |
 |---|---|---|---|
-| `model` | string | 是 | — |
-| `encoding_format` | enum（`float`, `base64`） | 否 | — |
-| `dimensions` | integer | 否 | 输出向量维度 |
+| `model` | string | Có | — |
+| `encoding_format` | enum (`float`, `base64`) | Không | — |
+| `dimensions` | integer | Không | Số chiều vector đầu ra |
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功创建嵌入 |
+| `200` | Tạo embedding thành công |
 
-#### `200` 响应字段
+#### Trường phản hồi `200`
 
-| 字段 | 类型 | 说明 |
+| Trường | Kiểu | Mô tả |
 |---|---|---|
 | `object` | string | — |
 | `data` | array&lt;object&gt; | — |

@@ -1,26 +1,26 @@
-# Native OpenAI Format
+# 原生OpenAI格式
 
-将文本转换为向量嵌入
+將文字轉換為向量嵌入
 
 `POST` `/v1/embeddings`
 
-### 请求体（`application/json`）
+### 請求體（`application/json`）
 
-| 字段 | 类型 | 必填 | 说明 |
+| 欄位 | 型別 | 必填 | 說明 |
 |---|---|---|---|
 | `model` | string | 是 | — |
 | `encoding_format` | enum（`float`, `base64`） | 否 | — |
-| `dimensions` | integer | 否 | 输出向量维度 |
+| `dimensions` | integer | 否 | 輸出向量維度 |
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
-| `200` | 成功创建嵌入 |
+| `200` | 成功建立嵌入 |
 
-#### `200` 响应字段
+#### `200` 響應欄位
 
-| 字段 | 类型 | 说明 |
+| 欄位 | 型別 | 說明 |
 |---|---|---|
 | `object` | string | — |
 | `data` | array&lt;object&gt; | — |

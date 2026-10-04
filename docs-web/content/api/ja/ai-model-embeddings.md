@@ -2,27 +2,27 @@
 
 ## Native OpenAI Format
 
-将文本转换为向量嵌入
+テキストをベクトル埋め込みに変換します。
 
 `POST` `/v1/embeddings`
 
-### 请求体（`application/json`）
+### リクエストボディ（`application/json`）
 
-| 字段 | 类型 | 必填 | 说明 |
+| フィールド | 型 | 必須 | 説明 |
 |---|---|---|---|
-| `model` | string | 是 | — |
-| `encoding_format` | enum（`float`, `base64`） | 否 | — |
-| `dimensions` | integer | 否 | 输出向量维度 |
+| `model` | string | 必須 | — |
+| `encoding_format` | enum（`float`, `base64`） | 任意 | — |
+| `dimensions` | integer | 任意 | 出力ベクトルの次元数 |
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
-| `200` | 成功创建嵌入 |
+| `200` | 埋め込みの作成に成功 |
 
-#### `200` 响应字段
+#### `200` レスポンスフィールド
 
-| 字段 | 类型 | 说明 |
+| フィールド | 型 | 説明 |
 |---|---|---|
 | `object` | string | — |
 | `data` | array&lt;object&gt; | — |
@@ -32,33 +32,33 @@
 
 ## Native Gemini Format
 
-使用指定引擎/模型创建嵌入
+指定したエンジン/モデルで埋め込みを作成します。
 
 `POST` `/v1/engines/{model}/embeddings`
 
-### 请求参数
+### リクエストパラメータ
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| パラメータ名 | 位置 | 型 | 必須 | 説明 |
 |---|---|---|---|---|
-| `model` | path | string | 是 | 模型/引擎 ID |
+| `model` | path | string | 必須 | モデル/エンジン ID |
 
-### 请求体（`application/json`）
+### リクエストボディ（`application/json`）
 
-| 字段 | 类型 | 必填 | 说明 |
+| フィールド | 型 | 必須 | 説明 |
 |---|---|---|---|
-| `model` | string | 是 | — |
-| `encoding_format` | enum（`float`, `base64`） | 否 | — |
-| `dimensions` | integer | 否 | 输出向量维度 |
+| `model` | string | 必須 | — |
+| `encoding_format` | enum（`float`, `base64`） | 任意 | — |
+| `dimensions` | integer | 任意 | 出力ベクトルの次元数 |
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
-| `200` | 成功创建嵌入 |
+| `200` | 埋め込みの作成に成功 |
 
-#### `200` 响应字段
+#### `200` レスポンスフィールド
 
-| 字段 | 类型 | 说明 |
+| フィールド | 型 | 説明 |
 |---|---|---|
 | `object` | string | — |
 | `data` | array&lt;object&gt; | — |

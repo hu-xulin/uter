@@ -1,61 +1,61 @@
 # Claude Code
 
-> **Project Introduction**
+> **Giới thiệu dự án**
 >
-> Unleash Claude's raw power directly in your terminal. Search million-line codebases instantly. Turn hours-long workflows into a single command. Your tools. Your workflow. Your codebase, evolving at thought speed.
+> Giải phóng sức mạnh thô của Claude trực tiếp trong terminal của bạn. Tìm kiếm các codebase hàng triệu dòng ngay lập tức. Biến các quy trình làm việc tốn hàng giờ thành một lệnh duy nhất. Công cụ của bạn. Quy trình của bạn. Codebase của bạn, tiến hóa với tốc độ suy nghĩ.
 >
->   - Official Homepage: [https://www.anthropic.com/claude-code](https://www.anthropic.com/claude-code)
+>   - Trang chủ chính thức: [https://www.anthropic.com/claude-code](https://www.anthropic.com/claude-code)
 
-## Demo
+## Bản demo
 
 ![introduce-01.webp](/apps-assets/claude_code/introduce-01.webp)
 
 ![introduce-02.webp](/apps-assets/claude_code/introduce-02.webp)
 
-### Features
+### Tính năng
 
-| **Category**                       | **Feature**                                                                                                        |
+| **Danh mục**                       | **Tính năng**                                                                                                        |
 | ---------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| **Code Understanding**             | Deep codebase analysis, utilizing intelligent agents to search and understand project structure and dependencies |
-|                                    | Automatically generates high-level code overviews, quickly helping users understand the codebase                 |
-| **Code Editing**                   | Supports multi-file collaborative editing, suitable for complex code modifications                               |
-|                                    | Provides practical and usable code suggestions that align with project patterns and architecture                 |
-| **Integration Capabilities**       | Supports direct execution in the terminal, eliminating context switching                                         |
-|                                    | Seamless integration with VS Code and JetBrains IDEs, no copy-pasting required                                   |
-| **Code Generation & Optimization** | Automatically generates code, creates tests, fixes bugs, supporting the complete process from concept to commit  |
-|                                    | Optimized for code generation and understanding, combining advanced models like Claude Opus 4                    |
-| **Security & Flexibility**         | Changes require explicit user authorization, ensuring safer file and command operations                          |
-|                                    | Adapts to user code standards, supports custom configurations                                                    |
-| **Toolchain Integration**          | Supports integration with tools like GitHub and GitLab to achieve automated workflows                            |
-|                                    | Integrates with test suites and build systems, enhancing existing development tools                              |
-| **Cross-Platform & Extensibility** | Supports Windows, macOS, and Linux operating systems                                                             |
-|                                    | Configurable to run in SDKs or GitHub Actions, flexibly adapting to different needs                              |
-| **Key Application Scenarios**      | Codebase onboarding and understanding, quick ramp-up for new members                                             |
-|                                    | Code issue fixing and optimization processes, from problem analysis to PR submission                             |
-|                                    | Project code refactoring and new feature implementation                                                          |
-| **User Feedback Highlights**       | Improves daily development efficiency, saving time spent on routine tasks                                        |
-|                                    | Excellent performance in handling complex multi-step tasks, expanding development possibilities                  |
+| **Hiểu mã**             | Phân tích sâu codebase, sử dụng các tác nhân thông minh để tìm kiếm và hiểu cấu trúc và phụ thuộc của dự án |
+|                                    | Tự động tạo các tổng quan mã cấp cao, giúp người dùng nhanh chóng hiểu codebase                 |
+| **Chỉnh sửa mã**                   | Hỗ trợ chỉnh sửa cộng tác đa tệp, phù hợp cho các sửa đổi mã phức tạp                               |
+|                                    | Cung cấp các gợi ý mã thiết thực và có thể sử dụng, phù hợp với mẫu và kiến trúc dự án                 |
+| **Năng lực tích hợp**       | Hỗ trợ thực thi trực tiếp trong terminal, loại bỏ việc chuyển ngữ cảnh                                         |
+|                                    | Tích hợp liền mạch với VS Code và các IDE JetBrains, không cần sao chép-dán                                   |
+| **Tạo và tối ưu mã** | Tự động tạo mã, viết test, sửa lỗi, hỗ trợ quy trình hoàn chỉnh từ ý tưởng đến commit  |
+|                                    | Được tối ưu cho việc tạo và hiểu mã, kết hợp các mô hình tiên tiến như Claude Opus 4                    |
+| **Bảo mật & Linh hoạt**         | Các thay đổi yêu cầu ủy quyền rõ ràng từ người dùng, đảm bảo thao tác tệp và lệnh an toàn hơn                          |
+|                                    | Thích ứng với tiêu chuẩn mã của người dùng, hỗ trợ cấu hình tùy chỉnh                                                    |
+| **Tích hợp chuỗi công cụ**          | Hỗ trợ tích hợp với các công cụ như GitHub và GitLab để đạt được quy trình làm việc tự động hóa                            |
+|                                    | Tích hợp với bộ test và hệ thống build, nâng cao các công cụ phát triển hiện có                              |
+| **Đa nền tảng & Mở rộng** | Hỗ trợ các hệ điều hành Windows, macOS và Linux                                                             |
+|                                    | Có thể cấu hình để chạy trong SDK hoặc GitHub Actions, thích ứng linh hoạt với các nhu cầu khác nhau                              |
+| **Các kịch bản ứng dụng chính**      | Làm quen và hiểu codebase, tăng tốc nhanh cho thành viên mới                                             |
+|                                    | Quy trình sửa và tối ưu sự cố mã, từ phân tích vấn đề đến gửi PR                             |
+|                                    | Tái cấu trúc mã dự án và triển khai tính năng mới                                                          |
+| **Điểm nổi bật từ phản hồi người dùng**       | Cải thiện hiệu suất phát triển hàng ngày, tiết kiệm thời gian cho các tác vụ thường quy                                        |
+|                                    | Hiệu suất xuất sắc trong xử lý các tác vụ đa bước phức tạp, mở rộng khả năng phát triển                  |
 
-## AI Model Configuration Method
+## Phương thức cấu hình mô hình AI
 
-### Windows Graphical Guide
+### Hướng dẫn đồ họa Windows
 
-#### 1. Install Node.js Environment
+#### 1. Cài đặt môi trường Node.js
 
-Claude Code requires a Node.js environment to run.
+Claude Code yêu cầu môi trường Node.js để chạy.
 
-> **Node.js Environment Installation Steps**
+> **Các bước cài đặt môi trường Node.js**
 >
-> - Open your browser and visit https://nodejs.org/
->   - Click the "LTS" version to download (Long Term Support version recommended)
->   - After downloading, double-click the .msi file
->   - Follow the installation wizard to complete the installation, keeping default settings
+> - Mở trình duyệt và truy cập https://nodejs.org/
+>   - Nhấn phiên bản "LTS" để tải xuống (khuyên dùng phiên bản Hỗ trợ dài hạn)
+>   - Sau khi tải xuống, nhấp đúp tệp .msi
+>   - Làm theo trình hướng dẫn cài đặt để hoàn tất, giữ cài đặt mặc định
 
-> **Windows Notes**
+> **Lưu ý Windows**
 >
-> - It is recommended to use PowerShell instead of CMD
->   - If you encounter permission issues, try running as administrator
->   - Some antivirus software may report false positives; you may need to add an exception
+> - Khuyên dùng PowerShell thay vì CMD
+>   - Nếu gặp vấn đề quyền, hãy thử chạy với quyền quản trị
+>   - Một số phần mềm diệt virus có thể báo false positive; bạn có thể cần thêm ngoại lệ
 
 ![windows-img-01.webp](/apps-assets/claude_code/windows-img-01.webp)
 
@@ -67,29 +67,29 @@ Claude Code requires a Node.js environment to run.
 
 ![windows-img-05.webp](/apps-assets/claude_code/windows-img-05.webp)
 
-> **Verify Installation Success**
+> **Xác minh cài đặt thành công**
 >
-> After installation, open PowerShell or CMD and enter the following commands:
+> Sau khi cài đặt, mở PowerShell hoặc CMD và nhập các lệnh sau:
 >
 >   ```bash
 >   node --version
 >   npm --version
 >   ```
 >
->   If version numbers are displayed, the installation was successful.
+>   Nếu hiển thị số phiên bản, cài đặt đã thành công.
 
-#### 2. Install Git Bash
+#### 2. Cài đặt Git Bash
 
-> **Windows Notes**
+> **Lưu ý Windows**
 >
-> In a Windows environment, Git Bash is required to install Claude Code. After installation, environment variable setup and using Claude Code will still be done in regular PowerShell or CMD.
+> Trong môi trường Windows, Git Bash là bắt buộc để cài đặt Claude Code. Sau khi cài đặt, việc thiết lập biến môi trường và sử dụng Claude Code vẫn được thực hiện trong PowerShell hoặc CMD thông thường.
 
-> **Download and Install Git for Windows**
+> **Tải và cài đặt Git for Windows**
 >
-> - Visit https://git-scm.com/downloads/win
->   - Click "Download for Windows" to download the installer
->   - Run the downloaded .exe installation file
->   - Keep default settings during installation, and click "Next" to complete the installation
+> - Truy cập https://git-scm.com/downloads/win
+>   - Nhấn "Download for Windows" để tải trình cài đặt
+>   - Chạy tệp .exe đã tải xuống
+>   - Giữ cài đặt mặc định trong quá trình cài đặt, và nhấn "Next" để hoàn tất
 
 ![windows-img-06.webp](/apps-assets/claude_code/windows-img-06.webp)
 
@@ -97,51 +97,51 @@ Claude Code requires a Node.js environment to run.
 
 ![windows-img-08.webp](/apps-assets/claude_code/windows-img-08.webp)
 
-> **Verify Git Bash Installation**
+> **Xác minh cài đặt Git Bash**
 >
-> After installation, open Git Bash and enter the following command to verify:
+> Sau khi cài đặt, mở Git Bash và nhập lệnh sau để xác minh:
 >
 >   ```bash
 >   git --version
 >   ```
 >
->   If a version number is displayed, the installation was successful.
+>   Nếu hiển thị số phiên bản, cài đặt đã thành công.
 
-#### 3. Install Claude Code
+#### 3. Cài đặt Claude Code
 
-> **Install Claude Code**
+> **Cài đặt Claude Code**
 >
-> Open PowerShell and run the following command:
+> Mở PowerShell và chạy lệnh sau:
 >
 >   ```bash
 >   npm install -g @anthropic-ai/claude-code
 >   ```
 >
->   This command will download and install the latest version of Claude Code from the official npm repository.
+>   Lệnh này sẽ tải xuống và cài đặt phiên bản mới nhất của Claude Code từ kho npm chính thức.
 
 ![windows-img-09.webp](/apps-assets/claude_code/windows-img-09.webp)
 
-> **Add ~/.local/bin to PATH (only if prompted)**
+> **Thêm ~/.local/bin vào PATH (chỉ khi được nhắc)**
 >
 > ```powershell
 >   [Environment]::SetEnvironmentVariable('Path', ([Environment]::GetEnvironmentVariable('Path','User') + ";$HOME\.local\bin"), 'User')
 >   ```
 
-> **Verify Claude Code Installation**
+> **Xác minh cài đặt Claude Code**
 >
-> After installation, enter the following command to check if it was successfully installed:
+> Sau khi cài đặt, nhập lệnh sau để kiểm tra xem đã cài đặt thành công chưa:
 >
 >   ```bash
 >   claude --version
 >   ```
 >
->   If a version number is displayed, congratulations! Claude Code has been successfully installed.
+>   Nếu hiển thị số phiên bản, xin chúc mừng! Claude Code đã được cài đặt thành công.
 
-#### 4. Set Environment Variables
+#### 4. Thiết lập biến môi trường
 
-> **One-Click Setup Command (Windows System)**
+> **Lệnh thiết lập một cú nhấp (Hệ thống Windows)**
 >
-> To allow Claude Code to connect to your relay service, you need to set multiple environment variables:
+> Để cho phép Claude Code kết nối với dịch vụ chuyển tiếp của bạn, bạn cần thiết lập nhiều biến môi trường:
 
 ```powershell
 iex (irm 'https://raw.githubusercontent.com/Uter.ai/uter-docs/refs/heads/main/helper/claude-cli-setup.ps1')
@@ -149,25 +149,25 @@ iex (irm 'https://raw.githubusercontent.com/Uter.ai/uter-docs/refs/heads/main/he
 
 ![windows-configure](/apps-assets/claude_code/windows_configure.webp)
 
-#### 5. Start Using Claude Code
+#### 5. Bắt đầu sử dụng Claude Code
 
-You can now start using Claude Code!
+Bây giờ bạn có thể bắt đầu sử dụng Claude Code!
 
-> **Launch Claude Code**
+> **Khởi chạy Claude Code**
 >
-> Open PowerShell and launch Claude Code directly:
+> Mở PowerShell và khởi chạy Claude Code trực tiếp:
 >
 >   ```bash
 >   claude
 >   ```
 >
->   To use in a specific project:
+>   Để sử dụng trong một dự án cụ thể:
 >
 >   ```bash
->   # Navigate to your project directory
+>   # Điều hướng đến thư mục dự án của bạn
 >   cd C:\path\to\your\project
 >
->   # Launch Claude Code
+>   # Khởi chạy Claude Code
 >   claude
 >   ```
 
@@ -181,39 +181,39 @@ You can now start using Claude Code!
 
 ![windows-img-15.webp](/apps-assets/claude_code/windows-img-15.webp)
 
-> **Select Model**
+> **Chọn mô hình**
 >
-> Enter the command:
+> Nhập lệnh:
 >
 >   ```bash
 >   /model
 >   ```
 >
->   Press Enter to select a model; usually, the default settings are sufficient.
+>   Nhấn Enter để chọn một mô hình; thường thì cài đặt mặc định là đủ.
 
 ![windows-img-16.webp](/apps-assets/claude_code/windows-img-16.webp)
 
 ![windows-img-17.webp](/apps-assets/claude_code/windows-img-17.webp)
 
-> Note: After modifying environment variables, all models (including officially preset models) will call the custom access point instead of using official account quotas.
+> Lưu ý: Sau khi sửa đổi biến môi trường, tất cả mô hình (bao gồm cả các mô hình được cài sẵn chính thức) sẽ gọi điểm truy cập tùy chỉnh thay vì sử dụng hạn ngạch tài khoản chính thức.
 
-### macOS Graphical Guide
+### Hướng dẫn đồ họa macOS
 
-#### 1. Install Claude Code CLI
+#### 1. Cài đặt Claude Code CLI
 
-Open Terminal
+Mở Terminal
 
 ![macos-img-01.webp](/apps-assets/claude_code/macos-img-01.webp)
 
-> **Install Claude Code**
+> **Cài đặt Claude Code**
 >
-> Open Terminal and run the following command:
+> Mở Terminal và chạy lệnh sau:
 >
 >   ```bash
 >   curl -fsSL https://claude.ai/install.sh | bash
 >   ```
 >
->   Optional: Run the provided command when prompted
+>   Tùy chọn: Chạy lệnh được cung cấp khi được nhắc
 >
 >   ```bash
 >   echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc && source ~/.bashrc
@@ -221,13 +221,13 @@ Open Terminal
 
 ![macos-img-02.webp](/apps-assets/claude_code/macos-img-02.webp)
 
-#### 2. Set Environment Variables
+#### 2. Thiết lập biến môi trường
 
-To allow Claude Code to connect to a third-party relay service, you need to set environment variables:
+Để cho phép Claude Code kết nối với dịch vụ chuyển tiếp bên thứ ba, bạn cần thiết lập biến môi trường:
 
-> **One-Click Setup for Claude Code Environment Variables**
+> **Thiết lập một cú nhấp cho biến môi trường Claude Code**
 >
-> Enter the command:
+> Nhập lệnh:
 >
 >   ```bash
 >   curl -fsSL https://raw.githubusercontent.com/Uter.ai/uter-docs/refs/heads/main/helper/claude-cli-setup.sh | bash
@@ -235,35 +235,35 @@ To allow Claude Code to connect to a third-party relay service, you need to set 
 
 ![macos-configure](/apps-assets/claude_code/macos_configure.webp)
 
-> **Verify Claude Code Installation**
+> **Xác minh cài đặt Claude Code**
 >
-> After installation, enter the following command to check if it was successfully installed:
+> Sau khi cài đặt, nhập lệnh sau để kiểm tra xem đã cài đặt thành công chưa:
 >
 >   ```bash
 >   claude --version
 >   ```
 >
->   If a version number is displayed, congratulations! Claude Code has been successfully installed.
+>   Nếu hiển thị số phiên bản, xin chúc mừng! Claude Code đã được cài đặt thành công.
 
-#### 3. Start Using Claude Code
+#### 3. Bắt đầu sử dụng Claude Code
 
-You can now start using Claude Code!
+Bây giờ bạn có thể bắt đầu sử dụng Claude Code!
 
-> **Launch Claude Code**
+> **Khởi chạy Claude Code**
 >
-> Launch Claude Code directly:
+> Khởi chạy Claude Code trực tiếp:
 >
 >   ```bash
 >   claude
 >   ```
 >
->   To use in a specific project:
+>   Để sử dụng trong một dự án cụ thể:
 >
 >   ```bash
->   # Navigate to your project directory
+>   # Điều hướng đến thư mục dự án của bạn
 >   cd /path/to/your/project
 >
->   # Launch Claude Code
+>   # Khởi chạy Claude Code
 >   claude
 >   ```
 
@@ -277,15 +277,15 @@ You can now start using Claude Code!
 
 ![macos-img-08.webp](/apps-assets/claude_code/macos-img-08.webp)
 
-> **Select Model (Optional)**
+> **Chọn mô hình (Tùy chọn)**
 >
-> Enter the command:
+> Nhập lệnh:
 >
 >   ```bash
 >   /model
 >   ```
 >
->   Press Enter to select an official model; usually, the default model is sufficient.
+>   Nhấn Enter để chọn một mô hình chính thức; thường thì mô hình mặc định là đủ.
 
 ![macos-img-09.webp](/apps-assets/claude_code/macos-img-09.webp)
 
@@ -293,33 +293,33 @@ You can now start using Claude Code!
 
 ![macos-img-11.webp](/apps-assets/claude_code/macos-img-11.webp)
 
-> Note: After modifying the `ANTHROPIC_BASE_URL` environment variable, all models (including officially preset models) will call the custom access point instead of using official account quotas.
+> Lưu ý: Sau khi sửa đổi biến môi trường `ANTHROPIC_BASE_URL`, tất cả mô hình (bao gồm cả các mô hình được cài sẵn chính thức) sẽ gọi điểm truy cập tùy chỉnh thay vì sử dụng hạn ngạch tài khoản chính thức.
 
-#### 4. macOS Common Issues
+#### 4. Các vấn đề thường gặp trên macOS
 
-> **macOS Security Settings Preventing Execution**
+> **Cài đặt bảo mật macOS ngăn chặn thực thi**
 >
-> If the system prevents Claude Code from running:
+> Nếu hệ thống ngăn Claude Code chạy:
 >
->   - Open "System Preferences" → "Security & Privacy"
->   - Click "Open Anyway" or "Allow"
->   - Or run in Terminal: `sudo spctl --master-disable`
+>   - Mở "System Preferences" → "Security & Privacy"
+>   - Nhấn "Open Anyway" hoặc "Allow"
+>   - Hoặc chạy trong Terminal: `sudo spctl --master-disable`
 
-### Linux Graphical Guide
+### Hướng dẫn đồ họa Linux
 
-#### 1. Install Claude Code
+#### 1. Cài đặt Claude Code
 
 ![linux-img-01.webp](/apps-assets/claude_code/linux-img-01.webp)
 
-> **Install Claude Code**
+> **Cài đặt Claude Code**
 >
-> Open Terminal and run the following command:
+> Mở Terminal và chạy lệnh sau:
 >
 >   ```bash
 >   curl -fsSL https://claude.ai/install.sh | bash
 >   ```
 >
->   If you encounter permission issues, you can use sudo:
+>   Nếu gặp vấn đề quyền, bạn có thể dùng sudo:
 >
 >   ```bash
 >   sudo curl -fsSL https://claude.ai/install.sh | bash
@@ -327,23 +327,23 @@ You can now start using Claude Code!
 
 ![linux-img-03.webp](/apps-assets/claude_code/linux-img-03.webp)
 
-> **Verify Claude Code Installation**
+> **Xác minh cài đặt Claude Code**
 >
-> After installation, enter the following command to check if it was successfully installed:
+> Sau khi cài đặt, nhập lệnh sau để kiểm tra xem đã cài đặt thành công chưa:
 >
 >   ```bash
 >   claude --version
 >   ```
 >
->   If a version number is displayed, congratulations! Claude Code has been successfully installed.
+>   Nếu hiển thị số phiên bản, xin chúc mừng! Claude Code đã được cài đặt thành công.
 
-#### 2. Set Environment Variables
+#### 2. Thiết lập biến môi trường
 
-To allow Claude Code to connect to your relay service, you need to set two environment variables:
+Để cho phép Claude Code kết nối với dịch vụ chuyển tiếp của bạn, bạn cần thiết lập hai biến môi trường:
 
-> **One-Click Environment Variable Modification**
+> **Sửa đổi biến môi trường một cú nhấp**
 >
-> Enter the command:
+> Nhập lệnh:
 >
 >   ```bash
 >   curl -fsSL https://raw.githubusercontent.com/Uter.ai/uter-docs/refs/heads/main/helper/claude-cli-setup.sh | bash
@@ -351,25 +351,25 @@ To allow Claude Code to connect to your relay service, you need to set two envir
 
 ![macos-configure](/apps-assets/claude_code/macos_configure.webp)
 
-#### 3. Start Using Claude Code
+#### 3. Bắt đầu sử dụng Claude Code
 
-You can now start using Claude Code!
+Bây giờ bạn có thể bắt đầu sử dụng Claude Code!
 
-> **Launch Claude Code**
+> **Khởi chạy Claude Code**
 >
-> Launch Claude Code directly:
+> Khởi chạy Claude Code trực tiếp:
 >
 >   ```bash
 >   claude
 >   ```
 >
->   To use in a specific project:
+>   Để sử dụng trong một dự án cụ thể:
 >
 >   ```bash
->   # Navigate to your project directory
+>   # Điều hướng đến thư mục dự án của bạn
 >   cd /path/to/your/project
 >
->   # Launch Claude Code
+>   # Khởi chạy Claude Code
 >   claude
 >   ```
 
@@ -379,15 +379,15 @@ You can now start using Claude Code!
 
 ![linux-img-05.webp](/apps-assets/claude_code/linux-img-05.webp)
 
-> **Select Model**
+> **Chọn mô hình**
 >
-> Enter the command:
+> Nhập lệnh:
 >
 >   ```bash
 >   /model
 >   ```
 >
->   Press Enter to select an official model; usually, the default model is sufficient.
+>   Nhấn Enter để chọn một mô hình chính thức; thường thì mô hình mặc định là đủ.
 
 ![linux-img-06.webp](/apps-assets/claude_code/linux-img-06.webp)
 
@@ -397,13 +397,13 @@ You can now start using Claude Code!
 
 ![linux-img-09.webp](/apps-assets/claude_code/linux-img-09.webp)
 
-> Note: After modifying the `ANTHROPIC_BASE_URL` environment variable, all models (including officially preset models) will call the custom access point instead of using official account quotas.
+> Lưu ý: Sau khi sửa đổi biến môi trường `ANTHROPIC_BASE_URL`, tất cả mô hình (bao gồm cả các mô hình được cài sẵn chính thức) sẽ gọi điểm truy cập tùy chỉnh thay vì sử dụng hạn ngạch tài khoản chính thức.
 
-#### 4. Linux Common Issues
+#### 4. Các vấn đề thường gặp trên Linux
 
-> **Missing Dependency Libraries**
+> **Thiếu thư viện phụ thuộc**
 >
-> Some Linux distributions require additional dependencies to be installed:
+> Một số bản phân phối Linux yêu cầu cài đặt thêm các phụ thuộc:
 >
 >   ```bash
 >   # Ubuntu/Debian
@@ -413,10 +413,10 @@ You can now start using Claude Code!
 >   sudo dnf groupinstall "Development Tools"
 >   ```
 
-> **Environment Variables Not Taking Effect**
+> **Biến môi trường không có hiệu lực**
 >
-> Check the following points:
+> Kiểm tra các điểm sau:
 >
->   - Confirm that you modified the correct configuration file (`.bashrc` or `.zshrc`)
->   - Restart the terminal or run `source ~/.bashrc`
->   - Verify settings: `echo $ANTHROPIC_BASE_URL`
+>   - Xác nhận bạn đã sửa đúng tệp cấu hình (`.bashrc` hoặc `.zshrc`)
+>   - Khởi động lại terminal hoặc chạy `source ~/.bashrc`
+>   - Xác minh cài đặt: `echo $ANTHROPIC_BASE_URL`

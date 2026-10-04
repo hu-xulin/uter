@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { SUPPORTED_DOCS_LOCALES, i18n, type DocsLocale } from '@/lib/i18n';
 import { DocsI18nProvider } from '@/lib/docs-i18n-provider';
+import { LocaleHtmlLang } from '@/lib/locale-html-lang';
 
 export function generateStaticParams() {
   return SUPPORTED_DOCS_LOCALES.map((lang) => ({ lang }));
@@ -25,5 +26,10 @@ export default async function DocsLocaleLayout({
   ).includes(lang)
     ? (lang as DocsLocale)
     : i18n.defaultLanguage;
-  return <DocsI18nProvider locale={locale}>{children}</DocsI18nProvider>;
+  return (
+    <>
+      <LocaleHtmlLang locale={locale} />
+      <DocsI18nProvider locale={locale}>{children}</DocsI18nProvider>
+    </>
+  );
 }

@@ -1,68 +1,68 @@
 # gemini
 
-## Gemini Native Format
+## Нативный формат Gemini
 
-Gemini 图片生成
+Генерация изображений Gemini.
 
 `POST` `/v1beta/models/{model}:generateContent/`
 
-### 请求参数
+### Параметры запроса
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| Параметр | Расположение | Тип | Обязательно | Описание |
 |---|---|---|---|---|
-| `model` | path | string | 是 | 模型名称 |
+| `model` | path | string | да | Название модели |
 
-### 请求体（`application/json`）
+### Тело запроса (`application/json`)
 
-| 字段 | 类型 | 必填 | 说明 |
+| Поле | Тип | Обязательно | Описание |
 |---|---|---|---|
-| `contents` | array&lt;object&gt; | 是 | — |
-| `generationConfig.thinkingConfig.includeThoughts` | boolean | 否 | 是否返回思考内容 |
-| `generationConfig.responseModalities` | array&lt;string&gt; | 否 | — |
-| `generationConfig.imageConfig.aspectRatio` | string | 否 | — |
-| `generationConfig.imageConfig.imageSize` | string | 否 | — |
+| `contents` | array&lt;object&gt; | да | — |
+| `generationConfig.thinkingConfig.includeThoughts` | boolean | нет | Возвращать ли содержимое рассуждений |
+| `generationConfig.responseModalities` | array&lt;string&gt; | нет | — |
+| `generationConfig.imageConfig.aspectRatio` | string | нет | — |
+| `generationConfig.imageConfig.imageSize` | string | нет | — |
 
-### 响应
+### Ответ
 
-| 状态码 | 说明 |
+| Код статуса | Описание |
 |---|---|
-| `200` | 成功 |
+| `200` | Успешно |
 
-#### `200` 响应字段
+#### Поля ответа `200`
 
-| 字段 | 类型 | 说明 |
+| Поле | Тип | Описание |
 |---|---|---|
 | `candidates` | array&lt;object&gt; | — |
 | `usageMetadata.promptTokenCount` | integer | — |
 | `usageMetadata.candidatesTokenCount` | integer | — |
 | `usageMetadata.totalTokenCount` | integer | — |
 
-## OpenAI Chat Format
+## Формат OpenAI Chat
 
-Gemini 图片生成
+Генерация изображений Gemini.
 
 `POST` `/v1/chat/completions`
 
-### 请求体（`application/json`）
+### Тело запроса (`application/json`)
 
-| 字段 | 类型 | 必填 | 说明 |
+| Поле | Тип | Обязательно | Описание |
 |---|---|---|---|
-| `model` | string | 是 | — |
-| `stream` | boolean | 是 | — |
-| `messages` | array&lt;object&gt; | 是 | — |
-| `extra_body.google.image_config.aspect_ratio` | string | 否 | — |
-| `extra_body.google.image_config.image_size` | string | 否 | — |
-| `contents` | array&lt;object&gt; | 是 | — |
+| `model` | string | да | — |
+| `stream` | boolean | да | — |
+| `messages` | array&lt;object&gt; | да | — |
+| `extra_body.google.image_config.aspect_ratio` | string | нет | — |
+| `extra_body.google.image_config.image_size` | string | нет | — |
+| `contents` | array&lt;object&gt; | да | — |
 
-### 响应
+### Ответ
 
-| 状态码 | 说明 |
+| Код статуса | Описание |
 |---|---|
-| `200` | 成功 |
+| `200` | Успешно |
 
-#### `200` 响应字段
+#### Поля ответа `200`
 
-| 字段 | 类型 | 说明 |
+| Поле | Тип | Описание |
 |---|---|---|
 | `id` | string | — |
 | `model` | string | — |

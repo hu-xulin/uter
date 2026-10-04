@@ -1,384 +1,384 @@
-# Uter Smart Large Model Service Platform Recharge Agreement
+# 優特智慧大模型服務平臺充值協議
 
-| Item | Content |
+| 專案 | 內容 |
 |---|---|
-| Service brand | **Uter.ai** |
-| Platform | **Uter Smart Large Model Service Platform** |
-| Official website | https://uter.ai |
-| Document | Uter Smart Large Model Service Platform Recharge Agreement |
-| Version | V1.0 |
-| Effective date | September 28, 2026 |
-| Last updated | September 28, 2026 |
-| Contracting entity | **Shenzhen Uter Network Technology Co., Ltd.** (the sole contracting entity for the recharge service and related fund-management matters under this Agreement) |
-| Applies to | Individual and enterprise users who make prepayments on the Platform |
-| Governing law | The laws of the People's Republic of China (excluding conflict-of-law rules) |
-| Related documents | Uter Smart Large Model Service Platform User Agreement; Uter Smart Large Model Service Platform Privacy Policy |
+| 服務品牌 | **Uter.ai 優特智慧** |
+| 平臺名稱 | **優特智慧大模型服務平臺** |
+| 官方網站 | https://uter.ai |
+| 文件名稱 | 優特智慧大模型服務平臺充值協議（Recharge Agreement） |
+| 版本號 | V1.0 |
+| 生效日期 | 2026 年 09 月 28 日 |
+| 最近更新 | 2026 年 09 月 28 日 |
+| 締約主體 | **深圳優特網路有限公司**（本協議項下的唯一締約主體） |
+| 適用物件 | 透過平臺進行預充值的個人使用者與企業使用者 |
+| 適用法律 | 中華人民共和國法律（不含衝突法） |
+| 配套檔案 | 《優特智慧大模型服務平臺使用者協議》《優特智慧大模型服務平臺隱私政策》 |
 
-> **Important notice**: This Agreement is a set of standard terms and forms part of the Uter Smart Large Model Service Platform User Agreement. Before making any recharge, please read all of its terms completely and carefully — **in particular the terms shown in bold that exclude or limit our liability, that limit your rights, and the terms on refund conditions and dispute resolution**. By completing any recharge, or by ticking your agreement to this Agreement, you are deemed to have fully understood and accepted all of its terms. If you do not agree with any part of this Agreement, please do not make a recharge.
+> **重要提示**：本協議為格式條款，是《優特智慧大模型服務平臺使用者協議》的組成部分。請您在充值前，完整、仔細地閱讀本協議全部條款，**特別是以加粗形式提示的免除或限制我們責任的條款、限制您權利的條款、退款條件條款與爭議解決條款**。您完成任一充值，或勾選同意本協議，均視為您已充分理解並接受本協議全部條款。如您不同意本協議任何內容，請勿進行充值。
 
 ---
 
-## Summary
+## 摘要
 
-**This summary does not replace the main text; the full text governs all rights and obligations.**
+**摘要不替代正文，完整的權利義務以正文為準。**
 
-| What you most want to know | Our answer |
+| 您最關心的問題 | 我們的回答 |
 |---|---|
-| How is my credit calculated after a recharge? | Your available credit is converted from the amount paid using the **conversion rate** agreed between us or published on the Platform. The conversion is itemised on the recharge confirmation page and in the monthly statement. |
-| Can I get back money I have not used? | **Yes.** Any unconsumed balance may be refunded on request at any time. The fees actually charged by **third-party payment channels** and the **taxes** corresponding to invoices already issued are deducted; beyond those deductions we **charge no refund handling fee**, and the funds are returned via the original payment route within **7 business days** of receiving a qualifying refund request. |
-| Is a large recharge protected any further? | For a single or cumulative recharge reaching **RMB 300,000**, you may open a **jointly controlled account** with us. Neither party may withdraw from it without the other's confirmation. |
-| Does a staged recharge reduce my discount? | **No.** The discount is locked to the tier corresponding to the total contract amount and is not downgraded because the funds arrive in stages. |
-| Will the service stop abruptly when the balance runs low? | **No.** We notify you when the available credit falls below **110%** of the estimated consumption for the current month; if a suspension is genuinely necessary, we give you **48 hours'** notice beforehand. |
-| How do I reconcile my account? | We deliver the previous month's statement by the **5th** of each month; you may raise objections within **10 days** of receipt, after which the statement is deemed confirmed. |
-| What happens to my balance if the company runs into trouble? | Unconsumed balance is a **liability for services prepaid**, recorded on the Platform **separately and not commingled with the company's own funds**. On liquidation it is handled under the Enterprise Bankruptcy Law of the PRC and ranks ahead of shareholder distributions. |
+| 充值後額度怎麼計算？ | 按雙方約定或平臺公示的**折算比例**折算可用額度，並在充值確認頁與月度對賬單中列明折算過程與結果。 |
+| 沒消耗完的錢能退嗎？ | **能。** 未消耗餘額可隨時申請退還。退還時扣除已產生的**第三方支付通道手續費**及已開票對應的**稅費**，在此之外我們**不收取任何退費手續費**，並在收到符合條件的退還申請後 **7 個工作日**內原路退回。 |
+| 大額充值有額外保障嗎？ | 單筆或累計達到 **100萬元**的充值，可與公司共同開立**共管賬戶**；未經雙方共同確認，任何一方均不得單方支取。 |
+| 分批到賬會降低折扣嗎？ | **不會。** 折扣按合同充值總額對應檔位鎖定，不因分批到賬而降檔。 |
+| 餘額快用完會突然停服嗎？ | **不會。** 可用額度低於當月預估消耗 **110%** 時我們會提醒；確需暫停服務的，我們將在暫停前 **48 小時**通知您。 |
+| 怎麼核對賬目？ | 我們於每月 **5 日**前送達上月對賬單；您可在收到後 **10 日**內提出異議，逾期未提出視為確認。 |
+| 公司若出現經營風險，我的餘額怎麼辦？ | 未消耗餘額屬於**預收服務費負債**，在平臺上**單獨記賬、不與公司自有資金混同**，清算時依《中華人民共和國企業破產法》處理，並優先於股東分配。 |
 
 ---
 
-## Contents
+## 目錄
 
-1. General provisions and scope of application
-2. Recharge, credit conversion and receipts
-3. Staged recharge
-4. Metering, consumption and credit alerts
-5. Refund of unconsumed balance
-6. Reconciliation and fund security
-7. Jointly controlled account (for large recharges)
-8. Rights and obligations of the parties; limitation of liability
-9. Miscellaneous
-
----
-
-## Chapter 1　General provisions and scope of application
-
-**Article 1　[Purpose]**
-
-This Agreement sets out the rights and obligations between you and Shenzhen Uter Network Technology Co., Ltd. ("we", "us" or "the Company") in respect of your prepayment to the Uter Smart Large Model Service Platform (the "Platform"), and of the stages that prepaid funds pass through — arrival, conversion, consumption, reconciliation and refund — so that prepaid funds are **secure, verifiable and refundable**.
-
-**Article 2　[Scope of application]**
-
-This Agreement applies to the following conduct on the Platform:
-
-(1) **Large recharges**: a single recharge, or cumulative recharges from your first recharge onward, reaching **RMB 300,000** (inclusive);
-
-(2) **Staged recharges**: recharges individually below RMB 300,000 where you and the Company separately agree to split the total contract amount into several instalments arriving on an agreed schedule;
-
-(3) **Other prepayments**: for prepayments outside the two categories above, Chapter 5 (refund of unconsumed balance) applies and the remaining matters follow the User Agreement.
-
-**Article 3　[Definitions]**
-
-Unless the context requires otherwise, the following terms have the meanings below:
-
-(1) **Recharge balance**: funds prepaid to the Platform that have not yet been consumed in full in accordance with actual usage;
-
-(2) **Available credit**: the credit available to offset service fees, being the amount paid converted at the conversion rate;
-
-(3) **Conversion rate**: the rate at which the amount paid is converted into available credit, as agreed in writing between the parties or published on the Platform. The conversion rate is **not lower than 1.00**; that is, a recharge attracts no additional charge of any kind;
-
-(4) **Consumption**: the fees actually incurred by your use of the Platform's API services under the billing rules published on the Platform;
-
-(5) **Staged recharge**: a recharge arrangement as defined in paragraph (2) of Article 2;
-
-(6) **Jointly controlled account**: a corporate bank account opened jointly by the Company and you at a bank under Chapter 7 of this Agreement and supervised by both parties;
-
-(7) **Statement**: the monthly written record delivered by the Company showing the opening balance, that month's consumption, recharges received, closing balance and refund records;
-
-(8) **Business day**: a statutory business day in the People's Republic of China; **calendar day**: a calendar day, including statutory holidays.
-
-**Article 4　[Relationship with the User Agreement]**
-
-(1) This Agreement forms part of the Uter Smart Large Model Service Platform User Agreement (the "User Agreement") and has the same effect as the User Agreement.
-
-(2) On matters concerning **prepaid funds and their management**, where this Agreement and the User Agreement differ, **this Agreement prevails**; matters not addressed here follow the User Agreement.
-
-(3) Where neither this Agreement nor the User Agreement addresses a matter, the rules published on the Platform and the laws and regulations of the People's Republic of China currently in force apply.
+1. 總則與適用範圍
+2. 充值、額度折算與票據
+3. 分批充值
+4. 計費、消耗與額度提醒
+5. 未消耗餘額的退還
+6. 對賬與資金安全
+7. 共管賬戶（大額充值適用）
+8. 雙方權利義務與責任限制
+9. 其他條款
 
 ---
 
-## Chapter 2　Recharge, credit conversion and receipts
+## 第一章　總則與適用範圍
 
-**Article 5　[Payment channels and arrival of funds]**
+**第一條　【目的】**
 
-(1) You shall make recharges through the channels published on the Platform, namely **corporate bank transfer** and **online payment**.
+本協議旨在明確您向優特智慧大模型服務平臺（以下簡稱"平臺"）預充值，以及該等預充值資金在到賬、折算、消耗、對賬、退還等環節中，您與深圳優特網路有限公司（以下簡稱"我們"或"公司"）之間的權利義務，保障預充值資金**安全、可查、可退**。
 
-(2) **You shall pay using an entity whose verified identity matches your Platform account.** Where payment is made by a third party on your behalf, the Company may require you to explain the source and purpose of the funds and may withhold credit conversion until verification is complete.
+**第二條　【適用範圍】**
 
-(3) The time of arrival is the time the funds are actually credited by the bank or third-party payment institution. **Online payments normally arrive immediately upon successful payment; corporate transfers normally arrive within the same business day**, subject to delay for interbank processing or statutory holidays.
+本協議適用於您在本平臺的下列行為：
 
-(4) Once a recharge arrives, the Platform converts available credit under Article 6 and issues you with a **receipt for the equivalent amount**.
+（一）**大額充值**：單筆或自首次充值起累計達到 **100萬元人民幣**（含本數）的充值；
 
-**Article 6　[Credit conversion]**
+（二）**分批充值**：單筆金額不足 100萬元，但您與公司另行約定將合同充值總額拆分為多筆、按約定時間表分批到賬的充值；
 
-(1) Available credit is calculated as follows:
+（三）**其他預充值**：除前兩項外的預充值，就"未消耗餘額可退"事項適用本協議第五章，其餘事項適用《使用者協議》相應約定。
 
-> **Available credit = Amount paid × Conversion rate**
+**第三條　【定義】**
 
-(2) The conversion rate is agreed in writing between the parties or published on the Platform. For example, at a conversion rate of **1.10**, RMB 100 paid converts into RMB 110 of available credit.
+除上下文另有所指外，本協議中下列用語具有如下含義：
 
-(3) **The conversion rule and its result are itemised on the recharge confirmation page and in that month's statement** so that you can verify them. Once applied, the conversion rate applies to the whole of the available credit corresponding to that recharge and is **not adjusted for later usage volume, arrival instalments or routing outcomes**.
+（一）**充值餘額**：您向平臺預付、尚未按實際用量消耗完畢的款項餘額；
 
-(4) Unless otherwise agreed in writing, the Company **charges no handling fee, management fee or service fee for a recharge**. **Fees charged to the Company by the payment channel for the movement of funds are deducted on a cost basis under Article 16 when a refund occurs.**
+（二）**可用額度**：以充值實付金額按折算比例折算後、可用於扣減服務費用的額度；
 
-**Article 7　[Receipts and invoices]**
+（三）**折算比例**：實付金額折算為可用額度的比例，由雙方書面約定或由平臺公示；折算比例 **不低於 1.00**，即充值不產生任何形式的額外收費；
 
-(1) Once a recharge arrives, the Platform issues a **recharge receipt** stating the amount paid, the conversion rate, the available credit, the time of arrival and the transaction number.
+（四）**消耗**：您使用平臺 API 服務，按平臺公示的計費規則實際產生的費用；
 
-(2) You may request a value-added tax invoice (special or ordinary, depending on your taxpayer status) for service consumption actually incurred. **Invoices are not issued for the recharge itself; they are issued on the amount actually consumed.**
+（五）**分批充值**：如本條第（二）項定義之充值安排；
 
-(3) Invoice requests shall be made within the calendar year in which the corresponding consumption occurs; in principle no invoice can be issued for a prior year. Where incorrect invoicing details provided by you cause re-issuance or cancellation, you bear the associated cost.
+（六）**共管賬戶**：由公司與您依照本協議第七章在銀行共同開立、雙方共同監管的對公賬戶；
 
-(4) On a refund, **for any portion already invoiced you shall return the original invoice or process a red-letter reversal**. Until that is completed, the Company may withhold the corresponding tax from the refund and return it without interest once the reversal is complete.
+（七）**對賬單**：公司按月向您送達的、載明期初餘額、本月消耗、本月充值、期末餘額與退費記錄的書面憑證；
 
----
+（八）**工作日**：中華人民共和國法定工作日；**自然日**：日曆日，含法定節假日。
 
-## Chapter 3　Staged recharge
+**第四條　【與《使用者協議》的關係】**
 
-**Article 8　[Arrangement]**
+（一）本協議是《優特智慧大模型服務平臺使用者協議》（以下簡稱"《使用者協議》"）的組成部分，與《使用者協議》具有同等效力。
 
-(1) You may agree with the Company in writing on a staged recharge, splitting the total contract amount into **four instalments arriving one instalment per week**, with the amounts and timing as confirmed in writing by both parties.
+（二）就**預充值資金及其管理事項**，本協議與《使用者協議》約定不一致的，**以本協議為準**；本協議未約定的事項，適用《使用者協議》。
 
-(2) The schedule, instalment amounts and conversion rate are specified in a **recharge confirmation or supplementary agreement signed separately** by the parties. In the absence of such specification, the total is divided equally into four instalments arriving on the same day of each week from the agreed start date.
-
-**Article 9　[Effect of a staged recharge]**
-
-(1) The contract discount is locked to the tier corresponding to the **total contract amount across all instalments** and is **not downgraded because the funds arrive in stages**.
-
-(2) On arrival of any instalment, the discount for that instalment takes effect immediately and applies to the whole of the available credit.
-
-(3) **You may top up later instalments early according to your actual usage**; an early arrival does not affect the remaining instalments on the original schedule and does not change the locked discount tier.
-
-(4) If you fail to pay an instalment on schedule, the Company may give written notice. **If payment is still outstanding 15 days after that notice**, the Company may adjust the discount on the amount already received to the tier **corresponding to the amount received** and settle the difference, which is applied as an adjustment of available credit rather than collected in cash.
-
-**Article 10　[Consideration protection for staged recharges]**
-
-The Company undertakes that, for a staged recharge, **before each instalment arrives it will not restrict your service by reference to the total contract amount not yet received**. The available credit corresponding to amounts you have already paid may be used normally under this Agreement, **regardless of whether later instalments arrive on schedule**.
-
-**Article 11　[Failure to pay on schedule]**
-
-(1) Where the Company adjusts the discount tier under Article 9(4), it shall give you **5 business days'** written notice with the revised settlement details.
-
-(2) If you pay the outstanding instalments within **5 business days** of receiving that notice, the Company shall restore the original contract discount tier and retroactively adjust the available credit from the date of adjustment.
-
-(3) For reasonable costs the Company has already incurred because of the missed schedule (for example, upstream procurement commitments already locked in), the Company may claim against you after itemising them in writing, **limited to amounts actually incurred and verifiable**.
+（三）本協議與《使用者協議》均未約定的，適用平臺公示的相關規則與中華人民共和國現行有效的法律法規。
 
 ---
 
-## Chapter 4　Metering, consumption and credit alerts
+## 第二章　充值、額度折算與票據
 
-**Article 12　[Metered billing and measurement basis]**
+**第五條　【充值渠道與到賬】**
 
-(1) Available credit is deducted in real time according to **actual API usage** under the billing rules published on the Platform.
+（一）您應透過平臺公示的渠道充值，包括**對公轉賬**與**線上支付**。
 
-(2) **Measurements are based on data recorded by the Platform.** The Platform records the time, model identifier, input/output token counts, status code and latency of each request and generates fee details and statements from that data.
+（二）**您應使用與平臺賬戶實名資訊一致的主體完成支付**；使用第三方賬戶代付的，公司有權要求您補充說明資金來源與用途，並在核驗透過前暫不折算額度。
 
-(3) The same model may be priced differently across routing paths and upstream model providers. The Platform bills according to the **actual routing outcome** and lists the corresponding tiers on the pricing page.
+（三）款項到賬時間以銀行或第三方支付機構實際入賬時間為準。**線上支付通常在支付成功後即時到賬；對公轉賬通常在同一工作日內到賬**，跨行或遇法定節假日順延。
 
-**Article 13　[Usage details and enquiries]**
+（四）充值到賬後，平臺按本協議第六條折算可用額度，並向您出具**等額收據**。
 
-(1) Billing details are **available in real time**. You may export usage and fee details for any period from the console, and an export record may serve as the basis for reconciliation.
+**第六條　【額度折算】**
 
-(2) Detail data is retained for **no less than 12 months** from the date it is generated.
+（一）可用額度按下列公式計算：
 
-**Article 14　[Credit alerts and suspension of service]**
+> **可用額度 = 實付金額 × 折算比例**
 
-(1) **Alert**: when available credit falls below **110%** of the estimated consumption for the current month, the Platform notifies you by the method agreed between the parties (in-app message, email or SMS).
+（二）折算比例由雙方書面約定或由平臺公示。例如折算比例為 **1.10** 時，實付 100 元人民幣折算為可用額度 110 元。
 
-(2) **Suspension**: if available credit is exhausted, the Platform may suspend the service. **Except where you have breached the usage rules or are in arrears, the Platform gives you 48 hours' written notice (including email and in-app message) before a suspension.**
+（三）**折算規則與折算結果將在充值確認頁與當月對賬單中列明**，便於您核對。折算比例一經適用，即適用於該筆充值對應的全部可用額度，**不因後續用量大小、到賬批次或路由結果而調整**。
 
-(3) **Effect of suspension**: a suspension **does not affect** the retention of your data, your access to usage details, or your right to a refund of unconsumed balance. Service resumes immediately once you top up.
+（四）除雙方另有書面約定外，公司**不因充值收取任何手續費、管理費或服務費**。**支付通道就資金往來向公司收取的通道費用，在發生退還時依本協議第十六條據實扣除。**
 
-(4) **Consumed fees are not refunded**: fees for tokens actually consumed are not refunded, whether or not you actually used the output (for example where you abandoned use because of prompt design, changed requirements or unsatisfactory results).
+**第七條　【收據與發票】**
 
-(5) Where a request fails because of **an error on the Platform's side** (gateway failure, or routing failure where the request never reached the upstream), it is not billed and any deducted amount is returned automatically.
+（一）充值到賬後，平臺向您出具**充值收據**，載明實付金額、折算比例、可用額度、到賬時間與流水號。
 
----
+（二）您可就實際發生的服務消費申請開具增值稅發票（專用發票或普通發票，視您的納稅人資格而定）。**充值本身不開具發票，發票按實際消耗金額開具**。
 
-## Chapter 5　Refund of unconsumed balance
+（三）發票申請應在對應消費發生的自然年度內提出，跨年度原則上不予補開。因您提供的開票資訊有誤導致重開、退票的，相關成本由您承擔。
 
-**Article 15　[Right to a refund]**
-
-(1) **You may request a refund of the unconsumed part of your recharge balance at any time. The fees actually charged by third-party payment channels and the taxes corresponding to invoices already issued are deducted from the refund; beyond those deductions the Company charges no refund handling fee.**
-
-(2) Refunds are returned **via the original payment route** as a matter of principle, that is, to the original paying account. If that account is closed or unavailable, you may request payment to a bank account **whose verified identity matches your Platform account**, supported by the necessary evidence.
-
-(3) Refund requests are submitted through the console or sent to **finance@uter.ai**.
-
-**Article 16　[Calculation of the refund amount]**
-
-(1) The **base refundable amount** is calculated as follows:
-
-1. Where the conversion rate is **1.00** (that is, the amount paid equals the available credit):
-
-> **Base refundable amount = Amount paid − Amount actually consumed**
-
-2. Where the conversion rate is **greater than 1.00** (that is, credit was converted at a discount or with bonus credit):
-
-> **Base refundable amount = Amount paid × (1 − Amount actually consumed ÷ Total credit after conversion)**
-
-where "total credit after conversion" is the total available credit for that recharge after conversion. The effect of this formula is that the **amount paid is refunded in proportion to the unconsumed credit out of the total credit after conversion**; bonus credit is not converted into cash.
-
-(2) The **refundable amount** is the base refundable amount less the following items actually incurred:
-
-> **Refundable amount = Base refundable amount − Third-party payment channel fees − Taxes corresponding to invoices already issued**
-
-1. **Third-party payment channel fees**: the fees actually charged to the Company by the payment channel for the movement of funds, deducted on a cost basis; the Company will provide a breakdown of the amount on your request.
-2. **Taxes corresponding to invoices already issued**: handled under Article 7(4); where the original invoice should be returned or a red-letter reversal made but has not been completed, the corresponding tax is deducted on a cost basis.
-
-(3) Where an account holds several recharges with different conversion rates, the base refundable amount is calculated **first-in, first-out** for each, and the refund is paid after the deductions under paragraph (2) are combined.
-
-(4) Where a **termination by the Company** or **force majeure** requires a full refund under the User Agreement, the deductions in paragraph (2) do not apply.
-
-**Article 17　[Refund process and timelines]**
-
-(1) Within **7 business days** of receiving a refund request that meets the requirements of this Agreement, the Company calculates the refundable amount under Article 16 and completes the refund via the original payment route. Delays caused by the processing times of banks or third-party payment institutions are not counted towards that period.
-
-(2) To meet anti-money-laundering and fund-security obligations, the Company may require you to provide identification, source-of-funds and purpose-of-funds information in any of the following cases; the refund period is extended accordingly, **by no more than 15 business days**:
-
-1. the same account requests refunds cumulatively exceeding **RMB 500,000** within 30 days **without any actual consumption**;
-2. the recharge funds come from a third party whose verified identity does not match the Platform account;
-3. other cases where verification is required by law, regulation or a competent authority.
-
-(3) If verification shows that **none** of the above applies, the Company shall immediately resume counting the refund period. **If verification fails or you decline to cooperate**, the Company may decline that refund, handle the matter under the User Agreement and, where necessary, report to the competent authority.
-
-**Article 18　[Amounts not refundable]**
-
-(1) Fees for services actually consumed;
-
-(2) Bonus credit, coupons, trial credit and other portions **not paid in cash**;
-
-(3) Third-party payment channel fees and the taxes corresponding to invoices already issued, which are deducted on a cost basis under Article 16(2);
-
-(4) Where your account is terminated under the User Agreement and there are payable fees, liquidated damages or compensation confirmed by an effective legal instrument, the remaining balance after deduction is still refundable — **except in cases of serious unlawful conduct**.
+（四）發生退還時，**已開具發票對應的部分，您應配合退回原發票或辦理紅字沖銷**；未配合完成的，公司有權在退還金額中暫扣相應稅費，待沖銷完成後無息退還。
 
 ---
 
-## Chapter 6　Reconciliation and fund security
+## 第三章　分批充值
 
-**Article 19　[Monthly statement]**
+**第八條　【分批充值安排】**
 
-(1) The Company delivers the previous month's statement by the **5th of each month**, stating the **opening balance, a summary of that month's consumption details, recharges received that month, the closing balance and refund records**.
+（一）您可與公司書面約定分批充值，將合同充值總額拆分為**四批**，**每週到賬一批**，具體金額與時點以雙方書面確認的時間表為準。
 
-(2) **You shall raise any objection to the statement in writing within 10 days of receipt**; if you do not, the statement is deemed confirmed. A confirmed statement is the basis for settlement and for transfers from the jointly controlled account.
+（二）分批充值的時間表、批次金額與折算比例，由雙方**另行簽署的充值確認書或補充協議**明確；未明確的，按均分四批、自約定起始日起每週同一日到賬執行。
 
-(3) If an objection is verified and an error exists, the Company shall correct and re-deliver the statement within **3 business days** of verification; the correction does not affect the undisputed parts.
+**第九條　【分批充值的效力】**
 
-**Article 20　[Separate recording of balances and priority on liquidation]**
+（一）合同折扣按**全部批次的合同總額**對應檔位鎖定，**不因分批到賬而降檔**。
 
-(1) **The Company shall record each customer's recharge balance truthfully and separately in its reconciliation system, and shall not commingle it with the Company's own funds.**
+（二）任一批次到賬後，該批次對應的折扣立即生效並適用於全部可用額度。
 
-(2) If the Company is dissolved, liquidated or becomes bankrupt, your unconsumed balance is a **liability for prepaid services**, and its ranking is determined under the Enterprise Bankruptcy Law of the People's Republic of China, **ahead of shareholder distributions**.
+（三）**您有權視實際用量提前續充後續批次**；提前到賬的批次不影響原時間表其餘批次的效力，亦不改變已鎖定的折扣檔位。
 
-(3) If the Company merges, splits, changes control or undergoes a major business change, it shall give you **30 calendar days'** notice; the transferee or successor shall assume the balance obligations under this Agreement, **failing which you may require the unconsumed balance to be refunded in full**.
+（四）您未按時間表到賬的，公司有權書面催告；**催告後 15 日內仍未到賬的**，公司有權將已到賬部分的折扣調整為**已到賬金額對應的檔位**，並按差額重新結算，差額以可用額度形式調整，不做現金追收。
 
----
+**第十條　【分批充值的對價保障】**
 
-## Chapter 7　Jointly controlled account (for large recharges)
+公司承諾：分批充值項下，**各批次資金到賬前，公司不以您尚未到賬的合同總額為限對您設定服務限制**。您已到賬部分對應的可用額度，按本協議正常使用，**不受後續批次是否按期到賬的影響**。
 
-**Article 21　[Availability and opening]**
+**第十一條　【未按時間表到賬的處理】**
 
-(1) A customer whose single or cumulative recharge reaches **RMB 300,000** may open a **jointly controlled account** with the Company at a bank; for a large-recharge customer, cooperating in opening the account is **an obligation of the Company**.
+（一）公司依本協議第九條第（四）項調整折扣檔位的，應提前 **5 個工作日**書面通知您，並附調整後的結算明細。
 
-(2) The account is managed by **both parties' specimen seals** or by **two-person authorisation on online banking**; **neither party may withdraw from it unilaterally**.
+（二）您在收到通知後 **5 個工作日內**補足未到賬批次的，公司應恢復原合同折扣檔位，並追溯調整自調整之日起的可用額度。
 
-(3) The cost of opening and maintaining the account is **borne by the Company**; additional costs caused by your own circumstances (for example, changing the account-holding entity or frequently changing specimen seals) are borne by you.
-
-(4) The detailed operating rules of the account follow the **Jointly Controlled Account Supervision Agreement** signed by you, the Company and the bank. To the extent that agreement and this Agreement differ on the operation of the account, the Supervision Agreement prevails.
-
-**Article 22　[Arrival of funds and monthly transfers]**
-
-(1) If you choose the jointly controlled account model, **recharge funds go directly into that account and not into the Company's operating account**.
-
-(2) Within **5 business days** after both parties confirm the monthly statement, the Company transfers the confirmed amount actually consumed from the jointly controlled account to the Company's operating account for upstream resource procurement and service delivery.
-
-(3) **No one may transfer funds out of the jointly controlled account without joint confirmation by both parties.**
-
-(4) If the parties dispute the amount to be transferred, the disputed portion is **not transferred** pending resolution; the undisputed portion is transferred normally and service delivery is unaffected.
-
-**Article 23　[Refund route and closing the account]**
-
-(1) On a refund request, the unconsumed balance is **returned directly from the jointly controlled account via the original payment route**, without passing through the Company's operating account.
-
-(2) If you end the cooperation or this Agreement is terminated, **all untransferred balance in the jointly controlled account is returned to you** and the account may be closed; both parties shall cooperate in the closing formalities within **10 business days**.
-
-**Article 24　[Disclosure of use of funds]**
-
-(1) To build trust, **the Company may, on your written request**, provide the names of the principal suppliers in its current upstream resource procurement together with summaries of payment vouchers (commercially sensitive details may be redacted) to evidence the actual use of transferred funds.
-
-(2) Such disclosure is available no more than once per calendar quarter, and the Company shall reply within **10 business days** of the written request. Where information involves trade secrets or may not lawfully be disclosed, the Company may decline and explain why.
+（三）因未按時間表到賬導致的公司已發生的合理成本（如已鎖定的上游採購承諾），公司可在書面列明後向您主張，但**以實際發生且可驗證的金額為限**。
 
 ---
 
-## Chapter 8　Rights and obligations of the parties; limitation of liability
+## 第四章　計費、消耗與額度提醒
 
-**Article 25　[Obligations of the Company]**
+**第十二條　【按量計費與計量口徑】**
 
-(1) To record and keep your recharge balance and consumption details truthfully, ensuring the accounts are verifiable, exportable and traceable;
+（一）可用額度按**實際 API 呼叫量**，依平臺公示的計費規則實時扣減。
 
-(2) To perform its alert, notice, reconciliation and refund obligations under this Agreement;
+（二）**計量以平臺記錄的資料為準。** 平臺記錄每次請求的時間、模型標識、輸入/輸出 Token 數、狀態碼與耗時，並據此生成費用明細與賬單。
 
-(3) To adopt technical and organisational measures consistent with industry standards to protect the integrity and confidentiality of funds and account data;
+（三）不同路由路徑、不同上游模型提供商的同一模型可能存在價格差異，平臺按**實際路由結果**計價，並在價格頁列明對應檔位。
 
-(4) Not to use your recharge balance for any purpose other than those set out in this Agreement.
+**第十三條　【用量明細與查詢】**
 
-**Article 26　[Your obligations]**
+（一）計費明細**實時可查**。您可在控制檯匯出任意時段的用量與費用明細，匯出記錄可作為對賬依據。
 
-(1) To make recharges using an entity whose verified identity matches your Platform account, and to ensure the funds come from lawful sources;
+（二）明細資料自產生之日起保留**不少於 12 個月**。
 
-(2) **Not to use prepaid funds for money laundering, cash-out, collection and payment on behalf of others, or the transfer of unlawful funds, or for any other unlawful or irregular activity**;
+**第十四條　【額度提醒與暫停服務】**
 
-(3) To check notices promptly and to raise objections to statements within the agreed period;
+（一）**提醒**：可用額度低於當月預估消耗的 **110%** 時，平臺按雙方約定方式（站內信、郵件或簡訊）向您提醒。
 
-(4) To bear the consequences of failed or delayed refunds caused by account details you supplied incorrectly.
+（二）**暫停**：可用額度耗盡的，平臺有權暫停服務。**除您存在違規使用或欠費情形外，平臺將在暫停前 48 小時以書面方式（含郵件、站內信）通知您。**
 
-**Article 27　[Limitation of liability]**
+（三）**暫停的效力**：服務暫停**不影響**您的資料保留、明細查詢與未消耗餘額的退還權利。您補充充值後，服務即時恢復。
 
-(1) **To the maximum extent permitted by law, the Company's liability for compensation under this Agreement is limited to the amount you have actually paid and not consumed.**
+（四）**已消耗費用不退**：已實際消耗的 Token 費用不予退還，無論您是否實際使用輸出結果（例如因提示詞設計、需求變更或效果不滿意而放棄使用）。
 
-(2) The limitation above does not apply to: **the Company's wilful misconduct or gross negligence; the Company's breach of its balance-custody obligations under Article 25; or any other case in which liability may not lawfully be limited or excluded.**
-
-(3) The Company is not liable for breach where service is suspended or delayed for reasons **beyond its reasonable control**, such as force majeure, governmental action, cross-border link interruption or changes in upstream model provider policies; however it shall notify you promptly and **refund the unconsumed balance in full**.
+（五）因**平臺自身錯誤**（閘道器異常、路由失敗且未送達上游）導致請求失敗的，不計費；已扣減的費用自動返還。
 
 ---
 
-## Chapter 9　Miscellaneous
+## 第五章　未消耗餘額的退還
 
-**Article 28　[Amendment and effectiveness]**
+**第十五條　【退還權利】**
 
-(1) This Agreement takes effect for you when you **complete a recharge** or **sign a recharge confirmation separately**, whichever is later.
+（一）**您充值餘額中的未消耗部分，您有權隨時申請退還。退還金額應扣除已產生的第三方支付通道手續費及已開票對應的稅費；除前述扣除項外，公司不就退還另行收取任何手續費。**
 
-(2) The Company may revise this Agreement as necessary to reflect laws and regulations, regulatory requirements, payment-channel rules or product iteration. Revised versions are published on the Platform and **notified to you at least 7 calendar days in advance**; for terms with a material impact on you — such as refund conditions, limitation of liability or dispute resolution — **15 calendar days'** notice is given.
+（二）退還以**原路退回**為原則，即退回至原支付賬戶；原支付賬戶登出或不可用的，您可申請退還至**與平臺賬戶實名一致**的銀行賬戶，並提供必要證明。
 
-(3) **A published revision applies to recharges made after the revision; a recharge balance existing before the revision remains governed by the version in force at the time of that recharge.** This rule ensures that a revision cannot reduce the refundable amount of, or raise the exit threshold for, your existing balance.
+（三）退還申請透過控制檯提交，或傳送至 **finance@uter.ai**。
 
-(4) The Platform keeps historical versions of this Agreement for traceability.
+**第十六條　【退還金額的計算】**
 
-**Article 29　[Notices and service]**
+（一）**基礎應退金額**按下列公式計算：
 
-(1) Notices from the Company may be served by any of the following means and are deemed served on dispatch: **in-app message (deemed served on sending), registered email (deemed served 24 hours after sending), console announcement (deemed served on publication), SMS (deemed served on sending)**.
+1. 折算比例為 **1.00** 的充值（即實付金額與可用額度一致）：
 
-(2) Notices concerning **discount adjustments, suspension of service, refund verification or material amendments to this Agreement** are served by **two or more** means at the same time.
+> **基礎應退金額 = 實付金額 − 已實際消耗金額**
 
-(3) You are obliged to keep your registered email address and mobile number valid. Notices from you to the Company should be sent to **finance@uter.ai** (funds and accounts), **legal@uter.ai** (legal and compliance) or **bd@uter.ai** (commercial and contracts).
+2. 折算比例**大於 1.00** 的充值（即以折扣或贈額折算的充值）：
 
-**Article 30　[Governing law and dispute resolution]**
+> **基礎應退金額 = 實付金額 × （1 − 實際消耗金額 ÷ 折算後總額）**
 
-(1) The formation, validity, interpretation, performance and dispute resolution of this Agreement are governed by **the laws of the People's Republic of China** (excluding conflict-of-law rules).
+其中"折算後總額"為該筆充值折算後的可用額度總額。該公式的適用效果是：**按未消耗額度佔折算後總額的比例退還實付金額**，贈額部分不折算為現金。
 
-(2) Any dispute arising out of or in connection with this Agreement shall first be resolved through friendly negotiation; failing that, either party may bring proceedings before **the competent people's court in the place where Shenzhen Uter Network Technology Co., Ltd. is domiciled (Shenzhen)**.
+（二）**應退金額**為在基礎應退金額中據實扣除下列款項後的餘額：
 
-(3) During dispute resolution, the parties shall continue to perform the other terms of this Agreement; **the Company shall not suspend your normal service for the undisputed portion because of the dispute**.
+> **應退金額 = 基礎應退金額 − 第三方支付通道手續費 − 已開票對應的稅費**
 
-**Article 31　[Other terms]**
+1. **第三方支付通道手續費**：支付通道就本次資金往來實際向公司收取的費用，據實扣除；公司可應您要求提供該筆費用的金額說明。
+2. **已開票對應的稅費**：已開具發票的部分，按本協議第七條第（四）項處理；應退回原發票或辦理紅字沖銷而未完成的，其對應稅費據實扣除。
 
-(1) **Entire agreement**: this Agreement and the User Agreement together constitute the entire agreement between the parties on prepaid funds.
+（三）同一賬戶記憶體在多筆不同折算比例的充值時，按**先進先出**順序逐筆計算基礎應退金額，並在合併扣除本條第（二）項款項後一併退還。
 
-(2) **Severability**: if any term of this Agreement is held invalid or unenforceable, the remaining terms remain in effect.
+（四）依《使用者協議》，因**公司主動終止服務**或**不可抗力**而應全額退還的，不適用本條第（二）項的扣除。
 
-(3) **Assignment**: you may not assign your rights and obligations under this Agreement without the Company's written consent; the Company may assign this Agreement in the event of a merger, restructuring or adjustment among affiliates, with prior notice to you.
+**第十七條　【退還流程與時限】**
 
-(4) **No waiver**: the Company's failure or delay in exercising any right under this Agreement does not constitute a waiver of that right.
+（一）公司在收到符合本協議要求的退還申請後 **7 個工作日**內，按第十六條計算應退金額並完成原路退回。因銀行或第三方支付機構的處理時限導致的延遲，不計入前述期限。
 
-(5) **Headings**: article headings are for ease of reading only and do not affect interpretation.
+（二）為履行反洗錢與資金安全義務，出現下列情形之一的，公司有權要求您補充提供身份資訊、資金來源與用途說明；核驗期間退還時限相應順延，**順延不超過 15 個工作日**：
 
-(6) **Language**: the **Chinese version** of this Agreement prevails. English or other translations are provided for understanding only; where a translation conflicts with the Chinese version, **the Chinese version prevails**.
+1. 同一賬戶在**無實際消耗**的情形下，30 日內累計申請退還金額超過 **50 萬元**；
+2. 充值資金來源於與平臺賬戶實名資訊不一致的第三方；
+3. 依法律法規或有權機關要求需進行核驗的其他情形。
 
-(7) **Survival**: after termination of this Agreement, terms that by their nature should survive (such as refund of balance, limitation of liability and dispute resolution) continue in effect.
+（三）經核驗**不存在**前述情形的，公司應立即恢復計算退還時限；**核驗不透過或您拒絕配合的**，公司有權拒絕該筆退還，並依《使用者協議》處理，必要時向有權機關報告。
+
+**第十八條　【不予退還的情形】**
+
+（一）已實際消耗的服務費用；
+
+（二）贈額、優惠券、體驗額度等**未以現金支付**的部分；
+
+（三）依本協議第十六條第（二）項據實扣除的第三方支付通道手續費及已開票對應的稅費；
+
+（四）依《使用者協議》賬戶被終止，且存在應付費用、違約金或經生效法律文書確認的賠償責任，在扣除後的剩餘部分仍應退還，但**構成嚴重違法情形的除外**。
+
+---
+
+## 第六章　對賬與資金安全
+
+**第十九條　【月度對賬單】**
+
+（一）公司於**每月 5 日前**向您送達上月對賬單，載明：**期初餘額、本月消耗明細彙總、本月充值到賬、期末餘額、退費記錄**。
+
+（二）**您對對賬單有異議的，應於收到後 10 日內書面提出**；逾期未提出的，視為確認。經確認的對賬單是雙方結算與劃扣的依據。
+
+（三）對賬單異議經核實確有差錯的，公司應在核實後 **3 個工作日內**更正並重新送達；更正不影響其他無異議部分的效力。
+
+**第二十條　【餘額單獨記賬與清算順位】**
+
+（一）**公司應在對賬系統中如實、單獨記載每一客戶的充值餘額，不得與公司自有資金混同記賬。**
+
+（二）公司發生解散、清算、破產等情形的，您的未消耗餘額屬於**預收服務費負債**，其受償順序依《中華人民共和國企業破產法》處理，**優先於股東分配**。
+
+（三）公司發生合併、分立、控制權變更或業務重大調整的，應提前 **30 個自然日**通知您；受讓方或承繼方應承繼本協議項下的餘額義務，**否則您有權要求全額退還未消耗餘額**。
+
+---
+
+## 第七章　共管賬戶（大額充值適用）
+
+**第二十一條　【共管賬戶的適用與開立】**
+
+（一）單筆或累計充值達到 **100萬元**的客戶，可以與公司在銀行共同開立**共管賬戶**；就大額充值客戶而言，配合開立共管賬戶**為公司義務**。
+
+（二）共管賬戶採用**預留雙方印鑑**或**開通網銀雙人複核**方式管理，**任何一方均不得單方支取**。
+
+（三）共管賬戶的開立及維護費用**由公司承擔**；因您的原因（如更換開戶主體、頻繁變更預留印鑑）產生的額外費用，由您承擔。
+
+（四）共管賬戶的具體操作細則，以您、公司與銀行三方簽署的**《共管賬戶監管協議》**為準；該協議與本協議不一致的，就共管賬戶的操作事項以《共管賬戶監管協議》為準。
+
+**第二十二條　【資金入賬與按月劃扣】**
+
+（一）您選擇共管賬戶模式的，**充值款項直接進入共管賬戶，不進入公司經營賬戶**。
+
+（二）每月對賬單經雙方確認後 **5 個工作日內**，公司按確認的實際消耗金額，將相應款項從共管賬戶劃轉至公司經營賬戶，用於上游資源採購與服務履行。
+
+（三）**未經雙方共同操作確認，任何人不得從共管賬戶劃轉資金。**
+
+（四）雙方對劃扣金額存在爭議的，爭議部分**暫不劃扣**，待爭議解決後按解決結果處理；無爭議部分正常劃扣，不影響服務提供。
+
+**第二十三條　【退還路徑與賬戶撤銷】**
+
+（一）您申請退還的，未消耗餘額**從共管賬戶直接原路退回**，不經公司經營賬戶。
+
+（二）您終止合作或本協議解除的，共管賬戶內**全部未劃扣餘額退回您**，共管賬戶即可撤銷；撤銷手續由雙方在 **10 個工作日內**互相配合辦理。
+
+**第二十四條　【資金用途披露】**
+
+（一）為增進信任，**公司可應您書面要求**，提供當期上游資源採購的主要供應商名稱與付款憑證摘要（商業敏感細節可脫敏），用以證明劃扣資金的實際用途。
+
+（二）前述披露每自然季度不超過一次，公司應在收到書面要求後 **10 個工作日內**答覆。涉及商業秘密或依法不得披露的資訊，公司可拒絕披露並說明理由。
+
+---
+
+## 第八章　雙方權利義務與責任限制
+
+**第二十五條　【公司的義務】**
+
+（一）如實記載並保管您的充值餘額與消耗明細，保證賬目可查、可匯出、可追溯；
+
+（二）按本協議約定履行提醒、通知、對賬與退還義務；
+
+（三）採取符合業界標準的技術與管理措施，保障資金與賬目資料的完整性、機密性；
+
+（四）不將您的充值餘額用於本協議約定用途之外的用途。
+
+**第二十六條　【您的義務】**
+
+（一）使用與平臺賬戶實名資訊一致的主體充值，並保證資金來源合法；
+
+（二）**不得利用預充值資金從事洗錢、套現、代收代付、轉移非法資金等違法違規活動**；
+
+（三）及時查收通知並對對賬單在約定期限內提出異議；
+
+（四）因您提供的賬戶資訊錯誤導致的退款失敗、延遲，相應後果由您承擔。
+
+**第二十七條　【責任限制】**
+
+（一）**在法律允許的最大範圍內，公司因本協議承擔的賠償責任以您已實際支付且未消耗的充值金額為限。**
+
+（二）前項限制不適用於下列情形：**公司的故意或重大過失；公司違反第二十五條項下餘額保管義務；依法不得限制或免除責任的其他情形。**
+
+（三）因不可抗力、政府行為、跨境鏈路中斷、上游模型提供商政策變更等**公司無法合理控制**的原因導致的服務暫停或延遲，公司不承擔違約責任，但應及時通知並**將未消耗餘額全額退還**。
+
+---
+
+## 第九章　其他條款
+
+**第二十八條　【協議變更與生效】**
+
+（一）本協議自您**完成充值**或**另行簽署充值確認書**時對您生效，以後發生者為準。
+
+（二）公司有權基於法律法規、監管要求、支付渠道規則或產品迭代之必要修訂本協議。修訂版本在平臺公示，**並至少提前 7 個自然日通知您**；涉及退還條件、責任限制、爭議解決等對您有重大影響的條款，**提前 15 個自然日**通知。
+
+（三）**公示的修訂版本，對修訂後發生的充值適用；修訂前的充值餘額，適用充值時有效的版本。** 這一規則確保您的既有餘額不會因協議修訂而減少可退金額或增加退出門檻。
+
+（四）平臺保留本協議的歷史版本以供追溯。
+
+**第二十九條　【通知與送達】**
+
+（一）公司向您發出的通知可透過下列任一方式送達，自發出之日起視為送達：**站內信（傳送即視為送達）、註冊郵箱（發出後 24 小時視為送達）、控制檯公告（釋出即視為送達）、簡訊（傳送即視為送達）**。
+
+（二）涉及**折扣調整、暫停服務、退款核驗、協議重大修訂**的通知，公司同時採用**兩種以上**方式送達。
+
+（三）您有義務保持註冊郵箱與手機號有效。您向公司發出的通知，應傳送至 **finance@uter.ai**（資金與賬務）、**legal@uter.ai**（法務與合規）或 **bd@uter.ai**（商務與合同）。
+
+**第三十條　【法律適用與爭議解決】**
+
+（一）本協議的訂立、效力、解釋、履行及爭議解決，均適用**中華人民共和國法律**（不含衝突法）。
+
+（二）因本協議引起的或與本協議有關的任何爭議，雙方應首先友好協商解決；協商不成的，任何一方均可向**深圳優特網路有限公司住所地（深圳市）有管轄權的人民法院**提起訴訟。
+
+（三）爭議解決期間，除爭議事項本身外，雙方應繼續履行本協議其他條款；**公司不得因爭議而暫停您無爭議部分的正常服務**。
+
+**第三十一條　【其他】**
+
+（一）**完整協議**：本協議與《使用者協議》共同構成雙方就預充值資金事項達成的完整約定。
+
+（二）**條款可分性**：本協議任何條款被認定為無效或不可執行的，不影響其餘條款的效力。
+
+（三）**轉讓**：未經公司書面同意，您不得轉讓本協議項下權利義務；公司有權在合併、重組或關聯主體調整情形下轉讓本協議，並提前通知您。
+
+（四）**不棄權**：公司未行使或延遲行使本協議項下任何權利，不構成對該權利的放棄。
+
+（五）**標題**：各條標題僅為便於閱讀，不影響條款解釋。
+
+（六）**語言版本**：本協議以**中文版本**為準。英文或其他語言譯本僅供理解參考；譯本與中文版本存在衝突時，以**中文版本**為準。
+
+（七）**存續**：本協議終止後，依其性質應繼續有效的條款（如餘額退還、責任限制、爭議解決）繼續有效。

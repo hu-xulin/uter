@@ -1,68 +1,68 @@
 # gemini
 
-## Gemini Native Format
+## Format Gemini natif
 
-Gemini 图片生成
+Génération d'images Gemini.
 
 `POST` `/v1beta/models/{model}:generateContent/`
 
-### 请求参数
+### Paramètres de requête
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| Nom du paramètre | Position | Type | Requis | Description |
 |---|---|---|---|---|
-| `model` | path | string | 是 | 模型名称 |
+| `model` | path | string | Oui | Nom du modèle |
 
-### 请求体（`application/json`）
+### Corps de la requête (`application/json`)
 
-| 字段 | 类型 | 必填 | 说明 |
+| Champ | Type | Requis | Description |
 |---|---|---|---|
-| `contents` | array&lt;object&gt; | 是 | — |
-| `generationConfig.thinkingConfig.includeThoughts` | boolean | 否 | 是否返回思考内容 |
-| `generationConfig.responseModalities` | array&lt;string&gt; | 否 | — |
-| `generationConfig.imageConfig.aspectRatio` | string | 否 | — |
-| `generationConfig.imageConfig.imageSize` | string | 否 | — |
+| `contents` | array&lt;object&gt; | Oui | — |
+| `generationConfig.thinkingConfig.includeThoughts` | boolean | Non | Indique si le contenu de réflexion est renvoyé |
+| `generationConfig.responseModalities` | array&lt;string&gt; | Non | — |
+| `generationConfig.imageConfig.aspectRatio` | string | Non | — |
+| `generationConfig.imageConfig.imageSize` | string | Non | — |
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-#### `200` 响应字段
+#### Champs de la réponse `200`
 
-| 字段 | 类型 | 说明 |
+| Champ | Type | Description |
 |---|---|---|
 | `candidates` | array&lt;object&gt; | — |
 | `usageMetadata.promptTokenCount` | integer | — |
 | `usageMetadata.candidatesTokenCount` | integer | — |
 | `usageMetadata.totalTokenCount` | integer | — |
 
-## OpenAI Chat Format
+## Format OpenAI Chat
 
-Gemini 图片生成
+Génération d'images Gemini.
 
 `POST` `/v1/chat/completions`
 
-### 请求体（`application/json`）
+### Corps de la requête (`application/json`)
 
-| 字段 | 类型 | 必填 | 说明 |
+| Champ | Type | Requis | Description |
 |---|---|---|---|
-| `model` | string | 是 | — |
-| `stream` | boolean | 是 | — |
-| `messages` | array&lt;object&gt; | 是 | — |
-| `extra_body.google.image_config.aspect_ratio` | string | 否 | — |
-| `extra_body.google.image_config.image_size` | string | 否 | — |
-| `contents` | array&lt;object&gt; | 是 | — |
+| `model` | string | Oui | — |
+| `stream` | boolean | Oui | — |
+| `messages` | array&lt;object&gt; | Oui | — |
+| `extra_body.google.image_config.aspect_ratio` | string | Non | — |
+| `extra_body.google.image_config.image_size` | string | Non | — |
+| `contents` | array&lt;object&gt; | Oui | — |
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-#### `200` 响应字段
+#### Champs de la réponse `200`
 
-| 字段 | 类型 | 说明 |
+| Champ | Type | Description |
 |---|---|---|
 | `id` | string | — |
 | `model` | string | — |

@@ -1,621 +1,621 @@
-# Uter Large Model Service Platform Terms of Service
+# Условия использования Платформы больших языковых моделей Uter
 
-| Item | Content |
+| Элемент | Содержание |
 |---|---|
-| Service Brand | **Uter.ai 优特智能** |
-| Platform Name | **Uter Large Model Service Platform** |
-| Official Website | https://uter.ai |
-| Document Name | Uter Large Model Service Platform Terms of Service |
-| Version | V1.0 |
-| Effective Date | August 8, 2026 |
-| Last Updated | August 8, 2026 |
-| Contracting Entity | **Shenzhen Uter Network Co., Ltd.** (the sole contracting entity for the services under this Agreement) |
-| Applicable To | Individual and enterprise users who register for and use the Uter Large Model Service Platform (Uter.ai) |
+| Бренд Сервиса | **Uter.ai** |
+| Наименование Платформы | **Платформа больших языковых моделей Uter** |
+| Официальный сайт | https://uter.ai |
+| Наименование документа | Условия использования Платформы больших языковых моделей Uter |
+| Версия | V1.0 |
+| Дата вступления в силу | August 8, 2026 |
+| Последнее обновление | August 8, 2026 |
+| Сторона по договору | **Shenzhen Uter Network Co., Ltd.** (единственная сторона по договору в отношении Сервиса в рамках настоящего Соглашения) |
+| Применимо к | Физическим и юридическим лицам, регистрирующимся на Платформе больших языковых моделей Uter (Uter.ai) и использующим её |
 
-> **Important Notice:** This Agreement is a standard-form contract. Before registering for or using this Service, please read all provisions of this Agreement carefully and in full, **especially the clauses highlighted in bold that exempt or limit our liabilities, restrict your rights, and govern dispute resolution and governing law.** If you do not agree to any part of this Agreement, please immediately stop registering for or using this Service. Checking the acceptance box, completing registration, or actually calling any API interface shall be deemed as your full understanding and acceptance of all terms of this Agreement.
-
----
-
-## Table of Contents
-
-1. General Provisions and Acceptance
-2. Definitions
-3. Account Registration, Verification and Security
-4. Service Scope and Content
-5. Usage Rules and Prohibited Conduct
-6. Top-up, Billing and Settlement
-7. Service Levels, Quotas and Availability
-8. Data, Content and Personal Information Protection
-9. Third-Party Services and Upstream Model Terms
-10. Intellectual Property Rights
-11. Disclaimers and Limitation of Liability
-12. Changes, Suspension and Termination of Service
-13. Breach and Handling
-14. Export Control, Sanctions and Cross-Border Compliance
-15. Governing Law and Dispute Resolution
-16. Notices and Service of Documents
-17. Miscellaneous
-- Appendix A Core Prohibited List of the Acceptable Use Policy (AUP)
-- Appendix B List of Upstream Model Providers and Sub-processors
+> **Важное уведомление:** Настоящее Соглашение является договором стандартной формы. До регистрации или использования настоящего Сервиса необходимо полностью и внимательно ознакомиться со всеми положениями настоящего Соглашения, **в особенности с положениями, выделенными полужирным шрифтом, которые освобождают нас от ответственности или ограничивают её, ограничивают Ваши права, а также регулируют разрешение споров и применимое право.** Если Вы не согласны ни с одним из положений настоящего Соглашения, необходимо немедленно прекратить регистрацию либо использование настоящего Сервиса. Отметка согласия в соответствующем поле, завершение регистрации либо фактический вызов любого интерфейса API считаются подтверждением полного понимания и принятия всех положений настоящего Соглашения.
 
 ---
 
-## Article 1 General Provisions and Acceptance
+## Содержание
 
-**1.1 Contracting Entity**
-
-This Agreement is entered into between you (hereinafter "User" or "you") and **Shenzhen Uter Network Co., Ltd.** (hereinafter collectively "Uter.ai 优特智能", "优特" or "we").
-
-- **Contracting Entity**: **Shenzhen Uter Network Co., Ltd.**, registered in Shenzhen, Guangdong Province, the People's Republic of China, holding an ICP license, algorithm filing and generative AI service filing. The company operates the **Uter Large Model Service Platform** (official website: Uter.ai, hereinafter the "Platform"), providing this Service to users within **the territory of the People's Republic of China (excluding the Hong Kong, Macao and Taiwan regions of China)**.
-- **Single Entity**: The **sole contracting entity for the services under this Agreement is Shenzhen Uter Network Co., Ltd.** We do not currently provide services to you through any overseas affiliated entity. Should we provide services through an overseas affiliated entity in the future, we will execute a separate service agreement and notify you in advance.
-
-**1.2 Composition of the Agreement**
-
-This Agreement, together with the following documents, constitutes the complete agreement and has the same legal effect as the main text of this Agreement; in the event of any inconsistency between an appendix and the main text, the main text shall prevail, except where the appendix imposes stricter obligations on a specific matter:
-
-1. the Privacy Policy;
-2. the Acceptable Use Policy (see Appendix A);
-3. the Service Level Agreement (SLA);
-4. the Pricing Page, Model Catalog and Rate-Limiting Rules published on the Platform;
-5. written documents separately executed between you and us, such as the Enterprise Service Agreement, Data Processing Agreement (DPA) and Order Confirmation.
-
-**1.3 Modes of Acceptance**
-
-You shall be deemed to have fully and unconditionally accepted this Agreement upon any of the following:
-
-- Checking "I have read and agree to the Terms of Service" on the registration page;
-- Completing account registration, enterprise identity verification or top-up;
-- Initiating any model call request using an API Key (or equivalent credential) issued by us.
-
-**1.4 Amendment of the Agreement**
-
-1.4.1 We may amend this Agreement as necessitated by changes in laws and regulations, regulatory requirements, adjustments to upstream model providers' policies, or product iteration. The amended Agreement will be prominently published on the Platform, with at least **7 calendar days'** advance notice (for clauses that materially affect you, such as billing rules, limitation of liability and dispute resolution, **15 calendar days'** advance notice).
-
-1.4.2 Upon expiry of the publication period, your continued use of this Service shall be deemed as acceptance of the amendments. If you do not accept them, you have the right to stop using the Service before the publication period expires and apply for settlement of your account balance.
-
-1.4.3 We recommend that you check the latest version of this Agreement periodically. The Platform will retain historical versions for traceability.
-
-**1.5 User Eligibility**
-
-1.5.1 If you are a **natural person**, you should be at least **18 years of age** and have full capacity for civil conduct. If you are under 18, you should read this Agreement in the company of a guardian and use this Service only with the guardian's consent.
-
-1.5.2 If you register in the name of an **enterprise, institution, social organization or other organization**, you represent and warrant that you are duly authorized by that organization, have the right to accept this Agreement on its behalf and assume the corresponding obligations, and that the qualification documents you submit to us (business license, power of attorney, etc.) are true, lawful and valid.
-
-1.5.3 You undertake that you are not a sanctioned or restricted subject under Article 14 of this Agreement.
-
-**1.6 Effectiveness**
-
-This Agreement takes effect on **August 8, 2026**. For users who registered before the effectiveness of this Agreement, this Agreement applies from the date of its effectiveness.
+1. Общие положения и акцепт
+2. Определения
+3. Регистрация аккаунта, верификация и безопасность
+4. Объём и содержание Сервиса
+5. Правила использования и запрещённые действия
+6. Пополнение, тарификация и расчёты
+7. Уровень Сервиса, квоты и доступность
+8. Защита данных, контента и персональных данных
+9. Сторонние сервисы и условия апстрим-моделей
+10. Права интеллектуальной собственности
+11. Оговорки и ограничение ответственности
+12. Изменение, приостановление и прекращение Сервиса
+13. Нарушение и меры реагирования
+14. Экспортный контроль, санкции и трансграничное соответствие
+15. Применимое право и разрешение споров
+16. Уведомления и вручение документов
+17. Прочие положения
+- Приложение A. Основной перечень запрещённых действий Политики допустимого использования (AUP)
+- Приложение B. Перечень апстрим-поставщиков моделей и субобработчиков
 
 ---
 
-## Article 2 Definitions
+## Раздел 1. Общие положения и акцепт
 
-Unless the context otherwise requires, the following terms have the meanings set out below:
+**1.1 Сторона по договору**
 
-| Term | Definition |
+Настоящее Соглашение заключается между Вами (далее — «Пользователь» или «Вы») и **Shenzhen Uter Network Co., Ltd.** (далее совместно — «Uter.ai», «Uter» или «мы»).
+
+- **Сторона по договору**: **Shenzhen Uter Network Co., Ltd.**, зарегистрированная в Шэньчжэне, провинция Гуандун, Китайская Народная Республика, имеющая лицензию ICP, запись об алгоритме и запись о сервисе генеративного искусственного интеллекта. Компания эксплуатирует **Платформу больших языковых моделей Uter** (официальный сайт: Uter.ai, далее — «Платформа»), предоставляя настоящий Сервис пользователям на **территории Китайской Народной Республики (за исключением районов Гонконг, Макао и Тайвань)**.
+- **Единственная сторона**: **единственной стороной по договору в отношении Сервиса в рамках настоящего Соглашения является Shenzhen Uter Network Co., Ltd.** В настоящее время мы не предоставляем Вам Сервис через какие-либо зарубежные аффилированные лица. В случае если в будущем Сервис будет предоставляться через зарубежное аффилированное лицо, мы заключим отдельное сервисное соглашение и заранее уведомим Вас.
+
+**1.2 Состав Соглашения**
+
+Настоящее Соглашение вместе со следующими документами образует полное соглашение и имеет такую же юридическую силу, как и основной текст настоящего Соглашения; при любом несоответствии между приложением и основным текстом преимущественную силу имеет основной текст, за исключением случаев, когда приложение устанавливает более строгие обязательства по конкретному вопросу:
+
+1. Политика конфиденциальности;
+2. Политика допустимого использования (см. Приложение A);
+3. Соглашение об уровне Сервиса (SLA);
+4. Страница цен, каталог моделей и правила ограничения частоты, опубликованные на Платформе;
+5. отдельно заключённые между Вами и нами документы, такие как Корпоративное сервисное соглашение, Соглашение об обработке данных (DPA) и Подтверждение заказа.
+
+**1.3 Способы акцепта**
+
+Вы считаетесь полностью и безоговорочно принявшими настоящее Соглашение при совершении любого из следующих действий:
+
+- отметка пункта «Я прочитал(а) Условия использования и согласен(на) с ними» на странице регистрации;
+- завершение регистрации аккаунта, верификации юридического лица или пополнения баланса;
+- направление любого запроса на вызов модели с использованием выданного нами API Key (или эквивалентных учётных данных).
+
+**1.4 Изменение Соглашения**
+
+1.4.1 Мы вправе изменять настоящее Соглашение в связи с изменениями законодательства и нормативных актов, требований регуляторов, корректировкой политик апстрим-поставщиков моделей или с развитием продукта. Изменённое Соглашение публикуется на Платформе на видном месте с предварительным уведомлением не менее чем за **7 календарных дней** (для положений, существенно затрагивающих Вас, таких как правила тарификации, ограничение ответственности и разрешение споров, — не менее чем за **15 календарных дней**).
+
+1.4.2 По истечении срока публикации дальнейшее использование Вами настоящего Сервиса считается принятием изменений. Если Вы их не принимаете, Вы вправе прекратить использование Сервиса до истечения срока публикации и обратиться с заявлением о расчёте остатка Вашего баланса.
+
+1.4.3 Мы рекомендуем Вам периодически проверять актуальную редакцию настоящего Соглашения. Платформа сохраняет исторические редакции для возможности отслеживания.
+
+**1.5 Право на использование**
+
+1.5.1 Если Вы являетесь **физическим лицом**, Вы должны достигнуть возраста **18 лет** и обладать полной дееспособностью. Если Вы не достигли возраста 18 лет, Вам следует ознакомиться с настоящим Соглашением в присутствии законного представителя и использовать настоящий Сервис только с его согласия.
+
+1.5.2 Если Вы регистрируетесь от имени **предприятия, учреждения, общественной организации или иной организации**, Вы заявляете и гарантируете, что надлежащим образом уполномочены этой организацией, вправе принять настоящее Соглашение от её имени и принять на себя соответствующие обязательства, а также что представленные нам документы, подтверждающие полномочия (свидетельство о государственной регистрации, доверенность и т. д.), являются достоверными, законными и действительными.
+
+1.5.3 Вы обязуетесь, что Вы не являетесь лицом, в отношении которого применяются санкции или ограничения в соответствии с Разделом 14 настоящего Соглашения.
+
+**1.6 Вступление в силу**
+
+Настоящее Соглашение вступает в силу **August 8, 2026**. В отношении пользователей, зарегистрированных до вступления настоящего Соглашения в силу, оно применяется начиная с даты его вступления в силу.
+
+---
+
+## Раздел 2. Определения
+
+Если из контекста не следует иное, следующие термины имеют указанное ниже значение:
+
+| Термин | Определение |
 |---|---|
-| **Service** | The services provided by the Uter Large Model Service Platform to users through its official website (Uter.ai) and unified API gateway, including multi-model aggregation calling, routing and scheduling, usage metering, and account management |
-| **Platform** | The Uter Large Model Service Platform, collectively the Uter official website (Uter.ai), console, developer documentation, SDK and API interfaces |
-| **API Key** | The calling credential issued by us to users for identity authentication and metering/billing (including keys, tokens, temporary credentials and all equivalent forms) |
-| **Token** | The smallest billing unit for processing text by a large language model. Input Tokens (Prompt Tokens) and Output Tokens (Completion Tokens) are billed separately |
-| **Upstream Model Provider** | A third party that actually provides model inference capability, including but not limited to OpenAI, Anthropic, Google, Microsoft Azure, Amazon AWS Bedrock, and domestic model vendors |
-| **Upstream Service** | The model inference interface and its supporting services provided by an Upstream Model Provider |
-| **Routing** | The mechanism by which the Platform distributes user requests to the corresponding upstream service based on model identifier, availability, latency and cost strategy |
-| **User Content** | The input content (prompts, files, images, etc.) submitted by the user through this Service and the output content returned by the Service |
-| **Enterprise User** | A user who registers in the name of an organization and completes enterprise verification |
-| **Account Balance** | The available fund quota that the user has pre-charged but not yet consumed |
-| **Metering Data** | The log data recorded and generated by the Platform for billing purposes, such as Token consumption, request counts and latency |
+| **Сервис** | Услуги, предоставляемые Платформой больших языковых моделей Uter пользователям через её официальный сайт (Uter.ai) и единый шлюз API, включая агрегированный вызов нескольких моделей, маршрутизацию и планирование, учёт использования и управление аккаунтами |
+| **Платформа** | Платформа больших языковых моделей Uter, включающая официальный сайт Uter (Uter.ai), консоль, документацию для разработчиков, SDK и интерфейсы API |
+| **API Key** | Учётные данные для вызовов, выдаваемые нами пользователям для аутентификации и учёта/тарификации (включая ключи, токены, временные учётные данные и все эквивалентные формы) |
+| **Токен** | Наименьшая единица тарификации обработки текста большой языковой моделью. Входящие токены (Prompt Tokens) и исходящие токены (Completion Tokens) тарифицируются раздельно |
+| **Апстрим-поставщик модели** | Третье лицо, фактически предоставляющее вычислительные возможности инференса моделей, включая, но не ограничиваясь, OpenAI, Anthropic, Google, Microsoft Azure, Amazon AWS Bedrock и отечественных поставщиков моделей |
+| **Апстрим-сервис** | Интерфейс инференса моделей и сопутствующие сервисы, предоставляемые апстрим-поставщиком модели |
+| **Маршрутизация** | Механизм, посредством которого Платформа распределяет запросы пользователя по соответствующим апстрим-сервисам на основе идентификатора модели, доступности, задержки и стратегии стоимости |
+| **Контент пользователя** | Входящий контент (запросы, файлы, изображения и т. д.), отправляемый пользователем через настоящий Сервис, и возвращаемый Сервисом выходной контент |
+| **Корпоративный пользователь** | Пользователь, который регистрируется от имени организации и проходит корпоративную верификацию |
+| **Баланс аккаунта** | Доступный остаток средств, предоплаченных пользователем, но ещё не израсходованных |
+| **Данные учёта** | Журнальные данные, фиксируемые и формируемые Платформой для целей тарификации, такие как расход токенов, количество запросов и задержка |
 
 ---
 
-## Article 3 Account Registration, Verification and Security
+## Раздел 3. Регистрация аккаунта, верификация и безопасность
 
-**3.1 Obligation of Truthful Information**
+**3.1 Обязанность предоставления достоверных сведений**
 
-3.1.1 You shall provide true, accurate, complete and valid registration and verification information, and update it within **5 business days** of any change.
+3.1.1 Вы обязаны предоставлять достоверные, точные, полные и действительные регистрационные и верификационные сведения и обновлять их в течение **5 рабочих дней** с момента любого изменения.
 
-3.1.2 You shall bear the consequences (including but not limited to service suspension, account freezing, inability to refund the balance, and third-party claims) arising from false, invalid or impersonated information caused by you.
+3.1.2 Вы несёте последствия (включая, но не ограничиваясь, приостановление Сервиса, блокировку аккаунта, невозможность возврата средств и предъявление требований третьими лицами), возникшие вследствие того, что Вами были предоставлены недостоверные, недействительные или чужие сведения.
 
-**3.2 Identity Verification**
+**3.2 Идентификация**
 
-3.2.1 Pursuant to the Cybersecurity Law of the PRC, the Administrative Measures for Internet Information Services, the Interim Measures for the Management of Generative AI Services and other regulations, users of domestic services must complete **identity verification** (identity verification for natural persons; business license verification for enterprises) before calling the Service.
+3.2.1 В соответствии с Законом Китайской Народной Республики о кибербезопасности, Административными мерами по управлению интернет-информационными услугами, Временными мерами по управлению услугами генеративного искусственного интеллекта и иными нормативными актами пользователи внутренних сервисов обязаны пройти **идентификацию** (идентификацию физического лица; проверку свидетельства о государственной регистрации для юридического лица) до вызова Сервиса.
 
-3.2.2 We may, as required by regulators, require you to submit additional industry qualifications, application scenario descriptions, content security management systems and other materials, and may refuse to activate the Service before approval.
+3.2.2 Мы вправе по требованию регуляторов потребовать от Вас дополнительные отраслевые квалификационные документы, описания сценариев применения, системы управления безопасностью контента и иные материалы и можем отказать в активации Сервиса до их одобрения.
 
-**3.3 Account Security**
+**3.3 Безопасность аккаунта**
 
-3.3.1 **You bear full responsibility for the safekeeping of all account credentials, including account name, password, API Key and two-factor authentication credentials. Once issued, an API Key is equivalent to your identity credential.**
+3.3.1 **Вы несёте полную ответственность за сохранность всех учётных данных аккаунта, включая имя аккаунта, пароль, API Key и учётные данные двухфакторной аутентификации. После выдачи API Key приравнивается к удостоверению личности пользователя.**
 
-3.3.2 You should at least take the following measures: do not hard-code API Keys in client code or public code repositories; issue independent Keys for different applications; rotate them regularly; configure IP allowlists and usage alerts; revoke immediately in the console upon discovering a leak.
+3.3.2 Вам следует как минимум принять следующие меры: не размещать API Keys в клиентском коде или публичных репозиториях кода; выдавать независимые ключи для разных приложений; регулярно их ротировать; настраивать списки разрешённых IP-адресов и оповещения об использовании; немедленно отзывать ключ в консоли при обнаружении утечки.
 
-3.3.3 **You bear all call volume and fees arising from your poor safekeeping, device intrusion, Key leakage or use by third parties.** We are not liable for fee losses caused by Key leakage. You should notify us immediately upon discovering a leak, and we will assist in revoking the credential; fees already incurred before your notice will not be refunded.
+3.3.3 **Вы несёте весь объём вызовов и расходы, возникающие вследствие ненадлежащего хранения, компрометации устройства, утечки ключа или использования третьими лицами.** Мы не несём ответственности за убытки, причинённые утечкой ключа. При обнаружении утечки Вам следует немедленно уведомить нас, и мы поможем отозвать учётные данные; расходы, понесённые до Вашего уведомления, возврату не подлежат.
 
-**3.4 Uniqueness and Transfer Restrictions of Accounts**
+**3.4 Уникальность аккаунтов и ограничения на передачу**
 
-3.4.1 One account is limited to use by one legal entity. **Without our prior written consent, you may not rent, lend, sell, gift or transfer the account or API Key in any form.**
+3.4.1 Один аккаунт может использоваться только одним юридическим лицом. **Без нашего предварительного письменного согласия Вы не вправе каким-либо образом сдавать аккаунт или API Key в аренду, передавать, продавать, дарить или уступать.**
 
-3.4.2 We may identify account sharing or resale based on login IP, device fingerprint, calling characteristics, etc., and take the measures under Article 13 of this Agreement.
+3.4.2 Мы вправе выявлять факты обмена аккаунтами или их перепродажи на основании IP-адреса входа, отпечатка устройства, характеристик вызовов и т. д. и применять меры, предусмотренные Разделом 13 настоящего Соглашения.
 
-**3.5 Account Cancellation**
+**3.5 Удаление аккаунта**
 
-You may apply to cancel your account in the console at any time. Before cancellation, you should settle all payable amounts and back up your own data. After cancellation, we will delete or anonymize your personal information as required by laws and regulations, except for transaction records that must be retained by law.
+Вы вправе в любой момент обратиться с заявлением об удалении аккаунта в консоли. До удаления аккаунта Вам следует рассчитать все причитающиеся суммы и создать резервную копию собственных данных. После удаления мы удаляем или обезличиваем Ваши персональные данные в соответствии с требованиями законодательства и нормативных актов, за исключением записей о транзакциях, подлежащих хранению в силу закона.
 
 ---
 
-## Article 4 Service Scope and Content
+## Раздел 4. Объём и содержание Сервиса
 
-**4.1 Service Content**
+**4.1 Содержание Сервиса**
 
-4.1.1 We provide an **aggregation and forwarding service for model invocation capability**. Specifically:
+4.1.1 Мы предоставляем **сервис агрегации и переадресации вычислительных возможностей моделей**. В частности:
 
-- Unified API protocol access (compatible with OpenAI format and mainstream SDKs);
-- Intelligent routing and failover across multiple models and upstreams;
-- Prepaid account system, usage metering, billing and invoicing;
-- Console management, usage monitoring, alerting and log query;
-- Optional value-added services: content security review, dedicated instances, private deployment, model fine-tuning, compliance consulting.
+- доступ через единый протокол API (совместимый с форматом OpenAI и основными SDK);
+- интеллектуальная маршрутизация и аварийное переключение между несколькими моделями и апстрим-провайдерами;
+- предоплатная система аккаунтов, учёт использования, тарификация и выставление счетов;
+- управление через консоль, мониторинг использования, оповещения и запрос журналов;
+- дополнительные платные услуги: модерация контента, выделенные экземпляры, частное развёртывание, дообучение моделей, консультации по соблюдению требований.
 
-4.1.2 **We are not the developer or owner of the models themselves.** Except for services explicitly labeled "self-developed models", all model capabilities involved in this Service are provided by Upstream Model Providers. Our role in this Service is that of an **integrator and reseller of the Service**, not the original provider of the models.
+4.1.2 **Мы не являемся разработчиком или правообладателем самих моделей.** За исключением сервисов, прямо помеченных как «собственные разработки», все задействованные в настоящем Сервисе возможности моделей предоставляются апстрим-поставщиками моделей. Наша роль в настоящем Сервисе — роль **интегратора и реселлера Сервиса**, а не первоначального поставщика моделей.
 
-**4.2 Service Forms**
+**4.2 Формы Сервиса**
 
-| Form | Description | Billing |
+| Форма | Описание | Тарификация |
 |---|---|---|
-| Public Cloud API | Multi-tenant shared resource pool, postpaid settlement by Token | Pay-as-you-go |
-| Dedicated Instance | Exclusive compute quota, guaranteed latency and concurrency | Subscription + pay-as-you-go |
-| Private Deployment | Deployed in the user's own environment, data does not leave the domain | Project-based + annual maintenance |
-| Developer Edition | Includes free trial quota, for individual developers | Pay-as-you-go |
+| Публичное облако API | Мультитенантный пул общих ресурсов, постоплата по токенам | Оплата по факту |
+| Выделенный экземпляр | Эксклюзивная вычислительная квота, гарантированная задержка и пропускная способность | Подписка + оплата по факту |
+| Частное развёртывание | Развёртывается в собственной среде пользователя, данные не покидают периметр | Проектная оплата + годовое обслуживание |
+| Редакция для разработчиков | Включает бесплатную пробную квоту, для индивидуальных разработчиков | Оплата по факту |
 
-**4.3 Service Regions**
+**4.3 Регионы предоставления Сервиса**
 
-4.3.1 We may open different model catalogs to users in different registration regions based on Upstream Model Providers' regional authorization restrictions, export control requirements and local laws.
+4.3.1 Мы вправе открывать различные каталоги моделей для пользователей из различных регионов регистрации с учётом региональных ограничений авторизации апстрим-поставщиков моделей, требований экспортного контроля и местного законодательства.
 
-4.3.2 **You may not use technical means to bypass regional restrictions to call models not opened to your region.** We may intercept and handle abnormal cross-border calling behavior.
+4.3.2 **Вам запрещается использовать технические средства для обхода региональных ограничений и вызова моделей, не открытых для Вашего региона.** Мы вправе перехватывать и обрабатывать ненормальное межстрановое поведение при вызовах.
 
-**4.4 Model On/Off-boarding**
+**4.4 Подключение и отключение моделей**
 
-4.4.1 Upstream Model Providers may add, update, discontinue or deprecate specific models at any time. We will notify you in advance to the extent reasonably feasible and suggest alternative models.
+4.4.1 Апстрим-поставщики моделей в любой момент могут добавлять, обновлять, прекращать поддержку или выводить из эксплуатации отдельные модели. Мы заранее уведомим Вас в разумно возможных пределах и предложим альтернативные модели.
 
-4.4.2 **Service adjustments caused by upstream model off-boarding, capability changes or price adjustments do not constitute a breach by us.** We will endeavor to provide a migration window of at least **30 calendar days**, but where the upstream's transition period is shorter, the actual upstream arrangement shall prevail.
+4.4.2 **Изменения Сервиса, вызванные прекращением поддержки апстрим-моделей, изменением возможностей или корректировкой цен, не являются нарушением с нашей стороны.** Мы приложим усилия для предоставления окна миграции продолжительностью не менее **30 календарных дней**, однако если переходный период на стороне апстрима короче, применяется фактический порядок, установленный апстримом.
 
-**4.5 Free Quota and Trials**
+**4.5 Бесплатная квота и пробное использование**
 
-Free quota is for evaluation and testing only. We may adjust the quota, restrict available models or terminate trials at any time, and make no commitment regarding the availability of services within the free quota. The free quota is non-refundable, non-transferable and non-cashable.
-
----
-
-## Article 5 Usage Rules and Prohibited Conduct
-
-**5.1 General Compliance**
-
-You undertake to use this Service only for lawful and legitimate purposes, to comply with the laws and regulations of the PRC, those of your location and of the place of service use, and all applicable policies of Upstream Model Providers. **You bear sole and full legal liability for all content submitted through this Service and the consequences arising therefrom.**
-
-**5.2 Content-Level Prohibitions**
-
-You may not use this Service to generate, store, disseminate or otherwise process the following content:
-
-1. Content that opposes the basic principles established by the Constitution, endangers national security, honor and interests, incites subversion of state power or overthrow of the socialist system;
-2. Content that incites division of the country, undermines national unity, advocates terrorism or extremism, incites ethnic hatred or discrimination, or undermines ethnic solidarity;
-3. Content that undermines national religious policy, or advocates cults and feudal superstition;
-4. Content that spreads rumors or false information and disrupts economic or social order;
-5. Content that insults or slanders others, or infringes upon others' rights of reputation, portrait, privacy or personal information;
-6. Obscene, pornographic, gambling, violent, murderous, terrorist or crime-instructing content;
-7. **Any content involving the sexual exploitation of or sexualization of minors** — upon discovery, we will immediately terminate the Service and report to the competent authority, with no grace period;
-8. Content that infringes upon others' intellectual property rights, trade secrets or other lawful rights and interests;
-9. Content that, in violation of the Interim Measures for the Management of Generative AI Services and the Provisions on the Administration of Deep Synthesis of Internet Information Services, fails to label generated content as required by law;
-10. Use for illegal activities such as telecom network fraud, money laundering, illegal fundraising, pyramid selling, illegal stock recommendation or illegal lending.
-
-**5.3 Technical-Level Prohibitions**
-
-You may not engage in the following, nor assist or incite others to do so:
-
-1. Reverse engineering, decompiling or disassembling this Service or the Upstream Service, or attempting to obtain source code, model weights or system prompts;
-2. Using automated scripts, crawlers or bulk registration to maliciously register accounts, scrape free quota or obtain benefits;
-3. **Reselling, sub-licensing or re-distributing this Service or API Keys to third parties in any form** (except channel agents authorized in writing by us);
-4. Circumventing, evading or destroying our rate-limiting, content review, authentication, regional restriction or billing metering technical measures;
-5. Conducting stress testing, penetration testing or denial-of-service attacks against the Service, or using abnormally high concurrent requests that affect the Platform and other users;
-6. Concealing the true source of calls through forged request characteristics, tampered Headers or proxy pools;
-7. Using this Service to train models that directly compete with upstream models (Distillation or model distillation) unless explicitly authorized by the upstream provider;
-8. Extracting, caching or mirroring upstream model outputs to build datasets or services substantially identical to this Service.
-
-**5.4 Additional Requirements for Specific Scenarios**
-
-5.4.1 **Public-facing application scenarios**: If you integrate this Service into a generative AI application open to the public (including websites, Apps, mini-programs, smart hardware), you should complete the required **algorithm filing, generative AI service filing** and content labeling obligations on your own, and obtain our separate written confirmation. We may provide compliance guidance but do not assume your filing obligations thereby.
-
-5.4.2 **High-risk decision scenarios**: You may not use the output of this Service as the **sole** basis for decisions in high-risk scenarios such as medical diagnosis, legal opinions, financial investment decisions, judicial adjudication or personnel recruitment. Such scenarios should be reviewed by qualified professionals.
-
-5.4.3 **Minor-related products**: If your product is directed at minors or may be used by minors, you should obtain guardian consent in accordance with law and implement additional content security measures.
-
-5.4.4 **Sensitive personal information**: Without lawful authorization, you may not submit through this Service others' sensitive personal information, biometric information, medical and health information, financial account information or other specially protected data.
-
-**5.5 Violation Handling**
-
-If you violate this Article, we may, at our discretion and depending on the circumstances, take one or more of the following measures without bearing breach liability: warning and requiring rectification within a time limit; restricting call rate or quota; suspending part or all of the Service; freezing the account; terminating this Agreement; deleting violating content; reporting to and cooperating with regulators or competent authorities in investigation; pursuing your breach and tort liabilities.
+Бесплатная квота предназначена исключительно для оценки и тестирования. Мы вправе в любой момент скорректировать квоту, ограничить доступные модели или прекратить пробное использование и не принимаем на себя обязательств относительно доступности Сервиса в рамках бесплатной квоты. Бесплатная квота не подлежит возврату средств, передаче и обналичиванию.
 
 ---
 
-## Article 6 Top-up, Billing and Settlement
+## Раздел 5. Правила использования и запрещённые действия
 
-**6.1 Billing Unit and Basis**
+**5.1 Общие требования соблюдения**
 
-6.1.1 This Service uses **Token** as the basic billing unit, billing **Input Tokens** and **Output Tokens** separately, with prices subject to the Platform's Pricing Page.
+Вы обязуетесь использовать настоящий Сервис исключительно в законных и правомерных целях, соблюдать законодательство и нормативные акты Китайской Народной Республики, законодательство места Вашего нахождения и места использования Сервиса, а также все применимые политики апстрим-поставщиков моделей. **Вы несёте единственную и полную юридическую ответственность за весь контент, отправляемый через настоящий Сервис, и за последствия, возникающие из него.**
 
-6.1.2 **Metering is based on our Platform's metering data.** We record the model identifier, input/output Token counts, timestamps and result status of each request, and generate the bill accordingly. You may query details in the console.
+**5.2 Запреты на уровне контента**
 
-6.1.3 Prices may differ for the same model across different routing paths and different upstream providers; we bill according to the **actual routing result** and list the corresponding price tiers on the Pricing Page.
+Вам запрещается использовать настоящий Сервис для создания, хранения, распространения или иной обработки следующего контента:
 
-**6.2 Price Adjustment**
+1. контент, посягающий на основные принципы, установленные Конституцией, ставящий под угрозу национальную безопасность, честь и интересы страны, призывающий к подрыву государственной власти или свержению социалистической системы;
+2. контент, призывающий к расчленению страны, подрывающий национальное единство, пропагандирующий терроризм или экстремизм, призывающий к межнациональной ненависти или дискриминации, а также подрывающий межнациональную солидарность;
+3. контент, подрывающий государственную религиозную политику, пропагандирующий культы и суеверия;
+4. контент, распространяющий слухи или ложную информацию и дестабилизирующий экономический или общественный порядок;
+5. контент, оскорбляющий или клевещущий в отношении других лиц, а также нарушающий их права на репутацию, изображение, частную жизнь или персональные данные;
+6. непристойный, порнографический, азартный, насильственный, пропагандирующий убийство, террористический или содержащий инструкции по совершению преступлений контент;
+7. **любой контент, связанный с сексуальной эксплуатацией или сексуализацией несовершеннолетних**, — при обнаружении мы немедленно прекращаем Сервис и направляем сообщение в компетентный орган без какого-либо льготного срока;
+8. контент, нарушающий права интеллектуальной собственности, коммерческую тайну или иные законные права и интересы других лиц;
+9. контент, который в нарушение Временных мер по управлению услугами генеративного искусственного интеллекта и Положений об управлении интернет-информационными услугами глубокой синтезации не маркирует сгенерированный контент в установленном законом порядке;
+10. использование для незаконной деятельности, такой как мошенничество в телекоммуникационных сетях, отмывание денежных средств, незаконное привлечение средств, пирамидальные схемы, незаконные рекомендации по покупке ценных бумаг или незаконное кредитование.
 
-We may adjust service prices based on upstream price changes, exchange rate fluctuations and cost structure changes. Price adjustments will be published **15 calendar days** in advance; adjustments are not retroactive, and usage before publication is settled at the original price.
+**5.3 Запреты на техническом уровне**
 
-**6.3 Prepayment and Account Balance**
+Вам запрещается совершать следующие действия, а также содействовать или побуждать других лиц к их совершению:
 
-6.3.1 This Service adopts a **prepaid model**: you should first top up to form an account balance, which is deducted in real time upon calling. When the balance is insufficient, the Service will automatically stop; we do not provide credit advances (except enterprise users with separate written arrangements).
+1. обратная разработка, декомпиляция или дизассемблирование настоящего Сервиса или апстрим-сервиса, а также попытки получить исходный код, веса моделей или системные запросы;
+2. использование автоматизированных скриптов, краулеров или массовой регистрации для злонамеренной регистрации аккаунтов, сбора бесплатной квоты или получения выгоды;
+3. **перепродажа, сублицензирование или перераспределение настоящего Сервиса или API Keys третьим лицам любым способом** (за исключением агентских каналов, письменно авторизованных нами);
+4. обход, уклонение или уничтожение наших технических мер ограничения частоты, модерации контента, аутентификации, региональных ограничений или тарифного учёта;
+5. проведение нагрузочного тестирования, тестирования на проникновение или атак типа «отказ в обслуживании» против Сервиса, а также использование аномально высокого числа параллельных запросов, влияющих на Платформу и других пользователей;
+6. сокрытие действительного источника вызовов посредством поддельных характеристик запросов, подменённых заголовков или прокси-пулов;
+7. использование настоящего Сервиса для обучения моделей, непосредственно конкурирующих с апстрим-моделями (дистилляция или дистилляция моделей), если иное явно не разрешено апстрим-провайдером;
+8. извлечение, кэширование или зеркалирование выходных данных апстрим-моделей для создания наборов данных или сервисов, существенно аналогичных настоящему Сервису.
 
-6.3.2 **Account Balance is non-transferable, non-cashable and may not be used for purposes other than this Service.**
+**5.4 Дополнительные требования для отдельных сценариев**
 
-6.3.3 **Refund Rules**:
+5.4.1 **Сценарии с публичным доступом**: если Вы интегрируете настоящий Сервис в приложение с генеративным искусственным интеллектом, открытое для публики (включая веб-сайты, приложения, мини-приложения, интеллектуальные устройства), Вам следует самостоятельно выполнить требуемые **запись об алгоритме, запись о сервисе генеративного искусственного интеллекта** и обязанности по маркировке контента и получить наше отдельное письменное подтверждение. Мы можем предоставлять консультационную помощь по соблюдению требований, но не принимаем на себя в связи с этим Ваши обязанности по постановке на учёт.
 
-- For un-consumed top-up balances, you may apply for a refund, but the fees charged by third-party payment channels and the taxes corresponding to invoices already issued will be deducted; the review period is **7 business days**. The method of calculating the refund amount and the refund process follow the Recharge Agreement.
-- **Consumed Token fees are non-refundable**, regardless of whether you actually used the output (e.g., you abandoned use due to poor prompt design, changed requirements or dissatisfaction with results).
-- Where account termination is caused by your violation of this Agreement, the balance, after deduction of payable fees and possible third-party claims, may be refunded; where serious illegality is constituted, we may lawfully defer the refund and cooperate with competent authorities.
+5.4.2 **Сценарии принятия решений повышенного риска**: Вам запрещается использовать выходные данные настоящего Сервиса в качестве **единственного** основания для принятия решений в сценариях повышенного риска, таких как медицинская диагностика, юридические заключения, инвестиционные решения в сфере финансов, судебное разбирательство или подбор персонала. Такие сценарии подлежат рассмотрению квалифицированными специалистами.
 
-6.3.4 The balance is valid for **12 months** from the top-up date. Before expiry we will remind you via in-site message/email; unused balances after expiry may be reactivated upon application; if unused continuously for **3 months**, we may handle it after deducting reasonable management fees.
+5.4.3 **Продукция, связанная с несовершеннолетними**: если Ваш продукт предназначен для несовершеннолетних или может быть ими использован, Вам следует получить согласие законного представителя в соответствии с законодательством и внедрить дополнительные меры обеспечения безопасности контента.
 
-**6.4 Failed Requests and Billing**
+5.4.4 **Чувствительные персональные данные**: без законного разрешения Вам запрещается отправлять через настоящий Сервис чувствительные персональные данные, биометрические данные, медицинские данные и сведения о здоровье, сведения о финансовых счетах или иные особо защищённые данные других лиц.
 
-6.4.1 Requests that fail due to **our** platform errors (gateway exceptions, routing failures that did not reach upstream) are not billed, and any deducted fees are automatically returned.
+**5.5 Меры реагирования на нарушения**
 
-6.4.2 **Requests for which an Upstream Model Provider returned an error, timeout, or content intercepted by the upstream safety policy (Refusal / Content Filter) and that already incurred upstream consumption are still billed according to actual consumption**:
-
-- Where the upstream has returned a content filtering result (e.g., safety interception, refusal), input Token consumption typically still occurs and is billed as Input Tokens;
-- Where the upstream returned a `5xx` error or timeout, it is generally not billed; if the upstream has billed, we will return the equivalent amount after verification;
-- You may submit a billing dispute through the console; the dispute acceptance period is **30 calendar days** from bill generation, after which the bill is deemed accepted.
-
-6.4.3 Streaming requests interrupted are metered by the Tokens actually transmitted.
-
-**6.5 Discounts and Offers**
-
-Prompt Caching, Batch, off-peak calling, etc. may enjoy discounts; the specific discount rates are subject to the Pricing Page and upstream policies. **Discounts vary with upstream policies and do not constitute a long-term commitment.**
-
-**6.6 Invoicing and Taxation**
-
-We issue VAT invoices (special or general VAT invoices, depending on your taxpayer qualification) based on your actual consumption amount. Invoice applications must be submitted within the calendar year to which the bill belongs; cross-year re-issuance is not provided. Costs of re-issuance or cancellation due to incorrect invoicing information you provided are borne by you.
-
-**6.7 Arrears Handling**
-
-After the balance is exhausted, the Service will be suspended. For enterprise users on a monthly post-settlement model, if payment is overdue by more than **15 calendar days**, we may suspend the Service; if overdue by more than **30 calendar days**, we may terminate the Service, pursue breach liability, and charge a late penalty of **0.05% per day**.
+В случае нарушения настоящего Раздела мы вправе по своему усмотрению и с учётом обстоятельств принять одну или несколько следующих мер без несения ответственности за нарушение: предупреждение с требованием устранить нарушение в установленный срок; ограничение частоты вызовов или квоты; приостановление части или всего Сервиса; блокировка аккаунта; расторжение настоящего Соглашения; удаление нарушающего контента; направление сообщений в регуляторные органы и компетентные органы власти и содействие им в проведении проверок; привлечение к ответственности за нарушение договора и за деликт.
 
 ---
 
-## Article 7 Service Levels, Quotas and Availability
+## Раздел 6. Пополнение, тарификация и расчёты
 
-**7.1 Availability Target**
+**6.1 Единица и основание тарификации**
 
-7.1.1 We commit to a monthly availability of no less than **99.9%** for the **Platform gateway** (authentication, routing, metering modules); the specific calculation method and compensation standard are detailed in the Service Level Agreement (SLA).
+6.1.1 Настоящий Сервис использует **Токен** в качестве базовой единицы тарификации, тарифицирует **Входящие токены** и **Исходящие токены** раздельно, а цены определяются в соответствии со Страницей цен Платформы.
 
-7.1.2 **The above commitment does not cover the availability of the Upstream Model Providers themselves.** The availability of upstream services is indirectly guaranteed by the upstream provider to **you** (as the end user) under its own SLA; we do not assume guarantee liability for the upstream SLA.
+6.1.2 **Учёт производится на основании данных учёта нашей Платформы.** Мы фиксируем идентификатор модели, количество входящих и исходящих токенов, временные метки и статус результата каждого запроса и формируем на их основе счёт. Вы можете запросить подробности в консоли.
 
-**7.2 SLA Exclusions**
+6.1.3 Цены на одну и ту же модель могут различаться по различным маршрутам и различным апстрим-провайдерам; мы тарифицируем в соответствии с **фактическим результатом маршрутизации**, а соответствующие ценовые категории указываем на Странице цен.
 
-The following circumstances are not counted as downtime: upstream model provider failures, rate-limiting or policy changes; Internet backbone failures, DNS pollution, cross-border link congestion; your own application, network or configuration issues; our planned maintenance (72 hours' notice, no more than 4 hours each); force majeure; bans due to your violation.
+**6.2 Корректировка цен**
 
-**7.3 SLA Compensation**
+Мы вправе корректировать цены на Сервис исходя из изменения цен апстрима, колебаний валютных курсов и изменений структуры затрат. Корректировка цен публикуется за **15 календарных дней**; корректировки не имеют обратной силы, а использование до публикации оплачивается по первоначальной цене.
 
-When the SLA is not met, we will compensate in the form of **service credit vouchers**, with the compensation cap at **100% of your actual consumption amount in the month**, and **no cash refund is provided**. Service credit vouchers are non-transferable, non-cashable, and valid for 6 months.
+**6.3 Предоплата и баланс аккаунта**
 
-**7.4 Quotas and Rate-Limiting**
+6.3.1 Настоящий Сервис применяет **предоплатную модель**: Вам следует сначала пополнить баланс аккаунта, который списывается в реальном времени при вызове. При недостаточности баланса Сервис автоматически приостанавливается; мы не предоставляем кредитных авансов (за исключением корпоративных пользователей с отдельно согласованными письменными условиями).
 
-7.4.1 We set rate limits (RPM: requests per minute; TPM: Tokens per minute) and concurrency caps by account tier; specific quotas are published in the console and can be requested for increase.
+6.3.2 **Баланс аккаунта не подлежит передаче, обналичиванию и использованию в иных целях, чем настоящий Сервис.**
 
-7.4.2 When a single request exceeds the model's context length limit, the request will be rejected; we are not responsible for effect loss due to truncation or chunking.
+6.3.3 **Правила возврата средств**:
 
-7.4.3 To ensure overall Platform stability, we may implement global scheduling, degradation or temporary rate-limiting. If degradation is needed, we will prioritize protecting higher-tier users and paid dedicated instances.
+- в отношении не израсходованного остатка пополнения Вы можете обратиться с заявлением о возврате средств, однако удерживаются комиссии, взимаемые сторонними платёжными каналами, и налоги, соответствующие уже выставленным счетам; срок рассмотрения составляет **7 рабочих дней**. Порядок расчёта суммы возврата и процесс возврата средств определяются Соглашением о пополнении;
+- **израсходованные средства за токены возврату не подлежат** независимо от того, воспользовались ли Вы фактически результатом (например, прекратили использование по причине неудачной формулировки запроса, изменения требований или неудовлетворённости результатом);
+- если прекращение аккаунта вызвано нарушением Вами настоящего Соглашения, остаток после удержания причитающихся платежей и возможных требований третьих лиц может быть возвращён; при наличии признаков серьёзного нарушения законодательства мы вправе в установленном законом порядке отложить возврат средств и сотрудничать с компетентными органами.
+
+6.3.4 Баланс действителен в течение **12 месяцев** с даты пополнения. До истечения срока мы напомним Вам посредством сообщения на сайте или по электронной почте; неиспользованный остаток после истечения срока может быть реактивирован по заявлению; при непрерывном неиспользовании в течение **3 месяцев** мы вправе урегулировать его после удержания разумного сбора за администрирование.
+
+**6.4 Неуспешные запросы и тарификация**
+
+6.4.1 Запросы, не выполненные вследствие ошибок **нашей** платформы (исключения шлюза, сбои маршрутизации, при которых запрос не достиг апстрима), не тарифицируются, и любые удержанные средства возвращаются автоматически.
+
+6.4.2 **Запросы, по которым апстрим-поставщик модели вернул ошибку, тайм-аут либо контент, перехваченный апстрим-политикой безопасности (Refusal / Content Filter), и фактическое потребление на стороне апстрима уже возникло, тем не менее тарифицируются в соответствии с фактическим потреблением**:
+
+- если апстрим вернул результат фильтрации контента (например, перехват в целях безопасности, отказ), потребление входящих токенов, как правило, всё равно возникает и тарифицируется как входящие токены;
+- если апстрим вернул ошибку `5xx` или тайм-аут, тарификация, как правило, не производится; если тарификация была произведена апстримом, мы после проверки вернём эквивалентную сумму;
+- Вы можете подать спор по тарификации через консоль; срок приёма споров составляет **30 календарных дней** с даты формирования счёта, по истечении которого счёт считается принятым.
+
+6.4.3 Прерванные потоковые запросы учитываются по фактически переданным токенам.
+
+**6.5 Скидки и акции**
+
+Кэширование запросов, пакетная обработка, вызовы в непиковые часы и тому подобное могут давать право на скидку; конкретные размеры скидок определяются Страницей цен и политиками апстрима. **Скидки изменяются вместе с политиками апстрима и не являются долгосрочным обязательством.**
+
+**6.6 Выставление счетов и налогообложение**
+
+Мы выставляем счета-фактуры НДС (специальные либо обычные счета-фактуры НДС в зависимости от Вашего налогового статуса) исходя из фактически понесённых Вами расходов. Заявления на выставление счёта подаются в течение календарного года, к которому относится счёт; повторное выставление счетов за предыдущие годы не производится. Расходы на повторное выставление или отмену счёта вследствие неверных выставляемых Вами реквизитов несёте Вы.
+
+**6.7 Работа с задолженностью**
+
+После исчерпания баланса Сервис приостанавливается. Для корпоративных пользователей, работающих по модели с ежемесячной постоплатой, при просрочке оплаты более чем на **15 календарных дней** мы вправе приостановить Сервис; при просрочке более чем на **30 календарных дней** мы вправе прекратить Сервис, привлечь к ответственности за нарушение договора и начислить пеню в размере **0.05% в день**.
 
 ---
 
-## Article 8 Data, Content and Personal Information Protection
+## Раздел 7. Уровень Сервиса, квоты и доступность
 
-**8.1 Ownership of User Content**
+**7.1 Целевой показатель доступности**
 
-The input content you submit through this Service, and the output content generated by the Service based on that input, belong to **you or your lawful authorizer**. We do not claim any ownership of User Content.
+7.1.1 Мы обязуемся обеспечивать ежемесячную доступность на уровне не менее **99.9%** для **шлюза Платформы** (модули аутентификации, маршрутизации и учёта); конкретный метод расчёта и стандарт компенсаций подробно определены в Соглашении об уровне Сервиса (SLA).
 
-**8.2 Data Processing Role**
+7.1.2 **Указанное обязательство не распространяется на доступность самих апстрим-поставщиков моделей.** Доступность апстрим-сервисов косвенно гарантируется апстрим-провайдером **Вам** (как конечному пользователю) в рамках его собственного SLA; мы не несём гарантийной ответственности за апстрим-SLA.
 
-In providing this Service, with respect to the personal-information-containing data you submit through the Service:
+**7.2 Исключения из SLA**
 
-- **You are the personal information processor**, bearing full responsibility for the legal basis (notice and consent, contract necessity, etc.);
-- **We are the entrusted processor**, processing data only upon your instructions and not using it for purposes beyond this Agreement.
+Следующие обстоятельства не считаются простоями: сбои апстрим-поставщиков моделей, ограничение частоты или изменение политик; сбои магистральных сетей Интернета, загрязнение DNS, перегрузка трансграничных каналов; проблемы Вашего приложения, сети или конфигурации; наши плановые технические работы (уведомление за 72 часа, не более 4 часов каждое); форс-мажор; блокировки вследствие нарушений с Вашей стороны.
 
-Enterprise users may separately execute a Data Processing Agreement (DPA) with us, specifying the processing purpose, period, method, security measures and audit rights.
+**7.3 Компенсации по SLA**
 
-**8.3 Data Retention Policy**
+При несоблюдении SLA мы предоставляем компенсацию в форме **ваучеров сервисного кредита**, при этом лимит компенсации составляет **100% фактически понесённых Вами расходов за месяц**, и **денежный возврат средств не производится**. Ваучеры сервисного кредита не подлежат передаче и обналичиванию и действительны в течение 6 месяцев.
 
-| Data Type | Default Retention | Purpose |
+**7.4 Квоты и ограничение частоты**
+
+7.4.1 Мы устанавливаем ограничения частоты (RPM: запросов в минуту; TPM: токенов в минуту) и лимиты параллельных запросов в зависимости от уровня аккаунта; конкретные квоты публикуются в консоли, и их увеличение может быть затребовано.
+
+7.4.2 При превышении отдельным запросом предельной длины контекста модели запрос отклоняется; мы не несём ответственности за потерю результата вследствие усечения или разбиения на части.
+
+7.4.3 Для обеспечения общей стабильности Платформы мы вправе применять глобальное планирование, снижение нагрузки или временное ограничение частоты. При необходимости снижения нагрузки мы в первую очередь будем защищать пользователей более высоких уровней и оплачиваемые выделенные экземпляры.
+
+---
+
+## Раздел 8. Защита данных, контента и персональных данных
+
+**8.1 Право собственности на контент пользователя**
+
+Входящий контент, отправляемый Вами через настоящий Сервис, и выходной контент, формируемый Сервисом на его основе, принадлежат **Вам либо Вашему законному представителю**. Мы не претендуем на какие-либо права собственности на контент пользователя.
+
+**8.2 Роль в обработке данных**
+
+При предоставлении настоящего Сервиса в отношении содержащих персональные данные, отправляемых Вами через Сервис:
+
+- **Вы являетесь оператором персональных данных**, неся полную ответственность за правовое основание обработки (уведомление и согласие, необходимость исполнения договора и т. д.);
+- **Мы являемся обработчиком по поручению**, обрабатывая данные исключительно по Вашим указаниям и не используя их для целей, выходящих за рамки настоящего Соглашения.
+
+Корпоративные пользователи вправе отдельно заключить с нами Соглашение об обработке данных (DPA), определяющее цели, сроки, способы обработки, меры безопасности и права на аудит.
+
+**8.3 Политика хранения данных**
+
+| Тип данных | Срок хранения по умолчанию | Цель |
 |---|---|---|
-| Request/response body content | **Not retained by default** (enterprise users may separately agree to disable logs) | Real-time forwarding only |
-| Request metadata (time, model, Token count, status code, latency) | 12 months | Billing, reconciliation, security audit |
-| Account and verification information | Duration of account + legally required period | Identity recognition, real-name compliance |
-| Security audit logs | 6 months | Retention as required by the Cybersecurity Law |
+| Содержимое запросов и ответов | **По умолчанию не сохраняется** (корпоративные пользователи могут отдельно согласовать отключение журналов) | Только переадресация в реальном времени |
+| Метаданные запроса (время, модель, количество токенов, код статуса, задержка) | 12 месяцев | Тарификация, сверка, аудит безопасности |
+| Данные аккаунта и верификации | Срок существования аккаунта и установленный законом срок | Идентификация личности, соблюдение требований о подтверждении реального имени |
+| Журналы аудита безопасности | 6 месяцев | Хранние в соответствии с требованиями Закона о кибербезопасности |
 
-> Note: If you use upstream official-channel models, the body content will inevitably be transmitted to the Upstream Model Provider, whose retention policy is governed by the upstream privacy policy.
+> Примечание: при использовании моделей из официальных апстрим-каналов содержимое запросов и ответов неизбежно передаётся апстрим-поставщику модели, политика хранения которого определяется апстрим-политикой конфиденциальности.
 
-**8.4 Cross-Border Data Transfer**
+**8.4 Трансграничная передача данных**
 
-8.4.1 When using overseas model nodes, your input content will be transmitted to overseas upstream services and may be processed and stored overseas.
+8.4.1 При использовании зарубежных узлов моделей Ваш входящий контент передаётся зарубежным апстрим-сервисам и может обрабатываться и храниться за рубежом.
 
-8.4.2 **Before using such models, you should complete the compliance procedures required for data export on your own** (where applicable, including filing of the standard contract for cross-border personal information transfer, security assessment or certification), and fulfill sufficient notice obligations to your end users in your privacy policy. Your act of selecting an overseas model at the Platform constitutes your explicit instruction for such cross-border transfer.
+8.4.2 **До использования таких моделей Вам следует самостоятельно пройти процедуры соответствия, необходимые для экспорта данных** (в применимых случаях, включая подачу уведомления о заключении стандартного договора о трансграничной передаче персональных данных, проведение оценки воздействия на защиту данных или сертификацию), а также надлежащим образом исполнить обязанности по уведомлению Ваших конечных пользователей в Вашей политике конфиденциальности. Ваш выбор зарубежной модели на Платформе является Вашим прямым указанием на совершение такой трансграничной передачи.
 
-8.4.3 We recommend and support you in achieving data non-export through "domestic nodes + domestic models"; you may also reduce export risk through server-side data masking, field replacement and other technical means.
+8.4.3 Мы рекомендуем Вам и поддерживаем Вас в достижении отсутствия экспорта данных за счёт схемы «внутренние узлы + внутренние модели»; Вы также можете снизить риски экспорта посредством обезличивания данных на стороне сервера, замены полей и иных технических средств.
 
-**8.5 Security Measures**
+**8.5 Меры безопасности**
 
-We adopt security measures including but not limited to: transport-layer encryption (TLS 1.3), static data encryption, least-privilege access control, key escrow and rotation, intrusion detection, log audit, and employee confidentiality agreements. We conduct regular security assessments and penetration testing.
+Мы применяем меры безопасности, включая, но не ограничиваясь: шифрование на транспортном уровне (TLS 1.3), шифрование данных при хранении, разграничение доступа по принципу наименьших привилегий, эскроу и ротацию ключей, обнаружение вторжений, аудит журналов и соглашения о конфиденциальности с работниками. Мы регулярно проводим оценку безопасности и тестирование на проникновение.
 
-**8.6 Security Incident Notice**
+**8.6 Уведомление об инцидентах безопасности**
 
-When a data breach, tampering, loss or other security incident occurs or is likely to occur, we will promptly take remedial measures, report to regulators as required by laws and regulations, and notify you via in-site message or email.
+При возникновении или угрозе возникновения утечки данных, их изменения, утраты или иного инцидента безопасности мы оперативно принимаем меры по устранению последствий, направляем сообщения в регуляторные органы в соответствии с требованиями законодательства и нормативных актов и уведомляем Вас посредством сообщения на сайте или по электронной почте.
 
-**8.7 Personal Information Protection**
+**8.7 Защита персональных данных**
 
-The collection, use, storage, sharing of personal information and the exercise of your rights are detailed in the Privacy Policy. **The Privacy Policy is an inseparable part of this Agreement.**
-
----
-
-## Article 9 Third-Party Services and Upstream Model Terms
-
-**9.1 Pass-through of Upstream Terms**
-
-9.1.1 **You acknowledge and agree that when you call upstream models through this Service, you must also comply with the usage policies, terms and acceptable use policies of the Upstream Model Providers**, including but not limited to OpenAI Usage Policies, Anthropic Usage Policies, Google Generative AI Prohibited Use Policy, Microsoft Azure Acceptable Use Policy, Amazon AWS Acceptable Use Policy, and the service specifications of various domestic model vendors.
-
-9.1.2 The substance of the above upstream terms is summarized in Article 5 of this Agreement and can be consulted at the links listed in Appendix B. Where the superior terms conflict with this Agreement, for the part concerning upstream model services, **the stricter one shall prevail**.
-
-9.1.3 Your violation of upstream policies also constitutes a breach under this Agreement.
-
-**9.2 Impact of Upstream Policy and Authorization Changes**
-
-9.2.1 Upstream Model Providers may change policies, adjust prices, restrict regions, restrict uses or terminate authorization to us at any time.
-
-9.2.2 **Unavailability of specific models, need to switch to alternative models or restricted service caused by upstream changes does not constitute a breach by us.** We will make reasonable efforts to notify in advance and provide a migration plan.
-
-**9.3 Liability Boundary for Upstream Interruptions**
-
-**Any failure, rate-limiting, ban, content interception, data breach or breach by an Upstream Model Provider is not our fault. We do not bear joint liability for the acts or omissions of upstream parties, but will make reasonable efforts to assist you in communicating with upstream and taking remedial measures.**
-
-**9.4 Resale Authorization Statement**
-
-We declare that our provision of upstream model invocation capability to you is based on lawful authorization arrangements with upstream providers or their authorized distributors. **We do not provide unlimited assurance of the continuing validity of upstream authorization.** If authorization terminates, we will notify you in advance to the extent permitted by regulations and upstream requirements, and assist with migration or refund according to the un-consumed balance.
-
-**9.5 Third-Party Links and Content**
-
-The Platform may contain links to third-party websites or resources. We are not responsible for the accuracy, legality or availability of third-party content.
+Сбор, использование, хранение, передача персональных данных и осуществление Ваших прав подробно описаны в Политике конфиденциальности. **Политика конфиденциальности является неотъемлемой частью настоящего Соглашения.**
 
 ---
 
-## Article 10 Intellectual Property Rights
+## Раздел 9. Сторонние сервисы и условия апстрим-моделей
 
-**10.1 Platform Intellectual Property**
+**9.1 Передача условий апстрима**
 
-The intellectual property rights of the software, gateway programs, interface design, documentation, trademarks (including the Chinese and English brand names and graphic logos of **Uter** and **优特**), domain name (Uter.ai), technical solutions and algorithm strategies of this Service all belong to us or the respective right holders. Without written permission, you may not copy, modify, disseminate, reverse engineer or use them for any commercial purpose.
+9.1.1 **Вы признаёте и соглашаетесь, что при вызове апстрим-моделей через настоящий Сервис Вы также обязаны соблюдать политики использования, условия и политики допустимого использования апстрим-поставщиков моделей**, включая, но не ограничиваясь, OpenAI Usage Policies, Anthropic Usage Policies, Google Generative AI Prohibited Use Policy, Microsoft Azure Acceptable Use Policy, Amazon AWS Acceptable Use Policy и сервисными спецификациями различных отечественных поставщиков моделей.
 
-**10.2 Trademark Use**
+9.1.2 Существо указанных апстрим-условий обобщено в Разделе 5 настоящего Соглашения и может быть изучено по ссылкам, приведённым в Приложении B. В случае противоречий между условиями более высокого уровня и настоящим Соглашением в части, касающейся сервисов апстрим-моделей, **применяются более строгие условия**.
 
-Without prior written consent, you may not use the Chinese or English names, trademarks or logos of "Uter" or "优特" in any promotional materials or product interfaces, or otherwise imply a cooperation, endorsement or affiliation with us.
+9.1.3 Нарушение Вами апстрим-политик также является нарушением настоящего Соглашения.
 
-**10.3 Risk Notice for Generated Content**
+**9.2 Последствия изменения апстрим-политик и авторизации**
 
-10.3.1 Large language model outputs are **probabilistic and non-deterministic**. **We make no express or implied warranty as to the accuracy, completeness, timeliness, applicability or non-infringement of the outputs.**
+9.2.1 Апстрим-поставщики моделей в любой момент могут изменять политики, корректировать цены, ограничивать регионы и виды использования либо прекращать авторизацию в отношении нас.
 
-10.3.2 **Content generated by large models may be similar to prior works of others.** We cannot guarantee that generated content is original or will not infringe third-party intellectual property rights. You should complete rights clearance on your own before commercial use of generated content.
+9.2.2 **Недоступность отдельных моделей, необходимость перехода на альтернативные модели или ограничение сервисов вследствие изменений на стороне апстрима не являются нарушением с нашей стороны.** Мы приложим разумные усилия для предварительного уведомления и предоставления плана миграции.
 
-10.3.3 **You may not claim exclusive rights to the output content for the same prompt.**
+**9.3 Граница ответственности за сбои апстрима**
 
-**10.4 Feedback**
+**Любой сбой, ограничение частоты, блокировка, перехват контента, утечка данных или нарушение со стороны апстрим-поставщика модели не является нашей виной. Мы не несём солидарной ответственности за действия или бездействие апстрим-сторон, однако приложим разумные усилия для содействия Вам в коммуникации с апстримом и принятии мер по устранению последствий.**
 
-Any product suggestions, defect reports, improvement opinions, etc. you submit to us ("Feedback") are deemed to grant us a perpetual, irrevocable, royalty-free right to use, modify and integrate such Feedback worldwide without paying consideration to you. The Feedback does not contain your confidential information.
+**9.4 Заявление о разрешении на перепродажу**
 
----
+Мы заявляем, что предоставление Вам апстрим-вычислительных возможностей моделей осуществляется на основании договорённостей о законной авторизации с апстрим-провайдерами или их уполномоченными дистрибьюторами. **Мы не предоставляем безусловной гарантии неизменной действительности апстрим-авторизации.** В случае прекращения авторизации мы заранее уведомим Вас в пределах, допускаемых нормативными актами и требованиями апстрима, и окажем содействие в миграции или возврате средств исходя из не израсходованного остатка.
 
-## Article 11 Disclaimers and Limitation of Liability
+**9.5 Сторонние ссылки и контент**
 
-**11.1 Service Provided "As Is" and "As Available"**
-
-To the maximum extent permitted by applicable law, we provide this Service on an "AS IS" and "AS AVAILABLE" basis, **making no express or implied warranties**, including but not limited to warranties of merchantability, fitness for a particular purpose, uninterrupted use, error-free operation, virus-free, or accurate results.
-
-**11.2 Non-Professional Advice**
-
-Any content output by this Service does not constitute medical, legal, tax, accounting or investment advice. **You should not use the output as a substitute for professional advice.** Any decisions and consequences arising from reliance on the output are borne by you.
-
-**11.3 Exclusion of Damages**
-
-To the maximum extent permitted by applicable law, **we are not liable for any of the following losses**: loss of profit, loss of revenue, loss of goodwill, loss of data, loss of anticipated savings, business interruption, cost of procuring substitute services, and any indirect, incidental, special, punitive or consequential loss — **whether or not such loss was foreseeable, and whether or not we were advised of the possibility of such loss**.
-
-**11.4 Cap on Aggregate Liability**
-
-**To the maximum extent permitted by applicable law, our aggregate liability to you for all claims under or relating to this Agreement shall not exceed the total service fees actually paid by you and not refunded in the 12 months preceding the event giving rise to the claim.**
-
-**11.5 Exceptions**
-
-The limitations in Articles 11.3 and 11.4 do not apply to the following: personal injury or property damage caused by our intentional misconduct or gross negligence; our infringement of your intellectual property rights; liabilities that mandatory law prohibits limiting or excluding.
-
-**11.6 Force Majeure**
-
-Where service interruption or non-performance is caused by force majeure (including natural disasters, war, epidemic, government acts, regulatory directives, large-scale cyber attacks, global outage of an Upstream Model Provider, Internet infrastructure failures, etc.), we are exempted to the extent of the facts, but will make reasonable efforts to reduce the impact and notify you.
-
-**11.7 User Indemnification Obligation**
-
-**If, due to your violation of this Agreement, violation of laws and regulations, or infringement of third-party rights, we are claimed by a third party, punished by a regulator, held liable by an Upstream Model Provider or suffer other losses, you shall fully indemnify us for all such losses (including but not limited to compensation, fines, attorney fees, litigation/arbitration fees, notarization fees and reasonable investigation costs), and shall actively cooperate with our defense.**
+Платформа может содержать ссылки на сторонние веб-сайты или ресурсы. Мы не несём ответственности за достоверность, законность или доступность стороннего контента.
 
 ---
 
-## Article 12 Changes, Suspension and Termination of Service
+## Раздел 10. Права интеллектуальной собственности
 
-**12.1 Your Right to Terminate**
+**10.1 Интеллектуальная собственность Платформы**
 
-You may stop using this Service and apply to cancel your account at any time. After termination, you should settle fees, handle the balance and back up data as agreed in Article 6.
+Исключительные права на программное обеспечение, программы шлюза, дизайн интерфейсов, документацию, товарные знаки (включая китайское и английское наименования бренда и графические логотипы **Uter**), доменное имя (Uter.ai), технические решения и алгоритмические стратегии настоящего Сервиса принадлежат нам либо соответствующим правообладателям. Без письменного разрешения Вы не вправе копировать, изменять, распространять, декомпилировать их или использовать в любых коммерческих целях.
 
-**12.2 Our Right to Suspend and Terminate**
+**10.2 Использование товарных знаков**
 
-12.2.1 We have the right to **immediately suspend or terminate** the Service to you without bearing breach liability under any of the following circumstances:
+Без предварительного письменного согласия Вам запрещается использовать китайское или английское наименование, товарные знаки или логотипы «Uter» в каких-либо рекламных материалах или интерфейсах продукта, а также иным образом создавать впечатление сотрудничества, одобрения или аффилированности с нами.
 
-1. You violate Article 5 (Usage Rules and Prohibited Conduct) or Article 14 (Export Control and Sanctions) of this Agreement;
-2. You fail to pass or maintain identity verification;
-3. You fail to pay fees beyond the agreed period;
-4. Your usage behavior exposes the Platform to regulatory risk, upstream ban risk or major security risk;
-5. You enter bankruptcy, liquidation, dissolution proceedings, or lose performance capacity;
-6. Laws and regulations, regulators or Upstream Model Providers require us to stop providing Service to you.
+**10.3 Уведомление о рисках сгенерированного контента**
 
-12.2.2 For items 1, 4 and 6 of Article 12.2.1, we may simultaneously **freeze the account balance** until the relevant risk or dispute is resolved.
+10.3.1 Выходные данные больших языковых моделей **носят вероятностный и недетерминированный характер**. **Мы не даём ни явных, ни подразумеваемых гарантий точности, полноты, своевременности, применимости или ненарушения прав в отношении выходных данных.**
 
-**12.3 Consequences of Termination**
+10.3.2 **Контент, сгенерированный большими моделями, может быть сходен с ранее созданными работами других лиц.** Мы не можем гарантировать, что сгенерированный контент является оригинальным или не нарушает права интеллектуальной собственности третьих лиц. До коммерческого использования сгенерированного контента Вам следует самостоятельно провести проверку прав на его использование.
 
-After termination: your API Key becomes invalid immediately; the un-consumed balance is handled as agreed in Article 6; we delete or anonymize your data as required by Article 8 and laws and regulations; Articles 8, 10, 11, 13, 14, 15, 17 and other provisions that should continue to be effective by their nature continue to be effective.
+10.3.3 **Вы не вправе претендовать на исключительные права на выходной контент, полученный по одному и тому же запросу.**
 
-**12.4 Our Right to Early Termination**
+**10.4 Обратная связь**
 
-For services with no fixed term agreed, we may terminate this Agreement with **30 calendar days'** advance notice. In this case, we will refund the full un-consumed balance (excluding consumed portions), **without deducting third-party payment channel fees or taxes**.
+Любые предложения по продукту, сообщения о дефектах, мнения о совершенствовании и т. д., направляемые Вами нам («Обратная связь»), считаются предоставлением нам бессрочного, безотзывного и безвозмездного права использовать, изменять и интегрировать такую Обратную связь по всему миру без выплаты Вам какого-либо вознаграждения. Обратная связь не содержит Вашей конфиденциальной информации.
 
 ---
 
-## Article 13 Breach and Handling
+## Раздел 11. Оговорки и ограничение ответственности
 
-**13.1 Gradient of Handling Measures**
+**11.1 Предоставление Сервиса «КАК ЕСТЬ» и «ПО МЕРЕ ДОСТУПНОСТИ»**
 
-We will adopt handling measures in proportion to the breach and give rectification opportunities where possible:
+В максимально допустимом законодательством объёме мы предоставляем настоящий Сервис на условиях «AS IS» и «AS AVAILABLE», **не давая ни явных, ни подразумеваемых гарантий**, включая, но не ограничиваясь, гарантии товарной пригодности, пригодности для определённой цели, бесперебойной работы, отсутствия ошибок, отсутствия вирусов и точности результатов.
 
-| Severity | Typical Scenario | Handling Measure |
+**11.2 Отсутствие профессиональных консультаций**
+
+Любой контент, выдаваемый настоящим Сервисом, не является медицинской, юридической, налоговой, бухгалтерской или инвестиционной консультацией. **Вам не следует использовать выходные данные как замену профессиональной консультации.** Все решения и последствия, возникающие вследствие доверия выходным данным, несёте Вы.
+
+**11.3 Исключение убытков**
+
+В максимально допустимом законодательством объёме **мы не несём ответственности за любой из следующих убытков**: убыток прибыли, убыток выручки, убыток деловой репутации, убыток данных, убыток ожидаемой экономии, перебои в деятельности, расходы на приобретение заменяющих сервисов, а также любые косвенные, случайные, специальные, штрафные или последующие убытки — **независимо от того, был ли такой убыток предсказуем, и независимо от того, сообщались ли нам о возможности таких убытков**.
+
+**11.4 Предел совокупной ответственности**
+
+**В максимально допустимом законодательством объёме наша совокупная ответственность перед Вами по всем требованиям, вытекающим из настоящего Соглашения или связанным с ним, не должна превышать общую сумму сервисных сборов, фактически уплаченных Вами и не возвращённых в течение 12 месяцев, предшествующих событию, послужившему основанием для требования.**
+
+**11.5 Исключения**
+
+Ограничения, установленные в Разделах 11.3 и 11.4, не применяются в следующих случаях: причинение вреда здоровью или имуществу вследствие нашего умышленного противоправного действия или грубой неосторожности; нарушение нами Ваших прав интеллектуальной собственности; ответственность, ограничение или исключение которой запрещено императивными нормами закона.
+
+**11.6 Форс-мажор**
+
+Если перебои в работе или неисполнение обязанностей вызваны обстоятельствами непреодолимой силы (включая природные бедствия, войну, эпидемию, акты государственных органов, распоряжения регуляторов, массовые кибератаки, глобальную недоступность апстрим-поставщика модели, сбои инфраструктуры Интернета и т. д.), мы освобождаемся от ответственности в объёме фактических обстоятельств, однако приложим разумные усилия для снижения негативных последствий и уведомления Вас.
+
+**11.7 Обязанность возмещения убытков Пользователем**
+
+**Если вследствие нарушения Вами настоящего Соглашения, законодательства или нормативных актов либо нарушения прав третьих лиц к нам предъявляются требования третьим лицом, к нам применяются санкции регулятора, с нас взыскивается ответственность апстрим-поставщиком модели либо мы терпим иные убытки, Вы обязуетесь полностью возместить нам все такие убытки (включая, но не ограничиваясь, компенсации, штрафы, гонорары адвокатов, судебные и арбитражные расходы, расходы на нотариальные действия и разумные расходы на расследование) и активно сотрудничать с нашей защитой.**
+
+---
+
+## Раздел 12. Изменение, приостановление и прекращение Сервиса
+
+**12.1 Ваше право на прекращение**
+
+Вы в любой момент вправе прекратить использование настоящего Сервиса и обратиться с заявлением об удалении аккаунта. После прекращения Вам следует произвести расчёты, урегулировать остаток и создать резервную копию данных в соответствии с Разделом 6.
+
+**12.2 Наше право на приостановление и прекращение**
+
+12.2.1 Мы вправе **немедленно приостановить или прекратить** предоставление Вам Сервиса без несения ответственности за нарушение договора при наступлении любого из следующих обстоятельств:
+
+1. Вы нарушаете Раздел 5 (Правила использования и запрещённые действия) или Раздел 14 (Экспортный контроль и санкции) настоящего Соглашения;
+2. Вы не проходите идентификацию или не поддерживаете её;
+3. Вы не вносите платежи сверх согласованного срока;
+4. Ваше поведение при использовании создаёт для Платформы регуляторные риски, риск блокировки апстримом или существенные риски безопасности;
+5. Вы вступаете в процедуру банкротства, ликвидации, прекращения деятельности либо утрачиваете правоспособность;
+6. Законодательство и нормативные акты, регуляторные органы или апстрим-поставщики моделей требуют от нас прекратить предоставление Вам Сервиса.
+
+12.2.2 В случаях пунктов 1, 4 и 6 части 12.2.1 мы вправе одновременно **заблокировать баланс аккаунта** до устранения соответствующего риска или спора.
+
+**12.3 Последствия прекращения**
+
+После прекращения: Ваш API Key немедленно утрачивает силу; не израсходованный остаток урегулируется в соответствии с Разделом 6; мы удаляем или обезличиваем Ваши данные в соответствии с Разделом 8 и требованиями законодательства и нормативных актов; Разделы 8, 10, 11, 13, 14, 15, 17 и другие положения, которые по своей природе должны оставаться в силе, продолжают действовать.
+
+**12.4 Наше право на досрочное прекращение**
+
+В отношении сервисов, срок которых не определён, мы вправе расторгнуть настоящее Соглашение с предварительным уведомлением за **30 календарных дней**. В этом случае мы полностью возвращаем не израсходованный остаток (за вычетом израсходованных сумм), **без удержания комиссий сторонних платёжных каналов или налогов**.
+
+---
+
+## Раздел 13. Нарушение и меры реагирования
+
+**13.1 Градация мер реагирования**
+
+Мы применяем меры реагирования, соразмерные характеру нарушения, и по возможности предоставляем возможность для устранения нарушения:
+
+| Степень серьёзности | Типичная ситуация | Мера реагирования |
 |---|---|---|
-| General breach | First minor rate excess, information not updated in time | In-site reminder, rectification within time limit |
-| Serious breach | Repeated rate excess, minor content violation, late payment | Rate-limiting, service suspension, quota freeze |
-| Severe breach | Reselling API Keys, malicious quota scraping, bypassing risk control, major content violation | Immediate service termination, account freeze, liability pursuit |
-| Suspected illegality | Minor sexual exploitation, fraud, terrorism, sanction violation | Immediate termination, evidence preservation, report to competent authority |
+| Общее нарушение | Первое незначительное превышение частоты, несвоевременное обновление сведений | Напоминание на сайте, устранение в установленный срок |
+| Серьёзное нарушение | Многократное превышение частоты, незначительное нарушение контента, просрочка оплаты | Ограничение частоты, приостановление Сервиса, блокировка квоты |
+| Грубое нарушение | Перепродажа API Keys, злонамеренный сбор квоты, обход контроля рисков, существенное нарушение контента | Немедленное прекращение Сервиса, блокировка аккаунта, привлечение к ответственности |
+| Подозрение в противоправности | Сексуальная эксплуатация несовершеннолетних, мошенничество, терроризм, нарушение санкций | Немедленное прекращение, сохранение доказательств, направление сообщения в компетентный орган |
 
-**13.2 Investigation and Defense**
+**13.2 Проверка и защита**
 
-13.2.1 Before making a major handling decision, we will (where the circumstances permit and do not affect the investigation) inform you of the reason via in-site message or email and give you a **5 business day** defense period.
+13.2.1 До принятия решения о существенных мерах реагирования мы (при наличии обстоятельств, позволяющих это и не затрагивающих проверку) уведомим Вас о причинах посредством сообщения на сайте или по электронной почте и предоставим Вам **5 рабочих дней** для представления возражений.
 
-13.2.2 Where it concerns public safety, minor protection, sanction compliance or explicit regulatory requirements, we have the right to **execute first and inform later**.
+13.2.2 Если вопрос касается общественной безопасности, защиты несовершеннолетних, соблюдения санкций или прямых требований регуляторов, мы вправе **сначала исполнить, а затем уведомить**.
 
-**13.3 Appeal Channel**
+**13.3 Канал обжалования**
 
-If you disagree with the handling result, you may submit an appeal to support@uter.ai. We will respond within **10 business days**. The appeal does not affect the execution of the handling measure.
-
----
-
-## Article 14 Export Control, Sanctions and Cross-Border Compliance
-
-**14.1 Your Representations and Warranties**
-
-You represent, warrant and undertake that:
-
-1. You and your affiliates, actual controllers and ultimate beneficial owners **are not** subjects sanctioned or restricted by any competent authority such as the United Nations, the PRC, the United States (OFAC SDN List) or the European Union;
-2. You are not located in, established in, or actually operating from a comprehensively sanctioned country or region;
-3. You will not use the output or capability of this Service for **weapons development, military use, nuclear/biological/chemical proliferation, missile technology** or other export-controlled uses;
-4. You will not, directly or indirectly through this Service, transship, resell or transfer any controlled technology, data or service to sanctioned subjects or sanctioned regions.
-
-**14.2 Compliance Review Rights**
-
-We have the right (but no obligation) to conduct compliance screening of users' registration location, billing address, payment source and calling characteristics. Upon discovering suspected violations, we may suspend the Service, require compliance explanations or supplementary materials.
-
-**14.3 Cooperation Obligations**
-
-You shall cooperate with us and the Upstream Model Providers in compliance investigations and provide the required evidence within **5 business days**. Refusal to cooperate entitles us to terminate the Service.
-
-**14.4 Special Notice**
-
-**The export control and sanctions lists are dynamically changing. You should continuously verify your own compliance status during your use of this Service. Even if we have not conducted screening or screening found no issues, it does not relieve you of your obligations and liabilities under Article 14.1.**
+В случае несогласия с результатом мер реагирования Вы вправе направить жалобу на адрес support@uter.ai. Мы отвечаем в течение **10 рабочих дней**. Обжалование не приостанавливает исполнение меры реагирования.
 
 ---
 
-## Article 15 Governing Law and Dispute Resolution
+## Раздел 14. Экспортный контроль, санкции и трансграничное соответствие
 
-**15.1 Governing Law**
+**14.1 Ваши заявления и гарантии**
 
-15.1.1 The formation, validity, interpretation, performance and dispute resolution of this Agreement are governed by the **laws of the People's Republic of China** (excluding conflict-of-laws rules).
+Вы заявляете, гарантируете и обязуетесь, что:
 
-15.1.2 For the model services under this Agreement, the legal relationship between us and the Upstream Model Providers is governed by the laws of the corresponding jurisdiction; such arrangement does not affect the application of the laws of the PRC to this Agreement.
+1. Вы и Ваши аффилированные лица, фактические контролирующие и конечные бенефициарные владельцы **не являются** лицами, в отношении которых применяются санкции или ограничения со стороны любого компетентного органа, включая Организацию Объединённых Наций, Китайскую Народную Республику, Соединённые Штаты Америки (OFAC SDN List) или Европейский союз;
+2. Вы не находитесь, не созданы и не осуществляете фактическую деятельность в стране или регионе, подпадающем под комплексные санкции;
+3. Вы не будете использовать выходные данные или возможности настоящего Сервиса для **разработки оружия, военного применения, распространения ядерного, биологического или химического оружия, ракетной техники** либо для иных целей, подпадающих под экспортный контроль;
+4. Вы не будете напрямую либо косвенно через настоящий Сервис перевозить, перепродавать или передавать контролируемые технологии, данные или сервисы лицам и в регионы, подпадающим под санкции.
 
-15.1.3 Where the laws of the PRC contain mandatory provisions on specific matters (such as personal information protection, management of generative AI services), such provisions prevail.
+**14.2 Право на проверку соответствия**
 
-**15.2 Dispute Resolution**
+Мы вправе (но не обязаны) проводить проверку соответствия требованиям на основании места регистрации пользователей, платёжного адреса, источника платежа и характеристик вызовов. При обнаружении предполагаемых нарушений мы вправе приостановить Сервис, потребовать объяснений относительно соблюдения требований или дополнительных материалов.
 
-15.2.1 Any dispute arising from or relating to this Agreement shall first be resolved through friendly negotiation between the parties.
+**14.3 Обязанности по сотрудничеству**
 
-15.2.2 If negotiation fails, either party may file a lawsuit with the **people's court with jurisdiction over the domicile of Shenzhen Uter Network Co., Ltd. (Shenzhen)**; the court of first instance is the people's court of the district where it is registered; where the subject matter exceeds the first-instance jurisdictional standard of the basic people's court, the Shenzhen Intermediate People's Court has jurisdiction.
+Вы обязаны сотрудничать с нами и апстрим-поставщиками моделей в ходе проверок соответствия требованиям и предоставить необходимые доказательства в течение **5 рабочих дней**. Отказ от сотрудничества предоставляет нам право прекратить Сервис.
 
-15.2.3 During dispute resolution, except for the dispute itself, both parties shall continue to perform the other provisions of this Agreement.
+**14.4 Специальное уведомление**
 
-**15.3 Language Version**
-
-This Agreement is governed by the **Chinese version**. We may provide English or other language translations for reference only; in the event of any conflict between the translation and the Chinese version, **the Chinese version shall prevail**.
-
-**15.4 Severability**
-
-If any provision of this Agreement is deemed invalid or unenforceable, it shall not affect the validity of the other provisions. The parties shall replace it with a valid provision closest to the original commercial purpose.
+**Списки экспортного контроля и санкций динамически изменяются. Вам следует непрерывно проверять собственный статус соответствия требованиям в ходе использования настоящего Сервиса. Даже если мы не проводили проверку либо проверка не выявила нарушений, это не освобождает Вас от обязанностей и ответственности согласно Разделу 14.1.**
 
 ---
 
-## Article 16 Notices and Service of Documents
+## Раздел 15. Применимое право и разрешение споров
 
-16.1 Notices we send to you may be served by any of the following means, deemed served upon dispatch: in-site message (served upon sending), registered email (deemed served 24 hours after sending), console announcement (served upon publication), SMS (deemed served upon sending).
+**15.1 Применимое право**
 
-16.2 **You are obligated to keep your registered email and mobile number valid and check notices promptly.** Consequences arising from your failure to check notices in time are borne by you.
+15.1.1 Заключение, действительность, толкование, исполнение и разрешение споров по настоящему Соглашению регулируются **законодательством Китайской Народной Республики** (за исключением коллизиционных норм).
 
-16.3 Notices you send to us should be sent to:
+15.1.2 В отношении сервисов моделей по настоящему Соглашению правовые отношения между нами и апстрим-поставщиками моделей регулируются законодательством соответствующей подсудности; такое устройство не влияет на применение законодательства Китайской Народной Республики к настоящему Соглашению.
 
-- Service and technical support: tech@uter.ai
-- Legal and compliance matters: legal@uter.ai
-- Business and contract matters: bd@uter.ai
-- Abuse reporting: abuse@uter.ai
+15.1.3 Если законодательство Китайской Народной Республики содержит императивные нормы по конкретным вопросам (например, о защите персональных данных, об управлении услугами генеративного искусственного интеллекта), применяются такие нормы.
 
-16.4 For notices concerning service termination, account freezing or material clause changes, we will use two or more means of service simultaneously.
+**15.2 Разрешение споров**
 
----
+15.2.1 Любой спор, возникающий из настоящего Соглашения или связанный с ним, подлежит первоначальному разрешению путём переговоров между сторонами.
 
-## Article 17 Miscellaneous
+15.2.2 В случае недостижения согласия любая из сторон вправе обратиться с иском в **народный суд по месту нахождения Shenzhen Uter Network Co., Ltd. (Шэньчжэнь)**; судом первой инстанции является народный суд района, в котором осуществлена регистрация; если предмет спора превышает предел подсудности районного народного суда, подсудность принадлежит Шэньчжэньскому промежуточному народному суду.
 
-17.1 **Entire Agreement**: This Agreement (including all appendices and incorporated documents) constitutes the entire agreement between the parties regarding this Service, superseding all prior oral or written communications and representations.
+15.2.3 В ходе разрешения спора, за исключением самого спора, стороны продолжают исполнять остальные положения настоящего Соглашения.
 
-17.2 **Assignment**: Without our prior written consent, you may not assign your rights and obligations under this Agreement. We may assign this Agreement to an affiliate in the event of merger, reorganization, asset sale or affiliate adjustment, with prior notice to you.
+**15.3 Языковая редакция**
 
-17.3 **No Waiver**: Our failure or delay in exercising any right under this Agreement does not constitute a waiver of that right.
+Настоящее Соглашение регулируется **китайской редакцией**. Мы можем предоставлять переводы на английский или иные языки исключительно для ознакомления; в случае любого противоречия между переводом и китайской редакцией **применяется китаская редакция**.
 
-17.4 **Independent Parties**: The parties are independent contracting parties; this Agreement does not constitute any agency, partnership, joint venture or employment relationship.
+**15.4 Делимость положений**
 
-17.5 **Headings**: The headings of the articles are for ease of reading only and do not affect the interpretation of the articles.
-
-17.6 **Survival**: After termination of this Agreement, provisions that should continue to be effective by their nature (such as intellectual property, confidentiality, limitation of liability, dispute resolution) continue to be effective.
+Если какое-либо положение настоящего Соглашения будет признано недействительным или неисполнимым, это не повлияет на действительность остальных положений. Стороны заменят его действительным положением, наиболее близким к первоначальной коммерческой цели.
 
 ---
 
-## Appendix A Core Prohibited List of the Acceptable Use Policy (AUP)
+## Раздел 16. Уведомления и вручение документов
 
-The following are absolutely prohibited uses, which upon discovery will result in **immediate service termination, no appeal, and reporting to the competent authority in accordance with law**:
+16.1 Уведомления, направляемые нами Вам, могут вручаться любым из следующих способов и считаются вручёнными с момента отправки: сообщение на сайте (считается вручённым с момента отправки), заказное письмо по электронной почте (считается вручённым по истечении 24 часов с момента отправки), объявление в консоли (считается вручённым с момента публикации), SMS-сообщение (считается вручённым с момента отправки).
 
-| No. | Prohibited Use |
+16.2 **Вы обязаны обеспечивать актуальность зарегистрированного адреса электронной почты и номера мобильного телефона и своевременно проверять уведомления.** Последствия, возникающие вследствие несвоевременной проверки уведомлений, несёте Вы.
+
+16.3 Уведомления, направляемые Вами нам, следует отправлять:
+
+- по вопросам Сервиса и технической поддержки: tech@uter.ai
+- по юридическим вопросам и вопросам соответствия требованиям: legal@uter.ai
+- по коммерческим вопросам и договорам: bd@uter.ai
+- по сообщениям о нарушениях: abuse@uter.ai
+
+16.4 Для уведомлений о прекращении Сервиса, блокировке аккаунта или существенных изменениях положений мы будем одновременно использовать два или более способа вручения.
+
+---
+
+## Раздел 17. Прочие положения
+
+17.1 **Полнота соглашения**: настоящее Соглашение (включая все приложения и включённые документы) образует полное соглашение между сторонами в отношении настоящего Сервиса и заменяет все предшествующие устные или письменные сообщения и заверения.
+
+17.2 **Уступка**: без нашего предварительного письменного согласия Вы не вправе уступать свои права и обязанности по настоящему Соглашению. Мы вправе уступить настоящее Соглашение аффилированному лицу в случае слияния, реорганизации, продажи активов или изменения структуры аффилированных лиц с предварительным уведомлением Вас.
+
+17.3 **Отсутствие отказа от права**: наше неосуществление или задержка в осуществлении какого-либо права по настоящему Соглашению не являются отказом от такого права.
+
+17.4 **Независимые стороны**: стороны являются независимыми контрагентами; настоящее Соглашение не создаёт отношений агентства, партнёрства, совместной деятельности или трудовых отношений.
+
+17.5 **Заголовки**: заголовки разделов приведены исключительно для удобства чтения и не влияют на толкование разделов.
+
+17.6 **Сохранение действия**: после расторжения настоящего Соглашения положения, которые по своей природе должны оставаться в силе (такие как интеллектуальная собственность, конфиденциальность, ограничение ответственности, разрешение споров), продолжают действовать.
+
+---
+
+## Приложение A. Основной перечень запрещённых действий Политики допустимого использования (AUP)
+
+Нижеперечисленные виды использования абсолютно запрещены, и при их обнаружении влекут **немедленное прекращение Сервиса, отсутствие права на обжалование и направление сообщения в компетентный орган в соответствии с законом**:
+
+| № | Запрещённый вид использования |
 |---|---|
-| 1 | Any generation or dissemination of content involving the sexual exploitation or sexualization of minors |
-| 2 | Generation, acquisition or dissemination of Child Sexual Abuse Material (CSAM) |
-| 3 | Assisting in terrorist activities or violent extremism |
-| 4 | Operational guidance for manufacturing weapons, explosives, hazardous chemicals or biological agents |
-| 5 | Conducting telecom network fraud, phishing attacks, malware writing and dissemination |
-| 6 | Money laundering, terrorist financing, sanction evasion |
-| 7 | Unauthorized facial recognition, biometric collection and identity impersonation |
-| 8 | Large-scale generation of false information, automated manipulation of public opinion or traffic inflation |
-| 9 | Generation of non-consensual deepfake content for deceptive purposes |
-| 10 | Any use violating the acceptable use policies of Upstream Model Providers |
+| 1 | Любое создание или распространение контента, связанного с сексуальной эксплуатацией или сексуализацией несовершеннолетних |
+| 2 | Создание, получение или распространение детского порнографического материала (CSAM) |
+| 3 | Содействие террористической деятельности или насильственному экстремизму |
+| 4 | Эксплуатационные указания по изготовлению оружия, взрывчатых веществ, опасных химических веществ или биологических агентов |
+| 5 | Мошенничество в телекоммуникационных сетях, фишинговые атаки, написание и распространение вредоносного программного обеспечения |
+| 6 | Отмывание денежных средств, финансирование терроризма, обход санкций |
+| 7 | Несанкционированное распознавание лиц, сбор биометрических данных и имперсонация личности |
+| 8 | Массовое создание ложной информации, автоматизированная манипуляция общественным мнением или накрутка трафика |
+| 9 | Создание дипфейк-контента без согласия объекта съёмки в обманных целях |
+| 10 | Любое использование, нарушающее политики допустимого использования апстрим-поставщиков моделей |
 
 ---
 
-## Appendix B List of Upstream Model Providers and Sub-processors
+## Приложение B. Перечень апстрим-поставщиков моделей и субобработчиков
 
-| Provider | Cloud Platform / Channel | Typical Models | Policy Link |
+| Поставщик | Облачная платформа / канал | Типичные модели | Ссылка на политику |
 |---|---|---|---|
-| OpenAI | Azure OpenAI Service | GPT series | openai.com/policies/usage-policies |
-| Anthropic | Amazon Bedrock / Official API | Claude series | anthropic.com/legal/aup |
-| Google | Vertex AI | Gemini series | policies.google.com/terms/generative-ai/use-policy |
-| xAI | Official API | Grok series | x.ai/legal |
-| Mistral AI | Official API | Mistral series | mistral.ai/terms |
-| Domestic Vendors | Official API | Tongyi / Doubao / Hunyuan / DeepSeek / Zhipu / Kimi, etc. | Each vendor's official publication |
+| OpenAI | Azure OpenAI Service | серия GPT | openai.com/policies/usage-policies |
+| Anthropic | Amazon Bedrock / Official API | серия Claude | anthropic.com/legal/aup |
+| Google | Vertex AI | серия Gemini | policies.google.com/terms/generative-ai/use-policy |
+| xAI | Official API | серия Grok | x.ai/legal |
+| Mistral AI | Official API | серия Mistral | mistral.ai/terms |
+| Отечественные поставщики | Official API | Tongyi / Doubao / Hunyuan / DeepSeek / Zhipu / Kimi и др. | Официальные публикации каждого поставщика |
 
-> We may add, replace or remove Upstream Providers. Changes to the list will be published on the Platform; material changes will be notified separately.
+> Мы вправе добавлять, заменять или исключать апстрим-поставщиков. Изменения перечня публикуются на Платформе; о существенных изменениях направляется отдельное уведомление.

@@ -1,71 +1,68 @@
-# CC Switch - All-in-One AI CLI Management Tool
+# CC Switch - オールインワン AI CLI 管理ツール
 
-> **Chat Settings Option**
+> **チャット設定オプション**
 >
-> In the Uter console under System Settings -> Chat Settings, you can add the following shortcut to enable one-click fill for CC Switch from the token management page:
+> Uter コンソールの システム設定 → チャット設定 で、トークン管理ページから CC Switch をワンクリック入力できるよう、次のショートカットを追加できます：
 
     ```json
     { "CC Switch": "ccswitch" }
     ```
 
-> 🔀 CC Switch is an open-source, cross-platform all-in-one AI CLI management tool. It supports
->   one-click provider switching for Claude Code, Codex and Gemini CLI, unified MCP server management,
->   system prompts management, and Skills extension management — letting you freely switch between
->   multiple AI coding assistants without manually editing config files.
+> 🔀 CC Switch はオープンソースのクロスプラットフォーム対応オールインワン AI CLI 管理ツールです。Claude Code、Codex、Gemini CLI のワンクリック プロバイダ切り替え、統合された MCP サーバー管理、システムプロンプト管理、Skills 拡張管理をサポートしており、設定ファイルを手動で編集することなく複数の AI コーディング アシスタントを自由に切り替えられます。
 
-- GitHub Repository: [https://github.com/farion1231/cc-switch](https://github.com/farion1231/cc-switch)
-- Download: [GitHub Releases](https://github.com/farion1231/cc-switch/releases)
+- GitHub リポジトリ: [https://github.com/farion1231/cc-switch](https://github.com/farion1231/cc-switch)
+- ダウンロード: [GitHub Releases](https://github.com/farion1231/cc-switch/releases)
 
-## Key Features
+## 主要機能
 
-### 🔌 Provider Management
-- **One-click switching** — Switch between Claude Code, Codex, and Gemini API configs instantly, no manual env vars or config file editing
-- **Multi-endpoint support** — Configure multiple endpoints per provider with API key management and latency speed tests
-- **4-tier model config** — Granular model selection across Haiku / Sonnet / Opus / Custom tiers
+### 🔌 プロバイダ管理
+- **ワンクリック切り替え** — Claude Code、Codex、Gemini の API 設定を瞬時に切り替え、環境変数や設定ファイルを手動編集する必要なし
+- **マルチエンドポイント対応** — プロバイダごとに複数エンドポイントを設定でき、API キー管理とレイテンシ速度テストに対応
+- **4 段階のモデル設定** — Haiku / Sonnet / Opus / カスタム の各層で細かいモデル選択
 
-### 🛠️ MCP Server Management
-- **Unified cross-app management** — Manage MCP servers for Claude / Codex / Gemini from a single panel
-- **Three transport types** — Supports stdio, HTTP, and SSE (Server-Sent Events)
-- **Auto sync** — Unified import/export with bidirectional synchronization
+### 🛠️ MCP サーバー管理
+- **統合クロスアプリ管理** — Claude / Codex / Gemini の MCP サーバーを単一のパネルから管理
+- **3 つの転送タイプ** — stdio、HTTP、SSE（Server-Sent Events）をサポート
+- **自動同期** — 双方向同期を伴う統合インポート/エクスポート
 
-### 💬 Prompts Management
-- **Multi-preset system prompts** — Unlimited presets with quick switching
-- **Cross-app support** — Claude (`CLAUDE.md`), Codex (`AGENTS.md`), Gemini (`GEMINI.md`)
-- **Markdown editor** — CodeMirror 6 with live preview
+### 💬 プロンプト管理
+- **マルチプリセットのシステムプロンプト** — 無制限のプリセットとクイック切り替え
+- **クロスアプリ対応** — Claude（`CLAUDE.md`）、Codex（`AGENTS.md`）、Gemini（`GEMINI.md`）
+- **Markdown エディタ** — ライブプレビュー付きの CodeMirror 6
 
-### 🌐 Multi-platform Support
-- **Desktop app** — Native installers for Windows, macOS, and Linux
-- **Web version** — Browser-accessible interface for headless servers / SSH environments
-- **CLI version** — Both interactive menu-driven and command-line modes
+### 🌐 マルチプラットフォーム対応
+- **デスクトップアプリ** — Windows、macOS、Linux 向けのネイティブインストーラー
+- **Web 版** — ヘッドレスサーバー / SSH 環境向けのブラウザアクセス可能なインターフェース
+- **CLI 版** — 対話型メニューとコマンドライン両方のモード
 
-## Uter Integration
+## Uter との連携
 
-CC Switch supports the `ccswitch://` Deep Link protocol, allowing one-click provider config import from the Uter token management page.
+CC Switch は `ccswitch://` ディープリンク プロトコルをサポートしており、Uter トークン管理ページからプロバイダ設定をワンクリックでインポートできます。
 
-### Configuration Steps
+### 設定手順
 
-1. **On the Uter token management page, click the dropdown menu for the corresponding token**
-   Select the **CC Switch** option from the menu. The system will automatically launch CC Switch and open the configuration dialog.
+1. **Uter トークン管理ページで、該当トークンのドロップダウンメニューをクリック**
+   メニューから **CC Switch** オプションを選択します。システムが自動的に CC Switch を起動し、設定ダイアログを開きます。
 
-2. **Complete the configuration in the dialog**
+2. **ダイアログで設定を完了**
    ![CC Switch Configuration Dialog](/apps-assets/cc_switch/fill_dialog.webp)
 
-   Field descriptions:
-   - **Application**: Switch app type at the top — **Claude** / **Codex** / **Gemini**, select the target application as needed
-   - **Name**: Enter a name for this config (e.g. `My Claude`) to easily identify and switch in CC Switch later
-   - **Main Model** (required) — The primary model to use by default
-   - **Haiku Model** — Lightweight, fast model
-   - **Sonnet Model** — Balanced model
-   - **Opus Model** — Most capable model
+   項目の説明：
+   - **Application**: 上部でアプリの種類を切り替え — **Claude** / **Codex** / **Gemini** から、必要に応じて対象アプリケーションを選択
+   - **Name**: この設定の名前を入力（例：`My Claude`）して、CC Switch での識別と切り替えを容易に
+   - **Main Model**（必須） — デフォルトで使用する主要モデル
+   - **Haiku Model** — 軽量で高速なモデル
+   - **Sonnet Model** — バランスの取れたモデル
+   - **Opus Model** — 最も高性能なモデル
 
-   All models are dropdown selections; unselected fields show "Please select model".
+   すべてのモデルはドロップダウンで選択します。未選択の欄は「Please select model」と表示されます。
 
-3. **Finish**
-   Click **"Open CC Switch"** to import the config into CC Switch and start using it; click **"Cancel"** to discard.
+3. **完了**
+   **「Open CC Switch」** をクリックすると設定を CC Switch にインポートして利用開始、**「Cancel」** をクリックすると破棄します。
 
-## Installation
+## インストール
 
-### macOS (Homebrew recommended)
+### macOS（Homebrew 推奨）
 
 ```shell
 brew tap farion1231/ccswitch
@@ -74,19 +71,19 @@ brew install --cask cc-switch
 
 ### Windows
 
-Download the `.msi` installer or portable `.zip` from [Releases](https://github.com/farion1231/cc-switch/releases).
+[Releases](https://github.com/farion1231/cc-switch/releases) から `.msi` インストーラーまたはポータブル `.zip` をダウンロード。
 
 ### Linux
 
-Download the `.deb` package or `.AppImage` from [Releases](https://github.com/farion1231/cc-switch/releases).
+[Releases](https://github.com/farion1231/cc-switch/releases) から `.deb` パッケージまたは `.AppImage` をダウンロード。
 
-ArchLinux users:
+ArchLinux ユーザー：
 
 ```shell
 paru -S cc-switch-bin
 ```
 
-### Web Version (Headless / SSH Servers)
+### Web 版（ヘッドレス / SSH サーバー）
 
 ```shell
 wget https://github.com/farion1231/cc-switch/releases/latest/download/cc-switch-web-linux-x64.tar.gz
@@ -95,11 +92,11 @@ cd cc-switch-web/
 ./cc-switch-web
 ```
 
-Default port `17666`, access via browser at `http://localhost:17666`.
+デフォルトポートは `17666`、ブラウザで `http://localhost:17666` からアクセス。
 
-## Related Links
+## 関連リンク
 
-- [GitHub Repository](https://github.com/farion1231/cc-switch)
+- [GitHub リポジトリ](https://github.com/farion1231/cc-switch)
 - [Changelog](https://github.com/farion1231/cc-switch/blob/main/CHANGELOG.md)
-- [Web Version Repository](https://github.com/cp-yu/cc-switch-web)
-- [CLI Version Repository](https://github.com/thomas-jack/cc-switch-cli)
+- [Web 版リポジトリ](https://github.com/cp-yu/cc-switch-web)
+- [CLI 版リポジトリ](https://github.com/thomas-jack/cc-switch-cli)

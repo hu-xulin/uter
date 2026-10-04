@@ -1,17 +1,17 @@
-# API Reference
+# API 參考
 
-## Overview
+## 概述
 
-Uter provides a complete set of RESTful API interfaces, categorized into **AI Model APIs** and **Management APIs**. You can use these interfaces to invoke AI capabilities and perform system management functions.
+優特提供完整的 RESTful API 介面，分為 **AI 模型介面** 和 **管理介面** 兩大類。您可以透過這些介面實現 AI 能力呼叫和系統管理功能。
 
-> **Online Debugging**
+> **線上除錯**
 >
-> You can visit the Apifox Playground to test and debug API interfaces online, or browse the API documentation below.
+> 您可以訪問 Apifox 操練場 線上測試和除錯 API 介面，或瀏覽下方的 API 文件。
 
-## AI Model APIs
+## AI 模型介面
 
-AI Model APIs provide access to various AI capabilities and are compatible with the OpenAI API format.
+AI 模型介面提供各種 AI 能力的呼叫，相容 OpenAI API 格式。
 
-## Management APIs
+## 管理介面
 
-Management APIs are used for backend operations such as system configuration, user management, and business management.
+管理介面用於系統配置、使用者管理、業務管理等後臺操作。

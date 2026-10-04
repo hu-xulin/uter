@@ -1,90 +1,97 @@
-# AionUi - Free Open-Source Desktop Office Agent
+# AionUi - Công cụ văn phòng máy tính để bàn mã nguồn mở miễn phí
 
-> 🚀 AionUi is a free, local, open-source Cowork, supporting various AI agents such as Gemini CLI, Claude Code, Codex, OpenCode, Qwen Code, Goose CLI, Auggie. It provides a complete GUI interface and WebUI remote access functionality, serving as an open-source alternative to Cowork.
+> 🚀 AionUi là một công cụ văn phòng (Cowork) cục bộ, mã nguồn mở và miễn phí, hỗ trợ nhiều tác nhân AI như Gemini CLI, Claude Code, Codex, OpenCode, Qwen Code, Goose CLI, Auggie. Nó cung cấp giao diện GUI hoàn chỉnh và tính năng truy cập từ xa qua WebUI, đóng vai trò là giải pháp thay thế mã nguồn mở cho Cowork.
 
-- Official Website: [https://www.aionui.com](https://www.aionui.com)
-- GitHub Repository: [https://github.com/iOfficeAI/AionUi](https://github.com/iOfficeAI/AionUi)
-- Download Link: [https://github.com/iOfficeAI/AionUi/releases](https://github.com/iOfficeAI/AionUi/releases)
+- Trang chủ: [https://www.aionui.com](https://www.aionui.com)
+- Kho GitHub: [https://github.com/iOfficeAI/AionUi](https://github.com/iOfficeAI/AionUi)
+- Liên kết tải xuống: [https://github.com/iOfficeAI/AionUi/releases](https://github.com/iOfficeAI/AionUi/releases)
 
-![AionUi Logo](/apps-assets/aionui/aionui-logo.webp)
+![Logo AionUi](/apps-assets/aionui/aionui-logo.webp)
 
-## Core Features
+## Tính năng cốt lõi
 
-### 💬 Multi-Session Chat
-- **Multi-session + Independent Context** - Allows opening multiple chat sessions simultaneously, each with its own independent context memory.
-- **Local Storage** - All conversation data is stored locally in an SQLite database and will not be lost.
+### 💬 Trò chuyện đa phiên
 
-### 🤖 Multi-Model Support
-- **Multi-Platform Support** - Supports mainstream models like Gemini, OpenAI, Claude, Qwen, with flexible switching.
-- **Local Model Support** - Supports local model deployment via Ollama, LM Studio, etc.
+- **Đa phiên + Ngữ cảnh độc lập** - Cho phép mở nhiều phiên trò chuyện đồng thời, mỗi phiên có bộ nhớ ngữ cảnh độc lập riêng.
+- **Lưu trữ cục bộ** - Tất cả dữ liệu hội thoại được lưu trữ cục bộ trong cơ sở dữ liệu SQLite và sẽ không bị mất.
 
-### 🤝 Multi-Agent Mode
-- **Run Multiple AI Agents Simultaneously** - Allows running multiple AI agents concurrently (e.g., Gemini CLI, Claude Code, Codex, OpenCode, Qwen Code, Goose CLI, Auggie, etc.).
-- **Unified MCP Management** - Unified management and configuration of all agents via Model Context Protocol (MCP), simplifying operation.
-- **Skills Configuration** - Supports configuring exclusive Skills for different agents to extend their capabilities.
-- **Assistant Customization** - Supports custom assistant configurations to create personalized AI workflows.
-- **Independent Configuration** - Each agent can be configured and used independently without interference.
-- **Flexible Switching** - Seamlessly switch between different agents to meet various scenario requirements.
+### 🤖 Hỗ trợ đa mô hình
 
-### 🗂️ File Management
-- **File Tree Browsing + Drag-and-Drop Upload** - Browse files like a folder, supports drag-and-drop of files or folders for one-click import.
-- **Smart Organization** - AI can help organize folders and automatically categorize them.
+- **Hỗ trợ đa nền tảng** - Hỗ trợ các mô hình phổ biến như Gemini, OpenAI, Claude, Qwen, với khả năng chuyển đổi linh hoạt.
+- **Hỗ trợ mô hình cục bộ** - Hỗ trợ triển khai mô hình cục bộ qua Ollama, LM Studio, v.v.
 
-### 📄 Preview Panel
-- **9+ Format Preview** - Supports formats like PDF, Word, Excel, PPT, code, Markdown, images, etc.
-- **Real-time Tracking + Editable** - Automatically tracks file changes, supports real-time editing and debugging of Markdown, code, HTML.
+### 🤝 Chế độ đa tác nhân
 
-### 🎨 AI Image Generation and Editing
-- **Smart Image Generation** - Supports various image generation models such as Gemini 2.5 Flash Image Preview, Nano, Banana, etc.
-- **Image Recognition and Editing** - AI-powered image analysis and editing features.
+- **Chạy nhiều tác nhân AI đồng thời** - Cho phép chạy nhiều tác nhân AI cùng lúc (ví dụ: Gemini CLI, Claude Code, Codex, OpenCode, Qwen Code, Goose CLI, Auggie, v.v.).
+- **Quản lý MCP thống nhất** - Quản lý và cấu hình tất cả tác nhân thông qua Model Context Protocol (MCP), đơn giản hóa thao tác.
+- **Cấu hình Skills** - Hỗ trợ cấu hình Skills riêng cho từng tác nhân để mở rộng năng lực.
+- **Tùy chỉnh trợ lý** - Hỗ trợ cấu hình trợ lý tùy chỉnh để tạo quy trình làm việc AI cá nhân hóa.
+- **Cấu hình độc lập** - Mỗi tác nhân có thể được cấu hình và sử dụng độc lập mà không bị can thiệp.
+- **Chuyển đổi linh hoạt** - Chuyển đổi liền mạch giữa các tác nhân khác nhau để đáp ứng các yêu cầu kịch bản khác nhau.
 
-### 🌐 Multi-Channel Access
-- **WebUI Remote Access** - Accessible via browser from any device on the network, supports mobile devices.
-- **Telegram Integration** - Supports interaction via Telegram bots.
-- **Feishu Integration** - Supports access and interaction via Feishu.
-- **Local Data Security** - All data is stored in a local SQLite database, suitable for server deployment.
+### 🗂️ Quản lý tệp
 
-## Uter Integration Method
+- **Duyệt cây tệp + Kéo thả tải lên** - Duyệt tệp như một thư mục, hỗ trợ kéo thả tệp hoặc thư mục để nhập chỉ với một cú nhấp.
+- **Tổ chức thông minh** - AI có thể giúp sắp xếp thư mục và tự động phân loại chúng.
 
-### Parameter Entry
+### 📄 Bảng xem trước
 
-Provider Type: Types supported by Uter
-API Key: Obtained from Uter
-API Address: Uter site address (e.g., `https://<your-uter-domain>/v1`)
+- **Xem trước 9+ định dạng** - Hỗ trợ các định dạng như PDF, Word, Excel, PPT, mã, Markdown, hình ảnh, v.v.
+- **Theo dõi thời gian thực + Có thể chỉnh sửa** - Tự động theo dõi thay đổi tệp, hỗ trợ chỉnh sửa và gỡ lỗi thời gian thực cho Markdown, mã, HTML.
 
-Please use your self-deployed Uter, or ensure that the service provider offers Uter services with legitimate upstream authorization and compliance obligations. Do not connect API addresses or keys from unknown sources to a production environment.
+### 🎨 Tạo và chỉnh sửa hình ảnh AI
 
-### Configuration Steps
+- **Tạo hình ảnh thông minh** - Hỗ trợ nhiều mô hình tạo hình ảnh như Gemini 2.5 Flash Image Preview, Nano, Banana, v.v.
+- **Nhận diện và chỉnh sửa hình ảnh** - Các tính năng phân tích và chỉnh sửa hình ảnh được hỗ trợ bởi AI.
 
-1.  **Copy API key in Uter**
-    ![Copy API Key](/apps-assets/aionui/copy_apikey.webp)
+### 🌐 Truy cập đa kênh
 
-2.  **Open AionUi Settings**
-    - Go to the settings page in AionUi
-    - Find the Model Configuration Tab
-    - Click "Add Model"
-    ![Open Settings](/apps-assets/aionui/add-model-1.webp)
+- **Truy cập từ xa WebUI** - Có thể truy cập qua trình duyệt từ bất kỳ thiết bị nào trong mạng, hỗ trợ thiết bị di động.
+- **Tích hợp Telegram** - Hỗ trợ tương tác qua bot Telegram.
+- **Tích hợp Feishu** - Hỗ trợ truy cập và tương tác qua Feishu.
+- **Bảo mật dữ liệu cục bộ** - Tất cả dữ liệu được lưu trữ trong cơ sở dữ liệu SQLite cục bộ, phù hợp để triển khai trên máy chủ.
 
-3.  **Add New Provider**
-    - Click "Add Model"
-    - Select Uter
-    ![Add Uter Provider](/apps-assets/aionui/uter_provider.webp)
+## Phương thức tích hợp Uter
 
-4.  **Configure API Information**
-    - API Address: Enter your Uter site address (format: `https://<your-uter-domain>/v1`)
-    - API Key: Paste the API Key copied from the Uter console
+### Nhập tham số
 
-5.  **Add Model**
-    - Select the model to add from the dropdown
-    - The model name should match the model name configured in Uter
-    - Select the appropriate request protocol
+Provider Type: Các loại được Uter hỗ trợ
+API Key: Lấy từ Uter
+API Address: Địa chỉ trang Uter (ví dụ: `https://<your-uter-domain>/v1`)
 
-6.  **Start Using**
-    - Return to the chat page
-    - Select the configured Uter model to start a conversation
+Vui lòng sử dụng Uter tự triển khai của bạn, hoặc đảm bảo rằng nhà cung cấp dịch vụ cung cấp dịch vụ Uter với ủy quyền upstream hợp pháp và các nghĩa vụ tuân thủ. Không kết nối địa chỉ API hoặc khóa từ nguồn không xác định vào môi trường sản xuất.
 
-## Related Links
+### Các bước cấu hình
 
-- [GitHub Repository](https://github.com/iOfficeAI/AionUi)
-- [Complete Usage Guide](https://github.com/iOfficeAI/AionUi#-detailed-usage-guide)
-- [FAQ Frequently Asked Questions](https://github.com/iOfficeAI/AionUi#-support--help)
+1.  **Sao chép API key trong Uter**
+    ![Sao chép API Key](/apps-assets/aionui/copy_apikey.webp)
+
+2.  **Mở Cài đặt AionUi**
+    - Truy cập trang cài đặt trong AionUi
+    - Tìm tab Cấu hình mô hình
+    - Nhấn "Add Model"
+    ![Mở Cài đặt](/apps-assets/aionui/add-model-1.webp)
+
+3.  **Thêm nhà cung cấp mới**
+    - Nhấn "Add Model"
+    - Chọn Uter
+    ![Thêm nhà cung cấp Uter](/apps-assets/aionui/uter_provider.webp)
+
+4.  **Cấu hình thông tin API**
+    - API Address: Nhập địa chỉ trang Uter của bạn (định dạng: `https://<your-uter-domain>/v1`)
+    - API Key: Dán API Key đã sao chép từ bảng điều khiển Uter
+
+5.  **Thêm mô hình**
+    - Chọn mô hình cần thêm từ menu thả xuống
+    - Tên mô hình phải khớp với tên mô hình đã cấu hình trong Uter
+    - Chọn giao thức yêu cầu phù hợp
+
+6.  **Bắt đầu sử dụng**
+    - Quay lại trang trò chuyện
+    - Chọn mô hình Uter đã cấu hình để bắt đầu cuộc hội thoại
+
+## Liên kết liên quan
+
+- [Kho GitHub](https://github.com/iOfficeAI/AionUi)
+- [Hướng dẫn sử dụng đầy đủ](https://github.com/iOfficeAI/AionUi#-detailed-usage-guide)
+- [Câu hỏi thường gặp FAQ](https://github.com/iOfficeAI/AionUi#-support--help)

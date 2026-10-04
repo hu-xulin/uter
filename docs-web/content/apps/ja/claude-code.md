@@ -1,61 +1,61 @@
 # Claude Code
 
-> **Project Introduction**
+> **プロジェクト紹介**
 >
-> Unleash Claude's raw power directly in your terminal. Search million-line codebases instantly. Turn hours-long workflows into a single command. Your tools. Your workflow. Your codebase, evolving at thought speed.
+> Claude の真の力をターミナルから直接解放します。数百万行のコードベースも瞬時に検索。数時間かかるワークフローを単一のコマンドに。あなたのツール。あなたのワークフロー。あなたのコードベースが、思考する速さで進化します。
 >
->   - Official Homepage: [https://www.anthropic.com/claude-code](https://www.anthropic.com/claude-code)
+>   - 公式ホームページ: [https://www.anthropic.com/claude-code](https://www.anthropic.com/claude-code)
 
-## Demo
+## デモ
 
 ![introduce-01.webp](/apps-assets/claude_code/introduce-01.webp)
 
 ![introduce-02.webp](/apps-assets/claude_code/introduce-02.webp)
 
-### Features
+### 機能
 
-| **Category**                       | **Feature**                                                                                                        |
+| **カテゴリ**                       | **機能**                                                                                                        |
 | ---------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| **Code Understanding**             | Deep codebase analysis, utilizing intelligent agents to search and understand project structure and dependencies |
-|                                    | Automatically generates high-level code overviews, quickly helping users understand the codebase                 |
-| **Code Editing**                   | Supports multi-file collaborative editing, suitable for complex code modifications                               |
-|                                    | Provides practical and usable code suggestions that align with project patterns and architecture                 |
-| **Integration Capabilities**       | Supports direct execution in the terminal, eliminating context switching                                         |
-|                                    | Seamless integration with VS Code and JetBrains IDEs, no copy-pasting required                                   |
-| **Code Generation & Optimization** | Automatically generates code, creates tests, fixes bugs, supporting the complete process from concept to commit  |
-|                                    | Optimized for code generation and understanding, combining advanced models like Claude Opus 4                    |
-| **Security & Flexibility**         | Changes require explicit user authorization, ensuring safer file and command operations                          |
-|                                    | Adapts to user code standards, supports custom configurations                                                    |
-| **Toolchain Integration**          | Supports integration with tools like GitHub and GitLab to achieve automated workflows                            |
-|                                    | Integrates with test suites and build systems, enhancing existing development tools                              |
-| **Cross-Platform & Extensibility** | Supports Windows, macOS, and Linux operating systems                                                             |
-|                                    | Configurable to run in SDKs or GitHub Actions, flexibly adapting to different needs                              |
-| **Key Application Scenarios**      | Codebase onboarding and understanding, quick ramp-up for new members                                             |
-|                                    | Code issue fixing and optimization processes, from problem analysis to PR submission                             |
-|                                    | Project code refactoring and new feature implementation                                                          |
-| **User Feedback Highlights**       | Improves daily development efficiency, saving time spent on routine tasks                                        |
-|                                    | Excellent performance in handling complex multi-step tasks, expanding development possibilities                  |
+| **コード理解**             | インテリジェントエージェントを活用した深いコードベース解析により、プロジェクトの構造と依存関係を検索・理解 |
+|                                    | 高レベルなコード概要を自動生成し、ユーザーがコードベースを素早く理解するのを支援                 |
+| **コード編集**                   | 複数ファイルの共同編集に対応し、複雑なコード修正に適している                               |
+|                                    | プロジェクトのパターンやアーキテクチャに沿った、実用的で使いやすいコード提案を提供                 |
+| **統合能力**       | ターミナルでの直接実行に対応し、コンテキスト切り替えを解消                                         |
+|                                    | VS Code や JetBrains IDE とシームレスに統合、コピー＆ペースト不要                                   |
+| **コード生成と最適化** | コードの自動生成、テストの作成、バグの修正を行い、概念からコミットまでの一連のプロセスを支援  |
+|                                    | コード生成と理解に最適化され、Claude Opus 4 などの高度なモデルを組み合わせ                    |
+| **セキュリティと柔軟性**         | 変更にはユーザーの明示的な承認が必要で、ファイルやコマンド操作をより安全に                          |
+|                                    | ユーザーのコード規約に適応し、カスタム設定をサポート                                                    |
+| **ツールチェーン統合**          | GitHub や GitLab などのツールと統合し、自動化ワークフローを実現                            |
+|                                    | テストスイートやビルドシステムと統合し、既存の開発ツールを強化                              |
+| **クロスプラットフォームと拡張性** | Windows、macOS、Linux の各 OS をサポート                                                             |
+|                                    | SDK や GitHub Actions で実行できるよう設定可能で、さまざまなニーズに柔軟に対応                              |
+| **主な適用シナリオ**      | コードベースのオンボーディングと理解、新メンバーの迅速な立ち上げ                                             |
+|                                    | 問題分析から PR 提出までの、コードの問題修正と最適化プロセス                         |
+|                                    | プロジェクトコードのリファクタリングと新機能の実装                                                          |
+| **ユーザーフィードバックのハイライト**       | 日々の開発効率を向上させ、定常的なタスクにかかる時間を節約                                        |
+|                                    | 複雑な多段階タスクの処理において優れた性能を発揮し、開発の可能性を広げる                  |
 
-## AI Model Configuration Method
+## AI モデルの設定方法
 
-### Windows Graphical Guide
+### Windows 図解ガイド
 
-#### 1. Install Node.js Environment
+#### 1. Node.js 環境のインストール
 
-Claude Code requires a Node.js environment to run.
+Claude Code を実行するには Node.js 環境が必要です。
 
-> **Node.js Environment Installation Steps**
+> **Node.js 環境のインストール手順**
 >
-> - Open your browser and visit https://nodejs.org/
->   - Click the "LTS" version to download (Long Term Support version recommended)
->   - After downloading, double-click the .msi file
->   - Follow the installation wizard to complete the installation, keeping default settings
+> - ブラウザで https://nodejs.org/ を開く
+>   - 「LTS」バージョンをクリックしてダウンロード（Long Term Support 版を推奨）
+>   - ダウンロード後、.msi ファイルをダブルクリック
+>   - インストールウィザードに従ってデフォルト設定のままインストールを完了
 
-> **Windows Notes**
+> **Windows の注意点**
 >
-> - It is recommended to use PowerShell instead of CMD
->   - If you encounter permission issues, try running as administrator
->   - Some antivirus software may report false positives; you may need to add an exception
+> - CMD ではなく PowerShell の使用を推奨
+>   - 権限の問題が発生した場合は、管理者として実行を試す
+>   - 一部のウイルス対策ソフトが誤検知する場合があります；例外に追加する必要があるかもしれません
 
 ![windows-img-01.webp](/apps-assets/claude_code/windows-img-01.webp)
 
@@ -67,29 +67,29 @@ Claude Code requires a Node.js environment to run.
 
 ![windows-img-05.webp](/apps-assets/claude_code/windows-img-05.webp)
 
-> **Verify Installation Success**
+> **インストール成功の確認**
 >
-> After installation, open PowerShell or CMD and enter the following commands:
+> インストール後、PowerShell または CMD を開き、次のコマンドを入力：
 >
 >   ```bash
 >   node --version
 >   npm --version
 >   ```
 >
->   If version numbers are displayed, the installation was successful.
+>   バージョン番号が表示されれば、インストールは成功です。
 
-#### 2. Install Git Bash
+#### 2. Git Bash のインストール
 
-> **Windows Notes**
+> **Windows の注意点**
 >
-> In a Windows environment, Git Bash is required to install Claude Code. After installation, environment variable setup and using Claude Code will still be done in regular PowerShell or CMD.
+> Windows 環境では、Claude Code のインストールに Git Bash が必要です。インストール後も、環境変数の設定と Claude Code の使用は通常の PowerShell または CMD で行います。
 
-> **Download and Install Git for Windows**
+> **Git for Windows のダウンロードとインストール**
 >
-> - Visit https://git-scm.com/downloads/win
->   - Click "Download for Windows" to download the installer
->   - Run the downloaded .exe installation file
->   - Keep default settings during installation, and click "Next" to complete the installation
+> - https://git-scm.com/downloads/win にアクセス
+>   - 「Download for Windows」をクリックしてインストーラーをダウンロード
+>   - ダウンロードした .exe インストールファイルを実行
+>   - インストール中はデフォルト設定を維持し、「Next」をクリックしてインストールを完了
 
 ![windows-img-06.webp](/apps-assets/claude_code/windows-img-06.webp)
 
@@ -97,51 +97,51 @@ Claude Code requires a Node.js environment to run.
 
 ![windows-img-08.webp](/apps-assets/claude_code/windows-img-08.webp)
 
-> **Verify Git Bash Installation**
+> **Git Bash インストールの確認**
 >
-> After installation, open Git Bash and enter the following command to verify:
+> インストール後、Git Bash を開き、次のコマンドを入力して確認：
 >
 >   ```bash
 >   git --version
 >   ```
 >
->   If a version number is displayed, the installation was successful.
+>   バージョン番号が表示されればインストール成功です。
 
-#### 3. Install Claude Code
+#### 3. Claude Code のインストール
 
-> **Install Claude Code**
+> **Claude Code のインストール**
 >
-> Open PowerShell and run the following command:
+> PowerShell を開き、次のコマンドを実行：
 >
 >   ```bash
 >   npm install -g @anthropic-ai/claude-code
 >   ```
 >
->   This command will download and install the latest version of Claude Code from the official npm repository.
+>   このコマンドは公式 npm リポジトリから最新版の Claude Code をダウンロードしてインストールします。
 
 ![windows-img-09.webp](/apps-assets/claude_code/windows-img-09.webp)
 
-> **Add ~/.local/bin to PATH (only if prompted)**
+> **~/.local/bin を PATH に追加（求められた場合のみ）**
 >
 > ```powershell
 >   [Environment]::SetEnvironmentVariable('Path', ([Environment]::GetEnvironmentVariable('Path','User') + ";$HOME\.local\bin"), 'User')
 >   ```
 
-> **Verify Claude Code Installation**
+> **Claude Code インストールの確認**
 >
-> After installation, enter the following command to check if it was successfully installed:
+> インストール後、次のコマンドを入力して正常にインストールされたか確認：
 >
 >   ```bash
 >   claude --version
 >   ```
 >
->   If a version number is displayed, congratulations! Claude Code has been successfully installed.
+>   バージョン番号が表示されれば、おめでとうございます！ Claude Code のインストールは成功です。
 
-#### 4. Set Environment Variables
+#### 4. 環境変数を設定
 
-> **One-Click Setup Command (Windows System)**
+> **ワンクリック設定コマンド（Windows システム）**
 >
-> To allow Claude Code to connect to your relay service, you need to set multiple environment variables:
+> Claude Code が中継サービスに接続できるよう、複数の環境変数を設定する必要があります：
 
 ```powershell
 iex (irm 'https://raw.githubusercontent.com/Uter.ai/uter-docs/refs/heads/main/helper/claude-cli-setup.ps1')
@@ -149,25 +149,25 @@ iex (irm 'https://raw.githubusercontent.com/Uter.ai/uter-docs/refs/heads/main/he
 
 ![windows-configure](/apps-assets/claude_code/windows_configure.webp)
 
-#### 5. Start Using Claude Code
+#### 5. Claude Code の利用開始
 
-You can now start using Claude Code!
+これで Claude Code を使い始められます！
 
-> **Launch Claude Code**
+> **Claude Code を起動**
 >
-> Open PowerShell and launch Claude Code directly:
+> PowerShell を開き、Claude Code を直接起動：
 >
 >   ```bash
 >   claude
 >   ```
 >
->   To use in a specific project:
+>   特定のプロジェクトで使用する場合：
 >
 >   ```bash
->   # Navigate to your project directory
+>   # プロジェクトディレクトリに移動
 >   cd C:\path\to\your\project
 >
->   # Launch Claude Code
+>   # Claude Code を起動
 >   claude
 >   ```
 
@@ -181,39 +181,39 @@ You can now start using Claude Code!
 
 ![windows-img-15.webp](/apps-assets/claude_code/windows-img-15.webp)
 
-> **Select Model**
+> **モデルを選択**
 >
-> Enter the command:
+> 次のコマンドを入力：
 >
 >   ```bash
 >   /model
 >   ```
 >
->   Press Enter to select a model; usually, the default settings are sufficient.
+>   Enter を押してモデルを選択；通常はデフォルト設定で十分です。
 
 ![windows-img-16.webp](/apps-assets/claude_code/windows-img-16.webp)
 
 ![windows-img-17.webp](/apps-assets/claude_code/windows-img-17.webp)
 
-> Note: After modifying environment variables, all models (including officially preset models) will call the custom access point instead of using official account quotas.
+> 注：環境変数を変更すると、すべてのモデル（公式プリセットモデルを含む）が、公式アカウントの割り当てではなくカスタムアクセスポイントを呼び出すようになります。
 
-### macOS Graphical Guide
+### macOS 図解ガイド
 
-#### 1. Install Claude Code CLI
+#### 1. Claude Code CLI をインストール
 
-Open Terminal
+ターミナルを開く
 
 ![macos-img-01.webp](/apps-assets/claude_code/macos-img-01.webp)
 
-> **Install Claude Code**
+> **Claude Code のインストール**
 >
-> Open Terminal and run the following command:
+> ターミナルを開き、次のコマンドを実行：
 >
 >   ```bash
 >   curl -fsSL https://claude.ai/install.sh | bash
 >   ```
 >
->   Optional: Run the provided command when prompted
+>   オプション：求められたら次のコマンドを実行
 >
 >   ```bash
 >   echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc && source ~/.bashrc
@@ -221,13 +221,13 @@ Open Terminal
 
 ![macos-img-02.webp](/apps-assets/claude_code/macos-img-02.webp)
 
-#### 2. Set Environment Variables
+#### 2. 環境変数を設定
 
-To allow Claude Code to connect to a third-party relay service, you need to set environment variables:
+Claude Code がサードパーティの中継サービスに接続できるよう、環境変数を設定する必要があります：
 
-> **One-Click Setup for Claude Code Environment Variables**
+> **Claude Code 環境変数のワンクリック設定**
 >
-> Enter the command:
+> 次のコマンドを入力：
 >
 >   ```bash
 >   curl -fsSL https://raw.githubusercontent.com/Uter.ai/uter-docs/refs/heads/main/helper/claude-cli-setup.sh | bash
@@ -235,35 +235,35 @@ To allow Claude Code to connect to a third-party relay service, you need to set 
 
 ![macos-configure](/apps-assets/claude_code/macos_configure.webp)
 
-> **Verify Claude Code Installation**
+> **Claude Code インストールの確認**
 >
-> After installation, enter the following command to check if it was successfully installed:
+> インストール後、次のコマンドを入力して正常にインストールされたか確認：
 >
 >   ```bash
 >   claude --version
 >   ```
 >
->   If a version number is displayed, congratulations! Claude Code has been successfully installed.
+>   バージョン番号が表示されれば、おめでとうございます！ Claude Code のインストールは成功です。
 
-#### 3. Start Using Claude Code
+#### 3. Claude Code の利用開始
 
-You can now start using Claude Code!
+これで Claude Code を使い始められます！
 
-> **Launch Claude Code**
+> **Claude Code を起動**
 >
-> Launch Claude Code directly:
+> Claude Code を直接起動：
 >
 >   ```bash
 >   claude
 >   ```
 >
->   To use in a specific project:
+>   特定のプロジェクトで使用する場合：
 >
 >   ```bash
->   # Navigate to your project directory
+>   # プロジェクトディレクトリに移動
 >   cd /path/to/your/project
 >
->   # Launch Claude Code
+>   # Claude Code を起動
 >   claude
 >   ```
 
@@ -277,15 +277,15 @@ You can now start using Claude Code!
 
 ![macos-img-08.webp](/apps-assets/claude_code/macos-img-08.webp)
 
-> **Select Model (Optional)**
+> **モデルを選択（オプション）**
 >
-> Enter the command:
+> 次のコマンドを入力：
 >
 >   ```bash
 >   /model
 >   ```
 >
->   Press Enter to select an official model; usually, the default model is sufficient.
+>   Enter を押して公式モデルを選択；通常はデフォルトモデルで十分です。
 
 ![macos-img-09.webp](/apps-assets/claude_code/macos-img-09.webp)
 
@@ -293,33 +293,33 @@ You can now start using Claude Code!
 
 ![macos-img-11.webp](/apps-assets/claude_code/macos-img-11.webp)
 
-> Note: After modifying the `ANTHROPIC_BASE_URL` environment variable, all models (including officially preset models) will call the custom access point instead of using official account quotas.
+> 注：`ANTHROPIC_BASE_URL` 環境変数を変更すると、すべてのモデル（公式プリセットモデルを含む）が、公式アカウントの割り当てではなくカスタムアクセスポイントを呼び出すようになります。
 
-#### 4. macOS Common Issues
+#### 4. macOS の一般的な問題
 
-> **macOS Security Settings Preventing Execution**
+> **macOS のセキュリティ設定で実行がブロックされる**
 >
-> If the system prevents Claude Code from running:
+> システムが Claude Code の実行をブロックする場合：
 >
->   - Open "System Preferences" → "Security & Privacy"
->   - Click "Open Anyway" or "Allow"
->   - Or run in Terminal: `sudo spctl --master-disable`
+>   - 「システム環境設定」→「セキュリティとプライバシー」を開く
+>   - 「このまま開く」または「許可」をクリック
+>   - またはターミナルで実行：`sudo spctl --master-disable`
 
-### Linux Graphical Guide
+### Linux 図解ガイド
 
-#### 1. Install Claude Code
+#### 1. Claude Code のインストール
 
 ![linux-img-01.webp](/apps-assets/claude_code/linux-img-01.webp)
 
-> **Install Claude Code**
+> **Claude Code のインストール**
 >
-> Open Terminal and run the following command:
+> ターミナルを開き、次のコマンドを実行：
 >
 >   ```bash
 >   curl -fsSL https://claude.ai/install.sh | bash
 >   ```
 >
->   If you encounter permission issues, you can use sudo:
+>   権限の問題が発生した場合は sudo を使用できます：
 >
 >   ```bash
 >   sudo curl -fsSL https://claude.ai/install.sh | bash
@@ -327,23 +327,23 @@ You can now start using Claude Code!
 
 ![linux-img-03.webp](/apps-assets/claude_code/linux-img-03.webp)
 
-> **Verify Claude Code Installation**
+> **Claude Code インストールの確認**
 >
-> After installation, enter the following command to check if it was successfully installed:
+> インストール後、次のコマンドを入力して正常にインストールされたか確認：
 >
 >   ```bash
 >   claude --version
 >   ```
 >
->   If a version number is displayed, congratulations! Claude Code has been successfully installed.
+>   バージョン番号が表示されれば、おめでとうございます！ Claude Code のインストールは成功です。
 
-#### 2. Set Environment Variables
+#### 2. 環境変数を設定
 
-To allow Claude Code to connect to your relay service, you need to set two environment variables:
+Claude Code が中継サービスに接続できるよう、2 つの環境変数を設定する必要があります：
 
-> **One-Click Environment Variable Modification**
+> **環境変数のワンクリック変更**
 >
-> Enter the command:
+> 次のコマンドを入力：
 >
 >   ```bash
 >   curl -fsSL https://raw.githubusercontent.com/Uter.ai/uter-docs/refs/heads/main/helper/claude-cli-setup.sh | bash
@@ -351,25 +351,25 @@ To allow Claude Code to connect to your relay service, you need to set two envir
 
 ![macos-configure](/apps-assets/claude_code/macos_configure.webp)
 
-#### 3. Start Using Claude Code
+#### 3. Claude Code の利用開始
 
-You can now start using Claude Code!
+これで Claude Code を使い始められます！
 
-> **Launch Claude Code**
+> **Claude Code を起動**
 >
-> Launch Claude Code directly:
+> Claude Code を直接起動：
 >
 >   ```bash
 >   claude
 >   ```
 >
->   To use in a specific project:
+>   特定のプロジェクトで使用する場合：
 >
 >   ```bash
->   # Navigate to your project directory
+>   # プロジェクトディレクトリに移動
 >   cd /path/to/your/project
 >
->   # Launch Claude Code
+>   # Claude Code を起動
 >   claude
 >   ```
 
@@ -379,15 +379,15 @@ You can now start using Claude Code!
 
 ![linux-img-05.webp](/apps-assets/claude_code/linux-img-05.webp)
 
-> **Select Model**
+> **モデルを選択**
 >
-> Enter the command:
+> 次のコマンドを入力：
 >
 >   ```bash
 >   /model
 >   ```
 >
->   Press Enter to select an official model; usually, the default model is sufficient.
+>   Enter を押して公式モデルを選択；通常はデフォルトモデルで十分です。
 
 ![linux-img-06.webp](/apps-assets/claude_code/linux-img-06.webp)
 
@@ -397,13 +397,13 @@ You can now start using Claude Code!
 
 ![linux-img-09.webp](/apps-assets/claude_code/linux-img-09.webp)
 
-> Note: After modifying the `ANTHROPIC_BASE_URL` environment variable, all models (including officially preset models) will call the custom access point instead of using official account quotas.
+> 注：`ANTHROPIC_BASE_URL` 環境変数を変更すると、すべてのモデル（公式プリセットモデルを含む）が、公式アカウントの割り当てではなくカスタムアクセスポイントを呼び出すようになります。
 
-#### 4. Linux Common Issues
+#### 4. Linux の一般的な問題
 
-> **Missing Dependency Libraries**
+> **依存ライブラリの欠落**
 >
-> Some Linux distributions require additional dependencies to be installed:
+> 一部の Linux ディストリビューションでは追加の依存関係のインストールが必要です：
 >
 >   ```bash
 >   # Ubuntu/Debian
@@ -413,10 +413,10 @@ You can now start using Claude Code!
 >   sudo dnf groupinstall "Development Tools"
 >   ```
 
-> **Environment Variables Not Taking Effect**
+> **環境変数が反映されない**
 >
-> Check the following points:
+> 以下の点を確認：
 >
->   - Confirm that you modified the correct configuration file (`.bashrc` or `.zshrc`)
->   - Restart the terminal or run `source ~/.bashrc`
->   - Verify settings: `echo $ANTHROPIC_BASE_URL`
+>   - 正しい設定ファイル（`.bashrc` または `.zshrc`）を変更したことを確認
+>   - ターミナルを再起動するか `source ~/.bashrc` を実行
+>   - 設定を確認：`echo $ANTHROPIC_BASE_URL`

@@ -2,46 +2,46 @@
 
 ## Native Claude Format
 
-Anthropic Claude Messages API 格式的请求。
-需要在请求头中包含 `anthropic-version`。
+Anthropic Claude Messages API 形式のリクエストです。
+リクエストヘッダーに `anthropic-version` を含める必要があります。
 
 `POST` `/v1/messages`
 
-### 请求参数
+### リクエストパラメータ
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| パラメータ名 | 位置 | 型 | 必須 | 説明 |
 |---|---|---|---|---|
-| `anthropic-version` | header | string | 是 | Anthropic API 版本 |
-| `x-api-key` | header | string | 否 | Anthropic API Key (可选，也可使用 Bearer Token) |
+| `anthropic-version` | header | string | 必須 | Anthropic API のバージョン |
+| `x-api-key` | header | string | 任意 | Anthropic API Key（省略可、Bearer Token も利用可） |
 
-### 请求体（`application/json`）
+### リクエストボディ（`application/json`）
 
-| 字段 | 类型 | 必填 | 说明 |
+| フィールド | 型 | 必須 | 説明 |
 |---|---|---|---|
-| `model` | string | 是 | — |
-| `messages` | array&lt;object&gt; | 是 | — |
-| `max_tokens` | integer | 是 | — |
-| `temperature` | number | 否 | — |
-| `top_p` | number | 否 | — |
-| `top_k` | integer | 否 | — |
-| `stream` | boolean | 否 | — |
-| `stop_sequences` | array&lt;string&gt; | 否 | — |
-| `tools` | array&lt;object&gt; | 否 | — |
-| `tool_choice.type` | enum（`auto`, `any`, `tool`） | 否 | — |
-| `tool_choice.name` | string | 否 | — |
-| `thinking.type` | enum（`enabled`, `disabled`） | 否 | — |
-| `thinking.budget_tokens` | integer | 否 | — |
-| `metadata.user_id` | string | 否 | — |
+| `model` | string | 必須 | — |
+| `messages` | array&lt;object&gt; | 必須 | — |
+| `max_tokens` | integer | 必須 | — |
+| `temperature` | number | 任意 | — |
+| `top_p` | number | 任意 | — |
+| `top_k` | integer | 任意 | — |
+| `stream` | boolean | 任意 | — |
+| `stop_sequences` | array&lt;string&gt; | 任意 | — |
+| `tools` | array&lt;object&gt; | 任意 | — |
+| `tool_choice.type` | enum（`auto`, `any`, `tool`） | 任意 | — |
+| `tool_choice.name` | string | 任意 | — |
+| `thinking.type` | enum（`enabled`, `disabled`） | 任意 | — |
+| `thinking.budget_tokens` | integer | 任意 | — |
+| `metadata.user_id` | string | 任意 | — |
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
-| `200` | 成功创建响应 |
+| `200` | レスポンスの作成に成功 |
 
-#### `200` 响应字段
+#### `200` レスポンスフィールド
 
-| 字段 | 类型 | 说明 |
+| フィールド | 型 | 説明 |
 |---|---|---|
 | `id` | string | — |
 | `type` | string | — |

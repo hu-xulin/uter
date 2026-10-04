@@ -1,17 +1,17 @@
-# AI Applications
+# Applications IA
 
-## Overview
+## Vue d'ensemble
 
-Uter is compatible with various popular AI applications and tools. Below is a list of verified supported applications and their configuration guides.
+Uter est compatible avec diverses applications et outils IA populaires. Vous trouverez ci-dessous une liste d'applications prises en charge vérifiées et leurs guides de configuration.
 
-## Supported Applications
+## Applications prises en charge
 
-## Integration Guide
+## Guide d'intégration
 
-Most applications only require configuring the following information to connect to Uter:
+La plupart des applications ne nécessitent que de configurer les informations suivantes pour se connecter à Uter :
 
-1.  **API Address**: Your Uter service address
-2.  **API Key**: The Token generated in the Uter console
-3.  **Model Name**: Select the model to use
+1.  **Adresse API** : l'adresse de votre service Uter
+2.  **Clé API** : le jeton généré dans la console Uter
+3.  **Nom du modèle** : sélectionnez le modèle à utiliser
 
-For specific configuration steps, please refer to the detailed documentation of each application.
+Pour les étapes de configuration spécifiques, veuillez consulter la documentation détaillée de chaque application.

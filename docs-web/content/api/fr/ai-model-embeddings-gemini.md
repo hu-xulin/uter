@@ -1,32 +1,32 @@
-# Native Gemini Format
+# Format Gemini natif
 
-使用指定引擎/模型创建嵌入
+Crée un embedding avec le moteur/modèle spécifié.
 
 `POST` `/v1/engines/{model}/embeddings`
 
-### 请求参数
+### Paramètres de requête
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| Nom du paramètre | Position | Type | Requis | Description |
 |---|---|---|---|---|
-| `model` | path | string | 是 | 模型/引擎 ID |
+| `model` | path | string | Oui | ID du modèle/moteur |
 
-### 请求体（`application/json`）
+### Corps de la requête (`application/json`)
 
-| 字段 | 类型 | 必填 | 说明 |
+| Champ | Type | Requis | Description |
 |---|---|---|---|
-| `model` | string | 是 | — |
-| `encoding_format` | enum（`float`, `base64`） | 否 | — |
-| `dimensions` | integer | 否 | 输出向量维度 |
+| `model` | string | Oui | — |
+| `encoding_format` | enum（`float`, `base64`） | Non | — |
+| `dimensions` | integer | Non | Dimension du vecteur de sortie |
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功创建嵌入 |
+| `200` | Embedding créé avec succès |
 
-#### `200` 响应字段
+#### Champs de la réponse `200`
 
-| 字段 | 类型 | 说明 |
+| Champ | Type | Description |
 |---|---|---|
 | `object` | string | — |
 | `data` | array&lt;object&gt; | — |

@@ -1,47 +1,47 @@
-# Native Gemini Format
+# Định dạng Native của Gemini
 
-The native Gemini audio generation endpoint. Synthesize speech directly with models such as `gemini-2.5-flash-preview-tts`, returning audio in PCM / WAV and other formats.
+Endpoint tạo âm thanh native của Gemini. Tổng hợp giọng nói trực tiếp bằng các mô hình như `gemini-2.5-flash-preview-tts`, trả về âm thanh ở định dạng PCM / WAV và các định dạng khác.
 
-Unlike the "Native OpenAI Format", this endpoint follows Google Gemini's `v1beta` protocol: you submit content to the `generateContent` endpoint and control the output modality and voice via `generationConfig`. Uter unifies access to the Gemini family of models — keys, quotas and billing all use the platform account system.
+Khác với "Định dạng Native OpenAI", endpoint này tuân theo giao thức `v1beta` của Google Gemini: bạn gửi nội dung đến endpoint `generateContent` và điều khiển phương thức đầu ra cũng như giọng nói thông qua `generationConfig`. Uter thống nhất truy cập vào họ mô hình Gemini — khóa, hạn ngạch và thanh toán đều sử dụng hệ thống tài khoản nền tảng.
 
-## Authorization
+## Xác thực
 
-Authenticate with a Bearer token.
+Xác thực bằng Bearer token.
 
 `Authorization: Bearer <token>`
 
-| Parameter | In | Description |
+| Tham số | Vị trí | Mô tả |
 |---|---|---|
-| `Authorization` | header | Bearer token, format `Bearer sk-xxxxxx` |
+| `Authorization` | header | Bearer token, định dạng `Bearer sk-xxxxxx` |
 
-## Path Parameters
+## Tham số đường dẫn
 
-| Parameter | Type | Required | Description |
+| Tham số | Kiểu | Bắt buộc | Mô tả |
 |---|---|---|---|
-| `model` | string | yes | Model name, e.g. `gemini-2.5-flash-preview-tts` |
+| `model` | string | Có | Tên mô hình, ví dụ `gemini-2.5-flash-preview-tts` |
 
-## Request Body
+## Thân yêu cầu
 
 `Content-Type: application/json`
 
-| Field | Type | Required | Description |
+| Trường | Kiểu | Bắt buộc | Mô tả |
 |---|---|---|---|
-| `contents` | array&lt;object&gt; | yes | Conversation content; each entry is one input turn |
-| `generationConfig` | object | yes | Generation configuration controlling output modality and voice |
+| `contents` | array&lt;object&gt; | Có | Nội dung hội thoại; mỗi mục là một lượt đầu vào |
+| `generationConfig` | object | Có | Cấu hình tạo, điều khiển phương thức đầu ra và giọng nói |
 
-### generationConfig fields
+### Các trường generationConfig
 
-| Field | Type | Required | Description |
+| Trường | Kiểu | Bắt buộc | Mô tả |
 |---|---|---|---|
-| `responseModalities` | array&lt;string&gt; | no | Output modalities; audio use cases must include `AUDIO` |
-| `speechConfig` | object | no | Speech configuration |
-| `speechConfig.voiceConfig.prebuiltVoiceConfig.voiceName` | string | no | Prebuilt voice name, e.g. `Kore` |
+| `responseModalities` | array&lt;string&gt; | Không | Phương thức đầu ra; trường hợp sử dụng âm thanh phải bao gồm `AUDIO` |
+| `speechConfig` | object | Không | Cấu hình giọng nói |
+| `speechConfig.voiceConfig.prebuiltVoiceConfig.voiceName` | string | Không | Tên giọng nói có sẵn, ví dụ `Kore` |
 
-## Response
+## Phản hồi
 
-`200` the request succeeded and JSON is returned. The generated audio is inlined in `candidates[].content.parts[]`.
+`200` yêu cầu thành công và JSON được trả về. Âm thanh được tạo được nhúng vào `candidates[].content.parts[]`.
 
-### Request example
+### Ví dụ yêu cầu
 
 ```bash
 curl -X POST "https://uter.ai/v1beta/models/gemini-2.5-flash-preview-tts:generateContent" \
@@ -68,7 +68,7 @@ curl -X POST "https://uter.ai/v1beta/models/gemini-2.5-flash-preview-tts:generat
   }'
 ```
 
-### Response example
+### Ví dụ phản hồi
 
 ```json
 {
@@ -92,4 +92,4 @@ curl -X POST "https://uter.ai/v1beta/models/gemini-2.5-flash-preview-tts:generat
 }
 ```
 
-> Tip: the audio is inlined as base64 in `inlineData.data`; decode it according to `inlineData.mimeType` to play. Billing is based on input tokens — the synthesized audio is not billed as extra tokens.
+> Mẹo: âm thanh được nhúng dưới dạng base64 trong `inlineData.data`; giải mã theo `inlineData.mimeType` để phát. Việc thanh toán dựa trên token đầu vào — âm thanh đã tổng hợp không bị tính thêm token.

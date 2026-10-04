@@ -2,7 +2,7 @@ import { ContentCardGrid } from '@/lib/content-renderer';
 import { userGuideChapterTeaser } from '@/lib/content/user-guide-chapter';
 import {
   USER_GUIDE_CHAPTER_SLUGS,
-  getUserGuideContent,
+  getUserGuideIdentity,
   userGuideChapterTitle,
   userGuideChapterUrl,
 } from '@/lib/content/user-guide';
@@ -29,7 +29,7 @@ export default async function UserGuidePage(props: {
 }) {
   const { lang } = await props.params;
   const locale = docsLocaleFromSegment(lang);
-  const content = getUserGuideContent(locale);
+  const identity = getUserGuideIdentity(locale);
 
   const items = USER_GUIDE_CHAPTER_SLUGS.map((slug) => ({
     title: userGuideChapterTitle(locale, slug) ?? slug,
@@ -40,8 +40,8 @@ export default async function UserGuidePage(props: {
   return (
     <DocsShell
       locale={locale}
-      title={content.title}
-      description={content.description}
+      title={identity.title}
+      description={identity.description}
       toc={[]}
     >
       <ContentCardGrid items={items} />

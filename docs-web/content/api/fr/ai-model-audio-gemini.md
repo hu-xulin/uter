@@ -1,47 +1,47 @@
-# Native Gemini Format
+# Format Gemini natif
 
-The native Gemini audio generation endpoint. Synthesize speech directly with models such as `gemini-2.5-flash-preview-tts`, returning audio in PCM / WAV and other formats.
+Le point de terminaison de génération audio Gemini natif. Synthétise la parole directement avec des modèles tels que `gemini-2.5-flash-preview-tts`, renvoyant de l'audio aux formats PCM / WAV et autres.
 
-Unlike the "Native OpenAI Format", this endpoint follows Google Gemini's `v1beta` protocol: you submit content to the `generateContent` endpoint and control the output modality and voice via `generationConfig`. Uter unifies access to the Gemini family of models — keys, quotas and billing all use the platform account system.
+Contrairement au « Format OpenAI natif », ce point de terminaison suit le protocole `v1beta` de Google Gemini : vous soumettez du contenu au point de terminaison `generateContent` et contrôlez la modalité de sortie et la voix via `generationConfig`. Uter unifie l'accès à la famille de modèles Gemini — clés, quotas et facturation utilisent tous le système de compte de la plateforme.
 
-## Authorization
+## Autorisation
 
-Authenticate with a Bearer token.
+Authentifiez-vous avec un jeton Bearer.
 
 `Authorization: Bearer <token>`
 
-| Parameter | In | Description |
+| Paramètre | Emplacement | Description |
 |---|---|---|
-| `Authorization` | header | Bearer token, format `Bearer sk-xxxxxx` |
+| `Authorization` | header | Jeton Bearer, format `Bearer sk-xxxxxx` |
 
-## Path Parameters
+## Paramètres de chemin
 
-| Parameter | Type | Required | Description |
+| Paramètre | Type | Requis | Description |
 |---|---|---|---|
-| `model` | string | yes | Model name, e.g. `gemini-2.5-flash-preview-tts` |
+| `model` | string | oui | Nom du modèle, ex. `gemini-2.5-flash-preview-tts` |
 
-## Request Body
+## Corps de la requête
 
 `Content-Type: application/json`
 
-| Field | Type | Required | Description |
+| Champ | Type | Requis | Description |
 |---|---|---|---|
-| `contents` | array&lt;object&gt; | yes | Conversation content; each entry is one input turn |
-| `generationConfig` | object | yes | Generation configuration controlling output modality and voice |
+| `contents` | array&lt;object&gt; | oui | Contenu de conversation ; chaque entrée est un tour de saisie |
+| `generationConfig` | object | oui | Configuration de génération contrôlant la modalité de sortie et la voix |
 
-### generationConfig fields
+### Champs de generationConfig
 
-| Field | Type | Required | Description |
+| Champ | Type | Requis | Description |
 |---|---|---|---|
-| `responseModalities` | array&lt;string&gt; | no | Output modalities; audio use cases must include `AUDIO` |
-| `speechConfig` | object | no | Speech configuration |
-| `speechConfig.voiceConfig.prebuiltVoiceConfig.voiceName` | string | no | Prebuilt voice name, e.g. `Kore` |
+| `responseModalities` | array&lt;string&gt; | non | Modalités de sortie ; les cas d'usage audio doivent inclure `AUDIO` |
+| `speechConfig` | object | non | Configuration vocale |
+| `speechConfig.voiceConfig.prebuiltVoiceConfig.voiceName` | string | non | Nom de voix prédéfinie, ex. `Kore` |
 
-## Response
+## Réponse
 
-`200` the request succeeded and JSON is returned. The generated audio is inlined in `candidates[].content.parts[]`.
+`200` la requête a réussi et du JSON est renvoyé. L'audio généré est inclus en ligne dans `candidates[].content.parts[]`.
 
-### Request example
+### Exemple de requête
 
 ```bash
 curl -X POST "https://uter.ai/v1beta/models/gemini-2.5-flash-preview-tts:generateContent" \
@@ -68,7 +68,7 @@ curl -X POST "https://uter.ai/v1beta/models/gemini-2.5-flash-preview-tts:generat
   }'
 ```
 
-### Response example
+### Exemple de réponse
 
 ```json
 {
@@ -92,4 +92,4 @@ curl -X POST "https://uter.ai/v1beta/models/gemini-2.5-flash-preview-tts:generat
 }
 ```
 
-> Tip: the audio is inlined as base64 in `inlineData.data`; decode it according to `inlineData.mimeType` to play. Billing is based on input tokens — the synthesized audio is not billed as extra tokens.
+> Astuce : l'audio est inclus en base64 dans `inlineData.data` ; décodez-le selon `inlineData.mimeType` pour le lire. La facturation est basée sur les tokens d'entrée — l'audio synthétisé n'est pas facturé en tokens supplémentaires.

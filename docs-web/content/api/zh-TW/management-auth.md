@@ -1,40 +1,40 @@
-# Authentication System Description (Auth)
+# 鑑權體系說明（Auth）
 
-## Description
+## 說明
 
-Backend management interfaces adopt a multi-level authentication mechanism, commonly: **Public**, **User**, **Admin**, **Root**.
+後臺管理介面採用多級鑑權機制，常見為：**公開**、**使用者**、**管理員**、**Root**。
 
-## Authentication Methods (Choose One)
+## 認證方式（二選一）
 
 ### Session
 
-Obtain Session via the login interface:
+透過登入介面獲取 Session：
 
 - `POST /api/user/login`
 
-### Access Token (Recommended)
+### Access Token（推薦）
 
-Carry in the request header:
+在請求頭中攜帶：
 
 ```text
 Authorization: Bearer {token}
 ```
 
-Tokens can be generated in "Personal Settings - Security Settings - System Access Tokens".
+Token 可在「個人設定 - 安全設定 - 系統訪問令牌」中生成。
 
-## Required Request Headers
+## 必需請求頭
 
-Some interfaces require carrying a user identification request header:
+部分介面要求攜帶使用者標識請求頭：
 
 ```text
 Uter-User: {user_id}
 ```
 
-Where `{user_id}` must match the currently logged-in user.
+其中 `{user_id}` 必須與當前登入使用者匹配。
 
-## Permission Levels
+## 許可權級別
 
-- **Public**: No authentication required
-- **User**: Requires login or Access Token
-- **Admin**: Requires administrator privileges
-- **Root**: Highest privilege
+- **公開（Public）**：無需鑑權
+- **使用者（User）**：需要登入或 Access Token
+- **管理員（Admin）**：需要管理員許可權
+- **Root**：最高許可權

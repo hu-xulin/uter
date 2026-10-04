@@ -1,88 +1,88 @@
 # sora
 
-## Create Video 
+## Создание видео
 
-OpenAI 兼容的视频生成接口。
+Интерфейс генерации видео, совместимый с OpenAI.
 
-参考文档: https://platform.openai.com/docs/api-reference/videos/create
+Справочная документация: https://platform.openai.com/docs/api-reference/videos/create
 
 `POST` `/v1/videos`
 
-### 请求体（`multipart/form-data`）
+### Тело запроса (`multipart/form-data`)
 
-| 字段 | 类型 | 必填 | 说明 |
+| Поле | Тип | Обязательно | Описание |
 |---|---|---|---|
-| `model` | string | 否 | 模型/风格 ID |
-| `prompt` | string | 否 | 文本描述提示词 |
-| `image` | string | 否 | 图片输入 (URL 或 Base64) |
-| `duration` | number | 否 | 视频时长（秒） |
-| `width` | integer | 否 | 视频宽度 |
-| `height` | integer | 否 | 视频高度 |
-| `fps` | integer | 否 | 视频帧率 |
-| `seed` | integer | 否 | 随机种子 |
-| `n` | integer | 否 | 生成视频数量 |
-| `response_format` | string | 否 | 响应格式 |
-| `user` | string | 否 | 用户标识 |
-| `metadata` | object | 否 | 扩展参数 (如 negative_prompt, style, quality_level 等) |
+| `model` | string | нет | Идентификатор модели/стиля |
+| `prompt` | string | нет | Текстовое описание (подсказка) |
+| `image` | string | нет | Входное изображение (URL или Base64) |
+| `duration` | number | нет | Длительность видео (в секундах) |
+| `width` | integer | нет | Ширина видео |
+| `height` | integer | нет | Высота видео |
+| `fps` | integer | нет | Частота кадров видео |
+| `seed` | integer | нет | Случайное зерно |
+| `n` | integer | нет | Количество генерируемых видео |
+| `response_format` | string | нет | Формат ответа |
+| `user` | string | нет | Идентификатор пользователя |
+| `metadata` | object | нет | Дополнительные параметры (например, negative_prompt, style, quality_level и др.) |
 
-### 响应
+### Ответ
 
-| 状态码 | 说明 |
+| Код статуса | Описание |
 |---|---|
-| `200` | 成功创建视频任务 |
-| `400` | 请求参数错误 |
+| `200` | Задача видео успешно создана |
+| `400` | Ошибка параметров запроса |
 
-#### `200` 响应字段
+#### Поля ответа `200`
 
-| 字段 | 类型 | 说明 |
+| Поле | Тип | Описание |
 |---|---|---|
-| `id` | string | 视频 ID |
-| `object` | string | 对象类型 |
-| `model` | string | 使用的模型 |
-| `status` | string | 任务状态 |
-| `progress` | integer | 进度百分比 |
-| `created_at` | integer | 创建时间戳 |
-| `seconds` | string | 视频时长 |
-| `completed_at` | integer | 完成时间戳 |
-| `expires_at` | integer | 过期时间戳 |
-| `size` | string | 视频尺寸 |
-| `error.message` | string | 错误信息 |
-| `error.code` | string | 错误码 |
-| `metadata` | object | 额外元数据 |
+| `id` | string | Идентификатор видео |
+| `object` | string | Тип объекта |
+| `model` | string | Использованная модель |
+| `status` | string | Состояние задачи |
+| `progress` | integer | Прогресс в процентах |
+| `created_at` | integer | Временная метка создания |
+| `seconds` | string | Длительность видео |
+| `completed_at` | integer | Временная метка завершения |
+| `expires_at` | integer | Временная метка истечения срока |
+| `size` | string | Размер видео |
+| `error.message` | string | Текст ошибки |
+| `error.code` | string | Код ошибки |
+| `metadata` | object | Дополнительные метаданные |
 
-#### `400` 响应字段
+#### Поля ответа `400`
 
-| 字段 | 类型 | 说明 |
+| Поле | Тип | Описание |
 |---|---|---|
-| `error.message` | string | 错误信息 |
-| `error.type` | string | 错误类型 |
-| `error.param` | string | 相关参数 |
-| `error.code` | string | 错误代码 |
+| `error.message` | string | Текст ошибки |
+| `error.type` | string | Тип ошибки |
+| `error.param` | string | Связанный параметр |
+| `error.code` | string | Код ошибки |
 
-## Get Video Task Status 
+## Получение состояния видеозадачи
 
-OpenAI 兼容的视频任务状态查询接口。
+Интерфейс запроса состояния видеозадачи, совместимый с OpenAI.
 
-返回视频任务的详细状态信息。
+Возвращает подробную информацию о состоянии видеозадачи.
 
 `GET` `/v1/videos/{task_id}`
 
-### 请求参数
+### Параметры запроса
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| Параметр | Расположение | Тип | Обязательно | Описание |
 |---|---|---|---|---|
-| `task_id` | path | string | 是 | 视频任务 ID |
+| `task_id` | path | string | да | Идентификатор видеозадачи |
 
-### 响应
+### Ответ
 
-| 状态码 | 说明 |
+| Код статуса | Описание |
 |---|---|
-| `200` | 成功获取视频任务状态 |
-| `404` | 任务不存在 |
+| `200` | Состояние видеозадачи успешно получено |
+| `404` | Задача не существует |
 
-#### `200` 响应字段
+#### Поля ответа `200`
 
-| 字段 | 类型 | 说明 |
+| Поле | Тип | Описание |
 |---|---|---|
 | `id` | string | — |
 | `object` | string | — |
@@ -92,41 +92,41 @@ OpenAI 兼容的视频任务状态查询接口。
 | `created_at` | integer | — |
 | `seconds` | string | — |
 
-#### `404` 响应字段
+#### Поля ответа `404`
 
-| 字段 | 类型 | 说明 |
+| Поле | Тип | Описание |
 |---|---|---|
-| `error.message` | string | 错误信息 |
-| `error.type` | string | 错误类型 |
-| `error.param` | string | 相关参数 |
-| `error.code` | string | 错误代码 |
+| `error.message` | string | Текст ошибки |
+| `error.type` | string | Тип ошибки |
+| `error.param` | string | Связанный параметр |
+| `error.code` | string | Код ошибки |
 
-## Get Video Content
+## Получение содержимого видео
 
-获取已完成视频任务的视频文件内容。
+Получает содержимое видеофайла завершённой видеозадачи.
 
-此接口会代理返回视频文件流。
+Этот интерфейс проксирует и возвращает поток видеофайла.
 
 `GET` `/v1/videos/{task_id}/content`
 
-### 请求参数
+### Параметры запроса
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| Параметр | Расположение | Тип | Обязательно | Описание |
 |---|---|---|---|---|
-| `task_id` | path | string | 是 | 视频任务 ID |
+| `task_id` | path | string | да | Идентификатор видеозадачи |
 
-### 响应
+### Ответ
 
-| 状态码 | 说明 |
+| Код статуса | Описание |
 |---|---|
-| `200` | 成功获取视频内容 |
-| `404` | 视频不存在或未完成 |
+| `200` | Содержимое видео успешно получено |
+| `404` | Видео не существует или не завершено |
 
-#### `404` 响应字段
+#### Поля ответа `404`
 
-| 字段 | 类型 | 说明 |
+| Поле | Тип | Описание |
 |---|---|---|
-| `error.message` | string | 错误信息 |
-| `error.type` | string | 错误类型 |
-| `error.param` | string | 相关参数 |
-| `error.code` | string | 错误代码 |
+| `error.message` | string | Текст ошибки |
+| `error.type` | string | Тип ошибки |
+| `error.param` | string | Связанный параметр |
+| `error.code` | string | Код ошибки |

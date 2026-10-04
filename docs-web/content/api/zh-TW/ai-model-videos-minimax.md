@@ -1,167 +1,167 @@
-# MiniMax Format
+# MiniMax格式
 
-MiniMax H3 (`MiniMax-H3`) video generation: call MiniMax H3 through an asynchronous task API, supporting text-to-video, image-to-video and reference-to-video, billed precisely against upstream usage.
+MiniMax H3（`MiniMax-H3`）影片生成：透過非同步任務介面呼叫 MiniMax H3，支援文生影片、圖生影片、參考生影片，並按上游真實用量精確計費。
 
-## Model and Capabilities
+## 模型與能力
 
-There is a single model name, `MiniMax-H3`. **The generation mode is decided automatically by which media inputs the request carries:**
+只有一個模型名：`MiniMax-H3`。**生成模式由請求中帶了什麼媒體輸入自動決定**：
 
-| Mode | Trigger | Media input |
+| 生成模式 | 觸發條件 | 媒體輸入 |
 |---|---|---|
-| Text-to-video (t2v) | Only `prompt` | None |
-| Image-to-video (i2v) | A first-frame image (optional last-frame image) | `input_reference` / `images` |
-| Reference-to-video (r2v) | Reference image / video / audio | Top-level `media[]` array |
+| 文生影片（t2v） | 只有 `prompt` | 無 |
+| 圖生影片（i2v） | 傳入首幀圖（可選尾幀圖） | `input_reference` / `images` |
+| 參考生影片（r2v） | 傳入參考圖 / 參考影片 / 參考音訊 | 頂層 `media[]` 陣列 |
 
-In every mode, `prompt` is **always required**.
+無論哪種模式，`prompt`（文字提示詞）**始終必填**。
 
-## Create Video
+## 建立影片
 
 `POST` `/v1/video/generations`
 
-### Request Headers
+### 請求頭
 
-| Header | Required | Description |
+| Header | 必填 | 說明 |
 |---|---|---|
-| `Authorization` | Yes | `Bearer sk-your-api-key` |
-| `Content-Type` | Yes | `application/json` |
+| `Authorization` | 是 | `Bearer sk-你的APIKey` |
+| `Content-Type` | 是 | `application/json` |
 
-### Request Body (`application/json`)
+### 請求體（`application/json`）
 
-| Field | Type | Required | Description |
+| 欄位 | 型別 | 必填 | 說明 |
 |---|---|---|---|
-| `model` | string | Yes | Fixed to `MiniMax-H3` |
-| `prompt` | string | Yes | Text prompt |
-| `resolution` | string | No | Resolution; currently only `2K` (default `2K`) |
-| `duration` | int | No | Video length in seconds, `4`–`15`, default `6` |
-| `ratio` | string | No | Aspect ratio: `16:9` / `9:16` / `1:1` / `adaptive`. Defaults to `16:9` for t2v and `adaptive` (follows the first frame) for i2v |
-| `input_reference` | string | No | i2v first-frame image URL (public, or base64) |
-| `images` | string[] | No | i2v image array: the 1st is the first frame, the 2nd is the last frame |
-| `media` | object[] | No | Structured media input for reference-to-video, see below |
+| `model` | string | 是 | 固定為 `MiniMax-H3` |
+| `prompt` | string | 是 | 文字提示詞 |
+| `resolution` | string | 否 | 解析度，目前僅 `2K`（預設 `2K`） |
+| `duration` | int | 否 | 生成影片時長（秒），取值 `4 ~ 15`，預設 `6` |
+| `ratio` | string | 否 | 寬高比：`16:9` / `9:16` / `1:1` / `adaptive`。文生影片預設 `16:9`；圖生影片預設 `adaptive`（跟隨首幀圖） |
+| `input_reference` | string | 否 | 圖生影片首幀圖 URL（公網可訪問 / base64） |
+| `images` | string[] | 否 | 圖生影片影象陣列：第 1 張作首幀、第 2 張作尾幀 |
+| `media` | object[] | 否 | 參考生影片結構化媒體輸入，見下 |
 
-### `media[]` Elements
+### `media[]` 元素
 
-Used for reference-to-video (r2v) to specify each reference asset's role precisely:
+用於參考生影片（r2v），精確指定每個參考素材的角色：
 
-| `type` | Role | Purpose |
+| `type` | 對映角色 | 用途 |
 |---|---|---|
-| `reference_image` | Reference image | Reference picture(s) |
-| `reference_video` | Reference video | Reference video (its billable duration counts toward total seconds) |
-| `reference_audio` | Reference audio | Reference audio |
-| `first_frame` / `last_frame` | First / last frame | i2v first / last frame images |
+| `reference_image` | 參考圖 | 參考圖片（可多張） |
+| `reference_video` | 參考影片 | 參考影片（其計費時長計入總秒數） |
+| `reference_audio` | 參考音訊 | 參考音訊 |
+| `first_frame` / `last_frame` | 首幀 / 尾幀 | 圖生影片的首 / 尾幀圖 |
 
-When structured `media` is omitted, Uter infers assets from `images` / `input_reference` by extension and order: video → reference video, audio → reference audio, 1st image → first frame, 2nd image → last frame. Use `media[]` when you need precise role control.
+未傳結構化 `media` 時，優特智慧會從 `images` / `input_reference` 按副檔名與順序自動推斷：影片 → 參考影片、音訊 → 參考音訊、第 1 張圖 → 首幀、第 2 張圖 → 尾幀。需要精確控制角色時請使用 `media[]`。
 
-> Reference audio (`reference_audio`) is currently limited by upstream support: in testing the upstream returns task failure (Uter refunds in full automatically). Text-to-video, image-to-video (first frame / first+last frame) and reference image/video generation all work normally.
+> 參考音訊（`reference_audio`）目前受上游支援限制：實測上游會返回任務失敗（優特智慧自動全額退款）。文生影片、圖生影片（首幀 / 首+尾幀）、參考圖 / 參考影片生影片均可正常使用。
 
-### Response
+### 響應
 
-| Status | Description |
+| 狀態碼 | 說明 |
 |---|---|
-| `200` | Video task created successfully |
-| `400` | Invalid request parameters |
+| `200` | 成功建立影片任務 |
+| `400` | 請求引數錯誤 |
 
-#### `200` Response Fields
+#### `200` 響應欄位
 
-| Field | Type | Description |
+| 欄位 | 型別 | 說明 |
 |---|---|---|
-| `id` / `task_id` | string | Public task ID (`task_` prefix) used for subsequent queries |
-| `object` | string | Object type (`video`) |
-| `model` | string | Model used |
-| `status` | string | Task status (`queued` right after submission) |
-| `progress` | integer | Progress percentage |
-| `created_at` | integer | Creation timestamp |
+| `id` / `task_id` | string | 公開任務 ID（`task_` 字首），用於後續查詢 |
+| `object` | string | 物件型別（`video`） |
+| `model` | string | 使用的模型 |
+| `status` | string | 任務狀態（提交後為 `queued`） |
+| `progress` | integer | 進度百分比 |
+| `created_at` | integer | 建立時間戳 |
 
-> `id` / `task_id` is generated by Uter and is not the upstream MiniMax task_id.
+> `id` / `task_id` 由優特智慧生成，不等於上游 MiniMax 的 task_id。
 
-## Get Video Task Status
+## 獲取影片任務狀態
 
 `GET` `/v1/video/generations/{task_id}`
 
-The response uses Uter's unified `{code, message, data}` envelope.
+響應採用優特智慧統一的 `{code, message, data}` 包裝格式。
 
-### Request Parameters
+### 請求引數
 
-| Name | In | Type | Required | Description |
+| 引數名 | 位置 | 型別 | 必填 | 說明 |
 |---|---|---|---|---|
-| `task_id` | path | string | Yes | Video task ID |
+| `task_id` | path | string | 是 | 影片任務 ID |
 
-### Response
+### 響應
 
-| Status | Description |
+| 狀態碼 | 說明 |
 |---|---|
-| `200` | Task status retrieved successfully |
-| `404` | Task not found |
+| `200` | 成功獲取影片任務狀態 |
+| `404` | 任務不存在 |
 
-#### `200` Response Fields (`data`)
+#### `200` 響應欄位（`data`）
 
-| Field | Type | Description |
+| 欄位 | 型別 | 說明 |
 |---|---|---|
-| `data.task_id` | string | Public task ID |
-| `data.status` | string | Task status: `QUEUED` / `IN_PROGRESS` / `SUCCESS` / `FAILURE` |
-| `data.result_url` | string | Video result URL (non-empty only on `SUCCESS`) |
-| `data.quota` | int | Final quota charged (already settled against actual usage) |
-| `data.data.task.usage` | object | Precise upstream usage, the billing basis (`total_seconds` / `input_seconds` / `output_seconds` / `input_image_count`) |
+| `data.task_id` | string | 公開任務 ID |
+| `data.status` | string | 任務狀態：`QUEUED` / `IN_PROGRESS` / `SUCCESS` / `FAILURE` |
+| `data.result_url` | string | 影片結果 URL（僅 `SUCCESS` 時非空） |
+| `data.quota` | int | 本次任務最終扣費 quota（完成後已按真實用量結算） |
+| `data.data.task.usage` | object | 上游返回的精確用量，即計費依據（`total_seconds` / `input_seconds` / `output_seconds` / `input_image_count`） |
 
-#### Status Enum
+#### 狀態列舉
 
-| Unified status | MiniMax status | Description |
+| 統一狀態 | 對應 MiniMax 狀態 | 說明 |
 |---|---|---|
-| `QUEUED` | `queued` / `preparing` | Queued |
-| `IN_PROGRESS` | `running` | Generating |
-| `SUCCESS` | `succeeded` | Completed; `result_url` holds the video |
-| `FAILURE` | `failed` / `cancelled` / `expired` | Failed; `fail_reason` explains why |
+| `QUEUED` | `queued` / `preparing` | 已進入佇列 |
+| `IN_PROGRESS` | `running` | 生成中 |
+| `SUCCESS` | `succeeded` | 已完成，`result_url` 為影片地址 |
+| `FAILURE` | `failed` / `cancelled` / `expired` | 生成失敗，`fail_reason` 為失敗原因 |
 
-## Billing
+## 計費說明
 
-MiniMax H3 bills against the **actual upstream usage**:
+MiniMax H3 按上游返回的**真實用量**精確計費：
 
 ```
-cost(USD) = total_billed_seconds × resolution_price + billable_reference_images × $0.04
-where: total_billed_seconds = input_reference_video_seconds + generated_video_seconds
+费用(USD) = 总计费秒数 × 分辨率单价 + 计费参考图数 × $0.04
+其中：总计费秒数 = 输入参考视频计费时长 + 生成视频时长
 ```
 
-| Resolution | Price |
+| 解析度 | 單價 |
 |---|---|
-| `2K` | $0.13 / second |
-| `768P` | $0.09 / second (not yet available) |
+| `2K` | $0.13 / 秒 |
+| `768P` | $0.09 / 秒（暫未開放呼叫） |
 
-Key points:
+要點：
 
-- **Input reference video is billed too**: for r2v, a reference video's billable duration is counted at the output resolution's price.
-- **Reference images are billed separately**: $0.04 per billable reference image.
-- **Pre-charged on submit, settled on completion**: a provisional charge is taken at submit time, then Uter recomputes precisely from the upstream `usage` on success, refunding or charging the difference.
+- **輸入參考影片也計費**：r2v 傳入參考影片時，其計費時長按輸出影片的解析度單價計入總秒數。
+- **參考圖另計**：每張計費參考圖 $0.04。
+- **提交時預扣、完成時按真實用量結算**：提交任務時按輸出時長預扣一筆；任務成功後優特智慧用上游返回的 `usage` 精確重算，多退少補。
 
-## Full Example
+## 完整呼叫示例
 
 ```bash
-# Step 1: submit the task
+# Step 1: 提交任务
 curl -X POST https://uter.ai/v1/video/generations \
-  -H "Authorization: Bearer sk-your-api-key" \
+  -H "Authorization: Bearer sk-你的APIKey" \
   -H "Content-Type: application/json" \
   -d '{
     "model": "MiniMax-H3",
-    "prompt": "A cat dozing in the sunlight, fur gently swaying in the breeze",
+    "prompt": "一只猫在阳光下打盹，毛毛随风轻轻摇曳",
     "resolution": "2K",
     "duration": 6,
     "ratio": "16:9"
   }'
 
-# Step 2: poll (every 10~15 seconds)
+# Step 2: 轮询（建议间隔 10~15 秒）
 curl https://uter.ai/v1/video/generations/task_xxx \
-  -H "Authorization: Bearer sk-your-api-key"
+  -H "Authorization: Bearer sk-你的APIKey"
 
-# Step 3: once data.status == "SUCCESS", download from data.result_url
+# Step 3: data.status == "SUCCESS" 后，从 data.result_url 下载视频
 ```
 
-Reference-to-video using the top-level `media[]` array:
+參考生影片使用頂層 `media[]` 傳入參考素材：
 
 ```bash
 curl -X POST https://uter.ai/v1/video/generations \
-  -H "Authorization: Bearer sk-your-api-key" \
+  -H "Authorization: Bearer sk-你的APIKey" \
   -H "Content-Type: application/json" \
   -d '{
     "model": "MiniMax-H3",
-    "prompt": "Generate a coherent video from the given assets",
+    "prompt": "参考给定素材生成一段连贯的视频",
     "resolution": "2K",
     "duration": 6,
     "media": [
@@ -171,11 +171,11 @@ curl -X POST https://uter.ai/v1/video/generations \
   }'
 ```
 
-## Status Codes and Errors
+## 狀態碼與錯誤
 
-| Case | Description |
+| 場景 | 說明 |
 |---|---|
-| Missing `prompt` | `400`, `prompt is required` (rejected before submission, no charge) |
-| `401` / `403` | API key invalid / not allowed to access this model |
-| `402` | Insufficient balance (`insufficient user quota`); top up in the Uter console |
-| Task `FAILURE` | Upstream generation failed, see `fail_reason`; Uter refunds automatically |
+| 未傳 `prompt` | `400`，`prompt is required`（提交前攔截，不扣費） |
+| `401` / `403` | API Key 無效 / 無權訪問此模型 |
+| `402` | 餘額不足（`insufficient user quota`），請前往優特智慧控制檯充值 |
+| 任務 `FAILURE` | 上游生成失敗，見 `fail_reason`；優特智慧會自動退款 |

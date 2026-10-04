@@ -1,45 +1,45 @@
-# AstrBot - Agent Chatbot
+# AstrBot — агент-чатбот
 
-> AstrBot is an open-source, all-in-one Agent chatbot platform that seamlessly integrates large language model capabilities into mainstream instant messaging software such as QQ, Feishu, DingTalk, and WeChat Work, creating a reliable and scalable conversational AI infrastructure for individuals, developers, and teams. Whether it's a personal AI companion, intelligent customer service, automation assistant, or enterprise knowledge base, AstrBot can quickly build production-ready AI applications within your instant messaging platform's workflow.
+> AstrBot — это открытая универсальная платформа агент-чатботов, которая бесшовно интегрирует возможности больших языковых моделей в популярное ПО мгновенного обмена сообщениями, такое как QQ, Feishu, DingTalk и WeChat Work, создавая надёжную и масштабируемую инфраструктуру разговорного ИИ для частных лиц, разработчиков и команд. Будь то личный ИИ-помощник, интеллектуальная служба поддержки, помощник по автоматизации или корпоративная база знаний — AstrBot позволяет быстро создавать готовые к эксплуатации ИИ-приложения в рамках рабочего процесса вашей платформы обмена сообщениями.
 
-- Official Website: [https://astrbot.app](https://astrbot.app)
-- Official Documentation: [https://docs.astrbot.app](https://docs.astrbot.app)
-- Project Homepage: [https://github.com/astrbotdevs/astrbot](https://github.com/astrbotdevs/astrbot)
+- Официальный сайт: [https://astrbot.app](https://astrbot.app)
+- Официальная документация: [https://docs.astrbot.app](https://docs.astrbot.app)
+- Страница проекта: [https://github.com/astrbotdevs/astrbot](https://github.com/astrbotdevs/astrbot)
 
-## Uter Integration Method
+## Способ интеграции с Uter
 
-AstrBot supports integrating Uter as a model provider, allowing users to access and utilize various AI model services through Uter.
+AstrBot поддерживает интеграцию Uter в качестве провайдера моделей, позволяя пользователям получать доступ и использовать различные сервисы ИИ-моделей через Uter.
 
-### Configuration Steps
+### Шаги настройки
 
-#### Obtain Uter API Key
+#### Получение API-ключа Uter
 
-After registering and logging into Uter, click 'Console' in the top navigation bar, then click 'Token Management', and then click the 'Add Token' button to create a uter Key. Select the appropriate permissions and click 'Create'.
+После регистрации и входа в Uter нажмите «Консоль» в верхней панели навигации, затем нажмите «Управление токенами», а затем кнопку «Добавить токен», чтобы создать ключ Uter. Выберите соответствующие разрешения и нажмите «Создать».
 
-![create-api-key](/apps-assets/astrbot/image.webp)
+![создание-api-ключа](/apps-assets/astrbot/image.webp)
 
-After successful creation, click the 'Copy Key' button to copy the generated API Key.
+После успешного создания нажмите кнопку «Копировать ключ», чтобы скопировать сгенерированный API-ключ.
 
-![copy-api-key](/apps-assets/astrbot/image-1.webp)
+![копирование-api-ключа](/apps-assets/astrbot/image-1.webp)
 
-#### Configure Uter Service Provider in AstrBot
+#### Настройка провайдера услуг Uter в AstrBot
 
-Open the AstrBot administration panel, go to the 'Model Providers' page, then click the 'Add Model Provider' button.
+Откройте панель администрирования AstrBot, перейдите на страницу «Провайдеры моделей», затем нажмите кнопку «Добавить провайдера моделей».
 
-Uter perfectly supports OpenAI Chat Completion and Responses interfaces. Click 'OpenAI' to enter the OpenAI provider configuration page.
+Uter полностью поддерживает интерфейсы OpenAI Chat Completion и Responses. Нажмите «OpenAI», чтобы перейти на страницу настройки провайдера OpenAI.
 
-In the pop-up dialog, set the API Base URL to the Uter interface address. Please use your own deployed Uter, or ensure that the service provider has legitimate upstream authorization and compliance obligations for the Uter service. If you have deployed Uter locally, fill in the local address, for example, `http://localhost:3000/v1`. Do not connect API addresses or keys from unknown sources to a production environment.
+В появившемся диалоговом окне установите для «API Base URL» адрес интерфейса Uter. Используйте свой собственный развёрнутый экземпляр Uter или убедитесь, что поставщик услуг имеет легитимную апстрим-авторизацию и обязательства по соответствию для сервиса Uter. Если вы развернули Uter локально, укажите локальный адрес, например `http://localhost:3000/v1`. Не подключайте адреса API или ключи из неизвестных источников к производственной среде.
 
-Then, enter the API Key into the 'API Key' field and click the 'Save' button.
+Затем введите API-ключ в поле «API Key» и нажмите кнопку «Сохранить».
 
-![astrbot-provider-config](/apps-assets/astrbot/image-2.webp)
+![настройка-провайдера-astrbot](/apps-assets/astrbot/image-2.webp)
 
-Then click 'Save' to complete the Uter provider configuration.
+Затем нажмите «Сохранить», чтобы завершить настройку провайдера Uter.
 
-#### Apply Service Provider
+#### Применение провайдера услуг
 
-Go to the 'Configuration File' page, find the 'Model' section, change the 'Default Chat Model' to the Uter provider you just created, and click the 'Save' button.
+Перейдите на страницу «Конфигурационный файл», найдите раздел «Model», измените «Default Chat Model» на созданный вами провайдер Uter и нажмите кнопку «Сохранить».
 
-![apply](/apps-assets/astrbot/image-3.webp)
+![применение](/apps-assets/astrbot/image-3.webp)
 
-At this point, you have successfully configured Uter as AstrBot's model provider. Now, you can access and use various AI model services provided by Uter through AstrBot.
+На этом этапе вы успешно настроили Uter в качестве провайдера моделей AstrBot. Теперь вы можете получать доступ и использовать различные сервисы ИИ-моделей, предоставляемые Uter, через AstrBot.

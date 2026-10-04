@@ -1,71 +1,76 @@
-# CC Switch - All-in-One AI CLI Management Tool
+# CC Switch - Công cụ quản lý AI CLI tất cả trong một
 
-> **Chat Settings Option**
+> **Tùy chọn cài đặt trò chuyện**
 >
-> In the Uter console under System Settings -> Chat Settings, you can add the following shortcut to enable one-click fill for CC Switch from the token management page:
+> Trong bảng điều khiển Uter tại System Settings -> Chat Settings, bạn có thể thêm
+>   lối tắt sau để bật điền một cú nhấp cho CC Switch từ trang quản lý token:
 
     ```json
     { "CC Switch": "ccswitch" }
     ```
 
-> 🔀 CC Switch is an open-source, cross-platform all-in-one AI CLI management tool. It supports
->   one-click provider switching for Claude Code, Codex and Gemini CLI, unified MCP server management,
->   system prompts management, and Skills extension management — letting you freely switch between
->   multiple AI coding assistants without manually editing config files.
+> 🔀 CC Switch là một công cụ quản lý AI CLI đa nền tảng, mã nguồn mở, tất cả trong một. Nó hỗ trợ
+>   chuyển đổi nhà cung cấp chỉ với một cú nhấp cho Claude Code, Codex và Gemini CLI, quản lý máy chủ
+>   MCP thống nhất, quản lý lời nhắc hệ thống và quản lý mở rộng Skills — cho phép bạn tự do chuyển
+>   đổi giữa nhiều trợ lý mã hóa AI mà không cần chỉnh sửa thủ công tệp cấu hình.
 
-- GitHub Repository: [https://github.com/farion1231/cc-switch](https://github.com/farion1231/cc-switch)
-- Download: [GitHub Releases](https://github.com/farion1231/cc-switch/releases)
+- Kho GitHub: [https://github.com/farion1231/cc-switch](https://github.com/farion1231/cc-switch)
+- Tải xuống: [GitHub Releases](https://github.com/farion1231/cc-switch/releases)
 
-## Key Features
+## Tính năng chính
 
-### 🔌 Provider Management
-- **One-click switching** — Switch between Claude Code, Codex, and Gemini API configs instantly, no manual env vars or config file editing
-- **Multi-endpoint support** — Configure multiple endpoints per provider with API key management and latency speed tests
-- **4-tier model config** — Granular model selection across Haiku / Sonnet / Opus / Custom tiers
+### 🔌 Quản lý nhà cung cấp
 
-### 🛠️ MCP Server Management
-- **Unified cross-app management** — Manage MCP servers for Claude / Codex / Gemini from a single panel
-- **Three transport types** — Supports stdio, HTTP, and SSE (Server-Sent Events)
-- **Auto sync** — Unified import/export with bidirectional synchronization
+- **Chuyển đổi một cú nhấp** — Chuyển đổi tức thì giữa cấu hình API của Claude Code, Codex và Gemini, không cần biến môi trường hay chỉnh sửa tệp cấu hình thủ công
+- **Hỗ trợ đa điểm cuối** — Cấu hình nhiều điểm cuối cho mỗi nhà cung cấp với quản lý khóa API và kiểm tra tốc độ độ trễ
+- **Cấu hình mô hình 4 cấp** — Lựa chọn mô hình chi tiết qua các cấp Haiku / Sonnet / Opus / Tùy chỉnh
 
-### 💬 Prompts Management
-- **Multi-preset system prompts** — Unlimited presets with quick switching
-- **Cross-app support** — Claude (`CLAUDE.md`), Codex (`AGENTS.md`), Gemini (`GEMINI.md`)
-- **Markdown editor** — CodeMirror 6 with live preview
+### 🛠️ Quản lý máy chủ MCP
 
-### 🌐 Multi-platform Support
-- **Desktop app** — Native installers for Windows, macOS, and Linux
-- **Web version** — Browser-accessible interface for headless servers / SSH environments
-- **CLI version** — Both interactive menu-driven and command-line modes
+- **Quản lý chéo ứng dụng thống nhất** — Quản lý máy chủ MCP cho Claude / Codex / Gemini từ một bảng duy nhất
+- **Ba loại truyền tải** — Hỗ trợ stdio, HTTP và SSE (Server-Sent Events)
+- **Đồng bộ tự động** — Nhập/xuất thống nhất với đồng bộ hóa hai chiều
 
-## Uter Integration
+### 💬 Quản lý lời nhắc
 
-CC Switch supports the `ccswitch://` Deep Link protocol, allowing one-click provider config import from the Uter token management page.
+- **Nhiều lời nhắc hệ thống cài sẵn** — Không giới hạn cài sẵn với chuyển đổi nhanh
+- **Hỗ trợ chéo ứng dụng** — Claude (`CLAUDE.md`), Codex (`AGENTS.md`), Gemini (`GEMINI.md`)
+- **Trình soạn thảo Markdown** — CodeMirror 6 với xem trước trực tiếp
 
-### Configuration Steps
+### 🌐 Hỗ trợ đa nền tảng
 
-1. **On the Uter token management page, click the dropdown menu for the corresponding token**
-   Select the **CC Switch** option from the menu. The system will automatically launch CC Switch and open the configuration dialog.
+- **Ứng dụng máy tính để bàn** — Trình cài đặt gốc cho Windows, macOS và Linux
+- **Phiên bản web** — Giao diện truy cập qua trình duyệt cho máy chủ không giao diện / môi trường SSH
+- **Phiên bản CLI** — Cả chế độ menu tương tác và dòng lệnh
 
-2. **Complete the configuration in the dialog**
-   ![CC Switch Configuration Dialog](/apps-assets/cc_switch/fill_dialog.webp)
+## Tích hợp Uter
 
-   Field descriptions:
-   - **Application**: Switch app type at the top — **Claude** / **Codex** / **Gemini**, select the target application as needed
-   - **Name**: Enter a name for this config (e.g. `My Claude`) to easily identify and switch in CC Switch later
-   - **Main Model** (required) — The primary model to use by default
-   - **Haiku Model** — Lightweight, fast model
-   - **Sonnet Model** — Balanced model
-   - **Opus Model** — Most capable model
+CC Switch hỗ trợ giao thức Deep Link `ccswitch://`, cho phép nhập cấu hình nhà cung cấp chỉ với một cú nhấp từ trang quản lý token Uter.
 
-   All models are dropdown selections; unselected fields show "Please select model".
+### Các bước cấu hình
 
-3. **Finish**
-   Click **"Open CC Switch"** to import the config into CC Switch and start using it; click **"Cancel"** to discard.
+1. **Trên trang quản lý token Uter, nhấn menu thả xuống cho token tương ứng**
+   Chọn tùy chọn **CC Switch** từ menu. Hệ thống sẽ tự động khởi chạy CC Switch và mở hộp thoại cấu hình.
 
-## Installation
+2. **Hoàn tất cấu hình trong hộp thoại**
+   ![Hộp thoại cấu hình CC Switch](/apps-assets/cc_switch/fill_dialog.webp)
 
-### macOS (Homebrew recommended)
+   Mô tả các trường:
+   - **Application**: Chuyển loại ứng dụng ở trên cùng — **Claude** / **Codex** / **Gemini**, chọn ứng dụng mục tiêu theo nhu cầu
+   - **Name**: Nhập tên cho cấu hình này (ví dụ `My Claude`) để dễ dàng nhận diện và chuyển đổi trong CC Switch sau này
+   - **Main Model** (bắt buộc) — Mô hình chính được sử dụng mặc định
+   - **Haiku Model** — Mô hình nhẹ, nhanh
+   - **Sonnet Model** — Mô hình cân bằng
+   - **Opus Model** — Mô hình mạnh nhất
+
+   Tất cả mô hình đều là lựa chọn từ menu thả xuống; các trường chưa chọn hiển thị "Please select model".
+
+3. **Hoàn tất**
+   Nhấn **"Open CC Switch"** để nhập cấu hình vào CC Switch và bắt đầu sử dụng; nhấn **"Cancel"** để hủy bỏ.
+
+## Cài đặt
+
+### macOS (Khuyên dùng dùng Homebrew)
 
 ```shell
 brew tap farion1231/ccswitch
@@ -74,19 +79,19 @@ brew install --cask cc-switch
 
 ### Windows
 
-Download the `.msi` installer or portable `.zip` from [Releases](https://github.com/farion1231/cc-switch/releases).
+Tải trình cài đặt `.msi` hoặc tệp `.zip` di động từ [Releases](https://github.com/farion1231/cc-switch/releases).
 
 ### Linux
 
-Download the `.deb` package or `.AppImage` from [Releases](https://github.com/farion1231/cc-switch/releases).
+Tải gói `.deb` hoặc `.AppImage` từ [Releases](https://github.com/farion1231/cc-switch/releases).
 
-ArchLinux users:
+Người dùng ArchLinux:
 
 ```shell
 paru -S cc-switch-bin
 ```
 
-### Web Version (Headless / SSH Servers)
+### Phiên bản Web (Máy chủ không giao diện / SSH)
 
 ```shell
 wget https://github.com/farion1231/cc-switch/releases/latest/download/cc-switch-web-linux-x64.tar.gz
@@ -95,11 +100,11 @@ cd cc-switch-web/
 ./cc-switch-web
 ```
 
-Default port `17666`, access via browser at `http://localhost:17666`.
+Cổng mặc định `17666`, truy cập qua trình duyệt tại `http://localhost:17666`.
 
-## Related Links
+## Liên kết liên quan
 
-- [GitHub Repository](https://github.com/farion1231/cc-switch)
-- [Changelog](https://github.com/farion1231/cc-switch/blob/main/CHANGELOG.md)
-- [Web Version Repository](https://github.com/cp-yu/cc-switch-web)
-- [CLI Version Repository](https://github.com/thomas-jack/cc-switch-cli)
+- [Kho GitHub](https://github.com/farion1231/cc-switch)
+- [Nhật ký thay đổi](https://github.com/farion1231/cc-switch/blob/main/CHANGELOG.md)
+- [Kho phiên bản Web](https://github.com/cp-yu/cc-switch-web)
+- [Kho phiên bản CLI](https://github.com/thomas-jack/cc-switch-cli)

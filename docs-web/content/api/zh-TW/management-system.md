@@ -1,164 +1,164 @@
-# system
+# 系統
 
-## Get About Information
+## 獲取關於資訊
 
-🔓 无需鉴权
+🔓 無需鑑權
 
 `GET` `/api/about`
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |
 
-## Get Home Page Content
+## 獲取首頁內容
 
-🔓 无需鉴权
+🔓 無需鑑權
 
 `GET` `/api/home_page_content`
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |
 
-## Get Model List
+## 獲取模型列表
 
-🔐 需要登录（User权限）
+🔐 需要登入（User許可權）
 
 `GET` `/api/models`
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |
 
-## Get Announcements
+## 獲取公告
 
-🔓 无需鉴权
+🔓 無需鑑權
 
 `GET` `/api/notice`
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |
 
-## Get Pricing Information
+## 獲取定價資訊
 
-🔓 无需鉴权（可选登录）
+🔓 無需鑑權（可選登入）
 
 `GET` `/api/pricing`
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |
 
-## Get Privacy Policy
+## 獲取隱私政策
 
-🔓 无需鉴权
+🔓 無需鑑權
 
 `GET` `/api/privacy-policy`
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |
 
-## Get Ratio Configuration
+## 獲取倍率配置
 
-🔓 无需鉴权
+🔓 無需鑑權
 
 `GET` `/api/ratio_config`
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |
 
-## Get Initialization Status
+## 獲取初始化狀態
 
-🔓 无需鉴权
+🔓 無需鑑權
 
 `GET` `/api/setup`
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |
 
-## Initialize System
+## 初始化系統
 
-🔓 无需鉴权
+🔓 無需鑑權
 
 `POST` `/api/setup`
 
-### 请求体（`application/json`）
+### 請求體（`application/json`）
 
-| 字段 | 类型 | 必填 | 说明 |
+| 欄位 | 型別 | 必填 | 說明 |
 |---|---|---|---|
 | `username` | string | 否 | — |
 | `password` | string | 否 | — |
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |
 
-## Get System Status
+## 獲取系統狀態
 
-🔓 无需鉴权
+🔓 無需鑑權
 
 `GET` `/api/status`
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |
 
-## Test System Status
+## 測試系統狀態
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 需要管理員許可權（Admin）
 
 `GET` `/api/status/test`
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |
 
-## Get Uptime Kuma Status
+## 獲取Uptime Kuma狀態
 
-🔓 无需鉴权
+🔓 無需鑑權
 
 `GET` `/api/uptime/status`
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |
 
-## Get User Agreement
+## 獲取使用者協議
 
-🔓 无需鉴权
+🔓 無需鑑權
 
 `GET` `/api/user-agreement`
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |

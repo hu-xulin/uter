@@ -1,30 +1,30 @@
-# Document Reranking
+# Réordonnancement de documents
 
-## Document Reranking
+## Réordonnancement de documents
 
-根据查询对文档列表进行相关性重排序
+Réordonne une liste de documents par pertinence selon une requête.
 
 `POST` `/v1/rerank`
 
-### 请求体（`application/json`）
+### Corps de la requête (`application/json`)
 
-| 字段 | 类型 | 必填 | 说明 |
+| Champ | Type | Requis | Description |
 |---|---|---|---|
-| `model` | string | 是 | — |
-| `query` | string | 是 | 查询文本 |
-| `documents` | array&lt;string&gt; | 是 | 要重排序的文档列表 |
-| `top_n` | integer | 否 | 返回前 N 个结果 |
-| `return_documents` | boolean | 否 | — |
+| `model` | string | Oui | — |
+| `query` | string | Oui | Texte de requête |
+| `documents` | array&lt;string&gt; | Oui | Liste des documents à réordonner |
+| `top_n` | integer | Non | Renvoie les N premiers résultats |
+| `return_documents` | boolean | Non | — |
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功重排序 |
+| `200` | Réordonnancement réussi |
 
-#### `200` 响应字段
+#### Champs de la réponse `200`
 
-| 字段 | 类型 | 说明 |
+| Champ | Type | Description |
 |---|---|---|
 | `id` | string | — |
 | `results` | array&lt;object&gt; | — |

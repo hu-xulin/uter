@@ -1,124 +1,124 @@
-# fine-tuning
+# 微調（Fine-tuning）
 
-## Cancel Fine-tuning Task (Unimplemented)
+## 取消微調任務 (未實現)
 
-此接口尚未实现
+此介面尚未實現
 
 `POST` `/v1/fine-tunes/{fine_tune_id}/cancel`
 
-### 请求参数
+### 請求引數
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| 引數名 | 位置 | 型別 | 必填 | 說明 |
 |---|---|---|---|---|
 | `fine_tune_id` | path | string | 是 | — |
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
-| `501` | 未实现 |
+| `501` | 未實現 |
 
-#### `501` 响应字段
+#### `501` 響應欄位
 
-| 字段 | 类型 | 说明 |
+| 欄位 | 型別 | 說明 |
 |---|---|---|
-| `error.message` | string | 错误信息 |
-| `error.type` | string | 错误类型 |
-| `error.param` | string | 相关参数 |
-| `error.code` | string | 错误代码 |
+| `error.message` | string | 錯誤資訊 |
+| `error.type` | string | 錯誤型別 |
+| `error.param` | string | 相關引數 |
+| `error.code` | string | 錯誤程式碼 |
 
-## Create Fine-tuning Task (Unimplemented)
+## 建立微調任務 (未實現)
 
-此接口尚未实现
+此介面尚未實現
 
 `POST` `/v1/fine-tunes`
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
-| `501` | 未实现 |
+| `501` | 未實現 |
 
-#### `501` 响应字段
+#### `501` 響應欄位
 
-| 字段 | 类型 | 说明 |
+| 欄位 | 型別 | 說明 |
 |---|---|---|
-| `error.message` | string | 错误信息 |
-| `error.type` | string | 错误类型 |
-| `error.param` | string | 相关参数 |
-| `error.code` | string | 错误代码 |
+| `error.message` | string | 錯誤資訊 |
+| `error.type` | string | 錯誤型別 |
+| `error.param` | string | 相關引數 |
+| `error.code` | string | 錯誤程式碼 |
 
-## Get Fine-tune Job Events (Unimplemented)
+## 獲取微調任務事件 (未實現)
 
-此接口尚未实现
+此介面尚未實現
 
 `GET` `/v1/fine-tunes/{fine_tune_id}/events`
 
-### 请求参数
+### 請求引數
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| 引數名 | 位置 | 型別 | 必填 | 說明 |
 |---|---|---|---|---|
 | `fine_tune_id` | path | string | 是 | — |
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
-| `501` | 未实现 |
+| `501` | 未實現 |
 
-#### `501` 响应字段
+#### `501` 響應欄位
 
-| 字段 | 类型 | 说明 |
+| 欄位 | 型別 | 說明 |
 |---|---|---|
-| `error.message` | string | 错误信息 |
-| `error.type` | string | 错误类型 |
-| `error.param` | string | 相关参数 |
-| `error.code` | string | 错误代码 |
+| `error.message` | string | 錯誤資訊 |
+| `error.type` | string | 錯誤型別 |
+| `error.param` | string | 相關引數 |
+| `error.code` | string | 錯誤程式碼 |
 
-## List Fine-tuning Jobs (Unimplemented)
+## 列出微調任務 (未實現)
 
-此接口尚未实现
+此介面尚未實現
 
 `GET` `/v1/fine-tunes`
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
-| `501` | 未实现 |
+| `501` | 未實現 |
 
-#### `501` 响应字段
+#### `501` 響應欄位
 
-| 字段 | 类型 | 说明 |
+| 欄位 | 型別 | 說明 |
 |---|---|---|
-| `error.message` | string | 错误信息 |
-| `error.type` | string | 错误类型 |
-| `error.param` | string | 相关参数 |
-| `error.code` | string | 错误代码 |
+| `error.message` | string | 錯誤資訊 |
+| `error.type` | string | 錯誤型別 |
+| `error.param` | string | 相關引數 |
+| `error.code` | string | 錯誤程式碼 |
 
-## Get Fine-tuning Job Details (Unimplemented)
+## 獲取微調任務詳情 (未實現)
 
-此接口尚未实现
+此介面尚未實現
 
 `GET` `/v1/fine-tunes/{fine_tune_id}`
 
-### 请求参数
+### 請求引數
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| 引數名 | 位置 | 型別 | 必填 | 說明 |
 |---|---|---|---|---|
 | `fine_tune_id` | path | string | 是 | — |
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
-| `501` | 未实现 |
+| `501` | 未實現 |
 
-#### `501` 响应字段
+#### `501` 響應欄位
 
-| 字段 | 类型 | 说明 |
+| 欄位 | 型別 | 說明 |
 |---|---|---|
-| `error.message` | string | 错误信息 |
-| `error.type` | string | 错误类型 |
-| `error.param` | string | 相关参数 |
-| `error.code` | string | 错误代码 |
+| `error.message` | string | 錯誤資訊 |
+| `error.type` | string | 錯誤型別 |
+| `error.param` | string | 相關引數 |
+| `error.code` | string | 錯誤程式碼 |

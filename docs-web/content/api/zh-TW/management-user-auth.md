@@ -1,117 +1,117 @@
-# user-auth
+# 使用者登陸註冊
 
-## Send Password Reset Email
+## 傳送密碼重置郵件
 
-🔓 无需鉴权
+🔓 無需鑑權
 
 `GET` `/api/reset_password`
 
-### 请求参数
+### 請求引數
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| 引數名 | 位置 | 型別 | 必填 | 說明 |
 |---|---|---|---|---|
 | `email` | query | string | 是 | — |
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |
 
-## Get User Group List
+## 獲取使用者分組列表
 
-🔓 无需鉴权
+🔓 無需鑑權
 
 `GET` `/api/user/groups`
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |
 
-## Two-Factor Authentication Login
+## 兩步驗證登入
 
-🔓 无需鉴权（登录流程）
+🔓 無需鑑權（登入流程）
 
 `POST` `/api/user/login/2fa`
 
-### 请求体（`application/json`）
+### 請求體（`application/json`）
 
-| 字段 | 类型 | 必填 | 说明 |
+| 欄位 | 型別 | 必填 | 說明 |
 |---|---|---|---|
 | `code` | string | 否 | — |
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |
 
-## User Login
+## 使用者登入
 
-🔓 无需鉴权
+🔓 無需鑑權
 
 `POST` `/api/user/login`
 
-### 请求体（`application/json`）
+### 請求體（`application/json`）
 
-| 字段 | 类型 | 必填 | 说明 |
+| 欄位 | 型別 | 必填 | 說明 |
 |---|---|---|---|
 | `username` | string | 否 | — |
 | `password` | string | 否 | — |
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |
 
-## User Logout
+## 使用者登出
 
-🔓 无需鉴权
+🔓 無需鑑權
 
 `GET` `/api/user/logout`
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |
 
-## Start Passkey Login
+## 開始Passkey登入
 
-🔓 无需鉴权
+🔓 無需鑑權
 
 `POST` `/api/user/passkey/login/begin`
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |
 
-## Complete Passkey Login
+## 完成Passkey登入
 
-🔓 无需鉴权
+🔓 無需鑑權
 
 `POST` `/api/user/passkey/login/finish`
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |
 
-## User Registration
+## 使用者註冊
 
-🔓 无需鉴权
+🔓 無需鑑權
 
 `POST` `/api/user/register`
 
-### 请求体（`application/json`）
+### 請求體（`application/json`）
 
-| 字段 | 类型 | 必填 | 说明 |
+| 欄位 | 型別 | 必填 | 說明 |
 |---|---|---|---|
 | `username` | string | 否 | — |
 | `password` | string | 否 | — |
@@ -119,46 +119,46 @@
 | `verification_code` | string | 否 | — |
 | `aff_code` | string | 否 | — |
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |
 
-## Reset Password
+## 重置密碼
 
-🔓 无需鉴权
+🔓 無需鑑權
 
 `POST` `/api/user/reset`
 
-### 请求体（`application/json`）
+### 請求體（`application/json`）
 
-| 字段 | 类型 | 必填 | 说明 |
+| 欄位 | 型別 | 必填 | 說明 |
 |---|---|---|---|
 | `email` | string | 否 | — |
 | `token` | string | 否 | — |
 | `password` | string | 否 | — |
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |
 
-## Send Email Verification Code
+## 傳送郵箱驗證碼
 
-🔓 无需鉴权
+🔓 無需鑑權
 
 `GET` `/api/verification`
 
-### 请求参数
+### 請求引數
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| 引數名 | 位置 | 型別 | 必填 | 說明 |
 |---|---|---|---|---|
 | `email` | query | string | 是 | — |
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |

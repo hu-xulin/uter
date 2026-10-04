@@ -1,34 +1,34 @@
-# Native Gemini Format
+# Định dạng Native của Gemini
 
-## Native Gemini Format
+## Định dạng Native của Gemini
 
-Gemini 音频生成接口。
-可使用gemini-2.5-flash-preview-tts等模型
+Giao diện tạo âm thanh Gemini.
+Có thể sử dụng các mô hình như gemini-2.5-flash-preview-tts.
 
 `POST` `/v1beta/models/{model}:generateContent`
 
-### 请求参数
+### Tham số yêu cầu
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| Tên tham số | Vị trí | Kiểu | Bắt buộc | Mô tả |
 |---|---|---|---|---|
-| `model` | path | string | 是 | 模型名称 |
+| `model` | path | string | Có | Tên mô hình |
 
-### 请求体（`application/json`）
+### Thân yêu cầu (`application/json`)
 
-| 字段 | 类型 | 必填 | 说明 |
+| Trường | Kiểu | Bắt buộc | Mô tả |
 |---|---|---|---|
-| `contents` | array&lt;object&gt; | 是 | — |
-| `generationConfig.responseModalities` | array&lt;string&gt; | 否 | — |
+| `contents` | array&lt;object&gt; | Có | — |
+| `generationConfig.responseModalities` | array&lt;string&gt; | Không | — |
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-#### `200` 响应字段
+#### Trường phản hồi `200`
 
-| 字段 | 类型 | 说明 |
+| Trường | Kiểu | Mô tả |
 |---|---|---|
 | `candidates` | array&lt;object&gt; | — |
 | `usageMetadata.promptTokenCount` | integer | — |

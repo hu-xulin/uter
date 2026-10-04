@@ -1,17 +1,17 @@
-# AI Applications
+# AI 應用
 
-## Overview
+## 概述
 
-Uter is compatible with various popular AI applications and tools. Below is a list of verified supported applications and their configuration guides.
+優特相容多種流行的 AI 應用和工具。以下是已驗證支援的應用列表及配置指南。
 
-## Supported Applications
+## 支援的應用
 
-## Integration Guide
+## 整合指南
 
-Most applications only require configuring the following information to connect to Uter:
+大多數應用只需要配置以下資訊即可連線 優特：
 
-1.  **API Address**: Your Uter service address
-2.  **API Key**: The Token generated in the Uter console
-3.  **Model Name**: Select the model to use
+1. **API 地址**：您的 優特服務地址
+2. **API Key**：在 優特控制檯生成的令牌
+3. **模型名稱**：選擇需要使用的模型
 
-For specific configuration steps, please refer to the detailed documentation of each application.
+具體配置步驟請參考各應用的詳細文件。

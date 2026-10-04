@@ -1,81 +1,81 @@
 # openai
 
-## Text-to-Speech
+## Преобразование текста в речь (Text-to-Speech)
 
-将文本转换为音频
+Преобразует текст в аудио.
 
 `POST` `/v1/audio/speech`
 
-### 请求体（`application/json`）
+### Тело запроса (`application/json`)
 
-| 字段 | 类型 | 必填 | 说明 |
+| Поле | Тип | Обязательно | Описание |
 |---|---|---|---|
-| `model` | string | 是 | — |
-| `input` | string | 是 | 要转换的文本 |
-| `voice` | enum（`alloy`, `echo`, `fable`, `onyx`, `nova`, `shimmer`） | 是 | — |
-| `response_format` | enum（`mp3`, `opus`, `aac`, `flac`, `wav`, `pcm`） | 否 | — |
-| `speed` | number | 否 | — |
+| `model` | string | да | — |
+| `input` | string | да | Текст для преобразования |
+| `voice` | enum（`alloy`, `echo`, `fable`, `onyx`, `nova`, `shimmer`） | да | — |
+| `response_format` | enum（`mp3`, `opus`, `aac`, `flac`, `wav`, `pcm`） | нет | — |
+| `speed` | number | нет | — |
 
-### 响应
+### Ответ
 
-| 状态码 | 说明 |
+| Код статуса | Описание |
 |---|---|
-| `200` | 成功生成音频 |
+| `200` | Аудио успешно сгенерировано |
 
-## Audio Transcriptions
+## Транскрипция аудио
 
-将音频转换为文本
+Преобразует аудио в текст.
 
 `POST` `/v1/audio/transcriptions`
 
-### 请求体（`multipart/form-data`）
+### Тело запроса (`multipart/form-data`)
 
-| 字段 | 类型 | 必填 | 说明 |
+| Поле | Тип | Обязательно | Описание |
 |---|---|---|---|
-| `file` | string（binary） | 是 | 音频文件 |
-| `model` | string | 是 | — |
-| `language` | string | 否 | ISO-639-1 语言代码 |
-| `prompt` | string | 否 | — |
-| `response_format` | enum（`json`, `text`, `srt`, `verbose_json`, `vtt`） | 否 | — |
-| `temperature` | number | 否 | — |
-| `timestamp_granularities` | array&lt;enum（`word`, `segment`）&gt; | 否 | — |
+| `file` | string（binary） | да | Аудиофайл |
+| `model` | string | да | — |
+| `language` | string | нет | Код языка ISO-639-1 |
+| `prompt` | string | нет | — |
+| `response_format` | enum（`json`, `text`, `srt`, `verbose_json`, `vtt`） | нет | — |
+| `temperature` | number | нет | — |
+| `timestamp_granularities` | array&lt;enum（`word`, `segment`）&gt; | нет | — |
 
-### 响应
+### Ответ
 
-| 状态码 | 说明 |
+| Код статуса | Описание |
 |---|---|
-| `200` | 成功转录 |
+| `200` | Успешно транскрибировано |
 
-#### `200` 响应字段
+#### Поля ответа `200`
 
-| 字段 | 类型 | 说明 |
+| Поле | Тип | Описание |
 |---|---|---|
 | `text` | string | — |
 
-## Audio Translation
+## Перевод аудио
 
-将音频翻译为英文文本
+Переводит аудио в английский текст.
 
 `POST` `/v1/audio/translations`
 
-### 请求体（`multipart/form-data`）
+### Тело запроса (`multipart/form-data`)
 
-| 字段 | 类型 | 必填 | 说明 |
+| Поле | Тип | Обязательно | Описание |
 |---|---|---|---|
-| `file` | string（binary） | 是 | — |
-| `model` | string | 是 | — |
-| `prompt` | string | 否 | — |
-| `response_format` | string | 否 | — |
-| `temperature` | number | 否 | — |
+| `file` | string（binary） | да | — |
+| `model` | string | да | — |
+| `prompt` | string | нет | — |
+| `response_format` | string | нет | — |
+| `temperature` | number | нет | — |
 
-### 响应
+### Ответ
 
-| 状态码 | 说明 |
+| Код статуса | Описание |
 |---|---|
-| `200` | 成功翻译 |
+| `200` | Успешно переведено |
 
-#### `200` 响应字段
+#### Поля ответа `200`
 
-| 字段 | 类型 | 说明 |
+| Поле | Тип | Описание |
 |---|---|---|
 | `text` | string | — |

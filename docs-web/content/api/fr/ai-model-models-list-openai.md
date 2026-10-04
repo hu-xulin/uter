@@ -1,42 +1,42 @@
-# Native OpenAI Format
+# Format OpenAI natif
 
-获取当前可用的模型列表。
+Récupère la liste des modèles actuellement disponibles.
 
-根据请求头自动识别返回格式：
-- 包含 `x-api-key` 和 `anthropic-version` 头时返回 Anthropic 格式
-- 包含 `x-goog-api-key` 头或 `key` 查询参数时返回 Gemini 格式
-- 其他情况返回 OpenAI 格式
+Le format de retour est automatiquement identifié selon les en-têtes de requête :
+- Renvoie le format Anthropic lorsque les en-têtes `x-api-key` et `anthropic-version` sont présents
+- Renvoie le format Gemini lorsque l'en-tête `x-goog-api-key` ou le paramètre de requête `key` est présent
+- Renvoie le format OpenAI dans les autres cas
 
 `GET` `/v1/models`
 
-### 请求参数
+### Paramètres de requête
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| Nom du paramètre | Position | Type | Requis | Description |
 |---|---|---|---|---|
-| `key` | query | string | 否 | Google API Key (用于 Gemini 格式) |
-| `x-api-key` | header | string | 否 | Anthropic API Key (用于 Claude 格式) |
-| `anthropic-version` | header | string | 否 | Anthropic API 版本 |
-| `x-goog-api-key` | header | string | 否 | Google API Key (用于 Gemini 格式) |
+| `key` | query | string | Non | Clé API Google (pour le format Gemini) |
+| `x-api-key` | header | string | Non | Clé API Anthropic (pour le format Claude) |
+| `anthropic-version` | header | string | Non | Version de l'API Anthropic |
+| `x-goog-api-key` | header | string | Non | Clé API Google (pour le format Gemini) |
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功获取模型列表 |
-| `401` | 认证失败 |
+| `200` | Liste des modèles récupérée avec succès |
+| `401` | Échec d'authentification |
 
-#### `200` 响应字段
+#### Champs de la réponse `200`
 
-| 字段 | 类型 | 说明 |
+| Champ | Type | Description |
 |---|---|---|
 | `object` | string | — |
 | `data` | array&lt;object&gt; | — |
 
-#### `401` 响应字段
+#### Champs de la réponse `401`
 
-| 字段 | 类型 | 说明 |
+| Champ | Type | Description |
 |---|---|---|
-| `error.message` | string | 错误信息 |
-| `error.type` | string | 错误类型 |
-| `error.param` | string | 相关参数 |
-| `error.code` | string | 错误代码 |
+| `error.message` | string | Message d'erreur |
+| `error.type` | string | Type d'erreur |
+| `error.param` | string | Paramètre concerné |
+| `error.code` | string | Code d'erreur |

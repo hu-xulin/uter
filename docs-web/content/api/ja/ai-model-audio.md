@@ -2,33 +2,33 @@
 
 ## Native Gemini Format
 
-Gemini 音频生成接口。
-可使用gemini-2.5-flash-preview-tts等模型
+Gemini の音声生成インターフェースです。
+`gemini-2.5-flash-preview-tts` などのモデルを使用できます。
 
 `POST` `/v1beta/models/{model}:generateContent`
 
-### 请求参数
+### リクエストパラメータ
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| パラメータ名 | 位置 | 型 | 必須 | 説明 |
 |---|---|---|---|---|
-| `model` | path | string | 是 | 模型名称 |
+| `model` | path | string | 必須 | モデル名 |
 
-### 请求体（`application/json`）
+### リクエストボディ（`application/json`）
 
-| 字段 | 类型 | 必填 | 说明 |
+| フィールド | 型 | 必須 | 説明 |
 |---|---|---|---|
-| `contents` | array&lt;object&gt; | 是 | — |
-| `generationConfig.responseModalities` | array&lt;string&gt; | 否 | — |
+| `contents` | array&lt;object&gt; | 必須 | — |
+| `generationConfig.responseModalities` | array&lt;string&gt; | 任意 | — |
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-#### `200` 响应字段
+#### `200` レスポンスフィールド
 
-| 字段 | 类型 | 说明 |
+| フィールド | 型 | 説明 |
 |---|---|---|
 | `candidates` | array&lt;object&gt; | — |
 | `usageMetadata.promptTokenCount` | integer | — |

@@ -1,73 +1,73 @@
-# system-settings
+# Cài đặt hệ thống (system-settings)
 
-## Get System Options
+## Lấy tùy chọn hệ thống (Get System Options)
 
-👑 需要超级管理员权限（Root）
+👑 Yêu cầu quyền siêu quản trị viên (Root)
 
 `GET` `/api/option/`
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Migrate Console Settings
+## Di chuyển cài đặt bảng điều khiển (Migrate Console Settings)
 
-👑 需要超级管理员权限（Root）
+👑 Yêu cầu quyền siêu quản trị viên (Root)
 
 `POST` `/api/option/migrate_console_setting`
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Update System Options
+## Cập nhật tùy chọn hệ thống (Update System Options)
 
-👑 需要超级管理员权限（Root）
+👑 Yêu cầu quyền siêu quản trị viên (Root)
 
 `PUT` `/api/option/`
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Reset Model Ratio
+## Đặt lại tỷ lệ mô hình (Reset Model Ratio)
 
-👑 需要超级管理员权限（Root）
+👑 Yêu cầu quyền siêu quản trị viên (Root)
 
 `POST` `/api/option/rest_model_ratio`
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Get Syncable Channels
+## Lấy các kênh có thể đồng bộ (Get Syncable Channels)
 
-👑 需要超级管理员权限（Root）
+👑 Yêu cầu quyền siêu quản trị viên (Root)
 
 `GET` `/api/ratio_sync/channels`
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Fetch Upstream Ratios
+## Lấy tỷ lệ upstream (Fetch Upstream Ratios)
 
-👑 需要超级管理员权限（Root）
+👑 Yêu cầu quyền siêu quản trị viên (Root)
 
 `POST` `/api/ratio_sync/fetch`
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |

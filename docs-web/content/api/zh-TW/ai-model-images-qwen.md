@@ -1,14 +1,14 @@
-# qwen
+# 通義千問OpenAI格式
 
-## Generate Images
+## 生成影象
 
-百炼qwen-image系列图片生成
+百鍊qwen-image系列圖片生成
 
 `POST` `/v1/images/generations`
 
-### 请求体（`application/json`）
+### 請求體（`application/json`）
 
-| 字段 | 类型 | 必填 | 说明 |
+| 欄位 | 型別 | 必填 | 說明 |
 |---|---|---|---|
 | `model` | string | 是 | — |
 | `input.messages` | array&lt;object&gt; | 否 | — |
@@ -17,28 +17,28 @@
 | `parameters.watermark` | boolean | 否 | — |
 | `parameters.size` | string | 否 | — |
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
-| `200` | 成功生成图像 |
+| `200` | 成功生成影象 |
 
-#### `200` 响应字段
+#### `200` 響應欄位
 
-| 字段 | 类型 | 说明 |
+| 欄位 | 型別 | 說明 |
 |---|---|---|
 | `created` | integer | — |
 | `data` | array&lt;object&gt; | — |
 
-## Edit Image
+## 編輯影象
 
-百炼qwen-image系列图片编辑
+百鍊qwen-image系列圖片編輯
 
 `POST` `/v1/images/edits`
 
-### 请求体（`application/json`）
+### 請求體（`application/json`）
 
-| 字段 | 类型 | 必填 | 说明 |
+| 欄位 | 型別 | 必填 | 說明 |
 |---|---|---|---|
 | `model` | string | 是 | — |
 | `input.messages` | array&lt;object&gt; | 否 | — |
@@ -48,15 +48,15 @@
 | `parameters.watermark` | boolean | 否 | — |
 | `parameters.size` | string | 否 | — |
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
-| `200` | 成功生成图像 |
+| `200` | 成功生成影象 |
 
-#### `200` 响应字段
+#### `200` 響應欄位
 
-| 字段 | 类型 | 说明 |
+| 欄位 | 型別 | 說明 |
 |---|---|---|
 | `created` | integer | — |
 | `data` | array&lt;object&gt; | — |

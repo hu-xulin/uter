@@ -1,62 +1,62 @@
-# list
+# Danh sách
 
-## Native OpenAI Format
+## Định dạng Native OpenAI
 
-获取当前可用的模型列表。
+Lấy danh sách mô hình hiện có sẵn.
 
-根据请求头自动识别返回格式：
-- 包含 `x-api-key` 和 `anthropic-version` 头时返回 Anthropic 格式
-- 包含 `x-goog-api-key` 头或 `key` 查询参数时返回 Gemini 格式
-- 其他情况返回 OpenAI 格式
+Tự động nhận diện định dạng trả về dựa trên header yêu cầu:
+- Trả về định dạng Anthropic khi chứa header `x-api-key` và `anthropic-version`
+- Trả về định dạng Gemini khi chứa header `x-goog-api-key` hoặc tham số query `key`
+- Các trường hợp khác trả về định dạng OpenAI
 
 `GET` `/v1/models`
 
-### 请求参数
+### Tham số yêu cầu
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| Tên tham số | Vị trí | Kiểu | Bắt buộc | Mô tả |
 |---|---|---|---|---|
-| `key` | query | string | 否 | Google API Key (用于 Gemini 格式) |
-| `x-api-key` | header | string | 否 | Anthropic API Key (用于 Claude 格式) |
-| `anthropic-version` | header | string | 否 | Anthropic API 版本 |
-| `x-goog-api-key` | header | string | 否 | Google API Key (用于 Gemini 格式) |
+| `key` | query | string | Không | Google API Key (dùng cho định dạng Gemini) |
+| `x-api-key` | header | string | Không | Anthropic API Key (dùng cho định dạng Claude) |
+| `anthropic-version` | header | string | Không | Phiên bản Anthropic API |
+| `x-goog-api-key` | header | string | Không | Google API Key (dùng cho định dạng Gemini) |
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功获取模型列表 |
-| `401` | 认证失败 |
+| `200` | Lấy danh sách mô hình thành công |
+| `401` | Xác thực thất bại |
 
-#### `200` 响应字段
+#### Trường phản hồi `200`
 
-| 字段 | 类型 | 说明 |
+| Trường | Kiểu | Mô tả |
 |---|---|---|
 | `object` | string | — |
 | `data` | array&lt;object&gt; | — |
 
-#### `401` 响应字段
+#### Trường phản hồi `401`
 
-| 字段 | 类型 | 说明 |
+| Trường | Kiểu | Mô tả |
 |---|---|---|
-| `error.message` | string | 错误信息 |
-| `error.type` | string | 错误类型 |
-| `error.param` | string | 相关参数 |
-| `error.code` | string | 错误代码 |
+| `error.message` | string | Thông báo lỗi |
+| `error.type` | string | Loại lỗi |
+| `error.param` | string | Tham số liên quan |
+| `error.code` | string | Mã lỗi |
 
-## Native Gemini Format
+## Định dạng Native Gemini
 
-以 Gemini API 格式返回可用模型列表
+Trả về danh sách mô hình khả dụng ở định dạng Gemini API.
 
 `GET` `/v1beta/models`
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功获取模型列表 |
+| `200` | Lấy danh sách mô hình thành công |
 
-#### `200` 响应字段
+#### Trường phản hồi `200`
 
-| 字段 | 类型 | 说明 |
+| Trường | Kiểu | Mô tả |
 |---|---|---|
 | `models` | array&lt;object&gt; | — |

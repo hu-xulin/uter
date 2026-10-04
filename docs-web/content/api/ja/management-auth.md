@@ -1,40 +1,40 @@
-# Authentication System Description (Auth)
+# 認証システムの説明 (Auth)
 
-## Description
+## 説明
 
-Backend management interfaces adopt a multi-level authentication mechanism, commonly: **Public**, **User**, **Admin**, **Root**.
+バックエンド管理インターフェースは多層認証機構を採用しており、一般的に **Public**、**User**、**Admin**、**Root** のいずれかです。
 
-## Authentication Methods (Choose One)
+## 認証方法（いずれか一つを選択）
 
 ### Session
 
-Obtain Session via the login interface:
+ログインインターフェースからセッションを取得します：
 
 - `POST /api/user/login`
 
-### Access Token (Recommended)
+### アクセストークン（推奨）
 
-Carry in the request header:
+リクエストヘッダーに含めます：
 
 ```text
 Authorization: Bearer {token}
 ```
 
-Tokens can be generated in "Personal Settings - Security Settings - System Access Tokens".
+トークンは「個人設定 - セキュリティ設定 - システムアクセストークン」で生成できます。
 
-## Required Request Headers
+## 必須のリクエストヘッダー
 
-Some interfaces require carrying a user identification request header:
+一部のインターフェースでは、ユーザー識別用リクエストヘッダーを含める必要があります：
 
 ```text
 Uter-User: {user_id}
 ```
 
-Where `{user_id}` must match the currently logged-in user.
+`{user_id}` は、現在ログインしているユーザーと一致している必要があります。
 
-## Permission Levels
+## 権限レベル
 
-- **Public**: No authentication required
-- **User**: Requires login or Access Token
-- **Admin**: Requires administrator privileges
-- **Root**: Highest privilege
+- **Public**: 認証不要
+- **User**: ログインまたはアクセストークンが必要
+- **Admin**: 管理者権限が必要
+- **Root**: 最高権限

@@ -1,420 +1,422 @@
-# Uter Large Model Service Platform Privacy Policy
+# 優特智慧大模型服務平臺隱私政策
 
-| Item | Content |
+| 專案 | 內容 |
 |---|---|
-| Service Brand | **Uter.ai 优特智能** |
-| Platform Name | **Uter Large Model Service Platform** |
-| Official Website | https://uter.ai |
-| Document Name | Uter Large Model Service Platform Privacy Policy |
-| Version | V1.0 |
-| Effective Date | August 8, 2026 |
-| Last Updated | August 8, 2026 |
-| Personal Information Processor | **Shenzhen Uter Network Co., Ltd.** |
-| Registered Address | Shenzhen, Guangdong Province, the People's Republic of China |
-| Personal Information Protection Officer Email | privacy@uter.ai |
-| Customer Service Email | support@uter.ai |
+| 服務品牌 | **Uter.ai 優特智慧** |
+| 平臺名稱 | **優特智慧大模型服務平臺** |
+| 官方網站 | https://uter.ai |
+| 文件名稱 | 優特智慧大模型服務平臺隱私政策（Privacy Policy） |
+| 版本號 | V1.0 |
+| 生效日期 | 2026 年 08 月 08 日 |
+| 最近更新 | 2026 年 08 月 08 日 |
+| 資訊處理者 | **深圳優特網路有限公司** |
+| 註冊地址 | 廣東省深圳市南山區阿里中心T2 |
+| 資訊保護郵箱 | privacy@uter.ai |
+| 客服郵箱 | support@uter.ai |
 
-> **This Policy, together with the Uter Large Model Service Platform Terms of Service, constitutes the complete agreement between you and Shenzhen Uter Network Co., Ltd.** This Policy is a part of that Agreement; its rules on the processing of personal information supplement Article 8 (Data, Content and Personal Information Protection) of the Terms of Service; in the event of any inconsistency with respect to the processing of personal information, **this Policy shall prevail.**
+> **本政策與《優特智慧大模型服務平臺使用者協議》共同構成您與深圳優特網路有限公司之間的完整約定。** 本政策是該協議的組成部分，其中對個人資訊的處理規則與使用者協議第八章（資料、內容與個人資訊保護）互為補充；兩者不一致時，就個人資訊處理事項以**本政策**為準。
 
 ---
 
-## Summary
+## 摘要
 
-To help you understand quickly, we first summarize the core of this Policy in one paragraph. **The Summary does not replace the main text; the complete rights and obligations are governed by the main text.**
+為便於您快速理解，我們先用一段話概括本政策的核心內容。**摘要不替代正文，完整的權利義務以正文為準。**
 
-| What you care about most | Our answer |
+| 您最關心的問題 | 我們的回答 |
 |---|---|
-| What personal information do you collect? | We collect only the account information, identity verification information, payment information and call logs necessary to provide the Service — 4 categories in total. **We do not collect your contacts, photo album, location, microphone or other information unrelated to our business.** |
-| Do you keep the prompt content I send to the models? | **By default, we do not retain the body content of requests and responses.** We only record the metadata used for billing and security audit (time, model identifier, Token count, status code, latency). |
-| Will you use my data to train models? | **No.** We do not train large models ourselves, nor do we use your request content for any model training, fine-tuning or improvement purposes. |
-| Will my data go overseas? | Only when **you actively choose to call overseas model nodes** will the request content be transmitted to overseas upstream services in real time, and it is not retained domestically. See Chapter 4; such transfer is actively instructed and initiated by you. |
-| What if my end users submit personal information to my application? | **You are the processor, and we are the entrusted processor.** We process only upon your instructions and not for our own purposes. See Chapter 2. |
-| How do I delete my data? | You may delete it yourself in the console; or email privacy@uter.ai, and we will respond within **15 business days**. |
+| 你們收集哪些個人資訊？ | 僅收集為您提供服務所必需的賬戶資訊、實名認證資訊、支付資訊與呼叫日誌，共 4 類。**不收集您的通訊錄、相簿、位置、麥克風等與業務無關的資訊。** |
+| 你們會儲存我發給模型的提示詞內容嗎？ | **預設不留存請求與響應的正文內容。** 我們只記錄用於計費與安全審計的後設資料（時間、模型標識、Token 數、狀態碼、耗時）。 |
+| 你們會用我的資料訓練模型嗎？ | **不會。** 我們自身不訓練大模型，也不將您的請求內容用於任何模型訓練、微調或改進目的。 |
+| 我的資料會出境嗎？ | 僅當**您主動選擇呼叫境外模型節點**時，請求內容會實時傳輸至境外上游服務，且不在境內留存。詳見第四章；該等傳輸由您主動指示併發起。 |
+| 如果我的終端使用者向我的應用提交了個人資訊呢？ | **您是處理者，我們是受託處理者。** 我們僅按您的指令處理，不用於自身目的。詳見第二章。 |
+| 我怎麼刪除我的資料？ | 控制檯可自助刪除；也可發郵件至 privacy@uter.ai，我們將在 **15 個工作日**內響應。 |
 
 ---
 
-## Table of Contents
+## 目錄
 
-1. Introduction and Scope
-2. Key Concepts and Role Definitions
-3. How We Collect and Use Personal Information
-4. How We Entrust Processing, Share, Transfer and Publicly Disclose
-5. Cross-Border Data Transfer
-6. How We Store and Protect Personal Information
-7. Your Rights Regarding Personal Information
-8. Cookies and Similar Technologies
-9. Protection of Minors
-10. Special Notes on Generative AI Services
-11. Updates to this Policy
-12. How to Contact Us
-13. Definitions
-
----
-
-## Chapter 1 Introduction and Scope
-
-**1.1 Who We Are**
-
-The Uter Large Model Service Platform (hereinafter the "Platform") is operated by **Shenzhen Uter Network Co., Ltd.** (hereinafter "we" or "优特"). Registered in Shenzhen, Guangdong Province, the People's Republic of China, we are the **personal information processor** of the personal information collected by this Platform.
-
-**1.2 Scope of this Policy**
-
-1.2.1 This Policy applies to our processing of your personal information when you use the Platform's services through the official website Uter.ai, the console, developer documentation, SDK and API interfaces.
-
-1.2.2 **This Policy does not apply to the following circumstances**:
-
-1. **The upstream model services you call through this Platform**: the privacy rules of upstream model providers for their own processing activities are independently formulated and published by them, which we cannot control and for which we bear no responsibility;
-2. **Third-party websites or services linked from outside this Platform**;
-3. **Where you, as a developer or enterprise customer, provide services to your end users through this Platform — your own processing of your end users' personal information** — in such activities you are the processor; see Chapter 2.
-
-**1.3 Our Basic Commitments**
-
-We commit to the principles of lawfulness, legitimacy, necessity and good faith, collecting personal information in a **minimum necessary** manner; not using personal information unrelated to the Service for any purpose; not using your personal information for **model training**; and not selling your personal information to any third party.
+1. 引言與適用範圍
+2. 關鍵概念與角色界定
+3. 我們如何收集和使用個人資訊
+4. 我們如何委託處理、共享、轉讓與公開披露
+5. 資料出境
+6. 我們如何儲存與保護個人資訊
+7. 您的個人資訊權利
+8. Cookie 與同類技術
+9. 未成年人保護
+10. 生成式人工智慧服務的特別說明
+11. 本政策的更新
+12. 如何聯絡我們
+13. 名詞解釋
 
 ---
 
-## Chapter 2 Key Concepts and Role Definitions
+## 第一章　引言與適用範圍
 
-> This Chapter is the core of this Policy. As **a large-model API service platform for developers and enterprise customers**, the business chain involves two layers: "you" and "your end users". Accurately understanding each party's legal role is the premise for determining rights and obligations.
+**1.1 我們是誰**
 
-**2.1 Two-Layer Data Relationship**
+優特智慧大模型服務平臺（以下簡稱"本平臺"）由 **深圳優特網路有限公司**（以下簡稱"我們"或"優特"）運營。我們註冊於中國廣東省深圳市，是本平臺所收集個人資訊的**個人資訊處理者**。
+
+**1.2 本政策的適用範圍**
+
+1.2.1 本政策適用於您透過 uter.ai 官方網站、控制檯、開發者文件、SDK 及 API 介面使用本平臺服務時，我們對您個人資訊的處理活動。
+
+1.2.2 **本政策不適用於下列情形**：
+
+1. **您透過本平臺呼叫的上游模型服務**：上游模型提供商對其自身處理活動的隱私規則由其自行制定並公示，我們無法控制，亦不承擔其責任；
+2. **連結至本平臺之外的第三方網站或服務**；
+3. **您作為開發者或企業客戶，透過本平臺向您的終端使用者提供服務時，您自身對終端使用者個人資訊的處理活動**——該等活動的處理者為您，詳見第二章。
+
+**1.3 我們的基本承諾**
+
+我們承諾：遵循合法、正當、必要和誠信原則，以**最小必要**方式收集個人資訊；不將與服務無關的個人資訊用於任何目的；不將您的個人資訊用於**模型訓練**；不向任何第三方出售您的個人資訊。
+
+---
+
+## 第二章　關鍵概念與角色界定
+
+> 本章是本政策的核心。本平臺為**面向開發者與企業客戶的大模型 API 服務平臺**，業務鏈條中存在"您"與"您的終端使用者"兩個層次。準確理解我們各自的法律角色，是判斷權利義務的前提。
+
+**2.1 兩層資料關係**
 
 ```
-Your end user --(submits information to your app)--> Your app --(calls Platform API)--> Platform --> Upstream Model Provider
-       ↑                                                                  ↑
-   【You】 as processor                                           【You】 as processor, 【we】 as entrusted processor
+您的终端用户 ──(向您的应用提交信息)──> 您的应用 ──(调用本平台 API)──> 本平台 ──> 上游模型提供商
+        ↑                                        ↑
+   由【您】作为处理者                     由【您】作为处理者，我们作为受托处理者
 ```
 
-**2.2 Our Two Roles**
+**2.2 我們的兩種角色**
 
-| Scenario | Data Involved | Your Role | Our Role | Applicable Rules |
+| 場景 | 涉及的資料 | 您的角色 | 我們的角色 | 適用規則 |
 |---|---|---|---|---|
-| **Scenario A: You register, verify, top up and log in to the Platform** | Your phone number, email, ID/business license information, payment information, login logs | Individual | **Personal Information Processor** | Chapters 3–7 of this Policy in full |
-| **Scenario B: You submit request content through the API that contains personal information** | Prompts, uploaded files, model-returned content | **Personal Information Processor** | **Entrusted Processor** | We process only upon your instructions, not for our own purposes; applies Article 2.3 of this Policy |
+| **場景 A：您註冊、認證、充值、登入本平臺** | 您的手機號、郵箱、身份證/營業執照資訊、支付資訊、登入日誌 | 個人 | **個人資訊處理者** | 適用本政策第三章至第七章全文 |
+| **場景 B：您透過 API 提交請求內容，其中包含個人資訊** | 提示詞、上傳檔案、模型返回內容 | **個人資訊處理者** | **受託處理者** | 我們僅按您的指令處理，不用於自身目的；適用本政策第 2.3 條 |
 
-**2.3 Special Provisions as Entrusted Processor**
+**2.3 作為受託處理者的特別約定**
 
-2.3.1 In Scenario B:
+2.3.1 在場景 B 中：
 
-1. **You should obtain lawful authorization from your end users on your own** (notice and consent or other legitimate basis), and fulfill sufficient notice obligations in your own privacy policy;
-2. We process data according to your instructions; the purpose, method and period of processing are determined by your calling behavior;
-3. **We do not use such data for any purpose other than Scenario A in Article 2.2**, including but not limited to commercial exploitation, model training, user profiling, and data resale;
-4. In the event of a security incident, we will promptly notify you, and you will fulfill the notification and reporting obligations to your end users and regulators;
-5. You may separately execute a Data Processing Agreement (DPA) with us, specifying processing details and audit arrangements.
+1. **您應自行取得您終端使用者的合法授權**（告知同意或其他合法性基礎），並在您自身的隱私政策中履行充分告知義務；
+2. 我們按照您的指令處理資料，處理目的、方式、期限均由您的呼叫行為決定；
+3. **我們不將該等資料用於本政策第 2.2 條場景 A 之外的任何目的**，包括但不限於商業化利用、模型訓練、使用者畫像、資料售賣；
+4. 出現安全事件時，我們會及時通知您，並由您向您的終端使用者及監管機關履行告知與報告義務；
+5. 您可與我們另行簽署《資料處理協議（DPA）》，約定處理細節與審計安排。
 
-2.3.2 **We recommend and support you to desensitize personal information before submission.** If the data you submit involves sensitive personal information (such as biometrics, medical and health, financial accounts, whereabouts, or personal information of minors under the age of 14), you should ensure that you have obtained **separate consent** and completed a personal information protection impact assessment.
+2.3.2 **我們建議並且支援您在提交前對個人資訊進行脫敏處理。** 若您提交的資料涉及敏感個人資訊（如生物識別、醫療健康、金融賬戶、行蹤軌跡、不滿十四周歲未成年人資訊），您應確保已取得**單獨同意**並完成個人資訊保護影響評估。
 
-2.3.3 Except as otherwise provided by law, we **will not actively access** your request content. Only under the following circumstances may we view it within the minimum necessary scope: for troubleshooting technical faults with your authorization; upon lawful requests from regulators or judicial authorities; upon discovering content suspected of serious illegality or endangering public safety.
+2.3.3 除法律另有規定外，我們**不會主動訪問**您的請求內容。僅在下列情形下，我們可能在最小必要範圍內檢視：為您排查技術故障且經您授權；應監管機關、司法機關的合法要求；發現涉嫌嚴重違法或危害公共安全的內容。
 
 ---
 
-## Chapter 3 How We Collect and Use Personal Information
+## 第三章　我們如何收集和使用個人資訊
 
-**3.1 List of Personal Information We Collect**
+**3.1 我們收集的個人資訊清單**
 
-We collect only the following 4 categories of personal information directly related to the Service:
+我們僅收集下列 4 類與服務直接相關的個人資訊：
 
-| Category | Specific Fields | Required | Collection Scenario |
+| 類別 | 具體欄位 | 是否必需 | 收集場景 |
 |---|---|---|---|
-| **① Account Information** | Mobile phone number, email, account password (encrypted storage), nickname/enterprise name | Required | Registration, login |
-| **② Identity Verification Information** | Natural person: name, ID number (verified by a third-party identity verification institution); Enterprise: enterprise name, unified social credit code, legal representative name, business license image | Required | Fulfilling real-name obligation under the Cybersecurity Law and the Interim Measures for the Management of Generative AI Services |
-| **③ Payment and Invoicing Information** | Top-up order number, payment channel, transaction amount, invoicing entity and tax number | Required | Top-up, invoicing |
-| **④ Logs and Metadata** | IP address, device identifier (User-Agent), access time, model identifier, input/output Token count, request status code, response latency, API Key identifier | Required | Providing service, billing, security audit |
+| **① 賬戶資訊** | 手機號碼、電子郵箱、賬戶密碼（加密儲存）、暱稱/企業名稱 | 必需 | 註冊、登入 |
+| **② 實名認證資訊** | 自然人：姓名、身份證件號碼（由第三方實名核驗機構核驗）；企業：企業名稱、統一社會信用程式碼、法定代表人姓名、營業執照影像件 | 必需 | 依《網路安全法》第二十四條及《生成式人工智慧服務管理暫行辦法》履行實名義務 |
+| **③ 支付與開票資訊** | 充值訂單號、支付渠道、交易金額、開票主體與稅號 | 必需 | 充值、開票 |
+| **④ 日誌與後設資料** | IP 地址、裝置標識（User-Agent）、訪問時間、模型標識、輸入/輸出 Token 數、請求狀態碼、響應耗時、API Key 標識 | 必需 | 提供服務、計費、安全審計 |
 
-**3.2 Information We Will Not Collect**
+**3.2 我們不會收集的資訊**
 
-**We will not collect or request the following permissions or information:** contacts, call records, SMS content, photo album and images (except those you actively upload), precise geographic location, microphone and camera, clipboard content, or the installation list of other applications on your device.
+**我們不會收集、不會請求下列許可權或資訊：** 通訊錄、通話記錄、簡訊內容、相簿與圖片（除您主動上傳外）、精確地理位置、麥克風與攝像頭、剪貼簿內容、您裝置上其他應用的安裝列表。
 
-**3.3 Processing Purpose and Legal Basis**
+**3.3 處理目的與法律依據對照表**
 
-| Processing Activity | Processing Purpose | Legal Basis (PIPL) |
+| 處理活動 | 處理目的 | 法律依據（《個人資訊保護法》） |
 |---|---|---|
-| Account registration and login | Establish and maintain the service relationship | Article 13(1)(ii): necessary for concluding and performing a contract |
-| Identity verification | Fulfilling statutory obligations | Article 13(1)(iii): necessary to perform statutory duties or obligations |
-| Billing and invoicing | Settling service fees, fulfilling tax obligations | Same as above |
-| Metering and call logs | Billing reconciliation, fault troubleshooting, service quality improvement | Article 13(1)(ii) |
-| Security risk control and anti-fraud | Identifying malicious calls, resale, account theft, risk-control bypass, etc. | Article 13(1)(ii); where automated decision-making is involved, Article 24 applies |
-| Service notices and agreement change notifications | Fulfilling notification obligations | Article 13(1)(ii)(iii) |
-| Marketing pushes (**not required**) | Product updates, promotional activities | Requires your **separate consent**; you may unsubscribe at any time |
+| 賬戶註冊與登入 | 建立並維護服務關係 | 第 13 條第 1 款第（二）項：為訂立、履行合同所必需 |
+| 實名認證 | 履行法定義務 | 第 13 條第 1 款第（三）項：履行法定職責或義務所必需 |
+| 計費與開票 | 結算服務費用、履行稅務義務 | 同上 |
+| 計量與呼叫日誌 | 計費對賬、故障排查、服務質量改進 | 第 13 條第 1 款第（二）項 |
+| 安全風控與反欺詐 | 識別惡意呼叫、轉售、盜號、繞過風控等行為 | 第 13 條第 1 款第（二）項；涉及自動化決策的，適用第 24 條 |
+| 服務通知與協議變更告知 | 履行告知義務 | 第 13 條第 1 款第（二）（三）項 |
+| 營銷資訊推送（**非必需**） | 產品動態、優惠活動 | 需取得您的**單獨同意**，您可隨時退訂 |
 
-**3.4 About Identity Verification**
+**3.4 關於實名認證**
 
-3.4.1 Pursuant to Article 24 of the Cybersecurity Law of the PRC, the Administrative Measures for Internet Information Services and the Interim Measures for the Management of Generative AI Services, you must complete identity verification before calling this Service.
+3.4.1 依據《中華人民共和國網路安全法》第二十四條、《網際網路資訊服務管理辦法》及《生成式人工智慧服務管理暫行辦法》的規定，您須完成實名認證後方可呼叫本服務。
 
-3.4.2 Identity verification is completed by a qualified third-party verification institution. **We retain only the verification result and desensitized identifier after passing verification, and do not retain the complete document image** (except as otherwise provided by law).
+3.4.2 實名核驗由具備資質的第三方核驗機構完成。**我們僅在核驗透過後留存核驗結果與脫敏標識，不留存完整的證件影像件**（法律另有規定的除外）。
 
-3.4.3 If identity verification is not completed, we cannot activate the Service for you; the un-consumed top-up balance may then be refunded under Article 6 of the Terms of Service.
+3.4.3 未完成實名認證的，我們無法為您開通服務；屆時未消耗的充值餘額可按使用者協議第六條申請退還。
 
-**3.5 Circumstances Where Consent Is Not Required**
+**3.5 無需徵得同意的情形**
 
-Pursuant to Article 13 of the Personal Information Protection Law (PIPL), we may process your personal information without your consent under the following circumstances: necessary for concluding or performing a contract to which you are a party; necessary to perform statutory duties or obligations; necessary to respond to public health emergencies or to protect the life, health and property safety of natural persons in emergencies; processing within a reasonable scope for news reporting or public supervision in the public interest; processing your personal information that you have voluntarily made public or that is otherwise lawfully public within a reasonable scope as prescribed by law; and other circumstances prescribed by laws and administrative regulations.
+依據《個人資訊保護法》第十三條，下列情形我們處理您的個人資訊無需取得您的同意：為訂立、履行您作為一方當事人的合同所必需；為履行法定職責或法定義務所必需；為應對突發公共衛生事件或緊急情況下為保護自然人生命健康和財產安全所必需；為公共利益實施新聞報道、輿論監督等在合理範圍內處理；依照法律規定在合理的範圍內處理您自行公開或其他已合法公開的個人資訊；法律、行政法規規定的其他情形。
 
-**3.6 Explanation of Automated Decision-Making**
+**3.6 自動化決策的說明**
 
-3.6.1 We use an automated risk-control system to identify abnormal calling behavior (such as API Key resale, malicious traffic inflation, region-restriction bypass). Such automated decisions are **used only for service security and compliance purposes and will not be used for credit evaluation of you or differentiated pricing**.
+3.6.1 我們使用自動化風控系統識別異常呼叫行為（如 API Key 轉售、惡意刷量、繞過地域限制）。該等自動化決策**僅用於服務安全與合規目的，不會用於對您的信用評價或差別化定價**。
 
-3.6.2 Pursuant to Article 24 of the PIPL, if such automated decision-making has a significant impact on your rights and interests (such as restricting or terminating the Service), **you have the right to request an explanation from us and to refuse a decision made solely by automated means**. You may do so via privacy@uter.ai.
+3.6.2 依據《個人資訊保護法》第二十四條，若該等自動化決策對您的權益造成重大影響（如限制或終止服務），**您有權要求我們作出說明，並有權拒絕僅透過自動化決策的方式作出決定**。您可透過 privacy@uter.ai 提出。
 
 ---
 
-## Chapter 4 How We Entrust Processing, Share, Transfer and Publicly Disclose
+## 第四章　我們如何委託處理、共享、轉讓與公開披露
 
-**4.1 Entrusted Processing**
+**4.1 委託處理**
 
-To provide you with the Service, we may entrust the following types of partners to process your personal information:
+為向您提供服務，我們可能委託下列型別的合作方處理您的個人資訊：
 
-| Type of Entrusted Party | Processing Purpose | Information Types Involved |
+| 受託方型別 | 處理目的 | 涉及的資訊型別 |
 |---|---|---|
-| Cloud infrastructure provider (domestic) | Server hosting, data storage, network transmission | All four categories |
-| Identity verification institution | Identity/enterprise information verification | ② Identity verification information |
-| Third-party payment institution | Payment settlement | ③ Payment and invoicing information |
-| Electronic invoice service provider | Invoice issuance | ③ Payment and invoicing information |
-| SMS/email service provider | Sending verification codes and service notices | ① Account information |
-| Security risk-control service provider | Anti-fraud and anomaly identification | ④ Logs and metadata |
-| **Upstream Model Provider** | **Model inference** | **Your request content (only when you initiate a call)** |
+| 雲基礎設施服務商（境內） | 伺服器託管、資料儲存、網路傳輸 | 全部四類 |
+| 實名核驗機構 | 身份/企業資訊核驗 | ② 實名認證資訊 |
+| 第三方支付機構 | 支付結算 | ③ 支付與開票資訊 |
+| 電子發票服務商 | 開具發票 | ③ 支付與開票資訊 |
+| 簡訊/郵件服務商 | 傳送驗證碼與服務通知 | ① 賬戶資訊 |
+| 安全風控服務商 | 反欺詐與異常識別 | ④ 日誌與後設資料 |
+| **上游模型提供商** | **模型推理** | **您的請求內容（僅在您發起呼叫時）** |
 
-We have or will require the above entrusted parties by written agreement to comply with the same personal information protection standards, sign confidentiality agreements, not process beyond the entrusted purpose, and delete or return data upon termination of the entrustment relationship.
+我們已或將以書面協議方式，要求上述受託方遵守同等的個人資訊保護標準、簽署保密協議、不得超出委託目的處理、並在委託關係終止後刪除或返還資料。
 
-**4.2 Special Notes on Upstream Model Providers**
+**4.2 關於上游模型提供商的特別說明**
 
-4.2.1 Upstream Model Providers are a necessary link in the Platform's service chain. **When you initiate an API call, the request content is transmitted to the corresponding Upstream Model Provider to complete inference.**
+4.2.1 上游模型提供商是本平臺服務鏈條中的必要一環。**您發起 API 呼叫時，請求內容會傳輸至相應上游模型提供商以完成推理。**
 
-4.2.2 Regarding the processing of such data by upstream model providers:
+4.2.2 就上游模型提供商對該等資料的處理：
 
-- **Some** upstream providers act as our entrusted parties in this link, bound by the agreement between us and them;
-- **Some** upstream providers may act as **independent personal information processors**, whose processing activities are governed by their own published privacy policies and API terms of use. We have made reasonable efforts to select providers with higher data-processing standards, but **cannot control their specific processing behavior**.
+- **部分**上游提供商作為我們在該環節的受託方，受我們與其之間協議的約束；
+- **部分**上游提供商可能作為**獨立的個人資訊處理者**，其處理活動適用其自身公示的隱私政策與 API 使用條款。我們已盡合理努力選擇資料處理標準較高的提供商，但**無法控制其具體處理行為**。
 
-4.2.3 **If you are unwilling to bear the above risks, please select the Platform's domestic model nodes, or desensitize the request content before use.**
+4.2.3 **如您不願承擔上述風險，請選擇本平臺的境內模型節點，或在使用前對請求內容作脫敏處理。**
 
-**4.3 Sharing**
+**4.3 共享**
 
-Except under the following circumstances, we **will not share your personal information with any third party**:
+除下列情形外，我們**不會與任何第三方共享您的個人資訊**：
 
-1. We have obtained your **separate consent**;
-2. As required by laws and regulations or compulsory requirements of regulators or judicial authorities (we will notify you to the extent permitted by law);
-3. Necessary to protect public interests or the major legitimate rights and interests of you or other individuals, where it is difficult to obtain your consent;
-4. Necessary to perform the contract between you and us (such as transmitting request content to upstream providers).
+1. 已取得您的**單獨同意**；
+2. 依據法律法規或監管機關、司法機關的強制要求（我們將在法律允許的範圍內告知您）；
+3. 為維護公共利益或您或其他個人的生命、財產等重大合法權益所必需且難以取得本人同意；
+4. 為履行您與我們之間的合同所必需（如向上遊提供商傳輸請求內容）。
 
-**4.4 Transfer**
+**4.4 轉讓**
 
-We will not transfer your personal information to any third party. If a merger, division, dissolution, acquisition or asset transfer occurs, we will inform you of the name and contact information of the recipient, and require the recipient to continue to perform the obligations under this Policy; if the recipient changes the original processing purpose or method, we will re-obtain your consent.
+我們不會向任何第三方轉讓您的個人資訊。若發生合併、分立、解散、被收購或資產轉讓等情形，我們將告知您接收方的名稱與聯絡方式，並要求接收方繼續履行本政策項下的義務；接收方變更原處理目的、處理方式的，將重新取得您的同意。
 
-**4.5 Public Disclosure**
+**4.5 公開披露**
 
-We will not publicly disclose your personal information. Where disclosure is legally required, we will take security protection measures and inform you of the purpose, type and possible scope of the disclosure.
+我們不會公開披露您的個人資訊。依法必須披露的，我們將採取安全保護措施，並告知您披露的目的、資訊型別及可能涉及的資訊範圍。
 
-**4.6 Exceptions**
+**4.6 例外情形**
 
-Pursuant to Article 13 of the PIPL and related provisions, we do not need to separately obtain your consent under the following circumstances: directly related to national security or national defense security; directly related to public security, public health or major public interests; directly related to the investigation, prosecution, trial and execution of judgments of crimes; necessary to protect the major legitimate rights and interests of you or other individuals where it is difficult to obtain consent; your personal information voluntarily made public to the public; personal information collected from lawfully publicly disclosed information; and other circumstances prescribed by laws and regulations.
+依據《個人資訊保護法》第十三條及相關規定，下列情形我們無需另行取得您的同意：與國家安全、國防安全直接相關；與公共安全、公共衛生、重大公共利益直接相關；與犯罪偵查、起訴、審判和判決執行等直接相關；為維護您或其他個人的生命、財產等重大合法權益但難以取得本人同意；您自行向社會公眾公開的個人資訊；從合法公開披露的資訊中收集的個人資訊；法律法規規定的其他情形。
 
 ---
 
-## Chapter 5 Cross-Border Data Transfer
+## 第五章　資料出境
 
-**5.1 Trigger Condition**
+**5.1 觸發條件**
 
-The Platform defaults to domestic nodes and domestic models, **with data not leaving the country**.
+本平臺預設採用境內節點與境內模型，**資料不出境**。
 
-**Only when you actively choose to call overseas model nodes** will your request content be transmitted to overseas Upstream Model Providers and may be processed and stored overseas.
+**僅在您主動選擇呼叫境外模型節點時**，您的請求內容會傳輸至境外上游模型提供商並可能在境外處理與儲存。
 
-**5.2 Our Processing Principles**
+**5.2 我們的處理原則**
 
-5.2.1 Such transfer is **actively selected and initiated by you**. Your act of selecting an overseas model in the console constitutes your explicit instruction for cross-border data transfer.
+5.2.1 該等傳輸由**您主動選擇併發起**。您在控制檯選擇境外模型的行為，構成您對資料出境的明確指示。
 
-5.2.2 We **do not retain your request and response body content domestically**; the outbound transfer is real-time forwarding and does not constitute incremental storage of domestic data (only the necessary metadata for billing and audit is retained, and such metadata is stored within the territory of China).
+5.2.2 我們**不在境內留存**您的請求與響應正文內容，出境傳輸為實時轉發，不構成境內資料的增量儲存（僅保留必要的後設資料用於計費與審計，且該等後設資料儲存於中國境內）。
 
-5.2.3 **Pursuant to Section 3 of Chapter 3 of the PIPL and the Measures for the Security Assessment of Data Outbound Transfer, you should complete the required cross-border data compliance procedures before submitting request content containing personal information to this Platform**, including but not limited to: execution and filing of the standard contract for cross-border personal information transfer, personal information protection certification, or security assessment filing (where the filing threshold is met).
+5.2.3 **依據《個人資訊保護法》第三章第三節及《資料出境安全評估辦法》等規定，您在向本平臺提交含個人資訊的請求內容前，應自行完成所需的資料出境合規程式**，包括但不限於：個人資訊出境標準合同訂立與備案、個人資訊保護認證，或安全評估申報（如達到申報門檻）。
 
-5.2.4 We recommend and support you in reducing outbound risk through the following means: selecting domestic models; implementing data desensitization, field replacement and pseudonymization on the client; and avoiding outbound transfer of sensitive personal information altogether.
+5.2.4 我們建議並支援您透過以下方式降低出境風險：選擇境內模型；在客戶端實施資料脫敏、欄位替換、假名化處理；對敏感個人資訊一律避免出境。
 
-**5.3 Exceptions to Cross-Border Transfer**
+**5.3 跨境傳輸的例外**
 
-Data involving critical information infrastructure operators, important data, or data prohibited from outbound transfer by laws and regulations **must not be processed through the Platform's overseas nodes**. You bear the consequences of violating this provision.
+涉及關鍵資訊基礎設施運營者、重要資料、或法律法規禁止出境的資料，**不得透過本平臺的境外節點處理**。您違反本條約定造成的後果由您自行承擔。
 
 ---
 
-## Chapter 6 How We Store and Protect Personal Information
+## 第六章　我們如何儲存與保護個人資訊
 
-**6.1 Storage Location**
+**6.1 儲存地點**
 
-Your personal information is stored on servers **within the territory of the People's Republic of China** (located in domestic data centers). Except as stated in Article 5.1, we do not transmit your personal information overseas.
+您的個人資訊儲存於**中華人民共和國境內**的伺服器（位於中國境內資料中心）。除第 5.1 條所述情形外，我們不向境外傳輸您的個人資訊。
 
-**6.2 Storage Period**
+**6.2 儲存期限**
 
-We follow the principle of **minimum necessary period**, as follows:
+我們遵循**最小必要期限**原則，具體如下：
 
-| Information Type | Storage Period | Basis |
+| 資訊型別 | 儲存期限 | 依據 |
 |---|---|---|
-| Request and response **body content** | **Not retained by default** (released upon real-time forwarding) | Minimum necessary principle |
-| Call metadata (time, model, Token count, status code, latency) | **12 months** | Billing reconciliation and audit needs |
-| Account and identity verification information | During the existence of the account, deleted or anonymized within **6 months** after account cancellation | Service relationship and regulatory verification needs |
-| Payment and invoicing records | Pursuant to the E-Commerce Law and the Measures for the Administration of Accounting Archives, **no less than 3 years** from completion of the transaction | Statutory obligation |
-| Network security logs | **No less than 6 months** | Article 21 of the Cybersecurity Law |
-| Security incident handling records | **3 years** | Compliance traceability needs |
+| 請求與響應**正文內容** | **預設不留存**（實時轉發後即釋放） | 最小必要原則 |
+| 呼叫後設資料（時間、模型、Token 數、狀態碼、耗時） | **12 個月** | 計費對賬與審計需要 |
+| 賬戶與實名認證資訊 | 賬戶存續期間，賬戶登出後 **6 個月**內刪除或匿名化 | 服務關係與監管核查需要 |
+| 支付與開票記錄 | 依據《電子商務法》《會計檔案管理辦法》，自交易完成之日起 **不少於 3 年** | 法定義務 |
+| 網路安全日誌 | **不少於 6 個月** | 《網路安全法》第二十一條 |
+| 安全事件處置記錄 | **3 年** | 合規追溯需要 |
 
-**Beyond the above periods, we will delete or anonymize the data and not use it for any purpose.**
+**超過上述期限的，我們將刪除或匿名化處理，不再用於任何目的。**
 
-**6.3 Security Protection Measures**
+**6.3 安全保護措施**
 
-We adopt security measures that meet industry standards to protect your personal information:
+我們採取符合業界標準的安全措施保護您的個人資訊：
 
-| Layer | Measures |
+| 層面 | 措施 |
 |---|---|
-| Transmission security | Site-wide HTTPS / TLS 1.3 encryption; mandatory key authentication for APIs |
-| Storage security | Sensitive fields (ID numbers, passwords) encrypted at storage; least-privilege database access |
-| Access control | Tiered employee authorization, operation audit trail; API Key supports IP allowlist and rotation |
-| Security audit | Regular vulnerability scanning, penetration testing, log audit |
-| Organizational management | Employee confidentiality agreements, specialized training for data-processing positions, immediate recovery of permissions upon departure |
-| Compliance assessment | Personal information protection impact assessment (PIA) pursuant to Article 55 of the PIPL |
+| 傳輸安全 | 全站 HTTPS / TLS 1.3 加密，API 強制金鑰鑑權 |
+| 儲存安全 | 敏感欄位（身份證件號碼、密碼）加密儲存；資料庫訪問最小許可權 |
+| 訪問控制 | 員工分級授權、操作留痕審計；API Key 支援 IP 白名單與輪換 |
+| 安全審計 | 定期漏洞掃描、滲透測試、日誌審計 |
+| 組織管理 | 員工保密協議、資料處理崗位專項培訓、離職許可權即時回收 |
+| 合規評估 | 依《個人資訊保護法》第五十五條，開展個人資訊保護影響評估（PIA） |
 
-**6.4 Handling of Security Incidents**
+**6.4 安全事件的處置**
 
-Where a personal information leak, tampering or loss occurs or is likely to occur, we will:
+發生或可能發生個人資訊洩露、篡改、丟失的，我們將：
 
-1. Immediately activate the emergency plan and take remedial measures;
-2. Report to the department performing personal information protection duties pursuant to Article 57 of the PIPL;
-3. Promptly inform you by in-site message, email or SMS: the basic facts of the incident, possible impact, remedial measures we have taken, suggestions for you to prevent risks on your own, and our contact information;
-4. Where it is difficult to notify each individual, publish an announcement by reasonable and effective means.
+1. 立即啟動應急預案，採取補救措施；
+2. 依《個人資訊保護法》第五十七條，向履行個人資訊保護職責的部門報告；
+3. 及時以站內信、電子郵件或簡訊方式告知您：事件基本情況、可能的影響、我們已採取的處置措施、您可自主防範風險的建議、我們的聯絡方式；
+4. 難以逐一告知時，採取合理、有效的方式釋出公告。
 
-**6.5 Inherent Risk Tip on Information Security**
+**6.5 資訊保安的固有風險提示**
 
-The Internet environment is not absolutely secure. **Please use account passwords of sufficient complexity, keep your API Key safe, and do not hard-code keys on the client.** If information leakage is caused by your own poor safekeeping, we bear no responsibility for the resulting consequences.
+網際網路環境並非絕對安全。**請您使用複雜度足夠的賬戶密碼、妥善保管 API Key、不在客戶端硬編碼金鑰。** 若因您自身保管不善導致資訊洩露，我們不承擔由此產生的責任。
 
 ---
 
-## Chapter 7 Your Rights Regarding Personal Information
+## 第七章　您的個人資訊權利
 
-Pursuant to Chapter 4 of the PIPL, you enjoy the following rights regarding your own personal information. We will respond within **15 business days** of receiving your request and verifying your identity (where the situation is complex, it may be extended to 30 business days with notice to you).
+依據《個人資訊保護法》第四章，您對自身個人資訊享有下列權利。我們將在收到您的請求並核驗身份後 **15 個工作日**內予以響應（情況複雜的可延長至 30 個工作日並告知您）。
 
-| Right | How to Exercise | Notes |
+| 權利 | 行使方式 | 說明 |
 |---|---|---|
-| **Access and Copy** | Self-service view in console "Account Settings → Personal Information"; or email request | We will provide a copy in a structured, common format |
-| **Correct and Supplement** | Self-service modification in console; identity reverification required for real-name information | We will correct promptly after verification |
-| **Delete** | Self-service deletion in console; or email request | Applies to Article 47 of the PIPL: processing purpose achieved or no longer necessary; we stop service or storage period expires; you withdraw consent; we process unlawfully; other circumstances prescribed by laws and regulations |
-| **Withdraw Consent** | Console "Privacy Settings"; or email request | Withdrawal does not affect the validity of processing activities already conducted based on consent before withdrawal |
-| **Cancel Account** | Self-service cancellation in console | Settle fees and back up data before cancellation; account is unrecoverable after cancellation |
-| **Portability** | Email request | Where conditions prescribed by the national cyberspace authority are met, we provide a portability channel |
-| **Restrict or Refuse Processing** | Email request | E.g., refuse a decision made solely by automated means that has a major impact on you |
-| **Explanation** | Email request | You have the right to request an explanation of this Policy and the personal information processing rules |
-| **Complaint and Report** | privacy@uter.ai | We will respond within 15 business days |
+| **查閱、複製** | 控制檯"賬戶設定-個人資訊"自助檢視；或郵件申請 | 我們將以結構化、通用的格式提供副本 |
+| **更正、補充** | 控制檯自助修改；涉及實名資訊的，需重新核驗 | 我們將在核實後及時更正 |
+| **刪除** | 控制檯自助刪除；或郵件申請 | 適用《個人資訊保護法》第四十七條情形：處理目的已實現或為實現處理目的不再必要；我們停止提供服務或儲存期限屆滿；您撤回同意；我們違法處理；法律法規規定的其他情形 |
+| **撤回同意** | 控制檯"隱私設定"；或郵件申請 | 撤回不影響撤回前基於同意已進行的處理活動的效力 |
+| **登出賬戶** | 控制檯自助登出 | 登出前應結清費用、備份資料；登出後賬戶不可恢復 |
+| **轉移** | 郵件申請 | 符合國家網信部門規定條件的，我們提供轉移途徑 |
+| **限制或拒絕處理** | 郵件申請 | 如拒絕僅透過自動化決策作出對您有重大影響的決定 |
+| **解釋說明** | 郵件申請 | 您有權要求我們對本政策及個人資訊處理規則作出解釋 |
+| **投訴舉報** | privacy@uter.ai | 我們將在 15 個工作日內答覆 |
 
-**7.1 Request Acceptance Channel**
+**7.1 請求受理渠道**
 
-- Email: privacy@uter.ai
-- Console: Account Settings → Privacy and Data → Exercise of Rights
-- We may need you to provide necessary information to verify your identity; **verification is used only for identity confirmation and will not additionally expand the scope of information collection**.
+- 郵箱：privacy@uter.ai
+- 控制檯：賬戶設定 → 隱私與資料 → 權利行使
+- 我們可能需要您提供必要資訊以核驗身份；**核驗僅用於身份確認，不會額外擴大資訊收集範圍。**
 
-**7.2 Circumstances Where We May Decline to Respond**
+**7.2 拒絕響應的情形**
 
-We may be unable to respond to your request and will explain the reason under the following circumstances: related to our performance of obligations prescribed by laws and regulations; directly related to national security or national defense security; directly related to public security, public health or major public interests; directly related to the investigation, prosecution, trial and execution of judgments of crimes; sufficient evidence that you are acting in bad faith or abusing rights; response would cause serious harm to the legitimate rights and interests of you or other individuals or organizations; involves trade secrets.
+下列情形我們可能無法響應您的請求，並將說明理由：與我們履行法律法規規定的義務相關；與國家安全、國防安全直接相關；與公共安全、公共衛生、重大公共利益直接相關；與犯罪偵查、起訴、審判和執行判決等直接相關；有充分證據表明您存在主觀惡意或濫用權利；響應將導致您或其他個人、組織的合法權益受到嚴重損害；涉及商業秘密。
 
-**7.3 External Remedies**
+**7.3 外部救濟途徑**
 
-If you believe our processing activities infringe your legitimate rights and interests, and negotiation with us fails, you have the right to complain or report to the **department performing personal information protection duties**. You may:
+若您認為我們的處理活動侵害了您的合法權益，且與我們協商未果，您有權向**履行個人資訊保護職責的部門**投訴、舉報。您可以：
 
-- Report to the **National Cyber and Information Security Notification Center** or the **12377 Illegal and Bad Information Reporting Center**;
-- Complain to the **Shenzhen Office of Cyberspace Administration** or the **Shenzhen Communications Administration**;
-- File a lawsuit with the **people's court with jurisdiction**.
-
----
-
-## Chapter 8 Cookies and Similar Technologies
-
-8.1 We use Cookie and local storage (LocalStorage) technologies to implement the following necessary functions: maintaining login status, recording language and interface preferences, and preventing cross-site request forgery (CSRF).
-
-8.2 This Platform **does not use** Cookies for cross-site advertising tracking or personalized advertising delivery.
-
-8.3 You may manage or delete Cookies through browser settings. **Disabling necessary Cookies may prevent you from logging in normally or using console functions.**
+- 向**國家網路與資訊保安資訊通報中心**或**12377 網路違法和不良資訊舉報中心**舉報；
+- 向**深圳市網際網路資訊辦公室**或**深圳市通訊管理局**投訴；
+- 向**有管轄權的人民法院**提起訴訟。
 
 ---
 
-## Chapter 9 Protection of Minors
+## 第八章　Cookie 與同類技術
 
-9.1 This Platform **does not provide services to minors**. Pursuant to Article 1.5 of the Uter Large Model Service Platform Terms of Service, users should be at least **18 years of age** and have full capacity for civil conduct.
+8.1 我們使用 Cookie 及本地儲存（LocalStorage）技術實現下列必要功能：維持登入狀態、記錄語言與介面偏好、防範跨站請求偽造（CSRF）。
 
-9.2 We will not actively collect minors' personal information, nor require minors to provide any personal information. If you are a minor, please do not register for or use this Platform's services.
+8.2 本平臺**不使用** Cookie 進行跨站廣告追蹤或個性化廣告投放。
 
-9.3 Pursuant to Article 31 of the PIPL, **the personal information of minors under the age of 14 is sensitive personal information**. If we discover that we have mistakenly collected a minor's personal information, we will delete it immediately; guardians are welcome to contact us via privacy@uter.ai.
-
-9.4 **Note for users who are developers**: If the application you develop based on this Platform is directed at minors or may be used by minors, **you should obtain the separate consent of their guardians on your own**, and design dedicated information processing rules and content security measures for minors. This obligation is borne by you; this Platform does not intervene in the legal relationship between you and your end users.
+8.3 您可透過瀏覽器設定管理或刪除 Cookie。**禁用必要 Cookie 可能導致您無法正常登入或使用控制檯功能。**
 
 ---
 
-## Chapter 10 Special Notes on Generative AI Services
+## 第九章　未成年人保護
 
-**10.1 We Do Not Train Models**
+9.1 本平臺**不面向未成年人提供服務**。依據《優特智慧大模型服務平臺使用者協議》第 1.5 條，使用者應年滿 **18 週歲**且具備完全民事行為能力。
 
-10.1.1 We ourselves **do not develop or train large models**. The role of this Platform is the aggregator and forwarder of model capability.
+9.2 我們不會主動收集未成年人的個人資訊，也不會要求未成年人提供任何個人資訊。若您為未成年人，請勿註冊或使用本平臺服務。
 
-10.1.2 **We will not use your request content to train or fine-tune any model**, nor use it to improve model performance, build training datasets or perform data annotation.
+9.3 我們依據《個人資訊保護法》第三十一條，**不滿十四周歲未成年人的個人資訊屬於敏感個人資訊**。若發現誤收集了未成年人個人資訊的，我們將立即刪除；同時歡迎監護人透過 privacy@uter.ai 聯絡我們。
 
-10.1.3 Whether an Upstream Model Provider uses your data to train its models **depends on that upstream's own policy and your contractual arrangements**. We recommend that you consult the corresponding upstream's privacy policy; for providers that explicitly commit not to use customer data for training, we will mark them in the model catalog.
-
-**10.2 Labeling Obligations for Generated Content**
-
-10.2.1 Pursuant to Article 12 of the Interim Measures for the Management of Generative AI Services and Article 17 of the Provisions on the Administration of Deep Synthesis of Internet Information Services, **as the service provider providing generative AI services to end users, you should add explicit labels to generated content as required by law, or add implicit labels in file metadata.**
-
-10.2.2 We may provide technical support for labeling capability, but **do not replace you in fulfilling the statutory labeling obligation**.
-
-**10.3 Content Security**
-
-10.3.1 We may deploy content security review capability on the server side to intercept obviously illegal inputs and outputs. Such review is based on **the content itself** and does not target your personal identity.
-
-10.3.2 If you use this Platform's generative capability in scenarios with **public opinion attributes or social mobilization capacity** as defined by the Provisions on the Administration of Algorithm Recommendation for Internet Information Services and the Interim Measures for the Management of Generative AI Services, you should fulfill the **algorithm filing** and **security assessment** obligations pursuant to law.
-
-**10.4 Risks of Output Content**
-
-The output of large language models is probabilistic and non-deterministic, and **may contain factual errors, bias or inappropriate content**. Please do not use the output as the sole basis for professional decisions such as medical, legal or financial investment.
+9.4 **作為開發者的使用者注意**：若您基於本平臺開發的應用程式面向未成年人或可能被未成年人使用，**您應自行取得其監護人的單獨同意**，並針對未成年人設計專門的資訊處理規則與內容安全措施。此義務由您承擔，本平臺不介入您與終端使用者之間的法律關係。
 
 ---
 
-## Chapter 11 Updates to this Policy
+## 第十章　生成式人工智慧服務的特別說明
 
-11.1 We may update this Policy based on changes in laws and regulations, business adjustments or technology upgrades. The updated Policy will be prominently published on the Platform with the update date marked.
+**10.1 我們不訓練模型**
 
-11.2 For the following **material changes**, we will **prominently notify you** by in-site message, email or pop-up, and re-obtain your consent where necessary:
+10.1.1 我們自身**不研發、不訓練大模型**。本平臺的角色是模型能力的聚合與轉發方。
 
-1. The purpose, type or method of processing personal information changes materially;
-2. The main objects of sharing, transfer or public disclosure of personal information change;
-3. Your rights regarding the processing of personal information and how to exercise them change materially;
-4. The purpose, recipient or type of cross-border data transfer changes;
-5. The personal information security impact assessment indicates a high risk.
+10.1.2 **我們不會使用您的請求內容訓練或微調任何模型**，也不會將其用於改善模型效能、構建訓練資料集或進行資料標註。
 
-11.3 Upon expiry of the publication period, your continued use of this Service is deemed as acceptance of the updated Policy; if you do not accept it, you may stop using it and cancel your account.
+10.1.3 就上游模型提供商是否使用您的資料訓練其模型，**取決於該上游自身的政策與您的合同安排**。我們建議您查閱對應上游的隱私政策；對於明確承諾不用客戶資料訓練的提供商，我們會在模型目錄中予以標註。
 
-**Version History**
+**10.2 生成內容的標識義務**
 
-| Version | Effective Date | Revision Notes |
+10.2.1 依據《生成式人工智慧服務管理暫行辦法》第十二條及《網際網路資訊服務深度合成管理規定》第十七條，**您作為向終端使用者提供生成式人工智慧服務的服務提供者，應依法對生成內容新增顯式標識或在檔案後設資料中新增隱式標識。**
+
+10.2.2 我們可提供標識能力的技術支援，但**不代替您履行法定的標識義務**。
+
+**10.3 內容安全**
+
+10.3.1 我們可能在服務端部署內容安全稽核能力，對明顯違法的輸入輸出進行攔截。該等稽核基於**內容本身**，不針對您的個人身份。
+
+10.3.2 若您將本平臺的生成式能力用於《網際網路資訊服務演算法推薦管理規定》《生成式人工智慧服務管理暫行辦法》規定的**具有輿論屬性或社會動員能力**的場景，您應依法履行**演算法備案**與**安全評估**義務。
+
+**10.4 輸出內容的風險**
+
+大語言模型的輸出具有機率性與非確定性，**可能存在事實性錯誤、偏見或不適當內容**。請勿將輸出內容作為醫療、法律、金融投資等專業決策的唯一依據。
+
+---
+
+## 第十一章　本政策的更新
+
+11.1 我們可能依據法律法規變化、業務調整或技術升級更新本政策。更新後的政策將在平臺以顯著方式公示並標註更新日期。
+
+11.2 涉及下列**重大變更**的，我們將以站內信、電子郵件或彈窗等方式**顯著通知您，並在必要時重新取得您的同意**：
+
+1. 處理個人資訊的目的、型別、方式發生重大變化；
+2. 個人資訊共享、轉讓或公開披露的主要物件發生變化；
+3. 您參與個人資訊處理方面的權利及其行使方式發生重大變化；
+4. 資料出境的目的、接收方、型別發生變化；
+5. 個人資訊保安影響評估報告表明存在高風險。
+
+11.3 公示期屆滿後您繼續使用本服務，即視為接受更新後的政策；如您不接受，可停止使用並登出賬戶。
+
+**版本歷史**
+
+| 版本號 | 生效日期 | 修訂說明 |
 |---|---|---|
-| V1.0 | August 8, 2026 | First release |
+| V1.0 | 2026 年 08 月 08 日 | 首次釋出 |
 
 ---
 
-## Chapter 12 How to Contact Us
+## 第十二章　如何聯絡我們
 
-| Matter | Contact |
+| 事項 | 聯絡方式 |
 |---|---|
-| Personal Information Protection Officer | privacy@uter.ai |
-| Exercise of Personal Information Rights and Complaints | privacy@uter.ai |
-| Service and Technical Support | tech@uter.ai |
-| Abuse and Violation Reporting | abuse@uter.ai |
-| Business and Contracts | bd@uter.ai |
-| Mailing Address | T2, Ali Center, Nanshan District, Shenzhen, Guangdong Province, the People's Republic of China |
+| 個人資訊保護負責人 | privacy@uter.ai |
+| 個人資訊權利行使與投訴 | privacy@uter.ai |
+| 服務與技術支援 | tech@uter.ai |
+| 濫用與違規舉報 | abuse@uter.ai |
+| 商務與合同 | bd@uter.ai |
+| 通訊地址 | 廣東省深圳市南山區阿里中心T2 |
 
-We will respond within **15 business days** of receiving your question or complaint.
+我們將在收到您的問題或投訴後 **15 個工作日**內予以答覆。
 
 ---
 
-## Chapter 13 Definitions
+## 第十三章　名詞解釋
 
-| Term | Meaning |
+| 術語 | 含義 |
 |---|---|
-| **Personal Information** | Various kinds of information recorded electronically or otherwise relating to identified or identifiable natural persons, excluding information that has been anonymized |
-| **Sensitive Personal Information** | Personal information that, once leaked or illegally used, is likely to cause damage to the dignity of a natural person or endanger personal or property safety, including biometrics, religious beliefs, specific identity, medical and health, financial accounts, whereabouts and other information, as well as the personal information of minors under the age of 14 |
-| **Personal Information Processor** | An organization or individual that independently determines the purpose and method of processing personal information |
-| **Entrusted Processor** | An organization or individual that accepts entrustment from a personal information processor and processes personal information according to its instructions |
-| **De-identification** | The process by which personal information is processed so that a specific natural person cannot be identified without the aid of additional information |
-| **Anonymization** | The process by which personal information is processed such that a specific natural person cannot be identified and cannot be restored |
-| **Automated Decision-Making** | Activities that use computer programs to automatically analyze and evaluate an individual's behavioral habits, interests, hobbies or economic, health or credit status, and make decisions |
-| **Cross-Border Data Transfer** | Transmitting or storing personal information collected and generated during operations within the territory of China to a location outside China, or allowing overseas institutions, organizations or individuals to access or retrieve such information |
-| **Upstream Model Provider** | A third party that actually provides large-model inference capability, including but not limited to OpenAI, Anthropic, Google, Alibaba Cloud, ByteDance, Tencent, DeepSeek, Zhipu, etc. |
+| **個人資訊** | 以電子或其他方式記錄的與已識別或可識別的自然人有關的各種資訊，不包括匿名化處理後的資訊 |
+| **敏感個人資訊** | 一旦洩露或非法使用，容易導致自然人的人格尊嚴受到侵害或人身、財產安全受到危害的個人資訊，包括生物識別、宗教信仰、特定身份、醫療健康、金融賬戶、行蹤軌跡等資訊，以及不滿十四周歲未成年人的個人資訊 |
+| **個人資訊處理者** | 自主決定處理目的、處理方式的組織、個人 |
+| **受託處理者** | 接受個人資訊處理者委託，按其指令處理個人資訊的組織、個人 |
+| **去標識化** | 個人資訊經過處理，使其在不借助額外資訊的情況下無法識別特定自然人的過程 |
+| **匿名化** | 個人資訊經過處理無法識別特定自然人且不能復原的過程 |
+| **自動化決策** | 透過計算機程式自動分析、評估個人的行為習慣、興趣愛好或經濟、健康、信用狀況等，並進行決策的活動 |
+| **資料出境** | 將在中國境內運營中收集和產生的個人資訊傳輸、儲存至境外，或允許境外的機構、組織、個人訪問、調取該等資訊 |
+| **上游模型提供商** | 實際提供大模型推理能力的第三方，包括但不限於 OpenAI、Anthropic、Google、阿里雲、位元組跳動、騰訊、DeepSeek、智譜等 |
+
+---

@@ -1,68 +1,70 @@
-# OpenClaw - Self-hosted AI Assistant Platform
+# OpenClaw — самостоятельно размещаемая платформа ИИ-ассистентов
 
-> **Project Introduction**
+> **Введение в проект**
 >
-> OpenClaw is an open-source, self-hosted personal AI
->   assistant platform that connects messaging apps to AI
->   agents running on your own hardware. Designed for developers and advanced users, it allows you to have an autonomous AI assistant without giving up control of your data.
+> OpenClaw — это открытая, самостоятельно размещаемая платформа
+> персональных ИИ-ассистентов, которая подключает приложения обмена
+> сообщениями к ИИ-агентам, работающим на вашем собственном оборудовании.
+> Предназначена для разработчиков и продвинутых пользователей, она позволяет
+> иметь автономного ИИ-ассистента, не отказываясь от контроля над своими данными.
 >
->   - Official Homepage: [https://openclaw.ai](https://openclaw.ai)
->   - Project Documentation: [https://docs.openclaw.ai](https://docs.openclaw.ai)
+>   - Официальная домашняя страница: [https://openclaw.ai](https://openclaw.ai)
+>   - Документация проекта: [https://docs.openclaw.ai](https://docs.openclaw.ai)
 >   - GitHub: [https://github.com/openclaw/openclaw](https://github.com/openclaw/openclaw)
 
-OpenClaw is completely open-source. You can browse the source code, submit issues, or contribute on [OpenClaw's GitHub repository](https://github.com/openclaw/openclaw). This tutorial covers the complete steps for installing, configuring, and integrating OpenClaw with Uter.
+OpenClaw полностью открыт. Вы можете просматривать исходный код, отправлять отчёты об ошибках или вносить вклад на [репозитории OpenClaw на GitHub](https://github.com/openclaw/openclaw). Это руководство охватывает полные шаги по установке, настройке и интеграции OpenClaw с Uter.
 
-## 🌟 Core Features
+## 🌟 Основные возможности
 
-### Multi-channel Integration
+### Многоканальная интеграция
 
-- **Multi-channel Integration**: Supports various messaging channels like Telegram, Discord, WhatsApp, iMessage, and can be extended to more platforms via plugins.
-- **Single Gateway**: Unified management of all channels through a single Gateway process.
-- **Voice Support**: Supports macOS/iOS/Android voice interaction.
-- **Canvas Interface**: Can render interactive Canvas interfaces.
+- **Многоканальная интеграция**: Поддерживает различные каналы обмена сообщениями, такие как Telegram, Discord, WhatsApp, iMessage, и может быть расширена до большего числа платформ через плагины.
+- **Единый шлюз**: Единое управление всеми каналами через один процесс Gateway.
+- **Голосовая поддержка**: Поддерживает голосовое взаимодействие macOS/iOS/Android.
+- **Интерфейс Canvas**: Может отображать интерактивные интерфейсы Canvas.
 
-### Self-hosting and Data Security
+### Самостоятельное размещение и безопасность данных
 
-- **Fully Self-hosted**: Runs on your own machine or server.
-- **Open Source Transparency**: MIT open-source license, completely transparent code.
-- **Local Data**: Context and skills are stored on your local computer, not in the cloud.
+- **Полностью самостоятельное размещение**: Работает на вашем собственном компьютере или сервере.
+- **Прозрачность открытого кода**: Лицензия MIT, полностью прозрачный код.
+- **Локальные данные**: Контекст и навыки хранятся на вашем локальном компьютере, а не в облаке.
 
-### Intelligent Agent Capabilities
+### Возможности интеллектуальных агентов
 
-- **Continuous Operation**: Supports persistent background operation with long-term memory.
-- **Scheduled Tasks**: Supports cron scheduled tasks.
-- **Session Isolation**: Isolates sessions by agent/workspace/sender.
-- **Multi-agent Routing**: Supports collaborative work among multiple agents.
-- **Tool Calling**: Native support for tool calling and code execution.
+- **Непрерывная работа**: Поддерживает постоянную фоновую работу с долговременной памятью.
+- **Запланированные задачи**: Поддерживает запланированные задачи cron.
+- **Изоляция сессий**: Изолирует сессии по агенту/рабочему пространству/отправителю.
+- **Маршрутизация нескольких агентов**: Поддерживает совместную работу нескольких агентов.
+- **Вызов инструментов**: Нативная поддержка вызова инструментов и выполнения кода.
 
-## 📦 Preparation Before Integration
+## 📦 Подготовка перед интеграцией
 
-> **Preparation Information**
+> **Подготовительная информация**
 >
-> - Node.js 22 or higher
->   - An available Uter address (usually ending with `/v1`)
->   - An available Uter API Key
->   - Please use your own deployed Uter, or confirm that the service provider has legitimate upstream authorization and compliance obligations for their Uter service. Do not connect unknown API addresses or keys to production environments.
+> - Node.js 22 или выше
+>   - Доступный адрес Uter (обычно заканчивается на `/v1`)
+>   - Доступный API-ключ Uter
+>   - Используйте свой собственный развёрнутый экземпляр Uter или подтвердите, что поставщик услуг имеет легитимную апстрим-авторизацию и обязательства по соответствию для своего сервиса Uter. Не подключайте неизвестные адреса API или ключи к производственным средам.
 
-Before integrating Uter, it's recommended to first get the Gateway and Control UI running according to OpenClaw's official current recommended process. This makes it easier to distinguish whether OpenClaw itself is not starting or if the model provider configuration is incorrect when troubleshooting later.
+Перед интеграцией Uter рекомендуется сначала запустить Gateway и Control UI в соответствии с текущим рекомендуемым процессом OpenClaw. Это облегчает определение того, не запускается ли сам OpenClaw или неверна конфигурация провайдера моделей при последующем устранении неполадок.
 
-### 1. Install OpenClaw (macOS/Linux)
+### 1. Установите OpenClaw (macOS/Linux)
 
 ```bash
 curl -fsSL https://openclaw.ai/install.sh | bash
 ```
 
-For other installation methods, refer to the OpenClaw official documentation: [Getting Started](https://docs.openclaw.ai/start/getting-started).
+Другие способы установки см. в официальной документации OpenClaw: [Начало работы](https://docs.openclaw.ai/start/getting-started).
 
-### 2. Run the Onboarding Wizard
+### 2. Запустите мастер начальной настройки
 
 ```bash
 openclaw onboard --install-daemon
 ```
 
-This wizard will complete basic authentication, Gateway setup, and optional channel initialization. The goal here is to get OpenClaw running first, then switch the default model to Uter later.
+Этот мастер выполнит базовую аутентификацию, настройку Gateway и необязательную инициализацию каналов. Цель здесь — сначала запустить OpenClaw, а затем позже переключить модель по умолчанию на Uter.
 
-### 3. Check Gateway and Control UI
+### 3. Проверьте Gateway и Control UI
 
 ```bash
 openclaw gateway status
@@ -72,43 +74,43 @@ openclaw gateway status
 openclaw dashboard
 ```
 
-If the browser can open the Control UI, it means OpenClaw's basic operation is normal. At this stage, there's no need to configure Telegram, Discord, Feishu, or other messaging channels yet.
+Если браузер может открыть Control UI, это означает, что базовая работа OpenClaw в норме. На этом этапе настраивать Telegram, Discord, Feishu или другие каналы обмена сообщениями ещё не нужно.
 
-### 4. Locate the Configuration File
+### 4. Найдите конфигурационный файл
 
-OpenClaw's configuration file is usually located at `~/.openclaw/openclaw.json`. You can continue to modify it based on what the onboarding wizard generated.
+Конфигурационный файл OpenClaw обычно располагается по адресу `~/.openclaw/openclaw.json`. Вы можете продолжить его изменение на основе того, что сгенерировал мастер начальной настройки.
 
-> **Path-related Environment Variables**
+> **Переменные среды, связанные с путями**
 >
-> If you run OpenClaw under a dedicated service account, or wish to customize the configuration/state directory, you can use:
+> Если вы запускаете OpenClaw под выделенной служебной учётной записью или хотите настроить каталог конфигурации/состояния, вы можете использовать:
 >
 >   - `OPENCLAW_HOME`
 >   - `OPENCLAW_STATE_DIR`
 >   - `OPENCLAW_CONFIG_PATH`
 >
->   For detailed instructions, see the official environment variables documentation: [Environment Variables](https://docs.openclaw.ai/help/environment).
+>   Подробные инструкции см. в официальной документации по переменным среды: [Переменные среды](https://docs.openclaw.ai/help/environment).
 
-## 🚀 Using Uter as a Model Provider
+## 🚀 Использование Uter в качестве провайдера моделей
 
-OpenClaw supports integrating custom or OpenAI-compatible model gateways via `models.providers`. For Uter, the most common approach is to add it as a custom provider to the configuration, then point the default model to `uter/model-ID`.
+OpenClaw поддерживает интеграцию пользовательских шлюзов моделей, совместимых с OpenAI, через `models.providers`. Для Uter наиболее распространённый подход — добавить его как пользовательского провайдера в конфигурацию, а затем направить модель по умолчанию на `uter/model-ID`.
 
-### Integration Approach
+### Подход к интеграции
 
-1. Declare a `uter` provider under `models.providers`.
-2. Point `baseUrl` to your Uter address, ensuring it includes `/v1`.
-3. Set `api` to `openai-completions`.
-4. List the model IDs you want OpenClaw to use in `models`.
-5. Switch the default model in `agents.defaults.model.primary` to `uter/...`.
+1. Объявите провайдера `uter` в `models.providers`.
+2. Направьте `baseUrl` на ваш адрес Uter, убедившись, что он включает `/v1`.
+3. Установите `api` в `openai-completions`.
+4. Перечислите ID моделей, которые вы хотите использовать в OpenClaw, в `models`.
+5. Переключите модель по умолчанию в `agents.defaults.model.primary` на `uter/...`.
 
-### Recommended Practice: Store API Key in Environment Variables
+### Рекомендуемая практика: храните API-ключ в переменных среды
 
-First, provide your Uter key in the current shell, service environment, or an `.env` file readable by OpenClaw:
+Сначала укажите свой ключ Uter в текущей оболочке, служебной среде или в `.env` файле, доступном для чтения OpenClaw:
 
 ```bash
 export UTER_API_KEY="sk-your-uter-key"
 ```
 
-Then, add or modify the following snippet in `openclaw.json`:
+Затем добавьте или измените следующий фрагмент в `openclaw.json`:
 
 ```json5
 {
@@ -142,40 +144,40 @@ Then, add or modify the following snippet in `openclaw.json`:
 }
 ```
 
-This is not a complete configuration that must be copied exactly, but rather the most critical part for integrating Uter. As long as the `provider`, model IDs, and default model references are correct, OpenClaw will be able to call your exposed model resources via Uter.
+Это не полная конфигурация, которую нужно скопировать точно, а лишь наиболее критичная часть для интеграции Uter. Пока `provider`, ID моделей и ссылки на модель по умолчанию указаны верно, OpenClaw сможет вызывать ваши открытые ресурсы моделей через Uter.
 
-### Key Configuration Details
+### Ключевые детали конфигурации
 
-| Configuration Item | Description |
+| Элемент конфигурации | Описание |
 | --- | --- |
-| `models.mode` | Recommended to set to `merge`, appending `uter` while retaining OpenClaw's built-in providers |
-| `models.providers.uter.baseUrl` | Your Uter address, usually needs to include `/v1` |
-| `models.providers.uter.apiKey` | Uter key, recommended to inject via `${UTER_API_KEY}` |
-| `models.providers.uter.api` | For OpenAI-compatible gateways like Uter, use `openai-completions` |
-| `models.providers.uter.models` | The model IDs listed here must match the actual model names exposed by your Uter |
-| `agents.defaults.model.primary` | Default primary model, format must be `provider/model-id` |
-| `agents.defaults.model.fallbacks` | List of fallback models, automatically switches if the primary model fails |
-| `agents.defaults.models` | Optional, used to create aliases for models, convenient for referencing in UI or sessions |
+| `models.mode` | Рекомендуется установить в `merge`, добавляя `uter` при сохранении встроенных провайдеров OpenClaw |
+| `models.providers.uter.baseUrl` | Ваш адрес Uter, обычно должен включать `/v1` |
+| `models.providers.uter.apiKey` | Ключ Uter, рекомендуется внедрять через `${UTER_API_KEY}` |
+| `models.providers.uter.api` | Для шлюзов, совместимых с OpenAI, таких как Uter, используйте `openai-completions` |
+| `models.providers.uter.models` | Перечисленные здесь ID моделей должны соответствовать фактическим именам моделей, открытым вашим Uter |
+| `agents.defaults.model.primary` | Модель по умолчанию, формат должен быть `provider/model-id` |
+| `agents.defaults.model.fallbacks` | Список резервных моделей, автоматически переключается при сбое основной модели |
+| `agents.defaults.models` | Необязательно, используется для создания псевдонимов моделей, удобно для ссылок в UI или сессиях |
 
-### Verify Successful Integration
+### Проверьте успешность интеграции
 
-After completing the configuration, return to the Control UI or reopen it:
+После завершения конфигурации вернитесь в Control UI или откройте его заново:
 
 ```bash
 openclaw dashboard
 ```
 
-If you can initiate conversations normally in OpenClaw and the default model has become `uter/...`, then the integration is successful. You can also use:
+Если вы можете нормально инициировать беседы в OpenClaw и модель по умолчанию стала `uter/...`, то интеграция успешна. Вы также можете использовать:
 
 ```bash
 openclaw models list
 ```
 
-to confirm that models with the `uter/` prefix appear in the selectable list.
+чтобы подтвердить, что модели с префиксом `uter/` появляются в списке для выбора.
 
-### Common Issues
+### Распространённые проблемы
 
-- `baseUrl` missing `/v1`: This is one of the most common integration errors.
-- Incorrect model ID: `primary` and `fallbacks` must correspond to the `id` in `models.providers.uter.models`.
-- API key only effective in the current terminal: If Gateway runs as a background service, ensure the service process can also read `UTER_API_KEY`.
-- For foreground troubleshooting: Use the official foreground running method `openclaw gateway --port 18789` to observe logs and errors.
+- `baseUrl` без `/v1`: Это одна из самых частых ошибок интеграции.
+- Неверный ID модели: `primary` и `fallbacks` должны соответствовать `id` в `models.providers.uter.models`.
+- API-ключ действует только в текущем терминале: Если Gateway запущен как фоновый сервис, убедитесь, что процесс сервиса также может читать `UTER_API_KEY`.
+- Для устранения неполадок на переднем плане: Используйте официальный способ запуска на переднем плане `openclaw gateway --port 18789`, чтобы наблюдать логи и ошибки.

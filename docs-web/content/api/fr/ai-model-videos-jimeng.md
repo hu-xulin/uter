@@ -1,52 +1,52 @@
-# Jimeng Video Generation
+# Génération vidéo Jimeng
 
-## Jimeng Video Generation
+## Génération vidéo Jimeng
 
-即梦官方 API 格式的视频生成接口。
+Interface de génération vidéo au format d'API officiel Jimeng.
 
-支持通过 Action 参数指定操作类型：
-- `CVSync2AsyncSubmitTask`: 提交视频生成任务
-- `CVSync2AsyncGetResult`: 获取任务结果
+Prend en charge la spécification du type d'opération via le paramètre Action :
+- `CVSync2AsyncSubmitTask` : soumettre une tâche de génération vidéo
+- `CVSync2AsyncGetResult` : récupérer le résultat de la tâche
 
-需要在查询参数中指定 Action 和 Version。
+Vous devez spécifier Action et Version dans les paramètres de requête.
 
 `POST` `/jimeng/`
 
-### 请求参数
+### Paramètres de requête
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| Nom du paramètre | Position | Type | Requis | Description |
 |---|---|---|---|---|
-| `Action` | query | enum（`CVSync2AsyncSubmitTask`, `CVSync2AsyncGetResult`） | 是 | API 操作类型 |
-| `Version` | query | string | 是 | API 版本 |
+| `Action` | query | enum（`CVSync2AsyncSubmitTask`, `CVSync2AsyncGetResult`） | Oui | Type d'opération API |
+| `Version` | query | string | Oui | Version de l'API |
 
-### 请求体（`application/json`）
+### Corps de la requête (`application/json`)
 
-| 字段 | 类型 | 必填 | 说明 |
+| Champ | Type | Requis | Description |
 |---|---|---|---|
-| `req_key` | string | 否 | 请求类型标识 |
-| `prompt` | string | 否 | 文本描述 |
-| `binary_data_base64` | array&lt;string&gt; | 否 | Base64 编码的图片数据 |
+| `req_key` | string | Non | Identifiant du type de requête |
+| `prompt` | string | Non | Description textuelle |
+| `binary_data_base64` | array&lt;string&gt; | Non | Données image encodées en Base64 |
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功处理请求 |
-| `400` | 请求参数错误 |
+| `200` | Requête traitée avec succès |
+| `400` | Erreur de paramètres de requête |
 
-#### `200` 响应字段
+#### Champs de la réponse `200`
 
-| 字段 | 类型 | 说明 |
+| Champ | Type | Description |
 |---|---|---|
-| `code` | integer | 响应码 |
-| `message` | string | 响应消息 |
-| `data` | object | 响应数据 |
+| `code` | integer | Code de réponse |
+| `message` | string | Message de réponse |
+| `data` | object | Données de réponse |
 
-#### `400` 响应字段
+#### Champs de la réponse `400`
 
-| 字段 | 类型 | 说明 |
+| Champ | Type | Description |
 |---|---|---|
-| `error.message` | string | 错误信息 |
-| `error.type` | string | 错误类型 |
-| `error.param` | string | 相关参数 |
-| `error.code` | string | 错误代码 |
+| `error.message` | string | Message d'erreur |
+| `error.type` | string | Type d'erreur |
+| `error.param` | string | Paramètre concerné |
+| `error.code` | string | Code d'erreur |

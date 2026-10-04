@@ -2,184 +2,184 @@
 
 ## Kling Image to Video
 
-使用 Kling 模型从图片生成视频。
+Kling モデルを使用して画像から動画を生成します。
 
-支持通过 image 参数传入图片 URL 或 Base64 编码的图片数据。
+image パラメータで画像 URL または Base64 エンコードされた画像データを渡すことができます。
 
 `POST` `/kling/v1/videos/image2video`
 
-### 请求体（`application/json`）
+### リクエストボディ（`application/json`）
 
-| 字段 | 类型 | 必填 | 说明 |
+| フィールド | 型 | 必須 | 説明 |
 |---|---|---|---|
-| `model` | string | 否 | 模型/风格 ID |
-| `prompt` | string | 否 | 文本描述提示词 |
-| `image` | string | 否 | 图片输入 (URL 或 Base64) |
-| `duration` | number | 否 | 视频时长（秒） |
-| `width` | integer | 否 | 视频宽度 |
-| `height` | integer | 否 | 视频高度 |
-| `fps` | integer | 否 | 视频帧率 |
-| `seed` | integer | 否 | 随机种子 |
-| `n` | integer | 否 | 生成视频数量 |
-| `response_format` | string | 否 | 响应格式 |
-| `user` | string | 否 | 用户标识 |
-| `metadata` | object | 否 | 扩展参数 (如 negative_prompt, style, quality_level 等) |
+| `model` | string | 任意 | モデル/スタイル ID |
+| `prompt` | string | 任意 | テキスト説明プロンプト |
+| `image` | string | 任意 | 画像入力（URL または Base64） |
+| `duration` | number | 任意 | 動画の長さ（秒） |
+| `width` | integer | 任意 | 動画の幅 |
+| `height` | integer | 任意 | 動画の高さ |
+| `fps` | integer | 任意 | 動画のフレームレート |
+| `seed` | integer | 任意 | 乱数シード |
+| `n` | integer | 任意 | 生成する動画の数 |
+| `response_format` | string | 任意 | 応答フォーマット |
+| `user` | string | 任意 | ユーザー識別子 |
+| `metadata` | object | 任意 | 拡張パラメータ（negative_prompt、style、quality_level など） |
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
-| `200` | 成功创建视频生成任务 |
-| `400` | 请求参数错误 |
+| `200` | 動画生成タスクの作成に成功 |
+| `400` | リクエストパラメータエラー |
 
-#### `200` 响应字段
+#### `200` レスポンスフィールド
 
-| 字段 | 类型 | 说明 |
+| フィールド | 型 | 説明 |
 |---|---|---|
-| `task_id` | string | 任务 ID |
-| `status` | string | 任务状态 |
+| `task_id` | string | タスク ID |
+| `status` | string | タスク状態 |
 
-#### `400` 响应字段
+#### `400` レスポンスフィールド
 
-| 字段 | 类型 | 说明 |
+| フィールド | 型 | 説明 |
 |---|---|---|
-| `error.message` | string | 错误信息 |
-| `error.type` | string | 错误类型 |
-| `error.param` | string | 相关参数 |
-| `error.code` | string | 错误代码 |
+| `error.message` | string | エラーメッセージ |
+| `error.type` | string | エラータイプ |
+| `error.param` | string | 関連パラメータ |
+| `error.code` | string | エラーコード |
 
 ## Kling Text-to-Video
 
-使用 Kling 模型从文本描述生成视频。
+Kling モデルを使用してテキスト説明から動画を生成します。
 
-支持的模型：kling-v1, kling-v1-5 等
+対応モデル：kling-v1、kling-v1-5 など
 
 `POST` `/kling/v1/videos/text2video`
 
-### 请求体（`application/json`）
+### リクエストボディ（`application/json`）
 
-| 字段 | 类型 | 必填 | 说明 |
+| フィールド | 型 | 必須 | 説明 |
 |---|---|---|---|
-| `model` | string | 否 | 模型/风格 ID |
-| `prompt` | string | 否 | 文本描述提示词 |
-| `image` | string | 否 | 图片输入 (URL 或 Base64) |
-| `duration` | number | 否 | 视频时长（秒） |
-| `width` | integer | 否 | 视频宽度 |
-| `height` | integer | 否 | 视频高度 |
-| `fps` | integer | 否 | 视频帧率 |
-| `seed` | integer | 否 | 随机种子 |
-| `n` | integer | 否 | 生成视频数量 |
-| `response_format` | string | 否 | 响应格式 |
-| `user` | string | 否 | 用户标识 |
-| `metadata` | object | 否 | 扩展参数 (如 negative_prompt, style, quality_level 等) |
+| `model` | string | 任意 | モデル/スタイル ID |
+| `prompt` | string | 任意 | テキスト説明プロンプト |
+| `image` | string | 任意 | 画像入力（URL または Base64） |
+| `duration` | number | 任意 | 動画の長さ（秒） |
+| `width` | integer | 任意 | 動画の幅 |
+| `height` | integer | 任意 | 動画の高さ |
+| `fps` | integer | 任意 | 動画のフレームレート |
+| `seed` | integer | 任意 | 乱数シード |
+| `n` | integer | 任意 | 生成する動画の数 |
+| `response_format` | string | 任意 | 応答フォーマット |
+| `user` | string | 任意 | ユーザー識別子 |
+| `metadata` | object | 任意 | 拡張パラメータ（negative_prompt、style、quality_level など） |
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
-| `200` | 成功创建视频生成任务 |
-| `400` | 请求参数错误 |
+| `200` | 動画生成タスクの作成に成功 |
+| `400` | リクエストパラメータエラー |
 
-#### `200` 响应字段
+#### `200` レスポンスフィールド
 
-| 字段 | 类型 | 说明 |
+| フィールド | 型 | 説明 |
 |---|---|---|
-| `task_id` | string | 任务 ID |
-| `status` | string | 任务状态 |
+| `task_id` | string | タスク ID |
+| `status` | string | タスク状態 |
 
-#### `400` 响应字段
+#### `400` レスポンスフィールド
 
-| 字段 | 类型 | 说明 |
+| フィールド | 型 | 説明 |
 |---|---|---|
-| `error.message` | string | 错误信息 |
-| `error.type` | string | 错误类型 |
-| `error.param` | string | 相关参数 |
-| `error.code` | string | 错误代码 |
+| `error.message` | string | エラーメッセージ |
+| `error.type` | string | エラータイプ |
+| `error.param` | string | 関連パラメータ |
+| `error.code` | string | エラーコード |
 
 ## Get Kling Image-to-Video Task Status
 
-查询 Kling 图生视频任务的状态和结果。
+Kling の画像から動画へのタスクの状態と結果を照会します。
 
 `GET` `/kling/v1/videos/image2video/{task_id}`
 
-### 请求参数
+### リクエストパラメータ
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| パラメータ名 | 位置 | 型 | 必須 | 説明 |
 |---|---|---|---|---|
-| `task_id` | path | string | 是 | 任务 ID |
+| `task_id` | path | string | 必須 | タスク ID |
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
-| `200` | 成功获取任务状态 |
-| `404` | 任务不存在 |
+| `200` | タスク状態の取得に成功 |
+| `404` | タスクが存在しません |
 
-#### `200` 响应字段
+#### `200` レスポンスフィールド
 
-| 字段 | 类型 | 说明 |
+| フィールド | 型 | 説明 |
 |---|---|---|
-| `task_id` | string | 任务 ID |
-| `status` | enum（`queued`, `in_progress`, `completed`, `failed`） | 任务状态 |
-| `url` | string | 视频资源 URL（成功时） |
-| `format` | string | 视频格式 |
-| `metadata.duration` | number | 实际生成的视频时长 |
-| `metadata.fps` | integer | 实际帧率 |
-| `metadata.width` | integer | 实际宽度 |
-| `metadata.height` | integer | 实际高度 |
-| `metadata.seed` | integer | 使用的随机种子 |
-| `error.code` | integer | 错误码 |
-| `error.message` | string | 错误信息 |
+| `task_id` | string | タスク ID |
+| `status` | enum（`queued`, `in_progress`, `completed`, `failed`） | タスク状態 |
+| `url` | string | 動画リソース URL（成功時） |
+| `format` | string | 動画フォーマット |
+| `metadata.duration` | number | 実際に生成された動画の長さ |
+| `metadata.fps` | integer | 実際のフレームレート |
+| `metadata.width` | integer | 実際の幅 |
+| `metadata.height` | integer | 実際の高さ |
+| `metadata.seed` | integer | 使用された乱数シード |
+| `error.code` | integer | エラーコード |
+| `error.message` | string | エラーメッセージ |
 
-#### `404` 响应字段
+#### `404` レスポンスフィールド
 
-| 字段 | 类型 | 说明 |
+| フィールド | 型 | 説明 |
 |---|---|---|
-| `error.message` | string | 错误信息 |
-| `error.type` | string | 错误类型 |
-| `error.param` | string | 相关参数 |
-| `error.code` | string | 错误代码 |
+| `error.message` | string | エラーメッセージ |
+| `error.type` | string | エラータイプ |
+| `error.param` | string | 関連パラメータ |
+| `error.code` | string | エラーコード |
 
 ## Get Kling Text-to-Video Task Status
 
-查询 Kling 文生视频任务的状态和结果。
+Kling のテキストから動画へのタスクの状態と結果を照会します。
 
 `GET` `/kling/v1/videos/text2video/{task_id}`
 
-### 请求参数
+### リクエストパラメータ
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| パラメータ名 | 位置 | 型 | 必須 | 説明 |
 |---|---|---|---|---|
-| `task_id` | path | string | 是 | 任务 ID |
+| `task_id` | path | string | 必須 | タスク ID |
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
-| `200` | 成功获取任务状态 |
-| `404` | 任务不存在 |
+| `200` | タスク状態の取得に成功 |
+| `404` | タスクが存在しません |
 
-#### `200` 响应字段
+#### `200` レスポンスフィールド
 
-| 字段 | 类型 | 说明 |
+| フィールド | 型 | 説明 |
 |---|---|---|
-| `task_id` | string | 任务 ID |
-| `status` | enum（`queued`, `in_progress`, `completed`, `failed`） | 任务状态 |
-| `url` | string | 视频资源 URL（成功时） |
-| `format` | string | 视频格式 |
-| `metadata.duration` | number | 实际生成的视频时长 |
-| `metadata.fps` | integer | 实际帧率 |
-| `metadata.width` | integer | 实际宽度 |
-| `metadata.height` | integer | 实际高度 |
-| `metadata.seed` | integer | 使用的随机种子 |
-| `error.code` | integer | 错误码 |
-| `error.message` | string | 错误信息 |
+| `task_id` | string | タスク ID |
+| `status` | enum（`queued`, `in_progress`, `completed`, `failed`） | タスク状態 |
+| `url` | string | 動画リソース URL（成功時） |
+| `format` | string | 動画フォーマット |
+| `metadata.duration` | number | 実際に生成された動画の長さ |
+| `metadata.fps` | integer | 実際のフレームレート |
+| `metadata.width` | integer | 実際の幅 |
+| `metadata.height` | integer | 実際の高さ |
+| `metadata.seed` | integer | 使用された乱数シード |
+| `error.code` | integer | エラーコード |
+| `error.message` | string | エラーメッセージ |
 
-#### `404` 响应字段
+#### `404` レスポンスフィールド
 
-| 字段 | 类型 | 说明 |
+| フィールド | 型 | 説明 |
 |---|---|---|
-| `error.message` | string | 错误信息 |
-| `error.type` | string | 错误类型 |
-| `error.param` | string | 相关参数 |
-| `error.code` | string | 错误代码 |
+| `error.message` | string | エラーメッセージ |
+| `error.type` | string | エラータイプ |
+| `error.param` | string | 関連パラメータ |
+| `error.code` | string | エラーコード |

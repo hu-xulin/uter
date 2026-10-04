@@ -1,35 +1,35 @@
-# Features Description
+# Описание функций
 
-1. 🎨 Brand new UI interface (some interfaces are yet to be updated)
-2. 🌍 Multi-language support (to be improved)
-3. 🎨 Added [Midjourney-Proxy(Plus)](https://github.com/novicezk/midjourney-proxy) API support (Before use, please confirm third-party project and upstream service authorization, content security, and terms of service requirements)
-4. 💰 Supports internal balance, cost allocation, or enterprise customer account management in legally authorized deployments, configurable in system settings:
+1. 🎨 Абсолютно новый интерфейс пользователя (некоторые интерфейсы ещё предстоит обновить)
+2. 🌍 Поддержка нескольких языков (будет улучшена)
+3. 🎨 Добавлена поддержка API [Midjourney-Proxy(Plus)](https://github.com/novicezk/midjourney-proxy) (Перед использованием подтвердите авторизацию стороннего проекта и вышестоящего сервиса, безопасность контента и требования условий обслуживания)
+4. 💰 Поддерживает внутренний баланс, распределение затрат или управление учётными записями корпоративных клиентов в юридически авторизованных развёртываниях, настраивается в системных настройках:
    - [x] Epay
-5. 🔍 Supports querying usage or balance information of legally authorized channels
-6. 📑 Pagination supports selecting the number of items displayed per page
-7. 🔄 Supports SQLite database storage, out-of-the-box, lightweight and convenient
-8. 💵 Supports internal cost accounting or enterprise customer billing, configurable in System Settings - Operations Settings
-9. ⚖️ Supports channel **Weighted Random**
-10. 📈 Data Dashboard (Console)
-11. 🔒 Can set models that a token can call
-12. 🤖 Supports Telegram authorized login
-13. 🎵 Added [Suno API](https://github.com/Suno-API/Suno-API) API support (Before use, please confirm third-party project and upstream service authorization, content security, and terms of service requirements)
-14. 🔄 Supports Rerank models, currently compatible with Cohere and Jina, and can be integrated with Dify
-15. ⚡ **[OpenAI Realtime API](https://platform.openai.com/docs/guides/realtime/integration)** - Supports OpenAI's Realtime API, supports Azure channels
-16. Supports using the route /chat2link to enter the chat interface
-17. 🧠 Supports setting reasoning effort via model name suffix:
-    1. OpenAI o-series models
-       - Add suffix `-high` to set as high reasoning effort (e.g., `o3-mini-high`)
-       - Add suffix `-medium` to set as medium reasoning effort (e.g., `o3-mini-medium`)
-       - Add suffix `-low` to set as low reasoning effort (e.g., `o3-mini-low`)
-    2. Claude thinking models
-       - Add suffix `-thinking` to enable thinking mode (e.g., `claude-3-7-sonnet-20250219-thinking`)
-18. 🔄 Thinking to Content: Supports setting the `thinking_to_content` option in `Channel - Edit - Channel Extra Settings`. Default is `false`. When enabled, it will convert the thinking content `reasoning_content` into a `<think>` tag and append it to the returned content.
-19. 🔄 Model Rate Limiting: Supports setting model rate limiting in `System Settings - Rate Limit Settings`, including total request limit and successful request limit.
-20. 💰 Cache Billing Support: When enabled, billing can be performed according to the set ratio upon cache hit:
-    1. Set the `Prompt Cache Ratio` option in `System Settings - Operations Settings`.
-    2. Set the `Prompt Cache Ratio` in the channel, range 0-1. For example, setting it to 0.5 means billing at 50% upon cache hit.
-    3. Supported channels:
+5. 🔍 Поддерживает запрос информации об использовании или балансе юридически авторизованных каналов
+6. 📑 Пагинация поддерживает выбор количества отображаемых элементов на странице
+7. 🔄 Поддерживает хранение в базе данных SQLite, готово к использованию, лёгкое и удобное
+8. 💵 Поддерживает внутренний учёт затрат или выставление счетов корпоративным клиентам, настраивается в Системные настройки - Настройки операций
+9. ⚖️ Поддерживает **взвешенный случайный выбор** каналов
+10. 📈 Панель данных (Консоль)
+11. 🔒 Можно задать модели, которые токен может вызывать
+12. 🤖 Поддерживает авторизованный вход в Telegram
+13. 🎵 Добавлена поддержка API [Suno API](https://github.com/Suno-API/Suno-API) (Перед использованием подтвердите авторизацию стороннего проекта и вышестоящего сервиса, безопасность контента и требования условий обслуживания)
+14. 🔄 Поддерживает модели Rerank, в настоящее время совместимые с Cohere и Jina, и может быть интегрирован с Dify
+15. ⚡ **[OpenAI Realtime API](https://platform.openai.com/docs/guides/realtime/integration)** - Поддерживает Realtime API от OpenAI, поддерживает каналы Azure
+16. Поддерживает использование маршрута /chat2link для входа в интерфейс чата
+17. 🧠 Поддерживает настройку интенсивности рассуждения через суффикс имени модели:
+    1. Модели OpenAI серии o
+       - Добавьте суффикс `-high`, чтобы установить высокую интенсивность рассуждения (например, `o3-mini-high`)
+       - Добавьте суффикс `-medium`, чтобы установить среднюю интенсивность рассуждения (например, `o3-mini-medium`)
+       - Добавьте суффикс `-low`, чтобы установить низкую интенсивность рассуждения (например, `o3-mini-low`)
+    2. Модели рассуждения Claude
+       - Добавьте суффикс `-thinking`, чтобы включить режим рассуждения (например, `claude-3-7-sonnet-20250219-thinking`)
+18. 🔄 Thinking to Content: Поддерживает настройку опции `thinking_to_content` в `Channel - Edit - Channel Extra Settings`. По умолчанию `false`. При включении преобразует содержимое рассуждения `reasoning_content` в тег `<think>` и добавляет его к возвращаемому содержимому.
+19. 🔄 Ограничение скорости модели: Поддерживает настройку ограничения скорости модели в `System Settings - Rate Limit Settings`, включая общий лимит запросов и лимит успешных запросов.
+20. 💰 Поддержка кэш-биллинга: При включении может выполняться выставление счетов в соответствии с заданным коэффициентом при попадании в кэш:
+    1. Установите опцию `Prompt Cache Ratio` в `System Settings - Operations Settings`.
+    2. Установите `Prompt Cache Ratio` в канале, диапазон 0-1. Например, значение 0.5 означает выставление счетов по ставке 50% при попадании в кэш.
+    3. Поддерживаемые каналы:
     - [x] OpenAI
     - [x] Azure
     - [x] DeepSeek

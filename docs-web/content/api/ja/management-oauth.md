@@ -1,140 +1,140 @@
 # oauth
 
-## Discord OAuth Login
+## Discord OAuth ログイン
 
-🔓 无需鉴权（OAuth回调）
+🔓 認証不要（OAuthコールバック）
 
 `GET` `/api/oauth/discord`
 
-### 请求参数
+### リクエストパラメータ
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| パラメータ名 | 位置 | 型 | 必須 | 説明 |
 |---|---|---|---|---|
-| `code` | query | string | 否 | — |
+| `code` | query | string | いいえ | — |
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-## Bind Email
+## メールの紐付け
 
-🔓 无需鉴权
+🔓 認証不要
 
 `GET` `/api/oauth/email/bind`
 
-### 请求参数
+### リクエストパラメータ
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| パラメータ名 | 位置 | 型 | 必須 | 説明 |
 |---|---|---|---|---|
-| `email` | query | string | 否 | — |
-| `code` | query | string | 否 | — |
+| `email` | query | string | いいえ | — |
+| `code` | query | string | いいえ | — |
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-## GitHub OAuth Login
+## GitHub OAuth ログイン
 
-🔓 无需鉴权（OAuth回调）
+🔓 認証不要（OAuthコールバック）
 
 `GET` `/api/oauth/github`
 
-### 请求参数
+### リクエストパラメータ
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| パラメータ名 | 位置 | 型 | 必須 | 説明 |
 |---|---|---|---|---|
-| `code` | query | string | 否 | — |
+| `code` | query | string | いいえ | — |
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-## LinuxDO OAuth Login
+## LinuxDO OAuth ログイン
 
-🔓 无需鉴权（OAuth回调）
+🔓 認証不要（OAuthコールバック）
 
 `GET` `/api/oauth/linuxdo`
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-## OIDC Login
+## OIDC ログイン
 
-🔓 无需鉴权（OAuth回调）
+🔓 認証不要（OAuthコールバック）
 
 `GET` `/api/oauth/oidc`
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-## Generate OAuth State
+## OAuth State の生成
 
-🔓 无需鉴权
+🔓 認証不要
 
 `GET` `/api/oauth/state`
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-## Bind Telegram
+## Telegram の紐付け
 
-🔓 无需鉴权
+🔓 認証不要
 
 `GET` `/api/oauth/telegram/bind`
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-## Telegram Login
+## Telegram ログイン
 
-🔓 无需鉴权（OAuth回调）
+🔓 認証不要（OAuthコールバック）
 
 `GET` `/api/oauth/telegram/login`
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-## Bind WeChat
+## WeChat の紐付け
 
-🔓 无需鉴权
+🔓 認証不要
 
 `GET` `/api/oauth/wechat/bind`
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-## WeChat OAuth Login
+## WeChat OAuth ログイン
 
-🔓 无需鉴权（OAuth回调）
+🔓 認証不要（OAuthコールバック）
 
 `GET` `/api/oauth/wechat`
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |

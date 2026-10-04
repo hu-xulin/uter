@@ -1,74 +1,74 @@
-# FluentRead - Open Source Translation Plugin
+# FluentRead - Plugin dịch thuật mã nguồn mở
 
-> **Chat Settings Options**
+> **Tùy chọn cài đặt trò chuyện**
 >
-> In the System Settings -> Chat Settings of the Uter console, you can add
->   the following shortcut options for easy one-click population to FluentRead on
->   the Token Management page:
+> Trong System Settings -> Chat Settings của bảng điều khiển Uter, bạn có thể thêm
+>   các tùy chọn lối tắt sau để điền dễ dàng một cú nhấp vào FluentRead trên
+>   trang Token Management:
 
     ```json
     { "流畅阅读": "fluentread" }
     ```
 
-> 🌊 FluentRead is an open-source browser translation plugin dedicated to
->   providing a native-like reading experience.
+> 🌊 FluentRead là một plugin dịch thuật trình duyệt mã nguồn mở, được dành riêng
+>   để mang lại trải nghiệm đọc giống bản địa.
 
-- Project Address: [https://github.com/Bistutu/FluentRead](https://github.com/Bistutu/FluentRead)
+- Địa chỉ dự án: [https://github.com/Bistutu/FluentRead](https://github.com/Bistutu/FluentRead)
 
-## 🌟 Core Features
+## 🌟 Tính năng cốt lõi
 
-### Smart Translation Engine
+### Công cụ dịch thông minh
 
-- **Multi-Engine Support**: Supports 20+ translation engines
-- **Traditional Translation**: Microsoft Translate, Google Translate, DeepL Translate, etc.
-- **AI Large Models**: OpenAI, DeepSeek, Kimi, Ollama, etc.
-- **Custom Engine**: Supports custom translation service configuration
+- **Hỗ trợ đa công cụ**: Hỗ trợ 20+ công cụ dịch
+- **Dịch truyền thống**: Microsoft Translate, Google Translate, DeepL Translate, v.v.
+- **Mô hình AI lớn**: OpenAI, DeepSeek, Kimi, Ollama, v.v.
+- **Công cụ tùy chỉnh**: Hỗ trợ cấu hình dịch vụ dịch tùy chỉnh
 
-### Immersive Reading Experience
+### Trải nghiệm đọc đắm chìm
 
-- **Bilingual Comparison**: Original and translated text displayed side-by-side for easier reading
-- **Selection Translation**: Select any text to get instant translation results
-- **One-Click Copy**: Quickly copy translated text to improve reading efficiency
-- **Full-Page Translation**: One-click translation of the entire webpage with a floating button, no page refresh required
+- **So sánh song ngữ**: Văn bản gốc và bản dịch hiển thị cạnh nhau để dễ đọc hơn
+- **Chọn để dịch**: Chọn bất kỳ văn bản nào để nhận kết quả dịch tức thì
+- **Sao chép một cú nhấp**: Nhanh chóng sao chép văn bản đã dịch để tăng hiệu quả đọc
+- **Dịch toàn trang**: Dịch toàn bộ trang web chỉ với một cú nhấp qua nút nổi, không cần làm mới trang
 
-### Privacy and Customization
+### Quyền riêng tư và tùy chỉnh
 
-- **Privacy Protection**: All data stored locally, open-source and transparent code
-- **High Customization**: Rich customization options to meet different scenario needs
-- **Completely Free**: Open-source and free, non-commercial project
+- **Bảo vệ quyền riêng tư**: Tất cả dữ liệu được lưu trữ cục bộ, mã nguồn mở và minh bạch
+- **Tùy chỉnh cao**: Nhiều tùy chọn tùy chỉnh để đáp ứng nhu cầu các kịch bản khác nhau
+- **Hoàn toàn miễn phí**: Mã nguồn mở và miễn phí, dự án phi thương mại
 
-## 📦 Installation Methods
+## 📦 Phương thức cài đặt
 
-| Browser     | Installation Method                                                                                                                                                                                                                                   |
+| Trình duyệt     | Phương thức cài đặt                                                                                                                                                                                                                                   |
 | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Chrome**  | [Chrome Web Store](https://chromewebstore.google.com/detail/%E6%B5%81%E7%95%85%E9%98%85%E8%AF%BB/djnlaiohfaaifbibleebjggkghlmcpcj?hl=zh-CN&authuser=0) \| [Domestic Mirror](https://www.crxsoso.com/webstore/detail/djnlaiohfaaifbibleebjggkghlmcpcj) |
+| **Chrome**  | [Chrome Web Store](https://chromewebstore.google.com/detail/%E6%B5%81%E7%95%85%E9%98%85%E8%AF%BB/djnlaiohfaaifbibleebjggkghlmcpcj?hl=zh-CN&authuser=0) \| [Mirror nội địa](https://www.crxsoso.com/webstore/detail/djnlaiohfaaifbibleebjggkghlmcpcj) |
 | **Edge**    | [Edge Add-ons Store](https://microsoftedge.microsoft.com/addons/detail/%E6%B5%81%E7%95%85%E9%98%85%E8%AF%BB/kakgmllfpjldjhcnkghpplmlbnmcoflp?hl=zh-CN)                                                                                                |
 | **Firefox** | [Firefox Add-ons Store](https://addons.mozilla.org/zh-CN/firefox/addon/%E6%B5%81%E7%95%85%E9%98%85%E8%AF%BB/)                                                                                                                                         |
 
-## 🚀 Configuration Methods
+## 🚀 Phương thức cấu hình
 
-### Import Configuration from Uter Console (Recommended)
+### Nhập cấu hình từ bảng điều khiển Uter (Khuyên dùng)
 
-After the FluentRead plugin is installed in your browser, opening the Uter console -> Token Management page will display a prompt to add FluentRead.
+Sau khi cài đặt plugin FluentRead trong trình duyệt, việc mở bảng điều khiển Uter -> trang Token Management sẽ hiển thị lời nhắc thêm FluentRead.
 
-![添加提示](/apps-assets/fluentread/hint.webp)
+![thêm gợi ý](/apps-assets/fluentread/hint.webp)
 
-After selecting a model, click 'One-click fill to FluentRead', and a confirmation window will pop up. Check if the corresponding information is correct.
+Sau khi chọn một mô hình, nhấn 'One-click fill to FluentRead', và một cửa sổ xác nhận sẽ bật lên. Hãy kiểm tra xem thông tin tương ứng có chính xác không.
 
-![确认](/apps-assets/fluentread/confirm.webp)
+![xác nhận](/apps-assets/fluentread/confirm.webp)
 
-After confirming the import, the Uter configuration in FluentRead will be enabled.
+Sau khi xác nhận nhập, cấu hình Uter trong FluentRead sẽ được bật.
 
-![配置结果](/apps-assets/fluentread/fluentread.webp)
+![kết quả cấu hình](/apps-assets/fluentread/fluentread.webp)
 
-### Manually Fill in Configuration in FluentRead
+### Tự điền cấu hình thủ công trong FluentRead
 
-![手动配置](/apps-assets/fluentread/configuration.webp)
+![cấu hình thủ công](/apps-assets/fluentread/configuration.webp)
 
-| Configuration Item  | Content                                 |
+| Mục cấu hình  | Nội dung                                 |
 | ------------------- | --------------------------------------- |
-| Translation Service | Uter                                  |
-| Access Token        | Uter Key                              |
-| Uter Endpoint     | Uter Deployment Address (without /v1) |
-| Model               | Select from list, or custom model       |
-| Custom Model        | Model Name                              |
+| Dịch vụ dịch | Uter                                  |
+| Access Token        | Key Uter                              |
+| Uter Endpoint     | Địa chỉ triển khai Uter (không có /v1) |
+| Model               | Chọn từ danh sách, hoặc mô hình tùy chỉnh       |
+| Custom Model        | Tên mô hình                              |

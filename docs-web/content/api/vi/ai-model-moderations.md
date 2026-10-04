@@ -1,26 +1,26 @@
-# Native OpenAI Format
+# Định dạng Native OpenAI
 
-## Native OpenAI Format
+## Định dạng Native OpenAI
 
-检查文本内容是否违反使用政策
+Kiểm tra xem nội dung văn bản có vi phạm chính sách sử dụng hay không.
 
 `POST` `/v1/moderations`
 
-### 请求体（`application/json`）
+### Thân yêu cầu (`application/json`)
 
-| 字段 | 类型 | 必填 | 说明 |
+| Trường | Kiểu | Bắt buộc | Mô tả |
 |---|---|---|---|
-| `model` | string | 否 | — |
+| `model` | string | Không | — |
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功审核 |
+| `200` | Kiểm duyệt thành công |
 
-#### `200` 响应字段
+#### Trường phản hồi `200`
 
-| 字段 | 类型 | 说明 |
+| Trường | Kiểu | Mô tả |
 |---|---|---|
 | `id` | string | — |
 | `model` | string | — |

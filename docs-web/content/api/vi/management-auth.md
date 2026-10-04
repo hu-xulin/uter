@@ -1,40 +1,40 @@
-# Authentication System Description (Auth)
+# Mô tả hệ thống xác thực (Auth)
 
-## Description
+## Mô tả
 
-Backend management interfaces adopt a multi-level authentication mechanism, commonly: **Public**, **User**, **Admin**, **Root**.
+Các giao diện quản lý backend áp dụng cơ chế xác thực đa cấp độ, thường gồm: **Public**, **User**, **Admin**, **Root**.
 
-## Authentication Methods (Choose One)
+## Phương thức xác thực (Chọn một)
 
-### Session
+### Phiên (Session)
 
-Obtain Session via the login interface:
+Lấy Session qua giao diện đăng nhập:
 
 - `POST /api/user/login`
 
-### Access Token (Recommended)
+### Access Token (Khuyên dùng)
 
-Carry in the request header:
+Mang theo trong header yêu cầu:
 
 ```text
 Authorization: Bearer {token}
 ```
 
-Tokens can be generated in "Personal Settings - Security Settings - System Access Tokens".
+Token có thể được tạo trong "Cài đặt cá nhân - Cài đặt bảo mật - Token truy cập hệ thống".
 
-## Required Request Headers
+## Header yêu cầu bắt buộc
 
-Some interfaces require carrying a user identification request header:
+Một số giao diện yêu cầu mang theo header định danh người dùng:
 
 ```text
 Uter-User: {user_id}
 ```
 
-Where `{user_id}` must match the currently logged-in user.
+Trong đó `{user_id}` phải khớp với người dùng đang đăng nhập.
 
-## Permission Levels
+## Cấp độ quyền
 
-- **Public**: No authentication required
-- **User**: Requires login or Access Token
-- **Admin**: Requires administrator privileges
-- **Root**: Highest privilege
+- **Public**: Không yêu cầu xác thực
+- **User**: Yêu cầu đăng nhập hoặc Access Token
+- **Admin**: Yêu cầu quyền quản trị viên
+- **Root**: Quyền cao nhất

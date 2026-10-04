@@ -1,140 +1,140 @@
 # oauth
 
-## Discord OAuth Login
+## Connexion OAuth Discord
 
-🔓 无需鉴权（OAuth回调）
+🔓 Aucune authentification requise (rappel OAuth)
 
 `GET` `/api/oauth/discord`
 
-### 请求参数
+### Paramètres de requête
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| Nom du paramètre | Position | Type | Requis | Description |
 |---|---|---|---|---|
-| `code` | query | string | 否 | — |
+| `code` | query | string | Non | — |
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-## Bind Email
+## Lier l'e-mail
 
-🔓 无需鉴权
+🔓 Aucune authentification requise
 
 `GET` `/api/oauth/email/bind`
 
-### 请求参数
+### Paramètres de requête
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| Nom du paramètre | Position | Type | Requis | Description |
 |---|---|---|---|---|
-| `email` | query | string | 否 | — |
-| `code` | query | string | 否 | — |
+| `email` | query | string | Non | — |
+| `code` | query | string | Non | — |
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-## GitHub OAuth Login
+## Connexion OAuth GitHub
 
-🔓 无需鉴权（OAuth回调）
+🔓 Aucune authentification requise (rappel OAuth)
 
 `GET` `/api/oauth/github`
 
-### 请求参数
+### Paramètres de requête
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| Nom du paramètre | Position | Type | Requis | Description |
 |---|---|---|---|---|
-| `code` | query | string | 否 | — |
+| `code` | query | string | Non | — |
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-## LinuxDO OAuth Login
+## Connexion OAuth LinuxDO
 
-🔓 无需鉴权（OAuth回调）
+🔓 Aucune authentification requise (rappel OAuth)
 
 `GET` `/api/oauth/linuxdo`
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-## OIDC Login
+## Connexion OIDC
 
-🔓 无需鉴权（OAuth回调）
+🔓 Aucune authentification requise (rappel OAuth)
 
 `GET` `/api/oauth/oidc`
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-## Generate OAuth State
+## Générer l'état OAuth
 
-🔓 无需鉴权
+🔓 Aucune authentification requise
 
 `GET` `/api/oauth/state`
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-## Bind Telegram
+## Lier Telegram
 
-🔓 无需鉴权
+🔓 Aucune authentification requise
 
 `GET` `/api/oauth/telegram/bind`
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-## Telegram Login
+## Connexion Telegram
 
-🔓 无需鉴权（OAuth回调）
+🔓 Aucune authentification requise (rappel OAuth)
 
 `GET` `/api/oauth/telegram/login`
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-## Bind WeChat
+## Lier WeChat
 
-🔓 无需鉴权
+🔓 Aucune authentification requise
 
 `GET` `/api/oauth/wechat/bind`
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-## WeChat OAuth Login
+## Connexion OAuth WeChat
 
-🔓 无需鉴权（OAuth回调）
+🔓 Aucune authentification requise (rappel OAuth)
 
 `GET` `/api/oauth/wechat`
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |

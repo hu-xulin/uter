@@ -1,81 +1,81 @@
 # openai
 
-## Text-to-Speech
+## Synthèse vocale (Text-to-Speech)
 
-将文本转换为音频
+Convertit le texte en audio.
 
 `POST` `/v1/audio/speech`
 
-### 请求体（`application/json`）
+### Corps de la requête (`application/json`)
 
-| 字段 | 类型 | 必填 | 说明 |
+| Champ | Type | Requis | Description |
 |---|---|---|---|
-| `model` | string | 是 | — |
-| `input` | string | 是 | 要转换的文本 |
-| `voice` | enum（`alloy`, `echo`, `fable`, `onyx`, `nova`, `shimmer`） | 是 | — |
-| `response_format` | enum（`mp3`, `opus`, `aac`, `flac`, `wav`, `pcm`） | 否 | — |
-| `speed` | number | 否 | — |
+| `model` | string | Oui | — |
+| `input` | string | Oui | Texte à convertir |
+| `voice` | enum（`alloy`, `echo`, `fable`, `onyx`, `nova`, `shimmer`） | Oui | — |
+| `response_format` | enum（`mp3`, `opus`, `aac`, `flac`, `wav`, `pcm`） | Non | — |
+| `speed` | number | Non | — |
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功生成音频 |
+| `200` | Audio généré avec succès |
 
-## Audio Transcriptions
+## Transcriptions audio
 
-将音频转换为文本
+Convertit l'audio en texte.
 
 `POST` `/v1/audio/transcriptions`
 
-### 请求体（`multipart/form-data`）
+### Corps de la requête (`multipart/form-data`)
 
-| 字段 | 类型 | 必填 | 说明 |
+| Champ | Type | Requis | Description |
 |---|---|---|---|
-| `file` | string（binary） | 是 | 音频文件 |
-| `model` | string | 是 | — |
-| `language` | string | 否 | ISO-639-1 语言代码 |
-| `prompt` | string | 否 | — |
-| `response_format` | enum（`json`, `text`, `srt`, `verbose_json`, `vtt`） | 否 | — |
-| `temperature` | number | 否 | — |
-| `timestamp_granularities` | array&lt;enum（`word`, `segment`）&gt; | 否 | — |
+| `file` | string（binary） | Oui | Fichier audio |
+| `model` | string | Oui | — |
+| `language` | string | Non | Code de langue ISO-639-1 |
+| `prompt` | string | Non | — |
+| `response_format` | enum（`json`, `text`, `srt`, `verbose_json`, `vtt`） | Non | — |
+| `temperature` | number | Non | — |
+| `timestamp_granularities` | array&lt;enum（`word`, `segment`）&gt; | Non | — |
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功转录 |
+| `200` | Transcription réussie |
 
-#### `200` 响应字段
+#### Champs de la réponse `200`
 
-| 字段 | 类型 | 说明 |
+| Champ | Type | Description |
 |---|---|---|
 | `text` | string | — |
 
-## Audio Translation
+## Traduction audio
 
-将音频翻译为英文文本
+Traduit l'audio en texte anglais.
 
 `POST` `/v1/audio/translations`
 
-### 请求体（`multipart/form-data`）
+### Corps de la requête (`multipart/form-data`)
 
-| 字段 | 类型 | 必填 | 说明 |
+| Champ | Type | Requis | Description |
 |---|---|---|---|
-| `file` | string（binary） | 是 | — |
-| `model` | string | 是 | — |
-| `prompt` | string | 否 | — |
-| `response_format` | string | 否 | — |
-| `temperature` | number | 否 | — |
+| `file` | string（binary） | Oui | — |
+| `model` | string | Oui | — |
+| `prompt` | string | Non | — |
+| `response_format` | string | Non | — |
+| `temperature` | number | Non | — |
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功翻译 |
+| `200` | Traduction réussie |
 
-#### `200` 响应字段
+#### Champs de la réponse `200`
 
-| 字段 | 类型 | 说明 |
+| Champ | Type | Description |
 |---|---|---|
 | `text` | string | — |

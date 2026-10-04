@@ -1,85 +1,85 @@
-# two-factor-auth
+# 兩步驗證
 
-## Regenerate Backup Codes
+## 重新生成備用碼
 
-🔐 需要登录（User权限）
+🔐 需要登入（User許可權）
 
 `POST` `/api/user/2fa/backup_codes`
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |
 
-## Disable 2FA
+## 禁用2FA
 
-🔐 需要登录（User权限）
+🔐 需要登入（User許可權）
 
 `POST` `/api/user/2fa/disable`
 
-### 请求体（`application/json`）
+### 請求體（`application/json`）
 
-| 字段 | 类型 | 必填 | 说明 |
+| 欄位 | 型別 | 必填 | 說明 |
 |---|---|---|---|
 | `code` | string | 否 | — |
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |
 
-## Enable 2FA
+## 啟用2FA
 
-🔐 需要登录（User权限）
+🔐 需要登入（User許可權）
 
 `POST` `/api/user/2fa/enable`
 
-### 请求体（`application/json`）
+### 請求體（`application/json`）
 
-| 字段 | 类型 | 必填 | 说明 |
+| 欄位 | 型別 | 必填 | 說明 |
 |---|---|---|---|
 | `code` | string | 否 | — |
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |
 
-## Set Up 2FA
+## 設定2FA
 
-🔐 需要登录（User权限）
+🔐 需要登入（User許可權）
 
 `POST` `/api/user/2fa/setup`
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |
 
-## Get 2FA Statistics
+## 獲取2FA統計
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 需要管理員許可權（Admin）
 
 `GET` `/api/user/2fa/stats`
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |
 
-## Get 2FA Status
+## 獲取2FA狀態
 
-🔐 需要登录（User权限）
+🔐 需要登入（User許可權）
 
 `GET` `/api/user/2fa/status`
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |

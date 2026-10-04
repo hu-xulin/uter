@@ -1,164 +1,164 @@
 # user-auth
 
-## Send Password Reset Email
+## パスワードリセットメールの送信
 
-🔓 无需鉴权
+🔓 認証不要
 
 `GET` `/api/reset_password`
 
-### 请求参数
+### リクエストパラメータ
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| パラメータ名 | 位置 | 型 | 必須 | 説明 |
 |---|---|---|---|---|
-| `email` | query | string | 是 | — |
+| `email` | query | string | はい | — |
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-## Get User Group List
+## ユーザーグループリストの取得
 
-🔓 无需鉴权
+🔓 認証不要
 
 `GET` `/api/user/groups`
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-## Two-Factor Authentication Login
+## 二要素認証ログイン
 
-🔓 无需鉴权（登录流程）
+🔓 認証不要（ログインフロー）
 
 `POST` `/api/user/login/2fa`
 
-### 请求体（`application/json`）
+### リクエストボディ（`application/json`）
 
-| 字段 | 类型 | 必填 | 说明 |
+| フィールド | 型 | 必須 | 説明 |
 |---|---|---|---|
-| `code` | string | 否 | — |
+| `code` | string | いいえ | — |
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-## User Login
+## ユーザーログイン
 
-🔓 无需鉴权
+🔓 認証不要
 
 `POST` `/api/user/login`
 
-### 请求体（`application/json`）
+### リクエストボディ（`application/json`）
 
-| 字段 | 类型 | 必填 | 说明 |
+| フィールド | 型 | 必須 | 説明 |
 |---|---|---|---|
-| `username` | string | 否 | — |
-| `password` | string | 否 | — |
+| `username` | string | いいえ | — |
+| `password` | string | いいえ | — |
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-## User Logout
+## ユーザーログアウト
 
-🔓 无需鉴权
+🔓 認証不要
 
 `GET` `/api/user/logout`
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-## Start Passkey Login
+## Passkey ログインの開始
 
-🔓 无需鉴权
+🔓 認証不要
 
 `POST` `/api/user/passkey/login/begin`
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-## Complete Passkey Login
+## Passkey ログインの完了
 
-🔓 无需鉴权
+🔓 認証不要
 
 `POST` `/api/user/passkey/login/finish`
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-## User Registration
+## ユーザー登録
 
-🔓 无需鉴权
+🔓 認証不要
 
 `POST` `/api/user/register`
 
-### 请求体（`application/json`）
+### リクエストボディ（`application/json`）
 
-| 字段 | 类型 | 必填 | 说明 |
+| フィールド | 型 | 必須 | 説明 |
 |---|---|---|---|
-| `username` | string | 否 | — |
-| `password` | string | 否 | — |
-| `email` | string | 否 | — |
-| `verification_code` | string | 否 | — |
-| `aff_code` | string | 否 | — |
+| `username` | string | いいえ | — |
+| `password` | string | いいえ | — |
+| `email` | string | いいえ | — |
+| `verification_code` | string | いいえ | — |
+| `aff_code` | string | いいえ | — |
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-## Reset Password
+## パスワードのリセット
 
-🔓 无需鉴权
+🔓 認証不要
 
 `POST` `/api/user/reset`
 
-### 请求体（`application/json`）
+### リクエストボディ（`application/json`）
 
-| 字段 | 类型 | 必填 | 说明 |
+| フィールド | 型 | 必須 | 説明 |
 |---|---|---|---|
-| `email` | string | 否 | — |
-| `token` | string | 否 | — |
-| `password` | string | 否 | — |
+| `email` | string | いいえ | — |
+| `token` | string | いいえ | — |
+| `password` | string | いいえ | — |
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-## Send Email Verification Code
+## メール認証コードの送信
 
-🔓 无需鉴权
+🔓 認証不要
 
 `GET` `/api/verification`
 
-### 请求参数
+### リクエストパラメータ
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| パラメータ名 | 位置 | 型 | 必須 | 説明 |
 |---|---|---|---|---|
-| `email` | query | string | 是 | — |
+| `email` | query | string | はい | — |
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |

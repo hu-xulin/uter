@@ -1,50 +1,50 @@
-# LunaTranslator - Open Source GalGame Translator
+# LunaTranslator - Traducteur GalGame open-source
 
-> **Chat Settings Options**
+> **Options des paramètres de conversation**
 >
-> In the Uter
->   console's System Settings -> Chat Settings, you can add the following shortcut option for one-click population into
->   LunaTranslator from the Token Management page:
+> Dans les Paramètres système -> Paramètres de conversation de la console
+>   Uter, vous pouvez ajouter l'option de raccourci suivante pour un remplissage en un clic vers
+>   LunaTranslator depuis la page Gestion des jetons :
 
     ```json
     { "LunaTranslator": "lunatranslator://llmapi/base64?data={cheryConfig}" }
     ```
 
 > LunaTranslator
->   is an open-source and free visual novel (GalGame) translator, dedicated to providing a native-level visual novel gaming experience.
+>   est un traducteur de visual novels (GalGame) open-source et gratuit, dédié à offrir une expérience de jeu de visual novel de qualité native.
 
-- Project Address: [https://github.com/HIllya51/LunaTranslator](https://github.com/HIllya51/LunaTranslator)
-- Project Documentation: [https://docs.lunatranslator.org/en/README.html](https://docs.lunatranslator.org/en/README.html)
+- Adresse du projet : [https://github.com/HIllya51/LunaTranslator](https://github.com/HIllya51/LunaTranslator)
+- Documentation du projet : [https://docs.lunatranslator.org/en/README.html](https://docs.lunatranslator.org/en/README.html)
 
-## Feature Support
+## Fonctionnalités prises en charge
 
-- **HOOK** Primarily uses HOOK to extract game text, adapting to almost all common and niche visual novels.
+- **HOOK** Utilise principalement HOOK pour extraire le texte du jeu, s'adaptant à presque tous les visual novels courants et de niche.
 
-- **In-game Translation** For some games, translation can be directly embedded into the game for an immersive experience.
+- **Traduction en jeu** Pour certains jeux, la traduction peut être directement intégrée au jeu pour une expérience immersive.
 
-- **HOOK Emulator** For most games on NS/PSP/PSV/PS2, HOOK emulator support allows direct reading of game text.
+- **Émulateur HOOK** Pour la plupart des jeux sur NS/PSP/PSV/PS2, la prise en charge de l'émulateur HOOK permet une lecture directe du texte du jeu.
 
-- **OCR** Built-in high-precision OCR models, and supports many other online & offline OCR engines for flexible reading of any text.
+- **OCR** Modèles OCR intégrés de haute précision, et prend en charge de nombreux autres moteurs OCR en ligne et hors ligne pour une lecture flexible de n'importe quel texte.
 
-- **Rich Translation Interfaces** Supports almost all translation engines, including large language model translation, offline translation, etc.
+- **Interfaces de traduction riches** Prend en charge presque tous les moteurs de traduction, y compris la traduction par grands modèles de langage, la traduction hors ligne, etc.
 
-- **Language Learning** Supports Japanese word segmentation and kana furigana, AnkiConnect, and Yomitan plugin.
+- **Apprentissage des langues** Prend en charge la segmentation des mots japonais et les furigana kana, AnkiConnect, et le plugin Yomitan.
 
-- **Speech Synthesis** Supports a large number of online & offline speech synthesis engines.
+- **Synthèse vocale** Prend en charge un grand nombre de moteurs de synthèse vocale en ligne et hors ligne.
 
-- **Speech Recognition** On Windows 10 and Windows 11, Windows Speech Recognition can be used.
+- **Reconnaissance vocale** Sur Windows 10 et Windows 11, la Reconnaissance vocale Windows peut être utilisée.
 
-## Installation Method
+## Méthode d'installation
 
-Download and install from [LunaTranslator Documentation - Download & Launch & Update](https://docs.lunatranslator.org/en/README.html)
+Télécharger et installer depuis [Documentation LunaTranslator - Téléchargement, lancement et mise à jour](https://docs.lunatranslator.org/en/README.html)
 
-## Integrating Uter into LunaTranslator
+## Intégrer Uter dans LunaTranslator
 
-LunaTranslator supports integration with locally deployed Uter. Please use your own deployed Uter, or ensure that the service provider has legitimate upstream authorization and compliance obligations for their Uter service. Do not connect API addresses or keys from unknown sources to production environments.
+LunaTranslator prend en charge l'intégration avec Uter déployé localement. Veuillez utiliser votre propre Uter déployé, ou vous assurer que le fournisseur de services dispose d'une autorisation en amont légitime et d'obligations de conformité pour son service Uter. Ne connectez pas d'adresses API ou de clés provenant de sources inconnues à des environnements de production.
 
-### One-Click Configuration
+### Configuration en un clic
 
-1.  In the Uter console's `System Settings` -> `Chat Settings`, add the following shortcut option:
+1.  Dans les `Paramètres système` -> `Paramètres de conversation` de la console Uter, ajouter l'option de raccourci suivante :
 
     ```json
     { "LunaTranslator": "lunatranslator://llmapi/base64?data={cheryConfig}" }
@@ -52,48 +52,48 @@ LunaTranslator supports integration with locally deployed Uter. Please use your 
 
     ![add_config](/apps-assets/luna_translator/add_config.webp)
 
-2.  In the **`Uter`** -> `Console` -> `Token Management` tab, select the token you want to use in LunaTranslator, click the dropdown option next to the chat button, choose `LunaTranslator`, and you will be redirected to LunaTranslator with the API address and API Key automatically configured.
+2.  Dans l'onglet **`Uter`** -> `Console` -> `Gestion des jetons`, sélectionnez le jeton que vous souhaitez utiliser dans LunaTranslator, cliquez sur l'option déroulante à côté du bouton de conversation, choisissez `LunaTranslator`, et vous serez redirigé vers LunaTranslator avec l'adresse API et la clé API configurées automatiquement.
 
-    ![跳转到 LunaTranslator](/apps-assets/luna_translator/jump_to_app.webp)
+    ![jump_to_luna](/apps-assets/luna_translator/jump_to_app.webp)
 
-3.  In **`LunaTranslator`** -> `Settings` -> `Translation Settings` -> `Large Models`, a new large model interface configuration will appear; click Edit.
+3.  Dans **`LunaTranslator`** -> `Paramètres` -> `Paramètres de traduction` -> `Grands modèles`, une nouvelle configuration d'interface de grand modèle apparaîtra ; cliquez sur Modifier.
 
-    ![设置api](/apps-assets/luna_translator/api_setting.webp)
+    ![set_api](/apps-assets/luna_translator/api_setting.webp)
 
-4.  Click the refresh button next to the **model** dropdown to retrieve the Uter platform's model list, select or enter the model name, then click OK to save.
+4.  Cliquez sur le bouton d'actualisation à côté du menu déroulant **model** pour récupérer la liste des modèles de la plateforme Uter, sélectionnez ou saisissez le nom du modèle, puis cliquez sur OK pour enregistrer.
 
-    ![设置模型](/apps-assets/luna_translator/setting_model.webp)
+    ![set_model](/apps-assets/luna_translator/setting_model.webp)
 
-5.  Check if the toggle switch next to the **uter** large model interface configuration is turned on. If not enabled, enable the interface to start using it.
+5.  Vérifiez que l'interrupteur à bascule à côté de la configuration d'interface de grand modèle **uter** est activé. S'il n'est pas activé, activez l'interface pour commencer à l'utiliser.
 
-    ![开启配置](/apps-assets/luna_translator/open_config.webp)
+    ![open_config](/apps-assets/luna_translator/open_config.webp)
 
-### Manual Configuration
+### Configuration manuelle
 
-1.  In the **`Uter`** -> `Console` -> `Token Management` tab, obtain the API Key.
+1.  Dans l'onglet **`Uter`** -> `Console` -> `Gestion des jetons`, obtenez la clé API.
 
-    ![获取 API Key](/apps-assets/luna_translator/copy_api_key.webp)
+    ![get_api_key](/apps-assets/luna_translator/copy_api_key.webp)
 
-2.  In **`LunaTranslator`** -> `Settings` - `Translation Settings` -> `Large Models`, select Add.
+2.  Dans **`LunaTranslator`** -> `Paramètres` - `Paramètres de traduction` -> `Grands modèles`, sélectionnez Ajouter.
 
-    ![添加 API](/apps-assets/luna_translator/add_api.webp)
+    ![add_api](/apps-assets/luna_translator/add_api.webp)
 
-3.  Copy the **Large Model General Interface** template and add a new interface.
+3.  Copiez le modèle **Interface générale de grand modèle** et ajoutez une nouvelle interface.
 
-    ![添加 API2](/apps-assets/luna_translator/add_api_2.webp)
+    ![add_api2](/apps-assets/luna_translator/add_api_2.webp)
 
-4.  In the **newly added interface**, fill in the corresponding API Address and API Key.
+4.  Dans la **nouvelle interface ajoutée**, remplissez l'adresse API et la clé API correspondantes.
 
-    ![设置 API1](/apps-assets/luna_translator/setting_api.webp)
+    ![set_api1](/apps-assets/luna_translator/setting_api.webp)
 
-    ![设置 API2](/apps-assets/luna_translator/setting_api2.webp)
+    ![set_api2](/apps-assets/luna_translator/setting_api2.webp)
 
-5.  Click the refresh button next to the **model** dropdown to retrieve the Uter platform's model list, select or enter the model name, then click OK to save.
+5.  Cliquez sur le bouton d'actualisation à côté du menu déroulant **model** pour récupérer la liste des modèles de la plateforme Uter, sélectionnez ou saisissez le nom du modèle, puis cliquez sur OK pour enregistrer.
 
-    ![设置 API3](/apps-assets/luna_translator/setting_api3.webp)
+    ![set_api3](/apps-assets/luna_translator/setting_api3.webp)
 
-6.  Click the toggle switch next to **Uter** to enable the interface and start using it.
+6.  Cliquez sur l'interrupteur à bascule à côté de **Uter** pour activer l'interface et commencer à l'utiliser.
 
-    ![打开API](/apps-assets/luna_translator/open_api.webp)
+    ![open_api](/apps-assets/luna_translator/open_api.webp)
 
-For more usage methods, please refer to the official LunaTranslator documentation: [LunaTranslator Documentation - Large Model Translation Interface](https://docs.lunatranslator.org/en/guochandamoxing.html)
+Pour plus de méthodes d'utilisation, veuillez consulter la documentation officielle de LunaTranslator : [Documentation LunaTranslator - Interface de traduction par grand modèle](https://docs.lunatranslator.org/en/guochandamoxing.html)

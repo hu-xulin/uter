@@ -1,99 +1,99 @@
-# LunaTranslator - Open Source GalGame Translator
+# LunaTranslator - Trình dịch GalGame mã nguồn mở
 
-> **Chat Settings Options**
+> **Tùy chọn cài đặt trò chuyện**
 >
-> In the Uter
->   console's System Settings -> Chat Settings, you can add the following shortcut option for one-click population into
->   LunaTranslator from the Token Management page:
+> Trong System Settings -> Chat Settings của bảng điều khiển
+>   Uter, bạn có thể thêm tùy chọn lối tắt sau để điền một cú nhấp vào
+>   LunaTranslator từ trang Token Management:
 
     ```json
     { "LunaTranslator": "lunatranslator://llmapi/base64?data={cheryConfig}" }
     ```
 
 > LunaTranslator
->   is an open-source and free visual novel (GalGame) translator, dedicated to providing a native-level visual novel gaming experience.
+>   là một trình dịch visual novel (GalGame) mã nguồn mở và miễn phí, được dành riêng để mang lại trải nghiệm chơi visual novel ở mức độ bản địa.
 
-- Project Address: [https://github.com/HIllya51/LunaTranslator](https://github.com/HIllya51/LunaTranslator)
-- Project Documentation: [https://docs.lunatranslator.org/en/README.html](https://docs.lunatranslator.org/en/README.html)
+- Địa chỉ dự án: [https://github.com/HIllya51/LunaTranslator](https://github.com/HIllya51/LunaTranslator)
+- Tài liệu dự án: [https://docs.lunatranslator.org/en/README.html](https://docs.lunatranslator.org/en/README.html)
 
-## Feature Support
+## Hỗ trợ tính năng
 
-- **HOOK** Primarily uses HOOK to extract game text, adapting to almost all common and niche visual novels.
+- **HOOK** Chủ yếu sử dụng HOOK để trích xuất văn bản game, thích ứng với hầu hết mọi visual novel phổ biến và ngách.
 
-- **In-game Translation** For some games, translation can be directly embedded into the game for an immersive experience.
+- **Dịch trong game** Với một số game, bản dịch có thể được nhúng trực tiếp vào game để có trải nghiệm đắm chìm.
 
-- **HOOK Emulator** For most games on NS/PSP/PSV/PS2, HOOK emulator support allows direct reading of game text.
+- **Trình giả lập HOOK** Với hầu hết game trên NS/PSP/PSV/PS2, hỗ trợ trình giả lập HOOK cho phép đọc trực tiếp văn bản game.
 
-- **OCR** Built-in high-precision OCR models, and supports many other online & offline OCR engines for flexible reading of any text.
+- **OCR** Tích hợp các mô hình OCR độ chính xác cao, và hỗ trợ nhiều công cụ OCR trực tuyến & ngoại tuyến khác để đọc linh hoạt mọi văn bản.
 
-- **Rich Translation Interfaces** Supports almost all translation engines, including large language model translation, offline translation, etc.
+- **Giao diện dịch phong phú** Hỗ trợ hầu hết mọi công cụ dịch, bao gồm dịch bằng mô hình ngôn ngữ lớn, dịch ngoại tuyến, v.v.
 
-- **Language Learning** Supports Japanese word segmentation and kana furigana, AnkiConnect, and Yomitan plugin.
+- **Học ngôn ngữ** Hỗ trợ tách từ tiếng Nhật và furigana kana, AnkiConnect và plugin Yomitan.
 
-- **Speech Synthesis** Supports a large number of online & offline speech synthesis engines.
+- **Tổng hợp giọng nói** Hỗ trợ số lượng lớn công cụ tổng hợp giọng nói trực tuyến & ngoại tuyến.
 
-- **Speech Recognition** On Windows 10 and Windows 11, Windows Speech Recognition can be used.
+- **Nhận dạng giọng nói** Trên Windows 10 và Windows 11, có thể sử dụng Windows Speech Recognition.
 
-## Installation Method
+## Phương thức cài đặt
 
-Download and install from [LunaTranslator Documentation - Download & Launch & Update](https://docs.lunatranslator.org/en/README.html)
+Tải xuống và cài đặt từ [Tài liệu LunaTranslator - Tải xuống & Khởi chạy & Cập nhật](https://docs.lunatranslator.org/en/README.html)
 
-## Integrating Uter into LunaTranslator
+## Tích hợp Uter vào LunaTranslator
 
-LunaTranslator supports integration with locally deployed Uter. Please use your own deployed Uter, or ensure that the service provider has legitimate upstream authorization and compliance obligations for their Uter service. Do not connect API addresses or keys from unknown sources to production environments.
+LunaTranslator hỗ trợ tích hợp với Uter tự triển khai cục bộ. Vui lòng sử dụng Uter do chính bạn triển khai, hoặc đảm bảo rằng nhà cung cấp dịch vụ có ủy quyền upstream hợp pháp và các nghĩa vụ tuân thủ cho dịch vụ Uter của họ. Không kết nối địa chỉ API hoặc khóa từ nguồn không xác định vào môi trường sản xuất.
 
-### One-Click Configuration
+### Cấu hình một cú nhấp
 
-1.  In the Uter console's `System Settings` -> `Chat Settings`, add the following shortcut option:
+1.  Trong `System Settings` -> `Chat Settings` của bảng điều khiển Uter, thêm tùy chọn lối tắt sau:
 
     ```json
     { "LunaTranslator": "lunatranslator://llmapi/base64?data={cheryConfig}" }
     ```
 
-    ![add_config](/apps-assets/luna_translator/add_config.webp)
+    ![thêm_cấu_hình](/apps-assets/luna_translator/add_config.webp)
 
-2.  In the **`Uter`** -> `Console` -> `Token Management` tab, select the token you want to use in LunaTranslator, click the dropdown option next to the chat button, choose `LunaTranslator`, and you will be redirected to LunaTranslator with the API address and API Key automatically configured.
+2.  Trong tab **`Uter`** -> `Console` -> `Token Management`, chọn token bạn muốn sử dụng trong LunaTranslator, nhấn tùy chọn thả xuống bên cạnh nút trò chuyện, chọn `LunaTranslator`, và bạn sẽ được chuyển hướng đến LunaTranslator với địa chỉ API và API Key được cấu hình tự động.
 
-    ![跳转到 LunaTranslator](/apps-assets/luna_translator/jump_to_app.webp)
+    ![chuyển hướng đến LunaTranslator](/apps-assets/luna_translator/jump_to_app.webp)
 
-3.  In **`LunaTranslator`** -> `Settings` -> `Translation Settings` -> `Large Models`, a new large model interface configuration will appear; click Edit.
+3.  Trong **`LunaTranslator`** -> `Settings` -> `Translation Settings` -> `Large Models`, sẽ xuất hiện một cấu hình giao diện mô hình lớn mới; nhấn Edit.
 
-    ![设置api](/apps-assets/luna_translator/api_setting.webp)
+    ![cài đặt_api](/apps-assets/luna_translator/api_setting.webp)
 
-4.  Click the refresh button next to the **model** dropdown to retrieve the Uter platform's model list, select or enter the model name, then click OK to save.
+4.  Nhấn nút làm mới cạnh menu thả xuống **model** để lấy danh sách mô hình của nền tảng Uter, chọn hoặc nhập tên mô hình, sau đó nhấn OK để lưu.
 
-    ![设置模型](/apps-assets/luna_translator/setting_model.webp)
+    ![cài đặt mô hình](/apps-assets/luna_translator/setting_model.webp)
 
-5.  Check if the toggle switch next to the **uter** large model interface configuration is turned on. If not enabled, enable the interface to start using it.
+5.  Kiểm tra xem công tắc chuyển bên cạnh cấu hình giao diện mô hình lớn **uter** đã được bật chưa. Nếu chưa được bật, hãy bật giao diện để bắt đầu sử dụng.
 
-    ![开启配置](/apps-assets/luna_translator/open_config.webp)
+    ![bật cấu hình](/apps-assets/luna_translator/open_config.webp)
 
-### Manual Configuration
+### Cấu hình thủ công
 
-1.  In the **`Uter`** -> `Console` -> `Token Management` tab, obtain the API Key.
+1.  Trong tab **`Uter`** -> `Console` -> `Token Management`, lấy API Key.
 
-    ![获取 API Key](/apps-assets/luna_translator/copy_api_key.webp)
+    ![lấy API Key](/apps-assets/luna_translator/copy_api_key.webp)
 
-2.  In **`LunaTranslator`** -> `Settings` - `Translation Settings` -> `Large Models`, select Add.
+2.  Trong **`LunaTranslator`** -> `Settings` - `Translation Settings` -> `Large Models`, chọn Add.
 
-    ![添加 API](/apps-assets/luna_translator/add_api.webp)
+    ![thêm API](/apps-assets/luna_translator/add_api.webp)
 
-3.  Copy the **Large Model General Interface** template and add a new interface.
+3.  Sao chép mẫu **Large Model General Interface** và thêm một giao diện mới.
 
-    ![添加 API2](/apps-assets/luna_translator/add_api_2.webp)
+    ![thêm API2](/apps-assets/luna_translator/add_api_2.webp)
 
-4.  In the **newly added interface**, fill in the corresponding API Address and API Key.
+4.  Trong **giao diện mới được thêm**, điền địa chỉ API và API Key tương ứng.
 
-    ![设置 API1](/apps-assets/luna_translator/setting_api.webp)
+    ![cài đặt API1](/apps-assets/luna_translator/setting_api.webp)
 
-    ![设置 API2](/apps-assets/luna_translator/setting_api2.webp)
+    ![cài đặt API2](/apps-assets/luna_translator/setting_api2.webp)
 
-5.  Click the refresh button next to the **model** dropdown to retrieve the Uter platform's model list, select or enter the model name, then click OK to save.
+5.  Nhấn nút làm mới cạnh menu thả xuống **model** để lấy danh sách mô hình của nền tảng Uter, chọn hoặc nhập tên mô hình, sau đó nhấn OK để lưu.
 
-    ![设置 API3](/apps-assets/luna_translator/setting_api3.webp)
+    ![cài đặt API3](/apps-assets/luna_translator/setting_api3.webp)
 
-6.  Click the toggle switch next to **Uter** to enable the interface and start using it.
+6.  Nhấn công tắc chuyển bên cạnh **Uter** để bật giao diện và bắt đầu sử dụng.
 
-    ![打开API](/apps-assets/luna_translator/open_api.webp)
+    ![mở API](/apps-assets/luna_translator/open_api.webp)
 
-For more usage methods, please refer to the official LunaTranslator documentation: [LunaTranslator Documentation - Large Model Translation Interface](https://docs.lunatranslator.org/en/guochandamoxing.html)
+Để biết thêm phương thức sử dụng, vui lòng tham khảo tài liệu chính thức của LunaTranslator: [Tài liệu LunaTranslator - Giao diện dịch mô hình lớn](https://docs.lunatranslator.org/en/guochandamoxing.html)

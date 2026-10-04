@@ -1,60 +1,60 @@
-# openai
+# OpenAI
 
-## Edit Image
+## Chỉnh sửa ảnh (Edit Image)
 
-在给定原始图像和提示的情况下创建编辑或扩展图像。
+Tạo ảnh chỉnh sửa hoặc mở rộng dựa trên ảnh gốc và prompt đã cho.
 
 `POST` `/v1/images/edits/`
 
-### 请求体（`multipart/form-data`）
+### Thân yêu cầu (`multipart/form-data`)
 
-| 字段 | 类型 | 必填 | 说明 |
+| Trường | Kiểu | Bắt buộc | Mô tả |
 |---|---|---|---|
-| `image` | string（binary） | 是 | 要编辑的图像。必须是有效的 PNG 文件，小于 4MB，并且是方形的。如果未提供遮罩，图像必须具有透明度，将用作遮罩。 |
-| `mask` | string（binary） | 否 | 附加图像，其完全透明区域（例如，alpha 为零的区域）指示image应编辑的位置。必须是有效的 PNG 文件，小于 4MB，并且尺寸与原始image相同。 |
-| `prompt` | string | 是 | 所需图像的文本描述。最大长度为 1000 个字符。 |
-| `n` | string | 否 | 要生成的图像数。必须介于 1 和 10 之间。 |
-| `size` | string | 否 | 生成图像的大小。必须是`256x256`、`512x512`或 `1024x1024`之一。 |
-| `response_format` | string | 否 | 生成的图像返回的格式。必须是`url`或`b64_json`。 |
-| `user` | string | 否 | 代表您的最终用户的唯一标识符，可以帮助 OpenAI 监控和检测滥用行为。[了解更多](https://platform.openai.com/docs/guides/safety-best-practices/end-user-ids)。 |
-| `model` | string | 否 | — |
+| `image` | string (binary) | Có | Hình ảnh cần chỉnh sửa. Phải là tệp PNG hợp lệ, nhỏ hơn 4MB và có dạng hình vuông. Nếu không cung cấp mask, hình ảnh phải có độ trong suốt và sẽ được dùng làm mask. |
+| `mask` | string (binary) | Không | Hình ảnh bổ sung, các vùng hoàn toàn trong suốt (ví dụ vùng có alpha bằng 0) chỉ định vị trí ảnh cần chỉnh sửa. Phải là tệp PNG hợp lệ, nhỏ hơn 4MB và có kích thước giống với ảnh gốc. |
+| `prompt` | string | Có | Mô tả văn bản của ảnh mong muốn. Độ dài tối đa 1000 ký tự. |
+| `n` | string | Không | Số lượng ảnh cần tạo. Phải nằm trong khoảng 1 đến 10. |
+| `size` | string | Không | Kích thước ảnh tạo ra. Phải là một trong `256x256`, `512x512` hoặc `1024x1024`. |
+| `response_format` | string | Không | Định dạng trả về của ảnh tạo ra. Phải là `url` hoặc `b64_json`. |
+| `user` | string | Không | Định danh duy nhất đại diện cho người dùng cuối của bạn, giúp OpenAI giám sát và phát hiện hành vi lạm dụng. [Tìm hiểu thêm](https://platform.openai.com/docs/guides/safety-best-practices/end-user-ids). |
+| `model` | string | Không | — |
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | Response |
+| `200` | Phản hồi |
 
-## Generate Images
+## Tạo ảnh (Generate Images)
 
-在给定提示的情况下创建图像。[了解更多](https://platform.openai.com/docs/guides/images)。
+Tạo ảnh dựa trên prompt đã cho. [Tìm hiểu thêm](https://platform.openai.com/docs/guides/images).
 
 `POST` `/v1/images/generations/`
 
-### 请求体（`application/json`）
+### Thân yêu cầu (`application/json`)
 
-| 字段 | 类型 | 必填 | 说明 |
+| Trường | Kiểu | Bắt buộc | Mô tả |
 |---|---|---|---|
-| `model` | string | 否 | 用于图像生成的模型。`dall-e-2`、`dall-e-3` 或 `gpt-image-1` 之一。默认为 `dall-e-2`，除非使用特定于 `gpt-image-1` 的参数。 |
-| `prompt` | string | 是 | 所需图像的文本描述。`gpt-image-1` 的最大长度为 32000 个字符，`dall-e-2` 的最大长度为 1000 个字符，`dall-e-3` 的最大长度为 4000 个字符。 |
-| `n` | integer | 否 | 要生成的图像数量。必须介于 1 到 10 之间。对于 `dall-e-3`，仅支持 `n=1`。 |
-| `size` | string | 否 | 生成的图像的大小。`对于 gpt-image-1`，必须是 `1024x1024`、`1536x1024`（横向）、`1024x1536`（纵向）或`自动`（默认值）之一，`对于 dall-e-2`，必须是 `256x256、``512x512` 或 `1024x1024` 之一，对于 `dall-e-3`，必须是 `1024x1024`、`1792x1024` 或 `1024x1792` 之一。 |
-| `background` | string | 否 | 允许为生成的图像的背景设置透明度。此参数仅支持 `gpt-image-1`。必须是以下之一 `透明`、`不透明`或`自动`（默认值）。使用`自动`时，模型将自动确定图像的最佳背景。  如果`是透明`的，则输出格式需要支持透明度，因此应将其设置为 `png`（默认值）或 `webp`。 |
-| `moderation` | string | 否 | 控制 `gpt-image-1` 生成的图像的内容审核级别。必须为`低，` 以进行限制较少的筛选或`自动`（默认值）。 |
-| `quality` | string | 否 | 将生成的图像的质量。 |
-| `stream` | string | 否 | — |
-| `style` | string | 否 | — |
-| `user` | string | 否 | — |
+| `model` | string | Không | Mô hình dùng để tạo ảnh. Một trong `dall-e-2`, `dall-e-3` hoặc `gpt-image-1`. Mặc định là `dall-e-2`, trừ khi sử dụng các tham số riêng cho `gpt-image-1`. |
+| `prompt` | string | Có | Mô tả văn bản của ảnh mong muốn. Độ dài tối đa cho `gpt-image-1` là 32000 ký tự, `dall-e-2` là 1000 ký tự, `dall-e-3` là 4000 ký tự. |
+| `n` | integer | Không | Số lượng ảnh cần tạo. Phải nằm trong khoảng 1 đến 10. Với `dall-e-3`, chỉ hỗ trợ `n=1`. |
+| `size` | string | Không | Kích thước ảnh tạo ra. Với `gpt-image-1`, phải là một trong `1024x1024`, `1536x1024` (ngang), `1024x1536` (dọc) hoặc `auto` (mặc định); với `dall-e-2`, phải là một trong `256x256`, `512x512` hoặc `1024x1024`; với `dall-e-3`, phải là một trong `1024x1024`, `1792x1024` hoặc `1024x1792`. |
+| `background` | string | Không | Cho phép thiết lập độ trong suốt cho nền của ảnh tạo ra. Tham số này chỉ hỗ trợ `gpt-image-1`. Phải là một trong `transparent` (trong suốt), `opaque` (đục) hoặc `auto` (mặc định). Khi dùng `auto`, mô hình sẽ tự động xác định nền tối ưu. Nếu là `transparent`, định dạng đầu ra cần hỗ trợ trong suốt, do đó nên đặt là `png` (mặc định) hoặc `webp`. |
+| `moderation` | string | Không | Kiểm soát mức độ kiểm duyệt nội dung của ảnh tạo bởi `gpt-image-1`. Phải là `low` để lọc ít hạn chế hơn hoặc `auto` (mặc định). |
+| `quality` | string | Không | Chất lượng của ảnh tạo ra. |
+| `stream` | string | Không | — |
+| `style` | string | Không | — |
+| `user` | string | Không | — |
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | Response |
+| `200` | Phản hồi |
 
-#### `200` 响应字段
+#### Trường phản hồi `200`
 
-| 字段 | 类型 | 说明 |
+| Trường | Kiểu | Mô tả |
 |---|---|---|
 | `created` | integer | — |
 | `data` | array&lt;object&gt; | — |

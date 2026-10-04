@@ -1,88 +1,88 @@
 # sora
 
-## Create Video 
+## ビデオ作成 (Create Video)
 
-OpenAI 兼容的视频生成接口。
+OpenAI 互換のビデオ生成インターフェースです。
 
-参考文档: https://platform.openai.com/docs/api-reference/videos/create
+参考ドキュメント: https://platform.openai.com/docs/api-reference/videos/create
 
 `POST` `/v1/videos`
 
-### 请求体（`multipart/form-data`）
+### リクエストボディ（`multipart/form-data`）
 
-| 字段 | 类型 | 必填 | 说明 |
+| フィールド | 型 | 必須 | 説明 |
 |---|---|---|---|
-| `model` | string | 否 | 模型/风格 ID |
-| `prompt` | string | 否 | 文本描述提示词 |
-| `image` | string | 否 | 图片输入 (URL 或 Base64) |
-| `duration` | number | 否 | 视频时长（秒） |
-| `width` | integer | 否 | 视频宽度 |
-| `height` | integer | 否 | 视频高度 |
-| `fps` | integer | 否 | 视频帧率 |
-| `seed` | integer | 否 | 随机种子 |
-| `n` | integer | 否 | 生成视频数量 |
-| `response_format` | string | 否 | 响应格式 |
-| `user` | string | 否 | 用户标识 |
-| `metadata` | object | 否 | 扩展参数 (如 negative_prompt, style, quality_level 等) |
+| `model` | string | いいえ | モデル/スタイル ID |
+| `prompt` | string | いいえ | テキストによる説明プロンプト |
+| `image` | string | いいえ | 画像入力 (URL または Base64) |
+| `duration` | number | いいえ | ビデオの長さ（秒） |
+| `width` | integer | いいえ | ビデオの幅 |
+| `height` | integer | いいえ | ビデオの高さ |
+| `fps` | integer | いいえ | ビデオのフレームレート |
+| `seed` | integer | いいえ | 乱数シード |
+| `n` | integer | いいえ | 生成するビデオの数 |
+| `response_format` | string | いいえ | レスポンスの形式 |
+| `user` | string | いいえ | ユーザー識別子 |
+| `metadata` | object | いいえ | 拡張パラメータ (negative_prompt, style, quality_level など) |
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
-| `200` | 成功创建视频任务 |
-| `400` | 请求参数错误 |
+| `200` | ビデオタスクの作成に成功 |
+| `400` | リクエストパラメータが不正 |
 
-#### `200` 响应字段
+#### `200` レスポンスフィールド
 
-| 字段 | 类型 | 说明 |
+| フィールド | 型 | 説明 |
 |---|---|---|
-| `id` | string | 视频 ID |
-| `object` | string | 对象类型 |
-| `model` | string | 使用的模型 |
-| `status` | string | 任务状态 |
-| `progress` | integer | 进度百分比 |
-| `created_at` | integer | 创建时间戳 |
-| `seconds` | string | 视频时长 |
-| `completed_at` | integer | 完成时间戳 |
-| `expires_at` | integer | 过期时间戳 |
-| `size` | string | 视频尺寸 |
-| `error.message` | string | 错误信息 |
-| `error.code` | string | 错误码 |
-| `metadata` | object | 额外元数据 |
+| `id` | string | ビデオ ID |
+| `object` | string | オブジェクトの種類 |
+| `model` | string | 使用されたモデル |
+| `status` | string | タスクの状態 |
+| `progress` | integer | 進捗率（パーセント） |
+| `created_at` | integer | 作成タイムスタンプ |
+| `seconds` | string | ビデオの長さ |
+| `completed_at` | integer | 完了タイムスタンプ |
+| `expires_at` | integer | 有効期限タイムスタンプ |
+| `size` | string | ビデオのサイズ |
+| `error.message` | string | エラーメッセージ |
+| `error.code` | string | エラーコード |
+| `metadata` | object | その他のメタデータ |
 
-#### `400` 响应字段
+#### `400` レスポンスフィールド
 
-| 字段 | 类型 | 说明 |
+| フィールド | 型 | 説明 |
 |---|---|---|
-| `error.message` | string | 错误信息 |
-| `error.type` | string | 错误类型 |
-| `error.param` | string | 相关参数 |
-| `error.code` | string | 错误代码 |
+| `error.message` | string | エラーメッセージ |
+| `error.type` | string | エラーの種類 |
+| `error.param` | string | 関連するパラメータ |
+| `error.code` | string | エラーコード |
 
-## Get Video Task Status 
+## ビデオタスク状態の取得 (Get Video Task Status)
 
-OpenAI 兼容的视频任务状态查询接口。
+OpenAI 互換のビデオタスク状態照会インターフェースです。
 
-返回视频任务的详细状态信息。
+ビデオタスクの詳細な状態情報を返します。
 
 `GET` `/v1/videos/{task_id}`
 
-### 请求参数
+### リクエストパラメータ
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| パラメータ名 | 位置 | 型 | 必須 | 説明 |
 |---|---|---|---|---|
-| `task_id` | path | string | 是 | 视频任务 ID |
+| `task_id` | path | string | はい | ビデオタスク ID |
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
-| `200` | 成功获取视频任务状态 |
-| `404` | 任务不存在 |
+| `200` | ビデオタスクの状態を正常に取得 |
+| `404` | タスクが存在しません |
 
-#### `200` 响应字段
+#### `200` レスポンスフィールド
 
-| 字段 | 类型 | 说明 |
+| フィールド | 型 | 説明 |
 |---|---|---|
 | `id` | string | — |
 | `object` | string | — |
@@ -92,41 +92,41 @@ OpenAI 兼容的视频任务状态查询接口。
 | `created_at` | integer | — |
 | `seconds` | string | — |
 
-#### `404` 响应字段
+#### `404` レスポンスフィールド
 
-| 字段 | 类型 | 说明 |
+| フィールド | 型 | 説明 |
 |---|---|---|
-| `error.message` | string | 错误信息 |
-| `error.type` | string | 错误类型 |
-| `error.param` | string | 相关参数 |
-| `error.code` | string | 错误代码 |
+| `error.message` | string | エラーメッセージ |
+| `error.type` | string | エラーの種類 |
+| `error.param` | string | 関連するパラメータ |
+| `error.code` | string | エラーコード |
 
-## Get Video Content
+## ビデオコンテンツの取得 (Get Video Content)
 
-获取已完成视频任务的视频文件内容。
+完了したビデオタスクのビデオファイルの内容を取得します。
 
-此接口会代理返回视频文件流。
+このインターフェースはビデオファイルストリームをプロキシして返します。
 
 `GET` `/v1/videos/{task_id}/content`
 
-### 请求参数
+### リクエストパラメータ
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| パラメータ名 | 位置 | 型 | 必須 | 説明 |
 |---|---|---|---|---|
-| `task_id` | path | string | 是 | 视频任务 ID |
+| `task_id` | path | string | はい | ビデオタスク ID |
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
-| `200` | 成功获取视频内容 |
-| `404` | 视频不存在或未完成 |
+| `200` | ビデオコンテンツの取得に成功 |
+| `404` | ビデオが存在しないか、未完了 |
 
-#### `404` 响应字段
+#### `404` レスポンスフィールド
 
-| 字段 | 类型 | 说明 |
+| フィールド | 型 | 説明 |
 |---|---|---|
-| `error.message` | string | 错误信息 |
-| `error.type` | string | 错误类型 |
-| `error.param` | string | 相关参数 |
-| `error.code` | string | 错误代码 |
+| `error.message` | string | エラーメッセージ |
+| `error.type` | string | エラーの種類 |
+| `error.param` | string | 関連するパラメータ |
+| `error.code` | string | エラーコード |

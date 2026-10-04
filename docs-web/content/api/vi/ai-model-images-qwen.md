@@ -1,62 +1,62 @@
-# qwen
+# Qwen
 
-## Generate Images
+## Tạo ảnh (Generate Images)
 
-百炼qwen-image系列图片生成
+Tạo ảnh thuộc dòng qwen-image của Bailian.
 
 `POST` `/v1/images/generations`
 
-### 请求体（`application/json`）
+### Thân yêu cầu (`application/json`)
 
-| 字段 | 类型 | 必填 | 说明 |
+| Trường | Kiểu | Bắt buộc | Mô tả |
 |---|---|---|---|
-| `model` | string | 是 | — |
-| `input.messages` | array&lt;object&gt; | 否 | — |
-| `parameters.negative_prompt` | string | 否 | — |
-| `parameters.prompt_extend` | boolean | 否 | — |
-| `parameters.watermark` | boolean | 否 | — |
-| `parameters.size` | string | 否 | — |
+| `model` | string | Có | — |
+| `input.messages` | array&lt;object&gt; | Không | — |
+| `parameters.negative_prompt` | string | Không | — |
+| `parameters.prompt_extend` | boolean | Không | — |
+| `parameters.watermark` | boolean | Không | — |
+| `parameters.size` | string | Không | — |
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功生成图像 |
+| `200` | Tạo ảnh thành công |
 
-#### `200` 响应字段
+#### Trường phản hồi `200`
 
-| 字段 | 类型 | 说明 |
+| Trường | Kiểu | Mô tả |
 |---|---|---|
 | `created` | integer | — |
 | `data` | array&lt;object&gt; | — |
 
-## Edit Image
+## Chỉnh sửa ảnh (Edit Image)
 
-百炼qwen-image系列图片编辑
+Chỉnh sửa ảnh thuộc dòng qwen-image của Bailian.
 
 `POST` `/v1/images/edits`
 
-### 请求体（`application/json`）
+### Thân yêu cầu (`application/json`)
 
-| 字段 | 类型 | 必填 | 说明 |
+| Trường | Kiểu | Bắt buộc | Mô tả |
 |---|---|---|---|
-| `model` | string | 是 | — |
-| `input.messages` | array&lt;object&gt; | 否 | — |
-| `parameters.n` | integer | 否 | — |
-| `parameters.negative_prompt` | string | 否 | — |
-| `parameters.prompt_extend` | boolean | 否 | — |
-| `parameters.watermark` | boolean | 否 | — |
-| `parameters.size` | string | 否 | — |
+| `model` | string | Có | — |
+| `input.messages` | array&lt;object&gt; | Không | — |
+| `parameters.n` | integer | Không | — |
+| `parameters.negative_prompt` | string | Không | — |
+| `parameters.prompt_extend` | boolean | Không | — |
+| `parameters.watermark` | boolean | Không | — |
+| `parameters.size` | string | Không | — |
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功生成图像 |
+| `200` | Tạo ảnh thành công |
 
-#### `200` 响应字段
+#### Trường phản hồi `200`
 
-| 字段 | 类型 | 说明 |
+| Trường | Kiểu | Mô tả |
 |---|---|---|
 | `created` | integer | — |
 | `data` | array&lt;object&gt; | — |

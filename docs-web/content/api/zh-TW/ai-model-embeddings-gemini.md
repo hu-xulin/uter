@@ -1,32 +1,32 @@
-# Native Gemini Format
+# 原生Gemini格式
 
-使用指定引擎/模型创建嵌入
+使用指定引擎/模型建立嵌入
 
 `POST` `/v1/engines/{model}/embeddings`
 
-### 请求参数
+### 請求引數
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| 引數名 | 位置 | 型別 | 必填 | 說明 |
 |---|---|---|---|---|
 | `model` | path | string | 是 | 模型/引擎 ID |
 
-### 请求体（`application/json`）
+### 請求體（`application/json`）
 
-| 字段 | 类型 | 必填 | 说明 |
+| 欄位 | 型別 | 必填 | 說明 |
 |---|---|---|---|
 | `model` | string | 是 | — |
 | `encoding_format` | enum（`float`, `base64`） | 否 | — |
-| `dimensions` | integer | 否 | 输出向量维度 |
+| `dimensions` | integer | 否 | 輸出向量維度 |
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
-| `200` | 成功创建嵌入 |
+| `200` | 成功建立嵌入 |
 
-#### `200` 响应字段
+#### `200` 響應欄位
 
-| 字段 | 类型 | 说明 |
+| 欄位 | 型別 | 說明 |
 |---|---|---|
 | `object` | string | — |
 | `data` | array&lt;object&gt; | — |

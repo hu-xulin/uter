@@ -1,77 +1,77 @@
 [
   {
     "id": "index",
-    "title": "AI Applications",
-    "description": "Supported AI applications and integration solutions"
+    "title": "AI アプリケーション",
+    "description": "対応 AI アプリケーションと統合ソリューション"
   },
   {
     "id": "aionui",
-    "title": "AionUi - Free Open-Source Desktop Office Agent",
-    "description": "AionUi Tutorial — A free open-source desktop office agent supporting various AI agents like Gemini CLI, Claude Code, Codex, and more. Integrates with Uter to enable multi-model workflows."
+    "title": "AionUi - 無料オープンソースのデスクトップオフィスエージェント",
+    "description": "AionUi チュートリアル — Gemini CLI、Claude Code、Codex などさまざまな AI エージェントをサポートする無料のオープンソースデスクトップオフィスエージェント。Uter と統合してマルチモデルワークフローを実現します。"
   },
   {
     "id": "aqbot",
-    "title": "AQBot - Local-First Desktop AI Workbench",
-    "description": "AQBot guide — connect this local-first desktop AI workbench to Uter. Import with aqbot:// in one click, or configure OpenAI / Claude / Gemini protocols manually."
+    "title": "AQBot - ローカルファーストのデスクトップ AI ワークベンチ",
+    "description": "AQBot ガイド — このローカルファーストのデスクトップ AI ワークベンチを Uter に接続します。aqbot:// でワンクリックインポートするか、OpenAI / Claude / Gemini プロトコルを手動で設定します。"
   },
   {
     "id": "cc-switch",
-    "title": "CC Switch - All-in-One AI CLI Management Tool",
-    "description": "CC Switch tutorial — a cross-platform tool for unified management of Claude Code, Codex & Gemini CLI provider configs, MCP servers, and system prompts. One-click import from Uter."
+    "title": "CC Switch - オールインワンの AI CLI 管理ツール",
+    "description": "CC Switch チュートリアル — Claude Code、Codex、Gemini CLI のプロバイダー設定、MCP サーバー、システムプロンプトを統合管理するクロスプラットフォームツール。Uter からのワンクリックインポートに対応。"
   },
   {
     "id": "cherry-studio",
-    "title": "Cherry Studio - Desktop AI Client",
-    "description": "Cherry Studio Tutorial — Connecting the desktop AI client to Uter, one-click API Key entry. Built-in 30+ professional AI assistants, covering various work scenarios."
+    "title": "Cherry Studio - デスクトップ AI クライアント",
+    "description": "Cherry Studio チュートリアル — デスクトップ AI クライアントを Uter に接続し、API Key をワンクリックで入力。さまざまな業務シナリオをカバーする 30 以上の専門 AI アシスタントを内蔵。"
   },
   {
     "id": "deepchat",
-    "title": "DeepChat - Commercial-Friendly Full-Featured AI Agent Client",
-    "description": "DeepChat guide — connect this open-source, commercial-friendly full-featured AI Agent client to Uter and import DeepChat configuration with DeepLink in one click."
+    "title": "DeepChat - 商用利用に優しいフル機能の AI エージェントクライアント",
+    "description": "DeepChat ガイド — このオープンソースで商用利用に優しいフル機能の AI エージェントクライアントを Uter に接続し、DeepChat 設定を DeepLink でワンクリックインポートします。"
   },
   {
     "id": "fluent-read",
-    "title": "FluentRead - Open Source Translation Plugin",
-    "description": "FluentRead configuration guide — open-source browser translation plugin with 20+ engines and AI model support. Connect to Uter for immersive bilingual reading."
+    "title": "FluentRead - オープンソースの翻訳プラグイン",
+    "description": "FluentRead 設定ガイド — 20 以上のエンジンと AI モデルに対応したオープンソースのブラウザ翻訳プラグイン。Uter に接続して没入型のバイリンガル読書を実現します。"
   },
   {
     "id": "memoh",
-    "title": "Memoh - Containerized AI Agent Platform",
-    "description": "Memoh integration guide — Connect the self-hosted containerized AI agent platform to Uter, creating AI bots with long-term memory for Telegram, Discord, Lark, QQ, WeChat, and more."
+    "title": "Memoh - コンテナ化された AI エージェントプラットフォーム",
+    "description": "Memoh 統合ガイド — セルフホスト型のコンテナ化された AI エージェントプラットフォームを Uter に接続し、Telegram、Discord、Lark、QQ、WeChat など向けに長期記憶を持つ AI ボットを作成します。"
   },
   {
     "id": "openclaw",
-    "title": "OpenClaw - Self-hosted AI Assistant Platform",
-    "description": "OpenClaw Tutorial — Install OpenClaw, integrate Uter, and quickly set up a self-hosted AI assistant. Open-source project, supporting multi-channel integration like Telegram, Discord, WhatsApp."
+    "title": "OpenClaw - セルフホスト型 AI アシスタントプラットフォーム",
+    "description": "OpenClaw チュートリアル — OpenClaw をインストールし、Uter と統合してセルフホスト型 AI アシスタントを迅速に構築。Telegram、Discord、WhatsApp などのマルチチャネル統合に対応したオープンソースプロジェクト。"
   },
   {
     "id": "langbot",
-    "title": "LangBot - Instant Messaging Bot Development Platform",
-    "description": "LangBot integration guide — build AI-powered chatbots for Feishu, DingTalk, Telegram, Discord, and more. Supports Knowledge Base, Agent, and MCP with Uter."
+    "title": "LangBot - インスタントメッセージングボット開発プラットフォーム",
+    "description": "LangBot 統合ガイド — Feishu、DingTalk、Telegram、Discord など向けの AI 搭載チャットボットを構築。Uter とのナレッジベース、Agent、MCP に対応。"
   },
   {
     "id": "luna-translator",
-    "title": "LunaTranslator - Open Source GalGame Translator",
-    "description": "LunaTranslator Tutorial — An open-source GalGame / visual novel translator that supports HOOK, OCR, and AI translation engines. Integrates with Uter to improve translation quality."
+    "title": "LunaTranslator - オープンソースの GalGame 翻訳ツール",
+    "description": "LunaTranslator チュートリアル — HOOK、OCR、AI 翻訳エンジンに対応したオープンソースの GalGame / ビジュアルノベル翻訳ツール。Uter と統合して翻訳品質を向上させます。"
   },
   {
     "id": "astrbot",
-    "title": "AstrBot - Agent Chatbot",
-    "description": "AstrBot Configuration Tutorial — Integrating the open-source Agent chatbot platform with Uter to inject AI capabilities into instant messaging platforms like QQ, Feishu, DingTalk, and WeChat Work."
+    "title": "AstrBot - エージェントチャットボット",
+    "description": "AstrBot 設定チュートリアル — オープンソースのエージェントチャットボットプラットフォームを Uter と統合し、QQ、Feishu、DingTalk、WeChat Work などのインスタントメッセージングプラットフォームに AI 機能を注入します。"
   },
   {
     "id": "claude-code",
     "title": "Claude Code",
-    "description": "Claude Code configuration guide — use Anthropic's terminal-based coding agent with Uter. Supports code understanding, multi-file editing, and IDE integration."
+    "description": "Claude Code 設定ガイド — Anthropic の端末ベースのコーディングエージェントを Uter で使用。コード理解、マルチファイル編集、IDE 統合に対応。"
   },
   {
     "id": "codex-cli",
     "title": "OpenAI Codex CLI",
-    "description": "OpenAI Codex CLI Installation Tutorial — Install a terminal AI coding assistant on Windows, macOS, Linux, connecting to Uter. Supports sandbox policies and atomic patch editing."
+    "description": "OpenAI Codex CLI インストールチュートリアル — Windows、macOS、Linux に端末 AI コーディングアシスタントをインストールし、Uter に接続。サンドボックスポリシーとアトミックパッチ編集に対応。"
   },
   {
     "id": "factory-droid-cli",
     "title": "Factory Droid CLI",
-    "description": "Factory Droid CLI setup guide — install and configure this AI software engineering agent with Uter. Supports end-to-end development from planning to testing."
+    "description": "Factory Droid CLI セットアップガイド — この AI ソフトウェアエンジニアリングエージェントを Uter でインストールおよび設定。計画からテストまでのエンドツーエンド開発に対応。"
   }
 ]

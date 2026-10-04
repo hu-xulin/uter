@@ -1,7 +1,7 @@
 [
   {
     "id": "ai-model-audio",
-    "title": "AI Model API · Native Gemini Format",
+    "title": "AI Model API · ネイティブ Gemini 形式",
     "category": "ai-model"
   },
   {
@@ -11,7 +11,7 @@
   },
   {
     "id": "ai-model-chat",
-    "title": "Native Claude Format",
+    "title": "ネイティブ Claude 形式",
     "category": "ai-model"
   },
   {
@@ -26,12 +26,12 @@
   },
   {
     "id": "ai-model-completions",
-    "title": "AI Model API · Native OpenAI Format",
+    "title": "AI Model API · ネイティブ OpenAI 形式",
     "category": "ai-model"
   },
   {
     "id": "ai-model-completions-openai",
-    "title": "AI Model API · Native OpenAI Format",
+    "title": "AI Model API · ネイティブ OpenAI 形式",
     "category": "ai-model"
   },
   {
@@ -41,12 +41,12 @@
   },
   {
     "id": "ai-model-embeddings-openai",
-    "title": "AI Model API · Native OpenAI Format",
+    "title": "AI Model API · ネイティブ OpenAI 形式",
     "category": "ai-model"
   },
   {
     "id": "ai-model-embeddings-gemini",
-    "title": "AI Model API · Native Gemini Format",
+    "title": "AI Model API · ネイティブ Gemini 形式",
     "category": "ai-model"
   },
   {
@@ -66,32 +66,32 @@
   },
   {
     "id": "ai-model-models-list",
-    "title": "list",
+    "title": "リスト",
     "category": "ai-model"
   },
   {
     "id": "ai-model-models-list-openai",
-    "title": "AI Model API · Native OpenAI Format",
+    "title": "AI Model API · ネイティブ OpenAI 形式",
     "category": "ai-model"
   },
   {
     "id": "ai-model-models-list-gemini",
-    "title": "AI Model API · Native Gemini Format",
+    "title": "AI Model API · ネイティブ Gemini 形式",
     "category": "ai-model"
   },
   {
     "id": "ai-model-moderations",
-    "title": "AI Model API · Native OpenAI Format",
+    "title": "AI Model API · ネイティブ OpenAI 形式",
     "category": "ai-model"
   },
   {
     "id": "ai-model-realtime",
-    "title": "AI Model API · Native OpenAI Format",
+    "title": "AI Model API · ネイティブ OpenAI 形式",
     "category": "ai-model"
   },
   {
     "id": "ai-model-rerank",
-    "title": "Document Reranking",
+    "title": "ドキュメント再ランキング",
     "category": "ai-model"
   },
   {
@@ -101,12 +101,12 @@
   },
   {
     "id": "ai-model-videos",
-    "title": "videos",
+    "title": "動画",
     "category": "ai-model"
   },
   {
     "id": "ai-model-videos-jimeng",
-    "title": "Jimeng Video Generation",
+    "title": "Jimeng 動画生成",
     "category": "ai-model"
   },
   {
@@ -121,62 +121,62 @@
   },
   {
     "id": "ai-model-videos-happyhorse",
-    "title": "HappyHorse Format",
+    "title": "HappyHorse 形式",
     "category": "ai-model"
   },
   {
     "id": "ai-model-videos-minimax",
-    "title": "MiniMax Format",
+    "title": "MiniMax 形式",
     "category": "ai-model"
   },
   {
     "id": "ai-model-videos-wanx",
-    "title": "Wanx Format",
+    "title": "Wanx 形式",
     "category": "ai-model"
   },
   {
     "id": "ai-model-videos-veo",
-    "title": "Google Veo Format",
+    "title": "Google Veo 形式",
     "category": "ai-model"
   },
   {
     "id": "ai-model-videos-pixverse",
-    "title": "PixVerse Format",
+    "title": "PixVerse 形式",
     "category": "ai-model"
   },
   {
     "id": "ai-model-videos-seedance",
-    "title": "Seedance Format",
+    "title": "Seedance 形式",
     "category": "ai-model"
   },
   {
     "id": "management-auth",
-    "title": "Authentication System Description (Auth)",
+    "title": "認証システムの説明 (Auth)",
     "category": "management"
   },
   {
     "id": "management-channel-management",
-    "title": "channel-management",
+    "title": "チャンネル管理",
     "category": "management"
   },
   {
     "id": "management-default",
-    "title": "Redeem Code",
+    "title": "引換コード",
     "category": "management"
   },
   {
     "id": "management-groups",
-    "title": "groups",
+    "title": "グループ",
     "category": "management"
   },
   {
     "id": "management-logs",
-    "title": "logs",
+    "title": "ログ",
     "category": "management"
   },
   {
     "id": "management-model-management",
-    "title": "model-management",
+    "title": "モデル管理",
     "category": "management"
   },
   {
@@ -186,62 +186,62 @@
   },
   {
     "id": "management-payment",
-    "title": "payment",
+    "title": "支払い",
     "category": "management"
   },
   {
     "id": "management-redemption",
-    "title": "redemption",
+    "title": "引換",
     "category": "management"
   },
   {
     "id": "management-security-verification",
-    "title": "security-verification",
+    "title": "セキュリティ認証",
     "category": "management"
   },
   {
     "id": "management-statistics",
-    "title": "statistics",
+    "title": "統計",
     "category": "management"
   },
   {
     "id": "management-system",
-    "title": "system",
+    "title": "システム",
     "category": "management"
   },
   {
     "id": "management-system-settings",
-    "title": "system-settings",
+    "title": "システム設定",
     "category": "management"
   },
   {
     "id": "management-tasks",
-    "title": "tasks",
+    "title": "タスク",
     "category": "management"
   },
   {
     "id": "management-token-management",
-    "title": "token-management",
+    "title": "トークン管理",
     "category": "management"
   },
   {
     "id": "management-two-factor-auth",
-    "title": "two-factor-auth",
+    "title": "二要素認証",
     "category": "management"
   },
   {
     "id": "management-user-auth",
-    "title": "user-auth",
+    "title": "ユーザー認証",
     "category": "management"
   },
   {
     "id": "management-user-management",
-    "title": "user-management",
+    "title": "ユーザー管理",
     "category": "management"
   },
   {
     "id": "management-vendors",
-    "title": "vendors",
+    "title": "ベンダー",
     "category": "management"
   }
 ]

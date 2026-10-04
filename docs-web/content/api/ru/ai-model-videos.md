@@ -1,99 +1,99 @@
 # videos
 
-## Create Video Generation Task
+## Создание задачи генерации видео
 
-提交视频生成任务，支持文生视频和图生视频。
+Отправляет задачу генерации видео, поддерживает генерацию видео по тексту и по изображению.
 
-返回任务 ID，可通过 GET 接口查询任务状态。
+Возвращает идентификатор задачи, состояние которой можно запрашивать через GET-интерфейс.
 
 `POST` `/v1/video/generations`
 
-### 请求体（`application/json`）
+### Тело запроса (`application/json`)
 
-| 字段 | 类型 | 必填 | 说明 |
+| Поле | Тип | Обязательно | Описание |
 |---|---|---|---|
-| `model` | string | 否 | 模型/风格 ID |
-| `prompt` | string | 否 | 文本描述提示词 |
-| `image` | string | 否 | 图片输入 (URL 或 Base64) |
-| `duration` | number | 否 | 视频时长（秒） |
-| `width` | integer | 否 | 视频宽度 |
-| `height` | integer | 否 | 视频高度 |
-| `fps` | integer | 否 | 视频帧率 |
-| `seed` | integer | 否 | 随机种子 |
-| `n` | integer | 否 | 生成视频数量 |
-| `response_format` | string | 否 | 响应格式 |
-| `user` | string | 否 | 用户标识 |
-| `metadata` | object | 否 | 扩展参数 (如 negative_prompt, style, quality_level 等) |
+| `model` | string | нет | Идентификатор модели/стиля |
+| `prompt` | string | нет | Текстовое описание (подсказка) |
+| `image` | string | нет | Входное изображение (URL или Base64) |
+| `duration` | number | нет | Длительность видео (в секундах) |
+| `width` | integer | нет | Ширина видео |
+| `height` | integer | нет | Высота видео |
+| `fps` | integer | нет | Частота кадров видео |
+| `seed` | integer | нет | Случайное зерно |
+| `n` | integer | нет | Количество генерируемых видео |
+| `response_format` | string | нет | Формат ответа |
+| `user` | string | нет | Идентификатор пользователя |
+| `metadata` | object | нет | Дополнительные параметры (например, negative_prompt, style, quality_level и др.) |
 
-### 响应
+### Ответ
 
-| 状态码 | 说明 |
+| Код статуса | Описание |
 |---|---|
-| `200` | 成功创建视频生成任务 |
-| `400` | 请求参数错误 |
+| `200` | Задача генерации видео успешно создана |
+| `400` | Ошибка параметров запроса |
 
-#### `200` 响应字段
+#### Поля ответа `200`
 
-| 字段 | 类型 | 说明 |
+| Поле | Тип | Описание |
 |---|---|---|
-| `task_id` | string | 任务 ID |
-| `status` | string | 任务状态 |
+| `task_id` | string | Идентификатор задачи |
+| `status` | string | Состояние задачи |
 
-#### `400` 响应字段
+#### Поля ответа `400`
 
-| 字段 | 类型 | 说明 |
+| Поле | Тип | Описание |
 |---|---|---|
-| `error.message` | string | 错误信息 |
-| `error.type` | string | 错误类型 |
-| `error.param` | string | 相关参数 |
-| `error.code` | string | 错误代码 |
+| `error.message` | string | Текст ошибки |
+| `error.type` | string | Тип ошибки |
+| `error.param` | string | Связанный параметр |
+| `error.code` | string | Код ошибки |
 
-## Get Video Generation Task Status
+## Получение состояния задачи генерации видео
 
-查询视频生成任务的状态和结果。
+Запрашивает состояние и результат задачи генерации видео.
 
-任务状态：
-- `queued`: 排队中
-- `in_progress`: 生成中
-- `completed`: 已完成
-- `failed`: 失败
+Состояния задачи:
+- `queued`: в очереди
+- `in_progress`: выполняется
+- `completed`: завершено
+- `failed`: ошибка
 
 `GET` `/v1/video/generations/{task_id}`
 
-### 请求参数
+### Параметры запроса
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| Параметр | Расположение | Тип | Обязательно | Описание |
 |---|---|---|---|---|
-| `task_id` | path | string | 是 | 任务 ID |
+| `task_id` | path | string | да | Идентификатор задачи |
 
-### 响应
+### Ответ
 
-| 状态码 | 说明 |
+| Код статуса | Описание |
 |---|---|
-| `200` | 成功获取任务状态 |
-| `404` | 任务不存在 |
+| `200` | Состояние задачи успешно получено |
+| `404` | Задача не существует |
 
-#### `200` 响应字段
+#### Поля ответа `200`
 
-| 字段 | 类型 | 说明 |
+| Поле | Тип | Описание |
 |---|---|---|
-| `task_id` | string | 任务 ID |
-| `status` | enum（`queued`, `in_progress`, `completed`, `failed`） | 任务状态 |
-| `url` | string | 视频资源 URL（成功时） |
-| `format` | string | 视频格式 |
-| `metadata.duration` | number | 实际生成的视频时长 |
-| `metadata.fps` | integer | 实际帧率 |
-| `metadata.width` | integer | 实际宽度 |
-| `metadata.height` | integer | 实际高度 |
-| `metadata.seed` | integer | 使用的随机种子 |
-| `error.code` | integer | 错误码 |
-| `error.message` | string | 错误信息 |
+| `task_id` | string | Идентификатор задачи |
+| `status` | enum（`queued`, `in_progress`, `completed`, `failed`） | Состояние задачи |
+| `url` | string | URL видеоресурса (при успехе) |
+| `format` | string | Формат видео |
+| `metadata.duration` | number | Фактическая длительность сгенерированного видео |
+| `metadata.fps` | integer | Фактическая частота кадров |
+| `metadata.width` | integer | Фактическая ширина |
+| `metadata.height` | integer | Фактическая высота |
+| `metadata.seed` | integer | Использованное случайное зерно |
+| `error.code` | integer | Код ошибки |
+| `error.message` | string | Текст ошибки |
 
-#### `404` 响应字段
+#### Поля ответа `404`
 
-| 字段 | 类型 | 说明 |
+| Поле | Тип | Описание |
 |---|---|---|
-| `error.message` | string | 错误信息 |
-| `error.type` | string | 错误类型 |
-| `error.param` | string | 相关参数 |
-| `error.code` | string | 错误代码 |
+| `error.message` | string | Текст ошибки |
+| `error.type` | string | Тип ошибки |
+| `error.param` | string | Связанный параметр |
+| `error.code` | string | Код ошибки |

@@ -1,12 +1,12 @@
-# Native OpenAI Format
+# 原生OpenAI格式
 
-基于给定提示创建文本补全
+基於給定提示建立文字補全
 
 `POST` `/v1/completions`
 
-### 请求体（`application/json`）
+### 請求體（`application/json`）
 
-| 字段 | 类型 | 必填 | 说明 |
+| 欄位 | 型別 | 必填 | 說明 |
 |---|---|---|---|
 | `model` | string | 是 | — |
 | `max_tokens` | integer | 否 | — |
@@ -17,24 +17,24 @@
 | `suffix` | string | 否 | — |
 | `echo` | boolean | 否 | — |
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
-| `200` | 成功创建响应 |
+| `200` | 成功建立響應 |
 
-#### `200` 响应字段
+#### `200` 響應欄位
 
-| 字段 | 类型 | 说明 |
+| 欄位 | 型別 | 說明 |
 |---|---|---|
 | `id` | string | — |
 | `object` | string | — |
 | `created` | integer | — |
 | `model` | string | — |
 | `choices` | array&lt;object&gt; | — |
-| `usage.prompt_tokens` | integer | 提示词 Token 数 |
-| `usage.completion_tokens` | integer | 补全 Token 数 |
-| `usage.total_tokens` | integer | 总 Token 数 |
+| `usage.prompt_tokens` | integer | 提示詞 Token 數 |
+| `usage.completion_tokens` | integer | 補全 Token 數 |
+| `usage.total_tokens` | integer | 總 Token 數 |
 | `usage.prompt_tokens_details.cached_tokens` | integer | — |
 | `usage.prompt_tokens_details.text_tokens` | integer | — |
 | `usage.prompt_tokens_details.audio_tokens` | integer | — |

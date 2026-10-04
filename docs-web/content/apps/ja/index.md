@@ -1,17 +1,17 @@
-# AI Applications
+# AI アプリケーション
 
-## Overview
+## 概要
 
-Uter is compatible with various popular AI applications and tools. Below is a list of verified supported applications and their configuration guides.
+Uter はさまざまな人気の AI アプリケーションやツールと互換性があります。以下は、検証済みの対応アプリケーションとその設定ガイドの一覧です。
 
-## Supported Applications
+## 対応アプリケーション
 
-## Integration Guide
+## 連携ガイド
 
-Most applications only require configuring the following information to connect to Uter:
+ほとんどのアプリケーションは、Uter に接続するために以下の情報を設定するだけです：
 
-1.  **API Address**: Your Uter service address
-2.  **API Key**: The Token generated in the Uter console
-3.  **Model Name**: Select the model to use
+1.  **API アドレス**: お使いの Uter サービスのアドレス
+2.  **API Key**: Uter コンソールで生成したトークン
+3.  **モデル名**: 使用するモデルを選択
 
-For specific configuration steps, please refer to the detailed documentation of each application.
+具体的な設定手順については、各アプリケーションの詳細ドキュメントを参照してください。

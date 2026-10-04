@@ -1,47 +1,47 @@
-# Native Claude Format
+# Нативный формат Claude
 
-## Native Claude Format
+## Нативный формат Claude
 
-Anthropic Claude Messages API 格式的请求。
-需要在请求头中包含 `anthropic-version`。
+Запрос в формате Anthropic Claude Messages API.
+В заголовках запроса необходимо указать `anthropic-version`.
 
 `POST` `/v1/messages`
 
-### 请求参数
+### Параметры запроса
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| Параметр | Расположение | Тип | Обязательно | Описание |
 |---|---|---|---|---|
-| `anthropic-version` | header | string | 是 | Anthropic API 版本 |
-| `x-api-key` | header | string | 否 | Anthropic API Key (可选，也可使用 Bearer Token) |
+| `anthropic-version` | header | string | да | Версия Anthropic API |
+| `x-api-key` | header | string | нет | Anthropic API Key (необязательно, также можно использовать Bearer Token) |
 
-### 请求体（`application/json`）
+### Тело запроса (`application/json`)
 
-| 字段 | 类型 | 必填 | 说明 |
+| Поле | Тип | Обязательно | Описание |
 |---|---|---|---|
-| `model` | string | 是 | — |
-| `messages` | array&lt;object&gt; | 是 | — |
-| `max_tokens` | integer | 是 | — |
-| `temperature` | number | 否 | — |
-| `top_p` | number | 否 | — |
-| `top_k` | integer | 否 | — |
-| `stream` | boolean | 否 | — |
-| `stop_sequences` | array&lt;string&gt; | 否 | — |
-| `tools` | array&lt;object&gt; | 否 | — |
-| `tool_choice.type` | enum（`auto`, `any`, `tool`） | 否 | — |
-| `tool_choice.name` | string | 否 | — |
-| `thinking.type` | enum（`enabled`, `disabled`） | 否 | — |
-| `thinking.budget_tokens` | integer | 否 | — |
-| `metadata.user_id` | string | 否 | — |
+| `model` | string | да | — |
+| `messages` | array&lt;object&gt; | да | — |
+| `max_tokens` | integer | да | — |
+| `temperature` | number | нет | — |
+| `top_p` | number | нет | — |
+| `top_k` | integer | нет | — |
+| `stream` | boolean | нет | — |
+| `stop_sequences` | array&lt;string&gt; | нет | — |
+| `tools` | array&lt;object&gt; | нет | — |
+| `tool_choice.type` | enum（`auto`, `any`, `tool`） | нет | — |
+| `tool_choice.name` | string | нет | — |
+| `thinking.type` | enum（`enabled`, `disabled`） | нет | — |
+| `thinking.budget_tokens` | integer | нет | — |
+| `metadata.user_id` | string | нет | — |
 
-### 响应
+### Ответ
 
-| 状态码 | 说明 |
+| Код статуса | Описание |
 |---|---|
-| `200` | 成功创建响应 |
+| `200` | Успешно создан ответ |
 
-#### `200` 响应字段
+#### Поля ответа `200`
 
-| 字段 | 类型 | 说明 |
+| Поле | Тип | Описание |
 |---|---|---|
 | `id` | string | — |
 | `type` | string | — |
