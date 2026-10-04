@@ -283,7 +283,7 @@ export function RedemptionsMutateDrawer({
                 : t(
                     'Add new redemption code(s) by providing necessary info.'
                   )}{' '}
-              {t('Click save when you&apos;re done.')}
+              {t("Click save when you're done.")}
             </SheetDescription>
           </SheetHeader>
           <Form {...form}>

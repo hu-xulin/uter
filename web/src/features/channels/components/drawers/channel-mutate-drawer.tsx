@@ -1579,7 +1579,7 @@ export function ChannelMutateDrawer({
           <div className='space-y-0.5'>
             <FormLabel>{t('System Prompt Concatenation')}</FormLabel>
             <FormDescription>
-              {t('Concatenate channel system prompt with user&apos;s prompt')}
+              {t("Concatenate channel system prompt with user's prompt")}
             </FormDescription>
           </div>
           <FormControl>
