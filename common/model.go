@@ -32,6 +32,12 @@ var (
 		"prefix:imagen-",
 		"flux-",
 		"flux.1-",
+		// Doubao/VolcEngine Seedream text-to-image models. Aggregate channels
+		// expose them on /v1/images/generations only, so they must never be
+		// probed through /v1/chat/completions.
+		"seedream",
+		// Gemini "image" variants are native chat models that return images in
+		// the response, so they are intentionally NOT listed here.
 	}
 	OpenAITextModels = []string{
 		"gpt-",
