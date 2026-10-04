@@ -79,7 +79,7 @@ func Relay(c *gin.Context, relayFormat types.RelayFormat) {
 
 	var (
 		uterError *types.UterError
-		ws          *websocket.Conn
+		ws        *websocket.Conn
 	)
 
 	if relayFormat == types.RelayFormatOpenAIRealtime {

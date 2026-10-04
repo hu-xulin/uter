@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"github.com/Uter-AI/Uter/i18n"
 	"net/http"
 	"strconv"
 
@@ -89,7 +90,7 @@ func GetUserQuotaDates(c *gin.Context) {
 	if endTimestamp-startTimestamp > 2592000 {
 		c.JSON(http.StatusOK, gin.H{
 			"success": false,
-			"message": "时间跨度不能超过 1 个月",
+			"message": i18n.T(c, i18n.MsgUsedataSpan_too_long),
 		})
 		return
 	}
@@ -143,7 +144,7 @@ func GetUserFlowQuotaDates(c *gin.Context) {
 	if endTimestamp-startTimestamp > 2592000 {
 		c.JSON(http.StatusOK, gin.H{
 			"success": false,
-			"message": "时间跨度不能超过 1 个月",
+			"message": i18n.T(c, i18n.MsgUsedataSpan_too_long),
 		})
 		return
 	}

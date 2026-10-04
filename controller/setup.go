@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"github.com/Uter-AI/Uter/i18n"
 	"time"
 
 	"github.com/Uter-AI/Uter/common"
@@ -49,7 +50,7 @@ func PostSetup(c *gin.Context) {
 	if constant.Setup {
 		c.JSON(200, gin.H{
 			"success": false,
-			"message": "系统已经初始化完成",
+			"message": i18n.T(c, i18n.MsgCommonAlready_initialized),
 		})
 		return
 	}
@@ -62,7 +63,7 @@ func PostSetup(c *gin.Context) {
 	if err != nil {
 		c.JSON(200, gin.H{
 			"success": false,
-			"message": "请求参数有误",
+			"message": i18n.T(c, i18n.MsgCommonInvalid_param),
 		})
 		return
 	}
@@ -73,7 +74,7 @@ func PostSetup(c *gin.Context) {
 		if len(req.Username) > 12 {
 			c.JSON(200, gin.H{
 				"success": false,
-				"message": "用户名长度不能超过12个字符",
+				"message": i18n.T(c, i18n.MsgCommonUsername_too_long),
 			})
 			return
 		}
@@ -81,7 +82,7 @@ func PostSetup(c *gin.Context) {
 		if req.Password != req.ConfirmPassword {
 			c.JSON(200, gin.H{
 				"success": false,
-				"message": "两次输入的密码不一致",
+				"message": i18n.T(c, i18n.MsgCommonPassword_mismatch),
 			})
 			return
 		}
@@ -99,7 +100,7 @@ func PostSetup(c *gin.Context) {
 		if err != nil {
 			c.JSON(200, gin.H{
 				"success": false,
-				"message": "系统错误: " + err.Error(),
+				"message": i18n.T(c, i18n.MsgCommonSystem_error),
 			})
 			return
 		}
@@ -116,7 +117,7 @@ func PostSetup(c *gin.Context) {
 		if err != nil {
 			c.JSON(200, gin.H{
 				"success": false,
-				"message": "创建管理员账号失败: " + err.Error(),
+				"message": i18n.T(c, i18n.MsgCommonCreate_admin_failed),
 			})
 			return
 		}
@@ -131,7 +132,7 @@ func PostSetup(c *gin.Context) {
 	if err != nil {
 		c.JSON(200, gin.H{
 			"success": false,
-			"message": "保存自用模式设置失败: " + err.Error(),
+			"message": i18n.T(c, i18n.MsgCommonSave_self_use_mode_failed),
 		})
 		return
 	}
@@ -140,7 +141,7 @@ func PostSetup(c *gin.Context) {
 	if err != nil {
 		c.JSON(200, gin.H{
 			"success": false,
-			"message": "保存演示站点模式设置失败: " + err.Error(),
+			"message": i18n.T(c, i18n.MsgCommonSave_demo_mode_failed),
 		})
 		return
 	}
@@ -156,14 +157,14 @@ func PostSetup(c *gin.Context) {
 	if err != nil {
 		c.JSON(200, gin.H{
 			"success": false,
-			"message": "系统初始化失败: " + err.Error(),
+			"message": i18n.T(c, i18n.MsgCommonInit_failed),
 		})
 		return
 	}
 
 	c.JSON(200, gin.H{
 		"success": true,
-		"message": "系统初始化成功",
+		"message": i18n.T(c, i18n.MsgCommonInit_success),
 	})
 }
 

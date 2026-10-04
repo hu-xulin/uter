@@ -89,7 +89,7 @@ func TestFetchTaskPluginMarketplaceIndexProxiesConfiguredSource(t *testing.T) {
 	)
 	FetchTaskPluginMarketplaceIndex(c2)
 	var rejected struct {
-		Success bool `json:"success"`
+		Success bool   `json:"success"`
 		Message string `json:"message"`
 	}
 	if err := json.Unmarshal(w2.Body.Bytes(), &rejected); err != nil {

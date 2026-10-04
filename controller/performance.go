@@ -2,6 +2,7 @@ package controller
 
 import (
 	"fmt"
+	"github.com/Uter-AI/Uter/i18n"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -152,7 +153,7 @@ func ClearDiskCache(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
-		"message": "不活跃的磁盘缓存已清理",
+		"message": i18n.T(c, i18n.MsgPerformanceDisk_cache_cleared),
 	})
 }
 
@@ -162,7 +163,7 @@ func ResetPerformanceStats(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
-		"message": "统计信息已重置",
+		"message": i18n.T(c, i18n.MsgPerformanceStats_reset),
 	})
 }
 
@@ -172,7 +173,7 @@ func ForceGC(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
-		"message": "GC 已执行",
+		"message": i18n.T(c, i18n.MsgPerformanceGc_executed),
 	})
 }
 

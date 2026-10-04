@@ -405,10 +405,10 @@ func UpdateOrganization(c *gin.Context) {
 		}
 	}
 	var req struct {
-		Name        string  `json:"name"`
-		Quota       *int64  `json:"quota"`
-		MemberLimit *int    `json:"member_limit"`
-		Status      *int    `json:"status"`
+		Name        string `json:"name"`
+		Quota       *int64 `json:"quota"`
+		MemberLimit *int   `json:"member_limit"`
+		Status      *int   `json:"status"`
 	}
 	if err := common.DecodeJson(c.Request.Body, &req); err != nil {
 		common.ApiErrorI18n(c, i18n.MsgInvalidParams)

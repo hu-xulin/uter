@@ -3,6 +3,7 @@ package controller
 import (
 	"bytes"
 	"fmt"
+	"github.com/Uter-AI/Uter/i18n"
 	"io"
 	"net/http"
 	"time"
@@ -48,15 +49,15 @@ func SubscriptionRequestCreemPay(c *gin.Context) {
 		return
 	}
 	if !plan.Enabled {
-		common.ApiErrorMsg(c, "套餐未启用")
+		common.ApiErrorI18n(c, i18n.MsgSubscriptionPlan_disabled)
 		return
 	}
 	if plan.CreemProductId == "" {
-		common.ApiErrorMsg(c, "该套餐未配置 CreemProductId")
+		common.ApiErrorI18n(c, i18n.MsgSubscriptionCreem_product_missing)
 		return
 	}
 	if setting.CreemWebhookSecret == "" && !setting.CreemTestMode {
-		common.ApiErrorMsg(c, "Creem Webhook 未配置")
+		common.ApiErrorI18n(c, i18n.MsgSubscriptionCreem_webhook_missing)
 		return
 	}
 
@@ -67,7 +68,7 @@ func SubscriptionRequestCreemPay(c *gin.Context) {
 		return
 	}
 	if user == nil {
-		common.ApiErrorMsg(c, "用户不存在")
+		common.ApiErrorI18n(c, i18n.MsgCommonUser_not_found)
 		return
 	}
 
@@ -78,7 +79,7 @@ func SubscriptionRequestCreemPay(c *gin.Context) {
 			return
 		}
 		if count >= int64(plan.MaxPurchasePerUser) {
-			common.ApiErrorMsg(c, "已达到该套餐购买上限")
+			common.ApiErrorI18n(c, i18n.MsgSubscriptionPurchase_limit_reached)
 			return
 		}
 	}

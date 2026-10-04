@@ -2,6 +2,7 @@ package controller
 
 import (
 	"errors"
+	"github.com/Uter-AI/Uter/i18n"
 	"net/http"
 	"strconv"
 
@@ -66,7 +67,7 @@ func UpdateVendorMeta(c *gin.Context) {
 		return
 	}
 	if v.Id == 0 {
-		common.ApiErrorMsg(c, "缺少供应商 ID")
+		common.ApiErrorI18n(c, i18n.MsgCommonMissing_vendor_id)
 		return
 	}
 	if err := v.Update(); err != nil {

@@ -2,6 +2,7 @@ package controller
 
 import (
 	"encoding/json"
+	"github.com/Uter-AI/Uter/i18n"
 	"time"
 
 	"github.com/Uter-AI/Uter/common"
@@ -21,7 +22,7 @@ func VerifyLogin(c *gin.Context) {
 		Code      string `json:"code"`
 	}
 	if common.DecodeJson(c.Request.Body, &request) != nil || request.FlowToken == "" || request.Code == "" {
-		common.ApiErrorMsg(c, "参数错误")
+		common.ApiErrorI18n(c, i18n.MsgCommonInvalid_param)
 		return
 	}
 	if request.Method == "" {
@@ -45,7 +46,7 @@ func LoginPasskeyBegin(c *gin.Context) {
 		RPID      string `json:"rp_id"`
 	}
 	if common.DecodeJson(c.Request.Body, &request) != nil || request.FlowToken == "" {
-		common.ApiErrorMsg(c, "参数错误")
+		common.ApiErrorI18n(c, i18n.MsgCommonInvalid_param)
 		return
 	}
 	verification, err := service.RequireLoginVerification(request.FlowToken, service.VerificationMethodPasskey)
@@ -91,7 +92,7 @@ func LoginPasskeyFinish(c *gin.Context) {
 		Credential       json.RawMessage `json:"credential"`
 	}
 	if common.DecodeJson(c.Request.Body, &request) != nil || request.FlowToken == "" || request.PasskeyFlowToken == "" || len(request.Credential) == 0 {
-		common.ApiErrorMsg(c, "参数错误")
+		common.ApiErrorI18n(c, i18n.MsgCommonInvalid_param)
 		return
 	}
 	verification, err := service.RequireLoginVerification(request.FlowToken, service.VerificationMethodPasskey)

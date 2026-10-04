@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"github.com/Uter-AI/Uter/i18n"
 	"net/http"
 	"strings"
 
@@ -37,7 +38,7 @@ func ClearChannelAffinityCache(c *gin.Context) {
 	if ruleName == "" {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"success": false,
-			"message": "缺少参数：rule_name，或使用 all=true 清空全部",
+			"message": i18n.T(c, i18n.MsgChannelAffinity_rule_name_required),
 		})
 		return
 	}

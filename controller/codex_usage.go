@@ -3,6 +3,7 @@ package controller
 import (
 	"context"
 	"fmt"
+	"github.com/Uter-AI/Uter/i18n"
 	"net/http"
 	"strconv"
 	"strings"
@@ -86,7 +87,7 @@ func fetchCodexChannelWhamData(
 	oauthKey, err := codex.ParseOAuthKey(strings.TrimSpace(ch.Key))
 	if err != nil {
 		common.SysError("failed to parse oauth key: " + err.Error())
-		c.JSON(http.StatusOK, gin.H{"success": false, "message": "解析凭证失败，请检查渠道配置"})
+		c.JSON(http.StatusOK, gin.H{"success": false, "message": i18n.T(c, i18n.MsgCodexParse_credential_failed)})
 		return
 	}
 	accessToken := strings.TrimSpace(oauthKey.AccessToken)

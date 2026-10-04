@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/Uter-AI/Uter/i18n"
 	"io"
 	"net/http"
 	"net/url"
@@ -1122,7 +1123,7 @@ func DetectAllChannelUpstreamModelUpdates(c *gin.Context) {
 	if !created {
 		c.JSON(http.StatusConflict, gin.H{
 			"success": false,
-			"message": "已有模型更新任务正在运行或等待中，不能启动本次手动任务",
+			"message": i18n.T(c, i18n.MsgChannelUpdate_task_running),
 			"data": gin.H{
 				"task_id": task.TaskID,
 				"status":  task.Status,

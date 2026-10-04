@@ -147,7 +147,7 @@ func UniversalVerify(c *gin.Context) {
 	}
 	var request service.VerificationInput
 	if err := common.DecodeJson(c.Request.Body, &request); err != nil {
-		common.ApiErrorMsg(c, "参数错误")
+		common.ApiErrorI18n(c, i18n.MsgCommonInvalid_param)
 		return
 	}
 	proof, err := service.VerifySecurityInput(identity, request)

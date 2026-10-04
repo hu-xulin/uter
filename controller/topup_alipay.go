@@ -137,14 +137,14 @@ func RequestAlipayMiniProgram(c *gin.Context) {
 	}
 	bizBytes, _ := json.Marshal(bizContent)
 	params := map[string]string{
-		"app_id":     operation_setting.AlipayAppId,
-		"method":     "alipay.trade.create",
-		"format":     "JSON",
-		"charset":    "utf-8",
-		"sign_type":  "RSA2",
-		"timestamp":  time.Now().Format("2006-01-02 15:04:05"),
-		"version":    "1.0",
-		"notify_url": notifyUrl,
+		"app_id":      operation_setting.AlipayAppId,
+		"method":      "alipay.trade.create",
+		"format":      "JSON",
+		"charset":     "utf-8",
+		"sign_type":   "RSA2",
+		"timestamp":   time.Now().Format("2006-01-02 15:04:05"),
+		"version":     "1.0",
+		"notify_url":  notifyUrl,
 		"biz_content": string(bizBytes),
 	}
 	sign, err := service.AlipayBuildSign(params, operation_setting.AlipayPrivateKey)
