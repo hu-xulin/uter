@@ -1,42 +1,42 @@
 # Native OpenAI Format
 
-获取当前可用的模型列表。
+現在利用可能なモデル一覧を取得します。
 
-根据请求头自动识别返回格式：
-- 包含 `x-api-key` 和 `anthropic-version` 头时返回 Anthropic 格式
-- 包含 `x-goog-api-key` 头或 `key` 查询参数时返回 Gemini 格式
-- 其他情况返回 OpenAI 格式
+リクエストヘッダーに基づいて返却フォーマットを自動判定します：
+- `x-api-key` と `anthropic-version` ヘッダーを含む場合は Anthropic 形式を返します
+- `x-goog-api-key` ヘッダーまたは `key` クエリパラメータを含む場合は Gemini 形式を返します
+- それ以外の場合は OpenAI 形式を返します
 
 `GET` `/v1/models`
 
-### 请求参数
+### リクエストパラメータ
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| パラメータ名 | 位置 | 型 | 必須 | 説明 |
 |---|---|---|---|---|
-| `key` | query | string | 否 | Google API Key (用于 Gemini 格式) |
-| `x-api-key` | header | string | 否 | Anthropic API Key (用于 Claude 格式) |
-| `anthropic-version` | header | string | 否 | Anthropic API 版本 |
-| `x-goog-api-key` | header | string | 否 | Google API Key (用于 Gemini 格式) |
+| `key` | query | string | 任意 | Google API Key（Gemini 形式用） |
+| `x-api-key` | header | string | 任意 | Anthropic API Key（Claude 形式用） |
+| `anthropic-version` | header | string | 任意 | Anthropic API のバージョン |
+| `x-goog-api-key` | header | string | 任意 | Google API Key（Gemini 形式用） |
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
-| `200` | 成功获取模型列表 |
-| `401` | 认证失败 |
+| `200` | モデル一覧の取得に成功 |
+| `401` | 認証失敗 |
 
-#### `200` 响应字段
+#### `200` レスポンスフィールド
 
-| 字段 | 类型 | 说明 |
+| フィールド | 型 | 説明 |
 |---|---|---|
 | `object` | string | — |
 | `data` | array&lt;object&gt; | — |
 
-#### `401` 响应字段
+#### `401` レスポンスフィールド
 
-| 字段 | 类型 | 说明 |
+| フィールド | 型 | 説明 |
 |---|---|---|
-| `error.message` | string | 错误信息 |
-| `error.type` | string | 错误类型 |
-| `error.param` | string | 相关参数 |
-| `error.code` | string | 错误代码 |
+| `error.message` | string | エラーメッセージ |
+| `error.type` | string | エラータイプ |
+| `error.param` | string | 関連パラメータ |
+| `error.code` | string | エラーコード |

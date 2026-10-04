@@ -1,88 +1,88 @@
 # gemini
 
-## Gemini Media Recognition
+## Распознавание медиа Gemini
 
-Gemini图像、PDF、音频、视频识别请求
+Запрос на распознавание изображений, PDF, аудио и видео в Gemini.
 
-⚠️注意：原生 Gemini 格式请求支持通过 inlineData（base64）或 fileData.fileUri（可公开访问的 URL，支持 YouTube 链接）传递媒体。通过 Gemini File API 上传的文件 URI 能否访问，取决于上游渠道 Key 的权限，建议优先使用可公开访问的 URL。OpenAI 格式（chat/completions）请求转换为 Gemini 时，媒体将统一下载并转换为 inlineData（base64）传递。
+⚠️ Внимание: в нативном формате запроса Gemini медиаданные можно передавать через inlineData (base64) или fileData.fileUri (общедоступный URL, поддерживаются ссылки YouTube). Доступность URI файлов, загруженных через Gemini File API, зависит от прав ключа вышестоящего канала; рекомендуется в приоритетном порядке использовать общедоступные URL. При преобразовании запросов в формате OpenAI (chat/completions) в Gemini медиаданные единообразно загружаются и преобразуются в inlineData (base64).
 
 `POST` `/v1beta/models/{model}:generateContent`
 
-### 请求参数
+### Параметры запроса
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| Параметр | Расположение | Тип | Обязательно | Описание |
 |---|---|---|---|---|
-| `model` | path | string | 是 | 模型名称 |
+| `model` | path | string | да | Название модели |
 
-### 请求体（`application/json`）
+### Тело запроса (`application/json`)
 
-| 字段 | 类型 | 必填 | 说明 |
+| Поле | Тип | Обязательно | Описание |
 |---|---|---|---|
-| `contents` | array&lt;object&gt; | 否 | — |
-| `generationConfig.temperature` | number | 否 | — |
-| `generationConfig.topP` | number | 否 | — |
-| `generationConfig.topK` | integer | 否 | — |
-| `generationConfig.maxOutputTokens` | integer | 否 | — |
-| `generationConfig.stopSequences` | array&lt;string&gt; | 否 | — |
-| `safetySettings` | array&lt;object&gt; | 否 | — |
-| `tools` | array&lt;object&gt; | 否 | — |
-| `systemInstruction.parts` | array&lt;object&gt; | 否 | — |
+| `contents` | array&lt;object&gt; | нет | — |
+| `generationConfig.temperature` | number | нет | — |
+| `generationConfig.topP` | number | нет | — |
+| `generationConfig.topK` | integer | нет | — |
+| `generationConfig.maxOutputTokens` | integer | нет | — |
+| `generationConfig.stopSequences` | array&lt;string&gt; | нет | — |
+| `safetySettings` | array&lt;object&gt; | нет | — |
+| `tools` | array&lt;object&gt; | нет | — |
+| `systemInstruction.parts` | array&lt;object&gt; | нет | — |
 
-### 响应
+### Ответ
 
-| 状态码 | 说明 |
+| Код статуса | Описание |
 |---|---|
-| `200` | 成功 |
+| `200` | Успешно |
 
-#### `200` 响应字段
+#### Поля ответа `200`
 
-| 字段 | 类型 | 说明 |
+| Поле | Тип | Описание |
 |---|---|---|
 | `candidates` | array&lt;object&gt; | — |
 | `usageMetadata.promptTokenCount` | integer | — |
 | `usageMetadata.candidatesTokenCount` | integer | — |
 | `usageMetadata.totalTokenCount` | integer | — |
 
-## Gemini Text Chat
+## Текстовый чат Gemini
 
-代理 Gemini API 请求。
-路径格式: `/v1beta/models/{model_name}:{action}`
+Проксирование запросов к Gemini API.
+Формат пути: `/v1beta/models/{model_name}:{action}`
 
-例如:
+Например:
 - `/v1beta/models/gemini-2.5-pro:generateContent`
 - `/v1beta/models/gemini-2.5-pro:streamGenerateContent?alt=sse`
 
 `POST` `/v1beta/models/{model}:generateContent`
 
-### 请求参数
+### Параметры запроса
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| Параметр | Расположение | Тип | Обязательно | Описание |
 |---|---|---|---|---|
-| `model` | path | string | 是 | 模型名称 |
+| `model` | path | string | да | Название модели |
 
-### 请求体（`application/json`）
+### Тело запроса (`application/json`)
 
-| 字段 | 类型 | 必填 | 说明 |
+| Поле | Тип | Обязательно | Описание |
 |---|---|---|---|
-| `contents` | array&lt;object&gt; | 否 | — |
-| `generationConfig.temperature` | number | 否 | — |
-| `generationConfig.topP` | number | 否 | — |
-| `generationConfig.topK` | integer | 否 | — |
-| `generationConfig.maxOutputTokens` | integer | 否 | — |
-| `generationConfig.stopSequences` | array&lt;string&gt; | 否 | — |
-| `safetySettings` | array&lt;object&gt; | 否 | — |
-| `tools` | array&lt;object&gt; | 否 | — |
-| `systemInstruction.parts` | array&lt;object&gt; | 否 | — |
+| `contents` | array&lt;object&gt; | нет | — |
+| `generationConfig.temperature` | number | нет | — |
+| `generationConfig.topP` | number | нет | — |
+| `generationConfig.topK` | integer | нет | — |
+| `generationConfig.maxOutputTokens` | integer | нет | — |
+| `generationConfig.stopSequences` | array&lt;string&gt; | нет | — |
+| `safetySettings` | array&lt;object&gt; | нет | — |
+| `tools` | array&lt;object&gt; | нет | — |
+| `systemInstruction.parts` | array&lt;object&gt; | нет | — |
 
-### 响应
+### Ответ
 
-| 状态码 | 说明 |
+| Код статуса | Описание |
 |---|---|
-| `200` | 成功 |
+| `200` | Успешно |
 
-#### `200` 响应字段
+#### Поля ответа `200`
 
-| 字段 | 类型 | 说明 |
+| Поле | Тип | Описание |
 |---|---|---|
 | `candidates` | array&lt;object&gt; | — |
 | `usageMetadata.promptTokenCount` | integer | — |

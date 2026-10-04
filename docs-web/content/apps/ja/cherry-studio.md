@@ -1,53 +1,52 @@
-# Cherry Studio - Desktop AI Client
+# Cherry Studio - デスクトップ AI クライアント
 
-> **Chat Settings Options**
+> **チャット設定オプション**
 >
-> In the Uter
->   console's System Settings -> Chat Settings, you can add the following quick options for one-click filling into
->   Cherry Studio on the token management page:
+> Uter コンソールの システム設定 → チャット設定 で、トークン管理ページから
+>   Cherry Studio にワンクリックで入力できるよう、次のクイックオプションを追加できます：
 
     ```json
     { "Cherry Studio": "cherrystudio://providers/api-keys?v=1&data={cherryConfig}" }
     ```
 
-> 🍒 Cherry Studio is a powerful desktop AI client designed for professional users, integrating 30+
->   industry-specific intelligent assistants to meet the needs of various work scenarios and significantly improve work efficiency.
+> 🍒 Cherry Studio はプロフェッショナルユーザー向けに設計された強力なデスクトップ AI クライアントで、30 種類以上の
+>   業界別インテリジェントアシスタントを統合し、さまざまな作業シナリオのニーズに対応し、作業効率を大幅に向上させます。
 
-- Official Website: [https://cherry-ai.com](https://cherry-ai.com/)
-- Download Link: [https://cherry-ai.com/download](https://cherry-ai.com/download)
-- Official Documentation: [https://docs.cherry-ai.com](https://docs.cherry-ai.com)
+- 公式サイト: [https://cherry-ai.com](https://cherry-ai.com/)
+- ダウンロードリンク: [https://cherry-ai.com/download](https://cherry-ai.com/download)
+- 公式ドキュメント: [https://docs.cherry-ai.com](https://docs.cherry-ai.com)
 
-## Uter Integration Method
+## Uter との連携方法
 
-### Parameter Configuration
+### パラメータ設定
 
-Provider Type: Types supported by Uter
-API Key: Obtained from Uter
-API Address: Uter Site Address
+Provider Type: Uter がサポートする種類
+API Key: Uter から取得
+API Address: Uter サイトのアドレス
 
-Please use your self-deployed Uter, or ensure that the service provider has a Uter service with legal upstream authorization and compliance obligations. Do not integrate API addresses or keys from unknown sources into a production environment.
+ご自身で導入した Uter を使用するか、サービス提供者が正当な上流認可とコンプライアンス義務を負う Uter サービスを提供していることを確認してください。出所不明の API アドレスやキーを本番環境に統合しないでください。
 
-### Graphical Guide
+### 図解ガイド
 
-1. Copy API key in Uter
+1. Uter で API キーをコピー
    ![Copy API Key](/apps-assets/cherry_studio/copy_api_key.webp)
 
-2. Add Provider
+2. プロバイダを追加
    ![Add Provider](/apps-assets/cherry_studio/add_provider.webp)
 
-3. Add Model
+3. モデルを追加
    ![Add Model](/apps-assets/cherry_studio/add_models.webp)
 
-4. Return to Chat Page
+4. チャットページに戻る
    ![Switch to Chat Page](/apps-assets/cherry_studio/back_to_chat.webp)
 
-5. Switch Uter Model
+5. Uter モデルを切り替え
    ![Switch Model](/apps-assets/cherry_studio/switch_model.webp)
 
-## Drawing in Cherry Studio
+## Cherry Studio でのお絵かき
 
-1. First, add models that support drawing
+1. まず、お絵かきに対応したモデルを追加
    ![Drawing Models](/apps-assets/cherry_studio/add_paint_models.webp)
 
-2. Draw
+2. お絵かき
    ![Draw](/apps-assets/cherry_studio/paint.webp)

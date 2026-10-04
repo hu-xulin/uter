@@ -1,67 +1,67 @@
-# groups
+# Nhóm (groups)
 
-## Get All Groups
+## Lấy tất cả nhóm (Get All Groups)
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 Yêu cầu quyền quản trị viên (Admin)
 
 `GET` `/api/group/`
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Get Prefill Group
+## Lấy nhóm điền sẵn (Get Prefill Group)
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 Yêu cầu quyền quản trị viên (Admin)
 
 `GET` `/api/prefill_group/`
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Delete Prefill Group
+## Xóa nhóm điền sẵn (Delete Prefill Group)
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 Yêu cầu quyền quản trị viên (Admin)
 
 `DELETE` `/api/prefill_group/{id}`
 
-### 请求参数
+### Tham số yêu cầu
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| Tên tham số | Vị trí | Kiểu | Bắt buộc | Mô tả |
 |---|---|---|---|---|
-| `id` | path | integer | 是 | — |
+| `id` | path | integer | Có | — |
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Create Prefill Group
+## Tạo nhóm điền sẵn (Create Prefill Group)
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 Yêu cầu quyền quản trị viên (Admin)
 
 `POST` `/api/prefill_group/`
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Update Prefill Group
+## Cập nhật nhóm điền sẵn (Update Prefill Group)
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 Yêu cầu quyền quản trị viên (Admin)
 
 `PUT` `/api/prefill_group/`
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |

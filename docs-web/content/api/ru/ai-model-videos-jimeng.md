@@ -1,52 +1,52 @@
-# Jimeng Video Generation
+# Генерация видео Jimeng
 
-## Jimeng Video Generation
+## Генерация видео Jimeng
 
-即梦官方 API 格式的视频生成接口。
+Интерфейс генерации видео в официальном формате API 即梦.
 
-支持通过 Action 参数指定操作类型：
-- `CVSync2AsyncSubmitTask`: 提交视频生成任务
-- `CVSync2AsyncGetResult`: 获取任务结果
+Поддерживается указание типа операции через параметр Action:
+- `CVSync2AsyncSubmitTask`: отправить задачу генерации видео
+- `CVSync2AsyncGetResult`: получить результат задачи
 
-需要在查询参数中指定 Action 和 Version。
+В параметрах запроса необходимо указать Action и Version.
 
 `POST` `/jimeng/`
 
-### 请求参数
+### Параметры запроса
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| Параметр | Расположение | Тип | Обязательно | Описание |
 |---|---|---|---|---|
-| `Action` | query | enum（`CVSync2AsyncSubmitTask`, `CVSync2AsyncGetResult`） | 是 | API 操作类型 |
-| `Version` | query | string | 是 | API 版本 |
+| `Action` | query | enum（`CVSync2AsyncSubmitTask`, `CVSync2AsyncGetResult`） | да | Тип операции API |
+| `Version` | query | string | да | Версия API |
 
-### 请求体（`application/json`）
+### Тело запроса (`application/json`)
 
-| 字段 | 类型 | 必填 | 说明 |
+| Поле | Тип | Обязательно | Описание |
 |---|---|---|---|
-| `req_key` | string | 否 | 请求类型标识 |
-| `prompt` | string | 否 | 文本描述 |
-| `binary_data_base64` | array&lt;string&gt; | 否 | Base64 编码的图片数据 |
+| `req_key` | string | нет | Идентификатор типа запроса |
+| `prompt` | string | нет | Текстовое описание |
+| `binary_data_base64` | array&lt;string&gt; | нет | Данные изображения в кодировке Base64 |
 
-### 响应
+### Ответ
 
-| 状态码 | 说明 |
+| Код статуса | Описание |
 |---|---|
-| `200` | 成功处理请求 |
-| `400` | 请求参数错误 |
+| `200` | Запрос успешно обработан |
+| `400` | Ошибка параметров запроса |
 
-#### `200` 响应字段
+#### Поля ответа `200`
 
-| 字段 | 类型 | 说明 |
+| Поле | Тип | Описание |
 |---|---|---|
-| `code` | integer | 响应码 |
-| `message` | string | 响应消息 |
-| `data` | object | 响应数据 |
+| `code` | integer | Код ответа |
+| `message` | string | Сообщение ответа |
+| `data` | object | Данные ответа |
 
-#### `400` 响应字段
+#### Поля ответа `400`
 
-| 字段 | 类型 | 说明 |
+| Поле | Тип | Описание |
 |---|---|---|
-| `error.message` | string | 错误信息 |
-| `error.type` | string | 错误类型 |
-| `error.param` | string | 相关参数 |
-| `error.code` | string | 错误代码 |
+| `error.message` | string | Текст ошибки |
+| `error.type` | string | Тип ошибки |
+| `error.param` | string | Связанный параметр |
+| `error.code` | string | Код ошибки |

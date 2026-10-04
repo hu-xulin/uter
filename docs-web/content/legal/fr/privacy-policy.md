@@ -1,83 +1,83 @@
-# Uter Large Model Service Platform Privacy Policy
+# Politique de confidentialité de la Plateforme de services de grands modèles Uter
 
-| Item | Content |
+| Élément | Contenu |
 |---|---|
-| Service Brand | **Uter.ai 优特智能** |
-| Platform Name | **Uter Large Model Service Platform** |
-| Official Website | https://uter.ai |
-| Document Name | Uter Large Model Service Platform Privacy Policy |
+| Marque du Service | **Uter.ai** |
+| Nom de la Plateforme | **Plateforme de services de grands modèles Uter** |
+| Site officiel | https://uter.ai |
+| Nom du document | Politique de confidentialité de la Plateforme de services de grands modèles Uter |
 | Version | V1.0 |
-| Effective Date | August 8, 2026 |
-| Last Updated | August 8, 2026 |
-| Personal Information Processor | **Shenzhen Uter Network Co., Ltd.** |
-| Registered Address | Shenzhen, Guangdong Province, the People's Republic of China |
-| Personal Information Protection Officer Email | privacy@uter.ai |
-| Customer Service Email | support@uter.ai |
+| Date d'entrée en vigueur | 8 août 2026 |
+| Dernière mise à jour | 8 août 2026 |
+| Responsable du traitement | **Shenzhen Uter Network Co., Ltd.** |
+| Adresse immatriculée | Shenzhen, province du Guangdong, République populaire de Chine |
+| Courriel du Responsable de la protection des Données personnelles | privacy@uter.ai |
+| Courriel du service client | support@uter.ai |
 
-> **This Policy, together with the Uter Large Model Service Platform Terms of Service, constitutes the complete agreement between you and Shenzhen Uter Network Co., Ltd.** This Policy is a part of that Agreement; its rules on the processing of personal information supplement Article 8 (Data, Content and Personal Information Protection) of the Terms of Service; in the event of any inconsistency with respect to the processing of personal information, **this Policy shall prevail.**
+> **La présente Politique, conjointe avec les Conditions d'utilisation de la Plateforme de services de grands modèles Uter, constitue l'accord complet entre vous et Shenzhen Uter Network Co., Ltd.** La présente Politique fait partie de cet Accord ; ses règles relatives au traitement des Données personnelles complètent l'Article 8 (Protection des données, des contenus et des Données personnelles) des Conditions d'utilisation ; en cas d'incohérence quant au traitement des Données personnelles, **la présente Politique prévaut.**
 
 ---
 
-## Summary
+## Synthèse
 
-To help you understand quickly, we first summarize the core of this Policy in one paragraph. **The Summary does not replace the main text; the complete rights and obligations are governed by the main text.**
+Afin de vous aider à comprendre rapidement, nous résumons d'abord l'essentiel de la présente Politique en un paragraphe. **La Synthèse ne remplace pas le corps du document ; les droits et obligations complets sont régis par le corps du document.**
 
-| What you care about most | Our answer |
+| Ce qui vous intéresse le plus | Notre réponse |
 |---|---|
-| What personal information do you collect? | We collect only the account information, identity verification information, payment information and call logs necessary to provide the Service — 4 categories in total. **We do not collect your contacts, photo album, location, microphone or other information unrelated to our business.** |
-| Do you keep the prompt content I send to the models? | **By default, we do not retain the body content of requests and responses.** We only record the metadata used for billing and security audit (time, model identifier, Token count, status code, latency). |
-| Will you use my data to train models? | **No.** We do not train large models ourselves, nor do we use your request content for any model training, fine-tuning or improvement purposes. |
-| Will my data go overseas? | Only when **you actively choose to call overseas model nodes** will the request content be transmitted to overseas upstream services in real time, and it is not retained domestically. See Chapter 4; such transfer is actively instructed and initiated by you. |
-| What if my end users submit personal information to my application? | **You are the processor, and we are the entrusted processor.** We process only upon your instructions and not for our own purposes. See Chapter 2. |
-| How do I delete my data? | You may delete it yourself in the console; or email privacy@uter.ai, and we will respond within **15 business days**. |
+| Quelles Données personnelles collectez-vous ? | Nous ne collectons que les informations de compte, les informations de vérification d'identité, les informations de paiement et les journaux d'appels nécessaires à la fourniture du Service — 4 catégories au total. **Nous ne collectons pas vos contacts, votre album photo, votre position, votre microphone ni toute autre information sans rapport avec notre activité.** |
+| Conservez-vous le contenu des invites que j'envoie aux modèles ? | **Par défaut, nous ne conservons pas le contenu du corps des requêtes et réponses.** Nous n'enregistrons que les métadonnées utilisées à des fins de facturation et d'audit de sécurité (heure, identifiant de modèle, nombre de jetons, code de statut, latence). |
+| Utiliserez-vous mes données pour entraîner des modèles ? | **Non.** Nous n'entraînons pas nous-mêmes de grands modèles et n'utilisons pas le contenu de vos requêtes à des fins d'entraînement, de réglage fin ou d'amélioration de modèles. |
+| Mes données seront-elles transférées à l'étranger ? | Uniquement lorsque **vous choisissez activement d'appeler des nœuds de modèles situés à l'étranger** le contenu de la requête est transmis en temps réel vers des services en amont étrangers, et il n'est pas conservé sur le territoire national. Voir le Chapitre 4 ; un tel transfert est activement ordonné et déclenché par vous. |
+| Que se passe-t-il si mes utilisateurs finaux soumettent des Données personnelles à mon application ? | **Vous êtes le Responsable du traitement et nous sommes le Sous-traitant chargé du Traitement confié.** Nous ne traitons que sur vos instructions et non pour nos propres finalités. Voir le Chapitre 2. |
+| Comment supprimer mes données ? | Vous pouvez les supprimer vous-même dans la console ; ou écrire à privacy@uter.ai, et nous répondrons dans un délai de **15 jours ouvrables**. |
 
 ---
 
-## Table of Contents
+## Sommaire
 
-1. Introduction and Scope
-2. Key Concepts and Role Definitions
-3. How We Collect and Use Personal Information
-4. How We Entrust Processing, Share, Transfer and Publicly Disclose
-5. Cross-Border Data Transfer
-6. How We Store and Protect Personal Information
-7. Your Rights Regarding Personal Information
-8. Cookies and Similar Technologies
-9. Protection of Minors
-10. Special Notes on Generative AI Services
-11. Updates to this Policy
-12. How to Contact Us
-13. Definitions
-
----
-
-## Chapter 1 Introduction and Scope
-
-**1.1 Who We Are**
-
-The Uter Large Model Service Platform (hereinafter the "Platform") is operated by **Shenzhen Uter Network Co., Ltd.** (hereinafter "we" or "优特"). Registered in Shenzhen, Guangdong Province, the People's Republic of China, we are the **personal information processor** of the personal information collected by this Platform.
-
-**1.2 Scope of this Policy**
-
-1.2.1 This Policy applies to our processing of your personal information when you use the Platform's services through the official website Uter.ai, the console, developer documentation, SDK and API interfaces.
-
-1.2.2 **This Policy does not apply to the following circumstances**:
-
-1. **The upstream model services you call through this Platform**: the privacy rules of upstream model providers for their own processing activities are independently formulated and published by them, which we cannot control and for which we bear no responsibility;
-2. **Third-party websites or services linked from outside this Platform**;
-3. **Where you, as a developer or enterprise customer, provide services to your end users through this Platform — your own processing of your end users' personal information** — in such activities you are the processor; see Chapter 2.
-
-**1.3 Our Basic Commitments**
-
-We commit to the principles of lawfulness, legitimacy, necessity and good faith, collecting personal information in a **minimum necessary** manner; not using personal information unrelated to the Service for any purpose; not using your personal information for **model training**; and not selling your personal information to any third party.
+1. Introduction et périmètre
+2. Concepts clés et définition des rôles
+3. Comment nous collectons et utilisons les Données personnelles
+4. Comment nous confions le traitement, partageons, transférons et divulguons publiquement
+5. Transfert de données hors de Chine
+6. Comment nous stockons et protégeons les Données personnelles
+7. Vos droits relatifs aux Données personnelles
+8. Cookies et technologies similaires
+9. Protection des mineurs
+10. Remarques particulières sur les services d'IA générative
+11. Mises à jour de la présente Politique
+12. Comment nous contacter
+13. Définitions
 
 ---
 
-## Chapter 2 Key Concepts and Role Definitions
+## Chapitre 1 Introduction et périmètre
 
-> This Chapter is the core of this Policy. As **a large-model API service platform for developers and enterprise customers**, the business chain involves two layers: "you" and "your end users". Accurately understanding each party's legal role is the premise for determining rights and obligations.
+**1.1 Qui nous sommes**
 
-**2.1 Two-Layer Data Relationship**
+La Plateforme de services de grands modèles Uter (ci-après la « Plateforme ») est exploitée par **Shenzhen Uter Network Co., Ltd.** (ci-après « nous » ou « Uter »). Immatriculée à Shenzhen, dans la province du Guangdong, en République populaire de Chine, nous sommes le **Responsable du traitement** des Données personnelles collectées par la présente Plateforme.
+
+**1.2 Périmètre de la présente Politique**
+
+1.2.1 La présente Politique s'applique à notre traitement de vos Données personnelles lorsque vous utilisez les services de la Plateforme au moyen du site officiel Uter.ai, de la console, de la documentation développeur, des SDK et des interfaces API.
+
+1.2.2 **La présente Politique ne s'applique pas aux circonstances suivantes** :
+
+1. **les services de modèles en amont que vous appelez par l'intermédiaire de la présente Plateforme** : les règles de confidentialité des fournisseurs de modèles en amont relatives à leurs propres activités de traitement sont établies et publiées de manière indépendante par eux, ce que nous ne pouvons pas contrôler et dont nous ne sommes pas responsables ;
+2. **les sites web ou services de tiers vers lesquels renvoyant des liens depuis l'extérieur de la présente Plateforme** ;
+3. **lorsque vous, en tant que développeur ou client entreprise, fournissez des services à vos utilisateurs finaux par l'intermédiaire de la présente Plateforme — votre propre traitement des Données personnelles de vos utilisateurs finaux** — dans de telles activités, vous êtes le Responsable du traitement ; voir le Chapitre 2.
+
+**1.3 Nos engagements fondamentaux**
+
+Nous nous engageons à respecter les principes de licéité, de légalité, de nécessité et de bonne foi, en collectant les Données personnelles de manière **strictement nécessaire** ; à ne pas utiliser les Données personnelles sans rapport avec le Service à quelque fin que ce soit ; à ne pas utiliser vos Données personnelles pour **l'entraînement de modèles** ; et à ne pas vendre vos Données personnelles à un quelconque tiers.
+
+---
+
+## Chapitre 2 Concepts clés et définition des rôles
+
+> Le présent Chapitre constitue le cœur de la présente Politique. En tant que **plateforme API de grands modèles destinée aux développeurs et aux clients entreprise**, la chaîne d'activité implique deux couches : « vous » et « vos utilisateurs finaux ». Comprendre précisément le rôle juridique de chaque partie constitue le fondement de la détermination des droits et obligations.
+
+**2.1 Relation de données à deux couches**
 
 ```
 Your end user --(submits information to your app)--> Your app --(calls Platform API)--> Platform --> Upstream Model Provider
@@ -85,336 +85,336 @@ Your end user --(submits information to your app)--> Your app --(calls Platform 
    【You】 as processor                                           【You】 as processor, 【we】 as entrusted processor
 ```
 
-**2.2 Our Two Roles**
+**2.2 Nos deux rôles**
 
-| Scenario | Data Involved | Your Role | Our Role | Applicable Rules |
+| Scénario | Données concernées | Votre rôle | Notre rôle | Règles applicables |
 |---|---|---|---|---|
-| **Scenario A: You register, verify, top up and log in to the Platform** | Your phone number, email, ID/business license information, payment information, login logs | Individual | **Personal Information Processor** | Chapters 3–7 of this Policy in full |
-| **Scenario B: You submit request content through the API that contains personal information** | Prompts, uploaded files, model-returned content | **Personal Information Processor** | **Entrusted Processor** | We process only upon your instructions, not for our own purposes; applies Article 2.3 of this Policy |
+| **Scénario A : vous vous inscrivez, vous vous vérifiez, vous effectuez une recharge et vous vous connectez à la Plateforme** | Votre numéro de téléphone, votre courriel, vos informations d'identité ou de licence d'exploitation, vos informations de paiement, vos journaux de connexion | Personne physique | **Responsable du traitement** | Les Chapitres 3 à 7 de la présente Politique dans leur intégralité |
+| **Scénario B : vous soumettez via l'API un contenu de requête contenant des Données personnelles** | Invites, fichiers téléversés, contenu renvoyé par le modèle | **Responsable du traitement** | **Sous-traitant chargé du Traitement confié** | Nous ne traitons que sur vos instructions, non pour nos propres finalités ; l'Article 2.3 de la présente Politique s'applique |
 
-**2.3 Special Provisions as Entrusted Processor**
+**2.3 Dispositions particulières en qualité de Sous-traitant chargé du Traitement confié**
 
-2.3.1 In Scenario B:
+2.3.1 Dans le Scénario B :
 
-1. **You should obtain lawful authorization from your end users on your own** (notice and consent or other legitimate basis), and fulfill sufficient notice obligations in your own privacy policy;
-2. We process data according to your instructions; the purpose, method and period of processing are determined by your calling behavior;
-3. **We do not use such data for any purpose other than Scenario A in Article 2.2**, including but not limited to commercial exploitation, model training, user profiling, and data resale;
-4. In the event of a security incident, we will promptly notify you, and you will fulfill the notification and reporting obligations to your end users and regulators;
-5. You may separately execute a Data Processing Agreement (DPA) with us, specifying processing details and audit arrangements.
+1. **Vous devez recueillir vous-même l'autorisation licite de vos utilisateurs finaux** (information et consentement ou toute autre base licite) et remplir vos obligations d'information dans votre propre politique de confidentialité ;
+2. Nous traitons les données conformément à vos instructions ; la finalité, la méthode et la durée du traitement sont déterminées par votre comportement d'appel ;
+3. **Nous n'utilisons ces données à aucune autre finalité que celle du Scénario A de l'Article 2.2**, y compris, sans limitation, l'exploitation commerciale, l'entraînement de modèles, le Profilage des utilisateurs et la revente de données ;
+4. En cas d'incident de sécurité, nous vous en informons sans délai, et vous fulfillez vos obligations d'information et de déclaration envers vos utilisateurs finaux et les autorités de régulation ;
+5. Vous pouvez conclure séparément avec nous un Contrat de traitement des données (DPA), précisant les modalités de traitement et les dispositions d'audit.
 
-2.3.2 **We recommend and support you to desensitize personal information before submission.** If the data you submit involves sensitive personal information (such as biometrics, medical and health, financial accounts, whereabouts, or personal information of minors under the age of 14), you should ensure that you have obtained **separate consent** and completed a personal information protection impact assessment.
+2.3.2 **Nous vous recommandons et vous accompagnons dans l'anonymisation des Données personnelles avant leur soumission.** Si les données que vous soumettez comprennent des Données personnelles sensibles (telles que les données biométriques, médicales et de santé, les comptes financiers, la localisation, ou les Données personnelles des mineurs de moins de 14 ans), vous devez vous assurer que vous avez obtenu un **consentement distinct** et réalisé une analyse d'impact de la protection des Données personnelles.
 
-2.3.3 Except as otherwise provided by law, we **will not actively access** your request content. Only under the following circumstances may we view it within the minimum necessary scope: for troubleshooting technical faults with your authorization; upon lawful requests from regulators or judicial authorities; upon discovering content suspected of serious illegality or endangering public safety.
+2.3.3 Sauf disposition légale contraire, nous **n'accédons pas activement** au contenu de vos requêtes. Ce n'est que dans les circonstances suivantes que nous pouvons le consulter dans la limite strictement nécessaire : pour diagnostiquer des défaillances techniques avec votre autorisation ; sur demande licite des autorités de régulation ou judiciaires ; lors de la découverte d'un contenu suspecté d'illégalité grave ou de mise en danger de la sécurité publique.
 
 ---
 
-## Chapter 3 How We Collect and Use Personal Information
+## Chapitre 3 Comment nous collectons et utilisons les Données personnelles
 
-**3.1 List of Personal Information We Collect**
+**3.1 Liste des Données personnelles que nous collectons**
 
-We collect only the following 4 categories of personal information directly related to the Service:
+Nous ne collectons que les 4 catégories de Données personnelles suivantes, directement liées au Service :
 
-| Category | Specific Fields | Required | Collection Scenario |
+| Catégorie | Champs précis | Obligatoire | Scénario de collecte |
 |---|---|---|---|
-| **① Account Information** | Mobile phone number, email, account password (encrypted storage), nickname/enterprise name | Required | Registration, login |
-| **② Identity Verification Information** | Natural person: name, ID number (verified by a third-party identity verification institution); Enterprise: enterprise name, unified social credit code, legal representative name, business license image | Required | Fulfilling real-name obligation under the Cybersecurity Law and the Interim Measures for the Management of Generative AI Services |
-| **③ Payment and Invoicing Information** | Top-up order number, payment channel, transaction amount, invoicing entity and tax number | Required | Top-up, invoicing |
-| **④ Logs and Metadata** | IP address, device identifier (User-Agent), access time, model identifier, input/output Token count, request status code, response latency, API Key identifier | Required | Providing service, billing, security audit |
+| **① Informations de compte** | Numéro de téléphone mobile, courriel, mot de passe du compte (stockage chiffré), pseudonyme / raison sociale | Obligatoire | Inscription, connexion |
+| **② Informations de vérification d'identité** | Personne physique : nom, numéro de pièce d'identité (vérifié par une institution tiers de vérification d'identité) ; Entreprise : raison sociale, code de crédit social unifié, nom du représentant légal, image de la licence d'exploitation | Obligatoire | Exécution de l'obligation d'identité réelle prévue par la Loi sur la cybersécurité et les Mesures provisoires relatives à la gestion des services d'IA générative |
+| **③ Informations de paiement et de facturation** | Numéro de commande de recharge, canal de paiement, montant de la transaction, entité de facturation et numéro fiscal | Obligatoire | Recharge, facturation |
+| **④ Journaux et métadonnées** | Adresse IP, identifiant d'appareil (User-Agent), heure d'accès, identifiant de modèle, nombre de jetons d'entrée/sortie, code de statut de la requête, latence de réponse, identifiant de Clé API | Obligatoire | Fourniture du Service, facturation, audit de sécurité |
 
-**3.2 Information We Will Not Collect**
+**3.2 Informations que nous ne collecterons pas**
 
-**We will not collect or request the following permissions or information:** contacts, call records, SMS content, photo album and images (except those you actively upload), precise geographic location, microphone and camera, clipboard content, or the installation list of other applications on your device.
+**Nous ne collecterons ni ne demanderons les permissions ou informations suivantes** : contacts, journaux d'appels, contenu de SMS, album photo et images (sauf ceux que vous téléversez activement), position géographique précise, microphone et caméra, contenu du presse-papiers, ou liste des autres applications installées sur votre appareil.
 
-**3.3 Processing Purpose and Legal Basis**
+**3.3 Finalité et base légale du traitement**
 
-| Processing Activity | Processing Purpose | Legal Basis (PIPL) |
+| Activité de traitement | Finalité du traitement | Base légale (LIPD) |
 |---|---|---|
-| Account registration and login | Establish and maintain the service relationship | Article 13(1)(ii): necessary for concluding and performing a contract |
-| Identity verification | Fulfilling statutory obligations | Article 13(1)(iii): necessary to perform statutory duties or obligations |
-| Billing and invoicing | Settling service fees, fulfilling tax obligations | Same as above |
-| Metering and call logs | Billing reconciliation, fault troubleshooting, service quality improvement | Article 13(1)(ii) |
-| Security risk control and anti-fraud | Identifying malicious calls, resale, account theft, risk-control bypass, etc. | Article 13(1)(ii); where automated decision-making is involved, Article 24 applies |
-| Service notices and agreement change notifications | Fulfilling notification obligations | Article 13(1)(ii)(iii) |
-| Marketing pushes (**not required**) | Product updates, promotional activities | Requires your **separate consent**; you may unsubscribe at any time |
+| Inscription et connexion au compte | Établir et maintenir la relation de service | Article 13(1)(ii) : nécessaire à la conclusion et à l'exécution d'un contrat |
+| Vérification d'identité | Exécution d'obligations légales | Article 13(1)(iii) : nécessaire à l'exécution de missions ou d'obligations légales |
+| Facturation et émission des factures | Liquidation des frais de service, exécution des obligations fiscales | Idem supra |
+| Comptage et journaux d'appels | Rapprochement de la facturation, diagnostic de défaillances, amélioration de la qualité du service | Article 13(1)(ii) |
+| Contrôle des risques de sécurité et lutte contre la fraude | Identification des appels malveillants, de la revente, du vol de compte, du contournement du contrôle des risques, etc. | Article 13(1)(ii) ; en cas de Décision automatisée, l'Article 24 s'applique |
+| Notifications relatives au Service et aux modifications de l'Accord | Exécution des obligations d'information | Article 13(1)(ii)(iii) |
+| Communications promotionnelles (**non obligatoires**) | Mises à jour du produit, activités promotionnelles | Exige votre **consentement distinct** ; vous pouvez vous désabonner à tout moment |
 
-**3.4 About Identity Verification**
+**3.4 À propos de la vérification d'identité**
 
-3.4.1 Pursuant to Article 24 of the Cybersecurity Law of the PRC, the Administrative Measures for Internet Information Services and the Interim Measures for the Management of Generative AI Services, you must complete identity verification before calling this Service.
+3.4.1 En vertu de l'Article 24 de la Loi sur la cybersécurité de la République populaire de Chine, des Mesures administratives relatives aux services d'information sur Internet et des Mesures provisoires relatives à la gestion des services d'IA générative, vous devez effectuer une vérification d'identité avant d'appeler le présent Service.
 
-3.4.2 Identity verification is completed by a qualified third-party verification institution. **We retain only the verification result and desensitized identifier after passing verification, and do not retain the complete document image** (except as otherwise provided by law).
+3.4.2 La vérification d'identité est réalisée par un institution tiers de vérification qualifié. **Nous ne conservons que le résultat de la vérification et l'identifiant anonymisé après réussite de la vérification, et ne conservons pas l'image complète du document** (sauf disposition légale contraire).
 
-3.4.3 If identity verification is not completed, we cannot activate the Service for you; the un-consumed top-up balance may then be refunded under Article 6 of the Terms of Service.
+3.4.3 Si la vérification d'identité n'est pas effectuée, nous ne pouvons pas activer le Service pour vous ; le solde de recharge non consommé peut alors être remboursé en vertu de l'Article 6 des Conditions d'utilisation.
 
-**3.5 Circumstances Where Consent Is Not Required**
+**3.5 Circonstances dans lesquelles le consentement n'est pas requis**
 
-Pursuant to Article 13 of the Personal Information Protection Law (PIPL), we may process your personal information without your consent under the following circumstances: necessary for concluding or performing a contract to which you are a party; necessary to perform statutory duties or obligations; necessary to respond to public health emergencies or to protect the life, health and property safety of natural persons in emergencies; processing within a reasonable scope for news reporting or public supervision in the public interest; processing your personal information that you have voluntarily made public or that is otherwise lawfully public within a reasonable scope as prescribed by law; and other circumstances prescribed by laws and administrative regulations.
+En vertu de l'Article 13 de la Loi sur la protection des Données personnelles (LIPD), nous pouvons traiter vos Données personnelles sans votre consentement dans les circonstances suivantes : traitement nécessaire à la conclusion ou à l'exécution d'un contrat auquel vous êtes partie ; traitement nécessaire à l'exécution de missions ou d'obligations légales ; traitement nécessaire pour répondre à des urgences de santé publique ou pour protéger, en cas d'urgence, la vie, la santé et la sécurité patrimoniale des personnes physiques ; traitement dans un cadre raisonnable à des fins d'information journalistique ou de contrôle d'intérêt public ; traitement des Données personnelles que vous avez volontairement rendues publiques ou qui sont autrement licitement publiques, dans un cadre raisonnable selon la loi ; et autres circonstances prévues par les lois et les règlements administratifs.
 
-**3.6 Explanation of Automated Decision-Making**
+**3.6 Explication de la Décision automatisée**
 
-3.6.1 We use an automated risk-control system to identify abnormal calling behavior (such as API Key resale, malicious traffic inflation, region-restriction bypass). Such automated decisions are **used only for service security and compliance purposes and will not be used for credit evaluation of you or differentiated pricing**.
+3.6.1 Nous utilisons un système automatisé de contrôle des risques afin d'identifier les comportements d'appel anormaux (tels que la revente de Clés API, l'inflation malveillante du trafic, le contournement des restrictions régionales). Ces décisions automatisées sont **utilisées uniquement à des fins de sécurité et de conformité du Service et ne serviront pas à l'évaluation de votre solvabilité ni à une tarification différenciée**.
 
-3.6.2 Pursuant to Article 24 of the PIPL, if such automated decision-making has a significant impact on your rights and interests (such as restricting or terminating the Service), **you have the right to request an explanation from us and to refuse a decision made solely by automated means**. You may do so via privacy@uter.ai.
+3.6.2 En vertu de l'Article 24 de la LIPD, si une telle Décision automatisée a un impact significatif sur vos droits et intérêts (par exemple la restriction ou la résiliation du Service), **vous avez le droit de nous demander une explication et de refuser une décision prise exclusivement au moyen de moyens automatisés**. Vous pouvez le faire via privacy@uter.ai.
 
 ---
 
-## Chapter 4 How We Entrust Processing, Share, Transfer and Publicly Disclose
+## Chapitre 4 Comment nous confions le traitement, partageons, transférons et divulguons publiquement
 
-**4.1 Entrusted Processing**
+**4.1 Traitement confié**
 
-To provide you with the Service, we may entrust the following types of partners to process your personal information:
+Afin de vous fournir le Service, nous pouvons confier le traitement de vos Données personnelles aux catégories de partenaires suivantes :
 
-| Type of Entrusted Party | Processing Purpose | Information Types Involved |
+| Type de partie déléguée | Finalité du traitement | Types d'informations concernés |
 |---|---|---|
-| Cloud infrastructure provider (domestic) | Server hosting, data storage, network transmission | All four categories |
-| Identity verification institution | Identity/enterprise information verification | ② Identity verification information |
-| Third-party payment institution | Payment settlement | ③ Payment and invoicing information |
-| Electronic invoice service provider | Invoice issuance | ③ Payment and invoicing information |
-| SMS/email service provider | Sending verification codes and service notices | ① Account information |
-| Security risk-control service provider | Anti-fraud and anomaly identification | ④ Logs and metadata |
-| **Upstream Model Provider** | **Model inference** | **Your request content (only when you initiate a call)** |
+| Fournisseur d'infrastructure cloud (national) | Hébergement des serveurs, stockage des données, transmission réseau | Les quatre catégories |
+| Institution de vérification d'identité | Vérification des informations d'identité ou d'entreprise | ② Informations de vérification d'identité |
+| Établissement de paiement de tiers | Règlement des paiements | ③ Informations de paiement et de facturation |
+| Prestataire de services de facturation électronique | Émission des factures | ③ Informations de paiement et de facturation |
+| Prestataire de services SMS/courriel | Envoi de codes de vérification et de notifications relatives au Service | ① Informations de compte |
+| Prestataire de services de contrôle des risques de sécurité | Lutte contre la fraude et identification des anomalies | ④ Journaux et métadonnées |
+| **Fournisseur de modèle en amont** | **Inférence de modèle** | **Le contenu de vos requêtes (uniquement lorsque vous initiez un appel)** |
 
-We have or will require the above entrusted parties by written agreement to comply with the same personal information protection standards, sign confidentiality agreements, not process beyond the entrusted purpose, and delete or return data upon termination of the entrustment relationship.
+Nous avons conclu, et conclurons avec les parties déléguées ci-dessus, des accords écrits leur imposant de respecter les mêmes normes de protection des Données personnelles, de signer des accords de confidentialité, de ne pas traiter au-delà de la finalité confiée et de supprimer ou de restituer les données à la fin de la relation de sous-traitance.
 
-**4.2 Special Notes on Upstream Model Providers**
+**4.2 Remarques particulières sur les Fournisseurs de modèles en amont**
 
-4.2.1 Upstream Model Providers are a necessary link in the Platform's service chain. **When you initiate an API call, the request content is transmitted to the corresponding Upstream Model Provider to complete inference.**
+4.2.1 Les Fournisseurs de modèles en amont constituent un maillon indispensable de la chaîne de service de la Plateforme. **Lorsque vous initiez un appel API, le contenu de la requête est transmis au Fournisseur de modèle en amont correspondant afin d'y effectuer l'inférence.**
 
-4.2.2 Regarding the processing of such data by upstream model providers:
+4.2.2 Concernant le traitement de ces données par les fournisseurs de modèles en amont :
 
-- **Some** upstream providers act as our entrusted parties in this link, bound by the agreement between us and them;
-- **Some** upstream providers may act as **independent personal information processors**, whose processing activities are governed by their own published privacy policies and API terms of use. We have made reasonable efforts to select providers with higher data-processing standards, but **cannot control their specific processing behavior**.
+- **certains** fournisseurs en amont interviennent en qualité de parties déléguées dans ce maillon, liés par l'accord conclu entre nous et eux ;
+- **d'autres** fournisseurs en amont peuvent agir en qualité de **Responsables du traitement indépendants**, dont les activités de traitement sont régies par leurs propres politiques de confidentialité et conditions d'utilisation d'API publiées. Nous avons fait des efforts raisonnables pour sélectionner des fournisseurs appliquant des normes de traitement des données plus élevées, mais **nous ne pouvons pas contrôler leur comportement de traitement spécifique**.
 
-4.2.3 **If you are unwilling to bear the above risks, please select the Platform's domestic model nodes, or desensitize the request content before use.**
+4.2.3 **Si vous ne souhaitez pas supporter les risques susmentionnés, veuillez sélectionner les nœuds de modèles nationaux de la Plateforme, ou anonymiser le contenu de la requête avant utilisation.**
 
-**4.3 Sharing**
+**4.3 Partage**
 
-Except under the following circumstances, we **will not share your personal information with any third party**:
+Sauf dans les circonstances suivantes, nous **ne partageons pas vos Données personnelles avec un quelconque tiers** :
 
-1. We have obtained your **separate consent**;
-2. As required by laws and regulations or compulsory requirements of regulators or judicial authorities (we will notify you to the extent permitted by law);
-3. Necessary to protect public interests or the major legitimate rights and interests of you or other individuals, where it is difficult to obtain your consent;
-4. Necessary to perform the contract between you and us (such as transmitting request content to upstream providers).
+1. Nous avons obtenu votre **consentement distinct** ;
+2. Comme l'exigent les lois et réglementations ou les exigences impératives des autorités de régulation ou judiciaires (nous vous en informerons dans la limite permise par la loi) ;
+3. Nécessaire pour protéger l'intérêt public ou les droits et intérêts légitimes importants de vous ou d'autres personnes, lorsqu'il est difficile d'obtenir votre consentement ;
+4. Nécessaire à l'exécution du contrat conclu entre vous et nous (par exemple la transmission du contenu des requêtes aux fournisseurs en amont).
 
-**4.4 Transfer**
+**4.4 Transfert**
 
-We will not transfer your personal information to any third party. If a merger, division, dissolution, acquisition or asset transfer occurs, we will inform you of the name and contact information of the recipient, and require the recipient to continue to perform the obligations under this Policy; if the recipient changes the original processing purpose or method, we will re-obtain your consent.
+Nous ne transférerons pas vos Données personnelles à un quelconque tiers. En cas de fusion, division, dissolution, acquisition ou cession d'actifs, nous vous informerons du nom et des coordonnées du recipient et exigerons de celui-ci qu'il continue d'exécuter les obligations prévues par la présente Politique ; si le recipient modifie la finalité ou la méthode initiale de traitement, nous recommencerons à recueillir votre consentement.
 
-**4.5 Public Disclosure**
+**4.5 Divulgation publique**
 
-We will not publicly disclose your personal information. Where disclosure is legally required, we will take security protection measures and inform you of the purpose, type and possible scope of the disclosure.
+Nous ne{divulguons pas publiquement vos Données personnelles. Lorsque la divulgation est légalement requise, nous prendrons des mesures de protection de la sécurité et vous informerons de la finalité, du type et de l'éventuelle portée de la divulgation.
 
 **4.6 Exceptions**
 
-Pursuant to Article 13 of the PIPL and related provisions, we do not need to separately obtain your consent under the following circumstances: directly related to national security or national defense security; directly related to public security, public health or major public interests; directly related to the investigation, prosecution, trial and execution of judgments of crimes; necessary to protect the major legitimate rights and interests of you or other individuals where it is difficult to obtain consent; your personal information voluntarily made public to the public; personal information collected from lawfully publicly disclosed information; and other circumstances prescribed by laws and regulations.
+En vertu de l'Article 13 de la LIPD et des dispositions connexes, nous n'avons pas besoin d'obtenir séparément votre consentement dans les circonstances suivantes : traitement directement lié à la sécurité nationale ou à la défense nationale ; traitement directement lié à la sécurité publique, à la santé publique ou à des intérêts publics importants ; traitement directement lié à l'enquête, à la poursuite, au jugement et à l'exécution des décisions pénales ; traitement nécessaire à la protection des droits et intérêts légitimes importants de vous ou d'autres personnes lorsqu'il est difficile d'obtenir le consentement ; Données personnelles que vous avez volontairement rendues publiques ; Données personnelles collectées à partir d'informations publiquement divulguées de manière licite ; et autres circonstances prévues par les lois et réglementations.
 
 ---
 
-## Chapter 5 Cross-Border Data Transfer
+## Chapitre 5 Transfert de données hors de Chine
 
-**5.1 Trigger Condition**
+**5.1 Condition de déclenchement**
 
-The Platform defaults to domestic nodes and domestic models, **with data not leaving the country**.
+Par défaut, la Plateforme utilise des nœuds et des modèles nationaux, **les données ne quittant pas le territoire national**.
 
-**Only when you actively choose to call overseas model nodes** will your request content be transmitted to overseas Upstream Model Providers and may be processed and stored overseas.
+**Le contenu de vos requêtes n'est transmis aux Fournisseurs de modèles en amont étrangers et n'est susceptible d'être traité et stocké à l'étranger que lorsque vous choisissez activement d'appeler des nœuds de modèles situés à l'étranger.**
 
-**5.2 Our Processing Principles**
+**5.2 Nos principes de traitement**
 
-5.2.1 Such transfer is **actively selected and initiated by you**. Your act of selecting an overseas model in the console constitutes your explicit instruction for cross-border data transfer.
+5.2.1 Un tel transfert est **choisi et déclenché activement par vous**. Votre acte de sélection d'un modèle étranger dans la console constitue votre instruction explicite pour un transfert transfrontalier de données.
 
-5.2.2 We **do not retain your request and response body content domestically**; the outbound transfer is real-time forwarding and does not constitute incremental storage of domestic data (only the necessary metadata for billing and audit is retained, and such metadata is stored within the territory of China).
+5.2.2 Nous **ne conservons pas sur le territoire national le contenu du corps de vos requêtes et réponses** ; le transfert sortant est un simple relais en temps réel et ne constitue pas un stockage incrémental de données nationales (seules les métadonnées nécessaires à la facturation et à l'audit sont conservées, et ces métadonnées sont stockées dans le territoire de la Chine).
 
-5.2.3 **Pursuant to Section 3 of Chapter 3 of the PIPL and the Measures for the Security Assessment of Data Outbound Transfer, you should complete the required cross-border data compliance procedures before submitting request content containing personal information to this Platform**, including but not limited to: execution and filing of the standard contract for cross-border personal information transfer, personal information protection certification, or security assessment filing (where the filing threshold is met).
+5.2.3 **En vertu de la Section 3 du Chapitre 3 de la LIPD et des Mesures relatives à l'évaluation de sécurité des transferts de données sortants, vous devez effectuer les procédures de conformité requises en matière de transfert transfrontalier de données avant de soumettre à la présente Plateforme un contenu de requête contenant des Données personnelles**, y compris sans limitation : la conclusion et le dépôt du contrat type de transfert transfrontalier de Données personnelles, la certification de protection des Données personnelles, ou le dépôt d'une demande d'évaluation de sécurité (lorsque le seuil de dépôt est atteint).
 
-5.2.4 We recommend and support you in reducing outbound risk through the following means: selecting domestic models; implementing data desensitization, field replacement and pseudonymization on the client; and avoiding outbound transfer of sensitive personal information altogether.
+5.2.4 Nous vous recommandons et vous accompagnons dans la réduction du risque de transfert sortant par les moyens suivants : sélection de modèles nationaux ; mise en œuvre de la dépersonnalisation des données, du remplacement de champs et de la pseudonymisation côté client ; et abstention complète de transférer des Données personnelles sensibles.
 
-**5.3 Exceptions to Cross-Border Transfer**
+**5.3 Exceptions au transfert transfrontalier**
 
-Data involving critical information infrastructure operators, important data, or data prohibited from outbound transfer by laws and regulations **must not be processed through the Platform's overseas nodes**. You bear the consequences of violating this provision.
+Les données impliquant des opérateurs d'infrastructures d'information critiques, des données importantes ou des données dont le transfert sortant est interdit par les lois et réglementations **ne doivent en aucun cas être traitées au moyen des nœuds étrangers de la Plateforme**. Vous supportez les conséquences de la violation de la présente disposition.
 
 ---
 
-## Chapter 6 How We Store and Protect Personal Information
+## Chapitre 6 Comment nous stockons et protégeons les Données personnelles
 
-**6.1 Storage Location**
+**6.1 Lieu de stockage**
 
-Your personal information is stored on servers **within the territory of the People's Republic of China** (located in domestic data centers). Except as stated in Article 5.1, we do not transmit your personal information overseas.
+Vos Données personnelles sont stockées sur des serveurs **situés dans le territoire de la République populaire de Chine** (hébergés dans des centres de données nationaux). Sauf disposition contraire prévue à l'Article 5.1, nous ne transmettons pas vos Données personnelles à l'étranger.
 
-**6.2 Storage Period**
+**6.2 Durée de stockage**
 
-We follow the principle of **minimum necessary period**, as follows:
+Nous suivons le principe de la **durée strictement nécessaire**, comme suit :
 
-| Information Type | Storage Period | Basis |
+| Type d'information | Durée de stockage | Base |
 |---|---|---|
-| Request and response **body content** | **Not retained by default** (released upon real-time forwarding) | Minimum necessary principle |
-| Call metadata (time, model, Token count, status code, latency) | **12 months** | Billing reconciliation and audit needs |
-| Account and identity verification information | During the existence of the account, deleted or anonymized within **6 months** after account cancellation | Service relationship and regulatory verification needs |
-| Payment and invoicing records | Pursuant to the E-Commerce Law and the Measures for the Administration of Accounting Archives, **no less than 3 years** from completion of the transaction | Statutory obligation |
-| Network security logs | **No less than 6 months** | Article 21 of the Cybersecurity Law |
-| Security incident handling records | **3 years** | Compliance traceability needs |
+| **Contenu du corps** des requêtes et réponses | **Non conservé par défaut** (libéré après relais en temps réel) | Principe de minimisation |
+| Métadonnées d'appel (heure, modèle, nombre de jetons, code de statut, latence) | **12 mois** | Besoins de rapprochement de facturation et d'audit |
+| Informations de compte et de vérification d'identité | Pendant la durée d'existence du compte, supprimées ou anonymisées dans les **6 mois** suivant l'annulation du compte | Relation de service et besoins de vérification réglementaire |
+| Enregistrements de paiement et de facturation | Conformément à la Loi sur le commerce électronique et aux Mesures relatives à la gestion des archives comptables, **au moins 3 ans** à compter de l'achèvement de la transaction | Obligation légale |
+| Journaux de cybersécurité | **Au moins 6 mois** | Article 21 de la Loi sur la cybersécurité |
+| Enregistrements de traitement des incidents de sécurité | **3 ans** | Besoins de traçabilité de la conformité |
 
-**Beyond the above periods, we will delete or anonymize the data and not use it for any purpose.**
+**Au-delà des durées susmentionnées, nous supprimons ou anonymisons les données et ne les utilisons à aucune fin.**
 
-**6.3 Security Protection Measures**
+**6.3 Mesures de protection de la sécurité**
 
-We adopt security measures that meet industry standards to protect your personal information:
+Nous adoptons des mesures de sécurité conformes aux normes du secteur pour protéger vos Données personnelles :
 
-| Layer | Measures |
+| Couche | Mesures |
 |---|---|
-| Transmission security | Site-wide HTTPS / TLS 1.3 encryption; mandatory key authentication for APIs |
-| Storage security | Sensitive fields (ID numbers, passwords) encrypted at storage; least-privilege database access |
-| Access control | Tiered employee authorization, operation audit trail; API Key supports IP allowlist and rotation |
-| Security audit | Regular vulnerability scanning, penetration testing, log audit |
-| Organizational management | Employee confidentiality agreements, specialized training for data-processing positions, immediate recovery of permissions upon departure |
-| Compliance assessment | Personal information protection impact assessment (PIA) pursuant to Article 55 of the PIPL |
+| Sécurité de la transmission | Chiffrement HTTPS / TLS 1.3 sur l'ensemble du site ; authentification obligatoire par clé pour les API |
+| Sécurité du stockage | Chiffrement des champs sensibles (numéros de pièce d'identité, mots de passe) au stockage ; accès à la base de données à privilèges minimal |
+| Contrôle d'accès | Habilitation des employés par niveaux, piste d'audit des opérations ; la Clé API prend en charge la liste d'adresses IP autorisées et la rotation |
+| Audit de sécurité | Analyse régulière des vulnérabilités, tests d'intrusion, audit des journaux |
+| Organisation | Accords de confidentialité des employés, formation spécialisée pour les postes de traitement des données, révocation immédiate des permissions lors des départs |
+| Évaluation de conformité | Analyse d'impact de la protection des Données personnelles (AIPD) en vertu de l'Article 55 de la LIPD |
 
-**6.4 Handling of Security Incidents**
+**6.4 Traitement des incidents de sécurité**
 
-Where a personal information leak, tampering or loss occurs or is likely to occur, we will:
+Lorsqu'une fuite, une altération ou une perte de Données personnelles survient ou est susceptible de survenir, nous :
 
-1. Immediately activate the emergency plan and take remedial measures;
-2. Report to the department performing personal information protection duties pursuant to Article 57 of the PIPL;
-3. Promptly inform you by in-site message, email or SMS: the basic facts of the incident, possible impact, remedial measures we have taken, suggestions for you to prevent risks on your own, and our contact information;
-4. Where it is difficult to notify each individual, publish an announcement by reasonable and effective means.
+1. activons immédiatement le plan d'urgence et prenons des mesures correctives ;
+2. signalons l'incident au service chargé de la protection des Données personnelles en vertu de l'Article 57 de la LIPD ;
+3. vous informons sans délai par message sur le site, par courriel ou par SMS : les faits essentiels de l'incident, l'impact possible, les mesures correctives que nous avons prises, les recommandations pour prévenir vous-même les risques et nos coordonnées ;
+4. lorsqu'il est difficile de notifier chaque personne, publions une annonce par des moyens raisonnables et efficaces.
 
-**6.5 Inherent Risk Tip on Information Security**
+**6.5 Avertissement inhérent sur la sécurité des informations**
 
-The Internet environment is not absolutely secure. **Please use account passwords of sufficient complexity, keep your API Key safe, and do not hard-code keys on the client.** If information leakage is caused by your own poor safekeeping, we bear no responsibility for the resulting consequences.
+L'environnement Internet n'est pas absolument sécurisé. **Veuillez utiliser des mots de passe de compte suffisamment complexes, conserver votre Clé API en lieu sûr et ne pas coder des clés en dur côté client.** Si une fuite d'information est causée par votre propre mauvaise conservation, nous n'assumons aucune responsabilité pour les conséquences qui en découlent.
 
 ---
 
-## Chapter 7 Your Rights Regarding Personal Information
+## Chapitre 7 Vos droits relatifs aux Données personnelles
 
-Pursuant to Chapter 4 of the PIPL, you enjoy the following rights regarding your own personal information. We will respond within **15 business days** of receiving your request and verifying your identity (where the situation is complex, it may be extended to 30 business days with notice to you).
+En vertu du Chapitre 4 de la LIPD, vousrições des droits suivants sur vos propres Données personnelles. Nous répondons dans un délai de **15 jours ouvrables** après réception de votre demande et vérification de votre identité (lorsque la situation est complexe, ce délai peut être porté à 30 jours ouvrables, après vous en avoir informé).
 
-| Right | How to Exercise | Notes |
+| Droit | Moyen de l'exercer | Observations |
 |---|---|---|
-| **Access and Copy** | Self-service view in console "Account Settings → Personal Information"; or email request | We will provide a copy in a structured, common format |
-| **Correct and Supplement** | Self-service modification in console; identity reverification required for real-name information | We will correct promptly after verification |
-| **Delete** | Self-service deletion in console; or email request | Applies to Article 47 of the PIPL: processing purpose achieved or no longer necessary; we stop service or storage period expires; you withdraw consent; we process unlawfully; other circumstances prescribed by laws and regulations |
-| **Withdraw Consent** | Console "Privacy Settings"; or email request | Withdrawal does not affect the validity of processing activities already conducted based on consent before withdrawal |
-| **Cancel Account** | Self-service cancellation in console | Settle fees and back up data before cancellation; account is unrecoverable after cancellation |
-| **Portability** | Email request | Where conditions prescribed by the national cyberspace authority are met, we provide a portability channel |
-| **Restrict or Refuse Processing** | Email request | E.g., refuse a decision made solely by automated means that has a major impact on you |
-| **Explanation** | Email request | You have the right to request an explanation of this Policy and the personal information processing rules |
-| **Complaint and Report** | privacy@uter.ai | We will respond within 15 business days |
+| **Accès et copie** | Consultation en libre-service dans la console, rubrique « Paramètres du compte → Données personnelles » ; ou demande par courriel | Nous fournissons une copie dans un format structuré et commun |
+| **Rectification et complément** | Modification en libre-service dans la console ; une nouvelle vérification d'identité est requise pour les informations d'identité réelle | Nous rectifions sans délai après vérification |
+| **Suppression** | Suppression en libre-service dans la console ; ou demande par courriel | S'applique à l'Article 47 de la LIPD : finalité du traitement atteinte ou devenue inutile ; arrêt du service ou expiration de la durée de stockage ; vous retirez votre consentement ; traitement illicite ; autres circonstances prévues par les lois et réglementations |
+| **Retrait du consentement** | Console, rubrique « Paramètres de confidentialité » ; ou demande par courriel | Le retrait ne remet pas en cause la validité des activités de traitement déjà effectuées sur la base du consentement avant le retrait |
+| **Annulation du compte** | Annulation en libre-service dans la console | Réglez les frais et sauvegardez les données avant l'annulation ; le compte est irrécupérable après l'annulation |
+| **Portabilité** | Demande par courriel | Lorsque les conditions fixées par l'autorité nationale du cyberespace sont réunies, nous fournissons un canal de portabilité |
+| **Limitation ou refus du traitement** | Demande par courriel | Par exemple, refuser une décision prise exclusivement au moyen de moyens automatisés et ayant un impact majeur sur vous |
+| **Explication** | Demande par courriel | Vous avez le droit de demander une explication de la présente Politique et des règles de traitement des Données personnelles |
+| **Réclamation et signalement** | privacy@uter.ai | Nous répondons dans un délai de 15 jours ouvrables |
 
-**7.1 Request Acceptance Channel**
+**7.1 Canal de réception des demandes**
 
-- Email: privacy@uter.ai
-- Console: Account Settings → Privacy and Data → Exercise of Rights
-- We may need you to provide necessary information to verify your identity; **verification is used only for identity confirmation and will not additionally expand the scope of information collection**.
+- Courriel : privacy@uter.ai
+- Console : Paramètres du compte → Confidentialité et données → Exercice des droits
+- Nous pouvons être amenés à vous demander de fournir les informations nécessaires à la vérification de votre identité ; **la vérification sert uniquement à confirmer l'identité et n'a pas pour effet d'étendre la portée de la collecte d'informations**.
 
-**7.2 Circumstances Where We May Decline to Respond**
+**7.2 Circonstances dans lesquelles nous pouvons refuser de répondre**
 
-We may be unable to respond to your request and will explain the reason under the following circumstances: related to our performance of obligations prescribed by laws and regulations; directly related to national security or national defense security; directly related to public security, public health or major public interests; directly related to the investigation, prosecution, trial and execution of judgments of crimes; sufficient evidence that you are acting in bad faith or abusing rights; response would cause serious harm to the legitimate rights and interests of you or other individuals or organizations; involves trade secrets.
+Nous pouvons être dans l'impossibilité de répondre à votre demande, et vous expliquerons la raison, dans les circonstances suivantes : demande liée à l'exécution de nos obligations prévues par les lois et réglementations ; demande directement liée à la sécurité nationale ou à la défense nationale ; demande directement liée à la sécurité publique, à la santé publique ou à des intérêts publics importants ; demande directement liée à l'enquête, à la poursuite, au jugement et à l'exécution des décisions pénales ; éléments suffisants indiquant que vous agissez de mauvaise foi ou abusez de vos droits ; réponse qui causerait un préjudice grave aux droits et intérêts légitimes de vous ou d'autres personnes ou organisations ; implication de secrets commerciaux.
 
-**7.3 External Remedies**
+**7.3 Voies de recours externes**
 
-If you believe our processing activities infringe your legitimate rights and interests, and negotiation with us fails, you have the right to complain or report to the **department performing personal information protection duties**. You may:
+Si vous estimez que nos activités de traitement portent atteinte à vos droits et intérêts légitimes et que la négociation avec nous a échoué, vous avez le droit d'introduire une réclamation ou un signalement auprès du **service chargé de la protection des Données personnelles**. Vous pouvez :
 
-- Report to the **National Cyber and Information Security Notification Center** or the **12377 Illegal and Bad Information Reporting Center**;
-- Complain to the **Shenzhen Office of Cyberspace Administration** or the **Shenzhen Communications Administration**;
-- File a lawsuit with the **people's court with jurisdiction**.
-
----
-
-## Chapter 8 Cookies and Similar Technologies
-
-8.1 We use Cookie and local storage (LocalStorage) technologies to implement the following necessary functions: maintaining login status, recording language and interface preferences, and preventing cross-site request forgery (CSRF).
-
-8.2 This Platform **does not use** Cookies for cross-site advertising tracking or personalized advertising delivery.
-
-8.3 You may manage or delete Cookies through browser settings. **Disabling necessary Cookies may prevent you from logging in normally or using console functions.**
+- signaler au **Centre national de notification de la cybersécurité et de la sécurité des informations** ou au **Centre 12377 de signalement des informations illicites et dépendantes** ;
+- introduire une réclamation auprès du **Bureau de Shenzhen de l'administration du cyberespace** ou de l'**Administration des communications de Shenzhen** ;
+- saisir le **tribunal populaire ayant la Compétence juridictionnelle**.
 
 ---
 
-## Chapter 9 Protection of Minors
+## Chapitre 8 Cookies et technologies similaires
 
-9.1 This Platform **does not provide services to minors**. Pursuant to Article 1.5 of the Uter Large Model Service Platform Terms of Service, users should be at least **18 years of age** and have full capacity for civil conduct.
+8.1 Nous utilisons les technologies de Cookie et de stockage local (LocalStorage) pour mettre en œuvre les fonctions nécessaires suivantes : maintien de l'état de connexion, mémorisation des préférences de langue et d'interface, et prévention des falsifications de requêtes intersites (CSRF).
 
-9.2 We will not actively collect minors' personal information, nor require minors to provide any personal information. If you are a minor, please do not register for or use this Platform's services.
+8.2 La présente Plateforme **n'utilise pas** de Cookies pour le pistage publicitaire intersite ni pour la diffusion de publicités personnalisées.
 
-9.3 Pursuant to Article 31 of the PIPL, **the personal information of minors under the age of 14 is sensitive personal information**. If we discover that we have mistakenly collected a minor's personal information, we will delete it immediately; guardians are welcome to contact us via privacy@uter.ai.
-
-9.4 **Note for users who are developers**: If the application you develop based on this Platform is directed at minors or may be used by minors, **you should obtain the separate consent of their guardians on your own**, and design dedicated information processing rules and content security measures for minors. This obligation is borne by you; this Platform does not intervene in the legal relationship between you and your end users.
+8.3 Vous pouvez gérer ou supprimer les Cookies par les paramètres de votre navigateur. **La désactivation des Cookies nécessaires peut vous empêcher de vous connecter normalement ou d'utiliser les fonctions de la console.**
 
 ---
 
-## Chapter 10 Special Notes on Generative AI Services
+## Chapitre 9 Protection des mineurs
 
-**10.1 We Do Not Train Models**
+9.1 La présente Plateforme **ne fournit pas de services aux mineurs**. En vertu de l'Article 1.5 des Conditions d'utilisation de la Plateforme de services de grands modèles Uter, les utilisateurs doivent être âgés d'au moins **18 ans** et jouir de la pleine capacité juridique.
 
-10.1.1 We ourselves **do not develop or train large models**. The role of this Platform is the aggregator and forwarder of model capability.
+9.2 Nous ne collecterons pas activement les Données personnelles des mineurs, n'exigerons pas des mineurs qu'ils fournissent des Données personnelles. Si vous êtes mineur, veuillez ne pas vous inscrire aux services de la présente Plateforme ni les utiliser.
 
-10.1.2 **We will not use your request content to train or fine-tune any model**, nor use it to improve model performance, build training datasets or perform data annotation.
+9.3 En vertu de l'Article 31 de la LIPD, **les Données personnelles des mineurs de moins de 14 ans sont des Données personnelles sensibles**. Si nous découvrons avoir collecté par erreur les Données personnelles d'un mineur, nous les supprimerons immédiatement ; les tuteurs sont invités à nous contacter via privacy@uter.ai.
 
-10.1.3 Whether an Upstream Model Provider uses your data to train its models **depends on that upstream's own policy and your contractual arrangements**. We recommend that you consult the corresponding upstream's privacy policy; for providers that explicitly commit not to use customer data for training, we will mark them in the model catalog.
-
-**10.2 Labeling Obligations for Generated Content**
-
-10.2.1 Pursuant to Article 12 of the Interim Measures for the Management of Generative AI Services and Article 17 of the Provisions on the Administration of Deep Synthesis of Internet Information Services, **as the service provider providing generative AI services to end users, you should add explicit labels to generated content as required by law, or add implicit labels in file metadata.**
-
-10.2.2 We may provide technical support for labeling capability, but **do not replace you in fulfilling the statutory labeling obligation**.
-
-**10.3 Content Security**
-
-10.3.1 We may deploy content security review capability on the server side to intercept obviously illegal inputs and outputs. Such review is based on **the content itself** and does not target your personal identity.
-
-10.3.2 If you use this Platform's generative capability in scenarios with **public opinion attributes or social mobilization capacity** as defined by the Provisions on the Administration of Algorithm Recommendation for Internet Information Services and the Interim Measures for the Management of Generative AI Services, you should fulfill the **algorithm filing** and **security assessment** obligations pursuant to law.
-
-**10.4 Risks of Output Content**
-
-The output of large language models is probabilistic and non-deterministic, and **may contain factual errors, bias or inappropriate content**. Please do not use the output as the sole basis for professional decisions such as medical, legal or financial investment.
+9.4 **Note pour les utilisateurs qui sont développeurs** : si l'application que vous développez sur la base de la présente Plateforme s'adresse à des mineurs ou peut être utilisée par des mineurs, **vous devez recueillir vous-même le consentement distinct de leurs tuteurs** et concevoir des règles de traitement des données et des mesures de sécurité des contenus spécifiquement destinées aux mineurs. Cette obligation vous incombe ; la présente Plateforme n'intervient pas dans la relation juridique entre vous et vos utilisateurs finaux.
 
 ---
 
-## Chapter 11 Updates to this Policy
+## Chapitre 10 Remarques particulières sur les services d'IA générative
 
-11.1 We may update this Policy based on changes in laws and regulations, business adjustments or technology upgrades. The updated Policy will be prominently published on the Platform with the update date marked.
+**10.1 Nous n'entraînons pas de modèles**
 
-11.2 For the following **material changes**, we will **prominently notify you** by in-site message, email or pop-up, and re-obtain your consent where necessary:
+10.1.1 Nous-mêmes, nous **ne développons pas et n'entraînons pas** de grands modèles. Le rôle de la présente Plateforme est celui d'agrégateur et de relais de la capacité des modèles.
 
-1. The purpose, type or method of processing personal information changes materially;
-2. The main objects of sharing, transfer or public disclosure of personal information change;
-3. Your rights regarding the processing of personal information and how to exercise them change materially;
-4. The purpose, recipient or type of cross-border data transfer changes;
-5. The personal information security impact assessment indicates a high risk.
+10.1.2 **Nous n'utiliserons pas le contenu de vos requêtes pour entraîner ou régler finement un quelconque modèle**, ni l'utiliser pour améliorer les performances des modèles, construire des jeux de données d'entraînement ou procéder à l'annotation de données.
 
-11.3 Upon expiry of the publication period, your continued use of this Service is deemed as acceptance of the updated Policy; if you do not accept it, you may stop using it and cancel your account.
+10.1.3 L'utilisation de vos données par un Fournisseur de modèle en amont pour entraîner ses modèles **dépend de la politique propre de cet amont et de vos arrangements contractuels**. Nous vous recommandons de consulter la politique de confidentialité de l'amont concerné ; pour les fournisseurs qui s'engagent explicitement à ne pas utiliser les données de leurs clients à des fins d'entraînement, nous les signalerons dans le catalogue des modèles.
 
-**Version History**
+**10.2 Obligations de marquage des contenus générés**
 
-| Version | Effective Date | Revision Notes |
+10.2.1 En vertu de l'Article 12 des Mesures provisoires relatives à la gestion des services d'IA générative et de l'Article 17 des Dispositions sur l'administration de la synthèse profonde d'informations sur Internet, **en tant que fournisseur de services d'IA générative, vous devez apposer sur les contenus générés un marquage explicite comme l'exige la loi, ou apposer un marquage implicite dans les métadonnées du fichier.**
+
+10.2.2 Nous pouvons fournir un support technique pour la capacité de marquage, mais **ne nous substituons pas à vous dans l'accomplissement de l'obligation légale de marquage**.
+
+**10.3 Sécurité des contenus**
+
+10.3.1 Nous pouvons déployer une capacité de revue de la sécurité des contenus côté serveur afin d'intercepter les entrées et sorties manifestement illicites. Une telle revue est fondée sur **le contenu lui-même** et ne cible pas votre identité personnelle.
+
+10.3.2 Si vous utilisez la capacité générative de la présente Plateforme dans des scénarios ayant des **attributs d'opinion publique ou une capacité de mobilisation sociale**, au sens des Dispositions sur l'administration de la recommandation par algorithme pour les services d'information sur Internet et des Mesures provisoires relatives à la gestion des services d'IA générative, vous devez accomplir les obligations d'**enregistrement d'algorithme** et d'**évaluation de sécurité** prévues par la loi.
+
+**10.4 Risques du contenu de sortie**
+
+La sortie des grands modèles de langage est probabiliste et non déterministe, et **peut contenir des erreurs factuelles, des biais ou des contenus inappropriés**. Veuillez ne pas utiliser la sortie comme base unique de décisions professionnelles telles que médicales, juridiques ou d'investissement financier.
+
+---
+
+## Chapitre 11 Mises à jour de la présente Politique
+
+11.1 Nous pouvons mettre à jour la présente Politique en fonction des évolutions des lois et réglementations, des ajustements commerciaux ou des améliorations technologiques. La Politique mise à jour sera publiée de manière bien visible sur la Plateforme, avec la date de mise à jour indiquée.
+
+11.2 Pour les **modifications substantielles** suivantes, nous vous **notifierons de manière bien visible** par message sur le site, par courriel ou par fenêtre contextuelle, et recueillerons à nouveau votre consentement lorsque cela est nécessaire :
+
+1. la finalité, le type ou la méthode de traitement des Données personnelles change de manière substantielle ;
+2. les principaux destinataires du partage, du transfert ou de la divulgation publique des Données personnelles changent ;
+3. vos droits relatifs au traitement des Données personnelles et les modalités de leur exercice changent de manière substantielle ;
+4. la finalité, le destinataire ou le type de transfert transfrontalier de données change ;
+5. l'analyse d'impact de la sécurité des Données personnelles indique un niveau de risque élevé.
+
+11.3 À l'expiration du délai de publication, votre utilisation continue du présent Service vaut acceptation de la Politique mise à jour ; si vous ne l'acceptez pas, vous pouvez cesser d'utiliser le Service et annuler votre compte.
+
+**Historique des versions**
+
+| Version | Date d'entrée en vigueur | Notes de révision |
 |---|---|---|
-| V1.0 | August 8, 2026 | First release |
+| V1.0 | 8 août 2026 | Première publication |
 
 ---
 
-## Chapter 12 How to Contact Us
+## Chapitre 12 Comment nous contacter
 
-| Matter | Contact |
+| Objet | Contact |
 |---|---|
-| Personal Information Protection Officer | privacy@uter.ai |
-| Exercise of Personal Information Rights and Complaints | privacy@uter.ai |
-| Service and Technical Support | tech@uter.ai |
-| Abuse and Violation Reporting | abuse@uter.ai |
-| Business and Contracts | bd@uter.ai |
-| Mailing Address | T2, Ali Center, Nanshan District, Shenzhen, Guangdong Province, the People's Republic of China |
+| Responsable de la protection des Données personnelles | privacy@uter.ai |
+| Exercice des droits relatifs aux Données personnelles et réclamations | privacy@uter.ai |
+| Service et support technique | tech@uter.ai |
+| Signalement d'abus et de violations | abuse@uter.ai |
+| Questions commerciales et contrats | bd@uter.ai |
+| Adresse postale | Bâtiment T2, Ali Center, district de Nanshan, Shenzhen, province du Guangdong, République populaire de Chine |
 
-We will respond within **15 business days** of receiving your question or complaint.
+Nous répondons dans un délai de **15 jours ouvrables** après réception de votre question ou réclamation.
 
 ---
 
-## Chapter 13 Definitions
+## Chapitre 13 Définitions
 
-| Term | Meaning |
+| Terme | Signification |
 |---|---|
-| **Personal Information** | Various kinds of information recorded electronically or otherwise relating to identified or identifiable natural persons, excluding information that has been anonymized |
-| **Sensitive Personal Information** | Personal information that, once leaked or illegally used, is likely to cause damage to the dignity of a natural person or endanger personal or property safety, including biometrics, religious beliefs, specific identity, medical and health, financial accounts, whereabouts and other information, as well as the personal information of minors under the age of 14 |
-| **Personal Information Processor** | An organization or individual that independently determines the purpose and method of processing personal information |
-| **Entrusted Processor** | An organization or individual that accepts entrustment from a personal information processor and processes personal information according to its instructions |
-| **De-identification** | The process by which personal information is processed so that a specific natural person cannot be identified without the aid of additional information |
-| **Anonymization** | The process by which personal information is processed such that a specific natural person cannot be identified and cannot be restored |
-| **Automated Decision-Making** | Activities that use computer programs to automatically analyze and evaluate an individual's behavioral habits, interests, hobbies or economic, health or credit status, and make decisions |
-| **Cross-Border Data Transfer** | Transmitting or storing personal information collected and generated during operations within the territory of China to a location outside China, or allowing overseas institutions, organizations or individuals to access or retrieve such information |
-| **Upstream Model Provider** | A third party that actually provides large-model inference capability, including but not limited to OpenAI, Anthropic, Google, Alibaba Cloud, ByteDance, Tencent, DeepSeek, Zhipu, etc. |
+| **Données personnelles** | Diverses informations enregistrées par voie électronique ou autre, se rapportant à des personnes physiques identifiées ou identifiables, à l'exclusion des informations ayant fait l'objet d'une anonymisation |
+| **Données personnelles sensibles** | Données personnelles dont la divulgation ou l'utilisation illicite est susceptible de porter atteinte à la dignité d'une personne physique ou de mettre en danger la sécurité des personnes ou des biens, comprenant les données biométriques, les croyances religieuses, l'identité spécifique, les données médicales et de santé, les comptes financiers, la localisation et autres informations, ainsi que les Données personnelles des mineurs de moins de 14 ans |
+| **Responsable du traitement** | Une organisation ou une personne physique qui détermine de manière autonome la finalité et la méthode de traitement des Données personnelles |
+| **Sous-traitant chargé du Traitement confié** | Une organisation ou une personne physique qui accepte une mission d'un Responsable du traitement et traite les Données personnelles selon ses instructions |
+| **Dé-identification** | Le processus par lequel les Données personnelles sont traitées de manière qu'une personne physique déterminée ne puisse pas être identifiée sans le secours d'informations supplémentaires |
+| **Anonymisation** | Le processus par lequel les Données personnelles sont traitées de manière qu'une personne physique déterminée ne puisse être ni identifiée ni reconstituée |
+| **Décision automatisée** | Les activités utilisant des programmes informatiques pour analyser et évaluer automatiquement les habitudes comportementales, les intérêts, les loisirs ou la situation économique, sanitaire ou de crédit d'une personne, et pour prendre des décisions |
+| **Transfert de données hors de Chine** | La transmission ou le stockage, hors du territoire de la Chine, des Données personnelles collectées et générées au cours des opérations, ou l'autorisation d'accès ou de consultation de ces informations par des institutions, organisations ou personnes physiques à l'étranger |
+| **Fournisseur de modèle en amont** | Un tiers qui fournit effectivement la capacité d'inférence des grands modèles, comprenant sans limitation OpenAI, Anthropic, Google, Alibaba Cloud, ByteDance, Tencent, DeepSeek, Zhipu, etc. |

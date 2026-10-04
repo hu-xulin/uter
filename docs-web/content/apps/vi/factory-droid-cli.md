@@ -1,44 +1,44 @@
 # Factory Droid CLI
 
-> **Project Introduction**
+> **Giới thiệu dự án**
 >
-> Droid CLI is a command-line tool developed by Factory AI, designed to run as an AI software engineering agent. It allows users to interact with various large language models through the terminal, build, debug, and refactor code, and even create complete applications.
+> Droid CLI là một công cụ dòng lệnh được phát triển bởi Factory AI, được thiết kế để chạy như một tác nhân kỹ sư phần mềm AI. Nó cho phép người dùng tương tác với nhiều mô hình ngôn ngữ lớn thông qua terminal, xây dựng, gỡ lỗi và tái cấu trúc mã, thậm chí tạo ra các ứng dụng hoàn chỉnh.
 >
->   - Official Homepage: [https://factory.ai/product/cli](https://factory.ai/product/cli)
->   - Official Documentation: [https://docs.factory.ai/cli/getting-started/quickstart](https://docs.factory.ai/cli/getting-started/quickstart)
+>   - Trang chủ chính thức: [https://factory.ai/product/cli](https://factory.ai/product/cli)
+>   - Tài liệu chính thức: [https://docs.factory.ai/cli/getting-started/quickstart](https://docs.factory.ai/cli/getting-started/quickstart)
 
-## Demo
+## Bản demo
 
 ![droid.webp](/apps-assets/factory_droid_cli/droid_example.webp)
 
-### Features
+### Tính năng
 
-| Category                       | Feature                                                                                                                     | Value/Capability                                               | Example/Notes                                                             |
+| Danh mục                       | Tính năng                                                                                                                     | Giá trị/Năng lực                                               | Ví dụ/Ghi chú                                                             |
 | ------------------------------ | --------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- | ------------------------------------------------------------------------- |
-| Quick Start with CLI           | 30-second installation; launch droid interactive session in project directory; supports macOS/Linux and Windows             | Rapid integration into current projects, no new tools required | Windows Installation: `irm https://app.factory.ai/cli/windows \| iex`; Launch: `droid` |
-| End-to-End Feature Development | Full-process automation from planning to implementation to testing; transparent review process                              | Accelerate delivery, maintain human oversight                  | Native diff viewing and approval process (see "Transparency and Control") |
-| Deep Codebase Understanding    | Integrates organizational shared knowledge from codebases, documentation, issue tracking; context-aware, improves over time | More accurate suggestions and changes                          | Continuously leverages knowledge across repositories and documents        |
-| Engineering System Integration | Native integration with Jira, Notion, Slack, and other tools; development work stays synchronized with team processes       | Reduce tool switching and information silos                    | "etc." indicates more integrations                                        |
-| Production-Grade Automation    | Workflows reusable locally and in CI/CD; enterprise-grade security and compliance built-in                                  | Consistency and auditability                                   | Adapts to pipelines and enterprise environments                           |
-| Enterprise Capabilities        | Private deployment options, SOC-2 compliance, air-gapped environments                                                       | Meets security and compliance requirements                     | Prioritizes security and quality                                          |
-| Enhance Existing Tools         | Works in terminal, IDE, and existing development environments; no need to switch editors or learn new interfaces            | Maintain existing work habits, low migration cost              | Deep integration with familiar tools                                      |
-| Transparency and Control       | Every decision is visible and reviewable; complete oversight of code changes; native diff viewing and approval workflows    | Reduce risk, enhance controllability                           | Audit-friendly, traceable                                                 |
-| Model Flexibility              | Not locked to a single AI provider; choose the best model per task; consistent organizational behavior and memory           | Optimal choice between performance and cost                    | Supports multi-model routing                                              |
-| Next Steps & Resources         | Quickstart, Common Use Cases, IDE Integration, Configuration, AGENTS.md                                                     | Facilitates adoption and practice                              | See "Next steps/Additional resources" on the page                         |
+| Bắt đầu nhanh với CLI           | Cài đặt trong 30 giây; khởi chạy phiên tương tác droid trong thư mục dự án; hỗ trợ macOS/Linux và Windows             | Tích hợp nhanh vào dự án hiện tại, không cần công cụ mới | Cài đặt Windows: `irm https://app.factory.ai/cli/windows \| iex`; Khởi chạy: `droid` |
+| Phát triển tính năng toàn diện | Tự động hóa quy trình đầy đủ từ lập kế hoạch đến triển khai đến kiểm thử; quy trình xem xét minh bạch                              | Tăng tốc giao hàng, duy trì sự giám sát của con người                  | Xem và phê duyệt diff bản địa (xem "Minh bạch và Kiểm soát") |
+| Hiểu sâu codebase    | Tích hợp kiến thức chia sẻ tổ chức từ codebase, tài liệu, theo dõi sự cố; nhận thức ngữ cảnh, cải thiệp theo thời gian | Đưa ra gợi ý và thay đổi chính xác hơn                          | Liên tục tận dụng kiến thức qua các kho và tài liệu        |
+| Tích hợp hệ thống kỹ thuật | Tích hợp nguyên sinh với Jira, Notion, Slack và các công cụ khác; công việc phát triển luôn đồng bộ với quy trình đội ngũ       | Giảm chuyển đổi công cụ và các silo thông tin                    | "etc." chỉ thị thêm các tích hợp                                        |
+| Tự động hóa cấp sản xuất    | Quy trình có thể tái sử dụng cục bộ và trong CI/CD; bảo mật và tuân thủ cấp doanh nghiệp được tích hợp sẵn                                  | Tính nhất quán và khả năng kiểm toán                                   | Thích ứng với pipeline và môi trường doanh nghiệp                           |
+| Năng lực doanh nghiệp        | Tùy chọn triển khai riêng tư, tuân thủ SOC-2, môi trường cách ly mạng (air-gapped)                                                       | Đáp ứng yêu cầu bảo mật và tuân thủ                     | Ưu tiên bảo mật và chất lượng                                          |
+| Nâng cao công cụ hiện có         | Hoạt động trong terminal, IDE và môi trường phát triển hiện có; không cần chuyển trình soạn thảo hoặc học giao diện mới            | Duy trì thói quen làm việc hiện có, chi phí di chuyển thấp              | Tích hợp sâu với các công cụ quen thuộc                                      |
+| Minh bạch và Kiểm soát       | Mọi quyết định đều hiển thị và có thể xem xét; giám sát hoàn toàn các thay đổi mã; xem và phê duyệt diff bản địa    | Giảm rủi ro, tăng khả năng kiểm soát                   | Thân thiện kiểm toán, có thể truy xuất                                                 |
+| Linh hoạt mô hình              | Không bị khóa vào một nhà cung cấp AI duy nhất; chọn mô hình tốt nhất cho từng tác vụ; hành vi và bộ nhớ tổ chức nhất quán           | Lựa chọn tối ưu giữa hiệu năng và chi phí                    | Hỗ trợ định tuyến đa mô hình                                              |
+| Bước tiếp theo & Tài nguyên         | Quickstart, Các trường hợp sử dụng phổ biến, Tích hợp IDE, Cấu hình, AGENTS.md                                                     | Hỗ trợ việc áp dụng và thực hành                              | Xem "Bước tiếp theo/Tài nguyên bổ sung" trên trang                         |
 
-## AI Model Configuration Method
+## Phương thức cấu hình mô hình AI
 
-### Windows Graphical Guide
+### Hướng dẫn đồ họa Windows
 
-#### 1. Open Terminal
+#### 1. Mở Terminal
 
 ![windows_open_terminal](/apps-assets/factory_droid_cli/windows_open_terminal.webp)
 
-#### 2. Install Factory Droid CLI
+#### 2. Cài đặt Factory Droid CLI
 
-Official one-click installation command:
+Lệnh cài đặt một cú nhấp chính thức:
 
-> **One-click Installation Command**
+> **Lệnh cài đặt một cú nhấp**
 >
 > ```powershell
 >   irm https://app.factory.ai/cli/windows | iex
@@ -46,66 +46,66 @@ Official one-click installation command:
 
 ![windows-install](/apps-assets/factory_droid_cli/windows_install_droid.webp)
 
-#### 3. Modify Configuration File
+#### 3. Sửa đổi tệp cấu hình
 
-Droid CLI requires modifying the configuration file to use third-party APIs.
+Droid CLI yêu cầu sửa đổi tệp cấu hình để sử dụng API bên thứ ba.
 
 ![windows-configure.webp](/apps-assets/factory_droid_cli/factory_cli_setup_windows.webp)
 
-> **Modify Environment Variables**
+> **Sửa đổi biến môi trường**
 >
 > ```powershell
 >   iex (irm 'https://raw.githubusercontent.com/Uter.ai/uter-docs/refs/heads/main/helper/factory-cli-setup.ps1')
 >   ```
 
-#### 4. Start Using Droid CLI
+#### 4. Bắt đầu sử dụng Droid CLI
 
-Now you can start using Droid CLI!
+Bây giờ bạn có thể bắt đầu sử dụng Droid CLI!
 
-> **Launch Droid CLI**
+> **Khởi chạy Droid CLI**
 >
-> Launch Droid CLI directly:
+> Khởi chạy Droid CLI trực tiếp:
 >
 >   ```bash
 >   droid
 >   ```
 >
->   Use in a specific project:
+>   Sử dụng trong một dự án cụ thể:
 >
 >   ```bash
->   # Navigate to your project directory
+>   # Điều hướng đến thư mục dự án của bạn
 >   cd C:\path\to\your\project
 >
->   # Launch Droid CLI
+>   # Khởi chạy Droid CLI
 >   droid
 >   ```
 >
->   Press Enter to launch Droid CLI.
+>   Nhấn Enter để khởi chạy Droid CLI.
 
-Droid CLI requires users to log in to an official account (free) before use.
+Droid CLI yêu cầu người dùng đăng nhập vào tài khoản chính thức (miễn phí) trước khi sử dụng.
 
-#### 5. Windows Common Issues Solution
+#### 5. Giải pháp vấn đề thường gặp trên Windows
 
-> This is usually a permission issue. Try the following solutions:
+> Đây thường là vấn đề quyền. Hãy thử các giải pháp sau:
 >
->   - Run PowerShell as an administrator
->   - Or configure `npm` to use the user directory: `npm config set prefix %APPDATA%\npm`
+>   - Chạy PowerShell với quyền quản trị
+>   - Hoặc cấu hình `npm` sử dụng thư mục người dùng: `npm config set prefix %APPDATA%\npm`
 
-> **PowerShell Execution Policy Error**
+> **Lỗi chính sách thực thi PowerShell**
 >
-> If you encounter an execution policy restriction, run:
+> Nếu gặp hạn chế chính sách thực thi, hãy chạy:
 >
 >   ```powershell
 >   Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 >   ```
 
-### macOS/Linux Graphical Guide
+### Hướng dẫn đồ họa macOS/Linux
 
-#### 1. Install Droid CLI
+#### 1. Cài đặt Droid CLI
 
-> **Install Droid CLI**
+> **Cài đặt Droid CLI**
 >
-> Open your terminal and run the following command:
+> Mở terminal và chạy lệnh sau:
 >
 >   ```bash
 >   curl -fsSL https://app.factory.ai/cli | sh
@@ -115,22 +115,22 @@ Droid CLI requires users to log in to an official account (free) before use.
 
 ![macos-img-02.webp](/apps-assets/factory_droid_cli/macos_install_droid_2.webp)
 
-Follow the installation prompts to modify environment variables (copy the installation prompt code directly):
+Làm theo hướng dẫn cài đặt để sửa đổi biến môi trường (sao chép mã gợi ý cài đặt trực tiếp):
 
-For Linux, choose `~/.bashrc` or `~/.zshrc` as appropriate.
+Với Linux, chọn `~/.bashrc` hoặc `~/.zshrc` tùy thích hợp.
 
-> **Droid CLI Environment Variables (Example Only)**
+> **Biến môi trường Droid CLI (chỉ ví dụ)**
 >
 > ```bash
 >   echo 'export PATH=/Users/modify_here/.local/bin:$PATH' >> ~/.zshrc
 >   source ~/.zshrc
 >   ```
 
-#### 2. Modify Configuration File
+#### 2. Sửa đổi tệp cấu hình
 
-Droid CLI requires modifying the configuration file to use third-party APIs.
+Droid CLI yêu cầu sửa đổi tệp cấu hình để sử dụng API bên thứ ba.
 
-> **One-click Configuration File Modification**
+> **Sửa đổi tệp cấu hình một cú nhấp**
 >
 > ```bash
 >   curl -fsSL https://raw.githubusercontent.com/Uter.ai/uter-docs/refs/heads/main/helper/factory-cli-setup.sh | bash
@@ -138,28 +138,28 @@ Droid CLI requires modifying the configuration file to use third-party APIs.
 
 ![macos-img-03.webp](/apps-assets/factory_droid_cli/macos_configure.webp)
 
-#### 3. Start Using Droid CLI
+#### 3. Bắt đầu sử dụng Droid CLI
 
-Now you can start using Droid CLI!
+Bây giờ bạn có thể bắt đầu sử dụng Droid CLI!
 
-> **Launch Droid CLI**
+> **Khởi chạy Droid CLI**
 >
-> Launch Droid CLI directly:
+> Khởi chạy Droid CLI trực tiếp:
 >
 >   ```bash
 >   droid
 >   ```
 >
->   Use in a specific project:
+>   Sử dụng trong một dự án cụ thể:
 >
 >   ```bash
->   # Navigate to your project directory
+>   # Điều hướng đến thư mục dự án của bạn
 >   cd /path/to/your/project
 >
->   # Launch Droid CLI
+>   # Khởi chạy Droid CLI
 >   droid
 >   ```
 >
->   Press Enter to launch Droid CLI.
+>   Nhấn Enter để khởi chạy Droid CLI.
 
-> Droid CLI requires users to log in to an official account (free) before use.
+> Droid CLI yêu cầu người dùng đăng nhập vào tài khoản chính thức (miễn phí) trước khi sử dụng.

@@ -1,94 +1,94 @@
-# AQBot - Local-First Desktop AI Workbench
+# AQBot - Bàn làm việc AI máy tính để bàn ưu tiên cục bộ
 
-> **Chat Settings Options**
+> **Tùy chọn cài đặt trò chuyện**
 >
-> In the Uter console, go to System Settings -> Chat Settings and add the
->   following shortcut option. It lets users fill AQBot from the token
->   management page with one click:
+> Trong bảng điều khiển Uter, đi tới System Settings -> Chat Settings và thêm
+>   tùy chọn lối tắt sau. Nó cho phép người dùng điền AQBot từ trang quản lý
+>   token chỉ với một cú nhấp:
 
     ```json
     { "AQBot": "aqbot://providers?name=New%20API&baseurl={address}&apikey={key}&type=openai" }
     ```
 
-> AQBot is a local-first, open-source desktop AI workbench (AGPL-3.0). It
->   unifies multi-provider chat, ACP agents, knowledge bases, MCP tools, and a
->   local API gateway, while keeping app data and user files on the machine.
+> AQBot là một bàn làm việc AI máy tính để bàn ưu tiên cục bộ, mã nguồn mở (AGPL-3.0). Nó
+>   hợp nhất trò chuyện đa nhà cung cấp, tác nhân ACP, cơ sở kiến thức, công cụ MCP và một
+>   cổng API cục bộ, đồng thời giữ dữ liệu ứng dụng và tệp người dùng trên máy.
 
-- Official Website: [https://app.aqbot.top](https://app.aqbot.top)
+- Trang chủ: [https://app.aqbot.top](https://app.aqbot.top)
 - GitHub: [https://github.com/AQBot-Desktop/AQBot](https://github.com/AQBot-Desktop/AQBot)
-- Download: [GitHub Releases](https://github.com/AQBot-Desktop/AQBot/releases)
-- Official Docs: [Getting Started](https://app.aqbot.top/guide/getting-started)
+- Tải xuống: [GitHub Releases](https://github.com/AQBot-Desktop/AQBot/releases)
+- Tài liệu chính thức: [Bắt đầu](https://app.aqbot.top/guide/getting-started)
 
-## Core Features
+## Tính năng cốt lõi
 
-- **Multi-provider chat** — Connect OpenAI, Claude, Gemini, DeepSeek, Qwen, and any OpenAI-compatible endpoint
-- **Provider import** — Import a provider from an `aqbot://` link after confirmation
-- **Model management** — Sync remote model lists, capability tags, and latency tests
-- **Agent** — In-chat Agent (uses your configured provider APIs) plus an ACP Agent workbench
-- **Local data** — App state lives in `~/.aqbot/`; user files live in `~/Documents/aqbot/`
+- **Trò chuyện đa nhà cung cấp** — Kết nối OpenAI, Claude, Gemini, DeepSeek, Qwen và bất kỳ điểm cuối tương thích OpenAI nào
+- **Nhập nhà cung cấp** — Nhập một nhà cung cấp từ liên kết `aqbot://` sau khi xác nhận
+- **Quản lý mô hình** — Đồng bộ danh sách mô hình từ xa, thẻ năng lực và kiểm tra độ trễ
+- **Tác nhân** — Tác nhân Agent trong trò chuyện (sử dụng API nhà cung cấp đã cấu hình của bạn) cùng với bàn làm việc ACP Agent
+- **Dữ liệu cục bộ** — Trạng thái ứng dụng nằm trong `~/.aqbot/`; tệp người dùng nằm trong `~/Documents/aqbot/`
 
-See the [AQBot website](https://app.aqbot.top) for the full feature set. This page covers Uter integration only.
+Xem [trang web AQBot](https://app.aqbot.top) để biết bộ tính năng đầy đủ. Trang này chỉ đề cập đến tích hợp Uter.
 
-## Uter Integration Method
+## Phương thức tích hợp Uter
 
-Please use your self-deployed Uter, or ensure that the service provider has a Uter service with legal upstream authorization and compliance obligations. Do not integrate API addresses or keys from unknown sources into a production environment.
+Vui lòng sử dụng Uter tự triển khai của bạn, hoặc đảm bảo rằng nhà cung cấp dịch vụ có dịch vụ Uter với ủy quyền upstream hợp pháp và các nghĩa vụ tuân thủ. Không tích hợp địa chỉ API hoặc khóa từ nguồn không xác định vào môi trường sản xuất.
 
-### Method 1: One-Click Import (Recommended)
+### Phương pháp 1: Nhập một cú nhấp (Khuyên dùng)
 
-1. Install AQBot and open it at least once so the system registers the `aqbot://` protocol
-2. In the Uter console, add the JSON above under **System Settings → Chat Settings**
-3. Open **Token Management** and choose **AQBot** from the token actions
-4. The browser launches AQBot. Confirm the provider name, API host, type `openai`, and key prefix
-5. After confirmation, AQBot opens **Settings → Provider Management**. It reuses a provider with the same API host + type, or creates a new one
-6. Open that provider, click **Sync Models**, then return to chat and select a model
+1. Cài đặt AQBot và mở ít nhất một lần để hệ thống đăng ký giao thức `aqbot://`
+2. Trong bảng điều khiển Uter, thêm JSON ở trên vào **System Settings → Chat Settings**
+3. Mở **Token Management** và chọn **AQBot** từ các thao tác token
+4. Trình duyệt khởi chạy AQBot. Xác nhận tên nhà cung cấp, máy chủ API, kiểu `openai` và tiền tố khóa
+5. Sau khi xác nhận, AQBot mở **Settings → Provider Management**. Nó sẽ sử dụng lại một nhà cung cấp có cùng máy chủ API + kiểu, hoặc tạo một nhà cung cấp mới
+6. Mở nhà cung cấp đó, nhấn **Sync Models**, sau đó quay lại trò chuyện và chọn một mô hình
 
-`{address}` is the Uter site root (for example `https://your-uter.example`), with no query string. For the OpenAI type, AQBot appends `/v1` automatically. Import does not validate the key or sync models.
+`{address}` là gốc trang Uter (ví dụ `https://your-uter.example`), không có chuỗi truy vấn. Với kiểu OpenAI, AQBot tự động thêm `/v1`. Việc nhập không xác thực khóa hay đồng bộ mô hình.
 
-### Method 2: Manual Configuration
+### Phương pháp 2: Cấu hình thủ công
 
-1. Copy the API Key from Uter Token Management
-2. In AQBot, go to **Settings → Provider Management → Add Provider**
-3. Fill in:
+1. Sao chép API Key từ Token Management của Uter
+2. Trong AQBot, đi tới **Settings → Provider Management → Add Provider**
+3. Điền vào:
 
-| Field | Value |
+| Trường | Giá trị |
 | --- | --- |
-| Provider Name | For example `Uter` |
-| Provider Type | `OpenAI` (recommended) |
-| API Host | Uter site address, such as `https://your-uter.example` |
-| API Key | Your Uter token |
+| Provider Name | Ví dụ `Uter` |
+| Provider Type | `OpenAI` (khuyên dùng) |
+| API Host | Địa chỉ trang Uter, chẳng hạn `https://your-uter.example` |
+| API Key | Token Uter của bạn |
 
-4. Click **Sync Models** to pull the models currently exposed by Uter
-5. Return to chat and select a synced model
+4. Nhấn **Sync Models** để kéo các mô hình hiện đang được Uter hiển thị
+5. Quay lại trò chuyện và chọn một mô hình đã đồng bộ
 
-![Switch model](/apps-assets/aqbot/switch-model.webp)
+![Chuyển đổi mô hình](/apps-assets/aqbot/switch-model.webp)
 
-### API Host Notes
+### Lưu ý về máy chủ API
 
-- Prefer the site root and let AQBot append `/v1`
-- If the host already ends with `/v1`, AQBot will not append another one
-- Add a trailing `!` only when you must disable automatic completion
+- Nên dùng gốc trang và để AQBot tự thêm `/v1`
+- Nếu máy chủ đã kết thúc bằng `/v1`, AQBot sẽ không thêm thêm một cái nữa
+- Chỉ thêm dấu `!` ở cuối khi bạn phải tắt tính năng tự động hoàn thành
 
-### Optional: Native Protocols
+### Tùy chọn: Giao thức gốc
 
-If Uter also exposes Claude or Gemini native APIs, add another provider:
+Nếu Uter cũng hiển thị API gốc của Claude hoặc Gemini, hãy thêm một nhà cung cấp khác:
 
-| Use | Provider Type | API Host |
+| Mục đích | Provider Type | API Host |
 | --- | --- | --- |
-| Chat Completions (default) | OpenAI | Site root |
-| Claude native `/v1/messages` | Anthropic | Site root |
-| Gemini native | Gemini | Site root |
+| Chat Completions (mặc định) | OpenAI | Gốc trang |
+| Claude gốc `/v1/messages` | Anthropic | Gốc trang |
+| Gemini gốc | Gemini | Gốc trang |
 
-Change `type` in the one-click template to `anthropic` or `gemini`. The same API key can back multiple providers.
+Đổi `type` trong mẫu một cú nhấp thành `anthropic` hoặc `gemini`. Cùng một API key có thể hỗ trợ nhiều nhà cung cấp.
 
-## FAQ
+## Câu hỏi thường gặp
 
-- **Clicking AQBot does not open the app**: Install and launch the desktop app first. Opening only the website or a Vite dev server does not register `aqbot://`
-- **Import succeeds but chat fails**: Click **Sync Models**, and make sure the model ID matches the name Uter actually exposes
-- **macOS says the app is damaged or the developer cannot be verified**: Follow the [AQBot README](https://github.com/AQBot-Desktop/AQBot) and [Getting Started](https://app.aqbot.top/guide/getting-started) to allow this app. You do not need to turn Gatekeeper off
-- **The one-click link contains an API key**: Generate it only on the signed-in token page. Do not post URLs that embed a real key
+- **Nhấn AQBot không mở ứng dụng**: Cài đặt và khởi chạy ứng dụng máy tính để bàn trước. Chỉ mở trang web hoặc máy chủ phát triển Vite không đăng ký được `aqbot://`
+- **Nhập thành công nhưng trò chuyện thất bại**: Nhấn **Sync Models**, và đảm bảo ID mô hình khớp với tên Uter thực sự hiển thị
+- **macOS báo ứng dụng bị hỏng hoặc không thể xác minh nhà phát triển**: Làm theo [README AQBot](https://github.com/AQBot-Desktop/AQBot) và [Bắt đầu](https://app.aqbot.top/guide/getting-started) để cho phép ứng dụng này. Bạn không cần tắt Gatekeeper
+- **Liên kết một cú nhấp chứa API key**: Chỉ tạo nó trên trang token đã đăng nhập. Không đăng tải URL có chứa khóa thực
 
-## Related Links
+## Liên kết liên quan
 
 - [AQBot GitHub](https://github.com/AQBot-Desktop/AQBot)
-- [Configure Providers (official docs)](https://app.aqbot.top/guide/providers)
-- [Download](https://github.com/AQBot-Desktop/AQBot/releases)
+- [Cấu hình nhà cung cấp (tài liệu chính thức)](https://app.aqbot.top/guide/providers)
+- [Tải xuống](https://github.com/AQBot-Desktop/AQBot/releases)

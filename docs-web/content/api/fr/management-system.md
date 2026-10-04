@@ -1,164 +1,164 @@
 # system
 
-## Get About Information
+## Récupérer les informations « À propos »
 
-🔓 无需鉴权
+🔓 Aucune authentification requise
 
 `GET` `/api/about`
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-## Get Home Page Content
+## Récupérer le contenu de la page d'accueil
 
-🔓 无需鉴权
+🔓 Aucune authentification requise
 
 `GET` `/api/home_page_content`
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-## Get Model List
+## Récupérer la liste des modèles
 
-🔐 需要登录（User权限）
+🔐 Nécessite une connexion (permission User)
 
 `GET` `/api/models`
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-## Get Announcements
+## Récupérer les annonces
 
-🔓 无需鉴权
+🔓 Aucune authentification requise
 
 `GET` `/api/notice`
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-## Get Pricing Information
+## Récupérer les informations de tarification
 
-🔓 无需鉴权（可选登录）
+🔓 Aucune authentification requise (connexion optionnelle)
 
 `GET` `/api/pricing`
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-## Get Privacy Policy
+## Récupérer la politique de confidentialité
 
-🔓 无需鉴权
+🔓 Aucune authentification requise
 
 `GET` `/api/privacy-policy`
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-## Get Ratio Configuration
+## Récupérer la configuration des ratios
 
-🔓 无需鉴权
+🔓 Aucune authentification requise
 
 `GET` `/api/ratio_config`
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-## Get Initialization Status
+## Récupérer l'état d'initialisation
 
-🔓 无需鉴权
+🔓 Aucune authentification requise
 
 `GET` `/api/setup`
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-## Initialize System
+## Initialiser le système
 
-🔓 无需鉴权
+🔓 Aucune authentification requise
 
 `POST` `/api/setup`
 
-### 请求体（`application/json`）
+### Corps de la requête (`application/json`)
 
-| 字段 | 类型 | 必填 | 说明 |
+| Champ | Type | Requis | Description |
 |---|---|---|---|
-| `username` | string | 否 | — |
-| `password` | string | 否 | — |
+| `username` | string | Non | — |
+| `password` | string | Non | — |
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-## Get System Status
+## Récupérer l'état du système
 
-🔓 无需鉴权
+🔓 Aucune authentification requise
 
 `GET` `/api/status`
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-## Test System Status
+## Tester l'état du système
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 Nécessite des privilèges d'administrateur (Admin)
 
 `GET` `/api/status/test`
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-## Get Uptime Kuma Status
+## Récupérer l'état Uptime Kuma
 
-🔓 无需鉴权
+🔓 Aucune authentification requise
 
 `GET` `/api/uptime/status`
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-## Get User Agreement
+## Récupérer le contrat d'utilisation
 
-🔓 无需鉴权
+🔓 Aucune authentification requise
 
 `GET` `/api/user-agreement`
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |

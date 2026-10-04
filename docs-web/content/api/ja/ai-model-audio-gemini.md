@@ -1,47 +1,47 @@
 # Native Gemini Format
 
-The native Gemini audio generation endpoint. Synthesize speech directly with models such as `gemini-2.5-flash-preview-tts`, returning audio in PCM / WAV and other formats.
+ネイティブ Gemini 音声生成エンドポイントです。 `gemini-2.5-flash-preview-tts` などのモデルで音声を直接合成し、PCM / WAV などの形式で音声を返します。
 
-Unlike the "Native OpenAI Format", this endpoint follows Google Gemini's `v1beta` protocol: you submit content to the `generateContent` endpoint and control the output modality and voice via `generationConfig`. Uter unifies access to the Gemini family of models — keys, quotas and billing all use the platform account system.
+「ネイティブ OpenAI 形式」とは異なり、このエンドポイントは Google Gemini の `v1beta` プロトコルに準拠します。 `generateContent` エンドポイントにコンテンツを送信し、出力モダリティと音声は `generationConfig` で制御します。Uter は Gemini ファミリーのモデルへのアクセスを統合しており、キー、クォータ、課金はすべてプラットフォームのアカウントシステムを使用します。
 
-## Authorization
+## 認証
 
-Authenticate with a Bearer token.
+Bearer トークンで認証します。
 
 `Authorization: Bearer <token>`
 
-| Parameter | In | Description |
+| パラメータ | 場所 | 説明 |
 |---|---|---|
-| `Authorization` | header | Bearer token, format `Bearer sk-xxxxxx` |
+| `Authorization` | header | Bearer トークン。形式は `Bearer sk-xxxxxx` |
 
-## Path Parameters
+## パスパラメータ
 
-| Parameter | Type | Required | Description |
+| パラメータ | 型 | 必須 | 説明 |
 |---|---|---|---|
-| `model` | string | yes | Model name, e.g. `gemini-2.5-flash-preview-tts` |
+| `model` | string | 必須 | モデル名。例: `gemini-2.5-flash-preview-tts` |
 
-## Request Body
+## リクエストボディ
 
 `Content-Type: application/json`
 
-| Field | Type | Required | Description |
+| フィールド | 型 | 必須 | 説明 |
 |---|---|---|---|
-| `contents` | array&lt;object&gt; | yes | Conversation content; each entry is one input turn |
-| `generationConfig` | object | yes | Generation configuration controlling output modality and voice |
+| `contents` | array&lt;object&gt; | 必須 | 会話コンテンツ。各要素は1つの入力ターン |
+| `generationConfig` | object | 必須 | 出力モダリティと音声を制御する生成設定 |
 
-### generationConfig fields
+### generationConfig フィールド
 
-| Field | Type | Required | Description |
+| フィールド | 型 | 必須 | 説明 |
 |---|---|---|---|
-| `responseModalities` | array&lt;string&gt; | no | Output modalities; audio use cases must include `AUDIO` |
-| `speechConfig` | object | no | Speech configuration |
-| `speechConfig.voiceConfig.prebuiltVoiceConfig.voiceName` | string | no | Prebuilt voice name, e.g. `Kore` |
+| `responseModalities` | array&lt;string&gt; | 任意 | 出力モダリティ。音声用途では `AUDIO` を含める必要があります |
+| `speechConfig` | object | 任意 | 音声設定 |
+| `speechConfig.voiceConfig.prebuiltVoiceConfig.voiceName` | string | 任意 | 組み込み音声名。例: `Kore` |
 
-## Response
+## レスポンス
 
-`200` the request succeeded and JSON is returned. The generated audio is inlined in `candidates[].content.parts[]`.
+`200` リクエストが成功し、JSON が返されます。生成された音声は `candidates[].content.parts[]` にインラインで格納されます。
 
-### Request example
+### リクエスト例
 
 ```bash
 curl -X POST "https://uter.ai/v1beta/models/gemini-2.5-flash-preview-tts:generateContent" \
@@ -68,7 +68,7 @@ curl -X POST "https://uter.ai/v1beta/models/gemini-2.5-flash-preview-tts:generat
   }'
 ```
 
-### Response example
+### レスポンス例
 
 ```json
 {
@@ -92,4 +92,4 @@ curl -X POST "https://uter.ai/v1beta/models/gemini-2.5-flash-preview-tts:generat
 }
 ```
 
-> Tip: the audio is inlined as base64 in `inlineData.data`; decode it according to `inlineData.mimeType` to play. Billing is based on input tokens — the synthesized audio is not billed as extra tokens.
+> ヒント: 音声は `inlineData.data` に base64 でインライン格納されています。 `inlineData.mimeType` に従ってデコードして再生してください。課金は入力トークンに基づきます — 合成された音声は追加トークンとして課金されません。

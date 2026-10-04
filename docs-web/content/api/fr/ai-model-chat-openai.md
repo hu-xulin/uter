@@ -1,59 +1,59 @@
 # openai
 
-## ChatCompletions Format
+## Format ChatCompletions
 
-根据对话历史创建模型响应。支持流式和非流式响应。
+Crée une réponse de modèle basée sur l'historique de conversation. Prend en charge les réponses en streaming et non-streaming.
 
-兼容 OpenAI Chat Completions API。
+Compatible avec l'API OpenAI Chat Completions.
 
 `POST` `/v1/chat/completions`
 
-### 请求体（`application/json`）
+### Corps de la requête (`application/json`)
 
-| 字段 | 类型 | 必填 | 说明 |
+| Champ | Type | Requis | Description |
 |---|---|---|---|
-| `model` | string | 是 | 模型 ID |
-| `messages` | array&lt;object&gt; | 是 | 对话消息列表 |
-| `temperature` | number | 否 | 采样温度 |
-| `top_p` | number | 否 | 核采样参数 |
-| `n` | integer | 否 | 生成数量 |
-| `stream` | boolean | 否 | 是否流式响应 |
-| `stream_options.include_usage` | boolean | 否 | — |
-| `max_tokens` | integer | 否 | 最大生成 Token 数 |
-| `max_completion_tokens` | integer | 否 | 最大补全 Token 数 |
-| `presence_penalty` | number | 否 | — |
-| `frequency_penalty` | number | 否 | — |
-| `logit_bias` | object | 否 | — |
-| `user` | string | 否 | — |
-| `tools` | array&lt;object&gt; | 否 | — |
-| `response_format.type` | enum（`text`, `json_object`, `json_schema`） | 否 | — |
-| `response_format.json_schema` | object | 否 | JSON Schema 定义 |
-| `seed` | integer | 否 | — |
-| `reasoning_effort` | enum（`low`, `medium`, `high`） | 否 | 推理强度 (用于支持推理的模型) |
-| `modalities` | array&lt;enum（`text`, `audio`）&gt; | 否 | — |
-| `audio.voice` | string | 否 | — |
-| `audio.format` | string | 否 | — |
+| `model` | string | Oui | ID du modèle |
+| `messages` | array&lt;object&gt; | Oui | Liste des messages de conversation |
+| `temperature` | number | Non | Température d'échantillonnage |
+| `top_p` | number | Non | Paramètre d'échantillonnage par noyau |
+| `n` | integer | Non | Nombre de générations |
+| `stream` | boolean | Non | Réponse en streaming ou non |
+| `stream_options.include_usage` | boolean | Non | — |
+| `max_tokens` | integer | Non | Nombre maximum de tokens générés |
+| `max_completion_tokens` | integer | Non | Nombre maximum de tokens de complétion |
+| `presence_penalty` | number | Non | — |
+| `frequency_penalty` | number | Non | — |
+| `logit_bias` | object | Non | — |
+| `user` | string | Non | — |
+| `tools` | array&lt;object&gt; | Non | — |
+| `response_format.type` | enum（`text`, `json_object`, `json_schema`） | Non | — |
+| `response_format.json_schema` | object | Non | Définition JSON Schema |
+| `seed` | integer | Non | — |
+| `reasoning_effort` | enum（`low`, `medium`, `high`） | Non | Intensité de raisonnement (pour les modèles prenant en charge le raisonnement) |
+| `modalities` | array&lt;enum（`text`, `audio`）&gt; | Non | — |
+| `audio.voice` | string | Non | — |
+| `audio.format` | string | Non | — |
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功创建响应 |
-| `400` | 请求参数错误 |
-| `429` | 请求频率限制 |
+| `200` | Réponse créée avec succès |
+| `400` | Erreur de paramètres de requête |
+| `429` | Limite de fréquence de requête |
 
-#### `200` 响应字段
+#### Champs de la réponse `200`
 
-| 字段 | 类型 | 说明 |
+| Champ | Type | Description |
 |---|---|---|
 | `id` | string | — |
 | `object` | string | — |
 | `created` | integer | — |
 | `model` | string | — |
 | `choices` | array&lt;object&gt; | — |
-| `usage.prompt_tokens` | integer | 提示词 Token 数 |
-| `usage.completion_tokens` | integer | 补全 Token 数 |
-| `usage.total_tokens` | integer | 总 Token 数 |
+| `usage.prompt_tokens` | integer | Nombre de tokens d'invite |
+| `usage.completion_tokens` | integer | Nombre de tokens de complétion |
+| `usage.total_tokens` | integer | Nombre total de tokens |
 | `usage.prompt_tokens_details.cached_tokens` | integer | — |
 | `usage.prompt_tokens_details.text_tokens` | integer | — |
 | `usage.prompt_tokens_details.audio_tokens` | integer | — |
@@ -63,56 +63,56 @@
 | `usage.completion_tokens_details.reasoning_tokens` | integer | — |
 | `system_fingerprint` | string | — |
 
-#### `400` 响应字段
+#### Champs de la réponse `400`
 
-| 字段 | 类型 | 说明 |
+| Champ | Type | Description |
 |---|---|---|
-| `error.message` | string | 错误信息 |
-| `error.type` | string | 错误类型 |
-| `error.param` | string | 相关参数 |
-| `error.code` | string | 错误代码 |
+| `error.message` | string | Message d'erreur |
+| `error.type` | string | Type d'erreur |
+| `error.param` | string | Paramètre concerné |
+| `error.code` | string | Code d'erreur |
 
-#### `429` 响应字段
+#### Champs de la réponse `429`
 
-| 字段 | 类型 | 说明 |
+| Champ | Type | Description |
 |---|---|---|
-| `error.message` | string | 错误信息 |
-| `error.type` | string | 错误类型 |
-| `error.param` | string | 相关参数 |
-| `error.code` | string | 错误代码 |
+| `error.message` | string | Message d'erreur |
+| `error.type` | string | Type d'erreur |
+| `error.param` | string | Paramètre concerné |
+| `error.code` | string | Code d'erreur |
 
-## Responses Format
+## Format Responses
 
-OpenAI Responses API，用于创建模型响应。
-支持多轮对话、工具调用、推理等功能。
+API OpenAI Responses, utilisée pour créer des réponses de modèle.
+Prend en charge le dialogue multi-tours, l'appel d'outils, le raisonnement, etc.
 
 `POST` `/v1/responses`
 
-### 请求体（`application/json`）
+### Corps de la requête (`application/json`)
 
-| 字段 | 类型 | 必填 | 说明 |
+| Champ | Type | Requis | Description |
 |---|---|---|---|
-| `model` | string | 是 | — |
-| `instructions` | string | 否 | — |
-| `max_output_tokens` | integer | 否 | — |
-| `temperature` | number | 否 | — |
-| `top_p` | number | 否 | — |
-| `stream` | boolean | 否 | — |
-| `tools` | array&lt;object&gt; | 否 | — |
-| `reasoning.effort` | enum（`low`, `medium`, `high`） | 否 | — |
-| `reasoning.summary` | string | 否 | — |
-| `previous_response_id` | string | 否 | — |
-| `truncation` | enum（`auto`, `disabled`） | 否 | — |
+| `model` | string | Oui | — |
+| `instructions` | string | Non | — |
+| `max_output_tokens` | integer | Non | — |
+| `temperature` | number | Non | — |
+| `top_p` | number | Non | — |
+| `stream` | boolean | Non | — |
+| `tools` | array&lt;object&gt; | Non | — |
+| `reasoning.effort` | enum（`low`, `medium`, `high`） | Non | — |
+| `reasoning.summary` | string | Non | — |
+| `previous_response_id` | string | Non | — |
+| `truncation` | enum（`auto`, `disabled`） | Non | — |
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功创建响应 |
+| `200` | Réponse créée avec succès |
 
-#### `200` 响应字段
+#### Champs de la réponse `200`
 
-| 字段 | 类型 | 说明 |
+| Champ | Type | Description |
 |---|---|---|
 | `id` | string | — |
 | `object` | string | — |
@@ -120,9 +120,9 @@ OpenAI Responses API，用于创建模型响应。
 | `status` | enum（`completed`, `failed`, `in_progress`, `incomplete`） | — |
 | `model` | string | — |
 | `output` | array&lt;object&gt; | — |
-| `usage.prompt_tokens` | integer | 提示词 Token 数 |
-| `usage.completion_tokens` | integer | 补全 Token 数 |
-| `usage.total_tokens` | integer | 总 Token 数 |
+| `usage.prompt_tokens` | integer | Nombre de tokens d'invite |
+| `usage.completion_tokens` | integer | Nombre de tokens de complétion |
+| `usage.total_tokens` | integer | Nombre total de tokens |
 | `usage.prompt_tokens_details.cached_tokens` | integer | — |
 | `usage.prompt_tokens_details.text_tokens` | integer | — |
 | `usage.prompt_tokens_details.audio_tokens` | integer | — |

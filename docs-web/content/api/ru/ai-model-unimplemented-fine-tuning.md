@@ -1,124 +1,124 @@
 # fine-tuning
 
-## Cancel Fine-tuning Task (Unimplemented)
+## Отмена задачи дообучения (не реализовано)
 
-此接口尚未实现
+Этот интерфейс ещё не реализован.
 
 `POST` `/v1/fine-tunes/{fine_tune_id}/cancel`
 
-### 请求参数
+### Параметры запроса
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| Параметр | Расположение | Тип | Обязательно | Описание |
 |---|---|---|---|---|
-| `fine_tune_id` | path | string | 是 | — |
+| `fine_tune_id` | path | string | да | — |
 
-### 响应
+### Ответ
 
-| 状态码 | 说明 |
+| Код статуса | Описание |
 |---|---|
-| `501` | 未实现 |
+| `501` | Не реализовано |
 
-#### `501` 响应字段
+#### Поля ответа `501`
 
-| 字段 | 类型 | 说明 |
+| Поле | Тип | Описание |
 |---|---|---|
-| `error.message` | string | 错误信息 |
-| `error.type` | string | 错误类型 |
-| `error.param` | string | 相关参数 |
-| `error.code` | string | 错误代码 |
+| `error.message` | string | Текст ошибки |
+| `error.type` | string | Тип ошибки |
+| `error.param` | string | Связанный параметр |
+| `error.code` | string | Код ошибки |
 
-## Create Fine-tuning Task (Unimplemented)
+## Создание задачи дообучения (не реализовано)
 
-此接口尚未实现
+Этот интерфейс ещё не реализован.
 
 `POST` `/v1/fine-tunes`
 
-### 响应
+### Ответ
 
-| 状态码 | 说明 |
+| Код статуса | Описание |
 |---|---|
-| `501` | 未实现 |
+| `501` | Не реализовано |
 
-#### `501` 响应字段
+#### Поля ответа `501`
 
-| 字段 | 类型 | 说明 |
+| Поле | Тип | Описание |
 |---|---|---|
-| `error.message` | string | 错误信息 |
-| `error.type` | string | 错误类型 |
-| `error.param` | string | 相关参数 |
-| `error.code` | string | 错误代码 |
+| `error.message` | string | Текст ошибки |
+| `error.type` | string | Тип ошибки |
+| `error.param` | string | Связанный параметр |
+| `error.code` | string | Код ошибки |
 
-## Get Fine-tune Job Events (Unimplemented)
+## Получение событий задачи дообучения (не реализовано)
 
-此接口尚未实现
+Этот интерфейс ещё не реализован.
 
 `GET` `/v1/fine-tunes/{fine_tune_id}/events`
 
-### 请求参数
+### Параметры запроса
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| Параметр | Расположение | Тип | Обязательно | Описание |
 |---|---|---|---|---|
-| `fine_tune_id` | path | string | 是 | — |
+| `fine_tune_id` | path | string | да | — |
 
-### 响应
+### Ответ
 
-| 状态码 | 说明 |
+| Код статуса | Описание |
 |---|---|
-| `501` | 未实现 |
+| `501` | Не реализовано |
 
-#### `501` 响应字段
+#### Поля ответа `501`
 
-| 字段 | 类型 | 说明 |
+| Поле | Тип | Описание |
 |---|---|---|
-| `error.message` | string | 错误信息 |
-| `error.type` | string | 错误类型 |
-| `error.param` | string | 相关参数 |
-| `error.code` | string | 错误代码 |
+| `error.message` | string | Текст ошибки |
+| `error.type` | string | Тип ошибки |
+| `error.param` | string | Связанный параметр |
+| `error.code` | string | Код ошибки |
 
-## List Fine-tuning Jobs (Unimplemented)
+## Список задач дообучения (не реализовано)
 
-此接口尚未实现
+Этот интерфейс ещё не реализован.
 
 `GET` `/v1/fine-tunes`
 
-### 响应
+### Ответ
 
-| 状态码 | 说明 |
+| Код статуса | Описание |
 |---|---|
-| `501` | 未实现 |
+| `501` | Не реализовано |
 
-#### `501` 响应字段
+#### Поля ответа `501`
 
-| 字段 | 类型 | 说明 |
+| Поле | Тип | Описание |
 |---|---|---|
-| `error.message` | string | 错误信息 |
-| `error.type` | string | 错误类型 |
-| `error.param` | string | 相关参数 |
-| `error.code` | string | 错误代码 |
+| `error.message` | string | Текст ошибки |
+| `error.type` | string | Тип ошибки |
+| `error.param` | string | Связанный параметр |
+| `error.code` | string | Код ошибки |
 
-## Get Fine-tuning Job Details (Unimplemented)
+## Получение деталей задачи дообучения (не реализовано)
 
-此接口尚未实现
+Этот интерфейс ещё не реализован.
 
 `GET` `/v1/fine-tunes/{fine_tune_id}`
 
-### 请求参数
+### Параметры запроса
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| Параметр | Расположение | Тип | Обязательно | Описание |
 |---|---|---|---|---|
-| `fine_tune_id` | path | string | 是 | — |
+| `fine_tune_id` | path | string | да | — |
 
-### 响应
+### Ответ
 
-| 状态码 | 说明 |
+| Код статуса | Описание |
 |---|---|
-| `501` | 未实现 |
+| `501` | Не реализовано |
 
-#### `501` 响应字段
+#### Поля ответа `501`
 
-| 字段 | 类型 | 说明 |
+| Поле | Тип | Описание |
 |---|---|---|
-| `error.message` | string | 错误信息 |
-| `error.type` | string | 错误类型 |
-| `error.param` | string | 相关参数 |
-| `error.code` | string | 错误代码 |
+| `error.message` | string | Текст ошибки |
+| `error.type` | string | Тип ошибки |
+| `error.param` | string | Связанный параметр |
+| `error.code` | string | Код ошибки |

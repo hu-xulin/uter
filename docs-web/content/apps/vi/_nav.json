@@ -1,77 +1,77 @@
 [
   {
     "id": "index",
-    "title": "AI Applications",
-    "description": "Supported AI applications and integration solutions"
+    "title": "Ứng dụng AI",
+    "description": "Các ứng dụng AI được hỗ trợ và giải pháp tích hợp"
   },
   {
     "id": "aionui",
-    "title": "AionUi - Free Open-Source Desktop Office Agent",
-    "description": "AionUi Tutorial — A free open-source desktop office agent supporting various AI agents like Gemini CLI, Claude Code, Codex, and more. Integrates with Uter to enable multi-model workflows."
+    "title": "AionUi - Công cụ văn phòng máy tính để bàn mã nguồn mở miễn phí",
+    "description": "Hướng dẫn AionUi — một công cụ văn phòng máy tính để bàn mã nguồn mở miễn phí hỗ trợ nhiều tác nhân AI như Gemini CLI, Claude Code, Codex và hơn thế nữa. Tích hợp với Uter để kích hoạt quy trình làm việc đa mô hình."
   },
   {
     "id": "aqbot",
-    "title": "AQBot - Local-First Desktop AI Workbench",
-    "description": "AQBot guide — connect this local-first desktop AI workbench to Uter. Import with aqbot:// in one click, or configure OpenAI / Claude / Gemini protocols manually."
+    "title": "AQBot - Bàn làm việc AI máy tính để bàn ưu tiên cục bộ",
+    "description": "Hướng dẫn AQBot — kết nối bàn làm việc AI máy tính để bàn ưu tiên cục bộ này với Uter. Nhập bằng aqbot:// chỉ với một cú nhấp, hoặc cấu hình thủ công các giao thức OpenAI / Claude / Gemini."
   },
   {
     "id": "cc-switch",
-    "title": "CC Switch - All-in-One AI CLI Management Tool",
-    "description": "CC Switch tutorial — a cross-platform tool for unified management of Claude Code, Codex & Gemini CLI provider configs, MCP servers, and system prompts. One-click import from Uter."
+    "title": "CC Switch - Công cụ quản lý AI CLI tất cả trong một",
+    "description": "Hướng dẫn CC Switch — công cụ đa nền tảng để quản lý thống nhất cấu hình nhà cung cấp Claude Code, Codex & Gemini CLI, máy chủ MCP và lời nhắc hệ thống. Nhập từ Uter chỉ với một cú nhấp."
   },
   {
     "id": "cherry-studio",
-    "title": "Cherry Studio - Desktop AI Client",
-    "description": "Cherry Studio Tutorial — Connecting the desktop AI client to Uter, one-click API Key entry. Built-in 30+ professional AI assistants, covering various work scenarios."
+    "title": "Cherry Studio - Ứng dụng khách AI máy tính để bàn",
+    "description": "Hướng dẫn Cherry Studio — Kết nối ứng dụng khách AI máy tính để bàn với Uter, nhập API Key chỉ với một cú nhấp. Tích hợp sẵn 30+ trợ lý AI chuyên nghiệp, bao phủ nhiều kịch bản công việc."
   },
   {
     "id": "deepchat",
-    "title": "DeepChat - Commercial-Friendly Full-Featured AI Agent Client",
-    "description": "DeepChat guide — connect this open-source, commercial-friendly full-featured AI Agent client to Uter and import DeepChat configuration with DeepLink in one click."
+    "title": "DeepChat - Ứng dụng khách tác nhân AI đầy đủ tính năng thân thiện thương mại",
+    "description": "Hướng dẫn DeepChat — kết nối ứng dụng khách tác nhân AI mã nguồn mở, đầy đủ tính năng và thân thiện thương mại này với Uter và nhập cấu hình DeepChat bằng DeepLink chỉ với một cú nhấp."
   },
   {
     "id": "fluent-read",
-    "title": "FluentRead - Open Source Translation Plugin",
-    "description": "FluentRead configuration guide — open-source browser translation plugin with 20+ engines and AI model support. Connect to Uter for immersive bilingual reading."
+    "title": "FluentRead - Plugin dịch thuật mã nguồn mở",
+    "description": "Hướng dẫn cấu hình FluentRead — plugin dịch thuật trình duyệt mã nguồn mở với 20+ công cụ và hỗ trợ mô hình AI. Kết nối với Uter để đọc song ngữ đắm chìm."
   },
   {
     "id": "memoh",
-    "title": "Memoh - Containerized AI Agent Platform",
-    "description": "Memoh integration guide — Connect the self-hosted containerized AI agent platform to Uter, creating AI bots with long-term memory for Telegram, Discord, Lark, QQ, WeChat, and more."
+    "title": "Memoh - Nền tảng tác nhân AI đóng gói trong container",
+    "description": "Hướng dẫn tích hợp Memoh — Kết nối nền tảng tác nhân AI tự lưu trữ, đóng gói trong container với Uter, tạo các bot AI có bộ nhớ dài hạn cho Telegram, Discord, Lark, QQ, WeChat và hơn thế nữa."
   },
   {
     "id": "openclaw",
-    "title": "OpenClaw - Self-hosted AI Assistant Platform",
-    "description": "OpenClaw Tutorial — Install OpenClaw, integrate Uter, and quickly set up a self-hosted AI assistant. Open-source project, supporting multi-channel integration like Telegram, Discord, WhatsApp."
+    "title": "OpenClaw - Nền tảng trợ lý AI tự lưu trữ",
+    "description": "Hướng dẫn OpenClaw — Cài đặt OpenClaw, tích hợp Uter và nhanh chóng thiết lập một trợ lý AI tự lưu trữ. Dự án mã nguồn mở, hỗ trợ tích hợp đa kênh như Telegram, Discord, WhatsApp."
   },
   {
     "id": "langbot",
-    "title": "LangBot - Instant Messaging Bot Development Platform",
-    "description": "LangBot integration guide — build AI-powered chatbots for Feishu, DingTalk, Telegram, Discord, and more. Supports Knowledge Base, Agent, and MCP with Uter."
+    "title": "LangBot - Nền tảng phát triển bot nhắn tin tức thời",
+    "description": "Hướng dẫn tích hợp LangBot — xây dựng chatbot được hỗ trợ bởi AI cho Feishu, DingTalk, Telegram, Discord và hơn thế nữa. Hỗ trợ Cơ sở kiến thức, Agent và MCP với Uter."
   },
   {
     "id": "luna-translator",
-    "title": "LunaTranslator - Open Source GalGame Translator",
-    "description": "LunaTranslator Tutorial — An open-source GalGame / visual novel translator that supports HOOK, OCR, and AI translation engines. Integrates with Uter to improve translation quality."
+    "title": "LunaTranslator - Trình dịch GalGame mã nguồn mở",
+    "description": "Hướng dẫn LunaTranslator — Trình dịch GalGame / visual novel mã nguồn mở hỗ trợ các công cụ dịch HOOK, OCR và AI. Tích hợp với Uter để cải thiện chất lượng dịch thuật."
   },
   {
     "id": "astrbot",
-    "title": "AstrBot - Agent Chatbot",
-    "description": "AstrBot Configuration Tutorial — Integrating the open-source Agent chatbot platform with Uter to inject AI capabilities into instant messaging platforms like QQ, Feishu, DingTalk, and WeChat Work."
+    "title": "AstrBot - Chatbot tác nhân",
+    "description": "Hướng dẫn cấu hình AstrBot — Tích hợp nền tảng chatbot tác nhân mã nguồn mở với Uter để đưa năng lực AI vào các nền tảng nhắn tin tức thời như QQ, Feishu, DingTalk và WeChat Work."
   },
   {
     "id": "claude-code",
     "title": "Claude Code",
-    "description": "Claude Code configuration guide — use Anthropic's terminal-based coding agent with Uter. Supports code understanding, multi-file editing, and IDE integration."
+    "description": "Hướng dẫn cấu hình Claude Code — sử dụng tác nhân mã hóa trên terminal của Anthropic với Uter. Hỗ trợ hiểu mã, chỉnh sửa đa tệp và tích hợp IDE."
   },
   {
     "id": "codex-cli",
     "title": "OpenAI Codex CLI",
-    "description": "OpenAI Codex CLI Installation Tutorial — Install a terminal AI coding assistant on Windows, macOS, Linux, connecting to Uter. Supports sandbox policies and atomic patch editing."
+    "description": "Hướng dẫn cài đặt OpenAI Codex CLI — Cài đặt trợ lý mã hóa AI trên terminal cho Windows, macOS, Linux, kết nối với Uter. Hỗ trợ chính sách hộp cát và chỉnh sửa bản vá nguyên tử."
   },
   {
     "id": "factory-droid-cli",
     "title": "Factory Droid CLI",
-    "description": "Factory Droid CLI setup guide — install and configure this AI software engineering agent with Uter. Supports end-to-end development from planning to testing."
+    "description": "Hướng dẫn thiết lập Factory Droid CLI — cài đặt và cấu hình tác nhân kỹ sư phần mềm AI này với Uter. Hỗ trợ phát triển toàn diện từ lập kế hoạch đến kiểm thử."
   }
 ]

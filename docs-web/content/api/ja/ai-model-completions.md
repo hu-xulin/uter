@@ -2,41 +2,41 @@
 
 ## Native OpenAI Format
 
-基于给定提示创建文本补全
+与えられたプロンプトに基づいてテキスト補完を作成します。
 
 `POST` `/v1/completions`
 
-### 请求体（`application/json`）
+### リクエストボディ（`application/json`）
 
-| 字段 | 类型 | 必填 | 说明 |
+| フィールド | 型 | 必須 | 説明 |
 |---|---|---|---|
-| `model` | string | 是 | — |
-| `max_tokens` | integer | 否 | — |
-| `temperature` | number | 否 | — |
-| `top_p` | number | 否 | — |
-| `n` | integer | 否 | — |
-| `stream` | boolean | 否 | — |
-| `suffix` | string | 否 | — |
-| `echo` | boolean | 否 | — |
+| `model` | string | 必須 | — |
+| `max_tokens` | integer | 任意 | — |
+| `temperature` | number | 任意 | — |
+| `top_p` | number | 任意 | — |
+| `n` | integer | 任意 | — |
+| `stream` | boolean | 任意 | — |
+| `suffix` | string | 任意 | — |
+| `echo` | boolean | 任意 | — |
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
-| `200` | 成功创建响应 |
+| `200` | レスポンスの作成に成功 |
 
-#### `200` 响应字段
+#### `200` レスポンスフィールド
 
-| 字段 | 类型 | 说明 |
+| フィールド | 型 | 説明 |
 |---|---|---|
 | `id` | string | — |
 | `object` | string | — |
 | `created` | integer | — |
 | `model` | string | — |
 | `choices` | array&lt;object&gt; | — |
-| `usage.prompt_tokens` | integer | 提示词 Token 数 |
-| `usage.completion_tokens` | integer | 补全 Token 数 |
-| `usage.total_tokens` | integer | 总 Token 数 |
+| `usage.prompt_tokens` | integer | プロンプト Token 数 |
+| `usage.completion_tokens` | integer | 補完 Token 数 |
+| `usage.total_tokens` | integer | 合計 Token 数 |
 | `usage.prompt_tokens_details.cached_tokens` | integer | — |
 | `usage.prompt_tokens_details.text_tokens` | integer | — |
 | `usage.prompt_tokens_details.audio_tokens` | integer | — |

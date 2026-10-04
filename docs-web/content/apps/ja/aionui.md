@@ -1,90 +1,90 @@
-# AionUi - Free Open-Source Desktop Office Agent
+# AionUi - 無料オープンソースのデスクトップオフィスエージェント
 
-> 🚀 AionUi is a free, local, open-source Cowork, supporting various AI agents such as Gemini CLI, Claude Code, Codex, OpenCode, Qwen Code, Goose CLI, Auggie. It provides a complete GUI interface and WebUI remote access functionality, serving as an open-source alternative to Cowork.
+> 🚀 AionUi は、Gemini CLI、Claude Code、Codex、OpenCode、Qwen Code、Goose CLI、Auggie などのさまざまな AI エージェントをサポートする、無料のローカル型オープンソース Cowork です。完全な GUI インターフェースと WebUI リモートアクセス機能を提供し、Cowork のオープンソース代替として機能します。
 
-- Official Website: [https://www.aionui.com](https://www.aionui.com)
-- GitHub Repository: [https://github.com/iOfficeAI/AionUi](https://github.com/iOfficeAI/AionUi)
-- Download Link: [https://github.com/iOfficeAI/AionUi/releases](https://github.com/iOfficeAI/AionUi/releases)
+- 公式サイト: [https://www.aionui.com](https://www.aionui.com)
+- GitHub リポジトリ: [https://github.com/iOfficeAI/AionUi](https://github.com/iOfficeAI/AionUi)
+- ダウンロードリンク: [https://github.com/iOfficeAI/AionUi/releases](https://github.com/iOfficeAI/AionUi/releases)
 
 ![AionUi Logo](/apps-assets/aionui/aionui-logo.webp)
 
-## Core Features
+## 主要機能
 
-### 💬 Multi-Session Chat
-- **Multi-session + Independent Context** - Allows opening multiple chat sessions simultaneously, each with its own independent context memory.
-- **Local Storage** - All conversation data is stored locally in an SQLite database and will not be lost.
+### 💬 マルチセッションチャット
+- **マルチセッション + 独立したコンテキスト** - 複数のチャットセッションを同時に開くことができ、それぞれが独自の独立したコンテキストメモリを持ちます。
+- **ローカル保存** - すべての会話データはローカルの SQLite データベースに保存され、失われることはありません。
 
-### 🤖 Multi-Model Support
-- **Multi-Platform Support** - Supports mainstream models like Gemini, OpenAI, Claude, Qwen, with flexible switching.
-- **Local Model Support** - Supports local model deployment via Ollama, LM Studio, etc.
+### 🤖 マルチモデル対応
+- **マルチプラットフォーム対応** - Gemini、OpenAI、Claude、Qwen などの主流モデルをサポートし、柔軟に切り替えられます。
+- **ローカルモデル対応** - Ollama、LM Studio などを通じたローカルモデルの導入をサポート。
 
-### 🤝 Multi-Agent Mode
-- **Run Multiple AI Agents Simultaneously** - Allows running multiple AI agents concurrently (e.g., Gemini CLI, Claude Code, Codex, OpenCode, Qwen Code, Goose CLI, Auggie, etc.).
-- **Unified MCP Management** - Unified management and configuration of all agents via Model Context Protocol (MCP), simplifying operation.
-- **Skills Configuration** - Supports configuring exclusive Skills for different agents to extend their capabilities.
-- **Assistant Customization** - Supports custom assistant configurations to create personalized AI workflows.
-- **Independent Configuration** - Each agent can be configured and used independently without interference.
-- **Flexible Switching** - Seamlessly switch between different agents to meet various scenario requirements.
+### 🤝 マルチエージェントモード
+- **複数の AI エージェントの同時実行** - 複数の AI エージェントを同時に実行できます（例：Gemini CLI、Claude Code、Codex、OpenCode、Qwen Code、Goose CLI、Auggie など）。
+- **統合 MCP 管理** - Model Context Protocol (MCP) を通じたすべてのエージェントの統合管理と設定により、操作を簡素化します。
+- **スキル設定** - 異なるエージェント向けに専用の Skills を設定し、能力を拡張できます。
+- **アシスタントのカスタマイズ** - カスタムアシスタント設定をサポートし、パーソナライズされた AI ワークフローを作成できます。
+- **独立した設定** - 各エージェントは独立して設定・使用でき、干渉しません。
+- **柔軟な切り替え** - さまざまなシナリオの要件を満たすために、異なるエージェント間をシームレスに切り替えられます。
 
-### 🗂️ File Management
-- **File Tree Browsing + Drag-and-Drop Upload** - Browse files like a folder, supports drag-and-drop of files or folders for one-click import.
-- **Smart Organization** - AI can help organize folders and automatically categorize them.
+### 🗂️ ファイル管理
+- **ファイルツリーの閲覧 + ドラッグ＆ドロップアップロード** - フォルダのようにファイルを閲覧でき、ファイルやフォルダのドラッグ＆ドロップによるワンクリックインポートをサポートします。
+- **スマート整理** - AI がフォルダの整理を手伝い、自動で分類します。
 
-### 📄 Preview Panel
-- **9+ Format Preview** - Supports formats like PDF, Word, Excel, PPT, code, Markdown, images, etc.
-- **Real-time Tracking + Editable** - Automatically tracks file changes, supports real-time editing and debugging of Markdown, code, HTML.
+### 📄 プレビューパネル
+- **9 種類以上の形式をプレビュー** - PDF、Word、Excel、PPT、コード、Markdown、画像などの形式をサポート。
+- **リアルタイム追跡 + 編集可能** - ファイルの変更を自動的に追跡し、Markdown、コード、HTML のリアルタイム編集とデバッグをサポート。
 
-### 🎨 AI Image Generation and Editing
-- **Smart Image Generation** - Supports various image generation models such as Gemini 2.5 Flash Image Preview, Nano, Banana, etc.
-- **Image Recognition and Editing** - AI-powered image analysis and editing features.
+### 🎨 AI 画像生成と編集
+- **スマート画像生成** - Gemini 2.5 Flash Image Preview、Nano、Banana などのさまざまな画像生成モデルをサポート。
+- **画像認識と編集** - AI を活用した画像解析および編集機能。
 
-### 🌐 Multi-Channel Access
-- **WebUI Remote Access** - Accessible via browser from any device on the network, supports mobile devices.
-- **Telegram Integration** - Supports interaction via Telegram bots.
-- **Feishu Integration** - Supports access and interaction via Feishu.
-- **Local Data Security** - All data is stored in a local SQLite database, suitable for server deployment.
+### 🌐 マルチチャネルアクセス
+- **WebUI リモートアクセス** - ネットワーク上の任意のデバイスからブラウザでアクセス可能、モバイルデバイスにも対応。
+- **Telegram 連携** - Telegram ボットを通じたやり取りをサポート。
+- **Feishu 連携** - Feishu を通じたアクセスとやり取りをサポート。
+- **ローカルデータの安全性** - すべてのデータはローカルの SQLite データベースに保存され、サーバーへの導入にも適しています。
 
-## Uter Integration Method
+## Uter との連携方法
 
-### Parameter Entry
+### パラメータの入力
 
-Provider Type: Types supported by Uter
-API Key: Obtained from Uter
-API Address: Uter site address (e.g., `https://<your-uter-domain>/v1`)
+Provider Type: Uter がサポートする種類
+API Key: Uter から取得
+API Address: Uter サイトのアドレス（例：`https://<your-uter-domain>/v1`）
 
-Please use your self-deployed Uter, or ensure that the service provider offers Uter services with legitimate upstream authorization and compliance obligations. Do not connect API addresses or keys from unknown sources to a production environment.
+ご自身で導入した Uter を使用するか、サービス提供者が正当な上流認可とコンプライアンス義務を負う Uter サービスを提供していることを確認してください。出所不明の API アドレスやキーを本番環境に接続しないでください。
 
-### Configuration Steps
+### 設定手順
 
-1.  **Copy API key in Uter**
+1.  **Uter で API キーをコピー**
     ![Copy API Key](/apps-assets/aionui/copy_apikey.webp)
 
-2.  **Open AionUi Settings**
-    - Go to the settings page in AionUi
-    - Find the Model Configuration Tab
-    - Click "Add Model"
+2.  **AionUi の設定を開く**
+    - AionUi の設定ページに移動
+    - 「モデル設定」タブを見つける
+    - 「モデルを追加」をクリック
     ![Open Settings](/apps-assets/aionui/add-model-1.webp)
 
-3.  **Add New Provider**
-    - Click "Add Model"
-    - Select Uter
+3.  **新しいプロバイダを追加**
+    - 「モデルを追加」をクリック
+    - Uter を選択
     ![Add Uter Provider](/apps-assets/aionui/uter_provider.webp)
 
-4.  **Configure API Information**
-    - API Address: Enter your Uter site address (format: `https://<your-uter-domain>/v1`)
-    - API Key: Paste the API Key copied from the Uter console
+4.  **API 情報を設定**
+    - API Address: Uter サイトのアドレスを入力（形式：`https://<your-uter-domain>/v1`）
+    - API Key: Uter コンソールからコピーした API キーを貼り付け
 
-5.  **Add Model**
-    - Select the model to add from the dropdown
-    - The model name should match the model name configured in Uter
-    - Select the appropriate request protocol
+5.  **モデルを追加**
+    - ドロップダウンから追加するモデルを選択
+    - モデル名は Uter で設定したモデル名と一致させる
+    - 適切なリクエストプロトコルを選択
 
-6.  **Start Using**
-    - Return to the chat page
-    - Select the configured Uter model to start a conversation
+6.  **利用開始**
+    - チャットページに戻る
+    - 設定した Uter モデルを選択して会話を開始
 
-## Related Links
+## 関連リンク
 
-- [GitHub Repository](https://github.com/iOfficeAI/AionUi)
-- [Complete Usage Guide](https://github.com/iOfficeAI/AionUi#-detailed-usage-guide)
-- [FAQ Frequently Asked Questions](https://github.com/iOfficeAI/AionUi#-support--help)
+- [GitHub リポジトリ](https://github.com/iOfficeAI/AionUi)
+- [詳細な使い方ガイド](https://github.com/iOfficeAI/AionUi#-detailed-usage-guide)
+- [FAQ よくある質問](https://github.com/iOfficeAI/AionUi#-support--help)

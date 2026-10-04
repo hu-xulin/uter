@@ -1,127 +1,127 @@
-# model-management
+# Quản lý mô hình (model-management)
 
-## Get All Model Metadata
+## Lấy tất cả siêu dữ liệu mô hình (Get All Model Metadata)
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 Yêu cầu quyền quản trị viên (Admin)
 
 `GET` `/api/models/`
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Delete Model
+## Xóa mô hình (Delete Model)
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 Yêu cầu quyền quản trị viên (Admin)
 
 `DELETE` `/api/models/{id}`
 
-### 请求参数
+### Tham số yêu cầu
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| Tên tham số | Vị trí | Kiểu | Bắt buộc | Mô tả |
 |---|---|---|---|---|
-| `id` | path | integer | 是 | — |
+| `id` | path | integer | Có | — |
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Get Specific Model
+## Lấy mô hình cụ thể (Get Specific Model)
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 Yêu cầu quyền quản trị viên (Admin)
 
 `GET` `/api/models/{id}`
 
-### 请求参数
+### Tham số yêu cầu
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| Tên tham số | Vị trí | Kiểu | Bắt buộc | Mô tả |
 |---|---|---|---|---|
-| `id` | path | integer | 是 | — |
+| `id` | path | integer | Có | — |
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Get Missing Models
+## Lấy các mô hình thiếu (Get Missing Models)
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 Yêu cầu quyền quản trị viên (Admin)
 
 `GET` `/api/models/missing`
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Create Model Metadata
+## Tạo siêu dữ liệu mô hình (Create Model Metadata)
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 Yêu cầu quyền quản trị viên (Admin)
 
 `POST` `/api/models/`
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Update Model Metadata
+## Cập nhật siêu dữ liệu mô hình (Update Model Metadata)
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 Yêu cầu quyền quản trị viên (Admin)
 
 `PUT` `/api/models/`
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Search Models
+## Tìm kiếm mô hình (Search Models)
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 Yêu cầu quyền quản trị viên (Admin)
 
 `GET` `/api/models/search`
 
-### 请求参数
+### Tham số yêu cầu
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| Tên tham số | Vị trí | Kiểu | Bắt buộc | Mô tả |
 |---|---|---|---|---|
-| `keyword` | query | string | 否 | — |
+| `keyword` | query | string | Không | — |
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Sync Upstream Models
+## Đồng bộ mô hình upstream (Sync Upstream Models)
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 Yêu cầu quyền quản trị viên (Admin)
 
 `POST` `/api/models/sync_upstream`
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Preview Upstream Model Synchronization
+## Xem trước đồng bộ mô hình upstream (Preview Upstream Model Synchronization)
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 Yêu cầu quyền quản trị viên (Admin)
 
 `GET` `/api/models/sync_upstream/preview`
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |

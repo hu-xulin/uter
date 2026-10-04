@@ -2,51 +2,51 @@
 
 ## Jimeng Video Generation
 
-即梦官方 API 格式的视频生成接口。
+Jimeng 公式 API 形式の動画生成インターフェースです。
 
-支持通过 Action 参数指定操作类型：
-- `CVSync2AsyncSubmitTask`: 提交视频生成任务
-- `CVSync2AsyncGetResult`: 获取任务结果
+Action パラメータで操作タイプを指定できます：
+- `CVSync2AsyncSubmitTask`: 動画生成タスクの送信
+- `CVSync2AsyncGetResult`: タスク結果の取得
 
-需要在查询参数中指定 Action 和 Version。
+クエリパラメータで Action と Version を指定する必要があります。
 
 `POST` `/jimeng/`
 
-### 请求参数
+### リクエストパラメータ
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| パラメータ名 | 位置 | 型 | 必須 | 説明 |
 |---|---|---|---|---|
-| `Action` | query | enum（`CVSync2AsyncSubmitTask`, `CVSync2AsyncGetResult`） | 是 | API 操作类型 |
-| `Version` | query | string | 是 | API 版本 |
+| `Action` | query | enum（`CVSync2AsyncSubmitTask`, `CVSync2AsyncGetResult`） | 必須 | API 操作タイプ |
+| `Version` | query | string | 必須 | API バージョン |
 
-### 请求体（`application/json`）
+### リクエストボディ（`application/json`）
 
-| 字段 | 类型 | 必填 | 说明 |
+| フィールド | 型 | 必須 | 説明 |
 |---|---|---|---|
-| `req_key` | string | 否 | 请求类型标识 |
-| `prompt` | string | 否 | 文本描述 |
-| `binary_data_base64` | array&lt;string&gt; | 否 | Base64 编码的图片数据 |
+| `req_key` | string | 任意 | リクエストタイプ識別子 |
+| `prompt` | string | 任意 | テキスト説明 |
+| `binary_data_base64` | array&lt;string&gt; | 任意 | Base64 エンコードされた画像データ |
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
-| `200` | 成功处理请求 |
-| `400` | 请求参数错误 |
+| `200` | リクエストの処理に成功 |
+| `400` | リクエストパラメータエラー |
 
-#### `200` 响应字段
+#### `200` レスポンスフィールド
 
-| 字段 | 类型 | 说明 |
+| フィールド | 型 | 説明 |
 |---|---|---|
-| `code` | integer | 响应码 |
-| `message` | string | 响应消息 |
-| `data` | object | 响应数据 |
+| `code` | integer | 応答コード |
+| `message` | string | 応答メッセージ |
+| `data` | object | 応答データ |
 
-#### `400` 响应字段
+#### `400` レスポンスフィールド
 
-| 字段 | 类型 | 说明 |
+| フィールド | 型 | 説明 |
 |---|---|---|
-| `error.message` | string | 错误信息 |
-| `error.type` | string | 错误类型 |
-| `error.param` | string | 相关参数 |
-| `error.code` | string | 错误代码 |
+| `error.message` | string | エラーメッセージ |
+| `error.type` | string | エラータイプ |
+| `error.param` | string | 関連パラメータ |
+| `error.code` | string | エラーコード |

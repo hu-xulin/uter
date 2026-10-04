@@ -1,73 +1,73 @@
 # system-settings
 
-## Get System Options
+## システムオプションの取得
 
-👑 需要超级管理员权限（Root）
+👑 スーパー管理者権限が必要（Root）
 
 `GET` `/api/option/`
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-## Migrate Console Settings
+## コンソール設定の移行
 
-👑 需要超级管理员权限（Root）
+👑 スーパー管理者権限が必要（Root）
 
 `POST` `/api/option/migrate_console_setting`
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-## Update System Options
+## システムオプションの更新
 
-👑 需要超级管理员权限（Root）
+👑 スーパー管理者権限が必要（Root）
 
 `PUT` `/api/option/`
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-## Reset Model Ratio
+## モデルレシオのリセット
 
-👑 需要超级管理员权限（Root）
+👑 スーパー管理者権限が必要（Root）
 
 `POST` `/api/option/rest_model_ratio`
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-## Get Syncable Channels
+## 同期可能なチャネルの取得
 
-👑 需要超级管理员权限（Root）
+👑 スーパー管理者権限が必要（Root）
 
 `GET` `/api/ratio_sync/channels`
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-## Fetch Upstream Ratios
+## 上流レシオの取得
 
-👑 需要超级管理员权限（Root）
+👑 スーパー管理者権限が必要（Root）
 
 `POST` `/api/ratio_sync/fetch`
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |

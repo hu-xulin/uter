@@ -1,33 +1,33 @@
-# Native OpenAI Format
+# 實時語音（Realtime）
 
-## Native OpenAI Format
+## 原生OpenAI格式
 
-建立 WebSocket 连接用于实时对话。
+建立 WebSocket 連線用於實時對話。
 
-**注意**: 这是一个 WebSocket 端点，需要使用 WebSocket 协议连接。
+**注意**: 這是一個 WebSocket 端點，需要使用 WebSocket 協議連線。
 
-连接 URL 示例: `wss://api.example.com/v1/realtime?model=gpt-4o-realtime`
+連線 URL 示例: `wss://api.example.com/v1/realtime?model=gpt-4o-realtime`
 
 `GET` `/v1/realtime`
 
-### 请求参数
+### 請求引數
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| 引數名 | 位置 | 型別 | 必填 | 說明 |
 |---|---|---|---|---|
 | `model` | query | string | 否 | 要使用的模型 |
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
-| `101` | WebSocket 协议切换 |
-| `400` | 请求错误 |
+| `101` | WebSocket 協議切換 |
+| `400` | 請求錯誤 |
 
-#### `400` 响应字段
+#### `400` 響應欄位
 
-| 字段 | 类型 | 说明 |
+| 欄位 | 型別 | 說明 |
 |---|---|---|
-| `error.message` | string | 错误信息 |
-| `error.type` | string | 错误类型 |
-| `error.param` | string | 相关参数 |
-| `error.code` | string | 错误代码 |
+| `error.message` | string | 錯誤資訊 |
+| `error.type` | string | 錯誤型別 |
+| `error.param` | string | 相關引數 |
+| `error.code` | string | 錯誤程式碼 |

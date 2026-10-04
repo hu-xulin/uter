@@ -1,40 +1,42 @@
-# Native OpenAI Format
+# Định dạng Native OpenAI
 
-基于给定提示创建文本补全
+## Định dạng Native OpenAI
+
+Tạo bản hoàn thành văn bản dựa trên prompt đã cho.
 
 `POST` `/v1/completions`
 
-### 请求体（`application/json`）
+### Thân yêu cầu (`application/json`)
 
-| 字段 | 类型 | 必填 | 说明 |
+| Trường | Kiểu | Bắt buộc | Mô tả |
 |---|---|---|---|
-| `model` | string | 是 | — |
-| `max_tokens` | integer | 否 | — |
-| `temperature` | number | 否 | — |
-| `top_p` | number | 否 | — |
-| `n` | integer | 否 | — |
-| `stream` | boolean | 否 | — |
-| `suffix` | string | 否 | — |
-| `echo` | boolean | 否 | — |
+| `model` | string | Có | — |
+| `max_tokens` | integer | Không | — |
+| `temperature` | number | Không | — |
+| `top_p` | number | Không | — |
+| `n` | integer | Không | — |
+| `stream` | boolean | Không | — |
+| `suffix` | string | Không | — |
+| `echo` | boolean | Không | — |
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功创建响应 |
+| `200` | Tạo phản hồi thành công |
 
-#### `200` 响应字段
+#### Trường phản hồi `200`
 
-| 字段 | 类型 | 说明 |
+| Trường | Kiểu | Mô tả |
 |---|---|---|
 | `id` | string | — |
 | `object` | string | — |
 | `created` | integer | — |
 | `model` | string | — |
 | `choices` | array&lt;object&gt; | — |
-| `usage.prompt_tokens` | integer | 提示词 Token 数 |
-| `usage.completion_tokens` | integer | 补全 Token 数 |
-| `usage.total_tokens` | integer | 总 Token 数 |
+| `usage.prompt_tokens` | integer | Số Token prompt |
+| `usage.completion_tokens` | integer | Số Token hoàn thành |
+| `usage.total_tokens` | integer | Tổng số Token |
 | `usage.prompt_tokens_details.cached_tokens` | integer | — |
 | `usage.prompt_tokens_details.text_tokens` | integer | — |
 | `usage.prompt_tokens_details.audio_tokens` | integer | — |

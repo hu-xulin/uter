@@ -1,49 +1,49 @@
-# tasks
+# 任務
 
-## Get All Midjourney Tasks
+## 獲取所有Midjourney任務
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 需要管理員許可權（Admin）
 
 `GET` `/api/mj/`
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |
 
-## Get Personal Midjourney Tasks
+## 獲取個人Midjourney任務
 
-🔐 需要登录（User权限）
+🔐 需要登入（User許可權）
 
 `GET` `/api/mj/self`
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |
 
-## Get All Tasks
+## 獲取所有任務
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 需要管理員許可權（Admin）
 
 `GET` `/api/task/`
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |
 
-## Get Personal Tasks
+## 獲取個人任務
 
-🔐 需要登录（User权限）
+🔐 需要登入（User許可權）
 
 `GET` `/api/task/self`
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |

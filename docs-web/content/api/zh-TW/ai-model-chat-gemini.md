@@ -1,22 +1,22 @@
-# gemini
+# 原生Gemini格式
 
-## Gemini Media Recognition
+## Gemini媒體識別
 
-Gemini图像、PDF、音频、视频识别请求
+Gemini影象、PDF、音訊、影片識別請求
 
-⚠️注意：原生 Gemini 格式请求支持通过 inlineData（base64）或 fileData.fileUri（可公开访问的 URL，支持 YouTube 链接）传递媒体。通过 Gemini File API 上传的文件 URI 能否访问，取决于上游渠道 Key 的权限，建议优先使用可公开访问的 URL。OpenAI 格式（chat/completions）请求转换为 Gemini 时，媒体将统一下载并转换为 inlineData（base64）传递。
+⚠️注意：原生 Gemini 格式請求支援透過 inlineData（base64）或 fileData.fileUri（可公開訪問的 URL，支援 YouTube 連結）傳遞媒體。透過 Gemini File API 上傳的檔案 URI 能否訪問，取決於上游渠道 Key 的許可權，建議優先使用可公開訪問的 URL。OpenAI 格式（chat/completions）請求轉換為 Gemini 時，媒體將統一下載並轉換為 inlineData（base64）傳遞。
 
 `POST` `/v1beta/models/{model}:generateContent`
 
-### 请求参数
+### 請求引數
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| 引數名 | 位置 | 型別 | 必填 | 說明 |
 |---|---|---|---|---|
-| `model` | path | string | 是 | 模型名称 |
+| `model` | path | string | 是 | 模型名稱 |
 
-### 请求体（`application/json`）
+### 請求體（`application/json`）
 
-| 字段 | 类型 | 必填 | 说明 |
+| 欄位 | 型別 | 必填 | 說明 |
 |---|---|---|---|
 | `contents` | array&lt;object&gt; | 否 | — |
 | `generationConfig.temperature` | number | 否 | — |
@@ -28,25 +28,25 @@ Gemini图像、PDF、音频、视频识别请求
 | `tools` | array&lt;object&gt; | 否 | — |
 | `systemInstruction.parts` | array&lt;object&gt; | 否 | — |
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |
 
-#### `200` 响应字段
+#### `200` 響應欄位
 
-| 字段 | 类型 | 说明 |
+| 欄位 | 型別 | 說明 |
 |---|---|---|
 | `candidates` | array&lt;object&gt; | — |
 | `usageMetadata.promptTokenCount` | integer | — |
 | `usageMetadata.candidatesTokenCount` | integer | — |
 | `usageMetadata.totalTokenCount` | integer | — |
 
-## Gemini Text Chat
+## Gemini文字聊天
 
-代理 Gemini API 请求。
-路径格式: `/v1beta/models/{model_name}:{action}`
+代理 Gemini API 請求。
+路徑格式: `/v1beta/models/{model_name}:{action}`
 
 例如:
 - `/v1beta/models/gemini-2.5-pro:generateContent`
@@ -54,15 +54,15 @@ Gemini图像、PDF、音频、视频识别请求
 
 `POST` `/v1beta/models/{model}:generateContent`
 
-### 请求参数
+### 請求引數
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| 引數名 | 位置 | 型別 | 必填 | 說明 |
 |---|---|---|---|---|
-| `model` | path | string | 是 | 模型名称 |
+| `model` | path | string | 是 | 模型名稱 |
 
-### 请求体（`application/json`）
+### 請求體（`application/json`）
 
-| 字段 | 类型 | 必填 | 说明 |
+| 欄位 | 型別 | 必填 | 說明 |
 |---|---|---|---|
 | `contents` | array&lt;object&gt; | 否 | — |
 | `generationConfig.temperature` | number | 否 | — |
@@ -74,15 +74,15 @@ Gemini图像、PDF、音频、视频识别请求
 | `tools` | array&lt;object&gt; | 否 | — |
 | `systemInstruction.parts` | array&lt;object&gt; | 否 | — |
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |
 
-#### `200` 响应字段
+#### `200` 響應欄位
 
-| 字段 | 类型 | 说明 |
+| 欄位 | 型別 | 說明 |
 |---|---|---|
 | `candidates` | array&lt;object&gt; | — |
 | `usageMetadata.promptTokenCount` | integer | — |

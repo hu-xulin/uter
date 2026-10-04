@@ -80,6 +80,24 @@ export function userGuideMarkdownPath(locale: DocsLocale, slug: string): string 
 }
 
 /**
+ * The locale whose screenshots a chapter falls back to.
+ *
+ * Only `zh` and `en` have picture directories: the screenshots are taken
+ * from a running console, and re-shooting the guide in every language is
+ * not something that can be automated. A chapter in a language without
+ * its own directory therefore borrows the English one rather than
+ * rendering nine dashed placeholders — the pictures are UI screenshots,
+ * so the only thing a reader loses is the surrounding translation, which
+ * is right there in the prose. `zh-TW` is deliberately *not* included:
+ * its console is the Chinese one, so it takes the Chinese screenshots
+ * below instead.
+ */
+function screenshotLocale(locale: DocsLocale): DocsLocale {
+  if (locale === 'zh' || locale === 'zh-TW') return 'zh';
+  return 'en';
+}
+
+/**
  * The chapter's pictures, in the order `__img0`, `__img1`, … refer to
  * them.
  *
@@ -88,13 +106,14 @@ export function userGuideMarkdownPath(locale: DocsLocale, slug: string): string 
  * author who forgets the padding still gets the intended order.
  */
 function chapterImageUrls(locale: DocsLocale, slug: string): string[] {
-  const dir = path.join(IMAGE_ROOT, locale, slug);
+  const source = screenshotLocale(locale);
+  const dir = path.join(IMAGE_ROOT, source, slug);
   if (!existsSync(dir)) return [];
 
   return readdirSync(dir)
     .filter((name) => !name.startsWith('.') && /\.(png|jpe?g|webp|avif|gif|svg)$/i.test(name))
     .sort((a, b) => a.localeCompare(b, 'en', { numeric: true }))
-    .map((name) => `/user-guide/${locale}/${slug}/${name}`);
+    .map((name) => `/user-guide/${source}/${slug}/${name}`);
 }
 
 /** Resolve one image reference against the chapter's picture directory. */
@@ -105,7 +124,7 @@ function resolveImageSrc(raw: string, images: string[], locale: DocsLocale, slug
   const placeholder = /^__img(\d+)$/.exec(raw.trim());
   if (placeholder) return images[Number(placeholder[1])] ?? '';
 
-  return `/user-guide/${locale}/${slug}/${raw.replace(/^\.\//, '')}`;
+  return `/user-guide/${screenshotLocale(locale)}/${slug}/${raw.replace(/^\.\//, '')}`;
 }
 
 const CALLOUT_TONES: readonly CalloutTone[] = [

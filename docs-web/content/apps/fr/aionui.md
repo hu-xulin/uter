@@ -1,90 +1,97 @@
-# AionUi - Free Open-Source Desktop Office Agent
+# AionUi - Agent de bureau open-source gratuit
 
-> 🚀 AionUi is a free, local, open-source Cowork, supporting various AI agents such as Gemini CLI, Claude Code, Codex, OpenCode, Qwen Code, Goose CLI, Auggie. It provides a complete GUI interface and WebUI remote access functionality, serving as an open-source alternative to Cowork.
+> 🚀 AionUi est un Cowork local, gratuit et open-source, prenant en charge divers agents IA tels que Gemini CLI, Claude Code, Codex, OpenCode, Qwen Code, Goose CLI, Auggie. Il fournit une interface GUI complète et une fonctionnalité d'accès distant WebUI, servant d'alternative open-source à Cowork.
 
-- Official Website: [https://www.aionui.com](https://www.aionui.com)
-- GitHub Repository: [https://github.com/iOfficeAI/AionUi](https://github.com/iOfficeAI/AionUi)
-- Download Link: [https://github.com/iOfficeAI/AionUi/releases](https://github.com/iOfficeAI/AionUi/releases)
+- Site officiel : [https://www.aionui.com](https://www.aionui.com)
+- Dépôt GitHub : [https://github.com/iOfficeAI/AionUi](https://github.com/iOfficeAI/AionUi)
+- Lien de téléchargement : [https://github.com/iOfficeAI/AionUi/releases](https://github.com/iOfficeAI/AionUi/releases)
 
-![AionUi Logo](/apps-assets/aionui/aionui-logo.webp)
+![Logo AionUi](/apps-assets/aionui/aionui-logo.webp)
 
-## Core Features
+## Fonctionnalités principales
 
-### 💬 Multi-Session Chat
-- **Multi-session + Independent Context** - Allows opening multiple chat sessions simultaneously, each with its own independent context memory.
-- **Local Storage** - All conversation data is stored locally in an SQLite database and will not be lost.
+### 💬 Chat multi-sessions
 
-### 🤖 Multi-Model Support
-- **Multi-Platform Support** - Supports mainstream models like Gemini, OpenAI, Claude, Qwen, with flexible switching.
-- **Local Model Support** - Supports local model deployment via Ollama, LM Studio, etc.
+- **Multi-sessions + Contexte indépendant** - permet d'ouvrir plusieurs sessions de chat simultanément, chacune avec sa propre mémoire de contexte indépendante.
+- **Stockage local** - toutes les données de conversation sont stockées localement dans une base de données SQLite et ne seront pas perdues.
 
-### 🤝 Multi-Agent Mode
-- **Run Multiple AI Agents Simultaneously** - Allows running multiple AI agents concurrently (e.g., Gemini CLI, Claude Code, Codex, OpenCode, Qwen Code, Goose CLI, Auggie, etc.).
-- **Unified MCP Management** - Unified management and configuration of all agents via Model Context Protocol (MCP), simplifying operation.
-- **Skills Configuration** - Supports configuring exclusive Skills for different agents to extend their capabilities.
-- **Assistant Customization** - Supports custom assistant configurations to create personalized AI workflows.
-- **Independent Configuration** - Each agent can be configured and used independently without interference.
-- **Flexible Switching** - Seamlessly switch between different agents to meet various scenario requirements.
+### 🤖 Prise en charge multi-modèles
 
-### 🗂️ File Management
-- **File Tree Browsing + Drag-and-Drop Upload** - Browse files like a folder, supports drag-and-drop of files or folders for one-click import.
-- **Smart Organization** - AI can help organize folders and automatically categorize them.
+- **Prise en charge multiplateforme** - prend en charge les modèles grand public comme Gemini, OpenAI, Claude, Qwen, avec un basculement flexible.
+- **Prise en charge des modèles locaux** - prend en charge le déploiement de modèles locaux via Ollama, LM Studio, etc.
 
-### 📄 Preview Panel
-- **9+ Format Preview** - Supports formats like PDF, Word, Excel, PPT, code, Markdown, images, etc.
-- **Real-time Tracking + Editable** - Automatically tracks file changes, supports real-time editing and debugging of Markdown, code, HTML.
+### 🤝 Mode multi-agents
 
-### 🎨 AI Image Generation and Editing
-- **Smart Image Generation** - Supports various image generation models such as Gemini 2.5 Flash Image Preview, Nano, Banana, etc.
-- **Image Recognition and Editing** - AI-powered image analysis and editing features.
+- **Exécuter plusieurs agents IA simultanément** - permet d'exécuter plusieurs agents IA en parallèle (par ex. Gemini CLI, Claude Code, Codex, OpenCode, Qwen Code, Goose CLI, Auggie, etc.).
+- **Gestion MCP unifiée** - gestion et configuration unifiées de tous les agents via le Model Context Protocol (MCP), simplifiant l'exploitation.
+- **Configuration de Skills** - prend en charge la configuration de Skills exclusives pour différents agents afin d'étendre leurs capacités.
+- **Personnalisation de l'assistant** - prend en charge des configurations d'assistant personnalisées pour créer des flux de travail IA personnalisés.
+- **Configuration indépendante** - chaque agent peut être configuré et utilisé indépendamment sans interférence.
+- **Basculement flexible** - basculez de manière transparente entre différents agents pour répondre à divers besoins selon les scénarios.
 
-### 🌐 Multi-Channel Access
-- **WebUI Remote Access** - Accessible via browser from any device on the network, supports mobile devices.
-- **Telegram Integration** - Supports interaction via Telegram bots.
-- **Feishu Integration** - Supports access and interaction via Feishu.
-- **Local Data Security** - All data is stored in a local SQLite database, suitable for server deployment.
+### 🗂️ Gestion des fichiers
 
-## Uter Integration Method
+- **Navigation en arborescence + glisser-déposer** - parcourez les fichiers comme un dossier, prend en charge le glisser-déposer de fichiers ou dossiers pour un import en un clic.
+- **Organisation intelligente** - l'IA peut aider à organiser les dossiers et à les catégoriser automatiquement.
 
-### Parameter Entry
+### 📄 Panneau d'aperçu
 
-Provider Type: Types supported by Uter
-API Key: Obtained from Uter
-API Address: Uter site address (e.g., `https://<your-uter-domain>/v1`)
+- **Aperçu de plus de 9 formats** - prend en charge des formats comme PDF, Word, Excel, PPT, code, Markdown, images, etc.
+- **Suivi en temps réel + modifiable** - suit automatiquement les modifications des fichiers, prend en charge l'édition et le débogage en temps réel de Markdown, code, HTML.
 
-Please use your self-deployed Uter, or ensure that the service provider offers Uter services with legitimate upstream authorization and compliance obligations. Do not connect API addresses or keys from unknown sources to a production environment.
+### 🎨 Génération et édition d'images par IA
 
-### Configuration Steps
+- **Génération d'images intelligente** - prend en charge divers modèles de génération d'images tels que Gemini 2.5 Flash Image Preview, Nano, Banana, etc.
+- **Reconnaissance et édition d'images** - fonctionnalités d'analyse et d'édition d'images pilotées par l'IA.
 
-1.  **Copy API key in Uter**
-    ![Copy API Key](/apps-assets/aionui/copy_apikey.webp)
+### 🌐 Accès multi-canaux
 
-2.  **Open AionUi Settings**
-    - Go to the settings page in AionUi
-    - Find the Model Configuration Tab
-    - Click "Add Model"
-    ![Open Settings](/apps-assets/aionui/add-model-1.webp)
+- **Accès distant WebUI** - accessible via le navigateur depuis n'importe quel appareil du réseau, prend en charge les appareils mobiles.
+- **Intégration Telegram** - prend en charge l'interaction via des bots Telegram.
+- **Intégration Feishu** - prend en charge l'accès et l'interaction via Feishu.
+- **Sécurité des données locales** - toutes les données sont stockées dans une base de données SQLite locale, adaptée au déploiement sur serveur.
 
-3.  **Add New Provider**
-    - Click "Add Model"
-    - Select Uter
-    ![Add Uter Provider](/apps-assets/aionui/uter_provider.webp)
+## Méthode d'intégration Uter
 
-4.  **Configure API Information**
-    - API Address: Enter your Uter site address (format: `https://<your-uter-domain>/v1`)
-    - API Key: Paste the API Key copied from the Uter console
+### Saisie des paramètres
 
-5.  **Add Model**
-    - Select the model to add from the dropdown
-    - The model name should match the model name configured in Uter
-    - Select the appropriate request protocol
+Type de fournisseur : types pris en charge par Uter
+Clé API : obtenue depuis Uter
+Adresse API : adresse du site Uter (par ex. `https://<your-uter-domain>/v1`)
 
-6.  **Start Using**
-    - Return to the chat page
-    - Select the configured Uter model to start a conversation
+Veuillez utiliser votre propre instance Uter déployée, ou assurez-vous que le fournisseur de services propose des services Uter avec une autorisation amont légitime et des obligations de conformité. Ne connectez pas d'adresses API ou de clés provenant de sources inconnues à un environnement de production.
 
-## Related Links
+### Étapes de configuration
 
-- [GitHub Repository](https://github.com/iOfficeAI/AionUi)
-- [Complete Usage Guide](https://github.com/iOfficeAI/AionUi#-detailed-usage-guide)
-- [FAQ Frequently Asked Questions](https://github.com/iOfficeAI/AionUi#-support--help)
+1.  **Copier la clé API dans Uter**
+    ![Copier la clé API](/apps-assets/aionui/copy_apikey.webp)
+
+2.  **Ouvrir les paramètres AionUi**
+    - Accédez à la page des paramètres dans AionUi
+    - Trouvez l'onglet Configuration du modèle
+    - Cliquez sur « Add Model »
+    ![Ouvrir les paramètres](/apps-assets/aionui/add-model-1.webp)
+
+3.  **Ajouter un nouveau fournisseur**
+    - Cliquez sur « Add Model »
+    - Sélectionnez Uter
+    ![Ajouter le fournisseur Uter](/apps-assets/aionui/uter_provider.webp)
+
+4.  **Configurer les informations API**
+    - Adresse API : saisissez l'adresse de votre site Uter (format : `https://<your-uter-domain>/v1`)
+    - Clé API : collez la clé API copiée depuis la console Uter
+
+5.  **Ajouter un modèle**
+    - Sélectionnez le modèle à ajouter dans le menu déroulant
+    - Le nom du modèle doit correspondre au nom du modèle configuré dans Uter
+    - Sélectionnez le protocole de requête approprié
+
+6.  **Commencer à utiliser**
+    - Retournez à la page de conversation
+    - Sélectionnez le modèle Uter configuré pour démarrer une conversation
+
+## Liens associés
+
+- [Dépôt GitHub](https://github.com/iOfficeAI/AionUi)
+- [Guide d'utilisation complet](https://github.com/iOfficeAI/AionUi#-detailed-usage-guide)
+- [FAQ Questions fréquentes](https://github.com/iOfficeAI/AionUi#-support--help)

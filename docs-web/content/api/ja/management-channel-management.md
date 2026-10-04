@@ -1,427 +1,427 @@
 # channel-management
 
-## Batch Delete Channels
+## チャネルの一括削除
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 管理者権限が必要（Admin）
 
 `POST` `/api/channel/batch`
 
-### 请求体（`application/json`）
+### リクエストボディ（`application/json`）
 
-| 字段 | 类型 | 必填 | 说明 |
+| フィールド | 型 | 必須 | 説明 |
 |---|---|---|---|
-| `ids` | array&lt;integer&gt; | 否 | — |
+| `ids` | array&lt;integer&gt; | いいえ | — |
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-## Batch Set Channel Tags
+## チャネルタグの一括設定
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 管理者権限が必要（Admin）
 
 `POST` `/api/channel/batch/tag`
 
-### 请求体（`application/json`）
+### リクエストボディ（`application/json`）
 
-| 字段 | 类型 | 必填 | 说明 |
+| フィールド | 型 | 必須 | 説明 |
 |---|---|---|---|
-| `ids` | array&lt;integer&gt; | 否 | — |
-| `tag` | string | 否 | — |
+| `ids` | array&lt;integer&gt; | いいえ | — |
+| `tag` | string | いいえ | — |
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-## Copy Channel
+## チャネルのコピー
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 管理者権限が必要（Admin）
 
 `POST` `/api/channel/copy/{id}`
 
-### 请求参数
+### リクエストパラメータ
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| パラメータ名 | 位置 | 型 | 必須 | 説明 |
 |---|---|---|---|---|
-| `id` | path | integer | 是 | — |
-| `suffix` | query | string | 否 | — |
-| `reset_balance` | query | boolean | 否 | — |
+| `id` | path | integer | はい | — |
+| `suffix` | query | string | いいえ | — |
+| `reset_balance` | query | boolean | いいえ | — |
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-## Delete Disabled Channels
+## 無効チャネルの削除
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 管理者権限が必要（Admin）
 
 `DELETE` `/api/channel/disabled`
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-## Get Upstream Model List
+## 上流モデルリストの取得
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 管理者権限が必要（Admin）
 
 `GET` `/api/channel/fetch_models/{id}`
 
-### 请求参数
+### リクエストパラメータ
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| パラメータ名 | 位置 | 型 | 必須 | 説明 |
 |---|---|---|---|---|
-| `id` | path | integer | 是 | — |
+| `id` | path | integer | はい | — |
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-## Get Model List
+## モデルリストの取得
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 管理者権限が必要（Admin）
 
 `POST` `/api/channel/fetch_models`
 
-### 请求体（`application/json`）
+### リクエストボディ（`application/json`）
 
-| 字段 | 类型 | 必填 | 说明 |
+| フィールド | 型 | 必須 | 説明 |
 |---|---|---|---|
-| `base_url` | string | 否 | — |
-| `type` | integer | 否 | — |
-| `key` | string | 否 | — |
+| `base_url` | string | いいえ | — |
+| `type` | integer | いいえ | — |
+| `key` | string | いいえ | — |
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-## Fix Channel Capability
+## チャネル機能の修復
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 管理者権限が必要（Admin）
 
 `POST` `/api/channel/fix`
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-## Get All Channels
+## すべてのチャネルの取得
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 管理者権限が必要（Admin）
 
 `GET` `/api/channel/`
 
-### 请求参数
+### リクエストパラメータ
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| パラメータ名 | 位置 | 型 | 必須 | 説明 |
 |---|---|---|---|---|
-| `p` | query | integer | 否 | — |
-| `page_size` | query | integer | 否 | — |
-| `id_sort` | query | boolean | 否 | — |
-| `tag_mode` | query | boolean | 否 | — |
-| `status` | query | string | 否 | — |
-| `type` | query | integer | 否 | — |
+| `p` | query | integer | いいえ | — |
+| `page_size` | query | integer | いいえ | — |
+| `id_sort` | query | boolean | いいえ | — |
+| `tag_mode` | query | boolean | いいえ | — |
+| `status` | query | string | いいえ | — |
+| `type` | query | integer | いいえ | — |
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-## Delete Channel
+## チャネルの削除
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 管理者権限が必要（Admin）
 
 `DELETE` `/api/channel/{id}`
 
-### 请求参数
+### リクエストパラメータ
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| パラメータ名 | 位置 | 型 | 必須 | 説明 |
 |---|---|---|---|---|
-| `id` | path | integer | 是 | — |
+| `id` | path | integer | はい | — |
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-## Get Specific Channel
+## 特定のチャネルの取得
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 管理者権限が必要（Admin）
 
 `GET` `/api/channel/{id}`
 
-### 请求参数
+### リクエストパラメータ
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| パラメータ名 | 位置 | 型 | 必須 | 説明 |
 |---|---|---|---|---|
-| `id` | path | integer | 是 | — |
+| `id` | path | integer | はい | — |
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-## Get Channel Key
+## チャネルキーの取得
 
-👑 需要超级管理员权限（Root）+ 安全验证
+👑 スーパー管理者権限が必要（Root）+ セキュリティ検証
 
 `POST` `/api/channel/{id}/key`
 
-### 请求参数
+### リクエストパラメータ
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| パラメータ名 | 位置 | 型 | 必須 | 説明 |
 |---|---|---|---|---|
-| `id` | path | integer | 是 | — |
+| `id` | path | integer | はい | — |
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-## Get Channel Model List
+## チャネルモデルリストの取得
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 管理者権限が必要（Admin）
 
 `GET` `/api/channel/models`
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-## Get Enabled Model List
+## 有効モデルリストの取得
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 管理者権限が必要（Admin）
 
 `GET` `/api/channel/models_enabled`
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-## Manage Multiple Keys
+## 複数キーの管理
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 管理者権限が必要（Admin）
 
 `POST` `/api/channel/multi_key/manage`
 
-### 请求体（`application/json`）
+### リクエストボディ（`application/json`）
 
-| 字段 | 类型 | 必填 | 说明 |
+| フィールド | 型 | 必須 | 説明 |
 |---|---|---|---|
-| `channel_id` | integer | 否 | — |
-| `action` | enum（`get_key_status`, `disable_key`, `enable_key`, `delete_key`, `delete_disabled_keys`, `enable_all_keys` …） | 否 | — |
-| `key_index` | integer | 否 | — |
+| `channel_id` | integer | いいえ | — |
+| `action` | enum（`get_key_status`, `disable_key`, `enable_key`, `delete_key`, `delete_disabled_keys`, `enable_all_keys` …） | いいえ | — |
+| `key_index` | integer | いいえ | — |
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-## Add Channel
+## チャネルの追加
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 管理者権限が必要（Admin）
 
 `POST` `/api/channel/`
 
-### 请求体（`application/json`）
+### リクエストボディ（`application/json`）
 
-| 字段 | 类型 | 必填 | 说明 |
+| フィールド | 型 | 必須 | 説明 |
 |---|---|---|---|
-| `mode` | enum（`single`, `batch`, `multi_to_single`） | 否 | — |
-| `channel` | object | 否 | Unresolved $ref: #/definitions/224188811 |
+| `mode` | enum（`single`, `batch`, `multi_to_single`） | いいえ | — |
+| `channel` | object | いいえ | Unresolved $ref: #/definitions/224188811 |
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-## Update Channel
+## チャネルの更新
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 管理者権限が必要（Admin）
 
 `PUT` `/api/channel/`
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-## Search Channels
+## チャネルの検索
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 管理者権限が必要（Admin）
 
 `GET` `/api/channel/search`
 
-### 请求参数
+### リクエストパラメータ
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| パラメータ名 | 位置 | 型 | 必須 | 説明 |
 |---|---|---|---|---|
-| `keyword` | query | string | 否 | — |
-| `group` | query | string | 否 | — |
-| `model` | query | string | 否 | — |
+| `keyword` | query | string | いいえ | — |
+| `group` | query | string | いいえ | — |
+| `model` | query | string | いいえ | — |
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-## Disable Tag Channel
+## タグチャネルの無効化
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 管理者権限が必要（Admin）
 
 `POST` `/api/channel/tag/disabled`
 
-### 请求体（`application/json`）
+### リクエストボディ（`application/json`）
 
-| 字段 | 类型 | 必填 | 说明 |
+| フィールド | 型 | 必須 | 説明 |
 |---|---|---|---|
-| `tag` | string | 否 | — |
+| `tag` | string | いいえ | — |
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-## Enable Tag Channel
+## タグチャネルの有効化
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 管理者権限が必要（Admin）
 
 `POST` `/api/channel/tag/enabled`
 
-### 请求体（`application/json`）
+### リクエストボディ（`application/json`）
 
-| 字段 | 类型 | 必填 | 说明 |
+| フィールド | 型 | 必須 | 説明 |
 |---|---|---|---|
-| `tag` | string | 否 | — |
+| `tag` | string | いいえ | — |
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-## Get Tag Models
+## タグモデルの取得
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 管理者権限が必要（Admin）
 
 `GET` `/api/channel/tag/models`
 
-### 请求参数
+### リクエストパラメータ
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| パラメータ名 | 位置 | 型 | 必須 | 説明 |
 |---|---|---|---|---|
-| `tag` | query | string | 是 | — |
+| `tag` | query | string | はい | — |
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-## Edit Tag Channel
+## タグチャネルの編集
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 管理者権限が必要（Admin）
 
 `PUT` `/api/channel/tag`
 
-### 请求体（`application/json`）
+### リクエストボディ（`application/json`）
 
-| 字段 | 类型 | 必填 | 说明 |
+| フィールド | 型 | 必須 | 説明 |
 |---|---|---|---|
-| `tag` | string | 否 | — |
-| `new_tag` | string | 否 | — |
-| `priority` | integer | 否 | — |
-| `weight` | integer | 否 | — |
+| `tag` | string | いいえ | — |
+| `new_tag` | string | いいえ | — |
+| `priority` | integer | いいえ | — |
+| `weight` | integer | いいえ | — |
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-## Test All Channels
+## すべてのチャネルのテスト
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 管理者権限が必要（Admin）
 
 `GET` `/api/channel/test`
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-## Test Specific Channel
+## 特定のチャネルのテスト
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 管理者権限が必要（Admin）
 
 `GET` `/api/channel/test/{id}`
 
-### 请求参数
+### リクエストパラメータ
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| パラメータ名 | 位置 | 型 | 必須 | 説明 |
 |---|---|---|---|---|
-| `id` | path | integer | 是 | — |
+| `id` | path | integer | はい | — |
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-## Update All Channel Balances
+## すべてのチャネル残高の更新
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 管理者権限が必要（Admin）
 
 `GET` `/api/channel/update_balance`
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-## Update Specified Channel Balance
+## 指定チャネル残高の更新
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 管理者権限が必要（Admin）
 
 `GET` `/api/channel/update_balance/{id}`
 
-### 请求参数
+### リクエストパラメータ
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| パラメータ名 | 位置 | 型 | 必須 | 説明 |
 |---|---|---|---|---|
-| `id` | path | integer | 是 | — |
+| `id` | path | integer | はい | — |
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |

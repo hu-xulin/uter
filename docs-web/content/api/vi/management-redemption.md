@@ -1,110 +1,110 @@
-# redemption
+# Mã đổi thưởng (redemption)
 
-## Get All Redemption Codes
+## Lấy tất cả mã đổi thưởng (Get All Redemption Codes)
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 Yêu cầu quyền quản trị viên (Admin)
 
 `GET` `/api/redemption/`
 
-### 请求参数
+### Tham số yêu cầu
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| Tên tham số | Vị trí | Kiểu | Bắt buộc | Mô tả |
 |---|---|---|---|---|
-| `p` | query | integer | 否 | — |
-| `page_size` | query | integer | 否 | — |
+| `p` | query | integer | Không | — |
+| `page_size` | query | integer | Không | — |
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Delete Redemption Code
+## Xóa mã đổi thưởng (Delete Redemption Code)
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 Yêu cầu quyền quản trị viên (Admin)
 
 `DELETE` `/api/redemption/{id}`
 
-### 请求参数
+### Tham số yêu cầu
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| Tên tham số | Vị trí | Kiểu | Bắt buộc | Mô tả |
 |---|---|---|---|---|
-| `id` | path | integer | 是 | — |
+| `id` | path | integer | Có | — |
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Get Specific Redemption Code
+## Lấy mã đổi thưởng cụ thể (Get Specific Redemption Code)
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 Yêu cầu quyền quản trị viên (Admin)
 
 `GET` `/api/redemption/{id}`
 
-### 请求参数
+### Tham số yêu cầu
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| Tên tham số | Vị trí | Kiểu | Bắt buộc | Mô tả |
 |---|---|---|---|---|
-| `id` | path | integer | 是 | — |
+| `id` | path | integer | Có | — |
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Delete Invalid Redemption Codes
+## Xóa các mã đổi thưởng không hợp lệ (Delete Invalid Redemption Codes)
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 Yêu cầu quyền quản trị viên (Admin)
 
 `DELETE` `/api/redemption/invalid`
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Create Redemption Code
+## Tạo mã đổi thưởng (Create Redemption Code)
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 Yêu cầu quyền quản trị viên (Admin)
 
 `POST` `/api/redemption/`
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Update Redemption Code
+## Cập nhật mã đổi thưởng (Update Redemption Code)
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 Yêu cầu quyền quản trị viên (Admin)
 
 `PUT` `/api/redemption/`
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Search Redemption Codes
+## Tìm kiếm mã đổi thưởng (Search Redemption Codes)
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 Yêu cầu quyền quản trị viên (Admin)
 
 `GET` `/api/redemption/search`
 
-### 请求参数
+### Tham số yêu cầu
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| Tên tham số | Vị trí | Kiểu | Bắt buộc | Mô tả |
 |---|---|---|---|---|
-| `keyword` | query | string | 否 | — |
+| `keyword` | query | string | Không | — |
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |

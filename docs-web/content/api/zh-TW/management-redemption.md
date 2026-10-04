@@ -1,110 +1,110 @@
-# redemption
+# 兌換碼
 
-## Get All Redemption Codes
+## 獲取所有兌換碼
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 需要管理員許可權（Admin）
 
 `GET` `/api/redemption/`
 
-### 请求参数
+### 請求引數
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| 引數名 | 位置 | 型別 | 必填 | 說明 |
 |---|---|---|---|---|
 | `p` | query | integer | 否 | — |
 | `page_size` | query | integer | 否 | — |
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |
 
-## Delete Redemption Code
+## 刪除兌換碼
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 需要管理員許可權（Admin）
 
 `DELETE` `/api/redemption/{id}`
 
-### 请求参数
+### 請求引數
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| 引數名 | 位置 | 型別 | 必填 | 說明 |
 |---|---|---|---|---|
 | `id` | path | integer | 是 | — |
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |
 
-## Get Specific Redemption Code
+## 獲取指定兌換碼
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 需要管理員許可權（Admin）
 
 `GET` `/api/redemption/{id}`
 
-### 请求参数
+### 請求引數
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| 引數名 | 位置 | 型別 | 必填 | 說明 |
 |---|---|---|---|---|
 | `id` | path | integer | 是 | — |
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |
 
-## Delete Invalid Redemption Codes
+## 刪除無效兌換碼
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 需要管理員許可權（Admin）
 
 `DELETE` `/api/redemption/invalid`
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |
 
-## Create Redemption Code
+## 建立兌換碼
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 需要管理員許可權（Admin）
 
 `POST` `/api/redemption/`
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |
 
-## Update Redemption Code
+## 更新兌換碼
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 需要管理員許可權（Admin）
 
 `PUT` `/api/redemption/`
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |
 
-## Search Redemption Codes
+## 搜尋兌換碼
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 需要管理員許可權（Admin）
 
 `GET` `/api/redemption/search`
 
-### 请求参数
+### 請求引數
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| 引數名 | 位置 | 型別 | 必填 | 說明 |
 |---|---|---|---|---|
 | `keyword` | query | string | 否 | — |
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |

@@ -1,384 +1,384 @@
-# Uter Smart Large Model Service Platform Recharge Agreement
+# Contrat de recharge de la Plateforme intelligente de services de grands modèles Uter
 
-| Item | Content |
+| Élément | Contenu |
 |---|---|
-| Service brand | **Uter.ai** |
-| Platform | **Uter Smart Large Model Service Platform** |
-| Official website | https://uter.ai |
-| Document | Uter Smart Large Model Service Platform Recharge Agreement |
+| Marque du Service | **Uter.ai** |
+| Plateforme | **Plateforme intelligente de services de grands modèles Uter** |
+| Site officiel | https://uter.ai |
+| Document | Contrat de recharge de la Plateforme intelligente de services de grands modèles Uter |
 | Version | V1.0 |
-| Effective date | September 28, 2026 |
-| Last updated | September 28, 2026 |
-| Contracting entity | **Shenzhen Uter Network Technology Co., Ltd.** (the sole contracting entity for the recharge service and related fund-management matters under this Agreement) |
-| Applies to | Individual and enterprise users who make prepayments on the Platform |
-| Governing law | The laws of the People's Republic of China (excluding conflict-of-law rules) |
-| Related documents | Uter Smart Large Model Service Platform User Agreement; Uter Smart Large Model Service Platform Privacy Policy |
+| Date d'entrée en vigueur | 28 septembre 2026 |
+| Dernière mise à jour | 28 septembre 2026 |
+| Entité contractante | **Shenzhen Uter Network Technology Co., Ltd.** (unique entité contractante pour le service de recharge et les questions de gestion des fonds qui lui sont liées en vertu du présent Contrat) |
+| S'applique à | Les utilisateurs individuels et entreprise qui effectuent des prépaiements sur la Plateforme |
+| Droit applicable | Le droit de la République populaire de Chine (hors règles de conflit de lois) |
+| Documents connexes | Contrat d'utilisation de la Plateforme intelligente de services de grands modèles Uter ; Politique de confidentialité de la Plateforme intelligente de services de grands modèles Uter |
 
-> **Important notice**: This Agreement is a set of standard terms and forms part of the Uter Smart Large Model Service Platform User Agreement. Before making any recharge, please read all of its terms completely and carefully — **in particular the terms shown in bold that exclude or limit our liability, that limit your rights, and the terms on refund conditions and dispute resolution**. By completing any recharge, or by ticking your agreement to this Agreement, you are deemed to have fully understood and accepted all of its terms. If you do not agree with any part of this Agreement, please do not make a recharge.
+> **Avis important** : Le présent Contrat est un ensemble de conditions générales et fait partie intégrante du Contrat d'utilisation de la Plateforme intelligente de services de grands modèles Uter. Avant d'effectuer la moindre recharge, veuillez lire l'intégralité de ses conditions attentivement et complètement — **en particulier les conditions en gras qui excluent ou limitent notre responsabilité, qui limitent vos droits, ainsi que les conditions relatives aux modalités de remboursement et à la résolution des litiges**. En effectuant la moindre recharge, ou en cochant votre accord avec le présent Contrat, vous êtes réputé avoir compris et accepté l'intégralité de ses conditions. Si vous n'acceptez aucune partie du présent Contrat, veuillez ne pas effectuer de recharge.
 
 ---
 
-## Summary
+## Synthèse
 
-**This summary does not replace the main text; the full text governs all rights and obligations.**
+**La présente synthèse ne remplace pas le corps du document ; le texte intégral régit tous les droits et obligations.**
 
-| What you most want to know | Our answer |
+| Ce que vous souhaitez le plus savoir | Notre réponse |
 |---|---|
-| How is my credit calculated after a recharge? | Your available credit is converted from the amount paid using the **conversion rate** agreed between us or published on the Platform. The conversion is itemised on the recharge confirmation page and in the monthly statement. |
-| Can I get back money I have not used? | **Yes.** Any unconsumed balance may be refunded on request at any time. The fees actually charged by **third-party payment channels** and the **taxes** corresponding to invoices already issued are deducted; beyond those deductions we **charge no refund handling fee**, and the funds are returned via the original payment route within **7 business days** of receiving a qualifying refund request. |
-| Is a large recharge protected any further? | For a single or cumulative recharge reaching **RMB 300,000**, you may open a **jointly controlled account** with us. Neither party may withdraw from it without the other's confirmation. |
-| Does a staged recharge reduce my discount? | **No.** The discount is locked to the tier corresponding to the total contract amount and is not downgraded because the funds arrive in stages. |
-| Will the service stop abruptly when the balance runs low? | **No.** We notify you when the available credit falls below **110%** of the estimated consumption for the current month; if a suspension is genuinely necessary, we give you **48 hours'** notice beforehand. |
-| How do I reconcile my account? | We deliver the previous month's statement by the **5th** of each month; you may raise objections within **10 days** of receipt, after which the statement is deemed confirmed. |
-| What happens to my balance if the company runs into trouble? | Unconsumed balance is a **liability for services prepaid**, recorded on the Platform **separately and not commingled with the company's own funds**. On liquidation it is handled under the Enterprise Bankruptcy Law of the PRC and ranks ahead of shareholder distributions. |
+| Comment mon solde est-il calculé après une recharge ? | Votre solde disponible est converti à partir du montant payé selon le **taux de conversion** convenu entre nous ou publié sur la Plateforme. La conversion est détaillée sur la page de confirmation de recharge et dans le relevé mensuel. |
+| Puis-je récupérer l'argent que je n'ai pas utilisé ? | **Oui.** Tout solde non consommé peut être remboursé sur demande à tout moment. Les frais effectivement prélevés par les **canaux de paiement de tiers** ainsi que les **taxes** correspondant aux factures déjà émises sont déduits ; au-delà de ces déductions, nous **ne facturons aucun frais de traitement du remboursement**, et les fonds sont restitués par la voie de paiement d'origine dans un délai de **7 jours ouvrables** à compter de la réception d'une demande de remboursement admissible. |
+| Une recharge importante bénéficie-t-elle d'une protection supplémentaire ? | Pour une recharge unique ou cumulée atteignant **300,000 RMB**, vous pouvez ouvrir avec nous un **compte à gestion conjointe**. Aucune des deux parties ne peut s'en retirer sans la confirmation de l'autre. |
+| Une recharge échelonnée réduit-elle ma remise ? | **Non.** La remise est verrouillée sur le palier correspondant au montant total du contrat et n'est pas déclassée du fait que les fonds arrivent par tranches. |
+| Le service s'arrêtera-t-il brutalement lorsque le solde devient faible ? | **Non.** Nous vous notifions lorsque le solde disponible devient inférieur à **110%** de la consommation estimée du mois en cours ; si une suspension est réellement nécessaire, nous vous accordons un préavis de **48 heures** au préalable. |
+| Comment rapprocher mon compte ? | Nous transmettons le relevé du mois précédent au plus tard le **5** de chaque mois ; vous pouvez formuler vos contestations dans les **10 jours** suivant sa réception, après quoi le relevé est réputé confirmé. |
+| Que devient mon solde si la société rencontre des difficultés ? | Le solde non consommé constitue un **passif relatif à des services prépayés**, enregistré sur la Plateforme **de manière distincte et sans être confondu avec les fonds propres de la société**. En cas de liquidation, il est traité en vertu de la Loi sur les faillites d'entreprises de la République populaire de Chine et se classe avant les distributions aux actionnaires. |
 
 ---
 
-## Contents
+## Sommaire
 
-1. General provisions and scope of application
-2. Recharge, credit conversion and receipts
-3. Staged recharge
-4. Metering, consumption and credit alerts
-5. Refund of unconsumed balance
-6. Reconciliation and fund security
-7. Jointly controlled account (for large recharges)
-8. Rights and obligations of the parties; limitation of liability
-9. Miscellaneous
-
----
-
-## Chapter 1　General provisions and scope of application
-
-**Article 1　[Purpose]**
-
-This Agreement sets out the rights and obligations between you and Shenzhen Uter Network Technology Co., Ltd. ("we", "us" or "the Company") in respect of your prepayment to the Uter Smart Large Model Service Platform (the "Platform"), and of the stages that prepaid funds pass through — arrival, conversion, consumption, reconciliation and refund — so that prepaid funds are **secure, verifiable and refundable**.
-
-**Article 2　[Scope of application]**
-
-This Agreement applies to the following conduct on the Platform:
-
-(1) **Large recharges**: a single recharge, or cumulative recharges from your first recharge onward, reaching **RMB 300,000** (inclusive);
-
-(2) **Staged recharges**: recharges individually below RMB 300,000 where you and the Company separately agree to split the total contract amount into several instalments arriving on an agreed schedule;
-
-(3) **Other prepayments**: for prepayments outside the two categories above, Chapter 5 (refund of unconsumed balance) applies and the remaining matters follow the User Agreement.
-
-**Article 3　[Definitions]**
-
-Unless the context requires otherwise, the following terms have the meanings below:
-
-(1) **Recharge balance**: funds prepaid to the Platform that have not yet been consumed in full in accordance with actual usage;
-
-(2) **Available credit**: the credit available to offset service fees, being the amount paid converted at the conversion rate;
-
-(3) **Conversion rate**: the rate at which the amount paid is converted into available credit, as agreed in writing between the parties or published on the Platform. The conversion rate is **not lower than 1.00**; that is, a recharge attracts no additional charge of any kind;
-
-(4) **Consumption**: the fees actually incurred by your use of the Platform's API services under the billing rules published on the Platform;
-
-(5) **Staged recharge**: a recharge arrangement as defined in paragraph (2) of Article 2;
-
-(6) **Jointly controlled account**: a corporate bank account opened jointly by the Company and you at a bank under Chapter 7 of this Agreement and supervised by both parties;
-
-(7) **Statement**: the monthly written record delivered by the Company showing the opening balance, that month's consumption, recharges received, closing balance and refund records;
-
-(8) **Business day**: a statutory business day in the People's Republic of China; **calendar day**: a calendar day, including statutory holidays.
-
-**Article 4　[Relationship with the User Agreement]**
-
-(1) This Agreement forms part of the Uter Smart Large Model Service Platform User Agreement (the "User Agreement") and has the same effect as the User Agreement.
-
-(2) On matters concerning **prepaid funds and their management**, where this Agreement and the User Agreement differ, **this Agreement prevails**; matters not addressed here follow the User Agreement.
-
-(3) Where neither this Agreement nor the User Agreement addresses a matter, the rules published on the Platform and the laws and regulations of the People's Republic of China currently in force apply.
+1. Dispositions générales et périmètre d'application
+2. Recharge, conversion du solde et reçus
+3. Recharge échelonnée
+4. Comptage, consommation et alertes de solde
+5. Remboursement du solde non consommé
+6. Rapprochement et sécurité des fonds
+7. Compte à gestion conjointe (pour les recharges importantes)
+8. Droits et obligations des parties ; limitation de responsabilité
+9. Dispositions diverses
 
 ---
 
-## Chapter 2　Recharge, credit conversion and receipts
+## Chapitre 1　Dispositions générales et périmètre d'application
 
-**Article 5　[Payment channels and arrival of funds]**
+**Article 1　[Objet]**
 
-(1) You shall make recharges through the channels published on the Platform, namely **corporate bank transfer** and **online payment**.
+Le présent Contrat définit les droits et obligations entre vous et Shenzhen Uter Network Technology Co., Ltd. (« nous », « notre » ou « la Société ») en ce qui concerne votre prépaiement à la Plateforme intelligente de services de grands modèles Uter (la « Plateforme »), ainsi que les étapes que traversent les fonds prépayés — arrivée, conversion, consommation, rapprochement et remboursement — afin que les fonds prépayés soient **sûrs, vérifiables et remboursables**.
 
-(2) **You shall pay using an entity whose verified identity matches your Platform account.** Where payment is made by a third party on your behalf, the Company may require you to explain the source and purpose of the funds and may withhold credit conversion until verification is complete.
+**Article 2　[Périmètre d'application]**
 
-(3) The time of arrival is the time the funds are actually credited by the bank or third-party payment institution. **Online payments normally arrive immediately upon successful payment; corporate transfers normally arrive within the same business day**, subject to delay for interbank processing or statutory holidays.
+Le présent Contrat s'applique aux comportements suivants sur la Plateforme :
 
-(4) Once a recharge arrives, the Platform converts available credit under Article 6 and issues you with a **receipt for the equivalent amount**.
+(1) **Recharges importantes** : une recharge unique, ou des recharges cumulées depuis votre première recharge, atteignant **300,000 RMB** (inclus) ;
 
-**Article 6　[Credit conversion]**
+(2) **Recharges échelonnées** : des recharges individuelles inférieures à 300,000 RMB pour lesquelles vous et la Société convenez séparément de répartir le montant total du contrat en plusieurs échéances arrivant selon un calendrier convenu ;
 
-(1) Available credit is calculated as follows:
+(3) **Autres prépaiements** : pour les prépaiements ne relevant pas des deux catégories ci-dessus, le Chapitre 5 (Remboursement du solde non consommé) s'applique et les questions restantes relèvent du Contrat d'utilisation.
 
-> **Available credit = Amount paid × Conversion rate**
+**Article 3　[Définitions]**
 
-(2) The conversion rate is agreed in writing between the parties or published on the Platform. For example, at a conversion rate of **1.10**, RMB 100 paid converts into RMB 110 of available credit.
+Sauf si le contexte n'exige autrement, les termes suivants ont les sens suivants :
 
-(3) **The conversion rule and its result are itemised on the recharge confirmation page and in that month's statement** so that you can verify them. Once applied, the conversion rate applies to the whole of the available credit corresponding to that recharge and is **not adjusted for later usage volume, arrival instalments or routing outcomes**.
+(1) **Solde de recharge** : fonds prépayés à la Plateforme qui n'ont pas encore été entièrement consommés conformément à l'utilisation effective ;
 
-(4) Unless otherwise agreed in writing, the Company **charges no handling fee, management fee or service fee for a recharge**. **Fees charged to the Company by the payment channel for the movement of funds are deducted on a cost basis under Article 16 when a refund occurs.**
+(2) **Solde disponible** : le solde disponible pour compenser les frais de service, étant le montant payé converti au taux de conversion ;
 
-**Article 7　[Receipts and invoices]**
+(3) **Taux de conversion** : le taux auquel le montant payé est converti en solde disponible, tel que convenu par écrit entre les parties ou publié sur la Plateforme. Le taux de conversion n'est **pas inférieur à 1.00** ; autrement dit, une recharge n'entraîne aucun frais additionnel d'aucune sorte ;
 
-(1) Once a recharge arrives, the Platform issues a **recharge receipt** stating the amount paid, the conversion rate, the available credit, the time of arrival and the transaction number.
+(4) **Consommation** : les frais effectivement supportés par votre utilisation des services API de la Plateforme en vertu des règles de facturation publiées sur la Plateforme ;
 
-(2) You may request a value-added tax invoice (special or ordinary, depending on your taxpayer status) for service consumption actually incurred. **Invoices are not issued for the recharge itself; they are issued on the amount actually consumed.**
+(5) **Recharge échelonnée** : un dispositif de recharge tel que défini au point (2) de l'Article 2 ;
 
-(3) Invoice requests shall be made within the calendar year in which the corresponding consumption occurs; in principle no invoice can be issued for a prior year. Where incorrect invoicing details provided by you cause re-issuance or cancellation, you bear the associated cost.
+(6) **Compte à gestion conjointe** : un compte bancaire d'entreprise ouvert conjointement par la Société et vous auprès d'une banque en vertu du Chapitre 7 du présent Contrat et supervisé par les deux parties ;
 
-(4) On a refund, **for any portion already invoiced you shall return the original invoice or process a red-letter reversal**. Until that is completed, the Company may withhold the corresponding tax from the refund and return it without interest once the reversal is complete.
+(7) **Relevé** : l'état écrit mensuel remis par la Société indiquant le solde d'ouverture, la consommation du mois, les recharges reçues, le solde de clôture et les enregistrements de remboursement ;
 
----
+(8) **Jour ouvrable** : un jour ouvrable légal en République populaire de Chine ; **jour calendaire** : un jour calendaire, y compris les jours fériés légaux.
 
-## Chapter 3　Staged recharge
+**Article 4　[Relation avec le Contrat d'utilisation]**
 
-**Article 8　[Arrangement]**
+(1) Le présent Contrat fait partie du Contrat d'utilisation de la Plateforme intelligente de services de grands modèles Uter (le « Contrat d'utilisation ») et a la même portée juridique que le Contrat d'utilisation.
 
-(1) You may agree with the Company in writing on a staged recharge, splitting the total contract amount into **four instalments arriving one instalment per week**, with the amounts and timing as confirmed in writing by both parties.
+(2) Sur les questions relatives aux **fonds prépayés et à leur gestion**, en cas de divergence entre le présent Contrat et le Contrat d'utilisation, **le présent Contrat prévaut** ; les questions non traitées ici relèvent du Contrat d'utilisation.
 
-(2) The schedule, instalment amounts and conversion rate are specified in a **recharge confirmation or supplementary agreement signed separately** by the parties. In the absence of such specification, the total is divided equally into four instalments arriving on the same day of each week from the agreed start date.
-
-**Article 9　[Effect of a staged recharge]**
-
-(1) The contract discount is locked to the tier corresponding to the **total contract amount across all instalments** and is **not downgraded because the funds arrive in stages**.
-
-(2) On arrival of any instalment, the discount for that instalment takes effect immediately and applies to the whole of the available credit.
-
-(3) **You may top up later instalments early according to your actual usage**; an early arrival does not affect the remaining instalments on the original schedule and does not change the locked discount tier.
-
-(4) If you fail to pay an instalment on schedule, the Company may give written notice. **If payment is still outstanding 15 days after that notice**, the Company may adjust the discount on the amount already received to the tier **corresponding to the amount received** and settle the difference, which is applied as an adjustment of available credit rather than collected in cash.
-
-**Article 10　[Consideration protection for staged recharges]**
-
-The Company undertakes that, for a staged recharge, **before each instalment arrives it will not restrict your service by reference to the total contract amount not yet received**. The available credit corresponding to amounts you have already paid may be used normally under this Agreement, **regardless of whether later instalments arrive on schedule**.
-
-**Article 11　[Failure to pay on schedule]**
-
-(1) Where the Company adjusts the discount tier under Article 9(4), it shall give you **5 business days'** written notice with the revised settlement details.
-
-(2) If you pay the outstanding instalments within **5 business days** of receiving that notice, the Company shall restore the original contract discount tier and retroactively adjust the available credit from the date of adjustment.
-
-(3) For reasonable costs the Company has already incurred because of the missed schedule (for example, upstream procurement commitments already locked in), the Company may claim against you after itemising them in writing, **limited to amounts actually incurred and verifiable**.
+(3) Lorsque ni le présent Contrat ni le Contrat d'utilisation ne traite une question, les règles publiées sur la Plateforme ainsi que les lois et réglementations en vigueur de la République populaire de Chine s'appliquent.
 
 ---
 
-## Chapter 4　Metering, consumption and credit alerts
+## Chapitre 2　Recharge, conversion du solde et reçus
 
-**Article 12　[Metered billing and measurement basis]**
+**Article 5　[Canaux de paiement et arrivée des fonds]**
 
-(1) Available credit is deducted in real time according to **actual API usage** under the billing rules published on the Platform.
+(1) Vous devez effectuer vos recharges par les canaux publiés sur la Plateforme, à savoir le **virement bancaire d'entreprise** et le **paiement en ligne**.
 
-(2) **Measurements are based on data recorded by the Platform.** The Platform records the time, model identifier, input/output token counts, status code and latency of each request and generates fee details and statements from that data.
+(2) **Vous devez payer au moyen d'une entité dont l'identité vérifiée correspond à votre compte Plateforme.** Lorsque le paiement est effectué par un tiers pour votre compte, la Société peut exiger de vous une explication de l'origine et de l'affectation des fonds et peut suspendre la conversion du solde jusqu'à l'achèvement de la vérification.
 
-(3) The same model may be priced differently across routing paths and upstream model providers. The Platform bills according to the **actual routing outcome** and lists the corresponding tiers on the pricing page.
+(3) La date d'arrivée est la date à laquelle les fonds sont effectivement crédités par la banque ou l'établissement de paiement de tiers. **Les paiements en ligne arrivent normalement immédiatement après le paiement réussi ; les virements d'entreprise arrivent normalement dans le même jour ouvrable**, sous réserve des délais de traitement interbancaire ou des jours fériés légaux.
 
-**Article 13　[Usage details and enquiries]**
+(4) Dès qu'une recharge arrive, la Plateforme convertit le solde disponible en vertu de l'Article 6 et vous délivre un **reçu d'un montant équivalent**.
 
-(1) Billing details are **available in real time**. You may export usage and fee details for any period from the console, and an export record may serve as the basis for reconciliation.
+**Article 6　[Conversion du solde]**
 
-(2) Detail data is retained for **no less than 12 months** from the date it is generated.
+(1) Le solde disponible est calculé comme suit :
 
-**Article 14　[Credit alerts and suspension of service]**
+> **Solde disponible = Montant payé × Taux de conversion**
 
-(1) **Alert**: when available credit falls below **110%** of the estimated consumption for the current month, the Platform notifies you by the method agreed between the parties (in-app message, email or SMS).
+(2) Le taux de conversion est convenu par écrit entre les parties ou publié sur la Plateforme. Par exemple, à un taux de conversion de **1.10**, 100 RMB payés sont convertis en 110 RMB de solde disponible.
 
-(2) **Suspension**: if available credit is exhausted, the Platform may suspend the service. **Except where you have breached the usage rules or are in arrears, the Platform gives you 48 hours' written notice (including email and in-app message) before a suspension.**
+(3) **La règle de conversion et son résultat sont détaillés sur la page de confirmation de recharge et dans le relevé du mois**, afin que vous puissiez les vérifier. Une fois appliqué, le taux de conversion s'applique à l'intégralité du solde disponible correspondant à cette recharge et n'est **pas ajusté en fonction du volume d'utilisation ultérieur, des échéances d'arrivée ou des résultats de routage**.
 
-(3) **Effect of suspension**: a suspension **does not affect** the retention of your data, your access to usage details, or your right to a refund of unconsumed balance. Service resumes immediately once you top up.
+(4) Sauf accord écrit contraire, la Société **ne facture aucun frais de traitement, de gestion ou de service pour une recharge**. **Les frais facturés à la Société par le canal de paiement au titre de la circulation des fonds sont déduits au titre du coût réel en vertu de l'Article 16 en cas de remboursement.**
 
-(4) **Consumed fees are not refunded**: fees for tokens actually consumed are not refunded, whether or not you actually used the output (for example where you abandoned use because of prompt design, changed requirements or unsatisfactory results).
+**Article 7　[Reçus et factures]**
 
-(5) Where a request fails because of **an error on the Platform's side** (gateway failure, or routing failure where the request never reached the upstream), it is not billed and any deducted amount is returned automatically.
+(1) Dès qu'une recharge arrive, la Plateforme délivre un **reçu de recharge** indiquant le montant payé, le taux de conversion, le solde disponible, la date d'arrivée et le numéro de transaction.
 
----
+(2) Vous pouvez demander une facture de taxe sur la valeur ajoutée (spéciale ou ordinaire, selon votre qualité de contribuable) au titre de la consommation de service effectivement supportée. **Les factures ne sont pas émises pour la recharge elle-même ; elles sont émises sur le montant effectivement consommé.**
 
-## Chapter 5　Refund of unconsumed balance
+(3) Les demandes de facture doivent être effectuées au cours de l'année civile au cours de laquelle la consommation correspondante intervient ; en principe, aucune facture ne peut être émise pour une année antérieure. Lorsque des informations de facturation erronées fournies par vous entraînent une réémission ou une annulation, vous en supportez le coût.
 
-**Article 15　[Right to a refund]**
-
-(1) **You may request a refund of the unconsumed part of your recharge balance at any time. The fees actually charged by third-party payment channels and the taxes corresponding to invoices already issued are deducted from the refund; beyond those deductions the Company charges no refund handling fee.**
-
-(2) Refunds are returned **via the original payment route** as a matter of principle, that is, to the original paying account. If that account is closed or unavailable, you may request payment to a bank account **whose verified identity matches your Platform account**, supported by the necessary evidence.
-
-(3) Refund requests are submitted through the console or sent to **finance@uter.ai**.
-
-**Article 16　[Calculation of the refund amount]**
-
-(1) The **base refundable amount** is calculated as follows:
-
-1. Where the conversion rate is **1.00** (that is, the amount paid equals the available credit):
-
-> **Base refundable amount = Amount paid − Amount actually consumed**
-
-2. Where the conversion rate is **greater than 1.00** (that is, credit was converted at a discount or with bonus credit):
-
-> **Base refundable amount = Amount paid × (1 − Amount actually consumed ÷ Total credit after conversion)**
-
-where "total credit after conversion" is the total available credit for that recharge after conversion. The effect of this formula is that the **amount paid is refunded in proportion to the unconsumed credit out of the total credit after conversion**; bonus credit is not converted into cash.
-
-(2) The **refundable amount** is the base refundable amount less the following items actually incurred:
-
-> **Refundable amount = Base refundable amount − Third-party payment channel fees − Taxes corresponding to invoices already issued**
-
-1. **Third-party payment channel fees**: the fees actually charged to the Company by the payment channel for the movement of funds, deducted on a cost basis; the Company will provide a breakdown of the amount on your request.
-2. **Taxes corresponding to invoices already issued**: handled under Article 7(4); where the original invoice should be returned or a red-letter reversal made but has not been completed, the corresponding tax is deducted on a cost basis.
-
-(3) Where an account holds several recharges with different conversion rates, the base refundable amount is calculated **first-in, first-out** for each, and the refund is paid after the deductions under paragraph (2) are combined.
-
-(4) Where a **termination by the Company** or **force majeure** requires a full refund under the User Agreement, the deductions in paragraph (2) do not apply.
-
-**Article 17　[Refund process and timelines]**
-
-(1) Within **7 business days** of receiving a refund request that meets the requirements of this Agreement, the Company calculates the refundable amount under Article 16 and completes the refund via the original payment route. Delays caused by the processing times of banks or third-party payment institutions are not counted towards that period.
-
-(2) To meet anti-money-laundering and fund-security obligations, the Company may require you to provide identification, source-of-funds and purpose-of-funds information in any of the following cases; the refund period is extended accordingly, **by no more than 15 business days**:
-
-1. the same account requests refunds cumulatively exceeding **RMB 500,000** within 30 days **without any actual consumption**;
-2. the recharge funds come from a third party whose verified identity does not match the Platform account;
-3. other cases where verification is required by law, regulation or a competent authority.
-
-(3) If verification shows that **none** of the above applies, the Company shall immediately resume counting the refund period. **If verification fails or you decline to cooperate**, the Company may decline that refund, handle the matter under the User Agreement and, where necessary, report to the competent authority.
-
-**Article 18　[Amounts not refundable]**
-
-(1) Fees for services actually consumed;
-
-(2) Bonus credit, coupons, trial credit and other portions **not paid in cash**;
-
-(3) Third-party payment channel fees and the taxes corresponding to invoices already issued, which are deducted on a cost basis under Article 16(2);
-
-(4) Where your account is terminated under the User Agreement and there are payable fees, liquidated damages or compensation confirmed by an effective legal instrument, the remaining balance after deduction is still refundable — **except in cases of serious unlawful conduct**.
+(4) En cas de remboursement, **pour toute portion déjà facturée, vous devez restituer la facture d'origine ou procéder à une régularisation par facture corrective**. Tant que cette opération n'est pas effectuée, la Société peut retenir la taxe correspondante sur le remboursement et la restituer sans intérêts une fois la régularisation achevée.
 
 ---
 
-## Chapter 6　Reconciliation and fund security
+## Chapitre 3　Recharge échelonnée
 
-**Article 19　[Monthly statement]**
+**Article 8　[Aménagement]**
 
-(1) The Company delivers the previous month's statement by the **5th of each month**, stating the **opening balance, a summary of that month's consumption details, recharges received that month, the closing balance and refund records**.
+(1) Vous pouvez convenir avec la Société par écrit d'une recharge échelonnée, en répartissant le montant total du contrat en **quatre échéances arrivant à raison d'une échéance par semaine**, les montants et les dates étant confirmés par écrit par les deux parties.
 
-(2) **You shall raise any objection to the statement in writing within 10 days of receipt**; if you do not, the statement is deemed confirmed. A confirmed statement is the basis for settlement and for transfers from the jointly controlled account.
+(2) Le calendrier, les montants des échéances et le taux de conversion sont précisés dans une **confirmation de recharge ou un avenant signé séparément** par les parties. À défaut d'une telle précision, le montant total est divisé en quatre échéances égales arrivant le même jour de chaque semaine à compter de la date de début convenue.
 
-(3) If an objection is verified and an error exists, the Company shall correct and re-deliver the statement within **3 business days** of verification; the correction does not affect the undisputed parts.
+**Article 9　[Effet d'une recharge échelonnée]**
 
-**Article 20　[Separate recording of balances and priority on liquidation]**
+(1) La remise contractuelle est verrouillée sur le palier correspondant au **montant total du contrat toutes échéances confondues** et n'est **pas déclassée du fait que les fonds arrivent par tranches**.
 
-(1) **The Company shall record each customer's recharge balance truthfully and separately in its reconciliation system, and shall not commingle it with the Company's own funds.**
+(2) À l'arrivée de chaque échéance, la remise applicable à cette échéance prend effet immédiatement et s'applique à l'intégralité du solde disponible.
 
-(2) If the Company is dissolved, liquidated or becomes bankrupt, your unconsumed balance is a **liability for prepaid services**, and its ranking is determined under the Enterprise Bankruptcy Law of the People's Republic of China, **ahead of shareholder distributions**.
+(3) **Vous pouvez avancer le versement des échéances ultérieures en fonction de votre utilisation effective** ; une arrivée anticipée n'affecte pas les échéances restantes selon le calendrier initial et ne modifie pas le palier de remise verrouillé.
 
-(3) If the Company merges, splits, changes control or undergoes a major business change, it shall give you **30 calendar days'** notice; the transferee or successor shall assume the balance obligations under this Agreement, **failing which you may require the unconsumed balance to be refunded in full**.
+(4) Si vous ne versez pas une échéance selon le calendrier, la Société peut adresser un avis écrit. **Si le paiement reste en souffrance 15 jours après cet avis**, la Société peut ajuster la remise appliquée au montant déjà reçu au palier **correspondant au montant reçu** et régler la différence, celle-ci étant appliquée comme un ajustement du solde disponible et non recouvrée en espèces.
 
----
+**Article 10　[Protection de la contrepartie pour les recharges échelonnées]**
 
-## Chapter 7　Jointly controlled account (for large recharges)
+La Société s'engage, pour une recharge échelonnée, à **ne pas restreindre votre service au motif du montant total du contrat non encore reçu avant l'arrivée de chaque échéance**. Le solde disponible correspondant aux montants que vous avez déjà payés peut être utilisé normalement en vertu du présent Contrat, **indépendamment de l'arrivée ou non des échéances ultérieures selon le calendrier**.
 
-**Article 21　[Availability and opening]**
+**Article 11　[Défaut de versement selon le calendrier]**
 
-(1) A customer whose single or cumulative recharge reaches **RMB 300,000** may open a **jointly controlled account** with the Company at a bank; for a large-recharge customer, cooperating in opening the account is **an obligation of the Company**.
+(1) Lorsque la Société ajuste le palier de remise en vertu de l'Article 9(4), elle doit vous adresser un avis écrit **5 jours ouvrables** à l'avance précisant les détails de règlement révisés.
 
-(2) The account is managed by **both parties' specimen seals** or by **two-person authorisation on online banking**; **neither party may withdraw from it unilaterally**.
+(2) Si vous versez les échéances en souffrance dans les **5 jours ouvrables** suivant la réception de cet avis, la Société rétablit le palier de remise contractuel initial et ajuste rétroactivement le solde disponible à compter de la date de l'ajustement.
 
-(3) The cost of opening and maintaining the account is **borne by the Company**; additional costs caused by your own circumstances (for example, changing the account-holding entity or frequently changing specimen seals) are borne by you.
-
-(4) The detailed operating rules of the account follow the **Jointly Controlled Account Supervision Agreement** signed by you, the Company and the bank. To the extent that agreement and this Agreement differ on the operation of the account, the Supervision Agreement prevails.
-
-**Article 22　[Arrival of funds and monthly transfers]**
-
-(1) If you choose the jointly controlled account model, **recharge funds go directly into that account and not into the Company's operating account**.
-
-(2) Within **5 business days** after both parties confirm the monthly statement, the Company transfers the confirmed amount actually consumed from the jointly controlled account to the Company's operating account for upstream resource procurement and service delivery.
-
-(3) **No one may transfer funds out of the jointly controlled account without joint confirmation by both parties.**
-
-(4) If the parties dispute the amount to be transferred, the disputed portion is **not transferred** pending resolution; the undisputed portion is transferred normally and service delivery is unaffected.
-
-**Article 23　[Refund route and closing the account]**
-
-(1) On a refund request, the unconsumed balance is **returned directly from the jointly controlled account via the original payment route**, without passing through the Company's operating account.
-
-(2) If you end the cooperation or this Agreement is terminated, **all untransferred balance in the jointly controlled account is returned to you** and the account may be closed; both parties shall cooperate in the closing formalities within **10 business days**.
-
-**Article 24　[Disclosure of use of funds]**
-
-(1) To build trust, **the Company may, on your written request**, provide the names of the principal suppliers in its current upstream resource procurement together with summaries of payment vouchers (commercially sensitive details may be redacted) to evidence the actual use of transferred funds.
-
-(2) Such disclosure is available no more than once per calendar quarter, and the Company shall reply within **10 business days** of the written request. Where information involves trade secrets or may not lawfully be disclosed, the Company may decline and explain why.
+(3) Pour les frais raisonnables que la Société a déjà exposés en raison du non-respect du calendrier (par exemple des engagements d'achat en amont déjà figés), la Société peut réclamer sa contrepartie après les avoir détaillés par écrit, **dans la limite des montants effectivement engagés et vérifiables**.
 
 ---
 
-## Chapter 8　Rights and obligations of the parties; limitation of liability
+## Chapitre 4　Comptage, consommation et alertes de solde
 
-**Article 25　[Obligations of the Company]**
+**Article 12　[Facturation au comptage et base de mesure]**
 
-(1) To record and keep your recharge balance and consumption details truthfully, ensuring the accounts are verifiable, exportable and traceable;
+(1) Le solde disponible est déduit en temps réel en fonction de l'**utilisation effective des API** en vertu des règles de facturation publiées sur la Plateforme.
 
-(2) To perform its alert, notice, reconciliation and refund obligations under this Agreement;
+(2) **Les mesures sont fondées sur les données enregistrées par la Plateforme.** La Plateforme enregistre l'heure, l'identifiant de modèle, les nombres de jetons d'entrée et de sortie, le code de statut et la latence de chaque requête, et génère à partir de ces données les détails des frais et les relevés.
 
-(3) To adopt technical and organisational measures consistent with industry standards to protect the integrity and confidentiality of funds and account data;
+(3) Un même modèle peut être tarifé différemment selon les chemins de routage et les fournisseurs de modèles en amont. La Plateforme facture selon le **résultat réel du routage** et publie les paliers correspondants sur la page des tarifs.
 
-(4) Not to use your recharge balance for any purpose other than those set out in this Agreement.
+**Article 13　[Détails d'utilisation et demandes de renseignements]**
 
-**Article 26　[Your obligations]**
+(1) Les détails de facturation sont **disponibles en temps réel**. Vous pouvez exporter depuis la console les détails d'utilisation et de frais pour toute période, et un enregistrement d'exportation peut servir de base au rapprochement.
 
-(1) To make recharges using an entity whose verified identity matches your Platform account, and to ensure the funds come from lawful sources;
+(2) Les données de détail sont conservées **pendant au moins 12 mois** à compter de leur date de génération.
 
-(2) **Not to use prepaid funds for money laundering, cash-out, collection and payment on behalf of others, or the transfer of unlawful funds, or for any other unlawful or irregular activity**;
+**Article 14　[Alertes de solde et suspension du service]**
 
-(3) To check notices promptly and to raise objections to statements within the agreed period;
+(1) **Alerte** : lorsque le solde disponible devient inférieur à **110%** de la consommation estimée du mois en cours, la Plateforme vous notifie selon la méthode convenue entre les parties (message dans l'application, courriel ou SMS).
 
-(4) To bear the consequences of failed or delayed refunds caused by account details you supplied incorrectly.
+(2) **Suspension** : si le solde disponible est épuisé, la Plateforme peut suspendre le service. **Sauf si vous avez violé les règles d'utilisation ou si vous êtes en retard de paiement, la Plateforme vous accorde un avis écrit de 48 heures (y compris par courriel et message dans l'application) avant toute suspension.**
 
-**Article 27　[Limitation of liability]**
+(3) **Effet de la suspension** : une suspension **n'affecte pas** la conservation de vos données, votre accès aux détails d'utilisation, ni votre droit au remboursement du solde non consommé. Le service reprend immédiatement dès que vous effectuez une recharge.
 
-(1) **To the maximum extent permitted by law, the Company's liability for compensation under this Agreement is limited to the amount you have actually paid and not consumed.**
+(4) **Les frais consommés ne sont pas remboursés** : les frais correspondant aux jetons effectivement consommés ne sont pas remboursés, que vous ayez effectivement utilisé la sortie ou non (par exemple lorsque vous avez abandonné l'utilisation en raison de la conception des invites, d'un changement d'exigences ou de résultats insatisfaisants).
 
-(2) The limitation above does not apply to: **the Company's wilful misconduct or gross negligence; the Company's breach of its balance-custody obligations under Article 25; or any other case in which liability may not lawfully be limited or excluded.**
-
-(3) The Company is not liable for breach where service is suspended or delayed for reasons **beyond its reasonable control**, such as force majeure, governmental action, cross-border link interruption or changes in upstream model provider policies; however it shall notify you promptly and **refund the unconsumed balance in full**.
+(5) Lorsqu'une requête échoue en raison d'**une erreur du côté de la Plateforme** (défaillance de passerelle, ou échec de routage lorsque la requête n'a jamais atteint l'amont), elle n'est pas facturée et tout montant déduit est restitué automatiquement.
 
 ---
 
-## Chapter 9　Miscellaneous
+## Chapitre 5　Remboursement du solde non consommé
 
-**Article 28　[Amendment and effectiveness]**
+**Article 15　[Droit au remboursement]**
 
-(1) This Agreement takes effect for you when you **complete a recharge** or **sign a recharge confirmation separately**, whichever is later.
+(1) **Vous pouvez demander à tout moment le remboursement de la partie non consommée de votre solde de recharge. Les frais effectivement prélevés par les canaux de paiement de tiers et les taxes correspondant aux factures déjà émises sont déduits du remboursement ; au-delà de ces déductions, la Société ne facture aucun frais de traitement du remboursement.**
 
-(2) The Company may revise this Agreement as necessary to reflect laws and regulations, regulatory requirements, payment-channel rules or product iteration. Revised versions are published on the Platform and **notified to you at least 7 calendar days in advance**; for terms with a material impact on you — such as refund conditions, limitation of liability or dispute resolution — **15 calendar days'** notice is given.
+(2) Les remboursements sont restitués **par la voie de paiement d'origine** en règle générale, c'est-à-dire sur le compte payeur d'origine. Si ce compte est fermé ou indisponible, vous pouvez demander le versement sur un compte bancaire **dont l'identité vérifiée correspond à votre compte Plateforme**, sur présentation des justificatifs nécessaires.
 
-(3) **A published revision applies to recharges made after the revision; a recharge balance existing before the revision remains governed by the version in force at the time of that recharge.** This rule ensures that a revision cannot reduce the refundable amount of, or raise the exit threshold for, your existing balance.
+(3) Les demandes de remboursement sont soumises via la console ou envoyées à **finance@uter.ai**.
 
-(4) The Platform keeps historical versions of this Agreement for traceability.
+**Article 16　[Calcul du montant du remboursement]**
 
-**Article 29　[Notices and service]**
+(1) Le **montant remboursable de base** est calculé comme suit :
 
-(1) Notices from the Company may be served by any of the following means and are deemed served on dispatch: **in-app message (deemed served on sending), registered email (deemed served 24 hours after sending), console announcement (deemed served on publication), SMS (deemed served on sending)**.
+1. Lorsque le taux de conversion est de **1.00** (autrement dit, lorsque le montant payé est égal au solde disponible) :
 
-(2) Notices concerning **discount adjustments, suspension of service, refund verification or material amendments to this Agreement** are served by **two or more** means at the same time.
+> **Montant remboursable de base = Montant payé − Montant effectivement consommé**
 
-(3) You are obliged to keep your registered email address and mobile number valid. Notices from you to the Company should be sent to **finance@uter.ai** (funds and accounts), **legal@uter.ai** (legal and compliance) or **bd@uter.ai** (commercial and contracts).
+2. Lorsque le taux de conversion est **supérieur à 1.00** (autrement dit, lorsque le solde a été converti avec une remise ou avec un solde bonus) :
 
-**Article 30　[Governing law and dispute resolution]**
+> **Montant remboursable de base = Montant payé × (1 − Montant effectivement consommé ÷ Solde total après conversion)**
 
-(1) The formation, validity, interpretation, performance and dispute resolution of this Agreement are governed by **the laws of the People's Republic of China** (excluding conflict-of-law rules).
+où le « solde total après conversion » désigne le solde disponible total pour cette recharge après conversion. L'effet de cette formule est que **le montant payé est remboursé au prorata du solde non consommé sur le solde total après conversion** ; le solde bonus n'est pas converti en espèces.
 
-(2) Any dispute arising out of or in connection with this Agreement shall first be resolved through friendly negotiation; failing that, either party may bring proceedings before **the competent people's court in the place where Shenzhen Uter Network Technology Co., Ltd. is domiciled (Shenzhen)**.
+(2) Le **montant remboursable** est le montant remboursable de base diminué des postes suivants effectivement engagés :
 
-(3) During dispute resolution, the parties shall continue to perform the other terms of this Agreement; **the Company shall not suspend your normal service for the undisputed portion because of the dispute**.
+> **Montant remboursable = Montant remboursable de base − Frais des canaux de paiement de tiers − Taxes correspondant aux factures déjà émises**
 
-**Article 31　[Other terms]**
+1. **Frais des canaux de paiement de tiers** : les frais effectivement facturés à la Société par le canal de paiement au titre de la circulation des fonds, déduits au titre du coût réel ; la Société vous en fournira le détail sur demande.
+2. **Taxes correspondant aux factures déjà émises** : traités en vertu de l'Article 7(4) ; lorsque la facture d'origine doit être restituée ou qu'une régularisation par facture corrective doit être effectuée sans avoir été réalisée, la taxe correspondante est déduite au titre du coût réel.
 
-(1) **Entire agreement**: this Agreement and the User Agreement together constitute the entire agreement between the parties on prepaid funds.
+(3) Lorsqu'un compte détient plusieurs recharges à des taux de conversion différents, le montant remboursable de base est calculé **premier entré, premier sorti** pour chacune d'elles, et le remboursement est versé après consolidation des déductions visées au point (2).
 
-(2) **Severability**: if any term of this Agreement is held invalid or unenforceable, the remaining terms remain in effect.
+(4) Lorsqu'une **résiliation par la Société** ou un **cas de force majeure** exige un remboursement intégral en vertu du Contrat d'utilisation, les déductions prévues au point (2) ne s'appliquent pas.
 
-(3) **Assignment**: you may not assign your rights and obligations under this Agreement without the Company's written consent; the Company may assign this Agreement in the event of a merger, restructuring or adjustment among affiliates, with prior notice to you.
+**Article 17　[Procédure et délais de remboursement]**
 
-(4) **No waiver**: the Company's failure or delay in exercising any right under this Agreement does not constitute a waiver of that right.
+(1) Dans un délai de **7 jours ouvrables** à compter de la réception d'une demande de remboursement remplissant les conditions du présent Contrat, la Société calcule le montant remboursable en vertu de l'Article 16 et exécute le remboursement par la voie de paiement d'origine. Les retards tenant aux délais de traitement des banques ou des établissements de paiement de tiers ne sont pas imputés à ce délai.
 
-(5) **Headings**: article headings are for ease of reading only and do not affect interpretation.
+(2) Pour satisfaire à ses obligations de lutte contre le blanchiment de capitaux et de sécurité des fonds, la Société peut exiger de vous fournir des informations d'identification, d'origine des fonds et d'affectation des fonds dans l'un quelconque des cas suivants ; le délai de remboursement est prorogé en conséquence, **dans la limite de 15 jours ouvrables** :
 
-(6) **Language**: the **Chinese version** of this Agreement prevails. English or other translations are provided for understanding only; where a translation conflicts with the Chinese version, **the Chinese version prevails**.
+1. le même compte demande des remboursements cumulant plus de **500,000 RMB** sur 30 jours **sans aucune consommation effective** ;
+2. les fonds de recharge proviennent d'un tiers dont l'identité vérifiée ne correspond pas au compte Plateforme ;
+3. les autres cas où une vérification est exigée par la loi, la réglementation ou une autorité compétente.
 
-(7) **Survival**: after termination of this Agreement, terms that by their nature should survive (such as refund of balance, limitation of liability and dispute resolution) continue in effect.
+(3) Si la vérification établit qu'**aucun** des cas susmentionnés ne s'applique, la Société reprend immédiatement le décompte du délai de remboursement. **Si la vérification échoue ou si vous refusez de coopérer**, la Société peut refuser ce remboursement, traiter la question selon le Contrat d'utilisation et, le cas échéant, signaler les faits à l'autorité compétente.
+
+**Article 18　[Montants non remboursables]**
+
+(1) Les frais de services effectivement consommés ;
+
+(2) Le solde bonus, les coupons, le solde d'essai et toutes autres portions **non payées en espèces** ;
+
+(3) Les frais des canaux de paiement de tiers et les taxes correspondant aux factures déjà émises, déduits au titre du coût réel en vertu de l'Article 16(2) ;
+
+(4) Lorsque votre compte est résilié en vertu du Contrat d'utilisation et que des sommes exigibles, des dommages-intérêts ou une indemnisation sont confirmés par un acte juridique définitif, le solde restant après déduction demeure remboursable — **sauf en cas de comportement illicite grave**.
+
+---
+
+## Chapitre 6　Rapprochement et sécurité des fonds
+
+**Article 19　[Relevé mensuel]**
+
+(1) La Société transmet le relevé du mois précédent au plus tard le **5 de chaque mois**, en indiquant le **solde d'ouverture, un résumé des détails de consommation du mois, les recharges reçues au cours du mois, le solde de clôture et les enregistrements de remboursement**.
+
+(2) **Vous devez formuler toute contestation sur le relevé par écrit dans les 10 jours suivant sa réception** ; à défaut, le relevé est réputé confirmé. Un relevé confirmé constitue la base du règlement et des virements provenant du compte à gestion conjointe.
+
+(3) Si une contestation est vérifiée et qu'une erreur est constatée, la Société doit rectifier et retransmettre le relevé dans un délai de **3 jours ouvrables** à compter de la vérification ; la rectification n'affecte pas les parties non contestées.
+
+**Article 20　[Enregistrement distinct des soldes et rang en cas de liquidation]**
+
+(1) **La Société doit enregistrer fidèlement et de manière distincte le solde de recharge de chaque client dans son système de rapprochement, et ne doit pas le confondre avec les fonds propres de la Société.**
+
+(2) En cas de dissolution, de liquidation ou de faillite de la Société, votre solde non consommé constitue un **passif relatif à des services prépayés**, et son rang est déterminé en vertu de la Loi sur les faillites d'entreprises de la République populaire de Chine, **avant les distributions aux actionnaires**.
+
+(3) En cas de fusion, de division, de changement de contrôle ou de modification commerciale majeure de la Société, celle-ci doit vous accorder un préavis de **30 jours calendaires** ; le cessionnaire ou le successeur reprend les obligations liées au solde en vertu du présent Contrat, **à défaut de quoi vous pouvez exiger le remboursement intégral du solde non consommé**.
+
+---
+
+## Chapitre 7　Compte à gestion conjointe (pour les recharges importantes)
+
+**Article 21　[Disponibilité et ouverture]**
+
+(1) Un client dont la recharge unique ou cumulée atteint **300,000 RMB** peut ouvrir avec la Société un **compte à gestion conjointe** auprès d'une banque ; pour un client réalisant des recharges importantes, la coopération à l'ouverture de ce compte constitue **une obligation de la Société**.
+
+(2) Le compte est géré au moyen des **cachets des deux parties** ou d'une **autorisation à deux personnes sur la banque en ligne** ; **aucune des parties ne peut s'en retirer unilatéralement**.
+
+(3) Le coût d'ouverture et de tenue du compte est **supporté par la Société** ; les coûts supplémentaires consécutifs à votre propre situation (par exemple le changement de l'entité titulaire du compte ou le changement fréquent de cachets) sont à votre charge.
+
+(4) Les règles détaillées de fonctionnement du compte figurent dans l'**Accord de supervision du compte à gestion conjointe** signé par vous, la Société et la banque. Dans la mesure où ledit accord et le présent Contrat divergent quant au fonctionnement du compte, l'Accord de supervision prévaut.
+
+**Article 22　[Arrivée des fonds et virements mensuels]**
+
+(1) Si vous choisissez le modèle du compte à gestion conjointe, **les fonds de recharge sont versés directement sur ce compte et non sur le compte d'exploitation de la Société**.
+
+(2) Dans un délai de **5 jours ouvrables** après confirmation du relevé mensuel par les deux parties, la Société vire depuis le compte à gestion conjointe vers son compte d'exploitation le montant confirmé effectivement consommé, aux fins d'achat de ressources en amont et de fourniture du service.
+
+(3) **Nul ne peut virer de fonds hors du compte à gestion conjointe sans la confirmation conjointe des deux parties.**
+
+(4) Si les parties contestent le montant à virer, la partie contestée **n'est pas virée** dans l'attente de la résolution ; la partie non contestée est virée normalement et la fourniture du service n'est pas affectée.
+
+**Article 23　[Voie de remboursement et clôture du compte]**
+
+(1) Sur demande de remboursement, le solde non consommé est **restitué directement depuis le compte à gestion conjointe par la voie de paiement d'origine**, sans transiter par le compte d'exploitation de la Société.
+
+(2) Si vous mettez fin à la collaboration ou si le présent Contrat est résilié, **la totalité du solde non viré du compte à gestion conjointe vous est restituée** et le compte peut être clôturé ; les deux parties doivent coopérer aux formalités de clôture dans un délai de **10 jours ouvrables**.
+
+**Article 24　[Divulgation de l'affectation des fonds]**
+
+(1) afin d'instaurer la confiance, **la Société peut, sur demande écrite de votre part**, fournir les noms de ses principaux fournisseurs dans le cadre de ses achats actuels de ressources en amont, ainsi que des résumés des justificatifs de paiement (les détails commercialement sensibles peuvent être caviardés), afin de prouver l'affectation effective des fonds virés.
+
+(2) Une telle divulgation est disponible au plus une fois par trimestre civil, et la Société doit répondre dans un délai de **10 jours ouvrables** à compter de la demande écrite. Lorsque les informations concernent des secrets commerciaux ou ne peuvent être légalement divulguées, la Société peut refuser et en expliquer la raison.
+
+---
+
+## Chapitre 8　Droits et obligations des parties ; limitation de responsabilité
+
+**Article 25　[Obligations de la Société]**
+
+(1) Enregistrer et conserver fidèlement votre solde de recharge et vos détails de consommation, en veillant à ce que les comptes soient vérifiables, exportables et traçables ;
+
+(2) Exécuter ses obligations d'alerte, d'information, de rapprochement et de remboursement en vertu du présent Contrat ;
+
+(3) Adopter des mesures techniques et organisationnelles conformes aux normes du secteur pour protéger l'intégrité et la confidentialité des fonds et des données de compte ;
+
+(4) Ne pas utiliser votre solde de recharge à des fins autres que celles prévues par le présent Contrat.
+
+**Article 26　[Vos obligations]**
+
+(1) Effectuer vos recharges au moyen d'une entité dont l'identité vérifiée correspond à votre compte Plateforme, et veiller à ce que les fonds proviennent de sources licites ;
+
+(2) **Ne pas utiliser les fonds prépayés pour le blanchiment de capitaux, l'encaissement, l'encaissement et le paiement pour le compte de tiers, le transfert de fonds illicites, ni pour aucune autre activité illicite ou irrégulière** ;
+
+(3) Consulter rapidement les informations et formuler vos contestations sur les relevés dans le délai convenu ;
+
+(4) Supporter les conséquences d'un remboursement défaillant ou retardé.causé par des coordonnées de compte que vous avez fournies de manière inexacte.
+
+**Article 27　[Limitation de responsabilité]**
+
+(1) **Dans la mesure maximale autorisée par la loi, la responsabilité de la Société en matière d'indemnisation en vertu du présent Contrat est limitée au montant que vous avez effectivement payé et non consommé.**
+
+(2) La limitation susmentionnée ne s'applique pas à : **la faute intentionnelle ou la négligence grave de la Société ; la violation par la Société de ses obligations de conservation des soldes en vertu de l'Article 25 ; ou tout autre cas dans lequel la responsabilité ne peut légalement être limitée ou exclue.**
+
+(3) La Société n'est pas responsable du manquement lorsque le service est suspendu ou retardé pour des motifs **dépassant son contrôle raisonnable**, tels que la force majeure, une action gouvernementale, une interruption des liaisons transfrontalières ou des modifications des politiques des fournisseurs de modèles en amont ; elle doit toutefois vous en informer sans délai et **rembourser intégralement le solde non consommé**.
+
+---
+
+## Chapitre 9　Dispositions diverses
+
+**Article 28　[Modification et entrée en vigueur]**
+
+(1) Le présent Contrat prend effet à votre égard lorsque vous **effectuez une recharge** ou que vous **signez séparément une confirmation de recharge**, la date la plus tardive des deux étant retenue.
+
+(2) La Société peut réviser le présent Contrat autant que nécessaire pour refléter les lois et réglementations, les exigences réglementaires, les règles des canaux de paiement ou l'itération du produit. Les versions révisées sont publiées sur la Plateforme et **vous sont notifiées au moins 7 jours calendaires à l'avance** ; pour les conditions ayant un impact substantiel sur vous — telles que les modalités de remboursement, la limitation de responsabilité ou la résolution des litiges — un préavis de **15 jours calendaires** est accordé.
+
+(3) **Une révision publiée s'applique aux recharges effectuées après la révision ; un solde de recharge existant avant la révision demeure régi par la version en vigueur au moment de cette recharge.** Cette règle garantit qu'une révision ne peut ni réduire le montant remboursable de votre solde existant, ni relever le seuil de sortie de celui-ci.
+
+(4) La Plateforme conserve les versions historiques du présent Contrat à des fins de traçabilité.
+
+**Article 29　[Notifications et signification]**
+
+(1) Les notifications de la Société peuvent être effectuées par l'un quelconque des moyens suivants et sont réputées notifiées dès leur envoi : **message dans l'application (réputé notifié dès l'envoi), courriel enregistré (réputé notifié 24 heures après l'envoi), annonce dans la console (réputée notifiée dès sa publication), SMS (réputé notifié dès l'envoi)**.
+
+(2) Les notifications relatives aux **ajustements de remise, à la suspension du service, à la vérification des remboursements ou aux modifications substantielles du présent Contrat** sont effectuées par **deux ou plusieurs** moyens simultanément.
+
+(3) Vous êtes tenu de maintenir votre adresse courriel enregistrée et votre numéro de mobile en cours de validité. Les notifications que vous adressez à la Société doivent être envoyées à **finance@uter.ai** (fonds et comptes), **legal@uter.ai** (juridique et conformité) ou **bd@uter.ai** (commercial et contrats).
+
+**Article 30　[Droit applicable et résolution des litiges]**
+
+(1) La formation, la validité, l'interprétation, l'exécution et la résolution des litiges du présent Contrat sont régies par **le droit de la République populaire de Chine** (hors règles de conflit de lois).
+
+(2) Tout litige découlant du présent Contrat ou s'y rapportant doit d'abord être résolu par voie de négociation amiable ; à défaut, l'une ou l'autre partie peut saisir **le tribunal populaire compétent du lieu du domicile de Shenzhen Uter Network Technology Co., Ltd. (Shenzhen)**.
+
+(3) Pendant la résolution du litige, les parties doivent continuer d'exécuter les autres conditions du présent Contrat ; **la Société ne doit pas suspendre votre service normal pour la partie non contestée en raison du litige**.
+
+**Article 31　[Autres conditions]**
+
+(1) **Accord complet** : le présent Contrat et le Contrat d'utilisation constituent ensemble l'accord complet entre les parties quant aux fonds prépayés.
+
+(2) **Séparabilité** : si l'une quelconque des conditions du présent Contrat est réputée invalide ou inapplicable, les autres conditions demeurent en vigueur.
+
+(3) **Cession** : vous ne pouvez céder vos droits et obligations au titre du présent Contrat sans le consentement écrit de la Société ; la Société peut céder le présent Contrat en cas de fusion, de réorganisation ou de réajustement entre entités affiliées, après vous en avoir informé à l'avance.
+
+(4) **Absence de renonciation** : le fait que la Société n'exerce pas ou exerce tardivement un droit au titre du présent Contrat ne vaut pas renonciation à ce droit.
+
+(5) **Intitulés** : les intitulés des articles ne sont destinés qu'à faciliter la lecture et n'affectent pas l'interprétation.
+
+(6) **Langue** : la **version chinoise** du présent Contrat prévaut. Les traductions en anglais ou dans d'autres langues sont fournies à titre indicatif uniquement ; en cas de conflit entre une traduction et la version chinoise, **la version chinoise prévaut**.
+
+(7) **Survie** : après la résiliation du présent Contrat, les conditions qui, par leur nature, doivent survivre (telles que le remboursement du solde, la limitation de responsabilité et la résolution des litiges) demeurent en vigueur.

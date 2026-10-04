@@ -1,17 +1,17 @@
-# API Reference
+# Справочник API
 
-## Overview
+## Обзор
 
-Uter provides a complete set of RESTful API interfaces, categorized into **AI Model APIs** and **Management APIs**. You can use these interfaces to invoke AI capabilities and perform system management functions.
+Uter предоставляет полный набор RESTful API-интерфейсов, разделённых на **API моделей ИИ** и **API управления**. Вы можете использовать эти интерфейсы для вызова возможностей ИИ и выполнения функций системного управления.
 
-> **Online Debugging**
+> **Онлайн-отладка**
 >
-> You can visit the Apifox Playground to test and debug API interfaces online, or browse the API documentation below.
+> Вы можете посетить Apifox Playground, чтобы протестировать и отладить API-интерфейсы онлайн, либо изучить документацию по API ниже.
 
-## AI Model APIs
+## API моделей ИИ
 
-AI Model APIs provide access to various AI capabilities and are compatible with the OpenAI API format.
+API моделей ИИ предоставляют доступ к различным возможностям ИИ и совместимы с форматом OpenAI API.
 
-## Management APIs
+## API управления
 
-Management APIs are used for backend operations such as system configuration, user management, and business management.
+API управления используются для серверных операций, таких как конфигурация системы, управление пользователями и бизнес-управление.

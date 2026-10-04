@@ -1,140 +1,140 @@
-# oauth
+# OAuth
 
-## Discord OAuth Login
+## Discord OAuth登入
 
-🔓 无需鉴权（OAuth回调）
+🔓 無需鑑權（OAuth回撥）
 
 `GET` `/api/oauth/discord`
 
-### 请求参数
+### 請求引數
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| 引數名 | 位置 | 型別 | 必填 | 說明 |
 |---|---|---|---|---|
 | `code` | query | string | 否 | — |
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |
 
-## Bind Email
+## 繫結郵箱
 
-🔓 无需鉴权
+🔓 無需鑑權
 
 `GET` `/api/oauth/email/bind`
 
-### 请求参数
+### 請求引數
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| 引數名 | 位置 | 型別 | 必填 | 說明 |
 |---|---|---|---|---|
 | `email` | query | string | 否 | — |
 | `code` | query | string | 否 | — |
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |
 
-## GitHub OAuth Login
+## GitHub OAuth登入
 
-🔓 无需鉴权（OAuth回调）
+🔓 無需鑑權（OAuth回撥）
 
 `GET` `/api/oauth/github`
 
-### 请求参数
+### 請求引數
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| 引數名 | 位置 | 型別 | 必填 | 說明 |
 |---|---|---|---|---|
 | `code` | query | string | 否 | — |
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |
 
-## LinuxDO OAuth Login
+## LinuxDO OAuth登入
 
-🔓 无需鉴权（OAuth回调）
+🔓 無需鑑權（OAuth回撥）
 
 `GET` `/api/oauth/linuxdo`
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |
 
-## OIDC Login
+## OIDC登入
 
-🔓 无需鉴权（OAuth回调）
+🔓 無需鑑權（OAuth回撥）
 
 `GET` `/api/oauth/oidc`
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |
 
-## Generate OAuth State
+## 生成OAuth State
 
-🔓 无需鉴权
+🔓 無需鑑權
 
 `GET` `/api/oauth/state`
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |
 
-## Bind Telegram
+## 繫結Telegram
 
-🔓 无需鉴权
+🔓 無需鑑權
 
 `GET` `/api/oauth/telegram/bind`
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |
 
-## Telegram Login
+## Telegram登入
 
-🔓 无需鉴权（OAuth回调）
+🔓 無需鑑權（OAuth回撥）
 
 `GET` `/api/oauth/telegram/login`
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |
 
-## Bind WeChat
+## 繫結微信
 
-🔓 无需鉴权
+🔓 無需鑑權
 
 `GET` `/api/oauth/wechat/bind`
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |
 
-## WeChat OAuth Login
+## 微信OAuth登入
 
-🔓 无需鉴权（OAuth回调）
+🔓 無需鑑權（OAuth回撥）
 
 `GET` `/api/oauth/wechat`
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |

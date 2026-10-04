@@ -1,94 +1,90 @@
-# AQBot - Local-First Desktop AI Workbench
+# AQBot - ローカルファーストのデスクトップ AI ワークベンチ
 
-> **Chat Settings Options**
+> **チャット設定オプション**
 >
-> In the Uter console, go to System Settings -> Chat Settings and add the
->   following shortcut option. It lets users fill AQBot from the token
->   management page with one click:
+> Uter コンソールで、システム設定 → チャット設定 に移動し、次のショートカットオプションを追加します。これにより、トークン管理ページから AQBot をワンクリックで入力できるようになります：
 
     ```json
     { "AQBot": "aqbot://providers?name=New%20API&baseurl={address}&apikey={key}&type=openai" }
     ```
 
-> AQBot is a local-first, open-source desktop AI workbench (AGPL-3.0). It
->   unifies multi-provider chat, ACP agents, knowledge bases, MCP tools, and a
->   local API gateway, while keeping app data and user files on the machine.
+> AQBot はローカルファーストのオープンソース デスクトップ AI ワークベンチです（AGPL-3.0）。複数プロバイダのチャット、ACP エージェント、ナレッジベース、MCP ツール、およびローカル API ゲートウェイを統合しながら、アプリデータとユーザーファイルをマシン上に保持します。
 
-- Official Website: [https://app.aqbot.top](https://app.aqbot.top)
+- 公式サイト: [https://app.aqbot.top](https://app.aqbot.top)
 - GitHub: [https://github.com/AQBot-Desktop/AQBot](https://github.com/AQBot-Desktop/AQBot)
-- Download: [GitHub Releases](https://github.com/AQBot-Desktop/AQBot/releases)
-- Official Docs: [Getting Started](https://app.aqbot.top/guide/getting-started)
+- ダウンロード: [GitHub Releases](https://github.com/AQBot-Desktop/AQBot/releases)
+- 公式ドキュメント: [はじめに](https://app.aqbot.top/guide/getting-started)
 
-## Core Features
+## 主要機能
 
-- **Multi-provider chat** — Connect OpenAI, Claude, Gemini, DeepSeek, Qwen, and any OpenAI-compatible endpoint
-- **Provider import** — Import a provider from an `aqbot://` link after confirmation
-- **Model management** — Sync remote model lists, capability tags, and latency tests
-- **Agent** — In-chat Agent (uses your configured provider APIs) plus an ACP Agent workbench
-- **Local data** — App state lives in `~/.aqbot/`; user files live in `~/Documents/aqbot/`
+- **マルチプロバイダチャット** — OpenAI、Claude、Gemini、DeepSeek、Qwen、および任意の OpenAI 互換エンドポイントに接続
+- **プロバイダのインポート** — 確認後に `aqbot://` リンクからプロバイダをインポート
+- **モデル管理** — リモートのモデル一覧、機能タグ、レイテンシテストを同期
+- **エージェント** — チャット内エージェント（設定したプロバイダ API を使用）に加え、ACP エージェント ワークベンチ
+- **ローカルデータ** — アプリの状態は `~/.aqbot/` に、ユーザーファイルは `~/Documents/aqbot/` に保存
 
-See the [AQBot website](https://app.aqbot.top) for the full feature set. This page covers Uter integration only.
+機能の全容については [AQBot のウェブサイト](https://app.aqbot.top) を参照してください。このページでは Uter との連携のみを扱います。
 
-## Uter Integration Method
+## Uter との連携方法
 
-Please use your self-deployed Uter, or ensure that the service provider has a Uter service with legal upstream authorization and compliance obligations. Do not integrate API addresses or keys from unknown sources into a production environment.
+ご自身で導入した Uter を使用するか、サービス提供者が正当な上流認可とコンプライアンス義務を負う Uter サービスを提供していることを確認してください。出所不明の API アドレスやキーを本番環境に統合しないでください。
 
-### Method 1: One-Click Import (Recommended)
+### 方法 1: ワンクリックインポート（推奨）
 
-1. Install AQBot and open it at least once so the system registers the `aqbot://` protocol
-2. In the Uter console, add the JSON above under **System Settings → Chat Settings**
-3. Open **Token Management** and choose **AQBot** from the token actions
-4. The browser launches AQBot. Confirm the provider name, API host, type `openai`, and key prefix
-5. After confirmation, AQBot opens **Settings → Provider Management**. It reuses a provider with the same API host + type, or creates a new one
-6. Open that provider, click **Sync Models**, then return to chat and select a model
+1. AQBot をインストールし、少なくとも一度開いてシステムに `aqbot://` プロトコルを登録する
+2. Uter コンソールで、上記の JSON を **システム設定 → チャット設定** に追加
+3. **トークン管理** を開き、トークン操作から **AQBot** を選択
+4. ブラウザが AQBot を起動する。プロバイダ名、API ホスト、タイプ `openai`、キーのプレフィックスを確認
+5. 確認後、AQBot が **設定 → プロバイダ管理** を開く。同じ API ホスト + タイプのプロバイダがあれば再利用し、なければ新規作成する
+6. そのプロバイダを開き、**モデルの同期** をクリックし、チャットに戻ってモデルを選択
 
-`{address}` is the Uter site root (for example `https://your-uter.example`), with no query string. For the OpenAI type, AQBot appends `/v1` automatically. Import does not validate the key or sync models.
+`{address}` は Uter サイトのルート（例：`https://your-uter.example`）で、クエリ文字列は付けません。OpenAI タイプの場合、AQBot が自動的に `/v1` を付加します。インポートではキーの検証やモデルの同期は行われません。
 
-### Method 2: Manual Configuration
+### 方法 2: 手動設定
 
-1. Copy the API Key from Uter Token Management
-2. In AQBot, go to **Settings → Provider Management → Add Provider**
-3. Fill in:
+1. Uter トークン管理から API キーをコピー
+2. AQBot で **設定 → プロバイダ管理 → プロバイダを追加** に移動
+3. 次を入力：
 
-| Field | Value |
+| 項目 | 値 |
 | --- | --- |
-| Provider Name | For example `Uter` |
-| Provider Type | `OpenAI` (recommended) |
-| API Host | Uter site address, such as `https://your-uter.example` |
-| API Key | Your Uter token |
+| プロバイダ名 | 例：`Uter` |
+| プロバイダタイプ | `OpenAI`（推奨） |
+| API ホスト | Uter サイトのアドレス（例：`https://your-uter.example`） |
+| API キー | お使いの Uter トークン |
 
-4. Click **Sync Models** to pull the models currently exposed by Uter
-5. Return to chat and select a synced model
+4. **モデルの同期** をクリックして、Uter が現在公開しているモデルを取得
+5. チャットに戻り、同期されたモデルを選択
 
 ![Switch model](/apps-assets/aqbot/switch-model.webp)
 
-### API Host Notes
+### API ホストに関する注意
 
-- Prefer the site root and let AQBot append `/v1`
-- If the host already ends with `/v1`, AQBot will not append another one
-- Add a trailing `!` only when you must disable automatic completion
+- サイトルートを指定し、AQBot に `/v1` を付加させるのが推奨
+- ホストが既に `/v1` で終わっている場合、AQBot はそれ以上付加しない
+- 自動補完を無効にする必要がある場合のみ、末尾に `!` を追加
 
-### Optional: Native Protocols
+### オプション: ネイティブプロトコル
 
-If Uter also exposes Claude or Gemini native APIs, add another provider:
+Uter が Claude や Gemini のネイティブ API も公開している場合、別のプロバイダを追加：
 
-| Use | Provider Type | API Host |
+| 用途 | プロバイダタイプ | API ホスト |
 | --- | --- | --- |
-| Chat Completions (default) | OpenAI | Site root |
-| Claude native `/v1/messages` | Anthropic | Site root |
-| Gemini native | Gemini | Site root |
+| Chat Completions（デフォルト） | OpenAI | サイトルート |
+| Claude ネイティブ `/v1/messages` | Anthropic | サイトルート |
+| Gemini ネイティブ | Gemini | サイトルート |
 
-Change `type` in the one-click template to `anthropic` or `gemini`. The same API key can back multiple providers.
+ワンクリックテンプレートの `type` を `anthropic` または `gemini` に変更します。同じ API キーで複数のプロバイダを支えることができます。
 
 ## FAQ
 
-- **Clicking AQBot does not open the app**: Install and launch the desktop app first. Opening only the website or a Vite dev server does not register `aqbot://`
-- **Import succeeds but chat fails**: Click **Sync Models**, and make sure the model ID matches the name Uter actually exposes
-- **macOS says the app is damaged or the developer cannot be verified**: Follow the [AQBot README](https://github.com/AQBot-Desktop/AQBot) and [Getting Started](https://app.aqbot.top/guide/getting-started) to allow this app. You do not need to turn Gatekeeper off
-- **The one-click link contains an API key**: Generate it only on the signed-in token page. Do not post URLs that embed a real key
+- **AQBot をクリックしてもアプリが開かない**: まずデスクトップアプリをインストールして起動してください。ウェブサイトや Vite 開発サーバーだけを開いても `aqbot://` は登録されません
+- **インポートは成功するがチャットが失敗する**: **モデルの同期** をクリックし、モデル ID が Uter が実際に公開している名前と一致することを確認
+- **macOS でアプリが破損している、または開発者を確認できないと表示される**: [AQBot README](https://github.com/AQBot-Desktop/AQBot) と [はじめに](https://app.aqbot.top/guide/getting-started) に従ってこのアプリを許可してください。Gatekeeper をオフにする必要はありません
+- **ワンクリックリンクに API キーが含まれている**: サインイン済みのトークンページでのみ生成してください。実際のキーが埋め込まれた URL を投稿しないでください
 
-## Related Links
+## 関連リンク
 
 - [AQBot GitHub](https://github.com/AQBot-Desktop/AQBot)
-- [Configure Providers (official docs)](https://app.aqbot.top/guide/providers)
-- [Download](https://github.com/AQBot-Desktop/AQBot/releases)
+- [プロバイダの設定（公式ドキュメント）](https://app.aqbot.top/guide/providers)
+- [ダウンロード](https://github.com/AQBot-Desktop/AQBot/releases)

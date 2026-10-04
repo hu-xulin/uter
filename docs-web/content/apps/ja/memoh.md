@@ -1,79 +1,79 @@
-# Memoh - Containerized AI Agent Platform
+# Memoh - コンテナ化された AI エージェントプラットフォーム
 
-> Memoh is an open-source, self-hosted AI agent platform where each bot runs in
->   its own isolated container with persistent memory and a dedicated filesystem.
->   It supports 9 channels including Telegram, Discord, Lark (Feishu), QQ, Matrix,
->   WeCom, WeChat, Email, and a built-in Web UI, along with MCP tool calling,
->   browser automation, scheduled tasks, and other rich agent capabilities.
+> Memoh は、各ボットが独自の分離されたコンテナで、永続的なメモリと専用のファイルシステムを備えて
+>   動作する、オープンソースのセルフホスト型 AI エージェントプラットフォームです。
+>   Telegram、Discord、Lark (Feishu)、QQ、Matrix、WeCom、WeChat、Email、および
+>   組み込みの Web UI を含む 9 つのチャネルをサポートし、MCP ツール呼び出し、
+>   ブラウザ自動化、スケジュールされたタスクなど、豊富なエージェント機能も備えています。
 
-- Website: [https://memoh.sh](https://memoh.sh)
-- Documentation: [https://docs.memoh.ai](https://docs.memoh.ai)
+- ウェブサイト: [https://memoh.sh](https://memoh.sh)
+- ドキュメント: [https://docs.memoh.ai](https://docs.memoh.ai)
 - GitHub: [https://github.com/memohai/Memoh](https://github.com/memohai/Memoh)
 
-## Key Features
+## 主要機能
 
-- **Containerized Isolation**: Each bot runs in its own containerd container with a dedicated filesystem and network, supporting snapshots and data import/export
-- **Memory Engine**: LLM-driven fact extraction, hybrid retrieval (dense + sparse + BM25), 24-hour context loading, memory compaction and rebuild
-- **Multi-Channel Support**: Telegram, Discord, Lark (Feishu), QQ, Matrix, WeCom, WeChat, Email, Web UI
-- **MCP Support**: Full MCP protocol support (HTTP / SSE / Stdio / OAuth), with independent MCP connection management per bot
-- **Browser Automation**: Built-in headless browser powered by Playwright, supporting web browsing, form filling, screenshots, and more
-- **Web Dashboard**: Modern management interface built with Vue 3 + Tailwind CSS, featuring streaming chat, tool call visualization, file management, and more
+- **コンテナ分離**: 各ボットは専用の filesystem とネットワークを持つ独自の containerd コンテナで動作し、スナップショットやデータのインポート/エクスポートをサポート
+- **メモリエンジン**: LLM 駆動の事実抽出、ハイブリッド検索（dense + sparse + BM25）、24 時間コンテキストの読み込み、メモリの圧縮と再構築
+- **マルチチャネル対応**: Telegram、Discord、Lark (Feishu)、QQ、Matrix、WeCom、WeChat、Email、Web UI
+- **MCP 対応**: 完全な MCP プロトコル対応（HTTP / SSE / Stdio / OAuth）、ボットごとに独立した MCP 接続管理
+- **ブラウザ自動化**: Playwright を動力源とする組み込みのヘッドレスブラウザを備え、ウェブ閲覧、フォーム入力、スクリーンショットなどをサポート
+- **Web ダッシュボード**: Vue 3 + Tailwind CSS で構築されたモダンな管理インターフェースで、ストリーミングチャット、ツール呼び出しの可視化、ファイル管理などを備える
 
-## Quick Installation
+## クイックインストール
 
-Memoh is deployed via Docker. One-click install (requires Docker):
+Memoh は Docker 経由で導入します。ワンクリックインストール（Docker が必要）：
 
 ```bash
 curl -fsSL https://memoh.sh | sudo sh
 ```
 
-Or install manually:
+または手動でインストール：
 
 ```bash
 git clone --depth 1 https://github.com/memohai/Memoh.git
 cd Memoh
 cp conf/app.docker.toml config.toml
-# Edit the config.toml configuration file
+# conf/app.docker.toml 設定ファイルを編集
 sudo docker compose up -d
 ```
 
-After startup, visit `http://localhost:8082`. Default credentials: `admin` / `admin123`.
+起動後、`http://localhost:8082` にアクセス。デフォルト認証情報：`admin` / `admin123`。
 
-## Uter Integration
+## Uter との統合
 
-Memoh supports any OpenAI-compatible model provider, allowing you to use Uter to centrally manage and access various AI model services.
+Memoh は任意の OpenAI 互換モデルプロバイダをサポートし、Uter を使用してさまざまな AI モデルサービスを一元管理・アクセスできます。
 
-### Configuration Steps
+### 設定手順
 
-#### Obtain a Uter API Key
+#### Uter API キーを取得
 
-After registering and logging in to Uter, click "Console" in the top navigation bar, then click "Token Management", and click the "Add Token" button to create a uter Key. Select the appropriate permissions and click "Create".
+Uter に登録してログイン後、上部ナビゲーションバーの「コンソール」をクリックし、次に「トークン管理」をクリックし、「トークンを追加」ボタンをクリックして uter キーを作成します。適切な権限を選択し、「作成」をクリックします。
 
-Once created, click the copy button to copy the generated API Key.
+作成後、コピーボタンをクリックして生成された API キーをコピーします。
 
 ![copy-api-key](/apps-assets/memoh/copy_api_key.webp)
 
-#### Add a Model Provider in Memoh
+#### Memoh でモデルプロバイダを追加
 
-Log in to the Memoh Web dashboard, go to the provider management page, and click Uter.
+Memoh Web ダッシュボードにログインし、プロバイダ管理ページに移動して Uter をクリックします。
 
 ![switch-to-uter-provider](/apps-assets/memoh/switch_to_uter_provider.webp)
 
-Fill in the following information on the configuration page:
+設定ページで次の情報を入力：
 
-- **API Base URL**: Enter the Uter endpoint URL, e.g. `https://api.example.com/v1` (use `http://localhost:3000/v1` for local deployments)
-- **API Key**: Paste the API Key copied from Uter
+- **API Base URL**: Uter のエンドポイント URL を入力（例：`https://api.example.com/v1`、ローカル導入の場合は `http://localhost:3000/v1`）
+- **API Key**: Uter からコピーした API キーを貼り付け
 
-Click Save to complete the provider configuration.
+保存をクリックしてプロバイダ設定を完了します。
 
-#### Import Models
+#### モデルをインポート
 
-After configuring the provider, go to the model management page and click auto-import or manually add the models you need.
+プロバイダを設定後、モデル管理ページに移動し、自動インポートをクリックするか、必要なモデルを手動で追加します。
 
-#### Configure a Model for Your Bot
+#### ボットにモデルを設定
 
-Go to the bot settings page, find the model configuration section, switch the default chat model to the one added via the Uter provider, and click Save.
+ボット設定ページに移動し、モデル設定セクションを見つけて、デフォルトのチャットモデルを Uter プロバイダ経由で追加したものに切り替え、保存をクリックします。
 
 ![set_chat_model](/apps-assets/memoh/set_chat_model.webp)
 
-You have now successfully configured Uter as the model provider for Memoh. You can chat with AI bots through any of Memoh's channels (Telegram, Discord, Lark, etc.), and all requests will be routed through Uter.
+これで、Memoh のモデルプロバイダとして Uter の設定が完了しました。Memoh の任意のチャネル（Telegram、Discord、Lark など）を通じて AI ボットとチャットでき、すべてのリクエストは Uter を経由します。

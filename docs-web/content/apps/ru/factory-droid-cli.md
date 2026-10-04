@@ -1,44 +1,44 @@
 # Factory Droid CLI
 
-> **Project Introduction**
+> **Введение в проект**
 >
-> Droid CLI is a command-line tool developed by Factory AI, designed to run as an AI software engineering agent. It allows users to interact with various large language models through the terminal, build, debug, and refactor code, and even create complete applications.
+> Droid CLI — это инструмент командной строки, разработанный Factory AI, предназначенный для работы в качестве ИИ-агента по программной инженерии. Он позволяет пользователям взаимодействовать с различными большими языковыми моделями через терминал, создавать, отлаживать и рефакторить код, а также создавать полноценные приложения.
 >
->   - Official Homepage: [https://factory.ai/product/cli](https://factory.ai/product/cli)
->   - Official Documentation: [https://docs.factory.ai/cli/getting-started/quickstart](https://docs.factory.ai/cli/getting-started/quickstart)
+>   - Официальная домашняя страница: [https://factory.ai/product/cli](https://factory.ai/product/cli)
+>   - Официальная документация: [https://docs.factory.ai/cli/getting-started/quickstart](https://docs.factory.ai/cli/getting-started/quickstart)
 
-## Demo
+## Демонстрация
 
 ![droid.webp](/apps-assets/factory_droid_cli/droid_example.webp)
 
-### Features
+### Возможности
 
-| Category                       | Feature                                                                                                                     | Value/Capability                                               | Example/Notes                                                             |
-| ------------------------------ | --------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- | ------------------------------------------------------------------------- |
-| Quick Start with CLI           | 30-second installation; launch droid interactive session in project directory; supports macOS/Linux and Windows             | Rapid integration into current projects, no new tools required | Windows Installation: `irm https://app.factory.ai/cli/windows \| iex`; Launch: `droid` |
-| End-to-End Feature Development | Full-process automation from planning to implementation to testing; transparent review process                              | Accelerate delivery, maintain human oversight                  | Native diff viewing and approval process (see "Transparency and Control") |
-| Deep Codebase Understanding    | Integrates organizational shared knowledge from codebases, documentation, issue tracking; context-aware, improves over time | More accurate suggestions and changes                          | Continuously leverages knowledge across repositories and documents        |
-| Engineering System Integration | Native integration with Jira, Notion, Slack, and other tools; development work stays synchronized with team processes       | Reduce tool switching and information silos                    | "etc." indicates more integrations                                        |
-| Production-Grade Automation    | Workflows reusable locally and in CI/CD; enterprise-grade security and compliance built-in                                  | Consistency and auditability                                   | Adapts to pipelines and enterprise environments                           |
-| Enterprise Capabilities        | Private deployment options, SOC-2 compliance, air-gapped environments                                                       | Meets security and compliance requirements                     | Prioritizes security and quality                                          |
-| Enhance Existing Tools         | Works in terminal, IDE, and existing development environments; no need to switch editors or learn new interfaces            | Maintain existing work habits, low migration cost              | Deep integration with familiar tools                                      |
-| Transparency and Control       | Every decision is visible and reviewable; complete oversight of code changes; native diff viewing and approval workflows    | Reduce risk, enhance controllability                           | Audit-friendly, traceable                                                 |
-| Model Flexibility              | Not locked to a single AI provider; choose the best model per task; consistent organizational behavior and memory           | Optimal choice between performance and cost                    | Supports multi-model routing                                              |
-| Next Steps & Resources         | Quickstart, Common Use Cases, IDE Integration, Configuration, AGENTS.md                                                     | Facilitates adoption and practice                              | See "Next steps/Additional resources" on the page                         |
+| Категория | Возможность | Ценность/Возможность | Пример/Примечания |
+| --- | --- | --- | --- |
+| Быстрый старт с CLI | Установка за 30 секунд; запуск интерактивной сессии droid в каталоге проекта; поддерживает macOS/Linux и Windows | Быстрая интеграция в текущие проекты, без новых инструментов | Установка в Windows: `irm https://app.factory.ai/cli/windows \| iex`; Запуск: `droid` |
+| Сквозная разработка функций | Полная автоматизация от планирования до реализации и тестирования; прозрачный процесс проверки | Ускорение поставки, сохранение контроля человеком | Нативный просмотр diff и процесс утверждения (см. «Прозрачность и контроль») |
+| Глубокое понимание кодовой базы | Интегрирует общие знания организации из кодовых баз, документации, отслеживания задач; учитывает контекст, улучшается со временем | Более точные предложения и изменения | Непрерывно использует знания из репозиториев и документов |
+| Интеграция с инженерными системами | Нативная интеграция с Jira, Notion, Slack и другими инструментами; работа остаётся синхронизированной с процессами команды | Сокращение переключения между инструментами и информационных силосов | «и т. д.» указывает на большее число интеграций |
+| Автоматизация промышленного уровня | Рабочие процессы пригодны для повторного использования локально и в CI/CD; встроенная безопасность и соответствие корпоративного уровня | Согласованность и проверяемость | Адаптируется к конвейерам и корпоративным средам |
+| Корпоративные возможности | Варианты приватного развёртывания, соответствие SOC-2, изолированные (air-gapped) среды | Удовлетворяет требованиям безопасности и соответствия | Приоритет безопасности и качеству |
+| Расширение существующих инструментов | Работает в терминале, IDE и существующих средах разработки; не нужно переключать редакторы или учить новые интерфейсы | Сохранение привычных рабочих привычек, низкая стоимость миграции | Глубокая интеграция с привычными инструментами |
+| Прозрачность и контроль | Каждое решение видимо и проверяемо; полный контроль над изменениями кода; нативные рабочие процессы просмотра diff и утверждения | Снижение риска, повышение управляемости | Удобно для аудита, отслеживаемо |
+| Гибкость моделей | Не привязан к одному ИИ-провайдеру; выбирайте лучшую модель для задачи; согласованное поведение и память организации | Оптимальный выбор между производительностью и стоимостью | Поддерживает мультимодельную маршрутизацию |
+| Дальнейшие шаги и ресурсы | Quickstart, типовые варианты использования, интеграция с IDE, конфигурация, AGENTS.md | Содействует внедрению и практике | См. «Дальнейшие шаги/Дополнительные ресурсы» на странице |
 
-## AI Model Configuration Method
+## Способ настройки ИИ-модели
 
-### Windows Graphical Guide
+### Графическое руководство для Windows
 
-#### 1. Open Terminal
+#### 1. Откройте Терминал
 
 ![windows_open_terminal](/apps-assets/factory_droid_cli/windows_open_terminal.webp)
 
-#### 2. Install Factory Droid CLI
+#### 2. Установите Factory Droid CLI
 
-Official one-click installation command:
+Официальная команда установки в один клик:
 
-> **One-click Installation Command**
+> **Команда установки в один клик**
 >
 > ```powershell
 >   irm https://app.factory.ai/cli/windows | iex
@@ -46,66 +46,66 @@ Official one-click installation command:
 
 ![windows-install](/apps-assets/factory_droid_cli/windows_install_droid.webp)
 
-#### 3. Modify Configuration File
+#### 3. Измените конфигурационный файл
 
-Droid CLI requires modifying the configuration file to use third-party APIs.
+Droid CLI требует изменения конфигурационного файла для использования сторонних API.
 
 ![windows-configure.webp](/apps-assets/factory_droid_cli/factory_cli_setup_windows.webp)
 
-> **Modify Environment Variables**
+> **Изменение переменных среды**
 >
 > ```powershell
 >   iex (irm 'https://raw.githubusercontent.com/Uter.ai/uter-docs/refs/heads/main/helper/factory-cli-setup.ps1')
 >   ```
 
-#### 4. Start Using Droid CLI
+#### 4. Начните использовать Droid CLI
 
-Now you can start using Droid CLI!
+Теперь вы можете начать использовать Droid CLI!
 
-> **Launch Droid CLI**
+> **Запуск Droid CLI**
 >
-> Launch Droid CLI directly:
+> Запустите Droid CLI напрямую:
 >
 >   ```bash
 >   droid
 >   ```
 >
->   Use in a specific project:
+>   Использование в определённом проекте:
 >
 >   ```bash
->   # Navigate to your project directory
+>   # Перейдите в каталог вашего проекта
 >   cd C:\path\to\your\project
 >
->   # Launch Droid CLI
+>   # Запустите Droid CLI
 >   droid
 >   ```
 >
->   Press Enter to launch Droid CLI.
+>   Нажмите Enter, чтобы запустить Droid CLI.
 
-Droid CLI requires users to log in to an official account (free) before use.
+Droid CLI требует от пользователей входа в официальную учётную запись (бесплатно) перед использованием.
 
-#### 5. Windows Common Issues Solution
+#### 5. Решение распространённых проблем Windows
 
-> This is usually a permission issue. Try the following solutions:
+> Обычно это проблема с правами. Попробуйте следующие решения:
 >
->   - Run PowerShell as an administrator
->   - Or configure `npm` to use the user directory: `npm config set prefix %APPDATA%\npm`
+>   - Запустите PowerShell от имени администратора
+>   - Или настройте `npm` на использование каталога пользователя: `npm config set prefix %APPDATA%\npm`
 
-> **PowerShell Execution Policy Error**
+> **Ошибка политики выполнения PowerShell**
 >
-> If you encounter an execution policy restriction, run:
+> Если вы столкнулись с ограничением политики выполнения, выполните:
 >
 >   ```powershell
 >   Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 >   ```
 
-### macOS/Linux Graphical Guide
+### Графическое руководство для macOS/Linux
 
-#### 1. Install Droid CLI
+#### 1. Установите Droid CLI
 
-> **Install Droid CLI**
+> **Установка Droid CLI**
 >
-> Open your terminal and run the following command:
+> Откройте терминал и выполните следующую команду:
 >
 >   ```bash
 >   curl -fsSL https://app.factory.ai/cli | sh
@@ -115,22 +115,22 @@ Droid CLI requires users to log in to an official account (free) before use.
 
 ![macos-img-02.webp](/apps-assets/factory_droid_cli/macos_install_droid_2.webp)
 
-Follow the installation prompts to modify environment variables (copy the installation prompt code directly):
+Следуйте подсказкам установки, чтобы изменить переменные среды (скопируйте код подсказки установки напрямую):
 
-For Linux, choose `~/.bashrc` or `~/.zshrc` as appropriate.
+Для Linux выберите `~/.bashrc` или `~/.zshrc` по ситуации.
 
-> **Droid CLI Environment Variables (Example Only)**
+> **Переменные среды Droid CLI (только пример)**
 >
 > ```bash
 >   echo 'export PATH=/Users/modify_here/.local/bin:$PATH' >> ~/.zshrc
 >   source ~/.zshrc
 >   ```
 
-#### 2. Modify Configuration File
+#### 2. Измените конфигурационный файл
 
-Droid CLI requires modifying the configuration file to use third-party APIs.
+Droid CLI требует изменения конфигурационного файла для использования сторонних API.
 
-> **One-click Configuration File Modification**
+> **Изменение конфигурационного файла в один клик**
 >
 > ```bash
 >   curl -fsSL https://raw.githubusercontent.com/Uter.ai/uter-docs/refs/heads/main/helper/factory-cli-setup.sh | bash
@@ -138,28 +138,28 @@ Droid CLI requires modifying the configuration file to use third-party APIs.
 
 ![macos-img-03.webp](/apps-assets/factory_droid_cli/macos_configure.webp)
 
-#### 3. Start Using Droid CLI
+#### 3. Начните использовать Droid CLI
 
-Now you can start using Droid CLI!
+Теперь вы можете начать использовать Droid CLI!
 
-> **Launch Droid CLI**
+> **Запуск Droid CLI**
 >
-> Launch Droid CLI directly:
+> Запустите Droid CLI напрямую:
 >
 >   ```bash
 >   droid
 >   ```
 >
->   Use in a specific project:
+>   Использование в определённом проекте:
 >
 >   ```bash
->   # Navigate to your project directory
+>   # Перейдите в каталог вашего проекта
 >   cd /path/to/your/project
 >
->   # Launch Droid CLI
+>   # Запустите Droid CLI
 >   droid
 >   ```
 >
->   Press Enter to launch Droid CLI.
+>   Нажмите Enter, чтобы запустить Droid CLI.
 
-> Droid CLI requires users to log in to an official account (free) before use.
+> Droid CLI требует от пользователей входа в официальную учётную запись (бесплатно) перед использованием.

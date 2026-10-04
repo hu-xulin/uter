@@ -1,25 +1,25 @@
 # security-verification
 
-## General Security Verification
+## 一般セキュリティ検証
 
-🔐 需要登录（User权限）
+🔐 ログインが必要（User権限）
 
 `POST` `/api/verify`
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-## Get Verification Status
+## 検証状態の取得
 
-🔐 需要登录（User权限）
+🔐 ログインが必要（User権限）
 
 `GET` `/api/verify/status`
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |

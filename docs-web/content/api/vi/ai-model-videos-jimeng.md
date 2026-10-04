@@ -1,52 +1,52 @@
-# Jimeng Video Generation
+# Tạo video Jimeng
 
-## Jimeng Video Generation
+## Tạo video Jimeng
 
-即梦官方 API 格式的视频生成接口。
+Giao diện tạo video định dạng API chính thức của Jimeng.
 
-支持通过 Action 参数指定操作类型：
-- `CVSync2AsyncSubmitTask`: 提交视频生成任务
-- `CVSync2AsyncGetResult`: 获取任务结果
+Hỗ trợ chỉ định loại thao tác qua tham số Action:
+- `CVSync2AsyncSubmitTask`: Gửi tác vụ tạo video
+- `CVSync2AsyncGetResult`: Lấy kết quả tác vụ
 
-需要在查询参数中指定 Action 和 Version。
+Cần chỉ định Action và Version trong tham số query.
 
 `POST` `/jimeng/`
 
-### 请求参数
+### Tham số yêu cầu
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| Tên tham số | Vị trí | Kiểu | Bắt buộc | Mô tả |
 |---|---|---|---|---|
-| `Action` | query | enum（`CVSync2AsyncSubmitTask`, `CVSync2AsyncGetResult`） | 是 | API 操作类型 |
-| `Version` | query | string | 是 | API 版本 |
+| `Action` | query | enum (`CVSync2AsyncSubmitTask`, `CVSync2AsyncGetResult`) | Có | Loại thao tác API |
+| `Version` | query | string | Có | Phiên bản API |
 
-### 请求体（`application/json`）
+### Thân yêu cầu (`application/json`)
 
-| 字段 | 类型 | 必填 | 说明 |
+| Trường | Kiểu | Bắt buộc | Mô tả |
 |---|---|---|---|
-| `req_key` | string | 否 | 请求类型标识 |
-| `prompt` | string | 否 | 文本描述 |
-| `binary_data_base64` | array&lt;string&gt; | 否 | Base64 编码的图片数据 |
+| `req_key` | string | Không | Định danh loại yêu cầu |
+| `prompt` | string | Không | Mô tả văn bản |
+| `binary_data_base64` | array&lt;string&gt; | Không | Dữ liệu ảnh mã hóa Base64 |
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功处理请求 |
-| `400` | 请求参数错误 |
+| `200` | Xử lý yêu cầu thành công |
+| `400` | Tham số yêu cầu lỗi |
 
-#### `200` 响应字段
+#### Trường phản hồi `200`
 
-| 字段 | 类型 | 说明 |
+| Trường | Kiểu | Mô tả |
 |---|---|---|
-| `code` | integer | 响应码 |
-| `message` | string | 响应消息 |
-| `data` | object | 响应数据 |
+| `code` | integer | Mã phản hồi |
+| `message` | string | Thông báo phản hồi |
+| `data` | object | Dữ liệu phản hồi |
 
-#### `400` 响应字段
+#### Trường phản hồi `400`
 
-| 字段 | 类型 | 说明 |
+| Trường | Kiểu | Mô tả |
 |---|---|---|
-| `error.message` | string | 错误信息 |
-| `error.type` | string | 错误类型 |
-| `error.param` | string | 相关参数 |
-| `error.code` | string | 错误代码 |
+| `error.message` | string | Thông báo lỗi |
+| `error.type` | string | Loại lỗi |
+| `error.param` | string | Tham số liên quan |
+| `error.code` | string | Mã lỗi |

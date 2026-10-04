@@ -1,45 +1,48 @@
-# AstrBot - Agent Chatbot
+# AstrBot - Agent 聊天機器人
 
-> AstrBot is an open-source, all-in-one Agent chatbot platform that seamlessly integrates large language model capabilities into mainstream instant messaging software such as QQ, Feishu, DingTalk, and WeChat Work, creating a reliable and scalable conversational AI infrastructure for individuals, developers, and teams. Whether it's a personal AI companion, intelligent customer service, automation assistant, or enterprise knowledge base, AstrBot can quickly build production-ready AI applications within your instant messaging platform's workflow.
+> AstrBot 是一個開源的一站式 Agent 聊天機器人平臺，可將大模型能力無縫接入
+>   QQ、飛書、釘釘、企業微信等主流即時通訊軟體，為個人、開發者和團隊打造可靠、可擴充套件的對話式智慧基礎設施。無論是個人
+>   AI 夥伴、智慧客服、自動化助手，還是企業知識庫，AstrBot
+>   都能在你的即時通訊軟體平臺的工作流中快速構建生產可用的 AI 應用。
 
-- Official Website: [https://astrbot.app](https://astrbot.app)
-- Official Documentation: [https://docs.astrbot.app](https://docs.astrbot.app)
-- Project Homepage: [https://github.com/astrbotdevs/astrbot](https://github.com/astrbotdevs/astrbot)
+- 官方網站：[https://astrbot.app](https://astrbot.app)
+- 官方文件：[https://docs.astrbot.app](https://docs.astrbot.app)
+- 專案主頁：[https://github.com/astrbotdevs/astrbot](https://github.com/astrbotdevs/astrbot)
 
-## Uter Integration Method
+## 優特接入方法
 
-AstrBot supports integrating Uter as a model provider, allowing users to access and utilize various AI model services through Uter.
+AstrBot 支援接入 優特作為模型提供商，使用者可以透過 優特來訪問和使用各種 AI 模型服務。
 
-### Configuration Steps
+### 配置步驟
 
-#### Obtain Uter API Key
+#### 獲取 優特 API Key 金鑰
 
-After registering and logging into Uter, click 'Console' in the top navigation bar, then click 'Token Management', and then click the 'Add Token' button to create a uter Key. Select the appropriate permissions and click 'Create'.
+在 優特註冊並登入後，點選上方導航欄的「控制檯」，點選「令牌管理」，然後點選「新增令牌」按鈕，建立一個新的 API Key 金鑰，選擇適當的許可權，然後點選「建立」。
 
 ![create-api-key](/apps-assets/astrbot/image.webp)
 
-After successful creation, click the 'Copy Key' button to copy the generated API Key.
+建立成功後，點選複製金鑰按鈕，複製生成的 API Key 金鑰。
 
 ![copy-api-key](/apps-assets/astrbot/image-1.webp)
 
-#### Configure Uter Service Provider in AstrBot
+#### 在 AstrBot 中配置 優特服務提供商
 
-Open the AstrBot administration panel, go to the 'Model Providers' page, then click the 'Add Model Provider' button.
+開啟 AstrBot 管理面板，進入「模型提供商」頁面，然後，點選「新增模型提供商」按鈕。
 
-Uter perfectly supports OpenAI Chat Completion and Responses interfaces. Click 'OpenAI' to enter the OpenAI provider configuration page.
+優特完美地支援了 OpenAI Chat Completion 和 Responses 介面，我們點選 「OpenAI」，進入 OpenAI 提供商的配置頁面。
 
-In the pop-up dialog, set the API Base URL to the Uter interface address. Please use your own deployed Uter, or ensure that the service provider has legitimate upstream authorization and compliance obligations for the Uter service. If you have deployed Uter locally, fill in the local address, for example, `http://localhost:3000/v1`. Do not connect API addresses or keys from unknown sources to a production environment.
+在彈出的對話方塊中，將 API Base URL 設定為 優特的介面地址。請使用您自己部署的 優特，或確認服務方具備合法上游授權和合規義務的 優特服務。如果您本地部署了 優特，則填寫本地地址，例如 `http://localhost:3000/v1`。不要將來源不明的 API 地址或金鑰接入生產環境。
 
-Then, enter the API Key into the 'API Key' field and click the 'Save' button.
+然後，將 API Key 填入「API Key」欄位中，點選「儲存」按鈕。
 
 ![astrbot-provider-config](/apps-assets/astrbot/image-2.webp)
 
-Then click 'Save' to complete the Uter provider configuration.
+然後點選儲存，完成 優特提供商的配置。
 
-#### Apply Service Provider
+#### 應用服務提供商
 
-Go to the 'Configuration File' page, find the 'Model' section, change the 'Default Chat Model' to the Uter provider you just created, and click the 'Save' button.
+進入「配置檔案」頁面，找到模型一節，將「預設聊天模型」修改為剛剛建立的 優特提供商，點選「儲存」按鈕。
 
 ![apply](/apps-assets/astrbot/image-3.webp)
 
-At this point, you have successfully configured Uter as AstrBot's model provider. Now, you can access and use various AI model services provided by Uter through AstrBot.
+至此，您已經成功配置了 優特作為 AstrBot 的模型提供商。現在，您可以透過 AstrBot 來訪問和使用 優特提供的各種 AI 模型服務了。

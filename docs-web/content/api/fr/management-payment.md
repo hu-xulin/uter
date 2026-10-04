@@ -1,121 +1,121 @@
 # payment
 
-## Creem Webhook
+## Webhook Creem
 
-🔓 无需鉴权（Webhook回调）
+🔓 Aucune authentification requise (rappel Webhook)
 
 `POST` `/api/creem/webhook`
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-## Stripe Webhook
+## Webhook Stripe
 
-🔓 无需鉴权（Webhook回调）
+🔓 Aucune authentification requise (rappel Webhook)
 
 `POST` `/api/stripe/webhook`
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-## Get Payment Amount
+## Obtenir le montant du paiement
 
-🔐 需要登录（User权限）
+🔐 Nécessite une connexion (permission User)
 
 `POST` `/api/user/amount`
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-## Initiate Creem Payment
+## Initier un paiement Creem
 
-🔐 需要登录（User权限）
+🔐 Nécessite une connexion (permission User)
 
 `POST` `/api/user/creem/pay`
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-## Epay Callback
+## Rappel Epay
 
-🔓 无需鉴权（支付回调）
+🔓 Aucune authentification requise (rappel de paiement)
 
 `GET` `/api/user/epay/notify`
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-## Initiate Easy Payment
+## Initier un paiement facile (Easy Payment)
 
-🔐 需要登录（User权限）
+🔐 Nécessite une connexion (permission User)
 
 `POST` `/api/user/pay`
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-## Get Stripe Payment Amount
+## Obtenir le montant du paiement Stripe
 
-🔐 需要登录（User权限）
+🔐 Nécessite une connexion (permission User)
 
 `POST` `/api/user/stripe/amount`
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-## Initiate Stripe Payment
+## Initier un paiement Stripe
 
-🔐 需要登录（User权限）
+🔐 Nécessite une connexion (permission User)
 
 `POST` `/api/user/stripe/pay`
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-## Get Top-up Information
+## Obtenir les informations de recharge
 
-🔐 需要登录（User权限）
+🔐 Nécessite une connexion (permission User)
 
 `GET` `/api/user/topup/info`
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-## Get User Top-up Records
+## Obtenir les enregistrements de recharge de l'utilisateur
 
-🔐 需要登录（User权限）
+🔐 Nécessite une connexion (permission User)
 
 `GET` `/api/user/topup/self`
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |

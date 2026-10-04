@@ -1,25 +1,25 @@
 # security-verification
 
-## General Security Verification
+## Vérification de sécurité générale
 
-🔐 需要登录（User权限）
+🔐 Nécessite une connexion (permission User)
 
 `POST` `/api/verify`
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-## Get Verification Status
+## Obtenir le statut de vérification
 
-🔐 需要登录（User权限）
+🔐 Nécessite une connexion (permission User)
 
 `GET` `/api/verify/status`
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |

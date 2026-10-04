@@ -1,615 +1,615 @@
-# Uter Large Model Service Platform Terms of Service
+# Uter 大規模モデルサービスプラットフォーム 利用規約
 
-| Item | Content |
+| 項目 | 内容 |
 |---|---|
-| Service Brand | **Uter.ai 优特智能** |
-| Platform Name | **Uter Large Model Service Platform** |
-| Official Website | https://uter.ai |
-| Document Name | Uter Large Model Service Platform Terms of Service |
-| Version | V1.0 |
-| Effective Date | August 8, 2026 |
-| Last Updated | August 8, 2026 |
-| Contracting Entity | **Shenzhen Uter Network Co., Ltd.** (the sole contracting entity for the services under this Agreement) |
-| Applicable To | Individual and enterprise users who register for and use the Uter Large Model Service Platform (Uter.ai) |
+| サービスブランド | **Uter.ai 优特智能** |
+| プラットフォーム名称 | **Uter 大規模モデルサービスプラットフォーム** |
+| 公式サイト | https://uter.ai |
+| 文書名 | Uter 大規模モデルサービスプラットフォーム 利用規約 |
+| バージョン | V1.0 |
+| 施行日 | 2026年8月8日 |
+| 最終更新日 | 2026年8月8日 |
+| 契約主体 | **深圳市 Uter 網絡科技有限公司**（本契約に基づくサービスの唯一の契約主体） |
+| 適用対象 | Uter 大規模モデルサービスプラットフォーム（Uter.ai）に登録し、これを利用する個人および企業ユーザー |
 
-> **Important Notice:** This Agreement is a standard-form contract. Before registering for or using this Service, please read all provisions of this Agreement carefully and in full, **especially the clauses highlighted in bold that exempt or limit our liabilities, restrict your rights, and govern dispute resolution and governing law.** If you do not agree to any part of this Agreement, please immediately stop registering for or using this Service. Checking the acceptance box, completing registration, or actually calling any API interface shall be deemed as your full understanding and acceptance of all terms of this Agreement.
-
----
-
-## Table of Contents
-
-1. General Provisions and Acceptance
-2. Definitions
-3. Account Registration, Verification and Security
-4. Service Scope and Content
-5. Usage Rules and Prohibited Conduct
-6. Top-up, Billing and Settlement
-7. Service Levels, Quotas and Availability
-8. Data, Content and Personal Information Protection
-9. Third-Party Services and Upstream Model Terms
-10. Intellectual Property Rights
-11. Disclaimers and Limitation of Liability
-12. Changes, Suspension and Termination of Service
-13. Breach and Handling
-14. Export Control, Sanctions and Cross-Border Compliance
-15. Governing Law and Dispute Resolution
-16. Notices and Service of Documents
-17. Miscellaneous
-- Appendix A Core Prohibited List of the Acceptable Use Policy (AUP)
-- Appendix B List of Upstream Model Providers and Sub-processors
+> **重要な通知:** 本契約は定型約款です。本サービスに登録または利用する前に、本契約のすべての条項を完全かつ注意深くお読みください、**特に、当社の責任を免除または制限し、お客様の権利を制限し、かつ紛争解決および準拠法を定める太字で強調された条項**。本契約のいかなる部分にも同意いただけない場合は、直ちに本サービスの登録または利用を停止してください。同意のチェックボックスへのチェック、登録の完了、またはいかなるAPIインターフェースの実際の呼び出しもって、本契約のすべての条項を完全に理解し受諾したものとみなされます。
 
 ---
 
-## Article 1 General Provisions and Acceptance
+## 目次
 
-**1.1 Contracting Entity**
-
-This Agreement is entered into between you (hereinafter "User" or "you") and **Shenzhen Uter Network Co., Ltd.** (hereinafter collectively "Uter.ai 优特智能", "优特" or "we").
-
-- **Contracting Entity**: **Shenzhen Uter Network Co., Ltd.**, registered in Shenzhen, Guangdong Province, the People's Republic of China, holding an ICP license, algorithm filing and generative AI service filing. The company operates the **Uter Large Model Service Platform** (official website: Uter.ai, hereinafter the "Platform"), providing this Service to users within **the territory of the People's Republic of China (excluding the Hong Kong, Macao and Taiwan regions of China)**.
-- **Single Entity**: The **sole contracting entity for the services under this Agreement is Shenzhen Uter Network Co., Ltd.** We do not currently provide services to you through any overseas affiliated entity. Should we provide services through an overseas affiliated entity in the future, we will execute a separate service agreement and notify you in advance.
-
-**1.2 Composition of the Agreement**
-
-This Agreement, together with the following documents, constitutes the complete agreement and has the same legal effect as the main text of this Agreement; in the event of any inconsistency between an appendix and the main text, the main text shall prevail, except where the appendix imposes stricter obligations on a specific matter:
-
-1. the Privacy Policy;
-2. the Acceptable Use Policy (see Appendix A);
-3. the Service Level Agreement (SLA);
-4. the Pricing Page, Model Catalog and Rate-Limiting Rules published on the Platform;
-5. written documents separately executed between you and us, such as the Enterprise Service Agreement, Data Processing Agreement (DPA) and Order Confirmation.
-
-**1.3 Modes of Acceptance**
-
-You shall be deemed to have fully and unconditionally accepted this Agreement upon any of the following:
-
-- Checking "I have read and agree to the Terms of Service" on the registration page;
-- Completing account registration, enterprise identity verification or top-up;
-- Initiating any model call request using an API Key (or equivalent credential) issued by us.
-
-**1.4 Amendment of the Agreement**
-
-1.4.1 We may amend this Agreement as necessitated by changes in laws and regulations, regulatory requirements, adjustments to upstream model providers' policies, or product iteration. The amended Agreement will be prominently published on the Platform, with at least **7 calendar days'** advance notice (for clauses that materially affect you, such as billing rules, limitation of liability and dispute resolution, **15 calendar days'** advance notice).
-
-1.4.2 Upon expiry of the publication period, your continued use of this Service shall be deemed as acceptance of the amendments. If you do not accept them, you have the right to stop using the Service before the publication period expires and apply for settlement of your account balance.
-
-1.4.3 We recommend that you check the latest version of this Agreement periodically. The Platform will retain historical versions for traceability.
-
-**1.5 User Eligibility**
-
-1.5.1 If you are a **natural person**, you should be at least **18 years of age** and have full capacity for civil conduct. If you are under 18, you should read this Agreement in the company of a guardian and use this Service only with the guardian's consent.
-
-1.5.2 If you register in the name of an **enterprise, institution, social organization or other organization**, you represent and warrant that you are duly authorized by that organization, have the right to accept this Agreement on its behalf and assume the corresponding obligations, and that the qualification documents you submit to us (business license, power of attorney, etc.) are true, lawful and valid.
-
-1.5.3 You undertake that you are not a sanctioned or restricted subject under Article 14 of this Agreement.
-
-**1.6 Effectiveness**
-
-This Agreement takes effect on **August 8, 2026**. For users who registered before the effectiveness of this Agreement, this Agreement applies from the date of its effectiveness.
+1. 総則および承諾
+2. 定義
+3. アカウントの登録、確認およびセキュリティ
+4. サービスの範囲および内容
+5. 利用規則および禁止行為
+6. チャージ、請求および決済
+7. サービスレベル、割当ておよび可用性
+8. データ、コンテンツおよび個人情報の保護
+9. 第三者サービスおよび上流モデルの条件
+10. 知的財産権
+11. 免責事項および責任の制限
+12. サービスの変更、停止および終了
+13. 違反およびその処理
+14. 輸出管理、制裁および越境コンプライアンス
+15. 準拠法および紛争解決
+16. 通知および文書の送達
+17. その他
+- 附属書A 利用可能ポリシー（AUP）の核心的禁止リスト
+- 附属書B 上流モデル提供元および下請処理者の一覧
 
 ---
 
-## Article 2 Definitions
+## 第1条 総則および承諾
 
-Unless the context otherwise requires, the following terms have the meanings set out below:
+**1.1 契約主体**
 
-| Term | Definition |
+本契約は、お客様（以下「ユーザー」または「お客様」）と**深圳市 Uter 網絡科技有限公司**（以下総称して「Uter.ai 优特智能」「优特」または「当社」）との間で締結されます。
+
+- **契約主体**: **深圳市 Uter 網絡科技有限公司**。中華人民共和国広東省深圳市に登録され、ICPライセンス、アルゴリズム届出、および生成AIサービス届出を保有しています。同社は**Uter 大規模モデルサービスプラットフォーム**（公式サイト：Uter.ai、以下「本プラットフォーム」）を運営し、**中華人民共和国の領域内（中華人民共和国の香港、マカオ、および台湾地域を除く）**のユーザーに本サービスを提供します。
+- **単一主体**: **本契約に基づくサービスの唯一の契約主体は深圳市 Uter 網絡科技有限公司です。** 現在、当社はいかなる海外関連会社を通じてもお客様にサービスを提供していません。将来、海外関連会社を通じてサービスを提供する場合、別途サービス契約を締結し、事前に通知します。
+
+**1.2 契約の構成**
+
+本契約は、以下の文書とともに完全な合意を構成し、本契約の本文と同一の法的効力を有します。附属書と本文の間に矛盾がある場合、附属書が特定の事項についてより厳しい義務を課す場合を除き、本文が優先します：
+
+1. プライバシーポリシー；
+2. 利用可能ポリシー（附属書Aを参照）；
+3. サービスレベル協定（SLA）；
+4. 本プラットフォーム上で公表された料金ページ、モデルカタログ、およびレート制限規則；
+5. 企業サービス契約、データ処理契約（DPA）、および注文確認書など、お客様と当社が別途締結した書面文書。
+
+**1.3 承諾の方式**
+
+お客様は、以下のいずれかが生じた時点で、本契約を完全かつ無条件に受諾したものとみなされます：
+
+- 登録ページで「利用規約を読み、同意する」にチェックを入れる；
+- アカウント登録、企業本人確認、またはチャージを完了する；
+- 当社が発行したAPI Key（または同等の資格情報）を用いていかなるモデル呼び出しリクエストを開始する。
+
+**1.4 契約の改定**
+
+1.4.1 当社は、法令の変更、規制要件、上流モデル提供元の方針の調整、または製品の刷新に必要に応じて本契約を改定する場合があります。改定された契約は本プラットフォーム上に目立つよう公表され、少なくとも**7暦日の**事前通知が行われます（請求ルール、責任の制限、および紛争解決など、お客様に重大に影響する条項については、**15暦日の**事前通知）。
+
+1.4.2 公表期間の満了後、お客様が本サービスを継続して利用することを、改定の受諾とみなします。受諾いただけない場合、公表期間が満了する前に本サービスの利用を停止し、アカウント残高の精算を申請する権利を有します。
+
+1.4.3 当社は、本契約の最新版を定期的にご確認いただくよう推奨します。本プラットフォームは追跡可能性のため履歴バージョンを保持します。
+
+**1.5 ユーザーの適格性**
+
+1.5.1 お客様が**自然人**である場合、**18歳以上**であり、かつ完全な民事行為能力を有するものとします。18歳未満の場合は、保護者の同伴のもと本契約をお読みいただき、保護者の同意がある場合にのみ本サービスを利用するものとします。
+
+1.5.2 お客様が**企業、機関、社会団体、またはその他の組織**の名義で登録する場合、お客様は当該組織から正当に授権されており、その代理として本契約を受諾し対応する義務を負担する権利を有し、かつ当社に提出する資格証明書類（営業許可証、委任状など）が真実、適法、かつ有効であることを表明し保証します。
+
+1.5.3 お客様は、本契約第14条に基づく制裁または制限の対象ではないことを約束します。
+
+**1.6 効力発生**
+
+本契約は**2026年8月8日**に効力を生じます。本契約の効力発生前に登録したユーザーについては、本契約はその効力発生日から適用されます。
+
+---
+
+## 第2条 定義
+
+文脈上別異の定めがない限り、以下の用語は以下の意味を有します：
+
+| 用語 | 定義 |
 |---|---|
-| **Service** | The services provided by the Uter Large Model Service Platform to users through its official website (Uter.ai) and unified API gateway, including multi-model aggregation calling, routing and scheduling, usage metering, and account management |
-| **Platform** | The Uter Large Model Service Platform, collectively the Uter official website (Uter.ai), console, developer documentation, SDK and API interfaces |
-| **API Key** | The calling credential issued by us to users for identity authentication and metering/billing (including keys, tokens, temporary credentials and all equivalent forms) |
-| **Token** | The smallest billing unit for processing text by a large language model. Input Tokens (Prompt Tokens) and Output Tokens (Completion Tokens) are billed separately |
-| **Upstream Model Provider** | A third party that actually provides model inference capability, including but not limited to OpenAI, Anthropic, Google, Microsoft Azure, Amazon AWS Bedrock, and domestic model vendors |
-| **Upstream Service** | The model inference interface and its supporting services provided by an Upstream Model Provider |
-| **Routing** | The mechanism by which the Platform distributes user requests to the corresponding upstream service based on model identifier, availability, latency and cost strategy |
-| **User Content** | The input content (prompts, files, images, etc.) submitted by the user through this Service and the output content returned by the Service |
-| **Enterprise User** | A user who registers in the name of an organization and completes enterprise verification |
-| **Account Balance** | The available fund quota that the user has pre-charged but not yet consumed |
-| **Metering Data** | The log data recorded and generated by the Platform for billing purposes, such as Token consumption, request counts and latency |
+| **サービス** | Uter 大規模モデルサービスプラットフォームが公式サイト（Uter.ai）および統一APIゲートウェイを通じてユーザーに提供するサービス。多モデル集約呼び出し、ルーティングおよびスケジューリング、利用計量、およびアカウント管理を含む |
+| **プラットフォーム** | Uter 大規模モデルサービスプラットフォーム。Uter 公式サイト（Uter.ai）、コンソール、開発者ドキュメント、SDK、およびAPIインターフェースを総称する |
+| **API Key** | 身元認証および計量/請求のために当社がユーザーに発行する呼び出し資格情報（キー、トークン、一時的資格情報、およびすべての同等の形態を含む） |
+| **Token** | 大規模言語モデルによるテキスト処理の最小請求単位。入力トークン（Prompt Tokens）と出力トークン（Completion Tokens）は別々に請求される |
+| **上流モデル提供元** | 実際にモデル推論能力を提供する第三者。OpenAI、Anthropic、Google、Microsoft Azure、Amazon AWS Bedrock、および国内モデルベンダーを含むが、これらに限定されない |
+| **上流サービス** | 上流モデル提供元が提供するモデル推論インターフェースおよびその付帯サービス |
+| **ルーティング** | 本プラットフォームが、モデル識別子、可用性、レイテンシ、およびコスト戦略に基づき、ユーザーリクエストを対応する上流サービスに分配する仕組み |
+| **ユーザーコンテンツ** | ユーザーが本サービスを通じて提出した入力コンテンツ（プロンプト、ファイル、画像など）および本サービスが返した出力コンテンツ |
+| **企業ユーザー** | 組織の名義で登録し、企業確認を完了したユーザー |
+| **アカウント残高** | ユーザーが前払いしたがまだ消費されていない利用可能な資金枠 |
+| **計量データ** | 本プラットフォームが請求のために記録および生成したログデータ。トークン消費、リクエスト回数、およびレイテンシなど |
 
 ---
 
-## Article 3 Account Registration, Verification and Security
+## 第3条 アカウントの登録、確認およびセキュリティ
 
-**3.1 Obligation of Truthful Information**
+**3.1 真実の情報の義務**
 
-3.1.1 You shall provide true, accurate, complete and valid registration and verification information, and update it within **5 business days** of any change.
+3.1.1 お客様は、真実、正確、完全、かつ有効な登録および確認情報を提供し、変更があった場合は**5営業日以内**に更新するものとします。
 
-3.1.2 You shall bear the consequences (including but not limited to service suspension, account freezing, inability to refund the balance, and third-party claims) arising from false, invalid or impersonated information caused by you.
+3.1.2 お客様の責めによる虚偽、無効、またはなりすましの情報から生じた結果（サービス停止、アカウント凍結、残高の返金不能、および第三者の請求を含むがこれらに限定されない）は、お客様が負担するものとします。
 
-**3.2 Identity Verification**
+**3.2 本人確認**
 
-3.2.1 Pursuant to the Cybersecurity Law of the PRC, the Administrative Measures for Internet Information Services, the Interim Measures for the Management of Generative AI Services and other regulations, users of domestic services must complete **identity verification** (identity verification for natural persons; business license verification for enterprises) before calling the Service.
+3.2.1 中華人民共和国サイバーセキュリティ法、インターネット情報サービス管理弁法、生成AIサービス管理暫定措置弁法、その他の規制に基づき、国内サービスのユーザーは本サービスを呼び出す前に**本人確認**（自然人の場合は身分確認、企業の場合は営業許可証確認）を完了させる必要があります。
 
-3.2.2 We may, as required by regulators, require you to submit additional industry qualifications, application scenario descriptions, content security management systems and other materials, and may refuse to activate the Service before approval.
+3.2.2 当社は、規制当局の要請に応じ、追加の業界資格、アプリケーションシナリオの説明、コンテンツセキュリティ管理制度、およびその他の資料の提出を求め、承認前に本サービスを有効化することを拒否する場合があります。
 
-**3.3 Account Security**
+**3.3 アカウントのセキュリティ**
 
-3.3.1 **You bear full responsibility for the safekeeping of all account credentials, including account name, password, API Key and two-factor authentication credentials. Once issued, an API Key is equivalent to your identity credential.**
+3.3.1 **お客様は、アカウント名、パスワード、API Key、および二要素認証資格情報を含むすべてのアカウント資格情報の保管につき、全面的な責任を負います。発行後、API Keyはお客様の身分証明と同等です。**
 
-3.3.2 You should at least take the following measures: do not hard-code API Keys in client code or public code repositories; issue independent Keys for different applications; rotate them regularly; configure IP allowlists and usage alerts; revoke immediately in the console upon discovering a leak.
+3.3.2 お客様は少なくとも以下の措置を講じるものとします：クライアントコードや公開コードリポジトリにAPI Keyをハードコードしない；異なるアプリケーションごとに独立したキーを発行する；定期的にローテーションする；IP許可リストおよび利用アラートを設定する；漏洩発見時には直ちにコンソールで失効させる。
 
-3.3.3 **You bear all call volume and fees arising from your poor safekeeping, device intrusion, Key leakage or use by third parties.** We are not liable for fee losses caused by Key leakage. You should notify us immediately upon discovering a leak, and we will assist in revoking the credential; fees already incurred before your notice will not be refunded.
+3.3.3 **お客様は、お客様の保管不備、デバイスの侵入、キーの漏洩、または第三者による利用から生じるすべての呼び出し量および料金を負担します。** 当社は、キー漏洩により生じた料金損失について責任を負いません。漏洩を発見した場合は直ちに当社に通知するものとし、当社は資格情報の失効を支援します。通知前にすでに発生した料金は返金されません。
 
-**3.4 Uniqueness and Transfer Restrictions of Accounts**
+**3.4 アカウントの一意性および譲渡制限**
 
-3.4.1 One account is limited to use by one legal entity. **Without our prior written consent, you may not rent, lend, sell, gift or transfer the account or API Key in any form.**
+3.4.1 1つのアカウントは1つの法人による利用に限られます。**当社の事前の書面による同意なく、お客様はアカウントまたはAPI Keyをいかなる形態でも貸与、貸付、売買、贈与、または譲渡してはなりません。**
 
-3.4.2 We may identify account sharing or resale based on login IP, device fingerprint, calling characteristics, etc., and take the measures under Article 13 of this Agreement.
+3.4.2 当社は、ログインIP、デバイス指紋、呼び出し特性などに基づきアカウント共有または再販を識別し、本契約第13条に基づく措置を講じる場合があります。
 
-**3.5 Account Cancellation**
+**3.5 アカウントの削除**
 
-You may apply to cancel your account in the console at any time. Before cancellation, you should settle all payable amounts and back up your own data. After cancellation, we will delete or anonymize your personal information as required by laws and regulations, except for transaction records that must be retained by law.
+お客様はコンソールでいつでもアカウントの削除を申請できます。削除前に、お客様はすべての支払期限の到来した金額を精算し、ご自身のデータをバックアップするものとします。削除後、当社は法令に基づきお客様の個人情報を削除または匿名化します。ただし、法律上保持が義務付けられた取引記録を除きます。
 
 ---
 
-## Article 4 Service Scope and Content
+## 第4条 サービスの範囲および内容
 
-**4.1 Service Content**
+**4.1 サービス内容**
 
-4.1.1 We provide an **aggregation and forwarding service for model invocation capability**. Specifically:
+4.1.1 当社は**モデル呼び出し能力の集約および転送サービス**を提供します。具体的には：
 
-- Unified API protocol access (compatible with OpenAI format and mainstream SDKs);
-- Intelligent routing and failover across multiple models and upstreams;
-- Prepaid account system, usage metering, billing and invoicing;
-- Console management, usage monitoring, alerting and log query;
-- Optional value-added services: content security review, dedicated instances, private deployment, model fine-tuning, compliance consulting.
+- 統一されたAPIプロトコルアクセス（OpenAI形式および主流SDKとの互換）；
+- 複数のモデルおよび上流をまたぐインテリジェントなルーティングおよびフェイルオーバー；
+- 前払いアカウントシステム、利用計量、請求、および請求書発行；
+- コンソール管理、利用監視、アラート、およびログ照会；
+- オプションの付加価値サービス：コンテンツセキュリティ審査、専用インスタンス、プライベート展開、モデル微調整、コンプライアンスコンサルティング。
 
-4.1.2 **We are not the developer or owner of the models themselves.** Except for services explicitly labeled "self-developed models", all model capabilities involved in this Service are provided by Upstream Model Providers. Our role in this Service is that of an **integrator and reseller of the Service**, not the original provider of the models.
+4.1.2 **当社はモデル自体の開発者または所有者ではありません。** 「自社開発モデル」と明示して標示されたサービスを除き、本サービスに関与するすべてのモデル能力は上流モデル提供元によって提供されます。本サービスにおける当社の役割は、**本サービスの統合者および再販者**であって、モデルの当初の提供者ではありません。
 
-**4.2 Service Forms**
+**4.2 サービスの形態**
 
-| Form | Description | Billing |
+| 形態 | 説明 | 請求 |
 |---|---|---|
-| Public Cloud API | Multi-tenant shared resource pool, postpaid settlement by Token | Pay-as-you-go |
-| Dedicated Instance | Exclusive compute quota, guaranteed latency and concurrency | Subscription + pay-as-you-go |
-| Private Deployment | Deployed in the user's own environment, data does not leave the domain | Project-based + annual maintenance |
-| Developer Edition | Includes free trial quota, for individual developers | Pay-as-you-go |
+| パブリッククラウドAPI | マルチテナント共有リソースプール、トークンによる後払い決済 | 従量制 |
+| 専用インスタンス | 専用のコンピュート枠、レイテンシおよび同時実行の保証 | サブスクリプション + 従量制 |
+| プライベート展開 | ユーザー自身の環境に展開、データはドメイン外に出ない | プロジェクトベース + 年次保守 |
+| 開発者版 | 無料試用枠を含む、個人の開発者向け | 従量制 |
 
-**4.3 Service Regions**
+**4.3 サービス地域**
 
-4.3.1 We may open different model catalogs to users in different registration regions based on Upstream Model Providers' regional authorization restrictions, export control requirements and local laws.
+4.3.1 当社は、上流モデル提供元の地域認可制限、輸出管理要件、および現地の法律に基づき、異なる登録地域のユーザーに対して異なるモデルカタログを開放する場合があります。
 
-4.3.2 **You may not use technical means to bypass regional restrictions to call models not opened to your region.** We may intercept and handle abnormal cross-border calling behavior.
+4.3.2 **お客様は、技術的手段を用いて地域制限を回避し、ご自身の地域に開放されていないモデルを呼び出してはなりません。** 当社は異常な越境呼び出し行動を遮断および処理する場合があります。
 
-**4.4 Model On/Off-boarding**
+**4.4 モデルの搭載および解除**
 
-4.4.1 Upstream Model Providers may add, update, discontinue or deprecate specific models at any time. We will notify you in advance to the extent reasonably feasible and suggest alternative models.
+4.4.1 上流モデル提供元は、特定のモデルをいつでも追加、更新、廃止、または非推奨とする場合があります。当社は合理的に可能な範囲で事前に通知し、代替モデルを提案します。
 
-4.4.2 **Service adjustments caused by upstream model off-boarding, capability changes or price adjustments do not constitute a breach by us.** We will endeavor to provide a migration window of at least **30 calendar days**, but where the upstream's transition period is shorter, the actual upstream arrangement shall prevail.
+4.4.2 **上流モデルの解除、能力変更、または価格調整に起因するサービス調整は、当社の債務不履行を構成しません。** 当社は少なくとも**30暦日**の移行期間を提供するよう努めますが、上流の移行期間がそれより短い場合は、実際の上流の取り決めが優先します。
 
-**4.5 Free Quota and Trials**
+**4.5 無料枠および試用**
 
-Free quota is for evaluation and testing only. We may adjust the quota, restrict available models or terminate trials at any time, and make no commitment regarding the availability of services within the free quota. The free quota is non-refundable, non-transferable and non-cashable.
-
----
-
-## Article 5 Usage Rules and Prohibited Conduct
-
-**5.1 General Compliance**
-
-You undertake to use this Service only for lawful and legitimate purposes, to comply with the laws and regulations of the PRC, those of your location and of the place of service use, and all applicable policies of Upstream Model Providers. **You bear sole and full legal liability for all content submitted through this Service and the consequences arising therefrom.**
-
-**5.2 Content-Level Prohibitions**
-
-You may not use this Service to generate, store, disseminate or otherwise process the following content:
-
-1. Content that opposes the basic principles established by the Constitution, endangers national security, honor and interests, incites subversion of state power or overthrow of the socialist system;
-2. Content that incites division of the country, undermines national unity, advocates terrorism or extremism, incites ethnic hatred or discrimination, or undermines ethnic solidarity;
-3. Content that undermines national religious policy, or advocates cults and feudal superstition;
-4. Content that spreads rumors or false information and disrupts economic or social order;
-5. Content that insults or slanders others, or infringes upon others' rights of reputation, portrait, privacy or personal information;
-6. Obscene, pornographic, gambling, violent, murderous, terrorist or crime-instructing content;
-7. **Any content involving the sexual exploitation of or sexualization of minors** — upon discovery, we will immediately terminate the Service and report to the competent authority, with no grace period;
-8. Content that infringes upon others' intellectual property rights, trade secrets or other lawful rights and interests;
-9. Content that, in violation of the Interim Measures for the Management of Generative AI Services and the Provisions on the Administration of Deep Synthesis of Internet Information Services, fails to label generated content as required by law;
-10. Use for illegal activities such as telecom network fraud, money laundering, illegal fundraising, pyramid selling, illegal stock recommendation or illegal lending.
-
-**5.3 Technical-Level Prohibitions**
-
-You may not engage in the following, nor assist or incite others to do so:
-
-1. Reverse engineering, decompiling or disassembling this Service or the Upstream Service, or attempting to obtain source code, model weights or system prompts;
-2. Using automated scripts, crawlers or bulk registration to maliciously register accounts, scrape free quota or obtain benefits;
-3. **Reselling, sub-licensing or re-distributing this Service or API Keys to third parties in any form** (except channel agents authorized in writing by us);
-4. Circumventing, evading or destroying our rate-limiting, content review, authentication, regional restriction or billing metering technical measures;
-5. Conducting stress testing, penetration testing or denial-of-service attacks against the Service, or using abnormally high concurrent requests that affect the Platform and other users;
-6. Concealing the true source of calls through forged request characteristics, tampered Headers or proxy pools;
-7. Using this Service to train models that directly compete with upstream models (Distillation or model distillation) unless explicitly authorized by the upstream provider;
-8. Extracting, caching or mirroring upstream model outputs to build datasets or services substantially identical to this Service.
-
-**5.4 Additional Requirements for Specific Scenarios**
-
-5.4.1 **Public-facing application scenarios**: If you integrate this Service into a generative AI application open to the public (including websites, Apps, mini-programs, smart hardware), you should complete the required **algorithm filing, generative AI service filing** and content labeling obligations on your own, and obtain our separate written confirmation. We may provide compliance guidance but do not assume your filing obligations thereby.
-
-5.4.2 **High-risk decision scenarios**: You may not use the output of this Service as the **sole** basis for decisions in high-risk scenarios such as medical diagnosis, legal opinions, financial investment decisions, judicial adjudication or personnel recruitment. Such scenarios should be reviewed by qualified professionals.
-
-5.4.3 **Minor-related products**: If your product is directed at minors or may be used by minors, you should obtain guardian consent in accordance with law and implement additional content security measures.
-
-5.4.4 **Sensitive personal information**: Without lawful authorization, you may not submit through this Service others' sensitive personal information, biometric information, medical and health information, financial account information or other specially protected data.
-
-**5.5 Violation Handling**
-
-If you violate this Article, we may, at our discretion and depending on the circumstances, take one or more of the following measures without bearing breach liability: warning and requiring rectification within a time limit; restricting call rate or quota; suspending part or all of the Service; freezing the account; terminating this Agreement; deleting violating content; reporting to and cooperating with regulators or competent authorities in investigation; pursuing your breach and tort liabilities.
+無料枠は評価およびテストのみを目的とします。当社はいつでも枠を調整し、利用可能なモデルを制限し、または試用を終了する場合があり、無料枠内のサービスの可用性についていかなる約束もしません。無料枠は返金不可、譲渡不可、および現金化不可です。
 
 ---
 
-## Article 6 Top-up, Billing and Settlement
+## 第5条 利用規則および禁止行為
 
-**6.1 Billing Unit and Basis**
+**5.1 一般的コンプライアンス**
 
-6.1.1 This Service uses **Token** as the basic billing unit, billing **Input Tokens** and **Output Tokens** separately, with prices subject to the Platform's Pricing Page.
+お客様は、本サービスを適法かつ正当な目的にのみ利用し、中華人民共和国の法令、お客様の所在地およびサービス利用地の法令、および上流モデル提供元の適用されるすべての方針を遵守することを約束します。**お客様は、本サービスを通じて提出されたすべてのコンテンツおよびそこから生じる結果について、単独かつ全面的な法的責任を負います。**
 
-6.1.2 **Metering is based on our Platform's metering data.** We record the model identifier, input/output Token counts, timestamps and result status of each request, and generate the bill accordingly. You may query details in the console.
+**5.2 コンテンツレベルの禁止事項**
 
-6.1.3 Prices may differ for the same model across different routing paths and different upstream providers; we bill according to the **actual routing result** and list the corresponding price tiers on the Pricing Page.
+お客様は、本サービスを用いて以下のコンテンツを生成、保存、流通、またはその他の方法で処理してはなりません：
 
-**6.2 Price Adjustment**
+1. 憲法が定める基本原則に反し、国家安全、名誉、および利益を危険にし、国家権力の転覆または社会主義制度の打倒を扇動するコンテンツ；
+2. 国の分割を扇動し、国家統一を破壊し、テロリズムまたは過激主義を提唱し、民族の憎悪または差別を扇動し、または民族の団結を破壊するコンテンツ；
+3. 国家の宗教政策を破壊し、またはカルトや封建的迷信を提唱するコンテンツ；
+4. 噂または虚偽情報を拡散し、経済または社会の秩序を乱すコンテンツ；
+5. 他人を侮辱または中傷し、他人の名誉権、肖像権、プライバシー権、または個人情報を侵害するコンテンツ；
+6. わいせつ、ポルノ、賭博、暴力的、殺人、テロリスト、または犯罪を教唆するコンテンツ；
+7. **未成年者の性的搾取または性的対象化に関するいかなるコンテンツも**——発見時、当社は直ちにサービスを終了し、猶予期間なく所管官庁に報告します；
+8. 他人の知的財産権、営業秘密、またはその他の適法な権利利益を侵害するコンテンツ；
+9. 生成AIサービス管理暫定措置弁法およびインターネット情報サービス深層合成管理規定に違反し、法令が求めるとおり生成コンテンツにラベルを付与していないコンテンツ；
+10. 電信ネットワーク詐欺、マネーロンダリング、違法な資金調達、ネズミ講、違法な株価推奨、または違法な貸付など、違法活動への利用。
 
-We may adjust service prices based on upstream price changes, exchange rate fluctuations and cost structure changes. Price adjustments will be published **15 calendar days** in advance; adjustments are not retroactive, and usage before publication is settled at the original price.
+**5.3 技術レベルの禁止事項**
 
-**6.3 Prepayment and Account Balance**
+お客様は以下を行ってはならず、また他人が行うことの援助または扇動もしてはなりません：
 
-6.3.1 This Service adopts a **prepaid model**: you should first top up to form an account balance, which is deducted in real time upon calling. When the balance is insufficient, the Service will automatically stop; we do not provide credit advances (except enterprise users with separate written arrangements).
+1. 本サービスまたは上流サービスのリバースエンジニアリング、逆コンパイル、または逆アセンブル、もしくはソースコード、モデル重み、またはシステムプロンプトの取得の試み；
+2. 自動化されたスクリプト、クローラー、または大量登録を用いた悪意あるアカウント登録、無料枠のスクレイピング、または利益の取得；
+3. **本サービスまたはAPI Keyの、第三者に対するいかなる形態での再販、再許諾、または再配布**（当社が書面で授権したチャネル代理店を除く）；
+4. 当社のレート制限、コンテンツ審査、認証、地域制限、または請求計量の技術的措置の回避、逃れ、または破壊；
+5. 本サービスに対するストレステスト、ペネトレーションテスト、またはDoS攻撃の実施、または本プラットフォームおよび他のユーザーに影響を及ぼす異常に高い同時リクエストの使用；
+6. 偽造されたリクエスト特性、改ざんされたヘッダー、またはプロキシ�プールによる呼び出しの真の出所の隠蔽；
+7. 上流モデル提供元から明示的に授権されていない限り、上流モデルと直接競合するモデルを学習するための本サービスの利用（蒸留またはモデル蒸留）；
+8. 本サービスと実質的に同一のデータセットまたはサービスを構築するための、上流モデルの出力の抽出、キャッシュ、またはミラーリング。
 
-6.3.2 **Account Balance is non-transferable, non-cashable and may not be used for purposes other than this Service.**
+**5.4 特定シナリオの追加要件**
 
-6.3.3 **Refund Rules**:
+5.4.1 **公開向けアプリケーションシナリオ**: お客様が本サービスを公衆に開放された生成AIアプリケーション（ウェブサイト、アプリ、ミニプログラム、スマートハードウェアを含む）に統合する場合、必要な**アルゴリズム届出、生成AIサービス届出**およびコンテンツラベル付け義務をご自身で完了させ、かつ当社の別途書面による確認を得るものとします。当社はコンプライアンスの指導を提供する場合がありますが、それによってお客様の届出義務を負うものではありません。
 
-- For un-consumed top-up balances, you may apply for a refund, but the fees charged by third-party payment channels and the taxes corresponding to invoices already issued will be deducted; the review period is **7 business days**. The method of calculating the refund amount and the refund process follow the Recharge Agreement.
-- **Consumed Token fees are non-refundable**, regardless of whether you actually used the output (e.g., you abandoned use due to poor prompt design, changed requirements or dissatisfaction with results).
-- Where account termination is caused by your violation of this Agreement, the balance, after deduction of payable fees and possible third-party claims, may be refunded; where serious illegality is constituted, we may lawfully defer the refund and cooperate with competent authorities.
+5.4.2 **高リスク意思決定シナリオ**: お客様は、本サービスの出力を、医療診断、法的意見、金融投資判断、司法裁判、または人事採用などの高リスクシナリオにおける意思決定の**唯一の**根拠として使用してはなりません。かかるシナリオは資格を有する専門家により審査されるべきです。
 
-6.3.4 The balance is valid for **12 months** from the top-up date. Before expiry we will remind you via in-site message/email; unused balances after expiry may be reactivated upon application; if unused continuously for **3 months**, we may handle it after deducting reasonable management fees.
+5.4.3 **未成年者関連製品**: お客様の製品が未成年者を対象としている、または未成年者により利用される可能性がある場合、お客様は法令に従い保護者の同意を得て、追加のコンテンツセキュリティ措置を実施するものとします。
 
-**6.4 Failed Requests and Billing**
+5.4.4 **機微な個人情報**: 適法な授権なく、お客様は他人の機微な個人情報、生体認証情報、医療・健康情報、金融口座情報、またはその他の特別に保護されたデータを本サービスを通じて提出してはなりません。
 
-6.4.1 Requests that fail due to **our** platform errors (gateway exceptions, routing failures that did not reach upstream) are not billed, and any deducted fees are automatically returned.
+**5.5 違反への対応**
 
-6.4.2 **Requests for which an Upstream Model Provider returned an error, timeout, or content intercepted by the upstream safety policy (Refusal / Content Filter) and that already incurred upstream consumption are still billed according to actual consumption**:
-
-- Where the upstream has returned a content filtering result (e.g., safety interception, refusal), input Token consumption typically still occurs and is billed as Input Tokens;
-- Where the upstream returned a `5xx` error or timeout, it is generally not billed; if the upstream has billed, we will return the equivalent amount after verification;
-- You may submit a billing dispute through the console; the dispute acceptance period is **30 calendar days** from bill generation, after which the bill is deemed accepted.
-
-6.4.3 Streaming requests interrupted are metered by the Tokens actually transmitted.
-
-**6.5 Discounts and Offers**
-
-Prompt Caching, Batch, off-peak calling, etc. may enjoy discounts; the specific discount rates are subject to the Pricing Page and upstream policies. **Discounts vary with upstream policies and do not constitute a long-term commitment.**
-
-**6.6 Invoicing and Taxation**
-
-We issue VAT invoices (special or general VAT invoices, depending on your taxpayer qualification) based on your actual consumption amount. Invoice applications must be submitted within the calendar year to which the bill belongs; cross-year re-issuance is not provided. Costs of re-issuance or cancellation due to incorrect invoicing information you provided are borne by you.
-
-**6.7 Arrears Handling**
-
-After the balance is exhausted, the Service will be suspended. For enterprise users on a monthly post-settlement model, if payment is overdue by more than **15 calendar days**, we may suspend the Service; if overdue by more than **30 calendar days**, we may terminate the Service, pursue breach liability, and charge a late penalty of **0.05% per day**.
+お客様が本条に違反した場合、当社は、裁量により、状況に応じて、以下の措置のいずれかまたは複数を、債務不履行責任を負うことなく講じる場合があります：警告および期限付き是正の要求；呼び出しレートまたは割当ての制限；一部または全部のサービスの停止；アカウントの凍結；本契約の終了；違反コンテンツの削除；規制当局または所管官庁への報告および調査への協力；お客様の債務不履行および不法行為責任の追求。
 
 ---
 
-## Article 7 Service Levels, Quotas and Availability
+## 第6条 チャージ、請求および決済
 
-**7.1 Availability Target**
+**6.1 請求単位および根拠**
 
-7.1.1 We commit to a monthly availability of no less than **99.9%** for the **Platform gateway** (authentication, routing, metering modules); the specific calculation method and compensation standard are detailed in the Service Level Agreement (SLA).
+6.1.1 本サービスは**トークン**を基本請求単位とし、**入力トークン**および**出力トークン**を別々に請求し、価格は本プラットフォームの料金ページに従います。
 
-7.1.2 **The above commitment does not cover the availability of the Upstream Model Providers themselves.** The availability of upstream services is indirectly guaranteed by the upstream provider to **you** (as the end user) under its own SLA; we do not assume guarantee liability for the upstream SLA.
+6.1.2 **計量は、当社のプラットフォームの計量データに基づきます。** 当社は各リクエストのモデル識別子、入出力トークン数、タイムスタンプ、および結果ステータスを記録し、それに応じて請求書を生成します。お客様はコンソールで明細を照会できます。
 
-**7.2 SLA Exclusions**
+6.1.3 同一モデルであっても、異なるルーティング経路および異なる上流提供元によって価格が異なる場合があります。当社は**実際のルーティング結果**に基づき請求し、対応する価格ティアを料金ページに掲載します。
 
-The following circumstances are not counted as downtime: upstream model provider failures, rate-limiting or policy changes; Internet backbone failures, DNS pollution, cross-border link congestion; your own application, network or configuration issues; our planned maintenance (72 hours' notice, no more than 4 hours each); force majeure; bans due to your violation.
+**6.2 価格調整**
 
-**7.3 SLA Compensation**
+当社は、上流の価格変更、為替変動、およびコスト構造の変化に基づきサービス価格を調整する場合があります。価格調整は**15暦日**前に公表されます。調整は遡及せず、公表前の利用は元の価格で決済されます。
 
-When the SLA is not met, we will compensate in the form of **service credit vouchers**, with the compensation cap at **100% of your actual consumption amount in the month**, and **no cash refund is provided**. Service credit vouchers are non-transferable, non-cashable, and valid for 6 months.
+**6.3 前払いおよびアカウント残高**
 
-**7.4 Quotas and Rate-Limiting**
+6.3.1 本サービスは**前払いモデル**を採用します：お客様はまずチャージしてアカウント残高を形成し、呼び出し時にリアルタイムに差し引かれます。残高が不足した場合、サービスは自動的に停止します。当社は信用前払いを提供しません（別途書面で取り決めのある企業ユーザーを除く）。
 
-7.4.1 We set rate limits (RPM: requests per minute; TPM: Tokens per minute) and concurrency caps by account tier; specific quotas are published in the console and can be requested for increase.
+6.3.2 **アカウント残高は譲渡不可、現金化不可であり、本サービス以外の目的には使用できません。**
 
-7.4.2 When a single request exceeds the model's context length limit, the request will be rejected; we are not responsible for effect loss due to truncation or chunking.
+6.3.3 **返金規則**:
 
-7.4.3 To ensure overall Platform stability, we may implement global scheduling, degradation or temporary rate-limiting. If degradation is needed, we will prioritize protecting higher-tier users and paid dedicated instances.
+- 未消費のチャージ残高については返金を申請できますが、第三者決済チャネルが徴収した手数料およびすでに発行された請求書に相当する税金が差し引かれます。審査期間は**7営業日**です。返金額の計算方法および返金プロセスは、チャージ協定に従います。
+- **消費済みのトークン料金は返金されません**。実際に出力を利用したかどうかにかかわらず同様です（例：プロンプト設計の不備、要件変更、または結果への不満により利用を放棄した場合）。
+- アカウント終了が本契約違反に起因する場合、支払期限の到来した料金および考えられる第三者の請求を差し引いた後の残高は返金される場合があります。重大な違法性が構成される場合、当社は法的に返金を繰り延べ、かつ所管官庁に協力する場合があります。
+
+6.3.4 残高の有効期間はチャージ日から**12か月**です。満了前にサイト内メッセージ/メールで通知します。満了後の未使用残高は申請により再有効化される場合があります。連続して**3か月**未使用の場合、合理的な管理費を差し引いた上で当社が処理する場合があります。
+
+**6.4 失敗したリクエストおよび請求**
+
+6.4.1 **当社**のプラットフォームエラー（ゲートウェイ例外、上流に到達しなかったルーティング失敗）により失敗したリクエストは請求されず、差し引かれた料金は自動的に返還されます。
+
+6.4.2 **上流モデル提供元がエラー、タイムアウト、または上流の安全ポリシーにより遮断されたコンテンツ（Refusal / Content Filter）を返し、すでに上流消費が発生したリクエストは、実際の消費に応じてなお請求されます**：
+
+- 上流がコンテンツフィルタリング結果（安全遮断、拒否など）を返した場合、入力トークン消費は典型的にはなお発生し、入力トークンとして請求されます；
+- 上流が `5xx` エラーまたはタイムアウトを返した場合、一般的には請求されません。上流が請求した場合、確認後に相当額を返還します；
+- お客様はコンソールから請求異議を提出できます。異議受付期間は請求書生成から**30暦日**であり、それ以降は請求書が受諾されたものとみなされます。
+
+6.4.3 中断されたストリーミングリクエストは、実際に送信されたトークン数により計量されます。
+
+**6.5 割引および特典**
+
+プロンプトキャッシング、バッチ、オフピーク呼び出しなどは割引の対象となる場合があります。具体的な割引率は料金ページおよび上流の方針に従います。**割引は上流の方針により変動し、長期的な約束を構成しません。**
+
+**6.6 請求書発行および課税**
+
+当社は、お客様の実際の消費額に基づき、付加価値税の請求書（お客様の納税者資格に応じた特殊または一般のVAT請求書）を発行します。請求書の申請は、請求書の属する暦年内に提出する必要があります。年をまたいだ再発行は行いません。お客様が提供した請求書記載事項の誤りによる再発行または取消しの費用はお客様の負担となります。
+
+**6.7 未払いの処理**
+
+残高が枯渇した後、サービスは停止されます。月次後払いモデルの企業ユーザーについて、支払いが**15暦日**以上遅延した場合、当社はサービスを停止する場合があります。支払いが**30暦日**以上遅延した場合、当社はサービスを終了し、債務不履行責任を追求し、かつ**1日あたり0.05%**の遅延損害金を請求する場合があります。
 
 ---
 
-## Article 8 Data, Content and Personal Information Protection
+## 第7条 サービスレベル、割当ておよび可用性
 
-**8.1 Ownership of User Content**
+**7.1 可用性目標**
 
-The input content you submit through this Service, and the output content generated by the Service based on that input, belong to **you or your lawful authorizer**. We do not claim any ownership of User Content.
+7.1.1 当社は**本プラットフォームゲートウェイ**（認証、ルーティング、計量モジュール）について、月次可用性を**99.9%以上**とコミットします。具体的な計算方法および補償基準は、サービスレベル協定（SLA）に詳細に定められます。
 
-**8.2 Data Processing Role**
+7.1.2 **上記のコミットメントは、上流モデル提供元自身の可用性を含みません。** 上流サービスの可用性は、上流提供元自身のSLAに基づき**（エンドユーザーである）お客様**に対して間接的に保証されます。当社は上流SLAについて保証責任を負いません。
 
-In providing this Service, with respect to the personal-information-containing data you submit through the Service:
+**7.2 SLAの除外事由**
 
-- **You are the personal information processor**, bearing full responsibility for the legal basis (notice and consent, contract necessity, etc.);
-- **We are the entrusted processor**, processing data only upon your instructions and not using it for purposes beyond this Agreement.
+以下の場合はダウンタイムに算入されません：上流モデル提供元の障害、レート制限、または方針変更；インターネットバックボーンの障害、DNS汚染、越境リンクの輻輳；お客様自身のアプリケーション、ネットワーク、または設定の問題；当社の計画的保守（72時間前通知、各回4時間以内）；不可抗力；お客様の違反による禁止。
 
-Enterprise users may separately execute a Data Processing Agreement (DPA) with us, specifying the processing purpose, period, method, security measures and audit rights.
+**7.3 SLA補償**
 
-**8.3 Data Retention Policy**
+SLAが満たされない場合、当社は**サービスクレジットバウチャー**の形態で補償し、補償上限は**当該月のお客様の実際の消費額の100%**とし、**現金による返金は行われません**。サービスクレジットバウチャーは譲渡不可、現金化不可であり、6か月間有効です。
 
-| Data Type | Default Retention | Purpose |
+**7.4 割当ておよびレート制限**
+
+7.4.1 当社はアカウントティアごとにレート制限（RPM：1分あたりのリクエスト数；TPM：1分あたりのトークン数）および同時実行上限を設定します。具体的な割当てはコンソールに公表され、増額を申請できます。
+
+7.4.2 単一リクエストがモデルのコンテキスト長の上限を超えた場合、リクエストは拒否されます。切り捨てまたはチャンキングによる効果の喪失について、当社は責任を負いません。
+
+7.4.3 本プラットフォーム全体の安定性を確保するため、当社は全体スケジューリング、デグレデーション、または一時的なレート制限を実施する場合があります。デグレデーションが必要な場合、当社はより上位のティアのユーザーおよび有料の専用インスタンスの保護を優先します。
+
+---
+
+## 第8条 データ、コンテンツおよび個人情報の保護
+
+**8.1 ユーザーコンテンツの所有権**
+
+お客様が本サービスを通じて提出した入力コンテンツ、および本サービスが当該入力に基づき生成した出力コンテンツは、**お客様またはお客様の適法な授権者**に帰属します。当社はユーザーコンテンツに対するいかなる所有権も主張しません。
+
+**8.2 データ処理の役割**
+
+本サービスの提供において、お客様が本サービスを通じて提出する個人情報を含むデータに関して：
+
+- **お客様は個人情報処理者**であり、法的根拠（通知および同意、契約上の必要性など）について全面的な責任を負います；
+- **当社は受託処理者**であり、お客様の指示に基づく場合にのみデータを処理し、本契約を超える目的には使用しません。
+
+企業ユーザーは当社と別途データ処理契約（DPA）を締結し、処理の目的、期間、方法、セキュリティ措置、および監査権を定めることができます。
+
+**8.3 データ保持方針**
+
+| データ種類 | デフォルトの保持 | 目的 |
 |---|---|---|
-| Request/response body content | **Not retained by default** (enterprise users may separately agree to disable logs) | Real-time forwarding only |
-| Request metadata (time, model, Token count, status code, latency) | 12 months | Billing, reconciliation, security audit |
-| Account and verification information | Duration of account + legally required period | Identity recognition, real-name compliance |
-| Security audit logs | 6 months | Retention as required by the Cybersecurity Law |
+| リクエスト/レスポンスの本文内容 | **デフォルトで保持しない**（企業ユーザーはログ無効化を別途合意できる） | リアルタイム転送のみ |
+| リクエストメタデータ（時刻、モデル、トークン数、ステータスコード、レイテンシ） | 12か月 | 請求、照合、セキュリティ監査 |
+| アカウントおよび確認情報 | アカウント存続期間 + 法令が求める期間 | 身分識別、実名コンプライアンス |
+| セキュリティ監査ログ | 6か月 | サイバーセキュリティ法が求める保持 |
 
-> Note: If you use upstream official-channel models, the body content will inevitably be transmitted to the Upstream Model Provider, whose retention policy is governed by the upstream privacy policy.
+> 注：上流の公式チャネルモデルを利用する場合、本文内容は必然的に上流モデル提供元へ送信され、その保持方針は上流のプライバシーポリシーに準拠します。
 
-**8.4 Cross-Border Data Transfer**
+**8.4 越境データ移送**
 
-8.4.1 When using overseas model nodes, your input content will be transmitted to overseas upstream services and may be processed and stored overseas.
+8.4.1 海外モデルノードを利用する場合、お客様の入力内容は海外の上流サービスへ送信され、海外で処理および保存される場合があります。
 
-8.4.2 **Before using such models, you should complete the compliance procedures required for data export on your own** (where applicable, including filing of the standard contract for cross-border personal information transfer, security assessment or certification), and fulfill sufficient notice obligations to your end users in your privacy policy. Your act of selecting an overseas model at the Platform constitutes your explicit instruction for such cross-border transfer.
+8.4.2 **かかるモデルを利用する前に、お客様はデータ輸出に必要なコンプライアンス手続をご自身で完了させる**ものとします（該当する場合、越境個人情報移送のための標準契約の届出、セキュリティ評価、または認証を含む）。かつ、ご自身のプライバシーポリシーにおいてエンドユーザーに対する十分な通知義務を果たすものとします。本プラットフォームで海外モデルを選択するお客様の行為は、かかる越境移送に対するお客様の明示的な指示を構成します。
 
-8.4.3 We recommend and support you in achieving data non-export through "domestic nodes + domestic models"; you may also reduce export risk through server-side data masking, field replacement and other technical means.
+8.4.3 当社は、「国内ノード + 国内モデル」によるデータ非輸出の達成を推奨し、支援します。また、サーバー側のデータマスキング、フィールド置換、およびその他の技術的手段による輸出リスクの低減も可能です。
 
-**8.5 Security Measures**
+**8.5 セキュリティ措置**
 
-We adopt security measures including but not limited to: transport-layer encryption (TLS 1.3), static data encryption, least-privilege access control, key escrow and rotation, intrusion detection, log audit, and employee confidentiality agreements. We conduct regular security assessments and penetration testing.
+当社は、以下を含む（これらに限定されない）セキュリティ措置を採用します：トランスポート層暗号化（TLS 1.3）、静的データ暗号化、最小特権のアクセス制御、キーのエスクローおよびローテーション、侵入検知、ログ監査、および従業員守秘義務契約。当社は定期的なセキュリティ評価およびペネトレーションテストを実施します。
 
-**8.6 Security Incident Notice**
+**8.6 セキュリティインシデント通知**
 
-When a data breach, tampering, loss or other security incident occurs or is likely to occur, we will promptly take remedial measures, report to regulators as required by laws and regulations, and notify you via in-site message or email.
+データ漏洩、改ざん、紛失、またはその他のセキュリティインシデントが発生し、または発生するおそれがある場合、当社は速やかに救済措置を講じ、法令に従い規制当局に報告し、サイト内メッセージまたはメールでお客様に通知します。
 
-**8.7 Personal Information Protection**
+**8.7 個人情報の保護**
 
-The collection, use, storage, sharing of personal information and the exercise of your rights are detailed in the Privacy Policy. **The Privacy Policy is an inseparable part of this Agreement.**
-
----
-
-## Article 9 Third-Party Services and Upstream Model Terms
-
-**9.1 Pass-through of Upstream Terms**
-
-9.1.1 **You acknowledge and agree that when you call upstream models through this Service, you must also comply with the usage policies, terms and acceptable use policies of the Upstream Model Providers**, including but not limited to OpenAI Usage Policies, Anthropic Usage Policies, Google Generative AI Prohibited Use Policy, Microsoft Azure Acceptable Use Policy, Amazon AWS Acceptable Use Policy, and the service specifications of various domestic model vendors.
-
-9.1.2 The substance of the above upstream terms is summarized in Article 5 of this Agreement and can be consulted at the links listed in Appendix B. Where the superior terms conflict with this Agreement, for the part concerning upstream model services, **the stricter one shall prevail**.
-
-9.1.3 Your violation of upstream policies also constitutes a breach under this Agreement.
-
-**9.2 Impact of Upstream Policy and Authorization Changes**
-
-9.2.1 Upstream Model Providers may change policies, adjust prices, restrict regions, restrict uses or terminate authorization to us at any time.
-
-9.2.2 **Unavailability of specific models, need to switch to alternative models or restricted service caused by upstream changes does not constitute a breach by us.** We will make reasonable efforts to notify in advance and provide a migration plan.
-
-**9.3 Liability Boundary for Upstream Interruptions**
-
-**Any failure, rate-limiting, ban, content interception, data breach or breach by an Upstream Model Provider is not our fault. We do not bear joint liability for the acts or omissions of upstream parties, but will make reasonable efforts to assist you in communicating with upstream and taking remedial measures.**
-
-**9.4 Resale Authorization Statement**
-
-We declare that our provision of upstream model invocation capability to you is based on lawful authorization arrangements with upstream providers or their authorized distributors. **We do not provide unlimited assurance of the continuing validity of upstream authorization.** If authorization terminates, we will notify you in advance to the extent permitted by regulations and upstream requirements, and assist with migration or refund according to the un-consumed balance.
-
-**9.5 Third-Party Links and Content**
-
-The Platform may contain links to third-party websites or resources. We are not responsible for the accuracy, legality or availability of third-party content.
+個人情報の収集、利用、保存、共有、およびお客様の権利の行使の詳細は、プライバシーポリシーに定められます。**プライバシーポリシーは本契約の不可分の一部です。**
 
 ---
 
-## Article 10 Intellectual Property Rights
+## 第9条 第三者サービスおよび上流モデルの条件
 
-**10.1 Platform Intellectual Property**
+**9.1 上流条件の通過**
 
-The intellectual property rights of the software, gateway programs, interface design, documentation, trademarks (including the Chinese and English brand names and graphic logos of **Uter** and **优特**), domain name (Uter.ai), technical solutions and algorithm strategies of this Service all belong to us or the respective right holders. Without written permission, you may not copy, modify, disseminate, reverse engineer or use them for any commercial purpose.
+9.1.1 **お客様は、本サービスを通じて上流モデルを呼び出す際、OpenAI利用ポリシー、Anthropic利用ポリシー、Google生成AI禁止利用ポリシー、Microsoft Azure利用可能ポリシー、Amazon AWS利用可能ポリシー、および各国内モデルベンダーのサービス仕様を含む（これらに限定されない）上流モデル提供元の利用ポリシー、条件、および利用可能ポリシーにも従わなければならないことに、認識し同意します。**
 
-**10.2 Trademark Use**
+9.1.2 上記の上流条件の実質は本契約第5条に要約されており、附属書Bに掲載されたリンクで確認できます。上位の条件が本契約と矛盾する場合、上流モデルサービスに関する部分については、**より厳しいものが優先します**。
 
-Without prior written consent, you may not use the Chinese or English names, trademarks or logos of "Uter" or "优特" in any promotional materials or product interfaces, or otherwise imply a cooperation, endorsement or affiliation with us.
+9.1.3 お客様による上流ポリシー違反は、本契約上の違反も構成します。
 
-**10.3 Risk Notice for Generated Content**
+**9.2 上流の方針および授権変更の影響**
 
-10.3.1 Large language model outputs are **probabilistic and non-deterministic**. **We make no express or implied warranty as to the accuracy, completeness, timeliness, applicability or non-infringement of the outputs.**
+9.2.1 上流モデル提供元は、方針の変更、価格の調整、地域の制限、利用の制限、または当社に対する授権の終了をいつでも行う場合があります。
 
-10.3.2 **Content generated by large models may be similar to prior works of others.** We cannot guarantee that generated content is original or will not infringe third-party intellectual property rights. You should complete rights clearance on your own before commercial use of generated content.
+9.2.2 **上流の変更に起因する特定モデルの利用不能、代替モデルへの切り替えの必要、または制限されたサービスは、当社の債務不履行を構成しません。** 当社は合理的に努力して事前に通知し、移行計画を提供します。
 
-10.3.3 **You may not claim exclusive rights to the output content for the same prompt.**
+**9.3 上流中断に対する責任境界**
 
-**10.4 Feedback**
+**上流モデル提供元のいかなる障害、レート制限、禁止、コンテンツ遮断、データ漏洩、または債務不履行も、当社の過失ではありません。当社は上流当事者の作為または不作為について連帯責任を負いませんが、お客様と上流との通信および救済措置の支援に合理的な努力を払います。**
 
-Any product suggestions, defect reports, improvement opinions, etc. you submit to us ("Feedback") are deemed to grant us a perpetual, irrevocable, royalty-free right to use, modify and integrate such Feedback worldwide without paying consideration to you. The Feedback does not contain your confidential information.
+**9.4 再販授権の表明**
 
----
+当社は、上流モデル提供元またはその授権販売店との適法な授権取り決めに基づき、お客様に対する上流モデル呼び出し能力の提供を行っていることを表明します。**当社は、上流授権の継続的な有効性について無制限の保証を提供するものではありません。** 授権が終了する場合、当社は規制および上流の要求が許す範囲で事前に通知し、未消費残高に応じた移行または返金を支援します。
 
-## Article 11 Disclaimers and Limitation of Liability
+**9.5 第三者リンクおよびコンテンツ**
 
-**11.1 Service Provided "As Is" and "As Available"**
-
-To the maximum extent permitted by applicable law, we provide this Service on an "AS IS" and "AS AVAILABLE" basis, **making no express or implied warranties**, including but not limited to warranties of merchantability, fitness for a particular purpose, uninterrupted use, error-free operation, virus-free, or accurate results.
-
-**11.2 Non-Professional Advice**
-
-Any content output by this Service does not constitute medical, legal, tax, accounting or investment advice. **You should not use the output as a substitute for professional advice.** Any decisions and consequences arising from reliance on the output are borne by you.
-
-**11.3 Exclusion of Damages**
-
-To the maximum extent permitted by applicable law, **we are not liable for any of the following losses**: loss of profit, loss of revenue, loss of goodwill, loss of data, loss of anticipated savings, business interruption, cost of procuring substitute services, and any indirect, incidental, special, punitive or consequential loss — **whether or not such loss was foreseeable, and whether or not we were advised of the possibility of such loss**.
-
-**11.4 Cap on Aggregate Liability**
-
-**To the maximum extent permitted by applicable law, our aggregate liability to you for all claims under or relating to this Agreement shall not exceed the total service fees actually paid by you and not refunded in the 12 months preceding the event giving rise to the claim.**
-
-**11.5 Exceptions**
-
-The limitations in Articles 11.3 and 11.4 do not apply to the following: personal injury or property damage caused by our intentional misconduct or gross negligence; our infringement of your intellectual property rights; liabilities that mandatory law prohibits limiting or excluding.
-
-**11.6 Force Majeure**
-
-Where service interruption or non-performance is caused by force majeure (including natural disasters, war, epidemic, government acts, regulatory directives, large-scale cyber attacks, global outage of an Upstream Model Provider, Internet infrastructure failures, etc.), we are exempted to the extent of the facts, but will make reasonable efforts to reduce the impact and notify you.
-
-**11.7 User Indemnification Obligation**
-
-**If, due to your violation of this Agreement, violation of laws and regulations, or infringement of third-party rights, we are claimed by a third party, punished by a regulator, held liable by an Upstream Model Provider or suffer other losses, you shall fully indemnify us for all such losses (including but not limited to compensation, fines, attorney fees, litigation/arbitration fees, notarization fees and reasonable investigation costs), and shall actively cooperate with our defense.**
+本プラットフォームには第三者のウェブサイトまたはリソースへのリンクが含まれる場合があります。当社は第三者コンテンツの正確性、適法性、または可用性について責任を負いません。
 
 ---
 
-## Article 12 Changes, Suspension and Termination of Service
+## 第10条 知的財産権
 
-**12.1 Your Right to Terminate**
+**10.1 プラットフォームの知的財産**
 
-You may stop using this Service and apply to cancel your account at any time. After termination, you should settle fees, handle the balance and back up data as agreed in Article 6.
+本サービスのソフトウェア、ゲートウェイプログラム、インターフェース設計、ドキュメント、商標（**Uter** および **优特** の中国語名および英語名ならびに図形ロゴを含む）、ドメイン名（Uter.ai）、技術解決策、およびアルゴリズム戦略の知的財産権はすべて、当社または各権利者に帰属します。書面の許可なく、お客様はこれらを複製、改変、流通、リバースエンジニアリング、またはいかなる商業目的にも使用してはなりません。
 
-**12.2 Our Right to Suspend and Terminate**
+**10.2 商標の使用**
 
-12.2.1 We have the right to **immediately suspend or terminate** the Service to you without bearing breach liability under any of the following circumstances:
+事前の書面による同意なく、お客様は「Uter」または「优特」の中国語名、英語名、商標、またはロゴをいかなる宣伝資料または製品インターフェースにも使用し、または当社との協力、承認、または提携を暗示してはなりません。
 
-1. You violate Article 5 (Usage Rules and Prohibited Conduct) or Article 14 (Export Control and Sanctions) of this Agreement;
-2. You fail to pass or maintain identity verification;
-3. You fail to pay fees beyond the agreed period;
-4. Your usage behavior exposes the Platform to regulatory risk, upstream ban risk or major security risk;
-5. You enter bankruptcy, liquidation, dissolution proceedings, or lose performance capacity;
-6. Laws and regulations, regulators or Upstream Model Providers require us to stop providing Service to you.
+**10.3 生成コンテンツのリスク通知**
 
-12.2.2 For items 1, 4 and 6 of Article 12.2.1, we may simultaneously **freeze the account balance** until the relevant risk or dispute is resolved.
+10.3.1 大規模言語モデルの出力は**確率的かつ非決定的**です。**当社は、出力の正確性、完全性、適時性、有用性、または非侵害性について、いかなる明示または黙示の保証も行いません。**
 
-**12.3 Consequences of Termination**
+10.3.2 **大規模モデルにより生成されたコンテンツは、他人の既存の著作物と類似する場合があります。** 当社は、生成コンテンツが独創的であること、または第三者の知的財産権を侵害しないことを保証できません。お客様は、生成コンテンツを商業利用する前にご自身で権利のクリアランスを完了させるものとします。
 
-After termination: your API Key becomes invalid immediately; the un-consumed balance is handled as agreed in Article 6; we delete or anonymize your data as required by Article 8 and laws and regulations; Articles 8, 10, 11, 13, 14, 15, 17 and other provisions that should continue to be effective by their nature continue to be effective.
+10.3.3 **お客様は、同一のプロンプトに対する出力コンテンツについて専属権を主張してはなりません。**
 
-**12.4 Our Right to Early Termination**
+**10.4 フィードバック**
 
-For services with no fixed term agreed, we may terminate this Agreement with **30 calendar days'** advance notice. In this case, we will refund the full un-consumed balance (excluding consumed portions), **without deducting third-party payment channel fees or taxes**.
+お客様が当社に提出するいかなる製品提案、欠陥報告、改善意見など（「フィードバック」）も、対価を支払うことなく、世界的に永続的かつ取消不能な、かかるフィードバックを利用、改変、および統合する権利を当社に付与するものとみなされます。フィードバックにはお客様の機密情報は含まれません。
 
 ---
 
-## Article 13 Breach and Handling
+## 第11条 免責事項および責任の制限
 
-**13.1 Gradient of Handling Measures**
+**11.1 「現状有姿」および「利用可能な限り」でのサービス提供**
 
-We will adopt handling measures in proportion to the breach and give rectification opportunities where possible:
+適用される法律で認められる最大限度において、当社は本サービスを「AS IS（現状有姿）」および「AS AVAILABLE（利用可能な限り）」の基準で提供し、**いかなる明示または黙示の保証も行いません**。商品性、特定目的への適合性、中断のない利用、エラーのない動作、ウイルスフリー、または正確な結果の保証を含みますが、これらに限定されません。
 
-| Severity | Typical Scenario | Handling Measure |
+**11.2 非専門的助言**
+
+本サービスが出力するいかなるコンテンツも、医療、法務、税務、会計、または投資の助言を構成しません。**お客様は、出力を専門的な助言の代替として使用してはなりません。** 出力への依拠から生じるいかなる決定および結果も、お客様が負担します。
+
+**11.3 損害の除外**
+
+適用される法律で認められる最大限度において、**当社は以下のいかなる損失の責任も負いません**：利益の損失、収入の損失、信用の損失、データの損失、予想された節約の損失、事業の中断、代替サービスの調達費用、およびいかなる間接的、付随的、特別、懲罰的、または結果的損失 —— **かかる損失が予見可能であったかどうか、および当社がかかる損失の可能性を知らされていたかどうかを問いません**。
+
+**11.4 総責任の上限**
+
+**適用される法律で認められる最大限度において、本契約に基づく、またはこれに関連するすべての請求についてお客様に対する当社の総責任は、請求の原因となった事由の発生前12か月間においてお客様が実際に支払い未返金のサービス料金の総額を超えないものとします。**
+
+**11.5 例外**
+
+第11.3条および第11.4条の制限は、以下には適用されません：当社の故意または重過失により生じた人身傷害または財産損害；当社によるお客様の知的財産権の侵害；強行法規が制限または除外を禁止する責任。
+
+**11.6 不可抗力**
+
+不可抗力（自然災害、戦争、疫病、政府の行為、規制指令、大規模なサイバー攻撃、上流モデル提供元の世界的な障害、インターネット基盤の故障などを含む）によりサービス中断または不履行が生じた場合、当社は事実の範囲で免責されますが、影響の低減に合理的な努力を払い、お客様に通知します。
+
+**11.7 お客様の補償義務**
+
+**お客様の本契約違反、法令違反、または第三者の権利侵害により、当社が第三者から請求され、規制当局により処罰され、上流モデル提供元から責任を追及され、またはその他の損失を被った場合、お客様はかかるすべての損失（補償、罰金、弁護士費用、訴訟/仲裁費用、公证費用、および合理的な調査費用を含むがこれらに限定されない）を当社に完全に補償し、かつ当社の防御に積極的に協力するものとします。**
+
+---
+
+## 第12条 サービスの変更、停止および終了
+
+**12.1 お客様の終了権**
+
+お客様はいつでも本サービスの利用を停止し、アカウントの削除を申請できます。終了後、お客様は第6条に従い料金を精算し、残高を処理し、データをバックアップするものとします。
+
+**12.2 当社の停止および終了権**
+
+12.2.1 当社は、以下のいずれかの場合に、**直ちにサービスを停止または終了**する権利を、債務不履行責任を負うことなく有します：
+
+1. お客様が本契約第5条（利用規則および禁止行為）または第14条（輸出管理および制裁）に違反した；
+2. お客様が本人確認に合格またはこれを維持できない；
+3. お客様が合意された期間を超えて料金を支払わない；
+4. お客様の利用行動が、本プラットフォームを規制リスク、上流禁止リスク、または重大なセキュリティリスクにさらす；
+5. お客様が破産、清算、解散手続きに入る、または履行能力を喪失する；
+6. 法令、規制当局、または上流モデル提供元が、お客様へのサービス提供の停止を当社に要求する。
+
+12.2.2 第12.2.1条の項目1、4、および6について、当社は関連するリスクまたは紛争が解決されるまで**アカウント残高を凍結**する場合があります。
+
+**12.3 終了の結果**
+
+終了後：お客様のAPI Keyは直ちに無効となる；未消費残高は第6条に従い処理される；当社は第8条および法令に従いお客様のデータを削除または匿名化する；第8、10、11、13、14、15、17条および性質上効力を維持すべきその他の規定は、引き続き効力を維持する。
+
+**12.4 当社の早期終了権**
+
+合意された固定期間のないサービスについて、当社は**30暦日の**事前通知をもって本契約を終了できるものとします。この場合、当社は未消費残高の全額（消費済み部分を除く）を返金し、**第三者決済チャネル手数料または税金を差し引きません**。
+
+---
+
+## 第13条 違反およびその処理
+
+**13.1 処理措置の勾配**
+
+当社は、違反に比例した処理措置を採用し、可能な場合は是正の機会を与えます：
+
+| 重大度 | 典型的シナリオ | 処理措置 |
 |---|---|---|
-| General breach | First minor rate excess, information not updated in time | In-site reminder, rectification within time limit |
-| Serious breach | Repeated rate excess, minor content violation, late payment | Rate-limiting, service suspension, quota freeze |
-| Severe breach | Reselling API Keys, malicious quota scraping, bypassing risk control, major content violation | Immediate service termination, account freeze, liability pursuit |
-| Suspected illegality | Minor sexual exploitation, fraud, terrorism, sanction violation | Immediate termination, evidence preservation, report to competent authority |
+| 一般的違反 | 初回の軽微なレート超過、情報の未更新 | サイト内リマインダー、期限付き是正 |
+| 重大な違反 | 反復するレート超過、軽微なコンテンツ違反、支払遅延 | レート制限、サービス停止、割当て凍結 |
+| 深刻な違反 | API Keyの再販、悪意ある枠スクレイピング、リスク管理の回避、重大なコンテンツ違反 | 直ちのサービス終了、アカウント凍結、責任追求 |
+| 違法の疑い | 軽微な性的搾取、詐欺、テロリズム、制裁違反 | 直ちの終了、証拠保全、所管官庁への報告 |
 
-**13.2 Investigation and Defense**
+**13.2 調査および弁明**
 
-13.2.1 Before making a major handling decision, we will (where the circumstances permit and do not affect the investigation) inform you of the reason via in-site message or email and give you a **5 business day** defense period.
+13.2.1 重大な処理決定を行う前に、当社は（状況が許し調査に影響を及ぼさない場合）サイト内メッセージまたはメールにより理由をお客様に通知し、**5営業日**の弁明期間を与えます。
 
-13.2.2 Where it concerns public safety, minor protection, sanction compliance or explicit regulatory requirements, we have the right to **execute first and inform later**.
+13.2.2 公共の安全、未成年者保護、制裁コンプライアンス、または明確な規制要件に関わる場合、当社は**先行執行・事後通知**の権利を有します。
 
-**13.3 Appeal Channel**
+**13.3 申立て窓口**
 
-If you disagree with the handling result, you may submit an appeal to support@uter.ai. We will respond within **10 business days**. The appeal does not affect the execution of the handling measure.
-
----
-
-## Article 14 Export Control, Sanctions and Cross-Border Compliance
-
-**14.1 Your Representations and Warranties**
-
-You represent, warrant and undertake that:
-
-1. You and your affiliates, actual controllers and ultimate beneficial owners **are not** subjects sanctioned or restricted by any competent authority such as the United Nations, the PRC, the United States (OFAC SDN List) or the European Union;
-2. You are not located in, established in, or actually operating from a comprehensively sanctioned country or region;
-3. You will not use the output or capability of this Service for **weapons development, military use, nuclear/biological/chemical proliferation, missile technology** or other export-controlled uses;
-4. You will not, directly or indirectly through this Service, transship, resell or transfer any controlled technology, data or service to sanctioned subjects or sanctioned regions.
-
-**14.2 Compliance Review Rights**
-
-We have the right (but no obligation) to conduct compliance screening of users' registration location, billing address, payment source and calling characteristics. Upon discovering suspected violations, we may suspend the Service, require compliance explanations or supplementary materials.
-
-**14.3 Cooperation Obligations**
-
-You shall cooperate with us and the Upstream Model Providers in compliance investigations and provide the required evidence within **5 business days**. Refusal to cooperate entitles us to terminate the Service.
-
-**14.4 Special Notice**
-
-**The export control and sanctions lists are dynamically changing. You should continuously verify your own compliance status during your use of this Service. Even if we have not conducted screening or screening found no issues, it does not relieve you of your obligations and liabilities under Article 14.1.**
+お客様が処理結果に異議がある場合、support@uter.ai に申立てを提出できます。当社は**10営業日以内**に回答します。申立ては処理措置の執行には影響を与えません。
 
 ---
 
-## Article 15 Governing Law and Dispute Resolution
+## 第14条 輸出管理、制裁および越境コンプライアンス
 
-**15.1 Governing Law**
+**14.1 お客様の表明および保証**
 
-15.1.1 The formation, validity, interpretation, performance and dispute resolution of this Agreement are governed by the **laws of the People's Republic of China** (excluding conflict-of-laws rules).
+お客様は、以下を表明し、保証し、かつ約束します：
 
-15.1.2 For the model services under this Agreement, the legal relationship between us and the Upstream Model Providers is governed by the laws of the corresponding jurisdiction; such arrangement does not affect the application of the laws of the PRC to this Agreement.
+1. お客様およびお客様の関連会社、実質支配者、および最終受益所有者は、国連、中華人民共和国、アメリカ合衆国（OFAC SDNリスト）、または欧州連合などのいかなる有管轄権機関による制裁または制限の対象**ではない**；
+2. お客様は、包括的に制裁を受けている国または地域に所在せず、そこで設立されておらず、また実際にそこから運営されていない；
+3. お客様は、本サービスの出力または能力を**兵器開発、軍事利用、核/生物/化学の拡散、ミサイル技術**またはその他の輸出管理された利用に使用しない；
+4. お客様は、本サービスを通じて直接または間接に、いかなる管理技術、データ、またはサービスも制裁対象または制裁地域に転送、再販、または譲渡しない。
 
-15.1.3 Where the laws of the PRC contain mandatory provisions on specific matters (such as personal information protection, management of generative AI services), such provisions prevail.
+**14.2 コンプライアンス審査権**
 
-**15.2 Dispute Resolution**
+当社は（義務ではなく）ユーザーの登録所在地、請求先住所、支払出所、および呼び出し特性のコンプライアンス審査を行う権利を有します。疑わしい違反を発見した場合、当社はサービスを停止し、コンプライアンスの説明または補足資料を求める場合があります。
 
-15.2.1 Any dispute arising from or relating to this Agreement shall first be resolved through friendly negotiation between the parties.
+**14.3 協力義務**
 
-15.2.2 If negotiation fails, either party may file a lawsuit with the **people's court with jurisdiction over the domicile of Shenzhen Uter Network Co., Ltd. (Shenzhen)**; the court of first instance is the people's court of the district where it is registered; where the subject matter exceeds the first-instance jurisdictional standard of the basic people's court, the Shenzhen Intermediate People's Court has jurisdiction.
+お客様は、当社および上流モデル提供元のコンプライアンス調査に協力し、**5営業日以内**に必要な証拠を提供するものとします。協力を拒否した場合、当社はサービスを終了する権利を有します。
 
-15.2.3 During dispute resolution, except for the dispute itself, both parties shall continue to perform the other provisions of this Agreement.
+**14.4 特記事項**
 
-**15.3 Language Version**
-
-This Agreement is governed by the **Chinese version**. We may provide English or other language translations for reference only; in the event of any conflict between the translation and the Chinese version, **the Chinese version shall prevail**.
-
-**15.4 Severability**
-
-If any provision of this Agreement is deemed invalid or unenforceable, it shall not affect the validity of the other provisions. The parties shall replace it with a valid provision closest to the original commercial purpose.
+**輸出管理および制裁のリストは動的に変化します。お客様は本サービスの利用期間を通じてご自身のコンプライアンス状況を継続的に確認するものとします。当社が審査を行わなかった、または審査で問題が発見されなかったとしても、第14.1条に基づくお客様の義務および責任を免除するものではありません。**
 
 ---
 
-## Article 16 Notices and Service of Documents
+## 第15条 準拠法および紛争解決
 
-16.1 Notices we send to you may be served by any of the following means, deemed served upon dispatch: in-site message (served upon sending), registered email (deemed served 24 hours after sending), console announcement (served upon publication), SMS (deemed served upon sending).
+**15.1 準拠法**
 
-16.2 **You are obligated to keep your registered email and mobile number valid and check notices promptly.** Consequences arising from your failure to check notices in time are borne by you.
+15.1.1 本契約の成立、有効性、解釈、履行、および紛争解決は、**中華人民共和国の法律**（法の抵触規則を除く）に準拠します。
 
-16.3 Notices you send to us should be sent to:
+15.1.2 本契約に基づくモデルサービスについて、当社と上流モデル提供元との法的関係は対応する法域の法律に準拠します。かかる取り決めは、中華人民共和国の法律の本契約への適用に影響を与えません。
 
-- Service and technical support: tech@uter.ai
-- Legal and compliance matters: legal@uter.ai
-- Business and contract matters: bd@uter.ai
-- Abuse reporting: abuse@uter.ai
+15.1.3 中華人民共和国の法律に、特定の事項（個人情報保護、生成AIサービスの管理など）について強行規定がある場合、かかる規定が優先します。
 
-16.4 For notices concerning service termination, account freezing or material clause changes, we will use two or more means of service simultaneously.
+**15.2 紛争解決**
 
----
+15.2.1 本契約から生じ、またはこれに関連するいかなる紛争も、まず当事者間の友好的な協議により解決されます。
 
-## Article 17 Miscellaneous
+15.2.2 協議が不成立の場合、いずれの当事者も**深圳市 Uter 網絡科技有限公司の所在地を管轄する裁判所（深圳市）**に提訴できます；第一審裁判所は同社の登録地を管轄する区の人民法院とし、係争物の価額が基層人民法院の第一審管轄基準を超える場合は、深圳市中級人民法院が管轄します。
 
-17.1 **Entire Agreement**: This Agreement (including all appendices and incorporated documents) constitutes the entire agreement between the parties regarding this Service, superseding all prior oral or written communications and representations.
+15.2.3 紛争解決中も、紛争自体を除き、双方は本契約の他の規定を引き続き履行するものとします。
 
-17.2 **Assignment**: Without our prior written consent, you may not assign your rights and obligations under this Agreement. We may assign this Agreement to an affiliate in the event of merger, reorganization, asset sale or affiliate adjustment, with prior notice to you.
+**15.3 言語バージョン**
 
-17.3 **No Waiver**: Our failure or delay in exercising any right under this Agreement does not constitute a waiver of that right.
+本契約は**中国語版**によって規律されます。当社は参照のみを目的として英語またはその他の言語の翻訳を提供する場合があります。翻訳と中国語版の間に矛盾がある場合、**中国語版が優先します**。
 
-17.4 **Independent Parties**: The parties are independent contracting parties; this Agreement does not constitute any agency, partnership, joint venture or employment relationship.
+**15.4 分離可能性**
 
-17.5 **Headings**: The headings of the articles are for ease of reading only and do not affect the interpretation of the articles.
-
-17.6 **Survival**: After termination of this Agreement, provisions that should continue to be effective by their nature (such as intellectual property, confidentiality, limitation of liability, dispute resolution) continue to be effective.
+本契約のいずれかの規定が無効または執行不能とみなされた場合、他の規定の有効性には影響しません。当事者は、原本の商業目的に最も近い有効な規定に置き換えるものとします。
 
 ---
 
-## Appendix A Core Prohibited List of the Acceptable Use Policy (AUP)
+## 第16条 通知および文書の送達
 
-The following are absolutely prohibited uses, which upon discovery will result in **immediate service termination, no appeal, and reporting to the competent authority in accordance with law**:
+16.1 当社からお客様への通知は、以下のいずれかの手段により送達され、発送時に送達されたものとみなされます：サイト内メッセージ（送信時に送達）、登録メール（送信後24時間で送達されたものとみなす）、コンソール公告（公表時に送達）、SMS（送信時に送達）。
 
-| No. | Prohibited Use |
+16.2 **お客様は、登録メールおよび携帯電話番号を有効に保ち、通知を速やかに確認する義務を負います。** 通知をタイミングよく確認しなかったことに起因する結果は、お客様が負担します。
+
+16.3 お客様から当社への通知は、以下に送信するものとします：
+
+- サービスおよび技術サポート：tech@uter.ai
+- 法務およびコンプライアンス事項：legal@uter.ai
+- 事業および契約事項：bd@uter.ai
+- 悪用報告：abuse@uter.ai
+
+16.4 サービス終了、アカウント凍結、または重大な条項変更に関する通知については、当社は2つ以上の送達手段を同時に使用します。
+
+---
+
+## 第17条 その他
+
+17.1 **完全合意**: 本契約（すべての附属書および組み込まれた文書を含む）は、本サービスに関する当事者間の完全な合意を構成し、それ以前のすべての口頭または書面の通信および表明に優先します。
+
+17.2 **譲渡**: 当社の事前の書面による同意なく、お客様は本契約に基づく権利および義務を譲渡してはなりません。当社は、合併、再編、資産売却、または関連会社の調整に際し、お客様への事前通知をもって本契約を関連会社に譲渡する場合があります。
+
+17.3 **権利放棄の否認**: 当社が本契約に基づくいかなる権利の行使を怠り、または遅延させたとしても、当該権利の放棄を構成しません。
+
+17.4 **独立した当事者**: 当事者は独立した契約当事者であり、本契約はいかなる代理、パートナーシップ、合弁、または雇用関係を構成しません。
+
+17.5 **見出し**: 各条の見出しは読みやすさのためのみであり、各条の解釈に影響を与えません。
+
+17.6 **存続**: 本契約の終了後も、性質上効力を維持すべき規定（知的財産、守秘、責任の制限、紛争解決など）は引き続き効力を維持します。
+
+---
+
+## 附属書A 利用可能ポリシー（AUP）の核心的禁止リスト
+
+以下は絶対に禁止される利用であり、発見時には**直ちにサービスを終了し、申立ての機会はなく、かつ法令に従い所管官庁に報告します**：
+
+| No. | 禁止される利用 |
 |---|---|
-| 1 | Any generation or dissemination of content involving the sexual exploitation or sexualization of minors |
-| 2 | Generation, acquisition or dissemination of Child Sexual Abuse Material (CSAM) |
-| 3 | Assisting in terrorist activities or violent extremism |
-| 4 | Operational guidance for manufacturing weapons, explosives, hazardous chemicals or biological agents |
-| 5 | Conducting telecom network fraud, phishing attacks, malware writing and dissemination |
-| 6 | Money laundering, terrorist financing, sanction evasion |
-| 7 | Unauthorized facial recognition, biometric collection and identity impersonation |
-| 8 | Large-scale generation of false information, automated manipulation of public opinion or traffic inflation |
-| 9 | Generation of non-consensual deepfake content for deceptive purposes |
-| 10 | Any use violating the acceptable use policies of Upstream Model Providers |
+| 1 | 未成年者の性的搾取または性的対象化に関するコンテンツの生成または流通 |
+| 2 | 児童性的虐待素材（CSAM）の生成、取得、または流通 |
+| 3 | テロリスト活動または暴力的過激主義の支援 |
+| 4 | 兵器、爆発物、危険化学品、または生物剤の製造に関する実用的な指示 |
+| 5 | 電信ネットワーク詐欺、フィッシング攻撃、マルウェアの作成および流通の実行 |
+| 6 | マネーロンダリング、テロ資金供与、制裁回避 |
+| 7 | 無断の顔認識、生体認証収集、および身分偽装 |
+| 8 | 大量の虚偽情報生成、世論の自動的操作、またはトラフィックの水増し |
+| 9 | 欺瞞的目的での非同意ディープフェイクコンテンツの生成 |
+| 10 | 上流モデル提供元の利用可能ポリシーに違反するいかなる利用 |
 
 ---
 
-## Appendix B List of Upstream Model Providers and Sub-processors
+## 附属書B 上流モデル提供元および下請処理者の一覧
 
-| Provider | Cloud Platform / Channel | Typical Models | Policy Link |
+| 提供元 | クラウドプラットフォーム / チャネル | 代表的モデル | 方針リンク |
 |---|---|---|---|
 | OpenAI | Azure OpenAI Service | GPT series | openai.com/policies/usage-policies |
 | Anthropic | Amazon Bedrock / Official API | Claude series | anthropic.com/legal/aup |
@@ -618,4 +618,4 @@ The following are absolutely prohibited uses, which upon discovery will result i
 | Mistral AI | Official API | Mistral series | mistral.ai/terms |
 | Domestic Vendors | Official API | Tongyi / Doubao / Hunyuan / DeepSeek / Zhipu / Kimi, etc. | Each vendor's official publication |
 
-> We may add, replace or remove Upstream Providers. Changes to the list will be published on the Platform; material changes will be notified separately.
+> 当社は上流提供元を追加、置換、または削除する場合があります。一覧の変更は本プラットフォームに公表され、重大な変更は別途通知されます。

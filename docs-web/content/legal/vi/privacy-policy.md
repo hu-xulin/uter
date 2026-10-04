@@ -1,83 +1,83 @@
-# Uter Large Model Service Platform Privacy Policy
+# Chính sách bảo mật của Nền tảng dịch vụ mô hình lớn Uter
 
-| Item | Content |
+| Mục | Nội dung |
 |---|---|
-| Service Brand | **Uter.ai 优特智能** |
-| Platform Name | **Uter Large Model Service Platform** |
-| Official Website | https://uter.ai |
-| Document Name | Uter Large Model Service Platform Privacy Policy |
-| Version | V1.0 |
-| Effective Date | August 8, 2026 |
-| Last Updated | August 8, 2026 |
-| Personal Information Processor | **Shenzhen Uter Network Co., Ltd.** |
-| Registered Address | Shenzhen, Guangdong Province, the People's Republic of China |
-| Personal Information Protection Officer Email | privacy@uter.ai |
-| Customer Service Email | support@uter.ai |
+| Thương hiệu dịch vụ | **Uter.ai** |
+| Tên nền tảng | **Nền tảng dịch vụ mô hình lớn Uter** |
+| Trang web chính thức | https://uter.ai |
+| Tên tài liệu | Chính sách bảo mật của Nền tảng dịch vụ mô hình lớn Uter |
+| Phiên bản | V1.0 |
+| Ngày có hiệu lực | August 8, 2026 |
+| Cập nhật lần cuối | August 8, 2026 |
+| Bên kiểm soát thông tin cá nhân | **Công ty TNHH Uter Network, Thâm Quyến** |
+| Địa chỉ đăng ký | Thâm Quyến, tỉnh Quảng Đông, Cộng hòa Nhân dân Trung Hoa |
+| Email của cán bộ bảo vệ thông tin cá nhân | privacy@uter.ai |
+| Email dịch vụ khách hàng | support@uter.ai |
 
-> **This Policy, together with the Uter Large Model Service Platform Terms of Service, constitutes the complete agreement between you and Shenzhen Uter Network Co., Ltd.** This Policy is a part of that Agreement; its rules on the processing of personal information supplement Article 8 (Data, Content and Personal Information Protection) of the Terms of Service; in the event of any inconsistency with respect to the processing of personal information, **this Policy shall prevail.**
+> **Chính sách này, cùng với Điều khoản sử dụng của Nền tảng dịch vụ mô hình lớn Uter, tạo thành toàn bộ thỏa thuận giữa bạn và Công ty TNHH Uter Network, Thâm Quyến.** Chính sách này là một phần của Hợp đồng đó; các quy định của nó về xử lý thông tin cá nhân bổ sung cho Điều 8 (Dữ liệu, nội dung và bảo vệ Thông tin cá nhân) của Điều khoản sử dụng; trong trường hợp có bất khắc biệt về xử lý thông tin cá nhân thì **Chính sách này được ưu tiên.**
 
 ---
 
-## Summary
+## Tóm tắt
 
-To help you understand quickly, we first summarize the core of this Policy in one paragraph. **The Summary does not replace the main text; the complete rights and obligations are governed by the main text.**
+Để giúp bạn nhanh chóng hiểu, trước tiên chúng tôi tóm tắt cốt lõi của Chính sách này trong một đoạn. **Bản Tóm tắt không thay thế phần chính; toàn bộ quyền và nghĩa vụ được điều chỉnh bởi phần chính.**
 
-| What you care about most | Our answer |
+| Điều bạn quan tâm nhất | Câu trả lời của chúng tôi |
 |---|---|
-| What personal information do you collect? | We collect only the account information, identity verification information, payment information and call logs necessary to provide the Service — 4 categories in total. **We do not collect your contacts, photo album, location, microphone or other information unrelated to our business.** |
-| Do you keep the prompt content I send to the models? | **By default, we do not retain the body content of requests and responses.** We only record the metadata used for billing and security audit (time, model identifier, Token count, status code, latency). |
-| Will you use my data to train models? | **No.** We do not train large models ourselves, nor do we use your request content for any model training, fine-tuning or improvement purposes. |
-| Will my data go overseas? | Only when **you actively choose to call overseas model nodes** will the request content be transmitted to overseas upstream services in real time, and it is not retained domestically. See Chapter 4; such transfer is actively instructed and initiated by you. |
-| What if my end users submit personal information to my application? | **You are the processor, and we are the entrusted processor.** We process only upon your instructions and not for our own purposes. See Chapter 2. |
-| How do I delete my data? | You may delete it yourself in the console; or email privacy@uter.ai, and we will respond within **15 business days**. |
+| Bạn thu thập những thông tin cá nhân nào? | Chúng tôi chỉ thu thập thông tin tài khoản, thông tin xác minh danh tính, thông tin thanh toán và nhật ký gọi cần thiết để cung cấp Dịch vụ — tổng cộng 4 nhóm. **Chúng tôi không thu thập danh bạ, thư viện ảnh, vị trí, micrô hoặc các thông tin khác không liên quan đến hoạt động kinh doanh của chúng tôi.** |
+| Bạn có lưu giữ nội dung câu lệnh tôi gửi tới mô hình không? | **Mặc định, chúng tôi không lưu giữ nội dung thân của các yêu cầu và phản hồi.** Chúng tôi chỉ ghi lại siêu dữ liệu dùng cho tính phí và kiểm toát an ninh (thời gian, mã định danh mô hình, số lượng Token, mã trạng thái, độ trễ). |
+| Bạn có sử dụng dữ liệu của tôi để huấn luyện mô hình không? | **Không.** Chúng tôi không tự huấn luyện mô hình lớn, cũng không sử dụng nội dung yêu cầu của bạn cho bất kỳ mục đích huấn luyện, tinh chỉnh hay cải thiện mô hình nào. |
+| Dữ liệu của tôi có ra nước ngoài không? | Chỉ khi **bạn chủ động lựa chọn gọi các nút mô hình ở nước ngoài** thì nội dung yêu cầu mới được truyền theo thời gian thực tới dịch vụ thượng nguồn ở nước ngoài, và không được lưu giữ trong nước. Xem Chương 4; việc chuyển dữ liệu như vậy do bạn chủ động chỉ dẫn và khởi xướng. |
+| Nếu người dùng cuối của tôi gửi thông tin cá nhân vào ứng dụng của tôi thì sao? | **Bạn là bên kiểm soát, còn chúng tôi là bên được ủy thác xử lý.** Chúng tôi chỉ xử lý theo chỉ dẫn của bạn và không cho mục đích của chính mình. Xem Chương 2. |
+| Làm cách nào để xóa dữ liệu của tôi? | Bạn có thể tự xóa trên bảng điều khiển; hoặc gửi email đến privacy@uter.ai, và chúng tôi sẽ phản hồi trong vòng **15 ngày làm việc**. |
 
 ---
 
-## Table of Contents
+## Mục lục
 
-1. Introduction and Scope
-2. Key Concepts and Role Definitions
-3. How We Collect and Use Personal Information
-4. How We Entrust Processing, Share, Transfer and Publicly Disclose
-5. Cross-Border Data Transfer
-6. How We Store and Protect Personal Information
-7. Your Rights Regarding Personal Information
-8. Cookies and Similar Technologies
-9. Protection of Minors
-10. Special Notes on Generative AI Services
-11. Updates to this Policy
-12. How to Contact Us
-13. Definitions
-
----
-
-## Chapter 1 Introduction and Scope
-
-**1.1 Who We Are**
-
-The Uter Large Model Service Platform (hereinafter the "Platform") is operated by **Shenzhen Uter Network Co., Ltd.** (hereinafter "we" or "优特"). Registered in Shenzhen, Guangdong Province, the People's Republic of China, we are the **personal information processor** of the personal information collected by this Platform.
-
-**1.2 Scope of this Policy**
-
-1.2.1 This Policy applies to our processing of your personal information when you use the Platform's services through the official website Uter.ai, the console, developer documentation, SDK and API interfaces.
-
-1.2.2 **This Policy does not apply to the following circumstances**:
-
-1. **The upstream model services you call through this Platform**: the privacy rules of upstream model providers for their own processing activities are independently formulated and published by them, which we cannot control and for which we bear no responsibility;
-2. **Third-party websites or services linked from outside this Platform**;
-3. **Where you, as a developer or enterprise customer, provide services to your end users through this Platform — your own processing of your end users' personal information** — in such activities you are the processor; see Chapter 2.
-
-**1.3 Our Basic Commitments**
-
-We commit to the principles of lawfulness, legitimacy, necessity and good faith, collecting personal information in a **minimum necessary** manner; not using personal information unrelated to the Service for any purpose; not using your personal information for **model training**; and not selling your personal information to any third party.
+1. Giới thiệu và phạm vi áp dụng
+2. Khái niệm cốt lõi và định nghĩa vai trò
+3. Cách chúng tôi thu thập và sử dụng Thông tin cá nhân
+4. Cách chúng tôi Xử lý ủy thác, chia sẻ, chuyển giao và công bố công khai
+5. Chuyển dữ liệu xuyên biên giới
+6. Cách chúng tôi lưu giữ và bảo vệ Thông tin cá nhân
+7. Quyền của bạn đối với Thông tin cá nhân
+8. Cookie và công nghệ tương tự
+9. Bảo vệ Người chưa thành niên
+10. Lưu ý đặc biệt về dịch vụ trí tuệ nhân tạo
+11. Cập nhật Chính sách này
+12. Cách liên hệ với chúng tôi
+13. Định nghĩa
 
 ---
 
-## Chapter 2 Key Concepts and Role Definitions
+## Chương 1. Giới thiệu và phạm vi áp dụng
 
-> This Chapter is the core of this Policy. As **a large-model API service platform for developers and enterprise customers**, the business chain involves two layers: "you" and "your end users". Accurately understanding each party's legal role is the premise for determining rights and obligations.
+**1.1 Chúng tôi là ai**
 
-**2.1 Two-Layer Data Relationship**
+Nền tảng dịch vụ mô hình lớn Uter (sau đây gọi là «Nền tảng») được vận hành bởi **Công ty TNHH Uter Network, Thâm Quyến** (sau đây gọi là «chúng tôi» hoặc «Uter»). Đăng ký tại Thâm Quyến, tỉnh Quảng Đông, Cộng hòa Nhân dân Trung Hoa, chúng tôi là **Bên kiểm soát thông tin cá nhân** đối với thông tin cá nhân được Nền tảng này thu thập.
+
+**1.2 Phạm vi áp dụng của Chính sách này**
+
+1.2.1 Chính sách này áp dụng cho việc chúng tôi xử lý thông tin cá nhân của bạn khi bạn sử dụng các dịch vụ của Nền tảng thông qua trang web chính thức Uter.ai, bảng điều khiển, tài liệu dành cho nhà phát triển, SDK và các giao diện API.
+
+1.2.2 **Chính sách này không áp dụng đối với các trường hợp sau**:
+
+1. **Các dịch vụ mô hình thượng nguồn mà bạn gọi qua Nền tảng này**: các quy tắc bảo mật của nhà cung cấp mô hình thượng nguồn đối với hoạt động xử lý của chính họ được xây dựng và công bố độc lập bởi họ, nằm ngoài tầm kiểm soát của chúng tôi và chúng tôi không chịu trách nhiệm;
+2. **Các trang web hoặc dịch vụ của bên thứ ba được liên kết từ bên ngoài Nền tảng này**;
+3. **Trường hợp bạn, với tư cách nhà phát triển hoặc khách hàng doanh nghiệp, cung cấp dịch vụ cho người dùng cuối của mình thông qua Nền tảng này — việc bạn tự xử lý thông tin cá nhân của người dùng cuối** — trong các hoạt động đó, bạn là bên kiểm soát; xem Chương 2.
+
+**1.3 Các cam kết cơ bản của chúng tôi**
+
+Chúng tôi cam kết tuân thủ các nguyên tắc hợp pháp, chính đáng, cần thiết và thiện chí, thu thập thông tin cá nhân theo cách **tối thiểu cần thiết**; không sử dụng thông tin cá nhân không liên quan đến Dịch vụ cho bất kỳ mục đích nào; không sử dụng thông tin cá nhân của bạn cho **huấn luyện mô hình**; và không bán thông tin cá nhân của bạn cho bất kỳ bên thứ ba nào.
+
+---
+
+## Chương 2. Khái niệm cốt lõi và định nghĩa vai trò
+
+> Chương này là phần cốt lõi của Chính sách này. Với tư cách là **nền tảng dịch vụ API mô hình lớn dành cho nhà phát triển và khách hàng doanh nghiệp**, chuỗi hoạt động có liên quan đến hai tầng: «bạn» và «người dùng cuối của bạn». Việc hiểu chính xác vị thế pháp lý của từng bên là tiền đề để xác định quyền và nghĩa vụ.
+
+**2.1 Quan hệ dữ liệu hai tầng**
 
 ```
 Your end user --(submits information to your app)--> Your app --(calls Platform API)--> Platform --> Upstream Model Provider
@@ -85,336 +85,336 @@ Your end user --(submits information to your app)--> Your app --(calls Platform 
    【You】 as processor                                           【You】 as processor, 【we】 as entrusted processor
 ```
 
-**2.2 Our Two Roles**
+**2.2 Hai vai trò của chúng tôi**
 
-| Scenario | Data Involved | Your Role | Our Role | Applicable Rules |
+| Kịch bản | Dữ liệu liên quan | Vai trò của bạn | Vai trò của chúng tôi | Quy tắc áp dụng |
 |---|---|---|---|---|
-| **Scenario A: You register, verify, top up and log in to the Platform** | Your phone number, email, ID/business license information, payment information, login logs | Individual | **Personal Information Processor** | Chapters 3–7 of this Policy in full |
-| **Scenario B: You submit request content through the API that contains personal information** | Prompts, uploaded files, model-returned content | **Personal Information Processor** | **Entrusted Processor** | We process only upon your instructions, not for our own purposes; applies Article 2.3 of this Policy |
+| **Kịch bản A: Bạn đăng ký, xác minh, nạp tiền và đăng nhập vào Nền tảng** | Số điện thoại, email, thông tin giấy tờ tùy thân/giấy chứng nhận đăng ký doanh nghiệp, thông tin thanh toán, nhật ký đăng nhập | Cá nhân | **Bên kiểm soát thông tin cá nhân** | Toàn bộ Chương 3–7 của Chính sách này |
+| **Kịch bản B: Bạn gửi nội dung yêu cầu có chứa thông tin cá nhân thông qua API** | Câu lệnh, tệp đã tải lên, nội dung mô hình trả về | **Bên kiểm soát thông tin cá nhân** | **Bên xử lý được ủy thác** | Chúng tôi chỉ xử lý theo chỉ dẫn của bạn, không cho mục đích của chính mình; áp dụng Điều 2.3 của Chính sách này |
 
-**2.3 Special Provisions as Entrusted Processor**
+**2.3 Quy định đặc biệt với tư cách Bên xử lý được ủy thác**
 
-2.3.1 In Scenario B:
+2.3.1 Trong Kịch bản B:
 
-1. **You should obtain lawful authorization from your end users on your own** (notice and consent or other legitimate basis), and fulfill sufficient notice obligations in your own privacy policy;
-2. We process data according to your instructions; the purpose, method and period of processing are determined by your calling behavior;
-3. **We do not use such data for any purpose other than Scenario A in Article 2.2**, including but not limited to commercial exploitation, model training, user profiling, and data resale;
-4. In the event of a security incident, we will promptly notify you, and you will fulfill the notification and reporting obligations to your end users and regulators;
-5. You may separately execute a Data Processing Agreement (DPA) with us, specifying processing details and audit arrangements.
+1. **Bạn phải tự thu được sự ủy quyền hợp pháp từ người dùng cuối của mình** (thông báo và sự đồng ý, hoặc cơ sở hợp pháp khác), và thực hiện đầy đủ nghĩa vụ thông báo trong chính sách bảo mật của chính bạn;
+2. Chúng tôi xử lý dữ liệu theo chỉ dẫn của bạn; mục đích, phương thức và thời hạn xử lý do hành vi gọi của bạn quyết định;
+3. **Chúng tôi không sử dụng dữ liệu đó cho bất kỳ mục đích nào khác ngoài Kịch bản A tại Điều 2.2**, bao gồm nhưng không giới hạn ở khai thác thương mại, huấn luyện mô hình, phân hồ sơ người dùng và bán lại dữ liệu;
+4. Khi xảy ra sự cố an ninh, chúng tôi sẽ kịp thời thông báo cho bạn, và bạn sẽ thực hiện nghĩa vụ thông báo và báo cáo đối với người dùng cuối của mình và cơ quan quản lý;
+5. Bạn có thể ký kết riêng Hợp đồng xử lý dữ liệu (DPA) với chúng tôi, quy định chi tiết xử lý và các thỏa thuận kiểm toán.
 
-2.3.2 **We recommend and support you to desensitize personal information before submission.** If the data you submit involves sensitive personal information (such as biometrics, medical and health, financial accounts, whereabouts, or personal information of minors under the age of 14), you should ensure that you have obtained **separate consent** and completed a personal information protection impact assessment.
+2.3.2 **Chúng tôi khuyến nghị và hỗ trợ bạn thực hiện khử định danh thông tin cá nhân trước khi gửi.** Nếu dữ liệu bạn gửi có liên quan đến thông tin cá nhân nhạy cảm (chẳng hạn như sinh trắc học, y tế và sức khỏe, tài khoản tài chính, vị trí, hoặc thông tin cá nhân của người chưa thành niên dưới 14 tuổi), bạn phải bảo đảm rằng mình đã thu được **sự đồng ý riêng** và đã hoàn thành đánh giá tác động bảo vệ thông tin cá nhân.
 
-2.3.3 Except as otherwise provided by law, we **will not actively access** your request content. Only under the following circumstances may we view it within the minimum necessary scope: for troubleshooting technical faults with your authorization; upon lawful requests from regulators or judicial authorities; upon discovering content suspected of serious illegality or endangering public safety.
+2.3.3 Trừ khi pháp luật có quy định khác, chúng tôi **sẽ không chủ động truy cập** nội dung yêu cầu của bạn. Chỉ trong các trường hợp sau chúng tôi mới có thể xem trong phạm vi tối thiểu cần thiết: để khắc phục sự cố kỹ thuật với sự đồng ý của bạn; theo yêu cầu hợp pháp của cơ quan quản lý hoặc cơ quan tư pháp; khi phát hiện nội dung bị nghi vấn vi phạm pháp luật nghiêm trọng hoặc nguy hại an toàn công cộng.
 
 ---
 
-## Chapter 3 How We Collect and Use Personal Information
+## Chương 3. Cách chúng tôi thu thập và sử dụng Thông tin cá nhân
 
-**3.1 List of Personal Information We Collect**
+**3.1 Danh mục Thông tin cá nhân chúng tôi thu thập**
 
-We collect only the following 4 categories of personal information directly related to the Service:
+Chúng tôi chỉ thu thập 4 nhóm thông tin cá nhân sau đây, trực tiếp liên quan đến Dịch vụ:
 
-| Category | Specific Fields | Required | Collection Scenario |
+| Nhóm | Trường dữ liệu cụ thể | Bắt buộc | Kịch bản thu thập |
 |---|---|---|---|
-| **① Account Information** | Mobile phone number, email, account password (encrypted storage), nickname/enterprise name | Required | Registration, login |
-| **② Identity Verification Information** | Natural person: name, ID number (verified by a third-party identity verification institution); Enterprise: enterprise name, unified social credit code, legal representative name, business license image | Required | Fulfilling real-name obligation under the Cybersecurity Law and the Interim Measures for the Management of Generative AI Services |
-| **③ Payment and Invoicing Information** | Top-up order number, payment channel, transaction amount, invoicing entity and tax number | Required | Top-up, invoicing |
-| **④ Logs and Metadata** | IP address, device identifier (User-Agent), access time, model identifier, input/output Token count, request status code, response latency, API Key identifier | Required | Providing service, billing, security audit |
+| **① Thông tin tài khoản** | Số điện thoại, email, mật khẩu tài khoản (lưu trữ đã mã hóa), tên hiển thị/tên doanh nghiệp | Bắt buộc | Đăng ký, đăng nhập |
+| **② Thông tin xác minh danh tính** | Cá nhân: họ tên, số giấy tờ tùy thân (xác minh bởi cơ quan xác minh danh tính bên thứ ba); Doanh nghiệp: tên doanh nghiệp, mã số doanh nghiệp, họ tên người đại diện theo pháp luật, ảnh giấy chứng nhận đăng ký doanh nghiệp | Bắt buộc | Thực hiện nghĩa vụ danh tính thật theo Luật An ninh mạng và Biện pháp tạm thời về quản lý dịch vụ trí tuệ nhân tạo |
+| **③ Thông tin thanh toán và hóa đơn** | Mã đơn nạp tiền, kênh thanh toán, số tiền giao dịch, thực thể xuất hóa đơn và mã số thuế | Bắt buộc | Nạp tiền, xuất hóa đơn |
+| **④ Nhật ký và siêu dữ liệu** | Địa chỉ IP, mã định danh thiết bị (User-Agent), thời gian truy cập, mã định danh mô hình, số lượng Token đầu vào/đầu ra, mã trạng thái yêu cầu, độ trễ phản hồi, mã định danh API Key | Bắt buộc | Cung cấp dịch vụ, tính phí, kiểm toát an ninh |
 
-**3.2 Information We Will Not Collect**
+**3.2 Thông tin chúng tôi sẽ không thu thập**
 
-**We will not collect or request the following permissions or information:** contacts, call records, SMS content, photo album and images (except those you actively upload), precise geographic location, microphone and camera, clipboard content, or the installation list of other applications on your device.
+**Chúng tôi sẽ không thu thập hoặc yêu cầu các quyền hoặc thông tin sau:** danh bạ, nhật ký cuộc gọi, nội dung tin nhắn SMS, thư viện ảnh và hình ảnh (trừ những tệp bạn chủ động tải lên), vị trí địa lý chính xác, micrô và camera, nội dung bảng nhớ tạm, hoặc danh sách các ứng dụng khác được cài đặt trên thiết bị của bạn.
 
-**3.3 Processing Purpose and Legal Basis**
+**3.3 Mục đích xử lý và cơ sở pháp lý**
 
-| Processing Activity | Processing Purpose | Legal Basis (PIPL) |
+| Hoạt động xử lý | Mục đích xử lý | Cơ sở pháp lý (PIPL) |
 |---|---|---|
-| Account registration and login | Establish and maintain the service relationship | Article 13(1)(ii): necessary for concluding and performing a contract |
-| Identity verification | Fulfilling statutory obligations | Article 13(1)(iii): necessary to perform statutory duties or obligations |
-| Billing and invoicing | Settling service fees, fulfilling tax obligations | Same as above |
-| Metering and call logs | Billing reconciliation, fault troubleshooting, service quality improvement | Article 13(1)(ii) |
-| Security risk control and anti-fraud | Identifying malicious calls, resale, account theft, risk-control bypass, etc. | Article 13(1)(ii); where automated decision-making is involved, Article 24 applies |
-| Service notices and agreement change notifications | Fulfilling notification obligations | Article 13(1)(ii)(iii) |
-| Marketing pushes (**not required**) | Product updates, promotional activities | Requires your **separate consent**; you may unsubscribe at any time |
+| Đăng ký và đăng nhập tài khoản | Xác lập và duy trì quan hệ dịch vụ | Điều 13(1)(ii): cần thiết để ký kết và thực hiện hợp đồng |
+| Xác minh danh tính | Thực hiện nghĩa vụ theo quy định pháp luật | Điều 13(1)(iii): cần thiết để thực hiện nhiệm vụ hoặc nghĩa vụ theo quy định pháp luật |
+| Tính phí và xuất hóa đơn | Quyết toán phí dịch vụ, thực hiện nghĩa vụ thuế | Như trên |
+| Đo lường và nhật ký gọi | Đối soát tính phí, khắc phục sự cố, cải thiện chất lượng dịch vụ | Điều 13(1)(ii) |
+| Kiểm soát rủi ro an ninh và chống gian lận | Nhận diện lời gọi độc hại, bán lại, đánh cắp tài khoản, vượt kiểm soát rủi ro, v.v. | Điều 13(1)(ii); khi có liên quan đến quyết định tự động, áp dụng Điều 24 |
+| Thông báo dịch vụ và thông báo thay đổi điều khoản | Thực hiện nghĩa vụ thông báo | Điều 13(1)(ii)(iii) |
+| Gửi thông tin tiếp thị (**không bắt buộc**) | Cập nhật sản phẩm, hoạt động khuyến mãi | Cần có **sự đồng ý riêng** của bạn; bạn có thể hủy đăng ký bất cứ lúc nào |
 
-**3.4 About Identity Verification**
+**3.4 Về xác minh danh tính**
 
-3.4.1 Pursuant to Article 24 of the Cybersecurity Law of the PRC, the Administrative Measures for Internet Information Services and the Interim Measures for the Management of Generative AI Services, you must complete identity verification before calling this Service.
+3.4.1 Theo Điều 24 của Luật An ninh mạng Cộng hòa Nhân dân Trung Hoa, Biện pháp quản lý dịch vụ thông tin Internet và Biện pháp tạm thời về quản lý dịch vụ trí tuệ nhân tạo, bạn phải hoàn tất xác minh danh tính trước khi gọi Dịch vụ này.
 
-3.4.2 Identity verification is completed by a qualified third-party verification institution. **We retain only the verification result and desensitized identifier after passing verification, and do not retain the complete document image** (except as otherwise provided by law).
+3.4.2 Xác minh danh tính được thực hiện bởi một cơ quan xác minh đủ năng lực bên thứ ba. **Chúng tôi chỉ lưu giữ kết quả xác minh và mã định danh đã khử định danh sau khi xác minh thành công, và không lưu giữ ảnh tài liệu đầy đủ** (trừ khi pháp luật có quy định khác).
 
-3.4.3 If identity verification is not completed, we cannot activate the Service for you; the un-consumed top-up balance may then be refunded under Article 6 of the Terms of Service.
+3.4.3 Nếu chưa hoàn tất xác minh danh tính, chúng tôi không thể kích hoạt Dịch vụ cho bạn; khi đó số dư nạp tiền chưa tiêu thụ có thể được hoàn tiền theo Điều 6 của Điều khoản sử dụng.
 
-**3.5 Circumstances Where Consent Is Not Required**
+**3.5 Các trường hợp không cần có Sự đồng ý**
 
-Pursuant to Article 13 of the Personal Information Protection Law (PIPL), we may process your personal information without your consent under the following circumstances: necessary for concluding or performing a contract to which you are a party; necessary to perform statutory duties or obligations; necessary to respond to public health emergencies or to protect the life, health and property safety of natural persons in emergencies; processing within a reasonable scope for news reporting or public supervision in the public interest; processing your personal information that you have voluntarily made public or that is otherwise lawfully public within a reasonable scope as prescribed by law; and other circumstances prescribed by laws and administrative regulations.
+Theo Điều 13 của Luật Bảo vệ Thông tin cá nhân (PIPL), chúng tôi có thể xử lý thông tin cá nhân của bạn mà không cần bạn đồng ý trong các trường hợp sau: cần thiết để ký kết hoặc thực hiện hợp đồng mà bạn là một bên; cần thiết để thực hiện nhiệm vụ hoặc nghĩa vụ theo quy định pháp luật; cần thiết để ứng phó với tình huống khẩn cấp về sức khỏe cộng đồng hoặc để bảo vệ tính mạng, sức khỏe và an toàn tài sản của cá nhân trong trường hợp khẩn cấp; xử lý trong phạm vi hợp lý để phục vụ hoạt động tin tức hoặc giám sát công ích; xử lý trong phạm vi hợp lý đối với thông tin cá nhân mà bạn đã tự nguyện công bố hoặc vốn đã công khai hợp pháp theo quy định pháp luật; và các trường hợp khác theo quy định của pháp luật và pháp lệnh hành chính.
 
-**3.6 Explanation of Automated Decision-Making**
+**3.6 Giải thích về Quyết định tự động**
 
-3.6.1 We use an automated risk-control system to identify abnormal calling behavior (such as API Key resale, malicious traffic inflation, region-restriction bypass). Such automated decisions are **used only for service security and compliance purposes and will not be used for credit evaluation of you or differentiated pricing**.
+3.6.1 Chúng tôi sử dụng hệ thống kiểm soát rủi ro tự động để nhận diện hành vi gọi bất thường (chẳng hạn như bán lại API Key, bơm lưu lượng độc hại, vượt hạn chế khu vực). Các quyết định tự động như vậy **chỉ được sử dụng cho mục đích bảo mật và tuân thủ dịch vụ, và sẽ không được sử dụng để đánh giá tín dụng của bạn hoặc định giá phân biệt đối xử**.
 
-3.6.2 Pursuant to Article 24 of the PIPL, if such automated decision-making has a significant impact on your rights and interests (such as restricting or terminating the Service), **you have the right to request an explanation from us and to refuse a decision made solely by automated means**. You may do so via privacy@uter.ai.
+3.6.2 Theo Điều 24 của PIPL, nếu việc quyết định tự động như vậy có ảnh hưởng đáng kể đến quyền và lợi ích của bạn (chẳng hạn như hạn chế hoặc chấm dứt Dịch vụ), **bạn có quyền yêu cầu chúng tôi giải thích và từ chối quyết định được đưa ra hoàn toàn bằng phương tiện tự động**. Bạn có thể thực hiện việc này qua privacy@uter.ai.
 
 ---
 
-## Chapter 4 How We Entrust Processing, Share, Transfer and Publicly Disclose
+## Chương 4. Cách chúng tôi Xử lý ủy thác, chia sẻ, chuyển giao và công bố công khai
 
-**4.1 Entrusted Processing**
+**4.1 Xử lý ủy thác**
 
-To provide you with the Service, we may entrust the following types of partners to process your personal information:
+Để cung cấp Dịch vụ cho bạn, chúng tôi có thể ủy thác cho các loại đối tác sau xử lý thông tin cá nhân của bạn:
 
-| Type of Entrusted Party | Processing Purpose | Information Types Involved |
+| Loại bên được ủy thác | Mục đích xử lý | Loại thông tin liên quan |
 |---|---|---|
-| Cloud infrastructure provider (domestic) | Server hosting, data storage, network transmission | All four categories |
-| Identity verification institution | Identity/enterprise information verification | ② Identity verification information |
-| Third-party payment institution | Payment settlement | ③ Payment and invoicing information |
-| Electronic invoice service provider | Invoice issuance | ③ Payment and invoicing information |
-| SMS/email service provider | Sending verification codes and service notices | ① Account information |
-| Security risk-control service provider | Anti-fraud and anomaly identification | ④ Logs and metadata |
-| **Upstream Model Provider** | **Model inference** | **Your request content (only when you initiate a call)** |
+| Nhà cung cấp hạ tầng đám mây (trong nước) | Lưu trữ máy chủ, lưu trữ dữ liệu, truyền tải mạng | Cả bốn nhóm |
+| Cơ quan xác minh danh tính | Xác minh thông tin cá nhân/doanh nghiệp | ② Thông tin xác minh danh tính |
+| Tổ chức thanh toán của bên thứ ba | Quyết toán thanh toán | ③ Thông tin thanh toán và hóa đơn |
+| Nhà cung cấp dịch vụ hóa đơn điện tử | Phát hành hóa đơn | ③ Thông tin thanh toán và hóa đơn |
+| Nhà cung cấp dịch vụ SMS/email | Gửi mã xác minh và thông báo dịch vụ | ① Thông tin tài khoản |
+| Nhà cung cấp dịch vụ kiểm soát rủi ro an ninh | Chống gian lận và nhận diện bất thường | ④ Nhật ký và siêu dữ liệu |
+| **Nhà cung cấp mô hình thượng nguồn** | **Suy luận mô hình** | **Nội dung yêu cầu của bạn (chỉ khi bạn khởi tạo lời gọi)** |
 
-We have or will require the above entrusted parties by written agreement to comply with the same personal information protection standards, sign confidentiality agreements, not process beyond the entrusted purpose, and delete or return data upon termination of the entrustment relationship.
+Chúng tôi đã hoặc sẽ yêu cầu các bên được ủy thác nêu trên bằng văn bản tuân thủ các tiêu chuẩn bảo vệ thông tin cá nhân như nhau, ký kết thỏa thuận bảo mật, không xử lý vượt quá mục đích được ủy thác, và xóa hoặc trả lại dữ liệu khi chấm dứt quan hệ ủy thác.
 
-**4.2 Special Notes on Upstream Model Providers**
+**4.2 Lưu ý đặc biệt về Nhà cung cấp mô hình thượng nguồn**
 
-4.2.1 Upstream Model Providers are a necessary link in the Platform's service chain. **When you initiate an API call, the request content is transmitted to the corresponding Upstream Model Provider to complete inference.**
+4.2.1 Nhà cung cấp mô hình thượng nguồn là một mắt xích không thể thiếu trong chuỗi dịch vụ của Nền tảng. **Khi bạn khởi tạo một lời gọi API, nội dung yêu cầu được truyền đến Nhà cung cấp mô hình thượng nguồn tương ứng để hoàn thành việc suy luận.**
 
-4.2.2 Regarding the processing of such data by upstream model providers:
+4.2.2 Về việc xử lý dữ liệu như vậy của các nhà cung cấp mô hình thượng nguồn:
 
-- **Some** upstream providers act as our entrusted parties in this link, bound by the agreement between us and them;
-- **Some** upstream providers may act as **independent personal information processors**, whose processing activities are governed by their own published privacy policies and API terms of use. We have made reasonable efforts to select providers with higher data-processing standards, but **cannot control their specific processing behavior**.
+- **Một số** nhà cung cấp thượng nguồn đóng vai trò là bên được ủy thác của chúng tôi trong mắt xích này, bị ràng buộc bởi hợp đồng giữa chúng tôi và họ;
+- **Một số** nhà cung cấp thượng nguồn có thể đóng vai trò là **Bên kiểm soát thông tin cá nhân độc lập**, và hoạt động xử lý của họ chịu sự chi phối của chính sách bảo mật và điều khoản sử dụng API do chính họ công bố. Chúng tôi đã nỗ lực hợp lý để lựa chọn các nhà cung cấp có tiêu chuẩn xử lý dữ liệu cao hơn, nhưng **không thể kiểm soát hành vi xử lý cụ thể của họ**.
 
-4.2.3 **If you are unwilling to bear the above risks, please select the Platform's domestic model nodes, or desensitize the request content before use.**
+4.2.3 **Nếu bạn không muốn gánh phải các rủi ro nêu trên, vui lòng lựa chọn các nút mô hình trong nước của Nền tảng, hoặc khử định danh nội dung yêu cầu trước khi sử dụng.**
 
-**4.3 Sharing**
+**4.3 Chia sẻ**
 
-Except under the following circumstances, we **will not share your personal information with any third party**:
+Trừ các trường hợp sau đây, chúng tôi **sẽ không chia sẻ thông tin cá nhân của bạn với bất kỳ bên thứ ba nào**:
 
-1. We have obtained your **separate consent**;
-2. As required by laws and regulations or compulsory requirements of regulators or judicial authorities (we will notify you to the extent permitted by law);
-3. Necessary to protect public interests or the major legitimate rights and interests of you or other individuals, where it is difficult to obtain your consent;
-4. Necessary to perform the contract between you and us (such as transmitting request content to upstream providers).
+1. Chúng tôi đã thu được **sự đồng ý riêng** của bạn;
+2. Theo yêu cầu của pháp luật và quy định hoặc yêu cầu bắt buộc của cơ quan quản lý hoặc cơ quan tư pháp (chúng tôi sẽ thông báo cho bạn trong phạm vi được pháp luật cho phép);
+3. Cần thiết để bảo vệ lợi ích công cộng hoặc quyền và lợi ích trọng yếu của bạn hoặc cá nhân khác, khi việc thu được sự đồng ý của bạn gặp khó khăn;
+4. Cần thiết để thực hiện hợp đồng giữa bạn và chúng tôi (chẳng hạn như truyền nội dung yêu cầu tới nhà cung cấp thượng nguồn).
 
-**4.4 Transfer**
+**4.4 Chuyển giao**
 
-We will not transfer your personal information to any third party. If a merger, division, dissolution, acquisition or asset transfer occurs, we will inform you of the name and contact information of the recipient, and require the recipient to continue to perform the obligations under this Policy; if the recipient changes the original processing purpose or method, we will re-obtain your consent.
+Chúng tôi sẽ không chuyển giao thông tin cá nhân của bạn cho bất kỳ bên thứ ba nào. Nếu xảy ra sáp nhập, chia tách, giải thể, thâu tóm hoặc chuyển nhượng tài sản, chúng tôi sẽ thông báo cho bạn về tên và thông tin liên hệ của bên tiếp nhận, và yêu cầu bên tiếp nhận tiếp tục thực hiện các nghĩa vụ theo Chính sách này; nếu bên tiếp nhận thay đổi mục đích hoặc phương thức xử lý ban đầu, chúng tôi sẽ thu lại sự đồng ý của bạn.
 
-**4.5 Public Disclosure**
+**4.5 Công bố công khai**
 
-We will not publicly disclose your personal information. Where disclosure is legally required, we will take security protection measures and inform you of the purpose, type and possible scope of the disclosure.
+Chúng tôi sẽ không công bố công khai thông tin cá nhân của bạn. Khi việc công bố bắt buộc theo pháp luật, chúng tôi sẽ áp dụng các biện pháp bảo vệ an toàn và thông báo cho bạn về mục đích, loại thông tin và phạm vi có thể của việc công bố.
 
-**4.6 Exceptions**
+**4.6 Ngoại lệ**
 
-Pursuant to Article 13 of the PIPL and related provisions, we do not need to separately obtain your consent under the following circumstances: directly related to national security or national defense security; directly related to public security, public health or major public interests; directly related to the investigation, prosecution, trial and execution of judgments of crimes; necessary to protect the major legitimate rights and interests of you or other individuals where it is difficult to obtain consent; your personal information voluntarily made public to the public; personal information collected from lawfully publicly disclosed information; and other circumstances prescribed by laws and regulations.
+Theo Điều 13 của PIPL và các quy định liên quan, chúng tôi không cần thu được riêng sự đồng ý của bạn trong các trường hợp sau: trực tiếp liên quan đến an ninh quốc gia hoặc an ninh quốc phòng; trực tiếp liên quan đến an ninh công cộng, sức khỏe cộng đồng hoặc lợi ích công cộng trọng yếu; trực tiếp liên quan đến việc điều tra, truy cứu, xét xử và thi hành án phạt tội; cần thiết để bảo vệ quyền và lợi ích trọng yếu của bạn hoặc cá nhân khác khi việc thu được sự đồng ý gặp khó khăn; thông tin cá nhân của bạn tự nguyện công bố ra công chúng; thông tin cá nhân thu thập từ thông tin đã được công bố công khai hợp pháp; và các trường hợp khác theo quy định của pháp luật.
 
 ---
 
-## Chapter 5 Cross-Border Data Transfer
+## Chương 5. Chuyển dữ liệu xuyên biên giới
 
-**5.1 Trigger Condition**
+**5.1 Điều kiện kích hoạt**
 
-The Platform defaults to domestic nodes and domestic models, **with data not leaving the country**.
+Nền tảng mặc định sử dụng các nút trong nước và mô hình trong nước, **với dữ liệu không ra khỏi lãnh thổ quốc gia**.
 
-**Only when you actively choose to call overseas model nodes** will your request content be transmitted to overseas Upstream Model Providers and may be processed and stored overseas.
+**Chỉ khi bạn chủ động lựa chọn gọi các nút mô hình ở nước ngoài** thì nội dung yêu cầu của bạn mới được truyền đến Nhà cung cấp mô hình thượng nguồn ở nước ngoài và có thể được xử lý và lưu trữ ở nước ngoài.
 
-**5.2 Our Processing Principles**
+**5.2 Nguyên tắc xử lý của chúng tôi**
 
-5.2.1 Such transfer is **actively selected and initiated by you**. Your act of selecting an overseas model in the console constitutes your explicit instruction for cross-border data transfer.
+5.2.1 Việc chuyển dữ liệu như vậy là **do bạn chủ động lựa chọn và khởi xướng**. Việc bạn chọn một mô hình ở nước ngoài trên bảng điều khiển cấu thành chỉ dẫn rõ ràng của bạn đối với việc chuyển dữ liệu xuyên biên giới.
 
-5.2.2 We **do not retain your request and response body content domestically**; the outbound transfer is real-time forwarding and does not constitute incremental storage of domestic data (only the necessary metadata for billing and audit is retained, and such metadata is stored within the territory of China).
+5.2.2 Chúng tôi **không lưu giữ nội dung thân của yêu cầu và phản hồi của bạn trong nước**; việc truyền ra nước ngoài là chuyển tiếp theo thời gian thực và không cấu thành việc lưu trữ gia tăng dữ liệu trong nước (chỉ lưu giữ siêu dữ liệu cần thiết cho tính phí và kiểm toán, và siêu dữ liệu đó được lưu trong lãnh thổ Trung Quốc).
 
-5.2.3 **Pursuant to Section 3 of Chapter 3 of the PIPL and the Measures for the Security Assessment of Data Outbound Transfer, you should complete the required cross-border data compliance procedures before submitting request content containing personal information to this Platform**, including but not limited to: execution and filing of the standard contract for cross-border personal information transfer, personal information protection certification, or security assessment filing (where the filing threshold is met).
+5.2.3 **Theo Mục 3 của Chương 3 PIPL và Biện pháp đánh giá an toàn dữ liệu xuất khẩu, trước khi gửi nội dung yêu cầu có chứa thông tin cá nhân đến Nền tảng này, bạn phải hoàn thành các thủ tục tuân thủ bắt buộc về dữ liệu xuyên biên giới**, bao gồm nhưng không giới hạn ở: ký kết và đăng ký hợp đồng tiêu chuẩn cho việc chuyển thông tin cá nhân xuyên biên giới, chứng nhận bảo vệ thông tin cá nhân, hoặc đăng ký đánh giá an toàn (khi đạt ngưỡng đăng ký).
 
-5.2.4 We recommend and support you in reducing outbound risk through the following means: selecting domestic models; implementing data desensitization, field replacement and pseudonymization on the client; and avoiding outbound transfer of sensitive personal information altogether.
+5.2.4 Chúng tôi khuyến nghị và hỗ trợ bạn giảm rủi ro xuất khẩu thông qua các biện pháp sau: lựa chọn mô hình trong nước; thực hiện khử định danh dữ liệu, thay thế trường và giả danh hóa phía máy khách; và hoàn toàn tránh chuyển thông tin cá nhân nhạy cảm ra nước ngoài.
 
-**5.3 Exceptions to Cross-Border Transfer**
+**5.3 Ngoại lệ đối với việc chuyển dữ liệu xuyên biên giới**
 
-Data involving critical information infrastructure operators, important data, or data prohibited from outbound transfer by laws and regulations **must not be processed through the Platform's overseas nodes**. You bear the consequences of violating this provision.
+Dữ liệu liên quan đến nhà vận hành hạ tầng thông tin quan trọng, dữ liệu quan trọng hoặc dữ liệu bị pháp luật và quy định cấm xuất khẩu **không được xử lý qua các nút ở nước ngoài của Nền tảng**. Bạn gánh chịu hậu quả của việc vi phạm quy định này.
 
 ---
 
-## Chapter 6 How We Store and Protect Personal Information
+## Chương 6. Cách chúng tôi lưu giữ và bảo vệ Thông tin cá nhân
 
-**6.1 Storage Location**
+**6.1 Nơi lưu giữ**
 
-Your personal information is stored on servers **within the territory of the People's Republic of China** (located in domestic data centers). Except as stated in Article 5.1, we do not transmit your personal information overseas.
+Thông tin cá nhân của bạn được lưu giữ trên các máy chủ **trong lãnh thổ Cộng hòa Nhân dân Trung Hoa** (đặt tại các trung tâm dữ liệu trong nước). Trừ trường hợp nêu tại Điều 5.1, chúng tôi không truyền thông tin cá nhân của bạn ra nước ngoài.
 
-**6.2 Storage Period**
+**6.2 Thời gian lưu giữ**
 
-We follow the principle of **minimum necessary period**, as follows:
+Chúng tôi tuân thủ nguyên tắc **thời gian tối thiểu cần thiết**, cụ thể:
 
-| Information Type | Storage Period | Basis |
+| Loại thông tin | Thời gian lưu giữ | Cơ sở |
 |---|---|---|
-| Request and response **body content** | **Not retained by default** (released upon real-time forwarding) | Minimum necessary principle |
-| Call metadata (time, model, Token count, status code, latency) | **12 months** | Billing reconciliation and audit needs |
-| Account and identity verification information | During the existence of the account, deleted or anonymized within **6 months** after account cancellation | Service relationship and regulatory verification needs |
-| Payment and invoicing records | Pursuant to the E-Commerce Law and the Measures for the Administration of Accounting Archives, **no less than 3 years** from completion of the transaction | Statutory obligation |
-| Network security logs | **No less than 6 months** | Article 21 of the Cybersecurity Law |
-| Security incident handling records | **3 years** | Compliance traceability needs |
+| **Nội dung thân** của yêu cầu và phản hồi | **Mặc định không lưu giữ** (được giải phóng sau khi chuyển tiếp theo thời gian thực) | Nguyên tắc tối thiểu cần thiết |
+| Siêu dữ liệu gọi (thời gian, mô hình, số Token, mã trạng thái, độ trễ) | **12 tháng** | Nhu cầu đối soát tính phí và kiểm toán |
+| Thông tin tài khoản và xác minh danh tính | Trong suốt thời gian tồn tại của tài khoản, xóa hoặc ẩn danh trong vòng **6 tháng** sau khi hủy tài khoản | Nhu cầu quan hệ dịch vụ và kiểm chứng theo quy định |
+| Hồ sơ thanh toán và hóa đơn | Theo Luật Thương mại điện tử và Biện pháp quản lý lưu trữ kế toán, **không ít hơn 3 năm** kể từ khi hoàn tất giao dịch | Nghĩa vụ theo pháp luật |
+| Nhật ký an ninh mạng | **Không ít hơn 6 tháng** | Điều 21 của Luật An ninh mạng |
+| Hồ sơ xử lý sự cố an ninh | **3 năm** | Nhu cầu truy vết tuân thủ |
 
-**Beyond the above periods, we will delete or anonymize the data and not use it for any purpose.**
+**Ngoài các thời hạn nêu trên, chúng tôi sẽ xóa hoặc ẩn danh dữ liệu và không sử dụng cho bất kỳ mục đích nào.**
 
-**6.3 Security Protection Measures**
+**6.3 Biện pháp bảo vệ an toàn**
 
-We adopt security measures that meet industry standards to protect your personal information:
+Chúng tôi áp dụng các biện pháp bảo vệ đáp ứng tiêu chuẩn ngành để bảo vệ thông tin cá nhân của bạn:
 
-| Layer | Measures |
+| Lớp | Biện pháp |
 |---|---|
-| Transmission security | Site-wide HTTPS / TLS 1.3 encryption; mandatory key authentication for APIs |
-| Storage security | Sensitive fields (ID numbers, passwords) encrypted at storage; least-privilege database access |
-| Access control | Tiered employee authorization, operation audit trail; API Key supports IP allowlist and rotation |
-| Security audit | Regular vulnerability scanning, penetration testing, log audit |
-| Organizational management | Employee confidentiality agreements, specialized training for data-processing positions, immediate recovery of permissions upon departure |
-| Compliance assessment | Personal information protection impact assessment (PIA) pursuant to Article 55 of the PIPL |
+| Bảo mật truyền tải | Mã hóa HTTPS / TLS 1.3 toàn hệ thống; bắt buộc xác thực khóa cho API |
+| Bảo mật lưu trữ | Mã hóa khi lưu trữ các trường nhạy cảm (số giấy tờ tùy thân, mật khẩu); truy cập cơ sở dữ liệu theo nguyên tắc đặc quyền tối thiểu |
+| Kiểm soát truy cập | Phân cấp thẩm quyền nhân viên theo tầng, nhật ký kiểm toán thao tác; API Key hỗ trợ danh sách cho phép IP và xoay vòng |
+| Kiểm toát an ninh | Quét lỗ hổng, kiểm thử xâm nhập và kiểm toán nhật ký định kỳ |
+| Quản lý tổ chức | Hợp đồng bảo mật với nhân viên, đào tạo chuyên biệt cho các vị trí xử lý dữ liệu, thu hồi ngay quyền khi nhân viên nghỉ việc |
+| Đánh giá tuân thủ | Đánh giá tác động bảo vệ thông tin cá nhân (PIA) theo Điều 55 của PIPL |
 
-**6.4 Handling of Security Incidents**
+**6.4 Xử lý sự cố an ninh**
 
-Where a personal information leak, tampering or loss occurs or is likely to occur, we will:
+Khi xảy ra hoặc có khả năng xảy ra việc rò rỉ, sửa đổi hoặc mất thông tin cá nhân, chúng tôi sẽ:
 
-1. Immediately activate the emergency plan and take remedial measures;
-2. Report to the department performing personal information protection duties pursuant to Article 57 of the PIPL;
-3. Promptly inform you by in-site message, email or SMS: the basic facts of the incident, possible impact, remedial measures we have taken, suggestions for you to prevent risks on your own, and our contact information;
-4. Where it is difficult to notify each individual, publish an announcement by reasonable and effective means.
+1. Lập tức kích hoạt kế hoạch ứng phó và thực hiện các biện pháp khắc phục;
+2. Báo cáo với cơ quan thực hiện nhiệm vụ bảo vệ thông tin cá nhân theo Điều 57 của PIPL;
+3. Kịp thời thông báo cho bạn qua tin nhắn trong ứng dụng, email hoặc SMS: các sự kiện cơ bản của sự cố, tác động có thể xảy ra, các biện pháp khắc phục chúng tôi đã thực hiện, đề xuất để bạn tự phòng ngừa rủi ro, và thông tin liên hệ của chúng tôi;
+4. Khi khó thông báo từng cá nhân, đăng thông báo bằng các biện pháp hợp lý và hiệu quả.
 
-**6.5 Inherent Risk Tip on Information Security**
+**6.5 Lưu ý về rủi ro vốn có trong an toàn thông tin**
 
-The Internet environment is not absolutely secure. **Please use account passwords of sufficient complexity, keep your API Key safe, and do not hard-code keys on the client.** If information leakage is caused by your own poor safekeeping, we bear no responsibility for the resulting consequences.
+Môi trường Internet không hoàn toàn an toàn tuyệt đối. **Vui lòng sử dụng mật khẩu tài khoản đủ phức tạp, giữ gìn API Key của bạn, và không viết cứng khóa phía máy khách.** Nếu việc rò rỉ thông tin là do bạn giữ gìn không tốt, chúng tôi không chịu trách nhiệm đối với các hậu quả phát sinh.
 
 ---
 
-## Chapter 7 Your Rights Regarding Personal Information
+## Chương 7. Quyền của bạn đối với Thông tin cá nhân
 
-Pursuant to Chapter 4 of the PIPL, you enjoy the following rights regarding your own personal information. We will respond within **15 business days** of receiving your request and verifying your identity (where the situation is complex, it may be extended to 30 business days with notice to you).
+Theo Chương 4 của PIPL, bạn có các quyền sau đối với thông tin cá nhân của chính mình. Chúng tôi sẽ phản hồi trong vòng **15 ngày làm việc** kể từ khi nhận được yêu cầu của bạn và xác minh danh tính của bạn (trong trường hợp tình hình phức tạp, có thể kéo dài đến 30 ngày làm việc kèm thông báo cho bạn).
 
-| Right | How to Exercise | Notes |
+| Quyền | Cách thực hiện | Lưu ý |
 |---|---|---|
-| **Access and Copy** | Self-service view in console "Account Settings → Personal Information"; or email request | We will provide a copy in a structured, common format |
-| **Correct and Supplement** | Self-service modification in console; identity reverification required for real-name information | We will correct promptly after verification |
-| **Delete** | Self-service deletion in console; or email request | Applies to Article 47 of the PIPL: processing purpose achieved or no longer necessary; we stop service or storage period expires; you withdraw consent; we process unlawfully; other circumstances prescribed by laws and regulations |
-| **Withdraw Consent** | Console "Privacy Settings"; or email request | Withdrawal does not affect the validity of processing activities already conducted based on consent before withdrawal |
-| **Cancel Account** | Self-service cancellation in console | Settle fees and back up data before cancellation; account is unrecoverable after cancellation |
-| **Portability** | Email request | Where conditions prescribed by the national cyberspace authority are met, we provide a portability channel |
-| **Restrict or Refuse Processing** | Email request | E.g., refuse a decision made solely by automated means that has a major impact on you |
-| **Explanation** | Email request | You have the right to request an explanation of this Policy and the personal information processing rules |
-| **Complaint and Report** | privacy@uter.ai | We will respond within 15 business days |
+| **Truy cập và sao chép** | Tự xem trên bảng điều khiển tại «Account Settings → Personal Information»; hoặc gửi email yêu cầu | Chúng tôi sẽ cung cấp bản sao ở dạng có cấu trúc và định dạng thông dụng |
+| **Sửa và bổ sung** | Tự sửa trên bảng điều khiển; phải xác minh lại danh tính đối với thông tin danh tính thật | Chúng tôi sẽ sửa sau khi xác minh |
+| **Xóa** | Tự xóa trên bảng điều khiển; hoặc gửi email yêu cầu | Áp dụng Điều 47 của PIPL: mục đích xử lý đã đạt hoặc không còn cần thiết; chúng tôi ngừng cung cấp dịch vụ hoặc thời gian lưu giữ đã hết; bạn rút lại sự đồng ý; chúng tôi xử lý không hợp pháp; các trường hợp khác theo quy định của pháp luật |
+| **Rút lại sự đồng ý** | «Privacy Settings» trên bảng điều khiển; hoặc gửi email yêu cầu | Việc rút lại không ảnh hưởng đến hiệu lực của các hoạt động xử lý đã thực hiện dựa trên sự đồng ý trước khi rút lại |
+| **Hủy tài khoản** | Tự hủy trên bảng điều khiển | Thanh toán phí và sao lưu dữ liệu trước khi hủy; tài khoản không thể khôi phục sau khi hủy |
+| **Khả năng chuyển dữ liệu** | Gửi email yêu cầu | Khi đáp ứng các điều kiện theo quy định của cơ quan quản lý không gian mạng quốc gia, chúng tôi cung cấp kênh chuyển dữ liệu |
+| **Hạn chế hoặc từ chối xử lý** | Gửi email yêu cầu | Ví dụ: từ chối quyết định được đưa ra hoàn toàn bằng phương tiện tự động có ảnh hưởng lớn đến bạn |
+| **Giải thích** | Gửi email yêu cầu | Bạn có quyền yêu cầu giải thích Chính sách này và các quy tắc xử lý thông tin cá nhân |
+| **Khiếu nại và báo cáo** | privacy@uter.ai | Chúng tôi sẽ phản hồi trong vòng 15 ngày làm việc |
 
-**7.1 Request Acceptance Channel**
+**7.1 Kênh tiếp nhận yêu cầu**
 
 - Email: privacy@uter.ai
-- Console: Account Settings → Privacy and Data → Exercise of Rights
-- We may need you to provide necessary information to verify your identity; **verification is used only for identity confirmation and will not additionally expand the scope of information collection**.
+- Bảng điều khiển: Account Settings → Privacy and Data → Exercise of Rights
+- Chúng tôi có thể cần bạn cung cấp thông tin cần thiết để xác minh danh tính; **việc xác minh chỉ dùng để xác nhận danh tính và sẽ không làm mở rộng thêm phạm vi thu thập thông tin**.
 
-**7.2 Circumstances Where We May Decline to Respond**
+**7.2 Các trường hợp chúng tôi có thể từ chối phản hồi**
 
-We may be unable to respond to your request and will explain the reason under the following circumstances: related to our performance of obligations prescribed by laws and regulations; directly related to national security or national defense security; directly related to public security, public health or major public interests; directly related to the investigation, prosecution, trial and execution of judgments of crimes; sufficient evidence that you are acting in bad faith or abusing rights; response would cause serious harm to the legitimate rights and interests of you or other individuals or organizations; involves trade secrets.
+Chúng tôi có thể không phản hồi yêu cầu của bạn và sẽ giải thích lý do trong các trường hợp sau: liên quan đến việc chúng tôi thực hiện các nghĩa vụ theo quy định của pháp luật; trực tiếp liên quan đến an ninh quốc gia hoặc an ninh quốc phòng; trực tiếp liên quan đến an ninh công cộng, sức khỏe cộng đồng hoặc lợi ích công cộng trọng yếu; trực tiếp liên quan đến việc điều tra, truy cứu, xét xử và thi hành án phạt tội; có đủ bằng chứng cho thấy bạn đang hành xử thiện chí kém hoặc lạm dụng quyền; việc phản hồi sẽ gây tổn hại nghiêm trọng đến quyền và lợi ích hợp pháp của bạn hoặc của cá nhân hoặc tổ chức khác; liên quan đến bí mật thương mại.
 
-**7.3 External Remedies**
+**7.3 Biện pháp khắc phục bên ngoài**
 
-If you believe our processing activities infringe your legitimate rights and interests, and negotiation with us fails, you have the right to complain or report to the **department performing personal information protection duties**. You may:
+Nếu bạn cho rằng hoạt động xử lý của chúng tôi xâm phạm quyền và lợi ích hợp pháp của mình, và việc thương lượng với chúng tôi không thành, bạn có quyền khiếu nại hoặc báo cáo với **cơ quan thực hiện nhiệm vụ bảo vệ thông tin cá nhân**. Bạn có thể:
 
-- Report to the **National Cyber and Information Security Notification Center** or the **12377 Illegal and Bad Information Reporting Center**;
-- Complain to the **Shenzhen Office of Cyberspace Administration** or the **Shenzhen Communications Administration**;
-- File a lawsuit with the **people's court with jurisdiction**.
-
----
-
-## Chapter 8 Cookies and Similar Technologies
-
-8.1 We use Cookie and local storage (LocalStorage) technologies to implement the following necessary functions: maintaining login status, recording language and interface preferences, and preventing cross-site request forgery (CSRF).
-
-8.2 This Platform **does not use** Cookies for cross-site advertising tracking or personalized advertising delivery.
-
-8.3 You may manage or delete Cookies through browser settings. **Disabling necessary Cookies may prevent you from logging in normally or using console functions.**
+- Báo cáo với **Trung tâm Thông báo về An ninh mạng và Thông tin quốc gia** hoặc **Trung tâm tiếp nhận báo cáo thông tin sai lệch và xấu 12377**;
+- Khiếu nại với **Văn phòng Quản lý không gian mạng Thâm Quyến** hoặc **Cục Quản lý Truyền thông Thâm Quyến**;
+- Nộp đơn kiện tại **tòa án nhân dân có thẩm quyền xét xử**.
 
 ---
 
-## Chapter 9 Protection of Minors
+## Chương 8. Cookie và công nghệ tương tự
 
-9.1 This Platform **does not provide services to minors**. Pursuant to Article 1.5 of the Uter Large Model Service Platform Terms of Service, users should be at least **18 years of age** and have full capacity for civil conduct.
+8.1 Chúng tôi sử dụng công nghệ Cookie và bộ nhớ cục bộ (LocalStorage) để thực hiện các chức năng thiết yếu sau: duy trì trạng thái đăng nhập, ghi nhớ tùy chọn ngôn ngữ và giao diện, và ngăn chặn giả mạo yêu cầu từ trang khác (CSRF).
 
-9.2 We will not actively collect minors' personal information, nor require minors to provide any personal information. If you are a minor, please do not register for or use this Platform's services.
+8.2 Nền tảng này **không sử dụng** Cookie để theo dõi quảng cáo liên trang hoặc phân phối quảng cáo cá nhân hóa.
 
-9.3 Pursuant to Article 31 of the PIPL, **the personal information of minors under the age of 14 is sensitive personal information**. If we discover that we have mistakenly collected a minor's personal information, we will delete it immediately; guardians are welcome to contact us via privacy@uter.ai.
-
-9.4 **Note for users who are developers**: If the application you develop based on this Platform is directed at minors or may be used by minors, **you should obtain the separate consent of their guardians on your own**, and design dedicated information processing rules and content security measures for minors. This obligation is borne by you; this Platform does not intervene in the legal relationship between you and your end users.
+8.3 Bạn có thể quản lý hoặc xóa Cookie thông qua cài đặt trình duyệt. **Việc vô hiệu hóa Cookie thiết yếu có thể khiến bạn không thể đăng nhập bình thường hoặc sử dụng các chức năng của bảng điều khiển.**
 
 ---
 
-## Chapter 10 Special Notes on Generative AI Services
+## Chương 9. Bảo vệ Người chưa thành niên
 
-**10.1 We Do Not Train Models**
+9.1 Nền tảng này **không cung cấp dịch vụ cho người chưa thành niên**. Theo Điều 1.5 của Điều khoản sử dụng của Nền tảng dịch vụ mô hình lớn Uter, người dùng phải từ **18 tuổi trở lên** và có năng lực đầy đủ về hành vi dân sự.
 
-10.1.1 We ourselves **do not develop or train large models**. The role of this Platform is the aggregator and forwarder of model capability.
+9.2 Chúng tôi sẽ không chủ động thu thập thông tin cá nhân của người chưa thành niên, cũng không yêu cầu người chưa thành niên cung cấp bất kỳ thông tin cá nhân nào. Nếu bạn là người chưa thành niên, vui lòng không đăng ký hoặc sử dụng các dịch vụ của Nền tảng này.
 
-10.1.2 **We will not use your request content to train or fine-tune any model**, nor use it to improve model performance, build training datasets or perform data annotation.
+9.3 Theo Điều 31 của PIPL, **thông tin cá nhân của người chưa thành niên dưới 14 tuổi là thông tin cá nhân nhạy cảm**. Nếu phát hiện mình đã vô tình thu thập thông tin cá nhân của người chưa thành niên, chúng tôi sẽ xóa ngay lập tức; người giám hộ có thể liên hệ với chúng tôi qua privacy@uter.ai.
 
-10.1.3 Whether an Upstream Model Provider uses your data to train its models **depends on that upstream's own policy and your contractual arrangements**. We recommend that you consult the corresponding upstream's privacy policy; for providers that explicitly commit not to use customer data for training, we will mark them in the model catalog.
-
-**10.2 Labeling Obligations for Generated Content**
-
-10.2.1 Pursuant to Article 12 of the Interim Measures for the Management of Generative AI Services and Article 17 of the Provisions on the Administration of Deep Synthesis of Internet Information Services, **as the service provider providing generative AI services to end users, you should add explicit labels to generated content as required by law, or add implicit labels in file metadata.**
-
-10.2.2 We may provide technical support for labeling capability, but **do not replace you in fulfilling the statutory labeling obligation**.
-
-**10.3 Content Security**
-
-10.3.1 We may deploy content security review capability on the server side to intercept obviously illegal inputs and outputs. Such review is based on **the content itself** and does not target your personal identity.
-
-10.3.2 If you use this Platform's generative capability in scenarios with **public opinion attributes or social mobilization capacity** as defined by the Provisions on the Administration of Algorithm Recommendation for Internet Information Services and the Interim Measures for the Management of Generative AI Services, you should fulfill the **algorithm filing** and **security assessment** obligations pursuant to law.
-
-**10.4 Risks of Output Content**
-
-The output of large language models is probabilistic and non-deterministic, and **may contain factual errors, bias or inappropriate content**. Please do not use the output as the sole basis for professional decisions such as medical, legal or financial investment.
+9.4 **Lưu ý dành cho người dùng là nhà phát triển**: Nếu ứng dụng bạn phát triển dựa trên Nền tảng này hướng đến người chưa thành niên hoặc có thể được người chưa thành niên sử dụng, **bạn phải tự thu được sự đồng ý riêng của người giám hộ họ**, và thiết kế các quy tắc xử lý thông tin riêng biệt cùng biện pháp bảo vệ an toàn nội dung dành cho người chưa thành niên. Nghĩa vụ này do bạn gánh vác; Nền tảng này không can thiệp vào quan hệ pháp lý giữa bạn và người dùng cuối của bạn.
 
 ---
 
-## Chapter 11 Updates to this Policy
+## Chương 10. Lưu ý đặc biệt về dịch vụ trí tuệ nhân tạo
 
-11.1 We may update this Policy based on changes in laws and regulations, business adjustments or technology upgrades. The updated Policy will be prominently published on the Platform with the update date marked.
+**10.1 Chúng tôi không huấn luyện mô hình**
 
-11.2 For the following **material changes**, we will **prominently notify you** by in-site message, email or pop-up, and re-obtain your consent where necessary:
+10.1.1 Bản thân chúng tôi **không phát triển hay huấn luyện mô hình lớn**. Vai trò của Nền tảng này là bên tổng hợp và chuyển tiếp năng lực mô hình.
 
-1. The purpose, type or method of processing personal information changes materially;
-2. The main objects of sharing, transfer or public disclosure of personal information change;
-3. Your rights regarding the processing of personal information and how to exercise them change materially;
-4. The purpose, recipient or type of cross-border data transfer changes;
-5. The personal information security impact assessment indicates a high risk.
+10.1.2 **Chúng tôi sẽ không sử dụng nội dung yêu cầu của bạn để huấn luyện hoặc tinh chỉnh bất kỳ mô hình nào**, cũng không sử dụng nó để cải thiện hiệu năng mô hình, xây dựng tập dữ liệu huấn luyện hoặc thực hiện chú thích dữ liệu.
 
-11.3 Upon expiry of the publication period, your continued use of this Service is deemed as acceptance of the updated Policy; if you do not accept it, you may stop using it and cancel your account.
+10.1.3 Việc Nhà cung cấp mô hình thượng nguồn có sử dụng dữ liệu của bạn để huấn luyện mô hình của họ hay không **phụ thuộc vào chính sách của thượng nguồn đó và các thỏa thuận hợp đồng của bạn**. Chúng tôi khuyến nghị bạn tham khảo chính sách bảo mật của từng bên thượng nguồn tương ứng; đối với các nhà cung cấp cam kết rõ ràng không sử dụng dữ liệu khách hàng để huấn luyện, chúng tôi sẽ đánh dấu họ trong danh mục mô hình.
 
-**Version History**
+**10.2 Nghĩa vụ gắn nhãn nội dung được tạo ra**
 
-| Version | Effective Date | Revision Notes |
+10.2.1 Theo Điều 12 của Biện pháp tạm thời về quản lý dịch vụ trí tuệ nhân tạo và Điều 17 của Quy định về quản lý công nghệ chuyên sâu tổng hợp thông tin Internet, **với tư cách là nhà cung cấp dịch vụ trí tuệ nhân tạo cho người dùng cuối, bạn phải gắn nhãn rõ ràng cho nội dung được tạo ra theo yêu cầu của pháp luật, hoặc thêm nhãn ngụ ý trong siêu dữ liệu tệp.**
+
+10.2.2 Chúng tôi có thể cung cấp hỗ trợ kỹ thuật cho năng lực gắn nhãn, nhưng **không thay thế bạn trong việc thực hiện nghĩa vụ gắn nhãn theo quy định pháp luật**.
+
+**10.3 An toàn nội dung**
+
+10.3.1 Chúng tôi có thể triển khai năng lực rà soát an toàn nội dung phía máy chủ để chặn các đầu vào và đầu ra vi phạm rõ ràng. Việc rà soát này dựa trên **chính nội dung đó** và không nhắm vào danh tính cá nhân của bạn.
+
+10.3.2 Nếu bạn sử dụng năng lực trí tuệ nhân tạo của Nền tảng này trong các kịch bản có **thuộc tính dư luận hoặc khả năng huy động xã hội** theo Quy định về quản lý khuyến nghị thuật toán trong dịch vụ thông tin Internet và Biện pháp tạm thời về quản lý dịch vụ trí tuệ nhân tạo, bạn phải thực hiện nghĩa vụ **đăng ký thuật toán** và **đánh giá an toàn** theo pháp luật.
+
+**10.4 Rủi ro của nội dung đầu ra**
+
+Kết quả đầu ra của mô hình ngôn ngữ lớn có tính xác suất và không tất định, và **có thể chứa thông tin sai thực tế, thiên lệch hoặc nội dung không phù hợp**. Vui lòng không sử dụng kết quả đầu ra làm cơ sở duy nhất cho các quyết định chuyên môn như y tế, pháp lý hoặc đầu tư tài chính.
+
+---
+
+## Chương 11. Cập nhật Chính sách này
+
+11.1 Chúng tôi có thể cập nhật Chính sách này dựa trên thay đổi pháp luật và quy định, điều chỉnh kinh doanh hoặc nâng cấp công nghệ. Chính sách đã cập nhật sẽ được công bố nổi bật trên Nền tảng với ngày cập nhật được ghi rõ.
+
+11.2 Đối với các **thay đổi trọng yếu** sau đây, chúng tôi sẽ **thông báo nổi bật cho bạn** qua tin nhắn trong ứng dụng, email hoặc hộp thoại, và thu lại sự đồng ý của bạn khi cần thiết:
+
+1. Mục đích, loại thông tin hoặc phương thức xử lý thông tin cá nhân thay đổi trọng yếu;
+2. Các đối tượng chính được chia sẻ, chuyển giao hoặc công bố công khai thông tin cá nhân thay đổi;
+3. Quyền của bạn đối với việc xử lý thông tin cá nhân và cách thực hiện quyền đó thay đổi trọng yếu;
+4. Mục đích, bên tiếp nhận hoặc loại của việc chuyển dữ liệu xuyên biên giới thay đổi;
+5. Đánh giá tác động bảo mật thông tin cá nhân chỉ ra rủi ro cao.
+
+11.3 Khi thời hạn công bố kết thúc, việc bạn tiếp tục sử dụng Dịch vụ này được coi là chấp nhận Chính sách đã cập nhật; nếu không đồng ý, bạn có thể ngừng sử dụng và hủy tài khoản của mình.
+
+**Lịch sử phiên bản**
+
+| Phiên bản | Ngày có hiệu lực | Ghi chú sửa đổi |
 |---|---|---|
-| V1.0 | August 8, 2026 | First release |
+| V1.0 | August 8, 2026 | Phát hành lần đầu |
 
 ---
 
-## Chapter 12 How to Contact Us
+## Chương 12. Cách liên hệ với chúng tôi
 
-| Matter | Contact |
+| Nội dung | Liên hệ |
 |---|---|
-| Personal Information Protection Officer | privacy@uter.ai |
-| Exercise of Personal Information Rights and Complaints | privacy@uter.ai |
-| Service and Technical Support | tech@uter.ai |
-| Abuse and Violation Reporting | abuse@uter.ai |
-| Business and Contracts | bd@uter.ai |
-| Mailing Address | T2, Ali Center, Nanshan District, Shenzhen, Guangdong Province, the People's Republic of China |
+| Cán bộ bảo vệ thông tin cá nhân | privacy@uter.ai |
+| Thực hiện quyền về thông tin cá nhân và khiếu nại | privacy@uter.ai |
+| Dịch vụ và hỗ trợ kỹ thuật | tech@uter.ai |
+| Báo cáo lạm dụng và vi phạm | abuse@uter.ai |
+| Kinh doanh và hợp đồng | bd@uter.ai |
+| Địa chỉ gửi thư | T2, Ali Center, quận Nam Sơn, Thâm Quyến, tỉnh Quảng Đông, Cộng hòa Nhân dân Trung Hoa |
 
-We will respond within **15 business days** of receiving your question or complaint.
+Chúng tôi sẽ phản hồi trong vòng **15 ngày làm việc** kể từ khi nhận được câu hỏi hoặc khiếu nại của bạn.
 
 ---
 
-## Chapter 13 Definitions
+## Chương 13. Định nghĩa
 
-| Term | Meaning |
+| Thuật ngữ | Ý nghĩa |
 |---|---|
-| **Personal Information** | Various kinds of information recorded electronically or otherwise relating to identified or identifiable natural persons, excluding information that has been anonymized |
-| **Sensitive Personal Information** | Personal information that, once leaked or illegally used, is likely to cause damage to the dignity of a natural person or endanger personal or property safety, including biometrics, religious beliefs, specific identity, medical and health, financial accounts, whereabouts and other information, as well as the personal information of minors under the age of 14 |
-| **Personal Information Processor** | An organization or individual that independently determines the purpose and method of processing personal information |
-| **Entrusted Processor** | An organization or individual that accepts entrustment from a personal information processor and processes personal information according to its instructions |
-| **De-identification** | The process by which personal information is processed so that a specific natural person cannot be identified without the aid of additional information |
-| **Anonymization** | The process by which personal information is processed such that a specific natural person cannot be identified and cannot be restored |
-| **Automated Decision-Making** | Activities that use computer programs to automatically analyze and evaluate an individual's behavioral habits, interests, hobbies or economic, health or credit status, and make decisions |
-| **Cross-Border Data Transfer** | Transmitting or storing personal information collected and generated during operations within the territory of China to a location outside China, or allowing overseas institutions, organizations or individuals to access or retrieve such information |
-| **Upstream Model Provider** | A third party that actually provides large-model inference capability, including but not limited to OpenAI, Anthropic, Google, Alibaba Cloud, ByteDance, Tencent, DeepSeek, Zhipu, etc. |
+| **Thông tin cá nhân** | Các loại thông tin được ghi lại bằng phương tiện điện tử hoặc phương tiện khác liên quan đến cá nhân đã được xác định hoặc có thể xác định, không bao gồm thông tin đã được ẩn danh |
+| **Thông tin cá nhân nhạy cảm** | Thông tin cá nhân mà khi bị rò rỉ hoặc sử dụng trái phép có khả năng làm tổn hại danh dự của cá nhân hoặc nguy hại an toàn cá nhân hoặc tài sản, bao gồm sinh trắc học, tín ngưỡng, danh tính cụ thể, y tế và sức khỏe, tài khoản tài chính, vị trí và các thông tin khác, cũng như thông tin cá nhân của người chưa thành niên dưới 14 tuổi |
+| **Bên kiểm soát thông tin cá nhân** | Tổ chức hoặc cá nhân tự quyết định mục đích và phương thức xử lý thông tin cá nhân |
+| **Bên xử lý được ủy thác** | Tổ chức hoặc cá nhân nhận ủy thác từ Bên kiểm soát thông tin cá nhân và xử lý thông tin cá nhân theo chỉ dẫn của bên đó |
+| **Khử định danh** | Quá trình xử lý thông tin cá nhân sao cho một cá nhân cụ thể không thể bị xác định nếu không có sự trợ giúp của thông tin bổ sung |
+| **Ẩn danh tính** | Quá trình xử lý thông tin cá nhân sao cho một cá nhân cụ thể không thể bị xác định và không thể khôi phục lại |
+| **Quyết định tự động** | Các hoạt động sử dụng chương trình máy tính để tự động phân tích và đánh giá thói quen hành vi, sở thích, sở thú hoặc tình trạng kinh tế, sức khỏe hoặc tín dụng của một cá nhân, và đưa ra quyết định |
+| **Chuyển dữ liệu xuyên biên giới** | Việc truyền hoặc lưu trữ thông tin cá nhân được thu thập và tạo ra trong quá trình hoạt động trong lãnh thổ Trung Quốc đến một địa điểm ngoài Trung Quốc, hoặc cho phép các cơ quan, tổ chức hoặc cá nhân ở nước ngoài truy cập hoặc truy xuất thông tin đó |
+| **Nhà cung cấp mô hình thượng nguồn** | Bên thứ ba thực sự cung cấp năng lực suy luận mô hình lớn, bao gồm nhưng không giới hạn ở OpenAI, Anthropic, Google, Alibaba Cloud, ByteDance, Tencent, DeepSeek, Zhipu, v.v. |

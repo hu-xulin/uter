@@ -2,80 +2,80 @@
 
 ## Text-to-Speech
 
-将文本转换为音频
+テキストを音声に変換します。
 
 `POST` `/v1/audio/speech`
 
-### 请求体（`application/json`）
+### リクエストボディ（`application/json`）
 
-| 字段 | 类型 | 必填 | 说明 |
+| フィールド | 型 | 必須 | 説明 |
 |---|---|---|---|
-| `model` | string | 是 | — |
-| `input` | string | 是 | 要转换的文本 |
-| `voice` | enum（`alloy`, `echo`, `fable`, `onyx`, `nova`, `shimmer`） | 是 | — |
-| `response_format` | enum（`mp3`, `opus`, `aac`, `flac`, `wav`, `pcm`） | 否 | — |
-| `speed` | number | 否 | — |
+| `model` | string | 必須 | — |
+| `input` | string | 必須 | 変換するテキスト |
+| `voice` | enum（`alloy`, `echo`, `fable`, `onyx`, `nova`, `shimmer`） | 必須 | — |
+| `response_format` | enum（`mp3`, `opus`, `aac`, `flac`, `wav`, `pcm`） | 任意 | — |
+| `speed` | number | 任意 | — |
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
-| `200` | 成功生成音频 |
+| `200` | 音声の生成に成功 |
 
 ## Audio Transcriptions
 
-将音频转换为文本
+音声をテキストに変換します。
 
 `POST` `/v1/audio/transcriptions`
 
-### 请求体（`multipart/form-data`）
+### リクエストボディ（`multipart/form-data`）
 
-| 字段 | 类型 | 必填 | 说明 |
+| フィールド | 型 | 必須 | 説明 |
 |---|---|---|---|
-| `file` | string（binary） | 是 | 音频文件 |
-| `model` | string | 是 | — |
-| `language` | string | 否 | ISO-639-1 语言代码 |
-| `prompt` | string | 否 | — |
-| `response_format` | enum（`json`, `text`, `srt`, `verbose_json`, `vtt`） | 否 | — |
-| `temperature` | number | 否 | — |
-| `timestamp_granularities` | array&lt;enum（`word`, `segment`）&gt; | 否 | — |
+| `file` | string（binary） | 必須 | 音声ファイル |
+| `model` | string | 必須 | — |
+| `language` | string | 任意 | ISO-639-1 言語コード |
+| `prompt` | string | 任意 | — |
+| `response_format` | enum（`json`, `text`, `srt`, `verbose_json`, `vtt`） | 任意 | — |
+| `temperature` | number | 任意 | — |
+| `timestamp_granularities` | array&lt;enum（`word`, `segment`）&gt; | 任意 | — |
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
-| `200` | 成功转录 |
+| `200` | 書き起こしに成功 |
 
-#### `200` 响应字段
+#### `200` レスポンスフィールド
 
-| 字段 | 类型 | 说明 |
+| フィールド | 型 | 説明 |
 |---|---|---|
 | `text` | string | — |
 
 ## Audio Translation
 
-将音频翻译为英文文本
+音声を英語のテキストに翻訳します。
 
 `POST` `/v1/audio/translations`
 
-### 请求体（`multipart/form-data`）
+### リクエストボディ（`multipart/form-data`）
 
-| 字段 | 类型 | 必填 | 说明 |
+| フィールド | 型 | 必須 | 説明 |
 |---|---|---|---|
-| `file` | string（binary） | 是 | — |
-| `model` | string | 是 | — |
-| `prompt` | string | 否 | — |
-| `response_format` | string | 否 | — |
-| `temperature` | number | 否 | — |
+| `file` | string（binary） | 必須 | — |
+| `model` | string | 必須 | — |
+| `prompt` | string | 任意 | — |
+| `response_format` | string | 任意 | — |
+| `temperature` | number | 任意 | — |
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
-| `200` | 成功翻译 |
+| `200` | 翻訳に成功 |
 
-#### `200` 响应字段
+#### `200` レスポンスフィールド
 
-| 字段 | 类型 | 说明 |
+| フィールド | 型 | 説明 |
 |---|---|---|
 | `text` | string | — |

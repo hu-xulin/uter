@@ -1,122 +1,122 @@
-# logs
+# journaux
 
-## Delete Historical Logs
+## Supprimer les journaux historiques
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 Nécessite des privilèges d'administrateur (Admin)
 
 `DELETE` `/api/log/`
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-## Get All Logs
+## Récupérer tous les journaux
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 Nécessite des privilèges d'administrateur (Admin)
 
 `GET` `/api/log/`
 
-### 请求参数
+### Paramètres de requête
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| Nom du paramètre | Position | Type | Requis | Description |
 |---|---|---|---|---|
-| `p` | query | integer | 否 | — |
-| `page_size` | query | integer | 否 | — |
+| `p` | query | integer | Non | — |
+| `page_size` | query | integer | Non | — |
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-## Search Logs
+## Rechercher des journaux
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 Nécessite des privilèges d'administrateur (Admin)
 
 `GET` `/api/log/search`
 
-### 请求参数
+### Paramètres de requête
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| Nom du paramètre | Position | Type | Requis | Description |
 |---|---|---|---|---|
-| `keyword` | query | string | 否 | — |
+| `keyword` | query | string | Non | — |
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-## Get Personal Logs
+## Récupérer les journaux personnels
 
-🔐 需要登录（User权限）
+🔐 Nécessite une connexion (permission User)
 
 `GET` `/api/log/self`
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-## Search Personal Logs
+## Rechercher les journaux personnels
 
-🔐 需要登录（User权限）
+🔐 Nécessite une connexion (permission User)
 
 `GET` `/api/log/self/search`
 
-### 请求参数
+### Paramètres de requête
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| Nom du paramètre | Position | Type | Requis | Description |
 |---|---|---|---|---|
-| `keyword` | query | string | 否 | — |
+| `keyword` | query | string | Non | — |
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-## Get Personal Log Statistics
+## Récupérer les statistiques de journaux personnels
 
-🔐 需要登录（User权限）
+🔐 Nécessite une connexion (permission User)
 
 `GET` `/api/log/self/stat`
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-## Get Log Statistics
+## Récupérer les statistiques de journaux
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 Nécessite des privilèges d'administrateur (Admin)
 
 `GET` `/api/log/stat`
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-## Get Logs by Token
+## Récupérer les journaux par jeton
 
-🔓 无需鉴权（通过令牌查询）
+🔓 Aucune authentification requise (requête par jeton)
 
 `GET` `/api/log/token`
 
-### 请求参数
+### Paramètres de requête
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| Nom du paramètre | Position | Type | Requis | Description |
 |---|---|---|---|---|
-| `key` | query | string | 否 | — |
+| `key` | query | string | Non | — |
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |

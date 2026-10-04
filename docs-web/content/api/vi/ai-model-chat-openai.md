@@ -1,59 +1,59 @@
-# openai
+# OpenAI
 
-## ChatCompletions Format
+## Định dạng ChatCompletions
 
-根据对话历史创建模型响应。支持流式和非流式响应。
+Tạo phản hồi mô hình dựa trên lịch sử hội thoại. Hỗ trợ phản hồi streaming và không streaming.
 
-兼容 OpenAI Chat Completions API。
+Tương thích với API OpenAI Chat Completions.
 
 `POST` `/v1/chat/completions`
 
-### 请求体（`application/json`）
+### Thân yêu cầu (`application/json`)
 
-| 字段 | 类型 | 必填 | 说明 |
+| Trường | Kiểu | Bắt buộc | Mô tả |
 |---|---|---|---|
-| `model` | string | 是 | 模型 ID |
-| `messages` | array&lt;object&gt; | 是 | 对话消息列表 |
-| `temperature` | number | 否 | 采样温度 |
-| `top_p` | number | 否 | 核采样参数 |
-| `n` | integer | 否 | 生成数量 |
-| `stream` | boolean | 否 | 是否流式响应 |
-| `stream_options.include_usage` | boolean | 否 | — |
-| `max_tokens` | integer | 否 | 最大生成 Token 数 |
-| `max_completion_tokens` | integer | 否 | 最大补全 Token 数 |
-| `presence_penalty` | number | 否 | — |
-| `frequency_penalty` | number | 否 | — |
-| `logit_bias` | object | 否 | — |
-| `user` | string | 否 | — |
-| `tools` | array&lt;object&gt; | 否 | — |
-| `response_format.type` | enum（`text`, `json_object`, `json_schema`） | 否 | — |
-| `response_format.json_schema` | object | 否 | JSON Schema 定义 |
-| `seed` | integer | 否 | — |
-| `reasoning_effort` | enum（`low`, `medium`, `high`） | 否 | 推理强度 (用于支持推理的模型) |
-| `modalities` | array&lt;enum（`text`, `audio`）&gt; | 否 | — |
-| `audio.voice` | string | 否 | — |
-| `audio.format` | string | 否 | — |
+| `model` | string | Có | ID mô hình |
+| `messages` | array&lt;object&gt; | Có | Danh sách tin nhắn hội thoại |
+| `temperature` | number | Không | Nhiệt độ lấy mẫu |
+| `top_p` | number | Không | Tham số lấy mẫu hạt nhân |
+| `n` | integer | Không | Số lượng tạo |
+| `stream` | boolean | Không | Có phản hồi streaming hay không |
+| `stream_options.include_usage` | boolean | Không | — |
+| `max_tokens` | integer | Không | Số Token tạo tối đa |
+| `max_completion_tokens` | integer | Không | Số Token hoàn thành tối đa |
+| `presence_penalty` | number | Không | — |
+| `frequency_penalty` | number | Không | — |
+| `logit_bias` | object | Không | — |
+| `user` | string | Không | — |
+| `tools` | array&lt;object&gt; | Không | — |
+| `response_format.type` | enum (`text`, `json_object`, `json_schema`) | Không | — |
+| `response_format.json_schema` | object | Không | Định nghĩa JSON Schema |
+| `seed` | integer | Không | — |
+| `reasoning_effort` | enum (`low`, `medium`, `high`) | Không | Cường độ suy luận (dành cho các mô hình hỗ trợ suy luận) |
+| `modalities` | array&lt;enum (`text`, `audio`)&gt; | Không | — |
+| `audio.voice` | string | Không | — |
+| `audio.format` | string | Không | — |
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功创建响应 |
-| `400` | 请求参数错误 |
-| `429` | 请求频率限制 |
+| `200` | Tạo phản hồi thành công |
+| `400` | Tham số yêu cầu lỗi |
+| `429` | Giới hạn tần suất yêu cầu |
 
-#### `200` 响应字段
+#### Trường phản hồi `200`
 
-| 字段 | 类型 | 说明 |
+| Trường | Kiểu | Mô tả |
 |---|---|---|
 | `id` | string | — |
 | `object` | string | — |
 | `created` | integer | — |
 | `model` | string | — |
 | `choices` | array&lt;object&gt; | — |
-| `usage.prompt_tokens` | integer | 提示词 Token 数 |
-| `usage.completion_tokens` | integer | 补全 Token 数 |
-| `usage.total_tokens` | integer | 总 Token 数 |
+| `usage.prompt_tokens` | integer | Số Token prompt |
+| `usage.completion_tokens` | integer | Số Token hoàn thành |
+| `usage.total_tokens` | integer | Tổng số Token |
 | `usage.prompt_tokens_details.cached_tokens` | integer | — |
 | `usage.prompt_tokens_details.text_tokens` | integer | — |
 | `usage.prompt_tokens_details.audio_tokens` | integer | — |
@@ -63,66 +63,66 @@
 | `usage.completion_tokens_details.reasoning_tokens` | integer | — |
 | `system_fingerprint` | string | — |
 
-#### `400` 响应字段
+#### Trường phản hồi `400`
 
-| 字段 | 类型 | 说明 |
+| Trường | Kiểu | Mô tả |
 |---|---|---|
-| `error.message` | string | 错误信息 |
-| `error.type` | string | 错误类型 |
-| `error.param` | string | 相关参数 |
-| `error.code` | string | 错误代码 |
+| `error.message` | string | Thông báo lỗi |
+| `error.type` | string | Loại lỗi |
+| `error.param` | string | Tham số liên quan |
+| `error.code` | string | Mã lỗi |
 
-#### `429` 响应字段
+#### Trường phản hồi `429`
 
-| 字段 | 类型 | 说明 |
+| Trường | Kiểu | Mô tả |
 |---|---|---|
-| `error.message` | string | 错误信息 |
-| `error.type` | string | 错误类型 |
-| `error.param` | string | 相关参数 |
-| `error.code` | string | 错误代码 |
+| `error.message` | string | Thông báo lỗi |
+| `error.type` | string | Loại lỗi |
+| `error.param` | string | Tham số liên quan |
+| `error.code` | string | Mã lỗi |
 
-## Responses Format
+## Định dạng Responses
 
-OpenAI Responses API，用于创建模型响应。
-支持多轮对话、工具调用、推理等功能。
+API OpenAI Responses, dùng để tạo phản hồi mô hình.
+Hỗ trợ hội thoại đa lượt, gọi công cụ, suy luận và các chức năng khác.
 
 `POST` `/v1/responses`
 
-### 请求体（`application/json`）
+### Thân yêu cầu (`application/json`)
 
-| 字段 | 类型 | 必填 | 说明 |
+| Trường | Kiểu | Bắt buộc | Mô tả |
 |---|---|---|---|
-| `model` | string | 是 | — |
-| `instructions` | string | 否 | — |
-| `max_output_tokens` | integer | 否 | — |
-| `temperature` | number | 否 | — |
-| `top_p` | number | 否 | — |
-| `stream` | boolean | 否 | — |
-| `tools` | array&lt;object&gt; | 否 | — |
-| `reasoning.effort` | enum（`low`, `medium`, `high`） | 否 | — |
-| `reasoning.summary` | string | 否 | — |
-| `previous_response_id` | string | 否 | — |
-| `truncation` | enum（`auto`, `disabled`） | 否 | — |
+| `model` | string | Có | — |
+| `instructions` | string | Không | — |
+| `max_output_tokens` | integer | Không | — |
+| `temperature` | number | Không | — |
+| `top_p` | number | Không | — |
+| `stream` | boolean | Không | — |
+| `tools` | array&lt;object&gt; | Không | — |
+| `reasoning.effort` | enum (`low`, `medium`, `high`) | Không | — |
+| `reasoning.summary` | string | Không | — |
+| `previous_response_id` | string | Không | — |
+| `truncation` | enum (`auto`, `disabled`) | Không | — |
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功创建响应 |
+| `200` | Tạo phản hồi thành công |
 
-#### `200` 响应字段
+#### Trường phản hồi `200`
 
-| 字段 | 类型 | 说明 |
+| Trường | Kiểu | Mô tả |
 |---|---|---|
 | `id` | string | — |
 | `object` | string | — |
 | `created_at` | integer | — |
-| `status` | enum（`completed`, `failed`, `in_progress`, `incomplete`） | — |
+| `status` | enum (`completed`, `failed`, `in_progress`, `incomplete`) | — |
 | `model` | string | — |
 | `output` | array&lt;object&gt; | — |
-| `usage.prompt_tokens` | integer | 提示词 Token 数 |
-| `usage.completion_tokens` | integer | 补全 Token 数 |
-| `usage.total_tokens` | integer | 总 Token 数 |
+| `usage.prompt_tokens` | integer | Số Token prompt |
+| `usage.completion_tokens` | integer | Số Token hoàn thành |
+| `usage.total_tokens` | integer | Tổng số Token |
 | `usage.prompt_tokens_details.cached_tokens` | integer | — |
 | `usage.prompt_tokens_details.text_tokens` | integer | — |
 | `usage.prompt_tokens_details.audio_tokens` | integer | — |

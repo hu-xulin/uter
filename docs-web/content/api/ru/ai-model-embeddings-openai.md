@@ -1,26 +1,26 @@
-# Native OpenAI Format
+# Нативный формат OpenAI
 
-将文本转换为向量嵌入
+Преобразует текст в векторные вложения (embeddings).
 
 `POST` `/v1/embeddings`
 
-### 请求体（`application/json`）
+### Тело запроса (`application/json`)
 
-| 字段 | 类型 | 必填 | 说明 |
+| Поле | Тип | Обязательно | Описание |
 |---|---|---|---|
-| `model` | string | 是 | — |
-| `encoding_format` | enum（`float`, `base64`） | 否 | — |
-| `dimensions` | integer | 否 | 输出向量维度 |
+| `model` | string | да | — |
+| `encoding_format` | enum（`float`, `base64`） | нет | — |
+| `dimensions` | integer | нет | Размерность выходного вектора |
 
-### 响应
+### Ответ
 
-| 状态码 | 说明 |
+| Код статуса | Описание |
 |---|---|
-| `200` | 成功创建嵌入 |
+| `200` | Вложение успешно создано |
 
-#### `200` 响应字段
+#### Поля ответа `200`
 
-| 字段 | 类型 | 说明 |
+| Поле | Тип | Описание |
 |---|---|---|
 | `object` | string | — |
 | `data` | array&lt;object&gt; | — |

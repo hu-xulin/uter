@@ -1,73 +1,73 @@
 # system-settings
 
-## Get System Options
+## Récupérer les options système
 
-👑 需要超级管理员权限（Root）
+👑 Nécessite des privilèges de super-administrateur (Root)
 
 `GET` `/api/option/`
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-## Migrate Console Settings
+## Migrer les paramètres de la console
 
-👑 需要超级管理员权限（Root）
+👑 Nécessite des privilèges de super-administrateur (Root)
 
 `POST` `/api/option/migrate_console_setting`
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-## Update System Options
+## Mettre à jour les options système
 
-👑 需要超级管理员权限（Root）
+👑 Nécessite des privilèges de super-administrateur (Root)
 
 `PUT` `/api/option/`
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-## Reset Model Ratio
+## Réinitialiser le ratio des modèles
 
-👑 需要超级管理员权限（Root）
+👑 Nécessite des privilèges de super-administrateur (Root)
 
 `POST` `/api/option/rest_model_ratio`
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-## Get Syncable Channels
+## Récupérer les canaux synchronisables
 
-👑 需要超级管理员权限（Root）
+👑 Nécessite des privilèges de super-administrateur (Root)
 
 `GET` `/api/ratio_sync/channels`
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-## Fetch Upstream Ratios
+## Récupérer les ratios en amont
 
-👑 需要超级管理员权限（Root）
+👑 Nécessite des privilèges de super-administrateur (Root)
 
 `POST` `/api/ratio_sync/fetch`
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |

@@ -1,49 +1,49 @@
 # tasks
 
-## Get All Midjourney Tasks
+## Récupérer toutes les tâches Midjourney
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 Nécessite des privilèges d'administrateur (Admin)
 
 `GET` `/api/mj/`
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-## Get Personal Midjourney Tasks
+## Récupérer les tâches Midjourney personnelles
 
-🔐 需要登录（User权限）
+🔐 Nécessite une connexion (permission User)
 
 `GET` `/api/mj/self`
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-## Get All Tasks
+## Récupérer toutes les tâches
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 Nécessite des privilèges d'administrateur (Admin)
 
 `GET` `/api/task/`
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-## Get Personal Tasks
+## Récupérer les tâches personnelles
 
-🔐 需要登录（User权限）
+🔐 Nécessite une connexion (permission User)
 
 `GET` `/api/task/self`
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |

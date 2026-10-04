@@ -1,37 +1,37 @@
 [
   {
     "id": "ai-model-audio",
-    "title": "AI Model API · Native Gemini Format",
+    "title": "API de modèle IA · Format Gemini natif",
     "category": "ai-model"
   },
   {
     "id": "ai-model-audio-openai",
-    "title": "AI Model API · openai",
+    "title": "API de modèle IA · openai",
     "category": "ai-model"
   },
   {
     "id": "ai-model-chat",
-    "title": "Native Claude Format",
+    "title": "Format Claude natif",
     "category": "ai-model"
   },
   {
     "id": "ai-model-chat-gemini",
-    "title": "AI Model API · gemini",
+    "title": "API de modèle IA · gemini",
     "category": "ai-model"
   },
   {
     "id": "ai-model-chat-openai",
-    "title": "AI Model API · openai",
+    "title": "API de modèle IA · openai",
     "category": "ai-model"
   },
   {
     "id": "ai-model-completions",
-    "title": "AI Model API · Native OpenAI Format",
+    "title": "API de modèle IA · Format OpenAI natif",
     "category": "ai-model"
   },
   {
     "id": "ai-model-completions-openai",
-    "title": "AI Model API · Native OpenAI Format",
+    "title": "API de modèle IA · Format OpenAI natif",
     "category": "ai-model"
   },
   {
@@ -41,22 +41,22 @@
   },
   {
     "id": "ai-model-embeddings-openai",
-    "title": "AI Model API · Native OpenAI Format",
+    "title": "API de modèle IA · Format OpenAI natif",
     "category": "ai-model"
   },
   {
     "id": "ai-model-embeddings-gemini",
-    "title": "AI Model API · Native Gemini Format",
+    "title": "API de modèle IA · Format Gemini natif",
     "category": "ai-model"
   },
   {
     "id": "ai-model-images-gemini",
-    "title": "AI Model API · gemini",
+    "title": "API de modèle IA · gemini",
     "category": "ai-model"
   },
   {
     "id": "ai-model-images-openai",
-    "title": "AI Model API · openai",
+    "title": "API de modèle IA · openai",
     "category": "ai-model"
   },
   {
@@ -66,32 +66,32 @@
   },
   {
     "id": "ai-model-models-list",
-    "title": "list",
+    "title": "liste",
     "category": "ai-model"
   },
   {
     "id": "ai-model-models-list-openai",
-    "title": "AI Model API · Native OpenAI Format",
+    "title": "API de modèle IA · Format OpenAI natif",
     "category": "ai-model"
   },
   {
     "id": "ai-model-models-list-gemini",
-    "title": "AI Model API · Native Gemini Format",
+    "title": "API de modèle IA · Format Gemini natif",
     "category": "ai-model"
   },
   {
     "id": "ai-model-moderations",
-    "title": "AI Model API · Native OpenAI Format",
+    "title": "API de modèle IA · Format OpenAI natif",
     "category": "ai-model"
   },
   {
     "id": "ai-model-realtime",
-    "title": "AI Model API · Native OpenAI Format",
+    "title": "API de modèle IA · Format OpenAI natif",
     "category": "ai-model"
   },
   {
     "id": "ai-model-rerank",
-    "title": "Document Reranking",
+    "title": "Re-classement de documents",
     "category": "ai-model"
   },
   {
@@ -101,12 +101,12 @@
   },
   {
     "id": "ai-model-videos",
-    "title": "videos",
+    "title": "vidéos",
     "category": "ai-model"
   },
   {
     "id": "ai-model-videos-jimeng",
-    "title": "Jimeng Video Generation",
+    "title": "Génération vidéo Jimeng",
     "category": "ai-model"
   },
   {
@@ -121,37 +121,37 @@
   },
   {
     "id": "ai-model-videos-happyhorse",
-    "title": "HappyHorse Format",
+    "title": "Format HappyHorse",
     "category": "ai-model"
   },
   {
     "id": "ai-model-videos-minimax",
-    "title": "MiniMax Format",
+    "title": "Format MiniMax",
     "category": "ai-model"
   },
   {
     "id": "ai-model-videos-wanx",
-    "title": "Wanx Format",
+    "title": "Format Wanx",
     "category": "ai-model"
   },
   {
     "id": "ai-model-videos-veo",
-    "title": "Google Veo Format",
+    "title": "Format Google Veo",
     "category": "ai-model"
   },
   {
     "id": "ai-model-videos-pixverse",
-    "title": "PixVerse Format",
+    "title": "Format PixVerse",
     "category": "ai-model"
   },
   {
     "id": "ai-model-videos-seedance",
-    "title": "Seedance Format",
+    "title": "Format Seedance",
     "category": "ai-model"
   },
   {
     "id": "management-auth",
-    "title": "Authentication System Description (Auth)",
+    "title": "Description du système d'authentification (Auth)",
     "category": "management"
   },
   {
@@ -161,17 +161,17 @@
   },
   {
     "id": "management-default",
-    "title": "Redeem Code",
+    "title": "Code de rachat",
     "category": "management"
   },
   {
     "id": "management-groups",
-    "title": "groups",
+    "title": "groupes",
     "category": "management"
   },
   {
     "id": "management-logs",
-    "title": "logs",
+    "title": "journaux",
     "category": "management"
   },
   {
@@ -186,12 +186,12 @@
   },
   {
     "id": "management-payment",
-    "title": "payment",
+    "title": "paiement",
     "category": "management"
   },
   {
     "id": "management-redemption",
-    "title": "redemption",
+    "title": "rachat",
     "category": "management"
   },
   {
@@ -201,12 +201,12 @@
   },
   {
     "id": "management-statistics",
-    "title": "statistics",
+    "title": "statistiques",
     "category": "management"
   },
   {
     "id": "management-system",
-    "title": "system",
+    "title": "système",
     "category": "management"
   },
   {
@@ -216,7 +216,7 @@
   },
   {
     "id": "management-tasks",
-    "title": "tasks",
+    "title": "tâches",
     "category": "management"
   },
   {
@@ -241,7 +241,7 @@
   },
   {
     "id": "management-vendors",
-    "title": "vendors",
+    "title": "fournisseurs",
     "category": "management"
   }
 ]

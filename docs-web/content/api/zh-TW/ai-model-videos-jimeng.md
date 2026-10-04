@@ -1,52 +1,52 @@
-# Jimeng Video Generation
+# 即夢格式
 
-## Jimeng Video Generation
+## 即夢影片生成
 
-即梦官方 API 格式的视频生成接口。
+即夢官方 API 格式的影片生成介面。
 
-支持通过 Action 参数指定操作类型：
-- `CVSync2AsyncSubmitTask`: 提交视频生成任务
-- `CVSync2AsyncGetResult`: 获取任务结果
+支援透過 Action 引數指定操作型別：
+- `CVSync2AsyncSubmitTask`: 提交影片生成任務
+- `CVSync2AsyncGetResult`: 獲取任務結果
 
-需要在查询参数中指定 Action 和 Version。
+需要在查詢引數中指定 Action 和 Version。
 
 `POST` `/jimeng/`
 
-### 请求参数
+### 請求引數
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| 引數名 | 位置 | 型別 | 必填 | 說明 |
 |---|---|---|---|---|
-| `Action` | query | enum（`CVSync2AsyncSubmitTask`, `CVSync2AsyncGetResult`） | 是 | API 操作类型 |
+| `Action` | query | enum（`CVSync2AsyncSubmitTask`, `CVSync2AsyncGetResult`） | 是 | API 操作型別 |
 | `Version` | query | string | 是 | API 版本 |
 
-### 请求体（`application/json`）
+### 請求體（`application/json`）
 
-| 字段 | 类型 | 必填 | 说明 |
+| 欄位 | 型別 | 必填 | 說明 |
 |---|---|---|---|
-| `req_key` | string | 否 | 请求类型标识 |
-| `prompt` | string | 否 | 文本描述 |
-| `binary_data_base64` | array&lt;string&gt; | 否 | Base64 编码的图片数据 |
+| `req_key` | string | 否 | 請求型別標識 |
+| `prompt` | string | 否 | 文字描述 |
+| `binary_data_base64` | array&lt;string&gt; | 否 | Base64 編碼的圖片資料 |
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
-| `200` | 成功处理请求 |
-| `400` | 请求参数错误 |
+| `200` | 成功處理請求 |
+| `400` | 請求引數錯誤 |
 
-#### `200` 响应字段
+#### `200` 響應欄位
 
-| 字段 | 类型 | 说明 |
+| 欄位 | 型別 | 說明 |
 |---|---|---|
-| `code` | integer | 响应码 |
-| `message` | string | 响应消息 |
-| `data` | object | 响应数据 |
+| `code` | integer | 響應碼 |
+| `message` | string | 響應訊息 |
+| `data` | object | 響應資料 |
 
-#### `400` 响应字段
+#### `400` 響應欄位
 
-| 字段 | 类型 | 说明 |
+| 欄位 | 型別 | 說明 |
 |---|---|---|
-| `error.message` | string | 错误信息 |
-| `error.type` | string | 错误类型 |
-| `error.param` | string | 相关参数 |
-| `error.code` | string | 错误代码 |
+| `error.message` | string | 錯誤資訊 |
+| `error.type` | string | 錯誤型別 |
+| `error.param` | string | 相關引數 |
+| `error.code` | string | 錯誤程式碼 |

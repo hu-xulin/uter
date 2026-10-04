@@ -806,10 +806,149 @@ const EN_CONTENT: UserGuideContent = {
   ],
 };
 
+/**
+ * Per-locale identity for the guide: its page title, its meta description,
+ * and the label of each of the nine chapters.
+ *
+ * A chapter's *body* comes from `content/user-guide/<locale>/<slug>.md`,
+ * but its *name* has to exist for all seven languages whether or not that
+ * file has been written yet — otherwise the sidebar loses a chapter in
+ * exactly the languages that are still being filled in, and the landing
+ * page's cards fall back to raw slugs like `wallet-and-subscription`.
+ *
+ * Keyed by {@link USER_GUIDE_CHAPTER_SLUGS} in the same order, so the
+ * labels cannot drift out of alignment with the chapter list the way a
+ * positional `sections` array inside the prose can.
+ */
+const USER_GUIDE_IDENTITY: Record<
+  DocsLocale,
+  { title: string; description: string; chapters: string[] }
+> = {
+  zh: {
+    title: ZH_CONTENT.title,
+    description: ZH_CONTENT.description,
+    chapters: [
+      '注册与登录',
+      '概览与数据看板',
+      '个人资料与安全',
+      'API 密钥',
+      '使用 API 与游乐场',
+      '聊天应用集成',
+      '日志与异步任务',
+      '钱包与订阅',
+      '定价和排行',
+    ],
+  },
+  'zh-TW': {
+    title: '使用者指南',
+    description: 'Uter 使用指南：從註冊登入到模型呼叫、聊天應用整合與日誌稽核',
+    chapters: [
+      '註冊與登入',
+      '概覽與資料儀表板',
+      '個人資料與安全性',
+      'API 金鑰',
+      '使用 API 與遊樂場',
+      '聊天應用整合',
+      '日誌與非同步任務',
+      '錢包與訂閱',
+      '定價與排行',
+    ],
+  },
+  en: {
+    title: EN_CONTENT.title,
+    description: EN_CONTENT.description,
+    chapters: [
+      'Registration & Login',
+      'Overview & Dashboard',
+      'Profile & Security',
+      'API Keys',
+      'Using the API & Playground',
+      'App Integration',
+      'Logs & Async Tasks',
+      'Wallet & Subscription',
+      'Model Hub & Leaderboard',
+    ],
+  },
+  fr: {
+    title: 'Guide de l’utilisateur',
+    description:
+      'Guide de l’utilisateur Uter : de l’inscription et de la connexion à l’appel de modèles, à l’intégration d’applications et à l’audit des journaux',
+    chapters: [
+      'Inscription et connexion',
+      'Vue d’ensemble et tableau de bord',
+      'Profil et sécurité',
+      'Clés API',
+      'Utiliser l’API et le bac à sable',
+      'Intégration d’applications',
+      'Journaux et tâches asynchrones',
+      'Portefeuille et abonnement',
+      'Hub de modèles et classement',
+    ],
+  },
+  ja: {
+    title: 'ユーザーガイド',
+    description:
+      'Uter ユーザーガイド：登録・ログインからモデル呼び出し、チャットアプリ連携、ログ監査まで',
+    chapters: [
+      '登録とログイン',
+      '概要とダッシュボード',
+      'プロフィールとセキュリティ',
+      'API キー',
+      'API とプレイグラウンド',
+      'アプリ連携',
+      'ログと非同期タスク',
+      'ウォレットとサブスクリプション',
+      'モデルハブとランキング',
+    ],
+  },
+  ru: {
+    title: 'Руководство пользователя',
+    description:
+      'Руководство пользователя Uter: от регистрации и входа до вызова моделей, интеграции приложений и аудита журналов',
+    chapters: [
+      'Регистрация и вход',
+      'Обзор и панель',
+      'Профиль и безопасность',
+      'API-ключи',
+      'Работа с API и песочницей',
+      'Интеграция приложений',
+      'Журналы и асинхронные задачи',
+      'Кошелёк и подписка',
+      'Каталог моделей и рейтинг',
+    ],
+  },
+  vi: {
+    title: 'Hướng dẫn sử dụng',
+    description:
+      'Hướng dẫn sử dụng Uter: từ đăng ký, đăng nhập đến gọi mô hình, tích hợp ứng dụng và kiểm tra nhật ký',
+    chapters: [
+      'Đăng ký và đăng nhập',
+      'Tổng quan và bảng điều khiển',
+      'Hồ sơ và bảo mật',
+      'Khóa API',
+      'Sử dụng API và khu thử nghiệm',
+      'Tích hợp ứng dụng',
+      'Nhật ký và tác vụ bất đồng bộ',
+      'Ví và gói đăng ký',
+      'Trung tâm mô hình và bảng xếp hạng',
+    ],
+  },
+};
+
 export function getUserGuideContent(locale: DocsLocale): UserGuideContent {
-  // Only `zh`/`zh-TW` author Chinese copy today; every other locale reads
-  // the English write-up.
+  // The structured objects above are the pre-Markdown fallback, kept for
+  // the chapters that have no file yet. Chinese copy is authored; every
+  // other locale reads the English write-up.
   return locale === 'zh' || locale === 'zh-TW' ? ZH_CONTENT : EN_CONTENT;
+}
+
+/** The guide's own title and meta description, in the reader's language. */
+export function getUserGuideIdentity(locale: DocsLocale): {
+  title: string;
+  description: string;
+} {
+  const { title, description } = USER_GUIDE_IDENTITY[locale];
+  return { title, description };
 }
 
 /** Where the guide's pages live under a locale root. */
@@ -861,11 +1000,13 @@ export function userGuideChapterUrl(locale: DocsLocale, slug: UserGuideChapterSl
 }
 
 /**
- * A chapter's label, taken from the structured content so the sidebar
- * reads the same whether the body comes from Markdown or not.
+ * A chapter's label, from the per-locale identity table rather than the
+ * structured prose, so the sidebar reads the same whether the body comes
+ * from Markdown or not — and so a language with a translated label but no
+ * Markdown file yet still shows a real name instead of a raw slug.
  */
 export function userGuideChapterTitle(locale: DocsLocale, slug: string): string | undefined {
   const index = userGuideChapterIndex(slug);
   if (index === -1) return undefined;
-  return getUserGuideContent(locale).sections[index]?.heading;
+  return USER_GUIDE_IDENTITY[locale].chapters[index];
 }

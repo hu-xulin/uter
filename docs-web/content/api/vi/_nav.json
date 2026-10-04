@@ -1,247 +1,247 @@
 [
   {
     "id": "ai-model-audio",
-    "title": "AI Model API · Native Gemini Format",
+    "title": "AI Model API · Định dạng Native Gemini",
     "category": "ai-model"
   },
   {
     "id": "ai-model-audio-openai",
-    "title": "AI Model API · openai",
+    "title": "AI Model API · OpenAI",
     "category": "ai-model"
   },
   {
     "id": "ai-model-chat",
-    "title": "Native Claude Format",
+    "title": "Định dạng Native Claude",
     "category": "ai-model"
   },
   {
     "id": "ai-model-chat-gemini",
-    "title": "AI Model API · gemini",
+    "title": "AI Model API · Gemini",
     "category": "ai-model"
   },
   {
     "id": "ai-model-chat-openai",
-    "title": "AI Model API · openai",
+    "title": "AI Model API · OpenAI",
     "category": "ai-model"
   },
   {
     "id": "ai-model-completions",
-    "title": "AI Model API · Native OpenAI Format",
+    "title": "AI Model API · Định dạng Native OpenAI",
     "category": "ai-model"
   },
   {
     "id": "ai-model-completions-openai",
-    "title": "AI Model API · Native OpenAI Format",
+    "title": "AI Model API · Định dạng Native OpenAI",
     "category": "ai-model"
   },
   {
     "id": "ai-model-embeddings",
-    "title": "embeddings",
+    "title": "Embeddings",
     "category": "ai-model"
   },
   {
     "id": "ai-model-embeddings-openai",
-    "title": "AI Model API · Native OpenAI Format",
+    "title": "AI Model API · Định dạng Native OpenAI",
     "category": "ai-model"
   },
   {
     "id": "ai-model-embeddings-gemini",
-    "title": "AI Model API · Native Gemini Format",
+    "title": "AI Model API · Định dạng Native Gemini",
     "category": "ai-model"
   },
   {
     "id": "ai-model-images-gemini",
-    "title": "AI Model API · gemini",
+    "title": "AI Model API · Gemini",
     "category": "ai-model"
   },
   {
     "id": "ai-model-images-openai",
-    "title": "AI Model API · openai",
+    "title": "AI Model API · OpenAI",
     "category": "ai-model"
   },
   {
     "id": "ai-model-images-qwen",
-    "title": "qwen",
+    "title": "Qwen",
     "category": "ai-model"
   },
   {
     "id": "ai-model-models-list",
-    "title": "list",
+    "title": "Danh sách",
     "category": "ai-model"
   },
   {
     "id": "ai-model-models-list-openai",
-    "title": "AI Model API · Native OpenAI Format",
+    "title": "AI Model API · Định dạng Native OpenAI",
     "category": "ai-model"
   },
   {
     "id": "ai-model-models-list-gemini",
-    "title": "AI Model API · Native Gemini Format",
+    "title": "AI Model API · Định dạng Native Gemini",
     "category": "ai-model"
   },
   {
     "id": "ai-model-moderations",
-    "title": "AI Model API · Native OpenAI Format",
+    "title": "AI Model API · Định dạng Native OpenAI",
     "category": "ai-model"
   },
   {
     "id": "ai-model-realtime",
-    "title": "AI Model API · Native OpenAI Format",
+    "title": "AI Model API · Định dạng Native OpenAI",
     "category": "ai-model"
   },
   {
     "id": "ai-model-rerank",
-    "title": "Document Reranking",
+    "title": "Tái xếp hạng tài liệu",
     "category": "ai-model"
   },
   {
     "id": "ai-model-unimplemented-fine-tuning",
-    "title": "fine-tuning",
+    "title": "Fine-tuning",
     "category": "ai-model"
   },
   {
     "id": "ai-model-videos",
-    "title": "videos",
+    "title": "Video",
     "category": "ai-model"
   },
   {
     "id": "ai-model-videos-jimeng",
-    "title": "Jimeng Video Generation",
+    "title": "Tạo video Jimeng",
     "category": "ai-model"
   },
   {
     "id": "ai-model-videos-kling",
-    "title": "kling",
+    "title": "Kling",
     "category": "ai-model"
   },
   {
     "id": "ai-model-videos-sora",
-    "title": "sora",
+    "title": "Sora",
     "category": "ai-model"
   },
   {
     "id": "ai-model-videos-happyhorse",
-    "title": "HappyHorse Format",
+    "title": "Định dạng HappyHorse",
     "category": "ai-model"
   },
   {
     "id": "ai-model-videos-minimax",
-    "title": "MiniMax Format",
+    "title": "Định dạng MiniMax",
     "category": "ai-model"
   },
   {
     "id": "ai-model-videos-wanx",
-    "title": "Wanx Format",
+    "title": "Định dạng Wanx",
     "category": "ai-model"
   },
   {
     "id": "ai-model-videos-veo",
-    "title": "Google Veo Format",
+    "title": "Định dạng Google Veo",
     "category": "ai-model"
   },
   {
     "id": "ai-model-videos-pixverse",
-    "title": "PixVerse Format",
+    "title": "Định dạng PixVerse",
     "category": "ai-model"
   },
   {
     "id": "ai-model-videos-seedance",
-    "title": "Seedance Format",
+    "title": "Định dạng Seedance",
     "category": "ai-model"
   },
   {
     "id": "management-auth",
-    "title": "Authentication System Description (Auth)",
+    "title": "Mô tả hệ thống xác thực (Auth)",
     "category": "management"
   },
   {
     "id": "management-channel-management",
-    "title": "channel-management",
+    "title": "Quản lý kênh",
     "category": "management"
   },
   {
     "id": "management-default",
-    "title": "Redeem Code",
+    "title": "Mã đổi thưởng",
     "category": "management"
   },
   {
     "id": "management-groups",
-    "title": "groups",
+    "title": "Nhóm",
     "category": "management"
   },
   {
     "id": "management-logs",
-    "title": "logs",
+    "title": "Nhật ký",
     "category": "management"
   },
   {
     "id": "management-model-management",
-    "title": "model-management",
+    "title": "Quản lý mô hình",
     "category": "management"
   },
   {
     "id": "management-oauth",
-    "title": "oauth",
+    "title": "OAuth",
     "category": "management"
   },
   {
     "id": "management-payment",
-    "title": "payment",
+    "title": "Thanh toán",
     "category": "management"
   },
   {
     "id": "management-redemption",
-    "title": "redemption",
+    "title": "Đổi thưởng",
     "category": "management"
   },
   {
     "id": "management-security-verification",
-    "title": "security-verification",
+    "title": "Xác minh bảo mật",
     "category": "management"
   },
   {
     "id": "management-statistics",
-    "title": "statistics",
+    "title": "Thống kê",
     "category": "management"
   },
   {
     "id": "management-system",
-    "title": "system",
+    "title": "Hệ thống",
     "category": "management"
   },
   {
     "id": "management-system-settings",
-    "title": "system-settings",
+    "title": "Cài đặt hệ thống",
     "category": "management"
   },
   {
     "id": "management-tasks",
-    "title": "tasks",
+    "title": "Tác vụ",
     "category": "management"
   },
   {
     "id": "management-token-management",
-    "title": "token-management",
+    "title": "Quản lý token",
     "category": "management"
   },
   {
     "id": "management-two-factor-auth",
-    "title": "two-factor-auth",
+    "title": "Xác thực hai yếu tố",
     "category": "management"
   },
   {
     "id": "management-user-auth",
-    "title": "user-auth",
+    "title": "Xác thực người dùng",
     "category": "management"
   },
   {
     "id": "management-user-management",
-    "title": "user-management",
+    "title": "Quản lý người dùng",
     "category": "management"
   },
   {
     "id": "management-vendors",
-    "title": "vendors",
+    "title": "Nhà cung cấp",
     "category": "management"
   }
 ]

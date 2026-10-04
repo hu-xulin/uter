@@ -25,9 +25,20 @@ type WebAssets struct {
 // SPA in sync; adding a locale here also requires the matching entry
 // in `docs-web/src/lib/i18n.ts#SUPPORTED_DOCS_LOCALES` and content in
 // `docs-web/src/lib/docs-content.ts`.
+//
+// Must list every locale the docs site actually ships — `zh`, `zh-TW`,
+// `en`, `fr`, `ja`, `ru`, `vi` — so `isDocsPath`/`isBareDocsPath` treat
+// French/Japanese/Russian/Vietnamese docs paths as real docs rather than
+// stale non-locale redirects. Dropping any locale here silently funnels
+// that language's readers back to the `zh` landing (see `isBareDocsPath`).
 var docsLocale = map[string]struct{}{
-	"zh": {},
-	"en": {},
+	"zh":    {},
+	"zh-TW": {},
+	"en":    {},
+	"fr":    {},
+	"ja":    {},
+	"ru":    {},
+	"vi":    {},
 }
 
 func isDocsLocale(code string) bool {
@@ -111,7 +122,10 @@ func docsLanding() string {
 // docsLocales is the ordered, canonical list of docs locales. The
 // SPA mirrors this ordering via `docs-link.ts#DOCS_LOCALE_PAIRS` so
 // the canonical landing stays deterministic across server and client.
-var docsLocales = []string{"zh", "en"}
+// `zh` stays first — it is the canonical landing for the default UI
+// language — but every shipped locale must appear so legacy/stale docs
+// redirects and `docsLanding` stay aligned with the SPA.
+var docsLocales = []string{"zh", "zh-TW", "en", "fr", "ja", "ru", "vi"}
 
 func SetWebRouter(router *gin.Engine, assets WebAssets, pluginDispatcher gin.HandlerFunc) {
 	frontendFS := common.EmbedFolder(assets.BuildFS, "web/dist")

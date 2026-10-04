@@ -1,22 +1,22 @@
-# Native Claude Format
+# 聊天（Chat）
 
-## Native Claude Format
+## 原生Claude格式
 
-Anthropic Claude Messages API 格式的请求。
-需要在请求头中包含 `anthropic-version`。
+Anthropic Claude Messages API 格式的請求。
+需要在請求頭中包含 `anthropic-version`。
 
 `POST` `/v1/messages`
 
-### 请求参数
+### 請求引數
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| 引數名 | 位置 | 型別 | 必填 | 說明 |
 |---|---|---|---|---|
 | `anthropic-version` | header | string | 是 | Anthropic API 版本 |
-| `x-api-key` | header | string | 否 | Anthropic API Key (可选，也可使用 Bearer Token) |
+| `x-api-key` | header | string | 否 | Anthropic API Key (可選，也可使用 Bearer Token) |
 
-### 请求体（`application/json`）
+### 請求體（`application/json`）
 
-| 字段 | 类型 | 必填 | 说明 |
+| 欄位 | 型別 | 必填 | 說明 |
 |---|---|---|---|
 | `model` | string | 是 | — |
 | `messages` | array&lt;object&gt; | 是 | — |
@@ -33,15 +33,15 @@ Anthropic Claude Messages API 格式的请求。
 | `thinking.budget_tokens` | integer | 否 | — |
 | `metadata.user_id` | string | 否 | — |
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
-| `200` | 成功创建响应 |
+| `200` | 成功建立響應 |
 
-#### `200` 响应字段
+#### `200` 響應欄位
 
-| 字段 | 类型 | 说明 |
+| 欄位 | 型別 | 說明 |
 |---|---|---|
 | `id` | string | — |
 | `type` | string | — |

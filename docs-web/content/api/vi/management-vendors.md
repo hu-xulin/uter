@@ -1,91 +1,91 @@
-# vendors
+# Nhà cung cấp (vendors)
 
-## Get All Vendors
+## Lấy tất cả nhà cung cấp (Get All Vendors)
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 Yêu cầu quyền quản trị viên (Admin)
 
 `GET` `/api/vendors/`
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Delete Vendor
+## Xóa nhà cung cấp (Delete Vendor)
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 Yêu cầu quyền quản trị viên (Admin)
 
 `DELETE` `/api/vendors/{id}`
 
-### 请求参数
+### Tham số yêu cầu
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| Tên tham số | Vị trí | Kiểu | Bắt buộc | Mô tả |
 |---|---|---|---|---|
-| `id` | path | integer | 是 | — |
+| `id` | path | integer | Có | — |
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Get Specific Vendor
+## Lấy nhà cung cấp cụ thể (Get Specific Vendor)
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 Yêu cầu quyền quản trị viên (Admin)
 
 `GET` `/api/vendors/{id}`
 
-### 请求参数
+### Tham số yêu cầu
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| Tên tham số | Vị trí | Kiểu | Bắt buộc | Mô tả |
 |---|---|---|---|---|
-| `id` | path | integer | 是 | — |
+| `id` | path | integer | Có | — |
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Create Vendor
+## Tạo nhà cung cấp (Create Vendor)
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 Yêu cầu quyền quản trị viên (Admin)
 
 `POST` `/api/vendors/`
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Update Vendor
+## Cập nhật nhà cung cấp (Update Vendor)
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 Yêu cầu quyền quản trị viên (Admin)
 
 `PUT` `/api/vendors/`
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Search Vendors
+## Tìm kiếm nhà cung cấp (Search Vendors)
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 Yêu cầu quyền quản trị viên (Admin)
 
 `GET` `/api/vendors/search`
 
-### 请求参数
+### Tham số yêu cầu
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| Tên tham số | Vị trí | Kiểu | Bắt buộc | Mô tả |
 |---|---|---|---|---|
-| `keyword` | query | string | 否 | — |
+| `keyword` | query | string | Không | — |
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |

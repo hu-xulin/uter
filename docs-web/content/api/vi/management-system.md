@@ -1,164 +1,164 @@
-# system
+# Hệ thống (system)
 
-## Get About Information
+## Lấy thông tin giới thiệu (Get About Information)
 
-🔓 无需鉴权
+🔓 Không cần xác thực
 
 `GET` `/api/about`
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Get Home Page Content
+## Lấy nội dung trang chủ (Get Home Page Content)
 
-🔓 无需鉴权
+🔓 Không cần xác thực
 
 `GET` `/api/home_page_content`
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Get Model List
+## Lấy danh sách mô hình (Get Model List)
 
-🔐 需要登录（User权限）
+🔐 Yêu cầu đăng nhập (quyền User)
 
 `GET` `/api/models`
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Get Announcements
+## Lấy thông báo (Get Announcements)
 
-🔓 无需鉴权
+🔓 Không cần xác thực
 
 `GET` `/api/notice`
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Get Pricing Information
+## Lấy thông tin giá (Get Pricing Information)
 
-🔓 无需鉴权（可选登录）
+🔓 Không cần xác thực (có thể đăng nhập tùy chọn)
 
 `GET` `/api/pricing`
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Get Privacy Policy
+## Lấy chính sách bảo mật (Get Privacy Policy)
 
-🔓 无需鉴权
+🔓 Không cần xác thực
 
 `GET` `/api/privacy-policy`
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Get Ratio Configuration
+## Lấy cấu hình tỷ lệ (Get Ratio Configuration)
 
-🔓 无需鉴权
+🔓 Không cần xác thực
 
 `GET` `/api/ratio_config`
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Get Initialization Status
+## Lấy trạng thái khởi tạo (Get Initialization Status)
 
-🔓 无需鉴权
+🔓 Không cần xác thực
 
 `GET` `/api/setup`
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Initialize System
+## Khởi tạo hệ thống (Initialize System)
 
-🔓 无需鉴权
+🔓 Không cần xác thực
 
 `POST` `/api/setup`
 
-### 请求体（`application/json`）
+### Thân yêu cầu (`application/json`)
 
-| 字段 | 类型 | 必填 | 说明 |
+| Trường | Kiểu | Bắt buộc | Mô tả |
 |---|---|---|---|
-| `username` | string | 否 | — |
-| `password` | string | 否 | — |
+| `username` | string | Không | — |
+| `password` | string | Không | — |
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Get System Status
+## Lấy trạng thái hệ thống (Get System Status)
 
-🔓 无需鉴权
+🔓 Không cần xác thực
 
 `GET` `/api/status`
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Test System Status
+## Kiểm tra trạng thái hệ thống (Test System Status)
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 Yêu cầu quyền quản trị viên (Admin)
 
 `GET` `/api/status/test`
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Get Uptime Kuma Status
+## Lấy trạng thái Uptime Kuma (Get Uptime Kuma Status)
 
-🔓 无需鉴权
+🔓 Không cần xác thực
 
 `GET` `/api/uptime/status`
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Get User Agreement
+## Lấy thỏa thuận người dùng (Get User Agreement)
 
-🔓 无需鉴权
+🔓 Không cần xác thực
 
 `GET` `/api/user-agreement`
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |

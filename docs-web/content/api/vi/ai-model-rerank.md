@@ -1,30 +1,30 @@
-# Document Reranking
+# Tái xếp hạng tài liệu (Document Reranking)
 
-## Document Reranking
+## Tái xếp hạng tài liệu
 
-根据查询对文档列表进行相关性重排序
+Sắp xếp lại mức độ liên quan của danh sách tài liệu dựa trên truy vấn.
 
 `POST` `/v1/rerank`
 
-### 请求体（`application/json`）
+### Thân yêu cầu (`application/json`)
 
-| 字段 | 类型 | 必填 | 说明 |
+| Trường | Kiểu | Bắt buộc | Mô tả |
 |---|---|---|---|
-| `model` | string | 是 | — |
-| `query` | string | 是 | 查询文本 |
-| `documents` | array&lt;string&gt; | 是 | 要重排序的文档列表 |
-| `top_n` | integer | 否 | 返回前 N 个结果 |
-| `return_documents` | boolean | 否 | — |
+| `model` | string | Có | — |
+| `query` | string | Có | Văn bản truy vấn |
+| `documents` | array&lt;string&gt; | Có | Danh sách tài liệu cần sắp xếp lại |
+| `top_n` | integer | Không | Trả về N kết quả đầu tiên |
+| `return_documents` | boolean | Không | — |
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功重排序 |
+| `200` | Sắp xếp lại thành công |
 
-#### `200` 响应字段
+#### Trường phản hồi `200`
 
-| 字段 | 类型 | 说明 |
+| Trường | Kiểu | Mô tả |
 |---|---|---|
 | `id` | string | — |
 | `results` | array&lt;object&gt; | — |

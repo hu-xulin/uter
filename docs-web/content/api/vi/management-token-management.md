@@ -1,134 +1,134 @@
-# token-management
+# Quản lý token (token-management)
 
-## Batch Delete Tokens
+## Xóa token hàng loạt (Batch Delete Tokens)
 
-🔐 需要登录（User权限）
+🔐 Yêu cầu đăng nhập (quyền User)
 
 `POST` `/api/token/batch`
 
-### 请求体（`application/json`）
+### Thân yêu cầu (`application/json`)
 
-| 字段 | 类型 | 必填 | 说明 |
+| Trường | Kiểu | Bắt buộc | Mô tả |
 |---|---|---|---|
-| `ids` | array&lt;integer&gt; | 否 | — |
+| `ids` | array&lt;integer&gt; | Không | — |
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Get All Tokens
+## Lấy tất cả token (Get All Tokens)
 
-🔐 需要登录（User权限）
+🔐 Yêu cầu đăng nhập (quyền User)
 
 `GET` `/api/token/`
 
-### 请求参数
+### Tham số yêu cầu
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| Tên tham số | Vị trí | Kiểu | Bắt buộc | Mô tả |
 |---|---|---|---|---|
-| `p` | query | integer | 否 | — |
-| `page_size` | query | integer | 否 | — |
+| `p` | query | integer | Không | — |
+| `page_size` | query | integer | Không | — |
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Delete Token
+## Xóa token (Delete Token)
 
-🔐 需要登录（User权限）
+🔐 Yêu cầu đăng nhập (quyền User)
 
 `DELETE` `/api/token/{id}`
 
-### 请求参数
+### Tham số yêu cầu
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| Tên tham số | Vị trí | Kiểu | Bắt buộc | Mô tả |
 |---|---|---|---|---|
-| `id` | path | integer | 是 | — |
+| `id` | path | integer | Có | — |
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Get Specified Token
+## Lấy token được chỉ định (Get Specified Token)
 
-🔐 需要登录（User权限）
+🔐 Yêu cầu đăng nhập (quyền User)
 
 `GET` `/api/token/{id}`
 
-### 请求参数
+### Tham số yêu cầu
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| Tên tham số | Vị trí | Kiểu | Bắt buộc | Mô tả |
 |---|---|---|---|---|
-| `id` | path | integer | 是 | — |
+| `id` | path | integer | Có | — |
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Create Token
+## Tạo token (Create Token)
 
-🔐 需要登录（User权限）
+🔐 Yêu cầu đăng nhập (quyền User)
 
 `POST` `/api/token/`
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Update Token
+## Cập nhật token (Update Token)
 
-🔐 需要登录（User权限）
+🔐 Yêu cầu đăng nhập (quyền User)
 
 `PUT` `/api/token/`
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Search Tokens
+## Tìm kiếm token (Search Tokens)
 
-🔐 需要登录（User权限）
+🔐 Yêu cầu đăng nhập (quyền User)
 
 `GET` `/api/token/search`
 
-### 请求参数
+### Tham số yêu cầu
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| Tên tham số | Vị trí | Kiểu | Bắt buộc | Mô tả |
 |---|---|---|---|---|
-| `keyword` | query | string | 否 | — |
+| `keyword` | query | string | Không | — |
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Get Token Usage
+## Lấy lượt sử dụng token (Get Token Usage)
 
-🔑 需要令牌认证（TokenAuth）
+🔑 Yêu cầu xác thực bằng token (TokenAuth)
 
 `GET` `/api/usage/token/`
 
-### 请求参数
+### Tham số yêu cầu
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| Tên tham số | Vị trí | Kiểu | Bắt buộc | Mô tả |
 |---|---|---|---|---|
-| `Authorization` | header | string | 否 | — |
+| `Authorization` | header | string | Không | — |
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |

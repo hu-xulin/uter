@@ -1,188 +1,188 @@
-# Google Veo Format
+# 谷歌Veo格式
 
-Google Veo 3.1 video generation: call the full Veo 3.1 model family through an asynchronous task API, supporting text-to-video and image-to-video with optional synchronised audio (up to 4K output).
+Google Veo 3.1 影片生成：透過非同步任務介面呼叫 Veo 3.1 全系列模型，支援文生影片、圖生影片，可選生成同步音訊（最高 4K 輸出）。
 
-## Supported Models
+## 支援的模型
 
-All three models share a single endpoint and are distinguished only by the `model` field. Every model supports text-to-video and image-to-video, with optional audio generation.
+3 個模型統一使用同一介面路徑，僅透過 `model` 欄位區分。所有模型均支援文生影片與圖生影片，均可選擇是否生成音訊。
 
-| Model ID | Version | Highlights | Best for |
+| 模型 ID | 版本 | 特點 | 適用場景 |
 |---|---|---|---|
-| `veo-3.1-generate-001` | Veo 3.1 | Highest quality, 4K, native audio | High-quality creative and commercial work |
-| `veo-3.1-fast-generate-001` | Veo 3.1 Fast | Faster, balanced quality | Rapid iteration, batch generation |
-| `veo-3.1-lite-generate-001` | Veo 3.1 Lite | Fastest, lowest cost | Prototyping, cost-sensitive cases |
+| `veo-3.1-generate-001` | Veo 3.1 | 最高畫質，支援 4K，原生音訊 | 高質量創意內容、商業製作 |
+| `veo-3.1-fast-generate-001` | Veo 3.1 Fast | 更快速度，均衡畫質 | 快速迭代、批次生成 |
+| `veo-3.1-lite-generate-001` | Veo 3.1 Lite | 最快速度，最低成本 | 原型驗證、低成本場景 |
 
-## Create Video
+## 建立影片
 
 `POST` `/v1/video/generations`
 
-### Request Headers
+### 請求頭
 
-| Header | Required | Description |
+| Header | 必填 | 說明 |
 |---|---|---|
-| `Authorization` | Yes | `Bearer sk-your-api-key` |
-| `Content-Type` | Yes | `application/json` |
+| `Authorization` | 是 | `Bearer sk-你的APIKey` |
+| `Content-Type` | 是 | `application/json` |
 
-### Request Body (`application/json`)
+### 請求體（`application/json`）
 
-| Field | Type | Required | Description |
+| 欄位 | 型別 | 必填 | 說明 |
 |---|---|---|---|
-| `model` | string | Yes | Veo 3.1 model ID, see the table above |
-| `prompt` | string | Yes | Video prompt; Chinese and English supported, English recommended for best results |
-| `size` | string | No | Resolution: `720p` / `1080p` / `4000` (4K, only some models), default `1080p` |
-| `resolution` | string | No | Same as `size` (recommended, matches upstream; wins when both are set) |
-| `duration` | int | No | Length in seconds: `4` / `6` / `8`, default `8` |
-| `seconds` | string | No | String form of `duration` (for OpenAI Sora API compatibility) |
-| `aspect_ratio` | string | No | Aspect ratio: `16:9` / `9:16`, default `16:9` |
-| `generate_audio` | bool | No | Generate synchronised audio (speech, effects, ambience). **Default `true`**; set explicitly to `false` to save cost |
-| `negative_prompt` | string | No | Negative prompt describing what to avoid |
-| `image` | string | No | i2v first-frame image; HTTP(S) URL / data URI / raw base64 |
-| `images` | string[] | No | i2v first-frame array; only `images[0]` is used, and `image` wins if both are sent |
-| `last_frame_image` | string | No | Last-frame image (with `image` / `images[0]` → first+last-frame interpolation, Veo 3.1 exclusive). Same format as `image` |
-| `reference_images` | string[] | No | Asset reference images, up to 3; submitted upstream as `referenceType="asset"`. **Mutually exclusive with `image` / `last_frame_image`**, and only supported for `duration=8` |
-| `metadata` | object | No | Veo native parameters container, see "metadata Advanced Parameters" |
+| `model` | string | 是 | Veo 3.1 模型 ID，見上表 |
+| `prompt` | string | 是 | 影片描述提示詞，支援中英文，建議英文獲得最佳效果 |
+| `size` | string | 否 | 解析度：`720p` / `1080p` / `4000`（4K，部分模型支援），預設 `1080p` |
+| `resolution` | string | 否 | 同 `size`（推薦使用，與上游一致；兩者並存時以本欄位為準） |
+| `duration` | int | 否 | 影片時長（秒），可選 `4` / `6` / `8`，預設 `8` |
+| `seconds` | string | 否 | `duration` 的字串形式（相容 OpenAI Sora API） |
+| `aspect_ratio` | string | 否 | 寬高比，可選 `16:9` / `9:16`，預設 `16:9` |
+| `generate_audio` | bool | 否 | 是否生成同步音訊（語音、音效、背景音），**預設 `true`**（如不需要音訊，強烈建議明確設為 `false` 以節省費用） |
+| `negative_prompt` | string | 否 | 負向提示詞，描述不希望出現的內容 |
+| `image` | string | 否 | 圖生影片首幀圖，支援 HTTP(S) URL / data URI / raw base64 |
+| `images` | string[] | 否 | 圖生影片首幀圖陣列，僅 `images[0]` 生效；與 `image` 同時傳時 `image` 優先 |
+| `last_frame_image` | string | 否 | 尾幀圖（與 `image` / `images[0]` 配合 → 首+尾幀插值生成過渡動畫，Veo 3.1 專屬）。格式同 `image` |
+| `reference_images` | string[] | 否 | 資產參考圖陣列，最多 3 張；後臺會以 `referenceType="asset"` 遞交上游。**與 `image` / `last_frame_image` 互斥**，僅支援 `duration=8` |
+| `metadata` | object | 否 | Veo 原生引數容器，見「metadata 高階引數」 |
 
-> Top-level snake_case fields such as `generate_audio` / `negative_prompt` / `aspect_ratio` are automatically mapped to upstream camelCase parameters. You may also place them inside `metadata` (snake_case or camelCase), which is equivalent to the top level.
+> 頂層 `generate_audio` / `negative_prompt` / `aspect_ratio` 等 snake_case 欄位會被自動對映到上游 Veo 的 camelCase 引數；也可將它們放到 `metadata` 內（snake_case 與 camelCase 均可），與頂層等價。
 >
-> `generate_audio: true` significantly increases cost (roughly 2×). As the billing default is `true`, set `generate_audio: false` explicitly when audio is not needed.
+> `generate_audio: true` 會顯著提高費用（約 2 倍）。計費預設值為 `true`，如不需要音訊請明確設定 `generate_audio: false`。
 
-### Response
+### 響應
 
-| Status | Description |
+| 狀態碼 | 說明 |
 |---|---|
-| `200` | Video task created successfully |
-| `400` | Invalid request parameters |
+| `200` | 成功建立影片任務 |
+| `400` | 請求引數錯誤 |
 
-#### `200` Response Fields
+#### `200` 響應欄位
 
-| Field | Type | Description |
+| 欄位 | 型別 | 說明 |
 |---|---|---|
-| `id` / `task_id` | string | Public task ID (`task_` prefix) used for subsequent queries |
-| `object` | string | Object type (`video`) |
-| `model` | string | Model used |
-| `status` | string | Task status (`queued` right after submission) |
-| `progress` | integer | Progress percentage |
-| `created_at` | integer | Creation timestamp |
+| `id` / `task_id` | string | 公開任務 ID（`task_` 字首），用於後續查詢 |
+| `object` | string | 物件型別（`video`） |
+| `model` | string | 使用的模型 |
+| `status` | string | 任務狀態（提交後為 `queued`） |
+| `progress` | integer | 進度百分比 |
+| `created_at` | integer | 建立時間戳 |
 
-## Get Video Task Status
+## 獲取影片任務狀態
 
 `GET` `/v1/video/generations/{task_id}`
 
-The response uses Uter's unified `{code, message, data}` envelope.
+響應採用優特智慧統一的 `{code, message, data}` 包裝格式。
 
-### Request Parameters
+### 請求引數
 
-| Name | In | Type | Required | Description |
+| 引數名 | 位置 | 型別 | 必填 | 說明 |
 |---|---|---|---|---|
-| `task_id` | path | string | Yes | Video task ID |
+| `task_id` | path | string | 是 | 影片任務 ID |
 
-### Response
+### 響應
 
-| Status | Description |
+| 狀態碼 | 說明 |
 |---|---|
-| `200` | Task status retrieved successfully |
-| `404` | Task not found |
+| `200` | 成功獲取影片任務狀態 |
+| `404` | 任務不存在 |
 
-#### `200` Response Fields (`data`)
+#### `200` 響應欄位（`data`）
 
-| Field | Type | Description |
+| 欄位 | 型別 | 說明 |
 |---|---|---|
-| `data.task_id` | string | Task ID |
-| `data.status` | string | Task status: `queued` / `processing` / `succeeded` / `failed` |
-| `data.error` | string / null | Failure reason; `null` on success |
-| `data.format` | string / null | Output format (e.g. `mp4`); `null` while processing or on failure |
-| `data.metadata` | object / null | Additional metadata |
-| `data.url` | string / null | Video download URL; `null` while processing or on failure (temporary signed link, valid 24 hours) |
+| `data.task_id` | string | 任務 ID |
+| `data.status` | string | 任務狀態：`queued` / `processing` / `succeeded` / `failed` |
+| `data.error` | string / null | 失敗原因，成功時為 `null` |
+| `data.format` | string / null | 輸出格式（如 `mp4`），處理中或失敗時為 `null` |
+| `data.metadata` | object / null | 附加後設資料 |
+| `data.url` | string / null | 影片下載地址，處理中或失敗時為 `null`（臨時簽名連結，24 小時有效） |
 
-#### Status Enum
+#### 狀態列舉
 
-| Status | Description |
+| 狀態 | 說明 |
 |---|---|
-| `queued` | Submitted, awaiting processing |
-| `processing` | Generating |
-| `succeeded` | Completed; `data.url` holds the download address |
-| `failed` | Failed; `data.error` explains why |
+| `queued` | 已提交，等待處理 |
+| `processing` | 生成中 |
+| `succeeded` | 已完成，`data.url` 為影片下載地址 |
+| `failed` | 生成失敗，`data.error` 為原因 |
 
-## Image Input Formats
+## 圖片輸入格式
 
-`image` / `images[0]` accept the following three formats; Uter detects and converts them to the inline base64 that Veo expects:
+`image` / `images[0]` 均支援以下三種格式，優特智慧會自動識別並轉換為 Veo 上游所需的內聯 base64：
 
-| Format | Example | Description |
+| 格式 | 示例 | 說明 |
 |---|---|---|
-| HTTP(S) URL | `https://example.com/foo.png` | Downloaded and base64-encoded by the backend; the URL must be publicly reachable and unexpired |
-| data URI | `data:image/png;base64,iVBOR...` | Inline data passed through directly; no network needed |
-| raw base64 | `iVBORw0KGgo...` (no prefix) | Bare base64; MIME type is sniffed automatically |
+| HTTP(S) URL | `https://example.com/foo.png` | 後端同步下載並 base64 編碼後轉發；URL 必須公網可達且未過期 |
+| data URI | `data:image/png;base64,iVBOR...` | 直接透傳內聯資料，無需聯網 |
+| raw base64 | `iVBORw0KGgo...`（不含字首） | 無字首純 base64，自動嗅探 MIME 型別 |
 
-Limits: decoded size ≤ **20 MB**; URL download timeout **30 seconds**; parse failures (unreachable URL / too large / invalid base64) return `400 parse images[0] failed: ...` with **no charge**. Native `gs://` GCS URIs are not supported; use `https://storage.googleapis.com/...` instead.
+限制：單張圖片解碼後 ≤ **20 MB**；URL 形式下載超時 **30 秒**；解析失敗（URL 不可達 / 超大 / base64 非法）返回 `400 parse images[0] failed: ...`，**不會扣費**。`gs://` 形式的 GCS 原生 URI 暫不支援，請改用 `https://storage.googleapis.com/...`。
 
-## metadata Advanced Parameters
+## metadata 高階引數
 
-`metadata` is a Veo-native parameter container for advanced options not present in the OpenAI style. All top-level fields may also be placed inside `metadata` (snake_case or camelCase).
+`metadata` 是 Veo 原生引數容器，可放置 OpenAI 風格中沒有的高階引數。所有頂層欄位也可放到 `metadata` 內（snake_case 與 camelCase 均可）。
 
-| Field | Type | Description |
+| 欄位 | 型別 | 說明 |
 |---|---|---|
-| `seed` | int | Random seed (recommended location) |
-| `personGeneration` / `person_generation` | string | Person generation policy: `allow_all` / `allow_adult` / `dont_allow` |
-| `storageUri` / `storage_uri` | string | Write the result directly to a GCS bucket path (vertex channel only; requires permissions) |
-| `compressionQuality` / `compression_quality` | string | Compression quality: `optimized` (default) / `lossless` |
-| `resizeMode` / `resize_mode` | string | i2v resize mode: `crop` / `fit` |
-| `sampleCount` / `sample_count` | int | Number of videos per request; **currently fixed at 1**, any value is overridden |
+| `seed` | int | 隨機種子（推薦放這裡） |
+| `personGeneration` / `person_generation` | string | 人物生成策略：`allow_all` / `allow_adult` / `dont_allow` |
+| `storageUri` / `storage_uri` | string | 直接把生成結果寫入指定 GCS 桶路徑（僅 vertex 渠道，需要許可權） |
+| `compressionQuality` / `compression_quality` | string | 壓縮質量：`optimized`（預設）/ `lossless` |
+| `resizeMode` / `resize_mode` | string | 圖生影片縮放策略：`crop` / `fit` |
+| `sampleCount` / `sample_count` | int | 一次生成幾條影片，**當前固定為 1**，傳入會被覆蓋 |
 
-> Precedence: camelCase already in metadata > snake_case in metadata > top-level fields.
+> 優先順序：metadata 內已有的 camelCase > metadata 內的 snake_case > 頂層欄位。
 
-## Model Comparison
+## 模型對比
 
-| Item | Veo 3.1 | Veo 3.1 Fast | Veo 3.1 Lite |
+| 對比項 | Veo 3.1 | Veo 3.1 Fast | Veo 3.1 Lite |
 |---|---|---|---|
-| **Model ID** | `veo-3.1-generate-001` | `veo-3.1-fast-generate-001` | `veo-3.1-lite-generate-001` |
-| **Quality** | Highest | Balanced | Basic |
-| **Speed (measured, 8s video)** | 90–130 s | 75–105 s | 50–80 s |
-| **Max resolution** | 4K | 1080p | 1080p |
-| **Audio support** | ✓ | ✓ | ✓ |
-| **Image-to-video** | ✓ | ✓ | ✓ |
+| **模型 ID** | `veo-3.1-generate-001` | `veo-3.1-fast-generate-001` | `veo-3.1-lite-generate-001` |
+| **畫質** | 最高 | 均衡 | 基礎 |
+| **速度（實測 8s 影片）** | 90~130 秒 | 75~105 秒 | 50~80 秒 |
+| **最高解析度** | 4K | 1080p | 1080p |
+| **音訊支援** | ✓ | ✓ | ✓ |
+| **圖生影片** | ✓ | ✓ | ✓ |
 
-## OpenAI-Compatible Endpoint
+## OpenAI 相容介面
 
-Besides `/v1/video/generations`, an OpenAI-style `/v1/videos` endpoint is available; the two are fully equivalent.
+除 `/v1/video/generations` 外，也支援 OpenAI 風格的 `/v1/videos` 介面，兩者完全等價。
 
-- Submit: `POST` `/v1/videos` (identical body fields)
-- Query: `GET` `/v1/videos/{task_id}` (returns the flat OpenAI format)
+- 提交：`POST` `/v1/videos`（請求體欄位相同）
+- 查詢：`GET` `/v1/videos/{task_id}`（返回 OpenAI 扁平格式）
 
-> The OpenAI-compatible query response does not include the video URL. To obtain the download address, use `/v1/video/generations/{task_id}` and read `data.url`.
+> OpenAI 相容介面的查詢響應不包含影片 URL。如需獲取下載地址，請使用 `/v1/video/generations/{task_id}` 介面，從 `data.url` 獲取。
 
-## Billing
+## 計費說明
 
 ```
 quota = modelPrice × QuotaPerUnit × groupRatio × pricingRatio × seconds
 
 QuotaPerUnit = 500,000
-groupRatio   = 1.0 (production default group)
+groupRatio   = 1.0（生产 default 组）
 ```
 
-### Video only (`generate_audio: false`)
+### 純影片（`generate_audio: false`）
 
-| Model | 720p | 1080p | 4K |
+| 模型 | 720p | 1080p | 4K |
 |---|---|---|---|
-| `veo-3.1-generate-001` | $0.20 / s | $0.20 / s | $0.40 / s |
-| `veo-3.1-fast-generate-001` | $0.08 / s | $0.10 / s | $0.25 / s |
-| `veo-3.1-lite-generate-001` | $0.03 / s | $0.05 / s | — |
+| `veo-3.1-generate-001` | $0.20 / 秒 | $0.20 / 秒 | $0.40 / 秒 |
+| `veo-3.1-fast-generate-001` | $0.08 / 秒 | $0.10 / 秒 | $0.25 / 秒 |
+| `veo-3.1-lite-generate-001` | $0.03 / 秒 | $0.05 / 秒 | — |
 
-### Video + audio (`generate_audio: true`)
+### 影片 + 音訊（`generate_audio: true`）
 
-| Model | 720p | 1080p | 4K |
+| 模型 | 720p | 1080p | 4K |
 |---|---|---|---|
-| `veo-3.1-generate-001` | $0.40 / s | $0.40 / s | $0.60 / s |
-| `veo-3.1-fast-generate-001` | $0.10 / s | $0.12 / s | $0.30 / s |
-| `veo-3.1-lite-generate-001` | $0.05 / s | $0.08 / s | — |
+| `veo-3.1-generate-001` | $0.40 / 秒 | $0.40 / 秒 | $0.60 / 秒 |
+| `veo-3.1-fast-generate-001` | $0.10 / 秒 | $0.12 / 秒 | $0.30 / 秒 |
+| `veo-3.1-lite-generate-001` | $0.05 / 秒 | $0.08 / 秒 | — |
 
-On `failed`, Uter refunds automatically.
+任務失敗（`failed`）時優特智慧會自動退款。
 
-## Full Example
+## 完整呼叫示例
 
 ```bash
-# Text-to-video
+# 文生视频
 curl -X POST https://uter.ai/v1/video/generations \
-  -H "Authorization: Bearer sk-your-api-key" \
+  -H "Authorization: Bearer sk-你的APIKey" \
   -H "Content-Type: application/json" \
   -d '{
     "model": "veo-3.1-generate-001",
@@ -192,19 +192,20 @@ curl -X POST https://uter.ai/v1/video/generations \
     "aspect_ratio": "16:9"
   }'
 
-# Poll (every 10~15 seconds)
+# 轮询（建议间隔 10~15 秒）
 curl https://uter.ai/v1/video/generations/task_xxx \
-  -H "Authorization: Bearer sk-your-api-key"
+  -H "Authorization: Bearer sk-你的APIKey"
 
-# Once data.status == "succeeded", download from data.url
+# data.status == "succeeded" 后下载视频（data.url）
 curl -o output.mp4 "https://uter.ai/v1/videos/task_xxx/content"
 ```
 
-First+last-frame interpolation (Veo 3.1 exclusive):
+首+尾幀插值（Veo 3.1 專屬）與資產參考圖：
 
 ```bash
+# 首+尾帧插值
 curl -X POST https://uter.ai/v1/video/generations \
-  -H "Authorization: Bearer sk-your-api-key" \
+  -H "Authorization: Bearer sk-你的APIKey" \
   -H "Content-Type: application/json" \
   -d '{
     "model": "veo-3.1-generate-001",
@@ -217,17 +218,17 @@ curl -X POST https://uter.ai/v1/video/generations \
   }'
 ```
 
-- `reference_images` cannot be combined with `image` / `images` / `last_frame_image`, otherwise `400 reference_images is mutually exclusive ...` is returned.
-- `reference_images` accepts at most 3 entries; more returns `400 reference_images supports at most 3 entries`.
-- `reference_images` is only supported for `duration=8`.
+- `reference_images` 不能與 `image` / `images` / `last_frame_image` 同時使用，否則返回 `400 reference_images is mutually exclusive ...`。
+- `reference_images` 最多 3 張，超過返回 `400 reference_images supports at most 3 entries`。
+- `reference_images` 僅支援 `duration=8`。
 
-## Status Codes and Errors
+## 狀態碼與錯誤
 
-| Status | Reason | Action |
+| 狀態碼 | 原因 | 處理 |
 |---|---|---|
-| `400` | Parameter error (missing `prompt`, invalid `duration`, or image parse failure `parse images[0] failed: ...`) | Check the request body fields |
-| `401` | API key invalid or expired | Check the `Authorization` header |
-| `403` | API key not allowed to access this model | Check the token model whitelist |
-| `402` | Insufficient balance | Top up in the Uter console |
+| `400` | 引數錯誤（缺少 `prompt`、非法 `duration` 值，或圖片解析失敗 `parse images[0] failed: ...`） | 檢查請求體欄位 |
+| `401` | API Key 無效或過期 | 檢查 `Authorization` 頭 |
+| `403` | API Key 無權訪問此模型 | 檢查 token 模型白名單 |
+| `402` | 餘額不足 | 前往優特智慧控制檯充值 |
 
-Common `failed` causes: content safety rejection (adjust the prompt; add `negative_prompt`), unreachable image URL, `duration` out of range, or 4K requested on the Lite model.
+任務 `failed` 常見原因：內容安全策略攔截（調整 prompt，可加 `negative_prompt`）、圖片 URL 無法訪問、`duration` 不在支援範圍、Lite 模型不支援 4K。

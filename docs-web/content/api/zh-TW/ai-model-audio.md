@@ -1,34 +1,34 @@
-# Native Gemini Format
+# 音訊（Audio）
 
-## Native Gemini Format
+## 原生Gemini格式
 
-Gemini 音频生成接口。
+Gemini 音訊生成介面。
 可使用gemini-2.5-flash-preview-tts等模型
 
 `POST` `/v1beta/models/{model}:generateContent`
 
-### 请求参数
+### 請求引數
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| 引數名 | 位置 | 型別 | 必填 | 說明 |
 |---|---|---|---|---|
-| `model` | path | string | 是 | 模型名称 |
+| `model` | path | string | 是 | 模型名稱 |
 
-### 请求体（`application/json`）
+### 請求體（`application/json`）
 
-| 字段 | 类型 | 必填 | 说明 |
+| 欄位 | 型別 | 必填 | 說明 |
 |---|---|---|---|
 | `contents` | array&lt;object&gt; | 是 | — |
 | `generationConfig.responseModalities` | array&lt;string&gt; | 否 | — |
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |
 
-#### `200` 响应字段
+#### `200` 響應欄位
 
-| 字段 | 类型 | 说明 |
+| 欄位 | 型別 | 說明 |
 |---|---|---|
 | `candidates` | array&lt;object&gt; | — |
 | `usageMetadata.promptTokenCount` | integer | — |

@@ -1,81 +1,81 @@
-# openai
+# OpenAI
 
-## Text-to-Speech
+## Chuyển văn bản thành giọng nói (Text-to-Speech)
 
-将文本转换为音频
+Chuyển đổi văn bản thành âm thanh.
 
 `POST` `/v1/audio/speech`
 
-### 请求体（`application/json`）
+### Thân yêu cầu (`application/json`)
 
-| 字段 | 类型 | 必填 | 说明 |
+| Trường | Kiểu | Bắt buộc | Mô tả |
 |---|---|---|---|
-| `model` | string | 是 | — |
-| `input` | string | 是 | 要转换的文本 |
-| `voice` | enum（`alloy`, `echo`, `fable`, `onyx`, `nova`, `shimmer`） | 是 | — |
-| `response_format` | enum（`mp3`, `opus`, `aac`, `flac`, `wav`, `pcm`） | 否 | — |
-| `speed` | number | 否 | — |
+| `model` | string | Có | — |
+| `input` | string | Có | Văn bản cần chuyển đổi |
+| `voice` | enum (`alloy`, `echo`, `fable`, `onyx`, `nova`, `shimmer`) | Có | — |
+| `response_format` | enum (`mp3`, `opus`, `aac`, `flac`, `wav`, `pcm`) | Không | — |
+| `speed` | number | Không | — |
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功生成音频 |
+| `200` | Tạo âm thanh thành công |
 
-## Audio Transcriptions
+## Chuyển âm thanh thành văn bản (Audio Transcriptions)
 
-将音频转换为文本
+Chuyển đổi âm thanh thành văn bản.
 
 `POST` `/v1/audio/transcriptions`
 
-### 请求体（`multipart/form-data`）
+### Thân yêu cầu (`multipart/form-data`)
 
-| 字段 | 类型 | 必填 | 说明 |
+| Trường | Kiểu | Bắt buộc | Mô tả |
 |---|---|---|---|
-| `file` | string（binary） | 是 | 音频文件 |
-| `model` | string | 是 | — |
-| `language` | string | 否 | ISO-639-1 语言代码 |
-| `prompt` | string | 否 | — |
-| `response_format` | enum（`json`, `text`, `srt`, `verbose_json`, `vtt`） | 否 | — |
-| `temperature` | number | 否 | — |
-| `timestamp_granularities` | array&lt;enum（`word`, `segment`）&gt; | 否 | — |
+| `file` | string (binary) | Có | Tệp âm thanh |
+| `model` | string | Có | — |
+| `language` | string | Không | Mã ngôn ngữ ISO-639-1 |
+| `prompt` | string | Không | — |
+| `response_format` | enum (`json`, `text`, `srt`, `verbose_json`, `vtt`) | Không | — |
+| `temperature` | number | Không | — |
+| `timestamp_granularities` | array&lt;enum (`word`, `segment`)&gt; | Không | — |
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功转录 |
+| `200` | Chuyển đổi thành công |
 
-#### `200` 响应字段
+#### Trường phản hồi `200`
 
-| 字段 | 类型 | 说明 |
+| Trường | Kiểu | Mô tả |
 |---|---|---|
 | `text` | string | — |
 
-## Audio Translation
+## Dịch âm thanh (Audio Translation)
 
-将音频翻译为英文文本
+Dịch âm thanh thành văn bản tiếng Anh.
 
 `POST` `/v1/audio/translations`
 
-### 请求体（`multipart/form-data`）
+### Thân yêu cầu (`multipart/form-data`)
 
-| 字段 | 类型 | 必填 | 说明 |
+| Trường | Kiểu | Bắt buộc | Mô tả |
 |---|---|---|---|
-| `file` | string（binary） | 是 | — |
-| `model` | string | 是 | — |
-| `prompt` | string | 否 | — |
-| `response_format` | string | 否 | — |
-| `temperature` | number | 否 | — |
+| `file` | string (binary) | Có | — |
+| `model` | string | Có | — |
+| `prompt` | string | Không | — |
+| `response_format` | string | Không | — |
+| `temperature` | number | Không | — |
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功翻译 |
+| `200` | Dịch thành công |
 
-#### `200` 响应字段
+#### Trường phản hồi `200`
 
-| 字段 | 类型 | 说明 |
+| Trường | Kiểu | Mô tả |
 |---|---|---|
 | `text` | string | — |

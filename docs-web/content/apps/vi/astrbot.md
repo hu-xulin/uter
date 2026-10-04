@@ -1,45 +1,45 @@
-# AstrBot - Agent Chatbot
+# AstrBot - Chatbot tác nhân
 
-> AstrBot is an open-source, all-in-one Agent chatbot platform that seamlessly integrates large language model capabilities into mainstream instant messaging software such as QQ, Feishu, DingTalk, and WeChat Work, creating a reliable and scalable conversational AI infrastructure for individuals, developers, and teams. Whether it's a personal AI companion, intelligent customer service, automation assistant, or enterprise knowledge base, AstrBot can quickly build production-ready AI applications within your instant messaging platform's workflow.
+> AstrBot là một nền tảng chatbot tác nhân mã nguồn mở, tất cả trong một, tích hợp liền mạch năng lực của các mô hình ngôn ngữ lớn vào phần mềm nhắn tin tức thời phổ biến như QQ, Feishu, DingTalk và WeChat Work, tạo ra một cơ sở hạ tầng trò chuyện AI đáng tin cậy và có khả năng mở rộng cho cá nhân, nhà phát triển và đội ngũ. Dù là bạn đồng hành AI cá nhân, dịch vụ khách hàng thông minh, trợ lý tự động hóa hay cơ sở kiến thức doanh nghiệp, AstrBot đều có thể nhanh chóng xây dựng các ứng dụng AI sẵn sàng sản xuất trong quy trình làm việc của nền tảng nhắn tin tức thời của bạn.
 
-- Official Website: [https://astrbot.app](https://astrbot.app)
-- Official Documentation: [https://docs.astrbot.app](https://docs.astrbot.app)
-- Project Homepage: [https://github.com/astrbotdevs/astrbot](https://github.com/astrbotdevs/astrbot)
+- Trang chủ: [https://astrbot.app](https://astrbot.app)
+- Tài liệu chính thức: [https://docs.astrbot.app](https://docs.astrbot.app)
+- Trang dự án: [https://github.com/astrbotdevs/astrbot](https://github.com/astrbotdevs/astrbot)
 
-## Uter Integration Method
+## Phương thức tích hợp Uter
 
-AstrBot supports integrating Uter as a model provider, allowing users to access and utilize various AI model services through Uter.
+AstrBot hỗ trợ tích hợp Uter như một nhà cung cấp mô hình, cho phép người dùng truy cập và sử dụng nhiều dịch vụ mô hình AI thông qua Uter.
 
-### Configuration Steps
+### Các bước cấu hình
 
-#### Obtain Uter API Key
+#### Lấy API Key của Uter
 
-After registering and logging into Uter, click 'Console' in the top navigation bar, then click 'Token Management', and then click the 'Add Token' button to create a uter Key. Select the appropriate permissions and click 'Create'.
+Sau khi đăng ký và đăng nhập Uter, nhấn 'Console' trên thanh điều hướng trên cùng, sau đó nhấn 'Token Management', rồi nhấn nút 'Add Token' để tạo một Key uter. Chọn quyền hạn phù hợp và nhấn 'Create'.
 
-![create-api-key](/apps-assets/astrbot/image.webp)
+![tạo-api-key](/apps-assets/astrbot/image.webp)
 
-After successful creation, click the 'Copy Key' button to copy the generated API Key.
+Sau khi tạo thành công, nhấn nút 'Copy Key' để sao chép API Key đã tạo.
 
-![copy-api-key](/apps-assets/astrbot/image-1.webp)
+![sao-chép-api-key](/apps-assets/astrbot/image-1.webp)
 
-#### Configure Uter Service Provider in AstrBot
+#### Cấu hình nhà cung cấp dịch vụ Uter trong AstrBot
 
-Open the AstrBot administration panel, go to the 'Model Providers' page, then click the 'Add Model Provider' button.
+Mở bảng quản trị AstrBot, đi tới trang 'Model Providers', sau đó nhấn nút 'Add Model Provider'.
 
-Uter perfectly supports OpenAI Chat Completion and Responses interfaces. Click 'OpenAI' to enter the OpenAI provider configuration page.
+Uter hỗ trợ hoàn hảo các giao diện OpenAI Chat Completion và Responses. Nhấn 'OpenAI' để vào trang cấu hình nhà cung cấp OpenAI.
 
-In the pop-up dialog, set the API Base URL to the Uter interface address. Please use your own deployed Uter, or ensure that the service provider has legitimate upstream authorization and compliance obligations for the Uter service. If you have deployed Uter locally, fill in the local address, for example, `http://localhost:3000/v1`. Do not connect API addresses or keys from unknown sources to a production environment.
+Trong hộp thoại bật lên, đặt API Base URL thành địa chỉ giao diện Uter. Vui lòng sử dụng Uter do chính bạn triển khai, hoặc đảm bảo rằng nhà cung cấp dịch vụ có ủy quyền upstream hợp pháp và các nghĩa vụ tuân thủ cho dịch vụ Uter. Nếu bạn đã triển khai Uter cục bộ, hãy điền địa chỉ cục bộ, ví dụ `http://localhost:3000/v1`. Không kết nối địa chỉ API hoặc khóa từ nguồn không xác định vào môi trường sản xuất.
 
-Then, enter the API Key into the 'API Key' field and click the 'Save' button.
+Sau đó, nhập API Key vào trường 'API Key' và nhấn nút 'Save'.
 
-![astrbot-provider-config](/apps-assets/astrbot/image-2.webp)
+![cấu-hình-nhà-cung-cấp-astrbot](/apps-assets/astrbot/image-2.webp)
 
-Then click 'Save' to complete the Uter provider configuration.
+Sau đó nhấn 'Save' để hoàn tất cấu hình nhà cung cấp Uter.
 
-#### Apply Service Provider
+#### Áp dụng nhà cung cấp dịch vụ
 
-Go to the 'Configuration File' page, find the 'Model' section, change the 'Default Chat Model' to the Uter provider you just created, and click the 'Save' button.
+Đi tới trang 'Configuration File', tìm phần 'Model', đổi 'Default Chat Model' thành nhà cung cấp Uter bạn vừa tạo, và nhấn nút 'Save'.
 
-![apply](/apps-assets/astrbot/image-3.webp)
+![áp-dụng](/apps-assets/astrbot/image-3.webp)
 
-At this point, you have successfully configured Uter as AstrBot's model provider. Now, you can access and use various AI model services provided by Uter through AstrBot.
+Lúc này, bạn đã cấu hình thành công Uter làm nhà cung cấp mô hình cho AstrBot. Giờ đây, bạn có thể truy cập và sử dụng các dịch vụ mô hình AI mà Uter cung cấp thông qua AstrBot.

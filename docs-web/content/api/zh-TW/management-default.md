@@ -1,19 +1,19 @@
-# Redeem Code
+# 使用兌換碼
 
-## Redeem Code
+## 使用兌換碼
 
-🔐 需要登录（User权限）
+🔐 需要登入（User許可權）
 
 `POST` `/api/user/topup`
 
-### 请求体（`application/json`）
+### 請求體（`application/json`）
 
-| 字段 | 类型 | 必填 | 说明 |
+| 欄位 | 型別 | 必填 | 說明 |
 |---|---|---|---|
 | `key` | string | 是 | — |
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |

@@ -2,35 +2,35 @@
 
 ## Gemini Native Format
 
-Gemini 图片生成
+Gemini 画像生成です。
 
 `POST` `/v1beta/models/{model}:generateContent/`
 
-### 请求参数
+### リクエストパラメータ
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| パラメータ名 | 位置 | 型 | 必須 | 説明 |
 |---|---|---|---|---|
-| `model` | path | string | 是 | 模型名称 |
+| `model` | path | string | 必須 | モデル名 |
 
-### 请求体（`application/json`）
+### リクエストボディ（`application/json`）
 
-| 字段 | 类型 | 必填 | 说明 |
+| フィールド | 型 | 必須 | 説明 |
 |---|---|---|---|
-| `contents` | array&lt;object&gt; | 是 | — |
-| `generationConfig.thinkingConfig.includeThoughts` | boolean | 否 | 是否返回思考内容 |
-| `generationConfig.responseModalities` | array&lt;string&gt; | 否 | — |
-| `generationConfig.imageConfig.aspectRatio` | string | 否 | — |
-| `generationConfig.imageConfig.imageSize` | string | 否 | — |
+| `contents` | array&lt;object&gt; | 必須 | — |
+| `generationConfig.thinkingConfig.includeThoughts` | boolean | 任意 | 思考内容を返すかどうか |
+| `generationConfig.responseModalities` | array&lt;string&gt; | 任意 | — |
+| `generationConfig.imageConfig.aspectRatio` | string | 任意 | — |
+| `generationConfig.imageConfig.imageSize` | string | 任意 | — |
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-#### `200` 响应字段
+#### `200` レスポンスフィールド
 
-| 字段 | 类型 | 说明 |
+| フィールド | 型 | 説明 |
 |---|---|---|
 | `candidates` | array&lt;object&gt; | — |
 | `usageMetadata.promptTokenCount` | integer | — |
@@ -39,30 +39,30 @@ Gemini 图片生成
 
 ## OpenAI Chat Format
 
-Gemini 图片生成
+Gemini 画像生成です。
 
 `POST` `/v1/chat/completions`
 
-### 请求体（`application/json`）
+### リクエストボディ（`application/json`）
 
-| 字段 | 类型 | 必填 | 说明 |
+| フィールド | 型 | 必須 | 説明 |
 |---|---|---|---|
-| `model` | string | 是 | — |
-| `stream` | boolean | 是 | — |
-| `messages` | array&lt;object&gt; | 是 | — |
-| `extra_body.google.image_config.aspect_ratio` | string | 否 | — |
-| `extra_body.google.image_config.image_size` | string | 否 | — |
-| `contents` | array&lt;object&gt; | 是 | — |
+| `model` | string | 必須 | — |
+| `stream` | boolean | 必須 | — |
+| `messages` | array&lt;object&gt; | 必須 | — |
+| `extra_body.google.image_config.aspect_ratio` | string | 任意 | — |
+| `extra_body.google.image_config.image_size` | string | 任意 | — |
+| `contents` | array&lt;object&gt; | 必須 | — |
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-#### `200` 响应字段
+#### `200` レスポンスフィールド
 
-| 字段 | 类型 | 说明 |
+| フィールド | 型 | 説明 |
 |---|---|---|
 | `id` | string | — |
 | `model` | string | — |

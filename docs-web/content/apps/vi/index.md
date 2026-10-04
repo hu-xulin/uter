@@ -1,17 +1,17 @@
-# AI Applications
+# Ứng dụng AI
 
-## Overview
+## Tổng quan
 
-Uter is compatible with various popular AI applications and tools. Below is a list of verified supported applications and their configuration guides.
+Uter tương thích với nhiều ứng dụng và công cụ AI phổ biến. Dưới đây là danh sách các ứng dụng được hỗ trợ đã được xác minh cùng hướng dẫn cấu hình của chúng.
 
-## Supported Applications
+## Các ứng dụng được hỗ trợ
 
-## Integration Guide
+## Hướng dẫn tích hợp
 
-Most applications only require configuring the following information to connect to Uter:
+Hầu hết các ứng dụng chỉ yêu cầu cấu hình các thông tin sau để kết nối với Uter:
 
-1.  **API Address**: Your Uter service address
-2.  **API Key**: The Token generated in the Uter console
-3.  **Model Name**: Select the model to use
+1.  **Địa chỉ API**: Địa chỉ dịch vụ Uter của bạn
+2.  **API Key**: Token được tạo trong bảng điều khiển Uter
+3.  **Tên mô hình**: Chọn mô hình cần sử dụng
 
-For specific configuration steps, please refer to the detailed documentation of each application.
+Để biết các bước cấu hình cụ thể, vui lòng tham khảo tài liệu chi tiết của từng ứng dụng.

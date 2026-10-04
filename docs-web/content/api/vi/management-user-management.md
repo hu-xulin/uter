@@ -1,382 +1,382 @@
-# user-management
+# Quản lý người dùng (user-management)
 
-## Get Invitation Code
+## Lấy mã mời (Get Invitation Code)
 
-🔐 需要登录（User权限）
+🔐 Yêu cầu đăng nhập (quyền User)
 
 `GET` `/api/user/aff`
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Convert Invitation Quota
+## Chuyển đổi hạn ngạch mời (Convert Invitation Quota)
 
-🔐 需要登录（User权限）
+🔐 Yêu cầu đăng nhập (quyền User)
 
 `POST` `/api/user/aff_transfer`
 
-### 请求体（`application/json`）
+### Thân yêu cầu (`application/json`)
 
-| 字段 | 类型 | 必填 | 说明 |
+| Trường | Kiểu | Bắt buộc | Mô tả |
 |---|---|---|---|
-| `quota` | integer | 否 | — |
+| `quota` | integer | Không | — |
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Get All Users
+## Lấy tất cả người dùng (Get All Users)
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 Yêu cầu quyền quản trị viên (Admin)
 
 `GET` `/api/user/`
 
-### 请求参数
+### Tham số yêu cầu
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| Tên tham số | Vị trí | Kiểu | Bắt buộc | Mô tả |
 |---|---|---|---|---|
-| `p` | query | integer | 否 | — |
-| `page_size` | query | integer | 否 | — |
+| `p` | query | integer | Không | — |
+| `page_size` | query | integer | Không | — |
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Admin Disable User 2FA
+## Admin tắt 2FA người dùng (Admin Disable User 2FA)
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 Yêu cầu quyền quản trị viên (Admin)
 
 `DELETE` `/api/user/{id}/2fa`
 
-### 请求参数
+### Tham số yêu cầu
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| Tên tham số | Vị trí | Kiểu | Bắt buộc | Mô tả |
 |---|---|---|---|---|
-| `id` | path | integer | 是 | — |
+| `id` | path | integer | Có | — |
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Delete User
+## Xóa người dùng (Delete User)
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 Yêu cầu quyền quản trị viên (Admin)
 
 `DELETE` `/api/user/{id}`
 
-### 请求参数
+### Tham số yêu cầu
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| Tên tham số | Vị trí | Kiểu | Bắt buộc | Mô tả |
 |---|---|---|---|---|
-| `id` | path | integer | 是 | — |
+| `id` | path | integer | Có | — |
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Get Specific User
+## Lấy người dùng cụ thể (Get Specific User)
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 Yêu cầu quyền quản trị viên (Admin)
 
 `GET` `/api/user/{id}`
 
-### 请求参数
+### Tham số yêu cầu
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| Tên tham số | Vị trí | Kiểu | Bắt buộc | Mô tả |
 |---|---|---|---|---|
-| `id` | path | integer | 是 | — |
+| `id` | path | integer | Có | — |
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Admin Reset User Passkey
+## Admin đặt lại Passkey người dùng (Admin Reset User Passkey)
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 Yêu cầu quyền quản trị viên (Admin)
 
 `DELETE` `/api/user/{id}/reset_passkey`
 
-### 请求参数
+### Tham số yêu cầu
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| Tên tham số | Vị trí | Kiểu | Bắt buộc | Mô tả |
 |---|---|---|---|---|
-| `id` | path | integer | 是 | — |
+| `id` | path | integer | Có | — |
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Manage User Status
+## Quản lý trạng thái người dùng (Manage User Status)
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 Yêu cầu quyền quản trị viên (Admin)
 
 `POST` `/api/user/manage`
 
-### 请求体（`application/json`）
+### Thân yêu cầu (`application/json`)
 
-| 字段 | 类型 | 必填 | 说明 |
+| Trường | Kiểu | Bắt buộc | Mô tả |
 |---|---|---|---|
-| `id` | integer | 否 | — |
-| `action` | enum（`disable`, `enable`, `delete`, `promote`, `demote`） | 否 | — |
+| `id` | integer | Không | — |
+| `action` | enum (`disable`, `enable`, `delete`, `promote`, `demote`) | Không | — |
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Get User Available Models
+## Lấy mô hình khả dụng của người dùng (Get User Available Models)
 
-🔐 需要登录（User权限）
+🔐 Yêu cầu đăng nhập (quyền User)
 
 `GET` `/api/user/models`
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Delete Passkey
+## Xóa Passkey (Delete Passkey)
 
-🔐 需要登录（User权限）
+🔐 Yêu cầu đăng nhập (quyền User)
 
 `DELETE` `/api/user/passkey`
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Get Passkey Status
+## Lấy trạng thái Passkey (Get Passkey Status)
 
-🔐 需要登录（User权限）
+🔐 Yêu cầu đăng nhập (quyền User)
 
 `GET` `/api/user/passkey`
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Start Passkey Registration
+## Bắt đầu đăng ký Passkey (Start Passkey Registration)
 
-🔐 需要登录（User权限）
+🔐 Yêu cầu đăng nhập (quyền User)
 
 `POST` `/api/user/passkey/register/begin`
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Complete Passkey Registration
+## Hoàn tất đăng ký Passkey (Complete Passkey Registration)
 
-🔐 需要登录（User权限）
+🔐 Yêu cầu đăng nhập (quyền User)
 
 `POST` `/api/user/passkey/register/finish`
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Start Passkey Verification
+## Bắt đầu xác minh Passkey (Start Passkey Verification)
 
-🔐 需要登录（User权限）
+🔐 Yêu cầu đăng nhập (quyền User)
 
 `POST` `/api/user/passkey/verify/begin`
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Complete Passkey Verification
+## Hoàn tất xác minh Passkey (Complete Passkey Verification)
 
-🔐 需要登录（User权限）
+🔐 Yêu cầu đăng nhập (quyền User)
 
 `POST` `/api/user/passkey/verify/finish`
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Create User
+## Tạo người dùng (Create User)
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 Yêu cầu quyền quản trị viên (Admin)
 
 `POST` `/api/user/`
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Update User
+## Cập nhật người dùng (Update User)
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 Yêu cầu quyền quản trị viên (Admin)
 
 `PUT` `/api/user/`
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Search Users
+## Tìm kiếm người dùng (Search Users)
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 Yêu cầu quyền quản trị viên (Admin)
 
 `GET` `/api/user/search`
 
-### 请求参数
+### Tham số yêu cầu
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| Tên tham số | Vị trí | Kiểu | Bắt buộc | Mô tả |
 |---|---|---|---|---|
-| `keyword` | query | string | 否 | — |
-| `group` | query | string | 否 | — |
+| `keyword` | query | string | Không | — |
+| `group` | query | string | Không | — |
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Delete Current User
+## Xóa người dùng hiện tại (Delete Current User)
 
-🔐 需要登录（User权限）
+🔐 Yêu cầu đăng nhập (quyền User)
 
 `DELETE` `/api/user/self`
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Get Current User Information
+## Lấy thông tin người dùng hiện tại (Get Current User Information)
 
-🔐 需要登录（User权限）
+🔐 Yêu cầu đăng nhập (quyền User)
 
 `GET` `/api/user/self`
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Get Current User Groups
+## Lấy nhóm của người dùng hiện tại (Get Current User Groups)
 
-🔐 需要登录（User权限）
+🔐 Yêu cầu đăng nhập (quyền User)
 
 `GET` `/api/user/self/groups`
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Update Current User Information
+## Cập nhật thông tin người dùng hiện tại (Update Current User Information)
 
-🔐 需要登录（User权限）
+🔐 Yêu cầu đăng nhập (quyền User)
 
 `PUT` `/api/user/self`
 
-### 请求体（`application/json`）
+### Thân yêu cầu (`application/json`)
 
-| 字段 | 类型 | 必填 | 说明 |
+| Trường | Kiểu | Bắt buộc | Mô tả |
 |---|---|---|---|
-| `username` | string | 否 | — |
-| `display_name` | string | 否 | — |
-| `password` | string | 否 | — |
-| `original_password` | string | 否 | — |
+| `username` | string | Không | — |
+| `display_name` | string | Không | — |
+| `password` | string | Không | — |
+| `original_password` | string | Không | — |
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Update User Settings
+## Cập nhật cài đặt người dùng (Update User Settings)
 
-🔐 需要登录（User权限）
+🔐 Yêu cầu đăng nhập (quyền User)
 
 `PUT` `/api/user/setting`
 
-### 请求体（`application/json`）
+### Thân yêu cầu (`application/json`)
 
-| 字段 | 类型 | 必填 | 说明 |
+| Trường | Kiểu | Bắt buộc | Mô tả |
 |---|---|---|---|
-| `notify_type` | string | 否 | — |
-| `quota_warning_threshold` | number | 否 | — |
-| `webhook_url` | string | 否 | — |
-| `notification_email` | string | 否 | — |
+| `notify_type` | string | Không | — |
+| `quota_warning_threshold` | number | Không | — |
+| `webhook_url` | string | Không | — |
+| `notification_email` | string | Không | — |
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Generate Access Token
+## Tạo Access Token (Generate Access Token)
 
-🔐 需要登录（User权限）
+🔐 Yêu cầu đăng nhập (quyền User)
 
 `GET` `/api/user/token`
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Admin Completes Top-up
+## Admin hoàn tất nạp tiền (Admin Completes Top-up)
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 Yêu cầu quyền quản trị viên (Admin)
 
 `POST` `/api/user/topup/complete`
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Get All Top-up Records
+## Lấy tất cả lịch sử nạp tiền (Get All Top-up Records)
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 Yêu cầu quyền quản trị viên (Admin)
 
 `GET` `/api/user/topup`
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |

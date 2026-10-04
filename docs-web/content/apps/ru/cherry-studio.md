@@ -1,53 +1,52 @@
-# Cherry Studio - Desktop AI Client
+# Cherry Studio — десктопный ИИ-клиент
 
-> **Chat Settings Options**
+> **Параметры настроек чата**
 >
-> In the Uter
->   console's System Settings -> Chat Settings, you can add the following quick options for one-click filling into
->   Cherry Studio on the token management page:
+> В консоли Uter в разделе «Системные настройки» → «Настройки чата» вы можете добавить следующие
+> быстрые параметры для заполнения в один клик в Cherry Studio на странице управления токенами:
 
     ```json
     { "Cherry Studio": "cherrystudio://providers/api-keys?v=1&data={cherryConfig}" }
     ```
 
-> 🍒 Cherry Studio is a powerful desktop AI client designed for professional users, integrating 30+
->   industry-specific intelligent assistants to meet the needs of various work scenarios and significantly improve work efficiency.
+> 🍒 Cherry Studio — это мощный десктопный ИИ-клиент, предназначенный для профессиональных пользователей, интегрирующий 30+
+> отраслевых интеллектуальных ассистентов для удовлетворения потребностей различных рабочих сценариев и значительного повышения эффективности работы.
 
-- Official Website: [https://cherry-ai.com](https://cherry-ai.com/)
-- Download Link: [https://cherry-ai.com/download](https://cherry-ai.com/download)
-- Official Documentation: [https://docs.cherry-ai.com](https://docs.cherry-ai.com)
+- Официальный сайт: [https://cherry-ai.com](https://cherry-ai.com/)
+- Ссылка для загрузки: [https://cherry-ai.com/download](https://cherry-ai.com/download)
+- Официальная документация: [https://docs.cherry-ai.com](https://docs.cherry-ai.com)
 
-## Uter Integration Method
+## Способ интеграции с Uter
 
-### Parameter Configuration
+### Настройка параметров
 
-Provider Type: Types supported by Uter
-API Key: Obtained from Uter
-API Address: Uter Site Address
+Тип провайдера: типы, поддерживаемые Uter
+API Key: получен в Uter
+Адрес API: адрес сайта Uter
 
-Please use your self-deployed Uter, or ensure that the service provider has a Uter service with legal upstream authorization and compliance obligations. Do not integrate API addresses or keys from unknown sources into a production environment.
+Используйте свой собственный развёрнутый экземпляр Uter или убедитесь, что поставщик услуг предоставляет сервис Uter с легитимной апстрим-авторизацией и обязательствами по соответствию. Не интегрируйте адреса API или ключи из неизвестных источников в производственную среду.
 
-### Graphical Guide
+### Графическое руководство
 
-1. Copy API key in Uter
-   ![Copy API Key](/apps-assets/cherry_studio/copy_api_key.webp)
+1. Скопируйте API-ключ в Uter
+   ![Копирование API-ключа](/apps-assets/cherry_studio/copy_api_key.webp)
 
-2. Add Provider
-   ![Add Provider](/apps-assets/cherry_studio/add_provider.webp)
+2. Добавьте провайдера
+   ![Добавление провайдера](/apps-assets/cherry_studio/add_provider.webp)
 
-3. Add Model
-   ![Add Model](/apps-assets/cherry_studio/add_models.webp)
+3. Добавьте модель
+   ![Добавление модели](/apps-assets/cherry_studio/add_models.webp)
 
-4. Return to Chat Page
-   ![Switch to Chat Page](/apps-assets/cherry_studio/back_to_chat.webp)
+4. Вернитесь на страницу чата
+   ![Переход на страницу чата](/apps-assets/cherry_studio/back_to_chat.webp)
 
-5. Switch Uter Model
-   ![Switch Model](/apps-assets/cherry_studio/switch_model.webp)
+5. Переключите модель Uter
+   ![Переключение модели](/apps-assets/cherry_studio/switch_model.webp)
 
-## Drawing in Cherry Studio
+## Рисование в Cherry Studio
 
-1. First, add models that support drawing
-   ![Drawing Models](/apps-assets/cherry_studio/add_paint_models.webp)
+1. Сначала добавьте модели, поддерживающие рисование
+   ![Модели для рисования](/apps-assets/cherry_studio/add_paint_models.webp)
 
-2. Draw
-   ![Draw](/apps-assets/cherry_studio/paint.webp)
+2. Нарисуйте
+   ![Рисование](/apps-assets/cherry_studio/paint.webp)

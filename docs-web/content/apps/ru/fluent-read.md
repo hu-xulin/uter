@@ -1,74 +1,74 @@
-# FluentRead - Open Source Translation Plugin
+# FluentRead — открытый плагин перевода
 
-> **Chat Settings Options**
+> **Параметры настроек чата**
 >
-> In the System Settings -> Chat Settings of the Uter console, you can add
->   the following shortcut options for easy one-click population to FluentRead on
->   the Token Management page:
+> В «Системных настройках» → «Настройках чата» консоли Uter можно добавить
+> следующие параметры быстрого доступа для удобного заполнения в один клик в FluentRead
+> на странице управления токенами:
 
     ```json
     { "流畅阅读": "fluentread" }
     ```
 
-> 🌊 FluentRead is an open-source browser translation plugin dedicated to
->   providing a native-like reading experience.
+> 🌊 FluentRead — это открытый плагин перевода для браузера, созданный для
+> обеспечения опыта чтения, близкого к родному.
 
-- Project Address: [https://github.com/Bistutu/FluentRead](https://github.com/Bistutu/FluentRead)
+- Адрес проекта: [https://github.com/Bistutu/FluentRead](https://github.com/Bistutu/FluentRead)
 
-## 🌟 Core Features
+## 🌟 Основные возможности
 
-### Smart Translation Engine
+### Умный движок перевода
 
-- **Multi-Engine Support**: Supports 20+ translation engines
-- **Traditional Translation**: Microsoft Translate, Google Translate, DeepL Translate, etc.
-- **AI Large Models**: OpenAI, DeepSeek, Kimi, Ollama, etc.
-- **Custom Engine**: Supports custom translation service configuration
+- **Поддержка нескольких движков**: Поддерживает 20+ движков перевода
+- **Традиционный перевод**: Microsoft Translate, Google Translate, DeepL Translate и др.
+- **Большие ИИ-модели**: OpenAI, DeepSeek, Kimi, Ollama и др.
+- **Пользовательский движок**: Поддерживает настройку пользовательского сервиса перевода
 
-### Immersive Reading Experience
+### Иммерсивный опыт чтения
 
-- **Bilingual Comparison**: Original and translated text displayed side-by-side for easier reading
-- **Selection Translation**: Select any text to get instant translation results
-- **One-Click Copy**: Quickly copy translated text to improve reading efficiency
-- **Full-Page Translation**: One-click translation of the entire webpage with a floating button, no page refresh required
+- **Двуязычное сравнение**: Исходный и переведённый текст отображаются бок о бок для более лёгкого чтения
+- **Перевод по выделению**: Выделите любой текст, чтобы получить мгновенный перевод
+- **Копирование в один клик**: Быстро копируйте переведённый текст для повышения эффективности чтения
+- **Перевод всей страницы**: Перевод всей веб-страницы в один клик с плавающей кнопкой, без перезагрузки страницы
 
-### Privacy and Customization
+### Приватность и настройка
 
-- **Privacy Protection**: All data stored locally, open-source and transparent code
-- **High Customization**: Rich customization options to meet different scenario needs
-- **Completely Free**: Open-source and free, non-commercial project
+- **Защита приватности**: Все данные хранятся локально, прозрачный открытый код
+- **Высокая настраиваемость**: Богатые варианты настройки для удовлетворения потребностей различных сценариев
+- **Полностью бесплатно**: Открытый исходный код и бесплатно, некоммерческий проект
 
-## 📦 Installation Methods
+## 📦 Способы установки
 
-| Browser     | Installation Method                                                                                                                                                                                                                                   |
+| Браузер | Способ установки |
 | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Chrome**  | [Chrome Web Store](https://chromewebstore.google.com/detail/%E6%B5%81%E7%95%85%E9%98%85%E8%AF%BB/djnlaiohfaaifbibleebjggkghlmcpcj?hl=zh-CN&authuser=0) \| [Domestic Mirror](https://www.crxsoso.com/webstore/detail/djnlaiohfaaifbibleebjggkghlmcpcj) |
-| **Edge**    | [Edge Add-ons Store](https://microsoftedge.microsoft.com/addons/detail/%E6%B5%81%E7%95%85%E9%98%85%E8%AF%BB/kakgmllfpjldjhcnkghpplmlbnmcoflp?hl=zh-CN)                                                                                                |
-| **Firefox** | [Firefox Add-ons Store](https://addons.mozilla.org/zh-CN/firefox/addon/%E6%B5%81%E7%95%85%E9%98%85%E8%AF%BB/)                                                                                                                                         |
+| **Chrome**  | [Chrome Web Store](https://chromewebstore.google.com/detail/%E6%B5%81%E7%95%85%E9%98%85%E8%AF%BB/djnlaiohfaaifbibleebjggkghlmcpcj?hl=zh-CN&authuser=0) \| [Внутреннее зеркало](https://www.crxsoso.com/webstore/detail/djnlaiohfaaifbibleebjggkghlmcpcj) |
+| **Edge**    | [Магазин дополнений Edge](https://microsoftedge.microsoft.com/addons/detail/%E6%B5%81%E7%95%85%E9%98%85%E8%AF%BB/kakgmllfpjldjhcnkghpplmlbnmcoflp?hl=zh-CN)                                                                                                |
+| **Firefox** | [Магазин дополнений Firefox](https://addons.mozilla.org/zh-CN/firefox/addon/%E6%B5%81%E7%95%85%E9%98%85%E8%AF%BB/)                                                                                                                                         |
 
-## 🚀 Configuration Methods
+## 🚀 Способы настройки
 
-### Import Configuration from Uter Console (Recommended)
+### Импорт конфигурации из консоли Uter (рекомендуется)
 
-After the FluentRead plugin is installed in your browser, opening the Uter console -> Token Management page will display a prompt to add FluentRead.
+После установки плагина FluentRead в браузере открытие консоли Uter → страницы управления токенами отобразит подсказку добавления FluentRead.
 
 ![添加提示](/apps-assets/fluentread/hint.webp)
 
-After selecting a model, click 'One-click fill to FluentRead', and a confirmation window will pop up. Check if the corresponding information is correct.
+После выбора модели нажмите «Заполнить в FluentRead в один клик», и появится окно подтверждения. Проверьте правильность соответствующей информации.
 
 ![确认](/apps-assets/fluentread/confirm.webp)
 
-After confirming the import, the Uter configuration in FluentRead will be enabled.
+После подтверждения импорта конфигурация Uter в FluentRead будет включена.
 
 ![配置结果](/apps-assets/fluentread/fluentread.webp)
 
-### Manually Fill in Configuration in FluentRead
+### Ручное заполнение конфигурации в FluentRead
 
 ![手动配置](/apps-assets/fluentread/configuration.webp)
 
-| Configuration Item  | Content                                 |
+| Элемент конфигурации | Содержимое |
 | ------------------- | --------------------------------------- |
-| Translation Service | Uter                                  |
-| Access Token        | Uter Key                              |
-| Uter Endpoint     | Uter Deployment Address (without /v1) |
-| Model               | Select from list, or custom model       |
-| Custom Model        | Model Name                              |
+| Сервис перевода | Uter |
+| Токен доступа | Ключ Uter |
+| Конечная точка Uter | Адрес развёртывания Uter (без /v1) |
+| Модель | Выбрать из списка или пользовательская модель |
+| Пользовательская модель | Название модели |

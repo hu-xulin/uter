@@ -1,85 +1,85 @@
-# two-factor-auth
+# Xác thực hai yếu tố (two-factor-auth)
 
-## Regenerate Backup Codes
+## Tạo lại mã dự phòng (Regenerate Backup Codes)
 
-🔐 需要登录（User权限）
+🔐 Yêu cầu đăng nhập (quyền User)
 
 `POST` `/api/user/2fa/backup_codes`
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Disable 2FA
+## Tắt 2FA (Disable 2FA)
 
-🔐 需要登录（User权限）
+🔐 Yêu cầu đăng nhập (quyền User)
 
 `POST` `/api/user/2fa/disable`
 
-### 请求体（`application/json`）
+### Thân yêu cầu (`application/json`)
 
-| 字段 | 类型 | 必填 | 说明 |
+| Trường | Kiểu | Bắt buộc | Mô tả |
 |---|---|---|---|
-| `code` | string | 否 | — |
+| `code` | string | Không | — |
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Enable 2FA
+## Bật 2FA (Enable 2FA)
 
-🔐 需要登录（User权限）
+🔐 Yêu cầu đăng nhập (quyền User)
 
 `POST` `/api/user/2fa/enable`
 
-### 请求体（`application/json`）
+### Thân yêu cầu (`application/json`)
 
-| 字段 | 类型 | 必填 | 说明 |
+| Trường | Kiểu | Bắt buộc | Mô tả |
 |---|---|---|---|
-| `code` | string | 否 | — |
+| `code` | string | Không | — |
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Set Up 2FA
+## Thiết lập 2FA (Set Up 2FA)
 
-🔐 需要登录（User权限）
+🔐 Yêu cầu đăng nhập (quyền User)
 
 `POST` `/api/user/2fa/setup`
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Get 2FA Statistics
+## Lấy thống kê 2FA (Get 2FA Statistics)
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 Yêu cầu quyền quản trị viên (Admin)
 
 `GET` `/api/user/2fa/stats`
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Get 2FA Status
+## Lấy trạng thái 2FA (Get 2FA Status)
 
-🔐 需要登录（User权限）
+🔐 Yêu cầu đăng nhập (quyền User)
 
 `GET` `/api/user/2fa/status`
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |

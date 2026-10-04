@@ -1,85 +1,85 @@
 # two-factor-auth
 
-## Regenerate Backup Codes
+## バックアップコードの再生成
 
-🔐 需要登录（User权限）
+🔐 ログインが必要（User権限）
 
 `POST` `/api/user/2fa/backup_codes`
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-## Disable 2FA
+## 2FA の無効化
 
-🔐 需要登录（User权限）
+🔐 ログインが必要（User権限）
 
 `POST` `/api/user/2fa/disable`
 
-### 请求体（`application/json`）
+### リクエストボディ（`application/json`）
 
-| 字段 | 类型 | 必填 | 说明 |
+| フィールド | 型 | 必須 | 説明 |
 |---|---|---|---|
-| `code` | string | 否 | — |
+| `code` | string | いいえ | — |
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-## Enable 2FA
+## 2FA の有効化
 
-🔐 需要登录（User权限）
+🔐 ログインが必要（User権限）
 
 `POST` `/api/user/2fa/enable`
 
-### 请求体（`application/json`）
+### リクエストボディ（`application/json`）
 
-| 字段 | 类型 | 必填 | 说明 |
+| フィールド | 型 | 必須 | 説明 |
 |---|---|---|---|
-| `code` | string | 否 | — |
+| `code` | string | いいえ | — |
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-## Set Up 2FA
+## 2FA の設定
 
-🔐 需要登录（User权限）
+🔐 ログインが必要（User権限）
 
 `POST` `/api/user/2fa/setup`
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-## Get 2FA Statistics
+## 2FA 統計の取得
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 管理者権限が必要（Admin）
 
 `GET` `/api/user/2fa/stats`
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-## Get 2FA Status
+## 2FA 状態の取得
 
-🔐 需要登录（User权限）
+🔐 ログインが必要（User権限）
 
 `GET` `/api/user/2fa/status`
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |

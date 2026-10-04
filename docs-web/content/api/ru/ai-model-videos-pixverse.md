@@ -1,167 +1,167 @@
-# PixVerse Format
+# Формат PixVerse
 
-PixVerse video generation: call the full PixVerse model family (C1 / V6 / V5.6 / V5.5 / V5 / V4.5 / V4 / V3.5) through the OpenAI-compatible `/v1/videos` endpoint, supporting text-to-video and image-to-video.
+Генерация видео PixVerse: обращение к полному семейству моделей PixVerse (C1 / V6 / V5.6 / V5.5 / V5 / V4.5 / V4 / V3.5) через совместимую с OpenAI конечную точку `/v1/videos`; поддерживаются генерация по тексту и по изображению.
 
-## Supported Models
+## Поддерживаемые модели
 
-In the `model` field, always use the form `PixVerse/<version>`, e.g. `PixVerse/v5.6`.
+В поле `model` всегда используйте форму `PixVerse/<версия>`, напр. `PixVerse/v5.6`.
 
-| Model | Highlights | Duration tiers | Audio |
+| Модель | Особенности | Уровни длительности | Аудио |
 |---|---|---|---|
-| `PixVerse/c1` | Flagship, most flexible per-second billing | 1–15 s (per second) | ✓ |
-| `PixVerse/v6` | Latest generation, per-second billing | 1–15 s (per second) | ✓ |
-| `PixVerse/v5.6` | Single-clip mode, stable quality | 5 / 8 / 10 s | ✓ |
-| `PixVerse/v5.5` | Supports Multi-Clip stitching | 5 / 8 / 10 s | ✓ |
-| `PixVerse/v5` | 5th-gen base version | 5 / 8 s | ✗ |
-| `PixVerse/v4.5` | 4.5th gen, supports Fast Motion | 5 / 8 s | ✗ |
-| `PixVerse/v4` | 4th gen, supports Fast Motion | 5 / 8 s | ✗ |
-| `PixVerse/v3.5` | 3.5th gen, supports Fast Motion | 5 / 8 s | ✗ |
+| `PixVerse/c1` | Флагманская, наиболее гибкая почасовая тарификация | 1–15 с (посекундно) | ✓ |
+| `PixVerse/v6` | Новейшее поколение, посекундная тарификация | 1–15 с (посекундно) | ✓ |
+| `PixVerse/v5.6` | Одноклиповый режим, стабильное качество | 5 / 8 / 10 с | ✓ |
+| `PixVerse/v5.5` | Поддерживает склейку нескольких клипов | 5 / 8 / 10 с | ✓ |
+| `PixVerse/v5` | Базовая версия 5-го поколения | 5 / 8 с | ✗ |
+| `PixVerse/v4.5` | 4.5-е поколение, поддерживает Fast Motion | 5 / 8 с | ✗ |
+| `PixVerse/v4` | 4-е поколение, поддерживает Fast Motion | 5 / 8 с | ✗ |
+| `PixVerse/v3.5` | 3.5-е поколение, поддерживает Fast Motion | 5 / 8 с | ✗ |
 
-> The `PixVerse/` prefix is case-sensitive; use `PixVerse/v5.6` exactly. The version part (`v5.6`, `c1`) is normalised case-insensitively.
+> Префикс `PixVerse/` чувствителен к регистру; используйте точно `PixVerse/v5.6`. Часть с версией (`v5.6`, `c1`) нормализуется без учёта регистра.
 
-## Create Video
+## Создание видео
 
 `POST` `/v1/videos`
 
-### Request Headers
+### Заголовки запроса
 
-| Header | Required | Description |
+| Заголовок | Обязательно | Описание |
 |---|---|---|
-| `Authorization` | Yes | `Bearer sk-your-api-key` |
-| `Content-Type` | Yes | `application/json` |
+| `Authorization` | Да | `Bearer sk-your-api-key` |
+| `Content-Type` | Да | `application/json` |
 
-### Request Body (`application/json`)
+### Тело запроса (`application/json`)
 
-| Field | Type | Required | Description |
+| Поле | Тип | Обязательно | Описание |
 |---|---|---|---|
-| `model` | string | Yes | PixVerse model name, see the table above |
-| `prompt` | string | Yes | Video prompt, up to 2048 characters |
-| `image` | string | No | Source image for image-to-video (URL or base64 data URI); presence switches to image-to-video |
-| `images` | string[] | No | Array form of `image` (mutually exclusive with `image`) |
-| `duration` | int | No | Length in seconds, default 5; supported tiers vary by model |
-| `resolution` | string | No | Resolution tier (same as `size`, recommended for alignment across models): `720P` / `1080P` |
-| `size` | string | No | Resolution: `360p` `540p` `720p` `1080p`, or pixel form such as `1920x1080`. When both are sent, `resolution` wins |
-| `metadata` | object | No | PixVerse-specific parameters container, see below |
+| `model` | string | Да | Название модели PixVerse, см. таблицу выше |
+| `prompt` | string | Да | Видеоподсказка, до 2048 символов |
+| `image` | string | Нет | Исходное изображение для генерации по изображению (URL или data URI base64); наличие переключает в режим изображение-в-видео |
+| `images` | string[] | Нет | Массив-форма поля `image` (взаимоисключающе с `image`) |
+| `duration` | int | Нет | Длительность в секундах, по умолчанию 5; поддерживаемые уровни зависят от модели |
+| `resolution` | string | Нет | Уровень разрешения (аналог `size`, рекомендуется для согласованности между моделями): `720P` / `1080P` |
+| `size` | string | Нет | Разрешение: `360p` `540p` `720p` `1080p` либо пиксельная форма, напр. `1920x1080`. При указании обоих приоритет у `resolution` |
+| `metadata` | object | Нет | Контейнер параметров, специфичных для PixVerse, см. ниже |
 
-### Response
+### Ответ
 
-| Status | Description |
+| Статус | Описание |
 |---|---|
-| `200` | Video task created successfully |
-| `400` | Invalid request parameters |
+| `200` | Задача видео успешно создана |
+| `400` | Недопустимые параметры запроса |
 
-#### `200` Response Fields
+#### Поля ответа `200`
 
-| Field | Type | Description |
+| Поле | Тип | Описание |
 |---|---|---|
-| `id` / `task_id` | string | Public task ID (`task_` prefix) used for subsequent queries |
-| `object` | string | Object type (`video`) |
-| `model` | string | Model used |
-| `status` | string | Task status (`queued` right after submission) |
-| `progress` | integer | Progress percentage |
-| `created_at` | integer | Creation timestamp |
+| `id` / `task_id` | string | Публичный ID задачи (префикс `task_`) для последующих запросов |
+| `object` | string | Тип объекта (`video`) |
+| `model` | string | Использованная модель |
+| `status` | string | Состояние задачи (сразу после отправки — `queued`) |
+| `progress` | integer | Прогресс в процентах |
+| `created_at` | integer | Временная метка создания |
 
-> `id` / `task_id` is generated by Uter and is not the upstream PixVerse `video_id`. Always use the value returned here.
+> `id` / `task_id` генерируется Uter и не является upstream-`video_id` PixVerse. Всегда используйте значение, возвращаемое здесь.
 
-## Get Video Task Status
+## Получение состояния задачи видео
 
 `GET` `/v1/videos/{task_id}`
 
-### Request Parameters
+### Параметры запроса
 
-| Name | In | Type | Required | Description |
+| Имя | Расположение | Тип | Обязательно | Описание |
 |---|---|---|---|---|
-| `task_id` | path | string | Yes | Video task ID |
+| `task_id` | path | string | Да | ID задачи видео |
 
-### Response
+### Ответ
 
-| Status | Description |
+| Статус | Описание |
 |---|---|
-| `200` | Task status retrieved successfully |
-| `404` | Task not found |
+| `200` | Состояние задачи успешно получено |
+| `404` | Задача не найдена |
 
-#### `200` Response Fields
+#### Поля ответа `200`
 
-| Field | Type | Description |
+| Поле | Тип | Описание |
 |---|---|---|
-| `id` | string | Video ID |
-| `status` | string | Task status, see the enum |
-| `progress` | integer | Progress percentage |
-| `created_at` | integer | Creation timestamp |
-| `completed_at` | integer | Completion timestamp (on success) |
-| `size` | string | Video size (on success) |
-| `metadata.url` | string | Video URL (only when `completed`) |
-| `error.message` | string | Failure reason (only when `failed`) |
+| `id` | string | ID видео |
+| `status` | string | Состояние задачи, см. перечисление |
+| `progress` | integer | Прогресс в процентах |
+| `created_at` | integer | Временная метка создания |
+| `completed_at` | integer | Временная метка завершения (при успехе) |
+| `size` | string | Размер видео (при успехе) |
+| `metadata.url` | string | URL видео (только когда `completed`) |
+| `error.message` | string | Причина сбоя (только когда `failed`) |
 
-#### Status Enum
+#### Перечисление статусов
 
-| Status | Description |
+| Статус | Описание |
 |---|---|
-| `queued` | Submitted, queued |
-| `in_progress` | Generating |
-| `completed` | Completed; `metadata.url` holds the video |
-| `failed` | Failed; `error.message` explains why |
+| `queued` | Отправлено, в очереди |
+| `in_progress` | Генерация |
+| `completed` | Завершено; `metadata.url` содержит видео |
+| `failed` | Сбой; `error.message` объясняет причину |
 
-## Get Video Content
+## Получение содержимого видео
 
 `GET` `/v1/videos/{task_id}/content`
 
-Returns the raw video stream (`Content-Type: video/mp4`). Uter proxies PixVerse's temporary URL, avoiding exposure of the upstream address and the expiry problem.
+Возвращает поток необработанного видео (`Content-Type: video/mp4`). Uter проксирует временный URL PixVerse, избегая раскрытия upstream-адреса и проблемы с истечением срока.
 
-### Request Parameters
+### Параметры запроса
 
-| Name | In | Type | Required | Description |
+| Имя | Расположение | Тип | Обязательно | Описание |
 |---|---|---|---|---|
-| `task_id` | path | string | Yes | Video task ID |
+| `task_id` | path | string | Да | ID задачи видео |
 
-### Response
+### Ответ
 
-| Status | Description |
+| Статус | Описание |
 |---|---|
-| `200` | Video content retrieved successfully |
-| `404` | Video not found or not finished |
+| `200` | Содержимое видео успешно получено |
+| `404` | Видео не найдено или не завершено |
 
-> **Strongly recommended**: download via the `/content` proxy rather than accessing `metadata.url` directly. The latter is PixVerse's temporary link (usually valid for a few hours), whereas the proxy never expires as long as the task record exists.
+> **Настоятельно рекомендуется**: загружайте через прокси `/content`, а не обращаясь к `metadata.url` напрямую. Последний — временная ссылка PixVerse (обычно действительна несколько часов), тогда как прокси не истекает, пока существует запись задачи.
 
-## Specific Parameters (`metadata`)
+## Специфичные параметры (`metadata`)
 
-All PixVerse-specific fields are passed through the request body's `metadata` object.
+Все поля, специфичные для PixVerse, передаются через объект `metadata` тела запроса.
 
-### General Fields
+### Общие поля
 
-| Field | Type | Applies to | Description |
+| Поле | Тип | Применяется к | Описание |
 |---|---|---|---|
-| `quality` | string | All | Resolution; overrides top-level `size`: `360p` `540p` `720p` `1080p` |
-| `aspect_ratio` | string | Text-to-video | Aspect ratio: `16:9` `9:16` `1:1` `4:3` `3:4` `2:3` `3:2` `21:9` |
-| `motion_mode` | string | V4.5 / V4 / V3.5 | Motion mode: `normal` (default) or `fast` (2× price; only 5s at 360p/540p/720p) |
-| `camera_movement` | string | All | Camera movement, e.g. `zoom_in` `zoom_out` `pan_left` `pan_right` |
-| `seed` | int | All | Random seed, 0–2147483647 |
-| `template_id` | int | All | Template ID |
-| `style` | string | All | Style, e.g. `anime` |
-| `water_mark` | bool | All | Whether to add a watermark |
-| `negative_prompt` | string | All | Negative prompt |
+| `quality` | string | Все | Разрешение; переопределяет верхуровневый `size`: `360p` `540p` `720p` `1080p` |
+| `aspect_ratio` | string | Генерация по тексту | Соотношение сторон: `16:9` `9:16` `1:1` `4:3` `3:4` `2:3` `3:2` `21:9` |
+| `motion_mode` | string | V4.5 / V4 / V3.5 | Режим движения: `normal` (по умолчанию) или `fast` (цена ×2; только 5с при 360p/540p/720p) |
+| `camera_movement` | string | Все | Движение камеры, напр. `zoom_in` `zoom_out` `pan_left` `pan_right` |
+| `seed` | int | Все | Случайное зерно, 0–2147483647 |
+| `template_id` | int | Все | ID шаблона |
+| `style` | string | Все | Стиль, напр. `anime` |
+| `water_mark` | bool | Все | Добавлять ли водяной знак |
+| `negative_prompt` | string | Все | Негативная подсказка |
 
-> `motion_mode: fast` is strictly limited to V4.5 / V4 / V3.5, 5-second duration and 360p/540p/720p. Other combinations (e.g. `1080p + fast` or `8s + fast`) return `400` and are not charged.
+> `motion_mode: fast` строго ограничен V4.5 / V4 / V3.5, длительностью 5 секунд и разрешением 360p/540p/720p. Другие комбинации (напр. `1080p + fast` или `8s + fast`) возвращают `400` и не тарифицируются.
 
-### Audio Generation (C1 / V6 / V5.6 / V5.5)
+### Генерация аудио (C1 / V6 / V5.6 / V5.5)
 
-| Field | Type | Applies to | Description |
+| Поле | Тип | Применяется к | Описание |
 |---|---|---|---|
-| `generate_audio_switch` | bool | C1 / V6 / V5.6 / V5.5 | Switch to the "with audio" billing tier (audio generated upstream) |
+| `generate_audio_switch` | bool | C1 / V6 / V5.6 / V5.5 | Переключение на тарифный уровень «с аудио» (аудио генерируется upstream) |
 
-> V5 / V4.5 / V4 / V3.5 do **not** support audio; passing `generate_audio_switch: true` returns `400`.
+> V5 / V4.5 / V4 / V3.5 **не** поддерживают аудио; передача `generate_audio_switch: true` возвращает `400`.
 
-### Image-to-Video Advanced Fields
+### Расширенные поля для изображения-в-видео
 
-PixVerse image-to-video requires uploading the image upstream to obtain an `img_id`. Uter **wraps the upload flow automatically**: pass `image: "https://..."` or `image: "data:image/png;base64,..."` in the body and Uter uploads it to PixVerse, retrieves the `img_id` and forwards it.
+PixVerse для генерации изображение-в-видео требует загрузки изображения upstream для получения `img_id`. Uter **автоматически оборачивает поток загрузки**: передайте `image: "https://..."` или `image: "data:image/png;base64,..."` в теле, и Uter загрузит его в PixVerse, получит `img_id` и перенаправит.
 
-If you already have an `img_id` (advanced case), pass it directly:
+Если у вас уже есть `img_id` (расширенный случай), передайте его напрямую:
 
-| Field | Type | Description |
+| Поле | Тип | Описание |
 |---|---|---|
-| `img_id` | int | Pre-uploaded image ID; takes precedence over automatic upload from `image` |
+| `img_id` | int | ID предзагруженного изображения; имеет приоритет над автоматической загрузкой из `image` |
 
-## Full Example
+## Полный пример
 
 ```bash
 # Step 1: submit the task
@@ -186,12 +186,12 @@ curl https://uter.ai/v1/videos/task_xxx/content \
   -o cat_on_moon.mp4
 ```
 
-## Status Codes and Errors
+## Коды состояния и ошибки
 
-| Case | Description |
+| Случай | Описание |
 |---|---|
-| `400` | Invalid parameter combination (e.g. `generate_audio_switch: true` on V5, fast mode with 1080p/8s, unsupported quality × duration, unknown model); rejected before submission, no charge |
-| `401` | API key invalid or expired |
-| `403` | API key not allowed to access this model (check the token model whitelist) |
-| `402` | Insufficient balance (`insufficient user quota`); top up in the Uter console |
-| Task `failed` | Upstream failure (moderation / generation / timeout); Uter refunds automatically and the refund appears in the logs |
+| `400` | Недопустимая комбинация параметров (напр. `generate_audio_switch: true` на V5, fast-режим с 1080p/8s, неподдерживаемое качество × длительность, неизвестная модель); отклоняется до отправки, списание не производится |
+| `401` | Недействительный или просроченный API-ключ |
+| `403` | API-ключ не имеет доступа к этой модели (проверьте белый список моделей токена) |
+| `402` | Недостаточный баланс (`insufficient user quota`); пополните в консоли Uter |
+| Задача `failed` | Сбой upstream (модерация / генерация / таймаут); Uter автоматически возвращает средства, и возврат отображается в логах |

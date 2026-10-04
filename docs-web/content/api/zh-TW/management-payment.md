@@ -1,121 +1,121 @@
-# payment
+# 充值
 
 ## Creem Webhook
 
-🔓 无需鉴权（Webhook回调）
+🔓 無需鑑權（Webhook回撥）
 
 `POST` `/api/creem/webhook`
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |
 
 ## Stripe Webhook
 
-🔓 无需鉴权（Webhook回调）
+🔓 無需鑑權（Webhook回撥）
 
 `POST` `/api/stripe/webhook`
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |
 
-## Get Payment Amount
+## 獲取支付金額
 
-🔐 需要登录（User权限）
+🔐 需要登入（User許可權）
 
 `POST` `/api/user/amount`
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |
 
-## Initiate Creem Payment
+## 發起Creem支付
 
-🔐 需要登录（User权限）
+🔐 需要登入（User許可權）
 
 `POST` `/api/user/creem/pay`
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |
 
-## Epay Callback
+## 易支付回撥
 
-🔓 无需鉴权（支付回调）
+🔓 無需鑑權（支付回撥）
 
 `GET` `/api/user/epay/notify`
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |
 
-## Initiate Easy Payment
+## 發起易支付
 
-🔐 需要登录（User权限）
+🔐 需要登入（User許可權）
 
 `POST` `/api/user/pay`
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |
 
-## Get Stripe Payment Amount
+## 獲取Stripe支付金額
 
-🔐 需要登录（User权限）
+🔐 需要登入（User許可權）
 
 `POST` `/api/user/stripe/amount`
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |
 
-## Initiate Stripe Payment
+## 發起Stripe支付
 
-🔐 需要登录（User权限）
+🔐 需要登入（User許可權）
 
 `POST` `/api/user/stripe/pay`
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |
 
-## Get Top-up Information
+## 獲取充值資訊
 
-🔐 需要登录（User权限）
+🔐 需要登入（User許可權）
 
 `GET` `/api/user/topup/info`
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |
 
-## Get User Top-up Records
+## 獲取使用者充值記錄
 
-🔐 需要登录（User权限）
+🔐 需要登入（User許可權）
 
 `GET` `/api/user/topup/self`
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |

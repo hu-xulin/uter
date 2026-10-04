@@ -1,124 +1,124 @@
-# fine-tuning
+# Fine-tuning
 
-## Cancel Fine-tuning Task (Unimplemented)
+## Hủy tác vụ Fine-tuning (Chưa triển khai)
 
-此接口尚未实现
+Giao diện này chưa được triển khai.
 
 `POST` `/v1/fine-tunes/{fine_tune_id}/cancel`
 
-### 请求参数
+### Tham số yêu cầu
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| Tên tham số | Vị trí | Kiểu | Bắt buộc | Mô tả |
 |---|---|---|---|---|
-| `fine_tune_id` | path | string | 是 | — |
+| `fine_tune_id` | path | string | Có | — |
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `501` | 未实现 |
+| `501` | Chưa triển khai |
 
-#### `501` 响应字段
+#### Trường phản hồi `501`
 
-| 字段 | 类型 | 说明 |
+| Trường | Kiểu | Mô tả |
 |---|---|---|
-| `error.message` | string | 错误信息 |
-| `error.type` | string | 错误类型 |
-| `error.param` | string | 相关参数 |
-| `error.code` | string | 错误代码 |
+| `error.message` | string | Thông báo lỗi |
+| `error.type` | string | Loại lỗi |
+| `error.param` | string | Tham số liên quan |
+| `error.code` | string | Mã lỗi |
 
-## Create Fine-tuning Task (Unimplemented)
+## Tạo tác vụ Fine-tuning (Chưa triển khai)
 
-此接口尚未实现
+Giao diện này chưa được triển khai.
 
 `POST` `/v1/fine-tunes`
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `501` | 未实现 |
+| `501` | Chưa triển khai |
 
-#### `501` 响应字段
+#### Trường phản hồi `501`
 
-| 字段 | 类型 | 说明 |
+| Trường | Kiểu | Mô tả |
 |---|---|---|
-| `error.message` | string | 错误信息 |
-| `error.type` | string | 错误类型 |
-| `error.param` | string | 相关参数 |
-| `error.code` | string | 错误代码 |
+| `error.message` | string | Thông báo lỗi |
+| `error.type` | string | Loại lỗi |
+| `error.param` | string | Tham số liên quan |
+| `error.code` | string | Mã lỗi |
 
-## Get Fine-tune Job Events (Unimplemented)
+## Lấy sự kiện tác vụ Fine-tune (Chưa triển khai)
 
-此接口尚未实现
+Giao diện này chưa được triển khai.
 
 `GET` `/v1/fine-tunes/{fine_tune_id}/events`
 
-### 请求参数
+### Tham số yêu cầu
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| Tên tham số | Vị trí | Kiểu | Bắt buộc | Mô tả |
 |---|---|---|---|---|
-| `fine_tune_id` | path | string | 是 | — |
+| `fine_tune_id` | path | string | Có | — |
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `501` | 未实现 |
+| `501` | Chưa triển khai |
 
-#### `501` 响应字段
+#### Trường phản hồi `501`
 
-| 字段 | 类型 | 说明 |
+| Trường | Kiểu | Mô tả |
 |---|---|---|
-| `error.message` | string | 错误信息 |
-| `error.type` | string | 错误类型 |
-| `error.param` | string | 相关参数 |
-| `error.code` | string | 错误代码 |
+| `error.message` | string | Thông báo lỗi |
+| `error.type` | string | Loại lối |
+| `error.param` | string | Tham số liên quan |
+| `error.code` | string | Mã lỗi |
 
-## List Fine-tuning Jobs (Unimplemented)
+## Liệt kê tác vụ Fine-tuning (Chưa triển khai)
 
-此接口尚未实现
+Giao diện này chưa được triển khai.
 
 `GET` `/v1/fine-tunes`
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `501` | 未实现 |
+| `501` | Chưa triển khai |
 
-#### `501` 响应字段
+#### Trường phản hồi `501`
 
-| 字段 | 类型 | 说明 |
+| Trường | Kiểu | Mô tả |
 |---|---|---|
-| `error.message` | string | 错误信息 |
-| `error.type` | string | 错误类型 |
-| `error.param` | string | 相关参数 |
-| `error.code` | string | 错误代码 |
+| `error.message` | string | Thông báo lỗi |
+| `error.type` | string | Loại lỗi |
+| `error.param` | string | Tham số liên quan |
+| `error.code` | string | Mã lỗi |
 
-## Get Fine-tuning Job Details (Unimplemented)
+## Lấy chi tiết tác vụ Fine-tuning (Chưa triển khai)
 
-此接口尚未实现
+Giao diện này chưa được triển khai.
 
 `GET` `/v1/fine-tunes/{fine_tune_id}`
 
-### 请求参数
+### Tham số yêu cầu
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| Tên tham số | Vị trí | Kiểu | Bắt buộc | Mô tả |
 |---|---|---|---|---|
-| `fine_tune_id` | path | string | 是 | — |
+| `fine_tune_id` | path | string | Có | — |
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `501` | 未实现 |
+| `501` | Chưa triển khai |
 
-#### `501` 响应字段
+#### Trường phản hồi `501`
 
-| 字段 | 类型 | 说明 |
+| Trường | Kiểu | Mô tả |
 |---|---|---|
-| `error.message` | string | 错误信息 |
-| `error.type` | string | 错误类型 |
-| `error.param` | string | 相关参数 |
-| `error.code` | string | 错误代码 |
+| `error.message` | string | Thông báo lỗi |
+| `error.type` | string | Loại lỗi |
+| `error.param` | string | Tham số liên quan |
+| `error.code` | string | Mã lỗi |

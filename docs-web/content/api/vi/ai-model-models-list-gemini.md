@@ -1,17 +1,17 @@
-# Native Gemini Format
+# Định dạng Native Gemini
 
-以 Gemini API 格式返回可用模型列表
+Trả về danh sách mô hình khả dụng ở định dạng Gemini API.
 
 `GET` `/v1beta/models`
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功获取模型列表 |
+| `200` | Lấy danh sách mô hình thành công |
 
-#### `200` 响应字段
+#### Trường phản hồi `200`
 
-| 字段 | 类型 | 说明 |
+| Trường | Kiểu | Mô tả |
 |---|---|---|
 | `models` | array&lt;object&gt; | — |

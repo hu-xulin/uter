@@ -1,42 +1,42 @@
-# Native OpenAI Format
+# Format OpenAI natif
 
-## Native OpenAI Format
+## Format OpenAI natif
 
-基于给定提示创建文本补全
+Crée une complétion de texte basée sur l'invite donnée.
 
 `POST` `/v1/completions`
 
-### 请求体（`application/json`）
+### Corps de la requête (`application/json`)
 
-| 字段 | 类型 | 必填 | 说明 |
+| Champ | Type | Requis | Description |
 |---|---|---|---|
-| `model` | string | 是 | — |
-| `max_tokens` | integer | 否 | — |
-| `temperature` | number | 否 | — |
-| `top_p` | number | 否 | — |
-| `n` | integer | 否 | — |
-| `stream` | boolean | 否 | — |
-| `suffix` | string | 否 | — |
-| `echo` | boolean | 否 | — |
+| `model` | string | Oui | — |
+| `max_tokens` | integer | Non | — |
+| `temperature` | number | Non | — |
+| `top_p` | number | Non | — |
+| `n` | integer | Non | — |
+| `stream` | boolean | Non | — |
+| `suffix` | string | Non | — |
+| `echo` | boolean | Non | — |
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功创建响应 |
+| `200` | Réponse créée avec succès |
 
-#### `200` 响应字段
+#### Champs de la réponse `200`
 
-| 字段 | 类型 | 说明 |
+| Champ | Type | Description |
 |---|---|---|
 | `id` | string | — |
 | `object` | string | — |
 | `created` | integer | — |
 | `model` | string | — |
 | `choices` | array&lt;object&gt; | — |
-| `usage.prompt_tokens` | integer | 提示词 Token 数 |
-| `usage.completion_tokens` | integer | 补全 Token 数 |
-| `usage.total_tokens` | integer | 总 Token 数 |
+| `usage.prompt_tokens` | integer | Nombre de tokens d'invite |
+| `usage.completion_tokens` | integer | Nombre de tokens de complétion |
+| `usage.total_tokens` | integer | Nombre total de tokens |
 | `usage.prompt_tokens_details.cached_tokens` | integer | — |
 | `usage.prompt_tokens_details.text_tokens` | integer | — |
 | `usage.prompt_tokens_details.audio_tokens` | integer | — |

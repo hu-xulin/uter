@@ -1,121 +1,121 @@
-# payment
+# Thanh toán (payment)
 
 ## Creem Webhook
 
-🔓 无需鉴权（Webhook回调）
+🔓 Không cần xác thực (callback Webhook)
 
 `POST` `/api/creem/webhook`
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
 ## Stripe Webhook
 
-🔓 无需鉴权（Webhook回调）
+🔓 Không cần xác thực (callback Webhook)
 
 `POST` `/api/stripe/webhook`
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Get Payment Amount
+## Lấy số tiền thanh toán (Get Payment Amount)
 
-🔐 需要登录（User权限）
+🔐 Yêu cầu đăng nhập (quyền User)
 
 `POST` `/api/user/amount`
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Initiate Creem Payment
+## Khởi tạo thanh toán Creem (Initiate Creem Payment)
 
-🔐 需要登录（User权限）
+🔐 Yêu cầu đăng nhập (quyền User)
 
 `POST` `/api/user/creem/pay`
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Epay Callback
+## Callback Epay (Epay Callback)
 
-🔓 无需鉴权（支付回调）
+🔓 Không cần xác thực (callback thanh toán)
 
 `GET` `/api/user/epay/notify`
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Initiate Easy Payment
+## Khởi tạo thanh toán Easy (Initiate Easy Payment)
 
-🔐 需要登录（User权限）
+🔐 Yêu cầu đăng nhập (quyền User)
 
 `POST` `/api/user/pay`
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Get Stripe Payment Amount
+## Lấy số tiền thanh toán Stripe (Get Stripe Payment Amount)
 
-🔐 需要登录（User权限）
+🔐 Yêu cầu đăng nhập (quyền User)
 
 `POST` `/api/user/stripe/amount`
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Initiate Stripe Payment
+## Khởi tạo thanh toán Stripe (Initiate Stripe Payment)
 
-🔐 需要登录（User权限）
+🔐 Yêu cầu đăng nhập (quyền User)
 
 `POST` `/api/user/stripe/pay`
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Get Top-up Information
+## Lấy thông tin nạp tiền (Get Top-up Information)
 
-🔐 需要登录（User权限）
+🔐 Yêu cầu đăng nhập (quyền User)
 
 `GET` `/api/user/topup/info`
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-## Get User Top-up Records
+## Lấy lịch sử nạp tiền người dùng (Get User Top-up Records)
 
-🔐 需要登录（User权限）
+🔐 Yêu cầu đăng nhập (quyền User)
 
 `GET` `/api/user/topup/self`
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |

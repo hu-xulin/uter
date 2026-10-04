@@ -1,88 +1,88 @@
-# gemini
+# Gemini
 
-## Gemini Media Recognition
+## Nhận diện đa phương tiện Gemini
 
-Gemini图像、PDF、音频、视频识别请求
+Yêu cầu nhận diện hình ảnh, PDF, âm thanh, video của Gemini.
 
-⚠️注意：原生 Gemini 格式请求支持通过 inlineData（base64）或 fileData.fileUri（可公开访问的 URL，支持 YouTube 链接）传递媒体。通过 Gemini File API 上传的文件 URI 能否访问，取决于上游渠道 Key 的权限，建议优先使用可公开访问的 URL。OpenAI 格式（chat/completions）请求转换为 Gemini 时，媒体将统一下载并转换为 inlineData（base64）传递。
+⚠️ Lưu ý: yêu cầu định dạng native Gemini hỗ trợ truyền media qua inlineData (base64) hoặc fileData.fileUri (URL có thể truy cập công khai, hỗ trợ liên kết YouTube). Việc URI tệp tải lên qua Gemini File API có thể truy cập hay không phụ thuộc vào quyền của Key kênh upstream, khuyến nghị ưu tiên sử dụng URL có thể truy cập công khai. Khi yêu cầu định dạng OpenAI (chat/completions) được chuyển đổi sang Gemini, media sẽ được tải về và chuyển đổi thống nhất thành inlineData (base64) để truyền đi.
 
 `POST` `/v1beta/models/{model}:generateContent`
 
-### 请求参数
+### Tham số yêu cầu
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| Tên tham số | Vị trí | Kiểu | Bắt buộc | Mô tả |
 |---|---|---|---|---|
-| `model` | path | string | 是 | 模型名称 |
+| `model` | path | string | Có | Tên mô hình |
 
-### 请求体（`application/json`）
+### Thân yêu cầu (`application/json`)
 
-| 字段 | 类型 | 必填 | 说明 |
+| Trường | Kiểu | Bắt buộc | Mô tả |
 |---|---|---|---|
-| `contents` | array&lt;object&gt; | 否 | — |
-| `generationConfig.temperature` | number | 否 | — |
-| `generationConfig.topP` | number | 否 | — |
-| `generationConfig.topK` | integer | 否 | — |
-| `generationConfig.maxOutputTokens` | integer | 否 | — |
-| `generationConfig.stopSequences` | array&lt;string&gt; | 否 | — |
-| `safetySettings` | array&lt;object&gt; | 否 | — |
-| `tools` | array&lt;object&gt; | 否 | — |
-| `systemInstruction.parts` | array&lt;object&gt; | 否 | — |
+| `contents` | array&lt;object&gt; | Không | — |
+| `generationConfig.temperature` | number | Không | — |
+| `generationConfig.topP` | number | Không | — |
+| `generationConfig.topK` | integer | Không | — |
+| `generationConfig.maxOutputTokens` | integer | Không | — |
+| `generationConfig.stopSequences` | array&lt;string&gt; | Không | — |
+| `safetySettings` | array&lt;object&gt; | Không | — |
+| `tools` | array&lt;object&gt; | Không | — |
+| `systemInstruction.parts` | array&lt;object&gt; | Không | — |
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-#### `200` 响应字段
+#### Trường phản hồi `200`
 
-| 字段 | 类型 | 说明 |
+| Trường | Kiểu | Mô tả |
 |---|---|---|
 | `candidates` | array&lt;object&gt; | — |
 | `usageMetadata.promptTokenCount` | integer | — |
 | `usageMetadata.candidatesTokenCount` | integer | — |
 | `usageMetadata.totalTokenCount` | integer | — |
 
-## Gemini Text Chat
+## Chat văn bản Gemini
 
-代理 Gemini API 请求。
-路径格式: `/v1beta/models/{model_name}:{action}`
+Yêu cầu proxy API Gemini.
+Định dạng đường dẫn: `/v1beta/models/{model_name}:{action}`
 
-例如:
+Ví dụ:
 - `/v1beta/models/gemini-2.5-pro:generateContent`
 - `/v1beta/models/gemini-2.5-pro:streamGenerateContent?alt=sse`
 
 `POST` `/v1beta/models/{model}:generateContent`
 
-### 请求参数
+### Tham số yêu cầu
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| Tên tham số | Vị trí | Kiểu | Bắt buộc | Mô tả |
 |---|---|---|---|---|
-| `model` | path | string | 是 | 模型名称 |
+| `model` | path | string | Có | Tên mô hình |
 
-### 请求体（`application/json`）
+### Thân yêu cầu (`application/json`)
 
-| 字段 | 类型 | 必填 | 说明 |
+| Trường | Kiểu | Bắt buộc | Mô tả |
 |---|---|---|---|
-| `contents` | array&lt;object&gt; | 否 | — |
-| `generationConfig.temperature` | number | 否 | — |
-| `generationConfig.topP` | number | 否 | — |
-| `generationConfig.topK` | integer | 否 | — |
-| `generationConfig.maxOutputTokens` | integer | 否 | — |
-| `generationConfig.stopSequences` | array&lt;string&gt; | 否 | — |
-| `safetySettings` | array&lt;object&gt; | 否 | — |
-| `tools` | array&lt;object&gt; | 否 | — |
-| `systemInstruction.parts` | array&lt;object&gt; | 否 | — |
+| `contents` | array&lt;object&gt; | Không | — |
+| `generationConfig.temperature` | number | Không | — |
+| `generationConfig.topP` | number | Không | — |
+| `generationConfig.topK` | integer | Không | — |
+| `generationConfig.maxOutputTokens` | integer | Không | — |
+| `generationConfig.stopSequences` | array&lt;string&gt; | Không | — |
+| `safetySettings` | array&lt;object&gt; | Không | — |
+| `tools` | array&lt;object&gt; | Không | — |
+| `systemInstruction.parts` | array&lt;object&gt; | Không | — |
 
-### 响应
+### Phản hồi
 
-| 状态码 | 说明 |
+| Mã trạng thái | Mô tả |
 |---|---|
-| `200` | 成功 |
+| `200` | Thành công |
 
-#### `200` 响应字段
+#### Trường phản hồi `200`
 
-| 字段 | 类型 | 说明 |
+| Trường | Kiểu | Mô tả |
 |---|---|---|
 | `candidates` | array&lt;object&gt; | — |
 | `usageMetadata.promptTokenCount` | integer | — |

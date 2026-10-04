@@ -1,79 +1,79 @@
-# Memoh - Containerized AI Agent Platform
+# Memoh - Nền tảng tác nhân AI đóng gói trong container
 
-> Memoh is an open-source, self-hosted AI agent platform where each bot runs in
->   its own isolated container with persistent memory and a dedicated filesystem.
->   It supports 9 channels including Telegram, Discord, Lark (Feishu), QQ, Matrix,
->   WeCom, WeChat, Email, and a built-in Web UI, along with MCP tool calling,
->   browser automation, scheduled tasks, and other rich agent capabilities.
+> Memoh là một nền tảng tác nhân AI tự lưu trữ, mã nguồn mở, nơi mỗi bot chạy trong
+>   container riêng biệt của nó với bộ nhớ bền vững và hệ thống tệp chuyên dụng.
+>   Nó hỗ trợ 9 kênh bao gồm Telegram, Discord, Lark (Feishu), QQ, Matrix,
+>   WeCom, WeChat, Email và một Web UI tích hợp sẵn, cùng với gọi công cụ MCP,
+>   tự động hóa trình duyệt, tác vụ lập lịch và nhiều năng lực tác nhân phong phú khác.
 
-- Website: [https://memoh.sh](https://memoh.sh)
-- Documentation: [https://docs.memoh.ai](https://docs.memoh.ai)
+- Trang web: [https://memoh.sh](https://memoh.sh)
+- Tài liệu: [https://docs.memoh.ai](https://docs.memoh.ai)
 - GitHub: [https://github.com/memohai/Memoh](https://github.com/memohai/Memoh)
 
-## Key Features
+## Tính năng chính
 
-- **Containerized Isolation**: Each bot runs in its own containerd container with a dedicated filesystem and network, supporting snapshots and data import/export
-- **Memory Engine**: LLM-driven fact extraction, hybrid retrieval (dense + sparse + BM25), 24-hour context loading, memory compaction and rebuild
-- **Multi-Channel Support**: Telegram, Discord, Lark (Feishu), QQ, Matrix, WeCom, WeChat, Email, Web UI
-- **MCP Support**: Full MCP protocol support (HTTP / SSE / Stdio / OAuth), with independent MCP connection management per bot
-- **Browser Automation**: Built-in headless browser powered by Playwright, supporting web browsing, form filling, screenshots, and more
-- **Web Dashboard**: Modern management interface built with Vue 3 + Tailwind CSS, featuring streaming chat, tool call visualization, file management, and more
+- **Cách ly bằng container**: Mỗi bot chạy trong container containerd riêng với hệ thống tệp và mạng chuyên dụng, hỗ trợ snapshot và nhập/xuất dữ liệu
+- **Công cụ bộ nhớ**: Trích xuất sự thật dựa trên LLM, truy xuất kết hợp (dense + sparse + BM25), tải ngữ cảnh 24 giờ, nén và xây dựng lại bộ nhớ
+- **Hỗ trợ đa kênh**: Telegram, Discord, Lark (Feishu), QQ, Matrix, WeCom, WeChat, Email, Web UI
+- **Hỗ trợ MCP**: Hỗ trợ đầy đủ giao thức MCP (HTTP / SSE / Stdio / OAuth), với quản lý kết nối MCP độc lập cho từng bot
+- **Tự động hóa trình duyệt**: Trình duyệt không giao diện tích hợp sẵn được hỗ trợ bởi Playwright, hỗ trợ duyệt web, điền biểu mẫu, chụp màn hình và hơn thế nữa
+- **Bảng điều khiển web**: Giao diện quản lý hiện đại được xây dựng bằng Vue 3 + Tailwind CSS, với trò chuyện streaming, trực quan hóa lời gọi công cụ, quản lý tệp và hơn thế nữa
 
-## Quick Installation
+## Cài đặt nhanh
 
-Memoh is deployed via Docker. One-click install (requires Docker):
+Memoh được triển khai qua Docker. Cài đặt một cú nhấp (yêu cầu Docker):
 
 ```bash
 curl -fsSL https://memoh.sh | sudo sh
 ```
 
-Or install manually:
+Hoặc cài đặt thủ công:
 
 ```bash
 git clone --depth 1 https://github.com/memohai/Memoh.git
 cd Memoh
 cp conf/app.docker.toml config.toml
-# Edit the config.toml configuration file
+# Chỉnh sửa tệp cấu hình config.toml
 sudo docker compose up -d
 ```
 
-After startup, visit `http://localhost:8082`. Default credentials: `admin` / `admin123`.
+Sau khi khởi động, truy cập `http://localhost:8082`. Thông tin đăng nhập mặc định: `admin` / `admin123`.
 
-## Uter Integration
+## Tích hợp Uter
 
-Memoh supports any OpenAI-compatible model provider, allowing you to use Uter to centrally manage and access various AI model services.
+Memoh hỗ trợ mọi nhà cung cấp mô hình tương thích OpenAI, cho phép bạn sử dụng Uter để quản lý tập trung và truy cập nhiều dịch vụ mô hình AI.
 
-### Configuration Steps
+### Các bước cấu hình
 
-#### Obtain a Uter API Key
+#### Lấy API Key của Uter
 
-After registering and logging in to Uter, click "Console" in the top navigation bar, then click "Token Management", and click the "Add Token" button to create a uter Key. Select the appropriate permissions and click "Create".
+Sau khi đăng ký và đăng nhập Uter, nhấn "Console" trên thanh điều hướng trên cùng, sau đó nhấn "Token Management", và nhấn nút "Add Token" để tạo một Key uter. Chọn quyền hạn phù hợp và nhấn "Create".
 
-Once created, click the copy button to copy the generated API Key.
+Khi đã tạo, nhấn nút sao chép để sao chép API Key đã tạo.
 
-![copy-api-key](/apps-assets/memoh/copy_api_key.webp)
+![sao-chép-api-key](/apps-assets/memoh/copy_api_key.webp)
 
-#### Add a Model Provider in Memoh
+#### Thêm nhà cung cấp mô hình trong Memoh
 
-Log in to the Memoh Web dashboard, go to the provider management page, and click Uter.
+Đăng nhập vào bảng điều khiển web Memoh, đi tới trang quản lý nhà cung cấp, và nhấn Uter.
 
-![switch-to-uter-provider](/apps-assets/memoh/switch_to_uter_provider.webp)
+![chuyển-sang-nhà-cung-cấp-uter](/apps-assets/memoh/switch_to_uter_provider.webp)
 
-Fill in the following information on the configuration page:
+Điền các thông tin sau trên trang cấu hình:
 
-- **API Base URL**: Enter the Uter endpoint URL, e.g. `https://api.example.com/v1` (use `http://localhost:3000/v1` for local deployments)
-- **API Key**: Paste the API Key copied from Uter
+- **API Base URL**: Nhập URL điểm cuối Uter, ví dụ `https://api.example.com/v1` (dùng `http://localhost:3000/v1` cho triển khai cục bộ)
+- **API Key**: Dán API Key đã sao chép từ Uter
 
-Click Save to complete the provider configuration.
+Nhấn Save để hoàn tất cấu hình nhà cung cấp.
 
-#### Import Models
+#### Nhập mô hình
 
-After configuring the provider, go to the model management page and click auto-import or manually add the models you need.
+Sau khi cấu hình nhà cung cấp, đi tới trang quản lý mô hình và nhấn tự động nhập hoặc thêm thủ công các mô hình bạn cần.
 
-#### Configure a Model for Your Bot
+#### Cấu hình mô hình cho bot của bạn
 
-Go to the bot settings page, find the model configuration section, switch the default chat model to the one added via the Uter provider, and click Save.
+Đi tới trang cài đặt bot, tìm phần cấu hình mô hình, chuyển mô hình trò chuyện mặc định sang mô hình đã thêm qua nhà cung cấp Uter, và nhấn Save.
 
-![set_chat_model](/apps-assets/memoh/set_chat_model.webp)
+![đặt_mô_hình_trò_chuyện](/apps-assets/memoh/set_chat_model.webp)
 
-You have now successfully configured Uter as the model provider for Memoh. You can chat with AI bots through any of Memoh's channels (Telegram, Discord, Lark, etc.), and all requests will be routed through Uter.
+Bạn đã cấu hình thành công Uter làm nhà cung cấp mô hình cho Memoh. Bạn có thể trò chuyện với các bot AI qua bất kỳ kênh nào của Memoh (Telegram, Discord, Lark, v.v.), và tất cả yêu cầu sẽ được định tuyến qua Uter.

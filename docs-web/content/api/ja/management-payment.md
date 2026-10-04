@@ -2,120 +2,120 @@
 
 ## Creem Webhook
 
-🔓 无需鉴权（Webhook回调）
+🔓 認証不要（Webhookコールバック）
 
 `POST` `/api/creem/webhook`
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
 ## Stripe Webhook
 
-🔓 无需鉴权（Webhook回调）
+🔓 認証不要（Webhookコールバック）
 
 `POST` `/api/stripe/webhook`
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-## Get Payment Amount
+## 決済金額の取得
 
-🔐 需要登录（User权限）
+🔐 ログインが必要（User権限）
 
 `POST` `/api/user/amount`
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-## Initiate Creem Payment
+## Creem 決済の開始
 
-🔐 需要登录（User权限）
+🔐 ログインが必要（User権限）
 
 `POST` `/api/user/creem/pay`
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-## Epay Callback
+## Epay コールバック
 
-🔓 无需鉴权（支付回调）
+🔓 認証不要（決済コールバック）
 
 `GET` `/api/user/epay/notify`
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-## Initiate Easy Payment
+## Easy Payment 決済の開始
 
-🔐 需要登录（User权限）
+🔐 ログインが必要（User権限）
 
 `POST` `/api/user/pay`
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-## Get Stripe Payment Amount
+## Stripe 決済金額の取得
 
-🔐 需要登录（User权限）
+🔐 ログインが必要（User権限）
 
 `POST` `/api/user/stripe/amount`
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-## Initiate Stripe Payment
+## Stripe 決済の開始
 
-🔐 需要登录（User权限）
+🔐 ログインが必要（User権限）
 
 `POST` `/api/user/stripe/pay`
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-## Get Top-up Information
+## チャージ情報の取得
 
-🔐 需要登录（User权限）
+🔐 ログインが必要（User権限）
 
 `GET` `/api/user/topup/info`
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-## Get User Top-up Records
+## ユーザーチャージ記録の取得
 
-🔐 需要登录（User权限）
+🔐 ログインが必要（User権限）
 
 `GET` `/api/user/topup/self`
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |

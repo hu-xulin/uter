@@ -1,53 +1,52 @@
-# DeepChat - Commercial-Friendly Full-Featured AI Agent Client
+# DeepChat - 商用フレンドリーなフル機能 AI エージェントクライアント
 
-> **Chat Settings Options**
+> **チャット設定オプション**
 >
-> In the Uter console, go to System Settings -> Chat Settings and add the
->   following shortcut option. It lets users fill DeepChat from the token
->   management page with one click:
+> Uter コンソールで、システム設定 → チャット設定 に移動し、次のショートカットオプションを追加します。
+>   これにより、トークン管理ページから DeepChat をワンクリックで入力できるようになります：
 
     ```json
     { "DeepChat": "deepchat://provider/install?v=1&data={deepchatConfig}" }
     ```
 
-> DeepChat is an open-source, cross-platform, commercial-friendly full-featured
->   AI Agent client. It supports cloud and local models, MCP tool calls, Skills,
->   ACP, Agent integration, and remote-control workflows, making it suitable for
->   users who need unified Provider management and advanced AI Agents.
+> DeepChat はオープンソースのクロスプラットフォームで、商用フレンドリーなフル機能の
+>   AI エージェントクライアントです。クラウドモデルとローカルモデル、MCP ツール呼び出し、Skills、
+>   ACP、エージェント統合、およびリモート制御ワークフローをサポートし、統合されたプロバイダ管理と
+>   高度な AI エージェントを必要とするユーザーに適しています。
 
-- Official Website: [https://deepchat.thinkinai.xyz](https://deepchat.thinkinai.xyz)
-- GitHub Repository: [https://github.com/ThinkInAIXYZ/deepchat](https://github.com/ThinkInAIXYZ/deepchat)
-- Download Address: [https://deepchat.thinkinai.xyz/#/download](https://deepchat.thinkinai.xyz/#/download)
+- 公式サイト: [https://deepchat.thinkinai.xyz](https://deepchat.thinkinai.xyz)
+- GitHub リポジトリ: [https://github.com/ThinkInAIXYZ/deepchat](https://github.com/ThinkInAIXYZ/deepchat)
+- ダウンロードアドレス: [https://deepchat.thinkinai.xyz/#/download](https://deepchat.thinkinai.xyz/#/download)
 
-## Uter Integration Method
+## Uter との連携方法
 
-### Method 1: One-Click Import
+### 方法 1: ワンクリックインポート
 
-1. In the Uter console sidebar, open **Token Management** and find the token you want to use
+1. Uter コンソールのサイドバーで **トークン管理** を開き、使用したいトークンを見つける
 
-2. Select **DeepChat** from the token actions
+2. トークン操作から **DeepChat** を選択
 
-3. Let the browser launch DeepChat and confirm opening the app
+3. ブラウザで DeepChat を起動し、アプリを開くことを確認
    ![Open DeepChat](/apps-assets/deepchat/3-open-deepchat.webp)
 
-4. Confirm the configuration in DeepChat's Provider import preview
+4. DeepChat のプロバイダインポートプレビューで設定を確認
    ![Confirm DeepChat Configuration](/apps-assets/deepchat/4-deepchat-ok.webp)
 
-5. Open the model list and select a Uter model to start using it
+5. モデル一覧を開き、Uter モデルを選択して利用開始
    ![Open Model List](/apps-assets/deepchat/5-open-models.webp)
 
-### Method 2: Manual Import
+### 方法 2: 手動インポート
 
-1. Copy the API Key and site address from the Uter console
+1. Uter コンソールから API キーとサイトアドレスをコピー
    ![Uter Manual Configuration Guide](/apps-assets/deepchat/7-uter-manual-guidance.webp)
 
-2. In DeepChat settings, add or edit the Uter Provider, then fill in the API address and API Key
+2. DeepChat の設定で Uter プロバイダを追加または編集し、API アドレスと API キーを入力
    ![DeepChat Manual Configuration Guide](/apps-assets/deepchat/6-deepchat-manual-guidance.webp)
 
-3. Open the model list and select a Uter model to start using it
+3. モデル一覧を開き、Uter モデルを選択して利用開始
    ![Open Model List](/apps-assets/deepchat/5-open-models.webp)
 
-## Related Links
+## 関連リンク
 
-- [DeepChat GitHub Repository](https://github.com/ThinkInAIXYZ/deepchat)
-- [DeepChat Download Page](https://deepchat.thinkinai.xyz/#/download)
+- [DeepChat GitHub リポジトリ](https://github.com/ThinkInAIXYZ/deepchat)
+- [DeepChat ダウンロードページ](https://deepchat.thinkinai.xyz/#/download)

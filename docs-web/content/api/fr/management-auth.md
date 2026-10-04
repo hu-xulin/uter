@@ -1,40 +1,40 @@
-# Authentication System Description (Auth)
+# Description du système d'authentification (Auth)
 
 ## Description
 
-Backend management interfaces adopt a multi-level authentication mechanism, commonly: **Public**, **User**, **Admin**, **Root**.
+Les interfaces de gestion backend adoptent un mécanisme d'authentification multi-niveaux, généralement : **Public**, **User**, **Admin**, **Root**.
 
-## Authentication Methods (Choose One)
+## Méthodes d'authentification (choisir l'une d'elles)
 
 ### Session
 
-Obtain Session via the login interface:
+Obtenez une session via l'interface de connexion :
 
 - `POST /api/user/login`
 
-### Access Token (Recommended)
+### Jeton d'accès (recommandé)
 
-Carry in the request header:
+À inclure dans l'en-tête de requête :
 
 ```text
 Authorization: Bearer {token}
 ```
 
-Tokens can be generated in "Personal Settings - Security Settings - System Access Tokens".
+Les jetons peuvent être générés dans « Paramètres personnels - Paramètres de sécurité - Jetons d'accès système ».
 
-## Required Request Headers
+## En-têtes de requête requis
 
-Some interfaces require carrying a user identification request header:
+Certaines interfaces nécessitent de transporter un en-tête de requête d'identification utilisateur :
 
 ```text
 Uter-User: {user_id}
 ```
 
-Where `{user_id}` must match the currently logged-in user.
+Où `{user_id}` doit correspondre à l'utilisateur actuellement connecté.
 
-## Permission Levels
+## Niveaux de permission
 
-- **Public**: No authentication required
-- **User**: Requires login or Access Token
-- **Admin**: Requires administrator privileges
-- **Root**: Highest privilege
+- **Public** : aucune authentification requise
+- **User** : nécessite une connexion ou un jeton d'accès
+- **Admin** : nécessite des privilèges d'administrateur
+- **Root** : privilège le plus élevé

@@ -1,17 +1,17 @@
-# API Reference
+# API リファレンス
 
-## Overview
+## 概要
 
-Uter provides a complete set of RESTful API interfaces, categorized into **AI Model APIs** and **Management APIs**. You can use these interfaces to invoke AI capabilities and perform system management functions.
+Uter は一連の RESTful API インターフェースを提供しており、**AI Model API** と **Management API** に分類されます。これらのインターフェースを使用して AI 機能を呼び出したり、システム管理機能を実行したりできます。
 
-> **Online Debugging**
+> **オンラインデバッグ**
 >
-> You can visit the Apifox Playground to test and debug API interfaces online, or browse the API documentation below.
+> Apifox Playground にアクセスして API インターフェースのオンラインテストとデバッグを行うか、以下の API ドキュメントを参照してください。
 
-## AI Model APIs
+## AI Model API
 
-AI Model APIs provide access to various AI capabilities and are compatible with the OpenAI API format.
+AI Model API は、さまざまな AI 機能へのアクセスを提供し、OpenAI API 形式と互換性があります。
 
-## Management APIs
+## Management API
 
-Management APIs are used for backend operations such as system configuration, user management, and business management.
+Management API は、システム設定、ユーザー管理、業務管理などのバックエンド操作に使用されます。

@@ -1,382 +1,382 @@
 # user-management
 
-## Get Invitation Code
+## 招待コードの取得
 
-🔐 需要登录（User权限）
+🔐 ログインが必要（User権限）
 
 `GET` `/api/user/aff`
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-## Convert Invitation Quota
+## 招待クォータの変換
 
-🔐 需要登录（User权限）
+🔐 ログインが必要（User権限）
 
 `POST` `/api/user/aff_transfer`
 
-### 请求体（`application/json`）
+### リクエストボディ（`application/json`）
 
-| 字段 | 类型 | 必填 | 说明 |
+| フィールド | 型 | 必須 | 説明 |
 |---|---|---|---|
-| `quota` | integer | 否 | — |
+| `quota` | integer | いいえ | — |
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-## Get All Users
+## すべてのユーザーの取得
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 管理者権限が必要（Admin）
 
 `GET` `/api/user/`
 
-### 请求参数
+### リクエストパラメータ
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| パラメータ名 | 位置 | 型 | 必須 | 説明 |
 |---|---|---|---|---|
-| `p` | query | integer | 否 | — |
-| `page_size` | query | integer | 否 | — |
+| `p` | query | integer | いいえ | — |
+| `page_size` | query | integer | いいえ | — |
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-## Admin Disable User 2FA
+## 管理者によるユーザー 2FA の無効化
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 管理者権限が必要（Admin）
 
 `DELETE` `/api/user/{id}/2fa`
 
-### 请求参数
+### リクエストパラメータ
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| パラメータ名 | 位置 | 型 | 必須 | 説明 |
 |---|---|---|---|---|
-| `id` | path | integer | 是 | — |
+| `id` | path | integer | はい | — |
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-## Delete User
+## ユーザーの削除
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 管理者権限が必要（Admin）
 
 `DELETE` `/api/user/{id}`
 
-### 请求参数
+### リクエストパラメータ
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| パラメータ名 | 位置 | 型 | 必須 | 説明 |
 |---|---|---|---|---|
-| `id` | path | integer | 是 | — |
+| `id` | path | integer | はい | — |
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-## Get Specific User
+## 特定のユーザーの取得
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 管理者権限が必要（Admin）
 
 `GET` `/api/user/{id}`
 
-### 请求参数
+### リクエストパラメータ
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| パラメータ名 | 位置 | 型 | 必須 | 説明 |
 |---|---|---|---|---|
-| `id` | path | integer | 是 | — |
+| `id` | path | integer | はい | — |
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-## Admin Reset User Passkey
+## 管理者によるユーザー Passkey のリセット
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 管理者権限が必要（Admin）
 
 `DELETE` `/api/user/{id}/reset_passkey`
 
-### 请求参数
+### リクエストパラメータ
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| パラメータ名 | 位置 | 型 | 必須 | 説明 |
 |---|---|---|---|---|
-| `id` | path | integer | 是 | — |
+| `id` | path | integer | はい | — |
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-## Manage User Status
+## ユーザー状態の管理
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 管理者権限が必要（Admin）
 
 `POST` `/api/user/manage`
 
-### 请求体（`application/json`）
+### リクエストボディ（`application/json`）
 
-| 字段 | 类型 | 必填 | 说明 |
+| フィールド | 型 | 必須 | 説明 |
 |---|---|---|---|
-| `id` | integer | 否 | — |
-| `action` | enum（`disable`, `enable`, `delete`, `promote`, `demote`） | 否 | — |
+| `id` | integer | いいえ | — |
+| `action` | enum（`disable`, `enable`, `delete`, `promote`, `demote`） | いいえ | — |
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-## Get User Available Models
+## ユーザー利用可能モデルの取得
 
-🔐 需要登录（User权限）
+🔐 ログインが必要（User権限）
 
 `GET` `/api/user/models`
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-## Delete Passkey
+## Passkey の削除
 
-🔐 需要登录（User权限）
+🔐 ログインが必要（User権限）
 
 `DELETE` `/api/user/passkey`
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-## Get Passkey Status
+## Passkey 状態の取得
 
-🔐 需要登录（User权限）
+🔐 ログインが必要（User権限）
 
 `GET` `/api/user/passkey`
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-## Start Passkey Registration
+## Passkey 登録の開始
 
-🔐 需要登录（User权限）
+🔐 ログインが必要（User権限）
 
 `POST` `/api/user/passkey/register/begin`
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-## Complete Passkey Registration
+## Passkey 登録の完了
 
-🔐 需要登录（User权限）
+🔐 ログインが必要（User権限）
 
 `POST` `/api/user/passkey/register/finish`
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-## Start Passkey Verification
+## Passkey 検証の開始
 
-🔐 需要登录（User权限）
+🔐 ログインが必要（User権限）
 
 `POST` `/api/user/passkey/verify/begin`
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-## Complete Passkey Verification
+## Passkey 検証の完了
 
-🔐 需要登录（User权限）
+🔐 ログインが必要（User権限）
 
 `POST` `/api/user/passkey/verify/finish`
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-## Create User
+## ユーザーの作成
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 管理者権限が必要（Admin）
 
 `POST` `/api/user/`
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-## Update User
+## ユーザーの更新
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 管理者権限が必要（Admin）
 
 `PUT` `/api/user/`
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-## Search Users
+## ユーザーの検索
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 管理者権限が必要（Admin）
 
 `GET` `/api/user/search`
 
-### 请求参数
+### リクエストパラメータ
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| パラメータ名 | 位置 | 型 | 必須 | 説明 |
 |---|---|---|---|---|
-| `keyword` | query | string | 否 | — |
-| `group` | query | string | 否 | — |
+| `keyword` | query | string | いいえ | — |
+| `group` | query | string | いいえ | — |
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-## Delete Current User
+## 現在のユーザーの削除
 
-🔐 需要登录（User权限）
+🔐 ログインが必要（User権限）
 
 `DELETE` `/api/user/self`
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-## Get Current User Information
+## 現在のユーザー情報の取得
 
-🔐 需要登录（User权限）
+🔐 ログインが必要（User権限）
 
 `GET` `/api/user/self`
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-## Get Current User Groups
+## 現在のユーザーのグループ取得
 
-🔐 需要登录（User权限）
+🔐 ログインが必要（User権限）
 
 `GET` `/api/user/self/groups`
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-## Update Current User Information
+## 現在のユーザー情報の更新
 
-🔐 需要登录（User权限）
+🔐 ログインが必要（User権限）
 
 `PUT` `/api/user/self`
 
-### 请求体（`application/json`）
+### リクエストボディ（`application/json`）
 
-| 字段 | 类型 | 必填 | 说明 |
+| フィールド | 型 | 必須 | 説明 |
 |---|---|---|---|
-| `username` | string | 否 | — |
-| `display_name` | string | 否 | — |
-| `password` | string | 否 | — |
-| `original_password` | string | 否 | — |
+| `username` | string | いいえ | — |
+| `display_name` | string | いいえ | — |
+| `password` | string | いいえ | — |
+| `original_password` | string | いいえ | — |
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-## Update User Settings
+## ユーザーの更新 Settings
 
-🔐 需要登录（User权限）
+🔐 ログインが必要（User権限）
 
 `PUT` `/api/user/setting`
 
-### 请求体（`application/json`）
+### リクエストボディ（`application/json`）
 
-| 字段 | 类型 | 必填 | 说明 |
+| フィールド | 型 | 必須 | 説明 |
 |---|---|---|---|
-| `notify_type` | string | 否 | — |
-| `quota_warning_threshold` | number | 否 | — |
-| `webhook_url` | string | 否 | — |
-| `notification_email` | string | 否 | — |
+| `notify_type` | string | いいえ | — |
+| `quota_warning_threshold` | number | いいえ | — |
+| `webhook_url` | string | いいえ | — |
+| `notification_email` | string | いいえ | — |
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-## Generate Access Token
+## アクセストークンの生成
 
-🔐 需要登录（User权限）
+🔐 ログインが必要（User権限）
 
 `GET` `/api/user/token`
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-## Admin Completes Top-up
+## 管理者によるチャージの完了
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 管理者権限が必要（Admin）
 
 `POST` `/api/user/topup/complete`
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-## Get All Top-up Records
+## すべてのチャージ記録の取得
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 管理者権限が必要（Admin）
 
 `GET` `/api/user/topup`
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |

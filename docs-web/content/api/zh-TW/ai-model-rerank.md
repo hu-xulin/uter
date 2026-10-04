@@ -1,30 +1,30 @@
-# Document Reranking
+# 重排序（Rerank）
 
-## Document Reranking
+## 文件重排序
 
-根据查询对文档列表进行相关性重排序
+根據查詢對文件列表進行相關性重排序
 
 `POST` `/v1/rerank`
 
-### 请求体（`application/json`）
+### 請求體（`application/json`）
 
-| 字段 | 类型 | 必填 | 说明 |
+| 欄位 | 型別 | 必填 | 說明 |
 |---|---|---|---|
 | `model` | string | 是 | — |
-| `query` | string | 是 | 查询文本 |
-| `documents` | array&lt;string&gt; | 是 | 要重排序的文档列表 |
-| `top_n` | integer | 否 | 返回前 N 个结果 |
+| `query` | string | 是 | 查詢文字 |
+| `documents` | array&lt;string&gt; | 是 | 要重排序的文件列表 |
+| `top_n` | integer | 否 | 返回前 N 個結果 |
 | `return_documents` | boolean | 否 | — |
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功重排序 |
 
-#### `200` 响应字段
+#### `200` 響應欄位
 
-| 字段 | 类型 | 说明 |
+| 欄位 | 型別 | 說明 |
 |---|---|---|
 | `id` | string | — |
 | `results` | array&lt;object&gt; | — |

@@ -1,88 +1,88 @@
 # gemini
 
-## Gemini Media Recognition
+## Reconnaissance de médias Gemini
 
-Gemini图像、PDF、音频、视频识别请求
+Requête de reconnaissance d'images, PDF, audio, vidéo Gemini.
 
-⚠️注意：原生 Gemini 格式请求支持通过 inlineData（base64）或 fileData.fileUri（可公开访问的 URL，支持 YouTube 链接）传递媒体。通过 Gemini File API 上传的文件 URI 能否访问，取决于上游渠道 Key 的权限，建议优先使用可公开访问的 URL。OpenAI 格式（chat/completions）请求转换为 Gemini 时，媒体将统一下载并转换为 inlineData（base64）传递。
+⚠️ Note : les requêtes au format Gemini natif prennent en charge le transfert de médias via inlineData (base64) ou fileData.fileUri (URL publiquement accessible, prend en charge les liens YouTube). L'accessibilité de l'URI de fichier téléversé via l'API Gemini File dépend des permissions de la clé du canal en amont ; il est recommandé d'utiliser en priorité une URL publiquement accessible. Lors de la conversion d'une requête au format OpenAI (chat/completions) vers Gemini, les médias sont téléchargés et convertis uniformément en inlineData (base64) pour le transfert.
 
 `POST` `/v1beta/models/{model}:generateContent`
 
-### 请求参数
+### Paramètres de requête
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| Nom du paramètre | Position | Type | Requis | Description |
 |---|---|---|---|---|
-| `model` | path | string | 是 | 模型名称 |
+| `model` | path | string | Oui | Nom du modèle |
 
-### 请求体（`application/json`）
+### Corps de la requête (`application/json`)
 
-| 字段 | 类型 | 必填 | 说明 |
+| Champ | Type | Requis | Description |
 |---|---|---|---|
-| `contents` | array&lt;object&gt; | 否 | — |
-| `generationConfig.temperature` | number | 否 | — |
-| `generationConfig.topP` | number | 否 | — |
-| `generationConfig.topK` | integer | 否 | — |
-| `generationConfig.maxOutputTokens` | integer | 否 | — |
-| `generationConfig.stopSequences` | array&lt;string&gt; | 否 | — |
-| `safetySettings` | array&lt;object&gt; | 否 | — |
-| `tools` | array&lt;object&gt; | 否 | — |
-| `systemInstruction.parts` | array&lt;object&gt; | 否 | — |
+| `contents` | array&lt;object&gt; | Non | — |
+| `generationConfig.temperature` | number | Non | — |
+| `generationConfig.topP` | number | Non | — |
+| `generationConfig.topK` | integer | Non | — |
+| `generationConfig.maxOutputTokens` | integer | Non | — |
+| `generationConfig.stopSequences` | array&lt;string&gt; | Non | — |
+| `safetySettings` | array&lt;object&gt; | Non | — |
+| `tools` | array&lt;object&gt; | Non | — |
+| `systemInstruction.parts` | array&lt;object&gt; | Non | — |
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-#### `200` 响应字段
+#### Champs de la réponse `200`
 
-| 字段 | 类型 | 说明 |
+| Champ | Type | Description |
 |---|---|---|
 | `candidates` | array&lt;object&gt; | — |
 | `usageMetadata.promptTokenCount` | integer | — |
 | `usageMetadata.candidatesTokenCount` | integer | — |
 | `usageMetadata.totalTokenCount` | integer | — |
 
-## Gemini Text Chat
+## Conversation texte Gemini
 
-代理 Gemini API 请求。
-路径格式: `/v1beta/models/{model_name}:{action}`
+Requête proxy vers l'API Gemini.
+Format du chemin : `/v1beta/models/{model_name}:{action}`
 
-例如:
+Par exemple :
 - `/v1beta/models/gemini-2.5-pro:generateContent`
 - `/v1beta/models/gemini-2.5-pro:streamGenerateContent?alt=sse`
 
 `POST` `/v1beta/models/{model}:generateContent`
 
-### 请求参数
+### Paramètres de requête
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| Nom du paramètre | Position | Type | Requis | Description |
 |---|---|---|---|---|
-| `model` | path | string | 是 | 模型名称 |
+| `model` | path | string | Oui | Nom du modèle |
 
-### 请求体（`application/json`）
+### Corps de la requête (`application/json`)
 
-| 字段 | 类型 | 必填 | 说明 |
+| Champ | Type | Requis | Description |
 |---|---|---|---|
-| `contents` | array&lt;object&gt; | 否 | — |
-| `generationConfig.temperature` | number | 否 | — |
-| `generationConfig.topP` | number | 否 | — |
-| `generationConfig.topK` | integer | 否 | — |
-| `generationConfig.maxOutputTokens` | integer | 否 | — |
-| `generationConfig.stopSequences` | array&lt;string&gt; | 否 | — |
-| `safetySettings` | array&lt;object&gt; | 否 | — |
-| `tools` | array&lt;object&gt; | 否 | — |
-| `systemInstruction.parts` | array&lt;object&gt; | 否 | — |
+| `contents` | array&lt;object&gt; | Non | — |
+| `generationConfig.temperature` | number | Non | — |
+| `generationConfig.topP` | number | Non | — |
+| `generationConfig.topK` | integer | Non | — |
+| `generationConfig.maxOutputTokens` | integer | Non | — |
+| `generationConfig.stopSequences` | array&lt;string&gt; | Non | — |
+| `safetySettings` | array&lt;object&gt; | Non | — |
+| `tools` | array&lt;object&gt; | Non | — |
+| `systemInstruction.parts` | array&lt;object&gt; | Non | — |
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-#### `200` 响应字段
+#### Champs de la réponse `200`
 
-| 字段 | 类型 | 说明 |
+| Champ | Type | Description |
 |---|---|---|
 | `candidates` | array&lt;object&gt; | — |
 | `usageMetadata.promptTokenCount` | integer | — |

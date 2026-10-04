@@ -1,34 +1,34 @@
-# Native Gemini Format
+# Format Gemini natif
 
-## Native Gemini Format
+## Format Gemini natif
 
-Gemini 音频生成接口。
-可使用gemini-2.5-flash-preview-tts等模型
+Interface de génération audio Gemini.
+Les modèles tels que gemini-2.5-flash-preview-tts peuvent être utilisés.
 
 `POST` `/v1beta/models/{model}:generateContent`
 
-### 请求参数
+### Paramètres de requête
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| Nom du paramètre | Position | Type | Requis | Description |
 |---|---|---|---|---|
-| `model` | path | string | 是 | 模型名称 |
+| `model` | path | string | Oui | Nom du modèle |
 
-### 请求体（`application/json`）
+### Corps de la requête (`application/json`)
 
-| 字段 | 类型 | 必填 | 说明 |
+| Champ | Type | Requis | Description |
 |---|---|---|---|
-| `contents` | array&lt;object&gt; | 是 | — |
-| `generationConfig.responseModalities` | array&lt;string&gt; | 否 | — |
+| `contents` | array&lt;object&gt; | Oui | — |
+| `generationConfig.responseModalities` | array&lt;string&gt; | Non | — |
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-#### `200` 响应字段
+#### Champs de la réponse `200`
 
-| 字段 | 类型 | 说明 |
+| Champ | Type | Description |
 |---|---|---|
 | `candidates` | array&lt;object&gt; | — |
 | `usageMetadata.promptTokenCount` | integer | — |

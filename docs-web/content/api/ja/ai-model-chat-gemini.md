@@ -2,41 +2,41 @@
 
 ## Gemini Media Recognition
 
-Gemini图像、PDF、音频、视频识别请求
+Gemini による画像、PDF、音声、動画の認識リクエストです。
 
-⚠️注意：原生 Gemini 格式请求支持通过 inlineData（base64）或 fileData.fileUri（可公开访问的 URL，支持 YouTube 链接）传递媒体。通过 Gemini File API 上传的文件 URI 能否访问，取决于上游渠道 Key 的权限，建议优先使用可公开访问的 URL。OpenAI 格式（chat/completions）请求转换为 Gemini 时，媒体将统一下载并转换为 inlineData（base64）传递。
+⚠️注意：ネイティブ Gemini 形式のリクエストは、inlineData（base64）または fileData.fileUri（公開アクセス可能な URL、YouTube リンク対応）でメディアを渡すことができます。Gemini File API でアップロードしたファイルの URI がアクセス可能かどうかは、上流チャネルの Key の権限に依存します。公開アクセス可能な URL の使用を推奨します。OpenAI 形式（chat/completions）のリクエストを Gemini に変換する際、メディアは一律にダウンロードされ inlineData（base64）に変換されて渡されます。
 
 `POST` `/v1beta/models/{model}:generateContent`
 
-### 请求参数
+### リクエストパラメータ
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| パラメータ名 | 位置 | 型 | 必須 | 説明 |
 |---|---|---|---|---|
-| `model` | path | string | 是 | 模型名称 |
+| `model` | path | string | 必須 | モデル名 |
 
-### 请求体（`application/json`）
+### リクエストボディ（`application/json`）
 
-| 字段 | 类型 | 必填 | 说明 |
+| フィールド | 型 | 必須 | 説明 |
 |---|---|---|---|
-| `contents` | array&lt;object&gt; | 否 | — |
-| `generationConfig.temperature` | number | 否 | — |
-| `generationConfig.topP` | number | 否 | — |
-| `generationConfig.topK` | integer | 否 | — |
-| `generationConfig.maxOutputTokens` | integer | 否 | — |
-| `generationConfig.stopSequences` | array&lt;string&gt; | 否 | — |
-| `safetySettings` | array&lt;object&gt; | 否 | — |
-| `tools` | array&lt;object&gt; | 否 | — |
-| `systemInstruction.parts` | array&lt;object&gt; | 否 | — |
+| `contents` | array&lt;object&gt; | 任意 | — |
+| `generationConfig.temperature` | number | 任意 | — |
+| `generationConfig.topP` | number | 任意 | — |
+| `generationConfig.topK` | integer | 任意 | — |
+| `generationConfig.maxOutputTokens` | integer | 任意 | — |
+| `generationConfig.stopSequences` | array&lt;string&gt; | 任意 | — |
+| `safetySettings` | array&lt;object&gt; | 任意 | — |
+| `tools` | array&lt;object&gt; | 任意 | — |
+| `systemInstruction.parts` | array&lt;object&gt; | 任意 | — |
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-#### `200` 响应字段
+#### `200` レスポンスフィールド
 
-| 字段 | 类型 | 说明 |
+| フィールド | 型 | 説明 |
 |---|---|---|
 | `candidates` | array&lt;object&gt; | — |
 | `usageMetadata.promptTokenCount` | integer | — |
@@ -45,44 +45,44 @@ Gemini图像、PDF、音频、视频识别请求
 
 ## Gemini Text Chat
 
-代理 Gemini API 请求。
-路径格式: `/v1beta/models/{model_name}:{action}`
+Gemini API リクエストのプロキシです。
+パス形式: `/v1beta/models/{model_name}:{action}`
 
-例如:
+例:
 - `/v1beta/models/gemini-2.5-pro:generateContent`
 - `/v1beta/models/gemini-2.5-pro:streamGenerateContent?alt=sse`
 
 `POST` `/v1beta/models/{model}:generateContent`
 
-### 请求参数
+### リクエストパラメータ
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| パラメータ名 | 位置 | 型 | 必須 | 説明 |
 |---|---|---|---|---|
-| `model` | path | string | 是 | 模型名称 |
+| `model` | path | string | 必須 | モデル名 |
 
-### 请求体（`application/json`）
+### リクエストボディ（`application/json`）
 
-| 字段 | 类型 | 必填 | 说明 |
+| フィールド | 型 | 必須 | 説明 |
 |---|---|---|---|
-| `contents` | array&lt;object&gt; | 否 | — |
-| `generationConfig.temperature` | number | 否 | — |
-| `generationConfig.topP` | number | 否 | — |
-| `generationConfig.topK` | integer | 否 | — |
-| `generationConfig.maxOutputTokens` | integer | 否 | — |
-| `generationConfig.stopSequences` | array&lt;string&gt; | 否 | — |
-| `safetySettings` | array&lt;object&gt; | 否 | — |
-| `tools` | array&lt;object&gt; | 否 | — |
-| `systemInstruction.parts` | array&lt;object&gt; | 否 | — |
+| `contents` | array&lt;object&gt; | 任意 | — |
+| `generationConfig.temperature` | number | 任意 | — |
+| `generationConfig.topP` | number | 任意 | — |
+| `generationConfig.topK` | integer | 任意 | — |
+| `generationConfig.maxOutputTokens` | integer | 任意 | — |
+| `generationConfig.stopSequences` | array&lt;string&gt; | 任意 | — |
+| `safetySettings` | array&lt;object&gt; | 任意 | — |
+| `tools` | array&lt;object&gt; | 任意 | — |
+| `systemInstruction.parts` | array&lt;object&gt; | 任意 | — |
 
-### 响应
+### レスポンス
 
-| 状态码 | 说明 |
+| ステータスコード | 説明 |
 |---|---|
 | `200` | 成功 |
 
-#### `200` 响应字段
+#### `200` レスポンスフィールド
 
-| 字段 | 类型 | 说明 |
+| フィールド | 型 | 説明 |
 |---|---|---|
 | `candidates` | array&lt;object&gt; | — |
 | `usageMetadata.promptTokenCount` | integer | — |

@@ -1,134 +1,134 @@
 # token-management
 
-## Batch Delete Tokens
+## Supprimer des jetons par lot
 
-🔐 需要登录（User权限）
+🔐 Nécessite une connexion (permission User)
 
 `POST` `/api/token/batch`
 
-### 请求体（`application/json`）
+### Corps de la requête (`application/json`)
 
-| 字段 | 类型 | 必填 | 说明 |
+| Champ | Type | Requis | Description |
 |---|---|---|---|
-| `ids` | array&lt;integer&gt; | 否 | — |
+| `ids` | array&lt;integer&gt; | Non | — |
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-## Get All Tokens
+## Récupérer tous les jetons
 
-🔐 需要登录（User权限）
+🔐 Nécessite une connexion (permission User)
 
 `GET` `/api/token/`
 
-### 请求参数
+### Paramètres de requête
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| Nom du paramètre | Position | Type | Requis | Description |
 |---|---|---|---|---|
-| `p` | query | integer | 否 | — |
-| `page_size` | query | integer | 否 | — |
+| `p` | query | integer | Non | — |
+| `page_size` | query | integer | Non | — |
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-## Delete Token
+## Supprimer un jeton
 
-🔐 需要登录（User权限）
+🔐 Nécessite une connexion (permission User)
 
 `DELETE` `/api/token/{id}`
 
-### 请求参数
+### Paramètres de requête
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| Nom du paramètre | Position | Type | Requis | Description |
 |---|---|---|---|---|
-| `id` | path | integer | 是 | — |
+| `id` | path | integer | Oui | — |
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-## Get Specified Token
+## Récupérer le jeton spécifié
 
-🔐 需要登录（User权限）
+🔐 Nécessite une connexion (permission User)
 
 `GET` `/api/token/{id}`
 
-### 请求参数
+### Paramètres de requête
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| Nom du paramètre | Position | Type | Requis | Description |
 |---|---|---|---|---|
-| `id` | path | integer | 是 | — |
+| `id` | path | integer | Oui | — |
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-## Create Token
+## Créer un jeton
 
-🔐 需要登录（User权限）
+🔐 Nécessite une connexion (permission User)
 
 `POST` `/api/token/`
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-## Update Token
+## Mettre à jour un jeton
 
-🔐 需要登录（User权限）
+🔐 Nécessite une connexion (permission User)
 
 `PUT` `/api/token/`
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-## Search Tokens
+## Rechercher des jetons
 
-🔐 需要登录（User权限）
+🔐 Nécessite une connexion (permission User)
 
 `GET` `/api/token/search`
 
-### 请求参数
+### Paramètres de requête
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| Nom du paramètre | Position | Type | Requis | Description |
 |---|---|---|---|---|
-| `keyword` | query | string | 否 | — |
+| `keyword` | query | string | Non | — |
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-## Get Token Usage
+## Récupérer l'utilisation du jeton
 
-🔑 需要令牌认证（TokenAuth）
+🔑 Nécessite une authentification par jeton (TokenAuth)
 
 `GET` `/api/usage/token/`
 
-### 请求参数
+### Paramètres de requête
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| Nom du paramètre | Position | Type | Requis | Description |
 |---|---|---|---|---|
-| `Authorization` | header | string | 否 | — |
+| `Authorization` | header | string | Non | — |
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |

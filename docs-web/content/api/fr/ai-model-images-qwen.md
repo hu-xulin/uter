@@ -1,62 +1,62 @@
 # qwen
 
-## Generate Images
+## Générer des images
 
-百炼qwen-image系列图片生成
+Génération d'images de la série qwen-image (Bailian).
 
 `POST` `/v1/images/generations`
 
-### 请求体（`application/json`）
+### Corps de la requête (`application/json`)
 
-| 字段 | 类型 | 必填 | 说明 |
+| Champ | Type | Requis | Description |
 |---|---|---|---|
-| `model` | string | 是 | — |
-| `input.messages` | array&lt;object&gt; | 否 | — |
-| `parameters.negative_prompt` | string | 否 | — |
-| `parameters.prompt_extend` | boolean | 否 | — |
-| `parameters.watermark` | boolean | 否 | — |
-| `parameters.size` | string | 否 | — |
+| `model` | string | Oui | — |
+| `input.messages` | array&lt;object&gt; | Non | — |
+| `parameters.negative_prompt` | string | Non | — |
+| `parameters.prompt_extend` | boolean | Non | — |
+| `parameters.watermark` | boolean | Non | — |
+| `parameters.size` | string | Non | — |
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功生成图像 |
+| `200` | Image générée avec succès |
 
-#### `200` 响应字段
+#### Champs de la réponse `200`
 
-| 字段 | 类型 | 说明 |
+| Champ | Type | Description |
 |---|---|---|
 | `created` | integer | — |
 | `data` | array&lt;object&gt; | — |
 
-## Edit Image
+## Éditer une image
 
-百炼qwen-image系列图片编辑
+Édition d'images de la série qwen-image (Bailian).
 
 `POST` `/v1/images/edits`
 
-### 请求体（`application/json`）
+### Corps de la requête (`application/json`)
 
-| 字段 | 类型 | 必填 | 说明 |
+| Champ | Type | Requis | Description |
 |---|---|---|---|
-| `model` | string | 是 | — |
-| `input.messages` | array&lt;object&gt; | 否 | — |
-| `parameters.n` | integer | 否 | — |
-| `parameters.negative_prompt` | string | 否 | — |
-| `parameters.prompt_extend` | boolean | 否 | — |
-| `parameters.watermark` | boolean | 否 | — |
-| `parameters.size` | string | 否 | — |
+| `model` | string | Oui | — |
+| `input.messages` | array&lt;object&gt; | Non | — |
+| `parameters.n` | integer | Non | — |
+| `parameters.negative_prompt` | string | Non | — |
+| `parameters.prompt_extend` | boolean | Non | — |
+| `parameters.watermark` | boolean | Non | — |
+| `parameters.size` | string | Non | — |
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功生成图像 |
+| `200` | Image générée avec succès |
 
-#### `200` 响应字段
+#### Champs de la réponse `200`
 
-| 字段 | 类型 | 说明 |
+| Champ | Type | Description |
 |---|---|---|
 | `created` | integer | — |
 | `data` | array&lt;object&gt; | — |

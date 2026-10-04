@@ -1,50 +1,43 @@
-# LunaTranslator - Open Source GalGame Translator
+# LunaTranslator - オープンソース GalGame 翻訳ツール
 
-> **Chat Settings Options**
+> **チャット設定オプション**
 >
-> In the Uter
->   console's System Settings -> Chat Settings, you can add the following shortcut option for one-click population into
->   LunaTranslator from the Token Management page:
+> Uter コンソールの システム設定 → チャット設定 で、トークン管理ページから
+>   LunaTranslator にワンクリックで入力できるよう、次のショートカットオプションを追加できます：
 
     ```json
     { "LunaTranslator": "lunatranslator://llmapi/base64?data={cheryConfig}" }
     ```
 
 > LunaTranslator
->   is an open-source and free visual novel (GalGame) translator, dedicated to providing a native-level visual novel gaming experience.
+>   は、ネイティブレベルのビジュアルノベル（GalGame）体験の提供に特化した、オープンソースで無料の
+>   ビジュアルノベル翻訳ツールです。
 
-- Project Address: [https://github.com/HIllya51/LunaTranslator](https://github.com/HIllya51/LunaTranslator)
-- Project Documentation: [https://docs.lunatranslator.org/en/README.html](https://docs.lunatranslator.org/en/README.html)
+- プロジェクトアドレス: [https://github.com/HIllya51/LunaTranslator](https://github.com/HIllya51/LunaTranslator)
+- プロジェクトドキュメント: [https://docs.lunatranslator.org/en/README.html](https://docs.lunatranslator.org/en/README.html)
 
-## Feature Support
+## 対応機能
 
-- **HOOK** Primarily uses HOOK to extract game text, adapting to almost all common and niche visual novels.
+- **HOOK** 主に HOOK を使用してゲームのテキストを抽出し、ほぼすべての一般的なおよびニッチなビジュアルノベルに対応。
+- **ゲーム内翻訳** 一部のゲームでは、翻訳をゲームに直接埋め込んで没入感のある体験を提供。
+- **HOOK エミュレータ** NS/PSP/PSV/PS2 のほとんどのゲームに対し、HOOK エミュレータのサポートによりゲームテキストを直接読み取り。
+- **OCR** 高精度な組み込み OCR モデルを備え、他の多くのオンライン/オフライン OCR エンジンもサポートし、任意のテキストを柔軟に読み取り。
+- **豊富な翻訳インターフェース** 大規模言語モデル翻訳、オフライン翻訳など、ほぼすべての翻訳エンジンをサポート。
+- **言語学習** 日本語の単語分割とふりがな、AnkiConnect、Yomitan プラグインをサポート。
+- **音声合成** 多数のオンライン/オフライン音声合成エンジンをサポート。
+- **音声認識** Windows 10 および Windows 11 では、Windows 音声認識を使用可能。
 
-- **In-game Translation** For some games, translation can be directly embedded into the game for an immersive experience.
+## インストール方法
 
-- **HOOK Emulator** For most games on NS/PSP/PSV/PS2, HOOK emulator support allows direct reading of game text.
+[LunaTranslator Documentation - Download & Launch & Update](https://docs.lunatranslator.org/en/README.html) からダウンロードしてインストール。
 
-- **OCR** Built-in high-precision OCR models, and supports many other online & offline OCR engines for flexible reading of any text.
+## LunaTranslator への Uter の統合
 
-- **Rich Translation Interfaces** Supports almost all translation engines, including large language model translation, offline translation, etc.
+LunaTranslator はローカルに導入した Uter との統合をサポートしています。ご自身で導入した Uter を使用するか、サービス提供者がその Uter サービスに対して正当な上流認可とコンプライアンス義務を負っていることを確認してください。出所不明の API アドレスやキーを本番環境に接続しないでください。
 
-- **Language Learning** Supports Japanese word segmentation and kana furigana, AnkiConnect, and Yomitan plugin.
+### ワンクリック設定
 
-- **Speech Synthesis** Supports a large number of online & offline speech synthesis engines.
-
-- **Speech Recognition** On Windows 10 and Windows 11, Windows Speech Recognition can be used.
-
-## Installation Method
-
-Download and install from [LunaTranslator Documentation - Download & Launch & Update](https://docs.lunatranslator.org/en/README.html)
-
-## Integrating Uter into LunaTranslator
-
-LunaTranslator supports integration with locally deployed Uter. Please use your own deployed Uter, or ensure that the service provider has legitimate upstream authorization and compliance obligations for their Uter service. Do not connect API addresses or keys from unknown sources to production environments.
-
-### One-Click Configuration
-
-1.  In the Uter console's `System Settings` -> `Chat Settings`, add the following shortcut option:
+1.  Uter コンソールの `System Settings` → `Chat Settings` で、次のショートカットオプションを追加：
 
     ```json
     { "LunaTranslator": "lunatranslator://llmapi/base64?data={cheryConfig}" }
@@ -52,48 +45,48 @@ LunaTranslator supports integration with locally deployed Uter. Please use your 
 
     ![add_config](/apps-assets/luna_translator/add_config.webp)
 
-2.  In the **`Uter`** -> `Console` -> `Token Management` tab, select the token you want to use in LunaTranslator, click the dropdown option next to the chat button, choose `LunaTranslator`, and you will be redirected to LunaTranslator with the API address and API Key automatically configured.
+2.  **`Uter`** → `Console` → `Token Management` タブで、LunaTranslator で使用するトークンを選択し、チャットボタン横のドロップダウンオプションをクリックして `LunaTranslator` を選択すると、API アドレスと API キーが自動設定された状態で LunaTranslator にリダイレクトされます。
 
-    ![跳转到 LunaTranslator](/apps-assets/luna_translator/jump_to_app.webp)
+    ![LunaTranslator への移動](/apps-assets/luna_translator/jump_to_app.webp)
 
-3.  In **`LunaTranslator`** -> `Settings` -> `Translation Settings` -> `Large Models`, a new large model interface configuration will appear; click Edit.
+3.  **`LunaTranslator`** → `Settings` → `Translation Settings` → `Large Models` で、新しい大規模モデルインターフェース設定が表示されるので、編集をクリック。
 
-    ![设置api](/apps-assets/luna_translator/api_setting.webp)
+    ![API の設定](/apps-assets/luna_translator/api_setting.webp)
 
-4.  Click the refresh button next to the **model** dropdown to retrieve the Uter platform's model list, select or enter the model name, then click OK to save.
+4.  **model** ドロップダウン横の更新ボタンをクリックして Uter プラットフォームのモデル一覧を取得し、モデル名を選択または入力してから OK をクリックして保存。
 
-    ![设置模型](/apps-assets/luna_translator/setting_model.webp)
+    ![モデルの設定](/apps-assets/luna_translator/setting_model.webp)
 
-5.  Check if the toggle switch next to the **uter** large model interface configuration is turned on. If not enabled, enable the interface to start using it.
+5.  **uter** 大規模モデルインターフェース設定横のトグルスイッチがオンになっているか確認。有効になっていない場合は、インターフェースを有効にして利用開始。
 
-    ![开启配置](/apps-assets/luna_translator/open_config.webp)
+    ![設定を有効化](/apps-assets/luna_translator/open_config.webp)
 
-### Manual Configuration
+### 手動設定
 
-1.  In the **`Uter`** -> `Console` -> `Token Management` tab, obtain the API Key.
+1.  **`Uter`** → `Console` → `Token Management` タブで、API キーを取得。
 
-    ![获取 API Key](/apps-assets/luna_translator/copy_api_key.webp)
+    ![API キーの取得](/apps-assets/luna_translator/copy_api_key.webp)
 
-2.  In **`LunaTranslator`** -> `Settings` - `Translation Settings` -> `Large Models`, select Add.
+2.  **`LunaTranslator`** → `Settings` - `Translation Settings` → `Large Models` で、追加を選択。
 
-    ![添加 API](/apps-assets/luna_translator/add_api.webp)
+    ![API の追加](/apps-assets/luna_translator/add_api.webp)
 
-3.  Copy the **Large Model General Interface** template and add a new interface.
+3.  **Large Model General Interface** テンプレートをコピーし、新しいインターフェースを追加。
 
-    ![添加 API2](/apps-assets/luna_translator/add_api_2.webp)
+    ![API の追加2](/apps-assets/luna_translator/add_api_2.webp)
 
-4.  In the **newly added interface**, fill in the corresponding API Address and API Key.
+4.  **新しく追加したインターフェース** に、対応する API アドレスと API キーを入力。
 
-    ![设置 API1](/apps-assets/luna_translator/setting_api.webp)
+    ![API 設定1](/apps-assets/luna_translator/setting_api.webp)
 
-    ![设置 API2](/apps-assets/luna_translator/setting_api2.webp)
+    ![API 設定2](/apps-assets/luna_translator/setting_api2.webp)
 
-5.  Click the refresh button next to the **model** dropdown to retrieve the Uter platform's model list, select or enter the model name, then click OK to save.
+5.  **model** ドロップダウン横の更新ボタンをクリックして Uter プラットフォームのモデル一覧を取得し、モデル名を選択または入力してから OK をクリックして保存。
 
-    ![设置 API3](/apps-assets/luna_translator/setting_api3.webp)
+    ![API 設定3](/apps-assets/luna_translator/setting_api3.webp)
 
-6.  Click the toggle switch next to **Uter** to enable the interface and start using it.
+6.  **Uter** 横のトグルスイッチをクリックしてインターフェースを有効にし、利用開始。
 
-    ![打开API](/apps-assets/luna_translator/open_api.webp)
+    ![API を開く](/apps-assets/luna_translator/open_api.webp)
 
-For more usage methods, please refer to the official LunaTranslator documentation: [LunaTranslator Documentation - Large Model Translation Interface](https://docs.lunatranslator.org/en/guochandamoxing.html)
+その他の使い方については、LunaTranslator 公式ドキュメントを参照してください: [LunaTranslator Documentation - Large Model Translation Interface](https://docs.lunatranslator.org/en/guochandamoxing.html)

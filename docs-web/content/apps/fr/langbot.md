@@ -1,50 +1,50 @@
-# LangBot - Instant Messaging Bot Development Platform
+# LangBot - Plateforme de développement de bots de messagerie instantanée
 
-> LangBot is an open-source instant messaging bot development platform that
->   supports various instant messaging platforms such as Feishu, DingTalk, WeChat,
->   QQ, Telegram, Discord, Slack, etc. It integrates with mainstream global AI
->   models, supports various AI application capabilities like Knowledge Base,
->   Agent, MCP, and is perfectly compatible with Uter.
+> LangBot est une plateforme open-source de développement de bots de messagerie instantanée qui
+>   prend en charge diverses plateformes de messagerie instantanée telles que Feishu, DingTalk, WeChat,
+>   QQ, Telegram, Discord, Slack, etc. Elle s'intègre aux principaux modèles IA
+>   mondiaux, prend en charge diverses capacités d'applications IA comme la Base de connaissances,
+>   l'Agent, le MCP, et est parfaitement compatible avec Uter.
 
-- Official Website: [https://langbot.app](https://langbot.app/)
-- Download Address: [https://github.com/langbot-app/LangBot/releases](https://github.com/langbot-app/LangBot/releases)
-- Official Documentation: [https://docs.langbot.app](https://docs.langbot.app/)
-- Open Source Address: [https://github.com/langbot-app/LangBot](https://github.com/langbot-app/LangBot)
+- Site officiel : [https://langbot.app](https://langbot.app/)
+- Adresse de téléchargement : [https://github.com/langbot-app/LangBot/releases](https://github.com/langbot-app/LangBot/releases)
+- Documentation officielle : [https://docs.langbot.app](https://docs.langbot.app/)
+- Adresse open-source : [https://github.com/langbot-app/LangBot](https://github.com/langbot-app/LangBot)
 
-## Integrating Uter
+## Intégrer Uter
 
-LangBot supports integrating with locally deployed Uter and third-party Uter services built using Uter.
+LangBot prend en charge l'intégration avec Uter déployé localement et les services Uter tiers construits à l'aide d'Uter.
 
-### Usage
+### Utilisation
 
-1.  Obtain an API key from Uter
-    ![获取 API key](/apps-assets/langbot/get_api_key.webp)
+1.  Obtenir une clé API depuis Uter
+    ![get-api-key](/apps-assets/langbot/get_api_key.webp)
 
-        If Uter is deployed locally, please configure the API address yourself (refer to [Container Network Connection](https://docs.langbot.app/en/workshop/network-details.html)). If using a third-party Uter service, you can copy the address from the page. Note that `/v1` needs to be appended to the address.
+        Si Uter est déployé localement, veuillez configurer vous-même l'adresse API (reportez-vous à [Connexion réseau des conteneurs](https://docs.langbot.app/en/workshop/network-details.html)). Si vous utilisez un service Uter tiers, vous pouvez copier l'adresse depuis la page. Notez que `/v1` doit être ajouté à l'adresse.
 
-2.  Add a model in LangBot, select Uter as the provider, and fill in the corresponding API key and API address
-    ![添加 Uter 模型](/apps-assets/langbot/add_uter_model.webp)
+2.  Ajouter un modèle dans LangBot, sélectionner Uter comme fournisseur, et remplir la clé API et l'adresse API correspondantes
+    ![add-uter-model](/apps-assets/langbot/add_uter_model.webp)
 
-3.  Select the model to use in the pipeline
+3.  Sélectionner le modèle à utiliser dans le pipeline
 
-    ![选择模型](/apps-assets/langbot/select_model.webp)
+    ![select-model](/apps-assets/langbot/select_model.webp)
 
-4.  Use it by chatting in conversation debugging or by chatting with a bot bound to the pipeline
+4.  L'utiliser en discutant dans le débogage de conversation ou en discutant avec un bot lié au pipeline
 
-    ![对话](/apps-assets/langbot/debug_chat.webp)
+    ![chat](/apps-assets/langbot/debug_chat.webp)
 
-    ![微信对话](/apps-assets/langbot/wechat.webp)
+    ![wechat-chat](/apps-assets/langbot/wechat.webp)
 
-    For deploying and configuring bots, please refer to [Deploying Bots](https://docs.langbot.app/en/deploy/platforms/readme.html).
+    Pour le déploiement et la configuration des bots, veuillez consulter [Déployer des bots](https://docs.langbot.app/en/deploy/platforms/readme.html).
 
-### Using LangBot Knowledge Base
+### Utilisation de la base de connaissances LangBot
 
-LangBot supports using Uter's embedding models and utilizing them as vector models for the knowledge base.
+LangBot prend en charge l'utilisation des modèles d'embedding d'Uter et les utilise comme modèles vectoriels pour la base de connaissances.
 
-1. Add an embedding model in LangBot, select Uter as the provider
-   ![添加嵌入模型](/apps-assets/langbot/add_embedding_model.webp)
+1. Ajouter un modèle d'embedding dans LangBot, sélectionner Uter comme fournisseur
+   ![add-embedding-model](/apps-assets/langbot/add_embedding_model.webp)
 
-2. Select the embedding model when creating a new knowledge base
-   ![使用嵌入模型](/apps-assets/langbot/use_embedding_model.webp)
+2. Sélectionner le modèle d'embedding lors de la création d'une nouvelle base de connaissances
+   ![use-embedding-model](/apps-assets/langbot/use_embedding_model.webp)
 
-For more usage instructions, please refer to the LangBot official documentation: [https://docs.langbot.app](https://docs.langbot.app/)
+Pour plus d'instructions d'utilisation, veuillez consulter la documentation officielle de LangBot : [https://docs.langbot.app](https://docs.langbot.app/)

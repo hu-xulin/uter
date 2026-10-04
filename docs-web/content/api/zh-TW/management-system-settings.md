@@ -1,73 +1,73 @@
-# system-settings
+# 系統設定
 
-## Get System Options
+## 獲取系統選項
 
-👑 需要超级管理员权限（Root）
+👑 需要超級管理員許可權（Root）
 
 `GET` `/api/option/`
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |
 
-## Migrate Console Settings
+## 遷移控制檯設定
 
-👑 需要超级管理员权限（Root）
+👑 需要超級管理員許可權（Root）
 
 `POST` `/api/option/migrate_console_setting`
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |
 
-## Update System Options
+## 更新系統選項
 
-👑 需要超级管理员权限（Root）
+👑 需要超級管理員許可權（Root）
 
 `PUT` `/api/option/`
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |
 
-## Reset Model Ratio
+## 重置模型倍率
 
-👑 需要超级管理员权限（Root）
+👑 需要超級管理員許可權（Root）
 
 `POST` `/api/option/rest_model_ratio`
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |
 
-## Get Syncable Channels
+## 獲取可同步渠道
 
-👑 需要超级管理员权限（Root）
+👑 需要超級管理員許可權（Root）
 
 `GET` `/api/ratio_sync/channels`
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |
 
-## Fetch Upstream Ratios
+## 獲取上游倍率
 
-👑 需要超级管理员权限（Root）
+👑 需要超級管理員許可權（Root）
 
 `POST` `/api/ratio_sync/fetch`
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |

@@ -1,50 +1,50 @@
-# LangBot - Instant Messaging Bot Development Platform
+# LangBot - Nền tảng phát triển bot nhắn tin tức thời
 
-> LangBot is an open-source instant messaging bot development platform that
->   supports various instant messaging platforms such as Feishu, DingTalk, WeChat,
->   QQ, Telegram, Discord, Slack, etc. It integrates with mainstream global AI
->   models, supports various AI application capabilities like Knowledge Base,
->   Agent, MCP, and is perfectly compatible with Uter.
+> LangBot là một nền tảng phát triển bot nhắn tin tức thời mã nguồn mở, hỗ trợ
+>   nhiều nền tảng nhắn tin tức thời như Feishu, DingTalk, WeChat,
+>   QQ, Telegram, Discord, Slack, v.v. Nó tích hợp với các mô hình AI
+>   toàn cầu chính thống, hỗ trợ nhiều năng lực ứng dụng AI như Cơ sở kiến thức,
+>   Agent, MCP, và tương thích hoàn hảo với Uter.
 
-- Official Website: [https://langbot.app](https://langbot.app/)
-- Download Address: [https://github.com/langbot-app/LangBot/releases](https://github.com/langbot-app/LangBot/releases)
-- Official Documentation: [https://docs.langbot.app](https://docs.langbot.app/)
-- Open Source Address: [https://github.com/langbot-app/LangBot](https://github.com/langbot-app/LangBot)
+- Trang chủ: [https://langbot.app](https://langbot.app/)
+- Địa chỉ tải xuống: [https://github.com/langbot-app/LangBot/releases](https://github.com/langbot-app/LangBot/releases)
+- Tài liệu chính thức: [https://docs.langbot.app](https://docs.langbot.app/)
+- Địa chỉ mã nguồn mở: [https://github.com/langbot-app/LangBot](https://github.com/langbot-app/LangBot)
 
-## Integrating Uter
+## Tích hợp Uter
 
-LangBot supports integrating with locally deployed Uter and third-party Uter services built using Uter.
+LangBot hỗ trợ tích hợp với Uter tự triển khai cục bộ và các dịch vụ Uter bên thứ ba được xây dựng bằng Uter.
 
-### Usage
+### Cách sử dụng
 
-1.  Obtain an API key from Uter
-    ![获取 API key](/apps-assets/langbot/get_api_key.webp)
+1.  Lấy API key từ Uter
+    ![lấy API key](/apps-assets/langbot/get_api_key.webp)
 
-        If Uter is deployed locally, please configure the API address yourself (refer to [Container Network Connection](https://docs.langbot.app/en/workshop/network-details.html)). If using a third-party Uter service, you can copy the address from the page. Note that `/v1` needs to be appended to the address.
+        Nếu Uter được triển khai cục bộ, vui lòng tự cấu hình địa chỉ API (tham khảo [Kết nối mạng container](https://docs.langbot.app/en/workshop/network-details.html)). Nếu sử dụng dịch vụ Uter bên thứ ba, bạn có thể sao chép địa chỉ từ trang. Lưu ý cần thêm `/v1` vào địa chỉ.
 
-2.  Add a model in LangBot, select Uter as the provider, and fill in the corresponding API key and API address
-    ![添加 Uter 模型](/apps-assets/langbot/add_uter_model.webp)
+2.  Thêm một mô hình trong LangBot, chọn Uter làm nhà cung cấp, và điền API key và địa chỉ API tương ứng
+    ![thêm mô hình Uter](/apps-assets/langbot/add_uter_model.webp)
 
-3.  Select the model to use in the pipeline
+3.  Chọn mô hình cần sử dụng trong pipeline
 
-    ![选择模型](/apps-assets/langbot/select_model.webp)
+    ![chọn mô hình](/apps-assets/langbot/select_model.webp)
 
-4.  Use it by chatting in conversation debugging or by chatting with a bot bound to the pipeline
+4.  Sử dụng bằng cách trò chuyện trong gỡ lỗi hội thoại hoặc trò chuyện với một bot được gắn với pipeline
 
-    ![对话](/apps-assets/langbot/debug_chat.webp)
+    ![hội thoại](/apps-assets/langbot/debug_chat.webp)
 
-    ![微信对话](/apps-assets/langbot/wechat.webp)
+    ![hội thoại WeChat](/apps-assets/langbot/wechat.webp)
 
-    For deploying and configuring bots, please refer to [Deploying Bots](https://docs.langbot.app/en/deploy/platforms/readme.html).
+    Để triển khai và cấu hình bot, vui lòng tham khảo [Triển khai bot](https://docs.langbot.app/en/deploy/platforms/readme.html).
 
-### Using LangBot Knowledge Base
+### Sử dụng Cơ sở kiến thức LangBot
 
-LangBot supports using Uter's embedding models and utilizing them as vector models for the knowledge base.
+LangBot hỗ trợ sử dụng các mô hình embedding của Uter và tận dụng chúng làm mô hình vector cho cơ sở kiến thức.
 
-1. Add an embedding model in LangBot, select Uter as the provider
-   ![添加嵌入模型](/apps-assets/langbot/add_embedding_model.webp)
+1. Thêm một mô hình embedding trong LangBot, chọn Uter làm nhà cung cấp
+   ![thêm mô hình embedding](/apps-assets/langbot/add_embedding_model.webp)
 
-2. Select the embedding model when creating a new knowledge base
-   ![使用嵌入模型](/apps-assets/langbot/use_embedding_model.webp)
+2. Chọn mô hình embedding khi tạo một cơ sở kiến thức mới
+   ![sử dụng mô hình embedding](/apps-assets/langbot/use_embedding_model.webp)
 
-For more usage instructions, please refer to the LangBot official documentation: [https://docs.langbot.app](https://docs.langbot.app/)
+Để biết thêm hướng dẫn sử dụng, vui lòng tham khảo tài liệu chính thức của LangBot: [https://docs.langbot.app](https://docs.langbot.app/)

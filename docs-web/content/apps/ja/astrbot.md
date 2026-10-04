@@ -1,45 +1,45 @@
-# AstrBot - Agent Chatbot
+# AstrBot - エージェントチャットボット
 
-> AstrBot is an open-source, all-in-one Agent chatbot platform that seamlessly integrates large language model capabilities into mainstream instant messaging software such as QQ, Feishu, DingTalk, and WeChat Work, creating a reliable and scalable conversational AI infrastructure for individuals, developers, and teams. Whether it's a personal AI companion, intelligent customer service, automation assistant, or enterprise knowledge base, AstrBot can quickly build production-ready AI applications within your instant messaging platform's workflow.
+> AstrBot はオープンソースのオールインワン エージェントチャットボット プラットフォームで、QQ、Feishu、DingTalk、WeChat Work などの主流のインスタントメッセージング ソフトウェアに大規模言語モデルの機能をシームレスに統合し、個人、開発者、チーム向けの信頼性が高く拡張性のある会話型 AI インフラストラクチャを構築します。パーソナル AI コンパニオン、インテリジェント カスタマーサービス、自動化アシスタント、企業ナレッジベースのいずれであっても、AstrBot はインスタントメッセージング プラットフォームのワークフロー内で本番環境対応の AI アプリケーションを迅速に構築できます。
 
-- Official Website: [https://astrbot.app](https://astrbot.app)
-- Official Documentation: [https://docs.astrbot.app](https://docs.astrbot.app)
-- Project Homepage: [https://github.com/astrbotdevs/astrbot](https://github.com/astrbotdevs/astrbot)
+- 公式サイト: [https://astrbot.app](https://astrbot.app)
+- 公式ドキュメント: [https://docs.astrbot.app](https://docs.astrbot.app)
+- プロジェクトホームページ: [https://github.com/astrbotdevs/astrbot](https://github.com/astrbotdevs/astrbot)
 
-## Uter Integration Method
+## Uter との連携方法
 
-AstrBot supports integrating Uter as a model provider, allowing users to access and utilize various AI model services through Uter.
+AstrBot は Uter をモデルプロバイダとして統合でき、ユーザーは Uter を通じてさまざまな AI モデルサービスにアクセスして利用できます。
 
-### Configuration Steps
+### 設定手順
 
-#### Obtain Uter API Key
+#### Uter API キーを取得
 
-After registering and logging into Uter, click 'Console' in the top navigation bar, then click 'Token Management', and then click the 'Add Token' button to create a uter Key. Select the appropriate permissions and click 'Create'.
+Uter に登録してログインした後、上部のナビゲーションバーの「コンソール」をクリックし、次に「トークン管理」をクリックし、「トークンを追加」ボタンをクリックして Uter キーを作成します。適切な権限を選択し、「作成」をクリックします。
 
 ![create-api-key](/apps-assets/astrbot/image.webp)
 
-After successful creation, click the 'Copy Key' button to copy the generated API Key.
+作成に成功したら、「キーをコピー」ボタンをクリックして生成された API キーをコピーします。
 
 ![copy-api-key](/apps-assets/astrbot/image-1.webp)
 
-#### Configure Uter Service Provider in AstrBot
+#### AstrBot で Uter サービスプロバイダを設定
 
-Open the AstrBot administration panel, go to the 'Model Providers' page, then click the 'Add Model Provider' button.
+AstrBot 管理パネルを開き、「モデルプロバイダ」ページに移動し、「モデルプロバイダを追加」ボタンをクリックします。
 
-Uter perfectly supports OpenAI Chat Completion and Responses interfaces. Click 'OpenAI' to enter the OpenAI provider configuration page.
+Uter は OpenAI Chat Completion および Responses インターフェースを完全にサポートしています。「OpenAI」をクリックして OpenAI プロバイダ設定ページに進みます。
 
-In the pop-up dialog, set the API Base URL to the Uter interface address. Please use your own deployed Uter, or ensure that the service provider has legitimate upstream authorization and compliance obligations for the Uter service. If you have deployed Uter locally, fill in the local address, for example, `http://localhost:3000/v1`. Do not connect API addresses or keys from unknown sources to a production environment.
+ポップアップダイアログで、API Base URL を Uter のインターフェースアドレスに設定します。ご自身で導入した Uter を使用するか、サービス提供者が Uter サービスに対して正当な上流認可とコンプライアンス義務を負っていることを確認してください。Uter をローカルに導入した場合は、ローカルアドレス（例：`http://localhost:3000/v1`）を入力してください。出所不明の API アドレスやキーを本番環境に接続しないでください。
 
-Then, enter the API Key into the 'API Key' field and click the 'Save' button.
+次に、API キーを「API Key」欄に入力し、「保存」ボタンをクリックします。
 
 ![astrbot-provider-config](/apps-assets/astrbot/image-2.webp)
 
-Then click 'Save' to complete the Uter provider configuration.
+その後、「保存」をクリックして Uter プロバイダの設定を完了します。
 
-#### Apply Service Provider
+#### サービスプロバイダを適用
 
-Go to the 'Configuration File' page, find the 'Model' section, change the 'Default Chat Model' to the Uter provider you just created, and click the 'Save' button.
+「設定ファイル」ページに移動し、「モデル」セクションを見つけて、「デフォルトのチャットモデル」を今作成した Uter プロバイダに変更し、「保存」ボタンをクリックします。
 
 ![apply](/apps-assets/astrbot/image-3.webp)
 
-At this point, you have successfully configured Uter as AstrBot's model provider. Now, you can access and use various AI model services provided by Uter through AstrBot.
+これで、AstrBot のモデルプロバイダとして Uter の設定が完了しました。これ以降、AstrBot を通じて Uter が提供するさまざまな AI モデルサービスにアクセスして利用できます。

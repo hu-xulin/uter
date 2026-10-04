@@ -1,42 +1,42 @@
-# Native OpenAI Format
+# Нативный формат OpenAI
 
-## Native OpenAI Format
+## Нативный формат OpenAI
 
-基于给定提示创建文本补全
+Создаёт текстовое дополнение на основе заданной подсказки.
 
 `POST` `/v1/completions`
 
-### 请求体（`application/json`）
+### Тело запроса (`application/json`)
 
-| 字段 | 类型 | 必填 | 说明 |
+| Поле | Тип | Обязательно | Описание |
 |---|---|---|---|
-| `model` | string | 是 | — |
-| `max_tokens` | integer | 否 | — |
-| `temperature` | number | 否 | — |
-| `top_p` | number | 否 | — |
-| `n` | integer | 否 | — |
-| `stream` | boolean | 否 | — |
-| `suffix` | string | 否 | — |
-| `echo` | boolean | 否 | — |
+| `model` | string | да | — |
+| `max_tokens` | integer | нет | — |
+| `temperature` | number | нет | — |
+| `top_p` | number | нет | — |
+| `n` | integer | нет | — |
+| `stream` | boolean | нет | — |
+| `suffix` | string | нет | — |
+| `echo` | boolean | нет | — |
 
-### 响应
+### Ответ
 
-| 状态码 | 说明 |
+| Код статуса | Описание |
 |---|---|
-| `200` | 成功创建响应 |
+| `200` | Успешно создан ответ |
 
-#### `200` 响应字段
+#### Поля ответа `200`
 
-| 字段 | 类型 | 说明 |
+| Поле | Тип | Описание |
 |---|---|---|
 | `id` | string | — |
 | `object` | string | — |
 | `created` | integer | — |
 | `model` | string | — |
 | `choices` | array&lt;object&gt; | — |
-| `usage.prompt_tokens` | integer | 提示词 Token 数 |
-| `usage.completion_tokens` | integer | 补全 Token 数 |
-| `usage.total_tokens` | integer | 总 Token 数 |
+| `usage.prompt_tokens` | integer | Количество токенов подсказки |
+| `usage.completion_tokens` | integer | Количество токенов дополнения |
+| `usage.total_tokens` | integer | Общее количество токенов |
 | `usage.prompt_tokens_details.cached_tokens` | integer | — |
 | `usage.prompt_tokens_details.text_tokens` | integer | — |
 | `usage.prompt_tokens_details.audio_tokens` | integer | — |

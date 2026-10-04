@@ -1,74 +1,74 @@
-# FluentRead - Open Source Translation Plugin
+# 流暢閱讀 (FluentRead) - 開源翻譯外掛
 
-> **Chat Settings Options**
+> **聊天設定選項**
 >
-> In the System Settings -> Chat Settings of the Uter console, you can add
->   the following shortcut options for easy one-click population to FluentRead on
->   the Token Management page:
+> 在 優特
+>   控制檯的系統設定->聊天設定中，可新增如下快捷選項，便於在令牌管理頁一鍵填充到
+>   FluentRead：
 
     ```json
-    { "流畅阅读": "fluentread" }
+    { "流暢閱讀": "fluentread" }
     ```
 
-> 🌊 FluentRead is an open-source browser translation plugin dedicated to
->   providing a native-like reading experience.
+> 🌊
+>   流暢閱讀（FluentRead）是一款開源瀏覽器翻譯外掛，致力於提供母語般的閱讀體驗。
 
-- Project Address: [https://github.com/Bistutu/FluentRead](https://github.com/Bistutu/FluentRead)
+- 專案地址：[https://github.com/Bistutu/FluentRead](https://github.com/Bistutu/FluentRead)
 
-## 🌟 Core Features
+## 🌟 核心特性
 
-### Smart Translation Engine
+### 智慧翻譯引擎
 
-- **Multi-Engine Support**: Supports 20+ translation engines
-- **Traditional Translation**: Microsoft Translate, Google Translate, DeepL Translate, etc.
-- **AI Large Models**: OpenAI, DeepSeek, Kimi, Ollama, etc.
-- **Custom Engine**: Supports custom translation service configuration
+- **多引擎支援**：支援 20+ 種翻譯引擎
+- **傳統翻譯**：微軟翻譯、谷歌翻譯、DeepL翻譯等
+- **AI 大模型**：OpenAI、DeepSeek、Kimi、Ollama等
+- **自定義引擎**：支援自定義翻譯服務配置
 
-### Immersive Reading Experience
+### 沉浸式閱讀體驗
 
-- **Bilingual Comparison**: Original and translated text displayed side-by-side for easier reading
-- **Selection Translation**: Select any text to get instant translation results
-- **One-Click Copy**: Quickly copy translated text to improve reading efficiency
-- **Full-Page Translation**: One-click translation of the entire webpage with a floating button, no page refresh required
+- **雙語對照**：原文與譯文並列顯示，閱讀更輕鬆
+- **劃詞翻譯**：選中任意文字，即時獲得翻譯結果
+- **一鍵複製**：快速複製譯文，提高閱讀效率
+- **全文翻譯**：懸浮球一鍵翻譯整個網頁，無需重新整理頁面
 
-### Privacy and Customization
+### 隱私與定製
 
-- **Privacy Protection**: All data stored locally, open-source and transparent code
-- **High Customization**: Rich customization options to meet different scenario needs
-- **Completely Free**: Open-source and free, non-commercial project
+- **隱私保護**：所有資料本地儲存，程式碼開源透明
+- **高度定製**：豐富的自定義選項，滿足不同場景需求
+- **完全免費**：開源免費，非商業化專案
 
-## 📦 Installation Methods
+## 📦 安裝方式
 
-| Browser     | Installation Method                                                                                                                                                                                                                                   |
-| ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Chrome**  | [Chrome Web Store](https://chromewebstore.google.com/detail/%E6%B5%81%E7%95%85%E9%98%85%E8%AF%BB/djnlaiohfaaifbibleebjggkghlmcpcj?hl=zh-CN&authuser=0) \| [Domestic Mirror](https://www.crxsoso.com/webstore/detail/djnlaiohfaaifbibleebjggkghlmcpcj) |
-| **Edge**    | [Edge Add-ons Store](https://microsoftedge.microsoft.com/addons/detail/%E6%B5%81%E7%95%85%E9%98%85%E8%AF%BB/kakgmllfpjldjhcnkghpplmlbnmcoflp?hl=zh-CN)                                                                                                |
-| **Firefox** | [Firefox Add-ons Store](https://addons.mozilla.org/zh-CN/firefox/addon/%E6%B5%81%E7%95%85%E9%98%85%E8%AF%BB/)                                                                                                                                         |
+| 瀏覽器      | 安裝方式                                                                                                                                                                                                                                      |
+| ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Chrome**  | [Chrome 應用商店](https://chromewebstore.google.com/detail/%E6%B5%81%E7%95%85%E9%98%85%E8%AF%BB/djnlaiohfaaifbibleebjggkghlmcpcj?hl=zh-CN&authuser=0) \| [國內映象](https://www.crxsoso.com/webstore/detail/djnlaiohfaaifbibleebjggkghlmcpcj) |
+| **Edge**    | [Edge 應用商店](https://microsoftedge.microsoft.com/addons/detail/%E6%B5%81%E7%95%85%E9%98%85%E8%AF%BB/kakgmllfpjldjhcnkghpplmlbnmcoflp?hl=zh-CN)                                                                                             |
+| **Firefox** | [Firefox 附加元件商店](https://addons.mozilla.org/zh-CN/firefox/addon/%E6%B5%81%E7%95%85%E9%98%85%E8%AF%BB/)                                                                                                                                  |
 
-## 🚀 Configuration Methods
+## 🚀 配置方法
 
-### Import Configuration from Uter Console (Recommended)
+### 從 優特控制檯匯入配置（推薦）
 
-After the FluentRead plugin is installed in your browser, opening the Uter console -> Token Management page will display a prompt to add FluentRead.
+當瀏覽器安裝了流暢閱讀外掛後，開啟 優特控制檯->令牌管理頁面會彈出新增流暢閱讀的提示
 
-![添加提示](/apps-assets/fluentread/hint.webp)
+![新增提示](/apps-assets/fluentread/hint.webp)
 
-After selecting a model, click 'One-click fill to FluentRead', and a confirmation window will pop up. Check if the corresponding information is correct.
+選擇模型後點選一鍵填充到FluentRead，會彈出確認視窗，檢查對應的資訊是否正確
 
-![确认](/apps-assets/fluentread/confirm.webp)
+![確認](/apps-assets/fluentread/confirm.webp)
 
-After confirming the import, the Uter configuration in FluentRead will be enabled.
+確認匯入後在流暢閱讀中的優特配置便會啟用
 
-![配置结果](/apps-assets/fluentread/fluentread.webp)
+![配置結果](/apps-assets/fluentread/fluentread.webp)
 
-### Manually Fill in Configuration in FluentRead
+### 在流暢閱讀中手動填寫配置
 
-![手动配置](/apps-assets/fluentread/configuration.webp)
+![手動配置](/apps-assets/fluentread/configuration.webp)
 
-| Configuration Item  | Content                                 |
-| ------------------- | --------------------------------------- |
-| Translation Service | Uter                                  |
-| Access Token        | Uter Key                              |
-| Uter Endpoint     | Uter Deployment Address (without /v1) |
-| Model               | Select from list, or custom model       |
-| Custom Model        | Model Name                              |
+| 配置項     | 內容                       |
+| ---------- | -------------------------- |
+| 翻譯服務   | 優特                     |
+| 訪問令牌   | 優特金鑰                |
+| 優特介面 | 優特部署地址（不帶/v1）  |
+| 模型       | 列表中選擇，或者自定義模型 |
+| 自定義模型 | 模型名稱                   |

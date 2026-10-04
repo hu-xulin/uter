@@ -1,382 +1,382 @@
 # user-management
 
-## Get Invitation Code
+## Récupérer le code d'invitation
 
-🔐 需要登录（User权限）
+🔐 Nécessite une connexion (permission User)
 
 `GET` `/api/user/aff`
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-## Convert Invitation Quota
+## Convertir le quota d'invitation
 
-🔐 需要登录（User权限）
+🔐 Nécessite une connexion (permission User)
 
 `POST` `/api/user/aff_transfer`
 
-### 请求体（`application/json`）
+### Corps de la requête (`application/json`)
 
-| 字段 | 类型 | 必填 | 说明 |
+| Champ | Type | Requis | Description |
 |---|---|---|---|
-| `quota` | integer | 否 | — |
+| `quota` | integer | Non | — |
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-## Get All Users
+## Récupérer tous les utilisateurs
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 Nécessite des privilèges d'administrateur (Admin)
 
 `GET` `/api/user/`
 
-### 请求参数
+### Paramètres de requête
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| Nom du paramètre | Position | Type | Requis | Description |
 |---|---|---|---|---|
-| `p` | query | integer | 否 | — |
-| `page_size` | query | integer | 否 | — |
+| `p` | query | integer | Non | — |
+| `page_size` | query | integer | Non | — |
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-## Admin Disable User 2FA
+## Désactiver la 2FA d'un utilisateur (admin)
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 Nécessite des privilèges d'administrateur (Admin)
 
 `DELETE` `/api/user/{id}/2fa`
 
-### 请求参数
+### Paramètres de requête
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| Nom du paramètre | Position | Type | Requis | Description |
 |---|---|---|---|---|
-| `id` | path | integer | 是 | — |
+| `id` | path | integer | Oui | — |
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-## Delete User
+## Supprimer un utilisateur
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 Nécessite des privilèges d'administrateur (Admin)
 
 `DELETE` `/api/user/{id}`
 
-### 请求参数
+### Paramètres de requête
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| Nom du paramètre | Position | Type | Requis | Description |
 |---|---|---|---|---|
-| `id` | path | integer | 是 | — |
+| `id` | path | integer | Oui | — |
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-## Get Specific User
+## Récupérer un utilisateur spécifique
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 Nécessite des privilèges d'administrateur (Admin)
 
 `GET` `/api/user/{id}`
 
-### 请求参数
+### Paramètres de requête
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| Nom du paramètre | Position | Type | Requis | Description |
 |---|---|---|---|---|
-| `id` | path | integer | 是 | — |
+| `id` | path | integer | Oui | — |
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-## Admin Reset User Passkey
+## Réinitialiser la clé d'accès d'un utilisateur (admin)
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 Nécessite des privilèges d'administrateur (Admin)
 
 `DELETE` `/api/user/{id}/reset_passkey`
 
-### 请求参数
+### Paramètres de requête
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| Nom du paramètre | Position | Type | Requis | Description |
 |---|---|---|---|---|
-| `id` | path | integer | 是 | — |
+| `id` | path | integer | Oui | — |
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-## Manage User Status
+## Gérer le statut d'un utilisateur
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 Nécessite des privilèges d'administrateur (Admin)
 
 `POST` `/api/user/manage`
 
-### 请求体（`application/json`）
+### Corps de la requête (`application/json`)
 
-| 字段 | 类型 | 必填 | 说明 |
+| Champ | Type | Requis | Description |
 |---|---|---|---|
-| `id` | integer | 否 | — |
-| `action` | enum（`disable`, `enable`, `delete`, `promote`, `demote`） | 否 | — |
+| `id` | integer | Non | — |
+| `action` | enum（`disable`, `enable`, `delete`, `promote`, `demote`） | Non | — |
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-## Get User Available Models
+## Récupérer les modèles disponibles pour l'utilisateur
 
-🔐 需要登录（User权限）
+🔐 Nécessite une connexion (permission User)
 
 `GET` `/api/user/models`
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-## Delete Passkey
+## Supprimer la clé d'accès
 
-🔐 需要登录（User权限）
+🔐 Nécessite une connexion (permission User)
 
 `DELETE` `/api/user/passkey`
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-## Get Passkey Status
+## Récupérer le statut de la clé d'accès
 
-🔐 需要登录（User权限）
+🔐 Nécessite une connexion (permission User)
 
 `GET` `/api/user/passkey`
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-## Start Passkey Registration
+## Démarrer l'enregistrement de la clé d'accès
 
-🔐 需要登录（User权限）
+🔐 Nécessite une connexion (permission User)
 
 `POST` `/api/user/passkey/register/begin`
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-## Complete Passkey Registration
+## Terminer l'enregistrement de la clé d'accès
 
-🔐 需要登录（User权限）
+🔐 Nécessite une connexion (permission User)
 
 `POST` `/api/user/passkey/register/finish`
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-## Start Passkey Verification
+## Démarrer la vérification de la clé d'accès
 
-🔐 需要登录（User权限）
+🔐 Nécessite une connexion (permission User)
 
 `POST` `/api/user/passkey/verify/begin`
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-## Complete Passkey Verification
+## Terminer la vérification de la clé d'accès
 
-🔐 需要登录（User权限）
+🔐 Nécessite une connexion (permission User)
 
 `POST` `/api/user/passkey/verify/finish`
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-## Create User
+## Créer un utilisateur
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 Nécessite des privilèges d'administrateur (Admin)
 
 `POST` `/api/user/`
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-## Update User
+## Mettre à jour un utilisateur
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 Nécessite des privilèges d'administrateur (Admin)
 
 `PUT` `/api/user/`
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-## Search Users
+## Rechercher des utilisateurs
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 Nécessite des privilèges d'administrateur (Admin)
 
 `GET` `/api/user/search`
 
-### 请求参数
+### Paramètres de requête
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| Nom du paramètre | Position | Type | Requis | Description |
 |---|---|---|---|---|
-| `keyword` | query | string | 否 | — |
-| `group` | query | string | 否 | — |
+| `keyword` | query | string | Non | — |
+| `group` | query | string | Non | — |
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-## Delete Current User
+## Supprimer l'utilisateur actuel
 
-🔐 需要登录（User权限）
+🔐 Nécessite une connexion (permission User)
 
 `DELETE` `/api/user/self`
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-## Get Current User Information
+## Récupérer les informations de l'utilisateur actuel
 
-🔐 需要登录（User权限）
+🔐 Nécessite une connexion (permission User)
 
 `GET` `/api/user/self`
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-## Get Current User Groups
+## Récupérer les groupes de l'utilisateur actuel
 
-🔐 需要登录（User权限）
+🔐 Nécessite une connexion (permission User)
 
 `GET` `/api/user/self/groups`
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-## Update Current User Information
+## Mettre à jour les informations de l'utilisateur actuel
 
-🔐 需要登录（User权限）
+🔐 Nécessite une connexion (permission User)
 
 `PUT` `/api/user/self`
 
-### 请求体（`application/json`）
+### Corps de la requête (`application/json`)
 
-| 字段 | 类型 | 必填 | 说明 |
+| Champ | Type | Requis | Description |
 |---|---|---|---|
-| `username` | string | 否 | — |
-| `display_name` | string | 否 | — |
-| `password` | string | 否 | — |
-| `original_password` | string | 否 | — |
+| `username` | string | Non | — |
+| `display_name` | string | Non | — |
+| `password` | string | Non | — |
+| `original_password` | string | Non | — |
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-## Update User Settings
+## Mettre à jour les paramètres utilisateur
 
-🔐 需要登录（User权限）
+🔐 Nécessite une connexion (permission User)
 
 `PUT` `/api/user/setting`
 
-### 请求体（`application/json`）
+### Corps de la requête (`application/json`)
 
-| 字段 | 类型 | 必填 | 说明 |
+| Champ | Type | Requis | Description |
 |---|---|---|---|
-| `notify_type` | string | 否 | — |
-| `quota_warning_threshold` | number | 否 | — |
-| `webhook_url` | string | 否 | — |
-| `notification_email` | string | 否 | — |
+| `notify_type` | string | Non | — |
+| `quota_warning_threshold` | number | Non | — |
+| `webhook_url` | string | Non | — |
+| `notification_email` | string | Non | — |
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-## Generate Access Token
+## Générer un jeton d'accès
 
-🔐 需要登录（User权限）
+🔐 Nécessite une connexion (permission User)
 
 `GET` `/api/user/token`
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-## Admin Completes Top-up
+## Finaliser une recharge (admin)
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 Nécessite des privilèges d'administrateur (Admin)
 
 `POST` `/api/user/topup/complete`
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |
 
-## Get All Top-up Records
+## Récupérer tous les enregistrements de recharge
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 Nécessite des privilèges d'administrateur (Admin)
 
 `GET` `/api/user/topup`
 
-### 响应
+### Réponse
 
-| 状态码 | 说明 |
+| Code d'état | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Succès |

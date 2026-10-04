@@ -1,382 +1,382 @@
-# user-management
+# 使用者管理
 
-## Get Invitation Code
+## 獲取邀請碼
 
-🔐 需要登录（User权限）
+🔐 需要登入（User許可權）
 
 `GET` `/api/user/aff`
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |
 
-## Convert Invitation Quota
+## 轉換邀請額度
 
-🔐 需要登录（User权限）
+🔐 需要登入（User許可權）
 
 `POST` `/api/user/aff_transfer`
 
-### 请求体（`application/json`）
+### 請求體（`application/json`）
 
-| 字段 | 类型 | 必填 | 说明 |
+| 欄位 | 型別 | 必填 | 說明 |
 |---|---|---|---|
 | `quota` | integer | 否 | — |
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |
 
-## Get All Users
+## 獲取所有使用者
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 需要管理員許可權（Admin）
 
 `GET` `/api/user/`
 
-### 请求参数
+### 請求引數
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| 引數名 | 位置 | 型別 | 必填 | 說明 |
 |---|---|---|---|---|
 | `p` | query | integer | 否 | — |
 | `page_size` | query | integer | 否 | — |
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |
 
-## Admin Disable User 2FA
+## 管理員禁用使用者2FA
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 需要管理員許可權（Admin）
 
 `DELETE` `/api/user/{id}/2fa`
 
-### 请求参数
+### 請求引數
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| 引數名 | 位置 | 型別 | 必填 | 說明 |
 |---|---|---|---|---|
 | `id` | path | integer | 是 | — |
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |
 
-## Delete User
+## 刪除使用者
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 需要管理員許可權（Admin）
 
 `DELETE` `/api/user/{id}`
 
-### 请求参数
+### 請求引數
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| 引數名 | 位置 | 型別 | 必填 | 說明 |
 |---|---|---|---|---|
 | `id` | path | integer | 是 | — |
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |
 
-## Get Specific User
+## 獲取指定使用者
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 需要管理員許可權（Admin）
 
 `GET` `/api/user/{id}`
 
-### 请求参数
+### 請求引數
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| 引數名 | 位置 | 型別 | 必填 | 說明 |
 |---|---|---|---|---|
 | `id` | path | integer | 是 | — |
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |
 
-## Admin Reset User Passkey
+## 管理員重置使用者Passkey
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 需要管理員許可權（Admin）
 
 `DELETE` `/api/user/{id}/reset_passkey`
 
-### 请求参数
+### 請求引數
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| 引數名 | 位置 | 型別 | 必填 | 說明 |
 |---|---|---|---|---|
 | `id` | path | integer | 是 | — |
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |
 
-## Manage User Status
+## 管理使用者狀態
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 需要管理員許可權（Admin）
 
 `POST` `/api/user/manage`
 
-### 请求体（`application/json`）
+### 請求體（`application/json`）
 
-| 字段 | 类型 | 必填 | 说明 |
+| 欄位 | 型別 | 必填 | 說明 |
 |---|---|---|---|
 | `id` | integer | 否 | — |
 | `action` | enum（`disable`, `enable`, `delete`, `promote`, `demote`） | 否 | — |
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |
 
-## Get User Available Models
+## 獲取使用者可用模型
 
-🔐 需要登录（User权限）
+🔐 需要登入（User許可權）
 
 `GET` `/api/user/models`
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |
 
-## Delete Passkey
+## 刪除Passkey
 
-🔐 需要登录（User权限）
+🔐 需要登入（User許可權）
 
 `DELETE` `/api/user/passkey`
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |
 
-## Get Passkey Status
+## 獲取Passkey狀態
 
-🔐 需要登录（User权限）
+🔐 需要登入（User許可權）
 
 `GET` `/api/user/passkey`
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |
 
-## Start Passkey Registration
+## 開始註冊Passkey
 
-🔐 需要登录（User权限）
+🔐 需要登入（User許可權）
 
 `POST` `/api/user/passkey/register/begin`
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |
 
-## Complete Passkey Registration
+## 完成註冊Passkey
 
-🔐 需要登录（User权限）
+🔐 需要登入（User許可權）
 
 `POST` `/api/user/passkey/register/finish`
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |
 
-## Start Passkey Verification
+## 開始驗證Passkey
 
-🔐 需要登录（User权限）
+🔐 需要登入（User許可權）
 
 `POST` `/api/user/passkey/verify/begin`
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |
 
-## Complete Passkey Verification
+## 完成驗證Passkey
 
-🔐 需要登录（User权限）
+🔐 需要登入（User許可權）
 
 `POST` `/api/user/passkey/verify/finish`
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |
 
-## Create User
+## 建立使用者
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 需要管理員許可權（Admin）
 
 `POST` `/api/user/`
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |
 
-## Update User
+## 更新使用者
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 需要管理員許可權（Admin）
 
 `PUT` `/api/user/`
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |
 
-## Search Users
+## 搜尋使用者
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 需要管理員許可權（Admin）
 
 `GET` `/api/user/search`
 
-### 请求参数
+### 請求引數
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| 引數名 | 位置 | 型別 | 必填 | 說明 |
 |---|---|---|---|---|
 | `keyword` | query | string | 否 | — |
 | `group` | query | string | 否 | — |
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |
 
-## Delete Current User
+## 登出當前使用者
 
-🔐 需要登录（User权限）
+🔐 需要登入（User許可權）
 
 `DELETE` `/api/user/self`
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |
 
-## Get Current User Information
+## 獲取當前使用者資訊
 
-🔐 需要登录（User权限）
+🔐 需要登入（User許可權）
 
 `GET` `/api/user/self`
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |
 
-## Get Current User Groups
+## 獲取當前使用者分組
 
-🔐 需要登录（User权限）
+🔐 需要登入（User許可權）
 
 `GET` `/api/user/self/groups`
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |
 
-## Update Current User Information
+## 更新當前使用者資訊
 
-🔐 需要登录（User权限）
+🔐 需要登入（User許可權）
 
 `PUT` `/api/user/self`
 
-### 请求体（`application/json`）
+### 請求體（`application/json`）
 
-| 字段 | 类型 | 必填 | 说明 |
+| 欄位 | 型別 | 必填 | 說明 |
 |---|---|---|---|
 | `username` | string | 否 | — |
 | `display_name` | string | 否 | — |
 | `password` | string | 否 | — |
 | `original_password` | string | 否 | — |
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |
 
-## Update User Settings
+## 更新使用者設定
 
-🔐 需要登录（User权限）
+🔐 需要登入（User許可權）
 
 `PUT` `/api/user/setting`
 
-### 请求体（`application/json`）
+### 請求體（`application/json`）
 
-| 字段 | 类型 | 必填 | 说明 |
+| 欄位 | 型別 | 必填 | 說明 |
 |---|---|---|---|
 | `notify_type` | string | 否 | — |
 | `quota_warning_threshold` | number | 否 | — |
 | `webhook_url` | string | 否 | — |
 | `notification_email` | string | 否 | — |
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |
 
-## Generate Access Token
+## 生成訪問令牌
 
-🔐 需要登录（User权限）
+🔐 需要登入（User許可權）
 
 `GET` `/api/user/token`
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |
 
-## Admin Completes Top-up
+## 管理員完成充值
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 需要管理員許可權（Admin）
 
 `POST` `/api/user/topup/complete`
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |
 
-## Get All Top-up Records
+## 獲取所有充值記錄
 
-👨‍💼 需要管理员权限（Admin）
+👨‍💼 需要管理員許可權（Admin）
 
 `GET` `/api/user/topup`
 
-### 响应
+### 響應
 
-| 状态码 | 说明 |
+| 狀態碼 | 說明 |
 |---|---|
 | `200` | 成功 |

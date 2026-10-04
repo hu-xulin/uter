@@ -1,35 +1,35 @@
-# Features Description
+# 特性說明
 
-1. 🎨 Brand new UI interface (some interfaces are yet to be updated)
-2. 🌍 Multi-language support (to be improved)
-3. 🎨 Added [Midjourney-Proxy(Plus)](https://github.com/novicezk/midjourney-proxy) API support (Before use, please confirm third-party project and upstream service authorization, content security, and terms of service requirements)
-4. 💰 Supports internal balance, cost allocation, or enterprise customer account management in legally authorized deployments, configurable in system settings:
-   - [x] Epay
-5. 🔍 Supports querying usage or balance information of legally authorized channels
-6. 📑 Pagination supports selecting the number of items displayed per page
-7. 🔄 Supports SQLite database storage, out-of-the-box, lightweight and convenient
-8. 💵 Supports internal cost accounting or enterprise customer billing, configurable in System Settings - Operations Settings
-9. ⚖️ Supports channel **Weighted Random**
-10. 📈 Data Dashboard (Console)
-11. 🔒 Can set models that a token can call
-12. 🤖 Supports Telegram authorized login
-13. 🎵 Added [Suno API](https://github.com/Suno-API/Suno-API) API support (Before use, please confirm third-party project and upstream service authorization, content security, and terms of service requirements)
-14. 🔄 Supports Rerank models, currently compatible with Cohere and Jina, and can be integrated with Dify
-15. ⚡ **[OpenAI Realtime API](https://platform.openai.com/docs/guides/realtime/integration)** - Supports OpenAI's Realtime API, supports Azure channels
-16. Supports using the route /chat2link to enter the chat interface
-17. 🧠 Supports setting reasoning effort via model name suffix:
-    1. OpenAI o-series models
-       - Add suffix `-high` to set as high reasoning effort (e.g., `o3-mini-high`)
-       - Add suffix `-medium` to set as medium reasoning effort (e.g., `o3-mini-medium`)
-       - Add suffix `-low` to set as low reasoning effort (e.g., `o3-mini-low`)
-    2. Claude thinking models
-       - Add suffix `-thinking` to enable thinking mode (e.g., `claude-3-7-sonnet-20250219-thinking`)
-18. 🔄 Thinking to Content: Supports setting the `thinking_to_content` option in `Channel - Edit - Channel Extra Settings`. Default is `false`. When enabled, it will convert the thinking content `reasoning_content` into a `<think>` tag and append it to the returned content.
-19. 🔄 Model Rate Limiting: Supports setting model rate limiting in `System Settings - Rate Limit Settings`, including total request limit and successful request limit.
-20. 💰 Cache Billing Support: When enabled, billing can be performed according to the set ratio upon cache hit:
-    1. Set the `Prompt Cache Ratio` option in `System Settings - Operations Settings`.
-    2. Set the `Prompt Cache Ratio` in the channel, range 0-1. For example, setting it to 0.5 means billing at 50% upon cache hit.
-    3. Supported channels:
+1. 🎨 全新的UI介面
+2. 🌍 多語言支援
+3. 🎨 新增[Midjourney-Proxy(Plus)](https://github.com/novicezk/midjourney-proxy)
+4. 💰 支援合法授權部署中的內部餘額、成本分攤或企業客戶賬務管理，可在系統設定中設定：
+   - [x] 易支付
+5. 🔍 支援查詢合法授權渠道的用量或餘額資訊
+6. 📑 分頁支援選擇每頁顯示數量
+7. 🔄 支援 SQLite 資料庫儲存，開箱即用，輕量便捷
+8. 💵 支援組織內部成本核算或企業客戶賬務計量，可在 系統設定-運營設定 中設定
+9. ⚖️ 支援渠道 **加權隨機**
+10. 📈 資料看板（管理）
+11. 🔒 可設定令牌能呼叫的模型
+12. 🤖 支援Telegram授權登入
+13. 🎵 新增 [Suno API](https://github.com/Suno-API/Suno-API)介面支援
+14. 🔄 支援Rerank模型，目前相容Cohere和Jina，可接入Dify
+15. ⚡ **[OpenAI Realtime API](https://platform.openai.com/docs/guides/realtime/integration)** - 支援OpenAI的Realtime API，支援Azure渠道
+16. 支援使用路由/chat2link 進入聊天介面
+17. 🧠 支援透過模型名稱字尾設定 reasoning effort：
+    1. OpenAI o系列模型
+       - 新增字尾 `-high` 設定為 high reasoning effort (例如: `o3-mini-high`)
+       - 新增字尾 `-medium` 設定為 medium reasoning effort (例如: `o3-mini-medium`)
+       - 新增字尾 `-low` 設定為 low reasoning effort (例如: `o3-mini-low`)
+    2. Claude 思考模型
+       - 新增字尾 `-thinking` 啟用思考模式 (例如: `claude-3-7-sonnet-20250219-thinking`)
+18. 🔄 思考轉內容，支援在 `渠道-编辑-渠道额外设置` 中設定 `thinking_to_content` 選項，預設`false`，開啟後會將思考內容 `reasoning_content` 轉換為 `<think>` 標籤拼接到內容中返回。
+19. 🔄 模型限流，支援在 `系统设置-速率限制设置` 中設定模型限流，支援設定總請求數限制和成功請求數限制
+20. 💰 快取計費支援，開啟後可以在快取命中時按照設定的比例計費：
+    1. 在 `系统设置-运营设置` 中設定 提示快取倍率 選項
+    2. 在渠道中設定 提示快取倍率，範圍 0-1，例如設定為 0.5 表示快取命中時按照 50% 計費
+    3. 支援的渠道：
     - [x] OpenAI
     - [x] Azure
     - [x] DeepSeek
