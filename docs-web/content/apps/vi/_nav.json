@@ -1,0 +1,77 @@
+[
+  {
+    "id": "index",
+    "title": "AI Applications",
+    "description": "Supported AI applications and integration solutions"
+  },
+  {
+    "id": "aionui",
+    "title": "AionUi - Free Open-Source Desktop Office Agent",
+    "description": "AionUi Tutorial — A free open-source desktop office agent supporting various AI agents like Gemini CLI, Claude Code, Codex, and more. Integrates with Uter to enable multi-model workflows."
+  },
+  {
+    "id": "aqbot",
+    "title": "AQBot - Local-First Desktop AI Workbench",
+    "description": "AQBot guide — connect this local-first desktop AI workbench to Uter. Import with aqbot:// in one click, or configure OpenAI / Claude / Gemini protocols manually."
+  },
+  {
+    "id": "cc-switch",
+    "title": "CC Switch - All-in-One AI CLI Management Tool",
+    "description": "CC Switch tutorial — a cross-platform tool for unified management of Claude Code, Codex & Gemini CLI provider configs, MCP servers, and system prompts. One-click import from Uter."
+  },
+  {
+    "id": "cherry-studio",
+    "title": "Cherry Studio - Desktop AI Client",
+    "description": "Cherry Studio Tutorial — Connecting the desktop AI client to Uter, one-click API Key entry. Built-in 30+ professional AI assistants, covering various work scenarios."
+  },
+  {
+    "id": "deepchat",
+    "title": "DeepChat - Commercial-Friendly Full-Featured AI Agent Client",
+    "description": "DeepChat guide — connect this open-source, commercial-friendly full-featured AI Agent client to Uter and import DeepChat configuration with DeepLink in one click."
+  },
+  {
+    "id": "fluent-read",
+    "title": "FluentRead - Open Source Translation Plugin",
+    "description": "FluentRead configuration guide — open-source browser translation plugin with 20+ engines and AI model support. Connect to Uter for immersive bilingual reading."
+  },
+  {
+    "id": "memoh",
+    "title": "Memoh - Containerized AI Agent Platform",
+    "description": "Memoh integration guide — Connect the self-hosted containerized AI agent platform to Uter, creating AI bots with long-term memory for Telegram, Discord, Lark, QQ, WeChat, and more."
+  },
+  {
+    "id": "openclaw",
+    "title": "OpenClaw - Self-hosted AI Assistant Platform",
+    "description": "OpenClaw Tutorial — Install OpenClaw, integrate Uter, and quickly set up a self-hosted AI assistant. Open-source project, supporting multi-channel integration like Telegram, Discord, WhatsApp."
+  },
+  {
+    "id": "langbot",
+    "title": "LangBot - Instant Messaging Bot Development Platform",
+    "description": "LangBot integration guide — build AI-powered chatbots for Feishu, DingTalk, Telegram, Discord, and more. Supports Knowledge Base, Agent, and MCP with Uter."
+  },
+  {
+    "id": "luna-translator",
+    "title": "LunaTranslator - Open Source GalGame Translator",
+    "description": "LunaTranslator Tutorial — An open-source GalGame / visual novel translator that supports HOOK, OCR, and AI translation engines. Integrates with Uter to improve translation quality."
+  },
+  {
+    "id": "astrbot",
+    "title": "AstrBot - Agent Chatbot",
+    "description": "AstrBot Configuration Tutorial — Integrating the open-source Agent chatbot platform with Uter to inject AI capabilities into instant messaging platforms like QQ, Feishu, DingTalk, and WeChat Work."
+  },
+  {
+    "id": "claude-code",
+    "title": "Claude Code",
+    "description": "Claude Code configuration guide — use Anthropic's terminal-based coding agent with Uter. Supports code understanding, multi-file editing, and IDE integration."
+  },
+  {
+    "id": "codex-cli",
+    "title": "OpenAI Codex CLI",
+    "description": "OpenAI Codex CLI Installation Tutorial — Install a terminal AI coding assistant on Windows, macOS, Linux, connecting to Uter. Supports sandbox policies and atomic patch editing."
+  },
+  {
+    "id": "factory-droid-cli",
+    "title": "Factory Droid CLI",
+    "description": "Factory Droid CLI setup guide — install and configure this AI software engineering agent with Uter. Supports end-to-end development from planning to testing."
+  }
+]

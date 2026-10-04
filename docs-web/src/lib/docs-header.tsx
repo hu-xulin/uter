@@ -71,7 +71,12 @@ const NAV_LINKS_EN = [
  */
 const BRAND_NAME: Record<DocsLocale, string> = {
   zh: 'Uter.ai 优特智能',
+  'zh-TW': 'Uter.ai 優特智能',
   en: 'Uter.ai',
+  fr: 'Uter.ai',
+  ja: 'Uter.ai',
+  ru: 'Uter.ai',
+  vi: 'Uter.ai',
 };
 
 const COPY = {
@@ -81,11 +86,41 @@ const COPY = {
     toggleTheme: '切换主题',
     chooseLanguage: '选择语言',
   },
+  'zh-TW': {
+    signIn: '登入',
+    toggleMenu: '切換導航選單',
+    toggleTheme: '切換主題',
+    chooseLanguage: '選擇語言',
+  },
   en: {
     signIn: 'Sign in',
     toggleMenu: 'Toggle navigation menu',
     toggleTheme: 'Toggle theme',
     chooseLanguage: 'Choose a language',
+  },
+  fr: {
+    signIn: 'Se connecter',
+    toggleMenu: 'Basculer le menu de navigation',
+    toggleTheme: 'Basculer le thème',
+    chooseLanguage: 'Choisir une langue',
+  },
+  ja: {
+    signIn: 'ログイン',
+    toggleMenu: 'ナビゲーションメニューを切り替え',
+    toggleTheme: 'テーマを切り替え',
+    chooseLanguage: '言語を選択',
+  },
+  ru: {
+    signIn: 'Войти',
+    toggleMenu: 'Переключить навигационное меню',
+    toggleTheme: 'Переключить тему',
+    chooseLanguage: 'Выбрать язык',
+  },
+  vi: {
+    signIn: 'Đăng nhập',
+    toggleMenu: 'Chuyển đổi menu điều hướng',
+    toggleTheme: 'Chuyển đổi giao diện',
+    chooseLanguage: 'Chọn ngôn ngữ',
   },
 } as const;
 

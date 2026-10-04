@@ -17,11 +17,24 @@ import { landingCards } from '@/lib/nav';
  * declaring a `summary` there. A section therefore cannot be renamed or
  * moved in one place and left behind in the other.
  */
-const TITLE: Record<DocsLocale, string> = { zh: '文档', en: 'Docs' };
+const TITLE: Record<DocsLocale, string> = {
+  zh: '文档',
+  'zh-TW': '文件',
+  en: 'Docs',
+  fr: 'Documentation',
+  ja: 'ドキュメント',
+  ru: 'Документация',
+  vi: 'Tài liệu',
+};
 
 const INTRO: Record<DocsLocale, string> = {
   zh: '按板块浏览：特性说明、用户指南、API 参考、AI 应用与协议文件。',
+  'zh-TW': '按板塊瀏覽：特性說明、使用者指南、API 參考、AI 應用與協議文件。',
   en: 'Browse by section: features, the user guide, the API reference, AI apps and the legal documents.',
+  fr: 'Parcourez par section : fonctionnalités, guide utilisateur, référence API, applications IA et documents légaux.',
+  ja: 'セクション別に参照：機能、ユーザーガイド、API リファレンス、AI アプリ、契約書。',
+  ru: 'Просмотр по разделам: возможности, руководство пользователя, справочник API, ИИ-приложения и юридические документы.',
+  vi: 'Duyệt theo mục: tính năng, hướng dẫn người dùng, tài liệu tham khảo API, ứng dụng AI và văn bản pháp lý.',
 };
 
 export function generateStaticParams() {

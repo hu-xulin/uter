@@ -126,62 +126,77 @@ export function aboutSectionUrl(locale: DocsLocale, index: number): string {
  * monochrome on purpose, so a single file serves both themes.
  */
 const PARTNER_WALL: AboutPartner[] = [
-  { id: 'openai', group: 'global', name: { zh: 'GPT', en: 'GPT' }, company: { zh: 'OpenAI', en: 'OpenAI' } },
+  {
+    id: 'openai',
+    group: 'global',
+    name: { zh: 'GPT', 'zh-TW': 'GPT', en: 'GPT', fr: 'GPT', ja: 'GPT', ru: 'GPT', vi: 'GPT' },
+    company: { zh: 'OpenAI', 'zh-TW': 'OpenAI', en: 'OpenAI', fr: 'OpenAI', ja: 'OpenAI', ru: 'OpenAI', vi: 'OpenAI' },
+  },
   {
     id: 'anthropic',
     group: 'global',
-    name: { zh: 'Claude', en: 'Claude' },
-    company: { zh: 'Anthropic', en: 'Anthropic' },
+    name: { zh: 'Claude', 'zh-TW': 'Claude', en: 'Claude', fr: 'Claude', ja: 'Claude', ru: 'Claude', vi: 'Claude' },
+    company: { zh: 'Anthropic', 'zh-TW': 'Anthropic', en: 'Anthropic', fr: 'Anthropic', ja: 'Anthropic', ru: 'Anthropic', vi: 'Anthropic' },
   },
   {
     id: 'google',
     group: 'global',
-    name: { zh: 'Gemini', en: 'Gemini' },
-    company: { zh: 'Google', en: 'Google' },
+    name: { zh: 'Gemini', 'zh-TW': 'Gemini', en: 'Gemini', fr: 'Gemini', ja: 'Gemini', ru: 'Gemini', vi: 'Gemini' },
+    company: { zh: 'Google', 'zh-TW': 'Google', en: 'Google', fr: 'Google', ja: 'Google', ru: 'Google', vi: 'Google' },
   },
-  { id: 'xai', group: 'global', name: { zh: 'Grok', en: 'Grok' }, company: { zh: 'xAI', en: 'xAI' } },
+  {
+    id: 'xai',
+    group: 'global',
+    name: { zh: 'Grok', 'zh-TW': 'Grok', en: 'Grok', fr: 'Grok', ja: 'Grok', ru: 'Grok', vi: 'Grok' },
+    company: { zh: 'xAI', 'zh-TW': 'xAI', en: 'xAI', fr: 'xAI', ja: 'xAI', ru: 'xAI', vi: 'xAI' },
+  },
   {
     id: 'mistral',
     group: 'global',
-    name: { zh: 'Mistral', en: 'Mistral' },
-    company: { zh: 'Mistral AI', en: 'Mistral AI' },
+    name: { zh: 'Mistral', 'zh-TW': 'Mistral', en: 'Mistral', fr: 'Mistral', ja: 'Mistral', ru: 'Mistral', vi: 'Mistral' },
+    company: { zh: 'Mistral AI', 'zh-TW': 'Mistral AI', en: 'Mistral AI', fr: 'Mistral AI', ja: 'Mistral AI', ru: 'Mistral AI', vi: 'Mistral AI' },
   },
-  { id: 'cohere', group: 'global', name: { zh: 'Command', en: 'Command' }, company: { zh: 'Cohere', en: 'Cohere' } },
+  {
+    id: 'cohere',
+    group: 'global',
+    name: { zh: 'Command', 'zh-TW': 'Command', en: 'Command', fr: 'Command', ja: 'Command', ru: 'Command', vi: 'Command' },
+    company: { zh: 'Cohere', 'zh-TW': 'Cohere', en: 'Cohere', fr: 'Cohere', ja: 'Cohere', ru: 'Cohere', vi: 'Cohere' },
+  },
   {
     id: 'deepseek',
     group: 'china',
-    name: { zh: 'DeepSeek', en: 'DeepSeek' },
-    company: { zh: '深度求索', en: 'DeepSeek' },
+    name: { zh: 'DeepSeek', 'zh-TW': 'DeepSeek', en: 'DeepSeek', fr: 'DeepSeek', ja: 'DeepSeek', ru: 'DeepSeek', vi: 'DeepSeek' },
+    company: { zh: '深度求索', 'zh-TW': '深度求索', en: 'DeepSeek', fr: 'DeepSeek', ja: 'DeepSeek', ru: 'DeepSeek', vi: 'DeepSeek' },
   },
   {
     id: 'qwen',
     group: 'china',
-    name: { zh: '通义千问', en: 'Qwen' },
-    company: { zh: '阿里巴巴', en: 'Alibaba' },
+    name: { zh: '通义千问', 'zh-TW': '通義千問', en: 'Qwen', fr: 'Qwen', ja: 'Qwen', ru: 'Qwen', vi: 'Qwen' },
+    company: { zh: '阿里巴巴', 'zh-TW': '阿里巴巴', en: 'Alibaba', fr: 'Alibaba', ja: 'Alibaba', ru: 'Alibaba', vi: 'Alibaba' },
   },
   {
     id: 'hunyuan',
     group: 'china',
-    name: { zh: '混元', en: 'Hunyuan' },
-    company: { zh: '腾讯', en: 'Tencent' },
+    name: { zh: '混元', 'zh-TW': '混元', en: 'Hunyuan', fr: 'Hunyuan', ja: 'Hunyuan', ru: 'Hunyuan', vi: 'Hunyuan' },
+    company: { zh: '腾讯', 'zh-TW': '騰訊', en: 'Tencent', fr: 'Tencent', ja: 'Tencent', ru: 'Tencent', vi: 'Tencent' },
   },
   {
     id: 'doubao',
     group: 'china',
-    name: { zh: '豆包', en: 'Doubao' },
-    company: { zh: '字节跳动', en: 'ByteDance' },
+    name: { zh: '豆包', 'zh-TW': '豆包', en: 'Doubao', fr: 'Doubao', ja: 'Doubao', ru: 'Doubao', vi: 'Doubao' },
+    company: { zh: '字节跳动', 'zh-TW': '字節跳動', en: 'ByteDance', fr: 'ByteDance', ja: 'ByteDance', ru: 'ByteDance', vi: 'ByteDance' },
   },
   {
     id: 'glm',
     group: 'china',
-    name: { zh: '智谱 GLM', en: 'Zhipu GLM' },
-    company: { zh: '智谱 AI', en: 'Zhipu AI' },
+    name: { zh: '智谱 GLM', 'zh-TW': '智譜 GLM', en: 'Zhipu GLM', fr: 'Zhipu GLM', ja: 'Zhipu GLM', ru: 'Zhipu GLM', vi: 'Zhipu GLM' },
+    company: { zh: '智谱 AI', 'zh-TW': '智譜 AI', en: 'Zhipu AI', fr: 'Zhipu AI', ja: 'Zhipu AI', ru: 'Zhipu AI', vi: 'Zhipu AI' },
   },
   {
     id: 'kimi',
     group: 'china',
-    name: { zh: 'Kimi', en: 'Kimi' },
-    company: { zh: '月之暗面', en: 'Moonshot AI' },
+    name: { zh: 'Kimi', 'zh-TW': 'Kimi', en: 'Kimi', fr: 'Kimi', ja: 'Kimi', ru: 'Kimi', vi: 'Kimi' },
+    company: { zh: '月之暗面', 'zh-TW': '月之暗面', en: 'Moonshot AI', fr: 'Moonshot AI', ja: 'Moonshot AI', ru: 'Moonshot AI', vi: 'Moonshot AI' },
   },
 ];
 
@@ -190,8 +205,24 @@ export const PARTNER_GROUP_LABELS: Record<
   AboutPartner['group'],
   Record<DocsLocale, string>
 > = {
-  global: { zh: '国外大模型', en: 'Global models' },
-  china: { zh: '国内大模型', en: 'Models from China' },
+  global: {
+    zh: '国外大模型',
+    'zh-TW': '國外大模型',
+    en: 'Global models',
+    fr: 'Modèles mondiaux',
+    ja: 'グローバルモデル',
+    ru: 'Мировые модели',
+    vi: 'Mô hình toàn cầu',
+  },
+  china: {
+    zh: '国内大模型',
+    'zh-TW': '國內大模型',
+    en: 'Models from China',
+    fr: 'Modèles chinois',
+    ja: '中国のモデル',
+    ru: 'Китайские модели',
+    vi: 'Mô hình Trung Quốc',
+  },
 };
 
 /**
@@ -793,7 +824,10 @@ const EN_CONTENT: AboutContent = {
 };
 
 export function getAboutContent(locale: DocsLocale): AboutContent {
-  return locale === 'en' ? EN_CONTENT : ZH_CONTENT;
+  // Only `zh`/`zh-TW` author Chinese copy today; every other locale reads
+  // the English write-up rather than Chinese.
+  if (locale === 'zh' || locale === 'zh-TW') return ZH_CONTENT;
+  return EN_CONTENT;
 }
 
 /**

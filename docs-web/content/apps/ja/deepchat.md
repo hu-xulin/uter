@@ -1,0 +1,53 @@
+# DeepChat - Commercial-Friendly Full-Featured AI Agent Client
+
+> **Chat Settings Options**
+>
+> In the Uter console, go to System Settings -> Chat Settings and add the
+>   following shortcut option. It lets users fill DeepChat from the token
+>   management page with one click:
+
+    ```json
+    { "DeepChat": "deepchat://provider/install?v=1&data={deepchatConfig}" }
+    ```
+
+> DeepChat is an open-source, cross-platform, commercial-friendly full-featured
+>   AI Agent client. It supports cloud and local models, MCP tool calls, Skills,
+>   ACP, Agent integration, and remote-control workflows, making it suitable for
+>   users who need unified Provider management and advanced AI Agents.
+
+- Official Website: [https://deepchat.thinkinai.xyz](https://deepchat.thinkinai.xyz)
+- GitHub Repository: [https://github.com/ThinkInAIXYZ/deepchat](https://github.com/ThinkInAIXYZ/deepchat)
+- Download Address: [https://deepchat.thinkinai.xyz/#/download](https://deepchat.thinkinai.xyz/#/download)
+
+## Uter Integration Method
+
+### Method 1: One-Click Import
+
+1. In the Uter console sidebar, open **Token Management** and find the token you want to use
+
+2. Select **DeepChat** from the token actions
+
+3. Let the browser launch DeepChat and confirm opening the app
+   ![Open DeepChat](/apps-assets/deepchat/3-open-deepchat.webp)
+
+4. Confirm the configuration in DeepChat's Provider import preview
+   ![Confirm DeepChat Configuration](/apps-assets/deepchat/4-deepchat-ok.webp)
+
+5. Open the model list and select a Uter model to start using it
+   ![Open Model List](/apps-assets/deepchat/5-open-models.webp)
+
+### Method 2: Manual Import
+
+1. Copy the API Key and site address from the Uter console
+   ![Uter Manual Configuration Guide](/apps-assets/deepchat/7-uter-manual-guidance.webp)
+
+2. In DeepChat settings, add or edit the Uter Provider, then fill in the API address and API Key
+   ![DeepChat Manual Configuration Guide](/apps-assets/deepchat/6-deepchat-manual-guidance.webp)
+
+3. Open the model list and select a Uter model to start using it
+   ![Open Model List](/apps-assets/deepchat/5-open-models.webp)
+
+## Related Links
+
+- [DeepChat GitHub Repository](https://github.com/ThinkInAIXYZ/deepchat)
+- [DeepChat Download Page](https://deepchat.thinkinai.xyz/#/download)

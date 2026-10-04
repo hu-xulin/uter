@@ -14,10 +14,13 @@
 import { usePathname } from 'fumadocs-core/framework';
 
 import { localeFromPath } from '@/lib/docs-search-index';
-import { i18n, type DocsLocale } from '@/lib/i18n';
+import { SUPPORTED_DOCS_LOCALES, i18n, type DocsLocale } from '@/lib/i18n';
 
 export function useDocsLocale(): DocsLocale {
   const pathname = usePathname();
   const segment = localeFromPath(pathname);
-  return segment === 'en' ? 'en' : segment === 'zh' ? 'zh' : i18n.defaultLanguage;
+  if (segment && (SUPPORTED_DOCS_LOCALES as readonly string[]).includes(segment)) {
+    return segment as DocsLocale;
+  }
+  return i18n.defaultLanguage;
 }

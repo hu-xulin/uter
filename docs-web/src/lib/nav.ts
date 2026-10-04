@@ -197,8 +197,15 @@ function manifest(): Manifest {
  */
 function text(label: Localized, locale: DocsLocale, what: string): string {
   const value = label?.[locale];
-  if (!value) throw new Error(`nav.json: missing "${locale}" label for ${what}`);
-  return value;
+  if (value) return value;
+  // New locales are authored in `zh`/`en` only for now; fall back through
+  // the supported pair instead of throwing a blank sidebar row. `zh-TW`
+  // reads Simplified Chinese first (closer than English), everyone else
+  // reads English.
+  if (locale === 'zh-TW' && label.zh) return label.zh;
+  if (label.en) return label.en;
+  if (label.zh) return label.zh;
+  throw new Error(`nav.json: missing label for ${what} (no fallback)`);
 }
 
 /** `shortenAt` — the part of a label ahead of the separator. */

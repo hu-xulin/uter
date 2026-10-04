@@ -371,7 +371,12 @@ export function FeatureList({
 /** Placeholder wording for a picture the site does not ship yet. */
 const PENDING_IMAGE_LABEL: Record<DocsLocale, string> = {
   zh: '图片待补充',
+  'zh-TW': '圖片待補充',
   en: 'Screenshot coming soon',
+  fr: 'Capture à venir',
+  ja: 'スクリーンショット近日公開',
+  ru: 'Скриншот скоро появится',
+  vi: 'Ảnh chụp màn hình sắp ra mắt',
 };
 
 /** Draw one run of inline text, keeping its formatting. */

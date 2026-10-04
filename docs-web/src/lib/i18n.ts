@@ -1,13 +1,20 @@
 /**
- * Locale list for the docs site. Adding more is a one-line change here
- * plus, for full docs pages, a content folder under `content/`.
+ * Locale list for the docs site.
  *
- * The supported locales are intentionally short (`zh`, `en`) — the
- * gateway's SPA already maps a much wider set (zh-CN, zh-TW, fr, ja,
- * ru, vi) onto a single canonical locale for the docs site, since we
- * only author content for one language pair today.
+ * The gateway's SPA already supports the full seven-locale set
+ * (`zh-CN`, `zh-TW`, `fr`, `ja`, `ru`, `vi`, `en`); the docs site now
+ * ships translations for the same seven. Adding more is a one-line change
+ * here plus, for full docs pages, a content folder under `content/`.
  */
-export const SUPPORTED_DOCS_LOCALES = ['zh', 'en'] as const;
+export const SUPPORTED_DOCS_LOCALES = [
+  'zh',
+  'zh-TW',
+  'en',
+  'fr',
+  'ja',
+  'ru',
+  'vi',
+] as const;
 export type DocsLocale = (typeof SUPPORTED_DOCS_LOCALES)[number];
 
 export const i18n = {
@@ -16,16 +23,30 @@ export const i18n = {
 };
 
 /**
- * Map the gateway SPA's locale codes onto a docs locale. Anything that
- * isn't `zh` falls back to `en` for now — that's the supported pair we
- * ship translations for. Add specific locale codes here as more
- * translations are authored; this function is the only place that
- * needs to know about the mapping.
+ * Map the gateway SPA's locale codes onto a docs locale.
+ *
+ * The SPA uses `zh-CN` / `zh-TW` while the docs site uses `zh` / `zh-TW`,
+ * so the regional variant has to be normalised here. Anything unrecognised
+ * falls back to `en` — that is the second language we author content for,
+ * and the safe default for locales we have not translated yet.
+ *
+ * This is the only place that needs to know about the mapping.
  */
 export function resolveDocsLocale(spaLocale: string | undefined | null): DocsLocale {
   if (!spaLocale) return i18n.defaultLanguage;
   const normalized = spaLocale.toLowerCase();
-  if (normalized.startsWith('zh')) return 'zh';
+  if (normalized.startsWith('zh')) {
+    return normalized.includes('tw') || normalized.includes('hant') ? 'zh-TW' : 'zh';
+  }
+  if (
+    normalized === 'en' ||
+    normalized === 'fr' ||
+    normalized === 'ja' ||
+    normalized === 'ru' ||
+    normalized === 'vi'
+  ) {
+    return normalized as DocsLocale;
+  }
   return 'en';
 }
 
