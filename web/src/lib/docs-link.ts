@@ -21,31 +21,39 @@ For commercial licensing, please contact support@Uter.ai.com
  * Locale → docs-path prefix mapping.
  *
  * The bundled docs site (a Next.js static export in `web/dist/docs`)
- * ships Chinese (`zh`) and English (`en`) landing pages today. The
- * gateway SPA still serves a wider set of UI locales (zh-CN, zh-TW,
- * fr, ja, ru, vi) — this map is the single source of truth that
- * collapses them onto the docs locales we actually author content
- * for. Adding a new docs translation only requires editing this file.
+ * ships all seven supported locales — `zh`, `zh-TW`, `en`, `fr`, `ja`,
+ * `ru`, `vi` — each with its own translated content (API reference, user
+ * guide, about pages, legal docs). The gateway SPA serves the same seven
+ * UI locales, so this map maps every UI language onto its own docs
+ * locale rather than collapsing them onto `zh`/`en`. Adding a new docs
+ * translation only requires editing this file.
  *
  * The SPA tags its own interface languages with non-standard camelCase
  * codes — `zhCN` / `zhTW`, see `i18n/languages.ts#INTERFACE_LANGUAGE_OPTIONS`
  * — and it is those codes, not BCP-47 ones, that reach us through
  * `i18n.language`. They are listed alongside the standard tags so a
- * Chinese UI resolves to the Chinese docs; without them every Chinese
- * reader was sent to the English site.
+ * Traditional-Chinese UI resolves to the Traditional-Chinese docs and a
+ * French UI to the French docs; without the camelCase codes every reader
+ * would be sent to the fallback locale.
  */
 export const DOCS_LOCALE_PAIRS = {
-  zh: ['zh', 'zh-CN', 'zh-TW', 'zh-HK', 'zh-Hans', 'zh-Hant', 'zhCN', 'zhTW'],
+  zh: ['zh', 'zh-CN', 'zh-Hans', 'zhCN'],
+  'zh-TW': ['zh-TW', 'zh-HK', 'zh-Hant', 'zhTW'],
   en: ['en', 'en-US', 'en-GB', 'en-AU', 'en-CA'],
+  fr: ['fr', 'fr-FR', 'fr-CA'],
+  ru: ['ru', 'ru-RU'],
+  ja: ['ja', 'ja-JP'],
+  vi: ['vi', 'vi-VN'],
 } as const
 
 export type DocsLocaleCode = keyof typeof DOCS_LOCALE_PAIRS
 
 /**
  * Fallback docs locale when the UI locale is missing or not part of
- * the recognised UI set. English is the default — Chinese variants
- * resolve through {@link DOCS_LOCALE_PAIRS}; everything else (fr, ja,
- * ru, vi, unknown codes) lands here.
+ * the recognised UI set. English is the default — every supported UI
+ * locale (zh, zh-TW, en, fr, ja, ru, vi) resolves through
+ * {@link DOCS_LOCALE_PAIRS}; only truly unknown codes (ko, es, de, …)
+ * land here.
  */
 export const DEFAULT_DOCS_LOCALE: DocsLocaleCode = 'en'
 
