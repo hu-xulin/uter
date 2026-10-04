@@ -116,9 +116,9 @@ export function UsersMutateDrawer({
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [quotaDialogOpen, setQuotaDialogOpen] = useState(false)
   // 创建用户时的账号类型：普通用户 / 组织 / 管理员（仅超管可选择「组织」）。
-  const [accountKind, setAccountKind] = useState<'user' | 'organization' | 'admin'>(
-    'user'
-  )
+  const [accountKind, setAccountKind] = useState<
+    'user' | 'organization' | 'admin'
+  >('user')
 
   // Fetch groups
   const { data: groupsData } = useQuery({
@@ -184,14 +184,17 @@ export function UsersMutateDrawer({
       if (!accountPasswordSchema.safeParse(data.password ?? '').success) {
         form.setError('password', {
           type: 'manual',
-          message: t('Password must contain between 8 and 128 characters.'),
+          message: t('Password must contain between 8 and 18 characters.'),
         })
         return
       }
     }
 
     // 选择「组织」角色时必须指定归属组织，否则退回普通用户逻辑无意义。
-    if (accountKind === 'organization' && !(data.organization_id && data.organization_id > 0)) {
+    if (
+      accountKind === 'organization' &&
+      !(data.organization_id && data.organization_id > 0)
+    ) {
       form.setError('organization_id', {
         type: 'manual',
         message: t('Please select an organization'),
@@ -306,7 +309,12 @@ export function UsersMutateDrawer({
                           items={[
                             { value: 'user', label: t('Common User') },
                             ...(canEditAdminPermissions
-                              ? [{ value: 'organization', label: t('Organization') }]
+                              ? [
+                                  {
+                                    value: 'organization',
+                                    label: t('Organization'),
+                                  },
+                                ]
                               : []),
                             { value: 'admin', label: t('Admin') },
                           ]}
@@ -343,7 +351,9 @@ export function UsersMutateDrawer({
                                   {t('Organization')}
                                 </SelectItem>
                               )}
-                              <SelectItem value='admin'>{t('Admin')}</SelectItem>
+                              <SelectItem value='admin'>
+                                {t('Admin')}
+                              </SelectItem>
                             </SelectGroup>
                           </SelectContent>
                         </Select>
@@ -428,12 +438,18 @@ export function UsersMutateDrawer({
                           </FormControl>
                           <SelectContent alignItemWithTrigger={false}>
                             <SelectGroup>
-                              <SelectItem value='owner'>{t('Owner')}</SelectItem>
-                              <SelectItem value='admin'>{t('Admin')}</SelectItem>
+                              <SelectItem value='owner'>
+                                {t('Owner')}
+                              </SelectItem>
+                              <SelectItem value='admin'>
+                                {t('Admin')}
+                              </SelectItem>
                               <SelectItem value='department_admin'>
                                 {t('Department Admin')}
                               </SelectItem>
-                              <SelectItem value='member'>{t('Member')}</SelectItem>
+                              <SelectItem value='member'>
+                                {t('Member')}
+                              </SelectItem>
                             </SelectGroup>
                           </SelectContent>
                         </Select>
@@ -476,7 +492,7 @@ export function UsersMutateDrawer({
                           placeholder={
                             isUpdate
                               ? t('Leave empty to keep unchanged')
-                              : t('Enter password (8–128 characters)')
+                              : t('Enter password (8–18 characters)')
                           }
                         />
                       </FormControl>
