@@ -39,7 +39,12 @@ export function DocsI18nProvider({
       locale={locale}
       locales={[
         { name: '中文', locale: 'zh' },
+        { name: '繁體中文', locale: 'zh-TW' },
         { name: 'English', locale: 'en' },
+        { name: 'Français', locale: 'fr' },
+        { name: '日本語', locale: 'ja' },
+        { name: 'Русский', locale: 'ru' },
+        { name: 'Tiếng Việt', locale: 'vi' },
       ]}
       translations={DOCS_CHROME[locale]}
       onLocaleChange={(target) => {

@@ -807,7 +807,9 @@ const EN_CONTENT: UserGuideContent = {
 };
 
 export function getUserGuideContent(locale: DocsLocale): UserGuideContent {
-  return locale === 'zh' ? ZH_CONTENT : EN_CONTENT;
+  // Only `zh`/`zh-TW` author Chinese copy today; every other locale reads
+  // the English write-up.
+  return locale === 'zh' || locale === 'zh-TW' ? ZH_CONTENT : EN_CONTENT;
 }
 
 /** Where the guide's pages live under a locale root. */

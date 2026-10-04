@@ -60,12 +60,25 @@ type Section = {
 };
 
 /** The docs site's own name in the breadcrumb trail, per locale. */
-const DOCS_LABEL: Record<DocsLocale, string> = { zh: '文档', en: 'Docs' };
+const DOCS_LABEL: Record<DocsLocale, string> = {
+  zh: '文档',
+  'zh-TW': '文件',
+  en: 'Docs',
+  fr: 'Documentation',
+  ja: 'ドキュメント',
+  ru: 'Документация',
+  vi: 'Tài liệu',
+};
 
 /** The `guide/wiki/basic-concepts/` grouping, spelled as it reads. */
 const BASIC_CONCEPTS_LABEL: Record<DocsLocale, string> = {
   zh: '基础概念',
+  'zh-TW': '基礎概念',
   en: 'Basic Concepts',
+  fr: 'Concepts de base',
+  ja: '基本概念',
+  ru: 'Основные понятия',
+  vi: 'Khái niệm cơ bản',
 };
 
 /**

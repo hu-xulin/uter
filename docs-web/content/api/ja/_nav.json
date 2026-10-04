@@ -1,0 +1,247 @@
+[
+  {
+    "id": "ai-model-audio",
+    "title": "AI Model API · Native Gemini Format",
+    "category": "ai-model"
+  },
+  {
+    "id": "ai-model-audio-openai",
+    "title": "AI Model API · openai",
+    "category": "ai-model"
+  },
+  {
+    "id": "ai-model-chat",
+    "title": "Native Claude Format",
+    "category": "ai-model"
+  },
+  {
+    "id": "ai-model-chat-gemini",
+    "title": "AI Model API · gemini",
+    "category": "ai-model"
+  },
+  {
+    "id": "ai-model-chat-openai",
+    "title": "AI Model API · openai",
+    "category": "ai-model"
+  },
+  {
+    "id": "ai-model-completions",
+    "title": "AI Model API · Native OpenAI Format",
+    "category": "ai-model"
+  },
+  {
+    "id": "ai-model-completions-openai",
+    "title": "AI Model API · Native OpenAI Format",
+    "category": "ai-model"
+  },
+  {
+    "id": "ai-model-embeddings",
+    "title": "embeddings",
+    "category": "ai-model"
+  },
+  {
+    "id": "ai-model-embeddings-openai",
+    "title": "AI Model API · Native OpenAI Format",
+    "category": "ai-model"
+  },
+  {
+    "id": "ai-model-embeddings-gemini",
+    "title": "AI Model API · Native Gemini Format",
+    "category": "ai-model"
+  },
+  {
+    "id": "ai-model-images-gemini",
+    "title": "AI Model API · gemini",
+    "category": "ai-model"
+  },
+  {
+    "id": "ai-model-images-openai",
+    "title": "AI Model API · openai",
+    "category": "ai-model"
+  },
+  {
+    "id": "ai-model-images-qwen",
+    "title": "qwen",
+    "category": "ai-model"
+  },
+  {
+    "id": "ai-model-models-list",
+    "title": "list",
+    "category": "ai-model"
+  },
+  {
+    "id": "ai-model-models-list-openai",
+    "title": "AI Model API · Native OpenAI Format",
+    "category": "ai-model"
+  },
+  {
+    "id": "ai-model-models-list-gemini",
+    "title": "AI Model API · Native Gemini Format",
+    "category": "ai-model"
+  },
+  {
+    "id": "ai-model-moderations",
+    "title": "AI Model API · Native OpenAI Format",
+    "category": "ai-model"
+  },
+  {
+    "id": "ai-model-realtime",
+    "title": "AI Model API · Native OpenAI Format",
+    "category": "ai-model"
+  },
+  {
+    "id": "ai-model-rerank",
+    "title": "Document Reranking",
+    "category": "ai-model"
+  },
+  {
+    "id": "ai-model-unimplemented-fine-tuning",
+    "title": "fine-tuning",
+    "category": "ai-model"
+  },
+  {
+    "id": "ai-model-videos",
+    "title": "videos",
+    "category": "ai-model"
+  },
+  {
+    "id": "ai-model-videos-jimeng",
+    "title": "Jimeng Video Generation",
+    "category": "ai-model"
+  },
+  {
+    "id": "ai-model-videos-kling",
+    "title": "kling",
+    "category": "ai-model"
+  },
+  {
+    "id": "ai-model-videos-sora",
+    "title": "sora",
+    "category": "ai-model"
+  },
+  {
+    "id": "ai-model-videos-happyhorse",
+    "title": "HappyHorse Format",
+    "category": "ai-model"
+  },
+  {
+    "id": "ai-model-videos-minimax",
+    "title": "MiniMax Format",
+    "category": "ai-model"
+  },
+  {
+    "id": "ai-model-videos-wanx",
+    "title": "Wanx Format",
+    "category": "ai-model"
+  },
+  {
+    "id": "ai-model-videos-veo",
+    "title": "Google Veo Format",
+    "category": "ai-model"
+  },
+  {
+    "id": "ai-model-videos-pixverse",
+    "title": "PixVerse Format",
+    "category": "ai-model"
+  },
+  {
+    "id": "ai-model-videos-seedance",
+    "title": "Seedance Format",
+    "category": "ai-model"
+  },
+  {
+    "id": "management-auth",
+    "title": "Authentication System Description (Auth)",
+    "category": "management"
+  },
+  {
+    "id": "management-channel-management",
+    "title": "channel-management",
+    "category": "management"
+  },
+  {
+    "id": "management-default",
+    "title": "Redeem Code",
+    "category": "management"
+  },
+  {
+    "id": "management-groups",
+    "title": "groups",
+    "category": "management"
+  },
+  {
+    "id": "management-logs",
+    "title": "logs",
+    "category": "management"
+  },
+  {
+    "id": "management-model-management",
+    "title": "model-management",
+    "category": "management"
+  },
+  {
+    "id": "management-oauth",
+    "title": "oauth",
+    "category": "management"
+  },
+  {
+    "id": "management-payment",
+    "title": "payment",
+    "category": "management"
+  },
+  {
+    "id": "management-redemption",
+    "title": "redemption",
+    "category": "management"
+  },
+  {
+    "id": "management-security-verification",
+    "title": "security-verification",
+    "category": "management"
+  },
+  {
+    "id": "management-statistics",
+    "title": "statistics",
+    "category": "management"
+  },
+  {
+    "id": "management-system",
+    "title": "system",
+    "category": "management"
+  },
+  {
+    "id": "management-system-settings",
+    "title": "system-settings",
+    "category": "management"
+  },
+  {
+    "id": "management-tasks",
+    "title": "tasks",
+    "category": "management"
+  },
+  {
+    "id": "management-token-management",
+    "title": "token-management",
+    "category": "management"
+  },
+  {
+    "id": "management-two-factor-auth",
+    "title": "two-factor-auth",
+    "category": "management"
+  },
+  {
+    "id": "management-user-auth",
+    "title": "user-auth",
+    "category": "management"
+  },
+  {
+    "id": "management-user-management",
+    "title": "user-management",
+    "category": "management"
+  },
+  {
+    "id": "management-vendors",
+    "title": "vendors",
+    "category": "management"
+  }
+]
