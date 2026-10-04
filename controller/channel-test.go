@@ -112,6 +112,16 @@ func testChannel(ctx context.Context, channel *model.Channel, testUserID int, te
 
 	endpointType = normalizeChannelTestEndpoint(channel, endpointType)
 
+	// Video generation models are served by asynchronous task endpoints that
+	// cannot be probed by a synchronous channel test. Probing them through
+	// /v1/chat/completions produces a misleading upstream error and marks a
+	// healthy model as failed, so report them as unsupported instead.
+	if endpointType == "" && isVideoGenerationModel(testModel) {
+		return testResult{
+			localErr: fmt.Errorf("%s is a video generation model and cannot be verified by a synchronous channel test", testModel),
+		}
+	}
+
 	requestPath := "/v1/chat/completions"
 
 	// 如果指定了端点类型，使用指定的端点类型
@@ -137,6 +147,16 @@ func testChannel(ctx context.Context, channel *model.Channel, testUserID int, te
 
 		// VolcEngine 图像生成模型
 		if channel.Type == constant.ChannelTypeVolcEngine && strings.Contains(testModel, "seedream") {
+			requestPath = "/v1/images/generations"
+		}
+
+		// Image generation models must be probed on the image endpoint. Sending
+		// them to /v1/chat/completions makes an aggregate channel report a false
+		// failure ("This model is not supported on the Chat Completions
+		// endpoint") even though the model itself is healthy, because aggregate
+		// upstreams expose images and video through dedicated endpoints only.
+		// The VolcEngine branch above is a subset of this, and matches first.
+		if common.IsImageGenerationModel(testModel) {
 			requestPath = "/v1/images/generations"
 		}
 
@@ -700,6 +720,59 @@ func detectErrorMessageFromJSONBytes(jsonBytes []byte) string {
 	return message
 }
 
+// channelTestChatPrompt returns the probe prompt for a chat test. Most models
+// accept a bare "hi", but chat-native image models (for example the Gemini
+// "-image" variants) reject a prompt that describes nothing drawable, which
+// would look like a channel failure. A short descriptive prompt is accepted by
+// text models too, so it is safe as a universal probe.
+func channelTestChatPrompt(model string) string {
+	lower := strings.ToLower(model)
+	if strings.Contains(lower, "image") || strings.Contains(lower, "seedream") {
+		return "Describe the image of a cute cat in one sentence."
+	}
+	return "hi"
+}
+
+// channelTestImageSize picks a probe size the model actually accepts. Seedream
+// rejects anything below 3686400 pixels, so a 1024x1024 probe would report a
+// false failure for a healthy model.
+func channelTestImageSize(model string) string {
+	lower := strings.ToLower(model)
+	if strings.Contains(lower, "seedream") {
+		return "1920x1920"
+	}
+	return "1024x1024"
+}
+
+// videoGenerationModelMarkers identify models that are only served by
+// asynchronous video endpoints. A channel test cannot verify them through any
+// synchronous chat or image probe, so they are reported as unsupported instead
+// of being counted as failures.
+var videoGenerationModelMarkers = []string{
+	"seedance",
+	"happyhorse",
+	"video",
+	"-i2v",
+	"-r2v",
+	"-t2v",
+	"sora",
+	"veo-",
+	"kling",
+	"vidu",
+	"hailuo",
+	"runway",
+}
+
+func isVideoGenerationModel(model string) bool {
+	lower := strings.ToLower(model)
+	for _, marker := range videoGenerationModelMarkers {
+		if strings.Contains(lower, marker) {
+			return true
+		}
+	}
+	return false
+}
+
 func buildTestRequest(model string, endpointType string, channel *model.Channel, isStream bool) dto.Request {
 	testResponsesInput := json.RawMessage(`[{"role":"user","content":"hi"}]`)
 
@@ -718,7 +791,7 @@ func buildTestRequest(model string, endpointType string, channel *model.Channel,
 				Model:  model,
 				Prompt: "a cute cat",
 				N:      lo.ToPtr(uint(1)),
-				Size:   "1024x1024",
+				Size:   channelTestImageSize(model),
 			}
 		case constant.EndpointTypeJinaRerank:
 			// 返回 RerankRequest
@@ -772,7 +845,7 @@ func buildTestRequest(model string, endpointType string, channel *model.Channel,
 				Messages: []dto.Message{
 					{
 						Role:    "user",
-						Content: "hi",
+						Content: channelTestChatPrompt(model),
 					},
 				},
 				MaxTokens: lo.ToPtr(uint(16)),
@@ -821,7 +894,7 @@ func buildTestRequest(model string, endpointType string, channel *model.Channel,
 		Messages: []dto.Message{
 			{
 				Role:    "user",
-				Content: "hi",
+				Content: channelTestChatPrompt(model),
 			},
 		},
 	}
