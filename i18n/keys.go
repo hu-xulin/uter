@@ -28,6 +28,9 @@ const (
 	MsgAlreadyExists     = "common.already_exists"
 	MsgNameCannotBeEmpty = "common.name_cannot_be_empty"
 	MsgBatchTooMany      = "common.batch_too_many"
+	// MsgAuthMethodUnsupported is used when the current sign-in method
+	// cannot be used to complete a security verification step.
+	MsgAuthMethodUnsupported = "common.auth_method_unsupported"
 )
 
 // Auth middleware messages
@@ -234,6 +237,12 @@ const (
 	MsgPasskeyRPIDInvalid             = "passkey.rp_id_invalid"
 	MsgPasskeyRPIDUnavailable         = "passkey.rp_id_unavailable"
 	MsgPasskeyRPIDRemovalConfirmation = "passkey.rp_id_removal_confirmation"
+	MsgPasskeyNotEnabled             = "passkey.not_enabled"
+	MsgPasskeyInvalidRequest         = "passkey.invalid_request"
+	MsgPasskeyNotBound               = "passkey.not_bound"
+	MsgPasskeyRegisterSuccess        = "passkey.register_success"
+	MsgPasskeyDeleted                = "passkey.deleted"
+	MsgPasskeyReset                  = "passkey.reset"
 )
 
 // 2FA related messages

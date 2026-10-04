@@ -670,9 +670,9 @@ func TestPasskeyDomainErrorsRespectRequestLanguage(t *testing.T) {
 	for _, locale := range []struct {
 		language, invalid, unavailable, removal string
 	}{
-		{"zh-CN", "通行密钥域名无效。请填写域名，不包含协议、端口、路径或通配符。", "此通行密钥域名无法在当前网站使用。请前往原网站或选择其他验证方式。", "请核对受影响的通行密钥并确认删除域名。配置或影响范围发生变化后，需要重新确认。"},
-		{"zh-TW", "通行金鑰網域無效。請填寫網域，不包含通訊協定、連接埠、路徑或萬用字元。", "此通行金鑰網域無法在目前網站使用。請前往原網站或選擇其他驗證方式。", "請核對受影響的通行金鑰並確認刪除網域。設定或影響範圍變更後，需要重新確認。"},
-		{"en", "Invalid Passkey domain. Enter a domain without a scheme, port, path or wildcard.", "This Passkey domain is not available on this website. Use its original website or another verification method.", "Review the affected Passkeys and confirm the domain removal. If the settings or impact have changed, confirmation is required again."},
+		{"zh-CN", "通行密钥域名无效。请填写纯域名，不要带协议、端口、路径或通配符（如 uter.ai）。", "该域名无法在当前网站用作通行密钥。请前往原网站或使用其他验证方式。", "请核对受影响的通行密钥并确认删除该域名。若配置或影响范围有变化，需重新确认。"},
+		{"zh-TW", "通行金鑰網域無效。請填寫純網域，不要帶通訊協定、連接埠、路徑或萬用字元（如 uter.ai）。", "該網域無法在目前網站用作通行金鑰。請前往原網站或使用其他驗證方式。", "請核對受影響的通行金鑰並確認刪除該網域。若設定或影響範圍有變化，需重新確認。"},
+		{"en", "That Passkey domain isn’t valid. Enter a domain with no scheme, port, path or wildcard (e.g. uter.ai).", "This domain can’t be used as a Passkey here. Use its original site or another sign-in method.", "Please review the affected Passkeys and confirm removing this domain. If the settings or impact change, you’ll need to confirm again."},
 	} {
 		t.Run(locale.language, func(t *testing.T) {
 			for _, request := range []struct {
