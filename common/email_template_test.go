@@ -28,9 +28,9 @@ func TestBuildBrandEmailHTML(t *testing.T) {
 	require.Contains(t, html, "<strong>user@example.com</strong>")
 	require.Contains(t, html, ">282150</p>")
 	require.Contains(t, html, "此验证码将在 10 分钟后失效。")
-	// 品牌头部 logo（base64 内嵌 PNG，记号+字标一体）与页脚落款
+	// 品牌头部头像（base64 内嵌 PNG，彩色 u 记号）与页脚落款
 	require.Contains(t, html, `src="data:image/png;base64,`)
-	require.Contains(t, html, `width="61" height="64" alt="Uter.ai"`)
+	require.Contains(t, html, `width="56" height="56" alt="Uter.ai"`)
 	require.Contains(t, html, "深圳优特网络有限公司")
 	// 空段落被跳过，不会产生空 <p>
 	require.NotContains(t, html, "<p style=\"margin:0 0 16px;font-size:14px;line-height:1.7;color:#3c4043;\">   </p>")
