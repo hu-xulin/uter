@@ -933,6 +933,22 @@ func buildSubscriptionSummaries(subs []UserSubscription) []SubscriptionSummary {
 	return result
 }
 
+// GetUserSubscriptionUserID 返回指定用户订阅归属的 user_id，供 controller 层在校验
+// 「调用者是否可管理目标用户（角色 / 组织范围）」前反查被操作对象。对应审计项 P1-2。
+func GetUserSubscriptionUserID(subId int) (int, error) {
+	if subId <= 0 {
+		return 0, errors.New("invalid subscription id")
+	}
+	var userId int
+	if err := DB.Model(&UserSubscription{}).Where("id = ?", subId).Pluck("user_id", &userId).Error; err != nil {
+		return 0, err
+	}
+	if userId == 0 {
+		return 0, errors.New("subscription not found")
+	}
+	return userId, nil
+}
+
 // AdminInvalidateUserSubscription marks a user subscription as cancelled and ends it immediately.
 func AdminInvalidateUserSubscription(userSubscriptionId int) (string, error) {
 	if userSubscriptionId <= 0 {
@@ -1564,4 +1580,46 @@ func PostConsumeUserSubscriptionDelta(userSubscriptionId int, delta int64) error
 		sub.AmountUsed = newUsed
 		return tx.Save(&sub).Error
 	})
+}
+
+// ErrSubscriptionQuotaExceeded 表示结算补扣超过订阅总额，subscription 侧无法继续吸收。
+// 调用方应自行决定把超出部分转记到其他资金来源（如钱包欠费），而不是静默丢弃。
+var ErrSubscriptionQuotaExceeded = errors.New("subscription quota exceeded total")
+
+// PostConsumeUserSubscriptionDeltaCapped 与 PostConsumeUserSubscriptionDelta 类似，但在超过订阅总额时
+// 把 AmountUsed 封顶到 AmountTotal，并返回超出总额、未能被订阅吸收的部分（overflow，>=0）。
+// 用于结算点：订阅被封顶后，overflow 由调用方转记到钱包欠费，避免平台少收、且订阅不会显示虚假剩余额度。
+// 退款（负 delta）不会触发封顶，overflow 恒为 0。
+func PostConsumeUserSubscriptionDeltaCapped(userSubscriptionId int, delta int64) (overflow int64, err error) {
+	if userSubscriptionId <= 0 {
+		return 0, errors.New("invalid userSubscriptionId")
+	}
+	if delta == 0 {
+		return 0, nil
+	}
+	err = DB.Transaction(func(tx *gorm.DB) error {
+		var sub UserSubscription
+		if err := lockForUpdate(tx).
+			Where("id = ?", userSubscriptionId).
+			First(&sub).Error; err != nil {
+			return err
+		}
+		newUsed := sub.AmountUsed + delta
+		if newUsed < 0 {
+			sub.RefundCarryOver += -newUsed
+			newUsed = 0
+		}
+		if sub.RefundCarryOver > 0 && newUsed > 0 {
+			applied := min(newUsed, sub.RefundCarryOver)
+			newUsed -= applied
+			sub.RefundCarryOver -= applied
+		}
+		if sub.AmountTotal > 0 && newUsed > sub.AmountTotal {
+			overflow = newUsed - sub.AmountTotal
+			newUsed = sub.AmountTotal
+		}
+		sub.AmountUsed = newUsed
+		return tx.Save(&sub).Error
+	})
+	return overflow, err
 }

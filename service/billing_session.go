@@ -62,15 +62,26 @@ func (s *BillingSession) Settle(actualQuota int) error {
 	// 2) 调整令牌额度
 	var tokenErr error
 	if !s.relayInfo.IsPlayground {
-		if delta > 0 {
-			tokenErr = model.DecreaseTokenQuota(s.relayInfo.TokenId, s.relayInfo.TokenKey, delta)
-		} else {
-			tokenErr = model.IncreaseTokenQuota(s.relayInfo.TokenId, s.relayInfo.TokenKey, -delta)
+		tokenFn := func() error {
+			if delta > 0 {
+				return model.DecreaseTokenQuota(s.relayInfo.TokenId, s.relayInfo.TokenKey, delta)
+			}
+			return model.IncreaseTokenQuota(s.relayInfo.TokenId, s.relayInfo.TokenKey, -delta)
+		}
+		// 资金来源已提交，令牌账本失败不可重试整个 Settle（否则会重复结算资金）。
+		// 但令牌额度本身必须尽量对齐：对令牌调整做有限次重试；仍失败则上报为
+		// 需人工对账的告警事件（SysError 而非 SysLog），而非静默丢弃导致账本漂移。
+		const maxTokenAdjustRetries = 3
+		for attempt := 0; attempt < maxTokenAdjustRetries; attempt++ {
+			if tokenErr = tokenFn(); tokenErr == nil {
+				break
+			}
+			common.SysLog(fmt.Sprintf("token quota adjust attempt %d failed (userId=%d, tokenId=%d, delta=%d): %s",
+				attempt+1, s.relayInfo.UserId, s.relayInfo.TokenId, delta, tokenErr.Error()))
 		}
 		if tokenErr != nil {
-			// 资金来源已提交，令牌调整失败只能记录日志；标记 settled 防止 Refund 误退资金
-			common.SysLog(fmt.Sprintf("error adjusting token quota after funding settled (userId=%d, tokenId=%d, delta=%d): %s",
-				s.relayInfo.UserId, s.relayInfo.TokenId, delta, tokenErr.Error()))
+			common.SysError(fmt.Sprintf("token quota adjust permanently failed after %d attempts, ledger drift risk (userId=%d, tokenId=%d, delta=%d): %s",
+				maxTokenAdjustRetries, s.relayInfo.UserId, s.relayInfo.TokenId, delta, tokenErr.Error()))
 		}
 	}
 	// 3) 更新 relayInfo 上的订阅 PostDelta（用于日志）

@@ -180,7 +180,8 @@ func FetchCustomOAuthDiscovery(c *gin.Context) {
 	}
 	httpReq.Header.Set("Accept", "application/json")
 
-	client := &http.Client{Timeout: 20 * time.Second}
+	// 使用受 SSRF 防护的客户端，避免对任意 issuer/OIDC discovery URL 的裸请求打到内网
+	client := service.GetSSRFProtectedHTTPClient()
 	resp, err := client.Do(httpReq)
 	if err != nil {
 		common.ApiErrorMsg(c, "获取 Discovery 配置失败: "+err.Error())

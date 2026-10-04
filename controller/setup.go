@@ -58,6 +58,18 @@ func PostSetup(c *gin.Context) {
 	// Check if root user already exists
 	rootExists := model.RootUserExists()
 
+	// 安全加固（对应审计项 P2-5）：若 root 账号已存在但系统未标记初始化，说明是
+	// 「只迁移了 users 表 / setups 表缺失」之类的异常部署态。此时任意匿名请求仍可
+	// 经本接口改写「自用模式 / 演示站模式」并把系统标记为已初始化，属于未授权写。
+	// 直接拒绝，要求使用已有管理员账号正常登录。
+	if rootExists {
+		c.JSON(200, gin.H{
+			"success": false,
+			"message": i18n.T(c, i18n.MsgCommonAlready_initialized),
+		})
+		return
+	}
+
 	var req SetupRequest
 	err := c.ShouldBindJSON(&req)
 	if err != nil {

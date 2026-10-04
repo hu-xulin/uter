@@ -3,6 +3,7 @@ package model
 import (
 	"errors"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/Uter-AI/Uter/common"
@@ -22,6 +23,32 @@ type TwoFA struct {
 	CreatedAt      time.Time      `json:"created_at"`
 	UpdatedAt      time.Time      `json:"updated_at"`
 	DeletedAt      gorm.DeletedAt `json:"-" gorm:"index"`
+}
+
+// BeforeSave 在落库前加密 TOTP 密钥（AES-GCM），避免明文入库。
+// 已是信封格式（v1: 前缀）则跳过，防止重复加密。
+func (t *TwoFA) BeforeSave(tx *gorm.DB) error {
+	if t.Secret != "" && !strings.HasPrefix(t.Secret, common.SecretEnvelopePrefix()) {
+		enc, err := common.EncryptSecret(t.Secret)
+		if err != nil {
+			return err
+		}
+		t.Secret = enc
+	}
+	return nil
+}
+
+// AfterFind 在加载后解密 TOTP 密钥，内存中始终为明文，对调用方透明。
+// 历史明文记录解密失败（非信封格式）时原样保留，向后兼容。
+func (t *TwoFA) AfterFind(tx *gorm.DB) error {
+	if t.Secret != "" {
+		dec, err := common.DecryptSecret(t.Secret)
+		if err != nil {
+			return err
+		}
+		t.Secret = dec
+	}
+	return nil
 }
 
 // TwoFABackupCode 备用码使用记录表

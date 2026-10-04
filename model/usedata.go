@@ -185,8 +185,23 @@ func GetQuotaDataGroupByUser(startTime int64, endTime int64, orgUsernames []stri
 // GetAllQuotaDates 返回按模型/时间聚合的额度消耗。
 //
 // userIds 是「用户维度」过滤，与 orgUsernames 范围过滤取交集：越权的 id 只会得到空集。
+// 当传入 username 时，同样必须落在 orgUsernames 组织范围内——组织管理员不能用 ?username=
+// 越权查询组织外任意用户的消耗明细（原实现在此处短路、丢弃 orgUsernames，构成越权泄露）。
 func GetAllQuotaDates(startTime int64, endTime int64, username string, orgUsernames []string, userIds ...int) (quotaData []*QuotaData, err error) {
 	if username != "" {
+		// 组织范围约束：username 必须属于 orgUsernames，否则返回空集（fail-closed）
+		if len(orgUsernames) > 0 {
+			inScope := false
+			for _, u := range orgUsernames {
+				if u == username {
+					inScope = true
+					break
+				}
+			}
+			if !inScope {
+				return []*QuotaData{}, nil
+			}
+		}
 		return GetQuotaDataByUsername(username, startTime, endTime, userIds...)
 	}
 	var quotaDatas []*QuotaData

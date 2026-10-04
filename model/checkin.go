@@ -1,8 +1,9 @@
 package model
 
 import (
+	"crypto/rand"
 	"errors"
-	"math/rand"
+	"math/big"
 	"time"
 
 	"github.com/Uter-AI/Uter/common"
@@ -71,7 +72,11 @@ func UserCheckin(userId int) (*Checkin, error) {
 	// 计算随机额度奖励
 	quotaAwarded := setting.MinQuota
 	if setting.MaxQuota > setting.MinQuota {
-		quotaAwarded = setting.MinQuota + rand.Intn(setting.MaxQuota-setting.MinQuota+1)
+		// 使用密码学安全随机数，避免可被预测的额度输出（math/rand 为线性可恢复 PRNG）
+		n := int64(setting.MaxQuota - setting.MinQuota + 1)
+		if r, err := rand.Int(rand.Reader, big.NewInt(n)); err == nil {
+			quotaAwarded = setting.MinQuota + int(r.Int64())
+		}
 	}
 
 	today := time.Now().Format("2006-01-02")

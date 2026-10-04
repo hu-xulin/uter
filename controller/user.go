@@ -1158,7 +1158,10 @@ func canManageTargetUser(c *gin.Context, target *model.User) bool {
 		return false
 	}
 	if c.GetString("org_role") == model.OrgRoleDepartmentAdmin {
-		if myDept := c.GetInt("department_id"); myDept > 0 && target.DepartmentId != myDept {
+		// 部门管理员只能管理本部门成员。department_id 列已废弃且恒为 0，必须改用部门名称；
+		// 未分配部门（department_name 为空）时 fail-closed，拒绝跨组织/跨部门操作。
+		myDept := c.GetString("department_name")
+		if myDept == "" || target.DepartmentName != myDept {
 			return false
 		}
 	}

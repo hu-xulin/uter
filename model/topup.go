@@ -31,7 +31,7 @@ const (
 	PaymentMethodCreem        = "creem"
 	PaymentMethodWaffo        = "waffo"
 	PaymentMethodWaffoPancake = "waffo_pancake"
-	PaymentMethodBalance = "balance"
+	PaymentMethodBalance      = "balance"
 	// 网站支付（Web 收银台）：PC 走扫码、移动端跳转支付方 App / H5 收银台。
 	// 这是面向 Web 站点的主通道——支付发生在浏览器中，不受 Apple IAP 约束，费率约 0.6%。
 	PaymentMethodAlipay    = "alipay_web"
@@ -416,8 +416,11 @@ func GetUserTopUps(userId int, pageInfo *common.PageInfo) (topups []*TopUp, tota
 	return topups, total, nil
 }
 
-// GetAllTopUps 获取全平台的充值记录（管理员使用，不限制时间窗口）
-func GetAllTopUps(pageInfo *common.PageInfo) (topups []*TopUp, total int64, err error) {
+// GetAllTopUps 获取充值记录（管理员使用，不限制时间窗口）。
+// userIds 非空时仅返回归属这些用户的订单：平台管理员传 nil 看全平台；组织 / 部门
+// 管理员经 middleware.RequestOrgScope 拿到范围内成员 id（空范围时传 NoOrgMemberId
+// 哨兵），从而把只读接口收敛到本租户，杜绝跨租户泄露（对应审计项 P2-3）。
+func GetAllTopUps(pageInfo *common.PageInfo, userIds []int) (topups []*TopUp, total int64, err error) {
 	tx := DB.Begin()
 	if tx.Error != nil {
 		return nil, 0, tx.Error
@@ -428,12 +431,17 @@ func GetAllTopUps(pageInfo *common.PageInfo) (topups []*TopUp, total int64, err 
 		}
 	}()
 
-	if err = tx.Model(&TopUp{}).Count(&total).Error; err != nil {
+	query := tx.Model(&TopUp{})
+	if len(userIds) > 0 {
+		query = query.Where("user_id IN ?", userIds)
+	}
+
+	if err = query.Count(&total).Error; err != nil {
 		tx.Rollback()
 		return nil, 0, err
 	}
 
-	if err = tx.Order("id desc").Limit(pageInfo.GetPageSize()).Offset(pageInfo.GetStartIdx()).Find(&topups).Error; err != nil {
+	if err = query.Order("id desc").Limit(pageInfo.GetPageSize()).Offset(pageInfo.GetStartIdx()).Find(&topups).Error; err != nil {
 		tx.Rollback()
 		return nil, 0, err
 	}
@@ -489,8 +497,9 @@ func SearchUserTopUps(userId int, keyword string, pageInfo *common.PageInfo) (to
 	return topups, total, nil
 }
 
-// SearchAllTopUps 按订单号搜索全平台充值记录（管理员使用，不限制时间窗口）
-func SearchAllTopUps(keyword string, pageInfo *common.PageInfo) (topups []*TopUp, total int64, err error) {
+// SearchAllTopUps 按订单号搜索充值记录（管理员使用，不限制时间窗口）。
+// userIds 非空时仅搜索归属这些用户的订单，语义与 GetAllTopUps 一致（对应审计项 P2-3）。
+func SearchAllTopUps(keyword string, pageInfo *common.PageInfo, userIds []int) (topups []*TopUp, total int64, err error) {
 	tx := DB.Begin()
 	if tx.Error != nil {
 		return nil, 0, tx.Error
@@ -502,6 +511,9 @@ func SearchAllTopUps(keyword string, pageInfo *common.PageInfo) (topups []*TopUp
 	}()
 
 	query := tx.Model(&TopUp{})
+	if len(userIds) > 0 {
+		query = query.Where("user_id IN ?", userIds)
+	}
 	if keyword != "" {
 		pattern, perr := sanitizeLikePattern(keyword)
 		if perr != nil {
@@ -527,6 +539,22 @@ func SearchAllTopUps(keyword string, pageInfo *common.PageInfo) (topups []*TopUp
 		return nil, 0, err
 	}
 	return topups, total, nil
+}
+
+// GetTopUpUserIDByTradeNo 返回指定订单归属的用户 id，供 controller 层对补单接口做
+// 组织范围门禁（组织管理员只能补本组织成员的订单）。对应审计项 P2-3。
+func GetTopUpUserIDByTradeNo(tradeNo string) (int, error) {
+	if tradeNo == "" {
+		return 0, errors.New("未提供订单号")
+	}
+	var userId int
+	if err := DB.Model(&TopUp{}).Where("trade_no = ?", tradeNo).Pluck("user_id", &userId).Error; err != nil {
+		return 0, err
+	}
+	if userId == 0 {
+		return 0, ErrTopUpNotFound
+	}
+	return userId, nil
 }
 
 // ManualCompleteTopUp 管理员手动完成订单并给用户充值

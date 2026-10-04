@@ -109,9 +109,10 @@ func NotifyUser(userId int, userEmail string, userSetting dto.UserSetting, data 
 func sendEmailNotify(userEmail string, data dto.Notify) error {
 	// make email content
 	content := data.Content
-	// 处理占位符
+	// 处理占位符：动态值先 HTML 转义再代入，杜绝通知内容里的用户可控数据注入邮件 HTML
+	// （钓鱼/伪造验证码页）。模板本体（data.Content）的合法内联 HTML 保持不变。
 	for _, value := range data.Values {
-		content = strings.Replace(content, dto.ContentValueParam, fmt.Sprintf("%v", value), 1)
+		content = strings.Replace(content, dto.ContentValueParam, html.EscapeString(fmt.Sprintf("%v", value)), 1)
 	}
 	return common.SendEmail(common.BrandEmailSubject(data.Title), userEmail, common.BuildBrandEmailHTML(common.BrandEmail{
 		Heading:    html.EscapeString(data.Title),
