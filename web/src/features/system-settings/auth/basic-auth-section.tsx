@@ -227,7 +227,7 @@ export function BasicAuthSection({ defaultValues }: BasicAuthSectionProps) {
                 <SettingsSwitchContent>
                   <FormLabel>{t('Email Alias Restriction')}</FormLabel>
                   <FormDescription>
-                    {t('Block email aliases (e.g., user+alias@domain.com)')}
+                    {t('Block email aliases (e.g., user+alias, user.name, user_name, user-name@domain.com)')}
                   </FormDescription>
                 </SettingsSwitchContent>
                 <FormControl>
