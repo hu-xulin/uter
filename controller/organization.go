@@ -2,6 +2,7 @@ package controller
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -172,6 +173,17 @@ func AddOrganizationMembers(c *gin.Context) {
 		common.ApiError(c, err)
 		return
 	}
+	// 纳新审计（对应审计项 P1-1）：把任意未归属用户拉进本租户属跨账号写操作，
+	// 必须明确留痕，记录本次加入组织的成员 id。与 OrgAdminAuth 中间件兜底审计互为补充。
+	memberIds := make([]int, 0, len(items))
+	for _, it := range items {
+		memberIds = append(memberIds, it.UserId)
+	}
+	recordManageAuditFor(c, 0, "organization.member_add", map[string]any{
+		"organization_id": org.Id,
+		"member_ids":      memberIds,
+		"member_count":    len(memberIds),
+	})
 	common.ApiSuccess(c, gin.H{"success": true})
 }
 
@@ -318,6 +330,16 @@ func UpdateOrganizationMember(c *gin.Context) {
 	}
 	// 角色/部门变更后刷新认证缓存，侧栏与后端鉴权立即生效（见 model.CreateOrganization 注释）。
 	_, _ = model.BumpUserAuthVersion(uid)
+	// 授予所有者必须同步转移负责人指针（organizations.owner_user_id）：该指针是
+	// UpdateOrganization / RemoveOrganizationMember 判定「谁是负责人」的唯一依据。
+	// 只写 users.org_role 会留下一个指向旧负责人的悬空指针 —— 新负责人改不了组织，
+	// 旧负责人（可能已退出组织）反而仍被当作负责人。
+	if req.OrgRole == model.OrgRoleOwner {
+		if err := model.SetOrganizationOwner(orgId, uid); err != nil {
+			common.ApiError(c, err)
+			return
+		}
+	}
 	// 被设为组织所有者：强制吊销其全部客户端会话（含当前），要求重新登录——高危权限变更的安全卫生。
 	if req.OrgRole == model.OrgRoleOwner {
 		if _, rerr := model.RevokeAllUserSessions(uid, "organization owner role granted"); rerr != nil {
@@ -368,6 +390,20 @@ func RemoveOrganizationMember(c *gin.Context) {
 	if err := org.RemoveMember(uid); err != nil {
 		common.ApiError(c, err)
 		return
+	}
+	// 被移出的成员若是组织负责人，指针必须一并转移，否则 organizations.owner_user_id
+	// 会指向一个已不在组织里的账号：真正的负责人无权改组织，而该账号（哪怕已退出）
+	// 仍被判定为负责人。没有继任者时写 0 —— 自增 id 从 1 开始，0 不会误匹配，
+	// 等价于「仅超管可继续管理」，是 fail-closed 的。
+	if uid == org.OwnerUserId {
+		var successor int
+		_ = model.DB.Model(&model.User{}).
+			Where("organization_id = ? AND org_role = ? AND deleted_at IS NULL", orgId, model.OrgRoleOwner).
+			Order("id").Limit(1).Pluck("id", &successor)
+		if err := model.SetOrganizationOwner(orgId, successor); err != nil {
+			common.SysLog(fmt.Sprintf("failed to move organization owner pointer (org=%d, removed=%d): %s",
+				orgId, uid, err.Error()))
+		}
 	}
 	common.ApiSuccess(c, gin.H{"success": true})
 }
@@ -449,13 +485,19 @@ func GetOrganizationStats(c *gin.Context) {
 		common.ApiErrorI18n(c, i18n.MsgInvalidParams)
 		return
 	}
-	if _, _, ok := loadOrgForAuthority(c, orgId); !ok {
+	_, authority, ok := loadOrgForAuthority(c, orgId)
+	if !ok {
 		return
 	}
 	org, err := model.GetOrganizationById(orgId)
 	if err != nil {
 		common.ApiError(c, err)
 		return
+	}
+	// 部门管理员权限仅限本部门，不应看到组织级总预算/已用（最小权限缺口）。
+	if authority == orgAuthorityDepartmentAdmin {
+		org.Quota = 0
+		org.UsedQuota = 0
 	}
 	common.ApiSuccess(c, gin.H{
 		"organization": org,
@@ -754,10 +796,22 @@ func orgLogUsernames(c *gin.Context, orgId int, authority orgAuthority) ([]strin
 // 范围为空（如部门管理员未分配部门）时返回 [model.NoOrgMemberId] 哨兵，避免静默退化为看全站。
 func orgMemberIds(c *gin.Context, orgId int, authority orgAuthority) ([]int, error) {
 	excludeRoles := orgVisibilityExcludeRoles(authority)
+	var ids []int
+	var err error
 	if authority == orgAuthorityDepartmentAdmin {
-		return model.GetOrgMemberIdsInDepartment(orgId, c.GetString("department_name"), excludeRoles...)
+		ids, err = model.GetOrgMemberIdsInDepartment(orgId, c.GetString("department_name"), excludeRoles...)
+	} else {
+		ids, err = model.GetOrgMemberIds(orgId, excludeRoles...)
 	}
-	return model.GetOrgMemberIds(orgId, excludeRoles...)
+	if err != nil {
+		return nil, err
+	}
+	if len(ids) == 0 {
+		// 可见成员为空时返回哨兵（model.NoOrgMemberId），避免下游 applyTaskQueryUserFilter
+		// 把空切片当作「不过滤」而静默退化成「看全平台任务/绘图」。
+		return []int{model.NoOrgMemberId}, nil
+	}
+	return ids, nil
 }
 
 // GetOrganizationTasks 返回组织内成员的任务日志（组织管理者看全组织，部门管理员只看本部门）。
