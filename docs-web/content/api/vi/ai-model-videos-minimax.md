@@ -1,137 +1,137 @@
-# MiniMax Format
+# Định dạng MiniMax
 
-MiniMax H3 (`MiniMax-H3`) video generation: call MiniMax H3 through an asynchronous task API, supporting text-to-video, image-to-video and reference-to-video, billed precisely against upstream usage.
+Tạo video MiniMax H3 (`MiniMax-H3`): gọi MiniMax H3 qua API tác vụ bất đồng bộ, hỗ trợ tạo video từ văn bản, từ hình ảnh và từ hình tham chiếu, được tính phí chính xác theo mức sử dụng phía thượng nguồn.
 
-## Model and Capabilities
+## Mô hình và khả năng
 
-There is a single model name, `MiniMax-H3`. **The generation mode is decided automatically by which media inputs the request carries:**
+Chỉ có một tên mô hình, `MiniMax-H3`. **Chế độ tạo được quyết định tự động dựa trên các đầu vào media mà yêu cầu mang theo:**
 
-| Mode | Trigger | Media input |
+| Chế độ | Kích hoạt khi | Đầu vào media |
 |---|---|---|
-| Text-to-video (t2v) | Only `prompt` | None |
-| Image-to-video (i2v) | A first-frame image (optional last-frame image) | `input_reference` / `images` |
-| Reference-to-video (r2v) | Reference image / video / audio | Top-level `media[]` array |
+| Từ văn bản sang video (t2v) | Chỉ có `prompt` | Không |
+| Từ hình ảnh sang video (i2v) | Ảnh khung hình đầu (ảnh khung hình cuối là tùy chọn) | `input_reference` / `images` |
+| Từ hình tham chiếu sang video (r2v) | Ảnh / video / âm thanh tham chiếu | Mảng `media[]` ở cấp cao nhất |
 
-In every mode, `prompt` is **always required**.
+Trong mọi chế độ, `prompt` **luôn bắt buộc**.
 
-## Create Video
+## Tạo video
 
 `POST` `/v1/video/generations`
 
-### Request Headers
+### Header yêu cầu
 
-| Header | Required | Description |
+| Header | Bắt buộc | Mô tả |
 |---|---|---|
-| `Authorization` | Yes | `Bearer sk-your-api-key` |
-| `Content-Type` | Yes | `application/json` |
+| `Authorization` | Có | `Bearer sk-your-api-key` |
+| `Content-Type` | Có | `application/json` |
 
-### Request Body (`application/json`)
+### Body yêu cầu (`application/json`)
 
-| Field | Type | Required | Description |
+| Trường | Kiểu | Bắt buộc | Mô tả |
 |---|---|---|---|
-| `model` | string | Yes | Fixed to `MiniMax-H3` |
-| `prompt` | string | Yes | Text prompt |
-| `resolution` | string | No | Resolution; currently only `2K` (default `2K`) |
-| `duration` | int | No | Video length in seconds, `4`–`15`, default `6` |
-| `ratio` | string | No | Aspect ratio: `16:9` / `9:16` / `1:1` / `adaptive`. Defaults to `16:9` for t2v and `adaptive` (follows the first frame) for i2v |
-| `input_reference` | string | No | i2v first-frame image URL (public, or base64) |
-| `images` | string[] | No | i2v image array: the 1st is the first frame, the 2nd is the last frame |
-| `media` | object[] | No | Structured media input for reference-to-video, see below |
+| `model` | string | Có | Cố định là `MiniMax-H3` |
+| `prompt` | string | Có | Prompt văn bản |
+| `resolution` | string | Không | Độ phân giải; hiện chỉ có `2K` (mặc định `2K`) |
+| `duration` | int | Không | Thời lượng video tính bằng giây, `4`–`15`, mặc định `6` |
+| `ratio` | string | Không | Tỷ lệ khung hình: `16:9` / `9:16` / `1:1` / `adaptive`. Mặc định `16:9` cho t2v và `adaptive` (theo khung hình đầu) cho i2v |
+| `input_reference` | string | Không | URL ảnh khung hình đầu cho i2v (công khai hoặc base64) |
+| `images` | string[] | Không | Mảng ảnh cho i2v: ảnh thứ nhất là khung hình đầu, ảnh thứ hai là khung hình cuối |
+| `media` | object[] | Không | Đầu vào media có cấu trúc cho chế độ từ hình tham chiếu sang video, xem bên dưới |
 
-### `media[]` Elements
+### Các phần tử `media[]`
 
-Used for reference-to-video (r2v) to specify each reference asset's role precisely:
+Dùng cho chế độ từ hình tham chiếu sang video (r2v) để chỉ rõ chính xác vai trò của từng tài nguyên tham chiếu:
 
-| `type` | Role | Purpose |
+| `type` | Vai trò | Mục đích |
 |---|---|---|
-| `reference_image` | Reference image | Reference picture(s) |
-| `reference_video` | Reference video | Reference video (its billable duration counts toward total seconds) |
-| `reference_audio` | Reference audio | Reference audio |
-| `first_frame` / `last_frame` | First / last frame | i2v first / last frame images |
+| `reference_image` | Ảnh tham chiếu | (Các) ảnh tham chiếu |
+| `reference_video` | Video tham chiếu | Video tham chiếu (thời lượng tính phí của nó được tính vào tổng số giây) |
+| `reference_audio` | Âm thanh tham chiếu | Âm thanh tham chiếu |
+| `first_frame` / `last_frame` | Khung hình đầu / cuối | Ảnh khung hình đầu / cuối cho i2v |
 
-When structured `media` is omitted, Uter infers assets from `images` / `input_reference` by extension and order: video → reference video, audio → reference audio, 1st image → first frame, 2nd image → last frame. Use `media[]` when you need precise role control.
+Khi bỏ qua `media` có cấu trúc, Uter suy luận tài nguyên từ `images` / `input_reference` dựa trên phần mở rộng và thứ tự: video → video tham chiếu, audio → âm thanh tham chiếu, ảnh thứ nhất → khung hình đầu, ảnh thứ hai → khung hình cuối. Hãy dùng `media[]` khi bạn cần kiểm soát vai trò chính xác.
 
-> Reference audio (`reference_audio`) is currently limited by upstream support: in testing the upstream returns task failure (Uter refunds in full automatically). Text-to-video, image-to-video (first frame / first+last frame) and reference image/video generation all work normally.
+> Âm thanh tham chiếu (`reference_audio`) hiện bị giới hạn bởi khả năng hỗ trợ phía thượng nguồn: trong quá trình thử nghiệm, thượng nguồn trả về tác vụ thất bại (Uter tự động hoàn tiền đầy đủ). Tạo video từ văn bản, từ hình ảnh (khung hình đầu / đầu + cuối) và từ ảnh/video tham chiếu đều hoạt động bình thường.
 
-### Response
+### Phản hồi
 
-| Status | Description |
+| Trạng thái | Mô tả |
 |---|---|
-| `200` | Video task created successfully |
-| `400` | Invalid request parameters |
+| `200` | Tạo tác vụ video thành công |
+| `400` | Tham số yêu cầu không hợp lệ |
 
-#### `200` Response Fields
+#### Trường phản hồi `200`
 
-| Field | Type | Description |
+| Trường | Kiểu | Mô tả |
 |---|---|---|
-| `id` / `task_id` | string | Public task ID (`task_` prefix) used for subsequent queries |
-| `object` | string | Object type (`video`) |
-| `model` | string | Model used |
-| `status` | string | Task status (`queued` right after submission) |
-| `progress` | integer | Progress percentage |
-| `created_at` | integer | Creation timestamp |
+| `id` / `task_id` | string | ID tác vụ công khai (tiền tố `task_`) dùng cho các truy vấn sau |
+| `object` | string | Loại đối tượng (`video`) |
+| `model` | string | Mô hình đã sử dụng |
+| `status` | string | Trạng thái tác vụ (`queued` ngay sau khi gửi) |
+| `progress` | integer | Phần trăm tiến độ |
+| `created_at` | integer | Dấu thời gian tạo |
 
-> `id` / `task_id` is generated by Uter and is not the upstream MiniMax task_id.
+> `id` / `task_id` do Uter tạo ra và không phải task_id MiniMax phía thượng nguồn.
 
-## Get Video Task Status
+## Lấy trạng thái tác vụ video
 
 `GET` `/v1/video/generations/{task_id}`
 
-The response uses Uter's unified `{code, message, data}` envelope.
+Phản hồi sử dụng lớp bọc `{code, message, data}` thống nhất của Uter.
 
-### Request Parameters
+### Tham số yêu cầu
 
-| Name | In | Type | Required | Description |
+| Tên | Vị trí | Kiểu | Bắt buộc | Mô tả |
 |---|---|---|---|---|
-| `task_id` | path | string | Yes | Video task ID |
+| `task_id` | path | string | Có | ID tác vụ video |
 
-### Response
+### Phản hồi
 
-| Status | Description |
+| Trạng thái | Mô tả |
 |---|---|
-| `200` | Task status retrieved successfully |
-| `404` | Task not found |
+| `200` | Lấy trạng thái tác vụ thành công |
+| `404` | Không tìm thấy tác vụ |
 
-#### `200` Response Fields (`data`)
+#### Trường phản hồi `200` (`data`)
 
-| Field | Type | Description |
+| Trường | Kiểu | Mô tả |
 |---|---|---|
-| `data.task_id` | string | Public task ID |
-| `data.status` | string | Task status: `QUEUED` / `IN_PROGRESS` / `SUCCESS` / `FAILURE` |
-| `data.result_url` | string | Video result URL (non-empty only on `SUCCESS`) |
-| `data.quota` | int | Final quota charged (already settled against actual usage) |
-| `data.data.task.usage` | object | Precise upstream usage, the billing basis (`total_seconds` / `input_seconds` / `output_seconds` / `input_image_count`) |
+| `data.task_id` | string | ID tác vụ công khai |
+| `data.status` | string | Trạng thái tác vụ: `QUEUED` / `IN_PROGRESS` / `SUCCESS` / `FAILURE` |
+| `data.result_url` | string | URL kết quả video (chỉ có giá trị khi `SUCCESS`) |
+| `data.quota` | int | Hạn mức tính phí cuối cùng (đã quyết toán theo mức sử dụng thực tế) |
+| `data.data.task.usage` | object | Mức sử dụng chính xác phía thượng nguồn, cơ sở tính phí (`total_seconds` / `input_seconds` / `output_seconds` / `input_image_count`) |
 
-#### Status Enum
+#### Enum trạng thái
 
-| Unified status | MiniMax status | Description |
+| Trạng thái thống nhất | Trạng thái MiniMax | Mô tả |
 |---|---|---|
-| `QUEUED` | `queued` / `preparing` | Queued |
-| `IN_PROGRESS` | `running` | Generating |
-| `SUCCESS` | `succeeded` | Completed; `result_url` holds the video |
-| `FAILURE` | `failed` / `cancelled` / `expired` | Failed; `fail_reason` explains why |
+| `QUEUED` | `queued` / `preparing` | Đang xếp hàng |
+| `IN_PROGRESS` | `running` | Đang tạo |
+| `SUCCESS` | `succeeded` | Hoàn tất; `result_url` chứa video |
+| `FAILURE` | `failed` / `cancelled` / `expired` | Thất bại; `fail_reason` giải thích lý do |
 
-## Billing
+## Tính phí
 
-MiniMax H3 bills against the **actual upstream usage**:
+MiniMax H3 tính phí theo **mức sử dụng thực tế phía thượng nguồn**:
 
 ```
 cost(USD) = total_billed_seconds × resolution_price + billable_reference_images × $0.04
 where: total_billed_seconds = input_reference_video_seconds + generated_video_seconds
 ```
 
-| Resolution | Price |
+| Độ phân giải | Đơn giá |
 |---|---|
-| `2K` | $0.13 / second |
-| `768P` | $0.09 / second (not yet available) |
+| `2K` | $0,13 / giây |
+| `768P` | $0,09 / giây (chưa khả dụng) |
 
-Key points:
+Các điểm chính:
 
-- **Input reference video is billed too**: for r2v, a reference video's billable duration is counted at the output resolution's price.
-- **Reference images are billed separately**: $0.04 per billable reference image.
-- **Pre-charged on submit, settled on completion**: a provisional charge is taken at submit time, then Uter recomputes precisely from the upstream `usage` on success, refunding or charging the difference.
+- **Video tham chiếu đầu vào cũng bị tính phí**: với r2v, thời lượng tính phí của một video tham chiếu được tính theo đơn giá của độ phân giải đầu ra.
+- **Ảnh tham chiếu được tính phí riêng**: $0,04 cho mỗi ảnh tham chiếu có tính phí.
+- **Tính trước khi gửi, quyết toán khi hoàn tất**: khoản tính phí tạm được trừ khi gửi, sau đó Uter tính lại chính xác dựa trên `usage` phía thượng nguồn khi thành công, hoàn tiền hoặc thu thêm phần chênh lệch.
 
-## Full Example
+## Ví dụ đầy đủ
 
 ```bash
 # Step 1: submit the task
@@ -153,7 +153,7 @@ curl https://uter.ai/v1/video/generations/task_xxx \
 # Step 3: once data.status == "SUCCESS", download from data.result_url
 ```
 
-Reference-to-video using the top-level `media[]` array:
+Tạo video từ hình tham chiếu bằng mảng `media[]` ở cấp cao nhất:
 
 ```bash
 curl -X POST https://uter.ai/v1/video/generations \
@@ -171,11 +171,11 @@ curl -X POST https://uter.ai/v1/video/generations \
   }'
 ```
 
-## Status Codes and Errors
+## Mã trạng thái và lỗi
 
-| Case | Description |
+| Trường hợp | Mô tả |
 |---|---|
-| Missing `prompt` | `400`, `prompt is required` (rejected before submission, no charge) |
-| `401` / `403` | API key invalid / not allowed to access this model |
-| `402` | Insufficient balance (`insufficient user quota`); top up in the Uter console |
-| Task `FAILURE` | Upstream generation failed, see `fail_reason`; Uter refunds automatically |
+| Thiếu `prompt` | `400`, `prompt is required` (bị từ chối trước khi gửi, không tính phí) |
+| `401` / `403` | API key không hợp lệ / không được phép truy cập mô hình này |
+| `402` | Số dư không đủ (`insufficient user quota`); nạp thêm trong bảng điều khiển Uter |
+| Tác vụ `FAILURE` | Tạo video phía thượng nguồn thất bại, xem `fail_reason`; Uter tự động hoàn tiền |

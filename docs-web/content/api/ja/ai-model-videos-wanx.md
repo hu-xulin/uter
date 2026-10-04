@@ -1,163 +1,163 @@
-# Wanx Format
+# Wanx 形式
 
-Wan 2.7 video generation: call the full Wan 2.7 model family through an asynchronous task API, supporting text-to-video, image-to-video, reference-to-video and video editing, with 1080P output, videos up to 15 seconds, multi-shot narrative and native audio synchronisation.
+Wan 2.7 動画生成：非同期タスク API を通じて Wan 2.7 モデルファミリー全体を呼び出し、テキストから動画、画像から動画、参照から動画、動画編集に対応します。1080P 出力、最大 15 秒の動画、マルチショットのナラティブ、ネイティブオーディオ同期を備えています。
 
-## Supported Models
+## 対応モデル
 
-All four models share a single endpoint, `/v1/video/generations`, and are distinguished only by the `model` field; the response shape is identical.
+4 つのモデルは同一のエンドポイント `/v1/video/generations` を共有し、`model` フィールドのみで区別されます。レスポンスの構造も同一です。
 
-| Model | Capability | Required media input | Description |
+| モデル | 機能 | 必須メディア入力 | 説明 |
 |---|---|---|---|
-| `wan2.7-t2v` | Text-to-video | — | Generate video from text; supports multi-shot narrative and audio sync |
-| `wan2.7-i2v` | Image-to-video | 1 first-frame image | Animate from a first-frame image following the prompt |
-| `wan2.7-r2v` | Reference-to-video | 1–9 reference images | Multi-image reference preserving subject consistency; refer to images as `[Image N]` |
-| `wan2.7-videoedit` | Video editing | 1 video + 0–3 reference images | Style transfer, element replacement and local edits via text instructions |
+| `wan2.7-t2v` | テキストから動画 | — | テキストから動画を生成。マルチショットのナラティブと音声同期に対応 |
+| `wan2.7-i2v` | 画像から動画 | 1 枚のファーストフレーム画像 | ファーストフレーム画像からプロンプトに従ってアニメーション化 |
+| `wan2.7-r2v` | 参照から動画 | 1〜9 枚の参照画像 | 被写体の一貫性を保つ複数画像参照。`[Image N]` として画像を参照 |
+| `wan2.7-videoedit` | 動画編集 | 1 本の動画 + 0〜3 枚の参照画像 | テキスト指示によるスタイル転送、要素置換、部分編集 |
 
-## Create Video
+## 動画の作成
 
 `POST` `/v1/video/generations`
 
-### Request Headers
+### リクエストヘッダー
 
-| Header | Required | Description |
+| ヘッダー | 必須 | 説明 |
 |---|---|---|
-| `Authorization` | Yes | `Bearer sk-your-api-key` |
-| `Content-Type` | Yes | `application/json` |
+| `Authorization` | はい | `Bearer sk-your-api-key` |
+| `Content-Type` | はい | `application/json` |
 
-### Request Body (`application/json`)
+### リクエストボディ（`application/json`）
 
-| Field | Type | Required | Description |
+| フィールド | 型 | 必須 | 説明 |
 |---|---|---|---|
-| `model` | string | Yes | Wan 2.7 model name, see the table above |
-| `prompt` | string | Yes | Text prompt, up to 5000 characters, Chinese and English supported |
-| `resolution` | string | No | Resolution tier: `720P` / `1080P`, default `720P`. **Recommended**; matches the Alibaba Cloud official field name |
-| `size` | string | No | Legacy field name. When both are sent, `resolution` wins; when only `size` is sent its value is used as the resolution. New integrations should use `resolution` |
-| `duration` | int | No | Length in seconds: `2`–`15` for t2v/i2v, default `5`; `2`–`10` for r2v with a reference video; ignored by `videoedit` (follows the input video, max 15s) |
-| `input_reference` | string | No | i2v only: public URL of the first-frame image |
-| `images` | array | No | videoedit only: array of media URLs; the 1st element is the video to edit (MP4/MOV), the rest are optional reference images (max 3) |
-| `metadata` | object | No | Wan 2.7-specific parameters container, see below |
+| `model` | string | はい | Wan 2.7 モデル名。上の表を参照 |
+| `prompt` | string | はい | テキストプロンプト。5000 文字まで、中国語と英語に対応 |
+| `resolution` | string | いいえ | 解像度ティア：`720P` / `1080P`、デフォルト `720P`。**推奨**。Alibaba Cloud の公式フィールド名と一致します |
+| `size` | string | いいえ | 旧フィールド名。両方を送信した場合は `resolution` が優先されます。`size` のみを送信した場合はその値が解像度として使用されます。新しい連携では `resolution` を使用してください |
+| `duration` | int | いいえ | 長さ（秒）：t2v/i2v は `2`〜`15`、デフォルト `5`。参照動画ありの r2v は `2`〜`10`。`videoedit` では無視されます（入力動画に従い、最大 15 秒） |
+| `input_reference` | string | いいえ | i2v のみ：ファーストフレーム画像の公開 URL |
+| `images` | array | いいえ | videoedit のみ：メディア URL の配列。1 番目の要素は編集対象の動画（MP4/MOV）、残りは任意の参照画像（最大 3 枚） |
+| `metadata` | object | いいえ | Wan 2.7 固有のパラメータコンテナ。下記を参照 |
 
-> The `images` field is in a release transition period: before the release, pass media via the `metadata.input.media` array; after it, the system infers media types from URL extensions and `images` can be used directly.
+> `images` フィールドはリリースの移行期にあります。リリース前は `metadata.input.media` 配列でメディアを渡してください。リリース後はシステムが URL の拡張子からメディア種別を推定するため、`images` を直接使用できます。
 
-### Response
+### レスポンス
 
-| Status | Description |
+| ステータス | 説明 |
 |---|---|
-| `200` | Video task created successfully |
-| `400` | Invalid request parameters |
+| `200` | 動画タスクの作成に成功 |
+| `400` | リクエストパラメータが不正 |
 
-#### `200` Response Fields
+#### `200` レスポンスフィールド
 
-| Field | Type | Description |
+| フィールド | 型 | 説明 |
 |---|---|---|
-| `id` / `task_id` | string | Public task ID (`task_` prefix) used for subsequent queries |
-| `object` | string | Object type (`video`) |
-| `model` | string | Model used |
-| `status` | string | Task status (`queued` right after submission) |
-| `progress` | integer | Progress percentage |
-| `created_at` | integer | Creation timestamp |
+| `id` / `task_id` | string | 公開タスク ID（`task_` プレフィックス）。後続の照会に使用 |
+| `object` | string | オブジェクト種別（`video`） |
+| `model` | string | 使用されたモデル |
+| `status` | string | タスクステータス（送信直後は `queued`） |
+| `progress` | integer | 進捗率（パーセント） |
+| `created_at` | integer | 作成タイムスタンプ |
 
-> `id` / `task_id` is generated by Uter and is not the upstream DashScope task_id. Always use the value returned here.
+> `id` / `task_id` は Uter が生成するもので、上流の DashScope の task_id ではありません。常にここで返される値を使用してください。
 
-## Get Video Task Status
+## 動画タスクのステータス取得
 
 `GET` `/v1/video/generations/{task_id}`
 
-The response uses Uter's unified `{code, message, data}` envelope.
+レスポンスは Uter の統一 `{code, message, data}` エンベロープを使用します。
 
-### Request Parameters
+### リクエストパラメータ
 
-| Name | In | Type | Required | Description |
+| 名前 | 場所 | 型 | 必須 | 説明 |
 |---|---|---|---|---|
-| `task_id` | path | string | Yes | Video task ID |
+| `task_id` | path | string | はい | 動画タスク ID |
 
-### Response
+### レスポンス
 
-| Status | Description |
+| ステータス | 説明 |
 |---|---|
-| `200` | Task status retrieved successfully |
-| `404` | Task not found |
+| `200` | タスクステータスの取得に成功 |
+| `404` | タスクが見つかりません |
 
-#### `200` Response Fields (`data`)
+#### `200` レスポンスフィールド（`data`）
 
-| Field | Type | Description |
+| フィールド | 型 | 説明 |
 |---|---|---|
-| `data.task_id` | string | Public task ID |
-| `data.status` | string | Task status: `NOT_START` / `QUEUED` / `IN_PROGRESS` / `SUCCESS` / `FAILURE` |
-| `data.result_url` | string | Video result URL (non-empty only on `SUCCESS`; upstream OSS signed link valid for 24 hours) |
-| `data.fail_reason` | string | Failure reason (non-empty only on `FAILURE`) |
-| `data.quota` | int | Raw quota charged for this task |
-| `data.progress` | string | Progress string, e.g. `"40%"` / `"100%"` |
-| `data.properties.upstream_model_name` | string | Model name actually sent upstream |
-| `data.data` | object | Raw upstream DashScope response (`output.video_url`, `usage`, `request_id`) |
+| `data.task_id` | string | 公開タスク ID |
+| `data.status` | string | タスクステータス：`NOT_START` / `QUEUED` / `IN_PROGRESS` / `SUCCESS` / `FAILURE` |
+| `data.result_url` | string | 動画結果 URL（`SUCCESS` の場合のみ値あり。上流の OSS 署名付きリンクで 24 時間有効） |
+| `data.fail_reason` | string | 失敗理由（`FAILURE` の場合のみ値あり） |
+| `data.quota` | int | このタスクで課金された生のクォータ |
+| `data.progress` | string | 進捗文字列。例：`"40%"` / `"100%"` |
+| `data.properties.upstream_model_name` | string | 実際に上流へ送信されたモデル名 |
+| `data.data` | object | 上流 DashScope の生レスポンス（`output.video_url`、`usage`、`request_id`） |
 
-#### Status Enum
+#### ステータス列挙
 
-| Status | Upstream status | Description |
+| ステータス | 上流ステータス | 説明 |
 |---|---|---|
-| `NOT_START` | `PENDING` | Created, not yet processing |
-| `QUEUED` | `PENDING` | Queued upstream |
-| `IN_PROGRESS` | `RUNNING` | Generating |
-| `SUCCESS` | `SUCCEEDED` | Completed; `result_url` holds the video |
-| `FAILURE` | `FAILED` / `CANCELED` / `UNKNOWN` | Failed; `fail_reason` explains why |
+| `NOT_START` | `PENDING` | 作成済み、まだ処理されていません |
+| `QUEUED` | `PENDING` | 上流の待機キューです |
+| `IN_PROGRESS` | `RUNNING` | 生成中 |
+| `SUCCESS` | `SUCCEEDED` | 完了。`result_url` に動画が含まれます |
+| `FAILURE` | `FAILED` / `CANCELED` / `UNKNOWN` | 失敗。`fail_reason` で理由を確認できます |
 
-## Specific Parameters (`metadata`)
+## 固有パラメータ（`metadata`）
 
-Pass the following through the request body's `metadata` object; Uter forwards them to upstream DashScope.
+以下はリクエストボディの `metadata` オブジェクト経由で渡します。Uter が上流 DashScope に転送します。
 
-### General Control Parameters
+### 共通制御パラメータ
 
-| Field | Type | Applies to | Description | Default |
+| フィールド | 型 | 適用対象 | 説明 | デフォルト |
 |---|---|---|---|---|
-| `ratio` | string | t2v / r2v | Aspect ratio: `16:9` / `9:16` / `1:1` / `4:3` / `3:4` | `16:9` |
-| `seed` | int | All | Random seed, `0`–`2147483647`; auto-generated when omitted | — |
-| `negative_prompt` | string | All | Negative prompt, up to 500 characters | — |
+| `ratio` | string | t2v / r2v | アスペクト比：`16:9` / `9:16` / `1:1` / `4:3` / `3:4` | `16:9` |
+| `seed` | int | すべて | 乱数シード。`0`〜`2147483647`。省略時は自動生成 | — |
+| `negative_prompt` | string | すべて | ネガティブプロンプト。500 文字まで | — |
 
-> i2v does not support `ratio`; the aspect ratio follows the input first-frame image.
+> i2v は `ratio` に対応していません。アスペクト比は入力のファーストフレーム画像に従います。
 
-### Multi-Media Input (`metadata.input.media`)
+### マルチメディア入力（`metadata.input.media`）
 
-For r2v and videoedit, pass media through the `metadata.input.media` array:
+r2v と videoedit では、`metadata.input.media` 配列経由でメディアを渡します。
 
-| `type` | Purpose | Count limit |
+| `type` | 用途 | 件数制限 |
 |---|---|---|
-| `reference_image` | Reference image | r2v: 1–9; videoedit: 0–3 |
-| `video` | Video to edit (videoedit only) | Exactly 1 |
-| `first_frame` | First-frame image (i2v only; may also use top-level `input_reference`) | Exactly 1 |
+| `reference_image` | 参照画像 | r2v：1〜9、videoedit：0〜3 |
+| `video` | 編集対象の動画（videoedit のみ） | ちょうど 1 |
+| `first_frame` | ファーストフレーム画像（i2v のみ。トップレベルの `input_reference` も使用可能） | ちょうど 1 |
 
-For r2v, reference images by array order in the prompt using `[Image 1]`, `[Image 2]`.
+r2v では、プロンプト内で `[Image 1]`、`[Image 2]` を使って配列順で参照画像を指定します。
 
-### Media Constraints
+### メディアの制約
 
-| Type | Format | Resolution | Size | Other limits |
+| 種別 | フォーマット | 解像度 | サイズ | その他の制約 |
 |---|---|---|---|---|
-| Image (i2v first frame) | JPEG / JPG / PNG / WEBP | 240–8000 px | ≤ 10 MB | Aspect ratio 1:8 – 8:1 |
-| Image (r2v reference) | JPEG / JPG / PNG / WEBP | Short side ≥ 300 px | ≤ 10 MB | Use sharp images |
-| Image (videoedit reference) | JPEG / JPG / PNG / BMP / WEBP | 240–8000 px | ≤ 20 MB | Aspect ratio 1:8 – 8:1 |
-| Video (videoedit input) | MP4 / MOV (H.264) | 240–4096 px | ≤ 100 MB | 2–10 s, aspect ratio 1:8 – 8:1 |
+| 画像（i2v ファーストフレーム） | JPEG / JPG / PNG / WEBP | 240〜8000 px | ≤ 10 MB | アスペクト比 1:8〜8:1 |
+| 画像（r2v 参照） | JPEG / JPG / PNG / WEBP | 短辺 ≥ 300 px | ≤ 10 MB | シャープな画像を使用してください |
+| 画像（videoedit 参照） | JPEG / JPG / PNG / BMP / WEBP | 240〜8000 px | ≤ 20 MB | アスペクト比 1:8〜8:1 |
+| 動画（videoedit 入力） | MP4 / MOV（H.264） | 240〜4096 px | ≤ 100 MB | 2〜10 秒、アスペクト比 1:8〜8:1 |
 
-## OpenAI-Compatible Endpoint
+## OpenAI 互換エンドポイント
 
-Besides `/v1/video/generations`, an OpenAI-style `/v1/videos` endpoint is available; the two are fully equivalent.
+`/v1/video/generations` に加えて、OpenAI 形式の `/v1/videos` エンドポイントも利用でき、両者は完全に等価です。
 
-- Submit: `POST` `/v1/videos` (identical body fields)
-- Query: `GET` `/v1/videos/{task_id}` (returns the flat OpenAI format)
+- 送信：`POST` `/v1/videos`（ボディフィールドは同一）
+- 照会：`GET` `/v1/videos/{task_id}`（フラットな OpenAI 形式を返す）
 
-| OpenAI status | Unified status |
+| OpenAI ステータス | 統一ステータス |
 |---|---|
 | `queued` | `NOT_START` / `QUEUED` |
 | `in_progress` | `IN_PROGRESS` |
 | `completed` | `SUCCESS` |
 | `failed` | `FAILURE` |
 
-## Billing
+## 課金
 
-Wan 2.7 bills by **seconds × resolution factor**:
+Wan 2.7 は**秒数 × 解像度係数**で課金されます。
 
-| Resolution | Price | 5-second example |
+| 解像度 | 価格 | 5 秒の場合の例 |
 |---|---|---|
-| `720P` | $0.10 / second | $0.50 |
-| `1080P` | $0.15 / second | $0.75 |
+| `720P` | $0.10 / 秒 | $0.50 |
+| `1080P` | $0.15 / 秒 | $0.75 |
 
 ```
 quota = modelPrice × QuotaPerUnit × groupRatio × seconds × resolutionRatio
@@ -168,9 +168,9 @@ groupRatio      = 1.0 (production default group)
 resolutionRatio = 720P → 1.0, 1080P → 1.5
 ```
 
-On `FAILURE`, Uter refunds automatically.
+`FAILURE` の場合、Uter は自動的に返金します。
 
-## Full Example
+## 完全な例
 
 ```bash
 # Step 1: submit the task
@@ -192,15 +192,15 @@ curl https://uter.ai/v1/video/generations/task_xxx \
 # Step 3: once data.status == "SUCCESS", download from data.result_url
 ```
 
-For videoedit, pass media via the `images` array: the 1st MP4/MOV is the video to edit and the remaining PNG/JPG/WEBP entries are reference images; `duration` is not required (it follows the input video).
+videoedit の場合は `images` 配列でメディアを渡します。1 番目の MP4/MOV が編集対象の動画、残りの PNG/JPG/WEBP が参照画像です。`duration` は指定不要です（入力動画に従います）。
 
-## Status Codes and Errors
+## ステータスコードとエラー
 
-| Case | Description |
+| ケース | 説明 |
 |---|---|
-| `400` | Parameter error (missing `prompt`, unknown model, empty `images` for videoedit, …); rejected before submission, no charge |
-| `401` / `403` | API key invalid / not allowed to access this model |
-| `402` | Insufficient balance (`insufficient user quota`); top up in the Uter console |
-| Task `FAILURE` | Upstream generation failed, see `fail_reason`; Uter refunds automatically |
+| `400` | パラメータエラー（`prompt` の欠落、未知のモデル、videoedit での `images` が空など）。送信前に拒否され、課金は発生しません |
+| `401` / `403` | API キーが無効、またはこのモデルへのアクセスが許可されていません |
+| `402` | 残高が不足しています（`insufficient user quota`）。Uter コンソールでチャージしてください |
+| タスク `FAILURE` | 上流の生成に失敗しました。`fail_reason` を確認してください。Uter は自動的に返金します |
 
-Common `FAILURE` causes: `DataInspectionFailed` (upstream safety rejection — adjust the prompt or assets), missing `input_reference` for i2v, zero reference images for r2v, `images[0]` not being MP4/MOV for videoedit, unreachable media URL, or media that violates the constraints above.
+`FAILURE` の一般的な原因：`DataInspectionFailed`（上流の安全審査による拒否。プロンプトまたは素材を調整してください）、i2v での `input_reference` の欠落、r2v での参照画像が 0 枚、videoedit での `images[0]` が MP4/MOV でない、到達できないメディア URL、または上記の制約に違反するメディア。

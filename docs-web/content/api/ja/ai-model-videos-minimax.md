@@ -1,137 +1,137 @@
-# MiniMax Format
+# MiniMax 形式
 
-MiniMax H3 (`MiniMax-H3`) video generation: call MiniMax H3 through an asynchronous task API, supporting text-to-video, image-to-video and reference-to-video, billed precisely against upstream usage.
+MiniMax H3（`MiniMax-H3`）動画生成：非同期タスク API を通じて MiniMax H3 を呼び出し、テキストから動画、画像から動画、参照から動画に対応します。上流の実使用量に基づいて正確に課金されます。
 
-## Model and Capabilities
+## モデルと機能
 
-There is a single model name, `MiniMax-H3`. **The generation mode is decided automatically by which media inputs the request carries:**
+モデル名は `MiniMax-H3` の 1 種類のみです。**生成モードは、リクエストに含まれるメディア入力に応じて自動的に決定されます。**
 
-| Mode | Trigger | Media input |
+| モード | トリガー | メディア入力 |
 |---|---|---|
-| Text-to-video (t2v) | Only `prompt` | None |
-| Image-to-video (i2v) | A first-frame image (optional last-frame image) | `input_reference` / `images` |
-| Reference-to-video (r2v) | Reference image / video / audio | Top-level `media[]` array |
+| テキストから動画（t2v） | `prompt` のみ | なし |
+| 画像から動画（i2v） | ファーストフレーム画像（ラストフレーム画像は任意） | `input_reference` / `images` |
+| 参照から動画（r2v） | 参照画像 / 動画 / 音声 | トップレベルの `media[]` 配列 |
 
-In every mode, `prompt` is **always required**.
+いずれのモードでも、`prompt` は**常に必須**です。
 
-## Create Video
+## 動画の作成
 
 `POST` `/v1/video/generations`
 
-### Request Headers
+### リクエストヘッダー
 
-| Header | Required | Description |
+| ヘッダー | 必須 | 説明 |
 |---|---|---|
-| `Authorization` | Yes | `Bearer sk-your-api-key` |
-| `Content-Type` | Yes | `application/json` |
+| `Authorization` | はい | `Bearer sk-your-api-key` |
+| `Content-Type` | はい | `application/json` |
 
-### Request Body (`application/json`)
+### リクエストボディ（`application/json`）
 
-| Field | Type | Required | Description |
+| フィールド | 型 | 必須 | 説明 |
 |---|---|---|---|
-| `model` | string | Yes | Fixed to `MiniMax-H3` |
-| `prompt` | string | Yes | Text prompt |
-| `resolution` | string | No | Resolution; currently only `2K` (default `2K`) |
-| `duration` | int | No | Video length in seconds, `4`–`15`, default `6` |
-| `ratio` | string | No | Aspect ratio: `16:9` / `9:16` / `1:1` / `adaptive`. Defaults to `16:9` for t2v and `adaptive` (follows the first frame) for i2v |
-| `input_reference` | string | No | i2v first-frame image URL (public, or base64) |
-| `images` | string[] | No | i2v image array: the 1st is the first frame, the 2nd is the last frame |
-| `media` | object[] | No | Structured media input for reference-to-video, see below |
+| `model` | string | はい | `MiniMax-H3` に固定 |
+| `prompt` | string | はい | テキストプロンプト |
+| `resolution` | string | いいえ | 解像度。現時点では `2K` のみ（デフォルト `2K`） |
+| `duration` | int | いいえ | 動画の長さ（秒）。`4`〜`15`、デフォルト `6` |
+| `ratio` | string | いいえ | アスペクト比：`16:9` / `9:16` / `1:1` / `adaptive`。t2v では `16:9`、i2v では `adaptive`（ファーストフレームに追随）がデフォルト |
+| `input_reference` | string | いいえ | i2v のファーストフレーム画像 URL（公開 URL または base64） |
+| `images` | string[] | いいえ | i2v の画像配列：1 枚目がファーストフレーム、2 枚目がラストフレーム |
+| `media` | object[] | いいえ | 参照から動画用の構造化メディア入力。下記を参照 |
 
-### `media[]` Elements
+### `media[]` の要素
 
-Used for reference-to-video (r2v) to specify each reference asset's role precisely:
+参照から動画（r2v）で、各参照アセットの役割を正確に指定するために使用します。
 
-| `type` | Role | Purpose |
+| `type` | 役割 | 用途 |
 |---|---|---|
-| `reference_image` | Reference image | Reference picture(s) |
-| `reference_video` | Reference video | Reference video (its billable duration counts toward total seconds) |
-| `reference_audio` | Reference audio | Reference audio |
-| `first_frame` / `last_frame` | First / last frame | i2v first / last frame images |
+| `reference_image` | 参照画像 | 参照画像 |
+| `reference_video` | 参照動画 | 参照動画（その課金対象秒数が合計秒数に加算されます） |
+| `reference_audio` | 参照音声 | 参照音声 |
+| `first_frame` / `last_frame` | ファースト / ラストフレーム | i2v のファースト / ラストフレーム画像 |
 
-When structured `media` is omitted, Uter infers assets from `images` / `input_reference` by extension and order: video → reference video, audio → reference audio, 1st image → first frame, 2nd image → last frame. Use `media[]` when you need precise role control.
+構造化された `media` を省略した場合、Uter は `images` / `input_reference` から拡張子と順序でアセットを推定します：動画 → 参照動画、音声 → 参照音声、1 枚目の画像 → ファーストフレーム、2 枚目の画像 → ラストフレーム。役割を厳密に制御したい場合は `media[]` を使用してください。
 
-> Reference audio (`reference_audio`) is currently limited by upstream support: in testing the upstream returns task failure (Uter refunds in full automatically). Text-to-video, image-to-video (first frame / first+last frame) and reference image/video generation all work normally.
+> 参照音声（`reference_audio`）は現時点で上流の対応状況に制限があります。テストでは上流がタスク失敗を返すため、Uter が自動的に全額返金します。テキストから動画、画像から動画（ファーストフレーム / ファースト＋ラストフレーム）、参照画像・参照動画からの生成はいずれも正常に動作します。
 
-### Response
+### レスポンス
 
-| Status | Description |
+| ステータス | 説明 |
 |---|---|
-| `200` | Video task created successfully |
-| `400` | Invalid request parameters |
+| `200` | 動画タスクの作成に成功 |
+| `400` | リクエストパラメータが不正 |
 
-#### `200` Response Fields
+#### `200` レスポンスフィールド
 
-| Field | Type | Description |
+| フィールド | 型 | 説明 |
 |---|---|---|
-| `id` / `task_id` | string | Public task ID (`task_` prefix) used for subsequent queries |
-| `object` | string | Object type (`video`) |
-| `model` | string | Model used |
-| `status` | string | Task status (`queued` right after submission) |
-| `progress` | integer | Progress percentage |
-| `created_at` | integer | Creation timestamp |
+| `id` / `task_id` | string | 公開タスク ID（`task_` プレフィックス）。後続の照会に使用 |
+| `object` | string | オブジェクト種別（`video`） |
+| `model` | string | 使用されたモデル |
+| `status` | string | タスクステータス（送信直後は `queued`） |
+| `progress` | integer | 進捗率（パーセント） |
+| `created_at` | integer | 作成タイムスタンプ |
 
-> `id` / `task_id` is generated by Uter and is not the upstream MiniMax task_id.
+> `id` / `task_id` は Uter が生成するもので、上流の MiniMax の task_id ではありません。
 
-## Get Video Task Status
+## 動画タスクのステータス取得
 
 `GET` `/v1/video/generations/{task_id}`
 
-The response uses Uter's unified `{code, message, data}` envelope.
+レスポンスは Uter の統一 `{code, message, data}` エンベロープを使用します。
 
-### Request Parameters
+### リクエストパラメータ
 
-| Name | In | Type | Required | Description |
+| 名前 | 場所 | 型 | 必須 | 説明 |
 |---|---|---|---|---|
-| `task_id` | path | string | Yes | Video task ID |
+| `task_id` | path | string | はい | 動画タスク ID |
 
-### Response
+### レスポンス
 
-| Status | Description |
+| ステータス | 説明 |
 |---|---|
-| `200` | Task status retrieved successfully |
-| `404` | Task not found |
+| `200` | タスクステータスの取得に成功 |
+| `404` | タスクが見つかりません |
 
-#### `200` Response Fields (`data`)
+#### `200` レスポンスフィールド（`data`）
 
-| Field | Type | Description |
+| フィールド | 型 | 説明 |
 |---|---|---|
-| `data.task_id` | string | Public task ID |
-| `data.status` | string | Task status: `QUEUED` / `IN_PROGRESS` / `SUCCESS` / `FAILURE` |
-| `data.result_url` | string | Video result URL (non-empty only on `SUCCESS`) |
-| `data.quota` | int | Final quota charged (already settled against actual usage) |
-| `data.data.task.usage` | object | Precise upstream usage, the billing basis (`total_seconds` / `input_seconds` / `output_seconds` / `input_image_count`) |
+| `data.task_id` | string | 公開タスク ID |
+| `data.status` | string | タスクステータス：`QUEUED` / `IN_PROGRESS` / `SUCCESS` / `FAILURE` |
+| `data.result_url` | string | 動画結果 URL（`SUCCESS` の場合のみ値あり） |
+| `data.quota` | int | 最終的な課金クォータ（実使用量に基づいてすでに精算済み） |
+| `data.data.task.usage` | object | 上流の正確な使用量。課金の基準（`total_seconds` / `input_seconds` / `output_seconds` / `input_image_count`） |
 
-#### Status Enum
+#### ステータス列挙
 
-| Unified status | MiniMax status | Description |
+| 統一ステータス | MiniMax ステータス | 説明 |
 |---|---|---|
-| `QUEUED` | `queued` / `preparing` | Queued |
-| `IN_PROGRESS` | `running` | Generating |
-| `SUCCESS` | `succeeded` | Completed; `result_url` holds the video |
-| `FAILURE` | `failed` / `cancelled` / `expired` | Failed; `fail_reason` explains why |
+| `QUEUED` | `queued` / `preparing` | 待機中 |
+| `IN_PROGRESS` | `running` | 生成中 |
+| `SUCCESS` | `succeeded` | 完了。`result_url` に動画が含まれます |
+| `FAILURE` | `failed` / `cancelled` / `expired` | 失敗。`fail_reason` で理由を確認できます |
 
-## Billing
+## 課金
 
-MiniMax H3 bills against the **actual upstream usage**:
+MiniMax H3 は**上流の実使用量**に基づいて課金されます。
 
 ```
 cost(USD) = total_billed_seconds × resolution_price + billable_reference_images × $0.04
 where: total_billed_seconds = input_reference_video_seconds + generated_video_seconds
 ```
 
-| Resolution | Price |
+| 解像度 | 価格 |
 |---|---|
-| `2K` | $0.13 / second |
-| `768P` | $0.09 / second (not yet available) |
+| `2K` | $0.13 / 秒 |
+| `768P` | $0.09 / 秒（未対応） |
 
-Key points:
+重要なポイント：
 
-- **Input reference video is billed too**: for r2v, a reference video's billable duration is counted at the output resolution's price.
-- **Reference images are billed separately**: $0.04 per billable reference image.
-- **Pre-charged on submit, settled on completion**: a provisional charge is taken at submit time, then Uter recomputes precisely from the upstream `usage` on success, refunding or charging the difference.
+- **入力の参照動画も課金対象です**：r2v では参照動画の課金対象秒数が出力解像度の価格で計算されます。
+- **参照画像は別途課金されます**：課金対象の参照画像 1 枚につき $0.04。
+- **送信時に仮払い、完了時に精算**：送信時に仮の課金が適用され、成功時に Uter が上流の `usage` から正確に再計算して差額を返金または追加課金します。
 
-## Full Example
+## 完全な例
 
 ```bash
 # Step 1: submit the task
@@ -153,7 +153,7 @@ curl https://uter.ai/v1/video/generations/task_xxx \
 # Step 3: once data.status == "SUCCESS", download from data.result_url
 ```
 
-Reference-to-video using the top-level `media[]` array:
+トップレベルの `media[]` 配列を使用した参照から動画：
 
 ```bash
 curl -X POST https://uter.ai/v1/video/generations \
@@ -171,11 +171,11 @@ curl -X POST https://uter.ai/v1/video/generations \
   }'
 ```
 
-## Status Codes and Errors
+## ステータスコードとエラー
 
-| Case | Description |
+| ケース | 説明 |
 |---|---|
-| Missing `prompt` | `400`, `prompt is required` (rejected before submission, no charge) |
-| `401` / `403` | API key invalid / not allowed to access this model |
-| `402` | Insufficient balance (`insufficient user quota`); top up in the Uter console |
-| Task `FAILURE` | Upstream generation failed, see `fail_reason`; Uter refunds automatically |
+| `prompt` が欠落 | `400`、`prompt is required`（送信前に拒否され、課金は発生しません） |
+| `401` / `403` | API キーが無効、またはこのモデルへのアクセスが許可されていません |
+| `402` | 残高が不足しています（`insufficient user quota`）。Uter コンソールでチャージしてください |
+| タスク `FAILURE` | 上流の生成に失敗しました。`fail_reason` を確認してください。Uter は自動的に返金します |

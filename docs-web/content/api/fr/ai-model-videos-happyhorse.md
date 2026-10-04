@@ -1,158 +1,158 @@
-# HappyHorse Format
+# Format de l'API HappyHorse
 
-HappyHorse video generation: call the full HappyHorse 1.0 model family through an asynchronous task API, supporting text-to-video, image-to-video, reference-to-video and video editing.
+Génération vidéo HappyHorse : appelez toute la famille de modèles HappyHorse 1.0 via une API de tâches asynchrone, avec prise en charge de la génération texte vers vidéo, image vers vidéo, référence vers vidéo et du montage vidéo.
 
-## Supported Models
+## Modèles pris en charge
 
-All four models share a single endpoint, `/v1/video/generations`, and are distinguished only by the `model` field; the response shape is identical.
+Les quatre modèles partagent un même point de terminaison, `/v1/video/generations`, et ne se distinguent que par le champ `model` ; la forme de la réponse est identique.
 
-| Model | Capability | Required media input | Description |
+| Modèle | Capacité | Entrée média requise | Description |
 |---|---|---|---|
-| `happyhorse-1.0-t2v` | Text-to-video | — | Generate video from a text description only |
-| `happyhorse-1.0-i2v` | Image-to-video | 1 first-frame image | Animate from a first-frame image following the prompt |
-| `happyhorse-1.0-r2v` | Reference-to-video | 1–9 reference images | Multi-image reference; refer to images as `[Image N]` in the prompt |
-| `happyhorse-1.0-video-edit` | Video editing | 1 video + 0–5 reference images | Style transfer, local replacement and other edits on a video |
+| `happyhorse-1.0-t2v` | Texte vers vidéo | — | Génère une vidéo à partir d'une simple description textuelle |
+| `happyhorse-1.0-i2v` | Image vers vidéo | 1 image de première image | Anime à partir d'une image de première image en suivant le prompt |
+| `happyhorse-1.0-r2v` | Référence vers vidéo | 1–9 images de référence | Référence multi-images ; référencez les images via `[Image N]` dans le prompt |
+| `happyhorse-1.0-video-edit` | Montage vidéo | 1 vidéo + 0–5 images de référence | Transfert de style, remplacement local et autres retouches sur une vidéo |
 
-## Create Video
+## Créer une vidéo
 
-Submit a video generation task and receive a task ID; poll the status endpoint for the result.
+Soumettez une tâche de génération vidéo et recevez un identifiant de tâche ; interrogez le point de terminaison de statut pour obtenir le résultat.
 
 `POST` `/v1/video/generations`
 
-### Request Headers
+### En-têtes de requête
 
-| Header | Required | Description |
+| En-tête | Requis | Description |
 |---|---|---|
-| `Authorization` | Yes | `Bearer sk-your-api-key` |
-| `Content-Type` | Yes | `application/json` |
+| `Authorization` | Oui | `Bearer sk-your-api-key` |
+| `Content-Type` | Oui | `application/json` |
 
-### Request Body (`application/json`)
+### Corps de la requête (`application/json`)
 
-| Field | Type | Required | Description |
+| Champ | Type | Requis | Description |
 |---|---|---|---|
-| `model` | string | Yes | HappyHorse model name, see the table above |
-| `prompt` | string | Yes | Text prompt, at most 5000 non-Chinese characters or 2500 Chinese characters; longer input is truncated |
-| `size` | string | No | Resolution tier: `720P` / `1080P`; default `1080P` |
-| `duration` | int | No | Video length in seconds, `3`–`15`, default `5`; ignored by `video-edit` (follows the input video, max 15s) |
-| `input_reference` | string | No | i2v only: public URL of the first-frame image |
-| `metadata` | object | No | HappyHorse-specific parameters container, see below |
+| `model` | string | Oui | Nom du modèle HappyHorse, voir le tableau ci-dessus |
+| `prompt` | string | Oui | Prompt textuel, jusqu'à 5000 caractères non chinois ou 2500 caractères chinois ; une saisie plus longue est tronquée |
+| `size` | string | Non | Palier de résolution : `720P` / `1080P` ; par défaut `1080P` |
+| `duration` | int | Non | Durée de la vidéo en secondes, `3`–`15`, par défaut `5` ; ignoré pour `video-edit` (suit la vidéo d'entrée, 15 s max.) |
+| `input_reference` | string | Non | Uniquement i2v : URL publique de l'image de première image |
+| `metadata` | object | Non | Conteneur des paramètres propres à HappyHorse, voir ci-dessous |
 
-### Response
+### Réponse
 
-| Status | Description |
+| Statut | Description |
 |---|---|
-| `200` | Video task created successfully |
-| `400` | Invalid request parameters |
+| `200` | Tâche vidéo créée avec succès |
+| `400` | Paramètres de requête invalides |
 
-#### `200` Response Fields
+#### Champs de la réponse `200`
 
-| Field | Type | Description |
+| Champ | Type | Description |
 |---|---|---|
-| `id` / `task_id` | string | Public task ID (`task_` prefix) used for subsequent queries |
-| `object` | string | Object type (`video`) |
-| `model` | string | Model used |
-| `status` | string | Task status (`queued` right after submission) |
-| `progress` | integer | Progress percentage |
-| `created_at` | integer | Creation timestamp |
+| `id` / `task_id` | string | Identifiant public de tâche (préfixe `task_`) utilisé pour les requêtes ultérieures |
+| `object` | string | Type d'objet (`video`) |
+| `model` | string | Modèle utilisé |
+| `status` | string | Statut de la tâche (`queued` juste après la soumission) |
+| `progress` | integer | Pourcentage de progression |
+| `created_at` | integer | Horodatage de création |
 
-> `id` / `task_id` is generated by Uter and is not the upstream DashScope task_id. Always use the value returned here.
+> `id` / `task_id` est généré par Uter et n'est pas le task_id DashScope en amont. Utilisez toujours la valeur renvoyée ici.
 
-## Get Video Task Status
+## Obtenir le statut de la tâche vidéo
 
 `GET` `/v1/video/generations/{task_id}`
 
-The response uses Uter's unified `{code, message, data}` envelope.
+La réponse utilise l'enveloppe unifiée `{code, message, data}` d'Uter.
 
-### Request Parameters
+### Paramètres de requête
 
-| Name | In | Type | Required | Description |
+| Nom | Emplacement | Type | Requis | Description |
 |---|---|---|---|---|
-| `task_id` | path | string | Yes | Video task ID |
+| `task_id` | path | string | Oui | Identifiant de la tâche vidéo |
 
-### Response
+### Réponse
 
-| Status | Description |
+| Statut | Description |
 |---|---|
-| `200` | Task status retrieved successfully |
-| `404` | Task not found |
+| `200` | Statut de la tâche récupéré avec succès |
+| `404` | Tâche introuvable |
 
-#### `200` Response Fields (`data`)
+#### Champs de la réponse `200` (`data`)
 
-| Field | Type | Description |
+| Champ | Type | Description |
 |---|---|---|
-| `data.task_id` | string | Public task ID |
-| `data.status` | string | Task status: `NOT_START` / `QUEUED` / `IN_PROGRESS` / `SUCCESS` / `FAILURE` |
-| `data.result_url` | string | Video result URL (non-empty only on `SUCCESS`; an upstream OSS signed link, typically valid for 24 hours) |
-| `data.fail_reason` | string | Failure reason (non-empty only on `FAILURE`) |
-| `data.quota` | int | Raw quota charged for this task |
-| `data.progress` | string | Progress string, e.g. `"30%"` / `"100%"` |
-| `data.submit_time` / `start_time` / `finish_time` | int64 | Submit / start / finish Unix timestamps (seconds) |
-| `data.properties.upstream_model_name` | string | Model name actually sent upstream |
-| `data.data` | object | Raw upstream DashScope response (`output.video_url`, `usage`, `request_id`) |
+| `data.task_id` | string | Identifiant public de tâche |
+| `data.status` | string | Statut de la tâche : `NOT_START` / `QUEUED` / `IN_PROGRESS` / `SUCCESS` / `FAILURE` |
+| `data.result_url` | string | URL du résultat vidéo (non vide uniquement sur `SUCCESS` ; lien signé OSS en amont, valable généralement 24 heures) |
+| `data.fail_reason` | string | Raison de l'échec (non vide uniquement sur `FAILURE`) |
+| `data.quota` | int | Quota brut facturé pour cette tâche |
+| `data.progress` | string | Chaîne de progression, par ex. `"30%"` / `"100%"` |
+| `data.submit_time` / `start_time` / `finish_time` | int64 | Horodatages Unix de soumission / début / fin (secondes) |
+| `data.properties.upstream_model_name` | string | Nom de modèle effectivement envoyé en amont |
+| `data.data` | object | Réponse DashScope brute en amont (`output.video_url`, `usage`, `request_id`) |
 
-#### Status Enum
+#### Énumération des statuts
 
-| Status | Upstream status | Description |
+| Statut | Statut en amont | Description |
 |---|---|---|
-| `NOT_START` | `PENDING` | Created, not yet processing |
-| `QUEUED` | `PENDING` | Queued upstream |
-| `IN_PROGRESS` | `RUNNING` | Generating |
-| `SUCCESS` | `SUCCEEDED` | Completed; `result_url` holds the video |
-| `FAILURE` | `FAILED` / `CANCELED` / `UNKNOWN` | Failed; `fail_reason` explains why |
+| `NOT_START` | `PENDING` | Créée, pas encore traitée |
+| `QUEUED` | `PENDING` | File d'attente en amont |
+| `IN_PROGRESS` | `RUNNING` | Génération en cours |
+| `SUCCESS` | `SUCCEEDED` | Terminée ; `result_url` contient la vidéo |
+| `FAILURE` | `FAILED` / `CANCELED` / `UNKNOWN` | Échec ; `fail_reason` explique pourquoi |
 
-## Specific Parameters (`metadata`)
+## Paramètres spécifiques (`metadata`)
 
-Pass the following through the request body's `metadata` object; Uter forwards them to upstream DashScope.
+Transmettez les éléments suivants via l'objet `metadata` du corps de la requête ; Uter les transmet à DashScope en amont.
 
-### Video Control Parameters
+### Paramètres de contrôle vidéo
 
-| Field | Type | Applies to | Description | Default |
+| Champ | Type | S'applique à | Description | Par défaut |
 |---|---|---|---|---|
-| `ratio` | string | t2v / r2v | Aspect ratio: `16:9` / `9:16` / `1:1` / `4:3` / `3:4` | `16:9` |
-| `watermark` | bool | All | Whether to add a watermark (bottom-right "Happy Horse" text) | `true` |
-| `seed` | int | All | Random seed, `0`–`2147483647`; auto-generated when omitted | — |
-| `audio_setting` | string | video-edit | Audio control: `auto` (model-controlled) / `origin` (keep original audio) | `auto` |
+| `ratio` | string | t2v / r2v | Rapport d'aspect : `16:9` / `9:16` / `1:1` / `4:3` / `3:4` | `16:9` |
+| `watermark` | bool | Tous | Ajouter ou non un filigrane (texte « Happy Horse » en bas à droite) | `true` |
+| `seed` | int | Tous | Graine aléatoire, `0`–`2147483647` ; générée automatiquement si omise | — |
+| `audio_setting` | string | video-edit | Contrôle audio : `auto` (contrôlé par le modèle) / `origin` (conserver l'audio d'origine) | `auto` |
 
-> i2v does not support `ratio`; the aspect ratio follows the input first-frame image.
+> i2v ne prend pas en charge `ratio` ; le rapport d'aspect suit l'image de première image en entrée.
 
-### Multi-Media Input (`metadata.input.media`)
+### Entrée multimédia (`metadata.input.media`)
 
-r2v and video-edit pass media via the `metadata.input.media` array:
+r2v et video-edit transmettent les médias via le tableau `metadata.input.media` :
 
-| `type` | Purpose | Count limit |
+| `type` | Rôle | Limite de nombre |
 |---|---|---|
-| `reference_image` | Reference image (supported by r2v and video-edit) | r2v: 1–9; video-edit: 0–5 |
-| `video` | Video to edit (video-edit only) | Exactly 1 |
-| `first_frame` | First-frame image (i2v only; may also use top-level `input_reference`) | Exactly 1 |
+| `reference_image` | Image de référence (prise en charge par r2v et video-edit) | r2v : 1–9 ; video-edit : 0–5 |
+| `video` | Vidéo à monter (video-edit uniquement) | Exactement 1 |
+| `first_frame` | Image de première image (i2v uniquement ; peut aussi utiliser le `input_reference` de premier niveau) | Exactement 1 |
 
-For r2v, reference images by array order in the prompt using `[Image 1]`, `[Image 2]`.
+Pour r2v, référencez les images de référence par leur ordre dans le tableau via `[Image 1]`, `[Image 2]` dans le prompt.
 
-### Media Constraints
+### Contraintes médias
 
-| Type | Format | Resolution | Size | Other limits |
+| Type | Format | Résolution | Taille | Autres limites |
 |---|---|---|---|---|
-| Image (i2v first frame) | JPEG / JPG / PNG / WEBP | Width & height ≥ 300 px | ≤ 10 MB | Aspect ratio 1:2.5 – 2.5:1 |
-| Image (r2v reference) | JPEG / JPG / PNG / WEBP | Short side ≥ 400 px | ≤ 10 MB | Use sharp images |
-| Image (video-edit reference) | JPEG / JPG / PNG / WEBP | Width & height ≥ 300 px | ≤ 10 MB | Aspect ratio 1:2.5 – 2.5:1 |
-| Video (video-edit input) | MP4 / MOV (H.264) | Long side ≤ 2160, short side ≥ 320 | ≤ 100 MB | 3–60 s, >8 fps, ratio 1:2.5 – 2.5:1 |
+| Image (première image i2v) | JPEG / JPG / PNG / WEBP | Largeur et hauteur ≥ 300 px | ≤ 10 Mo | Rapport d'aspect 1:2,5 – 2,5:1 |
+| Image (référence r2v) | JPEG / JPG / PNG / WEBP | Petit côté ≥ 400 px | ≤ 10 Mo | Utilisez des images nettes |
+| Image (référence video-edit) | JPEG / JPG / PNG / WEBP | Largeur et hauteur ≥ 300 px | ≤ 10 Mo | Rapport d'aspect 1:2,5 – 2,5:1 |
+| Vidéo (entrée video-edit) | MP4 / MOV (H.264) | Grand côté ≤ 2160, petit côté ≥ 320 | ≤ 100 Mo | 3–60 s, >8 fps, rapport 1:2,5 – 2,5:1 |
 
-> video-edit output length: input ≤ 15s yields the same length; input > 15s is truncated to the first 15s.
+> Longueur de sortie video-edit : une entrée ≤ 15 s donne la même longueur ; une entrée > 15 s est tronquée aux 15 premières secondes.
 
-## OpenAI-Compatible Endpoint
+## Point de terminaison compatible OpenAI
 
-Besides `/v1/video/generations`, an OpenAI-style `/v1/videos` endpoint is available; the two are fully equivalent (same backend task).
+En plus de `/v1/video/generations`, un point de terminaison `/v1/videos` de style OpenAI est disponible ; les deux sont entièrement équivalents (même tâche en backend).
 
-- Submit: `POST` `/v1/videos` (identical body fields)
-- Query: `GET` `/v1/videos/{task_id}` (returns the flat OpenAI format)
+- Soumission : `POST` `/v1/videos` (champs de corps identiques)
+- Requête : `GET` `/v1/videos/{task_id}` (renvoie le format plat OpenAI)
 
-| OpenAI status | Unified status |
+| Statut OpenAI | Statut unifié |
 |---|---|
 | `queued` | `NOT_START` / `QUEUED` |
 | `in_progress` | `IN_PROGRESS` |
 | `completed` | `SUCCESS` |
 | `failed` | `FAILURE` |
 
-## Full Example
+## Exemple complet
 
 ```bash
 # Step 1: submit the task
@@ -174,13 +174,13 @@ curl https://uter.ai/v1/video/generations/task_xxx \
 # Step 3: once data.status == "SUCCESS", download from data.result_url
 ```
 
-## Status Codes and Errors
+## Codes d'état et erreurs
 
-| Case | Description |
+| Cas | Description |
 |---|---|
-| `400` | Parameter error (missing `prompt`, unknown model, …); rejected before submission, no charge |
-| `401` / `403` | API key invalid / not allowed to access this model (check the token model whitelist) |
-| `402` | Insufficient balance (`insufficient user quota`); top up in the Uter console |
-| Task `FAILURE` | Upstream generation failed, see `data.fail_reason`; Uter refunds automatically and the refund appears in the logs |
+| `400` | Erreur de paramètre (`prompt` manquant, modèle inconnu, …) ; rejetée avant soumission, aucun débit |
+| `401` / `403` | Clé d'API invalide / non autorisée à accéder à ce modèle (vérifiez la liste blanche de modèles du jeton) |
+| `402` | Solde insuffisant (`insufficient user quota`) ; rechargez dans la console Uter |
+| Tâche `FAILURE` | La génération en amont a échoué, voir `data.fail_reason` ; Uter rembourse automatiquement et le remboursement apparaît dans les journaux |
 
-Common `FAILURE` causes: content moderation rejection (adjust the prompt), missing `input_reference` for i2v, zero reference images for r2v, missing video for video-edit, unreachable media URL, or media that violates the constraints above.
+Causes courantes de `FAILURE` : rejet par la modération du contenu (ajustez le prompt), `input_reference` manquant pour i2v, zéro image de référence pour r2v, vidéo manquante pour video-edit, URL média injoignable, ou média ne respectant pas les contraintes ci-dessus.

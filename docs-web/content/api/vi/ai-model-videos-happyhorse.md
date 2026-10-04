@@ -1,158 +1,158 @@
-# HappyHorse Format
+# Định dạng HappyHorse
 
-HappyHorse video generation: call the full HappyHorse 1.0 model family through an asynchronous task API, supporting text-to-video, image-to-video, reference-to-video and video editing.
+Tạo video HappyHorse: gọi toàn bộ họ mô hình HappyHorse 1.0 qua API tác vụ bất đồng bộ, hỗ trợ tạo video từ văn bản, từ hình ảnh, từ hình tham chiếu và chỉnh sửa video.
 
-## Supported Models
+## Các mô hình được hỗ trợ
 
-All four models share a single endpoint, `/v1/video/generations`, and are distinguished only by the `model` field; the response shape is identical.
+Cả bốn mô hình dùng chung một endpoint `/v1/video/generations` và chỉ phân biệt qua trường `model`; cấu trúc phản hồi là như nhau.
 
-| Model | Capability | Required media input | Description |
+| Mô hình | Khả năng | Đầu vào media bắt buộc | Mô tả |
 |---|---|---|---|
-| `happyhorse-1.0-t2v` | Text-to-video | — | Generate video from a text description only |
-| `happyhorse-1.0-i2v` | Image-to-video | 1 first-frame image | Animate from a first-frame image following the prompt |
-| `happyhorse-1.0-r2v` | Reference-to-video | 1–9 reference images | Multi-image reference; refer to images as `[Image N]` in the prompt |
-| `happyhorse-1.0-video-edit` | Video editing | 1 video + 0–5 reference images | Style transfer, local replacement and other edits on a video |
+| `happyhorse-1.0-t2v` | Từ văn bản sang video | — | Tạo video chỉ từ mô tả văn bản |
+| `happyhorse-1.0-i2v` | Từ hình ảnh sang video | 1 ảnh khung hình đầu | Hoạt ảnh từ ảnh khung hình đầu theo prompt |
+| `happyhorse-1.0-r2v` | Từ hình tham chiếu sang video | 1–9 ảnh tham chiếu | Tham chiếu nhiều hình ảnh; tham chiếu ảnh bằng `[Image N]` trong prompt |
+| `happyhorse-1.0-video-edit` | Chỉnh sửa video | 1 video + 0–5 ảnh tham chiếu | Chuyển style, thay thế cục bộ và các chỉnh sửa khác trên video |
 
-## Create Video
+## Tạo video
 
-Submit a video generation task and receive a task ID; poll the status endpoint for the result.
+Gửi một tác vụ tạo video và nhận về ID tác vụ; thăm dò endpoint trạng thái để lấy kết quả.
 
 `POST` `/v1/video/generations`
 
-### Request Headers
+### Header yêu cầu
 
-| Header | Required | Description |
+| Header | Bắt buộc | Mô tả |
 |---|---|---|
-| `Authorization` | Yes | `Bearer sk-your-api-key` |
-| `Content-Type` | Yes | `application/json` |
+| `Authorization` | Có | `Bearer sk-your-api-key` |
+| `Content-Type` | Có | `application/json` |
 
-### Request Body (`application/json`)
+### Body yêu cầu (`application/json`)
 
-| Field | Type | Required | Description |
+| Trường | Kiểu | Bắt buộc | Mô tả |
 |---|---|---|---|
-| `model` | string | Yes | HappyHorse model name, see the table above |
-| `prompt` | string | Yes | Text prompt, at most 5000 non-Chinese characters or 2500 Chinese characters; longer input is truncated |
-| `size` | string | No | Resolution tier: `720P` / `1080P`; default `1080P` |
-| `duration` | int | No | Video length in seconds, `3`–`15`, default `5`; ignored by `video-edit` (follows the input video, max 15s) |
-| `input_reference` | string | No | i2v only: public URL of the first-frame image |
-| `metadata` | object | No | HappyHorse-specific parameters container, see below |
+| `model` | string | Có | Tên mô hình HappyHorse, xem bảng trên |
+| `prompt` | string | Có | Prompt văn bản, tối đa 5000 ký tự phi Trung Quốc hoặc 2500 ký tự Trung Quốc; đầu vào dài hơn sẽ bị cắt bớt |
+| `size` | string | Không | Bậc độ phân giải: `720P` / `1080P`; mặc định `1080P` |
+| `duration` | int | Không | Thời lượng video tính bằng giây, `3`–`15`, mặc định `5`; bị bỏ qua với `video-edit` (theo video đầu vào, tối đa 15 giây) |
+| `input_reference` | string | Không | Chỉ dùng cho i2v: URL công khai của ảnh khung hình đầu |
+| `metadata` | object | Không | Container tham số riêng của HappyHorse, xem bên dưới |
 
-### Response
+### Phản hồi
 
-| Status | Description |
+| Trạng thái | Mô tả |
 |---|---|
-| `200` | Video task created successfully |
-| `400` | Invalid request parameters |
+| `200` | Tạo tác vụ video thành công |
+| `400` | Tham số yêu cầu không hợp lệ |
 
-#### `200` Response Fields
+#### Trường phản hồi `200`
 
-| Field | Type | Description |
+| Trường | Kiểu | Mô tả |
 |---|---|---|
-| `id` / `task_id` | string | Public task ID (`task_` prefix) used for subsequent queries |
-| `object` | string | Object type (`video`) |
-| `model` | string | Model used |
-| `status` | string | Task status (`queued` right after submission) |
-| `progress` | integer | Progress percentage |
-| `created_at` | integer | Creation timestamp |
+| `id` / `task_id` | string | ID tác vụ công khai (tiền tố `task_`) dùng cho các truy vấn sau |
+| `object` | string | Loại đối tượng (`video`) |
+| `model` | string | Mô hình đã sử dụng |
+| `status` | string | Trạng thái tác vụ (`queued` ngay sau khi gửi) |
+| `progress` | integer | Phần trăm tiến độ |
+| `created_at` | integer | Dấu thời gian tạo |
 
-> `id` / `task_id` is generated by Uter and is not the upstream DashScope task_id. Always use the value returned here.
+> `id` / `task_id` do Uter tạo ra và không phải task_id DashScope phía thượng nguồn. Luôn sử dụng giá trị được trả về tại đây.
 
-## Get Video Task Status
+## Lấy trạng thái tác vụ video
 
 `GET` `/v1/video/generations/{task_id}`
 
-The response uses Uter's unified `{code, message, data}` envelope.
+Phản hồi sử dụng lớp bọc `{code, message, data}` thống nhất của Uter.
 
-### Request Parameters
+### Tham số yêu cầu
 
-| Name | In | Type | Required | Description |
+| Tên | Vị trí | Kiểu | Bắt buộc | Mô tả |
 |---|---|---|---|---|
-| `task_id` | path | string | Yes | Video task ID |
+| `task_id` | path | string | Có | ID tác vụ video |
 
-### Response
+### Phản hồi
 
-| Status | Description |
+| Trạng thái | Mô tả |
 |---|---|
-| `200` | Task status retrieved successfully |
-| `404` | Task not found |
+| `200` | Lấy trạng thái tác vụ thành công |
+| `404` | Không tìm thấy tác vụ |
 
-#### `200` Response Fields (`data`)
+#### Trường phản hồi `200` (`data`)
 
-| Field | Type | Description |
+| Trường | Kiểu | Mô tả |
 |---|---|---|
-| `data.task_id` | string | Public task ID |
-| `data.status` | string | Task status: `NOT_START` / `QUEUED` / `IN_PROGRESS` / `SUCCESS` / `FAILURE` |
-| `data.result_url` | string | Video result URL (non-empty only on `SUCCESS`; an upstream OSS signed link, typically valid for 24 hours) |
-| `data.fail_reason` | string | Failure reason (non-empty only on `FAILURE`) |
-| `data.quota` | int | Raw quota charged for this task |
-| `data.progress` | string | Progress string, e.g. `"30%"` / `"100%"` |
-| `data.submit_time` / `start_time` / `finish_time` | int64 | Submit / start / finish Unix timestamps (seconds) |
-| `data.properties.upstream_model_name` | string | Model name actually sent upstream |
-| `data.data` | object | Raw upstream DashScope response (`output.video_url`, `usage`, `request_id`) |
+| `data.task_id` | string | ID tác vụ công khai |
+| `data.status` | string | Trạng thái tác vụ: `NOT_START` / `QUEUED` / `IN_PROGRESS` / `SUCCESS` / `FAILURE` |
+| `data.result_url` | string | URL kết quả video (chỉ có giá trị khi `SUCCESS`; liên kết chữ ký OSS phía thượng nguồn, thường hợp lệ 24 giờ) |
+| `data.fail_reason` | string | Lý do thất bại (chỉ có giá trị khi `FAILURE`) |
+| `data.quota` | int | Hạn mức thô bị tính phí cho tác vụ này |
+| `data.progress` | string | Chuỗi tiến độ, ví dụ `"30%"` / `"100%"` |
+| `data.submit_time` / `start_time` / `finish_time` | int64 | Dấu thời gian Unix gửi / bắt đầu / kết thúc (giây) |
+| `data.properties.upstream_model_name` | string | Tên mô hình thực tế đã gửi lên thượng nguồn |
+| `data.data` | object | Phản hồi DashScope thô phía thượng nguồn (`output.video_url`, `usage`, `request_id`) |
 
-#### Status Enum
+#### Enum trạng thái
 
-| Status | Upstream status | Description |
+| Trạng thái | Trạng thái thượng nguồn | Mô tả |
 |---|---|---|
-| `NOT_START` | `PENDING` | Created, not yet processing |
-| `QUEUED` | `PENDING` | Queued upstream |
-| `IN_PROGRESS` | `RUNNING` | Generating |
-| `SUCCESS` | `SUCCEEDED` | Completed; `result_url` holds the video |
-| `FAILURE` | `FAILED` / `CANCELED` / `UNKNOWN` | Failed; `fail_reason` explains why |
+| `NOT_START` | `PENDING` | Đã tạo, chưa xử lý |
+| `QUEUED` | `PENDING` | Đang xếp hàng ở thượng nguồn |
+| `IN_PROGRESS` | `RUNNING` | Đang tạo |
+| `SUCCESS` | `SUCCEEDED` | Hoàn tất; `result_url` chứa video |
+| `FAILURE` | `FAILED` / `CANCELED` / `UNKNOWN` | Thất bại; `fail_reason` giải thích lý do |
 
-## Specific Parameters (`metadata`)
+## Tham số riêng (`metadata`)
 
-Pass the following through the request body's `metadata` object; Uter forwards them to upstream DashScope.
+Truyền các mục sau qua object `metadata` trong body yêu cầu; Uter chuyển tiếp chúng tới DashScope phía thượng nguồn.
 
-### Video Control Parameters
+### Tham số điều khiển video
 
-| Field | Type | Applies to | Description | Default |
+| Trường | Kiểu | Áp dụng cho | Mô tả | Mặc định |
 |---|---|---|---|---|
-| `ratio` | string | t2v / r2v | Aspect ratio: `16:9` / `9:16` / `1:1` / `4:3` / `3:4` | `16:9` |
-| `watermark` | bool | All | Whether to add a watermark (bottom-right "Happy Horse" text) | `true` |
-| `seed` | int | All | Random seed, `0`–`2147483647`; auto-generated when omitted | — |
-| `audio_setting` | string | video-edit | Audio control: `auto` (model-controlled) / `origin` (keep original audio) | `auto` |
+| `ratio` | string | t2v / r2v | Tỷ lệ khung hình: `16:9` / `9:16` / `1:1` / `4:3` / `3:4` | `16:9` |
+| `watermark` | bool | Tất cả | Có thêm watermark hay không (chữ «Happy Horse» ở góc dưới bên phải) | `true` |
+| `seed` | int | Tất cả | Hạt giống ngẫu nhiên, `0`–`2147483647`; tự động sinh nếu bị bỏ qua | — |
+| `audio_setting` | string | video-edit | Điều khiển âm thanh: `auto` (do mô hình kiểm soát) / `origin` (giữ nguyên âm thanh gốc) | `auto` |
 
-> i2v does not support `ratio`; the aspect ratio follows the input first-frame image.
+> i2v không hỗ trợ `ratio`; tỷ lệ khung hình theo ảnh khung hình đầu đầu vào.
 
-### Multi-Media Input (`metadata.input.media`)
+### Đầu vào đa phương tiện (`metadata.input.media`)
 
-r2v and video-edit pass media via the `metadata.input.media` array:
+r2v và video-edit truyền media qua mảng `metadata.input.media`:
 
-| `type` | Purpose | Count limit |
+| `type` | Vai trò | Giới hạn số lượng |
 |---|---|---|
-| `reference_image` | Reference image (supported by r2v and video-edit) | r2v: 1–9; video-edit: 0–5 |
-| `video` | Video to edit (video-edit only) | Exactly 1 |
-| `first_frame` | First-frame image (i2v only; may also use top-level `input_reference`) | Exactly 1 |
+| `reference_image` | Ảnh tham chiếu (r2v và video-edit hỗ trợ) | r2v: 1–9; video-edit: 0–5 |
+| `video` | Video cần chỉnh sửa (chỉ video-edit) | Chính xác 1 |
+| `first_frame` | Ảnh khung hình đầu (chỉ i2v; cũng có thể dùng `input_reference` ở cấp cao nhất) | Chính xác 1 |
 
-For r2v, reference images by array order in the prompt using `[Image 1]`, `[Image 2]`.
+Với r2v, tham chiếu ảnh theo thứ tự trong mảng bằng `[Image 1]`, `[Image 2]` trong prompt.
 
-### Media Constraints
+### Ràng buộc media
 
-| Type | Format | Resolution | Size | Other limits |
+| Loại | Định dạng | Độ phân giải | Dung lượng | Ràng buộc khác |
 |---|---|---|---|---|
-| Image (i2v first frame) | JPEG / JPG / PNG / WEBP | Width & height ≥ 300 px | ≤ 10 MB | Aspect ratio 1:2.5 – 2.5:1 |
-| Image (r2v reference) | JPEG / JPG / PNG / WEBP | Short side ≥ 400 px | ≤ 10 MB | Use sharp images |
-| Image (video-edit reference) | JPEG / JPG / PNG / WEBP | Width & height ≥ 300 px | ≤ 10 MB | Aspect ratio 1:2.5 – 2.5:1 |
-| Video (video-edit input) | MP4 / MOV (H.264) | Long side ≤ 2160, short side ≥ 320 | ≤ 100 MB | 3–60 s, >8 fps, ratio 1:2.5 – 2.5:1 |
+| Ảnh (khung hình đầu i2v) | JPEG / JPG / PNG / WEBP | Chiều rộng và chiều cao ≥ 300 px | ≤ 10 MB | Tỷ lệ khung hình 1:2,5 – 2,5:1 |
+| Ảnh (tham chiếu r2v) | JPEG / JPG / PNG / WEBP | Cạnh ngắn ≥ 400 px | ≤ 10 MB | Nên dùng ảnh sắc nét |
+| Ảnh (tham chiếu video-edit) | JPEG / JPG / PNG / WEBP | Chiều rộng và chiều cao ≥ 300 px | ≤ 10 MB | Tỷ lệ khung hình 1:2,5 – 2,5:1 |
+| Video (đầu vào video-edit) | MP4 / MOV (H.264) | Cạnh dài ≤ 2160, cạnh ngắn ≥ 320 | ≤ 100 MB | 3–60 giây, >8 fps, tỷ lệ 1:2,5 – 2,5:1 |
 
-> video-edit output length: input ≤ 15s yields the same length; input > 15s is truncated to the first 15s.
+> Độ dài đầu ra video-edit: đầu vào ≤ 15 giây cho độ dài tương ứng; đầu vào > 15 giây bị cắt còn 15 giây đầu.
 
-## OpenAI-Compatible Endpoint
+## Endpoint tương thích OpenAI
 
-Besides `/v1/video/generations`, an OpenAI-style `/v1/videos` endpoint is available; the two are fully equivalent (same backend task).
+Ngoài `/v1/video/generations`, còn có endpoint `/v1/videos` theo phong cách OpenAI; hai endpoint hoàn toàn tương đương (cùng một tác vụ backend).
 
-- Submit: `POST` `/v1/videos` (identical body fields)
-- Query: `GET` `/v1/videos/{task_id}` (returns the flat OpenAI format)
+- Gửi: `POST` `/v1/videos` (các trường body giống hệt)
+- Truy vấn: `GET` `/v1/videos/{task_id}` (trả về định dạng phẳng của OpenAI)
 
-| OpenAI status | Unified status |
+| Trạng thái OpenAI | Trạng thái thống nhất |
 |---|---|
 | `queued` | `NOT_START` / `QUEUED` |
 | `in_progress` | `IN_PROGRESS` |
 | `completed` | `SUCCESS` |
 | `failed` | `FAILURE` |
 
-## Full Example
+## Ví dụ đầy đủ
 
 ```bash
 # Step 1: submit the task
@@ -174,13 +174,13 @@ curl https://uter.ai/v1/video/generations/task_xxx \
 # Step 3: once data.status == "SUCCESS", download from data.result_url
 ```
 
-## Status Codes and Errors
+## Mã trạng thái và lỗi
 
-| Case | Description |
+| Trường hợp | Mô tả |
 |---|---|
-| `400` | Parameter error (missing `prompt`, unknown model, …); rejected before submission, no charge |
-| `401` / `403` | API key invalid / not allowed to access this model (check the token model whitelist) |
-| `402` | Insufficient balance (`insufficient user quota`); top up in the Uter console |
-| Task `FAILURE` | Upstream generation failed, see `data.fail_reason`; Uter refunds automatically and the refund appears in the logs |
+| `400` | Lỗi tham số (thiếu `prompt`, mô hình không xác định, …); bị từ chối trước khi gửi, không tính phí |
+| `401` / `403` | API key không hợp lệ / không được phép truy cập mô hình này (kiểm tra danh sách mô hình được phép của token) |
+| `402` | Số dư không đủ (`insufficient user quota`); nạp thêm trong bảng điều khiển Uter |
+| Tác vụ `FAILURE` | Tạo video phía thượng nguồn thất bại, xem `data.fail_reason`; Uter tự động hoàn tiền và khoản hoàn hiện trong nhật ký |
 
-Common `FAILURE` causes: content moderation rejection (adjust the prompt), missing `input_reference` for i2v, zero reference images for r2v, missing video for video-edit, unreachable media URL, or media that violates the constraints above.
+Các nguyên nhân thường gặp của `FAILURE`: bị kiểm duyệt nội dung từ chối (điều chỉnh prompt), thiếu `input_reference` cho i2v, không có ảnh tham chiếu cho r2v, thiếu video cho video-edit, URL media không truy cập được, hoặc media vi phạm các ràng buộc nêu trên.
