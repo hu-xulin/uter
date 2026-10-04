@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "github.com/Uter-AI/Uter/docs/plugin-api/v1.schema.json",
-  "title": "uter Task Plugin v1 manifest",
+  "$id": "github.com/Uter-AI/Uter/docs-dev/plugin-api/v1.schema.json",
+  "title": "Uter Task Plugin v1 manifest",
   "type": "object",
   "additionalProperties": false,
   "required": ["apiVersion", "key", "name", "version", "author", "models", "fetchMode"],
