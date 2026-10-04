@@ -71,22 +71,22 @@
 
 <p align="center">
   <a href="https://www.cherry-ai.com/" target="_blank">
-    <img src="./docs/images/cherry-studio.png" alt="Cherry Studio" height="80" />
+    <img src="./docs-dev/images/cherry-studio.png" alt="Cherry Studio" height="80" />
   </a><!--
   --><a href="https://github.com/iOfficeAI/AionUi/" target="_blank">
-    <img src="./docs/images/aionui.png" alt="Aion UI" height="80" />
+    <img src="./docs-dev/images/aionui.png" alt="Aion UI" height="80" />
   </a><!--
   --><a href="https://bda.pku.edu.cn/" target="_blank">
-    <img src="./docs/images/pku.png" alt="Université de Pékin" height="80" />
+    <img src="./docs-dev/images/pku.png" alt="Université de Pékin" height="80" />
   </a><!--
   --><a href="https://www.compshare.cn/?ytag=GPU_yy_gh_Uter" target="_blank">
-    <img src="./docs/images/ucloud.png" alt="UCloud" height="80" />
+    <img src="./docs-dev/images/ucloud.png" alt="UCloud" height="80" />
   </a><!--
   --><a href="https://www.aliyun.com/" target="_blank">
-    <img src="./docs/images/aliyun.png" alt="Alibaba Cloud" height="80" />
+    <img src="./docs-dev/images/aliyun.png" alt="Alibaba Cloud" height="80" />
   </a><!--
   --><a href="https://io.net/" target="_blank">
-    <img src="./docs/images/io-net.png" alt="IO.NET" height="80" />
+    <img src="./docs-dev/images/io-net.png" alt="IO.NET" height="80" />
   </a>
 </p>
 
@@ -397,7 +397,7 @@ docker run --name uter -d --restart always \
 2. Recherchez **Uter** dans le magasin d'applications
 3. Installation en un clic
 
-📖 [Tutoriel avec des images](./docs/BT.md)
+📖 [Tutoriel avec des images](./docs-dev/BT.md)
 
 </details>
 
@@ -417,7 +417,7 @@ La base de données fait autorité pour les Sessions de connexion et pour les li
 
 Réduire `SYNC_FREQUENCY` raccourcit la fenêtre d’obsolescence avec des Redis indépendants, mais ajoute une lecture de Session par clé primaire, par SID actif, par nœud et par TTL. Ces garanties donnent une obsolescence bornée à l’authentification Session ; les limites et les autres caches du plan de contrôle adossés à Redis restent dépendants de la topologie.
 
-Consultez [Authentification utilisateur et sessions de connexion](./docs/authentication.md) pour les contrats de token, de vérification Origin et de PAT.
+Consultez [Authentification utilisateur et sessions de connexion](./docs-dev/authentication.md) pour les contrats de token, de vérification Origin et de PAT.
 
 ### 🔄 Nouvelle tentative de canal et cache
 

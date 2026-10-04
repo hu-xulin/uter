@@ -1148,7 +1148,7 @@ func decodeMeta(value any) (Meta, error) {
 }
 
 // ValidateV1Meta applies the metadata constraints published in
-// docs/plugin-api/v1.schema.json to administrator uploads.
+// docs-dev/plugin-api/v1.schema.json to administrator uploads.
 func ValidateV1Meta(meta Meta) error {
 	meta = cloneMeta(meta)
 	return normalizeV1Meta(&meta)
