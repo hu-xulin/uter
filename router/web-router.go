@@ -180,6 +180,14 @@ func SetWebRouter(router *gin.Engine, assets WebAssets, pluginDispatcher gin.Han
 		// remaining gzip stream as text — the whole SPA shell comes out as
 		// mojibake. Keep gzip registered exactly once, in `router.Use`.
 		middleware.AccessTokenAudit(),
+		// 发件人头像（BIMI）SVG 需以 `Access-Control-Allow-Origin: *` 对外提供，
+		// 供 Gmail/Apple Mail 等服务商远程拉取并展示品牌头像。
+		func(c *gin.Context) {
+			if c.Request.URL.Path == "/uter-bimi.svg" {
+				c.Header("Access-Control-Allow-Origin", "*")
+			}
+			c.Next()
+		},
 		// 先把请求交给静态文件系统，命中真实文件即返回，**不经过**下面的
 		// GlobalWebRateLimit。
 		//
