@@ -23,6 +23,7 @@ import {
   applyAuthRotation,
   clearAuthentication,
   getFreshAuthHeaders,
+  isAuthTeardownInProgress,
   refreshAuthentication,
 } from '@/lib/auth-session'
 import { handleServerError } from '@/lib/handle-server-error'
@@ -119,6 +120,8 @@ export function resetSessionExpiredNotice(): void {
 
 function notifySessionExpired(error: unknown, skipErrorHandler?: boolean) {
   if (skipErrorHandler) return
+  // 退出登录/会话被注销的过渡期内，不提示会话过期，避免与"退出登录"提示冲突。
+  if (isAuthTeardownInProgress()) return
   if (!shouldNotifySessionExpired()) return
   handleServerError({
     message: t('Session expired!'),

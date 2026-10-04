@@ -18,6 +18,7 @@ For commercial licensing, please contact support@Uter.ai.com
 */
 import { toast } from 'sonner'
 
+import { isAuthTeardownInProgress } from './auth-session'
 import {
   getServerErrorMessage,
   getServerErrorSources,
@@ -36,6 +37,9 @@ export function handleServerError(
   fallbackMessage?: string,
   presentation?: { title: string; description?: string }
 ): void {
+  // 退出登录/会话被注销的过渡期内，静默所有服务器错误提示，
+  // 避免"无权XXX"之类的迟到错误盖过"退出登录"提示。
+  if (isAuthTeardownInProgress()) return
   if (isServerErrorCancelled(error)) return
   const sources = getServerErrorSources(error)
   const reported = sources.some((source) => reportedErrors.has(source))
