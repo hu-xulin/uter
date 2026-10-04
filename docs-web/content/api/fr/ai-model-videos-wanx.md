@@ -1,163 +1,163 @@
-# Wanx Format
+# Format de l'API Wanx
 
-Wan 2.7 video generation: call the full Wan 2.7 model family through an asynchronous task API, supporting text-to-video, image-to-video, reference-to-video and video editing, with 1080P output, videos up to 15 seconds, multi-shot narrative and native audio synchronisation.
+Génération vidéo Wan 2.7 : appelez toute la famille de modèles Wan 2.7 via une API de tâches asynchrone, avec prise en charge de la génération texte vers vidéo, image vers vidéo, référence vers vidéo et du montage vidéo, avec sortie 1080P, vidéos jusqu'à 15 secondes, narration multi-coups et synchronisation audio native.
 
-## Supported Models
+## Modèles pris en charge
 
-All four models share a single endpoint, `/v1/video/generations`, and are distinguished only by the `model` field; the response shape is identical.
+Les quatre modèles partagent un même point de terminaison, `/v1/video/generations`, et ne se distinguent que par le champ `model` ; la forme de la réponse est identique.
 
-| Model | Capability | Required media input | Description |
+| Modèle | Capacité | Entrée média requise | Description |
 |---|---|---|---|
-| `wan2.7-t2v` | Text-to-video | — | Generate video from text; supports multi-shot narrative and audio sync |
-| `wan2.7-i2v` | Image-to-video | 1 first-frame image | Animate from a first-frame image following the prompt |
-| `wan2.7-r2v` | Reference-to-video | 1–9 reference images | Multi-image reference preserving subject consistency; refer to images as `[Image N]` |
-| `wan2.7-videoedit` | Video editing | 1 video + 0–3 reference images | Style transfer, element replacement and local edits via text instructions |
+| `wan2.7-t2v` | Texte vers vidéo | — | Génère une vidéo à partir de texte ; prend en charge la narration multi-coups et la synchronisation audio |
+| `wan2.7-i2v` | Image vers vidéo | 1 image de première image | Anime à partir d'une image de première image en suivant le prompt |
+| `wan2.7-r2v` | Référence vers vidéo | 1–9 images de référence | Référence multi-images préservant la cohérence du sujet ; référencez les images via `[Image N]` |
+| `wan2.7-videoedit` | Montage vidéo | 1 vidéo + 0–3 images de référence | Transfert de style, remplacement d'éléments et retouches locales via des instructions textuelles |
 
-## Create Video
+## Créer une vidéo
 
 `POST` `/v1/video/generations`
 
-### Request Headers
+### En-têtes de requête
 
-| Header | Required | Description |
+| En-tête | Requis | Description |
 |---|---|---|
-| `Authorization` | Yes | `Bearer sk-your-api-key` |
-| `Content-Type` | Yes | `application/json` |
+| `Authorization` | Oui | `Bearer sk-your-api-key` |
+| `Content-Type` | Oui | `application/json` |
 
-### Request Body (`application/json`)
+### Corps de la requête (`application/json`)
 
-| Field | Type | Required | Description |
+| Champ | Type | Requis | Description |
 |---|---|---|---|
-| `model` | string | Yes | Wan 2.7 model name, see the table above |
-| `prompt` | string | Yes | Text prompt, up to 5000 characters, Chinese and English supported |
-| `resolution` | string | No | Resolution tier: `720P` / `1080P`, default `720P`. **Recommended**; matches the Alibaba Cloud official field name |
-| `size` | string | No | Legacy field name. When both are sent, `resolution` wins; when only `size` is sent its value is used as the resolution. New integrations should use `resolution` |
-| `duration` | int | No | Length in seconds: `2`–`15` for t2v/i2v, default `5`; `2`–`10` for r2v with a reference video; ignored by `videoedit` (follows the input video, max 15s) |
-| `input_reference` | string | No | i2v only: public URL of the first-frame image |
-| `images` | array | No | videoedit only: array of media URLs; the 1st element is the video to edit (MP4/MOV), the rest are optional reference images (max 3) |
-| `metadata` | object | No | Wan 2.7-specific parameters container, see below |
+| `model` | string | Oui | Nom du modèle Wan 2.7, voir le tableau ci-dessus |
+| `prompt` | string | Oui | Prompt textuel, jusqu'à 5000 caractères, chinois et anglais pris en charge |
+| `resolution` | string | Non | Palier de résolution : `720P` / `1080P`, `720P` par défaut. **Recommandé** ; correspond au nom de champ officiel Alibaba Cloud |
+| `size` | string | Non | Nom de champ hérité. Lorsque les deux sont envoyés, `resolution` l'emporte ; lorsque seul `size` est envoyé, sa valeur est utilisée comme résolution. Les nouvelles intégrations doivent utiliser `resolution` |
+| `duration` | int | Non | Durée en secondes : `2`–`15` pour t2v/i2v, `5` par défaut ; `2`–`10` pour r2v avec une vidéo de référence ; ignoré pour `videoedit` (suit la vidéo d'entrée, 15 s max.) |
+| `input_reference` | string | Non | Uniquement i2v : URL publique de l'image de première image |
+| `images` | array | Non | Uniquement videoedit : tableau d'URL médias ; le 1er élément est la vidéo à monter (MP4/MOV), les restants sont des images de référence facultatives (3 max.) |
+| `metadata` | object | Non | Conteneur des paramètres propres à Wan 2.7, voir ci-dessous |
 
-> The `images` field is in a release transition period: before the release, pass media via the `metadata.input.media` array; after it, the system infers media types from URL extensions and `images` can be used directly.
+> Le champ `images` est en période de transition : avant la publication, transmettez les médias via le tableau `metadata.input.media` ; après, le système déduit les types de médias à partir des extensions d'URL et `images` peut être utilisé directement.
 
-### Response
+### Réponse
 
-| Status | Description |
+| Statut | Description |
 |---|---|
-| `200` | Video task created successfully |
-| `400` | Invalid request parameters |
+| `200` | Tâche vidéo créée avec succès |
+| `400` | Paramètres de requête invalides |
 
-#### `200` Response Fields
+#### Champs de la réponse `200`
 
-| Field | Type | Description |
+| Champ | Type | Description |
 |---|---|---|
-| `id` / `task_id` | string | Public task ID (`task_` prefix) used for subsequent queries |
-| `object` | string | Object type (`video`) |
-| `model` | string | Model used |
-| `status` | string | Task status (`queued` right after submission) |
-| `progress` | integer | Progress percentage |
-| `created_at` | integer | Creation timestamp |
+| `id` / `task_id` | string | Identifiant public de tâche (préfixe `task_`) utilisé pour les requêtes ultérieures |
+| `object` | string | Type d'objet (`video`) |
+| `model` | string | Modèle utilisé |
+| `status` | string | Statut de la tâche (`queued` juste après la soumission) |
+| `progress` | integer | Pourcentage de progression |
+| `created_at` | integer | Horodatage de création |
 
-> `id` / `task_id` is generated by Uter and is not the upstream DashScope task_id. Always use the value returned here.
+> `id` / `task_id` est généré par Uter et n'est pas le task_id DashScope en amont. Utilisez toujours la valeur renvoyée ici.
 
-## Get Video Task Status
+## Obtenir le statut de la tâche vidéo
 
 `GET` `/v1/video/generations/{task_id}`
 
-The response uses Uter's unified `{code, message, data}` envelope.
+La réponse utilise l'enveloppe unifiée `{code, message, data}` d'Uter.
 
-### Request Parameters
+### Paramètres de requête
 
-| Name | In | Type | Required | Description |
+| Nom | Emplacement | Type | Requis | Description |
 |---|---|---|---|---|
-| `task_id` | path | string | Yes | Video task ID |
+| `task_id` | path | string | Oui | Identifiant de la tâche vidéo |
 
-### Response
+### Réponse
 
-| Status | Description |
+| Statut | Description |
 |---|---|
-| `200` | Task status retrieved successfully |
-| `404` | Task not found |
+| `200` | Statut de la tâche récupéré avec succès |
+| `404` | Tâche introuvable |
 
-#### `200` Response Fields (`data`)
+#### Champs de la réponse `200` (`data`)
 
-| Field | Type | Description |
+| Champ | Type | Description |
 |---|---|---|
-| `data.task_id` | string | Public task ID |
-| `data.status` | string | Task status: `NOT_START` / `QUEUED` / `IN_PROGRESS` / `SUCCESS` / `FAILURE` |
-| `data.result_url` | string | Video result URL (non-empty only on `SUCCESS`; upstream OSS signed link valid for 24 hours) |
-| `data.fail_reason` | string | Failure reason (non-empty only on `FAILURE`) |
-| `data.quota` | int | Raw quota charged for this task |
-| `data.progress` | string | Progress string, e.g. `"40%"` / `"100%"` |
-| `data.properties.upstream_model_name` | string | Model name actually sent upstream |
-| `data.data` | object | Raw upstream DashScope response (`output.video_url`, `usage`, `request_id`) |
+| `data.task_id` | string | Identifiant public de tâche |
+| `data.status` | string | Statut de la tâche : `NOT_START` / `QUEUED` / `IN_PROGRESS` / `SUCCESS` / `FAILURE` |
+| `data.result_url` | string | URL du résultat vidéo (non vide uniquement sur `SUCCESS` ; lien signé OSS en amont valable 24 heures) |
+| `data.fail_reason` | string | Raison de l'échec (non vide uniquement sur `FAILURE`) |
+| `data.quota` | int | Quota brut facturé pour cette tâche |
+| `data.progress` | string | Chaîne de progression, par ex. `"40%"` / `"100%"` |
+| `data.properties.upstream_model_name` | string | Nom de modèle effectivement envoyé en amont |
+| `data.data` | object | Réponse DashScope brute en amont (`output.video_url`, `usage`, `request_id`) |
 
-#### Status Enum
+#### Énumération des statuts
 
-| Status | Upstream status | Description |
+| Statut | Statut en amont | Description |
 |---|---|---|
-| `NOT_START` | `PENDING` | Created, not yet processing |
-| `QUEUED` | `PENDING` | Queued upstream |
-| `IN_PROGRESS` | `RUNNING` | Generating |
-| `SUCCESS` | `SUCCEEDED` | Completed; `result_url` holds the video |
-| `FAILURE` | `FAILED` / `CANCELED` / `UNKNOWN` | Failed; `fail_reason` explains why |
+| `NOT_START` | `PENDING` | Créée, pas encore traitée |
+| `QUEUED` | `PENDING` | File d'attente en amont |
+| `IN_PROGRESS` | `RUNNING` | Génération en cours |
+| `SUCCESS` | `SUCCEEDED` | Terminée ; `result_url` contient la vidéo |
+| `FAILURE` | `FAILED` / `CANCELED` / `UNKNOWN` | Échec ; `fail_reason` explique pourquoi |
 
-## Specific Parameters (`metadata`)
+## Paramètres spécifiques (`metadata`)
 
-Pass the following through the request body's `metadata` object; Uter forwards them to upstream DashScope.
+Transmettez les éléments suivants via l'objet `metadata` du corps de la requête ; Uter les transmet à DashScope en amont.
 
-### General Control Parameters
+### Paramètres de contrôle généraux
 
-| Field | Type | Applies to | Description | Default |
+| Champ | Type | S'applique à | Description | Par défaut |
 |---|---|---|---|---|
-| `ratio` | string | t2v / r2v | Aspect ratio: `16:9` / `9:16` / `1:1` / `4:3` / `3:4` | `16:9` |
-| `seed` | int | All | Random seed, `0`–`2147483647`; auto-generated when omitted | — |
-| `negative_prompt` | string | All | Negative prompt, up to 500 characters | — |
+| `ratio` | string | t2v / r2v | Rapport d'aspect : `16:9` / `9:16` / `1:1` / `4:3` / `3:4` | `16:9` |
+| `seed` | int | Tous | Graine aléatoire, `0`–`2147483647` ; générée automatiquement si omise | — |
+| `negative_prompt` | string | Tous | Prompt négatif, jusqu'à 500 caractères | — |
 
-> i2v does not support `ratio`; the aspect ratio follows the input first-frame image.
+> i2v ne prend pas en charge `ratio` ; le rapport d'aspect suit l'image de première image en entrée.
 
-### Multi-Media Input (`metadata.input.media`)
+### Entrée multimédia (`metadata.input.media`)
 
-For r2v and videoedit, pass media through the `metadata.input.media` array:
+Pour r2v et videoedit, transmettez les médias via le tableau `metadata.input.media` :
 
-| `type` | Purpose | Count limit |
+| `type` | Finalité | Limite de nombre |
 |---|---|---|
-| `reference_image` | Reference image | r2v: 1–9; videoedit: 0–3 |
-| `video` | Video to edit (videoedit only) | Exactly 1 |
-| `first_frame` | First-frame image (i2v only; may also use top-level `input_reference`) | Exactly 1 |
+| `reference_image` | Image de référence | r2v : 1–9 ; videoedit : 0–3 |
+| `video` | Vidéo à monter (videoedit uniquement) | Exactement 1 |
+| `first_frame` | Image de première image (i2v uniquement ; peut aussi utiliser le `input_reference` de premier niveau) | Exactement 1 |
 
-For r2v, reference images by array order in the prompt using `[Image 1]`, `[Image 2]`.
+Pour r2v, référencez les images de référence par leur ordre dans le tableau via `[Image 1]`, `[Image 2]` dans le prompt.
 
-### Media Constraints
+### Contraintes médias
 
-| Type | Format | Resolution | Size | Other limits |
+| Type | Format | Résolution | Taille | Autres limites |
 |---|---|---|---|---|
-| Image (i2v first frame) | JPEG / JPG / PNG / WEBP | 240–8000 px | ≤ 10 MB | Aspect ratio 1:8 – 8:1 |
-| Image (r2v reference) | JPEG / JPG / PNG / WEBP | Short side ≥ 300 px | ≤ 10 MB | Use sharp images |
-| Image (videoedit reference) | JPEG / JPG / PNG / BMP / WEBP | 240–8000 px | ≤ 20 MB | Aspect ratio 1:8 – 8:1 |
-| Video (videoedit input) | MP4 / MOV (H.264) | 240–4096 px | ≤ 100 MB | 2–10 s, aspect ratio 1:8 – 8:1 |
+| Image (première image i2v) | JPEG / JPG / PNG / WEBP | 240–8000 px | ≤ 10 Mo | Rapport d'aspect 1:8 – 8:1 |
+| Image (référence r2v) | JPEG / JPG / PNG / WEBP | Petit côté ≥ 300 px | ≤ 10 Mo | Utilisez des images nettes |
+| Image (référence videoedit) | JPEG / JPG / PNG / BMP / WEBP | 240–8000 px | ≤ 20 Mo | Rapport d'aspect 1:8 – 8:1 |
+| Vidéo (entrée videoedit) | MP4 / MOV (H.264) | 240–4096 px | ≤ 100 Mo | 2–10 s, rapport d'aspect 1:8 – 8:1 |
 
-## OpenAI-Compatible Endpoint
+## Point de terminaison compatible OpenAI
 
-Besides `/v1/video/generations`, an OpenAI-style `/v1/videos` endpoint is available; the two are fully equivalent.
+En plus de `/v1/video/generations`, un point de terminaison `/v1/videos` de style OpenAI est disponible ; les deux sont entièrement équivalents.
 
-- Submit: `POST` `/v1/videos` (identical body fields)
-- Query: `GET` `/v1/videos/{task_id}` (returns the flat OpenAI format)
+- Soumission : `POST` `/v1/videos` (champs de corps identiques)
+- Requête : `GET` `/v1/videos/{task_id}` (renvoie le format plat OpenAI)
 
-| OpenAI status | Unified status |
+| Statut OpenAI | Statut unifié |
 |---|---|
 | `queued` | `NOT_START` / `QUEUED` |
 | `in_progress` | `IN_PROGRESS` |
 | `completed` | `SUCCESS` |
 | `failed` | `FAILURE` |
 
-## Billing
+## Facturation
 
-Wan 2.7 bills by **seconds × resolution factor**:
+Wan 2.7 facture selon **les secondes × le facteur de résolution** :
 
-| Resolution | Price | 5-second example |
+| Résolution | Prix | Exemple sur 5 secondes |
 |---|---|---|
-| `720P` | $0.10 / second | $0.50 |
-| `1080P` | $0.15 / second | $0.75 |
+| `720P` | 0,10 $ / seconde | 0,50 $ |
+| `1080P` | 0,15 $ / seconde | 0,75 $ |
 
 ```
 quota = modelPrice × QuotaPerUnit × groupRatio × seconds × resolutionRatio
@@ -168,9 +168,9 @@ groupRatio      = 1.0 (production default group)
 resolutionRatio = 720P → 1.0, 1080P → 1.5
 ```
 
-On `FAILURE`, Uter refunds automatically.
+Sur `FAILURE`, Uter rembourse automatiquement.
 
-## Full Example
+## Exemple complet
 
 ```bash
 # Step 1: submit the task
@@ -192,15 +192,15 @@ curl https://uter.ai/v1/video/generations/task_xxx \
 # Step 3: once data.status == "SUCCESS", download from data.result_url
 ```
 
-For videoedit, pass media via the `images` array: the 1st MP4/MOV is the video to edit and the remaining PNG/JPG/WEBP entries are reference images; `duration` is not required (it follows the input video).
+Pour videoedit, transmettez les médias via le tableau `images` : le 1er MP4/MOV est la vidéo à monter et les entrées PNG/JPG/WEBP restantes sont des images de référence ; `duration` n'est pas requis (il suit la vidéo d'entrée).
 
-## Status Codes and Errors
+## Codes d'état et erreurs
 
-| Case | Description |
+| Cas | Description |
 |---|---|
-| `400` | Parameter error (missing `prompt`, unknown model, empty `images` for videoedit, …); rejected before submission, no charge |
-| `401` / `403` | API key invalid / not allowed to access this model |
-| `402` | Insufficient balance (`insufficient user quota`); top up in the Uter console |
-| Task `FAILURE` | Upstream generation failed, see `fail_reason`; Uter refunds automatically |
+| `400` | Erreur de paramètre (`prompt` manquant, modèle inconnu, `images` vide pour videoedit, …) ; rejetée avant soumission, aucun débit |
+| `401` / `403` | Clé d'API invalide / non autorisée à accéder à ce modèle |
+| `402` | Solde insuffisant (`insufficient user quota`) ; rechargez dans la console Uter |
+| Tâche `FAILURE` | La génération en amont a échoué, voir `fail_reason` ; Uter rembourse automatiquement |
 
-Common `FAILURE` causes: `DataInspectionFailed` (upstream safety rejection — adjust the prompt or assets), missing `input_reference` for i2v, zero reference images for r2v, `images[0]` not being MP4/MOV for videoedit, unreachable media URL, or media that violates the constraints above.
+Causes courantes de `FAILURE` : `DataInspectionFailed` (rejet de sécurité en amont — ajustez le prompt ou les ressources), `input_reference` manquant pour i2v, zéro image de référence pour r2v, `images[0]` qui n'est pas en MP4/MOV pour videoedit, URL média injoignable, ou média ne respectant pas les contraintes ci-dessus.

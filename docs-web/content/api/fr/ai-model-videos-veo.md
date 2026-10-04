@@ -1,183 +1,183 @@
-# Google Veo Format
+# Format de l'API Google Veo
 
-Google Veo 3.1 video generation: call the full Veo 3.1 model family through an asynchronous task API, supporting text-to-video and image-to-video with optional synchronised audio (up to 4K output).
+Génération vidéo Google Veo 3.1 : appelez toute la famille de modèles Veo 3.1 via une API de tâches asynchrone, avec prise en charge de la génération texte vers vidéo et image vers vidéo, avec audio synchronisé facultatif (jusqu'à la sortie 4K).
 
-## Supported Models
+## Modèles pris en charge
 
-All three models share a single endpoint and are distinguished only by the `model` field. Every model supports text-to-video and image-to-video, with optional audio generation.
+Les trois modèles partagent un même point de terminaison et ne se distinguent que par le champ `model`. Chaque modèle prend en charge la génération texte vers vidéo et image vers vidéo, avec génération audio facultative.
 
-| Model ID | Version | Highlights | Best for |
+| Identifiant de modèle | Version | Points forts | Idéal pour |
 |---|---|---|---|
-| `veo-3.1-generate-001` | Veo 3.1 | Highest quality, 4K, native audio | High-quality creative and commercial work |
-| `veo-3.1-fast-generate-001` | Veo 3.1 Fast | Faster, balanced quality | Rapid iteration, batch generation |
-| `veo-3.1-lite-generate-001` | Veo 3.1 Lite | Fastest, lowest cost | Prototyping, cost-sensitive cases |
+| `veo-3.1-generate-001` | Veo 3.1 | Qualité la plus élevée, 4K, audio natif | Travaux créatifs et commerciaux de haute qualité |
+| `veo-3.1-fast-generate-001` | Veo 3.1 Fast | Plus rapide, qualité équilibrée | Itération rapide, génération par lots |
+| `veo-3.1-lite-generate-001` | Veo 3.1 Lite | Le plus rapide, coût le plus faible | Prototypage, cas sensibles au coût |
 
-## Create Video
+## Créer une vidéo
 
 `POST` `/v1/video/generations`
 
-### Request Headers
+### En-têtes de requête
 
-| Header | Required | Description |
+| En-tête | Requis | Description |
 |---|---|---|
-| `Authorization` | Yes | `Bearer sk-your-api-key` |
-| `Content-Type` | Yes | `application/json` |
+| `Authorization` | Oui | `Bearer sk-your-api-key` |
+| `Content-Type` | Oui | `application/json` |
 
-### Request Body (`application/json`)
+### Corps de la requête (`application/json`)
 
-| Field | Type | Required | Description |
+| Champ | Type | Requis | Description |
 |---|---|---|---|
-| `model` | string | Yes | Veo 3.1 model ID, see the table above |
-| `prompt` | string | Yes | Video prompt; Chinese and English supported, English recommended for best results |
-| `size` | string | No | Resolution: `720p` / `1080p` / `4000` (4K, only some models), default `1080p` |
-| `resolution` | string | No | Same as `size` (recommended, matches upstream; wins when both are set) |
-| `duration` | int | No | Length in seconds: `4` / `6` / `8`, default `8` |
-| `seconds` | string | No | String form of `duration` (for OpenAI Sora API compatibility) |
-| `aspect_ratio` | string | No | Aspect ratio: `16:9` / `9:16`, default `16:9` |
-| `generate_audio` | bool | No | Generate synchronised audio (speech, effects, ambience). **Default `true`**; set explicitly to `false` to save cost |
-| `negative_prompt` | string | No | Negative prompt describing what to avoid |
-| `image` | string | No | i2v first-frame image; HTTP(S) URL / data URI / raw base64 |
-| `images` | string[] | No | i2v first-frame array; only `images[0]` is used, and `image` wins if both are sent |
-| `last_frame_image` | string | No | Last-frame image (with `image` / `images[0]` → first+last-frame interpolation, Veo 3.1 exclusive). Same format as `image` |
-| `reference_images` | string[] | No | Asset reference images, up to 3; submitted upstream as `referenceType="asset"`. **Mutually exclusive with `image` / `last_frame_image`**, and only supported for `duration=8` |
-| `metadata` | object | No | Veo native parameters container, see "metadata Advanced Parameters" |
+| `model` | string | Oui | Identifiant de modèle Veo 3.1, voir le tableau ci-dessus |
+| `prompt` | string | Oui | Prompt vidéo ; chinois et anglais pris en charge, anglais recommandé pour les meilleurs résultats |
+| `size` | string | Non | Résolution : `720p` / `1080p` / `4000` (4K, certains modèles uniquement), `1080p` par défaut |
+| `resolution` | string | Non | Identique à `size` (recommandé, conforme à l'amont ; l'emporte lorsque les deux sont définis) |
+| `duration` | int | Non | Durée en secondes : `4` / `6` / `8`, `8` par défaut |
+| `seconds` | string | Non | Forme chaîne de `duration` (pour la compatibilité avec l'API OpenAI Sora) |
+| `aspect_ratio` | string | Non | Rapport d'aspect : `16:9` / `9:16`, `16:9` par défaut |
+| `generate_audio` | bool | Non | Générer un audio synchronisé (parole, effets, ambiance). **`true` par défaut** ; définissez explicitement `false` pour économiser |
+| `negative_prompt` | string | Non | Prompt négatif décrivant ce qu'il faut éviter |
+| `image` | string | Non | Image de première image i2v ; URL HTTP(S) / data URI / base64 brut |
+| `images` | string[] | Non | Tableau d'images de première image i2v ; seul `images[0]` est utilisé, et `image` l'emporte si les deux sont envoyés |
+| `last_frame_image` | string | Non | Image de dernière image (avec `image` / `images[0]` → interpolation première + dernière image, exclusif à Veo 3.1). Même format que `image` |
+| `reference_images` | string[] | Non | Images de référence, jusqu'à 3 ; envoyées en amont avec `referenceType="asset"`. **Mutuellement exclusif avec `image` / `last_frame_image`**, et pris en charge uniquement pour `duration=8` |
+| `metadata` | object | Non | Conteneur des paramètres natifs Veo, voir « Paramètres avancés metadata » |
 
-> Top-level snake_case fields such as `generate_audio` / `negative_prompt` / `aspect_ratio` are automatically mapped to upstream camelCase parameters. You may also place them inside `metadata` (snake_case or camelCase), which is equivalent to the top level.
+> Les champs snake_case de premier niveau tels que `generate_audio` / `negative_prompt` / `aspect_ratio` sont automatiquement mappés vers les paramètres camelCase en amont. Vous pouvez aussi les placer dans `metadata` (snake_case ou camelCase), ce qui équivaut au premier niveau.
 >
-> `generate_audio: true` significantly increases cost (roughly 2×). As the billing default is `true`, set `generate_audio: false` explicitly when audio is not needed.
+> `generate_audio: true` augmente considérablement le coût (environ ×2). Comme la valeur par défaut de facturation est `true`, définissez explicitement `generate_audio: false` lorsque l'audio n'est pas nécessaire.
 
-### Response
+### Réponse
 
-| Status | Description |
+| Statut | Description |
 |---|---|
-| `200` | Video task created successfully |
-| `400` | Invalid request parameters |
+| `200` | Tâche vidéo créée avec succès |
+| `400` | Paramètres de requête invalides |
 
-#### `200` Response Fields
+#### Champs de la réponse `200`
 
-| Field | Type | Description |
+| Champ | Type | Description |
 |---|---|---|
-| `id` / `task_id` | string | Public task ID (`task_` prefix) used for subsequent queries |
-| `object` | string | Object type (`video`) |
-| `model` | string | Model used |
-| `status` | string | Task status (`queued` right after submission) |
-| `progress` | integer | Progress percentage |
-| `created_at` | integer | Creation timestamp |
+| `id` / `task_id` | string | Identifiant public de tâche (préfixe `task_`) utilisé pour les requêtes ultérieures |
+| `object` | string | Type d'objet (`video`) |
+| `model` | string | Modèle utilisé |
+| `status` | string | Statut de la tâche (`queued` juste après la soumission) |
+| `progress` | integer | Pourcentage de progression |
+| `created_at` | integer | Horodatage de création |
 
-## Get Video Task Status
+## Obtenir le statut de la tâche vidéo
 
 `GET` `/v1/video/generations/{task_id}`
 
-The response uses Uter's unified `{code, message, data}` envelope.
+La réponse utilise l'enveloppe unifiée `{code, message, data}` d'Uter.
 
-### Request Parameters
+### Paramètres de requête
 
-| Name | In | Type | Required | Description |
+| Nom | Emplacement | Type | Requis | Description |
 |---|---|---|---|---|
-| `task_id` | path | string | Yes | Video task ID |
+| `task_id` | path | string | Oui | Identifiant de la tâche vidéo |
 
-### Response
+### Réponse
 
-| Status | Description |
+| Statut | Description |
 |---|---|
-| `200` | Task status retrieved successfully |
-| `404` | Task not found |
+| `200` | Statut de la tâche récupéré avec succès |
+| `404` | Tâche introuvable |
 
-#### `200` Response Fields (`data`)
+#### Champs de la réponse `200` (`data`)
 
-| Field | Type | Description |
+| Champ | Type | Description |
 |---|---|---|
-| `data.task_id` | string | Task ID |
-| `data.status` | string | Task status: `queued` / `processing` / `succeeded` / `failed` |
-| `data.error` | string / null | Failure reason; `null` on success |
-| `data.format` | string / null | Output format (e.g. `mp4`); `null` while processing or on failure |
-| `data.metadata` | object / null | Additional metadata |
-| `data.url` | string / null | Video download URL; `null` while processing or on failure (temporary signed link, valid 24 hours) |
+| `data.task_id` | string | Identifiant de tâche |
+| `data.status` | string | Statut de la tâche : `queued` / `processing` / `succeeded` / `failed` |
+| `data.error` | string / null | Raison de l'échec ; `null` en cas de succès |
+| `data.format` | string / null | Format de sortie (par ex. `mp4`) ; `null` pendant le traitement ou en cas d'échec |
+| `data.metadata` | object / null | Métadonnées supplémentaires |
+| `data.url` | string / null | URL de téléchargement de la vidéo ; `null` pendant le traitement ou en cas d'échec (lien signé temporaire, valable 24 heures) |
 
-#### Status Enum
+#### Énumération des statuts
 
-| Status | Description |
+| Statut | Description |
 |---|---|
-| `queued` | Submitted, awaiting processing |
-| `processing` | Generating |
-| `succeeded` | Completed; `data.url` holds the download address |
-| `failed` | Failed; `data.error` explains why |
+| `queued` | Soumise, en attente de traitement |
+| `processing` | Génération en cours |
+| `succeeded` | Terminée ; `data.url` contient l'adresse de téléchargement |
+| `failed` | Échec ; `data.error` explique pourquoi |
 
-## Image Input Formats
+## Formats d'entrée image
 
-`image` / `images[0]` accept the following three formats; Uter detects and converts them to the inline base64 that Veo expects:
+`image` / `images[0]` acceptent les trois formats suivants ; Uter les détecte et les convertit vers le base64 intégré qu'attend Veo :
 
-| Format | Example | Description |
+| Format | Exemple | Description |
 |---|---|---|
-| HTTP(S) URL | `https://example.com/foo.png` | Downloaded and base64-encoded by the backend; the URL must be publicly reachable and unexpired |
-| data URI | `data:image/png;base64,iVBOR...` | Inline data passed through directly; no network needed |
-| raw base64 | `iVBORw0KGgo...` (no prefix) | Bare base64; MIME type is sniffed automatically |
+| URL HTTP(S) | `https://example.com/foo.png` | Téléchargée et encodée en base64 par le backend ; l'URL doit être publiquement accessible et non expirée |
+| data URI | `data:image/png;base64,iVBOR...` | Données intégrées transmises directement ; aucun réseau requis |
+| base64 brut | `iVBORw0KGgo...` (sans préfixe) | Base64 nu ; le type MIME est détecté automatiquement |
 
-Limits: decoded size ≤ **20 MB**; URL download timeout **30 seconds**; parse failures (unreachable URL / too large / invalid base64) return `400 parse images[0] failed: ...` with **no charge**. Native `gs://` GCS URIs are not supported; use `https://storage.googleapis.com/...` instead.
+Limites : taille décodée ≤ **20 Mo** ; délai de téléchargement de l'URL **30 secondes** ; les échecs d'analyse (URL injoignable / trop volumineux / base64 invalide) renvoient `400 parse images[0] failed: ...` **sans facturation**. Les URI GCS natifs `gs://` ne sont pas pris en charge ; utilisez `https://storage.googleapis.com/...` à la place.
 
-## metadata Advanced Parameters
+## Paramètres avancés metadata
 
-`metadata` is a Veo-native parameter container for advanced options not present in the OpenAI style. All top-level fields may also be placed inside `metadata` (snake_case or camelCase).
+`metadata` est un conteneur de paramètres natif Veo pour les options avancées absentes du style OpenAI. Tous les champs de premier niveau peuvent aussi être placés dans `metadata` (snake_case ou camelCase).
 
-| Field | Type | Description |
+| Champ | Type | Description |
 |---|---|---|
-| `seed` | int | Random seed (recommended location) |
-| `personGeneration` / `person_generation` | string | Person generation policy: `allow_all` / `allow_adult` / `dont_allow` |
-| `storageUri` / `storage_uri` | string | Write the result directly to a GCS bucket path (vertex channel only; requires permissions) |
-| `compressionQuality` / `compression_quality` | string | Compression quality: `optimized` (default) / `lossless` |
-| `resizeMode` / `resize_mode` | string | i2v resize mode: `crop` / `fit` |
-| `sampleCount` / `sample_count` | int | Number of videos per request; **currently fixed at 1**, any value is overridden |
+| `seed` | int | Graine aléatoire (emplacement recommandé) |
+| `personGeneration` / `person_generation` | string | Politique de génération de personnes : `allow_all` / `allow_adult` / `dont_allow` |
+| `storageUri` / `storage_uri` | string | Écrire le résultat directement dans un chemin de bucket GCS (canal vertex uniquement ; nécessite des permissions) |
+| `compressionQuality` / `compression_quality` | string | Qualité de compression : `optimized` (par défaut) / `lossless` |
+| `resizeMode` / `resize_mode` | string | Mode de redimensionnement i2v : `crop` / `fit` |
+| `sampleCount` / `sample_count` | int | Nombre de vidéos par requête ; **actuellement fixé à 1**, toute valeur est ignorée |
 
-> Precedence: camelCase already in metadata > snake_case in metadata > top-level fields.
+> Priorité : camelCase déjà présent dans metadata > snake_case dans metadata > champs de premier niveau.
 
-## Model Comparison
+## Comparaison des modèles
 
-| Item | Veo 3.1 | Veo 3.1 Fast | Veo 3.1 Lite |
+| Élément | Veo 3.1 | Veo 3.1 Fast | Veo 3.1 Lite |
 |---|---|---|---|
-| **Model ID** | `veo-3.1-generate-001` | `veo-3.1-fast-generate-001` | `veo-3.1-lite-generate-001` |
-| **Quality** | Highest | Balanced | Basic |
-| **Speed (measured, 8s video)** | 90–130 s | 75–105 s | 50–80 s |
-| **Max resolution** | 4K | 1080p | 1080p |
-| **Audio support** | ✓ | ✓ | ✓ |
-| **Image-to-video** | ✓ | ✓ | ✓ |
+| **Identifiant de modèle** | `veo-3.1-generate-001` | `veo-3.1-fast-generate-001` | `veo-3.1-lite-generate-001` |
+| **Qualité** | La plus élevée | Équilibrée | Basique |
+| **Vitesse (mesurée, vidéo 8 s)** | 90–130 s | 75–105 s | 50–80 s |
+| **Résolution maximale** | 4K | 1080p | 1080p |
+| **Prise en charge audio** | ✓ | ✓ | ✓ |
+| **Image vers vidéo** | ✓ | ✓ | ✓ |
 
-## OpenAI-Compatible Endpoint
+## Point de terminaison compatible OpenAI
 
-Besides `/v1/video/generations`, an OpenAI-style `/v1/videos` endpoint is available; the two are fully equivalent.
+En plus de `/v1/video/generations`, un point de terminaison `/v1/videos` de style OpenAI est disponible ; les deux sont entièrement équivalents.
 
-- Submit: `POST` `/v1/videos` (identical body fields)
-- Query: `GET` `/v1/videos/{task_id}` (returns the flat OpenAI format)
+- Soumission : `POST` `/v1/videos` (champs de corps identiques)
+- Requête : `GET` `/v1/videos/{task_id}` (renvoie le format plat OpenAI)
 
-> The OpenAI-compatible query response does not include the video URL. To obtain the download address, use `/v1/video/generations/{task_id}` and read `data.url`.
+> La réponse de requête compatible OpenAI n'inclut pas l'URL de la vidéo. Pour obtenir l'adresse de téléchargement, utilisez `/v1/video/generations/{task_id}` et lisez `data.url`.
 
-## Billing
+## Facturation
 
 ```
 quota = modelPrice × QuotaPerUnit × groupRatio × pricingRatio × seconds
 
 QuotaPerUnit = 500,000
-groupRatio   = 1.0 (production default group)
+groupRatio   = 1.0 (groupe par défaut en production)
 ```
 
-### Video only (`generate_audio: false`)
+### Vidéo seule (`generate_audio: false`)
 
-| Model | 720p | 1080p | 4K |
+| Modèle | 720p | 1080p | 4K |
 |---|---|---|---|
-| `veo-3.1-generate-001` | $0.20 / s | $0.20 / s | $0.40 / s |
-| `veo-3.1-fast-generate-001` | $0.08 / s | $0.10 / s | $0.25 / s |
-| `veo-3.1-lite-generate-001` | $0.03 / s | $0.05 / s | — |
+| `veo-3.1-generate-001` | 0,20 $ / s | 0,20 $ / s | 0,40 $ / s |
+| `veo-3.1-fast-generate-001` | 0,08 $ / s | 0,10 $ / s | 0,25 $ / s |
+| `veo-3.1-lite-generate-001` | 0,03 $ / s | 0,05 $ / s | — |
 
-### Video + audio (`generate_audio: true`)
+### Vidéo + audio (`generate_audio: true`)
 
-| Model | 720p | 1080p | 4K |
+| Modèle | 720p | 1080p | 4K |
 |---|---|---|---|
-| `veo-3.1-generate-001` | $0.40 / s | $0.40 / s | $0.60 / s |
-| `veo-3.1-fast-generate-001` | $0.10 / s | $0.12 / s | $0.30 / s |
-| `veo-3.1-lite-generate-001` | $0.05 / s | $0.08 / s | — |
+| `veo-3.1-generate-001` | 0,40 $ / s | 0,40 $ / s | 0,60 $ / s |
+| `veo-3.1-fast-generate-001` | 0,10 $ / s | 0,12 $ / s | 0,30 $ / s |
+| `veo-3.1-lite-generate-001` | 0,05 $ / s | 0,08 $ / s | — |
 
-On `failed`, Uter refunds automatically.
+Sur `failed`, Uter rembourse automatiquement.
 
-## Full Example
+## Exemple complet
 
 ```bash
 # Text-to-video
@@ -200,7 +200,7 @@ curl https://uter.ai/v1/video/generations/task_xxx \
 curl -o output.mp4 "https://uter.ai/v1/videos/task_xxx/content"
 ```
 
-First+last-frame interpolation (Veo 3.1 exclusive):
+Interpolation première + dernière image (exclusif à Veo 3.1) :
 
 ```bash
 curl -X POST https://uter.ai/v1/video/generations \
@@ -217,17 +217,17 @@ curl -X POST https://uter.ai/v1/video/generations \
   }'
 ```
 
-- `reference_images` cannot be combined with `image` / `images` / `last_frame_image`, otherwise `400 reference_images is mutually exclusive ...` is returned.
-- `reference_images` accepts at most 3 entries; more returns `400 reference_images supports at most 3 entries`.
-- `reference_images` is only supported for `duration=8`.
+- `reference_images` ne peut pas être combiné avec `image` / `images` / `last_frame_image`, sinon `400 reference_images is mutually exclusive ...` est renvoyé.
+- `reference_images` accepte au plus 3 entrées ; au-delà, `400 reference_images supports at most 3 entries` est renvoyé.
+- `reference_images` n'est pris en charge que pour `duration=8`.
 
-## Status Codes and Errors
+## Codes d'état et erreurs
 
-| Status | Reason | Action |
+| Statut | Raison | Action |
 |---|---|---|
-| `400` | Parameter error (missing `prompt`, invalid `duration`, or image parse failure `parse images[0] failed: ...`) | Check the request body fields |
-| `401` | API key invalid or expired | Check the `Authorization` header |
-| `403` | API key not allowed to access this model | Check the token model whitelist |
-| `402` | Insufficient balance | Top up in the Uter console |
+| `400` | Erreur de paramètre (`prompt` manquant, `duration` invalide, ou échec d'analyse d'image `parse images[0] failed: ...`) | Vérifiez les champs du corps de la requête |
+| `401` | Clé d'API invalide ou expirée | Vérifiez l'en-tête `Authorization` |
+| `403` | Clé d'API non autorisée à accéder à ce modèle | Vérifiez la liste blanche de modèles du jeton |
+| `402` | Solde insuffisant | Rechargez dans la console Uter |
 
-Common `failed` causes: content safety rejection (adjust the prompt; add `negative_prompt`), unreachable image URL, `duration` out of range, or 4K requested on the Lite model.
+Causes courantes de `failed` : rejet par la sécurité du contenu (ajustez le prompt ; ajoutez `negative_prompt`), URL d'image injoignable, `duration` hors plage, ou 4K demandé sur le modèle Lite.

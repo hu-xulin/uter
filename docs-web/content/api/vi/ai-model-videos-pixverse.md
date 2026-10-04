@@ -1,167 +1,167 @@
-# PixVerse Format
+# Định dạng PixVerse
 
-PixVerse video generation: call the full PixVerse model family (C1 / V6 / V5.6 / V5.5 / V5 / V4.5 / V4 / V3.5) through the OpenAI-compatible `/v1/videos` endpoint, supporting text-to-video and image-to-video.
+Tạo video PixVerse: gọi toàn bộ họ mô hình PixVerse (C1 / V6 / V5.6 / V5.5 / V5 / V4.5 / V4 / V3.5) qua endpoint tương thích OpenAI `/v1/videos`, hỗ trợ tạo video từ văn bản và từ hình ảnh.
 
-## Supported Models
+## Các mô hình được hỗ trợ
 
-In the `model` field, always use the form `PixVerse/<version>`, e.g. `PixVerse/v5.6`.
+Trong trường `model`, luôn dùng dạng `PixVerse/<phiên bản>`, ví dụ `PixVerse/v5.6`.
 
-| Model | Highlights | Duration tiers | Audio |
+| Mô hình | Điểm nhấn | Bậc thời lượng | Âm thanh |
 |---|---|---|---|
-| `PixVerse/c1` | Flagship, most flexible per-second billing | 1–15 s (per second) | ✓ |
-| `PixVerse/v6` | Latest generation, per-second billing | 1–15 s (per second) | ✓ |
-| `PixVerse/v5.6` | Single-clip mode, stable quality | 5 / 8 / 10 s | ✓ |
-| `PixVerse/v5.5` | Supports Multi-Clip stitching | 5 / 8 / 10 s | ✓ |
-| `PixVerse/v5` | 5th-gen base version | 5 / 8 s | ✗ |
-| `PixVerse/v4.5` | 4.5th gen, supports Fast Motion | 5 / 8 s | ✗ |
-| `PixVerse/v4` | 4th gen, supports Fast Motion | 5 / 8 s | ✗ |
-| `PixVerse/v3.5` | 3.5th gen, supports Fast Motion | 5 / 8 s | ✗ |
+| `PixVerse/c1` | Flagship, tính phí theo giây linh hoạt nhất | 1–15 giây (theo giây) | ✓ |
+| `PixVerse/v6` | Thế hệ mới nhất, tính phí theo giây | 1–15 giây (theo giây) | ✓ |
+| `PixVerse/v5.6` | Chế độ clip đơn, chất lượng ổn định | 5 / 8 / 10 giây | ✓ |
+| `PixVerse/v5.5` | Hỗ trợ ghép nhiều clip | 5 / 8 / 10 giây | ✓ |
+| `PixVerse/v5` | Phiên bản gốc thế hệ 5 | 5 / 8 giây | ✗ |
+| `PixVerse/v4.5` | Thế hệ 4.5, hỗ trợ Fast Motion | 5 / 8 giây | ✗ |
+| `PixVerse/v4` | Thế hệ 4, hỗ trợ Fast Motion | 5 / 8 giây | ✗ |
+| `PixVerse/v3.5` | Thế hệ 3.5, hỗ trợ Fast Motion | 5 / 8 giây | ✗ |
 
-> The `PixVerse/` prefix is case-sensitive; use `PixVerse/v5.6` exactly. The version part (`v5.6`, `c1`) is normalised case-insensitively.
+> Tiền tố `PixVerse/` phân biệt chữ hoa chữ thường; hãy dùng chính xác `PixVerse/v5.6`. Phần phiên bản (`v5.6`, `c1`) được chuẩn hóa không phân biệt chữ hoa chữ thường.
 
-## Create Video
+## Tạo video
 
 `POST` `/v1/videos`
 
-### Request Headers
+### Header yêu cầu
 
-| Header | Required | Description |
+| Header | Bắt buộc | Mô tả |
 |---|---|---|
-| `Authorization` | Yes | `Bearer sk-your-api-key` |
-| `Content-Type` | Yes | `application/json` |
+| `Authorization` | Có | `Bearer sk-your-api-key` |
+| `Content-Type` | Có | `application/json` |
 
-### Request Body (`application/json`)
+### Body yêu cầu (`application/json`)
 
-| Field | Type | Required | Description |
+| Trường | Kiểu | Bắt buộc | Mô tả |
 |---|---|---|---|
-| `model` | string | Yes | PixVerse model name, see the table above |
-| `prompt` | string | Yes | Video prompt, up to 2048 characters |
-| `image` | string | No | Source image for image-to-video (URL or base64 data URI); presence switches to image-to-video |
-| `images` | string[] | No | Array form of `image` (mutually exclusive with `image`) |
-| `duration` | int | No | Length in seconds, default 5; supported tiers vary by model |
-| `resolution` | string | No | Resolution tier (same as `size`, recommended for alignment across models): `720P` / `1080P` |
-| `size` | string | No | Resolution: `360p` `540p` `720p` `1080p`, or pixel form such as `1920x1080`. When both are sent, `resolution` wins |
-| `metadata` | object | No | PixVerse-specific parameters container, see below |
+| `model` | string | Có | Tên mô hình PixVerse, xem bảng trên |
+| `prompt` | string | Có | Prompt video, tối đa 2048 ký tự |
+| `image` | string | Không | Ảnh nguồn cho chế độ từ hình ảnh sang video (URL hoặc data URI base64); có mặt thì chuyển sang từ hình ảnh sang video |
+| `images` | string[] | Không | Dạng mảng của `image` (loại trừ với `image`) |
+| `duration` | int | Không | Thời lượng tính bằng giây, mặc định 5; các bậc được hỗ trợ khác nhau theo mô hình |
+| `resolution` | string | Không | Bậc độ phân giải (giống `size`, khuyến nghị để thống nhất giữa các mô hình): `720P` / `1080P` |
+| `size` | string | Không | Độ phân giải: `360p` `540p` `720p` `1080p`, hoặc dạng pixel như `1920x1080`. Khi gửi cả hai, `resolution` được ưu tiên |
+| `metadata` | object | Không | Container tham số riêng của PixVerse, xem bên dưới |
 
-### Response
+### Phản hồi
 
-| Status | Description |
+| Trạng thái | Mô tả |
 |---|---|
-| `200` | Video task created successfully |
-| `400` | Invalid request parameters |
+| `200` | Tạo tác vụ video thành công |
+| `400` | Tham số yêu cầu không hợp lệ |
 
-#### `200` Response Fields
+#### Trường phản hồi `200`
 
-| Field | Type | Description |
+| Trường | Kiểu | Mô tả |
 |---|---|---|
-| `id` / `task_id` | string | Public task ID (`task_` prefix) used for subsequent queries |
-| `object` | string | Object type (`video`) |
-| `model` | string | Model used |
-| `status` | string | Task status (`queued` right after submission) |
-| `progress` | integer | Progress percentage |
-| `created_at` | integer | Creation timestamp |
+| `id` / `task_id` | string | ID tác vụ công khai (tiền tố `task_`) dùng cho các truy vấn sau |
+| `object` | string | Loại đối tượng (`video`) |
+| `model` | string | Mô hình đã sử dụng |
+| `status` | string | Trạng thái tác vụ (`queued` ngay sau khi gửi) |
+| `progress` | integer | Phần trăm tiến độ |
+| `created_at` | integer | Dấu thời gian tạo |
 
-> `id` / `task_id` is generated by Uter and is not the upstream PixVerse `video_id`. Always use the value returned here.
+> `id` / `task_id` do Uter tạo ra và không phải `video_id` PixVerse phía thượng nguồn. Luôn sử dụng giá trị được trả về tại đây.
 
-## Get Video Task Status
+## Lấy trạng thái tác vụ video
 
 `GET` `/v1/videos/{task_id}`
 
-### Request Parameters
+### Tham số yêu cầu
 
-| Name | In | Type | Required | Description |
+| Tên | Vị trí | Kiểu | Bắt buộc | Mô tả |
 |---|---|---|---|---|
-| `task_id` | path | string | Yes | Video task ID |
+| `task_id` | path | string | Có | ID tác vụ video |
 
-### Response
+### Phản hồi
 
-| Status | Description |
+| Trạng thái | Mô tả |
 |---|---|
-| `200` | Task status retrieved successfully |
-| `404` | Task not found |
+| `200` | Lấy trạng thái tác vụ thành công |
+| `404` | Không tìm thấy tác vụ |
 
-#### `200` Response Fields
+#### Trường phản hồi `200`
 
-| Field | Type | Description |
+| Trường | Kiểu | Mô tả |
 |---|---|---|
-| `id` | string | Video ID |
-| `status` | string | Task status, see the enum |
-| `progress` | integer | Progress percentage |
-| `created_at` | integer | Creation timestamp |
-| `completed_at` | integer | Completion timestamp (on success) |
-| `size` | string | Video size (on success) |
-| `metadata.url` | string | Video URL (only when `completed`) |
-| `error.message` | string | Failure reason (only when `failed`) |
+| `id` | string | ID video |
+| `status` | string | Trạng thái tác vụ, xem enum |
+| `progress` | integer | Phần trăm tiến độ |
+| `created_at` | integer | Dấu thời gian tạo |
+| `completed_at` | integer | Dấu thời gian hoàn tất (khi thành công) |
+| `size` | string | Kích thước video (khi thành công) |
+| `metadata.url` | string | URL video (chỉ khi `completed`) |
+| `error.message` | string | Lý do thất bại (chỉ khi `failed`) |
 
-#### Status Enum
+#### Enum trạng thái
 
-| Status | Description |
+| Trạng thái | Mô tả |
 |---|---|
-| `queued` | Submitted, queued |
-| `in_progress` | Generating |
-| `completed` | Completed; `metadata.url` holds the video |
-| `failed` | Failed; `error.message` explains why |
+| `queued` | Đã gửi, đang xếp hàng |
+| `in_progress` | Đang tạo |
+| `completed` | Hoàn tất; `metadata.url` chứa video |
+| `failed` | Thất bại; `error.message` giải thích lý do |
 
-## Get Video Content
+## Lấy nội dung video
 
 `GET` `/v1/videos/{task_id}/content`
 
-Returns the raw video stream (`Content-Type: video/mp4`). Uter proxies PixVerse's temporary URL, avoiding exposure of the upstream address and the expiry problem.
+Trả về luồng video thô (`Content-Type: video/mp4`). Uter làm proxy URL tạm thời của PixVerse, tránh việc lộ địa chỉ thượng nguồn và vấn đề hết hạn.
 
-### Request Parameters
+### Tham số yêu cầu
 
-| Name | In | Type | Required | Description |
+| Tên | Vị trí | Kiểu | Bắt buộc | Mô tả |
 |---|---|---|---|---|
-| `task_id` | path | string | Yes | Video task ID |
+| `task_id` | path | string | Có | ID tác vụ video |
 
-### Response
+### Phản hồi
 
-| Status | Description |
+| Trạng thái | Mô tả |
 |---|---|
-| `200` | Video content retrieved successfully |
-| `404` | Video not found or not finished |
+| `200` | Lấy nội dung video thành công |
+| `404` | Không tìm thấy video hoặc video chưa hoàn tất |
 
-> **Strongly recommended**: download via the `/content` proxy rather than accessing `metadata.url` directly. The latter is PixVerse's temporary link (usually valid for a few hours), whereas the proxy never expires as long as the task record exists.
+> **Khuyến nghị mạnh**: hãy tải qua proxy `/content` thay vì truy cập trực tiếp `metadata.url`. Liên kết sau là liên kết tạm thời của PixVerse (thường chỉ hợp lệ vài giờ), trong khi proxy không hết hạn miễn là bản ghi tác vụ còn tồn tại.
 
-## Specific Parameters (`metadata`)
+## Tham số riêng (`metadata`)
 
-All PixVerse-specific fields are passed through the request body's `metadata` object.
+Mọi trường riêng của PixVerse đều được truyền qua object `metadata` trong body yêu cầu.
 
-### General Fields
+### Trường chung
 
-| Field | Type | Applies to | Description |
+| Trường | Kiểu | Áp dụng cho | Mô tả |
 |---|---|---|---|
-| `quality` | string | All | Resolution; overrides top-level `size`: `360p` `540p` `720p` `1080p` |
-| `aspect_ratio` | string | Text-to-video | Aspect ratio: `16:9` `9:16` `1:1` `4:3` `3:4` `2:3` `3:2` `21:9` |
-| `motion_mode` | string | V4.5 / V4 / V3.5 | Motion mode: `normal` (default) or `fast` (2× price; only 5s at 360p/540p/720p) |
-| `camera_movement` | string | All | Camera movement, e.g. `zoom_in` `zoom_out` `pan_left` `pan_right` |
-| `seed` | int | All | Random seed, 0–2147483647 |
-| `template_id` | int | All | Template ID |
-| `style` | string | All | Style, e.g. `anime` |
-| `water_mark` | bool | All | Whether to add a watermark |
-| `negative_prompt` | string | All | Negative prompt |
+| `quality` | string | Tất cả | Độ phân giải; ghi đè `size` ở cấp cao nhất: `360p` `540p` `720p` `1080p` |
+| `aspect_ratio` | string | Từ văn bản sang video | Tỷ lệ khung hình: `16:9` `9:16` `1:1` `4:3` `3:4` `2:3` `3:2` `21:9` |
+| `motion_mode` | string | V4.5 / V4 / V3.5 | Chế độ chuyển động: `normal` (mặc định) hoặc `fast` (giá ×2; chỉ 5 giây ở 360p/540p/720p) |
+| `camera_movement` | string | Tất cả | Chuyển động camera, ví dụ `zoom_in` `zoom_out` `pan_left` `pan_right` |
+| `seed` | int | Tất cả | Hạt giống ngẫu nhiên, 0–2147483647 |
+| `template_id` | int | Tất cả | ID template |
+| `style` | string | Tất cả | Phong cách, ví dụ `anime` |
+| `water_mark` | bool | Tất cả | Có thêm watermark hay không |
+| `negative_prompt` | string | Tất cả | Prompt tiêu cực |
 
-> `motion_mode: fast` is strictly limited to V4.5 / V4 / V3.5, 5-second duration and 360p/540p/720p. Other combinations (e.g. `1080p + fast` or `8s + fast`) return `400` and are not charged.
+> `motion_mode: fast` chỉ giới hạn nghiêm ngặt cho V4.5 / V4 / V3.5, thời lượng 5 giây và 360p/540p/720p. Các tổ hợp khác (ví dụ `1080p + fast` hoặc `8s + fast`) trả về `400` và không tính phí.
 
-### Audio Generation (C1 / V6 / V5.6 / V5.5)
+### Tạo âm thanh (C1 / V6 / V5.6 / V5.5)
 
-| Field | Type | Applies to | Description |
+| Trường | Kiểu | Áp dụng cho | Mô tả |
 |---|---|---|---|
-| `generate_audio_switch` | bool | C1 / V6 / V5.6 / V5.5 | Switch to the "with audio" billing tier (audio generated upstream) |
+| `generate_audio_switch` | bool | C1 / V6 / V5.6 / V5.5 | Chuyển sang bậc tính phí «có âm thanh» (âm thanh được tạo phía thượng nguồn) |
 
-> V5 / V4.5 / V4 / V3.5 do **not** support audio; passing `generate_audio_switch: true` returns `400`.
+> V5 / V4.5 / V4 / V3.5 **không** hỗ trợ âm thanh; gửi `generate_audio_switch: true` sẽ trả về `400`.
 
-### Image-to-Video Advanced Fields
+### Trường nâng cao cho từ hình ảnh sang video
 
-PixVerse image-to-video requires uploading the image upstream to obtain an `img_id`. Uter **wraps the upload flow automatically**: pass `image: "https://..."` or `image: "data:image/png;base64,..."` in the body and Uter uploads it to PixVerse, retrieves the `img_id` and forwards it.
+Chế độ từ hình ảnh sang video của PixVerse yêu cầu tải ảnh lên thượng nguồn để lấy `img_id`. Uter **tự động bọc quy trình tải lên**: truyền `image: "https://..."` hoặc `image: "data:image/png;base64,..."` trong body, Uter sẽ tải lên PixVerse, lấy `img_id` và chuyển tiếp.
 
-If you already have an `img_id` (advanced case), pass it directly:
+Nếu bạn đã có `img_id` (trường hợp nâng cao), hãy truyền trực tiếp:
 
-| Field | Type | Description |
+| Trường | Kiểu | Mô tả |
 |---|---|---|
-| `img_id` | int | Pre-uploaded image ID; takes precedence over automatic upload from `image` |
+| `img_id` | int | ID ảnh đã tải lên trước; được ưu tiên hơn việc tự động tải lên từ `image` |
 
-## Full Example
+## Ví dụ đầy đủ
 
 ```bash
 # Step 1: submit the task
@@ -186,12 +186,12 @@ curl https://uter.ai/v1/videos/task_xxx/content \
   -o cat_on_moon.mp4
 ```
 
-## Status Codes and Errors
+## Mã trạng thái và lỗi
 
-| Case | Description |
+| Trường hợp | Mô tả |
 |---|---|
-| `400` | Invalid parameter combination (e.g. `generate_audio_switch: true` on V5, fast mode with 1080p/8s, unsupported quality × duration, unknown model); rejected before submission, no charge |
-| `401` | API key invalid or expired |
-| `403` | API key not allowed to access this model (check the token model whitelist) |
-| `402` | Insufficient balance (`insufficient user quota`); top up in the Uter console |
-| Task `failed` | Upstream failure (moderation / generation / timeout); Uter refunds automatically and the refund appears in the logs |
+| `400` | Tổ hợp tham số không hợp lệ (ví dụ `generate_audio_switch: true` trên V5, chế độ fast với 1080p/8s, quality × duration không được hỗ trợ, mô hình không xác định); bị từ chối trước khi gửi, không tính phí |
+| `401` | API key không hợp lệ hoặc đã hết hạn |
+| `403` | API key không được phép truy cập mô hình này (kiểm tra danh sách mô hình được phép của token) |
+| `402` | Số dư không đủ (`insufficient user quota`); nạp thêm trong bảng điều khiển Uter |
+| Tác vụ `failed` | Thất bại phía thượng nguồn (kiểm duyệt / tạo / hết thời gian chờ); Uter tự động hoàn tiền và khoản hoàn hiện trong nhật ký |

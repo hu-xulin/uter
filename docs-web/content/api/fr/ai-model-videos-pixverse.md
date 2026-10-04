@@ -1,167 +1,167 @@
-# PixVerse Format
+# Format de l'API PixVerse
 
-PixVerse video generation: call the full PixVerse model family (C1 / V6 / V5.6 / V5.5 / V5 / V4.5 / V4 / V3.5) through the OpenAI-compatible `/v1/videos` endpoint, supporting text-to-video and image-to-video.
+Génération vidéo PixVerse : appelez toute la famille de modèles PixVerse (C1 / V6 / V5.6 / V5.5 / V5 / V4.5 / V4 / V3.5) via le point de terminaison compatible OpenAI `/v1/videos`, avec prise en charge de la génération texte vers vidéo et image vers vidéo.
 
-## Supported Models
+## Modèles pris en charge
 
-In the `model` field, always use the form `PixVerse/<version>`, e.g. `PixVerse/v5.6`.
+Dans le champ `model`, utilisez toujours la forme `PixVerse/<version>`, par ex. `PixVerse/v5.6`.
 
-| Model | Highlights | Duration tiers | Audio |
+| Modèle | Points forts | Paliers de durée | Audio |
 |---|---|---|---|
-| `PixVerse/c1` | Flagship, most flexible per-second billing | 1–15 s (per second) | ✓ |
-| `PixVerse/v6` | Latest generation, per-second billing | 1–15 s (per second) | ✓ |
-| `PixVerse/v5.6` | Single-clip mode, stable quality | 5 / 8 / 10 s | ✓ |
-| `PixVerse/v5.5` | Supports Multi-Clip stitching | 5 / 8 / 10 s | ✓ |
-| `PixVerse/v5` | 5th-gen base version | 5 / 8 s | ✗ |
-| `PixVerse/v4.5` | 4.5th gen, supports Fast Motion | 5 / 8 s | ✗ |
-| `PixVerse/v4` | 4th gen, supports Fast Motion | 5 / 8 s | ✗ |
-| `PixVerse/v3.5` | 3.5th gen, supports Fast Motion | 5 / 8 s | ✗ |
+| `PixVerse/c1` | Modèle phare, facturation à la seconde la plus flexible | 1–15 s (à la seconde) | ✓ |
+| `PixVerse/v6` | Dernière génération, facturation à la seconde | 1–15 s (à la seconde) | ✓ |
+| `PixVerse/v5.6` | Mode clip unique, qualité stable | 5 / 8 / 10 s | ✓ |
+| `PixVerse/v5.5` | Prend en charge l'assemblage multi-clips | 5 / 8 / 10 s | ✓ |
+| `PixVerse/v5` | Version de base de 5e génération | 5 / 8 s | ✗ |
+| `PixVerse/v4.5` | 4,5e génération, prend en charge Fast Motion | 5 / 8 s | ✗ |
+| `PixVerse/v4` | 4e génération, prend en charge Fast Motion | 5 / 8 s | ✗ |
+| `PixVerse/v3.5` | 3,5e génération, prend en charge Fast Motion | 5 / 8 s | ✗ |
 
-> The `PixVerse/` prefix is case-sensitive; use `PixVerse/v5.6` exactly. The version part (`v5.6`, `c1`) is normalised case-insensitively.
+> Le préfixe `PixVerse/` est sensible à la casse ; utilisez exactement `PixVerse/v5.6`. La partie version (`v5.6`, `c1`) est normalisée sans distinction de casse.
 
-## Create Video
+## Créer une vidéo
 
 `POST` `/v1/videos`
 
-### Request Headers
+### En-têtes de requête
 
-| Header | Required | Description |
+| En-tête | Requis | Description |
 |---|---|---|
-| `Authorization` | Yes | `Bearer sk-your-api-key` |
-| `Content-Type` | Yes | `application/json` |
+| `Authorization` | Oui | `Bearer sk-your-api-key` |
+| `Content-Type` | Oui | `application/json` |
 
-### Request Body (`application/json`)
+### Corps de la requête (`application/json`)
 
-| Field | Type | Required | Description |
+| Champ | Type | Requis | Description |
 |---|---|---|---|
-| `model` | string | Yes | PixVerse model name, see the table above |
-| `prompt` | string | Yes | Video prompt, up to 2048 characters |
-| `image` | string | No | Source image for image-to-video (URL or base64 data URI); presence switches to image-to-video |
-| `images` | string[] | No | Array form of `image` (mutually exclusive with `image`) |
-| `duration` | int | No | Length in seconds, default 5; supported tiers vary by model |
-| `resolution` | string | No | Resolution tier (same as `size`, recommended for alignment across models): `720P` / `1080P` |
-| `size` | string | No | Resolution: `360p` `540p` `720p` `1080p`, or pixel form such as `1920x1080`. When both are sent, `resolution` wins |
-| `metadata` | object | No | PixVerse-specific parameters container, see below |
+| `model` | string | Oui | Nom du modèle PixVerse, voir le tableau ci-dessus |
+| `prompt` | string | Oui | Prompt vidéo, jusqu'à 2048 caractères |
+| `image` | string | Non | Image source pour l'image vers vidéo (URL ou data URI base64) ; sa présence bascule en image vers vidéo |
+| `images` | string[] | Non | Forme tableau de `image` (mutuellement exclusif avec `image`) |
+| `duration` | int | Non | Durée en secondes, 5 par défaut ; les paliers pris en charge varient selon le modèle |
+| `resolution` | string | Non | Palier de résolution (identique à `size`, recommandé pour l'harmonisation entre modèles) : `720P` / `1080P` |
+| `size` | string | Non | Résolution : `360p` `540p` `720p` `1080p`, ou forme en pixels comme `1920x1080`. Si les deux sont envoyés, `resolution` l'emporte |
+| `metadata` | object | Non | Conteneur des paramètres propres à PixVerse, voir ci-dessous |
 
-### Response
+### Réponse
 
-| Status | Description |
+| Statut | Description |
 |---|---|
-| `200` | Video task created successfully |
-| `400` | Invalid request parameters |
+| `200` | Tâche vidéo créée avec succès |
+| `400` | Paramètres de requête invalides |
 
-#### `200` Response Fields
+#### Champs de la réponse `200`
 
-| Field | Type | Description |
+| Champ | Type | Description |
 |---|---|---|
-| `id` / `task_id` | string | Public task ID (`task_` prefix) used for subsequent queries |
-| `object` | string | Object type (`video`) |
-| `model` | string | Model used |
-| `status` | string | Task status (`queued` right after submission) |
-| `progress` | integer | Progress percentage |
-| `created_at` | integer | Creation timestamp |
+| `id` / `task_id` | string | Identifiant public de tâche (préfixe `task_`) utilisé pour les requêtes ultérieures |
+| `object` | string | Type d'objet (`video`) |
+| `model` | string | Modèle utilisé |
+| `status` | string | Statut de la tâche (`queued` juste après la soumission) |
+| `progress` | integer | Pourcentage de progression |
+| `created_at` | integer | Horodatage de création |
 
-> `id` / `task_id` is generated by Uter and is not the upstream PixVerse `video_id`. Always use the value returned here.
+> `id` / `task_id` est généré par Uter et n'est pas le `video_id` PixVerse en amont. Utilisez toujours la valeur renvoyée ici.
 
-## Get Video Task Status
+## Obtenir le statut de la tâche vidéo
 
 `GET` `/v1/videos/{task_id}`
 
-### Request Parameters
+### Paramètres de requête
 
-| Name | In | Type | Required | Description |
+| Nom | Emplacement | Type | Requis | Description |
 |---|---|---|---|---|
-| `task_id` | path | string | Yes | Video task ID |
+| `task_id` | path | string | Oui | Identifiant de la tâche vidéo |
 
-### Response
+### Réponse
 
-| Status | Description |
+| Statut | Description |
 |---|---|
-| `200` | Task status retrieved successfully |
-| `404` | Task not found |
+| `200` | Statut de la tâche récupéré avec succès |
+| `404` | Tâche introuvable |
 
-#### `200` Response Fields
+#### Champs de la réponse `200`
 
-| Field | Type | Description |
+| Champ | Type | Description |
 |---|---|---|
-| `id` | string | Video ID |
-| `status` | string | Task status, see the enum |
-| `progress` | integer | Progress percentage |
-| `created_at` | integer | Creation timestamp |
-| `completed_at` | integer | Completion timestamp (on success) |
-| `size` | string | Video size (on success) |
-| `metadata.url` | string | Video URL (only when `completed`) |
-| `error.message` | string | Failure reason (only when `failed`) |
+| `id` | string | Identifiant de la vidéo |
+| `status` | string | Statut de la tâche, voir l'énumération |
+| `progress` | integer | Pourcentage de progression |
+| `created_at` | integer | Horodatage de création |
+| `completed_at` | integer | Horodatage d'achèvement (en cas de succès) |
+| `size` | string | Taille de la vidéo (en cas de succès) |
+| `metadata.url` | string | URL de la vidéo (uniquement lorsque `completed`) |
+| `error.message` | string | Raison de l'échec (uniquement lorsque `failed`) |
 
-#### Status Enum
+#### Énumération des statuts
 
-| Status | Description |
+| Statut | Description |
 |---|---|
-| `queued` | Submitted, queued |
-| `in_progress` | Generating |
-| `completed` | Completed; `metadata.url` holds the video |
-| `failed` | Failed; `error.message` explains why |
+| `queued` | Soumise, en file d'attente |
+| `in_progress` | Génération en cours |
+| `completed` | Terminée ; `metadata.url` contient la vidéo |
+| `failed` | Échec ; `error.message` explique pourquoi |
 
-## Get Video Content
+## Obtenir le contenu vidéo
 
 `GET` `/v1/videos/{task_id}/content`
 
-Returns the raw video stream (`Content-Type: video/mp4`). Uter proxies PixVerse's temporary URL, avoiding exposure of the upstream address and the expiry problem.
+Renvoie le flux vidéo brut (`Content-Type: video/mp4`). Uter relaie l'URL temporaire de PixVerse, ce qui évite d'exposer l'adresse en amont et le problème d'expiration.
 
-### Request Parameters
+### Paramètres de requête
 
-| Name | In | Type | Required | Description |
+| Nom | Emplacement | Type | Requis | Description |
 |---|---|---|---|---|
-| `task_id` | path | string | Yes | Video task ID |
+| `task_id` | path | string | Oui | Identifiant de la tâche vidéo |
 
-### Response
+### Réponse
 
-| Status | Description |
+| Statut | Description |
 |---|---|
-| `200` | Video content retrieved successfully |
-| `404` | Video not found or not finished |
+| `200` | Contenu vidéo récupéré avec succès |
+| `404` | Vidéo introuvable ou non terminée |
 
-> **Strongly recommended**: download via the `/content` proxy rather than accessing `metadata.url` directly. The latter is PixVerse's temporary link (usually valid for a few hours), whereas the proxy never expires as long as the task record exists.
+> **Fortement recommandé** : téléchargez via le proxy `/content` plutôt que d'accéder directement à `metadata.url`. Ce dernier est un lien temporaire PixVerse (généralement valable quelques heures), tandis que le proxy n'expire jamais tant que l'enregistrement de la tâche existe.
 
-## Specific Parameters (`metadata`)
+## Paramètres spécifiques (`metadata`)
 
-All PixVerse-specific fields are passed through the request body's `metadata` object.
+Tous les champs propres à PixVerse sont transmis via l'objet `metadata` du corps de la requête.
 
-### General Fields
+### Champs généraux
 
-| Field | Type | Applies to | Description |
+| Champ | Type | S'applique à | Description |
 |---|---|---|---|
-| `quality` | string | All | Resolution; overrides top-level `size`: `360p` `540p` `720p` `1080p` |
-| `aspect_ratio` | string | Text-to-video | Aspect ratio: `16:9` `9:16` `1:1` `4:3` `3:4` `2:3` `3:2` `21:9` |
-| `motion_mode` | string | V4.5 / V4 / V3.5 | Motion mode: `normal` (default) or `fast` (2× price; only 5s at 360p/540p/720p) |
-| `camera_movement` | string | All | Camera movement, e.g. `zoom_in` `zoom_out` `pan_left` `pan_right` |
-| `seed` | int | All | Random seed, 0–2147483647 |
-| `template_id` | int | All | Template ID |
-| `style` | string | All | Style, e.g. `anime` |
-| `water_mark` | bool | All | Whether to add a watermark |
-| `negative_prompt` | string | All | Negative prompt |
+| `quality` | string | Tous | Résolution ; prime sur le `size` de premier niveau : `360p` `540p` `720p` `1080p` |
+| `aspect_ratio` | string | Texte vers vidéo | Rapport d'aspect : `16:9` `9:16` `1:1` `4:3` `3:4` `2:3` `3:2` `21:9` |
+| `motion_mode` | string | V4.5 / V4 / V3.5 | Mode de mouvement : `normal` (par défaut) ou `fast` (prix ×2 ; uniquement 5 s en 360p/540p/720p) |
+| `camera_movement` | string | Tous | Mouvement de caméra, par ex. `zoom_in` `zoom_out` `pan_left` `pan_right` |
+| `seed` | int | Tous | Graine aléatoire, 0–2147483647 |
+| `template_id` | int | Tous | Identifiant de modèle |
+| `style` | string | Tous | Style, par ex. `anime` |
+| `water_mark` | bool | Tous | Ajouter ou non un filigrane |
+| `negative_prompt` | string | Tous | Prompt négatif |
 
-> `motion_mode: fast` is strictly limited to V4.5 / V4 / V3.5, 5-second duration and 360p/540p/720p. Other combinations (e.g. `1080p + fast` or `8s + fast`) return `400` and are not charged.
+> `motion_mode: fast` est strictement limité à V4.5 / V4 / V3.5, une durée de 5 secondes et 360p/540p/720p. Les autres combinaisons (par ex. `1080p + fast` ou `8s + fast`) renvoient `400` et ne sont pas facturées.
 
-### Audio Generation (C1 / V6 / V5.6 / V5.5)
+### Génération audio (C1 / V6 / V5.6 / V5.5)
 
-| Field | Type | Applies to | Description |
+| Champ | Type | S'applique à | Description |
 |---|---|---|---|
-| `generate_audio_switch` | bool | C1 / V6 / V5.6 / V5.5 | Switch to the "with audio" billing tier (audio generated upstream) |
+| `generate_audio_switch` | bool | C1 / V6 / V5.6 / V5.5 | Basculer vers le palier de facturation « avec audio » (audio généré en amont) |
 
-> V5 / V4.5 / V4 / V3.5 do **not** support audio; passing `generate_audio_switch: true` returns `400`.
+> V5 / V4.5 / V4 / V3.5 ne prennent **pas** en charge l'audio ; transmettre `generate_audio_switch: true` renvoie `400`.
 
-### Image-to-Video Advanced Fields
+### Champs avancés d'image vers vidéo
 
-PixVerse image-to-video requires uploading the image upstream to obtain an `img_id`. Uter **wraps the upload flow automatically**: pass `image: "https://..."` or `image: "data:image/png;base64,..."` in the body and Uter uploads it to PixVerse, retrieves the `img_id` and forwards it.
+L'image vers vidéo PixVerse nécessite de téléverser l'image en amont pour obtenir un `img_id`. Uter **encapsule automatiquement le flux de téléversement** : transmettez `image: "https://..."` ou `image: "data:image/png;base64,..."` dans le corps et Uter la téléverse vers PixVerse, récupère l'`img_id` et le transmet.
 
-If you already have an `img_id` (advanced case), pass it directly:
+Si vous disposez déjà d'un `img_id` (cas avancé), transmettez-le directement :
 
-| Field | Type | Description |
+| Champ | Type | Description |
 |---|---|---|
-| `img_id` | int | Pre-uploaded image ID; takes precedence over automatic upload from `image` |
+| `img_id` | int | Identifiant d'image pré-téléversé ; prime sur le téléversement automatique depuis `image` |
 
-## Full Example
+## Exemple complet
 
 ```bash
 # Step 1: submit the task
@@ -186,12 +186,12 @@ curl https://uter.ai/v1/videos/task_xxx/content \
   -o cat_on_moon.mp4
 ```
 
-## Status Codes and Errors
+## Codes d'état et erreurs
 
-| Case | Description |
+| Cas | Description |
 |---|---|
-| `400` | Invalid parameter combination (e.g. `generate_audio_switch: true` on V5, fast mode with 1080p/8s, unsupported quality × duration, unknown model); rejected before submission, no charge |
-| `401` | API key invalid or expired |
-| `403` | API key not allowed to access this model (check the token model whitelist) |
-| `402` | Insufficient balance (`insufficient user quota`); top up in the Uter console |
-| Task `failed` | Upstream failure (moderation / generation / timeout); Uter refunds automatically and the refund appears in the logs |
+| `400` | Combinaison de paramètres invalide (par ex. `generate_audio_switch: true` sur V5, mode fast avec 1080p/8s, qualité × durée non pris en charge, modèle inconnu) ; rejetée avant soumission, aucun débit |
+| `401` | Clé d'API invalide ou expirée |
+| `403` | Clé d'API non autorisée à accéder à ce modèle (vérifiez la liste blanche de modèles du jeton) |
+| `402` | Solde insuffisant (`insufficient user quota`) ; rechargez dans la console Uter |
+| Tâche `failed` | Échec en amont (modération / génération / délai dépassé) ; Uter rembourse automatiquement et le remboursement apparaît dans les journaux |

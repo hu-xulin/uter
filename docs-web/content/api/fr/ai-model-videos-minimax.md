@@ -1,137 +1,137 @@
-# MiniMax Format
+# Format de l'API MiniMax
 
-MiniMax H3 (`MiniMax-H3`) video generation: call MiniMax H3 through an asynchronous task API, supporting text-to-video, image-to-video and reference-to-video, billed precisely against upstream usage.
+Génération vidéo MiniMax H3 (`MiniMax-H3`) : appelez MiniMax H3 via une API de tâches asynchrone, avec prise en charge de la génération texte vers vidéo, image vers vidéo et référence vers vidéo, facturée précisément selon l'usage en amont.
 
-## Model and Capabilities
+## Modèle et capacités
 
-There is a single model name, `MiniMax-H3`. **The generation mode is decided automatically by which media inputs the request carries:**
+Il existe un seul nom de modèle, `MiniMax-H3`. **Le mode de génération est déterminé automatiquement selon les entrées média portées par la requête :**
 
-| Mode | Trigger | Media input |
+| Mode | Déclencheur | Entrée média |
 |---|---|---|
-| Text-to-video (t2v) | Only `prompt` | None |
-| Image-to-video (i2v) | A first-frame image (optional last-frame image) | `input_reference` / `images` |
-| Reference-to-video (r2v) | Reference image / video / audio | Top-level `media[]` array |
+| Texte vers vidéo (t2v) | Uniquement `prompt` | Aucune |
+| Image vers vidéo (i2v) | Une image de première image (image de dernière image facultative) | `input_reference` / `images` |
+| Référence vers vidéo (r2v) | Image / vidéo / audio de référence | Tableau `media[]` de premier niveau |
 
-In every mode, `prompt` is **always required**.
+Dans tous les modes, `prompt` est **toujours requis**.
 
-## Create Video
+## Créer une vidéo
 
 `POST` `/v1/video/generations`
 
-### Request Headers
+### En-têtes de requête
 
-| Header | Required | Description |
+| En-tête | Requis | Description |
 |---|---|---|
-| `Authorization` | Yes | `Bearer sk-your-api-key` |
-| `Content-Type` | Yes | `application/json` |
+| `Authorization` | Oui | `Bearer sk-your-api-key` |
+| `Content-Type` | Oui | `application/json` |
 
-### Request Body (`application/json`)
+### Corps de la requête (`application/json`)
 
-| Field | Type | Required | Description |
+| Champ | Type | Requis | Description |
 |---|---|---|---|
-| `model` | string | Yes | Fixed to `MiniMax-H3` |
-| `prompt` | string | Yes | Text prompt |
-| `resolution` | string | No | Resolution; currently only `2K` (default `2K`) |
-| `duration` | int | No | Video length in seconds, `4`–`15`, default `6` |
-| `ratio` | string | No | Aspect ratio: `16:9` / `9:16` / `1:1` / `adaptive`. Defaults to `16:9` for t2v and `adaptive` (follows the first frame) for i2v |
-| `input_reference` | string | No | i2v first-frame image URL (public, or base64) |
-| `images` | string[] | No | i2v image array: the 1st is the first frame, the 2nd is the last frame |
-| `media` | object[] | No | Structured media input for reference-to-video, see below |
+| `model` | string | Oui | Fixé à `MiniMax-H3` |
+| `prompt` | string | Oui | Prompt textuel |
+| `resolution` | string | Non | Résolution ; actuellement uniquement `2K` (par défaut `2K`) |
+| `duration` | int | Non | Durée de la vidéo en secondes, `4`–`15`, par défaut `6` |
+| `ratio` | string | Non | Rapport d'aspect : `16:9` / `9:16` / `1:1` / `adaptive`. Par défaut `16:9` pour t2v et `adaptive` (suit la première image) pour i2v |
+| `input_reference` | string | Non | URL de l'image de première image i2v (publique, ou base64) |
+| `images` | string[] | Non | Tableau d'images i2v : la 1re est la première image, la 2e est la dernière image |
+| `media` | object[] | Non | Entrée média structurée pour la référence vers vidéo, voir ci-dessous |
 
-### `media[]` Elements
+### Éléments `media[]`
 
-Used for reference-to-video (r2v) to specify each reference asset's role precisely:
+Utilisés pour la référence vers vidéo (r2v) afin de préciser le rôle de chaque ressource de référence :
 
-| `type` | Role | Purpose |
+| `type` | Rôle | Finalité |
 |---|---|---|
-| `reference_image` | Reference image | Reference picture(s) |
-| `reference_video` | Reference video | Reference video (its billable duration counts toward total seconds) |
-| `reference_audio` | Reference audio | Reference audio |
-| `first_frame` / `last_frame` | First / last frame | i2v first / last frame images |
+| `reference_image` | Image de référence | Image(s) de référence |
+| `reference_video` | Vidéo de référence | Vidéo de référence (sa durée facturable compte dans les secondes totales) |
+| `reference_audio` | Audio de référence | Audio de référence |
+| `first_frame` / `last_frame` | Première / dernière image | Images de première / dernière image pour i2v |
 
-When structured `media` is omitted, Uter infers assets from `images` / `input_reference` by extension and order: video → reference video, audio → reference audio, 1st image → first frame, 2nd image → last frame. Use `media[]` when you need precise role control.
+Lorsque le `media` structuré est omis, Uter déduit les ressources à partir de `images` / `input_reference` selon l'extension et l'ordre : vidéo → vidéo de référence, audio → audio de référence, 1re image → première image, 2e image → dernière image. Utilisez `media[]` lorsque vous devez contrôler précisément les rôles.
 
-> Reference audio (`reference_audio`) is currently limited by upstream support: in testing the upstream returns task failure (Uter refunds in full automatically). Text-to-video, image-to-video (first frame / first+last frame) and reference image/video generation all work normally.
+> L'audio de référence (`reference_audio`) est actuellement limité par la prise en charge en amont : lors des tests, l'amont renvoie un échec de tâche (Uter rembourse intégralement et automatiquement). La génération texte vers vidéo, image vers vidéo (première image / première + dernière image) et par image/vidéo de référence fonctionne normalement.
 
-### Response
+### Réponse
 
-| Status | Description |
+| Statut | Description |
 |---|---|
-| `200` | Video task created successfully |
-| `400` | Invalid request parameters |
+| `200` | Tâche vidéo créée avec succès |
+| `400` | Paramètres de requête invalides |
 
-#### `200` Response Fields
+#### Champs de la réponse `200`
 
-| Field | Type | Description |
+| Champ | Type | Description |
 |---|---|---|
-| `id` / `task_id` | string | Public task ID (`task_` prefix) used for subsequent queries |
-| `object` | string | Object type (`video`) |
-| `model` | string | Model used |
-| `status` | string | Task status (`queued` right after submission) |
-| `progress` | integer | Progress percentage |
-| `created_at` | integer | Creation timestamp |
+| `id` / `task_id` | string | Identifiant public de tâche (préfixe `task_`) utilisé pour les requêtes ultérieures |
+| `object` | string | Type d'objet (`video`) |
+| `model` | string | Modèle utilisé |
+| `status` | string | Statut de la tâche (`queued` juste après la soumission) |
+| `progress` | integer | Pourcentage de progression |
+| `created_at` | integer | Horodatage de création |
 
-> `id` / `task_id` is generated by Uter and is not the upstream MiniMax task_id.
+> `id` / `task_id` est généré par Uter et n'est pas le task_id MiniMax en amont.
 
-## Get Video Task Status
+## Obtenir le statut de la tâche vidéo
 
 `GET` `/v1/video/generations/{task_id}`
 
-The response uses Uter's unified `{code, message, data}` envelope.
+La réponse utilise l'enveloppe unifiée `{code, message, data}` d'Uter.
 
-### Request Parameters
+### Paramètres de requête
 
-| Name | In | Type | Required | Description |
+| Nom | Emplacement | Type | Requis | Description |
 |---|---|---|---|---|
-| `task_id` | path | string | Yes | Video task ID |
+| `task_id` | path | string | Oui | Identifiant de la tâche vidéo |
 
-### Response
+### Réponse
 
-| Status | Description |
+| Statut | Description |
 |---|---|
-| `200` | Task status retrieved successfully |
-| `404` | Task not found |
+| `200` | Statut de la tâche récupéré avec succès |
+| `404` | Tâche introuvable |
 
-#### `200` Response Fields (`data`)
+#### Champs de la réponse `200` (`data`)
 
-| Field | Type | Description |
+| Champ | Type | Description |
 |---|---|---|
-| `data.task_id` | string | Public task ID |
-| `data.status` | string | Task status: `QUEUED` / `IN_PROGRESS` / `SUCCESS` / `FAILURE` |
-| `data.result_url` | string | Video result URL (non-empty only on `SUCCESS`) |
-| `data.quota` | int | Final quota charged (already settled against actual usage) |
-| `data.data.task.usage` | object | Precise upstream usage, the billing basis (`total_seconds` / `input_seconds` / `output_seconds` / `input_image_count`) |
+| `data.task_id` | string | Identifiant public de tâche |
+| `data.status` | string | Statut de la tâche : `QUEUED` / `IN_PROGRESS` / `SUCCESS` / `FAILURE` |
+| `data.result_url` | string | URL du résultat vidéo (non vide uniquement sur `SUCCESS`) |
+| `data.quota` | int | Quota final facturé (déjà réglé sur l'usage réel) |
+| `data.data.task.usage` | object | Usage en amont précis, base de facturation (`total_seconds` / `input_seconds` / `output_seconds` / `input_image_count`) |
 
-#### Status Enum
+#### Énumération des statuts
 
-| Unified status | MiniMax status | Description |
+| Statut unifié | Statut MiniMax | Description |
 |---|---|---|
-| `QUEUED` | `queued` / `preparing` | Queued |
-| `IN_PROGRESS` | `running` | Generating |
-| `SUCCESS` | `succeeded` | Completed; `result_url` holds the video |
-| `FAILURE` | `failed` / `cancelled` / `expired` | Failed; `fail_reason` explains why |
+| `QUEUED` | `queued` / `preparing` | En file d'attente |
+| `IN_PROGRESS` | `running` | Génération en cours |
+| `SUCCESS` | `succeeded` | Terminée ; `result_url` contient la vidéo |
+| `FAILURE` | `failed` / `cancelled` / `expired` | Échec ; `fail_reason` explique pourquoi |
 
-## Billing
+## Facturation
 
-MiniMax H3 bills against the **actual upstream usage**:
+MiniMax H3 facture selon **l'usage réel en amont** :
 
 ```
 cost(USD) = total_billed_seconds × resolution_price + billable_reference_images × $0.04
 where: total_billed_seconds = input_reference_video_seconds + generated_video_seconds
 ```
 
-| Resolution | Price |
+| Résolution | Prix |
 |---|---|
-| `2K` | $0.13 / second |
-| `768P` | $0.09 / second (not yet available) |
+| `2K` | 0,13 $ / seconde |
+| `768P` | 0,09 $ / seconde (pas encore disponible) |
 
-Key points:
+Points clés :
 
-- **Input reference video is billed too**: for r2v, a reference video's billable duration is counted at the output resolution's price.
-- **Reference images are billed separately**: $0.04 per billable reference image.
-- **Pre-charged on submit, settled on completion**: a provisional charge is taken at submit time, then Uter recomputes precisely from the upstream `usage` on success, refunding or charging the difference.
+- **La vidéo de référence en entrée est également facturée** : pour r2v, la durée facturable d'une vidéo de référence est comptée au prix de la résolution de sortie.
+- **Les images de référence sont facturées séparément** : 0,04 $ par image de référence facturable.
+- **Pré-débité à la soumission, réglé à l'achèvement** : une charge provisoire est prélevée à la soumission, puis Uter recalcule précisément à partir de l'`usage` en amont en cas de succès, en remboursant ou en débitant la différence.
 
-## Full Example
+## Exemple complet
 
 ```bash
 # Step 1: submit the task
@@ -153,7 +153,7 @@ curl https://uter.ai/v1/video/generations/task_xxx \
 # Step 3: once data.status == "SUCCESS", download from data.result_url
 ```
 
-Reference-to-video using the top-level `media[]` array:
+Référence vers vidéo à l'aide du tableau `media[]` de premier niveau :
 
 ```bash
 curl -X POST https://uter.ai/v1/video/generations \
@@ -171,11 +171,11 @@ curl -X POST https://uter.ai/v1/video/generations \
   }'
 ```
 
-## Status Codes and Errors
+## Codes d'état et erreurs
 
-| Case | Description |
+| Cas | Description |
 |---|---|
-| Missing `prompt` | `400`, `prompt is required` (rejected before submission, no charge) |
-| `401` / `403` | API key invalid / not allowed to access this model |
-| `402` | Insufficient balance (`insufficient user quota`); top up in the Uter console |
-| Task `FAILURE` | Upstream generation failed, see `fail_reason`; Uter refunds automatically |
+| `prompt` manquant | `400`, `prompt is required` (rejeté avant soumission, aucun débit) |
+| `401` / `403` | Clé d'API invalide / non autorisée à accéder à ce modèle |
+| `402` | Solde insuffisant (`insufficient user quota`) ; rechargez dans la console Uter |
+| Tâche `FAILURE` | La génération en amont a échoué, voir `fail_reason` ; Uter rembourse automatiquement |
