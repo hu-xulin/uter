@@ -83,6 +83,50 @@ function redirectToSignIn(): void {
   }
 }
 
+/**
+ * A single sign-out (or an expiring session) invalidates every request that is
+ * already in flight, so a burst of parallel 401s reaches the interceptor at
+ * once. Each one used to raise its own "Session expired!" toast, which the user
+ * saw as the same message repeated. We therefore notify once per session and
+ * re-arm only when a genuinely different session appears, so a later, real
+ * expiry still tells the user what happened.
+ */
+let notifiedSessionKey: string | null = null
+
+function currentSessionKey(): string {
+  return (
+    useAuthStore.getState().auth.session?.sid ||
+    useAuthStore.getState().auth.accessToken ||
+    'anonymous'
+  )
+}
+
+/**
+ * Returns true the first time it is called for a given session, and false for
+ * every repeat until the session changes. Exported for tests.
+ */
+export function shouldNotifySessionExpired(): boolean {
+  const key = currentSessionKey()
+  if (notifiedSessionKey === key) return false
+  notifiedSessionKey = key
+  return true
+}
+
+/** Test seam: forget which session was already announced. */
+export function resetSessionExpiredNotice(): void {
+  notifiedSessionKey = null
+}
+
+function notifySessionExpired(error: unknown, skipErrorHandler?: boolean) {
+  if (skipErrorHandler) return
+  if (!shouldNotifySessionExpired()) return
+  handleServerError({
+    message: t('Session expired!'),
+    [safeServerErrorMessage]: true,
+    cause: error,
+  })
+}
+
 api.interceptors.response.use(
   (response) => {
     if (response.config.acceptAuthRotation && response.data?.success === true) {
@@ -112,31 +156,15 @@ api.interceptors.response.use(
         }
 
         if (outcome.kind === 'anonymous' || outcome.kind === 'out_of_sync') {
-          if (!skipErrorHandler) {
-            handleServerError({
-              message: t('Session expired!'),
-              [safeServerErrorMessage]: true,
-              cause: error,
-            })
-          }
+          notifySessionExpired(error, skipErrorHandler)
           redirectToSignIn()
         }
       } else if (config?.authRetry) {
         clearAuthentication(false)
-        if (!skipErrorHandler) {
-          handleServerError({
-            message: t('Session expired!'),
-            [safeServerErrorMessage]: true,
-            cause: error,
-          })
-        }
+        notifySessionExpired(error, skipErrorHandler)
         redirectToSignIn()
-      } else if (!skipErrorHandler) {
-        handleServerError({
-          message: t('Session expired!'),
-          [safeServerErrorMessage]: true,
-          cause: error,
-        })
+      } else {
+        notifySessionExpired(error, skipErrorHandler)
       }
     }
     if (axios.isAxiosError(error)) error.message = getServerErrorMessage(error)
