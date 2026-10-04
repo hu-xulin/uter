@@ -33,6 +33,14 @@ const serverErrorMessageKeys = {
   TELEGRAM_LEGACY_AUTH_REMOVED:
     'Telegram login has changed. Reload the page and start Telegram OAuth again.',
   AUTH_INTERNAL_ERROR: 'Please try again later.',
+  EMAIL_DOMAIN_NOT_SUPPORTED:
+    'This email domain is not supported. Please use an email address from another domain.',
+  EMAIL_ALIAS_NOT_SUPPORTED:
+    'Email aliases are not supported. Please use an email address without +, -, _ or . in the part before @, then try again.',
+  EMAIL_ADDRESS_REJECTED: 'Please enter a valid email address',
+  EMAIL_ALREADY_TAKEN: 'This email address is already in use.',
+  EMAIL_BINDING_DELIVERY_FAILED:
+    'Verification email could not be sent. Start email verification again.',
   SECURITY_VERIFICATION_FAILED: 'Verification failed. Please try again.',
   PASSKEY_RP_ID_UNAVAILABLE:
     'This Passkey domain is not available on this website. Use its original website or another verification method.',
