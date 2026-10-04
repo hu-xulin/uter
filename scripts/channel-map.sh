@@ -15,7 +15,7 @@
 #   ./scripts/channel-map.sh --adaptor                    # GetAdaptor 派发表
 #   ./scripts/channel-map.sh --task                       # taskPluginKeys 映射
 #   ./scripts/channel-map.sh --query KEYWORD              # 模糊搜 KEYWORD(名称片段或编号)
-#   ./scripts/channel-map.sh --check                      # 与 docs/channel-adaptor-map.md 校验关键编号
+#   ./scripts/channel-map.sh --check                      # 与 docs-dev/channel-adaptor-map.md 校验关键编号
 #
 # 输出风格:ASCII 表格 + 颜色。跨 macOS / Linux,纯 bash + sed + grep(无 jq / gawk 依赖)。
 
@@ -27,7 +27,7 @@ CHANNEL_GO="$ROOT_DIR/constant/channel.go"
 API_TYPE_GO="$ROOT_DIR/constant/api_type.go"
 ADAPTOR_GO="$ROOT_DIR/relay/relay_adaptor.go"
 CHANNEL_DIR="$ROOT_DIR/relay/channel"
-DOC_MD="$ROOT_DIR/docs/channel-adaptor-map.md"
+DOC_MD="$ROOT_DIR/docs-dev/channel-adaptor-map.md"
 
 # ───────────────────────── 颜色 ─────────────────────────
 if [[ -t 1 ]] && command -v tput >/dev/null 2>&1 && [[ "$(tput colors 2>/dev/null || echo 0)" -ge 8 ]]; then
@@ -52,7 +52,7 @@ OPTIONS:
   --adaptor        GetAdaptor 实际派发表(relay_adaptor.go:50)
   --task           taskPluginKeys 任务平台映射
   --query KEYWORD  模糊搜 KEYWORD(名称片段或编号;纯数字按编号查)
-  --check          与 docs/channel-adaptor-map.md 校验关键编号
+  --check          与 docs-dev/channel-adaptor-map.md 校验关键编号
   -h, --help       显示本帮助
 
 数据源:${C_DIM}
@@ -162,7 +162,7 @@ cmd_types() {
   done < <(parse_channel_types)
   echo
   printf "${C_DIM}* 想知道某个 ChannelType 派发到哪个 adaptor 包?用 ${C_YEL}--query <id>${C_DIM} 或 ${C_YEL}--adaptor${C_DIM}${C_RST}\n"
-  printf "${C_DIM}* 完整归属表见 docs/channel-adaptor-map.md${C_RST}\n"
+  printf "${C_DIM}* 完整归属表见 docs-dev/channel-adaptor-map.md${C_RST}\n"
 }
 
 cmd_api_types() {
@@ -282,7 +282,7 @@ cmd_check() {
   if [[ ! -f "$DOC_MD" ]]; then
     echo "${C_RED}✗ $DOC_MD 不存在,无法校验${C_RST}"; return 1
   fi
-  hdr "校验 docs/channel-adaptor-map.md 是否与源码一致"
+  hdr "校验 docs-dev/channel-adaptor-map.md 是否与源码一致"
   local pass=0 fail=0
   while IFS=$'\t' read -r id name; do
     [[ -z "$id" || "$id" == "0" ]] && continue

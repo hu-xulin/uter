@@ -71,22 +71,22 @@
 
 <p align="center">
   <a href="https://www.cherry-ai.com/" target="_blank">
-    <img src="./docs/images/cherry-studio.png" alt="Cherry Studio" height="80" />
+    <img src="./docs-dev/images/cherry-studio.png" alt="Cherry Studio" height="80" />
   </a><!--
   --><a href="https://github.com/iOfficeAI/AionUi/" target="_blank">
-    <img src="./docs/images/aionui.png" alt="Aion UI" height="80" />
+    <img src="./docs-dev/images/aionui.png" alt="Aion UI" height="80" />
   </a><!--
   --><a href="https://bda.pku.edu.cn/" target="_blank">
-    <img src="./docs/images/pku.png" alt="北京大学" height="80" />
+    <img src="./docs-dev/images/pku.png" alt="北京大学" height="80" />
   </a><!--
   --><a href="https://www.compshare.cn/?ytag=GPU_yy_gh_Uter" target="_blank">
-    <img src="./docs/images/ucloud.png" alt="UCloud 优刻得" height="80" />
+    <img src="./docs-dev/images/ucloud.png" alt="UCloud 优刻得" height="80" />
   </a><!--
   --><a href="https://www.aliyun.com/" target="_blank">
-    <img src="./docs/images/aliyun.png" alt="阿里云" height="80" />
+    <img src="./docs-dev/images/aliyun.png" alt="阿里云" height="80" />
   </a><!--
   --><a href="https://io.net/" target="_blank">
-    <img src="./docs/images/io-net.png" alt="IO.NET" height="80" />
+    <img src="./docs-dev/images/io-net.png" alt="IO.NET" height="80" />
   </a>
 </p>
 
@@ -397,7 +397,7 @@ docker run --name uter -d --restart always \
 2. 在应用商店搜索 **Uter**
 3. 一键安装
 
-📖 [图文教程](./docs/installation/BT.md)
+📖 [图文教程](./docs-dev/installation/BT.md)
 
 </details>
 
@@ -417,7 +417,7 @@ docker run --name uter -d --restart always \
 
 缩短 `SYNC_FREQUENCY` 可减小独立 Redis 的陈旧窗口，但每个活跃 SID 在每个节点上会按该 TTL 增加一次数据库主键点查。上述保证只让 Session 鉴权在不同拓扑下保持有界陈旧；限流和其他 Redis 控制面缓存仍受拓扑影响。
 
-Token、Origin 校验和 PAT 契约见[用户鉴权与登录会话](./docs/authentication.md)。
+Token、Origin 校验和 PAT 契约见[用户鉴权与登录会话](./docs-dev/authentication.md)。
 
 ### 🔄 渠道重试与缓存
 

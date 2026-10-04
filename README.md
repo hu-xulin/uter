@@ -71,22 +71,22 @@
 
 <p align="center">
   <a href="https://www.cherry-ai.com/" target="_blank">
-    <img src="./docs/images/cherry-studio.png" alt="Cherry Studio" height="80" />
+    <img src="./docs-dev/images/cherry-studio.png" alt="Cherry Studio" height="80" />
   </a><!--
   --><a href="https://github.com/iOfficeAI/AionUi/" target="_blank">
-    <img src="./docs/images/aionui.png" alt="Aion UI" height="80" />
+    <img src="./docs-dev/images/aionui.png" alt="Aion UI" height="80" />
   </a><!--
   --><a href="https://bda.pku.edu.cn/" target="_blank">
-    <img src="./docs/images/pku.png" alt="Peking University" height="80" />
+    <img src="./docs-dev/images/pku.png" alt="Peking University" height="80" />
   </a><!--
   --><a href="https://www.compshare.cn/?ytag=GPU_yy_gh_Uter" target="_blank">
-    <img src="./docs/images/ucloud.png" alt="UCloud" height="80" />
+    <img src="./docs-dev/images/ucloud.png" alt="UCloud" height="80" />
   </a><!--
   --><a href="https://www.aliyun.com/" target="_blank">
-    <img src="./docs/images/aliyun.png" alt="Alibaba Cloud" height="80" />
+    <img src="./docs-dev/images/aliyun.png" alt="Alibaba Cloud" height="80" />
   </a><!--
   --><a href="https://io.net/" target="_blank">
-    <img src="./docs/images/io-net.png" alt="IO.NET" height="80" />
+    <img src="./docs-dev/images/io-net.png" alt="IO.NET" height="80" />
   </a>
 </p>
 
@@ -399,7 +399,7 @@ docker run --name uter -d --restart always \
 2. Search for **Uter** in the application store
 3. One-click installation
 
-📖 [Tutorial with images](./docs/BT.md)
+📖 [Tutorial with images](./docs-dev/BT.md)
 
 </details>
 
@@ -419,7 +419,7 @@ The database is authoritative for login Sessions and for the per-user active/iss
 
 A shorter `SYNC_FREQUENCY` reduces the independent-Redis staleness window but causes one additional primary-key Session lookup per active SID, per node, per TTL. These guarantees make Session authentication bounded-stale across the supported topologies; rate limits and other Redis-backed control-plane caches remain topology-dependent.
 
-See [User authentication and login sessions](./docs/authentication.md) for the token, Origin-check and PAT contracts.
+See [User authentication and login sessions](./docs-dev/authentication.md) for the token, Origin-check and PAT contracts.
 
 ### 🔄 Channel Retry and Cache
 

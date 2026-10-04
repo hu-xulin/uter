@@ -334,7 +334,7 @@ relay/channel/
 # .github/workflows/check-channel-map.yml 草案
 - name: Verify channel adaptor map is up to date
   run: |
-    ./scripts/channel-map.sh --check  # 对比 docs/channel-adaptor-map.md
+    ./scripts/channel-map.sh --check  # 对比 docs-dev/channel-adaptor-map.md
 ```
 
 具体 CI 配置可以等接入后再加。
