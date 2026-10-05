@@ -59,6 +59,7 @@ import {
   DOCS_ENTRY_PATH,
   docsPathFor,
   resolveDocsLocaleCode,
+  toDocsSplat,
 } from '@/lib/docs-link'
 import { handleServerError } from '@/lib/handle-server-error'
 
@@ -334,7 +335,15 @@ export function ChatPresetsItem({ item }: { item: NavChatPresets }) {
       const target = slug
         ? `${docsPathFor(locale)}apps/${slug}/`
         : `${docsPathFor(locale)}apps/`
-      navigate({ to: DOCS_ENTRY_PATH, search: { p: target } })
+      // `target` is the framed content path; route to the clean host URL
+      // `/docs/<lang>/<page>` (the `/docs/$` splat) so the page reopens
+      // from a shareable, encoding-free link.
+      const splat = toDocsSplat(target)
+      if (splat) {
+        navigate({ to: '/docs/$', params: { _splat: splat } })
+      } else {
+        navigate({ to: DOCS_ENTRY_PATH })
+      }
     },
     [i18n.language, navigate]
   )

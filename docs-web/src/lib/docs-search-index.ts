@@ -54,17 +54,18 @@ const SNIPPET_BEFORE = 40;
 const SNIPPET_AFTER = 140;
 
 /**
- * Origin-relative prefix the docs site is mounted at, derived from the
- * current pathname.
+ * Origin-relative prefix the docs search index is served from.
  *
- * `/docs/zh/...` is served from the export directory mounted at the site
- * root, so this returns `''`. Deriving it (instead of hard-coding `/`)
- * keeps the search index reachable if the docs are ever served under a
- * prefix.
+ * The docs export is mounted under the `basePath` `/docs-content` (see
+ * `next.config.mjs`), so the index file — `search-index.json` — lives at
+ * `/docs-content/search-index.json`. The value is fixed for this
+ * deployment, which keeps the fetch URL deterministic regardless of the
+ * current locale path.
  */
-export function docsRootFromPath(pathname: string): string {
-  const i = pathname.indexOf('/docs/');
-  return i === -1 ? '' : pathname.slice(0, i);
+const DOCS_CONTENT_MOUNT = '/docs-content';
+
+export function docsRootFromPath(_pathname: string): string {
+  return DOCS_CONTENT_MOUNT;
 }
 
 /**

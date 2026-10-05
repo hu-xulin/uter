@@ -20,144 +20,54 @@ type WebAssets struct {
 	IndexPage []byte
 }
 
-// docsLocale is the set of locale codes the docs site ships with.
-// The SPA's docs-link helper (`web/src/lib/docs-link.ts`) keeps the
-// SPA in sync; adding a locale here also requires the matching entry
-// in `docs-web/src/lib/i18n.ts#SUPPORTED_DOCS_LOCALES` and content in
-// `docs-web/src/lib/docs-content.ts`.
+// Docs hosting model
 //
-// Must list every locale the docs site actually ships — `zh`, `zh-TW`,
-// `en`, `fr`, `ja`, `ru`, `vi` — so `isDocsPath`/`isBareDocsPath` treat
-// French/Japanese/Russian/Vietnamese docs paths as real docs rather than
-// stale non-locale redirects. Dropping any locale here silently funnels
-// that language's readers back to the `zh` landing (see `isBareDocsPath`).
-var docsLocale = map[string]struct{}{
-	"zh":    {},
-	"zh-TW": {},
-	"en":    {},
-	"fr":    {},
-	"ja":    {},
-	"ru":    {},
-	"vi":    {},
-}
-
-func isDocsLocale(code string) bool {
-	_, ok := docsLocale[code]
-	return ok
-}
-
-// isDocsPath reports whether a URL belongs to the docs section
-// (`/docs/<lang>/...`). Used by NoRoute so unknown docs paths can be
-// redirected to the docs landing instead of being served by the SPA
-// shell (which has no docs route and would show a generic 404 UI).
-func isDocsPath(p string) bool {
-	if !strings.HasPrefix(p, "/") {
-		return false
-	}
-	rest := strings.TrimPrefix(p, "/")
-	// First segment must be "docs".
-	docsPart, after, hasSep := strings.Cut(rest, "/")
-	if !hasSep || docsPart != "docs" {
-		return false
-	}
-	// Second segment is the locale.
-	locale, _, hasSep2 := strings.Cut(after, "/")
-	_ = hasSep2
-	return isDocsLocale(locale)
-}
-
-// isBareDocsPath reports whether a URL is a legacy bare-docs entry that
-// the SPA cannot reach through its own router.
+// The SPA owns the clean, encoding-free host routes `/docs` and
+// `/docs/<lang>/<page>` (see `web/src/routes/docs.tsx` and
+// `web/src/routes/docs/$.tsx`), which render the app shell and frame the
+// statically exported docs site. The exported content itself lives under
+// the Next.js `basePath` `/docs-content` (set in
+// `docs-web/next.config.mjs`) and is copied to `web/dist/docs-content`
+// by `docs-web/scripts/copy-to-web.mjs`; this router mounts that
+// directory at `/docs-content`, serving the real pages from
+// `/docs-content/docs/<lang>/<page>` and `/docs-content/about/<lang>/...`.
 //
-// The exact `/docs` and `/docs/` paths are intentionally NOT matched
-// here — they are owned by the SPA's `/docs` route, which reads the
-// user's UI language and redirects to the locale-appropriate landing
-// (`/docs/zh/` for Chinese, `/docs/en/` for everything else). Only paths
-// strictly deeper than the bare entry — e.g. `/legacy/foo/` from
-// stale admin `docs_link` values — are legacy redirects to the
-// canonical landing.
-//
-// Note: with the `/docs/<lang>/` URL scheme, paths like `/docs/zh/quickstart/`
-// are now valid docs paths handled by `isDocsPath` above, not bare-docs
-// redirects. This function only catches paths under `/docs/` that don't
-// have a valid locale as the second segment (e.g. `/docs/legacy/foo/`).
-func isBareDocsPath(p string) bool {
-	if !strings.HasPrefix(p, "/") {
-		return false
-	}
-	rest := strings.TrimPrefix(p, "/")
-	if rest == "docs" || rest == "docs/" {
-		return false
-	}
-	if !strings.HasPrefix(rest, "docs/") {
-		return false
-	}
-	// Check if the second segment is a valid docs locale. If it is,
-	// this is a real docs path handled by isDocsPath, not a bare redirect.
-	afterDocs := strings.TrimPrefix(rest, "docs/")
-	locale, _, _ := strings.Cut(afterDocs, "/")
-	if isDocsLocale(locale) {
-		return false
-	}
-	return true
-}
+// Because the SPA claims every `/docs/*` path, this file no longer needs
+// the legacy `/docs/*` redirect helpers that used to funnel unknown docs
+// paths back to a landing — the SPA route tree handles those.
 
-// docsLanding returns the canonical landing-page URL. Centralised so
-// every docs-site redirect points at the same target. The canonical
-// entry is the first locale in the ordered `docsLocales` slice, not
-// the map — Go map iteration order is randomised, so the redirect
-// target must be derived from the slice to stay deterministic.
-//
-// Note this is the *locale-resolved* landing. The admin-facing
-// `docs_link` default in `setting/operation_setting/general_setting.go`
-// is deliberately locale-free (`/docs`) and routes through the SPA's
-// docs entry, which picks the locale before landing here.
-func docsLanding() string {
-	if len(docsLocales) == 0 {
-		return "/"
-	}
-	return "/docs/" + docsLocales[0] + "/"
-}
-
-// docsLocales is the ordered, canonical list of docs locales. The
-// SPA mirrors this ordering via `docs-link.ts#DOCS_LOCALE_PAIRS` so
-// the canonical landing stays deterministic across server and client.
-// `zh` stays first — it is the canonical landing for the default UI
-// language — but every shipped locale must appear so legacy/stale docs
-// redirects and `docsLanding` stay aligned with the SPA.
-var docsLocales = []string{"zh", "zh-TW", "en", "fr", "ja", "ru", "vi"}
+// docsContentMount is the URL prefix the statically exported docs + About
+// site is served from. It must match the Next.js `basePath` in
+// `docs-web/next.config.mjs` and the copy target in
+// `docs-web/scripts/copy-to-web.mjs`, and the SPA's
+// `web/src/lib/docs-link.ts#DOCS_CONTENT_PREFIX`, so the framed content and
+// the clean `/docs/<lang>/<page>` host routes stay in lockstep.
+const docsContentMount = "/docs-content"
 
 func SetWebRouter(router *gin.Engine, assets WebAssets, pluginDispatcher gin.HandlerFunc) {
 	frontendFS := common.EmbedFolder(assets.BuildFS, "web/dist")
 
-	// The Next.js docs site builds a fully static export into
-	// `web/dist/docs/` via `docs-web/scripts/copy-to-web.mjs`. The docs
-	// routes live at `/docs/<lang>/...`, so we mount the embed at the
-	// root and let `static.Serve` fall through to the SPA for any path
-	// the embed doesn't have. `/docs/zh/...` resolves to the docs HTML;
-	// `/dashboard` falls through to `web/dist/index.html`.
-	docsFS := common.EmbedFolder(assets.BuildFS, "web/dist/docs")
-
-	landing := docsLanding()
+	// The Next.js docs + About site builds a fully static export into
+	// `web/dist/docs-content/` (under the `/docs-content` basePath set in
+	// `docs-web/next.config.mjs`). Mount it at `/docs-content` so the real
+	// pages are served from `/docs-content/docs/<lang>/...` and
+	// `/docs-content/about/<lang>/...`. The SPA keeps the clean `/docs/...`
+	// host routes (which frame this content), so `/docs-content/...` never
+	// collides with them. `/dashboard` and the rest of the SPA still fall
+	// through to `web/dist/index.html` via the NoRoute handler below.
+	docsFS := common.EmbedFolder(assets.BuildFS, "web/dist/docs-content")
 
 	router.Use(
 		middleware.RouteTag("web"),
 		gzip.Gzip(gzip.DefaultCompression),
 		middleware.Cache(),
-		// Legacy `/docs/<non-locale>` paths are stale and have no
-		// content (the docs site is shipped under `/docs/<lang>/...`).
-		// Send them to the canonical landing so stale `docs_link`
-		// settings and bookmarks still resolve. The exact `/docs` and
-		// `/docs/` paths are excluded so the SPA's `/docs` route can
-		// read the user's UI language and redirect to the locale entry.
-		func(c *gin.Context) {
-			if isBareDocsPath(c.Request.URL.Path) {
-				c.Redirect(http.StatusMovedPermanently, landing)
-				c.Abort()
-				return
-			}
-			c.Next()
-		},
+		// The SPA owns every `/docs/*` path now (clean host routes that
+		// frame the exported content), so there is no legacy `/docs/*`
+		// redirect to perform here — the SPA route tree resolves or 404s
+		// those internally. The exported content is served from
+		// `/docs-content/...` by the `static.Serve("/docs-content", ...)`
+		// mount at the end of this `Use` chain, which does not intercept
+		// `/docs/*`.
 		// The shipped icon file is `web/public/favicon-legacy.ico`, not
 		// `favicon.ico`: Rsbuild auto-detects `public/favicon.{ico,png,svg}`
 		// and injects an un-versioned `<link rel="icon" href="/favicon.ico">`
@@ -180,7 +90,7 @@ func SetWebRouter(router *gin.Engine, assets WebAssets, pluginDispatcher gin.Han
 			}
 			c.Next()
 		},
-		static.Serve("/", docsFS),
+		static.Serve(docsContentMount, docsFS),
 	)
 
 	router.NoRoute(
@@ -219,14 +129,6 @@ func SetWebRouter(router *gin.Engine, assets WebAssets, pluginDispatcher gin.Han
 		middleware.GlobalWebRateLimit(),
 		middleware.Cache(),
 		func(c *gin.Context) {
-			// Unknown `/docs/<lang>/<x>` paths are part of the docs section
-			// but the static export didn't emit them. Redirecting to
-			// the landing keeps the experience intact instead of
-			// showing a plain string or a SPA 404 page.
-			if isDocsPath(c.Request.URL.Path) {
-				c.Redirect(http.StatusMovedPermanently, landing)
-				return
-			}
 			if strings.HasPrefix(c.Request.RequestURI, "/v1") || strings.HasPrefix(c.Request.RequestURI, "/api") || strings.HasPrefix(c.Request.RequestURI, "/assets") {
 				controller.RelayNotFound(c)
 				return

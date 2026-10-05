@@ -20,7 +20,7 @@ For commercial licensing, please contact support@Uter.ai.com
 /**
  * Locale → docs-path prefix mapping.
  *
- * The bundled docs site (a Next.js static export in `web/dist/docs`)
+ * The bundled docs site (a Next.js static export in `web/dist/docs-content`)
  * ships all seven supported locales — `zh`, `zh-TW`, `en`, `fr`, `ja`,
  * `ru`, `vi` — each with its own translated content (API reference, user
  * guide, about pages, legal docs). The gateway SPA serves the same seven
@@ -63,10 +63,13 @@ export const DEFAULT_DOCS_LOCALE: DocsLocaleCode = 'en'
  * Visiting `/docs` renders the SPA's own shell — the shared public
  * header plus the statically exported docs site framed underneath —
  * so the docs read as part of the app instead of replacing it. The
- * route resolves the locale-matching landing (`/docs/zh/` for Chinese
- * variants, `/docs/en/` for everything else) from the active UI
- * language and, on later navigations inside the frame, mirrors the
- * docs page back into this route's `?p=` search param.
+ * shell is mounted at `/docs` (see `routes/docs.tsx`) and the clean,
+ * encoding-free path `/docs/<lang>/<page>` (handled by
+ * `routes/docs/$.tsx`) carries the exact page being shown, so a reload
+ * or a shared link reopens the same page. The framed content itself
+ * lives under {@link DOCS_CONTENT_PREFIX} (`/docs-content/docs/...`),
+ * deliberately distinct from this host route so the reader-facing URL
+ * stays legible.
  *
  * Using a single, locale-free URL keeps the "View docs" button href
  * stable across the whole SPA and leaves the locale choice to whatever
@@ -74,6 +77,78 @@ export const DEFAULT_DOCS_LOCALE: DocsLocaleCode = 'en'
  * required.
  */
 export const DOCS_ENTRY_PATH = '/docs'
+
+/**
+ * Mount prefix the *bundled docs content* is served from.
+ *
+ * The docs site is a Next.js static export copied into `web/dist/docs-content`
+ * (see `docs-web/scripts/copy-to-web.mjs`) and mounted at `/docs-content/…` by
+ * the Go gateway, so the framed content lives under
+ * `/docs-content/docs/<lang>/…`. The SPA's own docs route is `/docs` (see
+ * `routes/docs.tsx` + `routes/docs/$.tsx`); the two are deliberately distinct
+ * so a clean, encoding-free host URL like `/docs/zh/api/…` can be the SPA
+ * route while the iframe loads the real static page from
+ * `/docs-content/docs/zh/api/…`.
+ */
+export const DOCS_CONTENT_PREFIX = '/docs-content/docs'
+
+/** Convert a host docs path (`/docs/<lang>/…`) to its content path. */
+export function hostToContent(hostPath: string): string {
+  if (!hostPath.startsWith(`${DOCS_ENTRY_PATH}/`)) return `${DOCS_CONTENT_PREFIX}${hostPath}`
+  return `${DOCS_CONTENT_PREFIX}${hostPath.slice(DOCS_ENTRY_PATH.length)}`
+}
+
+/** Convert a content path (`/docs-content/docs/<lang>/…`) back to the host path. */
+export function contentToHost(contentPath: string): string {
+  if (!contentPath.startsWith(`${DOCS_CONTENT_PREFIX}/`)) return `${DOCS_ENTRY_PATH}${contentPath}`
+  return `${DOCS_ENTRY_PATH}${contentPath.slice(DOCS_CONTENT_PREFIX.length)}`
+}
+
+/**
+ * Normalise an arbitrary path coming from the framed docs site (or from a
+ * stored host URL) into a trusted content path, or `null` if it cannot be
+ * derived. Accepts three shapes the bridge / route may produce:
+ *  - `/docs-content/docs/<lang>/…` — already a content path
+ *  - `/docs/<lang>/…`            — a host path (stripped and re-prefixed)
+ *  - `/<lang>/…`                 — a bare locale path (prefixed)
+ * The locale segment must be one we actually ship (`zh`, `zh-TW`, `en`,
+ * `fr`, `ja`, `ru`, `vi`); anything else — empty, or a non-locale segment
+ * like `/docs/legacy/…` — is rejected so the viewer can fall back to the
+ * locale landing instead of framing a missing page.
+ */
+const DOCS_LOCALE_RE = /^(zh|zh-TW|en|fr|ja|ru|vi)$/
+
+export function coerceToContent(raw: string | undefined): string | null {
+  if (!raw) return null
+  let path = raw
+  if (path.startsWith(`${DOCS_CONTENT_PREFIX}/`)) {
+    // already a content path
+  } else if (path.startsWith(`${DOCS_ENTRY_PATH}/`)) {
+    path = hostToContent(path)
+  } else if (/^\/(zh|zh-TW|en|fr|ja|ru|vi)\//.test(path)) {
+    path = `${DOCS_CONTENT_PREFIX}${path}`
+  } else {
+    return null
+  }
+  const m = new RegExp(`^${DOCS_CONTENT_PREFIX}/([^/]+)/`).exec(path)
+  if (!m || !DOCS_LOCALE_RE.test(m[1])) return null
+  return path
+}
+
+/**
+ * Convert a docs path the bridge / a caller produces into the `?/$` splat
+ * for the SPA `/docs/$` route (e.g. `zh/api/audio-openai/`), or `null`
+ * when the input can't be resolved to a real docs page. The path may be a
+ * content path (`/docs-content/docs/…`) or a host path (`/docs/…`) — both
+ * normalise to the same splat.
+ */
+export function toDocsSplat(raw: string | undefined): string | null {
+  const content = coerceToContent(raw)
+  if (!content) return null
+  const host = contentToHost(content)
+  if (!host.startsWith(`${DOCS_ENTRY_PATH}/`)) return null
+  return host.slice(DOCS_ENTRY_PATH.length + 1)
+}
 
 /**
  * Whether an href resolves to the bundled docs entry the SPA renders
@@ -90,17 +165,21 @@ export function isBundledDocsHref(href: string): boolean {
 }
 
 /**
- * Entry path of the Uter docs site for a given locale. The docs
- * site is mounted at `/docs/<lang>/` by the Go gateway; the rest of
- * the path is just the `docs` prefix concatenated with the locale.
+ * Content path of the Uter docs site for a given locale — i.e. the URL the
+ * iframe actually loads. The static export is served by the Go gateway
+ * under {@link DOCS_CONTENT_PREFIX}, so the real content lives at
+ * `/docs-content/docs/<lang>/` while the host route the reader sees is the
+ * locale-free `/docs` (or the clean `/docs/<lang>/<page>`). Use
+ * {@link hostToContent} / {@link contentToHost} to cross between the two.
  *
- * `docs-web` is a Next.js static export copied into `web/dist/docs`
- * and served by the Go gateway at `/docs/<lang>/...`. We mirror the
- * supported-locale list there in `docs-web/src/lib/i18n.ts`; this
+ * `docs-web` is a Next.js static export (built with
+ * `basePath: '/docs-content'`) copied into `web/dist/docs-content` and
+ * served by the Go gateway at `/docs-content/docs/<lang>/...`. We mirror
+ * the supported-locale list there in `docs-web/src/lib/i18n.ts`; this
  * file is the SPA's counterpart so both sides agree.
  */
 export function docsPathFor(locale: DocsLocaleCode): string {
-  return `/docs/${locale}/`
+  return `${DOCS_CONTENT_PREFIX}/${locale}/`
 }
 
 /**
@@ -117,7 +196,7 @@ export const DOCS_LANDING_SEGMENT =
   'guide/wiki/basic-concepts/features-introduction'
 
 /**
- * Full path of the page the docs open on, for a given locale.
+ * Full content path of the page the docs open on, for a given locale.
  *
  * Distinct from {@link docsPathFor}, which is only the locale prefix:
  * switching UI language keeps the reader where they are by swapping the
@@ -130,7 +209,7 @@ export function docsLandingPathFor(locale: DocsLocaleCode): string {
 
 /**
  * Path of a legal document in the bundled docs site, for a given
- * locale — e.g. `/docs/en/legal/recharge-agreement/`.
+ * locale — e.g. `/docs-content/docs/en/legal/recharge-agreement/`.
  *
  * The legal documents are authored once, in
  * `docs-web/content/legal/<locale>/<doc>.md`, and that docs page is the
@@ -154,15 +233,19 @@ export function legalDocsPathFor(
 }
 
 /**
- * Entry path of the About page for a given locale.
+ * Mount prefix the *bundled About content* is served from.
  *
- * About is the second static page the gateway serves from the same
- * export (`docs-web`), mounted at `/about/<lang>/`. The SPA's `/about`
- * route frames it exactly the way `/docs` frames the docs site, so the
- * two share the locale resolution above and only differ in prefix.
+ * About shares the `docs-web` static export with the docs site; under the
+ * `basePath: '/docs-content'` it is emitted at `out/docs-content/about/<lang>/…`
+ * and mounted by the Go gateway at `/docs-content/about/…`. The SPA's own
+ * `/about` route (see `routes/about/index.tsx`) frames this content, so the
+ * reader-facing URL stays the locale-free `/about` while the iframe loads
+ * the real static page from `/docs-content/about/<lang>/…`.
  */
+export const ABOUT_CONTENT_PREFIX = '/docs-content/about'
+
 export function aboutPathFor(locale: DocsLocaleCode): string {
-  return `/about/${locale}/`
+  return `${ABOUT_CONTENT_PREFIX}/${locale}/`
 }
 
 /**
