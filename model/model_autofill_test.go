@@ -248,3 +248,47 @@ func findUpdate(t *testing.T, updates []MetadataSyncUpdate, name string) Metadat
 	}
 	return MetadataSyncUpdate{}
 }
+
+// A model the catalog has never heard of must still be filled by keyword, so a
+// newly launched product line stops reporting as missing metadata.
+func TestPlanOfficialMetadataFillDerivesUnknownModels(t *testing.T) {
+	locals := map[string]*Model{}
+	vendors := map[string]*Vendor{
+		// The site manages the brand locally even though the official vendor
+		// catalog files the same company under its product name.
+		"ByteDance": {Id: 15, Name: "ByteDance"},
+	}
+	upstream := map[string]MetadataValues{
+		// A catalogued relative for the same brand.
+		"doubao-seed-2-0-pro-260215": {Description: "Doubao Seed", Icon: "Doubao", Vendor: "Volcengine Ark", NameRule: NameRuleExact, Status: 1},
+	}
+
+	result, updates := PlanOfficialMetadataFill(
+		[]string{"doubao-seedance-2-0-260128", "doubao-seedream-5-0-260128"},
+		locals, vendors, upstream, map[string]Vendor{},
+	)
+
+	require.Equal(t, []string{"doubao-seedance-2-0-260128", "doubao-seedream-5-0-260128"}, result.CreatedModels)
+	require.Zero(t, result.SkippedUpstream)
+	require.Len(t, updates, 2)
+	for _, update := range updates {
+		require.True(t, update.Create)
+		require.Equal(t, "ByteDance", update.Values.Vendor,
+			"a derived model must attach to the vendor the site already manages")
+	}
+}
+
+// A derived brand the site does not manage and the official catalog does not
+// know must be skipped rather than guessed at or allowed to fail the batch.
+func TestPlanOfficialMetadataFillSkipsUnresolvableDerivedVendor(t *testing.T) {
+	locals := map[string]*Model{}
+	// The site has no "Nowhere" vendor and the catalog has never heard of it.
+	result, updates := PlanOfficialMetadataFill(
+		[]string{"nowhere-model-1"},
+		locals, map[string]*Vendor{}, map[string]MetadataValues{}, map[string]Vendor{},
+	)
+
+	require.Empty(t, result.CreatedModels)
+	require.Equal(t, 1, result.SkippedUpstream)
+	require.Empty(t, updates)
+}

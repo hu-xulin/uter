@@ -90,9 +90,17 @@ func PlanOfficialMetadataFill(
 			continue
 		}
 		values, known := upstream[name]
+		derived := false
 		if !known {
-			result.SkippedUpstream++
-			continue
+			// The catalog has no entry for this model. Rather than leaving the
+			// row permanently blank, derive what the name and the catalog's own
+			// relatives assert. A name that yields nothing stays skipped.
+			resolved, ok := DeriveMetadataValuesFromCatalog(name, upstream)
+			if !ok {
+				result.SkippedUpstream++
+				continue
+			}
+			values, derived = resolved, true
 		}
 		local := locals[name]
 		if local != nil && local.SyncOfficial == 0 {
@@ -114,6 +122,18 @@ func PlanOfficialMetadataFill(
 		var localVendor *Vendor
 		if local != nil {
 			localVendor = vendorByID[local.VendorID]
+		}
+		if derived {
+			// A keyword-derived brand name has to resolve to a vendor the site
+			// manages before it can be attached. When the official catalog does
+			// not know the name either, the model is left for an operator
+			// rather than guessed at, and the rest of the batch continues.
+			if !derivedVendorResolvable(values.Vendor, vendors) {
+				if _, known := upstreamVendors[values.Vendor]; !known {
+					result.SkippedUpstream++
+					continue
+				}
+			}
 		}
 		fields := metadataFieldsToFill(local, localVendor, values, upstreamVendors)
 		create := local == nil
@@ -197,6 +217,22 @@ func slicesClone(values []string) []string {
 	result := make([]string, len(values))
 	copy(result, values)
 	return result
+}
+
+// derivedVendorResolvable reports whether a keyword-derived brand name can be
+// attached to a model row.
+//
+// The name rules produce short brand names (ByteDance, Moonshot) while the
+// official vendor catalog files the same companies under their product names
+// ("Volcengine Ark", "Moonshot AI"). A brand the site already manages under the
+// derived name is directly attachable; anything else has to go through the
+// normal upstream lookup, which may not know that name at all.
+func derivedVendorResolvable(name string, vendors map[string]*Vendor) bool {
+	trimmed := strings.TrimSpace(name)
+	if trimmed == "" {
+		return false
+	}
+	return FindMetadataVendor(vendors, trimmed) != nil
 }
 
 // AutoFillOfficialMetadata fills missing model metadata from the official
