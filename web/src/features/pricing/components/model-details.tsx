@@ -57,7 +57,7 @@ import {
   getSuccessRateTextClass,
 } from '@/features/performance-metrics/lib/format'
 import { PluginIcon } from '@/features/task-plugins/components/plugin-icon'
-import { getLobeIcon } from '@/lib/lobe-icon'
+import { colorIconName, getLobeIcon } from '@/lib/lobe-icon'
 import { requireServerSuccess } from '@/lib/server-error-message'
 import { cn } from '@/lib/utils'
 import { useSystemConfigStore } from '@/stores/system-config-store'
@@ -630,7 +630,9 @@ function ModelHeader(props: {
   const { t } = useTranslation()
   const model = props.model
   const modelIconKey = model.icon || model.vendor_icon
-  const modelIcon = modelIconKey ? getLobeIcon(modelIconKey, 20) : null
+  const modelIcon = modelIconKey
+    ? getLobeIcon(colorIconName(modelIconKey), 20)
+    : null
   const description = model.description || model.vendor_description || null
 
   const sourceLabel =

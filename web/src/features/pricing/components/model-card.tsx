@@ -23,7 +23,7 @@ import { useTranslation } from 'react-i18next'
 import { CopyButton } from '@/components/copy-button'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card'
-import { getLobeIcon } from '@/lib/lobe-icon'
+import { colorIconName, getLobeIcon } from '@/lib/lobe-icon'
 import { cn } from '@/lib/utils'
 import { useSystemConfigStore } from '@/stores/system-config-store'
 
@@ -98,7 +98,11 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
   const groups = props.model.enable_groups || []
   const endpoints = props.model.supported_endpoint_types || []
   const modelIconKey = props.model.icon || props.model.vendor_icon
-  const modelIcon = modelIconKey ? getLobeIcon(modelIconKey, 28) : null
+  // Model logos render in their brand colors so cards stay scannable at a
+  // glance; the vendor filter in the sidebar deliberately stays monochrome.
+  const modelIcon = modelIconKey
+    ? getLobeIcon(colorIconName(modelIconKey), 28)
+    : null
   const initial = props.model.model_name?.charAt(0).toUpperCase() || '?'
   const isUnconfiguredTaskUsage = isUnconfiguredTaskUsageModel(props.model)
   const billingTime = useBillingTime(props.model.billing_expr)
@@ -554,7 +558,12 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
       <CardHeader className='flex flex-row items-start gap-3'>
         <div
           aria-hidden
-          className='bg-muted/50 flex size-10 shrink-0 items-center justify-center rounded-lg'
+          className={cn(
+            'flex size-10 shrink-0 items-center justify-center rounded-lg',
+            // Colored brand logos sit on their own artwork; the muted tile is
+            // only needed behind the initial-letter fallback.
+            !modelIcon && 'bg-muted/50'
+          )}
         >
           {modelIcon || (
             <span className='text-muted-foreground text-sm font-bold'>

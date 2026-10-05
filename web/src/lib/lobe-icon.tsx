@@ -69,6 +69,66 @@ function parseValue(raw: string | undefined | null): string | number | boolean {
 }
 
 /**
+ * Whether a brand ships the given chained variant (e.g. "Color", "Avatar").
+ *
+ * @lobehub/icons exposes every brand as a monochrome default component that
+ * follows `currentColor`, and attaches the alternative renderings (`.Color`,
+ * `.Avatar`, `.Combine`, `.Text`) as properties on it. Custom icons are plain
+ * components with no variants.
+ */
+function iconHasVariant(baseKey: string, variant: string): boolean {
+  if (CUSTOM_ICONS[baseKey]) return false
+  const entry = (LobeIcons as Record<string, unknown>)[baseKey]
+  if (entry == null) return false
+  if (typeof entry !== 'object' && typeof entry !== 'function') return false
+  return (entry as Record<string, unknown>)[variant] != null
+}
+
+/**
+ * Upgrade an icon key to its brand-color rendering.
+ *
+ * Prefers the `.Color` glyph; brands that only ship an `.Avatar` (brand
+ * background + monochrome glyph) fall back to it so every model renders a
+ * recognizable colored logo instead of a flat currentColor silhouette. Names
+ * that already target a variant, and brands without any variant, are returned
+ * untouched.
+ */
+export function colorIconName(iconName: string): string {
+  const segments = iconName
+    .trim()
+    .split('.')
+    .filter((segment) => segment !== '')
+  if (segments.length === 0) return ''
+  const [baseKey, ...rest] = segments
+  // Already a color rendering (brand glyph or brand-background avatar).
+  if (rest[0] === 'Color' || rest[0] === 'Avatar') return segments.join('.')
+  if (iconHasVariant(baseKey, 'Color')) {
+    return [baseKey, 'Color', ...rest].join('.')
+  }
+  if (iconHasVariant(baseKey, 'Avatar')) {
+    return [baseKey, 'Avatar', ...rest].join('.')
+  }
+  return segments.join('.')
+}
+
+/**
+ * Downgrade an icon key to its monochrome rendering.
+ *
+ * Mirrors the backend's `model.NormalizeIconKey`: only a bare "X.Color" key is
+ * rewritten to "X", so advanced chain forms such as
+ * "Claude.Avatar.type={'platform'}" are never mangled. The result follows
+ * `currentColor`, which is what the vendor filter chips want.
+ */
+export function monoIconName(iconName: string): string {
+  const trimmed = iconName.trim()
+  const dot = trimmed.indexOf('.')
+  if (dot === -1) return trimmed
+  const suffix = trimmed.slice(dot + 1).trim()
+  if (suffix.toLowerCase() !== 'color') return trimmed
+  return trimmed.slice(0, dot).trim()
+}
+
+/**
  * Get LobeHub icon component by name
  * @param iconName - Icon name/description (e.g., "OpenAI", "OpenAI.Color", "Claude.Avatar")
  * @param size - Icon size (default: 20)
