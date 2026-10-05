@@ -37,11 +37,10 @@ func generateCreemSignature(payload string, secret string) string {
 // 验证Creem webhook签名
 func verifyCreemSignature(payload string, signature string, secret string) bool {
 	if secret == "" {
+		// 没有配置密钥时永远拒绝。测试模式也不例外：一旦将来放宽
+		// isCreemWebhookEnabled 的启用条件，这个「测试模式跳过验签」的分支
+		// 会立刻把一个无认证的 webhook 变成可以任意给他人充值的接口。
 		logger.LogWarn(context.Background(), fmt.Sprintf("Creem webhook secret 未配置 test_mode=%t signature=%q body=%q", setting.CreemTestMode, signature, payload))
-		if setting.CreemTestMode {
-			logger.LogInfo(context.Background(), fmt.Sprintf("Creem webhook 验签已跳过 reason=test_mode signature=%q body=%q", signature, payload))
-			return true
-		}
 		return false
 	}
 

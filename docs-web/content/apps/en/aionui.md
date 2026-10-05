@@ -68,7 +68,7 @@ Please use your self-deployed Uter, or ensure that the service provider offers U
 3.  **Add New Provider**
     - Click "Add Model"
     - Select Uter
-    ![Add Uter Provider](/apps-assets/aionui/uter_provider.webp)
+    ![Add Uter Provider](/apps-assets/aionui/newapi_provider.webp)
 
 4.  **Configure API Information**
     - API Address: Enter your Uter site address (format: `https://<your-uter-domain>/v1`)

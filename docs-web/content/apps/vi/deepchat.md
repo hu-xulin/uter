@@ -39,7 +39,7 @@
 ### Phương pháp 2: Nhập thủ công
 
 1. Sao chép API Key và địa chỉ trang từ bảng điều khiển Uter
-   ![Hướng dẫn cấu hình thủ công Uter](/apps-assets/deepchat/7-uter-manual-guidance.webp)
+   ![Hướng dẫn cấu hình thủ công Uter](/apps-assets/deepchat/7-new-api-manual-guidance.webp)
 
 2. Trong cài đặt DeepChat, thêm hoặc chỉnh sửa Provider Uter, sau đó điền địa chỉ API và API Key
    ![Hướng dẫn cấu hình thủ công DeepChat](/apps-assets/deepchat/6-deepchat-manual-guidance.webp)

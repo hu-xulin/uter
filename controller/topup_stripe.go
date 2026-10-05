@@ -297,6 +297,34 @@ func fulfillOrder(ctx context.Context, event stripe.Event, referenceId string, c
 		return
 	}
 
+	// 金额校验：Stripe 实收金额必须与本地订单按「单价×数量」计算出的金额一致。
+	// 缺失此校验时，只要 checkout.session.completed 事件验签通过即按本地订单金额入账，
+	// 与实际扣款金额脱钩。开启 Stripe 优惠码（AllowPromotionCodes）后实付可能低于订单金额，
+	// 用户可用近乎 0 的付款拿到全额额度（少付多充）。
+	//
+	// 注意：不能用 topUp.Money 比较——它是经分组倍率换算后的美元数，
+	// 而 Stripe 的 amount_total 由 Price ID 的单价与 Quantity 决定，两者不构成固定倍数关系。
+	// 这里改用 Stripe Price 的单价设置换算，与下单时 genStripeLink 传入的 Quantity 同源。
+	amountTotalStr := event.GetObjectValue("amount_total")
+	topUp := model.GetTopUpByTradeNo(referenceId)
+	if topUp == nil {
+		logger.LogWarn(ctx, fmt.Sprintf("Stripe 回调订单不存在 trade_no=%s client_ip=%s", referenceId, callerIp))
+		return
+	}
+	expectedCents, ok := stripeExpectedAmountTotalCents()
+	if !ok {
+		logger.LogWarn(ctx, fmt.Sprintf("Stripe 单价配置缺失，跳过金额校验 trade_no=%s price_id=%q client_ip=%s",
+			referenceId, setting.StripePriceId, callerIp))
+	} else {
+		paidCents, parseErr := decimal.NewFromString(amountTotalStr)
+		expected := expectedCents.Mul(decimal.NewFromInt(topUp.Amount))
+		if parseErr != nil || paidCents.LessThanOrEqual(decimal.Zero) || !paidCents.Equal(expected) {
+			logger.LogWarn(ctx, fmt.Sprintf("Stripe 回调金额不匹配 trade_no=%s 回调金额=%s 期望金额=%s client_ip=%s",
+				referenceId, amountTotalStr, expected.String(), callerIp))
+			return
+		}
+	}
+
 	err := model.Recharge(referenceId, customerId, callerIp)
 	if err != nil {
 		logger.LogError(ctx, fmt.Sprintf("Stripe 充值处理失败 trade_no=%s event_type=%s client_ip=%s error=%q", referenceId, string(event.Type), callerIp, err.Error()))
@@ -357,6 +385,21 @@ func sessionExpired(ctx context.Context, event stripe.Event) {
 //   - cancelURL: custom URL to redirect when payment is canceled (empty for default)
 //
 // Returns the checkout session URL or an error if the session creation fails.
+// stripeExpectedAmountTotalCents converts the configured Stripe unit price
+// into the cents that Stripe's amount_total must equal for a one-unit order.
+// The Stripe Price ID is a server-side price whose unit amount is not known
+// locally, but StripeUnitPrice is the same figure the operator entered, so the
+// expected total is unitPriceCents * quantity. Returns false when no usable
+// unit price is configured, in which case the caller must skip the check rather
+// than reject a legitimate payment.
+func stripeExpectedAmountTotalCents() (decimal.Decimal, bool) {
+	unit := decimal.NewFromFloat(setting.StripeUnitPrice).Mul(decimal.NewFromInt(100))
+	if !unit.IsPositive() {
+		return decimal.Zero, false
+	}
+	return unit, true
+}
+
 func genStripeLink(referenceId string, customerId string, email string, amount int64, successURL string, cancelURL string) (string, error) {
 	if !strings.HasPrefix(setting.StripeApiSecret, "sk_") && !strings.HasPrefix(setting.StripeApiSecret, "rk_") {
 		return "", fmt.Errorf("无效的Stripe API密钥")

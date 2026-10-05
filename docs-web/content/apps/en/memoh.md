@@ -57,7 +57,7 @@ Once created, click the copy button to copy the generated API Key.
 
 Log in to the Memoh Web dashboard, go to the provider management page, and click Uter.
 
-![switch-to-uter-provider](/apps-assets/memoh/switch_to_uter_provider.webp)
+![switch-to-uter-provider](/apps-assets/memoh/switch_to_newapi_provider.webp)
 
 Fill in the following information on the configuration page:
 

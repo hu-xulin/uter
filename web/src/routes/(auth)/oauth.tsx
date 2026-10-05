@@ -18,7 +18,7 @@ For commercial licensing, please contact support@uter.ai
 */
 import { createFileRoute, useNavigate, useSearch } from '@tanstack/react-router'
 import i18next from 'i18next'
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 
 import { wechatLoginByCode } from '@/features/auth/api'
 import { sanitizeAuthRedirect } from '@/features/auth/lib/auth-redirect'
@@ -36,7 +36,15 @@ function OAuthComponent() {
     state?: string
   }
 
+  // This effect performs a credential-exchanging login, so it must run at most
+  // once per mount. `useSearch` returns a fresh object whenever the router
+  // store re-emits, which would otherwise let a re-render kick off a second,
+  // overlapping login whose response could race the first.
+  const loginStartedRef = useRef(false)
+
   useEffect(() => {
+    if (loginStartedRef.current) return
+    loginStartedRef.current = true
     ;(async () => {
       try {
         if (search?.provider === 'wechat' && search.code) {

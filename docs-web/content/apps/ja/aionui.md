@@ -68,7 +68,7 @@ API Address: Uter サイトのアドレス（例：`https://<your-uter-domain>/v
 3.  **新しいプロバイダを追加**
     - 「モデルを追加」をクリック
     - Uter を選択
-    ![Add Uter Provider](/apps-assets/aionui/uter_provider.webp)
+    ![Add Uter Provider](/apps-assets/aionui/newapi_provider.webp)
 
 4.  **API 情報を設定**
     - API Address: Uter サイトのアドレスを入力（形式：`https://<your-uter-domain>/v1`）

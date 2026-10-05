@@ -68,7 +68,7 @@ API 地址：優特站點地址（例如：`https://<your-uter-domain>/v1`）
 3. **新增新的提供商**
    - 點選"新增模型"
    - 選擇 優特
-   ![新增 優特提供商](/apps-assets/aionui/uter_provider.webp)
+   ![新增 優特提供商](/apps-assets/aionui/newapi_provider.webp)
 
 4. **配置 API 資訊**
    - API 地址：填寫您的 優特站點地址（格式：`https://<your-uter-domain>/v1`）

@@ -22,7 +22,7 @@ LangBot 支持接入本地部署的 Uter 和第三方使用 Uter 搭建的 Uter 
         若是本地部署的 Uter 请自行配置 API 地址（可参考[容器网络连接](https://docs.langbot.app/zh/workshop/network-details.html)），若使用第三方 Uter 服务，可在页面上复制地址。注意，地址后需要添加`/v1`。
 
 2.  在 LangBot 中添加模型，选择使用 Uter 供应商，填写对应的 API key 和 API 地址
-    ![添加 Uter 模型](/apps-assets/langbot/add_uter_model.webp)
+    ![添加 Uter 模型](/apps-assets/langbot/add_newapi_model.webp)
 
 3.  在流水线中选择使用模型
 

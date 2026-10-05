@@ -23,7 +23,7 @@ LangBot hỗ trợ tích hợp với Uter tự triển khai cục bộ và các 
         Nếu Uter được triển khai cục bộ, vui lòng tự cấu hình địa chỉ API (tham khảo [Kết nối mạng container](https://docs.langbot.app/en/workshop/network-details.html)). Nếu sử dụng dịch vụ Uter bên thứ ba, bạn có thể sao chép địa chỉ từ trang. Lưu ý cần thêm `/v1` vào địa chỉ.
 
 2.  Thêm một mô hình trong LangBot, chọn Uter làm nhà cung cấp, và điền API key và địa chỉ API tương ứng
-    ![thêm mô hình Uter](/apps-assets/langbot/add_uter_model.webp)
+    ![thêm mô hình Uter](/apps-assets/langbot/add_newapi_model.webp)
 
 3.  Chọn mô hình cần sử dụng trong pipeline
 

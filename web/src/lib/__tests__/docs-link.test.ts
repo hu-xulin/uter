@@ -76,12 +76,14 @@ describe('docs-link helpers', () => {
     // The quick-start landing is gone from the docs site; the entry has
     // to name a real page, and 特性说明 is the first entry in the
     // sidebar. The returned value is the *content* path (the iframe
-    // source), served under the `/docs-content` basePath.
+    // source), served under the `/docs-content` basePath. It ends with a
+    // slash because the docs export sets `trailingSlash: true` and the Go
+    // static handler resolves directories through their index file.
     expect(docsLandingPathFor('zh')).toBe(
-      `/docs-content/docs/zh/${DOCS_LANDING_SEGMENT}`
+      `/docs-content/docs/zh/${DOCS_LANDING_SEGMENT}/`
     )
     expect(docsLandingPathFor('en')).toBe(
-      `/docs-content/docs/en/${DOCS_LANDING_SEGMENT}`
+      `/docs-content/docs/en/${DOCS_LANDING_SEGMENT}/`
     )
     expect(DOCS_LANDING_SEGMENT).toBe(
       'guide/wiki/basic-concepts/features-introduction'

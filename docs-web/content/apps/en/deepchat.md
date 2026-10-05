@@ -39,7 +39,7 @@
 ### Method 2: Manual Import
 
 1. Copy the API Key and site address from the Uter console
-   ![Uter Manual Configuration Guide](/apps-assets/deepchat/7-uter-manual-guidance.webp)
+   ![Uter Manual Configuration Guide](/apps-assets/deepchat/7-new-api-manual-guidance.webp)
 
 2. In DeepChat settings, add or edit the Uter Provider, then fill in the API address and API Key
    ![DeepChat Manual Configuration Guide](/apps-assets/deepchat/6-deepchat-manual-guidance.webp)

@@ -56,7 +56,7 @@ Memoh 支持接入任何 OpenAI 兼容的模型提供商，可以通过 Uter 来
 
 登录 Memoh Web 管理面板，进入提供商管理页面，点击 Uter。
 
-![switch-to-uter-provider](/apps-assets/memoh/switch_to_uter_provider.webp)
+![switch-to-uter-provider](/apps-assets/memoh/switch_to_newapi_provider.webp)
 
 在配置页面中填写以下信息：
 

@@ -75,7 +75,7 @@ Vui lòng sử dụng Uter tự triển khai của bạn, hoặc đảm bảo r�
 3.  **Thêm nhà cung cấp mới**
     - Nhấn "Add Model"
     - Chọn Uter
-    ![Thêm nhà cung cấp Uter](/apps-assets/aionui/uter_provider.webp)
+    ![Thêm nhà cung cấp Uter](/apps-assets/aionui/newapi_provider.webp)
 
 4.  **Cấu hình thông tin API**
     - API Address: Nhập địa chỉ trang Uter của bạn (định dạng: `https://<your-uter-domain>/v1`)

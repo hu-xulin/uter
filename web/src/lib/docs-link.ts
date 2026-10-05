@@ -204,7 +204,11 @@ export const DOCS_LANDING_SEGMENT =
  * callers doing a re-point need. This one is for opening the docs fresh.
  */
 export function docsLandingPathFor(locale: DocsLocaleCode): string {
-  return `${docsPathFor(locale)}${DOCS_LANDING_SEGMENT}`
+  // next.config.mjs sets `trailingSlash: true` and the Go static handler
+  // resolves directories via their index file, so the landing URL must end
+  // with a slash like every other helper here. Without it the reader pays an
+  // extra 301 on each cold open of the docs entry point.
+  return `${docsPathFor(locale)}${DOCS_LANDING_SEGMENT}/`
 }
 
 /**

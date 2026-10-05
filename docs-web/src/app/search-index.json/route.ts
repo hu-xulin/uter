@@ -6,9 +6,10 @@ import { buildSearchIndex } from '@/lib/search-index-data';
  * `output: 'export'` has no server runtime, so this route handler is
  * evaluated once at build time and its response body written out as
  * `out/search-index.json`. `docs-web/scripts/copy-to-web.mjs` then moves
- * it into `web/dist/docs/`, and the Go router serves that directory at
- * the URL root — which puts the index at `/search-index.json`, exactly
- * where `docs-search-index.ts` fetches it from.
+ * it into `web/dist/docs-content/`, and the Go router serves that
+ * directory at `/docs-content` — which, together with the matching
+ * `basePath`, puts the index at `/docs-content/search-index.json`,
+ * exactly where `docs-search-index.ts` fetches it from.
  *
  * It is a route rather than a generated asset because the index has to
  * be built from the same `src/lib/content/` objects the pages render:
