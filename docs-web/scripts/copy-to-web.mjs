@@ -1,18 +1,23 @@
 #!/usr/bin/env node
 /**
  * Post-build script: copy the Next.js static export from `out/` into
- * `../web/dist/docs/` so the Go backend can serve it through the
+ * `../web/dist/docs-content/` so the Go backend can serve it through the
  * existing `//go:embed web/dist` mount.
  *
- * `next.config.mjs` is configured with `output: 'export'` so the build
- * artifact is a fully static directory tree at `out/`. The Go router
- * mounts `web/dist/docs/` at the URL root (with fallthrough to the
- * React SPA), so every URL inside `out/` maps directly to a served
- * path — there's no `basePath` rewrite to worry about.
+ * `next.config.mjs` sets `output: 'export'` and `basePath: '/docs-content'`.
+ * With `output: 'export'` the page tree is still emitted at the root of the
+ * export directory — i.e. `out/docs/<lang>/...`, `out/about/<lang>/...`,
+ * `out/_next/...`, `out/search-index.json` — and `basePath` only rewrites the
+ * asset references *inside* those files to be prefixed with `/docs-content`
+ * (so `/docs-content/_next/...`, `/docs-content/docs/...`, …). The export
+ * does NOT create an `out/docs-content/` subdirectory.
  *
- * With the `/docs/<lang>/` URL scheme, the Next.js App Router directory
- * structure is `docs/[lang]/...`, which exports to
- * `out/docs/<lang>/...` — matching the served URLs directly.
+ * The Go router mounts `web/dist/docs-content` at `/docs-content`
+ * (see `router/web-router.go`), so copying the whole `out/` tree into
+ * `web/dist/docs-content/` makes every asset URL resolve:
+ *   `/docs-content/docs/<lang>/...`  -> web/dist/docs-content/docs/<lang>/...
+ *   `/docs-content/about/<lang>/...` -> web/dist/docs-content/about/<lang>/...
+ *   `/docs-content/_next/...`        -> web/dist/docs-content/_next/...
  *
  * Run automatically after `next build` via the `postbuild` npm hook.
  */
@@ -21,8 +26,10 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
+// The static export is emitted to `out/` at the root; `basePath` only affects
+// the asset URLs written inside those files, not the directory layout.
 const source = path.resolve(here, '..', 'out');
-const target = path.resolve(here, '..', '..', 'web', 'dist', 'docs');
+const target = path.resolve(here, '..', '..', 'web', 'dist', 'docs-content');
 
 async function exists(p) {
   try {

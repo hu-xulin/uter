@@ -24,58 +24,65 @@ export default defineConfig(({ envMode }) => {
   ) as Record<string, { target: string; changeOrigin: boolean; ws?: boolean }>
 
   // Forward the statically exported pages to the Go backend (port 3000),
-  // which embeds them at `web/dist/docs/`. There are two sections —
-  // `/docs/<lang>/*` and `/about/<lang>/*` — and both are proxied one
-  // prefix per locale. The bare `/docs` and `/about` entries are
-  // deliberately *not* proxied: those are the SPA's own routes, which
-  // choose the locale from the UI language and frame the export. Override
-  // `NEXT_DOCS_PORT` to point at the Next.js dev server for live HMR
-  // against the source.
+  // which embeds them at `web/dist/docs-content/` and mounts that at
+  // `/docs-content` (see `router/web-router.go`). With `basePath:
+  // '/docs-content'` set in `docs-web/next.config.mjs`, every URL the
+  // export serves — `/docs-content/docs/<lang>/*`,
+  // `/docs-content/about/<lang>/*`, `/docs-content/_next/*`,
+  // `/docs-content/search-index.json`, … — is prefixed by `/docs-content`,
+  // so the proxy prefixes below must carry that prefix too. The bare
+  // `/docs` and `/about` entries are deliberately *not* proxied: those are
+  // the SPA's own routes, which choose the locale from the UI language and
+  // frame the export. Override `NEXT_DOCS_PORT` to point at the Next.js
+  // dev server for live HMR against the source.
   //
-  // `/_next/*` is proxied too: the exported HTML references its CSS/JS
-  // assets at `/_next/static/...` (Next.js's default asset prefix).
-  // Without the proxy, rsbuild serves `index.html` for those paths
-  // and the page renders without styles.
+  // `/docs-content/_next/*` is proxied too: the exported HTML references
+  // its CSS/JS assets at `/docs-content/_next/static/...` (Next.js's
+  // default asset prefix with the basePath). Without the proxy, rsbuild
+  // serves `index.html` for those paths and the page renders without
+  // styles.
   //
-  // `/search-index.json` is proxied for the same reason and one more:
-  // it is not an asset the HTML references but a file the search box
-  // fetches at runtime, from both sections. Unproxied, the dev server
+  // `/docs-content/search-index.json` is proxied for the same reason and
+  // one more: it is not an asset the HTML references but a file the search
+  // box fetches at runtime, from both sections. Unproxied, the dev server
   // answers it from its history fallback with `index.html` and a 200, so
-  // the fetch succeeds, `response.json()` throws, and the search
-  // silently falls back to an empty index — every query returns nothing,
-  // with no visible error.
+  // the fetch succeeds, `response.json()` throws, and the search silently
+  // falls back to an empty index — every query returns nothing, with no
+  // visible error.
   const docsProxyPort = process.env.NEXT_DOCS_PORT || '3000'
   const docsTarget = `http://localhost:${docsProxyPort}`
   const staticLocales = ['zh', 'en']
   const staticPrefixes = [
-    ...staticLocales.map((locale) => `/docs/${locale}`),
-    ...staticLocales.map((locale) => `/about/${locale}`),
+    ...staticLocales.map((locale) => `/docs-content/docs/${locale}`),
+    ...staticLocales.map((locale) => `/docs-content/about/${locale}`),
     // Files the docs export serves from its root rather than from a
     // localised section — the profile's portrait, the partner logo wall,
     // the user guide's screenshots (which sit under
     // `public/user-guide/<locale>/<slug>/`), and the subset brand font the
     // docs header sets its wordmark in. Unproxied, dev answers with
-    // `index.html` and the asset silently fails, or 404s as HTML.
+    // `index.html` and the asset silently fails, or 404s as HTML. The
+    // `/docs-content` prefix is the docs site's `basePath`.
     //
     // `brand-assets` is deliberately not `fonts`: that path is the SPA's
     // own font directory and the dev server serves it locally, so pointing
     // it at the docs server would take the app's faces with it.
-    '/about-assets',
-    '/img/partners',
-    '/user-guide',
-    '/apps-assets',
-    '/brand-assets',
-    '/_next',
-    '/search-index.json',
+    '/docs-content/about-assets',
+    '/docs-content/img/partners',
+    '/docs-content/user-guide',
+    '/docs-content/apps-assets',
+    '/docs-content/brand-assets',
+    '/docs-content/_next',
+    '/docs-content/search-index.json',
   ]
   // The Next dev server hydrates the page only after its HMR websocket
-  // (`ws://<origin>/_next/hmr`) is connected. The generic `/_next` proxy
-  // above forwards plain HTTP but not the `Upgrade` handshake, so the
-  // socket hangs forever: the proxied docs page loads and renders with no
-  // console error — and never hydrates, leaving every sidebar toggle dead.
-  // `ws: true` makes the dev server forward the upgrade. Must be declared
-  // before `/_next` so the more specific path matches first.
-  devProxy['/_next/hmr'] = {
+  // (`ws://<origin>/docs-content/_next/hmr`) is connected. The generic
+  // `/docs-content/_next` proxy above forwards plain HTTP but not the
+  // `Upgrade` handshake, so the socket hangs forever: the proxied docs page
+  // loads and renders with no console error — and never hydrates, leaving
+  // every sidebar toggle dead. `ws: true` makes the dev server forward the
+  // upgrade. Must be declared before `/docs-content/_next` so the more
+  // specific path matches first.
+  devProxy['/docs-content/_next/hmr'] = {
     target: docsTarget.replace('http', 'ws'),
     ws: true,
     changeOrigin: true,

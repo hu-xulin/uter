@@ -17,19 +17,20 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@Uter.ai.com
 */
 import { useNavigate } from '@tanstack/react-router'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { PublicLayout } from '@/components/layout'
 import { useTheme } from '@/context/theme-provider'
 import { useStatus } from '@/hooks/use-status'
 import {
-  DOCS_ENTRY_PATH,
+  DOCS_CONTENT_PREFIX,
+  DOCS_LANDING_SEGMENT,
   docsLandingPathFor,
-  docsPathFor,
   isBundledDocsHref,
   resolveDocsHref,
   resolveDocsLocaleCode,
+  toDocsSplat,
 } from '@/lib/docs-link'
 
 /**
@@ -52,44 +53,32 @@ const ROUTE_MESSAGE = 'Uter:docs:route'
  */
 const SPA_HEADER_HEIGHT = '4rem'
 
-/**
- * Accept only same-origin docs paths as the frame target. The value
- * round-trips through the `?p=` query parameter, so it is treated as
- * untrusted input: it must sit under `/docs/` and must not climb out
- * with a `..` segment.
- */
-function sanitizeDocsPath(value: string | undefined): string | null {
-  if (!value || !value.startsWith('/docs/')) return null
-  if (value.includes('..') || value.includes('//')) return null
-  return value
-}
-
-/**
- * Everything after the `/docs/<locale>/` prefix. Used to carry the page
- * the reader is on across a UI-language switch, which is why the locale
- * segment is stripped rather than matched.
- */
-function docsPathWithinLocale(path: string): string {
-  const match = /^\/docs\/[^/]+\/(.*)$/.exec(path)
-  return match ? match[1] : ''
-}
-
 type DocsViewerProps = {
   /**
-   * Docs page to open with, read from the route's `?p=` search param so
-   * a reload or a shared link reopens the same page.
+   * Docs page to open with, as a host path like `/docs/zh/api/...`.
+   *
+   * Comes from the `/docs/$` splat route, so reloading or sharing the
+   * URL reopens the same page. `undefined` on the bare `/docs` entry,
+   * in which case the locale landing is shown.
    */
-  initialPath?: string
+  initialHostPath?: string
 }
 
 /**
- * In-app docs page for `/docs`.
+ * In-app docs page for `/docs` and `/docs/$`.
  *
- * The docs content is a Next.js static export served by the gateway at
- * `/docs/<lang>/`. Rather than handing the whole document over to that
- * export — which replaces the app shell and its navigation — the shell
- * stays and the export is framed underneath it, so reading the docs
- * feels like another page of the SPA.
+ * The docs content is a Next.js static export mounted by the gateway at
+ * `/docs-content/docs/<lang>/...` (see `docs-web/next.config.mjs`'s
+ * `basePath` and `web/src/lib/docs-link.ts#DOCS_CONTENT_PREFIX`). The
+ * SPA keeps its own shell — `PublicHeader` plus the framed export — so
+ * reading the docs feels like another page of the app rather than a
+ * separate site that replaced it.
+ *
+ * The host URL is the clean, encoding-free `/docs/<lang>/<page>` (the
+ * `/docs/$` splat). The iframe loads the same page from the content
+ * prefix (`/docs-content/docs/<lang>/<page>`). The framed site reports
+ * the page it is showing over `postMessage`; we mirror that into the
+ * `/docs/$` route so a reload or a shared link reopens the same page.
  *
  * The framed site detects that it is embedded (see the bootstrap script
  * in `docs-web/src/app/layout.tsx`) and drops its own top bar, which
@@ -100,7 +89,7 @@ type DocsViewerProps = {
  * external knowledge base — in which case the SPA does not own the
  * target and falls back to a normal full-page navigation.
  */
-export function DocsViewer({ initialPath }: DocsViewerProps) {
+export function DocsViewer({ initialHostPath }: DocsViewerProps) {
   const { t, i18n } = useTranslation()
   const { resolvedTheme, setTheme } = useTheme()
   const { status } = useStatus()
@@ -114,23 +103,40 @@ export function DocsViewer({ initialPath }: DocsViewerProps) {
   // (see `docsLandingPathFor`), so a fresh visit lands on real content
   // instead of a redirect.
   const docsLocale = resolveDocsLocaleCode(i18n.language)
-  const localePrefix = docsPathFor(docsLocale)
-  const [frameSrc, setFrameSrc] = useState(
-    () => sanitizeDocsPath(initialPath) ?? docsLandingPathFor(docsLocale)
-  )
+
+  // The part after `/docs/` — e.g. `zh/api/audio-openai/`. Derived purely
+  // from the route (the `/docs/$` splat) or, when the entry was opened bare,
+  // from the locale landing. It is the single source of truth for both the
+  // iframe source and the mirrored host URL, so a frame-driven navigation and
+  // a UI-language switch both just rewrite this one string + the URL.
+  const hostSplat = useMemo(() => {
+    const fromRoute = initialHostPath ? toDocsSplat(initialHostPath) : null
+    if (fromRoute) return fromRoute
+    return (
+      toDocsSplat(docsLandingPathFor(docsLocale)) ??
+      `${docsLocale}/${DOCS_LANDING_SEGMENT}`
+    )
+  }, [initialHostPath, docsLocale])
+
+  const frameSrc = `${DOCS_CONTENT_PREFIX}/${hostSplat}`
 
   // Switching the UI language re-points the frame at the same page in
   // the other locale — both locales ship the same page tree — so the
   // reader stays where they were instead of being bounced back to the
-  // opening page. Only an actual language change triggers this: the
-  // page named by `?p=`, if any, is what was asked for and is left
-  // alone on mount.
-  const previousPrefix = useRef(localePrefix)
+  // opening page. We swap only the locale segment of the splat and mirror
+  // it into the host URL.
+  const previousLocale = useRef(docsLocale)
   useEffect(() => {
-    if (previousPrefix.current === localePrefix) return
-    previousPrefix.current = localePrefix
-    setFrameSrc((current) => `${localePrefix}${docsPathWithinLocale(current)}`)
-  }, [localePrefix])
+    if (previousLocale.current === docsLocale) return
+    previousLocale.current = docsLocale
+    const idx = hostSplat.indexOf('/')
+    const rest = idx === -1 ? '' : hostSplat.slice(idx + 1)
+    navigate({
+      to: '/docs/$',
+      params: { _splat: `${docsLocale}/${rest}` },
+      replace: true,
+    })
+  }, [docsLocale, hostSplat, navigate])
 
   // Push the resolved theme down on load and on every toggle, so the
   // frame follows the SPA's light/dark switch.
@@ -156,14 +162,14 @@ export function DocsViewer({ initialPath }: DocsViewerProps) {
       if (!data || typeof data !== 'object') return
 
       if (data.type === ROUTE_MESSAGE) {
-        const path = sanitizeDocsPath(
+        const splat = toDocsSplat(
           typeof data.path === 'string' ? data.path : undefined
         )
-        if (!path) return
+        if (!splat || splat === hostSplat) return
         // Mirror the framed page into the host URL so a reload lands
         // back on it. `replace` keeps the back button meaning "leave
         // the docs" instead of stepping through every page read.
-        navigate({ to: DOCS_ENTRY_PATH, search: { p: path }, replace: true })
+        navigate({ to: '/docs/$', params: { _splat: splat }, replace: true })
         return
       }
 
@@ -176,7 +182,7 @@ export function DocsViewer({ initialPath }: DocsViewerProps) {
 
     window.addEventListener('message', onMessage)
     return () => window.removeEventListener('message', onMessage)
-  }, [navigate, setTheme])
+  }, [navigate, setTheme, hostSplat])
 
   // A configured `docs_link` may point outside the SPA entirely; open
   // it the way the app always has, with a full document navigation.
@@ -190,11 +196,24 @@ export function DocsViewer({ initialPath }: DocsViewerProps) {
   return (
     <PublicLayout showMainContainer={false}>
       <div className='h-16 shrink-0' aria-hidden='true' />
+      {/* The framed docs share the SPA's origin, so we keep
+          `allow-same-origin`: the host verifies `event.origin ===
+          window.location.origin` on every postMessage, and a sandboxed
+          frame without this flag would post from an opaque "null" origin
+          and have every theme/route message rejected. `allow-scripts` is
+          required for the docs' own client scripts (sidebar, search, the
+          embed bridge). This is intentionally tighter than no sandbox.
+          oxlint's `iframe-missing-sandbox` rule bans the
+          allow-scripts + allow-same-origin combo as a generic heuristic,
+          but here the content is our own trusted docs export and the
+          combo is required for the bridge — the rule is disabled for this
+          file via an override in `.oxlintrc.json`. */}
       <iframe
         ref={frameRef}
         src={frameSrc}
         title={t('Docs')}
         onLoad={syncTheme}
+        sandbox='allow-scripts allow-same-origin'
         className='w-full border-0'
         style={{ height: `calc(100svh - ${SPA_HEADER_HEIGHT})` }}
       />

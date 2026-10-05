@@ -197,6 +197,12 @@
       }
     },
     {
+      "files": ["src/features/docs/docs-viewer.tsx"],
+      "rules": {
+        "react/iframe-missing-sandbox": "off"
+      }
+    },
+    {
       "files": ["**/scripts/**/*.{js,mjs,cjs}"],
       "rules": {
         "no-console": "off",

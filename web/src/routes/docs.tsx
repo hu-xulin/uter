@@ -17,27 +17,18 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@Uter.ai.com
 */
 import { createFileRoute } from '@tanstack/react-router'
-import { z } from 'zod'
 
 import { DocsViewer } from '@/features/docs'
 
 /**
- * `p` carries the docs page currently shown inside the frame
- * (`/docs/zh/guide/...`). It is written by the framed docs site through
- * `postMessage` and read back on load, so reloading or sharing the URL
- * reopens the same page. Absent on a fresh visit — `DocsViewer` then
- * falls back to the landing page of the active UI locale.
+ * Bare `/docs` entry. The SPA route that owns the docs shell; the actual
+ * page shown is resolved by `DocsViewer` from the UI locale (or, when the
+ * URL carries a `/docs/$` splat, from that splat — see `routes/docs/$.tsx`).
  */
-const searchSchema = z.object({
-  p: z.string().optional(),
-})
-
 function DocsRoute() {
-  const { p } = Route.useSearch()
-  return <DocsViewer initialPath={p} />
+  return <DocsViewer />
 }
 
 export const Route = createFileRoute('/docs')({
-  validateSearch: searchSchema,
   component: DocsRoute,
 })

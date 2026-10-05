@@ -75,12 +75,13 @@ describe('docs-link helpers', () => {
   test('docsLandingPathFor opens the docs on 特性说明, not on a landing page', () => {
     // The quick-start landing is gone from the docs site; the entry has
     // to name a real page, and 特性说明 is the first entry in the
-    // sidebar.
+    // sidebar. The returned value is the *content* path (the iframe
+    // source), served under the `/docs-content` basePath.
     expect(docsLandingPathFor('zh')).toBe(
-      `/docs/zh/${DOCS_LANDING_SEGMENT}`
+      `/docs-content/docs/zh/${DOCS_LANDING_SEGMENT}`
     )
     expect(docsLandingPathFor('en')).toBe(
-      `/docs/en/${DOCS_LANDING_SEGMENT}`
+      `/docs-content/docs/en/${DOCS_LANDING_SEGMENT}`
     )
     expect(DOCS_LANDING_SEGMENT).toBe(
       'guide/wiki/basic-concepts/features-introduction'
@@ -97,9 +98,9 @@ describe('docs-link helpers', () => {
     expect(resolveDocsLocaleCode('vi')).toBe('vi')
   })
 
-  test('docsPathFor returns the locale-suffixed landing with a trailing slash', () => {
-    expect(docsPathFor('zh')).toBe('/docs/zh/')
-    expect(docsPathFor('en')).toBe('/docs/en/')
+  test('docsPathFor returns the content path (iframe source) under /docs-content', () => {
+    expect(docsPathFor('zh')).toBe('/docs-content/docs/zh/')
+    expect(docsPathFor('en')).toBe('/docs-content/docs/en/')
   })
 
   test('resolveDocsLocaleCode maps every supported UI locale to its own docs locale', () => {
@@ -136,7 +137,7 @@ describe('docs-link helpers', () => {
     expect(resolveDocsLocaleCode('')).toBe('en')
   })
 
-  test('docsPathForSpaLocale returns the per-locale docs prefix for every UI language', () => {
+  test('docsPathForSpaLocale returns the per-locale content path for every UI language', () => {
     // Aliases are BCP-47 tags because they're used to map browser-detected
     // locales (and persisted UI preferences stored as BCP-47). i18next
     // itself uses camelCase (`zhCN`/`zhTW`) internally; that conversion
@@ -144,20 +145,21 @@ describe('docs-link helpers', () => {
     // reaches `i18n.language`, so by the time we read it for resolve,
     // it has already been normalized back to a BCP-47 form for matching
     // — see the SPA's i18n config (`web/src/i18n/config.ts`).
-    expect(docsPathForSpaLocale('zh-CN')).toBe('/docs/zh/')
-    expect(docsPathForSpaLocale('zh-TW')).toBe('/docs/zh-TW/')
-    expect(docsPathForSpaLocale('zh-HK')).toBe('/docs/zh-TW/')
-    expect(docsPathForSpaLocale('zh-Hans')).toBe('/docs/zh/')
-    expect(docsPathForSpaLocale('fr')).toBe('/docs/fr/')
-    expect(docsPathForSpaLocale('ja')).toBe('/docs/ja/')
-    expect(docsPathForSpaLocale('ru')).toBe('/docs/ru/')
-    expect(docsPathForSpaLocale('vi')).toBe('/docs/vi/')
+    // The value is the *content* path (iframe source) under /docs-content.
+    expect(docsPathForSpaLocale('zh-CN')).toBe('/docs-content/docs/zh/')
+    expect(docsPathForSpaLocale('zh-TW')).toBe('/docs-content/docs/zh-TW/')
+    expect(docsPathForSpaLocale('zh-HK')).toBe('/docs-content/docs/zh-TW/')
+    expect(docsPathForSpaLocale('zh-Hans')).toBe('/docs-content/docs/zh/')
+    expect(docsPathForSpaLocale('fr')).toBe('/docs-content/docs/fr/')
+    expect(docsPathForSpaLocale('ja')).toBe('/docs-content/docs/ja/')
+    expect(docsPathForSpaLocale('ru')).toBe('/docs-content/docs/ru/')
+    expect(docsPathForSpaLocale('vi')).toBe('/docs-content/docs/vi/')
   })
 
-  test('docsPathForSpaLocale falls back to /docs/en/ for unknown UI codes', () => {
-    expect(docsPathForSpaLocale('en')).toBe('/docs/en/')
-    expect(docsPathForSpaLocale('ko')).toBe('/docs/en/')
-    expect(docsPathForSpaLocale(null)).toBe('/docs/en/')
+  test('docsPathForSpaLocale falls back to /docs-content/docs/en/ for unknown UI codes', () => {
+    expect(docsPathForSpaLocale('en')).toBe('/docs-content/docs/en/')
+    expect(docsPathForSpaLocale('ko')).toBe('/docs-content/docs/en/')
+    expect(docsPathForSpaLocale(null)).toBe('/docs-content/docs/en/')
   })
 })
 

@@ -1,6 +1,7 @@
 'use client';
 
 import type { ReactNode } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
 import { I18nProvider } from 'fumadocs-ui/contexts/i18n';
 import { SUPPORTED_DOCS_LOCALES, type DocsLocale } from '@/lib/i18n';
 import { DOCS_CHROME } from '@/lib/docs-copy';
@@ -34,6 +35,8 @@ export function DocsI18nProvider({
   locale: DocsLocale;
   children: ReactNode;
 }) {
+  const pathname = usePathname();
+  const router = useRouter();
   return (
     <I18nProvider
       locale={locale}
@@ -49,8 +52,12 @@ export function DocsI18nProvider({
       translations={DOCS_CHROME[locale]}
       onLocaleChange={(target) => {
         if (typeof window === 'undefined') return;
-        const segments = window.location.pathname.split('/');
-        // `/docs/zh/…` and `/about/zh/…` — section first, locale second.
+        // `usePathname()` returns the path without the `basePath`
+        // (`/docs-content`), so the shape is `/docs/<lang>/…` /
+        // `/about/<lang>/…` — section first, locale second — exactly as
+        // before `basePath` was introduced. `router.push` re-adds the
+        // `basePath`, so the real URL stays under `/docs-content`.
+        const segments = (pathname ?? '').split('/');
         const section = segments[1];
         const current = segments[2];
         const isLocale =
@@ -58,10 +65,11 @@ export function DocsI18nProvider({
           (SUPPORTED_DOCS_LOCALES as readonly string[]).includes(current);
         if (section && isLocale) {
           segments[2] = target;
-          window.location.href = segments.join('/');
+          const next = segments.join('/');
+          router.push(next.endsWith('/') ? next : `${next}/`);
           return;
         }
-        window.location.href = section ? `/${section}/${target}/` : `/${target}/`;
+        router.push(section ? `/${section}/${target}/` : `/${target}/`);
       }}
     >
       {children}
