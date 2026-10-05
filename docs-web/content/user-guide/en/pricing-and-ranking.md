@@ -15,7 +15,7 @@
 8. **Model Details**: Click "Details" to view the model's complete introduction, capabilities, and related configuration information.
 9. **Copy Model Name**: Click the copy button to quickly copy the model name, convenient for use in API calls or system configurations.
 
-<img alt="模型广场页" src="01-model-marketplace.webp" />
+<img alt="定价页" src="01-model-marketplace.webp" />
 
 ## Leaderboard
 

@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import { usePathname } from 'fumadocs-core/framework';
 import { Languages, Moon, Sun } from 'lucide-react';
+import { withDocsBasePath } from '@/lib/docs-base-path';
 import { useTheme } from 'next-themes';
 import { useEffect, useState, type ReactNode } from 'react';
 import { LanguageSelect } from 'fumadocs-ui/layouts/shared/slots/language-select';
@@ -221,7 +222,11 @@ export function DocsHeader({ locale }: { locale: DocsLocale }) {
 
   const logo: ReactNode = (
     <Image
-      src='/logo.png?v=3'
+      // `images.unoptimized` is on (static export requires it), so next/image
+      // emits `src` verbatim instead of folding in the basePath — add it here
+      // or the header asks for `/logo.png`, which the SPA fallback answers
+      // with index.html and the mark renders blank.
+      src={withDocsBasePath('/logo.png?v=3')}
       alt={brand}
       width={28}
       height={28}

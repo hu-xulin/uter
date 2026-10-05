@@ -149,7 +149,7 @@ def _looks_like_brand(
     """Two guards against blurring page content instead of the brand.
 
     1. The brand always starts within the left 18% of the capture — the only
-       brand further right is on pages without a sidebar (模型广场, x≈0.18w).
+       brand further right is on pages without a sidebar (定价, x≈0.18w).
        Content false positives (red annotation callouts, panel headers) start
        further in.
     2. The wordmark is printed in neutral dark grey. A candidate whose dark
