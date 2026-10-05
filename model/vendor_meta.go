@@ -1,6 +1,9 @@
 package model
 
 import (
+	"errors"
+	"strings"
+
 	"github.com/Uter-AI/Uter/common"
 
 	"gorm.io/gorm"
@@ -81,6 +84,15 @@ func (v *Vendor) Delete() error { return DeleteVendors([]int{v.Id}) }
 
 // GetVendorByID 根据 ID 获取供应商
 func GetVendorByID(id int) (*Vendor, error) {
+	// 负 ID 对应定价广场上的合成"默认品牌"供应商，没有持久化记录，返回只读展示数据。
+	if id < 0 {
+		if v, ok := getDefaultBrandVendor(id); ok {
+			v.ModelCount = 0
+			v.Version = VendorRecordVersion(v)
+			return v, nil
+		}
+		return nil, gorm.ErrRecordNotFound
+	}
 	var v Vendor
 	err := DB.First(&v, id).Error
 	if err != nil {
@@ -101,6 +113,20 @@ func GetAllVendors(offset int, limit int) ([]*Vendor, error) {
 
 // SearchVendors filters persisted vendor records and counts actual model assignments.
 func SearchVendors(keyword string, offset, limit int, association ...string) ([]*Vendor, int64, error) {
+	return searchVendorsCore(keyword, offset, limit, false, association...)
+}
+
+// SearchVendorsIncludingDefaults behaves like SearchVendors but also surfaces the
+// synthetic "default brand" vendors that the pricing plaza shows for models matched by
+// name pattern without persisted metadata. This lets operators manage brands that
+// otherwise appear only on the pricing page. Synthetic vendors are never persisted and
+// always report zero linked models, so they are excluded from the "linked" filter and
+// skipped when a real vendor with the same name already exists.
+func SearchVendorsIncludingDefaults(keyword string, offset, limit int, association ...string) ([]*Vendor, int64, error) {
+	return searchVendorsCore(keyword, offset, limit, true, association...)
+}
+
+func searchVendorsCore(keyword string, offset, limit int, includeDefault bool, association ...string) ([]*Vendor, int64, error) {
 	db := DB.Model(&Vendor{})
 	if keyword != "" {
 		like := "%" + keyword + "%"
@@ -115,21 +141,64 @@ func SearchVendors(keyword string, offset, limit int, association ...string) ([]
 			db = db.Where("NOT EXISTS (?)", references)
 		}
 	}
-	var total int64
-	if err := db.Count(&total).Error; err != nil {
-		return nil, 0, err
-	}
 	var vendors []*Vendor
-	if err := db.Offset(offset).Limit(limit).Order("id DESC").Find(&vendors).Error; err != nil {
+	if err := db.Order("id DESC").Find(&vendors).Error; err != nil {
 		return nil, 0, err
 	}
+
+	if includeDefault && (len(association) == 0 || association[0] != "linked") {
+		realNames := make(map[string]struct{}, len(vendors))
+		for _, v := range vendors {
+			realNames[strings.ToLower(v.Name)] = struct{}{}
+		}
+		keywordLower := strings.ToLower(keyword)
+		for _, v := range defaultBrandVendors() {
+			if _, exists := realNames[strings.ToLower(v.Name)]; exists {
+				continue
+			}
+			if keyword != "" &&
+				!strings.Contains(strings.ToLower(v.Name), keywordLower) &&
+				!strings.Contains(strings.ToLower(v.Description), keywordLower) {
+				continue
+			}
+			vendors = append(vendors, v)
+		}
+	}
+
 	counts, err := GetVendorModelCounts()
 	if err != nil {
 		return nil, 0, err
 	}
-	for _, vendor := range vendors {
+	// 在内存中对合并后的完整列表分页，以保证合成供应商稳定排在持久化记录之后。
+	total := int64(len(vendors))
+	end := offset + limit
+	if end > len(vendors) {
+		end = len(vendors)
+	}
+	page := vendors[offset:end]
+	for _, vendor := range page {
 		vendor.ModelCount = counts[int64(vendor.Id)]
 		vendor.Version = VendorRecordVersion(vendor)
 	}
-	return vendors, total, nil
+	return page, total, nil
+}
+
+// PromoteDefaultVendor 将一个定价广场上的合成"默认品牌"供应商（负 ID）提升为真实的、
+// 可持久化管理的供应商记录。若同名下已存在真实供应商，则直接返回该记录以避免重复创建。
+func PromoteDefaultVendor(name, description, icon string) (*Vendor, error) {
+	name = strings.TrimSpace(name)
+	if name == "" {
+		return nil, errors.New("vendor name is required")
+	}
+	var existing Vendor
+	if err := DB.Where("LOWER(name) = LOWER(?)", name).First(&existing).Error; err == nil {
+		return &existing, nil
+	} else if !errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, err
+	}
+	v := &Vendor{Name: name, Description: description, Icon: icon}
+	if err := v.Insert(); err != nil {
+		return nil, err
+	}
+	return v, nil
 }

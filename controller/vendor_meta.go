@@ -18,7 +18,18 @@ func GetAllVendors(c *gin.Context) { SearchVendors(c) }
 
 func SearchVendors(c *gin.Context) {
 	pageInfo := common.GetPageQuery(c)
-	vendors, total, err := model.SearchVendors(c.Query("keyword"), pageInfo.GetStartIdx(), pageInfo.GetPageSize(), c.Query("association"))
+	keyword := c.Query("keyword")
+	association := c.Query("association")
+	var (
+		vendors []*model.Vendor
+		total   int64
+		err     error
+	)
+	if c.Query("include_default") == "true" {
+		vendors, total, err = model.SearchVendorsIncludingDefaults(keyword, pageInfo.GetStartIdx(), pageInfo.GetPageSize(), association)
+	} else {
+		vendors, total, err = model.SearchVendors(keyword, pageInfo.GetStartIdx(), pageInfo.GetPageSize(), association)
+	}
 	if err != nil {
 		vendorAPIError(c, err)
 		return
@@ -68,6 +79,18 @@ func UpdateVendorMeta(c *gin.Context) {
 	}
 	if v.Id == 0 {
 		common.ApiErrorI18n(c, i18n.MsgCommonMissing_vendor_id)
+		return
+	}
+	// 负 ID 对应定价广场上的合成"默认品牌"供应商，没有持久化记录。
+	// 将其提升为真实供应商，以便运营人员能够管理与编辑。
+	if v.Id < 0 {
+		created, err := model.PromoteDefaultVendor(v.Name, v.Description, v.Icon)
+		if err != nil {
+			vendorAPIError(c, err)
+			return
+		}
+		recordManageAudit(c, "vendor.metadata.save", map[string]any{"vendor_id": created.Id, "name": created.Name})
+		common.ApiSuccess(c, &created)
 		return
 	}
 	if err := v.Update(); err != nil {

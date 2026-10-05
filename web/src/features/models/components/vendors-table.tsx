@@ -79,6 +79,7 @@ export function VendorsTable() {
     association,
     p: state.pagination.pageIndex + 1,
     page_size: state.pagination.pageSize,
+    includeDefault: true,
   }
   const query = useQuery({
     queryKey: vendorsQueryKeys.list(params),

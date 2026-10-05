@@ -1105,7 +1105,64 @@ func TestVendorManagementDatabaseMatrix(t *testing.T) {
 				require.NoError(t, db.Model(&model.Vendor{}).Count(&count).Error)
 				assert.Zero(t, count, "refresh must not recreate a deleted vendor")
 			})
-			t.Run("metadata_ownership_preview_merge_delete_and_rollback", func(t *testing.T) {
+			t.Run("admin_search_surfaces_default_brands_and_promotes_them", func(t *testing.T) {
+				channel := model.Channel{Name: "ByteDance fixture", Type: 1, Status: common.ChannelStatusEnabled}
+				require.NoError(t, db.Create(&channel).Error)
+				require.NoError(t, db.Create(&model.Ability{Model: "doubao-pro-256k", Group: "default", ChannelId: channel.Id, Enabled: true}).Error)
+				model.RefreshPricing()
+				model.GetPricing()
+
+				// No persisted vendor record exists yet for the default brand.
+				var count int64
+				require.NoError(t, db.Model(&model.Vendor{}).Where("name = ?", "字节跳动").Count(&count).Error)
+				assert.Zero(t, count)
+
+				// Plain search must not surface the synthetic default brand.
+				plain, _, err := model.SearchVendors("", 0, 100)
+				require.NoError(t, err)
+				for _, v := range plain {
+					assert.NotEqual(t, "字节跳动", v.Name)
+				}
+
+				// Including defaults must surface it as a negative-ID synthetic vendor.
+				withDefaults, _, err := model.SearchVendorsIncludingDefaults("", 0, 100)
+				require.NoError(t, err)
+				var synthetic *model.Vendor
+				for _, v := range withDefaults {
+					if v.Name == "字节跳动" {
+						synthetic = v
+					}
+				}
+				require.NotNil(t, synthetic, "default brand 字节跳动 must appear in admin search")
+				assert.Negative(t, synthetic.Id)
+				assert.Equal(t, "Doubao.Color", synthetic.Icon)
+
+				// GetVendorByID resolves the synthetic vendor by its negative ID.
+				loaded, err := model.GetVendorByID(synthetic.Id)
+				require.NoError(t, err)
+				assert.Equal(t, "字节跳动", loaded.Name)
+
+				// Promoting it persists a real vendor record.
+				promoted, err := model.PromoteDefaultVendor("字节跳动", "ByteDance models", "Doubao.Color")
+				require.NoError(t, err)
+				assert.Positive(t, promoted.Id)
+				require.NoError(t, db.Model(&model.Vendor{}).Where("name = ?", "字节跳动").Count(&count).Error)
+				assert.EqualValues(t, 1, count)
+
+				// After promotion the admin search shows the real record and skips
+				// the synthetic duplicate (matched by name).
+				after, _, err := model.SearchVendorsIncludingDefaults("", 0, 100)
+				require.NoError(t, err)
+				realCount := 0
+				for _, v := range after {
+					if v.Name == "字节跳动" {
+						realCount++
+						assert.Positive(t, v.Id)
+					}
+				}
+				assert.Equal(t, 1, realCount)
+			})
+		t.Run("metadata_ownership_preview_merge_delete_and_rollback", func(t *testing.T) {
 				source := model.Vendor{Name: "  Vendor Source  ", Icon: "Gemini.Color"}
 				target := model.Vendor{Name: "Vendor Target", Description: "Keep target", Icon: "OpenAI"}
 				require.NoError(t, source.Insert())

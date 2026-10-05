@@ -157,3 +157,29 @@ func getDefaultVendorIcon(vendorName string) string {
 	}
 	return ""
 }
+
+// defaultBrandVendors 返回定价广场按名称规则匹配、但没有持久化元数据的模型所对应
+// 的"默认品牌"供应商。这些供应商使用保留的负 ID，不会写入数据库，仅用于展示。
+// 管理后台的供应商列表会合并它们，以便运营人员将这些品牌提升为可管理的真实记录。
+func defaultBrandVendors() []*Vendor {
+	vendors := make([]*Vendor, 0, len(defaultVendorDisplayIDs))
+	for name, id := range defaultVendorDisplayIDs {
+		vendors = append(vendors, &Vendor{
+			Id:     id,
+			Name:   name,
+			Icon:   getDefaultVendorIcon(name),
+			Status: 1,
+		})
+	}
+	return vendors
+}
+
+// getDefaultBrandVendor 按负 ID 返回对应的默认品牌供应商（用于只读展示与编辑提升）。
+func getDefaultBrandVendor(id int) (*Vendor, bool) {
+	for _, v := range defaultBrandVendors() {
+		if v.Id == id {
+			return v, true
+		}
+	}
+	return nil, false
+}
