@@ -111,6 +111,15 @@ export const FILTER_SECTIONS = {
 /** Maximum number of tags to display in model row */
 export const MAX_TAGS_DISPLAY = 5
 
+/**
+ * Context-window size labels, e.g. `8K`, `200K`, `1M`, `1.1M`, `204.8K`.
+ * They describe a model's input limit rather than a capability, so they are
+ * hidden from the tag filter and never counted as a tag. The pattern is
+ * anchored and requires a bare number plus a single K/M suffix, so real
+ * capability tags such as `推理` or `PDF` are never affected.
+ */
+export const CONTEXT_SIZE_TAG_PATTERN = /^\d+(?:\.\d+)?[kKmM]$/
+
 /** Maximum number of filter items to display before showing "More..." */
 export const MAX_FILTER_ITEMS = 5
 
