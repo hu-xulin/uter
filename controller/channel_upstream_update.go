@@ -557,6 +557,12 @@ func checkAndPersistChannelUpstreamModelUpdates(
 		if err = channel.UpdateAbilities(nil); err != nil {
 			return true, autoAdded, err
 		}
+		// The served model list just changed, so any newly added name can be
+		// missing its official metadata and price. Fill them in now so the
+		// admin table and the pricing page stop reporting them as unset.
+		if autoAdded > 0 {
+			autoFillOfficialData(context.Background(), pendingAddModels)
+		}
 	}
 	return modelsChanged, autoAdded, nil
 }
@@ -1002,6 +1008,11 @@ func applyChannelUpstreamModelUpdates(
 	if modelsChanged {
 		if err := channel.UpdateAbilities(nil); err != nil {
 			return addModels, removeModels, remainingModels, remainingRemoveModels, true, err
+		}
+		// Newly added names have no official metadata or price yet; fill them
+		// from the official catalog and price preset.
+		if len(addModels) > 0 {
+			autoFillOfficialData(context.Background(), addModels)
 		}
 	}
 	return addModels, removeModels, remainingModels, remainingRemoveModels, modelsChanged, nil
