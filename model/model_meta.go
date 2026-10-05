@@ -400,6 +400,79 @@ func GetVendorModelCounts() (map[int64]int64, error) {
 	return m, nil
 }
 
+// GetEffectiveVendorModelCounts 按"定价广场如何归因模型"统计每个供应商名下的模型数，
+// 保证管理页的「关联模型数」与定价页显示的是同一批模型：
+//  1. 已落库的 models 记录（含前缀/后缀/包含规则命中的记录）按其 vendor_id 计数；
+//  2. 渠道里可用、但没有模型元数据的模型，updatePricing 会按名称规则归因到某个默认品牌，
+//     若已存在同名真实供应商则归到该真实记录 —— 只统计 models 表会把这部分全部漏掉，
+//     于是出现"定价页该品牌下有一堆模型、管理页却显示 0"。
+// 只读：不会创建或复活任何供应商记录。
+func GetEffectiveVendorModelCounts() (map[int64]int64, error) {
+	counts, err := GetVendorModelCounts()
+	if err != nil {
+		return nil, err
+	}
+	synthetic, err := countDefaultBrandOwnedModels()
+	if err != nil {
+		return nil, err
+	}
+	for id, n := range synthetic {
+		counts[id] += n
+	}
+	return counts, nil
+}
+
+// countDefaultBrandOwnedModels 统计"没有模型元数据、靠名称规则归因到默认品牌"的可用模型
+// 数量，按最终归属的供应商 ID 分组（真实记录优先，没有则落到保留的负 ID）。
+func countDefaultBrandOwnedModels() (map[int64]int64, error) {
+	abilities, err := GetAllEnableAbilityWithChannels()
+	if err != nil {
+		return nil, err
+	}
+	counts := make(map[int64]int64)
+	if len(abilities) == 0 {
+		return counts, nil
+	}
+	names := make([]string, 0, len(abilities))
+	deduped := make(map[string]struct{}, len(abilities))
+	for _, ability := range abilities {
+		if _, ok := deduped[ability.Model]; ok {
+			continue
+		}
+		deduped[ability.Model] = struct{}{}
+		names = append(names, ability.Model)
+	}
+	var allMeta []Model
+	if err := DB.Find(&allMeta).Error; err != nil {
+		return nil, err
+	}
+	resolved := resolveModelMetadata(allMeta, names)
+	var vendors []Vendor
+	if err := DB.Find(&vendors).Error; err != nil {
+		return nil, err
+	}
+	vendorMap := make(map[int]*Vendor, len(vendors))
+	for i := range vendors {
+		vendorMap[vendors[i].Id] = &vendors[i]
+	}
+	for _, name := range names {
+		if _, ok := resolved[name]; ok {
+			// 已落库的元数据已按它的 vendor_id 计过一次，不能重复计。
+			continue
+		}
+		brand := defaultVendorNameForModel(name)
+		if brand == "" {
+			continue
+		}
+		vendorID := getDisplayVendor(brand, vendorMap)
+		if vendorID == 0 {
+			continue
+		}
+		counts[int64(vendorID)]++
+	}
+	return counts, nil
+}
+
 func GetAllModels(offset int, limit int) ([]*Model, error) {
 	models, _, err := SearchModels("", "", "", "", offset, limit)
 	return models, err

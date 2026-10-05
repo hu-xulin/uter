@@ -40,37 +40,40 @@ var defaultVendorRules = map[string]string{
 }
 
 // 供应商默认图标映射
+// 统一使用非彩色（单色）图标：不带 ".Color" 后缀的 @lobehub/icons 变体跟随
+// currentColor，能自适应深浅色主题；彩色变体在深色底上容易糊、且颜色无法统一。
 var defaultVendorIcons = map[string]string{
 	"OpenAI":     "OpenAI",
-	"Anthropic":  "Claude.Color",
-	"Google":     "Gemini.Color",
+	"Anthropic":  "Claude",
+	"Google":     "Gemini",
 	"Moonshot":   "Moonshot",
-	"智谱":         "Zhipu.Color",
-	"阿里巴巴":       "Qwen.Color",
-	"DeepSeek":   "DeepSeek.Color",
-	"MiniMax":    "Minimax.Color",
-	"百度":         "Wenxin.Color",
-	"讯飞":         "Spark.Color",
-	"腾讯":         "Hunyuan.Color",
-	"Cohere":     "Cohere.Color",
-	"Cloudflare": "Cloudflare.Color",
-	"360":        "Ai360.Color",
-	"零一万物":       "Yi.Color",
+	"智谱":         "Zhipu",
+	"阿里巴巴":       "Qwen",
+	"DeepSeek":   "DeepSeek",
+	"MiniMax":    "Minimax",
+	"百度":         "Wenxin",
+	"讯飞":         "Spark",
+	"腾讯":         "Hunyuan",
+	"Cohere":     "Cohere",
+	"Cloudflare": "Cloudflare",
+	"360":        "Ai360",
+	"零一万物":       "Yi",
 	"Jina":       "Jina",
-	"Mistral":    "Mistral.Color",
+	"Mistral":    "Mistral",
 	"xAI":        "XAI",
 	"Meta":       "Ollama",
-	"字节跳动":       "Doubao.Color",
-	"快手":         "Kling.Color",
-	"即梦":         "Jimeng.Color",
+	"字节跳动":       "Doubao",
+	"快手":         "Kling",
+	"即梦":         "Jimeng",
 	"Vidu":       "Vidu",
 	"微软":         "AzureAI",
 	"Microsoft":  "AzureAI",
 	"Azure":      "AzureAI",
 }
 
-// initDefaultVendorMapping 简化的默认供应商映射
-func initDefaultVendorMapping(metaMap map[string]*Model, vendorMap map[int]*Vendor, enableAbilities []AbilityWithChannel) {
+// defaultVendorPatterns 名称匹配规则，按"长规则优先"排序：同一模型名可能命中多条规则时，
+// 取最长的那条。排序结果必须与 initDefaultVendorMapping 的历史行为完全一致。
+var defaultVendorPatterns = func() []string {
 	patterns := make([]string, 0, len(defaultVendorRules))
 	for pattern := range defaultVendorRules {
 		patterns = append(patterns, pattern)
@@ -81,6 +84,25 @@ func initDefaultVendorMapping(metaMap map[string]*Model, vendorMap map[int]*Vend
 		}
 		return strings.Compare(a, b)
 	})
+	return patterns
+}()
+
+// defaultVendorNameForModel 返回模型名按名称规则应归属的默认品牌名，未命中返回空串。
+func defaultVendorNameForModel(model string) string {
+	if model == "" {
+		return ""
+	}
+	modelLower := strings.ToLower(model)
+	for _, pattern := range defaultVendorPatterns {
+		if strings.Contains(modelLower, pattern) {
+			return defaultVendorRules[pattern]
+		}
+	}
+	return ""
+}
+
+// initDefaultVendorMapping 简化的默认供应商映射
+func initDefaultVendorMapping(metaMap map[string]*Model, vendorMap map[int]*Vendor, enableAbilities []AbilityWithChannel) {
 	for _, ability := range enableAbilities {
 		modelName := ability.Model
 		if _, exists := metaMap[modelName]; exists {
@@ -89,13 +111,8 @@ func initDefaultVendorMapping(metaMap map[string]*Model, vendorMap map[int]*Vend
 
 		// 匹配供应商
 		vendorID := 0
-		modelLower := strings.ToLower(modelName)
-		for _, pattern := range patterns {
-			vendorName := defaultVendorRules[pattern]
-			if strings.Contains(modelLower, pattern) {
-				vendorID = getDisplayVendor(vendorName, vendorMap)
-				break
-			}
+		if vendorName := defaultVendorNameForModel(modelName); vendorName != "" {
+			vendorID = getDisplayVendor(vendorName, vendorMap)
 		}
 
 		// 创建模型元数据
@@ -151,7 +168,15 @@ var defaultVendorDisplayIDs = map[string]int{
 	"零一万物":       -1023,
 }
 
+// getDisplayVendor 返回该品牌在定价侧展示时应使用的供应商 ID。
+//
+// 曾被合并过的品牌不再以独立身份出现：这里优先落到当时的合并目标（一条真实记录），
+// 于是每一次定价刷新都不会再把被合并掉的合成品牌重新生成出来。
+// 这正是「合并一次，后续同类来源自动跟进」在读路径上的落点。
 func getDisplayVendor(vendorName string, vendorMap map[int]*Vendor) int {
+	if targetID := VendorMergeTargetFor(vendorName, vendorMap); targetID > 0 {
+		return targetID
+	}
 	for id, vendor := range vendorMap {
 		if strings.EqualFold(vendor.Name, vendorName) {
 			return id
@@ -168,7 +193,7 @@ func getDisplayVendor(vendorName string, vendorMap map[int]*Vendor) int {
 // 获取供应商默认图标
 func getDefaultVendorIcon(vendorName string) string {
 	if icon, exists := defaultVendorIcons[vendorName]; exists {
-		return icon
+		return NormalizeIconKey(icon)
 	}
 	return ""
 }
