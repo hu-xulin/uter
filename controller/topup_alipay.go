@@ -132,7 +132,7 @@ func RequestAlipayMiniProgram(c *gin.Context) {
 	bizContent := map[string]string{
 		"out_trade_no": tradeNo,
 		"total_amount": strconv.FormatFloat(payMoney, 'f', 2, 64),
-		"subject":      fmt.Sprintf("Uter 充值 %d", req.Amount),
+		"subject":      fmt.Sprintf("%s 充值 %d", common.EmailBrandName, req.Amount),
 		"buyer_id":     req.BuyerId,
 	}
 	bizBytes, _ := json.Marshal(bizContent)
@@ -263,7 +263,7 @@ func RequestAlipayWeb(c *gin.Context) {
 		bizContent := map[string]string{
 			"out_trade_no": tradeNo,
 			"total_amount": strconv.FormatFloat(payMoney, 'f', 2, 64),
-			"subject":      fmt.Sprintf("Uter 充值 %d", req.Amount),
+			"subject":      fmt.Sprintf("%s 充值 %d", common.EmailBrandName, req.Amount),
 			"product_code": "QUICK_WAP_WAY",
 			// 用户中途退出支付时回到的页面。
 			"quit_url": paymentReturnPath("/wallet"),
@@ -318,7 +318,7 @@ func RequestAlipayWeb(c *gin.Context) {
 	bizContent := map[string]string{
 		"out_trade_no": tradeNo,
 		"total_amount": strconv.FormatFloat(payMoney, 'f', 2, 64),
-		"subject":      fmt.Sprintf("Uter 充值 %d", req.Amount),
+		"subject":      fmt.Sprintf("%s 充值 %d", common.EmailBrandName, req.Amount),
 	}
 	bizBytes, _ := json.Marshal(bizContent)
 	params := map[string]string{

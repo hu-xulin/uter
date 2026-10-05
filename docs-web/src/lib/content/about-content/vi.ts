@@ -11,7 +11,7 @@ export const VI_CONTENT: AboutContent = {
         {
           heading: 'Kết nối trí tuệ. Mở ra khả năng mới.',
           paragraphs: [
-            'Uter, được vận hành bởi Công ty TNHH Uter Network, Thâm Quyến, là một công ty công nghệ tập trung vào trí tuệ nhân tạo và dịch vụ mô hình ngôn ngữ lớn.',
+            'Uter, được vận hành bởi Shenzhen Uter Network Co., Ltd., là một công ty công nghệ tập trung vào trí tuệ nhân tạo và dịch vụ mô hình ngôn ngữ lớn.',
             'Chúng tôi đang xây dựng một nền tảng dịch vụ mô hình ngôn ngữ lớn thông minh dành cho nhà phát triển, doanh nghiệp và những người tiên phong, kết nối các mô hình ngôn ngữ lớn tiên tiến cùng công nghệ AI thông qua một nền tảng dịch vụ thống nhất và hiệu quả.',
             'Khi AI tạo sinh tiếp tục phát triển, mô hình ngôn ngữ lớn đang trở thành một dạng hạ tầng số mới và là nguồn tăng trưởng năng suất ngày càng quan trọng.',
             'Tuy vậy, việc biến năng lực của mô hình thành ứng dụng thực tế vẫn còn nhiều độ phức tạp — từ việc lựa chọn mô hình và tích hợp kỹ thuật đến quản lý dịch vụ, phát triển ứng dụng và phối hợp giữa các năng lực AI khác nhau.',
@@ -286,7 +286,7 @@ export const VI_CONTENT: AboutContent = {
         { heading: 'Hợp tác theo kênh', email: 'partner@uter.ai' },
         { heading: 'Truyền thông', email: 'pr@uter.ai' },
         {
-          heading: 'Công ty TNHH Uter Network, Thâm Quyến',
+          heading: 'Shenzhen Uter Network Co., Ltd.',
           paragraphs: [
             'Uter',
             'Nền tảng dịch vụ mô hình ngôn ngữ lớn thông minh',

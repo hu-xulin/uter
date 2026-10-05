@@ -9,7 +9,7 @@
 | Version | V1.0 |
 | Effective date | September 28, 2026 |
 | Last updated | September 28, 2026 |
-| Contracting entity | **Shenzhen Uter Network Technology Co., Ltd.** (the sole contracting entity for the recharge service and related fund-management matters under this Agreement) |
+| Contracting entity | **Shenzhen Uter Network Co., Ltd.** (the sole contracting entity for the recharge service and related fund-management matters under this Agreement) |
 | Applies to | Individual and enterprise users who make prepayments on the Platform |
 | Governing law | The laws of the People's Republic of China (excluding conflict-of-law rules) |
 | Related documents | Uter Smart Large Model Service Platform User Agreement; Uter Smart Large Model Service Platform Privacy Policy |
@@ -52,7 +52,7 @@
 
 **Article 1　[Purpose]**
 
-This Agreement sets out the rights and obligations between you and Shenzhen Uter Network Technology Co., Ltd. ("we", "us" or "the Company") in respect of your prepayment to the Uter Smart Large Model Service Platform (the "Platform"), and of the stages that prepaid funds pass through — arrival, conversion, consumption, reconciliation and refund — so that prepaid funds are **secure, verifiable and refundable**.
+This Agreement sets out the rights and obligations between you and Shenzhen Uter Network Co., Ltd. ("we", "us" or "the Company") in respect of your prepayment to the Uter Smart Large Model Service Platform (the "Platform"), and of the stages that prepaid funds pass through — arrival, conversion, consumption, reconciliation and refund — so that prepaid funds are **secure, verifiable and refundable**.
 
 **Article 2　[Scope of application]**
 
@@ -363,7 +363,7 @@ where "total credit after conversion" is the total available credit for that rec
 
 (1) The formation, validity, interpretation, performance and dispute resolution of this Agreement are governed by **the laws of the People's Republic of China** (excluding conflict-of-law rules).
 
-(2) Any dispute arising out of or in connection with this Agreement shall first be resolved through friendly negotiation; failing that, either party may bring proceedings before **the competent people's court in the place where Shenzhen Uter Network Technology Co., Ltd. is domiciled (Shenzhen)**.
+(2) Any dispute arising out of or in connection with this Agreement shall first be resolved through friendly negotiation; failing that, either party may bring proceedings before **the competent people's court in the place where Shenzhen Uter Network Co., Ltd. is domiciled (Shenzhen)**.
 
 (3) During dispute resolution, the parties shall continue to perform the other terms of this Agreement; **the Company shall not suspend your normal service for the undisputed portion because of the dispute**.
 

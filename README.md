@@ -485,7 +485,7 @@ link to the original project: <github.com/Uter-AI/Uter>.
 
 This is an open-source project developed based on [One API](https://github.com/songquanpeng/one-api) (MIT License).
 
-If your organization's policies do not permit the use of AGPLv3-licensed software, or if you wish to avoid the open-source obligations of AGPLv3, please contact us at: [support@Uter.ai.com](mailto:support@Uter.ai.com)
+If your organization's policies do not permit the use of AGPLv3-licensed software, or if you wish to avoid the open-source obligations of AGPLv3, please contact us at: [support@uter.ai](mailto:support@uter.ai)
 
 ---
 

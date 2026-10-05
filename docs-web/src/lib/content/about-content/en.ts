@@ -11,7 +11,7 @@ export const EN_CONTENT: AboutContent = {
         {
           heading: 'Connecting Intelligence. Creating Possibilities.',
           paragraphs: [
-            'Uter, operated by Shenzhen Uter Network Technology Co., Ltd., is a technology company focused on artificial intelligence and large language model services.',
+            'Uter, operated by Shenzhen Uter Network Co., Ltd., is a technology company focused on artificial intelligence and large language model services.',
             'We are building an intelligent large language model service platform for developers, enterprises, and innovators, connecting leading large language models and AI technologies through a unified and efficient service platform.',
             'As generative AI continues to evolve, large language models are becoming a new form of digital infrastructure and an increasingly important source of productivity.',
             'Yet turning model capabilities into real-world applications still involves significant complexity — from model selection and technical integration to service management, application development, and coordination across different AI capabilities.',
@@ -286,7 +286,7 @@ export const EN_CONTENT: AboutContent = {
         { heading: 'Channel Partnerships', email: 'partner@uter.ai' },
         { heading: 'Media Relations', email: 'pr@uter.ai' },
         {
-          heading: 'Shenzhen Uter Network Technology Co., Ltd.',
+          heading: 'Shenzhen Uter Network Co., Ltd.',
           paragraphs: [
             'Uter',
             'Intelligent Large Language Model Services Platform',

@@ -16,7 +16,7 @@ func TestBuildBrandEmailHTML(t *testing.T) {
 	html := BuildBrandEmailHTML(BrandEmail{
 		Heading: "请验证您的邮箱地址",
 		Paragraphs: []string{
-			"Uter.ai 收到了将 <strong>user@example.com</strong> 用作 Uter.ai 帐号的请求。",
+			"Uter.ai 优特智能 收到了将 <strong>user@example.com</strong> 用作账号的请求。",
 			"请使用此验证码完成邮箱验证：",
 			"   ",
 		},

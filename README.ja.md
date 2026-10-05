@@ -475,7 +475,7 @@ Token、Origin 検証、PAT の契約については[ユーザー認証とログ
 
 本プロジェクトは、[One API](https://github.com/songquanpeng/one-api)（MITライセンス）をベースに開発されたオープンソースプロジェクトです。
 
-お客様の組織のポリシーがAGPLv3ライセンスのソフトウェアの使用を許可していない場合、またはAGPLv3のオープンソース義務を回避したい場合は、こちらまでお問い合わせください：[support@Uter.ai.com](mailto:support@Uter.ai.com)
+お客様の組織のポリシーがAGPLv3ライセンスのソフトウェアの使用を許可していない場合、またはAGPLv3のオープンソース義務を回避したい場合は、こちらまでお問い合わせください：[support@uter.ai](mailto:support@uter.ai)
 
 ---
 
