@@ -9,6 +9,29 @@ import (
 	"gorm.io/gorm"
 )
 
+// NormalizeIconKey 把 @lobehub/icons 的图标名统一收敛到非彩色（单色）变体。
+//
+// 单色变体跟随 currentColor，能自适应深浅色主题；彩色变体（"X.Color"）在深色
+// 底上容易糊、且无法统一色调。平台侧提供的默认值（默认供应商图标、官方元数据
+// 同步下发的图标）一律走这里，保证"默认全部非彩色"。
+//
+// 只剥离结尾的 .Color 段，其余链式属性（如 "Claude.Avatar.type={'platform'}"）
+// 原样保留，避免破坏高级写法。
+func NormalizeIconKey(icon string) string {
+	trimmed := strings.TrimSpace(icon)
+	if trimmed == "" {
+		return ""
+	}
+	base, suffix, found := strings.Cut(trimmed, ".")
+	if !found {
+		return trimmed
+	}
+	if !strings.EqualFold(suffix, "Color") {
+		return trimmed
+	}
+	return strings.TrimSpace(base)
+}
+
 // Vendor 用于存储供应商信息，供模型引用
 // Name 唯一，用于在模型中关联
 // Icon 采用 @lobehub/icons 的图标名，前端可直接渲染
@@ -87,7 +110,18 @@ func GetVendorByID(id int) (*Vendor, error) {
 	// 负 ID 对应定价广场上的合成"默认品牌"供应商，没有持久化记录，返回只读展示数据。
 	if id < 0 {
 		if v, ok := getDefaultBrandVendor(id); ok {
-			v.ModelCount = 0
+			// 该合成品牌已被合并过：直接返回合并目标，避免管理端打开一条
+			// 「看起来存在、实际没有记录」的合成条目。
+			if targetID := ResolveVendorMergeTarget(v.Name); targetID > 0 {
+				return GetVendorByID(targetID)
+			}
+			// 合成品牌自身没有 models 行，但定价页会把它名下的模型归到它/同名真实记录上，
+			// 这里沿用同一口径给出关联模型数。
+			counts, err := GetEffectiveVendorModelCounts()
+			if err != nil {
+				return nil, err
+			}
+			v.ModelCount = counts[int64(id)]
 			v.Version = VendorRecordVersion(v)
 			return v, nil
 		}
@@ -98,9 +132,11 @@ func GetVendorByID(id int) (*Vendor, error) {
 	if err != nil {
 		return nil, err
 	}
-	if err := DB.Model(&Model{}).Where("vendor_id = ?", id).Count(&v.ModelCount).Error; err != nil {
+	counts, err := GetEffectiveVendorModelCounts()
+	if err != nil {
 		return nil, err
 	}
+	v.ModelCount = counts[int64(id)]
 	v.Version = VendorRecordVersion(&v)
 	return &v, nil
 }
@@ -132,27 +168,25 @@ func searchVendorsCore(keyword string, offset, limit int, includeDefault bool, a
 		like := "%" + keyword + "%"
 		db = db.Where("name LIKE ? OR description LIKE ?", like, like)
 	}
-	if len(association) > 0 {
-		references := DB.Model(&Model{}).Select("1").Where("models.vendor_id = vendors.id")
-		switch association[0] {
-		case "linked":
-			db = db.Where("EXISTS (?)", references)
-		case "unlinked":
-			db = db.Where("NOT EXISTS (?)", references)
-		}
-	}
 	var vendors []*Vendor
 	if err := db.Order("id DESC").Find(&vendors).Error; err != nil {
 		return nil, 0, err
 	}
 
-	if includeDefault && (len(association) == 0 || association[0] != "linked") {
+	if includeDefault {
 		realNames := make(map[string]struct{}, len(vendors))
+		realByID := make(map[int]*Vendor, len(vendors))
 		for _, v := range vendors {
 			realNames[strings.ToLower(v.Name)] = struct{}{}
+			realByID[v.Id] = v
 		}
 		keywordLower := strings.ToLower(keyword)
 		for _, v := range defaultBrandVendors() {
+			// 已被合并过的品牌有了明确归宿，不再作为可管理的独立条目出现——
+			// 这正是「合并一次，后续同类自动跟进」在管理列表上的体现。
+			if VendorMergeTargetFor(v.Name, realByID) > 0 {
+				continue
+			}
 			if _, exists := realNames[strings.ToLower(v.Name)]; exists {
 				continue
 			}
@@ -165,9 +199,22 @@ func searchVendorsCore(keyword string, offset, limit int, includeDefault bool, a
 		}
 	}
 
-	counts, err := GetVendorModelCounts()
+	// 关联模型数必须与定价广场的归因口径一致（models 表 + 靠名称规则归因的默认品牌），
+	// 否则会出现"定价页品牌下有一堆模型、管理页显示 0"。
+	counts, err := GetEffectiveVendorModelCounts()
 	if err != nil {
 		return nil, 0, err
+	}
+	// 是否已关联模型同样以该口径判断，避免合成品牌被误判为"未关联"。
+	if len(association) > 0 && (association[0] == "linked" || association[0] == "unlinked") {
+		filtered := vendors[:0]
+		for _, v := range vendors {
+			linked := counts[int64(v.Id)] > 0
+			if linked == (association[0] == "linked") {
+				filtered = append(filtered, v)
+			}
+		}
+		vendors = filtered
 	}
 	// 在内存中对合并后的完整列表分页，以保证合成供应商稳定排在持久化记录之后。
 	total := int64(len(vendors))
@@ -196,6 +243,14 @@ func PromoteDefaultVendor(name, description, icon string) (*Vendor, error) {
 	name = strings.TrimSpace(name)
 	if name == "" {
 		return nil, errors.New("vendor name is required")
+	}
+	// 该品牌已被合并过：直接返回合并目标。否则「保存/提升」会重新造出一条
+	// 立即被合并规则隐藏的记录，运营会看到「改完不见」。
+	if targetID := ResolveVendorMergeTarget(name); targetID > 0 {
+		if target, err := GetVendorByID(targetID); err == nil {
+			target.Version = VendorRecordVersion(target)
+			return target, nil
+		}
 	}
 	// 1. 同名且未删除：直接在其上应用本次提交的字段（幂等，绝不新建第二条）。
 	var active Vendor

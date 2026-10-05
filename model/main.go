@@ -341,6 +341,7 @@ func migrateDB() error {
 		&TaskPlugin{},
 		&Model{},
 		&Vendor{},
+		&VendorMergeRule{},
 		&PrefillGroup{},
 		&Setup{},
 		&Organization{},

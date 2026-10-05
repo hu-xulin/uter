@@ -65,7 +65,7 @@ func modelManagementDB(t *testing.T, kind, dsn string) *gorm.DB {
 	require.NoError(t, model.InitDB())
 	database = model.DB
 	model.LOG_DB = database
-	require.NoError(t, database.AutoMigrate(&model.Model{}, &model.Vendor{}, &model.Channel{}, &model.Ability{}, &model.Option{}, &model.User{}, &model.AuditLog{}))
+	require.NoError(t, database.AutoMigrate(&model.Model{}, &model.Vendor{}, &model.VendorMergeRule{}, &model.Channel{}, &model.Ability{}, &model.Option{}, &model.User{}, &model.AuditLog{}))
 	for _, value := range restoreRatios {
 		require.NoError(t, value.restore("{}"))
 	}
@@ -1091,8 +1091,9 @@ func TestVendorManagementDatabaseMatrix(t *testing.T) {
 				model.GetPricing()
 				vendors := model.GetVendors()
 				require.Len(t, vendors, 1)
-				assert.Equal(t, "Google", vendors[0].Name)
-				assert.Equal(t, "Gemini.Color", vendors[0].Icon)
+			assert.Equal(t, "Google", vendors[0].Name)
+			// 图标走单色规范：默认品牌图标统一收敛到非彩色变体（NormalizeIconKey）。
+			assert.Equal(t, "Gemini", vendors[0].Icon)
 				assert.Negative(t, vendors[0].ID)
 				var count int64
 				require.NoError(t, db.Model(&model.Vendor{}).Count(&count).Error)
@@ -1135,7 +1136,7 @@ func TestVendorManagementDatabaseMatrix(t *testing.T) {
 				}
 				require.NotNil(t, synthetic, "default brand 字节跳动 must appear in admin search")
 				assert.Negative(t, synthetic.Id)
-				assert.Equal(t, "Doubao.Color", synthetic.Icon)
+				assert.Equal(t, "Doubao", synthetic.Icon)
 
 				// GetVendorByID resolves the synthetic vendor by its negative ID.
 				loaded, err := model.GetVendorByID(synthetic.Id)
@@ -1302,11 +1303,18 @@ func TestVendorManagementDatabaseMatrix(t *testing.T) {
 				require.NoError(t, db.Create(&channel).Error)
 				ability := model.Ability{Model: one.ModelName, Group: "default", ChannelId: channel.Id, Enabled: true}
 				require.NoError(t, db.Create(&ability).Error)
-				linked, total, err := model.SearchVendors("", 0, 20, "linked")
+				linked, _, err := model.SearchVendors("", 0, 20, "linked")
 				require.NoError(t, err)
-				require.Len(t, linked, 1)
-				assert.EqualValues(t, 1, total)
-				assert.EqualValues(t, 2, linked[0].ModelCount)
+				// 定价广场按名称规则归因到默认品牌的模型同样算"已关联"（口径与定价页一致），
+				// 所以这里按 source 定位，而不是断言整张列表只剩它一家。
+				var linkedSource *model.Vendor
+				for _, v := range linked {
+					if v.Id == source.Id {
+						linkedSource = v
+					}
+				}
+				require.NotNil(t, linkedSource)
+				assert.EqualValues(t, 2, linkedSource.ModelCount)
 				unlinked, _, err := model.SearchVendors("Vendor Target", 0, 20, "unlinked")
 				require.NoError(t, err)
 				require.Len(t, unlinked, 1)
@@ -1421,6 +1429,58 @@ func TestVendorManagementDatabaseMatrix(t *testing.T) {
 				require.NoError(t, db.Where("model = ? AND channel_id = ?", one.ModelName, channel.Id).First(&retainedAbility).Error)
 				assert.Equal(t, ability.Group, retainedAbility.Group)
 				assert.Equal(t, ability.Enabled, retainedAbility.Enabled)
+			})
+			t.Run("vendor_model_count_matches_pricing_attribution", func(t *testing.T) {
+				// 供应商的「关联模型数」必须与定价广场的归因口径一致：定价广场会把没有
+				// 模型元数据的可用模型按名称规则归因到默认品牌。只统计 models 表会让这些
+				// 模型全部漏掉 —— 定价页该品牌下有一堆模型，管理页却显示 0。
+				channel := model.Channel{Name: "Jina fixture", Type: 1, Status: common.ChannelStatusEnabled}
+				require.NoError(t, db.Create(&channel).Error)
+				require.NoError(t, db.Create(&model.Ability{Model: "jina-colbert-v2", Group: "default", ChannelId: channel.Id, Enabled: true}).Error)
+				model.RefreshPricing()
+				model.GetPricing()
+
+				var synthetic *model.Vendor
+				withDefaults, _, err := model.SearchVendorsIncludingDefaults("", 0, 100)
+				require.NoError(t, err)
+				for _, v := range withDefaults {
+					if v.Name == "Jina" {
+						synthetic = v
+					}
+				}
+				require.NotNil(t, synthetic, "default brand Jina must surface with the catalog model")
+				assert.Negative(t, synthetic.Id)
+				assert.EqualValues(t, 1, synthetic.ModelCount, "models pricing attributes to the brand must be counted")
+
+				linked, _, err := model.SearchVendorsIncludingDefaults("", 0, 100, "linked")
+				require.NoError(t, err)
+				listedAsLinked := false
+				for _, v := range linked {
+					if v.Id == synthetic.Id {
+						listedAsLinked = true
+					}
+				}
+				assert.True(t, listedAsLinked, "a default brand owning catalog models counts as linked")
+
+				// 提升为真实记录后，同一批模型必须继续算在该真实记录名下（此前会显示 0）。
+				promoted, err := model.PromoteDefaultVendor("Jina", "", "Jina")
+				require.NoError(t, err)
+				require.Positive(t, promoted.Id)
+
+				var realRecord *model.Vendor
+				afterPromote, _, err := model.SearchVendorsIncludingDefaults("", 0, 100)
+				require.NoError(t, err)
+				for _, v := range afterPromote {
+					if v.Id == promoted.Id {
+						realRecord = v
+					}
+				}
+				require.NotNil(t, realRecord)
+				assert.EqualValues(t, 1, realRecord.ModelCount, "promoted record must report the models pricing shows under it")
+
+				loaded, err := model.GetVendorByID(promoted.Id)
+				require.NoError(t, err)
+				assert.EqualValues(t, 1, loaded.ModelCount)
 			})
 			t.Run("concurrent_create_and_delete_never_orphan_model", func(t *testing.T) {
 				vendor := model.Vendor{Name: "Concurrent owner"}

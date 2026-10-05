@@ -5,6 +5,7 @@ import (
 	"github.com/Uter-AI/Uter/i18n"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/Uter-AI/Uter/common"
 
@@ -62,6 +63,18 @@ func CreateVendorMeta(c *gin.Context) {
 		vendorAPIError(c, err)
 		return
 	}
+	// 名称命中历史合并规则：直接返回当时的合并目标，而不是新建一条会被规则
+	// 立刻重定向走的孤儿记录（它会永远看不见，却占用名称并制造误解）。
+	if targetID := model.ResolveVendorMergeTarget(v.Name); targetID > 0 {
+		if target, err := model.GetVendorByID(targetID); err == nil {
+			recordManageAudit(c, "vendor.metadata.save", map[string]any{
+				"vendor_id": target.Id, "name": target.Name,
+				"redirected_from": v.Name,
+			})
+			common.ApiSuccess(c, target)
+			return
+		}
+	}
 	if err := v.Insert(); err != nil {
 		vendorAPIError(c, err)
 		return
@@ -92,6 +105,19 @@ func UpdateVendorMeta(c *gin.Context) {
 		recordManageAudit(c, "vendor.metadata.save", map[string]any{"vendor_id": created.Id, "name": created.Name})
 		common.ApiSuccess(c, &created)
 		return
+	}
+	// 改名指向一个已被合并的名称时同样归集到合并目标，保证「被合并的来源永不独立出现」。
+	if v.Id > 0 {
+		if targetID := model.ResolveVendorMergeTarget(v.Name); targetID > 0 && targetID != v.Id {
+			if target, err := model.GetVendorByID(targetID); err == nil {
+				recordManageAudit(c, "vendor.metadata.save", map[string]any{
+					"vendor_id": target.Id, "name": target.Name,
+					"redirected_from": v.Name,
+				})
+				common.ApiSuccess(c, target)
+				return
+			}
+		}
 	}
 	if err := v.Update(); err != nil {
 		vendorAPIError(c, err)
@@ -165,4 +191,84 @@ func ApplyVendorOperation(c *gin.Context) {
 	}
 	recordManageAudit(c, "vendor."+request.Action, map[string]any{"source_vendor_ids": request.VendorIDs, "target_vendor_id": request.TargetVendorID, "updated_model_ids": result.UpdatedModels, "deleted_vendor_ids": result.DeletedVendors})
 	common.ApiSuccess(c, result)
+}
+
+// VendorMergeRuleView 是合并规则在前端的呈现形态，除规则本身外附带目标供应商名称，
+// 让管理界面无需再额外查表即可展示「来源 -> 合并到谁」。
+type VendorMergeRuleView struct {
+	Id             int      `json:"id"`
+	SourceName     string   `json:"source_name"`
+	SourcePatterns []string `json:"source_patterns"`
+	TargetVendorID int      `json:"target_vendor_id"`
+	TargetName     string   `json:"target_vendor_name"`
+	CreatedTime    int64    `json:"created_time"`
+	UpdatedTime    int64    `json:"updated_time"`
+}
+
+// ListVendorMergeRules 返回全部生效中的「自动合并」规则，供管理员查看与撤销。
+func ListVendorMergeRules(c *gin.Context) {
+	rules, err := model.ListVendorMergeRules()
+	if err != nil {
+		vendorAPIError(c, err)
+		return
+	}
+	targetIDs := make([]int, 0, len(rules))
+	for _, rule := range rules {
+		targetIDs = append(targetIDs, rule.TargetVendorID)
+	}
+	names := make(map[int]string, len(targetIDs))
+	if len(targetIDs) > 0 {
+		var targets []model.Vendor
+		if err := model.DB.Where("id IN ?", targetIDs).Find(&targets).Error; err == nil {
+			for _, v := range targets {
+				names[v.Id] = v.Name
+			}
+		}
+	}
+	views := make([]VendorMergeRuleView, 0, len(rules))
+	for _, rule := range rules {
+		patterns := make([]string, 0)
+		if rule.SourcePatterns != "" {
+			for _, part := range splitVendorMergePatterns(rule.SourcePatterns) {
+				patterns = append(patterns, part)
+			}
+		}
+		views = append(views, VendorMergeRuleView{
+			Id:             rule.Id,
+			SourceName:     rule.SourceName,
+			SourcePatterns: patterns,
+			TargetVendorID: rule.TargetVendorID,
+			TargetName:     names[rule.TargetVendorID],
+			CreatedTime:    rule.CreatedTime,
+			UpdatedTime:    rule.UpdatedTime,
+		})
+	}
+	common.ApiSuccess(c, views)
+}
+
+// DeleteVendorMergeRule 撤销一条「自动合并」规则，使该来源恢复为独立供应商。
+func DeleteVendorMergeRule(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		vendorAPIError(c, errors.New("invalid vendor merge rule"))
+		return
+	}
+	if err := model.DeleteVendorMergeRule(id); err != nil {
+		vendorAPIError(c, err)
+		return
+	}
+	recordManageAudit(c, "vendor.merge-rule.delete", map[string]any{"merge_rule_id": id})
+	common.ApiSuccess(c, nil)
+}
+
+// splitVendorMergePatterns 把 model 层逗号分隔的规则还原成列表（与 model 层一致）。
+func splitVendorMergePatterns(encoded string) []string {
+	parts := strings.Split(encoded, ",")
+	out := make([]string, 0, len(parts))
+	for _, part := range parts {
+		if trimmed := strings.TrimSpace(part); trimmed != "" {
+			out = append(out, trimmed)
+		}
+	}
+	return out
 }
