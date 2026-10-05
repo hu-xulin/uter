@@ -188,7 +188,7 @@ func sendEmailBindingCodes(state model.EmailBindingState, codes emailBindingCode
 	content := common.BuildBrandEmailHTML(common.BrandEmail{
 		Heading: "确认您的邮箱地址",
 		Paragraphs: []string{
-			fmt.Sprintf("Uter.ai 收到了将 <strong>%s</strong> 绑定到您帐号的请求。", html.EscapeString(state.Email)),
+			fmt.Sprintf("%s 收到了将 <strong>%s</strong> 绑定到您账号的请求。", common.EmailBrandName, html.EscapeString(state.Email)),
 			"请使用此验证码完成邮箱绑定：",
 		},
 		Code: codes.New,

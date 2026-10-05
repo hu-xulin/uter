@@ -11,7 +11,7 @@ export const FR_CONTENT: AboutContent = {
         {
           heading: 'Connecter l’intelligence. Créer des possibilités.',
           paragraphs: [
-            'Uter, exploitée par Shenzhen Uter Network Technology Co., Ltd., est une entreprise technologique spécialisée dans l’intelligence artificielle et les services de grands modèles de langage.',
+            'Uter, exploitée par Shenzhen Uter Network Co., Ltd., est une entreprise technologique spécialisée dans l’intelligence artificielle et les services de grands modèles de langage.',
             'Nous construisons une plateforme intelligente de services de grands modèles de langage pour les développeurs, les entreprises et les innovateurs, en connectant les grands modèles de langage de pointe et les technologies IA au moyen d’une plateforme de service unifiée et efficace.',
             'À mesure que l’IA générative évolue, les grands modèles de langage deviennent une nouvelle forme d’infrastructure numérique et une source de productivité de plus en plus importante.',
             'Pourtant, transformer les capacités des modèles en applications concrètes reste complexe — du choix des modèles et de l’intégration technique à la gestion des services, au développement d’applications et à la coordination des différentes capacités IA.',
@@ -286,7 +286,7 @@ export const FR_CONTENT: AboutContent = {
         { heading: 'Partenariats de canal', email: 'partner@uter.ai' },
         { heading: 'Relations avec les médias', email: 'pr@uter.ai' },
         {
-          heading: 'Shenzhen Uter Network Technology Co., Ltd.',
+          heading: 'Shenzhen Uter Network Co., Ltd.',
           paragraphs: [
             'Uter',
             'Plateforme de services intelligents de grands modèles de langage',

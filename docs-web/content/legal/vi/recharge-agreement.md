@@ -9,7 +9,7 @@
 | Phiên bản | V1.0 |
 | Ngày có hiệu lực | September 28, 2026 |
 | Cập nhật lần cuối | September 28, 2026 |
-| Bên ký kết | **Công ty TNHH Công nghệ Uter Network, Thâm Quyến** (bên ký kết duy nhất đối với dịch vụ nạp tiền và các vấn đề quản lý quỹ liên quan theo Hợp đồng này) |
+| Bên ký kết | **Shenzhen Uter Network Co., Ltd.** (bên ký kết duy nhất đối với dịch vụ nạp tiền và các vấn đề quản lý quỹ liên quan theo Hợp đồng này) |
 | Áp dụng cho | Cá nhân và doanh nghiệp thực hiện trả trước trên Nền tảng |
 | Luật áp dụng | Pháp luật Cộng hòa Nhân dân Trung Hoa (không bao gồm quy tắc xung đột pháp luật) |
 | Tài liệu liên quan | Hợp đồng người dùng của Nền tảng dịch vụ mô hình lớn thông minh Uter; Chính sách bảo mật của Nền tảng dịch vụ mô hình lớn thông minh Uter |
@@ -52,7 +52,7 @@
 
 **Điều 1. [Mục đích]**
 
-Hợp đồng này xác lập quyền và nghĩa vụ giữa bạn và Công ty TNHH Công nghệ Uter Network, Thâm Quyến («chúng tôi», «chúng ta» hoặc «Công ty») liên quan đến việc bạn trả trước cho Nền tảng dịch vụ mô hình lớn thông minh Uter («Nền tảng»), cũng như các giai đoạn mà tiền trả trước đi qua — tiếp nhận, quy đổi, tiêu thụ, đối soát và hoàn tiền — nhằm bảo đảm tiền trả trước **an toàn, có thể kiểm chứng và có thể hoàn tiền**.
+Hợp đồng này xác lập quyền và nghĩa vụ giữa bạn và Shenzhen Uter Network Co., Ltd. («chúng tôi», «chúng ta» hoặc «Công ty») liên quan đến việc bạn trả trước cho Nền tảng dịch vụ mô hình lớn thông minh Uter («Nền tảng»), cũng như các giai đoạn mà tiền trả trước đi qua — tiếp nhận, quy đổi, tiêu thụ, đối soát và hoàn tiền — nhằm bảo đảm tiền trả trước **an toàn, có thể kiểm chứng và có thể hoàn tiền**.
 
 **Điều 2. [Phạm vi áp dụng]**
 
@@ -363,7 +363,7 @@ trong đó «tổng hạn mức sau quy đổi» là tổng hạn mức khả d�
 
 (1) Việc hình thành, hiệu lực, giải thích, thực hiện và giải quyết tranh chấp của Hợp đồng này được điều chỉnh bởi **pháp luật Cộng hòa Nhân dân Trung Hoa** (không bao gồm quy tắc xung đột pháp luật).
 
-(2) Mọi tranh chấp phát sinh từ hoặc liên quan đến Hợp đồng này trước hết phải được giải quyết thông qua thương lượng thiện chí; nếu không thành, bất kỳ bên nào có thể khởi kiện tại **tòa án nhân dân có thẩm quyền xét xử tại nơi trụ sở của Công ty TNHH Công nghệ Uter Network, Thâm Quyến (Thâm Quyến)**.
+(2) Mọi tranh chấp phát sinh từ hoặc liên quan đến Hợp đồng này trước hết phải được giải quyết thông qua thương lượng thiện chí; nếu không thành, bất kỳ bên nào có thể khởi kiện tại **tòa án nhân dân có thẩm quyền xét xử tại nơi trụ sở của Shenzhen Uter Network Co., Ltd. (Thâm Quyến)**.
 
 (3) Trong quá trình giải quyết tranh chấp, các bên vẫn tiếp tục thực hiện các điều khoản khác của Hợp đồng này; **Công ty không được tạm ngừng dịch vụ bình thường của bạn đối với phần không có tranh chấp chỉ vì có tranh chấp**.
 

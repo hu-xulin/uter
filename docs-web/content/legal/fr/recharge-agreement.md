@@ -9,7 +9,7 @@
 | Version | V1.0 |
 | Date d'entrée en vigueur | 28 septembre 2026 |
 | Dernière mise à jour | 28 septembre 2026 |
-| Entité contractante | **Shenzhen Uter Network Technology Co., Ltd.** (unique entité contractante pour le service de recharge et les questions de gestion des fonds qui lui sont liées en vertu du présent Contrat) |
+| Entité contractante | **Shenzhen Uter Network Co., Ltd.** (unique entité contractante pour le service de recharge et les questions de gestion des fonds qui lui sont liées en vertu du présent Contrat) |
 | S'applique à | Les utilisateurs individuels et entreprise qui effectuent des prépaiements sur la Plateforme |
 | Droit applicable | Le droit de la République populaire de Chine (hors règles de conflit de lois) |
 | Documents connexes | Contrat d'utilisation de la Plateforme intelligente de services de grands modèles Uter ; Politique de confidentialité de la Plateforme intelligente de services de grands modèles Uter |
@@ -52,7 +52,7 @@
 
 **Article 1　[Objet]**
 
-Le présent Contrat définit les droits et obligations entre vous et Shenzhen Uter Network Technology Co., Ltd. (« nous », « notre » ou « la Société ») en ce qui concerne votre prépaiement à la Plateforme intelligente de services de grands modèles Uter (la « Plateforme »), ainsi que les étapes que traversent les fonds prépayés — arrivée, conversion, consommation, rapprochement et remboursement — afin que les fonds prépayés soient **sûrs, vérifiables et remboursables**.
+Le présent Contrat définit les droits et obligations entre vous et Shenzhen Uter Network Co., Ltd. (« nous », « notre » ou « la Société ») en ce qui concerne votre prépaiement à la Plateforme intelligente de services de grands modèles Uter (la « Plateforme »), ainsi que les étapes que traversent les fonds prépayés — arrivée, conversion, consommation, rapprochement et remboursement — afin que les fonds prépayés soient **sûrs, vérifiables et remboursables**.
 
 **Article 2　[Périmètre d'application]**
 
@@ -363,7 +363,7 @@ où le « solde total après conversion » désigne le solde disponible total po
 
 (1) La formation, la validité, l'interprétation, l'exécution et la résolution des litiges du présent Contrat sont régies par **le droit de la République populaire de Chine** (hors règles de conflit de lois).
 
-(2) Tout litige découlant du présent Contrat ou s'y rapportant doit d'abord être résolu par voie de négociation amiable ; à défaut, l'une ou l'autre partie peut saisir **le tribunal populaire compétent du lieu du domicile de Shenzhen Uter Network Technology Co., Ltd. (Shenzhen)**.
+(2) Tout litige découlant du présent Contrat ou s'y rapportant doit d'abord être résolu par voie de négociation amiable ; à défaut, l'une ou l'autre partie peut saisir **le tribunal populaire compétent du lieu du domicile de Shenzhen Uter Network Co., Ltd. (Shenzhen)**.
 
 (3) Pendant la résolution du litige, les parties doivent continuer d'exécuter les autres conditions du présent Contrat ; **la Société ne doit pas suspendre votre service normal pour la partie non contestée en raison du litige**.
 

@@ -9,12 +9,12 @@
 | Phiên bản | V1.0 |
 | Ngày có hiệu lực | August 8, 2026 |
 | Cập nhật lần cuối | August 8, 2026 |
-| Bên kiểm soát thông tin cá nhân | **Công ty TNHH Uter Network, Thâm Quyến** |
+| Bên kiểm soát thông tin cá nhân | **Shenzhen Uter Network Co., Ltd.** |
 | Địa chỉ đăng ký | Thâm Quyến, tỉnh Quảng Đông, Cộng hòa Nhân dân Trung Hoa |
 | Email của cán bộ bảo vệ thông tin cá nhân | privacy@uter.ai |
 | Email dịch vụ khách hàng | support@uter.ai |
 
-> **Chính sách này, cùng với Điều khoản sử dụng của Nền tảng dịch vụ mô hình lớn Uter, tạo thành toàn bộ thỏa thuận giữa bạn và Công ty TNHH Uter Network, Thâm Quyến.** Chính sách này là một phần của Hợp đồng đó; các quy định của nó về xử lý thông tin cá nhân bổ sung cho Điều 8 (Dữ liệu, nội dung và bảo vệ Thông tin cá nhân) của Điều khoản sử dụng; trong trường hợp có bất khắc biệt về xử lý thông tin cá nhân thì **Chính sách này được ưu tiên.**
+> **Chính sách này, cùng với Điều khoản sử dụng của Nền tảng dịch vụ mô hình lớn Uter, tạo thành toàn bộ thỏa thuận giữa bạn và Shenzhen Uter Network Co., Ltd.** Chính sách này là một phần của Hợp đồng đó; các quy định của nó về xử lý thông tin cá nhân bổ sung cho Điều 8 (Dữ liệu, nội dung và bảo vệ Thông tin cá nhân) của Điều khoản sử dụng; trong trường hợp có bất khắc biệt về xử lý thông tin cá nhân thì **Chính sách này được ưu tiên.**
 
 ---
 
@@ -55,7 +55,7 @@
 
 **1.1 Chúng tôi là ai**
 
-Nền tảng dịch vụ mô hình lớn Uter (sau đây gọi là «Nền tảng») được vận hành bởi **Công ty TNHH Uter Network, Thâm Quyến** (sau đây gọi là «chúng tôi» hoặc «Uter»). Đăng ký tại Thâm Quyến, tỉnh Quảng Đông, Cộng hòa Nhân dân Trung Hoa, chúng tôi là **Bên kiểm soát thông tin cá nhân** đối với thông tin cá nhân được Nền tảng này thu thập.
+Nền tảng dịch vụ mô hình lớn Uter (sau đây gọi là «Nền tảng») được vận hành bởi **Shenzhen Uter Network Co., Ltd.** (sau đây gọi là «chúng tôi» hoặc «Uter»). Đăng ký tại Thâm Quyến, tỉnh Quảng Đông, Cộng hòa Nhân dân Trung Hoa, chúng tôi là **Bên kiểm soát thông tin cá nhân** đối với thông tin cá nhân được Nền tảng này thu thập.
 
 **1.2 Phạm vi áp dụng của Chính sách này**
 

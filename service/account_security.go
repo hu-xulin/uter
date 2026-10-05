@@ -40,8 +40,8 @@ func NotifyAccountSecurityChange(email, event string) error {
 	content := common.BuildBrandEmailHTML(common.BrandEmail{
 		Heading: "安全提醒",
 		Paragraphs: []string{
-			fmt.Sprintf("您的 Uter.ai 帐号发生了安全相关变更：%s。", html.EscapeString(event)),
-			"如果这不是您本人的操作，请立即前往帐号安全设置，撤销其他登录会话并联系管理员。",
+			fmt.Sprintf("您的 %s 账号发生了安全相关变更：%s。", common.EmailBrandName, html.EscapeString(event)),
+			"如果这不是您本人的操作，请立即前往账号安全设置，撤销其他登录会话并联系管理员。",
 		},
 	})
 	return common.SendEmail(subject, email, content)

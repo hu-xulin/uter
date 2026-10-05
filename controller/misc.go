@@ -248,7 +248,7 @@ func SendEmailVerification(c *gin.Context) {
 	content := common.BuildBrandEmailHTML(common.BrandEmail{
 		Heading: "请验证您的邮箱地址",
 		Paragraphs: []string{
-			fmt.Sprintf("Uter.ai 收到了将 <strong>%s</strong> 用作 Uter.ai 帐号的请求。", html.EscapeString(email)),
+			fmt.Sprintf("%s 收到了将 <strong>%s</strong> 用作账号的请求。", common.EmailBrandName, html.EscapeString(email)),
 			"请使用此验证码完成邮箱验证：",
 		},
 		Code: code,
@@ -282,7 +282,7 @@ func SendPasswordResetEmail(c *gin.Context) {
 		content := common.BuildBrandEmailHTML(common.BrandEmail{
 			Heading: "重置您的密码",
 			Paragraphs: []string{
-				fmt.Sprintf("Uter.ai 收到了重置帐号 <strong>%s</strong> 密码的请求。", html.EscapeString(email)),
+				fmt.Sprintf("%s 收到了重置账号 <strong>%s</strong> 密码的请求。", common.EmailBrandName, html.EscapeString(email)),
 				fmt.Sprintf("点击 <a href='%s' style=\"color:#1a73e8;text-decoration:none;\">此处</a> 进行密码重置。如果链接无法点击，请将下面的链接复制到浏览器中打开：", html.EscapeString(link)),
 				fmt.Sprintf("<span style=\"color:#5f6368;word-break:break-all;\">%s</span>", html.EscapeString(link)),
 			},

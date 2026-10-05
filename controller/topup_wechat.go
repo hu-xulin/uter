@@ -106,7 +106,7 @@ func RequestWechatPayMiniProgram(c *gin.Context) {
 	bodyMap := map[string]any{
 		"mchid":        operation_setting.WechatPayMchId,
 		"appid":        operation_setting.WechatPayAppId,
-		"description":  fmt.Sprintf("Uter 充值 %d", req.Amount),
+		"description":  fmt.Sprintf("%s 充值 %d", common.EmailBrandName, req.Amount),
 		"out_trade_no": tradeNo,
 		"notify_url":   notifyUrl,
 		"amount": map[string]any{
@@ -263,7 +263,7 @@ func RequestWechatPayWeb(c *gin.Context) {
 	bodyMap := map[string]any{
 		"mchid":        operation_setting.WechatPayMchId,
 		"appid":        operation_setting.WechatPayAppId,
-		"description":  fmt.Sprintf("Uter 充值 %d", req.Amount),
+		"description":  fmt.Sprintf("%s 充值 %d", common.EmailBrandName, req.Amount),
 		"out_trade_no": tradeNo,
 		"notify_url":   notifyUrl,
 		"amount": map[string]any{

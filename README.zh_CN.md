@@ -475,7 +475,7 @@ Token、Origin 校验和 PAT 契约见[用户鉴权与登录会话](./docs-dev/a
 
 本项目为开源项目，在 [One API](https://github.com/songquanpeng/one-api)（MIT 许可证）的基础上进行二次开发。
 
-如果您所在的组织政策不允许使用 AGPLv3 许可的软件，或您希望规避 AGPLv3 的开源义务，请发送邮件至：[support@Uter.ai.com](mailto:support@Uter.ai.com)
+如果您所在的组织政策不允许使用 AGPLv3 许可的软件，或您希望规避 AGPLv3 的开源义务，请发送邮件至：[support@uter.ai](mailto:support@uter.ai)
 
 ---
 

@@ -9,7 +9,7 @@
 | Phiên bản | V1.0 |
 | Ngày có hiệu lực | August 8, 2026 |
 | Cập nhật lần cuối | August 8, 2026 |
-| Bên ký kết | **Công ty TNHH Uter Network, Thâm Quyến** (bên ký kết duy nhất đối với các dịch vụ theo Hợp đồng này) |
+| Bên ký kết | **Shenzhen Uter Network Co., Ltd.** (bên ký kết duy nhất đối với các dịch vụ theo Hợp đồng này) |
 | Áp dụng cho | Cá nhân và doanh nghiệp đăng ký và sử dụng Nền tảng dịch vụ mô hình lớn Uter (Uter.ai) |
 
 > **Thông báo quan trọng:** Hợp đồng này là một hợp đồng theo mẫu. Trước khi đăng ký hoặc sử dụng Dịch vụ này, vui lòng đọc cẩn thận và toàn bộ các điều khoản của Hợp đồng này, **đặc biệt là các điều khoản được in đậm miễn trừ hoặc giới hạn trách nhiệm của chúng tôi, hạn chế quyền của bạn, và điều chỉnh việc giải quyết tranh chấp và luật áp dụng.** Nếu bạn không đồng ý với bất kỳ phần nào của Hợp đồng này, vui lòng ngừng đăng ký hoặc sử dụng Dịch vụ này ngay lập tức. Việc bạn đánh dấu vào ô chấp nhận, hoàn tất đăng ký, hoặc thực tế gọi bất kỳ giao diện API nào sẽ được coi là bạn đã hiểu và chấp nhận toàn bộ các điều khoản của Hợp đồng này.
@@ -44,10 +44,10 @@
 
 **1.1 Bên ký kết**
 
-Hợp đồng này được ký kết giữa bạn (sau đây gọi là «Người dùng» hoặc «bạn») và **Công ty TNHH Uter Network, Thâm Quyến** (sau đây gọi chung là «Uter.ai», «Uter» hoặc «chúng tôi»).
+Hợp đồng này được ký kết giữa bạn (sau đây gọi là «Người dùng» hoặc «bạn») và **Shenzhen Uter Network Co., Ltd.** (sau đây gọi chung là «Uter.ai», «Uter» hoặc «chúng tôi»).
 
-- **Bên ký kết**: **Công ty TNHH Uter Network, Thâm Quyến**, đăng ký tại Thâm Quyến, tỉnh Quảng Đông, Cộng hòa Nhân dân Trung Hoa, sở hữu giấy phép ICP, hồ sơ đăng ký thuật toán và hồ sơ đăng ký dịch vụ trí tuệ nhân tạo. Công ty vận hành **Nền tảng dịch vụ mô hình lớn Uter** (trang web chính thức: Uter.ai, sau đây gọi là «Nền tảng»), cung cấp Dịch vụ này cho người dùng tại **lãnh thổ Cộng hòa Nhân dân Trung Hoa (không bao gồm các khu vực Hồng Kông, Macao và Đài Loan của Trung Quốc)**.
-- **Thực thể duy nhất**: **Bên ký kết duy nhất đối với các dịch vụ theo Hợp đồng này là Công ty TNHH Uter Network, Thâm Quyến.** Hiện chúng tôi không cung cấp dịch vụ cho bạn thông qua bất kỳ thực thể liên kết nào ở nước ngoài. Nếu sau này chúng tôi cung cấp dịch vụ thông qua một thực thể liên kết ở nước ngoài, chúng tôi sẽ ký kết một hợp đồng dịch vụ riêng và thông báo trước cho bạn.
+- **Bên ký kết**: **Shenzhen Uter Network Co., Ltd.**, đăng ký tại Thâm Quyến, tỉnh Quảng Đông, Cộng hòa Nhân dân Trung Hoa, sở hữu giấy phép ICP, hồ sơ đăng ký thuật toán và hồ sơ đăng ký dịch vụ trí tuệ nhân tạo. Công ty vận hành **Nền tảng dịch vụ mô hình lớn Uter** (trang web chính thức: Uter.ai, sau đây gọi là «Nền tảng»), cung cấp Dịch vụ này cho người dùng tại **lãnh thổ Cộng hòa Nhân dân Trung Hoa (không bao gồm các khu vực Hồng Kông, Macao và Đài Loan của Trung Quốc)**.
+- **Thực thể duy nhất**: **Bên ký kết duy nhất đối với các dịch vụ theo Hợp đồng này là Shenzhen Uter Network Co., Ltd.** Hiện chúng tôi không cung cấp dịch vụ cho bạn thông qua bất kỳ thực thể liên kết nào ở nước ngoài. Nếu sau này chúng tôi cung cấp dịch vụ thông qua một thực thể liên kết ở nước ngoài, chúng tôi sẽ ký kết một hợp đồng dịch vụ riêng và thông báo trước cho bạn.
 
 **1.2 Thành phần của Hợp đồng**
 
@@ -541,7 +541,7 @@ Bạn phải phối hợp với chúng tôi và các Nhà cung cấp mô hình t
 
 15.2.1 Mọi tranh chấp phát sinh từ hoặc liên quan đến Hợp đồng này trước hết phải được giải quyết thông qua thương lượng thiện chí giữa các bên.
 
-15.2.2 Nếu thương lượng không thành, bất kỳ bên nào có thể nộp đơn kiện tại **tòa án nhân dân có thẩm quyền xét xử với trụ sở của Công ty TNHH Uter Network, Thâm Quyến (Thâm Quyến)**; tòa án sơ thẩm là tòa án nhân dân cấp huyện nơi công ty đăng ký; trường hợp giá trị vụ án vượt quá tiêu chuẩn thẩm quyền sơ thẩm của tòa án nhân dân cấp xã thì Tòa án nhân dân trung cấp Thâm Quyến có thẩm quyền xét xử.
+15.2.2 Nếu thương lượng không thành, bất kỳ bên nào có thể nộp đơn kiện tại **tòa án nhân dân có thẩm quyền xét xử với trụ sở của Shenzhen Uter Network Co., Ltd. (Thâm Quyến)**; tòa án sơ thẩm là tòa án nhân dân cấp huyện nơi công ty đăng ký; trường hợp giá trị vụ án vượt quá tiêu chuẩn thẩm quyền sơ thẩm của tòa án nhân dân cấp xã thì Tòa án nhân dân trung cấp Thâm Quyến có thẩm quyền xét xử.
 
 15.2.3 Trong quá trình giải quyết tranh chấp, trừ chính tranh chấp đó, các bên vẫn tiếp tục thực hiện các quy định khác của Hợp đồng này.
 

@@ -231,10 +231,10 @@ echo "==> [2/5] 构建文档站 (docs-web/ → web/dist/docs)"
 if [ "$NO_DOCS" = 0 ]; then
   cd "$ROOT/docs-web"
   if [ "$INSTALL" = 1 ]; then "$NODE_DIR/npm" install; fi
-  "$NODE_DIR/npm" run build   # postbuild 会自动把 out/ 拷进 web/dist/docs
-  [ -d "$ROOT/web/dist/docs" ] || fail "web/dist/docs 不存在，文档站拷贝失败"
+  "$NODE_DIR/npm" run build   # postbuild 会自动把 out/ 拷进 web/dist/docs-content
+  [ -d "$ROOT/web/dist/docs-content" ] || fail "web/dist/docs-content 不存在，文档站拷贝失败"
   # 文档站是 locale 前缀导出，根目录没有 index.html，用搜索索引当指纹。
-  echo "    产物: $(stat_line "$ROOT/web/dist/docs/search-index.json")"
+  echo "    产物: $(stat_line "$ROOT/web/dist/docs-content/search-index.json")"
 else
   echo "    跳过 (--no-docs)"
 fi

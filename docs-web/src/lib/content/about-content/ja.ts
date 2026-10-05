@@ -11,7 +11,7 @@ export const JA_CONTENT: AboutContent = {
         {
           heading: '知性をつなぎ、可能性を創る。',
           paragraphs: [
-            'Uter（Shenzhen Uter Network Technology Co., Ltd. 運営）は、人工知能と大規模言語モデルサービスに注力するテクノロジー企業です。',
+            'Uter（Shenzhen Uter Network Co., Ltd. 運営）は、人工知能と大規模言語モデルサービスに注力するテクノロジー企業です。',
             '私たちは、開発者・企業・イノベーターに向けた大規模言語モデルサービスプラットフォームを構築し、統一的で効率的なサービスを通じて主要な大規模言語モデルとAI技術を接続しています。',
             'ジェネレーティブAIが発展するなか、大規模言語モデルは新たなデジタルインフラとなり、生産力のより重要な供給源へと変わりつつあります。',
             'しかし、モデル能力を現実のアプリケーションへ転換するには、いまだに複雑な課題が残っています。モデルの選定や技術的統合、サービス管理、アプリケーション開発、そして異なるAI能力間の調整など、多岐にわたります。',
@@ -286,7 +286,7 @@ export const JA_CONTENT: AboutContent = {
         { heading: 'チャネルパートナーシップ', email: 'partner@uter.ai' },
         { heading: '広報', email: 'pr@uter.ai' },
         {
-          heading: 'Shenzhen Uter Network Technology Co., Ltd.',
+          heading: 'Shenzhen Uter Network Co., Ltd.',
           paragraphs: [
             'Uter',
             'インテリジェントな大規模言語モデルサービスプラットフォーム',
