@@ -207,17 +207,20 @@ export function VendorsTable() {
             >
               {t('Edit')}
             </DropdownMenuItem>
-            <DropdownMenuItem
-              variant='destructive'
-              onClick={() =>
-                setOperation({
-                  action: 'delete',
-                  vendor_ids: [row.original.id],
-                })
-              }
-            >
-              {t('Delete')}
-            </DropdownMenuItem>
+            {/* 负 ID 行是定价广场合成的"默认品牌"，没有可删除的记录：只能编辑（转为真实供应商）或合并。 */}
+            {row.original.id > 0 && (
+              <DropdownMenuItem
+                variant='destructive'
+                onClick={() =>
+                  setOperation({
+                    action: 'delete',
+                    vendor_ids: [row.original.id],
+                  })
+                }
+              >
+                {t('Delete')}
+              </DropdownMenuItem>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
       ),

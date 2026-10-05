@@ -108,6 +108,21 @@ func initDefaultVendorMapping(metaMap map[string]*Model, vendorMap map[int]*Vend
 	}
 }
 
+// defaultVendorNameToPatterns 反向映射：品牌名 -> 触发它的所有模型名前缀规则。
+// 用于把"按名称规则生成的合成默认品牌"合并进真实供应商时，定位其名下的模型。
+var defaultVendorNameToPatterns = func() map[string][]string {
+	m := make(map[string][]string)
+	for pattern, name := range defaultVendorRules {
+		m[name] = append(m[name], pattern)
+	}
+	return m
+}()
+
+// defaultBrandPatterns 返回某个默认品牌名对应的所有模型名匹配规则（原始前缀，调用方自行小写化）。
+func defaultBrandPatterns(name string) []string {
+	return defaultVendorNameToPatterns[name]
+}
+
 // Default vendor entries are presentation data. Reading pricing must never
 // recreate a deleted/merged database record.
 var defaultVendorDisplayIDs = map[string]int{
