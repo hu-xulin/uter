@@ -184,21 +184,73 @@ func searchVendorsCore(keyword string, offset, limit int, includeDefault bool, a
 }
 
 // PromoteDefaultVendor 将一个定价广场上的合成"默认品牌"供应商（负 ID）提升为真实的、
-// 可持久化管理的供应商记录。若同名下已存在真实供应商，则直接返回该记录以避免重复创建。
+// 可持久化管理的供应商记录。
+//
+// 为保证定价页与管理页始终指向同一条真实记录，这里按"名称"做去重与对账：
+//  1. 若已存在同名（未删除）的真实供应商，则在其上应用本次提交的字段并返回；
+//  2. 否则若存在同名但被软删除的供应商，则将其复活并应用字段（避免反复编辑时堆积孤儿记录）；
+//  3. 否则才新建一条真实记录。
+// 这样无论定价广场生成过多少次合成品牌，最终都收敛为唯一一条可被管理与编辑的真实供应商，
+// 定价页也会随之反映用户的修改。
 func PromoteDefaultVendor(name, description, icon string) (*Vendor, error) {
 	name = strings.TrimSpace(name)
 	if name == "" {
 		return nil, errors.New("vendor name is required")
 	}
-	var existing Vendor
-	if err := DB.Where("LOWER(name) = LOWER(?)", name).First(&existing).Error; err == nil {
-		return &existing, nil
+	// 1. 同名且未删除：直接在其上应用本次提交的字段（幂等，绝不新建第二条）。
+	var active Vendor
+	if err := DB.Where("LOWER(name) = LOWER(?)", name).First(&active).Error; err == nil {
+		return applyPromotedVendorFields(&active, name, description, icon)
 	} else if !errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, err
 	}
+	// 2. 同名但被软删除：复活该行并应用字段，避免反复编辑堆积孤儿记录。
+	var deleted Vendor
+	if err := DB.Unscoped().
+		Where("LOWER(name) = LOWER(?) AND deleted_at IS NOT NULL", name).
+		Order("id").First(&deleted).Error; err == nil {
+		now := common.GetTimestamp()
+		if err := DB.Unscoped().Model(&Vendor{}).Where("id = ?", deleted.Id).Updates(map[string]any{
+			"name":         name,
+			"description":  description,
+			"icon":         icon,
+			"status":       1,
+			"updated_time": now,
+			"deleted_at":   nil,
+		}).Error; err != nil {
+			return nil, err
+		}
+		restored := &Vendor{Id: deleted.Id, Name: name, Description: description, Icon: icon, Status: 1, CreatedTime: deleted.CreatedTime, UpdatedTime: now}
+		restored.Version = VendorRecordVersion(restored)
+		RefreshPricing()
+		return restored, nil
+	} else if !errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, err
+	}
+	// 3. 真正的新品牌：新建一条真实记录。
 	v := &Vendor{Name: name, Description: description, Icon: icon}
 	if err := v.Insert(); err != nil {
 		return nil, err
 	}
+	return v, nil
+}
+
+// applyPromotedVendorFields 在已存在的供应商上应用管理端提交的字段。
+// 语义与真实记录的 Vendor.Update 保持一致（整字段覆盖），这样管理端清空图标/简介也能生效，
+// 且"第一次保存（提升）"与"后续保存（更新）"行为不会割裂。
+func applyPromotedVendorFields(v *Vendor, name, description, icon string) (*Vendor, error) {
+	now := common.GetTimestamp()
+	if err := DB.Model(&Vendor{}).Where("id = ?", v.Id).Updates(map[string]any{
+		"name":         name,
+		"description":  description,
+		"icon":         icon,
+		"status":       v.Status,
+		"updated_time": now,
+	}).Error; err != nil {
+		return nil, err
+	}
+	v.Name, v.Description, v.Icon, v.UpdatedTime = name, description, icon, now
+	v.Version = VendorRecordVersion(v)
+	RefreshPricing()
 	return v, nil
 }

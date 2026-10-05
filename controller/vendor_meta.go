@@ -109,6 +109,11 @@ func DeleteVendorMeta(c *gin.Context) {
 		vendorAPIError(c, err)
 		return
 	}
+	if id < 0 {
+		// 负 ID 是定价广场上的合成"默认品牌"，没有持久化记录，只能合并不能直接删除。
+		vendorAPIError(c, model.ErrVendorDefaultBrandNotDeletable)
+		return
+	}
 	if err := model.DeleteVendors([]int{id}); err != nil {
 		vendorAPIError(c, err)
 		return

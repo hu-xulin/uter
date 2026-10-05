@@ -1160,8 +1160,114 @@ func TestVendorManagementDatabaseMatrix(t *testing.T) {
 						assert.Positive(t, v.Id)
 					}
 				}
-				assert.Equal(t, 1, realCount)
+			assert.Equal(t, 1, realCount)
+		})
+		t.Run("promote_default_brand_is_idempotent_applies_edits_and_revives", func(t *testing.T) {
+			// 快手 (-1017) 是与其它子测试无冲突的默认品牌，避免污染 字节跳动 记录。
+			channel := model.Channel{Name: "Kuaishou fixture", Type: 1, Status: common.ChannelStatusEnabled}
+			require.NoError(t, db.Create(&channel).Error)
+			require.NoError(t, db.Create(&model.Ability{Model: "kling-video", Group: "default", ChannelId: channel.Id, Enabled: true}).Error)
+			model.RefreshPricing()
+			model.GetPricing()
+
+			var before int64
+			require.NoError(t, db.Model(&model.Vendor{}).Where("name = ?", "快手").Count(&before).Error)
+			assert.Zero(t, before, "no persisted vendor before promotion")
+
+			// 第一次提升：创建真实记录。
+			first, err := model.PromoteDefaultVendor("快手", "first description", "Kling.Color")
+			require.NoError(t, err)
+			require.Positive(t, first.Id)
+			var afterFirst int64
+			require.NoError(t, db.Model(&model.Vendor{}).Where("name = ?", "快手").Count(&afterFirst).Error)
+			assert.EqualValues(t, 1, afterFirst)
+
+			// Issue 1：重复编辑默认品牌必须复用同一条记录并应用修改，绝不重复创建/孤儿化。
+			second, err := model.PromoteDefaultVendor("快手", "second description", "Kling.Color")
+			require.NoError(t, err)
+			assert.EqualValues(t, first.Id, second.Id, "repeat promotion must reuse the same record")
+			assert.Equal(t, "second description", second.Description, "edits must be applied")
+
+			var afterSecond int64
+			require.NoError(t, db.Model(&model.Vendor{}).Where("name = ?", "快手").Count(&afterSecond).Error)
+			assert.EqualValues(t, 1, afterSecond, "no duplicate vendor records after repeat edit")
+
+			// 软删除后再次提升必须复活同一条记录，而非新建。
+			require.NoError(t, db.Delete(&model.Vendor{Id: first.Id}).Error)
+			var afterDelete int64
+			require.NoError(t, db.Model(&model.Vendor{}).Where("name = ?", "快手").Count(&afterDelete).Error)
+			assert.Zero(t, afterDelete, "soft delete hides the record")
+
+			revived, err := model.PromoteDefaultVendor("快手", "revived description", "Kling.Color")
+			require.NoError(t, err)
+			assert.EqualValues(t, first.Id, revived.Id, "revive must reuse the soft-deleted record")
+			assert.Equal(t, "revived description", revived.Description)
+
+			var afterRevive int64
+			require.NoError(t, db.Model(&model.Vendor{}).Where("name = ?", "快手").Count(&afterRevive).Error)
+			assert.EqualValues(t, 1, afterRevive)
+		})
+		t.Run("merge_synthetic_default_brand_into_real_vendor_succeeds", func(t *testing.T) {
+			// Issue 2：把管理列表里"新增"（按名称规则合成、负 ID）的默认品牌合并进真实供应商，
+			// 不得报 "invalid or duplicate selection"。
+			target := model.Vendor{Name: "Merge Target Real", Icon: "OpenAI"}
+			require.NoError(t, target.Insert())
+
+			withDefaults, _, err := model.SearchVendorsIncludingDefaults("", 0, 100)
+			require.NoError(t, err)
+			var brandID int
+			found := false
+			for _, v := range withDefaults {
+				if v.Name == "即梦" { // -1015，与 快手/字节跳动 子测试无冲突
+					brandID = v.Id
+					found = true
+				}
+			}
+			require.True(t, found, "default brand 即梦 must surface in admin search")
+			assert.Negative(t, brandID, "synthetic default brand carries a negative id")
+
+			preview, err := model.PreviewVendorOperation(model.VendorOperation{
+				Action: "merge", VendorIDs: []int{brandID}, TargetVendorID: target.Id,
 			})
+			require.NoError(t, err, "merging a synthetic default brand must not error")
+			require.NotEmpty(t, preview.Sources)
+			assert.Equal(t, "即梦", preview.Sources[0].Name)
+
+			result, err := model.ApplyVendorOperation(model.VendorOperation{
+				Action: "merge", VendorIDs: []int{brandID}, TargetVendorID: target.Id, ExpectedVersion: preview.Version,
+			})
+			require.NoError(t, err)
+			require.NotNil(t, result)
+		})
+		t.Run("delete_synthetic_default_brand_is_rejected_with_guidance", func(t *testing.T) {
+			// 合成默认品牌没有持久化行可删除，删除必须被显式拒绝（而不是静默空操作），
+			// 否则用户点了「删除」后供应商仍在列表里，造成"管理无效"的错觉。
+			withDefaults, _, err := model.SearchVendorsIncludingDefaults("", 0, 100)
+			require.NoError(t, err)
+			var brandID int
+			found := false
+			for _, v := range withDefaults {
+				if v.Name == "Vidu" { // -1013
+					brandID = v.Id
+					found = true
+				}
+			}
+			require.True(t, found, "default brand Vidu must surface in admin search")
+
+			_, err = model.PreviewVendorOperation(model.VendorOperation{Action: "delete", VendorIDs: []int{brandID}})
+			require.ErrorIs(t, err, model.ErrVendorDefaultBrandNotDeletable)
+
+			// 真实供应商仍然可以正常删除（不能误伤）。
+			real := model.Vendor{Name: "Deletable Real Vendor", Icon: "OpenAI"}
+			require.NoError(t, real.Insert())
+			delPreview, err := model.PreviewVendorOperation(model.VendorOperation{Action: "delete", VendorIDs: []int{real.Id}})
+			require.NoError(t, err)
+			result, err := model.ApplyVendorOperation(model.VendorOperation{
+				Action: "delete", VendorIDs: []int{real.Id}, ExpectedVersion: delPreview.Version,
+			})
+			require.NoError(t, err)
+			require.NotNil(t, result)
+		})
 		t.Run("metadata_ownership_preview_merge_delete_and_rollback", func(t *testing.T) {
 				source := model.Vendor{Name: "  Vendor Source  ", Icon: "Gemini.Color"}
 				target := model.Vendor{Name: "Vendor Target", Description: "Keep target", Icon: "OpenAI"}
