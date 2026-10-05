@@ -65,6 +65,12 @@ func decodeVendorMergePatterns(encoded string) []string {
 // 幂等：同一来源重复合并到同一目标只会更新，不会堆积规则行。这与
 // PromoteDefaultVendor 的去重策略一致，避免反复操作产出孤儿记录。
 // 目标供应商必须真实存在，否则规则会把模型指到一条不存在的记录上。
+//
+// 注意：本函数运行在调用方的事务内，因此**不会**自行失效规则索引缓存。
+// 索引没有 TTL，如果在事务提交前就把缓存清掉，一个并发的定价刷新会在事务
+// 尚未提交时用「看不到规则」的快照重新填充缓存，该快照将永久生效——合并掉的
+// 品牌会在之后每次定价刷新时复活，正是本规则要消除的行为。提交后由调用方
+// 调用 InvalidateVendorMergeCache 完成失效，使提交成为最后一步。
 func RecordVendorMergeRule(tx *gorm.DB, sourceName string, sourcePatterns []string, targetVendorID int) error {
 	sourceName = strings.TrimSpace(sourceName)
 	if sourceName == "" || targetVendorID <= 0 {
@@ -87,11 +93,7 @@ func RecordVendorMergeRule(tx *gorm.DB, sourceName string, sourcePatterns []stri
 
 	var active VendorMergeRule
 	if err := tx.Where("source_key = ?", key).First(&active).Error; err == nil {
-		if updateErr := updateVendorMergeRule(tx, &active, sourceName, patterns, targetVendorID); updateErr != nil {
-			return updateErr
-		}
-		invalidateVendorMergeCache()
-		return nil
+		return updateVendorMergeRule(tx, &active, sourceName, patterns, targetVendorID)
 	} else if !errors.Is(err, gorm.ErrRecordNotFound) {
 		return err
 	}
@@ -101,33 +103,25 @@ func RecordVendorMergeRule(tx *gorm.DB, sourceName string, sourcePatterns []stri
 		Where("source_key = ? AND deleted_at IS NOT NULL", key).
 		Order("id").First(&removed).Error; err == nil {
 		now := common.GetTimestamp()
-		if updateErr := tx.Unscoped().Model(&VendorMergeRule{}).Where("id = ?", removed.Id).Updates(map[string]any{
+		return tx.Unscoped().Model(&VendorMergeRule{}).Where("id = ?", removed.Id).Updates(map[string]any{
 			"source_name":      sourceName,
 			"source_patterns":  patterns,
 			"target_vendor_id": targetVendorID,
 			"updated_time":     now,
 			"deleted_at":       nil,
-		}).Error; updateErr != nil {
-			return updateErr
-		}
-		invalidateVendorMergeCache()
-		return nil
+		}).Error
 	} else if !errors.Is(err, gorm.ErrRecordNotFound) {
 		return err
 	}
 	now := common.GetTimestamp()
-	if err := tx.Create(&VendorMergeRule{
+	return tx.Create(&VendorMergeRule{
 		SourceName:     sourceName,
 		SourceKey:      key,
 		SourcePatterns: patterns,
 		TargetVendorID: targetVendorID,
 		CreatedTime:    now,
 		UpdatedTime:    now,
-	}).Error; err != nil {
-		return err
-	}
-	invalidateVendorMergeCache()
-	return nil
+	}).Error
 }
 
 func updateVendorMergeRule(tx *gorm.DB, rule *VendorMergeRule, sourceName, patterns string, targetVendorID int) error {
@@ -153,7 +147,7 @@ func targetVendorName(tx *gorm.DB, id int) string {
 }
 
 // 规则索引在进程内缓存：它被定价刷新热路径逐模型调用，而规则本身极少变更
-// （只有合并与撤销触发），由 invalidateVendorMergeCache 显式失效。
+// （只有合并与撤销触发），由 InvalidateVendorMergeCache 显式失效。
 var (
 	vendorMergeIndexMu   sync.RWMutex
 	vendorMergeIndexData *vendorMergeIndex
@@ -169,9 +163,12 @@ type vendorMergeIndex struct {
 	patterns []vendorMergePatternRule
 }
 
-// invalidateVendorMergeCache 让下一次读取重新加载规则。
-// 任何写入/删除规则的路径都必须调用，否则定价刷新会拿着旧快照继续生成被合并掉的合成品牌。
-func invalidateVendorMergeCache() {
+// InvalidateVendorMergeCache 让下一次读取重新加载规则索引。
+//
+// 任何写入/删除规则的路径都必须在**事务提交之后**调用，否则并发读取可能在提交
+// 之前用旧快照重新填充缓存，而索引没有 TTL 可供自愈。被合并掉的品牌会在之后
+// 每次定价刷新时复活。
+func InvalidateVendorMergeCache() {
 	vendorMergeIndexMu.Lock()
 	vendorMergeIndexData = nil
 	vendorMergeIndexMu.Unlock()
@@ -328,7 +325,7 @@ func DeleteVendorMergeRule(id int) error {
 	if err := DB.Where("id = ?", id).Delete(&VendorMergeRule{}).Error; err != nil {
 		return err
 	}
-	invalidateVendorMergeCache()
+	InvalidateVendorMergeCache()
 	RefreshPricing()
 	return nil
 }
