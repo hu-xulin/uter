@@ -254,13 +254,23 @@ type metadataSyncCandidate struct {
 }
 
 func fetchMetadataCatalog(c *gin.Context, locale string) (metadataSyncSource, map[string]model.MetadataValues, map[string]model.Vendor, error) {
+	return fetchMetadataCatalogContext(c.Request.Context(), locale)
+}
+
+// fetchMetadataCatalogContext is the context-based form used by both the
+// interactive sync endpoints and the unattended channel-sync fill, so the
+// upstream fetch, its timeout and its payload validation stay identical.
+func fetchMetadataCatalogContext(ctx context.Context, locale string) (metadataSyncSource, map[string]model.MetadataValues, map[string]model.Vendor, error) {
 	resolved, valid := normalizeLocale(locale)
 	if !valid {
 		return metadataSyncSource{}, nil, nil, errors.New("unsupported metadata language")
 	}
 	modelsURL, vendorsURL := getUpstreamURLs(resolved)
 	source := metadataSyncSource{Locale: resolved, ModelsURL: modelsURL, VendorsURL: vendorsURL}
-	ctx, cancel := context.WithTimeout(c.Request.Context(), time.Duration(common.GetEnvOrDefault("SYNC_HTTP_TIMEOUT_SECONDS", 15))*time.Second)
+	if ctx == nil {
+		ctx = context.Background()
+	}
+	ctx, cancel := context.WithTimeout(ctx, time.Duration(common.GetEnvOrDefault("SYNC_HTTP_TIMEOUT_SECONDS", 15))*time.Second)
 	defer cancel()
 	var modelsEnv upstreamEnvelope[upstreamModel]
 	var vendorsEnv upstreamEnvelope[upstreamVendor]

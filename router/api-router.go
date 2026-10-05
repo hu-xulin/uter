@@ -433,6 +433,8 @@ func SetApiRouter(router *gin.Engine) {
 			vendorRoute.POST("/", controller.CreateVendorMeta)
 			vendorRoute.PUT("/", controller.UpdateVendorMeta)
 			vendorRoute.DELETE("/:id", controller.DeleteVendorMeta)
+			vendorRoute.GET("/merge-rules", controller.ListVendorMergeRules)
+			vendorRoute.DELETE("/merge-rules/:id", controller.DeleteVendorMergeRule)
 		}
 
 		modelsRoute := apiRouter.Group("/models")
@@ -440,6 +442,7 @@ func SetApiRouter(router *gin.Engine) {
 		{
 			modelsRoute.GET("/sync_upstream/preview", controller.SyncUpstreamPreview)
 			modelsRoute.POST("/sync_upstream", controller.SyncUpstreamModels)
+			modelsRoute.POST("/sync_upstream/auto_fill", controller.AutoFillChannelOfficialData)
 			modelsRoute.POST("/delete", controller.BatchDeleteModelMeta)
 			modelsRoute.GET("/missing", controller.GetMissingModels)
 			modelsRoute.GET("/", controller.GetAllModelsMeta)
