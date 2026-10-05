@@ -149,8 +149,18 @@ export async function searchVendors(params: {
   keyword?: string
   p?: number
   page_size?: number
+  includeDefault?: boolean
 }): Promise<GetVendorsResponse> {
-  const res = await api.get('/api/vendors/search', { params })
+  const query: Record<string, unknown> = {
+    association: params.association,
+    keyword: params.keyword,
+    p: params.p,
+    page_size: params.page_size,
+  }
+  if (params.includeDefault) {
+    query.include_default = 'true'
+  }
+  const res = await api.get('/api/vendors/search', { params: query })
   return res.data
 }
 
