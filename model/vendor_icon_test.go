@@ -50,7 +50,7 @@ func TestDefaultVendorIconsAreMonochrome(t *testing.T) {
 			t.Errorf("vendor %q default icon %q is not monochrome (normalizes to %q)", name, icon, got)
 		}
 	}
-	if got := getDefaultVendorIcon("字节跳动"); got != "Doubao" {
-		t.Errorf(`getDefaultVendorIcon("字节跳动") = %q, want "Doubao"`, got)
+	if got := getDefaultVendorIcon("ByteDance"); got != "Doubao" {
+		t.Errorf(`getDefaultVendorIcon("ByteDance") = %q, want "Doubao"`, got)
 	}
 }
