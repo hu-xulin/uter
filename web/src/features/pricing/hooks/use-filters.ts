@@ -29,6 +29,7 @@ import {
   DEFAULT_TOKEN_UNIT,
   VIEW_MODES,
   type ViewMode,
+  CONTEXT_SIZE_TAG_PATTERN,
 } from '../constants'
 import { filterAndSortModels, extractAllTags } from '../lib/filters'
 import type { PricingModel, TokenUnit } from '../types'
@@ -75,7 +76,12 @@ export function useFilters(models: PricingModel[]) {
   const groupFilter = filterState.group || FILTER_ALL
   const quotaTypeFilter = filterState.quotaType || QUOTA_TYPES.ALL
   const endpointTypeFilter = filterState.endpointType || ENDPOINT_TYPES.ALL
-  const tagFilter = filterState.tag || FILTER_ALL
+  // A `?tag=1m` bookmark created before context-size labels were hidden would
+  // otherwise match nothing and render an empty list, so fall back to "all".
+  const tagFilter =
+    filterState.tag && CONTEXT_SIZE_TAG_PATTERN.test(filterState.tag)
+      ? FILTER_ALL
+      : filterState.tag || FILTER_ALL
   const tokenUnit: TokenUnit =
     filterState.tokenUnit === 'K' ? 'K' : DEFAULT_TOKEN_UNIT
   const viewMode = normalizeViewMode(filterState.view)

@@ -22,6 +22,7 @@ import {
   QUOTA_TYPES,
   QUOTA_TYPE_VALUES,
   ENDPOINT_TYPES,
+  CONTEXT_SIZE_TAG_PATTERN,
 } from '../constants'
 import type { PricingModel } from '../types'
 import { hasTaskUsageSchema } from './dynamic-price'
@@ -166,6 +167,11 @@ export function filterAndSortModels(
 
 /**
  * Parse tags from comma-separated string
+ *
+ * Context-window size labels (`8K`, `1M`, `1.1M`, …) are dropped here so they
+ * neither reach the tag filter options nor get rendered on model cards. Doing
+ * it in the single shared parser keeps the filter counts, the card badges and
+ * the detail sheet consistent with each other.
  */
 export function parseTags(tagsString?: string): string[] {
   if (!tagsString) return []
@@ -173,6 +179,7 @@ export function parseTags(tagsString?: string): string[] {
     .split(/[,;|\s]+/)
     .map((t) => t.trim())
     .filter(Boolean)
+    .filter((tag) => !CONTEXT_SIZE_TAG_PATTERN.test(tag))
 }
 
 /**
