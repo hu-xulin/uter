@@ -10,7 +10,7 @@
 >   - 项目文档：[https://docs.openclaw.ai](https://docs.openclaw.ai)
 >   - GitHub：[https://github.com/openclaw/openclaw](https://github.com/openclaw/openclaw)
 
-OpenClaw 完全开源，你可以在 [OpenClaw 的 GitHub 仓库](https://github.com/openclaw/openclaw) 浏览源码、提交 Issue 或参与贡献。本教程涵盖安装、配置，以及将 OpenClaw 对接 优特的完整步骤。
+OpenClaw 完全开源，你可以在 [OpenClaw 的 GitHub 仓库](https://github.com/openclaw/openclaw) 浏览源码、提交 Issue 或参与贡献。本教程涵盖安装、配置，以及将 OpenClaw 对接 Uter 的完整步骤。
 
 ## 🌟 核心特性
 
@@ -40,11 +40,11 @@ OpenClaw 完全开源，你可以在 [OpenClaw 的 GitHub 仓库](https://github
 > **准备信息**
 >
 > - Node.js 22 或更高版本
->   - 一个可用的 优特地址（通常以 `/v1` 结尾）
->   - 一个可用的 优特 API Key
->   - 请使用您自己部署的 优特，或确认服务方具备合法上游授权和合规义务的 优特服务。不要将来源不明的 API 地址或密钥接入生产环境。
+>   - 一个可用的 Uter API 地址（通常以 `/v1` 结尾）
+>   - 一个可用的 Uter API Key
+>   - 请使用您自己部署的 Uter，或确认服务方具备合法上游授权和合规义务的 Uter 服务。不要将来源不明的 API 地址或密钥接入生产环境。
 
-在开始接入 优特之前，建议先按 OpenClaw 官方当前推荐流程把 Gateway 和 Control UI 跑起来。这样后续排查问题时，更容易区分是 OpenClaw 本身未启动，还是模型提供商配置有误。
+在开始接入 Uter 之前，建议先按 OpenClaw 官方当前推荐流程把 Gateway 和 Control UI 跑起来。这样后续排查问题时，更容易区分是 OpenClaw 本身未启动，还是模型提供商配置有误。
 
 ### 1. 安装 OpenClaw（macOS/Linux）
 
@@ -60,7 +60,7 @@ curl -fsSL https://openclaw.ai/install.sh | bash
 openclaw onboard --install-daemon
 ```
 
-该向导会完成基础认证、Gateway 设置，以及可选的渠道初始化。这里的目标是先把 OpenClaw 跑起来，后面再把默认模型切到 优特。
+该向导会完成基础认证、Gateway 设置，以及可选的渠道初始化。这里的目标是先把 OpenClaw 跑起来，后面再把默认模型切到 Uter。
 
 ### 3. 检查 Gateway 与 Control UI
 
@@ -88,21 +88,21 @@ OpenClaw 的配置文件通常位于 `~/.openclaw/openclaw.json`，你可以在�
 >
 >   详细说明见官方环境变量文档：[Environment Variables](https://docs.openclaw.ai/help/environment)。
 
-## 🚀 使用 优特作为模型提供商
+## 🚀 使用 Uter 作为模型提供商
 
-OpenClaw 支持通过 `models.providers` 接入自定义或兼容 OpenAI 接口的模型网关。对于 优特，最常见的做法是把它作为一个自定义 provider 加进配置里，再把默认模型指向 `uter/模型ID`。
+OpenClaw 支持通过 `models.providers` 接入自定义或兼容 OpenAI 接口的模型网关。对于 Uter，最常见的做法是把它作为一个自定义 provider 加进配置里，再把默认模型指向 `uter/模型ID`。
 
 ### 接入思路
 
 1. 在 `models.providers` 下声明一个 `uter` provider
-2. 将 `baseUrl` 指向你的 优特地址，并确保包含 `/v1`
+2. 将 `baseUrl` 指向你的 Uter API 地址，并确保包含 `/v1`
 3. 将 `api` 设为 `openai-completions`
 4. 在 `models` 中列出你希望 OpenClaw 使用的模型 ID
 5. 在 `agents.defaults.model.primary` 中把默认模型切到 `uter/...`
 
 ### 推荐做法：用环境变量保存密钥
 
-先在当前 shell、服务环境，或 OpenClaw 可读取的 `.env` 中提供你的 优特密钥：
+先在当前 shell、服务环境，或 OpenClaw 可读取的 `.env` 中提供你的 Uter API 密钥：
 
 ```bash
 export UTER_API_KEY="sk-your-uter-key"
@@ -142,17 +142,17 @@ export UTER_API_KEY="sk-your-uter-key"
 }
 ```
 
-这不是一份必须原样照抄的完整配置，而是接入 优特最关键的部分。只要 `provider`、模型 ID 和默认模型引用对应正确，OpenClaw 就能通过 优特调用你暴露出来的模型资源。
+这不是一份必须原样照抄的完整配置，而是接入 Uter 最关键的部分。只要 `provider`、模型 ID 和默认模型引用对应正确，OpenClaw 就能通过 Uter 调用你暴露出来的模型资源。
 
 ### 关键配置说明
 
 | 配置项 | 说明 |
 | --- | --- |
 | `models.mode` | 建议设为 `merge`，在保留 OpenClaw 内置 provider 的同时追加 `uter` |
-| `models.providers.uter.baseUrl` | 你的 优特地址，通常需要带上 `/v1` |
-| `models.providers.uter.apiKey` | 优特密钥，推荐通过 `${UTER_API_KEY}` 注入 |
-| `models.providers.uter.api` | 对于 优特这类 OpenAI 兼容网关，使用 `openai-completions` |
-| `models.providers.uter.models` | 这里列出的模型 ID 必须与你的 优特实际暴露的模型名称一致 |
+| `models.providers.uter.baseUrl` | 你的 Uter API 地址，通常需要带上 `/v1` |
+| `models.providers.uter.apiKey` | Uter API 密钥，推荐通过 `${UTER_API_KEY}` 注入 |
+| `models.providers.uter.api` | 对于 Uter 这类 OpenAI 兼容网关，使用 `openai-completions` |
+| `models.providers.uter.models` | 这里列出的模型 ID 必须与你的 Uter 实际暴露的模型名称一致 |
 | `agents.defaults.model.primary` | 默认主模型，格式必须是 `provider/model-id` |
 | `agents.defaults.model.fallbacks` | 备选模型列表，主模型失败时自动切换 |
 | `agents.defaults.models` | 可选，用来给模型起别名，方便在 UI 或会话里引用 |

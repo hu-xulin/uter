@@ -38,15 +38,15 @@ sudo docker compose up -d
 
 启动后访问 `http://localhost:8082`，默认账号密码：`admin` / `admin123`。
 
-## 优特接入方法
+## Uter 接入方法
 
-Memoh 支持接入任何 OpenAI 兼容的模型提供商，可以通过 优特来统一管理和访问各种 AI 模型服务。
+Memoh 支持接入任何 OpenAI 兼容的模型提供商，可以通过 Uter 来统一管理和访问各种 AI 模型服务。
 
 ### 配置步骤
 
-#### 获取 优特 API Key 密钥
+#### 获取 Uter API Key 密钥
 
-在 优特注册并登录后，点击上方导航栏的「控制台」，点击「令牌管理」，然后点击「添加令牌」按钮，创建一个新的 API Key 密钥，选择适当的权限，然后点击「创建」。
+在 Uter 注册并登录后，点击上方导航栏的「控制台」，点击「令牌管理」，然后点击「添加令牌」按钮，创建一个新的 API Key 密钥，选择适当的权限，然后点击「创建」。
 
 创建成功后，点击复制密钥按钮，复制生成的 API Key 密钥。
 
@@ -54,14 +54,14 @@ Memoh 支持接入任何 OpenAI 兼容的模型提供商，可以通过 优特�
 
 #### 在 Memoh 中添加模型提供商
 
-登录 Memoh Web 管理面板，进入提供商管理页面，点击优特。
+登录 Memoh Web 管理面板，进入提供商管理页面，点击 Uter。
 
 ![switch-to-uter-provider](/apps-assets/memoh/switch_to_uter_provider.webp)
 
 在配置页面中填写以下信息：
 
-- **API Base URL**：填写 优特的接口地址，例如 `https://api.example.com/v1`（如果本地部署则填写 `http://localhost:3000/v1`）
-- **API Key**：粘贴从 优特复制的 API Key 密钥
+- **API Base URL**：填写 Uter 的接口地址，例如 `https://api.example.com/v1`（如果本地部署则填写 `http://localhost:3000/v1`）
+- **API Key**：粘贴从 Uter 复制的 API Key 密钥
 
 点击保存，完成提供商配置。
 
@@ -71,8 +71,8 @@ Memoh 支持接入任何 OpenAI 兼容的模型提供商，可以通过 优特�
 
 #### 为机器人配置模型
 
-进入机器人设置页面，在模型配置一栏中，将默认聊天模型切换为刚刚通过 优特提供商添加的模型，点击保存。
+进入机器人设置页面，在模型配置一栏中，将默认聊天模型切换为刚刚通过 Uter 提供商添加的模型，点击保存。
 
 ![set_chat_model](/apps-assets/memoh/set_chat_model.webp)
 
-至此，您已经成功配置了 优特作为 Memoh 的模型提供商。现在，您可以通过 Memoh 中的各个渠道（Telegram、Discord、飞书等）与 AI 机器人对话，所有请求将通过 优特进行转发。
+至此，您已经成功配置了 Uter 作为 Memoh 的模型提供商。现在，您可以通过 Memoh 中的各个渠道（Telegram、Discord、飞书等）与 AI 机器人对话，所有请求将通过 Uter 进行转发。
