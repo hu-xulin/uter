@@ -26,6 +26,13 @@ export const modelsQueryKeys = {
   lists: () => [...modelsQueryKeys.all, 'list'] as const,
   list: (filters: GetModelsParams | SearchModelsParams) =>
     [...modelsQueryKeys.lists(), filters] as const,
+  /**
+   * The unpaginated candidate set the metadata / pricing filters narrow.
+   * Keyed separately from `list` so toggling either filter does not evict
+   * the page the table is currently rendering.
+   */
+  candidates: (filters: SearchModelsParams) =>
+    [...modelsQueryKeys.lists(), 'candidates', filters] as const,
   detail: (id: number) => [...modelsQueryKeys.all, 'detail', id] as const,
   missing: () => [...modelsQueryKeys.all, 'missing'] as const,
 }

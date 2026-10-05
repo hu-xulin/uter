@@ -35,6 +35,37 @@ export interface BoundChannel {
  */
 export type ModelSquareState = 'visible' | 'unavailable' | 'hidden' | 'partial'
 
+/**
+ * How a model row relates to the `models` metadata table.
+ *
+ * `has`  — a row exists in the table (`id > 0`).
+ * `none` — the row is synthetic: the name is configured on a channel but was
+ *          never given metadata, so the API returns it with `id === 0`.
+ */
+export type ModelMetadataFilter = 'has' | 'none'
+
+/**
+ * How a model is priced.
+ *
+ * `standard`      — ordinary per-token pricing: a `ModelRatio` (plus the
+ *                   optional `CompletionRatio`/cache ratios), no expression.
+ * `expression`    — a billing expression drives the price: either
+ *                   `billing_mode === 'tiered_expr'` with a `billing_expr`,
+ *                   or a per-call `ModelPrice` that overrides ratios.
+ * `unset`         — neither a ratio nor a price is configured, and the
+ *                   built-in fallback does not cover the name either.
+ * `unconfigured`  — nothing is configured, but a built-in default exists, so
+ *                   the platform would still serve the model at the default
+ *                   rate. Distinguishing this from `unset` is what tells an
+ *                   admin "this is covered" apart from "this will be
+ *                   rejected at relay time".
+ */
+export type ModelPricingFilter =
+  | 'standard'
+  | 'expression'
+  | 'unset'
+  | 'unconfigured'
+
 export interface Model {
   square_state?: ModelSquareState
   has_metadata?: boolean
