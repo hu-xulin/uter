@@ -9,15 +9,15 @@
 - 官方文档：[https://docs.astrbot.app](https://docs.astrbot.app)
 - 项目主页：[https://github.com/astrbotdevs/astrbot](https://github.com/astrbotdevs/astrbot)
 
-## 优特接入方法
+## Uter 接入方法
 
-AstrBot 支持接入 优特作为模型提供商，用户可以通过 优特来访问和使用各种 AI 模型服务。
+AstrBot 支持接入 Uter 作为模型提供商，用户可以通过 Uter 来访问和使用各种 AI 模型服务。
 
 ### 配置步骤
 
-#### 获取 优特 API Key 密钥
+#### 获取 Uter API Key 密钥
 
-在 优特注册并登录后，点击上方导航栏的「控制台」，点击「令牌管理」，然后点击「添加令牌」按钮，创建一个新的 API Key 密钥，选择适当的权限，然后点击「创建」。
+在 Uter 注册并登录后，点击上方导航栏的「控制台」，点击「令牌管理」，然后点击「添加令牌」按钮，创建一个新的 API Key 密钥，选择适当的权限，然后点击「创建」。
 
 ![create-api-key](/apps-assets/astrbot/image.webp)
 
@@ -25,24 +25,24 @@ AstrBot 支持接入 优特作为模型提供商，用户可以通过 优特来�
 
 ![copy-api-key](/apps-assets/astrbot/image-1.webp)
 
-#### 在 AstrBot 中配置 优特服务提供商
+#### 在 AstrBot 中配置 Uter 服务提供商
 
 打开 AstrBot 管理面板，进入「模型提供商」页面，然后，点击「新增模型提供商」按钮。
 
-优特完美地支持了 OpenAI Chat Completion 和 Responses 接口，我们点击 「OpenAI」，进入 OpenAI 提供商的配置页面。
+Uter 完美地支持了 OpenAI Chat Completion 和 Responses 接口，我们点击 「OpenAI」，进入 OpenAI 提供商的配置页面。
 
-在弹出的对话框中，将 API Base URL 设置为 优特的接口地址。请使用您自己部署的 优特，或确认服务方具备合法上游授权和合规义务的 优特服务。如果您本地部署了 优特，则填写本地地址，例如 `http://localhost:3000/v1`。不要将来源不明的 API 地址或密钥接入生产环境。
+在弹出的对话框中，将 API Base URL 设置为 Uter 的接口地址。请使用您自己部署的 Uter，或确认服务方具备合法上游授权和合规义务的 Uter 服务。如果您本地部署了 Uter，则填写本地地址，例如 `http://localhost:3000/v1`。不要将来源不明的 API 地址或密钥接入生产环境。
 
 然后，将 API Key 填入「API Key」字段中，点击「保存」按钮。
 
 ![astrbot-provider-config](/apps-assets/astrbot/image-2.webp)
 
-然后点击保存，完成 优特提供商的配置。
+然后点击保存，完成 Uter 提供商的配置。
 
 #### 应用服务提供商
 
-进入「配置文件」页面，找到模型一节，将「默认聊天模型」修改为刚刚创建的 优特提供商，点击「保存」按钮。
+进入「配置文件」页面，找到模型一节，将「默认聊天模型」修改为刚刚创建的 Uter 提供商，点击「保存」按钮。
 
 ![apply](/apps-assets/astrbot/image-3.webp)
 
-至此，您已经成功配置了 优特作为 AstrBot 的模型提供商。现在，您可以通过 AstrBot 来访问和使用 优特提供的各种 AI 模型服务了。
+至此，您已经成功配置了 Uter 作为 AstrBot 的模型提供商。现在，您可以通过 AstrBot 来访问和使用 Uter 提供的各种 AI 模型服务了。

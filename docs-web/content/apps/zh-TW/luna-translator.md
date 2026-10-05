@@ -52,7 +52,7 @@ LunaTranslator 支援接入本地部署的 優特。請使用您自己部署的 
 
    ![add_config](/apps-assets/luna_translator/add_config.webp)
 
-2. 在 **`优特`** -> `控制台` -> `令牌管理` 選項卡中選擇要使用在 LunaTranslator 的令牌，點選聊天按鈕旁的下拉選項，選擇 `LunaTranslator`,將會跳轉到 LunaTranslator 並自動配置 API 地址與 API Key
+2. 在 **`Uter`** -> `控制台` -> `令牌管理` 選項卡中選擇要使用在 LunaTranslator 的令牌，點選聊天按鈕旁的下拉選項，選擇 `LunaTranslator`,將會跳轉到 LunaTranslator 並自動配置 API 地址與 API Key
 
    ![跳轉到 LunaTranslator](/apps-assets/luna_translator/jump_to_app.webp)
 
@@ -70,7 +70,7 @@ LunaTranslator 支援接入本地部署的 優特。請使用您自己部署的 
 
 ### 手動配置
 
-1. 在 **`优特`** -> `控制台` -> `令牌管理` 選項卡中獲取 API Key
+1. 在 **`Uter`** -> `控制台` -> `令牌管理` 選項卡中獲取 API Key
 
    ![獲取 API Key](/apps-assets/luna_translator/copy_api_key.webp)
 

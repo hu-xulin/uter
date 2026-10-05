@@ -2,7 +2,7 @@
 
 > **聊天设置选项**
 >
-> 在 优特
+> 在 Uter
 >   控制台的系统设置->聊天设置中，可添加如下快捷选项，便于在令牌管理页一键填充到
 >   Cherry Studio：
 
@@ -17,19 +17,19 @@
 - 下载地址：[https://cherry-ai.com/download](https://cherry-ai.com/download)
 - 官方文档：[https://docs.cherry-ai.com](https://docs.cherry-ai.com)
 
-## 优特接入方法
+## Uter 接入方法
 
 ### 参数填写
 
-提供商类型：优特支持的类型  
-API 密钥：于 优特获取  
-API 地址：优特站点地址
+提供商类型：Uter 支持的类型  
+API 密钥：于 Uter 获取  
+API 地址：Uter 站点地址
 
-请使用您自己部署的 优特，或确认服务方具备合法上游授权和合规义务的 优特服务。不要将来源不明的 API 地址或密钥接入生产环境。
+请使用您自己部署的 Uter，或确认服务方具备合法上游授权和合规义务的 Uter 服务。不要将来源不明的 API 地址或密钥接入生产环境。
 
 ### 图文指引
 
-1. 在 优特中复制 API key
+1. 在 Uter 中复制 API key
    ![复制 API 密钥](/apps-assets/cherry_studio/copy_api_key.webp)
 
 2. 添加提供商
@@ -41,7 +41,7 @@ API 地址：优特站点地址
 4. 返回聊天页面
    ![切换聊天页面](/apps-assets/cherry_studio/back_to_chat.webp)
 
-5. 切换 优特模型
+5. 切换 Uter 模型
    ![切换模型](/apps-assets/cherry_studio/switch_model.webp)
 
 ## 在 Cherry Studio 中画图

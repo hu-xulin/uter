@@ -3,26 +3,26 @@
 > LangBot
 >   是一个开源的即时通信机器人开发平台，支持多种即时通信平台，如飞书、钉钉、微信、QQ、Telegram、Discord、Slack
 >   等。接入全球主流的 AI 模型，支持知识库、Agent、MCP等多种 AI
->   应用能力，并完美适配 优特。
+>   应用能力，并完美适配 Uter。
 
 - 官网地址：[https://langbot.app](https://langbot.app/)
 - 下载地址：[https://github.com/langbot-app/LangBot/releases](https://github.com/langbot-app/LangBot/releases)
 - 官方文档：[https://docs.langbot.app](https://docs.langbot.app/)
 - 开源地址：[https://github.com/langbot-app/LangBot](https://github.com/langbot-app/LangBot)
 
-## 接入 优特
+## 接入 Uter
 
-LangBot 支持接入本地部署的 优特和第三方使用 优特搭建的 优特服务。
+LangBot 支持接入本地部署的 Uter 和第三方使用 Uter 搭建的 Uter 服务。
 
 ### 使用方式
 
-1.  从 优特中获取 API key
+1.  从 Uter 中获取 API key
     ![获取 API key](/apps-assets/langbot/get_api_key.webp)
 
-        若是本地部署的 优特请自行配置 API 地址（可参考[容器网络连接](https://docs.langbot.app/zh/workshop/network-details.html)），若使用第三方 优特服务，可在页面上复制地址。注意，地址后需要添加`/v1`。
+        若是本地部署的 Uter 请自行配置 API 地址（可参考[容器网络连接](https://docs.langbot.app/zh/workshop/network-details.html)），若使用第三方 Uter 服务，可在页面上复制地址。注意，地址后需要添加`/v1`。
 
-2.  在 LangBot 中添加模型，选择使用 优特供应商，填写对应的 API key 和 API 地址
-    ![添加 优特模型](/apps-assets/langbot/add_uter_model.webp)
+2.  在 LangBot 中添加模型，选择使用 Uter 供应商，填写对应的 API key 和 API 地址
+    ![添加 Uter 模型](/apps-assets/langbot/add_uter_model.webp)
 
 3.  在流水线中选择使用模型
 
@@ -38,9 +38,9 @@ LangBot 支持接入本地部署的 优特和第三方使用 优特搭建的 优
 
 ### 使用 LangBot 知识库
 
-LangBot 支持使用 优特的嵌入模型，并将其作为知识库的向量模型。
+LangBot 支持使用 Uter 的嵌入模型，并将其作为知识库的向量模型。
 
-1. 在 LangBot 中添加嵌入模型，选择使用 优特供应商
+1. 在 LangBot 中添加嵌入模型，选择使用 Uter 供应商
    ![添加嵌入模型](/apps-assets/langbot/add_embedding_model.webp)
 
 2. 在新建知识库时选用嵌入模型

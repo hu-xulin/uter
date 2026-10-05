@@ -2,7 +2,7 @@
 
 > **聊天设置选项**
 >
-> 在 优特
+> 在 Uter
 >   控制台的系统设置->聊天设置中，可添加如下快捷选项，便于在令牌管理页一键填充到
 >   DeepChat：
 
@@ -18,11 +18,11 @@
 - GitHub 仓库：[https://github.com/ThinkInAIXYZ/deepchat](https://github.com/ThinkInAIXYZ/deepchat)
 - 下载地址：[https://deepchat.thinkinai.xyz/#/download](https://deepchat.thinkinai.xyz/#/download)
 
-## 优特接入方法
+## Uter 接入方法
 
 ### 方式一：一键导入
 
-1. 在 优特控制台侧边栏进入「令牌管理」，找到需要使用的令牌
+1. 在 Uter 控制台侧边栏进入「令牌管理」，找到需要使用的令牌
 
 2. 在令牌操作中选择 **DeepChat**
 
@@ -32,18 +32,18 @@
 4. 在 DeepChat 的 Provider 导入预览中确认配置
    ![确认 DeepChat 配置](/apps-assets/deepchat/4-deepchat-ok.webp)
 
-5. 打开模型列表，选择 优特模型开始使用
+5. 打开模型列表，选择 Uter 模型开始使用
    ![打开模型列表](/apps-assets/deepchat/5-open-models.webp)
 
 ### 方式二：手动导入
 
-1. 在 优特控制台复制 API Key 和站点地址
-   ![优特手动配置指引](/apps-assets/deepchat/7-uter-manual-guidance.webp)
+1. 在 Uter 控制台复制 API Key 和站点地址
+   ![Uter 手动配置指引](/apps-assets/deepchat/7-uter-manual-guidance.webp)
 
-2. 在 DeepChat 设置中添加或编辑 优特 Provider，填写 API 地址和 API Key
+2. 在 DeepChat 设置中添加或编辑 Uter Provider，填写 API 地址和 API Key
    ![DeepChat 手动配置指引](/apps-assets/deepchat/6-deepchat-manual-guidance.webp)
 
-3. 打开模型列表，选择 优特模型开始使用
+3. 打开模型列表，选择 Uter 模型开始使用
    ![打开模型列表](/apps-assets/deepchat/5-open-models.webp)
 
 ## 相关链接

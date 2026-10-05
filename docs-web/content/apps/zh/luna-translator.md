@@ -2,7 +2,7 @@
 
 > **聊天设置选项**
 >
-> 在 优特
+> 在 Uter
 >   控制台的系统设置->聊天设置中，可添加如下快捷选项，便于在令牌管理页一键填充到
 >   LunaTranslator：
 
@@ -38,13 +38,13 @@
 
 在 [LunaTranslator 文档- 下载 & 启动 & 更新](https://docs.lunatranslator.org/zh/README.html) 进行下载安装
 
-## 在 LunaTranslator 接入 优特
+## 在 LunaTranslator 接入 Uter
 
-LunaTranslator 支持接入本地部署的 优特。请使用您自己部署的 优特，或确认服务方具备合法上游授权和合规义务的 优特服务。不要将来源不明的 API 地址或密钥接入生产环境。
+LunaTranslator 支持接入本地部署的 Uter。请使用您自己部署的 Uter，或确认服务方具备合法上游授权和合规义务的 Uter 服务。不要将来源不明的 API 地址或密钥接入生产环境。
 
 ### 一键配置
 
-1. 在 优特控制台的`系统设置`->`聊天设置`中，添加如下快捷选项：
+1. 在 Uter 控制台的`系统设置`->`聊天设置`中，添加如下快捷选项：
 
    ```json
    { "LunaTranslator": "lunatranslator://llmapi/base64?data={cheryConfig}" }
@@ -52,7 +52,7 @@ LunaTranslator 支持接入本地部署的 优特。请使用您自己部署的 
 
    ![add_config](/apps-assets/luna_translator/add_config.webp)
 
-2. 在 **`优特`** -> `控制台` -> `令牌管理` 选项卡中选择要使用在 LunaTranslator 的令牌，点击聊天按钮旁的下拉选项，选择 `LunaTranslator`,将会跳转到 LunaTranslator 并自动配置 API 地址与 API Key
+2. 在 **`Uter`** -> `控制台` -> `令牌管理` 选项卡中选择要使用在 LunaTranslator 的令牌，点击聊天按钮旁的下拉选项，选择 `LunaTranslator`,将会跳转到 LunaTranslator 并自动配置 API 地址与 API Key
 
    ![跳转到 LunaTranslator](/apps-assets/luna_translator/jump_to_app.webp)
 
@@ -60,7 +60,7 @@ LunaTranslator 支持接入本地部署的 优特。请使用您自己部署的 
 
    ![设置api](/apps-assets/luna_translator/api_setting.webp)
 
-4. 点击 **model** 下拉框旁的刷新按钮，获取 优特平台的模型列表，选择或输入模型名称，完成后点击确定保存
+4. 点击 **model** 下拉框旁的刷新按钮，获取 Uter 平台的模型列表，选择或输入模型名称，完成后点击确定保存
 
    ![设置模型](/apps-assets/luna_translator/setting_model.webp)
 
@@ -70,7 +70,7 @@ LunaTranslator 支持接入本地部署的 优特。请使用您自己部署的 
 
 ### 手动配置
 
-1. 在 **`优特`** -> `控制台` -> `令牌管理` 选项卡中获取 API Key
+1. 在 **`Uter`** -> `控制台` -> `令牌管理` 选项卡中获取 API Key
 
    ![获取 API Key](/apps-assets/luna_translator/copy_api_key.webp)
 
@@ -88,11 +88,11 @@ LunaTranslator 支持接入本地部署的 优特。请使用您自己部署的 
 
    ![设置 API2](/apps-assets/luna_translator/setting_api2.webp)
 
-5. 点击 **model** 下拉框旁的刷新按钮，获取 优特平台的模型列表，选择或输入模型名称，完成后点击确定保存
+5. 点击 **model** 下拉框旁的刷新按钮，获取 Uter 平台的模型列表，选择或输入模型名称，完成后点击确定保存
 
    ![设置 API3](/apps-assets/luna_translator/setting_api3.webp)
 
-6. 点击 **优特** 旁边的开关按钮，启用接口即可开始使用
+6. 点击 **Uter** 旁边的开关按钮，启用接口即可开始使用
 
    ![打开API](/apps-assets/luna_translator/open_api.webp)
 

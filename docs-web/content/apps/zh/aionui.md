@@ -44,19 +44,19 @@
 - **飞书集成** - 支持通过飞书进行访问和交互
 - **本地数据安全** - 所有数据存储在本地 SQLite 数据库中，适合服务器部署
 
-## 优特接入方法
+## Uter 接入方法
 
 ### 参数填写
 
-提供商类型：优特支持的类型  
-API 密钥：于 优特获取  
-API 地址：优特站点地址（例如：`https://<your-uter-domain>/v1`）
+提供商类型：Uter 支持的类型  
+API 密钥：于 Uter 获取  
+API 地址：Uter 站点地址（例如：`https://<your-uter-domain>/v1`）
 
-请使用您自己部署的 优特，或确认服务方具备合法上游授权和合规义务的 优特服务。不要将来源不明的 API 地址或密钥接入生产环境。
+请使用您自己部署的 Uter，或确认服务方具备合法上游授权和合规义务的 Uter 服务。不要将来源不明的 API 地址或密钥接入生产环境。
 
 ### 配置步骤
 
-1. **在 优特中复制 API key**
+1. **在 Uter 中复制 API key**
    ![复制 API 密钥](/apps-assets/aionui/copy_apikey.webp)
 
 2. **打开 AionUi 设置**
@@ -67,21 +67,21 @@ API 地址：优特站点地址（例如：`https://<your-uter-domain>/v1`）
 
 3. **添加新的提供商**
    - 点击"添加模型"
-   - 选择 优特
-   ![添加 优特提供商](/apps-assets/aionui/uter_provider.webp)
+   - 选择 Uter
+   ![添加 Uter 提供商](/apps-assets/aionui/uter_provider.webp)
 
 4. **配置 API 信息**
-   - API 地址：填写您的 优特站点地址（格式：`https://<your-uter-domain>/v1`）
-   - API 密钥：粘贴从 优特控制台复制的 API Key
+   - API 地址：填写您的 Uter 站点地址（格式：`https://<your-uter-domain>/v1`）
+   - API 密钥：粘贴从 Uter 控制台复制的 API Key
 
 5. **添加模型**
    - 下拉选择需要添加的模型
-   - 模型名称应与 优特中配置的模型名称一致
+   - 模型名称应与 Uter 中配置的模型名称一致
    - 选择合适的请求协议
 
 6. **开始使用**
    - 返回聊天页面
-   - 选择已配置的 优特模型开始对话
+   - 选择已配置的 Uter 模型开始对话
 
 ## 相关链接
 
