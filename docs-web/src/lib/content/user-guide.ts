@@ -837,7 +837,6 @@ const USER_GUIDE_IDENTITY: Record<
       '日志与异步任务',
       '钱包与订阅',
       '定价和排行',
-      '模型测试',
     ],
   },
   'zh-TW': {
@@ -853,7 +852,6 @@ const USER_GUIDE_IDENTITY: Record<
       '日誌與非同步任務',
       '錢包與訂閱',
       '定價與排行',
-      '模型測試',
     ],
   },
   en: {
@@ -869,7 +867,6 @@ const USER_GUIDE_IDENTITY: Record<
       'Logs & Async Tasks',
       'Wallet & Subscription',
       'Model Hub & Leaderboard',
-      'Model Testing',
     ],
   },
   fr: {
@@ -886,7 +883,6 @@ const USER_GUIDE_IDENTITY: Record<
       'Journaux et tâches asynchrones',
       'Portefeuille et abonnement',
       'Hub de modèles et classement',
-      'Test des modèles',
     ],
   },
   ja: {
@@ -903,7 +899,6 @@ const USER_GUIDE_IDENTITY: Record<
       'ログと非同期タスク',
       'ウォレットとサブスクリプション',
       'モデルハブとランキング',
-      'モデルテスト',
     ],
   },
   ru: {
@@ -920,7 +915,6 @@ const USER_GUIDE_IDENTITY: Record<
       'Журналы и асинхронные задачи',
       'Кошелёк и подписка',
       'Каталог моделей и рейтинг',
-      'Тестирование моделей',
     ],
   },
   vi: {
@@ -937,7 +931,6 @@ const USER_GUIDE_IDENTITY: Record<
       'Nhật ký và tác vụ bất đồng bộ',
       'Ví và gói đăng ký',
       'Trung tâm mô hình và bảng xếp hạng',
-      'Kiểm thử mô hình',
     ],
   },
 };
@@ -992,7 +985,6 @@ export const USER_GUIDE_CHAPTER_SLUGS = [
   'logs-and-tasks',
   'wallet-and-subscription',
   'pricing-and-ranking',
-  'model-testing',
 ] as const;
 
 export type UserGuideChapterSlug = (typeof USER_GUIDE_CHAPTER_SLUGS)[number];

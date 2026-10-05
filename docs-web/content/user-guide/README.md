@@ -39,7 +39,10 @@ public/user-guide/zh/auth/
 | `logs-and-tasks` | 日志与异步任务 | Logs & Async Tasks |
 | `wallet-and-subscription` | 钱包与订阅 | Wallet & Subscription |
 | `pricing-and-ranking` | 定价和排行 | Model Hub & Leaderboard |
-| `model-testing` | 模型测试 | Model Testing |
+
+> `model-testing`（模型测试）曾是这个列表的第 10 章，现已提为与「用户指南」平级的顶层板块，
+> 地址 `/docs/<lang>/guide/wiki/model-testing/`，正文文件仍在本目录（`model-testing.md`），
+> 由 `src/app/docs/[lang]/guide/wiki/model-testing/page.tsx` 渲染。
 
 标题取自 `src/lib/content/user-guide.ts` 里的章节表，**不是** Markdown 里的 `# 一级标题`——
 这样侧栏在两种语言下都能显示，且某一语言的文件还没写时不至于没有名字。
