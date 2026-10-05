@@ -6,6 +6,12 @@ import (
 )
 
 // 简化的供应商映射规则
+//
+// 品牌名一律使用英文，且必须与 vendors 表中真实供应商记录的 Name 逐字一致：
+// getDisplayVendor 正是靠 EqualFold 把按规则合成的品牌落到那条真实记录上，
+// 名称对不上就会退化成负 ID 的合成品牌，导致「定价页一个品牌、管理页另一个品牌」，
+// 运营在管理页改图标/简介也反映不到定价页。中文名（百度/腾讯/阿里巴巴…）会让
+// 命名体系一分为二，因此这里只认英文名。
 var defaultVendorRules = map[string]string{
 	"gpt":      "OpenAI",
 	"dall-e":   "OpenAI",
@@ -16,55 +22,56 @@ var defaultVendorRules = map[string]string{
 	"gemini":   "Google",
 	"moonshot": "Moonshot",
 	"kimi":     "Moonshot",
-	"chatglm":  "智谱",
-	"glm-":     "智谱",
-	"qwen":     "阿里巴巴",
+	"chatglm":  "Z.AI",
+	"glm-":     "Z.AI",
+	"qwen":     "Alibaba",
 	"deepseek": "DeepSeek",
 	"abab":     "MiniMax",
 	"minimax":  "MiniMax",
-	"ernie":    "百度",
-	"spark":    "讯飞",
-	"hunyuan":  "腾讯",
+	"ernie":    "Baidu",
+	"spark":    "iFlytek",
+	"hunyuan":  "Tencent",
 	"command":  "Cohere",
 	"@cf/":     "Cloudflare",
 	"360":      "360",
-	"yi":       "零一万物",
+	"yi":       "01.AI",
 	"jina":     "Jina",
 	"mistral":  "Mistral",
 	"grok":     "xAI",
 	"llama":    "Meta",
-	"doubao":   "字节跳动",
-	"kling":    "快手",
-	"jimeng":   "即梦",
+	"doubao":   "ByteDance",
+	"kling":    "Kling",
+	"jimeng":   "Jimeng",
 	"vidu":     "Vidu",
 }
 
 // 供应商默认图标映射
 // 统一使用非彩色（单色）图标：不带 ".Color" 后缀的 @lobehub/icons 变体跟随
 // currentColor，能自适应深浅色主题；彩色变体在深色底上容易糊、且颜色无法统一。
+// 键名与 defaultVendorRules 的品牌名保持一致（同样只用英文名）。
 var defaultVendorIcons = map[string]string{
 	"OpenAI":     "OpenAI",
 	"Anthropic":  "Claude",
 	"Google":     "Gemini",
 	"Moonshot":   "Moonshot",
-	"智谱":         "Zhipu",
-	"阿里巴巴":       "Qwen",
+	"Z.AI":       "ZAI",
+	"Alibaba":    "Qwen",
 	"DeepSeek":   "DeepSeek",
 	"MiniMax":    "Minimax",
-	"百度":         "Wenxin",
-	"讯飞":         "Spark",
-	"腾讯":         "Hunyuan",
+	"Baidu":      "Wenxin",
+	"iFlytek":    "Spark",
+	"Tencent":    "Hunyuan",
 	"Cohere":     "Cohere",
 	"Cloudflare": "Cloudflare",
 	"360":        "Ai360",
-	"零一万物":       "Yi",
+	"01.AI":      "Yi",
 	"Jina":       "Jina",
 	"Mistral":    "Mistral",
 	"xAI":        "XAI",
 	"Meta":       "Ollama",
-	"字节跳动":       "Doubao",
-	"快手":         "Kling",
-	"即梦":         "Jimeng",
+	"ByteDance":  "Doubao",
+	"Kling":      "Kling",
+	"Jimeng":     "Jimeng",
 	"Vidu":       "Vidu",
 	"微软":         "AzureAI",
 	"Microsoft":  "AzureAI",
@@ -142,6 +149,11 @@ func defaultBrandPatterns(name string) []string {
 
 // Default vendor entries are presentation data. Reading pricing must never
 // recreate a deleted/merged database record.
+//
+// 键名与 defaultVendorRules 的品牌名一致（英文名）。负 ID 数值是稳定的对外契约，
+// 品牌改名时**沿用原数值**（如 -1016 始终是 doubao 家族、-1019 始终是 ernie 家族），
+// 以免外部按 ID 记住的引用失效。真实记录存在时 getDisplayVendor 会先按名称命中真实
+// 供应商，负 ID 仅在该品牌还没有真实记录时兜底。
 var defaultVendorDisplayIDs = map[string]int{
 	"360":        -1001,
 	"Anthropic":  -1002,
@@ -157,15 +169,15 @@ var defaultVendorDisplayIDs = map[string]int{
 	"OpenAI":     -1012,
 	"Vidu":       -1013,
 	"xAI":        -1014,
-	"即梦":         -1015,
-	"字节跳动":       -1016,
-	"快手":         -1017,
-	"智谱":         -1018,
-	"百度":         -1019,
-	"腾讯":         -1020,
-	"讯飞":         -1021,
-	"阿里巴巴":       -1022,
-	"零一万物":       -1023,
+	"Jimeng":     -1015,
+	"ByteDance":  -1016,
+	"Kling":      -1017,
+	"Z.AI":       -1018,
+	"Baidu":      -1019,
+	"Tencent":    -1020,
+	"iFlytek":    -1021,
+	"Alibaba":    -1022,
+	"01.AI":      -1023,
 }
 
 // getDisplayVendor 返回该品牌在定价侧展示时应使用的供应商 ID。

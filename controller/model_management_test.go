@@ -1115,14 +1115,14 @@ func TestVendorManagementDatabaseMatrix(t *testing.T) {
 
 				// No persisted vendor record exists yet for the default brand.
 				var count int64
-				require.NoError(t, db.Model(&model.Vendor{}).Where("name = ?", "字节跳动").Count(&count).Error)
+				require.NoError(t, db.Model(&model.Vendor{}).Where("name = ?", "ByteDance").Count(&count).Error)
 				assert.Zero(t, count)
 
 				// Plain search must not surface the synthetic default brand.
 				plain, _, err := model.SearchVendors("", 0, 100)
 				require.NoError(t, err)
 				for _, v := range plain {
-					assert.NotEqual(t, "字节跳动", v.Name)
+					assert.NotEqual(t, "ByteDance", v.Name)
 				}
 
 				// Including defaults must surface it as a negative-ID synthetic vendor.
@@ -1130,24 +1130,24 @@ func TestVendorManagementDatabaseMatrix(t *testing.T) {
 				require.NoError(t, err)
 				var synthetic *model.Vendor
 				for _, v := range withDefaults {
-					if v.Name == "字节跳动" {
+					if v.Name == "ByteDance" {
 						synthetic = v
 					}
 				}
-				require.NotNil(t, synthetic, "default brand 字节跳动 must appear in admin search")
+				require.NotNil(t, synthetic, "default brand ByteDance must appear in admin search")
 				assert.Negative(t, synthetic.Id)
 				assert.Equal(t, "Doubao", synthetic.Icon)
 
 				// GetVendorByID resolves the synthetic vendor by its negative ID.
 				loaded, err := model.GetVendorByID(synthetic.Id)
 				require.NoError(t, err)
-				assert.Equal(t, "字节跳动", loaded.Name)
+				assert.Equal(t, "ByteDance", loaded.Name)
 
 				// Promoting it persists a real vendor record.
-				promoted, err := model.PromoteDefaultVendor("字节跳动", "ByteDance models", "Doubao.Color")
+				promoted, err := model.PromoteDefaultVendor("ByteDance", "ByteDance models", "Doubao.Color")
 				require.NoError(t, err)
 				assert.Positive(t, promoted.Id)
-				require.NoError(t, db.Model(&model.Vendor{}).Where("name = ?", "字节跳动").Count(&count).Error)
+				require.NoError(t, db.Model(&model.Vendor{}).Where("name = ?", "ByteDance").Count(&count).Error)
 				assert.EqualValues(t, 1, count)
 
 				// After promotion the admin search shows the real record and skips
@@ -1156,7 +1156,7 @@ func TestVendorManagementDatabaseMatrix(t *testing.T) {
 				require.NoError(t, err)
 				realCount := 0
 				for _, v := range after {
-					if v.Name == "字节跳动" {
+					if v.Name == "ByteDance" {
 						realCount++
 						assert.Positive(t, v.Id)
 					}
@@ -1164,7 +1164,7 @@ func TestVendorManagementDatabaseMatrix(t *testing.T) {
 			assert.Equal(t, 1, realCount)
 		})
 		t.Run("promote_default_brand_is_idempotent_applies_edits_and_revives", func(t *testing.T) {
-			// 快手 (-1017) 是与其它子测试无冲突的默认品牌，避免污染 字节跳动 记录。
+			// Kling (-1017) 是与其它子测试无冲突的默认品牌，避免污染 ByteDance 记录。
 			channel := model.Channel{Name: "Kuaishou fixture", Type: 1, Status: common.ChannelStatusEnabled}
 			require.NoError(t, db.Create(&channel).Error)
 			require.NoError(t, db.Create(&model.Ability{Model: "kling-video", Group: "default", ChannelId: channel.Id, Enabled: true}).Error)
@@ -1172,40 +1172,40 @@ func TestVendorManagementDatabaseMatrix(t *testing.T) {
 			model.GetPricing()
 
 			var before int64
-			require.NoError(t, db.Model(&model.Vendor{}).Where("name = ?", "快手").Count(&before).Error)
+			require.NoError(t, db.Model(&model.Vendor{}).Where("name = ?", "Kling").Count(&before).Error)
 			assert.Zero(t, before, "no persisted vendor before promotion")
 
 			// 第一次提升：创建真实记录。
-			first, err := model.PromoteDefaultVendor("快手", "first description", "Kling.Color")
+			first, err := model.PromoteDefaultVendor("Kling", "first description", "Kling.Color")
 			require.NoError(t, err)
 			require.Positive(t, first.Id)
 			var afterFirst int64
-			require.NoError(t, db.Model(&model.Vendor{}).Where("name = ?", "快手").Count(&afterFirst).Error)
+			require.NoError(t, db.Model(&model.Vendor{}).Where("name = ?", "Kling").Count(&afterFirst).Error)
 			assert.EqualValues(t, 1, afterFirst)
 
 			// Issue 1：重复编辑默认品牌必须复用同一条记录并应用修改，绝不重复创建/孤儿化。
-			second, err := model.PromoteDefaultVendor("快手", "second description", "Kling.Color")
+			second, err := model.PromoteDefaultVendor("Kling", "second description", "Kling.Color")
 			require.NoError(t, err)
 			assert.EqualValues(t, first.Id, second.Id, "repeat promotion must reuse the same record")
 			assert.Equal(t, "second description", second.Description, "edits must be applied")
 
 			var afterSecond int64
-			require.NoError(t, db.Model(&model.Vendor{}).Where("name = ?", "快手").Count(&afterSecond).Error)
+			require.NoError(t, db.Model(&model.Vendor{}).Where("name = ?", "Kling").Count(&afterSecond).Error)
 			assert.EqualValues(t, 1, afterSecond, "no duplicate vendor records after repeat edit")
 
 			// 软删除后再次提升必须复活同一条记录，而非新建。
 			require.NoError(t, db.Delete(&model.Vendor{Id: first.Id}).Error)
 			var afterDelete int64
-			require.NoError(t, db.Model(&model.Vendor{}).Where("name = ?", "快手").Count(&afterDelete).Error)
+			require.NoError(t, db.Model(&model.Vendor{}).Where("name = ?", "Kling").Count(&afterDelete).Error)
 			assert.Zero(t, afterDelete, "soft delete hides the record")
 
-			revived, err := model.PromoteDefaultVendor("快手", "revived description", "Kling.Color")
+			revived, err := model.PromoteDefaultVendor("Kling", "revived description", "Kling.Color")
 			require.NoError(t, err)
 			assert.EqualValues(t, first.Id, revived.Id, "revive must reuse the soft-deleted record")
 			assert.Equal(t, "revived description", revived.Description)
 
 			var afterRevive int64
-			require.NoError(t, db.Model(&model.Vendor{}).Where("name = ?", "快手").Count(&afterRevive).Error)
+			require.NoError(t, db.Model(&model.Vendor{}).Where("name = ?", "Kling").Count(&afterRevive).Error)
 			assert.EqualValues(t, 1, afterRevive)
 		})
 		t.Run("merge_synthetic_default_brand_into_real_vendor_succeeds", func(t *testing.T) {
@@ -1219,12 +1219,12 @@ func TestVendorManagementDatabaseMatrix(t *testing.T) {
 			var brandID int
 			found := false
 			for _, v := range withDefaults {
-				if v.Name == "即梦" { // -1015，与 快手/字节跳动 子测试无冲突
+				if v.Name == "Jimeng" { // -1015，与 Kling/ByteDance 子测试无冲突
 					brandID = v.Id
 					found = true
 				}
 			}
-			require.True(t, found, "default brand 即梦 must surface in admin search")
+			require.True(t, found, "default brand Jimeng must surface in admin search")
 			assert.Negative(t, brandID, "synthetic default brand carries a negative id")
 
 			preview, err := model.PreviewVendorOperation(model.VendorOperation{
@@ -1232,7 +1232,7 @@ func TestVendorManagementDatabaseMatrix(t *testing.T) {
 			})
 			require.NoError(t, err, "merging a synthetic default brand must not error")
 			require.NotEmpty(t, preview.Sources)
-			assert.Equal(t, "即梦", preview.Sources[0].Name)
+			assert.Equal(t, "Jimeng", preview.Sources[0].Name)
 
 			result, err := model.ApplyVendorOperation(model.VendorOperation{
 				Action: "merge", VendorIDs: []int{brandID}, TargetVendorID: target.Id, ExpectedVersion: preview.Version,
