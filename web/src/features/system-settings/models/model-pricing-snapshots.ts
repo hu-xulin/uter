@@ -14,7 +14,7 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-For commercial licensing, please contact support@Uter.ai.com
+For commercial licensing, please contact support@uter.ai
 */
 import { splitBillingExprAndRequestRules } from '@/features/pricing/lib/billing-expr'
 import { splitPluginBillingExprKey } from '@/features/pricing/lib/plugin-pricing'

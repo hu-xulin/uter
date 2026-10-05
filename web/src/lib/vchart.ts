@@ -14,7 +14,7 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-For commercial licensing, please contact support@Uter.ai.com
+For commercial licensing, please contact support@uter.ai
 */
 export const VCHART_OPTION = {
   // 与老前端保持一致（浏览器环境渲染优化）
