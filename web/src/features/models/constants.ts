@@ -26,6 +26,19 @@ import type { NameRule, ModelStatus, SyncSource } from './types'
 
 export const DEFAULT_PAGE_SIZE = 20
 
+/**
+ * How many rows the client-side metadata / pricing filters pull before
+ * narrowing.
+ *
+ * Those two filters cannot be answered by the list endpoint — it does not
+ * inline the per-model pricing configuration — so the table loads the
+ * candidate set itself and reduces it in memory, mirroring how the backend
+ * handles `square_state`. The ceiling keeps a large catalogue from pulling
+ * every row at once; a catalogue bigger than this is filtered on the last
+ * page's worth of candidates rather than refusing to filter.
+ */
+export const CLIENT_FILTER_PAGE_SIZE = 1000
+
 // ============================================================================
 // Name Rule Options
 // ============================================================================

@@ -29,9 +29,14 @@ import { useTableUrlState } from '@/hooks/use-table-url-state'
 import { requireServerSuccess } from '@/lib/server-error-message'
 
 import { getModels, searchModels, getVendors } from '../api'
-import { DEFAULT_PAGE_SIZE } from '../constants'
+import { DEFAULT_PAGE_SIZE, CLIENT_FILTER_PAGE_SIZE } from '../constants'
 import { modelsQueryKeys, vendorsQueryKeys } from '../lib'
-import type { ModelSquareState } from '../types'
+import {
+  classifyModelMetadata,
+  classifyModelPricing,
+  indexPricingByModel,
+} from '../lib/model-filters'
+import type { ModelMetadataFilter, ModelPricingFilter, ModelSquareState } from '../types'
 import { DataTableBulkActions } from './data-table-bulk-actions'
 import { useModelsColumns } from './models-columns'
 import { useModels } from './models-provider'
@@ -65,6 +70,8 @@ export function ModelsTable() {
       { columnId: 'square_state', searchKey: 'square_state', type: 'array' },
       { columnId: 'vendor_id', searchKey: 'vendor', type: 'array' },
       { columnId: 'sync_official', searchKey: 'sync', type: 'array' },
+      { columnId: 'metadata', searchKey: 'metadata', type: 'array' },
+      { columnId: 'pricing', searchKey: 'pricing', type: 'array' },
     ],
   })
 
@@ -81,6 +88,20 @@ export function ModelsTable() {
   const syncFilter =
     (columnFilters.find((f) => f.id === 'sync_official')?.value as string[]) ||
     []
+  // `metadata` and `pricing` are resolved from data the list endpoint does
+  // not inline, so they are applied client-side below rather than pushed to
+  // the server. `'all'` is what the vendor filter uses for "no selection";
+  // an empty array means the same thing here.
+  const metadataFilter = (
+    columnFilters.find((f) => f.id === 'metadata')?.value as
+      | ModelMetadataFilter[]
+      | undefined
+  )?.[0]
+  const pricingFilter = (
+    columnFilters.find((f) => f.id === 'pricing')?.value as
+      | ModelPricingFilter[]
+      | undefined
+  )?.[0]
 
   // Fetch vendors for filter
   const { data: vendorsData } = useQuery({
@@ -165,7 +186,6 @@ export function ModelsTable() {
   })
 
   const models = data?.data?.items || []
-  const totalCount = data?.data?.total || 0
   const vendorCounts = data?.data?.vendor_counts
 
   // Columns configuration
@@ -180,9 +200,105 @@ export function ModelsTable() {
   else if (pricingQuery.isLoading) pricingState = 'loading'
   const columns = useModelsColumns(vendors, pricingQuery.data, pricingState)
 
+  /*
+   * The metadata and pricing filters narrow the row set in memory, the way
+   * the backend already does for `square_state`: fetch the whole candidate
+   * set, reduce it, then paginate. The pricing configuration is a separate
+   * per-model request, so it is only issued when a pricing filter is active —
+   * otherwise the page renders straight from the list response.
+   */
+  const needsClientFilter = Boolean(metadataFilter || pricingFilter)
+  const candidateQuery = useQuery({
+    queryKey: modelsQueryKeys.candidates({
+      include_channel_models: true,
+      keyword: globalFilter,
+      vendor: activeVendorFilter,
+      status: statusFilterValue,
+      sync_official: syncFilterValue,
+    }),
+    queryFn: async () =>
+      requireServerSuccess(
+        await searchModels({
+          include_channel_models: true,
+          keyword: globalFilter,
+          vendor: activeVendorFilter,
+          status: statusFilterValue,
+          sync_official: syncFilterValue,
+          p: 1,
+          page_size: CLIENT_FILTER_PAGE_SIZE,
+        })
+      ),
+    enabled: needsClientFilter,
+  })
+
+  const candidatePricingQuery = useModelPricing(
+    (candidateQuery.data?.data?.items ?? [])
+      .filter((item) => item.name_rule === 0)
+      .map((item) => item.model_name),
+    needsClientFilter && (candidateQuery.data?.data?.items?.length ?? 0) > 0
+  )
+
+  /*
+   * The unfiltered page the table would show without the two client-side
+   * filters. Held outside the memo so the memo — which only ever runs while a
+   * filter is active — does not depend on the list response and recompute on
+   * every refetch of an unrelated query.
+   */
+  const unfilteredModels = models
+
+  /*
+   * Narrowing the candidate set yields the page being shown and the total
+   * that matched. Both come out of one pass so the page count and the row
+   * count cannot disagree — deriving the total from the candidate set instead
+   * would overstate it and let the user page past the end into blanks.
+   */
+  const { page: filteredPage, matchedCount } = useMemo(() => {
+    const candidates = candidateQuery.data?.data?.items
+    if (!candidates) return { page: null, matchedCount: 0 }
+    const pricingIndex = indexPricingByModel(
+      candidatePricingQuery.data?.entries
+    )
+    const matched = candidates.filter((item) => {
+      if (
+        metadataFilter &&
+        classifyModelMetadata(item) !== metadataFilter
+      ) {
+        return false
+      }
+      if (
+        pricingFilter &&
+        classifyModelPricing(pricingIndex.get(item.model_name)) !==
+          pricingFilter
+      ) {
+        return false
+      }
+      return true
+    })
+    const start = pagination.pageIndex * pagination.pageSize
+    return {
+      page: matched.slice(start, start + pagination.pageSize),
+      matchedCount: matched.length,
+    }
+  }, [
+    metadataFilter,
+    pricingFilter,
+    candidateQuery.data,
+    candidatePricingQuery.data,
+    pagination.pageIndex,
+    pagination.pageSize,
+  ])
+
+  const visibleModels = needsClientFilter
+    ? (filteredPage ?? unfilteredModels)
+    : unfilteredModels
+
+  const totalCount = needsClientFilter
+    ? matchedCount
+    : data?.data?.total || 0
+
   // React Table instance
   const { table } = useDataTable({
-    data: models,
+    data: visibleModels,
     getRowId: (model) =>
       model.id > 0 ? `metadata:${model.id}` : `channel:${model.model_name}`,
     columns,
@@ -254,6 +370,26 @@ export function ModelsTable() {
         searchPlaceholder: t('Filter by model name...'),
         searchDebounceMs: 500,
         filters: [
+          {
+            columnId: 'metadata',
+            title: t('Model'),
+            options: [
+              { label: t('With metadata'), value: 'has' },
+              { label: t('Missing metadata'), value: 'none' },
+            ],
+            singleSelect: true,
+          },
+          {
+            columnId: 'pricing',
+            title: t('Pricing'),
+            options: [
+              { label: t('Standard pricing'), value: 'standard' },
+              { label: t('Custom pricing expression'), value: 'expression' },
+              { label: t('Pricing not set'), value: 'unset' },
+              { label: t('Pricing not configured'), value: 'unconfigured' },
+            ],
+            singleSelect: true,
+          },
           {
             columnId: 'status',
             title: t('Display policy'),
