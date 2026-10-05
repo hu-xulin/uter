@@ -29,6 +29,8 @@ import {
   isBundledDocsHref,
   resolveDocsHref,
   resolveDocsLocaleCode,
+  toDocsHostSplat,
+  toDocsSplat,
 } from '../docs-link'
 
 describe('docs-link helpers', () => {
@@ -200,5 +202,43 @@ describe('isBundledDocsHref', () => {
     expect(isBundledDocsHref('https://docs.example.com')).toBe(false)
     expect(isBundledDocsHref('/knowledge-base')).toBe(false)
     expect(isBundledDocsHref('')).toBe(false)
+  })
+})
+
+describe('host vs frame splat', () => {
+  // The export is built with `trailingSlash: true`, so the framed site and
+  // every path it reports over postMessage carry a trailing slash. The
+  // address bar must NOT keep it — the SPA route is not a directory — while
+  // the frame's src MUST, because the content mount resolves directory
+  // indexes and 301s the unslashed form.
+  test('toDocsSplat keeps the trailing slash the static mount needs', () => {
+    expect(toDocsSplat('/docs/zh/guide/wiki/model-testing/')).toBe(
+      'zh/guide/wiki/model-testing/'
+    )
+    expect(
+      toDocsSplat('/docs-content/docs/zh/guide/wiki/model-testing/')
+    ).toBe('zh/guide/wiki/model-testing/')
+  })
+
+  test('toDocsHostSplat strips it for the address bar', () => {
+    expect(toDocsHostSplat('/docs/zh/guide/wiki/model-testing/')).toBe(
+      'zh/guide/wiki/model-testing'
+    )
+    expect(toDocsHostSplat('/docs/zh/guide/wiki/model-testing')).toBe(
+      'zh/guide/wiki/model-testing'
+    )
+    expect(
+      toDocsHostSplat('/docs-content/docs/zh/guide/wiki/model-testing/')
+    ).toBe('zh/guide/wiki/model-testing')
+  })
+
+  test('toDocsHostSplat leaves the locale root bare', () => {
+    // Stripping would empty the splat, and `/docs/zh` is already shortest.
+    expect(toDocsHostSplat('/docs/zh/')).toBe('zh')
+  })
+
+  test('toDocsHostSplat still rejects a non-docs path', () => {
+    expect(toDocsHostSplat('/docs/legacy/x/')).toBeNull()
+    expect(toDocsHostSplat(undefined)).toBeNull()
   })
 })
