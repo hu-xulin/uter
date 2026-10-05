@@ -23,6 +23,28 @@
       }
     },
     {
+      "id": "model-testing",
+      "path": "guide/wiki/model-testing",
+      "label": {
+        "zh": "模型测试",
+        "en": "Model Testing",
+        "fr": "Test des modèles",
+        "ru": "Тестирование моделей",
+        "ja": "モデルテスト",
+        "vi": "Kiểm thử mô hình",
+        "zh-TW": "模型測試"
+      },
+      "summary": {
+        "zh": "接入大模型前的分步验证指南：连通性、参数、计费与错误边界。",
+        "en": "A step-by-step validation guide before adopting a model: connectivity, parameters, billing and error boundaries.",
+        "fr": "Un guide de validation étape par étape avant d'intégrer un modèle : connectivité, paramètres, facturation et gestion des erreurs.",
+        "ru": "Пошаговое руководство по проверке перед подключением модели: связность, параметры, тарификация и границы ошибок.",
+        "ja": "モデル導入前のステップバイステップ検証ガイド：接続性、パラメータ、課金、エラー境界。",
+        "vi": "Hướng dẫn kiểm tra từng bước trước khi tích hợp mô hình: kết nối, tham số, thanh toán và xử lý lỗi.",
+        "zh-TW": "接入大模型前的分步驗證指南：連通性、參數、計費與錯誤邊界。"
+      }
+    },
+    {
       "id": "guide",
       "path": "guide/wiki/user-guide",
       "label": {

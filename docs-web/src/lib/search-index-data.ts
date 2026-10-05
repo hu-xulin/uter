@@ -16,6 +16,7 @@ import {
   getUserGuideContent,
   userGuideChapterUrl,
 } from '@/lib/content/user-guide';
+import { loadUserGuideMarkdown } from '@/lib/content/user-guide-markdown';
 import { planHeadings } from '@/lib/docs-toc';
 import { SUPPORTED_DOCS_LOCALES, type DocsLocale } from '@/lib/i18n';
 import { collectionDocuments } from '@/lib/nav';
@@ -384,6 +385,50 @@ function userGuidePages(locale: DocsLocale, prefix: string, docsLabel: string): 
   return [landing, ...pages];
 }
 
+/**
+ * Index 模型测试 (`/docs/<lang>/guide/wiki/model-testing/`).
+ *
+ * A top-level section rather than a user-guide chapter, so it is indexed
+ * on its own instead of arriving through `userGuidePages()`. Its body is
+ * the same block model the guide chapters render (Markdown parsed by
+ * `loadUserGuideMarkdown`), and the anchors are planned with the same
+ * `planHeadings()` call its route makes, so a hit cannot point at an
+ * element that does not exist.
+ */
+function modelTestingPage(locale: DocsLocale, prefix: string, docsLabel: string): SearchIndexPage | null {
+  const markdown = loadUserGuideMarkdown(locale, 'model-testing');
+  if (!markdown) return null;
+
+  const title = markdown.documentTitle ?? markdown.groups[0]?.heading ?? '';
+  const groups =
+    markdown.groups.length > 0
+      ? markdown.groups
+      : [{ heading: title, blocks: markdown.lead, subSections: [] }];
+  const { sectionIds, subSectionIds } = planHeadings(groups);
+
+  // The title is the page's `h1`, which carries no id.
+  const entries: SearchIndexEntry[] = [{ kind: 'heading', text: title, anchor: '' }];
+  if (markdown.groups.length > 0) pushBlockEntries(entries, markdown.lead, '');
+
+  groups.forEach((group, i) => {
+    const anchor = sectionIds[i];
+    entries.push({ kind: 'heading', text: group.heading, anchor });
+    pushBlockEntries(entries, group.blocks, anchor);
+    group.subSections.forEach((sub, j) => {
+      const subAnchor = subSectionIds[i]?.[j] ?? anchor;
+      entries.push({ kind: 'heading', text: sub.heading, anchor: subAnchor });
+      pushBlockEntries(entries, sub.blocks, subAnchor);
+    });
+  });
+
+  return {
+    title,
+    url: `${prefix}/guide/wiki/model-testing/`,
+    breadcrumbs: [docsLabel, title],
+    entries,
+  };
+}
+
 function pagesForLocale(locale: DocsLocale): SearchIndexPage[] {
   const prefix = `/docs/${locale}`;
   const docsLabel = DOCS_LABEL[locale];
@@ -394,8 +439,11 @@ function pagesForLocale(locale: DocsLocale): SearchIndexPage[] {
    * now that the quick-start landing is gone, and indexing it would put
    * a hit on a page that has nothing to read.
    */
+  const modelTesting = modelTestingPage(locale, prefix, docsLabel);
+
   return [
     ...userGuidePages(locale, prefix, docsLabel),
+    ...(modelTesting ? [modelTesting] : []),
     ...markdownPages(locale, prefix, docsLabel),
   ];
 }
