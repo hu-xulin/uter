@@ -51,7 +51,14 @@ func TestSessionCookieOriginGuard(t *testing.T) {
 		{name: "same origin", origin: "https://panel.example.com", expected: http.StatusNoContent},
 		{name: "trusted exact origin", origin: "https://trusted.example.com", expected: http.StatusNoContent},
 		{name: "referer fallback", referer: "https://panel.example.com/profile", expected: http.StatusNoContent},
-		{name: "missing both", expected: http.StatusForbidden},
+		// No Origin and no Referer: allowed through for programmatic clients
+		// (mobile app / curl). Browsers always attach Origin to a cross-origin
+		// unsafe request, so its absence is not a CSRF signal — rejecting it
+		// would break non-browser clients without adding protection.
+		{name: "missing both", expected: http.StatusNoContent},
+		// A malformed Origin IS a browser context we could not validate, and
+		// must fail closed. "null" is what a sandboxed iframe / data: document
+		// sends; previously it short-circuited the guard and was let through.
 		{name: "null origin", origin: "null", expected: http.StatusForbidden},
 		{name: "suffix attack", origin: "https://trusted.example.com.evil.test", expected: http.StatusForbidden},
 		{name: "scheme mismatch", origin: "http://panel.example.com", expected: http.StatusForbidden},
@@ -67,6 +74,12 @@ func TestSessionCookieOriginGuard(t *testing.T) {
 	}
 }
 
+// TestSessionCookieOriginGuardDevelopmentCompatibility pins the local
+// development carve-out: a loopback-to-loopback dev proxy stays allowed in
+// insecure mode, while the very same origin is rejected once secure cookie mode
+// is on. SESSION_COOKIE_SECURE gates cookie attributes and the dev exemption —
+// it is not a CSRF kill switch, so non-loopback cross-site requests are rejected
+// either way (see auth_origin_csrf_test.go).
 func TestSessionCookieOriginGuardDevelopmentCompatibility(t *testing.T) {
 	previousSecure := common.SessionCookieSecure
 	previousTrustedURLs := common.SessionCookieTrustedURLs
@@ -82,9 +95,12 @@ func TestSessionCookieOriginGuardDevelopmentCompatibility(t *testing.T) {
 		origin   string
 		expected int
 	}{
-		{name: "insecure mode allows mismatched development origins", origin: "http://localhost:3001", expected: http.StatusNoContent},
+		{name: "insecure mode allows loopback dev proxy origins", origin: "http://localhost:3001", expected: http.StatusNoContent},
 		{name: "insecure mode allows missing origin", expected: http.StatusNoContent},
-		{name: "secure mode rejects mismatched development origins", secure: true, origin: "http://localhost:3001", expected: http.StatusForbidden},
+		{name: "secure mode rejects loopback dev proxy origins", secure: true, origin: "http://localhost:3001", expected: http.StatusForbidden},
+		{name: "secure mode allows missing origin for programmatic clients", secure: true, expected: http.StatusNoContent},
+		// A cross-site origin is rejected regardless of the cookie-secure flag.
+		{name: "insecure mode still rejects cross-site origin", origin: "https://evil.example.com", expected: http.StatusForbidden},
 	}
 
 	for _, test := range tests {

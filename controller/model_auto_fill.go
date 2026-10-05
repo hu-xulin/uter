@@ -196,6 +196,10 @@ func officialCatalogForFill(ctx context.Context) (map[string]model.MetadataValue
 // preset, falling back to the other preset for models the first one does not
 // price. This mirrors the pricing page's own gap filling so a model that shows
 // an official price there also gets it persisted here.
+//
+// GetPresetModelRatios hands out a private copy of the cached preset, so filling
+// the gaps below cannot corrupt the shared cache that also serves the plaza and
+// the admin preset editor.
 func autoFillOfficialPricing(ctx context.Context, names []string) (*model.AutoFillPricingResult, error) {
 	primary, fallback := officialPricingPresetIDs()
 	prices := GetPresetModelRatios(primary)

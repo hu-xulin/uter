@@ -1175,11 +1175,24 @@ var (
 // pricing preset (official -100 or models.dev -101): model -> field -> ratio.
 // Results are cached for presetRatioCacheTTL. A failed fetch returns an empty
 // map (fail-soft) so the plaza still renders platform prices.
+//
+// The returned map is always a fresh copy, never the cached instance itself.
+// Several callers merge a second preset's entries into the result to fill gaps
+// (the plaza's resolveOfficialPrices and the post-channel-sync official price
+// auto-fill); handing out the cached map let them graft entries into it, which
+// corrupted the admin preset editor, made the two presets converge, and raced
+// on a map shared by every concurrent request. Copying on the way out makes the
+// cache structurally read-only, so a caller cannot corrupt it no matter what it
+// does with the result.
+//
+// The per-model inner maps are shared rather than deep-copied: they are treated
+// as immutable values, and copying them would allocate a full preset per call on
+// the pricing hot path.
 func GetPresetModelRatios(presetID int) map[string]map[string]float64 {
 	presetRatioCacheMu.Lock()
 	if entry, ok := presetRatioCache[presetID]; ok &&
 		time.Since(entry.fetchedAt) < presetRatioCacheTTL {
-		data := entry.data
+		data := clonePresetModelRatios(entry.data)
 		presetRatioCacheMu.Unlock()
 		return data
 	}
@@ -1190,7 +1203,17 @@ func GetPresetModelRatios(presetID int) map[string]map[string]float64 {
 	presetRatioCacheMu.Lock()
 	presetRatioCache[presetID] = &presetRatioCacheEntry{data: data, fetchedAt: time.Now()}
 	presetRatioCacheMu.Unlock()
-	return data
+	return clonePresetModelRatios(data)
+}
+
+// clonePresetModelRatios copies the outer map so callers may mutate the result
+// without writing into the process-wide preset cache.
+func clonePresetModelRatios(source map[string]map[string]float64) map[string]map[string]float64 {
+	clone := make(map[string]map[string]float64, len(source))
+	for modelName, ratios := range source {
+		clone[modelName] = ratios
+	}
+	return clone
 }
 
 // RefreshPresetModelRatios forces a re-fetch on the next call (used by the

@@ -296,6 +296,17 @@ func applyVendorOperation(operation VendorOperation) (*VendorOperationResult, er
 					realDeleted = append(realDeleted, vendor.Id)
 				}
 			}
+			// 记住本次合并决策，使后续同名/同族的来源自动落到同一目标。
+			// 没有这一步，合成默认品牌会在每次定价刷新时被重新生成，
+			// 管理员就必须为新进来的模型一而再地重复手工合并。
+			if operation.Action == "merge" {
+				for _, vendor := range preview.Sources {
+					patterns := defaultBrandPatterns(vendor.Name)
+					if err := RecordVendorMergeRule(tx, vendor.Name, patterns, operation.TargetVendorID); err != nil {
+						return err
+					}
+				}
+			}
 			// 合并合成默认品牌：它没有持久化行，但其模型已被迁移到目标供应商；
 			// 这里再清掉任何仍挂着该品牌名（且不是目标本身）的真实供应商记录，
 			// 使该合成品牌在管理页与定价页都不再出现。
@@ -320,6 +331,9 @@ func applyVendorOperation(operation VendorOperation) (*VendorOperationResult, er
 	if err != nil {
 		return nil, err
 	}
+	// 规则索引必须在事务提交后才失效：提前失效会让并发读取用未提交的快照
+	// 重新填充无 TTL 的索引，导致被合并的品牌在后续定价刷新中复活。
+	InvalidateVendorMergeCache()
 	RefreshPricing()
 	return result, nil
 }
