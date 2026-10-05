@@ -57,7 +57,7 @@ Khi đã tạo, nhấn nút sao chép để sao chép API Key đã tạo.
 
 Đăng nhập vào bảng điều khiển web Memoh, đi tới trang quản lý nhà cung cấp, và nhấn Uter.
 
-![chuyển-sang-nhà-cung-cấp-uter](/apps-assets/memoh/switch_to_uter_provider.webp)
+![chuyển-sang-nhà-cung-cấp-uter](/apps-assets/memoh/switch_to_newapi_provider.webp)
 
 Điền các thông tin sau trên trang cấu hình:
 

@@ -22,7 +22,7 @@ LangBot 支援接入本地部署的 優特和第三方使用 優特搭建的 優
         若是本地部署的 優特請自行配置 API 地址（可參考[容器網路連線](https://docs.langbot.app/zh/workshop/network-details.html)），若使用第三方 優特服務，可在頁面上覆制地址。注意，地址後需要新增`/v1`。
 
 2.  在 LangBot 中新增模型，選擇使用 優特供應商，填寫對應的 API key 和 API 地址
-    ![新增 優特模型](/apps-assets/langbot/add_uter_model.webp)
+    ![新增 優特模型](/apps-assets/langbot/add_newapi_model.webp)
 
 3.  在流水線中選擇使用模型
 

@@ -57,7 +57,7 @@ Uter に登録してログイン後、上部ナビゲーションバーの「コ
 
 Memoh Web ダッシュボードにログインし、プロバイダ管理ページに移動して Uter をクリックします。
 
-![switch-to-uter-provider](/apps-assets/memoh/switch_to_uter_provider.webp)
+![switch-to-uter-provider](/apps-assets/memoh/switch_to_newapi_provider.webp)
 
 設定ページで次の情報を入力：
 

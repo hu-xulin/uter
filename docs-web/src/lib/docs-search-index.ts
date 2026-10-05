@@ -12,12 +12,12 @@ import { SUPPORTED_DOCS_LOCALES } from '@/lib/i18n';
  * by the `search-index.json` route handler (see `search-index-data.ts`)
  * and ranked in the browser by this module.
  *
- * It is served from the origin root, not from under `/docs/`: the
- * gateway mounts the docs export directory (`web/dist/docs/`) at `/`, so
- * the export's `out/docs/zh/...` becomes `/docs/zh/...` and its
- * `out/search-index.json` becomes `/search-index.json`. The path is
- * derived rather than hard-coded so a future mount under a prefix keeps
- * working.
+ * It is served under the `/docs-content` basePath: the gateway mounts
+ * the docs export directory (`web/dist/docs-content/`) at `/docs-content`
+ * (see `router/web-router.go`), so the export's `out/docs/zh/...` is
+ * reached at `/docs-content/docs/zh/...` and its `out/search-index.json`
+ * at `/docs-content/search-index.json`. The path is derived rather than
+ * hard-coded so a future mount under a different prefix keeps working.
  *
  * Ranking is deliberately simple: every query term must appear somewhere
  * in a page for it to match, headings weigh more than body text, and the

@@ -23,7 +23,7 @@ LangBot prend en charge l'intégration avec Uter déployé localement et les ser
         Si Uter est déployé localement, veuillez configurer vous-même l'adresse API (reportez-vous à [Connexion réseau des conteneurs](https://docs.langbot.app/en/workshop/network-details.html)). Si vous utilisez un service Uter tiers, vous pouvez copier l'adresse depuis la page. Notez que `/v1` doit être ajouté à l'adresse.
 
 2.  Ajouter un modèle dans LangBot, sélectionner Uter comme fournisseur, et remplir la clé API et l'adresse API correspondantes
-    ![add-uter-model](/apps-assets/langbot/add_uter_model.webp)
+    ![add-uter-model](/apps-assets/langbot/add_newapi_model.webp)
 
 3.  Sélectionner le modèle à utiliser dans le pipeline
 

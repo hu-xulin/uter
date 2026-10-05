@@ -17,6 +17,7 @@ import (
 	"github.com/Uter-AI/Uter/setting"
 	"github.com/Uter-AI/Uter/setting/operation_setting"
 	"github.com/gin-gonic/gin"
+	"github.com/shopspring/decimal"
 	"github.com/thanhpk/randstr"
 	waffo "github.com/waffo-com/waffo-go"
 	"github.com/waffo-com/waffo-go/config"
@@ -408,6 +409,28 @@ func handleWaffoPayment(c *gin.Context, wh *core.WebhookHandler, result *core.Pa
 	}
 
 	merchantOrderId := result.MerchantOrderID
+
+	// 金额校验：Waffo 回调的 orderAmount 必须与本地订单应付金额一致。
+	// 缺失此校验时，只要验签通过且状态为 PAY_SUCCESS 即按本地订单金额入账，
+	// 与实际扣款金额脱钩，存在少付多充的风险。下单时 OrderAmount 由
+	// formatWaffoAmount(topUp.Money, currency) 生成，这里用同一函数反向比对。
+	if paidAmount := strings.TrimSpace(result.OrderAmount); paidAmount != "" {
+		topUp := model.GetTopUpByTradeNo(merchantOrderId)
+		if topUp == nil {
+			logger.LogWarn(c.Request.Context(), fmt.Sprintf("Waffo 回调订单不存在 trade_no=%s client_ip=%s", merchantOrderId, c.ClientIP()))
+			sendWaffoWebhookResponse(c, wh, false, "订单不存在")
+			return
+		}
+		expected := formatWaffoAmount(topUp.Money, result.OrderCurrency)
+		paid, paidErr := decimal.NewFromString(paidAmount)
+		expectedDecimal, expectedErr := decimal.NewFromString(expected)
+		if paidErr != nil || expectedErr != nil || !paid.Equal(expectedDecimal) {
+			logger.LogWarn(c.Request.Context(), fmt.Sprintf("Waffo 回调金额不匹配 trade_no=%s 回调金额=%s 期望金额=%s client_ip=%s",
+				merchantOrderId, paidAmount, expected, c.ClientIP()))
+			sendWaffoWebhookResponse(c, wh, false, "金额不匹配")
+			return
+		}
+	}
 
 	LockOrder(merchantOrderId)
 	defer UnlockOrder(merchantOrderId)

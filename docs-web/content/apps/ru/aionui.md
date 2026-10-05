@@ -75,7 +75,7 @@ API Key: получен в Uter
 3. **Добавьте нового провайдера**
    - Нажмите «Добавить модель»
    - Выберите Uter
-   ![Добавление провайдера Uter](/apps-assets/aionui/uter_provider.webp)
+   ![Добавление провайдера Uter](/apps-assets/aionui/newapi_provider.webp)
 
 4. **Настройте данные API**
    - Адрес API: введите адрес сайта Uter (формат: `https://<your-uter-domain>/v1`)

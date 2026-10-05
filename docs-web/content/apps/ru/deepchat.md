@@ -36,7 +36,7 @@
 ### Способ 2: ручной импорт
 
 1. Скопируйте API-ключ и адрес сайта из консоли Uter
-   ![Руководство по ручной настройке Uter](/apps-assets/deepchat/7-uter-manual-guidance.webp)
+   ![Руководство по ручной настройке Uter](/apps-assets/deepchat/7-new-api-manual-guidance.webp)
 2. В настройках DeepChat добавьте или отредактируйте провайдера Uter, затем заполните адрес API и API-ключ
    ![Руководство по ручной настройке DeepChat](/apps-assets/deepchat/6-deepchat-manual-guidance.webp)
 3. Откройте список моделей и выберите модель Uter, чтобы начать использовать её

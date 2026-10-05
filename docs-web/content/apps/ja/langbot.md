@@ -23,7 +23,7 @@ LangBot は、ローカルに導入した Uter や、Uter を使用して構築�
         Uter をローカルに導入した場合は、ご自身で API アドレスを設定してください（[コンテナネットワーク接続](https://docs.langbot.app/en/workshop/network-details.html) 参照）。サードパーティの Uter サービスを利用する場合は、ページからアドレスをコピーできます。アドレスには `/v1` を付加する必要がある点に注意してください。
 
 2.  LangBot でモデルを追加し、プロバイダとして Uter を選択し、対応する API キーと API アドレスを入力
-    ![Uter モデルの追加](/apps-assets/langbot/add_uter_model.webp)
+    ![Uter モデルの追加](/apps-assets/langbot/add_newapi_model.webp)
 
 3.  パイプラインで使用するモデルを選択
 

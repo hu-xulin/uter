@@ -38,7 +38,7 @@
 ### 方式二：手動匯入
 
 1. 在 優特控制檯複製 API Key 和站點地址
-   ![優特手動配置指引](/apps-assets/deepchat/7-uter-manual-guidance.webp)
+   ![優特手動配置指引](/apps-assets/deepchat/7-new-api-manual-guidance.webp)
 
 2. 在 DeepChat 設定中新增或編輯 優特 Provider，填寫 API 地址和 API Key
    ![DeepChat 手動配置指引](/apps-assets/deepchat/6-deepchat-manual-guidance.webp)

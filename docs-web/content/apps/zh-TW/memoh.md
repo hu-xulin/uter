@@ -56,7 +56,7 @@ Memoh 支援接入任何 OpenAI 相容的模型提供商，可以透過 優特�
 
 登入 Memoh Web 管理面板，進入提供商管理頁面，點選優特。
 
-![switch-to-uter-provider](/apps-assets/memoh/switch_to_uter_provider.webp)
+![switch-to-uter-provider](/apps-assets/memoh/switch_to_newapi_provider.webp)
 
 在配置頁面中填寫以下資訊：
 

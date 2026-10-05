@@ -68,7 +68,7 @@ API 地址：Uter 站点地址（例如：`https://<your-uter-domain>/v1`）
 3. **添加新的提供商**
    - 点击"添加模型"
    - 选择 Uter
-   ![添加 Uter 提供商](/apps-assets/aionui/uter_provider.webp)
+   ![添加 Uter 提供商](/apps-assets/aionui/newapi_provider.webp)
 
 4. **配置 API 信息**
    - API 地址：填写您的 Uter 站点地址（格式：`https://<your-uter-domain>/v1`）

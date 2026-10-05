@@ -57,7 +57,7 @@ Memoh поддерживает любого провайдера моделей,
 
 Войдите в веб-панель управления Memoh, перейдите на страницу управления провайдерами и нажмите Uter.
 
-![switch-to-uter-provider](/apps-assets/memoh/switch_to_uter_provider.webp)
+![switch-to-uter-provider](/apps-assets/memoh/switch_to_newapi_provider.webp)
 
 Заполните следующую информацию на странице конфигурации:
 

@@ -38,7 +38,7 @@
 ### 方法 2: 手動インポート
 
 1. Uter コンソールから API キーとサイトアドレスをコピー
-   ![Uter Manual Configuration Guide](/apps-assets/deepchat/7-uter-manual-guidance.webp)
+   ![Uter Manual Configuration Guide](/apps-assets/deepchat/7-new-api-manual-guidance.webp)
 
 2. DeepChat の設定で Uter プロバイダを追加または編集し、API アドレスと API キーを入力
    ![DeepChat Manual Configuration Guide](/apps-assets/deepchat/6-deepchat-manual-guidance.webp)

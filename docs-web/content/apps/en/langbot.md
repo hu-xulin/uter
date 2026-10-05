@@ -23,7 +23,7 @@ LangBot supports integrating with locally deployed Uter and third-party Uter ser
         If Uter is deployed locally, please configure the API address yourself (refer to [Container Network Connection](https://docs.langbot.app/en/workshop/network-details.html)). If using a third-party Uter service, you can copy the address from the page. Note that `/v1` needs to be appended to the address.
 
 2.  Add a model in LangBot, select Uter as the provider, and fill in the corresponding API key and API address
-    ![添加 Uter 模型](/apps-assets/langbot/add_uter_model.webp)
+    ![添加 Uter 模型](/apps-assets/langbot/add_newapi_model.webp)
 
 3.  Select the model to use in the pipeline
 

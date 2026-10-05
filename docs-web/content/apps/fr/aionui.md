@@ -75,7 +75,7 @@ Veuillez utiliser votre propre instance Uter déployée, ou assurez-vous que le 
 3.  **Ajouter un nouveau fournisseur**
     - Cliquez sur « Add Model »
     - Sélectionnez Uter
-    ![Ajouter le fournisseur Uter](/apps-assets/aionui/uter_provider.webp)
+    ![Ajouter le fournisseur Uter](/apps-assets/aionui/newapi_provider.webp)
 
 4.  **Configurer les informations API**
     - Adresse API : saisissez l'adresse de votre site Uter (format : `https://<your-uter-domain>/v1`)
