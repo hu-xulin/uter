@@ -17,9 +17,10 @@
  *
  * ### Images
  *
- * A picture is a file under `public/user-guide/<locale>/<slug>/`. Because
- * `public/` is copied into the export verbatim, that URL needs no build
- * step and no entry in the Go embed list.
+ * A picture is a file under `public/user-guide/<locale>/<slug>/`. `public/`
+ * is copied into the export verbatim, so the file needs no build step and no
+ * entry in the Go embed list — but the URL has to carry the basePath the
+ * export is served under, which is what {@link withDocsBasePath} adds.
  *
  * Files are numbered by their own names (`01-login.webp`,
  * `02-oauth.webp`, …) and are matched **by sort order**: `__img0` is the
@@ -56,6 +57,7 @@ import {
   type CalloutTone,
   type Inline,
 } from '@/lib/content/blocks';
+import { withDocsBasePath } from '@/lib/docs-base-path';
 import type { DocsLocale } from '@/lib/i18n';
 
 /** One chapter parsed out of Markdown. */
@@ -113,18 +115,22 @@ function chapterImageUrls(locale: DocsLocale, slug: string): string[] {
   return readdirSync(dir)
     .filter((name) => !name.startsWith('.') && /\.(png|jpe?g|webp|avif|gif|svg)$/i.test(name))
     .sort((a, b) => a.localeCompare(b, 'en', { numeric: true }))
-    .map((name) => `/user-guide/${source}/${slug}/${name}`);
+    .map((name) => withDocsBasePath(`/user-guide/${source}/${slug}/${name}`));
 }
 
 /** Resolve one image reference against the chapter's picture directory. */
 function resolveImageSrc(raw: string, images: string[], locale: DocsLocale, slug: string): string {
   if (/^[a-z][a-z0-9+.-]*:/i.test(raw) || raw.startsWith('//')) return raw;
-  if (raw.startsWith('/')) return raw;
+  // A root-relative URL is one we (or the author) wrote pointing at the export
+  // root, so it needs the basePath the page is actually served under —
+  // without it the browser asks for `/user-guide/…`, gets the SPA's index.html
+  // back, and renders nothing. Idempotent, so an already-prefixed path is fine.
+  if (raw.startsWith('/')) return withDocsBasePath(raw);
 
   const placeholder = /^__img(\d+)$/.exec(raw.trim());
   if (placeholder) return images[Number(placeholder[1])] ?? '';
 
-  return `/user-guide/${screenshotLocale(locale)}/${slug}/${raw.replace(/^\.\//, '')}`;
+  return withDocsBasePath(`/user-guide/${screenshotLocale(locale)}/${slug}/${raw.replace(/^\.\//, '')}`);
 }
 
 const CALLOUT_TONES: readonly CalloutTone[] = [

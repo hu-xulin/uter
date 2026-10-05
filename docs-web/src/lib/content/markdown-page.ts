@@ -9,6 +9,7 @@ import rehypeStringify from 'rehype-stringify';
 import { unified } from 'unified';
 
 import { headingAnchor } from '@/lib/docs-toc';
+import { withDocsBasePath } from '@/lib/docs-base-path';
 
 /**
  * Pages whose body is a Markdown file under `content/`.
@@ -147,34 +148,114 @@ function assignAnchors(tree: unknown, headings: MarkdownHeading[]): void {
 }
 
 /** Parse one Markdown source into a page. */
+/**
+ * Give every image the basePath the export is served under.
+ *
+ * An author writes a picture as `/apps-assets/…` — a root-relative URL,
+ * which is what a file copied verbatim out of `public/` needs. But the page
+ * itself is requested at `/docs-content/docs/…`, so the browser resolves that
+ * URL against the domain root, misses, and the Go SPA fallback answers with
+ * `index.html`. The browser then holds HTML where it expects a pixel and
+ * renders an empty box. Rewriting `src` here — once, for every page that
+ * goes through this renderer — keeps content authoring unchanged and makes
+ * the fix independent of how many files reference images.
+ *
+ * Runs as a rehype plugin rather than on the raw Markdown so it also covers
+ * raw `<img>` tags typed straight into a document, not only `![]()`.
+ */
+function rehypeDocsAssetBasePath() {
+  return (tree: HastNode): void => {
+    visit(tree, (node) => {
+      if (node.type !== 'element') return;
+      if (node.tagName !== 'img' && node.tagName !== 'source') return;
+
+      const src = (node.properties as Record<string, unknown> | undefined)?.src;
+      if (typeof src !== 'string' || !src) return;
+      (node.properties as Record<string, unknown>).src = withDocsBasePath(src);
+    });
+  };
+}
+
+/**
+ * A hast node, narrowed to what this walk needs.
+ *
+ * `@types/hast` reaches this project only transitively (through
+ * `mdast-util-to-hast`), so it is not a declared dependency and importing it
+ * directly would be relying on someone else's dependency list. Describing the
+ * three fields we touch keeps the plugin honest without that coupling.
+ */
+type HastNode = {
+  type: string;
+  tagName?: string;
+  properties?: unknown;
+  children?: HastNode[];
+};
+
+/**
+ * The two shapes this file's remark plugin is typed against.
+ *
+ * `@types/mdast` and `vfile` reach this project only transitively (through
+ * `remark-parse` / `unified`), so importing them directly would be relying on
+ * someone else's dependency list — the same reason {@link HastNode} is
+ * spelled out. Only the members actually touched are described, and both
+ * stay deliberately loose: the plugin is handed whatever tree the processor
+ * holds and narrows it itself, so annotating it any more tightly only risks
+ * another overload mismatch rather than catching a real bug.
+ */
+type MdastRoot = { children?: unknown[]; type?: string };
+type VFileLike = { data: Record<string, unknown> };
+
+/** Depth-first walk over a hast tree, calling `fn` for every node. */
+function visit(node: HastNode, fn: (node: HastNode) => void): void {
+  fn(node);
+  for (const child of node.children ?? []) visit(child, fn);
+}
+
+/**
+ * Lift the page's `h1` into `file.data.title` and record the description.
+ *
+ * `DocsShell` renders the title itself, so it is taken out of the body
+ * rather than drawn twice; anything before it (a front-matter leftover, a
+ * stray comment) is dropped with it.
+ *
+ * Declared as a named plugin rather than an inline `.use(() => (tree, file)
+ * => …)`: a bare function passed to `use` is matched against the processor's
+ * plugin overloads, and an inline arrow's inferred parameter types do not
+ * always satisfy them — the call then fails to compile with `TS2769: No
+ * overload matches this call`, which is a type error in the *call*, not a
+ * runtime fault, and reads as if `unified` were broken. A named function is
+ * checked against one signature instead.
+ */
+function remarkPageMeta(options: {
+  description: { value: string };
+  headings: MarkdownHeading[];
+}) {
+  return (tree: MdastRoot, file: VFileLike): void => {
+    const children = (tree as { children?: Record<string, unknown>[] }).children ?? [];
+    const at = children.findIndex(
+      (node) => node.type === 'heading' && node.depth === 1
+    );
+    let title = '';
+    if (at !== -1) {
+      title = headingText(children[at]).trim();
+      children.splice(0, at + 1);
+    }
+    file.data.title = title;
+    options.description.value = firstParagraphText(children);
+    assignAnchors(tree, options.headings);
+  };
+}
+
 export function renderMarkdown(source: string): MarkdownPage {
   const headings: MarkdownHeading[] = [];
-  let description = '';
+  const description = { value: '' };
 
   const processor = unified()
     .use(remarkParse)
     .use(remarkGfm)
-    .use(() => (tree, file) => {
-      /*
-       * The `h1` is the page's title. `DocsShell` renders the title
-       * itself, so it is taken out of the body rather than drawn twice;
-       * anything before it (a front-matter leftover, a stray comment) is
-       * dropped with it.
-       */
-      const children = (tree as { children?: Record<string, unknown>[] }).children ?? [];
-      const at = children.findIndex(
-        (node) => node.type === 'heading' && node.depth === 1
-      );
-      let title = '';
-      if (at !== -1) {
-        title = headingText(children[at]).trim();
-        children.splice(0, at + 1);
-      }
-      file.data.title = title;
-      description = firstParagraphText(children);
-      assignAnchors(tree, headings);
-    })
+    .use(remarkPageMeta, { description, headings })
     .use(remarkRehype)
+    .use(rehypeDocsAssetBasePath)
     .use(rehypeStringify);
 
   const file = processor.processSync(source);
@@ -182,7 +263,7 @@ export function renderMarkdown(source: string): MarkdownPage {
 
   return {
     title,
-    description,
+    description: description.value,
     html: String(file.value ?? ''),
     headings,
     toc: headings.map((heading) => ({

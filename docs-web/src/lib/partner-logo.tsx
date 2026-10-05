@@ -2,13 +2,17 @@
 
 import { useState } from 'react';
 
+import { withDocsBasePath } from '@/lib/docs-base-path';
+
 /**
  * The partner marks, served from `public/img/partners/`.
  *
- * Root-relative and outside `/about/`, so the URL cannot be confused with
- * the SPA's own routes when the page is framed.
+ * The prefix keeps them reachable: the about page is served at
+ * `/docs-content/about/…`, so a bare `/img/partners/…` misses and the Go SPA
+ * fallback hands back `index.html` — which the browser rejects as an image,
+ * leaving the wall blank.
  */
-const PARTNER_LOGO_DIR = '/img/partners';
+const PARTNER_LOGO_DIR = withDocsBasePath('/img/partners');
 
 /**
  * One partner's mark, with the site's own monogram as the safety net.

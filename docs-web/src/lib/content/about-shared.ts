@@ -1,3 +1,4 @@
+import { withDocsBasePath } from '../docs-base-path';
 import type { DocsLocale } from '../i18n';
 
 /**
@@ -247,8 +248,10 @@ export const PARTNER_GROUP_LABELS: Record<
  * The founder's portrait, served from `public/about-assets/`.
  *
  * Root-relative and outside `/about/`, so the URL cannot be confused with
- * the SPA's own `/about` route when the page is framed.
+ * the SPA's own `/about` route when the page is framed. It does need the
+ * `basePath` the export is served under — without it the browser asks for
+ * `/about-assets/founder.jpg`, the Go SPA fallback answers with
+ * `index.html`, and the portrait silently fails to render.
  */
-
-export const FOUNDER_AVATAR = '/about-assets/founder.jpg';
+export const FOUNDER_AVATAR = withDocsBasePath('/about-assets/founder.jpg');
 

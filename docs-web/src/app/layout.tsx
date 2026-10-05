@@ -3,12 +3,16 @@ import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 import { RootProvider } from 'fumadocs-ui/provider/next';
 import { DocsSearchDialog } from '@/lib/docs-search';
+import { withDocsBasePath } from '@/lib/docs-base-path';
 
 /**
- * The docs site is served from the same origin as the SPA (`/docs/<lang>/`),
- * so it can reuse `/logo.png`. The `?v=` suffix must be bumped together with
- * `LOGO_ASSET_VERSION` in `web/src/lib/constants.ts` — it is what evicts an
- * already-cached copy in the browser.
+ * Favicon for the docs site.
+ *
+ * It has to carry the basePath: the export is served at `/docs-content/…`
+ * (see `next.config.mjs`), so a bare `/logo.png` would miss and the SPA
+ * fallback would answer with `index.html`. The `?v=` suffix must be bumped
+ * together with `LOGO_ASSET_VERSION` in `web/src/lib/constants.ts` — it is
+ * what evicts an already-cached copy in the browser.
  *
  * This also covers the standalone case (`/docs/zh/` opened directly): the SPA
  * shell deliberately ships no `favicon.ico` (see `web/index.html`), so without
@@ -17,8 +21,8 @@ import { DocsSearchDialog } from '@/lib/docs-search';
  */
 export const metadata: Metadata = {
   icons: {
-    icon: [{ url: '/logo.png?v=3', type: 'image/png' }],
-    apple: [{ url: '/logo.png?v=3' }],
+    icon: [{ url: withDocsBasePath('/logo.png?v=3'), type: 'image/png' }],
+    apple: [{ url: withDocsBasePath('/logo.png?v=3') }],
   },
 };
 
