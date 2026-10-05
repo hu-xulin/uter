@@ -26,7 +26,7 @@ import {
 } from '@/components/data-table'
 import { GroupBadge } from '@/components/group-badge'
 import { StatusBadge } from '@/components/status-badge'
-import { getLobeIcon } from '@/lib/lobe-icon'
+import { colorIconName, getLobeIcon } from '@/lib/lobe-icon'
 
 import { parseTags } from '../lib/filters'
 import type { PricingModel } from '../types'
@@ -71,7 +71,9 @@ export function usePricingColumns(
       cell: ({ row }) => {
         const model = row.original
         const modelIconKey = model.icon || model.vendor_icon
-        const modelIcon = modelIconKey ? getLobeIcon(modelIconKey, 14) : null
+        const modelIcon = modelIconKey
+          ? getLobeIcon(colorIconName(modelIconKey), 14)
+          : null
 
         return (
           <div className='flex max-w-full min-w-0 items-center gap-2'>
