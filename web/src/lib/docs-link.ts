@@ -151,6 +151,32 @@ export function toDocsSplat(raw: string | undefined): string | null {
 }
 
 /**
+ * The splat for the **address bar**, without a trailing slash.
+ *
+ * The export is built with `trailingSlash: true` (`docs-web/next.config.mjs`),
+ * so the framed site — and therefore every path it reports over
+ * `postMessage` — carries a trailing slash, and {@link toDocsSplat} hands
+ * that slash straight through. That is exactly right for the iframe's
+ * `src`: the content mount is a directory tree, so `/docs-content/docs/zh/…/model-testing`
+ * 301-redirects to `…/model-testing/` and only the slashed form resolves
+ * against `index.html` without a round trip.
+ *
+ * It is wrong for the URL the reader sees. `/docs/zh/guide/wiki/model-testing/`
+ * is the SPA's own route, not a directory, so the slash buys nothing there
+ * and only makes every shared link longer. This strips it, so the reader
+ * sees `/docs/zh/guide/wiki/model-testing`.
+ *
+ * The locale root is left alone: `zh` would strip to an empty splat, and
+ * `/docs/zh` is already the shortest honest form for it.
+ */
+export function toDocsHostSplat(raw: string | undefined): string | null {
+  const splat = toDocsSplat(raw)
+  if (!splat) return null
+  const trimmed = splat.replace(/\/+$/, '')
+  return trimmed === '' ? splat : trimmed
+}
+
+/**
  * Whether an href resolves to the bundled docs entry the SPA renders
  * itself ({@link DOCS_ENTRY_PATH}) rather than an admin-configured
  * destination.

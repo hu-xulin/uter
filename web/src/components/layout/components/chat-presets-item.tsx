@@ -59,7 +59,7 @@ import {
   DOCS_ENTRY_PATH,
   docsPathFor,
   resolveDocsLocaleCode,
-  toDocsSplat,
+  toDocsHostSplat,
 } from '@/lib/docs-link'
 import { handleServerError } from '@/lib/handle-server-error'
 
@@ -337,8 +337,10 @@ export function ChatPresetsItem({ item }: { item: NavChatPresets }) {
         : `${docsPathFor(locale)}apps/`
       // `target` is the framed content path; route to the clean host URL
       // `/docs/<lang>/<page>` (the `/docs/$` splat) so the page reopens
-      // from a shareable, encoding-free link.
-      const splat = toDocsSplat(target)
+      // from a shareable, encoding-free link. The host form drops the
+      // trailing slash the static mount needs, so the address bar reads
+      // `/docs/zh/apps/…`.
+      const splat = toDocsHostSplat(target)
       if (splat) {
         navigate({ to: '/docs/$', params: { _splat: splat } })
       } else {

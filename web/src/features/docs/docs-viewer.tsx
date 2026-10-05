@@ -30,7 +30,7 @@ import {
   isBundledDocsHref,
   resolveDocsHref,
   resolveDocsLocaleCode,
-  toDocsSplat,
+  toDocsHostSplat,
 } from '@/lib/docs-link'
 
 /**
@@ -104,27 +104,35 @@ export function DocsViewer({ initialHostPath }: DocsViewerProps) {
   // instead of a redirect.
   const docsLocale = resolveDocsLocaleCode(i18n.language)
 
-  // The part after `/docs/` — e.g. `zh/api/audio-openai/`. Derived purely
+  // The part after `/docs/` — e.g. `zh/api/audio-openai`. Derived purely
   // from the route (the `/docs/$` splat) or, when the entry was opened bare,
   // from the locale landing. It is the single source of truth for both the
   // iframe source and the mirrored host URL, so a frame-driven navigation and
   // a UI-language switch both just rewrite this one string + the URL.
+  //
+  // It is kept in the **host** form, without a trailing slash, because it is
+  // the address the reader sees and shares; the frame's own `src` re-adds the
+  // slash below, which the static directory mount requires.
   const hostSplat = useMemo(() => {
-    const fromRoute = initialHostPath ? toDocsSplat(initialHostPath) : null
+    const fromRoute = initialHostPath ? toDocsHostSplat(initialHostPath) : null
     if (fromRoute) return fromRoute
     return (
-      toDocsSplat(docsLandingPathFor(docsLocale)) ??
+      toDocsHostSplat(docsLandingPathFor(docsLocale)) ??
       `${docsLocale}/${DOCS_LANDING_SEGMENT}`
     )
   }, [initialHostPath, docsLocale])
 
-  const frameSrc = `${DOCS_CONTENT_PREFIX}/${hostSplat}`
+  // The content mount is a directory tree, so the frame's `src` must keep the
+  // trailing slash `/docs-content/docs/<lang>/…/` — the unslashed form 301s.
+  const frameSrc = `${DOCS_CONTENT_PREFIX}/${hostSplat}/`
 
   // Switching the UI language re-points the frame at the same page in
   // the other locale — both locales ship the same page tree — so the
   // reader stays where they were instead of being bounced back to the
   // opening page. We swap only the locale segment of the splat and mirror
-  // it into the host URL.
+  // it into the host URL. `hostSplat` is already slash-free, so a reader
+  // sitting on the locale root gets the bare `zh` rather than a trailing
+  // `zh/`.
   const previousLocale = useRef(docsLocale)
   useEffect(() => {
     if (previousLocale.current === docsLocale) return
@@ -133,7 +141,7 @@ export function DocsViewer({ initialHostPath }: DocsViewerProps) {
     const rest = idx === -1 ? '' : hostSplat.slice(idx + 1)
     navigate({
       to: '/docs/$',
-      params: { _splat: `${docsLocale}/${rest}` },
+      params: { _splat: rest ? `${docsLocale}/${rest}` : docsLocale },
       replace: true,
     })
   }, [docsLocale, hostSplat, navigate])
@@ -162,13 +170,15 @@ export function DocsViewer({ initialHostPath }: DocsViewerProps) {
       if (!data || typeof data !== 'object') return
 
       if (data.type === ROUTE_MESSAGE) {
-        const splat = toDocsSplat(
+        const splat = toDocsHostSplat(
           typeof data.path === 'string' ? data.path : undefined
         )
         if (!splat || splat === hostSplat) return
         // Mirror the framed page into the host URL so a reload lands
         // back on it. `replace` keeps the back button meaning "leave
-        // the docs" instead of stepping through every page read.
+        // the docs" instead of stepping through every page read. The
+        // splat is the *host* form (no trailing slash) — the frame's
+        // own src keeps the slash the static mount needs.
         navigate({ to: '/docs/$', params: { _splat: splat }, replace: true })
         return
       }
