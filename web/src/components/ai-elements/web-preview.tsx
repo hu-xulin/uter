@@ -224,6 +224,13 @@ export const WebPreviewBody = ({
 
 export type WebPreviewConsoleProps = ComponentProps<'div'> & {
   logs?: Array<{
+    /**
+     * 可选的稳定唯一标识。控制台日志是持续追加的列表，提供 id 可让 React
+     * 精确复用/卸载行节点，避免同毫秒同 level 同 message 的日志产生重复 key。
+     * 不传时回退到「时间戳 + level + message」派生键（对绝大多数场景已足够，
+     * 仅在同毫秒产生完全相同内容时可能重复）。
+     */
+    id?: string
     level: 'log' | 'warn' | 'error'
     message: string
     timestamp: Date
@@ -272,7 +279,7 @@ export const WebPreviewConsole = ({
           {logs.length === 0 ? (
             <p className='text-muted-foreground'>{t('No console output')}</p>
           ) : (
-            logs.map((log, index) => (
+            logs.map((log) => (
               <div
                 className={cn(
                   'text-xs',
@@ -280,7 +287,8 @@ export const WebPreviewConsole = ({
                   log.level === 'warn' && 'text-warning',
                   log.level === 'log' && 'text-foreground'
                 )}
-                key={`${log.timestamp.getTime()}-${index}`}
+                // 优先用调用方提供的稳定 id；缺失时回退派生键（见 WebPreviewConsoleProps.logs.id 注释）。
+                key={log.id ?? `${log.timestamp.getTime()}-${log.level}-${log.message}`}
               >
                 <span className='text-muted-foreground'>
                   {dayjs(log.timestamp).format('HH:mm:ss')}

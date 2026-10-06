@@ -54,7 +54,7 @@ func configureSSRFTestFetchSetting(t *testing.T) {
 	fetchSetting.IpFilterMode = false
 	fetchSetting.DomainList = nil
 	fetchSetting.IpList = nil
-	fetchSetting.AllowedPorts = []string{"80", "443"}
+	fetchSetting.AllowedPorts = []string{"80", "443", "3128"}
 	fetchSetting.ApplyIPFilterForDomain = true
 }
 
@@ -216,10 +216,10 @@ func TestGetSSRFProtectedHTTPClientFallsBackToDefaultClientWhenProtectionDisable
 
 func TestProtectedFetchRoundTripperUsesConfiguredProxy(t *testing.T) {
 	configureSSRFTestFetchSetting(t)
-	proxyURL := mustParseURL(t, "http://127.0.0.1:3128")
+	proxyURL := mustParseURL(t, "http://8.8.8.8:3128")
 	var dialed []string
 	client := newProtectedFetchHTTPClientWithProxy(
-		staticSSRFResolver{},
+		staticSSRFResolver{"8.8.8.8": {{IP: net.ParseIP("8.8.8.8")}}},
 		func(ctx context.Context, network, address string) (net.Conn, error) {
 			dialed = append(dialed, address)
 			return nil, errors.New("stop after proxy dial")
@@ -240,7 +240,7 @@ func TestProtectedFetchRoundTripperUsesConfiguredProxy(t *testing.T) {
 	resp, err := client.Do(req)
 	require.Error(t, err)
 	require.Nil(t, resp)
-	require.Equal(t, []string{"127.0.0.1:3128"}, dialed)
+	require.Equal(t, []string{"8.8.8.8:3128"}, dialed)
 }
 
 func TestProtectedFetchRoundTripperRejectsPrivateTargetBeforeProxy(t *testing.T) {

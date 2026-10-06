@@ -62,9 +62,13 @@ export type ModelMetadataFilter = 'has' | 'none'
  */
 export type ModelPricingFilter =
   | 'standard'
+  | 'dynamic'
+  | 'special_expression'
   | 'expression'
   | 'unset'
   | 'unconfigured'
+  | 'loading'
+  | 'error'
 
 export interface Model {
   square_state?: ModelSquareState

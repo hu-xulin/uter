@@ -185,6 +185,8 @@ function ChatRouteComponent() {
       key={iframeSrc}
       className='h-full w-full border-0'
       allow='camera; microphone'
+      // 同源应用内嵌：预设聊天页需脚本执行 + 同源访问（读父页 origin/storage）。
+      sandbox='allow-scripts allow-same-origin allow-forms allow-popups allow-modals'
       title={`Chat preset: ${preset.name}`}
     />
   )

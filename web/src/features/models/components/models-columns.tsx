@@ -143,6 +143,17 @@ export function useModelsColumns(
       },
     },
     {
+      // Virtual column backing the "Model" (metadata) toolbar faceted filter.
+      // It carries no data and is hidden from the table (see initialColumnVisibility
+      // in models-table.tsx); it only exists so the toolbar's filter chip can read
+      // and write its filter value through the table's column filter state.
+      id: 'metadata',
+      header: t('Model'),
+      enableSorting: false,
+      enableHiding: false,
+      cell: () => null,
+    },
+    {
       id: 'pricing',
       header: t('Pricing'),
       meta: { label: t('Pricing') },

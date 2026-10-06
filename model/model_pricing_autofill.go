@@ -146,6 +146,15 @@ func AutoFillOfficialPricing(
 	}
 	sort.Strings(ordered)
 
+	// Channel model names often carry irregular suffixes (dates, versions,
+	// regions) after the base model name. Build a matcher so a channel name like
+	// "gpt-4o-2024-05-13" still resolves to the preset's "gpt-4o" price.
+	presetKeys := make([]string, 0, len(preset))
+	for name := range preset {
+		presetKeys = append(presetKeys, name)
+	}
+	matcher := NewModelNameMatchCatalog(presetKeys)
+
 	writeErr := mutateModelPricingOptions(func(_ *gorm.DB, values map[string]map[string]any) error {
 		for _, name := range ordered {
 			if optOut[name] {
@@ -158,6 +167,13 @@ func AutoFillOfficialPricing(
 				continue
 			}
 			ratios, known := preset[name]
+			if !known {
+				// Fall back to a robust fuzzy match before giving up: the base
+				// model name is a prefix of the channel name with a suffix.
+				if matched, ok := matcher.Match(name); ok {
+					ratios, known = preset[matched], true
+				}
+			}
 			if !known {
 				result.SkippedUpstream++
 				continue

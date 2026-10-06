@@ -177,20 +177,19 @@ export function PromptInputProvider({
   const openRef = useRef<() => void>(() => {})
 
   const add = useCallback((files: File[] | FileList) => {
-    const incoming = Array.from(files)
+    const incoming = [...files]
     if (incoming.length === 0) return
 
-    setAttachements((prev) =>
-      prev.concat(
-        incoming.map((file) => ({
-          id: nanoid(),
-          type: 'file' as const,
-          url: URL.createObjectURL(file),
-          mediaType: file.type,
-          filename: file.name,
-        }))
-      )
-    )
+    setAttachements((prev) => [
+      ...prev,
+      ...incoming.map((file) => ({
+        id: nanoid(),
+        type: 'file' as const,
+        url: URL.createObjectURL(file),
+        mediaType: file.type,
+        filename: file.name,
+      })),
+    ])
   }, [])
 
   const remove = useCallback((id: string) => {
@@ -509,7 +508,7 @@ export const PromptInput = ({
 
   const addLocal = useCallback(
     (fileList: File[] | FileList) => {
-      const incoming = Array.from(fileList)
+      const incoming = [...fileList]
       const accepted = incoming.filter((f) => matchesAccept(f))
       if (incoming.length && accepted.length === 0) {
         onError?.({
@@ -552,7 +551,7 @@ export const PromptInput = ({
             filename: file.name,
           })
         }
-        return prev.concat(next)
+        return [...prev, ...next]
       })
     },
     [matchesAccept, maxFiles, maxFileSize, onError, t]
@@ -760,9 +759,12 @@ export const PromptInput = ({
             controller.textInput.clear()
           }
         }
-      } catch (_error) {
+      } catch {
         // Don't clear on error - user may want to retry
       }
+    }).catch(() => {
+      // Blob 转 dataURL 失败：吞掉 rejection 避免 unhandled promise rejection，
+      // 不清空附件以便用户重试。
     })
   }
 
@@ -843,7 +845,7 @@ export const PromptInputTextarea = ({
       e.preventDefault()
       const lastAttachment =
         attachments.files.length > 0
-          ? attachments.files[attachments.files.length - 1]
+          ? attachments.files.at(-1)
           : undefined
       if (lastAttachment) {
         attachments.remove(lastAttachment.id)
@@ -1138,7 +1140,12 @@ export const PromptInputSpeechButton = ({
       speechRecognition.onresult = (event) => {
         let finalTranscript = ''
 
-        const results = Array.from(event.results)
+        // SpeechRecognitionResultList 在类型上是类数组（ArrayLike）而非可迭代对象，
+        // 故不能直接用展开语法；Array.from 是此处唯一正确的转换方式。
+        // oxlint-disable-next-line unicorn/prefer-spread
+        const results = Array.from(event.results as ArrayLike<
+          SpeechRecognitionResult
+        >)
 
         for (const result of results) {
           if (result.isFinal) {

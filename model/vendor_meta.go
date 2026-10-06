@@ -2,6 +2,7 @@ package model
 
 import (
 	"errors"
+	"sort"
 	"strings"
 
 	"github.com/Uter-AI/Uter/common"
@@ -216,6 +217,15 @@ func searchVendorsCore(keyword string, offset, limit int, includeDefault bool, a
 		}
 		vendors = filtered
 	}
+	// 按关联模型数降序默认排序（名字升序兜底），方便与管理页（同样口径的
+	// 模型数）一一对应核对。ModelCount 是 gorm:"-"，无法下推到 SQL，故在内存排序。
+	sort.SliceStable(vendors, func(i, j int) bool {
+		if vendors[i].ModelCount != vendors[j].ModelCount {
+			return vendors[i].ModelCount > vendors[j].ModelCount
+		}
+		return strings.ToLower(vendors[i].Name) < strings.ToLower(vendors[j].Name)
+	})
+
 	// 在内存中对合并后的完整列表分页，以保证合成供应商稳定排在持久化记录之后。
 	total := int64(len(vendors))
 	end := offset + limit

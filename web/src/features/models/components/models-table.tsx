@@ -33,7 +33,7 @@ import { DEFAULT_PAGE_SIZE, CLIENT_FILTER_PAGE_SIZE } from '../constants'
 import { modelsQueryKeys, vendorsQueryKeys } from '../lib'
 import {
   classifyModelMetadata,
-  classifyModelPricing,
+  classifyPricingState,
   indexPricingByModel,
 } from '../lib/model-filters'
 import type { ModelMetadataFilter, ModelPricingFilter, ModelSquareState } from '../types'
@@ -238,6 +238,13 @@ export function ModelsTable() {
     needsClientFilter && (candidateQuery.data?.data?.items?.length ?? 0) > 0
   )
 
+  // Global fetch status for the candidate pricing; the table renders every
+  // individually-priced row with the same "Loading..." / "Failed to load"
+  // state, so the classifier reports it for each row.
+  let candidatePricingState: 'loading' | 'error' | undefined
+  if (candidatePricingQuery.isError) candidatePricingState = 'error'
+  else if (candidatePricingQuery.isLoading) candidatePricingState = 'loading'
+
   /*
    * The unfiltered page the table would show without the two client-side
    * filters. Held outside the memo so the memo — which only ever runs while a
@@ -265,12 +272,20 @@ export function ModelsTable() {
       ) {
         return false
       }
-      if (
-        pricingFilter &&
-        classifyModelPricing(pricingIndex.get(item.model_name)) !==
-          pricingFilter
-      ) {
-        return false
+      if (pricingFilter) {
+        // Matched models (name_rule !== 0) are priced per matched model and
+        // carry no row-level pricing entry, so they never match a pricing
+        // facet and are excluded while any pricing filter is active.
+        if (item.name_rule !== 0) return false
+        if (
+          classifyPricingState(
+            pricingIndex.get(item.model_name),
+            item.model_name,
+            candidatePricingState
+          ) !== pricingFilter
+        ) {
+          return false
+        }
       }
       return true
     })
@@ -284,6 +299,7 @@ export function ModelsTable() {
     pricingFilter,
     candidateQuery.data,
     candidatePricingQuery.data,
+    candidatePricingState,
     pagination.pageIndex,
     pagination.pageSize,
   ])
@@ -306,6 +322,9 @@ export function ModelsTable() {
     initialColumnVisibility: {
       description: false,
       id: false,
+      // Virtual column backing the "Model" (metadata) faceted filter; keep it
+      // out of the rendered table while still resolvable via getColumn().
+      metadata: false,
       vendor_id: false,
       name_rule: false,
       endpoints: false,
@@ -384,9 +403,19 @@ export function ModelsTable() {
             title: t('Pricing'),
             options: [
               { label: t('Standard pricing'), value: 'standard' },
-              { label: t('Custom pricing expression'), value: 'expression' },
+              { label: t('Dynamic Pricing'), value: 'dynamic' },
+              {
+                label: t('Special billing expression'),
+                value: 'special_expression',
+              },
+              {
+                label: t('Custom pricing expression'),
+                value: 'expression',
+              },
               { label: t('Pricing not set'), value: 'unset' },
               { label: t('Pricing not configured'), value: 'unconfigured' },
+              { label: t('Loading...'), value: 'loading' },
+              { label: t('Failed to load model pricing'), value: 'error' },
             ],
             singleSelect: true,
           },

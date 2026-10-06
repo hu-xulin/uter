@@ -132,6 +132,10 @@ export function TableStaggerContainer(props: StaggerContainerProps) {
   const shouldReduce = useReducedMotion()
 
   if (shouldReduce) {
+    // children 为 ReactNode，直接返回即可；此处保留 fragment 是为了与下方
+    // <motion.tbody> 分支的「返回单个 ReactNode」形状一致，避免 TS 报
+    // ReactNode | Element 的混合返回推断问题。
+    // oxlint-disable-next-line react/jsx-no-useless-fragment
     return <>{props.children}</>
   }
 

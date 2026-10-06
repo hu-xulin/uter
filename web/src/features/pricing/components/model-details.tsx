@@ -635,12 +635,10 @@ function ModelHeader(props: {
     : null
   const description = model.description || model.vendor_description || null
 
-  const sourceLabel =
-    props.pricingSource === 'channel'
-      ? props.isSuperAdmin
-        ? t('Platform price')
-        : t('Price')
-      : t('Official price')
+  let sourceLabel = t('Official price')
+  if (props.pricingSource === 'channel') {
+    sourceLabel = props.isSuperAdmin ? t('Platform price') : t('Price')
+  }
 
   return (
     <header className='pb-4'>

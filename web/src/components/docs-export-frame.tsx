@@ -108,6 +108,9 @@ export function DocsExportFrame({ src, title }: DocsExportFrameProps) {
         src={src}
         title={title}
         onLoad={syncTheme}
+        // 同源应用内嵌：需 allow-scripts 执行脚本 + allow-same-origin 才能读父页 DOM
+        // 做主题同步（postMessage 桥）。收紧 sandbox 会让主题同步失效。
+        sandbox='allow-scripts allow-same-origin'
         className='w-full border-0'
         style={{ height: `calc(100svh - ${SPA_HEADER_HEIGHT})` }}
       />

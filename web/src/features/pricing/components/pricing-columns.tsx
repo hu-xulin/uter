@@ -53,12 +53,10 @@ export function usePricingColumns(
 ): ColumnDef<PricingModel>[] {
   const { t } = useTranslation()
 
-  const sourceLabel =
-    options.pricingSource === 'channel'
-      ? options.isSuperAdmin
-        ? t('Platform price')
-        : t('Price')
-      : t('Official price')
+  let sourceLabel = t('Official price')
+  if (options.pricingSource === 'channel') {
+    sourceLabel = options.isSuperAdmin ? t('Platform price') : t('Price')
+  }
 
   return [
     // Model column

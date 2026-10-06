@@ -132,7 +132,7 @@ export function ApiInfoItemComponent(props: ApiInfoItemProps) {
             className='hidden size-7 p-0 sm:inline-flex'
             title={t('Open in New Tab')}
             render={<a href={item.url} target='_blank' rel='noreferrer' />}
-          ></Button>
+           />
         </div>
       </div>
     </div>

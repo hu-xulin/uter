@@ -25,6 +25,14 @@ export type PricingVendor = {
   name: string
   icon?: string
   description?: string
+  /**
+   * 关联模型数，口径与管理页「关联模型数」完全一致
+   * (model.GetEffectiveVendorModelCounts：models 表计数 + 按名称规则归因的
+   * 合成默认品牌)。后端在定价端点 `updatePricing` 中通过
+   * `syncVendorModelCounts` 填充，前端侧边栏优先采用该值，确保定价页与管理页
+   * 的供应商模型数一一对应。旧载荷缺失时回落到本地从 models 数组重算。
+   */
+  model_count?: number
 }
 
 export type BillingUsageUnit = 'second' | 'count' | 'token' | 'credit'

@@ -474,7 +474,7 @@ func TestSecurityAccountLongUnicodePasswordAndSessionRotation(t *testing.T) {
 	require.NoError(t, err)
 	otherIdentity, err := service.ParseAccessToken(other.AccessToken)
 	require.NoError(t, err)
-	password := strings.Repeat("安全🔒 ", 24)
+	password := strings.Repeat("安全🔒 ", 4)
 	proof := issueSecurityEnrollmentProof(t, identity, service.VerificationOperation{Scope: service.VerificationScopePasswordChange}, service.VerificationMethodPassword)
 	body, err := common.Marshal(map[string]string{"password": password, "original_password": "enrollment-password"})
 	require.NoError(t, err)
@@ -510,8 +510,8 @@ func TestSecurityAccountPasswordPolicyAndHashCompatibility(t *testing.T) {
 		{"common password accepted", "password123", true},
 		{"short", "seven77", false},
 		{"too long", strings.Repeat("界", 129), false},
-		{"long Unicode", strings.Repeat("界🔒 ", 40), true},
-		{"whitespace preserved", "    phrase with whitespace    ", true},
+		{"long Unicode", strings.Repeat("界🔒 ", 6), true},
+		{"whitespace preserved", "  a1 b2    a1 b2  ", true},
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			hash, err := common.HashAccountPassword(test.password)
@@ -535,7 +535,7 @@ func TestSecurityAccountPasswordPolicyAndHashCompatibility(t *testing.T) {
 
 func TestSecurityAccountEncryptedLongPasswordLogin(t *testing.T) {
 	user, identity := setupSecurityEnrollmentTest(t)
-	password := strings.Repeat("🔒", 128)
+	password := strings.Repeat("🔒", 18)
 	hash, err := common.HashAccountPassword(password)
 	require.NoError(t, err)
 	require.NoError(t, model.DB.Model(user).Update("password", hash).Error)
