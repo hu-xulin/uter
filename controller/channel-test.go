@@ -822,7 +822,7 @@ func buildTestRequest(model string, endpointType string, channel *model.Channel,
 				Messages: []dto.ClaudeMessage{
 					{
 						Role:    "user",
-						Content: "hi",
+						Content: channelTestChatPrompt(model),
 					},
 				},
 			}
@@ -831,7 +831,7 @@ func buildTestRequest(model string, endpointType string, channel *model.Channel,
 				Contents: []dto.GeminiChatContent{
 					{
 						Role:  "user",
-						Parts: []dto.GeminiPart{{Text: "hi"}},
+						Parts: []dto.GeminiPart{{Text: channelTestChatPrompt(model)}},
 					},
 				},
 				GenerationConfig: dto.GeminiChatGenerationConfig{
@@ -884,6 +884,22 @@ func buildTestRequest(model string, endpointType string, channel *model.Channel,
 			Model:  model,
 			Input:  json.RawMessage(`[{"role":"user","content":"hi"}]`),
 			Stream: lo.ToPtr(isStream),
+		}
+	}
+
+	// Image generation models. `testChannel` picks
+	// `/v1/images/generations` (and so `RelayModeImagesGenerations`) for these
+	// from the same `common.IsImageGenerationModel` check, but this function
+	// fell through to the chat branch below and returned a
+	// `GeneralOpenAIRequest` — so the type assertion in `testChannel` failed
+	// and every image model was reported as "invalid image request type"
+	// without a request ever reaching the upstream.
+	if common.IsImageGenerationModel(model) {
+		return &dto.ImageRequest{
+			Model:  model,
+			Prompt: "a cute cat",
+			N:      lo.ToPtr(uint(1)),
+			Size:   channelTestImageSize(model),
 		}
 	}
 
