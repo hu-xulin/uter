@@ -69,7 +69,7 @@ function FooterLinkItem(props: { link: FooterLink }) {
         href={props.link.href}
         target='_blank'
         rel='noopener noreferrer'
-        className='text-muted-foreground hover:text-foreground text-sm transition-colors duration-200'
+        className='text-muted-foreground hover:text-foreground text-base transition-colors duration-200'
       >
         {label}
       </a>
@@ -79,7 +79,7 @@ function FooterLinkItem(props: { link: FooterLink }) {
   return (
     <Link
       to={props.link.href}
-      className='text-muted-foreground hover:text-foreground text-sm transition-colors duration-200'
+      className='text-muted-foreground hover:text-foreground text-base transition-colors duration-200'
     >
       {label}
     </Link>
@@ -179,7 +179,7 @@ function LegalLinks(props: { leadingSeparator?: boolean }) {
           <a
             href={item.href}
             onClick={(event) => openInApp(event, item.id)}
-            className='hover:text-foreground transition-colors duration-200'
+            className='hover:text-foreground text-base transition-colors duration-200'
           >
             {item.label}
           </a>
@@ -218,7 +218,7 @@ function ProjectAttribution(props: {
         href='https://uter.ai'
         target='_blank'
         rel='noopener noreferrer'
-        className='text-foreground/70 hover:text-foreground font-medium transition-colors'
+        className='text-foreground/70 hover:text-foreground text-base font-medium transition-colors'
       >
         {props.brandName ?? t('Uter')}
       </a>
@@ -229,7 +229,7 @@ function ProjectAttribution(props: {
     return content
   }
   return (
-    <div className='text-muted-foreground/45 text-center text-xs sm:text-right'>
+    <div className='text-muted-foreground/45 text-center text-sm sm:text-right'>
       {content}
     </div>
   )
@@ -317,7 +317,7 @@ export function Footer(props: FooterProps) {
               className='custom-footer text-muted-foreground min-w-0 text-center text-sm sm:text-left'
               content={footerHtml}
             />
-            <div className='border-border/60 text-muted-foreground/45 flex w-full flex-wrap items-center justify-center gap-x-3 gap-y-1 border-t pt-4 text-xs sm:w-auto sm:justify-end sm:border-t-0 sm:border-l sm:pt-0 sm:pl-5'>
+            <div className='border-border/60 text-muted-foreground/45 flex w-full flex-wrap items-center justify-center gap-x-3 gap-y-1 border-t pt-4 text-sm sm:w-auto sm:justify-end sm:border-t-0 sm:border-l sm:pt-0 sm:pl-5'>
               <LegalLinks />
               <ProjectAttribution
                 currentYear={currentYear}
@@ -345,11 +345,11 @@ export function Footer(props: FooterProps) {
                 alt={brandName}
                 className='size-7 rounded-lg object-contain'
               />
-              <span className='font-brand text-sm font-semibold tracking-tight'>
+              <span className='font-brand text-base font-semibold tracking-tight'>
                 {brandName}
               </span>
             </Link>
-            <p className='text-muted-foreground/60 mt-3 max-w-[200px] text-xs leading-relaxed'>
+            <p className='text-muted-foreground/60 mt-3 max-w-[200px] text-sm leading-relaxed'>
               {t('Powerful API Management Platform')}
             </p>
           </div>
@@ -359,7 +359,7 @@ export function Footer(props: FooterProps) {
             <div className='grid grid-cols-3 gap-8 md:gap-16'>
               {displayColumns.map((column) => (
                 <div key={column.title}>
-                  <p className='text-muted-foreground/50 mb-3 text-xs font-medium tracking-wider uppercase'>
+                  <p className='text-muted-foreground/50 mb-3 text-sm font-medium tracking-wider uppercase'>
                     {t(column.title)}
                   </p>
                   <ul className='space-y-2.5'>
@@ -378,7 +378,7 @@ export function Footer(props: FooterProps) {
         {/* Copyright + optional legal links inline on the left, project
             attribution on the right; wraps on narrow screens. */}
         <div className='border-border/30 mt-12 flex flex-col items-center justify-between gap-x-3 gap-y-2 border-t pt-6 sm:flex-row'>
-          <div className='text-muted-foreground/40 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-xs sm:justify-start'>
+          <div className='text-muted-foreground/40 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-sm sm:justify-start'>
             <span>
               &copy; {currentYear} {brandName}.{' '}
               {props.copyright ?? t('footer.defaultCopyright')}
