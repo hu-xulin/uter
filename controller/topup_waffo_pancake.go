@@ -475,6 +475,24 @@ func WaffoPancakeWebhook(c *gin.Context) {
 		return
 	}
 
+	// 店铺归属校验（关键防线）。验签的信任锚是 SDK 内置的**全局**公钥：test/prod
+	// 两把公钥由库硬编码、所有商户共用（见 SDK `builtinTestPublicKey`）。
+	// 因此「验签通过」只能证明事件由 Pancake 签名，**不能**证明事件是发给本店的：
+	// 攻击者可注册自己的（test）商户、自造一条 order.completed，把
+	// orderMerchantExternalID 指向自己在本站的 pending 订单、buyerIdentity 指向
+	// 自己，再用全局 test 公钥可验签的报文重放到 /webhook/test，即可免费充值。
+	// 唯一可靠的分辨依据是事件归属的店铺必须等于本实例绑定的店铺。
+	if configuredStoreID := strings.TrimSpace(setting.WaffoPancakeStoreID); configuredStoreID == "" ||
+		!strings.EqualFold(strings.TrimSpace(event.StoreID), configuredStoreID) {
+		logger.LogError(c.Request.Context(), fmt.Sprintf(
+			"Waffo Pancake webhook 店铺归属校验失败 expected_store_id=%q actual_store_id=%q event_id=%s order_id=%s client_ip=%s",
+			configuredStoreID, event.StoreID, event.ID, event.Data.OrderID, c.ClientIP(),
+		))
+		// 200 OK：伪造事件不应触发 Pancake 重投（与身份不匹配分支一致）。
+		c.String(http.StatusOK, "OK")
+		return
+	}
+
 	logger.LogInfo(c.Request.Context(), fmt.Sprintf("Waffo Pancake webhook 验签成功 event_type=%s event_id=%s order_id=%s client_ip=%s", event.NormalizedEventType(), event.ID, event.Data.OrderID, c.ClientIP()))
 	if event.NormalizedEventType() != "order.completed" {
 		c.String(http.StatusOK, "OK")
@@ -519,6 +537,24 @@ func WaffoPancakeWebhook(c *gin.Context) {
 		))
 		c.String(http.StatusOK, "OK")
 		return
+	}
+
+	// 金额校验：回调实付金额必须与本地订单应付金额一致。缺失/不匹配一律拒绝
+	// （fail-closed）——只验签不验金额时，实付与订单金额脱钩，存在少付多充风险。
+	// 下单金额由 formatWaffoPancakeAmount 生成，这里用同一函数反向比对。
+	if topUp := model.GetTopUpByTradeNo(tradeNo); topUp != nil {
+		expected := formatWaffoPancakeAmount(topUp.Money)
+		paid := strings.TrimSpace(event.Data.Amount)
+		paidDec, paidErr := decimal.NewFromString(paid)
+		expectedDec, expectedErr := decimal.NewFromString(expected)
+		if paid == "" || paidErr != nil || expectedErr != nil || !paidDec.Equal(expectedDec) {
+			logger.LogError(c.Request.Context(), fmt.Sprintf(
+				"Waffo Pancake webhook 金额不匹配 trade_no=%s 回调金额=%q 期望金额=%s event_id=%s order_id=%s client_ip=%s",
+				tradeNo, paid, expected, event.ID, event.Data.OrderID, c.ClientIP(),
+			))
+			c.String(http.StatusOK, "OK")
+			return
+		}
 	}
 
 	LockOrder(tradeNo)

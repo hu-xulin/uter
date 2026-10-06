@@ -109,3 +109,31 @@ func TestOrgDataScopeDepartmentFilterFailsClosed(t *testing.T) {
 		t.Fatal("NoDepartmentFilter must not be empty: empty means no filter in list queries")
 	}
 }
+
+// Usernames()/UserIDs() 必须与 DepartmentFilter() 同样 fail-closed。
+//
+// 这是一条被测试盲区放过的真实缺陷：原实现只按 `s.Department == ""` 分流，
+// 未分配部门的部门管理员（NoDepartment=true 且 Department 亦为空）会落到
+// 「按整个组织查成员」分支，把「什么都看不到」退化成「看到全组织」。
+// 修复后 NoDepartment 在查询数据库之前就短路返回哨兵，因此本用例无需 DB。
+func TestOrgDataScopeMemberListsFailClosedWithoutDepartment(t *testing.T) {
+	scope := OrgDataScope{OrgID: 7, NoDepartment: true}
+
+	names, err := scope.Usernames()
+	if err != nil {
+		t.Fatalf("Usernames() error = %v", err)
+	}
+	if len(names) != 1 || names[0] != model.NoOrgMemberUsername {
+		t.Errorf("Usernames() = %v, want [%q]（未分配部门必须返回空集哨兵，而非整个组织）",
+			names, model.NoOrgMemberUsername)
+	}
+
+	ids, err := scope.UserIDs()
+	if err != nil {
+		t.Fatalf("UserIDs() error = %v", err)
+	}
+	if len(ids) != 1 || ids[0] != model.NoOrgMemberId {
+		t.Errorf("UserIDs() = %v, want [%d]（未分配部门必须返回空集哨兵，而非整个组织）",
+			ids, model.NoOrgMemberId)
+	}
+}

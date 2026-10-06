@@ -42,7 +42,8 @@ func getZhipuToken(apikey string) string {
 
 	split := strings.Split(apikey, ".")
 	if len(split) != 2 {
-		common.SysLog("invalid zhipu key: " + apikey)
+		// 绝不打印完整上游 key：渠道凭证以明文落到系统日志即可被日志采集链路直接盗用。
+		common.SysLog("invalid zhipu key format: " + common.MaskSensitiveInfo(apikey))
 		return ""
 	}
 

@@ -505,8 +505,7 @@ func GetUserOAuthBindingsByAdmin(c *gin.Context) {
 		return
 	}
 
-	myRole := c.GetInt("role")
-	if !canManageTargetRole(myRole, targetUser.Role) {
+	if !canManageTargetUser(c, targetUser) {
 		common.ApiErrorMsg(c, "no permission")
 		return
 	}
@@ -584,8 +583,7 @@ func UnbindCustomOAuthByAdmin(c *gin.Context) {
 		return
 	}
 
-	myRole := c.GetInt("role")
-	if !canManageTargetRole(myRole, targetUser.Role) {
+	if !canManageTargetUser(c, targetUser) {
 		common.ApiErrorMsg(c, "no permission")
 		return
 	}

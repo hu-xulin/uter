@@ -481,6 +481,13 @@ func findOrCreateOAuthUser(c *gin.Context, provider oauth.Provider, oauthUser *o
 			}
 			return nil, err
 		}
+		// 邮箱域名/别名限制必须与邮箱注册、邮箱绑定走同一套校验，否则站点开启
+		// 白名单后，仍可借第三方 OAuth 用任意域名（或 + 别名）新建账号，策略被完全绕过。
+		// 校验失败原样上抛，由 writeSecurityOperationError 映射为
+		// EMAIL_DOMAIN_NOT_SUPPORTED / EMAIL_ALIAS_NOT_SUPPORTED。
+		if _, err := service.ValidateAccountEmail(user.Email); err != nil {
+			return nil, err
+		}
 	}
 	user.Role = common.RoleCommonUser
 	user.Status = common.UserStatusEnabled

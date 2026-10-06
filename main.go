@@ -168,11 +168,18 @@ func main() {
 	}
 
 	if os.Getenv("ENABLE_PPROF") == "true" {
+		// 默认只监听回环地址：pprof 无鉴权，且能读到 goroutine 栈、堆快照与
+		// cmdline（可能含环境变量/密钥），监听 0.0.0.0 等于把它暴露给全网。
+		// 容器内确需从外部抓取时，用 PPROF_LISTEN_ADDR 显式放开。
+		pprofAddr := strings.TrimSpace(os.Getenv("PPROF_LISTEN_ADDR"))
+		if pprofAddr == "" {
+			pprofAddr = "127.0.0.1:8005"
+		}
 		gopool.Go(func() {
-			log.Println(http.ListenAndServe("0.0.0.0:8005", nil))
+			log.Println(http.ListenAndServe(pprofAddr, nil))
 		})
 		go common.Monitor()
-		common.SysLog("pprof enabled")
+		common.SysLog("pprof enabled on " + pprofAddr)
 	}
 
 	err = common.StartPyroScope()

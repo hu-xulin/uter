@@ -312,6 +312,12 @@ func (s OrgDataScope) Usernames() ([]string, error) {
 	if s.OrgID == 0 {
 		return nil, nil
 	}
+	// NoDepartment（部门管理员未分配部门）没有任何可见数据，必须直接返回空集哨兵。
+	// 若落到下面的 `s.Department == ""` 分支会退化成「整个组织」——正是 NoDepartment
+	// 要防的越权，与 DepartmentFilter() 的 fail-closed 语义保持一致。
+	if s.NoDepartment {
+		return []string{model.NoOrgMemberUsername}, nil
+	}
 	var (
 		names []string
 		err   error
@@ -336,6 +342,10 @@ func (s OrgDataScope) Usernames() ([]string, error) {
 func (s OrgDataScope) UserIDs() ([]int, error) {
 	if s.OrgID == 0 {
 		return nil, nil
+	}
+	// 同 Usernames：NoDepartment 必须 fail-closed 返回哨兵，不得退化成整个组织。
+	if s.NoDepartment {
+		return []int{model.NoOrgMemberId}, nil
 	}
 	var (
 		ids []int

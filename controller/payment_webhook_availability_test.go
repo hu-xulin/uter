@@ -117,22 +117,36 @@ func TestWaffoPancakeWebhookEnabledRequiresTopUpAndWebhookConfig(t *testing.T) {
 	confirmPaymentComplianceForTest(t)
 	originalMerchantID := setting.WaffoPancakeMerchantID
 	originalPrivateKey := setting.WaffoPancakePrivateKey
+	originalStoreID := setting.WaffoPancakeStoreID
 	originalProductID := setting.WaffoPancakeProductID
 	t.Cleanup(func() {
 		setting.WaffoPancakeMerchantID = originalMerchantID
 		setting.WaffoPancakePrivateKey = originalPrivateKey
+		setting.WaffoPancakeStoreID = originalStoreID
 		setting.WaffoPancakeProductID = originalProductID
 	})
 
-	// Presence of all three credentials enables the gateway. Webhook public
+	// Presence of all four credentials enables the gateway. Webhook public
 	// keys are bundled in the SDK and there is no separate Enabled toggle —
-	// clear any of the three fields to disable.
+	// clear any of the four fields to disable.
+	//
+	// StoreID is mandatory: the SDK verification key is a global shared public
+	// key that cannot attribute an event to a merchant, so StoreID is the only
+	// binding that separates a genuine in-store event from a forged one signed
+	// with an attacker's own merchant account.
 	setting.WaffoPancakeMerchantID = ""
 	setting.WaffoPancakePrivateKey = "private"
+	setting.WaffoPancakeStoreID = "store"
 	setting.WaffoPancakeProductID = "product"
 	require.False(t, isWaffoPancakeWebhookEnabled())
 
 	setting.WaffoPancakeMerchantID = "merchant"
+	require.True(t, isWaffoPancakeWebhookEnabled())
+
+	setting.WaffoPancakeStoreID = ""
+	require.False(t, isWaffoPancakeWebhookEnabled())
+
+	setting.WaffoPancakeStoreID = "store"
 	require.True(t, isWaffoPancakeWebhookEnabled())
 
 	setting.WaffoPancakeProductID = ""

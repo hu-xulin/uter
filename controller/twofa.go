@@ -211,8 +211,7 @@ func AdminDisable2FA(c *gin.Context) {
 		return
 	}
 
-	myRole := c.GetInt("role")
-	if !canManageTargetRole(myRole, targetUser.Role) {
+	if !canManageTargetUser(c, targetUser) {
 		c.JSON(http.StatusOK, gin.H{
 			"success": false,
 			"message": i18n.T(c, i18n.MsgTwofaInsufficient_privilege),
