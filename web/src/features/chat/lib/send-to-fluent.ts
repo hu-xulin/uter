@@ -21,7 +21,7 @@ export function sendToFluent(apiKey: string, serverAddress?: string): boolean {
     return false
   }
 
-  const container = document.getElementById('fluent-uter-container')
+  const container = document.querySelector('#fluent-uter-container')
   if (!container) {
     return false
   }

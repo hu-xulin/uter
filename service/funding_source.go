@@ -78,14 +78,15 @@ func (w *WalletFunding) Settle(delta int) error {
 		return nil
 	}
 	if orgId, err := model.OrgIdOfUser(w.userId); err == nil && orgId > 0 {
-		// 组织账本按差额 true-up（受 IncrOrgUsedQuota 的预算硬上限约束，见 F1 修复）。
+		// 组织账本按差额 true-up（如实累加，不截断；防线在准入点 ReserveOrgQuota）。
 		if err := model.IncrOrgUsedQuota(orgId, int64(delta)); err != nil {
 			return err
 		}
-		// 成员子额度硬约束（对应审计项 P1-1）：把结算差额并入成员 used_quota 时钳制在
-		// sub_quota_limit 上限，杜绝实时/分层计费顶额静默突破每成员配额上限。组织预算仍由
-		// IncrOrgUsedQuota 如实累加，二者口径一致（成员侧不允许超界，组织侧如实反映真实消耗）。
-		return model.IncrOrgMemberUsedQuotaBounded(orgId, w.userId, int64(delta))
+		// 成员子额度同样只如实记账：准入门在 ReserveOrgQuota 内已完成「闸门 + 记账」的单条
+		// 条件 UPDATE（TOCTOU 已在此关闭），结算点若再按 sub_quota_limit 截断，会把超出部分
+		// 永久丢弃，使成员账本与 logs.Quota 脱节、GetOrgUsedQuota 少记。超支以
+		// used_quota > sub_quota_limit 显式暴露并由下一次准入拦住。
+		return model.IncrUserUsedQuotaClamped(w.userId, delta)
 	}
 	if delta > 0 {
 		return model.DecreaseUserQuota(w.userId, delta, false)

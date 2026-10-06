@@ -296,7 +296,7 @@ func fetchMetadataCatalogContext(ctx context.Context, locale string) (metadataSy
 		if vendor.Name == "" {
 			continue
 		}
-		vendors[vendor.Name] = model.Vendor{Name: vendor.Name, Description: vendor.Description, Icon: vendor.Icon, Status: vendor.Status}
+		vendors[vendor.Name] = model.Vendor{Name: vendor.Name, Description: vendor.Description, Icon: model.NormalizeIconKey(vendor.Icon), Status: vendor.Status}
 	}
 	for _, item := range modelsEnv.Data {
 		if strings.TrimSpace(item.ModelName) == "" {
@@ -308,7 +308,7 @@ func fetchMetadataCatalogContext(ctx context.Context, locale string) (metadataSy
 				endpoints = string(item.Endpoints)
 			}
 		}
-		values := model.MetadataValues{Description: item.Description, Icon: item.Icon, Tags: item.Tags, Vendor: strings.TrimSpace(item.VendorName), Endpoints: endpoints, NameRule: item.NameRule, Status: item.Status}
+		values := model.MetadataValues{Description: item.Description, Icon: model.NormalizeIconKey(item.Icon), Tags: item.Tags, Vendor: strings.TrimSpace(item.VendorName), Endpoints: endpoints, NameRule: item.NameRule, Status: item.Status}
 		if err := model.ValidateMetadataValues(values); err != nil {
 			return source, nil, nil, fmt.Errorf("model %s: %w", item.ModelName, err)
 		}

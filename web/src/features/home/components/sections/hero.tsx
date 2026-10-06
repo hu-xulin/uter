@@ -129,13 +129,13 @@ export function Hero(props: HeroProps) {
               // every line is governed by a single <br /> and the same
               // `leading` value, instead of stacking two.
               const raw = heading.split('，').map((c) => c.trim())
-              const hasTrailingComma = raw[raw.length - 1] === ''
+              const hasTrailingComma = raw.at(-1) === ''
               const textChunks = hasTrailingComma ? raw.slice(0, -1) : raw
               if (textChunks.length >= 2) {
                 return (
                   <>
                     {textChunks.map((chunk, i) => (
-                      <span key={i}>
+                      <span key={chunk}>
                         {chunk}
                         {i < textChunks.length - 1 || hasTrailingComma
                           ? '，'

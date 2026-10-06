@@ -57,6 +57,9 @@ type PricingVendor struct {
 	Name        string `json:"name"`
 	Description string `json:"description,omitempty"`
 	Icon        string `json:"icon,omitempty"`
+	// ModelCount 是该供应商名下模型数，口径与管理页「关联模型数」完全一致
+	// （models 表 + 靠名称规则归因的默认品牌），便于两页一一对应核对。
+	ModelCount int64 `json:"model_count"`
 }
 
 var (
@@ -107,6 +110,36 @@ func GetVendors() []PricingVendor {
 		GetPricing()
 	}
 	return vendorsList
+}
+
+// syncVendorModelCounts 用与管理页完全一致的口径（models 表 + 靠名称规则归因的
+// 默认品牌）给 vendorsList 的每个供应商附加关联模型数，保证定价页左侧供应商的
+// 模型数与管理页一一对应。返回时对齐 includeDefault 的可见性：已合并的默认品牌、
+// 以及与真实供应商同名的默认品牌不重复出现。
+func syncVendorModelCounts(vendorsList []PricingVendor, vendorMap map[int]*Vendor) []PricingVendor {
+	counts, err := GetEffectiveVendorModelCounts()
+	if err != nil {
+		return vendorsList
+	}
+	result := make([]PricingVendor, 0, len(vendorsList))
+	realNames := make(map[string]struct{}, len(vendorMap))
+	for _, v := range vendorMap {
+		realNames[strings.ToLower(v.Name)] = struct{}{}
+	}
+	for _, v := range vendorsList {
+		if v.ID < 0 {
+			// 合成默认品牌：已合并或已有同名真实供应商的，不重复计入（管理页同样隐藏）。
+			if VendorMergeTargetFor(v.Name, vendorMap) > 0 {
+				continue
+			}
+			if _, dup := realNames[strings.ToLower(v.Name)]; dup {
+				continue
+			}
+		}
+		v.ModelCount = counts[int64(v.ID)]
+		result = append(result, v)
+	}
+	return result
 }
 
 func GetModelSupportEndpointTypes(model string) []constant.EndpointType {
@@ -218,8 +251,10 @@ func updatePricing() {
 	// 初始化默认供应商映射
 	initDefaultVendorMapping(metaMap, vendorMap, enableAbilities)
 
-	// 构建对前端友好的供应商列表
-	vendorsList = make([]PricingVendor, 0, len(vendorMap))
+	// 构建对前端友好的供应商列表。除真实供应商外，也纳入定价广场按名称规则
+	// 生成的合成默认品牌，使定价页左侧的供应商集合与管理页完全一致；重复项与
+	// 已合并品牌由 syncVendorModelCounts 去重。
+	vendorsList = make([]PricingVendor, 0, len(vendorMap)+len(defaultBrandVendors()))
 	for _, v := range vendorMap {
 		vendorsList = append(vendorsList, PricingVendor{
 			ID:          v.Id,
@@ -228,6 +263,14 @@ func updatePricing() {
 			Icon:        v.Icon,
 		})
 	}
+	for _, v := range defaultBrandVendors() {
+		vendorsList = append(vendorsList, PricingVendor{
+			ID:   v.Id,
+			Name: v.Name,
+			Icon: v.Icon,
+		})
+	}
+	vendorsList = syncVendorModelCounts(vendorsList, vendorMap)
 
 	modelGroupsMap := make(map[string]*types.Set[string])
 

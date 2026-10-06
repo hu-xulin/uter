@@ -158,7 +158,9 @@ func TestBatchUpdateAccumulatorSaturatesOverflow(t *testing.T) {
 	addNewRecord(BatchUpdateTypeUserQuota, 1, math.MaxInt)
 	addNewRecord(BatchUpdateTypeUserQuota, 1, 1)
 	batchUpdateLocks[BatchUpdateTypeUserQuota].Lock()
-	assert.Equal(t, math.MaxInt, batchUpdateStores[BatchUpdateTypeUserQuota][1])
+	// 溢出饱和到 MaxWalletQuota（1<<53-1）而非 int64 上限，与钱包域/DB 层校验口径一致，
+	// 避免累加器停在 int64 上限后又被 MaxWalletQuota 二次拒绝。
+	assert.Equal(t, common.MaxWalletQuota, batchUpdateStores[BatchUpdateTypeUserQuota][1])
 	batchUpdateLocks[BatchUpdateTypeUserQuota].Unlock()
 
 	batchUpdateLocks[BatchUpdateTypeUserQuota].Lock()
@@ -167,7 +169,7 @@ func TestBatchUpdateAccumulatorSaturatesOverflow(t *testing.T) {
 	addNewRecord(BatchUpdateTypeUserQuota, 1, math.MinInt)
 	addNewRecord(BatchUpdateTypeUserQuota, 1, -1)
 	batchUpdateLocks[BatchUpdateTypeUserQuota].Lock()
-	assert.Equal(t, math.MinInt, batchUpdateStores[BatchUpdateTypeUserQuota][1])
+	assert.Equal(t, -common.MaxWalletQuota, batchUpdateStores[BatchUpdateTypeUserQuota][1])
 	batchUpdateLocks[BatchUpdateTypeUserQuota].Unlock()
 }
 

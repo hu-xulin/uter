@@ -38,6 +38,7 @@ import {
   getQuotaTypeLabels,
 } from '../constants'
 import { hasTaskUsageSchema } from '../lib/dynamic-price'
+import { orderVendorsByModelCount } from '../lib/vendor-order'
 import { parseTags } from '../lib/filters'
 import type { PricingModel, PricingVendor } from '../types'
 
@@ -97,6 +98,12 @@ function FilterChip(props: {
   active: boolean
   onClick: () => void
 }) {
+  let badgeClass = 'bg-muted text-muted-foreground'
+  if (props.option.suffix) {
+    badgeClass = 'bg-green-600/80 text-white'
+  } else if (props.active) {
+    badgeClass = 'bg-background text-foreground'
+  }
   return (
     <Button
       type='button'
@@ -112,16 +119,7 @@ function FilterChip(props: {
       )}
       <span className='truncate'>{props.option.label}</span>
       {(props.option.suffix || props.option.count != null) && (
-        <span
-          className={cn(
-            'rounded-md px-1.5 py-0.5 text-[12px]',
-            props.option.suffix
-              ? 'bg-green-600/80 text-white'
-              : props.active
-                ? 'bg-background text-foreground'
-                : 'bg-muted text-muted-foreground'
-          )}
-        >
+        <span className={cn('rounded-md px-1.5 py-0.5 text-[12px]', badgeClass)}>
           {props.option.suffix ?? props.option.count}
         </span>
       )}
@@ -162,25 +160,25 @@ export function PricingSidebar(props: PricingSidebarProps) {
   const quotaTypeLabels = getQuotaTypeLabels(t)
   const endpointTypeLabels = getEndpointTypeLabels(t)
 
+  // Vendors are ordered by how many models they publish (most models first),
+  // so the largest providers surface at the top. Equal counts fall back to
+  // name order to keep the list deterministic. "All Vendors" stays pinned
+  // first because it resets the filter.
+  const orderedVendors = orderVendorsByModelCount(props.models, props.vendors)
   const vendorOptions: FilterOption[] = [
     {
       value: FILTER_ALL,
       label: t('All Vendors'),
       count: props.models.length,
     },
-    ...props.vendors
-      .map((vendor) => ({
-        value: vendor.name,
-        label: vendor.name,
-        count: countBy(
-          props.models,
-          (model) => model.vendor_name === vendor.name
-        ),
-        // Vendor chips stay monochrome so the colored model cards keep the
-        // visual weight; any stored ".Color" key is stripped here.
-        icon: vendor.icon ? getLobeIcon(monoIconName(vendor.icon), 14) : undefined,
-      }))
-      .filter((vendor) => vendor.count > 0),
+    ...orderedVendors.map((vendor) => ({
+      value: vendor.name,
+      label: vendor.name,
+      count: vendor.count,
+      // Vendor chips stay monochrome so the colored model cards keep the
+      // visual weight; any stored ".Color" key is stripped here.
+      icon: vendor.icon ? getLobeIcon(monoIconName(vendor.icon), 14) : undefined,
+    })),
   ]
 
   const groupOptions: FilterOption[] = [

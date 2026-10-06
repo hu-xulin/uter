@@ -123,3 +123,37 @@ export async function applyVendorOperation(
   }
   return response.data.data
 }
+
+// ============================================================================
+// Auto-merge rules
+// ============================================================================
+
+export type VendorMergeRule = {
+  id: number
+  /** 被合并的来源供应商名称（合成默认品牌或真实供应商名称）。 */
+  source_name: string
+  /** 合并时来源对应的模型名匹配规则（合成默认品牌的识别依据）。 */
+  source_patterns: string[]
+  /** 自动归集到的目标供应商 ID。 */
+  target_vendor_id: number
+  /** 目标供应商名称，便于直接展示「来源 -> 合并到谁」。 */
+  target_vendor_name: string
+  created_time: number
+  updated_time: number
+}
+
+export async function getVendorMergeRules(): Promise<{
+  success: boolean
+  message?: string
+  data?: VendorMergeRule[]
+}> {
+  const res = await api.get('/api/vendors/merge-rules')
+  return res.data
+}
+
+export async function deleteVendorMergeRule(
+  id: number
+): Promise<{ success: boolean; message?: string }> {
+  const res = await api.delete(`/api/vendors/merge-rules/${id}`)
+  return res.data
+}

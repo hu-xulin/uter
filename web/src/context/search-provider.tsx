@@ -16,9 +16,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
-import { createContext, useContext, useEffect, useState } from 'react'
-
-import { CommandMenu } from '@/components/command-menu'
+import { createContext, lazy, Suspense, useContext, useEffect, useState } from 'react'
 
 type SearchContextType = {
   open: boolean
@@ -26,6 +24,13 @@ type SearchContextType = {
 }
 
 const SearchContext = createContext<SearchContextType | null>(null)
+
+// CommandMenu 内部会调用 useSearch()，若静态 import 则形成
+// search-provider → command-menu → search-provider 的循环依赖。
+// 用 lazy 延迟加载打断循环（命令面板只在用户触发时渲染，无需阻塞首屏）。
+const CommandMenu = lazy(() =>
+  import('@/components/command-menu').then((m) => ({ default: m.CommandMenu }))
+)
 
 type SearchProviderProps = {
   children: React.ReactNode
@@ -48,7 +53,9 @@ export function SearchProvider({ children }: SearchProviderProps) {
   return (
     <SearchContext.Provider value={{ open, setOpen }}>
       {children}
-      <CommandMenu />
+      <Suspense fallback={null}>
+        <CommandMenu />
+      </Suspense>
     </SearchContext.Provider>
   )
 }

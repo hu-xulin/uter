@@ -219,7 +219,7 @@ func ApplyMetadataSync(updates []MetadataSyncUpdate, upstreamVendors map[string]
 				case "description":
 					fields[field] = update.Values.Description
 				case "icon":
-					fields[field] = update.Values.Icon
+					fields[field] = NormalizeIconKey(update.Values.Icon)
 				case "tags":
 					fields[field] = update.Values.Tags
 				case "endpoints":
@@ -234,11 +234,19 @@ func ApplyMetadataSync(updates []MetadataSyncUpdate, upstreamVendors map[string]
 					if name != "" {
 						vendor := FindMetadataVendor(vendors, name)
 						if vendor == nil {
+							// 该名称过去被合并过：直接归集到当时的合并目标，
+							// 避免上游同步又把已经归并掉的供应商重新造出来。
+							if merged, ok := resolveMergedVendor(tx, name); ok {
+								vendors[name] = merged
+								vendor = merged
+							}
+						}
+						if vendor == nil {
 							up, ok := upstreamVendors[name]
 							if !ok {
 								return fmt.Errorf("upstream vendor not found: %s", name)
 							}
-							vendor = &Vendor{Name: name, Description: up.Description, Icon: up.Icon, Status: 1, CreatedTime: common.GetTimestamp(), UpdatedTime: common.GetTimestamp()}
+							vendor = &Vendor{Name: name, Description: up.Description, Icon: NormalizeIconKey(up.Icon), Status: 1, CreatedTime: common.GetTimestamp(), UpdatedTime: common.GetTimestamp()}
 							if err := validateVendorMetadata(tx, vendor); err != nil {
 								return err
 							}

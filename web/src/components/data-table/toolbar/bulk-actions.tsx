@@ -35,7 +35,9 @@ type DataTableBulkActionsProps<TData> = {
   table: Table<TData>
   placement?: 'floating' | 'inline'
   entityName: string
-  children: React.ReactNode
+  // 可选：部分表格（如用户列表）只使用工具栏内置的默认操作，
+  // 不额外传入自定义按钮，此时 children 为 undefined，渲染为空。
+  children?: React.ReactNode
 }
 
 /**

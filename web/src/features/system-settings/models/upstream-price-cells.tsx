@@ -60,8 +60,8 @@ export function SyncPriceCell(props: { values: PricingSyncValues }) {
         </div>
         {parsed ? (
           <div className='space-y-2'>
-            {parsed.tiers.map((tier, index) => (
-              <div key={`${tier.label}-${index}`} className='space-y-1'>
+            {parsed.tiers.map((tier) => (
+              <div key={tier.label} className='space-y-1'>
                 {parsed.tiers.length > 1 && (
                   <div className='text-muted-foreground text-xs!'>
                     {tier.condition || tier.label || t('Default')}

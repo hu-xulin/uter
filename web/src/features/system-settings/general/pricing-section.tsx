@@ -144,6 +144,13 @@ export function PricingSection({ defaultValues }: PricingSectionProps) {
     defaultValues.QuotaPerUnit !== DEFAULT_CURRENCY_CONFIG.quotaPerUnit
   const showDisplayInCurrencyOption = displayInCurrencyEnabled === false
 
+  let exchangeRateLabel = t('USD Exchange Rate')
+  if (displayType === 'CNY') {
+    exchangeRateLabel = t('CNY per USD')
+  } else if (displayType === 'USD') {
+    exchangeRateLabel = t('USD Exchange Rate')
+  }
+
   return (
     <>
       <FormNavigationGuard when={isDirty} />
@@ -235,13 +242,7 @@ export function PricingSection({ defaultValues }: PricingSectionProps) {
                 name='USDExchangeRate'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>
-                      {displayType === 'CNY'
-                        ? t('CNY per USD')
-                        : displayType === 'USD'
-                          ? t('USD Exchange Rate')
-                          : t('USD Exchange Rate')}
-                    </FormLabel>
+                    <FormLabel>{exchangeRateLabel}</FormLabel>
                     <FormControl>
                       <Input
                         type='number'

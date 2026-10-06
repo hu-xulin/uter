@@ -94,63 +94,15 @@ export function BillingHistoryDialog({
     }
   }
 
-  return (
-    <>
-      <Dialog
-        open={open}
-        onOpenChange={onOpenChange}
-        title={t('Billing History')}
-        description={t(
-          'View your topup transaction records and payment history'
-        )}
-        contentClassName='flex max-h-[calc(100dvh-2rem)] flex-col max-sm:w-screen max-sm:max-w-none max-sm:rounded-none max-sm:p-4 sm:max-w-4xl'
-        contentHeight='auto'
-        bodyClassName='space-y-3'
-      >
-        <div className='min-h-0 space-y-3'>
-          {/* Search and Filter Bar */}
-          <div className='flex items-center gap-2'>
-            <div className='relative flex-1'>
-              <Search className='text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2' />
-              <Input
-                placeholder={t('Search by order number...')}
-                value={keyword}
-                onChange={(e) => handleSearch(e.target.value)}
-                className='h-9 pl-10'
-              />
-            </div>
-            <Select
-              items={[
-                { value: '10', label: t('10 / page') },
-                { value: '20', label: t('20 / page') },
-                { value: '50', label: t('50 / page') },
-                { value: '100', label: t('100 / page') },
-              ]}
-              value={pageSize.toString()}
-              onValueChange={(value) =>
-                value !== null && handlePageSizeChange(parseInt(value))
-              }
-            >
-              <SelectTrigger className='h-9 w-[92px] sm:w-32'>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent alignItemWithTrigger={false}>
-                <SelectGroup>
-                  <SelectItem value='10'>{t('10 / page')}</SelectItem>
-                  <SelectItem value='20'>{t('20 / page')}</SelectItem>
-                  <SelectItem value='50'>{t('50 / page')}</SelectItem>
-                  <SelectItem value='100'>{t('100 / page')}</SelectItem>
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Records List */}
-          <div className='max-h-[min(54vh,520px)] overflow-y-auto pr-1'>
-            {loading ? (
+  let recordsList
+  if (loading) {
+    recordsList = (
               <div className='space-y-3'>
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <div key={i} className='rounded-lg border p-3 sm:p-4'>
+                {['r1', 'r2', 'r3', 'r4', 'r5'].map((skeletonKey) => (
+                  <div
+                    key={skeletonKey}
+                    className='rounded-lg border p-3 sm:p-4'
+                  >
                     <div className='flex items-start justify-between'>
                       <div className='flex-1 space-y-2'>
                         <Skeleton className='h-4 w-48' />
@@ -166,7 +118,9 @@ export function BillingHistoryDialog({
                   </div>
                 ))}
               </div>
-            ) : records.length === 0 ? (
+    )
+  } else if (records.length === 0) {
+    recordsList = (
               <div className='text-muted-foreground flex min-h-40 flex-col items-center justify-center py-10 text-center'>
                 <p className='text-sm font-medium'>
                   {t('No billing records found')}
@@ -177,7 +131,9 @@ export function BillingHistoryDialog({
                     : t('Your transaction history will appear here')}
                 </p>
               </div>
-            ) : (
+    )
+  } else {
+    recordsList = (
               <div className='space-y-3'>
                 {records.map((record) => {
                   const statusConfig = getStatusConfig(record.status)
@@ -275,7 +231,63 @@ export function BillingHistoryDialog({
                   )
                 })}
               </div>
-            )}
+    )
+  }
+
+  return (
+    <>
+      <Dialog
+        open={open}
+        onOpenChange={onOpenChange}
+        title={t('Billing History')}
+        description={t(
+          'View your topup transaction records and payment history'
+        )}
+        contentClassName='flex max-h-[calc(100dvh-2rem)] flex-col max-sm:w-screen max-sm:max-w-none max-sm:rounded-none max-sm:p-4 sm:max-w-4xl'
+        contentHeight='auto'
+        bodyClassName='space-y-3'
+      >
+        <div className='min-h-0 space-y-3'>
+          {/* Search and Filter Bar */}
+          <div className='flex items-center gap-2'>
+            <div className='relative flex-1'>
+              <Search className='text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2' />
+              <Input
+                placeholder={t('Search by order number...')}
+                value={keyword}
+                onChange={(e) => handleSearch(e.target.value)}
+                className='h-9 pl-10'
+              />
+            </div>
+            <Select
+              items={[
+                { value: '10', label: t('10 / page') },
+                { value: '20', label: t('20 / page') },
+                { value: '50', label: t('50 / page') },
+                { value: '100', label: t('100 / page') },
+              ]}
+              value={pageSize.toString()}
+              onValueChange={(value) =>
+                value !== null && handlePageSizeChange(Number.parseInt(value))
+              }
+            >
+              <SelectTrigger className='h-9 w-[92px] sm:w-32'>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent alignItemWithTrigger={false}>
+                <SelectGroup>
+                  <SelectItem value='10'>{t('10 / page')}</SelectItem>
+                  <SelectItem value='20'>{t('20 / page')}</SelectItem>
+                  <SelectItem value='50'>{t('50 / page')}</SelectItem>
+                  <SelectItem value='100'>{t('100 / page')}</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Records List */}
+          <div className='max-h-[min(54vh,520px)] overflow-y-auto pr-1'>
+            {recordsList}
           </div>
 
           {/* Pagination */}

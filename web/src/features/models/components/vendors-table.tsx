@@ -19,7 +19,7 @@ For commercial licensing, please contact support@uter.ai
 import { useQuery } from '@tanstack/react-query'
 import { getRouteApi, useNavigate } from '@tanstack/react-router'
 import type { ColumnDef } from '@tanstack/react-table'
-import { MoreHorizontal } from 'lucide-react'
+import { GitMerge, MoreHorizontal } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -47,6 +47,7 @@ import { vendorsQueryKeys } from '../lib'
 import type { Vendor } from '../types'
 import { vendorErrorMessage, type VendorOperation } from '../vendor-api'
 import { VendorOperationDialog } from './dialogs/vendor-operation-dialog'
+import { VendorMergeRulesDialog } from './dialogs/vendor-merge-rules-dialog'
 import { useModels } from './models-provider'
 
 const route = getRouteApi('/_authenticated/models/$section')
@@ -56,6 +57,7 @@ export function VendorsTable() {
   const navigate = useNavigate()
   const { setCurrentVendor, setOpen } = useModels()
   const [operation, setOperation] = useState<VendorOperation | null>(null)
+  const [mergeRulesOpen, setMergeRulesOpen] = useState(false)
   const state = useTableUrlState({
     search: route.useSearch(),
     navigate: route.useNavigate(),
@@ -267,6 +269,16 @@ export function VendorsTable() {
         toolbarProps={{
           searchPlaceholder: t('Search vendor names or descriptions'),
           searchDebounceMs: 300,
+          preActions: (
+            <Button
+              variant='outline'
+              size='sm'
+              onClick={() => setMergeRulesOpen(true)}
+            >
+              <GitMerge className='size-3.5' />
+              {t('Auto-merge rules')}
+            </Button>
+          ),
           filters: [
             {
               columnId: 'model_count',
@@ -309,6 +321,10 @@ export function VendorsTable() {
           onSuccess={() => table.resetRowSelection()}
         />
       )}
+      <VendorMergeRulesDialog
+        open={mergeRulesOpen}
+        onOpenChange={setMergeRulesOpen}
+      />
     </>
   )
 }

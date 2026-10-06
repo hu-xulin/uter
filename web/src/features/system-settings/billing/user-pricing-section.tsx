@@ -128,12 +128,14 @@ export function UserPricingSection({
   // Billing thresholds are always stored/compared in USD; when the display
   // currency is TOKENS we still label the field in USD so the operator knows
   // what the number means.
-  const currencyUnit =
-    meta.kind === 'tokens'
-      ? 'USD'
-      : meta.kind === 'currency'
-        ? meta.currencyCode
-        : meta.symbol
+  let currencyUnit: string
+  if (meta.kind === 'tokens') {
+    currencyUnit = 'USD'
+  } else if (meta.kind === 'currency') {
+    currencyUnit = meta.currencyCode
+  } else {
+    currencyUnit = meta.symbol
+  }
 
   const [saved] = useState(() => serialize(deserialize(defaultSetting)))
   const [draft, setDraft] = useState<Draft>(() => deserialize(defaultSetting))

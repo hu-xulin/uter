@@ -16,7 +16,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
+import { modelPricingDisplay } from '@/features/model-pricing/pricing'
 import type { ModelPricingEntry } from '@/features/model-pricing/api'
+import { getDynamicPricingSummary } from '@/features/pricing/lib/dynamic-price'
 
 import type { ModelMetadataFilter, ModelPricingFilter } from '../types'
 
@@ -69,12 +71,16 @@ function isConfigured(value: unknown): boolean {
  *  2. A per-call `ModelPrice` overrides ratios, so it is also `expression`:
  *     the model is billed per call, not per token.
  *  3. A `ModelRatio` is ordinary per-token pricing → `standard`.
- *  4. Nothing configured, but the model is still resolvable — the platform
- *     has a built-in default, or a ratio that the relay resolves by prefix.
- *     That is `unconfigured`: nothing for the admin to do.
- *  5. Nothing configured and nothing to fall back on → `unset`. Relay rejects
- *     these with "pricing has not been configured" unless self-use mode is
- *     on, so this is the bucket worth acting on.
+ *  4. Nothing is saved in the admin configuration. The model is unconfigured
+ *     and needs pricing set up, so it is `unconfigured` — regardless of any
+ *     platform default the relay might still apply. This is the actionable
+ *     bucket an operator filters on, so it must surface every model the admin
+ *     has not explicitly priced, not only those with an engine-resolved default.
+ *  5. No pricing entry is returned for the model at all (the API knows nothing
+ *     about it) → `unset`. In practice this only happens for pattern models
+ *     (`name_rule !== 0`) that the client-side filter excludes from the pricing
+ *     query; an explicit-name model always has an entry, so it lands in
+ *     `unconfigured` when nothing is saved.
  *
  * A model with no entry at all is `unset`: no entry means no configuration.
  */
@@ -103,13 +109,16 @@ export function classifyModelPricing(
   if (isConfigured(configured.ModelPrice)) return 'expression'
   if (isConfigured(configured.ModelRatio)) return 'standard'
 
-  // Nothing saved: fall back to what the engine would still apply, which is
-  // what keeps this bucket accurate for models covered by a built-in default.
+  // A model the engine would still bill per call, even without a saved ratio,
+  // is genuinely expression-priced.
   if (isConfigured(effective.ModelPrice)) return 'expression'
-  if (isConfigured(effective.ModelRatio)) return 'unconfigured'
-  if (mode === 'tiered_expr') return 'unconfigured'
 
-  return 'unset'
+  // Nothing is saved in the admin configuration. From the operator's point of
+  // view the model is unconfigured and needs pricing set up, so it belongs in
+  // the `unconfigured` bucket regardless of any platform default the relay might
+  // still apply — either way the admin has work to do. (The `unset` bucket is
+  // reserved for models the pricing API returned no entry for at all.)
+  return 'unconfigured'
 }
 
 /**
@@ -123,4 +132,46 @@ export function indexPricingByModel(
     index.set(entry.model_name, entry)
   }
   return index
+}
+
+/**
+ * The pricing state behind the pricing filter, resolved from a model's pricing
+ * entry and the pricing request's own status.
+ *
+ * `state` carries the global fetch status. While the per-model pricing is still
+ * loading or has failed for the whole page, every individually-priced row
+ * shares that state — the column renders "Loading..." / "Failed to load model
+ * pricing" for all of them — so it is reported for every row.
+ *
+ * Expression-driven pricing resolves first, because `ModelPriceCell` renders it
+ * from the expression rather than from a saved ratio:
+ *  - `special_expression` — a billing expression that resolves to no tiers.
+ *  - `dynamic`            — a resolved tiered/plugin expression with prices.
+ *
+ * Anything else keeps the saved-configuration classification above, which
+ * already distinguishes `standard`, `expression` (per-call), `unconfigured`
+ * and `unset`. That keeps those four buckets exactly as they were before the
+ * expression buckets were split out, so adding a new facet never moves a model
+ * between the existing ones.
+ */
+export function classifyPricingState(
+  entry: ModelPricingEntry | undefined,
+  modelName: string,
+  state?: 'loading' | 'error'
+): ModelPricingFilter {
+  if (state === 'loading') return 'loading'
+  if (state === 'error') return 'error'
+
+  const model = modelPricingDisplay(
+    entry ?? { model_name: modelName, effective: {} }
+  )
+  const dynamic = getDynamicPricingSummary(model, { tokenUnit: 'M' })
+  if (dynamic) {
+    if (dynamic.isSpecialExpression) return 'special_expression'
+    if (dynamic.entries.length === 0) {
+      return dynamic.hasUnconfiguredProviders ? 'unconfigured' : 'dynamic'
+    }
+    return 'dynamic'
+  }
+  return classifyModelPricing(entry)
 }

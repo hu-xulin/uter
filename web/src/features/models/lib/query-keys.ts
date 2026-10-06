@@ -46,6 +46,7 @@ export const vendorsQueryKeys = {
   list: (filters?: Record<string, unknown>) =>
     [...vendorsQueryKeys.lists(), filters] as const,
   detail: (id: number) => [...vendorsQueryKeys.all, 'detail', id] as const,
+  mergeRules: () => [...vendorsQueryKeys.all, 'merge-rules'] as const,
 }
 
 /**

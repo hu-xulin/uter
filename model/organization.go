@@ -562,39 +562,6 @@ func IncrOrgUsedQuota(orgId int, amount int64) error {
 	return nil
 }
 
-// IncrOrgMemberUsedQuotaBounded 原子增减组织成员的已用额度，但受该成员 sub_quota_limit
-// 硬约束（对应审计项 P1-1）：组织成员在实时/分层计费结算顶额时，其 recorded 用量不得超过
-// 每成员配额上限。
-//
-// 与 IncrUserUsedQuotaClamped 的区别：后者只钳下限（防负值）、无上限；本函数在 delta>0 时
-// 把上限钳在 sub_quota_limit（sub_quota_limit<=0 表示不限量，退化为普通自增）。这样即使预扣点
-// 的 ReserveOrgQuota 已放行 preConsumed，结算时实际消耗超出子额度也不会把成员用量记到超界，
-// 守住「每成员配额上限」这条组织内部分账边界。组织预算仍由 IncrOrgUsedQuota 如实累加，
-// 二者口径一致：成员侧不允许突破 sub_quota_limit，组织侧如实反映真实消耗以便告警对账。
-func IncrOrgMemberUsedQuotaBounded(orgId int, userId int, delta int64) error {
-	if orgId <= 0 || delta == 0 {
-		return nil
-	}
-	if delta > 0 {
-		// 上限钳到 sub_quota_limit，下限钳到 0：单次结算补扣不会把成员用量推过其配额上限。
-		err := DB.Model(&User{}).Where("id = ? AND organization_id = ?", userId, orgId).
-			Update("used_quota", gorm.Expr(
-				"CASE WHEN sub_quota_limit > 0 AND used_quota + ? > sub_quota_limit THEN sub_quota_limit "+
-					"WHEN used_quota + ? < 0 THEN 0 ELSE used_quota + ? END",
-				delta, delta, delta)).Error
-		if err != nil {
-			common.SysLog(fmt.Sprintf("IncrOrgMemberUsedQuotaBounded failed (org=%d, user=%d, delta=%d): %s", orgId, userId, delta, err.Error()))
-		}
-		return err
-	}
-	err := DB.Model(&User{}).Where("id = ? AND organization_id = ?", userId, orgId).
-		Update("used_quota", gorm.Expr("CASE WHEN used_quota + ? < 0 THEN 0 ELSE used_quota + ? END", delta, delta)).Error
-	if err != nil {
-		common.SysLog(fmt.Sprintf("IncrOrgMemberUsedQuotaBounded failed (org=%d, user=%d, delta=%d): %s", orgId, userId, delta, err.Error()))
-	}
-	return err
-}
-
 // GetOrgMembers 分页读取组织内成员。departmentName 非空时仅返回该部门；
 // excludeRoles 用于按调用者权限隐藏特定角色（如组织管理员看不到所有者、部门管理员看不到所有者与管理员）。
 func GetOrgMembers(orgId int, departmentName string, keyword string, startIdx int, num int, excludeRoles ...string) ([]*User, int64, error) {

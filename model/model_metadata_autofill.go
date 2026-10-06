@@ -73,6 +73,16 @@ func PlanOfficialMetadataFill(
 		vendorByID[vendor.Id] = vendor
 	}
 
+	// Channel model names frequently append irregular suffixes (dates, versions,
+	// regions) to the canonical model name. Index the catalog so a channel name
+	// like "gpt-4o-2024-05-13" still recovers the catalog's "gpt-4o" entry
+	// instead of being treated as an unknown model.
+	upstreamKeys := make([]string, 0, len(upstream))
+	for name := range upstream {
+		upstreamKeys = append(upstreamKeys, name)
+	}
+	matcher := NewModelNameMatchCatalog(upstreamKeys)
+
 	// A pattern record (prefix/suffix/contains) already governs the models it
 	// matches, so filling an explicit row for a matched name would override an
 	// administrator's deliberate catch-all.
@@ -91,6 +101,14 @@ func PlanOfficialMetadataFill(
 		}
 		values, known := upstream[name]
 		derived := false
+		if !known {
+			// The catalog has no exact entry. Try a robust fuzzy match before
+			// falling back to keyword derivation: the base model name is a
+			// prefix of the channel name with a suffix.
+			if matched, ok := matcher.Match(name); ok {
+				values, known = upstream[matched], true
+			}
+		}
 		if !known {
 			// The catalog has no entry for this model. Rather than leaving the
 			// row permanently blank, derive what the name and the catalog's own

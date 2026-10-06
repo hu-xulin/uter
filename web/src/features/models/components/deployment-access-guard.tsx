@@ -199,5 +199,6 @@ export function DeploymentAccessGuard({
     )
   }
 
-  return <>{children}</>
+  // 守卫通过：直接透传 children（外层调用方已自行包裹布局）。
+  return children
 }

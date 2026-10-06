@@ -1,6 +1,13 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["typescript", "unicorn", "oxc", "react", "import", "promise"],
+  "plugins": [
+    "typescript",
+    "unicorn",
+    "oxc",
+    "react",
+    "import",
+    "promise"
+  ],
   "categories": {
     "correctness": "error"
   },
@@ -21,7 +28,10 @@
     "src/routeTree.gen.ts"
   ],
   "rules": {
-    "curly": ["error", "multi-line"],
+    "curly": [
+      "error",
+      "multi-line"
+    ],
     "eqeqeq": [
       "error",
       "always",
@@ -128,7 +138,9 @@
           "getSiteSectionMeta",
           "getUsageLogsSectionNavItems",
           "isUsageLogsSectionId",
-          "useSuppressSettingsSectionHeader"
+          "useSuppressSettingsSectionHeader",
+          "PRICING_SOURCE_OPTION_KEY",
+          "PRICING_SOURCE_VALUES"
         ]
       }
     ],
@@ -191,19 +203,35 @@
   },
   "overrides": [
     {
-      "files": ["src/routes/**/*.{ts,tsx}"],
+      "files": [
+        "src/routes/**/*.{ts,tsx}"
+      ],
       "rules": {
         "react/only-export-components": "off"
       }
     },
     {
-      "files": ["src/features/docs/docs-viewer.tsx"],
+      "files": [
+        "src/components/ai-elements/web-preview.tsx",
+        "src/components/docs-export-frame.tsx",
+        "src/routes/_authenticated/chat/$chatId.tsx"
+      ],
       "rules": {
         "react/iframe-missing-sandbox": "off"
       }
     },
     {
-      "files": ["**/scripts/**/*.{js,mjs,cjs}"],
+      "files": [
+        "src/features/docs/docs-viewer.tsx"
+      ],
+      "rules": {
+        "react/iframe-missing-sandbox": "off"
+      }
+    },
+    {
+      "files": [
+        "**/scripts/**/*.{js,mjs,cjs}"
+      ],
       "rules": {
         "no-console": "off",
         "prefer-node-protocol": "off"

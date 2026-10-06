@@ -8,9 +8,11 @@ import (
 	"net/http/httptest"
 
 	"github.com/Uter-AI/Uter/relaykit/dto"
+	"github.com/Uter-AI/Uter/service"
 	"github.com/Uter-AI/Uter/setting/billing_setting"
 	"github.com/Uter-AI/Uter/setting/config"
 	"github.com/Uter-AI/Uter/setting/ratio_setting"
+	"github.com/Uter-AI/Uter/setting/system_setting"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -68,7 +70,19 @@ func TestRatioConfigExportsEffectiveExpressions(t *testing.T) {
 	assert.Equal(t, `tier("base", p * 2)`, valueMap(response.Data["billing_expr"])["sync-export"])
 }
 
+func allowPrivatePricingSyncTest(t *testing.T) {
+	t.Helper()
+	originalFetchSetting := *system_setting.GetFetchSetting()
+	system_setting.GetFetchSetting().EnableSSRFProtection = true
+	system_setting.GetFetchSetting().AllowPrivateIp = true
+	system_setting.GetFetchSetting().AllowedPorts = []string{"1-65535"}
+	t.Cleanup(func() { *system_setting.GetFetchSetting() = originalFetchSetting })
+	service.InitHttpClient()
+}
+
 func TestPricingSyncCompleteSourcesAndArrayFormats(t *testing.T) {
+	// 上游定价源用 httptest 随机端口（默认不在 AllowedPorts 白名单内），放行以便触达测试服务器。
+	allowPrivatePricingSyncTest(t)
 	before := config.GlobalConfig.ExportAllConfigs()
 	oldRatios, oldCompletion := ratio_setting.ModelRatio2JSONString(), ratio_setting.CompletionRatio2JSONString()
 	t.Cleanup(func() {

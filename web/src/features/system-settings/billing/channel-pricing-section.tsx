@@ -308,7 +308,7 @@ export function ChannelPricingSection({
         .split(',')
         .map((m) => m.trim())
         .filter(Boolean)
-      if (list.length) map[String(channel.id)] = Array.from(new Set(list))
+      if (list.length) map[String(channel.id)] = [...new Set(list)]
     }
     return map
   }, [channelsQuery.data])

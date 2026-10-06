@@ -75,12 +75,13 @@ func TestSecurityLoginCodeCompletesOnce(t *testing.T) {
 	}{{"/api/user/login/verify", false}, {"/api/user/login/2fa", false}, {"/api/user/login/verify", true}} {
 		t.Run(fmt.Sprintf("%s/backup=%t", test.path, test.backup), func(t *testing.T) {
 			user, _ := setupSecurityEnrollmentTest(t)
-			factor := &model.TwoFA{UserId: user.Id, Secret: "JBSWY3DPEHPK3PXP", IsEnabled: true}
+			secret := "JBSWY3DPEHPK3PXP"
+			factor := &model.TwoFA{UserId: user.Id, Secret: secret, IsEnabled: true}
 			require.NoError(t, model.DB.Create(factor).Error)
 			challenge, err := service.StartLoginVerification(user, "password")
 			require.NoError(t, err)
 			require.NotNil(t, challenge)
-			code, err := totp.GenerateCode(factor.Secret, time.Now())
+			code, err := totp.GenerateCode(secret, time.Now())
 			require.NoError(t, err)
 			if test.backup {
 				code = "ABCD-1234"
@@ -120,7 +121,8 @@ func TestSecurityLoginRejectsChangedOrExpiredAuthorization(t *testing.T) {
 	for _, change := range []string{"expired", "disabled user", "auth version", "factor removed", "factor locked", "legacy flow", "wrong method", "other purpose"} {
 		t.Run(change, func(t *testing.T) {
 			user, _ := setupSecurityEnrollmentTest(t)
-			factor := &model.TwoFA{UserId: user.Id, Secret: "JBSWY3DPEHPK3PXP", IsEnabled: true}
+			secret := "JBSWY3DPEHPK3PXP"
+			factor := &model.TwoFA{UserId: user.Id, Secret: secret, IsEnabled: true}
 			require.NoError(t, model.DB.Create(factor).Error)
 			challenge, err := service.StartLoginVerification(user, "password")
 			require.NoError(t, err)
@@ -143,7 +145,7 @@ func TestSecurityLoginRejectsChangedOrExpiredAuthorization(t *testing.T) {
 			case "other purpose":
 				require.NoError(t, model.DB.Model(&model.AuthFlow{}).Where("purpose = ?", model.AuthFlowPurposeLoginVerification).Update("purpose", model.AuthFlowPurposeSecurityProof).Error)
 			}
-			code, err := totp.GenerateCode(factor.Secret, time.Now())
+			code, err := totp.GenerateCode(secret, time.Now())
 			require.NoError(t, err)
 			body, err := common.Marshal(map[string]string{"flow_token": challenge.FlowToken, "code": code, "method": method})
 			require.NoError(t, err)

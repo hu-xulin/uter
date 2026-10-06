@@ -22,15 +22,18 @@ import { describe, expect, it } from 'vitest'
 import {
   classifyModelMetadata,
   classifyModelPricing,
+  classifyPricingState,
   indexPricingByModel,
 } from '../lib/model-filters'
 
 /**
  * These cover the two classifiers behind the model list's metadata and
- * pricing filters. The behaviour worth pinning down is the boundary between
- * "nothing saved" and "something the engine still resolves", because that is
- * the difference between a model an admin can ignore and one relay will
- * reject with "pricing has not been configured".
+ * pricing filters. For pricing, the boundary that matters is "something the
+ * admin saved" (standard / expression) versus "nothing saved" (unconfigured).
+ * A model with no saved configuration is reported as `unconfigured` so it
+ * surfaces in that filter regardless of any platform default the relay would
+ * still apply; `unset` is reserved for models the pricing API returned no
+ * entry for at all.
  */
 
 function entry(over: Partial<ModelPricingEntry> = {}): ModelPricingEntry {
@@ -119,9 +122,10 @@ describe('classifyModelPricing', () => {
     ).toBe('expression')
   })
 
-  it('distinguishes "nothing saved but a default applies" from unset', () => {
-    // effective carries an engine default while configured is empty: the
-    // model works, so it is not the bucket that needs action.
+  it('reports "nothing saved" as unconfigured, with or without an engine default', () => {
+    // configured is empty; whether effective carries an engine default
+    // (ModelRatio) or only completion/cache defaults, the admin has nothing
+    // saved, so the model is unconfigured and surfaces in that filter.
     expect(
       classifyModelPricing(entry({ effective: { ModelRatio: 2.5 } }))
     ).toBe('unconfigured')
@@ -138,13 +142,13 @@ describe('classifyModelPricing', () => {
     ).toBe('expression')
   })
 
-  it('reports an empty entry as unset', () => {
-    expect(classifyModelPricing(entry())).toBe('unset')
+  it('reports an entry with nothing saved as unconfigured', () => {
+    expect(classifyModelPricing(entry())).toBe('unconfigured')
   })
 
-  it('ignores an engine-resolved CompletionRatio when nothing was saved', () => {
-    // `effective` always carries a resolved CompletionRatio and cache ratios;
-    // keying off those would make every model look configured.
+  it('treats an entry with only engine-resolved completion/cache defaults as unconfigured', () => {
+    // `effective` always carries a resolved CompletionRatio and cache ratios,
+    // but with nothing saved the model is still unconfigured and must surface.
     expect(
       classifyModelPricing(
         entry({
@@ -152,7 +156,41 @@ describe('classifyModelPricing', () => {
           effective: { CompletionRatio: 3, CacheRatio: 0.1 },
         })
       )
-    ).toBe('unset')
+    ).toBe('unconfigured')
+  })
+})
+
+describe('classifyPricingState', () => {
+  /**
+   * Covers only the branches that do not depend on how a billing expression
+   * parses into tiers: the global fetch status buckets and the pass-through to
+   * `classifyModelPricing` when no expression drives the price. The dynamic and
+   * special-expression buckets depend on tier parsing, which is exercised by
+   * the pricing-feature tests.
+   */
+  it('reports the shared fetch status ahead of any per-row pricing', () => {
+    // While the pricing request is in flight (or errored) the column renders
+    // one state for every individually-priced row.
+    expect(classifyPricingState(undefined, 'example', 'loading')).toBe(
+      'loading'
+    )
+    expect(classifyPricingState(undefined, 'example', 'error')).toBe('error')
+    expect(
+      classifyPricingState(entry({ configured: { ModelRatio: 2.5 } }), 'e', 'loading')
+    ).toBe('loading')
+  })
+
+  it('falls through to the saved-configuration buckets without an expression', () => {
+    expect(classifyPricingState(undefined, 'example')).toBe('unset')
+    expect(
+      classifyPricingState(entry({ configured: { ModelRatio: 2.5 } }), 'example')
+    ).toBe('standard')
+    expect(
+      classifyPricingState(entry({ configured: { ModelPrice: 0.3 } }), 'example')
+    ).toBe('expression')
+    expect(classifyPricingState(entry({ effective: { ModelRatio: 2.5 } }), 'example')).toBe(
+      'unconfigured'
+    )
   })
 })
 
