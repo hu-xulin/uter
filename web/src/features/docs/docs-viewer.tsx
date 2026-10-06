@@ -16,8 +16,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
-import { useNavigate } from '@tanstack/react-router'
-import { useCallback, useEffect, useMemo, useRef } from 'react'
+import { useNavigate, useRouterState } from '@tanstack/react-router'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { PublicLayout } from '@/components/layout'
@@ -25,6 +25,7 @@ import { useTheme } from '@/context/theme-provider'
 import { useStatus } from '@/hooks/use-status'
 import {
   DOCS_CONTENT_PREFIX,
+  DOCS_ENTRY_PATH,
   DOCS_LANDING_SEGMENT,
   docsLandingPathFor,
   isBundledDocsHref,
@@ -53,17 +54,6 @@ const ROUTE_MESSAGE = 'Uter:docs:route'
  */
 const SPA_HEADER_HEIGHT = '4rem'
 
-type DocsViewerProps = {
-  /**
-   * Docs page to open with, as a host path like `/docs/zh/api/...`.
-   *
-   * Comes from the `/docs/$` splat route, so reloading or sharing the
-   * URL reopens the same page. `undefined` on the bare `/docs` entry,
-   * in which case the locale landing is shown.
-   */
-  initialHostPath?: string
-}
-
 /**
  * In-app docs page for `/docs` and `/docs/$`.
  *
@@ -89,7 +79,7 @@ type DocsViewerProps = {
  * external knowledge base — in which case the SPA does not own the
  * target and falls back to a normal full-page navigation.
  */
-export function DocsViewer({ initialHostPath }: DocsViewerProps) {
+export function DocsViewer() {
   const { t, i18n } = useTranslation()
   const { resolvedTheme, setTheme } = useTheme()
   const { status } = useStatus()
@@ -104,27 +94,68 @@ export function DocsViewer({ initialHostPath }: DocsViewerProps) {
   // instead of a redirect.
   const docsLocale = resolveDocsLocaleCode(i18n.language)
 
-  // The part after `/docs/` — e.g. `zh/api/audio-openai`. Derived purely
-  // from the route (the `/docs/$` splat) or, when the entry was opened bare,
-  // from the locale landing. It is the single source of truth for both the
-  // iframe source and the mirrored host URL, so a frame-driven navigation and
-  // a UI-language switch both just rewrite this one string + the URL.
+  // The part after `/docs/` — e.g. `zh/api/audio-openai`. It is the single
+  // source of truth for both the frame source and the mirrored host URL, so a
+  // frame-driven navigation and a UI-language switch both just rewrite this
+  // one string + the URL.
+  //
+  // Read from the **live location** rather than from a prop. The bare `/docs`
+  // entry and `/docs/<page>` are two sibling routes, so the component that
+  // renders the frame has to live in the layout above them (see
+  // `routes/docs.tsx`) to stay mounted across that swap — and once it does,
+  // it has no prop to read, because the splat belongs to the child route. The
+  // location is the one place that always names the page the reader is on,
+  // which is exactly what a reload or a shared link has to reopen.
   //
   // It is kept in the **host** form, without a trailing slash, because it is
   // the address the reader sees and shares; the frame's own `src` re-adds the
   // slash below, which the static directory mount requires.
+  const pathname = useRouterState({ select: (s) => s.location.pathname })
   const hostSplat = useMemo(() => {
-    const fromRoute = initialHostPath ? toDocsHostSplat(initialHostPath) : null
-    if (fromRoute) return fromRoute
+    const fromLocation =
+      pathname !== DOCS_ENTRY_PATH && pathname.startsWith(DOCS_ENTRY_PATH)
+        ? toDocsHostSplat(pathname)
+        : null
+    if (fromLocation) return fromLocation
     return (
       toDocsHostSplat(docsLandingPathFor(docsLocale)) ??
       `${docsLocale}/${DOCS_LANDING_SEGMENT}`
     )
-  }, [initialHostPath, docsLocale])
+  }, [pathname, docsLocale])
 
   // The content mount is a directory tree, so the frame's `src` must keep the
   // trailing slash `/docs-content/docs/<lang>/…/` — the unslashed form 301s.
-  const frameSrc = `${DOCS_CONTENT_PREFIX}/${hostSplat}/`
+  //
+  // Reassigning an iframe's `src` is a *document load*, not a route change:
+  // the frame throws away the DOM it had and re-fetches, which reads as a
+  // full page refresh. That is exactly what must not happen when the reader
+  // clicks a sidebar link, because in that case the frame has **already**
+  // soft-navigated (Next.js swaps the RSC payload — verified: only
+  // `__next.*__PAGE__.txt` is fetched, no `index.html`) and then told us so
+  // over {@link ROUTE_MESSAGE}. Rewriting `src` to the page the frame is
+  // already showing would reload it for nothing.
+  //
+  // So `src` is pinned to the page the frame was *pointed at* and only moves
+  // when the host itself is the side that changed page — the reader arriving
+  // on a shared/reloaded link, or a UI-language switch. In-frame navigation
+  // updates the address bar alone (`hostSplat` above), leaving the loaded
+  // document — and its scroll position and open folder state — untouched.
+  const [frameSrc, setFrameSrc] = useState(
+    () => `${DOCS_CONTENT_PREFIX}/${hostSplat}/`
+  )
+
+  // The page the frame has told us it is on. While it matches `hostSplat`
+  // the two are describing the same navigation, so `src` must not be touched.
+  // Cleared as soon as the host moves `src` itself, so a later host-side trip
+  // back to that same page (browser back/forward onto a frame-reported URL)
+  // still reloads instead of wrongly believing the frame is already there.
+  const frameReportedSplat = useRef<string | null>(null)
+
+  useEffect(() => {
+    if (frameReportedSplat.current === hostSplat) return
+    frameReportedSplat.current = null
+    setFrameSrc(`${DOCS_CONTENT_PREFIX}/${hostSplat}/`)
+  }, [hostSplat])
 
   // Switching the UI language re-points the frame at the same page in
   // the other locale — both locales ship the same page tree — so the
@@ -139,11 +170,11 @@ export function DocsViewer({ initialHostPath }: DocsViewerProps) {
     previousLocale.current = docsLocale
     const idx = hostSplat.indexOf('/')
     const rest = idx === -1 ? '' : hostSplat.slice(idx + 1)
-    navigate({
-      to: '/docs/$',
-      params: { _splat: rest ? `${docsLocale}/${rest}` : docsLocale },
-      replace: true,
-    })
+    const next = rest ? `${docsLocale}/${rest}` : docsLocale
+    // The other locale ships the same page tree, so the frame is re-pointed
+    // by moving `hostSplat` — not left to re-derive the new locale's landing,
+    // which would throw the reader back to the first page of the docs.
+    navigate({ to: '/docs/$', params: { _splat: next }, replace: true })
   }, [docsLocale, hostSplat, navigate])
 
   // Push the resolved theme down on load and on every toggle, so the
@@ -173,7 +204,15 @@ export function DocsViewer({ initialHostPath }: DocsViewerProps) {
         const splat = toDocsHostSplat(
           typeof data.path === 'string' ? data.path : undefined
         )
-        if (!splat || splat === hostSplat) return
+        if (!splat) return
+
+        // The frame navigated on its own and is now showing this page, so
+        // record it *before* the address bar is rewritten. The effect that
+        // pins `src` compares this against `hostSplat` and leaves the loaded
+        // document alone when they describe the same navigation — which is
+        // what keeps a sidebar click from reloading the frame.
+        frameReportedSplat.current = splat
+
         // Mirror the framed page into the host URL so a reload lands
         // back on it. `replace` keeps the back button meaning "leave
         // the docs" instead of stepping through every page read. The

@@ -18,21 +18,16 @@ For commercial licensing, please contact support@uter.ai
 */
 import { createFileRoute } from '@tanstack/react-router'
 
-import { DocsViewer } from '@/features/docs'
-
 /**
  * Clean docs URL: `/docs/<lang>/<page>` with no query string and no
- * percent-encoding. The splat (everything after `/docs/`) is the host
- * path the iframe's content is derived from; `DocsViewer` turns it into
- * the framed content URL (`/docs-content/docs/<lang>/<page>`) and mirrors
- * any in-frame navigation back here so a reload / shared link reopens the
- * same page.
+ * percent-encoding. The splat (everything after `/docs/`) names the host page
+ * the iframe's content is derived from — `/docs-content/docs/<lang>/<page>` —
+ * so a reload or a shared link reopens the same page.
+ *
+ * Like the bare entry beside it, this route renders nothing: the shell and
+ * the single frame belong to the layout (`routes/docs.tsx`), which stays
+ * mounted when the reader moves between `/docs` and a page inside it. The
+ * frame reads the page to show from the location, so all this route has to
+ * do is give the page its own URL.
  */
-function DocsSplatRoute() {
-  const { _splat } = Route.useParams()
-  return <DocsViewer initialHostPath={`/docs/${_splat}`} />
-}
-
-export const Route = createFileRoute('/docs/$')({
-  component: DocsSplatRoute,
-})
+export const Route = createFileRoute('/docs/$')()
