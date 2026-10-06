@@ -208,7 +208,7 @@ export function Features(_props: FeaturesProps) {
                 </span>
                 <h3 className='text-base font-semibold'>{f.title}</h3>
               </div>
-              <p className='text-muted-foreground text-base leading-relaxed'>
+              <p className='text-muted-foreground text-sm leading-relaxed'>
                 {f.desc}
               </p>
               {f.visual}

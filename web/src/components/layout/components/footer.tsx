@@ -69,7 +69,7 @@ function FooterLinkItem(props: { link: FooterLink }) {
         href={props.link.href}
         target='_blank'
         rel='noopener noreferrer'
-        className='text-muted-foreground hover:text-foreground text-base transition-colors duration-200'
+        className='text-muted-foreground hover:text-foreground text-[13px] transition-colors duration-200'
       >
         {label}
       </a>
@@ -79,7 +79,7 @@ function FooterLinkItem(props: { link: FooterLink }) {
   return (
     <Link
       to={props.link.href}
-      className='text-muted-foreground hover:text-foreground text-base transition-colors duration-200'
+      className='text-muted-foreground hover:text-foreground text-[13px] transition-colors duration-200'
     >
       {label}
     </Link>
@@ -179,7 +179,7 @@ function LegalLinks(props: { leadingSeparator?: boolean }) {
           <a
             href={item.href}
             onClick={(event) => openInApp(event, item.id)}
-            className='hover:text-foreground text-base transition-colors duration-200'
+            className='hover:text-foreground text-[13px] transition-colors duration-200'
           >
             {item.label}
           </a>
@@ -229,7 +229,7 @@ function ProjectAttribution(props: {
     return content
   }
   return (
-    <div className='text-muted-foreground/45 text-center text-sm sm:text-right'>
+    <div className='text-muted-foreground/45 text-center text-[13px] sm:text-right'>
       {content}
     </div>
   )
@@ -314,10 +314,10 @@ export function Footer(props: FooterProps) {
         <div className='mx-auto w-full max-w-6xl px-6 py-5'>
           <div className='bg-muted/20 border-border/50 flex flex-col items-center justify-between gap-4 rounded-2xl border px-4 py-4 backdrop-blur-sm sm:flex-row sm:px-5'>
             <HtmlContent
-              className='custom-footer text-muted-foreground min-w-0 text-center text-sm sm:text-left'
+              className='custom-footer text-muted-foreground min-w-0 text-center text-[13px] sm:text-left'
               content={footerHtml}
             />
-            <div className='border-border/60 text-muted-foreground/45 flex w-full flex-wrap items-center justify-center gap-x-3 gap-y-1 border-t pt-4 text-sm sm:w-auto sm:justify-end sm:border-t-0 sm:border-l sm:pt-0 sm:pl-5'>
+            <div className='border-border/60 text-muted-foreground/45 flex w-full flex-wrap items-center justify-center gap-x-3 gap-y-1 border-t pt-4 text-[13px] sm:w-auto sm:justify-end sm:border-t-0 sm:border-l sm:pt-0 sm:pl-5'>
               <LegalLinks />
               <ProjectAttribution
                 currentYear={currentYear}
@@ -349,7 +349,7 @@ export function Footer(props: FooterProps) {
                 {brandName}
               </span>
             </Link>
-            <p className='text-muted-foreground/60 mt-3 max-w-[200px] text-sm leading-relaxed'>
+            <p className='text-muted-foreground/60 mt-3 max-w-[200px] text-[13px] leading-relaxed'>
               {t('Powerful API Management Platform')}
             </p>
           </div>
@@ -359,7 +359,7 @@ export function Footer(props: FooterProps) {
             <div className='grid grid-cols-3 gap-8 md:gap-16'>
               {displayColumns.map((column) => (
                 <div key={column.title}>
-                  <p className='text-muted-foreground/50 mb-3 text-sm font-medium tracking-wider uppercase'>
+                  <p className='text-muted-foreground/50 mb-3 text-[13px] font-medium tracking-wider uppercase'>
                     {t(column.title)}
                   </p>
                   <ul className='space-y-2.5'>
@@ -378,7 +378,7 @@ export function Footer(props: FooterProps) {
         {/* Copyright + optional legal links inline on the left, project
             attribution on the right; wraps on narrow screens. */}
         <div className='border-border/30 mt-12 flex flex-col items-center justify-between gap-x-3 gap-y-2 border-t pt-6 sm:flex-row'>
-          <div className='text-muted-foreground/40 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-sm sm:justify-start'>
+          <div className='text-muted-foreground/40 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-[13px] sm:justify-start'>
             <span>
               &copy; {currentYear} {brandName}.{' '}
               {props.copyright ?? t('footer.defaultCopyright')}
