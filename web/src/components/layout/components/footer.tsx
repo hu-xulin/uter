@@ -218,7 +218,7 @@ function ProjectAttribution(props: {
         href='https://uter.ai'
         target='_blank'
         rel='noopener noreferrer'
-        className='text-foreground/70 hover:text-foreground text-base font-medium transition-colors'
+        className='text-foreground/70 hover:text-foreground text-[13px] font-medium transition-colors'
       >
         {props.brandName ?? t('Uter')}
       </a>
@@ -345,7 +345,7 @@ export function Footer(props: FooterProps) {
                 alt={brandName}
                 className='size-7 rounded-lg object-contain'
               />
-              <span className='font-brand text-base font-semibold tracking-tight'>
+              <span className='font-brand text-[13px] font-semibold tracking-tight'>
                 {brandName}
               </span>
             </Link>
