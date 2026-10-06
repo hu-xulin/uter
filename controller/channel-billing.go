@@ -8,6 +8,7 @@ import (
 	"io"
 	"math"
 	"net/http"
+	"net/url"
 	"strconv"
 	"strings"
 	"time"
@@ -55,7 +56,49 @@ type OpenAICreditGrants struct {
 	TotalAvailable float64 `json:"total_available"`
 }
 
+// maxAdvancedCustomBalanceResponseBytes caps how much of an upstream balance
+// response is read before giving up, so a misconfigured route pointing at an
+// HTML page or a huge dump cannot exhaust memory.
 const maxAdvancedCustomBalanceResponseBytes = 256 << 10
+
+// advancedCustomBalanceStatusError turns a non-200 balance response into a
+// message the reader can act on.
+//
+// The request URL is echoed back for context, so it is stripped of its query
+// string and userinfo first: an advanced-custom route may carry the channel
+// key in a non-standard query parameter or userinfo, and this text goes
+// straight back to the browser.
+func advancedCustomBalanceStatusError(resp *http.Response, requestURL string) error {
+	status := resp.StatusCode
+
+	// Strip any query string before echoing the URL back: it may carry the
+	// secret in a non-standard parameter.
+	safeURL := requestURL
+	if parsed, err := url.Parse(requestURL); err == nil {
+		parsed.RawQuery = ""
+		parsed.User = nil
+		safeURL = parsed.String()
+	}
+
+	switch status {
+	case http.StatusNotFound, http.StatusMethodNotAllowed:
+		return fmt.Errorf(
+			"upstream returned %d for the balance request %s: this provider does not expose that endpoint. "+
+				"Set the channel's balance route to an endpoint the upstream actually serves "+
+				"(渠道设置 → 高级自定义 → 余额查询路由), or clear it if the provider has no balance API",
+			status, safeURL,
+		)
+	case http.StatusUnauthorized, http.StatusForbidden:
+		return fmt.Errorf(
+			"upstream returned %d for the balance request %s: the channel key was rejected. "+
+				"Check the key and the route's auth type",
+			status, safeURL,
+		)
+	default:
+		return fmt.Errorf("upstream returned %d for the balance request %s", status, safeURL)
+	}
+}
+
 
 type channelBalanceResult struct {
 	Balance     float64
@@ -414,7 +457,13 @@ func fetchAdvancedCustomBalance(channel *model.Channel) (channelBalanceResult, e
 	}
 	defer response.Body.Close()
 	if response.StatusCode != http.StatusOK {
-		return channelBalanceResult{}, fmt.Errorf("status code: %d", response.StatusCode)
+		// A bare "status code: 404" tells the reader nothing about which
+		// request failed or why. 404/405 in particular almost always mean the
+		// upstream simply does not expose the balance endpoint the channel
+		// maps (`/v1/dashboard/billing/credit_grants` is an OpenAI-ism that
+		// most OpenAI-compatible aggregators do not implement), so name the
+		// path and the remedy instead of leaving them to guess.
+		return channelBalanceResult{}, advancedCustomBalanceStatusError(response, requestURL)
 	}
 	body, err := io.ReadAll(io.LimitReader(response.Body, maxAdvancedCustomBalanceResponseBytes+1))
 	if err != nil {
