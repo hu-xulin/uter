@@ -242,18 +242,22 @@ fi
 echo "==> [3/5] 编译 Go 后端（内嵌 web/dist）"
 cd "$ROOT"
 
-# 文档站完整性闸门：`--no-docs` 之外的任何路径都必须带着 docs-content 进 Go 编译。
-# 起因：rsbuild build 会清空整个 web/dist（含 docs-content）。若有人只跑 web 构建
-# （或上一次 --no-docs 之后直接编 Go），docs-content 会整个消失，而
+# 文档站完整性闸门：只要这次会编 Go，就必须带着 docs-content 进编译。
+# 起因：rsbuild build 会清空整个 web/dist（含 docs-content），而
 # `//go:embed all:web/dist` 对缺失目录是**静默跳过**的 —— 编译照样成功，
 # 结果是二进制里没有文档站，/docs 与 /about 的 iframe 拿到 SPA 壳渲染成 404，
 # 且 `strings uter-bin | grep -c docs-content/docs/zh` 为 0，只能上线后才发现。
 # 这里在编译前拦住，把故障从「上线后页面消失」提前到「构建时报错」。
-if [ "$NO_DOCS" = 0 ]; then
-  [ -d "$ROOT/web/dist/docs-content/docs" ] \
-    || fail "web/dist/docs-content/docs 缺失：文档站没被拷进来（是否只跑了 web 构建？）。请重跑 $0（不要带 --no-docs）"
-  [ -d "$ROOT/web/dist/docs-content/about" ] \
-    || fail "web/dist/docs-content/about 缺失：关于页没被拷进来。请重跑 $0（不要带 --no-docs）"
+#
+# 注意：**`--no-docs` 恰恰是最危险的路径**（它跳过了 docs-web 步骤，却仍然会
+# 先跑 rsbuild 清空 dist），所以这里不按 NO_DOCS 豁免，而是按「dist 里到底
+# 有没有文档站」判断。`--no-build` 只重启不编译，不受此约束。
+if [ "$NO_BUILD" = 0 ]; then
+  if [ ! -d "$ROOT/web/dist/docs-content/docs" ] || [ ! -d "$ROOT/web/dist/docs-content/about" ]; then
+    fail "web/dist/docs-content 缺失：本次构建会把一个不含文档站的二进制编出来。
+  rsbuild build 会清空整个 web/dist（含 docs-content），而 go:embed 对缺失目录是静默跳过的。
+  请重跑 $0（不要带 --no-docs）。确实不需要文档站的话，请确认这是有意为之。"
+  fi
 fi
 
 # 读取 VERSION 用于本次构建（与 Dockerfile 注入方式一致：-X 'pkg=Version'）。
@@ -308,7 +312,7 @@ echo "✓ 后端已重启（同时提供 API 与前端 SPA）: pid=$pid  http://
 # Go 的 NoRoute 会把 SPA 壳返回给这个路径，状态码同样是 200。所以这里不看状态码，
 # 只确认响应体确实是文档站的 HTML（含 lang 标记）而不是 SPA 的 <!doctype html><html
 # lang="en"> 壳。缺文档站的二进制在这一步就会被当场发现，而不是等读者打开 /docs。
-if [ "$NO_DOCS" = 0 ]; then
+if [ "$NO_BUILD" = 0 ]; then
   probe="$(curl -s --noproxy '*' --max-time 10 "http://127.0.0.1:$PORT/docs-content/docs/zh/guide/wiki/basic-concepts/features-introduction/" 2>/dev/null || true)"
   case "$probe" in
     *"<html lang=\"zh-CN\""*|*'lang="zh-CN"'*) ;;
