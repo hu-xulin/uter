@@ -241,6 +241,21 @@ fi
 
 echo "==> [3/5] 编译 Go 后端（内嵌 web/dist）"
 cd "$ROOT"
+
+# 文档站完整性闸门：`--no-docs` 之外的任何路径都必须带着 docs-content 进 Go 编译。
+# 起因：rsbuild build 会清空整个 web/dist（含 docs-content）。若有人只跑 web 构建
+# （或上一次 --no-docs 之后直接编 Go），docs-content 会整个消失，而
+# `//go:embed all:web/dist` 对缺失目录是**静默跳过**的 —— 编译照样成功，
+# 结果是二进制里没有文档站，/docs 与 /about 的 iframe 拿到 SPA 壳渲染成 404，
+# 且 `strings uter-bin | grep -c docs-content/docs/zh` 为 0，只能上线后才发现。
+# 这里在编译前拦住，把故障从「上线后页面消失」提前到「构建时报错」。
+if [ "$NO_DOCS" = 0 ]; then
+  [ -d "$ROOT/web/dist/docs-content/docs" ] \
+    || fail "web/dist/docs-content/docs 缺失：文档站没被拷进来（是否只跑了 web 构建？）。请重跑 $0（不要带 --no-docs）"
+  [ -d "$ROOT/web/dist/docs-content/about" ] \
+    || fail "web/dist/docs-content/about 缺失：关于页没被拷进来。请重跑 $0（不要带 --no-docs）"
+fi
+
 # 读取 VERSION 用于本次构建（与 Dockerfile 注入方式一致：-X 'pkg=Version'）。
 # 构建成功后按进位规则写回：patch 满 100 进位 minor（v1.0.99 → v1.0.100 → v1.1.01 ...）。
 set +u
@@ -288,6 +303,24 @@ if [ -z "$code" ] || [ "$code" = "000" ]; then
 fi
 pid="$(lsof -nP -iTCP:$PORT -sTCP:LISTEN -t 2>/dev/null | head -1 || true)"
 echo "✓ 后端已重启（同时提供 API 与前端 SPA）: pid=$pid  http://127.0.0.1:$PORT/  (HTTP $code)"
+
+# 4.4 文档站落地校验：`/docs-content/...` 返回 200 不代表内容对——静态目录缺失时
+# Go 的 NoRoute 会把 SPA 壳返回给这个路径，状态码同样是 200。所以这里不看状态码，
+# 只确认响应体确实是文档站的 HTML（含 lang 标记）而不是 SPA 的 <!doctype html><html
+# lang="en"> 壳。缺文档站的二进制在这一步就会被当场发现，而不是等读者打开 /docs。
+if [ "$NO_DOCS" = 0 ]; then
+  probe="$(curl -s --noproxy '*' --max-time 10 "http://127.0.0.1:$PORT/docs-content/docs/zh/guide/wiki/basic-concepts/features-introduction/" 2>/dev/null || true)"
+  case "$probe" in
+    *"<html lang=\"zh-CN\""*|*'lang="zh-CN"'*) ;;
+    *) echo "✗ 文档站未随二进制生效：/docs-content/... 返回的不是文档站 HTML。" >&2
+       echo "  排查：strings $BIN | grep -c 'docs-content/docs/zh'  （为 0 即未内嵌）" >&2
+       echo "        ls web/dist/docs-content                          （应为存在）" >&2
+       echo "  多为只跑了 web 构建导致 rsbuild 清空了 web/dist，请重跑 $0（不要带 --no-docs）。" >&2
+       exit 1 ;;
+  esac
+  echo "✓ 文档站已内嵌并可访问（/docs 与 /about 的 iframe 内容正常）"
+fi
+
 echo "  日志: $LOG"
 echo "  说明: 本项目生产形态是单端口 $PORT —— SPA 与文档站已内嵌进 Go 二进制，"
 echo "        没有独立前端端口。改前端源码后想热更新调试，用 $0 --dev（3001/3100）。"
