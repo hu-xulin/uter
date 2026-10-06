@@ -269,17 +269,24 @@ export const DocsSidebarFolder: FC<{ item: PageTreeFolder; children: ReactNode }
   const section = currentSection(item, pathname, hash);
   const onOwnPage = item.index ? isCurrent(item.index.url, pathname, hash) : false;
 
+  /*
+   * Expand the whole active section. When the current page lives anywhere
+   * under this folder's top-level section (`sectionRoot`), every folder in
+   * that section is opened — clicking 用户指南 / API 参考 / AI 应用 reveals
+   * all of their subdirectories (both levels of the API reference), not
+   * just the branch that leads to the current page.
+   */
+  const sectionRoot = (item as PageTreeFolder & { sectionRoot?: string }).sectionRoot;
+  const inActiveSection = sectionRoot ? pathname.startsWith(sectionRoot) : false;
+
   return (
     <SidebarFolder
       collapsible={item.collapsible}
-      /*
-       * `active` is deliberately not passed: its only effect is to force
-       * `defaultOpen`, and a label that happens to be the current page
-       * must not unfold the group on arrival — the sidebar opens sections
-       * on request. Landing *inside* a section is a different matter, so
-       * that case opens the disclosure to show the reader where they are.
-       */
-      defaultOpen={(item.defaultOpen ?? false) || folderContainsCurrent(item, pathname, hash)}
+      defaultOpen={
+        (item.defaultOpen ?? false) ||
+        inActiveSection ||
+        folderContainsCurrent(item, pathname, hash)
+      }
     >
       {item.index ? (
         <SidebarFolderLink
