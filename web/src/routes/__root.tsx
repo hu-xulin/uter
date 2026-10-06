@@ -27,7 +27,10 @@ import {
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
 import { useEffect } from 'react'
 
-import { NavigationProgress } from '@/components/navigation-progress'
+// 顶部加载进度条目前停用：渲染处与下面的 import 都注释掉了。组件
+// `components/navigation-progress` 与 `react-top-loading-bar` 依赖原样保留，
+// 需要时取消这两处注释即可恢复，勿删组件或依赖。
+// import { NavigationProgress } from '@/components/navigation-progress'
 import { Toaster } from '@/components/ui/sonner'
 import { ThemeCustomizationProvider } from '@/context/theme-customization-provider'
 import { saveAffiliateCode } from '@/features/auth/lib/storage'
@@ -94,7 +97,15 @@ function RootComponent() {
 
   return (
     <ThemeCustomizationProvider>
-      <NavigationProgress />
+      {/*
+        顶部路由加载进度条已按要求停用：它在路由pending 时从左至右推进，
+        读起来像浏览器在「加载」，与站点即时反馈的观感冲突，且无实际信息量
+        （页面本身并不阻塞交互）。这里仅停止渲染，组件
+        `components/navigation-progress` 与 `react-top-loading-bar`
+        依赖都原样保留，需要时把下面这行改回 `<NavigationProgress />`
+        即可恢复，勿删组件或依赖。
+      */}
+      {/* <NavigationProgress /> */}
       <Outlet />
       <Toaster closeButton duration={5000} position='top-center' richColors />
       {import.meta.env.MODE === 'development' && (
