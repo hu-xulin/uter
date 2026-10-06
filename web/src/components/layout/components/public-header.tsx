@@ -114,7 +114,7 @@ export function PublicHeader(props: PublicHeaderProps) {
   let authContent = (
     <Button
       size='sm'
-      className='h-8 rounded-lg px-3.5 text-xs font-medium'
+      className='h-8 rounded-lg px-3.5 text-sm font-medium'
       render={<Link to='/sign-in' />}
     >
       {t('Sign in')}
@@ -246,7 +246,7 @@ export function PublicHeader(props: PublicHeaderProps) {
                       tabIndex={link.disabled ? -1 : undefined}
                       onClick={(event) => handleNavLinkClick(event, link)}
                       className={cn(
-                        'text-muted-foreground hover:text-foreground min-w-0 truncate rounded-lg px-3 py-1.5 text-sm font-medium transition-colors duration-200',
+                        'text-muted-foreground hover:text-foreground min-w-0 truncate rounded-lg px-3 py-1.5 text-base font-medium transition-colors duration-200',
                         link.disabled && 'pointer-events-none opacity-50'
                       )}
                     >
@@ -262,7 +262,7 @@ export function PublicHeader(props: PublicHeaderProps) {
                     disabled={link.disabled}
                     onClick={(event) => handleNavLinkClick(event, link)}
                     className={cn(
-                      'min-w-0 truncate rounded-lg px-3 py-1.5 text-sm transition-colors duration-200',
+                      'min-w-0 truncate rounded-lg px-3 py-1.5 text-base transition-colors duration-200',
                       isActive
                         ? 'text-black font-semibold dark:text-white'
                         : 'text-muted-foreground font-medium hover:text-foreground',
