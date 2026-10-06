@@ -7,7 +7,7 @@ import {
   DocsDescription,
 } from 'fumadocs-ui/layouts/docs/page';
 import { SearchTrigger } from 'fumadocs-ui/layouts/shared/slots/search-trigger';
-import type { Node as PageTreeNode, Root as PageTreeRoot } from 'fumadocs-core/page-tree';
+import type { Node as PageTreeNode, Root as PageTreeRoot, Folder as PageTreeFolder } from 'fumadocs-core/page-tree';
 import type { TOCItemType } from 'fumadocs-core/toc';
 
 import { DocsEmbedBridge } from '@/lib/docs-embed-bridge';
@@ -44,7 +44,7 @@ import { sidebarEntries, type SidebarEntry, type SidebarNode } from '@/lib/nav';
  * three levels (API 参考 → 音频 → 原生 Gemini 格式); the folder renderer
  * keeps every ancestor open while a descendant is current.
  */
-function buildNode(node: SidebarNode): PageTreeNode {
+function buildNode(node: SidebarNode, sectionRoot: string): PageTreeNode {
   if (!node.children || node.children.length === 0) {
     return {
       type: 'page',
@@ -68,12 +68,23 @@ function buildNode(node: SidebarNode): PageTreeNode {
       : { index: { type: 'page', name: node.title, url: node.url } }),
     collapsible: true,
     defaultOpen: node.defaultOpen ?? false,
-    children: node.children.map(buildNode),
-  };
+    /*
+     * `sectionRoot` is the URL of the top-level outline section this
+     * folder belongs to. The sidebar renderer reads it to expand *every*
+     * folder in the active section — so clicking a section reveals all of
+     * its subdirectories, not only the path to the current page.
+     */
+    sectionRoot,
+    children: node.children.map((child) => buildNode(child, sectionRoot)),
+  } as PageTreeFolder & { sectionRoot?: string };
 }
 
 function buildPageTree(entries: SidebarEntry[]): PageTreeRoot {
-  return { name: 'root', type: 'root', children: entries.map(buildNode) };
+  return {
+    name: 'root',
+    type: 'root',
+    children: entries.map((entry) => buildNode(entry, entry.url)),
+  };
 }
 
 /**

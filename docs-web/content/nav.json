@@ -90,7 +90,6 @@
         "vi": "Tài liệu tham khảo endpoint được nhóm theo giao thức, kèm tham số và phản hồi.",
         "zh-TW": "依協定分組的介面文件，含請求參數與回應欄位。"
       },
-      "noIndex": true,
       "children": {
         "source": "navigation",
         "navigation": "api",
