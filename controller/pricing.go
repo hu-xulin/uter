@@ -108,8 +108,8 @@ func normalizePricingSource(raw string) string {
 // all and the plaza would fall back to the platform's own — possibly discounted
 // — price and present it as the "official" one.
 //
-// GetPresetModelRatios hands out a private copy of the cached preset, so the
-// gap fill below mutates only that copy. Mutating the shared cache would
+// getPresetModelRatiosNonBlocking hands out a private copy of the cached preset,
+// so the gap fill below mutates only that copy. Mutating the shared cache would
 // permanently graft the fallback preset's entries into the cached primary
 // preset, corrupt the admin preset editor (which serves the same cache) and make
 // the two presets converge, silently rendering the pricing-source choice inert.
@@ -124,8 +124,8 @@ func resolveOfficialPrices(pricingSource string) map[string]map[string]float64 {
 	if referencePresetID == modelsDevPresetID {
 		fallbackPresetID = officialRatioPresetID
 	}
-	merged := GetPresetModelRatios(referencePresetID)
-	for modelName, ratios := range GetPresetModelRatios(fallbackPresetID) {
+	merged := getPresetModelRatiosNonBlocking(referencePresetID)
+	for modelName, ratios := range getPresetModelRatiosNonBlocking(fallbackPresetID) {
 		if _, ok := merged[modelName]; !ok {
 			merged[modelName] = ratios
 		}

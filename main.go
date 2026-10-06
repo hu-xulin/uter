@@ -114,6 +114,11 @@ func main() {
 	// endpoint inference can read cached route settings on first request.
 	model.GetPricing()
 
+	// Pre-warm the external pricing presets (official / models.dev) in the
+	// background so the first /api/pricing call never blocks on a slow upstream
+	// fetch (models.dev can take several seconds to respond).
+	controller.WarmPresetRatios()
+
 	// 热更新配置
 	go model.SyncOptions(common.SyncFrequency)
 	go controller.SyncTaskPlugins()
