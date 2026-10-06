@@ -18,20 +18,34 @@ For commercial licensing, please contact support@uter.ai
 */
 import { createFileRoute, Outlet } from '@tanstack/react-router'
 
+import { DocsViewer } from '@/features/docs'
+
 /**
- * Layout route for `/docs`. It owns the docs shell but renders no content
- * of its own — the bare entry (`routes/docs/index.tsx`) and the clean
- * `/docs/<lang>/<page>` URL (`routes/docs/$.tsx`) provide the page through
- * this outlet.
+ * Layout route for `/docs`. It owns the docs shell — and deliberately
+ * renders {@link DocsViewer} *here*, in the layout that survives every
+ * child swap, rather than in the two children below.
  *
- * Rendering `<Outlet/>` (instead of `<DocsViewer/>` directly) is what makes
- * the `/docs/$` child route mount. Without it the child never renders, so
- * `DocsViewer`'s `initialHostPath` stays `undefined` and the address bar can
- * never be re-pointed at the page the reader actually navigated to — see
- * `features/docs/docs-viewer.tsx`.
+ * The bare entry (`routes/docs/index.tsx`) and the clean `/docs/<lang>/<page>`
+ * URL (`routes/docs/$.tsx`) are **sibling** routes, so a viewer rendered by
+ * either of them is unmounted and remounted as soon as the reader moves
+ * between `/docs` and a page inside it — and a remounted `<iframe>` reloads
+ * its document, which is the "sudden page refresh" that made clicking a
+ * sidebar section feel like it threw the page away. One frame in the layout
+ * stays mounted across the whole docs section, and reads the page it should
+ * show from the location (`DocsViewer` uses `useRouterState`), so the
+ * children only have to exist to own the URL.
+ *
+ * Rendering `<Outlet/>` is also what makes the `/docs/$` child route mount
+ * at all; without it the child never renders and the address bar can never be
+ * re-pointed at the page the reader navigated to.
  */
 function DocsRoute() {
-  return <Outlet />
+  return (
+    <>
+      <DocsViewer />
+      <Outlet />
+    </>
+  )
 }
 
 export const Route = createFileRoute('/docs')({

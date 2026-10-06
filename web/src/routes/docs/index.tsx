@@ -18,19 +18,15 @@ For commercial licensing, please contact support@uter.ai
 */
 import { createFileRoute } from '@tanstack/react-router'
 
-import { DocsViewer } from '@/features/docs'
-
 /**
- * Bare `/docs` entry. Opens the docs on 特性说明 (see `docsLandingPathFor`);
- * the actual page is resolved by `DocsViewer` from the UI locale. Once the
- * reader navigates inside the frame, the `/docs/$` splat route
- * (`routes/docs/$.tsx`) takes over and mirrors the in-frame page into the
- * address bar, so a reload or a shared link reopens the same page.
+ * Bare `/docs` entry. The docs shell and the framed page are rendered by
+ * the layout above (`routes/docs.tsx`), which owns the single iframe for the
+ * whole section; this route exists only to give the entry its own URL. That
+ * split is what keeps the frame mounted — a viewer rendered here instead
+ * would be unmounted the moment the reader opens a page inside the docs, and
+ * the reloaded iframe is exactly the "sudden page refresh" being avoided.
+ *
+ * A bare entry shows the locale landing (特性说明), resolved by `DocsViewer`
+ * from the UI language.
  */
-function DocsIndexRoute() {
-  return <DocsViewer />
-}
-
-export const Route = createFileRoute('/docs/')({
-  component: DocsIndexRoute,
-})
+export const Route = createFileRoute('/docs/')()
