@@ -444,8 +444,8 @@ func GetUser(c *gin.Context) {
 		common.ApiError(c, err)
 		return
 	}
-	myRole := c.GetInt("role")
-	if !canManageTargetRole(myRole, user.Role) {
+	// 角色等级 + 组织/部门范围：组织范围管理员不得查看其他组织的用户。
+	if !canManageTargetUser(c, user) {
 		common.ApiErrorI18n(c, i18n.MsgUserNoPermissionSameLevel)
 		return
 	}
@@ -725,8 +725,8 @@ func UpdateUser(c *gin.Context) {
 		return
 	}
 	updatedUser.Role = originUser.Role
-	myRole := c.GetInt("role")
-	if !canManageTargetRole(myRole, originUser.Role) {
+	// 角色等级 + 组织/部门范围：组织范围管理员不得修改其他组织的用户。
+	if !canManageTargetUser(c, originUser) {
 		common.ApiErrorI18n(c, i18n.MsgUserNoPermissionHigherLevel)
 		return
 	}
@@ -789,8 +789,8 @@ func AdminClearUserBinding(c *gin.Context) {
 		return
 	}
 
-	myRole := c.GetInt("role")
-	if !canManageTargetRole(myRole, user.Role) {
+	// 角色等级 + 组织/部门范围：组织范围管理员不得清空其他组织用户的绑定。
+	if !canManageTargetUser(c, user) {
 		common.ApiErrorI18n(c, i18n.MsgUserNoPermissionSameLevel)
 		return
 	}
@@ -983,6 +983,11 @@ func DeleteUser(c *gin.Context) {
 		common.ApiErrorI18n(c, i18n.MsgUserNoPermissionHigherLevel)
 		return
 	}
+	// 组织/部门范围：组织范围管理员不得硬删除其他组织的用户。
+	if !targetWithinOrgScope(c, originUser) {
+		common.ApiErrorI18n(c, i18n.MsgUserNoPermissionHigherLevel)
+		return
+	}
 	err = model.HardDeleteUserById(id)
 	if err != nil {
 		common.ApiError(c, err)
@@ -1141,15 +1146,12 @@ type ManageRequest struct {
 	Mode   string `json:"mode"`
 }
 
-// canManageTargetUser 判定调用者是否可以管理目标用户：角色等级 + 组织/部门范围。
+// targetWithinOrgScope 判定调用者能否触达目标用户的组织/部门范围（不含角色等级）。
 //
-// 任何「改动他人」的动作都必须先过这一关，包括额度调整。原实现中 add_quota 在加载
-// 目标用户与这两项校验之前就 return，等于留了一条绕过「只能管理本组织成员」的通道。
-func canManageTargetUser(c *gin.Context, target *model.User) bool {
-	if !canManageTargetRole(c.GetInt("role"), target.Role) {
-		return false
-	}
-	// 组织范围管理员只能管理本组织（本部门）成员，杜绝越权改别家公司员工。
+// 平台管理员（organization_id==0）不受组织边界约束；组织范围管理员只能作用于本组织
+// 成员，部门管理员再额外限制到本部门。所有「查看/改动他人」的接口都必须过这一关，
+// 否则 role>=AdminUser 且 organization_id>0 的账号可以跨租户读、改、删其他组织的用户。
+func targetWithinOrgScope(c *gin.Context, target *model.User) bool {
 	myOrg := c.GetInt("organization_id")
 	if myOrg == 0 {
 		return true
@@ -1158,14 +1160,23 @@ func canManageTargetUser(c *gin.Context, target *model.User) bool {
 		return false
 	}
 	if c.GetString("org_role") == model.OrgRoleDepartmentAdmin {
-		// 部门管理员只能管理本部门成员。department_id 列已废弃且恒为 0，必须改用部门名称；
-		// 未分配部门（department_name 为空）时 fail-closed，拒绝跨组织/跨部门操作。
 		myDept := c.GetString("department_name")
 		if myDept == "" || target.DepartmentName != myDept {
 			return false
 		}
 	}
 	return true
+}
+
+// canManageTargetUser 判定调用者是否可以管理目标用户：角色等级 + 组织/部门范围。
+//
+// 任何「改动他人」的动作都必须先过这一关，包括额度调整。原实现中 add_quota 在加载
+// 目标用户与这两项校验之前就 return，等于留了一条绕过「只能管理本组织成员」的通道。
+func canManageTargetUser(c *gin.Context, target *model.User) bool {
+	if !canManageTargetRole(c.GetInt("role"), target.Role) {
+		return false
+	}
+	return targetWithinOrgScope(c, target)
 }
 
 // ManageUser Only admin user can do this

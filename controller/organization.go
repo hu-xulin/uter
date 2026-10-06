@@ -784,10 +784,24 @@ func orgVisibilityExcludeRoles(authority orgAuthority) []string {
 // 组织管理员与部门管理员视角会隐去其无权查看的角色（所有者 / 管理员）。
 func orgLogUsernames(c *gin.Context, orgId int, authority orgAuthority) ([]string, error) {
 	excludeRoles := orgVisibilityExcludeRoles(authority)
+	var (
+		names []string
+		err   error
+	)
 	if authority == orgAuthorityDepartmentAdmin {
-		return model.GetOrgMemberUsernamesInDepartment(orgId, c.GetString("department_name"), excludeRoles...)
+		names, err = model.GetOrgMemberUsernamesInDepartment(orgId, c.GetString("department_name"), excludeRoles...)
+	} else {
+		names, err = model.GetOrgMemberUsernames(orgId, excludeRoles...)
 	}
-	return model.GetOrgMemberUsernames(orgId, excludeRoles...)
+	if err != nil {
+		return nil, err
+	}
+	if len(names) == 0 {
+		// 与 orgMemberIds 对称：可见成员为空（如部门管理员未分配部门）时返回哨兵，
+		// 避免下游把空切片当作「不施加过滤」而静默退化成「看全平台日志/统计」。
+		return []string{model.NoOrgMemberUsername}, nil
+	}
+	return names, nil
 }
 
 // orgMemberIds 与 orgLogUsernames 对称：返回该组织范围内可见成员的 user id，

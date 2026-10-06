@@ -442,8 +442,7 @@ func AdminResetPasskey(c *gin.Context) {
 		writeSecurityOperationError(c, err)
 		return
 	}
-	myRole := c.GetInt("role")
-	if !canManageTargetRole(myRole, user.Role) {
+	if !canManageTargetUser(c, user) {
 		common.ApiErrorI18n(c, i18n.MsgAuthInsufficientPrivilege)
 		return
 	}

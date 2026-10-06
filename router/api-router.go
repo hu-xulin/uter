@@ -90,7 +90,9 @@ func SetApiRouter(router *gin.Engine) {
 			userRoute.GET("/epay/notify", controller.EpayNotify)
 			userRoute.POST("/alipay/notify", anonymousRequestBodyLimit, controller.AlipayNotify)
 			userRoute.POST("/wechat/notify", anonymousRequestBodyLimit, controller.WechatPayNotify)
-			userRoute.GET("/groups", controller.GetUserGroups)
+			// 分组名与倍率属站点内部信息，不应匿名暴露；前端统一走已鉴权的
+			// /user/self/groups，此处补 UserAuth 以消除匿名读取面。
+			userRoute.GET("/groups", middleware.UserAuth(), controller.GetUserGroups)
 
 			selfRoute := userRoute.Group("/")
 			selfRoute.Use(middleware.DisableCache(), middleware.UserAuth())

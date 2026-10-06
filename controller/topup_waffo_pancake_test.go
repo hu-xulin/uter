@@ -89,3 +89,31 @@ func TestGetWaffoPancakePayMoney(t *testing.T) {
 		})
 	}
 }
+
+// 验签公钥随 SDK 内置且为全局共享（所有商户同一把），因此「验签通过」无法分辨
+// 事件归属；StoreID 是唯一能把「本店真实事件」与「攻击者用自己商户伪造的事件」
+// 分开的绑定。未绑定 StoreID 时必须拒绝启用该充值通道（否则可被伪造事件免费充值）。
+func TestWaffoPancakeTopUpRequiresStoreID(t *testing.T) {
+	origMerchant, origKey := setting.WaffoPancakeMerchantID, setting.WaffoPancakePrivateKey
+	origStore, origProduct := setting.WaffoPancakeStoreID, setting.WaffoPancakeProductID
+	ps := operation_setting.GetPaymentSetting()
+	origConfirmed, origVersion := ps.ComplianceConfirmed, ps.ComplianceTermsVersion
+	t.Cleanup(func() {
+		setting.WaffoPancakeMerchantID, setting.WaffoPancakePrivateKey = origMerchant, origKey
+		setting.WaffoPancakeStoreID, setting.WaffoPancakeProductID = origStore, origProduct
+		ps.ComplianceConfirmed, ps.ComplianceTermsVersion = origConfirmed, origVersion
+	})
+
+	setting.WaffoPancakeMerchantID = "merchant-1"
+	setting.WaffoPancakePrivateKey = "pk"
+	setting.WaffoPancakeProductID = "prod-1"
+	ps.ComplianceConfirmed = true
+	ps.ComplianceTermsVersion = operation_setting.CurrentComplianceTermsVersion
+
+	setting.WaffoPancakeStoreID = ""
+	require.False(t, isWaffoPancakeTopUpEnabled(),
+		"未绑定店铺 ID 时不得启用：全局公钥验签无法分辨事件归属")
+
+	setting.WaffoPancakeStoreID = "store-1"
+	require.True(t, isWaffoPancakeTopUpEnabled(), "绑定店铺 ID 后应可启用")
+}
