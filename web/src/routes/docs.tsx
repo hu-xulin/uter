@@ -16,17 +16,22 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
-import { createFileRoute } from '@tanstack/react-router'
-
-import { DocsViewer } from '@/features/docs'
+import { createFileRoute, Outlet } from '@tanstack/react-router'
 
 /**
- * Bare `/docs` entry. The SPA route that owns the docs shell; the actual
- * page shown is resolved by `DocsViewer` from the UI locale (or, when the
- * URL carries a `/docs/$` splat, from that splat — see `routes/docs/$.tsx`).
+ * Layout route for `/docs`. It owns the docs shell but renders no content
+ * of its own — the bare entry (`routes/docs/index.tsx`) and the clean
+ * `/docs/<lang>/<page>` URL (`routes/docs/$.tsx`) provide the page through
+ * this outlet.
+ *
+ * Rendering `<Outlet/>` (instead of `<DocsViewer/>` directly) is what makes
+ * the `/docs/$` child route mount. Without it the child never renders, so
+ * `DocsViewer`'s `initialHostPath` stays `undefined` and the address bar can
+ * never be re-pointed at the page the reader actually navigated to — see
+ * `features/docs/docs-viewer.tsx`.
  */
 function DocsRoute() {
-  return <DocsViewer />
+  return <Outlet />
 }
 
 export const Route = createFileRoute('/docs')({
