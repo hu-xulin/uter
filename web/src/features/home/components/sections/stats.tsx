@@ -116,7 +116,7 @@ export function Stats(_props: StatsProps) {
               <span className='text-2xl font-bold tracking-tight md:text-3xl'>
                 <Counter end={s.end} suffix={s.suffix} decimals={s.decimals} />
               </span>
-              <span className='text-muted-foreground mt-1.5 text-xs'>
+              <span className='text-muted-foreground mt-1.5 text-sm'>
                 {s.label}
               </span>
             </div>
