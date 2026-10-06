@@ -3,6 +3,7 @@ import { Callout } from 'fumadocs-ui/components/callout';
 
 import { PARTNER_GROUP_LABELS } from '@/lib/content/about';
 import type { AboutPartner, AboutSection } from '@/lib/content/about';
+import { CodeBlock, type CodeCopyLabels } from '@/lib/code-block';
 import { PartnerLogo } from '@/lib/partner-logo';
 import type { Block, BlockGroup, Inline } from '@/lib/content/blocks';
 import type { DocsLocale } from '@/lib/i18n';
@@ -379,6 +380,25 @@ const PENDING_IMAGE_LABEL: Record<DocsLocale, string> = {
   vi: 'Ảnh chụp màn hình sắp ra mắt',
 };
 
+/**
+ * The code block's copy-button label. Localised because the button is the
+ * only interactive chrome the code block has, and a reader who cannot read
+ * the surrounding prose cannot act on it either.
+ */
+const CODE_COPY_LABEL: Record<DocsLocale, CodeCopyLabels> = {
+  zh: { copy: '复制', copied: '已复制' },
+  'zh-TW': { copy: '複製', copied: '已複製' },
+  en: { copy: 'Copy', copied: 'Copied' },
+  fr: { copy: 'Copier', copied: 'Copié' },
+  ja: { copy: 'コピー', copied: 'コピーしました' },
+  ru: { copy: 'Копировать', copied: 'Скопировано' },
+  vi: { copy: 'Sao chép', copied: 'Đã sao chép' },
+};
+
+function codeCopyLabels(locale: DocsLocale): CodeCopyLabels {
+  return CODE_COPY_LABEL[locale];
+}
+
 /** Draw one run of inline text, keeping its formatting. */
 function InlineRuns({ nodes }: { nodes: Inline[] }) {
   return (
@@ -501,18 +521,7 @@ function BlockView({ block, locale }: { block: Block; locale: DocsLocale }) {
     }
 
     case 'code':
-      return (
-        <div className='not-prose my-4 overflow-hidden rounded-lg border border-fd-border bg-fd-card/40'>
-          {block.lang ? (
-            <div className='border-b border-fd-border px-3 py-1.5 text-xs font-medium text-fd-muted-foreground'>
-              {block.lang}
-            </div>
-          ) : null}
-          <pre className='overflow-x-auto p-3 text-xs leading-relaxed'>
-            <code className='font-mono text-fd-foreground'>{block.value}</code>
-          </pre>
-        </div>
-      );
+      return <CodeBlock code={block.value} lang={block.lang} labels={codeCopyLabels(locale)} />;
 
     case 'table':
       return (

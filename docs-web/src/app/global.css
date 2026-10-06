@@ -67,6 +67,7 @@
  * from GitHub's markdown scale (h1 = 2em, h2 = 1.5em, body = 1em on a
  * 16px base):
  *
+ /*
  *   --text-doc-h1  一级标题 (page title) … 32px
  *   --text-doc-h2  二级标题 (h2 / h3) ……… 24px
  *   --text-doc-body 正文 (p / li / td / …)  16px
@@ -75,6 +76,15 @@
  * and the prose override at the end of this file. Weights stay out of
  * the tokens: headings are 600 (semibold) and body 400, matching the
  * SPA's GitHub vocabulary.
+ *
+ * `--text-doc-code` is the fourth tier, for code inside a fenced block.
+ * It is deliberately *not* the `text-xs` (12px) the blocks used to be
+ * drawn at: a shell command is read token by token, and at 12px the
+ * punctuation that separates them stops being distinguishable. 14px is
+ * GitHub's code size and holds a full-width line of a `curl` example
+ * without the guide's examples wrapping on a laptop.
+ * `--text-doc-code-line` is the gutter's own step; it matches the code so
+ * a line number sits on its line rather than a few pixels off it.
  */
 @theme {
   --text-doc-h1: 2rem;
@@ -83,6 +93,63 @@
   --text-doc-h2--line-height: 2rem;
   --text-doc-body: 1rem;
   --text-doc-body--line-height: 1.625rem;
+  --text-doc-code: 0.875rem;
+  --text-doc-code--line-height: 1.5rem;
+  --text-doc-code-line: 0.875rem;
+  --text-doc-code-line--line-height: 1.5rem;
+}
+
+/*
+ * ── Code block colours — GitHub's light syntax palette ───────────────
+ *
+ * A fenced block used to be drawn in `text-fd-foreground`, i.e. every
+ * token in one colour, which is what made an example unreadable as code:
+ * the shell command, its flag, its argument and the string it interpolates
+ * all looked alike.
+ *
+ * These are the roles `code-block.tsx` emits, mapped to GitHub's light
+ * values (the reference palette for Markdown code, and the same one the
+ * SPA's own code samples use). Defined as plain custom properties rather
+ * than inside `@theme` so they are readable at runtime and overridable
+ * per mode; the `text-doc-code-*` utilities below resolve to them.
+ *
+ *   comment   italic green      string    red
+ *   keyword   magenta           number    blue
+ *   variable  blue              property  blue
+ */
+:root {
+  --doc-code-comment: #177500;
+  --doc-code-string: #c41a16;
+  --doc-code-number: #1c01ce;
+  --doc-code-keyword: #a90d91;
+  --doc-code-variable: #1c01ce;
+  --doc-code-property: #0550ae;
+  --doc-code-plain: var(--color-fd-foreground);
+}
+
+/*
+ * Dark mode reuses the same roles on GitHub's dark palette. Each hue is
+ * lightened: the light values (a 4.5–9:1 on white) fall to 2–4:1 on
+ * `--color-fd-card`, which is unreadable at 14px.
+ */
+.dark {
+  --doc-code-comment: #6a9955;
+  --doc-code-string: #ce9178;
+  --doc-code-number: #b5cea8;
+  --doc-code-keyword: #c586c0;
+  --doc-code-variable: #9cdcfe;
+  --doc-code-property: #9cdcfe;
+  --doc-code-plain: var(--color-fd-foreground);
+}
+
+@theme inline {
+  --color-doc-code-comment: var(--doc-code-comment);
+  --color-doc-code-string: var(--doc-code-string);
+  --color-doc-code-number: var(--doc-code-number);
+  --color-doc-code-keyword: var(--doc-code-keyword);
+  --color-doc-code-variable: var(--doc-code-variable);
+  --color-doc-code-property: var(--doc-code-property);
+  --color-doc-code-plain: var(--doc-code-plain);
 }
 
 .dark {
