@@ -3,10 +3,100 @@ package controller
 import (
 	"math"
 	"testing"
+	"time"
 )
 
 func nearlyEqFloat(a, b float64) bool {
 	return math.Abs(a-b) < 1e-9
+}
+
+func TestSiblingPresetID(t *testing.T) {
+	if siblingPresetID(officialRatioPresetID) != modelsDevPresetID {
+		t.Fatal("official preset should pair with the models.dev preset")
+	}
+	if siblingPresetID(modelsDevPresetID) != officialRatioPresetID {
+		t.Fatal("models.dev preset should pair with the official preset")
+	}
+}
+
+// TestGetPresetModelRatiosServesStaleWithoutBlocking locks the regression that
+// made /api/pricing hang: a stale-but-present cache entry must be returned
+// immediately (never blocking on the upstream fetch, which can take several
+// seconds), and the returned map must be a clone so callers cannot mutate the
+// shared cache.
+func TestGetPresetModelRatiosServesStaleWithoutBlocking(t *testing.T) {
+	const preset = modelsDevPresetID
+	presetRatioCacheMu.Lock()
+	presetRatioCache[preset] = &presetRatioCacheEntry{
+		data:      map[string]map[string]float64{"stale-model": {"model_ratio": 1.23}},
+		fetchedAt: time.Now().Add(-time.Hour), // well past the TTL
+	}
+	presetRatioCacheMu.Unlock()
+
+	defer func() {
+		presetRatioCacheMu.Lock()
+		delete(presetRatioCache, preset)
+		presetRatioCacheMu.Unlock()
+	}()
+
+	start := time.Now()
+	got := GetPresetModelRatios(preset)
+	elapsed := time.Since(start)
+
+	if got["stale-model"]["model_ratio"] != 1.23 {
+		t.Fatalf("stale cached value was not served immediately")
+	}
+	if elapsed > 2*time.Second {
+		t.Fatalf("GetPresetModelRatios blocked on the external fetch (%s); SWR is broken", elapsed)
+	}
+
+	// The returned outer map must be a clone: adding a key to the result must
+	// not mutate the shared cache entry.
+	got["extra-model"] = map[string]float64{"model_ratio": 4.56}
+	presetRatioCacheMu.Lock()
+	_, leaked := presetRatioCache[preset].data["extra-model"]
+	presetRatioCacheMu.Unlock()
+	if leaked {
+		t.Fatalf("GetPresetModelRatios leaked a mutable outer reference into the caller")
+	}
+}
+
+// TestGetPresetModelRatiosNonBlockingNeverBlocks locks the guarantee for the
+// /api/pricing hot path: with no cache entry it must return an empty map
+// immediately (the plaza falls back to platform prices) instead of waiting on a
+// slow upstream, and a warm entry must be served as-is.
+func TestGetPresetModelRatiosNonBlockingNeverBlocks(t *testing.T) {
+	const preset = officialRatioPresetID
+	presetRatioCacheMu.Lock()
+	delete(presetRatioCache, preset)
+	presetRatioCacheMu.Unlock()
+	defer func() {
+		presetRatioCacheMu.Lock()
+		delete(presetRatioCache, preset)
+		presetRatioCacheMu.Unlock()
+	}()
+
+	start := time.Now()
+	cold := getPresetModelRatiosNonBlocking(preset)
+	elapsed := time.Since(start)
+	if len(cold) != 0 {
+		t.Fatalf("cold non-blocking fetch should return an empty map, got %d entries", len(cold))
+	}
+	if elapsed > time.Second {
+		t.Fatalf("non-blocking cold path blocked for %s; it must return immediately", elapsed)
+	}
+
+	// A fresh entry must be served from cache without any fetch.
+	presetRatioCacheMu.Lock()
+	presetRatioCache[preset] = &presetRatioCacheEntry{
+		data:      map[string]map[string]float64{"m": {"model_ratio": 2}},
+		fetchedAt: time.Now(),
+	}
+	presetRatioCacheMu.Unlock()
+	warm := getPresetModelRatiosNonBlocking(preset)
+	if warm["m"]["model_ratio"] != 2 {
+		t.Fatalf("warm non-blocking fetch did not serve the cached entry")
+	}
 }
 
 func TestDeriveExprPriceRatios(t *testing.T) {

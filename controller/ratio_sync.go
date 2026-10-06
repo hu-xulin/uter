@@ -1169,6 +1169,13 @@ var (
 	presetRatioCacheMu  sync.Mutex
 	presetRatioCache    = map[int]*presetRatioCacheEntry{}
 	presetRatioCacheTTL = 10 * time.Minute
+
+	// presetRefreshMu guards presetRefreshing and serializes the in-flight
+	// refresh of a single preset so concurrent callers coalesce into one fetch.
+	presetRefreshMu sync.Mutex
+	// presetRefreshing maps a presetID to a channel that is closed once its
+	// background refresh completes. A present key means a refresh is in flight.
+	presetRefreshing = map[int]chan struct{}{}
 )
 
 // GetPresetModelRatios returns normalized per-model ratio maps for a built-in
@@ -1188,22 +1195,128 @@ var (
 // The per-model inner maps are shared rather than deep-copied: they are treated
 // as immutable values, and copying them would allocate a full preset per call on
 // the pricing hot path.
+//
+// Caching is stale-while-revalidate so the /api/pricing response never blocks on
+// the upstream fetch. The upstream presets (models.dev / basellm.github.io) can
+// take several seconds to respond, and the cache starts empty on every process
+// start — without SWR, the first visitor after a restart (or after the 10-minute
+// TTL lapses) pays that latency and the pricing page appears to hang. When the
+// entry is merely stale we hand back the cached copy immediately and refresh it
+// in the background; only a truly absent entry blocks, and even then just once
+// (subsequent callers find the now-warm cache). WarmPresetRatios() pre-fetches
+// both presets at process start so the very first request is never cold.
 func GetPresetModelRatios(presetID int) map[string]map[string]float64 {
 	presetRatioCacheMu.Lock()
-	if entry, ok := presetRatioCache[presetID]; ok &&
-		time.Since(entry.fetchedAt) < presetRatioCacheTTL {
+	entry, ok := presetRatioCache[presetID]
+	if ok && time.Since(entry.fetchedAt) < presetRatioCacheTTL {
 		data := clonePresetModelRatios(entry.data)
 		presetRatioCacheMu.Unlock()
 		return data
 	}
+	if ok {
+		// Stale but present: serve it now, refresh asynchronously.
+		data := clonePresetModelRatios(entry.data)
+		presetRatioCacheMu.Unlock()
+		ensurePresetFreshAsync(presetID)
+		return data
+	}
 	presetRatioCacheMu.Unlock()
 
-	data := fetchPresetModelRatios(presetID)
+	// Truly cold entry: fetch it now, coalescing with any in-flight prewarm so
+	// we never issue two simultaneous fetches for the same preset. After this
+	// returns the cache is warm and every later call is instant.
+	doRefreshPreset(presetID)
 
+	presetRatioCacheMu.Lock()
+	entry = presetRatioCache[presetID]
+	presetRatioCacheMu.Unlock()
+	if entry == nil {
+		// fetchPresetModelRatios failed; fail-soft with an empty map.
+		return map[string]map[string]float64{}
+	}
+
+	// Warm the sibling preset too, so resolveOfficialPrices' gap-fill lookup is
+	// never the cold (blocking) one.
+	ensurePresetFreshAsync(siblingPresetID(presetID))
+	return clonePresetModelRatios(entry.data)
+}
+
+// getPresetModelRatiosNonBlocking returns the cached preset for a caller that
+// must never block on the upstream fetch — currently only the /api/pricing hot
+// path (resolveOfficialPrices).
+//
+// Behavior:
+//   - fresh or stale entry: return the cached copy; a stale one also triggers a
+//     background refresh (stale-while-revalidate).
+//   - no entry (cold, e.g. seconds after a process start): kick off a
+//     background refresh and return an empty map immediately. The plaza treats
+//     missing official prices as "show the platform price" (its documented
+//     fail-soft behavior, identical to a failed upstream fetch), so the pricing
+//     page renders fast instead of hanging on a slow models.dev response. The
+//     background refresh (plus the startup prewarm) fills the cache in, so
+//     subsequent loads carry the official reference/discount again.
+func getPresetModelRatiosNonBlocking(presetID int) map[string]map[string]float64 {
+	presetRatioCacheMu.Lock()
+	entry, ok := presetRatioCache[presetID]
+	if !ok {
+		presetRatioCacheMu.Unlock()
+		ensurePresetFreshAsync(presetID)
+		return map[string]map[string]float64{}
+	}
+	data := clonePresetModelRatios(entry.data)
+	stale := time.Since(entry.fetchedAt) >= presetRatioCacheTTL
+	presetRatioCacheMu.Unlock()
+	if stale {
+		ensurePresetFreshAsync(presetID)
+	}
+	return data
+}
+
+// siblingPresetID returns the other built-in preset: official <-> models.dev.
+func siblingPresetID(presetID int) int {
+	if presetID == officialRatioPresetID {
+		return modelsDevPresetID
+	}
+	return officialRatioPresetID
+}
+
+// ensurePresetFreshAsync triggers a background refresh of presetID without
+// blocking the caller. It coalesces concurrent refreshes of the same preset:
+// if one is already in flight, the goroutine simply waits for it to finish.
+func ensurePresetFreshAsync(presetID int) {
+	go doRefreshPreset(presetID)
+}
+
+func doRefreshPreset(presetID int) {
+	presetRefreshMu.Lock()
+	if ch, inFlight := presetRefreshing[presetID]; inFlight {
+		// A refresh is already running; reuse its result and avoid a second fetch.
+		presetRefreshMu.Unlock()
+		<-ch
+		return
+	}
+	done := make(chan struct{})
+	presetRefreshing[presetID] = done
+	presetRefreshMu.Unlock()
+
+	data := fetchPresetModelRatios(presetID)
 	presetRatioCacheMu.Lock()
 	presetRatioCache[presetID] = &presetRatioCacheEntry{data: data, fetchedAt: time.Now()}
 	presetRatioCacheMu.Unlock()
-	return clonePresetModelRatios(data)
+
+	presetRefreshMu.Lock()
+	delete(presetRefreshing, presetID)
+	close(done)
+	presetRefreshMu.Unlock()
+}
+
+// WarmPresetRatios proactively refreshes both built-in pricing presets in the
+// background so the first /api/pricing request after a process start does not
+// block on an external fetch. It is fire-and-forget and safe to call once at
+// startup.
+func WarmPresetRatios() {
+	ensurePresetFreshAsync(officialRatioPresetID)
+	ensurePresetFreshAsync(modelsDevPresetID)
 }
 
 // clonePresetModelRatios copies the outer map so callers may mutate the result
@@ -1217,11 +1330,14 @@ func clonePresetModelRatios(source map[string]map[string]float64) map[string]map
 }
 
 // RefreshPresetModelRatios forces a re-fetch on the next call (used by the
-// admin "sync" action so the plaza reflects the latest upstream prices).
+// admin "sync" action so the plaza reflects the latest upstream prices). The
+// next GetPresetModelRatios call will perform that blocking re-fetch, and we
+// also kick a background refresh so subsequent loads are warm.
 func RefreshPresetModelRatios(presetID int) {
 	presetRatioCacheMu.Lock()
 	delete(presetRatioCache, presetID)
 	presetRatioCacheMu.Unlock()
+	ensurePresetFreshAsync(presetID)
 }
 
 // GetPresetPrices returns a built-in pricing preset's per-model reference

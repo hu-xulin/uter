@@ -20,7 +20,9 @@ import { createFileRoute, redirect } from '@tanstack/react-router'
 import z from 'zod'
 
 import { Pricing } from '@/features/pricing'
+import { getPricing } from '@/features/pricing/api'
 import { getModuleAccessForGuard } from '@/lib/nav-modules'
+import { requireServerSuccess } from '@/lib/server-error-message'
 import { useAuthStore } from '@/stores/auth-store'
 
 const pricingSearchSchema = z.object({
@@ -52,6 +54,13 @@ export const Route = createFileRoute('/pricing/')({
         })
       }
     }
+    // Prefetch pricing data while the guard resolves so the page renders
+    // immediately on navigation instead of flashing a skeleton. Mirrors the
+    // query in usePricingData so react-query serves the cached result.
+    await context.queryClient.fetchQuery({
+      queryKey: ['pricing'],
+      queryFn: async () => requireServerSuccess(await getPricing()),
+    })
   },
   component: Pricing,
 })
