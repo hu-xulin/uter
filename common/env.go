@@ -66,3 +66,101 @@ func GetEnvOrDefaultIntList(env string, defaultValue []int) []int {
 	}
 	return values
 }
+
+// CustomerServiceURL 是智能客服（smart-cs）挂件后端的对外地址，由环境变量
+// CUSTOMER_SERVICE_URL 指定，通过 /api/status 下发给前端。
+//
+// 智能客服是**独立仓库、独立部署**的 Node 服务，前端组件直接跨域访问它，
+// 因此这里下发的是完整基地址（如 https://cs.uter.ai），前端在其后拼接
+// /api/deploy/widget-config 与 /api/qa/public-chat。
+//
+// 为空字符串（默认）表示不启用挂件，前端不渲染智能客服入口。
+var CustomerServiceURL = strings.TrimSpace(os.Getenv("CUSTOMER_SERVICE_URL"))
+
+// CustomerServiceEnabled 是智能客服挂件入口的总开关（可在「站点与品牌 → 智能客服」
+// 里切换）。与 CustomerServiceURL 是**两个独立的门**：URL 决定「挂到哪」，本开关决定
+// 「要不要挂」。两者都为真才渲染入口，因此运营可以先关掉入口、保留服务与配置。
+//
+// 默认为 true：保持既有行为——只要配了 URL 就显示入口；升级后不会突然少一个入口。
+// 注意它只影响**入口显示**，不会停止也不影响独立运行的智能客服服务本身。
+var CustomerServiceEnabled = true
+
+// 智能客服入口的页面分组键。每个键对应站点上一类页面，挂件按当前路由判定是否渲染。
+//
+// 这些键是**前后端与配置界面之间的稳定契约**：前端按同一套 key 做路由匹配，后端按
+// 同一套 key 做白名单过滤，改动需三处同步（common/env.go、web 侧 PageKey 类型、
+// 配置界面选项）。
+const (
+	// CustomerServicePageHome 首页（/）
+	CustomerServicePageHome = "home"
+	// CustomerServicePageDashboard 登录后的控制台（/dashboard 及其子路由）
+	CustomerServicePageDashboard = "dashboard"
+	// CustomerServicePagePricing 定价页（/pricing）
+	CustomerServicePagePricing = "pricing"
+	// CustomerServicePageRankings 排行页（/rankings）
+	CustomerServicePageRankings = "rankings"
+	// CustomerServicePageDocs 文档站（/docs）
+	CustomerServicePageDocs = "docs"
+	// CustomerServicePageAbout 关于页（/about）
+	CustomerServicePageAbout = "about"
+)
+
+// CustomerServicePageKeys 是全部合法页面键，顺序即配置界面的展示顺序。
+//
+// 用于过滤配置里出现的未知键：运营手改 option 或旧版本残留脏数据时，不应让
+// 未知键静默生效（否则「配了一个不存在的页面」看起来像开关已开）。
+var CustomerServicePageKeys = []string{
+	CustomerServicePageHome,
+	CustomerServicePageDashboard,
+	CustomerServicePagePricing,
+	CustomerServicePageRankings,
+	CustomerServicePageDocs,
+	CustomerServicePageAbout,
+}
+
+// customerServicePageKeySet 是 CustomerServicePageKeys 的集合形式，供 O(1) 过滤。
+var customerServicePageKeySet = func() map[string]struct{} {
+	set := make(map[string]struct{}, len(CustomerServicePageKeys))
+	for _, key := range CustomerServicePageKeys {
+		set[key] = struct{}{}
+	}
+	return set
+}()
+
+// NormalizeCustomerServicePages 把配置值规整成合法页面键列表（去空白、去重、去未知键、
+// 按 CustomerServicePageKeys 的固定顺序排序）。
+//
+// 输入为空（未配置）时返回**全部页面键**而不是空切片——这是向后兼容的关键：升级前
+// 只有一个总开关、默认全开，若把「未配置」解释成「一个页面都不开」，升级即让所有页面
+// 的客服入口消失。
+func NormalizeCustomerServicePages(value string) []string {
+	seen := make(map[string]struct{}, len(CustomerServicePageKeys))
+	for _, part := range strings.Split(value, ",") {
+		key := strings.ToLower(strings.TrimSpace(part))
+		if key == "" {
+			continue
+		}
+		if _, ok := customerServicePageKeySet[key]; !ok {
+			continue
+		}
+		seen[key] = struct{}{}
+	}
+	if len(seen) == 0 {
+		// 未配置 = 不限制页面，沿用总开关的全开行为。
+		return append([]string(nil), CustomerServicePageKeys...)
+	}
+	pages := make([]string, 0, len(seen))
+	for _, key := range CustomerServicePageKeys {
+		if _, ok := seen[key]; ok {
+			pages = append(pages, key)
+		}
+	}
+	return pages
+}
+
+// CustomerServicePages 是智能客服入口的**页面级**开关（可在「站点与品牌 → 智能客服」
+// 里逐页切换），以逗号分隔的页面键存储，例如 "home,pricing,docs"。
+//
+// 与 CustomerServiceEnabled 是**递进**关系而非并列：总开关关闭时本项不生效；总开关
+// 开启时，只有命中本列表的页面才渲染入口。留空 = 不限制 = 全部页面都开。
+var CustomerServicePages = ""
