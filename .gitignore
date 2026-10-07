@@ -60,6 +60,8 @@ __pycache__/
 
 # Compiled binary and local tooling caches (never commit)
 uter-bin*
+/Uter
+/Uter.exe
 node_modules/
 .playwright-cli/
 .workbuddy/
