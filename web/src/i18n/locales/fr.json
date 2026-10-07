@@ -3396,7 +3396,6 @@
     "Modality": "Modalité",
     "Mode": "Mode",
     "model": "modèle",
-    "Model": "Modèle",
     "Model {{model}}": "Modèle {{model}}",
     "Model Access": "Accès au modèle",
     "Model Analytics": "Analyse des modèles",
@@ -4463,7 +4462,6 @@
     "Prices shown per usage unit": "Prix affichés par unité d'utilisation",
     "Prices synced successfully": "Prix synchronisés avec succès",
     "Prices vary by usage tier and request conditions": "Les prix varient selon le palier d’utilisation et les conditions de requête",
-    "Pricing": "Tarification",
     "Pricing & Display": "Tarification et Affichage",
     "Pricing by condition": "Tarification par condition",
     "Pricing by Group": "Tarification par groupe",
@@ -6732,6 +6730,14 @@
     "Complete payment in the {{provider}} mini-program": "Effectuez le paiement dans le mini-programme {{provider}}",
     "Open the Uter mini-program, go to Wallet → Top up, then this page detects the successful top-up automatically.": "Ouvrez le mini-programme Uter, allez dans Portefeuille → Recharger, puis cette page détecte automatiquement la recharge réussie.",
     "Waiting for payment confirmation in the mini-program...": "En attente de la confirmation de paiement dans le mini-programme...",
-    "Payment successful": "Paiement réussi"
+    "Payment successful": "Paiement réussi",
+    "Customer Service": "Service client",
+    "Enable customer service": "Activer le service client",
+    "Master switch for the customer service entry. The service is deployed separately at {{url}}.": "Interrupteur principal de l'entrée du service client. Le service est déployé séparément à {{url}}.",
+    "Master switch for the customer service entry. No service address is configured yet, so the entry stays hidden even when this is on.": "Interrupteur principal de l'entrée du service client. Aucune adresse de service n'est encore configurée, donc l'entrée reste masquée même lorsque cette option est activée.",
+    "Pages where the entry appears": "Pages où l'entrée apparaît",
+    "Pick the pages that show the customer service entry. With the master switch on and nothing selected, the entry appears on every page.": "Choisissez les pages qui affichent l'entrée du service client. Si l'interrupteur principal est activé et qu'aucune page n'est sélectionnée, l'entrée apparaît sur toutes les pages.",
+    "Show the customer service entry on every page. The service is deployed separately at {{url}}.": "Afficher l’entrée du service client sur toutes les pages. Le service est déployé séparément à l’adresse {{url}}.",
+    "Show the customer service entry on every page. No service address is configured yet, so the entry stays hidden even when this is on.": "Afficher l’entrée du service client sur toutes les pages. Aucune adresse de service n’est encore configurée ; l’entrée reste donc masquée même lorsque l’option est activée."
   }
 }

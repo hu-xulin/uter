@@ -1908,7 +1908,7 @@
     "Display policy": "Правило показа",
     "Model": "Модель",
     "With metadata": "С метаданными",
-    "Pricing": "Цены",
+    "Pricing": "Ценообразование",
     "Standard pricing": "Стандартные цены",
     "Custom pricing expression": "Пользовательское выражение цены",
     "Pricing not set": "Не настроено",
@@ -3396,7 +3396,6 @@
     "Modality": "Модальность",
     "Mode": "Режим",
     "model": "модель",
-    "Model": "Модель",
     "Model {{model}}": "Модель {{model}}",
     "Model Access": "Доступ к моделям",
     "Model Analytics": "Аналитика моделей",
@@ -4463,7 +4462,6 @@
     "Prices shown per usage unit": "Цены указаны за единицу использования",
     "Prices synced successfully": "Цены успешно синхронизированы",
     "Prices vary by usage tier and request conditions": "Цена зависит от уровня использования и условий запроса",
-    "Pricing": "Ценообразование",
     "Pricing & Display": "Цены и отображение",
     "Pricing by condition": "Тарификация по условиям",
     "Pricing by Group": "Ценообразование по группам",
@@ -6732,6 +6730,14 @@
     "Complete payment in the {{provider}} mini-program": "Завершите оплату в мини-программе {{provider}}",
     "Open the Uter mini-program, go to Wallet → Top up, then this page detects the successful top-up automatically.": "Откройте мини-программу Uter, перейдите в Кошелёк → Пополнить, и эта страница автоматически обнаружит успешное пополнение.",
     "Waiting for payment confirmation in the mini-program...": "Ожидание подтверждения оплаты в мини-программе...",
-    "Payment successful": "Оплата выполнена"
+    "Payment successful": "Оплата выполнена",
+    "Customer Service": "Поддержка клиентов",
+    "Enable customer service": "Включить поддержку клиентов",
+    "Master switch for the customer service entry. The service is deployed separately at {{url}}.": "Главный переключатель записи службы поддержки. Служба развёрнута отдельно по адресу {{url}}.",
+    "Master switch for the customer service entry. No service address is configured yet, so the entry stays hidden even when this is on.": "Главный переключатель записи службы поддержки. Адрес службы ещё не настроен, поэтому запись остаётся скрытой, даже если переключатель включён.",
+    "Pages where the entry appears": "Страницы, на которых показывается запись",
+    "Pick the pages that show the customer service entry. With the master switch on and nothing selected, the entry appears on every page.": "Выберите страницы, на которых показывается запись службы поддержки. Если главный переключатель включён и ничего не выбрано, запись отображается на всех страницах.",
+    "Show the customer service entry on every page. The service is deployed separately at {{url}}.": "Показывать виджет поддержки клиентов на всех страницах. Сервис развёрнут отдельно по адресу {{url}}.",
+    "Show the customer service entry on every page. No service address is configured yet, so the entry stays hidden even when this is on.": "Показывать виджет поддержки клиентов на всех страницах. Адрес сервиса ещё не настроен, поэтому виджет останется скрытым даже при включённой опции."
   }
 }

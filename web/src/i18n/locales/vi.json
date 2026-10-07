@@ -1908,7 +1908,7 @@
     "Display policy": "Quy tắc hiển thị",
     "Model": "Mô hình",
     "With metadata": "Có siêu dữ liệu",
-    "Pricing": "Giá",
+    "Pricing": "Giá cả",
     "Standard pricing": "Giá tiêu chuẩn",
     "Custom pricing expression": "Biểu thức giá tùy chỉnh",
     "Pricing not set": "Chưa cấu hình",
@@ -3396,7 +3396,6 @@
     "Modality": "Phương thức",
     "Mode": "Chế độ",
     "model": "mô hình",
-    "Model": "Mô hình",
     "Model {{model}}": "Mô hình {{model}}",
     "Model Access": "Truy cập mô hình",
     "Model Analytics": "Phân tích mô hình",
@@ -4463,7 +4462,6 @@
     "Prices shown per usage unit": "Giá hiển thị theo từng đơn vị sử dụng",
     "Prices synced successfully": "Đồng bộ giá thành công",
     "Prices vary by usage tier and request conditions": "Giá thay đổi theo bậc dùng và điều kiện yêu cầu",
-    "Pricing": "Giá cả",
     "Pricing & Display": "Giá cả & Hiển thị",
     "Pricing by condition": "Định giá theo điều kiện",
     "Pricing by Group": "Giá theo Nhóm",
@@ -6732,6 +6730,14 @@
     "Complete payment in the {{provider}} mini-program": "Hoàn tất thanh toán trong mini-program {{provider}}",
     "Open the Uter mini-program, go to Wallet → Top up, then this page detects the successful top-up automatically.": "Mở mini-program Uter, vào Ví → Nạp tiền, trang này sẽ tự động phát hiện nạp tiền thành công.",
     "Waiting for payment confirmation in the mini-program...": "Đang chờ xác nhận thanh toán trong mini-program...",
-    "Payment successful": "Thanh toán thành công"
+    "Payment successful": "Thanh toán thành công",
+    "Customer Service": "Dịch vụ khách hàng",
+    "Enable customer service": "Bật dịch vụ khách hàng",
+    "Master switch for the customer service entry. The service is deployed separately at {{url}}.": "Công tắc chính cho mục dịch vụ khách hàng. Dịch vụ được triển khai riêng tại {{url}}.",
+    "Master switch for the customer service entry. No service address is configured yet, so the entry stays hidden even when this is on.": "Công tắc chính cho mục dịch vụ khách hàng. Chưa cấu hình địa chỉ dịch vụ, nên mục vẫn ẩn ngay cả khi công tắc này đang bật.",
+    "Pages where the entry appears": "Các trang hiển thị mục",
+    "Pick the pages that show the customer service entry. With the master switch on and nothing selected, the entry appears on every page.": "Chọn các trang hiển thị mục dịch vụ khách hàng. Khi công tắc chính đang bật và chưa chọn trang nào, mục sẽ hiển thị trên mọi trang.",
+    "Show the customer service entry on every page. The service is deployed separately at {{url}}.": "Hiển thị mục dịch vụ khách hàng trên mọi trang. Dịch vụ được triển khai riêng tại {{url}}.",
+    "Show the customer service entry on every page. No service address is configured yet, so the entry stays hidden even when this is on.": "Hiển thị mục dịch vụ khách hàng trên mọi trang. Chưa cấu hình địa chỉ dịch vụ, nên mục này vẫn ẩn ngay cả khi đã bật."
   }
 }
