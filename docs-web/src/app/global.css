@@ -70,7 +70,10 @@
  /*
  *   --text-doc-h1  一级标题 (page title) … 32px
  *   --text-doc-h2  二级标题 (h2 / h3) ……… 24px
- *   --text-doc-body 正文 (p / li / td / …)  16px
+ *   --text-doc-body 正文 (p / li / td / …)  16px / 28px
+ *
+ * Body leading is 1.75, not GitHub's 1.625 — same reason as the prose
+ * override below: 1.625 is a Latin-text ratio and CJK needs more air.
  *
  * These generate the `text-doc-*` utilities used by `content-renderer`
  * and the prose override at the end of this file. Weights stay out of
@@ -92,7 +95,7 @@
   --text-doc-h2: 1.5rem;
   --text-doc-h2--line-height: 2rem;
   --text-doc-body: 1rem;
-  --text-doc-body--line-height: 1.625rem;
+  --text-doc-body--line-height: 1.75rem;
   --text-doc-code: 0.875rem;
   --text-doc-code--line-height: 1.5rem;
   --text-doc-code-line: 0.875rem;
@@ -575,7 +578,7 @@ html[data-docs-embed='true'] #nd-subnav > a {
  *
  *   一级标题  `#nd-page > h1` (the DocsTitle) … 32px, weight 600
  *   二级标题  `.prose :is(h2, h3)` …………………… 24px, weight 600
- *   正文      `.prose :is(p, li, td, …)` …………… 16px, weight 400
+ *   正文      `.prose :is(p, li, td, …)` …………… 16px / 28px, weight 400
  *
  * The headings follow GitHub's markdown weight (600, not 700) so the
  * framed docs read with the same voice as the SPA. The prose rules win
@@ -583,6 +586,13 @@ html[data-docs-embed='true'] #nd-subnav > a {
  * specificity); `#nd-page > h1` is unlayered and outranks the title's
  * own `text-[1.75em]` utility. Code fences and image captions keep
  * their smaller meta size — they are not content headings or body.
+ *
+ * Body leading is 1.75, not GitHub's 1.625. 1.625 is tuned for Latin
+ * text, where ascenders and descenders open the lines up on their own;
+ * CJK is a full-square script with a much higher ink density and no
+ * vertical relief, so the same ratio reads as a solid block. 1.75
+ * (28px at 16px) is the CJK body-text range and is what most of these
+ * pages are actually written in.
  */
 #nd-page > h1 {
   font-size: var(--text-doc-h1);
@@ -593,7 +603,7 @@ html[data-docs-embed='true'] #nd-subnav > a {
 
 .prose {
   font-size: var(--text-doc-body);
-  line-height: 1.625;
+  line-height: 1.75;
 }
 
 .prose :is(h2, h3) {
@@ -605,6 +615,39 @@ html[data-docs-embed='true'] #nd-subnav > a {
 
 .prose :is(p, li, td, th, blockquote, dd, dt) {
   font-size: var(--text-doc-body);
+  /* Pinned too: `content-renderer` emits `leading-relaxed` (1.625) on
+     most of these paragraphs, which would otherwise outrank the 1.75
+     inherited from `.prose` and leave half a page at 28px and half at
+     26px. This rule is unlayered, so it wins over that utility. */
+  line-height: 1.75;
+}
+
+/*
+ * ── Chrome type — sidebar / TOC / drawer at one step ────────────────
+ *
+ * Body copy is 16px; every navigation surface sits one step below it at
+ * 14px so the three columns read as content → chrome. Two of these are
+ * corrections rather than declarations:
+ *
+ * · `#nd-toc a` — Fumadocs puts `prose` on every TOC item (it wants the
+ *   prose link colour), so the `.prose` rule above silently made the
+ *   table of contents render at the 16px *body* size. The id selector
+ *   is unlayered and outranks both the `.prose` font-size and the
+ *   component's own `text-sm`.
+ * · `#nd-sidebar-mobile` — Fumadocs hardcodes `text-[0.9375rem]` (15px)
+ *   on the drawer only, so the same navigation was 14px at desktop and
+ *   15px on a phone. Now one size everywhere.
+ *
+ * TOC leading is tightened to 1.5: 1.75 is right for reading prose but
+ * makes a link list feel like paragraphs.
+ */
+#nd-toc a {
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+#nd-sidebar-mobile {
+  font-size: 14px;
 }
 
 /*
