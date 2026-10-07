@@ -1908,7 +1908,7 @@
     "Display policy": "表示設定",
     "Model": "モデル",
     "With metadata": "メタデータあり",
-    "Pricing": "価格",
+    "Pricing": "価格設定",
     "Standard pricing": "標準課金",
     "Custom pricing expression": "カスタム課金式",
     "Pricing not set": "未設定",
@@ -3396,7 +3396,6 @@
     "Modality": "モダリティ",
     "Mode": "モード",
     "model": "モデル",
-    "Model": "モデル",
     "Model {{model}}": "モデル {{model}}",
     "Model Access": "モデルアクセス",
     "Model Analytics": "モデル分析",
@@ -4463,7 +4462,6 @@
     "Prices shown per usage unit": "使用単位ごとの価格を表示",
     "Prices synced successfully": "価格が正常に同期されました",
     "Prices vary by usage tier and request conditions": "価格は利用ティアとリクエスト条件で変動します",
-    "Pricing": "価格設定",
     "Pricing & Display": "価格設定と表示",
     "Pricing by condition": "条件別料金",
     "Pricing by Group": "グループ別価格設定",
@@ -6732,6 +6730,14 @@
     "Complete payment in the {{provider}} mini-program": "{{provider}}ミニプログラム内でお支払いを完了してください",
     "Open the Uter mini-program, go to Wallet → Top up, then this page detects the successful top-up automatically.": "Uterミニプログラムを開き、「ウォレット → チャージ」へ進むと、このページがチャージ完了を自動検知します。",
     "Waiting for payment confirmation in the mini-program...": "ミニプログラム内の支払い確認を待っています...",
-    "Payment successful": "支払い完了"
+    "Payment successful": "支払い完了",
+    "Customer Service": "カスタマーサービス",
+    "Enable customer service": "カスタマーサービスを有効化",
+    "Master switch for the customer service entry. The service is deployed separately at {{url}}.": "カスタマーサポート入口のメインスイッチ。サービスは {{url}} に別途デプロイされています。",
+    "Master switch for the customer service entry. No service address is configured yet, so the entry stays hidden even when this is on.": "カスタマーサポート入口のメインスイッチ。サービスアドレスが未設定のため、このスイッチをオンにしても入口は表示されません。",
+    "Pages where the entry appears": "入口を表示するページ",
+    "Pick the pages that show the customer service entry. With the master switch on and nothing selected, the entry appears on every page.": "カスタマーサポート入口を表示するページを選択してください。メインスイッチがオンで何も選択していない場合、入口はすべてのページに表示されます。",
+    "Show the customer service entry on every page. The service is deployed separately at {{url}}.": "すべてのページにカスタマーサービスの入口を表示します。サービスは {{url}} に独立して展開されています。",
+    "Show the customer service entry on every page. No service address is configured yet, so the entry stays hidden even when this is on.": "すべてのページにカスタマーサービスの入口を表示します。サービスアドレスが未設定のため、有効にしても入口は表示されません。"
   }
 }

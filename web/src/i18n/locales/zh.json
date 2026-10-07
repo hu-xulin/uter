@@ -3396,7 +3396,6 @@
     "Modality": "模态",
     "Mode": "模式",
     "model": "模型",
-    "Model": "模型",
     "Model {{model}}": "模型 {{model}}",
     "Model Access": "模型访问",
     "Model Analytics": "模型数据分析",
@@ -4463,7 +4462,6 @@
     "Prices shown per usage unit": "定价按每个用量单位显示",
     "Prices synced successfully": "定价同步成功",
     "Prices vary by usage tier and request conditions": "定价根据用量档位和请求条件动态调整",
-    "Pricing": "定价",
     "Pricing & Display": "定价与显示",
     "Pricing by condition": "按条件计价",
     "Pricing by Group": "按分组定价",
@@ -6732,6 +6730,14 @@
     "Complete payment in the {{provider}} mini-program": "请在{{provider}}小程序内完成支付",
     "Open the Uter mini-program, go to Wallet → Top up, then this page detects the successful top-up automatically.": "打开 Uter 小程序，进入「钱包 → 充值」，本页面会自动检测到充值成功。",
     "Waiting for payment confirmation in the mini-program...": "正在等待小程序内的支付确认……",
-    "Payment successful": "支付成功"
+    "Payment successful": "支付成功",
+    "Customer Service": "智能客服",
+    "Enable customer service": "启用智能客服",
+    "Master switch for the customer service entry. The service is deployed separately at {{url}}.": "智能客服入口的总开关。该服务独立部署于 {{url}}。",
+    "Master switch for the customer service entry. No service address is configured yet, so the entry stays hidden even when this is on.": "智能客服入口的总开关。尚未配置服务地址，因此即使开启入口仍保持隐藏。",
+    "Pages where the entry appears": "入口显示的页面",
+    "Pick the pages that show the customer service entry. With the master switch on and nothing selected, the entry appears on every page.": "选择要显示智能客服入口的页面。总开关开启且未选择任何页面时，入口会在所有页面显示。",
+    "Show the customer service entry on every page. The service is deployed separately at {{url}}.": "在每个页面显示智能客服入口。服务独立部署在 {{url}}。",
+    "Show the customer service entry on every page. No service address is configured yet, so the entry stays hidden even when this is on.": "在每个页面显示智能客服入口。当前尚未配置服务地址，因此即使开启，入口仍会保持隐藏。"
   }
 }
