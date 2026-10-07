@@ -327,16 +327,19 @@ export function UpstreamRatioSync() {
       handleServerError(error, t('Failed to fetch upstream prices')),
   })
   const syncMutation = useMutation({
-    mutationFn: async () => {
+    mutationFn: async (
+      override?: Record<string, Record<string, number | string>>
+    ) => {
       if (!pricingBaseline) throw new Error(t('Reload pricing'))
-      const after = applyPriceSyncSelections(
-        pricingBaseline.options,
-        resolutions
-      )
+      const resolved = override ?? resolutions
+      if (!Object.keys(resolved).length) {
+        throw new Error(t('No price sources selected'))
+      }
+      const after = applyPriceSyncSelections(pricingBaseline.options, resolved)
       await saveModelPricing(
         buildPricingChanges(pricingBaseline, pricingBaseline.options, after)
       )
-      return resolutions
+      return resolved
     },
     onSuccess: async (saved) => {
       setPrices((previous) =>
@@ -434,6 +437,57 @@ export function UpstreamRatioSync() {
     setConflictItems(previews)
     setConflictDialogOpen(true)
   }
+
+  // One-click sync: resolve every model that has an upstream price to that
+  // upstream value (overwriting local), then apply in a single transaction.
+  // The "Channel price" derived sources are local overrides, not upstream
+  // prices, so they are skipped; among the real upstream channels we prefer
+  // the one the operator selected, falling back to the first available.
+  const handleOneClickSync = useCallback(() => {
+    if (!pricingBaseline) {
+      toast.warning(t('Reload pricing'))
+      return
+    }
+    if (!Object.keys(prices).length) {
+      toast.warning(
+        t('Please select price sources and fetch upstream prices first')
+      )
+      return
+    }
+    const channelPricePrefix = t('Channel price source')
+    const selectedChannelNames = new Set(
+      channels
+        .filter((channel) => selectedChannelIds.includes(channel.id))
+        .map((channel) => channel.name)
+    )
+    const newSelectedSources: Record<string, string> = {}
+    const override: Record<string, Record<string, number | string>> = {}
+    for (const [model, row] of Object.entries(prices)) {
+      const realUpstreams = Object.keys(row.upstreams).filter(
+        (source) => !source.startsWith(channelPricePrefix)
+      )
+      if (!realUpstreams.length) continue
+      const chosen =
+        realUpstreams.find((source) => selectedChannelNames.has(source)) ??
+        realUpstreams[0]
+      newSelectedSources[model] = chosen
+      const values = row.upstreams[chosen]
+      if (values) override[model] = { ...values }
+    }
+    if (!Object.keys(override).length) {
+      toast.warning(t('No upstream prices available to sync'))
+      return
+    }
+    setSelectedSources(newSelectedSources)
+    syncMutation.mutate(override)
+  }, [
+    pricingBaseline,
+    prices,
+    channels,
+    selectedChannelIds,
+    t,
+    syncMutation,
+  ])
   const isLoading =
     loadingBaseline || fetchMutation.isPending || syncMutation.isPending
   return (
@@ -494,6 +548,17 @@ export function UpstreamRatioSync() {
           )}
         </div>
         <Button
+          variant='secondary'
+          onClick={handleOneClickSync}
+          disabled={
+            !pricingBaseline ||
+            !Object.keys(prices).length ||
+            isLoading
+          }
+        >
+          {t('One-click sync upstream prices')}
+        </Button>
+        <Button
           onClick={handleApplySync}
           disabled={
             !pricingBaseline ||
@@ -521,7 +586,7 @@ export function UpstreamRatioSync() {
           if (!syncMutation.isPending) setConflictDialogOpen(open)
         }}
         conflicts={conflictItems}
-        onConfirm={() => syncMutation.mutate()}
+        onConfirm={() => syncMutation.mutate(undefined)}
         isLoading={syncMutation.isPending}
         error={syncMutation.error?.message}
         onReload={() => {
