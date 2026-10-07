@@ -542,6 +542,14 @@ func buildSelfUserData(user *model.User) map[string]any {
 	userSetting := user.GetSetting()
 	permissions := calculateUserPermissions(user.Role)
 	permissions["admin_permissions"] = authz.Capabilities(user.Id, user.Role)
+	// 组织名随 self/login/refresh 一并返回，供个人资料页在「当前余额」前展示
+	// 成员的组织额度卡片使用；组织不存在（已被删）时回退空串，不阻断主流程。
+	orgName := ""
+	if user.OrganizationId > 0 {
+		if org, oerr := model.GetOrganizationById(user.OrganizationId); oerr == nil {
+			orgName = org.Name
+		}
+	}
 	return map[string]any{
 		"id":                user.Id,
 		"username":          user.Username,
@@ -571,6 +579,9 @@ func buildSelfUserData(user *model.User) map[string]any {
 		"organization_id":   user.OrganizationId,
 		"org_role":          user.OrgRole,
 		"department_id":     user.DepartmentId,
+		"sub_quota_limit":   user.SubQuotaLimit,
+		"department_name":   user.DepartmentName,
+		"organization_name": orgName,
 		"permissions":       permissions,
 	}
 }

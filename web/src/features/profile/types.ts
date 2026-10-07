@@ -49,6 +49,14 @@ export interface UserProfile {
   email?: string
   /** User group */
   group: string
+  /** Organization ID (0 = platform-managed, not in any org) */
+  organization_id?: number
+  /** Organization role (owner/admin/department_admin/member) */
+  org_role?: string
+  /** Organization-assigned sub-quota limit (quota units; 0 = unlimited, follows org pool) */
+  sub_quota_limit?: number
+  /** Organization name (set when organization_id > 0) */
+  organization_name?: string
   /** Current quota balance */
   quota: number
   /** Total used quota */
