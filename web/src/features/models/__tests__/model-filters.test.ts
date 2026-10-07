@@ -29,11 +29,11 @@ import {
 /**
  * These cover the two classifiers behind the model list's metadata and
  * pricing filters. For pricing, the boundary that matters is "something the
- * admin saved" (standard / expression) versus "nothing saved" (unconfigured).
- * A model with no saved configuration is reported as `unconfigured` so it
- * surfaces in that filter regardless of any platform default the relay would
- * still apply; `unset` is reserved for models the pricing API returned no
- * entry for at all.
+ * admin saved" (standard / expression) versus "nothing saved", and within the
+ * latter whether the default table still prices the name: resolved →
+ * `unconfigured` (using the default), unresolved → `unset` (no price at all,
+ * nor any entry returned by the pricing API). Both facets have to stay
+ * reachable, so the two must not collapse into one bucket.
  */
 
 function entry(over: Partial<ModelPricingEntry> = {}): ModelPricingEntry {
@@ -122,10 +122,11 @@ describe('classifyModelPricing', () => {
     ).toBe('expression')
   })
 
-  it('reports "nothing saved" as unconfigured, with or without an engine default', () => {
-    // configured is empty; whether effective carries an engine default
-    // (ModelRatio) or only completion/cache defaults, the admin has nothing
-    // saved, so the model is unconfigured and surfaces in that filter.
+  it('reports a name the defaults still price as unconfigured', () => {
+    // configured is empty but `effective` carries the ratio the engine would
+    // charge: the default table covered the name through its wildcard alias.
+    // The model runs at that default rate and only needs an override, so it
+    // belongs in the "unconfigured, using the default" facet.
     expect(
       classifyModelPricing(entry({ effective: { ModelRatio: 2.5 } }))
     ).toBe('unconfigured')
@@ -142,13 +143,16 @@ describe('classifyModelPricing', () => {
     ).toBe('expression')
   })
 
-  it('reports an entry with nothing saved as unconfigured', () => {
-    expect(classifyModelPricing(entry())).toBe('unconfigured')
+  it('reports an entry with nothing saved and no default as unset', () => {
+    // Nothing saved and no resolved ratio either: the model has no price at
+    // all, which is the `unset` facet — distinct from a model the defaults
+    // still price.
+    expect(classifyModelPricing(entry())).toBe('unset')
   })
 
-  it('treats an entry with only engine-resolved completion/cache defaults as unconfigured', () => {
+  it('treats an entry with only engine-resolved completion/cache defaults as unset', () => {
     // `effective` always carries a resolved CompletionRatio and cache ratios,
-    // but with nothing saved the model is still unconfigured and must surface.
+    // but none of them is a price: without a ModelRatio the model is unpriced.
     expect(
       classifyModelPricing(
         entry({
@@ -156,7 +160,7 @@ describe('classifyModelPricing', () => {
           effective: { CompletionRatio: 3, CacheRatio: 0.1 },
         })
       )
-    ).toBe('unconfigured')
+    ).toBe('unset')
   })
 })
 

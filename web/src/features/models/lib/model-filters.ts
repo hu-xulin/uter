@@ -71,18 +71,19 @@ function isConfigured(value: unknown): boolean {
  *  2. A per-call `ModelPrice` overrides ratios, so it is also `expression`:
  *     the model is billed per call, not per token.
  *  3. A `ModelRatio` is ordinary per-token pricing → `standard`.
- *  4. Nothing is saved in the admin configuration. The model is unconfigured
- *     and needs pricing set up, so it is `unconfigured` — regardless of any
- *     platform default the relay might still apply. This is the actionable
- *     bucket an operator filters on, so it must surface every model the admin
- *     has not explicitly priced, not only those with an engine-resolved default.
- *  5. No pricing entry is returned for the model at all (the API knows nothing
- *     about it) → `unset`. In practice this only happens for pattern models
- *     (`name_rule !== 0`) that the client-side filter excludes from the pricing
- *     query; an explicit-name model always has an entry, so it lands in
- *     `unconfigured` when nothing is saved.
+ *  4. Nothing is saved under the model's own name. The engine may still
+ *     resolve a price for it: the default table carries wildcard names, and
+ *     `effective` folds in the alias a name matches
+ *     (`gemini-2.5-flash-thinking-8192` → `gemini-2.5-flash-thinking-*`).
+ *     Such a model keeps being served at the default rate, so it is
+ *     `unconfigured` — "not configured, using the default" — and only needs an
+ *     override.
+ *  5. Nothing is saved and no default covers the name either, so the model has
+ *     no price at all and relay will not bill it → `unset`. This is the
+ *     actionable half of the pair: those names need pricing from scratch.
  *
- * A model with no entry at all is `unset`: no entry means no configuration.
+ * No pricing entry is returned for the model at all → also `unset`, since no
+ * entry means no configuration and no resolved default either.
  */
 export function classifyModelPricing(
   entry: ModelPricingEntry | undefined
@@ -113,12 +114,16 @@ export function classifyModelPricing(
   // is genuinely expression-priced.
   if (isConfigured(effective.ModelPrice)) return 'expression'
 
-  // Nothing is saved in the admin configuration. From the operator's point of
-  // view the model is unconfigured and needs pricing set up, so it belongs in
-  // the `unconfigured` bucket regardless of any platform default the relay might
-  // still apply — either way the admin has work to do. (The `unset` bucket is
-  // reserved for models the pricing API returned no entry for at all.)
-  return 'unconfigured'
+  // Nothing is saved under the model's own name. `effective` still carries the
+  // ratio the engine would charge — the default table resolved through the
+  // wildcard alias the name matches — when one exists, so the distinction is
+  // exactly the difference between "priced by default, needs an override" and
+  // "has no price at all". Splitting them keeps both filter facets reachable:
+  // folding every unsaved model into one bucket left the other permanently
+  // empty.
+  if (isConfigured(effective.ModelRatio)) return 'unconfigured'
+
+  return 'unset'
 }
 
 /**
