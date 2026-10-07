@@ -1,7 +1,27 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="dark">
   <head>
     <meta charset="UTF-8" />
+    <script>
+      // Apply the theme class before first paint to avoid a light flash.
+      // Mirrors the SPA ThemeProvider default: dark unless the user stored
+      // an explicit preference in the `vite-ui-theme` cookie.
+      (function () {
+        try {
+          var m = /(?:^|; )vite-ui-theme=(dark|light|system)/.exec(
+            document.cookie
+          )
+          var t = m ? m[1] : 'dark'
+          var d =
+            t === 'dark' ||
+            (t === 'system' &&
+              window.matchMedia('(prefers-color-scheme: dark)').matches)
+          document.documentElement.classList.add(d ? 'dark' : 'light')
+        } catch (e) {
+          document.documentElement.classList.add('dark')
+        }
+      })()
+    </script>
     <!-- Bump the `?v=` below together with LOGO_ASSET_VERSION in
          `src/lib/constants.ts` whenever `public/logo.png` is replaced.
          The version is what evicts an already-cached copy in the browser.
@@ -27,7 +47,7 @@
       content="Unified AI API gateway and admin dashboard."
     />
 
-    <meta name="theme-color" content="#fff" />
+    <meta name="theme-color" content="#070c17" />
     <!--umami-->
     <!--Google Analytics-->
   </head>

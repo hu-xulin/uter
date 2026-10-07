@@ -55,7 +55,7 @@ if(window.self===window.top)return;
 var root=document.documentElement;
 root.setAttribute('data-docs-embed','true');
 var m=/(?:^|;\\s*)vite-ui-theme=(dark|light|system)/.exec(document.cookie);
-var theme=m?m[1]:'system';
+var theme=m?m[1]:'dark';
 if(theme==='system'){theme=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'}
 window.localStorage.setItem('theme',theme);
 }catch(e){}})();`;
