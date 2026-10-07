@@ -1,5 +1,16 @@
 {
   "translation": {
+    "Your consumption is billed to the organization budget": "您的消費由組織預算承擔",
+    "Are you sure you want to delete \"{{name}}\"? Users who authenticated with this provider will no longer be able to log in.": "確定要刪除「{{name}}」嗎？使用該登入方式的使用者將無法再登入。",
+    "Configure a custom ratio for \"{{userGroup}}\" users when using a specific token group.": "為使用特定令牌分組的「{{userGroup}}」使用者設定自訂倍率。",
+    "Auto-merge rules": "自動合併規則",
+    "No auto-merge rules yet. Merge a vendor to create one.": "暫無自動合併規則。合併一個供應商即可建立。",
+    "Failed to load auto-merge rules": "載入自動合併規則失敗",
+    "Matches": "匹配數",
+    "Unknown vendor": "未知供應商",
+    "Confirm undo": "確認復原",
+    "Undo": "復原",
+    "These rules were created when you merged vendors. New vendors matching a rule are merged automatically. Revoke a rule to let its source appear as a separate vendor again.": "這些規則在您合併供應商時建立。符合規則的新供應商會自動合併；復原規則可讓其來源重新作為獨立供應商顯示。",
     "360": "360",
     "1000": "1000",
     "10000": "10000",

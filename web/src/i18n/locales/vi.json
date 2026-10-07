@@ -1,5 +1,16 @@
 {
   "translation": {
+    "Your consumption is billed to the organization budget": "Chi tiêu của bạn được tính vào ngân sách tổ chức",
+    "Are you sure you want to delete \"{{name}}\"? Users who authenticated with this provider will no longer be able to log in.": "Bạn có chắc muốn xóa «{{name}}»? Người dùng đã đăng nhập qua nhà cung cấp này sẽ không thể đăng nhập nữa.",
+    "Configure a custom ratio for \"{{userGroup}}\" users when using a specific token group.": "Cấu hình tỷ lệ tùy chỉnh cho người dùng «{{userGroup}}» khi sử dụng nhóm token cụ thể.",
+    "Auto-merge rules": "Quy tắc tự động gộp",
+    "No auto-merge rules yet. Merge a vendor to create one.": "Chưa có quy tắc tự động gộp. Hãy gộp một nhà cung cấp để tạo.",
+    "Failed to load auto-merge rules": "Không tải được quy tắc tự động gộp",
+    "Matches": "Số khớp",
+    "Unknown vendor": "Nhà cung cấp không xác định",
+    "Confirm undo": "Xác nhận hoàn tác",
+    "Undo": "Hoàn tác",
+    "These rules were created when you merged vendors. New vendors matching a rule are merged automatically. Revoke a rule to let its source appear as a separate vendor again.": "Các quy tắc này được tạo khi bạn gộp nhà cung cấp. Nhà cung cấp mới khớp với một quy tắc sẽ được gộp tự động. Thu hồi một quy tắc để nguồn của nó hiển thị lại thành nhà cung cấp riêng.",
     "360": "360",
     "1000": "1000",
     "10000": "10000",
