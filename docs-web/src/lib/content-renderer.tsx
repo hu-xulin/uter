@@ -4,6 +4,7 @@ import { Callout } from 'fumadocs-ui/components/callout';
 import { PARTNER_GROUP_LABELS } from '@/lib/content/about';
 import type { AboutPartner, AboutSection } from '@/lib/content/about';
 import { CodeBlock, type CodeCopyLabels } from '@/lib/code-block';
+import { withDocsBasePath } from '@/lib/docs-base-path';
 import { PartnerLogo } from '@/lib/partner-logo';
 import type { Block, BlockGroup, Inline } from '@/lib/content/blocks';
 import type { DocsLocale } from '@/lib/i18n';
@@ -280,6 +281,16 @@ function monogram(name: string): string {
  * (the `<a>` typography rule covers its children). Nothing in this grid
  * wants prose's typography, so the subtree opts out wholesale rather than
  * fighting each rule one utility at a time.
+ *
+ * The href carries the export's `basePath`. Next.js rewrites the href of
+ * its own `<Link>`, but not that of a plain `<a>`, so a URL assembled in
+ * TypeScript (`/about/zh/our-story/`) comes out of the export as a bare
+ * root-relative path — and the page it belongs to is served at
+ * `/docs-content/about/…`. Clicking the bare form therefore leaves the
+ * export, hits the gateway on a path no static file answers, and lands on
+ * the SPA fallback, which has no route for it and renders its Not Found
+ * page. {@link withDocsBasePath} is idempotent, so a caller that already
+ * passes a prefixed URL is left alone.
  */
 export function ContentCardGrid({
   items,
@@ -291,7 +302,7 @@ export function ContentCardGrid({
       {items.map((item) => (
         <li key={item.url}>
           <a
-            href={item.url}
+            href={withDocsBasePath(item.url)}
             className='flex h-full flex-col rounded-lg border border-fd-border bg-fd-card/40 p-4 transition-colors hover:border-fd-primary/40 hover:bg-fd-primary/5'
           >
             <span className='text-doc-body font-semibold text-fd-foreground'>
