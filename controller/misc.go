@@ -109,6 +109,18 @@ func GetStatus(c *gin.Context) {
 		"announcements_enabled": cs.AnnouncementsEnabled,
 		"faq_enabled":           cs.FAQEnabled,
 
+		// 智能客服（smart-cs）挂件：独立仓库、独立部署，前端按此地址直连，
+		// 不经过本服务反向代理。为空字符串时不渲染挂件（默认关闭）。
+		// 与下面 customer_service_enabled 是两个独立的门：地址决定「挂到哪」，
+		// 开关决定「要不要挂」，两者都为真才渲染入口。
+		"customer_service_url":     common.CustomerServiceURL,
+		"customer_service_enabled": common.CustomerServiceEnabled,
+		// 页面级开关（递进于上面的总开关）：下发**已规整**的页面键列表，前端
+		// 直接拿它与当前路由比对即可，无需再过滤未知键。空配置已由
+		// NormalizeCustomerServicePages 展开为全部页面，故前端无需区分
+		// 「未配置」与「全开」两种情况。
+		"customer_service_pages": common.NormalizeCustomerServicePages(common.CustomerServicePages),
+
 		// 模块管理配置
 		"HeaderNavModules":    common.OptionMap["HeaderNavModules"],
 		"SidebarModulesAdmin": common.OptionMap["SidebarModulesAdmin"],

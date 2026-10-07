@@ -146,6 +146,14 @@ export type SiteSettings = {
   'legal.recharge_agreement': string
   HeaderNavModules: string
   SidebarModulesAdmin: string
+  /** 智能客服入口总开关；与后端 common.CustomerServiceEnabled 对应。 */
+  CustomerServiceEnabled: boolean
+  /**
+   * 智能客服入口的页面级白名单（逗号分隔的页面键）；与后端
+   * common.CustomerServicePages 对应。空串表示未配置 = 全部页面都开
+   * （后端 NormalizeCustomerServicePages 会展开成全部键）。
+   */
+  CustomerServicePages: string
 }
 
 export type AuthSettings = {

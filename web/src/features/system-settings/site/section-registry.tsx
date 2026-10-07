@@ -23,6 +23,7 @@ import {
   serializeHeaderNavModules,
   serializeSidebarModulesAdmin,
 } from '../maintenance/config'
+import { CustomerServiceSection } from '../maintenance/customer-service-section'
 import { HeaderNavigationSection } from '../maintenance/header-navigation-section'
 import { NoticeSection } from '../maintenance/notice-section'
 import { SidebarModulesSection } from '../maintenance/sidebar-modules-section'
@@ -87,6 +88,18 @@ const SITE_SECTIONS = [
         />
       )
     },
+  },
+  {
+    // 智能客服入口开关。放在「侧边栏模块」之后：两者都是「站点对外展示什么」的
+    // 开关，挨在一起便于运营在同一屏内决定要露出哪些入口。
+    id: 'customer-service',
+    titleKey: 'Customer Service',
+    build: (settings: SiteSettings) => (
+      <CustomerServiceSection
+        defaultEnabled={settings.CustomerServiceEnabled}
+        defaultPages={settings.CustomerServicePages}
+      />
+    ),
   },
 ] as const
 

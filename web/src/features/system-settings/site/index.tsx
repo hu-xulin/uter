@@ -38,6 +38,9 @@ const defaultSiteSettings: SiteSettings = {
   'legal.recharge_agreement': '',
   HeaderNavModules: '',
   SidebarModulesAdmin: '',
+  CustomerServiceEnabled: true,
+  // 空串 = 未配置 = 全部页面都开（与后端 NormalizeCustomerServicePages 的语义一致）。
+  CustomerServicePages: '',
 }
 
 export function SiteSettings() {
