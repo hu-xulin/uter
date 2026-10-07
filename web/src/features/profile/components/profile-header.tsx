@@ -52,7 +52,7 @@ export function ProfileHeader({ profile, loading }: ProfileHeaderProps) {
       <Card data-card-hover='false' className='gap-0 overflow-hidden py-0'>
         <CardContent className='p-4 sm:p-5'>
           <div className='flex flex-col items-center gap-4 text-center sm:flex-row sm:text-left'>
-            <Skeleton className='h-16 w-16 rounded-2xl' />
+            <Skeleton className='h-12 w-12 rounded-full sm:h-16 sm:w-16' />
             <div className='space-y-3'>
               <div className='flex flex-col items-center gap-2 sm:flex-row sm:justify-start'>
                 <Skeleton className='h-8 w-48' />
@@ -122,9 +122,9 @@ export function ProfileHeader({ profile, loading }: ProfileHeaderProps) {
     <Card data-card-hover='false' className='gap-0 overflow-hidden py-0'>
       <CardContent className='p-3 sm:p-5'>
         <div className='flex items-center gap-3 text-left sm:gap-4'>
-          <Avatar className='ring-background h-12 w-12 rounded-xl text-sm ring-2 sm:h-16 sm:w-16 sm:rounded-2xl sm:text-lg sm:ring-4'>
+          <Avatar className='ring-background h-12 w-12 rounded-full text-sm ring-2 sm:h-16 sm:w-16 sm:text-lg sm:ring-4'>
             <AvatarFallback
-              className='rounded-xl font-semibold text-white sm:rounded-2xl'
+              className='rounded-full font-semibold text-white'
               style={avatarFallbackStyle}
             >
               {avatarFallback}
