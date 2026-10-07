@@ -1,5 +1,16 @@
 {
   "translation": {
+    "Your consumption is billed to the organization budget": "Ваши расходы относятся к бюджету организации",
+    "Are you sure you want to delete \"{{name}}\"? Users who authenticated with this provider will no longer be able to log in.": "Действительно удалить «{{name}}»? Пользователи, вошедшие через этого провайдера, больше не смогут войти.",
+    "Configure a custom ratio for \"{{userGroup}}\" users when using a specific token group.": "Настроить пользовательский коэффициент для пользователей «{{userGroup}}» при использовании определённой группы токенов.",
+    "Auto-merge rules": "Правила автослияния",
+    "No auto-merge rules yet. Merge a vendor to create one.": "Правил автослияния пока нет. Объедините поставщика, чтобы создать правило.",
+    "Failed to load auto-merge rules": "Не удалось загрузить правила автослияния",
+    "Matches": "Совпадений",
+    "Unknown vendor": "Неизвестный поставщик",
+    "Confirm undo": "Подтвердить отмену",
+    "Undo": "Отменить",
+    "These rules were created when you merged vendors. New vendors matching a rule are merged automatically. Revoke a rule to let its source appear as a separate vendor again.": "Эти правила созданы при слиянии поставщиков. Новые поставщики, подпадающие под правило, сливаются автоматически. Отзовите правило, чтобы его источник снова отображался как отдельный поставщик.",
     "360": "360",
     "1000": "1000",
     "10000": "10000",

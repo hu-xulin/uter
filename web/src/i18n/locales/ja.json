@@ -1,5 +1,16 @@
 {
   "translation": {
+    "Your consumption is billed to the organization budget": "ご請求は組織予算に計上されます",
+    "Are you sure you want to delete \"{{name}}\"? Users who authenticated with this provider will no longer be able to log in.": "「{{name}}」を削除してもよろしいですか？このプロバイダーでログインしたユーザーはログインできなくなります。",
+    "Configure a custom ratio for \"{{userGroup}}\" users when using a specific token group.": "特定のトークングループを使用する「{{userGroup}}」ユーザーのカスタム倍率を設定します。",
+    "Auto-merge rules": "自動マージルール",
+    "No auto-merge rules yet. Merge a vendor to create one.": "自動マージルールはまだありません。ベンダーをマージすると作成されます。",
+    "Failed to load auto-merge rules": "自動マージルールの読み込みに失敗しました",
+    "Matches": "一致数",
+    "Unknown vendor": "不明なベンダー",
+    "Confirm undo": "元に戻すことを確認",
+    "Undo": "元に戻す",
+    "These rules were created when you merged vendors. New vendors matching a rule are merged automatically. Revoke a rule to let its source appear as a separate vendor again.": "これらのルールはベンダーをマージした时而自動生成されました。ルールに一致する新しいベンダーは自動的にマージされます。ルールを取り消すと、その元に戻ったベンダーが個別に表示されます。",
     "360": "360",
     "1000": "1000",
     "10000": "10000",

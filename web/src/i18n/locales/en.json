@@ -1,5 +1,7 @@
 {
   "translation": {
+    "Are you sure you want to delete \"{{name}}\"? Users who authenticated with this provider will no longer be able to log in.": "Are you sure you want to delete \"{{name}}\"? Users who authenticated with this provider will no longer be able to log in.",
+    "Configure a custom ratio for \"{{userGroup}}\" users when using a specific token group.": "Configure a custom ratio for \"{{userGroup}}\" users when using a specific token group.",
     "360": "360",
     "1000": "1000",
     "10000": "10000",

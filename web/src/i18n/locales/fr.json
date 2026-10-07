@@ -1,5 +1,16 @@
 {
   "translation": {
+    "Your consumption is billed to the organization budget": "Votre consommation est imputée au budget de l'organisation",
+    "Are you sure you want to delete \"{{name}}\"? Users who authenticated with this provider will no longer be able to log in.": "Voulez-vous vraiment supprimer « {{name}} » ? Les utilisateurs qui se sont authentifiés avec ce fournisseur ne pourront plus se connecter.",
+    "Configure a custom ratio for \"{{userGroup}}\" users when using a specific token group.": "Configurer un ratio personnalisé pour les utilisateurs « {{userGroup}} » lorsqu’ils utilisent un groupe de jetons spécifique.",
+    "Auto-merge rules": "Règles de fusion automatique",
+    "No auto-merge rules yet. Merge a vendor to create one.": "Aucune règle de fusion automatique pour le moment. Fusionnez un fournisseur pour en créer une.",
+    "Failed to load auto-merge rules": "Échec du chargement des règles de fusion automatique",
+    "Matches": "Correspondances",
+    "Unknown vendor": "Fournisseur inconnu",
+    "Confirm undo": "Confirmer l’annulation",
+    "Undo": "Annuler",
+    "These rules were created when you merged vendors. New vendors matching a rule are merged automatically. Revoke a rule to let its source appear as a separate vendor again.": "Ces règles ont été créées lorsque vous avez fusionné des fournisseurs. Les nouveaux fournisseurs correspondant à une règle sont fusionnés automatiquement. Révoquez une règle pour que sa source réapparaisse comme un fournisseur distinct.",
     "360": "360",
     "1000": "1000",
     "10000": "10000",

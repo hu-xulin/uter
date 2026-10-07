@@ -1,5 +1,8 @@
 {
   "translation": {
+    "Your consumption is billed to the organization budget": "您的消费由组织预算承担",
+    "Are you sure you want to delete \"{{name}}\"? Users who authenticated with this provider will no longer be able to log in.": "确定要删除“{{name}}”吗？使用该登录方式的用户将无法再登录。",
+    "Configure a custom ratio for \"{{userGroup}}\" users when using a specific token group.": "为使用特定令牌分组的“{{userGroup}}”用户配置自定义倍率。",
     "360": "360",
     "1000": "1000",
     "10000": "10000",
