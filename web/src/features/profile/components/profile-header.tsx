@@ -114,8 +114,9 @@ export function ProfileHeader({ profile, loading }: ProfileHeaderProps) {
   const { config: currencyConfig } = getCurrencyDisplay()
   const fmtOrgMoney = (n: number) =>
     formatBillingCurrencyFromUSD(n / currencyConfig.quotaPerUnit)
-  // 额度三项按需求并入统计栏，故组织成员有6 项、非组织成员 3 项；上限为 0 表示不限量，
-  // 此时不展示「当月剩余」（没有上限就没有可扣减的余额）。
+  // 「当月剩余」排在「当月已用」之前：剩余是从上限里扣减出来的派生值，
+  // 紧跟在「当月上限」之后更符合「上限 → 还剩多少 → 花了多少」的阅读顺序。
+  // 上限为 0 表示不限量，此时不展示「当月剩余」（没有上限就没有可扣减的余额）。
   const quotaStats: {
     label: string
     value: string
@@ -131,13 +132,6 @@ export function ProfileHeader({ profile, loading }: ProfileHeaderProps) {
           icon: Building2,
           tone: 'chart-4',
         },
-        {
-          label: t('Used This Month'),
-          value: fmtOrgMoney(monthConsumed),
-          description: t('Since the first day of this month'),
-          icon: BarChart3,
-          tone: 'info',
-        },
       ]
     : []
   if (inOrganization && orgLimit > 0) {
@@ -147,6 +141,15 @@ export function ProfileHeader({ profile, loading }: ProfileHeaderProps) {
       description: t('Deducted from the monthly limit'),
       icon: WalletCards,
       tone: 'success',
+    })
+  }
+  if (inOrganization) {
+    quotaStats.push({
+      label: t('Used This Month'),
+      value: fmtOrgMoney(monthConsumed),
+      description: t('Since the first day of this month'),
+      icon: BarChart3,
+      tone: 'info',
     })
   }
   const stats: {
