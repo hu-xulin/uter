@@ -42,6 +42,18 @@ var CryptoSecret = uuid.New().String()
 var SessionCookieSecure = false
 var SessionCookieTrustedURLs []string
 
+// DefaultUserGroup 是新用户注册后落入的分组。
+//
+// 它必须与以下三处保持一致，否则新用户会「有分组、无渠道」或请求被鉴权拒绝：
+//   - `setting.UserUsableGroups`（可用分组表，缺失会让该分组的令牌报「无权访问」）
+//   - `setting/ratio_setting.GroupRatio`（分组倍率表，缺失会报「分组已弃用」）
+//   - 渠道的 `group` 字段（渠道不带该分组时，该分组下没有任何可用渠道）
+//
+// 之所以在代码里显式赋值而不是只依赖 `users.group` 列的 DB 默认值：SQLite
+// 无法 ALTER COLUMN SET DEFAULT，存量库的列默认值仍是建表时的值，改 GORM
+// tag 对已存在的表不生效。
+const DefaultUserGroup = "VIP0"
+
 const (
 	DefaultUserSessionActiveLimit           = 50
 	DefaultUserSessionIssuanceLimit         = 100
