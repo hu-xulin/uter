@@ -98,7 +98,7 @@ type User struct {
 	Quota                int                        `json:"quota" gorm:"type:int;default:0"`
 	UsedQuota            int                        `json:"used_quota" gorm:"type:int;default:0;column:used_quota"` // used quota
 	RequestCount         int                        `json:"request_count" gorm:"type:int;default:0;"`               // request number
-	Group                string                     `json:"group" gorm:"type:varchar(64);default:'default'"`
+	Group                string                     `json:"group" gorm:"type:varchar(64);default:'VIP0'"`
 	AffCode              string                     `json:"aff_code" gorm:"type:varchar(32);column:aff_code;uniqueIndex"`
 	AffCount             int                        `json:"aff_count" gorm:"type:int;default:0;column:aff_count"`
 	AffQuota             int                        `json:"aff_quota" gorm:"type:int;default:0;column:aff_quota"`           // 邀请剩余额度
@@ -678,6 +678,11 @@ func (user *User) TransferAffQuotaToQuota(quota int) error {
 }
 
 func (user *User) prepareForInsert(tx *gorm.DB) error {
+	// 兜底默认分组：注册、OAuth、微信、Telegram 等所有创建路径最终都走这里，
+	// 显式赋值而不是依赖列的 DB 默认值（存量 SQLite 库的列默认仍是建表时的值）。
+	if user.Group == "" {
+		user.Group = common.DefaultUserGroup
+	}
 	user.Email = NormalizeEmail(user.Email)
 	if err := ensureEmailAvailableWithTx(tx, user.Email, 0); err != nil {
 		return err
