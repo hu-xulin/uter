@@ -550,6 +550,10 @@ func buildSelfUserData(user *model.User) map[string]any {
 			orgName = org.Name
 		}
 	}
+	// 当月已用额度：按自然月（当月 1 日 00:00 起）从日志累计，已扣减退款。
+	// 与 sub_quota_limit / used_quota 的累计口径不同——那两者是组织子额度账本，
+	// 除非订阅计划按月重置否则不会清零，故不能当作「当月」展示。
+	monthConsumed := model.GetUserMonthConsumedQuota(user.Id)
 	return map[string]any{
 		"id":                user.Id,
 		"username":          user.Username,
@@ -580,6 +584,7 @@ func buildSelfUserData(user *model.User) map[string]any {
 		"org_role":          user.OrgRole,
 		"department_id":     user.DepartmentId,
 		"sub_quota_limit":   user.SubQuotaLimit,
+		"month_consumed":    monthConsumed,
 		"department_name":   user.DepartmentName,
 		"organization_name": orgName,
 		"permissions":       permissions,

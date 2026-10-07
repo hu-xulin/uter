@@ -50,6 +50,8 @@ interface ProfileHeaderProps {
 
 export function ProfileHeader({ profile, loading }: ProfileHeaderProps) {
   const { t } = useTranslation()
+  // 加载态需与真实列数一致：组织成员有 6 列（额度 3 + 余额/用量/请求 3），否则骨架会跳列。
+  const loadingColumns = (profile?.organization_id ?? 0) > 0 ? 6 : 3
 
   if (loading) {
     return (
@@ -71,14 +73,22 @@ export function ProfileHeader({ profile, loading }: ProfileHeaderProps) {
           </div>
         </CardContent>
         <div className='border-t'>
-          <div className='divide-border/60 grid grid-cols-1 divide-y sm:grid-cols-3 sm:divide-x sm:divide-y-0'>
-            {['balance', 'usage', 'requests'].map((key) => (
-              <div key={key} className='px-4 py-3.5 sm:px-5 sm:py-4'>
-                <Skeleton className='h-3.5 w-20' />
-                <Skeleton className='mt-2 h-7 w-28' />
-                <Skeleton className='mt-1.5 h-3.5 w-24' />
-              </div>
-            ))}
+          <div
+            className={`divide-border/60 grid divide-y sm:divide-x sm:divide-y-0 ${
+              loadingColumns > 3
+                ? 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-6'
+                : 'grid-cols-1 sm:grid-cols-3'
+            }`}
+          >
+            {['limit', 'used', 'remaining', 'balance', 'usage', 'requests']
+              .slice(0, loadingColumns)
+              .map((column) => (
+                <div key={column} className='px-4 py-3.5 sm:px-5 sm:py-4'>
+                  <Skeleton className='h-3.5 w-20' />
+                  <Skeleton className='mt-2 h-7 w-28' />
+                  <Skeleton className='mt-1.5 h-3.5 w-24' />
+                </div>
+              ))}
           </div>
         </div>
       </Card>
@@ -92,17 +102,53 @@ export function ProfileHeader({ profile, loading }: ProfileHeaderProps) {
   const avatarFallback = getUserAvatarFallback(avatarName)
   const avatarFallbackStyle = getUserAvatarStyle(avatarName)
   const roleLabel = getRoleLabel(profile.role)
-  // 组织额度卡片：仅当账号归属某组织时展示，位于「当前余额」之前。
-  // 数据来自 self 接口的 organization_id / sub_quota_limit / used_quota：
-  // 组织成员的消耗记到组织预算与成员子额度账本，个人钱包不动，故 used_quota 即其组织子额度已用。
-  // 金额格式化与组织模块一致（quotaPerUnit=500000=1USD），避免把裸 token 数误当美元。
+  // 额度数据有两套口径，必须分开：
+  //   - sub_quota_limit / used_quota 是组织子额度**累计**账本，除非订阅计划按月重置否则不清零；
+  //   - month_consumed 是自然月内从日志累计的用量（已扣退款），只用于「当月」字样。
+  // 把累计值当「当月」展示会在跨月后明显出错，故月度三项一律取 month_consumed。
+  // 金额格式化与组织模块一致（quotaPerUnit=500000=1USD），避免把裸token 数误当美元。
   const inOrganization = (profile.organization_id ?? 0) > 0
   const orgLimit = profile.sub_quota_limit ?? 0
-  const orgUsed = profile.used_quota ?? 0
-  const orgPct = orgLimit > 0 ? Math.min(100, (orgUsed / orgLimit) * 100) : 0
+  const monthConsumed = profile.month_consumed ?? 0
+  const monthRemaining = orgLimit > 0 ? orgLimit - monthConsumed : 0
   const { config: currencyConfig } = getCurrencyDisplay()
   const fmtOrgMoney = (n: number) =>
     formatBillingCurrencyFromUSD(n / currencyConfig.quotaPerUnit)
+  // 额度三项按需求并入统计栏，故组织成员有6 项、非组织成员 3 项；上限为 0 表示不限量，
+  // 此时不展示「当月剩余」（没有上限就没有可扣减的余额）。
+  const quotaStats: {
+    label: string
+    value: string
+    description: string
+    icon: typeof WalletCards
+    tone: IconBadgeTone
+  }[] = inOrganization
+    ? [
+        {
+          label: t('Monthly Quota Limit'),
+          value: orgLimit > 0 ? fmtOrgMoney(orgLimit) : t('Unlimited'),
+          description: t('Resets monthly'),
+          icon: Building2,
+          tone: 'chart-4',
+        },
+        {
+          label: t('Used This Month'),
+          value: fmtOrgMoney(monthConsumed),
+          description: t('Since the first day of this month'),
+          icon: BarChart3,
+          tone: 'info',
+        },
+      ]
+    : []
+  if (inOrganization && orgLimit > 0) {
+    quotaStats.push({
+      label: t('Remaining This Month'),
+      value: fmtOrgMoney(monthRemaining),
+      description: t('Deducted from the monthly limit'),
+      icon: WalletCards,
+      tone: 'success',
+    })
+  }
   const stats: {
     label: string
     value: string
@@ -110,10 +156,11 @@ export function ProfileHeader({ profile, loading }: ProfileHeaderProps) {
     icon: typeof WalletCards
     tone: IconBadgeTone
   }[] = [
+    ...quotaStats,
     {
-      label: t('Current Balance'),
+      label: t('Account Balance'),
       value: formatQuota(profile.quota),
-      description: t('Remaining quota'),
+      description: t('Account Remaining Amount'),
       icon: WalletCards,
       tone: 'success',
     },
@@ -134,56 +181,7 @@ export function ProfileHeader({ profile, loading }: ProfileHeaderProps) {
   ]
 
   return (
-    <>
-      {inOrganization && (
-        <Card data-card-hover='false' className='gap-0 overflow-hidden py-0'>
-          <CardContent className='p-3 sm:p-5'>
-            <div className='flex items-center gap-2 text-left sm:gap-3'>
-              <IconBadge tone='chart-4' size='stat'>
-                <Building2 />
-              </IconBadge>
-              <div className='min-w-0'>
-                <h2 className='truncate text-base font-semibold tracking-tight sm:text-lg'>
-                  {t('Organization Quota')}
-                </h2>
-                <p className='text-muted-foreground truncate text-xs sm:text-sm'>
-                  {(profile.organization_name ? `${profile.organization_name} · ` : '') +
-                    t('Your consumption is billed to the organization budget')}
-                </p>
-              </div>
-            </div>
-          </CardContent>
-          <div className='border-t'>
-            <div className='divide-border/60 grid grid-cols-2 divide-x'>
-              <div className='min-w-0 px-3 py-3 sm:px-5 sm:py-4'>
-                <div className='text-muted-foreground truncate text-xs font-medium tracking-wider uppercase'>
-                  {t('Your Quota Limit')}
-                </div>
-                <div className='text-foreground mt-1.5 truncate text-lg font-bold tabular-nums sm:text-2xl'>
-                  {orgLimit > 0 ? fmtOrgMoney(orgLimit) : t('Unlimited')}
-                </div>
-              </div>
-              <div className='min-w-0 px-3 py-3 sm:px-5 sm:py-4'>
-                <div className='text-muted-foreground truncate text-xs font-medium tracking-wider uppercase'>
-                  {t('Your Used Quota')}
-                </div>
-                <div className='text-foreground mt-1.5 truncate text-lg font-bold tabular-nums sm:text-2xl'>
-                  {fmtOrgMoney(orgUsed)}
-                </div>
-              </div>
-            </div>
-            {orgLimit > 0 && (
-              <div className='px-3 pb-4 sm:px-5'>
-                <div className='h-2 w-full overflow-hidden rounded-full bg-muted'>
-                  <div className='h-full bg-primary' style={{ width: `${orgPct}%` }} />
-                </div>
-              </div>
-            )}
-          </div>
-        </Card>
-      )}
-
-      <Card data-card-hover='false' className='gap-0 overflow-hidden py-0'>
+    <Card data-card-hover='false' className='gap-0 overflow-hidden py-0'>
       <CardContent className='p-3 sm:p-5'>
         <div className='flex items-center gap-3 text-left sm:gap-4'>
           <Avatar className='ring-background h-12 w-12 rounded-full text-sm ring-2 sm:h-16 sm:w-16 sm:text-lg sm:ring-4'>
@@ -227,11 +225,29 @@ export function ProfileHeader({ profile, loading }: ProfileHeaderProps) {
                 </>
               )}
             </div>
+
+            {inOrganization && (
+              <p className='text-muted-foreground flex items-center gap-1.5 text-xs sm:text-sm'>
+                <Building2 className='size-3.5 shrink-0' />
+                <span className='truncate'>
+                  {(profile.organization_name
+                    ? `${profile.organization_name} · `
+                    : '') +
+                    t('Your consumption is billed to the organization budget')}
+                </span>
+              </p>
+            )}
           </div>
         </div>
       </CardContent>
       <div className='border-t'>
-        <div className='divide-border/60 grid grid-cols-3 divide-x'>
+        <div
+          className={`divide-border/60 grid divide-x ${
+            stats.length > 3
+              ? 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-6'
+              : 'grid-cols-3'
+          }`}
+        >
           {stats.map((item) => (
             <div key={item.label} className='min-w-0 px-3 py-3 sm:px-5 sm:py-4'>
               <div className='flex items-center gap-2'>
@@ -254,6 +270,5 @@ export function ProfileHeader({ profile, loading }: ProfileHeaderProps) {
         </div>
       </div>
     </Card>
-    </>
   )
 }

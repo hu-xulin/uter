@@ -55,6 +55,13 @@ export interface UserProfile {
   org_role?: string
   /** Organization-assigned sub-quota limit (quota units; 0 = unlimited, follows org pool) */
   sub_quota_limit?: number
+  /**
+   * Quota consumed since the first day of the current calendar month (quota
+   * units, refunds subtracted). Distinct from `used_quota`, which is the
+   * cumulative organization sub-quota ledger and only resets when the
+   * subscription plan's reset period is monthly.
+   */
+  month_consumed?: number
   /** Organization name (set when organization_id > 0) */
   organization_name?: string
   /** Current quota balance */
