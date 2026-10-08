@@ -11,6 +11,10 @@ build
 *.db-shm
 *.db-wal
 *.bak
+# 本地 DB 备份的白名单快照产物（*.bak 之外 SQLite 还会带出 -shm / -wal 两个伴生文件，
+# 同样不得入仓；模式写在这里，后续任何 .bak-* 备份都自动忽略）。
+*.bak-shm
+*.bak-wal
 logs
 web/dist
 web/node_modules
