@@ -177,6 +177,13 @@ const defaultModelSettings: ModelSettings = {
   'costopt_setting.semantic_cache_embed_model': '',
   'costopt_setting.semantic_cache_top_k': 3,
   'costopt_setting.semantic_cache_score_threshold': 0.92,
+  // ===== 模型描述多语化：默认全关，开启后才会产生外部请求与 LLM 调用 =====
+  ModelDescriptionSyncEnabled: false,
+  ModelDescriptionTranslateEnabled: false,
+  ModelDescriptionTranslateBaseURL: '',
+  ModelDescriptionTranslateApiKey: '',
+  ModelDescriptionTranslateModel: '',
+  ModelDescriptionTranslateLocales: '',
 }
 
 export function ModelSettings() {
