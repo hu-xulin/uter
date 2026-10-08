@@ -60,6 +60,8 @@ func InitOptionMap() {
 	// 管理员令牌默认空 = 未配置。它不加载自环境变量（避免把 uter-cs 的管理员凭证
 	// 写进 .env 明文），只经由 options 表由运营在后台粘贴。
 	common.OptionMap["CustomerServiceAdminToken"] = common.CustomerServiceAdminToken
+	// 大模型配置缓存：内存镜像，供「无令牌时直接展示已配置参数」使用（详见 common 注释）。
+	common.OptionMap["CustomerServiceLLMConfig"] = common.CustomerServiceLLMConfig
 	common.OptionMap["DisplayTokenStatEnabled"] = strconv.FormatBool(common.DisplayTokenStatEnabled)
 	common.OptionMap["DrawingEnabled"] = strconv.FormatBool(common.DrawingEnabled)
 	common.OptionMap["TaskEnabled"] = strconv.FormatBool(common.TaskEnabled)
@@ -461,7 +463,11 @@ func updateOptionMap(key string, value string) (err error) {
 	case "CustomerServiceAdminToken":
 		// 透传凭证，原样存。不 trim：令牌本身可能含首尾空白作为安全字符，
 		// 误 trim 会让用户粘贴的 token 与 uter-cs 端不一致而稳定 401。
+		//（wire 上的 TrimSpace 已在 csDo 里做，存储值保持原样。）
 		common.CustomerServiceAdminToken = value
+	case "CustomerServiceLLMConfig":
+		// 大模型配置缓存（JSON 字符串）。仅在管理员接口下发，GetOptions 已排除。
+		common.CustomerServiceLLMConfig = value
 	case "EmailDomainWhitelist":
 		common.EmailDomainWhitelist = strings.Split(value, ",")
 	case "SMTPServer":

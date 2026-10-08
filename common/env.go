@@ -197,3 +197,11 @@ var CustomerServicePages = ""
 // 它只保存在 Uter 的 options 表（与系统其它密钥同等级别），绝不出现在 /api/status
 // 等对外下发接口，前端只读「是否已配置」、不回显明文。
 var CustomerServiceAdminToken = ""
+
+// CustomerServiceLLMConfig 缓存 uter-cs 最近一次成功读取/保存的大模型配置（llm 段，
+// JSON 字符串）。用途：① 即使本次未携带令牌，也能直接展示「目前已经配置好的参数」；
+// ② 实时拉取 uter-cs 临时失败时回退展示，避免页面把上游错误当 500 砸出来。
+// 仅作内存镜像（含 api_key 等敏感字段），不写任何对外接口；落地持久化由
+// CustomerServiceAdminToken 同在 options 表托管（重启后令牌仍在，GET 会重新实时拉取）。
+// 批量选项接口 GetOptions 已将其排除，不会在 /api/option/ 泄露。
+var CustomerServiceLLMConfig = ""

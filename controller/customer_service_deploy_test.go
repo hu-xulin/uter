@@ -81,14 +81,17 @@ func withCS(t *testing.T, m *mockUterCS) (baseURL string) {
 	t.Helper()
 	origURL := common.CustomerServiceURL
 	origToken := common.CustomerServiceAdminToken
+	origCache := common.CustomerServiceLLMConfig
 	srv := httptest.NewServer(m.handler())
 	t.Cleanup(func() {
 		srv.Close()
 		common.CustomerServiceURL = origURL
 		common.CustomerServiceAdminToken = origToken
+		common.CustomerServiceLLMConfig = origCache
 	})
 	common.CustomerServiceURL = srv.URL
 	common.CustomerServiceAdminToken = "test-cs-token"
+	common.CustomerServiceLLMConfig = ""
 	return srv.URL
 }
 
@@ -120,6 +123,7 @@ func TestGetCustomerServiceLLMConfig_Preconditions(t *testing.T) {
 	t.Run("missing token returns 400 with needToken flag", func(t *testing.T) {
 		common.CustomerServiceURL = "https://cs.uter.ai"
 		common.CustomerServiceAdminToken = ""
+		common.CustomerServiceLLMConfig = ""
 		ctx, resp := setCtx(nil, http.MethodGet)
 		GetCustomerServiceLLMConfig(ctx)
 		assert.Equal(t, http.StatusBadRequest, resp.Code)
@@ -127,6 +131,38 @@ func TestGetCustomerServiceLLMConfig_Preconditions(t *testing.T) {
 		require.NoError(t, common.Unmarshal(resp.Body.Bytes(), &body))
 		assert.Equal(t, true, body["needToken"])
 	})
+}
+
+func TestGetCustomerServiceLLMConfig_NoTokenUsesCache(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	origURL := common.CustomerServiceURL
+	origToken := common.CustomerServiceAdminToken
+	origCache := common.CustomerServiceLLMConfig
+	t.Cleanup(func() {
+		common.CustomerServiceURL = origURL
+		common.CustomerServiceAdminToken = origToken
+		common.CustomerServiceLLMConfig = origCache
+	})
+
+	// 无令牌，但有上一次成功缓存：直接回放缓存，fromCache=true，不报 needToken。
+	common.CustomerServiceURL = "https://cs.uter.ai"
+	common.CustomerServiceAdminToken = ""
+	common.CustomerServiceLLMConfig = `{"provider":"api","model":"cached-model"}`
+
+	ctx, resp := setCtx(nil, http.MethodGet)
+	GetCustomerServiceLLMConfig(ctx)
+	require.Equal(t, http.StatusOK, resp.Code)
+	var body struct {
+		Success bool `json:"success"`
+		Data    struct {
+			LLM       map[string]any `json:"llm"`
+			FromCache bool           `json:"fromCache"`
+		} `json:"data"`
+	}
+	require.NoError(t, common.Unmarshal(resp.Body.Bytes(), &body))
+	assert.True(t, body.Success)
+	assert.Equal(t, "cached-model", body.Data.LLM["model"])
+	assert.True(t, body.Data.FromCache)
 }
 
 func TestGetCustomerServiceLLMConfig_HappyPath(t *testing.T) {
@@ -166,6 +202,7 @@ func TestGetCustomerServiceLLMConfig_UpstreamError(t *testing.T) {
 	t.Cleanup(func() { srv.Close() })
 	common.CustomerServiceURL = srv.URL
 	common.CustomerServiceAdminToken = "tok"
+	common.CustomerServiceLLMConfig = "" // 无缓存时才应落到 502
 
 	ctx, resp := setCtx(nil, http.MethodGet)
 	GetCustomerServiceLLMConfig(ctx)

@@ -6976,6 +6976,7 @@
     "Pages where the entry appears": "入口顯示的頁面",
     "Customer Service Admin Token": "智能客服管理員令牌",
     "Admin token is configured. Paste a new one to replace it.": "管理員令牌已配置。如需更換，請貼上新的令牌。",
+    "Configuration loaded from cache. Click Reload to fetch the latest from uter-cs.": "配置來自本地快取。點擊「重新載入」可從 uter-cs 拉取最新配置。",
     "Paste the uter-cs admin bearer token so Uter can read and save its model configuration on your behalf.": "請貼上 uter-cs 的管理員 Bearer 令牌，以便 Uter 代您讀取並儲存其大模型設定。",
     "Token cannot be empty": "令牌不能為空",
     "Save token": "儲存令牌",

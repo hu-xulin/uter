@@ -6976,6 +6976,7 @@
     "Pages where the entry appears": "Các trang hiển thị mục",
     "Customer Service Admin Token": "Mã thông báo quản trị viên hỗ trợ khách hàng",
     "Admin token is configured. Paste a new one to replace it.": "Đã cấu hình mã thông báo quản trị viên. Dán mã mới để thay thế.",
+    "Configuration loaded from cache. Click Reload to fetch the latest from uter-cs.": "Cấu hình được tải từ bộ nhớ đệm. Nhấn Tải lại để lấy cấu hình mới nhất từ uter-cs.",
     "Paste the uter-cs admin bearer token so Uter can read and save its model configuration on your behalf.": "Dán mã Bearer quản trị viên uter-cs để Uter đọc và lưu cấu hình mô hình thay bạn.",
     "Token cannot be empty": "Mã thông báo không được để trống",
     "Save token": "Lưu mã thông báo",

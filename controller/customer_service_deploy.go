@@ -13,8 +13,6 @@ GNU Affero General Public License for more details.
 
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-
-For commercial licensing, please contact support@uter.ai
 */
 
 package controller
@@ -38,17 +36,25 @@ import (
 // Uter 并不直接管理智能客服的模型配置，而是把「站点与品牌 → 智能客服」页面作为
 // 编辑入口，经本代理把请求转发给 uter-cs 的 /api/deploy/* 管理接口：
 //
-//   GET  /api/customer-service/deploy/llm  ->  uter-cs GET  /api/deploy/config  (取 llm 段)
-//   PUT  /api/customer-service/deploy/llm  ->  uter-cs PUT  /api/deploy/section/llm
-//                                         +  POST /api/deploy/apply (让新配置生效/重载引擎)
+//   GET  /api/customer-service/deploy/llm      ->  uter-cs GET  /api/deploy/config  (取 llm 段)
+//   PUT  /api/customer-service/deploy/llm      ->  uter-cs PUT  /api/deploy/section/llm
+//                                            +  POST /api/deploy/apply (让新配置生效/重载引擎)
+//   GET  /api/customer-service/admin-token     ->  仅回显当前存储的 uter-cs 管理员令牌（供前端掩码展示）
 //
 // 为什么是代理而不是前端直连：uter-cs 的管理接口需要 admin Bearer 令牌，这个凭证
 // 存在 Uter 的 options 表里（common.CustomerServiceAdminToken），前端不持有、也不
-// 应回显。由 Uter 后端统一带令牌转发，前端只跟 Uter 自己的 admin 会话打交道。
+// 应回显明文。由 Uter 后端统一带令牌转发，前端只跟 Uter 自己的 admin 会话打交道。
 //
 // 两个前置条件缺任一都直接 400，不带着空值去打 uter-cs（那会稳定 401，反而难排查）：
 //   - common.CustomerServiceURL           （智能客服地址，环境变量 CUSTOMER_SERVICE_URL）
 //   - common.CustomerServiceAdminToken    （运营粘贴的 uter-cs admin 令牌）
+//
+// 容错设计（修复「输入令牌后页面报错」）：
+//   - csDo 在 wire 上 TrimSpace 令牌，避免粘贴时带入首尾空白/换行导致 uter-cs 鉴权
+//     返回 400/401（实测尾部换行会让 Fastify 直接回 400）。
+//   - 读取配置时若实时拉取失败，但有上一次成功缓存（common.CustomerServiceLLMConfig），
+//     则回退展示缓存并附 stale 提示，而不是把上游错误直接砸到页面上。
+//   - 未配置令牌时若已有缓存，也直接展示缓存（满足「已配置好的参数无需再输入令牌即可看到」）。
 //
 // 响应统一走 Uter 的 {success, message, data} 约定，前端沿用现有拦截器与 requireServerSuccess。
 
@@ -59,13 +65,18 @@ func csBaseURL() string {
 	return strings.TrimRight(common.CustomerServiceURL, "/")
 }
 
-// csProxyError 把 uter-cs 的响应翻译成 Uter 侧的友好错误。
-func csProxyError(c *gin.Context, action string, status int, body string) {
+// proxyErrorMsg 把 uter-cs 的响应翻译成 Uter 侧的友好错误文本。
+func proxyErrorMsg(action string, status int, body string) string {
 	msg := fmt.Sprintf("智能客服返回错误（%s）：HTTP %d", action, status)
 	if body != "" && len(body) <= 500 {
 		msg += " —— " + strings.TrimSpace(body)
 	}
-	c.JSON(http.StatusBadGateway, gin.H{"success": false, "message": msg})
+	return msg
+}
+
+// csProxyError 把 uter-cs 的响应翻译成 Uter 侧的友好错误。
+func csProxyError(c *gin.Context, action string, status int, body string) {
+	c.JSON(http.StatusBadGateway, gin.H{"success": false, "message": proxyErrorMsg(action, status, body)})
 }
 
 // csDo 执行一次带 admin 令牌的 uter-cs 请求。method 为 GET/PUT/POST，body 为 nil
@@ -80,7 +91,8 @@ func csDo(c *gin.Context, method, path string, body []byte) ([]byte, int, error)
 	if err != nil {
 		return nil, 0, err
 	}
-	req.Header.Set("Authorization", "Bearer "+common.CustomerServiceAdminToken)
+	// 关键：令牌在 wire 上做 TrimSpace，剔除粘贴时带入的首尾空白/换行。
+	req.Header.Set("Authorization", "Bearer "+strings.TrimSpace(common.CustomerServiceAdminToken))
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Accept", "application/json")
 
@@ -94,11 +106,52 @@ func csDo(c *gin.Context, method, path string, body []byte) ([]byte, int, error)
 	return respBody, resp.StatusCode, nil
 }
 
+// cacheLLMConfig 把最近一次成功读取/保存的 llm 段缓存到内存，供「无令牌时直接展示」
+// 以及「上游临时不可达时回退展示」使用。仅内存镜像（含 api_key 等敏感字段），不写
+// 任何对外接口；落地持久化由 CustomerServiceAdminToken 同在 options 表托管即可（重启后
+// 令牌仍在，GET 会重新实时拉取）。
+func cacheLLMConfig(llm map[string]any) {
+	if llm == nil {
+		return
+	}
+	b, err := json.Marshal(llm)
+	if err != nil {
+		return
+	}
+	s := string(b)
+	common.OptionMapRWMutex.Lock()
+	common.CustomerServiceLLMConfig = s
+	// OptionMap 在单测等未初始化的场景可能为 nil，此时仅更新内存镜像变量即可。
+	if common.OptionMap != nil {
+		common.OptionMap["CustomerServiceLLMConfig"] = s
+	}
+	common.OptionMapRWMutex.Unlock()
+}
+
+// readCachedLLMConfig 读出内存缓存的 llm 段；无缓存返回 nil。
+func readCachedLLMConfig() map[string]any {
+	raw := strings.TrimSpace(common.CustomerServiceLLMConfig)
+	if raw == "" {
+		return nil
+	}
+	var m map[string]any
+	if err := json.Unmarshal([]byte(raw), &m); err != nil {
+		return nil
+	}
+	return m
+}
+
 // GetCustomerServiceLLMConfig 拉取 uter-cs 当前的大模型配置（llm 段）下发前端。
 //
 // 只回传 llm 段本身（provider/base/model/.../api_key 等），不回传整份 deploy 配置，
 // 前端也不需要其它段。api_key 等敏感字段原样下发——本接口本身受 AdminAuth 保护，
 // 调用者已是 Uter 管理员，与在 uter-cs 后台看配置同级。
+//
+// 容错优先级：
+//  1. 令牌已配置且实时拉取成功 → 返回实时配置（fromCache:false），并刷新缓存；
+//  2. 令牌已配置但实时拉取失败 → 有缓存则回退缓存（fromCache:true, stale:true + 原因），
+//     无缓存才报 502；
+//  3. 令牌未配置 → 有缓存则直接返回缓存（fromCache:true），否则 400 提示先填令牌。
 func GetCustomerServiceLLMConfig(c *gin.Context) {
 	if common.CustomerServiceURL == "" {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -107,45 +160,106 @@ func GetCustomerServiceLLMConfig(c *gin.Context) {
 		})
 		return
 	}
-	if common.CustomerServiceAdminToken == "" {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"success":   false,
-			"message":   "未配置智能客服管理员令牌",
-			"needToken": true,
+
+	if strings.TrimSpace(common.CustomerServiceAdminToken) != "" {
+		raw, status, err := csDo(c, http.MethodGet, "/api/deploy/config", nil)
+		if err != nil {
+			if cached := readCachedLLMConfig(); cached != nil {
+				c.JSON(http.StatusOK, gin.H{
+					"success": true,
+					"data": gin.H{
+						"llm":       cached,
+						"fromCache": true,
+						"stale":     true,
+						"message":   "无法连接智能客服，展示上次缓存的配置：" + err.Error(),
+					},
+				})
+				return
+			}
+			c.JSON(http.StatusBadGateway, gin.H{
+				"success": false,
+				"message": "无法连接智能客服：" + err.Error(),
+			})
+			return
+		}
+		if status != http.StatusOK {
+			if cached := readCachedLLMConfig(); cached != nil {
+				c.JSON(http.StatusOK, gin.H{
+					"success": true,
+					"data": gin.H{
+						"llm":       cached,
+						"fromCache": true,
+						"stale":     true,
+						"message":   proxyErrorMsg("读取配置", status, string(raw)),
+					},
+				})
+				return
+			}
+			csProxyError(c, "读取配置", status, string(raw))
+			return
+		}
+
+		var parsed struct {
+			Config struct {
+				LLM map[string]any `json:"llm"`
+			} `json:"config"`
+		}
+		if err := json.Unmarshal(raw, &parsed); err != nil {
+			if cached := readCachedLLMConfig(); cached != nil {
+				c.JSON(http.StatusOK, gin.H{
+					"success": true,
+					"data": gin.H{
+						"llm":       cached,
+						"fromCache": true,
+						"stale":     true,
+						"message":   "智能客服返回的配置无法解析，展示上次缓存：" + err.Error(),
+					},
+				})
+				return
+			}
+			c.JSON(http.StatusBadGateway, gin.H{
+				"success": false,
+				"message": "智能客服返回的配置无法解析：" + err.Error(),
+			})
+			return
+		}
+		if parsed.Config.LLM == nil {
+			// 容错：llm 段缺失时给空对象，前端据此显示「未配置模型」。
+			parsed.Config.LLM = map[string]any{}
+		}
+		cacheLLMConfig(parsed.Config.LLM)
+		c.JSON(http.StatusOK, gin.H{
+			"success": true,
+			"data":    gin.H{"llm": parsed.Config.LLM, "fromCache": false},
 		})
 		return
 	}
 
-	raw, status, err := csDo(c, http.MethodGet, "/api/deploy/config", nil)
-	if err != nil {
-		c.JSON(http.StatusBadGateway, gin.H{
-			"success": false,
-			"message": "无法连接智能客服：" + err.Error(),
+	// 未配置令牌：尽力回放已缓存的配置，让「已配置好的参数」可直接展示。
+	if cached := readCachedLLMConfig(); cached != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"success": true,
+			"data":    gin.H{"llm": cached, "fromCache": true},
 		})
 		return
 	}
-	if status != http.StatusOK {
-		csProxyError(c, "读取配置", status, string(raw))
-		return
-	}
+	c.JSON(http.StatusBadRequest, gin.H{
+		"success":   false,
+		"message":   "未配置智能客服管理员令牌",
+		"needToken": true,
+	})
+}
 
-	var parsed struct {
-		Config struct {
-			LLM map[string]any `json:"llm"`
-		} `json:"config"`
-	}
-	if err := json.Unmarshal(raw, &parsed); err != nil {
-		c.JSON(http.StatusBadGateway, gin.H{
-			"success": false,
-			"message": "智能客服返回的配置无法解析：" + err.Error(),
-		})
-		return
-	}
-	if parsed.Config.LLM == nil {
-		// 容错：llm 段缺失时给空对象，前端据此显示「未配置模型」。
-		parsed.Config.LLM = map[string]any{}
-	}
-	c.JSON(http.StatusOK, gin.H{"success": true, "data": gin.H{"llm": parsed.Config.LLM}})
+// GetCustomerServiceAdminToken 仅回显当前存储的 uter-cs 管理员令牌，供前端以「与密钥
+// 一致的掩码规则」展示在输入框里。接口本身受 AdminAuth 保护，仅管理员可见。
+//
+// 安全边界：令牌只返回给已登录的 Uter 管理员（与同页 API Key 的展示等级一致），绝不
+// 出现在 /api/status 等对外接口；GET /api/option/ 也已将其排除在批量选项之外。
+func GetCustomerServiceAdminToken(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"data":    gin.H{"token": common.CustomerServiceAdminToken},
+	})
 }
 
 // UpdateCustomerServiceLLMConfig 把前端编辑后的 llm 段写回 uter-cs，并触发引擎重载。
@@ -161,7 +275,7 @@ func UpdateCustomerServiceLLMConfig(c *gin.Context) {
 		})
 		return
 	}
-	if common.CustomerServiceAdminToken == "" {
+	if strings.TrimSpace(common.CustomerServiceAdminToken) == "" {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"success":   false,
 			"message":   "未配置智能客服管理员令牌",
@@ -216,6 +330,9 @@ func UpdateCustomerServiceLLMConfig(c *gin.Context) {
 			applyNote = "已保存；重载引擎提示：" + ar.Err
 		}
 	}
+
+	// 缓存本次写回的 llm 配置，供无令牌时直接展示。
+	cacheLLMConfig(payload)
 
 	c.JSON(http.StatusOK, gin.H{
 		"success":    true,

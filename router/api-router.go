@@ -63,8 +63,10 @@ func SetApiRouter(router *gin.Engine) {
 
 		// 智能客服（uter-cs）管理端代理：读取/保存其大模型配置。受 AdminAuth 保护，
 		// 实际请求由 Uter 后端携带 common.CustomerServiceAdminToken 转发给 uter-cs。
-		apiRouter.GET("/customer-service/deploy/llm", middleware.AdminAuth(), controller.GetCustomerServiceLLMConfig)
-		apiRouter.PUT("/customer-service/deploy/llm", middleware.AdminAuth(), controller.UpdateCustomerServiceLLMConfig)
+	apiRouter.GET("/customer-service/deploy/llm", middleware.AdminAuth(), controller.GetCustomerServiceLLMConfig)
+	apiRouter.PUT("/customer-service/deploy/llm", middleware.AdminAuth(), controller.UpdateCustomerServiceLLMConfig)
+	// 仅回显当前存储的 uter-cs 管理员令牌，供前端以「与密钥一致的掩码规则」展示。
+	apiRouter.GET("/customer-service/admin-token", middleware.AdminAuth(), controller.GetCustomerServiceAdminToken)
 
 		apiRouter.POST("/stripe/webhook", anonymousRequestBodyLimit, controller.StripeWebhook)
 		apiRouter.POST("/creem/webhook", anonymousRequestBodyLimit, controller.CreemWebhook)
