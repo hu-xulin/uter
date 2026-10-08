@@ -84,7 +84,7 @@ const defaultModelSettings: ModelSettings = {
   'channel_affinity_setting.rules': '[]',
   'model_deployment.ionet.api_key': '',
   'model_deployment.ionet.enabled': false,
-  // ===== 模型优化（costopt_setting.*）：默认值与后端 setting/costopt/config.go 对齐 =====
+  // ===== 降本优化（costopt_setting.*）：默认值与后端 setting/costopt/config.go 对齐 =====
   'costopt_setting.arbitrage_enabled': false,
   'costopt_setting.arbitrage_price_source': 'ratio_config',
   'costopt_setting.arbitrage_model_prices': '{}',
@@ -145,6 +145,33 @@ const defaultModelSettings: ModelSettings = {
   'costopt_setting.cost_per_success_signal': 'no_error',
   'costopt_setting.cost_per_success_field': '',
   'costopt_setting.cost_per_success_expected': '',
+  // ===== 降本优化 · 核心已落地项（纯代码、无需外部基建）=====
+  'costopt_setting.response_cache_enabled': false,
+  'costopt_setting.response_cache_ttl_seconds': 300,
+  'costopt_setting.response_cache_max_tokens': 4096,
+  'costopt_setting.negative_cache_enabled': false,
+  'costopt_setting.negative_cache_ttl_seconds': 30,
+  'costopt_setting.max_tokens_cap_enabled': false,
+  'costopt_setting.max_tokens_cap_global': 8192,
+  'costopt_setting.loop_detection_enabled': false,
+  'costopt_setting.loop_detection_threshold': 3,
+  'costopt_setting.agent_step_budget_enabled': false,
+  'costopt_setting.agent_step_budget_max_steps': 20,
+  'costopt_setting.agent_step_budget_max_tokens': 200000,
+  'costopt_setting.metrics_enabled': false,
+  'costopt_setting.anomaly_alert_enabled': false,
+  'costopt_setting.gzip_enabled': false,
+  'costopt_setting.cascade_enabled': false,
+  'costopt_setting.cascade_cheap_model': '',
+  'costopt_setting.cascade_premium_model': '',
+  'costopt_setting.cascade_refusal_keywords': '[]',
+  'costopt_setting.semantic_cache_enabled': false,
+  'costopt_setting.semantic_cache_ttl_seconds': 300,
+  'costopt_setting.semantic_cache_embed_base_url': '',
+  'costopt_setting.semantic_cache_embed_api_key': '',
+  'costopt_setting.semantic_cache_embed_model': '',
+  'costopt_setting.semantic_cache_top_k': 3,
+  'costopt_setting.semantic_cache_score_threshold': 0.92,
 }
 
 export function ModelSettings() {

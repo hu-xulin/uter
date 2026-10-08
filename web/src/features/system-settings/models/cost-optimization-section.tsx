@@ -48,7 +48,7 @@ import { useUpdateOption } from '../hooks/use-update-option'
 import { safeNumberFieldProps } from '../utils/numeric-field'
 
 /**
- * 模型优化（Model Optimization）
+ * 降本优化（Cost Optimization）
  *
  * 承载《Uter 技术降本全景方案 V2》中标记为「🟡 基础设施具备或仅部分覆盖」的项。
  * 这些项的共性缺口是：缺上游参数或策略开关。参数在后台填齐后，后端钩子即由
@@ -58,7 +58,7 @@ import { safeNumberFieldProps } from '../utils/numeric-field'
  * `setting/costopt/config.go` 的 json tag 一一对应。
  */
 
-import { ALL_FIELDS, GROUPS, leaf, type FieldDef } from './model-optimization-fields'
+import { ALL_FIELDS, GROUPS, leaf, type FieldDef } from './cost-optimization-fields'
 
 // zod schema：所有标量统一按 string 收集，提交时再按 kind 归一化，
 // 避免 number/bool 的空值让整份表单无法提交。
@@ -205,7 +205,7 @@ function OptimizationField(props: {
   )
 }
 
-export function ModelOptimizationSection(props: Props) {
+export function CostOptimizationSection(props: Props) {
   const { t } = useTranslation()
   const updateOption = useUpdateOption()
 
@@ -266,7 +266,7 @@ export function ModelOptimizationSection(props: Props) {
   }
 
   return (
-    <SettingsSection title={t('Model Optimization')}>
+    <SettingsSection title={t('Cost Optimization')}>
       <p className='text-muted-foreground text-xs'>
         {t(
           'Upstream parameters for cost optimization features that are only partially covered. Fill these in to activate the corresponding capability; leaving them empty keeps the gateway running unchanged.'

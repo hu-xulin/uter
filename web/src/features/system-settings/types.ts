@@ -289,7 +289,7 @@ export type ModelSettings = {
   'model_deployment.ionet.api_key': string
   'model_deployment.ionet.enabled': boolean
   /**
-   * 模型优化（costopt）字段：由后端 `setting/costopt/config.go` 的 json tag 决定，
+   * 降本优化（costopt）字段：由后端 `setting/costopt/config.go` 的 json tag 决定，
    * 数量多且随版本演进，这里用模板字面量索引签名统一承载，避免每加一个开关
    * 都要同时改类型与默认值两处。
    */
