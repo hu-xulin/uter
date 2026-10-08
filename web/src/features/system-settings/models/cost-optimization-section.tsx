@@ -17,7 +17,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@uter.ai
 */
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useEffect, useMemo, useRef, type ReactNode } from 'react'
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { useForm, type Control } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
@@ -45,6 +45,7 @@ import {
 import { SettingsPageFormActions } from '../components/settings-page-context'
 import { SettingsSection } from '../components/settings-section'
 import { useUpdateOption } from '../hooks/use-update-option'
+import { cn } from '@/lib/utils'
 import { safeNumberFieldProps } from '../utils/numeric-field'
 
 /**
@@ -106,6 +107,14 @@ function serialize(field: FieldDef, raw: unknown): string {
   return String(raw)
 }
 
+/**
+ * 门控是否关闭：布尔 false / 空值视为关，三态模式选择为 'off' 也视为关。
+ * 未配置（undefined/空串）时按关处理——与后端「默认 auto、显式 off 才停」一致的前提是
+ * 这些 mode 在 ModelSettings 默认值里已给出 'auto'，不会落到空串。
+ */
+const isGateOff = (v: string | number | boolean | undefined): boolean =>
+  v === undefined || v === '' || v === false || v === 'false' || v === 'off'
+
 function OptimizationField(props: {
   field: FieldDef
   control: Control<FormValues>
@@ -118,11 +127,8 @@ function OptimizationField(props: {
     string,
     string | number | boolean
   >
-  const gateOn =
-    def.gated === undefined ||
-    nestedValues[leaf(def.gated)] === true ||
-    nestedValues[leaf(def.gated)] === 'true'
-  const gateOff = !gateOn
+  // 门控既可能是布尔开关（false=关），也可能是三态模式选择（off=关）。
+  const gateOff = def.gated !== undefined && isGateOff(nestedValues[leaf(def.gated)])
 
   return (
     <FormField
@@ -156,7 +162,7 @@ function OptimizationField(props: {
             >
               {(def.options ?? []).map((o) => (
                 <option key={o.value} value={o.value}>
-                  {o.label}
+                  {t(o.label)}
                 </option>
               ))}
             </NativeSelect>
@@ -234,6 +240,10 @@ export function CostOptimizationSection(props: Props) {
 
   const values = form.watch()
 
+  // 支付网关风格：把降本分类水平排列成可切换的卡片，避免长列表堆叠。
+  const [activeGroup, setActiveGroup] = useState(0)
+  const activeGroupData = GROUPS[activeGroup]
+
   const onSubmit = async (submitted: FormValues) => {
     const normalized = normalizeFormValues(submitted)
     const changedKeys = Object.keys(normalized).filter((key) => {
@@ -278,26 +288,54 @@ export function CostOptimizationSection(props: Props) {
             onSave={form.handleSubmit(onSubmit)}
             isSaving={updateOption.isPending}
           />
-          {GROUPS.map((group) => (
-            <div key={group.title} className='space-y-3'>
-              <div className='space-y-1'>
-                <h3 className='text-sm font-semibold'>{t(group.title)}</h3>
-                <p className='text-muted-foreground text-xs'>
-                  {t(group.desc)}
-                </p>
-              </div>
-              <div className='space-y-4'>
-                {group.fields.map((def) => (
-                  <OptimizationField
-                    key={def.name}
-                    field={def}
-                    control={form.control}
-                    values={values}
-                  />
-                ))}
-              </div>
-            </div>
-          ))}
+          {/* 分类水平排列：支付网关风格的横向可切换卡片 */}
+          <div className='flex gap-2 overflow-x-auto pb-2'>
+            {GROUPS.map((group, idx) => {
+              const active = idx === activeGroup
+              return (
+                <button
+                  type='button'
+                  key={group.title}
+                  onClick={() => setActiveGroup(idx)}
+                  aria-pressed={active}
+                  className={cn(
+                    'flex min-w-[150px] flex-1 shrink-0 flex-col gap-1.5 rounded-lg border px-3 py-2 text-left transition-colors',
+                    active
+                      ? 'border-primary bg-primary/5'
+                      : 'border-border bg-background hover:bg-muted/50'
+                  )}
+                >
+                  <span
+                    className={cn(
+                      'text-sm font-medium leading-tight',
+                      active ? 'text-primary' : 'text-foreground'
+                    )}
+                  >
+                    {t(group.title)}
+                  </span>
+                  <span className='inline-flex h-5 w-fit min-w-5 items-center justify-center rounded-full bg-muted px-1.5 text-xs text-muted-foreground tabular-nums'>
+                    {group.fields.length}
+                  </span>
+                </button>
+              )
+            })}
+          </div>
+          <div className='mt-2 space-y-1'>
+            <h3 className='text-sm font-semibold'>{t(activeGroupData.title)}</h3>
+            <p className='text-muted-foreground text-xs'>
+              {t(activeGroupData.desc)}
+            </p>
+          </div>
+          <div className='space-y-4'>
+            {activeGroupData.fields.map((def) => (
+              <OptimizationField
+                key={def.name}
+                field={def}
+                control={form.control}
+                values={values}
+              />
+            ))}
+          </div>
         </SettingsForm>
       </Form>
     </SettingsSection>

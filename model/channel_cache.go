@@ -3,6 +3,7 @@ package model
 import (
 	"errors"
 	"fmt"
+	"math"
 	"math/rand"
 	"sort"
 	"strings"
@@ -122,6 +123,15 @@ type ChannelSelectOption struct {
 	// PreferChannelType 强烈偏好的渠道类型名（constant.GetChannelTypeName）。
 	// 非空时匹配渠道权重放大 100×，用于地理/区域比价等场景把流量导到特定区域渠道。
 	PreferChannelType string
+	// PriceFirst 按「渠道对该模型的有效单价」择优（多供应商套利 / 同模型跨通道比价 /
+	// Serverless 价值层 / A-tier 分层的自动模式）。仅在同一优先级档内生效，
+	// 不改变优先级档位划分，也不改变计费口径。
+	PriceFirst bool
+}
+
+// PriceFirstChannel 构造一个"按有效单价择优"的选路选项。
+func PriceFirstChannel() ChannelSelectOption {
+	return ChannelSelectOption{PriceFirst: true}
 }
 
 // PreferChannelType 构造一个"偏好某渠道类型"的选路选项。
@@ -143,9 +153,13 @@ func GetRandomSatisfiedChannel(
 
 	// 地理/区域比价：从变参选项中取出强偏好渠道类型（默认空）。
 	var preferCT string
+	var priceFirst bool
 	for _, o := range opts {
 		if o.PreferChannelType != "" {
 			preferCT = o.PreferChannelType
+		}
+		if o.PriceFirst {
+			priceFirst = true
 		}
 	}
 
@@ -235,6 +249,15 @@ func GetRandomSatisfiedChannel(
 		return nil, errors.New(fmt.Sprintf("no channel found, group: %s, model: %s, priority: %d", group, model, targetPriority))
 	}
 
+	// 自动择优（#4 多供应商套利 / #5 同模型跨通道比价 / #6 Serverless 价值层）：
+	// 在同一优先级档内按有效单价挑最便宜的渠道。取不到任何有效单价时回退加权随机，
+	// 保证「没有定价信息」不会导致选不出渠道。
+	if priceFirst && len(targetChannels) > 1 {
+		if picked := cheapestChannelByPrice(targetChannels, model); picked != nil {
+			return picked, nil
+		}
+	}
+
 	// smoothing factor and adjustment
 	smoothingFactor := 1
 	smoothingAdjustment := 0
@@ -264,6 +287,123 @@ func GetRandomSatisfiedChannel(
 	}
 	// return null if no channel is not found
 	return nil, errors.New("channel not found")
+}
+
+// ===== 有效单价：自动择优的定价来源 =====
+
+// channelUpstreamModel 解析渠道 model_mapping 后，该模型实际发往上游的模型名。
+// 这是「同模型跨通道比价」的关键：同一请求模型在不同渠道可能映射到不同上游模型，
+// 上游模型不同则定价不同，价差即套利空间（如 direct 与 Bedrock/Azure 的 Claude）。
+func channelUpstreamModel(ch *Channel, modelName string) string {
+	raw := ch.GetModelMapping()
+	if raw == "" {
+		return modelName
+	}
+	var mapping map[string]string
+	if err := common.UnmarshalJsonStr(raw, &mapping); err != nil || len(mapping) == 0 {
+		return modelName
+	}
+	upstream, cycle := followChannelModelMapping(mapping, modelName)
+	if cycle || upstream == "" {
+		return modelName
+	}
+	return upstream
+}
+
+// channelEffectiveUnitPrice 渠道对该模型的有效单价，归一到「每 1M token 美元」。
+// 返回 0 表示拿不到有效定价（该渠道不参与自动择优，但不被排除）。
+// 取价优先级：手填价目表覆盖 > 渠道映射后的上游模型定价（自动推算）。
+func channelEffectiveUnitPrice(ch *Channel, modelName string) float64 {
+	if ch == nil || modelName == "" {
+		return 0
+	}
+	cfg := costoptcfg.GetCostOptSetting()
+	// 统一口径：价目表描述的是「上游模型」的价格，故先解析渠道映射后的上游模型名，
+	// 手填价目表与自动推算都用同一个名字取价，避免两套口径对不上。
+	upstream := channelUpstreamModel(ch, modelName)
+	// 1) 手填价目表：manual 模式的主来源；auto 模式下作为覆盖值优先于自动推算。
+	if cfg.ArbitrageActive() && len(cfg.ArbitrageModelPrices) > 0 {
+		ctName := constant.GetChannelTypeName(ch.Type)
+		for _, key := range []string{ctName + "/" + upstream, upstream, ctName + "/" + modelName, modelName} {
+			if p, ok := cfg.ArbitrageModelPrices[key]; ok && p > 0 {
+				return p
+			}
+		}
+	}
+	// 2) 自动推算：渠道映射后的上游模型定价。
+	v, usePrice, exists := ratio_setting.GetModelRatioOrPrice(upstream)
+	if !exists || v <= 0 {
+		return 0
+	}
+	if usePrice {
+		return v
+	}
+	// ratio 口径是「每 token 的 quota」，换算为每 1M token 美元：
+	// 美元 = quota / QuotaPerUnit，故单价 = ratio * 1e6 / QuotaPerUnit。
+	return v * 1e6 / common.QuotaPerUnit
+}
+
+// cheapestChannelByPrice 在同一优先级档的候选渠道中按有效单价挑最便宜的。
+// 价差容忍 >1 时在容忍范围内保持按权重随机，避免把全部流量压到单一渠道；
+// 所有候选均取不到有效单价时返回 nil，由调用方回退到原加权随机。
+func cheapestChannelByPrice(channels []*Channel, modelName string) *Channel {
+	type priced struct {
+		ch    *Channel
+		price float64
+	}
+	var known []priced
+	min := math.MaxFloat64
+	for _, ch := range channels {
+		p := channelEffectiveUnitPrice(ch, modelName)
+		if p <= 0 {
+			continue
+		}
+		known = append(known, priced{ch: ch, price: p})
+		if p < min {
+			min = p
+		}
+	}
+	if len(known) == 0 {
+		return nil
+	}
+	tol := costoptcfg.GetCostOptSetting().ArbitrageTolerance()
+	if tol < 1 {
+		tol = 1
+	}
+	limit := min * tol
+	var within []*Channel
+	for _, k := range known {
+		if k.price <= limit {
+			within = append(within, k.ch)
+		}
+	}
+	if len(within) == 1 {
+		return within[0]
+	}
+	// 容忍范围内多个候选：按渠道权重随机，兼顾成本与负载分散。
+	sum := 0
+	for _, ch := range within {
+		w := ch.GetWeight()
+		if w <= 0 {
+			w = 1
+		}
+		sum += w
+	}
+	if sum == 0 {
+		return within[0]
+	}
+	r := rand.Intn(sum)
+	for _, ch := range within {
+		w := ch.GetWeight()
+		if w <= 0 {
+			w = 1
+		}
+		r -= w
+		if r < 0 {
+			return ch
+		}
+	}
+	return within[len(within)-1]
 }
 
 func CacheGetChannel(id int) (*Channel, error) {

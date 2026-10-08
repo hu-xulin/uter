@@ -1,23 +1,36 @@
 package costopt
 
 import (
+	"math"
 	"sort"
 	"strings"
 
+	"github.com/uter-ai/uter/common"
 	costoptcfg "github.com/uter-ai/uter/setting/costopt"
+	"github.com/uter-ai/uter/setting/ratio_setting"
 
 	"github.com/uter-ai/uter/relaykit/dto"
 )
 
-// ===== 4. 多供应商套利 + 5. 同模型跨通道比价 =====
+// ===== #4 多供应商套利 / #5 同模型跨通道比价 / #6 Serverless 价值层 / #7 A-tier 分层 =====
 //
-// 现状缺口（V2 标记为 🟡）：倍率数据已有、渠道机制可接任意上游，但缺「同质量
-// 自动选最便宜供应商」的择优引擎。V2.2 补齐该引擎：以配置价目表为准，在同一
-// 基准模型的候选供应商中按单价升序择优。
+// 定位：**自动实现 + 手动可配置，默认走自动**（三态：auto 默认 | manual | off）。
 //
-// 价目表 key 形如 "供应商/模型"（如 "groq/llama-3.3-70b"）或纯模型名；
-// value = 每百万 input token 的美元单价。归一化规则：取最后一个 "/" 之后的部分
-// 作为基准模型名，用于把不同供应商的同质模型归入一组比较。
+// 自动模式在做什么：
+//   - #5 同模型跨通道比价、#4 多供应商套利：比价动作发生在**渠道选择**环节
+//     （model.GetRandomSatisfiedChannel 按「渠道对该模型的有效单价」在同优先级档内择优），
+//     而不是改模型名。单价来自渠道 model_mapping 之后的上游模型定价，无需手填价目表。
+//   - #6 Serverless 价值层：自动识别 bulk（长 prompt）流量，按人工确认的等价组
+//     （ValueTierModelEquivalents）自动下沉到组内最便宜的开源模型，并偏好价值层渠道类型。
+//   - #7 A-tier 分层：自动识别后台流量（显式请求头/模型后缀），下沉到最便宜的等价模型；
+//     用户可见请求保留前沿模型。
+//
+// 手动配置扮演的角色是**边界约束**，不是前提条件：
+//   - 等价模型组：质量等价关系必须人工确认，这是自动执行的边界。
+//   - 渠道类型白名单、兜底模型、可见模型白名单：约束自动择优的搜索范围。
+//   - 手填价目表：覆盖自动推算的单价（可疑定价用手动值纠偏）。
+//
+// 取不到任何定价信息时不参与择优，回退原加权随机——「没有价格信息」不会导致选不出渠道。
 
 // baseModelOf 归一化出基准模型名（去掉供应商前缀）。
 func baseModelOf(name string) string {
@@ -27,14 +40,66 @@ func baseModelOf(name string) string {
 	return name
 }
 
-// ArbitrageCandidates 返回与 model 同质（同基准名）的候选，按单价升序。
-// 未启用、价目表为空或未命中时返回 nil。
+// AutoPriceFirst 是否让选路层按有效单价择优（handler 据此写 costopt_price_first）。
+// #4/#5/#6/#7 任一处于自动模式即为 true。
+func AutoPriceFirst() bool {
+	return costoptcfg.GetCostOptSetting().AutoPriceFirst()
+}
+
+// unitPriceOfModel 模型单价，归一到「每 1M token 美元」；无定价返回 0。
+// 与 model.channelEffectiveUnitPrice 保持同一口径，便于跨层比较。
+func unitPriceOfModel(name string) float64 {
+	if name == "" {
+		return 0
+	}
+	v, usePrice, exists := ratio_setting.GetModelRatioOrPrice(name)
+	if !exists || v <= 0 {
+		return 0
+	}
+	if usePrice {
+		return v
+	}
+	return v * 1e6 / common.QuotaPerUnit
+}
+
+// cheapestEquivalent 在等价模型组中选有效单价最低者（人工定义组、自动挑最便宜）。
+// 组未配置或组内无有效定价时返回 ""。
+func cheapestEquivalent(model string) string {
+	cfg := costoptcfg.GetCostOptSetting()
+	if model == "" || len(cfg.ValueTierModelEquivalents) == 0 {
+		return ""
+	}
+	group, ok := cfg.ValueTierModelEquivalents[model]
+	if !ok || len(group) == 0 {
+		// 退一步按基准名匹配（"vendor/model" 形态）
+		group, ok = cfg.ValueTierModelEquivalents[baseModelOf(model)]
+		if !ok || len(group) == 0 {
+			return ""
+		}
+	}
+	best := ""
+	bestPrice := math.MaxFloat64
+	for _, m := range group {
+		if m == "" || m == model {
+			continue
+		}
+		if p := unitPriceOfModel(m); p > 0 && p < bestPrice {
+			bestPrice, best = p, m
+		}
+	}
+	return best
+}
+
+// ===== 4. 多供应商套利 + 5. 同模型跨通道比价 =====
+
+// ArbitrageCandidates 返回与 model 同质的候选，按单价升序。
+// manual 模式：只用配置价目表；auto 模式：价目表为空时返回 nil（比价交给选路层按单价）。
 func ArbitrageCandidates(model string) []struct {
 	Name  string
 	Price float64
 } {
 	cfg := costoptcfg.GetCostOptSetting()
-	if !cfg.ArbitrageEnabled || len(cfg.ArbitrageModelPrices) == 0 || model == "" {
+	if !cfg.ArbitrageActive() || len(cfg.ArbitrageModelPrices) == 0 || model == "" {
 		return nil
 	}
 	base := baseModelOf(model)
@@ -93,13 +158,16 @@ func ArbitrageCandidates(model string) []struct {
 }
 
 // ApplyArbitrage 自动择优：把请求模型改写到同质候选中最便宜的那个。
-// 保守策略：未命中价目表时按配置走兜底模型或不改动；改写后仍走正常计费/缓存路径。
+//
+// 注意：#4/#5 的主战场是**渠道选择**（同一模型名在 direct/Bedrock/Azure 等通道间的价差），
+// 由 AutoPriceFirst 交给选路层按有效单价完成；这里只处理「跨供应商换模型」的场景
+// （需要人工价目表给出同质模型映射，属于手动边界）。
 func ApplyArbitrage(req *dto.GeneralOpenAIRequest) bool {
 	if req == nil || req.Model == "" {
 		return false
 	}
 	cfg := costoptcfg.GetCostOptSetting()
-	if !cfg.ArbitrageEnabled {
+	if !cfg.ArbitrageActive() {
 		return false
 	}
 	cands := ArbitrageCandidates(req.Model)
@@ -122,10 +190,11 @@ func ApplyArbitrage(req *dto.GeneralOpenAIRequest) bool {
 // ===== 6. Serverless 开源模型价值层 =====
 
 // ValueTierMatch 判断该请求是否应下沉到价值层（Groq/Fireworks/DeepInfra 等）。
+// auto 模式下 ValueTierAutoDetectBulk 控制是否自动按长 prompt 判定 bulk；
 // BulkOnly 模式下仅对长 prompt（bulk）流量生效，短交互仍走前沿模型保体验。
 func ValueTierMatch(req *dto.GeneralOpenAIRequest) bool {
 	cfg := costoptcfg.GetCostOptSetting()
-	if !cfg.ValueTierEnabled || req == nil || req.Model == "" {
+	if !cfg.ValueTierActive() || req == nil || req.Model == "" {
 		return false
 	}
 	if len(cfg.ValueTierModels) > 0 {
@@ -142,12 +211,16 @@ func ValueTierMatch(req *dto.GeneralOpenAIRequest) bool {
 		}
 	}
 	if cfg.ValueTierBulkOnly {
-		minChars := cfg.ValueTierMinPromptChars
-		if minChars <= 0 {
-			minChars = 2000
-		}
-		if len([]rune(lastUserMessageText(req))) < minChars {
-			return false
+		// 自动模式关闭了 bulk 自动判定时，视为"不限 bulk"（对所有命中的流量下沉）。
+		autoDetect := cfg.ValueTierAuto() && cfg.ValueTierAutoDetectBulk
+		if autoDetect || !cfg.ValueTierAuto() {
+			minChars := cfg.ValueTierMinPromptChars
+			if minChars <= 0 {
+				minChars = 2000
+			}
+			if len([]rune(lastUserMessageText(req))) < minChars {
+				return false
+			}
 		}
 	}
 	return true
@@ -155,46 +228,98 @@ func ValueTierMatch(req *dto.GeneralOpenAIRequest) bool {
 
 // ValueTierChannelTypes 配置的价值层渠道类型清单（供选路加权使用）。
 func ValueTierChannelTypes() []string {
-	if !costoptcfg.GetCostOptSetting().ValueTierEnabled {
+	cfg := costoptcfg.GetCostOptSetting()
+	if !cfg.ValueTierActive() {
 		return nil
 	}
-	return costoptcfg.GetCostOptSetting().ValueTierChannelTypes
+	return cfg.ValueTierChannelTypes
 }
 
 // ===== 7. A-tier + 价值层混合（用户可见走贵模，后台走便宜模） =====
 
 // TierSplitEnabled A-tier 分层是否启用（供 handler 决定是否收集请求头，避免无谓开销）。
 func TierSplitEnabled() bool {
-	return costoptcfg.GetCostOptSetting().TierSplitEnabled
+	return costoptcfg.GetCostOptSetting().TierSplitActive()
 }
 
-// IsBackgroundRequest 判断是否为后台流量：请求头或 model 后缀命中后台标记即算。
-func IsBackgroundRequest(req *dto.GeneralOpenAIRequest, headers map[string]string) bool {
-	cfg := costoptcfg.GetCostOptSetting()
-	if !cfg.TierSplitEnabled || len(cfg.TierSplitBackgroundTags) == 0 {
+// backgroundHeaderKeys 自动模式下判定后台流量的请求头关键字。
+var backgroundHeaderKeys = []string{"background", "async", "cron", "-task", "batch"}
+
+// visibleHeaderKeys 命中即视为"用户可见"流量（不判为后台）。
+var visibleHeaderKeys = []string{"visible", "interactive", "user-facing"}
+
+// truthyHeader 请求头值是否为"真"（空值或 0/false 视为假）。
+func truthyHeader(v string) bool {
+	switch strings.ToLower(strings.TrimSpace(v)) {
+	case "", "0", "false", "no", "off":
 		return false
 	}
+	return true
+}
+
+// IsBackgroundRequest 判断是否为后台流量。
+// 判定顺序：手动 tags（manual/auto 都生效）→ 自动显式信号（请求头/模型后缀）→ 可选非流式。
+func IsBackgroundRequest(req *dto.GeneralOpenAIRequest, headers map[string]string) bool {
+	cfg := costoptcfg.GetCostOptSetting()
+	if !cfg.TierSplitActive() {
+		return false
+	}
+	// 1) 手动配置：命中请求头/元信息标记即判定为后台流量。
+	if len(cfg.TierSplitBackgroundTags) > 0 {
+		for k, v := range headers {
+			lk := strings.ToLower(k)
+			lv := strings.ToLower(v)
+			for _, tag := range cfg.TierSplitBackgroundTags {
+				t := strings.ToLower(tag)
+				if t == "" {
+					continue
+				}
+				if strings.Contains(lk, t) || strings.Contains(lv, t) {
+					return true
+				}
+			}
+		}
+	}
+	if !cfg.TierSplitAuto() || !cfg.TierSplitAutoDetect {
+		return false
+	}
+	// 2) 自动：显式后台信号（请求头关键字，且值为真）。
+	hasVisible := false
 	for k, v := range headers {
 		lk := strings.ToLower(k)
-		lv := strings.ToLower(v)
-		for _, tag := range cfg.TierSplitBackgroundTags {
-			t := strings.ToLower(tag)
-			if t == "" {
-				continue
+		for _, key := range visibleHeaderKeys {
+			if strings.Contains(lk, key) {
+				hasVisible = true
 			}
-			if strings.Contains(lk, t) || strings.Contains(lv, t) {
+		}
+		for _, key := range backgroundHeaderKeys {
+			if strings.Contains(lk, key) && truthyHeader(v) {
 				return true
 			}
+		}
+	}
+	// 3) 自动：模型名显式后台后缀。
+	if req != nil {
+		lm := strings.ToLower(req.Model)
+		if strings.HasSuffix(lm, "-batch") || strings.Contains(lm, ":batch") ||
+			strings.HasSuffix(lm, ":background") || strings.HasSuffix(lm, "-background") {
+			return true
+		}
+	}
+	// 4) 可选：非流式视为后台。默认关闭——非流式不等于后台，开启可能让交互式请求掉质量。
+	if cfg.TierSplitNonStreamAsBackground && !hasVisible && req != nil {
+		if req.Stream != nil && !*req.Stream {
+			return true
 		}
 	}
 	return false
 }
 
 // ApplyTierSplit 后台流量下沉到便宜模型；用户可见请求保留前沿模型（VisibleModels 白名单）。
-// 返回是否改写了模型。
+// auto 模式下未指定 BackgroundModel 时，自动取等价组内最便宜的模型。
 func ApplyTierSplit(req *dto.GeneralOpenAIRequest, isBackground bool) bool {
 	cfg := costoptcfg.GetCostOptSetting()
-	if !cfg.TierSplitEnabled || req == nil || req.Model == "" {
+	if !cfg.TierSplitActive() || req == nil || req.Model == "" {
 		return false
 	}
 	if !isBackground {
@@ -207,18 +332,31 @@ func ApplyTierSplit(req *dto.GeneralOpenAIRequest, isBackground bool) bool {
 			return false
 		}
 	}
-	if cfg.TierSplitBackgroundModel != "" && cfg.TierSplitBackgroundModel != req.Model {
-		req.Model = cfg.TierSplitBackgroundModel
+	target := cfg.TierSplitBackgroundModel
+	if target == "" && cfg.TierSplitAuto() {
+		// 自动模式：从人工确认的等价组里挑最便宜的。
+		target = cheapestEquivalent(req.Model)
+	}
+	if target != "" && target != req.Model {
+		req.Model = target
 		return true
 	}
 	return false
 }
 
 // ApplyValueTierRouting 价值层路由：命中价值层的请求把偏好渠道类型写入返回值，
-// 由 handler 通过 gin 上下文透传给选路层加权（与地理比价同一机制）。
+// 由 handler 通过 gin 上下文透传给选路层（与地理比价同一机制）。
+// auto 模式下还会先把模型下沉到等价组内最便宜的开源模型。
 func ApplyValueTierRouting(req *dto.GeneralOpenAIRequest) string {
+	cfg := costoptcfg.GetCostOptSetting()
 	if !ValueTierMatch(req) {
 		return ""
+	}
+	// 先用原模型判定白名单，再按等价组下沉（下沉会改 model，顺序不可颠倒）。
+	if cfg.ValueTierAuto() {
+		if target := cheapestEquivalent(req.Model); target != "" && target != req.Model {
+			req.Model = target
+		}
 	}
 	types := ValueTierChannelTypes()
 	if len(types) == 0 {

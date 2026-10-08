@@ -149,7 +149,7 @@ func CacheGetRandomSatisfiedChannel(param *RetryParam) (*model.Channel, string, 
 			param.ModelName,
 			priorityRetry,
 			filters,
-			geoSelectOption(param.Ctx),
+			costOptSelectOption(param.Ctx),
 		)
 			if channel == nil {
 				// Current group has no available channel for this model, try next group
@@ -193,7 +193,7 @@ func CacheGetRandomSatisfiedChannel(param *RetryParam) (*model.Channel, string, 
 			param.ModelName,
 			param.GetRetry(),
 			filters,
-			geoSelectOption(param.Ctx),
+			costOptSelectOption(param.Ctx),
 		)
 		if err != nil {
 			return nil, param.TokenGroup, err
@@ -202,16 +202,28 @@ func CacheGetRandomSatisfiedChannel(param *RetryParam) (*model.Channel, string, 
 	return channel, selectGroup, nil
 }
 
-// geoSelectOption 从请求上下文读取地理/区域比价偏好渠道类型，构造选路选项。
-// 该值在 compatible_handler.go 派发前由 costopt.ApplyGeoRouting 写入（c.Set）。
-func geoSelectOption(ctx *gin.Context) model.ChannelSelectOption {
+// costOptSelectOption 从请求上下文读取降本偏好，构造选路选项。
+// 三个偏好均由 compatible_handler.go 在派发前写入 gin 上下文（c.Set）：
+//   - costopt_geo_ct：地理/区域比价的强偏好渠道类型
+//   - costopt_value_tier_ct：Serverless 价值层的强偏好渠道类型
+//     （此前 handler 只写入、选路层未消费，价值层实际不生效，本次接上）
+//   - costopt_price_first：按「渠道对该模型的有效单价」择优（#4/#5/#6/#7 自动模式）
+func costOptSelectOption(ctx *gin.Context) model.ChannelSelectOption {
 	if ctx == nil {
 		return model.ChannelSelectOption{}
 	}
+	var opt model.ChannelSelectOption
 	if ct := common.GetContextKeyString(ctx, "costopt_geo_ct"); ct != "" {
-		return model.PreferChannelType(ct)
+		opt.PreferChannelType = ct
 	}
-	return model.ChannelSelectOption{}
+	// 价值层偏好覆盖地理偏好：价值层的目标就是更便宜的通道。
+	if ct := common.GetContextKeyString(ctx, "costopt_value_tier_ct"); ct != "" {
+		opt.PreferChannelType = ct
+	}
+	if common.GetContextKeyString(ctx, "costopt_price_first") == "1" {
+		opt.PriceFirst = true
+	}
+	return opt
 }
 
 func pinnedTaskPluginIdentities(c *gin.Context, expected string) ([]int, []string) {
