@@ -16,6 +16,7 @@ import (
 	"github.com/jackc/pgx/v5/pgconn"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
+	"gorm.io/gorm/schema"
 )
 
 const (
@@ -28,6 +29,17 @@ func newGormConfig(prepareStmt bool) *gorm.Config {
 		PrepareStmt: prepareStmt,
 		Logger:      newGormLogger(os.Stdout),
 	}
+}
+
+// 注册多语描述用的 map 序列化器。
+//
+// GORM 的序列化器注册表是包级全局（schema.RegisterSerializer），不是
+// gorm.Config 上的字段，因此必须在包初始化时注册一次：tag 里的
+// serializer:jsonMap 若查不到对应实现，GORM 会直接报
+// "invalid serializer type"，而缺了它 map 字段就会落到 database/sql 上并报
+// "unsupported type model.LocalizedDescription, a map"。
+func init() {
+	schema.RegisterSerializer("jsonMap", JSONMapSerializer{})
 }
 
 func newGormLogger(w io.Writer) logger.Interface {
