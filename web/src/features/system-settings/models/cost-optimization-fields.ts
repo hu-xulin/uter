@@ -212,8 +212,8 @@ export const GROUPS: Array<{
         kind: 'text',
         label: 'Embedding API base URL',
         gated: 'costopt_setting.semantic_cache_enabled',
-        placeholder: 'https://api.openai.com',
-        help: 'OpenAI-compatible base URL of the embedding service used to compare prompt meaning. Do NOT include the trailing /v1 — the gateway appends it automatically (e.g. https://api.siliconflow.cn).',
+        placeholder: 'https://api.siliconflow.cn/v1',
+        help: 'OpenAI-compatible base URL of the embedding service used to compare prompt meaning. Both forms work: with or without the trailing /v1 (e.g. https://api.siliconflow.cn/v1 or https://api.siliconflow.cn) — the gateway appends /v1/embeddings exactly once, so it never becomes /v1/v1/embeddings.',
       },
       {
         name: 'costopt_setting.semantic_cache_embed_api_key',
@@ -562,8 +562,8 @@ export const GROUPS: Array<{
         kind: 'text',
         label: 'Batch API base URL',
         gated: 'costopt_setting.batch_enabled',
-        placeholder: 'https://api.openai.com',
-        help: 'OpenAI-compatible base URL of the upstream that serves the batch API. Do NOT include the trailing /v1 — the gateway appends it automatically.',
+        placeholder: 'https://api.siliconflow.cn/v1',
+        help: 'OpenAI-compatible base URL of the upstream that serves the batch API. Both forms work: with or without the trailing /v1 — the gateway appends the version exactly once, so it never becomes /v1/v1.',
       },
       {
         name: 'costopt_setting.batch_api_key',
