@@ -2,7 +2,9 @@ package router
 
 import (
 	"embed"
+	"log"
 	"net/http"
+	"os"
 	"strings"
 
 	"github.com/uter-ai/uter/common"
@@ -55,6 +57,20 @@ func SetWebRouter(router *gin.Engine, assets WebAssets, pluginDispatcher gin.Han
 	// collides with them. `/dashboard` and the rest of the SPA still fall
 	// through to `web/dist/index.html` via the NoRoute handler below.
 	docsFS := common.EmbedFolder(assets.BuildFS, "web/dist/docs-content")
+	// Serve the docs export from disk when UTER_DOCS_DIR points at a real
+	// directory: ops can drop the latest `docs-web` build into it (rsync) and
+	// hot-update docs with no rebuild and no restart. The directory must hold
+	// the same layout as `web/dist/docs-content` (`docs/`, `about/`, ...).
+	// Falls back to the embedded copy so a single binary still works when the
+	// variable is unset or the directory is missing.
+	docsDir := os.Getenv("UTER_DOCS_DIR")
+	if docsDir != "" {
+		if info, err := os.Stat(docsDir); err == nil && info.IsDir() {
+			docsFS = common.DiskFolder(docsDir)
+		} else {
+			log.Printf("[web] UTER_DOCS_DIR=%q is not a directory; serving docs from the embedded build", docsDir)
+		}
+	}
 
 	router.Use(
 		middleware.RouteTag("web"),
