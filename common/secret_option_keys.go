@@ -66,6 +66,12 @@ var costOptSecretOptionKeys = map[string]struct{}{
 	"costopt_setting.value_tier_vendor_api_key":    {},
 }
 
+// 模型描述多语化（controller/model_desc_translate.go）的密钥项。
+// 翻译端点的 API Key 同样是凭据，读取时必须掩码。
+var modelDescriptionSecretOptionKeys = map[string]struct{}{
+	"ModelDescriptionTranslateApiKey": {},
+}
+
 // IsSecretOptionKey 判断某个 option key 是否需要按密钥掩码处理。
 //
 // 注意：只影响「读取时的展示形态」。写入时由 IsMaskedSecret 兜底判断
@@ -75,6 +81,9 @@ func IsSecretOptionKey(key string) bool {
 		return true
 	}
 	if _, ok := costOptSecretOptionKeys[key]; ok {
+		return true
+	}
+	if _, ok := modelDescriptionSecretOptionKeys[key]; ok {
 		return true
 	}
 	return false
