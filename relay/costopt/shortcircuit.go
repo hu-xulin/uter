@@ -11,10 +11,10 @@ import (
 
 	costoptcfg "github.com/uter-ai/uter/setting/costopt"
 
+	"github.com/gin-gonic/gin"
 	"github.com/uter-ai/uter/relay/common"
 	"github.com/uter-ai/uter/relaykit/dto"
 	"github.com/uter-ai/uter/relaykit/types"
-	"github.com/gin-gonic/gin"
 )
 
 // MatchShortCircuit 命中零调用短路规则时返回 (answer, true)；否则 ("", false)。
@@ -130,6 +130,13 @@ func BuildShortCircuitResponse(c *gin.Context, info *common.RelayInfo, req *dto.
 	b, _ := json.Marshal(resp)
 	c.Data(http.StatusOK, "application/json", b)
 	return nil
+}
+
+// EstimateRequestUsage 对外暴露本次请求「若真的发给上游」的估算用量。
+// 用于降本节省记账：短路 / 负缓存 / 循环收敛这些未调上游的路径，
+// 以此口径把省下的 token 计入指标（与计费口径一致：字符数/4）。
+func EstimateRequestUsage(req *dto.GeneralOpenAIRequest, answer string) *dto.Usage {
+	return estimateUsage(req, answer)
 }
 
 // estimateUsage 以粗略经验值（token ≈ 字符数/4）估算短路应答用量，保证配额不漏扣。

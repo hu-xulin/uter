@@ -7,6 +7,8 @@ import (
 	"sync/atomic"
 
 	costoptcfg "github.com/uter-ai/uter/setting/costopt"
+
+	"github.com/uter-ai/uter/relaykit/dto"
 )
 
 // MetricsSnapshot 降本中间层聚合计数器（可观测性看板 / 成本 per 成功任务 / 异常审计共用）。
@@ -22,6 +24,12 @@ type MetricsSnapshot struct {
 	AgentBudgetBlocks   int64 `json:"agent_budget_blocks"`
 	AnomalyAlerts       int64 `json:"anomaly_alerts"`
 	TotalTokensSavedEst int64 `json:"total_tokens_saved_est"`
+	// 按节省来源拆分，便于定位「到底哪个特性在省 token」。
+	TokensSavedByExactCache    int64 `json:"tokens_saved_by_exact_cache"`
+	TokensSavedBySemantic      int64 `json:"tokens_saved_by_semantic_cache"`
+	TokensSavedByShortCircuit  int64 `json:"tokens_saved_by_short_circuit"`
+	TokensSavedByNegativeCache int64 `json:"tokens_saved_by_negative_cache"`
+	TokensSavedByLoopBreak     int64 `json:"tokens_saved_by_loop_break"`
 	// 41. 成本 per 成功任务：成功/总请求计数（比值即"每成功任务成本"的分母/分子）。
 	SuccessRequests int64 `json:"success_requests"`
 	TotalRequests   int64 `json:"total_requests"`
@@ -35,22 +43,74 @@ func enabledInc(p *int64) {
 	}
 }
 
-func IncCacheHit()             { enabledInc(&metrics.CacheHits) }
-func IncShortCircuit()         { enabledInc(&metrics.ShortCircuits) }
-func IncNegativeHit()          { enabledInc(&metrics.NegativeHits) }
-func IncSpikeAlert()           { enabledInc(&metrics.SpikeAlerts) }
-func IncSemHit()               { enabledInc(&metrics.SemHits) }
-func IncToolCacheHit()         { enabledInc(&metrics.ToolCacheHits) }
-func IncCascadeEscalation()    { enabledInc(&metrics.CascadeEscalations) }
-func IncLoopBreak()            { enabledInc(&metrics.LoopBreaks) }
-func IncAgentBudgetBlock()     { enabledInc(&metrics.AgentBudgetBlocks) }
-func IncAnomalyAlert()         { enabledInc(&metrics.AnomalyAlerts) }
+func IncCacheHit()          { enabledInc(&metrics.CacheHits) }
+func IncShortCircuit()      { enabledInc(&metrics.ShortCircuits) }
+func IncNegativeHit()       { enabledInc(&metrics.NegativeHits) }
+func IncSpikeAlert()        { enabledInc(&metrics.SpikeAlerts) }
+func IncSemHit()            { enabledInc(&metrics.SemHits) }
+func IncToolCacheHit()      { enabledInc(&metrics.ToolCacheHits) }
+func IncCascadeEscalation() { enabledInc(&metrics.CascadeEscalations) }
+func IncLoopBreak()         { enabledInc(&metrics.LoopBreaks) }
+func IncAgentBudgetBlock()  { enabledInc(&metrics.AgentBudgetBlocks) }
+func IncAnomalyAlert()      { enabledInc(&metrics.AnomalyAlerts) }
 
 // AddTokensSaved 累加估算节省的 token（用于"成本 per 成功任务"与看板）。
 func AddTokensSaved(n int64) {
 	if costoptcfg.GetCostOptSetting().MetricsEnabled && n > 0 {
 		atomic.AddInt64(&metrics.TotalTokensSavedEst, n)
 	}
+}
+
+// 节省 token 的来源分类，用于看板按特性拆分。
+const (
+	SavedSourceExactCache    = "exact_cache"
+	SavedSourceSemanticCache = "semantic_cache"
+	SavedSourceShortCircuit  = "short_circuit"
+	SavedSourceNegativeCache = "negative_cache"
+	SavedSourceLoopBreak     = "loop_break"
+)
+
+// RecordTokensSavedBy 按来源累加「本次因降本而未向上游花费的 token」。
+//
+// 语义：**传入的是"本可发生但被省下"的 token 数**，而非本次实际计费的 token。
+// 判定依据：
+//   - 精确/语义缓存命中：完全没调上游，因此把该响应的**全部**用量
+//     （prompt+completion）计为节省；
+//   - 短路 / 负缓存 / 循环收敛：同样未调上游，按 estimateUsage 的口径估算本次
+//     请求「若真的发出去」的用量计为节省；
+//   - n <= 0 时直接忽略（估算不出用量不计账，避免污染平均值）。
+//
+// 只累加、不覆盖 TotalTokensSavedEst：后者仍由各调用点传入总量，保持
+// "总量 == 各来源之和"这一不变量，便于在看板上对账。
+func RecordTokensSavedBy(source string, n int64) {
+	if n <= 0 || !costoptcfg.GetCostOptSetting().MetricsEnabled {
+		return
+	}
+	atomic.AddInt64(&metrics.TotalTokensSavedEst, n)
+	switch source {
+	case SavedSourceExactCache:
+		atomic.AddInt64(&metrics.TokensSavedByExactCache, n)
+	case SavedSourceSemanticCache:
+		atomic.AddInt64(&metrics.TokensSavedBySemantic, n)
+	case SavedSourceShortCircuit:
+		atomic.AddInt64(&metrics.TokensSavedByShortCircuit, n)
+	case SavedSourceNegativeCache:
+		atomic.AddInt64(&metrics.TokensSavedByNegativeCache, n)
+	case SavedSourceLoopBreak:
+		atomic.AddInt64(&metrics.TokensSavedByLoopBreak, n)
+	}
+}
+
+// UsageTokens 返回一次响应上报的总 token（prompt+completion）。
+// 对缓存/短路等回放路径，这是「本来会花掉」的量。
+func UsageTokens(usage *dto.Usage) int64 {
+	if usage == nil {
+		return 0
+	}
+	if usage.TotalTokens > 0 {
+		return int64(usage.TotalTokens)
+	}
+	return int64(usage.PromptTokens + usage.CompletionTokens)
 }
 
 // ===== 41. 成本 per 成功任务（补上「成功信号」，杜绝"省 token 却降质量"的假节省） =====
@@ -125,18 +185,23 @@ func MetricsEnabled() bool {
 // MetricsSnapshotNow 返回当前计数器快照（原子读）。
 func MetricsSnapshotNow() MetricsSnapshot {
 	return MetricsSnapshot{
-		CacheHits:           atomic.LoadInt64(&metrics.CacheHits),
-		ShortCircuits:       atomic.LoadInt64(&metrics.ShortCircuits),
-		NegativeHits:        atomic.LoadInt64(&metrics.NegativeHits),
-		SpikeAlerts:         atomic.LoadInt64(&metrics.SpikeAlerts),
-		SemHits:             atomic.LoadInt64(&metrics.SemHits),
-		ToolCacheHits:       atomic.LoadInt64(&metrics.ToolCacheHits),
-		CascadeEscalations:  atomic.LoadInt64(&metrics.CascadeEscalations),
-		LoopBreaks:          atomic.LoadInt64(&metrics.LoopBreaks),
-		AgentBudgetBlocks:   atomic.LoadInt64(&metrics.AgentBudgetBlocks),
-		AnomalyAlerts:       atomic.LoadInt64(&metrics.AnomalyAlerts),
-		TotalTokensSavedEst: atomic.LoadInt64(&metrics.TotalTokensSavedEst),
-		SuccessRequests:     atomic.LoadInt64(&metrics.SuccessRequests),
-		TotalRequests:       atomic.LoadInt64(&metrics.TotalRequests),
+		CacheHits:                  atomic.LoadInt64(&metrics.CacheHits),
+		ShortCircuits:              atomic.LoadInt64(&metrics.ShortCircuits),
+		NegativeHits:               atomic.LoadInt64(&metrics.NegativeHits),
+		SpikeAlerts:                atomic.LoadInt64(&metrics.SpikeAlerts),
+		SemHits:                    atomic.LoadInt64(&metrics.SemHits),
+		ToolCacheHits:              atomic.LoadInt64(&metrics.ToolCacheHits),
+		CascadeEscalations:         atomic.LoadInt64(&metrics.CascadeEscalations),
+		LoopBreaks:                 atomic.LoadInt64(&metrics.LoopBreaks),
+		AgentBudgetBlocks:          atomic.LoadInt64(&metrics.AgentBudgetBlocks),
+		AnomalyAlerts:              atomic.LoadInt64(&metrics.AnomalyAlerts),
+		TotalTokensSavedEst:        atomic.LoadInt64(&metrics.TotalTokensSavedEst),
+		TokensSavedByExactCache:    atomic.LoadInt64(&metrics.TokensSavedByExactCache),
+		TokensSavedBySemantic:      atomic.LoadInt64(&metrics.TokensSavedBySemantic),
+		TokensSavedByShortCircuit:  atomic.LoadInt64(&metrics.TokensSavedByShortCircuit),
+		TokensSavedByNegativeCache: atomic.LoadInt64(&metrics.TokensSavedByNegativeCache),
+		TokensSavedByLoopBreak:     atomic.LoadInt64(&metrics.TokensSavedByLoopBreak),
+		SuccessRequests:            atomic.LoadInt64(&metrics.SuccessRequests),
+		TotalRequests:              atomic.LoadInt64(&metrics.TotalRequests),
 	}
 }
