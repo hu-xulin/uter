@@ -91,16 +91,14 @@ func GetOptions(c *gin.Context) {
 			continue
 		}
 		value := common.Interface2String(v)
-		isSensitiveKey := strings.HasSuffix(k, "Token") ||
-			strings.HasSuffix(k, "Secret") ||
-			strings.HasSuffix(k, "Key") ||
-			strings.HasSuffix(k, "secret") ||
-			strings.HasSuffix(k, "api_key") ||
-			// 大模型配置缓存含 api_key 等敏感字段，且已通过专用管理员接口下发，
-			// 绝不出现在批量选项里。
-			k == "CustomerServiceLLMConfig"
-		if isSensitiveKey {
+		// 敏感键不再整条剔除（那会让前端拿不到任何密钥、保存后无法核对），
+		// 改为「保留键、值替换为掩码串」：管理员能确认填对了没，又拿不到明文。
+		// 含密钥的聚合体（大模型配置缓存）仍整条剔除——它不是单个可掩码字段。
+		if common.IsExcludedOptionKey(k) {
 			continue
+		}
+		if common.IsSecretOptionKey(k) {
+			value = common.MaskSecretValue(value)
 		}
 		options = append(options, &model.Option{
 			Key:   k,
@@ -214,6 +212,20 @@ func UpdateOption(c *gin.Context) {
 		if isPaymentComplianceOptionKey(option.Key) {
 			common.ApiErrorI18n(c, i18n.MsgCommonCompliance_field_readonly)
 			return
+		}
+	}
+
+	// 密钥类字段：前端保存时若原样回传掩码串（说明用户没改，只是把看到的
+	// 掩码又送了回来），则保留库中原密钥——避免掩码覆盖真实密钥导致功能失效。
+	// 传空串则视为「清空该密钥」，允许（有些场景确实要清）。
+	if common.IsSecretOptionKey(option.Key) {
+		if incoming, ok := option.Value.(string); ok && common.IsMaskedSecret(incoming) {
+			common.OptionMapRWMutex.RLock()
+			existingValue := common.Interface2String(common.OptionMap[option.Key])
+			common.OptionMapRWMutex.RUnlock()
+			if existingValue != "" {
+				option.Value = existingValue
+			}
 		}
 	}
 	if option.Key == "TaskPublicAddress" && option.Value.(string) != "" {
