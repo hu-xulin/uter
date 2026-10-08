@@ -95,7 +95,7 @@ func summarizeOverflow(ctx context.Context, cfg *costoptcfg.CostOptSetting, over
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, base+"/v1/chat/completions", bytes.NewReader(payload))
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, normalizeBaseURL(base)+"/v1/chat/completions", bytes.NewReader(payload))
 	if err != nil {
 		return ""
 	}
