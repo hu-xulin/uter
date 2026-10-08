@@ -61,6 +61,11 @@ import {
   type OrgRole,
   type Organization,
 } from './types'
+import {
+  formatBillingCurrencyFromUSD,
+  getCurrencyDisplay,
+  getCurrencyLabel,
+} from '@/lib/currency'
 import { formatUserId, parseUserId } from '@/lib/format'
 import { ROLE } from '@/lib/roles'
 import { useAuthStore } from '@/stores/auth-store'
@@ -75,8 +80,77 @@ const ROLE_LABEL_KEY: Record<OrgRole, string> = {
 
 const PAGE_SIZE = 20
 
+/**
+ * 组织额度一律按**金额**展示，不用 token 数。
+ *
+ * `users.sub_quota_limit` / `organizations.quota` 存的是 quota（token 数），
+ * `quotaPerUnit`（默认 500,000）才等于 1 USD——1000 是 1000 token ≈ $0.002，
+ * 不是 $1000。后台此前把裸整数直接放进输入框，管理员按「美元」理解去填数，
+ * 结果把成员上限设成 100 quota（$0.0002），任何真实请求都会被
+ * 「成员子额度已用尽」拦死（2026-10-07 线上问题）。因此展示与提示都必须是金额。
+ */
 function fmtQuota(n: number): string {
-  return (n ?? 0).toLocaleString()
+  if (!Number.isFinite(n)) return '-'
+  const { config } = getCurrencyDisplay()
+  return formatBillingCurrencyFromUSD(n / config.quotaPerUnit)
+}
+
+/**
+ * 成员子额度输入框。
+ *
+ * 表头写的是「Sub-quota Limit ($)」，输入框就必须是**金额**：展示金额、提交时换算
+ * 成 quota。此前输入框直接绑定裸 quota（显示 100、存 100），与表头的货币单位
+ * 自相矛盾，管理员按金额理解填数就会把上限设成 $0.0002，任何真实请求都被拦死。
+ *
+ * 换算：quota = amount × quotaPerUnit，向上取整到整数 quota。
+ */
+function SubQuotaInput({
+  quota,
+  onCommit,
+}: {
+  quota: number
+  onCommit: (quota: number) => void
+}) {
+  const { t } = useTranslation()
+  const { config } = getCurrencyDisplay()
+  const currencyLabel = getCurrencyLabel()
+
+  // 以「金额」为编辑态；quota<=0 表示不限量，对应空输入。
+  const [amount, setAmount] = useState(() =>
+    quota > 0 ? String(Number((quota / config.quotaPerUnit).toFixed(6))) : ''
+  )
+  useEffect(() => {
+    setAmount(quota > 0 ? String(Number((quota / config.quotaPerUnit).toFixed(6))) : '')
+  }, [quota, config.quotaPerUnit])
+
+  const commit = () => {
+    const parsed = Number(amount)
+    if (!Number.isFinite(parsed) || parsed <= 0) {
+      onCommit(0) // 空/0 = 不限量，跟随组织总池
+      setAmount('')
+      return
+    }
+    onCommit(Math.ceil(parsed * config.quotaPerUnit))
+  }
+
+  return (
+    <div className='flex flex-col gap-0.5'>
+      <div className='flex items-center gap-1'>
+        <input
+          type='number'
+          min='0'
+          step='0.01'
+          className='h-8 w-28 rounded-md border border-border bg-background px-2 text-left text-sm'
+          value={amount}
+          placeholder={t('Unlimited')}
+          aria-label={t('Sub-quota Limit ({{currency}})', { currency: currencyLabel })}
+          onChange={(e) => setAmount(e.target.value)}
+          onBlur={commit}
+        />
+        <span className='text-xs text-muted-foreground'>{currencyLabel}</span>
+      </div>
+    </div>
+  )
 }
 
 export function OrganizationPage() {
@@ -466,6 +540,8 @@ function OrgOverviewCard({
   // 组织负责人修改 —— 与后端 UpdateOrganization 的分级一致。
   const canEditMeta = isSuperAdmin || isOwner
   const canEditBudget = isSuperAdmin
+  // 预算相关标签统一在括号内标注当前显示货币单位（跟随系统展示设置）。
+  const currencyLabel = getCurrencyLabel()
 
   async function save() {
     setSaving(true)
@@ -509,9 +585,13 @@ function OrgOverviewCard({
             )}
           </div>
           <CardDescription>
-            {t('Total Budget')}: {fmtQuota(org.quota)} · {t('Used')}:{' '}
-            {fmtQuota(used)} · {t('Remaining')}: {fmtQuota(remaining)} ·{' '}
-            {t('Members')}: {memberCount}
+            {t('Total Budget ({{currency}})', {
+              currency: currencyLabel,
+            })}
+            : {fmtQuota(org.quota)} · {t('Used')}:{' '}
+            {fmtQuota(used)} ·{' '}
+            {t('Remaining ({{currency}})', { currency: currencyLabel })}:{' '}
+            {fmtQuota(remaining)} · {t('Members')}: {memberCount}
           </CardDescription>
         </div>
         {canEditMeta && (
@@ -598,6 +678,7 @@ function AddMemberCard({
   onAdded: () => void
 }) {
   const { t } = useTranslation()
+  const currencyLabel = getCurrencyLabel()
 
   type RowStatus = 'idle' | 'submitting' | 'added' | 'error'
   interface AddRow {
@@ -707,7 +788,9 @@ function AddMemberCard({
       <CardContent className='flex flex-col gap-3'>
         <div className='hidden grid-cols-[1fr_1fr_1fr_auto_auto] gap-2 px-1 text-xs text-muted-foreground sm:grid'>
           <span>{t('User ID')}</span>
-          <span>{t('Sub-quota Limit')}</span>
+          <span>
+            {t('Sub-quota Limit ({{currency}})', { currency: currencyLabel })}
+          </span>
           <span>{t('Department')}</span>
           <span />
           <span />
@@ -828,6 +911,7 @@ function MembersCard({
   const { t } = useTranslation()
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE))
   const [editingMember, setEditingMember] = useState<OrgMember | null>(null)
+  const currencyLabel = getCurrencyLabel()
 
   // 可授予的角色集合，与后端判据逐字对齐：
   //   超管/所有者 → 可授予 owner + 组织级角色；
@@ -887,8 +971,14 @@ function MembersCard({
                 <th className='px-2 py-2'>{t('Username')}</th>
                 <th className='px-2 py-2'>{t('Display Name')}</th>
                 <th className='px-2 py-2'>{t('Department')}</th>
-                <th className='px-2 py-2'>{t('Used Quota')}</th>
-                <th className='px-2 py-2'>{t('Sub-quota Limit')}</th>
+                <th className='px-2 py-2'>
+                  {t('Used Quota ({{currency}})', { currency: currencyLabel })}
+                </th>
+                <th className='px-2 py-2'>
+                  {t('Sub-quota Limit ({{currency}})', {
+                    currency: currencyLabel,
+                  })}
+                </th>
                 <th className='px-2 py-2'>{t('Role')}</th>
                 <th className='px-2 py-2'>{t('Actions')}</th>
               </tr>
@@ -907,14 +997,9 @@ function MembersCard({
                   </td>
                   <td className='px-2 py-2'>
                     {canEditSubQuotaOf(m) ? (
-                      <input
-                        type='number'
-                        className='h-8 w-28 rounded-md border border-border bg-background px-2 text-left text-sm'
-                        defaultValue={m.sub_quota_limit}
-                        placeholder={t('Unlimited')}
-                        onBlur={(e) =>
-                          onSubQuotaChange(m.id, Number(e.target.value) || 0)
-                        }
+                      <SubQuotaInput
+                        quota={m.sub_quota_limit}
+                        onCommit={(quota) => onSubQuotaChange(m.id, quota)}
                       />
                     ) : (
                       <span className='text-muted-foreground'>
@@ -1039,6 +1124,7 @@ function EditMemberDialog({
   }) => Promise<void>
 }) {
   const { t } = useTranslation()
+  const currencyLabel = getCurrencyLabel()
   const [departmentName, setDepartmentName] = useState(
     member.department_name || ''
   )
@@ -1098,7 +1184,9 @@ function EditMemberDialog({
             />
           </div>
           <div className='flex flex-col gap-2'>
-            <Label>{t('Sub-quota Limit')}</Label>
+            <Label>
+              {t('Sub-quota Limit ({{currency}})', { currency: currencyLabel })}
+            </Label>
             <Input
               type='number'
               value={subQuota}

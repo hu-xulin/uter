@@ -150,8 +150,8 @@ export type SiteSettings = {
   CustomerServiceEnabled: boolean
   /**
    * 智能客服入口的页面级白名单（逗号分隔的页面键）；与后端
-   * common.CustomerServicePages 对应。空串表示未配置 = 全部页面都开
-   * （后端 NormalizeCustomerServicePages 会展开成全部键）。
+   * common.CustomerServicePages 对应。两种特殊值：空串表示未配置 = 全部页面都开
+   * （后端 NormalizeCustomerServicePages 会展开成全部键）；"none" 表示全部页面都关。
    */
   CustomerServicePages: string
 }

@@ -325,7 +325,7 @@ export const DEFAULT_MARKETPLACE_INDEX_URL =
 // jsDelivr CDN, which is reachable from mainland China and serves identical
 // contents. Keep in sync with setting/task_plugin.go.
 export const GITHUB_MARKETPLACE_INDEX_URL =
-  'https://cdn.jsdelivr.net/gh/Uter-AI/uter-plugins@main/index.json'
+  'https://cdn.jsdelivr.net/gh/uter-ai/uter-plugins@main/index.json'
 
 /**
  * Both built-in indexes are maintained by the project. Other configured

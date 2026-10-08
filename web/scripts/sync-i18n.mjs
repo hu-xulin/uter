@@ -107,7 +107,7 @@ const BRAND_AND_LITERAL_KEYS = new Set([
   'Xunfei',
   'Zhipu V4',
   'Zhipu GLM',
-  'github.com/Uter-AI/Uter',
+  'github.com/uter-ai/uter',
   '"default": "us-central1", "claude-3-5-sonnet-20240620": "europe-west1"',
   'edit_this',
   'footer.columns.related.links.midjourney',
@@ -120,6 +120,33 @@ const BRAND_AND_LITERAL_KEYS = new Set([
 
 function isPlainObject(v) {
   return typeof v === 'object' && v !== null && !Array.isArray(v)
+}
+
+// deepUnionKeyShape 合并多个 locale 的「键形状」，键序 = 首次出现顺序。
+// 用途：作为 reorderLikeBase 的 base，使 key 集合等于**所有 locale 键的并集**。
+//
+// 为什么必须用并集（2026-10-07 修复的数据丢失 bug）：原实现把「叶子键最多」的
+// 那个 locale 当作唯一 base，再把所有 locale 重写成 base 的精确键集合，
+// 于是一旦 base 恰好缺少某个仍在使用的键（如 "Model"/"Pricing"），该键会从
+// **所有**语言包中被删除（只落进 _extras），中文界面随即回退成英文裸串。
+// 改成并集后，脚本在任何情况下都只会「补键 + 排序」，结构上不再可能删键。
+function deepUnionKeyShape(...objects) {
+  const out = {}
+  for (const obj of objects) {
+    if (!isPlainObject(obj)) continue
+    for (const k of Object.keys(obj)) {
+      if (Object.prototype.hasOwnProperty.call(out, k)) {
+        if (isPlainObject(out[k]) && isPlainObject(obj[k])) {
+          out[k] = deepUnionKeyShape(out[k], obj[k])
+        }
+        continue
+      }
+      out[k] = isPlainObject(obj[k])
+        ? deepUnionKeyShape({}, obj[k])
+        : obj[k]
+    }
+  }
+  return out
 }
 
 function stableStringify(obj) {
@@ -197,8 +224,13 @@ function reorderLikeBase(
     return base
   }
 
-  // For primitives: prefer target if defined, else base.
-  return target === undefined ? (fill ?? base) : target
+  // For primitives: prefer target if defined, else the compare-locale value (en).
+  // 本仓约定「key 即英文原文」，故两者都缺时回退到 key 本身（英文），
+  // 绝不能让并集里别的语种译文渗进 en.json。
+  if (target !== undefined) return target
+  if (fill !== undefined) return fill
+  const key = currentPath[currentPath.length - 1]
+  return key === undefined ? base : key
 }
 
 function isLikelyUntranslated({ locale, baseValue, value }) {
@@ -269,6 +301,16 @@ async function main() {
   const baseFile = `${baseLocale}.json`
   const baseJson = parsedByLocale[baseLocale]
 
+  // 键集合取所有 locale 的并集（base 优先决定键序），脚本只补键与重排，
+  // 结构上不再可能删除任何仍存在的键——修复「base 缺键导致全语种丢译文」的数据丢失 bug。
+  const unionJson = deepUnionKeyShape(
+    baseJson,
+    ...Object.keys(parsedByLocale)
+      .filter((l) => l !== baseLocale)
+      .sort((a, b) => a.localeCompare(b))
+      .map((l) => parsedByLocale[l])
+  )
+
   const compareJson = parsedByLocale[FALLBACK_COMPARE_LOCALE] ?? baseJson
 
   const report = {
@@ -288,7 +330,9 @@ async function main() {
 
     const extras = {}
     const missing = []
-    const fixed = reorderLikeBase(baseJson, json, compareJson, extras, missing)
+    // 以并集键形状为 base：缺失键用 compareJson(=en) 补齐，已存在的键一律保留，
+    // 不会因为某个 locale 缺键而被裁掉。
+    const fixed = reorderLikeBase(unionJson, json, compareJson, extras, missing)
 
     // Untranslated scan (translation namespace only)
     const untranslated = {}

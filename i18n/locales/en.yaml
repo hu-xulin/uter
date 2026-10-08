@@ -442,3 +442,10 @@ custom_oauth.name_empty: "Please enter a provider name."
 custom_oauth.has_bindings: "You can’t delete a provider that still has linked users."
 custom_oauth.binding_not_found: "We couldn’t find that OAuth binding."
 custom_oauth.provider_id_field_invalid: "We couldn’t extract a user ID from the provider’s response."
+
+# Quota errors (surfaced directly in API responses and UI toasts — must be human-readable)
+quota.org_sub_quota_exceeded: 'You have used up your personal allowance within the organization, so this request cannot proceed. Used: {{.Used}}, limit: {{.Limit}}, this request needs: {{.Required}}. Ask your organization administrator to raise your allowance.'
+quota.org_budget_exceeded: 'The organization''s shared budget is exhausted, so this request cannot proceed. Used: {{.Used}}, budget: {{.Limit}}, this request needs: {{.Required}}. Ask your organization administrator to top up or raise the budget.'
+quota.org_suspended: 'Your organization has been suspended, so requests are temporarily unavailable. Please contact your organization administrator.'
+quota.user_not_enough: 'Your account balance is not enough to complete this request. Please top up in Wallet and try again.'
+quota.token_not_enough: 'This API key does not have enough remaining quota for this request. Please add quota or create a new key on the API Keys page.'

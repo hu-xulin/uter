@@ -32,9 +32,9 @@ describe('plugin source URL normalization', () => {
   test('rewrites a GitHub blob URL to its raw host', () => {
     assert.equal(
       normalizePluginSourceUrl(
-        'github.com/Uter-AI/Uter-plugins/blob/main/plugins/tasks/doubao/1.0.0/plugin.js'
+        'https://github.com/uter-ai/uter-plugins/blob/main/plugins/tasks/doubao/1.0.0/plugin.js'
       ),
-      'https://raw.githubusercontent.com/Uter-AI/uter-plugins/main/plugins/tasks/doubao/1.0.0/plugin.js'
+      'https://raw.githubusercontent.com/uter-ai/uter-plugins/main/plugins/tasks/doubao/1.0.0/plugin.js'
     )
   })
 

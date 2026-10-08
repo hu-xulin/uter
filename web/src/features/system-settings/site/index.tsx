@@ -39,7 +39,8 @@ const defaultSiteSettings: SiteSettings = {
   HeaderNavModules: '',
   SidebarModulesAdmin: '',
   CustomerServiceEnabled: true,
-  // 空串 = 未配置 = 全部页面都开（与后端 NormalizeCustomerServicePages 的语义一致）。
+  // 空串 = 未配置 = 全部页面都开（与后端 NormalizeCustomerServicePages 的语义一致）；
+  // "none" 表示界面上六个开关全关 = 全部页面都关闭。
   CustomerServicePages: '',
 }
 

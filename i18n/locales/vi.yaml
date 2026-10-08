@@ -391,3 +391,10 @@ custom_oauth.name_empty: "Tên nhà cung cấp không được để trống"
 custom_oauth.has_bindings: "Không thể xóa nhà cung cấp có liên kết người dùng hiện có"
 custom_oauth.binding_not_found: "Không tìm thấy liên kết OAuth"
 custom_oauth.provider_id_field_invalid: "Không thể trích xuất ID người dùng từ phản hồi của nhà cung cấp"
+
+# Lỗi hạn mức (hiển thị trực tiếp trong phản hồi API và giao diện — phải dễ hiểu)
+quota.org_sub_quota_exceeded: 'Bạn đã hết hạn mức cá nhân trong tổ chức nên không thể thực hiện yêu cầu này. Đã dùng: {{.Used}}, hạn mức: {{.Limit}}, yêu cầu lần này cần: {{.Required}}. Vui lòng nhờ quản trị viên tổ chức nâng hạn mức của bạn.'
+quota.org_budget_exceeded: 'Ngân sách chung của tổ chức đã cạn nên không thể thực hiện yêu cầu này. Đã dùng: {{.Used}}, ngân sách: {{.Limit}}, yêu cầu lần này cần: {{.Required}}. Vui lòng nhờ quản trị viên tổ chức nạp tiền hoặc tăng ngân sách.'
+quota.org_suspended: 'Tổ chức của bạn đã bị tạm dừng, các yêu cầu tạm thời không khả dụng. Vui lòng liên hệ quản trị viên tổ chức.'
+quota.user_not_enough: 'Số dư tài khoản không đủ để hoàn thành yêu cầu này. Vui lòng nạp tiền trong mục Ví và thử lại.'
+quota.token_not_enough: 'API key này không đủ hạn mức còn lại cho yêu cầu này. Vui lòng bổ sung hạn mức hoặc tạo key mới tại trang API Keys.'

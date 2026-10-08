@@ -804,4 +804,12 @@ export const STATIC_I18N_KEYS = [
   'Vendor name and icon must not exceed 128 characters.',
   'Shown',
   'Not shown',
+  // 智能客服页面开关的展示名。这些在 customer-service-section.tsx 里以
+  // `t(option.labelKey)` 传入——变量形式的键扫不到，故在此登记，
+  // 让 check-i18n-keys 能一并守住（否则漏译时中文界面直接漏出英文）。
+  // 注意 dashboard 一项刻意用 'Management' 而非 'Dashboard'：后者在应用侧边栏
+  // 已译作「数据看板」，复用会把侧边栏一起改掉。
+  'Home page',
+  'Management',
+  'Documentation',
 ] as const

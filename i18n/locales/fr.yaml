@@ -391,3 +391,10 @@ custom_oauth.name_empty: "Le nom du fournisseur ne peut pas être vide"
 custom_oauth.has_bindings: "Impossible de supprimer le fournisseur avec des liaisons utilisateur existantes"
 custom_oauth.binding_not_found: "Liaison OAuth introuvable"
 custom_oauth.provider_id_field_invalid: "Impossible d'extraire l'ID utilisateur de la réponse du fournisseur"
+
+# Erreurs de quota (affichées directement dans les réponses API et l'interface — doivent être lisibles)
+quota.org_sub_quota_exceeded: 'Vous avez épuisé votre quota personnel au sein de l''organisation, cette requête ne peut pas aboutir. Utilisé : {{.Used}}, limite : {{.Limit}}, cette requête nécessite : {{.Required}}. Demandez à votre administrateur d''organisation d''augmenter votre quota.'
+quota.org_budget_exceeded: 'Le budget partagé de l''organisation est épuisé, cette requête ne peut pas aboutir. Utilisé : {{.Used}}, budget : {{.Limit}}, cette requête nécessite : {{.Required}}. Demandez à votre administrateur d''organisation de recharger ou d''augmenter le budget.'
+quota.org_suspended: 'Votre organisation a été suspendue, les requêtes sont temporairement indisponibles. Veuillez contacter votre administrateur d''organisation.'
+quota.user_not_enough: 'Le solde de votre compte est insuffisant pour cette requête. Rechargez via Portefeuille puis réessayez.'
+quota.token_not_enough: 'Cette clé API n''a pas assez de quota restant pour cette requête. Ajoutez du quota ou créez une nouvelle clé sur la page Clés API.'

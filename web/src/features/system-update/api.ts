@@ -42,7 +42,7 @@ export async function fetchLatestSystemRelease(
 
   try {
     const response = await fetch(
-      'https://api.github.com/repos/Uter-AI/Uter/releases?per_page=100',
+      'https://api.github.com/repos/uter-ai/uter/releases?per_page=100',
       {
         credentials: 'omit',
         headers: { Accept: 'application/vnd.github+json' },

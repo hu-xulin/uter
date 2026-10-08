@@ -21,7 +21,7 @@
   "author": "Uter.ai",
   "repository": {
     "type": "git",
-    "url": "github.com/Uter-AI/Uter"
+    "url": "github.com/uter-ai/uter"
   },
   "devDependencies": {
     "cross-env": "^7.0.3",

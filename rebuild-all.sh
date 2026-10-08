@@ -85,6 +85,12 @@ export PATH="$NODE_DIR:$PATH"
 # 仍可被环境变量 USER_SESSION_ACTIVE_LIMIT 覆盖（例如临时调回 50）。
 export USER_SESSION_ACTIVE_LIMIT="${USER_SESSION_ACTIVE_LIMIT:-200}"
 
+# 智能客服（smart-cs）挂件地址：独立仓库 uter-ai/uter-cs，独立部署，
+# 前端按此地址**跨域直连**，Uter 后端不做任何反向代理。
+# 该值经 /api/status 的 customer_service_url 下发给前端；留空则不渲染挂件。
+# 本地默认指向本机 3200；生产用 CUSTOMER_SERVICE_URL=https://cs.uter.ai 覆盖。
+export CUSTOMER_SERVICE_URL="${CUSTOMER_SERVICE_URL:-http://127.0.0.1:3200}"
+
 fail() { echo "✗ $1" >&2; exit 1; }
 stat_line() { stat -f '%Sm  %8z  %N' -t '%F %T' "$1" 2>/dev/null || echo "    缺失: $1"; }
 port_in_use() { lsof -nP -iTCP:"$1" -sTCP:LISTEN -t >/dev/null 2>&1; }
@@ -125,6 +131,7 @@ spawn() { # $1=日志 $2=cwd $3..=命令
   echo "---- start $(date '+%F %T') ----" >> "$log"
   "$PYTHON" - "$log" "$cwd" "$@" <<'PY'
 import os, socket, subprocess, sys
+import re
 from urllib.parse import urlsplit
 
 log, cwd = sys.argv[1], sys.argv[2]
@@ -162,6 +169,17 @@ def reachable(value):
 
 
 env = dict(os.environ)
+# 解析命令前缀里的 KEY=VALUE 作为额外环境变量（如 PORT=3200），
+# 不影响其它 spawn 调用（无此前缀时行为与之前一致）。
+extra_env = {}
+cmd = []
+for tok in sys.argv[3:]:
+    if re.match(r'^[A-Za-z_][A-Za-z0-9_]*=', tok) and ' ' not in tok:
+        k, v = tok.split('=', 1)
+        extra_env[k] = v
+    else:
+        cmd.append(tok)
+env.update(extra_env)
 dropped, kept = [], []
 if os.environ.get('KEEP_PROXY') != '1':
     keep_live_loopback = os.environ.get('KEEP_LOOPBACK_PROXY') == '1'
@@ -191,7 +209,7 @@ with open(log, 'a') as f:
         f.write('---- spawn: dropped loopback proxy %s ----\n' % item)
     for item in kept:
         f.write('---- spawn: kept live loopback proxy %s ----\n' % item)
-    subprocess.Popen(sys.argv[3:], cwd=cwd, env=env, stdout=f,
+    subprocess.Popen(cmd, cwd=cwd, env=env, stdout=f,
                      stderr=subprocess.STDOUT, start_new_session=True)
 PY
 }
@@ -260,16 +278,21 @@ if [ "$NO_BUILD" = 0 ]; then
   fi
 fi
 
+# 先自增、再用新值构建：保证「运行中二进制内嵌版本」与「VERSION 文件」始终一致。
+# 旧顺序（先按旧值构建、成功后再自增）会让服务上报的 X-Uter-Version 永远落后
+# VERSION 文件一号（例：二进制 v1.2.56 / VERSION v1.2.57），上线核对时极易误判成
+# 「跑的是旧二进制」。构建失败最多跳一个版本号，无副作用。
+bump_version
 # 读取 VERSION 用于本次构建（与 Dockerfile 注入方式一致：-X 'pkg=Version'）。
-# 构建成功后按进位规则写回：patch 满 100 进位 minor（v1.0.99 → v1.0.100 → v1.1.01 ...）。
+# 注意：紧跟变量的全角括号（如 $VAR（…））会被 bash 并入变量名，导致 unbound
+# variable（且 `set -u` 下直接致命）。因此一律用 ${VAR} 显式界定。
 set +u
 BUILD_VERSION="$(cat "$ROOT/VERSION" 2>/dev/null | tr -d '[:space:]')"
 [ -n "$BUILD_VERSION" ] || BUILD_VERSION="v0.0.0"
-echo "    本次版本: $BUILD_VERSION（构建成功后将按进位规则自增：patch 满 100 进位 minor）"
+echo "    本次版本: ${BUILD_VERSION}（patch 满 100 自动进位 minor：v1.0.99 → v1.1.01）"
 set -u
-"$GO" build -ldflags "-s -w -X 'github.com/Uter-AI/Uter/common.Version=$BUILD_VERSION'" -o "$BIN" . || fail "go build 失败"
-bump_version
-echo "    VERSION 已自增为: $(cat "$ROOT/VERSION")"
+"$GO" build -ldflags "-s -w -X 'github.com/uter-ai/uter/common.Version=${BUILD_VERSION}'" -o "$BIN" . || fail "go build 失败"
+echo "    VERSION = ${BUILD_VERSION}（二进制内嵌版本与 VERSION 文件一致）"
 fi
 
 if [ "$NO_RESTART" = 1 ]; then
@@ -297,6 +320,24 @@ fi
 
 # 4.2 独立会话启动，日志追加到 $LOG
 spawn "$LOG" "$ROOT" "$BIN"
+
+# 4.2b 智能客服（smart-cs）**不在本仓库内**：独立仓库 uter-ai/uter-cs、
+# 独立进程、独立部署。Uter 只把 CUSTOMER_SERVICE_URL 经 /api/status 下发给前端，
+# 由浏览器跨域直连该服务，Go 后端不做任何反向代理。
+# 因此这里**只做可达性体检并提示**：不安装依赖、不拉起进程、不假设任何本地目录。
+# 挂件的启停与部署由 CS 仓库自己的方式负责。
+if [ -n "${CUSTOMER_SERVICE_URL:-}" ]; then
+  cs_code="$(curl -s --noproxy '*' -o /dev/null -w '%{http_code}' --max-time 3 "$CUSTOMER_SERVICE_URL/" 2>/dev/null || true)"
+  if [ -n "$cs_code" ] && [ "$cs_code" != "000" ]; then
+    echo "    智能客服（独立服务）可达: ${CUSTOMER_SERVICE_URL} (HTTP ${cs_code})"
+  else
+    echo "    ⚠ 智能客服不可达: ${CUSTOMER_SERVICE_URL}"
+    echo "      Uter 不会代为启动它。请到 uter-cs 仓库（https://github.com/uter-ai/uter-cs）按其README 部署后重试；"
+    echo "      或将 CUSTOMER_SERVICE_URL 置空以关闭挂件。"
+  fi
+else
+  echo "    智能客服未启用（CUSTOMER_SERVICE_URL 为空，挂件不渲染）"
+fi
 
 # 4.3 体检：端口监听 + HTTP 可达，失败把日志尾部甩出来
 code="$(wait_http "$PORT" 30 || true)"
@@ -363,4 +404,4 @@ if [ "$web_code" = "000" ]; then
   exit 1
 fi
 echo "✓ SPA dev      : http://127.0.0.1:$WEB_DEV_PORT/  (HTTP $web_code)  日志: $WEB_DEV_LOG"
-echo "  改 web/src 下的代码即时热更新；API 与 /docs 代理到后端 $PORT。"
+echo "  改 web/src 下的代码即时热更新；API 与 /docs 代理到后端 ${PORT}。"
