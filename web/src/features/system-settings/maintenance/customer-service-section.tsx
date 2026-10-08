@@ -294,14 +294,19 @@ export function CustomerServiceSection({
             })}
           </div>
         </SettingsForm>
+
+        {/* ⚠️ AdminTokenField / ModelConfigPanel 内部也用了 FormItem/FormLabel/
+            FormControl（shadcn 原语会调用 useFormContext），必须放在同一个
+            <Form {...form}> 的 FormProvider 内部，否则 useFormContext() 返回 null
+            触发渲染异常（ErrorBoundary 会把它渲染成「500」页）。
+            这里不再单独包一层 Form，直接复用上面的 provider。 */}
+        <AdminTokenField
+          defaultConfigured={Boolean(defaultAdminToken)}
+          onSaved={() => setReloadSignal((n) => n + 1)}
+        />
+
+        <ModelConfigPanel reloadSignal={reloadSignal} />
       </Form>
-
-      <AdminTokenField
-        defaultConfigured={Boolean(defaultAdminToken)}
-        onSaved={() => setReloadSignal((n) => n + 1)}
-      />
-
-      <ModelConfigPanel reloadSignal={reloadSignal} />
     </SettingsSection>
   )
 }
