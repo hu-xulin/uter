@@ -9,10 +9,10 @@ import (
 
 	"github.com/uter-ai/uter/common"
 
-	"github.com/uter-ai/uter/controller"
-	"github.com/uter-ai/uter/middleware"
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
+	"github.com/uter-ai/uter/controller"
+	"github.com/uter-ai/uter/middleware"
 )
 
 // WebAssets holds the embedded dashboard frontend assets.
@@ -56,17 +56,15 @@ func SetWebRouter(router *gin.Engine, assets WebAssets, pluginDispatcher gin.Han
 	// host routes (which frame this content), so `/docs-content/...` never
 	// collides with them. `/dashboard` and the rest of the SPA still fall
 	// through to `web/dist/index.html` via the NoRoute handler below.
-	docsFS := common.EmbedFolder(assets.BuildFS, "web/dist/docs-content")
-	// Serve the docs export from disk when UTER_DOCS_DIR points at a real
-	// directory: ops can drop the latest `docs-web` build into it (rsync) and
-	// hot-update docs with no rebuild and no restart. The directory must hold
-	// the same layout as `web/dist/docs-content` (`docs/`, `about/`, ...).
-	// Falls back to the embedded copy so a single binary still works when the
-	// variable is unset or the directory is missing.
 	docsDir := os.Getenv("UTER_DOCS_DIR")
+	docsFS := common.EmbedFolder(assets.BuildFS, "web/dist/docs-content")
+	// docsDiskDir stays empty unless we actually serve from disk, so the ETag
+	// middleware stays a no-op for the embedded copy.
+	docsDiskDir := ""
 	if docsDir != "" {
 		if info, err := os.Stat(docsDir); err == nil && info.IsDir() {
 			docsFS = common.DiskFolder(docsDir)
+			docsDiskDir = docsDir
 		} else {
 			log.Printf("[web] UTER_DOCS_DIR=%q is not a directory; serving docs from the embedded build", docsDir)
 		}
@@ -107,6 +105,16 @@ func SetWebRouter(router *gin.Engine, assets WebAssets, pluginDispatcher gin.Han
 			}
 			c.Next()
 		},
+		// Attach a content-based ETag to the docs tree *before* the static handler
+		// serves it, and short-circuit matching `If-None-Match` requests with
+		// 304. Needed because the docs are `no-cache` (they revalidate on
+		// every load) and revalidation on `Last-Modified` alone goes stale
+		// when ops hot-update via `rsync -a`, which preserves mtimes. A
+		// content hash changes whenever the bytes change, so a replaced page
+		// is picked up immediately. Must be registered before
+		// `static.Serve`, which answers existing files without calling
+		// `c.Next()`.
+		middleware.DiskETag(docsContentMount, docsDiskDir),
 		static.Serve(docsContentMount, docsFS),
 	)
 
