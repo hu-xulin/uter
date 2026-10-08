@@ -391,3 +391,10 @@ custom_oauth.name_empty: "プロバイダー名を空にすることはできま
 custom_oauth.has_bindings: "既存のユーザー連携があるプロバイダーは削除できません"
 custom_oauth.binding_not_found: "OAuth 連携が見つかりません"
 custom_oauth.provider_id_field_invalid: "プロバイダーの応答からユーザー ID を抽出できませんでした"
+
+# クォータエラー（API 応答と UI に直接表示されるため、人間が読める文にする）
+quota.org_sub_quota_exceeded: '組織内での個人クォータを使い切ったため、このリクエストを実行できません。已使用：{{.Used}}、上限：{{.Limit}}、今回必要な額：{{.Required}}。組織管理者に上限を引き上げをご依頼ください。'
+quota.org_budget_exceeded: '組織の共有予算を使い切ったため、このリクエストを実行できません。已使用：{{.Used}}、予算：{{.Limit}}、今回必要な額：{{.Required}}。組織管理者にチャージまたは予算増額をご依頼ください。'
+quota.org_suspended: '所在的組織が停止中のため、リクエストは一時的に利用できません。組織管理者にご連絡ください。'
+quota.user_not_enough: 'アカウント残高が不足しているため、このリクエストを完了できません。「ウォレット」でチャージしてから再試行してください。'
+quota.token_not_enough: 'この API キーの残りクォータが不足しているため、このリクエストを完了できません。API キーの画面でクォータを追加するか、新しいキーを作成してください。'

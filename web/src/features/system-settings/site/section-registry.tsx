@@ -95,10 +95,7 @@ const SITE_SECTIONS = [
     id: 'customer-service',
     titleKey: 'Customer Service',
     build: (settings: SiteSettings) => (
-      <CustomerServiceSection
-        defaultEnabled={settings.CustomerServiceEnabled}
-        defaultPages={settings.CustomerServicePages}
-      />
+      <CustomerServiceSection defaultPages={settings.CustomerServicePages} />
     ),
   },
 ] as const

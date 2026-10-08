@@ -111,5 +111,5 @@ export function selectLatestRelease(payload: unknown): SystemRelease | null {
 }
 
 export function getSystemReleaseUrl(release: SystemRelease): string {
-  return `github.com/Uter-AI/Uter/releases/tag/${encodeURIComponent(release.tag_name)}`
+  return `github.com/uter-ai/uter/releases/tag/${encodeURIComponent(release.tag_name)}`
 }

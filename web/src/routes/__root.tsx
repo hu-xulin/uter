@@ -31,6 +31,7 @@ import { useEffect } from 'react'
 // `components/navigation-progress` 与 `react-top-loading-bar` 依赖原样保留，
 // 需要时取消这两处注释即可恢复，勿删组件或依赖。
 // import { NavigationProgress } from '@/components/navigation-progress'
+import { ErrorBoundary } from '@/components/ErrorBoundary'
 import { Toaster } from '@/components/ui/sonner'
 import { ThemeCustomizationProvider } from '@/context/theme-customization-provider'
 import { saveAffiliateCode } from '@/features/auth/lib/storage'
@@ -46,6 +47,7 @@ import {
 import { subscribeAuthSessionEvents } from '@/lib/auth-session-sync'
 import { resolveLegacyRoute } from '@/lib/legacy-route'
 import { useAuthStore } from '@/stores/auth-store'
+import { CustomerServiceWidget } from '@/features/customer-service/CustomerServiceWidget'
 
 function RootComponent() {
   const navigate = useNavigate()
@@ -60,6 +62,11 @@ function RootComponent() {
       saveAffiliateCode(aff)
     }
   }, [])
+
+  // 智能客服挂件：改用 Uter 原生 <CustomerServiceWidget />（见下方 return）。
+  // 该组件按 /api/status 下发的 customer_service_url **浏览器直连**独立仓库
+  // uter-ai/uter-cs 的服务，Uter 后端不再持有其代码、也不做反向代理；
+  // 地址为空时不渲染挂件入口。
 
   useEffect(
     () =>
@@ -106,20 +113,23 @@ function RootComponent() {
         即可恢复，勿删组件或依赖。
       */}
       {/* <NavigationProgress /> */}
-      <Outlet />
-      <Toaster closeButton duration={5000} position='top-center' richColors />
-      {import.meta.env.MODE === 'development' && (
-        <>
-          <ReactQueryDevtools
-            buttonPosition='bottom-right'
-            initialIsOpen={false}
-          />
-          <TanStackRouterDevtools
-            position='bottom-left'
-            initialIsOpen={false}
-          />
-        </>
-      )}
+      <ErrorBoundary>
+        <Outlet />
+        <Toaster closeButton duration={5000} position='top-center' richColors />
+        {import.meta.env.MODE === 'development' && (
+          <>
+            <ReactQueryDevtools
+              buttonPosition='bottom-right'
+              initialIsOpen={false}
+            />
+            <TanStackRouterDevtools
+              position='bottom-left'
+              initialIsOpen={false}
+            />
+          </>
+        )}
+      </ErrorBoundary>
+      <CustomerServiceWidget />
     </ThemeCustomizationProvider>
   )
 }

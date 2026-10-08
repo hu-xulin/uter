@@ -8,7 +8,7 @@
 #
 # ⚠️ 安全要点（部署前必读）：
 #   - 本文件不含任何明文密码，全部经 ${...} 从同目录 .env 注入；
-#     .env 已被 .gitignore 忽略，不会提交到公开仓库（Uter-AI/Uter）。
+#     .env 已被 .gitignore 忽略，不会提交到公开仓库（uter-ai/uter）。
 #   - 切勿把真实密码写回本文件或提交到仓库。
 #   - 端口暴露面已最小化：仅应用 3000 对外；PostgreSQL / Redis 仅在内部网络互通，无 published 端口。
 #   - SESSION_COOKIE_SECURE=true 要求全站 HTTPS。请在宿主机前置 nginx / Caddy / Traefik 做 TLS 终止，
@@ -21,7 +21,7 @@
 services:
   uter:
     # 镜像：默认使用本地构建的 uter:latest；或设置 UTER_IMAGE 指向你的镜像仓库
-    # （如 ghcr.io/Uter-AI/Uter:latest）。本地构建：先 `docker build -t uter .`，或取消下一行注释并注释掉 image 行
+    # （如 ghcr.io/uter-ai/uter:latest）。本地构建：先 `docker build -t uter .`，或取消下一行注释并注释掉 image 行
     # build: .
     image: ${UTER_IMAGE:-uter:latest}
     container_name: uter

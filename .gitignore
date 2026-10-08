@@ -68,3 +68,9 @@ node_modules/
 
 # Local audit / analysis reports (deliverables for review, not source)
 _reports/
+
+# 智能客服（smart-cs）是独立仓库 uter-ai/uter-cs，代码完全不入本仓，
+# 默认 clone 到同级目录（../uter-cs），由 CUSTOMER_SERVICE_URL 经
+# /api/status 下发给前端直连。以下规则仅作兜底：万一有人在仓库内又 clone 了一份，
+# 也不得被误纳入提交。
+/smart-cs/

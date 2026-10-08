@@ -1,0 +1,71 @@
+# Cross-database smoke-test stack for Uter (GAP-05).
+#
+# Brings up the external dialects that the unit tests cannot cover without
+# Docker: MySQL / PostgreSQL (primary DB) and ClickHouse (log DB), plus Redis
+# (cache / rate-limit). SQLite needs no container and is exercised in-memory.
+#
+# Usage:
+#   docker compose -f docker-compose.multidb.yml up -d
+#   export UTER_TEST_MYSQL_DSN='root:uter@tcp(127.0.0.1:3306)/uter?parseTime=true&charset=utf8mb4'
+#   export UTER_TEST_POSTGRES_DSN='postgres://uter:uter@127.0.0.1:5432/uter?sslmode=disable'
+#   export UTER_TEST_CLICKHOUSE_DSN='clickhouse://default:uter@127.0.0.1:9000/uter'
+#   GOWORK=off go test ./model/ -run TestMultiDBDialectCompat -v
+#
+# Note: ClickHouse is ONLY valid as the log DB (LOG_SQL_DSN), never as the
+# primary SQL_DSN — chooseDB() rejects ClickHouse for the primary database.
+
+services:
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: uter
+      MYSQL_DATABASE: uter
+    ports:
+      - '3306:3306'
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    healthcheck:
+      test: ['CMD', 'mysqladmin', 'ping', '-h', 'localhost', '-prootpass']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: uter
+      POSTGRES_PASSWORD: uter
+      POSTGRES_DB: uter
+    ports:
+      - '5432:5432'
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U uter']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  clickhouse:
+    image: clickhouse/clickhouse-server:24.8
+    environment:
+      CLICKHOUSE_DB: uter
+      CLICKHOUSE_USER: default
+      CLICKHOUSE_PASSWORD: uter
+      CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: 1
+    ports:
+      - '9000:9000' # native protocol (gorm-clickhouse)
+      - '8123:8123' # HTTP
+    ulimits:
+      nofile:
+        soft: 262144
+        hard: 262144
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - '6379:6379'
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 5s
+      retries: 10

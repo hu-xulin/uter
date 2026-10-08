@@ -443,3 +443,10 @@ custom_oauth.name_empty: "请填写服务商名称。"
 custom_oauth.has_bindings: "该服务商仍有用户绑定，无法删除。"
 custom_oauth.binding_not_found: "找不到对应的 OAuth 绑定。"
 custom_oauth.provider_id_field_invalid: "无法从服务商返回中提取用户 ID。"
+
+# 额度类错误（直接透出到 API 响应与界面提示，必须是人话）
+quota.org_sub_quota_exceeded: '您在组织内的个人额度已用尽，无法继续发起请求。当前已用 {{.Used}}，额度上限 {{.Limit}}，本次需要 {{.Required}}。如需继续使用，请联系组织管理员提高您的额度上限。'
+quota.org_budget_exceeded: '组织共享预算已用尽，无法继续发起请求。当前已用 {{.Used}}，预算上限 {{.Limit}}，本次需要 {{.Required}}。请联系组织管理员充值或提高预算。'
+quota.org_suspended: '您所在的组织已被停用，暂时无法发起请求。请联系组织管理员恢复。'
+quota.user_not_enough: '您的账户余额不足，无法完成本次请求。请前往「钱包」充值后重试。'
+quota.token_not_enough: '该 API 密钥的剩余额度不足，无法完成本次请求。请前往「API 密钥」页面补充额度或新建密钥。'

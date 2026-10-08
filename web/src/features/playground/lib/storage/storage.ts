@@ -16,7 +16,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
-import { useAuthStore } from '@/stores/auth-store'
+import { scopedKey } from '@/lib/scoped-storage'
 import { MESSAGE_STATUS, STORAGE_KEYS } from '../../constants'
 import type { PlaygroundConfig, ParameterEnabled, Message } from '../../types'
 import {
@@ -46,25 +46,6 @@ const TRUNCATED_CONTENT_SUFFIX = '\n\n[...]'
 const MIN_PREFIX_COLLAPSE_LENGTH = 2000
 const MIN_REPEATED_SECTION_COUNT = 3
 const SECTION_HEADING_LINE_PATTERN = /^#{2,6}\s+\d+\.\s+.+$/gm
-
-/**
- * Resolve a localStorage key for the currently signed-in account.
- *
- * The playground keeps its conversation, config and parameter state in
- * localStorage, which is scoped to the browser profile — NOT to the account.
- * Without a user id in the key, two people sharing a machine (or one person
- * switching accounts) would load each other's prompts and see text they never
- * typed. Scoping by user id keeps every account's history private while still
- * letting a signed-in user resume their own conversation.
- *
- * Falls back to the unscoped key only when nobody is signed in (pre-auth
- * render); the playground itself sits behind auth, so every real read/write is
- * user-scoped.
- */
-function scopedKey(baseKey: string): string {
-  const userId = useAuthStore.getState().auth.user?.id
-  return userId ? `${baseKey}:${userId}` : baseKey
-}
 
 function readStoredValue(key: string): unknown | null {
   const saved = localStorage.getItem(key)

@@ -593,6 +593,10 @@ export function useChannelsColumns(
 ): ColumnDef<Channel>[] {
   const { t, i18n } = useTranslation()
   const { sensitiveVisible } = useChannels()
+  // 主题必须在组件/Hook 顶层读取：Type 列的 cell 渲染回调里按 tag 行提前 return，
+  // 若在回调内调用 useTheme 会构成条件 Hook 调用（rules-of-hooks 违规），
+  // 不同行会打乱 Hook 顺序。resolvedTheme 只影响 logo 选型，放到依赖里即可。
+  const { resolvedTheme } = useTheme()
   const enableSelection = options.enableSelection ?? true
   const locale = toIntlLocale(i18n.resolvedLanguage || i18n.language)
   // The column definitions only depend on the translation function, the active
@@ -782,7 +786,6 @@ export function useChannelsColumns(
             )
           }
 
-          const { resolvedTheme } = useTheme()
           const type = row.getValue('type') as number
           const typeNameKey = getChannelTypeLabel(type)
           const channel = row.original as Channel
@@ -1261,6 +1264,6 @@ export function useChannelsColumns(
         meta: { pinned: 'right' as const },
       },
     ],
-    [enableSelection, t, locale, sensitiveVisible]
+    [enableSelection, t, locale, sensitiveVisible, resolvedTheme]
   )
 }

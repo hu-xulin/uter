@@ -139,7 +139,7 @@ docker-compose down && docker-compose up -d
 - [官方文档](https://uter.ai/docszh/docs/installation)
 - [环境变量配置](https://uter.ai/docszh/docs/installation/config-maintenance/environment-variables)
 - [常见问题](https://uter.ai/docszh/docs/support/faq)
-- [GitHub 仓库](github.com/Uter-AI/Uter)
+- [GitHub 仓库](github.com/uter-ai/uter)
 
 ***
 
