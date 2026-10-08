@@ -134,7 +134,7 @@ type CostOptSetting struct {
 	ToolDefTrimStripDescription bool `json:"tool_def_trim_strip_description"`
 	ToolDefTrimStripExamples    bool `json:"tool_def_trim_strip_examples"`
 
-	// 28. 精准 RAG：钩子（需外部 RAG 系统时启用）
+	// 28. 精准 RAG（基础开关与端点；其余参数见下方 V2.2「模型优化」配置区）
 	RAGEnabled  bool   `json:"rag_enabled"`
 	RAGEndpoint string `json:"rag_endpoint"`
 	RAGAPIKey   string `json:"rag_api_key"`
@@ -340,6 +340,8 @@ var costOptSetting = CostOptSetting{
 	PromptCompressionMaxRatio:   0.5,
 	ToolDefTrimEnabled:          false,
 	RAGEnabled:                  false,
+	RAGEndpoint:                "",
+	RAGAPIKey:                  "",
 	LongTaskPersistEnabled:      false,
 	BatchEnabled:                false,
 	BatchPollIntervalSeconds:    30,

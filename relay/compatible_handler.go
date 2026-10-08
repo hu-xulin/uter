@@ -227,70 +227,111 @@ func TextHelper(c *gin.Context, info *relaycommon.RelayInfo) (uterError *types.U
 		return nil
 	}
 
-	var requestBody io.Reader
-
-	if passThroughGlobal || info.ChannelSetting.PassThroughBodyEnabled {
-		storage, err := common.GetBodyStorage(c)
-		if err != nil {
-			return types.NewErrorWithStatusCode(err, types.ErrorCodeReadRequestBodyFailed, http.StatusBadRequest, types.ErrOptionWithSkipRetry())
-		}
-		if common.DebugEnabled {
-			if debugBytes, bErr := storage.Bytes(); bErr == nil {
-				logger.LogDebug(c, "requestBody: %s", debugBytes)
-			}
-		}
-		requestBody = common.NewReplayableBodyReader(storage)
-	} else {
-		convertedRequest, err := adaptor.ConvertOpenAIRequest(c, info, request)
-		if err != nil {
-			return newConvertRequestFailedError(c, info, err)
-		}
-		relaycommon.AppendRequestConversionFromRequest(info, convertedRequest)
-
-		if req, ok := convertedRequest.(*dto.GeneralOpenAIRequest); ok {
-			applySystemPromptIfNeeded(c, info, req)
-		}
-
-		jsonData, err := common.Marshal(convertedRequest)
-		if err != nil {
-			return types.NewError(err, types.ErrorCodeJsonMarshalFailed, types.ErrOptionWithSkipRetry())
-		}
-
-		// remove disabled fields for OpenAI API
-		jsonData, err = relaycommon.RemoveDisabledFields(jsonData, info.ChannelOtherSettings, info.ChannelSetting.PassThroughBodyEnabled)
-		if err != nil {
-			return types.NewError(err, types.ErrorCodeConvertRequestFailed, types.ErrOptionWithSkipRetry())
-		}
-
-		// apply param override
-		if len(info.ParamOverride) > 0 {
-			jsonData, err = relaycommon.ApplyParamOverrideWithRelayInfo(jsonData, info)
+	// 上游请求构造 + 执行抽成闭包，便于 LLM 级联在廉价模型拒绝时升级到贵模型（仅非流式，写入客户端前决策）。
+	relayAttempt := func() (*http.Response, *types.UterError) {
+		var requestBody io.Reader
+		if passThroughGlobal || info.ChannelSetting.PassThroughBodyEnabled {
+			storage, err := common.GetBodyStorage(c)
 			if err != nil {
-				return uterErrorFromParamOverride(err)
+				return nil, types.NewErrorWithStatusCode(err, types.ErrorCodeReadRequestBodyFailed, http.StatusBadRequest, types.ErrOptionWithSkipRetry())
 			}
+			if common.DebugEnabled {
+				if debugBytes, bErr := storage.Bytes(); bErr == nil {
+					logger.LogDebug(c, "requestBody: %s", debugBytes)
+				}
+			}
+			requestBody = common.NewReplayableBodyReader(storage)
+		} else {
+			convertedRequest, err := adaptor.ConvertOpenAIRequest(c, info, request)
+			if err != nil {
+				return nil, newConvertRequestFailedError(c, info, err)
+			}
+			relaycommon.AppendRequestConversionFromRequest(info, convertedRequest)
+
+			if req, ok := convertedRequest.(*dto.GeneralOpenAIRequest); ok {
+				applySystemPromptIfNeeded(c, info, req)
+			}
+
+			jsonData, err := common.Marshal(convertedRequest)
+			if err != nil {
+				return nil, types.NewError(err, types.ErrorCodeJsonMarshalFailed, types.ErrOptionWithSkipRetry())
+			}
+
+			// remove disabled fields for OpenAI API
+			jsonData, err = relaycommon.RemoveDisabledFields(jsonData, info.ChannelOtherSettings, info.ChannelSetting.PassThroughBodyEnabled)
+			if err != nil {
+				return nil, types.NewError(err, types.ErrorCodeConvertRequestFailed, types.ErrOptionWithSkipRetry())
+			}
+
+			// apply param override
+			if len(info.ParamOverride) > 0 {
+				jsonData, err = relaycommon.ApplyParamOverrideWithRelayInfo(jsonData, info)
+				if err != nil {
+					return nil, uterErrorFromParamOverride(err)
+				}
+			}
+
+			logger.LogDebug(c, "text request body: %s", jsonData)
+
+			body, closer, err := relaycommon.NewOutboundJSONBody(jsonData)
+			if err != nil {
+				return nil, types.NewError(err, types.ErrorCodeConvertRequestFailed, types.ErrOptionWithSkipRetry())
+			}
+			defer closer.Close()
+			jsonData = nil
+			requestBody = body
 		}
 
-		logger.LogDebug(c, "text request body: %s", jsonData)
-
-		body, closer, err := relaycommon.NewOutboundJSONBody(jsonData)
+		resp, err := adaptor.DoRequest(c, info, requestBody)
 		if err != nil {
-			return types.NewError(err, types.ErrorCodeConvertRequestFailed, types.ErrOptionWithSkipRetry())
+			return nil, types.NewOpenAIError(err, types.ErrorCodeDoRequestFailed, http.StatusInternalServerError)
 		}
-		defer closer.Close()
-		jsonData = nil
-		requestBody = body
+		if resp == nil {
+			return nil, nil
+		}
+		return resp.(*http.Response), nil
 	}
 
-	var httpResp *http.Response
-	resp, err := adaptor.DoRequest(c, info, requestBody)
-	if err != nil {
-		return types.NewOpenAIError(err, types.ErrorCodeDoRequestFailed, http.StatusInternalServerError)
+	httpResp, uterErr := relayAttempt()
+	if uterErr != nil {
+		return uterErr
+	}
+	if httpResp == nil {
+		return nil
+	}
+
+	// LLM 级联升级：廉价模型返回拒绝/低质（非流式），在写入客户端前升级到贵模型再发。
+	if costopt.CascadeActiveFor(request) {
+		raw, readErr := io.ReadAll(httpResp.Body)
+		httpResp.Body.Close()
+		if readErr != nil {
+			return types.NewError(fmt.Errorf("cascade: read upstream body failed: %w", readErr), types.ErrorCodeDoRequestFailed, types.ErrOptionWithSkipRetry())
+		}
+		if costopt.IsCascadeRefusal(string(raw)) {
+			if premium := costopt.CascadePremiumModelName(); premium != "" && premium != request.Model {
+				request.Model = premium
+				upgraded, uerr := relayAttempt()
+				if uerr != nil {
+					return uerr
+				}
+				if upgraded != nil {
+					httpResp = upgraded
+					costopt.IncCascadeEscalation()
+				} else {
+					httpResp.Body = io.NopCloser(bytes.NewReader(raw))
+				}
+			} else {
+				httpResp.Body = io.NopCloser(bytes.NewReader(raw))
+			}
+		} else {
+			httpResp.Body = io.NopCloser(bytes.NewReader(raw))
+		}
 	}
 
 	statusCodeMappingStr := c.GetString("status_code_mapping")
 
-	if resp != nil {
-		httpResp = resp.(*http.Response)
+	if httpResp != nil {
+
 		info.IsStream = info.IsStream || strings.HasPrefix(httpResp.Header.Get("Content-Type"), "text/event-stream")
 		if httpResp.StatusCode != http.StatusOK {
 			uterErr := service.RelayErrorHandler(c.Request.Context(), httpResp, false)

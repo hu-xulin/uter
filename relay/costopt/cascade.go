@@ -41,3 +41,24 @@ func IsCascadeRefusal(text string) bool {
 	}
 	return false
 }
+
+// CascadeActiveFor 判断当前请求是否处于级联降级态且可升级（廉价模型 + 非流式）。
+// 仅当启用、请求模型等于廉价模型、且贵模型已配置、且非流式时为 true。
+func CascadeActiveFor(req *dto.GeneralOpenAIRequest) bool {
+	cfg := costoptcfg.GetCostOptSetting()
+	if !cfg.CascadeEnabled || cfg.CascadeCheapModel == "" || cfg.CascadePremiumModel == "" {
+		return false
+	}
+	if req.Model != cfg.CascadeCheapModel {
+		return false
+	}
+	if req.Stream != nil && *req.Stream {
+		return false
+	}
+	return true
+}
+
+// CascadePremiumModelName 返回级联升级目标（贵模型）名称。
+func CascadePremiumModelName() string {
+	return costoptcfg.GetCostOptSetting().CascadePremiumModel
+}

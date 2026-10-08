@@ -24,6 +24,8 @@ import { ClaudeSettingsCard } from './claude-settings-card'
 import { GeminiSettingsCard } from './gemini-settings-card'
 import { GlobalSettingsCard } from './global-settings-card'
 import { GrokSettingsCard } from './grok-settings-card'
+import { MODEL_OPTIMIZATION_KEYS } from './model-optimization-fields'
+import { ModelOptimizationSection } from './model-optimization-section'
 import { RoutingReliabilitySection } from './routing-reliability-section'
 
 function formatJsonForEditor(value: string, fallback: string) {
@@ -178,6 +180,18 @@ const MODELS_SECTIONS = [
           enabled: settings['model_deployment.ionet.enabled'],
           apiKey: settings['model_deployment.ionet.api_key'],
         }}
+      />
+    ),
+  },
+  {
+    // 模型优化：紧随「模型部署」之后。承载 V2 方案里 🟡 项待填写的上游参数。
+    id: 'model-optimization',
+    titleKey: 'Model Optimization',
+    build: (settings: ModelSettings) => (
+      <ModelOptimizationSection
+        defaultValues={Object.fromEntries(
+          MODEL_OPTIMIZATION_KEYS.map((k) => [k, settings[k]])
+        )}
       />
     ),
   },
