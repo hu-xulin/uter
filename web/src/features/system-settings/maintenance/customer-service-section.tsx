@@ -382,8 +382,15 @@ function AdminTokenField({
     }
   }
 
-  const displayValue = editing ? draft : revealed ? token : maskSecret(token)
-  const inputType = editing ? (revealed ? 'text' : 'password') : 'text'
+  let displayValue: string
+  let inputType: string
+  if (editing) {
+    displayValue = draft
+    inputType = revealed ? 'text' : 'password'
+  } else {
+    displayValue = revealed ? token : maskSecret(token)
+    inputType = 'text'
+  }
 
   return (
     <div className='mt-6 space-y-3 rounded-lg border p-4'>
