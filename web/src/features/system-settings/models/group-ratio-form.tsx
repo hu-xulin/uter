@@ -183,6 +183,7 @@ export const GroupRatioForm = memo(function GroupRatioForm({
                       </FormLabel>
                       <FormControl>
                         <Input
+                          placeholder='10'
                           {...safeNumberFieldProps(field)}
                           type='number'
                           min={1}
@@ -378,6 +379,7 @@ export const GroupRatioForm = memo(function GroupRatioForm({
                   <FormLabel>{t('Maximum custom groups per token')}</FormLabel>
                   <FormControl>
                     <Input
+                      placeholder='10'
                       {...safeNumberFieldProps(field)}
                       type='number'
                       min={1}

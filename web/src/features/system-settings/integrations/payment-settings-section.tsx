@@ -44,6 +44,7 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { SecretInput } from '@/components/ui/secret-input'
 import { Switch } from '@/components/ui/switch'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { formatUserId } from '@/lib/format'
@@ -945,6 +946,7 @@ export function PaymentSettingsSection({
                         </FormLabel>
                         <FormControl>
                           <Input
+                            placeholder='1.00'
                             type='number'
                             step='0.01'
                             min={0}
@@ -969,6 +971,7 @@ export function PaymentSettingsSection({
                         <FormLabel>{t('Minimum top-up (USD)')}</FormLabel>
                         <FormControl>
                           <Input
+                            placeholder='1'
                             type='number'
                             step='0.01'
                             min={0}
@@ -1303,14 +1306,10 @@ export function PaymentSettingsSection({
                       <FormItem>
                         <FormLabel>{t('Epay secret key')}</FormLabel>
                         <FormControl>
-                          <Input
-                            type='password'
+                          <SecretInput
+                            value={field.value ?? ''}
+                            onChange={field.onChange}
                             placeholder={t('Enter new key to update')}
-                            autoComplete='new-password'
-                            {...field}
-                            onChange={(event) =>
-                              field.onChange(event.target.value)
-                            }
                           />
                         </FormControl>
                         <FormDescription>
@@ -1376,14 +1375,10 @@ export function PaymentSettingsSection({
                       <FormItem>
                         <FormLabel>{t('API secret')}</FormLabel>
                         <FormControl>
-                          <Input
-                            type='password'
+                          <SecretInput
+                            value={field.value ?? ''}
+                            onChange={field.onChange}
                             placeholder={t('sk_xxx or rk_xxx')}
-                            autoComplete='new-password'
-                            {...field}
-                            onChange={(event) =>
-                              field.onChange(event.target.value)
-                            }
                           />
                         </FormControl>
                         <FormDescription>
@@ -1401,14 +1396,10 @@ export function PaymentSettingsSection({
                       <FormItem>
                         <FormLabel>{t('Webhook secret')}</FormLabel>
                         <FormControl>
-                          <Input
-                            type='password'
+                          <SecretInput
+                            value={field.value ?? ''}
+                            onChange={field.onChange}
                             placeholder={t('whsec_xxx')}
-                            autoComplete='new-password'
-                            {...field}
-                            onChange={(event) =>
-                              field.onChange(event.target.value)
-                            }
                           />
                         </FormControl>
                         <FormDescription>
@@ -1456,6 +1447,7 @@ export function PaymentSettingsSection({
                         </FormLabel>
                         <FormControl>
                           <Input
+                            placeholder='1.00'
                             type='number'
                             step='0.01'
                             min={0}
@@ -1478,6 +1470,7 @@ export function PaymentSettingsSection({
                         <FormLabel>{t('Minimum top-up (USD)')}</FormLabel>
                         <FormControl>
                           <Input
+                            placeholder='1'
                             type='number'
                             step='0.01'
                             min={0}
@@ -1548,14 +1541,10 @@ export function PaymentSettingsSection({
                       <FormItem>
                         <FormLabel>{t('API Key')}</FormLabel>
                         <FormControl>
-                          <Input
-                            type='password'
+                          <SecretInput
+                            value={field.value ?? ''}
+                            onChange={field.onChange}
                             placeholder={t('Enter Creem API key')}
-                            autoComplete='new-password'
-                            {...field}
-                            onChange={(event) =>
-                              field.onChange(event.target.value)
-                            }
                           />
                         </FormControl>
                         <FormDescription>
@@ -1573,14 +1562,10 @@ export function PaymentSettingsSection({
                       <FormItem>
                         <FormLabel>{t('Webhook Secret')}</FormLabel>
                         <FormControl>
-                          <Input
-                            type='password'
+                          <SecretInput
+                            value={field.value ?? ''}
+                            onChange={field.onChange}
                             placeholder={t('Enter webhook secret')}
-                            autoComplete='new-password'
-                            {...field}
-                            onChange={(event) =>
-                              field.onChange(event.target.value)
-                            }
                           />
                         </FormControl>
                         <FormDescription>

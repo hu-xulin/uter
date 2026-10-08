@@ -38,7 +38,11 @@ import {
   createServerError,
 } from '@/lib/server-error-message'
 
-import { fetchUpstreamRatios, getSystemOptions, getUpstreamChannels } from '../api'
+import {
+  fetchUpstreamRatios,
+  getSystemOptions,
+  getUpstreamChannels,
+} from '../api'
 import type {
   DifferencesMap,
   PricingSyncModels,
@@ -172,9 +176,7 @@ function mergeChannelPrices(
       upstreams[src.sourceName] = derived
       changed = true
     }
-    next[model] = changed
-      ? { current: row.current, upstreams }
-      : row
+    next[model] = changed ? { current: row.current, upstreams } : row
   }
   return next
 }
@@ -218,7 +220,10 @@ export function UpstreamRatioSync() {
     if (!channelPriceSetting) return []
     let parsed: {
       enabled?: boolean
-      channels?: Record<string, { enabled?: boolean; models?: Record<string, ChannelPriceRule> }>
+      channels?: Record<
+        string,
+        { enabled?: boolean; models?: Record<string, ChannelPriceRule> }
+      >
     }
     try {
       parsed = JSON.parse(channelPriceSetting)
@@ -226,8 +231,13 @@ export function UpstreamRatioSync() {
       return []
     }
     if (parsed.enabled !== true) return []
-    const nameById = new Map(channels.map((channel) => [String(channel.id), channel.name]))
-    const out: { sourceName: string; byModel: Record<string, ChannelPriceRule> }[] = []
+    const nameById = new Map(
+      channels.map((channel) => [String(channel.id), channel.name])
+    )
+    const out: {
+      sourceName: string
+      byModel: Record<string, ChannelPriceRule>
+    }[] = []
     for (const [channelId, config] of Object.entries(parsed.channels ?? {})) {
       if (!config || config.enabled === false) continue
       const byModel: Record<string, ChannelPriceRule> = {}
@@ -237,7 +247,8 @@ export function UpstreamRatioSync() {
       }
       if (Object.keys(byModel).length) {
         out.push({
-          sourceName: `${t('Channel price source')} · #${channelId} ${nameById.get(channelId) ?? ''}`.trim(),
+          sourceName:
+            `${t('Channel price source')} · #${channelId} ${nameById.get(channelId) ?? ''}`.trim(),
           byModel,
         })
       }
@@ -314,10 +325,7 @@ export function UpstreamRatioSync() {
       }
       setDifferences(response.data.differences)
       setPrices(
-        mergeChannelPrices(
-          response.data.prices,
-          channelPriceSourcesRef.current
-        )
+        mergeChannelPrices(response.data.prices, channelPriceSourcesRef.current)
       )
       if (!Object.keys(response.data.prices).length) {
         toast.success(t('No price differences found'))
@@ -480,14 +488,7 @@ export function UpstreamRatioSync() {
     }
     setSelectedSources(newSelectedSources)
     syncMutation.mutate(override)
-  }, [
-    pricingBaseline,
-    prices,
-    channels,
-    selectedChannelIds,
-    t,
-    syncMutation,
-  ])
+  }, [pricingBaseline, prices, channels, selectedChannelIds, t, syncMutation])
   const isLoading =
     loadingBaseline || fetchMutation.isPending || syncMutation.isPending
   return (
@@ -551,9 +552,7 @@ export function UpstreamRatioSync() {
           variant='secondary'
           onClick={handleOneClickSync}
           disabled={
-            !pricingBaseline ||
-            !Object.keys(prices).length ||
-            isLoading
+            !pricingBaseline || !Object.keys(prices).length || isLoading
           }
         >
           {t('One-click sync upstream prices')}

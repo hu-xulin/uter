@@ -227,6 +227,7 @@ export function RequestSimulation(props: RequestSimulationProps) {
               {t('Billable image count')}
             </FieldLabel>
             <Input
+              placeholder='1'
               id={imageCountId}
               type='number'
               min={1}

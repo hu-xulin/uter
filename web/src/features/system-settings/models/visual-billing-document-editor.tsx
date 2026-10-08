@@ -47,12 +47,12 @@ import {
   type VisualPrice,
 } from '@/features/pricing/lib/billing-expression/visual'
 
-import { TierPriceFields } from './tier-price-fields'
-import { useOfficialPrices } from './use-official-prices'
 import {
   officialRequestPriceUSD,
   officialTierVariablePriceUSD,
 } from './model-pricing-core'
+import { TierPriceFields } from './tier-price-fields'
+import { useOfficialPrices } from './use-official-prices'
 import { VisualConditionTree } from './visual-condition-tree'
 
 type PricingNodeProps = {
@@ -166,7 +166,10 @@ function PricingTierFields(
           for (const [variable, value] of Object.entries(updates)) {
             if (value === undefined) continue
             if (!existing.has(variable as VisualPrice['variable'])) {
-              next.push({ variable: variable as VisualPrice['variable'], value })
+              next.push({
+                variable: variable as VisualPrice['variable'],
+                value,
+              })
             }
           }
           props.onChange({ ...node, prices: next })
@@ -201,18 +204,18 @@ function PricingRuleCard(
   const { prices: officialPrices } = useOfficialPrices({
     enabled: showReference,
   })
-  const officialRatios = showReference
-    ? officialPrices?.[modelName]
-    : undefined
+  const officialRatios = showReference ? officialPrices?.[modelName] : undefined
   // Collapsed-card summary: a Uter price row above an official price row,
   // dimension by dimension, in canonical variable order. The base
   // input/output dimensions (`p`/`c`) are not part of BILLING_EXTRA_VARS but
   // must be listed too; a dimension is shown when either side has a price.
-  const summaryBaseVars: { key: VisualPrice['variable']; shortLabel: string }[] =
-    [
-      { key: 'p', shortLabel: 'Input' },
-      { key: 'c', shortLabel: 'Output' },
-    ]
+  const summaryBaseVars: {
+    key: VisualPrice['variable']
+    shortLabel: string
+  }[] = [
+    { key: 'p', shortLabel: 'Input' },
+    { key: 'c', shortLabel: 'Output' },
+  ]
   const summaryExtraVars = BILLING_EXTRA_VARS.map((variable) => ({
     ...variable,
     key: variable.key as VisualPrice['variable'],
@@ -305,7 +308,7 @@ function PricingRuleCard(
             <span className='text-muted-foreground block text-sm break-words'>
               {matchDescription}
             </span>
-            {              tier.kind === 'tier' &&
+            {tier.kind === 'tier' &&
               (tier.billingUnit === 'request' ? (
                 <span className='flex flex-wrap gap-x-4 gap-y-1 text-xs tabular-nums'>
                   <span>

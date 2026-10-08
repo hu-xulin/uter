@@ -156,6 +156,7 @@ export function RateLimitSection({ defaultValues }: RateLimitSectionProps) {
                   <FormControl>
                     <div className='flex items-center gap-2'>
                       <Input
+                        placeholder='1'
                         type='number'
                         min={0}
                         step={1}
@@ -186,6 +187,7 @@ export function RateLimitSection({ defaultValues }: RateLimitSectionProps) {
                   <FormControl>
                     <div className='flex items-center gap-2'>
                       <Input
+                        placeholder='60'
                         type='number'
                         min={0}
                         max={100000000}
@@ -217,6 +219,7 @@ export function RateLimitSection({ defaultValues }: RateLimitSectionProps) {
                   <FormControl>
                     <div className='flex items-center gap-2'>
                       <Input
+                        placeholder='60'
                         type='number'
                         min={1}
                         max={100000000}

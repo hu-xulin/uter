@@ -27,6 +27,7 @@ import { Dialog } from '@/components/dialog'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { SecretInput } from '@/components/ui/secret-input'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import { Textarea } from '@/components/ui/textarea'
@@ -178,22 +179,16 @@ export function WaffoSettingsSection({
         <div className='grid grid-cols-2 gap-4'>
           <div className='grid gap-1.5'>
             <Label>{t('API Key (Production)')}</Label>
-            <Input
-              type='password'
+            <SecretInput
               value={values.WaffoApiKey}
-              onChange={(event) =>
-                onValueChange('WaffoApiKey', event.target.value)
-              }
+              onChange={(v) => onValueChange('WaffoApiKey', v)}
             />
           </div>
           <div className='grid gap-1.5'>
             <Label>{t('API Key (Sandbox)')}</Label>
-            <Input
-              type='password'
+            <SecretInput
               value={values.WaffoSandboxApiKey}
-              onChange={(event) =>
-                onValueChange('WaffoSandboxApiKey', event.target.value)
-              }
+              onChange={(v) => onValueChange('WaffoSandboxApiKey', v)}
             />
           </div>
         </div>
@@ -201,6 +196,7 @@ export function WaffoSettingsSection({
         <div className='grid gap-1.5'>
           <Label>{t('Merchant ID')}</Label>
           <Input
+            placeholder='merchant_id'
             value={values.WaffoMerchantId}
             onChange={(event) =>
               onValueChange('WaffoMerchantId', event.target.value)
@@ -213,6 +209,7 @@ export function WaffoSettingsSection({
             <Label>{t('RSA Private Key (Production)')}</Label>
             <Textarea
               rows={3}
+              placeholder={'-----BEGIN RSA PRIVATE KEY-----'}
               value={values.WaffoPrivateKey}
               onChange={(event) =>
                 onValueChange('WaffoPrivateKey', event.target.value)
@@ -224,6 +221,7 @@ export function WaffoSettingsSection({
             <Label>{t('RSA Private Key (Sandbox)')}</Label>
             <Textarea
               rows={3}
+              placeholder={'-----BEGIN RSA PRIVATE KEY-----'}
               value={values.WaffoSandboxPrivateKey}
               onChange={(event) =>
                 onValueChange('WaffoSandboxPrivateKey', event.target.value)
@@ -238,6 +236,7 @@ export function WaffoSettingsSection({
             <Label>{t('Waffo Public Key (Production)')}</Label>
             <Textarea
               rows={3}
+              placeholder={'-----BEGIN CERTIFICATE-----'}
               value={values.WaffoPublicCert}
               onChange={(event) =>
                 onValueChange('WaffoPublicCert', event.target.value)
@@ -249,6 +248,7 @@ export function WaffoSettingsSection({
             <Label>{t('Waffo Public Key (Sandbox)')}</Label>
             <Textarea
               rows={3}
+              placeholder={'-----BEGIN CERTIFICATE-----'}
               value={values.WaffoSandboxPublicCert}
               onChange={(event) =>
                 onValueChange('WaffoSandboxPublicCert', event.target.value)
@@ -269,6 +269,7 @@ export function WaffoSettingsSection({
               type='number'
               step={0.1}
               min={0}
+              placeholder='1.00'
               value={values.WaffoUnitPrice}
               onChange={(event) =>
                 onValueChange(
@@ -283,6 +284,7 @@ export function WaffoSettingsSection({
             <Input
               type='number'
               min={1}
+              placeholder='1'
               value={values.WaffoMinTopUp}
               onChange={(event) =>
                 onValueChange(
@@ -411,6 +413,7 @@ export function WaffoSettingsSection({
           <div className='grid gap-1.5'>
             <Label required>{t('Display name')}</Label>
             <Input
+              placeholder='Credit Card'
               value={methodForm.name}
               onChange={(e) =>
                 setMethodForm((p) => ({ ...p, name: e.target.value }))
@@ -482,6 +485,7 @@ export function WaffoSettingsSection({
           <div className='grid gap-1.5'>
             <Label>{t('Payment method name')}</Label>
             <Input
+              placeholder='Credit Card'
               value={methodForm.payMethodName}
               onChange={(e) =>
                 setMethodForm((p) => ({

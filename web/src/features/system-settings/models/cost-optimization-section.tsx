@@ -1,3 +1,4 @@
+import { zodResolver } from '@hookform/resolvers/zod'
 /*
 Copyright (C) 2023-2026 Uter.ai
 
@@ -17,8 +18,14 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@uter.ai
 */
 import { HelpCircle } from 'lucide-react'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useEffect, useMemo, useRef, useState, type MouseEvent, type ReactNode } from 'react'
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type MouseEvent,
+  type ReactNode,
+} from 'react'
 import { useForm, type Control } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
@@ -40,8 +47,10 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
+import { SecretInput } from '@/components/ui/secret-input'
 import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
+import { cn } from '@/lib/utils'
 
 import {
   SettingsForm,
@@ -51,9 +60,7 @@ import {
 import { SettingsPageFormActions } from '../components/settings-page-context'
 import { SettingsSection } from '../components/settings-section'
 import { useUpdateOption } from '../hooks/use-update-option'
-import { cn } from '@/lib/utils'
 import { safeNumberFieldProps } from '../utils/numeric-field'
-
 /**
  * 降本优化（Cost Optimization）
  *
@@ -64,8 +71,12 @@ import { safeNumberFieldProps } from '../utils/numeric-field'
  * 全部字段以 `costopt_setting.` 前缀写入 Options 表，与后端
  * `setting/costopt/config.go` 的 json tag 一一对应。
  */
-
-import { ALL_FIELDS, GROUPS, leaf, type FieldDef } from './cost-optimization-fields'
+import {
+  ALL_FIELDS,
+  GROUPS,
+  leaf,
+  type FieldDef,
+} from './cost-optimization-fields'
 
 // zod schema：所有标量统一按 string 收集，提交时再按 kind 归一化，
 // 避免 number/bool 的空值让整份表单无法提交。
@@ -108,7 +119,9 @@ interface Props {
 
 /** 把表单值按字段类型序列化成后端 Options 表期望的字符串。 */
 function serialize(field: FieldDef, raw: unknown): string {
-  if (field.kind === 'bool') return raw === true || raw === 'true' ? 'true' : 'false'
+  if (field.kind === 'bool') {
+    return raw === true || raw === 'true' ? 'true' : 'false'
+  }
   if (raw === undefined || raw === null) return ''
   return String(raw)
 }
@@ -168,7 +181,8 @@ function OptimizationField(props: {
     string | number | boolean
   >
   // 门控既可能是布尔开关（false=关），也可能是三态模式选择（off=关）。
-  const gateOff = def.gated !== undefined && isGateOff(nestedValues[leaf(def.gated)])
+  const gateOff =
+    def.gated !== undefined && isGateOff(nestedValues[leaf(def.gated)])
 
   return (
     <FormField
@@ -225,6 +239,15 @@ function OptimizationField(props: {
             <Input
               type='number'
               {...safeNumberFieldProps(field)}
+              disabled={gateOff}
+              placeholder={def.placeholder}
+            />
+          )
+        } else if (def.secret) {
+          control = (
+            <SecretInput
+              value={String(field.value ?? '')}
+              onChange={field.onChange}
               disabled={gateOff}
               placeholder={def.placeholder}
             />
@@ -295,7 +318,10 @@ export function CostOptimizationSection(props: Props) {
     const changedKeys = Object.keys(normalized).filter((key) => {
       const def = ALL_FIELDS.find((f) => f.name === key)
       if (!def) return false
-      return serialize(def, normalized[key]) !== serialize(def, baselineRef.current[key])
+      return (
+        serialize(def, normalized[key]) !==
+        serialize(def, baselineRef.current[key])
+      )
     })
 
     if (changedKeys.length === 0) {
@@ -319,6 +345,9 @@ export function CostOptimizationSection(props: Props) {
     }
     baselineRef.current = nextBaseline
     baselineSerializedRef.current = JSON.stringify(nextBaseline)
+    // 保存后把表单显式重置为已保存的归一化值，确保输入框显示「保存后的值」
+    // 而非占位符（密钥字段则显示为掩码）。
+    form.reset(buildFormDefaults(nextBaseline))
   }
 
   return (
@@ -359,7 +388,7 @@ export function CostOptimizationSection(props: Props) {
                   >
                     {t(group.title)}
                   </span>
-                  <span className='inline-flex h-5 w-fit min-w-5 items-center justify-center rounded-full bg-muted px-1.5 text-xs text-muted-foreground tabular-nums'>
+                  <span className='bg-muted text-muted-foreground inline-flex h-5 w-fit min-w-5 items-center justify-center rounded-full px-1.5 text-xs tabular-nums'>
                     {group.fields.length}
                   </span>
                 </button>
@@ -367,7 +396,9 @@ export function CostOptimizationSection(props: Props) {
             })}
           </div>
           <div className='mt-2 space-y-1'>
-            <h3 className='text-sm font-semibold'>{t(activeGroupData.title)}</h3>
+            <h3 className='text-sm font-semibold'>
+              {t(activeGroupData.title)}
+            </h3>
             <p className='text-muted-foreground text-xs'>
               {t(activeGroupData.desc)}
             </p>

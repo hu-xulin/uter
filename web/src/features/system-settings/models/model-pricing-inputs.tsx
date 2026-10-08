@@ -141,7 +141,9 @@ export function PriceLane(props: {
   )
 }
 
-export function PriceReferenceFootnote(props: { reference: PriceReferenceInfo }) {
+export function PriceReferenceFootnote(props: {
+  reference: PriceReferenceInfo
+}) {
   let toneClass = 'text-muted-foreground'
   if (props.reference.discountTone === 'discount') {
     toneClass = 'text-emerald-600'
@@ -150,7 +152,9 @@ export function PriceReferenceFootnote(props: { reference: PriceReferenceInfo })
   }
   return (
     <div className='flex flex-wrap items-center gap-x-2 text-xs tabular-nums'>
-      <span className='text-muted-foreground'>{props.reference.officialLabel}</span>
+      <span className='text-muted-foreground'>
+        {props.reference.officialLabel}
+      </span>
       <span className={cn('font-medium', toneClass)}>
         {props.reference.discountLabel}
       </span>

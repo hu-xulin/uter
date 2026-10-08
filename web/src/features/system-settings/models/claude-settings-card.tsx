@@ -276,6 +276,7 @@ export function ClaudeSettingsCard({ defaultValues }: ClaudeSettingsCardProps) {
                   <FormLabel>{t('Budget Tokens Ratio')}</FormLabel>
                   <FormControl>
                     <Input
+                      placeholder='1'
                       {...field}
                       value={String(field.value ?? '')}
                       onChange={(event) => field.onChange(event.target.value)}

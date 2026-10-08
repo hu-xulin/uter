@@ -137,6 +137,7 @@ export function QuotaSettingsSection({
                   <FormLabel>{t('New User Quota')}</FormLabel>
                   <FormControl>
                     <Input
+                      placeholder='500000'
                       type='number'
                       value={field.value ?? ''}
                       onChange={handleNumberChange(field.onChange)}
@@ -166,6 +167,7 @@ export function QuotaSettingsSection({
                   <FormLabel>{t('Pre-Consumed Quota')}</FormLabel>
                   <FormControl>
                     <Input
+                      placeholder='50000'
                       type='number'
                       value={field.value ?? ''}
                       onChange={handleNumberChange(field.onChange)}
@@ -190,6 +192,7 @@ export function QuotaSettingsSection({
                   <FormLabel>{t('Inviter Reward')}</FormLabel>
                   <FormControl>
                     <Input
+                      placeholder='100000'
                       type='number'
                       value={field.value ?? ''}
                       onChange={handleNumberChange(field.onChange)}
@@ -219,6 +222,7 @@ export function QuotaSettingsSection({
                   <FormLabel>{t('Invitee Reward')}</FormLabel>
                   <FormControl>
                     <Input
+                      placeholder='100000'
                       type='number'
                       value={field.value ?? ''}
                       onChange={handleNumberChange(field.onChange)}

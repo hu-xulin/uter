@@ -517,6 +517,7 @@ export function LogSettingsSection({
                       : t('Days to Retain')}
                   </Label>
                   <Input
+                    placeholder='30'
                     type='number'
                     min={1}
                     max={serverLogCleanupMode === 'by_count' ? 1000 : 3650}

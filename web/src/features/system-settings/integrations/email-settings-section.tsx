@@ -31,6 +31,7 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { SecretInput } from '@/components/ui/secret-input'
 import { Label } from '@/components/ui/label'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Switch } from '@/components/ui/switch'
@@ -390,12 +391,10 @@ export function EmailSettingsSection({
               <FormItem>
                 <FormLabel>{t('Password / Access Token')}</FormLabel>
                 <FormControl>
-                  <Input
-                    autoComplete='off'
-                    type='password'
+                  <SecretInput
+                    value={field.value ?? ''}
+                    onChange={field.onChange}
                     placeholder={t('Enter new token to update')}
-                    {...field}
-                    onChange={(event) => field.onChange(event.target.value)}
                   />
                 </FormControl>
                 <FormDescription>

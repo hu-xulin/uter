@@ -145,8 +145,7 @@ export function getSyncExpressionPricing(
   }
   const fields = BILLING_PRICING_VARS.filter(
     (field): field is typeof field & { tierField: string } =>
-      !!field.tierField &&
-      new RegExp(`\\b${field.key}\\s*\\*`).test(body)
+      !!field.tierField && new RegExp(`\\b${field.key}\\s*\\*`).test(body)
   )
   const conditionLabels = {
     p: t('Input tokens'),

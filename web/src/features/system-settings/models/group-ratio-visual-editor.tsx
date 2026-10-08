@@ -544,6 +544,7 @@ function GroupPricingTable({
                 className: 'min-w-40',
                 cell: (row) => (
                   <Input
+                    placeholder='vip'
                     value={row.name}
                     onChange={(event) =>
                       updateRow(row._id, 'name', event.target.value)
@@ -558,6 +559,7 @@ function GroupPricingTable({
                 className: 'w-28',
                 cell: (row) => (
                   <Input
+                    placeholder='1'
                     type='number'
                     min={0}
                     step={0.1}

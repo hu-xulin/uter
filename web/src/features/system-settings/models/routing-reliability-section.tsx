@@ -351,6 +351,7 @@ export function RoutingReliabilitySection({
                     <FormLabel>{t('Retry Times')}</FormLabel>
                     <FormControl>
                       <Input
+                        placeholder='3'
                         type='number'
                         min='0'
                         max='10'
@@ -490,6 +491,7 @@ export function RoutingReliabilitySection({
                     <FormLabel>{t('Test interval (minutes)')}</FormLabel>
                     <FormControl>
                       <Input
+                        placeholder='10'
                         type='number'
                         min={1}
                         step={1}
@@ -516,6 +518,7 @@ export function RoutingReliabilitySection({
                     <FormLabel>{t('Channel test concurrency')}</FormLabel>
                     <FormControl>
                       <Input
+                        placeholder='5'
                         type='number'
                         min={1}
                         max={MAX_CHANNEL_TEST_CONCURRENCY}
@@ -594,6 +597,7 @@ export function RoutingReliabilitySection({
                     <FormLabel>{t('Disable threshold (seconds)')}</FormLabel>
                     <FormControl>
                       <Input
+                        placeholder='5'
                         type='number'
                         min={0}
                         step={1}

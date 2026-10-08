@@ -176,9 +176,7 @@ function ChannelModelPicker({
   )
   const toggle = (model: string) =>
     setSelected((prev) =>
-      prev.includes(model)
-        ? prev.filter((x) => x !== model)
-        : [...prev, model]
+      prev.includes(model) ? prev.filter((x) => x !== model) : [...prev, model]
     )
   const apply = () => {
     onApply(selected)
@@ -214,9 +212,7 @@ function ChannelModelPicker({
                 key={model}
                 className={cn(
                   'flex items-center gap-2 rounded-md px-2 py-1 text-sm',
-                  disabled
-                    ? 'opacity-50'
-                    : 'hover:bg-muted/60 cursor-pointer'
+                  disabled ? 'opacity-50' : 'hover:bg-muted/60 cursor-pointer'
                 )}
               >
                 <input
@@ -482,7 +478,9 @@ export function ChannelPricingSection({
                   onClick={() =>
                     setDraft((prev) => ({
                       ...prev,
-                      channels: prev.channels.filter((item) => item.id !== row.id),
+                      channels: prev.channels.filter(
+                        (item) => item.id !== row.id
+                      ),
                     }))
                   }
                 >
