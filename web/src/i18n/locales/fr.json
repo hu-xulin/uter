@@ -6976,6 +6976,7 @@
     "Pages where the entry appears": "Pages où l'entrée apparaît",
     "Customer Service Admin Token": "Jeton d'administrateur du service client",
     "Admin token is configured. Paste a new one to replace it.": "Jeton d'administrateur configuré. Collez-en un nouveau pour le remplacer.",
+    "Configuration loaded from cache. Click Reload to fetch the latest from uter-cs.": "Configuration chargée depuis le cache. Cliquez sur Recharger pour récupérer la dernière configuration depuis uter-cs.",
     "Paste the uter-cs admin bearer token so Uter can read and save its model configuration on your behalf.": "Collez le jeton Bearer admin uter-cs pour que Uter lise et enregistre sa configuration de modèle pour vous.",
     "Token cannot be empty": "Le jeton ne peut pas être vide",
     "Save token": "Enregistrer le jeton",

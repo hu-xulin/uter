@@ -6976,6 +6976,7 @@
     "Pages where the entry appears": "入口を表示するページ",
     "Customer Service Admin Token": "カスタマーサポート管理者トークン",
     "Admin token is configured. Paste a new one to replace it.": "管理者トークンは設定済みです。置き換えるには新しいトークンを貼り付けてください。",
+    "Configuration loaded from cache. Click Reload to fetch the latest from uter-cs.": "設定はキャッシュから読み込まれました。uter-cs から最新の設定を取得するには「再読み込み」をクリックしてください。",
     "Paste the uter-cs admin bearer token so Uter can read and save its model configuration on your behalf.": "Uter がモデル構成を代わりに読み取り・保存できるよう、uter-cs の管理者 Bearer トークンを貼り付けてください。",
     "Token cannot be empty": "トークンは空にできません",
     "Save token": "トークンを保存",

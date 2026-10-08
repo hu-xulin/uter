@@ -6975,6 +6975,7 @@
     "Pages where the entry appears": "Pages where the entry appears",
     "Customer Service Admin Token": "Customer Service Admin Token",
     "Admin token is configured. Paste a new one to replace it.": "Admin token is configured. Paste a new one to replace it.",
+    "Configuration loaded from cache. Click Reload to fetch the latest from uter-cs.": "Configuration loaded from cache. Click Reload to fetch the latest from uter-cs.",
     "Paste the uter-cs admin bearer token so Uter can read and save its model configuration on your behalf.": "Paste the uter-cs admin bearer token so Uter can read and save its model configuration on your behalf.",
     "Token cannot be empty": "Token cannot be empty",
     "Save token": "Save token",

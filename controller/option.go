@@ -95,7 +95,10 @@ func GetOptions(c *gin.Context) {
 			strings.HasSuffix(k, "Secret") ||
 			strings.HasSuffix(k, "Key") ||
 			strings.HasSuffix(k, "secret") ||
-			strings.HasSuffix(k, "api_key")
+			strings.HasSuffix(k, "api_key") ||
+			// 大模型配置缓存含 api_key 等敏感字段，且已通过专用管理员接口下发，
+			// 绝不出现在批量选项里。
+			k == "CustomerServiceLLMConfig"
 		if isSensitiveKey {
 			continue
 		}
