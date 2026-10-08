@@ -85,7 +85,7 @@ export PATH="$NODE_DIR:$PATH"
 # 仍可被环境变量 USER_SESSION_ACTIVE_LIMIT 覆盖（例如临时调回 50）。
 export USER_SESSION_ACTIVE_LIMIT="${USER_SESSION_ACTIVE_LIMIT:-200}"
 
-# 智能客服（smart-cs）挂件地址：独立仓库 uter-ai/uter-cs，独立部署，
+# 智能客服（uter-cs）挂件地址：独立仓库 uter-ai/uter-cs，独立部署，
 # 前端按此地址**跨域直连**，Uter 后端不做任何反向代理。
 # 该值经 /api/status 的 customer_service_url 下发给前端；留空则不渲染挂件。
 # 本地默认指向本机 3200；生产用 CUSTOMER_SERVICE_URL=https://cs.uter.ai 覆盖。
@@ -321,7 +321,7 @@ fi
 # 4.2 独立会话启动，日志追加到 $LOG
 spawn "$LOG" "$ROOT" "$BIN"
 
-# 4.2b 智能客服（smart-cs）**不在本仓库内**：独立仓库 uter-ai/uter-cs、
+# 4.2b 智能客服（uter-cs）**不在本仓库内**：独立仓库 uter-ai/uter-cs、
 # 独立进程、独立部署。Uter 只把 CUSTOMER_SERVICE_URL 经 /api/status 下发给前端，
 # 由浏览器跨域直连该服务，Go 后端不做任何反向代理。
 # 因此这里**只做可达性体检并提示**：不安装依赖、不拉起进程、不假设任何本地目录。

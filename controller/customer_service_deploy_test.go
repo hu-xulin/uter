@@ -33,8 +33,8 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// mockSmartCS 模拟 smart-cs 的部署管理接口，记录被调用的路径与是否带上了 admin 令牌。
-type mockSmartCS struct {
+// mockUterCS 模拟 uter-cs 的部署管理接口，记录被调用的路径与是否带上了 admin 令牌。
+type mockUterCS struct {
 	calls        []string
 	gotToken     string
 	configLLM    map[string]any
@@ -44,7 +44,7 @@ type mockSmartCS struct {
 	applyError   string
 }
 
-func (m *mockSmartCS) handler() http.HandlerFunc {
+func (m *mockUterCS) handler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		m.calls = append(m.calls, r.Method+" "+r.URL.Path)
 		m.gotToken = r.Header.Get("Authorization")
@@ -77,7 +77,7 @@ func (m *mockSmartCS) handler() http.HandlerFunc {
 }
 
 // withCS 把 Uter 侧的智能客服开关接到 mock，并在测试结束后还原。
-func withCS(t *testing.T, m *mockSmartCS) (baseURL string) {
+func withCS(t *testing.T, m *mockUterCS) (baseURL string) {
 	t.Helper()
 	origURL := common.CustomerServiceURL
 	origToken := common.CustomerServiceAdminToken
@@ -130,7 +130,7 @@ func TestGetCustomerServiceLLMConfig_Preconditions(t *testing.T) {
 }
 
 func TestGetCustomerServiceLLMConfig_HappyPath(t *testing.T) {
-	m := &mockSmartCS{
+	m := &mockUterCS{
 		configLLM: map[string]any{
 			"provider": "api",
 			"model":    "deepseek-ai/DeepSeek-V3",
@@ -153,7 +153,7 @@ func TestGetCustomerServiceLLMConfig_HappyPath(t *testing.T) {
 	assert.True(t, body.Success)
 	assert.Equal(t, "deepseek-ai/DeepSeek-V3", body.Data.LLM["model"])
 	assert.Equal(t, "sk-secret", body.Data.LLM["api_key"])
-	// 必须带上 admin 令牌转发，否则 smart-cs 会 401。
+	// 必须带上 admin 令牌转发，否则 uter-cs 会 401。
 	assert.Equal(t, "Bearer test-cs-token", m.gotToken)
 	assert.Contains(t, m.calls, "GET /api/deploy/config")
 }
@@ -199,7 +199,7 @@ func TestUpdateCustomerServiceLLMConfig_Preconditions(t *testing.T) {
 }
 
 func TestUpdateCustomerServiceLLMConfig_HappyPath(t *testing.T) {
-	m := &mockSmartCS{sectionEcho: true, applyStatus: http.StatusOK}
+	m := &mockUterCS{sectionEcho: true, applyStatus: http.StatusOK}
 	withCS(t, m)
 
 	payload := map[string]any{"provider": "api", "model": "new-model"}
@@ -221,7 +221,7 @@ func TestUpdateCustomerServiceLLMConfig_HappyPath(t *testing.T) {
 
 func TestUpdateCustomerServiceLLMConfig_ApplyFailsDegrades(t *testing.T) {
 	// 写回成功但重载失败：仍可返回 200，只在提示里说明，不让主目标（落盘）失败。
-	m := &mockSmartCS{sectionEcho: true, applyStatus: http.StatusInternalServerError, applyError: "engine busy"}
+	m := &mockUterCS{sectionEcho: true, applyStatus: http.StatusInternalServerError, applyError: "engine busy"}
 	withCS(t, m)
 
 	payload := map[string]any{"model": "new-model"}

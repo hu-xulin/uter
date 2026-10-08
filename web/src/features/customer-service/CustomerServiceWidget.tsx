@@ -24,8 +24,8 @@ import {
   type CustomerServicePageKey,
 } from './page-keys'
 
-// 智能客服挂件（smart-cs）的 Uter 原生实现。
-// 通过 Go 网关的 /api/cs/* 反代访问 smart-cs 后端（本地 3200），对外单端口，
+// 智能客服挂件（uter-cs）的 Uter 原生实现。
+// 通过 Go 网关的 /api/cs/* 反代访问 uter-cs 后端（本地 3200），对外单端口，
 // 不再依赖外挂的 /cs/widget.js 与 Nginx 反代。
 //
 // 视觉：底色/描边/文字一律取自 shadcn 主题变量
@@ -117,8 +117,8 @@ function currentLang(): string {
 
 // 智能客服后端基地址：来自 /api/status 的 customer_service_url。
 //
-// 智能客服（smart-cs）是**独立仓库、独立部署**的 Node 服务，Uter 后端不代理它，
-// 由浏览器直连（跨域，CORS 由 smart-cs 侧放开）。留空表示未启用挂件。
+// 智能客服（uter-cs）是**独立仓库、独立部署**的 Node 服务，Uter 后端不代理它，
+// 由浏览器直连（跨域，CORS 由 uter-cs 侧放开）。留空表示未启用挂件。
 //
 // 渲染入口需要**三个门**依次成立：
 //  1. customer_service_enabled —— 总开关（「站点与品牌 → 智能客服」）；
