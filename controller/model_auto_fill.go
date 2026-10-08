@@ -79,6 +79,11 @@ func autoFillOfficialData(ctx context.Context, modelNames []string) AutoFillSumm
 			pricingOptOut(pricing), pricingUnknown(pricing),
 		))
 	}
+
+	// 多语描述是独立于单值字段的一层：上游目录按语种各有一份文件，需要分别
+	// 拉取并（可选）由 LLM 补译，因此不并入上面那次只拉英文的目录填充。
+	syncLocalizedDescriptions(ctx, names)
+
 	return summary
 }
 
