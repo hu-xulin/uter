@@ -106,6 +106,8 @@ Your end user --(submits information to your app)--> Your app --(calls Platform 
 
 2.3.3 Trừ khi pháp luật có quy định khác, chúng tôi **sẽ không chủ động truy cập** nội dung yêu cầu của bạn. Chỉ trong các trường hợp sau chúng tôi mới có thể xem trong phạm vi tối thiểu cần thiết: để khắc phục sự cố kỹ thuật với sự đồng ý của bạn; theo yêu cầu hợp pháp của cơ quan quản lý hoặc cơ quan tư pháp; khi phát hiện nội dung bị nghi vấn vi phạm pháp luật nghiêm trọng hoặc nguy hại an toàn công cộng.
 
+2.3.4 **Bổ sung về xác định vai trò**: Nếu pháp luật, quy định hoặc cơ quan có thẩm quyền xác định rằng Nền tảng trong các tình huống nêu trên cấu thành bên xử lý chung hoặc bên cung cấp công nghệ xử lý thông tin cá nhân, hai bên đồng ý phân chia trách nhiệm tương ứng theo quy định liên quan của Luật Bảo vệ Thông tin Cá nhân và theo lỗi của mỗi bên. Các điều khoản miễn trừ và giới hạn trách nhiệm của Nền tảng không vì thế mà làm giảm bớt các quyền mà bạn được hưởng theo pháp luật áp dụng.
+
 ---
 
 ## Chương 3. Cách chúng tôi thu thập và sử dụng Thông tin cá nhân
@@ -223,7 +225,7 @@ Nền tảng mặc định sử dụng các nút trong nước và mô hình tro
 
 5.2.2 Chúng tôi **không lưu giữ nội dung thân của yêu cầu và phản hồi của bạn trong nước**; việc truyền ra nước ngoài là chuyển tiếp theo thời gian thực và không cấu thành việc lưu trữ gia tăng dữ liệu trong nước (chỉ lưu giữ siêu dữ liệu cần thiết cho tính phí và kiểm toán, và siêu dữ liệu đó được lưu trong lãnh thổ Trung Quốc).
 
-5.2.3 **Theo Mục 3 của Chương 3 PIPL và Biện pháp đánh giá an toàn dữ liệu xuất khẩu, trước khi gửi nội dung yêu cầu có chứa thông tin cá nhân đến Nền tảng này, bạn phải hoàn thành các thủ tục tuân thủ bắt buộc về dữ liệu xuyên biên giới**, bao gồm nhưng không giới hạn ở: ký kết và đăng ký hợp đồng tiêu chuẩn cho việc chuyển thông tin cá nhân xuyên biên giới, chứng nhận bảo vệ thông tin cá nhân, hoặc đăng ký đánh giá an toàn (khi đạt ngưỡng đăng ký).
+5.2.3 **Theo Mục 3 của Chương 3 PIPL và Biện pháp đánh giá an toàn dữ liệu xuất khẩu, trước khi gửi nội dung yêu cầu có chứa thông tin cá nhân đến Nền tảng này, bạn phải hoàn thành các thủ tục tuân thủ bắt buộc về dữ liệu xuyên biên giới**, bao gồm nhưng không giới hạn ở: ký kết và đăng ký hợp đồng tiêu chuẩn cho việc chuyển thông tin cá nhân xuyên biên giới, chứng nhận bảo vệ thông tin cá nhân, hoặc đăng ký đánh giá an toàn (khi đạt ngưỡng đăng ký). Là nền tảng thực tế truyền dữ liệu ra nước ngoài, chúng tôi cũng sẽ thực hiện theo pháp luật các thủ tục đăng ký, đánh giá an toàn hoặc chứng nhận cần thiết cho việc cung cấp thông tin cá nhân xuyên biên giới (nơi áp dụng). Đối với người dùng EU, chúng tôi sẽ cung cấp các cơ chế chuyển giao xuyên biên giới như Điều khoản Hợp đồng Tiêu chuẩn (SCC) theo GDPR, và trong phạm vi hợp lý sẽ hỗ trợ bạn các tài liệu như mẫu hợp đồng tiêu chuẩn và danh sách địa điểm xử lý dữ liệu.
 
 5.2.4 Chúng tôi khuyến nghị và hỗ trợ bạn giảm rủi ro xuất khẩu thông qua các biện pháp sau: lựa chọn mô hình trong nước; thực hiện khử định danh dữ liệu, thay thế trường và giả danh hóa phía máy khách; và hoàn toàn tránh chuyển thông tin cá nhân nhạy cảm ra nước ngoài.
 
@@ -391,6 +393,8 @@ Kết quả đầu ra của mô hình ngôn ngữ lớn có tính xác suất v�
 ---
 
 ## Chương 12. Cách liên hệ với chúng tôi
+
+Theo Điều 52 của Luật Bảo vệ Thông tin Cá nhân, chúng tôi đã chỉ định người phụ trách bảo vệ thông tin cá nhân. Thông tin liên hệ như sau:
 
 | Nội dung | Liên hệ |
 |---|---|

@@ -106,6 +106,10 @@ Your end user --(submits information to your app)--> Your app --(calls Platform 
 
 2.3.3 Except as otherwise provided by law, we **will not actively access** your request content. Only under the following circumstances may we view it within the minimum necessary scope: for troubleshooting technical faults with your authorization; upon lawful requests from regulators or judicial authorities; upon discovering content suspected of serious illegality or endangering public safety.
 
+**2.3.4 Fallback on Characterization**
+
+If laws, regulations or a competent authority determine that we constitute a **joint processor** or a provider of personal information processing technology in the foregoing scenarios, both parties agree to allocate the corresponding liabilities in accordance with the relevant provisions of the Personal Information Protection Law and each party's respective fault. Our disclaimers and limitation-of-liability provisions shall not thereby diminish the rights you enjoy under applicable law.
+
 ---
 
 ## Chapter 3 How We Collect and Use Personal Information
@@ -223,7 +227,7 @@ The Platform defaults to domestic nodes and domestic models, **with data not lea
 
 5.2.2 We **do not retain your request and response body content domestically**; the outbound transfer is real-time forwarding and does not constitute incremental storage of domestic data (only the necessary metadata for billing and audit is retained, and such metadata is stored within the territory of China).
 
-5.2.3 **Pursuant to Section 3 of Chapter 3 of the PIPL and the Measures for the Security Assessment of Data Outbound Transfer, you should complete the required cross-border data compliance procedures before submitting request content containing personal information to this Platform**, including but not limited to: execution and filing of the standard contract for cross-border personal information transfer, personal information protection certification, or security assessment filing (where the filing threshold is met).
+5.2.3 **Pursuant to Section 3 of Chapter 3 of the PIPL and the Measures for the Security Assessment of Data Outbound Transfer, you should complete the required cross-border data compliance procedures before submitting request content containing personal information to this Platform**, including but not limited to: execution and filing of the standard contract for cross-border personal information transfer, personal information protection certification, or security assessment filing (where the filing threshold is met). **As the platform that actually transmits data overseas, we will also discharge, as required by law, the filing, security assessment or certification procedures for the cross-border provision of personal information (where applicable). For EU users, we will provide cross-border transfer mechanisms such as Standard Contractual Clauses (SCCs) under the GDPR, and will, within a reasonable scope, provide you with assistance such as the standard contract template and the list of data-processing locations.**
 
 5.2.4 We recommend and support you in reducing outbound risk through the following means: selecting domestic models; implementing data desensitization, field replacement and pseudonymization on the client; and avoiding outbound transfer of sensitive personal information altogether.
 
@@ -391,6 +395,8 @@ The output of large language models is probabilistic and non-deterministic, and 
 ---
 
 ## Chapter 12 How to Contact Us
+
+**Pursuant to Article 52 of the Personal Information Protection Law, we have designated a Personal Information Protection Officer. The contact details are as follows:**
 
 | Matter | Contact |
 |---|---|
