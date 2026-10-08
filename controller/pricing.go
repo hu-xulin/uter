@@ -59,6 +59,8 @@ func GetPricing(c *gin.Context) {
 
 	usableGroup = service.GetUserUsableGroups(group)
 	pricing = filterPricingByUsableGroups(pricing, usableGroup)
+	// 按访客语言解析多语描述。放在过滤之后，只对真正要返回的条目做解析。
+	pricing = localizePricingDescriptions(pricing, i18n.GetLangFromContext(c))
 	// check groupRatio contains usableGroup
 	for group := range ratio_setting.GetGroupRatioCopy() {
 		if _, ok := usableGroup[group]; !ok {
@@ -84,6 +86,42 @@ func GetPricing(c *gin.Context) {
 		"official_prices":    officialPrices,
 		"pricing_version":    "a42d372ccf0b5dd13ecf71203521f9d2",
 	})
+}
+
+// localizePricingDescriptions 按访客语言把模型描述解析成单值。
+//
+// 前端拿到的是「已解析好的 Description」+「全语种副本」：只关心一种语言的
+// 调用方继续读 Description 即可，切换语言时前端可用副本在本地重绘，不必
+// 为每种语言重新请求定价接口。
+//
+// 解析不到目标语种时保持 model 层填好的单值描述（通常就是英文），而不是
+// 置空——回退到英文远好过卡片描述突然变空。
+func localizePricingDescriptions(pricing []model.Pricing, lang string) []model.Pricing {
+	if len(pricing) == 0 || lang == "" {
+		return pricing
+	}
+	hasMultiLang := false
+	for i := range pricing {
+		if len(pricing[i].Descriptions) > 0 {
+			hasMultiLang = true
+			break
+		}
+	}
+	if !hasMultiLang {
+		return pricing
+	}
+	localized := make([]model.Pricing, len(pricing))
+	copy(localized, pricing)
+	for i := range localized {
+		// 用 model 层的解析函数：多语副本按访客语言取，取不到时回落到单字段
+		// description，保证「只有旧数据、没有多语副本」的模型不会显示空白。
+		if text := model.ResolveModelDescription(
+			model.LocalizedDescription(localized[i].Descriptions), localized[i].Description, lang,
+		); text != "" {
+			localized[i].Description = text
+		}
+	}
+	return localized
 }
 
 // normalizePricingSource constrains the persisted `PricingSource` option to a

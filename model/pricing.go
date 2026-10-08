@@ -27,9 +27,13 @@ type PricingPluginVariant struct {
 }
 
 type Pricing struct {
-	BillingPluginVariants  []PricingPluginVariant               `json:"billing_plugin_variants,omitempty"`
-	ModelName              string                               `json:"model_name"`
-	Description            string                               `json:"description,omitempty"`
+	BillingPluginVariants []PricingPluginVariant `json:"billing_plugin_variants,omitempty"`
+	ModelName             string                 `json:"model_name"`
+	Description           string                 `json:"description,omitempty"`
+	// Descriptions 是该模型描述的全语种副本，供前端在切换语言时本地切换，
+	// 无需为每种语言重新请求。Description 始终是按访客语言解析后的结果，
+	// 因此只关心单一语言的既有调用方不受影响。
+	Descriptions           map[string]string                    `json:"descriptions,omitempty"`
 	Icon                   string                               `json:"icon,omitempty"`
 	Tags                   string                               `json:"tags,omitempty"`
 	VendorID               int                                  `json:"vendor_id,omitempty"`
@@ -79,6 +83,20 @@ var (
 	modelSupportEndpointTypes = make(map[string][]constant.EndpointType)
 	modelSupportEndpointsLock = sync.RWMutex{}
 )
+
+// multiLangOrSelf 返回该模型的多语描述副本；只有单字段时把它归一为英文单语。
+//
+// 这样「尚未开启多语化、只有 description」的历史模型也会带上 descriptions，
+// 前端切换语言时至少有英文兜底，而不会因为缺字段回退成「暂无描述」。
+func multiLangOrSelf(meta *Model) map[string]string {
+	if len(meta.Descriptions) > 0 {
+		return meta.Descriptions
+	}
+	if text := strings.TrimSpace(meta.Description); text != "" {
+		return map[string]string{"en": text}
+	}
+	return nil
+}
 
 func GetPricing() []Pricing {
 	if time.Since(lastGetPricingTime) > time.Minute*1 || len(pricingMap) == 0 {
@@ -395,6 +413,12 @@ func updatePricing() {
 				continue
 			}
 			pricing.Description = meta.Description
+			// 全语种副本交给 controller 按访客语言解析出 Description，
+			// 这里只负责把数据带出去。只填了单字段的历史模型由
+			// normalizeModelDescriptions 补出英文位，使其同样能多语渲染。
+			if descriptions := LocalizedDescription(multiLangOrSelf(meta)); len(descriptions) > 0 {
+				pricing.Descriptions = map[string]string(descriptions)
+			}
 			pricing.Icon = meta.Icon
 			pricing.Tags = meta.Tags
 			pricing.VendorID = meta.VendorID
