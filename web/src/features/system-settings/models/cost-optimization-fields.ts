@@ -17,7 +17,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@uter.ai
 */
 
-// 模型优化（Model Optimization）字段定义。
+// 降本优化（Cost Optimization）字段定义。
 // 独立成文件是为了满足 react(only-export-components)：组件文件只导出组件，
 // 常量与类型放这里，避免破坏 Fast Refresh。
 export type FieldKind = 'bool' | 'number' | 'text' | 'json' | 'select'
@@ -35,6 +35,41 @@ export type FieldDef = {
 
 // 分组：每组一个标题 + 字段清单
 export const GROUPS: Array<{ title: string; desc: string; fields: FieldDef[] }> = [
+  {
+    title: 'Core cost optimization (implemented)',
+    // 这些项是 V2 已落地、纯代码完成、无需外部基建的特性；
+    // 此前没有 UI，只能靠改 Options 表默认值打开。这里把它们显式暴露出来。
+    // 全部默认关闭，开启即生效，不会影响主链路。
+    desc: 'These items ship in V2 and are fully coded with no external dependency. They are off by default and take effect the moment you enable them.',
+    fields: [
+      { name: 'costopt_setting.response_cache_enabled', kind: 'bool', label: 'Enable response cache' },
+      { name: 'costopt_setting.response_cache_ttl_seconds', kind: 'number', label: 'Response cache TTL in seconds', gated: 'costopt_setting.response_cache_enabled' },
+      { name: 'costopt_setting.response_cache_max_tokens', kind: 'number', label: 'Response cache maximum tokens', gated: 'costopt_setting.response_cache_enabled' },
+      { name: 'costopt_setting.negative_cache_enabled', kind: 'bool', label: 'Enable negative cache' },
+      { name: 'costopt_setting.negative_cache_ttl_seconds', kind: 'number', label: 'Negative cache TTL in seconds', gated: 'costopt_setting.negative_cache_enabled' },
+      { name: 'costopt_setting.max_tokens_cap_enabled', kind: 'bool', label: 'Enable max tokens cap' },
+      { name: 'costopt_setting.max_tokens_cap_global', kind: 'number', label: 'Global max tokens cap', gated: 'costopt_setting.max_tokens_cap_enabled' },
+      { name: 'costopt_setting.loop_detection_enabled', kind: 'bool', label: 'Enable loop detection' },
+      { name: 'costopt_setting.loop_detection_threshold', kind: 'number', label: 'Loop detection threshold', gated: 'costopt_setting.loop_detection_enabled' },
+      { name: 'costopt_setting.agent_step_budget_enabled', kind: 'bool', label: 'Enable agent step budget' },
+      { name: 'costopt_setting.agent_step_budget_max_steps', kind: 'number', label: 'Maximum agent steps', gated: 'costopt_setting.agent_step_budget_enabled' },
+      { name: 'costopt_setting.agent_step_budget_max_tokens', kind: 'number', label: 'Maximum agent tokens', gated: 'costopt_setting.agent_step_budget_enabled' },
+      { name: 'costopt_setting.metrics_enabled', kind: 'bool', label: 'Enable cost optimization metrics' },
+      { name: 'costopt_setting.anomaly_alert_enabled', kind: 'bool', label: 'Enable anomaly alert' },
+      { name: 'costopt_setting.gzip_enabled', kind: 'bool', label: 'Enable response gzip compression' },
+      { name: 'costopt_setting.cascade_enabled', kind: 'bool', label: 'Enable cascade cheap-to-premium' },
+      { name: 'costopt_setting.cascade_cheap_model', kind: 'text', label: 'Cascade cheap model', gated: 'costopt_setting.cascade_enabled' },
+      { name: 'costopt_setting.cascade_premium_model', kind: 'text', label: 'Cascade premium model', gated: 'costopt_setting.cascade_enabled' },
+      { name: 'costopt_setting.cascade_refusal_keywords', kind: 'json', label: 'Cascade refusal keywords', gated: 'costopt_setting.cascade_enabled' },
+      { name: 'costopt_setting.semantic_cache_enabled', kind: 'bool', label: 'Enable semantic cache' },
+      { name: 'costopt_setting.semantic_cache_ttl_seconds', kind: 'number', label: 'Semantic cache TTL in seconds', gated: 'costopt_setting.semantic_cache_enabled' },
+      { name: 'costopt_setting.semantic_cache_embed_base_url', kind: 'text', label: 'Embedding API base URL', gated: 'costopt_setting.semantic_cache_enabled' },
+      { name: 'costopt_setting.semantic_cache_embed_api_key', kind: 'text', label: 'Embedding API key', gated: 'costopt_setting.semantic_cache_enabled' },
+      { name: 'costopt_setting.semantic_cache_embed_model', kind: 'text', label: 'Embedding model', gated: 'costopt_setting.semantic_cache_enabled' },
+      { name: 'costopt_setting.semantic_cache_top_k', kind: 'number', label: 'Semantic cache top K', gated: 'costopt_setting.semantic_cache_enabled' },
+      { name: 'costopt_setting.semantic_cache_score_threshold', kind: 'number', label: 'Semantic cache score threshold', gated: 'costopt_setting.semantic_cache_enabled' },
+    ],
+  },
   {
     title: 'Vendor arbitrage and cross-channel price comparison',
     desc: 'Automatically pick the cheapest equivalent vendor for the same model. Prices are per 1M input tokens in USD.',
@@ -198,7 +233,7 @@ export const GROUPS: Array<{ title: string; desc: string; fields: FieldDef[] }> 
 export const ALL_FIELDS: FieldDef[] = GROUPS.flatMap((g) => g.fields)
 
 /** 供 section-registry 从 settings 中挑选本区字段用。 */
-export const MODEL_OPTIMIZATION_KEYS: Array<`costopt_setting.${string}`> =
+export const COST_OPTIMIZATION_KEYS: Array<`costopt_setting.${string}`> =
   ALL_FIELDS.map((f) => f.name as `costopt_setting.${string}`)
 
 /** 从完整 option key 取出 zod 嵌套用的子字段名。 */
