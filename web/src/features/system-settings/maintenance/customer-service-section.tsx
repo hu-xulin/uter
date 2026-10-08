@@ -27,6 +27,8 @@ import { Form, FormControl, FormItem, FormLabel } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Switch } from '@/components/ui/switch'
 import { api } from '@/lib/api'
+import { Eye, EyeOff } from 'lucide-react'
+import { maskSecret } from '@/lib/secret'
 
 import { SettingsForm } from '../components/settings-form-layout'
 import { SettingsPageFormActions } from '../components/settings-page-context'
@@ -209,6 +211,7 @@ export function CustomerServiceSection({
 }) {
   const { t } = useTranslation()
   const updateOption = useUpdateOption()
+  const [reloadSignal, setReloadSignal] = useState(0)
   const parsedDefaults = useMemo(
     () => parsePages(defaultPages ?? ''),
     [defaultPages]
@@ -293,41 +296,94 @@ export function CustomerServiceSection({
         </SettingsForm>
       </Form>
 
-      <AdminTokenField defaultConfigured={Boolean(defaultAdminToken)} />
+      <AdminTokenField
+        defaultConfigured={Boolean(defaultAdminToken)}
+        onSaved={() => setReloadSignal((n) => n + 1)}
+      />
 
-      <ModelConfigPanel />
+      <ModelConfigPanel reloadSignal={reloadSignal} />
     </SettingsSection>
   )
 }
 
-/** 智能客服管理员令牌：作为 Uter 代理 uter-cs 管理接口时的 Bearer 凭证。 */
+/**
+ * 智能客服管理员令牌：作为 Uter 代理 uter-cs 管理接口时的 Bearer 凭证。
+ *
+ * 展示规则与同页的 API Key 一致——默认以掩码显示（前 4 + 中间星号 + 后 4），点眼睛可
+ * 临时查看完整值；聚焦即进入「替换」模式，清空并可输入新令牌，失焦未改动则还原为原值，
+ * 绝不把掩码串写回后端。已保存的令牌经由 GET /api/customer-service/admin-token 拉取后
+ * 直接显示，无需再次粘贴。
+ */
 function AdminTokenField({
   defaultConfigured,
+  onSaved,
 }: {
   defaultConfigured: boolean
+  onSaved?: () => void
 }) {
   const { t } = useTranslation()
   const updateOption = useUpdateOption()
   const [token, setToken] = useState('')
   const [configured, setConfigured] = useState(defaultConfigured)
+  const [revealed, setRevealed] = useState(false)
+  const [editing, setEditing] = useState(false)
+  const [draft, setDraft] = useState('')
 
+  useEffect(() => {
+    let alive = true
+    api
+      .get<{ success: boolean; data: { token: string } }>(
+        '/api/customer-service/admin-token'
+      )
+      .then((r) => {
+        if (alive && r.data?.success && r.data.data?.token) {
+          setToken(r.data.data.token)
+          setConfigured(true)
+        }
+      })
+      .catch(() => {})
+    return () => {
+      alive = false
+    }
+  }, [])
+
+  const beginEdit = () => {
+    setDraft('')
+    setEditing(true)
+    setRevealed(false)
+  }
+  const commitEdit = () => {
+    // 聚焦后未输入任何内容就失焦：还原为已保存令牌，避免把已保存令牌误清成空。
+    if (draft.trim() === '') {
+      setEditing(false)
+      return
+    }
+    setToken(draft)
+    setEditing(false)
+  }
   const save = async () => {
-    if (!token.trim()) {
+    const v = (editing ? draft : token).trim()
+    if (!v) {
       toast.error(t('Token cannot be empty'))
       return
     }
     try {
       await updateOption.mutateAsync({
         key: 'CustomerServiceAdminToken',
-        value: token.trim(),
+        value: v,
       })
+      setToken(v)
       setConfigured(true)
-      setToken('')
+      setEditing(false)
       toast.success(t('Admin token saved'))
+      onSaved?.()
     } catch {
       // 错误已由拦截器提示
     }
   }
+
+  const displayValue = editing ? draft : revealed ? token : maskSecret(token)
+  const inputType = editing ? (revealed ? 'text' : 'password') : 'text'
 
   return (
     <div className='mt-6 space-y-3 rounded-lg border p-4'>
@@ -344,19 +400,40 @@ function AdminTokenField({
         </p>
       </div>
       <div className='flex flex-col gap-2 sm:flex-row'>
-        <Input
-          type='password'
-          autoComplete='new-password'
-          placeholder='Bearer …'
-          value={token}
-          onChange={(e) => setToken(e.target.value)}
-          disabled={updateOption.isPending}
-        />
+        <div className='relative flex-1'>
+          <Input
+            type={inputType}
+            autoComplete='new-password'
+            placeholder='Bearer …'
+            value={displayValue}
+            disabled={updateOption.isPending}
+            onFocus={beginEdit}
+            onChange={(e) => {
+              if (editing) setDraft(e.target.value)
+            }}
+            onBlur={commitEdit}
+            className='pr-9'
+          />
+          {!editing && token && (
+            <button
+              type='button'
+              tabIndex={-1}
+              onClick={() => setRevealed((v) => !v)}
+              aria-label={revealed ? 'Hide token' : 'Reveal token'}
+              className='text-muted-foreground hover:text-foreground absolute right-2 top-1/2 size-5 -translate-y-1/2'
+            >
+              {revealed ? <EyeOff className='size-4' /> : <Eye className='size-4' />}
+            </button>
+          )}
+        </div>
         <button
           type='button'
           className='bg-primary text-primary-foreground shrink-0 rounded-md px-4 py-2 text-sm font-medium disabled:opacity-50'
           onClick={save}
-          disabled={updateOption.isPending || !token.trim()}
+          disabled={
+            updateOption.isPending ||
+            (editing ? !draft.trim() : !token.trim())
+          }
         >
           {t('Save token')}
         </button>
@@ -373,25 +450,45 @@ function AdminTokenField({
  * - 保存走 PUT /api/customer-service/deploy/llm，由 Uter 后端带令牌转发并触发 uter-cs
  *   引擎重载。
  */
-function ModelConfigPanel() {
+/**
+ * 大模型配置面板：经 Uter 代理读写 uter-cs 的 llm 段。
+ *
+ * 容错与「无需先输入令牌即可看到已配置参数」：
+ *  - 挂载即尝试 GET 一次。令牌已配置则拉取实时配置；令牌未配置但有缓存，则直接回放
+ *    缓存（满足「已配置好的参数直接展示，不需要先输入 Token」）。
+ *  - 实时拉取失败但有缓存时，回退展示缓存并附提示，而不是把上游错误砸到页面上。
+ *  - 仅当「既无令牌也无缓存」时才提示先填令牌（此时表单为空，仍可手动填写）。
+ *  - reloadSignal 变化（例如刚保存完令牌）会触发重新拉取。
+ */
+function ModelConfigPanel({ reloadSignal = 0 }: { reloadSignal?: number }) {
   const { t } = useTranslation()
   const [config, setConfig] = useState<LLMConfig | null>(null)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [needToken, setNeedToken] = useState(false)
+  const [fromCache, setFromCache] = useState(false)
+  const [stale, setStale] = useState(false)
+  const [note, setNote] = useState('')
   const [error, setError] = useState('')
 
   const load = useCallback(async () => {
     setLoading(true)
     setError('')
     setNeedToken(false)
+    setFromCache(false)
+    setStale(false)
+    setNote('')
     try {
-      const res = await api.get<{ success: boolean; data: { llm: LLMConfig } }>(
-        '/api/customer-service/deploy/llm'
-      )
+      const res = await api.get<{
+        success: boolean
+        data: { llm: LLMConfig; fromCache?: boolean; stale?: boolean; message?: string }
+      }>('/api/customer-service/deploy/llm')
       const data = res.data
       if (data && data.success) {
         setConfig(normalizeLLM(data.data?.llm))
+        setFromCache(Boolean(data.data?.fromCache))
+        setStale(Boolean(data.data?.stale))
+        if (data.data?.message) setNote(data.data.message)
       } else {
         setError(t('Failed to load model configuration'))
         setConfig(normalizeLLM(null))
@@ -417,7 +514,7 @@ function ModelConfigPanel() {
 
   useEffect(() => {
     void load()
-  }, [load])
+  }, [load, reloadSignal])
 
   const update = async () => {
     if (!config) return
@@ -473,11 +570,23 @@ function ModelConfigPanel() {
         </p>
       )}
 
-      {!loading && !needToken && error && (
+      {!loading && fromCache && !stale && (
+        <p className='text-muted-foreground text-xs'>
+          {t(
+            'Configuration loaded from cache. Click Reload to fetch the latest from uter-cs.'
+          )}
+        </p>
+      )}
+
+      {!loading && stale && note && (
+        <p className='text-muted-foreground text-xs'>{note}</p>
+      )}
+
+      {!loading && error && (
         <p className='text-destructive text-sm'>{error}</p>
       )}
 
-      {!loading && !needToken && config && (
+      {!loading && config && (
         <div className='space-y-3'>
           {LLM_FIELDS.map((field) => (
             <FormItem key={field.key} className='flex flex-col gap-1.5'>

@@ -146,9 +146,7 @@ export function SidebarModulesSection({
     organization: {
       organization: {
         title: t('Organization'),
-        description: t(
-          'Manage your organization, members and shared quota.'
-        ),
+        description: t('Manage your organization, members and shared quota.'),
       },
     },
     admin: {
@@ -205,13 +203,7 @@ export function SidebarModulesSection({
   }
 
   // 固定区域顺序：组织区域始终位于管理员区域上方（与需求一致）。
-  const SECTION_ORDER = [
-    'chat',
-    'console',
-    'personal',
-    'organization',
-    'admin',
-  ]
+  const SECTION_ORDER = ['chat', 'console', 'personal', 'organization', 'admin']
   const sections = Object.entries(config).sort((a, b) => {
     const ia = SECTION_ORDER.indexOf(a[0])
     const ib = SECTION_ORDER.indexOf(b[0])

@@ -440,6 +440,7 @@ export function ChannelAffinitySection(props: Props) {
           <div className='grid gap-1.5'>
             <Label>{t('Max Entries')}</Label>
             <Input
+              placeholder='100'
               type='number'
               min={0}
               value={maxEntries}
@@ -449,6 +450,7 @@ export function ChannelAffinitySection(props: Props) {
           <div className='grid gap-1.5'>
             <Label>{t('Default TTL (seconds)')}</Label>
             <Input
+              placeholder='300'
               type='number'
               min={0}
               value={defaultTtl}

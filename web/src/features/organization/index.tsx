@@ -18,10 +18,10 @@ For commercial licensing, please contact support@uter.ai
 */
 
 import { useEffect, useMemo, useRef, useState } from 'react'
-
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 
+import { SectionPageLayout } from '@/components/layout'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
@@ -42,7 +42,14 @@ import {
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { NativeSelect, NativeSelectOption } from '@/components/ui/native-select'
-import { SectionPageLayout } from '@/components/layout'
+import {
+  formatBillingCurrencyFromUSD,
+  getCurrencyDisplay,
+  getCurrencyLabel,
+} from '@/lib/currency'
+import { formatUserId, parseUserId } from '@/lib/format'
+import { ROLE } from '@/lib/roles'
+import { useAuthStore } from '@/stores/auth-store'
 
 import {
   addOrganizationMembers,
@@ -61,14 +68,6 @@ import {
   type OrgRole,
   type Organization,
 } from './types'
-import {
-  formatBillingCurrencyFromUSD,
-  getCurrencyDisplay,
-  getCurrencyLabel,
-} from '@/lib/currency'
-import { formatUserId, parseUserId } from '@/lib/format'
-import { ROLE } from '@/lib/roles'
-import { useAuthStore } from '@/stores/auth-store'
 
 const ROLE_LABEL_KEY: Record<OrgRole, string> = {
   '': 'Member',
@@ -120,7 +119,9 @@ function SubQuotaInput({
     quota > 0 ? String(Number((quota / config.quotaPerUnit).toFixed(6))) : ''
   )
   useEffect(() => {
-    setAmount(quota > 0 ? String(Number((quota / config.quotaPerUnit).toFixed(6))) : '')
+    setAmount(
+      quota > 0 ? String(Number((quota / config.quotaPerUnit).toFixed(6))) : ''
+    )
   }, [quota, config.quotaPerUnit])
 
   const commit = () => {
@@ -140,14 +141,16 @@ function SubQuotaInput({
           type='number'
           min='0'
           step='0.01'
-          className='h-8 w-28 rounded-md border border-border bg-background px-2 text-left text-sm'
+          className='border-border bg-background h-8 w-28 rounded-md border px-2 text-left text-sm'
           value={amount}
           placeholder={t('Unlimited')}
-          aria-label={t('Sub-quota Limit ({{currency}})', { currency: currencyLabel })}
+          aria-label={t('Sub-quota Limit ({{currency}})', {
+            currency: currencyLabel,
+          })}
           onChange={(e) => setAmount(e.target.value)}
           onBlur={commit}
         />
-        <span className='text-xs text-muted-foreground'>{currencyLabel}</span>
+        <span className='text-muted-foreground text-xs'>{currencyLabel}</span>
       </div>
     </div>
   )
@@ -234,7 +237,7 @@ export function OrganizationPage() {
     return (
       <SectionPageLayout>
         <SectionPageLayout.Content>
-          <div className='p-8 text-center text-muted-foreground'>
+          <div className='text-muted-foreground p-8 text-center'>
             {t('Loading...')}
           </div>
         </SectionPageLayout.Content>
@@ -346,7 +349,11 @@ export function OrganizationPage() {
 
 function CreateOrganizationCard({ onCreated }: { onCreated: () => void }) {
   const { t } = useTranslation()
+  const { config } = getCurrencyDisplay()
+  const currencyLabel = getCurrencyLabel()
   const [name, setName] = useState('')
+  // 预算以**金额**录入（单位跟随系统货币设置），提交时换算成 quota；
+  // 空/0 表示不限量，与 SubQuotaInput 的约定保持一致。
   const [quota, setQuota] = useState('')
   const [memberLimit, setMemberLimit] = useState('')
   const [submitting, setSubmitting] = useState(false)
@@ -358,9 +365,14 @@ function CreateOrganizationCard({ onCreated }: { onCreated: () => void }) {
     }
     setSubmitting(true)
     try {
+      const amount = Number(quota)
+      const quotaInTokens =
+        Number.isFinite(amount) && amount > 0
+          ? Math.ceil(amount * config.quotaPerUnit)
+          : 0
       const res = await createOrganization({
         name: name.trim(),
-        quota: Number(quota) || 0,
+        quota: quotaInTokens,
         member_limit: memberLimit ? Number(memberLimit) : 0,
       })
       if (res.success) {
@@ -397,13 +409,23 @@ function CreateOrganizationCard({ onCreated }: { onCreated: () => void }) {
               />
             </div>
             <div className='flex flex-col gap-2'>
-              <Label>{t('Budget (Quota)')}</Label>
+              <Label>
+                {t('Budget ({{currency}})', { currency: currencyLabel })}
+              </Label>
               <Input
                 type='number'
+                min='0'
+                step='0.01'
                 value={quota}
                 onChange={(e) => setQuota(e.target.value)}
-                placeholder='0'
+                placeholder='0.00'
               />
+              <p className='text-muted-foreground text-xs'>
+                {t(
+                  'Enter the budget in {{currency}}. Leave it empty or set 0 for unlimited.',
+                  { currency: currencyLabel }
+                )}
+              </p>
             </div>
             <div className='flex flex-col gap-2'>
               <Label>{t('Member Limit')}</Label>
@@ -481,7 +503,7 @@ function MyQuotaCard({
       <CardContent className='flex flex-col gap-3'>
         <div className='grid grid-cols-1 gap-3 sm:grid-cols-2'>
           <div className='flex flex-col gap-1'>
-            <span className='text-sm text-muted-foreground'>
+            <span className='text-muted-foreground text-sm'>
               {t('Your Quota Limit')}
             </span>
             <span className='text-lg font-semibold'>
@@ -489,15 +511,15 @@ function MyQuotaCard({
             </span>
           </div>
           <div className='flex flex-col gap-1'>
-            <span className='text-sm text-muted-foreground'>
+            <span className='text-muted-foreground text-sm'>
               {t('Your Used Quota')}
             </span>
             <span className='text-lg font-semibold'>{fmtQuota(used)}</span>
           </div>
         </div>
         {limit > 0 && (
-          <div className='h-2 w-full overflow-hidden rounded-full bg-muted'>
-            <div className='h-full bg-primary' style={{ width: `${pct}%` }} />
+          <div className='bg-muted h-2 w-full overflow-hidden rounded-full'>
+            <div className='bg-primary h-full' style={{ width: `${pct}%` }} />
           </div>
         )}
       </CardContent>
@@ -523,12 +545,38 @@ function OrgOverviewCard({
   onUpdated: (o: Organization) => void
 }) {
   const { t } = useTranslation()
+  const currencyLabel = getCurrencyLabel()
+  const { config } = getCurrencyDisplay()
+
+  // 额度 ⇄ 金额互转，与 SubQuotaInput 使用同一换算（向上取整到整数 quota）。
+  // ⚠️ 必须定义在调用它的 useState **之前**：useState 的 lazy initializer 在渲染期
+  // 立即执行，若此时 quotaToAmount 还是 const 未初始化（TDZ），组件会直接崩。
+  const quotaToAmount = (q: string) => {
+    const n = Number(q)
+    return n > 0 ? String(Number((n / config.quotaPerUnit).toFixed(6))) : ''
+  }
+  const amountToQuota = (raw: string) => {
+    const n = Number(raw)
+    return Number.isFinite(n) && n > 0 ? Math.ceil(n * config.quotaPerUnit) : 0
+  }
+
   const [editing, setEditing] = useState(false)
   const [name, setName] = useState(org.name)
-  const [quota, setQuota] = useState(String(org.quota))
+  // 预算以**金额**录入（单位跟随系统货币设置），提交时换算回 quota；
+  // 空/0 = 不限量。与创建组织的表单、以及成员列表里的 SubQuotaInput 三处口径一致。
+  const [quota, setQuota] = useState(() => quotaToAmount(String(org.quota)))
   const [memberLimit, setMemberLimit] = useState(String(org.member_limit))
   const [status, setStatus] = useState(String(org.status))
   const [saving, setSaving] = useState(false)
+
+  // 保存后 org.quota 由父组件回传，需把新的额度重新折算成金额显示，
+  // 否则输入框会停留在保存前的旧值。
+  useEffect(() => {
+    setQuota(quotaToAmount(String(org.quota)))
+    // quotaToAmount 每次渲染重建，但它只依赖 config.quotaPerUnit（配置不变则结果不变），
+    // 故按其真实依赖声明，避免 exhaustive-deps 误报。
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [org.quota, config.quotaPerUnit])
 
   const suspended = org.status === ORG_STATUS_DISABLED
   const used = stats?.used_quota ?? org.used_quota
@@ -540,8 +588,6 @@ function OrgOverviewCard({
   // 组织负责人修改 —— 与后端 UpdateOrganization 的分级一致。
   const canEditMeta = isSuperAdmin || isOwner
   const canEditBudget = isSuperAdmin
-  // 预算相关标签统一在括号内标注当前显示货币单位（跟随系统展示设置）。
-  const currencyLabel = getCurrencyLabel()
 
   async function save() {
     setSaving(true)
@@ -552,7 +598,7 @@ function OrgOverviewCard({
       const r = await updateOrganization(org.id, {
         name: name.trim(),
         ...(canEditBudget
-          ? { quota: Number(quota) || 0, status: Number(status) }
+          ? { quota: amountToQuota(quota), status: Number(status) }
           : {}),
         member_limit: Number(memberLimit) || 0,
       })
@@ -561,7 +607,7 @@ function OrgOverviewCard({
         onUpdated({
           ...org,
           name: name.trim(),
-          quota: canEditBudget ? Number(quota) || 0 : org.quota,
+          quota: canEditBudget ? amountToQuota(quota) : org.quota,
           member_limit: Number(memberLimit) || 0,
           status: canEditBudget ? Number(status) : org.status,
         })
@@ -588,8 +634,7 @@ function OrgOverviewCard({
             {t('Total Budget ({{currency}})', {
               currency: currencyLabel,
             })}
-            : {fmtQuota(org.quota)} · {t('Used')}:{' '}
-            {fmtQuota(used)} ·{' '}
+            : {fmtQuota(org.quota)} · {t('Used')}: {fmtQuota(used)} ·{' '}
             {t('Remaining ({{currency}})', { currency: currencyLabel })}:{' '}
             {fmtQuota(remaining)} · {t('Members')}: {memberCount}
           </CardDescription>
@@ -605,8 +650,8 @@ function OrgOverviewCard({
         )}
       </CardHeader>
       <CardContent className='flex flex-col gap-3'>
-        <div className='h-2 w-full overflow-hidden rounded-full bg-muted'>
-          <div className='h-full bg-primary' style={{ width: `${pct}%` }} />
+        <div className='bg-muted h-2 w-full overflow-hidden rounded-full'>
+          <div className='bg-primary h-full' style={{ width: `${pct}%` }} />
         </div>
         {editing && (
           <div className='grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4'>
@@ -615,10 +660,15 @@ function OrgOverviewCard({
               <Input value={name} onChange={(e) => setName(e.target.value)} />
             </div>
             <div className='flex flex-col gap-2'>
-              <Label>{t('Budget (Quota)')}</Label>
+              <Label>
+                {t('Budget ({{currency}})', { currency: currencyLabel })}
+              </Label>
               <Input
                 type='number'
+                min='0'
+                step='0.01'
                 value={quota}
+                placeholder='0.00'
                 disabled={!canEditBudget}
                 onChange={(e) => setQuota(e.target.value)}
               />
@@ -647,8 +697,10 @@ function OrgOverviewCard({
               </NativeSelect>
             </div>
             {!canEditBudget && (
-              <p className='text-xs text-muted-foreground sm:col-span-2 lg:col-span-4'>
-                {t('Only the platform administrator can change the budget and status.')}
+              <p className='text-muted-foreground text-xs sm:col-span-2 lg:col-span-4'>
+                {t(
+                  'Only the platform administrator can change the budget and status.'
+                )}
               </p>
             )}
             <div className='flex items-end gap-2 sm:col-span-2 lg:col-span-4'>
@@ -717,9 +769,7 @@ function AddMemberCard({
   }
 
   function updateRow(key: number, patch: Partial<AddRow>) {
-    setRows((prev) =>
-      prev.map((r) => (r.key === key ? { ...r, ...patch } : r))
-    )
+    setRows((prev) => prev.map((r) => (r.key === key ? { ...r, ...patch } : r)))
   }
 
   function addRow() {
@@ -786,7 +836,7 @@ function AddMemberCard({
         </CardDescription>
       </CardHeader>
       <CardContent className='flex flex-col gap-3'>
-        <div className='hidden grid-cols-[1fr_1fr_1fr_auto_auto] gap-2 px-1 text-xs text-muted-foreground sm:grid'>
+        <div className='text-muted-foreground hidden grid-cols-[1fr_1fr_1fr_auto_auto] gap-2 px-1 text-xs sm:grid'>
           <span>{t('User ID')}</span>
           <span>
             {t('Sub-quota Limit ({{currency}})', { currency: currencyLabel })}
@@ -806,7 +856,9 @@ function AddMemberCard({
                 <Input
                   value={row.userId}
                   disabled={disabled}
-                  onChange={(e) => updateRow(row.key, { userId: e.target.value })}
+                  onChange={(e) =>
+                    updateRow(row.key, { userId: e.target.value })
+                  }
                   placeholder='uter100000001'
                 />
               </div>
@@ -814,7 +866,9 @@ function AddMemberCard({
                 type='number'
                 value={row.subLimit}
                 disabled={disabled}
-                onChange={(e) => updateRow(row.key, { subLimit: e.target.value })}
+                onChange={(e) =>
+                  updateRow(row.key, { subLimit: e.target.value })
+                }
                 placeholder='0'
               />
               <Input
@@ -823,19 +877,19 @@ function AddMemberCard({
                 onChange={(e) => updateRow(row.key, { dept: e.target.value })}
                 placeholder={t('Department name')}
               />
-      <Button
-        onClick={() => submitRow(row)}
-        disabled={disabled}
-        variant={row.status === 'added' ? 'secondary' : 'default'}
-      >
-        {ADD_MEMBER_LABEL[row.status]}
-      </Button>
+              <Button
+                onClick={() => submitRow(row)}
+                disabled={disabled}
+                variant={row.status === 'added' ? 'secondary' : 'default'}
+              >
+                {ADD_MEMBER_LABEL[row.status]}
+              </Button>
               {index === 0 ? (
                 // 首行预留「删除行」按钮占位：让第 5 列(auto)从一开始就持有删除按钮宽度，
                 // 避免新增行后前 3 个 1fr 列收缩、把「添加成员」按钮左推，导致首行与后续行按钮不对齐。
                 <Button
                   variant='outline'
-                  className='invisible pointer-events-none'
+                  className='pointer-events-none invisible'
                   tabIndex={-1}
                   aria-hidden
                 >
@@ -851,7 +905,7 @@ function AddMemberCard({
                 </Button>
               )}
               {row.status === 'error' && row.errorMsg && (
-                <p className='col-span-full text-xs text-destructive'>
+                <p className='text-destructive col-span-full text-xs'>
                   {row.errorMsg}
                 </p>
               )}
@@ -929,11 +983,7 @@ function MembersCard({
   function canEditRoleOf(m: OrgMember): boolean {
     if (!roleOptions.length) return false
     if (canManageMembers) return m.id !== org.owner_user_id
-    return (
-      m.id !== myUserId &&
-      m.org_role !== 'owner' &&
-      m.org_role !== 'admin'
-    )
+    return m.id !== myUserId && m.org_role !== 'owner' && m.org_role !== 'admin'
   }
 
   function canEditSubQuotaOf(m: OrgMember): boolean {
@@ -966,7 +1016,7 @@ function MembersCard({
         <div className='overflow-x-auto'>
           <table className='w-full text-sm'>
             <thead>
-              <tr className='border-b text-left text-muted-foreground'>
+              <tr className='text-muted-foreground border-b text-left'>
                 <th className='px-2 py-2'>{t('User ID')}</th>
                 <th className='px-2 py-2'>{t('Username')}</th>
                 <th className='px-2 py-2'>{t('Display Name')}</th>
@@ -986,15 +1036,13 @@ function MembersCard({
             <tbody>
               {members.map((m) => (
                 <tr key={m.id} className='border-b'>
-                  <td className='px-2 py-2 font-mono tabular-nums text-muted-foreground'>
+                  <td className='text-muted-foreground px-2 py-2 font-mono tabular-nums'>
                     {formatUserId(m.id)}
                   </td>
                   <td className='px-2 py-2 font-medium'>{m.username}</td>
                   <td className='px-2 py-2'>{m.display_name || '-'}</td>
                   <td className='px-2 py-2'>{m.department_name || '-'}</td>
-                  <td className='px-2 py-2'>
-                    {fmtQuota(m.used_quota)}
-                  </td>
+                  <td className='px-2 py-2'>{fmtQuota(m.used_quota)}</td>
                   <td className='px-2 py-2'>
                     {canEditSubQuotaOf(m) ? (
                       <SubQuotaInput
@@ -1057,7 +1105,7 @@ function MembersCard({
                 <tr>
                   <td
                     colSpan={8}
-                    className='px-2 py-6 text-center text-muted-foreground'
+                    className='text-muted-foreground px-2 py-6 text-center'
                   >
                     {t('No organization yet')}
                   </td>
@@ -1066,7 +1114,7 @@ function MembersCard({
             </tbody>
           </table>
         </div>
-        <div className='flex items-center justify-between text-sm text-muted-foreground'>
+        <div className='text-muted-foreground flex items-center justify-between text-sm'>
           <span>
             {t('Page')} {page} / {totalPages}
           </span>

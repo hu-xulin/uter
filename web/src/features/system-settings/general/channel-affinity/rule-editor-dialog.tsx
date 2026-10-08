@@ -430,6 +430,7 @@ export function RuleEditorDialog(props: Props) {
               <div className='grid gap-1.5'>
                 <Label>{t('TTL (seconds, 0 = default)')}</Label>
                 <Input
+                  placeholder='0'
                   type='number'
                   min={0}
                   {...form.register('ttl_seconds')}

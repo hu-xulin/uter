@@ -194,6 +194,7 @@ export function MonitoringSettingsSection({
                 <FormLabel>{t('Quota reminder (tokens)')}</FormLabel>
                 <FormControl>
                   <Input
+                    placeholder='100000'
                     type='number'
                     min={0}
                     step={1}

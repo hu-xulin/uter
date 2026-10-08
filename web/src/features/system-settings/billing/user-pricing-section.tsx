@@ -100,9 +100,10 @@ function deserialize(raw: string): Draft {
   const tiers = (parsed.tiers ?? []).map((tier) => ({
     id: nextId(),
     min: String(tier.min_amount ?? 0),
-    max: tier.max_amount === null || tier.max_amount === undefined
-      ? ''
-      : String(tier.max_amount),
+    max:
+      tier.max_amount === null || tier.max_amount === undefined
+        ? ''
+        : String(tier.max_amount),
     ratio: String(tier.ratio ?? 1),
     label: tier.label ?? '',
   }))
@@ -287,7 +288,10 @@ export function UserPricingSection({
               size='sm'
               disabled={!draft.enabled}
               onClick={() =>
-                setDraft((prev) => ({ ...prev, tiers: [...prev.tiers, newTier()] }))
+                setDraft((prev) => ({
+                  ...prev,
+                  tiers: [...prev.tiers, newTier()],
+                }))
               }
             >
               <Plus data-icon='inline-start' />

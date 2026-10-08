@@ -241,9 +241,7 @@ export function TierPriceFields(props: TierPriceFieldsProps) {
       const officialUSD = officialTierVariablePriceUSD(official, key)
       if (officialUSD == null) continue
       const isCore = key === 'p' || key === 'c'
-      const included = props.onInclude
-        ? props.prices[key] !== undefined
-        : true
+      const included = props.onInclude ? props.prices[key] !== undefined : true
       if (!isCore && !included) continue
       updates[key] = formatGeneratedPriceUSD(officialUSD * discount)
     }
@@ -397,10 +395,7 @@ export function TierPriceFields(props: TierPriceFieldsProps) {
       ? officialRequestPriceUSD(officialRatios)
       : null
     const discount = showReference
-      ? computeDimensionDiscount(
-          toNumberOrNull(props.fixedPrice),
-          officialUSD
-        )
+      ? computeDimensionDiscount(toNumberOrNull(props.fixedPrice), officialUSD)
       : null
     const discountHint = discountHintText(discount)
     const officialHint =
@@ -469,7 +464,10 @@ export function TierPriceFields(props: TierPriceFieldsProps) {
                 onClick={() => void handleSync()}
               >
                 <RefreshCw
-                  className={cn('h-3.5 w-3.5', officialLoading && 'animate-spin')}
+                  className={cn(
+                    'h-3.5 w-3.5',
+                    officialLoading && 'animate-spin'
+                  )}
                 />
                 {t('Sync prices')}
               </Button>
@@ -528,9 +526,7 @@ export function TierPriceFields(props: TierPriceFieldsProps) {
       {/* Discount ratio: regenerates the Uter prices from official prices */}
       {showReference && (
         <div className='flex flex-wrap items-center gap-2'>
-          <Label className='text-sm font-semibold'>
-            {t('Discount ratio')}
-          </Label>
+          <Label className='text-sm font-semibold'>{t('Discount ratio')}</Label>
           <InputGroup className='w-28'>
             <InputGroupAddon>x</InputGroupAddon>
             <PricingAmountInput
@@ -551,11 +547,12 @@ export function TierPriceFields(props: TierPriceFieldsProps) {
           >
             {t('Calculate')}
           </Button>
-          {appliedDiscount != null && discountSummaryText(appliedDiscount) !== '' && (
-            <span className='bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300 rounded-md px-2 py-1 text-xs font-medium tabular-nums'>
-              {discountSummaryText(appliedDiscount)}
-            </span>
-          )}
+          {appliedDiscount != null &&
+            discountSummaryText(appliedDiscount) !== '' && (
+              <span className='rounded-md bg-emerald-100 px-2 py-1 text-xs font-medium text-emerald-700 tabular-nums dark:bg-emerald-950 dark:text-emerald-300'>
+                {discountSummaryText(appliedDiscount)}
+              </span>
+            )}
           <span className='text-muted-foreground text-xs'>
             {t('Uter price = official price × discount ratio.')}
           </span>

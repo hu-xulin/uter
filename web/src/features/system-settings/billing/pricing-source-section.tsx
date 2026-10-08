@@ -131,46 +131,46 @@ export function PricingSourceSection({
           <SettingsFormGrid>
             <SettingsFormGridItem span='full'>
               <FormField
-              control={form.control}
-              name='pricingSource'
-              render={({ field }) => (
-                <FormItem>
-                  <FormDescription>
-                    {t('Pricing source usage hint')}
-                  </FormDescription>
-                  <FormControl>
-                    <RadioGroup
-                      value={field.value}
-                      onValueChange={field.onChange}
-                      disabled={updateOption.isPending || isSubmitting}
-                      className='gap-3'
-                    >
-                      {PRICING_SOURCE_VALUES.map((value) => (
-                        <label
-                          key={value}
-                          htmlFor={`pricing-source-${value}`}
-                          className='hover:bg-muted/40 flex cursor-pointer items-start gap-3 rounded-lg border p-3 transition-colors'
-                        >
-                          <RadioGroupItem
-                            id={`pricing-source-${value}`}
-                            value={value}
-                            className='mt-0.5'
-                          />
-                          <span className='flex flex-col gap-0.5'>
-                            <FormLabel className='cursor-pointer'>
-                              {t(SOURCE_OPTION_KEYS[value])}
-                            </FormLabel>
-                            <span className='text-muted-foreground text-xs'>
-                              {t(SOURCE_HINT_KEYS[value])}
+                control={form.control}
+                name='pricingSource'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormDescription>
+                      {t('Pricing source usage hint')}
+                    </FormDescription>
+                    <FormControl>
+                      <RadioGroup
+                        value={field.value}
+                        onValueChange={field.onChange}
+                        disabled={updateOption.isPending || isSubmitting}
+                        className='gap-3'
+                      >
+                        {PRICING_SOURCE_VALUES.map((value) => (
+                          <label
+                            key={value}
+                            htmlFor={`pricing-source-${value}`}
+                            className='hover:bg-muted/40 flex cursor-pointer items-start gap-3 rounded-lg border p-3 transition-colors'
+                          >
+                            <RadioGroupItem
+                              id={`pricing-source-${value}`}
+                              value={value}
+                              className='mt-0.5'
+                            />
+                            <span className='flex flex-col gap-0.5'>
+                              <FormLabel className='cursor-pointer'>
+                                {t(SOURCE_OPTION_KEYS[value])}
+                              </FormLabel>
+                              <span className='text-muted-foreground text-xs'>
+                                {t(SOURCE_HINT_KEYS[value])}
+                              </span>
                             </span>
-                          </span>
-                        </label>
-                      ))}
-                    </RadioGroup>
-                  </FormControl>
-                </FormItem>
-              )}
-            />
+                          </label>
+                        ))}
+                      </RadioGroup>
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
             </SettingsFormGridItem>
           </SettingsFormGrid>
         </SettingsForm>

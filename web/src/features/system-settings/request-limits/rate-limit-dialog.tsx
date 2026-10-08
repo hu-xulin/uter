@@ -166,6 +166,7 @@ export function RateLimitDialog({
                 <FormControl>
                   <div className='flex items-center gap-2'>
                     <Input
+                      placeholder='60'
                       type='number'
                       min={0}
                       max={2147483647}
@@ -197,6 +198,7 @@ export function RateLimitDialog({
                 <FormControl>
                   <div className='flex items-center gap-2'>
                     <Input
+                      placeholder='60'
                       type='number'
                       min={1}
                       max={2147483647}

@@ -39,10 +39,19 @@ export type FieldDef = {
   placeholder?: string
   /** i18n key：问号按钮点开后展示的说明文字（key 即英文原文） */
   help?: string
+  /**
+   * 标记为密钥字段：前端以 SecretInput 渲染——保存后显示掩码（前 4 + 中间星号 + 后 4），
+   * 聚焦可输入新值，绝不把掩码串写回后端。用于 API key / secret 等敏感字段。
+   */
+  secret?: boolean
 }
 
 // 分组：每组一个标题 + 字段清单
-export const GROUPS: Array<{ title: string; desc: string; fields: FieldDef[] }> = [
+export const GROUPS: Array<{
+  title: string
+  desc: string
+  fields: FieldDef[]
+}> = [
   {
     title: 'Core cost optimization (implemented)',
     // 这些项是 V2 已落地、纯代码完成、无需外部基建的特性；
@@ -203,14 +212,15 @@ export const GROUPS: Array<{ title: string; desc: string; fields: FieldDef[] }> 
         kind: 'text',
         label: 'Embedding API base URL',
         gated: 'costopt_setting.semantic_cache_enabled',
-        placeholder: 'https://api.openai.com/v1',
-        help: 'OpenAI-compatible base URL of the embedding service used to compare prompt meaning.',
+        placeholder: 'https://api.openai.com',
+        help: 'OpenAI-compatible base URL of the embedding service used to compare prompt meaning. Do NOT include the trailing /v1 — the gateway appends it automatically (e.g. https://api.siliconflow.cn).',
       },
       {
         name: 'costopt_setting.semantic_cache_embed_api_key',
         kind: 'text',
         label: 'Embedding API key',
         gated: 'costopt_setting.semantic_cache_enabled',
+        secret: true,
         placeholder: 'sk-...',
         help: 'API key for the embedding service.',
       },
@@ -381,6 +391,7 @@ export const GROUPS: Array<{ title: string; desc: string; fields: FieldDef[] }> 
         kind: 'text',
         label: 'Vendor API key',
         gated: 'costopt_setting.value_tier_mode',
+        secret: true,
         placeholder: 'gsk_...',
         help: 'API key for the cheap vendor.',
       },
@@ -464,6 +475,7 @@ export const GROUPS: Array<{ title: string; desc: string; fields: FieldDef[] }> 
         kind: 'text',
         label: 'RAG API key',
         gated: 'costopt_setting.rag_enabled',
+        secret: true,
         placeholder: 'rk_...',
         help: 'API key sent to the RAG endpoint. Leave empty when the service needs no authentication.',
       },
@@ -550,14 +562,15 @@ export const GROUPS: Array<{ title: string; desc: string; fields: FieldDef[] }> 
         kind: 'text',
         label: 'Batch API base URL',
         gated: 'costopt_setting.batch_enabled',
-        placeholder: 'https://api.openai.com/v1',
-        help: 'OpenAI-compatible base URL of the upstream that serves the batch API.',
+        placeholder: 'https://api.openai.com',
+        help: 'OpenAI-compatible base URL of the upstream that serves the batch API. Do NOT include the trailing /v1 — the gateway appends it automatically.',
       },
       {
         name: 'costopt_setting.batch_api_key',
         kind: 'text',
         label: 'Batch API key',
         gated: 'costopt_setting.batch_enabled',
+        secret: true,
         placeholder: 'sk-...',
         help: 'API key for the batch endpoint.',
       },
@@ -673,6 +686,7 @@ export const GROUPS: Array<{ title: string; desc: string; fields: FieldDef[] }> 
         kind: 'text',
         label: 'Origin shield secret',
         gated: 'costopt_setting.cdn_enabled',
+        secret: true,
         placeholder: 'your-shared-secret',
         help: 'Shared secret used to sign the origin shield header.',
       },

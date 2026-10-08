@@ -245,6 +245,7 @@ export function PricingSection({ defaultValues }: PricingSectionProps) {
                     <FormLabel>{exchangeRateLabel}</FormLabel>
                     <FormControl>
                       <Input
+                        placeholder='7.25'
                         type='number'
                         step='0.01'
                         {...safeNumberFieldProps(field)}
