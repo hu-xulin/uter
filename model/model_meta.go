@@ -33,19 +33,26 @@ type BoundChannel struct {
 }
 
 type Model struct {
-	Id                 int            `json:"id"`
-	ModelName          string         `json:"model_name" gorm:"size:128;not null;uniqueIndex:uk_model_name_delete_at,priority:1"`
-	Description        string         `json:"description,omitempty" gorm:"type:text"`
-	Icon               string         `json:"icon,omitempty" gorm:"type:varchar(128)"`
-	Tags               string         `json:"tags,omitempty" gorm:"type:varchar(255)"`
-	VendorID           int            `json:"vendor_id,omitempty" gorm:"index"`
-	Endpoints          string         `json:"endpoints,omitempty" gorm:"type:text"`
-	SupportedEndpoints []string       `json:"supported_endpoints,omitempty" gorm:"-"`
-	Status             int            `json:"status" gorm:"default:1"`
-	SyncOfficial       int            `json:"sync_official" gorm:"default:1"`
-	CreatedTime        int64          `json:"created_time" gorm:"bigint"`
-	UpdatedTime        int64          `json:"updated_time" gorm:"bigint"`
-	DeletedAt          gorm.DeletedAt `json:"-" gorm:"index;uniqueIndex:uk_model_name_delete_at,priority:2"`
+	Id          int    `json:"id"`
+	ModelName   string `json:"model_name" gorm:"size:128;not null;uniqueIndex:uk_model_name_delete_at,priority:1"`
+	Description string `json:"description,omitempty" gorm:"type:text"`
+	// Descriptions 持有同一段描述的多语副本（locale -> 文本），供定价页按访客
+	// 语言渲染。上游目录只提供 zh/en/ja，其余语种由站内 LLM 从英文补译。
+	//
+	// Description 保留为「主语言」单字段，既向下兼容既有调用方，也作为
+	// Descriptions 缺失时的回退来源；两者由 normalizeModelDescriptions 保持
+	// 同步，不允许各自漂移。
+	Descriptions       LocalizedDescription `json:"descriptions,omitempty" gorm:"type:text;serializer:jsonMap"`
+	Icon               string               `json:"icon,omitempty" gorm:"type:varchar(128)"`
+	Tags               string               `json:"tags,omitempty" gorm:"type:varchar(255)"`
+	VendorID           int                  `json:"vendor_id,omitempty" gorm:"index"`
+	Endpoints          string               `json:"endpoints,omitempty" gorm:"type:text"`
+	SupportedEndpoints []string             `json:"supported_endpoints,omitempty" gorm:"-"`
+	Status             int                  `json:"status" gorm:"default:1"`
+	SyncOfficial       int                  `json:"sync_official" gorm:"default:1"`
+	CreatedTime        int64                `json:"created_time" gorm:"bigint"`
+	UpdatedTime        int64                `json:"updated_time" gorm:"bigint"`
+	DeletedAt          gorm.DeletedAt       `json:"-" gorm:"index;uniqueIndex:uk_model_name_delete_at,priority:2"`
 
 	BoundChannels []BoundChannel `json:"bound_channels,omitempty" gorm:"-"`
 	EnableGroups  []string       `json:"enable_groups,omitempty" gorm:"-"`
@@ -238,6 +245,7 @@ func (mi *Model) Insert() error {
 		if err := validateModelVendor(tx, mi.VendorID); err != nil {
 			return err
 		}
+		mi.Description, mi.Descriptions = normalizeModelDescriptions(mi.Description, mi.Descriptions)
 		now := common.GetTimestamp()
 		mi.CreatedTime, mi.UpdatedTime = now, now
 		status, syncOfficial := mi.Status, mi.SyncOfficial
@@ -264,8 +272,9 @@ func (mi *Model) Update() error {
 			return err
 		}
 		mi.UpdatedTime = common.GetTimestamp()
+		mi.Description, mi.Descriptions = normalizeModelDescriptions(mi.Description, mi.Descriptions)
 		return tx.Model(&Model{}).Where("id = ?", mi.Id).
-			Select("model_name", "description", "icon", "tags", "vendor_id", "endpoints", "status", "sync_official", "name_rule", "updated_time").Updates(mi).Error
+			Select("model_name", "description", "descriptions", "icon", "tags", "vendor_id", "endpoints", "status", "sync_official", "name_rule", "updated_time").Updates(mi).Error
 	})
 }
 
