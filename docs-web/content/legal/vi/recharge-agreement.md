@@ -1,20 +1,20 @@
-# Hợp đồng nạp tiền của Nền tảng dịch vụ mô hình lớn thông minh Uter
+# Hợp đồng nạp tiền của Nền tảng dịch vụ mô hình lớn Uter
 
 | Mục | Nội dung |
 |---|---|
 | Thương hiệu dịch vụ | **Uter.ai** |
-| Nền tảng | **Nền tảng dịch vụ mô hình lớn thông minh Uter** |
+| Nền tảng | **Nền tảng dịch vụ mô hình lớn Uter** |
 | Trang web chính thức | https://uter.ai |
-| Tài liệu | Hợp đồng nạp tiền của Nền tảng dịch vụ mô hình lớn thông minh Uter |
+| Tài liệu | Hợp đồng nạp tiền của Nền tảng dịch vụ mô hình lớn Uter |
 | Phiên bản | V1.0 |
 | Ngày có hiệu lực | September 28, 2026 |
 | Cập nhật lần cuối | September 28, 2026 |
 | Bên ký kết | **Shenzhen Uter Network Co., Ltd.** (bên ký kết duy nhất đối với dịch vụ nạp tiền và các vấn đề quản lý quỹ liên quan theo Hợp đồng này) |
 | Áp dụng cho | Cá nhân và doanh nghiệp thực hiện trả trước trên Nền tảng |
 | Luật áp dụng | Pháp luật Cộng hòa Nhân dân Trung Hoa (không bao gồm quy tắc xung đột pháp luật) |
-| Tài liệu liên quan | Hợp đồng người dùng của Nền tảng dịch vụ mô hình lớn thông minh Uter; Chính sách bảo mật của Nền tảng dịch vụ mô hình lớn thông minh Uter |
+| Tài liệu liên quan | Hợp đồng người dùng của Nền tảng dịch vụ mô hình lớn Uter; Chính sách bảo mật của Nền tảng dịch vụ mô hình lớn Uter |
 
-> **Thông báo quan trọng**: Hợp đồng này là một bộ điều khoản theo mẫu và là một phần của Hợp đồng người dùng của Nền tảng dịch vụ mô hình lớn thông minh Uter. Trước khi thực hiện bất kỳ lần nạp tiền nào, vui lòng đọc đầy đủ và cẩn thận toàn bộ các điều khoản của nó — **đặc biệt là các điều khoản được in đậm loại trừ hoặc giới hạn trách nhiệm của chúng tôi, giới hạn quyền của bạn, và các điều khoản về điều kiện hoàn tiền và giải quyết tranh chấp**. Việc bạn hoàn tất bất kỳ lần nạp tiền nào, hoặc đánh dấu đồng ý với Hợp đồng này, đều được coi là bạn đã hiểu và chấp nhận toàn bộ các điều khoản của nó. Nếu bạn không đồng ý với bất kỳ phần nào của Hợp đồng này, vui lòng không thực hiện nạp tiền.
+> **Thông báo quan trọng**: Hợp đồng này là một bộ điều khoản theo mẫu và là một phần của Hợp đồng người dùng của Nền tảng dịch vụ mô hình lớn Uter. Trước khi thực hiện bất kỳ lần nạp tiền nào, vui lòng đọc đầy đủ và cẩn thận toàn bộ các điều khoản của nó — **đặc biệt là các điều khoản được in đậm loại trừ hoặc giới hạn trách nhiệm của chúng tôi, giới hạn quyền của bạn, và các điều khoản về điều kiện hoàn tiền và giải quyết tranh chấp**. Việc bạn hoàn tất bất kỳ lần nạp tiền nào, hoặc đánh dấu đồng ý với Hợp đồng này, đều được coi là bạn đã hiểu và chấp nhận toàn bộ các điều khoản của nó. Nếu bạn không đồng ý với bất kỳ phần nào của Hợp đồng này, vui lòng không thực hiện nạp tiền.
 
 ---
 
@@ -25,8 +25,8 @@
 | Điều bạn muốn biết nhất | Câu trả lời của chúng tôi |
 |---|---|
 | Sau khi nạp tiền, hạn mức của tôi được tính như thế nào? | Hạn mức khả dụng của bạn được quy đổi từ số tiền đã thanh toán theo **tỷ lệ quy đổi** do chúng tôi thỏa thuận hoặc công bố trên Nền tảng. Việc quy đổi được liệt kê chi tiết trên trang xác nhận nạp tiền và trong bảng đối soát hằng tháng. |
-| Tôi có lấy lại được số tiền chưa sử dụng không? | **Có.** Bất kỳ số dư chưa tiêu thụ nào cũng có thể được hoàn tiền theo yêu cầu bất cứ lúc nào. Các khoản phí thực tế do **kênh thanh toán của bên thứ ba** thu và **khoản thuế** tương ứng với hóa đơn đã phát hành sẽ được khấu trừ; ngoài các khoản khấu trừ đó, chúng tôi **không thu phí xử lý hoàn tiền**, và số tiền được trả về theo đúng tuyến thanh toán ban đầu trong vòng **7 ngày làm việc** kể từ khi nhận được yêu cầu hoàn tiền hợp lệ. |
-| Nạp tiền lớn có được bảo vệ thêm không? | Với một lần nạp tiền đơn lẻ hoặc tổng tích lũy đạt **RMB 300,000**, bạn có thể mở một **tài khoản đồng kiểm soát** với chúng tôi. Không bên nào có thể rút tiền mà không có sự xác nhận của bên kia. |
+| Tôi có lấy lại được số tiền chưa sử dụng không? | **Có.** Bất kỳ số dư chưa tiêu thụ nào cũng có thể được hoàn tiền theo yêu cầu trong thời hạn hiệu lực của tài khoản. Các khoản phí thực tế do **kênh thanh toán của bên thứ ba** thu và **khoản thuế** tương ứng với hóa đơn đã phát hành sẽ được khấu trừ; ngoài các khoản khấu trừ đó, chúng tôi **không thu phí xử lý hoàn tiền**, và số tiền được trả về theo đúng tuyến thanh toán ban đầu trong vòng **7 ngày làm việc** kể từ khi nhận được yêu cầu hoàn tiền hợp lệ. |
+| Nạp tiền lớn có được bảo vệ thêm không? | Với một lần nạp tiền đơn lẻ hoặc tổng tích lũy đạt **RMB 1,000,000**, bạn có thể mở một **tài khoản đồng kiểm soát** với chúng tôi theo thỏa thuận thống nhất giữa các bên (dịch vụ giá trị gia tăng giám sát quỹ tùy chọn). Không bên nào có thể rút tiền mà không có sự xác nhận của bên kia. |
 | Nạp tiền theo đợt có làm giảm mức chiết khấu của tôi không? | **Không.** Mức chiết khấu được cố định theo bậc ứng với tổng giá trị hợp đồng và không bị hạ bậc chỉ vì tiền đến theo từng đợt. |
 | Khi số dư sắp hết, dịch vụ có bị ngắt đột ngột không? | **Không.** Chúng tôi thông báo cho bạn khi hạn mức khả dụng thấp hơn **110%** mức tiêu thụ dự kiến của tháng hiện tại; nếu thực sự cần tạm ngừng, chúng tôi sẽ thông báo trước **48 giờ**. |
 | Tôi đối soát tài khoản bằng cách nào? | Chúng tôi gửi bảng đối soát của tháng trước trước ngày **5** hằng tháng; bạn có thể phản đối trong vòng **10 ngày** kể từ khi nhận, sau đó bảng đối soát được coi là đã xác nhận. |
@@ -52,15 +52,15 @@
 
 **Điều 1. [Mục đích]**
 
-Hợp đồng này xác lập quyền và nghĩa vụ giữa bạn và Shenzhen Uter Network Co., Ltd. («chúng tôi», «chúng ta» hoặc «Công ty») liên quan đến việc bạn trả trước cho Nền tảng dịch vụ mô hình lớn thông minh Uter («Nền tảng»), cũng như các giai đoạn mà tiền trả trước đi qua — tiếp nhận, quy đổi, tiêu thụ, đối soát và hoàn tiền — nhằm bảo đảm tiền trả trước **an toàn, có thể kiểm chứng và có thể hoàn tiền**.
+Hợp đồng này xác lập quyền và nghĩa vụ giữa bạn và Shenzhen Uter Network Co., Ltd. («chúng tôi», «chúng ta» hoặc «Công ty») liên quan đến việc bạn trả trước cho Nền tảng dịch vụ mô hình lớn Uter («Nền tảng»), cũng như các giai đoạn mà tiền trả trước đi qua — tiếp nhận, quy đổi, tiêu thụ, đối soát và hoàn tiền — nhằm bảo đảm tiền trả trước **an toàn, có thể kiểm chứng và có thể hoàn tiền**.
 
 **Điều 2. [Phạm vi áp dụng]**
 
 Hợp đồng này áp dụng cho các hành vi sau trên Nền tảng:
 
-(1) **Nạp tiền lớn**: một lần nạp tiền đơn lẻ, hoặc tổng các lần nạp tiền tính từ lần nạp tiền đầu tiên trở đi, đạt **RMB 300,000** (bao gồm);
+(1) **Nạp tiền lớn**: một lần nạp tiền đơn lẻ, hoặc tổng các lần nạp tiền tính từ lần nạp tiền đầu tiên trở đi, đạt **RMB 1,000,000** (bao gồm);
 
-(2) **Nạp tiền theo đợt**: các lần nạp tiền, mỗi lần dưới RMB 300,000, mà bạn và Công ty thỏa thuận riêng để chia tổng giá trị hợp đồng thành một số kỳ đoạn đến theo lịch trình đã thỏa thuận;
+(2) **Nạp tiền theo đợt**: các lần nạp tiền, mỗi lần dưới RMB 1,000,000, mà bạn và Công ty thỏa thuận riêng để chia tổng giá trị hợp đồng thành một số kỳ đoạn đến theo lịch trình đã thỏa thuận;
 
 (3) **Các hình thức trả trước khác**: đối với các hình thức trả trước nằm ngoài hai nhóm trên, Chương 5 (Hoàn tiền số dư chưa tiêu thụ) được áp dụng và các vấn đề còn lại tuân theo Hợp đồng người dùng.
 
@@ -86,7 +86,7 @@ Trừ khi ngữ cảnh có yêu cầu khác, các thuật ngữ sau đây có ng
 
 **Điều 4. [Quan hệ với Hợp đồng người dùng]**
 
-(1) Hợp đồng này là một phần của Hợp đồng người dùng của Nền tảng dịch vụ mô hình lớn thông minh Uter («Hợp đồng người dùng») và có hiệu lực ngang với Hợp đồng người dùng.
+(1) Hợp đồng này là một phần của Hợp đồng người dùng của Nền tảng dịch vụ mô hình lớn Uter («Hợp đồng người dùng») và có hiệu lực ngang với Hợp đồng người dùng.
 
 (2) Đối với các vấn đề liên quan đến **tiền trả trước và quản lý tiền trả trước**, khi Hợp đồng này và Hợp đồng người dùng có sự khác biệt thì **Hợp đồng này được ưu tiên**; các vấn đề không được quy định tại đây thì tuân theo Hợp đồng người dùng.
 
@@ -196,7 +196,7 @@ Công ty cam kết rằng, đối với việc nạp tiền theo đợt, **trư�
 
 **Điều 15. [Quyền yêu cầu hoàn tiền]**
 
-(1) **Bạn có thể yêu cầu hoàn tiền phần chưa tiêu thụ của số dư nạp tiền của mình bất cứ lúc nào. Các khoản phí thực tế do kênh thanh toán của bên thứ ba thu và khoản thuế tương ứng với hóa đơn đã phát hành sẽ được khấu trừ khỏi khoản hoàn tiền; ngoài các khoản khấu trừ đó, Công ty không thu phí xử lý hoàn tiền.**
+(1) **Bạn có thể yêu cầu hoàn tiền phần chưa tiêu thụ của số dư nạp tiền của mình trong thời hạn hiệu lực của tài khoản. Các khoản phí thực tế do kênh thanh toán của bên thứ ba thu và khoản thuế tương ứng với hóa đơn đã phát hành sẽ được khấu trừ khỏi khoản hoàn tiền; ngoài các khoản khấu trừ đó, Công ty không thu phí xử lý hoàn tiền.**
 
 (2) Việc hoàn tiền được trả **theo đúng tuyến thanh toán ban đầu** theo nguyên tắc, tức là trả về tài khoản đã thanh toán ban đầu. Nếu tài khoản đó đã đóng hoặc không khả dụng, bạn có thể yêu cầu thanh toán về một tài khoản ngân hàng **có danh tính đã xác minh khớp với tài khoản Nền tảng của bạn**, với đầy đủ chứng cứ cần thiết.
 
@@ -225,7 +225,7 @@ trong đó «tổng hạn mức sau quy đổi» là tổng hạn mức khả d�
 
 (3) Khi một tài khoản có nhiều lần nạp tiền với các tỷ lệ quy đổi khác nhau, số tiền hoàn tiền cơ sở được tính theo nguyên tắc **nhập trước xuất trước** cho từng lần, và khoản hoàn tiền được trả sau khi tổng hợp các khoản khấu trừ theo khoản (2).
 
-(4) Khi việc **Công ty chấm dứt** hoặc **bất khả kháng** dẫn đến yêu cầu hoàn tiền toàn bộ theo Hợp đồng người dùng, thì các khoản khấu trừ tại khoản (2) không áp dụng.
+(4) Khi việc **Công ty chấm dứt** hoặc **bất khả kháng** dẫn đến yêu cầu hoàn tiền toàn bộ theo Hợp đồng người dùng, thì các quy định tại khoản (2) về khấu trừ trên cơ sở chi phí thực tế các khoản phí kênh thanh toán bên thứ ba thực tế phát sinh và các loại thuế tương ứng với hóa đơn đã xuất vẫn tiếp tục áp dụng.
 
 **Điều 17. [Quy trình và thời hạn hoàn tiền]**
 
@@ -263,9 +263,9 @@ trong đó «tổng hạn mức sau quy đổi» là tổng hạn mức khả d�
 
 **Điều 20. [Ghi nhận riêng số dư và thứ tự ưu tiên khi thanh lý]**
 
-(1) **Công ty phải ghi nhận trung thực và riêng biệt số dư nạp tiền của từng khách hàng trong hệ thống đối soát của mình, và không được trộn lẫn số đó với vốn của Công ty.**
+(1) Công ty theo các quy định pháp luật, quy định và chuẩn mực kế toán áp dụng, ghi chép trung thực và riêng biệt số dư nạp tiền của từng khách hàng trong hệ thống đối chiếu của mình, đảm bảo số dư an toàn và có thể kiểm chứng; trong phạm vi pháp luật cho phép, Công ty áp dụng các biện pháp cần thiết để phòng ngừa rủi ro số dư của khách hàng bị trộn lẫn với tài sản của Công ty.
 
-(2) Nếu Công ty bị giải thể, thanh lý hoặc phá sản, số dư chưa tiêu thụ của bạn là **khoản nợ phải trả cho dịch vụ đã trả trước**, và thứ tự xếp hạng của khoản đó được xác định theo Luật Phá sản doanh nghiệp của Cộng hòa Nhân dân Trung Hoa, **xếp trước các khoản phân phối cho cổ đông**.
+(2) Nếu Công ty bị giải thể, thanh lý hoặc phá sản, số dư chưa tiêu thụ của bạn là **khoản nợ phải trả cho dịch vụ đã trả trước**, và trong phạm vi pháp luật cho phép, thứ tự xếp hạng của khoản đó được xác định theo Luật Phá sản doanh nghiệp của Cộng hòa Nhân dân Trung Hoa, **xếp trước các khoản phân phối cho cổ đông**.
 
 (3) Nếu Công ty sáp nhập, chia tách, thay đổi quyền kiểm soát hoặc có thay đổi kinh doanh lớn, Công ty phải thông báo cho bạn trước **30 ngày lịch**; bên tiếp nhận hoặc bên kế thừa phải tiếp nhận các nghĩa vụ về số dư theo Hợp đồng này, **nếu không thì bạn có quyền yêu cầu hoàn tiền toàn bộ số dư chưa tiêu thụ**.
 
@@ -275,7 +275,7 @@ trong đó «tổng hạn mức sau quy đổi» là tổng hạn mức khả d�
 
 **Điều 21. [Khả năng sử dụng và việc mở tài khoản]**
 
-(1) Khách hàng có một lần nạp tiền đơn lẻ hoặc tổng tích lũy đạt **RMB 300,000** có thể mở một **tài khoản đồng kiểm soát** với Công ty tại ngân hàng; đối với khách hàng nạp tiền lớn, việc phối hợp mở tài khoản là **nghĩa vụ của Công ty**.
+(1) Khách hàng có một lần nạp tiền đơn lẻ hoặc tổng tích lũy đạt **RMB 1,000,000** có thể mở một **tài khoản đồng kiểm soát** với Công ty tại ngân hàng; đối với khách hàng nạp tiền lớn, việc phối hợp mở tài khoản là **dịch vụ giá trị gia tăng giám sát quỹ tùy chọn mà Công ty cung cấp cho khách hàng nạp tiền lớn, và không phải là nghĩa vụ bắt buộc của Công ty**.
 
 (2) Tài khoản được quản lý bằng **con dấu của cả hai bên** hoặc bằng **cơ chế phê duyệt hai người trên ngân hàng trực tuyến**; **không bên nào có thể đơn phương rút tiền từ tài khoản đó**.
 
@@ -331,11 +331,11 @@ trong đó «tổng hạn mức sau quy đổi» là tổng hạn mức khả d�
 
 **Điều 27. [Giới hạn trách nhiệm]**
 
-(1) **Trong phạm vi tối đa mà pháp luật cho phép, trách nhiệm bồi thường của Công ty theo Hợp đồng này được giới hạn ở số tiền bạn đã thực sự thanh toán và chưa tiêu thụ.**
+(1) **Trong phạm vi tối đa mà pháp luật cho phép, trách nhiệm bồi thường của Công ty theo Hợp đồng này không vượt quá tổng số phí dịch vụ mà bạn đã thực tế thanh toán cho chúng tôi và chưa được hoàn trả trong 12 tháng trước ngày phát sinh sự kiện dẫn đến khiếu nại (thống nhất với Điều 11.4 của Thỏa thuận Người dùng).**
 
 (2) Giới hạn nêu trên không áp dụng đối với: **hành vi cố ý hoặc sơ suất nghiêm trọng của Công ty; việc Công ty vi phạm nghĩa vụ giữ gìn số dư theo Điều 25; hoặc bất kỳ trường hợp nào khác mà trách nhiệm không thể bị giới hạn hoặc loại trừ theo pháp luật.**
 
-(3) Công ty không chịu trách nhiệm về vi phạm khi dịch vụ bị tạm ngừng hoặc chậm trễ vì những lý do **nằm ngoài tầm kiểm soát hợp lý của Công ty**, chẳng hạn như bất khả kháng, hành động của chính phủ, gián đoạn đường liên kết xuyên biên giới hoặc thay đổi chính sách của nhà cung cấp mô hình thượng nguồn; tuy nhiên, Công ty phải thông báo kịp thời cho bạn và **hoàn tiền toàn bộ số dư chưa tiêu thụ**.
+(3) Công ty không chịu trách nhiệm về vi phạm khi dịch vụ bị tạm ngừng hoặc chậm trễ vì những lý do **nằm ngoài tầm kiểm soát hợp lý của Công ty**, chẳng hạn như bất khả kháng, hành động của chính phủ, gián đoạn đường liên kết xuyên biên giới hoặc thay đổi chính sách của nhà cung cấp mô hình thượng nguồn; tuy nhiên, Công ty phải thông báo kịp thời cho bạn và **hoàn trả số dư chưa tiêu dùng, với các khoản phí kênh thanh toán bên thứ ba thực tế phát sinh và các loại thuế tương ứng với hóa đơn đã xuất được khấu trừ trên cơ sở chi phí thực tế**.
 
 ---
 

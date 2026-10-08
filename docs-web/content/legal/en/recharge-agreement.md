@@ -1,20 +1,20 @@
-# Uter Smart Large Model Service Platform Recharge Agreement
+# Uter Large Model Service Platform Recharge Agreement
 
 | Item | Content |
 |---|---|
 | Service brand | **Uter.ai** |
-| Platform | **Uter Smart Large Model Service Platform** |
+| Platform | **Uter Large Model Service Platform** |
 | Official website | https://uter.ai |
-| Document | Uter Smart Large Model Service Platform Recharge Agreement |
+| Document | Uter Large Model Service Platform Recharge Agreement |
 | Version | V1.0 |
 | Effective date | September 28, 2026 |
 | Last updated | September 28, 2026 |
 | Contracting entity | **Shenzhen Uter Network Co., Ltd.** (the sole contracting entity for the recharge service and related fund-management matters under this Agreement) |
 | Applies to | Individual and enterprise users who make prepayments on the Platform |
 | Governing law | The laws of the People's Republic of China (excluding conflict-of-law rules) |
-| Related documents | Uter Smart Large Model Service Platform User Agreement; Uter Smart Large Model Service Platform Privacy Policy |
+| Related documents | Uter Large Model Service Platform User Agreement; Uter Large Model Service Platform Privacy Policy |
 
-> **Important notice**: This Agreement is a set of standard terms and forms part of the Uter Smart Large Model Service Platform User Agreement. Before making any recharge, please read all of its terms completely and carefully — **in particular the terms shown in bold that exclude or limit our liability, that limit your rights, and the terms on refund conditions and dispute resolution**. By completing any recharge, or by ticking your agreement to this Agreement, you are deemed to have fully understood and accepted all of its terms. If you do not agree with any part of this Agreement, please do not make a recharge.
+> **Important notice**: This Agreement is a set of standard terms and forms part of the Uter Large Model Service Platform User Agreement. Before making any recharge, please read all of its terms completely and carefully — **in particular the terms shown in bold that exclude or limit our liability, that limit your rights, and the terms on refund conditions and dispute resolution**. By completing any recharge, or by ticking your agreement to this Agreement, you are deemed to have fully understood and accepted all of its terms. If you do not agree with any part of this Agreement, please do not make a recharge.
 
 ---
 
@@ -25,8 +25,8 @@
 | What you most want to know | Our answer |
 |---|---|
 | How is my credit calculated after a recharge? | Your available credit is converted from the amount paid using the **conversion rate** agreed between us or published on the Platform. The conversion is itemised on the recharge confirmation page and in the monthly statement. |
-| Can I get back money I have not used? | **Yes.** Any unconsumed balance may be refunded on request at any time. The fees actually charged by **third-party payment channels** and the **taxes** corresponding to invoices already issued are deducted; beyond those deductions we **charge no refund handling fee**, and the funds are returned via the original payment route within **7 business days** of receiving a qualifying refund request. |
-| Is a large recharge protected any further? | For a single or cumulative recharge reaching **RMB 300,000**, you may open a **jointly controlled account** with us. Neither party may withdraw from it without the other's confirmation. |
+| Can I get back money I have not used? | **Yes.** Any unconsumed balance may be refunded on request **within the validity period of the account**. The fees actually charged by **third-party payment channels** and the **taxes** corresponding to invoices already issued are deducted; beyond those deductions we **charge no refund handling fee**, and the funds are returned via the original payment route within **7 business days** of receiving a qualifying refund request. |
+| Is a large recharge protected any further? | For a single or cumulative recharge reaching **RMB 1,000,000**, you may, upon mutual agreement between the parties, open a **jointly controlled account** with us (an optional fund-custody value-added service). Neither party may withdraw from it without the other's confirmation. |
 | Does a staged recharge reduce my discount? | **No.** The discount is locked to the tier corresponding to the total contract amount and is not downgraded because the funds arrive in stages. |
 | Will the service stop abruptly when the balance runs low? | **No.** We notify you when the available credit falls below **110%** of the estimated consumption for the current month; if a suspension is genuinely necessary, we give you **48 hours'** notice beforehand. |
 | How do I reconcile my account? | We deliver the previous month's statement by the **5th** of each month; you may raise objections within **10 days** of receipt, after which the statement is deemed confirmed. |
@@ -52,15 +52,15 @@
 
 **Article 1　[Purpose]**
 
-This Agreement sets out the rights and obligations between you and Shenzhen Uter Network Co., Ltd. ("we", "us" or "the Company") in respect of your prepayment to the Uter Smart Large Model Service Platform (the "Platform"), and of the stages that prepaid funds pass through — arrival, conversion, consumption, reconciliation and refund — so that prepaid funds are **secure, verifiable and refundable**.
+This Agreement sets out the rights and obligations between you and Shenzhen Uter Network Co., Ltd. ("we", "us" or "the Company") in respect of your prepayment to the Uter Large Model Service Platform (the "Platform"), and of the stages that prepaid funds pass through — arrival, conversion, consumption, reconciliation and refund — so that prepaid funds are **secure, verifiable and refundable**.
 
 **Article 2　[Scope of application]**
 
 This Agreement applies to the following conduct on the Platform:
 
-(1) **Large recharges**: a single recharge, or cumulative recharges from your first recharge onward, reaching **RMB 300,000** (inclusive);
+(1) **Large recharges**: a single recharge, or cumulative recharges from your first recharge onward, reaching **RMB 1,000,000** (inclusive);
 
-(2) **Staged recharges**: recharges individually below RMB 300,000 where you and the Company separately agree to split the total contract amount into several instalments arriving on an agreed schedule;
+(2) **Staged recharges**: recharges individually below RMB 1,000,000 where you and the Company separately agree to split the total contract amount into several instalments arriving on an agreed schedule;
 
 (3) **Other prepayments**: for prepayments outside the two categories above, Chapter 5 (refund of unconsumed balance) applies and the remaining matters follow the User Agreement.
 
@@ -86,7 +86,7 @@ Unless the context requires otherwise, the following terms have the meanings bel
 
 **Article 4　[Relationship with the User Agreement]**
 
-(1) This Agreement forms part of the Uter Smart Large Model Service Platform User Agreement (the "User Agreement") and has the same effect as the User Agreement.
+(1) This Agreement forms part of the Uter Large Model Service Platform User Agreement (the "User Agreement") and has the same effect as the User Agreement.
 
 (2) On matters concerning **prepaid funds and their management**, where this Agreement and the User Agreement differ, **this Agreement prevails**; matters not addressed here follow the User Agreement.
 
@@ -196,7 +196,7 @@ The Company undertakes that, for a staged recharge, **before each instalment arr
 
 **Article 15　[Right to a refund]**
 
-(1) **You may request a refund of the unconsumed part of your recharge balance at any time. The fees actually charged by third-party payment channels and the taxes corresponding to invoices already issued are deducted from the refund; beyond those deductions the Company charges no refund handling fee.**
+(1) **You may request a refund of the unconsumed part of your recharge balance within the validity period of the account. The fees actually charged by third-party payment channels and the taxes corresponding to invoices already issued are deducted from the refund; beyond those deductions the Company charges no refund handling fee.**
 
 (2) Refunds are returned **via the original payment route** as a matter of principle, that is, to the original paying account. If that account is closed or unavailable, you may request payment to a bank account **whose verified identity matches your Platform account**, supported by the necessary evidence.
 
@@ -225,7 +225,7 @@ where "total credit after conversion" is the total available credit for that rec
 
 (3) Where an account holds several recharges with different conversion rates, the base refundable amount is calculated **first-in, first-out** for each, and the refund is paid after the deductions under paragraph (2) are combined.
 
-(4) Where a **termination by the Company** or **force majeure** requires a full refund under the User Agreement, the deductions in paragraph (2) do not apply.
+(4) Where a **termination by the Company** or **force majeure** requires a refund under the User Agreement, the provisions of paragraph (2) on deducting, on a cost basis, the third-party payment channel fees actually incurred and the taxes corresponding to invoices already issued shall still apply.
 
 **Article 17　[Refund process and timelines]**
 
@@ -263,9 +263,9 @@ where "total credit after conversion" is the total available credit for that rec
 
 **Article 20　[Separate recording of balances and priority on liquidation]**
 
-(1) **The Company shall record each customer's recharge balance truthfully and separately in its reconciliation system, and shall not commingle it with the Company's own funds.**
+(1) **In accordance with applicable laws, regulations and accounting standards, the Company shall truthfully and separately record each customer's recharge balance in its reconciliation system, so as to ensure the balance is secure and verifiable; within the limits permitted by law, the Company shall take necessary measures to guard against the risk of customers' balances being commingled with the Company's assets.**
 
-(2) If the Company is dissolved, liquidated or becomes bankrupt, your unconsumed balance is a **liability for prepaid services**, and its ranking is determined under the Enterprise Bankruptcy Law of the People's Republic of China, **ahead of shareholder distributions**.
+(2) If the Company is dissolved, liquidated or becomes bankrupt, your unconsumed balance is a **liability for prepaid services**, and, within the limits permitted by law, its ranking is determined under the Enterprise Bankruptcy Law of the People's Republic of China, **ahead of shareholder distributions**.
 
 (3) If the Company merges, splits, changes control or undergoes a major business change, it shall give you **30 calendar days'** notice; the transferee or successor shall assume the balance obligations under this Agreement, **failing which you may require the unconsumed balance to be refunded in full**.
 
@@ -275,7 +275,7 @@ where "total credit after conversion" is the total available credit for that rec
 
 **Article 21　[Availability and opening]**
 
-(1) A customer whose single or cumulative recharge reaches **RMB 300,000** may open a **jointly controlled account** with the Company at a bank; for a large-recharge customer, cooperating in opening the account is **an obligation of the Company**.
+(1) A customer whose single or cumulative recharge reaches **RMB 1,000,000** may, upon mutual agreement between the parties, open a **jointly controlled account** with the Company at a bank; a jointly controlled account is **an optional fund-custody value-added service that the Company offers to large-recharge customers, and is not a mandatory obligation of the Company**.
 
 (2) The account is managed by **both parties' specimen seals** or by **two-person authorisation on online banking**; **neither party may withdraw from it unilaterally**.
 
@@ -331,11 +331,11 @@ where "total credit after conversion" is the total available credit for that rec
 
 **Article 27　[Limitation of liability]**
 
-(1) **To the maximum extent permitted by law, the Company's liability for compensation under this Agreement is limited to the amount you have actually paid and not consumed.**
+(1) **To the maximum extent permitted by law, the Company's aggregate liability for compensation under this Agreement shall not exceed the total service fees you have actually paid to us and not refunded in the 12 months preceding the event giving rise to the claim (consistent with Article 11.4 of the User Agreement).**
 
 (2) The limitation above does not apply to: **the Company's wilful misconduct or gross negligence; the Company's breach of its balance-custody obligations under Article 25; or any other case in which liability may not lawfully be limited or excluded.**
 
-(3) The Company is not liable for breach where service is suspended or delayed for reasons **beyond its reasonable control**, such as force majeure, governmental action, cross-border link interruption or changes in upstream model provider policies; however it shall notify you promptly and **refund the unconsumed balance in full**.
+(3) The Company is not liable for breach where service is suspended or delayed for reasons **beyond its reasonable control**, such as force majeure, governmental action, cross-border link interruption or changes in upstream model provider policies; however it shall notify you promptly and **refund the unconsumed balance, with the third-party payment channel fees actually incurred and the taxes corresponding to invoices already issued deducted on a cost basis**.
 
 ---
 

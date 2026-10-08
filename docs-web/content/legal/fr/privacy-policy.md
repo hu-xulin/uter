@@ -106,6 +106,8 @@ Your end user --(submits information to your app)--> Your app --(calls Platform 
 
 2.3.3 Sauf disposition légale contraire, nous **n'accédons pas activement** au contenu de vos requêtes. Ce n'est que dans les circonstances suivantes que nous pouvons le consulter dans la limite strictement nécessaire : pour diagnostiquer des défaillances techniques avec votre autorisation ; sur demande licite des autorités de régulation ou judiciaires ; lors de la découverte d'un contenu suspecté d'illégalité grave ou de mise en danger de la sécurité publique.
 
+2.3.4 **Réserve de qualification** : Si les lois, règlements ou une autorité compétente déterminent que nous constituons un co-responsable ou un fournisseur de technologie de traitement des données à caractère personnel dans les scénarios susmentionnés, les deux parties conviennent de répartir les responsabilités correspondantes conformément aux dispositions pertinentes de la loi sur la protection des informations personnelles et à la faute respective de chaque partie. Nos clauses d'exclusion de responsabilité et de limitation de responsabilité ne réduisent pas pour autant les droits dont vous jouissez en vertu de la loi applicable.
+
 ---
 
 ## Chapitre 3 Comment nous collectons et utilisons les Données personnelles
@@ -223,7 +225,7 @@ Par défaut, la Plateforme utilise des nœuds et des modèles nationaux, **les d
 
 5.2.2 Nous **ne conservons pas sur le territoire national le contenu du corps de vos requêtes et réponses** ; le transfert sortant est un simple relais en temps réel et ne constitue pas un stockage incrémental de données nationales (seules les métadonnées nécessaires à la facturation et à l'audit sont conservées, et ces métadonnées sont stockées dans le territoire de la Chine).
 
-5.2.3 **En vertu de la Section 3 du Chapitre 3 de la LIPD et des Mesures relatives à l'évaluation de sécurité des transferts de données sortants, vous devez effectuer les procédures de conformité requises en matière de transfert transfrontalier de données avant de soumettre à la présente Plateforme un contenu de requête contenant des Données personnelles**, y compris sans limitation : la conclusion et le dépôt du contrat type de transfert transfrontalier de Données personnelles, la certification de protection des Données personnelles, ou le dépôt d'une demande d'évaluation de sécurité (lorsque le seuil de dépôt est atteint).
+5.2.3 **En vertu de la Section 3 du Chapitre 3 de la LIPD et des Mesures relatives à l'évaluation de sécurité des transferts de données sortants, vous devez effectuer les procédures de conformité requises en matière de transfert transfrontalier de données avant de soumettre à la présente Plateforme un contenu de requête contenant des Données personnelles**, y compris sans limitation : la conclusion et le dépôt du contrat type de transfert transfrontalier de Données personnelles, la certification de protection des Données personnelles, ou le dépôt d'une demande d'évaluation de sécurité (lorsque le seuil de dépôt est atteint). En tant que plateforme transférant effectivement les données à l'étranger, nous remplirons également, conformément à la loi, les formalités de déclaration, d'évaluation de sécurité ou de certification requises pour la fourniture transfrontalière d'informations personnelles (le cas échéant). Pour les utilisateurs de l'UE, nous fournirons des mécanismes de transfert transfrontalier tels que les clauses contractuelles types (CCT) au titre du RGPD, et, dans une mesure raisonnable, vous fournirons une assistance telle que le modèle de contrat type et la liste des lieux de traitement des données.
 
 5.2.4 Nous vous recommandons et vous accompagnons dans la réduction du risque de transfert sortant par les moyens suivants : sélection de modèles nationaux ; mise en œuvre de la dépersonnalisation des données, du remplacement de champs et de la pseudonymisation côté client ; et abstention complète de transférer des Données personnelles sensibles.
 
@@ -391,6 +393,8 @@ La sortie des grands modèles de langage est probabiliste et non déterministe, 
 ---
 
 ## Chapitre 12 Comment nous contacter
+
+Conformément à l'article 52 de la loi sur la protection des informations personnelles, nous avons désigné un délégué à la protection des informations personnelles. Ses coordonnées sont les suivantes :
 
 | Objet | Contact |
 |---|---|

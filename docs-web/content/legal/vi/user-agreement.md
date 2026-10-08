@@ -46,7 +46,7 @@
 
 Hợp đồng này được ký kết giữa bạn (sau đây gọi là «Người dùng» hoặc «bạn») và **Shenzhen Uter Network Co., Ltd.** (sau đây gọi chung là «Uter.ai», «Uter» hoặc «chúng tôi»).
 
-- **Bên ký kết**: **Shenzhen Uter Network Co., Ltd.**, đăng ký tại Thâm Quyến, tỉnh Quảng Đông, Cộng hòa Nhân dân Trung Hoa, sở hữu giấy phép ICP, hồ sơ đăng ký thuật toán và hồ sơ đăng ký dịch vụ trí tuệ nhân tạo. Công ty vận hành **Nền tảng dịch vụ mô hình lớn Uter** (trang web chính thức: Uter.ai, sau đây gọi là «Nền tảng»), cung cấp Dịch vụ này cho người dùng tại **lãnh thổ Cộng hòa Nhân dân Trung Hoa (không bao gồm các khu vực Hồng Kông, Macao và Đài Loan của Trung Quốc)**.
+- **Bên ký kết**: **Shenzhen Uter Network Co., Ltd.**, được đăng ký tại Cộng hòa Nhân dân Trung Hoa, có địa chỉ trụ sở tại T2, Ali Center, quận Nanshan, Thâm Quyến, tỉnh Quảng Đông. Công ty đã hoàn tất các thủ tục tuân thủ theo quy định của pháp luật (đăng ký ICP, đăng ký thuật toán và đăng ký dịch vụ AI tạo sinh, v.v.) (theo thông tin được cơ quan có thẩm quyền công bố). Công ty vận hành **Nền tảng dịch vụ mô hình lớn Uter** (trang web chính thức: Uter.ai, sau đây gọi là «Nền tảng»), cung cấp Dịch vụ này cho người dùng trên toàn cầu. Đối với người dùng ngoài lãnh thổ Cộng hòa Nhân dân Trung Hoa, Nền tảng sẽ thực hiện các nghĩa vụ tuân thủ tương ứng theo pháp luật áp dụng của khu vực tài phán liên quan (như Quy định bảo vệ dữ liệu chung (GDPR) của EU và Đạo luật bảo mật người tiêu dùng California (CCPA) của Hoa Kỳ, v.v.).
 - **Thực thể duy nhất**: **Bên ký kết duy nhất đối với các dịch vụ theo Hợp đồng này là Shenzhen Uter Network Co., Ltd.** Hiện chúng tôi không cung cấp dịch vụ cho bạn thông qua bất kỳ thực thể liên kết nào ở nước ngoài. Nếu sau này chúng tôi cung cấp dịch vụ thông qua một thực thể liên kết ở nước ngoài, chúng tôi sẽ ký kết một hợp đồng dịch vụ riêng và thông báo trước cho bạn.
 
 **1.2 Thành phần của Hợp đồng**
@@ -260,7 +260,7 @@ Chúng tôi có thể điều chỉnh giá dịch vụ dựa trên thay đổi g
 - **Phí Token đã tiêu thụ không được hoàn lại**, bất kể bạn có thực sự sử dụng kết quả đầu ra hay không (ví dụ, bạn từ bỏ sử dụng do thiết kế câu lệnh kém, thay đổi yêu cầu hoặc không hài lòng về kết quả).
 - Trường hợp việc chấm dứt tài khoản là do bạn vi phạm Hợp đồng này, số dư sau khi khấu trừ các khoản phí phải trả và các khoản yêu cầu bồi thường có thể của bên thứ ba có thể được hoàn lại; trường hợp có hành vi vi phạm pháp luật nghiêm trọng, chúng tôi có thể hợp pháp trì hoãn việc hoàn tiền và phối hợp với cơ quan có thẩm quyền.
 
-6.3.4 Số dư có hiệu lực trong **12 tháng** kể từ ngày nạp tiền. Trước khi hết hạn, chúng tôi sẽ nhắc nhở bạn qua tin nhắn trong ứng dụng hoặc email; số dư chưa sử dụng sau khi hết hạn có thể được kích hoạt lại theo yêu cầu; nếu không sử dụng liên tục trong **3 tháng**, chúng tôi có thể xử lý sau khi khấu trừ khoản phí quản lý hợp lý.
+6.3.4 Thời hạn hiệu lực của số dư là 12 tháng kể từ ngày nạp tiền. Trước khi hết hạn, chúng tôi sẽ nhắc bạn qua tin nhắn nội bộ/email; số dư chưa sử dụng sau khi hết hạn có thể được kích hoạt lại theo yêu cầu, hoặc bạn có thể yêu cầu hoàn tiền theo Thỏa thuận Nạp tiền. Nếu số dư không được sử dụng liên tục trong 3 tháng và bạn không yêu cầu xử lý nào, chúng tôi có quyền sau khi khấu trừ chi phí quản lý hợp lý sẽ hoàn trả số dư hoặc xử lý theo thỏa thuận, và điều này không bị coi là tịch thu không bồi hoàn.
 
 **6.4 Yêu cầu thất bại và tính phí**
 
@@ -326,6 +326,7 @@ Trong quá trình cung cấp Dịch vụ này, đối với dữ liệu có ch�
 
 - **Bạn là Bên kiểm soát thông tin cá nhân**, chịu toàn bộ trách nhiệm về cơ sở pháp lý (thông báo và sự đồng ý, sự cần thiết của hợp đồng, v.v.);
 - **Chúng tôi là Bên xử lý được ủy thác**, chỉ xử lý dữ liệu theo chỉ dẫn của bạn và không sử dụng cho mục đích nào ngoài Hợp đồng này.
+- **Bổ sung về xác định vai trò**: Nếu pháp luật, quy định hoặc cơ quan có thẩm quyền xác định rằng Nền tảng trong các tình huống nêu trên cấu thành bên xử lý chung hoặc bên cung cấp công nghệ xử lý thông tin cá nhân, hai bên đồng ý phân chia trách nhiệm tương ứng theo quy định liên quan của Luật Bảo vệ Thông tin Cá nhân và theo lỗi của mỗi bên. Các điều khoản miễn trừ và giới hạn trách nhiệm của Nền tảng không vì thế mà làm giảm bớt các quyền mà bạn được hưởng theo pháp luật áp dụng.
 
 Người dùng doanh nghiệp có thể ký kết riêng Hợp đồng xử lý dữ liệu (DPA) với chúng tôi, quy định mục đích, thời hạn, phương thức xử lý, biện pháp bảo mật và quyền kiểm toán.
 
@@ -473,7 +474,7 @@ Sau khi chấm dứt: API Key của bạn trở nên không hợp lệ ngay lậ
 
 **12.4 Quyền chấm dứt sớm của chúng tôi**
 
-Đối với các dịch vụ không có thời hạn cố định đã thỏa thuận, chúng tôi có thể chấm dứt Hợp đồng này với thông báo trước **30 ngày lịch**. Trong trường hợp đó, chúng tôi sẽ hoàn lại toàn bộ số dư chưa tiêu thụ (không tính phần đã tiêu thụ), **không khấu trừ phí kênh thanh toán của bên thứ ba hay thuế**.
+Đối với các dịch vụ không có thời hạn cố định đã thỏa thuận, chúng tôi có thể chấm dứt Hợp đồng này với thông báo trước **30 ngày lịch**. Trong trường hợp đó, chúng tôi sẽ hoàn trả số dư chưa tiêu dùng (không bao gồm các phần đã tiêu dùng), với các khoản phí kênh thanh toán bên thứ ba thực tế phát sinh và các loại thuế tương ứng với hóa đơn đã xuất được khấu trừ trên cơ sở chi phí thực tế.
 
 ---
 
@@ -515,7 +516,7 @@ Bạn cam kết, bảo đảm và tự nguyện rằng:
 
 **14.2 Quyền rà soát tuân thủ**
 
-Chúng tôi có quyền (nhưng không có nghĩa vụ) thực hiện sàng lọc tuân thủ đối với địa điểm đăng ký, địa chỉ thanh toán, nguồn thanh toán và đặc trưng gọi của người dùng. Khi phát hiện nghi vấn vi phạm, chúng tôi có thể tạm ngừng Dịch vụ, yêu cầu giải trình về tuân thủ hoặc cung cấp tài liệu bổ sung.
+Chúng tôi có quyền, và khi pháp luật áp dụng và yêu cầu quản lý quy định bắt buộc, có nghĩa vụ tiến hành sàng lọc tuân thủ đối với địa điểm đăng ký, địa chỉ thanh toán, nguồn thanh toán và đặc trưng gọi của người dùng. Khi phát hiện nghi vấn vi phạm, chúng tôi có thể tạm ngừng Dịch vụ, yêu cầu giải trình về tuân thủ hoặc cung cấp tài liệu bổ sung.
 
 **14.3 Nghĩa vụ phối hợp**
 

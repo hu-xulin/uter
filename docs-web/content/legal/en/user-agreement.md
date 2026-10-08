@@ -46,7 +46,7 @@
 
 This Agreement is entered into between you (hereinafter "User" or "you") and **Shenzhen Uter Network Co., Ltd.** (hereinafter collectively "Uter.ai 优特智能", "优特" or "we").
 
-- **Contracting Entity**: **Shenzhen Uter Network Co., Ltd.**, registered in Shenzhen, Guangdong Province, the People's Republic of China, holding an ICP license, algorithm filing and generative AI service filing. The company operates the **Uter Large Model Service Platform** (official website: Uter.ai, hereinafter the "Platform"), providing this Service to users within **the territory of the People's Republic of China (excluding the Hong Kong, Macao and Taiwan regions of China)**.
+- **Contracting Entity**: **Shenzhen Uter Network Co., Ltd.**, registered in the People's Republic of China, with its registered address at **T2, Ali Center, Nanshan District, Shenzhen, Guangdong Province**. The Company has completed such compliance procedures as ICP filing, algorithm filing and generative AI service filing as required by law (subject to the information published by the competent authorities). The Company operates the **Uter Large Model Service Platform** (official website: Uter.ai, hereinafter the "Platform"), providing this Service to **global users**. For users outside the territory of the People's Republic of China, the Platform will discharge the corresponding compliance obligations under the applicable laws of the relevant jurisdiction (such as the EU General Data Protection Regulation (GDPR) and the U.S. California Consumer Privacy Act (CCPA), etc.).
 - **Single Entity**: The **sole contracting entity for the services under this Agreement is Shenzhen Uter Network Co., Ltd.** We do not currently provide services to you through any overseas affiliated entity. Should we provide services through an overseas affiliated entity in the future, we will execute a separate service agreement and notify you in advance.
 
 **1.2 Composition of the Agreement**
@@ -260,7 +260,7 @@ We may adjust service prices based on upstream price changes, exchange rate fluc
 - **Consumed Token fees are non-refundable**, regardless of whether you actually used the output (e.g., you abandoned use due to poor prompt design, changed requirements or dissatisfaction with results).
 - Where account termination is caused by your violation of this Agreement, the balance, after deduction of payable fees and possible third-party claims, may be refunded; where serious illegality is constituted, we may lawfully defer the refund and cooperate with competent authorities.
 
-6.3.4 The balance is valid for **12 months** from the top-up date. Before expiry we will remind you via in-site message/email; unused balances after expiry may be reactivated upon application; if unused continuously for **3 months**, we may handle it after deducting reasonable management fees.
+6.3.4 The balance is valid for **12 months** from the top-up date. Before expiry we will remind you via in-site message/email; unused balances after expiry may be reactivated upon application, or you may apply for a refund under the Recharge Agreement. Where the balance remains unused for **3 consecutive months** and you have not applied for any handling of it, we may, after deducting reasonable management fees, refund the balance or handle it as agreed, which shall not be deemed an unconditional forfeiture.
 
 **6.4 Failed Requests and Billing**
 
@@ -326,6 +326,7 @@ In providing this Service, with respect to the personal-information-containing d
 
 - **You are the personal information processor**, bearing full responsibility for the legal basis (notice and consent, contract necessity, etc.);
 - **We are the entrusted processor**, processing data only upon your instructions and not using it for purposes beyond this Agreement.
+- **Fallback on characterization**: If laws, regulations or a competent authority determine that we constitute a **joint processor** or a provider of personal information processing technology in the foregoing scenarios, both parties agree to allocate the corresponding liabilities in accordance with the relevant provisions of the Personal Information Protection Law and each party's respective fault. Our disclaimers and limitation-of-liability provisions shall not thereby diminish the rights you enjoy under applicable law.
 
 Enterprise users may separately execute a Data Processing Agreement (DPA) with us, specifying the processing purpose, period, method, security measures and audit rights.
 
@@ -473,7 +474,7 @@ After termination: your API Key becomes invalid immediately; the un-consumed bal
 
 **12.4 Our Right to Early Termination**
 
-For services with no fixed term agreed, we may terminate this Agreement with **30 calendar days'** advance notice. In this case, we will refund the full un-consumed balance (excluding consumed portions), **without deducting third-party payment channel fees or taxes**.
+For services with no fixed term agreed, we may terminate this Agreement with **30 calendar days'** advance notice. In this case, we will refund the un-consumed balance (excluding consumed portions), **with the third-party payment channel fees actually incurred and the taxes corresponding to invoices already issued deducted on a cost basis**.
 
 ---
 
@@ -515,7 +516,7 @@ You represent, warrant and undertake that:
 
 **14.2 Compliance Review Rights**
 
-We have the right (but no obligation) to conduct compliance screening of users' registration location, billing address, payment source and calling characteristics. Upon discovering suspected violations, we may suspend the Service, require compliance explanations or supplementary materials.
+We have the right to, and where applicable laws and regulatory requirements so mandate, the obligation to conduct compliance screening of users' registration location, billing address, payment source and calling characteristics. Upon discovering suspected violations, we may suspend the Service, require compliance explanations or supplementary materials.
 
 **14.3 Cooperation Obligations**
 

@@ -1,20 +1,20 @@
-# Contrat de recharge de la Plateforme intelligente de services de grands modèles Uter
+# Contrat de recharge de la Plateforme de services de grands modèles Uter
 
 | Élément | Contenu |
 |---|---|
 | Marque du Service | **Uter.ai** |
-| Plateforme | **Plateforme intelligente de services de grands modèles Uter** |
+| Plateforme | **Plateforme de services de grands modèles Uter** |
 | Site officiel | https://uter.ai |
-| Document | Contrat de recharge de la Plateforme intelligente de services de grands modèles Uter |
+| Document | Contrat de recharge de la Plateforme de services de grands modèles Uter |
 | Version | V1.0 |
 | Date d'entrée en vigueur | 28 septembre 2026 |
 | Dernière mise à jour | 28 septembre 2026 |
 | Entité contractante | **Shenzhen Uter Network Co., Ltd.** (unique entité contractante pour le service de recharge et les questions de gestion des fonds qui lui sont liées en vertu du présent Contrat) |
 | S'applique à | Les utilisateurs individuels et entreprise qui effectuent des prépaiements sur la Plateforme |
 | Droit applicable | Le droit de la République populaire de Chine (hors règles de conflit de lois) |
-| Documents connexes | Contrat d'utilisation de la Plateforme intelligente de services de grands modèles Uter ; Politique de confidentialité de la Plateforme intelligente de services de grands modèles Uter |
+| Documents connexes | Contrat d'utilisation de la Plateforme de services de grands modèles Uter ; Politique de confidentialité de la Plateforme de services de grands modèles Uter |
 
-> **Avis important** : Le présent Contrat est un ensemble de conditions générales et fait partie intégrante du Contrat d'utilisation de la Plateforme intelligente de services de grands modèles Uter. Avant d'effectuer la moindre recharge, veuillez lire l'intégralité de ses conditions attentivement et complètement — **en particulier les conditions en gras qui excluent ou limitent notre responsabilité, qui limitent vos droits, ainsi que les conditions relatives aux modalités de remboursement et à la résolution des litiges**. En effectuant la moindre recharge, ou en cochant votre accord avec le présent Contrat, vous êtes réputé avoir compris et accepté l'intégralité de ses conditions. Si vous n'acceptez aucune partie du présent Contrat, veuillez ne pas effectuer de recharge.
+> **Avis important** : Le présent Contrat est un ensemble de conditions générales et fait partie intégrante du Contrat d'utilisation de la Plateforme de services de grands modèles Uter. Avant d'effectuer la moindre recharge, veuillez lire l'intégralité de ses conditions attentivement et complètement — **en particulier les conditions en gras qui excluent ou limitent notre responsabilité, qui limitent vos droits, ainsi que les conditions relatives aux modalités de remboursement et à la résolution des litiges**. En effectuant la moindre recharge, ou en cochant votre accord avec le présent Contrat, vous êtes réputé avoir compris et accepté l'intégralité de ses conditions. Si vous n'acceptez aucune partie du présent Contrat, veuillez ne pas effectuer de recharge.
 
 ---
 
@@ -25,8 +25,8 @@
 | Ce que vous souhaitez le plus savoir | Notre réponse |
 |---|---|
 | Comment mon solde est-il calculé après une recharge ? | Votre solde disponible est converti à partir du montant payé selon le **taux de conversion** convenu entre nous ou publié sur la Plateforme. La conversion est détaillée sur la page de confirmation de recharge et dans le relevé mensuel. |
-| Puis-je récupérer l'argent que je n'ai pas utilisé ? | **Oui.** Tout solde non consommé peut être remboursé sur demande à tout moment. Les frais effectivement prélevés par les **canaux de paiement de tiers** ainsi que les **taxes** correspondant aux factures déjà émises sont déduits ; au-delà de ces déductions, nous **ne facturons aucun frais de traitement du remboursement**, et les fonds sont restitués par la voie de paiement d'origine dans un délai de **7 jours ouvrables** à compter de la réception d'une demande de remboursement admissible. |
-| Une recharge importante bénéficie-t-elle d'une protection supplémentaire ? | Pour une recharge unique ou cumulée atteignant **300,000 RMB**, vous pouvez ouvrir avec nous un **compte à gestion conjointe**. Aucune des deux parties ne peut s'en retirer sans la confirmation de l'autre. |
+| Puis-je récupérer l'argent que je n'ai pas utilisé ? | **Oui.** Tout solde non consommé peut être remboursé sur demande dans la période de validité du compte. Les frais effectivement prélevés par les **canaux de paiement de tiers** ainsi que les **taxes** correspondant aux factures déjà émises sont déduits ; au-delà de ces déductions, nous **ne facturons aucun frais de traitement du remboursement**, et les fonds sont restitués par la voie de paiement d'origine dans un délai de **7 jours ouvrables** à compter de la réception d'une demande de remboursement admissible. |
+| Une recharge importante bénéficie-t-elle d'une protection supplémentaire ? | Pour une recharge unique ou cumulée atteignant **RMB 1 000 000**, vous pouvez ouvrir avec nous un **compte à gestion conjointe** sous réserve d'un accord mutuel entre les parties (un service à valeur ajoutée de garde de fonds facultatif). Aucune des parties ne peut s'en retirer sans la confirmation de l'autre. |
 | Une recharge échelonnée réduit-elle ma remise ? | **Non.** La remise est verrouillée sur le palier correspondant au montant total du contrat et n'est pas déclassée du fait que les fonds arrivent par tranches. |
 | Le service s'arrêtera-t-il brutalement lorsque le solde devient faible ? | **Non.** Nous vous notifions lorsque le solde disponible devient inférieur à **110%** de la consommation estimée du mois en cours ; si une suspension est réellement nécessaire, nous vous accordons un préavis de **48 heures** au préalable. |
 | Comment rapprocher mon compte ? | Nous transmettons le relevé du mois précédent au plus tard le **5** de chaque mois ; vous pouvez formuler vos contestations dans les **10 jours** suivant sa réception, après quoi le relevé est réputé confirmé. |
@@ -52,15 +52,15 @@
 
 **Article 1　[Objet]**
 
-Le présent Contrat définit les droits et obligations entre vous et Shenzhen Uter Network Co., Ltd. (« nous », « notre » ou « la Société ») en ce qui concerne votre prépaiement à la Plateforme intelligente de services de grands modèles Uter (la « Plateforme »), ainsi que les étapes que traversent les fonds prépayés — arrivée, conversion, consommation, rapprochement et remboursement — afin que les fonds prépayés soient **sûrs, vérifiables et remboursables**.
+Le présent Contrat définit les droits et obligations entre vous et Shenzhen Uter Network Co., Ltd. (« nous », « notre » ou « la Société ») en ce qui concerne votre prépaiement à la Plateforme de services de grands modèles Uter (la « Plateforme »), ainsi que les étapes que traversent les fonds prépayés — arrivée, conversion, consommation, rapprochement et remboursement — afin que les fonds prépayés soient **sûrs, vérifiables et remboursables**.
 
 **Article 2　[Périmètre d'application]**
 
 Le présent Contrat s'applique aux comportements suivants sur la Plateforme :
 
-(1) **Recharges importantes** : une recharge unique, ou des recharges cumulées depuis votre première recharge, atteignant **300,000 RMB** (inclus) ;
+(1) **Recharges importantes** : une recharge unique, ou des recharges cumulées depuis votre première recharge, atteignant **RMB 1 000 000** (inclus) ;
 
-(2) **Recharges échelonnées** : des recharges individuelles inférieures à 300,000 RMB pour lesquelles vous et la Société convenez séparément de répartir le montant total du contrat en plusieurs échéances arrivant selon un calendrier convenu ;
+(2) **Recharges échelonnées** : des recharges individuelles inférieures à RMB 1 000 000 pour lesquelles vous et la Société convenez séparément de répartir le montant total du contrat en plusieurs échéances arrivant selon un calendrier convenu ;
 
 (3) **Autres prépaiements** : pour les prépaiements ne relevant pas des deux catégories ci-dessus, le Chapitre 5 (Remboursement du solde non consommé) s'applique et les questions restantes relèvent du Contrat d'utilisation.
 
@@ -86,7 +86,7 @@ Sauf si le contexte n'exige autrement, les termes suivants ont les sens suivants
 
 **Article 4　[Relation avec le Contrat d'utilisation]**
 
-(1) Le présent Contrat fait partie du Contrat d'utilisation de la Plateforme intelligente de services de grands modèles Uter (le « Contrat d'utilisation ») et a la même portée juridique que le Contrat d'utilisation.
+(1) Le présent Contrat fait partie du Contrat d'utilisation de la Plateforme de services de grands modèles Uter (le « Contrat d'utilisation ») et a la même portée juridique que le Contrat d'utilisation.
 
 (2) Sur les questions relatives aux **fonds prépayés et à leur gestion**, en cas de divergence entre le présent Contrat et le Contrat d'utilisation, **le présent Contrat prévaut** ; les questions non traitées ici relèvent du Contrat d'utilisation.
 
@@ -196,7 +196,7 @@ La Société s'engage, pour une recharge échelonnée, à **ne pas restreindre v
 
 **Article 15　[Droit au remboursement]**
 
-(1) **Vous pouvez demander à tout moment le remboursement de la partie non consommée de votre solde de recharge. Les frais effectivement prélevés par les canaux de paiement de tiers et les taxes correspondant aux factures déjà émises sont déduits du remboursement ; au-delà de ces déductions, la Société ne facture aucun frais de traitement du remboursement.**
+(1) **Vous pouvez demander dans la période de validité du compte le remboursement de la partie non consommée de votre solde de recharge. Les frais effectivement prélevés par les canaux de paiement de tiers et les taxes correspondant aux factures déjà émises sont déduits du remboursement ; au-delà de ces déductions, la Société ne facture aucun frais de traitement du remboursement.**
 
 (2) Les remboursements sont restitués **par la voie de paiement d'origine** en règle générale, c'est-à-dire sur le compte payeur d'origine. Si ce compte est fermé ou indisponible, vous pouvez demander le versement sur un compte bancaire **dont l'identité vérifiée correspond à votre compte Plateforme**, sur présentation des justificatifs nécessaires.
 
@@ -225,7 +225,7 @@ où le « solde total après conversion » désigne le solde disponible total po
 
 (3) Lorsqu'un compte détient plusieurs recharges à des taux de conversion différents, le montant remboursable de base est calculé **premier entré, premier sorti** pour chacune d'elles, et le remboursement est versé après consolidation des déductions visées au point (2).
 
-(4) Lorsqu'une **résiliation par la Société** ou un **cas de force majeure** exige un remboursement intégral en vertu du Contrat d'utilisation, les déductions prévues au point (2) ne s'appliquent pas.
+(4) Lorsqu'une **résiliation par la Société** ou un **cas de force majeure** exige un remboursement intégral en vertu du Contrat d'utilisation, les dispositions du paragraphe (2) prévoyant la déduction, sur la base des coûts réels, des frais de canal de paiement tiers réellement encourus et des taxes correspondant aux factures déjà émises continuent de s'appliquer.
 
 **Article 17　[Procédure et délais de remboursement]**
 
@@ -263,9 +263,9 @@ où le « solde total après conversion » désigne le solde disponible total po
 
 **Article 20　[Enregistrement distinct des soldes et rang en cas de liquidation]**
 
-(1) **La Société doit enregistrer fidèlement et de manière distincte le solde de recharge de chaque client dans son système de rapprochement, et ne doit pas le confondre avec les fonds propres de la Société.**
+(1) Conformément aux lois, règlements et normes comptables applicables, la Société consigne de manière véridique et séparée le solde de recharge de chaque client dans son système de rapprochement, afin de garantir que le solde est sûr et vérifiable ; dans les limites permises par la loi, la Société prend les mesures nécessaires pour se prémunir contre le risque de confusion entre les soldes des clients et les actifs de la Société.
 
-(2) En cas de dissolution, de liquidation ou de faillite de la Société, votre solde non consommé constitue un **passif relatif à des services prépayés**, et son rang est déterminé en vertu de la Loi sur les faillites d'entreprises de la République populaire de Chine, **avant les distributions aux actionnaires**.
+(2) En cas de dissolution, de liquidation ou de faillite de la Société, votre solde non consommé constitue un **passif relatif à des services prépayés**, et, dans les limites permises par la loi, son rang est déterminé en vertu de la Loi sur les faillites d'entreprises de la République populaire de Chine, **avant les distributions aux actionnaires**.
 
 (3) En cas de fusion, de division, de changement de contrôle ou de modification commerciale majeure de la Société, celle-ci doit vous accorder un préavis de **30 jours calendaires** ; le cessionnaire ou le successeur reprend les obligations liées au solde en vertu du présent Contrat, **à défaut de quoi vous pouvez exiger le remboursement intégral du solde non consommé**.
 
@@ -275,7 +275,7 @@ où le « solde total après conversion » désigne le solde disponible total po
 
 **Article 21　[Disponibilité et ouverture]**
 
-(1) Un client dont la recharge unique ou cumulée atteint **300,000 RMB** peut ouvrir avec la Société un **compte à gestion conjointe** auprès d'une banque ; pour un client réalisant des recharges importantes, la coopération à l'ouverture de ce compte constitue **une obligation de la Société**.
+(1) Un client dont la recharge unique ou cumulée atteint **RMB 1 000 000** peut ouvrir avec la Société un **compte à gestion conjointe** auprès d'une banque ; pour un client réalisant des recharges importantes, la coopération à l'ouverture de ce compte constitue **un service à valeur ajoutée de garde de fonds facultatif que la Société offre aux clients à gros rechargements, et n'est pas une obligation obligatoire de la Société**.
 
 (2) Le compte est géré au moyen des **cachets des deux parties** ou d'une **autorisation à deux personnes sur la banque en ligne** ; **aucune des parties ne peut s'en retirer unilatéralement**.
 
@@ -331,11 +331,11 @@ où le « solde total après conversion » désigne le solde disponible total po
 
 **Article 27　[Limitation de responsabilité]**
 
-(1) **Dans la mesure maximale autorisée par la loi, la responsabilité de la Société en matière d'indemnisation en vertu du présent Contrat est limitée au montant que vous avez effectivement payé et non consommé.**
+(1) **Dans la mesure maximale autorisée par la loi, la responsabilité de la Société en matière d'indemnisation en vertu du présent Contrat ne dépassera pas le montant total des frais de service que vous nous avez réellement payés et non remboursés dans les 12 mois précédant l'événement à l'origine de la réclamation (conformément à l'article 11.4 de l'Accord utilisateur).**
 
 (2) La limitation susmentionnée ne s'applique pas à : **la faute intentionnelle ou la négligence grave de la Société ; la violation par la Société de ses obligations de conservation des soldes en vertu de l'Article 25 ; ou tout autre cas dans lequel la responsabilité ne peut légalement être limitée ou exclue.**
 
-(3) La Société n'est pas responsable du manquement lorsque le service est suspendu ou retardé pour des motifs **dépassant son contrôle raisonnable**, tels que la force majeure, une action gouvernementale, une interruption des liaisons transfrontalières ou des modifications des politiques des fournisseurs de modèles en amont ; elle doit toutefois vous en informer sans délai et **rembourser intégralement le solde non consommé**.
+(3) La Société n'est pas responsable du manquement lorsque le service est suspendu ou retardé pour des motifs **dépassant son contrôle raisonnable**, tels que la force majeure, une action gouvernementale, une interruption des liaisons transfrontalières ou des modifications des politiques des fournisseurs de modèles en amont ; elle doit toutefois vous en informer sans délai et **rembourser le solde non consommé, les frais de canal de paiement tiers réellement encourus et les taxes correspondant aux factures déjà émises étant déduits sur la base des coûts réels**.
 
 ---
 

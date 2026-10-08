@@ -46,7 +46,7 @@
 
 Le présent Contrat est conclu entre vous (ci-après « Utilisateur » ou « vous ») et **Shenzhen Uter Network Co., Ltd.** (ci-après désignés collectivement « Uter.ai », « Uter » ou « nous »).
 
-- **Entité contractante** : **Shenzhen Uter Network Co., Ltd.**, immatriculée à Shenzhen, dans la province du Guangdong, en République populaire de Chine, titulaire d'une licence ICP, d'un enregistrement d'algorithme et d'un enregistrement de service d'IA générative. La société exploite la **Plateforme de services de grands modèles Uter** (site officiel : Uter.ai, ci-après la « Plateforme ») et fournit le présent Service aux utilisateurs situés **sur le territoire de la République populaire de Chine (hors des régions de Hong Kong, Macao et Taïwan de la Chine)**.
+- **Entité contractante** : **Shenzhen Uter Network Co., Ltd.**, enregistrée dans la République populaire de Chine, dont le siège social est situé T2, Ali Center, district de Nanshan, Shenzhen, province du Guangdong. La Société a accompli les formalités de conformité requises par la loi (déclaration ICP, déclaration d'algorithme et déclaration de service d'IA générative, etc.) (sous réserve des informations publiées par les autorités compétentes). La société exploite la **Plateforme de services de grands modèles Uter** (site officiel : Uter.ai, ci-après la « Plateforme ») et fournit ce Service aux utilisateurs du monde entier. Pour les utilisateurs hors du territoire de la République populaire de Chine, la Plateforme remplira les obligations de conformité correspondantes en vertu des lois applicables de la juridiction concernée (telles que le Règlement général sur la protection des données (RGPD) de l'UE et le California Consumer Privacy Act (CCPA) des États-Unis, etc.).
 - **Entité unique** : **L'unique entité contractante pour les services régis par le présent Contrat est Shenzhen Uter Network Co., Ltd.** Nous ne fournissons actuellement pas de services par l'intermédiaire d'une quelconque entité affiliée étrangère. Si nous devions fournir des services par l'intermédiaire d'une entité affiliée étrangère, nous conclurions un contrat de service distinct et vous en informerions à l'avance.
 
 **1.2 Composition du Contrat**
@@ -260,7 +260,7 @@ Nous pouvons ajuster les prix des services en fonction des variations de prix en
 - **les frais de jetons consommés ne sont pas remboursables**, que vous ayez effectivement utilisé la sortie ou non (par exemple, si vous avez abandonné l'utilisation en raison d'une conception médiocre des invites, d'un changement d'exigences ou d'une insatisfaction quant aux résultats).
 - lorsque la résiliation du compte résulte de votre violation du présent Contrat, le solde peut être remboursé, après déduction des sommes exigibles et des réclamations éventuelles de tiers ; lorsqu'une illégalité grave est caractérisée, nous pouvons légalement différer le remboursement et coopérer avec les autorités compétentes.
 
-6.3.4 Le solde est valable **12 mois** à compter de la date de recharge. Avant son expiration, nous vous adresserons un rappel par message sur le site ou par courriel ; les soldes non utilisés après expiration peuvent être réactivés sur demande ; s'ils restent inutilisés pendant **3 mois** consécutifs, nous pouvons les traiter après déduction de frais de gestion raisonnables.
+6.3.4 La validité du solde est de 12 mois à compter de la date de recharge. Avant l'expiration, nous vous rappellerons par message intérieur/courriel ; le solde inutilisé après expiration peut être réactivé sur demande, ou vous pouvez demander un remboursement conformément à l'Accord de recharge. Si le solde reste inutilisé pendant 3 mois consécutifs et que vous n'avez demandé aucun traitement, nous pouvons, après déduction de frais de gestion raisonnables, rembourser le solde ou le traiter conformément à l'accord, ce qui ne sera pas considéré comme une confiscation sans indemnité.
 
 **6.4 Requêtes échouées et facturation**
 
@@ -325,7 +325,8 @@ Le contenu d'entrée que vous soumettez au moyen du présent Service, ainsi que 
 Dans le cadre de la fourniture du présent Service, en ce qui concerne les données contenant des Données personnelles que vous soumettez au moyen du Service :
 
 - **vous êtes le Responsable du traitement**, assumant l'entière responsabilité de la base légale (information et consentement, nécessité contractuelle, etc.) ;
-- **nous sommes le Sous-traitant chargé du Traitement confié**, qui traite les données uniquement sur vos instructions et ne les utilise à aucune fin allant au-delà du présent Contrat.
+- **nous sommes le Sous-traitant chargé du Traitement confié**, qui traite les données uniquement sur vos instructions et ne les utilise à aucune fin allant au-delà du présent Contrat ;
+- **Réserve de qualification** : Si les lois, règlements ou une autorité compétente déterminent que nous constituons un co-responsable ou un fournisseur de technologie de traitement des données à caractère personnel dans les scénarios susmentionnés, les deux parties conviennent de répartir les responsabilités correspondantes conformément aux dispositions pertinentes de la loi sur la protection des informations personnelles et à la faute respective de chaque partie. Nos clauses d'exclusion de responsabilité et de limitation de responsabilité ne réduisent pas pour autant les droits dont vous jouissez en vertu de la loi applicable.
 
 Les utilisateurs entreprise peuvent conclure séparément avec nous un Contrat de traitement des données (DPA), précisant la finalité, la durée, la méthode, les mesures de sécurité du traitement et les droits d'audit.
 
@@ -473,7 +474,7 @@ Après la résiliation : votre Clé API devient immédiatement invalide ; le sol
 
 **12.4 Notre droit de résiliation anticipée**
 
-Pour les services sans durée fixe convenue, nous pouvons résilier le présent Contrat avec un préavis d'au moins **30 jours calendaires**. Dans ce cas, nous remboursons la totalité du solde non consommé (à l'exclusion des parts consommées), **sans déduction des frais des canaux de paiement de tiers ni des taxes**.
+Pour les services sans durée fixe convenue, nous pouvons résilier le présent Contrat avec un préavis d'au moins **30 jours calendaires**. Dans ce cas, nous rembourserons le solde non consommé (à l'exclusion des parties consommées), les frais de canal de paiement tiers réellement encourus et les taxes correspondant aux factures déjà émises étant déduits sur la base des coûts réels.
 
 ---
 
@@ -515,7 +516,7 @@ Vous déclarez, garantissez et vous engagez à ce que :
 
 **14.2 Droit d'examen de conformité**
 
-Nous avons le droit (mais aucune obligation) de procéder à un examen de conformité du lieu d'inscription des utilisateurs, de leur adresse de facturation, de leur source de paiement et de leurs caractéristiques d'appel. En cas de découverte de violations suspectées, nous pouvons suspendre le Service, exiger des explications de conformité ou des documents complémentaires.
+Nous avons le droit de, et lorsque les lois applicables et les exigences réglementaires l'imposent, l'obligation de procéder au criblage de conformité du lieu d'inscription des utilisateurs, de leur adresse de facturation, de leur source de paiement et de leurs caractéristiques d'appel. En cas de découverte de violations suspectées, nous pouvons suspendre le Service, exiger des explications de conformité ou des documents complémentaires.
 
 **14.3 Obligations de coopération**
 
