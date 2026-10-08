@@ -25,6 +25,7 @@ import { MarketplacePanel } from '../components/marketplace-panel'
 import {
   DEFAULT_MARKETPLACE_INDEX_URL,
   GITHUB_MARKETPLACE_INDEX_URL,
+  MARKETPLACE_OFFICIAL_INDEX_NAME,
 } from '../lib/marketplace'
 import type { MarketplaceIndex, MarketplaceSource } from '../types'
 
@@ -111,9 +112,11 @@ describe('MarketplacePanel source switch', () => {
   test('selects only the official source by default and hides both URLs', async () => {
     renderPanel()
 
+    // Built-in sources are branded by the client, not by whatever name the
+    // remote index advertises, so the heading is the shared official label.
     expect(
       await screen.findByRole('heading', {
-        name: officialIndex.name,
+        name: MARKETPLACE_OFFICIAL_INDEX_NAME,
       })
     ).toBeInTheDocument()
     expect(screen.queryByText(DEFAULT_MARKETPLACE_INDEX_URL)).toBeNull()
@@ -133,7 +136,9 @@ describe('MarketplacePanel source switch', () => {
   test('loads GitHub only after the administrator switches to it', async () => {
     const user = userEvent.setup()
     renderPanel()
-    await screen.findByRole('heading', { name: officialIndex.name })
+    await screen.findByRole('heading', {
+      name: MARKETPLACE_OFFICIAL_INDEX_NAME,
+    })
 
     expect(fetchMarketplaceIndexMock).not.toHaveBeenCalledWith(
       GITHUB_MARKETPLACE_INDEX_URL
@@ -142,11 +147,16 @@ describe('MarketplacePanel source switch', () => {
     await user.click(screen.getByRole('button', { name: 'GitHub' }))
 
     expect(
-      await screen.findByRole('heading', { name: githubIndex.name })
+      await screen.findByRole('heading', {
+        name: MARKETPLACE_OFFICIAL_INDEX_NAME,
+      })
     ).toBeInTheDocument()
+    // Only the selected source is mounted: switching must not stack sections.
     expect(
-      screen.queryByRole('heading', { name: officialIndex.name })
-    ).toBeNull()
+      screen.getAllByRole('heading', {
+        name: MARKETPLACE_OFFICIAL_INDEX_NAME,
+      })
+    ).toHaveLength(1)
     expect(screen.getByRole('button', { name: 'GitHub' })).toHaveAttribute(
       'aria-pressed',
       'true'

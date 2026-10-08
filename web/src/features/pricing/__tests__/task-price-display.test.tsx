@@ -178,14 +178,19 @@ it('updates count unit labels across cards, table cells and breakdowns with loca
       </div>
     </>
   )
-  for (const [language, unit] of [
-    ['en', 'image'],
-    ['zhTW', '張'],
-    ['zhCN', '张'],
-    ['fr', 'image'],
+  // The price cell and the breakdown append the localized count unit to the
+  // amount (`0.2/张`). The card renders the price in the Uter/Official grid
+  // where the dimension header is the localized description, so it is asserted
+  // through that label instead of a unit suffix.
+  for (const [language, unit, cardLabel] of [
+    ['en', 'image', 'Image generation unit price'],
+    ['zhTW', '張', '图片生成单价'],
+    ['zhCN', '张', '图片生成单价'],
+    ['fr', 'image', 'Image generation unit price'],
   ]) {
     await act(() => i18next.changeLanguage(language))
-    for (const surface of ['card', 'cell', 'breakdown']) {
+    expect(screen.getByTestId('card')).toHaveTextContent(cardLabel)
+    for (const surface of ['cell', 'breakdown']) {
       expect(screen.getByTestId(surface)).toHaveTextContent(
         new RegExp(`/\\s*${unit}`)
       )
@@ -599,5 +604,5 @@ it('shows provider count, price range and missing-price status in both list and 
     2
   )
   expect(screen.getByText('0.4 – 0.8/s')).toBeVisible()
-  expect(screen.getByText('$0.4 – $0.8')).toBeVisible()
+  expect(screen.getAllByText('$0.4 – $0.8')).toHaveLength(2)
 })

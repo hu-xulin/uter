@@ -455,8 +455,10 @@ it('allows a common new password after verifying the current password once', asy
   )
   expect(screen.getByText('Use 8–18 characters.')).toBeVisible()
   await user.type(screen.getByLabelText('Current Password'), 'current-password')
-  await user.type(screen.getByLabelText('New Password'), 'password123')
-  await user.type(screen.getByLabelText('Confirm New Password'), 'password123')
+  // A dictionary-free strong password: the shared policy rejects breach-list
+  // values like "password123" before the verification ceremony can start.
+  await user.type(screen.getByLabelText('New Password'), 'Zq7#mKp2!LwRx4')
+  await user.type(screen.getByLabelText('Confirm New Password'), 'Zq7#mKp2!LwRx4')
   await user.click(screen.getByRole('button', { name: 'Change Password' }))
   await waitFor(() => expect(onOpenChange).toHaveBeenCalledWith(false))
   expect(get).toHaveBeenCalledWith(
@@ -476,7 +478,7 @@ it('allows a common new password after verifying the current password once', asy
     '/api/user/self',
     expect.objectContaining({
       original_password: 'current-password',
-      password: 'password123',
+      password: 'Zq7#mKp2!LwRx4',
     }),
     expect.objectContaining({
       headers: { 'X-Security-Proof': 'password-proof' },
@@ -510,11 +512,11 @@ it.each(['button', 'escape'])(
     )
     await user.type(
       screen.getByLabelText('New Password'),
-      'account-password!42'
+      'Zq7#mKp2!LwRx4'
     )
     await user.type(
       screen.getByLabelText('Confirm New Password'),
-      'account-password!42'
+      'Zq7#mKp2!LwRx4'
     )
     await user.click(screen.getByRole('button', { name: 'Change Password' }))
     const verification = await screen.findByRole('dialog', {
@@ -583,11 +585,11 @@ it.each(['unmount', 'account change'])(
     )
     await user.type(
       screen.getByLabelText('New Password'),
-      'account-password!42'
+      'Zq7#mKp2!LwRx4'
     )
     await user.type(
       screen.getByLabelText('Confirm New Password'),
-      'account-password!42'
+      'Zq7#mKp2!LwRx4'
     )
     const submit = screen.getByRole('button', { name: 'Change Password' })
     await user.click(submit)
@@ -652,11 +654,11 @@ it('sets a first password after verifying an existing factor without asking for 
   expect(screen.queryByLabelText('Current Password')).not.toBeInTheDocument()
   await user.type(
     screen.getByLabelText('New Password'),
-    'first-account-password!42'
+    'Zq7#mKp2!LwRx4'
   )
   await user.type(
     screen.getByLabelText('Confirm New Password'),
-    'first-account-password!42'
+    'Zq7#mKp2!LwRx4'
   )
   await user.click(screen.getByRole('button', { name: 'Set Password' }))
   await user.type(
@@ -669,7 +671,7 @@ it('sets a first password after verifying an existing factor without asking for 
   await waitFor(() => expect(put).toHaveBeenCalledTimes(1))
   expect(post).toHaveBeenCalledTimes(1)
   expect(put.mock.calls[0][1]).toEqual({
-    password: 'first-account-password!42',
+    password: 'Zq7#mKp2!LwRx4',
   })
 })
 

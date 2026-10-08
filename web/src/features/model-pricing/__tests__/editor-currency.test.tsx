@@ -794,9 +794,16 @@ it('converts tier price coefficients but leaves token thresholds and rule multip
   const before = await commit(editor.ref)
   await selectCurrency('Site currency (CNY)')
   expect(await commit(editor.ref)).toEqual(before)
-  const inputs = screen.getAllByRole('textbox', { name: 'Input price' })
-  expect(inputs[0]).toHaveValue('14')
-  fireEvent.change(inputs[0], { target: { value: '21' } })
+  // With a model name present the editor also renders a read-only official
+  // reference input per dimension, so only the editable ones are inspected.
+  const input = screen
+    .getAllByRole('textbox', { name: 'Input price' })
+    .find((el) => !(el as HTMLInputElement).disabled)
+  if (!input) {
+    throw new Error('Expected an editable input price field')
+  }
+  expect(input).toHaveValue('14')
+  fireEvent.change(input, { target: { value: '21' } })
   const saved = await commit(editor.ref)
   const config = tryParseVisualConfig(saved?.billingExpr ?? '')
   expect(config?.tiers[0].input_unit_cost).toBe(3)

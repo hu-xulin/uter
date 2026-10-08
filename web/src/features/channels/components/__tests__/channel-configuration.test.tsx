@@ -1151,7 +1151,9 @@ test('editing legacy channels retains the full provider list and saves the origi
   const legacy = screen.getByRole('option', { name: 'Sora Built-in #55' })
   expect(legacy).toHaveAttribute('aria-current', 'true')
   await user.click(legacy)
-  expect(screen.getByText('custom-model')).toBeVisible()
+  // The saved model is preserved in both the picker chip and the per-model
+  // routing panel that mirrors the models selected for an existing channel.
+  expect(screen.getAllByText('custom-model')).toHaveLength(2)
   expect(screen.getByDisplayValue('https://saved.example')).toBeVisible()
   fireEvent.change(screen.getByLabelText('Name *'), {
     target: { value: 'Renamed legacy channel' },
@@ -1183,25 +1185,31 @@ test('opening and reselecting an existing plugin preserves its saved configurati
   render(<ConfigurationHarness currentRow={editingChannel} />)
   expect(await screen.findByDisplayValue('Existing channel')).toBeVisible()
   expect(screen.getByDisplayValue('https://saved.example')).toBeVisible()
-  expect(screen.getByText('custom-model')).toBeVisible()
+  // The saved model is preserved in both the picker chip and the per-model
+  // routing panel that mirrors the models selected for an existing channel.
+  expect(screen.getAllByText('custom-model')).toHaveLength(2)
   expect(screen.queryByLabelText('Task plugin *')).not.toBeInTheDocument()
   const providerControl = screen.getByRole('button', {
     name: 'Change provider',
   })
   await user.click(await within(providerControl).findByText('Video A'))
   await user.click(await screen.findByRole('option', { name: /Video A/ }))
-  expect(screen.getByText('custom-model')).toBeVisible()
+  // The saved model is preserved in both the picker chip and the per-model
+  // routing panel that mirrors the models selected for an existing channel.
+  expect(screen.getAllByText('custom-model')).toHaveLength(2)
   expect(screen.getByDisplayValue('https://saved.example')).toBeVisible()
   await user.click(screen.getByRole('button', { name: 'Change provider' }))
   await user.click(
     screen.getByRole('button', { name: 'Back to configuration' })
   )
-  expect(screen.getByText('custom-model')).toBeVisible()
+  // The saved model is preserved in both the picker chip and the per-model
+  // routing panel that mirrors the models selected for an existing channel.
+  expect(screen.getAllByText('custom-model')).toHaveLength(2)
   await user.click(screen.getByRole('button', { name: 'Change provider' }))
   await user.click(screen.getByRole('option', { name: /^Video B Plugin/ }))
   expect(screen.getByDisplayValue('Existing channel')).toBeVisible()
   expect(screen.getByDisplayValue('https://saved.example')).toBeVisible()
-  expect(screen.getByText('video-b-1')).toBeVisible()
+  expect(screen.getAllByText('video-b-1')).toHaveLength(2)
   await user.click(screen.getByRole('tab', { name: /Routing & Mapping/ }))
   expect(screen.getByLabelText('Priority')).toHaveValue(7)
 })
@@ -1703,7 +1711,9 @@ test('an operator without sensitive write permission can discover saved models a
   expect(put.mock.calls[0]?.[1]).toMatchObject({ id: 42, priority: 8 })
   expect(put.mock.calls[0]?.[1]).not.toHaveProperty('setting')
   expect(put.mock.calls[0]?.[1]).not.toHaveProperty('key')
-})
+  // Switching three tabs across the full drawer is more work than the default
+  // 5s budget allows on a cold jsdom worker.
+}, 30000)
 
 test.each([
   ['random', 'Random', 'polling', 'Polling'],

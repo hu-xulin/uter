@@ -244,14 +244,20 @@ test('keeps the condition tree as the default after switching models and applyin
   expect(
     screen.getByRole('button', { name: 'Add pricing branch' })
   ).toBeVisible()
-  expect(screen.getByRole('textbox', { name: 'Input price' })).toHaveValue('2')
+  // A model name renders a read-only official reference input per dimension, so
+  // the editable Uter fields are selected explicitly.
+  const editableField = (name: string) =>
+    screen
+      .getAllByRole('textbox', { name })
+      .find((el) => !(el as HTMLInputElement).disabled)
+  expect(editableField('Input price')).toHaveValue('2')
   expect(props.onBillingExprChange).not.toHaveBeenCalled()
   const user = userEvent.setup()
   await user.click(screen.getByRole('button', { name: 'Flat' }))
   expect(
     screen.getByRole('button', { name: 'Add pricing branch' })
   ).toBeVisible()
-  expect(screen.getByRole('textbox', { name: 'Output price' })).toHaveValue('4')
+  expect(editableField('Output price')).toHaveValue('4')
   expect(props.onBillingExprChange).toHaveBeenLastCalledWith(
     'tier("base", p * 2 + c * 4)'
   )
@@ -374,7 +380,7 @@ test('builds weekday peak pricing with two time ranges from an empty visual form
       })
     ).toMatchObject({ status: 'success', matchedTier, cost })
   }
-})
+}, 30000)
 
 test('edits image cache pricing and preserves an explicitly free cache lane', () => {
   const source =

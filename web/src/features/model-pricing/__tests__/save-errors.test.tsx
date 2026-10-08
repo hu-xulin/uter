@@ -125,9 +125,14 @@ it.each([200, 400])(
       </QueryClientProvider>
     )
     const user = userEvent.setup()
-    const price = await screen.findByRole('textbox', {
-      name: 'Input price',
-    })
+    // The panel also renders a read-only official reference input per dimension,
+    // so the editable Uter field is selected explicitly.
+    const price = (
+      await screen.findAllByRole('textbox', { name: 'Input price' })
+    ).find((el) => !(el as HTMLInputElement).disabled)
+    if (!price) {
+      throw new Error('Expected an editable input price field')
+    }
     await user.clear(price)
     await user.type(price, '3')
     const save = screen.getByRole('button', { name: 'Save model prices' })
@@ -135,7 +140,12 @@ it.each([200, 400])(
     await waitFor(() =>
       expect(notify.mock.calls.map(([text]) => text)).toEqual([message])
     )
-    expect(await screen.findByRole('alert')).toHaveTextContent(message)
+    // The pricing sheet may also surface an official-reference loading alert,
+    // so the backend pricing error is matched by its own message.
+    const pricingAlerts = (await screen.findAllByRole('alert')).filter((el) =>
+      el.textContent?.includes(message)
+    )
+    expect(pricingAlerts).toHaveLength(1)
     expect(price).toHaveValue('3')
     await waitFor(() => expect(save).toBeEnabled())
     await user.click(save)
