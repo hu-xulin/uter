@@ -36,6 +36,7 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { SecretInput } from '@/components/ui/secret-input'
 import { Switch } from '@/components/ui/switch'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { handleServerError } from '@/lib/handle-server-error'
@@ -479,17 +480,11 @@ export function OAuthSection(props: OAuthSectionProps) {
                     <FormItem>
                       <FormLabel>{t('Client Secret')}</FormLabel>
                       <FormControl>
-                        <Input
-                          type='password'
+                        <SecretInput
                           placeholder={t('Your GitHub OAuth Client Secret')}
-                          autoComplete='new-password'
                           value={field.value ?? ''}
-                          onChange={(event) =>
-                            field.onChange(event.target.value)
-                          }
+                          onChange={field.onChange}
                           name={field.name}
-                          onBlur={field.onBlur}
-                          ref={field.ref}
                         />
                       </FormControl>
                       <FormMessage />
@@ -570,17 +565,11 @@ export function OAuthSection(props: OAuthSectionProps) {
                     <FormItem>
                       <FormLabel>{t('Client Secret')}</FormLabel>
                       <FormControl>
-                        <Input
-                          type='password'
+                        <SecretInput
                           placeholder={t('Your Discord OAuth Client Secret')}
-                          autoComplete='new-password'
                           value={field.value ?? ''}
-                          onChange={(event) =>
-                            field.onChange(event.target.value)
-                          }
+                          onChange={field.onChange}
                           name={field.name}
-                          onBlur={field.onBlur}
-                          ref={field.ref}
                         />
                       </FormControl>
                       <FormMessage />
@@ -699,17 +688,11 @@ export function OAuthSection(props: OAuthSectionProps) {
                     <FormItem>
                       <FormLabel>{t('Client Secret')}</FormLabel>
                       <FormControl>
-                        <Input
-                          type='password'
+                        <SecretInput
                           placeholder={t('OIDC Client Secret')}
-                          autoComplete='new-password'
                           value={field.value ?? ''}
-                          onChange={(event) =>
-                            field.onChange(event.target.value)
-                          }
+                          onChange={field.onChange}
                           name={field.name}
-                          onBlur={field.onBlur}
-                          ref={field.ref}
                         />
                       </FormControl>
                       <FormMessage />
@@ -868,19 +851,11 @@ export function OAuthSection(props: OAuthSectionProps) {
                     <FormItem>
                       <FormLabel>{t('Client Secret')}</FormLabel>
                       <FormControl>
-                        <Input
-                          type='password'
-                          placeholder={t(
-                            'Telegram OAuth Client Secret from BotFather'
-                          )}
-                          autoComplete='new-password'
+                        <SecretInput
+
                           value={field.value ?? ''}
-                          onChange={(event) =>
-                            field.onChange(event.target.value)
-                          }
+                          onChange={field.onChange}
                           name={field.name}
-                          onBlur={field.onBlur}
-                          ref={field.ref}
                         />
                       </FormControl>
                       <FormMessage />
@@ -991,17 +966,11 @@ export function OAuthSection(props: OAuthSectionProps) {
                     <FormItem>
                       <FormLabel>{t('Client Secret')}</FormLabel>
                       <FormControl>
-                        <Input
-                          type='password'
+                        <SecretInput
                           placeholder={t('LinuxDO Client Secret')}
-                          autoComplete='new-password'
                           value={field.value ?? ''}
-                          onChange={(event) =>
-                            field.onChange(event.target.value)
-                          }
+                          onChange={field.onChange}
                           name={field.name}
-                          onBlur={field.onBlur}
-                          ref={field.ref}
                         />
                       </FormControl>
                       <FormMessage />
@@ -1090,17 +1059,11 @@ export function OAuthSection(props: OAuthSectionProps) {
                     <FormItem>
                       <FormLabel>{t('Server Token')}</FormLabel>
                       <FormControl>
-                        <Input
-                          type='password'
+                        <SecretInput
                           placeholder={t('Server Token')}
-                          autoComplete='new-password'
                           value={field.value ?? ''}
-                          onChange={(event) =>
-                            field.onChange(event.target.value)
-                          }
+                          onChange={field.onChange}
                           name={field.name}
-                          onBlur={field.onBlur}
-                          ref={field.ref}
                         />
                       </FormControl>
                       <FormMessage />

@@ -21,24 +21,34 @@ import * as React from 'react'
 
 import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
-import { maskSecret } from '@/lib/secret'
 
 type SecretInputProps = {
-  /** 真实密钥（来自表单值；可以是已保存的真实值，或用户新输入的值） */
+  /**
+   * 已保存的值。可能是：
+   * - 后端回传的**掩码串**（如 `abcd****wxyz`）——管理后台读取选项时即如此；
+   * - 用户本次输入的真实明文（编辑中、尚未保存）。
+   */
   value: string
-  /** 仅在真实改值时回传真实密钥；失焦清空时回传原值，绝不回传掩码串 */
+  /** 回传值。非编辑态被锁定，只在真正改值时调用；绝不回传掩码串。 */
   onChange: (value: string) => void
   placeholder?: string
   disabled?: boolean
   className?: string
+  name?: string
 }
 
 /**
- * 密钥输入框：
- * - 未编辑时显示掩码（前 4 + 中间星号 + 后 4），可点眼睛临时查看完整值；
- * - 聚焦即进入「替换」模式，清空并允许输入新密钥；
- * - 失焦时若未输入任何内容，则还原为原密钥（不会误清空已保存的密钥）；
- * - 仅回传真实密钥，绝不把掩码串写回表单/后端。
+ * 密钥输入框。
+ *
+ * 交互规则（对应「保存后展示」需求）：
+ * - **展示态**（默认）：显示后端给的掩码串，可用眼睛临时查看完整值。
+ *  展示态是只读的——若这里渲染成可编辑输入框，用户在掩码串上改一个字就会把
+ *   含 `*` 的串写回后端、覆盖真实密钥（这正是此前「保存后密钥失效」的成因）。
+ * - **编辑态**（点击后）：清空并聚焦，允许输入新明文。
+ * - **失焦未输入**：还原为进入编辑前的值，**不会把已保存的密钥清空**。
+ *
+ * 无论是否编辑，onChange 都不会拿到掩码串：展示态根本不触发 onChange，
+ * 失焦时回填的是 original（真实值或后端掩码串本身，均为「当前已保存值」）。
  */
 export function SecretInput({
   value,
@@ -46,40 +56,49 @@ export function SecretInput({
   placeholder,
   disabled,
   className,
+  name,
 }: SecretInputProps) {
   const [editing, setEditing] = React.useState(false)
   const [draft, setDraft] = React.useState('')
   const [revealed, setRevealed] = React.useState(false)
+  // 进入编辑态那一刻的「原值」，用于失焦回填。
   const originalRef = React.useRef(value)
+  const inputRef = React.useRef<HTMLInputElement>(null)
 
-  // 外部 value 变化时（例如表单 reset 到已保存值），退出编辑态并清空草稿。
+  // 外部 value 变化（保存后表单 reset、切换数据源等）时退出编辑态。
   React.useEffect(() => {
     if (!editing) setDraft('')
   }, [value, editing])
 
-  const display = editing ? draft : revealed ? value : maskSecret(value)
-  const inputType = editing ? (revealed ? 'text' : 'password') : 'text'
+  const isBlank = value.trim() === ''
+
+  // 展示态直接显示 value——它就是后端下发的掩码串（如 abcd****wxyz）。
+  // 前端不再二次掩码，否则会对掩码串再掩一层，出现 `sk-a************6789` 这种
+  // 「掩码的掩码」，既前后不一致也对不上核对。
+  // （真实明文只在本地编辑态、revealed 时出现，不来自后端。）
+  const display = editing ? draft : value
 
   return (
     <div className={cn('relative', className)}>
       <Input
-        type={inputType}
+        ref={inputRef}
+        name={name}
+        // 展示态用 text 呈现掩码串（可读、可核对前4后4）；编辑态用 password
+        // 避免新输入的密钥被旁观者看到。两者都不允许把掩码串当成输入值。
+        type={editing ? (revealed ? 'text' : 'password') : 'text'}
         disabled={disabled}
         autoComplete='new-password'
-        placeholder={
-          editing
-            ? (placeholder ?? '')
-            : value
-              ? maskSecret(value)
-              : (placeholder ?? '')
-        }
-        value={display}
+        readOnly={!editing}
+        placeholder={isBlank ? (placeholder ?? '') : undefined}
+        value={editing ? draft : display}
         onFocus={() => {
           if (disabled) return
+          originalRef.current = value
           setEditing(true)
           setDraft('')
           setRevealed(false)
-          originalRef.current = value
+          // 让光标落在输入框末尾，便于直接追加编辑。
+          requestAnimationFrame(() => inputRef.current?.focus())
         }}
         onChange={(e) => {
           const v = e.target.value
@@ -87,15 +106,16 @@ export function SecretInput({
           onChange(v)
         }}
         onBlur={() => {
-          // 未输入任何内容就失焦：还原为原密钥，避免把已保存密钥误清成空。
+          // 未输入任何内容就失焦：还原为原值，避免把已保存密钥误清成空。
           if (draft.trim() === '') {
             onChange(originalRef.current)
           }
           setEditing(false)
+          setDraft('')
         }}
-        className='pr-9'
+        className={cn('pr-9', editing && 'border-ring')}
       />
-      {!editing && value && (
+      {!editing && !isBlank && (
         <button
           type='button'
           tabIndex={-1}
