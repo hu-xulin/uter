@@ -45,6 +45,15 @@ func taskPluginCompileError(c *gin.Context, err error) {
 		common.ApiErrorI18n(c, i18n.MsgTaskPluginUnknownMetaField, map[string]any{"Field": unknownField.Field})
 		return
 	}
+	var capabilityErr *jsplugin.CapabilityError
+	if errors.As(err, &capabilityErr) {
+		if capabilityErr.Duplicate {
+			common.ApiErrorI18n(c, i18n.MsgTaskPluginDuplicateCapability, map[string]any{"Capability": capabilityErr.Name})
+		} else {
+			common.ApiErrorI18n(c, i18n.MsgTaskPluginUnsupportedCapability, map[string]any{"Capability": capabilityErr.Name})
+		}
+		return
+	}
 	common.ApiError(c, err)
 }
 
@@ -83,7 +92,7 @@ func UploadTaskPlugin(c *gin.Context) {
 		return
 	}
 	if err = jsplugin.ValidateV1Meta(loaded.Meta); err != nil {
-		common.ApiErrorMsg(c, err.Error())
+		taskPluginCompileError(c, err)
 		return
 	}
 	icon := strings.TrimSpace(request.Icon)

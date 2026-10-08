@@ -1,6 +1,8 @@
 package i18n
 
 const MsgTaskPluginUnknownMetaField = "task_plugin.unknown_meta_field"
+const MsgTaskPluginUnsupportedCapability = "task_plugin.unsupported_capability"
+const MsgTaskPluginDuplicateCapability = "task_plugin.duplicate_capability"
 
 // Message keys for i18n translations
 // Use these constants instead of hardcoded strings

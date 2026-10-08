@@ -3,6 +3,8 @@
 
 # Task plugin messages
 task_plugin.unknown_meta_field: '這個外掛帶了一個 uter 還不認識的設定項「{{.Field}}」。請升級 uter 後重新安裝該外掛。'
+task_plugin.unsupported_capability: '該外掛需要「{{.Capability}}」能力，但目前版本的 uter 尚未支援。請升級 uter，或聯絡外掛作者取得相容版本。'
+task_plugin.duplicate_capability: '該外掛重複宣告了「{{.Capability}}」能力。請重新安裝乾淨的外掛副本，或聯絡外掛作者。'
 
 # Common messages
 common.invalid_params: "您填寫的內容有誤，請檢查後再試。"

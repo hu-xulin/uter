@@ -108,6 +108,57 @@ export function invalid(kind) {
 	}
 }
 
+func TestEngineJSONOrderReordersKeys(t *testing.T) {
+	engine, err := Compile(`
+export function orderIt() {
+  const input = {a:"first", b:"second", z:"third", nested:{x:1, y:2, w:3}, items:[1, 2, 3]};
+  const by = {b:0, a:1, y:0, x:1};
+  const result = utils.json.order(input, by);
+  return {
+    keys: Object.keys(result),
+    nested: Object.keys(result.nested),
+    array: Array.isArray(result.items),
+    available: utils.hasCapability("json-order@1"),
+    unavailable: utils.hasCapability("json-order@2"),
+    passthroughKeys: Object.keys(utils.json.order(input)),
+  };
+}
+export function orderInvalid(kind) {
+  let value;
+  switch(kind) {
+    case "cycle": value={}; value.self=value; break;
+    case "function": value={run:function(){}}; break;
+    case "undefined": value={missing:undefined}; break;
+    case "nan": value=NaN; break;
+    case "bigint": value=1n; break;
+    case "date": value=new Date(); break;
+    case "sparse": value=[,1]; break;
+  }
+  return utils.json.order(value);
+}`, Options{})
+	require.NoError(t, err)
+	value, err := engine.Call(t.Context(), "orderIt")
+	require.NoError(t, err)
+	result := value.(map[string]any)
+	// Mapped keys lead (b before a); unmapped keys (z, nested, items) keep
+	// insertion order and follow. The full ordering is deterministic.
+	assert.Equal(t, []any{"b", "a", "z", "nested", "items"}, result["keys"])
+	// The same priority map applies recursively inside nested objects.
+	assert.Equal(t, []any{"y", "x", "w"}, result["nested"])
+	assert.Equal(t, true, result["array"])
+	assert.Equal(t, true, result["available"])
+	assert.Equal(t, false, result["unavailable"])
+	// Without a map, order is preserved (a, b, z, nested, items).
+	assert.Equal(t, []any{"a", "b", "z", "nested", "items"}, result["passthroughKeys"])
+	_ = result
+	for _, kind := range []string{"cycle", "function", "undefined", "nan", "bigint", "date", "sparse"} {
+		t.Run(kind, func(t *testing.T) {
+			_, err := engine.Call(t.Context(), "orderInvalid", kind)
+			require.Error(t, err)
+		})
+	}
+}
+
 func TestJSONStateChangesAndEncodedLimits(t *testing.T) {
 	const changes = `[
   [{"op":"set","path":[],"value":{"text":"<","parts":[],"nested":{"value":null}}}],

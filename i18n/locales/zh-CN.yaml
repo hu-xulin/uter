@@ -3,6 +3,8 @@
 
 # Task plugin messages
 task_plugin.unknown_meta_field: '这个插件带了一个 uter 还不认识的设置项“{{.Field}}”。请升级 uter 后重新安装该插件。'
+task_plugin.unsupported_capability: '该插件需要「{{.Capability}}」能力，但当前版本的 uter 暂不支持。请升级 uter，或联系插件作者获取兼容版本。'
+task_plugin.duplicate_capability: '该插件重复声明了「{{.Capability}}」能力。请重新安装干净的插件副本，或联系插件作者。'
 
 # Common messages
 common.invalid_params: "您填写的内容有误，请检查后再试。"

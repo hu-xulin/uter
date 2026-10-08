@@ -1,6 +1,8 @@
 # Vietnamese translations
 
 task_plugin.unknown_meta_field: "Siêu dữ liệu plugin chứa trường không xác định \"{{.Field}}\". Nếu plugin này được tải từ chợ chính thức, có thể cần phiên bản uter mới hơn. Hãy thử cập nhật uter rồi cài đặt lại plugin."
+task_plugin.unsupported_capability: "Plugin này yêu cầu tính năng \"{{.Capability}}\", nhưng phiên bản uter của bạn chưa hỗ trợ. Hãy cập nhật uter hoặc liên hệ tác giả plugin để lấy bản tương thích."
+task_plugin.duplicate_capability: "Plugin này khai báo tính năng \"{{.Capability}}\" nhiều hơn một lần. Hãy cài đặt lại bản sao sạch của plugin hoặc liên hệ tác giả."
 common.invalid_params: "Tham số không hợp lệ"
 common.database_error: "Lỗi cơ sở dữ liệu, vui lòng liên hệ quản trị viên"
 common.retry_later: "Vui lòng thử lại sau"

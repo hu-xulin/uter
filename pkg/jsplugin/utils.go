@@ -7,14 +7,18 @@ import (
 	"encoding/base64"
 	"encoding/hex"
 	"fmt"
+	"math"
 	"net/url"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 	"github.com/grafana/sobek"
+
+	"github.com/uter-ai/uter/common"
 )
 
 type volcSignRequest struct {
@@ -32,23 +36,56 @@ type volcSignRequest struct {
 func injectGlobals(runtime *sobek.Runtime, identity func() string, now func() time.Time, logOutput func(string)) error {
 	utils := map[string]any{
 		"hasCapability": HasCapability,
-		"json": map[string]any{
-			"clone": func(call sobek.FunctionCall) sobek.Value {
-				if sobek.IsUndefined(call.Argument(0)) {
-					panic(runtime.NewTypeError("json.clone requires a JSON value"))
-				}
-				budget := &jsonStateBudget{ctx: context.Background(), bytes: MaxJSONToolBytes, nodes: maxJSONToolNodes}
-				value, err := newJSONStateNode(call.Argument(0), 0, budget)
-				if err != nil {
-					panic(runtime.NewTypeError("json.clone: %s", err))
-				}
-				cloned, err := value.jsValue(runtime)
-				if err != nil {
-					panic(runtime.NewGoError(err))
-				}
-				return cloned
-			},
+	"json": map[string]any{
+		"clone": func(call sobek.FunctionCall) sobek.Value {
+			if sobek.IsUndefined(call.Argument(0)) {
+				panic(runtime.NewTypeError("json.clone requires a JSON value"))
+			}
+			budget := &jsonStateBudget{ctx: context.Background(), bytes: MaxJSONToolBytes, nodes: maxJSONToolNodes}
+			value, err := newJSONStateNode(call.Argument(0), 0, budget)
+			if err != nil {
+				panic(runtime.NewTypeError("json.clone: %s", err))
+			}
+			cloned, err := value.jsValue(runtime)
+			if err != nil {
+				panic(runtime.NewGoError(err))
+			}
+			return cloned
 		},
+		// order re-emits a JSON value as a fresh object/array whose object keys
+		// are sorted by the optional priority map. Keys absent from the map keep
+		// their original insertion order and are emitted after the mapped ones.
+		// It is the host-side backing for the json-order@1 capability.
+		"order": func(call sobek.FunctionCall) sobek.Value {
+			if sobek.IsUndefined(call.Argument(0)) {
+				panic(runtime.NewTypeError("json.order requires a JSON value"))
+			}
+			orderMap := map[string]int{}
+			if !sobek.IsUndefined(call.Argument(1)) {
+				arg := call.Argument(1)
+				object, ok := arg.(*sobek.Object)
+				if !ok || object.ClassName() != "Object" {
+					panic(runtime.NewTypeError("json.order order map must be a plain object"))
+				}
+				for _, key := range object.Keys() {
+					switch number := object.Get(key).Export().(type) {
+					case float64:
+						orderMap[key] = int(number)
+					case int64:
+						orderMap[key] = int(number)
+					case int:
+						orderMap[key] = number
+					}
+				}
+			}
+			budget := &jsonStateBudget{ctx: context.Background(), bytes: MaxJSONToolBytes, nodes: maxJSONToolNodes}
+			result, err := orderJSONTree(runtime, call.Argument(0), orderMap, 0, budget)
+			if err != nil {
+				panic(runtime.NewTypeError("json.order: %s", err))
+			}
+			return result
+		},
+	},
 		"unixNow": func() int64 { return now().Unix() },
 		"jwtSignHS256": func(claims map[string]any, secret string) (string, error) {
 			return jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims(claims)).SignedString([]byte(secret))
@@ -88,6 +125,105 @@ func injectGlobals(runtime *sobek.Runtime, identity func() string, now func() ti
 		return err
 	}
 	return runtime.Set("console", console)
+}
+
+// orderJSONTree re-emits a JS JSON value as a new sobek value whose object keys
+// are reordered by orderMap at every level (unlisted keys keep insertion order
+// and follow listed ones). It reuses the bounded accounting used by json.clone
+// so a malicious plugin cannot allocate unbounded memory.
+func orderJSONTree(runtime *sobek.Runtime, value sobek.Value, orderMap map[string]int, depth int, budget *jsonStateBudget) (sobek.Value, error) {
+	if depth > maxJSONToolDepth {
+		return nil, fmt.Errorf("JSON state exceeds depth limit")
+	}
+	if sobek.IsUndefined(value) {
+		return nil, fmt.Errorf("undefined is not a JSON value")
+	}
+	if sobek.IsNull(value) {
+		return runtime.ToValue(nil), nil
+	}
+	if object, ok := value.(*sobek.Object); ok {
+		switch object.ClassName() {
+		case "Object":
+			keys := object.Keys()
+			if len(keys) > budget.nodes {
+				return nil, fmt.Errorf("JSON object exceeds node limit")
+			}
+			if err := budget.spend(2, 0); err != nil {
+				return nil, err
+			}
+			sorted := make([]string, len(keys))
+			copy(sorted, keys)
+			sort.SliceStable(sorted, func(i, j int) bool {
+				pi, oki := orderMap[sorted[i]]
+				pj, okj := orderMap[sorted[j]]
+				if oki && okj {
+					return pi < pj
+				}
+				if oki != okj {
+					return oki
+				}
+				return false
+			})
+			result := runtime.NewObject()
+			for _, key := range sorted {
+				child, err := orderJSONTree(runtime, object.Get(key), orderMap, depth+1, budget)
+				if err != nil {
+					return nil, err
+				}
+				if err = result.DefineDataProperty(key, child, sobek.FLAG_TRUE, sobek.FLAG_TRUE, sobek.FLAG_TRUE); err != nil {
+					return nil, err
+				}
+			}
+			return result, nil
+		case "Array":
+			length := object.Get("length").ToInteger()
+			if length < 0 || length > int64(budget.nodes) {
+				return nil, fmt.Errorf("JSON array exceeds node limit")
+			}
+			if err := budget.spend(2+max(0, int(length)-1), 0); err != nil {
+				return nil, err
+			}
+			items := make([]any, length)
+			for index := range items {
+				raw := object.Get(strconv.Itoa(index))
+				if raw == nil {
+					return nil, fmt.Errorf("sparse arrays are not JSON values")
+				}
+				elem, err := orderJSONTree(runtime, raw, orderMap, depth+1, budget)
+				if err != nil {
+					return nil, err
+				}
+				items[index] = elem
+			}
+			return runtime.NewArray(items...), nil
+		default:
+			return nil, fmt.Errorf("json.order accepts only plain objects, arrays and JSON scalars")
+		}
+	}
+	exported := value.Export()
+	switch typed := exported.(type) {
+	case int:
+		exported = float64(typed)
+	case int64:
+		exported = float64(typed)
+	}
+	switch scalar := exported.(type) {
+	case float64:
+		if math.IsNaN(scalar) || math.IsInf(scalar, 0) {
+			return nil, fmt.Errorf("JSON numbers must be finite")
+		}
+	case nil, bool, string:
+	default:
+		return nil, fmt.Errorf("value must contain only JSON objects, arrays and scalars")
+	}
+	encoded, err := common.Marshal(exported)
+	if err != nil {
+		return nil, err
+	}
+	if err = budget.spend(len(encoded), 0); err != nil {
+		return nil, err
+	}
+	return runtime.ToValue(exported), nil
 }
 
 func signVolcV4(request volcSignRequest, now func() time.Time) (map[string]string, error) {

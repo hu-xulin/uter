@@ -1,6 +1,8 @@
 # French translations
 
 task_plugin.unknown_meta_field: "Les métadonnées du plugin contiennent un champ inconnu « {{.Field}} ». Si ce plugin a été téléchargé depuis la marketplace officielle, il peut nécessiter une version plus récente d'uter. Essayez de mettre uter à jour puis de réinstaller le plugin."
+task_plugin.unsupported_capability: "Ce plugin nécessite la capacité « {{.Capability}} », non prise en charge par votre version d'uter. Mettez uter à jour ou demandez une version compatible à l'auteur du plugin."
+task_plugin.duplicate_capability: "Ce plugin déclare la capacité « {{.Capability}} » plusieurs fois. Réinstallez une copie propre du plugin ou contactez son auteur."
 common.invalid_params: "Paramètres invalides"
 common.database_error: "Erreur de base de données, veuillez contacter l'administrateur"
 common.retry_later: "Veuillez réessayer plus tard"
