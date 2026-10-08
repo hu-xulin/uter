@@ -1,6 +1,8 @@
 package router
 
 import (
+	"os"
+
 	"github.com/uter-ai/uter/controller"
 	"github.com/uter-ai/uter/middleware"
 	"github.com/uter-ai/uter/service"
@@ -25,6 +27,12 @@ func SetApiRouter(router *gin.Engine) {
 		apiRouter.GET("/setup", controller.GetSetup)
 		apiRouter.POST("/setup", anonymousRequestBodyLimit, controller.PostSetup)
 		apiRouter.GET("/status", controller.GetStatus)
+		// Runtime interface locale, served only when UTER_I18N_DIR points at a
+		// directory of locale JSONs (otherwise 404 → the SPA keeps its
+		// built-in copy). Lets a corrected translation reach users without a
+		// frontend rebuild or a server restart. DiskETag is registered before
+		// the handler so the content ETag / 304 handling wraps the response.
+		apiRouter.GET("/i18n/:file", middleware.DiskETag("/api/i18n", os.Getenv("UTER_I18N_DIR")), controller.GetI18nBundle)
 		apiRouter.GET("/uptime/status", middleware.UserAuth(), controller.GetUptimeKumaStatus)
 		apiRouter.GET("/models", middleware.UserAuth(), controller.DashboardListModels)
 		apiRouter.GET("/status/test", middleware.AdminAuth(), controller.TestStatus)

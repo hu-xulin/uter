@@ -21,6 +21,7 @@ import LanguageDetector from 'i18next-browser-languagedetector'
 import { initReactI18next } from 'react-i18next'
 
 import { convertDetectedLanguage } from './languages'
+import { installRuntimeLocaleLoader } from './runtime-locale'
 import en from './locales/en.json'
 import fr from './locales/fr.json'
 import ja from './locales/ja.json'
@@ -59,6 +60,14 @@ i18n
       // codes (non-Chinese codes pass through for normal supportedLngs matching).
       convertDetectedLanguage,
     },
+  })
+  .then(() => {
+    // Pull the active locale from `GET /api/i18n/:file` (present only when the
+    // backend sets UTER_I18N_DIR) and swap it in over the bundled JSON, so a
+    // corrected translation applies without a rebuild or restart. The bundled
+    // copy above stays the first-paint source and the fallback when the
+    // endpoint is absent.
+    installRuntimeLocaleLoader()
   })
 
 export default i18n
