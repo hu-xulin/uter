@@ -17,18 +17,16 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@uter.ai
 */
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useEffect, useMemo } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
+import { toast } from 'sonner'
 import * as z from 'zod'
 
-import {
-  Form,
-  FormControl,
-  FormItem,
-  FormLabel,
-} from '@/components/ui/form'
+import { Form, FormControl, FormItem, FormLabel } from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
 import { Switch } from '@/components/ui/switch'
+import { api } from '@/lib/api'
 
 import { SettingsForm } from '../components/settings-form-layout'
 import { SettingsPageFormActions } from '../components/settings-page-context'
@@ -81,7 +79,7 @@ function parsePages(value: string): CustomerServicePageKey[] {
     .split(',')
     .map((part) => part.trim().toLowerCase())
     .filter((part): part is CustomerServicePageKey =>
-      all.includes(part as CustomerServicePageKey),
+      all.includes(part as CustomerServicePageKey)
     )
   // 解析不出任何合法键（含空串、全是未知键）时按「全开」处理，与后端一致。
   // 空串来自「从未配置过」的存量部署，仍按全开兜底，与后端
@@ -101,12 +99,90 @@ function serializePages(pages: string[]): string {
     .join(',')
 }
 
+/** 智能客服大模型配置（smart-cs 的 llm 段）字段。敏感字段（api_key 等）走密码框。 */
+const LLM_FIELDS: {
+  key: string
+  labelKey: string
+  sensitive?: boolean
+  placeholderKey?: string
+}[] = [
+  { key: 'provider', labelKey: 'Provider' },
+  {
+    key: 'base',
+    labelKey: 'API Base URL',
+    placeholderKey: 'https://api.example.com/v1',
+  },
+  {
+    key: 'model',
+    labelKey: 'Primary Model',
+    placeholderKey: 'deepseek-ai/DeepSeek-V3',
+  },
+  {
+    key: 'fallback_model',
+    labelKey: 'Fallback Model',
+    placeholderKey: 'Qwen/Qwen3-8B',
+  },
+  {
+    key: 'embed_model',
+    labelKey: 'Embedding Model',
+    placeholderKey: 'BAAI/bge-m3',
+  },
+  {
+    key: 'api_key',
+    labelKey: 'API Key',
+    sensitive: true,
+    placeholderKey: 'sk-...',
+  },
+  {
+    key: 'backup_base',
+    labelKey: 'Backup Base URL',
+    placeholderKey: 'https://backup.example.com/v1',
+  },
+  {
+    key: 'backup_model',
+    labelKey: 'Backup Model',
+    placeholderKey: 'glm-4-flash',
+  },
+  {
+    key: 'backup_api_key',
+    labelKey: 'Backup API Key',
+    sensitive: true,
+    placeholderKey: 'sk-...',
+  },
+]
+
+type LLMConfig = Record<string, string>
+
 /**
- * 「站点与品牌 → 智能客服」：只保留六个页面级开关。
+ * 把后端 {success, data:{llm}} 响应规整成本地字符串 map。缺失/非字符串字段兜底为空串，
+ * 避免把 null/number 直接塞进受控 input 触发 React 的类型告警。
+ */
+function normalizeLLM(raw: unknown): LLMConfig {
+  const out: LLMConfig = {}
+  const source =
+    raw && typeof raw === 'object' ? (raw as Record<string, unknown>) : null
+  for (const f of LLM_FIELDS) {
+    const v = source ? source[f.key] : undefined
+    if (typeof v === 'string') {
+      out[f.key] = v
+    } else if (v == null) {
+      out[f.key] = ''
+    } else {
+      out[f.key] = String(v)
+    }
+  }
+  return out
+}
+
+/**
+ * 「站点与品牌 → 智能客服」：页面级入口开关 + 智能客服管理员令牌 + 大模型配置。
  *
  * 智能客服本体是独立仓库（uter-ai/uter-cs）、独立部署，Uter 只是把
- * `CUSTOMER_SERVICE_URL` 经 /api/status 下发给前端、由浏览器直连。这里关掉的**只是
- * 入口显示**，既不会停止也不影响那个服务本身——运营可以先隐藏入口、保留服务与配置。
+ * `CUSTOMER_SERVICE_URL` 经 /api/status 下发给前端、由浏览器直连它的聊天接口。
+ * 但这里的三块配置都走 Uter 后端**代理**到 smart-cs 的管理端：
+ *   - 页面开关：写入 Uter 自身的 option（入口显隐是 Uter 侧的事）；
+ *   - 管理员令牌：写入 Uter option，作为 Uter 代理 smart-cs 管理接口时的凭证；
+ *   - 大模型配置：经 Uter 的 /api/customer-service/deploy/llm 代理读写 smart-cs。
  *
  * 曾经有一个「启动智能客服」总开关，2026-10-08 按运营要求移除：页面开关本身已能
  * 表达「在哪些页面显示」，而全开/全关就是总开关的两种取值，再加一个同级开关只会
@@ -116,15 +192,18 @@ function serializePages(pages: string[]): string {
  */
 export function CustomerServiceSection({
   defaultPages,
+  defaultAdminToken,
 }: {
   /** 后端存的逗号串；空串表示未配置 = 全部页面都开。 */
   defaultPages?: string
+  /** 后端存的 smart-cs 管理员令牌（敏感，仅用于判断「是否已配置」，不回显明文）。 */
+  defaultAdminToken?: string
 }) {
   const { t } = useTranslation()
   const updateOption = useUpdateOption()
   const parsedDefaults = useMemo(
     () => parsePages(defaultPages ?? ''),
-    [defaultPages],
+    [defaultPages]
   )
   const form = useForm<CustomerServiceFormValues>({
     resolver: zodResolver(customerServiceSchema),
@@ -205,6 +284,228 @@ export function CustomerServiceSection({
           </div>
         </SettingsForm>
       </Form>
+
+      <AdminTokenField defaultConfigured={Boolean(defaultAdminToken)} />
+
+      <ModelConfigPanel />
     </SettingsSection>
+  )
+}
+
+/** 智能客服管理员令牌：作为 Uter 代理 smart-cs 管理接口时的 Bearer 凭证。 */
+function AdminTokenField({
+  defaultConfigured,
+}: {
+  defaultConfigured: boolean
+}) {
+  const { t } = useTranslation()
+  const updateOption = useUpdateOption()
+  const [token, setToken] = useState('')
+  const [configured, setConfigured] = useState(defaultConfigured)
+
+  const save = async () => {
+    if (!token.trim()) {
+      toast.error(t('Token cannot be empty'))
+      return
+    }
+    try {
+      await updateOption.mutateAsync({
+        key: 'CustomerServiceAdminToken',
+        value: token.trim(),
+      })
+      setConfigured(true)
+      setToken('')
+      toast.success(t('Admin token saved'))
+    } catch {
+      // 错误已由拦截器提示
+    }
+  }
+
+  return (
+    <div className='mt-6 space-y-3 rounded-lg border p-4'>
+      <div className='space-y-0.5'>
+        <p className='text-sm leading-none font-medium'>
+          {t('Customer Service Admin Token')}
+        </p>
+        <p className='text-muted-foreground text-sm'>
+          {configured
+            ? t('Admin token is configured. Paste a new one to replace it.')
+            : t(
+                'Paste the smart-cs admin bearer token so Uter can read and save its model configuration on your behalf.'
+              )}
+        </p>
+      </div>
+      <div className='flex flex-col gap-2 sm:flex-row'>
+        <Input
+          type='password'
+          autoComplete='new-password'
+          placeholder='Bearer …'
+          value={token}
+          onChange={(e) => setToken(e.target.value)}
+          disabled={updateOption.isPending}
+        />
+        <button
+          type='button'
+          className='bg-primary text-primary-foreground shrink-0 rounded-md px-4 py-2 text-sm font-medium disabled:opacity-50'
+          onClick={save}
+          disabled={updateOption.isPending || !token.trim()}
+        >
+          {t('Save token')}
+        </button>
+      </div>
+    </div>
+  )
+}
+
+/**
+ * 大模型配置面板：经 Uter 代理读写 smart-cs 的 llm 段。
+ *
+ * - 挂载即尝试 GET 一次：成功则填充表单；返回 needToken 则提示先填管理员令牌；
+ *   其它错误提示具体原因。
+ * - 保存走 PUT /api/customer-service/deploy/llm，由 Uter 后端带令牌转发并触发 smart-cs
+ *   引擎重载。
+ */
+function ModelConfigPanel() {
+  const { t } = useTranslation()
+  const [config, setConfig] = useState<LLMConfig | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
+  const [needToken, setNeedToken] = useState(false)
+  const [error, setError] = useState('')
+
+  const load = useCallback(async () => {
+    setLoading(true)
+    setError('')
+    setNeedToken(false)
+    try {
+      const res = await api.get<{ success: boolean; data: { llm: LLMConfig } }>(
+        '/api/customer-service/deploy/llm'
+      )
+      const data = res.data
+      if (data && data.success) {
+        setConfig(normalizeLLM(data.data?.llm))
+      } else {
+        setError(t('Failed to load model configuration'))
+        setConfig(normalizeLLM(null))
+      }
+    } catch (e: unknown) {
+      const err = e as {
+        response?: { data?: { needToken?: boolean; message?: string } }
+      }
+      if (err?.response?.data?.needToken) {
+        setNeedToken(true)
+      } else {
+        setError(
+          err?.response?.data?.message ||
+            t('Failed to load model configuration')
+        )
+      }
+      setConfig(normalizeLLM(null))
+    } finally {
+      setLoading(false)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [t])
+
+  useEffect(() => {
+    void load()
+  }, [load])
+
+  const update = async () => {
+    if (!config) return
+    setSaving(true)
+    setError('')
+    try {
+      const res = await api.put<{ success: boolean; message?: string }>(
+        '/api/customer-service/deploy/llm',
+        config
+      )
+      if (res.data?.success) {
+        toast.success(res.data.message || t('Model configuration saved'))
+      } else {
+        setError(res.data?.message || t('Failed to save model configuration'))
+      }
+    } catch (e: unknown) {
+      const err = e as { response?: { data?: { message?: string } } }
+      setError(
+        err?.response?.data?.message || t('Failed to save model configuration')
+      )
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  return (
+    <div className='mt-6 space-y-3 rounded-lg border p-4'>
+      <div className='space-y-0.5'>
+        <p className='text-sm leading-none font-medium'>
+          {t('Model Configuration')}
+        </p>
+        <p className='text-muted-foreground text-sm'>
+          {t(
+            'Large model settings for the customer service assistant. Changes are pushed to the connected smart-cs deployment.'
+          )}
+        </p>
+      </div>
+
+      {loading && (
+        <p className='text-muted-foreground text-sm'>{t('Loading…')}</p>
+      )}
+
+      {!loading && needToken && (
+        <p className='text-sm text-amber-600'>
+          {t(
+            'Admin token not configured. Paste the smart-cs admin token above first.'
+          )}
+        </p>
+      )}
+
+      {!loading && !needToken && error && (
+        <p className='text-destructive text-sm'>{error}</p>
+      )}
+
+      {!loading && !needToken && config && (
+        <div className='space-y-3'>
+          {LLM_FIELDS.map((field) => (
+            <FormItem key={field.key} className='flex flex-col gap-1.5'>
+              <FormLabel className='text-sm font-normal'>
+                {t(field.labelKey)}
+              </FormLabel>
+              <FormControl>
+                <Input
+                  type={field.sensitive ? 'password' : 'text'}
+                  autoComplete='off'
+                  placeholder={field.placeholderKey ?? ''}
+                  value={config[field.key] ?? ''}
+                  onChange={(e) =>
+                    setConfig({ ...config, [field.key]: e.target.value })
+                  }
+                  disabled={saving}
+                />
+              </FormControl>
+            </FormItem>
+          ))}
+
+          <div className='flex justify-end gap-2 pt-1'>
+            <button
+              type='button'
+              className='rounded-md border px-3 py-1.5 text-sm'
+              onClick={() => void load()}
+              disabled={saving}
+            >
+              {t('Reload')}
+            </button>
+            <button
+              type='button'
+              className='bg-primary text-primary-foreground rounded-md px-4 py-1.5 text-sm font-medium disabled:opacity-50'
+              onClick={() => void update()}
+              disabled={saving}
+            >
+              {saving ? t('Saving…') : t('Save model configuration')}
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
   )
 }

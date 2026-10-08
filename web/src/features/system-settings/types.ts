@@ -154,6 +154,12 @@ export type SiteSettings = {
    * （后端 NormalizeCustomerServicePages 会展开成全部键）；"none" 表示全部页面都关。
    */
   CustomerServicePages: string
+  /**
+   * 智能客服（smart-cs）管理员令牌（敏感）。前端只用来判断「是否已配置」，绝不在表单里
+   * 回显明文。真正保存/代理调用发生在 Uter 后端（controller/customer_service_deploy.go），
+   * 它拿这个值作为 Bearer 令牌转发到 smart-cs 的管理端 API。
+   */
+  CustomerServiceAdminToken: string
 }
 
 export type AuthSettings = {
