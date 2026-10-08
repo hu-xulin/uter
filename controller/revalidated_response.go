@@ -3,7 +3,7 @@ package controller
 import (
 	"net/http"
 
-	"github.com/Uter-AI/Uter/common"
+	"github.com/uter-ai/uter/common"
 
 	"github.com/gin-gonic/gin"
 )

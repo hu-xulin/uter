@@ -7,10 +7,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Uter-AI/Uter/common"
+	"github.com/uter-ai/uter/common"
 
-	"github.com/Uter-AI/Uter/constant"
-	"github.com/Uter-AI/Uter/model"
+	"github.com/uter-ai/uter/constant"
+	"github.com/uter-ai/uter/model"
 )
 
 type CodexCredentialRefreshOptions struct {

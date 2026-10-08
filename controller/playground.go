@@ -4,11 +4,11 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/Uter-AI/Uter/middleware"
+	"github.com/uter-ai/uter/middleware"
 
-	"github.com/Uter-AI/Uter/model"
-	relaycommon "github.com/Uter-AI/Uter/relay/common"
-	"github.com/Uter-AI/Uter/relaykit/types"
+	"github.com/uter-ai/uter/model"
+	relaycommon "github.com/uter-ai/uter/relay/common"
+	"github.com/uter-ai/uter/relaykit/types"
 
 	"github.com/gin-gonic/gin"
 )

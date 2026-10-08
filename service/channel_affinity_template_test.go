@@ -8,9 +8,9 @@ import (
 	"testing"
 	"time"
 
-	relaycommon "github.com/Uter-AI/Uter/relay/common"
+	relaycommon "github.com/uter-ai/uter/relay/common"
 
-	"github.com/Uter-AI/Uter/setting/operation_setting"
+	"github.com/uter-ai/uter/setting/operation_setting"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/require"
 )

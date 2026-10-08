@@ -6,10 +6,10 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/Uter-AI/Uter/dto"
+	"github.com/uter-ai/uter/dto"
 
-	"github.com/Uter-AI/Uter/relaykit/types"
-	"github.com/Uter-AI/Uter/service"
+	"github.com/uter-ai/uter/relaykit/types"
+	"github.com/uter-ai/uter/service"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

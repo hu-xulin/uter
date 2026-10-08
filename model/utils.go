@@ -6,7 +6,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/Uter-AI/Uter/common"
+	"github.com/uter-ai/uter/common"
 
 	"github.com/bytedance/gopkg/util/gopool"
 	"gorm.io/gorm"

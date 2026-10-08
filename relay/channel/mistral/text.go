@@ -3,9 +3,9 @@ package mistral
 import (
 	"regexp"
 
-	"github.com/Uter-AI/Uter/common"
+	"github.com/uter-ai/uter/common"
 
-	"github.com/Uter-AI/Uter/relaykit/dto"
+	"github.com/uter-ai/uter/relaykit/dto"
 )
 
 var mistralToolCallIdRegexp = regexp.MustCompile("^[a-zA-Z0-9]{9}$")

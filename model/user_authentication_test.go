@@ -9,9 +9,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Uter-AI/Uter/common"
+	"github.com/uter-ai/uter/common"
 
-	"github.com/Uter-AI/Uter/setting/system_setting"
+	"github.com/uter-ai/uter/setting/system_setting"
 	"github.com/go-redis/redis/v8"
 	"github.com/go-webauthn/webauthn/webauthn"
 	"github.com/pquerna/otp/totp"

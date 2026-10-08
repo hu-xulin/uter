@@ -1,6 +1,6 @@
 package common
 
-import "github.com/Uter-AI/Uter/constant"
+import "github.com/uter-ai/uter/constant"
 
 func ChannelType2APIType(channelType int) (int, bool) {
 	apiType := -1
@@ -21,6 +21,8 @@ func ChannelType2APIType(channelType int) (int, bool) {
 		apiType = constant.APITypeXunfei
 	case constant.ChannelTypeAIProxyLibrary:
 		apiType = constant.APITypeAIProxyLibrary
+	case constant.ChannelTypeFastGPT:
+		apiType = constant.APITypeOpenAI
 	case constant.ChannelTypeTencent:
 		apiType = constant.APITypeTencent
 	case constant.ChannelTypeGemini:

@@ -1,6 +1,6 @@
 package system_setting
 
-import "github.com/Uter-AI/Uter/setting/config"
+import "github.com/uter-ai/uter/setting/config"
 
 type DiscordSettings struct {
 	Enabled      bool   `json:"enabled"`

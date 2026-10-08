@@ -3,9 +3,9 @@ package oairesponses
 import (
 	"strings"
 
-	"github.com/Uter-AI/Uter/relaykit/dto"
+	"github.com/uter-ai/uter/relaykit/dto"
 
-	kitutil "github.com/Uter-AI/Uter/relaykit/relayconvert/kitutil"
+	kitutil "github.com/uter-ai/uter/relaykit/relayconvert/kitutil"
 )
 
 const (

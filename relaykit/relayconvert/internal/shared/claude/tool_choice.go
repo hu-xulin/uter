@@ -1,6 +1,6 @@
 package claude
 
-import "github.com/Uter-AI/Uter/relaykit/dto"
+import "github.com/uter-ai/uter/relaykit/dto"
 
 func MapOpenAIToolChoice(toolChoice any, parallelToolCalls *bool) *dto.ClaudeToolChoice {
 	var claudeToolChoice *dto.ClaudeToolChoice

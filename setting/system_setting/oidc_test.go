@@ -3,7 +3,7 @@ package system_setting
 import (
 	"testing"
 
-	"github.com/Uter-AI/Uter/setting/config"
+	"github.com/uter-ai/uter/setting/config"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

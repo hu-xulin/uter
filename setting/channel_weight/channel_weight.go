@@ -15,7 +15,7 @@ type ChannelModelEntry struct {
 
 // ChannelModelWeightSetting maps channelId -> model -> entry.
 type ChannelModelWeightSetting struct {
-	Enabled  bool                                     `json:"enabled"`
+	Enabled  bool                                    `json:"enabled"`
 	Channels map[string]map[string]ChannelModelEntry `json:"channels"`
 }
 

@@ -1,27 +1,47 @@
 package relay
 
 import (
+	"bytes"
 	"fmt"
 	"io"
 	"net/http"
 	"strings"
 
-	"github.com/Uter-AI/Uter/common"
+	"github.com/uter-ai/uter/common"
 
-	"github.com/Uter-AI/Uter/constant"
-	"github.com/Uter-AI/Uter/logger"
-	relaycommon "github.com/Uter-AI/Uter/relay/common"
-	relayconstant "github.com/Uter-AI/Uter/relay/constant"
-	"github.com/Uter-AI/Uter/relay/helper"
-	"github.com/Uter-AI/Uter/relaykit/dto"
-	"github.com/Uter-AI/Uter/relaykit/types"
-	"github.com/Uter-AI/Uter/service"
-	"github.com/Uter-AI/Uter/setting/model_setting"
-	"github.com/Uter-AI/Uter/setting/ratio_setting"
+	costopt "github.com/uter-ai/uter/relay/costopt"
+	"github.com/uter-ai/uter/constant"
+	"github.com/uter-ai/uter/logger"
+	relaycommon "github.com/uter-ai/uter/relay/common"
+	relayconstant "github.com/uter-ai/uter/relay/constant"
+	"github.com/uter-ai/uter/relay/helper"
+	"github.com/uter-ai/uter/relaykit/dto"
+	"github.com/uter-ai/uter/relaykit/types"
+	"github.com/uter-ai/uter/service"
+	"github.com/uter-ai/uter/setting/model_setting"
+	"github.com/uter-ai/uter/setting/ratio_setting"
 	"github.com/samber/lo"
 
 	"github.com/gin-gonic/gin"
 )
+
+// collectHeaderHints 收集用于「后台流量」判定的请求头。
+// 只取少量常见标记头，避免全量拷贝请求头带来的无谓开销。
+func collectHeaderHints(c *gin.Context) map[string]string {
+	if c == nil || c.Request == nil {
+		return nil
+	}
+	hints := make(map[string]string, 6)
+	for _, k := range []string{
+		"X-Uter-Task-Type", "X-Task-Type", "X-Uter-Scene",
+		"X-Uter-Background", "X-Background", "User-Agent",
+	} {
+		if v := c.Request.Header.Get(k); v != "" {
+			hints[k] = v
+		}
+	}
+	return hints
+}
 
 func TextHelper(c *gin.Context, info *relaycommon.RelayInfo) (uterError *types.UterError) {
 	info.InitChannelMeta(c)
@@ -47,6 +67,105 @@ func TextHelper(c *gin.Context, info *relaycommon.RelayInfo) (uterError *types.U
 	if err := helper.ApplyReasoningModelSuffix(c, info, request); err != nil {
 		return newConvertRequestFailedError(c, info, err)
 	}
+
+	// ===== 降本中间层（与《中转站API降本技术清单_轻资产版》对齐） =====
+	// 派发前改写请求（不影响计费身份）：上下文滑动窗口/摘要、图像下采样代理、轻量复杂度路由
+	costopt.ApplyContextWindow(request, info)
+	costopt.ApplyImageResize(request)
+	costopt.ApplyComplexityRouting(request, info)
+
+	// ===== V2.2「模型优化」完整能力（全部配置门控，缺参数时 no-op） =====
+	// 30) 共享系统前缀置顶：优先于 RAG/压缩执行，保证稳定前缀位于 messages 最前，
+	//     上游 prefix caching 才能稳定命中（间接省输入 token）。
+	costopt.ApplySharedPrefix(request)
+
+	// ===== V2 剩余特性（全部配置门控；缺外部服务时优雅 no-op） =====
+	// 0) Agent 步数/Token 预算拦截（失控 Agent 直接阻断，防 $0.03→$0.60）
+	agentBudgetHeaders := map[string]string{}
+	for _, k := range []string{"X-Uter-Agent-Step", "X-Uter-Agent-Step-Max", "X-Uter-Conversation-Id", costopt.GeoRoutingRegionHeader()} {
+		if v := c.Request.Header.Get(k); v != "" {
+			agentBudgetHeaders[k] = v
+		}
+	}
+	if r := costopt.CheckAgentStepBudget(c.Request.Context(), info, agentBudgetHeaders); r.Blocked {
+		costopt.IncAgentBudgetBlock()
+		return types.NewErrorWithStatusCode(fmt.Errorf("agent budget exceeded: %s", r.Reason), types.ErrorCodeBadResponseStatusCode, http.StatusTooManyRequests, types.ErrOptionWithSkipRetry())
+	}
+	// 0.1) 循环/收敛检测（Agent 死循环直接收敛，不再烧上游）
+	if loopHit, _ := costopt.DetectLoop(request); loopHit {
+		costopt.IncLoopBreak()
+		return costopt.BuildShortCircuitResponse(c, info, request, "检测到重复循环请求，已自动收敛。请调整输入或明确目标后重试。")
+	}
+	// 0.2) 精准 RAG 钩子（需外部 RAG 系统；命中则注入上下文，best-effort）
+	costopt.RetrieveRAG(c.Request.Context(), request)
+	// 0.3) Prompt 压缩（用便宜压缩模型压短历史，降低输入 token）
+	costopt.ApplyPromptCompression(request, info)
+	// 0.4) RouterLM 选模（用小型 router 模型替用户选最优上游）
+	costopt.ApplyRouterLM(request, info)
+	// 0.5) LLM 级联 Cascade（先走廉价模型，拒绝再升级）
+	costopt.ApplyCascade(request, info)
+	// 0.6) 地理/区域比价（把区域偏好写入 gin 上下文，供选路加权）
+	if ct := costopt.GeoRoutePreferredChannelType(c.Request.Header.Get(costopt.GeoRoutingRegionHeader())); ct != "" {
+		c.Set("costopt_geo_ct", ct)
+	}
+	// 0.65) 多供应商套利 / 同模型跨通道比价：在同质候选中自动选最便宜的供应商。
+	costopt.ApplyArbitrage(request)
+	// 0.66) Serverless 开源模型价值层：bulk/长 prompt 流量下沉到 Groq 等价值层渠道。
+	if ct := costopt.ApplyValueTierRouting(request); ct != "" {
+		c.Set("costopt_value_tier_ct", ct)
+	}
+	// 0.67) A-tier + 价值层混合：后台流量分流到便宜模型，用户可见请求保留前沿模型。
+	if costopt.TierSplitEnabled() && costopt.IsBackgroundRequest(request, collectHeaderHints(c)) {
+		costopt.ApplyTierSplit(request, true)
+	}
+	// 0.7) 工具定义精简（裁剪 tools schema，降低每请求工具定义 token）
+	costopt.ApplyToolDefTrim(request)
+	// 0.8) 工具调用去重（去除连续重复的工具结果，降低 Agent 重复调用浪费）
+	costopt.ApplyToolCallDedup(request)
+	// 0.9) 结构化输出约束（中转层强制策略，抑制啰嗦输出；输出通常比输入贵 2–5×）
+	costopt.ApplyStructuredOutput(request)
+	// 1) 零调用短路：命中规则直接返回预设答案，根本不调上游 LLM（该部分 100% 省去模型调用）
+	if shortAnswer, shortHit := costopt.MatchShortCircuit(request, info); shortHit {
+		costopt.IncShortCircuit()
+		return costopt.BuildShortCircuitResponse(c, info, request, shortAnswer)
+	}
+	// 1.5) 负缓存：对"此前已被上游确定性拒绝"的相同请求，直接复用拒绝状态码，不再浪费一次上游调用。
+	var negKey string
+	if costopt.NegativeEnabled() {
+		negKey = costopt.NegativeKey(request, info)
+		if hit, code := costopt.CheckNegative(c.Request.Context(), negKey); hit {
+			costopt.IncNegativeHit()
+			return types.NewErrorWithStatusCode(
+				fmt.Errorf("negative cache hit: upstream previously rejected identical request with status %d", code),
+				types.ErrorCodeBadResponseStatusCode, code, types.ErrOptionWithSkipRetry())
+		}
+	}
+	// 2) 精确缓存：含租户隔离 + in-flight 合并（singleflight）。命中直接返回；未命中由 owner 走上游并回写。
+	var cacheKey string
+	var isCacheOwner bool
+	var capBuf *bytes.Buffer
+	if costopt.CacheEnabled() {
+		cacheKey = costopt.CacheKey(request, info)
+		for {
+			cached, owner := costopt.ReserveOrGet(c.Request.Context(), cacheKey)
+			if cached != nil {
+				costopt.IncCacheHit()
+				return costopt.RespondWithCached(c, info, cached)
+			}
+			if owner {
+				isCacheOwner = true
+				defer costopt.ReleaseOwner(cacheKey)
+				break
+			}
+		}
+	}
+	// 2.5) 语义缓存：近似匹配（embedding 端点已配时生效）。仅在精确缓存未命中后查，避免无谓 embedding 调用。
+	if hit, body := costopt.CheckSemantic(c.Request.Context(), request, info); hit {
+		costopt.IncSemHit()
+		return costopt.RespondWithCached(c, info, body)
+	}
+	// 3) 输出长度成本硬上限（max_tokens 封顶，防输出失控）
+	costopt.ClampMaxTokens(request, info)
 
 	includeUsage := true
 	// 判断用户是否需要返回使用情况
@@ -92,6 +211,18 @@ func TextHelper(c *gin.Context, info *relaycommon.RelayInfo) (uterError *types.U
 			service.PostAudioConsumeQuota(c, info, usage, "")
 		} else {
 			service.PostTextConsumeQuota(c, info, usage, nil)
+		}
+
+		// 降本中间层：突增/尖峰检测（仅记录 + 日志告警，不阻断正常响应）。
+		if costopt.RecordAndCheckSpike(c.Request.Context(), info, usage.PromptTokens+usage.CompletionTokens) {
+			logger.LogWarn(c, "spike alert: user %d token consumption exceeded threshold in rolling 60s window", info.UserId)
+			if costopt.AnomalyAlertEnabled() {
+				costopt.IncAnomalyAlert()
+			}
+		}
+		// 降本中间层：Agent 会话 Token 预算累加（供下次检查拦截）。
+		if convID := c.Request.Header.Get("X-Uter-Conversation-Id"); convID != "" {
+			costopt.RecordAgentToken(c.Request.Context(), convID, int64(usage.PromptTokens+usage.CompletionTokens))
 		}
 		return nil
 	}
@@ -165,8 +296,17 @@ func TextHelper(c *gin.Context, info *relaycommon.RelayInfo) (uterError *types.U
 			uterErr := service.RelayErrorHandler(c.Request.Context(), httpResp, false)
 			// reset status code 重置状态码
 			service.ResetStatusCode(uterErr, statusCodeMappingStr)
+			// 负缓存：对确定性客户端错误（4xx 非 429）写入短 TTL，后续相同请求直接复用拒绝，避免重复烧上游。
+			if negKey != "" && costopt.IsDeterministicClientError(httpResp.StatusCode) {
+				costopt.StoreNegative(c.Request.Context(), negKey, httpResp.StatusCode)
+			}
 			return uterErr
 		}
+	}
+
+	// 降本中间层：owner 且非流式时，复制上游响应体以便回写缓存
+	if isCacheOwner && httpResp != nil && !lo.FromPtrOr(request.Stream, false) {
+		_, capBuf = costopt.CaptureBody(httpResp)
 	}
 
 	usage, uterErr := adaptor.DoResponse(c, httpResp, info)
@@ -176,13 +316,32 @@ func TextHelper(c *gin.Context, info *relaycommon.RelayInfo) (uterError *types.U
 		return uterErr
 	}
 
-	var containAudioTokens = usage.(*dto.Usage).CompletionTokenDetails.AudioTokens > 0 || usage.(*dto.Usage).PromptTokensDetails.AudioTokens > 0
+	u := usage.(*dto.Usage)
+	var containAudioTokens = u.CompletionTokenDetails.AudioTokens > 0 || u.PromptTokensDetails.AudioTokens > 0
 	var containsAudioRatios = ratio_setting.ContainsAudioRatio(info.OriginModelName) || ratio_setting.ContainsAudioCompletionRatio(info.OriginModelName)
 
 	if containAudioTokens && containsAudioRatios {
-		service.PostAudioConsumeQuota(c, info, usage.(*dto.Usage), "")
+		service.PostAudioConsumeQuota(c, info, u, "")
 	} else {
-		service.PostTextConsumeQuota(c, info, usage.(*dto.Usage), nil)
+		service.PostTextConsumeQuota(c, info, u, nil)
+	}
+
+	// 降本中间层：突增/尖峰检测（仅记录 + 日志告警，不阻断正常响应）。
+	if costopt.RecordAndCheckSpike(c.Request.Context(), info, u.PromptTokens+u.CompletionTokens) {
+		logger.LogWarn(c, "spike alert: user %d token consumption exceeded threshold in rolling 60s window", info.UserId)
+		if costopt.AnomalyAlertEnabled() {
+			costopt.IncAnomalyAlert()
+		}
+	}
+	// 降本中间层：Agent 会话 Token 预算累加（供下次检查拦截）。
+	if convID := c.Request.Header.Get("X-Uter-Conversation-Id"); convID != "" {
+		costopt.RecordAgentToken(c.Request.Context(), convID, int64(u.PromptTokens+u.CompletionTokens))
+	}
+
+	// 降本中间层：owner 且非流式成功响应，将上游原文回写精确缓存 + 语义缓存（按 completion_tokens 上限过滤）。
+	if isCacheOwner && capBuf != nil && !lo.FromPtrOr(request.Stream, false) {
+		costopt.StoreIfCachable(c.Request.Context(), cacheKey, capBuf, usage.(*dto.Usage).CompletionTokens)
+		costopt.StoreSemantic(c.Request.Context(), request, capBuf.Bytes())
 	}
 	return nil
 }

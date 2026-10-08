@@ -1,10 +1,10 @@
 package service
 
 import (
-	relaycommon "github.com/Uter-AI/Uter/relay/common"
+	relaycommon "github.com/uter-ai/uter/relay/common"
 
-	"github.com/Uter-AI/Uter/relaykit/dto"
-	"github.com/Uter-AI/Uter/relaykit/relayconvert"
+	"github.com/uter-ai/uter/relaykit/dto"
+	"github.com/uter-ai/uter/relaykit/relayconvert"
 )
 
 func NormalizeCacheCreationSplit(totalTokens int, tokens5m int, tokens1h int) (int, int) {

@@ -50,14 +50,14 @@ func TestAlipaySignVerifyRoundTrip(t *testing.T) {
 	privPEM, pub := genTestRSAKey(t)
 
 	params := map[string]string{
-		"app_id":     "2021000000000000",
-		"method":     "alipay.trade.create",
-		"charset":    "utf-8",
-		"sign_type":  "RSA2",
-		"timestamp":  "2026-01-01 00:00:00",
-		"version":    "1.0",
+		"app_id":      "2021000000000000",
+		"method":      "alipay.trade.create",
+		"charset":     "utf-8",
+		"sign_type":   "RSA2",
+		"timestamp":   "2026-01-01 00:00:00",
+		"version":     "1.0",
 		"biz_content": `{"out_trade_no":"USR1NOtest","buyer_id":"2088000000000000"}`,
-		"empty":      "",
+		"empty":       "",
 	}
 	sign, err := AlipayBuildSign(params, privPEM)
 	if err != nil {
@@ -69,28 +69,28 @@ func TestAlipaySignVerifyRoundTrip(t *testing.T) {
 
 	// 验签时同样只包含 sign_type（不含 sign 本身），空值排除。
 	verifyParams := map[string]string{
-		"app_id":     params["app_id"],
-		"method":     params["method"],
-		"charset":    params["charset"],
-		"timestamp":  params["timestamp"],
-		"version":    params["version"],
+		"app_id":      params["app_id"],
+		"method":      params["method"],
+		"charset":     params["charset"],
+		"timestamp":   params["timestamp"],
+		"version":     params["version"],
 		"biz_content": params["biz_content"],
-		"sign":       sign,
-		"sign_type":  "RSA2",
+		"sign":        sign,
+		"sign_type":   "RSA2",
 	}
 	if !AlipayVerifySign(verifyParams, mustPKCS1PubPEM(t, pub), sign) {
 		t.Fatal("AlipayVerifySign failed for a valid signature")
 	}
 	// 篡改参数后验签必须失败。
 	bad := map[string]string{
-		"app_id":     "9999999999999999",
-		"method":     params["method"],
-		"charset":    params["charset"],
-		"timestamp":  params["timestamp"],
-		"version":    params["version"],
+		"app_id":      "9999999999999999",
+		"method":      params["method"],
+		"charset":     params["charset"],
+		"timestamp":   params["timestamp"],
+		"version":     params["version"],
 		"biz_content": params["biz_content"],
-		"sign":       sign,
-		"sign_type":  "RSA2",
+		"sign":        sign,
+		"sign_type":   "RSA2",
 	}
 	if AlipayVerifySign(bad, mustPKCS1PubPEM(t, pub), sign) {
 		t.Fatal("AlipayVerifySign must fail after tampering")

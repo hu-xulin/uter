@@ -4,14 +4,14 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/Uter-AI/Uter/relaykit/dto"
+	"github.com/uter-ai/uter/relaykit/dto"
 
-	"github.com/Uter-AI/Uter/relaykit/relayconvert/convmeta"
-	"github.com/Uter-AI/Uter/relaykit/relayconvert/internal/convdiag"
-	sharedclaude "github.com/Uter-AI/Uter/relaykit/relayconvert/internal/shared/claude"
-	sharedgemini "github.com/Uter-AI/Uter/relaykit/relayconvert/internal/shared/gemini"
-	"github.com/Uter-AI/Uter/relaykit/relayconvert/reasoning"
-	"github.com/Uter-AI/Uter/relaykit/types"
+	"github.com/uter-ai/uter/relaykit/relayconvert/convmeta"
+	"github.com/uter-ai/uter/relaykit/relayconvert/internal/convdiag"
+	sharedclaude "github.com/uter-ai/uter/relaykit/relayconvert/internal/shared/claude"
+	sharedgemini "github.com/uter-ai/uter/relaykit/relayconvert/internal/shared/gemini"
+	"github.com/uter-ai/uter/relaykit/relayconvert/reasoning"
+	"github.com/uter-ai/uter/relaykit/types"
 )
 
 func ClaudeMessagesRequestToOpenAIChat(claudeRequest dto.ClaudeRequest, info convmeta.Meta) (*dto.GeneralOpenAIRequest, error) {

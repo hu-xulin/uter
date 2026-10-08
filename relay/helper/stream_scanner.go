@@ -10,13 +10,13 @@ import (
 	"sync"
 	"time"
 
-	"github.com/Uter-AI/Uter/common"
+	"github.com/uter-ai/uter/common"
 
-	"github.com/Uter-AI/Uter/constant"
-	"github.com/Uter-AI/Uter/logger"
-	relaycommon "github.com/Uter-AI/Uter/relay/common"
-	"github.com/Uter-AI/Uter/service"
-	"github.com/Uter-AI/Uter/setting/operation_setting"
+	"github.com/uter-ai/uter/constant"
+	"github.com/uter-ai/uter/logger"
+	relaycommon "github.com/uter-ai/uter/relay/common"
+	"github.com/uter-ai/uter/service"
+	"github.com/uter-ai/uter/setting/operation_setting"
 
 	"github.com/bytedance/gopkg/util/gopool"
 

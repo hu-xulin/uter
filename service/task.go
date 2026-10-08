@@ -3,7 +3,7 @@ package service
 import (
 	"strings"
 
-	"github.com/Uter-AI/Uter/constant"
+	"github.com/uter-ai/uter/constant"
 )
 
 func CoverTaskActionToModelName(platform constant.TaskPlatform, action string) string {

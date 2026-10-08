@@ -15,23 +15,23 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/Uter-AI/Uter/common"
-	"github.com/Uter-AI/Uter/constant"
-	"github.com/Uter-AI/Uter/controller"
-	"github.com/Uter-AI/Uter/i18n"
-	"github.com/Uter-AI/Uter/logger"
-	"github.com/Uter-AI/Uter/middleware"
-	"github.com/Uter-AI/Uter/model"
-	"github.com/Uter-AI/Uter/oauth"
-	"github.com/Uter-AI/Uter/pkg/jsplugin"
-	perfmetrics "github.com/Uter-AI/Uter/pkg/perf_metrics"
-	"github.com/Uter-AI/Uter/relay"
-	kitutil "github.com/Uter-AI/Uter/relaykit/relayconvert/kitutil"
-	"github.com/Uter-AI/Uter/router"
-	"github.com/Uter-AI/Uter/service"
-	"github.com/Uter-AI/Uter/service/authz"
-	_ "github.com/Uter-AI/Uter/setting/performance_setting"
-	"github.com/Uter-AI/Uter/setting/ratio_setting"
+	"github.com/uter-ai/uter/common"
+	"github.com/uter-ai/uter/constant"
+	"github.com/uter-ai/uter/controller"
+	"github.com/uter-ai/uter/i18n"
+	"github.com/uter-ai/uter/logger"
+	"github.com/uter-ai/uter/middleware"
+	"github.com/uter-ai/uter/model"
+	"github.com/uter-ai/uter/oauth"
+	"github.com/uter-ai/uter/pkg/jsplugin"
+	perfmetrics "github.com/uter-ai/uter/pkg/perf_metrics"
+	"github.com/uter-ai/uter/relay"
+	kitutil "github.com/uter-ai/uter/relaykit/relayconvert/kitutil"
+	"github.com/uter-ai/uter/router"
+	"github.com/uter-ai/uter/service"
+	"github.com/uter-ai/uter/service/authz"
+	_ "github.com/uter-ai/uter/setting/performance_setting"
+	"github.com/uter-ai/uter/setting/ratio_setting"
 
 	"github.com/bytedance/gopkg/util/gopool"
 	"github.com/gin-gonic/gin"
@@ -210,6 +210,7 @@ func main() {
 	// This will cause SSE not to work!!!
 	//server.Use(gzip.Gzip(gzip.DefaultCompression))
 	server.Use(middleware.RequestId())
+	server.Use(middleware.SecurityHeaders())
 	server.Use(middleware.Version())
 	server.Use(middleware.I18n())
 	middleware.SetUpLogger(server)

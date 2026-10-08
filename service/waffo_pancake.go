@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/Uter-AI/Uter/model"
+	"github.com/uter-ai/uter/model"
 
-	"github.com/Uter-AI/Uter/setting"
+	"github.com/uter-ai/uter/setting"
 	pancake "github.com/waffo-com/waffo-pancake-sdk-go"
 )
 

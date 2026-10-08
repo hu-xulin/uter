@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/Uter-AI/Uter/relaykit/dto"
+	"github.com/uter-ai/uter/relaykit/dto"
 
-	sharedclaude "github.com/Uter-AI/Uter/relaykit/relayconvert/internal/shared/claude"
-	kitutil "github.com/Uter-AI/Uter/relaykit/relayconvert/kitutil"
+	sharedclaude "github.com/uter-ai/uter/relaykit/relayconvert/internal/shared/claude"
+	kitutil "github.com/uter-ai/uter/relaykit/relayconvert/kitutil"
 )
 
 const responsesEventOutputTextDone = "response.output_text.done"

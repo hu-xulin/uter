@@ -3,7 +3,7 @@ package ali
 import (
 	"testing"
 
-	"github.com/Uter-AI/Uter/relaykit/dto"
+	"github.com/uter-ai/uter/relaykit/dto"
 
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"

@@ -5,7 +5,7 @@ import (
 	"math"
 	"strings"
 
-	"github.com/Uter-AI/Uter/relaykit/dto"
+	"github.com/uter-ai/uter/relaykit/dto"
 )
 
 type GeminiRender struct {

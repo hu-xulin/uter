@@ -6,9 +6,9 @@ package reasoning
 import (
 	"strings"
 
-	kitreasoning "github.com/Uter-AI/Uter/relaykit/relayconvert/reasoning"
+	kitreasoning "github.com/uter-ai/uter/relaykit/relayconvert/reasoning"
 
-	"github.com/Uter-AI/Uter/setting/model_setting"
+	"github.com/uter-ai/uter/setting/model_setting"
 )
 
 var (

@@ -3,9 +3,9 @@ package authz
 import (
 	"fmt"
 
-	"github.com/Uter-AI/Uter/common"
+	"github.com/uter-ai/uter/common"
 
-	"github.com/Uter-AI/Uter/model"
+	"github.com/uter-ai/uter/model"
 	casbinmodel "github.com/casbin/casbin/v2/model"
 	"github.com/casbin/casbin/v2/persist"
 	"gorm.io/gorm"

@@ -8,11 +8,11 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/Uter-AI/Uter/common"
+	"github.com/uter-ai/uter/common"
 
-	"github.com/Uter-AI/Uter/model"
-	"github.com/Uter-AI/Uter/relaykit/dto"
-	"github.com/Uter-AI/Uter/setting/system_setting"
+	"github.com/uter-ai/uter/model"
+	"github.com/uter-ai/uter/relaykit/dto"
+	"github.com/uter-ai/uter/setting/system_setting"
 )
 
 func NotifyRootUser(t string, subject string, content string) {

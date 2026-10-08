@@ -4,10 +4,10 @@ import (
 	"context"
 	"testing"
 
-	"github.com/Uter-AI/Uter/relaykit/dto"
+	"github.com/uter-ai/uter/relaykit/dto"
 
-	"github.com/Uter-AI/Uter/relaykit/relayconvert/convmeta"
-	kitutil "github.com/Uter-AI/Uter/relaykit/relayconvert/kitutil"
+	"github.com/uter-ai/uter/relaykit/relayconvert/convmeta"
+	kitutil "github.com/uter-ai/uter/relaykit/relayconvert/kitutil"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

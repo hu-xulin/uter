@@ -3,7 +3,7 @@ package types
 import (
 	"sync"
 
-	"github.com/Uter-AI/Uter/common"
+	"github.com/uter-ai/uter/common"
 )
 
 type RWMap[K comparable, V any] struct {

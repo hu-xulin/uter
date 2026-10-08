@@ -3,9 +3,9 @@ package zhipu_4v
 import (
 	"time"
 
-	"github.com/Uter-AI/Uter/relaykit/dto"
+	"github.com/uter-ai/uter/relaykit/dto"
 
-	"github.com/Uter-AI/Uter/relaykit/types"
+	"github.com/uter-ai/uter/relaykit/types"
 )
 
 //	type ZhipuMessage struct {

@@ -7,7 +7,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/Uter-AI/Uter/relaykit/types"
+	"github.com/uter-ai/uter/relaykit/types"
 )
 
 type ChannelSettings struct {

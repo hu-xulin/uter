@@ -6,9 +6,9 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/Uter-AI/Uter/common"
+	"github.com/uter-ai/uter/common"
 
-	"github.com/Uter-AI/Uter/model"
+	"github.com/uter-ai/uter/model"
 )
 
 func TestBuildTaskPluginViewRewritesOnlyStructuredTaskIDFields(t *testing.T) {

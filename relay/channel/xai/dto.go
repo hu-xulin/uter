@@ -1,6 +1,6 @@
 package xai
 
-import "github.com/Uter-AI/Uter/relaykit/dto"
+import "github.com/uter-ai/uter/relaykit/dto"
 
 // ChatCompletionResponse represents the response from XAI chat completion API
 type ChatCompletionResponse struct {

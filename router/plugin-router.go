@@ -13,12 +13,12 @@ import (
 	"sync"
 	"sync/atomic"
 
-	"github.com/Uter-AI/Uter/common"
-	"github.com/Uter-AI/Uter/constant"
-	"github.com/Uter-AI/Uter/controller"
-	"github.com/Uter-AI/Uter/logger"
-	"github.com/Uter-AI/Uter/middleware"
-	"github.com/Uter-AI/Uter/pkg/jsplugin"
+	"github.com/uter-ai/uter/common"
+	"github.com/uter-ai/uter/constant"
+	"github.com/uter-ai/uter/controller"
+	"github.com/uter-ai/uter/logger"
+	"github.com/uter-ai/uter/middleware"
+	"github.com/uter-ai/uter/pkg/jsplugin"
 	"github.com/gin-gonic/gin"
 )
 

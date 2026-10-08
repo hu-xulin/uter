@@ -3,18 +3,18 @@ package controller
 import (
 	"context"
 	"fmt"
-	"github.com/Uter-AI/Uter/i18n"
+	"github.com/uter-ai/uter/i18n"
 	"net/http"
 	"strconv"
 	"strings"
 	"time"
 
-	"github.com/Uter-AI/Uter/common"
+	"github.com/uter-ai/uter/common"
 
-	"github.com/Uter-AI/Uter/constant"
-	"github.com/Uter-AI/Uter/model"
-	"github.com/Uter-AI/Uter/relay/channel/codex"
-	"github.com/Uter-AI/Uter/service"
+	"github.com/uter-ai/uter/constant"
+	"github.com/uter-ai/uter/model"
+	"github.com/uter-ai/uter/relay/channel/codex"
+	"github.com/uter-ai/uter/service"
 
 	"github.com/gin-gonic/gin"
 )

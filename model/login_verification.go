@@ -3,7 +3,7 @@ package model
 import (
 	"time"
 
-	"github.com/Uter-AI/Uter/common"
+	"github.com/uter-ai/uter/common"
 
 	"gorm.io/gorm"
 )

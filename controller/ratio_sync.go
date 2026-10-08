@@ -5,7 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/Uter-AI/Uter/i18n"
+	"github.com/uter-ai/uter/i18n"
 	"io"
 	"math"
 	"net/http"
@@ -16,15 +16,15 @@ import (
 	"sync"
 	"time"
 
-	"github.com/Uter-AI/Uter/common"
+	"github.com/uter-ai/uter/common"
 
-	"github.com/Uter-AI/Uter/logger"
+	"github.com/uter-ai/uter/logger"
 
-	"github.com/Uter-AI/Uter/model"
-	"github.com/Uter-AI/Uter/relaykit/dto"
-	"github.com/Uter-AI/Uter/service"
-	"github.com/Uter-AI/Uter/setting/billing_setting"
-	"github.com/Uter-AI/Uter/setting/ratio_setting"
+	"github.com/uter-ai/uter/model"
+	"github.com/uter-ai/uter/relaykit/dto"
+	"github.com/uter-ai/uter/service"
+	"github.com/uter-ai/uter/setting/billing_setting"
+	"github.com/uter-ai/uter/setting/ratio_setting"
 	"github.com/samber/lo"
 
 	"github.com/gin-gonic/gin"

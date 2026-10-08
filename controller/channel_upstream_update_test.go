@@ -8,12 +8,12 @@ import (
 	"net/url"
 	"testing"
 
-	"github.com/Uter-AI/Uter/common"
+	"github.com/uter-ai/uter/common"
 
-	"github.com/Uter-AI/Uter/constant"
-	"github.com/Uter-AI/Uter/i18n"
-	"github.com/Uter-AI/Uter/model"
-	"github.com/Uter-AI/Uter/relaykit/dto"
+	"github.com/uter-ai/uter/constant"
+	"github.com/uter-ai/uter/i18n"
+	"github.com/uter-ai/uter/model"
+	"github.com/uter-ai/uter/relaykit/dto"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

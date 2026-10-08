@@ -3,10 +3,10 @@ package router
 import (
 	"net/http"
 
-	"github.com/Uter-AI/Uter/controller"
+	"github.com/uter-ai/uter/controller"
 
-	"github.com/Uter-AI/Uter/middleware"
-	"github.com/Uter-AI/Uter/service/authz"
+	"github.com/uter-ai/uter/middleware"
+	"github.com/uter-ai/uter/service/authz"
 	"github.com/gin-gonic/gin"
 )
 

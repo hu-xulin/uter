@@ -4,7 +4,7 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/Uter-AI/Uter/common"
+	"github.com/uter-ai/uter/common"
 
 	"github.com/glebarez/sqlite"
 	"gorm.io/gorm"

@@ -6,12 +6,12 @@ import (
 	"reflect"
 	"testing"
 
-	common2 "github.com/Uter-AI/Uter/common"
+	common2 "github.com/uter-ai/uter/common"
 
-	"github.com/Uter-AI/Uter/relaykit/types"
+	"github.com/uter-ai/uter/relaykit/types"
 
-	"github.com/Uter-AI/Uter/relaykit/dto"
-	"github.com/Uter-AI/Uter/setting/model_setting"
+	"github.com/uter-ai/uter/relaykit/dto"
+	"github.com/uter-ai/uter/setting/model_setting"
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

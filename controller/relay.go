@@ -9,25 +9,25 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Uter-AI/Uter/common"
+	"github.com/uter-ai/uter/common"
 
-	"github.com/Uter-AI/Uter/constant"
-	taskdto "github.com/Uter-AI/Uter/dto"
-	"github.com/Uter-AI/Uter/logger"
-	"github.com/Uter-AI/Uter/middleware"
-	"github.com/Uter-AI/Uter/model"
-	pluginruntime "github.com/Uter-AI/Uter/pkg/jsplugin"
-	perfmetrics "github.com/Uter-AI/Uter/pkg/perf_metrics"
-	"github.com/Uter-AI/Uter/relay"
-	"github.com/Uter-AI/Uter/relay/channel/task/taskcommon"
-	relaycommon "github.com/Uter-AI/Uter/relay/common"
-	relayconstant "github.com/Uter-AI/Uter/relay/constant"
-	"github.com/Uter-AI/Uter/relay/helper"
-	"github.com/Uter-AI/Uter/relaykit/dto"
-	"github.com/Uter-AI/Uter/relaykit/types"
-	"github.com/Uter-AI/Uter/service"
-	"github.com/Uter-AI/Uter/setting"
-	"github.com/Uter-AI/Uter/setting/operation_setting"
+	"github.com/uter-ai/uter/constant"
+	taskdto "github.com/uter-ai/uter/dto"
+	"github.com/uter-ai/uter/logger"
+	"github.com/uter-ai/uter/middleware"
+	"github.com/uter-ai/uter/model"
+	pluginruntime "github.com/uter-ai/uter/pkg/jsplugin"
+	perfmetrics "github.com/uter-ai/uter/pkg/perf_metrics"
+	"github.com/uter-ai/uter/relay"
+	"github.com/uter-ai/uter/relay/channel/task/taskcommon"
+	relaycommon "github.com/uter-ai/uter/relay/common"
+	relayconstant "github.com/uter-ai/uter/relay/constant"
+	"github.com/uter-ai/uter/relay/helper"
+	"github.com/uter-ai/uter/relaykit/dto"
+	"github.com/uter-ai/uter/relaykit/types"
+	"github.com/uter-ai/uter/service"
+	"github.com/uter-ai/uter/setting"
+	"github.com/uter-ai/uter/setting/operation_setting"
 
 	"github.com/bytedance/gopkg/util/gopool"
 	"github.com/samber/lo"
@@ -95,7 +95,7 @@ func Relay(c *gin.Context, relayFormat types.RelayFormat) {
 	defer func() {
 		if uterError != nil {
 			logger.LogError(c, fmt.Sprintf("relay error: %s", common.LocalLogPreview(uterError.Error())))
-			uterError.SetMessage(common.MessageWithRequestId(uterError.Error(), requestId))
+			uterError.SetMessage(common.MessageWithRequestId(localizeRelayError(c, uterError), requestId))
 			switch relayFormat {
 			case types.RelayFormatOpenAIRealtime:
 				helper.WssError(c, ws, uterError.ToOpenAIError())

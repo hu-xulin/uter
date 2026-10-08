@@ -10,10 +10,10 @@ import (
 	"golang.org/x/text/language"
 	"gopkg.in/yaml.v3"
 
-	"github.com/Uter-AI/Uter/common"
+	"github.com/uter-ai/uter/common"
 
-	"github.com/Uter-AI/Uter/constant"
-	"github.com/Uter-AI/Uter/relaykit/dto"
+	"github.com/uter-ai/uter/constant"
+	"github.com/uter-ai/uter/relaykit/dto"
 )
 
 const (

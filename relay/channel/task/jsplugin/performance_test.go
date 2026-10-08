@@ -11,11 +11,11 @@ import (
 	"sync/atomic"
 	"testing"
 
-	"github.com/Uter-AI/Uter/common"
+	"github.com/uter-ai/uter/common"
 
-	pluginruntime "github.com/Uter-AI/Uter/pkg/jsplugin"
-	"github.com/Uter-AI/Uter/plugins"
-	relaycommon "github.com/Uter-AI/Uter/relay/common"
+	pluginruntime "github.com/uter-ai/uter/pkg/jsplugin"
+	"github.com/uter-ai/uter/plugins"
+	relaycommon "github.com/uter-ai/uter/relay/common"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/require"
 )

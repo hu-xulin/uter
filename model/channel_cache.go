@@ -9,14 +9,15 @@ import (
 	"sync"
 	"time"
 
-	"github.com/Uter-AI/Uter/common"
+	"github.com/uter-ai/uter/common"
 
-	"github.com/Uter-AI/Uter/constant"
-	"github.com/Uter-AI/Uter/dto"
-	"github.com/Uter-AI/Uter/logger"
-	kitdto "github.com/Uter-AI/Uter/relaykit/dto"
-	"github.com/Uter-AI/Uter/setting/channel_weight"
-	"github.com/Uter-AI/Uter/setting/ratio_setting"
+	"github.com/uter-ai/uter/constant"
+	costoptcfg "github.com/uter-ai/uter/setting/costopt"
+	"github.com/uter-ai/uter/dto"
+	"github.com/uter-ai/uter/logger"
+	kitdto "github.com/uter-ai/uter/relaykit/dto"
+	"github.com/uter-ai/uter/setting/channel_weight"
+	"github.com/uter-ai/uter/setting/ratio_setting"
 )
 
 var group2model2channels map[string]map[string][]int // enabled channel
@@ -116,15 +117,36 @@ func SyncChannelCache(frequency int) {
 	}
 }
 
+// ChannelSelectOption 选路附加偏好（向后兼容：变参可选）。
+type ChannelSelectOption struct {
+	// PreferChannelType 强烈偏好的渠道类型名（constant.GetChannelTypeName）。
+	// 非空时匹配渠道权重放大 100×，用于地理/区域比价等场景把流量导到特定区域渠道。
+	PreferChannelType string
+}
+
+// PreferChannelType 构造一个"偏好某渠道类型"的选路选项。
+func PreferChannelType(t string) ChannelSelectOption {
+	return ChannelSelectOption{PreferChannelType: t}
+}
+
 func GetRandomSatisfiedChannel(
 	group string,
 	model string,
 	retry int,
 	filters []dto.ChannelFilter,
+	opts ...ChannelSelectOption,
 ) (*Channel, error) {
 	// if memory cache is disabled, get channel directly from database
 	if !common.MemoryCacheEnabled {
 		return GetChannel(group, model, retry, filters)
+	}
+
+	// 地理/区域比价：从变参选项中取出强偏好渠道类型（默认空）。
+	var preferCT string
+	for _, o := range opts {
+		if o.PreferChannelType != "" {
+			preferCT = o.PreferChannelType
+		}
 	}
 
 	channelSyncLock.RLock()
@@ -160,7 +182,20 @@ func GetRandomSatisfiedChannel(
 		if w, ok := channel_weight.GetChannelModelWeight(ch.Id, model); ok {
 			return w
 		}
-		return ch.GetWeight()
+		w := ch.GetWeight()
+		// 成本感知路由（多供应商自动择优）：运营可通过 CostAwareChannelTypeWeight
+		// 给更便宜的供应商类型加权重倍数，把流量导向低价渠道。仅当开关开启且倍数>1 时生效，
+		// 不影响未配置的渠道，也不改变优先级档位（仅在同档内加权随机）。
+		if costoptcfg.GetCostOptSetting().CostAwareRoutingEnabled {
+			if mult, ok := costoptcfg.GetCostOptSetting().CostAwareChannelTypeWeight[constant.GetChannelTypeName(ch.Type)]; ok && mult > 1 {
+				w *= mult
+			}
+		}
+		// 地理/区域比价：强偏好某区域渠道类型时，权重放大，把流量导到低价区端点。
+		if preferCT != "" && constant.GetChannelTypeName(ch.Type) == preferCT {
+			w *= 100
+		}
+		return w
 	}
 
 	uniquePriorities := make(map[int]bool)

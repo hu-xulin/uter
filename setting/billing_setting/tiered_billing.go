@@ -7,14 +7,14 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/Uter-AI/Uter/common"
+	"github.com/uter-ai/uter/common"
 
-	"github.com/Uter-AI/Uter/pkg/billingexpr"
-	"github.com/Uter-AI/Uter/pkg/jsplugin"
-	relaycommon "github.com/Uter-AI/Uter/relay/common"
-	"github.com/Uter-AI/Uter/relaykit/dto"
-	"github.com/Uter-AI/Uter/setting/config"
-	"github.com/Uter-AI/Uter/setting/ratio_setting"
+	"github.com/uter-ai/uter/pkg/billingexpr"
+	"github.com/uter-ai/uter/pkg/jsplugin"
+	relaycommon "github.com/uter-ai/uter/relay/common"
+	"github.com/uter-ai/uter/relaykit/dto"
+	"github.com/uter-ai/uter/setting/config"
+	"github.com/uter-ai/uter/setting/ratio_setting"
 	"github.com/samber/lo"
 )
 

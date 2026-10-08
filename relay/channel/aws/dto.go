@@ -7,10 +7,10 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/Uter-AI/Uter/common"
+	"github.com/uter-ai/uter/common"
 
-	"github.com/Uter-AI/Uter/logger"
-	"github.com/Uter-AI/Uter/relaykit/dto"
+	"github.com/uter-ai/uter/logger"
+	"github.com/uter-ai/uter/relaykit/dto"
 )
 
 type AwsClaudeRequest struct {

@@ -8,16 +8,16 @@ import (
 	"math"
 	"strings"
 
-	"github.com/Uter-AI/Uter/common"
+	"github.com/uter-ai/uter/common"
 
-	"github.com/Uter-AI/Uter/constant"
-	"github.com/Uter-AI/Uter/logger"
-	"github.com/Uter-AI/Uter/model"
-	"github.com/Uter-AI/Uter/pkg/billingexpr"
-	relaycommon "github.com/Uter-AI/Uter/relay/common"
-	"github.com/Uter-AI/Uter/setting/custom_pricing"
-	"github.com/Uter-AI/Uter/setting/ratio_setting"
-	"github.com/Uter-AI/Uter/types"
+	"github.com/uter-ai/uter/constant"
+	"github.com/uter-ai/uter/logger"
+	"github.com/uter-ai/uter/model"
+	"github.com/uter-ai/uter/pkg/billingexpr"
+	relaycommon "github.com/uter-ai/uter/relay/common"
+	"github.com/uter-ai/uter/setting/custom_pricing"
+	"github.com/uter-ai/uter/setting/ratio_setting"
+	"github.com/uter-ai/uter/types"
 	"github.com/gin-gonic/gin"
 )
 

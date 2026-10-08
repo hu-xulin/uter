@@ -1,13 +1,13 @@
 package router
 
 import (
-	"github.com/Uter-AI/Uter/controller"
-	"github.com/Uter-AI/Uter/middleware"
-	"github.com/Uter-AI/Uter/service"
-	"github.com/Uter-AI/Uter/service/authz"
+	"github.com/uter-ai/uter/controller"
+	"github.com/uter-ai/uter/middleware"
+	"github.com/uter-ai/uter/service"
+	"github.com/uter-ai/uter/service/authz"
 
 	// Import oauth package to register providers via init()
-	_ "github.com/Uter-AI/Uter/oauth"
+	_ "github.com/uter-ai/uter/oauth"
 
 	"github.com/gin-contrib/gzip"
 	"github.com/gin-gonic/gin"

@@ -511,4 +511,11 @@ const (
 	MsgTurnstileToken_empty                     = "turnstile.token_empty"
 	MsgTurnstileVerify_failed                   = "turnstile.verify_failed"
 	MsgRate_limitToo_frequent                   = "rate_limit.too_frequent"
+	// 额度类错误会直接透出到 API 响应与游乐场提示，必须本地化且可读，
+	// 不能把 errors.New 的英文技术串暴露给用户（2026-10-07）。
+	MsgQuotaOrgSubQuotaExceeded = "quota.org_sub_quota_exceeded"
+	MsgQuotaOrgBudgetExceeded   = "quota.org_budget_exceeded"
+	MsgQuotaOrgSuspended        = "quota.org_suspended"
+	MsgQuotaUserNotEnough       = "quota.user_not_enough"
+	MsgQuotaTokenNotEnough      = "quota.token_not_enough"
 )

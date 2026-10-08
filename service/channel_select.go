@@ -3,13 +3,13 @@ package service
 import (
 	"errors"
 
-	"github.com/Uter-AI/Uter/common"
+	"github.com/uter-ai/uter/common"
 
-	"github.com/Uter-AI/Uter/constant"
-	"github.com/Uter-AI/Uter/dto"
-	"github.com/Uter-AI/Uter/logger"
-	"github.com/Uter-AI/Uter/model"
-	"github.com/Uter-AI/Uter/pkg/jsplugin"
+	"github.com/uter-ai/uter/constant"
+	"github.com/uter-ai/uter/dto"
+	"github.com/uter-ai/uter/logger"
+	"github.com/uter-ai/uter/model"
+	"github.com/uter-ai/uter/pkg/jsplugin"
 	"github.com/gin-gonic/gin"
 )
 
@@ -144,12 +144,13 @@ func CacheGetRandomSatisfiedChannel(param *RetryParam) (*model.Channel, string, 
 			}
 			logger.LogDebug(param.Ctx, "Auto selecting group: %s, priorityRetry: %d", autoGroup, priorityRetry)
 
-			channel, _ = model.GetRandomSatisfiedChannel(
-				autoGroup,
-				param.ModelName,
-				priorityRetry,
-				filters,
-			)
+		channel, _ = model.GetRandomSatisfiedChannel(
+			autoGroup,
+			param.ModelName,
+			priorityRetry,
+			filters,
+			geoSelectOption(param.Ctx),
+		)
 			if channel == nil {
 				// Current group has no available channel for this model, try next group
 				// 当前分组没有该模型的可用渠道，尝试下一个分组
@@ -192,12 +193,25 @@ func CacheGetRandomSatisfiedChannel(param *RetryParam) (*model.Channel, string, 
 			param.ModelName,
 			param.GetRetry(),
 			filters,
+			geoSelectOption(param.Ctx),
 		)
 		if err != nil {
 			return nil, param.TokenGroup, err
 		}
 	}
 	return channel, selectGroup, nil
+}
+
+// geoSelectOption 从请求上下文读取地理/区域比价偏好渠道类型，构造选路选项。
+// 该值在 compatible_handler.go 派发前由 costopt.ApplyGeoRouting 写入（c.Set）。
+func geoSelectOption(ctx *gin.Context) model.ChannelSelectOption {
+	if ctx == nil {
+		return model.ChannelSelectOption{}
+	}
+	if ct := common.GetContextKeyString(ctx, "costopt_geo_ct"); ct != "" {
+		return model.PreferChannelType(ct)
+	}
+	return model.ChannelSelectOption{}
 }
 
 func pinnedTaskPluginIdentities(c *gin.Context, expected string) ([]int, []string) {

@@ -4,9 +4,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/Uter-AI/Uter/model"
+	"github.com/uter-ai/uter/model"
 
-	"github.com/Uter-AI/Uter/types"
+	"github.com/uter-ai/uter/types"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

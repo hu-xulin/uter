@@ -4,7 +4,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/Uter-AI/Uter/common"
+	"github.com/uter-ai/uter/common"
 )
 
 // Option keys persisted as JSON strings through the generic option API.

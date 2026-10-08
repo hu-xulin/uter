@@ -1,7 +1,7 @@
 package ali
 
 import (
-	"github.com/Uter-AI/Uter/relaykit/dto"
+	"github.com/uter-ai/uter/relaykit/dto"
 
 	"github.com/samber/lo"
 )

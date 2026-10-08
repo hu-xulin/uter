@@ -6,9 +6,9 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/Uter-AI/Uter/logger"
+	"github.com/uter-ai/uter/logger"
 
-	"github.com/Uter-AI/Uter/relaykit/dto"
+	"github.com/uter-ai/uter/relaykit/dto"
 )
 
 // HTTPTransportPolicy is the runtime-normalized outbound HTTP transport policy

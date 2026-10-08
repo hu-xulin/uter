@@ -9,14 +9,14 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/Uter-AI/Uter/common"
+	"github.com/uter-ai/uter/common"
 	"io"
 	"net/http"
 	"time"
 
-	"github.com/Uter-AI/Uter/logger"
-	"github.com/Uter-AI/Uter/model"
-	"github.com/Uter-AI/Uter/setting"
+	"github.com/uter-ai/uter/logger"
+	"github.com/uter-ai/uter/model"
+	"github.com/uter-ai/uter/setting"
 
 	"github.com/gin-gonic/gin"
 	"github.com/shopspring/decimal"

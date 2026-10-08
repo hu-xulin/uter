@@ -3,7 +3,7 @@ package toolconv
 import (
 	"encoding/json"
 
-	"github.com/Uter-AI/Uter/relaykit/types"
+	"github.com/uter-ai/uter/relaykit/types"
 )
 
 type Kind string

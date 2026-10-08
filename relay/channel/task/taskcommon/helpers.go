@@ -4,11 +4,11 @@ import (
 	"encoding/base64"
 	"fmt"
 
-	"github.com/Uter-AI/Uter/common"
+	"github.com/uter-ai/uter/common"
 
-	"github.com/Uter-AI/Uter/model"
-	relaycommon "github.com/Uter-AI/Uter/relay/common"
-	"github.com/Uter-AI/Uter/setting/system_setting"
+	"github.com/uter-ai/uter/model"
+	relaycommon "github.com/uter-ai/uter/relay/common"
+	"github.com/uter-ai/uter/setting/system_setting"
 	"github.com/gin-gonic/gin"
 )
 

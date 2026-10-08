@@ -4,15 +4,15 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/Uter-AI/Uter/common"
+	"github.com/uter-ai/uter/common"
 
-	"github.com/Uter-AI/Uter/constant"
-	"github.com/Uter-AI/Uter/logger"
-	"github.com/Uter-AI/Uter/relay/channel/xinference"
-	relaycommon "github.com/Uter-AI/Uter/relay/common"
-	"github.com/Uter-AI/Uter/relaykit/dto"
-	"github.com/Uter-AI/Uter/relaykit/types"
-	"github.com/Uter-AI/Uter/service"
+	"github.com/uter-ai/uter/constant"
+	"github.com/uter-ai/uter/logger"
+	"github.com/uter-ai/uter/relay/channel/xinference"
+	relaycommon "github.com/uter-ai/uter/relay/common"
+	"github.com/uter-ai/uter/relaykit/dto"
+	"github.com/uter-ai/uter/relaykit/types"
+	"github.com/uter-ai/uter/service"
 
 	"github.com/gin-gonic/gin"
 )

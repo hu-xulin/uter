@@ -1,9 +1,9 @@
 package performance_setting
 
 import (
-	"github.com/Uter-AI/Uter/common"
+	"github.com/uter-ai/uter/common"
 
-	"github.com/Uter-AI/Uter/setting/config"
+	"github.com/uter-ai/uter/setting/config"
 )
 
 // PerformanceSetting 性能设置配置

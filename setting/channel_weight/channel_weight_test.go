@@ -3,7 +3,7 @@ package channel_weight
 import (
 	"testing"
 
-	"github.com/Uter-AI/Uter/common"
+	"github.com/uter-ai/uter/common"
 )
 
 func setOption(t *testing.T, raw string) {

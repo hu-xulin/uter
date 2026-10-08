@@ -9,9 +9,9 @@ import (
 	"sync/atomic"
 	"testing"
 
-	relaycommon "github.com/Uter-AI/Uter/relay/common"
+	relaycommon "github.com/uter-ai/uter/relay/common"
 
-	"github.com/Uter-AI/Uter/service"
+	"github.com/uter-ai/uter/service"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

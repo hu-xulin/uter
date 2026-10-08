@@ -4,14 +4,14 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/Uter-AI/Uter/common"
+	"github.com/uter-ai/uter/common"
 
-	"github.com/Uter-AI/Uter/model"
-	"github.com/Uter-AI/Uter/pkg/jsplugin"
-	builtinplugins "github.com/Uter-AI/Uter/plugins"
-	"github.com/Uter-AI/Uter/relay/channel"
-	taskplugin "github.com/Uter-AI/Uter/relay/channel/task/jsplugin"
-	relaycommon "github.com/Uter-AI/Uter/relay/common"
+	"github.com/uter-ai/uter/model"
+	"github.com/uter-ai/uter/pkg/jsplugin"
+	builtinplugins "github.com/uter-ai/uter/plugins"
+	"github.com/uter-ai/uter/relay/channel"
+	taskplugin "github.com/uter-ai/uter/relay/channel/task/jsplugin"
+	relaycommon "github.com/uter-ai/uter/relay/common"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

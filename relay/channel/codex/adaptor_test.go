@@ -4,11 +4,11 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/Uter-AI/Uter/constant"
+	"github.com/uter-ai/uter/constant"
 
-	relaycommon "github.com/Uter-AI/Uter/relay/common"
-	relayconstant "github.com/Uter-AI/Uter/relay/constant"
-	"github.com/Uter-AI/Uter/relaykit/dto"
+	relaycommon "github.com/uter-ai/uter/relay/common"
+	relayconstant "github.com/uter-ai/uter/relay/constant"
+	"github.com/uter-ai/uter/relaykit/dto"
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

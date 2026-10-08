@@ -8,16 +8,16 @@ import (
 	"sync"
 
 	"context"
-	"github.com/Uter-AI/Uter/relaykit/dto"
+	"github.com/uter-ai/uter/relaykit/dto"
 
-	"github.com/Uter-AI/Uter/relaykit/relayconvert/convmeta"
-	claudemessages "github.com/Uter-AI/Uter/relaykit/relayconvert/internal/claude_messages"
-	"github.com/Uter-AI/Uter/relaykit/relayconvert/internal/convdiag"
-	geminichat "github.com/Uter-AI/Uter/relaykit/relayconvert/internal/gemini_chat"
-	oaichat "github.com/Uter-AI/Uter/relaykit/relayconvert/internal/oai_chat"
-	oairesponses "github.com/Uter-AI/Uter/relaykit/relayconvert/internal/oai_responses"
-	"github.com/Uter-AI/Uter/relaykit/relayconvert/internal/toolconv"
-	"github.com/Uter-AI/Uter/relaykit/types"
+	"github.com/uter-ai/uter/relaykit/relayconvert/convmeta"
+	claudemessages "github.com/uter-ai/uter/relaykit/relayconvert/internal/claude_messages"
+	"github.com/uter-ai/uter/relaykit/relayconvert/internal/convdiag"
+	geminichat "github.com/uter-ai/uter/relaykit/relayconvert/internal/gemini_chat"
+	oaichat "github.com/uter-ai/uter/relaykit/relayconvert/internal/oai_chat"
+	oairesponses "github.com/uter-ai/uter/relaykit/relayconvert/internal/oai_responses"
+	"github.com/uter-ai/uter/relaykit/relayconvert/internal/toolconv"
+	"github.com/uter-ai/uter/relaykit/types"
 )
 
 type RequestConverterFunc func(c context.Context, info convmeta.Meta, request any) (any, error)

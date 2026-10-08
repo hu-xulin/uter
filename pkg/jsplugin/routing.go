@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Uter-AI/Uter/constant"
+	"github.com/uter-ai/uter/constant"
 )
 
 type RouteType string

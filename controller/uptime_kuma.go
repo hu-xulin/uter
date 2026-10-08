@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Uter-AI/Uter/setting/console_setting"
+	"github.com/uter-ai/uter/setting/console_setting"
 
 	"github.com/gin-gonic/gin"
 	"golang.org/x/sync/errgroup"

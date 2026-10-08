@@ -3,10 +3,10 @@ package controller
 import (
 	"net/http"
 
-	"github.com/Uter-AI/Uter/common"
-	"github.com/Uter-AI/Uter/middleware"
-	"github.com/Uter-AI/Uter/model"
-	"github.com/Uter-AI/Uter/service"
+	"github.com/uter-ai/uter/common"
+	"github.com/uter-ai/uter/middleware"
+	"github.com/uter-ai/uter/model"
+	"github.com/uter-ai/uter/service"
 	"github.com/gin-gonic/gin"
 )
 

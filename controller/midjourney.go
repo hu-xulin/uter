@@ -8,15 +8,15 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/Uter-AI/Uter/common"
+	"github.com/uter-ai/uter/common"
 
-	"github.com/Uter-AI/Uter/dto"
-	"github.com/Uter-AI/Uter/logger"
-	"github.com/Uter-AI/Uter/middleware"
-	"github.com/Uter-AI/Uter/model"
-	"github.com/Uter-AI/Uter/service"
-	"github.com/Uter-AI/Uter/setting"
-	"github.com/Uter-AI/Uter/setting/system_setting"
+	"github.com/uter-ai/uter/dto"
+	"github.com/uter-ai/uter/logger"
+	"github.com/uter-ai/uter/middleware"
+	"github.com/uter-ai/uter/model"
+	"github.com/uter-ai/uter/service"
+	"github.com/uter-ai/uter/setting"
+	"github.com/uter-ai/uter/setting/system_setting"
 
 	"github.com/gin-gonic/gin"
 )

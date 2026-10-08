@@ -6,12 +6,12 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/Uter-AI/Uter/relaykit/dto"
+	"github.com/uter-ai/uter/relaykit/dto"
 
-	"github.com/Uter-AI/Uter/relaykit/relayconvert/convmeta"
-	sharedgemini "github.com/Uter-AI/Uter/relaykit/relayconvert/internal/shared/gemini"
-	kitutil "github.com/Uter-AI/Uter/relaykit/relayconvert/kitutil"
-	"github.com/Uter-AI/Uter/relaykit/types"
+	"github.com/uter-ai/uter/relaykit/relayconvert/convmeta"
+	sharedgemini "github.com/uter-ai/uter/relaykit/relayconvert/internal/shared/gemini"
+	kitutil "github.com/uter-ai/uter/relaykit/relayconvert/kitutil"
+	"github.com/uter-ai/uter/relaykit/types"
 )
 
 func AttachRequest(format types.RelayFormat, request any, set Set, options *convmeta.Options) (any, []types.ConversionDiagnostic, error) {

@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Uter-AI/Uter/common"
+	"github.com/uter-ai/uter/common"
 
 	"github.com/alicebob/miniredis/v2"
 	"github.com/go-redis/redis/v8"

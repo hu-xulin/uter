@@ -15,7 +15,7 @@ import (
 	"testing"
 )
 
-const modulePrefix = "github.com/Uter-AI/Uter/"
+const modulePrefix = "github.com/uter-ai/uter/"
 
 // Packages (relative to the relaykit module root) covered by the boundary.
 var kitDirs = []string{

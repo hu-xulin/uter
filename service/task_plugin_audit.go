@@ -1,10 +1,10 @@
 package service
 
 import (
-	"github.com/Uter-AI/Uter/common"
+	"github.com/uter-ai/uter/common"
 
-	"github.com/Uter-AI/Uter/model"
-	pluginruntime "github.com/Uter-AI/Uter/pkg/jsplugin"
+	"github.com/uter-ai/uter/model"
+	pluginruntime "github.com/uter-ai/uter/pkg/jsplugin"
 	"github.com/gin-gonic/gin"
 )
 

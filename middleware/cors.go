@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"github.com/Uter-AI/Uter/common"
+	"github.com/uter-ai/uter/common"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"

@@ -4,11 +4,11 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	relaycommon "github.com/Uter-AI/Uter/relay/common"
+	relaycommon "github.com/uter-ai/uter/relay/common"
 
-	"github.com/Uter-AI/Uter/relaykit/dto"
-	"github.com/Uter-AI/Uter/relaykit/types"
-	"github.com/Uter-AI/Uter/setting/operation_setting"
+	"github.com/uter-ai/uter/relaykit/dto"
+	"github.com/uter-ai/uter/relaykit/types"
+	"github.com/uter-ai/uter/setting/operation_setting"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

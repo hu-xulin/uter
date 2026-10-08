@@ -1,6 +1,6 @@
 package system_setting
 
-import "github.com/Uter-AI/Uter/common"
+import "github.com/uter-ai/uter/common"
 
 const (
 	DefaultTaskArtifactInvalidRateLimitPerMinute = 60

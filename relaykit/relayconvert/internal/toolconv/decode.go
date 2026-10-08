@@ -6,10 +6,10 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/Uter-AI/Uter/relaykit/dto"
+	"github.com/uter-ai/uter/relaykit/dto"
 
-	kitutil "github.com/Uter-AI/Uter/relaykit/relayconvert/kitutil"
-	"github.com/Uter-AI/Uter/relaykit/types"
+	kitutil "github.com/uter-ai/uter/relaykit/relayconvert/kitutil"
+	"github.com/uter-ai/uter/relaykit/types"
 )
 
 const maxClaudeWebSearchUses = 1000

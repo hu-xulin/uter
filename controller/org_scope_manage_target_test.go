@@ -21,7 +21,7 @@ package controller
 import (
 	"testing"
 
-	"github.com/Uter-AI/Uter/model"
+	"github.com/uter-ai/uter/model"
 
 	"github.com/gin-gonic/gin"
 )

@@ -3,11 +3,11 @@ package middleware
 import (
 	"github.com/gin-gonic/gin"
 
-	"github.com/Uter-AI/Uter/common"
+	"github.com/uter-ai/uter/common"
 
-	"github.com/Uter-AI/Uter/constant"
-	"github.com/Uter-AI/Uter/i18n"
-	"github.com/Uter-AI/Uter/relaykit/dto"
+	"github.com/uter-ai/uter/constant"
+	"github.com/uter-ai/uter/i18n"
+	"github.com/uter-ai/uter/relaykit/dto"
 )
 
 // I18n middleware detects and sets the language preference for the request

@@ -5,7 +5,7 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/Uter-AI/Uter/constant"
+	"github.com/uter-ai/uter/constant"
 )
 
 // ValidateRedirectURL validates that a redirect URL is safe to use.

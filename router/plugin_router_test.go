@@ -12,12 +12,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Uter-AI/Uter/common"
+	"github.com/uter-ai/uter/common"
 
-	"github.com/Uter-AI/Uter/constant"
-	"github.com/Uter-AI/Uter/middleware"
-	"github.com/Uter-AI/Uter/model"
-	"github.com/Uter-AI/Uter/pkg/jsplugin"
+	"github.com/uter-ai/uter/constant"
+	"github.com/uter-ai/uter/middleware"
+	"github.com/uter-ai/uter/model"
+	"github.com/uter-ai/uter/pkg/jsplugin"
 	"github.com/gin-contrib/gzip"
 	"github.com/gin-gonic/gin"
 	"github.com/glebarez/sqlite"

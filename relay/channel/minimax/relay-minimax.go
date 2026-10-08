@@ -3,11 +3,11 @@ package minimax
 import (
 	"fmt"
 
-	channelconstant "github.com/Uter-AI/Uter/constant"
+	channelconstant "github.com/uter-ai/uter/constant"
 
-	relaycommon "github.com/Uter-AI/Uter/relay/common"
-	"github.com/Uter-AI/Uter/relay/constant"
-	"github.com/Uter-AI/Uter/relaykit/types"
+	relaycommon "github.com/uter-ai/uter/relay/common"
+	"github.com/uter-ai/uter/relay/constant"
+	"github.com/uter-ai/uter/relaykit/types"
 )
 
 func GetRequestURL(info *relaycommon.RelayInfo) (string, error) {

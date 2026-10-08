@@ -7,9 +7,9 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/Uter-AI/Uter/common"
+	"github.com/uter-ai/uter/common"
 
-	"github.com/Uter-AI/Uter/setting/config"
+	"github.com/uter-ai/uter/setting/config"
 )
 
 type ChatCompletionsToResponsesPolicy struct {

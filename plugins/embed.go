@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"io/fs"
 
-	"github.com/Uter-AI/Uter/pkg/jsplugin"
+	"github.com/uter-ai/uter/pkg/jsplugin"
 )
 
 //go:embed tasks

@@ -1,7 +1,7 @@
 package dify
 
 import (
-	"github.com/Uter-AI/Uter/relaykit/dto"
+	"github.com/uter-ai/uter/relaykit/dto"
 )
 
 type DifyChatRequest struct {

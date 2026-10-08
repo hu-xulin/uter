@@ -7,9 +7,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Uter-AI/Uter/common"
+	"github.com/uter-ai/uter/common"
 
-	"github.com/Uter-AI/Uter/setting/system_setting"
+	"github.com/uter-ai/uter/setting/system_setting"
 
 	"github.com/go-webauthn/webauthn/protocol"
 	"github.com/go-webauthn/webauthn/webauthn"

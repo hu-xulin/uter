@@ -1,0 +1,189 @@
+// Package costopt 实现 Uter 网关层"降本中间层"：精确响应缓存（含租户隔离 +
+// in-flight 合并）、零调用短路规则层、max_tokens 成本硬上限。
+//
+// 设计原则（与《中转站API降本技术清单_轻资产版》对齐）：
+//   - 纯软件、无重资产；复用现有 common.RDB（go-redis）与 ModelRatio/GroupRatio 价格体系。
+//   - 缓存命中仍按缓存用量计费，保证收入与配额不漏扣。
+//   - 缓存键含 UserId（租户隔离），绝不跨用户复用私有响应（安全红线）。
+package costopt
+
+import (
+	"bytes"
+	"context"
+	"crypto/sha256"
+	"encoding/hex"
+	"encoding/json"
+	"io"
+	"net/http"
+	"sync"
+	"time"
+
+	"github.com/uter-ai/uter/common"
+	costoptcfg "github.com/uter-ai/uter/setting/costopt"
+
+	relaycommon "github.com/uter-ai/uter/relay/common"
+	"github.com/uter-ai/uter/relaykit/dto"
+	"github.com/uter-ai/uter/relaykit/types"
+	"github.com/uter-ai/uter/service"
+	"github.com/uter-ai/uter/setting/ratio_setting"
+	"github.com/gin-gonic/gin"
+	"github.com/go-redis/redis/v8"
+)
+
+const respCacheNamespace = "uter:resp_cache:"
+
+type inflightCall struct {
+	done chan struct{}
+}
+
+// inflight 记录正在计算同一缓存键的请求，用于 in-flight 合并（singleflight），
+// 避免并发相同请求重复打到上游。
+var inflight sync.Map // key -> *inflightCall
+
+// CacheEnabled 是否启用精确缓存（且 Redis 可用）。
+func CacheEnabled() bool {
+	return costoptcfg.GetCostOptSetting().ResponseCacheEnabled && common.RDB != nil
+}
+
+// CacheKey 计算精确缓存键。键包含：模型、消息、temperature/top_p/max_tokens/n/
+// stop/stream/penalty 等影响输出的参数；以及 UserId 实现租户隔离。
+func CacheKey(req *dto.GeneralOpenAIRequest, info *relaycommon.RelayInfo) string {
+	norm := map[string]any{
+		"model":             req.Model,
+		"messages":          req.Messages,
+		"temperature":       derefFloat(req.Temperature),
+		"top_p":             derefFloat(req.TopP),
+		"max_tokens":        derefUint(req.MaxTokens),
+		"n":                 derefInt(req.N),
+		"stop":              req.Stop,
+		"stream":            req.Stream != nil && *req.Stream,
+		"presence_penalty":  derefFloat(req.PresencePenalty),
+		"frequency_penalty": derefFloat(req.FrequencyPenalty),
+		// 租户隔离：绝不跨用户复用响应（安全红线）
+		"tenant_user_id": info.UserId,
+	}
+	b, _ := json.Marshal(norm)
+	sum := sha256.Sum256(b)
+	return respCacheNamespace + hex.EncodeToString(sum[:])
+}
+
+func derefFloat(p *float64) float64 {
+	if p == nil {
+		return 0
+	}
+	return *p
+}
+
+func derefUint(p *uint) uint {
+	if p == nil {
+		return 0
+	}
+	return *p
+}
+
+func derefInt(p *int) int {
+	if p == nil {
+		return 0
+	}
+	return *p
+}
+
+// ReserveOrGet 精确缓存读取 + in-flight 合并。
+//
+// 返回 (data, isOwner)：
+//   - data != nil            -> 命中缓存（可能立即命中，也可能等待他人计算后命中），调用方直接返回 data 即可。
+//   - data == nil && isOwner -> 本请求成为 owner，必须执行上游；成功后 Store，最后 ReleaseOwner。
+//   - data == nil && !isOwner -> 本请求为等待者且 owner 失败；调用方应再次调用本函数（重试，可能成为 owner）。
+func ReserveOrGet(ctx context.Context, key string) (data []byte, isOwner bool) {
+	rdb := common.RDB
+	if rdb == nil {
+		return nil, true
+	}
+	val, err := rdb.Get(ctx, key).Bytes()
+	if err == nil {
+		return val, false
+	}
+	if err != redis.Nil {
+		// Redis 故障：退化为直接走上游，不阻塞请求。
+		return nil, true
+	}
+	call := &inflightCall{done: make(chan struct{})}
+	actual, loaded := inflight.LoadOrStore(key, call)
+	if loaded {
+		// 已有 owner 在计算，等待其完成。
+		<-actual.(*inflightCall).done
+		val, err := rdb.Get(ctx, key).Bytes()
+		if err == nil {
+			return val, false
+		}
+		// owner 失败：返回 (nil,false)，调用方重试（下一轮 LoadOrStore 将无人占有 -> 成为 owner）。
+		return nil, false
+	}
+	return nil, true
+}
+
+// ReleaseOwner 释放 in-flight 占有权（owner 在 Store 之后、或任何失败路径上调用）。
+func ReleaseOwner(key string) {
+	if v, ok := inflight.LoadAndDelete(key); ok {
+		close(v.(*inflightCall).done)
+	}
+}
+
+// Store 写入缓存（仅成功响应、且仅非流式）。
+func Store(ctx context.Context, key string, data []byte, ttlSeconds int) {
+	rdb := common.RDB
+	if rdb == nil {
+		return
+	}
+	if ttlSeconds <= 0 {
+		ttlSeconds = 300
+	}
+	_ = rdb.Set(ctx, key, data, time.Duration(ttlSeconds)*time.Second)
+}
+
+// StoreIfCachable 回写缓存：仅当缓存启用、buf 非空、且 completionTokens 未超上限时写入。
+// 由 owner 在成功计费后调用。completion_tokens 过大的响应不值得缓存（占内存、命中率低）。
+func StoreIfCachable(ctx context.Context, key string, buf *bytes.Buffer, completionTokens int) {
+	cfg := costoptcfg.GetCostOptSetting()
+	if !cfg.ResponseCacheEnabled || buf == nil || buf.Len() == 0 {
+		return
+	}
+	if completionTokens > cfg.ResponseCacheMaxTokens {
+		return
+	}
+	Store(ctx, key, buf.Bytes(), cfg.ResponseCacheTTLSeconds)
+}
+
+// CaptureBody 包裹非流式上游响应体，使其在被 DoResponse 读取的同时复制到 buf，
+// 供回写缓存使用。返回原 body（已替换为 tee reader）与收集缓冲。
+func CaptureBody(httpResp *http.Response) (orig io.ReadCloser, buf *bytes.Buffer) {
+	buf = &bytes.Buffer{}
+	httpResp.Body = io.NopCloser(io.TeeReader(httpResp.Body, buf))
+	return httpResp.Body, buf
+}
+
+// RespondWithCached 命中缓存：先按缓存用量计费（保证收入/配额不漏），再原样回写响应。
+func RespondWithCached(c *gin.Context, info *relaycommon.RelayInfo, data []byte) *types.UterError {
+	var resp dto.TextResponse
+	if err := json.Unmarshal(data, &resp); err != nil {
+		// 理论上不会发生：存入的是合法上游 JSON。
+		return nil
+	}
+	// 缓存命中未占用任何渠道，置 0 避免渠道统计失真（UpdateChannelUsedQuota(0) 为空操作）。
+	info.ChannelId = 0
+	billCached(c, info, &resp.Usage)
+	c.Data(http.StatusOK, "application/json", data)
+	return nil
+}
+
+// billCached 按缓存响应用量计费（与正常路径一致：音频走 PostAudio，否则 PostText）。
+func billCached(c *gin.Context, info *relaycommon.RelayInfo, usage *dto.Usage) {
+	hasAudio := usage.CompletionTokenDetails.AudioTokens > 0 || usage.PromptTokensDetails.AudioTokens > 0
+	hasAudioRatio := ratio_setting.ContainsAudioRatio(info.OriginModelName) ||
+		ratio_setting.ContainsAudioCompletionRatio(info.OriginModelName)
+	if hasAudio && hasAudioRatio {
+		service.PostAudioConsumeQuota(c, info, usage, "")
+	} else {
+		service.PostTextConsumeQuota(c, info, usage, nil)
+	}
+}

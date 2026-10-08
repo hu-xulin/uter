@@ -6,15 +6,15 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/Uter-AI/Uter/relay/channel"
+	"github.com/uter-ai/uter/relay/channel"
 
-	"github.com/Uter-AI/Uter/relay/channel/openai"
-	relaycommon "github.com/Uter-AI/Uter/relay/common"
-	"github.com/Uter-AI/Uter/relaykit/dto"
-	"github.com/Uter-AI/Uter/relaykit/types"
-	"github.com/Uter-AI/Uter/setting/model_setting"
+	"github.com/uter-ai/uter/relay/channel/openai"
+	relaycommon "github.com/uter-ai/uter/relay/common"
+	"github.com/uter-ai/uter/relaykit/dto"
+	"github.com/uter-ai/uter/relaykit/types"
+	"github.com/uter-ai/uter/setting/model_setting"
 
-	"github.com/Uter-AI/Uter/relay/constant"
+	"github.com/uter-ai/uter/relay/constant"
 
 	"github.com/gin-gonic/gin"
 	"github.com/samber/lo"

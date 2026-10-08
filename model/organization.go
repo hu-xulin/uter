@@ -6,8 +6,8 @@ import (
 
 	"gorm.io/gorm"
 
-	"github.com/Uter-AI/Uter/common"
-	"github.com/Uter-AI/Uter/logger"
+	"github.com/uter-ai/uter/common"
+	"github.com/uter-ai/uter/logger"
 )
 
 // OrgRole 是用户在所属组织内的角色，与系统角色（common.Role*）正交。
@@ -110,6 +110,32 @@ var (
 	// ErrOrgNoValidMember 批量加入组织时没有任何合法的用户 id（全部解析失败或为空）。
 	ErrOrgNoValidMember = errors.New("no valid member to add")
 )
+
+// OrgQuotaError 携带额度超限的具体数值。用户在界面上看到的是**本地化后的可读文案**，
+// 而不是 `errors.New` 的英文技术串——这些错误会直接透出到 API 响应与游乐场提示里。
+//
+// 保留 `Is` 方法使 `errors.Is(err, ErrOrgSubQuotaExceeded/ErrOrgBudgetExceeded)`
+// 的既有判定（含单测）完全不受影响，同时让上层能用 errors.As 取出数值做本地化。
+type OrgQuotaError struct {
+	// Kind 为 ErrOrgSubQuotaExceeded 或 ErrOrgBudgetExceeded。
+	Kind     error
+	Used     int64
+	Limit    int64
+	Required int64
+}
+
+func (e *OrgQuotaError) Error() string {
+	if e.Required > 0 {
+		return fmt.Sprintf("%s: used %s / limit %s, need %s", e.Kind.Error(),
+			logger.FormatQuota(int(e.Used)), logger.FormatQuota(int(e.Limit)),
+			logger.FormatQuota(int(e.Required)))
+	}
+	return fmt.Sprintf("%s: used %s / limit %s", e.Kind.Error(),
+		logger.FormatQuota(int(e.Used)), logger.FormatQuota(int(e.Limit)))
+}
+
+// Is 让 errors.Is(err, ErrOrgSubQuotaExceeded) / ErrOrgBudgetExceeded 继续成立。
+func (e *OrgQuotaError) Is(target error) bool { return errors.Is(e.Kind, target) }
 
 // CreateOrganization 创建组织并把创建者设为 owner。
 func CreateOrganization(name string, ownerUserId int, quota int64) (*Organization, error) {
@@ -384,16 +410,14 @@ func EnforceOrgQuota(userId int, quota int64) error {
 		return fmt.Errorf("%w: org %d", ErrOrgSuspended, org.Id)
 	}
 	if !PreConsumeOrgQuota(org, quota) {
-		return fmt.Errorf("%w: used %s / budget %s", ErrOrgBudgetExceeded,
-			logger.FormatQuota(int(org.UsedQuota)), logger.FormatQuota(int(org.Quota)))
+		return &OrgQuotaError{Kind: ErrOrgBudgetExceeded, Used: int64(org.UsedQuota), Limit: int64(org.Quota), Required: quota}
 	}
 	subQuotaLimit, usedQuota, err := GetOrgMemberSubQuotaState(orgId, userId)
 	if err != nil {
 		return nil
 	}
 	if subQuotaLimit > 0 && int64(usedQuota)+quota > subQuotaLimit {
-		return fmt.Errorf("%w: used %s / limit %s", ErrOrgSubQuotaExceeded,
-			logger.FormatQuota(usedQuota), logger.FormatQuota(int(subQuotaLimit)))
+		return &OrgQuotaError{Kind: ErrOrgSubQuotaExceeded, Used: int64(usedQuota), Limit: subQuotaLimit, Required: quota}
 	}
 	return nil
 }
@@ -439,8 +463,14 @@ func ReserveOrgQuota(orgId int, userId int, amount int64) error {
 		return mres.Error
 	}
 	if mres.RowsAffected == 0 {
-		return fmt.Errorf("%w: org %d member %d over sub-quota limit on reserve %d",
-			ErrOrgSubQuotaExceeded, orgId, userId, amount)
+		// 读回成员账本给出真实数值：条件 UPDATE 不命中既可能是子额度不足，
+		// 也可能是成员已被移出组织，读权威值才能给出准确、可本地化的提示。
+		limit, used, stateErr := GetOrgMemberSubQuotaState(orgId, userId)
+		if stateErr != nil {
+			return fmt.Errorf("%w: org %d member %d over sub-quota limit on reserve %d",
+				ErrOrgSubQuotaExceeded, orgId, userId, amount)
+		}
+		return &OrgQuotaError{Kind: ErrOrgSubQuotaExceeded, Used: int64(used), Limit: limit, Required: amount}
 	}
 	// 2) 原子预留组织预算（与成员预留同口径）。
 	ores := DB.Model(&Organization{}).

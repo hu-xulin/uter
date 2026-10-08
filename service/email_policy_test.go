@@ -3,7 +3,7 @@ package service
 import (
 	"testing"
 
-	"github.com/Uter-AI/Uter/common"
+	"github.com/uter-ai/uter/common"
 )
 
 // The email policy has two independent switches, and each must produce its own
@@ -55,9 +55,9 @@ func TestValidateAccountEmailDistinguishesDomainAndAlias(t *testing.T) {
 			wantErr: ErrAccountEmailAliasRestricted,
 		},
 		{
-			name:   "alias restriction accepts a plain local part",
-			email:  "firstlast@allowed.example",
-			alias:  true,
+			name:  "alias restriction accepts a plain local part",
+			email: "firstlast@allowed.example",
+			alias: true,
 		},
 		{
 			name:    "both on reports the domain problem first",

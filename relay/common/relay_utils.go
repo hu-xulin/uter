@@ -7,10 +7,10 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/Uter-AI/Uter/common"
+	"github.com/uter-ai/uter/common"
 
-	"github.com/Uter-AI/Uter/constant"
-	"github.com/Uter-AI/Uter/dto"
+	"github.com/uter-ai/uter/constant"
+	"github.com/uter-ai/uter/dto"
 
 	"github.com/gin-gonic/gin"
 	"github.com/samber/lo"

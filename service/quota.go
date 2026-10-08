@@ -6,18 +6,18 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Uter-AI/Uter/common"
+	"github.com/uter-ai/uter/common"
 
-	"github.com/Uter-AI/Uter/constant"
-	"github.com/Uter-AI/Uter/logger"
-	"github.com/Uter-AI/Uter/model"
-	"github.com/Uter-AI/Uter/pkg/billingexpr"
-	perfmetrics "github.com/Uter-AI/Uter/pkg/perf_metrics"
-	relaycommon "github.com/Uter-AI/Uter/relay/common"
-	"github.com/Uter-AI/Uter/relaykit/dto"
-	"github.com/Uter-AI/Uter/setting/custom_pricing"
-	"github.com/Uter-AI/Uter/setting/ratio_setting"
-	"github.com/Uter-AI/Uter/types"
+	"github.com/uter-ai/uter/constant"
+	"github.com/uter-ai/uter/logger"
+	"github.com/uter-ai/uter/model"
+	"github.com/uter-ai/uter/pkg/billingexpr"
+	perfmetrics "github.com/uter-ai/uter/pkg/perf_metrics"
+	relaycommon "github.com/uter-ai/uter/relay/common"
+	"github.com/uter-ai/uter/relaykit/dto"
+	"github.com/uter-ai/uter/setting/custom_pricing"
+	"github.com/uter-ai/uter/setting/ratio_setting"
+	"github.com/uter-ai/uter/types"
 
 	"github.com/bytedance/gopkg/util/gopool"
 
@@ -160,11 +160,11 @@ func PreWssConsumeQuota(ctx *gin.Context, relayInfo *relaycommon.RelayInfo, usag
 	noteQuotaClamp(relayInfo, clamp)
 
 	if !isOrgMember && userQuota < quota {
-		return fmt.Errorf("user quota is not enough, user quota: %s, need quota: %s", logger.FormatQuota(userQuota), logger.FormatQuota(quota))
+		return &QuotaError{Kind: ErrUserQuotaNotEnough, Have: int64(userQuota), Need: int64(quota)}
 	}
 
 	if !token.UnlimitedQuota && token.RemainQuota < quota {
-		return fmt.Errorf("token quota is not enough, token remain quota: %s, need quota: %s", logger.FormatQuota(token.RemainQuota), logger.FormatQuota(quota))
+		return &QuotaError{Kind: ErrTokenQuotaNotEnough, Have: int64(token.RemainQuota), Need: int64(quota)}
 	}
 
 	// 组织共享钱包闸门（实时通道）：仅对组织成员生效。

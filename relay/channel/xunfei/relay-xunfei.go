@@ -11,12 +11,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Uter-AI/Uter/common"
+	"github.com/uter-ai/uter/common"
 
-	"github.com/Uter-AI/Uter/constant"
-	"github.com/Uter-AI/Uter/relay/helper"
-	"github.com/Uter-AI/Uter/relaykit/dto"
-	"github.com/Uter-AI/Uter/relaykit/types"
+	"github.com/uter-ai/uter/constant"
+	"github.com/uter-ai/uter/relay/helper"
+	"github.com/uter-ai/uter/relaykit/dto"
+	"github.com/uter-ai/uter/relaykit/types"
 	"github.com/samber/lo"
 
 	"github.com/gin-gonic/gin"

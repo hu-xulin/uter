@@ -39,7 +39,7 @@ func normalizeModelMatchName(s string) string {
 // matchCatalogKey indexes a set of catalog model names so MatchCatalogModelName
 // can be reused across many queries without re-normalizing every time.
 type matchCatalogKey struct {
-	original string
+	original   string
 	normalized string
 }
 

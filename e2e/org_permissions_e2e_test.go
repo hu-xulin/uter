@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/Uter-AI/Uter/model"
+	"github.com/uter-ai/uter/model"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -374,7 +374,7 @@ func TestOrgTokenIsolation(t *testing.T) {
 	var list struct {
 		Data struct {
 			Items []struct {
-				Id   int    `json:"id"`
+				Id   int     `json:"id"`
 				Name string  `json:"name"`
 				Key  *string `json:"key"`
 			} `json:"items"`

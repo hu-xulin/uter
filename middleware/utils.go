@@ -3,12 +3,12 @@ package middleware
 import (
 	"fmt"
 
-	"github.com/Uter-AI/Uter/common"
+	"github.com/uter-ai/uter/common"
 
-	"github.com/Uter-AI/Uter/dto"
-	"github.com/Uter-AI/Uter/logger"
-	pluginruntime "github.com/Uter-AI/Uter/pkg/jsplugin"
-	"github.com/Uter-AI/Uter/relaykit/types"
+	"github.com/uter-ai/uter/dto"
+	"github.com/uter-ai/uter/logger"
+	pluginruntime "github.com/uter-ai/uter/pkg/jsplugin"
+	"github.com/uter-ai/uter/relaykit/types"
 	"github.com/gin-gonic/gin"
 )
 

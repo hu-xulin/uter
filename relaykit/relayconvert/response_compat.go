@@ -3,13 +3,13 @@ package relayconvert
 import (
 	"fmt"
 
-	"github.com/Uter-AI/Uter/relaykit/dto"
+	"github.com/uter-ai/uter/relaykit/dto"
 
-	"github.com/Uter-AI/Uter/relaykit/relayconvert/convmeta"
-	claudemessages "github.com/Uter-AI/Uter/relaykit/relayconvert/internal/claude_messages"
-	geminichat "github.com/Uter-AI/Uter/relaykit/relayconvert/internal/gemini_chat"
-	oaichat "github.com/Uter-AI/Uter/relaykit/relayconvert/internal/oai_chat"
-	oairesponses "github.com/Uter-AI/Uter/relaykit/relayconvert/internal/oai_responses"
+	"github.com/uter-ai/uter/relaykit/relayconvert/convmeta"
+	claudemessages "github.com/uter-ai/uter/relaykit/relayconvert/internal/claude_messages"
+	geminichat "github.com/uter-ai/uter/relaykit/relayconvert/internal/gemini_chat"
+	oaichat "github.com/uter-ai/uter/relaykit/relayconvert/internal/oai_chat"
+	oairesponses "github.com/uter-ai/uter/relaykit/relayconvert/internal/oai_responses"
 )
 
 type ClaudeResponseInfo = claudemessages.ClaudeResponseInfo

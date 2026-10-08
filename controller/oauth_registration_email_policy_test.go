@@ -23,11 +23,11 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/Uter-AI/Uter/common"
+	"github.com/uter-ai/uter/common"
 
-	"github.com/Uter-AI/Uter/model"
-	"github.com/Uter-AI/Uter/oauth"
-	"github.com/Uter-AI/Uter/service"
+	"github.com/uter-ai/uter/model"
+	"github.com/uter-ai/uter/oauth"
+	"github.com/uter-ai/uter/service"
 	"github.com/gin-gonic/gin"
 	"github.com/glebarez/sqlite"
 	"github.com/stretchr/testify/assert"

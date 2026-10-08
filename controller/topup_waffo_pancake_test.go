@@ -4,10 +4,10 @@ import (
 	"maps"
 	"testing"
 
-	"github.com/Uter-AI/Uter/common"
+	"github.com/uter-ai/uter/common"
 
-	"github.com/Uter-AI/Uter/setting"
-	"github.com/Uter-AI/Uter/setting/operation_setting"
+	"github.com/uter-ai/uter/setting"
+	"github.com/uter-ai/uter/setting/operation_setting"
 	"github.com/stretchr/testify/require"
 )
 

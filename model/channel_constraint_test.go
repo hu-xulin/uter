@@ -3,11 +3,11 @@ package model
 import (
 	"testing"
 
-	"github.com/Uter-AI/Uter/common"
+	"github.com/uter-ai/uter/common"
 
-	"github.com/Uter-AI/Uter/constant"
-	"github.com/Uter-AI/Uter/dto"
-	kitdto "github.com/Uter-AI/Uter/relaykit/dto"
+	"github.com/uter-ai/uter/constant"
+	"github.com/uter-ai/uter/dto"
+	kitdto "github.com/uter-ai/uter/relaykit/dto"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
