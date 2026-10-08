@@ -51,6 +51,7 @@ import { SecretInput } from '@/components/ui/secret-input'
 import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
 import { cn } from '@/lib/utils'
+import { maskSecret } from '@/lib/secret'
 
 import {
   SettingsForm,
@@ -115,6 +116,25 @@ const normalizeFormValues = (values: FormValues): FlatValues => {
 
 interface Props {
   defaultValues: FlatValues
+}
+
+/**
+ * 把标记了 secret 的字段替换为掩码串，用于「保存后」展示。
+ *
+ * 与后端 common.MaskSecretValue 规则一致：前4+ 中间星号（最多 12）+ 后 4。
+ * 非密钥字段原样保留（前端不做任何遮蔽），满足「非密钥保存后原样展示」。
+ */
+function maskSecretFields(values: FlatValues): FlatValues {
+  const out: FlatValues = {}
+  for (const f of ALL_FIELDS) {
+    const raw = values[f.name]
+    if (f.secret && typeof raw === 'string' && raw !== '') {
+      out[f.name] = maskSecret(raw)
+    } else {
+      out[f.name] = raw as string | number | boolean
+    }
+  }
+  return out
 }
 
 /** 把表单值按字段类型序列化成后端 Options 表期望的字符串。 */
@@ -345,9 +365,10 @@ export function CostOptimizationSection(props: Props) {
     }
     baselineRef.current = nextBaseline
     baselineSerializedRef.current = JSON.stringify(nextBaseline)
-    // 保存后把表单显式重置为已保存的归一化值，确保输入框显示「保存后的值」
-    // 而非占位符（密钥字段则显示为掩码）。
-    form.reset(buildFormDefaults(nextBaseline))
+    // 保存后把表单重置为「后端将回读到的形态」：密钥字段用掩码串占位，
+    // 这样输入框立即呈现「前四位+后四位」而不是刚输入的明文。
+    // 再次保存时后端会识别掩码串并保留原密钥，不会被覆盖。
+    form.reset(buildFormDefaults(maskSecretFields(nextBaseline)))
   }
 
   return (

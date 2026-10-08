@@ -32,6 +32,7 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { SecretInput } from '@/components/ui/secret-input'
 import { Switch } from '@/components/ui/switch'
 
 import {
@@ -117,6 +118,8 @@ export function BotProtectionSection({
             name='TurnstileSiteKey'
             render={({ field }) => (
               <FormItem>
+                {/* Site Key 是 Cloudflare 设计上就要发给前端的公开值，
+                    按普通文本原样展示（掩码会让管理员无法核对）。 */}
                 <FormLabel>{t('Site Key')}</FormLabel>
                 <FormControl>
                   <Input
@@ -137,11 +140,11 @@ export function BotProtectionSection({
               <FormItem>
                 <FormLabel>{t('Secret Key')}</FormLabel>
                 <FormControl>
-                  <Input
-                    type='password'
+                  <SecretInput
                     placeholder={t('Your Turnstile secret key')}
-                    autoComplete='new-password'
-                    {...field}
+                    value={String(field.value ?? '')}
+                    onChange={field.onChange}
+                    name={field.name}
                   />
                 </FormControl>
                 <FormMessage />
