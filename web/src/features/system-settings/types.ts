@@ -300,6 +300,16 @@ export type ModelSettings = {
    * 都要同时改类型与默认值两处。
    */
   [key: `costopt_setting.${string}`]: string | number | boolean
+  /**
+   * 模型描述多语化：上游目录按语种各有一份文件，其余语种由站内 LLM 补译。
+   * 默认全关，管理员需显式开启并填齐翻译端点（base + key + model）才生效。
+   */
+  ModelDescriptionSyncEnabled: boolean
+  ModelDescriptionTranslateEnabled: boolean
+  ModelDescriptionTranslateBaseURL: string
+  ModelDescriptionTranslateApiKey: string
+  ModelDescriptionTranslateModel: string
+  ModelDescriptionTranslateLocales: string
 }
 
 export type BillingSettings = {

@@ -23,6 +23,7 @@ import { createSectionRegistry } from '../utils/section-registry'
 import { ClaudeSettingsCard } from './claude-settings-card'
 import { COST_OPTIMIZATION_KEYS } from './cost-optimization-fields'
 import { CostOptimizationSection } from './cost-optimization-section'
+import { ModelDescriptionLocalizationSection } from './model-description-localization-section'
 import { GeminiSettingsCard } from './gemini-settings-card'
 import { GlobalSettingsCard } from './global-settings-card'
 import { GrokSettingsCard } from './grok-settings-card'
@@ -192,6 +193,28 @@ const MODELS_SECTIONS = [
         defaultValues={Object.fromEntries(
           COST_OPTIMIZATION_KEYS.map((k) => [k, settings[k]])
         )}
+      />
+    ),
+  },
+  {
+    // 模型描述多语化：上游同步后把定价卡片描述按访客语言本地化。
+    id: 'model-description-localization',
+    titleKey: 'Model Description Localization',
+    build: (settings: ModelSettings) => (
+      <ModelDescriptionLocalizationSection
+        defaultValues={{
+          ModelDescriptionSyncEnabled: settings.ModelDescriptionSyncEnabled,
+          ModelDescriptionTranslateEnabled:
+            settings.ModelDescriptionTranslateEnabled,
+          ModelDescriptionTranslateBaseURL:
+            settings.ModelDescriptionTranslateBaseURL,
+          ModelDescriptionTranslateApiKey:
+            settings.ModelDescriptionTranslateApiKey,
+          ModelDescriptionTranslateModel:
+            settings.ModelDescriptionTranslateModel,
+          ModelDescriptionTranslateLocales:
+            settings.ModelDescriptionTranslateLocales,
+        }}
       />
     ),
   },
