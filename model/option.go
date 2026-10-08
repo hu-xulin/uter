@@ -57,6 +57,9 @@ func InitOptionMap() {
 	// 页面级开关以「全部页面键」落库而非空串：显式写出六项能让运营在配置界面
 	// 一眼看到当前生效范围，也避免「空串」与「未配置」两种语义在界面上混淆。
 	common.OptionMap["CustomerServicePages"] = strings.Join(common.CustomerServicePageKeys, ",")
+	// 管理员令牌默认空 = 未配置。它不加载自环境变量（避免把 smart-cs 的管理员凭证
+	// 写进 .env 明文），只经由 options 表由运营在后台粘贴。
+	common.OptionMap["CustomerServiceAdminToken"] = common.CustomerServiceAdminToken
 	common.OptionMap["DisplayTokenStatEnabled"] = strconv.FormatBool(common.DisplayTokenStatEnabled)
 	common.OptionMap["DrawingEnabled"] = strconv.FormatBool(common.DrawingEnabled)
 	common.OptionMap["TaskEnabled"] = strconv.FormatBool(common.TaskEnabled)
@@ -455,6 +458,10 @@ func updateOptionMap(key string, value string) (err error) {
 		// 注意本分支是字符串分支——上面的 bool 分支以 HasSuffix(key,"Enabled")
 		// 为条件，CustomerServicePages 不匹配，放那里会变成死代码。
 		common.CustomerServicePages = value
+	case "CustomerServiceAdminToken":
+		// 透传凭证，原样存。不 trim：令牌本身可能含首尾空白作为安全字符，
+		// 误 trim 会让用户粘贴的 token 与 smart-cs 端不一致而稳定 401。
+		common.CustomerServiceAdminToken = value
 	case "EmailDomainWhitelist":
 		common.EmailDomainWhitelist = strings.Split(value, ",")
 	case "SMTPServer":

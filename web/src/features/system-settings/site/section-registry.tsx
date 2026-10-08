@@ -95,7 +95,10 @@ const SITE_SECTIONS = [
     id: 'customer-service',
     titleKey: 'Customer Service',
     build: (settings: SiteSettings) => (
-      <CustomerServiceSection defaultPages={settings.CustomerServicePages} />
+      <CustomerServiceSection
+        defaultPages={settings.CustomerServicePages}
+        defaultAdminToken={settings.CustomerServiceAdminToken}
+      />
     ),
   },
 ] as const

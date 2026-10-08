@@ -61,6 +61,11 @@ func SetApiRouter(router *gin.Engine) {
 		apiRouter.GET("/oauth/:provider", middleware.CriticalRateLimit(), middleware.DisableCache(), middleware.TryUserAuth(), controller.HandleOAuth)
 		apiRouter.GET("/ratio_config", middleware.CriticalRateLimit(), controller.GetRatioConfig)
 
+		// 智能客服（smart-cs）管理端代理：读取/保存其大模型配置。受 AdminAuth 保护，
+		// 实际请求由 Uter 后端携带 common.CustomerServiceAdminToken 转发给 smart-cs。
+		apiRouter.GET("/customer-service/deploy/llm", middleware.AdminAuth(), controller.GetCustomerServiceLLMConfig)
+		apiRouter.PUT("/customer-service/deploy/llm", middleware.AdminAuth(), controller.UpdateCustomerServiceLLMConfig)
+
 		apiRouter.POST("/stripe/webhook", anonymousRequestBodyLimit, controller.StripeWebhook)
 		apiRouter.POST("/creem/webhook", anonymousRequestBodyLimit, controller.CreemWebhook)
 		apiRouter.POST("/waffo/webhook", anonymousRequestBodyLimit, controller.WaffoWebhook)

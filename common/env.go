@@ -182,3 +182,18 @@ func NormalizeCustomerServicePages(value string) []string {
 //   - ""（默认/未配置）= 不限制 = 全部页面都开（向后兼容）；
 //   - "none" = 显式全部关闭，对应界面上六个开关全关。
 var CustomerServicePages = ""
+
+// CustomerServiceAdminToken 是 Uter 后端调用智能客服（smart-cs）**管理端** API 时
+// 携带的 Bearer token（由运营在「站点与品牌 → 智能客服」里粘贴 smart-cs 的 admin
+// 令牌）。它是 Uter 与 smart-cs 之间的**透传凭证**：Uter 不解析、不签发，只原样
+// 转发给 smart-cs 的 /api/deploy/* 管理接口（读 /api/deploy/config、写
+// /api/deploy/section/llm 等）。
+//
+// 仅作内存镜像；真正的持久化在 options 表（model/option.go 注册
+// "CustomerServiceAdminToken"）。默认空串 = 未配置，此时任何需要它代理的端点都
+// 返回 400，而不是带着空 token 去打 smart-cs（那会稳定 401）。
+//
+// ⚠️ 安全边界：这是 smart-cs 的**管理员**凭证，等价于 smart-cs 的完全控制权。
+// 它只保存在 Uter 的 options 表（与系统其它密钥同等级别），绝不出现在 /api/status
+// 等对外下发接口，前端只读「是否已配置」、不回显明文。
+var CustomerServiceAdminToken = ""
