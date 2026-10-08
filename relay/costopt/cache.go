@@ -21,13 +21,13 @@ import (
 	"github.com/uter-ai/uter/common"
 	costoptcfg "github.com/uter-ai/uter/setting/costopt"
 
+	"github.com/gin-gonic/gin"
+	"github.com/go-redis/redis/v8"
 	relaycommon "github.com/uter-ai/uter/relay/common"
 	"github.com/uter-ai/uter/relaykit/dto"
 	"github.com/uter-ai/uter/relaykit/types"
 	"github.com/uter-ai/uter/service"
 	"github.com/uter-ai/uter/setting/ratio_setting"
-	"github.com/gin-gonic/gin"
-	"github.com/go-redis/redis/v8"
 )
 
 const respCacheNamespace = "uter:resp_cache:"
@@ -160,6 +160,18 @@ func CaptureBody(httpResp *http.Response) (orig io.ReadCloser, buf *bytes.Buffer
 	buf = &bytes.Buffer{}
 	httpResp.Body = io.NopCloser(io.TeeReader(httpResp.Body, buf))
 	return httpResp.Body, buf
+}
+
+// ExtractCachedUsage 从缓存/回放的响应体中取出 usage。
+// 缓存里存的是上游**原始响应**，因此其中的 usage 是上游真实上报值，
+// 用它统计「省下的 token」比字符数估算更可信。
+// 解析失败返回 nil，调用方据此跳过计账（宁可少记，也不要记错）。
+func ExtractCachedUsage(data []byte) *dto.Usage {
+	var resp dto.TextResponse
+	if err := json.Unmarshal(data, &resp); err != nil {
+		return nil
+	}
+	return &resp.Usage
 }
 
 // RespondWithCached 命中缓存：先按缓存用量计费（保证收入/配额不漏），再原样回写响应。

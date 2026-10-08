@@ -9,18 +9,18 @@ import (
 
 	"github.com/uter-ai/uter/common"
 
-	costopt "github.com/uter-ai/uter/relay/costopt"
+	"github.com/samber/lo"
 	"github.com/uter-ai/uter/constant"
 	"github.com/uter-ai/uter/logger"
 	relaycommon "github.com/uter-ai/uter/relay/common"
 	relayconstant "github.com/uter-ai/uter/relay/constant"
+	costopt "github.com/uter-ai/uter/relay/costopt"
 	"github.com/uter-ai/uter/relay/helper"
 	"github.com/uter-ai/uter/relaykit/dto"
 	"github.com/uter-ai/uter/relaykit/types"
 	"github.com/uter-ai/uter/service"
 	"github.com/uter-ai/uter/setting/model_setting"
 	"github.com/uter-ai/uter/setting/ratio_setting"
-	"github.com/samber/lo"
 
 	"github.com/gin-gonic/gin"
 )
@@ -94,6 +94,9 @@ func TextHelper(c *gin.Context, info *relaycommon.RelayInfo) (uterError *types.U
 	// 0.1) 循环/收敛检测（Agent 死循环直接收敛，不再烧上游）
 	if loopHit, _ := costopt.DetectLoop(request); loopHit {
 		costopt.IncLoopBreak()
+		// 循环收敛：拦下本次请求即省下其全部用量（收敛应答按短路口径估算）。
+		costopt.RecordTokensSavedBy(costopt.SavedSourceLoopBreak,
+			costopt.UsageTokens(costopt.EstimateRequestUsage(request, "")))
 		return costopt.BuildShortCircuitResponse(c, info, request, "检测到重复循环请求，已自动收敛。请调整输入或明确目标后重试。")
 	}
 	// 0.2) 精准 RAG 钩子（需外部 RAG 系统；命中则注入上下文，best-effort）
@@ -132,6 +135,9 @@ func TextHelper(c *gin.Context, info *relaycommon.RelayInfo) (uterError *types.U
 	// 1) 零调用短路：命中规则直接返回预设答案，根本不调上游 LLM（该部分 100% 省去模型调用）
 	if shortAnswer, shortHit := costopt.MatchShortCircuit(request, info); shortHit {
 		costopt.IncShortCircuit()
+		// 短路完全没调上游：把「本可发生的用量」记为节省（估算口径与计费一致）。
+		costopt.RecordTokensSavedBy(costopt.SavedSourceShortCircuit,
+			costopt.UsageTokens(costopt.EstimateRequestUsage(request, shortAnswer)))
 		return costopt.BuildShortCircuitResponse(c, info, request, shortAnswer)
 	}
 	// 1.5) 负缓存：对"此前已被上游确定性拒绝"的相同请求，直接复用拒绝状态码，不再浪费一次上游调用。
@@ -140,6 +146,9 @@ func TextHelper(c *gin.Context, info *relaycommon.RelayInfo) (uterError *types.U
 		negKey = costopt.NegativeKey(request, info)
 		if hit, code := costopt.CheckNegative(c.Request.Context(), negKey); hit {
 			costopt.IncNegativeHit()
+			// 负缓存：未调上游即拿到确定性拒绝，省下本次请求全部用量。
+			costopt.RecordTokensSavedBy(costopt.SavedSourceNegativeCache,
+				costopt.UsageTokens(costopt.EstimateRequestUsage(request, "")))
 			return types.NewErrorWithStatusCode(
 				fmt.Errorf("negative cache hit: upstream previously rejected identical request with status %d", code),
 				types.ErrorCodeBadResponseStatusCode, code, types.ErrOptionWithSkipRetry())
@@ -155,6 +164,10 @@ func TextHelper(c *gin.Context, info *relaycommon.RelayInfo) (uterError *types.U
 			cached, owner := costopt.ReserveOrGet(c.Request.Context(), cacheKey)
 			if cached != nil {
 				costopt.IncCacheHit()
+				// 精确缓存命中：本次完全没调上游，故该响应的全部用量都算节省。
+				// 用的是**上游真实上报的 usage**（非估算），可信度最高。
+				costopt.RecordTokensSavedBy(costopt.SavedSourceExactCache,
+					costopt.UsageTokens(costopt.ExtractCachedUsage(cached)))
 				return costopt.RespondWithCached(c, info, cached)
 			}
 			if owner {
@@ -167,6 +180,9 @@ func TextHelper(c *gin.Context, info *relaycommon.RelayInfo) (uterError *types.U
 	// 2.5) 语义缓存：近似匹配（embedding 端点已配时生效）。仅在精确缓存未命中后查，避免无谓 embedding 调用。
 	if hit, body := costopt.CheckSemantic(c.Request.Context(), request, info); hit {
 		costopt.IncSemHit()
+		// 语义缓存命中：同样未调上游，取回放响应里的真实 usage 计为节省。
+		costopt.RecordTokensSavedBy(costopt.SavedSourceSemanticCache,
+			costopt.UsageTokens(costopt.ExtractCachedUsage(body)))
 		return costopt.RespondWithCached(c, info, body)
 	}
 	// 3) 输出长度成本硬上限（max_tokens 封顶，防输出失控）
