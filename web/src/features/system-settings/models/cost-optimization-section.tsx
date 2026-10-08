@@ -16,8 +16,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
+import { HelpCircle } from 'lucide-react'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import { useEffect, useMemo, useRef, useState, type MouseEvent, type ReactNode } from 'react'
 import { useForm, type Control } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
@@ -34,6 +35,11 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { NativeSelect } from '@/components/ui/native-select'
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover'
 import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
 
@@ -115,6 +121,40 @@ function serialize(field: FieldDef, raw: unknown): string {
 const isGateOff = (v: string | number | boolean | undefined): boolean =>
   v === undefined || v === '' || v === false || v === 'false' || v === 'off'
 
+/**
+ * 标签后的「圆圈 + 问号」说明按钮：点击展开该配置项的说明。
+ * 说明文案走 i18n（key 即英文原文，见 fields 文件的 help 字段）。
+ */
+function FieldHelp({ help }: { help: string }) {
+  const { t } = useTranslation()
+  return (
+    <Popover>
+      <PopoverTrigger
+        // 按钮嵌在 FormLabel 里，点击不能触发表单聚焦/校验冒泡
+        onClick={(e: MouseEvent) => e.preventDefault()}
+        aria-label={t('Description')}
+        className='text-muted-foreground hover:text-foreground ml-1 inline-flex size-4 shrink-0 items-center justify-center align-middle'
+      >
+        <HelpCircle className='size-3.5' />
+      </PopoverTrigger>
+      <PopoverContent align='start' className='w-72 text-xs'>
+        {t(help)}
+      </PopoverContent>
+    </Popover>
+  )
+}
+
+/** 标签 + 可选说明按钮，供 bool 与普通字段共用。 */
+function FieldLabelRow({ def }: { def: FieldDef }) {
+  const { t } = useTranslation()
+  return (
+    <span className='inline-flex items-center'>
+      {t(def.label)}
+      {def.help && <FieldHelp help={def.help} />}
+    </span>
+  )
+}
+
 function OptimizationField(props: {
   field: FieldDef
   control: Control<FormValues>
@@ -139,7 +179,9 @@ function OptimizationField(props: {
           return (
             <SettingsSwitchItem>
               <SettingsSwitchContent>
-                <FormLabel>{t(def.label)}</FormLabel>
+                <FormLabel>
+                  <FieldLabelRow def={def} />
+                </FormLabel>
               </SettingsSwitchContent>
               <FormControl>
                 <Switch
@@ -174,7 +216,7 @@ function OptimizationField(props: {
               value={String(field.value ?? '')}
               onChange={field.onChange}
               disabled={gateOff}
-              placeholder='[]'
+              placeholder={def.placeholder ?? '[]'}
               className='font-mono text-xs'
             />
           )
@@ -184,6 +226,7 @@ function OptimizationField(props: {
               type='number'
               {...safeNumberFieldProps(field)}
               disabled={gateOff}
+              placeholder={def.placeholder}
             />
           )
         } else {
@@ -192,13 +235,16 @@ function OptimizationField(props: {
               value={String(field.value ?? '')}
               onChange={field.onChange}
               disabled={gateOff}
+              placeholder={def.placeholder}
             />
           )
         }
 
         return (
           <FormItem className='max-w-xl'>
-            <FormLabel>{t(def.label)}</FormLabel>
+            <FormLabel>
+              <FieldLabelRow def={def} />
+            </FormLabel>
             <FormControl>{control}</FormControl>
             {def.kind === 'json' && (
               <FormDescription>{t('JSON array or object')}</FormDescription>
