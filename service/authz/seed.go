@@ -3,7 +3,7 @@ package authz
 import (
 	"fmt"
 
-	"github.com/Uter-AI/Uter/model"
+	"github.com/uter-ai/uter/model"
 
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"

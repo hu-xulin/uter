@@ -8,17 +8,17 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/Uter-AI/Uter/common"
+	"github.com/uter-ai/uter/common"
 
-	"github.com/Uter-AI/Uter/constant"
-	"github.com/Uter-AI/Uter/dto"
-	"github.com/Uter-AI/Uter/middleware"
-	"github.com/Uter-AI/Uter/model"
-	"github.com/Uter-AI/Uter/relay"
-	relaychannel "github.com/Uter-AI/Uter/relay/channel"
-	relaycommon "github.com/Uter-AI/Uter/relay/common"
-	"github.com/Uter-AI/Uter/service"
-	"github.com/Uter-AI/Uter/types"
+	"github.com/uter-ai/uter/constant"
+	"github.com/uter-ai/uter/dto"
+	"github.com/uter-ai/uter/middleware"
+	"github.com/uter-ai/uter/model"
+	"github.com/uter-ai/uter/relay"
+	relaychannel "github.com/uter-ai/uter/relay/channel"
+	relaycommon "github.com/uter-ai/uter/relay/common"
+	"github.com/uter-ai/uter/service"
+	"github.com/uter-ai/uter/types"
 	"github.com/gin-gonic/gin"
 )
 

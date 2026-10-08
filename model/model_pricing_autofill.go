@@ -5,8 +5,8 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/Uter-AI/Uter/common"
-	"github.com/Uter-AI/Uter/setting/billing_setting"
+	"github.com/uter-ai/uter/common"
+	"github.com/uter-ai/uter/setting/billing_setting"
 	"gorm.io/gorm"
 )
 

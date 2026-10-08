@@ -1,6 +1,6 @@
 package system_setting
 
-import "github.com/Uter-AI/Uter/setting/config"
+import "github.com/uter-ai/uter/setting/config"
 
 type FetchSetting struct {
 	EnableSSRFProtection   bool     `json:"enable_ssrf_protection"` // 是否启用SSRF防护

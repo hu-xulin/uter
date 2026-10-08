@@ -6,14 +6,14 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Uter-AI/Uter/common"
+	"github.com/uter-ai/uter/common"
 
-	"github.com/Uter-AI/Uter/constant"
-	"github.com/Uter-AI/Uter/pkg/jsplugin"
-	"github.com/Uter-AI/Uter/relaykit/dto"
-	"github.com/Uter-AI/Uter/setting/billing_setting"
-	"github.com/Uter-AI/Uter/setting/config"
-	"github.com/Uter-AI/Uter/setting/ratio_setting"
+	"github.com/uter-ai/uter/constant"
+	"github.com/uter-ai/uter/pkg/jsplugin"
+	"github.com/uter-ai/uter/relaykit/dto"
+	"github.com/uter-ai/uter/setting/billing_setting"
+	"github.com/uter-ai/uter/setting/config"
+	"github.com/uter-ai/uter/setting/ratio_setting"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

@@ -1,12 +1,12 @@
 package controller
 
 import (
-	"github.com/Uter-AI/Uter/i18n"
+	"github.com/uter-ai/uter/i18n"
 	"net/http"
 
-	"github.com/Uter-AI/Uter/setting/billing_setting"
+	"github.com/uter-ai/uter/setting/billing_setting"
 
-	"github.com/Uter-AI/Uter/setting/ratio_setting"
+	"github.com/uter-ai/uter/setting/ratio_setting"
 
 	"github.com/gin-gonic/gin"
 )

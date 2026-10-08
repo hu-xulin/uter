@@ -7,12 +7,12 @@ import (
 	"encoding/json"
 	"time"
 
-	"github.com/Uter-AI/Uter/common"
+	"github.com/uter-ai/uter/common"
 
-	"github.com/Uter-AI/Uter/constant"
-	"github.com/Uter-AI/Uter/pkg/billingexpr"
-	commonRelay "github.com/Uter-AI/Uter/relay/common"
-	"github.com/Uter-AI/Uter/relaykit/dto"
+	"github.com/uter-ai/uter/constant"
+	"github.com/uter-ai/uter/pkg/billingexpr"
+	commonRelay "github.com/uter-ai/uter/relay/common"
+	"github.com/uter-ai/uter/relaykit/dto"
 )
 
 type TaskStatus string
@@ -216,10 +216,10 @@ func (p TaskPrivateData) Value() (driver.Value, error) {
 
 // SyncTaskQueryParams 用于包含所有搜索条件的结构体，可以根据需求添加更多字段
 type SyncTaskQueryParams struct {
-	Platform       constant.TaskPlatform
-	ChannelID      string
-	TaskID         string
-	UserID         string
+	Platform  constant.TaskPlatform
+	ChannelID string
+	TaskID    string
+	UserID    string
 	// Username 按用户名精确过滤；与 UserIDs（组织/部门范围）取交集，越权用户名只会得到空集。
 	Username       string
 	Action         string

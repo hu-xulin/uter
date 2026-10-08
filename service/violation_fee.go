@@ -5,13 +5,13 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Uter-AI/Uter/common"
+	"github.com/uter-ai/uter/common"
 
-	"github.com/Uter-AI/Uter/logger"
-	"github.com/Uter-AI/Uter/model"
-	relaycommon "github.com/Uter-AI/Uter/relay/common"
-	"github.com/Uter-AI/Uter/relaykit/types"
-	"github.com/Uter-AI/Uter/setting/model_setting"
+	"github.com/uter-ai/uter/logger"
+	"github.com/uter-ai/uter/model"
+	relaycommon "github.com/uter-ai/uter/relay/common"
+	"github.com/uter-ai/uter/relaykit/types"
+	"github.com/uter-ai/uter/setting/model_setting"
 
 	"github.com/shopspring/decimal"
 

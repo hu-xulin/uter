@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"github.com/Uter-AI/Uter/service"
+	"github.com/uter-ai/uter/service"
 )
 
 // paymentReturnPath 拼接支付完成后的站内回跳地址。

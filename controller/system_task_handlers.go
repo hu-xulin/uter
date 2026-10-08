@@ -5,12 +5,12 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/Uter-AI/Uter/common"
+	"github.com/uter-ai/uter/common"
 
-	"github.com/Uter-AI/Uter/constant"
-	"github.com/Uter-AI/Uter/model"
-	"github.com/Uter-AI/Uter/service"
-	"github.com/Uter-AI/Uter/setting/operation_setting"
+	"github.com/uter-ai/uter/constant"
+	"github.com/uter-ai/uter/model"
+	"github.com/uter-ai/uter/service"
+	"github.com/uter-ai/uter/setting/operation_setting"
 )
 
 // RegisterScheduledSystemTasks wires the periodic channel test, upstream model

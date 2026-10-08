@@ -3,7 +3,7 @@ package codex
 import (
 	"errors"
 
-	"github.com/Uter-AI/Uter/common"
+	"github.com/uter-ai/uter/common"
 )
 
 type OAuthKey struct {

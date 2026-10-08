@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Uter-AI/Uter/relaykit/dto"
+	"github.com/uter-ai/uter/relaykit/dto"
 
 	"github.com/expr-lang/expr"
 	"github.com/expr-lang/expr/vm"

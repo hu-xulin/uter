@@ -3,12 +3,12 @@ package service
 import (
 	"strings"
 
-	"github.com/Uter-AI/Uter/common"
+	"github.com/uter-ai/uter/common"
 
-	"github.com/Uter-AI/Uter/constant"
-	"github.com/Uter-AI/Uter/model"
-	"github.com/Uter-AI/Uter/setting"
-	"github.com/Uter-AI/Uter/setting/ratio_setting"
+	"github.com/uter-ai/uter/constant"
+	"github.com/uter-ai/uter/model"
+	"github.com/uter-ai/uter/setting"
+	"github.com/uter-ai/uter/setting/ratio_setting"
 	"github.com/gin-gonic/gin"
 )
 

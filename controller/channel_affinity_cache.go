@@ -1,11 +1,11 @@
 package controller
 
 import (
-	"github.com/Uter-AI/Uter/i18n"
+	"github.com/uter-ai/uter/i18n"
 	"net/http"
 	"strings"
 
-	"github.com/Uter-AI/Uter/service"
+	"github.com/uter-ai/uter/service"
 
 	"github.com/gin-gonic/gin"
 )

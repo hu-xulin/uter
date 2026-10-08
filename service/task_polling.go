@@ -10,14 +10,14 @@ import (
 	"sync"
 	"time"
 
-	"github.com/Uter-AI/Uter/common"
+	"github.com/uter-ai/uter/common"
 
-	"github.com/Uter-AI/Uter/constant"
-	taskdto "github.com/Uter-AI/Uter/dto"
-	"github.com/Uter-AI/Uter/logger"
-	"github.com/Uter-AI/Uter/model"
-	"github.com/Uter-AI/Uter/relay/channel/task/taskcommon"
-	relaycommon "github.com/Uter-AI/Uter/relay/common"
+	"github.com/uter-ai/uter/constant"
+	taskdto "github.com/uter-ai/uter/dto"
+	"github.com/uter-ai/uter/logger"
+	"github.com/uter-ai/uter/model"
+	"github.com/uter-ai/uter/relay/channel/task/taskcommon"
+	relaycommon "github.com/uter-ai/uter/relay/common"
 
 	"github.com/bytedance/gopkg/util/gopool"
 	"github.com/samber/lo"

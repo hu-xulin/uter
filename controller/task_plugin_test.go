@@ -12,14 +12,14 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/Uter-AI/Uter/common"
+	"github.com/uter-ai/uter/common"
 
-	"github.com/Uter-AI/Uter/constant"
-	"github.com/Uter-AI/Uter/i18n"
-	"github.com/Uter-AI/Uter/model"
-	"github.com/Uter-AI/Uter/pkg/jsplugin"
-	"github.com/Uter-AI/Uter/plugins"
-	"github.com/Uter-AI/Uter/setting"
+	"github.com/uter-ai/uter/constant"
+	"github.com/uter-ai/uter/i18n"
+	"github.com/uter-ai/uter/model"
+	"github.com/uter-ai/uter/pkg/jsplugin"
+	"github.com/uter-ai/uter/plugins"
+	"github.com/uter-ai/uter/setting"
 	"github.com/gin-gonic/gin"
 	"github.com/glebarez/sqlite"
 	"github.com/stretchr/testify/assert"
@@ -1103,7 +1103,7 @@ func TestGetTaskPluginMarketplaceSourcesDefaultWhenUnset(t *testing.T) {
 	require.True(t, response.Success)
 	require.Equal(t, []setting.TaskPluginMarketplaceSource{
 		{Name: "Official", IndexURL: "https://www.uter.ai/api/v1/plugins/index.json"},
-		{Name: "GitHub", IndexURL: "https://cdn.jsdelivr.net/gh/Uter-AI/uter-plugins@main/index.json"},
+		{Name: "GitHub", IndexURL: "https://cdn.jsdelivr.net/gh/uter-ai/uter-plugins@main/index.json"},
 	}, response.Data)
 	var count int64
 	require.NoError(t, model.DB.Model(&model.Option{}).Where("key = ?", setting.TaskPluginMarketplaceSourcesKey).Count(&count).Error)

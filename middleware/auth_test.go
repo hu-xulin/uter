@@ -10,10 +10,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Uter-AI/Uter/common"
+	"github.com/uter-ai/uter/common"
 
-	"github.com/Uter-AI/Uter/model"
-	"github.com/Uter-AI/Uter/service"
+	"github.com/uter-ai/uter/model"
+	"github.com/uter-ai/uter/service"
 	"github.com/gin-gonic/gin"
 	"github.com/glebarez/sqlite"
 	"github.com/golang-jwt/jwt/v5"

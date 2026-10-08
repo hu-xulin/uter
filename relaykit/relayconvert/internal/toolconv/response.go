@@ -6,10 +6,10 @@ import (
 	"strings"
 	"unicode/utf8"
 
-	"github.com/Uter-AI/Uter/relaykit/dto"
+	"github.com/uter-ai/uter/relaykit/dto"
 
-	kitutil "github.com/Uter-AI/Uter/relaykit/relayconvert/kitutil"
-	"github.com/Uter-AI/Uter/relaykit/types"
+	kitutil "github.com/uter-ai/uter/relaykit/relayconvert/kitutil"
+	"github.com/uter-ai/uter/relaykit/types"
 )
 
 // InspectResponse reports protocol information that the current response

@@ -7,9 +7,9 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/Uter-AI/Uter/common"
+	"github.com/uter-ai/uter/common"
 
-	"github.com/Uter-AI/Uter/setting/system_setting"
+	"github.com/uter-ai/uter/setting/system_setting"
 )
 
 // WorkerRequest Worker请求的数据结构

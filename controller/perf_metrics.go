@@ -4,9 +4,9 @@ import (
 	"net/http"
 	"strconv"
 
-	perfmetrics "github.com/Uter-AI/Uter/pkg/perf_metrics"
+	perfmetrics "github.com/uter-ai/uter/pkg/perf_metrics"
 
-	"github.com/Uter-AI/Uter/setting/ratio_setting"
+	"github.com/uter-ai/uter/setting/ratio_setting"
 
 	"github.com/gin-gonic/gin"
 	"github.com/samber/lo"

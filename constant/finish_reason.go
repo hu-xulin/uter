@@ -1,6 +1,6 @@
 package constant
 
-import "github.com/Uter-AI/Uter/relaykit/types"
+import "github.com/uter-ai/uter/relaykit/types"
 
 // Finish reasons moved to types with the conversion kit.
 var (

@@ -3,7 +3,7 @@ package oauth
 import (
 	"testing"
 
-	"github.com/Uter-AI/Uter/setting/system_setting"
+	"github.com/uter-ai/uter/setting/system_setting"
 
 	"github.com/stretchr/testify/assert"
 )

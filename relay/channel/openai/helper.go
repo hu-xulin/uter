@@ -4,16 +4,16 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/Uter-AI/Uter/common"
+	"github.com/uter-ai/uter/common"
 
-	"github.com/Uter-AI/Uter/logger"
-	relaycommon "github.com/Uter-AI/Uter/relay/common"
-	relayconstant "github.com/Uter-AI/Uter/relay/constant"
-	"github.com/Uter-AI/Uter/relay/helper"
-	"github.com/Uter-AI/Uter/relaykit/dto"
-	"github.com/Uter-AI/Uter/relaykit/relayconvert"
-	"github.com/Uter-AI/Uter/relaykit/types"
-	"github.com/Uter-AI/Uter/service"
+	"github.com/uter-ai/uter/logger"
+	relaycommon "github.com/uter-ai/uter/relay/common"
+	relayconstant "github.com/uter-ai/uter/relay/constant"
+	"github.com/uter-ai/uter/relay/helper"
+	"github.com/uter-ai/uter/relaykit/dto"
+	"github.com/uter-ai/uter/relaykit/relayconvert"
+	"github.com/uter-ai/uter/relaykit/types"
+	"github.com/uter-ai/uter/service"
 
 	"github.com/samber/lo"
 

@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"strings"
 
-	kitutil "github.com/Uter-AI/Uter/relaykit/relayconvert/kitutil"
+	kitutil "github.com/uter-ai/uter/relaykit/relayconvert/kitutil"
 
-	"github.com/Uter-AI/Uter/relaykit/types"
+	"github.com/uter-ai/uter/relaykit/types"
 )
 
 type GeminiChatRequest struct {

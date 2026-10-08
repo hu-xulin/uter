@@ -1,9 +1,9 @@
 package service
 
 import (
-	"github.com/Uter-AI/Uter/model"
+	"github.com/uter-ai/uter/model"
 
-	"github.com/Uter-AI/Uter/setting/custom_pricing"
+	"github.com/uter-ai/uter/setting/custom_pricing"
 )
 
 // monthToDateUSD resolves a user's month-to-date spend for 用户定价. The log

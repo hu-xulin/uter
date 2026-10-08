@@ -7,19 +7,19 @@ import (
 	"html"
 	"net/http"
 
-	"github.com/Uter-AI/Uter/common"
+	"github.com/uter-ai/uter/common"
 
-	"github.com/Uter-AI/Uter/constant"
-	"github.com/Uter-AI/Uter/i18n"
-	"github.com/Uter-AI/Uter/logger"
-	"github.com/Uter-AI/Uter/middleware"
-	"github.com/Uter-AI/Uter/model"
-	"github.com/Uter-AI/Uter/oauth"
-	"github.com/Uter-AI/Uter/service"
-	"github.com/Uter-AI/Uter/setting"
-	"github.com/Uter-AI/Uter/setting/console_setting"
-	"github.com/Uter-AI/Uter/setting/operation_setting"
-	"github.com/Uter-AI/Uter/setting/system_setting"
+	"github.com/uter-ai/uter/constant"
+	"github.com/uter-ai/uter/i18n"
+	"github.com/uter-ai/uter/logger"
+	"github.com/uter-ai/uter/middleware"
+	"github.com/uter-ai/uter/model"
+	"github.com/uter-ai/uter/oauth"
+	"github.com/uter-ai/uter/service"
+	"github.com/uter-ai/uter/setting"
+	"github.com/uter-ai/uter/setting/console_setting"
+	"github.com/uter-ai/uter/setting/operation_setting"
+	"github.com/uter-ai/uter/setting/system_setting"
 
 	"github.com/gin-gonic/gin"
 )
@@ -118,7 +118,8 @@ func GetStatus(c *gin.Context) {
 		// 页面级开关（递进于上面的总开关）：下发**已规整**的页面键列表，前端
 		// 直接拿它与当前路由比对即可，无需再过滤未知键。空配置已由
 		// NormalizeCustomerServicePages 展开为全部页面，故前端无需区分
-		// 「未配置」与「全开」两种情况。
+		// 「未配置」与「全开」两种情况；显式哨兵 "none" 则展开为空数组，
+		// 让入口在所有页面都不渲染。
 		"customer_service_pages": common.NormalizeCustomerServicePages(common.CustomerServicePages),
 
 		// 模块管理配置

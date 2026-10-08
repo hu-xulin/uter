@@ -8,9 +8,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Uter-AI/Uter/common"
+	"github.com/uter-ai/uter/common"
 
-	"github.com/Uter-AI/Uter/pkg/ionet"
+	"github.com/uter-ai/uter/pkg/ionet"
 	"github.com/gin-gonic/gin"
 )
 

@@ -4,14 +4,14 @@ import (
 	"context"
 	"fmt"
 
-	relaycommon "github.com/Uter-AI/Uter/relay/common"
+	relaycommon "github.com/uter-ai/uter/relay/common"
 
-	"github.com/Uter-AI/Uter/relaykit/dto"
-	"github.com/Uter-AI/Uter/relaykit/relayconvert/convmeta"
-	"github.com/Uter-AI/Uter/relaykit/relayconvert/reasoning"
-	"github.com/Uter-AI/Uter/relaykit/types"
-	"github.com/Uter-AI/Uter/setting/model_setting"
-	hostreasoning "github.com/Uter-AI/Uter/setting/reasoning"
+	"github.com/uter-ai/uter/relaykit/dto"
+	"github.com/uter-ai/uter/relaykit/relayconvert/convmeta"
+	"github.com/uter-ai/uter/relaykit/relayconvert/reasoning"
+	"github.com/uter-ai/uter/relaykit/types"
+	"github.com/uter-ai/uter/setting/model_setting"
+	hostreasoning "github.com/uter-ai/uter/setting/reasoning"
 	"github.com/gin-gonic/gin"
 )
 

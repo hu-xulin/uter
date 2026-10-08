@@ -126,7 +126,7 @@ func TestAlipayVerifySignRejectsEmptyAndTampered(t *testing.T) {
 	pubPEM := mustPKCS1PubPEM(t, pub)
 
 	params := map[string]string{
-		"app_id":      "2021000000000000",
+		"app_id":       "2021000000000000",
 		"out_trade_no": "USR1NOtest",
 		"total_amount": "10.00",
 		"trade_status": "TRADE_SUCCESS",
@@ -142,7 +142,7 @@ func TestAlipayVerifySignRejectsEmptyAndTampered(t *testing.T) {
 	// 篡改金额后原签名必须失效（这正是必须交叉校验金额的原因之一：
 	// 签名只保证报文未被篡改，不保证金额与本地订单一致）。
 	tampered := map[string]string{
-		"app_id":      "2021000000000000",
+		"app_id":       "2021000000000000",
 		"out_trade_no": "USR1NOtest",
 		"total_amount": "0.01",
 		"trade_status": "TRADE_SUCCESS",

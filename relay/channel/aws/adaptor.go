@@ -6,13 +6,13 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/Uter-AI/Uter/relay/channel"
+	"github.com/uter-ai/uter/relay/channel"
 
-	"github.com/Uter-AI/Uter/relay/channel/claude"
-	relaycommon "github.com/Uter-AI/Uter/relay/common"
-	"github.com/Uter-AI/Uter/relaykit/dto"
-	"github.com/Uter-AI/Uter/relaykit/types"
-	"github.com/Uter-AI/Uter/service"
+	"github.com/uter-ai/uter/relay/channel/claude"
+	relaycommon "github.com/uter-ai/uter/relay/common"
+	"github.com/uter-ai/uter/relaykit/dto"
+	"github.com/uter-ai/uter/relaykit/types"
+	"github.com/uter-ai/uter/service"
 	"github.com/aws/aws-sdk-go-v2/service/bedrockruntime"
 	"github.com/pkg/errors"
 

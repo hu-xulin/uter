@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/Uter-AI/Uter/common"
+	"github.com/uter-ai/uter/common"
 
-	"github.com/Uter-AI/Uter/setting/console_setting"
+	"github.com/uter-ai/uter/setting/console_setting"
 	"gorm.io/gorm"
 )
 

@@ -8,14 +8,14 @@ import (
 	"strings"
 	"unicode/utf8"
 
-	"github.com/Uter-AI/Uter/common"
+	"github.com/uter-ai/uter/common"
 
-	"github.com/Uter-AI/Uter/constant"
-	"github.com/Uter-AI/Uter/logger"
-	relaycommon "github.com/Uter-AI/Uter/relay/common"
-	constant2 "github.com/Uter-AI/Uter/relay/constant"
-	"github.com/Uter-AI/Uter/relaykit/dto"
-	"github.com/Uter-AI/Uter/relaykit/types"
+	"github.com/uter-ai/uter/constant"
+	"github.com/uter-ai/uter/logger"
+	relaycommon "github.com/uter-ai/uter/relay/common"
+	constant2 "github.com/uter-ai/uter/relay/constant"
+	"github.com/uter-ai/uter/relaykit/dto"
+	"github.com/uter-ai/uter/relaykit/types"
 
 	"github.com/gin-gonic/gin"
 )

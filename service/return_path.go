@@ -3,8 +3,8 @@ package service
 import (
 	"strings"
 
-	"github.com/Uter-AI/Uter/setting/operation_setting"
-	"github.com/Uter-AI/Uter/setting/system_setting"
+	"github.com/uter-ai/uter/setting/operation_setting"
+	"github.com/uter-ai/uter/setting/system_setting"
 )
 
 // PaymentSiteBaseURL 返回支付站点根地址（末尾不带斜杠）。

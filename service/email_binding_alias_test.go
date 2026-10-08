@@ -3,7 +3,7 @@ package service
 import (
 	"testing"
 
-	"github.com/Uter-AI/Uter/common"
+	"github.com/uter-ai/uter/common"
 )
 
 // TestValidateAccountEmailAliasRestriction 验证别名限制拦截 + - _ . 四种字符。

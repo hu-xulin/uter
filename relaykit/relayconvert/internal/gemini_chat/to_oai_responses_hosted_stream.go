@@ -3,10 +3,10 @@ package geminichat
 import (
 	"fmt"
 
-	"github.com/Uter-AI/Uter/relaykit/dto"
+	"github.com/uter-ai/uter/relaykit/dto"
 
-	oaichat "github.com/Uter-AI/Uter/relaykit/relayconvert/internal/oai_chat"
-	kitutil "github.com/Uter-AI/Uter/relaykit/relayconvert/kitutil"
+	oaichat "github.com/uter-ai/uter/relaykit/relayconvert/internal/oai_chat"
+	kitutil "github.com/uter-ai/uter/relaykit/relayconvert/kitutil"
 )
 
 // GeminiHostedStreamBridge accumulates grounding metadata until the provider

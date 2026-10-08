@@ -4,7 +4,7 @@ import (
 	"math"
 	"testing"
 
-	"github.com/Uter-AI/Uter/common"
+	"github.com/uter-ai/uter/common"
 )
 
 // Multipliers are produced by division, so compare with an epsilon.

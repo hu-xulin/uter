@@ -12,10 +12,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Uter-AI/Uter/common"
+	"github.com/uter-ai/uter/common"
 
-	"github.com/Uter-AI/Uter/model"
-	"github.com/Uter-AI/Uter/setting/system_setting"
+	"github.com/uter-ai/uter/model"
+	"github.com/uter-ai/uter/setting/system_setting"
 	"github.com/coreos/go-oidc/v3/oidc"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/oauth2"
@@ -86,7 +86,7 @@ type TelegramProvider struct {
 }
 
 func init() {
-	Register("telegram", NewTelegramProvider(newOAuthHTTPClient(20 * time.Second)))
+	Register("telegram", NewTelegramProvider(newOAuthHTTPClient(20*time.Second)))
 }
 
 // NewTelegramProvider shares the HTTP client with a long-lived, cached JWKS

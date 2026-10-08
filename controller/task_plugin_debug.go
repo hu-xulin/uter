@@ -1,13 +1,13 @@
 package controller
 
 import (
-	"github.com/Uter-AI/Uter/dto"
+	"github.com/uter-ai/uter/dto"
 
-	"github.com/Uter-AI/Uter/logger"
-	"github.com/Uter-AI/Uter/model"
-	pluginruntime "github.com/Uter-AI/Uter/pkg/jsplugin"
-	"github.com/Uter-AI/Uter/relay"
-	relaycommon "github.com/Uter-AI/Uter/relay/common"
+	"github.com/uter-ai/uter/logger"
+	"github.com/uter-ai/uter/model"
+	pluginruntime "github.com/uter-ai/uter/pkg/jsplugin"
+	"github.com/uter-ai/uter/relay"
+	relaycommon "github.com/uter-ai/uter/relay/common"
 	"github.com/gin-gonic/gin"
 )
 

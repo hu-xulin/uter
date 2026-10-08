@@ -7,14 +7,14 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/Uter-AI/Uter/common"
+	"github.com/uter-ai/uter/common"
 
-	"github.com/Uter-AI/Uter/constant"
-	"github.com/Uter-AI/Uter/pkg/jsplugin"
-	"github.com/Uter-AI/Uter/setting/billing_setting"
-	"github.com/Uter-AI/Uter/setting/operation_setting"
-	"github.com/Uter-AI/Uter/setting/ratio_setting"
-	hostreasoning "github.com/Uter-AI/Uter/setting/reasoning"
+	"github.com/uter-ai/uter/constant"
+	"github.com/uter-ai/uter/pkg/jsplugin"
+	"github.com/uter-ai/uter/setting/billing_setting"
+	"github.com/uter-ai/uter/setting/operation_setting"
+	"github.com/uter-ai/uter/setting/ratio_setting"
+	hostreasoning "github.com/uter-ai/uter/setting/reasoning"
 	"github.com/shopspring/decimal"
 )
 

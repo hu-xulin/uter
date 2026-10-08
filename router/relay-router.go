@@ -1,12 +1,15 @@
 package router
 
 import (
-	"github.com/Uter-AI/Uter/constant"
+	"net/http"
 
-	"github.com/Uter-AI/Uter/controller"
-	"github.com/Uter-AI/Uter/middleware"
-	"github.com/Uter-AI/Uter/relay"
-	"github.com/Uter-AI/Uter/relaykit/types"
+	"github.com/uter-ai/uter/constant"
+
+	"github.com/uter-ai/uter/controller"
+	"github.com/uter-ai/uter/middleware"
+	"github.com/uter-ai/uter/relay"
+	"github.com/uter-ai/uter/relay/costopt"
+	"github.com/uter-ai/uter/relaykit/types"
 
 	"github.com/gin-gonic/gin"
 )
@@ -16,6 +19,19 @@ func SetRelayRouter(router *gin.Engine) {
 	router.Use(middleware.DecompressRequestMiddleware())
 	router.Use(middleware.BodyStorageCleanup()) // 清理请求体存储
 	router.Use(middleware.StatsMiddleware())
+	router.Use(costopt.GzipMiddleware()) // 按配置+客户端 Accept-Encoding 自动 gzip 压缩响应
+
+	// 可观测性看板：暴露降本中间层聚合指标（MetricsEnabled 时）。
+	router.GET("/api/costopt/metrics", func(c *gin.Context) {
+		if !costopt.MetricsEnabled() {
+			c.JSON(http.StatusNotFound, gin.H{"error": "metrics disabled"})
+			return
+		}
+		c.JSON(http.StatusOK, costopt.MetricsSnapshotNow())
+	})
+
+	// 启动期缓存预热（CacheWarmupEnabled 且配置了条目时写入精确缓存）。
+	costopt.WarmupCache()
 	// https://platform.openai.com/docs/api-reference/introduction
 	modelsRouter := router.Group("/v1/models")
 	modelsRouter.Use(middleware.RouteTag("relay"))

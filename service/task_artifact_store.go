@@ -5,10 +5,10 @@ import (
 	"errors"
 	"io"
 
-	"github.com/Uter-AI/Uter/model"
+	"github.com/uter-ai/uter/model"
 
-	"github.com/Uter-AI/Uter/setting/system_setting"
-	"github.com/Uter-AI/Uter/types"
+	"github.com/uter-ai/uter/setting/system_setting"
+	"github.com/uter-ai/uter/types"
 	"github.com/gin-gonic/gin"
 )
 

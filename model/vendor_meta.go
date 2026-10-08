@@ -5,7 +5,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/Uter-AI/Uter/common"
+	"github.com/uter-ai/uter/common"
 
 	"gorm.io/gorm"
 )
@@ -247,6 +247,7 @@ func searchVendorsCore(keyword string, offset, limit int, includeDefault bool, a
 //  1. 若已存在同名（未删除）的真实供应商，则在其上应用本次提交的字段并返回；
 //  2. 否则若存在同名但被软删除的供应商，则将其复活并应用字段（避免反复编辑时堆积孤儿记录）；
 //  3. 否则才新建一条真实记录。
+//
 // 这样无论定价广场生成过多少次合成品牌，最终都收敛为唯一一条可被管理与编辑的真实供应商，
 // 定价页也会随之反映用户的修改。
 func PromoteDefaultVendor(name, description, icon string) (*Vendor, error) {

@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/Uter-AI/Uter/common"
+	"github.com/uter-ai/uter/common"
 
 	"gorm.io/gorm"
 )
@@ -406,6 +406,7 @@ func GetVendorModelCounts() (map[int64]int64, error) {
 //  2. 渠道里可用、但没有模型元数据的模型，updatePricing 会按名称规则归因到某个默认品牌，
 //     若已存在同名真实供应商则归到该真实记录 —— 只统计 models 表会把这部分全部漏掉，
 //     于是出现"定价页该品牌下有一堆模型、管理页却显示 0"。
+//
 // 只读：不会创建或复活任何供应商记录。
 func GetEffectiveVendorModelCounts() (map[int64]int64, error) {
 	counts, err := GetVendorModelCounts()

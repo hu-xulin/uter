@@ -3,10 +3,10 @@ package ali
 import (
 	"strings"
 
-	"github.com/Uter-AI/Uter/logger"
+	"github.com/uter-ai/uter/logger"
 
-	"github.com/Uter-AI/Uter/relaykit/dto"
-	"github.com/Uter-AI/Uter/service"
+	"github.com/uter-ai/uter/relaykit/dto"
+	"github.com/uter-ai/uter/service"
 	"github.com/gin-gonic/gin"
 )
 

@@ -1,6 +1,6 @@
 package operation_setting
 
-import "github.com/Uter-AI/Uter/setting/config"
+import "github.com/uter-ai/uter/setting/config"
 
 // TokenSetting 令牌相关配置
 type TokenSetting struct {

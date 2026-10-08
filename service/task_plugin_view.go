@@ -1,10 +1,10 @@
 package service
 
 import (
-	"github.com/Uter-AI/Uter/common"
+	"github.com/uter-ai/uter/common"
 
-	"github.com/Uter-AI/Uter/dto"
-	"github.com/Uter-AI/Uter/model"
+	"github.com/uter-ai/uter/dto"
+	"github.com/uter-ai/uter/model"
 )
 
 // BuildTaskPluginView converts a persisted task into the deliberately narrow

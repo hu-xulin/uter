@@ -1,7 +1,7 @@
 package helper
 
 import (
-	relaycommon "github.com/Uter-AI/Uter/relay/common"
+	relaycommon "github.com/uter-ai/uter/relay/common"
 )
 
 // StreamResult is passed to each dataHandler invocation, providing methods

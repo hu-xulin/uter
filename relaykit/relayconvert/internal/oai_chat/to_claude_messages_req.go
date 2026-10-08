@@ -6,13 +6,13 @@ import (
 
 	"context"
 
-	"github.com/Uter-AI/Uter/relaykit/dto"
+	"github.com/uter-ai/uter/relaykit/dto"
 
-	"github.com/Uter-AI/Uter/relaykit/relayconvert/convmeta"
-	relaymedia "github.com/Uter-AI/Uter/relaykit/relayconvert/internal/media"
-	sharedclaude "github.com/Uter-AI/Uter/relaykit/relayconvert/internal/shared/claude"
-	kitutil "github.com/Uter-AI/Uter/relaykit/relayconvert/kitutil"
-	"github.com/Uter-AI/Uter/relaykit/relayconvert/reasoning"
+	"github.com/uter-ai/uter/relaykit/relayconvert/convmeta"
+	relaymedia "github.com/uter-ai/uter/relaykit/relayconvert/internal/media"
+	sharedclaude "github.com/uter-ai/uter/relaykit/relayconvert/internal/shared/claude"
+	kitutil "github.com/uter-ai/uter/relaykit/relayconvert/kitutil"
+	"github.com/uter-ai/uter/relaykit/relayconvert/reasoning"
 )
 
 func OpenAIChatRequestToClaudeMessages(c context.Context, info convmeta.Meta, textRequest dto.GeneralOpenAIRequest) (*dto.ClaudeRequest, error) {

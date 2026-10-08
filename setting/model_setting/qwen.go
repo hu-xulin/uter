@@ -3,7 +3,7 @@ package model_setting
 import (
 	"strings"
 
-	"github.com/Uter-AI/Uter/setting/config"
+	"github.com/uter-ai/uter/setting/config"
 )
 
 // QwenSettings defines Qwen model configuration. 注意bool要以enabled结尾才可以生效编辑

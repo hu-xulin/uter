@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Uter-AI/Uter/constant"
+	"github.com/uter-ai/uter/constant"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

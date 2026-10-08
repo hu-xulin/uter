@@ -1,9 +1,9 @@
 package router
 
 import (
-	"github.com/Uter-AI/Uter/controller"
+	"github.com/uter-ai/uter/controller"
 
-	"github.com/Uter-AI/Uter/middleware"
+	"github.com/uter-ai/uter/middleware"
 
 	"github.com/gin-gonic/gin"
 )

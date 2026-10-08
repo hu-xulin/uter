@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/Uter-AI/Uter/common"
+	"github.com/uter-ai/uter/common"
 
-	"github.com/Uter-AI/Uter/model"
+	"github.com/uter-ai/uter/model"
 	"github.com/stretchr/testify/require"
 )
 
@@ -78,10 +78,10 @@ func TestWalletFundingOrgMemberRefundReturnsFullPreConsumed(t *testing.T) {
 		orgId  = 900_100
 		userId = 900_101
 		// 组织预算 0 表示不限量（model 语义），这里给一个具体值便于断言。
-		budget  = int64(5_000_000)
-		p       = 200_000
-		q       = 700_000
-		wallet  = 1_000_000
+		budget = int64(5_000_000)
+		p      = 200_000
+		q      = 700_000
+		wallet = 1_000_000
 	)
 	seedOrganization(t, orgId, budget)
 	seedOrgMember(t, userId, orgId, model.OrgRoleMember, wallet, 0)

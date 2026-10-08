@@ -8,10 +8,10 @@ import (
 	"testing"
 	"time"
 
-	relaycommon "github.com/Uter-AI/Uter/relay/common"
+	relaycommon "github.com/uter-ai/uter/relay/common"
 
-	relayconstant "github.com/Uter-AI/Uter/relay/constant"
-	"github.com/Uter-AI/Uter/relaykit/dto"
+	relayconstant "github.com/uter-ai/uter/relay/constant"
+	"github.com/uter-ai/uter/relaykit/dto"
 
 	"github.com/gin-gonic/gin"
 )

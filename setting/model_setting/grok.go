@@ -1,6 +1,6 @@
 package model_setting
 
-import "github.com/Uter-AI/Uter/setting/config"
+import "github.com/uter-ai/uter/setting/config"
 
 // GrokSettings defines Grok model configuration.
 type GrokSettings struct {

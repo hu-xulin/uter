@@ -42,6 +42,19 @@ func TestNormalizeCustomerServicePages(t *testing.T) {
 			want:  all,
 		},
 		{
+			// 显式哨兵「全部关闭」：运营在界面关掉所有开关时写回 "none"，
+			// 必须展开成空切片，让挂件在所有页面都不渲染。
+			name:  "none sentinel means no page",
+			input: CustomerServicePagesAllOff,
+			want:  []string{},
+		},
+		{
+			// 哨兵可带空白：前端写回的值不应因首尾空格改变语义。
+			name:  "none with surrounding spaces still means no page",
+			input: "  none  ",
+			want:  []string{},
+		},
+		{
 			name:  "blank separators also mean every page",
 			input: " , ,",
 			want:  all,

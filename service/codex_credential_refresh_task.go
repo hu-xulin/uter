@@ -8,11 +8,11 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/Uter-AI/Uter/common"
+	"github.com/uter-ai/uter/common"
 
-	"github.com/Uter-AI/Uter/constant"
-	"github.com/Uter-AI/Uter/logger"
-	"github.com/Uter-AI/Uter/model"
+	"github.com/uter-ai/uter/constant"
+	"github.com/uter-ai/uter/logger"
+	"github.com/uter-ai/uter/model"
 
 	"github.com/bytedance/gopkg/util/gopool"
 )

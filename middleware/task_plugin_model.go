@@ -5,7 +5,7 @@ import (
 	"mime"
 	"strings"
 
-	"github.com/Uter-AI/Uter/common"
+	"github.com/uter-ai/uter/common"
 
 	"github.com/gin-gonic/gin"
 	"github.com/tidwall/sjson"

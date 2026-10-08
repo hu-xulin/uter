@@ -8,14 +8,14 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/Uter-AI/Uter/common"
-	"github.com/Uter-AI/Uter/i18n"
+	"github.com/uter-ai/uter/common"
+	"github.com/uter-ai/uter/i18n"
 
-	"github.com/Uter-AI/Uter/middleware"
-	"github.com/Uter-AI/Uter/model"
-	"github.com/Uter-AI/Uter/service"
-	passkeysvc "github.com/Uter-AI/Uter/service/passkey"
-	"github.com/Uter-AI/Uter/setting/system_setting"
+	"github.com/uter-ai/uter/middleware"
+	"github.com/uter-ai/uter/model"
+	"github.com/uter-ai/uter/service"
+	passkeysvc "github.com/uter-ai/uter/service/passkey"
+	"github.com/uter-ai/uter/setting/system_setting"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-webauthn/webauthn/protocol"

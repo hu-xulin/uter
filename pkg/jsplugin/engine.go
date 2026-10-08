@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Uter-AI/Uter/logger"
+	"github.com/uter-ai/uter/logger"
 
 	"github.com/grafana/sobek"
 	"github.com/grafana/sobek/parser"

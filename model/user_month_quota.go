@@ -5,7 +5,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/Uter-AI/Uter/common"
+	"github.com/uter-ai/uter/common"
 )
 
 // The month-to-date spend powers 用户定价 (per-tier multipliers), so it is read

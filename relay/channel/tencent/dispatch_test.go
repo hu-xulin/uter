@@ -3,10 +3,10 @@ package tencent
 import (
 	"testing"
 
-	"github.com/Uter-AI/Uter/constant"
+	"github.com/uter-ai/uter/constant"
 
-	"github.com/Uter-AI/Uter/relay/channel/openai"
-	relaycommon "github.com/Uter-AI/Uter/relay/common"
+	"github.com/uter-ai/uter/relay/channel/openai"
+	relaycommon "github.com/uter-ai/uter/relay/common"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

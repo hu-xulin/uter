@@ -6,7 +6,7 @@ import (
 
 	"context"
 
-	"github.com/Uter-AI/Uter/relaykit/types"
+	"github.com/uter-ai/uter/relaykit/types"
 )
 
 type MediaResolver struct {

@@ -8,13 +8,13 @@ import (
 
 	"context"
 
-	"github.com/Uter-AI/Uter/relaykit/dto"
+	"github.com/uter-ai/uter/relaykit/dto"
 
-	"github.com/Uter-AI/Uter/relaykit/relayconvert/convmeta"
-	relaymedia "github.com/Uter-AI/Uter/relaykit/relayconvert/internal/media"
-	sharedgemini "github.com/Uter-AI/Uter/relaykit/relayconvert/internal/shared/gemini"
-	kitutil "github.com/Uter-AI/Uter/relaykit/relayconvert/kitutil"
-	"github.com/Uter-AI/Uter/relaykit/relayconvert/reasoning"
+	"github.com/uter-ai/uter/relaykit/relayconvert/convmeta"
+	relaymedia "github.com/uter-ai/uter/relaykit/relayconvert/internal/media"
+	sharedgemini "github.com/uter-ai/uter/relaykit/relayconvert/internal/shared/gemini"
+	kitutil "github.com/uter-ai/uter/relaykit/relayconvert/kitutil"
+	"github.com/uter-ai/uter/relaykit/relayconvert/reasoning"
 )
 
 func OpenAIChatRequestToGeminiGenerateContent(c context.Context, textRequest dto.GeneralOpenAIRequest, info convmeta.Meta) (*dto.GeminiChatRequest, error) {

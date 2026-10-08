@@ -3,7 +3,7 @@ package ratio_setting
 import (
 	"testing"
 
-	"github.com/Uter-AI/Uter/setting/model_setting"
+	"github.com/uter-ai/uter/setting/model_setting"
 
 	"github.com/stretchr/testify/assert"
 )

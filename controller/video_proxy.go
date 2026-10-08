@@ -15,13 +15,13 @@ import (
 	"sync"
 	"time"
 
-	"github.com/Uter-AI/Uter/common"
+	"github.com/uter-ai/uter/common"
 
-	"github.com/Uter-AI/Uter/logger"
-	"github.com/Uter-AI/Uter/model"
-	relaychannel "github.com/Uter-AI/Uter/relay/channel"
-	"github.com/Uter-AI/Uter/service"
-	"github.com/Uter-AI/Uter/setting/system_setting"
+	"github.com/uter-ai/uter/logger"
+	"github.com/uter-ai/uter/model"
+	relaychannel "github.com/uter-ai/uter/relay/channel"
+	"github.com/uter-ai/uter/service"
+	"github.com/uter-ai/uter/setting/system_setting"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/net/http/httpguts"
 )

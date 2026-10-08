@@ -6,9 +6,9 @@ import (
 	"os"
 	"strings"
 
-	"github.com/Uter-AI/Uter/common"
+	"github.com/uter-ai/uter/common"
 
-	"github.com/Uter-AI/Uter/middleware"
+	"github.com/uter-ai/uter/middleware"
 
 	"github.com/gin-gonic/gin"
 )

@@ -6,16 +6,16 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Uter-AI/Uter/common"
+	"github.com/uter-ai/uter/common"
 
-	"github.com/Uter-AI/Uter/constant"
-	"github.com/Uter-AI/Uter/pkg/jsplugin"
-	"github.com/Uter-AI/Uter/setting"
-	"github.com/Uter-AI/Uter/setting/config"
-	"github.com/Uter-AI/Uter/setting/operation_setting"
-	"github.com/Uter-AI/Uter/setting/performance_setting"
-	"github.com/Uter-AI/Uter/setting/ratio_setting"
-	"github.com/Uter-AI/Uter/setting/system_setting"
+	"github.com/uter-ai/uter/constant"
+	"github.com/uter-ai/uter/pkg/jsplugin"
+	"github.com/uter-ai/uter/setting"
+	"github.com/uter-ai/uter/setting/config"
+	"github.com/uter-ai/uter/setting/operation_setting"
+	"github.com/uter-ai/uter/setting/performance_setting"
+	"github.com/uter-ai/uter/setting/ratio_setting"
+	"github.com/uter-ai/uter/setting/system_setting"
 	"gorm.io/gorm"
 )
 

@@ -23,7 +23,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/Uter-AI/Uter/common"
+	"github.com/uter-ai/uter/common"
 
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
@@ -62,6 +62,14 @@ func TestGetStatusPublishesCustomerServicePages(t *testing.T) {
 			want: []any{
 				"home", "dashboard", "pricing", "rankings", "docs", "about",
 			},
+		},
+		{
+			// 显式哨兵「全部关闭」：后端必须下发明示的空数组，而非缺失该字段；
+			// 前端据此把入口在所有页面隐藏。空数组与 nil 不同，前端拿它做
+			// .includes 比对时恒为 false，故入口不会在任一页面出现。
+			name:  "none sentinel publishes empty array",
+			pages: common.CustomerServicePagesAllOff,
+			want:  []any{},
 		},
 		{
 			name:  "subset publishes only that subset",

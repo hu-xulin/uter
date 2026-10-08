@@ -3,9 +3,9 @@ package controller
 import (
 	"testing"
 
-	"github.com/Uter-AI/Uter/common"
+	"github.com/uter-ai/uter/common"
 
-	"github.com/Uter-AI/Uter/model"
+	"github.com/uter-ai/uter/model"
 )
 
 // orgAuthorityOf 是组织接口的唯一授权判据。这些用例钉住需求里的七类角色边界，

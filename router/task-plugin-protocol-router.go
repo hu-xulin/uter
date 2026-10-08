@@ -3,10 +3,10 @@ package router
 import (
 	"fmt"
 
-	"github.com/Uter-AI/Uter/controller"
-	"github.com/Uter-AI/Uter/middleware"
-	pluginruntime "github.com/Uter-AI/Uter/pkg/jsplugin"
-	"github.com/Uter-AI/Uter/relaykit/types"
+	"github.com/uter-ai/uter/controller"
+	"github.com/uter-ai/uter/middleware"
+	pluginruntime "github.com/uter-ai/uter/pkg/jsplugin"
+	"github.com/uter-ai/uter/relaykit/types"
 	"github.com/gin-gonic/gin"
 )
 

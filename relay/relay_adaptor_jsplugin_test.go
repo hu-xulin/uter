@@ -6,10 +6,10 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/Uter-AI/Uter/constant"
+	"github.com/uter-ai/uter/constant"
 
-	pluginruntime "github.com/Uter-AI/Uter/pkg/jsplugin"
-	jspluginadaptor "github.com/Uter-AI/Uter/relay/channel/task/jsplugin"
+	pluginruntime "github.com/uter-ai/uter/pkg/jsplugin"
+	jspluginadaptor "github.com/uter-ai/uter/relay/channel/task/jsplugin"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

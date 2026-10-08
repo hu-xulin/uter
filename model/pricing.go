@@ -6,14 +6,14 @@ import (
 	"sync"
 	"time"
 
-	"github.com/Uter-AI/Uter/common"
+	"github.com/uter-ai/uter/common"
 
-	"github.com/Uter-AI/Uter/constant"
-	"github.com/Uter-AI/Uter/pkg/jsplugin"
-	"github.com/Uter-AI/Uter/relaykit/dto"
-	"github.com/Uter-AI/Uter/setting/billing_setting"
-	"github.com/Uter-AI/Uter/setting/ratio_setting"
-	"github.com/Uter-AI/Uter/types"
+	"github.com/uter-ai/uter/constant"
+	"github.com/uter-ai/uter/pkg/jsplugin"
+	"github.com/uter-ai/uter/relaykit/dto"
+	"github.com/uter-ai/uter/setting/billing_setting"
+	"github.com/uter-ai/uter/setting/ratio_setting"
+	"github.com/uter-ai/uter/types"
 )
 
 type PricingPluginVariant struct {
@@ -122,11 +122,21 @@ func syncVendorModelCounts(vendorsList []PricingVendor, vendorMap map[int]*Vendo
 		return vendorsList
 	}
 	result := make([]PricingVendor, 0, len(vendorsList))
+	// 只有真实落库供应商（正 ID）才算「同名真实供应商」。vendorMap 里可能含
+	// getDisplayVendor 为按名称规则归因的模型物化出来的合成默认品牌（负 ID），
+	// 若把它们也计入会把该默认品牌自身判成重复而挤掉——正是「有模型的默认品牌
+	// 反而从定价页消失」的根因。
 	realNames := make(map[string]struct{}, len(vendorMap))
 	for _, v := range vendorMap {
-		realNames[strings.ToLower(v.Name)] = struct{}{}
+		if v.Id > 0 {
+			realNames[strings.ToLower(v.Name)] = struct{}{}
+		}
 	}
+	seen := make(map[int]struct{}, len(vendorsList))
 	for _, v := range vendorsList {
+		if _, dup := seen[v.ID]; dup {
+			continue
+		}
 		if v.ID < 0 {
 			// 合成默认品牌：已合并或已有同名真实供应商的，不重复计入（管理页同样隐藏）。
 			if VendorMergeTargetFor(v.Name, vendorMap) > 0 {
@@ -136,6 +146,7 @@ func syncVendorModelCounts(vendorsList []PricingVendor, vendorMap map[int]*Vendo
 				continue
 			}
 		}
+		seen[v.ID] = struct{}{}
 		v.ModelCount = counts[int64(v.ID)]
 		result = append(result, v)
 	}

@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/Uter-AI/Uter/i18n"
+	"github.com/uter-ai/uter/i18n"
 	"io"
 	"math"
 	"net/http"
@@ -13,17 +13,17 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Uter-AI/Uter/common"
+	"github.com/uter-ai/uter/common"
 
-	"github.com/Uter-AI/Uter/constant"
-	"github.com/Uter-AI/Uter/model"
-	"github.com/Uter-AI/Uter/relay/channel/advancedcustom"
-	relaycommon "github.com/Uter-AI/Uter/relay/common"
-	relayconstant "github.com/Uter-AI/Uter/relay/constant"
-	"github.com/Uter-AI/Uter/relaykit/dto"
-	"github.com/Uter-AI/Uter/relaykit/types"
-	"github.com/Uter-AI/Uter/service"
-	"github.com/Uter-AI/Uter/setting/operation_setting"
+	"github.com/uter-ai/uter/constant"
+	"github.com/uter-ai/uter/model"
+	"github.com/uter-ai/uter/relay/channel/advancedcustom"
+	relaycommon "github.com/uter-ai/uter/relay/common"
+	relayconstant "github.com/uter-ai/uter/relay/constant"
+	"github.com/uter-ai/uter/relaykit/dto"
+	"github.com/uter-ai/uter/relaykit/types"
+	"github.com/uter-ai/uter/service"
+	"github.com/uter-ai/uter/setting/operation_setting"
 
 	"github.com/shopspring/decimal"
 
@@ -98,7 +98,6 @@ func advancedCustomBalanceStatusError(resp *http.Response, requestURL string) er
 		return fmt.Errorf("upstream returned %d for the balance request %s", status, safeURL)
 	}
 }
-
 
 type channelBalanceResult struct {
 	Balance     float64

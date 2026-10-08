@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/Uter-AI/Uter/common"
-	"github.com/Uter-AI/Uter/model"
+	"github.com/uter-ai/uter/common"
+	"github.com/uter-ai/uter/model"
 )
 
 // ---------------------------------------------------------------------------

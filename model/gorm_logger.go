@@ -8,7 +8,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/Uter-AI/Uter/common"
+	"github.com/uter-ai/uter/common"
 
 	"github.com/ClickHouse/clickhouse-go/v2/lib/proto"
 	sqlitedriver "github.com/glebarez/go-sqlite"

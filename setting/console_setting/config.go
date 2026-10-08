@@ -1,6 +1,6 @@
 package console_setting
 
-import "github.com/Uter-AI/Uter/setting/config"
+import "github.com/uter-ai/uter/setting/config"
 
 type ConsoleSetting struct {
 	ApiInfo              string `json:"api_info"`              // 管理 API 信息 (JSON 数组字符串)

@@ -1,6 +1,6 @@
 package common
 
-import "github.com/Uter-AI/Uter/constant"
+import "github.com/uter-ai/uter/constant"
 
 const defaultAnonymousRequestBodyLimitKB = 512
 

@@ -3,9 +3,9 @@ package model
 import (
 	"slices"
 
-	"github.com/Uter-AI/Uter/constant"
+	"github.com/uter-ai/uter/constant"
 
-	"github.com/Uter-AI/Uter/dto"
+	"github.com/uter-ai/uter/dto"
 )
 
 var filterEvalOrder = []dto.ChannelFilterKind{

@@ -6,8 +6,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/Uter-AI/Uter/common"
-	"github.com/Uter-AI/Uter/setting"
+	"github.com/uter-ai/uter/common"
+	"github.com/uter-ai/uter/setting"
 	"github.com/gin-gonic/gin"
 )
 

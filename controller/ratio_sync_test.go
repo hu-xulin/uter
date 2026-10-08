@@ -3,16 +3,16 @@ package controller
 import (
 	"testing"
 
-	"github.com/Uter-AI/Uter/common"
+	"github.com/uter-ai/uter/common"
 	"net/http"
 	"net/http/httptest"
 
-	"github.com/Uter-AI/Uter/relaykit/dto"
-	"github.com/Uter-AI/Uter/service"
-	"github.com/Uter-AI/Uter/setting/billing_setting"
-	"github.com/Uter-AI/Uter/setting/config"
-	"github.com/Uter-AI/Uter/setting/ratio_setting"
-	"github.com/Uter-AI/Uter/setting/system_setting"
+	"github.com/uter-ai/uter/relaykit/dto"
+	"github.com/uter-ai/uter/service"
+	"github.com/uter-ai/uter/setting/billing_setting"
+	"github.com/uter-ai/uter/setting/config"
+	"github.com/uter-ai/uter/setting/ratio_setting"
+	"github.com/uter-ai/uter/setting/system_setting"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

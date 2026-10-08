@@ -7,10 +7,10 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/Uter-AI/Uter/common"
+	"github.com/uter-ai/uter/common"
 
 	"github.com/ClickHouse/clickhouse-go/v2"
-	"github.com/Uter-AI/Uter/logger"
+	"github.com/uter-ai/uter/logger"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
@@ -47,9 +47,9 @@ type AuditLog struct {
 }
 
 type AuditLogFilter struct {
-	SelfView        bool // Server-selected metadata projection, independent of the viewer's actual role.
-	UserId          int
-	Username        string
+	SelfView bool // Server-selected metadata projection, independent of the viewer's actual role.
+	UserId   int
+	Username string
 	// Usernames 是「可见范围」过滤：非空时只返回这些 username 的记录。
 	// 调用方必须保证它来自可信的范围解析（如组织/部门成员列表）；范围为空时应传
 	// NoOrgMemberUsername 哨兵，因为空切片在这里同样表示「不施加过滤」。

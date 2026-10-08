@@ -3,7 +3,7 @@ package billingexpr
 import (
 	"fmt"
 
-	"github.com/Uter-AI/Uter/common"
+	"github.com/uter-ai/uter/common"
 )
 
 // quotaConversion converts raw expression output to quota based on the

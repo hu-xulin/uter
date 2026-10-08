@@ -1,6 +1,6 @@
 package operation_setting
 
-import "github.com/Uter-AI/Uter/setting/config"
+import "github.com/uter-ai/uter/setting/config"
 
 // CheckinSetting 签到功能配置
 type CheckinSetting struct {

@@ -1,6 +1,6 @@
 package model
 
-import "github.com/Uter-AI/Uter/common"
+import "github.com/uter-ai/uter/common"
 
 // GetDBTimestamp returns a UNIX timestamp from database time.
 // Falls back to application time on error.

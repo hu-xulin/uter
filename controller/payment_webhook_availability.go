@@ -3,9 +3,9 @@ package controller
 import (
 	"strings"
 
-	"github.com/Uter-AI/Uter/setting"
+	"github.com/uter-ai/uter/setting"
 
-	"github.com/Uter-AI/Uter/setting/operation_setting"
+	"github.com/uter-ai/uter/setting/operation_setting"
 )
 
 func isPaymentComplianceConfirmed() bool {

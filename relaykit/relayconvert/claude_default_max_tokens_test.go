@@ -4,12 +4,12 @@ import (
 	"context"
 	"testing"
 
-	"github.com/Uter-AI/Uter/relaykit/dto"
+	"github.com/uter-ai/uter/relaykit/dto"
 
-	"github.com/Uter-AI/Uter/relaykit/relayconvert/convmeta"
-	sharedclaude "github.com/Uter-AI/Uter/relaykit/relayconvert/internal/shared/claude"
-	kitutil "github.com/Uter-AI/Uter/relaykit/relayconvert/kitutil"
-	"github.com/Uter-AI/Uter/relaykit/relayconvert/reasoning"
+	"github.com/uter-ai/uter/relaykit/relayconvert/convmeta"
+	sharedclaude "github.com/uter-ai/uter/relaykit/relayconvert/internal/shared/claude"
+	kitutil "github.com/uter-ai/uter/relaykit/relayconvert/kitutil"
+	"github.com/uter-ai/uter/relaykit/relayconvert/reasoning"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

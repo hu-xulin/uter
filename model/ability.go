@@ -7,11 +7,11 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/Uter-AI/Uter/common"
+	"github.com/uter-ai/uter/common"
 
-	"github.com/Uter-AI/Uter/dto"
+	"github.com/uter-ai/uter/dto"
 
-	"github.com/Uter-AI/Uter/setting/channel_weight"
+	"github.com/uter-ai/uter/setting/channel_weight"
 	"github.com/samber/lo"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"

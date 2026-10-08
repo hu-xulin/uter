@@ -105,6 +105,15 @@ const (
 	CustomerServicePageAbout = "about"
 )
 
+// CustomerServicePagesAllOff 是「全部页面都关」的显式哨兵值。
+//
+// 页面级开关以逗号分隔的页面键存储，空串被保留为「未配置 = 全部页面都开」
+// （见下方 NormalizeCustomerServicePages 的向后兼容说明）。但运营有时需要
+// 「一个页面都不开」，而空串已被「全开」占用、无法再表达「全关」。于是约定
+// 一个显式哨兵：界面上把六个开关全关掉时，前端写回 "none"，后端据此下发空数组，
+// 挂件即在所有页面都不渲染。
+const CustomerServicePagesAllOff = "none"
+
 // CustomerServicePageKeys 是全部合法页面键，顺序即配置界面的展示顺序。
 //
 // 用于过滤配置里出现的未知键：运营手改 option 或旧版本残留脏数据时，不应让
@@ -130,10 +139,17 @@ var customerServicePageKeySet = func() map[string]struct{} {
 // NormalizeCustomerServicePages 把配置值规整成合法页面键列表（去空白、去重、去未知键、
 // 按 CustomerServicePageKeys 的固定顺序排序）。
 //
-// 输入为空（未配置）时返回**全部页面键**而不是空切片——这是向后兼容的关键：升级前
-// 只有一个总开关、默认全开，若把「未配置」解释成「一个页面都不开」，升级即让所有页面
-// 的客服入口消失。
+// 三种输入语义：
+//   - ""（未配置）：返回**全部页面键**——这是向后兼容的关键：升级前只有总开关、默认
+//     全开，若把「未配置」解释成「一个页面都不开」，升级瞬间所有页面的客服入口都会消失；
+//   - "none"（显式哨兵）：返回**空切片**，表示运营在界面把所有页面开关都关掉；
+//   - 具体列表：返回其中合法的页面键（按固定顺序）。
 func NormalizeCustomerServicePages(value string) []string {
+	// 显式哨兵「全部关闭」：只有 TrimSpace 后恰好等于哨兵才算，避免把
+	// "none,home" 之类误判成全关。后端/前端约定该值只单独出现。
+	if strings.TrimSpace(value) == CustomerServicePagesAllOff {
+		return []string{}
+	}
 	seen := make(map[string]struct{}, len(CustomerServicePageKeys))
 	for _, part := range strings.Split(value, ",") {
 		key := strings.ToLower(strings.TrimSpace(part))
@@ -162,5 +178,7 @@ func NormalizeCustomerServicePages(value string) []string {
 // 里逐页切换），以逗号分隔的页面键存储，例如 "home,pricing,docs"。
 //
 // 与 CustomerServiceEnabled 是**递进**关系而非并列：总开关关闭时本项不生效；总开关
-// 开启时，只有命中本列表的页面才渲染入口。留空 = 不限制 = 全部页面都开。
+// 开启时，只有命中本列表的页面才渲染入口。两种特殊值：
+//   - ""（默认/未配置）= 不限制 = 全部页面都开（向后兼容）；
+//   - "none" = 显式全部关闭，对应界面上六个开关全关。
 var CustomerServicePages = ""

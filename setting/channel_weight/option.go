@@ -4,7 +4,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/Uter-AI/Uter/common"
+	"github.com/uter-ai/uter/common"
 )
 
 // ChannelModelWeightOptionKey is the option key holding the per-(channel, model)

@@ -11,7 +11,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Uter-AI/Uter/constant"
+	"github.com/uter-ai/uter/constant"
 
 	"github.com/pkg/errors"
 

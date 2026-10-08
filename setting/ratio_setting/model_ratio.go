@@ -4,11 +4,11 @@ import (
 	"maps"
 	"strings"
 
-	"github.com/Uter-AI/Uter/common"
+	"github.com/uter-ai/uter/common"
 
-	"github.com/Uter-AI/Uter/setting/operation_setting"
-	hostreasoning "github.com/Uter-AI/Uter/setting/reasoning"
-	"github.com/Uter-AI/Uter/types"
+	"github.com/uter-ai/uter/setting/operation_setting"
+	hostreasoning "github.com/uter-ai/uter/setting/reasoning"
+	"github.com/uter-ai/uter/types"
 )
 
 // from songquanpeng/one-api

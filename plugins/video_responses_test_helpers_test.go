@@ -4,11 +4,11 @@ import (
 	"sort"
 	"testing"
 
-	"github.com/Uter-AI/Uter/common"
+	"github.com/uter-ai/uter/common"
 
-	"github.com/Uter-AI/Uter/pkg/jsplugin"
-	builtinplugins "github.com/Uter-AI/Uter/plugins"
-	"github.com/Uter-AI/Uter/relay"
+	"github.com/uter-ai/uter/pkg/jsplugin"
+	builtinplugins "github.com/uter-ai/uter/plugins"
+	"github.com/uter-ai/uter/relay"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

@@ -9,11 +9,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Uter-AI/Uter/common"
+	"github.com/uter-ai/uter/common"
 
-	"github.com/Uter-AI/Uter/constant"
-	pluginruntime "github.com/Uter-AI/Uter/pkg/jsplugin"
-	"github.com/Uter-AI/Uter/relay/helper"
+	"github.com/uter-ai/uter/constant"
+	pluginruntime "github.com/uter-ai/uter/pkg/jsplugin"
+	"github.com/uter-ai/uter/relay/helper"
 )
 
 // readSubmitEvents owns only SSE framing and bounded JSON state. The plugin

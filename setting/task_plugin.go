@@ -5,7 +5,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/Uter-AI/Uter/common"
+	"github.com/uter-ai/uter/common"
 )
 
 const (
@@ -18,7 +18,7 @@ const (
 	// this built-in source unusable there. The same repository is served through
 	// the jsDelivr CDN, which is reachable from mainland China and serves
 	// identical contents, so the built-in source points at the CDN instead.
-	githubTaskPluginMarketplaceIndexURL = "https://cdn.jsdelivr.net/gh/Uter-AI/uter-plugins@main/index.json"
+	githubTaskPluginMarketplaceIndexURL = "https://cdn.jsdelivr.net/gh/uter-ai/uter-plugins@main/index.json"
 )
 
 type TaskPluginMarketplaceSource struct {

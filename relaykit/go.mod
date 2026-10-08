@@ -1,4 +1,4 @@
-module github.com/Uter-AI/Uter/relaykit
+module github.com/uter-ai/uter/relaykit
 
 go 1.25.1
 

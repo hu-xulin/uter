@@ -1,6 +1,6 @@
 package operation_setting
 
-import "github.com/Uter-AI/Uter/setting/config"
+import "github.com/uter-ai/uter/setting/config"
 
 // 额度展示类型
 const (

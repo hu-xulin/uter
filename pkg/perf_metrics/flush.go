@@ -5,10 +5,10 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/Uter-AI/Uter/common"
+	"github.com/uter-ai/uter/common"
 
-	"github.com/Uter-AI/Uter/model"
-	"github.com/Uter-AI/Uter/setting/perf_metrics_setting"
+	"github.com/uter-ai/uter/model"
+	"github.com/uter-ai/uter/setting/perf_metrics_setting"
 )
 
 func flushLoop() {

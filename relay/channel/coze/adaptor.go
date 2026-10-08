@@ -8,11 +8,11 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/Uter-AI/Uter/relay/channel"
+	"github.com/uter-ai/uter/relay/channel"
 
-	"github.com/Uter-AI/Uter/relay/common"
-	"github.com/Uter-AI/Uter/relaykit/dto"
-	"github.com/Uter-AI/Uter/relaykit/types"
+	"github.com/uter-ai/uter/relay/common"
+	"github.com/uter-ai/uter/relaykit/dto"
+	"github.com/uter-ai/uter/relaykit/types"
 
 	"github.com/gin-gonic/gin"
 )

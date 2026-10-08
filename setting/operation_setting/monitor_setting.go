@@ -5,7 +5,7 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/Uter-AI/Uter/setting/config"
+	"github.com/uter-ai/uter/setting/config"
 )
 
 type MonitorSetting struct {

@@ -4,10 +4,10 @@ import (
 	"encoding/json"
 	"errors"
 
-	"github.com/Uter-AI/Uter/common"
+	"github.com/uter-ai/uter/common"
 
-	"github.com/Uter-AI/Uter/setting/config"
-	"github.com/Uter-AI/Uter/types"
+	"github.com/uter-ai/uter/setting/config"
+	"github.com/uter-ai/uter/types"
 )
 
 var defaultGroupRatio = map[string]float64{

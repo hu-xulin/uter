@@ -21,17 +21,17 @@ import (
 	"time"
 	"unicode/utf8"
 
-	"github.com/Uter-AI/Uter/common"
+	"github.com/uter-ai/uter/common"
 
-	"github.com/Uter-AI/Uter/constant"
-	"github.com/Uter-AI/Uter/dto"
-	"github.com/Uter-AI/Uter/logger"
-	"github.com/Uter-AI/Uter/model"
-	pluginruntime "github.com/Uter-AI/Uter/pkg/jsplugin"
-	"github.com/Uter-AI/Uter/relay/channel"
-	relaycommon "github.com/Uter-AI/Uter/relay/common"
-	kitdto "github.com/Uter-AI/Uter/relaykit/dto"
-	"github.com/Uter-AI/Uter/service"
+	"github.com/uter-ai/uter/constant"
+	"github.com/uter-ai/uter/dto"
+	"github.com/uter-ai/uter/logger"
+	"github.com/uter-ai/uter/model"
+	pluginruntime "github.com/uter-ai/uter/pkg/jsplugin"
+	"github.com/uter-ai/uter/relay/channel"
+	relaycommon "github.com/uter-ai/uter/relay/common"
+	kitdto "github.com/uter-ai/uter/relaykit/dto"
+	"github.com/uter-ai/uter/service"
 	"github.com/gin-gonic/gin"
 )
 
