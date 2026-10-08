@@ -167,7 +167,7 @@ func uploadBatchFile(ctx context.Context, cfg *costoptcfg.CostOptSetting, jsonl 
 	}
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost,
-		strings.TrimRight(cfg.BatchAPIBaseURL, "/")+"/v1/files", &buf)
+		normalizeBaseURL(cfg.BatchAPIBaseURL)+"/v1/files", &buf)
 	if err != nil {
 		return "", err
 	}
@@ -216,7 +216,7 @@ func createBatch(ctx context.Context, cfg *costoptcfg.CostOptSetting, fileID str
 		return "", err
 	}
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost,
-		strings.TrimRight(cfg.BatchAPIBaseURL, "/")+ensureLeadingSlash(path), bytes.NewReader(payload))
+		normalizeBaseURL(cfg.BatchAPIBaseURL)+ensureLeadingSlash(path), bytes.NewReader(payload))
 	if err != nil {
 		return "", err
 	}
@@ -255,7 +255,7 @@ func BatchStatus(batchID string) (string, error) {
 	if tpl == "" {
 		tpl = "/v1/batches/{id}"
 	}
-	url := strings.TrimRight(cfg.BatchAPIBaseURL, "/") +
+	url := normalizeBaseURL(cfg.BatchAPIBaseURL) +
 		ensureLeadingSlash(strings.ReplaceAll(tpl, "{id}", batchID))
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
