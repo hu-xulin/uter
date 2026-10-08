@@ -6,10 +6,26 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
+	"strings"
 	"time"
 
 	costoptcfg "github.com/uter-ai/uter/setting/costopt"
 )
+
+// normalizeBaseURL 归一化 OpenAI 兼容 base 地址：去除首尾空白与结尾斜杠，
+// 并去掉结尾的 /v1 段，使 base 再拼接 "/v1/..." 时不会拼出双 /v1。
+//
+// 仅用于「base 不含版本段、版本由后端拼接」的端点（embedding / chat / batch）。
+// 切勿用于 base 本身含版本段的情形（如 value_tier 的 https://api.groq.com/openai/v1，
+// 其版本段是路径的一部分，不能剥离）。
+func normalizeBaseURL(base string) string {
+	b := strings.TrimSpace(base)
+	b = strings.TrimRight(b, "/")
+	if strings.HasSuffix(b, "/v1") {
+		b = strings.TrimRight(b[:len(b)-3], "/")
+	}
+	return b
+}
 
 // openAIChat 调用 OpenAI 兼容的 /v1/chat/completions，返回首个 choice 文本。
 // best-effort：任何错误直接返回错误，由调用方决定降级策略。
@@ -34,7 +50,7 @@ func openAIChat(ctx context.Context, base, key, model, system, user string, maxT
 	}
 	c, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
-	req, err := http.NewRequestWithContext(c, http.MethodPost, base+"/v1/chat/completions", bytes.NewReader(payload))
+	req, err := http.NewRequestWithContext(c, http.MethodPost, normalizeBaseURL(base)+"/v1/chat/completions", bytes.NewReader(payload))
 	if err != nil {
 		return "", err
 	}
@@ -76,7 +92,7 @@ func openAIEmbed(ctx context.Context, base, key, model string, texts []string) (
 	}
 	c, cancel := context.WithTimeout(ctx, 8*time.Second)
 	defer cancel()
-	req, err := http.NewRequestWithContext(c, http.MethodPost, base+"/v1/embeddings", bytes.NewReader(payload))
+	req, err := http.NewRequestWithContext(c, http.MethodPost, normalizeBaseURL(base)+"/v1/embeddings", bytes.NewReader(payload))
 	if err != nil {
 		return nil, err
 	}
