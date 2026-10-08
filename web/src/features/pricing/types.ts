@@ -67,7 +67,16 @@ export type PricingModel = {
   billing_plugin_variants?: BillingPluginVariant[]
   id: number
   model_name: string
+  /**
+   * 已按访客语言解析好的描述（后端 `localizePricingDescriptions` 的产物）。
+   */
   description?: string
+  /**
+   * 全语种描述副本（locale -> 文本），后端随定价接口一起下发。
+   * 切换界面语言时前端据此在本地重绘，无需为每种语言重新请求；
+   * 缺失的语种由 `resolveLocalizedText` 沿 zh-TW → zh → en 回退。
+   */
+  descriptions?: Record<string, string>
   icon?: string
   vendor_id?: number
   vendor_name?: string

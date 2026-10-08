@@ -24,6 +24,7 @@ import { CopyButton } from '@/components/copy-button'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card'
 import { colorIconName, getLobeIcon } from '@/lib/lobe-icon'
+import { resolveLocalizedText } from '@/lib/localized-text'
 import { cn } from '@/lib/utils'
 import { useSystemConfigStore } from '@/stores/system-config-store'
 
@@ -95,6 +96,12 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
   const showTokenSuffix =
     billingMode === 'Dynamic Pricing' || billingMode === 'Token-based'
   const tags = parseTags(props.model.tags)
+  // 描述优先取全语种副本按当前界面语言本地解析，这样切换语言立即生效，
+  // 不必为每种语言重新请求定价接口；没有副本时才用后端已解析好的单值。
+  const localizedDescription = resolveLocalizedText(
+    props.model.descriptions,
+    i18n.language
+  )
   const groups = props.model.enable_groups || []
   const endpoints = props.model.supported_endpoint_types || []
   const modelIconKey = props.model.icon || props.model.vendor_icon
@@ -603,7 +610,11 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
       <CardContent className='flex flex-1 flex-col gap-3'>
         <div className='flex min-w-0 flex-col gap-1.5'>
           <p className='text-muted-foreground line-clamp-2 text-[13px] leading-5 break-words'>
-            {props.model.description || t('No description available.')}
+            {/* 回退链必须包含后端已解析好的单值：只有 description、尚无
+                多语副本的历史模型全靠它显示，否则会误报「暂无描述」。 */}
+            {localizedDescription ||
+              props.model.description ||
+              t('No description available.')}
           </p>
           {tags.length > 0 && (
             <div
