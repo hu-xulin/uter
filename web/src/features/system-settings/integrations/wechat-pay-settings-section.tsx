@@ -237,7 +237,11 @@ export function WechatPaySettingsSection({
                   <FormItem>
                     <FormLabel>{t('Certificate Serial No')}</FormLabel>
                     <FormControl>
-                      <Input autoComplete='off' {...field} />
+                      <Input
+                        placeholder='1234567890abcdef1234567890abcdef'
+                        autoComplete='off'
+                        {...field}
+                      />
                     </FormControl>
                     <FormDescription>
                       {t('Merchant API certificate serial number')}
