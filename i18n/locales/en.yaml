@@ -2,6 +2,8 @@
 
 # Task plugin messages
 task_plugin.unknown_meta_field: 'This plugin has an option "{{.Field}}" that your version of uter doesn’t recognize. Update uter and reinstall the plugin.'
+task_plugin.unsupported_capability: 'This plugin requires the "{{.Capability}}" capability, which your version of uter doesn’t support yet. Update uter, or ask the plugin author for a compatible version.'
+task_plugin.duplicate_capability: 'This plugin lists the "{{.Capability}}" capability more than once. Reinstall a clean copy of the plugin, or contact the plugin author.'
 
 # Common messages
 common.invalid_params: "Something you entered isn’t right. Please check and try again."

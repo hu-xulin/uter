@@ -970,6 +970,19 @@ func (e *UnknownMetaFieldError) Error() string {
 	return fmt.Sprintf("plugin meta has unknown field %q", e.Field)
 }
 
+// CapabilityError identifies a required capability the host rejects.
+type CapabilityError struct {
+	Name      string
+	Duplicate bool
+}
+
+func (e *CapabilityError) Error() string {
+	if e.Duplicate {
+		return fmt.Sprintf("duplicate required capability %q", e.Name)
+	}
+	return fmt.Sprintf("unsupported required capability %q", e.Name)
+}
+
 func decodeMeta(value any) (Meta, error) {
 	object, ok := value.(map[string]any)
 	if !ok {
@@ -1157,8 +1170,11 @@ func ValidateV1Meta(meta Meta) error {
 func normalizeV1Meta(meta *Meta) error {
 	seenCapabilities := make(map[string]bool, len(meta.RequiredCapabilities))
 	for _, name := range meta.RequiredCapabilities {
-		if !HasCapability(name) || seenCapabilities[name] {
-			return fmt.Errorf("unsupported or duplicate required capability %q", name)
+		if seenCapabilities[name] {
+			return &CapabilityError{Name: name, Duplicate: true}
+		}
+		if !HasCapability(name) {
+			return &CapabilityError{Name: name}
 		}
 		if name == CapabilitySubmitSSEDelta && !slices.Contains(meta.SubmitResponseTypes, "sse") {
 			return fmt.Errorf("%s requires submitResponseTypes to include sse", name)

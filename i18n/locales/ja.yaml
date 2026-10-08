@@ -1,6 +1,8 @@
 # Japanese translations
 
 task_plugin.unknown_meta_field: "プラグインのメタデータに不明なフィールド「{{.Field}}」が含まれています。このプラグインが公式マーケットプレイスからダウンロードされたものの場合、より新しいバージョンの uter が必要です。uter を更新してからプラグインを再インストールしてください。"
+task_plugin.unsupported_capability: "このプラグインは「{{.Capability}}」機能を必要としますが、お使いの uter のバージョンではまだサポートされていません。uter を更新するか、プラグイン作者に互換バージョンをご確認ください。"
+task_plugin.duplicate_capability: "このプラグインは「{{.Capability}}」機能を複数回宣言しています。プラグインのクリーンなコピーを再インストールするか、作者にお問い合わせください。"
 common.invalid_params: "無効なパラメータ"
 common.database_error: "データベースエラー、管理者に連絡してください"
 common.retry_later: "しばらくしてからもう一度お試しください"

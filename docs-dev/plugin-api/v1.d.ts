@@ -1,10 +1,14 @@
 export type JSONValue = null | boolean | number | string | readonly JSONValue[] | {readonly [key: string]: JSONValue};
-export type HostCapability = "json-clone@1" | "submit-sse-delta@1";
+export type HostCapability = "json-clone@1" | "json-order@1" | "submit-sse-delta@1";
 export type MutableJSON<T> = T extends readonly (infer Item)[] ? MutableJSON<Item>[] : T extends object ? {-readonly [Key in keyof T]: MutableJSON<T[Key]>} : T;
 export interface HostUtils {
   hasCapability(name: string): boolean;
   /** Independent native JS containers; at most 1 MiB encoded JSON, depth 32 and 32,768 nodes. */
-  json: {clone<T extends JSONValue>(value: T): MutableJSON<T>};
+  json: {
+    clone<T extends JSONValue>(value: T): MutableJSON<T>;
+    /** Re-emits value with object keys reordered by the optional priority map (lower first; unmapped keys keep insertion order). Same size limits as clone. */
+    order<T extends JSONValue>(value: T, by?: Record<string, number>): MutableJSON<T>;
+  };
   unixNow(): number;
   uuid(): string;
   hmacSHA256(message: string, secret: string): string;
