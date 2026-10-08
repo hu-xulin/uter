@@ -78,10 +78,10 @@ interface WidgetConfig {
 type ChatMsg = { role: 'user' | 'bot'; text: string }
 
 const DEFAULTS: Required<Omit<WidgetConfig, 'siteToken'>> = {
-  title: '智能客服',
-  greeting: '您好，很高兴为您服务 👋\n请问有什么可以帮您？',
+  title: 'Uter优特智能客服',
+  greeting: '您好，我是Uter优特智能客服 👋\n请问有什么可以帮您？',
   placeholder: '输入您的问题，回车发送',
-  powered: 'AI 智能客服 · 7×24 在线',
+  powered: 'Uter优特智能客服 · 7×24 在线',
   presetQuestions: [],
 }
 
