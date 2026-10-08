@@ -19,10 +19,21 @@ func SetRelayRouter(router *gin.Engine) {
 	router.Use(middleware.DecompressRequestMiddleware())
 	router.Use(middleware.BodyStorageCleanup()) // 清理请求体存储
 	router.Use(middleware.StatsMiddleware())
-	router.Use(costopt.GzipMiddleware()) // 按配置+客户端 Accept-Encoding 自动 gzip 压缩响应
 
 	// 可观测性看板：暴露降本中间层聚合指标（MetricsEnabled 时）。
-	router.GET("/api/costopt/metrics", func(c *gin.Context) {
+	//
+	// 鉴权：AdminAuth。指标是**全平台聚合数据**（cache_hits / cascade_escalations /
+	// total_tokens_saved_est / total_requests 等），不属于任何单个令牌的所有者，
+	// 因此不能用 TokenAuth——那是中转 sk- 的鉴权语义，用在这里等于让任一持 Key
+	// 的普通用户读到全平台数据。AdminAuth 同时接受 dashboard 会话 Cookie、
+	// dashboard access token 与 PAT，并自动落管理操作审计。
+	//
+	// 注意：relay 路径的 gzip 不得在此处注册。gin 中分组级中间件晚于引擎级
+	// 全局中间件生效，而 SetWebRouter 会在其后以 router.Use 注册全局 gzip；
+	// 若把 costopt gzip 放进 relay 分组，实际不会压缩（开关形同虚设）。relay
+	// 的 gzip 统一由 router/gzip.go 的 GzipMiddleware（在 SetRouter 引擎级
+	// 注册一次）按 costopt.GzipEnabled 控制。这里只做路径分发。
+	router.GET("/api/costopt/metrics", middleware.AdminAuth(), func(c *gin.Context) {
 		if !costopt.MetricsEnabled() {
 			c.JSON(http.StatusNotFound, gin.H{"error": "metrics disabled"})
 			return

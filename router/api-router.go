@@ -9,14 +9,14 @@ import (
 	// Import oauth package to register providers via init()
 	_ "github.com/uter-ai/uter/oauth"
 
-	"github.com/gin-contrib/gzip"
 	"github.com/gin-gonic/gin"
 )
 
 func SetApiRouter(router *gin.Engine) {
 	apiRouter := router.Group("/api")
 	apiRouter.Use(middleware.RouteTag("api"))
-	apiRouter.Use(gzip.Gzip(gzip.DefaultCompression))
+	// 全局 gzip 已统一收敛到 router/gzip.go 的 GzipMiddleware（在 SetRouter 引擎级
+	// 注册一次），/api 路径始终压缩，故此处不再单独注册 gzip，避免两层叠加双重压缩。
 	apiRouter.Use(middleware.AccessTokenAudit())
 	apiRouter.Use(middleware.BodyStorageCleanup()) // 清理请求体存储
 	apiRouter.Use(middleware.GlobalAPIRateLimit())
