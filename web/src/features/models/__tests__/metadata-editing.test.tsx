@@ -520,24 +520,26 @@ describe('metadata editing', () => {
     )
     await user.click(screen.getByRole('tab', { name: 'Pricing' }))
     expect(screen.getByPlaceholderText('0.01')).toHaveValue('0')
-    await user.click(screen.getByRole('button', { name: 'Save model prices' }))
-    await waitFor(() =>
-      expect(patch).toHaveBeenCalledWith('/api/option/model_pricing', {
-        changes: [
-          {
-            model_name: 'example-model',
-            expected_version: 'v1',
-            pricing: { ModelPrice: 0, 'billing_setting.billing_mode': 'ratio' },
-            reset: false,
-          },
-        ],
-      })
-    )
+    // The server bumps the version before this write lands, so the first
+    // attempt is rejected; the panel reloads the fresh version and re-applies
+    // the draft once instead of asking the operator to reload manually.
     version = 'v2'
     storedPrice = 2
-    await user.click(
-      await screen.findByRole('button', { name: 'Reload pricing' })
-    )
+    await user.click(screen.getByRole('button', { name: 'Save model prices' }))
+    await waitFor(() => expect(patch).toHaveBeenCalledTimes(2))
+    expect(patch.mock.calls[0]?.[1]).toMatchObject({
+      changes: [{ model_name: 'example-model', expected_version: 'v1' }],
+    })
+    expect(patch.mock.calls[1]?.[1]).toMatchObject({
+      changes: [
+        {
+          model_name: 'example-model',
+          expected_version: 'v2',
+          pricing: { ModelPrice: 0, 'billing_setting.billing_mode': 'ratio' },
+          reset: false,
+        },
+      ],
+    })
     await waitFor(() =>
       expect(screen.getByPlaceholderText('0.01')).toHaveValue('2')
     )

@@ -561,12 +561,25 @@ test('custom providers have their own tab and keep the search when switching cat
   expect(within(tabs).getAllByRole('tab')).toHaveLength(5)
   await user.click(within(tabs).getByRole('tab', { name: 'Custom' }))
   const panel = screen.getByRole('tabpanel', { name: 'Custom' })
-  expect(within(panel).getAllByRole('option')).toHaveLength(2)
+  // Custom (8), Advanced Custom (58) and the three branded variants that
+  // behave exactly like Advanced Custom (62/63/64) share this category.
+  expect(within(panel).getAllByRole('option')).toHaveLength(5)
   expect(
     within(panel).getByRole('option', { name: 'Advanced Custom Built-in #58' })
   ).toBeVisible()
   expect(
     within(panel).getByRole('option', { name: 'Custom Built-in #8' })
+  ).toBeVisible()
+  expect(
+    within(panel).getByRole('option', { name: 'Shared Channel Built-in #62' })
+  ).toBeVisible()
+  expect(
+    within(panel).getByRole('option', {
+      name: 'Aggregate Channel Built-in #63',
+    })
+  ).toBeVisible()
+  expect(
+    within(panel).getByRole('option', { name: 'Proxy Channel Built-in #64' })
   ).toBeVisible()
   expect(
     within(panel).queryByRole('option', { name: /Plugin/ })
@@ -581,6 +594,16 @@ test('custom providers have their own tab and keep the search when switching cat
   ).not.toBeInTheDocument()
   expect(
     screen.queryByRole('option', { name: 'Custom Built-in #8' })
+  ).not.toBeInTheDocument()
+  // The branded Advanced Custom variants are Custom-only, never Built-in.
+  expect(
+    screen.queryByRole('option', { name: 'Shared Channel Built-in #62' })
+  ).not.toBeInTheDocument()
+  expect(
+    screen.queryByRole('option', { name: 'Aggregate Channel Built-in #63' })
+  ).not.toBeInTheDocument()
+  expect(
+    screen.queryByRole('option', { name: 'Proxy Channel Built-in #64' })
   ).not.toBeInTheDocument()
   await user.type(screen.getByRole('combobox'), '58')
   expect(screen.queryByRole('option')).not.toBeInTheDocument()

@@ -366,7 +366,9 @@ it('keeps prices and channel explanations readable in the mobile card and detail
   const price = screen.getByRole('button', {
     name: 'View pricing for catalog-only',
   })
-  expect(within(price).getByText('1.25')).toHaveClass('whitespace-normal')
+  const priceValues = within(price).getAllByText('$1.25')
+  expect(priceValues[0]).toBeVisible()
+  expect(priceValues[0]).not.toHaveClass('truncate')
   expect(within(price).getByText('USD / 1M tokens')).toHaveClass(
     'whitespace-normal'
   )
@@ -545,8 +547,8 @@ it.each([
   {
     name: 'legacy',
     effective: { ModelRatio: 1.5, CompletionRatio: 5, CacheRatio: 0.1 },
-    catalog: { model_ratio: 1.5, completion_ratio: 5 },
-    text: 'Input3Output15',
+    catalog: { model_ratio: 1.5, completion_ratio: 5, cache_ratio: 0.1 },
+    text: 'Input$31MOfficial:$31MOutput$151MOfficial:$151MCacheRead$0.31MOfficial:$0.31M',
   },
   {
     name: 'single-expression',
@@ -558,7 +560,7 @@ it.each([
       billing_mode: 'tiered_expr',
       billing_expr: 'tier("base", p * 3 + c * 15 + cr * 0.3)',
     },
-    text: 'Input3Output15',
+    text: 'Input3/1MtokensOutput15/1MtokensCacheRead0.3/1Mtokens',
   },
   {
     name: 'tier-expression',
@@ -572,19 +574,19 @@ it.each([
       billing_expr:
         'len <= 200000 ? tier("standard", p * 3 + c * 15) : tier("long", p * 6 + c * 22.5)',
     },
-    text: 'Input3Output15',
+    text: 'Input3/1MtokensOutput15/1MtokensOfficial:Input3·Output15USD/1Mtokens·2tiers',
   },
   {
     name: 'free-request',
     effective: { ModelPrice: 0 },
     catalog: { quota_type: 1, model_price: 0 },
-    text: 'Per-request0USD/request',
+    text: 'Per-request$0requestOfficial:$0requestUSD/request',
   },
   {
     name: 'free-tokens',
     effective: { ModelRatio: 0, CompletionRatio: 2 },
     catalog: { model_ratio: 0, completion_ratio: 2 },
-    text: 'Input0Output0',
+    text: 'Input$01MOfficial:$01MOutput$01MOfficial:$01M',
   },
   {
     name: 'free-expression',
@@ -596,7 +598,7 @@ it.each([
       billing_mode: 'tiered_expr',
       billing_expr: 'tier("free", p * 0 + c * 0)',
     },
-    text: 'Input0Output0',
+    text: 'Input0/1MtokensOutput0/1Mtokens',
   },
 ])(
   'shows $name effective pricing like the catalog without requiring a listed model',
@@ -610,7 +612,6 @@ it.each([
     })
     expect(button.textContent?.replaceAll(/\s/g, '')).toContain(text)
     expect(button).not.toHaveTextContent('Unset price')
-    expect(button).not.toHaveTextContent('Cache')
     render(
       <CatalogPrice
         model={{
@@ -847,11 +848,10 @@ it.each([
       name: 'View pricing for channel-only',
     })
     expect(button.textContent?.replaceAll(/\s/g, '')).toContain(
-      'Input0.5Output1'
+      type === 'CUSTOM'
+        ? 'Input🐱0.51MOfficial:🐱0.51MOutput🐱11MOfficial:🐱11M'
+        : 'Input$0.51MOfficial:$0.51MOutput$11MOfficial:$11M'
     )
-    expect(within(button).getByText(caption)).toBeVisible()
-    if (type === 'CUSTOM') {
-      expect(button.textContent?.match(/🐱/g)).toHaveLength(1)
-    }
+    expect(within(button).getAllByText(caption)).toHaveLength(1)
   }
 )

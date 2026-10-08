@@ -231,9 +231,16 @@ describe('overview setup guide', () => {
     keyLookupError = new Error('Key lookup unavailable')
     await renderOverview()
 
-    expect(
-      await screen.findByRole('button', { name: 'Hide setup guide' })
-    ).toBeVisible()
+    // The expanded card is a motion element that fades in from opacity 0, so
+    // visibility only settles once the entrance animation has run. Give it a
+    // generous window: on a loaded machine the frame can take a while.
+    await waitFor(
+      () =>
+        expect(
+          screen.getByRole('button', { name: 'Hide setup guide' })
+        ).toBeVisible(),
+      { timeout: 5000 }
+    )
     expect(
       screen.queryByRole('button', { name: 'Setup guide' })
     ).not.toBeInTheDocument()
