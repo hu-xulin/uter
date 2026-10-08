@@ -18,14 +18,14 @@ import (
 
 	"github.com/uter-ai/uter/common"
 
-	"github.com/uter-ai/uter/middleware"
-	"github.com/uter-ai/uter/model"
-	"github.com/uter-ai/uter/service"
-	"github.com/uter-ai/uter/service/authz"
 	"github.com/gin-gonic/gin"
 	"github.com/glebarez/sqlite"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/uter-ai/uter/middleware"
+	"github.com/uter-ai/uter/model"
+	"github.com/uter-ai/uter/service"
+	"github.com/uter-ai/uter/service/authz"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -439,7 +439,15 @@ func newAuditTestDatabase(t *testing.T, kind, dsn string) (*gorm.DB, string) {
 	t.Helper()
 	if kind == "sqlite" {
 		path := t.TempDir() + "/audit.db"
-		db, err := gorm.Open(sqlite.Open(path), &gorm.Config{})
+		// Mirror the production SQLite DSN (common.SQLitePath): WAL plus a
+		// 30s busy timeout and BEGIN IMMEDIATE transactions. Without these
+		// pragmas the pure-Go driver keeps SQLite's 5s default timeout and
+		// deferred transactions can die instantly on SQLITE_BUSY_SNAPSHOT,
+		// so concurrent-writer cases (e.g. the account-deletion race) fail
+		// with "database is locked" even though production is correct.
+		// See common.SQLitePath for the full rationale.
+		dsn := path + "?_pragma=busy_timeout(30000)&_pragma=journal_mode(WAL)&_txlock=immediate"
+		db, err := gorm.Open(sqlite.Open(dsn), &gorm.Config{})
 		require.NoError(t, err)
 		return db, path
 	}

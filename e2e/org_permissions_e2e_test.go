@@ -1,6 +1,7 @@
 package e2e
 
 import (
+	"encoding/json"
 	"net/http"
 	"strconv"
 	"testing"
@@ -397,4 +398,55 @@ func TestOrgTokenIsolation(t *testing.T) {
 	// 令牌仍然存在
 	recorder = env.call(t, http.MethodGet, "/api/token/"+strconv.Itoa(tokenId), "m1", "")
 	requireOK(t, recorder)
+}
+
+// TestOrgAddMemberSkipsUnknownUserIdPerRow 批量纳新遇到不存在的用户 ID 时，
+// 该行必须失败而**不影响其余行**（BE-ORG-007）。
+//
+// 回归背景：旧实现对不存在的 id 不做存在性校验，它不匹配任何准入 Count，于是被
+// `UPDATE ... WHERE id IN ?` 静默跳过，整批仍返回 success=true——调用方无法察觉
+// 有人根本没被加进来。现已改为逐行回执，且安全类不变量（跨租户/平台直管/重复纳新）
+// 仍然整批硬拒绝，见 TestOrgAddMemberRejectsForeignAndPrivileged。
+func TestOrgAddMemberSkipsUnknownUserIdPerRow(t *testing.T) {
+	env := newOrgPlatformEnv(t)
+	env.seedOrganization(t)
+	orgPath := "/api/organization/" + strconv.Itoa(env.orgId())
+
+	// outsider 尚未归属任何组织、999999 根本不存在：合法行必须成功，不存在的行必须带失败原因。
+	recorder := env.call(t, http.MethodPost, orgPath+"/members", "owner",
+		`{"members":[{"user_id":`+strconv.Itoa(env.uid("outsider"))+`,"department_name":"研发部"},`+
+			`{"user_id":999999,"department_name":"研发部"}]}`)
+	requireOK(t, recorder)
+
+	var payload struct {
+		Success bool `json:"success"`
+		Data    struct {
+			Succeeded int `json:"succeeded"`
+			Failed    int `json:"failed"`
+			Results   []struct {
+				UserId  int    `json:"user_id"`
+				Success bool   `json:"success"`
+				Reason  string `json:"reason"`
+			} `json:"results"`
+		} `json:"data"`
+	}
+	require.NoError(t, json.Unmarshal(recorder.Body.Bytes(), &payload))
+	require.True(t, payload.Success, recorder.Body.String())
+	require.Equal(t, 1, payload.Data.Succeeded, recorder.Body.String())
+	require.Equal(t, 1, payload.Data.Failed, recorder.Body.String())
+	require.Len(t, payload.Data.Results, 2)
+
+	// 合法行确实入组，并带上请求里的部门。
+	assert.Equal(t, env.orgId(), env.reloadUser(t, "outsider").OrganizationId)
+	assert.Equal(t, "研发部", env.reloadUser(t, "outsider").DepartmentName)
+
+	// 不存在的 id 必须带可机读的失败原因，且 reason 非空（便于前端逐行提示）。
+	var unknownReason string
+	for _, row := range payload.Data.Results {
+		if row.UserId == 999999 {
+			unknownReason = row.Reason
+			assert.False(t, row.Success)
+		}
+	}
+	assert.Equal(t, "user_not_found", unknownReason)
 }
