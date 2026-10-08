@@ -99,12 +99,13 @@ function serializePages(pages: string[]): string {
     .join(',')
 }
 
-/** 智能客服大模型配置（smart-cs 的 llm 段）字段。敏感字段（api_key 等）走密码框。 */
+/** 智能客服大模型配置（uter-cs 的 llm 段）字段。敏感字段（api_key 等）走密码框。 */
 const LLM_FIELDS: {
   key: string
   labelKey: string
   sensitive?: boolean
   placeholderKey?: string
+  descriptionKey?: string
 }[] = [
   { key: 'provider', labelKey: 'Provider' },
   {
@@ -115,16 +116,21 @@ const LLM_FIELDS: {
   {
     key: 'model',
     labelKey: 'Primary Model',
+    descriptionKey: 'Primary chat model used by the assistant for conversations.',
     placeholderKey: 'deepseek-ai/DeepSeek-V3',
   },
   {
     key: 'fallback_model',
     labelKey: 'Fallback Model',
+    descriptionKey:
+      'Fallback model: automatically used when the primary model fails or is unavailable.',
     placeholderKey: 'Qwen/Qwen3-8B',
   },
   {
     key: 'embed_model',
     labelKey: 'Embedding Model',
+    descriptionKey:
+      'Embedding model: vectorizes the knowledge base for semantic retrieval.',
     placeholderKey: 'BAAI/bge-m3',
   },
   {
@@ -141,6 +147,8 @@ const LLM_FIELDS: {
   {
     key: 'backup_model',
     labelKey: 'Backup Model',
+    descriptionKey:
+      'Cross-vendor backup: only used when base URL, model, and API key are all filled.',
     placeholderKey: 'glm-4-flash',
   },
   {
@@ -179,10 +187,10 @@ function normalizeLLM(raw: unknown): LLMConfig {
  *
  * 智能客服本体是独立仓库（uter-ai/uter-cs）、独立部署，Uter 只是把
  * `CUSTOMER_SERVICE_URL` 经 /api/status 下发给前端、由浏览器直连它的聊天接口。
- * 但这里的三块配置都走 Uter 后端**代理**到 smart-cs 的管理端：
+ * 但这里的三块配置都走 Uter 后端**代理**到 uter-cs 的管理端：
  *   - 页面开关：写入 Uter 自身的 option（入口显隐是 Uter 侧的事）；
- *   - 管理员令牌：写入 Uter option，作为 Uter 代理 smart-cs 管理接口时的凭证；
- *   - 大模型配置：经 Uter 的 /api/customer-service/deploy/llm 代理读写 smart-cs。
+ *   - 管理员令牌：写入 Uter option，作为 Uter 代理 uter-cs 管理接口时的凭证；
+ *   - 大模型配置：经 Uter 的 /api/customer-service/deploy/llm 代理读写 uter-cs。
  *
  * 曾经有一个「启动智能客服」总开关，2026-10-08 按运营要求移除：页面开关本身已能
  * 表达「在哪些页面显示」，而全开/全关就是总开关的两种取值，再加一个同级开关只会
@@ -196,7 +204,7 @@ export function CustomerServiceSection({
 }: {
   /** 后端存的逗号串；空串表示未配置 = 全部页面都开。 */
   defaultPages?: string
-  /** 后端存的 smart-cs 管理员令牌（敏感，仅用于判断「是否已配置」，不回显明文）。 */
+  /** 后端存的 uter-cs 管理员令牌（敏感，仅用于判断「是否已配置」，不回显明文）。 */
   defaultAdminToken?: string
 }) {
   const { t } = useTranslation()
@@ -292,7 +300,7 @@ export function CustomerServiceSection({
   )
 }
 
-/** 智能客服管理员令牌：作为 Uter 代理 smart-cs 管理接口时的 Bearer 凭证。 */
+/** 智能客服管理员令牌：作为 Uter 代理 uter-cs 管理接口时的 Bearer 凭证。 */
 function AdminTokenField({
   defaultConfigured,
 }: {
@@ -331,7 +339,7 @@ function AdminTokenField({
           {configured
             ? t('Admin token is configured. Paste a new one to replace it.')
             : t(
-                'Paste the smart-cs admin bearer token so Uter can read and save its model configuration on your behalf.'
+                'Paste the uter-cs admin bearer token so Uter can read and save its model configuration on your behalf.'
               )}
         </p>
       </div>
@@ -358,11 +366,11 @@ function AdminTokenField({
 }
 
 /**
- * 大模型配置面板：经 Uter 代理读写 smart-cs 的 llm 段。
+ * 大模型配置面板：经 Uter 代理读写 uter-cs 的 llm 段。
  *
  * - 挂载即尝试 GET 一次：成功则填充表单；返回 needToken 则提示先填管理员令牌；
  *   其它错误提示具体原因。
- * - 保存走 PUT /api/customer-service/deploy/llm，由 Uter 后端带令牌转发并触发 smart-cs
+ * - 保存走 PUT /api/customer-service/deploy/llm，由 Uter 后端带令牌转发并触发 uter-cs
  *   引擎重载。
  */
 function ModelConfigPanel() {
@@ -443,7 +451,12 @@ function ModelConfigPanel() {
         </p>
         <p className='text-muted-foreground text-sm'>
           {t(
-            'Large model settings for the customer service assistant. Changes are pushed to the connected smart-cs deployment.'
+            'Large model settings for the customer service assistant. Changes are pushed to the connected uter-cs deployment.'
+          )}
+        </p>
+        <p className='text-muted-foreground text-xs'>
+          {t(
+            'Three large models are configurable: primary chat model, fallback model, and cross-vendor backup model. The embedding model powers knowledge retrieval.'
           )}
         </p>
       </div>
@@ -455,7 +468,7 @@ function ModelConfigPanel() {
       {!loading && needToken && (
         <p className='text-sm text-amber-600'>
           {t(
-            'Admin token not configured. Paste the smart-cs admin token above first.'
+            'Admin token not configured. Paste the uter-cs admin token above first.'
           )}
         </p>
       )}
@@ -471,6 +484,11 @@ function ModelConfigPanel() {
               <FormLabel className='text-sm font-normal'>
                 {t(field.labelKey)}
               </FormLabel>
+              {field.descriptionKey && (
+                <p className='text-muted-foreground text-xs'>
+                  {t(field.descriptionKey)}
+                </p>
+              )}
               <FormControl>
                 <Input
                   type={field.sensitive ? 'password' : 'text'}

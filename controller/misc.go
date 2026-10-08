@@ -109,7 +109,7 @@ func GetStatus(c *gin.Context) {
 		"announcements_enabled": cs.AnnouncementsEnabled,
 		"faq_enabled":           cs.FAQEnabled,
 
-		// 智能客服（smart-cs）挂件：独立仓库、独立部署，前端按此地址直连，
+		// 智能客服（uter-cs）挂件：独立仓库、独立部署，前端按此地址直连，
 		// 不经过本服务反向代理。为空字符串时不渲染挂件（默认关闭）。
 		// 与下面 customer_service_enabled 是两个独立的门：地址决定「挂到哪」，
 		// 开关决定「要不要挂」，两者都为真才渲染入口。
