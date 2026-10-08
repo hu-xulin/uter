@@ -9,7 +9,6 @@ import (
 
 	"github.com/uter-ai/uter/controller"
 	"github.com/uter-ai/uter/middleware"
-	"github.com/gin-contrib/gzip"
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
 )
@@ -59,7 +58,9 @@ func SetWebRouter(router *gin.Engine, assets WebAssets, pluginDispatcher gin.Han
 
 	router.Use(
 		middleware.RouteTag("web"),
-		gzip.Gzip(gzip.DefaultCompression),
+		// 全局 gzip 已统一收敛到 router/gzip.go 的 GzipMiddleware（在 SetRouter 中
+		// 引擎级注册一次）：web 路径始终压缩，relay 路径仅当 costopt.GzipEnabled
+		// 时压缩。此处不再单独注册 gzip，避免两层 gzip 叠加造成整页乱码。
 		middleware.Cache(),
 		// The SPA owns every `/docs/*` path now (clean host routes that
 		// frame the exported content), so there is no legacy `/docs/*`
