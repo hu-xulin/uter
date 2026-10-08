@@ -200,6 +200,8 @@ token.db_error: "Jeton invalide, erreur de requête base de données, veuillez c
 token.auto_groups_too_many: "Un jeton peut sélectionner au plus {{.Max}} groupes automatiques"
 token.auto_groups_duplicate: "Le groupe automatique {{.Group}} est en double"
 token.auto_groups_invalid: "Le groupe automatique {{.Group}} est indisponible ou non autorisé"
+token.allow_ips_invalid: "La liste d'adresses IP autorisées contient une entrée invalide. Chaque ligne doit être une IP unique (ex. 203.0.113.5) ou une plage CIDR (ex. 203.0.113.0/24)."
+token.expired_time_invalid: "La date d'expiration est dans le passé. Utilisez -1 pour jamais expirer, ou un timestamp Unix futur."
 redemption.name_length: "La longueur du nom du code de rédemption doit être comprise entre 1 et 20"
 redemption.count_positive: "Le nombre de codes de rédemption doit être supérieur à 0"
 redemption.count_max: "Un maximum de 100 codes de rédemption peuvent être générés à la fois"

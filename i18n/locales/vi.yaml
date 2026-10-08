@@ -200,6 +200,8 @@ token.db_error: "Mã thông báo không hợp lệ, lỗi truy vấn cơ sở d�
 token.auto_groups_too_many: "Một mã thông báo có thể chọn tối đa {{.Max}} nhóm tự động"
 token.auto_groups_duplicate: "Nhóm tự động {{.Group}} bị trùng lặp"
 token.auto_groups_invalid: "Nhóm tự động {{.Group}} không khả dụng hoặc không được phép"
+token.allow_ips_invalid: "Danh sách IP cho phép chứa một mục không hợp lệ. Mỗi dòng phải là một IP đơn (vd. 203.0.113.5) hoặc dải CIDR (vd. 203.0.113.0/24)."
+token.expired_time_invalid: "Thời gian hết hạn nằm trong quá khứ. Dùng -1 để không bao giờ hết hạn, hoặc một timestamp Unix trong tương lai."
 redemption.name_length: "Độ dài tên mã đổi thưởng phải từ 1 đến 20"
 redemption.count_positive: "Số lượng mã đổi thưởng phải lớn hơn 0"
 redemption.count_max: "Tối đa 100 mã đổi thưởng có thể được tạo cùng lúc"

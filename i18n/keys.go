@@ -65,6 +65,12 @@ const (
 	MsgTokenAutoGroupsTooMany    = "token.auto_groups_too_many"
 	MsgTokenAutoGroupsDuplicate  = "token.auto_groups_duplicate"
 	MsgTokenAutoGroupsInvalid    = "token.auto_groups_invalid"
+	// MsgTokenAllowIpsInvalid is returned when the IP allowlist contains an
+	// entry that is neither a single IP nor a valid CIDR range.
+	MsgTokenAllowIpsInvalid = "token.allow_ips_invalid"
+	// MsgTokenExpiredTimeInvalid is returned when the expiry time is in the
+	// past (or 0). Only -1 (never expire) or a future timestamp is accepted.
+	MsgTokenExpiredTimeInvalid = "token.expired_time_invalid"
 )
 
 // Redemption related messages

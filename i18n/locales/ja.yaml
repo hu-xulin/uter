@@ -200,6 +200,8 @@ token.db_error: "無効なトークンです。データベースクエリエラ
 token.auto_groups_too_many: "1つのトークンが選択できる自動グループは最大 {{.Max}} 個です"
 token.auto_groups_duplicate: "自動グループ {{.Group}} が重複しています"
 token.auto_groups_invalid: "自動グループ {{.Group}} は利用できないか、権限がありません"
+token.allow_ips_invalid: "IP 許可リストに無効な項目が含まれています。各行は単一の IP（例: 203.0.113.5）または CIDR 範囲（例: 203.0.113.0/24）でなければなりません。"
+token.expired_time_invalid: "有効期限が過去の日時です。無期限の場合は -1 を、それ以外は未来の Unix タイムスタンプを指定してください。"
 redemption.name_length: "引換コード名の長さは 1〜20 文字でなければなりません"
 redemption.count_positive: "引換コードの数は 0 より大きくなければなりません"
 redemption.count_max: "一度に生成できる引換コードは最大 100 個です"
