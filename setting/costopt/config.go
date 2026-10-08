@@ -1,6 +1,8 @@
 package costopt
 
 import (
+	"strings"
+
 	"github.com/uter-ai/uter/setting/config"
 )
 
@@ -183,28 +185,49 @@ type CostOptSetting struct {
 	// 填完即由钩子升级为完整能力；留空则维持优雅 no-op，不影响主链路。
 
 	// 4/5. 多供应商套利 + 同模型跨通道比价：自动择优引擎
-	// 现状缺口：倍率数据已有、渠道机制可接任意上游，但无「同质量自动选最便宜」引擎。
+	//
+	// 三态模式：auto（默认）| manual | off
+	//   - auto：自动按「渠道对该模型的有效单价」择优。单价来自渠道 model_mapping 后的
+	//     上游模型定价（ratio_setting），无需手填任何价目表；手填项作为覆盖/约束。
+	//   - manual：只用下方手填价目表做择优（V2.2 行为）。
+	//   - off：关闭。
+	// 未配置（老版本 Options 表无该键）时回退到 ArbitrageEnabled 遗留开关。
+	ArbitrageMode string `json:"arbitrage_mode"`
+	// ArbitrageEnabled 遗留总开关：仅当 ArbitrageMode 为空时作为回退判定。
 	ArbitrageEnabled bool `json:"arbitrage_enabled"`
 	// ArbitragePriceSource 取价来源：ratio_config（用渠道倍率折算）| manual（用下方价目表）。
 	ArbitragePriceSource string `json:"arbitrage_price_source"`
 	// ArbitrageModelPrices 手动价目表：key="供应商/模型"（如 "groq/llama-3.3-70b"），
-	// value=每百万 input token 的美元单价。为空则回落到 ratio_config 折算。
+	// value=每百万 input token 的美元单价。auto 模式下作为覆盖值优先于自动推算。
 	ArbitrageModelPrices map[string]float64 `json:"arbitrage_model_prices"`
 	// ArbitragePreferSameModelOnly 仅在同一模型名跨通道间比价（#5 场景：direct/Bedrock/Azure）。
 	ArbitragePreferSameModelOnly bool `json:"arbitrage_prefer_same_model_only"`
 	// ArbitrageMaxPriceRatio 最贵候选相对最便宜候选的价差上限（1.0=只选最便宜）。
 	ArbitrageMaxPriceRatio float64 `json:"arbitrage_max_price_ratio"`
+	// ArbitrageAutoMaxPriceRatio 自动择优的价差容忍：1.0=严格最便宜；>1 时在容忍范围内
+	// 仍按权重随机，避免所有流量压到单一渠道（默认 1.0）。
+	ArbitrageAutoMaxPriceRatio float64 `json:"arbitrage_auto_max_price_ratio"`
 	// ArbitrageFallbackModel 价目表完全未命中时的兜底模型（空=不改模型）。
 	ArbitrageFallbackModel string `json:"arbitrage_fallback_model"`
 
 	// 6. Serverless 开源模型价值层（Groq / Fireworks / DeepInfra 等）
+	// 三态模式同 4/5：auto 默认自动（自动识别 bulk 流量 + 自动在等价组内选最便宜）。
+	ValueTierMode string `json:"value_tier_mode"`
+	// ValueTierEnabled 遗留总开关（ValueTierMode 为空时回退）。
 	ValueTierEnabled bool `json:"value_tier_enabled"`
 	// ValueTierChannelTypes 价值层渠道类型名清单（constant.GetChannelTypeName 口径）。
+	// auto 模式下留空=不限渠道类型，纯按单价择优；填了则只在清单内择优。
 	ValueTierChannelTypes []string `json:"value_tier_channel_types"`
-	// ValueTierModels 允许下沉到价值层的开源模型名清单。
+	// ValueTierModels 允许下沉到价值层的开源模型名清单（留空=不限）。
 	ValueTierModels []string `json:"value_tier_models"`
+	// ValueTierModelEquivalents 等价模型组：key=原模型，value=可下沉的开源模型清单。
+	// auto 模式下自动在组内选有效单价最低者下沉。例：{"gpt-4o": ["llama-3.3-70b", "qwen2.5-72b"]}
+	// 质量等价关系必须由人工确认，故该表是「自动执行 + 手动定义边界」的分界点。
+	ValueTierModelEquivalents map[string][]string `json:"value_tier_model_equivalents"`
 	// ValueTierBulkOnly 仅对 bulk（长 prompt）流量下沉，短交互仍走前沿模型。
 	ValueTierBulkOnly bool `json:"value_tier_bulk_only"`
+	// ValueTierAutoDetectBulk auto 模式下自动判定 bulk 流量（按 ValueTierMinPromptChars）。
+	ValueTierAutoDetectBulk bool `json:"value_tier_auto_detect_bulk"`
 	// ValueTierMinPromptChars bulk 判定阈值（用户消息字符数）。
 	ValueTierMinPromptChars int `json:"value_tier_min_prompt_chars"`
 	// ValueTierVendorBaseURL / Key 未接入独立渠道时的直连端点（可选，留空走渠道机制）。
@@ -212,12 +235,22 @@ type CostOptSetting struct {
 	ValueTierVendorAPIKey  string `json:"value_tier_vendor_api_key"`
 
 	// 7. A-tier + 价值层混合：用户可见走贵模，后台走便宜模
+	// 三态模式同 4/5：auto 默认自动识别后台流量并下沉。
+	TierSplitMode string `json:"tier_split_mode"`
+	// TierSplitEnabled 遗留总开关（TierSplitMode 为空时回退）。
 	TierSplitEnabled bool `json:"tier_split_enabled"`
 	// TierSplitVisibleModels 用户可见请求保留的前沿模型（不参与下沉）。
 	TierSplitVisibleModels []string `json:"tier_split_visible_models"`
 	// TierSplitBackgroundTags 后台任务标记：命中请求头/元信息即判定为后台流量。
 	TierSplitBackgroundTags []string `json:"tier_split_background_tags"`
+	// TierSplitAutoDetect auto 模式下自动识别后台流量的显式信号
+	// （X-Uter-Background / X-Uter-Async / X-Uter-Task 头，或模型名 -batch、:background 后缀）。
+	TierSplitAutoDetect bool `json:"tier_split_auto_detect"`
+	// TierSplitNonStreamAsBackground 把非流式请求也视为后台流量。
+	// ⚠️ 默认 false：非流式不等于后台，开启会把大量交互式请求判为后台，可能掉质量。
+	TierSplitNonStreamAsBackground bool `json:"tier_split_non_stream_as_background"`
 	// TierSplitBackgroundModel 后台流量使用的便宜模型。
+	// auto 模式下留空则回退到 ValueTierModelEquivalents 组内最便宜者。
 	TierSplitBackgroundModel string `json:"tier_split_background_model"`
 
 	// 18. 边缘 / CDN 静态资源缓存（需 CDN 基建，参数填齐后由钩子升级为完整能力）
@@ -356,17 +389,26 @@ var costOptSetting = CostOptSetting{
 	CostPerSuccessEnabled:       false,
 	AnomalyAlertEnabled:         false,
 
-	// V2.2「模型优化」默认值（全部默认关闭，填参后才形成完整能力）
+	// V2.2「降本优化」默认值
+	// #4/#5/#6/#7 默认走 auto：自动实现 + 手动可配置。自动模式从渠道 model_mapping 后的
+	// 上游模型定价自动推算有效单价并择优，无需手填价目表；手填项作为覆盖/边界约束。
+	ArbitrageMode:              "auto",
 	ArbitrageEnabled:           false,
 	ArbitragePriceSource:       "ratio_config",
 	ArbitrageMaxPriceRatio:     1.0,
+	ArbitrageAutoMaxPriceRatio: 1.0,
 	ArbitragePreferSameModelOnly: true,
 
-	ValueTierEnabled:       false,
+	ValueTierMode:           "auto",
+	ValueTierEnabled:        false,
 	ValueTierMinPromptChars: 2000,
-	ValueTierBulkOnly:      true,
+	ValueTierBulkOnly:       true,
+	ValueTierAutoDetectBulk: true,
 
-	TierSplitEnabled: false,
+	TierSplitMode:                  "auto",
+	TierSplitEnabled:               false,
+	TierSplitAutoDetect:            true,
+	TierSplitNonStreamAsBackground: false,
 
 	CDNCacheTTLSeconds: 86400,
 	CDNIncludeQuery:    false,
@@ -406,4 +448,80 @@ func init() {
 // GetCostOptSetting 获取降本中间层配置（返回包级变量指针，加载后原地更新）。
 func GetCostOptSetting() *CostOptSetting {
 	return &costOptSetting
+}
+
+// ===== 三态模式判定：auto（默认）| manual | off =====
+//
+// #4/#5/#6/#7 的定位是「自动实现 + 手动可配置，默认走自动」：
+//   - auto：自动推算每个渠道对该模型的有效单价并择优，无需手填价目表；
+//     手填参数退化为「覆盖/边界约束」（等价模型组、渠道类型白名单、兜底模型等）。
+//   - manual：只按手填参数执行（不给任何自动推导）。
+//   - off：关闭。
+//
+// 兼容逻辑：Options 表若已存在旧版 enabled 键，mode 为空时回退到 enabled，
+// 保证老部署升级后行为不变；新部署（无 mode 键）直接用 Go 默认值 auto。
+
+// modeActive 判定三态模式是否生效；mode 为空时回退 legacy（旧 enabled 开关）。
+func modeActive(mode string, legacy bool) bool {
+	switch strings.ToLower(strings.TrimSpace(mode)) {
+	case "off":
+		return false
+	case "auto", "manual":
+		return true
+	}
+	return legacy
+}
+
+// modeIsAuto 判定是否为自动模式（mode 为空视为 auto，即默认走自动）。
+func modeIsAuto(mode string) bool {
+	m := strings.ToLower(strings.TrimSpace(mode))
+	return m == "" || m == "auto"
+}
+
+// ArbitrageActive 多供应商套利 + 同模型跨通道比价（#4/#5）是否生效。
+func (c *CostOptSetting) ArbitrageActive() bool {
+	return modeActive(c.ArbitrageMode, c.ArbitrageEnabled)
+}
+
+// ArbitrageAuto #4/#5 是否为自动模式（自动按有效单价择优）。
+func (c *CostOptSetting) ArbitrageAuto() bool {
+	return c.ArbitrageActive() && modeIsAuto(c.ArbitrageMode)
+}
+
+// ValueTierActive Serverless 开源模型价值层（#6）是否生效。
+func (c *CostOptSetting) ValueTierActive() bool {
+	return modeActive(c.ValueTierMode, c.ValueTierEnabled)
+}
+
+// ValueTierAuto #6 是否为自动模式。
+func (c *CostOptSetting) ValueTierAuto() bool {
+	return c.ValueTierActive() && modeIsAuto(c.ValueTierMode)
+}
+
+// TierSplitActive A-tier + 价值层混合（#7）是否生效。
+func (c *CostOptSetting) TierSplitActive() bool {
+	return modeActive(c.TierSplitMode, c.TierSplitEnabled)
+}
+
+// TierSplitAuto #7 是否为自动模式（自动识别后台流量）。
+func (c *CostOptSetting) TierSplitAuto() bool {
+	return c.TierSplitActive() && modeIsAuto(c.TierSplitMode)
+}
+
+// AutoPriceFirst 选路层是否应按有效单价择优。
+// #4/#5/#6/#7 任一处于自动模式即开启——它们的比价动作最终都落在渠道选择上。
+func (c *CostOptSetting) AutoPriceFirst() bool {
+	return c.ArbitrageAuto() || c.ValueTierAuto() || c.TierSplitAuto()
+}
+
+// ArbitrageTolerance 自动择优的价差容忍（<=0 视为 1.0，即严格选最便宜）。
+// 大于 1 时在容忍范围内仍按权重随机，避免把全部流量压到单一渠道。
+func (c *CostOptSetting) ArbitrageTolerance() float64 {
+	if c.ArbitrageAutoMaxPriceRatio > 0 {
+		return c.ArbitrageAutoMaxPriceRatio
+	}
+	if c.ArbitrageMaxPriceRatio > 0 {
+		return c.ArbitrageMaxPriceRatio
+	}
+	return 1.0
 }

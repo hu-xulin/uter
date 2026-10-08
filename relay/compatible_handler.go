@@ -108,6 +108,11 @@ func TextHelper(c *gin.Context, info *relaycommon.RelayInfo) (uterError *types.U
 	if ct := costopt.GeoRoutePreferredChannelType(c.Request.Header.Get(costopt.GeoRoutingRegionHeader())); ct != "" {
 		c.Set("costopt_geo_ct", ct)
 	}
+	// 0.64) 自动择优总开关：#4/#5/#6/#7 任一处于 auto 模式时，让选路层在渠道选择环节
+	//     按「渠道对该模型的有效单价」择优（同模型跨 direct/Bedrock/Azure 的价差即在此兑现）。
+	if costopt.AutoPriceFirst() {
+		c.Set("costopt_price_first", "1")
+	}
 	// 0.65) 多供应商套利 / 同模型跨通道比价：在同质候选中自动选最便宜的供应商。
 	costopt.ApplyArbitrage(request)
 	// 0.66) Serverless 开源模型价值层：bulk/长 prompt 流量下沉到 Groq 等价值层渠道。
