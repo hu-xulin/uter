@@ -16,13 +16,13 @@ import (
 
 	"github.com/uter-ai/uter/common"
 
-	"github.com/uter-ai/uter/middleware"
-	"github.com/uter-ai/uter/model"
-	"github.com/uter-ai/uter/service"
 	"github.com/gin-gonic/gin"
 	"github.com/glebarez/sqlite"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/uter-ai/uter/middleware"
+	"github.com/uter-ai/uter/model"
+	"github.com/uter-ai/uter/service"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -641,6 +641,30 @@ func TestAPITokenAuditDatabaseMatrix(t *testing.T) {
 	}
 }
 
+func TestValidateTokenAllowIpsAndExpiredTime(t *testing.T) {
+	now := common.GetTimestamp()
+	// Valid allowlists: nil, empty, single IP, CIDR, multi-line (one entry per
+	// line). This matches model.Token.GetIpLimits, so a value accepted here is
+	// also valid when the token is used at request time.
+	for _, ip := range []string{"", "203.0.113.5", "203.0.113.0/24", "203.0.113.5\n198.51.100.0/24"} {
+		require.NoError(t, validateTokenAllowIps(common.GetPointer(ip)), "allow_ips=%q", ip)
+	}
+	require.NoError(t, validateTokenAllowIps(nil))
+	// Invalid allowlists: bad CIDR prefix, garbage, mixed valid+invalid line.
+	// (A single comma-joined line is treated as one entry by GetIpLimits, so it
+	// is invalid too.)
+	for _, ip := range []string{"10.0.0.0/40", "not-an-ip", "203.0.113.0/24\nbad", "203.0.113.5,198.51.100.7"} {
+		require.Error(t, validateTokenAllowIps(common.GetPointer(ip)), "allow_ips=%q", ip)
+	}
+	// Expiry: -1 (never) and a future timestamp are valid; a past positive
+	// timestamp is rejected; 0 is allowed (the caller normalizes it to -1).
+	require.NoError(t, validateTokenExpiredTime(-1))
+	require.NoError(t, validateTokenExpiredTime(0))
+	require.NoError(t, validateTokenExpiredTime(now+3600))
+	require.Error(t, validateTokenExpiredTime(now-10))
+	require.Error(t, validateTokenExpiredTime(1))
+}
+
 func verifyAPITokenAudit(t *testing.T) {
 	t.Helper()
 	pat := "api-token-audit-pat-secret"
@@ -705,6 +729,9 @@ func verifyAPITokenAudit(t *testing.T) {
 		{name: "batch keys partial and duplicate", method: "POST", path: "/batch/keys", body: `{"ids":[$id,$id,$other,999999]}`, action: "token.key_view_batch", success: true, params: `{"requested_ids":[$id,$id,$other,999999],"total":4,"count":1,"returned_ids":[$id]}`},
 		{name: "batch keys no matches", method: "POST", path: "/batch/keys", body: `{"ids":[$other,999999]}`, action: "token.key_view_batch", success: true, params: `{"requested_ids":[$other,999999],"total":2,"count":0,"returned_ids":[]}`},
 		{name: "empty batch keys", method: "POST", path: "/batch/keys", body: `{"ids":[]}`, action: "token.key_view_batch", params: `{"requested_ids":[],"total":0}`},
+		{name: "invalid CIDR create", method: "POST", path: "/", body: `{"name":"bad-cidr","expired_time":-1,"unlimited_quota":true,"allow_ips":"10.0.0.0/40"}`, action: "token.create", params: `{"name":"bad-cidr"}`},
+		{name: "past expired time create", method: "POST", path: "/", body: `{"name":"past-expire","expired_time":1,"unlimited_quota":true}`, action: "token.create", params: `{"name":"past-expire"}`},
+		{name: "invalid CIDR update", method: "PUT", path: "/", body: `{"id":$id,"name":"owned","expired_time":-1,"unlimited_quota":true,"allow_ips":"not-an-ip","group":"auto","cross_group_retry":true}`, action: "token.update", params: `{"id":$id,"name":"owned"}`},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			empty := ""

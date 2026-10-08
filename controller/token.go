@@ -2,6 +2,7 @@ package controller
 
 import (
 	"fmt"
+	"net"
 	"net/http"
 	"strconv"
 	"strings"
@@ -276,6 +277,44 @@ func GetTokenUsage(c *gin.Context) {
 	})
 }
 
+// validateTokenAllowIps verifies that every entry in the IP allowlist is either
+// a single IP address or a valid CIDR range. It uses the same parsing rules as
+// model.Token.GetIpLimits (split by newline, trim, strip commas). An empty or
+// nil allowlist is always valid.
+func validateTokenAllowIps(allowIps *string) error {
+	if allowIps == nil {
+		return nil
+	}
+	clean := strings.ReplaceAll(*allowIps, " ", "")
+	if clean == "" {
+		return nil
+	}
+	for entry := range strings.SplitSeq(clean, "\n") {
+		entry = strings.TrimSpace(entry)
+		entry = strings.ReplaceAll(entry, ",", "")
+		if entry == "" {
+			continue
+		}
+		if _, _, err := net.ParseCIDR(entry); err != nil {
+			if net.ParseIP(entry) == nil {
+				return fmt.Errorf("invalid IP allowlist entry: %q", entry)
+			}
+		}
+	}
+	return nil
+}
+
+// validateTokenExpiredTime ensures the expiry is either the "never expire"
+// sentinel (-1) or a future Unix timestamp. A zero value is allowed because the
+// caller normalizes it to -1; any positive timestamp already in the past would
+// make the token expire immediately and become permanently unusable.
+func validateTokenExpiredTime(expired int64) error {
+	if expired > 0 && expired < common.GetTimestamp() {
+		return fmt.Errorf("expiry time %d is in the past", expired)
+	}
+	return nil
+}
+
 func AddToken(c *gin.Context) {
 	request := tokenRequest{}
 	err := c.ShouldBindJSON(&request)
@@ -290,6 +329,22 @@ func AddToken(c *gin.Context) {
 	}
 	params := tokenAuditParams(c)
 	params["name"] = token.Name
+	// Normalize an omitted or zero expiry to "never expire" (-1). A zero value
+	// would otherwise make the token expire immediately and become unusable.
+	if token.ExpiredTime == 0 {
+		token.ExpiredTime = -1
+	}
+	// Reject malformed IP allowlist / expiry values. Otherwise an invalid CIDR
+	// would make the token reject every request (permanently unusable), and a
+	// past expiry would mark the token expired on first use.
+	if err := validateTokenAllowIps(token.AllowIps); err != nil {
+		common.ApiErrorI18n(c, i18n.MsgTokenAllowIpsInvalid)
+		return
+	}
+	if err := validateTokenExpiredTime(token.ExpiredTime); err != nil {
+		common.ApiErrorI18n(c, i18n.MsgTokenExpiredTimeInvalid)
+		return
+	}
 	// 非无限额度时，检查额度值是否超出有效范围
 	if !token.UnlimitedQuota {
 		if token.RemainQuota < 0 {
@@ -430,6 +485,12 @@ func UpdateToken(c *gin.Context) {
 	if statusOnly != "" {
 		cleanToken.Status = token.Status
 	} else {
+		// Reject a malformed IP allowlist before applying it; an invalid CIDR
+		// would otherwise make the token reject every request.
+		if err := validateTokenAllowIps(token.AllowIps); err != nil {
+			common.ApiErrorI18n(c, i18n.MsgTokenAllowIpsInvalid)
+			return
+		}
 		// If you add more fields, please also update token.Update()
 		cleanToken.Name = token.Name
 		cleanToken.ExpiredTime = token.ExpiredTime

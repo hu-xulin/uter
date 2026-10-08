@@ -208,6 +208,8 @@ token.db_error: "無法驗證令牌（資料庫出錯），請聯繫管理員。
 token.auto_groups_too_many: "一個令牌最多選擇 {{.Max}} 個自動分組。"
 token.auto_groups_duplicate: "自動分組「{{.Group}}」重複了，請去掉重複項。"
 token.auto_groups_invalid: "自動分組「{{.Group}}」不可用，或您沒有存取權限。"
+token.allow_ips_invalid: "IP 白名單包含無效條目。每行必須是一個單獨的 IP（如 203.0.113.5）或 CIDR 網段（如 203.0.113.0/24）。"
+token.expired_time_invalid: "過期時間已過期。永不過期請填 -1，或填寫未來的 Unix 時間戳記。"
 
 # Redemption messages
 redemption.name_length: "兌換碼名稱長度需為 1–20 個字元。"
