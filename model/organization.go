@@ -109,6 +109,9 @@ var (
 	ErrOrgStatusCodeInvalid = errors.New("invalid organization status code")
 	// ErrOrgNoValidMember 批量加入组织时没有任何合法的用户 id（全部解析失败或为空）。
 	ErrOrgNoValidMember = errors.New("no valid member to add")
+	// ErrOrgMemberUnknown 目标用户不存在（含已被硬删除的账号）。批量纳新时按行返回，
+	// 让调用方能区分「该行失败」与「其余行成功」，而不是整体静默成功。
+	ErrOrgMemberUnknown = errors.New("user does not exist")
 )
 
 // OrgQuotaError 携带额度超限的具体数值。用户在界面上看到的是**本地化后的可读文案**，
@@ -276,6 +279,27 @@ func (org *Organization) AddMembers(members []OrgMemberAdd) error {
 	//    （仅超管）反而无权改回，组织将失去唯一 owner；
 	//  - 目标系统角色高于普通用户：平台直管的管理员/超管不属于任何组织，
 	//    纳入会改写其组织归属，越出「组织只管自己租户」的边界。
+	// 目标用户必须真实存在。不存在的 id 会同时躲过下面三个 Count（不匹配任何行），
+	// 若不先拦下，最终 `UPDATE ... WHERE id IN ?` 只命中其余行而不报错，接口却返回
+	// 成功——调用方无法察觉有人根本没被加进来（BE-ORG-006/007）。
+	var unknown int64
+	if err := DB.Model(&User{}).Where("id IN ?", ids).Count(&unknown).Error; err != nil {
+		return err
+	}
+	if found := int64(len(ids)) - unknown; found != 0 {
+		// 明确列出缺失的 id，便于逐行回执；软删除的账号同样视为不存在。
+		missing := make([]int, 0, found)
+		for _, id := range ids {
+			var count int64
+			if err := DB.Model(&User{}).Where("id = ?", id).Count(&count).Error; err != nil {
+				return err
+			}
+			if count == 0 {
+				missing = append(missing, id)
+			}
+		}
+		return fmt.Errorf("%w: %v", ErrOrgMemberUnknown, missing)
+	}
 	var existing, foreign, privileged int64
 	base := DB.Model(&User{}).Where("id IN ?", ids)
 	if err := base.Session(&gorm.Session{}).Where("organization_id = ?", org.Id).

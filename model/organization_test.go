@@ -351,3 +351,40 @@ func TestReserveThenSettleReconcilesMemberUsage(t *testing.T) {
 	require.NoError(t, DB.Select("used_quota").Where("id = ?", 1).First(&u).Error)
 	assert.Equal(t, int64(500), int64(u.UsedQuota), "结算后 used_quota 应等于实际消耗，不得叠加预扣额")
 }
+
+// 批量纳新遇到不存在的用户 ID 时必须显式失败，而不是让整批「静默成功」。
+//
+// 旧实现只对 organization_id / role 做三个 Count，不存在的 id 不匹配任何一行，
+// 于是穿过准入检查后被 `UPDATE ... WHERE id IN ?` 悄悄跳过——接口返回成功，
+// 而该用户根本没进组织，调用方无从察觉（对应 BE-ORG-006 / BE-ORG-007）。
+func TestAddMembersRejectsUnknownUserId(t *testing.T) {
+	truncateTables(t)
+	org := insertOrgForTest(t, 1, 0)
+	insertOrgUserForTest(t, 7, 0, "", 0, 0, "")
+
+	err := org.AddMembers([]OrgMemberAdd{
+		{UserId: 999999, SubQuotaLimit: 0, DepartmentName: "研发"},
+	})
+	require.ErrorIs(t, err, ErrOrgMemberUnknown, "不存在的用户 ID 必须被显式拒绝")
+
+	// 已存在的用户不得被这次失败牵连（逐行语义在 controller 层验证）。
+	require.NoError(t, org.AddMembers([]OrgMemberAdd{
+		{UserId: 7, SubQuotaLimit: 0, DepartmentName: "研发"},
+	}))
+	var user User
+	require.NoError(t, DB.Select("organization_id", "org_role", "department_name").Where("id = ?", 7).First(&user).Error)
+	assert.Equal(t, 1, user.OrganizationId)
+	assert.Equal(t, OrgRoleMember, user.OrgRole)
+	assert.Equal(t, "研发", user.DepartmentName)
+}
+
+// 已软删除的账号等同于不存在：不得被纳新复活成组织成员。
+func TestAddMembersRejectsSoftDeletedUser(t *testing.T) {
+	truncateTables(t)
+	org := insertOrgForTest(t, 1, 0)
+	insertOrgUserForTest(t, 8, 0, "", 0, 0, "")
+	require.NoError(t, DB.Delete(&User{}, 8).Error)
+
+	err := org.AddMembers([]OrgMemberAdd{{UserId: 8, SubQuotaLimit: 0}})
+	require.ErrorIs(t, err, ErrOrgMemberUnknown)
+}

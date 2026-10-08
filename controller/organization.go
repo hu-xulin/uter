@@ -158,7 +158,7 @@ func AddOrganizationMembers(c *gin.Context) {
 	}
 	items := make([]model.OrgMemberAdd, 0, len(req.Members))
 	for _, m := range req.Members {
-		// 单行若未填部门，回退到请求级的 department_name（兼容旧的前端形态）。
+		// 单行若未填部门，回退到请求级的 department_name（兼容旧的前单形态）。
 		dept := m.DepartmentName
 		if dept == "" {
 			dept = req.DepartmentName
@@ -169,22 +169,69 @@ func AddOrganizationMembers(c *gin.Context) {
 			DepartmentName: dept,
 		})
 	}
-	if err := org.AddMembers(items); err != nil {
-		common.ApiError(c, err)
-		return
+	// 逐行纳新：单行失败（用户不存在、已属其它组织、平台直管账号等）不得牵连其余行，
+	// 也不能因为某行不合法就整体报错——否则批量导入会因一个错 id 全盘失败。
+	// 逐行结果与 BE-ORG-006/007 的验收口径一致：成功与失败原因分别回传。
+	type memberRowResult struct {
+		UserId         int    `json:"user_id"`
+		Success        bool   `json:"success"`
+		DepartmentName string `json:"department_name,omitempty"`
+		Error          string `json:"error,omitempty"`
+		Reason         string `json:"reason,omitempty"`
+	}
+	// 单行纳新需要独立的成员上限判定：批量整体判定会把已属于本组织（走更新语义）
+	// 的 id 也算进上限，逐行判定则只约束真正新增的那一行。
+	var addedCount int64
+	if org.MemberLimit > 0 {
+		model.DB.Model(&model.User{}).Where("organization_id = ? AND deleted_at IS NULL", org.Id).Count(&addedCount)
+	}
+	results := make([]memberRowResult, 0, len(items))
+	var succeededIds []int
+	for _, it := range items {
+		if it.UserId <= 0 {
+			results = append(results, memberRowResult{Success: false, Reason: "invalid_user_id"})
+			continue
+		}
+		if org.MemberLimit > 0 && addedCount >= int64(org.MemberLimit) {
+			results = append(results, memberRowResult{UserId: it.UserId, Success: false, Reason: "member_limit_reached"})
+			continue
+		}
+		if err := org.AddMembers([]model.OrgMemberAdd{it}); err != nil {
+			// 只有「用户不存在」是数据录入问题，按 BE-ORG-007 逐行回执、不牵连其余行。
+			// 其余都是**安全不变量**（跨租户搬迁、纳入平台直管账号、重复纳新、停用组织、
+			// 超出成员上限）：把它们降级成 200 + per-row 失败会让「批量导入」成为绕过
+			// 准入的通道（整批调用只要有任一行合法就返回成功），必须整批硬拒绝。
+			if errors.Is(err, model.ErrOrgMemberUnknown) {
+				results = append(results, memberRowResult{UserId: it.UserId, Success: false, Reason: "user_not_found"})
+				continue
+			}
+			common.ApiError(c, err)
+			return
+		}
+		addedCount++
+		succeededIds = append(succeededIds, it.UserId)
+		results = append(results, memberRowResult{UserId: it.UserId, Success: true, DepartmentName: it.DepartmentName})
 	}
 	// 纳新审计（对应审计项 P1-1）：把任意未归属用户拉进本租户属跨账号写操作，
-	// 必须明确留痕，记录本次加入组织的成员 id。与 OrgAdminAuth 中间件兜底审计互为补充。
-	memberIds := make([]int, 0, len(items))
-	for _, it := range items {
-		memberIds = append(memberIds, it.UserId)
+	// 必须明确留痕，记录本次真正加入组织的成员 id。与 OrgAdminAuth 中间件兜底审计互为补充。
+	if len(succeededIds) > 0 {
+		recordManageAuditFor(c, 0, "organization.member_add", map[string]any{
+			"organization_id": org.Id,
+			"member_ids":      succeededIds,
+			"member_count":    len(succeededIds),
+		})
 	}
-	recordManageAuditFor(c, 0, "organization.member_add", map[string]any{
-		"organization_id": org.Id,
-		"member_ids":      memberIds,
-		"member_count":    len(memberIds),
+	succeededCount := 0
+	for _, r := range results {
+		if r.Success {
+			succeededCount++
+		}
+	}
+	common.ApiSuccess(c, gin.H{
+		"succeeded": succeededCount,
+		"failed":    len(results) - succeededCount,
+		"results":   results,
 	})
-	common.ApiSuccess(c, gin.H{"success": true})
 }
 
 // orgMemberUpdateRequest 是设置组织成员属性的请求体。
