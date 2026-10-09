@@ -11,8 +11,8 @@ import (
 
 	"github.com/uter-ai/uter/dto"
 
-	"github.com/uter-ai/uter/setting/channel_weight"
 	"github.com/samber/lo"
+	"github.com/uter-ai/uter/setting/channel_weight"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
@@ -235,11 +235,10 @@ func effectiveChannelWeight(channel *Channel, model string) int {
 
 func (channel *Channel) AddAbilities(tx *gorm.DB) error {
 	models_ := strings.Split(channel.Models, ",")
-	groups_ := strings.Split(channel.Group, ",")
 	abilitySet := make(map[string]struct{})
 	abilities := make([]Ability, 0, len(models_))
 	for _, model := range models_ {
-		for _, group := range groups_ {
+		for group := range strings.SplitSeq(channel.Group, ",") {
 			key := group + "|" + model
 			if _, exists := abilitySet[key]; exists {
 				continue
@@ -307,11 +306,10 @@ func (channel *Channel) UpdateAbilities(tx *gorm.DB) error {
 
 	// Then add new abilities
 	models_ := channel.GetModels()
-	groups_ := strings.Split(channel.Group, ",")
 	abilitySet := make(map[string]struct{})
 	abilities := make([]Ability, 0, len(models_))
 	for _, model := range models_ {
-		for _, group := range groups_ {
+		for group := range strings.SplitSeq(channel.Group, ",") {
 			key := group + "|" + model
 			if _, exists := abilitySet[key]; exists {
 				continue

@@ -438,7 +438,7 @@ func defaultDerivedStatus(relativeStatus int) int {
 // generation, Vision for video. It only ever adds tags, never removes them.
 func DerivedMetadataTags(modelName, tags string) string {
 	existing := map[string]bool{}
-	for _, tag := range strings.Split(tags, ",") {
+	for tag := range strings.SplitSeq(tags, ",") {
 		if trimmed := strings.TrimSpace(tag); trimmed != "" {
 			existing[trimmed] = true
 		}

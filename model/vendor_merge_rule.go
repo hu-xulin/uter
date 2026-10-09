@@ -50,9 +50,8 @@ func decodeVendorMergePatterns(encoded string) []string {
 	if strings.TrimSpace(encoded) == "" {
 		return nil
 	}
-	parts := strings.Split(encoded, ",")
-	out := make([]string, 0, len(parts))
-	for _, part := range parts {
+	out := make([]string, 0)
+	for part := range strings.SplitSeq(encoded, ",") {
 		if trimmed := strings.TrimSpace(part); trimmed != "" {
 			out = append(out, trimmed)
 		}
