@@ -67,7 +67,7 @@ func GetEnvOrDefaultIntList(env string, defaultValue []int) []int {
 	return values
 }
 
-// CustomerServiceURL 是智能客服（uter-cs）挂件后端的对外地址，由环境变量
+// GetCustomerServiceURL 返回智能客服（uter-cs）挂件后端的对外地址，由环境变量
 // CUSTOMER_SERVICE_URL 指定，通过 /api/status 下发给前端。
 //
 // 智能客服是**独立仓库、独立部署**的 Node 服务，前端组件直接跨域访问它，
@@ -75,10 +75,19 @@ func GetEnvOrDefaultIntList(env string, defaultValue []int) []int {
 // /api/deploy/widget-config 与 /api/qa/public-chat。
 //
 // 为空字符串（默认）表示不启用挂件，前端不渲染智能客服入口。
-var CustomerServiceURL = strings.TrimSpace(os.Getenv("CUSTOMER_SERVICE_URL"))
+//
+// 🔑 为什么是函数而不是包级变量：.env 是由 main() 里的 godotenv.Load(".env")
+// 加载的，而**包级变量的初始化早于 main()**——写成
+// `var CustomerServiceURL = os.Getenv(...)` 会永远读到空（godotenv 事后加载
+// 不会重新求值已初始化的变量），表现为「未配置智能客服地址
+// （CUSTOMER_SERVICE_URL），无法拉取配置」，且 .env 里明明配了值。
+// 改为**每次调用时实时读取**，彻底消除这个初始化时序陷阱。
+func GetCustomerServiceURL() string {
+	return strings.TrimSpace(os.Getenv("CUSTOMER_SERVICE_URL"))
+}
 
 // CustomerServiceEnabled 是智能客服挂件入口的总开关（可在「站点与品牌 → 智能客服」
-// 里切换）。与 CustomerServiceURL 是**两个独立的门**：URL 决定「挂到哪」，本开关决定
+// 里切换）。与 GetCustomerServiceURL() 是**两个独立的门**：URL 决定「挂到哪」，本开关决定
 // 「要不要挂」。两者都为真才渲染入口，因此运营可以先关掉入口、保留服务与配置。
 //
 // 默认为 true：保持既有行为——只要配了 URL 就显示入口；升级后不会突然少一个入口。
