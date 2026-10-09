@@ -334,7 +334,7 @@ func translationLocales() []string {
 	}
 	seen := make(map[string]struct{}, len(descriptionTranslateLocales))
 	locales := make([]string, 0, len(descriptionTranslateLocales))
-	for _, part := range strings.Split(raw, ",") {
+	for part := range strings.SplitSeq(raw, ",") {
 		normalized, ok := model.NormalizeModelDescriptionLocale(part)
 		if !ok {
 			continue
