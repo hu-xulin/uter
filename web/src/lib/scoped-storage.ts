@@ -16,6 +16,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
+import type { StateStorage } from 'zustand/middleware'
+
 import { useAuthStore } from '@/stores/auth-store'
 
 /**
@@ -55,4 +57,64 @@ export function setScopedItem(baseKey: string, value: unknown): void {
 
 export function removeScopedItem(baseKey: string): void {
   localStorage.removeItem(scopedKey(baseKey))
+}
+
+/**
+ * StateStorage adapter for zustand's `persist` middleware.
+ *
+ * `persist` resolves the storage key once, at store creation, so handing it a
+ * plain `name` would put every account in the same slot. Routing get/set
+ * through scopedKey gives each account its own entry instead — otherwise a
+ * second account signing in on the same browser inherits the first one's
+ * persisted state.
+ */
+export const scopedStateStorage: StateStorage = {
+  getItem: (name) => {
+    try {
+      return localStorage.getItem(scopedKey(name))
+    } catch {
+      return null
+    }
+  },
+  setItem: (name, value) => {
+    try {
+      localStorage.setItem(scopedKey(name), value)
+    } catch {
+      /* storage unavailable or quota exceeded — ignore */
+    }
+  },
+  removeItem: (name) => {
+    try {
+      localStorage.removeItem(scopedKey(name))
+    } catch {
+      /* storage unavailable — ignore */
+    }
+  },
+}
+
+/**
+ * Drop every user-scoped entry that belongs to the account being signed out.
+ *
+ * Private per-account data (playground conversations, read state, personal
+ * settings) must not survive for whoever uses the browser next. Scanning for
+ * the `:userId` suffix covers every scoped key without each feature having to
+ * register its own, so a new scoped key is cleaned up by default.
+ *
+ * Must run while the session is still populated: scopedKey falls back to the
+ * unscoped name once the user is cleared.
+ */
+export function clearScopedItemsForCurrentUser(): void {
+  const userId = useAuthStore.getState().auth.user?.id
+  if (!userId) return
+  const suffix = `:${userId}`
+  try {
+    const doomed: string[] = []
+    for (let i = 0; i < localStorage.length; i += 1) {
+      const key = localStorage.key(i)
+      if (key?.endsWith(suffix)) doomed.push(key)
+    }
+    for (const key of doomed) localStorage.removeItem(key)
+  } catch {
+    /* storage unavailable — ignore */
+  }
 }

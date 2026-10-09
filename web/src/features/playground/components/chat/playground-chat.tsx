@@ -16,7 +16,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import {
@@ -103,8 +103,17 @@ export function PlaygroundChat({
     })
   }
 
+  // Seed the editor once per edit session. `messages` gets a new identity on
+  // every streamed token, so depending on it here would overwrite whatever the
+  // user is typing while the response is still arriving.
+  const seededEditKeyRef = useRef<string | null>(null)
   useEffect(() => {
-    if (!editingKey) return
+    if (!editingKey) {
+      seededEditKeyRef.current = null
+      return
+    }
+    if (seededEditKeyRef.current === editingKey) return
+    seededEditKeyRef.current = editingKey
     const content = getEditingMessageContent(messages, editingKey)
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setEditText(content)

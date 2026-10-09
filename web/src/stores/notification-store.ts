@@ -17,7 +17,21 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@uter.ai
 */
 import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
+import { createJSONStorage, persist } from 'zustand/middleware'
+
+import { scopedStateStorage } from '@/lib/scoped-storage'
+
+/**
+ * The read list only ever grows, and every announcement row asks whether it was
+ * read, so it is kept bounded — the oldest entries are the least useful.
+ */
+const MAX_TRACKED_READ_ANNOUNCEMENTS = 200
+
+const initialState = {
+  lastReadNotice: '',
+  readAnnouncementKeys: [] as string[],
+  closedUntilDate: null as string | null,
+}
 
 interface NotificationState {
   // Last read Notice content signature (full trimmed message)
@@ -33,6 +47,7 @@ interface NotificationState {
   setClosedUntilDate: (date: string | null) => void
   isAnnouncementRead: (key: string) => boolean
   isNoticeClosed: () => boolean
+  reset: () => void
 }
 
 /**
@@ -42,9 +57,7 @@ interface NotificationState {
 export const useNotificationStore = create<NotificationState>()(
   persist(
     (set, get) => ({
-      lastReadNotice: '',
-      readAnnouncementKeys: [],
-      closedUntilDate: null,
+      ...initialState,
 
       markNoticeRead: (noticeContent: string) => {
         // Persist the full trimmed content so edits beyond 100 chars register
@@ -53,11 +66,16 @@ export const useNotificationStore = create<NotificationState>()(
       },
 
       markAnnouncementsRead: (keys: string[]) => {
-        set((state) => ({
-          readAnnouncementKeys: [
-            ...new Set([...state.readAnnouncementKeys, ...keys]),
-          ],
-        }))
+        if (keys.length === 0) return
+        set((state) => {
+          const merged = [...new Set([...state.readAnnouncementKeys, ...keys])]
+          return {
+            readAnnouncementKeys:
+              merged.length > MAX_TRACKED_READ_ANNOUNCEMENTS
+                ? merged.slice(merged.length - MAX_TRACKED_READ_ANNOUNCEMENTS)
+                : merged,
+          }
+        })
       },
 
       setClosedUntilDate: (date: string | null) => {
@@ -75,9 +93,14 @@ export const useNotificationStore = create<NotificationState>()(
         const today = new Date().toDateString()
         return closedUntilDate === today
       },
+
+      // Sign-out clears the in-memory state too, so the next account does not
+      // start with this account's read marks.
+      reset: () => set(initialState),
     }),
     {
       name: 'notification-storage',
+      storage: createJSONStorage(() => scopedStateStorage),
       partialize: (state) => ({
         lastReadNotice: state.lastReadNotice,
         readAnnouncementKeys: state.readAnnouncementKeys,
