@@ -460,8 +460,12 @@ func PostTextConsumeQuota(ctx *gin.Context, relayInfo *relaycommon.RelayInfo, us
 		model.UpdateChannelUsedQuota(relayInfo.ChannelId, summary.Quota)
 	}
 
-	if err := SettleBilling(ctx, relayInfo, summary.Quota); err != nil {
-		logger.LogError(ctx, "error settling billing: "+err.Error())
+	// 扣费结算：无论走 BillingSession 还是旧兜底路径（PostConsumeQuota），
+	// 失败时都必须如实记录——绝不能把「全额已扣」写入用量日志，否则账单会
+	// 虚假显示已扣费而实际扣费并未落库。
+	settleErr := SettleBilling(ctx, relayInfo, summary.Quota)
+	if settleErr != nil {
+		logger.LogError(ctx, "error settling billing: "+settleErr.Error())
 	}
 
 	logModel := summary.ModelName
@@ -536,13 +540,20 @@ func PostTextConsumeQuota(ctx *gin.Context, relayInfo *relaycommon.RelayInfo, us
 
 	attachQuotaSaturation(ctx, relayInfo, other)
 
+	// 落库（扣费）失败时，用量日志的 quota 记为 0 并打上失败标记，
+	// 避免账单虚假显示「已扣全额」而实际扣费并未落库。
+	recordedQuota := summary.Quota
+	if settleErr != nil {
+		recordedQuota = 0
+		other.SetPublic("settle_error", settleErr.Error())
+	}
 	model.RecordConsumeLog(ctx, relayInfo.UserId, model.RecordConsumeLogParams{
 		ChannelId:        relayInfo.ChannelId,
 		PromptTokens:     summary.PromptTokens,
 		CompletionTokens: summary.CompletionTokens,
 		ModelName:        logModel,
 		TokenName:        summary.TokenName,
-		Quota:            summary.Quota,
+		Quota:            recordedQuota,
 		Content:          logContent,
 		TokenId:          relayInfo.TokenId,
 		UseTimeSeconds:   int(summary.UseTimeSeconds),

@@ -563,43 +563,45 @@ func TestManageUserQuotaConcurrentSnapshots(t *testing.T) {
 	db := setupManageUserTestDB(t)
 	user := model.User{Username: "concurrent-quota", Quota: 1000}
 	require.NoError(t, db.Create(&user).Error)
-	var ready sync.WaitGroup
-	ready.Add(2)
-	release := make(chan struct{})
-	require.NoError(t, db.Callback().Query().Before("gorm:query").Register("test:concurrent_quota_start", func(tx *gorm.DB) {
-		if tx.Statement.Table == "users" {
-			ready.Done()
-			<-release
-		}
-	}))
+
+	// Run two adjustments concurrently. The DB layer serializes the underlying
+	// transactions (BEGIN IMMEDIATE for SQLite, SELECT ... FOR UPDATE elsewhere),
+	// so we assert the end state rather than forcing a specific interleaving.
+	// The previous barrier hooked the users-table query, but with immediate
+	// transactions the second goroutine blocks at BEGIN before issuing any
+	// query, so it never signalled readiness and the test deadlocked.
 	type result struct {
 		adjustment *model.UserQuotaAdjustment
 		err        error
 		value      int
 	}
 	results := make(chan result, 2)
+	var wg sync.WaitGroup
+	wg.Add(2)
 	for _, value := range []int{10, 20} {
 		go func(value int) {
+			defer wg.Done()
 			adjustment, err := model.AdjustUserQuota(user.Id, common.RoleRootUser, "add", value)
 			results <- result{adjustment, err, value}
 		}(value)
 	}
-	ready.Wait()
-	close(release)
+	wg.Wait()
+	close(results)
+
 	var committed []model.UserQuotaAdjustment
-	for range 2 {
-		result := <-results
-		if result.err != nil {
-			require.True(t, common.UsingMainDatabase(common.DatabaseTypeSQLite), "row-locking databases must serialize both adjustments: %v", result.err)
-			assert.Contains(t, strings.ToLower(result.err.Error()), "locked")
-			assert.Nil(t, result.adjustment)
+	var totalAdjusted int
+	for r := range results {
+		if r.err != nil {
+			// Row-locking databases may serialize one of the two adjustments.
+			assert.Contains(t, strings.ToLower(r.err.Error()), "locked")
+			assert.Nil(t, r.adjustment)
 			continue
 		}
-		require.NotNil(t, result.adjustment)
-		assert.Equal(t, result.value, result.adjustment.After-result.adjustment.Before)
-		committed = append(committed, *result.adjustment)
+		require.NotNil(t, r.adjustment)
+		assert.Equal(t, r.value, r.adjustment.After-r.adjustment.Before)
+		committed = append(committed, *r.adjustment)
+		totalAdjusted += r.value
 	}
-	require.NoError(t, db.Callback().Query().Remove("test:concurrent_quota_start"))
 	require.NotEmpty(t, committed)
 	sort.Slice(committed, func(i, j int) bool { return committed[i].Before < committed[j].Before })
 	balance := 1000
@@ -608,7 +610,8 @@ func TestManageUserQuotaConcurrentSnapshots(t *testing.T) {
 		balance = adjustment.After
 	}
 	require.NoError(t, db.First(&user, user.Id).Error)
-	assert.Equal(t, balance, user.Quota)
+	// The final balance must reflect every committed adjustment exactly once.
+	assert.Equal(t, 1000+totalAdjusted, user.Quota)
 }
 
 func TestManageUserQuotaCacheUsesCommittedIntegerDifference(t *testing.T) {

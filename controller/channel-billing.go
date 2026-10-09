@@ -240,7 +240,9 @@ func updateChannelCloseAIBalance(channel *model.Channel) (float64, error) {
 }
 
 func updateChannelOpenAISBBalance(channel *model.Channel) (float64, error) {
-	url := fmt.Sprintf("https://api.openai-sb.com/sb-api/user/status?api_key=%s", channel.Key)
+	// 密钥不再放在 URL query（会落入上游访问日志），改为请求头传递。
+	// GetAuthHeader 已携带 Authorization: Bearer <key>。
+	url := "https://api.openai-sb.com/sb-api/user/status"
 	body, err := GetResponseBody("GET", url, channel, GetAuthHeader(channel.Key))
 	if err != nil {
 		return 0, err

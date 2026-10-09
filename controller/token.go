@@ -11,6 +11,7 @@ import (
 
 	"github.com/uter-ai/uter/constant"
 	"github.com/uter-ai/uter/i18n"
+	"github.com/uter-ai/uter/middleware"
 	"github.com/uter-ai/uter/model"
 	"github.com/uter-ai/uter/service"
 	"github.com/uter-ai/uter/setting"
@@ -192,6 +193,10 @@ func GetTokenKey(c *gin.Context) {
 	userId := c.GetInt("id")
 	if err != nil {
 		common.ApiError(c, err)
+		return
+	}
+	// 取回明文 sk- 属高危操作，需二次验证（Passkey / 2FA / 密码）。
+	if middleware.RequireSecurityProof(c, service.VerificationOperation{Scope: service.VerificationScopeTokenKeyRead}) == nil {
 		return
 	}
 	token, err := model.GetTokenByIds(id, userId)
@@ -593,6 +598,10 @@ func GetTokenKeysBatch(c *gin.Context) {
 	}
 	if len(tokenBatch.Ids) > 100 {
 		common.ApiErrorI18n(c, i18n.MsgBatchTooMany, map[string]any{"Max": 100})
+		return
+	}
+	// 批量取回明文 sk- 属高危操作，需二次验证（Passkey / 2FA / 密码）。
+	if middleware.RequireSecurityProof(c, service.VerificationOperation{Scope: service.VerificationScopeTokenKeyRead}) == nil {
 		return
 	}
 	userId := c.GetInt("id")
