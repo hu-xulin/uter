@@ -30,6 +30,7 @@ common.invalid_param_format: "Неверный формат запроса. Пр
 common.unsupported_operation: "Это действие не поддерживается."
 common.not_logged_in: "Сначала войдите в систему."
 common.user_not_found: "Аккаунт не найден."
+common.demo_site_read_only: "Демонстрационный сайт доступен только для чтения; операции записи отключены."
 common.invalid_user_id: "Этот ID пользователя недействителен."
 common.invalid_subscription_id: "Этот ID подписки недействителен."
 common.invalid_provider_id: "Этот ID провайдера недействителен."

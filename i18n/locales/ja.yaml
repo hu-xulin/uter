@@ -30,6 +30,7 @@ common.invalid_param_format: "リクエストの形式が正しくありませ�
 common.unsupported_operation: "この操作はサポートされていません。"
 common.not_logged_in: "まずログインしてください。"
 common.user_not_found: "そのアカウントが見つかりません。"
+common.demo_site_read_only: "デモサイトは読み取り専用のため、書き込み操作は無効です。"
 common.invalid_user_id: "このユーザー ID は無効です。"
 common.invalid_subscription_id: "このサブスクリプション ID は無効です。"
 common.invalid_provider_id: "このプロバイダー ID は無効です。"

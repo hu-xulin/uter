@@ -33,6 +33,9 @@ const (
 	// MsgAuthMethodUnsupported is used when the current sign-in method
 	// cannot be used to complete a security verification step.
 	MsgAuthMethodUnsupported = "common.auth_method_unsupported"
+	// MsgDemoSiteReadOnly is returned for any mutating admin/console request
+	// while the demo-site read-only mode (DemoSiteEnabled) is active.
+	MsgDemoSiteReadOnly = "common.demo_site_read_only"
 )
 
 // Auth middleware messages

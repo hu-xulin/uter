@@ -30,6 +30,7 @@ common.invalid_param_format: "Le format de la requête est incorrect. Vérifiez 
 common.unsupported_operation: "Cette action n'est pas prise en charge."
 common.not_logged_in: "Veuillez d'abord vous connecter."
 common.user_not_found: "Ce compte est introuvable."
+common.demo_site_read_only: "Le site de démonstration est en lecture seule ; les opérations d’écriture sont désactivées."
 common.invalid_user_id: "Cet ID utilisateur n'est pas valide."
 common.invalid_subscription_id: "Cet ID d'abonnement n'est pas valide."
 common.invalid_provider_id: "Cet ID de fournisseur n'est pas valide."
