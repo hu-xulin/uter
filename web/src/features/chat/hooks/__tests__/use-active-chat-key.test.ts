@@ -83,29 +83,27 @@ describe('fetchActiveChatKey', () => {
 
   test('forwards the security proof header when a proof token is provided', async () => {
     respondWithTokens([{ id: 9, status: 1 }])
-    let captured: { url: string; config?: { headers?: Record<string, string> } } | null =
-      null
+    const calls: Array<{ url: string; config?: { headers?: Record<string, string> } }> = []
     apiClient.post = async (url, _data, config) => {
-      captured = { url, config }
+      calls.push({ url, config })
       return { data: { success: true, data: { key: 'abcdef' } } }
     }
 
     await expect(fetchActiveChatKey('proof-abc')).resolves.toBe('sk-abcdef')
-    expect(captured?.url).toBe('/api/token/9/key')
-    expect(captured?.config?.headers?.['X-Security-Proof']).toBe('proof-abc')
+    expect(calls[0]?.url).toBe('/api/token/9/key')
+    expect(calls[0]?.config?.headers?.['X-Security-Proof']).toBe('proof-abc')
   })
 
   test('omits the security proof header when no proof token is provided', async () => {
     respondWithTokens([{ id: 9, status: 1 }])
-    let captured: { url: string; config?: { headers?: Record<string, string> } } | null =
-      null
+    const calls: Array<{ url: string; config?: { headers?: Record<string, string> } }> = []
     apiClient.post = async (url, _data, config) => {
-      captured = { url, config }
+      calls.push({ url, config })
       return { data: { success: true, data: { key: 'abcdef' } } }
     }
 
     await expect(fetchActiveChatKey()).resolves.toBe('sk-abcdef')
-    expect(captured?.config?.headers?.['X-Security-Proof']).toBeUndefined()
+    expect(calls[0]?.config?.headers?.['X-Security-Proof']).toBeUndefined()
   })
 })
 
