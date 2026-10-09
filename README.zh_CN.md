@@ -6,49 +6,47 @@
 
 🍥 **新一代大模型网关与AI资产管理系统**
 
-<p align="center">
-  简体中文 |
-  <a href="./README.zh_TW.md">繁體中文</a> |
-  <a href="./README.md">English</a> |
-  <a href="./README.fr.md">Français</a> |
-  <a href="./README.ja.md">日本語</a>
+<p align="center">  
+  简体中文 |  
+  <a href="./README.zh_TW.md">繁體中文</a> |  
+  <a href="./README.md">English</a> |  
+  <a href="./README.fr.md">Français</a> |  
+  <a href="./README.ja.md">日本語</a>  
 </p>
 
-<p align="center">
-  <a href="https://raw.githubusercontent.com/Calcium-Ion/uter/main/LICENSE">
-    <img src="https://img.shields.io/github/license/Calcium-Ion/uter?color=brightgreen" alt="license">
-  </a><!--
-  --><a href="https://github.com/Calcium-Ion/uter/releases/latest">
-    <img src="https://img.shields.io/github/v/release/Calcium-Ion/uter?color=brightgreen&include_prereleases" alt="release">
-  </a><!--
-  --><a href="https://hub.docker.com/r/CalciumIon/uter">
-    <img src="https://img.shields.io/badge/docker-dockerHub-blue" alt="docker">
-  </a>
-  <a href="https://atomgit.com/uter-ai/uter" target="_blank">
-    <img alt="AtomGit G-Star" src="https://atomgit.com/uter-ai/uter/star/badge.svg"/>
-  </a>
+<p align="center">  
+  <a href="https://raw.githubusercontent.com/Calcium-Ion/uter/main/LICENSE">  
+    <img src="https://img.shields.io/github/license/Calcium-Ion/uter?color=brightgreen" alt="license">  
+  </a><a href="https://github.com/Calcium-Ion/uter/releases/latest">  
+    <img src="https://img.shields.io/github/v/release/Calcium-Ion/uter?color=brightgreen\&include_prereleases" alt="release">  
+  </a><a href="https://hub.docker.com/r/CalciumIon/uter">  
+    <img src="https://img.shields.io/badge/docker-dockerHub-blue" alt="docker">  
+  </a>  
+  <a href="https://atomgit.com/uter-ai/uter" target="\_blank">  
+    <img alt="AtomGit G-Star" src="https://atomgit.com/uter-ai/uter/star/badge.svg"/>  
+  </a>  
 </p>
 
-<p align="center">
-  <a href="https://trendshift.io/repositories/20180" target="_blank">
-    <img src="https://trendshift.io/api/badge/repositories/20180" alt="uter-ai%2Futer | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/>
-  </a>
-  <br>
-  <a href="https://hellogithub.com/repository/uter-ai/uter" target="_blank">
-    <img src="https://api.hellogithub.com/v1/widgets/recommend.svg?rid=539ac4217e69431684ad4a0bab768811&claim_uid=tbFPfKIDHpc4TzR" alt="Featured｜HelloGitHub" style="width: 250px; height: 54px;" width="250" height="54" />
-  </a><!--
-  -->
-  <a href="https://atomgit.com/uter-ai/uter" target="_blank">
-    <img alt="AtomGit G-Star" src="https://atomgit.com/uter-ai/uter/star/new_badge.svg" width="250" height="55" />
-  </a>
+<p align="center">  
+  <a href="https://trendshift.io/repositories/20180" target="\_blank">  
+    <img src="https://trendshift.io/api/badge/repositories/20180" alt="uter-ai%2Futer | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/>  
+  </a>  
+    
+  
+  <a href="https://hellogithub.com/repository/uter-ai/uter" target="\_blank">  
+    <img src="https://api.hellogithub.com/v1/widgets/recommend.svg?rid=539ac4217e69431684ad4a0bab768811\&claim_uid=tbFPfKIDHpc4TzR" alt="Featured｜HelloGitHub" style="width: 250px; height: 54px;" width="250" height="54" />  
+  </a>  
+  <a href="https://atomgit.com/uter-ai/uter" target="\_blank">  
+    <img alt="AtomGit G-Star" src="https://atomgit.com/uter-ai/uter/star/new_badge.svg" width="250" height="55" />  
+  </a>  
 </p>
 
-<p align="center">
-  <a href="#-快速开始">快速开始</a> •
-  <a href="#-主要特性">主要特性</a> •
-  <a href="#-部署">部署</a> •
-  <a href="#-文档">文档</a> •
-  <a href="#-帮助支持">帮助</a>
+<p align="center">  
+  <a href="#-快速开始">快速开始</a> •  
+  <a href="#-主要特性">主要特性</a> •  
+  <a href="#-部署">部署</a> •  
+  <a href="#-文档">文档</a> •  
+  <a href="#-帮助支持">帮助</a>  
 </p>
 
 </div>
@@ -56,6 +54,7 @@
 ## 📝 项目说明
 
 > [!IMPORTANT]
+>
 > - 本项目仅面向合法授权的 AI API 网关、组织内部鉴权、多模型管理、用量统计、成本核算和私有化部署场景。
 > - 使用者必须合法取得上游 API Key、账号、模型服务或接口权限，并遵守上游服务条款及适用法律法规。
 > - 使用者应确保其使用方式符合上游服务条款及适用法律法规。
@@ -65,43 +64,38 @@
 
 ## 🤝 我们信任的合作伙伴
 
-<p align="center">
-  <em>排名不分先后</em>
+<p align="center">  
+  <em>排名不分先后</em>  
 </p>
 
-<p align="center">
-  <a href="https://www.cherry-ai.com/" target="_blank">
-    <img src="./docs-dev/images/cherry-studio.png" alt="Cherry Studio" height="80" />
-  </a><!--
-  --><a href="https://github.com/iOfficeAI/AionUi/" target="_blank">
-    <img src="./docs-dev/images/aionui.png" alt="Aion UI" height="80" />
-  </a><!--
-  --><a href="https://bda.pku.edu.cn/" target="_blank">
-    <img src="./docs-dev/images/pku.png" alt="北京大学" height="80" />
-  </a><!--
-  --><a href="https://www.compshare.cn/?ytag=GPU_yy_gh_Uter" target="_blank">
-    <img src="./docs-dev/images/ucloud.png" alt="UCloud 优刻得" height="80" />
-  </a><!--
-  --><a href="https://www.aliyun.com/" target="_blank">
-    <img src="./docs-dev/images/aliyun.png" alt="阿里云" height="80" />
-  </a><!--
-  --><a href="https://io.net/" target="_blank">
-    <img src="./docs-dev/images/io-net.png" alt="IO.NET" height="80" />
-  </a>
+<p align="center">  
+  <a href="https://www.cherry-ai.com/" target="\_blank">  
+    <img src="./docs-dev/images/cherry-studio.png" alt="Cherry Studio" height="80" />  
+  </a><a href="https://github.com/iOfficeAI/AionUi/" target="\_blank">  
+    <img src="./docs-dev/images/aionui.png" alt="Aion UI" height="80" />  
+  </a><a href="https://bda.pku.edu.cn/" target="\_blank">  
+    <img src="./docs-dev/images/pku.png" alt="北京大学" height="80" />  
+  </a><a href="https://www.compshare.cn/?ytag=GPU_yy_gh_Uter" target="\_blank">  
+    <img src="./docs-dev/images/ucloud.png" alt="UCloud 优刻得" height="80" />  
+  </a><a href="https://www.aliyun.com/" target="\_blank">  
+    <img src="./docs-dev/images/aliyun.png" alt="阿里云" height="80" />  
+  </a><a href="https://io.net/" target="\_blank">  
+    <img src="./docs-dev/images/io-net.png" alt="IO.NET" height="80" />  
+  </a>  
 </p>
 
 ---
 
 ## 🙏 特别鸣谢
 
-<p align="center">
-  <a href="https://www.jetbrains.com/?from=uter" target="_blank">
-    <img src="https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.png" alt="JetBrains Logo" width="120" />
-  </a>
+<p align="center">  
+  <a href="https://www.jetbrains.com/?from=uter" target="\_blank">  
+    <img src="https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.png" alt="JetBrains Logo" width="120" />  
+  </a>  
 </p>
 
-<p align="center">
-  <strong>感谢 <a href="https://www.jetbrains.com/?from=uter">JetBrains</a> 为本项目提供免费的开源开发许可证</strong>
+<p align="center">  
+  <strong>感谢 <a href="https://www.jetbrains.com/?from=uter">JetBrains</a> 为本项目提供免费的开源开发许可证</strong>  
 </p>
 
 ---
@@ -123,6 +117,7 @@ docker-compose up -d
 ```
 
 <details>
+
 <summary><strong>使用 Docker 命令</strong></summary>
 
 ```bash
@@ -153,7 +148,7 @@ docker run --name uter -d --restart always \
 
 🎉 部署完成后，访问 `http://localhost:3000` 即可使用！
 
-> [!WARNING]
+> [!WARNING]  
 > 将本项目作为面向公众的生成式 AI 服务或 API 转售服务运营时，使用者应先完成备案、内容安全、实名、日志留存、税务、支付和上游授权等合规义务。
 
 📖 更多部署方式请参考 [部署指南](https://uter.ai/docszh/docs/installation)
@@ -164,19 +159,19 @@ docker run --name uter -d --restart always \
 
 <div align="center">
 
-### 📖 [官方文档](https://uter.ai/docszh/docs) | [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/uter-ai/uter)
+### 📖 [官方文档](https://uter.ai/docszh/docs) | [[Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/uter-ai/uter)
 
 </div>
 
 **快速导航：**
 
-| 分类 | 链接 |
-|------|------|
-| 🚀 部署指南 | [安装文档](https://uter.ai/docszh/docs/installation) |
+| 分类      | 链接                                                                                        |
+| ------- | ----------------------------------------------------------------------------------------- |
+| 🚀 部署指南 | [安装文档](https://uter.ai/docszh/docs/installation)                                          |
 | ⚙️ 环境配置 | [环境变量](https://uter.ai/docszh/docs/installation/config-maintenance/environment-variables) |
-| 📡 接口文档 | [API 文档](https://uter.ai/docszh/docs/api) |
-| ❓ 常见问题 | [FAQ](https://uter.ai/docszh/docs/support/faq) |
-| 💬 社区交流 | [交流渠道](https://uter.ai/docszh/docs/support/community-interaction) |
+| 📡 接口文档 | [API 文档](https://uter.ai/docszh/docs/api)                                                 |
+| ❓ 常见问题  | [FAQ](https://uter.ai/docszh/docs/support/faq)                                            |
+| 💬 社区交流 | [交流渠道](https://uter.ai/docszh/docs/support/community-interaction)                         |
 
 ---
 
@@ -186,13 +181,13 @@ docker run --name uter -d --restart always \
 
 ### 🎨 核心功能
 
-| 特性 | 说明 |
-|------|------|
-| 🎨 全新 UI | 现代化的用户界面设计 |
-| 🌍 多语言 | 支持中文、英文、法语、日语 |
-| 🔄 数据兼容 | 完全兼容原版 One API 数据库 |
-| 📈 数据看板 | 可视化管理与统计分析 |
-| 🔒 权限管理 | 令牌分组、模型限制、用户管理 |
+| 特性       | 说明                 |
+| -------- | ------------------ |
+| 🎨 全新 UI | 现代化的用户界面设计         |
+| 🌍 多语言   | 支持中文、英文、法语、日语      |
+| 🔄 数据兼容  | 完全兼容原版 One API 数据库 |
+| 📈 数据看板  | 可视化管理与统计分析         |
+| 🔒 权限管理  | 令牌分组、模型限制、用户管理     |
 
 ### 💰 授权用量与成本管理
 
@@ -212,6 +207,7 @@ docker run --name uter -d --restart always \
 ### 🚀 高级功能
 
 **API 格式支持：**
+
 - ⚡ [OpenAI Responses](https://uter.ai/docszh/docs/api/ai-model/chat/openai/create-response)
 - ⚡ [OpenAI Realtime API](https://uter.ai/docszh/docs/api/ai-model/realtime/create-realtime-session)（含 Azure）
 - ⚡ [Claude Messages](https://uter.ai/docszh/docs/api/ai-model/chat/create-message)
@@ -219,11 +215,13 @@ docker run --name uter -d --restart always \
 - 🔄 [Rerank 模型](https://uter.ai/docszh/docs/api/ai-model/rerank/create-rerank)（Cohere、Jina）
 
 **智能路由：**
+
 - ⚖️ 渠道加权随机
 - 🔄 失败自动重试
 - 🚦 用户级别模型限流
 
 **格式转换：**
+
 - 🔄 **OpenAI Compatible ⇄ Claude Messages**
 - 🔄 **OpenAI Compatible → Google Gemini**
 - 🔄 **Google Gemini → OpenAI Compatible** - 仅支持文本，暂不支持函数调用
@@ -233,9 +231,11 @@ docker run --name uter -d --restart always \
 **Reasoning Effort 支持：**
 
 <details>
+
 <summary>查看详细配置</summary>
 
 **OpenAI 系列模型：**
+
 - `o3-mini-high` - High reasoning effort
 - `o3-mini-medium` - Medium reasoning effort
 - `o3-mini-low` - Low reasoning effort
@@ -244,9 +244,11 @@ docker run --name uter -d --restart always \
 - `gpt-5-low` - Low reasoning effort
 
 **Claude 思考模型：**
+
 - `claude-3-7-sonnet-20250219-thinking` - 启用思考模式
 
 **Google Gemini 系列模型：**
+
 - `gemini-2.5-flash-thinking` - 启用思考模式
 - `gemini-2.5-flash-nothinking` - 禁用思考模式
 - `gemini-2.5-pro-thinking` - 启用思考模式
@@ -261,21 +263,22 @@ docker run --name uter -d --restart always \
 
 > 详情请参考 [接口文档 - 网关接口](https://uter.ai/docszh/docs/api)
 
-| 模型类型 | 说明 | 文档 |
-|---------|------|------|
-| 🤖 OpenAI-Compatible | OpenAI 兼容模型 | [文档](https://uter.ai/docszh/docs/api/ai-model/chat/openai/createchatcompletion) |
-| 🤖 OpenAI Responses | OpenAI Responses 格式 | [文档](https://uter.ai/docszh/docs/api/ai-model/chat/openai/createresponse) |
-| 🎨 Midjourney-Proxy | [Midjourney-Proxy(Plus)](https://github.com/novicezk/midjourney-proxy) | [文档](https://doc.Uter.ai/api/midjourney-proxy-image) |
-| 🎵 Suno-API | [Suno API](https://github.com/Suno-API/Suno-API) | [文档](https://doc.Uter.ai/api/suno-music) |
-| 🔄 Rerank | Cohere、Jina | [文档](https://uter.ai/docszh/docs/api/ai-model/rerank/create-rerank) |
-| 💬 Claude | Messages 格式 | [文档](https://uter.ai/docszh/docs/api/ai-model/chat/createmessage) |
-| 🌐 Gemini | Google Gemini 格式 | [文档](https://uter.ai/docszh/docs/api/ai-model/chat/gemini/geminirelayv1beta) |
-| 🔧 Dify | ChatFlow 模式 | - |
-| 🎯 自定义上游 | 支持配置合法授权的上游接口地址 | - |
+| 模型类型                 | 说明                                                                     | 文档                                                                              |
+| -------------------- | ---------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| 🤖 OpenAI-Compatible | OpenAI 兼容模型                                                            | [文档](https://uter.ai/docszh/docs/api/ai-model/chat/openai/createchatcompletion) |
+| 🤖 OpenAI Responses  | OpenAI Responses 格式                                                    | [文档](https://uter.ai/docszh/docs/api/ai-model/chat/openai/createresponse)       |
+| 🎨 Midjourney-Proxy  | [Midjourney-Proxy(Plus)](https://github.com/novicezk/midjourney-proxy) | [文档](https://doc.Uter.ai/api/midjourney-proxy-image)                            |
+| 🎵 Suno-API          | [Suno API](https://github.com/Suno-API/Suno-API)                       | [文档](https://doc.Uter.ai/api/suno-music)                                        |
+| 🔄 Rerank            | Cohere、Jina                                                            | [文档](https://uter.ai/docszh/docs/api/ai-model/rerank/create-rerank)             |
+| 💬 Claude            | Messages 格式                                                            | [文档](https://uter.ai/docszh/docs/api/ai-model/chat/createmessage)               |
+| 🌐 Gemini            | Google Gemini 格式                                                       | [文档](https://uter.ai/docszh/docs/api/ai-model/chat/gemini/geminirelayv1beta)    |
+| 🔧 Dify              | ChatFlow 模式                                                            | -                                                                               |
+| 🎯 自定义上游             | 支持配置合法授权的上游接口地址                                                        | -                                                                               |
 
 ### 📡 支持的接口
 
 <details>
+
 <summary>查看完整接口列表</summary>
 
 - [聊天接口 (Chat Completions)](https://uter.ai/docszh/docs/api/ai-model/chat/openai/createchatcompletion)
@@ -295,49 +298,50 @@ docker run --name uter -d --restart always \
 
 ## 🚢 部署
 
-> [!TIP]
+> [!TIP]  
 > **最新版 Docker 镜像：** `calciumion/uter:latest`
 
 ### 📋 部署要求
 
-| 组件 | 要求 |
-|------|------|
-| **本地数据库** | SQLite（Docker 需挂载 `/data` 目录）|
-| **远程数据库** | MySQL ≥ 5.7.8 或 PostgreSQL ≥ 9.6 |
-| **容器引擎** | Docker / Docker Compose |
-| **系统架构** | 仅支持 64 位系统（amd64 / arm64），不支持 32 位系统 |
+| 组件        | 要求                                   |
+| --------- | ------------------------------------ |
+| **本地数据库** | SQLite（Docker 需挂载 `/data` 目录）        |
+| **远程数据库** | MySQL ≥ 5.7.8 或 PostgreSQL ≥ 9.6     |
+| **容器引擎**  | Docker / Docker Compose              |
+| **系统架构**  | 仅支持 64 位系统（amd64 / arm64），不支持 32 位系统 |
 
 ### ⚙️ 环境变量配置
 
-<details>
+<details>  
 <summary>常用环境变量配置</summary>
 
-| 变量名 | 说明                                                           | 默认值 |
-|--------|--------------------------------------------------------------|--------|
-| `SESSION_SECRET` | 鉴权签名密钥；所有节点必须保持一致                                           | - |
-| `SESSION_COOKIE_SECURE` | `false`/未配置时关闭 refresh/logout OriginGuard 以兼容本地 HTTP 开发代理；`true` 时启用 Secure Cookie 和严格 Origin 校验 | `false` |
-| `SESSION_COOKIE_TRUSTED_URL` | Secure 模式必填：允许调用 refresh/logout 的精确 HTTPS Origin，多个用英文逗号分隔；不是 relay CORS 白名单 | - |
-| `TRUSTED_PROXIES` | 未配置/留空时信任回环、RFC1918 和 IPv6 ULA 并输出启动告警；`none` 不信任任何代理；显式代理 IP/CIDR 列表完全替代默认值 | `127.0.0.0/8, ::1, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, fc00::/7` |
-| `USER_SESSION_ACTIVE_LIMIT` | 单用户最大活跃登录 Session 数 | `50` |
-| `USER_SESSION_ISSUANCE_LIMIT` | 单用户在签发窗口内可创建的 Session 总数，包含已撤销 Session | `100` |
-| `USER_SESSION_ISSUANCE_WINDOW_SECONDS` | Session 签发计数窗口（秒）；高于 revoked 保留期时自动钳制 | `86400` |
-| `USER_SESSION_REVOKED_RETENTION_DAYS` | revoked Session 用于审计和签发计数的保留天数 | `7` |
-| `USER_SESSION_HOURLY_ALERT_THRESHOLD` | 全局每小时 Session 签发告警阈值；只告警，不拒绝登录 | `5000` |
-| `CRYPTO_SECRET` | 缓存键 HMAC 密钥；共享 Redis 的节点必须使用相同有效值 | 默认跟随 `SESSION_SECRET` |
-| `SQL_DSN` | 数据库连接字符串                                                     | - |
-| `REDIS_CONN_STRING` | Redis 连接字符串                                                  | - |
-| `STREAMING_TIMEOUT` | 流式超时时间（秒）                                                    | `300` |
-| `STREAM_SCANNER_MAX_BUFFER_MB` | 流式扫描器单行最大缓冲（MB），图像生成等超大 `data:` 片段（如 4K 图片 base64）需适当调大 | `64` |
-| `MAX_REQUEST_BODY_MB` | 请求体最大大小（MB，**解压后**计；防止超大请求/zip bomb 导致内存暴涨），超过将返回 `413` | `32` |
-| `AZURE_DEFAULT_API_VERSION` | Azure API 版本                                                 | `2025-04-01-preview` |
-| `ERROR_LOG_ENABLED` | 错误日志开关                                                       | `false` |
-| `PYROSCOPE_URL` | Pyroscope 服务地址                                            | - |
-| `PYROSCOPE_APP_NAME` | Pyroscope 应用名                                        | `uter` |
-| `PYROSCOPE_BASIC_AUTH_USER` | Pyroscope Basic Auth 用户名                        | - |
-| `PYROSCOPE_BASIC_AUTH_PASSWORD` | Pyroscope Basic Auth 密码                  | - |
-| `PYROSCOPE_MUTEX_RATE` | Pyroscope mutex 采样率                               | `5` |
-| `PYROSCOPE_BLOCK_RATE` | Pyroscope block 采样率                               | `5` |
-| `HOSTNAME` | Pyroscope 标签里的主机名                                          | `uter` |
+| 变量名                                    | 说明                                                                                               | 默认值                                                                     |
+| -------------------------------------- | ------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------- |
+| `SESSION_SECRET`                       | 鉴权签名密钥；所有节点必须保持一致                                                                                | -                                                                       |
+| `SESSION_COOKIE_SECURE`                | `false`/未配置时关闭 refresh/logout OriginGuard 以兼容本地 HTTP 开发代理；`true` 时启用 Secure Cookie 和严格 Origin 校验 | `false`                                                                 |
+| `SESSION_COOKIE_TRUSTED_URL`           | Secure 模式必填：允许调用 refresh/logout 的精确 HTTPS Origin，多个用英文逗号分隔；不是 relay CORS 白名单                     | -                                                                       |
+| `TRUSTED_PROXIES`                      | 未配置/留空时信任回环、RFC1918 和 IPv6 ULA 并输出启动告警；`none` 不信任任何代理；显式代理 IP/CIDR 列表完全替代默认值                     | `127.0.0.0/8, ::1, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, fc00::/7` |
+| `USER_SESSION_ACTIVE_LIMIT`            | 单用户最大活跃登录 Session 数                                                                              | `50`                                                                    |
+| `USER_SESSION_ISSUANCE_LIMIT`          | 单用户在签发窗口内可创建的 Session 总数，包含已撤销 Session                                                           | `100`                                                                   |
+| `USER_SESSION_ISSUANCE_WINDOW_SECONDS` | Session 签发计数窗口（秒）；高于 revoked 保留期时自动钳制                                                            | `86400`                                                                 |
+| `USER_SESSION_REVOKED_RETENTION_DAYS`  | revoked Session 用于审计和签发计数的保留天数                                                                   | `7`                                                                     |
+| `USER_SESSION_HOURLY_ALERT_THRESHOLD`  | 全局每小时 Session 签发告警阈值；只告警，不拒绝登录                                                                   | `5000`                                                                  |
+| `CRYPTO_SECRET`                        | 缓存键 HMAC 密钥；共享 Redis 的节点必须使用相同有效值                                                                | 默认跟随 `SESSION_SECRET`                                                   |
+| `SQL_DSN`                              | 数据库连接字符串                                                                                         | -                                                                       |
+| `REDIS_CONN_STRING`                    | Redis 连接字符串                                                                                      | -                                                                       |
+| `STREAMING_TIMEOUT`                    | 流式超时时间（秒）                                                                                        | `300`                                                                   |
+| `STREAM_SCANNER_MAX_BUFFER_MB`         | 流式扫描器单行最大缓冲（MB），图像生成等超大 `data:` 片段（如 4K 图片 base64）需适当调大                                          | `64`                                                                    |
+| `MAX_REQUEST_BODY_MB`                  | 请求体最大大小（MB，**解压后**计；防止超大请求/zip bomb 导致内存暴涨），超过将返回 `413`                                          | `32`                                                                    |
+| `AZURE_DEFAULT_API_VERSION`            | Azure API 版本                                                                                     | `2025-04-01-preview`                                                    |
+| `ERROR_LOG_ENABLED`                    | 错误日志开关                                                                                           | `false`                                                                 |
+| `PYROSCOPE_URL`                        | Pyroscope 服务地址                                                                                   | -                                                                       |
+| `PYROSCOPE_APP_NAME`                   | Pyroscope 应用名                                                                                    | `uter`                                                                  |
+| `PYROSCOPE_BASIC_AUTH_USER`            | Pyroscope Basic Auth 用户名                                                                         | -                                                                       |
+| `PYROSCOPE_BASIC_AUTH_PASSWORD`        | Pyroscope Basic Auth 密码                                                                          | -                                                                       |
+| `PYROSCOPE_MUTEX_RATE`                 | Pyroscope mutex 采样率                                                                              | `5`                                                                     |
+| `PYROSCOPE_BLOCK_RATE`                 | Pyroscope block 采样率                                                                              | `5`                                                                     |
+| `HOSTNAME`                             | Pyroscope 标签里的主机名                                                                                | `uter`                                                                  |
+
 
 📖 **完整配置：** [环境变量文档](https://uter.ai/docszh/docs/installation/config-maintenance/environment-variables)
 
@@ -346,6 +350,7 @@ docker run --name uter -d --restart always \
 ### 🔧 部署方式
 
 <details>
+
 <summary><strong>方式 1：Docker Compose（推荐）</strong></summary>
 
 ```bash
@@ -363,9 +368,11 @@ docker-compose up -d
 </details>
 
 <details>
+
 <summary><strong>方式 2：Docker 命令</strong></summary>
 
 **使用 SQLite：**
+
 ```bash
 docker run --name uter -d --restart always \
   -p 3000:3000 \
@@ -375,6 +382,7 @@ docker run --name uter -d --restart always \
 ```
 
 **使用 MySQL：**
+
 ```bash
 docker run --name uter -d --restart always \
   -p 3000:3000 \
@@ -385,12 +393,14 @@ docker run --name uter -d --restart always \
 ```
 
 > **💡 路径说明：**
+>
 > - `./data:/data` - 相对路径，数据保存在当前目录的 data 文件夹
 > - 也可使用绝对路径，如：`/your/custom/path:/data`
 
 </details>
 
 <details>
+
 <summary><strong>方式 3：宝塔面板</strong></summary>
 
 1. 安装宝塔面板（≥ 9.2.0 版本）
@@ -404,16 +414,17 @@ docker run --name uter -d --restart always \
 ### ⚠️ 多机部署注意事项
 
 > [!WARNING]
+>
 > - 所有节点必须使用同一个主数据库，并设置相同的 `SESSION_SECRET`；否则 Access Token、Refresh 会话和临时鉴权流程无法一致校验。
 > - 连接同一个 Redis 的节点还必须设置相同的 `CRYPTO_SECRET`，否则节点生成的缓存键摘要不一致，无法正确共享缓存。
 
 登录 Session 和单用户活跃数/签发数限制均以数据库为权威。Redis 中的 Session 仅为短期缓存，TTL 跟随 `SYNC_FREQUENCY`（默认 60 秒），且不会超过 Session 的剩余寿命。
 
-| Redis 拓扑 | Session 状态传播 | 限流语义 |
-| --- | --- | --- |
-| 所有节点共享 Redis | 撤销和版本发布通常即时传播 | Redis 限流额度在节点间共享 |
+| Redis 拓扑       | Session 状态传播                                                       | 限流语义                         |
+| -------------- | ------------------------------------------------------------------ | ---------------------------- |
+| 所有节点共享 Redis   | 撤销和版本发布通常即时传播                                                      | Redis 限流额度在节点间共享             |
 | 每个节点使用独立 Redis | 最迟在有效 `SYNC_FREQUENCY` 内回源数据库收敛；版本轮换后，新 Token 在持有旧缓存的节点上可能短暂返回 401 | 每个节点独立计数，集群总额度最坏约为单节点阈值乘以节点数 |
-| 不使用 Redis | 每次 Session 校验直接读取数据库 | 各节点使用独立的内存限流额度 |
+| 不使用 Redis      | 每次 Session 校验直接读取数据库                                               | 各节点使用独立的内存限流额度               |
 
 缩短 `SYNC_FREQUENCY` 可减小独立 Redis 的陈旧窗口，但每个活跃 SID 在每个节点上会按该 TTL 增加一次数据库主键点查。上述保证只让 Session 鉴权在不同拓扑下保持有界陈旧；限流和其他 Redis 控制面缓存仍受拓扑影响。
 
@@ -424,6 +435,7 @@ Token、Origin 校验和 PAT 契约见[用户鉴权与登录会话](./docs-dev/a
 **重试配置：** `设置 → 运营设置 → 通用设置 → 失败重试次数`
 
 **缓存配置：**
+
 - `REDIS_CONN_STRING`：Redis 缓存（推荐）
 - `MEMORY_CACHE_ENABLED`：内存缓存
 
@@ -433,17 +445,17 @@ Token、Origin 校验和 PAT 契约见[用户鉴权与登录会话](./docs-dev/a
 
 ### 上游项目
 
-| 项目 | 说明 |
-|------|------|
-| [One API](https://github.com/songquanpeng/one-api) | 原版项目基础 |
+| 项目                                                               | 说明              |
+| ---------------------------------------------------------------- | --------------- |
+| [One API](https://github.com/songquanpeng/one-api)               | 原版项目基础          |
 | [Midjourney-Proxy](https://github.com/novicezk/midjourney-proxy) | Midjourney 接口支持 |
 
 ### 配套工具
 
-| 项目 | 说明 |
-|------|------|
-| [uter-key-tool](https://github.com/Calcium-Ion/uter-key-tool) | Key 额度查询工具 |
-| [uter-horizon](https://github.com/Calcium-Ion/uter-horizon) | Uter 高性能优化版 |
+| 项目                                                            | 说明          |
+| ------------------------------------------------------------- | ----------- |
+| [uter-key-tool](https://github.com/Calcium-Ion/uter-key-tool) | Key 额度查询工具  |
+| [uter-horizon](https://github.com/Calcium-Ion/uter-horizon)   | Uter 高性能优化版 |
 
 ---
 
@@ -451,12 +463,12 @@ Token、Origin 校验和 PAT 契约见[用户鉴权与登录会话](./docs-dev/a
 
 ### 📖 文档资源
 
-| 资源 | 链接 |
-|------|------|
-| 📘 常见问题 | [FAQ](https://uter.ai/docszh/docs/support/faq) |
+| 资源      | 链接                                                                |
+| ------- | ----------------------------------------------------------------- |
+| 📘 常见问题 | [FAQ](https://uter.ai/docszh/docs/support/faq)                    |
 | 💬 社区交流 | [交流渠道](https://uter.ai/docszh/docs/support/community-interaction) |
-| 🐛 反馈问题 | [问题反馈](https://uter.ai/docszh/docs/support/feedback-issues) |
-| 📚 完整文档 | [官方文档](https://uter.ai/docszh/docs) |
+| 🐛 反馈问题 | [问题反馈](https://uter.ai/docszh/docs/support/feedback-issues)       |
+| 📚 完整文档 | [官方文档](https://uter.ai/docszh/docs)                               |
 
 ### 🤝 贡献指南
 
@@ -475,7 +487,7 @@ Token、Origin 校验和 PAT 契约见[用户鉴权与登录会话](./docs-dev/a
 
 本项目为开源项目，在 [One API](https://github.com/songquanpeng/one-api)（MIT 许可证）的基础上进行二次开发。
 
-如果您所在的组织政策不允许使用 AGPLv3 许可的软件，或您希望规避 AGPLv3 的开源义务，请发送邮件至：[support@uter.ai](mailto:support@uter.ai)
+如果您所在的组织政策不允许使用 AGPLv3 许可的软件，或您希望规避 AGPLv3 的开源义务，请发送邮件至：<support@uter.ai>
 
 ---
 
@@ -483,7 +495,7 @@ Token、Origin 校验和 PAT 契约见[用户鉴权与登录会话](./docs-dev/a
 
 <div align="center">
 
-[![Star History Chart](https://api.star-history.com/svg?repos=Calcium-Ion/uter&type=Date)](https://star-history.com/#Calcium-Ion/uter&Date)
+![Star History Chart](https://api.star-history.com/svg?repos=Calcium-Ion/uter\&type=Date)
 
 </div>
 

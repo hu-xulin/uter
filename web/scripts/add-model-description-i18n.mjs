@@ -155,7 +155,7 @@ function upsert(lines, key, value) {
 
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i]
-    if (!line.trimStart().startsWith(encodedKey + ':')) continue
+    if (!line.trimStart().startsWith(`${encodedKey  }:`)) continue
     if (!isTranslationMember(line)) continue
     const current = line.trimStart().slice(encodedKey.length + 1).trim()
     if (current === JSON.stringify(value)) return 'unchanged'

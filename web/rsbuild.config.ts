@@ -121,6 +121,18 @@ export default defineConfig(({ envMode }) => {
           priority: 0,
           enforce: true,
         },
+        // zod is imported by 60+ modules (forms, schemas, feature types) across
+        // both the eager app graph and every async route, so it is a prime
+        // candidate for a single hoisted vendor chunk: dedupes it across all
+        // route chunks and keeps it in a long-lived cache that changes far less
+        // often than application code.
+        'vendor-zod': {
+          test: /node_modules[\\/]zod[\\/]/,
+          name: 'vendor-zod',
+          chunks: 'all',
+          priority: 0,
+          enforce: true,
+        },
       },
     },
     source: {
@@ -176,15 +188,17 @@ export default defineConfig(({ envMode }) => {
       buildCache: false,
     },
     tools: {
-      rspack: {
-        plugins: [
+      rspack: (config) => {
+        config.plugins = config.plugins || []
+        config.plugins.push(
           tanstackRouter({
             target: 'react',
             // Dev: avoid per-route async chunks (reduces white flash on navigation + faster HMR feedback).
             // Prod: keep route-based code splitting.
             autoCodeSplitting: isProd,
           }),
-        ],
+        )
+        return config
       },
     },
   }

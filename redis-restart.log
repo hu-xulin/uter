@@ -1,0 +1,69 @@
+[SYS] 2026/10/09 - 18:41:33 | initializing token encoders 
+[SYS] 2026/10/09 - 18:41:33 | token encoders initialized 
+[SYS] 2026/10/09 - 18:41:33 | SQL_DSN not set, using SQLite as database 
+[SYS] 2026/10/09 - 18:41:33 | database migration started 
+
+2026/10/09 18:41:33 [32m/Users/lincolnhu/go/pkg/mod/github.com/glebarez/sqlite@v1.11.0/migrator.go:342
+[0m[33m[0.165ms] [34;1m[rows:1][0m SELECT * FROM PRAGMA_index_list("options")
+[SYS] 2026/10/09 - 18:41:33 | system is already initialized at: 2026-09-23 08:08:32 +0800 CST 
+[SYS] 2026/10/09 - 18:41:33 | SYNC_FREQUENCY not set, use default value 60 
+[SYS] 2026/10/09 - 18:41:33 | Redis is enabled 
+[SYS] 2026/10/09 - 18:41:33 | i18n initialized with languages: zh-CN, zh-TW, en, fr, ru, ja, vi 
+[SYS] 2026/10/09 - 18:41:33 | Loaded 0 custom OAuth providers 
+[SYS] 2026/10/09 - 18:41:33 | Uter v1.3.18 started 
+[SYS] 2026/10/09 - 18:41:33 | memory cache enabled 
+[SYS] 2026/10/09 - 18:41:33 | sync frequency: 60 seconds 
+[SYS] 2026/10/09 - 18:41:33 | channels synced from database 
+2026/10/09 18:41:33 WARNING: TRUSTED_PROXIES is unset or blank; trusting loopback, RFC 1918, and IPv6 ULA proxy addresses for compatibility. Set TRUSTED_PROXIES=none to trust no proxies, or configure explicit proxy IPs/CIDRs to replace these defaults.
+[SYS] 2026/10/09 - 18:41:33 | 正在更新数据看板数据... 
+[INFO] 2026/10/09 - 18:41:33 | SYSTEM | subscription quota reset task started: tick=1m0s 
+[INFO] 2026/10/09 - 18:41:33 | SYSTEM | codex credential auto-refresh task started: tick=10m0s threshold=24h0m0s 
+[SYS] 2026/10/09 - 18:41:33 | 保存数据看板数据成功，共保存0条数据 
+[INFO] 2026/10/09 - 18:41:33 | SYSTEM | system task runner started: runner=uter-master-1-C0KBsd9R idle_interval=15s 
+
+  [33mWarning: Refresh cookie is not secure and refresh/logout Origin validation is disabled. Please set SESSION_COOKIE_SECURE=true in production.[0m
+
+
+  [32mUter.ai 优特智能 v1.3.18[0m  ready in 184 ms
+
+  ➜  [1mLocal:[0m   http://localhost:3000/
+  ➜  [1mNetwork:[0m http://192.168.1.7:3000/
+
+[GIN] 2026/10/09 - 18:41:38 | api | 2026100910413845320000026a4fa6bq5JZ9ZhF | 200 |     735.106µs |       127.0.0.1 |     GET /api/status
+[INFO] 2026/10/09 - 18:42:09 | 2026100910420941577900026a4fa6b8IdbJOdk | 用户 3 额度充足, 信任且不需要预扣费 (funding=wallet) 
+[INFO] 2026/10/09 - 18:42:20 | 2026100910420941577900026a4fa6b8IdbJOdk | 预扣费后补扣费：＄0.000048（实际消耗：＄0.000048，预扣费：＄0.000000） 
+[INFO] 2026/10/09 - 18:42:20 | 2026100910420941577900026a4fa6b8IdbJOdk | record consume log: userId=3, params={"channel_id":20,"prompt_tokens":14,"completion_tokens":8,"model_name":"claude-haiku-4-5-20251001","token_name":"默认密钥","quota":24,"content":"","token_id":5,"use_time_seconds":11,"is_stream":false,"group":"VIP0","other":{"admin_info":{"usage_billing_path":"upstream","use_channel":["20"]},"billing_source":"wallet","cache_ratio":1,"cache_tokens":0,"completion_ratio":5,"frt":-1000,"group_ratio":0.9,"input_tokens_total":14,"model_price":-1,"model_ratio":0.5,"request_conversion":["OpenAI Compatible"],"request_path":"/v1/chat/completions","user_group_ratio":-1}} 
+[GIN] 2026/10/09 - 18:42:20 | relay | 2026100910420941577900026a4fa6b8IdbJOdk | 200 | 10.753468213s |       127.0.0.1 |    POST /v1/chat/completions
+[INFO] 2026/10/09 - 18:42:20 | 2026100910422018041900026a4fa6bvbWBLoxl | 用户 3 额度充足, 信任且不需要预扣费 (funding=wallet) 
+[INFO] 2026/10/09 - 18:42:24 | 2026100910422018041900026a4fa6bvbWBLoxl | 预扣费后补扣费：＄0.000048（实际消耗：＄0.000048，预扣费：＄0.000000） 
+[INFO] 2026/10/09 - 18:42:24 | 2026100910422018041900026a4fa6bvbWBLoxl | record consume log: userId=3, params={"channel_id":20,"prompt_tokens":14,"completion_tokens":8,"model_name":"claude-haiku-4-5-20251001","token_name":"默认密钥","quota":24,"content":"","token_id":5,"use_time_seconds":4,"is_stream":false,"group":"VIP0","other":{"admin_info":{"usage_billing_path":"upstream","use_channel":["20"]},"billing_source":"wallet","cache_ratio":1,"cache_tokens":0,"completion_ratio":5,"frt":-1000,"group_ratio":0.9,"input_tokens_total":14,"model_price":-1,"model_ratio":0.5,"request_conversion":["OpenAI Compatible"],"request_path":"/v1/chat/completions","user_group_ratio":-1}} 
+[GIN] 2026/10/09 - 18:42:24 | relay | 2026100910422018041900026a4fa6bvbWBLoxl | 200 |  3.858077785s |       127.0.0.1 |    POST /v1/chat/completions
+[INFO] 2026/10/09 - 18:42:24 | 2026100910422405199200026a4fa6bQ7E5foEu | 用户 3 额度充足, 信任且不需要预扣费 (funding=wallet) 
+[INFO] 2026/10/09 - 18:42:27 | 2026100910422405199200026a4fa6bQ7E5foEu | 预扣费后补扣费：＄0.000048（实际消耗：＄0.000048，预扣费：＄0.000000） 
+[INFO] 2026/10/09 - 18:42:27 | 2026100910422405199200026a4fa6bQ7E5foEu | record consume log: userId=3, params={"channel_id":20,"prompt_tokens":14,"completion_tokens":8,"model_name":"claude-haiku-4-5-20251001","token_name":"默认密钥","quota":24,"content":"","token_id":5,"use_time_seconds":3,"is_stream":false,"group":"VIP0","other":{"admin_info":{"usage_billing_path":"upstream","use_channel":["20"]},"billing_source":"wallet","cache_ratio":1,"cache_tokens":0,"completion_ratio":5,"frt":-1000,"group_ratio":0.9,"input_tokens_total":14,"model_price":-1,"model_ratio":0.5,"request_conversion":["OpenAI Compatible"],"request_path":"/v1/chat/completions","user_group_ratio":-1}} 
+[GIN] 2026/10/09 - 18:42:27 | relay | 2026100910422405199200026a4fa6bQ7E5foEu | 200 |  2.987184625s |       127.0.0.1 |    POST /v1/chat/completions
+[SYS] 2026/10/09 - 18:42:33 | syncing channels from database 
+[SYS] 2026/10/09 - 18:42:33 | channels synced from database 
+[SYS] 2026/10/09 - 18:42:33 | syncing options from database 
+[SYS] 2026/10/09 - 18:43:33 | syncing channels from database 
+[SYS] 2026/10/09 - 18:43:33 | channels synced from database 
+[SYS] 2026/10/09 - 18:43:33 | syncing options from database 
+[SYS] 2026/10/09 - 18:44:33 | syncing channels from database 
+[SYS] 2026/10/09 - 18:44:33 | channels synced from database 
+[SYS] 2026/10/09 - 18:44:33 | syncing options from database 
+[SYS] 2026/10/09 - 18:45:33 | syncing channels from database 
+[SYS] 2026/10/09 - 18:45:33 | channels synced from database 
+[SYS] 2026/10/09 - 18:45:33 | syncing options from database 
+[INFO] 2026/10/09 - 18:46:04 | 2026100910460411880300026a4fa6bmOyAWFQ6 | 用户 3 额度充足, 信任且不需要预扣费 (funding=wallet) 
+[INFO] 2026/10/09 - 18:46:06 | 2026100910460411880300026a4fa6bmOyAWFQ6 | 预扣费后补扣费：＄0.000048（实际消耗：＄0.000048，预扣费：＄0.000000） 
+[INFO] 2026/10/09 - 18:46:06 | 2026100910460411880300026a4fa6bmOyAWFQ6 | record consume log: userId=3, params={"channel_id":20,"prompt_tokens":14,"completion_tokens":8,"model_name":"claude-haiku-4-5-20251001","token_name":"默认密钥","quota":24,"content":"","token_id":5,"use_time_seconds":2,"is_stream":false,"group":"VIP0","other":{"admin_info":{"usage_billing_path":"upstream","use_channel":["20"]},"billing_source":"wallet","cache_ratio":1,"cache_tokens":0,"completion_ratio":5,"frt":-1000,"group_ratio":0.9,"input_tokens_total":14,"model_price":-1,"model_ratio":0.5,"request_conversion":["OpenAI Compatible"],"request_path":"/v1/chat/completions","user_group_ratio":-1}} 
+[GIN] 2026/10/09 - 18:46:06 | relay | 2026100910460411880300026a4fa6bmOyAWFQ6 | 200 |  2.387406913s |       127.0.0.1 |    POST /v1/chat/completions
+[SYS] 2026/10/09 - 18:46:33 | syncing channels from database 
+[SYS] 2026/10/09 - 18:46:33 | channels synced from database 
+[SYS] 2026/10/09 - 18:46:33 | syncing options from database 
+[SYS] 2026/10/09 - 18:47:33 | syncing channels from database 
+[SYS] 2026/10/09 - 18:47:33 | channels synced from database 
+[SYS] 2026/10/09 - 18:47:33 | syncing options from database 
+[SYS] 2026/10/09 - 18:48:17 | received signal: terminated, shutting down... 
+[SYS] 2026/10/09 - 18:48:17 | 保存数据看板数据成功，共保存1条数据 
+[SYS] 2026/10/09 - 18:48:17 | server exited 

@@ -696,7 +696,7 @@ it.each(['wrong code', 'response lost'] as const)(
     await user.click(screen.getByRole('button', { name: 'Enable 2FA' }))
     if (failure === 'wrong code') {
       expect(
-        await screen.findByText('The authenticator code is incorrect.')
+        await screen.findByText('That authenticator code is wrong.')
       ).toBeVisible()
       await user.clear(screen.getByLabelText('Verification Code'))
       await user.type(screen.getByLabelText('Verification Code'), '654321')

@@ -67,7 +67,8 @@ i18n
     // corrected translation applies without a rebuild or restart. The bundled
     // copy above stays the first-paint source and the fallback when the
     // endpoint is absent.
-    installRuntimeLocaleLoader()
+    return installRuntimeLocaleLoader()
   })
+  .catch(() => {})
 
 export default i18n

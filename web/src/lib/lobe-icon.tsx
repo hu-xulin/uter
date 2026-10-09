@@ -7,7 +7,7 @@ published by the Free Software Foundation, either version 3 of the
 License, or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
+but WITHOUT ANY WARRANTY, without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 GNU Affero General Public License for more details.
 
@@ -17,71 +17,68 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@uter.ai
 */
 /**
- * LobeHub Icon Loader
- * Dynamically load and render icons from @lobehub/icons
+ * LobeHub Icon Loader — synchronous metadata API + lazy renderer entry point.
  *
  * Supports:
  * - Basic: "OpenAI", "OpenAI.Color"
  * - Chained properties: "OpenAI.Avatar.type={'platform'}"
  * - Size parameter: getLobeIcon("OpenAI", 20)
+ *
+ * Bundle strategy (perf):
+ * - The variant metadata (`@lobehub/icons/es/toc.json`, ≈100 KB) is imported
+ *   synchronously so `colorIconName` / `monoIconName` / `getLobeIconNames`
+ *   stay pure and synchronous (and unit-testable) without pulling the whole
+ *   icon set into the first-paint graph.
+ * - The actual icon components (~8 MB) are loaded lazily by the async resolver
+ *   (`lobe-icon-resolver.tsx`) via a cached dynamic `import('@lobehub/icons')`,
+ *   so they land in a separate async chunk fetched in parallel instead of
+ *   blocking first paint. `getLobeIcon` renders a lightweight fallback until
+ *   the registry arrives.
  */
-import * as LobeIcons from '@lobehub/icons'
-import type React from 'react'
+import toc from '@lobehub/icons/es/toc.json'
+import type { ReactNode } from 'react'
 
-import { IconSub2api } from '@/assets/custom/icon-sub2api'
+import { CUSTOM_ICONS } from './lobe-icon-custom'
+import { LobeIconResolver } from './lobe-icon-resolver'
 
-const CUSTOM_ICONS: Record<string, React.ComponentType<{ size?: number }>> = {
-  Sub2API: IconSub2api,
+type IconParam = {
+  hasColor?: boolean
+  hasAvatar?: boolean
+  hasCombine?: boolean
+  hasText?: boolean
+  hasTextCn?: boolean
+  hasBrand?: boolean
+  hasBrandColor?: boolean
 }
 
-/**
- * Parse a property value from string to appropriate type
- * @param raw - Raw string value
- * @returns Parsed value (boolean, number, or string)
- */
-function parseValue(raw: string | undefined | null): string | number | boolean {
-  if (raw == null) return true
+type TocEntry = { id: string; param: IconParam }
 
-  let v = String(raw).trim()
+// Synchronous brand → variant lookup derived from the lightweight toc.json.
+// Replaces the previous `LobeIcons[baseKey]` runtime inspection, which forced
+// the entire icon set into the bundle.
+const tocById = new Map<string, IconParam>()
+for (const entry of toc as TocEntry[]) {
+  tocById.set(entry.id, entry.param)
+}
 
-  // Remove curly braces
-  if (v.startsWith('{') && v.endsWith('}')) {
-    v = v.slice(1, -1).trim()
-  }
-
-  // Remove quotes
-  if (
-    (v.startsWith('"') && v.endsWith('"')) ||
-    (v.startsWith("'") && v.endsWith("'"))
-  ) {
-    return v.slice(1, -1)
-  }
-
-  // Boolean
-  if (v === 'true') return true
-  if (v === 'false') return false
-
-  // Number
-  if (/^-?\d+(?:\.\d+)?$/.test(v)) return Number(v)
-
-  // Return as string
-  return v
+function variantField(variant: string): keyof IconParam | null {
+  if (variant === 'Color') return 'hasColor'
+  if (variant === 'Avatar') return 'hasAvatar'
+  if (variant === 'Combine') return 'hasCombine'
+  if (variant === 'Text') return 'hasText'
+  return null
 }
 
 /**
  * Whether a brand ships the given chained variant (e.g. "Color", "Avatar").
- *
- * @lobehub/icons exposes every brand as a monochrome default component that
- * follows `currentColor`, and attaches the alternative renderings (`.Color`,
- * `.Avatar`, `.Combine`, `.Text`) as properties on it. Custom icons are plain
- * components with no variants.
  */
 function iconHasVariant(baseKey: string, variant: string): boolean {
   if (CUSTOM_ICONS[baseKey]) return false
-  const entry = (LobeIcons as Record<string, unknown>)[baseKey]
-  if (entry == null) return false
-  if (typeof entry !== 'object' && typeof entry !== 'function') return false
-  return (entry as Record<string, unknown>)[variant] != null
+  const param = tocById.get(baseKey)
+  if (!param) return false
+  const field = variantField(variant)
+  if (!field) return false
+  return param[field] === true
 }
 
 /**
@@ -132,7 +129,7 @@ export function monoIconName(iconName: string): string {
  * Get LobeHub icon component by name
  * @param iconName - Icon name/description (e.g., "OpenAI", "OpenAI.Color", "Claude.Avatar")
  * @param size - Icon size (default: 20)
- * @returns Icon component or fallback
+ * @returns Icon element (falls back to a placeholder until the registry loads)
  *
  * @example
  * getLobeIcon("OpenAI", 24)
@@ -141,103 +138,15 @@ export function monoIconName(iconName: string): string {
  */
 export function getLobeIcon(
   iconName: string | undefined | null,
-  size: number = 20
-): React.ReactNode {
-  if (!iconName || typeof iconName !== 'string') {
-    return (
-      <div
-        className='bg-muted text-muted-foreground flex items-center justify-center rounded-full text-xs font-medium'
-        style={{ width: size, height: size }}
-      >
-        ?
-      </div>
-    )
-  }
-
-  const trimmedName = iconName.trim()
-  if (!trimmedName) {
-    return (
-      <div
-        className='bg-muted text-muted-foreground flex items-center justify-center rounded-full text-xs font-medium'
-        style={{ width: size, height: size }}
-      >
-        ?
-      </div>
-    )
-  }
-
-  // Parse component path and chained properties
-  const segments = trimmedName.split('.')
-  const baseKey = segments[0]
-  const CustomIcon = CUSTOM_ICONS[baseKey]
-  if (CustomIcon) {
-    return <CustomIcon size={size} />
-  }
-  const BaseIcon = (LobeIcons as Record<string, unknown>)[baseKey] as
-    | Record<string, unknown>
-    | undefined
-
-  let IconComponent: React.ComponentType<Record<string, unknown>> | undefined
-  let propStartIndex: number
-
-  if (BaseIcon && segments.length > 1 && BaseIcon[segments[1]]) {
-    IconComponent = BaseIcon[segments[1]] as React.ComponentType<
-      Record<string, unknown>
-    >
-    propStartIndex = 2
-  } else {
-    IconComponent = (LobeIcons as Record<string, unknown>)[baseKey] as
-      | React.ComponentType<Record<string, unknown>>
-      | undefined
-    propStartIndex = segments.length > 1 && /^[A-Z]/.test(segments[1]) ? 2 : 1
-  }
-
-  // Fallback if icon not found
-  if (
-    !IconComponent ||
-    (typeof IconComponent !== 'function' && typeof IconComponent !== 'object')
-  ) {
-    const firstLetter = trimmedName.charAt(0).toUpperCase()
-    return (
-      <div
-        className='bg-muted text-muted-foreground flex items-center justify-center rounded-full text-xs font-medium'
-        style={{ width: size, height: size }}
-      >
-        {firstLetter}
-      </div>
-    )
-  }
-
-  // Parse chained properties (e.g., "type={'platform'}", "shape='square'")
-  const props: Record<string, string | number | boolean> = {}
-
-  for (let i = propStartIndex; i < segments.length; i++) {
-    const seg = segments[i]
-    if (!seg) continue
-
-    const eqIdx = seg.indexOf('=')
-    if (eqIdx === -1) {
-      props[seg.trim()] = true
-      continue
-    }
-
-    const key = seg.slice(0, eqIdx).trim()
-    const valRaw = seg.slice(eqIdx + 1).trim()
-    props[key] = parseValue(valRaw)
-  }
-
-  // Set size if not explicitly specified in the string
-  if (props.size == null && size != null) {
-    props.size = size
-  }
-
-  return <IconComponent {...props} />
+  size: number = 20,
+): ReactNode {
+  return <LobeIconResolver iconName={iconName ?? ''} size={size} />
 }
 
-// The selector uses the same installed icon registry as the renderer.
+// The selector uses the same lightweight metadata registry as the renderer.
 export function getLobeIconNames(): string[] {
-  const names = LobeIcons.toc.flatMap((icon) =>
-    icon.param.hasColor ? [icon.id, `${icon.id}.Color`] : [icon.id]
+  const names = (toc as TocEntry[]).flatMap((icon) =>
+    icon.param.hasColor ? [icon.id, `${icon.id}.Color`] : [icon.id],
   )
   return [...new Set([...names, ...Object.keys(CUSTOM_ICONS)])].sort()
 }

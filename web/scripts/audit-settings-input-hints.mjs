@@ -42,7 +42,7 @@ const SUMMARY = process.argv.includes('--summary')
 function sliceElement(src, startIdx) {
   // startIdx 指向 '<'；扫描到该元素的闭合 '>'（跳过嵌套花括号与字符串）。
   let i = startIdx
-  let depth = 0
+  const depth = 0
   while (i < src.length) {
     const ch = src[i]
     if (ch === "'" || ch === '"' || ch === '`') {
@@ -81,17 +81,17 @@ function nearbyLabel(before) {
     ...before.matchAll(/<FormLabel[^>]*>([\s\S]{0,120}?)<\/FormLabel>/g),
     ...before.matchAll(/<Label[^>]*>([\s\S]{0,120}?)<\/Label>/g),
   ]
-  const last = labels[labels.length - 1]
+  const last = labels.at(-1)
   if (!last) return ''
   return (
     last[1]
       // 把 `{t('文案')}` 里的引号文案取出来，而不是连同表达式一起删掉
       // （早先直接剥 `{...}` 会把文案本身也抹掉，导致清单里看不到字段名）。
-      .replace(/\{[^{}]*\}/g, (_, inner) => {
+      .replaceAll(/\{[^{}]*\}/g, (_, inner) => {
         const m = /'([^']*)'|"([^"]*)"/.exec(inner)
         return m ? m[1] ?? m[2] ?? '' : ''
       })
-      .replace(/\s+/g, ' ')
+      .replaceAll(/\s+/g, ' ')
       .trim()
   )
 }
@@ -116,7 +116,7 @@ for (const file of files.sort()) {
     for (const m of src.matchAll(re)) {
       // 跳过组件定义处（`function Xxx(`）与类型位置，只看 JSX 用法。
       const el = sliceElement(src, m.index)
-      if (!el.includes('/>') && !el.includes('</' + name + '>')) continue
+      if (!el.includes('/>') && !el.includes(`</${  name  }>`)) continue
       total++
       // disabled / readOnly 的控件无法被输入，示例没有意义（值由后端或逻辑给定），
       // 不计入缺失项，否则清单会混进根本不需要填的字段。

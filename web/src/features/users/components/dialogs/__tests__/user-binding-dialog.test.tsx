@@ -37,6 +37,7 @@ import {
 } from 'vitest'
 
 import { api } from '@/lib/api'
+import { formatUserId } from '@/lib/format'
 import { STATUS_QUERY_KEY } from '@/lib/status-query'
 import { useSystemConfigStore } from '@/stores/system-config-store'
 
@@ -182,7 +183,7 @@ describe('UserBindingDialog built-in bindings', () => {
       ['LinuxDO', 'linuxdo'],
     ] as const
 
-    await screen.findByText('bound-user (ID: 7)')
+    await screen.findByText(`bound-user (ID: ${formatUserId(7)})`)
     for (const [provider, bindingType] of expectedBindings) {
       fireEvent.click(findUnbindButton(provider))
       fireEvent.click(screen.getByRole('button', { name: 'Confirm Unbind' }))
@@ -224,7 +225,7 @@ describe('UserBindingDialog shared status updates', () => {
       <UserBindingDialog open userId={7} onOpenChange={() => undefined} />,
       queryClient
     )
-    await screen.findByText('bound-user (ID: 7)')
+    await screen.findByText(`bound-user (ID: ${formatUserId(7)})`)
     expect(screen.getByText('GitHub').parentElement).toHaveTextContent(
       'Disabled'
     )
@@ -270,7 +271,7 @@ describe('UserBindingDialog shared status updates', () => {
         <UserBindingDialog open userId={7} onOpenChange={() => undefined} />
       )
       await waitFor(() => expect(get).toHaveBeenCalledWith('/api/status'))
-      expect(screen.queryByText('bound-user (ID: 7)')).not.toBeInTheDocument()
+      expect(screen.queryByText(`bound-user (ID: ${formatUserId(7)})`)).not.toBeInTheDocument()
       await act(async () => {
         if (outcome === 'success') {
           resolveStatus({
@@ -278,7 +279,7 @@ describe('UserBindingDialog shared status updates', () => {
           })
         } else rejectStatus(new Error('Status unavailable'))
       })
-      await screen.findByText('bound-user (ID: 7)')
+      await screen.findByText(`bound-user (ID: ${formatUserId(7)})`)
       expect(screen.getByText('github-user')).toBeInTheDocument()
     }
   )
@@ -302,7 +303,7 @@ describe('UserBindingDialog shared status updates', () => {
       <UserBindingDialog open userId={7} onOpenChange={() => undefined} />,
       queryClient
     )
-    await screen.findByText('bound-user (ID: 7)')
+    await screen.findByText(`bound-user (ID: ${formatUserId(7)})`)
     await waitFor(() =>
       expect(queryClient.getQueryState(STATUS_QUERY_KEY)?.status).toBe('error')
     )
