@@ -56,6 +56,35 @@ import { useApiKeysColumns } from '../api-keys-columns'
 import { ApiKeysProvider } from '../api-keys-provider'
 import { ApiKeysTable } from '../api-keys-table'
 
+// The plaintext key reveal now requires a one-time step-up security proof. The
+// verification dialog UI is covered by dedicated tests; here we stub the hook so
+// the proof resolves immediately, letting this listing assert that the key
+// fetch carries the X-Security-Proof header and only happens on explicit copy.
+const mockRequestVerification = vi.fn()
+
+vi.mock('@/features/auth/secure-verification', async (importActual) => {
+  const actual = await importActual<typeof import('@/features/auth/secure-verification')>()
+  return {
+    ...actual,
+    useSecureVerification: () => ({
+      requestVerification: mockRequestVerification.mockResolvedValue({
+        proof_token: 'test-proof',
+      }),
+      requestLoginVerification: vi.fn(),
+      cancel: vi.fn(),
+      isActive: false,
+      dialogProps: {
+        state: { phase: 'idle' },
+        passkeyDomains: null,
+        onCancel: vi.fn(),
+        onRetry: vi.fn(),
+        onInputChange: vi.fn(),
+        onVerify: vi.fn(),
+      },
+    }),
+  }
+})
+
 const now = 1_700_000_000_000
 const key = apiKeySchema.parse({
   id: 7,
@@ -140,6 +169,7 @@ beforeEach(() => {
     .getState()
     .setConfig({ currency: { ...DEFAULT_CURRENCY_CONFIG } })
   vi.spyOn(api, 'get').mockResolvedValue({ data: { success: true, data: {} } })
+  mockRequestVerification.mockResolvedValue({ proof_token: 'test-proof' })
 })
 afterEach(() => {
   cleanup()
@@ -421,7 +451,7 @@ it('keeps expired status when the server refuses reactivation', async () => {
 })
 
 it.each([true, false])(
-  'fetches a full key only on explicit copy and honors permission success=%s',
+  'fetches a full key only after step-up verification and honors server permission success=%s',
   async (success) => {
     const user = userEvent.setup()
     const { post } = await renderKeysPage()
@@ -434,7 +464,15 @@ it.each([true, false])(
     await user.click(screen.getByRole('button', { name: 'Open menu' }))
     expect(post).not.toHaveBeenCalled()
     await user.click(screen.getByRole('menuitem', { name: 'Copy Key' }))
-    await waitFor(() => expect(post).toHaveBeenCalledWith('/api/token/7/key'))
+    // Revealing the plaintext key now requires a one-time step-up proof, sent
+    // as the X-Security-Proof header on the key fetch request.
+    await waitFor(() =>
+      expect(post).toHaveBeenCalledWith(
+        '/api/token/7/key',
+        undefined,
+        expect.objectContaining({ headers: { 'X-Security-Proof': 'test-proof' } })
+      )
+    )
     if (success) {
       await waitFor(() =>
         expect(copy).toHaveBeenCalledWith('sk-fake-key-for-test-only')
