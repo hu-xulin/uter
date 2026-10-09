@@ -82,10 +82,10 @@ func DiskETag(mount, dir string) func(c *gin.Context) {
 // a directory resolves to its `index.html`, and the result must stay inside
 // `dir`. Returns "" when the request does not map to a regular file.
 func resolveDiskFile(dir, mount, requestPath string) string {
-	if !strings.HasPrefix(requestPath, mount) {
+	rel, ok := strings.CutPrefix(requestPath, mount)
+	if !ok {
 		return ""
 	}
-	rel := strings.TrimPrefix(requestPath, mount)
 	if decoded, err := url.PathUnescape(rel); err == nil {
 		rel = decoded
 	}
@@ -142,7 +142,7 @@ func ifNoneMatch(header, etag string) bool {
 	if header == "" {
 		return false
 	}
-	for _, cand := range strings.Split(header, ",") {
+	for cand := range strings.SplitSeq(header, ",") {
 		cand = strings.TrimSpace(cand)
 		if cand == "" {
 			continue
