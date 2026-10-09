@@ -33,6 +33,12 @@ func GetFlowQuotaData(startTime int64, endTime int64, username string, userID in
 		return getRootFlowQuotaData(startTime, endTime, username, orgUsernames, filterUserIDs...)
 	case role >= common.RoleAdminUser:
 		return getAdminFlowQuotaData(startTime, endTime, username, orgUsernames, filterUserIDs...)
+	case len(orgUsernames) > 0:
+		// 组织管理员在平台上的角色是普通用户（RoleCommonUser），但其组织范围已通过
+		// orgUsernames 收敛。若仍走 default 的 getSelfFlowQuotaData(userID=0) 会得到
+		// 恒空的 WHERE user_id=0（BE-ORG-021：组织流量/统计端点对组织管理员恒返回空集）。
+		// 此处按组织范围走 admin 风格查询，与 orgMemberIds 收敛任务/绘图日志的写法一致。
+		return getAdminFlowQuotaData(startTime, endTime, username, orgUsernames, filterUserIDs...)
 	default:
 		return getSelfFlowQuotaData(startTime, endTime, userID)
 	}
