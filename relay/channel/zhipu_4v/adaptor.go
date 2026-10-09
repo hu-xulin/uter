@@ -8,6 +8,7 @@ import (
 
 	channelconstant "github.com/uter-ai/uter/constant"
 
+	"github.com/samber/lo"
 	"github.com/uter-ai/uter/relay/channel"
 	"github.com/uter-ai/uter/relay/channel/claude"
 	"github.com/uter-ai/uter/relay/channel/openai"
@@ -15,7 +16,6 @@ import (
 	relayconstant "github.com/uter-ai/uter/relay/constant"
 	"github.com/uter-ai/uter/relaykit/dto"
 	"github.com/uter-ai/uter/relaykit/types"
-	"github.com/samber/lo"
 
 	"github.com/gin-gonic/gin"
 )
