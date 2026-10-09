@@ -1,13 +1,27 @@
 package ionet
 
 import (
-	"encoding/json"
 	"fmt"
 	"strings"
 	"time"
 
 	"github.com/samber/lo"
+
+	"github.com/uter-ai/uter/common"
 )
+
+// validateContainerArgs returns a descriptive error when either the deployment
+// or container identifier is empty. It centralizes the argument checks shared
+// by the container API methods so the error messages stay consistent.
+func validateContainerArgs(deploymentID, containerID string) error {
+	if deploymentID == "" {
+		return fmt.Errorf("deployment ID cannot be empty")
+	}
+	if containerID == "" {
+		return fmt.Errorf("container ID cannot be empty")
+	}
+	return nil
+}
 
 // ListContainers retrieves all containers for a specific deployment
 func (c *Client) ListContainers(deploymentID string) (*ContainerList, error) {
@@ -32,11 +46,8 @@ func (c *Client) ListContainers(deploymentID string) (*ContainerList, error) {
 
 // GetContainerDetails retrieves detailed information about a specific container
 func (c *Client) GetContainerDetails(deploymentID, containerID string) (*Container, error) {
-	if deploymentID == "" {
-		return nil, fmt.Errorf("deployment ID cannot be empty")
-	}
-	if containerID == "" {
-		return nil, fmt.Errorf("container ID cannot be empty")
+	if err := validateContainerArgs(deploymentID, containerID); err != nil {
+		return nil, err
 	}
 
 	endpoint := fmt.Sprintf("/deployment/%s/container/%s", deploymentID, containerID)
@@ -57,11 +68,8 @@ func (c *Client) GetContainerDetails(deploymentID, containerID string) (*Contain
 
 // GetContainerJobs retrieves containers jobs for a specific container (similar to containers endpoint)
 func (c *Client) GetContainerJobs(deploymentID, containerID string) (*ContainerList, error) {
-	if deploymentID == "" {
-		return nil, fmt.Errorf("deployment ID cannot be empty")
-	}
-	if containerID == "" {
-		return nil, fmt.Errorf("container ID cannot be empty")
+	if err := validateContainerArgs(deploymentID, containerID); err != nil {
+		return nil, err
 	}
 
 	endpoint := fmt.Sprintf("/deployment/%s/containers-jobs/%s", deploymentID, containerID)
@@ -81,14 +89,11 @@ func (c *Client) GetContainerJobs(deploymentID, containerID string) (*ContainerL
 
 // buildLogEndpoint constructs the request path for fetching logs
 func buildLogEndpoint(deploymentID, containerID string, opts *GetLogsOptions) (string, error) {
-	if deploymentID == "" {
-		return "", fmt.Errorf("deployment ID cannot be empty")
-	}
-	if containerID == "" {
-		return "", fmt.Errorf("container ID cannot be empty")
+	if err := validateContainerArgs(deploymentID, containerID); err != nil {
+		return "", err
 	}
 
-	params := make(map[string]interface{})
+	params := make(map[string]any)
 
 	if opts != nil {
 		if opts.Level != "" {
@@ -166,11 +171,8 @@ func (c *Client) GetContainerLogsRaw(deploymentID, containerID string, opts *Get
 // StreamContainerLogs streams real-time logs for a specific container
 // This method uses a callback function to handle incoming log entries
 func (c *Client) StreamContainerLogs(deploymentID, containerID string, opts *GetLogsOptions, callback func(*LogEntry) error) error {
-	if deploymentID == "" {
-		return fmt.Errorf("deployment ID cannot be empty")
-	}
-	if containerID == "" {
-		return fmt.Errorf("container ID cannot be empty")
+	if err := validateContainerArgs(deploymentID, containerID); err != nil {
+		return err
 	}
 	if callback == nil {
 		return fmt.Errorf("callback function cannot be nil")
@@ -230,11 +232,8 @@ func (c *Client) StreamContainerLogs(deploymentID, containerID string, opts *Get
 
 // RestartContainer restarts a specific container (if supported by the API)
 func (c *Client) RestartContainer(deploymentID, containerID string) error {
-	if deploymentID == "" {
-		return fmt.Errorf("deployment ID cannot be empty")
-	}
-	if containerID == "" {
-		return fmt.Errorf("container ID cannot be empty")
+	if err := validateContainerArgs(deploymentID, containerID); err != nil {
+		return err
 	}
 
 	endpoint := fmt.Sprintf("/deployment/%s/container/%s/restart", deploymentID, containerID)
@@ -249,11 +248,8 @@ func (c *Client) RestartContainer(deploymentID, containerID string) error {
 
 // StopContainer stops a specific container (if supported by the API)
 func (c *Client) StopContainer(deploymentID, containerID string) error {
-	if deploymentID == "" {
-		return fmt.Errorf("deployment ID cannot be empty")
-	}
-	if containerID == "" {
-		return fmt.Errorf("container ID cannot be empty")
+	if err := validateContainerArgs(deploymentID, containerID); err != nil {
+		return err
 	}
 
 	endpoint := fmt.Sprintf("/deployment/%s/container/%s/stop", deploymentID, containerID)
@@ -268,17 +264,14 @@ func (c *Client) StopContainer(deploymentID, containerID string) error {
 
 // ExecuteInContainer executes a command in a specific container (if supported by the API)
 func (c *Client) ExecuteInContainer(deploymentID, containerID string, command []string) (string, error) {
-	if deploymentID == "" {
-		return "", fmt.Errorf("deployment ID cannot be empty")
-	}
-	if containerID == "" {
-		return "", fmt.Errorf("container ID cannot be empty")
+	if err := validateContainerArgs(deploymentID, containerID); err != nil {
+		return "", err
 	}
 	if len(command) == 0 {
 		return "", fmt.Errorf("command cannot be empty")
 	}
 
-	reqBody := map[string]interface{}{
+	reqBody := map[string]any{
 		"command": command,
 	}
 
@@ -289,8 +282,8 @@ func (c *Client) ExecuteInContainer(deploymentID, containerID string, command []
 		return "", fmt.Errorf("failed to execute command in container: %w", err)
 	}
 
-	var result map[string]interface{}
-	if err := json.Unmarshal(resp.Body, &result); err != nil {
+	var result map[string]any
+	if err := common.Unmarshal(resp.Body, &result); err != nil {
 		return "", fmt.Errorf("failed to parse execution result: %w", err)
 	}
 

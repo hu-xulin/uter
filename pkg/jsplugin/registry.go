@@ -587,7 +587,17 @@ func (r *Registry) ReplaceOverrides(plugins []*LoadedPlugin) error {
 
 	r.mu.Lock()
 	defer r.mu.Unlock()
-	if samePluginMap(r.override, overridePlugins) {
+	if func() bool {
+		if len(r.override) != len(overridePlugins) {
+			return false
+		}
+		for key, plugin := range r.override {
+			if overridePlugins[key] != plugin {
+				return false
+			}
+		}
+		return true
+	}() {
 		return nil
 	}
 	retainCurrent := pluginMapKeys(overridePlugins)
@@ -922,18 +932,6 @@ func clonePluginMap(source map[string]*LoadedPlugin) map[string]*LoadedPlugin {
 	clone := make(map[string]*LoadedPlugin, len(source))
 	maps.Copy(clone, source)
 	return clone
-}
-
-func samePluginMap(left, right map[string]*LoadedPlugin) bool {
-	if len(left) != len(right) {
-		return false
-	}
-	for key, plugin := range left {
-		if right[key] != plugin {
-			return false
-		}
-	}
-	return true
 }
 
 func pluginMapKeys(plugins map[string]*LoadedPlugin) map[string]struct{} {
