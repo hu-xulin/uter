@@ -187,17 +187,19 @@ stop_port() {
 
 PIDS=()
 TAILERS=()
+OWNED_PORTS=()   # 本脚本亲手拉起并占用的端口，供 cleanup 精确兜底
 
-# 🔑 架构：服务本体 → 直接写自己的日志文件（干净的独立进程，信号能直达）；
+# 🔑 架构：服务本体→ 直接写自己的日志文件（干净的独立进程，信号能直达）；
 #    终端显示由 tail -F 聚合 + sed 加标签。
 # ⚠️ 早先版本用 `服务 | sed | tee &`，$! 拿到的是 tee 的 pid，Ctrl+C 时信号被
 #    tee 吃掉，最上游的服务残留（实测 uter 停不掉）。日志+聚合分离可彻底避免。
-# 用法: start_svc <tag> <color> <logfile> <cmd...>
+# 用法: start_svc <tag> <color> <logfile> <port> <cmd...>
 start_svc() {
-  local tag="$1" color="$2" logfile="$3"; shift 3
+  local tag="$1" color="$2" logfile="$3" port="$4"; shift 4
   : > "$logfile"
   ( "$@" >>"$logfile" 2>&1 ) &
   PIDS+=($!)
+  OWNED_PORTS+=("$port")
   # 聚合到终端：加颜色标签
   tail -n 0 -F "$logfile" 2>/dev/null | prefix "$tag" "$color" &
   TAILERS+=($!)
@@ -220,10 +222,24 @@ cleanup() {
   for p in "${PIDS[@]:-}"; do
     [ -n "$p" ] && kill -9 "$p" 2>/dev/null || true
   done
-  # 3) 兜底按端口清理，确保不残留
-  for port in 3000 3200 3500 3510; do
-    pids="$(lsof -nP -iTCP:"$port" -sTCP:LISTEN -t 2>/dev/null || true)"
-    [ -n "$pids" ] && kill -9 $pids 2>/dev/null || true
+  # 3) 兜底：只清理由**本脚本亲手拉起**的端口，绝不按端口无差别清扫
+  # ⚠️ 早期版本无条件 `for port in 3000 3200 3500 3510; do kill -9 $(lsof ...)`，
+  #    这会误杀**别的** dev-all.sh 实例持有的服务——实测清理一个探针进程时，
+  #    它的 cleanup 把另一个正常实例的四个服务一起带走了。端口是全局资源，
+  #    「我退出了」不等于「这个端口归我」。因此这里逐个比对：只有当端口上的
+  #    监听进程确实属于本脚本启动的 PID 集合时才终止它。
+  for i in "${!OWNED_PORTS[@]}"; do
+    local_port="${OWNED_PORTS[$i]}"
+    on_port="$(lsof -nP -iTCP:"$local_port" -sTCP:LISTEN -t 2>/dev/null || true)"
+    [ -n "$on_port" ] || continue
+    for opid in $on_port; do
+      for mine in "${PIDS[@]:-}"; do
+        if [ "$opid" = "$mine" ]; then
+          kill -9 "$opid" 2>/dev/null || true
+          break
+        fi
+      done
+    done
   done
   echo "${C_DIM}全部已停止。日志留在 $LOGDIR${C_OFF}"
   exit 0
@@ -277,26 +293,28 @@ echo ""
 # ---- 1. uter：AI 网关本体 ----
 cd "$ROOT" || exit 1
 if ! port_busy 3000; then
-  start_svc "uter" "$C_UTER" "$LOGDIR/uter.log" ./uter-bin
+  start_svc "uter" "$C_UTER" "$LOGDIR/uter.log" 3000 ./uter-bin
 fi
 
 # ---- 2. uter-cs：智能客服 ----
 cd "$UTER_CS" || exit 1
 if ! port_busy 3200; then
-  start_svc "cs" "$C_CS" "$LOGDIR/uter-cs.log" env PORT=3200 "$NODE" server/index.js
+  start_svc "cs" "$C_CS" "$LOGDIR/uter-cs.log" 3200 \
+    env PORT=3200 "$NODE" server/index.js
 fi
 
 # ---- 3. rag-shim：RAG 测试桩 ----
 cd "$RAG_SHIM" || exit 1
 if ! port_busy 3500; then
-  start_svc "shim" "$C_SHIM" "$LOGDIR/rag-shim.log" env PORT=3500 "$NODE" server.js
+  start_svc "shim" "$C_SHIM" "$LOGDIR/rag-shim.log" 3500 \
+    env PORT=3500 "$NODE" server.js
 fi
 
 # ---- 4. rag-adapter：RAG 适配器（依赖本地语料 + SF Key）----
 cd "$RAG_ADAPTER" || exit 1
 if ! port_busy 3510; then
   # CS_BASE 留空→ 只用本地语料，不去打客服的鉴权接口（实测 401 会回退，纯浪费延迟）
-  start_svc "adapter" "$C_ADAPTER" "$LOGDIR/rag-adapter.log" \
+  start_svc "adapter" "$C_ADAPTER" "$LOGDIR/rag-adapter.log" 3510 \
     env SF_KEY="$SF_KEY" LOCAL_CORPUS="$LOCAL_CORPUS" CS_BASE="" PORT=3510 \
     "$NODE" server.js
 fi
