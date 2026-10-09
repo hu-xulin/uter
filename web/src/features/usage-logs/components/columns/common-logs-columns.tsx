@@ -733,12 +733,12 @@ export function useCommonLogsColumns(
               <div className='flex flex-col gap-0.5 text-[11px]'>
                 {cacheReadTokens > 0 && (
                   <span className='text-muted-foreground/60'>
-                    {t('Cache Read Short')} ↓ {cacheReadTokens.toLocaleString()}
+                    {t('Cache Read')} ↓ {cacheReadTokens.toLocaleString()}
                   </span>
                 )}
                 {cacheWriteTokens > 0 && (
                   <span className='text-muted-foreground/60'>
-                    {t('Cache Write Short')} ↑ {cacheWriteTokens.toLocaleString()}
+                    {t('Cache Write')} ↑ {cacheWriteTokens.toLocaleString()}
                   </span>
                 )}
               </div>

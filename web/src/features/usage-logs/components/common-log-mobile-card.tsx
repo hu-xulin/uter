@@ -302,12 +302,12 @@ export function CommonLogMobileCard<TData>(props: {
           </span>
           {cacheRead > 0 && (
             <span>
-              {t('Cache Read Short')} ↓ {cacheRead.toLocaleString()}
+              {t('Cache Read')} ↓ {cacheRead.toLocaleString()}
             </span>
           )}
           {cacheWrite > 0 && (
             <span>
-              {t('Cache Write Short')} ↑ {cacheWrite.toLocaleString()}
+              {t('Cache Write')} ↑ {cacheWrite.toLocaleString()}
             </span>
           )}
         </div>
