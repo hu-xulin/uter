@@ -18,6 +18,8 @@ import (
 
 	"github.com/uter-ai/uter/common"
 
+	"github.com/gin-gonic/gin"
+	"github.com/tidwall/gjson"
 	"github.com/uter-ai/uter/constant"
 	"github.com/uter-ai/uter/dto"
 	"github.com/uter-ai/uter/logger"
@@ -26,8 +28,6 @@ import (
 	relayconstant "github.com/uter-ai/uter/relay/constant"
 	"github.com/uter-ai/uter/relaykit/types"
 	"github.com/uter-ai/uter/service"
-	"github.com/gin-gonic/gin"
-	"github.com/tidwall/gjson"
 )
 
 const contextKeyTaskPluginEndpointModel = "task_plugin_endpoint_model_request"

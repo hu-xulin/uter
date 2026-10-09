@@ -6,14 +6,14 @@ import (
 
 	"github.com/uter-ai/uter/common"
 
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"github.com/uter-ai/uter/model"
 	"github.com/uter-ai/uter/pkg/jsplugin"
 	builtinplugins "github.com/uter-ai/uter/plugins"
 	"github.com/uter-ai/uter/relay/channel"
 	taskplugin "github.com/uter-ai/uter/relay/channel/task/jsplugin"
 	relaycommon "github.com/uter-ai/uter/relay/common"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 func TestHailuoResponsesProtocol(t *testing.T) {

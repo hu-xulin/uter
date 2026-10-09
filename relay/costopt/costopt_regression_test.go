@@ -6,9 +6,9 @@ import (
 
 	costoptcfg "github.com/uter-ai/uter/setting/costopt"
 
+	"github.com/stretchr/testify/require"
 	relaycommon "github.com/uter-ai/uter/relay/common"
 	"github.com/uter-ai/uter/relaykit/dto"
-	"github.com/stretchr/testify/require"
 )
 
 // CI 成本回归：对确定性降本逻辑做断言，防止"省钱逻辑"回退（token 当延迟管）。

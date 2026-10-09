@@ -9,8 +9,8 @@ import (
 
 	"github.com/uter-ai/uter/service"
 
-	"github.com/uter-ai/uter/setting/system_setting"
 	"github.com/gin-gonic/gin"
+	"github.com/uter-ai/uter/setting/system_setting"
 )
 
 const TaskArtifactAccessContextKey = "task_artifact_access"

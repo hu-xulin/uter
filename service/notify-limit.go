@@ -8,8 +8,8 @@ import (
 
 	"github.com/uter-ai/uter/common"
 
-	"github.com/uter-ai/uter/constant"
 	"github.com/bytedance/gopkg/util/gopool"
+	"github.com/uter-ai/uter/constant"
 )
 
 // notifyLimitStore is used for in-memory rate limiting when Redis is disabled

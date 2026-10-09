@@ -10,11 +10,11 @@ import (
 
 	"github.com/uter-ai/uter/common"
 
+	"github.com/gin-gonic/gin"
+	"github.com/stretchr/testify/require"
 	relaycommon "github.com/uter-ai/uter/relay/common"
 	relayconstant "github.com/uter-ai/uter/relay/constant"
 	"github.com/uter-ai/uter/relaykit/dto"
-	"github.com/gin-gonic/gin"
-	"github.com/stretchr/testify/require"
 )
 
 // TestConvertImageEditRequestMultipart verifies that ConvertImageRequest

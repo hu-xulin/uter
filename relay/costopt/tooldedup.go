@@ -1,8 +1,8 @@
 package costopt
 
 import (
-	costoptcfg "github.com/uter-ai/uter/setting/costopt"
 	"github.com/uter-ai/uter/relaykit/dto"
+	costoptcfg "github.com/uter-ai/uter/setting/costopt"
 )
 
 // ApplyToolCallDedup 去除对话中连续重复的相同工具结果（role=tool 且内容相同），

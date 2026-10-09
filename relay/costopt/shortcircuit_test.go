@@ -5,10 +5,10 @@ import (
 
 	costoptcfg "github.com/uter-ai/uter/setting/costopt"
 
-	relaycommon "github.com/uter-ai/uter/relay/common"
-	"github.com/uter-ai/uter/relaykit/dto"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	relaycommon "github.com/uter-ai/uter/relay/common"
+	"github.com/uter-ai/uter/relaykit/dto"
 )
 
 // withShortCircuitConfig 临时配置短路规则，结束后还原全局配置。

@@ -6,9 +6,9 @@ import (
 
 	relaycommon "github.com/uter-ai/uter/relay/common"
 
+	"github.com/gin-gonic/gin"
 	kitreasoning "github.com/uter-ai/uter/relaykit/relayconvert/reasoning"
 	"github.com/uter-ai/uter/relaykit/types"
-	"github.com/gin-gonic/gin"
 )
 
 func newConvertRequestFailedError(c *gin.Context, info *relaycommon.RelayInfo, err error) *types.UterError {

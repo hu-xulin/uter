@@ -55,8 +55,8 @@ func TestLocalizePricingDescriptions(t *testing.T) {
 // 污染后续所有访客——这是多语言接口最典型的串味 bug。
 func TestLocalizePricingDescriptionsDoesNotMutateInput(t *testing.T) {
 	pricing := []model.Pricing{{
-		ModelName:   "gpt-4o",
-		Description: "English",
+		ModelName:    "gpt-4o",
+		Description:  "English",
 		Descriptions: map[string]string{"en": "English", "zh": "中文"},
 	}}
 	localized := localizePricingDescriptions(pricing, "zh")

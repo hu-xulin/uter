@@ -6,8 +6,8 @@ import (
 
 	"github.com/uter-ai/uter/logger"
 
-	"github.com/uter-ai/uter/relaykit/types"
 	"github.com/gin-gonic/gin"
+	"github.com/uter-ai/uter/relaykit/types"
 )
 
 const maxConversionDiagnostics = 32

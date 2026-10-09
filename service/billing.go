@@ -7,9 +7,9 @@ import (
 	"github.com/uter-ai/uter/logger"
 	"github.com/uter-ai/uter/model"
 
+	"github.com/gin-gonic/gin"
 	relaycommon "github.com/uter-ai/uter/relay/common"
 	"github.com/uter-ai/uter/relaykit/types"
-	"github.com/gin-gonic/gin"
 )
 
 const (

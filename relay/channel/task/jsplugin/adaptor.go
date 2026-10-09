@@ -23,6 +23,7 @@ import (
 
 	"github.com/uter-ai/uter/common"
 
+	"github.com/gin-gonic/gin"
 	"github.com/uter-ai/uter/constant"
 	"github.com/uter-ai/uter/dto"
 	"github.com/uter-ai/uter/logger"
@@ -32,7 +33,6 @@ import (
 	relaycommon "github.com/uter-ai/uter/relay/common"
 	kitdto "github.com/uter-ai/uter/relaykit/dto"
 	"github.com/uter-ai/uter/service"
-	"github.com/gin-gonic/gin"
 )
 
 type requestDescriptor struct {

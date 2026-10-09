@@ -3,9 +3,9 @@ package service
 import (
 	relaycommon "github.com/uter-ai/uter/relay/common"
 
+	"github.com/gin-gonic/gin"
 	"github.com/uter-ai/uter/relaykit/relayconvert"
 	"github.com/uter-ai/uter/relaykit/types"
-	"github.com/gin-gonic/gin"
 )
 
 func ConvertResponse(c *gin.Context, info *relaycommon.RelayInfo, target types.RelayFormat, response any) (*relayconvert.ResponseResult, error) {

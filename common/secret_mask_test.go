@@ -80,7 +80,7 @@ func TestIsSecretOptionKey(t *testing.T) {
 
 	// 公开值必须按普通文本原样展示，否则管理员无法核对。
 	publicKeys := []string{
-		"TurnstileSiteKey",  // Cloudflare设计 上就是公开值
+		"TurnstileSiteKey", // Cloudflare设计 上就是公开值
 		"GitHubClientId",
 		"GitHubOAuthEnabled",
 		"costopt_setting.cdn_asset_base_url",

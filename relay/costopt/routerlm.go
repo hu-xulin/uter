@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"strings"
 
-	costoptcfg "github.com/uter-ai/uter/setting/costopt"
 	relaycommon "github.com/uter-ai/uter/relay/common"
 	"github.com/uter-ai/uter/relaykit/dto"
+	costoptcfg "github.com/uter-ai/uter/setting/costopt"
 )
 
 // ApplyRouterLM 用小型 router 模型替用户选最优上游模型，重写 req.Model。

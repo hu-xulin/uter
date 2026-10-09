@@ -36,56 +36,56 @@ type volcSignRequest struct {
 func injectGlobals(runtime *sobek.Runtime, identity func() string, now func() time.Time, logOutput func(string)) error {
 	utils := map[string]any{
 		"hasCapability": HasCapability,
-	"json": map[string]any{
-		"clone": func(call sobek.FunctionCall) sobek.Value {
-			if sobek.IsUndefined(call.Argument(0)) {
-				panic(runtime.NewTypeError("json.clone requires a JSON value"))
-			}
-			budget := &jsonStateBudget{ctx: context.Background(), bytes: MaxJSONToolBytes, nodes: maxJSONToolNodes}
-			value, err := newJSONStateNode(call.Argument(0), 0, budget)
-			if err != nil {
-				panic(runtime.NewTypeError("json.clone: %s", err))
-			}
-			cloned, err := value.jsValue(runtime)
-			if err != nil {
-				panic(runtime.NewGoError(err))
-			}
-			return cloned
-		},
-		// order re-emits a JSON value as a fresh object/array whose object keys
-		// are sorted by the optional priority map. Keys absent from the map keep
-		// their original insertion order and are emitted after the mapped ones.
-		// It is the host-side backing for the json-order@1 capability.
-		"order": func(call sobek.FunctionCall) sobek.Value {
-			if sobek.IsUndefined(call.Argument(0)) {
-				panic(runtime.NewTypeError("json.order requires a JSON value"))
-			}
-			orderMap := map[string]int{}
-			if !sobek.IsUndefined(call.Argument(1)) {
-				arg := call.Argument(1)
-				object, ok := arg.(*sobek.Object)
-				if !ok || object.ClassName() != "Object" {
-					panic(runtime.NewTypeError("json.order order map must be a plain object"))
+		"json": map[string]any{
+			"clone": func(call sobek.FunctionCall) sobek.Value {
+				if sobek.IsUndefined(call.Argument(0)) {
+					panic(runtime.NewTypeError("json.clone requires a JSON value"))
 				}
-				for _, key := range object.Keys() {
-					switch number := object.Get(key).Export().(type) {
-					case float64:
-						orderMap[key] = int(number)
-					case int64:
-						orderMap[key] = int(number)
-					case int:
-						orderMap[key] = number
+				budget := &jsonStateBudget{ctx: context.Background(), bytes: MaxJSONToolBytes, nodes: maxJSONToolNodes}
+				value, err := newJSONStateNode(call.Argument(0), 0, budget)
+				if err != nil {
+					panic(runtime.NewTypeError("json.clone: %s", err))
+				}
+				cloned, err := value.jsValue(runtime)
+				if err != nil {
+					panic(runtime.NewGoError(err))
+				}
+				return cloned
+			},
+			// order re-emits a JSON value as a fresh object/array whose object keys
+			// are sorted by the optional priority map. Keys absent from the map keep
+			// their original insertion order and are emitted after the mapped ones.
+			// It is the host-side backing for the json-order@1 capability.
+			"order": func(call sobek.FunctionCall) sobek.Value {
+				if sobek.IsUndefined(call.Argument(0)) {
+					panic(runtime.NewTypeError("json.order requires a JSON value"))
+				}
+				orderMap := map[string]int{}
+				if !sobek.IsUndefined(call.Argument(1)) {
+					arg := call.Argument(1)
+					object, ok := arg.(*sobek.Object)
+					if !ok || object.ClassName() != "Object" {
+						panic(runtime.NewTypeError("json.order order map must be a plain object"))
+					}
+					for _, key := range object.Keys() {
+						switch number := object.Get(key).Export().(type) {
+						case float64:
+							orderMap[key] = int(number)
+						case int64:
+							orderMap[key] = int(number)
+						case int:
+							orderMap[key] = number
+						}
 					}
 				}
-			}
-			budget := &jsonStateBudget{ctx: context.Background(), bytes: MaxJSONToolBytes, nodes: maxJSONToolNodes}
-			result, err := orderJSONTree(runtime, call.Argument(0), orderMap, 0, budget)
-			if err != nil {
-				panic(runtime.NewTypeError("json.order: %s", err))
-			}
-			return result
+				budget := &jsonStateBudget{ctx: context.Background(), bytes: MaxJSONToolBytes, nodes: maxJSONToolNodes}
+				result, err := orderJSONTree(runtime, call.Argument(0), orderMap, 0, budget)
+				if err != nil {
+					panic(runtime.NewTypeError("json.order: %s", err))
+				}
+				return result
+			},
 		},
-	},
 		"unixNow": func() int64 { return now().Unix() },
 		"jwtSignHS256": func(claims map[string]any, secret string) (string, error) {
 			return jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims(claims)).SignedString([]byte(secret))

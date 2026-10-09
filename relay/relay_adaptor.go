@@ -6,6 +6,7 @@ import (
 
 	"github.com/uter-ai/uter/constant"
 
+	"github.com/gin-gonic/gin"
 	pluginruntime "github.com/uter-ai/uter/pkg/jsplugin"
 	_ "github.com/uter-ai/uter/plugins"
 	"github.com/uter-ai/uter/relay/channel"
@@ -45,7 +46,6 @@ import (
 	"github.com/uter-ai/uter/relay/channel/xunfei"
 	"github.com/uter-ai/uter/relay/channel/zhipu"
 	"github.com/uter-ai/uter/relay/channel/zhipu_4v"
-	"github.com/gin-gonic/gin"
 )
 
 func GetAdaptor(apiType int) channel.Adaptor {

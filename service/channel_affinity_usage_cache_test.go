@@ -8,9 +8,9 @@ import (
 
 	"github.com/uter-ai/uter/relaykit/dto"
 
-	"github.com/uter-ai/uter/relaykit/types"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/require"
+	"github.com/uter-ai/uter/relaykit/types"
 )
 
 func buildChannelAffinityStatsContextForTest(ruleName, usingGroup, keyFP string) *gin.Context {

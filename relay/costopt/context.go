@@ -84,8 +84,8 @@ func summarizeOverflow(ctx context.Context, cfg *costoptcfg.CostOptSetting, over
 	}
 
 	payload, err := json.Marshal(map[string]any{
-		"model":    model,
-		"messages": []map[string]any{{"role": "user", "content": b.String()}},
+		"model":      model,
+		"messages":   []map[string]any{{"role": "user", "content": b.String()}},
 		"max_tokens": 512,
 	})
 	if err != nil {

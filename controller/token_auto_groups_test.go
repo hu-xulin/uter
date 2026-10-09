@@ -8,13 +8,13 @@ import (
 
 	"github.com/uter-ai/uter/common"
 
+	"github.com/gin-gonic/gin"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"github.com/uter-ai/uter/constant"
 	"github.com/uter-ai/uter/model"
 	"github.com/uter-ai/uter/setting"
 	"github.com/uter-ai/uter/setting/ratio_setting"
-	"github.com/gin-gonic/gin"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 func configureTokenAutoGroupsTest(t *testing.T, maxCount string, autoGroups string) {

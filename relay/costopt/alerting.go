@@ -10,8 +10,8 @@ import (
 	"github.com/uter-ai/uter/common"
 	costoptcfg "github.com/uter-ai/uter/setting/costopt"
 
-	relaycommon "github.com/uter-ai/uter/relay/common"
 	"github.com/go-redis/redis/v8"
+	relaycommon "github.com/uter-ai/uter/relay/common"
 )
 
 const spikeNamespace = "uter:spike:"

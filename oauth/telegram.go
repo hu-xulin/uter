@@ -14,10 +14,10 @@ import (
 
 	"github.com/uter-ai/uter/common"
 
-	"github.com/uter-ai/uter/model"
-	"github.com/uter-ai/uter/setting/system_setting"
 	"github.com/coreos/go-oidc/v3/oidc"
 	"github.com/gin-gonic/gin"
+	"github.com/uter-ai/uter/model"
+	"github.com/uter-ai/uter/setting/system_setting"
 	"golang.org/x/oauth2"
 )
 

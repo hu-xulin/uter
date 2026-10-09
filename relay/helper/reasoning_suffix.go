@@ -6,13 +6,13 @@ import (
 
 	relaycommon "github.com/uter-ai/uter/relay/common"
 
+	"github.com/gin-gonic/gin"
 	"github.com/uter-ai/uter/relaykit/dto"
 	"github.com/uter-ai/uter/relaykit/relayconvert/convmeta"
 	"github.com/uter-ai/uter/relaykit/relayconvert/reasoning"
 	"github.com/uter-ai/uter/relaykit/types"
 	"github.com/uter-ai/uter/setting/model_setting"
 	hostreasoning "github.com/uter-ai/uter/setting/reasoning"
-	"github.com/gin-gonic/gin"
 )
 
 // ApplyReasoningModelSuffix parses host-private reasoning suffixes from the

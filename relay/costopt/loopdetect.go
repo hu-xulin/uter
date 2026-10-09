@@ -3,8 +3,8 @@ package costopt
 import (
 	"strings"
 
-	costoptcfg "github.com/uter-ai/uter/setting/costopt"
 	"github.com/uter-ai/uter/relaykit/dto"
+	costoptcfg "github.com/uter-ai/uter/setting/costopt"
 )
 
 // DetectLoop 检测最近是否有 >= threshold 条连续相同的用户消息（Agent 死循环信号）。

@@ -6,9 +6,9 @@ import (
 
 	"github.com/uter-ai/uter/common"
 
+	"github.com/gin-gonic/gin"
 	"github.com/uter-ai/uter/i18n"
 	"github.com/uter-ai/uter/model"
-	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
 

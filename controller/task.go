@@ -10,6 +10,7 @@ import (
 
 	"github.com/uter-ai/uter/common"
 
+	"github.com/gin-gonic/gin"
 	"github.com/uter-ai/uter/constant"
 	"github.com/uter-ai/uter/dto"
 	"github.com/uter-ai/uter/middleware"
@@ -19,7 +20,6 @@ import (
 	relaycommon "github.com/uter-ai/uter/relay/common"
 	"github.com/uter-ai/uter/service"
 	"github.com/uter-ai/uter/types"
-	"github.com/gin-gonic/gin"
 )
 
 type taskArtifactResponse struct {

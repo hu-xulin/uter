@@ -5,11 +5,11 @@ import (
 	"encoding/json"
 	"time"
 
-	costoptcfg "github.com/uter-ai/uter/setting/costopt"
+	"github.com/go-redis/redis/v8"
 	"github.com/uter-ai/uter/common"
 	relaycommon "github.com/uter-ai/uter/relay/common"
 	"github.com/uter-ai/uter/relaykit/dto"
-	"github.com/go-redis/redis/v8"
+	costoptcfg "github.com/uter-ai/uter/setting/costopt"
 )
 
 const semVecListKey = "uter:sem_vecs"

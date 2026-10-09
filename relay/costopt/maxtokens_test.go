@@ -5,11 +5,11 @@ import (
 
 	costoptcfg "github.com/uter-ai/uter/setting/costopt"
 
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"github.com/uter-ai/uter/constant"
 	relaycommon "github.com/uter-ai/uter/relay/common"
 	"github.com/uter-ai/uter/relaykit/dto"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 // withMaxTokensConfig 临时配置 max_tokens 上限，结束后还原。

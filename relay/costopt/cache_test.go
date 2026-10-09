@@ -9,12 +9,12 @@ import (
 	"github.com/uter-ai/uter/common"
 	costoptcfg "github.com/uter-ai/uter/setting/costopt"
 
-	relaycommon "github.com/uter-ai/uter/relay/common"
-	"github.com/uter-ai/uter/relaykit/dto"
 	"github.com/alicebob/miniredis/v2"
 	"github.com/go-redis/redis/v8"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	relaycommon "github.com/uter-ai/uter/relay/common"
+	"github.com/uter-ai/uter/relaykit/dto"
 )
 
 // useCostOptMiniRedis 启动内存 Redis 并替换 common.RDB，测试结束后还原。

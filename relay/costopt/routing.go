@@ -11,7 +11,7 @@ import (
 // ApplyComplexityRouting 轻量复杂度路由：对未显式固定模型的简单任务，启发式降级到便宜模型。
 // 保守策略：仅当 FromModels 为空（任意源模型）或命中列表，且启发式判定为"简单"才改写 Model。
 // 不改 max_tokens，避免影响依赖长输出的客户端；改写后仍走正常计费/缓存路径。
-func ApplyComplexityRouting(req *dto.GeneralOpenAIRequest, info interface{}) bool {
+func ApplyComplexityRouting(req *dto.GeneralOpenAIRequest, info any) bool {
 	cfg := costoptcfg.GetCostOptSetting()
 	if !cfg.ComplexityRoutingEnabled || cfg.ComplexityRoutingCheapModel == "" {
 		return false

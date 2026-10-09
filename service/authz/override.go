@@ -6,8 +6,8 @@ import (
 
 	"github.com/uter-ai/uter/common"
 
-	"github.com/uter-ai/uter/model"
 	"github.com/casbin/casbin/v2"
+	"github.com/uter-ai/uter/model"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )

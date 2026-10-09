@@ -5,8 +5,8 @@ import (
 
 	"github.com/uter-ai/uter/common"
 
-	"github.com/uter-ai/uter/constant"
 	"github.com/stretchr/testify/assert"
+	"github.com/uter-ai/uter/constant"
 )
 
 func TestWanEndpointsDistinguishImagesFromVideos(t *testing.T) {

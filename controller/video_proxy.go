@@ -17,12 +17,12 @@ import (
 
 	"github.com/uter-ai/uter/common"
 
+	"github.com/gin-gonic/gin"
 	"github.com/uter-ai/uter/logger"
 	"github.com/uter-ai/uter/model"
 	relaychannel "github.com/uter-ai/uter/relay/channel"
 	"github.com/uter-ai/uter/service"
 	"github.com/uter-ai/uter/setting/system_setting"
-	"github.com/gin-gonic/gin"
 	"golang.org/x/net/http/httpguts"
 )
 

@@ -6,8 +6,8 @@ import (
 
 	"github.com/uter-ai/uter/common"
 
-	"github.com/uter-ai/uter/model"
 	"github.com/gin-gonic/gin"
+	"github.com/uter-ai/uter/model"
 )
 
 func GetModelPricingConfig(c *gin.Context) {

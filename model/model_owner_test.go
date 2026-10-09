@@ -6,8 +6,8 @@ import (
 
 	"github.com/uter-ai/uter/common"
 
-	"github.com/uter-ai/uter/constant"
 	"github.com/stretchr/testify/require"
+	"github.com/uter-ai/uter/constant"
 )
 
 func clearPreferredOwnerTables(t *testing.T) {

@@ -18,16 +18,16 @@ import (
 
 	"github.com/uter-ai/uter/common"
 
-	"github.com/uter-ai/uter/model"
-	"github.com/uter-ai/uter/oauth"
-	"github.com/uter-ai/uter/service"
-	"github.com/uter-ai/uter/setting/system_setting"
 	"github.com/fxamacker/cbor/v2"
 	"github.com/gin-gonic/gin"
 	"github.com/glebarez/sqlite"
 	"github.com/pquerna/otp/totp"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/uter-ai/uter/model"
+	"github.com/uter-ai/uter/oauth"
+	"github.com/uter-ai/uter/service"
+	"github.com/uter-ai/uter/setting/system_setting"
 	"gorm.io/gorm"
 )
 

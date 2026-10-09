@@ -6,10 +6,10 @@ import (
 
 	rootcommon "github.com/uter-ai/uter/common"
 
+	"github.com/gin-gonic/gin"
 	relaycommon "github.com/uter-ai/uter/relay/common"
 	"github.com/uter-ai/uter/relaykit/dto"
 	hostreasoning "github.com/uter-ai/uter/setting/reasoning"
-	"github.com/gin-gonic/gin"
 )
 
 func ModelMappedHelper(c *gin.Context, info *relaycommon.RelayInfo, request dto.Request) error {
