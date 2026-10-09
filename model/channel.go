@@ -413,8 +413,16 @@ func SearchChannels(keyword string, group string, model string, idSort bool, sor
 	baseQuery := DB.Model(&Channel{}).Omit("key")
 
 	// 构造WHERE子句
-	whereClause := "(id = ? OR name LIKE ? OR " + commonKeyCol + " = ? OR " + baseURLCol + " LIKE ?) AND " + modelsCol + " LIKE ?"
-	args := []any{common.String2Int(keyword), "%" + keyword + "%", keyword, "%" + keyword + "%", "%" + model + "%"}
+	keywordPattern, patternErr := likeContains(keyword)
+	if patternErr != nil {
+		return nil, patternErr
+	}
+	modelPattern, patternErr := likeContains(model)
+	if patternErr != nil {
+		return nil, patternErr
+	}
+	whereClause := "(id = ? OR name LIKE ? ESCAPE '!' OR " + commonKeyCol + " = ? OR " + baseURLCol + " LIKE ? ESCAPE '!') AND " + modelsCol + " LIKE ? ESCAPE '!'"
+	args := []any{common.String2Int(keyword), keywordPattern, keyword, keywordPattern, modelPattern}
 	baseQuery = ApplyChannelGroupFilter(baseQuery.Where(whereClause, args...), group)
 
 	// 执行查询
@@ -952,8 +960,16 @@ func SearchTags(keyword string, group string, model string, idSort bool) ([]*str
 	baseQuery := DB.Model(&Channel{}).Omit("key")
 
 	// 构造WHERE子句
-	whereClause := "(id = ? OR name LIKE ? OR " + commonKeyCol + " = ? OR " + baseURLCol + " LIKE ?) AND " + modelsCol + " LIKE ?"
-	args := []any{common.String2Int(keyword), "%" + keyword + "%", keyword, "%" + keyword + "%", "%" + model + "%"}
+	keywordPattern, patternErr := likeContains(keyword)
+	if patternErr != nil {
+		return nil, patternErr
+	}
+	modelPattern, patternErr := likeContains(model)
+	if patternErr != nil {
+		return nil, patternErr
+	}
+	whereClause := "(id = ? OR name LIKE ? ESCAPE '!' OR " + commonKeyCol + " = ? OR " + baseURLCol + " LIKE ? ESCAPE '!') AND " + modelsCol + " LIKE ? ESCAPE '!'"
+	args := []any{common.String2Int(keyword), keywordPattern, keyword, keywordPattern, modelPattern}
 	baseQuery = ApplyChannelGroupFilter(baseQuery.Where(whereClause, args...), group)
 
 	subQuery := baseQuery.

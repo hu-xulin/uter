@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"slices"
 	"strings"
 
 	"github.com/uter-ai/uter/common"
@@ -24,22 +25,47 @@ func CloseResponseBodyGracefully(httpResponse *http.Response) {
 	}
 }
 
+// upstreamHeadersNeverCopied are response headers that must never reach the
+// client. They are either hop-by-hop/transport headers owned by the gateway's
+// own connection, or credentials minted for the *upstream* host. The upstream
+// address is chosen by a channel admin, so copying them verbatim would let an
+// upstream plant cookies on the gateway domain (session fixation / credential
+// confusion) or make the client treat an upstream 401 as the gateway's own.
+var upstreamHeadersNeverCopied = []string{
+	// hop-by-hop / transport, owned by the gateway connection
+	"connection",
+	"keep-alive",
+	"transfer-encoding",
+	"te",
+	"trailer",
+	"upgrade",
+	// credentials scoped to the upstream origin
+	"set-cookie",
+	"set-cookie2",
+	"authorization",
+	"proxy-authenticate",
+	"proxy-authorization",
+	"www-authenticate",
+	// the body we forward is already decoded and re-measured by the gateway
+	"content-encoding",
+	"content-length",
+}
+
 // ShouldCopyUpstreamHeader checks whether a given upstream response header
-// should be copied to the client response. It returns false for Content-Length
-// (managed separately) and X-Oneapi-Request-Id (to preserve the local instance
-// ID). When the upstream header is X-Oneapi-Request-Id, the value is captured
-// into the Gin context for later logging.
+// should be copied to the client response. It returns false for the blocked
+// list above and for X-Oneapi-Request-Id (to preserve the local instance ID).
+// When the upstream header is X-Oneapi-Request-Id, the value is captured into
+// the Gin context for later logging.
 func ShouldCopyUpstreamHeader(c *gin.Context, k string, v []string) bool {
-	if strings.EqualFold(k, "Content-Length") {
-		return false
-	}
 	if strings.EqualFold(k, common.RequestIdKey) {
 		if c != nil && len(v) > 0 {
 			c.Set(common.UpstreamRequestIdKey, v[0])
 		}
 		return false
 	}
-	return true
+	return !slices.ContainsFunc(upstreamHeadersNeverCopied, func(blocked string) bool {
+		return strings.EqualFold(k, blocked)
+	})
 }
 
 func IOCopyBytesGracefully(c *gin.Context, src *http.Response, data []byte) {

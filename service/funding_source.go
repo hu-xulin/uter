@@ -181,9 +181,17 @@ func (s *SubscriptionFunding) Refund() error {
 	if s.preConsumed <= 0 {
 		return nil
 	}
-	return refundWithRetry(func() error {
+	// RefundSubscriptionPreConsume keys off requestId, so retrying is safe —
+	// unlike the wallet's non-idempotent quota += N. Zeroing the counter then
+	// makes any second Refund on this object a no-op, mirroring WalletFunding
+	// and giving the caller belt-and-braces idempotency.
+	if err := refundWithRetry(func() error {
 		return model.RefundSubscriptionPreConsume(s.requestId)
-	})
+	}); err != nil {
+		return err
+	}
+	s.preConsumed = 0
+	return nil
 }
 
 // refundWithRetry 尝试多次执行退款操作以提高成功率，只能用于基于事务的退款函数！！！！！！

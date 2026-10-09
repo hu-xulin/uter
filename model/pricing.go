@@ -262,7 +262,12 @@ func updatePricing() {
 	}
 	// 预加载模型元数据与供应商一次，避免循环查询
 	var allMeta []Model
-	_ = DB.Find(&allMeta).Error
+	// Pricing is derived from these rows; continuing with an empty set would
+	// silently publish prices computed against no metadata at all.
+	if err := DB.Find(&allMeta).Error; err != nil {
+		common.SysLog(fmt.Sprintf("failed to load model metadata for pricing: %v", err))
+		return
+	}
 	names := make([]string, 0, len(enableAbilities))
 	for _, ability := range enableAbilities {
 		names = append(names, ability.Model)
@@ -271,7 +276,10 @@ func updatePricing() {
 
 	// 预加载供应商
 	var vendors []Vendor
-	_ = DB.Find(&vendors).Error
+	if err := DB.Find(&vendors).Error; err != nil {
+		common.SysLog(fmt.Sprintf("failed to load vendors for pricing: %v", err))
+		return
+	}
 	vendorMap := make(map[int]*Vendor)
 	for i := range vendors {
 		vendorMap[vendors[i].Id] = &vendors[i]

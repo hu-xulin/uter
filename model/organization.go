@@ -28,6 +28,19 @@ func IsValidOrgRole(role string) bool {
 	return false
 }
 
+// bumpUserAuthVersionAfterOrgChange invalidates the cached auth snapshot after
+// an organization membership change. Failure leaves a stale organization_id /
+// org_role in the cache — the sidebar hides the org module and OrgAdminAuth
+// keeps applying the previous scope — so it has to be loud. It must not roll
+// back a membership change that already committed, hence log rather than return.
+func bumpUserAuthVersionAfterOrgChange(userId int) {
+	if _, err := BumpUserAuthVersion(userId); err != nil {
+		common.SysError(fmt.Sprintf(
+			"failed to bump auth version for user %d after organization change: %s",
+			userId, err.Error()))
+	}
+}
+
 // 组织状态取值。与 common.UserStatus* 一样从 1 开始：0 是 int 的零值，必须能被区分出来，
 // 否则「忘记赋值」会被静默当成一个合法状态。
 const (
@@ -168,7 +181,7 @@ func CreateOrganization(name string, ownerUserId int, quota int64) (*Organizatio
 	}
 	// 组织归属/角色变更必须刷新 Redis 用户认证缓存：登录会话与后端 OrgAdminAuth
 	// 都从缓存读 organization_id，若不失效则仍读旧值 0 —— 侧栏组织模块不显示、组织接口 403。
-	_, _ = BumpUserAuthVersion(ownerUserId)
+	bumpUserAuthVersionAfterOrgChange(ownerUserId)
 	return org, nil
 }
 
@@ -348,7 +361,7 @@ func (org *Organization) AddMembers(members []OrgMemberAdd) error {
 	}
 	// 见 CreateOrganization 注释：成员加入后刷新各自认证缓存，使侧栏与后端鉴权立即生效。
 	for _, id := range ids {
-		_, _ = BumpUserAuthVersion(id)
+		bumpUserAuthVersionAfterOrgChange(id)
 	}
 	return nil
 }
@@ -371,7 +384,7 @@ func (org *Organization) RemoveMember(userId int) error {
 		return ErrOrgNotFound
 	}
 	// 移出组织后刷新缓存，避免旧 organization_id 残留导致侧栏/接口仍按组织成员放行。
-	_, _ = BumpUserAuthVersion(userId)
+	bumpUserAuthVersionAfterOrgChange(userId)
 	return nil
 }
 
@@ -629,8 +642,12 @@ func GetOrgMembers(orgId int, departmentName string, keyword string, startIdx in
 		query = query.Where("org_role NOT IN ?", excludeRoles)
 	}
 	if keyword != "" {
-		query = query.Where("username LIKE ? OR email LIKE ? OR display_name LIKE ?",
-			"%"+keyword+"%", "%"+keyword+"%", "%"+keyword+"%")
+		keywordPattern, patternErr := likeContains(keyword)
+		if patternErr != nil {
+			return nil, 0, patternErr
+		}
+		query = query.Where("username LIKE ? ESCAPE '!' OR email LIKE ? ESCAPE '!' OR display_name LIKE ? ESCAPE '!'",
+			keywordPattern, keywordPattern, keywordPattern)
 	}
 	if err := query.Count(&total).Error; err != nil {
 		return nil, 0, err

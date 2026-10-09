@@ -75,10 +75,15 @@ func SearchRedemptions(keyword string, status string, startIdx int, num int) (re
 	query := tx.Model(&Redemption{})
 
 	if keyword != "" {
+		pattern, patternErr := sanitizeLikePattern(keyword)
+		if patternErr != nil {
+			tx.Rollback()
+			return nil, 0, patternErr
+		}
 		if id, err := strconv.Atoi(keyword); err == nil {
-			query = query.Where("id = ? OR name LIKE ?", id, keyword+"%")
+			query = query.Where("id = ? OR name LIKE ? ESCAPE '!'", id, pattern+"%")
 		} else {
-			query = query.Where("name LIKE ?", keyword+"%")
+			query = query.Where("name LIKE ? ESCAPE '!'", pattern+"%")
 		}
 	}
 

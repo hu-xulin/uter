@@ -17,6 +17,7 @@ import (
 	"github.com/uter-ai/uter/i18n"
 	"github.com/uter-ai/uter/logger"
 	"github.com/uter-ai/uter/model"
+	"github.com/uter-ai/uter/setting/system_setting"
 )
 
 func init() {
@@ -53,12 +54,20 @@ func (p *LinuxDOProvider) ExchangeToken(ctx context.Context, code string, c *gin
 	credentials := common.LinuxDOClientId + ":" + common.LinuxDOClientSecret
 	basicAuth := "Basic " + base64.StdEncoding.EncodeToString([]byte(credentials))
 
-	// Get redirect URI from request
-	scheme := "http"
-	if c.Request.TLS != nil {
-		scheme = "https"
+	// Build the callback from the configured server address rather than the Host
+	// header: Host is attacker-controlled, and an authorization code sent to a
+	// spoofed domain leaks with it. Every other provider derives its callback
+	// from ServerAddress; only fall back to the request host when the address
+	// is unset (bare local deploy), where it is the only address we have.
+	base := strings.TrimRight(system_setting.ServerAddress, "/")
+	if base == "" {
+		scheme := "http"
+		if c.Request.TLS != nil {
+			scheme = "https"
+		}
+		base = scheme + "://" + c.Request.Host
 	}
-	redirectURI := fmt.Sprintf("%s://%s/api/oauth/linuxdo", scheme, c.Request.Host)
+	redirectURI := base + "/api/oauth/linuxdo"
 
 	logger.LogDebug(ctx, "[OAuth-LinuxDO] ExchangeToken: token_endpoint=%s, redirect_uri=%s", tokenEndpoint, redirectURI)
 

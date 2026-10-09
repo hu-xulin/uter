@@ -137,7 +137,11 @@ func TestGetFlowQuotaDataUsesQuotaDataRoleSpecificDimensions(t *testing.T) {
 	// getSelfFlowQuotaData(userID=0) 得到恒空的 WHERE user_id=0。
 	orgAdminRows, err := GetFlowQuotaData(900, 2000, "", 0, common.RoleCommonUser, []string{"alice"})
 	require.NoError(t, err)
-	require.Len(t, orgAdminRows, 3) // alice 的 3 个分组（legacy 无 use_group 自成一组）
+	// 组织管理员走 admin 风格查询，维度与平台管理员一致（user/use_group/model/channel），
+	// 所以 alice 的 vip 数据按 channel 分成 2 组。legacy 行的 use_group 为空，被
+	// flowQuotaBaseQuery 的 use_group <> '' 排除 —— 与上面 adminRows 同一口径
+	//（否则 quota 999 会排在最前）。
+	require.Len(t, orgAdminRows, 2)
 	for _, r := range orgAdminRows {
 		require.Equal(t, "alice", r.Username, "组织管理员不应看到组织外成员（bob）的数据")
 	}

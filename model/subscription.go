@@ -1453,7 +1453,10 @@ func RefundSubscriptionPreConsume(requestId string) error {
 			record.Status = "refunded"
 			return tx.Save(&record).Error
 		}
-		if err := PostConsumeUserSubscriptionDelta(record.UserSubscriptionId, -record.PreConsumed); err != nil {
+		// Same transaction as the status flip below: the credit and the
+		// "refunded" marker must commit or roll back together, otherwise a
+		// retry refunds an already-refunded pre-consume.
+		if err := postConsumeUserSubscriptionDeltaTx(tx, record.UserSubscriptionId, -record.PreConsumed); err != nil {
 			return err
 		}
 		record.Status = "refunded"
@@ -1558,28 +1561,38 @@ func PostConsumeUserSubscriptionDelta(userSubscriptionId int, delta int64) error
 		return nil
 	}
 	return DB.Transaction(func(tx *gorm.DB) error {
-		var sub UserSubscription
-		if err := lockForUpdate(tx).
-			Where("id = ?", userSubscriptionId).
-			First(&sub).Error; err != nil {
-			return err
-		}
-		newUsed := sub.AmountUsed + delta
-		if newUsed < 0 {
-			sub.RefundCarryOver += -newUsed
-			newUsed = 0
-		}
-		if sub.RefundCarryOver > 0 && newUsed > 0 {
-			applied := min(newUsed, sub.RefundCarryOver)
-			newUsed -= applied
-			sub.RefundCarryOver -= applied
-		}
-		if sub.AmountTotal > 0 && newUsed > sub.AmountTotal {
-			return fmt.Errorf("subscription used exceeds total, used=%d total=%d", newUsed, sub.AmountTotal)
-		}
-		sub.AmountUsed = newUsed
-		return tx.Save(&sub).Error
+		return postConsumeUserSubscriptionDeltaTx(tx, userSubscriptionId, delta)
 	})
+}
+
+// postConsumeUserSubscriptionDeltaTx applies delta inside an existing
+// transaction, and is the form any caller must use when the delta has to commit
+// atomically with another write. Going through PostConsumeUserSubscriptionDelta
+// instead would open a *second* transaction, letting the credit commit while
+// the companion write rolls back — which leaves a pre-consume record marked
+// "consumed" after the money already moved, and a retry then refunds it twice.
+func postConsumeUserSubscriptionDeltaTx(tx *gorm.DB, userSubscriptionId int, delta int64) error {
+	var sub UserSubscription
+	if err := lockForUpdate(tx).
+		Where("id = ?", userSubscriptionId).
+		First(&sub).Error; err != nil {
+		return err
+	}
+	newUsed := sub.AmountUsed + delta
+	if newUsed < 0 {
+		sub.RefundCarryOver += -newUsed
+		newUsed = 0
+	}
+	if sub.RefundCarryOver > 0 && newUsed > 0 {
+		applied := min(newUsed, sub.RefundCarryOver)
+		newUsed -= applied
+		sub.RefundCarryOver -= applied
+	}
+	if sub.AmountTotal > 0 && newUsed > sub.AmountTotal {
+		return fmt.Errorf("subscription used exceeds total, used=%d total=%d", newUsed, sub.AmountTotal)
+	}
+	sub.AmountUsed = newUsed
+	return tx.Save(&sub).Error
 }
 
 // ErrSubscriptionQuotaExceeded 表示结算补扣超过订阅总额，subscription 侧无法继续吸收。
