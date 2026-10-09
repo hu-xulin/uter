@@ -730,15 +730,15 @@ export function useCommonLogsColumns(
               {t('Output')} {completionTokens.toLocaleString()}
             </span>
             {(cacheReadTokens > 0 || cacheWriteTokens > 0) && (
-              <div className='flex items-center gap-1 text-[11px]'>
+              <div className='flex flex-col gap-0.5 text-[11px]'>
                 {cacheReadTokens > 0 && (
                   <span className='text-muted-foreground/60'>
-                    {t('Cache Read')} ↓ {cacheReadTokens.toLocaleString()}
+                    {t('Cache Read Short')} ↓ {cacheReadTokens.toLocaleString()}
                   </span>
                 )}
                 {cacheWriteTokens > 0 && (
                   <span className='text-muted-foreground/60'>
-                    {t('Cache Write')} ↑ {cacheWriteTokens.toLocaleString()}
+                    {t('Cache Write Short')} ↑ {cacheWriteTokens.toLocaleString()}
                   </span>
                 )}
               </div>
