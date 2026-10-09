@@ -91,8 +91,8 @@ func cohereStreamHandler(c *gin.Context, info *relaycommon.RelayInfo, resp *http
 		if atEOF && len(data) == 0 {
 			return 0, nil, nil
 		}
-		if i := strings.Index(string(data), "\n"); i >= 0 {
-			return i + 1, data[0:i], nil
+		if before, _, found := strings.Cut(string(data), "\n"); found {
+			return len(before) + 1, []byte(before), nil
 		}
 		if atEOF {
 			return len(data), data, nil

@@ -13,13 +13,13 @@ import (
 
 	"github.com/uter-ai/uter/common"
 
+	"github.com/samber/lo"
 	"github.com/uter-ai/uter/constant"
 	relaycommon "github.com/uter-ai/uter/relay/common"
 	"github.com/uter-ai/uter/relay/helper"
 	"github.com/uter-ai/uter/relaykit/dto"
 	"github.com/uter-ai/uter/relaykit/types"
 	"github.com/uter-ai/uter/service"
-	"github.com/samber/lo"
 
 	"github.com/gin-gonic/gin"
 )
@@ -32,8 +32,8 @@ func uploadDifyFile(c *gin.Context, info *relaycommon.RelayInfo, user string, me
 		imageMedia := media.GetImageMedia()
 		base64Data := imageMedia.Url
 		// Remove base64 prefix if exists (e.g., "data:image/jpeg;base64,")
-		if idx := strings.Index(base64Data, ","); idx != -1 {
-			base64Data = base64Data[idx+1:]
+		if _, after, found := strings.Cut(base64Data, ","); found {
+			base64Data = after
 		}
 
 		// Decode base64 string
@@ -127,7 +127,7 @@ func uploadDifyFile(c *gin.Context, info *relaycommon.RelayInfo, user string, me
 
 func requestOpenAI2Dify(c *gin.Context, info *relaycommon.RelayInfo, request dto.GeneralOpenAIRequest) *DifyChatRequest {
 	difyReq := DifyChatRequest{
-		Inputs:           make(map[string]interface{}),
+		Inputs:           make(map[string]any),
 		AutoGenerateName: false,
 	}
 
