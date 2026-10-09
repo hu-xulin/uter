@@ -219,6 +219,7 @@ func RetrieveRAG(ctx context.Context, req *dto.GeneralOpenAIRequest) bool {
 	if !RAGEnabled() || req == nil {
 		return false
 	}
+	IncRAGRequest()
 	query := buildRAGQuery(req, cfg.RAGQueryFromLastN)
 	if strings.TrimSpace(query) == "" {
 		return false
@@ -231,6 +232,43 @@ func RetrieveRAG(ctx context.Context, req *dto.GeneralOpenAIRequest) bool {
 	if block == "" {
 		return false
 	}
+	// 净收益闸门：注入上下文会增加输入 token，若其相对原始 prompt 过大（或超绝对上限），
+	// 视为净负（实测：注入 +200 token 却无任何可测节省 → 纯亏），自动跳过注入。
+	if cfg.RAGNetBenefitEnabled && !ragNetBenefitPasses(cfg, block, req.Messages) {
+		IncRAGSkipped()
+		return false
+	}
 	injectRAG(req, cfg, block)
+	IncRAGHit()
 	return true
+}
+
+// estimateTokens 粗估字符串的 token 数（中文按约 1 token/字符、英文约 3 字符/token，取折中 3）。
+func estimateTokens(s string) int {
+	return len([]rune(s)) / 3
+}
+
+// ragNetBenefitPasses 净收益闸门判定：注入上下文是否值得（纯函数，便于单测）。
+// 注入 token 相对原始 prompt 过大、或超过绝对上限时视为净负，返回 false（应跳过注入）。
+func ragNetBenefitPasses(cfg *costoptcfg.CostOptSetting, block string, msgs []dto.Message) bool {
+	injectedTokens := estimateTokens(block)
+	if cfg.RAGMaxInjectedTokens > 0 && injectedTokens > cfg.RAGMaxInjectedTokens {
+		return false
+	}
+	if cfg.RAGInjectedVsPromptTokensRatio > 0 {
+		promptTokens := estimateMessagesTokens(msgs)
+		if promptTokens > 0 && float64(injectedTokens) > cfg.RAGInjectedVsPromptTokensRatio*float64(promptTokens) {
+			return false
+		}
+	}
+	return true
+}
+
+// estimateMessagesTokens 粗估一组消息的总 token 数（仅用于 RAG 净收益闸门，近似即可）。
+func estimateMessagesTokens(msgs []dto.Message) int {
+	total := 0
+	for i := range msgs {
+		total += len([]rune(msgs[i].StringContent()))
+	}
+	return total / 3
 }

@@ -50,8 +50,34 @@ func ApplyCascade(req *dto.GeneralOpenAIRequest, info *relaycommon.RelayInfo) bo
 	if isValueTierTarget(req.Model, originModel, cfg) {
 		return false
 	}
+	// 价格守卫：仅当廉价档模型**确实比当前模型更便宜**时才降级。否则「降本优化」会把用户
+	// 点名的便宜模型换成更贵的模型，纯亏（实测：sf-qwen2.5-7b-instruct 0.015 被换成
+	// sf-qwen3-8b 0.020，100 万 token 费用反升 35%）。
+	if !cascadeCheaperThan(req.Model, originModel, cfg.CascadeCheapModel) {
+		return false
+	}
 	req.Model = cfg.CascadeCheapModel
+	IncCascadeHit()
 	return true
+}
+
+// cascadeCheaperThan 判断级联廉价档是否真比当前模型便宜（按每 1M token 美元单价比较）。
+// reqModel 是当前模型（可能是上游名），originModel 是网关别名（两者都要试，因模型映射后会变成上游名）。
+// 仅当两者都能取到单价、且廉价档严格更便宜时返回 true；任一取不到单价时按「允许降级」处理
+// （尊重用户显式配置的 Cascade 意图，不因为定价缺失而架空它）。
+func cascadeCheaperThan(reqModel, originModel, cheapModel string) bool {
+	cheap := unitPriceOfModel(cheapModel)
+	if cheap <= 0 {
+		return true
+	}
+	cur := unitPriceOfModel(reqModel)
+	if cur <= 0 {
+		cur = unitPriceOfModel(originModel)
+	}
+	if cur <= 0 {
+		return true
+	}
+	return cheap < cur
 }
 
 // isValueTierTarget 判断某模型是否是价值层会下沉到的目标端点。

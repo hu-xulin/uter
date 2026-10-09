@@ -48,6 +48,7 @@ func ApplyRouterLM(req *dto.GeneralOpenAIRequest, info *relaycommon.RelayInfo) b
 	chosen = strings.TrimSpace(strings.Trim(chosen, "\"'"))
 	if chosen != "" {
 		req.Model = chosen
+		IncRouterLMHit()
 		return true
 	}
 	return false
