@@ -39,6 +39,13 @@ func ApplyCascade(req *dto.GeneralOpenAIRequest, info *relaycommon.RelayInfo) bo
 		matchConfiguredModel(req.Model, originModel, cfg.CascadePremiumModel) {
 		return false
 	}
+	// 价值层模型（Groq 等 serverless 廉价端点）本身就是「便宜档」，不该再被级联
+	// 降到廉价档：两者若指向不同渠道，改写后的模型所在渠道不会被重新选中 → 503/404。
+	for _, m := range cfg.ValueTierModels {
+		if matchConfiguredModel(req.Model, originModel, m) {
+			return false
+		}
+	}
 	req.Model = cfg.CascadeCheapModel
 	return true
 }
