@@ -79,17 +79,15 @@ func (m *mockUterCS) handler() http.HandlerFunc {
 // withCS 把 Uter 侧的智能客服开关接到 mock，并在测试结束后还原。
 func withCS(t *testing.T, m *mockUterCS) (baseURL string) {
 	t.Helper()
-	origURL := common.CustomerServiceURL
 	origToken := common.CustomerServiceAdminToken
 	origCache := common.CustomerServiceLLMConfig
 	srv := httptest.NewServer(m.handler())
 	t.Cleanup(func() {
 		srv.Close()
-		common.CustomerServiceURL = origURL
 		common.CustomerServiceAdminToken = origToken
 		common.CustomerServiceLLMConfig = origCache
 	})
-	common.CustomerServiceURL = srv.URL
+	t.Setenv("CUSTOMER_SERVICE_URL", srv.URL)
 	common.CustomerServiceAdminToken = "test-cs-token"
 	common.CustomerServiceLLMConfig = ""
 	return srv.URL
@@ -105,15 +103,13 @@ func setCtx(body []byte, method string) (*gin.Context, *httptest.ResponseRecorde
 
 func TestGetCustomerServiceLLMConfig_Preconditions(t *testing.T) {
 	gin.SetMode(gin.TestMode)
-	origURL := common.CustomerServiceURL
 	origToken := common.CustomerServiceAdminToken
 	t.Cleanup(func() {
-		common.CustomerServiceURL = origURL
 		common.CustomerServiceAdminToken = origToken
 	})
 
 	t.Run("missing URL returns 400", func(t *testing.T) {
-		common.CustomerServiceURL = ""
+		t.Setenv("CUSTOMER_SERVICE_URL", "")
 		common.CustomerServiceAdminToken = "tok"
 		ctx, resp := setCtx(nil, http.MethodGet)
 		GetCustomerServiceLLMConfig(ctx)
@@ -121,7 +117,7 @@ func TestGetCustomerServiceLLMConfig_Preconditions(t *testing.T) {
 	})
 
 	t.Run("missing token returns 400 with needToken flag", func(t *testing.T) {
-		common.CustomerServiceURL = "https://cs.uter.ai"
+		t.Setenv("CUSTOMER_SERVICE_URL", "https://cs.uter.ai")
 		common.CustomerServiceAdminToken = ""
 		common.CustomerServiceLLMConfig = ""
 		ctx, resp := setCtx(nil, http.MethodGet)
@@ -135,17 +131,15 @@ func TestGetCustomerServiceLLMConfig_Preconditions(t *testing.T) {
 
 func TestGetCustomerServiceLLMConfig_NoTokenUsesCache(t *testing.T) {
 	gin.SetMode(gin.TestMode)
-	origURL := common.CustomerServiceURL
 	origToken := common.CustomerServiceAdminToken
 	origCache := common.CustomerServiceLLMConfig
 	t.Cleanup(func() {
-		common.CustomerServiceURL = origURL
 		common.CustomerServiceAdminToken = origToken
 		common.CustomerServiceLLMConfig = origCache
 	})
 
 	// 无令牌，但有上一次成功缓存：直接回放缓存，fromCache=true，不报 needToken。
-	common.CustomerServiceURL = "https://cs.uter.ai"
+	t.Setenv("CUSTOMER_SERVICE_URL", "https://cs.uter.ai")
 	common.CustomerServiceAdminToken = ""
 	common.CustomerServiceLLMConfig = `{"provider":"api","model":"cached-model"}`
 
@@ -200,7 +194,7 @@ func TestGetCustomerServiceLLMConfig_UpstreamError(t *testing.T) {
 		_, _ = w.Write([]byte("boom"))
 	}))
 	t.Cleanup(func() { srv.Close() })
-	common.CustomerServiceURL = srv.URL
+	t.Setenv("CUSTOMER_SERVICE_URL", srv.URL)
 	common.CustomerServiceAdminToken = "tok"
 	common.CustomerServiceLLMConfig = "" // 无缓存时才应落到 502
 
@@ -211,15 +205,13 @@ func TestGetCustomerServiceLLMConfig_UpstreamError(t *testing.T) {
 
 func TestUpdateCustomerServiceLLMConfig_Preconditions(t *testing.T) {
 	gin.SetMode(gin.TestMode)
-	origURL := common.CustomerServiceURL
 	origToken := common.CustomerServiceAdminToken
 	t.Cleanup(func() {
-		common.CustomerServiceURL = origURL
 		common.CustomerServiceAdminToken = origToken
 	})
 
 	t.Run("missing token returns 400", func(t *testing.T) {
-		common.CustomerServiceURL = "https://cs.uter.ai"
+		t.Setenv("CUSTOMER_SERVICE_URL", "https://cs.uter.ai")
 		common.CustomerServiceAdminToken = ""
 		ctx, resp := setCtx([]byte(`{"model":"x"}`), http.MethodPut)
 		UpdateCustomerServiceLLMConfig(ctx)
@@ -227,7 +219,7 @@ func TestUpdateCustomerServiceLLMConfig_Preconditions(t *testing.T) {
 	})
 
 	t.Run("invalid JSON body returns 400", func(t *testing.T) {
-		common.CustomerServiceURL = "https://cs.uter.ai"
+		t.Setenv("CUSTOMER_SERVICE_URL", "https://cs.uter.ai")
 		common.CustomerServiceAdminToken = "tok"
 		ctx, resp := setCtx([]byte(`not-json`), http.MethodPut)
 		UpdateCustomerServiceLLMConfig(ctx)

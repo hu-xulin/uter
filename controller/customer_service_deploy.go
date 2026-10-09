@@ -46,7 +46,7 @@ import (
 // 应回显明文。由 Uter 后端统一带令牌转发，前端只跟 Uter 自己的 admin 会话打交道。
 //
 // 两个前置条件缺任一都直接 400，不带着空值去打 uter-cs（那会稳定 401，反而难排查）：
-//   - common.CustomerServiceURL           （智能客服地址，环境变量 CUSTOMER_SERVICE_URL）
+//   - common.GetCustomerServiceURL()     （智能客服地址，环境变量 CUSTOMER_SERVICE_URL）
 //   - common.CustomerServiceAdminToken    （运营粘贴的 uter-cs admin 令牌）
 //
 // 容错设计（修复「输入令牌后页面报错」）：
@@ -62,7 +62,7 @@ const customerServiceDeployTimeout = 15 * time.Second
 
 // csBaseURL 把 CUSTOMER_SERVICE_URL 规整成无尾部斜杠的基础地址。
 func csBaseURL() string {
-	return strings.TrimRight(common.CustomerServiceURL, "/")
+	return strings.TrimRight(common.GetCustomerServiceURL(), "/")
 }
 
 // proxyErrorMsg 把 uter-cs 的响应翻译成 Uter 侧的友好错误文本。
@@ -153,7 +153,7 @@ func readCachedLLMConfig() map[string]any {
 //     无缓存才报 502；
 //  3. 令牌未配置 → 有缓存则直接返回缓存（fromCache:true），否则 400 提示先填令牌。
 func GetCustomerServiceLLMConfig(c *gin.Context) {
-	if common.CustomerServiceURL == "" {
+	if common.GetCustomerServiceURL() == "" {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"success": false,
 			"message": "未配置智能客服地址（CUSTOMER_SERVICE_URL），无法拉取配置",
@@ -268,7 +268,7 @@ func GetCustomerServiceAdminToken(c *gin.Context) {
 // 让新模型/密钥立即生效（否则只改文件不重载，回答仍走旧引擎）。apply 失败不阻塞写回
 // 成功——落盘是主目标，重载失败给出提示让运营手动点「应用生效」即可。
 func UpdateCustomerServiceLLMConfig(c *gin.Context) {
-	if common.CustomerServiceURL == "" {
+	if common.GetCustomerServiceURL() == "" {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"success": false,
 			"message": "未配置智能客服地址（CUSTOMER_SERVICE_URL），无法保存配置",

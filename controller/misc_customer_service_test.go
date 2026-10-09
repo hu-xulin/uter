@@ -38,17 +38,15 @@ import (
 func TestGetStatusPublishesCustomerServicePages(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	originalPages := common.CustomerServicePages
-	originalURL := common.CustomerServiceURL
 	originalEnabled := common.CustomerServiceEnabled
 	t.Cleanup(func() {
 		common.CustomerServicePages = originalPages
-		common.CustomerServiceURL = originalURL
 		common.CustomerServiceEnabled = originalEnabled
 	})
 	// 页面级开关只在总开关开启时才有意义，这里固定为「开 + 有地址」，
 	// 单独隔离出页面列表这一个变量。
 	common.CustomerServiceEnabled = true
-	common.CustomerServiceURL = "https://cs.uter.ai"
+	t.Setenv("CUSTOMER_SERVICE_URL", "https://cs.uter.ai")
 
 	tests := []struct {
 		name  string
@@ -114,10 +112,8 @@ func TestGetStatusPublishesCustomerServicePages(t *testing.T) {
 // undefined、导致挂件被静默隐藏，所以这里连"字段在哪一层"一起钉住。
 func TestGetStatusPublishesCustomerServiceGates(t *testing.T) {
 	gin.SetMode(gin.TestMode)
-	originalURL := common.CustomerServiceURL
 	originalEnabled := common.CustomerServiceEnabled
 	t.Cleanup(func() {
-		common.CustomerServiceURL = originalURL
 		common.CustomerServiceEnabled = originalEnabled
 	})
 
@@ -153,7 +149,7 @@ func TestGetStatusPublishesCustomerServiceGates(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			common.CustomerServiceURL = tt.url
+			t.Setenv("CUSTOMER_SERVICE_URL", tt.url)
 			common.CustomerServiceEnabled = tt.enabled
 
 			response := httptest.NewRecorder()
