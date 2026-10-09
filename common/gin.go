@@ -106,6 +106,36 @@ func CleanupBodyStorage(c *gin.Context) {
 	}
 }
 
+// ReplaceRequestBody 用新内容整体替换请求体，并重建 BodyStorage 与 Content-Length。
+//
+// 供「选渠道之前需要改写请求体」的场景使用（如降本钩子前置改写模型名）：
+// BodyStorage 本身是只读的，无法原地改写，故新建一份存储替换缓存，
+// 保证后续 GetBodyStorage / UnmarshalBodyReusable / relay 读到的都是新内容。
+//
+// 旧 storage 会被 Close 释放；若存储落到磁盘则同时删除临时文件。
+func ReplaceRequestBody(c *gin.Context, body []byte) error {
+	// 先释放旧存储，避免磁盘型 body 的临时文件泄漏。
+	if storage, exists := c.Get(KeyBodyStorage); exists && storage != nil {
+		if bs, ok := storage.(BodyStorage); ok {
+			bs.Close()
+		}
+	}
+	c.Set(KeyBodyStorage, nil)
+	// KeyRequestBody 是 GetRequestBody 的旧缓存路径，一并清掉，否则旧内容会被优先复用。
+	c.Set(KeyRequestBody, nil)
+
+	newStorage, err := CreateBodyStorage(body)
+	if err != nil {
+		return err
+	}
+	c.Set(KeyBodyStorage, newStorage)
+	if c.Request != nil {
+		c.Request.Body = io.NopCloser(newStorage)
+		c.Request.ContentLength = int64(len(body))
+	}
+	return nil
+}
+
 func UnmarshalBodyReusable(c *gin.Context, v any) error {
 	storage, err := GetBodyStorage(c)
 	if err != nil {

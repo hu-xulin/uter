@@ -41,13 +41,40 @@ func ApplyCascade(req *dto.GeneralOpenAIRequest, info *relaycommon.RelayInfo) bo
 	}
 	// 价值层模型（Groq 等 serverless 廉价端点）本身就是「便宜档」，不该再被级联
 	// 降到廉价档：两者若指向不同渠道，改写后的模型所在渠道不会被重新选中 → 503/404。
-	for _, m := range cfg.ValueTierModels {
-		if matchConfiguredModel(req.Model, originModel, m) {
-			return false
-		}
+	//
+	// 判定不能只依赖 cfg.ValueTierModels —— 那是「允许下沉的**来源**模型白名单」
+	// （见 ValueTierMatch），而这里要排除的是「**下沉目标**端点」，两者语义相反。
+	// 实测：把来源白名单置空（正确用法，表示不限来源）后，本守卫随之失效，
+	// 导致已下沉到价值层的请求又被改写成廉价档并发往价值层渠道 → 上游 404。
+	// 故这里改为按等价组的**目标模型**判定，即价值层真正会选中的那些端点。
+	if isValueTierTarget(req.Model, originModel, cfg) {
+		return false
 	}
 	req.Model = cfg.CascadeCheapModel
 	return true
+}
+
+// isValueTierTarget 判断某模型是否是价值层会下沉到的目标端点。
+// 依据是 ValueTierModelEquivalents 的所有 value（等价组定义即「这些高档模型
+// 可下沉到这些开源模型」），并兼容 vendor/model 形态的基准名比较。
+func isValueTierTarget(reqModel, originModel string, cfg *costoptcfg.CostOptSetting) bool {
+	for _, m := range cfg.ValueTierModels {
+		if matchConfiguredModel(reqModel, originModel, m) {
+			return true
+		}
+	}
+	for _, group := range cfg.ValueTierModelEquivalents {
+		for _, target := range group {
+			if target == "" {
+				continue
+			}
+			if matchConfiguredModel(reqModel, originModel, target) ||
+				baseModelOf(target) == baseModelOf(reqModel) {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 // IsCascadeRefusal 判断廉价模型响应是否像拒绝/低质（需升级到贵模型）。
