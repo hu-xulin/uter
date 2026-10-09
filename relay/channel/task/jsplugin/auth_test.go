@@ -10,12 +10,12 @@ import (
 
 	"github.com/uter-ai/uter/common"
 
-	pluginruntime "github.com/uter-ai/uter/pkg/jsplugin"
-	vertexcore "github.com/uter-ai/uter/relay/channel/vertex"
-	relaycommon "github.com/uter-ai/uter/relay/common"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	pluginruntime "github.com/uter-ai/uter/pkg/jsplugin"
+	vertexcore "github.com/uter-ai/uter/relay/channel/vertex"
+	relaycommon "github.com/uter-ai/uter/relay/common"
 )
 
 func TestOAuth2JWTAuthCachesAndRefreshes(t *testing.T) {

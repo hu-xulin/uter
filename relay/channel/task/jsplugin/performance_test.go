@@ -13,11 +13,11 @@ import (
 
 	"github.com/uter-ai/uter/common"
 
+	"github.com/gin-gonic/gin"
+	"github.com/stretchr/testify/require"
 	pluginruntime "github.com/uter-ai/uter/pkg/jsplugin"
 	"github.com/uter-ai/uter/plugins"
 	relaycommon "github.com/uter-ai/uter/relay/common"
-	"github.com/gin-gonic/gin"
-	"github.com/stretchr/testify/require"
 )
 
 func benchmarkAlibaba(b *testing.B) (*pluginruntime.LoadedPlugin, *atomic.Int64) {

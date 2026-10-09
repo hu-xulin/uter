@@ -18,16 +18,16 @@ import (
 
 	"github.com/uter-ai/uter/common"
 
-	"github.com/uter-ai/uter/middleware"
-	"github.com/uter-ai/uter/model"
-	"github.com/uter-ai/uter/service"
-	passkeysvc "github.com/uter-ai/uter/service/passkey"
-	"github.com/uter-ai/uter/setting/system_setting"
 	"github.com/gin-gonic/gin"
 	"github.com/go-webauthn/webauthn/protocol"
 	"github.com/go-webauthn/webauthn/webauthn"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/uter-ai/uter/middleware"
+	"github.com/uter-ai/uter/model"
+	"github.com/uter-ai/uter/service"
+	passkeysvc "github.com/uter-ai/uter/service/passkey"
+	"github.com/uter-ai/uter/setting/system_setting"
 	"gorm.io/gorm"
 )
 

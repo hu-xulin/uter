@@ -8,11 +8,11 @@ import (
 
 	"github.com/uter-ai/uter/dto"
 
-	"github.com/uter-ai/uter/relaykit/types"
-	"github.com/uter-ai/uter/service"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/uter-ai/uter/relaykit/types"
+	"github.com/uter-ai/uter/service"
 )
 
 func TestShouldRetryHonorsPinRetryMode(t *testing.T) {

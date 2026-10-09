@@ -3,9 +3,9 @@ package costopt
 import (
 	"context"
 
-	costoptcfg "github.com/uter-ai/uter/setting/costopt"
 	relaycommon "github.com/uter-ai/uter/relay/common"
 	"github.com/uter-ai/uter/relaykit/dto"
+	costoptcfg "github.com/uter-ai/uter/setting/costopt"
 )
 
 // ApplyPromptCompression 用便宜压缩模型压短非 system 消息文本，降低输入 token。

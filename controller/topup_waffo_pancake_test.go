@@ -6,9 +6,9 @@ import (
 
 	"github.com/uter-ai/uter/common"
 
+	"github.com/stretchr/testify/require"
 	"github.com/uter-ai/uter/setting"
 	"github.com/uter-ai/uter/setting/operation_setting"
-	"github.com/stretchr/testify/require"
 )
 
 func TestFormatWaffoPancakeAmount_UsesDisplayPriceString(t *testing.T) {

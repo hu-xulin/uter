@@ -5,10 +5,10 @@ import (
 
 	relaycommon "github.com/uter-ai/uter/relay/common"
 
-	"github.com/uter-ai/uter/relaykit/dto"
-	"github.com/uter-ai/uter/relaykit/types"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/uter-ai/uter/relaykit/dto"
+	"github.com/uter-ai/uter/relaykit/types"
 )
 
 func TestResponseConverterFacades(t *testing.T) {

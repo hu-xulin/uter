@@ -8,12 +8,12 @@ import (
 
 	"github.com/uter-ai/uter/relaykit/dto"
 
-	"github.com/uter-ai/uter/relaykit/relayconvert"
-	"github.com/uter-ai/uter/relaykit/relayconvert/convmeta"
-	"github.com/uter-ai/uter/relaykit/types"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/uter-ai/uter/relaykit/relayconvert"
+	"github.com/uter-ai/uter/relaykit/relayconvert/convmeta"
+	"github.com/uter-ai/uter/relaykit/types"
 )
 
 func TestRelayInfoGetFinalRequestRelayFormatPrefersExplicitFinal(t *testing.T) {

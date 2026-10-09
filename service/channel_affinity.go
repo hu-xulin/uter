@@ -12,14 +12,14 @@ import (
 
 	"github.com/uter-ai/uter/common"
 
+	"github.com/gin-gonic/gin"
+	"github.com/samber/hot"
+	"github.com/tidwall/gjson"
 	"github.com/uter-ai/uter/model"
 	"github.com/uter-ai/uter/pkg/cachex"
 	"github.com/uter-ai/uter/relaykit/dto"
 	"github.com/uter-ai/uter/relaykit/types"
 	"github.com/uter-ai/uter/setting/operation_setting"
-	"github.com/gin-gonic/gin"
-	"github.com/samber/hot"
-	"github.com/tidwall/gjson"
 )
 
 const (
@@ -446,35 +446,6 @@ func cloneStringAnyMap(src map[string]any) map[string]any {
 	return dst
 }
 
-func mergeChannelOverride(base map[string]any, tpl map[string]any) map[string]any {
-	if len(base) == 0 && len(tpl) == 0 {
-		return map[string]any{}
-	}
-	if len(tpl) == 0 {
-		return base
-	}
-	out := cloneStringAnyMap(base)
-	for k, v := range tpl {
-		if strings.EqualFold(strings.TrimSpace(k), "operations") {
-			baseOps, hasBaseOps := extractParamOperations(out[k])
-			tplOps, hasTplOps := extractParamOperations(v)
-			if hasTplOps {
-				if hasBaseOps {
-					out[k] = append(tplOps, baseOps...)
-				} else {
-					out[k] = tplOps
-				}
-				continue
-			}
-		}
-		if _, exists := out[k]; exists {
-			continue
-		}
-		out[k] = v
-	}
-	return out
-}
-
 func extractParamOperations(value any) ([]any, bool) {
 	switch ops := value.(type) {
 	case []any:
@@ -543,7 +514,37 @@ func ApplyChannelAffinityOverrideTemplate(c *gin.Context, paramOverride map[stri
 		return paramOverride, false
 	}
 
-	mergedParam := mergeChannelOverride(paramOverride, meta.ParamTemplate)
+	var mergedParam map[string]any
+	{
+		base := paramOverride
+		tpl := meta.ParamTemplate
+		if len(base) == 0 && len(tpl) == 0 {
+			mergedParam = map[string]any{}
+		} else if len(tpl) == 0 {
+			mergedParam = base
+		} else {
+			out := cloneStringAnyMap(base)
+			for k, v := range tpl {
+				if strings.EqualFold(strings.TrimSpace(k), "operations") {
+					baseOps, hasBaseOps := extractParamOperations(out[k])
+					tplOps, hasTplOps := extractParamOperations(v)
+					if hasTplOps {
+						if hasBaseOps {
+							out[k] = append(tplOps, baseOps...)
+						} else {
+							out[k] = tplOps
+						}
+						continue
+					}
+				}
+				if _, exists := out[k]; exists {
+					continue
+				}
+				out[k] = v
+			}
+			mergedParam = out
+		}
+	}
 	appendChannelAffinityTemplateAdminInfo(c, meta)
 	return mergedParam, true
 }
@@ -863,7 +864,24 @@ func observeChannelAffinityUsageCache(statsCtx ChannelAffinityStatsContext, usag
 		}
 	}
 	next.Total++
-	hit, cachedTokens, promptCacheHitTokens := usageCacheSignals(usage)
+	var hit bool
+	var cachedTokens int64
+	var promptCacheHitTokens int64
+	if usage != nil {
+		cached := int64(0)
+		if usage.PromptTokensDetails.CachedTokens > 0 {
+			cached = int64(usage.PromptTokensDetails.CachedTokens)
+		} else if usage.InputTokensDetails != nil && usage.InputTokensDetails.CachedTokens > 0 {
+			cached = int64(usage.InputTokensDetails.CachedTokens)
+		}
+		pcht := int64(0)
+		if usage.PromptCacheHitTokens > 0 {
+			pcht = int64(usage.PromptCacheHitTokens)
+		}
+		hit = cached > 0 || pcht > 0
+		cachedTokens = cached
+		promptCacheHitTokens = pcht
+	}
 	if hit {
 		next.Hit++
 	}
@@ -909,24 +927,6 @@ func channelAffinityUsageCacheEntryKey(ruleName, usingGroup, keyFp string) strin
 		return ""
 	}
 	return ruleName + "\n" + usingGroup + "\n" + keyFp
-}
-
-func usageCacheSignals(usage *dto.Usage) (hit bool, cachedTokens int64, promptCacheHitTokens int64) {
-	if usage == nil {
-		return false, 0, 0
-	}
-
-	cached := int64(0)
-	if usage.PromptTokensDetails.CachedTokens > 0 {
-		cached = int64(usage.PromptTokensDetails.CachedTokens)
-	} else if usage.InputTokensDetails != nil && usage.InputTokensDetails.CachedTokens > 0 {
-		cached = int64(usage.InputTokensDetails.CachedTokens)
-	}
-	pcht := int64(0)
-	if usage.PromptCacheHitTokens > 0 {
-		pcht = int64(usage.PromptCacheHitTokens)
-	}
-	return cached > 0 || pcht > 0, cached, pcht
 }
 
 func usagePromptTokens(usage *dto.Usage) int {

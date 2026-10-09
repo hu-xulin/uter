@@ -10,8 +10,8 @@ import (
 	"github.com/uter-ai/uter/common"
 
 	"github.com/ClickHouse/clickhouse-go/v2"
-	"github.com/uter-ai/uter/logger"
 	"github.com/gin-gonic/gin"
+	"github.com/uter-ai/uter/logger"
 	"gorm.io/gorm"
 )
 

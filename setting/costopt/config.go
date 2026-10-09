@@ -9,8 +9,8 @@ import (
 // ShortCircuitRule 零调用短路规则：命中后直接返回预设答案，根本不调上游 LLM。
 // 机制：规则/正则/模板/静态 FAQ 库直接命中，省去该部分 100% 的模型调用成本。
 type ShortCircuitRule struct {
-	ID             string `json:"id"`
-	Enabled        bool   `json:"enabled"`
+	ID      string `json:"id"`
+	Enabled bool   `json:"enabled"`
 	// Scope 为空=全局生效；否则仅对指定分组（UsingGroup 或 TokenGroup）生效。
 	Scope string `json:"scope"`
 	// Model 为空=任意模型；否则仅对精确匹配该名称的请求生效。
@@ -37,19 +37,19 @@ type CostOptSetting struct {
 	ResponseCacheMaxTokens int `json:"response_cache_max_tokens"`
 
 	// 零调用短路规则层
-	ShortCircuitEnabled bool              `json:"short_circuit_enabled"`
+	ShortCircuitEnabled bool               `json:"short_circuit_enabled"`
 	ShortCircuitRules   []ShortCircuitRule `json:"short_circuit_rules"`
 
 	// 输出长度成本硬上限（max_tokens 封顶，防输出失控）
-	MaxTokensCapEnabled bool             `json:"max_tokens_cap_enabled"`
-	MaxTokensCapGlobal  int              `json:"max_tokens_cap_global"`
-	MaxTokensCapByGroup map[string]int   `json:"max_tokens_cap_by_group"`
+	MaxTokensCapEnabled bool           `json:"max_tokens_cap_enabled"`
+	MaxTokensCapGlobal  int            `json:"max_tokens_cap_global"`
+	MaxTokensCapByGroup map[string]int `json:"max_tokens_cap_by_group"`
 	// MaxTokensCapByChannel key=渠道类型名（constant.GetChannelTypeName）
 	MaxTokensCapByChannel map[string]int `json:"max_tokens_cap_by_channel"`
 
 	// 上下文滑动窗口 / 对话摘要（轻资产：裁掉旧消息，或用便宜模型压成摘要）
-	ContextWindowEnabled         bool   `json:"context_window_enabled"`
-	ContextWindowMaxMessages    int    `json:"context_window_max_messages"`     // 保留最近 N 条，超出部分裁掉或摘要
+	ContextWindowEnabled        bool   `json:"context_window_enabled"`
+	ContextWindowMaxMessages    int    `json:"context_window_max_messages"`    // 保留最近 N 条，超出部分裁掉或摘要
 	ContextWindowSummaryEnabled bool   `json:"context_window_summary_enabled"` // 溢出前缀用便宜模型压成摘要
 	ContextWindowSummaryModel   string `json:"context_window_summary_model"`   // 摘要用的便宜模型（如 haiku 级）
 	SummaryAPIBaseURL           string `json:"summary_api_base_url"`           // OpenAI 兼容端点
@@ -60,18 +60,18 @@ type CostOptSetting struct {
 	NegativeCacheTTLSeconds int  `json:"negative_cache_ttl_seconds"`
 
 	// 轻量复杂度路由（启发式把简单任务降级到便宜模型）
-	ComplexityRoutingEnabled     bool     `json:"complexity_routing_enabled"`
-	ComplexityRoutingFromModels  []string `json:"complexity_routing_from_models"` // 仅对这些源模型做降级
-	ComplexityRoutingCheapModel  string   `json:"complexity_routing_cheap_model"` // 降级目标便宜模型
+	ComplexityRoutingEnabled    bool     `json:"complexity_routing_enabled"`
+	ComplexityRoutingFromModels []string `json:"complexity_routing_from_models"` // 仅对这些源模型做降级
+	ComplexityRoutingCheapModel string   `json:"complexity_routing_cheap_model"` // 降级目标便宜模型
 
 	// 突增 / 尖峰告警（每租户 token 速率）
 	SpikeAlertEnabled      bool    `json:"spike_alert_enabled"`
 	SpikeAlertTokensPerMin int     `json:"spike_alert_tokens_per_min"` // 单租户每分钟 token 硬阈值
-	SpikeAlertMultiplier  float64 `json:"spike_alert_multiplier"`    // 超过基线倍数也告警
+	SpikeAlertMultiplier   float64 `json:"spike_alert_multiplier"`     // 超过基线倍数也告警
 
 	// 图像下采样代理（视觉 token 降本，纯字符串改写，不引入图像解码依赖）
 	ImageResizeEnabled       bool   `json:"image_resize_enabled"`
-	ImageResizeMaxEdge       int    `json:"image_resize_max_edge"`      // 长边最大像素
+	ImageResizeMaxEdge       int    `json:"image_resize_max_edge"`       // 长边最大像素
 	ImageResizeProxyTemplate string `json:"image_resize_proxy_template"` // 如 https://wsrv.nl/?url={url}&w={max}
 
 	// gzip 响应压缩（按 Accept-Encoding 自动压缩所有响应）
@@ -79,7 +79,7 @@ type CostOptSetting struct {
 
 	// 成本感知路由（多供应商自动择优）：按渠道类型名（constant.GetChannelTypeName）
 	// 偏置选路权重，让运营把流量导向更便宜的供应商。key=渠道类型名，value=权重倍数(>=1)。
-	CostAwareRoutingEnabled   bool            `json:"cost_aware_routing_enabled"`
+	CostAwareRoutingEnabled    bool           `json:"cost_aware_routing_enabled"`
 	CostAwareChannelTypeWeight map[string]int `json:"cost_aware_channel_type_weight"`
 
 	// ===== 以下为 V2 剩余特性（全部配置门控，缺外部服务时优雅 no-op） =====
@@ -91,8 +91,8 @@ type CostOptSetting struct {
 	CascadeRefusalKeywords []string `json:"cascade_refusal_keywords"`
 
 	// 9. 地理/区域比价：按请求头区域路由到偏好的渠道类型
-	GeoRoutingEnabled            bool              `json:"geo_routing_enabled"`
-	GeoRoutingRegionHeader       string            `json:"geo_routing_region_header"`
+	GeoRoutingEnabled             bool              `json:"geo_routing_enabled"`
+	GeoRoutingRegionHeader        string            `json:"geo_routing_region_header"`
 	GeoRoutingChannelTypeByRegion map[string]string `json:"geo_routing_channel_type_by_region"`
 
 	// 10. RouterLM 选模：用小型 router 模型替用户选最优上游
@@ -103,7 +103,7 @@ type CostOptSetting struct {
 	RouterLMFromModels []string `json:"router_lm_from_models"`
 
 	// 14. 语义缓存：可配 embedding 端点 + Redis 向量近似匹配
-	SemanticCacheEnabled         bool    `json:"semantic_cache_enabled"`
+	SemanticCacheEnabled        bool    `json:"semantic_cache_enabled"`
 	SemanticCacheTTLSeconds     int     `json:"semantic_cache_ttl_seconds"`
 	SemanticCacheEmbedBaseURL   string  `json:"semantic_cache_embed_base_url"`
 	SemanticCacheEmbedAPIKey    string  `json:"semantic_cache_embed_api_key"`
@@ -117,8 +117,8 @@ type CostOptSetting struct {
 	ToolResultCacheTTLSeconds int  `json:"tool_result_cache_ttl_seconds"`
 
 	// 16. 缓存预热：从内联条目预填精确缓存
-	CacheWarmupEnabled bool           `json:"cache_warmup_enabled"`
-	CacheWarmupEntries []WarmupEntry  `json:"cache_warmup_entries"`
+	CacheWarmupEnabled bool          `json:"cache_warmup_enabled"`
+	CacheWarmupEntries []WarmupEntry `json:"cache_warmup_entries"`
 
 	// 18. 边缘/CDN：静态资源前缀（文档站/资源走 CDN）
 	CDNEnabled      bool   `json:"cdn_enabled"`
@@ -152,7 +152,7 @@ type CostOptSetting struct {
 	BatchPollIntervalSeconds int      `json:"batch_poll_interval_seconds"`
 
 	// 32. 批量 Embedding：一次提交多个文本
-	BatchEmbedEnabled  bool   `json:"batch_embed_enabled"`
+	BatchEmbedEnabled bool   `json:"batch_embed_enabled"`
 	BatchEmbedBaseURL string `json:"batch_embed_base_url"`
 	BatchEmbedAPIKey  string `json:"batch_embed_api_key"`
 	BatchEmbedModel   string `json:"batch_embed_model"`
@@ -337,25 +337,25 @@ type WarmupEntry struct {
 }
 
 var costOptSetting = CostOptSetting{
-	ResponseCacheEnabled:     false,
+	ResponseCacheEnabled:    false,
 	ResponseCacheTTLSeconds: 300,
 	ResponseCacheMaxTokens:  4096,
 	ShortCircuitEnabled:     false,
 	MaxTokensCapEnabled:     false,
 	MaxTokensCapGlobal:      8192,
 
-	ContextWindowEnabled:      false,
-	ContextWindowMaxMessages:  20,
-	NegativeCacheEnabled:      false,
-	NegativeCacheTTLSeconds:   30,
-	ComplexityRoutingEnabled:  false,
-	SpikeAlertEnabled:         false,
-	SpikeAlertTokensPerMin:    200000,
-	SpikeAlertMultiplier:      5,
-	ImageResizeEnabled:        false,
-	ImageResizeMaxEdge:        1024,
-	GzipEnabled:               false,
-	CostAwareRoutingEnabled:   false,
+	ContextWindowEnabled:     false,
+	ContextWindowMaxMessages: 20,
+	NegativeCacheEnabled:     false,
+	NegativeCacheTTLSeconds:  30,
+	ComplexityRoutingEnabled: false,
+	SpikeAlertEnabled:        false,
+	SpikeAlertTokensPerMin:   200000,
+	SpikeAlertMultiplier:     5,
+	ImageResizeEnabled:       false,
+	ImageResizeMaxEdge:       1024,
+	GzipEnabled:              false,
+	CostAwareRoutingEnabled:  false,
 
 	// V2 剩余特性默认值（全部默认关闭）
 	CascadeEnabled:              false,
@@ -373,8 +373,8 @@ var costOptSetting = CostOptSetting{
 	PromptCompressionMaxRatio:   0.5,
 	ToolDefTrimEnabled:          false,
 	RAGEnabled:                  false,
-	RAGEndpoint:                "",
-	RAGAPIKey:                  "",
+	RAGEndpoint:                 "",
+	RAGAPIKey:                   "",
 	LongTaskPersistEnabled:      false,
 	BatchEnabled:                false,
 	BatchPollIntervalSeconds:    30,
@@ -392,11 +392,11 @@ var costOptSetting = CostOptSetting{
 	// V2.2「降本优化」默认值
 	// #4/#5/#6/#7 默认走 auto：自动实现 + 手动可配置。自动模式从渠道 model_mapping 后的
 	// 上游模型定价自动推算有效单价并择优，无需手填价目表；手填项作为覆盖/边界约束。
-	ArbitrageMode:              "auto",
-	ArbitrageEnabled:           false,
-	ArbitragePriceSource:       "ratio_config",
-	ArbitrageMaxPriceRatio:     1.0,
-	ArbitrageAutoMaxPriceRatio: 1.0,
+	ArbitrageMode:                "auto",
+	ArbitrageEnabled:             false,
+	ArbitragePriceSource:         "ratio_config",
+	ArbitrageMaxPriceRatio:       1.0,
+	ArbitrageAutoMaxPriceRatio:   1.0,
 	ArbitragePreferSameModelOnly: true,
 
 	ValueTierMode:           "auto",
@@ -431,11 +431,11 @@ var costOptSetting = CostOptSetting{
 	SharedPrefixEnabled:  false,
 	SharedPrefixMaxChars: 4000,
 
-	BatchCompletionWindow:    "24h",
-	BatchMaxItems:            100,
+	BatchCompletionWindow:     "24h",
+	BatchMaxItems:             100,
 	BatchFlushIntervalSeconds: 300,
-	BatchEndpointPath:        "/v1/batches",
-	BatchResultPath:          "/v1/batches/{id}",
+	BatchEndpointPath:         "/v1/batches",
+	BatchResultPath:           "/v1/batches/{id}",
 
 	CostPerSuccessSignal: "no_error",
 }

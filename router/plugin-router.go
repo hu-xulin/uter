@@ -13,13 +13,13 @@ import (
 	"sync"
 	"sync/atomic"
 
+	"github.com/gin-gonic/gin"
 	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/constant"
 	"github.com/uter-ai/uter/controller"
 	"github.com/uter-ai/uter/logger"
 	"github.com/uter-ai/uter/middleware"
 	"github.com/uter-ai/uter/pkg/jsplugin"
-	"github.com/gin-gonic/gin"
 )
 
 type pluginDispatchStateKey struct{}

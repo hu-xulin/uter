@@ -35,13 +35,13 @@ import (
 
 // mockUterCS 模拟 uter-cs 的部署管理接口，记录被调用的路径与是否带上了 admin 令牌。
 type mockUterCS struct {
-	calls        []string
-	gotToken     string
-	configLLM    map[string]any
-	sectionOK    bool
-	sectionEcho  bool
-	applyStatus  int
-	applyError   string
+	calls       []string
+	gotToken    string
+	configLLM   map[string]any
+	sectionOK   bool
+	sectionEcho bool
+	applyStatus int
+	applyError  string
 }
 
 func (m *mockUterCS) handler() http.HandlerFunc {
@@ -268,8 +268,8 @@ func TestUpdateCustomerServiceLLMConfig_ApplyFailsDegrades(t *testing.T) {
 
 	require.Equal(t, http.StatusOK, resp.Code)
 	var out struct {
-		Success    bool   `json:"success"`
-		ApplyNote  string `json:"apply_note"`
+		Success   bool   `json:"success"`
+		ApplyNote string `json:"apply_note"`
 	}
 	require.NoError(t, common.Unmarshal(resp.Body.Bytes(), &out))
 	assert.True(t, out.Success)

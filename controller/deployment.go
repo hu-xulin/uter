@@ -10,8 +10,8 @@ import (
 
 	"github.com/uter-ai/uter/common"
 
-	"github.com/uter-ai/uter/pkg/ionet"
 	"github.com/gin-gonic/gin"
+	"github.com/uter-ai/uter/pkg/ionet"
 )
 
 func getIoAPIKey(c *gin.Context) (string, bool) {

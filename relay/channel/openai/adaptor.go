@@ -24,6 +24,7 @@ import (
 	"github.com/uter-ai/uter/relaykit/dto"
 
 	//"github.com/uter-ai/uter/relay/channel/minimax"
+	"github.com/samber/lo"
 	"github.com/uter-ai/uter/relay/channel/xinference"
 	relaycommon "github.com/uter-ai/uter/relay/common"
 	"github.com/uter-ai/uter/relay/common_handler"
@@ -33,7 +34,6 @@ import (
 	"github.com/uter-ai/uter/service"
 	"github.com/uter-ai/uter/setting/model_setting"
 	"github.com/uter-ai/uter/setting/reasoning"
-	"github.com/samber/lo"
 
 	"github.com/gin-gonic/gin"
 )

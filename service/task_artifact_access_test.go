@@ -6,9 +6,9 @@ import (
 
 	"github.com/uter-ai/uter/common"
 
-	"github.com/uter-ai/uter/setting/system_setting"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/uter-ai/uter/setting/system_setting"
 )
 
 func TestTaskArtifactAccessBindsTaskAndKey(t *testing.T) {

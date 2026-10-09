@@ -10,6 +10,8 @@ import (
 
 	"github.com/uter-ai/uter/constant"
 
+	"github.com/gin-gonic/gin"
+	"github.com/samber/lo"
 	"github.com/uter-ai/uter/relay/channel"
 	"github.com/uter-ai/uter/relay/channel/claude"
 	"github.com/uter-ai/uter/relay/channel/gemini"
@@ -20,8 +22,6 @@ import (
 	"github.com/uter-ai/uter/relaykit/relayconvert"
 	"github.com/uter-ai/uter/relaykit/types"
 	"github.com/uter-ai/uter/service"
-	"github.com/gin-gonic/gin"
-	"github.com/samber/lo"
 )
 
 const ChannelName = "advanced_custom"

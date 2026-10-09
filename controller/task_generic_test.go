@@ -12,16 +12,16 @@ import (
 
 	"github.com/uter-ai/uter/common"
 
+	"github.com/gin-gonic/gin"
+	"github.com/glebarez/sqlite"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"github.com/uter-ai/uter/constant"
 	"github.com/uter-ai/uter/middleware"
 	"github.com/uter-ai/uter/model"
 	relaychannel "github.com/uter-ai/uter/relay/channel"
 	"github.com/uter-ai/uter/service"
 	"github.com/uter-ai/uter/setting/system_setting"
-	"github.com/gin-gonic/gin"
-	"github.com/glebarez/sqlite"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"gorm.io/gorm"
 )
 

@@ -6,11 +6,11 @@ import (
 
 	"github.com/uter-ai/uter/constant"
 
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	relaycommon "github.com/uter-ai/uter/relay/common"
 	relayconstant "github.com/uter-ai/uter/relay/constant"
 	"github.com/uter-ai/uter/relaykit/dto"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 func TestGetRequestURLAlphaSearch(t *testing.T) {

@@ -15,11 +15,11 @@ import (
 
 	"github.com/uter-ai/uter/common"
 
-	relaycommon "github.com/uter-ai/uter/relay/common"
-	"github.com/uter-ai/uter/service"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	relaycommon "github.com/uter-ai/uter/relay/common"
+	"github.com/uter-ai/uter/service"
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/hpack"
 )

@@ -22,10 +22,10 @@ import (
 	"os"
 	"testing"
 
+	"github.com/glebarez/sqlite"
 	"gorm.io/driver/clickhouse"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/postgres"
-	"github.com/glebarez/sqlite"
 	"gorm.io/gorm"
 )
 
@@ -34,7 +34,7 @@ import (
 // avoids any Uter-specific column types so the check stays portable across
 // SQLite, MySQL, PostgreSQL and ClickHouse.
 type multiDBSmokeRow struct {
-	ID   uint   `gorm:"primaryKey"`
+	ID   uint `gorm:"primaryKey"`
 	Name string
 }
 

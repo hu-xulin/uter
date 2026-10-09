@@ -5,8 +5,8 @@ import (
 
 	"github.com/uter-ai/uter/constant"
 
-	pluginruntime "github.com/uter-ai/uter/pkg/jsplugin"
 	"github.com/stretchr/testify/assert"
+	pluginruntime "github.com/uter-ai/uter/pkg/jsplugin"
 )
 
 // TaskPlatformUnavailableError feeds the client-facing rejection when no

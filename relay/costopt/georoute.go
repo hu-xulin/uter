@@ -1,8 +1,8 @@
 package costopt
 
 import (
-	costoptcfg "github.com/uter-ai/uter/setting/costopt"
 	relaycommon "github.com/uter-ai/uter/relay/common"
+	costoptcfg "github.com/uter-ai/uter/setting/costopt"
 )
 
 // GeoRoutePreferredChannelType 根据请求头区域返回配置的偏好渠道类型名（空=不偏好）。

@@ -8,10 +8,10 @@ import (
 
 	"github.com/uter-ai/uter/logger"
 
+	"github.com/gin-gonic/gin"
 	"github.com/uter-ai/uter/middleware"
 	"github.com/uter-ai/uter/model"
 	"github.com/uter-ai/uter/service"
-	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
 

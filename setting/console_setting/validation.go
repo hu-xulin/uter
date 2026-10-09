@@ -24,8 +24,8 @@ var (
 	slugRegex = regexp.MustCompile(`^[a-zA-Z0-9_-]+$`)
 )
 
-func parseJSONArray(jsonStr string, typeName string) ([]map[string]interface{}, error) {
-	var list []map[string]interface{}
+func parseJSONArray(jsonStr string, typeName string) ([]map[string]any, error) {
+	var list []map[string]any
 	if err := common.UnmarshalJsonStr(jsonStr, &list); err != nil {
 		return nil, fmt.Errorf("%s格式错误：%s", typeName, err.Error())
 	}
@@ -56,11 +56,11 @@ func checkDangerousContent(content string, index int, itemType string) error {
 	return nil
 }
 
-func getJSONList(jsonStr string) []map[string]interface{} {
+func getJSONList(jsonStr string) []map[string]any {
 	if jsonStr == "" {
-		return []map[string]interface{}{}
+		return []map[string]any{}
 	}
-	var list []map[string]interface{}
+	var list []map[string]any
 	_ = common.UnmarshalJsonStr(jsonStr, &list)
 	return list
 }
@@ -140,7 +140,7 @@ func validateApiInfo(apiInfoStr string) error {
 	return nil
 }
 
-func GetApiInfo() []map[string]interface{} {
+func GetApiInfo() []map[string]any {
 	return getJSONList(GetConsoleSetting().ApiInfo)
 }
 
@@ -217,7 +217,7 @@ func validateFAQ(faqStr string) error {
 	return nil
 }
 
-func getPublishTime(item map[string]interface{}) time.Time {
+func getPublishTime(item map[string]any) time.Time {
 	if v, ok := item["publishDate"]; ok {
 		if s, ok2 := v.(string); ok2 {
 			if t, err := time.Parse(time.RFC3339, s); err == nil {
@@ -228,7 +228,7 @@ func getPublishTime(item map[string]interface{}) time.Time {
 	return time.Time{}
 }
 
-func GetAnnouncements() []map[string]interface{} {
+func GetAnnouncements() []map[string]any {
 	list := getJSONList(GetConsoleSetting().Announcements)
 	sort.SliceStable(list, func(i, j int) bool {
 		return getPublishTime(list[i]).After(getPublishTime(list[j]))
@@ -236,7 +236,7 @@ func GetAnnouncements() []map[string]interface{} {
 	return list
 }
 
-func GetFAQ() []map[string]interface{} {
+func GetFAQ() []map[string]any {
 	return getJSONList(GetConsoleSetting().FAQ)
 }
 
@@ -305,6 +305,6 @@ func validateUptimeKumaGroups(groupsStr string) error {
 	return nil
 }
 
-func GetUptimeKumaGroups() []map[string]interface{} {
+func GetUptimeKumaGroups() []map[string]any {
 	return getJSONList(GetConsoleSetting().UptimeKumaGroups)
 }

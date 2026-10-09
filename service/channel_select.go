@@ -5,12 +5,12 @@ import (
 
 	"github.com/uter-ai/uter/common"
 
+	"github.com/gin-gonic/gin"
 	"github.com/uter-ai/uter/constant"
 	"github.com/uter-ai/uter/dto"
 	"github.com/uter-ai/uter/logger"
 	"github.com/uter-ai/uter/model"
 	"github.com/uter-ai/uter/pkg/jsplugin"
-	"github.com/gin-gonic/gin"
 )
 
 func GetChannelConstraints(c *gin.Context) *dto.ChannelConstraints {
@@ -144,13 +144,13 @@ func CacheGetRandomSatisfiedChannel(param *RetryParam) (*model.Channel, string, 
 			}
 			logger.LogDebug(param.Ctx, "Auto selecting group: %s, priorityRetry: %d", autoGroup, priorityRetry)
 
-		channel, _ = model.GetRandomSatisfiedChannel(
-			autoGroup,
-			param.ModelName,
-			priorityRetry,
-			filters,
-			costOptSelectOption(param.Ctx),
-		)
+			channel, _ = model.GetRandomSatisfiedChannel(
+				autoGroup,
+				param.ModelName,
+				priorityRetry,
+				filters,
+				costOptSelectOption(param.Ctx),
+			)
 			if channel == nil {
 				// Current group has no available channel for this model, try next group
 				// 当前分组没有该模型的可用渠道，尝试下一个分组

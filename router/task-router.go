@@ -3,8 +3,8 @@ package router
 import (
 	"github.com/uter-ai/uter/controller"
 
-	"github.com/uter-ai/uter/middleware"
 	"github.com/gin-gonic/gin"
+	"github.com/uter-ai/uter/middleware"
 )
 
 // SetTaskRouter registers the generic task-plugin API surface.

@@ -9,13 +9,13 @@ import (
 
 	"github.com/uter-ai/uter/common"
 
+	"github.com/shopspring/decimal"
 	"github.com/uter-ai/uter/constant"
 	"github.com/uter-ai/uter/pkg/jsplugin"
 	"github.com/uter-ai/uter/setting/billing_setting"
 	"github.com/uter-ai/uter/setting/operation_setting"
 	"github.com/uter-ai/uter/setting/ratio_setting"
 	hostreasoning "github.com/uter-ai/uter/setting/reasoning"
-	"github.com/shopspring/decimal"
 )
 
 // ModelPricingConversion is a preview only. Saving still requires a versioned

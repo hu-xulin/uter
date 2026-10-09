@@ -6,9 +6,9 @@ import (
 	"encoding/hex"
 	"time"
 
-	costoptcfg "github.com/uter-ai/uter/setting/costopt"
-	"github.com/uter-ai/uter/common"
 	"github.com/go-redis/redis/v8"
+	"github.com/uter-ai/uter/common"
+	costoptcfg "github.com/uter-ai/uter/setting/costopt"
 )
 
 // ToolResultCacheEnabled 是否启用工具/检索结果缓存（Redis 可用）。

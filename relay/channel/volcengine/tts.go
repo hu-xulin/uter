@@ -12,11 +12,11 @@ import (
 
 	relaycommon "github.com/uter-ai/uter/relay/common"
 
-	"github.com/uter-ai/uter/relaykit/dto"
-	"github.com/uter-ai/uter/relaykit/types"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
+	"github.com/uter-ai/uter/relaykit/dto"
+	"github.com/uter-ai/uter/relaykit/types"
 )
 
 type VolcengineTTSRequest struct {
@@ -57,7 +57,7 @@ type VolcengineTTSReqInfo struct {
 	Model           string                   `json:"model,omitempty"`
 	TextType        string                   `json:"text_type,omitempty"`
 	SilenceDuration float64                  `json:"silence_duration,omitempty"`
-	WithTimestamp   interface{}              `json:"with_timestamp,omitempty"`
+	WithTimestamp   any                      `json:"with_timestamp,omitempty"`
 	ExtraParam      *VolcengineTTSExtraParam `json:"extra_param,omitempty"`
 }
 

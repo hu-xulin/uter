@@ -6,10 +6,10 @@ import (
 
 	"github.com/uter-ai/uter/model"
 
-	"github.com/uter-ai/uter/types"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/uter-ai/uter/types"
 )
 
 func TestDisabledTaskArtifactStoreHasNoStorageBehavior(t *testing.T) {

@@ -9,12 +9,6 @@ import (
 
 	"github.com/uter-ai/uter/common"
 
-	"github.com/uter-ai/uter/constant"
-	"github.com/uter-ai/uter/dto"
-	"github.com/uter-ai/uter/model"
-	pluginruntime "github.com/uter-ai/uter/pkg/jsplugin"
-	builtinplugins "github.com/uter-ai/uter/plugins"
-	relaycommon "github.com/uter-ai/uter/relay/common"
 	"github.com/gin-gonic/gin"
 	"github.com/openai/openai-go"
 	"github.com/openai/openai-go/option"
@@ -22,6 +16,12 @@ import (
 	"github.com/openai/openai-go/shared"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/uter-ai/uter/constant"
+	"github.com/uter-ai/uter/dto"
+	"github.com/uter-ai/uter/model"
+	pluginruntime "github.com/uter-ai/uter/pkg/jsplugin"
+	builtinplugins "github.com/uter-ai/uter/plugins"
+	relaycommon "github.com/uter-ai/uter/relay/common"
 )
 
 func TestTaskPluginResponsesNonStreamDecodesWithOfficialGoSDK(t *testing.T) {

@@ -3,9 +3,9 @@ package costopt
 import (
 	"strings"
 
-	costoptcfg "github.com/uter-ai/uter/setting/costopt"
 	relaycommon "github.com/uter-ai/uter/relay/common"
 	"github.com/uter-ai/uter/relaykit/dto"
+	costoptcfg "github.com/uter-ai/uter/setting/costopt"
 )
 
 // ApplyCascade 若启用且当前模型非级联档，重写为级联廉价模型（第一档）。

@@ -1,8 +1,8 @@
 package costopt
 
 import (
-	costoptcfg "github.com/uter-ai/uter/setting/costopt"
 	"github.com/uter-ai/uter/relaykit/dto"
+	costoptcfg "github.com/uter-ai/uter/setting/costopt"
 )
 
 // ApplyToolDefTrim 发送前裁剪 tools schema，降低每请求的工具定义 token。

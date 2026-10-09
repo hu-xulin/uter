@@ -15,12 +15,12 @@ import (
 
 	"github.com/uter-ai/uter/common"
 
+	"github.com/alicebob/miniredis/v2"
+	"github.com/go-redis/redis/v8"
 	"github.com/uter-ai/uter/i18n"
 	"github.com/uter-ai/uter/middleware"
 	"github.com/uter-ai/uter/model"
 	"github.com/uter-ai/uter/service/authz"
-	"github.com/alicebob/miniredis/v2"
-	"github.com/go-redis/redis/v8"
 
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"

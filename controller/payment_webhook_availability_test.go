@@ -5,8 +5,8 @@ import (
 
 	"github.com/uter-ai/uter/setting"
 
-	"github.com/uter-ai/uter/setting/operation_setting"
 	"github.com/stretchr/testify/require"
+	"github.com/uter-ai/uter/setting/operation_setting"
 )
 
 func confirmPaymentComplianceForTest(t *testing.T) {

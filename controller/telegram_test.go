@@ -18,14 +18,14 @@ import (
 
 	"github.com/uter-ai/uter/common"
 
-	"github.com/uter-ai/uter/model"
-	"github.com/uter-ai/uter/oauth"
-	"github.com/uter-ai/uter/service"
-	"github.com/uter-ai/uter/setting/system_setting"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/uter-ai/uter/model"
+	"github.com/uter-ai/uter/oauth"
+	"github.com/uter-ai/uter/service"
+	"github.com/uter-ai/uter/setting/system_setting"
 	"golang.org/x/oauth2"
 	"gorm.io/gorm"
 )

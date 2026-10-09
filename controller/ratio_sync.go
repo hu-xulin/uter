@@ -20,12 +20,12 @@ import (
 
 	"github.com/uter-ai/uter/logger"
 
+	"github.com/samber/lo"
 	"github.com/uter-ai/uter/model"
 	"github.com/uter-ai/uter/relaykit/dto"
 	"github.com/uter-ai/uter/service"
 	"github.com/uter-ai/uter/setting/billing_setting"
 	"github.com/uter-ai/uter/setting/ratio_setting"
-	"github.com/samber/lo"
 
 	"github.com/gin-gonic/gin"
 )

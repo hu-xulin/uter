@@ -7,9 +7,9 @@ import (
 
 	"github.com/uter-ai/uter/model"
 
+	"github.com/gin-gonic/gin"
 	"github.com/uter-ai/uter/setting/system_setting"
 	"github.com/uter-ai/uter/types"
-	"github.com/gin-gonic/gin"
 )
 
 // StoredArtifactRef describes a persisted artifact object. No reference is

@@ -7,8 +7,8 @@ import (
 
 	"github.com/uter-ai/uter/common"
 
-	"github.com/uter-ai/uter/setting/operation_setting"
 	"github.com/bytedance/gopkg/util/gopool"
+	"github.com/uter-ai/uter/setting/operation_setting"
 	"gorm.io/gorm"
 )
 

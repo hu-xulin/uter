@@ -9,13 +9,13 @@ import (
 
 	"github.com/uter-ai/uter/common"
 
-	"github.com/uter-ai/uter/model"
-	"github.com/uter-ai/uter/setting/operation_setting"
 	"github.com/gin-gonic/gin"
 	"github.com/glebarez/sqlite"
 	"github.com/shopspring/decimal"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/uter-ai/uter/model"
+	"github.com/uter-ai/uter/setting/operation_setting"
 	"gorm.io/gorm"
 )
 

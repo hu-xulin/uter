@@ -6,9 +6,9 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/gin-gonic/gin"
 	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/setting"
-	"github.com/gin-gonic/gin"
 )
 
 // TestFetchTaskPluginMarketplaceIndexProxiesConfiguredSource proves the

@@ -6,11 +6,11 @@ import (
 
 	"github.com/uter-ai/uter/common"
 
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"github.com/uter-ai/uter/pkg/jsplugin"
 	relaycommon "github.com/uter-ai/uter/relay/common"
 	"github.com/uter-ai/uter/relaykit/dto"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 func TestSmokeTestTaskExprValidatesDeclaredUsageVectors(t *testing.T) {

@@ -9,6 +9,7 @@ import (
 
 	"github.com/uter-ai/uter/common"
 
+	"github.com/gin-gonic/gin"
 	"github.com/uter-ai/uter/relay/channel"
 	"github.com/uter-ai/uter/relay/channel/claude"
 	"github.com/uter-ai/uter/relay/channel/openai"
@@ -18,7 +19,6 @@ import (
 	"github.com/uter-ai/uter/relaykit/types"
 	"github.com/uter-ai/uter/setting/model_setting"
 	"github.com/uter-ai/uter/setting/reasoning"
-	"github.com/gin-gonic/gin"
 )
 
 type Adaptor struct {

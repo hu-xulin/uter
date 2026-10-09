@@ -8,9 +8,9 @@ import (
 
 	costoptcfg "github.com/uter-ai/uter/setting/costopt"
 
+	"github.com/stretchr/testify/require"
 	relaycommon "github.com/uter-ai/uter/relay/common"
 	"github.com/uter-ai/uter/relaykit/dto"
-	"github.com/stretchr/testify/require"
 )
 
 // withConfig 临时改写降本配置，结束后整体还原（含切片/映射头）。

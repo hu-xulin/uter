@@ -8,13 +8,13 @@ import (
 
 	"github.com/uter-ai/uter/relay/channel"
 
+	"github.com/aws/aws-sdk-go-v2/service/bedrockruntime"
+	"github.com/pkg/errors"
 	"github.com/uter-ai/uter/relay/channel/claude"
 	relaycommon "github.com/uter-ai/uter/relay/common"
 	"github.com/uter-ai/uter/relaykit/dto"
 	"github.com/uter-ai/uter/relaykit/types"
 	"github.com/uter-ai/uter/service"
-	"github.com/aws/aws-sdk-go-v2/service/bedrockruntime"
-	"github.com/pkg/errors"
 
 	"github.com/gin-gonic/gin"
 )
