@@ -16,7 +16,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
-import { useQuery } from '@tanstack/react-query'
+import { useCallback, useState } from 'react'
 import { t } from 'i18next'
 
 import { createApiKey, fetchTokenKey, getApiKeys } from '@/features/keys/api'
@@ -26,9 +26,9 @@ import {
   transformFormDataToPayload,
 } from '@/features/keys/lib'
 import {
-  requireServerSuccess,
   createServerError,
 } from '@/lib/server-error-message'
+import { useSecureVerification } from '@/features/auth/secure-verification'
 import { useAuthStore } from '@/stores/auth-store'
 
 /**
@@ -42,7 +42,13 @@ export class NoActiveChatKeyError extends Error {
   }
 }
 
-export async function fetchActiveChatKey() {
+/**
+ * Resolve the plaintext key of the account's enabled API key. Requires a
+ * one-time security proof (Passkey / 2FA / password) because this exposes the
+ * raw `sk-` secret — callers should obtain it via `useActiveChatKey().reveal()`
+ * which performs the verification, or pass an existing `proofToken`.
+ */
+export async function fetchActiveChatKey(proofToken?: string) {
   const result = await getApiKeys({ p: 1, size: 50 })
   if (!result.success) {
     throw createServerError(result, t('Failed to load API keys'))
@@ -54,7 +60,7 @@ export async function fetchActiveChatKey() {
     throw new NoActiveChatKeyError()
   }
 
-  const keyResult = await fetchTokenKey(active.id)
+  const keyResult = await fetchTokenKey(active.id, proofToken)
   if (!keyResult.success || !keyResult.data?.key) {
     throw createServerError(keyResult, t('Failed to load API keys'))
   }
@@ -66,9 +72,10 @@ export async function fetchActiveChatKey() {
  * Create the key used by chat shortcuts when the account has none yet.
  *
  * Reuses the API Keys page defaults so both entry points stay in sync, and
- * returns the freshly resolved key so the caller can keep going.
+ * returns the freshly resolved key so the caller can keep going. The resolved
+ * key requires a security proof (see `fetchActiveChatKey`).
  */
-export async function createDefaultChatKey() {
+export async function createDefaultChatKey(proofToken?: string) {
   const created = await createApiKey({
     ...transformFormDataToPayload(getApiKeyFormDefaultValues(false)),
     name: t('Default key'),
@@ -77,22 +84,61 @@ export async function createDefaultChatKey() {
     throw createServerError(created, t('Failed to create API key'))
   }
 
-  return fetchActiveChatKey()
+  return fetchActiveChatKey(proofToken)
+}
+
+export interface ActiveChatKeyState {
+  activeKey: string | null
+  isPending: boolean
+  isError: boolean
+  error: unknown
+  /**
+   * Trigger a step-up verification and, on success, resolve + return the
+   * active chat key. Returns null if the user cancels the verification.
+   */
+  reveal: () => Promise<string | null>
 }
 
 /**
- * Get the currently active API key for chat links
+ * Get the currently active API key for chat links.
+ *
+ * The key is a plaintext `sk-` secret, so it is only resolved on demand after
+ * the user passes step-up verification — it is never auto-fetched on mount.
  */
-export function useActiveChatKey(enabled: boolean) {
+export function useActiveChatKey(): ActiveChatKeyState {
   const userId = useAuthStore((state) => state.auth.user?.id)
+  const verification = useSecureVerification()
+  const [state, setState] = useState<{
+    key: string | null
+    status: 'idle' | 'pending' | 'error'
+    error?: unknown
+  }>({ key: null, status: 'idle' })
 
-  return useQuery({
-    queryKey: ['chat-active-key', userId],
-    queryFn: async () => requireServerSuccess(await fetchActiveChatKey()),
-    enabled: enabled && Boolean(userId),
-    staleTime: 5 * 60 * 1000,
-    gcTime: 10 * 60 * 1000,
-    // Every consumer renders its own inline state; avoid a duplicate toast.
-    meta: { errorToast: false },
-  })
+  const reveal = useCallback(async (): Promise<string | null> => {
+    if (!userId) return null
+    setState({ key: null, status: 'pending' })
+    try {
+      const proof = await verification.requestVerification({
+        scope: 'token.key.read',
+      })
+      if (!proof) {
+        setState({ key: null, status: 'idle' })
+        return null
+      }
+      const key = await fetchActiveChatKey(proof.proof_token)
+      setState({ key, status: 'idle' })
+      return key
+    } catch (error) {
+      setState({ key: null, status: 'error', error })
+      throw error
+    }
+  }, [userId, verification])
+
+  return {
+    activeKey: state.key,
+    isPending: state.status === 'pending',
+    isError: state.status === 'error',
+    error: state.error,
+    reveal,
+  }
 }

@@ -13,12 +13,10 @@ GNU Affero General Public License for more details.
 
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
-
-For commercial licensing, please contact support@uter.ai
 */
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { Loader2, MessageCircleWarning } from 'lucide-react'
-import { useEffect, useMemo, useState } from 'react'
+import { createFileRoute } from '@tanstack/react-router'
+import { Loader2, MessageCircleWarning, ShieldCheck } from 'lucide-react'
+import { useCallback, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 
@@ -38,7 +36,6 @@ export const Route = createFileRoute('/_authenticated/chat2link')({
 
 function Chat2LinkPage() {
   const { t } = useTranslation()
-  const navigate = useNavigate()
   const { chatPresets, serverAddress } = useChatPresets()
   const [keyDialogOpen, setKeyDialogOpen] = useState(false)
 
@@ -47,53 +44,58 @@ function Chat2LinkPage() {
     [chatPresets]
   )
 
-  const { data: activeKey, error: keyError } = useActiveChatKey(
-    Boolean(firstWebPreset)
-  )
+  // 明文 sk- 仅在用户完成二次验证后按需取回，绝不在挂载时自动拉取。
+  const { isPending, isError, error, reveal } = useActiveChatKey()
 
-  useEffect(() => {
-    if (!firstWebPreset) {
-      if (chatPresets.length > 0) {
-        toast.error(t('No available Web chat links'))
+  const handleOpen = useCallback(async () => {
+    if (!firstWebPreset) return
+    try {
+      const key = await reveal()
+      if (!key) return
+      const url = resolveChatUrl({
+        template: firstWebPreset.url,
+        apiKey: key,
+        serverAddress,
+      })
+      if (url) {
+        window.location.href = url
       }
-      return
+    } catch (err) {
+      if (err instanceof NoActiveChatKeyError) {
+        // 渲染分支会展示「创建并继续」引导。
+        return
+      }
+      handleServerError(err, t('Failed to open chat'))
     }
+  }, [firstWebPreset, reveal, serverAddress, t])
 
-    if (activeKey === undefined && !keyError) return
-
-    // No enabled key: keep the user here so they can create one and continue.
-    if (keyError instanceof NoActiveChatKeyError) return
-
-    if (keyError || !activeKey) {
-      const message =
-        keyError instanceof Error
-          ? keyError.message
-          : t('No enabled tokens available')
-      handleServerError(keyError, message)
-      navigate({ to: '/keys' })
-      return
+  if (!firstWebPreset) {
+    if (chatPresets.length > 0) {
+      toast.error(t('No available Web chat links'))
     }
+    return (
+      <div className='flex h-full flex-col items-center justify-center gap-4 p-6 text-center'>
+        <MessageCircleWarning className='text-muted-foreground h-12 w-12' />
+        <div className='space-y-1'>
+          <h2 className='text-lg font-semibold'>
+            {t('No available Web chat links')}
+          </h2>
+          <p className='text-muted-foreground'>
+            {t(
+              'This client needs an API key to be filled in automatically. Create one now?'
+            )}
+          </p>
+        </div>
+        <Button onClick={() => setKeyDialogOpen(true)}>
+          {t('Create and continue')}
+        </Button>
+        <ChatKeyDialog open={keyDialogOpen} onOpenChange={setKeyDialogOpen} />
+      </div>
+    )
+  }
 
-    const url = resolveChatUrl({
-      template: firstWebPreset.url,
-      apiKey: activeKey,
-      serverAddress,
-    })
-
-    if (url) {
-      window.location.href = url
-    }
-  }, [
-    firstWebPreset,
-    activeKey,
-    keyError,
-    serverAddress,
-    chatPresets.length,
-    navigate,
-    t,
-  ])
-
-  if (keyError instanceof NoActiveChatKeyError) {
+  // 无可用启用密钥：保留在当前页，引导用户创建后继续。
+  if (isError && error instanceof NoActiveChatKeyError) {
     return (
       <div className='flex h-full flex-col items-center justify-center gap-4 p-6 text-center'>
         <MessageCircleWarning className='text-muted-foreground h-12 w-12' />
@@ -114,11 +116,21 @@ function Chat2LinkPage() {
   }
 
   return (
-    <div className='flex h-full flex-col items-center justify-center gap-3'>
-      <Loader2 className='text-muted-foreground h-8 w-8 animate-spin' />
-      <p className='text-muted-foreground text-sm'>
-        {t('Redirecting to chat page...')}
-      </p>
+    <div className='flex h-full flex-col items-center justify-center gap-4 p-6 text-center'>
+      <ShieldCheck className='text-muted-foreground h-12 w-12' />
+      <div className='space-y-1'>
+        <h2 className='text-lg font-semibold'>{t('Verify to open chat link')}</h2>
+        <p className='text-muted-foreground'>
+          {t(
+            'This chat link needs your API key. Confirm your identity to reveal it and continue.'
+          )}
+        </p>
+      </div>
+      <Button onClick={handleOpen} disabled={isPending}>
+        {isPending && <Loader2 className='size-4 animate-spin' />}
+        {t('Verify and open chat')}
+      </Button>
+      <ChatKeyDialog open={keyDialogOpen} onOpenChange={setKeyDialogOpen} />
     </div>
   )
 }

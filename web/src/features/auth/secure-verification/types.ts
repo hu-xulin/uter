@@ -38,6 +38,7 @@ export type SecurityProofScope =
   | 'account.password.set'
   | 'account.password.change'
   | 'account.delete'
+  | 'token.key.read'
 
 export type VerificationOperation =
   | { scope: 'channel.key.read'; context: { channel_id: number } }

@@ -43,7 +43,6 @@ import {
 } from '@/components/ui/sidebar'
 import { ChatKeyDialog } from '@/features/chat/components/chat-key-dialog'
 import {
-  fetchActiveChatKey,
   NoActiveChatKeyError,
   useActiveChatKey,
 } from '@/features/chat/hooks/use-active-chat-key'
@@ -248,11 +247,8 @@ export function ChatPresetsItem({ item }: { item: NavChatPresets }) {
   const { chatPresets, serverAddress } = useChatPresets()
   const { state, isMobile, setOpenMobile } = useSidebar()
   const navigate = useNavigate()
-  // Prefetch the active key so the custom-protocol navigation can happen
-  // synchronously inside the click gesture. Navigating after an `await`
-  // loses the transient user activation and Chrome silently blocks the
-  // deep link, which is why every client preset appeared to do nothing.
-  const { data: activeChatKey } = useActiveChatKey(true)
+  // 明文 sk- 仅在用户完成二次验证后按需取回（reveal 会弹出验证流程）。
+  const { reveal } = useActiveChatKey()
   const href = useLocation({ select: (location) => location.href })
   const normalizedHref = normalizeHref(href)
   // 「聊天」没有可导航的 /chat 索引路由 —— 选中态只能由路由驱动：当前在
@@ -359,18 +355,9 @@ export function ChatPresetsItem({ item }: { item: NavChatPresets }) {
         return
       }
 
-      // Key already cached → resolve + launch synchronously so the deep link
-      // fires inside the user gesture. This is the common path once the
-      // sidebar has mounted and the key query has settled.
-      if (activeChatKey) {
-        openPreset(preset, activeChatKey)
-        return
-      }
-
-      // No cached key yet: fetch it. The navigation that follows an `await`
-      // may be blocked by the browser for custom protocols; the only keyless
-      // outcome is the create-key dialog, whose own button click is a fresh
-      // gesture and therefore navigates fine.
+      // 明文 sk- 需先完成二次验证才能取回。验证为异步交互，无法再保证「同步于点击
+      // 手势」地唤起自定义协议深链；https 类链接不受影响，自定义协议在验证后可能
+      // 被浏览器拦截（开发态已有剪贴板兜底提示）。
       if (loadingPresetIdRef.current) {
         toast.info(t('Preparing your chat link, please try again in a moment.'))
         return
@@ -379,7 +366,9 @@ export function ChatPresetsItem({ item }: { item: NavChatPresets }) {
       loadingPresetIdRef.current = preset.id
       setLoadingPresetId(preset.id)
       try {
-        openPreset(preset, await fetchActiveChatKey())
+        const key = await reveal()
+        if (!key) return
+        openPreset(preset, key)
       } catch (error) {
         // No enabled key yet: confirm before minting one, then carry on.
         if (error instanceof NoActiveChatKeyError) {
@@ -397,7 +386,7 @@ export function ChatPresetsItem({ item }: { item: NavChatPresets }) {
         setLoadingPresetId(null)
       }
     },
-    [openPreset, activeChatKey, t]
+    [openPreset, reveal, t]
   )
 
   const handleKeyCreated = useCallback(

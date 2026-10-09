@@ -53,6 +53,8 @@ import type { ApiKey } from '@/features/keys/types'
 import { useCopyToClipboard } from '@/hooks/use-copy-to-clipboard'
 import { getUserModels } from '@/lib/api'
 import { handleServerError } from '@/lib/handle-server-error'
+import { AuthOperationError } from '@/lib/secure-verification'
+import { useSecureVerification } from '@/features/auth/secure-verification'
 import { MOTION_TRANSITION } from '@/lib/motion'
 import { ROLE } from '@/lib/roles'
 import { requireServerSuccess } from '@/lib/server-error-message'
@@ -285,6 +287,8 @@ function RequestPreview(props: {
   const { t } = useTranslation()
   const shouldReduceMotion = useReducedMotion()
   const [isCopying, setIsCopying] = useState(false)
+  // 复制真实 curl（含明文 sk-）属高危操作，需二次验证。
+  const verification = useSecureVerification()
   const { copyToClipboard } = useCopyToClipboard({ notify: false })
   const previewCurl = buildCurlCommand({
     endpoint: props.example.endpoint,
@@ -297,7 +301,14 @@ function RequestPreview(props: {
 
     setIsCopying(true)
     try {
-      const result = await fetchTokenKey(props.example.keyId)
+      const proof = await verification.requestVerification({
+        scope: 'token.key.read',
+      })
+      if (!proof) return
+      const result = await fetchTokenKey(
+        props.example.keyId,
+        proof.proof_token
+      )
       const key = result.success && result.data?.key ? result.data.key : ''
       if (!key) {
         handleServerError(result, t('Failed to copy to clipboard'))
@@ -316,7 +327,10 @@ function RequestPreview(props: {
         toast.error(t('Failed to copy to clipboard'))
       }
     } catch (error) {
-      handleServerError(error, t('Failed to copy to clipboard'))
+      handleServerError(
+        AuthOperationError.from(error),
+        t('Failed to copy to clipboard')
+      )
     } finally {
       setIsCopying(false)
     }
