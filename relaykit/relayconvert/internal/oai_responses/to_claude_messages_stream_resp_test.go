@@ -6,9 +6,9 @@ import (
 
 	"github.com/uter-ai/uter/relaykit/dto"
 
-	kitutil "github.com/uter-ai/uter/relaykit/relayconvert/kitutil"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	kitutil "github.com/uter-ai/uter/relaykit/relayconvert/kitutil"
 )
 
 func TestResponsesToClaudeStreamDoesNotRepeatBlocksFromDoneAndCompletedEvents(t *testing.T) {

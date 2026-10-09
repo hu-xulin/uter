@@ -6,11 +6,11 @@ import (
 
 	"github.com/uter-ai/uter/relaykit/dto"
 
-	kitutil "github.com/uter-ai/uter/relaykit/relayconvert/kitutil"
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/tidwall/gjson"
+	kitutil "github.com/uter-ai/uter/relaykit/relayconvert/kitutil"
 )
 
 func TestResponsesRequestToChatCompletionsRequestInstructionsAndScalarInput(t *testing.T) {

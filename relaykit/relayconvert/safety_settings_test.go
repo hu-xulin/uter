@@ -6,10 +6,10 @@ import (
 
 	"github.com/uter-ai/uter/relaykit/dto"
 
-	"github.com/uter-ai/uter/relaykit/relayconvert/convmeta"
-	kitutil "github.com/uter-ai/uter/relaykit/relayconvert/kitutil"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/uter-ai/uter/relaykit/relayconvert/convmeta"
+	kitutil "github.com/uter-ai/uter/relaykit/relayconvert/kitutil"
 )
 
 func TestOpenAIToGeminiSafetySettings(t *testing.T) {

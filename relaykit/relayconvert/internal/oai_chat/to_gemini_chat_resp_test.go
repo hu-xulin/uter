@@ -5,9 +5,9 @@ import (
 
 	"github.com/uter-ai/uter/relaykit/dto"
 
-	"github.com/uter-ai/uter/relaykit/relayconvert/convmeta"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/uter-ai/uter/relaykit/relayconvert/convmeta"
 )
 
 func TestResponseOpenAI2GeminiMapsTextToolFinishReasonAndUsage(t *testing.T) {

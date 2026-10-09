@@ -6,12 +6,12 @@ import (
 
 	"github.com/uter-ai/uter/relaykit/dto"
 
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"github.com/uter-ai/uter/relaykit/relayconvert/convmeta"
 	sharedclaude "github.com/uter-ai/uter/relaykit/relayconvert/internal/shared/claude"
 	kitutil "github.com/uter-ai/uter/relaykit/relayconvert/kitutil"
 	"github.com/uter-ai/uter/relaykit/relayconvert/reasoning"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 func TestClaudeDefaultMaxTokensPresence(t *testing.T) {
