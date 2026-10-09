@@ -131,6 +131,22 @@ func TestGetFlowQuotaDataUsesQuotaDataRoleSpecificDimensions(t *testing.T) {
 	require.Empty(t, selfRows[0].TokenName)
 	require.Equal(t, "vip", selfRows[0].UseGroup)
 	require.Equal(t, 175, selfRows[0].Quota)
+
+	// BE-ORG-021：组织管理员在平台上的角色是普通用户（RoleCommonUser），但其组织范围
+	// 已通过 orgUsernames 收敛。必须按组织范围返回成员数据，而不是落入 default 的
+	// getSelfFlowQuotaData(userID=0) 得到恒空的 WHERE user_id=0。
+	orgAdminRows, err := GetFlowQuotaData(900, 2000, "", 0, common.RoleCommonUser, []string{"alice"})
+	require.NoError(t, err)
+	require.Len(t, orgAdminRows, 3) // alice 的 3 个分组（legacy 无 use_group 自成一组）
+	for _, r := range orgAdminRows {
+		require.Equal(t, "alice", r.Username, "组织管理员不应看到组织外成员（bob）的数据")
+	}
+
+	// 反向不变量：组织管理员若不传 orgUsernames（异常路径），保持 self(userID=0) 恒空，
+	// 不会静默退化成看全组织。
+	noScopeRows, err := GetFlowQuotaData(900, 2000, "", 0, common.RoleCommonUser, nil)
+	require.NoError(t, err)
+	require.Empty(t, noScopeRows)
 }
 
 func TestLogQuotaDataSplitsRowsByUseGroupTokenChannelAndNode(t *testing.T) {
