@@ -97,7 +97,7 @@ func FlushBatch() (int, string, error) {
 		return 0, "", nil
 	}
 
-	jsonl := buildBatchJSONL(items)
+	jsonl := buildBatchJSONL(items, batchChatEndpoint(cfg))
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
@@ -124,8 +124,19 @@ func FlushBatch() (int, string, error) {
 	return len(items), batchID, nil
 }
 
+// batchChatEndpoint 解析批内每条请求使用的 chat 端点（智谱填 /v4/chat/completions）。
+func batchChatEndpoint(cfg *costoptcfg.CostOptSetting) string {
+	if cfg != nil && cfg.BatchChatEndpoint != "" {
+		return cfg.BatchChatEndpoint
+	}
+	return costoptcfg.DefaultBatchChatEndpoint
+}
+
 // buildBatchJSONL 把条目拼成 OpenAI Batch 要求的 JSONL：每行带 custom_id 与 body。
-func buildBatchJSONL(items []BatchItem) string {
+func buildBatchJSONL(items []BatchItem, chatEndpoint string) string {
+	if chatEndpoint == "" {
+		chatEndpoint = costoptcfg.DefaultBatchChatEndpoint
+	}
 	var b strings.Builder
 	for i, it := range items {
 		body := it.Payload
@@ -135,7 +146,7 @@ func buildBatchJSONL(items []BatchItem) string {
 		line := map[string]any{
 			"custom_id": fmt.Sprintf("uter-%d-%d", time.Now().UnixNano(), i),
 			"method":    "POST",
-			"url":       "/v1/chat/completions",
+			"url":       chatEndpoint,
 			"body":      json.RawMessage(body),
 		}
 		raw, err := json.Marshal(line)
@@ -166,8 +177,12 @@ func uploadBatchFile(ctx context.Context, cfg *costoptcfg.CostOptSetting, jsonl 
 		return "", err
 	}
 
+	filesPath := cfg.BatchFilesPath
+	if filesPath == "" {
+		filesPath = "/v1/files"
+	}
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost,
-		normalizeBaseURL(cfg.BatchAPIBaseURL)+"/v1/files", &buf)
+		normalizeBaseURL(cfg.BatchAPIBaseURL)+ensureLeadingSlash(filesPath), &buf)
 	if err != nil {
 		return "", err
 	}
@@ -208,7 +223,7 @@ func createBatch(ctx context.Context, cfg *costoptcfg.CostOptSetting, fileID str
 	}
 	payload, err := json.Marshal(map[string]any{
 		"input_file_id":     fileID,
-		"endpoint":          "/v1/chat/completions",
+		"endpoint":          batchChatEndpoint(cfg),
 		"completion_window": window,
 		"metadata":          cfg.BatchMetadata,
 	})
