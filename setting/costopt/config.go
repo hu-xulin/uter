@@ -26,6 +26,10 @@ type ShortCircuitRule struct {
 	Priority int `json:"priority"`
 }
 
+// DefaultBatchChatEndpoint 批内 chat 端点的 OpenAI 兼容默认值。
+// 上游用 /v4 前缀（如智谱）时，改配置项 BatchChatEndpoint 覆盖。
+const DefaultBatchChatEndpoint = "/v1/chat/completions"
+
 // CostOptSetting 降本中间层配置（轻资产业务无关、纯软件，无服务器重资产）。
 // 全部字段通过 config.GlobalConfig 从数据库 Options 表加载（前缀 costopt_setting.）。
 type CostOptSetting struct {
@@ -108,6 +112,9 @@ type CostOptSetting struct {
 	SemanticCacheEmbedBaseURL   string  `json:"semantic_cache_embed_base_url"`
 	SemanticCacheEmbedAPIKey    string  `json:"semantic_cache_embed_api_key"`
 	SemanticCacheEmbedModel     string  `json:"semantic_cache_embed_model"`
+	// SemanticCacheEmbedEndpoint embeddings 端点完整路径；默认 /v1/embeddings。
+	// 智谱(BigModel/GLM)填 /api/paas/v4/embeddings（base 仅到主机，如 https://open.bigmodel.cn）。
+	SemanticCacheEmbedEndpoint string `json:"semantic_cache_embed_endpoint"`
 	SemanticCacheTopK           int     `json:"semantic_cache_top_k"`
 	SemanticCacheScoreThreshold float64 `json:"semantic_cache_score_threshold"`
 	SemanticCacheDim            int     `json:"semantic_cache_dim"`
@@ -130,6 +137,13 @@ type CostOptSetting struct {
 	PromptCompressionAPIBaseURL string  `json:"prompt_compression_api_base_url"`
 	PromptCompressionAPIKey     string  `json:"prompt_compression_api_key"`
 	PromptCompressionMaxRatio   float64 `json:"prompt_compression_max_ratio"`
+	// PromptCompressionReasoningReserve 压缩模型为 reasoning 类型（思考 token 与输出共用
+	// max_tokens 预算）时预留的倍数（默认 3）。预留后输出预算 = 内容预算 × 该倍数，否则
+	// 思考吃掉预算导致 content 为空、压缩静默失效（实测 gpt-oss-120b 思考 1584/1586 → 空输出）。
+	PromptCompressionReasoningReserve float64 `json:"prompt_compression_reasoning_reserve"`
+	// PromptCompressionMaxTotalTokens 压缩调用的「输入估算+输出预算」token 硬上限，避免触发
+	// 上游 TPM 限制（如 Groq 免费档 TPM=8000）导致 413。0=不限制（保持旧行为）。
+	PromptCompressionMaxTotalTokens int `json:"prompt_compression_max_total_tokens"`
 
 	// 21. 工具定义精简：发送前裁剪 tools schema
 	ToolDefTrimEnabled          bool `json:"tool_def_trim_enabled"`
@@ -140,6 +154,14 @@ type CostOptSetting struct {
 	RAGEnabled  bool   `json:"rag_enabled"`
 	RAGEndpoint string `json:"rag_endpoint"`
 	RAGAPIKey   string `json:"rag_api_key"`
+	// RAG 净收益闸门：注入上下文会增加输入 token，若其相对原始 prompt 过大（或超绝对上限），
+	// 视为净负（实测：注入 +200 token 却无任何可测节省 → 纯亏），自动跳过注入。
+	//   - RAGNetBenefitEnabled：总开关（默认开）。
+	//   - RAGInjectedVsPromptTokensRatio：注入 token / 原始 prompt token 的比值上限，超过即跳过（默认 4）。
+	//   - RAGMaxInjectedTokens：注入 token 绝对上限，超过即跳过（0=用 RAGMaxContextTokens 兜底）。
+	RAGNetBenefitEnabled           bool    `json:"rag_net_benefit_enabled"`
+	RAGInjectedVsPromptTokensRatio float64 `json:"rag_injected_vs_prompt_tokens_ratio"`
+	RAGMaxInjectedTokens           int     `json:"rag_max_injected_tokens"`
 
 	// 29. 长任务状态持久化：把旧事实外置为系统注记（复用摘要能力）
 	LongTaskPersistEnabled bool `json:"long_task_persist_enabled"`
@@ -156,6 +178,9 @@ type CostOptSetting struct {
 	BatchEmbedBaseURL string `json:"batch_embed_base_url"`
 	BatchEmbedAPIKey  string `json:"batch_embed_api_key"`
 	BatchEmbedModel   string `json:"batch_embed_model"`
+	// BatchEmbedEndpoint embeddings 端点完整路径；默认 /v1/embeddings。
+	// 智谱(BigModel/GLM)填 /api/paas/v4/embeddings（base 仅到主机，如 https://open.bigmodel.cn）。
+	BatchEmbedEndpoint string `json:"batch_embed_endpoint"`
 
 	// 33. Agent 步数预算：按会话步数/Token 预算
 	AgentStepBudgetEnabled   bool   `json:"agent_step_budget_enabled"`
@@ -319,6 +344,12 @@ type CostOptSetting struct {
 	BatchResultPath string `json:"batch_result_path"`
 	// BatchMetadata 随批提交的元数据（便于对账）。
 	BatchMetadata map[string]string `json:"batch_metadata"`
+	// BatchChatEndpoint 批内每条请求的 chat 端点（默认 /v1/chat/completions）。
+	// 智谱等使用 /v4 前缀的厂商必须填 /v4/chat/completions，否则上游拒绝。
+	BatchChatEndpoint string `json:"batch_chat_endpoint"`
+	// BatchFilesPath 上传批文件（JSONL）的路径（默认 /v1/files）。
+	// 智谱填 /v4/files。base 里的版本段会被剥离，故此处需自带版本前缀。
+	BatchFilesPath string `json:"batch_files_path"`
 
 	// 41. 成本 per 成功任务（补上「成功信号」，避免省 token 却降质量的假节省）
 	// CostPerSuccessSignal 成功判定来源：http_ok | no_error | json_field。
@@ -365,6 +396,11 @@ var costOptSetting = CostOptSetting{
 	SemanticCacheTTLSeconds:     300,
 	SemanticCacheTopK:           3,
 	SemanticCacheScoreThreshold: 0.92,
+	// 语义缓存 embedding 供应商默认指向智谱(BigModel)，endpoint 用 /api/paas/v4/embeddings。
+	SemanticCacheEmbedBaseURL:   "https://open.bigmodel.cn",
+	SemanticCacheEmbedAPIKey:    "46f90d2f5c5346b8bcdbeaebdae36699.VuUPspiwVxio4KkX", // 本地默认；含密钥，提交前请改为经后台「降本优化」表单录入或移入 Options 表，勿提交明文密钥。
+	SemanticCacheEmbedModel:     "embedding-2",
+	SemanticCacheEmbedEndpoint:  "/api/paas/v4/embeddings",
 	ToolResultCacheEnabled:      false,
 	ToolResultCacheTTLSeconds:   600,
 	CacheWarmupEnabled:          false,
@@ -378,7 +414,15 @@ var costOptSetting = CostOptSetting{
 	LongTaskPersistEnabled:      false,
 	BatchEnabled:                false,
 	BatchPollIntervalSeconds:    30,
-	BatchEmbedEnabled:           false,
+	BatchChatEndpoint:           DefaultBatchChatEndpoint,
+	BatchFilesPath:              "/v1/files",
+	// 批量 Embedding 供应商默认指向智谱(BigModel)：base 仅到主机，endpoint 用 /api/paas/v4/embeddings，
+	// 模型用 embedding-2（智谱的向量模型；GLM-4-Flash 是对话模型、不能产出向量，勿填）。
+	BatchEmbedEnabled:           true,
+	BatchEmbedBaseURL:           "https://open.bigmodel.cn",
+	BatchEmbedAPIKey:            "46f90d2f5c5346b8bcdbeaebdae36699.VuUPspiwVxio4KkX", // 本地默认；含密钥，提交前请改为经后台「降本优化」表单录入或移入 Options 表，勿提交明文密钥。
+	BatchEmbedModel:             "embedding-2",
+	BatchEmbedEndpoint:          "/api/paas/v4/embeddings",
 	AgentStepBudgetEnabled:      false,
 	AgentStepBudgetMaxSteps:     20,
 	AgentStepBudgetMaxTokens:    200000,
@@ -424,6 +468,14 @@ var costOptSetting = CostOptSetting{
 	RAGTimeoutMS:        1500,
 	RAGInjectPosition:   "system",
 	RAGQueryFromLastN:   2,
+
+	// RAG 净收益闸门默认开：注入 token 超过原始 prompt 的 4 倍即视为净负。
+	// 旧部署 Options 表无这些键时靠这里兜底，否则 bool 零值 false 会让闸门静默失效。
+	RAGNetBenefitEnabled:           true,
+	RAGInjectedVsPromptTokensRatio: 4.0,
+
+	// Prompt 压缩：reasoning 模型预留 3 倍思考预算；总 token 上限 0=不限制
+	// （调用侧对 <=0 已兜底为 3.0，此处保持 0 以免覆盖用户显式配置）。
 
 	LongTaskFactInterval: 5,
 	LongTaskMaxFacts:     50,

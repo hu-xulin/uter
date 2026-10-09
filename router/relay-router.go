@@ -41,8 +41,25 @@ func SetRelayRouter(router *gin.Engine) {
 		c.JSON(http.StatusOK, costopt.MetricsSnapshotNow())
 	})
 
+	// 独立的批量提交 API（智谱 GLM-4-Flash 等 Batch 上游）。
+	//
+	// 为何独立于 /v1/chat/completions：Batch 是异步的（智谱预计 24h 内出结果），
+	// 而 chat 调用方要同步拿到 completion。把同步流量自动转 batch 会让调用方收到
+	// 空响应＝破坏性，故这里只提供显式的离线提交/查询/下载端点，供后台脚本或
+	// 离线任务使用，对既有中转接口零影响。鉴权同为 AdminAuth（与 metrics 一致：
+	// 批任务跨租户聚合，且提交会消耗平台上游额度）。
+	batchRoute := router.Group("/api/costopt/batch")
+	batchRoute.Use(middleware.AdminAuth())
+	{
+		batchRoute.POST("/submit", costopt.SubmitBatchHTTP)
+		batchRoute.GET("/:id", costopt.BatchDetailHTTP)
+		batchRoute.GET("/:id/result", costopt.BatchResultHTTP)
+	}
+
 	// 启动期缓存预热（CacheWarmupEnabled 且配置了条目时写入精确缓存）。
 	costopt.WarmupCache()
+	// 启动批处理调度器（batch_enabled 时把 BatchQueue 驱动起来，定时 flush + 轮询）。
+	costopt.StartBatchScheduler()
 	// https://platform.openai.com/docs/api-reference/introduction
 	modelsRouter := router.Group("/v1/models")
 	modelsRouter.Use(middleware.RouteTag("relay"))

@@ -122,6 +122,7 @@ const defaultModelSettings: ModelSettings = {
   'costopt_setting.batch_api_base_url': '',
   'costopt_setting.batch_api_key': '',
   'costopt_setting.batch_endpoint_path': '/v1/batches',
+  'costopt_setting.batch_chat_endpoint': '/v1/chat/completions',
   'costopt_setting.batch_result_path': '/v1/batches/{id}',
   'costopt_setting.batch_completion_window': '24h',
   'costopt_setting.batch_max_items': 100,
