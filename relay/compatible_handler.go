@@ -25,6 +25,57 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// mapAliasToUpstream 把单个网关别名解析为上游真名；未配置映射时原样返回。
+func mapAliasToUpstream(c *gin.Context, alias string) string {
+	if c == nil || alias == "" {
+		return alias
+	}
+	modelMapping := c.GetString("model_mapping")
+	if modelMapping == "" || modelMapping == "{}" {
+		return alias
+	}
+	modelMap := make(map[string]string)
+	if err := common.Unmarshal([]byte(modelMapping), &modelMap); err != nil {
+		return alias
+	}
+	current := alias
+	visited := map[string]bool{current: true}
+	for i := 0; i < 8; i++ {
+		next, ok := modelMap[current]
+		if !ok || next == "" || visited[next] {
+			break
+		}
+		visited[next] = true
+		current = next
+	}
+	return current
+}
+
+// resolveRewrittenModelMapping 在降本钩子改写模型名之后，把「网关别名」重新解析为
+// 「上游真名」。
+//
+// 背景：ModelMappedHelper 只在 relay 入口跑一次，把 request.Model 从网关别名映射成
+// 上游名（如 sf-qwen3-8b → Qwen/Qwen3-8B）。而 Cascade / RouterLM / 复杂度路由 /
+// 套利 / 价值层 / 分层 这些钩子配置里填的是网关别名，它们在映射之后改写 request.Model，
+// 于是别名被原样发往上游，上游按真实模型名索引 → 404「Model does not exist」。
+//
+// 这里做一次幂等的补映射：把当前 request.Model 当作别名再查一次 model_mapping；
+// 查不到就说明它本来就是上游名，保持不变（幂等，不会二次映射已映射的名字）。
+func resolveRewrittenModelMapping(c *gin.Context, info *relaycommon.RelayInfo, request *dto.GeneralOpenAIRequest) bool {
+	if request == nil || request.Model == "" {
+		return false
+	}
+	upstream := mapAliasToUpstream(c, request.Model)
+	if upstream == request.Model {
+		return false
+	}
+	request.Model = upstream
+	if info != nil {
+		info.UpstreamModelName = upstream
+	}
+	return true
+}
+
 // collectHeaderHints 收集用于「后台流量」判定的请求头。
 // 只取少量常见标记头，避免全量拷贝请求头带来的无谓开销。
 func collectHeaderHints(c *gin.Context) map[string]string {
@@ -132,6 +183,10 @@ func TextHelper(c *gin.Context, info *relaycommon.RelayInfo) (uterError *types.U
 	costopt.ApplyToolCallDedup(request)
 	// 0.9) 结构化输出约束（中转层强制策略，抑制啰嗦输出；输出通常比输入贵 2–5×）
 	costopt.ApplyStructuredOutput(request)
+	// 0.95) 降本钩子改写的模型名是「网关别名」（如 sf-qwen3-8b），而 request.Model 在
+	// ModelMappedHelper 之后已是「上游名」（如 Qwen/Qwen3-8B）。若不重新解析，别名会被
+	// 原样发给上游 → 上游 404「Model does not exist」。这里对被改写过的模型再过一次映射。
+	resolveRewrittenModelMapping(c, info, request)
 	// 1) 零调用短路：命中规则直接返回预设答案，根本不调上游 LLM（该部分 100% 省去模型调用）
 	if shortAnswer, shortHit := costopt.MatchShortCircuit(request, info); shortHit {
 		costopt.IncShortCircuit()
@@ -322,7 +377,7 @@ func TextHelper(c *gin.Context, info *relaycommon.RelayInfo) (uterError *types.U
 	}
 
 	// LLM 级联升级：廉价模型返回拒绝/低质（非流式），在写入客户端前升级到贵模型再发。
-	if costopt.CascadeActiveFor(request) {
+	if costopt.CascadeActiveFor(request, info.OriginModelName) {
 		raw, readErr := io.ReadAll(httpResp.Body)
 		httpResp.Body.Close()
 		if readErr != nil {
@@ -330,7 +385,14 @@ func TextHelper(c *gin.Context, info *relaycommon.RelayInfo) (uterError *types.U
 		}
 		if costopt.IsCascadeRefusal(string(raw)) {
 			if premium := costopt.CascadePremiumModelName(); premium != "" && premium != request.Model {
-				request.Model = premium
+				// 升级到贵模型重发：贵模型名配置的是网关别名，同样需要再过一次 model_mapping，
+				// 否则别名会被原样发给上游导致 404。
+				upstreamPremium := premium
+				if mapped := mapAliasToUpstream(c, premium); mapped != "" {
+					upstreamPremium = mapped
+				}
+				request.Model = upstreamPremium
+				info.UpstreamModelName = upstreamPremium
 				upgraded, uerr := relayAttempt()
 				if uerr != nil {
 					return uerr
