@@ -21,6 +21,9 @@ import { useTranslation } from 'react-i18next'
 
 import useDialogState from '@/hooks/use-dialog'
 import { handleServerError } from '@/lib/handle-server-error'
+import { AuthOperationError } from '@/lib/secure-verification'
+
+import { useSecureVerification } from '@/features/auth/secure-verification'
 
 import { fetchTokenKey, fetchTokenKeysBatch } from '../api'
 import { ERROR_MESSAGES } from '../constants'
@@ -47,6 +50,9 @@ const ApiKeysContext = React.createContext<ApiKeysContextType | null>(null)
 
 export function ApiKeysProvider({ children }: { children: React.ReactNode }) {
   const { t } = useTranslation()
+  // 取回明文 sk- 属高危操作，所有 reveal 入口统一在此请求二次验证（Passkey / 2FA / 密码）。
+  const verification = useSecureVerification()
+  const requestVerification = verification.requestVerification
   const [open, setOpen] = useDialogState<ApiKeysDialogType>(null)
   const [currentRow, setCurrentRow] = useState<ApiKey | null>(null)
   const [refreshTrigger, setRefreshTrigger] = useState(0)
@@ -81,7 +87,9 @@ export function ApiKeysProvider({ children }: { children: React.ReactNode }) {
       const request = (async () => {
         setLoadingKeys((prev) => ({ ...prev, [id]: true }))
         try {
-          const res = await fetchTokenKey(id)
+          const proof = await requestVerification({ scope: 'token.key.read' })
+          if (!proof) return null
+          const res = await fetchTokenKey(id, proof.proof_token)
           if (res.success && res.data?.key) {
             const fullKey = `sk-${res.data.key}`
             setResolvedKeys((prev) => ({ ...prev, [id]: fullKey }))
@@ -90,7 +98,10 @@ export function ApiKeysProvider({ children }: { children: React.ReactNode }) {
           handleServerError(res, t(ERROR_MESSAGES.UNEXPECTED))
           return null
         } catch (error) {
-          handleServerError(error, t(ERROR_MESSAGES.UNEXPECTED))
+          handleServerError(
+            AuthOperationError.from(error),
+            t(ERROR_MESSAGES.UNEXPECTED)
+          )
           return null
         } finally {
           delete pendingRequests.current[id]
@@ -105,7 +116,7 @@ export function ApiKeysProvider({ children }: { children: React.ReactNode }) {
       pendingRequests.current[id] = request
       return request
     },
-    [resolvedKeys, t]
+    [resolvedKeys, t, requestVerification]
   )
 
   const resolveRealKeysBatch = useCallback(
@@ -122,7 +133,9 @@ export function ApiKeysProvider({ children }: { children: React.ReactNode }) {
       }
 
       try {
-        const res = await fetchTokenKeysBatch(uncachedIds)
+        const proof = await requestVerification({ scope: 'token.key.read' })
+        if (!proof) return {}
+        const res = await fetchTokenKeysBatch(uncachedIds, proof.proof_token)
         if (res.success && res.data?.keys) {
           const newKeys: Record<number, string> = {}
           for (const [idStr, key] of Object.entries(res.data.keys)) {
@@ -139,7 +152,10 @@ export function ApiKeysProvider({ children }: { children: React.ReactNode }) {
         handleServerError(res, t(ERROR_MESSAGES.UNEXPECTED))
         return {}
       } catch (error) {
-        handleServerError(error, t(ERROR_MESSAGES.UNEXPECTED))
+        handleServerError(
+          AuthOperationError.from(error),
+          t(ERROR_MESSAGES.UNEXPECTED)
+        )
         return {}
       } finally {
         for (const id of uncachedIds) {
@@ -151,7 +167,7 @@ export function ApiKeysProvider({ children }: { children: React.ReactNode }) {
         }
       }
     },
-    [resolvedKeys, t]
+    [resolvedKeys, t, requestVerification]
   )
 
   return (

@@ -24,6 +24,8 @@ import { toast } from 'sonner'
 import { ConfirmDialog } from '@/components/confirm-dialog'
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from '@/features/keys/constants'
 import { handleServerError } from '@/lib/handle-server-error'
+import { AuthOperationError } from '@/lib/secure-verification'
+import { useSecureVerification } from '@/features/auth/secure-verification'
 
 import { createDefaultChatKey } from '../hooks/use-active-chat-key'
 
@@ -48,12 +50,18 @@ export function ChatKeyDialog({
 }: ChatKeyDialogProps) {
   const { t } = useTranslation()
   const queryClient = useQueryClient()
+  // 取回新建密钥的明文 sk- 仍需二次验证。
+  const verification = useSecureVerification()
   const [isCreating, setIsCreating] = useState(false)
 
   const handleConfirm = useCallback(async () => {
     setIsCreating(true)
     try {
-      const apiKey = await createDefaultChatKey()
+      const proof = await verification.requestVerification({
+        scope: 'token.key.read',
+      })
+      if (!proof) return
+      const apiKey = await createDefaultChatKey(proof.proof_token)
       toast.success(t(SUCCESS_MESSAGES.API_KEY_CREATED))
       onOpenChange(false)
       onCreated?.(apiKey)
@@ -62,11 +70,14 @@ export function ChatKeyDialog({
         queryClient.invalidateQueries({ queryKey: ['keys'] }),
       ])
     } catch (error) {
-      handleServerError(error, t(ERROR_MESSAGES.CREATE_FAILED))
+      handleServerError(
+        AuthOperationError.from(error),
+        t(ERROR_MESSAGES.CREATE_FAILED)
+      )
     } finally {
       setIsCreating(false)
     }
-  }, [onCreated, onOpenChange, queryClient, t])
+  }, [onCreated, onOpenChange, queryClient, t, verification])
 
   return (
     <ConfirmDialog

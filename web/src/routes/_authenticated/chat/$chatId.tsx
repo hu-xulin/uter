@@ -17,7 +17,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@uter.ai
 */
 import { Link, createFileRoute, redirect } from '@tanstack/react-router'
-import { Loader2, MessageCircleWarning } from 'lucide-react'
+import { Loader2, MessageCircleWarning, ShieldCheck } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -61,19 +61,14 @@ function ChatRouteComponent() {
     return chatLinkRequiresApiKey(preset.url ?? '')
   }, [isWebLink, preset])
 
-  const {
-    data: activeKey,
-    isPending,
-    isError,
-    error,
-  } = useActiveChatKey(Boolean(preset && requiresActiveKey))
+  const { activeKey, isPending, isError, error, reveal } = useActiveChatKey()
 
   const iframeSrc = useMemo(() => {
     if (!preset || !isWebLink) return ''
     if (requiresActiveKey && !activeKey) return ''
     return resolveChatUrl({
       template: preset.url,
-      apiKey: requiresActiveKey ? activeKey : undefined,
+      apiKey: requiresActiveKey ? (activeKey ?? undefined) : undefined,
       serverAddress,
     })
   }, [activeKey, isWebLink, preset, requiresActiveKey, serverAddress])
@@ -124,6 +119,29 @@ function ChatRouteComponent() {
         <p className='text-muted-foreground text-sm'>
           {t('Preparing your chat link…')}
         </p>
+      </div>
+    )
+  }
+
+  // 需要明文密钥的聊天预设：先让用户完成二次验证再取回并加载。
+  if (requiresActiveKey && !activeKey && !isPending && !isError) {
+    return (
+      <div className='flex h-full flex-col items-center justify-center gap-4 p-6 text-center'>
+        <ShieldCheck className='text-muted-foreground h-12 w-12' />
+        <div className='space-y-1'>
+          <h2 className='text-lg font-semibold'>
+            {t('Verify to open chat link')}
+          </h2>
+          <p className='text-muted-foreground'>
+            {t(
+              'This chat link needs your API key. Confirm your identity to reveal it and continue.'
+            )}
+          </p>
+        </div>
+        <Button onClick={() => void reveal()} disabled={isPending}>
+          {isPending && <Loader2 className='size-4 animate-spin' />}
+          {t('Verify and open chat')}
+        </Button>
       </div>
     )
   }

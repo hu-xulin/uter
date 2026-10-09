@@ -23,7 +23,11 @@ const { api } = await import('@/lib/api')
 const { fetchActiveChatKey, createDefaultChatKey, NoActiveChatKeyError } =
   await import('../use-active-chat-key')
 
-type ApiMethod = (url: string, data?: unknown) => Promise<{ data: unknown }>
+type ApiMethod = (
+  url: string,
+  data?: unknown,
+  config?: { headers?: Record<string, string> }
+) => Promise<{ data: unknown }>
 type MockableApi = { get: ApiMethod; post: ApiMethod }
 
 const apiClient = api as unknown as MockableApi
@@ -75,6 +79,33 @@ describe('fetchActiveChatKey', () => {
 
     await expect(fetchActiveChatKey()).resolves.toBe('sk-abcdef')
     expect(postedUrls).toEqual(['/api/token/9/key'])
+  })
+
+  test('forwards the security proof header when a proof token is provided', async () => {
+    respondWithTokens([{ id: 9, status: 1 }])
+    let captured: { url: string; config?: { headers?: Record<string, string> } } | null =
+      null
+    apiClient.post = async (url, _data, config) => {
+      captured = { url, config }
+      return { data: { success: true, data: { key: 'abcdef' } } }
+    }
+
+    await expect(fetchActiveChatKey('proof-abc')).resolves.toBe('sk-abcdef')
+    expect(captured?.url).toBe('/api/token/9/key')
+    expect(captured?.config?.headers?.['X-Security-Proof']).toBe('proof-abc')
+  })
+
+  test('omits the security proof header when no proof token is provided', async () => {
+    respondWithTokens([{ id: 9, status: 1 }])
+    let captured: { url: string; config?: { headers?: Record<string, string> } } | null =
+      null
+    apiClient.post = async (url, _data, config) => {
+      captured = { url, config }
+      return { data: { success: true, data: { key: 'abcdef' } } }
+    }
+
+    await expect(fetchActiveChatKey()).resolves.toBe('sk-abcdef')
+    expect(captured?.config?.headers?.['X-Security-Proof']).toBeUndefined()
   })
 })
 
