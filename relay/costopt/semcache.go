@@ -80,6 +80,9 @@ func StoreSemantic(ctx context.Context, req *dto.GeneralOpenAIRequest, resp []by
 	if prompt == "" {
 		return
 	}
+	// 同样在响应写回后执行，请求上下文已取消；脱离它，否则 embedding 与 Redis 全失败。
+	ctx, cancel := cacheWriteCtx()
+	defer cancel()
 	cfg := costoptcfg.GetCostOptSetting()
 	vecs, err := openAIEmbed(ctx, cfg.SemanticCacheEmbedBaseURL, cfg.SemanticCacheEmbedAPIKey, cfg.SemanticCacheEmbedModel, []string{prompt})
 	if err != nil || len(vecs) == 0 {

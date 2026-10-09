@@ -64,7 +64,10 @@ func StoreNegative(ctx context.Context, key string, statusCode int) {
 	if statusCode == 0 {
 		statusCode = http.StatusBadRequest
 	}
-	_ = rdb.Set(ctx, key, strconv.Itoa(statusCode), time.Duration(ttl)*time.Second)
+	// 错误路径回写，同样可能已脱离请求上下文；用独立短超时上下文保证能落盘。
+	wctx, cancel := cacheWriteCtx()
+	defer cancel()
+	_ = rdb.Set(wctx, key, strconv.Itoa(statusCode), time.Duration(ttl)*time.Second)
 }
 
 var _ = redis.Nil // 保持 redis 依赖显式（与 cache.go 一致）

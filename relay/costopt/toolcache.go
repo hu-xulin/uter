@@ -47,5 +47,8 @@ func SetToolResult(ctx context.Context, key string, val []byte) {
 	if ttl <= 0 {
 		ttl = 600
 	}
-	common.RDB.Set(ctx, key, val, time.Duration(ttl)*time.Second)
+	// 工具结果由 Agent 在请求外/响应后回写，脱离请求上下文避免 context canceled。
+	wctx, cancel := cacheWriteCtx()
+	defer cancel()
+	common.RDB.Set(wctx, key, val, time.Duration(ttl)*time.Second)
 }

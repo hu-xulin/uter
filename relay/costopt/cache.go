@@ -129,6 +129,17 @@ func ReleaseOwner(key string) {
 	}
 }
 
+// cacheWriteCtx 返回一个脱离请求生命周期的短超时上下文，专用于 fire-and-forget 的缓存回写。
+//
+// 为什么必须脱离：这些回写发生在 DoResponse 把响应写回客户端之后，此时
+// c.Request.Context() 已被取消（Go 在响应写完后即 cancel 请求上下文）。若沿用入参 ctx，
+// rdb.Set 会以 "context canceled" 失败，而错误又被 `_ =` 丢弃，导致精确/语义/负缓存
+// 永不落盘（现象：配置全开、Redis 正常，却永远没有 uter:resp_cache:* 键）。
+// 读路径（ReserveOrGet/CheckNegative）仍用请求上下文——客户端断开时应当 promptly 中断读。
+func cacheWriteCtx() (context.Context, context.CancelFunc) {
+	return context.WithTimeout(context.Background(), 3*time.Second)
+}
+
 // Store 写入缓存（仅成功响应、且仅非流式）。
 func Store(ctx context.Context, key string, data []byte, ttlSeconds int) {
 	rdb := common.RDB
@@ -138,7 +149,9 @@ func Store(ctx context.Context, key string, data []byte, ttlSeconds int) {
 	if ttlSeconds <= 0 {
 		ttlSeconds = 300
 	}
-	_ = rdb.Set(ctx, key, data, time.Duration(ttlSeconds)*time.Second)
+	wctx, cancel := cacheWriteCtx()
+	defer cancel()
+	_ = rdb.Set(wctx, key, data, time.Duration(ttlSeconds)*time.Second)
 }
 
 // StoreIfCachable 回写缓存：仅当缓存启用、buf 非空、且 completionTokens 未超上限时写入。
