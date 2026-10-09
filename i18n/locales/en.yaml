@@ -33,6 +33,7 @@ common.invalid_param_format: "The request format is incorrect. Please check the 
 common.unsupported_operation: "This action isn't supported."
 common.not_logged_in: "Please sign in first."
 common.user_not_found: "We couldn't find that account."
+common.demo_site_read_only: "The demo site is read-only; write operations are disabled."
 common.invalid_user_id: "This user ID is invalid."
 common.invalid_subscription_id: "This subscription ID is invalid."
 common.invalid_provider_id: "This provider ID is invalid."

@@ -22,6 +22,8 @@ func SetApiRouter(router *gin.Engine) {
 	apiRouter.Use(middleware.AccessTokenAudit())
 	apiRouter.Use(middleware.BodyStorageCleanup()) // 清理请求体存储
 	apiRouter.Use(middleware.GlobalAPIRateLimit())
+	// 演示站只读模式：开启后拒绝一切敏感写操作（登录/OAuth/支付回拨等白名单除外）。
+	apiRouter.Use(middleware.DemoSiteReadOnly())
 	anonymousRequestBodyLimit := middleware.AnonymousRequestBodyLimit()
 	{
 		apiRouter.GET("/setup", controller.GetSetup)
@@ -71,10 +73,10 @@ func SetApiRouter(router *gin.Engine) {
 
 		// 智能客服（uter-cs）管理端代理：读取/保存其大模型配置。受 AdminAuth 保护，
 		// 实际请求由 Uter 后端携带 common.CustomerServiceAdminToken 转发给 uter-cs。
-	apiRouter.GET("/customer-service/deploy/llm", middleware.AdminAuth(), controller.GetCustomerServiceLLMConfig)
-	apiRouter.PUT("/customer-service/deploy/llm", middleware.AdminAuth(), controller.UpdateCustomerServiceLLMConfig)
-	// 仅回显当前存储的 uter-cs 管理员令牌，供前端以「与密钥一致的掩码规则」展示。
-	apiRouter.GET("/customer-service/admin-token", middleware.AdminAuth(), controller.GetCustomerServiceAdminToken)
+		apiRouter.GET("/customer-service/deploy/llm", middleware.AdminAuth(), controller.GetCustomerServiceLLMConfig)
+		apiRouter.PUT("/customer-service/deploy/llm", middleware.AdminAuth(), controller.UpdateCustomerServiceLLMConfig)
+		// 仅回显当前存储的 uter-cs 管理员令牌，供前端以「与密钥一致的掩码规则」展示。
+		apiRouter.GET("/customer-service/admin-token", middleware.AdminAuth(), controller.GetCustomerServiceAdminToken)
 
 		apiRouter.POST("/stripe/webhook", anonymousRequestBodyLimit, controller.StripeWebhook)
 		apiRouter.POST("/creem/webhook", anonymousRequestBodyLimit, controller.CreemWebhook)

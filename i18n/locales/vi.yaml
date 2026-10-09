@@ -30,6 +30,7 @@ common.invalid_param_format: "Định dạng yêu cầu không đúng. Hãy ki�
 common.unsupported_operation: "Thao tác này không được hỗ trợ."
 common.not_logged_in: "Vui lòng đăng nhập trước."
 common.user_not_found: "Không tìm thấy tài khoản."
+common.demo_site_read_only: "Trang demo ở chế độ chỉ đọc; các thao tác ghi bị vô hiệu hóa."
 common.invalid_user_id: "ID người dùng này không hợp lệ."
 common.invalid_subscription_id: "ID gói đăng ký này không hợp lệ."
 common.invalid_provider_id: "ID nhà cung cấp này không hợp lệ."

@@ -441,6 +441,15 @@ func GetUser(c *gin.Context) {
 	}
 	user, err := model.GetUserById(id, false)
 	if err != nil {
+		// 不存在的 ID 必须返回 404 语义，而不是 200 + 裸「record not found」，
+		// 否则调用方无法区分「查无此人」与「服务端错误」（BE-USR-016）。
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			c.JSON(http.StatusNotFound, gin.H{
+				"success": false,
+				"message": common.TranslateMessage(c, i18n.MsgCommonUser_not_found),
+			})
+			return
+		}
 		common.ApiError(c, err)
 		return
 	}
