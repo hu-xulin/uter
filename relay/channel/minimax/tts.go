@@ -174,6 +174,7 @@ func handleTTSResponse(c *gin.Context, resp *http.Response, info *relaycommon.Re
 }
 
 func handleChatCompletionResponse(c *gin.Context, resp *http.Response, info *relaycommon.RelayInfo) (usage any, err *types.UterError) {
+	defer resp.Body.Close()
 	body, readErr := io.ReadAll(resp.Body)
 	if readErr != nil {
 		return nil, types.NewErrorWithStatusCode(
@@ -182,7 +183,6 @@ func handleChatCompletionResponse(c *gin.Context, resp *http.Response, info *rel
 			http.StatusInternalServerError,
 		)
 	}
-	defer resp.Body.Close()
 
 	// Set response headers
 	for key, values := range resp.Header {

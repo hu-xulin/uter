@@ -155,6 +155,19 @@ func validateLikePattern(input string) error {
 	return nil
 }
 
+// likeContains wraps keyword in a "contains" LIKE pattern, escaping wildcards
+// the caller supplied. Searches that build their pattern as "%"+keyword+"%"
+// must go through it: a keyword of "%" otherwise turns the query into a
+// full-table scan, and "_" silently widens every match. The result is only
+// meaningful together with `ESCAPE '!'`.
+func likeContains(keyword string) (string, error) {
+	pattern, err := sanitizeLikePattern(keyword)
+	if err != nil {
+		return "", err
+	}
+	return "%" + pattern + "%", nil
+}
+
 const searchHardLimit = 100
 
 func SearchUserTokens(userId int, keyword string, token string, offset int, limit int) (tokens []*Token, total int64, err error) {

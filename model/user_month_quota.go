@@ -13,7 +13,10 @@ import (
 // expensive, therefore the value is cached for a short window: a user's tier is
 // allowed to settle a minute late, which is fine because tiers are thresholds
 // over a whole month.
-const monthlyQuotaCacheTTL = 60 * time.Second
+const (
+	monthlyQuotaCacheTTL         = 60 * time.Second
+	monthlyQuotaCacheMaxEntries  = 4096
+)
 
 type monthlyQuotaEntry struct {
 	quota     int64
@@ -50,15 +53,32 @@ func GetUserMonthConsumedQuota(userId int) int64 {
 		quota:     quota,
 		expiresAt: now.Add(monthlyQuotaCacheTTL),
 	}
-	if len(monthlyQuotaCache) > 4096 {
-		for id, entry := range monthlyQuotaCache {
-			if now.Before(entry.expiresAt) {
-				delete(monthlyQuotaCache, id)
-			}
-		}
+	if len(monthlyQuotaCache) > monthlyQuotaCacheMaxEntries {
+		evictMonthlyQuotaCacheLocked(now, userId)
 	}
 	monthlyQuotaMu.Unlock()
 	return quota
+}
+
+// evictMonthlyQuotaCacheLocked drops expired entries first. A burst of
+// first-time users can leave every entry fresh, in which case the map is
+// rebuilt instead: entries are cheap to recompute, so shedding them beats
+// letting the map grow without bound. keepUserId survives the rebuild so a
+// caller that just paid for a SUM keeps its result.
+func evictMonthlyQuotaCacheLocked(now time.Time, keepUserId int) {
+	for id, entry := range monthlyQuotaCache {
+		if !now.Before(entry.expiresAt) {
+			delete(monthlyQuotaCache, id)
+		}
+	}
+	if len(monthlyQuotaCache) <= monthlyQuotaCacheMaxEntries {
+		return
+	}
+	kept := monthlyQuotaCache[keepUserId]
+	monthlyQuotaCache = make(map[int]*monthlyQuotaEntry, monthlyQuotaCacheMaxEntries/2)
+	if kept != nil {
+		monthlyQuotaCache[keepUserId] = kept
+	}
 }
 
 // GetUserMonthConsumedUSD converts GetUserMonthConsumedQuota into platform

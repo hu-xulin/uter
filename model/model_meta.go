@@ -565,14 +565,21 @@ func SearchModels(keyword string, vendor string, status string, syncOfficial str
 	var models []*Model
 	db := DB.Model(&Model{})
 	if keyword != "" {
-		like := "%" + keyword + "%"
-		db = db.Where("model_name LIKE ? OR description LIKE ? OR tags LIKE ?", like, like, like)
+		like, patternErr := likeContains(keyword)
+		if patternErr != nil {
+			return nil, 0, patternErr
+		}
+		db = db.Where("model_name LIKE ? ESCAPE '!' OR description LIKE ? ESCAPE '!' OR tags LIKE ? ESCAPE '!'", like, like, like)
 	}
 	if vendor != "" {
 		if vid, err := strconv.Atoi(vendor); err == nil {
 			db = db.Where("models.vendor_id = ?", vid)
 		} else {
-			db = db.Joins("JOIN vendors ON vendors.id = models.vendor_id").Where("vendors.name LIKE ?", "%"+vendor+"%")
+			vendorPattern, patternErr := likeContains(vendor)
+			if patternErr != nil {
+				return nil, 0, patternErr
+			}
+			db = db.Joins("JOIN vendors ON vendors.id = models.vendor_id").Where("vendors.name LIKE ? ESCAPE '!'", vendorPattern)
 		}
 	}
 	if statusValue, ok := parseModelStatusFilter(status); ok {

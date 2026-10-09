@@ -514,8 +514,12 @@ func SearchUsersScoped(keyword string, group string, role *int, status *int, sta
 	// orgId==0 表示平台管理员/Root：可见全部用户，不加组织过滤
 
 	// 构建搜索条件
-	likeCondition := "username LIKE ? OR email LIKE ? OR display_name LIKE ?"
-	likeArgs := []any{"%" + keyword + "%", "%" + keyword + "%", "%" + keyword + "%"}
+	keywordPattern, patternErr := likeContains(keyword)
+	if patternErr != nil {
+		return nil, 0, patternErr
+	}
+	likeCondition := "username LIKE ? ESCAPE '!' OR email LIKE ? ESCAPE '!' OR display_name LIKE ? ESCAPE '!'"
+	likeArgs := []any{keywordPattern, keywordPattern, keywordPattern}
 
 	// 尝试将关键字转换为整数ID
 	keywordInt, err := strconv.Atoi(keyword)

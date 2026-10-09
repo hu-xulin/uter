@@ -166,8 +166,11 @@ func SearchVendorsIncludingDefaults(keyword string, offset, limit int, associati
 func searchVendorsCore(keyword string, offset, limit int, includeDefault bool, association ...string) ([]*Vendor, int64, error) {
 	db := DB.Model(&Vendor{})
 	if keyword != "" {
-		like := "%" + keyword + "%"
-		db = db.Where("name LIKE ? OR description LIKE ?", like, like)
+		like, patternErr := likeContains(keyword)
+		if patternErr != nil {
+			return nil, 0, patternErr
+		}
+		db = db.Where("name LIKE ? ESCAPE '!' OR description LIKE ? ESCAPE '!'", like, like)
 	}
 	var vendors []*Vendor
 	if err := db.Order("id DESC").Find(&vendors).Error; err != nil {

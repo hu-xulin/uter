@@ -124,6 +124,14 @@ func ChargeViolationFeeIfNeeded(ctx *gin.Context, relayInfo *relaycommon.RelayIn
 	}
 
 	if err := PostConsumeQuota(relayInfo, feeQuota, 0, true); err != nil {
+		// Funding sources are debited before the token, so a failure here can
+		// leave money already moved with no consume log to balance it. No log is
+		// written on purpose — the amount actually taken is unknown, and a
+		// guessed value would break the invariant from the other side. A system
+		// error is raised instead so the discrepancy is reconcilable.
+		common.SysError(fmt.Sprintf(
+			"violation fee post-consume failed, possible unlogged debit (userId=%d, channelId=%d, quota=%d): %s",
+			relayInfo.UserId, relayInfo.ChannelId, feeQuota, err.Error()))
 		logger.LogError(ctx, fmt.Sprintf("failed to charge violation fee: %s", err.Error()))
 		return false
 	}
