@@ -35,8 +35,8 @@ func GetFileTypeFromUrl(c *gin.Context, url string, reason ...string) (string, e
 	}
 
 	if headerType := strings.TrimSpace(response.Header.Get("Content-Type")); headerType != "" {
-		if i := strings.Index(headerType, ";"); i != -1 {
-			headerType = headerType[:i]
+		if before, _, found := strings.Cut(headerType, ";"); found {
+			headerType = before
 		}
 		if headerType != "application/octet-stream" {
 			return headerType, nil
@@ -67,8 +67,8 @@ func GetFileTypeFromUrl(c *gin.Context, url string, reason ...string) (string, e
 	}
 
 	cleanedURL := url
-	if q := strings.Index(cleanedURL, "?"); q != -1 {
-		cleanedURL = cleanedURL[:q]
+	if before, _, found := strings.Cut(cleanedURL, "?"); found {
+		cleanedURL = before
 	}
 	if slash := strings.LastIndex(cleanedURL, "/"); slash != -1 && slash+1 < len(cleanedURL) {
 		last := cleanedURL[slash+1:]

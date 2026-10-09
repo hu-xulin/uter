@@ -250,8 +250,8 @@ func writeToDiskCache(base64Data string) (string, error) {
 func smartDetectMimeType(resp *http.Response, url string, fileBytes []byte) string {
 	// 1. 尝试从 Content-Type header 获取
 	mimeType := resp.Header.Get("Content-Type")
-	if idx := strings.Index(mimeType, ";"); idx != -1 {
-		mimeType = strings.TrimSpace(mimeType[:idx])
+	if before, _, found := strings.Cut(mimeType, ";"); found {
+		mimeType = strings.TrimSpace(before)
 	}
 	if mimeType != "" && mimeType != "application/octet-stream" {
 		return mimeType
@@ -293,8 +293,8 @@ func smartDetectMimeType(resp *http.Response, url string, fileBytes []byte) stri
 		sniffed := http.DetectContentType(fileBytes)
 		if sniffed != "" && sniffed != "application/octet-stream" {
 			// 去除可能的 charset 参数
-			if idx := strings.Index(sniffed, ";"); idx != -1 {
-				sniffed = strings.TrimSpace(sniffed[:idx])
+			if before, _, found := strings.Cut(sniffed, ";"); found {
+				sniffed = strings.TrimSpace(before)
 			}
 			return sniffed
 		}
@@ -592,8 +592,8 @@ func findISPE(data []byte) (int, int, bool) {
 // guessMimeTypeFromURL 从 URL 猜测 MIME 类型
 func guessMimeTypeFromURL(url string) string {
 	cleanedURL := url
-	if q := strings.Index(cleanedURL, "?"); q != -1 {
-		cleanedURL = cleanedURL[:q]
+	if before, _, found := strings.Cut(cleanedURL, "?"); found {
+		cleanedURL = before
 	}
 
 	if slash := strings.LastIndex(cleanedURL, "/"); slash != -1 && slash+1 < len(cleanedURL) {

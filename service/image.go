@@ -20,8 +20,8 @@ import (
 // return image.Config, format, clean base64 string, error
 func DecodeBase64ImageData(base64String string) (image.Config, string, string, error) {
 	// 去除base64数据的URL前缀（如果有）
-	if idx := strings.Index(base64String, ","); idx != -1 {
-		base64String = base64String[idx+1:]
+	if _, after, found := strings.Cut(base64String, ","); found {
+		base64String = after
 	}
 
 	if len(base64String) == 0 {
@@ -43,26 +43,25 @@ func DecodeBase64ImageData(base64String string) (image.Config, string, string, e
 
 func DecodeBase64FileData(base64String string) (string, string, error) {
 	var mimeType string
-	var idx int
-	idx = strings.Index(base64String, ",")
-	if idx == -1 {
+	before, after, found := strings.Cut(base64String, ",")
+	if !found {
 		_, file_type, base64, err := DecodeBase64ImageData(base64String)
 		return "image/" + file_type, base64, err
 	}
-	mimeType = base64String[:idx]
-	base64String = base64String[idx+1:]
-	idx = strings.Index(mimeType, ";")
-	if idx == -1 {
+	mimeType = before
+	base64String = after
+	before, _, found = strings.Cut(mimeType, ";")
+	if !found {
 		_, file_type, base64, err := DecodeBase64ImageData(base64String)
 		return "image/" + file_type, base64, err
 	}
-	mimeType = mimeType[:idx]
-	idx = strings.Index(mimeType, ":")
-	if idx == -1 {
+	mimeType = before
+	_, after, found = strings.Cut(mimeType, ":")
+	if !found {
 		_, file_type, base64, err := DecodeBase64ImageData(base64String)
 		return "image/" + file_type, base64, err
 	}
-	mimeType = mimeType[idx+1:]
+	mimeType = after
 	return mimeType, base64String, nil
 }
 
