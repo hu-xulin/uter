@@ -12,6 +12,7 @@ import (
 	"github.com/samber/lo"
 	"github.com/uter-ai/uter/constant"
 	"github.com/uter-ai/uter/logger"
+	"github.com/uter-ai/uter/model"
 	relaycommon "github.com/uter-ai/uter/relay/common"
 	relayconstant "github.com/uter-ai/uter/relay/constant"
 	costopt "github.com/uter-ai/uter/relay/costopt"
@@ -73,6 +74,52 @@ func resolveRewrittenModelMapping(c *gin.Context, info *relaycommon.RelayInfo, r
 	if info != nil {
 		info.UpstreamModelName = upstream
 	}
+	return true
+}
+
+// SetupSelectedChannelFunc 由 middleware 包在init 时注入，等价于
+// middleware.SetupContextForSelectedChannel。
+//
+// 为什么绕这一圈：重选渠道需要写全套渠道上下文（base_url / key / model_mapping /
+// param_override …），那份逻辑在 middleware 包里。而 middleware 的测试文件会 import
+// relay（package middleware 的测试是同包测试），若 relay 反过来 import middleware 就构成
+// 测试期循环依赖（import cycle not allowed in test），编译能过但 go vet 会报错。
+//
+// 真正的依赖方向应该是 relay ← middleware，故这里用函数变量在运行时注入，避免编译期成环。
+var SetupSelectedChannelFunc func(c *gin.Context, channel *model.Channel, modelName string) *types.UterError
+
+// reselectChannelForModel 按给定模型名重新选一次渠道，并把选中渠道写回 gin 上下文，
+// 使后续 DoApiRequest 用上新渠道（base_url / key / model_mapping / param_override 全部刷新）。
+//
+// 用途：Cascade 升级到贵模型。原先 relayAttempt 闭包捕获 info 并复用原渠道，于是贵模型
+// 只能与廉价档同渠道；这里让渠道跟随模型重选，解除该限制。
+//
+// 失败时返回 false 且不改动任何上下文，调用方应退回原渠道继续（保持降级语义）。
+func reselectChannelForModel(c *gin.Context, info *relaycommon.RelayInfo, modelName string) bool {
+	if c == nil || modelName == "" || SetupSelectedChannelFunc == nil {
+		return false
+	}
+	channel, _, err := service.CacheGetRandomSatisfiedChannel(&service.RetryParam{
+		Ctx:         c,
+		TokenGroup:  info.TokenGroup,
+		ModelName:   modelName,
+		RequestPath: c.Request.URL.Path,
+		Retry:       common.GetPointer(0),
+	})
+	if err != nil || channel == nil {
+		return false
+	}
+	if setupErr := SetupSelectedChannelFunc(c, channel, modelName); setupErr != nil {
+		logger.LogWarn(c, "cascade: reselect channel for %s failed: %s", modelName, setupErr.Error())
+		return false
+	}
+	// 必须重跑 InitChannelMeta：它把渠道元信息（base_url / key / param_override /
+	// model_mapping / ChannelSetting）从 gin 上下文拷进 info。TextHelper 开头已跑过一次，
+	// 那里绑定的是**廉价档渠道**，不刷新的话重发仍会打到旧渠道，等于没重选。
+	info.InitChannelMeta(c)
+	// 计价身份跟随新模型，否则日志与计费仍记在旧模型上。
+	info.OriginModelName = modelName
+	logger.LogDebug(c, "cascade: reselected channel #%d for model %s", channel.Id, modelName)
 	return true
 }
 
@@ -385,8 +432,14 @@ func TextHelper(c *gin.Context, info *relaycommon.RelayInfo) (uterError *types.U
 		}
 		if costopt.IsCascadeRefusal(string(raw)) {
 			if premium := costopt.CascadePremiumModelName(); premium != "" && premium != request.Model {
-				// 升级到贵模型重发：贵模型名配置的是网关别名，同样需要再过一次 model_mapping，
-				// 否则别名会被原样发给上游导致 404。
+				// 升级到贵模型。若贵模型与廉价档不在同一渠道，必须按新模型名重选渠道，
+				// 否则请求仍发往廉价档渠道 → 上游不认识该模型 → 404。
+				// 重选失败（无渠道/被过滤）则退回原渠道，此时用同渠道的 model_mapping 兜底。
+				originChannelID := c.GetInt("channel_id")
+				if !reselectChannelForModel(c, info, premium) {
+					logger.LogDebug(c, "cascade: keep channel #%d for premium %s (reselect unavailable)", originChannelID, premium)
+				}
+				// 贵模型名配置的是网关别名，需再过一次 model_mapping，否则别名会被原样发给上游。
 				upstreamPremium := premium
 				if mapped := mapAliasToUpstream(c, premium); mapped != "" {
 					upstreamPremium = mapped

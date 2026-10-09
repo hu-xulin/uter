@@ -17,6 +17,8 @@ import (
 	"github.com/uter-ai/uter/logger"
 	"github.com/uter-ai/uter/model"
 	"github.com/uter-ai/uter/pkg/jsplugin"
+	"github.com/uter-ai/uter/relay"
+	"github.com/uter-ai/uter/relay/costopt"
 	relayconstant "github.com/uter-ai/uter/relay/constant"
 	"github.com/uter-ai/uter/relaykit/dto"
 	"github.com/uter-ai/uter/relaykit/types"
@@ -25,11 +27,22 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/tidwall/gjson"
+	"github.com/tidwall/sjson"
 )
 
 type ModelRequest struct {
 	Model string `json:"model"`
 	Group string `json:"group,omitempty"`
+}
+
+// init 把「写入选中渠道上下文」的能力注入 relay 包。
+//
+// 依赖方向：middleware → relay（distributor 之后才进 relay 处理）。relay 侧的 Cascade
+// 升级需要按新模型名重选渠道，若 relay 直接 import 本包的 SetupContextForSelectedChannel，
+// 则 middleware 的同包测试（会 import relay）将构成测试期循环依赖。故用函数变量在运行时
+// 反向注入，保持编译期依赖单向。
+func init() {
+	relay.SetupSelectedChannelFunc = SetupContextForSelectedChannel
 }
 
 func Distribute() func(c *gin.Context) {
@@ -45,6 +58,15 @@ func Distribute() func(c *gin.Context) {
 		if err != nil {
 			abortWithOpenAiMessage(c, http.StatusBadRequest, i18n.T(c, i18n.MsgDistributorInvalidRequest, map[string]any{"Error": err.Error()}))
 			return
+		}
+		// 降本改路前置：在选渠道之前应用「仅改模型名」的降本钩子（价值层 / 复杂度路由 /
+		// 级联 / RouterLM），并把改写后的模型名回写请求体。
+		//
+		// 为什么必须前置：渠道一旦选定，改写模型名就不会再触发选路，跨渠道改写必然打空
+		// （如 claude-haiku 被下沉到 Groq 模型，却仍发往原先选中的渠道 → 503/404）。
+		// 前置后 distributor 直接用新模型名选渠道，下游 relay 侧这些钩子成幂等 no-op。
+		if shouldSelectChannel {
+			applyCostoptModelRewrite(c, modelRequest)
 		}
 		if pin, found, overridden := constraints.ResolvedPin(); found {
 			for _, lost := range overridden {
@@ -316,6 +338,57 @@ func getModelFromRequest(c *gin.Context) (*ModelRequest, error) {
 		return nil, errors.New(i18n.T(c, i18n.MsgDistributorInvalidRequest, map[string]any{"Error": err.Error()}))
 	}
 	return &modelRequest, nil
+}
+
+// applyCostoptModelRewrite 在选渠道之前应用「仅改模型名」的降本钩子，并把改写结果回写请求体。
+//
+// 为什么必须回写：distributor 从 body 读模型名去选渠道，而下游 relay 又会重新解析同一个
+// body 发给上游。只改内存里的 modelRequest.Model 的话，relay 拿到的仍是旧模型名，
+// 渠道虽然选对了，请求体却写着另一个模型 —— 上游仍会 404。两者必须一致。
+//
+// 任何失败都保持原模型名继续（best-effort）：改写是降本优化，不该让正常请求失败。
+func applyCostoptModelRewrite(c *gin.Context, modelRequest *ModelRequest) {
+	if modelRequest == nil || modelRequest.Model == "" {
+		return
+	}
+	if !strings.HasPrefix(c.Request.Header.Get("Content-Type"), "application/json") {
+		// 只处理标准 JSON chat/completions 类请求；其它协议（MJ / video / multipart）
+		// 的钩子在TextHelper 侧仍会兜底跑，只是无法前置。
+		return
+	}
+	storage, err := common.GetBodyStorage(c)
+	if err != nil {
+		return
+	}
+	raw, err := storage.Bytes()
+	if err != nil || !gjson.ValidBytes(raw) {
+		return
+	}
+	// 任务插件等路径可能已锁定模型/渠道，改写会破坏其身份约束，跳过。
+	if c.GetString("expected_task_plugin_key") != "" {
+		return
+	}
+
+	var req dto.GeneralOpenAIRequest
+	if err := common.Unmarshal(raw, &req); err != nil {
+		return
+	}
+	rewritten := costopt.RewriteCostoptModelForRouting(&req, modelRequest.Model)
+	if rewritten == "" || rewritten == modelRequest.Model {
+		return
+	}
+
+	updated, err := sjson.SetBytes(raw, "model", rewritten)
+	if err != nil {
+		return
+	}
+	// BodyStorage 是只读的，须整体替换并重建缓存，保证 relay 侧读到的也是新模型名。
+	if err := common.ReplaceRequestBody(c, updated); err != nil {
+		return
+	}
+	oldModel := modelRequest.Model
+	modelRequest.Model = rewritten
+	logger.LogDebug(c, "costopt preroute: model rewritten %s -> %s", oldModel, rewritten)
 }
 
 func getModelFromJSONBody(c *gin.Context) (*ModelRequest, error) {
