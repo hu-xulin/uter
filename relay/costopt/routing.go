@@ -3,6 +3,7 @@ package costopt
 import (
 	"strings"
 
+	relaycommon "github.com/uter-ai/uter/relay/common"
 	costoptcfg "github.com/uter-ai/uter/setting/costopt"
 
 	"github.com/uter-ai/uter/relaykit/dto"
@@ -11,18 +12,25 @@ import (
 // ApplyComplexityRouting 轻量复杂度路由：对未显式固定模型的简单任务，启发式降级到便宜模型。
 // 保守策略：仅当 FromModels 为空（任意源模型）或命中列表，且启发式判定为"简单"才改写 Model。
 // 不改 max_tokens，避免影响依赖长输出的客户端；改写后仍走正常计费/缓存路径。
-func ApplyComplexityRouting(req *dto.GeneralOpenAIRequest, info any) bool {
+//
+// info 用于取网关原始模型名（OriginModelName）：配置里填的是网关别名，而 req.Model
+// 可能已被 model_mapping 换成上游名，两者都要参与匹配。
+func ApplyComplexityRouting(req *dto.GeneralOpenAIRequest, info *relaycommon.RelayInfo) bool {
 	cfg := costoptcfg.GetCostOptSetting()
 	if !cfg.ComplexityRoutingEnabled || cfg.ComplexityRoutingCheapModel == "" {
 		return false
 	}
-	if req.Model == "" || req.Model == cfg.ComplexityRoutingCheapModel {
+	originModel := ""
+	if info != nil {
+		originModel = info.OriginModelName
+	}
+	if req.Model == "" || matchConfiguredModel(req.Model, originModel, cfg.ComplexityRoutingCheapModel) {
 		return false
 	}
 	if len(cfg.ComplexityRoutingFromModels) > 0 {
 		hit := false
 		for _, m := range cfg.ComplexityRoutingFromModels {
-			if m == req.Model {
+			if matchConfiguredModel(req.Model, originModel, m) {
 				hit = true
 				break
 			}
