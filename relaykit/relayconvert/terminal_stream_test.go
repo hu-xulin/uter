@@ -5,10 +5,10 @@ import (
 
 	"github.com/uter-ai/uter/relaykit/dto"
 
-	"github.com/uter-ai/uter/relaykit/relayconvert/convmeta"
-	"github.com/uter-ai/uter/relaykit/types"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/uter-ai/uter/relaykit/relayconvert/convmeta"
+	"github.com/uter-ai/uter/relaykit/types"
 )
 
 func TestGeminiToOpenAIStatefulStreamTerminal(t *testing.T) {

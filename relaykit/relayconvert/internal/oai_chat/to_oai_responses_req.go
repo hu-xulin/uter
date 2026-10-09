@@ -8,9 +8,9 @@ import (
 
 	"github.com/uter-ai/uter/relaykit/dto"
 
+	"github.com/samber/lo"
 	kitutil "github.com/uter-ai/uter/relaykit/relayconvert/kitutil"
 	"github.com/uter-ai/uter/relaykit/relayconvert/reasoning"
-	"github.com/samber/lo"
 )
 
 func normalizeChatImageURLToString(v any) any {

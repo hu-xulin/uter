@@ -6,7 +6,7 @@ import (
 	kitutil "github.com/uter-ai/uter/relaykit/relayconvert/kitutil"
 )
 
-func ToJSONString(v interface{}) string {
+func ToJSONString(v any) string {
 	bytes, err := kitutil.Marshal(v)
 	if err != nil {
 		return fmt.Sprintf("%v", v)

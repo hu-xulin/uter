@@ -8,11 +8,11 @@ import (
 
 	"github.com/uter-ai/uter/relaykit/dto"
 
+	"github.com/tidwall/gjson"
+	"github.com/tidwall/sjson"
 	"github.com/uter-ai/uter/relaykit/reasonmap"
 	sharedclaude "github.com/uter-ai/uter/relaykit/relayconvert/internal/shared/claude"
 	kitutil "github.com/uter-ai/uter/relaykit/relayconvert/kitutil"
-	"github.com/tidwall/gjson"
-	"github.com/tidwall/sjson"
 )
 
 type ClaudeResponseInfo struct {
