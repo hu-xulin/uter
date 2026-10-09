@@ -168,6 +168,7 @@ func TextHelper(c *gin.Context, info *relaycommon.RelayInfo) (uterError *types.U
 
 	// ===== 降本中间层（与《中转站API降本技术清单_轻资产版》对齐） =====
 	// 派发前改写请求（不影响计费身份）：上下文滑动窗口/摘要、图像下采样代理、轻量复杂度路由
+	costopt.IncCostOptRequest()
 	costopt.ApplyContextWindow(request, info)
 	costopt.ApplyImageResize(request)
 	costopt.ApplyComplexityRouting(request, info)

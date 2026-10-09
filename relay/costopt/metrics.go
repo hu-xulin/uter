@@ -33,6 +33,20 @@ type MetricsSnapshot struct {
 	// 41. 成本 per 成功任务：成功/总请求计数（比值即"每成功任务成本"的分母/分子）。
 	SuccessRequests int64 `json:"success_requests"`
 	TotalRequests   int64 `json:"total_requests"`
+
+	// ===== 各降本钩子命中率（定位"开了但没生效"） =====
+	// 分母 = 进入降本钩子段的请求数；各钩子分子 = 该钩子实际改写了请求/注入了上下文的次数。
+	CostOptRequests     int64 `json:"costopt_requests"`       // 进入降本钩子段的请求数（命中率分母）
+	ValueTierHits       int64 `json:"value_tier_hits"`       // 价值层下沉改写模型次数
+	ComplexityHits      int64 `json:"complexity_hits"`       // 复杂度路由降级次数
+	CascadeHits         int64 `json:"cascade_hits"`          // 级联降级次数
+	RouterLMHits        int64 `json:"router_lm_hits"`        // RouterLM 选模改写次数
+	CompressionRequests int64 `json:"compression_requests"`  // Prompt 压缩尝试次数
+	CompressionHits     int64 `json:"compression_hits"`      // Prompt 压缩生效（至少改写 1 段）次数
+	CompressionEmpty    int64 `json:"compression_empty"`     // 压缩返回空内容次数（静默失败告警计数）
+	RAGRequests         int64 `json:"rag_requests"`          // RAG 检索尝试次数
+	RAGHits             int64 `json:"rag_hits"`              // RAG 注入成功次数
+	RAGSkipped          int64 `json:"rag_skipped"`           // RAG 被净收益闸门跳过次数
 }
 
 var metrics MetricsSnapshot
@@ -53,6 +67,19 @@ func IncCascadeEscalation() { enabledInc(&metrics.CascadeEscalations) }
 func IncLoopBreak()         { enabledInc(&metrics.LoopBreaks) }
 func IncAgentBudgetBlock()  { enabledInc(&metrics.AgentBudgetBlocks) }
 func IncAnomalyAlert()      { enabledInc(&metrics.AnomalyAlerts) }
+
+// ===== 各降本钩子命中率计数（仅在 MetricsEnabled 时累加） =====
+func IncCostOptRequest()     { enabledInc(&metrics.CostOptRequests) }
+func IncValueTierHit()       { enabledInc(&metrics.ValueTierHits) }
+func IncComplexityHit()      { enabledInc(&metrics.ComplexityHits) }
+func IncCascadeHit()         { enabledInc(&metrics.CascadeHits) }
+func IncRouterLMHit()        { enabledInc(&metrics.RouterLMHits) }
+func IncCompressionRequest() { enabledInc(&metrics.CompressionRequests) }
+func IncCompressionHit()     { enabledInc(&metrics.CompressionHits) }
+func IncCompressionEmpty()   { enabledInc(&metrics.CompressionEmpty) }
+func IncRAGRequest()         { enabledInc(&metrics.RAGRequests) }
+func IncRAGHit()             { enabledInc(&metrics.RAGHits) }
+func IncRAGSkipped()         { enabledInc(&metrics.RAGSkipped) }
 
 // AddTokensSaved 累加估算节省的 token（用于"成本 per 成功任务"与看板）。
 func AddTokensSaved(n int64) {
@@ -203,5 +230,16 @@ func MetricsSnapshotNow() MetricsSnapshot {
 		TokensSavedByLoopBreak:     atomic.LoadInt64(&metrics.TokensSavedByLoopBreak),
 		SuccessRequests:            atomic.LoadInt64(&metrics.SuccessRequests),
 		TotalRequests:              atomic.LoadInt64(&metrics.TotalRequests),
+		CostOptRequests:            atomic.LoadInt64(&metrics.CostOptRequests),
+		ValueTierHits:              atomic.LoadInt64(&metrics.ValueTierHits),
+		ComplexityHits:             atomic.LoadInt64(&metrics.ComplexityHits),
+		CascadeHits:                atomic.LoadInt64(&metrics.CascadeHits),
+		RouterLMHits:               atomic.LoadInt64(&metrics.RouterLMHits),
+		CompressionRequests:        atomic.LoadInt64(&metrics.CompressionRequests),
+		CompressionHits:            atomic.LoadInt64(&metrics.CompressionHits),
+		CompressionEmpty:           atomic.LoadInt64(&metrics.CompressionEmpty),
+		RAGRequests:                atomic.LoadInt64(&metrics.RAGRequests),
+		RAGHits:                    atomic.LoadInt64(&metrics.RAGHits),
+		RAGSkipped:                 atomic.LoadInt64(&metrics.RAGSkipped),
 	}
 }

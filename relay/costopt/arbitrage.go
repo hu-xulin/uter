@@ -356,6 +356,7 @@ func ApplyValueTierRouting(req *dto.GeneralOpenAIRequest) string {
 	if cfg.ValueTierAuto() {
 		if target := cheapestEquivalent(req.Model); target != "" && target != req.Model {
 			req.Model = target
+			IncValueTierHit()
 		}
 	}
 	types := ValueTierChannelTypes()

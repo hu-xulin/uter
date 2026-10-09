@@ -41,6 +41,7 @@ func ApplyComplexityRouting(req *dto.GeneralOpenAIRequest, info *relaycommon.Rel
 	}
 	if isLikelySimple(req) {
 		req.Model = cfg.ComplexityRoutingCheapModel
+		IncComplexityHit()
 		return true
 	}
 	return false
