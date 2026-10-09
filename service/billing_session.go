@@ -92,6 +92,17 @@ func (s *BillingSession) Settle(actualQuota int) error {
 	return tokenErr
 }
 
+// FundingSettled 报告资金来源是否已提交结算差额。
+//
+// Settle 分两步提交（资金来源 → 令牌额度）：资金来源失败时超出预扣的部分并没有
+// 真正扣到，此时日志只能记已经落地的预扣额；令牌失败则资金已扣、仅令牌账本漂移。
+// 调用方据此区分两者，避免把「没扣到」的钱写进消费日志。
+func (s *BillingSession) FundingSettled() bool {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	return s.fundingSettled
+}
+
 // Refund 退还所有预扣费，幂等安全，异步执行。
 func (s *BillingSession) Refund(c *gin.Context) {
 	s.mu.Lock()

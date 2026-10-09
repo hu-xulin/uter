@@ -209,7 +209,7 @@ export function WaffoSettingsSection({
             <Label>{t('RSA Private Key (Production)')}</Label>
             <Textarea
               rows={3}
-              placeholder={'-----BEGIN RSA PRIVATE KEY-----'}
+              placeholder="-----BEGIN RSA PRIVATE KEY-----"
               value={values.WaffoPrivateKey}
               onChange={(event) =>
                 onValueChange('WaffoPrivateKey', event.target.value)
@@ -221,7 +221,7 @@ export function WaffoSettingsSection({
             <Label>{t('RSA Private Key (Sandbox)')}</Label>
             <Textarea
               rows={3}
-              placeholder={'-----BEGIN RSA PRIVATE KEY-----'}
+              placeholder="-----BEGIN RSA PRIVATE KEY-----"
               value={values.WaffoSandboxPrivateKey}
               onChange={(event) =>
                 onValueChange('WaffoSandboxPrivateKey', event.target.value)
@@ -236,7 +236,7 @@ export function WaffoSettingsSection({
             <Label>{t('Waffo Public Key (Production)')}</Label>
             <Textarea
               rows={3}
-              placeholder={'-----BEGIN CERTIFICATE-----'}
+              placeholder="-----BEGIN CERTIFICATE-----"
               value={values.WaffoPublicCert}
               onChange={(event) =>
                 onValueChange('WaffoPublicCert', event.target.value)
@@ -248,7 +248,7 @@ export function WaffoSettingsSection({
             <Label>{t('Waffo Public Key (Sandbox)')}</Label>
             <Textarea
               rows={3}
-              placeholder={'-----BEGIN CERTIFICATE-----'}
+              placeholder="-----BEGIN CERTIFICATE-----"
               value={values.WaffoSandboxPublicCert}
               onChange={(event) =>
                 onValueChange('WaffoSandboxPublicCert', event.target.value)

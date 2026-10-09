@@ -39,6 +39,7 @@ import viLocale from '@/i18n/locales/vi.json'
 import zhTW from '@/i18n/locales/zh-TW.json'
 import zh from '@/i18n/locales/zh.json'
 import { api } from '@/lib/api'
+import { formatUserId } from '@/lib/format'
 import { useAuthStore } from '@/stores/auth-store'
 
 import { AuditLogs } from '..'
@@ -171,7 +172,10 @@ it.each([
     const cell = await screen.findByRole('cell', { name: new RegExp(headline) })
     expect(cell).toHaveTextContent(headline)
     if ('id' in params || 'target_user_id' in params) {
-      expect(cell).toHaveTextContent('(ID: 11)')
+      // 用户类审计的 {{id}} 渲染为对外编号 uter…（见 lib/format#formatUserId），
+      // 令牌/渠道类仍是原始数字 ID。
+      const displayId = 'target_user_id' in params ? formatUserId(11) : 11
+      expect(cell).toHaveTextContent(`(ID: ${displayId})`)
     }
     if (outcome) expect(cell).toHaveTextContent(outcome)
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument()

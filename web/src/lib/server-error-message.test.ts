@@ -24,7 +24,7 @@ describe('server error message mapping', () => {
   test('maps the active-session limit to recovery instructions', () => {
     const message = getServerErrorMessageKey({ code: 'AUTH_SESSION_LIMIT' })
 
-    expect(message ?? '').toMatch(/Sign out other sessions/)
+    expect(message ?? '').toMatch(/sign out the others/)
     expect(message ?? '').toMatch(/reset your password/)
   })
 
@@ -33,22 +33,23 @@ describe('server error message mapping', () => {
       response: { data: { code: 'AUTH_SESSION_ISSUANCE_LIMIT' } },
     })
 
-    expect(message ?? '').toMatch(/rolling window/)
+    expect(message ?? '').toMatch(/created recently/)
+    expect(message ?? '').toMatch(/try again/)
     expect(getServerErrorMessageKey({ code: 'UNKNOWN_CODE' })).toBe(null)
   })
 
   test('maps stable Telegram bind errors without exposing server text', () => {
     const expected = {
-      TELEGRAM_BIND_DISABLED: 'Telegram binding is disabled.',
+      TELEGRAM_BIND_DISABLED: 'Telegram binding is turned off.',
       TELEGRAM_BIND_INVALID_REQUEST:
-        'The Telegram authorization request is invalid or expired.',
+        'This Telegram sign-in request is invalid or expired.',
       TELEGRAM_BIND_FLOW_INVALID:
-        'This Telegram binding request has expired or has already been used.',
+        'This Telegram binding request expired or was already used.',
       TELEGRAM_BIND_SESSION_INVALID:
-        'The login session that started this Telegram binding is no longer valid.',
-      TELEGRAM_BIND_ALREADY_BOUND: 'This Telegram account is already bound.',
-      TELEGRAM_BIND_USER_DELETED: 'This user account no longer exists.',
-      TELEGRAM_BIND_USER_DISABLED: 'This user account is disabled.',
+        'The session that started this Telegram binding is no longer valid.',
+      TELEGRAM_BIND_ALREADY_BOUND: 'This Telegram account is already linked.',
+      TELEGRAM_BIND_USER_DELETED: 'This account no longer exists.',
+      TELEGRAM_BIND_USER_DISABLED: 'This account is disabled.',
       TELEGRAM_BIND_INTERNAL_ERROR:
         'Telegram binding failed. Please try again.',
     }

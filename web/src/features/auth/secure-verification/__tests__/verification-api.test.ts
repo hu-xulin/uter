@@ -452,11 +452,11 @@ it('passes an enrollment operation through OAuth state creation', async () => {
 it.each([
   [
     'SECURITY_PROOF_CONSUMED',
-    'This verification has already been used. Please verify again.',
+    'This verification was already used. Please verify again.',
   ],
   [
     'SECURITY_PROOF_CONTEXT_MISMATCH',
-    "Verification does not match this action's details. Please verify again.",
+    "Verification doesn't match this action's details. Please verify again.",
   ],
 ])('provides a re-verification message for %s', async (code, message) => {
   await expect(

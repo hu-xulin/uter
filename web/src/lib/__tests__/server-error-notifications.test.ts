@@ -350,7 +350,9 @@ it('preserves safe authentication messages and recognizes their original failure
 it('handles circular error causes and prioritizes translated stable error codes', () => {
   const error = new Error('Raw error')
   error.cause = { code: 'AUTH_INTERNAL_ERROR', cause: error }
-  expect(getServerErrorMessage(error)).toBe('Please try again later.')
+  expect(getServerErrorMessage(error)).toBe(
+    'Something went wrong on our side. Please try again later.'
+  )
   const notify = vi.spyOn(toast, 'error').mockReturnValue('error')
   handleServerError(error)
   handleServerError(error.cause)
