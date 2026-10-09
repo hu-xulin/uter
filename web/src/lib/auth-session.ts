@@ -21,7 +21,11 @@ import axios from 'axios'
 import { t } from 'i18next'
 
 import { publishAuthSessionEvent } from '@/lib/auth-session-sync'
+import {
+  clearScopedItemsForCurrentUser,
+} from '@/lib/scoped-storage'
 import { hasSessionHint } from '@/lib/session-hint'
+import { useNotificationStore } from '@/stores/notification-store'
 import {
   useAuthStore,
   type AuthBootstrapState,
@@ -218,6 +222,10 @@ export function clearAuthenticatedClientState(
 ): void {
   setAuthTeardownInProgress(true)
   queryClient.clear()
+  // Both run before clearAuthentication: they need auth.user.id to still be
+  // populated, since scopedKey falls back to the unscoped name once it is gone.
+  clearScopedItemsForCurrentUser()
+  useNotificationStore.getState().reset()
   clearAuthentication(synchronizeTabs)
   // 给在途请求足够时间回包并被静默；之后恢复正常错误提示。
   setTimeout(() => setAuthTeardownInProgress(false), 1500)
