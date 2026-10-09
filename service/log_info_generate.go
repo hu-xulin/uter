@@ -59,8 +59,8 @@ func appendRequestPath(ctx *gin.Context, relayInfo *relaycommon.RelayInfo, other
 	}
 	if relayInfo != nil && relayInfo.RequestURLPath != "" {
 		path := relayInfo.RequestURLPath
-		if idx := strings.Index(path, "?"); idx != -1 {
-			path = path[:idx]
+		if before, _, found := strings.Cut(path, "?"); found {
+			path = before
 		}
 		other.SetPublic("request_path", path)
 	}

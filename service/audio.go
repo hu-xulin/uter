@@ -33,9 +33,8 @@ func parseAudio(audioBase64 string, format string) (duration float64, err error)
 
 func DecodeBase64AudioData(audioBase64 string) (string, error) {
 	// 检查并移除 data:audio/xxx;base64, 前缀
-	idx := strings.Index(audioBase64, ",")
-	if idx != -1 {
-		audioBase64 = audioBase64[idx+1:]
+	if _, after, found := strings.Cut(audioBase64, ","); found {
+		audioBase64 = after
 	}
 
 	// 解码 Base64 数据

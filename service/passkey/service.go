@@ -161,9 +161,8 @@ func originsForRPID(origins []string, rpID string) []string {
 func resolveOrigins(r *http.Request, settings *system_setting.PasskeySettings) ([]string, error) {
 	originsStr := strings.TrimSpace(settings.Origins)
 	if originsStr != "" {
-		originList := strings.Split(originsStr, ",")
-		origins := make([]string, 0, len(originList))
-		for _, origin := range originList {
+		origins := make([]string, 0)
+		for origin := range strings.SplitSeq(originsStr, ",") {
 			trimmed := strings.TrimSpace(origin)
 			if trimmed == "" {
 				continue
@@ -301,8 +300,8 @@ func detectScheme(r *http.Request) string {
 		return ""
 	}
 	if proto := r.Header.Get("X-Forwarded-Proto"); proto != "" {
-		parts := strings.Split(proto, ",")
-		return strings.ToLower(strings.TrimSpace(parts[0]))
+		first, _, _ := strings.Cut(proto, ",")
+		return strings.ToLower(strings.TrimSpace(first))
 	}
 	if r.TLS != nil {
 		return "https"
