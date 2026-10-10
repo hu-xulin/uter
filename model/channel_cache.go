@@ -312,17 +312,35 @@ func channelUpstreamModel(ch *Channel, modelName string) string {
 
 // channelEffectiveUnitPrice 渠道对该模型的有效单价，归一到「每 1M token 美元」。
 // 返回 0 表示拿不到有效定价（该渠道不参与自动择优，但不被排除）。
-// 取价优先级：手填价目表覆盖 > 渠道映射后的上游模型定价（自动推算）。
+//
+// 🔑 取价以**系统定价表自动推算为主**（ratio_config）：解析渠道 model_mapping 得到
+// 上游模型名，直接查平台定价（ModelRatio / ModelPrice），无需人工维护任何价目表。
+// 手填价目表（ArbitrageModelPrices）降级为**可选覆盖**，仅用于自动推算拿不到定价
+// 或定价明显有误的个别场景——手工价目表会随上游调价而失效，绝不能作为主来源。
 func channelEffectiveUnitPrice(ch *Channel, modelName string) float64 {
 	if ch == nil || modelName == "" {
 		return 0
 	}
 	cfg := costoptcfg.GetCostOptSetting()
-	// 统一口径：价目表描述的是「上游模型」的价格，故先解析渠道映射后的上游模型名，
-	// 手填价目表与自动推算都用同一个名字取价，避免两套口径对不上。
+	// 统一口径：比价描述的是「上游模型」的价格，故先解析渠道映射后的上游模型名，
+	// 手工覆盖与自动推算都用同一个名字取价，避免两套口径对不上。
 	upstream := channelUpstreamModel(ch, modelName)
-	// 1) 手填价目表：manual 模式的主来源；auto 模式下作为覆盖值优先于自动推算。
-	if cfg.ArbitrageActive() && len(cfg.ArbitrageModelPrices) > 0 {
+
+	// 1) 自动推算（主路径）：渠道映射后的上游模型定价，来自平台统一价目表。
+	//    即使下面有手填覆盖，也先取自动价作为兜底，覆盖缺失时不会退化成「无定价」。
+	auto := 0.0
+	if v, usePrice, exists := ratio_setting.GetModelRatioOrPrice(upstream); exists && v > 0 {
+		if usePrice {
+			auto = v
+		} else {
+			// ratio 口径是「每 token 的 quota」，换算为每 1M token 美元：
+			// 美元 = quota / QuotaPerUnit，故单价 = ratio * 1e6 / QuotaPerUnit。
+			auto = v * 1e6 / common.QuotaPerUnit
+		}
+	}
+
+	// 2) 手填价目表覆盖（可选）：仅当显式提供且 auto 模式未关闭时才生效。
+	if cfg.ArbitrageActive() && cfg.ArbitragePriceSource == "manual" && len(cfg.ArbitrageModelPrices) > 0 {
 		ctName := constant.GetChannelTypeName(ch.Type)
 		for _, key := range []string{ctName + "/" + upstream, upstream, ctName + "/" + modelName, modelName} {
 			if p, ok := cfg.ArbitrageModelPrices[key]; ok && p > 0 {
@@ -330,17 +348,7 @@ func channelEffectiveUnitPrice(ch *Channel, modelName string) float64 {
 			}
 		}
 	}
-	// 2) 自动推算：渠道映射后的上游模型定价。
-	v, usePrice, exists := ratio_setting.GetModelRatioOrPrice(upstream)
-	if !exists || v <= 0 {
-		return 0
-	}
-	if usePrice {
-		return v
-	}
-	// ratio 口径是「每 token 的 quota」，换算为每 1M token 美元：
-	// 美元 = quota / QuotaPerUnit，故单价 = ratio * 1e6 / QuotaPerUnit。
-	return v * 1e6 / common.QuotaPerUnit
+	return auto
 }
 
 // cheapestChannelByPrice 在同一优先级档的候选渠道中按有效单价挑最便宜的。

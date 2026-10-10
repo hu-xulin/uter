@@ -179,31 +179,34 @@ function FieldHelp({ help }: { help: string }) {
 }
 
 /**
- * 保真分级徽章：标在风险字段标签旁。
+ * 保真分级徽章 + 外部依赖注记：标在风险字段标签旁。
  *
- * 目的是让运营在保存前就知道「这一项省的钱，是否以改变模型所见内容为代价」——
- * 零风险项不必多想，有损项必须知情后才开。
+ * 两个信号刻意分开表达，因为它们回答的是不同问题：
+ *   - 保真徽章回答「开了会不会掉质量」（safe / lossy）
+ *   - 依赖注记回答「开了还要额外准备什么」（needsInfra：上游端点或自建服务）
+ * 混成一个标签会让运营误以为「需外部服务」=「有风险」，或反之。
  */
-function FidelityBadge({ tier }: { tier: FidelityTier }) {
+function FidelityBadge({
+  tier,
+  needsInfra,
+}: {
+  tier: FidelityTier
+  needsInfra?: boolean
+}) {
   const { t } = useTranslation()
-  if (tier === 'lossy') {
-    return (
-      <span className='ml-2 inline-flex shrink-0 items-center rounded bg-amber-500/10 px-1.5 py-0.5 align-middle text-xs text-amber-600 dark:text-amber-400'>
-        {t('May reduce quality')}
-      </span>
-    )
-  }
-  if (tier === 'safe') {
-    return (
-      <span className='bg-primary/10 text-primary ml-2 inline-flex shrink-0 items-center rounded px-1.5 py-0.5 align-middle text-xs'>
-        {t('Zero risk')}
-      </span>
-    )
-  }
   return (
-    <span className='bg-muted text-muted-foreground ml-2 inline-flex shrink-0 items-center rounded px-1.5 py-0.5 align-middle text-xs'>
-      {t('Needs external service')}
-    </span>
+    <>
+      {tier === 'lossy' && (
+        <span className='ml-2 inline-flex shrink-0 items-center rounded bg-amber-500/10 px-1.5 py-0.5 align-middle text-xs text-amber-600 dark:text-amber-400'>
+          {t('May reduce quality')}
+        </span>
+      )}
+      {needsInfra && (
+        <span className='bg-muted text-muted-foreground ml-1.5 inline-flex shrink-0 items-center rounded px-1.5 py-0.5 align-middle text-xs'>
+          {t('Needs an endpoint')}
+        </span>
+      )}
+    </>
   )
 }
 
@@ -221,8 +224,10 @@ function FieldLabelRow({ def }: { def: FieldDef }) {
           )}
         </span>
       )}
-      {/* 有损项额外挂一枚徽章：默认关闭且会掉质量，运营须知情后才开。 */}
-      {!def.retired && def.fidelity && <FidelityBadge tier={def.fidelity} />}
+      {/* 有损项挂质量徽章；有外部依赖的挂端点注记。 */}
+      {!def.retired && def.fidelity && (
+        <FidelityBadge tier={def.fidelity} needsInfra={def.needsInfra} />
+      )}
       {def.help && <FieldHelp help={def.help} />}
     </span>
   )
@@ -417,7 +422,7 @@ export function CostOptimizationSection(props: Props) {
     <SettingsSection title={t('Cost Optimization')}>
       <p className='text-muted-foreground text-sm'>
         {t(
-          'Savings never come from swapping the model a customer selected — that model is what they are paying for. Each group is labelled by fidelity: zero-risk items change nothing the model sees, lossy items trim input or constrain output, and items needing an external service stay inactive until you fill in an endpoint.'
+          'Savings never come from swapping the model a customer selected — that model is what they are paying for. Groups are ordered by where the money comes from: reuse an earlier answer, pay less for the same model, fetch knowledge instead of resending it, then the guardrails that keep all three under control.'
         )}
       </p>
       <Form {...form}>
@@ -430,17 +435,11 @@ export function CostOptimizationSection(props: Props) {
           <div className='flex gap-2 overflow-x-auto pb-2'>
             {GROUPS.map((group, idx) => {
               const active = idx === activeGroup
-              // 分组徽章取组内字段的最低保真档（有损 > 需外部 > 零风险），
-              // 让整组风险在切换前就可见。已停用项不参与评级。
+              // 分组卡片标出组内最低保真档（有损优先），让整组风险在切换前可见。
+              // 已停用项不参与评级——它们的风险是"无效"，不是"掉质量"。
               const live = group.fields.filter((f) => !f.retired)
-              let worst: FidelityTier | undefined
-              if (live.some((f) => f.fidelity === 'lossy')) {
-                worst = 'lossy'
-              } else if (live.some((f) => f.fidelity === 'infra')) {
-                worst = 'infra'
-              } else if (live.some((f) => f.fidelity === 'safe')) {
-                worst = 'safe'
-              }
+              const hasLossy = live.some((f) => f.fidelity === 'lossy')
+              const hasInfra = live.some((f) => f.needsInfra)
               return (
                 <button
                   type='button'
@@ -462,11 +461,20 @@ export function CostOptimizationSection(props: Props) {
                   >
                     {t(group.title)}
                   </span>
-                  <span className='flex items-center gap-1.5'>
+                  <span className='flex flex-wrap items-center gap-1.5'>
                     <span className='bg-muted text-muted-foreground inline-flex h-5 w-fit min-w-5 items-center justify-center rounded-full px-1.5 text-xs tabular-nums'>
                       {group.fields.length}
                     </span>
-                    {worst && <FidelityBadge tier={worst} />}
+                    {hasLossy && (
+                      <span className='inline-flex items-center rounded bg-amber-500/10 px-1.5 py-0.5 text-xs text-amber-600 dark:text-amber-400'>
+                        {t('Lossy')}
+                      </span>
+                    )}
+                    {hasInfra && (
+                      <span className='bg-muted text-muted-foreground inline-flex items-center rounded px-1.5 py-0.5 text-xs'>
+                        {t('Needs an endpoint')}
+                      </span>
+                    )}
                   </span>
                 </button>
               )
