@@ -1,5 +1,5 @@
 export type JSONValue = null | boolean | number | string | readonly JSONValue[] | {readonly [key: string]: JSONValue};
-export type HostCapability = "json-clone@1" | "json-order@1" | "submit-sse-delta@1";
+export type HostCapability = "json-clone@1" | "json-order@1" | "submit-sse-delta@1" | "duration-auto@1";
 export type MutableJSON<T> = T extends readonly (infer Item)[] ? MutableJSON<Item>[] : T extends object ? {-readonly [Key in keyof T]: MutableJSON<T[Key]>} : T;
 export interface HostUtils {
   hasCapability(name: string): boolean;
@@ -17,6 +17,15 @@ export interface HostUtils {
   base64URL(value: string): string;
   base64URLDecode(value: string): string;
   volcSignV4(request: {method: string; url: string; headers?: Record<string, string>; body?: string; accessKey: string; secretKey: string; region?: string; service?: string; timestamp?: number}): Record<string, string>;
+  /**
+   * Normalizes a duration selector for media generation. Never invents a value:
+   * a finite number in (0, 24h] is echoed, "auto"/""/null/undefined and any
+   * negative or implausible value yield null (the host-neutral "auto" marker
+   * the plugin interprets itself), a numeric string is parsed to seconds, and
+   * an object returns its seconds/duration field if present, otherwise null.
+   * Constant-time in the argument size; objects are read key by key.
+   */
+  durationAuto(value: number | string | {seconds?: number; duration?: number; [key: string]: unknown} | null | undefined): number | null;
 }
 declare global {const utils: HostUtils;}
 export type FileReference = Readonly<{ref: string; field: string; filename: string; mimeType: string; size: number}>;
