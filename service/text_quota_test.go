@@ -897,6 +897,93 @@ func TestCalculateTextQuotaSummaryCapturesBothAnthropicCacheReadAndWrite(t *test
 	require.Equal(t, 200, summary.CacheCreationTokens)
 }
 
+// TestCalculateTextQuotaSummaryCapturesBothAnthropicCacheReadAndWriteRootLevel
+// 复现创梦平台在 OpenAI 兼容体中「原样转发 Claude 原生 usage」的真实形态：
+// cache_read_input_tokens / cache_creation_input_tokens 位于 usage 顶层而非
+// prompt_tokens_details 内。多缓存断点 + 部分命中时，同一次响应会同时携带
+// 两个值（例如工具被复用=读取、新系统提示=写入），这是 Claude 独有、能同时
+// 给出读取与写入两类数据的场景。
+func TestCalculateTextQuotaSummaryCapturesBothAnthropicCacheReadAndWriteRootLevel(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	w := httptest.NewRecorder()
+	ctx, _ := gin.CreateTestContext(w)
+
+	relayInfo := &relaycommon.RelayInfo{
+		RelayFormat:     types.RelayFormatOpenAI,
+		OriginModelName: "claude-sonnet-4-6",
+		PriceData: hosttypes.PriceData{
+			ModelRatio:         1,
+			CompletionRatio:    5,
+			CacheRatio:         0.1,
+			CacheCreationRatio: 1.25,
+			GroupRatioInfo:     hosttypes.GroupRatioInfo{GroupRatio: 1},
+		},
+		StartTime: time.Now(),
+	}
+
+	payload := `{
+		"prompt_tokens": 1200,
+		"completion_tokens": 95,
+		"cache_read_input_tokens": 1000,
+		"cache_creation_input_tokens": 200
+	}`
+	var usage dto.Usage
+	if err := json.Unmarshal([]byte(payload), &usage); err != nil {
+		t.Fatal(err)
+	}
+	usage.NormalizeCacheTokens()
+
+	summary := calculateTextQuotaSummary(ctx, relayInfo, &usage)
+
+	require.Equal(t, 1000, summary.CacheTokens)
+	require.Equal(t, 200, summary.CacheCreationTokens)
+}
+
+// TestCalculateTextQuotaSummaryCapturesAnthropicCacheReadOrWriteSingular 验证
+// Claude 在「仅创建缓存」（首次请求）与「仅命中缓存」（后续请求）两种单值场景
+// 下，对应的读取/写入维度都能被正确捕捉，而不是互相覆盖或归零。
+func TestCalculateTextQuotaSummaryCapturesAnthropicCacheReadOrWriteSingular(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	w := httptest.NewRecorder()
+	ctx, _ := gin.CreateTestContext(w)
+	baseRelay := func() *relaycommon.RelayInfo {
+		return &relaycommon.RelayInfo{
+			RelayFormat:     types.RelayFormatOpenAI,
+			OriginModelName: "claude-sonnet-4-6",
+			PriceData: hosttypes.PriceData{
+				ModelRatio:         1,
+				CompletionRatio:    5,
+				CacheRatio:         0.1,
+				CacheCreationRatio: 1.25,
+				GroupRatioInfo:     hosttypes.GroupRatioInfo{GroupRatio: 1},
+			},
+			StartTime: time.Now(),
+		}
+	}
+
+	t.Run("only creation (first request writes cache)", func(t *testing.T) {
+		var usage dto.Usage
+		if err := json.Unmarshal([]byte(`{"cache_creation_input_tokens":1772}`), &usage); err != nil {
+			t.Fatal(err)
+		}
+		usage.NormalizeCacheTokens()
+		summary := calculateTextQuotaSummary(ctx, baseRelay(), &usage)
+		require.Equal(t, 0, summary.CacheTokens)
+		require.Equal(t, 1772, summary.CacheCreationTokens)
+	})
+
+	t.Run("only read (follow-up request hits cache)", func(t *testing.T) {
+		var usage dto.Usage
+		if err := json.Unmarshal([]byte(`{"cache_read_input_tokens":1772}`), &usage); err != nil {
+			t.Fatal(err)
+		}
+		usage.NormalizeCacheTokens()
+		summary := calculateTextQuotaSummary(ctx, baseRelay(), &usage)
+		require.Equal(t, 1772, summary.CacheTokens)
+		require.Equal(t, 0, summary.CacheCreationTokens)
+	})
+}
+
 func TestCalculateTextQuotaSummarySeparatesOpenRouterCacheReadFromPromptBilling(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	w := httptest.NewRecorder()
