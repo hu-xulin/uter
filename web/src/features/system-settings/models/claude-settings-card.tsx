@@ -275,7 +275,7 @@ export function ClaudeSettingsCard({ defaultValues }: ClaudeSettingsCardProps) {
                 <FormItem>
                   <FormLabel>{t('Budget Tokens Ratio')}</FormLabel>
                   <FormControl>
-                    <Input
+                    <Input autoComplete='off'
                       placeholder='1'
                       {...field}
                       value={String(field.value ?? '')}

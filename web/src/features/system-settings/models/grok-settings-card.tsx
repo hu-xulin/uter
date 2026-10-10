@@ -183,7 +183,7 @@ export function GrokSettingsCard(props: Props) {
               <FormItem className='max-w-xs'>
                 <FormLabel>{t('Violation deduction amount')}</FormLabel>
                 <FormControl>
-                  <Input
+                  <Input autoComplete='off'
                     type='number'
                     step={0.01}
                     min={0}

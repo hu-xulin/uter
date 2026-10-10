@@ -236,7 +236,7 @@ export function PaymentMethodsVisualEditor({
       <div className='flex flex-col gap-3 sm:flex-row sm:items-center'>
         <div className='relative flex-1'>
           <Search className='text-muted-foreground absolute top-2.5 left-2.5 h-4 w-4' />
-          <Input
+          <Input autoComplete='off'
             placeholder={t('Search payment methods...')}
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
@@ -255,7 +255,7 @@ export function PaymentMethodsVisualEditor({
             </PopoverTrigger>
             <PopoverContent className='w-60'>
               <div className='space-y-2'>
-                <p className='text-muted-foreground text-xs'>
+                <p className='text-muted-foreground text-sm'>
                   {t('Quick insert payment entries')}
                 </p>
                 <div className='space-y-1'>
@@ -444,7 +444,7 @@ export function PaymentMethodsVisualEditor({
                           </span>
                         </div>
                       ) : (
-                        <span className='text-muted-foreground text-xs'>—</span>
+                        <span className='text-muted-foreground text-sm'>—</span>
                       )}
                     </div>
                     {method.min_topup && (

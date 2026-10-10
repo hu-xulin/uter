@@ -181,7 +181,7 @@ export function CheckinSettingsSection({
                       })}
                     </FormLabel>
                     <FormControl>
-                      <Input
+                      <Input autoComplete='off'
                         type='number'
                         min={0}
                         placeholder={t('1000')}
@@ -210,7 +210,7 @@ export function CheckinSettingsSection({
                       })}
                     </FormLabel>
                     <FormControl>
-                      <Input
+                      <Input autoComplete='off'
                         type='number'
                         min={0}
                         placeholder={t('10000')}

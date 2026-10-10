@@ -977,7 +977,7 @@ export const ModelPricingEditorPanel = forwardRef<
                       <FormItem>
                         <FormLabel>{t('Model name')}</FormLabel>
                         <FormControl>
-                          <Input
+                          <Input autoComplete='off'
                             placeholder={t('gpt-4')}
                             {...field}
                             disabled={isEditMode}
@@ -1064,7 +1064,7 @@ export const ModelPricingEditorPanel = forwardRef<
                       </Alert>
                     )}
                     {(pricingMode !== 'tiered_expr' || wasConverted) && (
-                      <p className='text-muted-foreground text-xs'>
+                      <p className='text-muted-foreground text-sm'>
                         {t(
                           'After conversion, expression reservation and rounding rules apply. Effective unit prices are preserved; individual rounded charges may differ.'
                         )}
@@ -1274,7 +1274,7 @@ export const ModelPricingEditorPanel = forwardRef<
                   {(pricingMode !== 'per-token' || effectivePreview) &&
                     previewRows.map((row) => (
                       <div key={row.key} className='grid gap-1 px-3 py-2.5'>
-                        <span className='text-muted-foreground text-xs'>
+                        <span className='text-muted-foreground text-sm'>
                           {row.label}
                         </span>
                         <span

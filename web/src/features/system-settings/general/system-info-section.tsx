@@ -159,7 +159,7 @@ export function SystemInfoSection({ defaultValues }: SystemInfoSectionProps) {
                   <FormItem>
                     <FormLabel>{t('System Name')}</FormLabel>
                     <FormControl>
-                      <Input placeholder={t('Uter')} {...field} />
+                      <Input autoComplete='off' placeholder={t('Uter')} {...field} />
                     </FormControl>
                     <FormDescription>
                       {t('The name displayed across the application')}
@@ -176,7 +176,7 @@ export function SystemInfoSection({ defaultValues }: SystemInfoSectionProps) {
                   <FormItem>
                     <FormLabel>{t('Server Address')}</FormLabel>
                     <FormControl>
-                      <Input placeholder='https://yourdomain.com' {...field} />
+                      <Input autoComplete='off' placeholder='https://yourdomain.com' {...field} />
                     </FormControl>
                     <FormDescription>
                       {t(
@@ -195,7 +195,7 @@ export function SystemInfoSection({ defaultValues }: SystemInfoSectionProps) {
                   <FormItem>
                     <FormLabel>{t('Async Task Public Address')}</FormLabel>
                     <FormControl>
-                      <Input
+                      <Input autoComplete='off'
                         placeholder='https://media.example.com/tasks'
                         {...field}
                       />
@@ -217,7 +217,7 @@ export function SystemInfoSection({ defaultValues }: SystemInfoSectionProps) {
                   <FormItem>
                     <FormLabel>{t('Logo URL')}</FormLabel>
                     <FormControl>
-                      <Input
+                      <Input autoComplete='off'
                         placeholder={t('https://example.com/logo.png')}
                         {...field}
                       />

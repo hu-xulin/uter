@@ -48,7 +48,7 @@ export function SyncPriceCell(props: { values: PricingSyncValues }) {
     return (
       <div className='min-w-0 flex-1 space-y-1'>
         <div className='flex items-center gap-2'>
-          <span className='text-muted-foreground text-xs!'>
+          <span className='text-muted-foreground text-sm!'>
             {t('Expression pricing')}
           </span>
           <CopyButton
@@ -63,7 +63,7 @@ export function SyncPriceCell(props: { values: PricingSyncValues }) {
             {parsed.tiers.map((tier) => (
               <div key={tier.label} className='space-y-1'>
                 {parsed.tiers.length > 1 && (
-                  <div className='text-muted-foreground text-xs!'>
+                  <div className='text-muted-foreground text-sm!'>
                     {tier.condition || tier.label || t('Default')}
                   </div>
                 )}
@@ -71,7 +71,7 @@ export function SyncPriceCell(props: { values: PricingSyncValues }) {
               </div>
             ))}
             {parsed.requestRuleExpr && (
-              <div className='text-muted-foreground text-xs! break-all'>
+              <div className='text-muted-foreground text-sm! break-all'>
                 {t('Includes request rules')}: {parsed.requestRuleExpr}
               </div>
             )}
@@ -103,7 +103,7 @@ function SyncPriceMetrics(props: {
     <dl className='flex min-w-0 flex-1 flex-wrap gap-x-4 gap-y-2'>
       {props.lines.map((line) => (
         <div key={line.label} className='min-w-0'>
-          <dt className='text-muted-foreground text-xs! leading-4'>
+          <dt className='text-muted-foreground text-sm! leading-4'>
             {line.label}
           </dt>
           <dd className='leading-5 font-medium tabular-nums'>{line.value}</dd>
@@ -136,7 +136,7 @@ export function SyncSourceHeader(props: { source: string }) {
       <span className='min-w-0 flex-1 truncate' title={name}>
         {name}
       </span>
-      <span className='text-muted-foreground text-xs tabular-nums'>
+      <span className='text-muted-foreground text-sm tabular-nums'>
         {selected}/{count}
       </span>
     </div>

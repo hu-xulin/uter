@@ -141,7 +141,7 @@ export function RateLimitDialog({
               <FormItem>
                 <FormLabel>{t('Group Name')}</FormLabel>
                 <FormControl>
-                  <Input
+                  <Input autoComplete='off'
                     placeholder={t('e.g., default, vip, premium')}
                     {...field}
                     disabled={isEditMode}
@@ -165,7 +165,7 @@ export function RateLimitDialog({
                 <FormLabel>{t('Max Requests (including failures)')}</FormLabel>
                 <FormControl>
                   <div className='flex items-center gap-2'>
-                    <Input
+                    <Input autoComplete='off'
                       placeholder='60'
                       type='number'
                       min={0}
@@ -197,7 +197,7 @@ export function RateLimitDialog({
                 <FormLabel>{t('Max Successful Requests')}</FormLabel>
                 <FormControl>
                   <div className='flex items-center gap-2'>
-                    <Input
+                    <Input autoComplete='off'
                       placeholder='60'
                       type='number'
                       min={1}

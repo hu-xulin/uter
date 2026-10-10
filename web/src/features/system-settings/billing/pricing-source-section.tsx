@@ -160,7 +160,7 @@ export function PricingSourceSection({
                               <FormLabel className='cursor-pointer'>
                                 {t(SOURCE_OPTION_KEYS[value])}
                               </FormLabel>
-                              <span className='text-muted-foreground text-xs'>
+                              <span className='text-muted-foreground text-sm'>
                                 {t(SOURCE_HINT_KEYS[value])}
                               </span>
                             </span>

@@ -196,7 +196,7 @@ export function PaymentMethodDialog({
               <FormItem>
                 <FormLabel>{t('Name')}</FormLabel>
                 <FormControl>
-                  <Input placeholder={t('e.g., Alipay, WeChat')} {...field} />
+                  <Input autoComplete='off' placeholder={t('e.g., Alipay, WeChat')} {...field} />
                 </FormControl>
                 <FormDescription>
                   {t('Display name for this payment method.')}
@@ -265,7 +265,7 @@ export function PaymentMethodDialog({
                 <FormLabel>{t('Icon')}</FormLabel>
                 <FormControl>
                   <div className='flex items-center gap-2'>
-                    <Input
+                    <Input autoComplete='off'
                       placeholder={t('e.g., SiAlipay')}
                       {...field}
                       className='flex-1'
@@ -296,7 +296,7 @@ export function PaymentMethodDialog({
               <FormItem>
                 <FormLabel>{t('Minimum top-up (optional)')}</FormLabel>
                 <FormControl>
-                  <Input
+                  <Input autoComplete='off'
                     type='number'
                     step='0.01'
                     placeholder={t('e.g., 50')}

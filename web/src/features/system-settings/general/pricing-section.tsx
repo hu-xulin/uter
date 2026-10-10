@@ -173,7 +173,7 @@ export function PricingSection({ defaultValues }: PricingSectionProps) {
                   <FormItem>
                     <FormLabel>{t('Quota Per Unit')}</FormLabel>
                     <FormControl>
-                      <Input
+                      <Input autoComplete='off'
                         type='number'
                         step='0.01'
                         value={field.value as number}
@@ -244,7 +244,7 @@ export function PricingSection({ defaultValues }: PricingSectionProps) {
                   <FormItem>
                     <FormLabel>{exchangeRateLabel}</FormLabel>
                     <FormControl>
-                      <Input
+                      <Input autoComplete='off'
                         placeholder='7.25'
                         type='number'
                         step='0.01'
@@ -271,7 +271,7 @@ export function PricingSection({ defaultValues }: PricingSectionProps) {
                     <FormItem>
                       <FormLabel>{t('Custom Currency Symbol')}</FormLabel>
                       <FormControl>
-                        <Input
+                        <Input autoComplete='off'
                           type='text'
                           value={field.value ?? ''}
                           onChange={field.onChange}
@@ -296,7 +296,7 @@ export function PricingSection({ defaultValues }: PricingSectionProps) {
                     <FormItem>
                       <FormLabel>{t('Units per USD')}</FormLabel>
                       <FormControl>
-                        <Input
+                        <Input autoComplete='off'
                           type='number'
                           step='0.01'
                           value={field.value ?? ''}

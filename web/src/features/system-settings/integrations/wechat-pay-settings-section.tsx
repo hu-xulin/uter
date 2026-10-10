@@ -33,8 +33,10 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { SecretInput } from '@/components/ui/secret-input'
 import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
+import { maskSecret } from '@/lib/secret'
 
 import {
   SettingsForm,
@@ -128,7 +130,14 @@ export function WechatPaySettingsSection({
     for (const update of updates) {
       await updateOption.mutateAsync(update)
     }
-    form.reset(values)
+    // 保存后把三个密钥字段重置为掩码串展示（与 uter 密钥规则一致：
+    // 展示态只显示前4后4，真实值留在后端；再次保存时后端会识别掩码串并保留原密钥）。
+    form.reset({
+      ...values,
+      apiV3Key: maskSecret(values.apiV3Key ?? ''),
+      privateKey: maskSecret(values.privateKey ?? ''),
+      platformCert: maskSecret(values.platformCert ?? ''),
+    })
     toast.success(t('Saved successfully'))
   }
 
@@ -221,7 +230,11 @@ export function WechatPaySettingsSection({
                   <FormItem>
                     <FormLabel>{t('APIv3 Key')}</FormLabel>
                     <FormControl>
-                      <Input type='password' autoComplete='off' {...field} />
+                      <SecretInput
+                        value={String(field.value ?? '')}
+                        onChange={field.onChange}
+                        placeholder='32-byte APIv3 key'
+                      />
                     </FormControl>
                     <FormDescription>
                       {t('32-byte APIv3 key for callback decryption')}

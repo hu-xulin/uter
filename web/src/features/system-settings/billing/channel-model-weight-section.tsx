@@ -174,7 +174,7 @@ function ChannelModelPicker({
   return (
     <div className='bg-popover space-y-2 rounded-lg border p-3 shadow-md'>
       <div className='flex items-center gap-2'>
-        <Input
+        <Input autoComplete='off'
           className='flex-1'
           value={query}
           onChange={(event) => setQuery(event.target.value)}
@@ -220,7 +220,7 @@ function ChannelModelPicker({
         )}
       </div>
       <div className='flex items-center justify-between gap-2'>
-        <span className='text-muted-foreground text-xs'>
+        <span className='text-muted-foreground text-sm'>
           {t('{{count}} selected models', { count: selected.length })}
         </span>
         <div className='flex gap-2'>
@@ -422,7 +422,7 @@ export function ChannelModelWeightSection({
               <div className='flex flex-wrap items-end justify-between gap-3'>
                 <div className='flex min-w-0 flex-wrap items-end gap-3'>
                   <div className='space-y-1'>
-                    <Label className='text-muted-foreground text-xs'>
+                    <Label className='text-muted-foreground text-sm'>
                       {t('Channel')}
                     </Label>
                     <Combobox
@@ -466,7 +466,7 @@ export function ChannelModelWeightSection({
 
               <SettingsControlChildren className='space-y-2'>
                 <div className='flex flex-wrap items-center justify-between gap-2'>
-                  <Label className='text-muted-foreground text-xs'>
+                  <Label className='text-muted-foreground text-sm'>
                     {t('Per-model overrides')}
                   </Label>
                   <Button
@@ -503,7 +503,7 @@ export function ChannelModelWeightSection({
                   />
                 )}
                 {row.models.length === 0 ? (
-                  <p className='text-muted-foreground text-xs'>
+                  <p className='text-muted-foreground text-sm'>
                     {t('No models configured for channel')}
                   </p>
                 ) : (
@@ -527,7 +527,7 @@ export function ChannelModelWeightSection({
                           placeholder='gpt-4o'
                           className='w-56'
                         />
-                        <Input
+                        <Input autoComplete='off'
                           className='w-24'
                           inputMode='decimal'
                           placeholder={t('Weight')}
@@ -538,7 +538,7 @@ export function ChannelModelWeightSection({
                             })
                           }
                         />
-                        <Input
+                        <Input autoComplete='off'
                           className='w-24'
                           inputMode='decimal'
                           placeholder={t('Priority')}
@@ -581,7 +581,7 @@ export function ChannelModelWeightSection({
                   <Plus data-icon='inline-start' />
                   <span>{t('Add model rule')}</span>
                 </Button>
-                <p className='text-muted-foreground text-xs'>
+                <p className='text-muted-foreground text-sm'>
                   {t('Per-model weight & priority hint')}
                 </p>
               </SettingsControlChildren>

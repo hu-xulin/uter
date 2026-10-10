@@ -123,7 +123,7 @@ export function PresetSelector(props: PresetSelectorProps) {
         </div>
         <div className='space-y-1.5'>
           <Label>{t('Base URL')}</Label>
-          <Input
+          <Input autoComplete='off'
             placeholder={t('https://your-server.example.com')}
             value={baseUrl}
             onChange={(e) => handleBaseUrlChange(e.target.value)}

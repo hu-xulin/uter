@@ -439,7 +439,7 @@ export function ChannelAffinitySection(props: Props) {
           />
           <div className='grid gap-1.5'>
             <Label>{t('Max Entries')}</Label>
-            <Input
+            <Input autoComplete='off'
               placeholder='100'
               type='number'
               min={0}
@@ -449,7 +449,7 @@ export function ChannelAffinitySection(props: Props) {
           </div>
           <div className='grid gap-1.5'>
             <Label>{t('Default TTL (seconds)')}</Label>
-            <Input
+            <Input autoComplete='off'
               placeholder='300'
               type='number'
               min={0}
@@ -556,7 +556,7 @@ export function ChannelAffinitySection(props: Props) {
             {t('Clear All Cache')}
           </Button>
           {cacheStats && (
-            <span className='text-muted-foreground text-xs'>
+            <span className='text-muted-foreground text-sm'>
               {t('Cache Entries')}: {cacheStats.total} /{' '}
               {cacheStats.cache_capacity}
             </span>

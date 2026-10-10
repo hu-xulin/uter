@@ -215,7 +215,7 @@ export function UpstreamRatioSyncTable(props: UpstreamRatioSyncTableProps) {
               className='text-muted-foreground absolute top-1/2 left-2 size-4 -translate-y-1/2'
               aria-hidden
             />
-            <Input
+            <Input autoComplete='off'
               value={search}
               onChange={(event) => {
                 setSearch(event.target.value)
@@ -249,7 +249,7 @@ export function UpstreamRatioSyncTable(props: UpstreamRatioSyncTableProps) {
               ))}
             </SelectContent>
           </Select>
-          <span className='text-muted-foreground text-xs sm:ml-auto'>
+          <span className='text-muted-foreground text-sm sm:ml-auto'>
             USD / {t('1M token')}
           </span>
         </div>

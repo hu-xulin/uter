@@ -442,7 +442,7 @@ export function WaffoPancakeSettingsSection({
             }
             className='font-mono text-xs'
           />
-          <p className='text-muted-foreground text-xs'>
+          <p className='text-muted-foreground text-sm'>
             {t(
               'The environment (test vs production) is decided by the key you paste here — use the Test key while integrating, then swap to the Production key when going live.'
             )}
@@ -464,7 +464,7 @@ export function WaffoPancakeSettingsSection({
             <h4 className='font-medium'>
               {t('Bind a Pancake store + product')}
             </h4>
-            <p className='text-muted-foreground text-xs'>{bindStatusMessage}</p>
+            <p className='text-muted-foreground text-sm'>{bindStatusMessage}</p>
           </div>
 
           {/*
@@ -500,7 +500,7 @@ export function WaffoPancakeSettingsSection({
           <div className='space-y-1.5'>
             <Label>{t('Payment return URL')}</Label>
             <div className='flex gap-2'>
-              <Input
+              <Input autoComplete='off'
                 placeholder='https://example.com/wallet'
                 value={returnURL}
                 onChange={(event) =>
@@ -520,7 +520,7 @@ export function WaffoPancakeSettingsSection({
                   : `+ ${t('Create')} ${DEFAULT_NEW_PAIR_NAME}`}
               </Button>
             </div>
-            <p className='text-muted-foreground text-xs'>
+            <p className='text-muted-foreground text-sm'>
               {t(
                 "Used as SuccessURL on the new product. You'll be prompted to confirm if left blank."
               )}

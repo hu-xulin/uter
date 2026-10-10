@@ -2234,7 +2234,7 @@ export function ChannelMutateDrawer({
               <FormItem className={sideDrawerSwitchItemClassName()}>
                 <div className='flex flex-col gap-0.5'>
                   <FormLabel>{t('Enabled')}</FormLabel>
-                  <FormDescription className='text-xs'>
+                  <FormDescription>
                     {t('Enable or disable this channel')}
                   </FormDescription>
                 </div>
@@ -2483,7 +2483,7 @@ export function ChannelMutateDrawer({
                   heightClassName='h-40 min-h-40 max-h-40'
                 />
               </FormControl>
-              <FormDescription className='text-xs'>
+              <FormDescription>
                 {t('Supported variables')}:{' '}
                 <code className='bg-muted rounded px-1 py-0.5'>
                   {'{api_key}'}

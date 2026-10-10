@@ -187,7 +187,7 @@ function ChannelModelPicker({
   return (
     <div className='bg-popover space-y-2 rounded-lg border p-3 shadow-md'>
       <div className='flex items-center gap-2'>
-        <Input
+        <Input autoComplete='off'
           className='flex-1'
           value={query}
           onChange={(event) => setQuery(event.target.value)}
@@ -233,7 +233,7 @@ function ChannelModelPicker({
         )}
       </div>
       <div className='flex items-center justify-between gap-2'>
-        <span className='text-muted-foreground text-xs'>
+        <span className='text-muted-foreground text-sm'>
           {t('{{count}} selected models', { count: selected.length })}
         </span>
         <div className='flex gap-2'>
@@ -433,7 +433,7 @@ export function ChannelPricingSection({
               <div className='flex flex-wrap items-end justify-between gap-3'>
                 <div className='flex min-w-0 flex-wrap items-end gap-3'>
                   <div className='space-y-1'>
-                    <Label className='text-muted-foreground text-xs'>
+                    <Label className='text-muted-foreground text-sm'>
                       {t('Channel')}
                     </Label>
                     <Combobox
@@ -448,10 +448,10 @@ export function ChannelPricingSection({
                     />
                   </div>
                   <div className='space-y-1'>
-                    <Label className='text-muted-foreground text-xs'>
+                    <Label className='text-muted-foreground text-sm'>
                       {t('Channel-wide multiplier')}
                     </Label>
-                    <Input
+                    <Input autoComplete='off'
                       className='w-32'
                       inputMode='decimal'
                       placeholder='1'
@@ -488,13 +488,13 @@ export function ChannelPricingSection({
                   <span>{t('Remove')}</span>
                 </Button>
               </div>
-              <p className='text-muted-foreground text-xs'>
+              <p className='text-muted-foreground text-sm'>
                 {t('Channel-wide multiplier hint')}
               </p>
 
               <SettingsControlChildren className='space-y-2'>
                 <div className='flex flex-wrap items-center justify-between gap-2'>
-                  <Label className='text-muted-foreground text-xs'>
+                  <Label className='text-muted-foreground text-sm'>
                     {t('Per-model overrides')}
                   </Label>
                   <Button
@@ -531,7 +531,7 @@ export function ChannelPricingSection({
                   />
                 )}
                 {row.models.length === 0 ? (
-                  <p className='text-muted-foreground text-xs'>
+                  <p className='text-muted-foreground text-sm'>
                     {t('No models configured for channel')}
                   </p>
                 ) : (
@@ -568,7 +568,7 @@ export function ChannelPricingSection({
                           }
                           className='w-40'
                         />
-                        <Input
+                        <Input autoComplete='off'
                           className='w-32'
                           inputMode='decimal'
                           placeholder={rule.mode === 'price' ? '2.5' : '0.8'}
@@ -611,7 +611,7 @@ export function ChannelPricingSection({
                   <Plus data-icon='inline-start' />
                   <span>{t('Add model rule')}</span>
                 </Button>
-                <p className='text-muted-foreground text-xs'>
+                <p className='text-muted-foreground text-sm'>
                   {t('Absolute price hint')}
                 </p>
               </SettingsControlChildren>

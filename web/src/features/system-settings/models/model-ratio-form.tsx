@@ -158,7 +158,7 @@ function ModelJsonTextareaField(props: {
               textareaRef={field.ref}
             />
           </FormControl>
-          <FormDescription className='text-xs leading-5'>
+          <FormDescription className='leading-5'>
             {props.description}
           </FormDescription>
           <FormMessage />

@@ -458,7 +458,7 @@ function RuleConditionRow({
 
   const renderParamHeaderCondition = (phCond: ParamHeaderCondition) => (
     <>
-      <Input
+      <Input autoComplete='off'
         value={phCond.path}
         onChange={(event) => onChange({ ...phCond, path: event.target.value })}
         placeholder={
@@ -488,7 +488,7 @@ function RuleConditionRow({
         </SelectContent>
       </Select>
       {phCond.mode !== MATCH_EXISTS && (
-        <Input
+        <Input autoComplete='off'
           value={phCond.value}
           onChange={(event) =>
             onChange({ ...phCond, value: event.target.value })
@@ -646,7 +646,7 @@ function RuleGroupCard({
           className='w-32'
           placeholder='1.0'
         />
-        <span className='text-muted-foreground text-xs'>
+        <span className='text-muted-foreground text-sm'>
           {t('Final cost = base × multiplier when conditions match')}
         </span>
       </div>
@@ -764,7 +764,7 @@ function CostEstimator({ effectiveExpr, fullExpr, currency }: EstimatorProps) {
     <div className='bg-muted/30 space-y-3 rounded-md border p-3'>
       <div className='space-y-1'>
         <h4 className='text-sm font-medium'>{t('Token estimator')}</h4>
-        <p className='text-muted-foreground text-xs'>
+        <p className='text-muted-foreground text-sm'>
           {t(
             'Enter token counts to preview the estimated cost (excluding group multipliers).'
           )}
@@ -798,7 +798,7 @@ function CostEstimator({ effectiveExpr, fullExpr, currency }: EstimatorProps) {
         <FieldLabel htmlFor={lengthId}>
           {t('Full input length override')}
         </FieldLabel>
-        <Input
+        <Input autoComplete='off'
           id={lengthId}
           type='number'
           min={0}
@@ -995,7 +995,7 @@ function LlmPromptHelper({ modelName }: LlmPromptHelperProps) {
       <CollapsibleContent className='mt-2'>
         <div className='bg-muted/30 rounded-md border p-3'>
           <div className='mb-2 flex items-center justify-between'>
-            <p className='text-muted-foreground text-xs'>
+            <p className='text-muted-foreground text-sm'>
               {t(
                 'Copy this prompt and send it to an LLM (e.g. ChatGPT / Claude) to help design your billing expression.'
               )}
@@ -1203,7 +1203,7 @@ export const TieredPricingEditor = memo(function TieredPricingEditor({
         )}
       </div>
 
-      <p className='text-muted-foreground text-xs'>
+      <p className='text-muted-foreground text-sm'>
         {t(
           'Raw expressions and presets use USD. Currency selection only converts visual price inputs and monetary previews.'
         )}
@@ -1237,7 +1237,7 @@ export const TieredPricingEditor = memo(function TieredPricingEditor({
               <h4 className='text-sm font-medium'>
                 {t('Request rule pricing')}
               </h4>
-              <p className='text-muted-foreground text-xs'>
+              <p className='text-muted-foreground text-sm'>
                 {t(
                   'When conditions match, the final price is multiplied by X. Multiple matches multiply together; values < 1 act as discounts.'
                 )}

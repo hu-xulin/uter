@@ -207,7 +207,7 @@ export function ModelDescriptionLocalizationSection({ defaultValues }: Props) {
                       <FormItem>
                         <FormLabel>{t('Translation API Base URL')}</FormLabel>
                         <FormControl>
-                          <Input
+                          <Input autoComplete='off'
                             {...field}
                             value={asText(field.value)}
                             placeholder='https://api.example.com/v1'
@@ -252,7 +252,7 @@ export function ModelDescriptionLocalizationSection({ defaultValues }: Props) {
                       <FormItem>
                         <FormLabel>{t('Translation Model')}</FormLabel>
                         <FormControl>
-                          <Input
+                          <Input autoComplete='off'
                             {...field}
                             value={asText(field.value)}
                             placeholder='gpt-4o-mini'
@@ -276,7 +276,7 @@ export function ModelDescriptionLocalizationSection({ defaultValues }: Props) {
                       <FormItem>
                         <FormLabel>{t('Locales to translate')}</FormLabel>
                         <FormControl>
-                          <Input
+                          <Input autoComplete='off'
                             {...field}
                             value={asText(field.value)}
                             placeholder='zh-TW, fr, ru, vi'

@@ -423,7 +423,7 @@ export function ApiInfoSection({ enabled, data }: ApiInfoSectionProps) {
                 <FormItem>
                   <FormLabel>{t('API URL')}</FormLabel>
                   <FormControl>
-                    <Input
+                    <Input autoComplete='off'
                       placeholder={t('https://api.example.com')}
                       {...field}
                     />
@@ -439,7 +439,7 @@ export function ApiInfoSection({ enabled, data }: ApiInfoSectionProps) {
                 <FormItem>
                   <FormLabel>{t('Route Description')}</FormLabel>
                   <FormControl>
-                    <Input placeholder={t('e.g., CN2 GIA')} {...field} />
+                    <Input autoComplete='off' placeholder={t('e.g., CN2 GIA')} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -452,7 +452,7 @@ export function ApiInfoSection({ enabled, data }: ApiInfoSectionProps) {
                 <FormItem>
                   <FormLabel>{t('Description')}</FormLabel>
                   <FormControl>
-                    <Input
+                    <Input autoComplete='off'
                       placeholder={t(
                         'e.g., Recommended for China Mainland Users'
                       )}

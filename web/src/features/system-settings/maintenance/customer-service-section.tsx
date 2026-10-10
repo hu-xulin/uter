@@ -256,16 +256,11 @@ export function CustomerServiceSection({
           />
 
           <div className='space-y-3 rounded-lg border p-4'>
-            <div className='space-y-0.5'>
-              <p className='text-sm leading-none font-medium'>
-                {t('Pages where the entry appears')}
-              </p>
-              <p className='text-muted-foreground text-sm'>
-                {t(
-                  'Pick the pages that show the customer service entry. With nothing selected, the entry is hidden on every page.'
-                )}
-              </p>
-            </div>
+            <p className='text-muted-foreground text-sm'>
+              {t(
+                'Pick the pages that show the customer service entry. With nothing selected, the entry is hidden on every page.'
+              )}
+            </p>
 
             {/* 用 FormField 包每一行只为复用 FormControl/Switch 的接线，
                 实际取值走 form.watch + setValue：六个独立布尔塞进一个数组字段里，
@@ -399,18 +394,13 @@ function AdminTokenField({
 
   return (
     <div className='mt-6 space-y-3 rounded-lg border p-4'>
-      <div className='space-y-0.5'>
-        <p className='text-sm leading-none font-medium'>
-          {t('Customer Service Admin Token')}
-        </p>
-        <p className='text-muted-foreground text-sm'>
-          {configured
-            ? t('Admin token is configured. Paste a new one to replace it.')
-            : t(
-                'Paste the uter-cs admin bearer token so Uter can read and save its model configuration on your behalf.'
-              )}
-        </p>
-      </div>
+      <p className='text-muted-foreground text-sm'>
+        {configured
+          ? t('Admin token is configured. Paste a new one to replace it.')
+          : t(
+              'Paste the uter-cs admin bearer token so Uter can read and save its model configuration on your behalf.'
+            )}
+      </p>
       <div className='flex flex-col gap-2 sm:flex-row'>
         <div className='relative flex-1'>
           <Input
@@ -451,6 +441,118 @@ function AdminTokenField({
         </button>
       </div>
     </div>
+  )
+}
+
+/**
+ * 大模型配置面板里「敏感字段」的输入框（api_key / backup_api_key 等）。
+ *
+ * 展示规则与同页 AdminTokenField、全局 SecretInput 一致：
+ * - **展示态**（默认）：显示 `maskSecret(real)`（前4 + 中间星号 + 后4），绝不把明文密钥直接
+ *   渲染进输入框；眼睛按钮可临时查看完整明文。
+ * - **编辑态**（点击后）：清空并聚焦，允许输入新明文（password 类型，避免旁观者看到）。
+ * - **失焦未输入**：退出编辑态、回填回「掩码后的真实值」，**不改动** `value`（即 config 中
+ *   保存的真实密钥原样保留，不会被掩码串覆盖）；只有真正键入内容时才把新明文写回 `value`。
+ *
+ * 关键点：`value` 始终是「真实明文」（后端下发、或用户本次输入的新明文），掩码仅用于展示；
+ * 渲染层不要把掩码串写回 `value`，否则保存时 PUT 会把掩码串当新密钥、覆盖真实密钥——这正是
+ * 此前「保存后密钥失效」的根因。与 SecretInput 的区别在于：本字段的掩码由前端本地完成
+ * （GET /api/customer-service/deploy/llm 按要求返回明文，由前端负责脱敏展示），而 config 仍
+ * 持有真实值用于保存。
+ */
+function MaskedConfigField({
+  labelKey,
+  descriptionKey,
+  placeholderKey,
+  value,
+  onChange,
+  disabled,
+}: {
+  labelKey: string
+  descriptionKey?: string
+  placeholderKey?: string
+  value: string
+  onChange: (v: string) => void
+  disabled?: boolean
+}) {
+  const { t } = useTranslation()
+  const [editing, setEditing] = useState(false)
+  const [draft, setDraft] = useState('')
+  const [revealed, setRevealed] = useState(false)
+
+  const isBlank = value.trim() === ''
+
+  // 展示态显示掩码串（前4后4）；编辑态显示正在输入的明文草稿；
+  // 展示态且眼睛已点时显示真实明文（用户主动查看）。
+  let display: string
+  if (editing) {
+    display = draft
+  } else if (revealed) {
+    display = value
+  } else {
+    display = maskSecret(value)
+  }
+
+  // 编辑态用 password（避免旁观者看到新密钥），其余展示态用 text 呈现掩码串。
+  let inputType: string
+  if (editing) {
+    inputType = revealed ? 'text' : 'password'
+  } else {
+    inputType = 'text'
+  }
+
+  return (
+    <FormItem className='flex flex-col gap-1.5'>
+      <FormLabel className='text-sm font-normal'>
+        {t(labelKey)}
+      </FormLabel>
+      {descriptionKey && (
+        <p className='text-muted-foreground text-sm'>
+          {t(descriptionKey)}
+        </p>
+      )}
+      <FormControl>
+        <div className='relative'>
+          <Input
+            type={inputType}
+            autoComplete='new-password'
+            readOnly={!editing}
+            placeholder={isBlank ? (placeholderKey ?? '') : undefined}
+            value={display}
+            onFocus={() => {
+              if (disabled) return
+              setDraft('')
+              setEditing(true)
+              setRevealed(false)
+            }}
+            onChange={(e) => {
+              // 仅在编辑态回写：真实明文写入 value（config），用于后续保存。
+              if (!editing) return
+              setDraft(e.target.value)
+              onChange(e.target.value)
+            }}
+            onBlur={() => {
+              // 失焦即退出编辑态；未输入则不调用 onChange，真实值保持不动。
+              setEditing(false)
+              setDraft('')
+            }}
+            disabled={disabled}
+            className='pr-9'
+          />
+          {!editing && !isBlank && (
+            <button
+              type='button'
+              tabIndex={-1}
+              onClick={() => setRevealed((v) => !v)}
+              aria-label={revealed ? 'Hide secret' : 'Reveal secret'}
+              className='text-muted-foreground hover:text-foreground absolute right-2 top-1/2 size-5 -translate-y-1/2'
+            >
+              {revealed ? <EyeOff className='size-4' /> : <Eye className='size-4' />}
+            </button>
+          )}
+        </div>
+      </FormControl>
+    </FormItem>
   )
 }
 
@@ -554,21 +656,16 @@ function ModelConfigPanel({ reloadSignal = 0 }: { reloadSignal?: number }) {
 
   return (
     <div className='mt-6 space-y-3 rounded-lg border p-4'>
-      <div className='space-y-0.5'>
-        <p className='text-sm leading-none font-medium'>
-          {t('Model Configuration')}
-        </p>
-        <p className='text-muted-foreground text-sm'>
-          {t(
-            'Large model settings for the customer service assistant. Changes are pushed to the connected uter-cs deployment.'
-          )}
-        </p>
-        <p className='text-muted-foreground text-xs'>
-          {t(
-            'Three large models are configurable: primary chat model, fallback model, and cross-vendor backup model. The embedding model powers knowledge retrieval.'
-          )}
-        </p>
-      </div>
+      <p className='text-muted-foreground text-sm'>
+        {t(
+          'Large model settings for the customer service assistant. Changes are pushed to the connected uter-cs deployment.'
+        )}
+      </p>
+      <p className='text-muted-foreground text-sm'>
+        {t(
+          'Three large models are configurable: primary chat model, fallback model, and cross-vendor backup model. The embedding model powers knowledge retrieval.'
+        )}
+      </p>
 
       {loading && (
         <p className='text-muted-foreground text-sm'>{t('Loading…')}</p>
@@ -583,7 +680,7 @@ function ModelConfigPanel({ reloadSignal = 0 }: { reloadSignal?: number }) {
       )}
 
       {!loading && fromCache && !stale && (
-        <p className='text-muted-foreground text-xs'>
+        <p className='text-muted-foreground text-sm'>
           {t(
             'Configuration loaded from cache. Click Reload to fetch the latest from uter-cs.'
           )}
@@ -591,7 +688,7 @@ function ModelConfigPanel({ reloadSignal = 0 }: { reloadSignal?: number }) {
       )}
 
       {!loading && stale && note && (
-        <p className='text-muted-foreground text-xs'>{note}</p>
+        <p className='text-muted-foreground text-sm'>{note}</p>
       )}
 
       {!loading && error && (
@@ -600,30 +697,42 @@ function ModelConfigPanel({ reloadSignal = 0 }: { reloadSignal?: number }) {
 
       {!loading && config && (
         <div className='space-y-3'>
-          {LLM_FIELDS.map((field) => (
-            <FormItem key={field.key} className='flex flex-col gap-1.5'>
-              <FormLabel className='text-sm font-normal'>
-                {t(field.labelKey)}
-              </FormLabel>
-              {field.descriptionKey && (
-                <p className='text-muted-foreground text-xs'>
-                  {t(field.descriptionKey)}
-                </p>
-              )}
-              <FormControl>
-                <Input
-                  type={field.sensitive ? 'password' : 'text'}
-                  autoComplete='off'
-                  placeholder={field.placeholderKey ?? ''}
-                  value={config[field.key] ?? ''}
-                  onChange={(e) =>
-                    setConfig({ ...config, [field.key]: e.target.value })
-                  }
-                  disabled={saving}
-                />
-              </FormControl>
-            </FormItem>
-          ))}
+          {LLM_FIELDS.map((field) =>
+            field.sensitive ? (
+              <MaskedConfigField
+                key={field.key}
+                labelKey={field.labelKey}
+                descriptionKey={field.descriptionKey}
+                placeholderKey={field.placeholderKey}
+                value={config[field.key] ?? ''}
+                onChange={(v) => setConfig({ ...config, [field.key]: v })}
+                disabled={saving}
+              />
+            ) : (
+              <FormItem key={field.key} className='flex flex-col gap-1.5'>
+                <FormLabel className='text-sm font-normal'>
+                  {t(field.labelKey)}
+                </FormLabel>
+                {field.descriptionKey && (
+                  <p className='text-muted-foreground text-sm'>
+                    {t(field.descriptionKey)}
+                  </p>
+                )}
+                <FormControl>
+                  <Input
+                    type='text'
+                    autoComplete='off'
+                    placeholder={field.placeholderKey ?? ''}
+                    value={config[field.key] ?? ''}
+                    onChange={(e) =>
+                      setConfig({ ...config, [field.key]: e.target.value })
+                    }
+                    disabled={saving}
+                  />
+                </FormControl>
+              </FormItem>
+            )
+          )}
 
           <div className='flex justify-end gap-2 pt-1'>
             <button

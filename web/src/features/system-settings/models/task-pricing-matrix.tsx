@@ -424,7 +424,7 @@ function TaskMatrixGroup(props: TaskMatrixGroupProps) {
               i18n.language
             )}
           </span>
-          <span className='text-muted-foreground text-xs'>
+          <span className='text-muted-foreground text-sm'>
             {t('{{count}} combinations', { count: props.entries.length })}
           </span>
           {!props.allRowsFree && freeCount > 0 ? (

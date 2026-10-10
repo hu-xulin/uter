@@ -389,7 +389,7 @@ export function AnnouncementsSection({
                   <span className='text-sm font-medium'>
                     {getRelativeTime(announcement.publishDate)}
                   </span>
-                  <span className='text-muted-foreground text-xs'>
+                  <span className='text-muted-foreground text-sm'>
                     {dayjs(announcement.publishDate).format(
                       'YYYY-MM-DD HH:mm:ss'
                     )}
@@ -570,7 +570,7 @@ export function AnnouncementsSection({
                 <FormItem>
                   <FormLabel>{t('Extra Notes (Optional)')}</FormLabel>
                   <FormControl>
-                    <Input
+                    <Input autoComplete='off'
                       placeholder={t('Additional information')}
                       {...field}
                     />

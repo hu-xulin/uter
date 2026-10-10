@@ -36,6 +36,7 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { SecretInput } from '@/components/ui/secret-input'
 import {
   Select,
   SelectContent,
@@ -289,7 +290,11 @@ export function ProviderFormDialog(props: ProviderFormDialogProps) {
                   <FormItem>
                     <FormLabel>{t('Provider Name')}</FormLabel>
                     <FormControl>
-                      <Input placeholder={t('e.g. My GitLab')} {...field} />
+                      <Input
+                        placeholder={t('e.g. My GitLab')}
+                        autoComplete='off'
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -303,7 +308,11 @@ export function ProviderFormDialog(props: ProviderFormDialogProps) {
                   <FormItem>
                     <FormLabel>{t('Slug')}</FormLabel>
                     <FormControl>
-                      <Input placeholder={t('e.g. my-gitlab')} {...field} />
+                      <Input
+                        placeholder={t('e.g. my-gitlab')}
+                        autoComplete='off'
+                        {...field}
+                      />
                     </FormControl>
                     <FormDescription>
                       {t('Used in URLs and API routes')}
@@ -321,10 +330,11 @@ export function ProviderFormDialog(props: ProviderFormDialogProps) {
                 <FormItem>
                   <FormLabel>{t('Icon')}</FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder={t('Icon identifier (e.g. github, gitlab)')}
-                      {...field}
-                    />
+                      <Input
+                        placeholder={t('Icon identifier (e.g. github, gitlab)')}
+                        autoComplete='off'
+                        {...field}
+                      />
                   </FormControl>
                   <FormDescription>
                     {t('Optional icon identifier for the login button')}
@@ -363,18 +373,18 @@ export function ProviderFormDialog(props: ProviderFormDialogProps) {
                 control={form.control}
                 name='client_secret'
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('Client Secret')}</FormLabel>
-                    <FormControl>
-                      <Input
-                        type='password'
-                        placeholder={t('OAuth Client Secret')}
-                        autoComplete='new-password'
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
+                <FormItem>
+                  <FormLabel>{t('Client Secret')}</FormLabel>
+                  <FormControl>
+                    <SecretInput
+                      placeholder={t('OAuth Client Secret')}
+                      value={String(field.value ?? '')}
+                      onChange={field.onChange}
+                      name={field.name}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
                 )}
               />
             </div>
@@ -440,6 +450,7 @@ export function ProviderFormDialog(props: ProviderFormDialogProps) {
                       placeholder={t(
                         'https://provider.com/.well-known/openid-configuration'
                       )}
+                      autoComplete='off'
                       {...field}
                     />
                   </FormControl>
@@ -462,6 +473,7 @@ export function ProviderFormDialog(props: ProviderFormDialogProps) {
                   <FormControl>
                     <Input
                       placeholder='https://provider.com/oauth/authorize'
+                      autoComplete='off'
                       {...field}
                     />
                   </FormControl>
@@ -479,6 +491,7 @@ export function ProviderFormDialog(props: ProviderFormDialogProps) {
                   <FormControl>
                     <Input
                       placeholder='https://provider.com/oauth/token'
+                      autoComplete='off'
                       {...field}
                     />
                   </FormControl>
@@ -496,6 +509,7 @@ export function ProviderFormDialog(props: ProviderFormDialogProps) {
                   <FormControl>
                     <Input
                       placeholder='https://provider.com/api/user'
+                      autoComplete='off'
                       {...field}
                     />
                   </FormControl>
@@ -513,6 +527,7 @@ export function ProviderFormDialog(props: ProviderFormDialogProps) {
                   <FormControl>
                     <Input
                       placeholder={t('e.g. openid profile email')}
+                      autoComplete='off'
                       {...field}
                     />
                   </FormControl>
@@ -544,7 +559,11 @@ export function ProviderFormDialog(props: ProviderFormDialogProps) {
                   <FormItem>
                     <FormLabel>{t('User ID Field')}</FormLabel>
                     <FormControl>
-                      <Input placeholder='id' {...field} />
+                      <Input
+                        placeholder='id'
+                        autoComplete='off'
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -558,7 +577,11 @@ export function ProviderFormDialog(props: ProviderFormDialogProps) {
                   <FormItem>
                     <FormLabel>{t('Username Field')}</FormLabel>
                     <FormControl>
-                      <Input placeholder='login' {...field} />
+                      <Input
+                        placeholder='login'
+                        autoComplete='off'
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -572,7 +595,11 @@ export function ProviderFormDialog(props: ProviderFormDialogProps) {
                   <FormItem>
                     <FormLabel>{t('Display Name Field')}</FormLabel>
                     <FormControl>
-                      <Input placeholder='name' {...field} />
+                      <Input
+                        placeholder='name'
+                        autoComplete='off'
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -586,7 +613,11 @@ export function ProviderFormDialog(props: ProviderFormDialogProps) {
                   <FormItem>
                     <FormLabel>{t('Email Field')}</FormLabel>
                     <FormControl>
-                      <Input placeholder='email' {...field} />
+                      <Input
+                        placeholder='email'
+                        autoComplete='off'
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -676,6 +707,7 @@ export function ProviderFormDialog(props: ProviderFormDialogProps) {
                       placeholder={t(
                         'e.g. Requires level {{required}}; your current level is {{current}}'
                       )}
+                      autoComplete='off'
                       {...field}
                     />
                   </FormControl>

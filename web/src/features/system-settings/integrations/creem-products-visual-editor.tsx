@@ -149,7 +149,7 @@ export function CreemProductsVisualEditor({
       <div className='flex flex-col gap-3 sm:flex-row sm:items-center'>
         <div className='relative flex-1'>
           <Search className='text-muted-foreground absolute top-2.5 left-2.5 h-4 w-4' />
-          <Input
+          <Input autoComplete='off'
             placeholder={t('Search products...')}
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}

@@ -155,7 +155,7 @@ export function RateLimitSection({ defaultValues }: RateLimitSectionProps) {
                   <FormLabel>{t('Limit period')}</FormLabel>
                   <FormControl>
                     <div className='flex items-center gap-2'>
-                      <Input
+                      <Input autoComplete='off'
                         placeholder='1'
                         type='number'
                         min={0}
@@ -186,7 +186,7 @@ export function RateLimitSection({ defaultValues }: RateLimitSectionProps) {
                   <FormLabel>{t('Max requests per period')}</FormLabel>
                   <FormControl>
                     <div className='flex items-center gap-2'>
-                      <Input
+                      <Input autoComplete='off'
                         placeholder='60'
                         type='number'
                         min={0}
@@ -218,7 +218,7 @@ export function RateLimitSection({ defaultValues }: RateLimitSectionProps) {
                   <FormLabel>{t('Max successful requests')}</FormLabel>
                   <FormControl>
                     <div className='flex items-center gap-2'>
-                      <Input
+                      <Input autoComplete='off'
                         placeholder='60'
                         type='number'
                         min={1}

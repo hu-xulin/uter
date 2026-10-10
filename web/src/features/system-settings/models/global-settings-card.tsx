@@ -348,7 +348,7 @@ export function GlobalSettingsCard({ defaultValues }: GlobalSettingsCardProps) {
               <FormItem>
                 <FormLabel>{t('Ping Interval (seconds)')}</FormLabel>
                 <FormControl>
-                  <Input
+                  <Input autoComplete='off'
                     type='number'
                     min={1}
                     disabled={!pingEnabled}

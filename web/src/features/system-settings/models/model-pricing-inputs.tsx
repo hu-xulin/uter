@@ -129,7 +129,7 @@ export function PriceLane(props: {
         reference={props.reference}
       />
       {!props.compact && (
-        <p className='text-muted-foreground text-xs'>
+        <p className='text-muted-foreground text-sm'>
           {props.enabled
             ? t('{{currency}} price per 1M tokens.', {
                 currency: (props.currency ?? USD_PRICING_CURRENCY).label,

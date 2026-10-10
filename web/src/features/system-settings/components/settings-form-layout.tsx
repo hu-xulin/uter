@@ -126,7 +126,7 @@ export function SettingsSwitchField({
         {description ? (
           <p
             id={controlId ? `${controlId}-description` : undefined}
-            className='text-muted-foreground text-xs'
+            className='text-muted-foreground text-sm'
           >
             {description}
           </p>

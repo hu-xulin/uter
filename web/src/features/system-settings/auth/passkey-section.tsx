@@ -370,6 +370,7 @@ export function PasskeySection(props: PasskeySectionProps) {
                 <FormControl>
                   <Input
                     placeholder={t('e.g. Uter Console')}
+                    autoComplete='off'
                     value={field.value ?? ''}
                     onChange={(event) => field.onChange(event.target.value)}
                     name={field.name}
@@ -560,6 +561,7 @@ export function PasskeySection(props: PasskeySectionProps) {
                           'border-amber-500 focus-visible:border-amber-500 focus-visible:ring-amber-500/20 dark:border-amber-400 dark:focus-visible:border-amber-400'
                       )}
                       placeholder={t('e.g. example.com')}
+                      autoComplete='off'
                       value={field.value ?? ''}
                       onChange={(event) => field.onChange(event.target.value)}
                       name={field.name}

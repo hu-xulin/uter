@@ -152,7 +152,7 @@ export function CreemProductDialog({
               <FormItem>
                 <FormLabel>{t('Product Name')}</FormLabel>
                 <FormControl>
-                  <Input placeholder={t('e.g., Basic Package')} {...field} />
+                  <Input autoComplete='off' placeholder={t('e.g., Basic Package')} {...field} />
                 </FormControl>
                 <FormDescription>
                   {t('Display name shown to users.')}
@@ -169,7 +169,7 @@ export function CreemProductDialog({
               <FormItem>
                 <FormLabel>{t('Product ID')}</FormLabel>
                 <FormControl>
-                  <Input
+                  <Input autoComplete='off'
                     placeholder={t('e.g., prod_xxx')}
                     disabled={isEditMode}
                     {...field}
@@ -222,7 +222,7 @@ export function CreemProductDialog({
                 <FormItem>
                   <FormLabel>{t('Price')}</FormLabel>
                   <FormControl>
-                    <Input
+                    <Input autoComplete='off'
                       type='number'
                       step='0.01'
                       min={0.01}
@@ -243,7 +243,7 @@ export function CreemProductDialog({
               <FormItem>
                 <FormLabel>{t('Quota')}</FormLabel>
                 <FormControl>
-                  <Input
+                  <Input autoComplete='off'
                     type='number'
                     min={1}
                     placeholder={t('e.g., 500000')}
