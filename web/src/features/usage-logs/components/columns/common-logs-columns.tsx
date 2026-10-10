@@ -726,22 +726,20 @@ export function useCommonLogsColumns(
         return (
           <div className='flex flex-col gap-0.5'>
             <span className='font-mono text-xs font-medium tabular-nums'>
-              {t('Input')} {promptTokens.toLocaleString()} /{' '}
+              {t('Input')} {promptTokens.toLocaleString()}
+            </span>
+            <span className='font-mono text-xs font-medium tabular-nums'>
               {t('Output')} {completionTokens.toLocaleString()}
             </span>
-            {(cacheReadTokens > 0 || cacheWriteTokens > 0) && (
-              <div className='flex flex-col gap-0.5 text-[11px]'>
-                {cacheReadTokens > 0 && (
-                  <span className='text-muted-foreground/60'>
-                    {t('Cache Read')} ↓ {cacheReadTokens.toLocaleString()}
-                  </span>
-                )}
-                {cacheWriteTokens > 0 && (
-                  <span className='text-muted-foreground/60'>
-                    {t('Cache Write')} ↑ {cacheWriteTokens.toLocaleString()}
-                  </span>
-                )}
-              </div>
+            {cacheReadTokens > 0 && (
+              <span className='text-muted-foreground/60 font-mono text-[11px] tabular-nums'>
+                {t('Cache Read')} ↓ {cacheReadTokens.toLocaleString()}
+              </span>
+            )}
+            {cacheWriteTokens > 0 && (
+              <span className='text-muted-foreground/60 font-mono text-[11px] tabular-nums'>
+                {t('Cache Write')} ↑ {cacheWriteTokens.toLocaleString()}
+              </span>
             )}
           </div>
         )
