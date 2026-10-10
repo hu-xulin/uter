@@ -9,7 +9,6 @@ package costopt
 // 本文件把这条不变量写成可执行断言，防止将来重构时被无意破坏。
 
 import (
-	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -86,41 +85,6 @@ func TestModelFidelity_RewriteCostoptModelForRoutingIsNoop(t *testing.T) {
 	}
 	assert.Equal(t, "claude-opus-4-5", RewriteCostoptModelForRouting(req, "claude-opus-4-5"),
 		"middleware选路入口也必须原样返回客户选的模型")
-}
-
-// TestModelFidelity_SemCacheKeyIsolatesModelAndTenant 锁定语义缓存的跨模型隔离。
-//
-// 这是修复前的真实漏洞：语义缓存曾用**单个全局 Redis key**，导致 A 模型的回答
-// 会被返回给请求 B 模型的客户。修复后键必须按「模型 + 租户」分桶。
-func TestModelFidelity_SemCacheKeyIsolatesModelAndTenant(t *testing.T) {
-	claude := semVecKey("claude-opus-4-5", 100)
-	gpt := semVecKey("gpt-4o", 100)
-	otherUser := semVecKey("claude-opus-4-5", 200)
-
-	assert.NotEqual(t, claude, gpt,
-		"不同模型必须落在不同缓存桶，绝不能把claude 的回答返回给 gpt 客户")
-	assert.NotEqual(t, claude, otherUser,
-		"不同租户必须落在不同缓存桶（租户隔离红线）")
-
-	// 同模型 + 同租户 → 同一个桶（否则缓存永不命中，降本失效）。
-	assert.Equal(t, claude, semVecKey("claude-opus-4-5", 100),
-		"同模型同租户必须复用同一桶")
-
-	// 大小写/空白差异不应导致桶分裂（否则命中率被无谓削弱）。
-	assert.Equal(t, claude, semVecKey("  CLAUDE-OPUS-4-5  ", 100),
-		"模型名大小写与空白应被规整，避免同模型分裂成多个桶")
-
-	// 模型缺失时归入独立桶，宁可不命中也不能到处复用。
-	assert.Equal(t, semVecKey("", 100), semVecKey("", 100))
-	assert.NotEqual(t, semVecKey("", 100), claude,
-		"模型名缺失时必须落在独立桶，不能与具名模型混用")
-}
-
-// TestModelFidelity_SemCacheKeyPrefix 确认键仍以原namespace 开头，便于运维清理/监控。
-func TestModelFidelity_SemCacheKeyPrefix(t *testing.T) {
-	key := semVecKey("gpt-4o", 7)
-	assert.True(t, strings.HasPrefix(key, semVecListKey),
-		"语义缓存键应保留原namespace 前缀 %q，实际=%q", semVecListKey, key)
 }
 
 // TestModelFidelity_ResponseCacheKeyIncludesModel 确认精确缓存一直把模型纳入键。

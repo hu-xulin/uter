@@ -111,10 +111,16 @@ func openAIChat(ctx context.Context, base, key, model, system, user string, maxT
 	return out.Choices[0].Message.Content, nil
 }
 
-// openAIEmbed 调用 OpenAI 兼容的 /v1/embeddings，返回每个文本的向量。
-func openAIEmbed(ctx context.Context, base, key, model string, texts []string) ([][]float32, error) {
+// openAIEmbed 调用 OpenAI 兼容的 embeddings 端点，返回每个文本的向量。
+// endpoint 为完整请求路径（含前导斜杠），默认 /v1/embeddings；智谱(BigModel/GLM)
+// 填 /api/paas/v4/embeddings（此时 base 仅到主机，如 https://open.bigmodel.cn，
+// 由后端拼接出 /api/paas/v4/embeddings）。
+func openAIEmbed(ctx context.Context, base, key, model, endpoint string, texts []string) ([][]float32, error) {
 	if base == "" || key == "" || model == "" || len(texts) == 0 {
 		return nil, errMissingEndpoint
+	}
+	if endpoint == "" {
+		endpoint = "/v1/embeddings"
 	}
 	payload, err := json.Marshal(map[string]any{
 		"model": model,
@@ -125,7 +131,7 @@ func openAIEmbed(ctx context.Context, base, key, model string, texts []string) (
 	}
 	c, cancel := context.WithTimeout(ctx, 8*time.Second)
 	defer cancel()
-	req, err := http.NewRequestWithContext(c, http.MethodPost, normalizeBaseURL(base)+"/v1/embeddings", bytes.NewReader(payload))
+	req, err := http.NewRequestWithContext(c, http.MethodPost, normalizeBaseURL(base)+endpoint, bytes.NewReader(payload))
 	if err != nil {
 		return nil, err
 	}

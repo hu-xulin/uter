@@ -6,26 +6,6 @@ import (
 	"github.com/uter-ai/uter/setting/config"
 )
 
-// ShortCircuitRule 零调用短路规则：命中后直接返回预设答案，根本不调上游 LLM。
-// 机制：规则/正则/模板/静态 FAQ 库直接命中，省去该部分 100% 的模型调用成本。
-type ShortCircuitRule struct {
-	ID      string `json:"id"`
-	Enabled bool   `json:"enabled"`
-	// Scope 为空=全局生效；否则仅对指定分组（UsingGroup 或 TokenGroup）生效。
-	Scope string `json:"scope"`
-	// Model 为空=任意模型；否则仅对精确匹配该名称的请求生效。
-	Model string `json:"model"`
-	// Match: exact（精确相等）| contains（包含）| regex（正则）。
-	Match string `json:"match"`
-	// Pattern 匹配目标：请求中"最后一条用户消息"的文本。
-	Pattern string `json:"pattern"`
-	// CaseSensitive 是否区分大小写（默认不区分）。
-	CaseSensitive bool   `json:"case_sensitive"`
-	Answer        string `json:"answer"`
-	// Priority 数值越大越优先匹配（用于多条规则共存时排序）。
-	Priority int `json:"priority"`
-}
-
 // DefaultBatchChatEndpoint 批内 chat 端点的 OpenAI 兼容默认值。
 // 上游用 /v4 前缀（如智谱）时，改配置项 BatchChatEndpoint 覆盖。
 const DefaultBatchChatEndpoint = "/v1/chat/completions"
@@ -40,24 +20,12 @@ type CostOptSetting struct {
 	// ResponseCacheMaxTokens 仅缓存 completion_tokens <= 该值的成功响应，避免大响应占内存，默认 4096。
 	ResponseCacheMaxTokens int `json:"response_cache_max_tokens"`
 
-	// 零调用短路规则层
-	ShortCircuitEnabled bool               `json:"short_circuit_enabled"`
-	ShortCircuitRules   []ShortCircuitRule `json:"short_circuit_rules"`
-
 	// 输出长度成本硬上限（max_tokens 封顶，防输出失控）
 	MaxTokensCapEnabled bool           `json:"max_tokens_cap_enabled"`
 	MaxTokensCapGlobal  int            `json:"max_tokens_cap_global"`
 	MaxTokensCapByGroup map[string]int `json:"max_tokens_cap_by_group"`
 	// MaxTokensCapByChannel key=渠道类型名（constant.GetChannelTypeName）
 	MaxTokensCapByChannel map[string]int `json:"max_tokens_cap_by_channel"`
-
-	// 上下文滑动窗口 / 对话摘要（轻资产：裁掉旧消息，或用便宜模型压成摘要）
-	ContextWindowEnabled        bool   `json:"context_window_enabled"`
-	ContextWindowMaxMessages    int    `json:"context_window_max_messages"`    // 保留最近 N 条，超出部分裁掉或摘要
-	ContextWindowSummaryEnabled bool   `json:"context_window_summary_enabled"` // 溢出前缀用便宜模型压成摘要
-	ContextWindowSummaryModel   string `json:"context_window_summary_model"`   // 摘要用的便宜模型（如 haiku 级）
-	SummaryAPIBaseURL           string `json:"summary_api_base_url"`           // OpenAI 兼容端点
-	SummaryAPIKey               string `json:"summary_api_key"`
 
 	// 负缓存：确定性失败请求短期不重复烧钱重试
 	NegativeCacheEnabled    bool `json:"negative_cache_enabled"`
@@ -72,11 +40,6 @@ type CostOptSetting struct {
 	SpikeAlertEnabled      bool    `json:"spike_alert_enabled"`
 	SpikeAlertTokensPerMin int     `json:"spike_alert_tokens_per_min"` // 单租户每分钟 token 硬阈值
 	SpikeAlertMultiplier   float64 `json:"spike_alert_multiplier"`     // 超过基线倍数也告警
-
-	// 图像下采样代理（视觉 token 降本，纯字符串改写，不引入图像解码依赖）
-	ImageResizeEnabled       bool   `json:"image_resize_enabled"`
-	ImageResizeMaxEdge       int    `json:"image_resize_max_edge"`       // 长边最大像素
-	ImageResizeProxyTemplate string `json:"image_resize_proxy_template"` // 如 https://wsrv.nl/?url={url}&w={max}
 
 	// gzip 响应压缩（按 Accept-Encoding 自动压缩所有响应）
 	GzipEnabled bool `json:"gzip_enabled"`
@@ -106,19 +69,6 @@ type CostOptSetting struct {
 	RouterLMAPIKey     string   `json:"router_lm_api_key"`
 	RouterLMFromModels []string `json:"router_lm_from_models"`
 
-	// 14. 语义缓存：可配 embedding 端点 + Redis 向量近似匹配
-	SemanticCacheEnabled      bool   `json:"semantic_cache_enabled"`
-	SemanticCacheTTLSeconds   int    `json:"semantic_cache_ttl_seconds"`
-	SemanticCacheEmbedBaseURL string `json:"semantic_cache_embed_base_url"`
-	SemanticCacheEmbedAPIKey  string `json:"semantic_cache_embed_api_key"`
-	SemanticCacheEmbedModel   string `json:"semantic_cache_embed_model"`
-	// SemanticCacheEmbedEndpoint embeddings 端点完整路径；默认 /v1/embeddings。
-	// 智谱(BigModel/GLM)填 /api/paas/v4/embeddings（base 仅到主机，如 https://open.bigmodel.cn）。
-	SemanticCacheEmbedEndpoint  string  `json:"semantic_cache_embed_endpoint"`
-	SemanticCacheTopK           int     `json:"semantic_cache_top_k"`
-	SemanticCacheScoreThreshold float64 `json:"semantic_cache_score_threshold"`
-	SemanticCacheDim            int     `json:"semantic_cache_dim"`
-
 	// 15. 工具/检索结果缓存：按工具名+参数哈希缓存结果
 	ToolResultCacheEnabled    bool `json:"tool_result_cache_enabled"`
 	ToolResultCacheTTLSeconds int  `json:"tool_result_cache_ttl_seconds"`
@@ -130,25 +80,6 @@ type CostOptSetting struct {
 	// 18. 边缘/CDN：静态资源前缀（文档站/资源走 CDN）
 	CDNEnabled      bool   `json:"cdn_enabled"`
 	CDNAssetBaseURL string `json:"cdn_asset_base_url"`
-
-	// 19. Prompt 压缩：用便宜压缩模型压短 system/历史
-	PromptCompressionEnabled    bool    `json:"prompt_compression_enabled"`
-	PromptCompressionModel      string  `json:"prompt_compression_model"`
-	PromptCompressionAPIBaseURL string  `json:"prompt_compression_api_base_url"`
-	PromptCompressionAPIKey     string  `json:"prompt_compression_api_key"`
-	PromptCompressionMaxRatio   float64 `json:"prompt_compression_max_ratio"`
-	// PromptCompressionReasoningReserve 压缩模型为 reasoning 类型（思考 token 与输出共用
-	// max_tokens 预算）时预留的倍数（默认 3）。预留后输出预算 = 内容预算 × 该倍数，否则
-	// 思考吃掉预算导致 content 为空、压缩静默失效（实测 gpt-oss-120b 思考 1584/1586 → 空输出）。
-	PromptCompressionReasoningReserve float64 `json:"prompt_compression_reasoning_reserve"`
-	// PromptCompressionMaxTotalTokens 压缩调用的「输入估算+输出预算」token 硬上限，避免触发
-	// 上游 TPM 限制（如 Groq 免费档 TPM=8000）导致 413。0=不限制（保持旧行为）。
-	PromptCompressionMaxTotalTokens int `json:"prompt_compression_max_total_tokens"`
-
-	// 21. 工具定义精简：发送前裁剪 tools schema
-	ToolDefTrimEnabled          bool `json:"tool_def_trim_enabled"`
-	ToolDefTrimStripDescription bool `json:"tool_def_trim_strip_description"`
-	ToolDefTrimStripExamples    bool `json:"tool_def_trim_strip_examples"`
 
 	// 28. 精准 RAG（基础开关与端点；其余参数见下方 V2.2「模型优化」配置区）
 	RAGEnabled  bool   `json:"rag_enabled"`
@@ -290,15 +221,6 @@ type CostOptSetting struct {
 	CDNSigningHeader string `json:"cdn_signing_header"`
 	CDNSigningSecret string `json:"cdn_signing_secret"`
 
-	// 24. 结构化输出约束（中转层强制策略，避免模型啰嗦输出）
-	StructuredOutputEnabled bool `json:"structured_output_enabled"`
-	// StructuredOutputMode：json_object | json_schema | stop。
-	StructuredOutputMode string `json:"structured_output_mode"`
-	// StructuredOutputStopSequences 强制追加的停止序列。
-	StructuredOutputStopSequences []string `json:"structured_output_stop_sequences"`
-	// StructuredOutputMaxRetries 结构校验失败后的最大重发次数。
-	StructuredOutputMaxRetries int `json:"structured_output_max_retries"`
-
 	// 28. 精准 RAG（需外部 RAG 系统，参数填齐后钩子升级为真实检索）
 	RAGTopK int `json:"rag_top_k"`
 	// RAGScoreThreshold 检索得分下限，低于该值的片段直接丢弃（紧 top-k 的关键）。
@@ -385,60 +307,24 @@ var costOptSetting = CostOptSetting{
 	// 删掉不改变模型能看到的工具结果集合。
 	ToolCallDedupEnabled: true,
 	// 循环检测：同一工具调用重复 N 次即判定失控并收敛，是**省钱且护住上游**的。
-	LoopDetectionEnabled:   true,
-	LoopDetectionThreshold: 3,
-
-	// ===== 档位 B：有损保真（改变输入或输出，默认关闭，参数已按推荐值预填）=====
-	//
-	// 这一档的手段确实省钱，但会**改变**发给模型的 prompt 或约束模型的输出，
-	// 可能掉质量。默认关闭：必须由运营在知情后显式打开。参数给出经过实测的推荐值，
-	// 打开即生效，不必逐项试错。
-	ShortCircuitEnabled: false,
-	MaxTokensCapEnabled: false,
-	MaxTokensCapGlobal:  8192,
-	// 上下文窗口：只裁历史、不启用摘要（摘要要另调便宜模型=又一次跨模型调用，
-	// 且摘要失真会污染上下文）。max_messages=20 约等于 10 轮对话，
-	// 超过此长度才裁，对绝大多数会话无感。
-	ContextWindowEnabled:     false,
-	ContextWindowMaxMessages: 20,
+	LoopDetectionEnabled:     true,
+	LoopDetectionThreshold:   3,
+	MaxTokensCapEnabled:      false,
+	MaxTokensCapGlobal:       8192,
 	ComplexityRoutingEnabled: false,
-	// 提示压缩：会改写用户原话，虽然省 input token 但语义有损，故默认关闭。
-	PromptCompressionEnabled:  false,
-	PromptCompressionMaxRatio: 0.5,
-	// 工具定义精简：strip_description 会显著降低模型选对工具的概率
-	//（工具描述是模型判断"何时调用"的唯一依据），只建议开 strip_examples。
-	ToolDefTrimEnabled:          false,
-	ToolDefTrimStripDescription: false,
-	ToolDefTrimStripExamples:    true,
-	// 结构化输出：会强制约束输出形态，改变客户要的语义，故默认关闭。
-	StructuredOutputEnabled: false,
 	// Agent 步数预算：会硬拦断长任务，有丢结果风险，默认关闭。
 	AgentStepBudgetEnabled:   false,
 	AgentStepBudgetMaxSteps:  20,
 	AgentStepBudgetMaxTokens: 200000,
-	// 图像下采样：改变模型看到的像素，有损视觉信息，默认关闭。
-	ImageResizeEnabled: false,
-	ImageResizeMaxEdge: 1024,
 	// 长任务事实外置：需要外部存储端点，默认关闭。
-	LongTaskPersistEnabled: false,
-	// 语义缓存：命中即返回历史答案，"语义相近≠答案等价"的风险始终存在，
-	// 故默认关闭；开启时阈值务必保持 0.92 以上（已预填）。
-	SemanticCacheEnabled:        false,
-	SemanticCacheTTLSeconds:     300,
-	SemanticCacheTopK:           3,
-	SemanticCacheScoreThreshold: 0.92,
-	// 语义缓存 embedding 供应商默认指向智谱(BigModel)，endpoint 用 /api/paas/v4/embeddings。
-	SemanticCacheEmbedBaseURL:  "https://open.bigmodel.cn",
-	SemanticCacheEmbedAPIKey:   "", // 密钥请勿硬编码在此；请经后台「降本优化」表单录入或写入 Options 表。
-	SemanticCacheEmbedModel:    "embedding-2",
-	SemanticCacheEmbedEndpoint: "/api/paas/v4/embeddings",
-	ToolResultCacheEnabled:     false,
-	ToolResultCacheTTLSeconds:  600,
-	CacheWarmupEnabled:         false,
-	CDNEnabled:                 false,
-	RAGEnabled:                 false,
-	RAGEndpoint:                "",
-	RAGAPIKey:                  "",
+	LongTaskPersistEnabled:    false,
+	ToolResultCacheEnabled:    false,
+	ToolResultCacheTTLSeconds: 600,
+	CacheWarmupEnabled:        false,
+	CDNEnabled:                false,
+	RAGEnabled:                false,
+	RAGEndpoint:               "",
+	RAGAPIKey:                 "",
 
 	// ===== 档位 C：需外部基建（上游/自有服务就绪后才可用）=====
 	// 全部保持关闭；缺端点时钩子优雅 no-op，不阻塞主链路。
@@ -491,9 +377,6 @@ var costOptSetting = CostOptSetting{
 
 	CDNCacheTTLSeconds: 86400,
 	CDNIncludeQuery:    false,
-
-	StructuredOutputMode:       "json_object",
-	StructuredOutputMaxRetries: 1,
 
 	RAGTopK:             4,
 	RAGScoreThreshold:   0.7,
