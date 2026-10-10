@@ -210,17 +210,23 @@ func ValueTierMatch(req *dto.GeneralOpenAIRequest) bool {
 			return false
 		}
 	}
-	if cfg.ValueTierBulkOnly {
-		// 自动模式关闭了 bulk 自动判定时，视为"不限 bulk"（对所有命中的流量下沉）。
-		autoDetect := cfg.ValueTierAuto() && cfg.ValueTierAutoDetectBulk
-		if autoDetect || !cfg.ValueTierAuto() {
-			minChars := cfg.ValueTierMinPromptChars
-			if minChars <= 0 {
-				minChars = 2000
-			}
-			if len([]rune(lastUserMessageText(req))) < minChars {
-				return false
-			}
+	if cfg.ValueTierBulkOnly || cfg.ValueTierAutoDetectBulk {
+		// 只有长prompt（bulk）流量才下沉到价值层，短交互仍走前沿模型保体验。
+		//
+		//🔑 这里曾漏掉 `|| cfg.ValueTierAutoDetectBulk`，导致 ValueTierBulkOnly=false
+		//	（默认值）时整段长度判定被跳过 → **所有请求无条件下沉**。实测
+		//	claude-haiku-4-5-20251001 的 81 token 短问答也被改写成
+		//	openai/gpt-oss-120b，与字段文档「仅对 bulk 流量下沉」完全相反，
+		//	且会让降本 A/B 测试两组走同一条路径、失去可比性。
+		//
+		// auto_detect_bulk 本身语义就是「auto 模式下自动按长 prompt 判定 bulk」，
+		// 因此它开启时就必须执行长度门槛；显式 bulk_only 同理。
+		minChars := cfg.ValueTierMinPromptChars
+		if minChars <= 0 {
+			minChars = 2000
+		}
+		if len([]rune(lastUserMessageText(req))) < minChars {
+			return false
 		}
 	}
 	return true

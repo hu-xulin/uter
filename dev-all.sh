@@ -134,6 +134,30 @@ strip_loopback_proxy() {
   fi
 }
 
+# WorkBuddy / CodeBuddy 沙箱注入的 node shim 必须剔除，否则长驻 node 服务会崩。
+#
+# 🔑 背景（实测崩过）：会话环境里有
+#   NODE_OPTIONS=--require=.../node-language-shim.cjs
+#   CODEBUDDY_BROKERED_FS_HOOK_ENABLED=1
+#   CODEBUDDY_SAFE_DELETE_ENABLED=1
+# shim 把 node 的 fs 调用代理到 broker IPC（socket 由会话持有）。服务进程要活得
+# 比会话久，会话一旦结束或 broker 退出，所有 fs 调用抛
+# `Error: connect failed: Connection refused at tryBrokerFileTokenSync`
+#（栈里有 wrappedCreateReadStream → @fastify/send → SendStream），进程直接崩，
+# 表现为「uter-cs 刚起来是200，几分钟后自己没了」。
+#
+# 与 vitest 必须 `env -u NODE_OPTIONS` 才能跑是**同一个根因**（区别只在于
+# vitest 是短进程、超时假红；长驻服务是直接崩）。rebuild-all.sh 已在构建阶段
+# 关掉 CODEBUDDY_*，但那只影响它自己派生的构建进程，管不到本脚本拉起的 node 服务。
+#
+# 开关：KEEP_SANDBOX_SHIM=1 保留原样（仅当你要在沙箱内调试 node 服务本身）。
+if [ "${KEEP_SANDBOX_SHIM:-}" != "1" ]; then
+  unset NODE_OPTIONS
+  export CODEBUDDY_BROKERED_FS_HOOK_ENABLED=0
+  export CODEBUDDY_SAFE_DELETE_ENABLED=0
+  export CODEBUDDY_SAFE_DELETE_SANDBOX=0
+fi
+
 # 登录会话活跃上限：默认拉到 200，防止多设备/多浏览器把超管锁在门外
 # （配合 auth_session.go 的「淘汰最旧 idle 会话」逻辑，硬上限只作兜底）。
 export USER_SESSION_ACTIVE_LIMIT="${USER_SESSION_ACTIVE_LIMIT:-200}"
@@ -320,19 +344,39 @@ if ! port_busy 3510; then
 fi
 
 # ---------------------------------------------------------------------------
-# 守护：:3000 是本脚本独占启动的。若它被外部干掉（最常见是有人在另一个终端跑了
-# 完整的 ./rebuild-all.sh，它会 detached 重启 uter），其余三个服务还活着，
-# 没有告警的话就是一个"半个服务在跑"的错位状态，且日志里只剩 tail 静默刷新。
-# 这里检测到就报一次（只报一次，不刷屏），不自动重启 —— 自动重启会和对方的
-# detached 实例抢端口，问题反而更难查。
+# 守护：检查本脚本**自己拉起**的端口是否还活着。
+#
+# 为什么不用 `wait`：bash 3.2 无 `wait -n`，末尾的 `wait -n || wait` 退化成
+# 「等所有子进程」——而 tail -F 聚合器是永不退出的，于是脚本在服务全崩后
+# 依然挂着，日志只剩空文件刷新，看着一切正常实则全挂（实测 uter-cs 崩掉后
+# :3200返回 000，而终端毫无提示）。
+#
+# 这里按端口逐一探活：任一自建服务消失就报一次（含它的日志尾部，便于定位），
+# 报完仍继续等待 Ctrl+C。**不自动重启**——崩了通常有根因（配置/端口/依赖），
+# 自动重启只会刷屏并掩盖首因。
 # ---------------------------------------------------------------------------
-if ! port_busy 3000; then
-  ( # 给 Go 服务一点启动时间再开始判定，避免误报
-    sleep 3
-    while port_busy 3000; do sleep 2; done
-    echo ""
-    echo "${C_DIM}⚠️  :3000 上的 uter 进程已消失（可能被 ./rebuild-all.sh 顶掉了）。${C_OFF}"
-    echo "${C_DIM}   其余服务仍在运行；Ctrl+C 全部停止后重跑 ./dev-all.sh。${C_OFF}"
+if [ "${#OWNED_PORTS[@]}" -gt 0 ]; then
+  ( sleep 3   # 给服务一点启动时间再开始判定，避免误报
+    while true; do
+      for i in "${!OWNED_PORTS[@]}"; do
+        p="${OWNED_PORTS[$i]}"
+        if ! port_busy "$p"; then
+          echo ""
+          echo "${C_DIM}⚠️  :${p} 上的服务已消失。${C_OFF}"
+          case "$p" in
+            3000) echo "${C_DIM}   若是另一终端跑了完整 ./rebuild-all.sh 顶掉了它，属预期。${C_OFF}" ;;
+            3200) echo "${C_DIM}   查${LOGDIR}/uter-cs.log 尾部；若见 node-brokered-fs-shim / Connection refused，${C_OFF}"
+                   echo "${C_DIM}   说明继承了 NODE_OPTIONS 里的沙箱 shim（已在本脚本剔除，确认走的是新脚本）。${C_OFF}" ;;
+            *)    echo "${C_DIM}   查 $LOGDIR 下对应日志尾部。${C_OFF}" ;;
+          esac
+          echo "${C_DIM}   其余服务仍在运行；修好后 Ctrl+C 全部停止再重跑。${C_OFF}"
+          # 只报一次：把该端口移出监控范围，避免每 2 秒刷屏
+          unset 'OWNED_PORTS[i]'
+        fi
+      done
+      [ "${#OWNED_PORTS[@]}" -eq 0 ] && break
+      sleep 2
+    done
   ) &
   WATCH_PID=$!
 fi
