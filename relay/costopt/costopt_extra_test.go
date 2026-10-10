@@ -29,10 +29,11 @@ func TestApplyComplexityRouting_SimpleRewritten(t *testing.T) {
 		c.ComplexityRoutingEnabled = true
 		c.ComplexityRoutingCheapModel = "gpt-4o-mini"
 	})
+	// 模型保真：复杂度路由已停用，简单短文本也不得被换模型。
 	req := &dto.GeneralOpenAIRequest{Model: "gpt-4o", Messages: []dto.Message{{Role: "user", Content: "你好"}}}
 	ok := ApplyComplexityRouting(req, &relaycommon.RelayInfo{})
-	require.True(t, ok, "简单短文本应被降级到便宜模型")
-	require.Equal(t, "gpt-4o-mini", req.Model)
+	require.False(t, ok, "模型保真：复杂度路由已停用")
+	require.Equal(t, "gpt-4o", req.Model, "客户选择的模型必须保持不变")
 }
 
 func TestApplyComplexityRouting_ComplexNotRewritten(t *testing.T) {
@@ -67,10 +68,10 @@ func TestApplyComplexityRouting_FromModelsFilter(t *testing.T) {
 	req := &dto.GeneralOpenAIRequest{Model: "claude-3", Messages: []dto.Message{{Role: "user", Content: "你好"}}}
 	require.False(t, ApplyComplexityRouting(req, &relaycommon.RelayInfo{}))
 	require.Equal(t, "claude-3", req.Model)
-	// 命中 FromModels -> 降级
+	// 命中 FromModels 也**不得**降级（模型保真：复杂度路由已整体停用）。
 	req2 := &dto.GeneralOpenAIRequest{Model: "gpt-4o", Messages: []dto.Message{{Role: "user", Content: "你好"}}}
-	require.True(t, ApplyComplexityRouting(req2, &relaycommon.RelayInfo{}))
-	require.Equal(t, "gpt-4o-mini", req2.Model)
+	require.False(t, ApplyComplexityRouting(req2, &relaycommon.RelayInfo{}))
+	require.Equal(t, "gpt-4o", req2.Model, "即使命中来源白名单，客户选择的模型也必须保持不变")
 }
 
 // ----- 图像下采样代理 -----

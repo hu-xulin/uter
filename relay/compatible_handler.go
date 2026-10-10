@@ -167,11 +167,12 @@ func TextHelper(c *gin.Context, info *relaycommon.RelayInfo) (uterError *types.U
 	}
 
 	// ===== 降本中间层（与《中转站API降本技术清单_轻资产版》对齐） =====
-	// 派发前改写请求（不影响计费身份）：上下文滑动窗口/摘要、图像下采样代理、轻量复杂度路由
+	// 派发前改写请求（不影响计费身份）：上下文滑动窗口/摘要、图像下采样代理。
+	// 🔑 模型保真：此处**不做任何跨模型改写**——客户选哪个模型就用哪个模型，
+	// 降本只来自同一模型内的 token 精简/ 缓存 / 批处理。跨模型改写见 costopt/preroute.go。
 	costopt.IncCostOptRequest()
 	costopt.ApplyContextWindow(request, info)
 	costopt.ApplyImageResize(request)
-	costopt.ApplyComplexityRouting(request, info)
 
 	// ===== V2.2「模型优化」完整能力（全部配置门控，缺参数时 no-op） =====
 	// 30) 共享系统前缀置顶：优先于 RAG/压缩执行，保证稳定前缀位于 messages 最前，
@@ -202,9 +203,9 @@ func TextHelper(c *gin.Context, info *relaycommon.RelayInfo) (uterError *types.U
 	costopt.RetrieveRAG(c.Request.Context(), request)
 	// 0.3) Prompt 压缩（用便宜压缩模型压短历史，降低输入 token）
 	costopt.ApplyPromptCompression(request, info)
-	// 0.4) RouterLM 选模（用小型 router 模型替用户选最优上游）
+	// 0.4~0.5) RouterLM 选模 / Cascade 级联：**已停用（模型保真）**。
+	//     这两项会把客户选择的模型换成另一个模型，违反客户明确要求，不再调用。
 	costopt.ApplyRouterLM(request, info)
-	// 0.5) LLM 级联 Cascade（先走廉价模型，拒绝再升级）
 	costopt.ApplyCascade(request, info)
 	// 0.6) 地理/区域比价（把区域偏好写入 gin 上下文，供选路加权）
 	if ct := costopt.GeoRoutePreferredChannelType(c.Request.Header.Get(costopt.GeoRoutingRegionHeader())); ct != "" {
@@ -217,14 +218,11 @@ func TextHelper(c *gin.Context, info *relaycommon.RelayInfo) (uterError *types.U
 	}
 	// 0.65) 多供应商套利 / 同模型跨通道比价：在同质候选中自动选最便宜的供应商。
 	costopt.ApplyArbitrage(request)
-	// 0.66) Serverless 开源模型价值层：bulk/长 prompt 流量下沉到 Groq 等价值层渠道。
-	if ct := costopt.ApplyValueTierRouting(request); ct != "" {
-		c.Set("costopt_value_tier_ct", ct)
-	}
-	// 0.67) A-tier + 价值层混合：后台流量分流到便宜模型，用户可见请求保留前沿模型。
-	if costopt.TierSplitEnabled() && costopt.IsBackgroundRequest(request, collectHeaderHints(c)) {
-		costopt.ApplyTierSplit(request, true)
-	}
+	// 0.66) Serverless 价值层下沉：**已停用（模型保真）**——把 claude/gemini 等
+	//     请求改写成廉价开源模型即换模型，违反客户明确要求，不再改写模型名。
+	// 0.67) A-tier + 价值层混合分流：**已停用（模型保真）**，同上。
+	// 注：0.65的 ApplyArbitrage 保留——它在**同一模型**的多个渠道间比价选最便宜
+	//     （同模型走 direct/Bedrock/Azure 价差可观），模型名不变，是真实节约。
 	// 0.7) 工具定义精简（裁剪 tools schema，降低每请求工具定义 token）
 	costopt.ApplyToolDefTrim(request)
 	// 0.8) 工具调用去重（去除连续重复的工具结果，降低 Agent 重复调用浪费）
@@ -424,46 +422,11 @@ func TextHelper(c *gin.Context, info *relaycommon.RelayInfo) (uterError *types.U
 		return nil
 	}
 
-	// LLM 级联升级：廉价模型返回拒绝/低质（非流式），在写入客户端前升级到贵模型再发。
-	if costopt.CascadeActiveFor(request, info.OriginModelName) {
-		raw, readErr := io.ReadAll(httpResp.Body)
-		httpResp.Body.Close()
-		if readErr != nil {
-			return types.NewError(fmt.Errorf("cascade: read upstream body failed: %w", readErr), types.ErrorCodeDoRequestFailed, types.ErrOptionWithSkipRetry())
-		}
-		if costopt.IsCascadeRefusal(string(raw)) {
-			if premium := costopt.CascadePremiumModelName(); premium != "" && premium != request.Model {
-				// 升级到贵模型。若贵模型与廉价档不在同一渠道，必须按新模型名重选渠道，
-				// 否则请求仍发往廉价档渠道 → 上游不认识该模型 → 404。
-				// 重选失败（无渠道/被过滤）则退回原渠道，此时用同渠道的 model_mapping 兜底。
-				originChannelID := c.GetInt("channel_id")
-				if !reselectChannelForModel(c, info, premium) {
-					logger.LogDebug(c, "cascade: keep channel #%d for premium %s (reselect unavailable)", originChannelID, premium)
-				}
-				// 贵模型名配置的是网关别名，需再过一次 model_mapping，否则别名会被原样发给上游。
-				upstreamPremium := premium
-				if mapped := mapAliasToUpstream(c, premium); mapped != "" {
-					upstreamPremium = mapped
-				}
-				request.Model = upstreamPremium
-				info.UpstreamModelName = upstreamPremium
-				upgraded, uerr := relayAttempt()
-				if uerr != nil {
-					return uerr
-				}
-				if upgraded != nil {
-					httpResp = upgraded
-					costopt.IncCascadeEscalation()
-				} else {
-					httpResp.Body = io.NopCloser(bytes.NewReader(raw))
-				}
-			} else {
-				httpResp.Body = io.NopCloser(bytes.NewReader(raw))
-			}
-		} else {
-			httpResp.Body = io.NopCloser(bytes.NewReader(raw))
-		}
-	}
+	// LLM 级联升级：**已停用（模型保真）**。
+	// 原逻辑在廉价模型返回拒答时，把请求改写成「贵模型」重发一遍
+	// （request.Model = premium）。这意味着客户请求的模型并非最终服务的模型，
+	// 且一次请求会产生两次上游计费，违反客户对模型的明确要求，现整体移除。
+	// 客户选择什么模型，就用什么模型返回什么结果（含拒答）。
 
 	statusCodeMappingStr := c.GetString("status_code_mapping")
 
@@ -519,7 +482,7 @@ func TextHelper(c *gin.Context, info *relaycommon.RelayInfo) (uterError *types.U
 	// 降本中间层：owner 且非流式成功响应，将上游原文回写精确缓存 + 语义缓存（按 completion_tokens 上限过滤）。
 	if isCacheOwner && capBuf != nil && !lo.FromPtrOr(request.Stream, false) {
 		costopt.StoreIfCachable(c.Request.Context(), cacheKey, capBuf, usage.(*dto.Usage).CompletionTokens)
-		costopt.StoreSemantic(c.Request.Context(), request, capBuf.Bytes())
+		costopt.StoreSemantic(c.Request.Context(), request, capBuf.Bytes(), info)
 	}
 	return nil
 }

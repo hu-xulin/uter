@@ -47,10 +47,11 @@ func TestRegression_ComplexityRoutingRewritesCheap(t *testing.T) {
 	cfg.ComplexityRoutingCheapModel = "gpt-4o-mini"
 	defer func() { cfg.ComplexityRoutingEnabled = false }()
 
+	// 模型保真：复杂度路由已停用，简单问题也不得下沉到别的模型。
 	req := &dto.GeneralOpenAIRequest{Model: "gpt-4o", Messages: []dto.Message{{Role: "user", Content: "现在几点"}}}
 	ok := ApplyComplexityRouting(req, &relaycommon.RelayInfo{})
-	require.True(t, ok, "简单问题应降级到便宜模型")
-	require.Equal(t, "gpt-4o-mini", req.Model)
+	require.False(t, ok, "模型保真：复杂度路由已停用，不得降级模型")
+	require.Equal(t, "gpt-4o", req.Model, "客户选择的模型必须保持不变")
 }
 
 func TestRegression_ToolDefTrimStrips(t *testing.T) {

@@ -44,6 +44,12 @@ export type FieldDef = {
    * 聚焦可输入新值，绝不把掩码串写回后端。用于 API key / secret 等敏感字段。
    */
   secret?: boolean
+  /**
+   * 已因「模型保真」原则停用：该项原本会把客户选择的模型换成另一个模型
+   * （跨模型降本），违反客户明确要求，后端已整体停用且不会再执行。
+   * 保留字段仅为兼容既有配置，前端一律禁用并标注原因，避免运营误开后无效。
+   */
+  retired?: boolean
 }
 
 // 分组：每组一个标题 + 字段清单
@@ -165,12 +171,14 @@ export const GROUPS: Array<{
       },
       {
         name: 'costopt_setting.cascade_enabled',
+        retired: true,
         kind: 'bool',
         label: 'Enable cascade cheap-to-premium',
         help: 'Routes to a cheap model first and upgrades to a premium model only when the cheap one refuses.',
       },
       {
         name: 'costopt_setting.cascade_cheap_model',
+        retired: true,
         kind: 'text',
         label: 'Cascade cheap model',
         gated: 'costopt_setting.cascade_enabled',
@@ -179,6 +187,7 @@ export const GROUPS: Array<{
       },
       {
         name: 'costopt_setting.cascade_premium_model',
+        retired: true,
         kind: 'text',
         label: 'Cascade premium model',
         gated: 'costopt_setting.cascade_enabled',
@@ -187,6 +196,7 @@ export const GROUPS: Array<{
       },
       {
         name: 'costopt_setting.cascade_refusal_keywords',
+        retired: true,
         kind: 'json',
         label: 'Cascade refusal keywords',
         gated: 'costopt_setting.cascade_enabled',
@@ -331,6 +341,7 @@ export const GROUPS: Array<{
     fields: [
       {
         name: 'costopt_setting.value_tier_mode',
+        retired: true,
         kind: 'select',
         label: 'Mode',
         options: [
@@ -342,6 +353,7 @@ export const GROUPS: Array<{
       },
       {
         name: 'costopt_setting.value_tier_model_equivalents',
+        retired: true,
         kind: 'json',
         label: 'Equivalent open-source models',
         gated: 'costopt_setting.value_tier_mode',
@@ -350,6 +362,7 @@ export const GROUPS: Array<{
       },
       {
         name: 'costopt_setting.value_tier_auto_detect_bulk',
+        retired: true,
         kind: 'bool',
         label: 'Auto detect bulk traffic',
         gated: 'costopt_setting.value_tier_mode',
@@ -357,6 +370,7 @@ export const GROUPS: Array<{
       },
       {
         name: 'costopt_setting.value_tier_channel_types',
+        retired: true,
         kind: 'json',
         label: 'Value tier channel types',
         gated: 'costopt_setting.value_tier_mode',
@@ -365,6 +379,7 @@ export const GROUPS: Array<{
       },
       {
         name: 'costopt_setting.value_tier_models',
+        retired: true,
         kind: 'json',
         label: 'Value tier models',
         gated: 'costopt_setting.value_tier_mode',
@@ -373,6 +388,7 @@ export const GROUPS: Array<{
       },
       {
         name: 'costopt_setting.value_tier_bulk_only',
+        retired: true,
         kind: 'bool',
         label: 'Bulk traffic only',
         gated: 'costopt_setting.value_tier_mode',
@@ -380,6 +396,7 @@ export const GROUPS: Array<{
       },
       {
         name: 'costopt_setting.value_tier_min_prompt_chars',
+        retired: true,
         kind: 'number',
         label: 'Minimum prompt characters',
         gated: 'costopt_setting.value_tier_mode',
@@ -388,6 +405,7 @@ export const GROUPS: Array<{
       },
       {
         name: 'costopt_setting.value_tier_vendor_base_url',
+        retired: true,
         kind: 'text',
         label: 'Vendor API base URL',
         gated: 'costopt_setting.value_tier_mode',
@@ -396,6 +414,7 @@ export const GROUPS: Array<{
       },
       {
         name: 'costopt_setting.value_tier_vendor_api_key',
+        retired: true,
         kind: 'text',
         label: 'Vendor API key',
         gated: 'costopt_setting.value_tier_mode',
@@ -411,6 +430,7 @@ export const GROUPS: Array<{
     fields: [
       {
         name: 'costopt_setting.tier_split_mode',
+        retired: true,
         kind: 'select',
         label: 'Mode',
         options: [
@@ -422,6 +442,7 @@ export const GROUPS: Array<{
       },
       {
         name: 'costopt_setting.tier_split_auto_detect',
+        retired: true,
         kind: 'bool',
         label: 'Auto detect background traffic',
         gated: 'costopt_setting.tier_split_mode',
@@ -429,6 +450,7 @@ export const GROUPS: Array<{
       },
       {
         name: 'costopt_setting.tier_split_visible_models',
+        retired: true,
         kind: 'json',
         label: 'User-facing models to keep',
         gated: 'costopt_setting.tier_split_mode',
@@ -437,6 +459,7 @@ export const GROUPS: Array<{
       },
       {
         name: 'costopt_setting.tier_split_background_tags',
+        retired: true,
         kind: 'json',
         label: 'Background request tags',
         gated: 'costopt_setting.tier_split_mode',
@@ -445,6 +468,7 @@ export const GROUPS: Array<{
       },
       {
         name: 'costopt_setting.tier_split_background_model',
+        retired: true,
         kind: 'text',
         label: 'Background model',
         gated: 'costopt_setting.tier_split_mode',
@@ -453,6 +477,7 @@ export const GROUPS: Array<{
       },
       {
         name: 'costopt_setting.tier_split_non_stream_as_background',
+        retired: true,
         kind: 'bool',
         label: 'Treat non-streaming requests as background',
         gated: 'costopt_setting.tier_split_mode',

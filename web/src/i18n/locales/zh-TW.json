@@ -15,6 +15,7 @@
   "Locales to translate": "待補譯語種",
   "Comma-separated. Leave empty to use the default: zh-TW, fr, ru, vi. A locale with no translation falls back to English rather than showing an empty description.": "用逗號分隔。留空則使用預設值：繁中、法語、俄語、越南語。某語種沒有譯文時回退到英文，而不是顯示空白描述。",
     "Cost Optimization": "降本優化",
+    "Retired: cost optimization never swaps the model the customer selected. Cost savings come from token slimming, caching and batching within the same model.": "已停用：降本最佳化不會替換客戶選擇的模型。成本節省來自同一模型內的 token 精簡、快取與批次處理。",
     "Caches identical responses for a short TTL and replays them for repeat requests, saving tokens on repeated or template prompts.": "在較短時間內快取相同的回應，重複請求時直接重播，重複提問或模板化提問可省下 token。",
     "How long a cached response stays reusable, in seconds. A longer TTL saves more but risks staler answers.": "快取回應可重用的時長（秒）。TTL 越長省得越多，但回答可能越過期。",
     "Only responses at or below this many tokens are cached; larger ones are streamed through untouched.": "只有不超過該 token 數的回應會被快取，更長的回應原樣透傳。",

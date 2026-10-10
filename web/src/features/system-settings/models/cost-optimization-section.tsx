@@ -183,6 +183,14 @@ function FieldLabelRow({ def }: { def: FieldDef }) {
   return (
     <span className='inline-flex items-center'>
       {t(def.label)}
+      {/* 已停用项（模型保真）：给出停用原因，避免运营以为是 bug。 */}
+      {def.retired && (
+        <span className='ml-2 text-xs text-muted-foreground'>
+          {t(
+            'Retired: cost optimization never swaps the model the customer selected. Cost savings come from token slimming, caching and batching within the same model.',
+          )}
+        </span>
+      )}
       {def.help && <FieldHelp help={def.help} />}
     </span>
   )
@@ -203,6 +211,8 @@ function OptimizationField(props: {
   // 门控既可能是布尔开关（false=关），也可能是三态模式选择（off=关）。
   const gateOff =
     def.gated !== undefined && isGateOff(nestedValues[leaf(def.gated)])
+  // 已停用项（模型保真）：无论父开关如何，一律禁用，避免运营误开后无效。
+  const inputDisabled = gateOff || def.retired === true
 
   return (
     <FormField
@@ -221,7 +231,7 @@ function OptimizationField(props: {
                 <Switch
                   checked={field.value === true || field.value === 'true'}
                   onCheckedChange={field.onChange}
-                  disabled={gateOff}
+                  disabled={inputDisabled}
                 />
               </FormControl>
             </SettingsSwitchItem>
@@ -234,7 +244,7 @@ function OptimizationField(props: {
             <NativeSelect
               value={String(field.value ?? '')}
               onChange={(e) => field.onChange(e.target.value)}
-              disabled={gateOff}
+              disabled={inputDisabled}
             >
               {(def.options ?? []).map((o) => (
                 <option key={o.value} value={o.value}>
@@ -249,17 +259,17 @@ function OptimizationField(props: {
               rows={3}
               value={String(field.value ?? '')}
               onChange={field.onChange}
-              disabled={gateOff}
+              disabled={inputDisabled}
               placeholder={def.placeholder ?? '[]'}
               className='font-mono text-xs'
             />
           )
         } else if (def.kind === 'number') {
           control = (
-            <Input
+            <Input autoComplete='off'
               type='number'
               {...safeNumberFieldProps(field)}
-              disabled={gateOff}
+              disabled={inputDisabled}
               placeholder={def.placeholder}
             />
           )
@@ -268,16 +278,16 @@ function OptimizationField(props: {
             <SecretInput
               value={String(field.value ?? '')}
               onChange={field.onChange}
-              disabled={gateOff}
+              disabled={inputDisabled}
               placeholder={def.placeholder}
             />
           )
         } else {
           control = (
-            <Input
+            <Input autoComplete='off'
               value={String(field.value ?? '')}
               onChange={field.onChange}
-              disabled={gateOff}
+              disabled={inputDisabled}
               placeholder={def.placeholder}
             />
           )
@@ -373,7 +383,7 @@ export function CostOptimizationSection(props: Props) {
 
   return (
     <SettingsSection title={t('Cost Optimization')}>
-      <p className='text-muted-foreground text-xs'>
+      <p className='text-muted-foreground text-sm'>
         {t(
           'Upstream parameters for cost optimization features that are only partially covered. Fill these in to activate the corresponding capability; leaving them empty keeps the gateway running unchanged.'
         )}
@@ -416,14 +426,9 @@ export function CostOptimizationSection(props: Props) {
               )
             })}
           </div>
-          <div className='mt-2 space-y-1'>
-            <h3 className='text-sm font-semibold'>
-              {t(activeGroupData.title)}
-            </h3>
-            <p className='text-muted-foreground text-xs'>
-              {t(activeGroupData.desc)}
-            </p>
-          </div>
+          <p className='text-muted-foreground text-sm mt-2'>
+            {t(activeGroupData.desc)}
+          </p>
           <div className='space-y-4'>
             {activeGroupData.fields.map((def) => (
               <OptimizationField

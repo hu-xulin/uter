@@ -15,6 +15,7 @@
   "Locales to translate": "Ngôn ngữ cần dịch",
   "Comma-separated. Leave empty to use the default: zh-TW, fr, ru, vi. A locale with no translation falls back to English rather than showing an empty description.": "Phân tách bằng dấu phẩy. Để trống sẽ dùng mặc định: zh-TW, fr, ru, vi. Ngôn ngữ chưa có bản dịch sẽ dùng tiếng Anh thay vì để trống mô tả.",
     "Cost Optimization": "Tối ưu chi phí",
+    "Retired: cost optimization never swaps the model the customer selected. Cost savings come from token slimming, caching and batching within the same model.": "Đã ngừng: tối ưu chi phí không bao giờ thay thế mô hình khách hàng đã chọn. Tiết kiệm đến từ việc giảm token, bộ nhớ đệm và xử lý hàng loạt trong cùng một mô hình.",
     "Caches identical responses for a short TTL and replays them for repeat requests, saving tokens on repeated or template prompts.": "Caches các phản hồi giống nhau trong thời gian ngắn và phát lại cho yêu cầu lặp lại, tiết kiệm token cho câu hỏi lặp hoặc theo mẫu.",
     "How long a cached response stays reusable, in seconds. A longer TTL saves more but risks staler answers.": "Số giây phản hồi trong bộ nhớ đệm có thể dùng lại. TTL càng dài càng tiết kiệm, nhưng câu trả lời có thể cũ hơn.",
     "Only responses at or below this many tokens are cached; larger ones are streamed through untouched.": "Chỉ các phản hồi không vượt quá số token này được bộ nhớ đệm; phản hồi dài hơn sẽ được truyền qua nguyên vẹn.",

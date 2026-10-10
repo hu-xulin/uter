@@ -45,8 +45,8 @@ func TestPlanModelRewrite_CascadeRunsFirstTier(t *testing.T) {
 		c.ValueTierModels = nil
 	})
 	req := &dto.GeneralOpenAIRequest{Model: "some-frontier-model"}
-	require.Equal(t, "cheap-model", PlanModelRewrite(req),
-		"级联应把任意模型降到廉价档")
+	require.Equal(t, "some-frontier-model", PlanModelRewrite(req),
+		"模型保真：即使 Cascade 开启也不得把任意模型降到廉价档")
 }
 
 // 已在廉价档的请求不应被重复改写（前置后 relay 侧还会再跑一次，需保证幂等）。
@@ -63,7 +63,7 @@ func TestPlanModelRewrite_IdempotentForCascadeTier(t *testing.T) {
 	req := &dto.GeneralOpenAIRequest{Model: "cheap-model"}
 	require.Equal(t, "cheap-model", PlanModelRewrite(req))
 	require.Equal(t, "premium-model", PlanModelRewrite(&dto.GeneralOpenAIRequest{Model: "premium-model"}),
-		"贵档也不应被降级")
+		"贵档同样保持不变（模型保真）")
 }
 
 // 价值层模型本身就是便宜档，不应再被级联降到廉价档（否则会指向别的渠道）。
@@ -105,8 +105,8 @@ func TestRewriteCostoptModelForRouting_ReportsRewrite(t *testing.T) {
 		c.ValueTierModels = nil
 	})
 	req := &dto.GeneralOpenAIRequest{Model: "frontier"}
-	require.Equal(t, "cheap", RewriteCostoptModelForRouting(req, "frontier"),
-		"发生改写时应返回新模型名供distributor 选渠道")
+	require.Equal(t, "frontier", RewriteCostoptModelForRouting(req, "frontier"),
+		"模型保真：middleware 入口不得返回新模型名，必须原样透传客户选择的模型")
 }
 
 // Cascade 必须在价值层/复杂度路由已做选择时让位，否则两个降本特性互相覆盖。
@@ -130,7 +130,7 @@ func TestPlanModelRewrite_ValueTierWinsOverCascade(t *testing.T) {
 		"已在价值层端点上的请求不应被 Cascade 覆盖成廉价档")
 }
 
-// 未被任何前置钩子选中的模型才走 Cascade 兜底 —— 证明让位逻辑没有把 Cascade 整体架空。
+// 模型保真：Cascade 兜底降级已整体停用，客户选择的模型必须原样保留。
 func TestPlanModelRewrite_CascadeStillRunsWhenNoOtherHookFired(t *testing.T) {
 	withConfig(t, func(c *costoptcfg.CostOptSetting) {
 		c.ValueTierMode = "off"
@@ -143,11 +143,11 @@ func TestPlanModelRewrite_CascadeStillRunsWhenNoOtherHookFired(t *testing.T) {
 		c.RouterLMEnabled = false
 	})
 	req := &dto.GeneralOpenAIRequest{Model: "claude-opus-4-5"}
-	require.Equal(t, "cascade-cheap", PlanModelRewrite(req),
-		"无前置选择时 Cascade 仍应兜底降级")
+	require.Equal(t, "claude-opus-4-5", PlanModelRewrite(req),
+		"模型保真：Cascade 不得兜底降级客户选择的模型")
 }
 
-// 真正的优先级断言：价值层下沉成功后（模型已变），后续钩子必须看到新模型并短路。
+// 模型保真：价值层与复杂度路由均已停用，模型名必须保持不变。
 // 这里用真实施行：ValueTierModelEquivalents 指向 Cascade 廉价档自身的反面 ——
 // 若 Cascade 仍被执行，结果会变成 cascade-cheap（错误），正确应停在价值层端点。
 func TestPlanModelRewrite_PriorityValueTierBeforeCascade(t *testing.T) {
@@ -168,11 +168,11 @@ func TestPlanModelRewrite_PriorityValueTierBeforeCascade(t *testing.T) {
 		Model:    "frontier",
 		Messages: []dto.Message{{Role: "user", Content: "你好"}},
 	}
-	require.Equal(t, "complexity-cheap", PlanModelRewrite(req),
-		"复杂度路由的下沉结果优先于 Cascade")
+	require.Equal(t, "frontier", PlanModelRewrite(req),
+		"模型保真：复杂度路由与 Cascade 均不得下沉模型")
 }
 
-// 复杂度路由同理：它已经把短问题下沉到廉价模型，Cascade 不应再插手。
+// 模型保真：复杂度路由已停用，短问题同样不得下沉到别的模型。
 func TestPlanModelRewrite_ComplexityWinsOverCascade(t *testing.T) {
 	withConfig(t, func(c *costoptcfg.CostOptSetting) {
 		c.ValueTierMode = "off"
@@ -188,9 +188,10 @@ func TestPlanModelRewrite_ComplexityWinsOverCascade(t *testing.T) {
 		Model:    "frontier",
 		Messages: []dto.Message{{Role: "user", Content: "你好"}},
 	}
-	require.Equal(t, "complexity-cheap", PlanModelRewrite(req),
-		"复杂度路由已下沉时不应再被 Cascade 覆盖")
+	require.Equal(t, "frontier", PlanModelRewrite(req),
+		"模型保真：复杂度路由不得下沉客户选择的模型")
 }
+
 // 回归：value_tier_models 置空（= 不限来源，正确用法）时，Cascade 仍必须放过价值层端点。
 //
 // 背景：ValueTierModels 语义是「允许下沉的**来源**白名单」，而 Cascade 的守卫需要排除
@@ -199,7 +200,7 @@ func TestPlanModelRewrite_ComplexityWinsOverCascade(t *testing.T) {
 func TestPlanModelRewrite_CascadeSkipsValueTierTargetWhenSourceListEmpty(t *testing.T) {
 	withConfig(t, func(c *costoptcfg.CostOptSetting) {
 		c.ValueTierMode = "off" // 只用等价组配置，不触发真实下沉（无定价）
-		c.ValueTierModels = nil  // 来源白名单置空 = 不限来源
+		c.ValueTierModels = nil // 来源白名单置空 = 不限来源
 		c.ValueTierModelEquivalents = map[string][]string{
 			"claude-sonnet-4-6": {"groq-gpt-oss-120b"},
 		}
