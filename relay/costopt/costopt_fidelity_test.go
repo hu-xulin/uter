@@ -113,10 +113,9 @@ func TestModelFidelity_LockConstant(t *testing.T) {
 // 这是保真重构**之后才发现**的真实漏洞：ArbitrageCandidates 原本受
 // ArbitragePreferSameModelOnly 控制，置 false 时退化为「去供应商前缀的基准名匹配」，
 // 于是价目表里一个 {"gpt-4o": 1.5} 就能把 claude-sonnet 的请求改写成 gpt-4o。
-// ApplyArbitrage 里还有一条更直接的兜底分支：价目表未命中就用
-// ArbitrageFallbackModel 换模型。两条都必须在任意配置下失效。
+// 该路径必须在任意配置下失效（价目表未命中时不再有换模型的兜底分支）。
 func TestModelFidelity_ArbitrageNeverSubstitutesModel(t *testing.T) {
-	// 构造一个足以让旧逻辑换掉模型的价目表：基准名不同、且配了兜底模型。
+	// 构造一个足以让旧逻辑换掉模型的价目表：基准名不同。
 	withConfig(t, func(c *costoptcfg.CostOptSetting) {
 		c.ArbitrageMode = "manual"
 		c.ArbitragePreferSameModelOnly = false // 旧逻辑据此放开跨模型替换
@@ -124,7 +123,6 @@ func TestModelFidelity_ArbitrageNeverSubstitutesModel(t *testing.T) {
 			"gpt-4o":      1.5,
 			"groq/gpt-4o": 0.2,
 		}
-		c.ArbitrageFallbackModel = "gpt-4o-mini"
 	})
 
 	req := &dto.GeneralOpenAIRequest{

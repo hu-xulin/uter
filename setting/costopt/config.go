@@ -163,8 +163,6 @@ type CostOptSetting struct {
 	// ArbitrageAutoMaxPriceRatio 自动择优的价差容忍：1.0=严格最便宜；>1 时在容忍范围内
 	// 仍按权重随机，避免所有流量压到单一渠道（默认 1.0）。
 	ArbitrageAutoMaxPriceRatio float64 `json:"arbitrage_auto_max_price_ratio"`
-	// ArbitrageFallbackModel 价目表完全未命中时的兜底模型（空=不改模型）。
-	ArbitrageFallbackModel string `json:"arbitrage_fallback_model"`
 
 	// 6. Serverless 开源模型价值层（Groq / Fireworks / DeepInfra 等）
 	// 三态模式同 4/5：auto 默认自动（自动识别 bulk 流量 + 自动在等价组内选最便宜）。

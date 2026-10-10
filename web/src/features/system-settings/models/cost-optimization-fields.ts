@@ -34,32 +34,24 @@ export type FidelityTier =
   | 'safe'
   /** 有损：确实省钱，但会改变 prompt（裁历史/压提示/降图）或约束输出形态，可能掉质量。默认关闭，需知情后开启。 */
   | 'lossy'
-  /** 有损但有独立外部依赖：注入外部检索结果等，缺端点时为 no-op。 */
-  | 'lossy'
 
 /**
  * 省钱的**作用机理**：钱到底是从哪一笔里省出来的。
  *
  * 这是分组的唯一依据——分类的意义在于让同类项聚合、好对比、好一起决策。
- * 早期版本按「需不需要外部基建」分组，结果把上游 Batch、embedding 服务、
- * 自有 RAG、CDN、长任务存储混在一组：它们的外部依赖形态、启用成本、
- * 责任人都完全不同，运营无法对比也无法分工。现改为按机理分组，
- * 外部依赖只作为组内注记（help 文案里说明），不再作为一级分类维度。
- *
- * 取钱之处只有四种，对应四个大类：
- *   1. reuse  已付过钱的东西别再付一次（缓存）
- *   2. shrink 同样的答案少花钱（换更便宜的通道/异步执行）
- *   3. trim   少喂、少产出（裁输入、限输出）
+ * 取钱之处只有四种，对应四大类：
+ *   1. reuse  已付过钱的东西别再付一次（缓存 / 前缀命中 / 传输压缩）
+ *   2. shrink 同一个模型换更便宜的执行方式（渠道价差、批处理折扣）
+ *   3. inject 用检索结果替掉客户反复粘贴的背景资料
  *   4. guard  防失控与度量（不直接省钱，但决定前三种是否在可控范围内）
+ *
+ * 在前述四大类之下，再按「外部依赖形态」细分子组（缓存 / 批处理 / RAG / 护栏…），
+ * 让每组参数既同源、又不超过 ~9 个，便于运营逐项决策、互不干扰。
  */
 export type SavingMechanism =
-  /** 复用：命中即返回历史结果，同一请求不再产生第二次费用 */
   | 'reuse'
-  /** 降本：同一模型换更便宜的执行方式（渠道价差、批处理折扣） */
   | 'shrink'
-  /** 精简：减少喂给模型的 token 或限制它产出的 token */
-  | 'trim'
-  /** 护栏与度量：不直接省钱，用于验证前三种的效果并防止失控 */
+  | 'inject'
   | 'guard'
 
 export type FieldDef = {
@@ -84,12 +76,6 @@ export type FieldDef = {
    * 聚焦可输入新值，绝不把掩码串写回后端。用于 API key / secret 等敏感字段。
    */
   secret?: boolean
-  /**
-   * 已因「模型保真」原则停用：该项原本会把客户选择的模型换成另一个模型
-   * （跨模型降本），违反客户明确要求，后端已整体停用且不会再执行。
-   * 保留字段仅为兼容既有配置，前端一律禁用并标注原因，避免运营误开后无效。
-   */
-  retired?: boolean
   /** 保真分级（见 FidelityTier）：这一项是否以改变模型所见内容为代价。 */
   fidelity?: FidelityTier
   /**
@@ -97,31 +83,33 @@ export type FieldDef = {
    * 仅作为组内注记，用于提示"填了端点才生效"，不参与一级分组。
    */
   needsInfra?: boolean
+  /**
+   * 已停用的历史配置项标记。当前降本优化已不再展示任何停用项（模型保真原则下整体停用），
+   * 故新分组里不会再出现 retired 字段；此处保留类型声明仅为兼容既有组件引用。
+   */
+  retired?: boolean
 }
 
-// 分组：按「钱从哪一笔省出来」组织，组内再按保真程度排列。
+// 分组：按「钱从哪一笔省出来」归为四大类（复用 / 换更便宜跑法 / 注入外部知识 / 护栏与度量），
+// 每大类之下再按外部依赖形态细分子组，使得每个子组参数同源、且数量可控（≤9）。
 //
-// 🔑 一级分类只看**作用机理**（钱从哪省出来），不看「是否需要外部基建」：
-// 后者会把形态完全不同的能力混在一起（上游 Batch 队列 / embedding 服务 /
-// 自有 RAG / CDN / 外部事实存储），它们的前置条件、启用成本、运维责任人都
-// 不一致，运营既无法对比也无法分工。外部依赖降级为组内注记needsInfra。
-//
-// 取钱之处只有四种，对应四个大类；护栏与已停用项另列：
-//   1. reuse  已付过钱的东西别再付一次（缓存）
-//   2. shrink 同一个模型换更便宜的方式跑（渠道价差、批处理折扣）
-//   3. inject 用检索结果替掉客户反复粘贴的背景资料
-//   4. guard  防失控与度量（不直接省钱，但决定前几种是否可控）
+// 设计要点：
+//   - 复用（reuse）：命中即返回历史结果，或让上游前缀缓存命中、压缩传输字节。
+//     不改变模型所见内容，响应逐字节相同，是唯一的零风险省钱手段。
+//   - 换更便宜的跑法（shrink）：同一个模型，换一条更便宜的通道或异步批处理方式。
+//     模型分毫未变，只是「怎么付钱」变了。
+//   - 注入外部知识（inject）：用检索结果替掉客户每次反复粘贴的背景资料。
+//     效果取决于检索质量，单独成组、且明确标注外部依赖。
+//   - 护栏与度量（guard）：不直接省钱，但决定前三种是否可控、是否真的省了。
 export const GROUPS: Array<{
   title: string
   desc: string
   fields: FieldDef[]
 }> = [
-  // ===== 机理一：复用（reuse）=====
-  // 命中即返回历史结果，同一请求不再产生第二次费用。
-  // 这是当前唯一「完全零风险」的省钱手段：不改变模型所见内容，响应逐字节相同。
+  // ===== 复用（reuse）：响应缓存 =====
   {
-    title: 'Reuse: never pay twice for the same answer',
-    desc: 'Returns an earlier answer instead of calling the model again, so identical work costs nothing the second time. The model sees exactly what it would have seen anyway, which makes these the only truly risk-free savings here.',
+    title: 'Response cache',
+    desc: 'Caches an identical request and replays it, so repeated work costs nothing the second time. The model sees exactly what it would have seen anyway, which makes these the only truly risk-free savings here.',
     fields: [
       {
         name: 'costopt_setting.response_cache_enabled',
@@ -171,20 +159,13 @@ export const GROUPS: Array<{
         label: 'Enable tool result deduplication',
         help: 'Drops repeated identical tool messages inside one conversation. The model still sees exactly the same set of distinct results.',
       },
-      {
-        name: 'costopt_setting.cache_warmup_enabled',
-        kind: 'bool',
-        fidelity: 'safe',
-        label: 'Enable cache warmup',
-        help: 'Preloads the exact cache at startup so the very first requests are already served warm.',
-      },
-      {
-        name: 'costopt_setting.gzip_enabled',
-        kind: 'bool',
-        fidelity: 'safe',
-        label: 'Enable response gzip compression',
-        help: 'Compresses response bodies with gzip, cutting bandwidth cost on text-heavy traffic. The decompressed content is identical.',
-      },
+    ],
+  },
+  // ===== 复用（reuse）：前缀与传输 =====
+  {
+    title: 'Prefix & transmission',
+    desc: 'Pins a stable system prefix so upstream prompt caching actually hits, and compresses the response body on the wire. Both cut cost without changing what the model receives.',
+    fields: [
       {
         name: 'costopt_setting.shared_prefix_enabled',
         kind: 'bool',
@@ -210,14 +191,26 @@ export const GROUPS: Array<{
         placeholder: '4000',
         help: 'Truncates the shared prefix to this many characters.',
       },
+      {
+        name: 'costopt_setting.gzip_enabled',
+        kind: 'bool',
+        fidelity: 'safe',
+        label: 'Enable response gzip compression',
+        help: 'Compresses response bodies with gzip, cutting bandwidth cost on text-heavy traffic. The decompressed content is identical.',
+      },
+      {
+        name: 'costopt_setting.cache_warmup_enabled',
+        kind: 'bool',
+        fidelity: 'safe',
+        label: 'Enable cache warmup',
+        help: 'Preloads the exact cache at startup so the very first requests are already served warm.',
+      },
     ],
   },
-  // ===== 机理二：换更便宜的跑法（shrink）=====
-  // 同一个模型，换一条更便宜的通道或换一种更便宜的执行方式。
-  // 这是保真前提下最实在的节约：模型分毫未变，只是「怎么付钱」变了。
+  // ===== 换更便宜的跑法（shrink）：渠道套利 =====
   {
-    title: 'Cheaper route: same model, lower price',
-    desc: 'Pays less for the very same model — through a cheaper channel or an upstream batch discount. Prices come from the platform pricing table automatically, so there is normally nothing to maintain here.',
+    title: 'Supplier arbitrage',
+    desc: 'Picks the cheapest channel serving the exact same model, using the platform pricing table automatically. Same model, lower price — never a model swap.',
     fields: [
       {
         name: 'costopt_setting.arbitrage_mode',
@@ -278,15 +271,13 @@ export const GROUPS: Array<{
         gated: 'costopt_setting.arbitrage_mode',
         help: 'Only compares channels serving the exact same model and never substitutes a different one. This is enforced by the backend and can no longer be turned off.',
       },
-      {
-        name: 'costopt_setting.arbitrage_fallback_model',
-        kind: 'text',
-        retired: true,
-        label: 'Fallback model',
-        gated: 'costopt_setting.arbitrage_mode',
-        placeholder: 'gpt-4o-mini',
-        help: 'No longer used. A fallback model would substitute the model the customer selected, which breaks model fidelity.',
-      },
+    ],
+  },
+  // ===== 换更便宜的跑法（shrink）：批量转批 — 连接 =====
+  {
+    title: 'Batch offload — connection',
+    desc: 'Submits offline traffic to an upstream Batch API at roughly half price. Same model, executed asynchronously. Fill in the endpoint details below to wire it up.',
+    fields: [
       {
         name: 'costopt_setting.batch_enabled',
         kind: 'bool',
@@ -356,6 +347,13 @@ export const GROUPS: Array<{
         placeholder: '/v1/batches/{id}',
         help: 'Path used to poll a batch by id. The {id} placeholder is replaced with the batch id.',
       },
+    ],
+  },
+  // ===== 换更便宜的跑法（shrink）：批量转批 — 调参 =====
+  {
+    title: 'Batch offload — tuning',
+    desc: 'Controls how requests are batched and which models are eligible. Larger windows and larger batches are cheaper, but they are also slower to return.',
+    fields: [
       {
         name: 'costopt_setting.batch_completion_window',
         kind: 'text',
@@ -396,6 +394,13 @@ export const GROUPS: Array<{
         placeholder: '["glm-4-flash"]',
         help: 'Only these models are submitted as batches. Anything else passes through normally.',
       },
+    ],
+  },
+  // ===== 换更便宜的跑法（shrink）：批量 embedding =====
+  {
+    title: 'Batch embedding',
+    desc: 'Submits multiple texts to a single embedding call. Requires the embedding base URL, endpoint, API key and model below.',
+    fields: [
       {
         name: 'costopt_setting.batch_embed_enabled',
         kind: 'bool',
@@ -445,6 +450,13 @@ export const GROUPS: Array<{
         placeholder: 'embedding-2',
         help: 'Embedding model name. Zhipu embedding models are embedding-2 (1024-dim) and embedding-3 (2048-dim). GLM-4-Flash is a chat model and cannot produce embeddings.',
       },
+    ],
+  },
+  // ===== 换更便宜的跑法（shrink）：CDN =====
+  {
+    title: 'CDN offload',
+    desc: 'Serves static assets from a CDN to cut origin bandwidth. The rewriting logic is implemented but is not yet wired to the asset route.',
+    fields: [
       {
         name: 'costopt_setting.cdn_enabled',
         kind: 'bool',
@@ -525,12 +537,10 @@ export const GROUPS: Array<{
       },
     ],
   },
-  // ===== 机理三：注入外部知识（inject）=====
-  // 单独成组：省的是「客户每次反复粘贴背景资料」的 token。
-  // 与前两组的区别在于它引入了外部知识源，效果取决于检索质量，故单列。
+  // ===== 注入外部知识（inject）：连接 =====
   {
-    title: 'Fetch knowledge instead of resending it',
-    desc: 'Pulls the relevant background from your own knowledge service and injects just that, instead of having the customer paste the same context on every call. The saving is real, but it only pays off once your retrieval quality is good.',
+    title: 'Knowledge injection — connection',
+    desc: 'Retrieves relevant knowledge from your own service and injects just that, instead of having the customer paste the same context on every call. Requires an external RAG endpoint.',
     fields: [
       {
         name: 'costopt_setting.rag_enabled',
@@ -561,6 +571,34 @@ export const GROUPS: Array<{
         placeholder: 'rk_...',
         help: 'API key sent to the RAG endpoint. Leave empty when the service needs no authentication.',
       },
+      {
+        name: 'costopt_setting.rag_inject_position',
+        kind: 'select',
+        fidelity: 'lossy',
+        label: 'Inject position',
+        options: [
+          { value: 'system', label: 'system' },
+          { value: 'user', label: 'user' },
+        ],
+        gated: 'costopt_setting.rag_enabled',
+        help: 'Whether the retrieved context goes into the system message or the user message.',
+      },
+      {
+        name: 'costopt_setting.rag_query_from_last_n',
+        kind: 'number',
+        fidelity: 'lossy',
+        label: 'Build query from last N messages',
+        gated: 'costopt_setting.rag_enabled',
+        placeholder: '2',
+        help: 'Builds the retrieval query from the last N messages of the conversation.',
+      },
+    ],
+  },
+  // ===== 注入外部知识（inject）：检索调参 =====
+  {
+    title: 'Knowledge injection — retrieval',
+    desc: 'Tunes how many snippets are retrieved, how they are scored and reranked, and how much is injected. A low score threshold injects noise and costs more than it saves.',
+    fields: [
       {
         name: 'costopt_setting.rag_top_k',
         kind: 'number',
@@ -615,27 +653,6 @@ export const GROUPS: Array<{
         help: 'How long to wait for the RAG service before continuing without it.',
       },
       {
-        name: 'costopt_setting.rag_inject_position',
-        kind: 'select',
-        fidelity: 'lossy',
-        label: 'Inject position',
-        options: [
-          { value: 'system', label: 'system' },
-          { value: 'user', label: 'user' },
-        ],
-        gated: 'costopt_setting.rag_enabled',
-        help: 'Whether the retrieved context goes into the system message or the user message.',
-      },
-      {
-        name: 'costopt_setting.rag_query_from_last_n',
-        kind: 'number',
-        fidelity: 'lossy',
-        label: 'Build query from last N messages',
-        gated: 'costopt_setting.rag_enabled',
-        placeholder: '2',
-        help: 'Builds the retrieval query from the last N messages of the conversation.',
-      },
-      {
         name: 'costopt_setting.rag_net_benefit_enabled',
         kind: 'bool',
         fidelity: 'lossy',
@@ -662,13 +679,10 @@ export const GROUPS: Array<{
       },
     ],
   },
-  // ===== 护栏与度量（guard）=====
-  // 不直接省钱，但决定前面几种是否可控、是否真的省了。
-  // max_tokens 封顶与 Agent 预算虽属「有损」，但它们的价值恰恰在于兜住最坏情况，
-  // 故与护栏同组——运营看到的是「防失控」，而不是「为了省钱砍质量」。
+  // ===== 护栏与度量（guard）：防失控 =====
   {
-    title: 'Runaway protection and measurement',
-    desc: 'These do not make a request cheaper by themselves. They cap runaway spend and prove whether the savings elsewhere are real, so enable them alongside the rest rather than after.',
+    title: 'Guardrails & runaway protection',
+    desc: 'Caps runaway spend and stops runaway agents, so the savings elsewhere stay under control. Enable these alongside the rest rather than after.',
     fields: [
       {
         name: 'costopt_setting.negative_cache_enabled',
@@ -743,6 +757,13 @@ export const GROUPS: Array<{
         placeholder: '200000',
         help: 'Maximum total tokens an agent may spend within a single request.',
       },
+    ],
+  },
+  // ===== 护栏与度量（guard）：告警与度量 =====
+  {
+    title: 'Spend alerts & measurement',
+    desc: 'Alerts on abnormal spend and exposes metrics, so you can prove the savings are real before widening the rollout.',
+    fields: [
       {
         name: 'costopt_setting.spike_alert_enabled',
         kind: 'bool',
@@ -810,256 +831,6 @@ export const GROUPS: Array<{
         gated: 'costopt_setting.cost_per_success_enabled',
         placeholder: 'true',
         help: 'Value that field must equal for the task to count as successful, for example true.',
-      },
-    ],
-  },
-  // ===== 已停用：跨模型替换 =====
-  // 保留字段仅为兼容既有配置。让运营看得见「为什么没生效」，
-  // 否则他们会反复打开这些开关却得不到任何效果。
-  {
-    title: 'Retired: swapping the customer model',
-    desc: 'Each of these would have replaced the model the customer selected with a cheaper one. That is the one thing cost cutting must never do, so they are disabled at the backend and can no longer run.',
-    fields: [
-      {
-        name: 'costopt_setting.value_tier_mode',
-        retired: true,
-        kind: 'select',
-        label: 'Value tier mode',
-        options: [
-          { value: 'off', label: 'off' },
-          { value: 'auto', label: 'auto' },
-          { value: 'manual', label: 'manual' },
-        ],
-        help: 'Would have rerouted bulk traffic to cheap open-source endpoints. Disabled.',
-      },
-      {
-        name: 'costopt_setting.value_tier_model_equivalents',
-        retired: true,
-        kind: 'json',
-        label: 'Equivalent open-source models',
-        gated: 'costopt_setting.value_tier_mode',
-        placeholder: '{"gpt-4o": ["llama-3.3-70b"]}',
-        help: 'Would have mapped a premium model onto cheap open-source equivalents. Disabled.',
-      },
-      {
-        name: 'costopt_setting.value_tier_models',
-        retired: true,
-        kind: 'json',
-        label: 'Value tier models',
-        gated: 'costopt_setting.value_tier_mode',
-        placeholder: '["llama-3.3-70b"]',
-        help: 'Models allowed on the cheap tier. Disabled.',
-      },
-      {
-        name: 'costopt_setting.value_tier_channel_types',
-        retired: true,
-        kind: 'json',
-        label: 'Value tier channel types',
-        gated: 'costopt_setting.value_tier_mode',
-        placeholder: '[8, 14]',
-        help: 'Channel types eligible for the cheap tier. Disabled.',
-      },
-      {
-        name: 'costopt_setting.value_tier_bulk_only',
-        retired: true,
-        kind: 'bool',
-        label: 'Bulk traffic only',
-        gated: 'costopt_setting.value_tier_mode',
-        help: 'Would have rerouted bulk traffic only. Disabled.',
-      },
-      {
-        name: 'costopt_setting.value_tier_auto_detect_bulk',
-        retired: true,
-        kind: 'bool',
-        label: 'Auto detect bulk traffic',
-        gated: 'costopt_setting.value_tier_mode',
-        help: 'Would have detected long repetitive prompts automatically. Disabled.',
-      },
-      {
-        name: 'costopt_setting.value_tier_min_prompt_chars',
-        retired: true,
-        kind: 'number',
-        label: 'Minimum prompt characters',
-        gated: 'costopt_setting.value_tier_mode',
-        placeholder: '2000',
-        help: 'Prompt length treated as bulk traffic. Disabled.',
-      },
-      {
-        name: 'costopt_setting.value_tier_vendor_base_url',
-        retired: true,
-        kind: 'text',
-        label: 'Vendor API base URL',
-        gated: 'costopt_setting.value_tier_mode',
-        placeholder: 'https://api.groq.com/openai/v1',
-        help: 'Endpoint of the cheap vendor. Disabled.',
-      },
-      {
-        name: 'costopt_setting.value_tier_vendor_api_key',
-        retired: true,
-        kind: 'text',
-        secret: true,
-        label: 'Vendor API key',
-        gated: 'costopt_setting.value_tier_mode',
-        placeholder: 'gsk_...',
-        help: 'API key for the cheap vendor. Disabled.',
-      },
-      {
-        name: 'costopt_setting.tier_split_mode',
-        retired: true,
-        kind: 'select',
-        label: 'Background split mode',
-        options: [
-          { value: 'off', label: 'off' },
-          { value: 'auto', label: 'auto' },
-          { value: 'manual', label: 'manual' },
-        ],
-        help: 'Would have sent background jobs to a cheaper model while user-facing requests stayed premium. Disabled.',
-      },
-      {
-        name: 'costopt_setting.tier_split_visible_models',
-        retired: true,
-        kind: 'json',
-        label: 'User-facing models to keep',
-        gated: 'costopt_setting.tier_split_mode',
-        placeholder: '["gpt-4o", "claude-opus"]',
-        help: 'Models that must stay on the premium tier. Disabled.',
-      },
-      {
-        name: 'costopt_setting.tier_split_background_tags',
-        retired: true,
-        kind: 'json',
-        label: 'Background request tags',
-        gated: 'costopt_setting.tier_split_mode',
-        placeholder: '["embedding", "summary"]',
-        help: 'Tags or paths that mark a request as background work. Disabled.',
-      },
-      {
-        name: 'costopt_setting.tier_split_background_model',
-        retired: true,
-        kind: 'text',
-        label: 'Background model',
-        gated: 'costopt_setting.tier_split_mode',
-        placeholder: 'gpt-4o-mini',
-        help: 'Cheaper model background requests would have used. Disabled.',
-      },
-      {
-        name: 'costopt_setting.tier_split_auto_detect',
-        retired: true,
-        kind: 'bool',
-        label: 'Auto detect background traffic',
-        gated: 'costopt_setting.tier_split_mode',
-        help: 'Would have recognised background work automatically. Disabled.',
-      },
-      {
-        name: 'costopt_setting.tier_split_non_stream_as_background',
-        retired: true,
-        kind: 'bool',
-        label: 'Treat non-streaming requests as background',
-        gated: 'costopt_setting.tier_split_mode',
-        help: 'Would have treated every non-streaming request as background. Disabled.',
-      },
-      {
-        name: 'costopt_setting.cascade_enabled',
-        retired: true,
-        kind: 'bool',
-        label: 'Enable cascade cheap-to-premium',
-        help: 'Would have tried a cheap model first and upgraded to a premium one when it refused. Disabled.',
-      },
-      {
-        name: 'costopt_setting.cascade_cheap_model',
-        retired: true,
-        kind: 'text',
-        label: 'Cascade cheap model',
-        gated: 'costopt_setting.cascade_enabled',
-        placeholder: 'gpt-4o-mini',
-        help: 'The low-cost model tried first. Disabled.',
-      },
-      {
-        name: 'costopt_setting.cascade_premium_model',
-        retired: true,
-        kind: 'text',
-        label: 'Cascade premium model',
-        gated: 'costopt_setting.cascade_enabled',
-        placeholder: 'gpt-4o',
-        help: 'The stronger model used once the cheap model refuses. Disabled.',
-      },
-      {
-        name: 'costopt_setting.cascade_refusal_keywords',
-        retired: true,
-        kind: 'json',
-        label: 'Cascade refusal keywords',
-        gated: 'costopt_setting.cascade_enabled',
-        placeholder: '["I cannot", "I apologize"]',
-        help: 'Keywords that mark a reply as a refusal and trigger the upgrade. Disabled.',
-      },
-      {
-        name: 'costopt_setting.complexity_routing_enabled',
-        retired: true,
-        kind: 'bool',
-        label: 'Enable complexity routing',
-        help: 'Would have judged a request simple and downgraded it to a cheaper model. Disabled.',
-      },
-      {
-        name: 'costopt_setting.complexity_routing_from_models',
-        retired: true,
-        kind: 'json',
-        label: 'Complexity routing source models',
-        gated: 'costopt_setting.complexity_routing_enabled',
-        placeholder: '["claude-opus-4-5"]',
-        help: 'Source models eligible for a complexity downgrade. Disabled.',
-      },
-      {
-        name: 'costopt_setting.complexity_routing_cheap_model',
-        retired: true,
-        kind: 'text',
-        label: 'Complexity routing cheap model',
-        gated: 'costopt_setting.complexity_routing_enabled',
-        placeholder: 'gpt-4o-mini',
-        help: 'Downgrade target for simple requests. Disabled.',
-      },
-      {
-        name: 'costopt_setting.router_lm_enabled',
-        retired: true,
-        kind: 'bool',
-        label: 'Enable router model selection',
-        help: 'Would have let a small router model pick the upstream model. Disabled.',
-      },
-      {
-        name: 'costopt_setting.router_lm_model',
-        retired: true,
-        kind: 'text',
-        label: 'Router model',
-        gated: 'costopt_setting.router_lm_enabled',
-        placeholder: 'openai/gpt-oss-120b',
-        help: 'The model used to make routing decisions. Disabled.',
-      },
-      {
-        name: 'costopt_setting.router_lm_api_base_url',
-        retired: true,
-        kind: 'text',
-        label: 'Router API base URL',
-        gated: 'costopt_setting.router_lm_enabled',
-        placeholder: 'https://api.openai.com/v1',
-        help: 'Endpoint serving the router model. Disabled.',
-      },
-      {
-        name: 'costopt_setting.router_lm_api_key',
-        retired: true,
-        kind: 'text',
-        secret: true,
-        label: 'Router API key',
-        gated: 'costopt_setting.router_lm_enabled',
-        placeholder: 'sk-...',
-        help: 'API key for the router model. Disabled.',
-      },
-      {
-        name: 'costopt_setting.router_lm_from_models',
-        retired: true,
-        kind: 'json',
-        label: 'Router eligible models',
-        gated: 'costopt_setting.router_lm_enabled',
-        placeholder: '["claude-opus-4-5"]',
-        help: 'Models the router was allowed to re-route. Disabled.',
       },
     ],
   },
