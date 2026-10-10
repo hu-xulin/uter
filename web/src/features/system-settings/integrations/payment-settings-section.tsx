@@ -945,7 +945,7 @@ export function PaymentSettingsSection({
                           {t('Price (local currency / USD)')}
                         </FormLabel>
                         <FormControl>
-                          <Input
+                          <Input autoComplete='off'
                             placeholder='1.00'
                             type='number'
                             step='0.01'
@@ -970,7 +970,7 @@ export function PaymentSettingsSection({
                       <FormItem>
                         <FormLabel>{t('Minimum top-up (USD)')}</FormLabel>
                         <FormControl>
-                          <Input
+                          <Input autoComplete='off'
                             placeholder='1'
                             type='number'
                             step='0.01'
@@ -994,7 +994,7 @@ export function PaymentSettingsSection({
                     <FormItem>
                       <FormLabel>{t('Payment site address')}</FormLabel>
                       <FormControl>
-                        <Input
+                        <Input autoComplete='off'
                           placeholder={t('https://gateway.example.com')}
                           {...field}
                           onChange={(event) =>
@@ -1235,7 +1235,7 @@ export function PaymentSettingsSection({
                       <FormItem>
                         <FormLabel>{t('Epay endpoint')}</FormLabel>
                         <FormControl>
-                          <Input
+                          <Input autoComplete='off'
                             placeholder={t('https://pay.example.com')}
                             {...field}
                             onChange={(event) =>
@@ -1258,7 +1258,7 @@ export function PaymentSettingsSection({
                       <FormItem>
                         <FormLabel>{t('Callback address')}</FormLabel>
                         <FormControl>
-                          <Input
+                          <Input autoComplete='off'
                             placeholder={t('https://gateway.example.com')}
                             {...field}
                             onChange={(event) =>
@@ -1419,7 +1419,7 @@ export function PaymentSettingsSection({
                       <FormItem>
                         <FormLabel>{t('Price ID')}</FormLabel>
                         <FormControl>
-                          <Input
+                          <Input autoComplete='off'
                             placeholder={t('price_xxx')}
                             {...field}
                             onChange={(event) =>
@@ -1446,7 +1446,7 @@ export function PaymentSettingsSection({
                           {t('Unit price (local currency / USD)')}
                         </FormLabel>
                         <FormControl>
-                          <Input
+                          <Input autoComplete='off'
                             placeholder='1.00'
                             type='number'
                             step='0.01'
@@ -1469,7 +1469,7 @@ export function PaymentSettingsSection({
                       <FormItem>
                         <FormLabel>{t('Minimum top-up (USD)')}</FormLabel>
                         <FormControl>
-                          <Input
+                          <Input autoComplete='off'
                             placeholder='1'
                             type='number'
                             step='0.01'

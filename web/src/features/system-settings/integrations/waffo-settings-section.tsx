@@ -195,7 +195,7 @@ export function WaffoSettingsSection({
 
         <div className='grid gap-1.5'>
           <Label>{t('Merchant ID')}</Label>
-          <Input
+          <Input autoComplete='off'
             placeholder='merchant_id'
             value={values.WaffoMerchantId}
             onChange={(event) =>
@@ -261,11 +261,11 @@ export function WaffoSettingsSection({
         <div className='grid grid-cols-3 gap-4'>
           <div className='grid gap-1.5'>
             <Label>{t('Currency')}</Label>
-            <Input value={values.WaffoCurrency} disabled />
+            <Input autoComplete='off' value={values.WaffoCurrency} disabled />
           </div>
           <div className='grid gap-1.5'>
             <Label>{t('Unit price (USD)')}</Label>
-            <Input
+            <Input autoComplete='off'
               type='number'
               step={0.1}
               min={0}
@@ -281,7 +281,7 @@ export function WaffoSettingsSection({
           </div>
           <div className='grid gap-1.5'>
             <Label>{t('Minimum top-up quantity')}</Label>
-            <Input
+            <Input autoComplete='off'
               type='number'
               min={1}
               placeholder='1'
@@ -299,7 +299,7 @@ export function WaffoSettingsSection({
         <div className='grid grid-cols-2 gap-4'>
           <div className='grid gap-1.5'>
             <Label>{t('Callback notification URL')}</Label>
-            <Input
+            <Input autoComplete='off'
               placeholder='https://example.com/api/waffo/webhook'
               value={values.WaffoNotifyUrl}
               onChange={(event) =>
@@ -309,7 +309,7 @@ export function WaffoSettingsSection({
           </div>
           <div className='grid gap-1.5'>
             <Label>{t('Payment return URL')}</Label>
-            <Input
+            <Input autoComplete='off'
               placeholder='https://example.com/wallet'
               value={values.WaffoReturnUrl}
               onChange={(event) =>
@@ -412,7 +412,7 @@ export function WaffoSettingsSection({
         <div className='space-y-3'>
           <div className='grid gap-1.5'>
             <Label required>{t('Display name')}</Label>
-            <Input
+            <Input autoComplete='off'
               placeholder='Credit Card'
               value={methodForm.name}
               onChange={(e) =>
@@ -463,7 +463,7 @@ export function WaffoSettingsSection({
                 </Button>
               ) : null}
             </div>
-            <p className='text-muted-foreground text-xs'>
+            <p className='text-muted-foreground text-sm'>
               {t(
                 'Supports PNG, JPG, SVG, or WebP. Recommended size: 128×128 or smaller.'
               )}
@@ -471,7 +471,7 @@ export function WaffoSettingsSection({
           </div>
           <div className='grid gap-1.5'>
             <Label>{t('Payment method type')}</Label>
-            <Input
+            <Input autoComplete='off'
               value={methodForm.payMethodType}
               onChange={(e) =>
                 setMethodForm((p) => ({
@@ -484,7 +484,7 @@ export function WaffoSettingsSection({
           </div>
           <div className='grid gap-1.5'>
             <Label>{t('Payment method name')}</Label>
-            <Input
+            <Input autoComplete='off'
               placeholder='Credit Card'
               value={methodForm.payMethodName}
               onChange={(e) =>

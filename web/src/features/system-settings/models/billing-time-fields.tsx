@@ -169,7 +169,7 @@ export function BillingConditionValueInput(props: {
     )
   }
   return (
-    <Input
+    <Input autoComplete='off'
       type='text'
       inputMode='numeric'
       aria-label={props.label ?? t('Condition value')}
@@ -204,7 +204,7 @@ export function BillingTimeRangeFields(props: {
         value={props.start}
         onChange={(start) => props.onChange(start, props.end)}
       />
-      <span className='text-muted-foreground text-xs'>{t('to')}</span>
+      <span className='text-muted-foreground text-sm'>{t('to')}</span>
       {props.endOperator}
       <BillingConditionValueInput
         label={props.probe === 'weekday' ? t('End weekday') : t('End')}

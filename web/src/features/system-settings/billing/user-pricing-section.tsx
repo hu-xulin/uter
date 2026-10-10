@@ -235,7 +235,7 @@ export function UserPricingSection({
                 key={tier.id}
                 className='grid grid-cols-[1fr_1fr_1fr_1.2fr_auto] items-center gap-2'
               >
-                <Input
+                <Input autoComplete='off'
                   inputMode='decimal'
                   placeholder='0'
                   value={tier.min}
@@ -243,7 +243,7 @@ export function UserPricingSection({
                     patchTier(tier.id, { min: event.target.value })
                   }
                 />
-                <Input
+                <Input autoComplete='off'
                   inputMode='decimal'
                   placeholder={t('No upper limit')}
                   value={tier.max}
@@ -251,7 +251,7 @@ export function UserPricingSection({
                     patchTier(tier.id, { max: event.target.value })
                   }
                 />
-                <Input
+                <Input autoComplete='off'
                   inputMode='decimal'
                   placeholder='1'
                   value={tier.ratio}
@@ -259,7 +259,7 @@ export function UserPricingSection({
                     patchTier(tier.id, { ratio: event.target.value })
                   }
                 />
-                <Input
+                <Input autoComplete='off'
                   placeholder={t('Description')}
                   value={tier.label}
                   onChange={(event) =>
@@ -297,10 +297,10 @@ export function UserPricingSection({
               <Plus data-icon='inline-start' />
               <span>{t('Add tier')}</span>
             </Button>
-            <p className='text-muted-foreground text-xs'>
+            <p className='text-muted-foreground text-sm'>
               {t('Monthly spend hint')}
             </p>
-            <p className='text-muted-foreground text-xs'>
+            <p className='text-muted-foreground text-sm'>
               {t('Monthly spend unit hint', { unit: currencyUnit })}
             </p>
           </div>

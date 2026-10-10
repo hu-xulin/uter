@@ -274,7 +274,7 @@ export function RuleEditorDialog(props: Props) {
       >
         <div className='grid gap-1.5'>
           <Label required>{t('Name')}</Label>
-          <Input
+          <Input autoComplete='off'
             placeholder='prefer-by-conversation-id'
             {...form.register('name', { required: true })}
           />
@@ -361,7 +361,7 @@ export function RuleEditorDialog(props: Props) {
                     </SelectGroup>
                   </SelectContent>
                 </Select>
-                <Input
+                <Input autoComplete='off'
                   className='min-w-0 flex-1'
                   placeholder={
                     src.type === 'gjson'
@@ -422,14 +422,14 @@ export function RuleEditorDialog(props: Props) {
             <div className='grid gap-3 sm:grid-cols-2'>
               <div className='grid gap-1.5'>
                 <Label>{t('Value Regex')}</Label>
-                <Input
+                <Input autoComplete='off'
                   placeholder='^[-0-9A-Za-z._:]{1,128}$'
                   {...form.register('value_regex')}
                 />
               </div>
               <div className='grid gap-1.5'>
                 <Label>{t('TTL (seconds, 0 = default)')}</Label>
-                <Input
+                <Input autoComplete='off'
                   placeholder='0'
                   type='number'
                   min={0}

@@ -285,7 +285,7 @@ function GroupSection(props: GroupSectionProps) {
                     )}
                 </div>
                 {rule.visible ? (
-                  <Input
+                  <Input autoComplete='off'
                     className='flex-1'
                     value={rule.description}
                     placeholder={t('Description')}

@@ -350,7 +350,7 @@ export function RoutingReliabilitySection({
                   <FormItem>
                     <FormLabel>{t('Retry Times')}</FormLabel>
                     <FormControl>
-                      <Input
+                      <Input autoComplete='off'
                         placeholder='3'
                         type='number'
                         min='0'
@@ -373,7 +373,7 @@ export function RoutingReliabilitySection({
                   <FormItem>
                     <FormLabel>{t('Auto-retry status codes')}</FormLabel>
                     <FormControl>
-                      <Input
+                      <Input autoComplete='off'
                         placeholder={t('e.g. 401, 403, 429, 500-599')}
                         value={field.value}
                         onChange={(event) => field.onChange(event.target.value)}
@@ -490,7 +490,7 @@ export function RoutingReliabilitySection({
                   <FormItem>
                     <FormLabel>{t('Test interval (minutes)')}</FormLabel>
                     <FormControl>
-                      <Input
+                      <Input autoComplete='off'
                         placeholder='10'
                         type='number'
                         min={1}
@@ -517,7 +517,7 @@ export function RoutingReliabilitySection({
                   <FormItem>
                     <FormLabel>{t('Channel test concurrency')}</FormLabel>
                     <FormControl>
-                      <Input
+                      <Input autoComplete='off'
                         placeholder='5'
                         type='number'
                         min={1}
@@ -596,7 +596,7 @@ export function RoutingReliabilitySection({
                   <FormItem>
                     <FormLabel>{t('Disable threshold (seconds)')}</FormLabel>
                     <FormControl>
-                      <Input
+                      <Input autoComplete='off'
                         placeholder='5'
                         type='number'
                         min={0}
@@ -622,7 +622,7 @@ export function RoutingReliabilitySection({
                   <FormItem>
                     <FormLabel>{t('Auto-disable status codes')}</FormLabel>
                     <FormControl>
-                      <Input
+                      <Input autoComplete='off'
                         placeholder={t('e.g. 401, 403, 429, 500-599')}
                         value={field.value}
                         onChange={(event) => field.onChange(event.target.value)}

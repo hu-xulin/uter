@@ -138,7 +138,7 @@ export function AmountOptionsVisualEditor({
           <Label htmlFor='new-amount' className='mb-2 block'>
             {t('Add new amount')}
           </Label>
-          <Input
+          <Input autoComplete='off'
             id='new-amount'
             type='number'
             step='0.01'

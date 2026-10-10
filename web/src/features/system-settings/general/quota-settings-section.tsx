@@ -136,7 +136,7 @@ export function QuotaSettingsSection({
                 <FormItem>
                   <FormLabel>{t('New User Quota')}</FormLabel>
                   <FormControl>
-                    <Input
+                    <Input autoComplete='off'
                       placeholder='500000'
                       type='number'
                       value={field.value ?? ''}
@@ -166,7 +166,7 @@ export function QuotaSettingsSection({
                 <FormItem>
                   <FormLabel>{t('Pre-Consumed Quota')}</FormLabel>
                   <FormControl>
-                    <Input
+                    <Input autoComplete='off'
                       placeholder='50000'
                       type='number'
                       value={field.value ?? ''}
@@ -191,7 +191,7 @@ export function QuotaSettingsSection({
                 <FormItem>
                   <FormLabel>{t('Inviter Reward')}</FormLabel>
                   <FormControl>
-                    <Input
+                    <Input autoComplete='off'
                       placeholder='100000'
                       type='number'
                       value={field.value ?? ''}
@@ -221,7 +221,7 @@ export function QuotaSettingsSection({
                 <FormItem>
                   <FormLabel>{t('Invitee Reward')}</FormLabel>
                   <FormControl>
-                    <Input
+                    <Input autoComplete='off'
                       placeholder='100000'
                       type='number'
                       value={field.value ?? ''}
@@ -274,7 +274,7 @@ export function QuotaSettingsSection({
                 <FormItem>
                   <FormLabel>{t('Top-Up Link')}</FormLabel>
                   <FormControl>
-                    <Input
+                    <Input autoComplete='off'
                       placeholder={t('https://example.com/topup')}
                       {...field}
                     />
@@ -294,7 +294,7 @@ export function QuotaSettingsSection({
                 <FormItem>
                   <FormLabel>{t('Documentation Link')}</FormLabel>
                   <FormControl>
-                    <Input
+                    <Input autoComplete='off'
                       placeholder={t('https://docs.example.com')}
                       {...field}
                     />

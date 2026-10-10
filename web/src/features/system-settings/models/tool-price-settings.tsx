@@ -312,7 +312,7 @@ export const ToolPriceSettings = memo(function ToolPriceSettings({
               id: 'tool',
               header: t('Tool identifier'),
               cell: (row) => (
-                <Input
+                <Input autoComplete='off'
                   value={row.key}
                   placeholder='web_search_preview:gpt-4o*'
                   onChange={(e) => updateRow(row.id, 'key', e.target.value)}
@@ -327,7 +327,7 @@ export const ToolPriceSettings = memo(function ToolPriceSettings({
                 const isInvalid = invalidRowIds.has(row.id)
                 return (
                   <Field data-invalid={isInvalid}>
-                    <Input
+                    <Input autoComplete='off'
                       type='number'
                       min={0}
                       step={0.5}

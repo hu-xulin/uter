@@ -149,7 +149,7 @@ export function AmountDiscountDialog({
               <FormItem>
                 <FormLabel>{t('Recharge Amount (USD)')}</FormLabel>
                 <FormControl>
-                  <Input
+                  <Input autoComplete='off'
                     type='number'
                     step='1'
                     min='1'
@@ -180,7 +180,7 @@ export function AmountDiscountDialog({
               <FormItem>
                 <FormLabel>{t('Discount Rate')}</FormLabel>
                 <FormControl>
-                  <Input
+                  <Input autoComplete='off'
                     type='number'
                     step='0.01'
                     min='0.01'

@@ -496,7 +496,7 @@ export function ApiKeysMutateDrawer({
                         <FormLabel className='text-sm'>
                           {t('Cross-group retry')}
                         </FormLabel>
-                        <FormDescription className='line-clamp-2 text-xs sm:line-clamp-none'>
+                        <FormDescription className='line-clamp-2 sm:line-clamp-none'>
                           {t(
                             'When enabled, if channels in the current group fail, it will try channels in the next group in order.'
                           )}
@@ -653,7 +653,7 @@ export function ApiKeysMutateDrawer({
                       <FormLabel className='text-sm'>
                         {t('Unlimited Quota')}
                       </FormLabel>
-                      <FormDescription className='text-xs'>
+                      <FormDescription>
                         {t('Enable unlimited quota for this API key')}
                       </FormDescription>
                     </div>

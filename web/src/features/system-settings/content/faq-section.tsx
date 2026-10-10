@@ -356,7 +356,7 @@ export function FAQSection({ enabled, data }: FAQSectionProps) {
                 <FormItem>
                   <FormLabel>{t('Question')}</FormLabel>
                   <FormControl>
-                    <Input
+                    <Input autoComplete='off'
                       placeholder={t('How to reset my quota?')}
                       {...field}
                     />

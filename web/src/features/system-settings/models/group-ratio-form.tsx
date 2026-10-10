@@ -182,7 +182,7 @@ export const GroupRatioForm = memo(function GroupRatioForm({
                         {t('Maximum custom groups per token')}
                       </FormLabel>
                       <FormControl>
-                        <Input
+                        <Input autoComplete='off'
                           placeholder='10'
                           {...safeNumberFieldProps(field)}
                           type='number'
@@ -378,7 +378,7 @@ export const GroupRatioForm = memo(function GroupRatioForm({
                 <FormItem data-invalid={fieldState.invalid}>
                   <FormLabel>{t('Maximum custom groups per token')}</FormLabel>
                   <FormControl>
-                    <Input
+                    <Input autoComplete='off'
                       placeholder='10'
                       {...safeNumberFieldProps(field)}
                       type='number'
@@ -617,7 +617,7 @@ function GroupPricingGuide({ open, onOpenChange }: GroupPricingGuideProps) {
                 <span className='bg-primary/10 ring-primary/40 rounded px-1.5 py-0.5 font-semibold ring-1'>
                   0.3
                 </span>{' '}
-                <span className='text-muted-foreground text-xs'>
+                <span className='text-muted-foreground text-sm'>
                   {t('(instead of {{ratio}})', { ratio: 0.5 })}
                 </span>
               </div>

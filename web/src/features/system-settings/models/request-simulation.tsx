@@ -226,7 +226,7 @@ export function RequestSimulation(props: RequestSimulationProps) {
             <FieldLabel htmlFor={imageCountId}>
               {t('Billable image count')}
             </FieldLabel>
-            <Input
+            <Input autoComplete='off'
               placeholder='1'
               id={imageCountId}
               type='number'
@@ -241,7 +241,7 @@ export function RequestSimulation(props: RequestSimulationProps) {
             </FieldDescription>
           </Field>
         )}
-        <p className='text-muted-foreground text-xs'>
+        <p className='text-muted-foreground text-sm'>
           {t(
             'Simulate a request including request rules and excluding group multipliers. Empty objects represent an empty request.'
           )}
@@ -330,7 +330,7 @@ export function RequestSimulation(props: RequestSimulationProps) {
             </SelectContent>
           </Select>
           {timeMode === 'fixed' && (
-            <Input
+            <Input autoComplete='off'
               aria-label={t('Specified time')}
               value={fixedTime}
               onChange={(event) => setFixedTime(event.target.value)}

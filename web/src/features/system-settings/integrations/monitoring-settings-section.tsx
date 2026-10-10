@@ -193,7 +193,7 @@ export function MonitoringSettingsSection({
               <FormItem>
                 <FormLabel>{t('Quota reminder (tokens)')}</FormLabel>
                 <FormControl>
-                  <Input
+                  <Input autoComplete='off'
                     placeholder='100000'
                     type='number'
                     min={0}
@@ -246,7 +246,7 @@ export function MonitoringSettingsSection({
                 <FormItem>
                   <FormLabel>{t('Flush interval (minutes)')}</FormLabel>
                   <FormControl>
-                    <Input
+                    <Input autoComplete='off'
                       type='number'
                       min={1}
                       step={1}
@@ -298,7 +298,7 @@ export function MonitoringSettingsSection({
                 <FormItem>
                   <FormLabel>{t('Retention days')}</FormLabel>
                   <FormControl>
-                    <Input
+                    <Input autoComplete='off'
                       type='number'
                       min={0}
                       step={1}

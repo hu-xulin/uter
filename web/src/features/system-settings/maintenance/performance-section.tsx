@@ -366,7 +366,7 @@ export function PerformanceSection(props: Props) {
                 <FormItem>
                   <FormLabel>{t('Disk Cache Threshold (MB)')}</FormLabel>
                   <FormControl>
-                    <Input
+                    <Input autoComplete='off'
                       type='number'
                       min={1}
                       step={1}
@@ -388,7 +388,7 @@ export function PerformanceSection(props: Props) {
                 <FormItem>
                   <FormLabel>{t('Max Disk Cache Size (MB)')}</FormLabel>
                   <FormControl>
-                    <Input
+                    <Input autoComplete='off'
                       type='number'
                       min={100}
                       step={1}
@@ -427,7 +427,7 @@ export function PerformanceSection(props: Props) {
                 <FormItem className='max-w-md'>
                   <FormLabel>{t('Cache Directory')}</FormLabel>
                   <FormControl>
-                    <Input
+                    <Input autoComplete='off'
                       placeholder={t(
                         'Leave empty to use system temp directory'
                       )}
@@ -484,7 +484,7 @@ export function PerformanceSection(props: Props) {
                 <FormItem>
                   <FormLabel>{t('CPU Threshold (%)')}</FormLabel>
                   <FormControl>
-                    <Input
+                    <Input autoComplete='off'
                       type='number'
                       min={0}
                       step={1}
@@ -503,7 +503,7 @@ export function PerformanceSection(props: Props) {
                 <FormItem>
                   <FormLabel>{t('Memory Threshold (%)')}</FormLabel>
                   <FormControl>
-                    <Input
+                    <Input autoComplete='off'
                       type='number'
                       min={0}
                       max={100}
@@ -523,7 +523,7 @@ export function PerformanceSection(props: Props) {
                 <FormItem>
                   <FormLabel>{t('Disk Threshold (%)')}</FormLabel>
                   <FormControl>
-                    <Input
+                    <Input autoComplete='off'
                       type='number'
                       min={0}
                       max={100}

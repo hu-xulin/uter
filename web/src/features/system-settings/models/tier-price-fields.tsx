@@ -119,7 +119,7 @@ function PriceField({
             onCheckedChange={(checked) => onInclude(checked === true)}
           />
         )}
-        <Label htmlFor={id} className='text-muted-foreground text-xs'>
+        <Label htmlFor={id} className='text-muted-foreground text-sm'>
           {label}
         </Label>
       </div>
@@ -133,7 +133,7 @@ function PriceField({
         aria-invalid={invalid || undefined}
         className='h-8 w-full'
       />
-      {hint && <p className='text-muted-foreground text-xs'>{hint}</p>}
+      {hint && <p className='text-muted-foreground text-sm'>{hint}</p>}
     </div>
   )
 }
@@ -146,7 +146,7 @@ function OfficialPriceField(props: {
 }) {
   return (
     <div className='w-36 space-y-0.5'>
-      <Label className='text-muted-foreground text-xs'>{props.label}</Label>
+      <Label className='text-muted-foreground text-sm'>{props.label}</Label>
       <PricingAmountInput
         currency={props.currency}
         aria-label={props.label}
@@ -553,7 +553,7 @@ export function TierPriceFields(props: TierPriceFieldsProps) {
                 {discountSummaryText(appliedDiscount)}
               </span>
             )}
-          <span className='text-muted-foreground text-xs'>
+          <span className='text-muted-foreground text-sm'>
             {t('Uter price = official price × discount ratio.')}
           </span>
         </div>
@@ -653,7 +653,7 @@ export function TierPriceFields(props: TierPriceFieldsProps) {
           <div className='space-y-3'>
             {showReference && (
               <div className='space-y-1.5'>
-                <p className='text-muted-foreground text-xs font-medium'>
+                <p className='text-muted-foreground text-sm font-medium'>
                   {t('Official prices')}
                 </p>
                 <div className='flex flex-wrap gap-x-4 gap-y-2'>
@@ -673,7 +673,7 @@ export function TierPriceFields(props: TierPriceFieldsProps) {
             )}
             <div className='space-y-1.5'>
               {showReference && (
-                <p className='text-muted-foreground text-xs font-medium'>
+                <p className='text-muted-foreground text-sm font-medium'>
                   {t('Uter prices')}
                 </p>
               )}

@@ -130,7 +130,7 @@ export function DashboardSection({ defaultValues }: DashboardSectionProps) {
                 <FormItem>
                   <FormLabel>{t('Refresh interval (minutes)')}</FormLabel>
                   <FormControl>
-                    <Input
+                    <Input autoComplete='off'
                       type='number'
                       min={1}
                       max={1440}

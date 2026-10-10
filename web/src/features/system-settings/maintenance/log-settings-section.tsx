@@ -516,7 +516,7 @@ export function LogSettingsSection({
                       ? t('Files to Retain')
                       : t('Days to Retain')}
                   </Label>
-                  <Input
+                  <Input autoComplete='off'
                     placeholder='30'
                     type='number'
                     min={1}

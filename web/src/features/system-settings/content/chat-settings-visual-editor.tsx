@@ -132,7 +132,7 @@ export function ChatSettingsVisualEditor({
       <div className='flex items-center gap-4'>
         <div className='relative flex-1'>
           <Search className='text-muted-foreground absolute top-2.5 left-2.5 h-4 w-4' />
-          <Input
+          <Input autoComplete='off'
             placeholder={t('Search chat presets...')}
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}

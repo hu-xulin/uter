@@ -378,7 +378,7 @@ export function UptimeKumaSection({ enabled, data }: UptimeKumaSectionProps) {
                 <FormItem>
                   <FormLabel>{t('Category Name')}</FormLabel>
                   <FormControl>
-                    <Input
+                    <Input autoComplete='off'
                       placeholder={t('e.g., Core APIs, OpenAI, Claude')}
                       {...field}
                     />
@@ -399,7 +399,7 @@ export function UptimeKumaSection({ enabled, data }: UptimeKumaSectionProps) {
                 <FormItem>
                   <FormLabel>{t('Uptime Kuma URL')}</FormLabel>
                   <FormControl>
-                    <Input
+                    <Input autoComplete='off'
                       placeholder={t('https://status.example.com')}
                       {...field}
                     />
@@ -418,7 +418,7 @@ export function UptimeKumaSection({ enabled, data }: UptimeKumaSectionProps) {
                 <FormItem>
                   <FormLabel>{t('Status Page Slug')}</FormLabel>
                   <FormControl>
-                    <Input placeholder={t('my-status')} {...field} />
+                    <Input autoComplete='off' placeholder={t('my-status')} {...field} />
                   </FormControl>
                   <FormDescription>
                     {t('The slug is appended to the URL:')} {'{url}'}

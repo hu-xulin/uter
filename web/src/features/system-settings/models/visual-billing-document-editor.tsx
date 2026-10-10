@@ -79,7 +79,7 @@ function PricingTierFields(
       <div className='flex flex-wrap items-center justify-between gap-2'>
         <div className='flex min-w-0 items-center gap-2'>
           <Badge variant='secondary'>{t('Tier')}</Badge>
-          <Input
+          <Input autoComplete='off'
             aria-label={t('Tier name')}
             value={node.label}
             onChange={(event) =>
@@ -475,7 +475,7 @@ export function VisualBillingDocumentEditor(props: {
   return (
     <div className='space-y-3'>
       {props.document.root.kind === 'branch' && (
-        <p className='text-muted-foreground text-xs'>
+        <p className='text-muted-foreground text-sm'>
           {t(
             'Rules are checked in order. The first match determines the price.'
           )}

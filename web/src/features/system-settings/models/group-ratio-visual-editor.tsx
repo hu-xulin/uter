@@ -543,7 +543,7 @@ function GroupPricingTable({
                 header: t('Group name'),
                 className: 'min-w-40',
                 cell: (row) => (
-                  <Input
+                  <Input autoComplete='off'
                     placeholder='vip'
                     value={row.name}
                     onChange={(event) =>
@@ -558,7 +558,7 @@ function GroupPricingTable({
                 header: t('Ratio'),
                 className: 'w-28',
                 cell: (row) => (
-                  <Input
+                  <Input autoComplete='off'
                     placeholder='1'
                     type='number'
                     min={0}
@@ -575,7 +575,7 @@ function GroupPricingTable({
                 header: t('Top-up ratio'),
                 className: 'w-28',
                 cell: (row) => (
-                  <Input
+                  <Input autoComplete='off'
                     type='number'
                     min={0}
                     step={0.1}
@@ -609,7 +609,7 @@ function GroupPricingTable({
                 className: 'min-w-56',
                 cell: (row) =>
                   row.selectable ? (
-                    <Input
+                    <Input autoComplete='off'
                       value={row.description}
                       placeholder={t('Group description')}
                       onChange={(event) =>
@@ -894,7 +894,7 @@ function GroupOverrideRules({
                                       {override.ratio}
                                       {baseRatio !== undefined &&
                                         baseRatio !== override.ratio && (
-                                          <span className='text-muted-foreground text-xs'>
+                                          <span className='text-muted-foreground text-sm'>
                                             {t('(instead of {{ratio}})', {
                                               ratio: baseRatio,
                                             })}
@@ -1077,13 +1077,13 @@ function GroupOverrideDialog({
             placeholder={t('Select a group')}
             onValueChange={setTargetGroup}
           />
-          <p className='text-muted-foreground text-xs'>
+          <p className='text-muted-foreground text-sm'>
             {t('The token group that will have a custom ratio')}
           </p>
         </div>
         <div className='space-y-2'>
           <Label>{t('Ratio')}</Label>
-          <Input
+          <Input autoComplete='off'
             value={ratio}
             onChange={(e) => {
               const val = e.target.value
@@ -1093,7 +1093,7 @@ function GroupOverrideDialog({
             }}
             placeholder={baseRatio === undefined ? '0.9' : String(baseRatio)}
           />
-          <p className='text-muted-foreground text-xs'>
+          <p className='text-muted-foreground text-sm'>
             {baseRatio !== undefined
               ? t('(instead of {{ratio}})', { ratio: baseRatio })
               : t(
