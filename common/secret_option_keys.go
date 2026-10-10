@@ -53,6 +53,14 @@ var secretOptionKeys = map[string]struct{}{
 	"EmailPassword":             {},
 	"CustomerServiceAdminToken": {},
 	"SMTPToken":                 {},
+
+	// 微信支付（站点与品牌 → 集成 → 微信支付）的敏感字段。键名取自
+	// web/src/features/system-settings/integrations/wechat-pay-settings-section.tsx
+	// 的 save key（WechatPayApiV3Key / WechatPayPrivateKey / WechatPayPlatformCert）。
+	// 此前未登记，GET /api/option/ 会明文下发这三值，与 uter 密钥掩码规则不符。
+	"WechatPayApiV3Key":      {},
+	"WechatPayPrivateKey":    {},
+	"WechatPayPlatformCert": {},
 }
 
 // 降本优化（relay/costopt）里标记为 secret 的配置项。
@@ -62,6 +70,7 @@ var costOptSecretOptionKeys = map[string]struct{}{
 	"costopt_setting.semantic_cache_embed_api_key": {},
 	"costopt_setting.rag_api_key":                  {},
 	"costopt_setting.batch_api_key":                {},
+	"costopt_setting.batch_embed_api_key":          {},
 	"costopt_setting.cdn_signing_secret":           {},
 	"costopt_setting.value_tier_vendor_api_key":    {},
 }
