@@ -50,8 +50,8 @@ import {
 import { SecretInput } from '@/components/ui/secret-input'
 import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
-import { cn } from '@/lib/utils'
 import { maskSecret } from '@/lib/secret'
+import { cn } from '@/lib/utils'
 
 import {
   SettingsForm,
@@ -179,34 +179,15 @@ function FieldHelp({ help }: { help: string }) {
 }
 
 /**
- * 保真分级徽章 + 外部依赖注记：标在风险字段标签旁。
- *
- * 两个信号刻意分开表达，因为它们回答的是不同问题：
- *   - 保真徽章回答「开了会不会掉质量」（safe / lossy）
- *   - 依赖注记回答「开了还要额外准备什么」（needsInfra：上游端点或自建服务）
- * 混成一个标签会让运营误以为「需外部服务」=「有风险」，或反之。
+ * 保真分级徽章：标在风险字段标签旁，提示「开了会不会掉质量」（safe / lossy）。
  */
-function FidelityBadge({
-  tier,
-  needsInfra,
-}: {
-  tier: FidelityTier
-  needsInfra?: boolean
-}) {
+function FidelityBadge({ tier }: { tier: FidelityTier }) {
   const { t } = useTranslation()
+  if (tier !== 'lossy') return null
   return (
-    <>
-      {tier === 'lossy' && (
-        <span className='ml-2 inline-flex shrink-0 items-center rounded bg-amber-500/10 px-1.5 py-0.5 align-middle text-xs text-amber-600 dark:text-amber-400'>
-          {t('May reduce quality')}
-        </span>
-      )}
-      {needsInfra && (
-        <span className='bg-muted text-muted-foreground ml-1.5 inline-flex shrink-0 items-center rounded px-1.5 py-0.5 align-middle text-xs'>
-          {t('Needs an endpoint')}
-        </span>
-      )}
-    </>
+    <span className='ml-2 inline-flex shrink-0 items-center rounded bg-amber-500/10 px-1.5 py-0.5 align-middle text-xs text-amber-600 dark:text-amber-400'>
+      {t('May reduce quality')}
+    </span>
   )
 }
 
@@ -218,16 +199,14 @@ function FieldLabelRow({ def }: { def: FieldDef }) {
       {t(def.label)}
       {/* 已停用项（模型保真）：给出停用原因，避免运营以为是 bug。 */}
       {def.retired && (
-        <span className='ml-2 text-xs text-muted-foreground'>
+        <span className='text-muted-foreground ml-2 text-xs'>
           {t(
-            'Retired: cost optimization never swaps the model the customer selected. Cost savings come from token slimming, caching and batching within the same model.',
+            'Retired: cost optimization never swaps the model the customer selected. Cost savings come from token slimming, caching and batching within the same model.'
           )}
         </span>
       )}
-      {/* 有损项挂质量徽章；有外部依赖的挂端点注记。 */}
-      {!def.retired && def.fidelity && (
-        <FidelityBadge tier={def.fidelity} needsInfra={def.needsInfra} />
-      )}
+      {/* 有损项挂质量徽章。 */}
+      {!def.retired && def.fidelity && <FidelityBadge tier={def.fidelity} />}
       {def.help && <FieldHelp help={def.help} />}
     </span>
   )
@@ -303,7 +282,8 @@ function OptimizationField(props: {
           )
         } else if (def.kind === 'number') {
           control = (
-            <Input autoComplete='off'
+            <Input
+              autoComplete='off'
               type='number'
               {...safeNumberFieldProps(field)}
               disabled={inputDisabled}
@@ -321,7 +301,8 @@ function OptimizationField(props: {
           )
         } else {
           control = (
-            <Input autoComplete='off'
+            <Input
+              autoComplete='off'
               value={String(field.value ?? '')}
               onChange={field.onChange}
               disabled={inputDisabled}
@@ -439,7 +420,6 @@ export function CostOptimizationSection(props: Props) {
               // 已停用项不参与评级——它们的风险是"无效"，不是"掉质量"。
               const live = group.fields.filter((f) => !f.retired)
               const hasLossy = live.some((f) => f.fidelity === 'lossy')
-              const hasInfra = live.some((f) => f.needsInfra)
               return (
                 <button
                   type='button'
@@ -470,17 +450,12 @@ export function CostOptimizationSection(props: Props) {
                         {t('Lossy')}
                       </span>
                     )}
-                    {hasInfra && (
-                      <span className='bg-muted text-muted-foreground inline-flex items-center rounded px-1.5 py-0.5 text-xs'>
-                        {t('Needs an endpoint')}
-                      </span>
-                    )}
                   </span>
                 </button>
               )
             })}
           </div>
-          <p className='text-muted-foreground text-sm mt-2'>
+          <p className='text-muted-foreground mt-2 text-sm'>
             {t(activeGroupData.desc)}
           </p>
           <div className='space-y-4'>
