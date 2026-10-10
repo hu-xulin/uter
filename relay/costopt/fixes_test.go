@@ -16,8 +16,8 @@ func TestCascade_PriceGuardBlocksWhenCheapIsMoreExpensive(t *testing.T) {
 	ratio_setting.InitRatioSettings() // 载入默认价目表，gpt-4o(1.25) / gpt-4o-mini(0.075) 才有单价
 	withConfig(t, func(c *costoptcfg.CostOptSetting) {
 		c.CascadeEnabled = true
-		c.CascadeCheapModel = "gpt-4o"          // 贵 (1.25)
-		c.CascadePremiumModel = "gpt-4o-32k"    // 更贵
+		c.CascadeCheapModel = "gpt-4o"       // 贵 (1.25)
+		c.CascadePremiumModel = "gpt-4o-32k" // 更贵
 		c.ComplexityRoutingEnabled = false
 		c.RouterLMEnabled = false
 		c.ValueTierMode = "off"
@@ -48,9 +48,9 @@ func TestCascade_PriceGuardAllowsWhenCheapIsCheaper(t *testing.T) {
 	req := &dto.GeneralOpenAIRequest{Model: "gpt-4o"} // 贵 (1.25)
 	before := MetricsSnapshotNow().CascadeHits
 	ok := ApplyCascade(req, nil)
-	require.True(t, ok, "廉价档比当前模型便宜时应降级")
-	require.Equal(t, "gpt-4o-mini", req.Model)
-	require.Equal(t, before+1, MetricsSnapshotNow().CascadeHits, "成功降级应计入 cascade_hits")
+	require.False(t, ok, "模型保真：Cascade 已停用，即使廉价档更便宜也不得降级模型")
+	require.Equal(t, "gpt-4o", req.Model, "客户选择的模型必须保持不变")
+	require.Equal(t, before, MetricsSnapshotNow().CascadeHits, "未发生降级则不应计入 cascade_hits")
 }
 
 func TestCascade_PriceGuardRespectsConfigWhenNoPrice(t *testing.T) {
@@ -65,8 +65,8 @@ func TestCascade_PriceGuardRespectsConfigWhenNoPrice(t *testing.T) {
 		c.ValueTierModels = nil
 	})
 	req := &dto.GeneralOpenAIRequest{Model: "unknown-frontier"}
-	require.True(t, ApplyCascade(req, nil), "定价缺失时仍应尊重 Cascade 配置意图")
-	require.Equal(t, "unknown-cheap-model", req.Model)
+	require.False(t, ApplyCascade(req, nil), "模型保真：Cascade 已停用，定价缺失也不得降级")
+	require.Equal(t, "unknown-frontier", req.Model, "客户选择的模型必须保持不变")
 }
 
 func TestPlanModelRewrite_KeepsCheapestModelWhenCascadeCheapIsPricier(t *testing.T) {
@@ -154,10 +154,11 @@ func TestMetrics_HookHitCounters(t *testing.T) {
 		c.ValueTierModels = nil
 	})
 	before := MetricsSnapshotNow()
-	// 一次会让 Cascade 命中改写的请求。
+	// 模型保真：Cascade 已停用，无论配置如何都不应发生模型改写与命中计数。
 	req := &dto.GeneralOpenAIRequest{Model: "gpt-4o"}
-	require.True(t, ApplyCascade(req, nil))
+	require.False(t, ApplyCascade(req, nil))
+	require.Equal(t, "gpt-4o", req.Model, "客户选择的模型必须保持不变")
 	after := MetricsSnapshotNow()
 	require.Equal(t, before.CostOptRequests, after.CostOptRequests, "CostOptRequests 只在 relay 钩子段累加，ApplyCascade 直调不应增加分母")
-	require.Equal(t, before.CascadeHits+1, after.CascadeHits, "Cascade 命中应 +1")
+	require.Equal(t, before.CascadeHits, after.CascadeHits, "未发生改写则 CascadeHits 不应增长")
 }

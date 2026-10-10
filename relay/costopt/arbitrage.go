@@ -350,24 +350,17 @@ func ApplyTierSplit(req *dto.GeneralOpenAIRequest, isBackground bool) bool {
 	return false
 }
 
-// ApplyValueTierRouting 价值层路由：命中价值层的请求把偏好渠道类型写入返回值，
-// 由 handler 通过 gin 上下文透传给选路层（与地理比价同一机制）。
-// auto 模式下还会先把模型下沉到等价组内最便宜的开源模型。
+// ApplyValueTierRouting 价值层路由：**已停用（模型保真）**。
+//
+// 原实现会把 claude/gemini 等请求的模型下沉到等价组里的廉价开源模型
+// （如 claude-sonnet → groq-gpt-oss-120b）。这属于「把客户选择的模型换成另一个
+// 模型」，违反客户明确要求，现整体停用：恒定返回 ""，绝不修改 req.Model。
+//
+// 保留函数签名以维持既有调用方与配置项；ModelFidelityLocked 是该约束的显式表达。
+//
+// 跨供应商比价（ApplyArbitrage）不受影响——它在**同一模型**的多个渠道间选最便宜的，
+// 模型名不变，属真实成本节约。
 func ApplyValueTierRouting(req *dto.GeneralOpenAIRequest) string {
-	cfg := costoptcfg.GetCostOptSetting()
-	if !ValueTierMatch(req) {
-		return ""
-	}
-	// 先用原模型判定白名单，再按等价组下沉（下沉会改 model，顺序不可颠倒）。
-	if cfg.ValueTierAuto() {
-		if target := cheapestEquivalent(req.Model); target != "" && target != req.Model {
-			req.Model = target
-			IncValueTierHit()
-		}
-	}
-	types := ValueTierChannelTypes()
-	if len(types) == 0 {
-		return ""
-	}
-	return types[0]
+	// 模型保真：不改写模型、不返回渠道偏好。
+	return ""
 }

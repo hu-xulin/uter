@@ -24,41 +24,16 @@ func matchConfiguredModel(reqModel, originModel, cfgModel string) bool {
 	return originModel != "" && originModel == cfgModel
 }
 
-// ApplyCascade 若启用且当前模型非级联档，重写为级联廉价模型（第一档）。
-// 升级到贵模型由 IsCascadeRefusal 在响应阶段判定，handler 据此重发。
+// ApplyCascade LLM 级联：**已停用（模型保真）**。
+//
+// 原实现把客户选择的模型重写为级联廉价档，并在拒答时升级重发。无论降级还是升级，
+// 用的都不是客户点名要的那个模型，违反客户明确要求；且升级重发会让计费与
+// 响应语义难以对齐。现整体停用：恒定返回 false，绝不修改 req.Model。
+//
+// 保留函数签名以维持既有调用方与配置项。
 func ApplyCascade(req *dto.GeneralOpenAIRequest, info *relaycommon.RelayInfo) bool {
-	cfg := costoptcfg.GetCostOptSetting()
-	if !cfg.CascadeEnabled || cfg.CascadeCheapModel == "" {
-		return false
-	}
-	originModel := ""
-	if info != nil {
-		originModel = info.OriginModelName
-	}
-	if matchConfiguredModel(req.Model, originModel, cfg.CascadeCheapModel) ||
-		matchConfiguredModel(req.Model, originModel, cfg.CascadePremiumModel) {
-		return false
-	}
-	// 价值层模型（Groq 等 serverless 廉价端点）本身就是「便宜档」，不该再被级联
-	// 降到廉价档：两者若指向不同渠道，改写后的模型所在渠道不会被重新选中 → 503/404。
-	//
-	// 判定不能只依赖 cfg.ValueTierModels —— 那是「允许下沉的**来源**模型白名单」
-	// （见 ValueTierMatch），而这里要排除的是「**下沉目标**端点」，两者语义相反。
-	// 实测：把来源白名单置空（正确用法，表示不限来源）后，本守卫随之失效，
-	// 导致已下沉到价值层的请求又被改写成廉价档并发往价值层渠道 → 上游 404。
-	// 故这里改为按等价组的**目标模型**判定，即价值层真正会选中的那些端点。
-	if isValueTierTarget(req.Model, originModel, cfg) {
-		return false
-	}
-	// 价格守卫：仅当廉价档模型**确实比当前模型更便宜**时才降级。否则「降本优化」会把用户
-	// 点名的便宜模型换成更贵的模型，纯亏（实测：sf-qwen2.5-7b-instruct 0.015 被换成
-	// sf-qwen3-8b 0.020，100 万 token 费用反升 35%）。
-	if !cascadeCheaperThan(req.Model, originModel, cfg.CascadeCheapModel) {
-		return false
-	}
-	req.Model = cfg.CascadeCheapModel
-	IncCascadeHit()
-	return true
+	// 模型保真：不把模型换成级联档。
+	return false
 }
 
 // cascadeCheaperThan 判断级联廉价档是否真比当前模型便宜（按每 1M token 美元单价比较）。

@@ -15,6 +15,7 @@
   "Locales to translate": "翻訳対象の言語",
   "Comma-separated. Leave empty to use the default: zh-TW, fr, ru, vi. A locale with no translation falls back to English rather than showing an empty description.": "カンマ区切り。空欄の場合は既定値（zh-TW、fr、ru、vi）を使用します。翻訳がない言語は空欄ではなく英語で表示されます。",
     "Cost Optimization": "コスト最適化",
+    "Retired: cost optimization never swaps the model the customer selected. Cost savings come from token slimming, caching and batching within the same model.": "廃止：コスト最適化は고객が選択したモデルを置き換えません。節約は同一モデル内のトークン削減、キャッシュ、バッチ処理から得られます。",
     "Caches identical responses for a short TTL and replays them for repeat requests, saving tokens on repeated or template prompts.": "同じ応答を短時間キャッシュし、同一のリクエストでは再生するため、質問の繰り返しやテンプレートの再利用でトークンを節約できます。",
     "How long a cached response stays reusable, in seconds. A longer TTL saves more but risks staler answers.": "キャッシュした応答を再利用できる期間（秒）。TTL が長いほど節約量は増えますが、回答が古くなるリスクがあります。",
     "Only responses at or below this many tokens are cached; larger ones are streamed through untouched.": "このトークン数以下の応答のみキャッシュされ、それより長い応答はそのまま配信されます。",

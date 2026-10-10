@@ -15,6 +15,7 @@
   "Locales to translate": "Locales to translate",
   "Comma-separated. Leave empty to use the default: zh-TW, fr, ru, vi. A locale with no translation falls back to English rather than showing an empty description.": "Comma-separated. Leave empty to use the default: zh-TW, fr, ru, vi. A locale with no translation falls back to English rather than showing an empty description.",
     "Cost Optimization": "Cost Optimization",
+    "Retired: cost optimization never swaps the model the customer selected. Cost savings come from token slimming, caching and batching within the same model.": "Retired: cost optimization never swaps the model the customer selected. Cost savings come from token slimming, caching and batching within the same model.",
     "Caches identical responses for a short TTL and replays them for repeat requests, saving tokens on repeated or template prompts.": "Caches identical responses for a short TTL and replays them for repeat requests, saving tokens on repeated or template prompts.",
     "How long a cached response stays reusable, in seconds. A longer TTL saves more but risks staler answers.": "How long a cached response stays reusable, in seconds. A longer TTL saves more but risks staler answers.",
     "Only responses at or below this many tokens are cached; larger ones are streamed through untouched.": "Only responses at or below this many tokens are cached; larger ones are streamed through untouched.",

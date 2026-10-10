@@ -1,55 +1,19 @@
 package costopt
 
 import (
-	"context"
-	"fmt"
-	"strings"
-
 	relaycommon "github.com/uter-ai/uter/relay/common"
 	"github.com/uter-ai/uter/relaykit/dto"
-	costoptcfg "github.com/uter-ai/uter/setting/costopt"
 )
 
-// ApplyRouterLM 用小型 router 模型替用户选最优上游模型，重写 req.Model。
-// best-effort：任何错误/空结果不修改（保持原模型）。
+// ApplyRouterLM 用小型 router 模型替用户选最优上游模型：**已停用（模型保真）**。
+//
+// 原实现会用一个小模型「替客户决定」用哪个上游模型并重写 req.Model。这直接违反
+// 客户对模型的明确指定——客户点的是某个模型，服务方无权替他换一个。现整体停用：
+// 恒定返回 false，绝不修改 req.Model，也不会发起 router 模型的额外调用
+// （那本身也是一笔白花的开销）。
+//
+// 保留函数签名以维持既有调用方与配置项。
 func ApplyRouterLM(req *dto.GeneralOpenAIRequest, info *relaycommon.RelayInfo) bool {
-	cfg := costoptcfg.GetCostOptSetting()
-	if !cfg.RouterLMEnabled || cfg.RouterLMModel == "" {
-		return false
-	}
-	if cfg.RouterLMAPIBaseURL == "" || cfg.RouterLMAPIKey == "" {
-		return false
-	}
-	if len(cfg.RouterLMFromModels) > 0 {
-		matched := false
-		for _, m := range cfg.RouterLMFromModels {
-			if m == req.Model {
-				matched = true
-				break
-			}
-		}
-		if !matched {
-			return false
-		}
-	}
-	lastUser := ""
-	for i := len(req.Messages) - 1; i >= 0; i-- {
-		if req.Messages[i].Role == "user" {
-			lastUser = req.Messages[i].StringContent()
-			break
-		}
-	}
-	candidates := strings.Join(cfg.RouterLMFromModels, ", ")
-	prompt := fmt.Sprintf("从以下候选模型中选择最适合处理该请求的一个，只输出模型名，不要解释：\n候选：%s\n请求：%s", candidates, lastUser)
-	chosen, err := openAIChat(context.Background(), cfg.RouterLMAPIBaseURL, cfg.RouterLMAPIKey, cfg.RouterLMModel, "", prompt, 16)
-	if err != nil || chosen == "" {
-		return false
-	}
-	chosen = strings.TrimSpace(strings.Trim(chosen, "\"'"))
-	if chosen != "" {
-		req.Model = chosen
-		IncRouterLMHit()
-		return true
-	}
+	// 模型保真：不替客户选模型。
 	return false
 }

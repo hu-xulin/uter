@@ -4,46 +4,20 @@ import (
 	"strings"
 
 	relaycommon "github.com/uter-ai/uter/relay/common"
-	costoptcfg "github.com/uter-ai/uter/setting/costopt"
 
 	"github.com/uter-ai/uter/relaykit/dto"
 )
 
-// ApplyComplexityRouting 轻量复杂度路由：对未显式固定模型的简单任务，启发式降级到便宜模型。
-// 保守策略：仅当 FromModels 为空（任意源模型）或命中列表，且启发式判定为"简单"才改写 Model。
-// 不改 max_tokens，避免影响依赖长输出的客户端；改写后仍走正常计费/缓存路径。
+// ApplyComplexityRouting 轻量复杂度路由：**已停用（模型保真）**。
 //
-// info 用于取网关原始模型名（OriginModelName）：配置里填的是网关别名，而 req.Model
-// 可能已被 model_mapping 换成上游名，两者都要参与匹配。
+// 原实现会把「简单任务」从客户选择的模型下沉到cheap_model（如 claude-opus → gpt-4o-mini）。
+// 这属于把客户选择的模型换成另一个模型，违反客户明确要求，现整体停用：
+// 恒定返回 false，绝不修改 req.Model。
+//
+// 保留函数签名以维持既有调用方与配置项。启发式函数（isLikelySimple 等）保留
+// 但不再被调用，供将来需要「同模型内精简」时参考。
 func ApplyComplexityRouting(req *dto.GeneralOpenAIRequest, info *relaycommon.RelayInfo) bool {
-	cfg := costoptcfg.GetCostOptSetting()
-	if !cfg.ComplexityRoutingEnabled || cfg.ComplexityRoutingCheapModel == "" {
-		return false
-	}
-	originModel := ""
-	if info != nil {
-		originModel = info.OriginModelName
-	}
-	if req.Model == "" || matchConfiguredModel(req.Model, originModel, cfg.ComplexityRoutingCheapModel) {
-		return false
-	}
-	if len(cfg.ComplexityRoutingFromModels) > 0 {
-		hit := false
-		for _, m := range cfg.ComplexityRoutingFromModels {
-			if matchConfiguredModel(req.Model, originModel, m) {
-				hit = true
-				break
-			}
-		}
-		if !hit {
-			return false
-		}
-	}
-	if isLikelySimple(req) {
-		req.Model = cfg.ComplexityRoutingCheapModel
-		IncComplexityHit()
-		return true
-	}
+	// 模型保真：不做跨模型下沉。
 	return false
 }
 
