@@ -306,6 +306,9 @@ func PostWssConsumeQuota(ctx *gin.Context, relayInfo *relaycommon.RelayInfo, mod
 		IsStream:         relayInfo.IsStream,
 		Group:            relayInfo.UsingGroup,
 		Other:            other,
+		// 实时/音频链路 cache 字段（如上游返回）一并落库，供统计接口聚合。
+		CacheReadTokens:  usage.InputTokenDetails.CachedTokens,
+		CacheWriteTokens: usage.InputTokenDetails.CacheWriteTokens,
 	})
 }
 
@@ -339,6 +342,8 @@ func PostAudioConsumeQuota(ctx *gin.Context, relayInfo *relaycommon.RelayInfo, u
 	if usage == nil {
 		usage = &dto.Usage{PromptTokens: relayInfo.GetEstimatePromptTokens(), TotalTokens: relayInfo.GetEstimatePromptTokens()}
 	}
+	// 上游 cache 字段形式多样，先归一化到规范字段，统计接口才能正确聚合。
+	usage.NormalizeCacheTokens()
 
 	var tieredUsedVars map[string]bool
 	if snap := relayInfo.TieredBillingSnapshot; snap != nil {
@@ -447,6 +452,9 @@ func PostAudioConsumeQuota(ctx *gin.Context, relayInfo *relaycommon.RelayInfo, u
 		IsStream:         relayInfo.IsStream,
 		Group:            relayInfo.UsingGroup,
 		Other:            other,
+		// 音频链路 cache 字段（如上游返回）一并落库，供统计接口聚合。
+		CacheReadTokens:  usage.PromptTokensDetails.CachedTokens,
+		CacheWriteTokens: usage.PromptTokensDetails.CacheCreationTokensTotal(),
 	})
 	gopool.Go(func() {
 		perfmetrics.RecordRelaySample(relayInfo, true, int64(usage.CompletionTokens))

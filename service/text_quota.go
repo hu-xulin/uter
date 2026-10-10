@@ -396,6 +396,11 @@ func usageSemanticFromUsage(relayInfo *relaycommon.RelayInfo, usage *dto.Usage) 
 func PostTextConsumeQuota(ctx *gin.Context, relayInfo *relaycommon.RelayInfo, usage *dto.Usage, extraContent []string) {
 	originUsage := usage
 	billingUsage := effectiveBillingUsage(usage)
+	// 上游 cache 字段形式多样（OpenAI cached_tokens / Anthropic cache_read_input_tokens /
+	// DeepSeek prompt_cache_hit_tokens 等），先归一化到规范字段，统计接口才能正确聚合。
+	if billingUsage != nil {
+		billingUsage.NormalizeCacheTokens()
+	}
 	if usage == nil {
 		extraContent = append(extraContent, "上游无计费信息")
 	}
