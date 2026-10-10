@@ -110,6 +110,18 @@ export function CommonLogsStats() {
         value={stats?.tpm || 0}
         accent='bg-slate-400/70'
       />
+      {/* 缓存维度此前完全没有聚合统计，只有逐条日志的 other JSON 里有。
+          这里恒显示（含 0），否则「统计不到」和「确实没命中缓存」无法区分。 */}
+      <StatBadge
+        label={t('Cache Write')}
+        value={(stats?.cache_write_tokens || 0).toLocaleString()}
+        accent='bg-emerald-500/70'
+      />
+      <StatBadge
+        label={t('Cache Read')}
+        value={(stats?.cache_read_tokens || 0).toLocaleString()}
+        accent='bg-violet-500/70'
+      />
     </div>
   )
 }

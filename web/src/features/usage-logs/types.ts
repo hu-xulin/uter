@@ -275,6 +275,10 @@ export interface LogStatistics {
   quota: number
   rpm: number
   tpm: number
+  /** 区间内缓存命中（读取）的 token 总量；后端用 omitempty，缺省即 0 */
+  cache_read_tokens?: number
+  /** 区间内缓存写入（创建）的 token 总量；后端用 omitempty，缺省即 0 */
+  cache_write_tokens?: number
 }
 
 // ============================================================================
