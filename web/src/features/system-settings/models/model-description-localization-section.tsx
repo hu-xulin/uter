@@ -147,7 +147,7 @@ export function ModelDescriptionLocalizationSection({ defaultValues }: Props) {
     >
       <p className='text-muted-foreground text-sm'>
         {t(
-          'After syncing upstream channel data, automatically fetch the official descriptions in Chinese, English and Japanese, and use the site LLM to translate the languages the upstream catalog does not provide (zh-TW, fr, ru, vi), so pricing page cards show descriptions in the visitor’s language.'
+          'After syncing upstream channel data, automatically fetch the official Chinese, English and Japanese descriptions, then use the site LLM to fill in the other six languages (zh, zh-TW, fr, ja, ru, vi). The upstream catalog does not cover every model, so Chinese and Japanese are included as a safety net. Only missing entries are filled in — existing text is never overwritten.'
         )}
       </p>
       <SettingsForm onSubmit={form.handleSubmit(onSubmit)}>
@@ -279,13 +279,13 @@ export function ModelDescriptionLocalizationSection({ defaultValues }: Props) {
                           <Input autoComplete='off'
                             {...field}
                             value={asText(field.value)}
-                            placeholder='zh-TW, fr, ru, vi'
+                            placeholder='zh, zh-TW, fr, ja, ru, vi'
                             disabled={updateOption.isPending}
                           />
                         </FormControl>
                         <FormDescription>
                           {t(
-                            'Comma-separated. Leave empty to use the default: zh-TW, fr, ru, vi. A locale with no translation falls back to English rather than showing an empty description.'
+                            'Comma-separated. Leave empty to use the default: zh, zh-TW, fr, ja, ru, vi — every language this site supports except English. The upstream catalog ships only Chinese, English and Japanese and does not cover every model, so the rest are filled in by translation. A locale with no translation falls back to English rather than showing an empty description.'
                           )}
                         </FormDescription>
                         <FormMessage />
