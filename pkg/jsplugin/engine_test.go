@@ -159,6 +159,146 @@ export function orderInvalid(kind) {
 	}
 }
 
+func TestEngineDurationAutoNormalizesWithoutInventing(t *testing.T) {
+	engine, err := Compile(`
+export function run(value) {
+  return {
+    out: utils.durationAuto(value),
+    available: utils.hasCapability("duration-auto@1"),
+    unavailable: utils.hasCapability("duration-auto@2"),
+  };
+}
+export function runKeyed(obj) {
+  return {
+    seconds: utils.durationAuto({seconds: 12}),
+    duration: utils.durationAuto({duration: 7.5}),
+    snake: utils.durationAuto({duration_seconds: 3}),
+    camel: utils.durationAuto({durationSeconds: 9}),
+    missing: utils.durationAuto({other: 1}),
+  };
+}`, Options{})
+	require.NoError(t, err)
+
+	// sobek exports whole numbers as int64 and fractional ones as float64; the
+	// plugin receives a JS number either way, so normalize before comparing.
+	asSeconds := func(t *testing.T, v any) float64 {
+		t.Helper()
+		switch n := v.(type) {
+		case float64:
+			return n
+		case int64:
+			return float64(n)
+		case int:
+			return float64(n)
+		case uint64:
+			return float64(n)
+		}
+		t.Fatalf("expected a numeric value, got %T(%v)", v, v)
+		return 0
+	}
+
+	t.Run("finite number is echoed", func(t *testing.T) {
+		value, err := engine.Call(t.Context(), "run", 30.0)
+		require.NoError(t, err)
+		result := value.(map[string]any)
+		assert.Equal(t, 30.0, asSeconds(t, result["out"]))
+		assert.Equal(t, true, result["available"])
+		assert.Equal(t, false, result["unavailable"])
+	})
+
+	t.Run("auto/empty/null/undefined yields null", func(t *testing.T) {
+		for _, input := range []any{"auto", "", nil} {
+			value, err := engine.Call(t.Context(), "run", input)
+			require.NoError(t, err)
+			assert.Nil(t, value.(map[string]any)["out"])
+		}
+		value, err := engine.Call(t.Context(), "run")
+		require.NoError(t, err)
+		assert.Nil(t, value.(map[string]any)["out"])
+	})
+
+	t.Run("numeric string is parsed to seconds", func(t *testing.T) {
+		value, err := engine.Call(t.Context(), "run", "42")
+		require.NoError(t, err)
+		assert.Equal(t, 42.0, asSeconds(t, value.(map[string]any)["out"]))
+	})
+
+	t.Run("non-numeric string yields null", func(t *testing.T) {
+		value, err := engine.Call(t.Context(), "run", "short")
+		require.NoError(t, err)
+		assert.Nil(t, value.(map[string]any)["out"])
+	})
+
+	t.Run("object extracts seconds/duration fields", func(t *testing.T) {
+		value, err := engine.Call(t.Context(), "runKeyed")
+		require.NoError(t, err)
+		result := value.(map[string]any)
+		assert.Equal(t, 12.0, asSeconds(t, result["seconds"]))
+		assert.Equal(t, 7.5, asSeconds(t, result["duration"]))
+		assert.Equal(t, 3.0, asSeconds(t, result["snake"]))
+		assert.Equal(t, 9.0, asSeconds(t, result["camel"]))
+		// Unknown key shape never fabricates a duration.
+		assert.Nil(t, result["missing"])
+	})
+
+	// A negative duration is never a real length: wan3.0 plugins pass "-1" as
+	// the "smart duration" sentinel, so echoing it would let a caller submit
+	// the marker as if it were seconds.
+	t.Run("negative and implausible durations yield null", func(t *testing.T) {
+		for _, input := range []any{-1, -0.5, -86400, 1e300, math.Inf(1), math.NaN()} {
+			value, err := engine.Call(t.Context(), "run", input)
+			require.NoError(t, err)
+			assert.Nil(t, value.(map[string]any)["out"], "input %#v must not be echoed as a duration", input)
+		}
+		// The 24h ceiling itself is still accepted.
+		value, err := engine.Call(t.Context(), "run", 86400.0)
+		require.NoError(t, err)
+		assert.Equal(t, 86400.0, asSeconds(t, value.(map[string]any)["out"]))
+	})
+
+	// durationAuto reads objects key by key, so a plugin cannot turn a duration
+	// lookup into an unbounded deep copy, and a getter runs at most once.
+	t.Run("large objects cost constant time and getters run once", func(t *testing.T) {
+		scoped, err := Compile(`
+let cached = null;
+export function build(n) {
+  const items = new Array(n);
+  for (let i = 0; i < n; i++) items[i] = { seconds: i, pad: "xxxxxxxxxxxxxxxx" };
+  cached = { seconds: 7, nested: items };
+  return n;
+}
+export function lookup() { return utils.durationAuto(cached); }
+export function getterRun() {
+  let touched = 0;
+  const o = {};
+  Object.defineProperty(o, "seconds", { get() { touched++; return 11; }, enumerable: true });
+  return { result: utils.durationAuto(o), touched };
+}`, Options{})
+		require.NoError(t, err)
+
+		got, err := scoped.Call(t.Context(), "getterRun")
+		require.NoError(t, err)
+		probe := got.(map[string]any)
+		assert.Equal(t, 11.0, asSeconds(t, probe["result"]))
+		assert.Equal(t, int64(1), probe["touched"], "the host must not re-read a getter per candidate key")
+
+		// Build the payload once, then time only the lookup. The lookup stays
+		// flat as the object grows because it never exports the whole value.
+		for _, n := range []int{1_000, 100_000} {
+			_, err = scoped.Call(t.Context(), "build", n)
+			require.NoError(t, err)
+
+			start := time.Now()
+			value, err := scoped.Call(t.Context(), "lookup")
+			elapsed := time.Since(start)
+			require.NoError(t, err)
+			assert.Equal(t, 7.0, asSeconds(t, value))
+			assert.Less(t, elapsed, 50*time.Millisecond,
+				"durationAuto must stay constant-time in the argument size (n=%d took %s)", n, elapsed)
+		}
+	})
+}
+
 func TestJSONStateChangesAndEncodedLimits(t *testing.T) {
 	const changes = `[
   [{"op":"set","path":[],"value":{"text":"<","parts":[],"nested":{"value":null}}}],

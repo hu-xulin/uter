@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"math"
 	"net/url"
+	"reflect"
 	"sort"
 	"strconv"
 	"strings"
@@ -31,6 +32,49 @@ type volcSignRequest struct {
 	Region    string            `json:"region"`
 	Service   string            `json:"service"`
 	Timestamp int64             `json:"timestamp"`
+}
+
+// maxDurationSeconds is the largest media duration durationAuto will echo.
+// Anything beyond it is not a plausible generation length and collapses to
+// the "let the plugin decide" null rather than travelling to an upstream.
+const maxDurationSeconds = 24 * 60 * 60
+
+// durationSelectorKeys are the object fields durationAuto reads, in priority
+// order. It reads only these keys and never exports the whole object, so the
+// cost is O(1) in the object's size.
+var durationSelectorKeys = [...]string{"seconds", "duration", "duration_seconds", "durationSeconds"}
+
+// extractDurationSeconds normalizes a sobek-exported number (sobek emits whole
+// numbers as int64 and fractional ones as float64) to seconds. It returns false
+// for non-numeric values and for NaN/Inf so callers never fabricate a duration.
+func extractDurationSeconds(v any) (float64, bool) {
+	switch n := v.(type) {
+	case float64:
+		if math.IsNaN(n) || math.IsInf(n, 0) {
+			return 0, false
+		}
+		return n, true
+	case int64:
+		return float64(n), true
+	case int:
+		return float64(n), true
+	case uint64:
+		return float64(n), true
+	case int32:
+		return float64(n), true
+	}
+	return 0, false
+}
+
+// durationSecondsOrNull echoes a finite, plausible duration and collapses
+// everything else to null. Negative values are rejected on purpose: wan3.0
+// plugins pass "-1" as the "smart duration" sentinel, so echoing it would let
+// a caller mistake the marker for a real length.
+func durationSecondsOrNull(runtime *sobek.Runtime, seconds float64) sobek.Value {
+	if seconds < 0 || seconds > maxDurationSeconds {
+		return sobek.Null()
+	}
+	return runtime.ToValue(seconds)
 }
 
 func injectGlobals(runtime *sobek.Runtime, identity func() string, now func() time.Time, logOutput func(string)) error {
@@ -106,6 +150,58 @@ func injectGlobals(runtime *sobek.Runtime, identity func() string, now func() ti
 		"uuid": func() string { return uuid.NewString() },
 		"volcSignV4": func(request volcSignRequest) (map[string]string, error) {
 			return signVolcV4(request, now)
+		},
+		// durationAuto is the host-side backing for the duration-auto@1
+		// capability. It normalizes a duration selector the plugin already knows
+		// about; it never fabricates a duration, so a misconfigured caller can
+		// only ever observe a null (treated as "let the plugin decide") or an
+		// explicit value it already supplied. Contracts:
+		//   - finite number  -> echoed as the same seconds value
+		//   - "auto"/""/null/undefined -> null (host-neutral "auto" marker)
+		//   - numeric string  -> parsed seconds
+		//   - object-> the seconds/duration field if present, else null
+		//   - negative or > 24h -> null (never a sentinel or an absurd length)
+		// Cost is O(1) in the argument's size: objects are read key by key
+		// instead of being exported wholesale, so a plugin cannot turn a
+		// duration lookup into an unbounded deep copy.
+		"durationAuto": func(call sobek.FunctionCall) sobek.Value {
+			arg := call.Argument(0)
+			if sobek.IsUndefined(arg) || sobek.IsNull(arg) {
+				return sobek.Null()
+			}
+			// Dispatch on the declared type before exporting anything. Objects
+			// are read key by key and never exported wholesale, so a plugin
+			// cannot turn a duration lookup into an unbounded deep copy.
+			switch arg.ExportType() {
+			case reflect.TypeFor[map[string]any]():
+				object, ok := arg.(*sobek.Object)
+				if !ok {
+					return sobek.Null()
+				}
+				for _, key := range durationSelectorKeys {
+					field := object.Get(key)
+					if field == nil || sobek.IsUndefined(field) || sobek.IsNull(field) {
+						continue
+					}
+					if n, ok := extractDurationSeconds(field.Export()); ok {
+						return durationSecondsOrNull(runtime, n)
+					}
+				}
+				return sobek.Null()
+			case reflect.TypeFor[string]():
+				trimmed := strings.TrimSpace(arg.Export().(string))
+				if trimmed == "" || trimmed == "auto" {
+					return sobek.Null()
+				}
+				if n, err := strconv.ParseFloat(trimmed, 64); err == nil {
+					return durationSecondsOrNull(runtime, n)
+				}
+				return sobek.Null()
+			}
+			if n, ok := extractDurationSeconds(arg.Export()); ok {
+				return durationSecondsOrNull(runtime, n)
+			}
+			return sobek.Null()
 		},
 	}
 	if err := runtime.Set("utils", utils); err != nil {
