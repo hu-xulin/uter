@@ -92,8 +92,16 @@ func cheapestEquivalent(model string) string {
 
 // ===== 4. 多供应商套利 + 5. 同模型跨通道比价 =====
 
-// ArbitrageCandidates 返回与 model 同质的候选，按单价升序。
-// manual 模式：只用配置价目表；auto 模式：价目表为空时返回 nil（比价交给选路层按单价）。
+// ArbitrageCandidates 返回与 model **完全同模型**的候选，按单价升序。
+//
+// 🔴 模型保真（不可配置的红线）：本函数恒定按完整模型名精确匹配候选，
+// **忽略** ArbitragePreferSameModelOnly 开关。历史行为是把它设为 false 时
+// 退化为「按去供应商前缀的基准名匹配」，于是 `{"gpt-4o": 1.5}` 这类价目表
+// 能把 claude-sonnet 的请求改写成 gpt-4o——那正是保真红线禁止的跨模型替换，
+// 且仅靠一个布尔开关就能重新打开。这里改为硬约束，无配置可绕过。
+//
+// 因此本函数的实际作用范围收窄为：**同一模型名跨渠道比价**（模型名不变，
+// 只在选路层决定走哪条通道），这才是 #5 场景真正的成本节约点。
 func ArbitrageCandidates(model string) []struct {
 	Name  string
 	Price float64
@@ -102,11 +110,8 @@ func ArbitrageCandidates(model string) []struct {
 	if !cfg.ArbitrageActive() || len(cfg.ArbitrageModelPrices) == 0 || model == "" {
 		return nil
 	}
-	base := baseModelOf(model)
-	if cfg.ArbitragePreferSameModelOnly {
-		// #5 场景：只在同模型名（跨通道）之间比价，此时基准名就是完整模型名。
-		base = model
-	}
+	// 模型保真：基准名就是完整模型名，绝不退化为去前缀的基准名。
+	base := model
 
 	type cand struct {
 		Name  string
@@ -117,10 +122,7 @@ func ArbitrageCandidates(model string) []struct {
 		if price <= 0 {
 			continue
 		}
-		b := baseModelOf(name)
-		if cfg.ArbitragePreferSameModelOnly {
-			b = name
-		}
+		b := name
 		if b != base {
 			continue
 		}
@@ -157,33 +159,24 @@ func ArbitrageCandidates(model string) []struct {
 	return res
 }
 
-// ApplyArbitrage 自动择优：把请求模型改写到同质候选中最便宜的那个。
+// ApplyArbitrage 自动择优：把请求模型改写到**同模型名**候选中最便宜的那个。
 //
 // 注意：#4/#5 的主战场是**渠道选择**（同一模型名在 direct/Bedrock/Azure 等通道间的价差），
-// 由 AutoPriceFirst 交给选路层按有效单价完成；这里只处理「跨供应商换模型」的场景
-// （需要人工价目表给出同质模型映射，属于手动边界）。
+// 由 AutoPriceFirst 交给选路层按有效单价完成；这里处理的是「同一模型名、不同供应商渠道」
+// 的映射（价目表里同一个模型名对应多个渠道报价时取最低）。
+//
+// 🔴 模型保真（不可配置的红线）：本函数**恒定不改写模型名**。
+//   - 候选由 ArbitrageCandidates 强制按完整模型名精确匹配，best 必等于 req.Model。
+//   - ArbitrageFallbackModel（价目表未命中时的兜底模型）**不再用于换模型**：
+//     那是货真价实的跨模型替换（客户要 A、服务方回 B），已按保真原则整体停用。
+//     该配置项保留仅为兼容既有 Options 键，不再有执行路径。
+//
+// 真实成本节约发生在**渠道**层而非模型层：同一个模型走 direct 与走 Bedrock、
+// 走国内中转与走海外中转，单价可以差数倍，而客户拿到的模型分毫不变。
 func ApplyArbitrage(req *dto.GeneralOpenAIRequest) bool {
-	if req == nil || req.Model == "" {
-		return false
-	}
-	cfg := costoptcfg.GetCostOptSetting()
-	if !cfg.ArbitrageActive() {
-		return false
-	}
-	cands := ArbitrageCandidates(req.Model)
-	if len(cands) > 0 {
-		best := cands[0].Name
-		if best != req.Model {
-			req.Model = best
-			return true
-		}
-		return false
-	}
-	// 价目表完全未命中：用兜底模型（可留空=不改动）。
-	if cfg.ArbitrageFallbackModel != "" && cfg.ArbitrageFallbackModel != req.Model {
-		req.Model = cfg.ArbitrageFallbackModel
-		return true
-	}
+	// 模型保真：本函数恒为 no-op，保留调用契约以维持主链路结构稳定。
+	_ = req
+	_ = ModelFidelityLocked
 	return false
 }
 
