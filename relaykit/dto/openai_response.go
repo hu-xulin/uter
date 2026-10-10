@@ -245,6 +245,13 @@ type Usage struct {
 	ClaudeCacheCreation5mTokens int `json:"claude_cache_creation_5_m_tokens"`
 	ClaudeCacheCreation1hTokens int `json:"claude_cache_creation_1_h_tokens"`
 
+	// Anthropic-style top-level cache fields. Some OpenAI-compatible upstreams
+	// return cache tokens at the usage root instead of inside prompt_tokens_details
+	// (e.g. cache_read_input_tokens / cache_creation_input_tokens). They are folded
+	// into the canonical PromptTokensDetails fields by NormalizeCacheTokens.
+	CacheReadInputTokens     int `json:"cache_read_input_tokens,omitempty"`
+	CacheCreationInputTokens int `json:"cache_creation_input_tokens,omitempty"`
+
 	// OpenRouter Params
 	Cost any `json:"cost,omitempty"`
 }
@@ -268,6 +275,13 @@ type InputTokenDetails struct {
 	// input_tokens_details.cache_write_tokens (Responses). It is billed at the
 	// cache-creation price.
 	CacheWriteTokens int `json:"cache_write_tokens,omitempty"`
+	// CacheReadInputTokens / CacheCreationInputTokens capture the Anthropic-style
+	// cache keys that many OpenAI-compatible upstreams and aggregators return
+	// (e.g. when proxying Claude): prompt_tokens_details.cache_read_input_tokens
+	// and prompt_tokens_details.cache_creation_input_tokens. They are folded into
+	// the canonical CachedTokens / CacheWriteTokens by Usage.NormalizeCacheTokens.
+	CacheReadInputTokens     int `json:"cache_read_input_tokens,omitempty"`
+	CacheCreationInputTokens int `json:"cache_creation_input_tokens,omitempty"`
 	TextTokens       int `json:"text_tokens"`
 	AudioTokens      int `json:"audio_tokens"`
 	ImageTokens      int `json:"image_tokens"`
@@ -319,6 +333,53 @@ func (d InputTokenDetails) CacheCreationTokensTotal() int {
 		return 0
 	}
 	return total
+}
+
+// NormalizeCacheTokens folds upstream-specific cache token fields into the
+// canonical PromptTokensDetails.CachedTokens (cache read) and
+// PromptTokensDetails.CacheWriteTokens (cache write / creation) so downstream
+// billing and statistics treat every provider uniformly.
+//
+// Upstreams report cache tokens inconsistently. OpenAI puts them in
+// prompt_tokens_details.cached_tokens / cache_write_tokens; Anthropic-style
+// proxies emit cache_read_input_tokens / cache_creation_input_tokens (either
+// nested in prompt_tokens_details or at the usage root); DeepSeek-style upstreams
+// use prompt_cache_hit_tokens. NormalizeCacheTokens only fills the canonical
+// fields when they are empty, so any value the upstream reported in a canonical
+// key always wins and is never overwritten.
+func (u *Usage) NormalizeCacheTokens() {
+	if u == nil {
+		return
+	}
+	d := &u.PromptTokensDetails
+	// Conversions may move the Anthropic-style cache keys into the
+	// InputTokensDetails sibling instead of PromptTokensDetails; check both.
+	var i *InputTokenDetails
+	if u.InputTokensDetails != nil {
+		i = u.InputTokensDetails
+	}
+	if d.CachedTokens == 0 {
+		switch {
+		case d.CacheReadInputTokens > 0:
+			d.CachedTokens = d.CacheReadInputTokens
+		case u.CacheReadInputTokens > 0:
+			d.CachedTokens = u.CacheReadInputTokens
+		case u.PromptCacheHitTokens > 0:
+			d.CachedTokens = u.PromptCacheHitTokens
+		case i != nil && i.CacheReadInputTokens > 0:
+			d.CachedTokens = i.CacheReadInputTokens
+		}
+	}
+	if d.CacheWriteTokens == 0 {
+		switch {
+		case d.CacheCreationInputTokens > 0:
+			d.CacheWriteTokens = d.CacheCreationInputTokens
+		case u.CacheCreationInputTokens > 0:
+			d.CacheWriteTokens = u.CacheCreationInputTokens
+		case i != nil && i.CacheCreationInputTokens > 0:
+			d.CacheWriteTokens = i.CacheCreationInputTokens
+		}
+	}
 }
 
 type OutputTokenDetails struct {
