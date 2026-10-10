@@ -166,13 +166,11 @@ func TextHelper(c *gin.Context, info *relaycommon.RelayInfo) (uterError *types.U
 		return newConvertRequestFailedError(c, info, err)
 	}
 
-	// ===== 降本中间层（与《中转站API降本技术清单_轻资产版》对齐） =====
-	// 派发前改写请求（不影响计费身份）：上下文滑动窗口/摘要、图像下采样代理。
-	// 🔑 模型保真：此处**不做任何跨模型改写**——客户选哪个模型就用哪个模型，
-	// 降本只来自同一模型内的 token 精简/ 缓存 / 批处理。跨模型改写见 costopt/preroute.go。
+	// ===== 降本中间层 =====
+	// 🔑 模型保真：此处**不做任何跨模型改写**——客户选哪个模型就用哪个模型。
+	// 跨模型改写见 costopt/preroute.go。
+	// 注：上下文裁剪 / 图像降采样属有损降本（会裁掉客户传入的内容），已整体移除。
 	costopt.IncCostOptRequest()
-	costopt.ApplyContextWindow(request, info)
-	costopt.ApplyImageResize(request)
 
 	// ===== V2.2「模型优化」完整能力（全部配置门控，缺参数时 no-op） =====
 	// 30) 共享系统前缀置顶：优先于 RAG/压缩执行，保证稳定前缀位于 messages 最前，
@@ -201,8 +199,8 @@ func TextHelper(c *gin.Context, info *relaycommon.RelayInfo) (uterError *types.U
 	}
 	// 0.2) 精准 RAG 钩子（需外部 RAG 系统；命中则注入上下文，best-effort）
 	costopt.RetrieveRAG(c.Request.Context(), request)
-	// 0.3) Prompt 压缩（用便宜压缩模型压短历史，降低输入 token）
-	costopt.ApplyPromptCompression(request, info)
+	// 0.3) Prompt 压缩：**已移除（有损降本）**——改写客户传入的历史内容，
+	//     会改变模型所见上下文，不再调用。
 	// 0.4~0.5) RouterLM 选模 / Cascade 级联：**已停用（模型保真）**。
 	//     这两项会把客户选择的模型换成另一个模型，违反客户明确要求，不再调用。
 	costopt.ApplyRouterLM(request, info)
@@ -223,24 +221,16 @@ func TextHelper(c *gin.Context, info *relaycommon.RelayInfo) (uterError *types.U
 	// 0.67) A-tier + 价值层混合分流：**已停用（模型保真）**，同上。
 	// 注：0.65的 ApplyArbitrage 保留——它在**同一模型**的多个渠道间比价选最便宜
 	//     （同模型走 direct/Bedrock/Azure 价差可观），模型名不变，是真实节约。
-	// 0.7) 工具定义精简（裁剪 tools schema，降低每请求工具定义 token）
-	costopt.ApplyToolDefTrim(request)
+	// 0.7) 工具定义精简：**已移除（有损降本）**——裁剪 tools schema 会让模型选错工具。
 	// 0.8) 工具调用去重（去除连续重复的工具结果，降低 Agent 重复调用浪费）
 	costopt.ApplyToolCallDedup(request)
-	// 0.9) 结构化输出约束（中转层强制策略，抑制啰嗦输出；输出通常比输入贵 2–5×）
-	costopt.ApplyStructuredOutput(request)
+	// 0.9) 结构化输出约束：**已移除（有损降本）**——强制约束输出会影响应答质量。
 	// 0.95) 降本钩子改写的模型名是「网关别名」（如 sf-qwen3-8b），而 request.Model 在
 	// ModelMappedHelper 之后已是「上游名」（如 Qwen/Qwen3-8B）。若不重新解析，别名会被
 	// 原样发给上游 → 上游 404「Model does not exist」。这里对被改写过的模型再过一次映射。
 	resolveRewrittenModelMapping(c, info, request)
-	// 1) 零调用短路：命中规则直接返回预设答案，根本不调上游 LLM（该部分 100% 省去模型调用）
-	if shortAnswer, shortHit := costopt.MatchShortCircuit(request, info); shortHit {
-		costopt.IncShortCircuit()
-		// 短路完全没调上游：把「本可发生的用量」记为节省（估算口径与计费一致）。
-		costopt.RecordTokensSavedBy(costopt.SavedSourceShortCircuit,
-			costopt.UsageTokens(costopt.EstimateRequestUsage(request, shortAnswer)))
-		return costopt.BuildShortCircuitResponse(c, info, request, shortAnswer)
-	}
+	// 1) 零调用短路：**已移除（有损降本）**——按规则直接返回预设答案，
+	//     客户拿到的不是模型生成的内容。BuildShortCircuitResponse 保留给循环检测复用。
 	// 1.5) 负缓存：对"此前已被上游确定性拒绝"的相同请求，直接复用拒绝状态码，不再浪费一次上游调用。
 	var negKey string
 	if costopt.NegativeEnabled() {
@@ -278,14 +268,8 @@ func TextHelper(c *gin.Context, info *relaycommon.RelayInfo) (uterError *types.U
 			}
 		}
 	}
-	// 2.5) 语义缓存：近似匹配（embedding 端点已配时生效）。仅在精确缓存未命中后查，避免无谓 embedding 调用。
-	if hit, body := costopt.CheckSemantic(c.Request.Context(), request, info); hit {
-		costopt.IncSemHit()
-		// 语义缓存命中：同样未调上游，取回放响应里的真实 usage 计为节省。
-		costopt.RecordTokensSavedBy(costopt.SavedSourceSemanticCache,
-			costopt.UsageTokens(costopt.ExtractCachedUsage(body)))
-		return costopt.RespondWithCached(c, info, body)
-	}
+	// 2.5) 语义缓存：**已移除（有损降本）**——近似匹配会回放另一个语义相近请求的应答，
+	//     客户拿到的是并非针对本次请求生成的内容。
 	// 3) 输出长度成本硬上限（max_tokens 封顶，防输出失控）
 	costopt.ClampMaxTokens(request, info)
 
@@ -482,7 +466,6 @@ func TextHelper(c *gin.Context, info *relaycommon.RelayInfo) (uterError *types.U
 	// 降本中间层：owner 且非流式成功响应，将上游原文回写精确缓存 + 语义缓存（按 completion_tokens 上限过滤）。
 	if isCacheOwner && capBuf != nil && !lo.FromPtrOr(request.Stream, false) {
 		costopt.StoreIfCachable(c.Request.Context(), cacheKey, capBuf, usage.(*dto.Usage).CompletionTokens)
-		costopt.StoreSemantic(c.Request.Context(), request, capBuf.Bytes(), info)
 	}
 	return nil
 }

@@ -1,90 +1,21 @@
 package costopt
 
+// 本文件原本还承载「零调用短路规则」(MatchShortCircuit)：按规则直接返回预设答案、
+// 完全不调上游。该功能属于有损降本（客户拿到的不是模型生成的内容），已整体移除。
+// 保留 BuildShortCircuitResponse / EstimateRequestUsage —— 它们被「循环检测」复用：
+// 检测到重复循环请求时用它们构造收敛应答并记账，属于护栏而非省钱手段。
 import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"regexp"
-	"sort"
 	"strings"
 	"time"
-
-	costoptcfg "github.com/uter-ai/uter/setting/costopt"
 
 	"github.com/gin-gonic/gin"
 	"github.com/uter-ai/uter/relay/common"
 	"github.com/uter-ai/uter/relaykit/dto"
 	"github.com/uter-ai/uter/relaykit/types"
 )
-
-// MatchShortCircuit 命中零调用短路规则时返回 (answer, true)；否则 ("", false)。
-// 命中后由调用方直接返回预设答案，根本不调上游 LLM（该部分 100% 省去模型调用）。
-func MatchShortCircuit(req *dto.GeneralOpenAIRequest, info *common.RelayInfo) (string, bool) {
-	cfg := costoptcfg.GetCostOptSetting()
-	if !cfg.ShortCircuitEnabled || len(cfg.ShortCircuitRules) == 0 {
-		return "", false
-	}
-	text := lastUserMessage(req)
-	if text == "" {
-		return "", false
-	}
-	// 按优先级降序，高优先级先匹配。
-	rules := append([]costoptcfg.ShortCircuitRule(nil), cfg.ShortCircuitRules...)
-	sort.SliceStable(rules, func(i, j int) bool {
-		return rules[i].Priority > rules[j].Priority
-	})
-	for _, r := range rules {
-		if !r.Enabled || r.Answer == "" || r.Pattern == "" {
-			continue
-		}
-		if r.Scope != "" && r.Scope != info.UsingGroup && r.Scope != info.TokenGroup {
-			continue
-		}
-		if r.Model != "" && r.Model != req.Model {
-			continue
-		}
-		if matchRule(r, text) {
-			return r.Answer, true
-		}
-	}
-	return "", false
-}
-
-func matchRule(r costoptcfg.ShortCircuitRule, text string) bool {
-	t := text
-	p := r.Pattern
-	if !r.CaseSensitive {
-		t = strings.ToLower(t)
-		p = strings.ToLower(p)
-	}
-	switch r.Match {
-	case "exact":
-		return t == p
-	case "contains":
-		return strings.Contains(t, p)
-	case "regex":
-		re, err := regexp.Compile(p)
-		if err != nil {
-			return false
-		}
-		return re.MatchString(t)
-	default:
-		return false
-	}
-}
-
-// lastUserMessage 取消息列表中最后一条用户消息的文本内容（忽略 system/assistant/tool）。
-func lastUserMessage(req *dto.GeneralOpenAIRequest) string {
-	for i := len(req.Messages) - 1; i >= 0; i-- {
-		if req.Messages[i].Role != "user" {
-			continue
-		}
-		if s := messageText(req.Messages[i]); s != "" {
-			return s
-		}
-	}
-	return ""
-}
 
 func messageText(m dto.Message) string {
 	switch v := m.Content.(type) {
@@ -103,7 +34,8 @@ func messageText(m dto.Message) string {
 	}
 }
 
-// BuildShortCircuitResponse 构造零调用短路应答并计费后返回。
+// BuildShortCircuitResponse 构造「未调上游」的应答并计费后返回。
+// 目前仅循环检测收敛路径使用：命中重复循环请求时直接返回说明文案，不再发往上游。
 // 非流式返回标准 chat.completion JSON；流式按 SSE 单块回放。
 func BuildShortCircuitResponse(c *gin.Context, info *common.RelayInfo, req *dto.GeneralOpenAIRequest, answer string) *types.UterError {
 	usage := estimateUsage(req, answer)
@@ -133,7 +65,7 @@ func BuildShortCircuitResponse(c *gin.Context, info *common.RelayInfo, req *dto.
 }
 
 // EstimateRequestUsage 对外暴露本次请求「若真的发给上游」的估算用量。
-// 用于降本节省记账：短路 / 负缓存 / 循环收敛这些未调上游的路径，
+// 用于降本节省记账：负缓存 / 循环收敛这些未调上游的路径，
 // 以此口径把省下的 token 计入指标（与计费口径一致：字符数/4）。
 func EstimateRequestUsage(req *dto.GeneralOpenAIRequest, answer string) *dto.Usage {
 	return estimateUsage(req, answer)

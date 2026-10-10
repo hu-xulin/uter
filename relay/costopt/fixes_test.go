@@ -85,33 +85,6 @@ func TestPlanModelRewrite_KeepsCheapestModelWhenCascadeCheapIsPricier(t *testing
 	require.Equal(t, "gpt-4o-mini", PlanModelRewrite(req))
 }
 
-// ----- 2. 压缩：reasoning 预算预留 + 总量上限 + 空内容告警 -----
-
-func TestIsReasoningModel(t *testing.T) {
-	require.True(t, isReasoningModel("openai/gpt-oss-120b"))
-	require.True(t, isReasoningModel("deepseek-reasoner"))
-	require.True(t, isReasoningModel("qwen-qwq-32b"))
-	require.False(t, isReasoningModel("gpt-4o-mini"))
-	require.False(t, isReasoningModel(""))
-}
-
-func TestCompressionBudget_ReasoningReserve(t *testing.T) {
-	// 非 reasoning：输出预算 == 内容预算（contentBudget 直接传入）。
-	require.Equal(t, 1000, compressionBudget(1000, 3000, false, 3.0, 0))
-	// reasoning：预算按 reserve 倍放大，避免思考吃光 → 空输出。
-	require.Equal(t, 3000, compressionBudget(1000, 3000, true, 3.0, 0))
-}
-
-func TestCompressionBudget_TotalTokenCap(t *testing.T) {
-	// 无上限时即便 reasoning 也不裁剪。
-	require.Equal(t, 3000, compressionBudget(1000, 3000, true, 3.0, 0))
-	// 上限触发：输出预算被压到上限 - 输入估算（且不低于 64）。
-	// 输入估算 = 24000/3 + 8 = 8008；36060 + 8008 远超 7000 → 7000-8008 < 0 → 钳到 64。
-	require.Equal(t, 64, compressionBudget(12020, 24000, true, 3.0, 7000))
-	// 温和上限：不触发裁剪。
-	require.Equal(t, 1000, compressionBudget(1000, 3000, false, 3.0, 7000))
-}
-
 // ----- 3. RAG 净收益闸门 -----
 
 func TestRAGNetBenefitPasses(t *testing.T) {

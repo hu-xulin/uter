@@ -25,21 +25,6 @@ func newTestRequest(nUser int, lastUser string) *dto.GeneralOpenAIRequest {
 	return &dto.GeneralOpenAIRequest{Model: "gpt-4o", Messages: msgs}
 }
 
-func TestRegression_ContextWindowTruncates(t *testing.T) {
-	cfg := costoptcfg.GetCostOptSetting()
-	cfg.ContextWindowEnabled = true
-	cfg.ContextWindowMaxMessages = 5
-	defer func() { cfg.ContextWindowEnabled = false }()
-
-	req := newTestRequest(30, "最后一个问题")
-	before := len(req.Messages)
-	ApplyContextWindow(req, &relaycommon.RelayInfo{})
-	require.Less(t, len(req.Messages), before, "上下文滑动窗口应裁掉旧消息，降低输入 token")
-	require.LessOrEqual(t, len(req.Messages), 5)
-	// 最后一个用户问题应保留
-	require.Equal(t, "最后一个问题", req.Messages[len(req.Messages)-1].StringContent())
-}
-
 func TestRegression_ComplexityRoutingRewritesCheap(t *testing.T) {
 	cfg := costoptcfg.GetCostOptSetting()
 	cfg.ComplexityRoutingEnabled = true
@@ -52,19 +37,6 @@ func TestRegression_ComplexityRoutingRewritesCheap(t *testing.T) {
 	ok := ApplyComplexityRouting(req, &relaycommon.RelayInfo{})
 	require.False(t, ok, "模型保真：复杂度路由已停用，不得降级模型")
 	require.Equal(t, "gpt-4o", req.Model, "客户选择的模型必须保持不变")
-}
-
-func TestRegression_ToolDefTrimStrips(t *testing.T) {
-	cfg := costoptcfg.GetCostOptSetting()
-	cfg.ToolDefTrimEnabled = true
-	cfg.ToolDefTrimStripDescription = true
-	defer func() { cfg.ToolDefTrimEnabled = false; cfg.ToolDefTrimStripDescription = false }()
-
-	req := &dto.GeneralOpenAIRequest{
-		Tools: []dto.ToolCallRequest{{Type: "function", Function: dto.FunctionRequest{Name: "f", Description: "很长的描述"}}},
-	}
-	ApplyToolDefTrim(req)
-	require.Equal(t, "", req.Tools[0].Function.Description, "工具定义精简应剥离 description，降低每请求 token")
 }
 
 func TestRegression_DetectLoop(t *testing.T) {

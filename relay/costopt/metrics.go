@@ -14,10 +14,8 @@ import (
 // MetricsSnapshot 降本中间层聚合计数器（可观测性看板 / 成本 per 成功任务 / 异常审计共用）。
 type MetricsSnapshot struct {
 	CacheHits           int64 `json:"cache_hits"`
-	ShortCircuits       int64 `json:"short_circuits"`
 	NegativeHits        int64 `json:"negative_hits"`
 	SpikeAlerts         int64 `json:"spike_alerts"`
-	SemHits             int64 `json:"sem_hits"`
 	ToolCacheHits       int64 `json:"tool_cache_hits"`
 	CascadeEscalations  int64 `json:"cascade_escalations"`
 	LoopBreaks          int64 `json:"loop_breaks"`
@@ -26,8 +24,6 @@ type MetricsSnapshot struct {
 	TotalTokensSavedEst int64 `json:"total_tokens_saved_est"`
 	// 按节省来源拆分，便于定位「到底哪个特性在省 token」。
 	TokensSavedByExactCache    int64 `json:"tokens_saved_by_exact_cache"`
-	TokensSavedBySemantic      int64 `json:"tokens_saved_by_semantic_cache"`
-	TokensSavedByShortCircuit  int64 `json:"tokens_saved_by_short_circuit"`
 	TokensSavedByNegativeCache int64 `json:"tokens_saved_by_negative_cache"`
 	TokensSavedByLoopBreak     int64 `json:"tokens_saved_by_loop_break"`
 	// 41. 成本 per 成功任务：成功/总请求计数（比值即"每成功任务成本"的分母/分子）。
@@ -58,10 +54,8 @@ func enabledInc(p *int64) {
 }
 
 func IncCacheHit()          { enabledInc(&metrics.CacheHits) }
-func IncShortCircuit()      { enabledInc(&metrics.ShortCircuits) }
 func IncNegativeHit()       { enabledInc(&metrics.NegativeHits) }
 func IncSpikeAlert()        { enabledInc(&metrics.SpikeAlerts) }
-func IncSemHit()            { enabledInc(&metrics.SemHits) }
 func IncToolCacheHit()      { enabledInc(&metrics.ToolCacheHits) }
 func IncCascadeEscalation() { enabledInc(&metrics.CascadeEscalations) }
 func IncLoopBreak()         { enabledInc(&metrics.LoopBreaks) }
@@ -91,8 +85,6 @@ func AddTokensSaved(n int64) {
 // 节省 token 的来源分类，用于看板按特性拆分。
 const (
 	SavedSourceExactCache    = "exact_cache"
-	SavedSourceSemanticCache = "semantic_cache"
-	SavedSourceShortCircuit  = "short_circuit"
 	SavedSourceNegativeCache = "negative_cache"
 	SavedSourceLoopBreak     = "loop_break"
 )
@@ -117,10 +109,6 @@ func RecordTokensSavedBy(source string, n int64) {
 	switch source {
 	case SavedSourceExactCache:
 		atomic.AddInt64(&metrics.TokensSavedByExactCache, n)
-	case SavedSourceSemanticCache:
-		atomic.AddInt64(&metrics.TokensSavedBySemantic, n)
-	case SavedSourceShortCircuit:
-		atomic.AddInt64(&metrics.TokensSavedByShortCircuit, n)
 	case SavedSourceNegativeCache:
 		atomic.AddInt64(&metrics.TokensSavedByNegativeCache, n)
 	case SavedSourceLoopBreak:
@@ -213,10 +201,8 @@ func MetricsEnabled() bool {
 func MetricsSnapshotNow() MetricsSnapshot {
 	return MetricsSnapshot{
 		CacheHits:                  atomic.LoadInt64(&metrics.CacheHits),
-		ShortCircuits:              atomic.LoadInt64(&metrics.ShortCircuits),
 		NegativeHits:               atomic.LoadInt64(&metrics.NegativeHits),
 		SpikeAlerts:                atomic.LoadInt64(&metrics.SpikeAlerts),
-		SemHits:                    atomic.LoadInt64(&metrics.SemHits),
 		ToolCacheHits:              atomic.LoadInt64(&metrics.ToolCacheHits),
 		CascadeEscalations:         atomic.LoadInt64(&metrics.CascadeEscalations),
 		LoopBreaks:                 atomic.LoadInt64(&metrics.LoopBreaks),
@@ -224,8 +210,6 @@ func MetricsSnapshotNow() MetricsSnapshot {
 		AnomalyAlerts:              atomic.LoadInt64(&metrics.AnomalyAlerts),
 		TotalTokensSavedEst:        atomic.LoadInt64(&metrics.TotalTokensSavedEst),
 		TokensSavedByExactCache:    atomic.LoadInt64(&metrics.TokensSavedByExactCache),
-		TokensSavedBySemantic:      atomic.LoadInt64(&metrics.TokensSavedBySemantic),
-		TokensSavedByShortCircuit:  atomic.LoadInt64(&metrics.TokensSavedByShortCircuit),
 		TokensSavedByNegativeCache: atomic.LoadInt64(&metrics.TokensSavedByNegativeCache),
 		TokensSavedByLoopBreak:     atomic.LoadInt64(&metrics.TokensSavedByLoopBreak),
 		SuccessRequests:            atomic.LoadInt64(&metrics.SuccessRequests),

@@ -2,8 +2,6 @@ package costopt
 
 import (
 	"context"
-	"net/url"
-	"strings"
 	"testing"
 
 	costoptcfg "github.com/uter-ai/uter/setting/costopt"
@@ -75,101 +73,6 @@ func TestApplyComplexityRouting_FromModelsFilter(t *testing.T) {
 }
 
 // ----- 图像下采样代理 -----
-
-func TestApplyImageResize_RewritesRemoteSkipsBase64(t *testing.T) {
-	withConfig(t, func(c *costoptcfg.CostOptSetting) {
-		c.ImageResizeEnabled = true
-		c.ImageResizeMaxEdge = 512
-		c.ImageResizeProxyTemplate = "https://imgproxy.example/?url={url}&w={max}"
-	})
-	remote := "https://cdn.example.com/pic.png"
-	base64img := "data:image/png;base64,iVBORw0KGgo="
-	req := &dto.GeneralOpenAIRequest{Model: "gpt-4o", Messages: []dto.Message{{Role: "user", Content: "看这张图"}}}
-	req.Messages[0].SetMediaContent([]dto.MediaContent{
-		{Type: dto.ContentTypeImageURL, ImageUrl: &dto.MessageImageUrl{Url: remote}},
-		{Type: dto.ContentTypeImageURL, ImageUrl: &dto.MessageImageUrl{Url: base64img}},
-	})
-
-	ok := ApplyImageResize(req)
-	require.True(t, ok)
-
-	content := req.Messages[0].ParseContent()
-	var remoteFound, base64Found bool
-	for _, mc := range content {
-		im := mc.GetImageMedia()
-		if im == nil {
-			continue
-		}
-		switch {
-		case strings.Contains(im.Url, "imgproxy.example"):
-			remoteFound = true
-			require.Contains(t, im.Url, url.QueryEscape(remote), "远程图 URL 应被转义后塞入模板")
-			require.Contains(t, im.Url, "w=512", "模板 {max} 应被最大边长替换")
-		case strings.HasPrefix(im.Url, "data:image"):
-			base64Found = true
-		}
-	}
-	require.True(t, remoteFound, "远程图应被改写")
-	require.True(t, base64Found, "base64 图应被原样跳过")
-}
-
-func TestApplyImageResize_Disabled(t *testing.T) {
-	withConfig(t, func(c *costoptcfg.CostOptSetting) {
-		c.ImageResizeEnabled = false
-		c.ImageResizeProxyTemplate = "https://imgproxy.example/?url={url}&w={max}"
-	})
-	remote := "https://cdn.example.com/pic.png"
-	req := &dto.GeneralOpenAIRequest{Model: "gpt-4o", Messages: []dto.Message{{Role: "user", Content: "图"}}}
-	req.Messages[0].SetMediaContent([]dto.MediaContent{
-		{Type: dto.ContentTypeImageURL, ImageUrl: &dto.MessageImageUrl{Url: remote}},
-	})
-	require.False(t, ApplyImageResize(req))
-}
-
-// ----- 上下文滑动窗口 / 摘要 -----
-
-func TestApplyContextWindow_DropsOverflow(t *testing.T) {
-	withConfig(t, func(c *costoptcfg.CostOptSetting) {
-		c.ContextWindowEnabled = true
-		c.ContextWindowMaxMessages = 3
-		c.ContextWindowSummaryEnabled = false
-	})
-	req := &dto.GeneralOpenAIRequest{Model: "gpt-4o", Messages: []dto.Message{
-		{Role: "user", Content: "m1"},
-		{Role: "assistant", Content: "a1"},
-		{Role: "user", Content: "m2"},
-		{Role: "assistant", Content: "a2"},
-		{Role: "user", Content: "m3"},
-	}}
-	ok := ApplyContextWindow(req, &relaycommon.RelayInfo{})
-	require.True(t, ok)
-	require.Len(t, req.Messages, 3, "应仅保留最近 3 条")
-	require.Equal(t, "m3", req.Messages[2].StringContent())
-}
-
-func TestApplyContextWindow_PreservesSystem(t *testing.T) {
-	withConfig(t, func(c *costoptcfg.CostOptSetting) {
-		c.ContextWindowEnabled = true
-		c.ContextWindowMaxMessages = 3
-		c.ContextWindowSummaryEnabled = false
-	})
-	req := &dto.GeneralOpenAIRequest{Model: "gpt-4o", Messages: []dto.Message{
-		{Role: "system", Content: "sys"},
-		{Role: "user", Content: "m1"},
-		{Role: "assistant", Content: "a1"},
-		{Role: "user", Content: "m2"},
-		{Role: "assistant", Content: "a2"},
-	}}
-	ok := ApplyContextWindow(req, &relaycommon.RelayInfo{})
-	require.True(t, ok)
-	// system(1) + keepOthers(3-1=2) => 3 条
-	require.Len(t, req.Messages, 3)
-	require.Equal(t, "sys", req.Messages[0].StringContent())
-	require.Equal(t, "m2", req.Messages[1].StringContent())
-	require.Equal(t, "a2", req.Messages[2].StringContent())
-}
-
-// ----- 负缓存 -----
 
 func TestNegativeCache_StoreAndCheck(t *testing.T) {
 	useCostOptMiniRedis(t)

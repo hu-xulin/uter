@@ -49,20 +49,18 @@ func TestRecordTokensSavedByKeepsTotalEqualToParts(t *testing.T) {
 	resetMetrics(t)
 
 	RecordTokensSavedBy(SavedSourceExactCache, 1000)
-	RecordTokensSavedBy(SavedSourceSemanticCache, 200)
-	RecordTokensSavedBy(SavedSourceShortCircuit, 30)
 	RecordTokensSavedBy(SavedSourceNegativeCache, 5)
 	RecordTokensSavedBy(SavedSourceLoopBreak, 7)
 
 	got := MetricsSnapshotNow()
-	parts := got.TokensSavedByExactCache + got.TokensSavedBySemantic +
-		got.TokensSavedByShortCircuit + got.TokensSavedByNegativeCache +
+	parts := got.TokensSavedByExactCache +
+		got.TokensSavedByNegativeCache +
 		got.TokensSavedByLoopBreak
 	if got.TotalTokensSavedEst != parts {
 		t.Fatalf("total=%d != sum(parts)=%d", got.TotalTokensSavedEst, parts)
 	}
-	if got.TotalTokensSavedEst != 1242 {
-		t.Fatalf("total=%d, want 1242", got.TotalTokensSavedEst)
+	if got.TotalTokensSavedEst != 1012 {
+		t.Fatalf("total=%d, want 1012", got.TotalTokensSavedEst)
 	}
 	if got.TokensSavedByExactCache != 1000 {
 		t.Fatalf("exact cache = %d, want 1000", got.TokensSavedByExactCache)

@@ -18,5 +18,5 @@ func BatchEmbed(ctx context.Context, texts []string) ([][]float32, error) {
 		return nil, errMissingEndpoint
 	}
 	cfg := costoptcfg.GetCostOptSetting()
-	return openAIEmbed(ctx, cfg.BatchEmbedBaseURL, cfg.BatchEmbedAPIKey, cfg.BatchEmbedModel, texts)
+	return openAIEmbed(ctx, cfg.BatchEmbedBaseURL, cfg.BatchEmbedAPIKey, cfg.BatchEmbedModel, cfg.BatchEmbedEndpoint, texts)
 }
