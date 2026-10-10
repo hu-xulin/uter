@@ -1633,3 +1633,112 @@ func TestAppendToolSurchargeLogInfoWritesOnlyStructuredFields(t *testing.T) {
 	assert.NotContains(t, fields, "image_generation_call")
 	assert.NotContains(t, fields, "image_generation_call_price")
 }
+
+// TestCalculateTextQuotaSummaryCapturesChuangMengRealKeys 用用户从创梦平台抓到的
+// 真实 usage JSON 实证：创梦代理 Claude 时使用的键名是
+//   prompt_tokens_details.cached_tokens            (读取)
+//   prompt_tokens_details.cached_creation_tokens   (写入)
+//   usage.claude_cache_creation_5_m_tokens         (写入, 顶层 5m 断点)
+// 而非 Anthropic 原生的 cache_read/cache_creation_input_tokens。这些键在
+// dto.Usage (d38ba7d) 已有 tag，因此读取与写入两维度都能被捕获——只是「创建缓存」
+// 回合只有写入、「命中缓存」回合只有读取（单次请求只会出现一个非零值，这是正确的
+// 缓存语义，不是 uter 丢字段）。跨两次请求，统计聚合 SUM 两列即可同时得到读取与写入。
+func TestCalculateTextQuotaSummaryCapturesChuangMengRealKeys(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	w := httptest.NewRecorder()
+	ctx, _ := gin.CreateTestContext(w)
+
+	relayInfo := &relaycommon.RelayInfo{
+		RelayFormat:     types.RelayFormatOpenAI,
+		OriginModelName: "claude-fable-5",
+		PriceData: hosttypes.PriceData{
+			ModelRatio:         1,
+			CompletionRatio:    5,
+			CacheRatio:         0.1,
+			CacheCreationRatio: 1.25,
+			CacheCreation5mRatio: 1.25,
+			CacheCreation1hRatio: 1.25,
+			GroupRatioInfo:     hosttypes.GroupRatioInfo{GroupRatio: 1},
+		},
+		StartTime: time.Now(),
+	}
+
+	t.Run("creation round: only write is non-zero", func(t *testing.T) {
+		// 用户真实抓取：msg_011CftVaV7vXQdi63pBmhPSD，缓存创建回合
+		raw := `{
+			"prompt_tokens": 32194,
+			"completion_tokens": 268,
+			"total_tokens": 32462,
+			"usage_semantic": "openai",
+			"usage_source": "anthropic",
+			"prompt_tokens_details": {
+				"cached_tokens": 0,
+				"cached_creation_tokens": 32192,
+				"text_tokens": 0,
+				"audio_tokens": 0,
+				"image_tokens": 0
+			},
+			"completion_tokens_details": {
+				"text_tokens": 0,
+				"audio_tokens": 0,
+				"image_tokens": 0,
+				"reasoning_tokens": 0
+			},
+			"input_tokens": 32194,
+			"output_tokens": 0,
+			"input_tokens_details": null,
+			"output_tokens_details": null,
+			"claude_cache_creation_5_m_tokens": 32192,
+			"claude_cache_creation_1_h_tokens": 0
+		}`
+		var usage dto.Usage
+		if err := json.Unmarshal([]byte(raw), &usage); err != nil {
+			t.Fatal(err)
+		}
+		usage.NormalizeCacheTokens()
+
+		summary := calculateTextQuotaSummary(ctx, relayInfo, &usage)
+
+		// 读取：cached_tokens=0（本次是创建回合，没有命中已有缓存）
+		require.Equal(t, 0, summary.CacheTokens)
+		// 写入：cached_creation_tokens=32192（被创建进缓存）
+		require.Equal(t, 32192, summary.CacheCreationTokens)
+		// 顶层 5m 断点也被捕获，且 cacheWriteTokensTotal 走 split 分支不重复计
+		require.Equal(t, 32192, summary.CacheCreationTokens5m)
+		require.Equal(t, 0, summary.CacheCreationTokens1h)
+		require.Equal(t, 32192, cacheWriteTokensTotal(summary))
+	})
+
+	t.Run("hit round: only read is non-zero", func(t *testing.T) {
+		// 推断的命中回合形态：cached_tokens 非零、cached_creation_tokens 归零
+		raw := `{
+			"prompt_tokens": 32462,
+			"completion_tokens": 268,
+			"total_tokens": 32730,
+			"usage_semantic": "openai",
+			"usage_source": "anthropic",
+			"prompt_tokens_details": {
+				"cached_tokens": 32192,
+				"cached_creation_tokens": 0,
+				"text_tokens": 0,
+				"audio_tokens": 0,
+				"image_tokens": 0
+			},
+			"claude_cache_creation_5_m_tokens": 0,
+			"claude_cache_creation_1_h_tokens": 0
+		}`
+		var usage dto.Usage
+		if err := json.Unmarshal([]byte(raw), &usage); err != nil {
+			t.Fatal(err)
+		}
+		usage.NormalizeCacheTokens()
+
+		summary := calculateTextQuotaSummary(ctx, relayInfo, &usage)
+
+		// 读取：cached_tokens=32192（命中已有缓存）
+		require.Equal(t, 32192, summary.CacheTokens)
+		// 写入：本次无新创建
+		require.Equal(t, 0, summary.CacheCreationTokens)
+		require.Equal(t, 0, cacheWriteTokensTotal(summary))
+	})
+}
