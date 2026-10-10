@@ -214,14 +214,45 @@ func InitDB() (err error) {
 	return err
 }
 
+// runLogCacheTokenBackfillOnce 把历史日志的缓存用量从 other 的 JSON 提升为独立列。
+//
+// 缓存用量原本只存在于 other 的 JSON 文本里，SQL 无法跨库聚合（json_extract 语法
+// 各库不同，且 MySQL/PostgreSQL 对非法 JSON 直接报错），所以所有统计接口都拿不到
+// 缓存维度。提升为独立列后，升级前的历史行必须回填一次，否则在统计里恒为 0，
+// 看起来像「这台实例从没命中过缓存」。
+//
+// ⚠️ 两处调用点都不能省，且都必须在 LOG_DB 就绪之后：
+//   - LOG_SQL_DSN 为空（默认 SQLite）时，InitLogDB 走第一条分支，**不会调用
+//     migrateLOGDB()**，Log{} 的列是由 migrateDB() 的 AutoMigrate 列表建的。
+//     挂在 migrateLOGDB 里会永远不执行（实测踩到）。
+//   - LOG_SQL_DSN 非空时列由 migrateLOGDB() 建，必须在那条分支之后回填。
+//
+// ⚠️ 判据不能用「建列前 HasColumn 是否为 false」：默认分支下 DB 与 LOG_DB 是同一个
+// 连接，migrateDB() 早已把列建好，HasColumn 恒为 true，回填会被静默跳过。
+// 因此用 options 表里的持久标记，保证只跑一次（避免每次启动全表扫描）。
+func runLogCacheTokenBackfillOnce() {
+	if !common.IsMasterNode {
+		return
+	}
+	if logCacheTokenBackfillDone() {
+		return
+	}
+	if backfillLogCacheTokenColumns() {
+		markLogCacheTokenBackfillDone()
+	}
+}
+
 func InitLogDB() (err error) {
 	if os.Getenv("LOG_SQL_DSN") == "" {
 		LOG_DB = DB
 		common.SetLogDatabaseType(common.MainDatabaseType())
 		initCol()
 		if common.IsMasterNode {
-			return MigrateAuditLogs()
+			if err := MigrateAuditLogs(); err != nil {
+				return err
+			}
 		}
+		runLogCacheTokenBackfillOnce()
 		return
 	}
 	db, dbType, err := chooseDB("LOG_SQL_DSN", true)
@@ -250,8 +281,11 @@ func InitLogDB() (err error) {
 			return nil
 		}
 		common.SysLog("database migration started")
-		err = migrateLOGDB()
-		return err
+		if err := migrateLOGDB(); err != nil {
+			return err
+		}
+		runLogCacheTokenBackfillOnce()
+		return nil
 	} else {
 		common.FatalLog(err)
 	}
@@ -389,6 +423,75 @@ func migrateLOGDB() error {
 		return migrateClickHouseLogDB()
 	}
 	return LOG_DB.AutoMigrate(&Log{})
+}
+
+// logCacheTokensBackfillKey 是回填的持久标记，写在 options 表里。
+//
+// 这里刻意不走 UpdateOption：迁移发生在 InitOptionMap 之前，UpdateOption 末尾的
+// updateOptionMap 会去写尚未初始化的内存表。直接写库更安全，InitOptionMap 之后
+// 也会自然把它加载进内存。
+const logCacheTokensBackfillKey = "log_cache_tokens_backfilled"
+
+func logCacheTokenBackfillDone() bool {
+	if DB == nil {
+		return false
+	}
+	var value string
+	err := DB.Table("options").Where("key = ?", logCacheTokensBackfillKey).Limit(1).Pluck("value", &value).Error
+	return err == nil && value == "1"
+}
+
+func markLogCacheTokenBackfillDone() {
+	if DB == nil {
+		return
+	}
+	// INSERT ... SELECT ... WHERE NOT EXISTS 在 SQLite/MySQL/PostgreSQL 上通用，
+	// 避免各库 upsert 语法差异（ON CONFLICT / ON DUPLICATE KEY / ON CONFLICT DO UPDATE）。
+	if err := DB.Exec(
+		"INSERT INTO options (key, value) SELECT ?, ? WHERE NOT EXISTS (SELECT 1 FROM options WHERE key = ?)",
+		logCacheTokensBackfillKey, "1", logCacheTokensBackfillKey).Error; err != nil {
+		common.SysLog(fmt.Sprintf("Warning: failed to record log cache token backfill marker: %v", err))
+	}
+}
+
+// backfillLogCacheTokenColumns 把 other JSON 里的缓存用量写回独立列。
+//
+// 各库对非法 JSON 的处理不同：SQLite 的 json_extract 返回 NULL（安全），
+// MySQL 的 JSON_EXTRACT 直接报错（必须先 JSON_VALID 过滤），PostgreSQL 的
+// ::jsonb 强转同样报错（用正则先挡一道）。因此三条语句分开写。
+// 失败只记日志、不影响启动——回填是展示增强，不是正确性依赖。
+func backfillLogCacheTokenColumns() bool {
+	if !LOG_DB.Migrator().HasColumn(&Log{}, "cache_write_tokens") {
+		return false
+	}
+	var readExpr, writeExpr, guard string
+	switch common.LogDatabaseType() {
+	case common.DatabaseTypeSQLite:
+		readExpr = "COALESCE(json_extract(other, '$.cache_tokens'), 0)"
+		writeExpr = "COALESCE(json_extract(other, '$.cache_write_tokens'), json_extract(other, '$.cache_creation_tokens'), 0)"
+		guard = ""
+	case common.DatabaseTypeMySQL:
+		readExpr = "COALESCE(JSON_EXTRACT(other, '$.cache_tokens'), 0)"
+		writeExpr = "COALESCE(JSON_EXTRACT(other, '$.cache_write_tokens'), JSON_EXTRACT(other, '$.cache_creation_tokens'), 0)"
+		guard = " AND JSON_VALID(other)"
+	case common.DatabaseTypePostgreSQL:
+		readExpr = "COALESCE((other::jsonb->>'cache_tokens')::int, 0)"
+		writeExpr = "COALESCE((other::jsonb->>'cache_write_tokens')::int, (other::jsonb->>'cache_creation_tokens')::int, 0)"
+		guard = " AND other ~ '^\\s*\\{'"
+	default:
+		return false
+	}
+	sql := fmt.Sprintf(
+		"UPDATE logs SET cache_read_tokens = %s, cache_write_tokens = %s "+
+			"WHERE other IS NOT NULL AND other <> '' AND cache_read_tokens = 0 AND cache_write_tokens = 0%s",
+		readExpr, writeExpr, guard)
+	result := LOG_DB.Exec(sql)
+	if result.Error != nil {
+		common.SysLog(fmt.Sprintf("Warning: failed to backfill log cache token columns: %v", result.Error))
+		return false
+	}
+	common.SysLog(fmt.Sprintf("backfilled log cache token columns: %d rows", result.RowsAffected))
+	return true
 }
 
 func migrateClickHouseLogDB() error {

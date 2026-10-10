@@ -560,6 +560,9 @@ func PostTextConsumeQuota(ctx *gin.Context, relayInfo *relaycommon.RelayInfo, us
 		IsStream:         relayInfo.IsStream,
 		Group:            relayInfo.UsingGroup,
 		Other:            other,
+		// 缓存用量提升为独立列，供统计接口直接 SUM 聚合（详见 model.Log 注释）。
+		CacheReadTokens:  summary.CacheTokens,
+		CacheWriteTokens: cacheWriteTokens,
 	})
 	gopool.Go(func() {
 		perfmetrics.RecordRelaySample(relayInfo, true, int64(summary.CompletionTokens))

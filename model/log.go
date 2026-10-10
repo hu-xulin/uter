@@ -79,6 +79,15 @@ type Log struct {
 	RequestId         string `json:"request_id,omitempty" gorm:"type:varchar(64);index:idx_logs_request_id;default:''"`
 	UpstreamRequestId string `json:"upstream_request_id,omitempty" gorm:"type:varchar(128);index:idx_logs_upstream_request_id;default:''"`
 	Other             string `json:"other"`
+	// CacheReadTokens / CacheWriteTokens 是从 Other 的 JSON 里提升出来的独立列。
+	//
+	// 缓存用量此前只存在于 other 的 JSON 文本中，SQL 无法直接聚合
+	// （json_extract 在 MySQL/PostgreSQL 上语法不同，且对非法 JSON 会直接报错），
+	// 所以所有统计接口都拿不到缓存维度，只能看到 quota/rpm/tpm。
+	// 提升为独立列后 SUM() 在三种数据库上都可用。历史行由
+	// backfillLogCacheTokenColumns 回填。
+	CacheReadTokens  int `json:"cache_read_tokens" gorm:"default:0"`
+	CacheWriteTokens int `json:"cache_write_tokens" gorm:"default:0"`
 }
 
 // don't use iota, avoid change log type value
@@ -403,6 +412,8 @@ type RecordConsumeLogParams struct {
 	IsStream         bool      `json:"is_stream"`
 	Group            string    `json:"group"`
 	Other            *LogOther `json:"other"`
+	CacheReadTokens  int       `json:"cache_read_tokens"`
+	CacheWriteTokens int       `json:"cache_write_tokens"`
 }
 
 func RecordConsumeLog(c *gin.Context, userId int, params RecordConsumeLogParams) {
@@ -447,6 +458,8 @@ func RecordConsumeLog(c *gin.Context, userId int, params RecordConsumeLogParams)
 		RequestId:         requestId,
 		UpstreamRequestId: upstreamRequestId,
 		Other:             otherStr,
+		CacheReadTokens:   params.CacheReadTokens,
+		CacheWriteTokens:  params.CacheWriteTokens,
 	}
 	err := createLog(log)
 	if err != nil {
@@ -685,15 +698,23 @@ type Stat struct {
 	Quota int `json:"quota"`
 	Rpm   int `json:"rpm"`
 	Tpm   int `json:"tpm"`
+	// CacheReadTokens / CacheWriteTokens 是筛选区间内缓存命中/写入的 token 总量。
+	// 只在后台确实产生过缓存用量时才需要展示，故用 omitempty 让前端以「无数据」
+	// 而非「0」来判断是否渲染。
+	CacheReadTokens  int `json:"cache_read_tokens,omitempty"`
+	CacheWriteTokens int `json:"cache_write_tokens,omitempty"`
 }
 
-// SumUsedQuota 统计消费类日志的额度 / RPM / TPM。
+// SumUsedQuota 统计消费类日志的额度 / RPM / TPM / 缓存用量。
 //
 // orgUsernames 是组织/部门范围（nil 表示平台视角，不施加过滤）；
 // userIds 是调用方显式指定的「用户维度」过滤，最终结果与范围过滤取交集，
 // 因此越权传入范围外的用户 id 只会得到空集，不会泄漏数据。
 func SumUsedQuota(logType int, startTimestamp int64, endTimestamp int64, modelName string, username string, tokenName string, channel int, group string, orgUsernames []string, userIds ...int) (stat Stat, err error) {
-	tx := LOG_DB.Table("logs").Select("COALESCE(sum(quota), 0) quota")
+	tx := LOG_DB.Table("logs").Select(
+		"COALESCE(sum(quota), 0) quota, " +
+			"COALESCE(sum(cache_read_tokens), 0) cache_read_tokens, " +
+			"COALESCE(sum(cache_write_tokens), 0) cache_write_tokens")
 
 	// 为rpm和tpm创建单独的查询
 	rpmTpmQuery := LOG_DB.Table("logs").Select("count(*) rpm, COALESCE(sum(prompt_tokens), 0) + COALESCE(sum(completion_tokens), 0) tpm")
