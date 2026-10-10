@@ -1,22 +1,3 @@
-/*
-Copyright (C) 2023-2026 Uter.ai
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU Affero General Public License as
-published by the Free Software Foundation, either version 3 of the
-License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU Affero General Public License for more details.
-
-You should have received a copy of the GNU Affero General Public License
-along with this program. If not, see <https://www.gnu.org/licenses/>.
-
-For commercial licensing, please contact support@uter.ai
-*/
-
 // 降本优化（Cost Optimization）字段定义。
 // 独立成文件是为了满足 react(only-export-components)：组件文件只导出组件，
 // 常量与类型放这里，避免破坏 Fast Refresh。
@@ -48,11 +29,7 @@ export type FidelityTier =
  * 在前述四大类之下，再按「外部依赖形态」细分子组（缓存 / 批处理 / RAG / 护栏…），
  * 让每组参数既同源、又不超过 ~9 个，便于运营逐项决策、互不干扰。
  */
-export type SavingMechanism =
-  | 'reuse'
-  | 'shrink'
-  | 'inject'
-  | 'guard'
+export type SavingMechanism = 'reuse' | 'shrink' | 'inject' | 'guard'
 
 export type FieldDef = {
   /** 完整option key（含 costopt_setting. 前缀） */
@@ -79,11 +56,6 @@ export type FieldDef = {
   /** 保真分级（见 FidelityTier）：这一项是否以改变模型所见内容为代价。 */
   fidelity?: FidelityTier
   /**
-   * 是否依赖外部基建（上游 Batch/embedding 服务、自有 RAG/CDN/存储）。
-   * 仅作为组内注记，用于提示"填了端点才生效"，不参与一级分组。
-   */
-  needsInfra?: boolean
-  /**
    * 已停用的历史配置项标记。当前降本优化已不再展示任何停用项（模型保真原则下整体停用），
    * 故新分组里不会再出现 retired 字段；此处保留类型声明仅为兼容既有组件引用。
    */
@@ -108,7 +80,7 @@ export const GROUPS: Array<{
 }> = [
   // ===== 复用（reuse）：响应缓存 =====
   {
-    title: 'Response cache',
+    title: 'Cache setting',
     desc: 'Caches an identical request and replays it, so repeated work costs nothing the second time. The model sees exactly what it would have seen anyway, which makes these the only truly risk-free savings here.',
     fields: [
       {
@@ -163,7 +135,7 @@ export const GROUPS: Array<{
   },
   // ===== 复用（reuse）：前缀与传输 =====
   {
-    title: 'Prefix & transmission',
+    title: 'Compression setting',
     desc: 'Pins a stable system prefix so upstream prompt caching actually hits, and compresses the response body on the wire. Both cut cost without changing what the model receives.',
     fields: [
       {
@@ -209,7 +181,7 @@ export const GROUPS: Array<{
   },
   // ===== 换更便宜的跑法（shrink）：渠道套利 =====
   {
-    title: 'Supplier arbitrage',
+    title: 'Price routing',
     desc: 'Picks the cheapest channel serving the exact same model, using the platform pricing table automatically. Same model, lower price — never a model swap.',
     fields: [
       {
@@ -273,16 +245,15 @@ export const GROUPS: Array<{
       },
     ],
   },
-  // ===== 换更便宜的跑法（shrink）：批量转批 — 连接 =====
+  // ===== 换更便宜的跑法（shrink）：批量转批（连接 + 调参合并） =====
   {
-    title: 'Batch offload — connection',
+    title: 'Batch setting',
     desc: 'Submits offline traffic to an upstream Batch API at roughly half price. Same model, executed asynchronously. Fill in the endpoint details below to wire it up.',
     fields: [
       {
         name: 'costopt_setting.batch_enabled',
         kind: 'bool',
         fidelity: 'safe',
-        needsInfra: true,
         label: 'Enable batch offload',
         help: 'Submits offline traffic to the upstream Batch API at roughly half price. Same model, just executed asynchronously. Requires upstream batch support.',
       },
@@ -290,7 +261,6 @@ export const GROUPS: Array<{
         name: 'costopt_setting.batch_api_base_url',
         kind: 'text',
         fidelity: 'safe',
-        needsInfra: true,
         label: 'Batch API base URL',
         gated: 'costopt_setting.batch_enabled',
         placeholder: 'https://open.bigmodel.cn/api/paas/v4',
@@ -300,7 +270,6 @@ export const GROUPS: Array<{
         name: 'costopt_setting.batch_api_key',
         kind: 'text',
         fidelity: 'safe',
-        needsInfra: true,
         secret: true,
         label: 'Batch API key',
         gated: 'costopt_setting.batch_enabled',
@@ -311,7 +280,6 @@ export const GROUPS: Array<{
         name: 'costopt_setting.batch_endpoint_path',
         kind: 'text',
         fidelity: 'safe',
-        needsInfra: true,
         label: 'Batch submit path',
         gated: 'costopt_setting.batch_enabled',
         placeholder: '/v1/batches',
@@ -321,7 +289,6 @@ export const GROUPS: Array<{
         name: 'costopt_setting.batch_chat_endpoint',
         kind: 'text',
         fidelity: 'safe',
-        needsInfra: true,
         label: 'Batch inner chat endpoint',
         gated: 'costopt_setting.batch_enabled',
         placeholder: '/v1/chat/completions',
@@ -331,7 +298,6 @@ export const GROUPS: Array<{
         name: 'costopt_setting.batch_files_path',
         kind: 'text',
         fidelity: 'safe',
-        needsInfra: true,
         label: 'Batch file upload path',
         gated: 'costopt_setting.batch_enabled',
         placeholder: '/v1/files',
@@ -341,7 +307,6 @@ export const GROUPS: Array<{
         name: 'costopt_setting.batch_result_path',
         kind: 'text',
         fidelity: 'safe',
-        needsInfra: true,
         label: 'Batch result path',
         gated: 'costopt_setting.batch_enabled',
         placeholder: '/v1/batches/{id}',
@@ -351,14 +316,13 @@ export const GROUPS: Array<{
   },
   // ===== 换更便宜的跑法（shrink）：批量转批 — 调参 =====
   {
-    title: 'Batch offload — tuning',
+    title: 'Batch scheduling',
     desc: 'Controls how requests are batched and which models are eligible. Larger windows and larger batches are cheaper, but they are also slower to return.',
     fields: [
       {
         name: 'costopt_setting.batch_completion_window',
         kind: 'text',
         fidelity: 'safe',
-        needsInfra: true,
         label: 'Completion window',
         gated: 'costopt_setting.batch_enabled',
         placeholder: '24h',
@@ -368,7 +332,6 @@ export const GROUPS: Array<{
         name: 'costopt_setting.batch_max_items',
         kind: 'number',
         fidelity: 'safe',
-        needsInfra: true,
         label: 'Maximum items per batch',
         gated: 'costopt_setting.batch_enabled',
         placeholder: '100',
@@ -378,7 +341,6 @@ export const GROUPS: Array<{
         name: 'costopt_setting.batch_flush_interval_seconds',
         kind: 'number',
         fidelity: 'safe',
-        needsInfra: true,
         label: 'Flush interval in seconds',
         gated: 'costopt_setting.batch_enabled',
         placeholder: '300',
@@ -388,7 +350,6 @@ export const GROUPS: Array<{
         name: 'costopt_setting.batch_eligible_models',
         kind: 'json',
         fidelity: 'safe',
-        needsInfra: true,
         label: 'Eligible models',
         gated: 'costopt_setting.batch_enabled',
         placeholder: '["glm-4-flash"]',
@@ -398,14 +359,13 @@ export const GROUPS: Array<{
   },
   // ===== 换更便宜的跑法（shrink）：批量 embedding =====
   {
-    title: 'Batch embedding',
+    title: 'Embedding setting',
     desc: 'Submits multiple texts to a single embedding call. Requires the embedding base URL, endpoint, API key and model below.',
     fields: [
       {
         name: 'costopt_setting.batch_embed_enabled',
         kind: 'bool',
         fidelity: 'safe',
-        needsInfra: true,
         label: 'Enable batch embedding',
         help: 'Submits multiple texts to a single embedding call. Requires the base URL, endpoint, API key and model below.',
       },
@@ -413,7 +373,6 @@ export const GROUPS: Array<{
         name: 'costopt_setting.batch_embed_base_url',
         kind: 'text',
         fidelity: 'safe',
-        needsInfra: true,
         label: 'Batch embedding API base URL',
         gated: 'costopt_setting.batch_embed_enabled',
         placeholder: 'https://open.bigmodel.cn',
@@ -423,7 +382,6 @@ export const GROUPS: Array<{
         name: 'costopt_setting.batch_embed_endpoint',
         kind: 'text',
         fidelity: 'safe',
-        needsInfra: true,
         label: 'Batch embedding endpoint',
         gated: 'costopt_setting.batch_embed_enabled',
         placeholder: '/api/paas/v4/embeddings',
@@ -433,7 +391,6 @@ export const GROUPS: Array<{
         name: 'costopt_setting.batch_embed_api_key',
         kind: 'text',
         fidelity: 'safe',
-        needsInfra: true,
         secret: true,
         label: 'Batch embedding API key',
         gated: 'costopt_setting.batch_embed_enabled',
@@ -444,7 +401,6 @@ export const GROUPS: Array<{
         name: 'costopt_setting.batch_embed_model',
         kind: 'text',
         fidelity: 'safe',
-        needsInfra: true,
         label: 'Batch embedding model',
         gated: 'costopt_setting.batch_embed_enabled',
         placeholder: 'embedding-2',
@@ -454,14 +410,13 @@ export const GROUPS: Array<{
   },
   // ===== 换更便宜的跑法（shrink）：CDN =====
   {
-    title: 'CDN offload',
+    title: 'CDN setting',
     desc: 'Serves static assets from a CDN to cut origin bandwidth. The rewriting logic is implemented but is not yet wired to the asset route.',
     fields: [
       {
         name: 'costopt_setting.cdn_enabled',
         kind: 'bool',
         fidelity: 'safe',
-        needsInfra: true,
         label: 'Enable CDN offload',
         help: 'Serves static assets from a CDN to cut origin bandwidth. The rewriting logic is implemented but not yet wired to the asset route.',
       },
@@ -469,7 +424,6 @@ export const GROUPS: Array<{
         name: 'costopt_setting.cdn_asset_base_url',
         kind: 'text',
         fidelity: 'safe',
-        needsInfra: true,
         label: 'CDN base URL',
         gated: 'costopt_setting.cdn_enabled',
         placeholder: 'https://cdn.example.com',
@@ -479,7 +433,6 @@ export const GROUPS: Array<{
         name: 'costopt_setting.cdn_origin_url',
         kind: 'text',
         fidelity: 'safe',
-        needsInfra: true,
         label: 'Origin URL',
         gated: 'costopt_setting.cdn_enabled',
         placeholder: 'https://origin.example.com',
@@ -489,7 +442,6 @@ export const GROUPS: Array<{
         name: 'costopt_setting.cdn_cache_ttl_seconds',
         kind: 'number',
         fidelity: 'safe',
-        needsInfra: true,
         label: 'Cache TTL in seconds',
         gated: 'costopt_setting.cdn_enabled',
         placeholder: '86400',
@@ -499,7 +451,6 @@ export const GROUPS: Array<{
         name: 'costopt_setting.cdn_path_prefixes',
         kind: 'json',
         fidelity: 'safe',
-        needsInfra: true,
         label: 'Path prefixes',
         gated: 'costopt_setting.cdn_enabled',
         placeholder: '["/assets/", "/static/"]',
@@ -509,7 +460,6 @@ export const GROUPS: Array<{
         name: 'costopt_setting.cdn_include_query',
         kind: 'bool',
         fidelity: 'safe',
-        needsInfra: true,
         label: 'Include query string in cache key',
         gated: 'costopt_setting.cdn_enabled',
         help: 'Includes the query string in the cache key. Leave it off so tracking parameters do not fragment the cache.',
@@ -518,7 +468,6 @@ export const GROUPS: Array<{
         name: 'costopt_setting.cdn_signing_header',
         kind: 'text',
         fidelity: 'safe',
-        needsInfra: true,
         label: 'Origin shield header',
         gated: 'costopt_setting.cdn_enabled',
         placeholder: 'X-Origin-Shield',
@@ -528,7 +477,6 @@ export const GROUPS: Array<{
         name: 'costopt_setting.cdn_signing_secret',
         kind: 'text',
         fidelity: 'safe',
-        needsInfra: true,
         secret: true,
         label: 'Origin shield secret',
         gated: 'costopt_setting.cdn_enabled',
@@ -539,14 +487,13 @@ export const GROUPS: Array<{
   },
   // ===== 注入外部知识（inject）：连接 =====
   {
-    title: 'Knowledge injection — connection',
+    title: 'RAG setting',
     desc: 'Retrieves relevant knowledge from your own service and injects just that, instead of having the customer paste the same context on every call. Requires an external RAG endpoint.',
     fields: [
       {
         name: 'costopt_setting.rag_enabled',
         kind: 'bool',
         fidelity: 'lossy',
-        needsInfra: true,
         label: 'Enable precise RAG',
         help: 'Retrieves relevant knowledge and injects it before the model answers. Requires an external RAG service.',
       },
@@ -554,7 +501,6 @@ export const GROUPS: Array<{
         name: 'costopt_setting.rag_endpoint',
         kind: 'text',
         fidelity: 'lossy',
-        needsInfra: true,
         label: 'RAG endpoint',
         gated: 'costopt_setting.rag_enabled',
         placeholder: 'https://rag.example.com/search',
@@ -564,7 +510,6 @@ export const GROUPS: Array<{
         name: 'costopt_setting.rag_api_key',
         kind: 'text',
         fidelity: 'lossy',
-        needsInfra: true,
         secret: true,
         label: 'RAG API key',
         gated: 'costopt_setting.rag_enabled',
@@ -596,7 +541,7 @@ export const GROUPS: Array<{
   },
   // ===== 注入外部知识（inject）：检索调参 =====
   {
-    title: 'Knowledge injection — retrieval',
+    title: 'Retrieval setting',
     desc: 'Tunes how many snippets are retrieved, how they are scored and reranked, and how much is injected. A low score threshold injects noise and costs more than it saves.',
     fields: [
       {
@@ -681,7 +626,7 @@ export const GROUPS: Array<{
   },
   // ===== 护栏与度量（guard）：防失控 =====
   {
-    title: 'Guardrails & runaway protection',
+    title: 'Protection setting',
     desc: 'Caps runaway spend and stops runaway agents, so the savings elsewhere stay under control. Enable these alongside the rest rather than after.',
     fields: [
       {
