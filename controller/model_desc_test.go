@@ -128,8 +128,9 @@ func TestNormalizeOpenAIBaseURL(t *testing.T) {
 
 // TestTranslationLocalesDefault 锁定补译语种的默认与覆盖行为。
 func TestTranslationLocalesDefault(t *testing.T) {
-	// 未配置时用上游缺失的那 4 语。
-	assert.ElementsMatch(t, []string{"zh-TW", "fr", "ru", "vi"}, translationLocales())
+	// 未配置时用除英语外的全部 6 语：上游只发 zh/en/ja 且覆盖不全，
+	// 故 zh/ja 一并纳入兜底（只补空白，不覆盖已有描述）。
+	assert.ElementsMatch(t, []string{"zh", "zh-TW", "fr", "ja", "ru", "vi"}, translationLocales())
 }
 
 // TestHasMissingLocale 锁定「哪些模型需要补译」的判定。

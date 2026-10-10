@@ -14,11 +14,16 @@ import (
 	"github.com/uter-ai/uter/model"
 )
 
-// descriptionTranslateLocales 是上游目录不提供、需要由 LLM 补译的语种。
+// descriptionTranslateLocales 是需要由 LLM 补译的语种：英文之外前端支持的全部 6 语。
 //
-// 上游 llm-metadata 只有 zh/en/ja；前端有 7 份语言包，缺的这 4 语若不回退
-// 到英文，繁中/法语/俄语/越南语访客看到的就是英文卡片。
-var descriptionTranslateLocales = []string{"zh-TW", "fr", "ru", "vi"}
+// 上游 llm-metadata 只有 zh/en/ja 三份目录，但**上游目录并不覆盖全部模型**——
+// 中文/日文条目常常缺斤少两。若只补 zh-TW/fr/ru/vi 四语，上游漏掉中文条目的
+// 模型就会让简体中文访客也看到英文卡片。
+//
+// 因此这里纳入除英语外的全部 6 语（zh, zh-TW, fr, ja, ru, vi），作为统一兜底。
+// 重复翻译不会发生：loadMissingTranslations 只挑「目标语种仍为空」的模型，
+// 上游已写入的 zh/ja 不会被覆盖（写库也是「只补空白」语义）。
+var descriptionTranslateLocales = []string{"zh", "zh-TW", "fr", "ja", "ru", "vi"}
 
 // translateConcurrency 限制同时在途的翻译请求数。
 //
