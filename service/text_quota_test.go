@@ -1,6 +1,7 @@
 package service
 
 import (
+	"encoding/json"
 	"fmt"
 	"math"
 	"net/http/httptest"
@@ -850,6 +851,50 @@ func TestCalculateTextQuotaSummaryBillsOpenAICacheWriteTokens(t *testing.T) {
 		// max(3619-2921-3616, 0) + 2921*0.1 + 3616*1.25 + 36*2 = 4884.1 => 4884
 		require.Equal(t, 4884, summary.Quota)
 	})
+}
+
+func TestCalculateTextQuotaSummaryCapturesBothAnthropicCacheReadAndWrite(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	w := httptest.NewRecorder()
+	ctx, _ := gin.CreateTestContext(w)
+
+	relayInfo := &relaycommon.RelayInfo{
+		RelayFormat:     types.RelayFormatOpenAI,
+		OriginModelName: "claude-3-7-sonnet",
+		PriceData: hosttypes.PriceData{
+			ModelRatio:         1,
+			CompletionRatio:    5,
+			CacheRatio:         0.1,
+			CacheCreationRatio: 1.25,
+			GroupRatioInfo:     hosttypes.GroupRatioInfo{GroupRatio: 1},
+		},
+		StartTime: time.Now(),
+	}
+
+	// 创梦平台等 OpenAI 兼容网关代理 Claude 时，以 Anthropic 风格键名返回：
+	// prompt_tokens_details.cache_read_input_tokens / cache_creation_input_tokens
+	payload := `{
+		"prompt_tokens": 1200,
+		"completion_tokens": 95,
+		"prompt_tokens_details": {
+			"cache_read_input_tokens": 1000,
+			"cache_creation_input_tokens": 200
+		}
+	}`
+	var usage dto.Usage
+	if err := json.Unmarshal([]byte(payload), &usage); err != nil {
+		t.Fatal(err)
+	}
+	usage.NormalizeCacheTokens()
+
+	summary := calculateTextQuotaSummary(ctx, relayInfo, &usage)
+
+	// 缓存读取：cache_read_input_tokens 经 Normalize 折叠进 CachedTokens
+	require.Equal(t, 1000, summary.CacheTokens)
+	// 缓存写入：cache_creation_input_tokens 经 Normalize 折叠进 CacheWriteTokens，
+	// 再由 CacheCreationTokensTotal() 进入 summary.CacheCreationTokens
+	// （最终写入日志的 cache_write_tokens 列）
+	require.Equal(t, 200, summary.CacheCreationTokens)
 }
 
 func TestCalculateTextQuotaSummarySeparatesOpenRouterCacheReadFromPromptBilling(t *testing.T) {
