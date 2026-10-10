@@ -107,14 +107,14 @@ type CostOptSetting struct {
 	RouterLMFromModels []string `json:"router_lm_from_models"`
 
 	// 14. 语义缓存：可配 embedding 端点 + Redis 向量近似匹配
-	SemanticCacheEnabled        bool    `json:"semantic_cache_enabled"`
-	SemanticCacheTTLSeconds     int     `json:"semantic_cache_ttl_seconds"`
-	SemanticCacheEmbedBaseURL   string  `json:"semantic_cache_embed_base_url"`
-	SemanticCacheEmbedAPIKey    string  `json:"semantic_cache_embed_api_key"`
-	SemanticCacheEmbedModel     string  `json:"semantic_cache_embed_model"`
+	SemanticCacheEnabled      bool   `json:"semantic_cache_enabled"`
+	SemanticCacheTTLSeconds   int    `json:"semantic_cache_ttl_seconds"`
+	SemanticCacheEmbedBaseURL string `json:"semantic_cache_embed_base_url"`
+	SemanticCacheEmbedAPIKey  string `json:"semantic_cache_embed_api_key"`
+	SemanticCacheEmbedModel   string `json:"semantic_cache_embed_model"`
 	// SemanticCacheEmbedEndpoint embeddings 端点完整路径；默认 /v1/embeddings。
 	// 智谱(BigModel/GLM)填 /api/paas/v4/embeddings（base 仅到主机，如 https://open.bigmodel.cn）。
-	SemanticCacheEmbedEndpoint string `json:"semantic_cache_embed_endpoint"`
+	SemanticCacheEmbedEndpoint  string  `json:"semantic_cache_embed_endpoint"`
 	SemanticCacheTopK           int     `json:"semantic_cache_top_k"`
 	SemanticCacheScoreThreshold float64 `json:"semantic_cache_score_threshold"`
 	SemanticCacheDim            int     `json:"semantic_cache_dim"`
@@ -368,88 +368,123 @@ type WarmupEntry struct {
 }
 
 var costOptSetting = CostOptSetting{
-	ResponseCacheEnabled:    false,
+	// ===== 档位 A：零风险保真（数学等价，默认开启）=====
+	//
+	// 这一档的手段**不改变发给模型的任何内容**，只复用或裁掉重复劳动，
+	// 因此对新部署默认开启：省下的钱是净赚，客户拿到的响应逐字节相同。
+	ResponseCacheEnabled:    true,
 	ResponseCacheTTLSeconds: 300,
 	ResponseCacheMaxTokens:  4096,
-	ShortCircuitEnabled:     false,
-	MaxTokensCapEnabled:     false,
-	MaxTokensCapGlobal:      8192,
+	// 负缓存只对 4xx 确定性错误（429 除外）生效，5xx 与限流永不缓存，
+	// 因此不会把上游故障放大成持续拒绝。
+	NegativeCacheEnabled:    true,
+	NegativeCacheTTLSeconds: 30,
+	// gzip 只压传输层字节，不影响响应内容。
+	GzipEnabled: true,
+	// 工具结果去重：同一对话里连续重复的同一条 tool 消息是纯冗余，
+	// 删掉不改变模型能看到的工具结果集合。
+	ToolCallDedupEnabled: true,
+	// 循环检测：同一工具调用重复 N 次即判定失控并收敛，是**省钱且护住上游**的。
+	LoopDetectionEnabled:   true,
+	LoopDetectionThreshold: 3,
 
+	// ===== 档位 B：有损保真（改变输入或输出，默认关闭，参数已按推荐值预填）=====
+	//
+	// 这一档的手段确实省钱，但会**改变**发给模型的 prompt 或约束模型的输出，
+	// 可能掉质量。默认关闭：必须由运营在知情后显式打开。参数给出经过实测的推荐值，
+	// 打开即生效，不必逐项试错。
+	ShortCircuitEnabled: false,
+	MaxTokensCapEnabled: false,
+	MaxTokensCapGlobal:  8192,
+	// 上下文窗口：只裁历史、不启用摘要（摘要要另调便宜模型=又一次跨模型调用，
+	// 且摘要失真会污染上下文）。max_messages=20 约等于 10 轮对话，
+	// 超过此长度才裁，对绝大多数会话无感。
 	ContextWindowEnabled:     false,
 	ContextWindowMaxMessages: 20,
-	NegativeCacheEnabled:     false,
-	NegativeCacheTTLSeconds:  30,
 	ComplexityRoutingEnabled: false,
-	SpikeAlertEnabled:        false,
-	SpikeAlertTokensPerMin:   200000,
-	SpikeAlertMultiplier:     5,
-	ImageResizeEnabled:       false,
-	ImageResizeMaxEdge:       1024,
-	GzipEnabled:              false,
-	CostAwareRoutingEnabled:  false,
-
-	// V2 剩余特性默认值（全部默认关闭）
-	CascadeEnabled:              false,
-	GeoRoutingEnabled:           false,
-	RouterLMEnabled:             false,
+	// 提示压缩：会改写用户原话，虽然省 input token 但语义有损，故默认关闭。
+	PromptCompressionEnabled:  false,
+	PromptCompressionMaxRatio: 0.5,
+	// 工具定义精简：strip_description 会显著降低模型选对工具的概率
+	//（工具描述是模型判断"何时调用"的唯一依据），只建议开 strip_examples。
+	ToolDefTrimEnabled:          false,
+	ToolDefTrimStripDescription: false,
+	ToolDefTrimStripExamples:    true,
+	// 结构化输出：会强制约束输出形态，改变客户要的语义，故默认关闭。
+	StructuredOutputEnabled: false,
+	// Agent 步数预算：会硬拦断长任务，有丢结果风险，默认关闭。
+	AgentStepBudgetEnabled:   false,
+	AgentStepBudgetMaxSteps:  20,
+	AgentStepBudgetMaxTokens: 200000,
+	// 图像下采样：改变模型看到的像素，有损视觉信息，默认关闭。
+	ImageResizeEnabled: false,
+	ImageResizeMaxEdge: 1024,
+	// 长任务事实外置：需要外部存储端点，默认关闭。
+	LongTaskPersistEnabled: false,
+	// 语义缓存：命中即返回历史答案，"语义相近≠答案等价"的风险始终存在，
+	// 故默认关闭；开启时阈值务必保持 0.92 以上（已预填）。
 	SemanticCacheEnabled:        false,
 	SemanticCacheTTLSeconds:     300,
 	SemanticCacheTopK:           3,
 	SemanticCacheScoreThreshold: 0.92,
 	// 语义缓存 embedding 供应商默认指向智谱(BigModel)，endpoint 用 /api/paas/v4/embeddings。
-	SemanticCacheEmbedBaseURL:   "https://open.bigmodel.cn",
-	SemanticCacheEmbedAPIKey:    "46f90d2f5c5346b8bcdbeaebdae36699.VuUPspiwVxio4KkX", // 本地默认；含密钥，提交前请改为经后台「降本优化」表单录入或移入 Options 表，勿提交明文密钥。
-	SemanticCacheEmbedModel:     "embedding-2",
-	SemanticCacheEmbedEndpoint:  "/api/paas/v4/embeddings",
-	ToolResultCacheEnabled:      false,
-	ToolResultCacheTTLSeconds:   600,
-	CacheWarmupEnabled:          false,
-	CDNEnabled:                  false,
-	PromptCompressionEnabled:    false,
-	PromptCompressionMaxRatio:   0.5,
-	ToolDefTrimEnabled:          false,
-	RAGEnabled:                  false,
-	RAGEndpoint:                 "",
-	RAGAPIKey:                   "",
-	LongTaskPersistEnabled:      false,
-	BatchEnabled:                false,
-	BatchPollIntervalSeconds:    30,
-	BatchChatEndpoint:           DefaultBatchChatEndpoint,
-	BatchFilesPath:              "/v1/files",
+	SemanticCacheEmbedBaseURL:  "https://open.bigmodel.cn",
+	SemanticCacheEmbedAPIKey:   "", // 密钥请勿硬编码在此；请经后台「降本优化」表单录入或写入 Options 表。
+	SemanticCacheEmbedModel:    "embedding-2",
+	SemanticCacheEmbedEndpoint: "/api/paas/v4/embeddings",
+	ToolResultCacheEnabled:     false,
+	ToolResultCacheTTLSeconds:  600,
+	CacheWarmupEnabled:         false,
+	CDNEnabled:                 false,
+	RAGEnabled:                 false,
+	RAGEndpoint:                "",
+	RAGAPIKey:                  "",
+
+	// ===== 档位 C：需外部基建（上游/自有服务就绪后才可用）=====
+	// 全部保持关闭；缺端点时钩子优雅 no-op，不阻塞主链路。
+	BatchEnabled:             false,
+	BatchPollIntervalSeconds: 30,
+	BatchChatEndpoint:        DefaultBatchChatEndpoint,
+	BatchFilesPath:           "/v1/files",
 	// 批量 Embedding 供应商默认指向智谱(BigModel)：base 仅到主机，endpoint 用 /api/paas/v4/embeddings，
 	// 模型用 embedding-2（智谱的向量模型；GLM-4-Flash 是对话模型、不能产出向量，勿填）。
-	BatchEmbedEnabled:           true,
-	BatchEmbedBaseURL:           "https://open.bigmodel.cn",
-	BatchEmbedAPIKey:            "46f90d2f5c5346b8bcdbeaebdae36699.VuUPspiwVxio4KkX", // 本地默认；含密钥，提交前请改为经后台「降本优化」表单录入或移入 Options 表，勿提交明文密钥。
-	BatchEmbedModel:             "embedding-2",
-	BatchEmbedEndpoint:          "/api/paas/v4/embeddings",
-	AgentStepBudgetEnabled:      false,
-	AgentStepBudgetMaxSteps:     20,
-	AgentStepBudgetMaxTokens:    200000,
-	ToolCallDedupEnabled:        false,
-	LoopDetectionEnabled:        false,
-	LoopDetectionThreshold:      3,
-	MetricsEnabled:              false,
-	CostPerSuccessEnabled:       false,
-	AnomalyAlertEnabled:         false,
+	BatchEmbedEnabled:  false,
+	BatchEmbedBaseURL:  "https://open.bigmodel.cn",
+	BatchEmbedAPIKey:   "", // 密钥请勿硬编码在此；请经后台「降本优化」表单录入或写入 Options 表。
+	BatchEmbedModel:    "embedding-2",
+	BatchEmbedEndpoint: "/api/paas/v4/embeddings",
+
+	SpikeAlertEnabled:      false,
+	SpikeAlertTokensPerMin: 200000,
+	SpikeAlertMultiplier:   5,
+	// 成本感知路由：只改渠道选择不改模型，保真；但会改变流量分布，默认关闭。
+	CostAwareRoutingEnabled: false,
+
+	MetricsEnabled:        false,
+	CostPerSuccessEnabled: false,
+	AnomalyAlertEnabled:   false,
 
 	// V2.2「降本优化」默认值
-	// #4/#5/#6/#7 默认走 auto：自动实现 + 手动可配置。自动模式从渠道 model_mapping 后的
+	// #4/#5 默认走 auto：自动实现 + 手动可配置。自动模式从渠道 model_mapping 后的
 	// 上游模型定价自动推算有效单价并择优，无需手填价目表；手填项作为覆盖/边界约束。
-	ArbitrageMode:                "auto",
-	ArbitrageEnabled:             false,
-	ArbitragePriceSource:         "ratio_config",
-	ArbitrageMaxPriceRatio:       1.0,
-	ArbitrageAutoMaxPriceRatio:   1.0,
+	ArbitrageMode:              "auto",
+	ArbitrageEnabled:           false,
+	ArbitragePriceSource:       "ratio_config",
+	ArbitrageMaxPriceRatio:     1.0,
+	ArbitrageAutoMaxPriceRatio: 1.0,
+	// 🔴 保真红线：该项已被ArbitrageCandidates 硬编码为「恒同模型」，
+	// 此处保留 true 仅表达意图，**改成 false 也不再放宽**（见 arbitrage.go 注释）。
 	ArbitragePreferSameModelOnly: true,
 
-	ValueTierMode:           "auto",
+	ValueTierMode: "off",
+	// ValueTierEnabled 遗留总开关（ValueTierMode 为空时回退）。已因保真原则整体停用。
 	ValueTierEnabled:        false,
 	ValueTierMinPromptChars: 2000,
 	ValueTierBulkOnly:       true,
 	ValueTierAutoDetectBulk: true,
 
-	TierSplitMode:                  "auto",
+	TierSplitMode: "off",
+	// TierSplitEnabled 遗留总开关（TierSplitMode 为空时回退）。已因保真原则整体停用。
 	TierSplitEnabled:               false,
 	TierSplitAutoDetect:            true,
 	TierSplitNonStreamAsBackground: false,
@@ -457,7 +492,6 @@ var costOptSetting = CostOptSetting{
 	CDNCacheTTLSeconds: 86400,
 	CDNIncludeQuery:    false,
 
-	StructuredOutputEnabled:    false,
 	StructuredOutputMode:       "json_object",
 	StructuredOutputMaxRetries: 1,
 

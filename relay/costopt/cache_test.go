@@ -154,9 +154,19 @@ func TestStoreIfCachable_RespectsMaxTokens(t *testing.T) {
 
 func TestCacheEnabled_Gate(t *testing.T) {
 	useCostOptMiniRedis(t)
-	// 默认未开启
-	require.False(t, CacheEnabled(), "缓存默认关闭，需显式开启")
 
+	// 门控之一：Redis 不可用时必须关闭，即便开关为真（否则会 panic 或静默失效）。
 	withCacheConfig(t, 300, 4096)
-	require.True(t, CacheEnabled(), "开启开关且 Redis 可用时应为真")
+	prevRDB := common.RDB
+	common.RDB = nil
+	require.False(t, CacheEnabled(), "Redis 不可用时缓存必须关闭")
+	common.RDB = prevRDB
+	require.True(t, CacheEnabled(), "开关开启且 Redis 可用时应为真")
+
+	// 门控之二：开关是真实门控，显式关闭即失效（防缓存被误当成常开）。
+	cfg := costoptcfg.GetCostOptSetting()
+	prevEnabled := cfg.ResponseCacheEnabled
+	cfg.ResponseCacheEnabled = false
+	require.False(t, CacheEnabled(), "开关关闭时缓存必须关闭")
+	cfg.ResponseCacheEnabled = prevEnabled
 }

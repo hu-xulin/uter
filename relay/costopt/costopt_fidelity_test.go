@@ -143,3 +143,75 @@ func TestModelFidelity_LockConstant(t *testing.T) {
 	assert.Contains(t, ModelRewriteDisabledReason, "模型保真",
 		"停用原因应明确指向模型保真原则，便于后台向运营解释")
 }
+
+// TestModelFidelity_ArbitrageNeverSubstitutesModel 覆盖套利路径。
+//
+// 这是保真重构**之后才发现**的真实漏洞：ArbitrageCandidates 原本受
+// ArbitragePreferSameModelOnly 控制，置 false 时退化为「去供应商前缀的基准名匹配」，
+// 于是价目表里一个 {"gpt-4o": 1.5} 就能把 claude-sonnet 的请求改写成 gpt-4o。
+// ApplyArbitrage 里还有一条更直接的兜底分支：价目表未命中就用
+// ArbitrageFallbackModel 换模型。两条都必须在任意配置下失效。
+func TestModelFidelity_ArbitrageNeverSubstitutesModel(t *testing.T) {
+	// 构造一个足以让旧逻辑换掉模型的价目表：基准名不同、且配了兜底模型。
+	withConfig(t, func(c *costoptcfg.CostOptSetting) {
+		c.ArbitrageMode = "manual"
+		c.ArbitragePreferSameModelOnly = false // 旧逻辑据此放开跨模型替换
+		c.ArbitrageModelPrices = map[string]float64{
+			"gpt-4o":      1.5,
+			"groq/gpt-4o": 0.2,
+		}
+		c.ArbitrageFallbackModel = "gpt-4o-mini"
+	})
+
+	req := &dto.GeneralOpenAIRequest{
+		Model:    "claude-opus-4-5",
+		Messages: []dto.Message{{Role: "user", Content: "hi"}},
+	}
+	assert.False(t, ApplyArbitrage(req), "ApplyArbitrage 不得再有任何改写行为")
+	assert.Equal(t, "claude-opus-4-5", req.Model,
+		"模型保真：套利不得把客户选择的 claude-opus-4-5 换成 gpt-4o / gpt-4o-mini")
+}
+
+// TestModelFidelity_ArbitrageCandidatesAreSameModelName 锁定候选集只能含同一模型名。
+//
+// 覆盖两种配置：同模型限定开/关，都必须只认完整模型名精确匹配。
+func TestModelFidelity_ArbitrageCandidatesAreSameModelName(t *testing.T) {
+	for _, sameOnly := range []bool{true, false} {
+		withConfig(t, func(c *costoptcfg.CostOptSetting) {
+			c.ArbitrageMode = "manual"
+			c.ArbitragePreferSameModelOnly = sameOnly
+			c.ArbitrageModelPrices = map[string]float64{
+				"gpt-4o":      1.5,
+				"groq/gpt-4o": 0.2, // 去掉前缀后基准名相同 → 旧逻辑会当成同模型候选
+				"gpt-4o-mini": 0.1, // 明显不同模型 → 任何逻辑都不该放行
+			}
+		})
+
+		cands := ArbitrageCandidates("gpt-4o")
+		require.Len(t, cands, 1, "同模型限定=%v 时，gpt-4o 的候选只能是它自己", sameOnly)
+		assert.Equal(t, "gpt-4o", cands[0].Name,
+			"候选集不得包含 groq/gpt-4o（带供应商前缀即不同名）或 gpt-4o-mini（不同模型）")
+
+		assert.Empty(t, ArbitrageCandidates("claude-opus-4-5"),
+			"价目表里没有任何 claude-opus-4-5 条目，不应产生候选")
+	}
+}
+
+// TestModelFidelity_SameModelArbitrageStillPicksCheapest 确认保真收紧后
+// 「同一模型跨渠道比价」这个真实降本能力没有被误伤。
+func TestModelFidelity_SameModelArbitrageStillPicksCheapest(t *testing.T) {
+	withConfig(t, func(c *costoptcfg.CostOptSetting) {
+		c.ArbitrageMode = "manual"
+		c.ArbitragePriceSource = "manual"
+		c.ArbitrageModelPrices = map[string]float64{
+			"gpt-4o":      1.5,
+			"gpt-4o-mini": 0.1,
+		}
+	})
+
+	cands := ArbitrageCandidates("gpt-4o")
+	require.Len(t, cands, 1)
+	assert.Equal(t, "gpt-4o", cands[0].Name)
+	// 价目表里 gpt-4o 只有一个报价，比价结果自然就是它本身——模型不变。
+	assert.Equal(t, float64(1.5), cands[0].Price)
+}
