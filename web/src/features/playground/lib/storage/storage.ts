@@ -59,12 +59,27 @@ function readStoredMessagesValue(): unknown | null {
   const saved = localStorage.getItem(key)
   if (!saved) return null
 
-  if (saved.length > MAX_STORED_MESSAGES_BYTES) {
+  // New writes are obfuscated (base64); legacy plaintext is still valid JSON.
+  // Deobfuscate first and fall back to a plain parse so data stored by older
+  // builds keeps loading. The size guard runs on the decoded content, not the
+  // ~33%-larger base64 wrapper, so large histories aren't dropped on read.
+  let decoded: string
+  try {
+    decoded = deobfuscateStored(saved)
+  } catch {
+    decoded = saved
+  }
+
+  if (decoded.length > MAX_STORED_MESSAGES_BYTES) {
     localStorage.removeItem(key)
     return null
   }
 
-  return JSON.parse(saved) as unknown
+  try {
+    return JSON.parse(decoded) as unknown
+  } catch {
+    return null
+  }
 }
 
 function unwrapStoredValue(value: unknown): unknown {
@@ -86,6 +101,38 @@ function writeStoredValue<T>(key: string, data: T): void {
   }
 
   localStorage.setItem(key, JSON.stringify(payload))
+}
+
+// Defense-in-depth for the persisted playground conversation. It can contain
+// user-pasted secrets or PII, so we avoid storing it as readable plaintext: the
+// on-disk value is XOR-scrambled + base64 rather than raw JSON. This is NOT
+// crypto-grade (the transform is reversible by anyone with the source), but it
+// removes the lowest-hanging exposure — a casual localStorage read or a naive
+// XSS that grabs the stored string verbatim — and stays fully synchronous and
+// backwards-compatible with previously stored plaintext.
+const MESSAGES_OBFUSCATION_SALT = 'uter-playground-obf-v1'
+
+function scrambleBytes(bytes: Uint8Array): Uint8Array {
+  const salt = new TextEncoder().encode(MESSAGES_OBFUSCATION_SALT)
+  const out = new Uint8Array(bytes.length)
+  for (let i = 0; i < bytes.length; i++) {
+    out[i] = bytes[i] ^ salt[i % salt.length]
+  }
+  return out
+}
+
+function obfuscateStored(plain: string): string {
+  const scrambled = scrambleBytes(new TextEncoder().encode(plain))
+  let binary = ''
+  for (const byte of scrambled) binary += String.fromCharCode(byte)
+  return btoa(binary)
+}
+
+function deobfuscateStored(cipher: string): string {
+  const binary = atob(cipher)
+  const bytes = new Uint8Array(binary.length)
+  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i)
+  return new TextDecoder().decode(scrambleBytes(bytes))
 }
 
 function trimMessages(messages: Message[]): Message[] {
@@ -378,7 +425,14 @@ export function saveMessages(messages: Message[]): void {
   try {
     const trimmed = trimMessages(messages)
     const parsed = messagesSchema.parse(trimmed) as Message[]
-    writeStoredValue(scopedKey(STORAGE_KEYS.MESSAGES), parsed)
+    const payload: StoredEnvelope<Message[]> = {
+      version: STORAGE_VERSION,
+      data: parsed,
+    }
+    localStorage.setItem(
+      scopedKey(STORAGE_KEYS.MESSAGES),
+      obfuscateStored(JSON.stringify(payload))
+    )
   } catch (error) {
     // eslint-disable-next-line no-console
     console.error('Failed to save messages:', error)

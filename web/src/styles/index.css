@@ -38,22 +38,7 @@ For commercial licensing, please contact support@uter.ai
 @import './theme.css';
 @import './theme-presets.css';
 
-/* Shiki dual themes: token colors follow dark theme (pre background stays `bg-background` on the block) */
 @layer components {
-  .shiki span {
-    color: var(--shiki-light) !important;
-    font-style: var(--shiki-light-font-style) !important;
-    font-weight: var(--shiki-light-font-weight) !important;
-    text-decoration: var(--shiki-light-text-decoration) !important;
-  }
-
-  .dark .shiki span {
-    color: var(--shiki-dark) !important;
-    font-style: var(--shiki-dark-font-style) !important;
-    font-weight: var(--shiki-dark-font-weight) !important;
-    text-decoration: var(--shiki-dark-text-decoration) !important;
-  }
-
   .json-code-editor-textarea {
     overflow: auto !important;
     scrollbar-gutter: stable;
