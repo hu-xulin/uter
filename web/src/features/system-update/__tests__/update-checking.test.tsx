@@ -190,7 +190,9 @@ describe('administrator update entry', () => {
       within(dialog).getByRole('link', { name: 'Go to GitHub' })
     ).toHaveAttribute(
       'href',
-      'github.com/uter-ai/uter/releases/tag/v1.0.0-rc.36'
+      // Absolute on purpose: a scheme-less href resolves against the dashboard
+      // origin instead of GitHub, and release notes need it as a baseUrl.
+      'https://github.com/uter-ai/uter/releases/tag/v1.0.0-rc.36'
     )
     await user.keyboard('{Escape}')
     await waitFor(() =>

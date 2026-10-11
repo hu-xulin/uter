@@ -27,7 +27,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useStatus } from '@/hooks/use-status'
-import { isHttpUrl, isLikelyHtml } from '@/lib/content-format'
+import { getSafeHttpUrl, isLikelyHtml } from '@/lib/content-format'
 import {
   isBundledDocsHref,
   legalDocsPathFor,
@@ -112,7 +112,8 @@ function ConfiguredLegalDocument({
 
   const rawContent = data?.data?.trim() ?? ''
   const hasContent = rawContent.length > 0
-  const isUrl = hasContent && isHttpUrl(rawContent)
+  const externalUrl = hasContent ? getSafeHttpUrl(rawContent) : undefined
+  const isUrl = externalUrl !== undefined
   const contentIsHtml = hasContent && isLikelyHtml(rawContent)
   const success = data?.success ?? false
 
@@ -168,7 +169,7 @@ function ConfiguredLegalDocument({
               <Button
                 render={
                   <a
-                    href={rawContent}
+                    href={externalUrl}
                     target='_blank'
                     rel='noopener noreferrer'
                   />

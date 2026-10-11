@@ -18,7 +18,11 @@ For commercial licensing, please contact support@uter.ai
 */
 import { describe, expect, test } from 'vitest'
 
-import { compareSystemVersions, selectLatestRelease } from '../releases'
+import {
+  compareSystemVersions,
+  getSystemReleaseUrl,
+  selectLatestRelease,
+} from '../releases'
 
 describe('system release ordering', () => {
   test.each([
@@ -69,5 +73,29 @@ describe('system release ordering', () => {
   test('rejects malformed payloads instead of reporting that the system is current', () => {
     expect(() => selectLatestRelease({ message: 'bad response' })).toThrow()
     expect(() => selectLatestRelease([{ tag_name: 42 }])).toThrow()
+  })
+
+  test('builds an absolute https release URL that survives the link scheme check', () => {
+    const url = getSystemReleaseUrl({ tag_name: 'v1.0.0-rc.36' } as never)
+
+    // A scheme-less string resolves against the dashboard origin when used as
+    // an href, and cannot be used as a baseUrl at all, so the scheme matters.
+    expect(url).toBe(
+      'https://github.com/uter-ai/uter/releases/tag/v1.0.0-rc.36'
+    )
+    expect(new URL(url).protocol).toBe('https:')
+  })
+
+  test('escapes a tag that would otherwise alter the release URL', () => {
+    const url = getSystemReleaseUrl({
+      tag_name: '../../evil',
+    } as never)
+
+    expect(url).toBe(
+      'https://github.com/uter-ai/uter/releases/tag/..%2F..%2Fevil'
+    )
+    expect(new URL(url).pathname).toBe(
+      '/uter-ai/uter/releases/tag/..%2F..%2Fevil'
+    )
   })
 })

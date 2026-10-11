@@ -111,5 +111,8 @@ export function selectLatestRelease(payload: unknown): SystemRelease | null {
 }
 
 export function getSystemReleaseUrl(release: SystemRelease): string {
-  return `github.com/uter-ai/uter/releases/tag/${encodeURIComponent(release.tag_name)}`
+  // Absolute https URL on purpose: this is consumed both as an `href` and as the
+  // `baseUrl` for relative links in the release notes, and a scheme-less string
+  // resolves against the dashboard origin instead of GitHub.
+  return `https://github.com/uter-ai/uter/releases/tag/${encodeURIComponent(release.tag_name)}`
 }

@@ -24,6 +24,7 @@ import {
   StaticDataTable,
   staticDataTableClassNames as tableStyles,
 } from '@/components/data-table'
+import { getSafeHttpUrl } from '@/lib/content-format'
 import { cn } from '@/lib/utils'
 
 import {
@@ -93,14 +94,15 @@ function GrowthChip(props: { value: number }) {
 }
 
 function AppLink(props: { app: AppRanking }) {
-  if (!props.app.url) {
+  const safeUrl = getSafeHttpUrl(props.app.url)
+  if (!safeUrl) {
     return <span className='text-foreground'>{props.app.name}</span>
   }
   return (
     <a
-      href={props.app.url}
+      href={safeUrl}
       target='_blank'
-      rel='noreferrer'
+      rel='noopener noreferrer'
       className='text-foreground hover:text-primary inline-flex items-center gap-1 transition-colors'
     >
       {props.app.name}
