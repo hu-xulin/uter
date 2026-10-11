@@ -19,6 +19,7 @@ For commercial licensing, please contact support@uter.ai
 import DOMPurify, { type Config } from 'dompurify'
 import { useEffect, useMemo, useRef } from 'react'
 
+import { sanitizeInlineStyle, sanitizeStyleSheet } from '@/lib/safe-css'
 import { cn } from '@/lib/utils'
 
 export type HtmlContentVariant = 'inline' | 'isolated'
@@ -59,6 +60,10 @@ const isolatedContentBaseStyles = `
 </style>
 `
 
+// `style` stays out of ADD_ATTR on purpose: DOMPurify allows the `style`
+// attribute by default, so listing it only restates the default. The attribute
+// and `<style>` contents are filtered by value in hardenIsolatedHtml instead --
+// see safe-css for why a tag/attribute allowlist is not enough.
 const isolatedSanitizeOptions = {
   ADD_ATTR: [
     'allowfullscreen',
@@ -78,7 +83,6 @@ const isolatedSanitizeOptions = {
     'referrerpolicy',
     'rel',
     'srclang',
-    'style',
     'target',
   ],
   ADD_TAGS: ['audio', 'iframe', 'picture', 'source', 'style', 'track', 'video'],
@@ -115,7 +119,30 @@ function hardenIsolatedHtml(html: string): string {
     }
   })
 
+  filterIsolatedCss(template.content)
+
   return template.innerHTML
+}
+
+/**
+ * Drop CSS that can reach the network or execute. Inline declarations are
+ * filtered one by one so a single `background-image:url(...)` does not take the
+ * rest of a layout rule with it.
+ */
+function filterIsolatedCss(root: ParentNode): void {
+  root.querySelectorAll<HTMLElement>('[style]').forEach((element) => {
+    const sanitized = sanitizeInlineStyle(element.getAttribute('style') ?? '')
+
+    if (sanitized) {
+      element.setAttribute('style', sanitized)
+    } else {
+      element.removeAttribute('style')
+    }
+  })
+
+  root.querySelectorAll('style').forEach((element) => {
+    element.textContent = sanitizeStyleSheet(element.textContent ?? '')
+  })
 }
 
 function sanitizeHtmlContent(
@@ -141,6 +168,9 @@ function IsolatedHtmlContent(props: {
   html: string
 }): React.ReactElement {
   const containerRef = useRef<HTMLDivElement>(null)
+  // A closed shadow root is unreachable via `container.shadowRoot`, so the only
+  // way to reach it across re-renders is to hold on to it here.
+  const shadowRootRef = useRef<ShadowRoot | null>(null)
 
   useEffect(() => {
     const container = containerRef.current
@@ -148,8 +178,11 @@ function IsolatedHtmlContent(props: {
       return
     }
 
+    // `mode: 'closed'` keeps the rendered admin HTML off `element.shadowRoot`,
+    // so page scripts cannot reach in and rewrite it after sanitization.
     const shadowRoot =
-      container.shadowRoot ?? container.attachShadow({ mode: 'open' })
+      shadowRootRef.current ??
+      (shadowRootRef.current = container.attachShadow({ mode: 'closed' }))
     const applicationStyleNodes = [
       ...document.head.querySelectorAll<HTMLLinkElement | HTMLStyleElement>(
         'style, link[rel="stylesheet"]'
