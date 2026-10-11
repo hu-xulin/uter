@@ -93,8 +93,13 @@ const allowedAttributes = [
   'y2',
 ]
 
+// `semantics` / `annotation` are deliberately absent. DOMPurify blacklists both
+// (mathMlDisallowed) because an HTML integration point inside MathML lets a
+// parser switch back to the HTML namespace, which is the classic mXSS namespace
+// confusion root cause. KaTeX does emit them, but only inside the
+// `.katex-mathml` span, which the stylesheet clips to 1px -- every visible glyph
+// comes from the sibling `.katex-html` span, so dropping them is not visible.
 const allowedTags = [
-  'annotation',
   'circle',
   'defs',
   'ellipse',
@@ -121,7 +126,6 @@ const allowedTags = [
   'path',
   'polygon',
   'rect',
-  'semantics',
   'stop',
   'svg',
   'text',

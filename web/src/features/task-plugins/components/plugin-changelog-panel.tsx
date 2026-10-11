@@ -24,6 +24,7 @@ import { EmptyState } from '@/components/empty-state'
 import { ErrorState } from '@/components/error-state'
 import { LoadingState } from '@/components/loading-state'
 import { Markdown } from '@/components/ui/markdown'
+import { getSafeHttpUrl } from '@/lib/content-format'
 
 import { findMarketplaceVersion } from '../lib/marketplace'
 import { changelogLocale, fetchPluginChangelog } from '../lib/plugin-changelog'
@@ -80,6 +81,10 @@ export function PluginChangelogPanel(props: PluginChangelogPanelProps) {
   }
 
   const changelog = query.data
+  // A marketplace index is third-party content: `sourceUrl` is untrusted and is
+  // used both as an href and as the base for every relative link in the
+  // changelog body, so it must be scheme-checked before either use.
+  const sourceUrl = getSafeHttpUrl(changelog.sourceUrl)
   const categoryLabels = {
     Added: t('Added'),
     Changed: t('Changed'),
@@ -95,14 +100,16 @@ export function PluginChangelogPanel(props: PluginChangelogPanelProps) {
         <span className='text-muted-foreground font-mono text-xs'>
           v{changelog.version}
         </span>
-        <a
-          href={changelog.sourceUrl}
-          target='_blank'
-          rel='noopener noreferrer'
-          className='text-muted-foreground hover:text-foreground inline-flex items-center gap-1.5 text-xs'
-        >
-          {t('View changelog source')}
-        </a>
+        {sourceUrl && (
+          <a
+            href={sourceUrl}
+            target='_blank'
+            rel='noopener noreferrer'
+            className='text-muted-foreground hover:text-foreground inline-flex items-center gap-1.5 text-xs'
+          >
+            {t('View changelog source')}
+          </a>
+        )}
       </div>
       {locale !== 'en' && changelog.locale === 'en' && (
         <p role='status' className='text-muted-foreground text-xs'>
@@ -115,9 +122,7 @@ export function PluginChangelogPanel(props: PluginChangelogPanelProps) {
         <section key={section.category} className='space-y-2'>
           <h3 className='font-medium'>{categoryLabels[section.category]}</h3>
           <div lang={changelog.locale}>
-            <Markdown baseUrl={changelog.sourceUrl}>
-              {section.markdown}
-            </Markdown>
+            <Markdown baseUrl={sourceUrl}>{section.markdown}</Markdown>
           </div>
         </section>
       ))}

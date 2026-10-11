@@ -16,6 +16,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
+import { getSafeHttpUrl } from '@/lib/content-format'
+
 import { TASK_STATUS } from '../constants'
 import type {
   TaskArtifact,
@@ -190,12 +192,5 @@ export function resolveTaskPreviewMode(
 export function getSafePluginAuthorUrl(
   author?: TaskPluginAuthor
 ): string | undefined {
-  if (!author?.url) return undefined
-  try {
-    const url = new URL(author.url)
-    if (url.protocol !== 'https:' && url.protocol !== 'http:') return undefined
-    return url.toString()
-  } catch {
-    return undefined
-  }
+  return getSafeHttpUrl(author?.url)
 }
