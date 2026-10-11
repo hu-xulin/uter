@@ -258,6 +258,8 @@ func main() {
 	if common.DataExportEnabled {
 		model.SaveQuotaDataCache()
 	}
+	// 等待用量日志批量写队列排空，避免关机时丢掉扣费凭据
+	model.FlushLogWrites(5 * time.Second)
 	common.SysLog("server exited")
 }
 

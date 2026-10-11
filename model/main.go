@@ -354,6 +354,10 @@ func migrateDB() error {
 	if err := migrateOptionPrimaryKey(DB); err != nil {
 		common.SysError("failed to migrate options primary key: " + err.Error())
 	}
+	// 必须在下方AutoMigrate 建 idx_qdt_agg_unique 唯一索引【之前】去重：
+	// 存量库若已有同一聚合键的多行（多实例刷盘、或旧的「先查后写」在竞态下双写），
+	// 建索引会因约束冲突失败，把启动卡死。去重累加统计量后只保留一行，不丢数据。
+	dedupeQuotaDataAggregatesOnce()
 
 	err := DB.AutoMigrate(
 		&Channel{},
