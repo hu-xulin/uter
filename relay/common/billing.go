@@ -22,3 +22,12 @@ type BillingSettler interface {
 	// Reserve 将预扣额度补到目标值；若目标值不高于当前预扣额度则不做任何事。
 	Reserve(targetQuota int) error
 }
+
+// RefundWaiter 是 BillingSettler 的可选扩展：等待 Refund 的异步退款真正结束。
+// 未发起过退款时实现必须立即返回。
+//
+// 单列为可选接口而非加进 BillingSettler：等待退款只是少数调用点（违规扣费）
+// 的排序需求，而 BillingSettler 的其余实现（含测试替身）并不需要它。
+type RefundWaiter interface {
+	WaitRefundDone()
+}

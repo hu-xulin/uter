@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/uter-ai/uter/common"
@@ -23,6 +24,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	"github.com/tidwall/gjson"
+	"github.com/tidwall/sjson"
 )
 
 type ThinkingContentInfo struct {
@@ -204,6 +206,10 @@ type RelayInfo struct {
 	// convOptions caches the converter settings snapshot (see ConvOptions).
 	convOptions *convmeta.Options
 
+	// costOptCacheKey 缓存降本中间层缓存键（精确缓存 + 负缓存同源）的计算结果。
+	// 见 CostOptCacheKey。
+	costOptCacheKey costOptCacheKeyMemo
+
 	conversionDiagnostics          []types.ConversionDiagnostic
 	conversionDiagnosticKeys       map[conversionDiagnosticKey]struct{}
 	conversionDiagnosticsTruncated bool
@@ -215,6 +221,46 @@ type RelayInfo struct {
 	*ResponsesUsageInfo
 	*ChannelMeta
 	*TaskRelayInfo
+}
+
+// costOptCacheKeyMemo 记住本次请求已经算过的降本缓存键。
+//
+// 精确缓存键需要 json.Marshal 整个 req.Messages（400KB payload 约 2-5ms 外加
+// 一份等大的临时分配），而 TextHelper 在同一次请求里会算两遍：先算负缓存键，
+// 再算精确缓存键，两次输入完全相同。
+//
+// 有效性判据用**请求指针身份**而不是内容指纹：内容指纹本身就得先序列化一遍，
+// 等于把要省的开销又付回去。同一请求内两次调用拿到的是同一个指针；换渠道重试时
+// TextHelper 会DeepCopy 出新的 request 副本，指针随之变化，缓存自动失效重算，
+// 因此不会出现「拿旧请求的键去查新请求」的串号。
+type costOptCacheKeyMemo struct {
+	mu  sync.Mutex
+	req *dto.GeneralOpenAIRequest
+	key string
+}
+
+// LoadCostOptCacheKey 返回此前为同一请求对象算出的降本缓存键。
+func (info *RelayInfo) LoadCostOptCacheKey(req *dto.GeneralOpenAIRequest) (string, bool) {
+	if info == nil || req == nil {
+		return "", false
+	}
+	info.costOptCacheKey.mu.Lock()
+	defer info.costOptCacheKey.mu.Unlock()
+	if info.costOptCacheKey.key == "" || info.costOptCacheKey.req != req {
+		return "", false
+	}
+	return info.costOptCacheKey.key, true
+}
+
+// StoreCostOptCacheKey 记录本次请求的降本缓存键，供同一请求内的后续调用复用。
+func (info *RelayInfo) StoreCostOptCacheKey(req *dto.GeneralOpenAIRequest, key string) {
+	if info == nil || req == nil || key == "" {
+		return
+	}
+	info.costOptCacheKey.mu.Lock()
+	defer info.costOptCacheKey.mu.Unlock()
+	info.costOptCacheKey.req = req
+	info.costOptCacheKey.key = key
 }
 
 // UpdateImageCount replaces the billable quantity without changing the frozen
@@ -1098,70 +1144,73 @@ func RemoveDisabledFields(jsonData []byte, channelOtherSettings dto.ChannelOther
 	if !hasRemovableDisabledField(jsonData, channelOtherSettings) {
 		return jsonData, nil
 	}
-
-	var data map[string]any
-	if err := common.Unmarshal(jsonData, &data); err != nil {
-		common.SysError("RemoveDisabledFields Unmarshal error :" + err.Error())
+	// sjson 不会校验整段 JSON 的合法性，非法输入会静默产生错误结果；
+	// 这里先显式校验，保持与旧实现「解析失败则原样返回」一致的降级语义。
+	if !gjson.ValidBytes(jsonData) {
+		common.SysError("RemoveDisabledFields: invalid json payload, skipped field filtering")
 		return jsonData, nil
 	}
 
-	// 默认移除 service_tier，除非明确允许（避免额外计费风险）
-	if !channelOtherSettings.AllowServiceTier {
-		if _, exists := data["service_tier"]; exists {
-			delete(data, "service_tier")
+	// 在 []byte 上直接按顶层 key 删除，不再 Unmarshal 成 map[string]any 再 Marshal 回来。
+	// 旧实现对含大 base64 字段的多模态请求会放大数倍内存（interface 装箱 + map bucket
+	// + 再次 marshal），这里对齐同包 applyOperationsLegacy 的写法，只改动必要的那几个字节。
+	result := jsonData
+	for _, field := range removableDisabledTopFields(jsonData, channelOtherSettings) {
+		next, err := sjson.DeleteBytes(result, escapeSjsonLiteralKey(field))
+		if err != nil {
+			common.SysError("RemoveDisabledFields delete " + field + " error: " + err.Error())
+			return jsonData, nil
 		}
+		result = next
 	}
 
-	// 默认移除 inference_geo，除非明确允许（避免在未授权情况下透传数据驻留区域）
-	if !channelOtherSettings.AllowInferenceGeo {
-		if _, exists := data["inference_geo"]; exists {
-			delete(data, "inference_geo")
+	// 默认移除 stream_options.include_obfuscation（嵌套路径，不做字面量转义）
+	if !channelOtherSettings.AllowIncludeObfuscation &&
+		gjson.GetBytes(result, "stream_options.include_obfuscation").Exists() {
+		next, err := sjson.DeleteBytes(result, "stream_options.include_obfuscation")
+		if err != nil {
+			common.SysError("RemoveDisabledFields delete stream_options.include_obfuscation error: " + err.Error())
+			return jsonData, nil
 		}
-	}
-
-	// 默认移除 speed，除非明确允许（避免意外切换 Claude 推理速度模式）
-	if !channelOtherSettings.AllowSpeed {
-		if _, exists := data["speed"]; exists {
-			delete(data, "speed")
-		}
-	}
-
-	// 默认允许 store 透传，除非明确禁用（禁用可能影响 Codex 使用）
-	if channelOtherSettings.DisableStore {
-		if _, exists := data["store"]; exists {
-			delete(data, "store")
-		}
-	}
-
-	// 默认移除 safety_identifier，除非明确允许（保护用户隐私，避免向 OpenAI 报告用户信息）
-	if !channelOtherSettings.AllowSafetyIdentifier {
-		if _, exists := data["safety_identifier"]; exists {
-			delete(data, "safety_identifier")
-		}
-	}
-
-	// 默认移除 stream_options.include_obfuscation，除非明确允许（避免关闭响应流混淆保护）
-	if !channelOtherSettings.AllowIncludeObfuscation {
-		if streamOptionsAny, exists := data["stream_options"]; exists {
-			if streamOptions, ok := streamOptionsAny.(map[string]any); ok {
-				if _, includeExists := streamOptions["include_obfuscation"]; includeExists {
-					delete(streamOptions, "include_obfuscation")
-				}
-				if len(streamOptions) == 0 {
-					delete(data, "stream_options")
-				} else {
-					data["stream_options"] = streamOptions
-				}
+		result = next
+		// 旧实现：include_obfuscation 删完后 stream_options 变成空对象时会连带删掉整个
+		// stream_options，避免发出空对象改变上游行为，这里保持一致。
+		if streamOptions := gjson.GetBytes(result, "stream_options"); streamOptions.IsObject() && len(streamOptions.Map()) == 0 {
+			next, err = sjson.DeleteBytes(result, "stream_options")
+			if err != nil {
+				common.SysError("RemoveDisabledFields delete stream_options error: " + err.Error())
+				return jsonData, nil
 			}
+			result = next
 		}
 	}
 
-	jsonDataAfter, err := common.Marshal(data)
-	if err != nil {
-		common.SysError("RemoveDisabledFields Marshal error :" + err.Error())
-		return jsonData, nil
+	return result, nil
+}
+
+// removableDisabledTopFields 返回本次需要从 payload 顶层删除的字段名。
+//
+// 只列出「渠道设置判定为需要删」且「确实出现在 payload 里」的字段：删除一个不存在的
+// key 仍会让 sjson 重新排布整段 JSON，白白付出内存与 CPU，所以先用 gjson 过滤一遍。
+func removableDisabledTopFields(jsonData []byte, channelOtherSettings dto.ChannelOtherSettings) []string {
+	candidates := [...]struct {
+		field   string
+		removes bool
+	}{
+		{"service_tier", !channelOtherSettings.AllowServiceTier},
+		{"inference_geo", !channelOtherSettings.AllowInferenceGeo},
+		{"speed", !channelOtherSettings.AllowSpeed},
+		{"store", channelOtherSettings.DisableStore},
+		{"safety_identifier", !channelOtherSettings.AllowSafetyIdentifier},
 	}
-	return jsonDataAfter, nil
+
+	fields := make([]string, 0, len(candidates))
+	for _, candidate := range candidates {
+		if candidate.removes && gjson.GetBytes(jsonData, escapeSjsonLiteralKey(candidate.field)).Exists() {
+			fields = append(fields, candidate.field)
+		}
+	}
+	return fields
 }
 
 func hasRemovableDisabledField(jsonData []byte, channelOtherSettings dto.ChannelOtherSettings) bool {

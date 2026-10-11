@@ -1097,42 +1097,46 @@ func (channel *Channel) GetHeaderOverride() map[string]any {
 }
 
 func GetChannelsByIds(ids []int) ([]*Channel, error) {
+	return getChannelsByIds(DB, ids)
+}
+
+// getChannelsByIds 支持在调用方给定的事务句柄上读取渠道。
+//
+// 必须支持 tx 版本：BatchSetChannelTag 在事务内先 Update 了 tag，再用它重建
+// abilities。若这里固定走全局 DB，读到的是另一个连接的事务外快照 —— 在 MySQL /
+// PostgreSQL 的 REPEATABLE READ 下可能仍是旧 tag，于是 abilities.tag 与
+// channels.tag 永久不一致。而 UpdateAbilityStatusByTag / UpdateAbilityByTag 都
+// 以 WHERE tag = ? 为唯一入口，一旦 abilities 的 tag 是错的，整条渠道的批量
+// 启停与改权重就会作用到错误的渠道集合上。
+func getChannelsByIds(tx *gorm.DB, ids []int) ([]*Channel, error) {
 	var channels []*Channel
-	err := DB.Where("id in (?)", ids).Find(&channels).Error
+	err := tx.Where("id in (?)", ids).Find(&channels).Error
 	return channels, err
 }
 
 func BatchSetChannelTag(ids []int, tag *string) error {
-	// 开启事务
-	tx := DB.Begin()
-	if tx.Error != nil {
-		return tx.Error
+	if len(ids) == 0 {
+		return nil
 	}
-
-	// 更新标签
-	err := tx.Model(&Channel{}).Where("id in (?)", ids).Update("tag", tag).Error
-	if err != nil {
-		tx.Rollback()
-		return err
-	}
-
-	// update ability status
-	channels, err := GetChannelsByIds(ids)
-	if err != nil {
-		tx.Rollback()
-		return err
-	}
-
-	for _, channel := range channels {
-		err = channel.UpdateAbilities(tx)
-		if err != nil {
-			tx.Rollback()
+	return DB.Transaction(func(tx *gorm.DB) error {
+		// 更新标签
+		if err := tx.Model(&Channel{}).Where("id in (?)", ids).Update("tag", tag).Error; err != nil {
 			return err
 		}
-	}
 
-	// 提交事务
-	return tx.Commit().Error
+		// update ability status —— 必须用同一事务句柄读回，保证看到上面刚写入的 tag。
+		channels, err := getChannelsByIds(tx, ids)
+		if err != nil {
+			return err
+		}
+
+		for _, channel := range channels {
+			if err := channel.UpdateAbilities(tx); err != nil {
+				return err
+			}
+		}
+		return nil
+	})
 }
 
 // CountAllChannels returns total channels in DB

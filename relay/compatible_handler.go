@@ -149,17 +149,15 @@ func TextHelper(c *gin.Context, info *relaycommon.RelayInfo) (uterError *types.U
 		return types.NewErrorWithStatusCode(fmt.Errorf("invalid request type, expected dto.GeneralOpenAIRequest, got %T", info.Request), types.ErrorCodeInvalidRequest, http.StatusBadRequest, types.ErrOptionWithSkipRetry())
 	}
 
-	request, err := common.DeepCopy(textReq)
-	if err != nil {
-		return types.NewError(fmt.Errorf("failed to copy request to GeneralOpenAIRequest: %w", err), types.ErrorCodeInvalidRequest, types.ErrOptionWithSkipRetry())
-	}
+	// 每次渠道尝试都会改写这份副本（模型映射、降本钩子、参数钳制等），
+	// 因此它必须与 info.Request 完全隔离：一次尝试的改写不能泄漏给后续重试。
+	request := deepCopyTextRequest(textReq)
 
 	if request.WebSearchOptions != nil {
 		c.Set("chat_completion_web_search_context_size", request.WebSearchOptions.SearchContextSize)
 	}
 
-	err = helper.ModelMappedHelper(c, info, request)
-	if err != nil {
+	if err := helper.ModelMappedHelper(c, info, request); err != nil {
 		return types.NewError(err, types.ErrorCodeChannelModelMappedError, types.ErrOptionWithSkipRetry())
 	}
 	if err := helper.ApplyReasoningModelSuffix(c, info, request); err != nil {

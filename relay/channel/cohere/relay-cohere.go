@@ -5,6 +5,7 @@ import (
 	"io"
 	"net/http"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/uter-ai/uter/common"
@@ -85,7 +86,9 @@ func cohereStreamHandler(c *gin.Context, info *relaycommon.RelayInfo, resp *http
 	responseId := helper.GetResponseID(c)
 	createdTime := common.GetTimestamp()
 	usage := &dto.Usage{}
-	responseText := ""
+	// 流式拼接用 strings.Builder：每 chunk 一次 `+=` 会在 responseText 非空时
+	// 退化为「重新分配 + 拷贝全部已有内容」，长输出下累计拷贝量是 O(n²/2)。
+	var responseTextBuilder strings.Builder
 	scanner := helper.NewStreamScanner(resp.Body)
 	scanner.Split(func(data []byte, atEOF bool) (advance int, token []byte, err error) {
 		if atEOF && len(data) == 0 {
@@ -99,17 +102,37 @@ func cohereStreamHandler(c *gin.Context, info *relaycommon.RelayInfo, resp *http
 		}
 		return 0, nil, nil
 	})
-	dataChan := make(chan string)
-	stopChan := make(chan bool)
+	// 有缓冲 + select 保护：客户端断开时 gin 的 c.Stream 会直接 return，
+	// 不再消费 dataChan。若生产者用裸 `dataChan <- data`，它会永久阻塞在
+	// 这次发送上（goroutine 泄漏），并连带持有 resp.Body 使上游连接无法归还
+	// 连接池、继续为已放弃的请求消耗上游算力。stopChan 改用 close 而非发送，
+	// 避免消费方已退出时的反向阻塞。
+	dataChan := make(chan string, 10)
+	stopChan := make(chan struct{})
+	var stopOnce sync.Once
+	stop := func() {
+		stopOnce.Do(func() { close(stopChan) })
+	}
 	go func() {
+		defer stop()
 		for scanner.Scan() {
-			data := scanner.Text()
-			dataChan <- data
+			select {
+			case dataChan <- scanner.Text():
+			case <-stopChan:
+				return
+			case <-c.Request.Context().Done():
+				return
+			}
 		}
 		if err := scanner.Err(); err != nil {
 			common.SysLog("error reading stream: " + err.Error())
 		}
-		stopChan <- true
+	}()
+	// 无论消费方怎么退出（正常结束 / 客户端断开 / 提前 return），
+	// 都要让上游 body 被关闭，并唤醒可能仍在发送的生产者。
+	defer func() {
+		stop()
+		service.CloseResponseBodyGracefully(resp)
 	}()
 	helper.SetEventStreamHeaders(c)
 	isFirst := true
@@ -155,7 +178,7 @@ func cohereStreamHandler(c *gin.Context, info *relaycommon.RelayInfo, resp *http
 						Index: 0,
 					},
 				}
-				responseText += cohereResp.Text
+				responseTextBuilder.WriteString(cohereResp.Text)
 			}
 			jsonStr, err := json.Marshal(openaiResp)
 			if err != nil {
@@ -170,7 +193,7 @@ func cohereStreamHandler(c *gin.Context, info *relaycommon.RelayInfo, resp *http
 		}
 	})
 	if usage.PromptTokens == 0 {
-		usage = service.ResponseText2Usage(c, responseText, info.UpstreamModelName, info.GetEstimatePromptTokens())
+		usage = service.ResponseText2Usage(c, responseTextBuilder.String(), info.UpstreamModelName, info.GetEstimatePromptTokens())
 	}
 	return usage, nil
 }

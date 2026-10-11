@@ -138,15 +138,90 @@ func ProcessStreamResponse(streamResponse dto.ChatCompletionsStreamResponse, res
 	return nil
 }
 
-func processTokenData(relayMode int, data string, responseTextBuilder *strings.Builder, toolCount *int) error {
+func collectStreamFunctionCallNames(data string, seen map[string]struct{}, names *[]string) {
+	var streamResponse dto.ChatCompletionsStreamResponse
+	if err := common.UnmarshalJsonStr(data, &streamResponse); err != nil {
+		return
+	}
+	collectStreamFunctionCallNamesFrom(&streamResponse, seen, names)
+}
+
+// collectStreamFunctionCallNamesFrom 是 collectStreamFunctionCallNames 的解析后版本。
+//
+// 同一个 chunk 此前要被 collectStreamFunctionCallNames 与 processTokenData 各
+// Unmarshal 一次（chat completions 模式下两者目标类型完全相同，是同一份解析结果
+// 算两遍），2000 chunk 的请求因此白白多花约 2000 次编解码。热路径改为解析一次后
+// 复用本函数。
+func collectStreamFunctionCallNamesFrom(streamResponse *dto.ChatCompletionsStreamResponse, seen map[string]struct{}, names *[]string) {
+	if streamResponse == nil {
+		return
+	}
+	for _, choice := range streamResponse.Choices {
+		for i, tc := range choice.Delta.ToolCalls {
+			name := strings.TrimSpace(tc.Function.Name)
+			if name == "" {
+				continue
+			}
+			toolIdx := i
+			if tc.Index != nil {
+				toolIdx = *tc.Index
+			}
+			fallbackKey := fmt.Sprintf("index\x00%d\x00%d\x00%s", choice.Index, toolIdx, name)
+			activeKey := fmt.Sprintf("active\x00%d\x00%d\x00%s", choice.Index, toolIdx, name)
+			callID := strings.TrimSpace(tc.ID)
+			if callID != "" {
+				idKey := fmt.Sprintf("id\x00%d\x00%s", choice.Index, callID)
+				if _, ok := seen[idKey]; ok {
+					continue
+				}
+				seen[idKey] = struct{}{}
+				seen[activeKey] = struct{}{}
+				if _, delayedID := seen[fallbackKey]; delayedID {
+					delete(seen, fallbackKey)
+					continue
+				}
+			} else {
+				if _, ok := seen[fallbackKey]; ok {
+					continue
+				}
+				if _, ok := seen[activeKey]; ok {
+					continue
+				}
+				seen[fallbackKey] = struct{}{}
+				seen[activeKey] = struct{}{}
+			}
+			*names = append(*names, name)
+		}
+	}
+}
+
+// processStreamChunk 处理单个 SSE chunk：解析一次，同时喂给 tool_call 名称收集
+// 与正文/工具参数累计两条路径。
+//
+// 此前这两条路径各自对同一段 data 做一次完整 Unmarshal（chat completions 模式下
+// 连目标类型都完全相同），一个 2000 chunk 的流式响应因此多做约 2000 次编解码。
+// 合并为一次解析后复用，两条路径拿到的仍是同一份解析结果，行为不变。
+func processStreamChunk(
+	relayMode int,
+	data string,
+	seenToolCalls map[string]struct{},
+	streamFunctionCallNames *[]string,
+	responseTextBuilder *strings.Builder,
+	toolCount *int,
+) error {
 	switch relayMode {
 	case relayconstant.RelayModeChatCompletions:
 		var streamResponse dto.ChatCompletionsStreamResponse
 		if err := common.UnmarshalJsonStr(data, &streamResponse); err != nil {
 			return err
 		}
+		collectStreamFunctionCallNamesFrom(&streamResponse, seenToolCalls, streamFunctionCallNames)
 		return ProcessStreamResponse(streamResponse, responseTextBuilder, toolCount)
 	case relayconstant.RelayModeCompletions:
+		// 旧路径同样会跑 collectStreamFunctionCallNames（它无条件按
+		// ChatCompletionsStreamResponse 解析），这里保留以免改变行为。
+		// 合并解析只用于 chat completions 这条热路径。
+		collectStreamFunctionCallNames(data, seenToolCalls, streamFunctionCallNames)
 		var streamResponse dto.CompletionsStreamResponse
 		if err := common.UnmarshalJsonStr(data, &streamResponse); err != nil {
 			return err

@@ -35,6 +35,7 @@ type BillingSession struct {
 	fundingSettled   bool // funding.Settle 已成功，资金来源已提交
 	settled          bool // Settle 全部完成（资金 + 令牌）
 	refunded         bool // Refund 已调用
+	refundDone       chan struct{}
 	mu               sync.Mutex
 }
 
@@ -60,7 +61,6 @@ func (s *BillingSession) Settle(actualQuota int) error {
 		s.fundingSettled = true
 	}
 	// 2) 调整令牌额度
-	var tokenErr error
 	if !s.relayInfo.IsPlayground {
 		tokenFn := func() error {
 			if delta > 0 {
@@ -73,15 +73,19 @@ func (s *BillingSession) Settle(actualQuota int) error {
 		// 需人工对账的告警事件（SysError 而非 SysLog），而非静默丢弃导致账本漂移。
 		const maxTokenAdjustRetries = 3
 		for attempt := 0; attempt < maxTokenAdjustRetries; attempt++ {
-			if tokenErr = tokenFn(); tokenErr == nil {
+			if tokenErr := tokenFn(); tokenErr == nil {
 				break
+			} else if attempt == maxTokenAdjustRetries-1 {
+				// 末次尝试仍失败：资金已经落地，只剩令牌账本漂移。
+				// 这不是「扣费没落库」，所以不能作为 Settle 的错误返回给上层
+				// （上层见到错误会把 logs.Quota 记 0，与真实扣掉的额度矛盾，
+				// 破坏「初始余额 − 最终余额 == logs.Quota」不变量）。
+				common.SysError(fmt.Sprintf("token quota adjust permanently failed after %d attempts, ledger drift risk (userId=%d, tokenId=%d, delta=%d): %s",
+					maxTokenAdjustRetries, s.relayInfo.UserId, s.relayInfo.TokenId, delta, tokenErr.Error()))
+			} else {
+				common.SysLog(fmt.Sprintf("token quota adjust attempt %d failed (userId=%d, tokenId=%d, delta=%d): %s",
+					attempt+1, s.relayInfo.UserId, s.relayInfo.TokenId, delta, tokenErr.Error()))
 			}
-			common.SysLog(fmt.Sprintf("token quota adjust attempt %d failed (userId=%d, tokenId=%d, delta=%d): %s",
-				attempt+1, s.relayInfo.UserId, s.relayInfo.TokenId, delta, tokenErr.Error()))
-		}
-		if tokenErr != nil {
-			common.SysError(fmt.Sprintf("token quota adjust permanently failed after %d attempts, ledger drift risk (userId=%d, tokenId=%d, delta=%d): %s",
-				maxTokenAdjustRetries, s.relayInfo.UserId, s.relayInfo.TokenId, delta, tokenErr.Error()))
 		}
 	}
 	// 3) 更新 relayInfo 上的订阅 PostDelta（用于日志）
@@ -89,14 +93,17 @@ func (s *BillingSession) Settle(actualQuota int) error {
 		s.relayInfo.SubscriptionPostDelta += int64(delta)
 	}
 	s.settled = true
-	return tokenErr
+	// 只有「资金未提交」才是结算失败，资金已落地时一律返回 nil：
+	// 令牌漂移已由上面的 SysError 上报，需要人工对账，但不能污染用量日志。
+	return nil
 }
 
 // FundingSettled 报告资金来源是否已提交结算差额。
 //
 // Settle 分两步提交（资金来源 → 令牌额度）：资金来源失败时超出预扣的部分并没有
 // 真正扣到，此时日志只能记已经落地的预扣额；令牌失败则资金已扣、仅令牌账本漂移。
-// 调用方据此区分两者，避免把「没扣到」的钱写进消费日志。
+// Settle 只在前者返回错误，后者的漂移已由 SysError 单独告警，不再作为错误上抛，
+// 因此调用方不会把「已扣全额」误记成 0。此方法供需要区分两者的调用方使用。
 func (s *BillingSession) FundingSettled() bool {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -111,6 +118,11 @@ func (s *BillingSession) Refund(c *gin.Context) {
 		return
 	}
 	s.refunded = true
+	// 退款仍在后台执行（不拖慢失败请求的响应），但必须给调用方一个可等待的
+	// 完成信号：违规扣费同样要写 users.quota，两者必须串行，否则退款与扣费
+	// 在缓存层的异步刷新无序，且退款可能在 MaxWalletQuota 上限附近整笔失败。
+	refundDone := make(chan struct{})
+	s.refundDone = refundDone
 	s.mu.Unlock()
 
 	logger.LogInfo(c, fmt.Sprintf("用户 %d 请求失败, 返还预扣费（token_quota=%s, funding=%s）",
@@ -129,6 +141,7 @@ func (s *BillingSession) Refund(c *gin.Context) {
 	funding := s.funding
 
 	gopool.Go(func() {
+		defer close(refundDone)
 		// 1) 退还资金来源
 		if err := funding.Refund(); err != nil {
 			common.SysLog("error refunding billing source: " + err.Error())
@@ -152,6 +165,22 @@ func (s *BillingSession) NeedsRefund() bool {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	return s.needsRefundLocked()
+}
+
+// WaitRefundDone 等待 Refund 后台任务真正结束；未发起过退款时立即返回。
+//
+// 用于必须排在退款之后的写操作（例如违规扣费）：两者都会
+// UPDATE users SET quota = quota ∓ N，各自 DB 层原子但缓存层异步刷新无序，
+// 且 IncreaseUserQuota 带 MaxWalletQuota 上限条件，退款与扣费并发时退款可能
+// 整笔失败——用户被吞一笔预扣的同时又被扣违规费。
+func (s *BillingSession) WaitRefundDone() {
+	s.mu.Lock()
+	done := s.refundDone
+	s.mu.Unlock()
+	if done == nil {
+		return
+	}
+	<-done
 }
 
 func (s *BillingSession) needsRefundLocked() bool {
@@ -280,6 +309,24 @@ func (s *BillingSession) preConsume(c *gin.Context, quota int) *types.UterError 
 func (s *BillingSession) reserveFunding(delta int, requireAvailableQuota bool) error {
 	switch funding := s.funding.(type) {
 	case *WalletFunding:
+		// 组织成员的组织预算是一道硬闸门，必须恒走 ReserveOrgQuota 的原子预留，
+		// 不能因请求类型而退化到软分支。软分支用的 IncrOrgUsedQuota 是裸
+		// `used_quota = used_quota + ?`（无 WHERE 条件），并发预留时组织预算
+		// 可被任意击穿；且它不写成员 users.used_quota，后续 EnforceOrgQuota
+		// 读到偏低的成员已用量，会持续放行，子额度形同虚设。
+		//
+		// 注意这里的顺序：组织判断放在 requireAvailableQuota 之前，因为
+		// requireAvailableQuota 只反映「图片请求」，而组织成员可能发的是文本
+		// 或 Realtime 请求。
+		if orgId, err := model.OrgIdOfUser(funding.userId); err == nil && orgId > 0 {
+			if err := model.ReserveOrgQuota(orgId, funding.userId, int64(delta)); err != nil {
+				return types.NewErrorWithStatusCode(err, types.ErrorCodeInsufficientUserQuota, http.StatusForbidden, types.ErrOptionWithSkipRetry(), types.ErrOptionWithNoRecordErrorLog())
+			}
+			// ReserveOrgQuota 已同时写组织账本与成员子额度账本，与 rollback
+			// /Refund 的两笔回减严格对称。
+			funding.consumed += delta
+			return nil
+		}
 		if requireAvailableQuota {
 			// Image quantity is known before submission, including retries and
 			// overrides. Reserve atomically instead of admitting wallet debt.
@@ -295,14 +342,7 @@ func (s *BillingSession) reserveFunding(delta int, requireAvailableQuota bool) e
 		// 全额无条件扣减，余额不足的部分记为欠费（余额可为负），不中断请求，
 		// 保证日志记录的预扣额度与用户余额的实际变动始终对账一致。
 		// DecreaseUserQuota 仅在数据库错误时失败。
-		// 组织成员：消耗由组织预算出资，组织 used_quota 账本按 delta 增减，个人钱包不动。
-		// 成员自身的 users.used_quota 不在这里写：它由结算点的
-		// UpdateUserUsedQuotaAndRequestCount 统一累加，重复写入会把用量记成 actual + delta。
-		if orgId, err := model.OrgIdOfUser(funding.userId); err == nil && orgId > 0 {
-			if err := model.IncrOrgUsedQuota(orgId, int64(delta)); err != nil {
-				return types.NewError(err, types.ErrorCodeUpdateDataError, types.ErrOptionWithSkipRetry())
-			}
-		} else if err := model.DecreaseUserQuota(funding.userId, delta, false); err != nil {
+		if err := model.DecreaseUserQuota(funding.userId, delta, false); err != nil {
 			return types.NewError(err, types.ErrorCodeUpdateDataError, types.ErrOptionWithSkipRetry())
 		}
 		funding.consumed += delta
@@ -328,6 +368,9 @@ func (s *BillingSession) rollbackFundingReserve(delta int) {
 	case *WalletFunding:
 		// 组织成员的预扣记在组织账本上，回滚必须回到同一本账；
 		// IncreaseUserQuota 会把额度错记到个人钱包（并永久虚增余额）。
+		// 两笔回减与 reserveFunding 里的 ReserveOrgQuota 严格对称：正向用
+		// 一次原子预留同时写 organizations.used_quota 与 members.used_quota，
+		// 故这里也必须两笔都减。只减其一会让两本账永久错位。
 		if orgId, err := model.OrgIdOfUser(funding.userId); err == nil && orgId > 0 {
 			if err := model.IncrOrgUsedQuota(orgId, -int64(delta)); err != nil {
 				common.SysLog("error rolling back organization funding reserve: " + err.Error())

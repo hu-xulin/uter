@@ -94,6 +94,40 @@ func GetCustomOAuthProviderById(id int) (*CustomOAuthProvider, error) {
 	return &provider, nil
 }
 
+// GetCustomOAuthProvidersByIds 批量取自定义 OAuth provider，返回 id -> provider。
+//
+// provider 是全局小表且几乎不变，列表类接口应一次取回再自行查表，
+// 避免按绑定条数产生 N+1 查询。传入的 id 会去重。
+func GetCustomOAuthProvidersByIds(ids []int) (map[int]*CustomOAuthProvider, error) {
+	result := make(map[int]*CustomOAuthProvider, len(ids))
+	if len(ids) == 0 {
+		return result, nil
+	}
+	unique := make([]int, 0, len(ids))
+	seen := make(map[int]struct{}, len(ids))
+	for _, id := range ids {
+		if id <= 0 {
+			continue
+		}
+		if _, ok := seen[id]; ok {
+			continue
+		}
+		seen[id] = struct{}{}
+		unique = append(unique, id)
+	}
+	if len(unique) == 0 {
+		return result, nil
+	}
+	var providers []*CustomOAuthProvider
+	if err := DB.Where("id IN ?", unique).Find(&providers).Error; err != nil {
+		return nil, err
+	}
+	for _, provider := range providers {
+		result[provider.Id] = provider
+	}
+	return result, nil
+}
+
 // GetCustomOAuthProviderBySlug returns a custom OAuth provider by slug
 func GetCustomOAuthProviderBySlug(slug string) (*CustomOAuthProvider, error) {
 	var provider CustomOAuthProvider

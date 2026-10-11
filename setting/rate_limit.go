@@ -37,11 +37,24 @@ func ModelRequestRateLimitGroup2JSONString() string {
 }
 
 func UpdateModelRequestRateLimitGroupByJSONString(jsonStr string) error {
-	ModelRequestRateLimitMutex.RLock()
-	defer ModelRequestRateLimitMutex.RUnlock()
+	// 先在局部解析，成功后再原子替换整体 map。
+	//
+	// 两个原因都不能省：
+	//  1. 这是写路径，必须持写锁。读侧 GetGroupRateLimit 在每个 relay
+	//     请求上被调用，若这里只持 RLock，写入全局 map 会与并发读撞上
+	//     Go 运行时的 concurrent map read and map write，整进程 fatal，
+	//     且不可 recover。
+	//  2. 直接 make() 后 Unmarshal，一旦解析失败全局配置已被清空，
+	//     限流会静默失效。局部解析失败时保持原配置不变。
+	next := make(map[string][2]int)
+	if err := common.Unmarshal([]byte(jsonStr), &next); err != nil {
+		return err
+	}
 
-	ModelRequestRateLimitGroup = make(map[string][2]int)
-	return common.Unmarshal([]byte(jsonStr), &ModelRequestRateLimitGroup)
+	ModelRequestRateLimitMutex.Lock()
+	ModelRequestRateLimitGroup = next
+	ModelRequestRateLimitMutex.Unlock()
+	return nil
 }
 
 func GetGroupRateLimit(group string) (totalCount, successCount int, found bool) {

@@ -180,6 +180,13 @@ func Relay(c *gin.Context, relayFormat types.RelayFormat) {
 			if relayInfo.Billing != nil {
 				relayInfo.Billing.Refund(c)
 			}
+			// 违规扣费必须排在退款之后：两者都会 UPDATE users SET quota = quota ∓ N，
+			// 各自在 DB 层原子，但缓存层的异步刷新无序；且 IncreaseUserQuota 带
+			// MaxWalletQuota 上限条件，并发执行时退款可能整笔失败——用户被吞一笔
+			// 预扣的同时又被扣违规费。Refund 本身仍是异步的，只在这里等它落地。
+			if waiter, ok := relayInfo.Billing.(relaycommon.RefundWaiter); ok {
+				waiter.WaitRefundDone()
+			}
 			service.ChargeViolationFeeIfNeeded(c, relayInfo, uterError)
 		}
 	}()
@@ -365,6 +372,13 @@ func getChannel(c *gin.Context, info *relaycommon.RelayInfo, retryParam *service
 
 func shouldRetry(c *gin.Context, openaiErr *types.UterError, retryTimes int) bool {
 	if openaiErr == nil {
+		return false
+	}
+	// 响应体一旦开始写出（流式已发出 chunk、或非流式已写 header/部分 body），
+	// 换渠道重发会把第二份回答追加到客户端已收到的内容后面：SSE 消费方拼接
+	// 所有 delta 后会看到整段重复，且这次请求按两次上游调用计费。
+	// 已产生输出的请求只能把错误以 error 事件追加通知客户端，不能重试。
+	if c.Writer.Written() {
 		return false
 	}
 	if service.ShouldSkipRetryAfterChannelAffinityFailure(c) {
