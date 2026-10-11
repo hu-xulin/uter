@@ -37,6 +37,10 @@ export default defineConfig({
     setupFiles: ['./src/test-setup.ts'],
     clearMocks: true,
     restoreMocks: true,
+    // jsdom interaction tests (e.g. channel-configuration) drive heavy
+    // userEvent flows that occasionally run past the 5s default under CI
+    // load and flake on timeout. 20s keeps a comfortable headroom.
+    testTimeout: 20000,
     include: ['src/**/*.{test,spec}.{ts,tsx}'],
   },
 })
