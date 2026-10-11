@@ -10,6 +10,7 @@ import (
 	"github.com/uter-ai/uter/relaykit/dto"
 
 	"github.com/gin-gonic/gin"
+	"golang.org/x/sync/singleflight"
 )
 
 // 版本 3：新增 DepartmentName。部门管理员的数据可见范围按部门【名称】判定
@@ -98,6 +99,13 @@ func updateUserCache(user User) error {
 	return writeUserCache(user.ToBaseUser(), false)
 }
 
+// userCacheMissGroup 合并并发的缓存未命中回源。
+//
+// Redis 集体过期（或被批量失效）的瞬间，同一用户的并发请求会同时穿透到
+// GetUserById。列表页一次可涉及上百个不同 user_id，若不加合并就是上百次
+// users 表查询；单个高频用户的并发穿透同样会被放大成同等量级的查库。
+var userCacheMissGroup singleflight.Group
+
 // GetUserCache gets complete user cache from hash
 func GetUserCache(userId int) (*UserBase, error) {
 	// Try getting from Redis first
@@ -109,6 +117,23 @@ func GetUserCache(userId int) (*UserBase, error) {
 	// Redis misses and read failures both fall back to the shared database. A
 	// version fence newer than the database is the one exception: allowing that
 	// snapshot would re-authorize a user while a restrictive update is pending.
+	// 同一 userId 的并发未命中只放一个请求回源，其余等待并复用其结果。
+	key := fmt.Sprintf("%d", userId)
+	loaded, err, _ := userCacheMissGroup.Do(key, func() (any, error) {
+		// 等锁期间缓存可能已被别的请求填好，先复查一次。
+		if cached, cacheErr := cacheGetUserBase(userId); cacheErr == nil {
+			return cached, nil
+		}
+		return loadUserCacheFromDB(userId)
+	})
+	if err != nil {
+		return nil, err
+	}
+	return loaded.(*UserBase), nil
+}
+
+// loadUserCacheFromDB 回源数据库并顺带水合缓存，是缓存未命中时的唯一落库路径。
+func loadUserCacheFromDB(userId int) (*UserBase, error) {
 	user, err := GetUserById(userId, false)
 	if err != nil {
 		return nil, err
@@ -149,6 +174,55 @@ func cacheGetUserBase(userId int) (*UserBase, error) {
 		return nil, ErrUserAuthCachePending
 	}
 	return &userCache, nil
+}
+
+// GetUserCaches 批量取用户基础信息，返回 userId -> *UserBase。
+//
+// 列表页一页最多 100 条记录，逐个 GetUserCache 在 Redis 集体过期瞬间会打
+// 100 次 users 表。这里先各自命中缓存，未命中的合并成一次 WHERE id IN ? 回源，
+// 把「一页 100 次查库」压成「最多 1 次查库」。
+//
+// 单个用户的读取语义（含 auth version fence 校验）与 GetUserCache 一致；
+// 取不到的用户不会出现在返回 map 中，调用方按缺省处理即可。
+func GetUserCaches(userIds []int) map[int]*UserBase {
+	result := make(map[int]*UserBase, len(userIds))
+	if len(userIds) == 0 {
+		return result
+	}
+	missing := make([]int, 0, len(userIds))
+	for _, userId := range userIds {
+		if userId <= 0 {
+			continue
+		}
+		if cached, err := cacheGetUserBase(userId); err == nil {
+			result[userId] = cached
+			continue
+		}
+		missing = append(missing, userId)
+	}
+	if len(missing) == 0 {
+		return result
+	}
+
+	var users []User
+	if err := DB.Omit("password", "access_token").Where("id IN ?", missing).Find(&users).Error; err != nil {
+		common.SysLog("failed to batch load users: " + err.Error())
+		return result
+	}
+	for _, user := range users {
+		if common.RedisEnabled {
+			floor, floorErr := getUserAuthVersionFloor(user.Id)
+			if floorErr == nil && floor > user.AuthVersion {
+				// 限制性更新在途：宁可让调用方拿不到，也不要用旧快照重新授权。
+				continue
+			}
+			if err := populateUserCache(user); err != nil && !errors.Is(err, ErrUserAuthCachePending) {
+				common.SysLog("failed to synchronously populate user cache: " + err.Error())
+			}
+		}
+		result[user.Id] = user.ToBaseUser()
+	}
+	return result
 }
 
 // Add atomic quota operations using hash fields.
