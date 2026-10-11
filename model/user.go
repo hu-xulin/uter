@@ -493,8 +493,16 @@ func SearchUsersScoped(keyword string, group string, role *int, status *int, sta
 	if tx.Error != nil {
 		return nil, 0, tx.Error
 	}
+	// 业务错误路径必须显式回滚：defer 只能兜住 panic。像下面 likeContains 的
+	// 非法搜索词（%%、% 超 2 个、去 % 后不足 2 字符）就直接 return，若不在这里
+	// 兜底，事务既不 Commit 也不 Rollback，每次请求稳定泄漏一个连接。
+	committed := false
 	defer func() {
 		if r := recover(); r != nil {
+			tx.Rollback()
+			return
+		}
+		if !committed {
 			tx.Rollback()
 		}
 	}()
@@ -563,6 +571,7 @@ func SearchUsersScoped(keyword string, group string, role *int, status *int, sta
 	if err = tx.Commit().Error; err != nil {
 		return nil, 0, err
 	}
+	committed = true
 
 	return users, total, nil
 }

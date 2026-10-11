@@ -420,7 +420,12 @@ func RecordConsumeLog(c *gin.Context, userId int, params RecordConsumeLogParams)
 	if !common.LogConsumeEnabled {
 		return
 	}
-	logger.LogInfo(c, fmt.Sprintf("record consume log: userId=%d, params=%s", userId, common.GetJsonString(params)))
+	// 原来这里无条件 LogInfo 打印整份 params（含 Content 全文 + Other 15+ 字段的
+	// JSON 序列化），每个请求因此多一次全量 Marshal + 一次全量写盘，且没有 debug 门控。
+	// 排障需要参数时用 LogDebug，它自带 common.DebugEnabled 门控。
+	if common.DebugEnabled {
+		logger.LogDebug(c, "record consume log: userId=%d, params=%s", userId, common.GetJsonString(params))
+	}
 	username := c.GetString("username")
 	requestId := c.GetString(common.RequestIdKey)
 	upstreamRequestId := c.GetString(common.UpstreamRequestIdKey)
@@ -461,7 +466,10 @@ func RecordConsumeLog(c *gin.Context, userId int, params RecordConsumeLogParams)
 		CacheReadTokens:   params.CacheReadTokens,
 		CacheWriteTokens:  params.CacheWriteTokens,
 	}
-	err := createLog(log)
+	// 走批量写（group commit）：并发请求的写入被合并成一次批量 INSERT，
+	// 重试与 sleep 由整组共享，而不是每个请求各付一遍。队列满时 submitLogWrite
+	// 会退回同步写，绝不丢日志。
+	err := submitLogWrite(log)
 	if err != nil {
 		logger.LogError(c, "failed to record log: "+err.Error())
 		reportLogWriteFailure(log, err)
@@ -585,7 +593,10 @@ func GetAllLogs(logType int, startTimestamp int64, endTimestamp int64, modelName
 	if len(userIds) > 0 {
 		tx = tx.Where("logs.user_id IN ?", userIds)
 	}
-	err = tx.Model(&Log{}).Count(&total).Error
+	// 与 GetUserLogs 对齐加硬上限：logs 是全站写入量最大的表，管理端不传
+	// 时间范围时 COUNT 就是一次无边界全表扫描。这里只截断 total，不改返回
+	// 结构与字段，前端读到的仍是「总条数」（上限内精确，超出即为 10000）。
+	err = tx.Model(&Log{}).Limit(logSearchCountLimit).Count(&total).Error
 	if err != nil {
 		return nil, 0, err
 	}

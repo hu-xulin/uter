@@ -178,19 +178,42 @@ return 1`
 // fence, then persists the version in the caller's transaction. Unscoped is
 // intentional so the same fail-closed path also covers hard deletion of an
 // already soft-deleted user.
+//
+// 每一轮分为两个阶段，Redis IO 一律发生在加行锁之前：
+//  1. 无锁读出当前版本并发布 fence（fail-closed 的下界必须先于提交可见）；
+//  2. 加行锁复核版本后做 CAS 更新。
+//
+// 之所以不把 fence 移到提交之后，是因为它必须在事务提交前就可见——否则
+// 限制性更新尚未落库、缓存快照却已被读者接受，恰好是 fence 要防的窗口。
+// 而 fence 语义是「宣布一个版本下界」，用略低的快照发布只会让读者更保守，
+// 绝不会漏放陈旧快照；真正的正确性由第 2 步的复核与 CAS 保证。
 func IncrementUserAuthVersionWithTx(tx *gorm.DB, userId int) (int64, error) {
 	if tx == nil || userId <= 0 {
 		return 0, fmt.Errorf("invalid user auth version update")
 	}
 	for range 3 {
+		// 阶段 1：无锁读 + 发布 fence。Redis EVAL 是网络 IO，若放在
+		// SELECT ... FOR UPDATE 之后，行锁会全程覆盖这段往返；Redis 抖动
+		// 就会把该用户的所有写操作（充值、额度调整等）一起排队。
+		var snapshot User
+		if err := tx.Unscoped().Select("id", "auth_version").Where("id = ?", userId).First(&snapshot).Error; err != nil {
+			return 0, err
+		}
+		current := max(snapshot.AuthVersion, 1)
+		next := current + 1
+		if err := SetUserAuthVersionFence(userId, next); err != nil {
+			return 0, err
+		}
+
+		// 阶段 2：加行锁复核。锁内读是 current read，能看到并发事务刚提交的
+		// 新版本；若无锁读拿到的是陈旧快照，则放弃本轮（下一轮重新在锁外
+		// 发布更高的 fence），绝不拿低估的下界去写版本。
 		var user User
 		if err := lockForUpdate(tx.Unscoped()).Select("id", "auth_version").Where("id = ?", userId).First(&user).Error; err != nil {
 			return 0, err
 		}
-		current := max(user.AuthVersion, 1)
-		next := current + 1
-		if err := SetUserAuthVersionFence(userId, next); err != nil {
-			return 0, err
+		if max(user.AuthVersion, 1) != current {
+			continue
 		}
 		result := tx.Unscoped().Model(&User{}).
 			Where("id = ? AND auth_version = ?", userId, user.AuthVersion).
