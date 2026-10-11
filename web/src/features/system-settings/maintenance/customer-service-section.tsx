@@ -656,6 +656,7 @@ function ModelConfigPanel({ reloadSignal = 0 }: { reloadSignal?: number }) {
 
   return (
     <div className='mt-6 space-y-3 rounded-lg border p-4'>
+      <h3 className='text-base font-medium'>{t('Model Configuration')}</h3>
       <p className='text-muted-foreground text-sm'>
         {t(
           'Large model settings for the customer service assistant. Changes are pushed to the connected uter-cs deployment.'
