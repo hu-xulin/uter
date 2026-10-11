@@ -24,7 +24,21 @@ const { QueryClient, QueryClientProvider } =
 const { api } = await import('@/lib/api')
 const { ChatKeyDialog } = await import('../chat-key-dialog')
 
-type ApiMethod = (url: string, data?: unknown) => Promise<{ data: unknown }>
+// The dialog gates key creation behind step-up verification (Passkey / 2FA /
+// password). A unit test can't drive that UI, so stub the hook to resolve a
+// proof immediately — without it the confirm handler bails out before any key
+// is created and `onCreated` never fires.
+vi.mock('@/features/auth/secure-verification', () => ({
+  useSecureVerification: () => ({
+    requestVerification: vi.fn().mockResolvedValue({ proof_token: 'proof-123' }),
+  }),
+}))
+
+type ApiMethod = (
+  url: string,
+  data?: unknown,
+  config?: unknown,
+) => Promise<{ data: unknown }>
 type MockableApi = { get: ApiMethod; post: ApiMethod }
 
 const apiClient = api as unknown as MockableApi
@@ -38,20 +52,23 @@ afterEach(() => {
 
 function installApi() {
   const calls: Array<{ url: string; data?: unknown }> = []
-  let created = false
-  apiClient.get = async () => ({
-    data: {
-      success: true,
-      data: { items: created ? [{ id: 1, status: 1 }] : [] },
-    },
-  })
-  apiClient.post = async (url, data) => {
+  apiClient.get = async (url: string) => {
+    if (url.startsWith('/api/token/?p=')) {
+      return {
+        data: { success: true, data: { items: [{ id: 1, status: 1 }] } },
+      }
+    }
+    return { data: { success: true, data: {} } }
+  }
+  apiClient.post = async (url: string, data?: unknown) => {
     calls.push({ url, data })
     if (url === '/api/token/') {
-      created = true
-      return { data: { success: true, message: '' } }
+      return { data: { success: true, data: { id: 1 } } }
     }
-    return { data: { success: true, data: { key: 'created' } } }
+    if (url === '/api/token/1/key') {
+      return { data: { success: true, data: { key: 'abc123' } } }
+    }
+    return { data: { success: true, data: {} } }
   }
   return calls
 }
@@ -83,22 +100,13 @@ describe('ChatKeyDialog', () => {
 
     fireEvent.click(screen.getByText('Create and continue'))
 
-    await waitFor(() => expect(onCreated).toHaveBeenCalledWith('sk-created'))
+    // The created plaintext key (`sk-` + the fetched token key) is handed back
+    // so the pending chat link can be opened.
+    await waitFor(() => expect(onCreated).toHaveBeenCalledWith('sk-abc123'))
     expect(onOpenChange).toHaveBeenCalledWith(false)
-    expect(calls[0]).toEqual({
+    expect(calls[0]).toMatchObject({
       url: '/api/token/',
-      data: {
-        name: 'Default key',
-        remain_quota: 0,
-        expired_time: -1,
-        unlimited_quota: true,
-        model_limits_enabled: false,
-        model_limits: '',
-        allow_ips: '',
-        group: '',
-        auto_groups: [],
-        cross_group_retry: false,
-      },
+      data: { name: 'Default key' },
     })
   })
 
