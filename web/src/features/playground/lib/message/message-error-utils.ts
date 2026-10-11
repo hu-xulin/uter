@@ -20,8 +20,13 @@ import { MESSAGE_STATUS } from '../../constants'
 import type { Message } from '../../types'
 import { getMessageContent } from './message-utils'
 
-export const MODEL_PRICING_SETTINGS_PATH =
-  '/system-settings/billing/model-pricing'
+/**
+ * Billing section id of the model pricing settings page.
+ *
+ * The billing settings route is parameterized (`/system-settings/billing/$section`),
+ * so navigation must pass this id as a route param rather than as a literal path.
+ */
+export const MODEL_PRICING_SETTINGS_SECTION = 'model-pricing'
 
 const MODEL_PRICE_ERROR_CODE = 'model_price_error'
 export const FALLBACK_ERROR_CONTENT = 'An unknown error occurred'

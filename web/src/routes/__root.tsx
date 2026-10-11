@@ -134,8 +134,59 @@ function RootComponent() {
   )
 }
 
+/**
+ * setup 状态检查的节流闸门。
+ *
+ * 背景：`beforeLoad` 会在每次路由切换时运行，若闸门不关闭就会反复请求
+ * `/api/status`。这里把三种结果区分开：
+ *  - 请求成功且已完成 setup —— 永久关闭，后续路由切换不再请求；
+ *  - 请求成功但未 setup —— 同样关闭本次会话的检查（用户正被重定向到
+ *    `/setup`，重复请求既无意义也只会放大负载）；
+ *  - 请求失败 —— 允许重试，但受一个短 TTL 约束，避免高频路由切换打爆接口。
+ */
+export const SETUP_STATUS_FAILURE_TTL = 5_000
+
+type SetupStatusGate = {
+  /** 本次路由切换是否需要发起 setup 状态检查 */
+  shouldCheck: (pathname: string) => boolean
+  /** 检查成功（无论是否已 setup）：关闭后续检查 */
+  markResolved: () => void
+  /** 检查失败：记录失败时间，进入 TTL 冷却 */
+  markFailed: (now: number) => void
+}
+
+export function createSetupStatusGate(options?: {
+  failureTtl?: number
+  now?: () => number
+}): SetupStatusGate {
+  const failureTtl = options?.failureTtl ?? SETUP_STATUS_FAILURE_TTL
+  const now = options?.now ?? Date.now
+
+  let resolved = false
+  let lastFailureAt: number | null = null
+
+  return {
+    shouldCheck(pathname) {
+      if (resolved) return false
+      if (pathname.startsWith('/setup')) return false
+      // 失败后处于冷却期：跳过本次检查，等待 TTL 到期再试。
+      if (lastFailureAt !== null && now() - lastFailureAt < failureTtl) {
+        return false
+      }
+      return true
+    },
+    markResolved() {
+      resolved = true
+      lastFailureAt = null
+    },
+    markFailed(failedAt) {
+      lastFailureAt = failedAt
+    },
+  }
+}
+
 // 同一页面会话内避免重复检查；刷新后重新校验当前服务实例。
-let setupStatusChecked = false
+const setupStatusGate = createSetupStatusGate()
 
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient
@@ -148,14 +199,14 @@ export const Route = createRootRouteWithContext<{
     }
 
     const pathname = location?.pathname || ''
-    const needsSetupCheck =
-      !setupStatusChecked && !pathname.startsWith('/setup')
     const authBootstrap = bootstrapAuthentication()
 
     // 只检查 setup 状态（如果需要）
-    if (needsSetupCheck) {
+    if (setupStatusGate.shouldCheck(pathname)) {
+      let failed = false
       const [status] = await Promise.all([
         getSetupStatus().catch((error) => {
+          failed = true
           if (import.meta.env.DEV) {
             // eslint-disable-next-line no-console
             console.warn('[root.beforeLoad] setup status check failed', error)
@@ -165,11 +216,17 @@ export const Route = createRootRouteWithContext<{
         authBootstrap,
       ])
 
-      if (status?.success && status.data) {
-        if (!status.data.status) {
+      if (failed) {
+        // 失败可重试，但进入 TTL 冷却，避免每次路由切换都打一次接口。
+        setupStatusGate.markFailed(Date.now())
+      } else {
+        // 成功即关闭闸门：`status.data.status` 为假说明未 setup，下面直接重定向，
+        // 此时无需（也不应）再为当前会话重复检查。
+        setupStatusGate.markResolved()
+
+        if (status?.success && status.data && !status.data.status) {
           throw redirect({ to: '/setup' })
         }
-        setupStatusChecked = true
       }
     } else {
       await authBootstrap

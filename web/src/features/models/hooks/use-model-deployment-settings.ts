@@ -26,29 +26,8 @@ interface ConnectionState {
   error: string | null
 }
 
-// Connection cache (5 minutes TTL)
+// Connection cache TTL (5 minutes)
 const CONNECTION_CACHE_TTL = 5 * 60 * 1000
-let connectionCache: {
-  ok: boolean
-  timestamp: number
-} | null = null
-
-function getCachedConnection(): boolean | null {
-  if (!connectionCache) return null
-  if (Date.now() - connectionCache.timestamp > CONNECTION_CACHE_TTL) {
-    connectionCache = null
-    return null
-  }
-  return connectionCache.ok
-}
-
-function setCachedConnection(ok: boolean) {
-  connectionCache = { ok, timestamp: Date.now() }
-}
-
-export function clearConnectionCache() {
-  connectionCache = null
-}
 
 type LoadingPhase = 'idle' | 'settings' | 'connection' | 'done'
 
@@ -65,67 +44,127 @@ export function useModelDeploymentSettings() {
   })
   const initialLoadRef = useRef(true)
 
-  // Parallel fetch: settings + connection test (when enabled)
-  const fetchAll = useCallback(async (useCache = true) => {
-    setLoading(true)
-    setLoadingPhase('settings')
+  // 连接探测结果按 hook 实例隔离：模块级共享会让多个实例互相污染，
+  // 一个实例的手动重试会清掉另一个实例刚拿到的缓存。
+  const connectionCacheRef = useRef<{
+    ok: boolean
+    timestamp: number
+  } | null>(null)
 
-    try {
-      // Step 1: Fetch settings first (usually fast)
-      const response = await getDeploymentSettings()
-      const isEnabled = response?.success && response?.data?.enabled === true
+  const readCachedConnection = useCallback((): boolean | null => {
+    const cached = connectionCacheRef.current
+    if (!cached) return null
+    if (Date.now() - cached.timestamp > CONNECTION_CACHE_TTL) {
+      connectionCacheRef.current = null
+      return null
+    }
+    return cached.ok
+  }, [])
 
-      setSettings({
-        'model_deployment.ionet.enabled': isEnabled,
-      })
+  const writeCachedConnection = useCallback((ok: boolean) => {
+    connectionCacheRef.current = { ok, timestamp: Date.now() }
+  }, [])
 
-      if (!isEnabled) {
-        // Not enabled, done
-        setConnectionState({ loading: false, ok: null, error: null })
-        setLoadingPhase('done')
-        setLoading(false)
-        return
-      }
+  const clearConnectionCache = useCallback(() => {
+    connectionCacheRef.current = null
+  }, [])
 
-      // Step 2: Check connection (check cache first)
-      if (useCache) {
-        const cached = getCachedConnection()
-        if (cached !== null) {
-          setConnectionState({ loading: false, ok: cached, error: null })
-          setLoadingPhase('done')
-          setLoading(false)
-          return
-        }
-      }
+  // 世代令牌 + AbortController：窗口 focus 等场景会并发触发多次 fetchAll，
+  // 而 fetchAll 内部是两段串行 await，后发的请求可能先返回。没有世代校验时
+  // 旧响应会在新响应之后写回 state，用户会看到「刚改完设置又跳回旧值」。
+  const generationRef = useRef(0)
+  const abortRef = useRef<AbortController | null>(null)
 
-      // Test connection
-      setLoadingPhase('connection')
-      setConnectionState({ loading: true, ok: null, error: null })
-
-      try {
-        const connResponse = await testDeploymentConnection()
-        if (connResponse?.success) {
-          setCachedConnection(true)
-          setConnectionState({ loading: false, ok: true, error: null })
-        } else {
-          const message = connResponse?.message || 'Connection failed'
-          setCachedConnection(false)
-          setConnectionState({ loading: false, ok: false, error: message })
-        }
-      } catch (error: unknown) {
-        const errMsg =
-          error instanceof Error ? error.message : 'Connection failed'
-        setCachedConnection(false)
-        setConnectionState({ loading: false, ok: false, error: errMsg })
-      }
-    } catch {
-      // Settings fetch failed, use defaults
-      setConnectionState({ loading: false, ok: null, error: null })
-    } finally {
-      setLoadingPhase('done')
-      setLoading(false)
+  const beginRequest = useCallback(() => {
+    abortRef.current?.abort()
+    const controller = new AbortController()
+    abortRef.current = controller
+    generationRef.current += 1
+    const generation = generationRef.current
+    return {
+      isStale: () =>
+        generation !== generationRef.current || controller.signal.aborted,
     }
   }, [])
+
+  // 卸载后中止在途请求并作废当前世代，避免异步回调继续 setState。
+  useEffect(() => {
+    return () => {
+      generationRef.current += 1
+      abortRef.current?.abort()
+      abortRef.current = null
+    }
+  }, [])
+
+  // Parallel fetch: settings + connection test (when enabled)
+  const fetchAll = useCallback(
+    async (useCache = true) => {
+      const { isStale } = beginRequest()
+      setLoading(true)
+      setLoadingPhase('settings')
+
+      try {
+        // Step 1: Fetch settings first (usually fast)
+        const response = await getDeploymentSettings()
+        if (isStale()) return
+        const isEnabled = response?.success && response?.data?.enabled === true
+
+        setSettings({
+          'model_deployment.ionet.enabled': isEnabled,
+        })
+
+        if (!isEnabled) {
+          // Not enabled, done
+          setConnectionState({ loading: false, ok: null, error: null })
+          return
+        }
+
+        // Step 2: Check connection (check cache first)
+        if (useCache) {
+          const cached = readCachedConnection()
+          if (cached !== null) {
+            setConnectionState({ loading: false, ok: cached, error: null })
+            return
+          }
+        }
+
+        // Test connection
+        setLoadingPhase('connection')
+        setConnectionState({ loading: true, ok: null, error: null })
+
+        try {
+          const connResponse = await testDeploymentConnection()
+          if (isStale()) return
+          if (connResponse?.success) {
+            writeCachedConnection(true)
+            setConnectionState({ loading: false, ok: true, error: null })
+          } else {
+            const message = connResponse?.message || 'Connection failed'
+            writeCachedConnection(false)
+            setConnectionState({ loading: false, ok: false, error: message })
+          }
+        } catch (error: unknown) {
+          if (isStale()) return
+          const errMsg =
+            error instanceof Error ? error.message : 'Connection failed'
+          writeCachedConnection(false)
+          setConnectionState({ loading: false, ok: false, error: errMsg })
+        }
+      } catch {
+        // Settings fetch failed, use defaults
+        if (!isStale()) {
+          setConnectionState({ loading: false, ok: null, error: null })
+        }
+      } finally {
+        // 过期世代不得收尾，否则会把新一轮请求的 loading 状态提前清掉。
+        if (!isStale()) {
+          setLoadingPhase('done')
+          setLoading(false)
+        }
+      }
+    },
+    [beginRequest, readCachedConnection, writeCachedConnection]
+  )
 
   // Initial load
   useEffect(() => {
@@ -140,34 +179,37 @@ export function useModelDeploymentSettings() {
   // Manual retry (skip cache)
   const testConnection = useCallback(async () => {
     clearConnectionCache()
+    const { isStale } = beginRequest()
     setConnectionState({ loading: true, ok: null, error: null })
     setLoadingPhase('connection')
 
     try {
       const response = await testDeploymentConnection()
+      if (isStale()) return
       if (response?.success) {
-        setCachedConnection(true)
+        writeCachedConnection(true)
         setConnectionState({ loading: false, ok: true, error: null })
         return
       }
       const message = response?.message || 'Connection failed'
-      setCachedConnection(false)
+      writeCachedConnection(false)
       setConnectionState({ loading: false, ok: false, error: message })
     } catch (error: unknown) {
+      if (isStale()) return
       const errMsg =
         error instanceof Error ? error.message : 'Connection failed'
-      setCachedConnection(false)
+      writeCachedConnection(false)
       setConnectionState({ loading: false, ok: false, error: errMsg })
     } finally {
-      setLoadingPhase('done')
+      if (!isStale()) setLoadingPhase('done')
     }
-  }, [])
+  }, [beginRequest, clearConnectionCache, writeCachedConnection])
 
   // Refresh all (skip cache)
   const refresh = useCallback(() => {
     clearConnectionCache()
     return fetchAll(false)
-  }, [fetchAll])
+  }, [clearConnectionCache, fetchAll])
 
   // Refresh on window focus (useful after saving settings in another page)
   useEffect(() => {

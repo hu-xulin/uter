@@ -115,6 +115,7 @@ import {
   type ChannelConnectionInfo,
 } from '@/lib/channel-connection-info'
 import { handleServerError } from '@/lib/handle-server-error'
+import { useOptionalNumberField } from '@/features/system-settings/utils/numeric-field'
 import { ROLE } from '@/lib/roles'
 import {
   requireServerSuccess,
@@ -510,6 +511,10 @@ export function ChannelMutateDrawer({
     resolver: zodResolver(channelFormSchema),
     defaultValues: CHANNEL_FORM_DEFAULT_VALUES,
   })
+
+  // Optional numeric fields: blank must stay blank instead of collapsing to 0.
+  const priorityField = useOptionalNumberField(form, 'priority')
+  const weightField = useOptionalNumberField(form, 'weight')
 
   // Watch values once for conditional fields and configuration indicators.
   const formValues = form.watch()
@@ -1872,16 +1877,11 @@ export function ChannelMutateDrawer({
         <FormField
           control={form.control}
           name='priority'
-          render={({ field }) => (
+          render={() => (
             <FormItem>
               <FormLabel>{t('Priority')}</FormLabel>
               <FormControl>
-                <Input
-                  type='number'
-                  placeholder='0'
-                  {...field}
-                  onChange={(e) => field.onChange(Number(e.target.value))}
-                />
+                <Input type='number' placeholder='0' {...priorityField} />
               </FormControl>
               <FormDescription>
                 {t(FIELD_DESCRIPTIONS.PRIORITY)}
@@ -1894,16 +1894,11 @@ export function ChannelMutateDrawer({
         <FormField
           control={form.control}
           name='weight'
-          render={({ field }) => (
+          render={() => (
             <FormItem>
               <FormLabel>{t('Weight')}</FormLabel>
               <FormControl>
-                <Input
-                  type='number'
-                  placeholder='0'
-                  {...field}
-                  onChange={(e) => field.onChange(Number(e.target.value))}
-                />
+                <Input type='number' placeholder='0' {...weightField} />
               </FormControl>
               <FormDescription>{t(FIELD_DESCRIPTIONS.WEIGHT)}</FormDescription>
               <FormMessage />

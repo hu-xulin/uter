@@ -37,6 +37,7 @@ import {
 import { Form } from '@/components/ui/form'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useSystemConfig } from '@/hooks/use-system-config'
+import { useTimeout } from '@/hooks/use-timeout'
 import { handleServerError } from '@/lib/handle-server-error'
 import { accountPasswordSchema } from '@/lib/password-policy'
 import { requireServerSuccess } from '@/lib/server-error-message'
@@ -81,6 +82,7 @@ export function SetupWizard() {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const { systemName, logo, loading: systemConfigLoading } = useSystemConfig()
+  const { schedule: scheduleTimeout } = useTimeout()
 
   const [currentStep, setCurrentStep] = useState(0)
   const [setupStatus, setSetupStatus] = useState<SetupStatus | undefined>()
@@ -110,7 +112,7 @@ export function SetupWizard() {
       if (response.success) {
         toast.success(t('System initialized successfully! Redirecting…'))
         await queryClient.invalidateQueries({ queryKey: ['setup-status'] })
-        setTimeout(() => {
+        scheduleTimeout(() => {
           navigate({ to: '/' })
         }, 1200)
       } else {

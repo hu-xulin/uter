@@ -57,6 +57,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
+import { useTimeout } from '@/hooks/use-timeout'
 import { cn } from '@/lib/utils'
 
 type CodeBlockProps = HTMLAttributes<HTMLDivElement> & {
@@ -650,6 +651,7 @@ export const CodeBlockCopyButton = ({
   const { t } = useTranslation()
   const [isCopied, setIsCopied] = useState(false)
   const { code } = useContext(CodeBlockContext)
+  const { schedule } = useTimeout()
 
   const copyToClipboard = async () => {
     if (typeof window === 'undefined' || !navigator?.clipboard?.writeText) {
@@ -661,7 +663,7 @@ export const CodeBlockCopyButton = ({
       await navigator.clipboard.writeText(code)
       setIsCopied(true)
       onCopy?.()
-      setTimeout(() => setIsCopied(false), timeout)
+      schedule(() => setIsCopied(false), timeout)
     } catch (error) {
       onError?.(error as Error)
     }
