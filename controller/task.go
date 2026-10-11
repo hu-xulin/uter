@@ -443,16 +443,13 @@ func GetUserTask(c *gin.Context) {
 func tasksToDto(tasks []*model.Task, fillUser bool, viewerRole int) []*dto.TaskDto {
 	var userIDMap map[int]*model.UserBase
 	if fillUser {
-		userIDMap = make(map[int]*model.UserBase)
 		userIDs := types.NewSet[int]()
 		for _, task := range tasks {
 			userIDs.Add(task.UserId)
 		}
-		for _, userID := range userIDs.Items() {
-			if cacheUser, err := model.GetUserCache(userID); err == nil {
-				userIDMap[userID] = cacheUser
-			}
-		}
+		// 批量取缓存：逐个 GetUserCache 在 Redis 集体过期瞬间会按页大小
+		// 打满 users 表（一页最多 100 次查库）。
+		userIDMap = model.GetUserCaches(userIDs.Items())
 	}
 	result := make([]*dto.TaskDto, len(tasks))
 	for i, task := range tasks {
