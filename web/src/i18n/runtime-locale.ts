@@ -23,12 +23,13 @@ import { normalizeInterfaceLanguage } from './languages'
 /**
  * Runtime interface-locale hot-reload.
  *
- * Every locale is bundled into the SPA at build time (`config.ts` imports the
- * JSON files statically), so fixing a typo in a translation normally means a
- * frontend rebuild plus a server restart. When the backend exposes
- * `GET /api/i18n/:file` — i.e. `UTER_I18N_DIR` points at a directory of locale
- * JSONs — we fetch the active locale once at startup and swap it into i18next,
- * so an edited translation reaches users without rebuilding or restarting.
+ * Locale JSON is bundled into the SPA at build time — `en` statically, the rest
+ * as code-split chunks pulled in by `locale-loaders.ts` — so fixing a typo in a
+ * translation normally means a frontend rebuild plus a server restart. When the
+ * backend exposes `GET /api/i18n/:file` — i.e. `UTER_I18N_DIR` points at a
+ * directory of locale JSONs — we fetch the active locale once at startup and
+ * swap it into i18next, so an edited translation reaches users without
+ * rebuilding or restarting.
  *
  * The bundled JSON stays the source of truth for first paint and remains the
  * fallback: when the endpoint is absent (the default single-binary install)
