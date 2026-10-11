@@ -21,7 +21,7 @@ import type {
   OnChangeFn,
   PaginationState,
 } from '@tanstack/react-table'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 
 type SearchRecord = Record<string, unknown>
 
@@ -180,11 +180,41 @@ export function useTableUrlState(
     })
   }
 
+  const urlGlobalFilter = (() => {
+    if (!globalFilterEnabled) return ''
+    const raw = (search as SearchRecord)[globalFilterKey]
+    return typeof raw === 'string' ? raw : ''
+  })()
+
   const [globalFilter, setGlobalFilter] = useState<string | undefined>(() => {
     if (!globalFilterEnabled) return undefined
     const raw = (search as SearchRecord)[globalFilterKey]
     return typeof raw === 'string' ? raw : ''
   })
+
+  // 由用户输入写入、且尚未在 URL 上观察到回显的关键词队列。用于区分
+  // 「URL 变化是自己写入的回显」与「URL 变化来自浏览器前进/后退」：
+  //  - 回显必须忽略，否则乱序落地的旧 URL 会把输入框拉回上一个字符（丢字/抖动）；
+  //  - 非回显必须采纳，否则后退后输入框与实际查询不一致。
+  // 回显到达时出队，采纳外部变化时整体清空，因此正常情况下队列长度恒为 0~1。
+  const pendingEchoesRef = useRef<string[]>([])
+
+  // URL 为单一数据源：仅在关键词本身变化时同步，使浏览器前进/后退能回滚输入框。
+  // 该 effect 只读 URL、只写 state，不触发导航，因此不会与输入形成回环。
+  useEffect(() => {
+    if (!globalFilterEnabled) return
+
+    const echoIndex = pendingEchoesRef.current.indexOf(urlGlobalFilter)
+    if (echoIndex !== -1) {
+      pendingEchoesRef.current.splice(echoIndex, 1)
+      return
+    }
+
+    pendingEchoesRef.current = []
+    setGlobalFilter((prev) =>
+      prev === urlGlobalFilter ? prev : urlGlobalFilter
+    )
+  }, [urlGlobalFilter, globalFilterEnabled])
 
   const onGlobalFilterChange: OnChangeFn<string> | undefined =
     globalFilterEnabled
@@ -195,6 +225,11 @@ export function useTableUrlState(
               : updater
           const value = trimGlobal ? next.trim() : next
           setGlobalFilter(value)
+          // URL 不会变化时不会有回显，此时不登记，避免陈旧标记吞掉后续的
+          // 浏览器前进/后退。
+          if (value !== urlGlobalFilter) {
+            pendingEchoesRef.current.push(value)
+          }
           navigate({
             search: (prev) => ({
               ...(prev as SearchRecord),

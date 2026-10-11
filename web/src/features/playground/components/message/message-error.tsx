@@ -16,7 +16,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
-import { AlertCircle, AlertTriangle, Settings } from 'lucide-react'
+import { useNavigate } from '@tanstack/react-router'
 /*
 Copyright (C) 2023-2026 Uter.ai
 
@@ -35,6 +35,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
+import { AlertCircle, AlertTriangle, Settings } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -46,7 +47,7 @@ import {
   FALLBACK_ERROR_CONTENT,
   getMessageErrorState,
   isAdminRole,
-  MODEL_PRICING_SETTINGS_PATH,
+  MODEL_PRICING_SETTINGS_SECTION,
 } from '../../lib'
 import type { Message } from '../../types'
 
@@ -66,6 +67,7 @@ export function MessageError({
   actions,
 }: MessageErrorProps) {
   const { t } = useTranslation()
+  const navigate = useNavigate()
   const user = useAuthStore((s) => s.auth.user)
   const errorState = getMessageErrorState(message, isAdminRole(user?.role))
 
@@ -89,7 +91,14 @@ export function MessageError({
             <Button
               variant='outline'
               size='sm'
-              onClick={() => window.open(MODEL_PRICING_SETTINGS_PATH, '_blank')}
+              onClick={() =>
+                // 站内路径走 router 导航：window.open 会新开标签页重新下载整个
+                // SPA bundle，浪费带宽且丢失当前会话状态。
+                navigate({
+                  to: '/system-settings/billing/$section',
+                  params: { section: MODEL_PRICING_SETTINGS_SECTION },
+                })
+              }
             >
               <Settings className='mr-1 h-3.5 w-3.5' />
               {t('Go to Settings')}

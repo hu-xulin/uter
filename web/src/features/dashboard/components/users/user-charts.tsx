@@ -19,13 +19,12 @@ For commercial licensing, please contact support@uter.ai
 import { useQuery } from '@tanstack/react-query'
 import { VChart } from '@visactor/react-vchart'
 import { Users, Loader2 } from 'lucide-react'
-import { useEffect, useMemo, useState, useRef, useCallback } from 'react'
+import { useMemo, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { IconBadge } from '@/components/ui/icon-badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { useTheme } from '@/context/theme-provider'
 import {
   getOrgQuotaDatesByUsers,
   getUserQuotaDataByUsers,
@@ -46,12 +45,8 @@ import type {
 } from '@/features/dashboard/types'
 import { requireServerSuccess } from '@/lib/server-error-message'
 import { getRollingDateRange, type TimeGranularity } from '@/lib/time'
-import { applyChartTheme } from '@/lib/use-chart-theme'
+import { useChartTheme } from '@/lib/use-chart-theme'
 import { VCHART_OPTION } from '@/lib/vchart'
-
-let themeManagerPromise: Promise<
-  (typeof import('@visactor/vchart'))['ThemeManager']
-> | null = null
 
 const USER_CHARTS: {
   value: string
@@ -79,12 +74,8 @@ interface UserChartsProps {
 
 export function UserCharts(props: UserChartsProps) {
   const { t } = useTranslation()
-  const { resolvedTheme } = useTheme()
+  const { resolvedTheme, themeReady } = useChartTheme()
   const { orgId } = useDashboardScope()
-  const [themeReady, setThemeReady] = useState(false)
-  const themeManagerRef = useRef<
-    (typeof import('@visactor/vchart'))['ThemeManager'] | null
-  >(null)
 
   // The selection is owned by the dashboard parent so it persists across
   // sub-section switches; the rolling window is derived from the chosen range.
@@ -126,22 +117,6 @@ export function UserCharts(props: UserChartsProps) {
     },
     [onFiltersChange, props.filters]
   )
-
-  useEffect(() => {
-    const updateTheme = async () => {
-      setThemeReady(false)
-      if (!themeManagerPromise) {
-        themeManagerPromise = import('@visactor/vchart').then(
-          (m) => m.ThemeManager
-        )
-      }
-      const ThemeManager = await themeManagerPromise
-      themeManagerRef.current = ThemeManager
-      applyChartTheme(ThemeManager, resolvedTheme)
-      setThemeReady(true)
-    }
-    updateTheme()
-  }, [resolvedTheme])
 
   const { data: userData, isLoading } = useQuery({
     queryKey: ['dashboard', 'user-quota', timeRange, orgId],

@@ -18,6 +18,8 @@ For commercial licensing, please contact support@uter.ai
 */
 import { useCallback, useEffect, useRef, useState } from 'react'
 
+import { useTimeout } from '@/hooks/use-timeout'
+
 import { DEFAULT_CONFIG, DEFAULT_PARAMETER_ENABLED } from '../constants'
 import {
   saveConfig,
@@ -61,6 +63,8 @@ export function usePlaygroundState() {
   const [models, setModels] = useState<ModelOption[]>([])
   const [groups, setGroups] = useState<GroupOption[]>([])
 
+  const { schedule: scheduleMessageLoad } = useTimeout()
+
   const persistMessages = useCallback((messagesToSave: Message[]) => {
     latestMessagesRef.current = messagesToSave
 
@@ -79,24 +83,15 @@ export function usePlaygroundState() {
   }, [])
 
   useEffect(() => {
-    let cancelled = false
-
-    window.setTimeout(() => {
+    scheduleMessageLoad(() => {
       const loadedMessages = loadMessages() ?? []
-      if (cancelled) {
-        return
-      }
 
       latestMessagesRef.current = loadedMessages
       hasLoadedMessagesRef.current = true
       setMessages(loadedMessages)
       setIsLoadingMessages(false)
     }, 0)
-
-    return () => {
-      cancelled = true
-    }
-  }, [])
+  }, [scheduleMessageLoad])
 
   useEffect(
     () => () => {

@@ -25,6 +25,28 @@ export function isHttpUrl(value: string): boolean {
   }
 }
 
+/**
+ * Normalise an externally supplied URL to an absolute http(s) href, or
+ * `undefined` when the value is missing, unparseable or uses any other scheme.
+ *
+ * Anything that reaches an `href`/`baseUrl` from the API, from admin-authored
+ * content or from a third-party marketplace index is attacker-influenced, so it
+ * must never be handed to the browser unchecked: `javascript:`, `data:` and
+ * `vbscript:` all turn a plain link into script execution.
+ */
+export function getSafeHttpUrl(
+  value?: string | null
+): string | undefined {
+  if (!value) return undefined
+  try {
+    const url = new URL(value)
+    if (url.protocol !== 'http:' && url.protocol !== 'https:') return undefined
+    return url.href
+  } catch {
+    return undefined
+  }
+}
+
 export function isLikelyHtml(value: string): boolean {
   return /<!doctype html|<html[\s>]|<head[\s>]|<body[\s>]|<style[\s>]|<script[\s>]|<\/?[a-z][\s\S]*>/i.test(
     value

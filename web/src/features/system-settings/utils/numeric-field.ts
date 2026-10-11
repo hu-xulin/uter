@@ -17,12 +17,17 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@uter.ai
 */
 import type { ChangeEvent } from 'react'
-import type {
-  ControllerRenderProps,
-  FieldPath,
-  FieldValues,
+import {
+  useController,
+  useWatch,
+  type ControllerRenderProps,
+  type FieldPath,
+  type FieldValues,
+  type UseFormReturn,
 } from 'react-hook-form'
 import { z } from 'zod'
+
+import { toNumberInputValue } from '@/lib/number-input'
 
 export function positiveIntegerSchema(message: string) {
   return z.number().int(message).positive(message)
@@ -76,8 +81,7 @@ export type SafeNumberFieldProps = {
 export function safeNumberFieldProps<
   TFieldValues extends FieldValues,
   TName extends FieldPath<TFieldValues>,
->(field: ControllerRenderProps<TFieldValues, TName>): SafeNumberFieldProps {
-  const raw = field.value as unknown
+>(field: ControllerRenderProps<TFieldValues, TName>): SafeNumberFieldProps {  const raw = field.value as unknown
   const display: number | '' =
     typeof raw === 'number' && Number.isFinite(raw) ? raw : ''
 
@@ -88,6 +92,77 @@ export function safeNumberFieldProps<
       if (Number.isFinite(next)) {
         ;(field.onChange as (value: number) => void)(next)
       }
+    },
+    onBlur: field.onBlur,
+    name: field.name,
+    ref: field.ref,
+  }
+}
+
+/**
+ * Adapter for binding a react-hook-form **optional** numeric field
+ * (`z.number().optional()`) to a native `<input type="number">`.
+ *
+ * Difference from {@link safeNumberFieldProps}:
+ * - {@link safeNumberFieldProps} targets required numeric schemas
+ *   (`z.number().int().positive()`). There, a blank field is not a legal value,
+ *   so it snaps back to the last valid number.
+ * - This adapter targets optional schemas, where blank **is** a legal value the
+ *   user must be able to express. It therefore preserves the blank state
+ *   instead of dropping the update.
+ *
+ * Because `<input type="number">` normalises every illegal intermediate
+ * keystroke (`-`, `.`, `1e`) to the empty string, a plain
+ * `Number(event.target.value)` would turn a blank field into `0` — making the
+ * field impossible to clear and swallowing minus signs. See
+ * {@link toNumberInputValue}.
+ *
+ * Form state stays `number | undefined`, so the submitted payload shape is
+ * unchanged: a cleared field is indistinguishable from never having touched it,
+ * which is exactly what "optional" should mean.
+ *
+ * Why `useWatch` instead of `field.value`: `useController` resolves the field
+ * value against `defaultValues`, so an explicit `undefined` is replaced by the
+ * default and the input can never actually look blank. `useWatch` returns the
+ * raw stored value, letting `undefined` render as an empty field.
+ *
+ * Must be called unconditionally (it is a hook), so call it at the top of the
+ * component rather than inside a `FormField` render callback.
+ *
+ * Usage:
+ * ```tsx
+ * const priorityField = useOptionalNumberField(form, 'priority')
+ *
+ * <FormField control={form.control} name='priority' render={() => (
+ *   <FormItem>
+ *     <FormControl>
+ *       <Input type='number' placeholder='0' {...priorityField} />
+ *     </FormControl>
+ *     <FormMessage />
+ *   </FormItem>
+ * )} />
+ * ```
+ */
+export function useOptionalNumberField<
+  TFieldValues extends FieldValues,
+  TName extends FieldPath<TFieldValues>,
+>(
+  form: UseFormReturn<TFieldValues>,
+  name: TName
+): SafeNumberFieldProps {
+  const { field } = useController({ control: form.control, name })
+  const watched = useWatch({ control: form.control, name })
+
+  const display: number | '' =
+    typeof watched === 'number' && Number.isFinite(watched) ? watched : ''
+
+  return {
+    value: display,
+    onChange: (event) => {
+      const next = toNumberInputValue(event.target.value)
+      ;(field.onChange as (value: number | undefined) => void)(
+        next === '' ? undefined : next
+      )
     },
     onBlur: field.onBlur,
     name: field.name,

@@ -27,6 +27,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useCountdown } from '@/hooks/use-countdown'
+import { useTimeout } from '@/hooks/use-timeout'
 import { api } from '@/lib/api'
 import { copyToClipboard } from '@/lib/copy-to-clipboard'
 import { handleServerError } from '@/lib/handle-server-error'
@@ -51,6 +52,7 @@ export function ResetPasswordConfirm({
   const [newPassword, setNewPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [copied, setCopied] = useState(false)
+  const { schedule: scheduleCopiedReset } = useTimeout()
   const {
     secondsLeft,
     isActive,
@@ -106,7 +108,7 @@ export function ResetPasswordConfirm({
           password: newPassword,
         })
       )
-      setTimeout(() => setCopied(false), 2000)
+      scheduleCopiedReset(() => setCopied(false), 2000)
     }
   }
 
