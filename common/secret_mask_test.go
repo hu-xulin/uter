@@ -71,6 +71,25 @@ func TestIsSecretOptionKey(t *testing.T) {
 		"costopt_setting.batch_api_key",
 		"costopt_setting.cdn_signing_secret",
 		"costopt_setting.value_tier_vendor_api_key",
+
+		// 支付 / 签名凭据：此前未登记，GET /api/option/ 会明文下发。
+		"EpayKey",
+		"AlipayPrivateKey",
+		"StripeApiSecret",
+		"StripeWebhookSecret",
+		"CreemWebhookSecret",
+		"WaffoPrivateKey",
+		"WaffoPancakePrivateKey",
+		"WaffoSandboxApiKey",
+		"WaffoSandboxPrivateKey",
+		"WorkerValidKey",
+
+		// 兜底后缀规则：不在这三张表里也应判为密钥。
+		"SomeFutureVendorSecret",
+		"some_future_vendor_api_key",
+		"someFutureVendorToken",
+		"someFutureVendorPassword",
+		"someFutureVendorPrivateKey",
 	}
 	for _, key := range secretKeys {
 		if !IsSecretOptionKey(key) {
@@ -80,15 +99,67 @@ func TestIsSecretOptionKey(t *testing.T) {
 
 	// 公开值必须按普通文本原样展示，否则管理员无法核对。
 	publicKeys := []string{
-		"TurnstileSiteKey", // Cloudflare设计 上就是公开值
+		"TurnstileSiteKey", // Cloudflare设计上就是公开值
+		"AlipayPublicKey",  // 支付宝公钥，用于校验回调签名，非机密
+		"StripePublishableKey",
 		"GitHubClientId",
 		"GitHubOAuthEnabled",
 		"costopt_setting.cdn_asset_base_url",
 		"costopt_setting.cascade_premium_model",
+
+		// 后缀规则只匹配结尾，不能因为包含 "key" 就误伤。
+		"MonkeyMode",
+		"keyword",
+		"key_prefix",
 	}
 	for _, key := range publicKeys {
 		if IsSecretOptionKey(key) {
 			t.Errorf("IsSecretOptionKey(%q) = true, want false", key)
+		}
+	}
+}
+
+// TestSecretOptionKeySuffixFallbackIsExhaustive 守住兜底规则的覆盖面：
+// 凡在 model.OptionMap 里出现、且键名以密钥类后缀结尾的键，
+// 必须能被判为密钥，除非被 publicOptionKeys 显式豁免。
+//
+// 这条测试存在的意义是防回归：微信支付三个键、以及整批支付密钥，
+// 都是因为「新增 OptionMap 键时忘了登记」而明文下发的。豁免表一旦
+// 收紧或漏写，这里会立刻红。
+func TestSecretOptionKeySuffixFallbackIsExhaustive(t *testing.T) {
+	// OptionMap 的键在 model 包里逐 case 分发，common 包无法直接引用，
+	// 故在此硬编码需要覆盖的敏感键作为等价断言源；两边漂移由
+	// testSecretOptionKeySourceOfTruth 与 model 包的 option 键对照发现。
+	for _, key := range []string{
+		"EpayKey",
+		"AlipayPrivateKey",
+		"AlipayPublicKey", //豁免
+		"StripeApiSecret",
+		"StripeWebhookSecret",
+		"StripeSecretKey",
+		"StripePublishableKey", // 豁免
+		"CreemApiKey",
+		"CreemWebhookSecret",
+		"WaffoApiKey",
+		"WaffoPrivateKey",
+		"WaffoPancakeApiKey",
+		"WaffoPancakePrivateKey",
+		"WaffoSandboxApiKey",
+		"WaffoSandboxPrivateKey",
+		"WorkerValidKey",
+		"WechatPayApiV3Key",
+		"WechatPayPrivateKey",
+		"WechatPayPlatformCert",
+		"TurnstileSecretKey",
+		"TurnstileSiteKey", // 豁免
+	} {
+		_, exempted := publicOptionKeys[key]
+		got := IsSecretOptionKey(key)
+		if exempted && got {
+			t.Errorf("%q 在豁免表中，却仍被判为密钥", key)
+		}
+		if !exempted && !got {
+			t.Errorf("%q 是敏感配置却未被掩码，会在 GET /api/option/ 明文下发", key)
 		}
 	}
 }

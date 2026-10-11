@@ -19,6 +19,8 @@ For commercial licensing, please contact support@uter.ai
 
 package common
 
+import "strings"
+
 // 明确登记为「需要掩码」的选项键。
 //
 // 为什么用显式登记表而不是按名称后缀推断：后缀推断会把公开值误判成密钥
@@ -61,6 +63,52 @@ var secretOptionKeys = map[string]struct{}{
 	"WechatPayApiV3Key":      {},
 	"WechatPayPrivateKey":    {},
 	"WechatPayPlatformCert": {},
+
+	// 支付 / 签名凭据。与微信支付同类：这些键都在 OptionMap 里，但此前
+	// 没有登记，GET /api/option/ 会明文下发。影响最大的是
+	// StripeWebhookSecret —— 泄漏后可直接伪造 checkout.session.completed
+	// 配合伪造 client_reference_id 给任意 pending 订单入账。
+	"EpayKey":                {},
+	"AlipayPrivateKey":       {},
+	"StripeApiSecret":        {},
+	"StripeWebhookSecret":    {},
+	"CreemWebhookSecret":     {},
+	"WaffoPrivateKey":        {},
+	"WaffoPancakePrivateKey": {},
+	"WaffoSandboxApiKey":     {},
+	"WaffoSandboxPrivateKey": {},
+	"WorkerValidKey":         {},
+}
+
+// 明确登记为「必须原样下发给浏览器」的公开值。这些键名以 key/token 结尾，
+// 会被下面的兜底后缀规则命中，但按设计就是要展示给前端核对或使用的，
+// 掩码会让管理员无法确认填对了没有。
+var publicOptionKeys = map[string]struct{}{
+	// Cloudflare 设计上就发给前端的 challenge 公钥。
+	"TurnstileSiteKey": {},
+	// 支付宝公钥，用于校验支付宝回调签名，非机密。
+	"AlipayPublicKey": {},
+	// Stripe 的可发布公钥（secret 侧的 StripeSecretKey 已另行登记）。
+	"StripePublishableKey": {},
+}
+
+// secretOptionKeySuffixes 是兜底规则：显式登记表之外的键名若命中任一后缀，
+// 一律按密钥掩码。
+//
+// 为什么还需要这层兜底：纯白名单的固有失效模式是「新增 OptionMap 键时
+// 再次遗漏」——微信支付三个键和上面这批支付密钥都是同一个原因漏掉的。
+// 后缀规则把「漏登记」的代价从明文下发凭据降为「一个公开值被多掩码一次」，
+// 而后者有 publicOptionKeys 显式豁免兜底。
+//
+// 注意单词边界：只匹配结尾，不匹配包含。避免 "Monkey"/"Turnstile" 这类
+// 误伤，也避免 "key_prefix" 这类中途出现的键被误判。
+var secretOptionKeySuffixes = []string{
+	"secret",
+	"password",
+	"privatekey",
+	"apikey",
+	"token",
+	"key",
 }
 
 // 降本优化（relay/costopt）里标记为 secret 的配置项。
@@ -94,6 +142,16 @@ func IsSecretOptionKey(key string) bool {
 	}
 	if _, ok := modelDescriptionSecretOptionKeys[key]; ok {
 		return true
+	}
+	// 显式登记为公开值的优先豁免，兜底规则不得反过来把它掩码掉。
+	if _, ok := publicOptionKeys[key]; ok {
+		return false
+	}
+	lower := strings.ToLower(key)
+	for _, suffix := range secretOptionKeySuffixes {
+		if strings.HasSuffix(lower, suffix) {
+			return true
+		}
 	}
 	return false
 }
