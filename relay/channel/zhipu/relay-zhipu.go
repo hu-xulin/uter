@@ -161,10 +161,29 @@ func zhipuStreamHandler(c *gin.Context, info *relaycommon.RelayInfo, resp *http.
 	var usage *dto.Usage
 	scanner := helper.NewStreamScanner(resp.Body)
 	scanner.Split(bufio.ScanLines)
-	dataChan := make(chan string)
-	metaChan := make(chan string)
-	stopChan := make(chan bool)
+	// 有缓冲 + select 保护：客户端断开时 gin 的 c.Stream 直接 return，
+	// 不再消费 dataChan/metaChan。裸 `ch <- v` 会让生产者永久阻塞在发送上，
+	// 泄漏 goroutine 并持有 resp.Body 使上游连接无法归还。此处三个发送点
+	// 都必须走 select，且 stopChan 改用 close 而非发送。
+	dataChan := make(chan string, 10)
+	metaChan := make(chan string, 3)
+	stopChan := make(chan struct{})
+	var stopOnce sync.Once
+	stop := func() {
+		stopOnce.Do(func() { close(stopChan) })
+	}
+	sendOrStop := func(ch chan string, data string) bool {
+		select {
+		case ch <- data:
+			return true
+		case <-stopChan:
+			return false
+		case <-c.Request.Context().Done():
+			return false
+		}
+	}
 	go func() {
+		defer stop()
 		for scanner.Scan() {
 			data := scanner.Text()
 			lines := strings.Split(data, "\n")
@@ -173,19 +192,22 @@ func zhipuStreamHandler(c *gin.Context, info *relaycommon.RelayInfo, resp *http.
 					continue
 				}
 				if line[:5] == "data:" {
-					dataChan <- line[5:]
-					if i != len(lines)-1 {
-						dataChan <- "\n"
+					if !sendOrStop(dataChan, line[5:]) {
+						return
+					}
+					if i != len(lines)-1 && !sendOrStop(dataChan, "\n") {
+						return
 					}
 				} else if line[:5] == "meta:" {
-					metaChan <- line[5:]
+					if !sendOrStop(metaChan, line[5:]) {
+						return
+					}
 				}
 			}
 		}
 		if err := scanner.Err(); err != nil {
 			common.SysLog("error reading stream: " + err.Error())
 		}
-		stopChan <- true
 	}()
 	helper.SetEventStreamHeaders(c)
 	c.Stream(func(w io.Writer) bool {
@@ -220,7 +242,11 @@ func zhipuStreamHandler(c *gin.Context, info *relaycommon.RelayInfo, resp *http.
 			return false
 		}
 	})
-	service.CloseResponseBodyGracefully(resp)
+	// 客户端断开时 c.Stream 会提前 return，这里统一关闭 body 并唤醒生产者。
+	defer func() {
+		stop()
+		service.CloseResponseBodyGracefully(resp)
+	}()
 	return usage, nil
 }
 

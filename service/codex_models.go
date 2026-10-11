@@ -11,6 +11,8 @@ import (
 	"time"
 
 	"github.com/uter-ai/uter/common"
+
+	"golang.org/x/sync/singleflight"
 )
 
 const (
@@ -19,7 +21,11 @@ const (
 )
 
 type codexClientVersionCache struct {
-	sync.Mutex
+	mu sync.Mutex
+	// inflight 合并并发的外网请求：缓存过期瞬间可能有大量渠道发现请求同时到达，
+	// 只放一个出去打 api.github.com，其余等待它把结果写进缓存。
+	inflight singleflight.Group
+
 	version   string
 	expiresAt time.Time
 }
@@ -30,26 +36,68 @@ func GetLatestCodexClientVersion(ctx context.Context, client *http.Client) (stri
 	return latestCodexClientVersion.get(ctx, client, codexLatestReleaseURL, time.Now())
 }
 
+// get 读取缓存并在过期时回源。
+//
+// 锁只保护缓存字段的读写：原先整个函数（含最长 20s 的外网请求）都在 cache.Lock()
+// 里，而这是包级全局锁，所有并发的渠道发现请求会串行排队并叠加各自的超时。
+// 现在改成「锁内查缓存 → 锁外做 IO → 锁内写缓存」，并用 singleflight 合并并发回源。
 func (cache *codexClientVersionCache) get(ctx context.Context, client *http.Client, releaseURL string, now time.Time) (string, error) {
-	cache.Lock()
-	defer cache.Unlock()
-
-	if cache.version != "" && now.Before(cache.expiresAt) {
-		return cache.version, nil
+	if version, ok := cache.cached(now); ok {
+		return version, nil
 	}
 
-	version, err := fetchLatestCodexClientVersion(ctx, client, releaseURL)
-	if err != nil {
-		if cache.version != "" {
-			cache.expiresAt = now.Add(codexClientVersionCacheTTL)
-			return cache.version, nil
+	version, err, _ := cache.inflight.Do(releaseURL, func() (any, error) {
+		// 等锁期间可能已有别的请求刷新过缓存，再查一次避免重复回源。
+		if version, ok := cache.cached(time.Now()); ok {
+			return version, nil
 		}
+		// IO 在锁外进行：包级锁不能被一次外网往返占住。
+		fetched, fetchErr := fetchLatestCodexClientVersion(ctx, client, releaseURL)
+		if fetchErr != nil {
+			// 回源失败时若有旧值则续期复用（stale-while-error），保持原行为。
+			stale, staleErr := cache.stale(fetchErr, time.Now())
+			if staleErr != nil {
+				return "", staleErr
+			}
+			return stale, nil
+		}
+		cache.store(fetched, time.Now())
+		return fetched, nil
+	})
+	if err != nil {
 		return "", err
 	}
+	return version.(string), nil
+}
 
+// cached 在锁内读取未过期的缓存值。
+func (cache *codexClientVersionCache) cached(now time.Time) (string, bool) {
+	cache.mu.Lock()
+	defer cache.mu.Unlock()
+	if cache.version != "" && now.Before(cache.expiresAt) {
+		return cache.version, true
+	}
+	return "", false
+}
+
+// stale 在回源失败时续期已有值，避免上游抖动导致每次请求都去打一次外网。
+// 没有旧值时把原始回源错误原样返回。
+func (cache *codexClientVersionCache) stale(fetchErr error, now time.Time) (string, error) {
+	cache.mu.Lock()
+	defer cache.mu.Unlock()
+	if cache.version == "" {
+		return "", fetchErr
+	}
+	cache.expiresAt = now.Add(codexClientVersionCacheTTL)
+	return cache.version, nil
+}
+
+// store 在锁内写入新鲜值。
+func (cache *codexClientVersionCache) store(version string, now time.Time) {
+	cache.mu.Lock()
+	defer cache.mu.Unlock()
 	cache.version = version
 	cache.expiresAt = now.Add(codexClientVersionCacheTTL)
-	return version, nil
 }
 
 func fetchLatestCodexClientVersion(ctx context.Context, client *http.Client, releaseURL string) (string, error) {

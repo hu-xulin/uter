@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
+	"sync"
 
 	"github.com/uter-ai/uter/common"
 
@@ -55,13 +56,21 @@ func palmStreamHandler(c *gin.Context, resp *http.Response) (*types.UterError, s
 	responseText := ""
 	responseId := helper.GetResponseID(c)
 	createdTime := common.GetTimestamp()
-	dataChan := make(chan string)
-	stopChan := make(chan bool)
+	// 有缓冲 + select 保护：客户端断开时 gin 的 c.Stream 直接 return，
+	// 不再消费 dataChan。裸 `ch <- v` 会让生产者永久阻塞在发送上（goroutine
+	// 泄漏），且 stopChan 的多次裸发送同样会在消费方已退出时反向阻塞。
+	// 改为缓冲 + close(stopChan) 广播信号。
+	dataChan := make(chan string, 1)
+	stopChan := make(chan struct{})
+	var stopOnce sync.Once
+	stop := func() {
+		stopOnce.Do(func() { close(stopChan) })
+	}
 	go func() {
+		defer stop()
 		responseBody, err := io.ReadAll(resp.Body)
 		if err != nil {
 			common.SysLog("error reading stream response: " + err.Error())
-			stopChan <- true
 			return
 		}
 		service.CloseResponseBodyGracefully(resp)
@@ -69,7 +78,6 @@ func palmStreamHandler(c *gin.Context, resp *http.Response) (*types.UterError, s
 		err = json.Unmarshal(responseBody, &palmResponse)
 		if err != nil {
 			common.SysLog("error unmarshalling stream response: " + err.Error())
-			stopChan <- true
 			return
 		}
 		fullTextResponse := streamResponsePaLM2OpenAI(&palmResponse)
@@ -81,11 +89,17 @@ func palmStreamHandler(c *gin.Context, resp *http.Response) (*types.UterError, s
 		jsonResponse, err := json.Marshal(fullTextResponse)
 		if err != nil {
 			common.SysLog("error marshalling stream response: " + err.Error())
-			stopChan <- true
 			return
 		}
-		dataChan <- string(jsonResponse)
-		stopChan <- true
+		select {
+		case dataChan <- string(jsonResponse):
+		case <-stopChan:
+		case <-c.Request.Context().Done():
+		}
+	}()
+	defer func() {
+		stop()
+		service.CloseResponseBodyGracefully(resp)
 	}()
 	helper.SetEventStreamHeaders(c)
 	c.Stream(func(w io.Writer) bool {
@@ -98,7 +112,6 @@ func palmStreamHandler(c *gin.Context, resp *http.Response) (*types.UterError, s
 			return false
 		}
 	})
-	service.CloseResponseBodyGracefully(resp)
 	return nil, responseText
 }
 

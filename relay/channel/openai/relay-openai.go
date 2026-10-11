@@ -135,8 +135,10 @@ func OaiStreamHandler(c *gin.Context, info *relaycommon.RelayInfo, resp *http.Re
 			}
 
 			lastStreamData = data
-			collectStreamFunctionCallNames(data, seenStreamToolCalls, &streamFunctionCallNames)
-			if err := processTokenData(info.RelayMode, data, &responseTextBuilder, &toolCount); err != nil {
+			// 每个 chunk 只解析一次：tool_call 名称收集与正文累计此前各自
+			// Unmarshal 同一段 data（chat completions 模式下目标类型还完全相同），
+			// 2000 chunk 的请求要多做约 2000 次编解码。
+			if err := processStreamChunk(info.RelayMode, data, seenStreamToolCalls, &streamFunctionCallNames, &responseTextBuilder, &toolCount); err != nil {
 				logger.LogError(c, "error processing stream token data: "+err.Error())
 				sr.Error(err)
 			}
@@ -193,50 +195,6 @@ func OaiStreamHandler(c *gin.Context, info *relaycommon.RelayInfo, resp *http.Re
 	HandleFinalResponse(c, info, lastStreamData, responseId, createAt, model, systemFingerprint, usage, containStreamUsage)
 
 	return usage, nil
-}
-
-func collectStreamFunctionCallNames(data string, seen map[string]struct{}, names *[]string) {
-	var streamResponse dto.ChatCompletionsStreamResponse
-	if err := common.UnmarshalJsonStr(data, &streamResponse); err != nil {
-		return
-	}
-	for _, choice := range streamResponse.Choices {
-		for i, tc := range choice.Delta.ToolCalls {
-			name := strings.TrimSpace(tc.Function.Name)
-			if name == "" {
-				continue
-			}
-			toolIdx := i
-			if tc.Index != nil {
-				toolIdx = *tc.Index
-			}
-			fallbackKey := fmt.Sprintf("index\x00%d\x00%d\x00%s", choice.Index, toolIdx, name)
-			activeKey := fmt.Sprintf("active\x00%d\x00%d\x00%s", choice.Index, toolIdx, name)
-			callID := strings.TrimSpace(tc.ID)
-			if callID != "" {
-				idKey := fmt.Sprintf("id\x00%d\x00%s", choice.Index, callID)
-				if _, ok := seen[idKey]; ok {
-					continue
-				}
-				seen[idKey] = struct{}{}
-				seen[activeKey] = struct{}{}
-				if _, delayedID := seen[fallbackKey]; delayedID {
-					delete(seen, fallbackKey)
-					continue
-				}
-			} else {
-				if _, ok := seen[fallbackKey]; ok {
-					continue
-				}
-				if _, ok := seen[activeKey]; ok {
-					continue
-				}
-				seen[fallbackKey] = struct{}{}
-				seen[activeKey] = struct{}{}
-			}
-			*names = append(*names, name)
-		}
-	}
 }
 
 func OpenaiHandler(c *gin.Context, info *relaycommon.RelayInfo, resp *http.Response) (*dto.Usage, *types.UterError) {

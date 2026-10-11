@@ -47,7 +47,19 @@ func CacheEnabled() bool {
 
 // CacheKey 计算精确缓存键。键包含：模型、消息、temperature/top_p/max_tokens/n/
 // stop/stream/penalty 等影响输出的参数；以及 UserId 实现租户隔离。
+//
+// 结果按请求对象 memoize 到 relayInfo：负缓存键与精确缓存键同源，一次请求里本来
+// 要序列化两遍整个 Messages（400KB payload 约 2-5ms + 等大的临时分配）。
 func CacheKey(req *dto.GeneralOpenAIRequest, info *relaycommon.RelayInfo) string {
+	if key, ok := info.LoadCostOptCacheKey(req); ok {
+		return key
+	}
+	key := computeCacheKey(req, info)
+	info.StoreCostOptCacheKey(req, key)
+	return key
+}
+
+func computeCacheKey(req *dto.GeneralOpenAIRequest, info *relaycommon.RelayInfo) string {
 	norm := map[string]any{
 		"model":             req.Model,
 		"messages":          req.Messages,

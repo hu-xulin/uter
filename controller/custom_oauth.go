@@ -452,10 +452,20 @@ func buildUserOAuthBindingsResponse(userId int) ([]UserOAuthBindingResponse, err
 		return nil, err
 	}
 
+	// provider 是全局小表且几乎不变，去重后一次取回，避免按绑定条数 N+1 查询。
+	providerIds := make([]int, 0, len(bindings))
+	for _, binding := range bindings {
+		providerIds = append(providerIds, binding.ProviderId)
+	}
+	providers, err := model.GetCustomOAuthProvidersByIds(providerIds)
+	if err != nil {
+		return nil, err
+	}
+
 	response := make([]UserOAuthBindingResponse, 0, len(bindings))
 	for _, binding := range bindings {
-		provider, err := model.GetCustomOAuthProviderById(binding.ProviderId)
-		if err != nil {
+		provider, ok := providers[binding.ProviderId]
+		if !ok {
 			continue
 		}
 		response = append(response, UserOAuthBindingResponse{
