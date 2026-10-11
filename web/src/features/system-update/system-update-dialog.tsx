@@ -24,6 +24,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
+import { getSafeHttpUrl } from '@/lib/content-format'
 import { formatTimestampToDate } from '@/lib/format'
 
 import { getSystemReleaseUrl, parseSystemVersion } from './releases'
@@ -50,7 +51,9 @@ export function SystemUpdateDialog(props: SystemUpdateDialogProps) {
   const update = props.update
   const release = update.release
   const snapshot = update.snapshot
-  const releaseUrl = release ? getSystemReleaseUrl(release) : null
+  const releaseUrl = release
+    ? getSafeHttpUrl(getSystemReleaseUrl(release))
+    : null
   const isPrerelease =
     release &&
     (release.prerelease ||

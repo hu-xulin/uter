@@ -17,6 +17,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@uter.ai
 */
 import {
+  DEFAULT_GOTIFY_PRIORITY,
   DEFAULT_QUOTA_WARNING_THRESHOLD,
   NOTIFICATION_METHODS,
 } from '../constants'
@@ -40,7 +41,7 @@ export function normalizeUserSettings(
     bark_url: parsed.bark_url ?? '',
     gotify_url: parsed.gotify_url ?? '',
     gotify_token: parsed.gotify_token ?? '',
-    gotify_priority: parsed.gotify_priority ?? 5,
+    gotify_priority: parsed.gotify_priority ?? DEFAULT_GOTIFY_PRIORITY,
     accept_unset_model_ratio_model:
       parsed.accept_unset_model_ratio_model || false,
     record_ip_log: parsed.record_ip_log || false,

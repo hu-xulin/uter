@@ -26,6 +26,11 @@ For commercial licensing, please contact support@uter.ai
 export const DEFAULT_QUOTA_WARNING_THRESHOLD = 500000
 
 /**
+ * Default Gotify message priority (0 = lowest, 10 = highest)
+ */
+export const DEFAULT_GOTIFY_PRIORITY = 5
+
+/**
  * Notification methods
  */
 export const NOTIFICATION_METHODS = [

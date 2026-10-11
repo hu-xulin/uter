@@ -28,10 +28,18 @@ import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { handleServerError } from '@/lib/handle-server-error'
+import {
+  handleNumberInput,
+  type NumberInputValue,
+} from '@/lib/number-input'
 import { ROLE } from '@/lib/roles'
 
 import { updateUserSettings } from '../../api'
-import { NOTIFICATION_METHODS } from '../../constants'
+import {
+  DEFAULT_GOTIFY_PRIORITY,
+  DEFAULT_QUOTA_WARNING_THRESHOLD,
+  NOTIFICATION_METHODS,
+} from '../../constants'
 import { normalizeUserSettings } from '../../lib/user-settings'
 import type { UserProfile, NotifyType } from '../../types'
 
@@ -40,6 +48,20 @@ const NOTIFICATION_ICONS: Record<NotifyType, typeof Mail> = {
   webhook: Webhook,
   bark: Bell,
   gotify: Server,
+}
+
+/**
+ * Editable copy of the normalised settings. The two numeric inputs are widened
+ * to {@link NumberInputValue} so the user can leave them blank; blank resolves
+ * back to the profile default on submit (see `handleSave`), keeping the request
+ * payload numeric and unchanged.
+ */
+type NotificationSettingsDraft = Omit<
+  ReturnType<typeof normalizeUserSettings>,
+  'quota_warning_threshold' | 'gotify_priority'
+> & {
+  quota_warning_threshold: NumberInputValue
+  gotify_priority: NumberInputValue
 }
 
 // ============================================================================
@@ -55,7 +77,9 @@ export function NotificationTab({ profile, onUpdate }: NotificationTabProps) {
   const { t } = useTranslation()
   const isAdmin = (profile?.role ?? 0) >= ROLE.ADMIN
   const [loading, setLoading] = useState(false)
-  const [settings, setSettings] = useState(() => normalizeUserSettings())
+  const [settings, setSettings] = useState<NotificationSettingsDraft>(
+    () => normalizeUserSettings()
+  )
 
   // Update form field helper
   const updateField = useCallback(
@@ -77,8 +101,23 @@ export function NotificationTab({ profile, onUpdate }: NotificationTabProps) {
   const handleSave = async () => {
     try {
       setLoading(true)
-      const { record_ip_log: _recordIpLog, ...notificationSettings } = settings
-      const response = await updateUserSettings(notificationSettings)
+      const {
+        record_ip_log: _recordIpLog,
+        quota_warning_threshold,
+        gotify_priority,
+        ...rest
+      } = settings
+      // A blank numeric field means "use the default", so the request payload
+      // stays numeric exactly as before.
+      const response = await updateUserSettings({
+        ...rest,
+        quota_warning_threshold:
+          quota_warning_threshold === ''
+            ? DEFAULT_QUOTA_WARNING_THRESHOLD
+            : quota_warning_threshold,
+        gotify_priority:
+          gotify_priority === '' ? DEFAULT_GOTIFY_PRIORITY : gotify_priority,
+      })
 
       if (response.success) {
         toast.success(t('Settings updated successfully'))
@@ -138,9 +177,9 @@ export function NotificationTab({ profile, onUpdate }: NotificationTabProps) {
           type='number'
           className='h-9'
           value={settings.quota_warning_threshold}
-          onChange={(e) =>
-            updateField('quota_warning_threshold', Number(e.target.value))
-          }
+          onChange={handleNumberInput((value) =>
+            updateField('quota_warning_threshold', value)
+          )}
           placeholder={t('Enter threshold')}
         />
         <p className='text-muted-foreground text-xs'>
@@ -245,9 +284,9 @@ export function NotificationTab({ profile, onUpdate }: NotificationTabProps) {
               min='0'
               max='10'
               value={settings.gotify_priority}
-              onChange={(e) =>
-                updateField('gotify_priority', Number(e.target.value))
-              }
+              onChange={handleNumberInput((value) =>
+                updateField('gotify_priority', value)
+              )}
               placeholder='5'
             />
             <p className='text-muted-foreground text-xs'>

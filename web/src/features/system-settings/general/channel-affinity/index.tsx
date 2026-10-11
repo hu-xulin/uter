@@ -37,6 +37,10 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import { handleServerError } from '@/lib/handle-server-error'
+import {
+  handleNumberInput,
+  type NumberInputValue,
+} from '@/lib/number-input'
 
 import { SettingsSwitchField } from '../../components/settings-form-layout'
 import { SettingsPageActionsPortal } from '../../components/settings-page-context'
@@ -136,10 +140,10 @@ export function ChannelAffinitySection(props: Props) {
   const [keepOnChannelDisabled, setKeepOnChannelDisabled] = useState(
     props.defaultValues['channel_affinity_setting.keep_on_channel_disabled']
   )
-  const [maxEntries, setMaxEntries] = useState(
+  const [maxEntries, setMaxEntries] = useState<NumberInputValue>(
     props.defaultValues['channel_affinity_setting.max_entries']
   )
-  const [defaultTtl, setDefaultTtl] = useState(
+  const [defaultTtl, setDefaultTtl] = useState<NumberInputValue>(
     props.defaultValues['channel_affinity_setting.default_ttl_seconds']
   )
   const [rules, setRules] = useState<AffinityRule[]>(() =>
@@ -285,22 +289,33 @@ export function ChannelAffinitySection(props: Props) {
           value: String(keepOnChannelDisabled),
         })
       }
+      // A blank field means "fall back to the current server value": the option
+      // values are sent as strings, so submitting '' would persist an empty
+      // value instead of restoring the default.
+      const maxEntriesValue =
+        maxEntries === ''
+          ? props.defaultValues['channel_affinity_setting.max_entries']
+          : maxEntries
+      const defaultTtlValue =
+        defaultTtl === ''
+          ? props.defaultValues['channel_affinity_setting.default_ttl_seconds']
+          : defaultTtl
       if (
-        maxEntries !==
+        maxEntriesValue !==
         props.defaultValues['channel_affinity_setting.max_entries']
       ) {
         updates.push({
           key: 'channel_affinity_setting.max_entries',
-          value: String(maxEntries),
+          value: String(maxEntriesValue),
         })
       }
       if (
-        defaultTtl !==
+        defaultTtlValue !==
         props.defaultValues['channel_affinity_setting.default_ttl_seconds']
       ) {
         updates.push({
           key: 'channel_affinity_setting.default_ttl_seconds',
-          value: String(defaultTtl),
+          value: String(defaultTtlValue),
         })
       }
 
@@ -444,7 +459,7 @@ export function ChannelAffinitySection(props: Props) {
               type='number'
               min={0}
               value={maxEntries}
-              onChange={(e) => setMaxEntries(Number(e.target.value))}
+              onChange={handleNumberInput(setMaxEntries)}
             />
           </div>
           <div className='grid gap-1.5'>
@@ -454,7 +469,7 @@ export function ChannelAffinitySection(props: Props) {
               type='number'
               min={0}
               value={defaultTtl}
-              onChange={(e) => setDefaultTtl(Number(e.target.value))}
+              onChange={handleNumberInput(setDefaultTtl)}
             />
           </div>
         </div>

@@ -30,6 +30,10 @@ import {
   quotaUnitsToDollars,
 } from '@/lib/format'
 import {
+  handleNumberInput,
+  type NumberInputValue,
+} from '@/lib/number-input'
+import {
   DEFAULT_CURRENCY_CONFIG,
   useSystemConfigStore,
 } from '@/stores/system-config-store'
@@ -58,8 +62,11 @@ export function TransferDialog({
   )
   const minimumAmount = quotaUnitsToDollars(minimumQuota)
   const maximumAmount = quotaUnitsToDollars(availableQuota)
-  const [amount, setAmount] = useState(minimumAmount)
-  const transferQuota = parseQuotaFromDollars(amount)
+  const [amount, setAmount] = useState<NumberInputValue>(minimumAmount)
+  // A blank field has no transfer amount yet, so it submits nothing (the
+  // button stays disabled) exactly like an out-of-range value.
+  const transferQuota =
+    typeof amount === 'number' ? parseQuotaFromDollars(amount) : 0
   const canTransfer =
     Number.isFinite(amount) &&
     transferQuota >= minimumQuota &&
@@ -132,7 +139,7 @@ export function TransferDialog({
             id='transfer-amount'
             type='number'
             value={amount}
-            onChange={(e) => setAmount(Number(e.target.value))}
+            onChange={handleNumberInput(setAmount)}
             min={minimumAmount}
             max={maximumAmount}
             step={minimumAmount}
