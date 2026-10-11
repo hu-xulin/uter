@@ -31,7 +31,7 @@ import { readCachedStatus, statusQueryOptions } from '@/lib/status-query'
 import { DirectionProvider } from './context/direction-provider'
 import { FontProvider } from './context/font-provider'
 import { ThemeProvider } from './context/theme-provider'
-import './i18n/config'
+import { initialized as i18nInitialized } from './i18n/config'
 // Generated Routes
 import { routeTree } from './routeTree.gen'
 
@@ -102,17 +102,27 @@ if (!rootElement) {
 })()
 if (!rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement)
-  root.render(
-    <StrictMode>
-      <QueryClientProvider client={queryClient}>
-        <ThemeProvider>
-          <FontProvider>
-            <DirectionProvider>
-              <RouterProvider router={router} />
-            </DirectionProvider>
-          </FontProvider>
-        </ThemeProvider>
-      </QueryClientProvider>
-    </StrictMode>
-  )
+
+  // Only English is bundled; the other six locales are code-split (see
+  // `i18n/locale-loaders.ts`). Render once the active language's chunk has been
+  // merged in, otherwise a Chinese or Japanese visitor paints the whole app in
+  // English and then visibly re-renders in their language a moment later.
+  // `initialized` resolves with `en` already in place, so this can only ever
+  // wait on one small JSON chunk — and it never rejects, so a failed or slow
+  // locale load falls back to English instead of blocking first paint.
+  void i18nInitialized.then(() => {
+    root.render(
+      <StrictMode>
+        <QueryClientProvider client={queryClient}>
+          <ThemeProvider>
+            <FontProvider>
+              <DirectionProvider>
+                <RouterProvider router={router} />
+              </DirectionProvider>
+            </FontProvider>
+          </ThemeProvider>
+        </QueryClientProvider>
+      </StrictMode>
+    )
+  })
 }
