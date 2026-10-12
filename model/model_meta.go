@@ -179,6 +179,29 @@ func FillModelSquareStates(rows []*Model, configured map[string][]int, connectio
 	return nil
 }
 
+// GetSquareHiddenModelNames resolves catalog metadata for concrete model names
+// and returns the subset hidden from the public square, i.e. names matched by a
+// metadata record whose status is disabled. It mirrors the hidden branch of
+// FillModelSquareStates so consumers that only need an exclusion list (for
+// example the public rankings) get the same answer without building every row.
+func GetSquareHiddenModelNames(names []string) (map[string]struct{}, error) {
+	hidden := make(map[string]struct{})
+	if len(names) == 0 {
+		return hidden, nil
+	}
+	var metadata []Model
+	if err := DB.Find(&metadata).Error; err != nil {
+		return nil, err
+	}
+	resolved := resolveModelMetadata(metadata, names)
+	for _, name := range names {
+		if policy := resolved[name]; policy != nil && policy.Status != 1 {
+			hidden[name] = struct{}{}
+		}
+	}
+	return hidden, nil
+}
+
 // GetConfiguredModelChannels includes disabled channels and reads no credentials.
 func GetConfiguredModelChannels() (map[string][]int, error) {
 	var channels []Channel

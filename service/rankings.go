@@ -199,6 +199,19 @@ func buildRankingsSnapshot(config rankingPeriodConfig, now time.Time) (*Rankings
 		}
 	}
 
+	// Models hidden from the pricing square must not surface anywhere on the
+	// public rankings page. Drop them before any rank, share or bucket is
+	// computed so their traffic cannot leak into the "Others" bucket either.
+	hiddenModels, err := model.GetSquareHiddenModelNames(
+		rankingModelNames(currentTotals, previousTotals, currentBuckets),
+	)
+	if err != nil {
+		return nil, err
+	}
+	currentTotals = filterRankingTotals(currentTotals, hiddenModels)
+	previousTotals = filterRankingTotals(previousTotals, hiddenModels)
+	currentBuckets = filterRankingBuckets(currentBuckets, hiddenModels)
+
 	meta := buildRankingModelMeta()
 	totalTokens := sumRankingTokens(currentTotals)
 	previousRankByModel := rankingRankMap(previousTotals)
@@ -510,6 +523,63 @@ func buildRankingMovers(models []RankedModel) ([]RankingMover, []RankingMover) {
 		return droppers[i].RankDelta < droppers[j].RankDelta
 	})
 	return limitRankingMovers(movers, rankingMoverLimit), limitRankingMovers(droppers, rankingMoverLimit)
+}
+
+// rankingModelNames collects every concrete model name referenced by the
+// ranking queries so the square-visibility policy can be resolved in one pass.
+func rankingModelNames(currentTotals []model.RankingQuotaTotal, previousTotals []model.RankingQuotaTotal, buckets []model.RankingQuotaBucket) []string {
+	seen := make(map[string]struct{}, len(currentTotals)+len(previousTotals)+len(buckets))
+	names := make([]string, 0, len(seen))
+	for _, item := range currentTotals {
+		if _, ok := seen[item.ModelName]; ok {
+			continue
+		}
+		seen[item.ModelName] = struct{}{}
+		names = append(names, item.ModelName)
+	}
+	for _, item := range previousTotals {
+		if _, ok := seen[item.ModelName]; ok {
+			continue
+		}
+		seen[item.ModelName] = struct{}{}
+		names = append(names, item.ModelName)
+	}
+	for _, item := range buckets {
+		if _, ok := seen[item.ModelName]; ok {
+			continue
+		}
+		seen[item.ModelName] = struct{}{}
+		names = append(names, item.ModelName)
+	}
+	return names
+}
+
+func filterRankingTotals(rows []model.RankingQuotaTotal, hidden map[string]struct{}) []model.RankingQuotaTotal {
+	if len(hidden) == 0 {
+		return rows
+	}
+	filtered := make([]model.RankingQuotaTotal, 0, len(rows))
+	for _, item := range rows {
+		if _, ok := hidden[item.ModelName]; ok {
+			continue
+		}
+		filtered = append(filtered, item)
+	}
+	return filtered
+}
+
+func filterRankingBuckets(rows []model.RankingQuotaBucket, hidden map[string]struct{}) []model.RankingQuotaBucket {
+	if len(hidden) == 0 {
+		return rows
+	}
+	filtered := make([]model.RankingQuotaBucket, 0, len(rows))
+	for _, item := range rows {
+		if _, ok := hidden[item.ModelName]; ok {
+			continue
+		}
+		filtered = append(filtered, item)
+	}
+	return filtered
 }
 
 func sortedRankingBuckets(bucketSet map[int64]struct{}) []int64 {
