@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 
@@ -438,6 +439,42 @@ func UnlockOrder(tradeNo string) {
 	createLock.Unlock()
 }
 
+// paidAmountMatchesOrder 校验网关回传的实付金额与本地订单应付金额是否一致。
+//
+// 为什么必须有：验签只能证明「这条回调确实是网关发的」，不能证明「用户按订单
+// 金额付了钱」。缺失该校验时，只要 trade_no 存在且验签通过，系统就按本地订单
+// 金额入账，与实际扣款金额脱钩——充值方或恶意网关运营方可用一个 0.01 元的
+// 成功回调换走整单额度（少付多充）。支付宝 / 微信 / Stripe / Waffo /
+// Waffo Pancake 的回调均已比对实付金额，本函数把同一标准收口到易支付。
+//
+// 单位：paid 与 expectedMoney 都以「元」为单位；期望值先 round 到分位，
+// 容忍网关侧字符串格式（"10.00" vs "10.0"）差异。
+func paidAmountMatchesOrder(paid decimal.Decimal, expectedMoney float64) bool {
+	if paid.LessThanOrEqual(decimal.Zero) {
+		return false
+	}
+	return paid.Equal(decimal.NewFromFloat(expectedMoney).Round(2))
+}
+
+// creemPaidCoversOrder 是 Creem 专用的金额判定（实付单位：分）。
+//
+// 不能用 paidAmountMatchesOrder 的严格相等：Creem 的商品价格保存在商户后台，
+// 本地 CreemProducts[].price 只是运营者配置的镜像值，两者可能因配置漂移而不等，
+// 严格相等会把正常支付全部拒掉（直接损失收入）。
+// 因此只拦截「实付少于应付」这一确定的欺诈方向；实付多于应付时放行并按本地
+// 订单额度入账，同时告警提示配置漂移。
+func creemPaidCoversOrder(paidMinorUnits int64, expectedMoney float64) (covered bool, overpaid bool) {
+	if paidMinorUnits <= 0 {
+		return false, false
+	}
+	paid := decimal.NewFromInt(paidMinorUnits).Div(decimal.NewFromInt(100))
+	expected := decimal.NewFromFloat(expectedMoney).Round(2)
+	if paid.LessThan(expected) {
+		return false, false
+	}
+	return true, paid.GreaterThan(expected)
+}
+
 func EpayNotify(c *gin.Context) {
 	if !isEpayWebhookEnabled() {
 		logger.LogWarn(c.Request.Context(), fmt.Sprintf("易支付 webhook 被拒绝 reason=webhook_disabled path=%q client_ip=%s", c.Request.RequestURI, c.ClientIP()))
@@ -496,6 +533,21 @@ func EpayNotify(c *gin.Context) {
 	logger.LogInfo(c.Request.Context(), fmt.Sprintf("易支付 webhook 验签成功 trade_no=%s callback_type=%s trade_status=%s client_ip=%s verify_info=%q", verifyInfo.ServiceTradeNo, verifyInfo.Type, verifyInfo.TradeStatus, c.ClientIP(), common.GetJsonString(verifyInfo)))
 
 	if verifyInfo.TradeStatus == epay.StatusTradeSuccess {
+		// 金额校验：易支付回传的实付金额必须与本地订单应付金额一致。
+		// 缺失此校验时，只要验签通过即按本地订单金额入账，与实际扣款金额脱钩，
+		// 存在少付多充的风险。验签只证明回调来自网关，不证明用户按订单金额付款。
+		topUp := model.GetTopUpByTradeNo(verifyInfo.ServiceTradeNo)
+		if topUp == nil {
+			logger.LogWarn(c.Request.Context(), fmt.Sprintf("易支付回调订单不存在 trade_no=%s client_ip=%s", verifyInfo.ServiceTradeNo, c.ClientIP()))
+			_, _ = c.Writer.Write([]byte("fail"))
+			return
+		}
+		paidMoney, moneyErr := decimal.NewFromString(strings.TrimSpace(verifyInfo.Money))
+		if moneyErr != nil || !paidAmountMatchesOrder(paidMoney, topUp.Money) {
+			logger.LogWarn(c.Request.Context(), fmt.Sprintf("易支付回调金额不匹配 trade_no=%s 回调金额=%q 本地应付=%.2f client_ip=%s", verifyInfo.ServiceTradeNo, verifyInfo.Money, topUp.Money, c.ClientIP()))
+			_, _ = c.Writer.Write([]byte("fail"))
+			return
+		}
 		// 进程内锁只是优化；重复/并发回调的正确性由 RechargeEpay 的
 		// 数据库行锁 + 事务内状态校验保证（多实例部署下同样安全）。
 		LockOrder(verifyInfo.ServiceTradeNo)
