@@ -21,12 +21,13 @@ import LanguageDetector from 'i18next-browser-languagedetector'
 import { initReactI18next } from 'react-i18next'
 
 import {
+  activeInterfaceLanguage,
   convertDetectedLanguage,
   normalizeInterfaceLanguage,
   type InterfaceLanguageCode,
 } from './languages'
-import en from './locales/en.json'
 import { loadLocaleBundle } from './locale-loaders'
+import en from './locales/en.json'
 import { installRuntimeLocaleLoader } from './runtime-locale'
 
 /**
@@ -48,9 +49,12 @@ export const resources = {
  * `deep` + `overwrite` let the freshly fetched strings win over anything already
  * registered for that language while leaving untouched keys intact.
  */
-function mergeBundle(code: InterfaceLanguageCode, bundle: {
-  translation: Record<string, string>
-}): boolean {
+function mergeBundle(
+  code: InterfaceLanguageCode,
+  bundle: {
+    translation: Record<string, string>
+  }
+): boolean {
   i18n.addResourceBundle(code, 'translation', bundle, true, true)
   return true
 }
@@ -106,9 +110,10 @@ const initialized = i18n
     // corrected translation applies without a rebuild or restart. The bundled
     // copy above stays the first-paint source and the fallback when the
     // endpoint is absent.
-    await ensureLocale(
-      normalizeInterfaceLanguage(i18n.resolvedLanguage ?? i18n.language)
-    )
+    // `activeInterfaceLanguage` reads `i18n.language` on purpose: at this point
+    // `i18n.resolvedLanguage` is still the fallback, because the bundle it
+    // would report has not been fetched yet. See its doc comment.
+    await ensureLocale(activeInterfaceLanguage(i18n))
     installRuntimeLocaleLoader()
   })
   .catch(() => {})

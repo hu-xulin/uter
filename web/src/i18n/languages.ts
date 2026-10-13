@@ -53,6 +53,27 @@ export function normalizeInterfaceLanguage(
 }
 
 /**
+ * The locale whose bundle the app must load.
+ *
+ * Read this off `i18n.language` — the language the visitor chose or the detector
+ * picked — and **never** off `i18n.resolvedLanguage`.
+ *
+ * `resolvedLanguage` is the language translations were actually read *from*,
+ * and until that locale's bundle is merged it is already the fallback: with
+ * `lng: 'zhCN'` and only `en` registered, i18next reports
+ * `language === 'zhCN'` together with `resolvedLanguage === 'en'`. A startup
+ * path that resolves `resolvedLanguage ?? language` therefore asks for `en`,
+ * the Chinese code-split chunk is never fetched, and every string keeps coming
+ * from the English fallback — the interface renders in English while the
+ * language switcher (which reads `i18n.language`) still ticks 「简体中文」.
+ */
+export function activeInterfaceLanguage(source: {
+  language?: string | null
+}): InterfaceLanguageCode {
+  return normalizeInterfaceLanguage(source.language)
+}
+
+/**
  * Map a browser-detected locale onto the interface language codes this project
  * uses with i18next (`zhCN` / `zhTW`).
  *
