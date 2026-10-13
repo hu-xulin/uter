@@ -7,8 +7,8 @@
 | Trang web chính thức | https://uter.ai |
 | Tài liệu | Hợp đồng nạp tiền của Nền tảng dịch vụ mô hình lớn Uter |
 | Phiên bản | V1.0 |
-| Ngày có hiệu lực | September 28, 2026 |
-| Cập nhật lần cuối | September 28, 2026 |
+| Ngày có hiệu lực | 8 tháng 8, 2026 |
+| Cập nhật lần cuối | 8 tháng 8, 2026 |
 | Bên ký kết | **Shenzhen Uter Network Co., Ltd.** (bên ký kết duy nhất đối với dịch vụ nạp tiền và các vấn đề quản lý quỹ liên quan theo Hợp đồng này) |
 | Áp dụng cho | Cá nhân và doanh nghiệp thực hiện trả trước trên Nền tảng |
 | Luật áp dụng | Pháp luật Cộng hòa Nhân dân Trung Hoa (không bao gồm quy tắc xung đột pháp luật) |
