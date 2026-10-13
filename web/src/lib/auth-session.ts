@@ -18,14 +18,13 @@ For commercial licensing, please contact support@uter.ai
 */
 import type { QueryClient } from '@tanstack/react-query'
 import axios from 'axios'
-import { t } from 'i18next'
+import i18n, { t } from 'i18next'
 
+import { getSavedLanguage } from '@/features/auth/lib/auth-redirect'
+import { normalizeInterfaceLanguage } from '@/i18n/languages'
 import { publishAuthSessionEvent } from '@/lib/auth-session-sync'
-import {
-  clearScopedItemsForCurrentUser,
-} from '@/lib/scoped-storage'
+import { clearScopedItemsForCurrentUser } from '@/lib/scoped-storage'
 import { hasSessionHint } from '@/lib/session-hint'
-import { useNotificationStore } from '@/stores/notification-store'
 import {
   useAuthStore,
   type AuthBootstrapState,
@@ -33,6 +32,7 @@ import {
   type AuthUser,
   type LoginSession,
 } from '@/stores/auth-store'
+import { useNotificationStore } from '@/stores/notification-store'
 
 export type RefreshOutcome =
   | { kind: 'authenticated'; bundle: AuthBundle }
@@ -151,6 +151,35 @@ function isAuthTokenRotation(value: unknown): value is AuthTokenRotation {
   )
 }
 
+/**
+ * Switch the interface to the language saved on the account.
+ *
+ * The account's language was only ever applied inside the sign-in flow, so any
+ * other way of acquiring a session — most importantly the silent refresh that
+ * restores one from the Refresh Cookie on reload — left the interface on
+ * whatever the browser detector had picked (`en` for an English-locale browser,
+ * and `i18nextLng` is empty on a first visit). 个人设置 then read its value
+ * straight from `setting.language`, so the page showed 「简体中文」 selected
+ * while every string around it rendered in English.
+ *
+ * An account without a saved language is left alone: `normalizeInterfaceLanguage`
+ * maps a missing value to `en`, and applying that would silently override the
+ * visitor's own choice made before signing in.
+ *
+ * Exported for tests; not part of the app's public surface.
+ */
+export function applySavedLanguage(user: AuthUser): void {
+  const saved = getSavedLanguage(user)
+  if (!saved) return
+
+  const next = normalizeInterfaceLanguage(saved)
+  const current = normalizeInterfaceLanguage(
+    i18n.resolvedLanguage ?? i18n.language
+  )
+  if (next === current) return
+  void i18n.changeLanguage(next)
+}
+
 export function applyAuthBundle(
   bundle: AuthBundle,
   synchronizeTabs = true
@@ -160,6 +189,7 @@ export function applyAuthBundle(
   // 新会话建立即结束销毁过渡，恢复正常错误提示。
   setAuthTeardownInProgress(false)
   useAuthStore.getState().auth.setBundle(bundle)
+  applySavedLanguage(bundle.user)
   if (synchronizeTabs && previousSID !== bundle.session.sid) {
     publishAuthSessionEvent('authenticated', bundle.session.sid)
   }
@@ -400,6 +430,10 @@ function currentValidAuthBundle(): AuthBundle | null {
 export async function resolveAuthentication(): Promise<RefreshOutcome> {
   const bundle = currentValidAuthBundle()
   if (bundle) {
+    // No `applyAuthBundle` on this path (the bundle never left the store), so
+    // the account language has to be applied here or a same-tab remount would
+    // drop back to the detected language.
+    applySavedLanguage(bundle.user)
     useAuthStore.getState().auth.setBootstrapState('complete')
     return { kind: 'authenticated', bundle }
   }
