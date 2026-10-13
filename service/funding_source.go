@@ -36,6 +36,18 @@ var ErrInsufficientWalletQuota = errors.New("wallet quota insufficient")
 
 type WalletFunding struct {
 	userId int
+	// orgId 是构造时已解析的组织归属（0 表示平台直管用户）。
+	//
+	// 一次请求里PreConsume/Settle/Refund 都会问同一个问题「这人是不是组织
+	// 成员」，而 OrgIdOfUser 在 Redis 关闭时每次都回落为一条
+	// SELECT * FROM users。BillingSession 在 tryWallet 里已经解析过一次，
+	// 构造时一并带下来，这里便不必重复查库。
+	orgId int
+	// orgIdResolved 区分「解析出0（平台直管用户）」与「尚未解析」。
+	//
+	// 只靠 orgId > 0 判断会让直管用户在 PreConsume/Settle/Refund 每次都回查，
+	// 等于没优化；组织归属在一次请求内不会变，查一次即可定型。
+	orgIdResolved bool
 	// consumed 是该资金来源**累计**预扣的额度，Refund 按它整体回退。
 	//
 	// 必须是累加而不是赋值：一次请求里 PreConsume 会被调用多次——先由
@@ -47,6 +59,21 @@ type WalletFunding struct {
 
 func (w *WalletFunding) Source() string { return BillingSourceWallet }
 
+// resolveOrgId 返回该资金来源对应的组织归属。构造时已解析的结果优先，
+// 只有未解析时才回查（构造点未覆盖的路径），并就地定型供后续调用复用。
+func (w *WalletFunding) resolveOrgId() int {
+	if w.orgIdResolved {
+		return w.orgId
+	}
+	orgId, err := model.OrgIdOfUser(w.userId)
+	if err != nil {
+		return 0
+	}
+	w.orgId = orgId
+	w.orgIdResolved = true
+	return orgId
+}
+
 func (w *WalletFunding) PreConsume(amount int) error {
 	if amount <= 0 {
 		return nil
@@ -55,7 +82,7 @@ func (w *WalletFunding) PreConsume(amount int) error {
 	// 路径（TryReserveUserQuota 立刻扣减）保持同一时序。否则预扣额度从未落账，
 	// 结算时只补 delta = actual − preConsumed，组织被系统性少收一整笔预扣额。
 	// ReserveOrgQuota 内部以单条条件 UPDATE 同时完成预算上限与成员子额度校验。
-	if orgId, err := model.OrgIdOfUser(w.userId); err == nil && orgId > 0 {
+	if orgId := w.resolveOrgId(); orgId > 0 {
 		if err := model.ReserveOrgQuota(orgId, w.userId, int64(amount)); err != nil {
 			return err
 		}
@@ -77,7 +104,7 @@ func (w *WalletFunding) Settle(delta int) error {
 	if delta == 0 {
 		return nil
 	}
-	if orgId, err := model.OrgIdOfUser(w.userId); err == nil && orgId > 0 {
+	if orgId := w.resolveOrgId(); orgId > 0 {
 		// 组织账本按差额 true-up（如实累加，不截断；防线在准入点 ReserveOrgQuota）。
 		if err := model.IncrOrgUsedQuota(orgId, int64(delta)); err != nil {
 			return err
@@ -99,7 +126,7 @@ func (w *WalletFunding) Refund() error {
 		return nil
 	}
 	// 组织成员：预扣同时记在组织预算账本与成员子额度账本上，按 consumed 一并回减。
-	if orgId, err := model.OrgIdOfUser(w.userId); err == nil && orgId > 0 {
+	if orgId := w.resolveOrgId(); orgId > 0 {
 		if err := model.IncrOrgUsedQuota(orgId, -int64(w.consumed)); err != nil {
 			common.SysLog("error rolling back organization funding reserve: " + err.Error())
 		}

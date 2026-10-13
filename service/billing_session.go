@@ -405,6 +405,21 @@ func (s *BillingSession) reserveToken(delta int) error {
 	return nil
 }
 
+// resolveOrgIdForBilling 解析本次请求的计费出资组织，优先复用
+// relayInfo.OrganizationId（其契约就是「创建计费会话时解析一次并缓存于此」）。
+//
+// 计费热路径上组织归属会被反复查询：准入（NewBillingSession 外层 + tryWallet
+// 内层）、shouldTrust、WalletFunding.PreConsume / Settle / Refund、
+// reserveFunding、recordMemberUsage。Redis 关闭时每次 OrgIdOfUser 都会回落为
+// 一条 SELECT * FROM users，单个组织成员请求最多 7 次全行查询，其中外层与
+// tryWallet 内层是紧邻的重复。这里把已解析的结果复用掉。
+func resolveOrgIdForBilling(relayInfo *relaycommon.RelayInfo) (int, error) {
+	if relayInfo.OrganizationId > 0 {
+		return relayInfo.OrganizationId, nil
+	}
+	return model.OrgIdOfUser(relayInfo.UserId)
+}
+
 // shouldTrust 统一信任额度检查，适用于钱包和订阅。
 func (s *BillingSession) shouldTrust(c *gin.Context) bool {
 	// 异步任务（ForcePreConsume=true）必须预扣全额，不允许信任旁路
@@ -415,7 +430,7 @@ func (s *BillingSession) shouldTrust(c *gin.Context) bool {
 	// 组织成员不享信任旁路。信任旁路会把 effectiveQuota 归零，从而跳过
 	// PreConsumeTokenQuota 里的 EnforceOrgQuota —— 组织预算上限与成员子额度上限
 	// 会同时失守（余额越大的成员反而越不受约束，方向恰好相反）。
-	if orgId, err := model.OrgIdOfUser(s.relayInfo.UserId); err == nil && orgId > 0 {
+	if orgId, err := resolveOrgIdForBilling(s.relayInfo); err == nil && orgId > 0 {
 		return false
 	}
 
@@ -486,7 +501,9 @@ func NewBillingSession(c *gin.Context, relayInfo *relaycommon.RelayInfo, preCons
 		// 「组织剩余预算 + 成员子额度」为准（EnforceOrgQuota 读数据库权威值）。
 		// 用个人钱包做闸门会造成两种相反的错误：额度为 0 的成员被全面拒绝，
 		// 余额充足的成员则因为余额永不被扣减而变成事实上的无限额度。
-		if orgId, orgErr := model.OrgIdOfUser(relayInfo.UserId); orgErr == nil && orgId > 0 {
+		// 优先复用外层已解析的组织归属（NewBillingSession 开头已解析过一次），
+		// 避免紧邻的重复查库。
+		if orgId, orgErr := resolveOrgIdForBilling(relayInfo); orgErr == nil && orgId > 0 {
 			// 缓存出资组织，供请求路径后续判断复用（尤其是后台 goroutine ——
 			// 那里不得再访问数据库，见 RelayInfo.OrganizationId 的说明）。
 			relayInfo.OrganizationId = orgId
@@ -500,7 +517,7 @@ func NewBillingSession(c *gin.Context, relayInfo *relaycommon.RelayInfo, preCons
 			}
 			session := &BillingSession{
 				relayInfo: relayInfo,
-				funding:   &WalletFunding{userId: relayInfo.UserId},
+				funding:   &WalletFunding{userId: relayInfo.UserId, orgId: orgId, orgIdResolved: true},
 			}
 			if apiErr := session.preConsume(c, preConsumedQuota); apiErr != nil {
 				return nil, apiErr
@@ -567,7 +584,10 @@ func NewBillingSession(c *gin.Context, relayInfo *relaycommon.RelayInfo, preCons
 	// 组织成员的出资方恒为组织共享预算：个人钱包与订阅都不参与扣费，
 	// 因此计费偏好（subscription_first / wallet_first …）对成员不适用，
 	// 直接走组织钱包路径，避免「组织成员却先扣订阅/个人钱包」的口径分裂。
-	if orgId, orgErr := model.OrgIdOfUser(relayInfo.UserId); orgErr == nil && orgId > 0 {
+	if orgId, orgErr := resolveOrgIdForBilling(relayInfo); orgErr == nil && orgId > 0 {
+		// 缓存出资组织：tryWallet 内的组织分支、shouldTrust、recordMemberUsage
+		// 都复用这一结果，不必再查一次库。
+		relayInfo.OrganizationId = orgId
 		return tryWallet()
 	}
 
