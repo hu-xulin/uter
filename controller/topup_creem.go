@@ -344,6 +344,20 @@ func handleCheckoutCompleted(c *gin.Context, event *CreemWebhookEvent) {
 		return
 	}
 
+	// 金额校验：实付不得少于本地订单应付金额。Creem 以最小货币单位（分）下发
+	// amount_paid，本地 Money 以元为单位。验签只证明回调来自 Creem，不证明用户
+	// 按订单金额付款——缺失该校验时，一个 1 分的成功回调即可换走整单额度。
+	// 这里刻意不用严格相等：Creem 商品价格在商户后台，本地 CreemProducts[].price
+	// 只是运营配置的镜像值，配置漂移会让两者不等，严格相等会把正常支付全部拒掉。
+	// 故只拦截「实付 < 应付」这一确定的欺诈方向；实付多于应付时放行并告警。
+	if covered, overpaid := creemPaidCoversOrder(int64(event.Object.Order.AmountPaid), topUp.Money); !covered {
+		logger.LogError(c.Request.Context(), fmt.Sprintf("Creem 回调实付金额少于本地订单应付金额 trade_no=%s 实付(分)=%d 本地应付(元)=%.2f creem_order_id=%s client_ip=%s", referenceId, event.Object.Order.AmountPaid, topUp.Money, event.Object.Order.Id, c.ClientIP()))
+		c.Status(http.StatusOK) // 200 避免 Creem 重投一个永久无法成功的事件
+		return
+	} else if overpaid {
+		logger.LogWarn(c.Request.Context(), fmt.Sprintf("Creem 回调实付金额多于本地订单应付金额，按本地额度入账 trade_no=%s 实付(分)=%d 本地应付(元)=%.2f", referenceId, event.Object.Order.AmountPaid, topUp.Money))
+	}
+
 	// 处理充值，传入客户邮箱和姓名信息
 	customerEmail := event.Object.Customer.Email
 	customerName := event.Object.Customer.Name
