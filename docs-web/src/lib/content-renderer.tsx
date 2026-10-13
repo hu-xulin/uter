@@ -514,14 +514,33 @@ function BlockView({ block, locale }: { block: Block; locale: DocsLocale }) {
         );
       }
 
+      /*
+       * The guide is captured once per theme, so the pair is drawn as two
+       * `img`s and the stylesheet shows the one that matches `<html>`.
+       * Both are in the DOM because this page is a static export: choosing
+       * at hydration time would flash the wrong theme's screenshot on
+       * every load, and there is no server to pick for us.
+       */
       return (
         <figure className='not-prose my-5'>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={block.src}
             alt={block.alt}
-            className='w-full rounded-lg border border-fd-border'
+            className={
+              block.srcDark
+                ? 'ug-shot ug-shot-light w-full rounded-lg border border-fd-border'
+                : 'w-full rounded-lg border border-fd-border'
+            }
           />
+          {block.srcDark ? (
+            /* eslint-disable-next-line @next/next/no-img-element */
+            <img
+              src={block.srcDark}
+              alt={block.alt}
+              className='ug-shot ug-shot-dark w-full rounded-lg border border-fd-border'
+            />
+          ) : null}
           {block.alt ? (
             <figcaption className='mt-2 text-center text-xs text-fd-muted-foreground'>
               {block.alt}
