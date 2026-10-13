@@ -23,7 +23,10 @@ import useDialogState from '@/hooks/use-dialog'
 import { handleServerError } from '@/lib/handle-server-error'
 import { AuthOperationError } from '@/lib/secure-verification'
 
-import { useSecureVerification } from '@/features/auth/secure-verification'
+import {
+  SecureVerificationDialog,
+  useSecureVerification,
+} from '@/features/auth/secure-verification'
 
 import { fetchTokenKey, fetchTokenKeysBatch } from '../api'
 import { ERROR_MESSAGES } from '../constants'
@@ -190,6 +193,12 @@ export function ApiKeysProvider({ children }: { children: React.ReactNode }) {
       }}
     >
       {children}
+      {/*
+       * 明文 sk- 的二次验证对话框必须由发起方渲染：本 provider 调用
+       * requestVerification({scope:'token.key.read'})，但不渲染对话框时该 Promise
+       * 永远挂起，密钥气泡会一直停在「加载中...」，用户无法查看/复制完整密钥。
+       */}
+      <SecureVerificationDialog {...verification.dialogProps} />
     </ApiKeysContext>
   )
 }
