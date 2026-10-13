@@ -1636,9 +1636,11 @@ func TestAppendToolSurchargeLogInfoWritesOnlyStructuredFields(t *testing.T) {
 
 // TestCalculateTextQuotaSummaryCapturesChuangMengRealKeys 用用户从创梦平台抓到的
 // 真实 usage JSON 实证：创梦代理 Claude 时使用的键名是
-//   prompt_tokens_details.cached_tokens            (读取)
-//   prompt_tokens_details.cached_creation_tokens   (写入)
-//   usage.claude_cache_creation_5_m_tokens         (写入, 顶层 5m 断点)
+//
+//	prompt_tokens_details.cached_tokens            (读取)
+//	prompt_tokens_details.cached_creation_tokens   (写入)
+//	usage.claude_cache_creation_5_m_tokens         (写入, 顶层 5m 断点)
+//
 // 而非 Anthropic 原生的 cache_read/cache_creation_input_tokens。这些键在
 // dto.Usage (d38ba7d) 已有 tag，因此读取与写入两维度都能被捕获——只是「创建缓存」
 // 回合只有写入、「命中缓存」回合只有读取（单次请求只会出现一个非零值，这是正确的
@@ -1652,13 +1654,13 @@ func TestCalculateTextQuotaSummaryCapturesChuangMengRealKeys(t *testing.T) {
 		RelayFormat:     types.RelayFormatOpenAI,
 		OriginModelName: "claude-fable-5",
 		PriceData: hosttypes.PriceData{
-			ModelRatio:         1,
-			CompletionRatio:    5,
-			CacheRatio:         0.1,
-			CacheCreationRatio: 1.25,
+			ModelRatio:           1,
+			CompletionRatio:      5,
+			CacheRatio:           0.1,
+			CacheCreationRatio:   1.25,
 			CacheCreation5mRatio: 1.25,
 			CacheCreation1hRatio: 1.25,
-			GroupRatioInfo:     hosttypes.GroupRatioInfo{GroupRatio: 1},
+			GroupRatioInfo:       hosttypes.GroupRatioInfo{GroupRatio: 1},
 		},
 		StartTime: time.Now(),
 	}
@@ -1741,4 +1743,141 @@ func TestCalculateTextQuotaSummaryCapturesChuangMengRealKeys(t *testing.T) {
 		require.Equal(t, 0, summary.CacheCreationTokens)
 		require.Equal(t, 0, cacheWriteTokensTotal(summary))
 	})
+}
+
+// TestChuangMengUsageIsRecordedWithoutDrift 用创梦（Dream Router）渠道实测抓到的
+// 真实 usage 载荷，锁死「上游报什么、就记什么」这条链路上的四个维度：
+//
+//	输入   prompt_tokens                -> logs.prompt_tokens
+//	输出   completion_tokens            -> logs.completion_tokens
+//	缓存读 prompt_tokens_details.cached_tokens        -> logs.cache_read_tokens
+//	缓存写 prompt_tokens_details.cached_creation_tokens -> logs.cache_write_tokens
+//
+// 背景（2026-10-13 实测）：对渠道 20「创梦渠道Dream Router」做端到端 A/B ——
+// 用同一份请求体分别经 uter 与直连上游发起，交错采样结果四维度逐项相等；同时
+// 抓取 uter 实际外发的请求字节，与客户端原始请求语义完全相同（仅 JSON 空白差异）。
+// 因此不存在「uter 改写/吞掉缓存字段」的缺陷，此测试把该结论固化为守卫：
+// 任何后续改动一旦让某个维度偏移 1 个 token 或整体丢失，本测试立刻红。
+func TestChuangMengUsageIsRecordedWithoutDrift(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+
+	cases := []struct {
+		name              string
+		usageJSON         string
+		wantPrompt        int
+		wantCompletion    int
+		wantCacheRead     int
+		wantCacheWrite    int
+		wantCreationSplit int
+	}{
+		{
+			// 创梦代理 Claude 的「缓存创建」回合：只有写入。
+			name: "creation round",
+			usageJSON: `{
+				"prompt_tokens": 32194,
+				"completion_tokens": 268,
+				"total_tokens": 32462,
+				"usage_semantic": "openai",
+				"usage_source": "anthropic",
+				"prompt_tokens_details": {
+					"cached_tokens": 0,
+					"cached_creation_tokens": 32192
+				},
+				"claude_cache_creation_5_m_tokens": 32192,
+				"claude_cache_creation_1_h_tokens": 0
+			}`,
+			wantPrompt:        32194,
+			wantCompletion:    268,
+			wantCacheRead:     0,
+			wantCacheWrite:    32192,
+			wantCreationSplit: 32192,
+		},
+		{
+			// 「缓存命中」回合：只有读取。
+			name: "hit round",
+			usageJSON: `{
+				"prompt_tokens": 32462,
+				"completion_tokens": 268,
+				"total_tokens": 32730,
+				"usage_semantic": "openai",
+				"usage_source": "anthropic",
+				"prompt_tokens_details": {
+					"cached_tokens": 32192,
+					"cached_creation_tokens": 0
+				},
+				"claude_cache_creation_5_m_tokens": 0,
+				"claude_cache_creation_1_h_tokens": 0
+			}`,
+			wantPrompt:        32462,
+			wantCompletion:    268,
+			wantCacheRead:     32192,
+			wantCacheWrite:    0,
+			wantCreationSplit: 0,
+		},
+		{
+			// 同时读写（部分命中 + 部分新建），用于盯住两个维度互不串扰。
+			name: "mixed round",
+			usageJSON: `{
+				"prompt_tokens": 40000,
+				"completion_tokens": 100,
+				"total_tokens": 40100,
+				"usage_semantic": "openai",
+				"usage_source": "anthropic",
+				"prompt_tokens_details": {
+					"cached_tokens": 30000,
+					"cached_creation_tokens": 5000
+				},
+				"claude_cache_creation_5_m_tokens": 5000,
+				"claude_cache_creation_1_h_tokens": 0
+			}`,
+			wantPrompt:        40000,
+			wantCompletion:    100,
+			wantCacheRead:     30000,
+			wantCacheWrite:    5000,
+			wantCreationSplit: 5000,
+		},
+	}
+
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			var usage dto.Usage
+			require.NoError(t, json.Unmarshal([]byte(tc.usageJSON), &usage))
+			// 归一化只应搬运、不得凭空造值：读取维度来自 cached_tokens。
+			usage.NormalizeCacheTokens()
+
+			require.Equal(t, tc.wantCacheRead, usage.PromptTokensDetails.CachedTokens,
+				"缓存读必须等于上游 cached_tokens")
+			require.Equal(t, tc.wantCacheWrite,
+				usage.PromptTokensDetails.CacheCreationTokensTotal(),
+				"缓存写必须等于上游 cached_creation_tokens")
+
+			relayInfo := &relaycommon.RelayInfo{
+				RelayFormat:     types.RelayFormatOpenAI,
+				OriginModelName: "claude-fable-5",
+				PriceData: hosttypes.PriceData{
+					ModelRatio:           1,
+					CompletionRatio:      5,
+					CacheRatio:           0.1,
+					CacheCreationRatio:   1.25,
+					CacheCreation5mRatio: 1.25,
+					CacheCreation1hRatio: 1.25,
+					GroupRatioInfo:       hosttypes.GroupRatioInfo{GroupRatio: 1},
+				},
+				StartTime: time.Now(),
+			}
+			ctx, _ := gin.CreateTestContext(httptest.NewRecorder())
+			summary := calculateTextQuotaSummary(ctx, relayInfo, &usage)
+
+			require.Equal(t, tc.wantPrompt, summary.PromptTokens, "输入 token 必须原样透传")
+			require.Equal(t, tc.wantCompletion, summary.CompletionTokens, "输出 token 必须原样透传")
+			require.Equal(t, tc.wantCacheRead, summary.CacheTokens, "缓存读维度不得漂移")
+			require.Equal(t, tc.wantCacheWrite, cacheWriteTokensTotal(summary), "缓存写维度不得漂移")
+			require.Equal(t, tc.wantCreationSplit, summary.CacheCreationTokens5m, "5m 写入断点必须被捕获")
+
+			// 不变量：非OpenRouter 渠道不得像 OpenRouter 那样把缓存维度从输入里再减一遍
+			// （那样会重复计账并让 prompt_tokens 少于上游真实值）。
+			require.Equal(t, tc.wantPrompt, summary.PromptTokens,
+				"输入 token 不得被缓存维度二次扣减")
+		})
+	}
 }
