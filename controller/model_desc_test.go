@@ -98,6 +98,31 @@ func TestParseTranslationPayload(t *testing.T) {
 	assert.Nil(t, parseTranslationPayload("", locales))
 }
 
+// TestParseTranslationPayloadIsDeterministic 锁定择优结果与 map 迭代顺序无关。
+//
+// zh_TW / zh-Hant / zh-HK / zh-MO 全部归一到 "zh-TW"。实现若沿用「先到先得」，
+// Go map 的随机迭代顺序会让同一份 LLM 输出时而取 zh_TW 的译文、时而取
+// zh-Hant 的译文。这里连跑多轮锁定：原样指名的 zh_TW 始终胜出。
+func TestParseTranslationPayloadIsDeterministic(t *testing.T) {
+	locales := []string{"zh-TW"}
+	payload := `{"zh_TW":"繁體描述","zh-Hant":"應忽略","zh-HK":"也應忽略","zh-MO":"同樣忽略"}`
+
+	for i := 0; i < 200; i++ {
+		got := parseTranslationPayload(payload, locales)
+		assert.Equal(t, map[string]string{"zh-TW": "繁體描述"}, got,
+			"iteration %d: an exactly-named locale key must always win over alias keys", i)
+	}
+
+	// 全部都是别名时，结果也应稳定：按 key 的字节序取第一个。
+	// 注意 Go 字符串比较按字节，"zh-HK" < "zh-Hant"（'K'=0x4B < 'a'=0x61）
+	// < "zh-MO"，所以最小的是 zh-HK。
+	for i := 0; i < 200; i++ {
+		got := parseTranslationPayload(`{"zh-MO":"甲","zh-Hant":"乙","zh-HK":"丙"}`, locales)
+		assert.Equal(t, map[string]string{"zh-TW": "丙"}, got,
+			"iteration %d: with only alias keys the byte order must decide", i)
+	}
+}
+
 // TestCleanTranslation 锁定去掉模型爱加的引号包裹。
 func TestCleanTranslation(t *testing.T) {
 	assert.Equal(t, "描述", cleanTranslation(`"描述"`))

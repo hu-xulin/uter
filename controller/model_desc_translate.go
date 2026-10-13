@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"sort"
 	"strings"
 	"sync"
 	"time"
@@ -180,6 +181,12 @@ const translationSystemPrompt = "You are a professional technical translator for
 // 逐个语种做宽松匹配：模型可能回传 "zh-TW" 也可能回传 "zh_TW"/"繁體中文"，
 // 认不出的条目直接跳过（由上层降级为单语种重试），绝不因为一个语种解析
 // 失败就丢掉整批。
+//
+// 多个 key 归一到同一语种时必须**确定性择优**，不能靠 map 遍历顺序决定胜负：
+// Go 的 map 迭代顺序随机，而 zh_TW / zh-Hant / zh-HK / zh-MO 都归一到 "zh-TW"，
+// 先到先得会让同一份 LLM 输出时而取 zh_TW 的译文、时而取 zh-Hant 的译文。
+// 规则是「规范化后与请求语种完全一致的 key 优先，其次按 key 字典序」，
+// 前者语义最明确，后者保证结果稳定可复现。
 func parseTranslationPayload(raw string, locales []string) map[string]string {
 	cleaned := cleanTranslation(raw)
 	if cleaned == "" {
@@ -195,9 +202,22 @@ func parseTranslationPayload(raw string, locales []string) map[string]string {
 	if err := common.Unmarshal([]byte(cleaned), &payload); err != nil {
 		return nil
 	}
+	keys := make([]string, 0, len(payload))
+	for targetLocale := range payload {
+		keys = append(keys, targetLocale)
+	}
+	// 精确命中的 key 排在前面；其余按字典序，保证择优结果与迭代顺序无关。
+	sort.Slice(keys, func(i, j int) bool {
+		iExact := localeKeyExactlyMatches(keys[i], locales)
+		jExact := localeKeyExactlyMatches(keys[j], locales)
+		if iExact != jExact {
+			return iExact
+		}
+		return keys[i] < keys[j]
+	})
 	out := make(map[string]string, len(locales))
-	for targetLocale, value := range payload {
-		text, ok := value.(string)
+	for _, targetLocale := range keys {
+		text, ok := payload[targetLocale].(string)
 		if !ok {
 			continue
 		}
@@ -218,6 +238,23 @@ func parseTranslationPayload(raw string, locales []string) map[string]string {
 		}
 	}
 	return out
+}
+
+// localeKeyExactlyMatches 判断 key 是否本身就是某个请求语种的技术性写法
+// （仅trim / 小写 / 下划线转连字符后相等）。
+//
+// 刻意不走 NormalizeModelDescriptionLocale：那个函数会做别名映射，
+// 于是 "zh-Hant" 与 "zh_TW" 都会被判为「精确」，无法区分谁才是调用方
+// 点名的语种。这里要区分的是"原样指名"与"经别名推断"—— 前者语义更明确，
+// 应当优先。
+func localeKeyExactlyMatches(key string, locales []string) bool {
+	canonical := strings.ToLower(strings.ReplaceAll(strings.TrimSpace(key), "_", "-"))
+	for _, locale := range locales {
+		if strings.EqualFold(strings.ReplaceAll(strings.TrimSpace(locale), "_", "-"), canonical) {
+			return true
+		}
+	}
+	return false
 }
 
 // cleanTranslation 去掉模型爱加的引号包裹与首尾空白。
