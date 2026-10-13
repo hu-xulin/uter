@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"regexp"
+	goruntime "runtime"
 	"slices"
 	"strings"
 	"time"
@@ -18,6 +19,22 @@ import (
 const (
 	DefaultCallTimeout = 5 * time.Second
 	DefaultConcurrency = 8
+
+	// DefaultHeapLimitBytes 是插件执行期间允许的进程堆增量上限。
+	//
+	// 为什么需要：Sobek 运行时没有内存配额，插件拿到的 utils.* 里虽有 jsonStateBudget
+	// 一类的显式预算，但插件本身仍可在 5 秒超时窗口内自由分配——例如一个 while 循环里
+	// 反复 push 一个不断变长的字符串，默认并发 8 意味着 8 个这样的插件可以同时把堆
+	// 撑到 OOM。超时拦不住快速分配，GC 也追不上瞬时峰值。
+	//
+	// 这里盯的是【堆增量】而不是堆总量：进程自身的正常用量（渠道缓存、日志缓冲）
+	// 不该被算到插件头上，否则正常负载波动会误杀健康插件。
+	DefaultHeapLimitBytes = 512 << 20 // 512 MiB
+
+	// memoryWatchInterval 是堆用量采样间隔。取值需权衡：间隔太短会让 runtime.ReadMemStats
+	// 的 STW 停顿频繁落在插件热路径上（ReadMemStats 会短暂阻塞），太长则来不及在
+	// 分配爆炸时及时中断。50ms 足以在秒级爆炸里抢到几次干预机会，又不至于显著影响吞吐。
+	memoryWatchInterval = 50 * time.Millisecond
 )
 
 var ErrCallAdmissionTimeout = errors.New("plugin call admission timed out")
@@ -475,6 +492,8 @@ func (e *Engine) getRuntime(ctx context.Context) (*runtimeInstance, error) {
 
 // A timeout callback must finish before its runtime can be reused. Merely
 // stopping a timer does not wait for an already-started Interrupt call.
+// watchRuntimeContext 把「调用方 ctx 取消」「超过 timeout」和「堆增量超限」三类
+// 中断收敛到同一个 Sobek 中断点上，并返回停表函数。
 func watchRuntimeContext(runtime *sobek.Runtime, ctx context.Context, timeout time.Duration, timeoutError error) func() {
 	callContext, cancel := context.WithTimeoutCause(ctx, timeout, timeoutError)
 	interrupted := make(chan struct{})
@@ -482,13 +501,70 @@ func watchRuntimeContext(runtime *sobek.Runtime, ctx context.Context, timeout ti
 		runtime.Interrupt(context.Cause(callContext))
 		close(interrupted)
 	})
+	stopMemoryWatch := watchRuntimeHeap(runtime, callContext)
 	return func() {
+		stopMemoryWatch()
 		if !stop() {
 			<-interrupted
 		}
 		cancel()
 	}
 }
+
+// watchRuntimeHeap 在调用窗口内周期性采样堆增量，越限即中断运行时。
+//
+// 与超时看门狗共用 runtime.Interrupt：Sobek 的中断是协作式的，JS 引擎会在下一个
+// 可中断点抛出 InterruptedError，随后调用点的 recover 把它转成普通错误——因此
+// 插件既不会崩进程，也拿不到「继续跑完」的余地。
+//
+// 采到越限后立即 return：本次调用已被中断，继续采样没有意义；而下一次调用会重新
+// 建立自己的看门狗和基准值。
+func watchRuntimeHeap(runtime *sobek.Runtime, ctx context.Context) func() {
+	var before goruntime.MemStats
+	goruntime.ReadMemStats(&before)
+
+	stop := make(chan struct{})
+	done := make(chan struct{})
+	go func() {
+		defer close(done)
+		ticker := time.NewTicker(memoryWatchInterval)
+		defer ticker.Stop()
+		for {
+			select {
+			case <-stop:
+				return
+			case <-ctx.Done():
+				return
+			case <-ticker.C:
+				var current goruntime.MemStats
+				goruntime.ReadMemStats(&current)
+				// HeapAlloc 是不触发 GC 的当前堆占用，读它才能看到「尚未被回收的
+				// 垃圾」——那正是瞬时爆炸的信号；HeapInuse 会因为 GC 而滞后。
+				//
+				// 必须做饱和减法而不是直接相减：HeapAlloc 是 uint64，GC 一旦回收
+				// 掉本调用自己产生的垃圾，current 可能小于 before，直接相减会回绕成
+				// 接近 2^64 的天文数字，把一次正常的 GC 误判成堆爆炸并中断调用。
+				delta := uint64(0)
+				if current.HeapAlloc > before.HeapAlloc {
+					delta = current.HeapAlloc - before.HeapAlloc
+				}
+				if delta > DefaultHeapLimitBytes {
+					logger.LogWarn(ctx, "task_plugin subsystem=runtime event=heap_limit_exceeded limit_bytes=%d delta_bytes=%d",
+						DefaultHeapLimitBytes, delta)
+					runtime.Interrupt(ErrHeapLimitExceeded)
+					return
+				}
+			}
+		}
+	}()
+	return func() {
+		close(stop)
+		<-done
+	}
+}
+
+// ErrHeapLimitExceeded 表示插件执行期间的堆增量超过了允许上限。
+var ErrHeapLimitExceeded = errors.New("plugin heap limit exceeded")
 
 func (e *Engine) newRuntime(ctx context.Context) (instance *runtimeInstance, err error) {
 	runtime := sobek.New()
