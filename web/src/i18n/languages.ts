@@ -69,6 +69,12 @@ export function normalizeInterfaceLanguage(
  */
 export function activeInterfaceLanguage(source: {
   language?: string | null
+  /**
+   * Present on a real i18next instance and deliberately **ignored** here — see
+   * the note above. Accepting it keeps the signature honest about what callers
+   * may pass (`i18n`) without inviting a second reading path.
+   */
+  resolvedLanguage?: string | null
 }): InterfaceLanguageCode {
   return normalizeInterfaceLanguage(source.language)
 }
