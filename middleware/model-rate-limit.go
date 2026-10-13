@@ -22,6 +22,11 @@ const (
 	ModelRequestRateLimitCountMark        = "MRRL"
 	ModelRequestRateLimitSuccessCountMark = "MRRLS"
 	modelRateLimitTimeFormat              = "2006-01-02T15:04:05.000Z"
+
+	// modelRateLimitRecordTimeout 给成功计数写回留的独立超时。写回发生在
+	// c.Next() 之后，不能挂请求 ctx（客户端可能已断开），但也不能无界等待 ——
+	// Redis 异常时会把这批 goroutine 永久挂住。
+	modelRateLimitRecordTimeout = 2 * time.Second
 )
 
 // 检查Redis中的请求限制
@@ -81,12 +86,16 @@ func recordRedisRequest(ctx context.Context, rdb *redis.Client, key string, maxC
 func redisRateLimitHandler(duration int64, totalMaxCount, successMaxCount int) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		userId := strconv.Itoa(c.GetInt("id"))
-		ctx := context.Background()
 		rdb := common.RDB
+
+		// 准入检查走请求 ctx：客户端断开时 Redis 往返能立即取消，不必在连接池里
+		// 排完队才发现调用方早已离开。此前统一用 context.Background()，断开后
+		// 这些查询仍会占用连接直到超时。
+		reqCtx := c.Request.Context()
 
 		// 1. 检查成功请求数限制
 		successKey := fmt.Sprintf("rateLimit:%s:%s", ModelRequestRateLimitSuccessCountMark, userId)
-		allowed, err := checkRedisRateLimit(ctx, rdb, successKey, successMaxCount, duration)
+		allowed, err := checkRedisRateLimit(reqCtx, rdb, successKey, successMaxCount, duration)
 		if err != nil {
 			fmt.Println("检查成功请求数限制失败:", err.Error())
 			abortWithOpenAiMessage(c, http.StatusInternalServerError, "rate_limit_check_failed")
@@ -100,10 +109,12 @@ func redisRateLimitHandler(duration int64, totalMaxCount, successMaxCount int) g
 		//2.检查总请求数限制并记录总请求（当totalMaxCount为0时会自动跳过，使用令牌桶限流器
 		if totalMaxCount > 0 {
 			totalKey := fmt.Sprintf("rateLimit:%s", userId)
-			// 初始化
-			tb := limiter.New(ctx, rdb)
+			// 初始化。令牌桶限流器会用这个 ctx 做后台维护（如令牌回收），
+			// 必须是有生命周期的 ctx —— 请求 ctx 在 c.Next() 之后就可能被取消，
+			// 传进去会让限流器的后台协程提前失效。
+			tb := limiter.New(context.Background(), rdb)
 			allowed, err = tb.Allow(
-				ctx,
+				reqCtx,
 				totalKey,
 				limiter.WithCapacity(rateLimitCapacity(totalMaxCount, duration)),
 				limiter.WithRate(int64(totalMaxCount)),
@@ -124,9 +135,14 @@ func redisRateLimitHandler(duration int64, totalMaxCount, successMaxCount int) g
 		// 4. 处理请求
 		c.Next()
 
-		// 5. 如果请求成功，记录成功请求
+		// 5. 如果请求成功，记录成功请求。
+		// 这里【不能】用请求 ctx：c.Next() 返回时上游可能已结束、客户端也可能
+		// 刚断开，此时请求 ctx 已取消，成功计数会被静默丢掉，限流将失效。
+		// 故另起一个带超时的独立 ctx，保证记账一定落地。
 		if c.Writer.Status() < 400 {
-			recordRedisRequest(ctx, rdb, successKey, successMaxCount)
+			recordCtx, cancel := context.WithTimeout(context.Background(), modelRateLimitRecordTimeout)
+			defer cancel()
+			recordRedisRequest(recordCtx, rdb, successKey, successMaxCount)
 		}
 	}
 }
