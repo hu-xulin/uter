@@ -511,7 +511,21 @@ func FetchUpstreamRatios(c *gin.Context) {
 				if lastErr == nil {
 					break
 				}
-				time.Sleep(time.Duration(200*(1<<attempt)) * time.Millisecond)
+				// 丢弃的响应必须就地关闭。net/http 约定 error 时 resp 通常为 nil，
+				// 但 CheckRedirect 失败等路径会返回「非 nil resp + 非 nil err」，
+				// 直接覆盖 resp 会把它的 Body 挂在那里，直到 GC 才有机会回收连接。
+				if resp != nil {
+					_ = resp.Body.Close()
+					resp = nil
+				}
+				// 退避期间若调用方已断开（同步渠道价格通常耗时数十秒），继续重试
+				// 纯属浪费上游配额，直接放弃。
+				select {
+				case <-c.Request.Context().Done():
+					ch <- upstreamResult{Name: uniqueName, Err: c.Request.Context().Err().Error()}
+					return
+				case <-time.After(time.Duration(200*(1<<attempt)) * time.Millisecond):
+				}
 			}
 			if lastErr != nil {
 				logger.LogWarn(c.Request.Context(), "http error on "+chItem.Name+": "+lastErr.Error())

@@ -115,6 +115,11 @@ func SyncChannelCache(frequency int) {
 		time.Sleep(time.Duration(frequency) * time.Second)
 		common.SysLog("syncing channels from database")
 		InitChannelCache()
+		// 回收已删除渠道遗留的轮询锁。GetChannelPollingLock 只增不减，
+		// 渠道被删后它的 *sync.Mutex 会永久留在 map 里；长期运行 + 频繁增删渠道
+		// （自动化/渠道供应商对接场景很常见）会让这张表无界增长。
+		// 挂在每轮同步之后，代价是一轮全表 id 的轻量查询。
+		CleanupChannelPollingLocks()
 	}
 }
 
