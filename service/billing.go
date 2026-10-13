@@ -104,7 +104,7 @@ func SettleBilling(ctx *gin.Context, relayInfo *relaycommon.RelayInfo, actualQuo
 // WalletFunding.Settle 的差额并入重复计账（used_quota 会变成 actual + delta）。
 func recordMemberUsage(relayInfo *relaycommon.RelayInfo, quota int) {
 	if relayInfo != nil && relayInfo.Billing != nil {
-		if orgId, err := model.OrgIdOfUser(relayInfo.UserId); err == nil && orgId > 0 {
+		if orgId, err := resolveOrgIdForBilling(relayInfo); err == nil && orgId > 0 {
 			model.UpdateUserRequestCount(relayInfo.UserId)
 			return
 		}

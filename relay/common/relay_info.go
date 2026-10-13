@@ -646,6 +646,15 @@ func genBaseRelayInfo(c *gin.Context, request dto.Request) *RelayInfo {
 		TokenUnlimited: common.GetContextKeyBool(c, constant.ContextKeyTokenUnlimited),
 		TokenGroup:     tokenGroup,
 
+		// 计费出资组织随登录态一起带进来：TokenAuth / UserAuth 都已通过
+		// UserBase.WriteContext 把 organization_id 写进 gin context（其数据来自
+		// GetUserCache，Redis 命中即零查库，未命中由 singleflight 收敛为一次回源）。
+		//
+		// 不带的后果：计费热路径只能靠 model.OrgIdOfUser 现场查库，组织成员请求
+		// 最多触发 7 次全行查询（Redis 关闭时）。这里补上后，RelayInfo 自创建起
+		// 就持有出资组织，下游 resolveOrgIdForBilling 无需再查。
+		OrganizationId: c.GetInt("organization_id"),
+
 		isFirstResponse: true,
 		RelayMode:       relayconstant.Path2RelayMode(c.Request.URL.Path),
 		RequestURLPath:  c.Request.URL.String(),
