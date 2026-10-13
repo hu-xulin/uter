@@ -7,8 +7,8 @@
 | Official website | https://uter.ai |
 | Document | Uter Large Model Service Platform Recharge Agreement |
 | Version | V1.0 |
-| Effective date | September 28, 2026 |
-| Last updated | September 28, 2026 |
+| Effective date | August 8, 2026 |
+| Last updated | August 8, 2026 |
 | Contracting entity | **Shenzhen Uter Network Co., Ltd.** (the sole contracting entity for the recharge service and related fund-management matters under this Agreement) |
 | Applies to | Individual and enterprise users who make prepayments on the Platform |
 | Governing law | The laws of the People's Republic of China (excluding conflict-of-law rules) |

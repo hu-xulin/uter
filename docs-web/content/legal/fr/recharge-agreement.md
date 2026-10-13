@@ -7,8 +7,8 @@
 | Site officiel | https://uter.ai |
 | Document | Contrat de recharge de la Plateforme de services de grands modèles Uter |
 | Version | V1.0 |
-| Date d'entrée en vigueur | 28 septembre 2026 |
-| Dernière mise à jour | 28 septembre 2026 |
+| Date d'entrée en vigueur | 8 août 2026 |
+| Dernière mise à jour | 8 août 2026 |
 | Entité contractante | **Shenzhen Uter Network Co., Ltd.** (unique entité contractante pour le service de recharge et les questions de gestion des fonds qui lui sont liées en vertu du présent Contrat) |
 | S'applique à | Les utilisateurs individuels et entreprise qui effectuent des prépaiements sur la Plateforme |
 | Droit applicable | Le droit de la République populaire de Chine (hors règles de conflit de lois) |
