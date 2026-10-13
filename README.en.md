@@ -316,7 +316,7 @@ docker run --name uter -d --restart always \
 | `SESSION_SECRET` | Authentication signing secret; must be identical on every node | - |
 | `SESSION_COOKIE_SECURE` | `false`/unset disables the refresh/logout OriginGuard for local HTTP dev proxies; `true` enables the Secure cookie and strict Origin checks | `false` |
 | `SESSION_COOKIE_TRUSTED_URL` | Required with Secure mode: comma-separated exact HTTPS Origins allowed to call refresh/logout; not a relay CORS allowlist | - |
-| `TRUSTED_PROXIES` | Unset/blank trusts loopback, RFC 1918 and IPv6 ULA with a startup warning; `none` trusts no proxies; an explicit proxy IP/CIDR list replaces the defaults | `127.0.0.0/8, ::1, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, fc00::/7` |
+| `TRUSTED_PROXIES` | Unset/blank trusts loopback only (`127.0.0.0/8`, `::1`) with a startup warning — RFC 1918 and IPv6 ULA are deliberately **not** trusted, because in container/K8s deployments the app and its clients often share those segments and a forged `X-Forwarded-For` would then control `ClientIP()`, defeating IP rate limits, Token `allow_ips`, and audit-log IPs; `none` trusts no proxies; an explicit proxy IP/CIDR list replaces the defaults | `127.0.0.0/8, ::1` |
 | `USER_SESSION_ACTIVE_LIMIT` | Maximum active login Sessions per user | `50` |
 | `USER_SESSION_ISSUANCE_LIMIT` | Maximum Sessions created per user within the issuance window, including revoked Sessions | `100` |
 | `USER_SESSION_ISSUANCE_WINDOW_SECONDS` | Per-user Session issuance window; clamped to the revoked retention period when configured higher | `86400` |

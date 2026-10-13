@@ -516,6 +516,15 @@ func TokenAuthReadOnly() func(c *gin.Context) {
 		userCache, err := model.GetUserCache(token.UserId)
 		if err != nil {
 			common.SysLog(fmt.Sprintf("TokenAuthReadOnly GetUserCache error for user %d: %v", token.UserId, err))
+			// 同 TokenAuth：用户已被硬删除属孤儿 token，按 401 而非 500。
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				c.JSON(http.StatusUnauthorized, gin.H{
+					"success": false,
+					"message": common.TranslateMessage(c, i18n.MsgTokenInvalid),
+				})
+				c.Abort()
+				return
+			}
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"success": false,
 				"message": common.TranslateMessage(c, i18n.MsgDatabaseError),
@@ -634,6 +643,14 @@ func TokenAuth() func(c *gin.Context) {
 		userCache, err := model.GetUserCache(token.UserId)
 		if err != nil {
 			common.SysLog(fmt.Sprintf("TokenAuth GetUserCache error for user %d: %v", token.UserId, err))
+			// 用户不存在（记录已被硬删除，token 成为孤儿）不是数据库故障：这条 token
+			// 永远不可能通过认证，按 401 处理。返回 500 会让客户端无谓重试、在监控里
+			// 制造假告警，还会让调用方误以为该联系管理员。
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				abortWithOpenAiMessage(c, http.StatusUnauthorized,
+					common.TranslateMessage(c, i18n.MsgTokenInvalid))
+				return
+			}
 			abortWithOpenAiMessage(c, http.StatusInternalServerError,
 				common.TranslateMessage(c, i18n.MsgDatabaseError))
 			return
