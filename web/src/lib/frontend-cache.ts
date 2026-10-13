@@ -18,12 +18,24 @@ For commercial licensing, please contact support@uter.ai
 */
 const FRONTEND_CACHE_VERSION = 'default-v1'
 const FRONTEND_CACHE_VERSION_KEY = 'Uter:default:cache-version'
+/**
+ * Keys the version bump must not touch.
+ *
+ * The wipe exists to drop *derived* UI state that a new build may have
+ * changed the shape of. A preference the user set by hand is not that:
+ * `i18nextLng` is where i18next caches the chosen interface language, and
+ * deleting it makes the next load fall back to `navigator.language` — an
+ * English-locale browser then renders the whole interface in English while
+ * 个人设置, which reads the account rather than this cache, still shows
+ * 「简体中文」 selected.
+ */
 const PRESERVED_LOCAL_STORAGE_KEYS = new Set([
   FRONTEND_CACHE_VERSION_KEY,
   'user',
   'uid',
   'aff',
   'oauth:binding:result',
+  'i18nextLng',
 ])
 
 export function initializeFrontendCache(): void {

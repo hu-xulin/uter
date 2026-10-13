@@ -18,7 +18,10 @@ For commercial licensing, please contact support@uter.ai
 */
 import i18n from 'i18next'
 
-import { normalizeInterfaceLanguage } from './languages'
+import {
+  activeInterfaceLanguage,
+  normalizeInterfaceLanguage,
+} from './languages'
 
 /**
  * Runtime interface-locale hot-reload.
@@ -124,7 +127,10 @@ async function fetchLocale(code: string): Promise<void> {
 export function installRuntimeLocaleLoader(): void {
   if (typeof window === 'undefined') return
 
-  void fetchLocale(i18n.resolvedLanguage ?? i18n.language)
+  // `i18n.language`, not `resolvedLanguage`: the latter is the fallback until
+  // the chosen locale's bundle lands, which would make this fetch the English
+  // file for a Chinese reader and never revalidate their own.
+  void fetchLocale(activeInterfaceLanguage(i18n))
 
   i18n.on('languageChanged', (code) => {
     void fetchLocale(code)
