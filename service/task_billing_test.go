@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/base64"
 	"encoding/json"
+	"fmt"
 	"math"
 	"net/http"
 	"net/http/httptest"
@@ -90,9 +91,21 @@ func truncate(t *testing.T) {
 	})
 }
 
+// seedUser 插入一个测试用户。
+//
+// AffCode 必须给唯一值：users.aff_code 有唯一索引，第二次 seedUser 会写同一个
+// 空串而撞 UNIQUE 约束（表现为后续测试报 "constraint failed: UNIQUE constraint
+// failed: users.aff_code"，看起来像无关测试坏了）。按 id 派生，天然唯一且可复现。
+// Username 同理：用户名有唯一索引，且多个测试都用 "test_user"。
 func seedUser(t *testing.T, id int, quota int) {
 	t.Helper()
-	user := &model.User{Id: id, Username: "test_user", Quota: quota, Status: common.UserStatusEnabled}
+	user := &model.User{
+		Id:       id,
+		Username: fmt.Sprintf("test_user_%d", id),
+		AffCode:  fmt.Sprintf("t%010d", id),
+		Quota:    quota,
+		Status:   common.UserStatusEnabled,
+	}
 	require.NoError(t, model.DB.Create(user).Error)
 }
 
