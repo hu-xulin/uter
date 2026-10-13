@@ -99,6 +99,34 @@ function screenshotLocale(locale: DocsLocale): DocsLocale {
   return 'en';
 }
 
+const IMAGE_FILE_PATTERN = /\.(png|jpe?g|webp|avif|gif|svg)$/i;
+
+/**
+ * One screenshot of a chapter, as the files on disk allow.
+ *
+ * The guide is captured twice — once per theme — so a chapter directory may
+ * hold either a flat set or the same names split across `light/` and `dark/`.
+ * `light` also carries the flat file, so callers that do not care about the
+ * theme (the `__imgN` fallback, a chapter shot only once) keep working with
+ * `light`/`dark` unset.
+ */
+type ChapterPicture = {
+  /** Base file name, e.g. `01-login.webp` — the identity in both themes. */
+  name: string;
+  /** Light-theme file, or the only file when the chapter is not paired. */
+  src: string;
+  /** Dark-theme file; undefined when the chapter ships a single set. */
+  srcDark?: string;
+};
+
+/** Image files directly inside `dir`, in the `__imgN` order. */
+function imageFilesIn(dir: string): string[] {
+  if (!existsSync(dir)) return [];
+  return readdirSync(dir)
+    .filter((name) => !name.startsWith('.') && IMAGE_FILE_PATTERN.test(name))
+    .sort((a, b) => a.localeCompare(b, 'en', { numeric: true }));
+}
+
 /**
  * The chapter's pictures, in the order `__img0`, `__img1`, … refer to
  * them.
@@ -106,31 +134,90 @@ function screenshotLocale(locale: DocsLocale): DocsLocale {
  * Sorted with `numeric` so `10-` follows `09-` rather than `01-`; the
  * zero-padded names the convention asks for make this a no-op, but an
  * author who forgets the padding still gets the intended order.
+ *
+ * A name present in only one of the two theme directories still resolves:
+ * the pair exists to serve a theme the chapter has a picture for, and
+ * falling back to the other theme beats a placeholder. The flat directory
+ * is read as well so a chapter can be migrated one screenshot at a time —
+ * pairs win over a flat file of the same name.
  */
-function chapterImageUrls(locale: DocsLocale, slug: string): string[] {
+function chapterPictures(locale: DocsLocale, slug: string): ChapterPicture[] {
   const source = screenshotLocale(locale);
+  const base = `/user-guide/${source}/${slug}`;
   const dir = path.join(IMAGE_ROOT, source, slug);
-  if (!existsSync(dir)) return [];
 
-  return readdirSync(dir)
-    .filter((name) => !name.startsWith('.') && /\.(png|jpe?g|webp|avif|gif|svg)$/i.test(name))
-    .sort((a, b) => a.localeCompare(b, 'en', { numeric: true }))
-    .map((name) => withDocsBasePath(`/user-guide/${source}/${slug}/${name}`));
+  const lightDir = path.join(dir, 'light');
+  const darkDir = path.join(dir, 'dark');
+  const lightFiles = imageFilesIn(lightDir);
+  const darkFiles = new Set(imageFilesIn(darkDir));
+  const flatFiles = imageFilesIn(dir);
+
+  const names = [...new Set([...lightFiles, ...flatFiles, ...darkFiles])].sort((a, b) =>
+    a.localeCompare(b, 'en', { numeric: true })
+  );
+
+  const paired = lightFiles.length > 0 || darkFiles.size > 0;
+  if (!paired) {
+    return names.map((name) => ({ name, src: withDocsBasePath(`${base}/${name}`) }));
+  }
+
+  return names.map((name) => {
+    /*
+     * Prefer the theme directories; a name that exists on one side only
+     * borrows the other side's file rather than dropping out of the guide.
+     */
+    const light = lightFiles.includes(name) ? `${base}/light/${name}` : undefined;
+    const dark = darkFiles.has(name) ? `${base}/dark/${name}` : undefined;
+    const flat = flatFiles.includes(name) ? `${base}/${name}` : undefined;
+    const primary = light ?? dark ?? flat ?? `${base}/${name}`;
+    const secondary = light && dark ? dark : undefined;
+    return {
+      name,
+      src: withDocsBasePath(primary),
+      srcDark: secondary ? withDocsBasePath(secondary) : undefined,
+    };
+  });
 }
 
-/** Resolve one image reference against the chapter's picture directory. */
-function resolveImageSrc(raw: string, images: string[], locale: DocsLocale, slug: string): string {
-  if (/^[a-z][a-z0-9+.-]*:/i.test(raw) || raw.startsWith('//')) return raw;
+/**
+ * Resolve one image reference against the chapter's picture directory.
+ *
+ * An absolute or remote URL is passed through untouched (it is not ours to
+ * rewrite); a leading `/` is ours but written from the export root, so it
+ * only needs the basePath.
+ */
+function resolvePicture(
+  raw: string,
+  pictures: ChapterPicture[],
+  locale: DocsLocale,
+  slug: string
+): { src: string; srcDark?: string } {
+  const trimmed = raw.trim();
+  // An `<img>` with no `src` yields an empty reference; treat it as unresolved
+  // so the renderer draws its placeholder instead of an implied directory URL.
+  if (!trimmed) return { src: '' };
+  if (/^[a-z][a-z0-9+.-]*:/i.test(trimmed) || trimmed.startsWith('//')) return { src: raw };
   // A root-relative URL is one we (or the author) wrote pointing at the export
   // root, so it needs the basePath the page is actually served under —
   // without it the browser asks for `/user-guide/…`, gets the SPA's index.html
   // back, and renders nothing. Idempotent, so an already-prefixed path is fine.
-  if (raw.startsWith('/')) return withDocsBasePath(raw);
+  if (trimmed.startsWith('/')) return { src: withDocsBasePath(raw) };
 
-  const placeholder = /^__img(\d+)$/.exec(raw.trim());
-  if (placeholder) return images[Number(placeholder[1])] ?? '';
+  const placeholder = /^__img(\d+)$/.exec(trimmed);
+  if (placeholder) {
+    const picture = pictures[Number(placeholder[1])];
+    return picture
+      ? { src: picture.src, srcDark: picture.srcDark }
+      : { src: '' };
+  }
 
-  return withDocsBasePath(`/user-guide/${screenshotLocale(locale)}/${slug}/${raw.replace(/^\.\//, '')}`);
+  const name = trimmed.replace(/^\.\//, '');
+  const match = pictures.find((picture) => picture.name === name);
+  if (match) return { src: match.src, srcDark: match.srcDark };
+
+  // Named but not in the directory listing: unchanged legacy behaviour — emit
+  // the URL the convention implies rather than silently dropping the picture.
+  return { src: withDocsBasePath(`/user-guide/${screenshotLocale(locale)}/${slug}/${name}`) };
 }
 
 const CALLOUT_TONES: readonly CalloutTone[] = [
@@ -170,7 +257,7 @@ function attribute(tag: string, name: string): string | undefined {
  */
 function htmlToBlocks(
   html: string,
-  images: string[],
+  images: ChapterPicture[],
   locale: DocsLocale,
   slug: string
 ): Block[] {
@@ -195,9 +282,11 @@ function htmlToBlocks(
 
   for (const tag of withoutCallouts.match(/<img\b[^>]*>/gi) ?? []) {
     const src = attribute(tag, 'src');
+    const resolved = src ? resolvePicture(src, images, locale, slug) : { src: '' };
     blocks.push({
       kind: 'image',
-      src: src ? resolveImageSrc(src, images, locale, slug) : '',
+      src: resolved.src,
+      srcDark: resolved.srcDark,
       alt: attribute(tag, 'alt') ?? '',
     });
   }
@@ -206,7 +295,7 @@ function htmlToBlocks(
 }
 
 /** Convert inline runs, dropping formatting this site does not draw. */
-function phrasingToInline(nodes: PhrasingContent[], images: string[], locale: DocsLocale, slug: string): Inline[] {
+function phrasingToInline(nodes: PhrasingContent[], images: ChapterPicture[], locale: DocsLocale, slug: string): Inline[] {
   const inline: Inline[] = [];
 
   for (const node of nodes) {
@@ -269,7 +358,7 @@ function isModuleStatement(children: Inline[]): boolean {
 }
 
 /** Convert a list item's children into one line of inline runs. */
-function listItemToInline(item: RootContent & { type: 'listItem' }, images: string[], locale: DocsLocale, slug: string): Inline[] {
+function listItemToInline(item: RootContent & { type: 'listItem' }, images: ChapterPicture[], locale: DocsLocale, slug: string): Inline[] {
   const inline: Inline[] = [];
 
   for (const child of item.children) {
@@ -294,7 +383,7 @@ function listItemToInline(item: RootContent & { type: 'listItem' }, images: stri
 }
 
 /** Convert block-level nodes into the render model. */
-function nodesToBlocks(nodes: RootContent[], images: string[], locale: DocsLocale, slug: string): Block[] {
+function nodesToBlocks(nodes: RootContent[], images: ChapterPicture[], locale: DocsLocale, slug: string): Block[] {
   const blocks: Block[] = [];
 
   for (let i = 0; i < nodes.length; i += 1) {
@@ -316,9 +405,11 @@ function nodesToBlocks(nodes: RootContent[], images: string[], locale: DocsLocal
           if (child.type === 'html' && /<img\b/i.test(child.value)) {
             for (const tag of child.value.match(/<img\b[^>]*>/gi) ?? []) {
               flush();
+              const resolved = resolvePicture(attribute(tag, 'src') ?? '', images, locale, slug);
               blocks.push({
                 kind: 'image',
-                src: resolveImageSrc(attribute(tag, 'src') ?? '', images, locale, slug),
+                src: resolved.src,
+                srcDark: resolved.srcDark,
                 alt: attribute(tag, 'alt') ?? '',
               });
             }
@@ -413,7 +504,7 @@ export function loadUserGuideMarkdown(locale: DocsLocale, slug: string): Markdow
 
   const source = readFileSync(file, 'utf8').replace(/^---\n[\s\S]*?\n---\n/, '');
   const tree: Root = unified().use(remarkParse).use(remarkGfm).parse(source);
-  const images = chapterImageUrls(locale, slug);
+  const images = chapterPictures(locale, slug);
 
   const chapter: MarkdownChapter = { lead: [], groups: [] };
   let target: Block[] = chapter.lead;

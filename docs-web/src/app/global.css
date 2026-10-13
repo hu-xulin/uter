@@ -674,3 +674,33 @@ html[data-docs-embed='true'] #nd-subnav > a {
 .legal-doc .prose table:first-of-type td {
   white-space: nowrap;
 }
+
+/*
+ * ── Theme-paired user-guide screenshots ──────────────────────────────
+ *
+ * Every guide screenshot is captured twice — once with the console in its
+ * light theme, once in dark — and the two files are shipped side by side
+ * as `light/<name>` and `dark/<name>`. `content-renderer.tsx` emits both
+ * `img`s and this pair of rules decides which one is visible, keyed off
+ * the `dark` class next-themes puts on `<html>`.
+ *
+ * This is CSS rather than a `useTheme()` in the renderer on purpose: the
+ * docs site is a static export, so a JS-side choice would paint the light
+ * screenshot first and swap it after hydration, flashing the wrong theme
+ * on every navigation.
+ *
+ * A chapter that only ships one set never gets the classes (the renderer
+ * omits them when there is no dark file), so it keeps rendering as a
+ * plain single image.
+ */
+.ug-shot-dark {
+  display: none;
+}
+
+.dark .ug-shot-light {
+  display: none;
+}
+
+.dark .ug-shot-dark {
+  display: block;
+}

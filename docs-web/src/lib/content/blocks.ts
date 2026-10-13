@@ -39,11 +39,16 @@ export type CalloutTone = 'info' | 'warn' | 'error' | 'success' | 'warning' | 'i
  * ship yet — see `user-guide-markdown.ts`. The renderer draws a labelled
  * placeholder for those instead of a broken image, so a half-migrated
  * chapter still reads as a page rather than as an error.
+ *
+ * `image.srcDark` is the same screenshot captured in the dark theme. The
+ * guide is shot twice, and the renderer draws the pair so the picture
+ * always matches the surrounding scheme; a chapter that only ships one
+ * set leaves it undefined and `src` is used for both.
  */
 export type Block =
   | { kind: 'paragraph'; children: Inline[] }
   | { kind: 'list'; ordered: boolean; items: Inline[][] }
-  | { kind: 'image'; src: string; alt: string }
+  | { kind: 'image'; src: string; srcDark?: string; alt: string }
   | { kind: 'code'; lang?: string; value: string }
   | { kind: 'table'; head: Inline[][]; rows: Inline[][][] }
   | { kind: 'callout'; tone: CalloutTone; children: Block[] };
