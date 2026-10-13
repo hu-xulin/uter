@@ -169,7 +169,13 @@ it.each([
         <AuditLogViewer scope='self' />
       </QueryClientProvider>
     )
-    const cell = await screen.findByRole('cell', { name: new RegExp(headline) })
+    // 表格先铺 200 个骨架 cell 再填数据，实测首帧到真实内容约 1.5s，
+    // 超出 findBy* 的 1s 默认超时 ⇒ 偶发找不到。显式放宽，避免用例与机器负载赛跑。
+    const cell = await screen.findByRole(
+      'cell',
+      { name: new RegExp(headline) },
+      { timeout: 5000 }
+    )
     expect(cell).toHaveTextContent(headline)
     if ('id' in params || 'target_user_id' in params) {
       // 用户类审计的 {{id}} 渲染为对外编号 uter…（见 lib/format#formatUserId），
@@ -387,8 +393,21 @@ it.each([
         </QueryClientProvider>
       </I18nextProvider>
     )
-    expect(await screen.findByRole('cell', { name: single })).toBeVisible()
-    expect(screen.getByRole('cell', { name: batch })).toBeVisible()
+    // 同上：骨架屏铺满后才有真实行，1s 默认超时在慢机器上不够。
+    expect(
+      await screen.findByRole(
+        'cell',
+        { name: single },
+        { timeout: 5000 }
+      )
+    ).toBeVisible()
+    expect(
+      await screen.findByRole(
+        'cell',
+        { name: batch },
+        { timeout: 5000 }
+      )
+    ).toBeVisible()
     expect(
       screen.queryByRole('cell', { name: 'channel.status_update' })
     ).not.toBeInTheDocument()

@@ -195,7 +195,9 @@ function buildTokenAuditOperation(
     }
     summary = headline
     if (id) {
-      identifier = t('(ID: {{id}})', { id })
+      // 前导空格与 quota 侧一致：cell 里 headline 与 identifier 是相邻元素，
+      // 缺空格会让可访问文本粘成「“production”(ID: 11)」。
+      identifier = ` ${t('(ID: {{id}})', { id })}`
       summary = t('{{operation}} (ID: {{id}})', { operation: headline, id })
       fields.push({ label: t('Token ID'), value: id, copyable: true })
     }

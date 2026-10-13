@@ -69,7 +69,10 @@ export function buildQuotaAuditOperation(
   }
   let headline = name ? t(operation.named, { name }) : t(operation.label)
   if (!name && !id) headline = `${headline} · ${t('Target not recorded')}`
-  const identifier = id ? t('(ID: {{id}})', { id }) : ''
+  // 前导空格不可省：列表 cell 把 headline 与 identifier 渲染成两个相邻元素
+  // （视觉间距由 flex gap 提供），可访问文本拼接时二者直接相接，会读成
+  // 「quota(ID: uter…)」。带上前导空格后文本与视觉一致，屏幕阅读器也断得开。
+  const identifier = id ? ` ${t('(ID: {{id}})', { id })}` : ''
   const summary = id
     ? t('{{operation}} (ID: {{id}})', { operation: headline, id })
     : headline
