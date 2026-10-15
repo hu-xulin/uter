@@ -337,21 +337,20 @@ export function SystemInfoSection({ defaultValues }: SystemInfoSectionProps) {
                 name='legal.user_agreement'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('User Agreement')}</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        placeholder={t(
-                          'Provide Markdown, HTML, or an external URL for the user agreement'
-                        )}
-                        rows={6}
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormDescription>
-                      {t(
-                        'Leave empty to use the default built-in user agreement. Entering Markdown, HTML, or a full URL overrides it for all users.'
+                  <FormLabel>{t('User Agreement')}</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder={t(
+                        'Document address: a full URL or a repo-relative Markdown path, e.g. docs-web/content/legal/zh/user-agreement.md'
                       )}
-                    </FormDescription>
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    {t(
+                      'Reference a document address instead of pasting content. Accepts a full URL or a Markdown file path (resolved relative to the docs root). Leave empty to use the built-in default user agreement.'
+                    )}
+                  </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -362,21 +361,20 @@ export function SystemInfoSection({ defaultValues }: SystemInfoSectionProps) {
                 name='legal.privacy_policy'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('Privacy Policy')}</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        placeholder={t(
-                          'Provide Markdown, HTML, or an external URL for the privacy policy'
-                        )}
-                        rows={6}
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormDescription>
-                      {t(
-                        'Leave empty to use the default built-in privacy policy. Entering Markdown, HTML, or a full URL overrides it for all users.'
+                  <FormLabel>{t('Privacy Policy')}</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder={t(
+                        'Document address: a full URL or a repo-relative Markdown path, e.g. docs-web/content/legal/zh/privacy-policy.md'
                       )}
-                    </FormDescription>
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    {t(
+                      'Reference a document address instead of pasting content. Accepts a full URL or a Markdown file path (resolved relative to the docs root). Leave empty to use the built-in default privacy policy.'
+                    )}
+                  </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -387,21 +385,20 @@ export function SystemInfoSection({ defaultValues }: SystemInfoSectionProps) {
                 name='legal.recharge_agreement'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('Recharge Agreement')}</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        placeholder={t(
-                          'Provide Markdown, HTML, or an external URL for the recharge agreement'
-                        )}
-                        rows={6}
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormDescription>
-                      {t(
-                        'Leave empty to hide the recharge agreement link. Supports Markdown, HTML, or a full URL to redirect users.'
+                  <FormLabel>{t('Recharge Agreement')}</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder={t(
+                        'Document address: a full URL or a repo-relative Markdown path, e.g. docs-web/content/legal/zh/recharge-agreement.md'
                       )}
-                    </FormDescription>
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    {t(
+                      'Reference a document address instead of pasting content. Accepts a full URL or a Markdown file path (resolved relative to the docs root). Leave empty to use the built-in default recharge agreement.'
+                    )}
+                  </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
