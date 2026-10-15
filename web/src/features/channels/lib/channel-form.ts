@@ -778,7 +778,7 @@ function buildSettingsJSON(formData: ChannelFormValues): string {
       formData.advanced_custom
     )
     if (advancedCustomConfig) {
-      // Branded channel types (62/63/64) carry a preset display name and logo
+      // Branded channel types (600/601/602) carry a preset display name and logo
       // seeded at creation time. Persist them even when the preset selection
       // or the advanced-custom route editor did not write them back, so the
       // channel card always renders with its brand identity.
