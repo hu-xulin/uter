@@ -82,12 +82,14 @@ func recordRedisRequest(ctx context.Context, rdb *redis.Client, key string, maxC
 func redisRateLimitHandler(duration int64, totalMaxCount, successMaxCount int) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		userId := strconv.Itoa(c.GetInt("id"))
-		ctx := context.Background()
 		rdb := common.RDB
+
+		// 检查阶段使用请求 ctx（P3.1）：客户端断开即可取消 Redis 排队，不必在连接池里排完队。
+		checkCtx := c.Request.Context()
 
 		// 1. 检查成功请求数限制
 		successKey := fmt.Sprintf("rateLimit:%s:%s", ModelRequestRateLimitSuccessCountMark, userId)
-		allowed, err := checkRedisRateLimit(ctx, rdb, successKey, successMaxCount, duration)
+		allowed, err := checkRedisRateLimit(checkCtx, rdb, successKey, successMaxCount, duration)
 		if err != nil {
 			fmt.Println(common.LogText("failed to check the successful request limit: %s", err.Error()))
 			abortWithOpenAiMessage(c, http.StatusInternalServerError, "rate_limit_check_failed")
@@ -101,10 +103,11 @@ func redisRateLimitHandler(duration int64, totalMaxCount, successMaxCount int) g
 		//2.检查总请求数限制并记录总请求（当totalMaxCount为0时会自动跳过，使用令牌桶限流器
 		if totalMaxCount > 0 {
 			totalKey := fmt.Sprintf("rateLimit:%s", userId)
-			// 初始化
-			tb := limiter.New(ctx, rdb)
+			// 令牌桶限流器按 P3.3 使用 Background：其生命周期不依赖单次请求，
+			// 不能用请求 ctx，否则后台协程会提前失效。
+			tb := limiter.New(context.Background(), rdb)
 			allowed, err = tb.Allow(
-				ctx,
+				checkCtx,
 				totalKey,
 				limiter.WithCapacity(rateLimitCapacity(totalMaxCount, duration)),
 				limiter.WithRate(int64(totalMaxCount)),
@@ -126,9 +129,13 @@ func redisRateLimitHandler(duration int64, totalMaxCount, successMaxCount int) g
 		// 4. 处理请求
 		c.Next()
 
-		// 5. 如果请求成功，记录成功请求
+		// 5. 如果请求成功，记录成功请求。
+		// P3.2：收尾记账在 c.Next() 之后，请求 ctx 可能已取消，必须另起带超时的独立 ctx，
+		// 否则 recordRedisRequest 会因 ctx 取消而丢失计数、限流失效。
 		if modelRequestSucceeded(c) {
-			recordRedisRequest(ctx, rdb, successKey, successMaxCount)
+			recordCtx, recordCancel := context.WithTimeout(context.Background(), 2*time.Second)
+			defer recordCancel()
+			recordRedisRequest(recordCtx, rdb, successKey, successMaxCount)
 		}
 	}
 }
