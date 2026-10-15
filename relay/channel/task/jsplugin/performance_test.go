@@ -12,12 +12,11 @@ import (
 	"testing"
 
 	"github.com/uter-ai/uter/common"
-
-	"github.com/gin-gonic/gin"
-	"github.com/stretchr/testify/require"
 	pluginruntime "github.com/uter-ai/uter/pkg/jsplugin"
 	"github.com/uter-ai/uter/plugins"
 	relaycommon "github.com/uter-ai/uter/relay/common"
+	"github.com/gin-gonic/gin"
+	"github.com/stretchr/testify/require"
 )
 
 func benchmarkAlibaba(b *testing.B) (*pluginruntime.LoadedPlugin, *atomic.Int64) {
@@ -61,9 +60,13 @@ func BenchmarkTaskPluginRuntime(b *testing.B) {
 					var err error
 					switch name {
 					case "HasExport":
-						_, err = plugin.Engine.HasExport(ctx, "extractUsage")
+						if !plugin.Engine.HasExport("extractUsage") {
+							b.Fatal("extractUsage not exported")
+						}
 					case "MissingExport":
-						_, err = plugin.Engine.HasExport(ctx, "absentHook")
+						if plugin.Engine.HasExport("absentHook") {
+							b.Fatal("absentHook exported")
+						}
 					default:
 						_, err = plugin.Engine.Call(ctx, "extractUsage", input)
 					}

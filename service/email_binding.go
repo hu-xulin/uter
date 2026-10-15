@@ -17,14 +17,27 @@ import (
 
 var (
 	ErrAccountEmailInvalid = errors.New("Please enter a valid email address")
+	// ErrAccountEmailRestricted is the umbrella the email policy rejects with.
+	// Uter keeps the two more specific errors below (they have different fixes
+	// to suggest, so they must not share a message), and both unwrap to this
+	// one — so errors.Is(err, ErrAccountEmailRestricted) matches either way.
+	ErrAccountEmailRestricted = errors.New("This email address is not allowed by the administrator's email policy.")
 	// ErrAccountEmailDomainRestricted covers addresses whose domain is not on
 	// the whitelist. ErrAccountEmailAliasRestricted is deliberately separate:
 	// the two have different fixes for the user, so they must not share a
 	// message. These strings double as i18next keys on the frontend.
-	ErrAccountEmailDomainRestricted = errors.New("This email domain is not supported. Please use an email address from another domain.")
-	ErrAccountEmailAliasRestricted  = errors.New("Email aliases are not supported. Please use an email address without +, -, _ or . in the part before @, then try again.")
+	ErrAccountEmailDomainRestricted error = emailPolicyError("This email domain is not supported. Please use an email address from another domain.")
+	ErrAccountEmailAliasRestricted  error = emailPolicyError("Email aliases are not supported. Please use an email address without +, -, _ or . in the part before @, then try again.")
 	ErrEmailBindingDelivery         = errors.New("Verification email could not be sent. Start email verification again.")
 )
+
+// emailPolicyError is one email-policy rejection that reports its own message
+// while still matching ErrAccountEmailRestricted under errors.Is.
+type emailPolicyError string
+
+func (e emailPolicyError) Error() string { return string(e) }
+
+func (e emailPolicyError) Unwrap() error { return ErrAccountEmailRestricted }
 
 type EmailBindingData struct {
 	FlowToken           string `json:"flow_token"`

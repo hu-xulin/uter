@@ -21,15 +21,14 @@ import (
 	"time"
 
 	"github.com/uter-ai/uter/common"
-
-	"github.com/gin-gonic/gin"
-	"github.com/pquerna/otp/totp"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"github.com/uter-ai/uter/model"
 	"github.com/uter-ai/uter/oauth"
 	"github.com/uter-ai/uter/service"
 	"github.com/uter-ai/uter/setting/system_setting"
+	"github.com/gin-gonic/gin"
+	"github.com/pquerna/otp/totp"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"gorm.io/gorm"
 )
 
@@ -131,7 +130,7 @@ func TestSecurityAccountDeletionAcceptsEitherFactorAndRevokesSessions(t *testing
 			}
 			otherSession, err := service.CreateLoginSession(user.Id, "password", "127.0.0.1", "second-session")
 			require.NoError(t, err)
-			require.NoError(t, model.UpdateUserAccessToken(user.Id, "account-delete-access-token"))
+			require.NoError(t, model.DB.Model(&model.User{}).Where("id = ?", user.Id).Update("access_token", "account-delete-access-token").Error)
 			response := securityEnrollmentRequest("DELETE", "/api/user/self", "", proof, identity, DeleteSelf)
 			var result securityEnrollmentResponse
 			require.NoError(t, common.Unmarshal(response.Body.Bytes(), &result))
@@ -196,7 +195,8 @@ func TestSecurityAccountDeletionRechecksTransactionAndConsumesFailedProof(t *tes
 				assert.Contains(t, response.Body.String(), "SECURITY_PROOF_CONSUMED")
 			}
 			if scenario != "write failure" {
-				assert.Error(t, model.DeleteUserForSession(identity))
+				_, err := model.DeleteUserForSession(identity)
+				assert.Error(t, err)
 			}
 			_, err := model.GetUserById(user.Id, false)
 			require.NoError(t, err)
@@ -234,6 +234,11 @@ func TestSecurityAccountDeletionConcurrentRequestsHaveOneWinner(t *testing.T) {
 	require.NoError(t, model.DB.Unscoped().First(&deleted, user.Id).Error)
 	assert.True(t, deleted.DeletedAt.Valid)
 	assert.Equal(t, identity.UserAuthVersion+1, deleted.AuthVersion)
+	_, _, err := service.ValidateLoginSession(identity)
+	assert.Error(t, err)
+	count, err := model.CountActiveUserSessions(user.Id, time.Now().Unix())
+	require.NoError(t, err)
+	assert.Zero(t, count)
 }
 
 type securityMailbox struct {
@@ -316,10 +321,13 @@ func (mailbox *securityMailbox) code(t *testing.T, receiver string) string {
 	t.Helper()
 	mailbox.mutex.Lock()
 	defer mailbox.mutex.Unlock()
+	// 验证码在品牌邮件模板里是一个独立的居中大字段落（见
+	// common.BuildBrandEmailHTML 的 codeBlock），没有 <strong> 包裹。
+	// 这里只认「独占一个元素的六位数字」，这样模板改配色/字号不会误伤，
+	// 而正文里出现的其他数字不会被误当成验证码。
+	codeElement := regexp.MustCompile(`>([0-9]{6})<`)
 	for index := len(mailbox.mail[receiver]) - 1; index >= 0; index-- {
-		// 验证码可能渲染为行内强调（旧排版）或品牌卡片中的大号独立段落（Google 风格排版）
-		match := regexp.MustCompile(`(?:<strong>|>)(\d{6})(?:</strong>|</p>)`).FindStringSubmatch(mailbox.mail[receiver][index])
-		if len(match) == 2 {
+		if match := codeElement.FindStringSubmatch(mailbox.mail[receiver][index]); len(match) == 2 {
 			return match[1]
 		}
 	}
@@ -349,7 +357,7 @@ func TestSecurityAccountRequiresProofBeforeMutation(t *testing.T) {
 		name, path, body string
 		handler          gin.HandlerFunc
 	}{
-		{"password", "/api/user/self", `{"password":"Zq7#mKp2!LwRx4","original_password":"enrollment-password"}`, UpdateSelf},
+		{"password", "/api/user/self", `{"password":"account-password!42","original_password":"enrollment-password"}`, UpdateSelf},
 		{"oauth binding", "/api/oauth/state", `{"provider":"security-account-test","intent":"bind"}`, GenerateOAuthCode},
 	} {
 		t.Run(test.name, func(t *testing.T) {
@@ -383,7 +391,7 @@ func TestSecurityAccountPasswordRequiresCurrentPassword(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			user, identity := setupSecurityEnrollmentTest(t)
 			proof := issueSecurityEnrollmentProof(t, identity, service.VerificationOperation{Scope: service.VerificationScopePasswordChange}, service.VerificationMethodPassword)
-			request, err := common.Marshal(map[string]string{"password": "Zq7#mKp2!LwRx4", "original_password": test.original})
+			request, err := common.Marshal(map[string]string{"password": "password123", "original_password": test.original})
 			require.NoError(t, err)
 			response := securityEnrollmentRequest(http.MethodPut, "/api/user/self", string(request), proof, identity, UpdateSelf)
 			var result securityEnrollmentResponse
@@ -392,7 +400,7 @@ func TestSecurityAccountPasswordRequiresCurrentPassword(t *testing.T) {
 			stored, err := model.GetUserById(user.Id, true)
 			require.NoError(t, err)
 			if test.success {
-				assert.True(t, common.ValidatePasswordAndHash("Zq7#mKp2!LwRx4", stored.Password))
+				assert.True(t, common.ValidatePasswordAndHash("password123", stored.Password))
 				assert.True(t, strings.HasPrefix(stored.Password, "$argon2id$"))
 			} else {
 				assert.Equal(t, "CURRENT_PASSWORD_INVALID", result.Code)
@@ -474,7 +482,7 @@ func TestSecurityAccountLongUnicodePasswordAndSessionRotation(t *testing.T) {
 	require.NoError(t, err)
 	otherIdentity, err := service.ParseAccessToken(other.AccessToken)
 	require.NoError(t, err)
-	password := strings.Repeat("安全🔒 ", 4)
+	password := strings.Repeat("安全🔒 ", 24)
 	proof := issueSecurityEnrollmentProof(t, identity, service.VerificationOperation{Scope: service.VerificationScopePasswordChange}, service.VerificationMethodPassword)
 	body, err := common.Marshal(map[string]string{"password": password, "original_password": "enrollment-password"})
 	require.NoError(t, err)
@@ -510,8 +518,8 @@ func TestSecurityAccountPasswordPolicyAndHashCompatibility(t *testing.T) {
 		{"common password accepted", "password123", true},
 		{"short", "seven77", false},
 		{"too long", strings.Repeat("界", 129), false},
-		{"long Unicode", strings.Repeat("界🔒 ", 6), true},
-		{"whitespace preserved", "  a1 b2    a1 b2  ", true},
+		{"long Unicode", strings.Repeat("界🔒 ", 40), true},
+		{"whitespace preserved", "    phrase with whitespace    ", true},
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			hash, err := common.HashAccountPassword(test.password)
@@ -535,7 +543,7 @@ func TestSecurityAccountPasswordPolicyAndHashCompatibility(t *testing.T) {
 
 func TestSecurityAccountEncryptedLongPasswordLogin(t *testing.T) {
 	user, identity := setupSecurityEnrollmentTest(t)
-	password := strings.Repeat("🔒", 18)
+	password := strings.Repeat("🔒", 128)
 	hash, err := common.HashAccountPassword(password)
 	require.NoError(t, err)
 	require.NoError(t, model.DB.Model(user).Update("password", hash).Error)
@@ -796,7 +804,7 @@ func TestSecurityAccountFirstPasswordRace(t *testing.T) {
 	require.NoError(t, model.DB.Model(user).Update("password", "").Error)
 	require.NoError(t, model.DB.Create(&model.PasskeyCredential{UserID: user.Id, CredentialID: "existing-key", PublicKey: "public-key"}).Error)
 	proof := issueSecurityEnrollmentProof(t, identity, service.VerificationOperation{Scope: service.VerificationScopePasswordSet}, service.VerificationMethodPasskey)
-	request := `{"password":"Zq7#mKp2!LwRx4"}`
+	request := `{"password":"initial-account-password!42"}`
 	response := securityEnrollmentRequest("PUT", "/api/user/self", request, proof, identity, UpdateSelf)
 	var result securityEnrollmentResponse
 	require.NoError(t, common.Unmarshal(response.Body.Bytes(), &result))

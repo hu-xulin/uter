@@ -14,10 +14,6 @@ import (
 	"testing"
 
 	"github.com/uter-ai/uter/common"
-
-	"github.com/gin-gonic/gin"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"github.com/uter-ai/uter/constant"
 	"github.com/uter-ai/uter/model"
 	"github.com/uter-ai/uter/pkg/billingexpr"
@@ -28,6 +24,9 @@ import (
 	"github.com/uter-ai/uter/setting/billing_setting"
 	"github.com/uter-ai/uter/setting/config"
 	"github.com/uter-ai/uter/setting/ratio_setting"
+	"github.com/gin-gonic/gin"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"gorm.io/gorm"
 )
 
@@ -65,6 +64,8 @@ func modelManagementDB(t *testing.T, kind, dsn string) *gorm.DB {
 	require.NoError(t, model.InitDB())
 	database = model.DB
 	model.LOG_DB = database
+	// VendorMergeRule 也要建：Vendor.Insert 会先查合并规则表把「已被合并的来源名」
+	// 归集到目标，缺表会让供应商写入直接报错。
 	require.NoError(t, database.AutoMigrate(&model.Model{}, &model.Vendor{}, &model.VendorMergeRule{}, &model.Channel{}, &model.Ability{}, &model.Option{}, &model.User{}, &model.AuditLog{}))
 	for _, value := range restoreRatios {
 		require.NoError(t, value.restore("{}"))
@@ -171,7 +172,8 @@ func TestModelPricingConversionDatabaseMatrix(t *testing.T) {
 				{"conversion-fixed", model.PricingValues{"ModelPrice": float64(0.25), "ModelRatio": float64(7)}, `tier("request", fixed(0.25))`, ""},
 				{"gpt-4o-2024-05-13", model.PricingValues{"ModelRatio": float64(2), "CompletionRatio": float64(99)}, `tier("base", p * 4 + c * 12)`, ""},
 				{"gpt-image-2", model.PricingValues{"ModelPrice": float64(1)}, `tier("image", fixed(1)) * image_count`, ""},
-				{"qwen-image-3.0-pro", model.PricingValues{"ModelPrice": float64(1)}, `tier("image", fixed(1)) * image_count`, ""},
+				// Bailian image models are served by the alibaba task plugin, so their pricing is a task usage expression.
+				{"qwen-image-3.0-pro", model.PricingValues{"ModelPrice": float64(1)}, "", "Task pricing must be converted manually using the task usage schema."},
 				{"wan2.7-image-pro", model.PricingValues{"ModelPrice": float64(1)}, "", "Task pricing must be converted manually using the task usage schema."},
 				{"video-summarizer", model.PricingValues{"ModelPrice": float64(1)}, `tier("request", fixed(1))`, ""},
 				{"sora-transcript-helper", model.PricingValues{"ModelPrice": float64(1)}, `tier("request", fixed(1))`, ""},
@@ -364,14 +366,14 @@ func TestModelPricingConversionDatabaseMatrix(t *testing.T) {
 				aliConversion, err := model.PreviewModelPricingConversion(aliName, model.PricingValues{"ModelPrice": 0.04})
 				require.NoError(t, err)
 				require.Empty(t, aliConversion.UnsupportedReason)
+				// Ali image billing lives in the alibaba task plugin, where prompt_extend is a
+				// usage fact; the legacy conversion no longer adds a per-channel request multiplier.
+				assert.Equal(t, `tier("image", fixed(0.04)) * image_count`, aliConversion.Expression)
+				assert.Empty(t, aliConversion.BillingDetails.RequestRules)
 				quantity := 3
 				aliCost, _, err := billingexpr.RunExprWithRequest(aliConversion.Expression, billingexpr.TokenParams{}, billingexpr.RequestInput{ImageCount: &quantity, Body: []byte(`{"parameters":{"prompt_extend":true}}`)})
 				require.NoError(t, err)
-				assert.Equal(t, 240000.0, aliCost)
-				require.NoError(t, (&model.Channel{Name: "Different image rules", Models: aliName, Type: 1, Status: common.ChannelStatusEnabled}).Insert())
-				conflicting, err = model.PreviewModelPricingConversion(aliName, model.PricingValues{"ModelPrice": 0.04})
-				require.NoError(t, err)
-				assert.Contains(t, conflicting.UnsupportedReason, "different image request multipliers")
+				assert.Equal(t, 120000.0, aliCost)
 				for _, tc := range []struct {
 					name    string
 					pricing model.PricingValues
@@ -1075,17 +1077,6 @@ func TestMetadataSyncLocaleAndEndpointValidation(t *testing.T) {
 	}
 }
 
-// pricingVendorByName 按名称从定价供应商列表中取出条目；列表顺序不保证（默认品牌
-// 来自 map 遍历），故涉及具体品牌的断言一律按名称定位而非下标。
-func pricingVendorByName(vendors []model.PricingVendor, name string) *model.PricingVendor {
-	for i := range vendors {
-		if vendors[i].Name == name {
-			return &vendors[i]
-		}
-	}
-	return nil
-}
-
 func TestVendorManagementDatabaseMatrix(t *testing.T) {
 	for _, dialect := range []struct{ kind, env string }{{"sqlite", ""}, {"mysql", "TEST_MYSQL_DSN"}, {"postgres", "TEST_POSTGRES_DSN"}} {
 		t.Run(dialect.kind, func(t *testing.T) {
@@ -1101,191 +1092,23 @@ func TestVendorManagementDatabaseMatrix(t *testing.T) {
 				model.RefreshPricing()
 				model.GetPricing()
 				vendors := model.GetVendors()
-				// 读定价返回「真实供应商 + 全部合成默认品牌」（定价页与管理页同口径，见
-				// model/pricing.go#syncVendorModelCounts），故不能断言只返回 1 条。核心不变式是：
-				// gemini 按名称规则归因到的 Google 默认品牌必须以负 ID 出现在列表里，且不落库。
-				google := pricingVendorByName(vendors, "Google")
-				require.NotNil(t, google, "gemini 归因到的 Google 默认品牌必须出现在定价供应商列表")
-				// 图标走单色规范：默认品牌图标统一收敛到非彩色变体（NormalizeIconKey）。
-				assert.Equal(t, "Gemini", google.Icon)
-				assert.Negative(t, google.ID)
+				require.Len(t, vendors, 1)
+				assert.Equal(t, "Google", vendors[0].Name)
+				// uter 把品牌图标统一成 @lobehub/icons 的单色变体（不带 .Color），
+				// 这样图标跟随 currentColor、深浅色主题都清晰；读取路径因此会把
+				// "Gemini.Color" 归一为 "Gemini"。见 model.NormalizeIconKey。
+				assert.Equal(t, "Gemini", vendors[0].Icon)
+				assert.Negative(t, vendors[0].ID)
 				var count int64
 				require.NoError(t, db.Model(&model.Vendor{}).Count(&count).Error)
 				assert.Zero(t, count)
 				saved := model.Vendor{Name: "Google", Icon: "Gemini.Color"}
 				require.NoError(t, saved.Insert())
-				promoted := pricingVendorByName(model.GetVendors(), "Google")
-				require.NotNil(t, promoted)
-				assert.Equal(t, saved.Id, promoted.ID, "提升为真实记录后应按真实 ID 展示")
+				assert.Equal(t, saved.Id, model.GetVendors()[0].ID)
 				require.NoError(t, saved.Delete())
-				restored := pricingVendorByName(model.GetVendors(), "Google")
-				require.NotNil(t, restored)
-				assert.Equal(t, google.ID, restored.ID, "删除后应回落到合成默认品牌 ID")
+				assert.Equal(t, vendors[0].ID, model.GetVendors()[0].ID)
 				require.NoError(t, db.Model(&model.Vendor{}).Count(&count).Error)
 				assert.Zero(t, count, "refresh must not recreate a deleted vendor")
-			})
-			t.Run("admin_search_surfaces_default_brands_and_promotes_them", func(t *testing.T) {
-				channel := model.Channel{Name: "ByteDance fixture", Type: 1, Status: common.ChannelStatusEnabled}
-				require.NoError(t, db.Create(&channel).Error)
-				require.NoError(t, db.Create(&model.Ability{Model: "doubao-pro-256k", Group: "default", ChannelId: channel.Id, Enabled: true}).Error)
-				model.RefreshPricing()
-				model.GetPricing()
-
-				// No persisted vendor record exists yet for the default brand.
-				var count int64
-				require.NoError(t, db.Model(&model.Vendor{}).Where("name = ?", "ByteDance").Count(&count).Error)
-				assert.Zero(t, count)
-
-				// Plain search must not surface the synthetic default brand.
-				plain, _, err := model.SearchVendors("", 0, 100)
-				require.NoError(t, err)
-				for _, v := range plain {
-					assert.NotEqual(t, "ByteDance", v.Name)
-				}
-
-				// Including defaults must surface it as a negative-ID synthetic vendor.
-				withDefaults, _, err := model.SearchVendorsIncludingDefaults("", 0, 100)
-				require.NoError(t, err)
-				var synthetic *model.Vendor
-				for _, v := range withDefaults {
-					if v.Name == "ByteDance" {
-						synthetic = v
-					}
-				}
-				require.NotNil(t, synthetic, "default brand ByteDance must appear in admin search")
-				assert.Negative(t, synthetic.Id)
-				assert.Equal(t, "Doubao", synthetic.Icon)
-
-				// GetVendorByID resolves the synthetic vendor by its negative ID.
-				loaded, err := model.GetVendorByID(synthetic.Id)
-				require.NoError(t, err)
-				assert.Equal(t, "ByteDance", loaded.Name)
-
-				// Promoting it persists a real vendor record.
-				promoted, err := model.PromoteDefaultVendor("ByteDance", "ByteDance models", "Doubao.Color")
-				require.NoError(t, err)
-				assert.Positive(t, promoted.Id)
-				require.NoError(t, db.Model(&model.Vendor{}).Where("name = ?", "ByteDance").Count(&count).Error)
-				assert.EqualValues(t, 1, count)
-
-				// After promotion the admin search shows the real record and skips
-				// the synthetic duplicate (matched by name).
-				after, _, err := model.SearchVendorsIncludingDefaults("", 0, 100)
-				require.NoError(t, err)
-				realCount := 0
-				for _, v := range after {
-					if v.Name == "ByteDance" {
-						realCount++
-						assert.Positive(t, v.Id)
-					}
-				}
-				assert.Equal(t, 1, realCount)
-			})
-			t.Run("promote_default_brand_is_idempotent_applies_edits_and_revives", func(t *testing.T) {
-				// Kling (-1017) 是与其它子测试无冲突的默认品牌，避免污染 ByteDance 记录。
-				channel := model.Channel{Name: "Kuaishou fixture", Type: 1, Status: common.ChannelStatusEnabled}
-				require.NoError(t, db.Create(&channel).Error)
-				require.NoError(t, db.Create(&model.Ability{Model: "kling-video", Group: "default", ChannelId: channel.Id, Enabled: true}).Error)
-				model.RefreshPricing()
-				model.GetPricing()
-
-				var before int64
-				require.NoError(t, db.Model(&model.Vendor{}).Where("name = ?", "Kling").Count(&before).Error)
-				assert.Zero(t, before, "no persisted vendor before promotion")
-
-				// 第一次提升：创建真实记录。
-				first, err := model.PromoteDefaultVendor("Kling", "first description", "Kling.Color")
-				require.NoError(t, err)
-				require.Positive(t, first.Id)
-				var afterFirst int64
-				require.NoError(t, db.Model(&model.Vendor{}).Where("name = ?", "Kling").Count(&afterFirst).Error)
-				assert.EqualValues(t, 1, afterFirst)
-
-				// Issue 1：重复编辑默认品牌必须复用同一条记录并应用修改，绝不重复创建/孤儿化。
-				second, err := model.PromoteDefaultVendor("Kling", "second description", "Kling.Color")
-				require.NoError(t, err)
-				assert.EqualValues(t, first.Id, second.Id, "repeat promotion must reuse the same record")
-				assert.Equal(t, "second description", second.Description, "edits must be applied")
-
-				var afterSecond int64
-				require.NoError(t, db.Model(&model.Vendor{}).Where("name = ?", "Kling").Count(&afterSecond).Error)
-				assert.EqualValues(t, 1, afterSecond, "no duplicate vendor records after repeat edit")
-
-				// 软删除后再次提升必须复活同一条记录，而非新建。
-				require.NoError(t, db.Delete(&model.Vendor{Id: first.Id}).Error)
-				var afterDelete int64
-				require.NoError(t, db.Model(&model.Vendor{}).Where("name = ?", "Kling").Count(&afterDelete).Error)
-				assert.Zero(t, afterDelete, "soft delete hides the record")
-
-				revived, err := model.PromoteDefaultVendor("Kling", "revived description", "Kling.Color")
-				require.NoError(t, err)
-				assert.EqualValues(t, first.Id, revived.Id, "revive must reuse the soft-deleted record")
-				assert.Equal(t, "revived description", revived.Description)
-
-				var afterRevive int64
-				require.NoError(t, db.Model(&model.Vendor{}).Where("name = ?", "Kling").Count(&afterRevive).Error)
-				assert.EqualValues(t, 1, afterRevive)
-			})
-			t.Run("merge_synthetic_default_brand_into_real_vendor_succeeds", func(t *testing.T) {
-				// Issue 2：把管理列表里"新增"（按名称规则合成、负 ID）的默认品牌合并进真实供应商，
-				// 不得报 "invalid or duplicate selection"。
-				target := model.Vendor{Name: "Merge Target Real", Icon: "OpenAI"}
-				require.NoError(t, target.Insert())
-
-				withDefaults, _, err := model.SearchVendorsIncludingDefaults("", 0, 100)
-				require.NoError(t, err)
-				var brandID int
-				found := false
-				for _, v := range withDefaults {
-					if v.Name == "Jimeng" { // -1015，与 Kling/ByteDance 子测试无冲突
-						brandID = v.Id
-						found = true
-					}
-				}
-				require.True(t, found, "default brand Jimeng must surface in admin search")
-				assert.Negative(t, brandID, "synthetic default brand carries a negative id")
-
-				preview, err := model.PreviewVendorOperation(model.VendorOperation{
-					Action: "merge", VendorIDs: []int{brandID}, TargetVendorID: target.Id,
-				})
-				require.NoError(t, err, "merging a synthetic default brand must not error")
-				require.NotEmpty(t, preview.Sources)
-				assert.Equal(t, "Jimeng", preview.Sources[0].Name)
-
-				result, err := model.ApplyVendorOperation(model.VendorOperation{
-					Action: "merge", VendorIDs: []int{brandID}, TargetVendorID: target.Id, ExpectedVersion: preview.Version,
-				})
-				require.NoError(t, err)
-				require.NotNil(t, result)
-			})
-			t.Run("delete_synthetic_default_brand_is_rejected_with_guidance", func(t *testing.T) {
-				// 合成默认品牌没有持久化行可删除，删除必须被显式拒绝（而不是静默空操作），
-				// 否则用户点了「删除」后供应商仍在列表里，造成"管理无效"的错觉。
-				withDefaults, _, err := model.SearchVendorsIncludingDefaults("", 0, 100)
-				require.NoError(t, err)
-				var brandID int
-				found := false
-				for _, v := range withDefaults {
-					if v.Name == "Vidu" { // -1013
-						brandID = v.Id
-						found = true
-					}
-				}
-				require.True(t, found, "default brand Vidu must surface in admin search")
-
-				_, err = model.PreviewVendorOperation(model.VendorOperation{Action: "delete", VendorIDs: []int{brandID}})
-				require.ErrorIs(t, err, model.ErrVendorDefaultBrandNotDeletable)
-
-				// 真实供应商仍然可以正常删除（不能误伤）。
-				real := model.Vendor{Name: "Deletable Real Vendor", Icon: "OpenAI"}
-				require.NoError(t, real.Insert())
-				delPreview, err := model.PreviewVendorOperation(model.VendorOperation{Action: "delete", VendorIDs: []int{real.Id}})
-				require.NoError(t, err)
-				result, err := model.ApplyVendorOperation(model.VendorOperation{
-					Action: "delete", VendorIDs: []int{real.Id}, ExpectedVersion: delPreview.Version,
-				})
-				require.NoError(t, err)
-				require.NotNil(t, result)
 			})
 			t.Run("metadata_ownership_preview_merge_delete_and_rollback", func(t *testing.T) {
 				source := model.Vendor{Name: "  Vendor Source  ", Icon: "Gemini.Color"}
@@ -1321,18 +1144,11 @@ func TestVendorManagementDatabaseMatrix(t *testing.T) {
 				require.NoError(t, db.Create(&channel).Error)
 				ability := model.Ability{Model: one.ModelName, Group: "default", ChannelId: channel.Id, Enabled: true}
 				require.NoError(t, db.Create(&ability).Error)
-				linked, _, err := model.SearchVendors("", 0, 20, "linked")
+				linked, total, err := model.SearchVendors("", 0, 20, "linked")
 				require.NoError(t, err)
-				// 定价广场按名称规则归因到默认品牌的模型同样算"已关联"（口径与定价页一致），
-				// 所以这里按 source 定位，而不是断言整张列表只剩它一家。
-				var linkedSource *model.Vendor
-				for _, v := range linked {
-					if v.Id == source.Id {
-						linkedSource = v
-					}
-				}
-				require.NotNil(t, linkedSource)
-				assert.EqualValues(t, 2, linkedSource.ModelCount)
+				require.Len(t, linked, 1)
+				assert.EqualValues(t, 1, total)
+				assert.EqualValues(t, 2, linked[0].ModelCount)
 				unlinked, _, err := model.SearchVendors("Vendor Target", 0, 20, "unlinked")
 				require.NoError(t, err)
 				require.Len(t, unlinked, 1)
@@ -1447,58 +1263,6 @@ func TestVendorManagementDatabaseMatrix(t *testing.T) {
 				require.NoError(t, db.Where("model = ? AND channel_id = ?", one.ModelName, channel.Id).First(&retainedAbility).Error)
 				assert.Equal(t, ability.Group, retainedAbility.Group)
 				assert.Equal(t, ability.Enabled, retainedAbility.Enabled)
-			})
-			t.Run("vendor_model_count_matches_pricing_attribution", func(t *testing.T) {
-				// 供应商的「关联模型数」必须与定价广场的归因口径一致：定价广场会把没有
-				// 模型元数据的可用模型按名称规则归因到默认品牌。只统计 models 表会让这些
-				// 模型全部漏掉 —— 定价页该品牌下有一堆模型，管理页却显示 0。
-				channel := model.Channel{Name: "Jina fixture", Type: 1, Status: common.ChannelStatusEnabled}
-				require.NoError(t, db.Create(&channel).Error)
-				require.NoError(t, db.Create(&model.Ability{Model: "jina-colbert-v2", Group: "default", ChannelId: channel.Id, Enabled: true}).Error)
-				model.RefreshPricing()
-				model.GetPricing()
-
-				var synthetic *model.Vendor
-				withDefaults, _, err := model.SearchVendorsIncludingDefaults("", 0, 100)
-				require.NoError(t, err)
-				for _, v := range withDefaults {
-					if v.Name == "Jina" {
-						synthetic = v
-					}
-				}
-				require.NotNil(t, synthetic, "default brand Jina must surface with the catalog model")
-				assert.Negative(t, synthetic.Id)
-				assert.EqualValues(t, 1, synthetic.ModelCount, "models pricing attributes to the brand must be counted")
-
-				linked, _, err := model.SearchVendorsIncludingDefaults("", 0, 100, "linked")
-				require.NoError(t, err)
-				listedAsLinked := false
-				for _, v := range linked {
-					if v.Id == synthetic.Id {
-						listedAsLinked = true
-					}
-				}
-				assert.True(t, listedAsLinked, "a default brand owning catalog models counts as linked")
-
-				// 提升为真实记录后，同一批模型必须继续算在该真实记录名下（此前会显示 0）。
-				promoted, err := model.PromoteDefaultVendor("Jina", "", "Jina")
-				require.NoError(t, err)
-				require.Positive(t, promoted.Id)
-
-				var realRecord *model.Vendor
-				afterPromote, _, err := model.SearchVendorsIncludingDefaults("", 0, 100)
-				require.NoError(t, err)
-				for _, v := range afterPromote {
-					if v.Id == promoted.Id {
-						realRecord = v
-					}
-				}
-				require.NotNil(t, realRecord)
-				assert.EqualValues(t, 1, realRecord.ModelCount, "promoted record must report the models pricing shows under it")
-
-				loaded, err := model.GetVendorByID(promoted.Id)
-				require.NoError(t, err)
-				assert.EqualValues(t, 1, loaded.ModelCount)
 			})
 			t.Run("concurrent_create_and_delete_never_orphan_model", func(t *testing.T) {
 				vendor := model.Vendor{Name: "Concurrent owner"}

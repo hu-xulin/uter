@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/uter-ai/uter/common"
-
 	"github.com/casbin/casbin/v2"
 	casbinmodel "github.com/casbin/casbin/v2/model"
 	"gorm.io/gorm"
@@ -89,7 +88,7 @@ func StartPolicySync(frequency int) {
 	for {
 		time.Sleep(time.Duration(frequency) * time.Second)
 		if err := ReloadPolicy(); err != nil {
-			common.SysError("failed to reload authz policy: " + err.Error())
+			common.SysError(common.LogText("failed to reload authz policy: %s", err.Error()))
 		}
 	}
 }

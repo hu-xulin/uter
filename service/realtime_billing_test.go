@@ -116,7 +116,7 @@ func TestRealtimeSessionChargesSettledQuotaOnce(t *testing.T) {
 			}
 
 			// 3) Session settlement over the summed usage.
-			PostWssConsumeQuota(ctx, relayInfo, modelName, sumRealtimeUsage(events), "")
+			PostWssConsumeQuota(ctx, relayInfo, modelName, sumRealtimeUsage(events), nil)
 
 			logged := &model.Log{}
 			require.NoError(t, model.LOG_DB.

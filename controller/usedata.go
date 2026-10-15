@@ -1,14 +1,11 @@
 package controller
 
 import (
-	"github.com/uter-ai/uter/i18n"
 	"net/http"
 	"strconv"
 
 	"github.com/uter-ai/uter/common"
-
 	"github.com/uter-ai/uter/middleware"
-
 	"github.com/uter-ai/uter/model"
 
 	"github.com/gin-gonic/gin"
@@ -36,16 +33,7 @@ func GetAllQuotaDates(c *gin.Context) {
 	startTimestamp, _ := strconv.ParseInt(c.Query("start_timestamp"), 10, 64)
 	endTimestamp, _ := strconv.ParseInt(c.Query("end_timestamp"), 10, 64)
 	username := c.Query("username")
-	userIds, ok := QueryUserIds(c)
-	if !ok {
-		return
-	}
-	orgUsernames, err := middleware.RequestOrgScope(c).Usernames()
-	if err != nil {
-		common.ApiError(c, err)
-		return
-	}
-	dates, err := model.GetAllQuotaDates(startTimestamp, endTimestamp, username, orgUsernames, userIds...)
+	dates, err := model.GetAllQuotaDates(startTimestamp, endTimestamp, username, nil)
 	if err != nil {
 		common.ApiError(c, err)
 		return
@@ -61,16 +49,7 @@ func GetAllQuotaDates(c *gin.Context) {
 func GetQuotaDatesByUser(c *gin.Context) {
 	startTimestamp, _ := strconv.ParseInt(c.Query("start_timestamp"), 10, 64)
 	endTimestamp, _ := strconv.ParseInt(c.Query("end_timestamp"), 10, 64)
-	userIds, ok := QueryUserIds(c)
-	if !ok {
-		return
-	}
-	orgUsernames, err := middleware.RequestOrgScope(c).Usernames()
-	if err != nil {
-		common.ApiError(c, err)
-		return
-	}
-	dates, err := model.GetQuotaDataGroupByUser(startTimestamp, endTimestamp, orgUsernames, userIds...)
+	dates, err := model.GetQuotaDataGroupByUser(startTimestamp, endTimestamp, nil)
 	if err != nil {
 		common.ApiError(c, err)
 		return
@@ -86,12 +65,9 @@ func GetUserQuotaDates(c *gin.Context) {
 	userId := c.GetInt("id")
 	startTimestamp, _ := strconv.ParseInt(c.Query("start_timestamp"), 10, 64)
 	endTimestamp, _ := strconv.ParseInt(c.Query("end_timestamp"), 10, 64)
-	// 判断时间跨度是否超过 1 个月
-	if endTimestamp-startTimestamp > 2592000 {
-		c.JSON(http.StatusOK, gin.H{
-			"success": false,
-			"message": i18n.T(c, i18n.MsgUsedataSpan_too_long),
-		})
+	startTimestamp, err := limitLogTimeRange(startTimestamp, endTimestamp)
+	if err != nil {
+		common.ApiError(c, err)
 		return
 	}
 	dates, err := model.GetQuotaDataByUserId(userId, startTimestamp, endTimestamp)
@@ -117,6 +93,7 @@ func GetAllFlowQuotaDates(c *gin.Context) {
 	if !ok {
 		return
 	}
+	// 流量看板同样按组织范围收敛：非平台视角只能看到本组织（或本部门）成员。
 	orgUsernames, err := middleware.RequestOrgScope(c).Usernames()
 	if err != nil {
 		common.ApiError(c, err)
@@ -141,11 +118,8 @@ func GetUserFlowQuotaDates(c *gin.Context) {
 	if !ok {
 		return
 	}
-	if endTimestamp-startTimestamp > 2592000 {
-		c.JSON(http.StatusOK, gin.H{
-			"success": false,
-			"message": i18n.T(c, i18n.MsgUsedataSpan_too_long),
-		})
+	if _, err := limitLogTimeRange(startTimestamp, endTimestamp); err != nil {
+		common.ApiError(c, err)
 		return
 	}
 	dates, err := model.GetFlowQuotaData(startTimestamp, endTimestamp, "", userId, common.RoleCommonUser, nil)

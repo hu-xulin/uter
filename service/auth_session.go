@@ -8,17 +8,16 @@ import (
 	"time"
 
 	"github.com/uter-ai/uter/common"
-
+	"github.com/uter-ai/uter/model"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	"github.com/uter-ai/uter/model"
 )
 
-const RefreshCookieName = "uter_refresh"
+const RefreshCookieName = "new_api_refresh"
 
 // SessionHintCookieName is the script-readable companion to RefreshCookieName.
 // See writeSessionHintCookie for why it exists and what it is not.
-const SessionHintCookieName = "uter_has_session"
+const SessionHintCookieName = "new_api_has_session"
 
 // SessionHintCookieValue is the only value the hint ever carries.
 const SessionHintCookieValue = "1"
@@ -86,9 +85,13 @@ func createLoginSession(userID int, expectedAuthVersion int64, loginMethod, ip, 
 		if evErr != nil {
 			return nil, evErr
 		}
-		if evicted > 0 {
-			common.SysLog(fmt.Sprintf("user %d reached the active login-session limit (%d); evicted %d oldest idle session(s) to allow the new login", userID, common.UserSessionActiveLimit, evicted))
+		if evicted == 0 {
+			// Nothing idle to reclaim, so the ceiling really is full. Refuse the
+			// new login instead of letting it push the active count past the
+			// limit — eviction is a courtesy, not a licence to exceed it.
+			return nil, model.ErrUserSessionLimit
 		}
+		common.SysLog(fmt.Sprintf("user %d reached the active login-session limit (%d); evicted %d oldest idle session(s) to allow the new login", userID, common.UserSessionActiveLimit, evicted))
 	}
 	issuanceCount, err := model.CountUserSessionsCreatedSince(userID, now-common.UserSessionIssuanceWindowSeconds)
 	if err != nil {
@@ -160,6 +163,16 @@ func ValidateLoginSession(identity AuthIdentity) (*model.UserSession, *model.Use
 	return session, user, nil
 }
 
+// ValidateStepUpIdentity checks that the identity requesting or consuming a
+// proof is still live: a browser session or a scoped access token.
+func ValidateStepUpIdentity(identity AuthIdentity) error {
+	if _, ok := model.ParseAccessTokenSessionID(identity.SessionID); ok {
+		return model.ValidateAccessTokenIdentity(identity)
+	}
+	_, _, err := ValidateLoginSession(identity)
+	return err
+}
+
 // ValidateSessionReference validates a server-side flow bound to an existing
 // dashboard session without requiring an access token on the callback request.
 func ValidateSessionReference(userID int, sid string) (AuthIdentity, error) {
@@ -185,7 +198,8 @@ func ValidateSessionReference(userID int, sid string) (AuthIdentity, error) {
 // AdvanceCurrentSessionSecurity increments the user's global auth version,
 // preserves only the current browser session at a new session version and
 // returns a replacement access token. Call after a successful 2FA/passkey
-// security-setting mutation that did not already advance AuthVersion.
+// security-setting mutation that did not already advance AuthVersion. When the
+// change was made through an access token it returns a nil bundle.
 func AdvanceCurrentSessionSecurity(identity AuthIdentity, reason string) (*AuthBundle, error) {
 	nextUserAuthVersion, err := model.BumpUserAuthVersion(identity.UserID)
 	if err != nil {
@@ -209,6 +223,12 @@ func AdvanceCurrentSessionToUserVersion(identity AuthIdentity, reason string) (*
 }
 
 func advanceCurrentSessionToVersion(identity AuthIdentity, nextUserAuthVersion int64, reason string) (*AuthBundle, error) {
+	// An access token has no browser session to keep, so every browser session
+	// signs in again at the new auth version. The token itself stays valid.
+	if _, ok := model.ParseAccessTokenSessionID(identity.SessionID); ok {
+		_, err := model.RevokeAllUserSessions(identity.UserID, reason)
+		return nil, err
+	}
 	session, err := model.AdvanceUserSessionAuthVersion(
 		identity.UserID,
 		identity.SessionID,

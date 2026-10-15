@@ -60,7 +60,7 @@ func GetPricing(c *gin.Context) {
 	usableGroup = service.GetUserUsableGroups(group)
 	pricing = filterPricingByUsableGroups(pricing, usableGroup)
 	// 按访客语言解析多语描述。放在过滤之后，只对真正要返回的条目做解析。
-	pricing = localizePricingDescriptions(pricing, i18n.GetLangFromContext(c))
+	pricing = localizePricingDescriptions(pricing, i18n.StatedLang(c))
 	// check groupRatio contains usableGroup
 	for group := range ratio_setting.GetGroupRatioCopy() {
 		if _, ok := usableGroup[group]; !ok {

@@ -39,6 +39,8 @@ var DefaultCollapseSidebar = false // default value of collapse sidebar
 
 var SessionSecret = uuid.New().String()
 var CryptoSecret = uuid.New().String()
+// DefaultLanguage 是 DEFAULT_LANGUAGE 环境变量：后端日志/通知/客户端错误的默认语言。
+var DefaultLanguage string
 var SessionCookieSecure = false
 var SessionCookieTrustedURLs []string
 
@@ -231,6 +233,12 @@ var (
 	GlobalWebRateLimitEnable   bool
 	GlobalWebRateLimitNum      int
 	GlobalWebRateLimitDuration int64
+
+	// GlobalStaticRateLimit* 是静态资源（/assets、/uploads 等）的独立限流，
+	// 避免页面首屏的静态请求挤占 GlobalWebRateLimit 的配额。
+	GlobalStaticRateLimitEnable   bool
+	GlobalStaticRateLimitNum      int
+	GlobalStaticRateLimitDuration int64
 
 	// GlobalApiRateLimitOrgWhitelist 是「不受 GlobalAPIRateLimit 约束」的组织 id 白名单
 	// （见 GLOBAL_API_RATE_LIMIT_ORG_WHITELIST）。默认空 = 不豁免任何人。

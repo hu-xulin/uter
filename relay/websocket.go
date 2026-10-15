@@ -2,9 +2,11 @@ package relay
 
 import (
 	"fmt"
+	"sync"
+	"time"
 
+	"github.com/uter-ai/uter/pkg/wsmanager"
 	relaycommon "github.com/uter-ai/uter/relay/common"
-
 	"github.com/uter-ai/uter/relaykit/dto"
 	"github.com/uter-ai/uter/relaykit/types"
 	"github.com/uter-ai/uter/service"
@@ -13,7 +15,7 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-func WssHelper(c *gin.Context, info *relaycommon.RelayInfo) (uterError *types.UterError) {
+func WssHelper(c *gin.Context, info *relaycommon.RelayInfo) (newAPIError *types.NewAPIError) {
 	info.InitChannelMeta(c)
 
 	adaptor := GetAdaptor(info.ApiType)
@@ -34,14 +36,26 @@ func WssHelper(c *gin.Context, info *relaycommon.RelayInfo) (uterError *types.Ut
 	if resp != nil {
 		info.TargetWs = resp.(*websocket.Conn)
 		defer info.TargetWs.Close()
+		var closeOnce sync.Once
+		unregister := wsmanager.Register(info.ChannelId, wsmanager.KindRealtime, func(reason string) {
+			closeOnce.Do(func() {
+				deadline := time.Now().Add(time.Second)
+				closeMessage := websocket.FormatCloseMessage(websocket.ClosePolicyViolation, reason)
+				_ = info.ClientWs.WriteControl(websocket.CloseMessage, closeMessage, deadline)
+				_ = info.TargetWs.WriteControl(websocket.CloseMessage, closeMessage, deadline)
+				_ = info.ClientWs.Close()
+				_ = info.TargetWs.Close()
+			})
+		})
+		defer unregister()
 	}
 
-	usage, uterError := adaptor.DoResponse(c, nil, info)
-	if uterError != nil {
+	usage, newAPIError := adaptor.DoResponse(c, nil, info)
+	if newAPIError != nil {
 		// reset status code 重置状态码
-		service.ResetStatusCode(uterError, statusCodeMappingStr)
-		return uterError
+		service.ResetStatusCode(newAPIError, statusCodeMappingStr)
+		return newAPIError
 	}
-	service.PostWssConsumeQuota(c, info, info.UpstreamModelName, usage.(*dto.RealtimeUsage), "")
+	service.PostWssConsumeQuota(c, info, info.UpstreamModelName, usage.(*dto.RealtimeUsage), nil)
 	return nil
 }

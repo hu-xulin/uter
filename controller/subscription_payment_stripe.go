@@ -2,20 +2,18 @@ package controller
 
 import (
 	"fmt"
-	"github.com/uter-ai/uter/i18n"
 	"net/http"
 	"strings"
 	"time"
 
 	"github.com/uter-ai/uter/common"
-
+	"github.com/uter-ai/uter/logger"
+	"github.com/uter-ai/uter/model"
+	"github.com/uter-ai/uter/setting"
 	"github.com/gin-gonic/gin"
 	"github.com/stripe/stripe-go/v81"
 	"github.com/stripe/stripe-go/v81/checkout/session"
 	"github.com/thanhpk/randstr"
-	"github.com/uter-ai/uter/logger"
-	"github.com/uter-ai/uter/model"
-	"github.com/uter-ai/uter/setting"
 )
 
 type SubscriptionStripePayRequest struct {
@@ -29,7 +27,7 @@ func SubscriptionRequestStripePay(c *gin.Context) {
 
 	var req SubscriptionStripePayRequest
 	if err := c.ShouldBindJSON(&req); err != nil || req.PlanId <= 0 {
-		common.ApiErrorI18n(c, i18n.MsgCommonInvalid_param)
+		common.ApiErrorT(c, "Invalid parameters")
 		return
 	}
 
@@ -39,19 +37,19 @@ func SubscriptionRequestStripePay(c *gin.Context) {
 		return
 	}
 	if !plan.Enabled {
-		common.ApiErrorI18n(c, i18n.MsgSubscriptionPlan_disabled)
+		common.ApiErrorT(c, "Subscription plan is not enabled")
 		return
 	}
 	if plan.StripePriceId == "" {
-		common.ApiErrorI18n(c, i18n.MsgSubscriptionStripe_price_missing)
+		common.ApiErrorT(c, "StripePriceId is not configured for this plan")
 		return
 	}
 	if !strings.HasPrefix(setting.StripeApiSecret, "sk_") && !strings.HasPrefix(setting.StripeApiSecret, "rk_") {
-		common.ApiErrorI18n(c, i18n.MsgSubscriptionStripe_not_configured)
+		common.ApiErrorT(c, "Stripe is not configured or key is invalid")
 		return
 	}
 	if setting.StripeWebhookSecret == "" {
-		common.ApiErrorI18n(c, i18n.MsgSubscriptionStripe_webhook_missing)
+		common.ApiErrorT(c, "Stripe webhook is not configured")
 		return
 	}
 
@@ -62,7 +60,7 @@ func SubscriptionRequestStripePay(c *gin.Context) {
 		return
 	}
 	if user == nil {
-		common.ApiErrorI18n(c, i18n.MsgCommonUser_not_found)
+		common.ApiErrorT(c, "User does not exist")
 		return
 	}
 
@@ -73,7 +71,7 @@ func SubscriptionRequestStripePay(c *gin.Context) {
 			return
 		}
 		if count >= int64(plan.MaxPurchasePerUser) {
-			common.ApiErrorI18n(c, i18n.MsgSubscriptionPurchase_limit_reached)
+			common.ApiErrorT(c, "Purchase limit for this plan has been reached")
 			return
 		}
 	}
@@ -83,8 +81,8 @@ func SubscriptionRequestStripePay(c *gin.Context) {
 
 	payLink, err := genStripeSubscriptionLink(referenceId, user.StripeCustomer, user.Email, plan.StripePriceId)
 	if err != nil {
-		logger.LogError(c.Request.Context(), fmt.Sprintf("Stripe 订阅支付链接创建失败 trade_no=%s plan_id=%d error=%q", referenceId, plan.Id, err.Error()))
-		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "拉起支付失败"})
+		logger.LogError(c.Request.Context(), common.LogText("Stripe failed to create subscription payment link trade_no=%s plan_id=%d error=%q", referenceId, plan.Id, err.Error()))
+		paymentError(c, common.NewMessage("Failed to start payment"))
 		return
 	}
 
@@ -99,7 +97,7 @@ func SubscriptionRequestStripePay(c *gin.Context) {
 		Status:          common.TopUpStatusPending,
 	}
 	if err := order.Insert(); err != nil {
-		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "创建订单失败"})
+		paymentError(c, common.NewMessage("Failed to create order"))
 		return
 	}
 

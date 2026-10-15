@@ -38,6 +38,9 @@ const (
 	APITypeCodex
 	APITypeAdvancedCustom
 	APITypeSub2API
-	APITypeUter
+	APITypeNewAPI
 	APITypeDummy // this one is only for count, do not add any channel after this
 )
+
+// APITypeUter 是上游 APITypeNewAPI 在 Uter 中的品牌名（与 ChannelTypeUter 对齐）。
+const APITypeUter = APITypeNewAPI

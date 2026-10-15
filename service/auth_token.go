@@ -59,11 +59,29 @@ func authSigningKey(purpose string) []byte {
 }
 
 func IssueAccessToken(identity AuthIdentity) (string, int64, error) {
+	return issueAccessTokenWithTTL(identity, AccessTokenTTL)
+}
+
+// IssueExpiredAccessToken 签发一个签名合法但已过期的访问令牌。
+//
+// 生产路径不会主动用它；它存在是为了让「已识别的内部凭证即便过期也必须被拒，
+// 而不是回落成匿名」这一支能在测试里被真实覆盖。
+//
+// 之所以不叫测试自己手搓 token：那份代码必须把 issuer、audience 和签名密钥
+// 派生串各抄一遍，而这些常量在重命名时会跟着变（上游曾把它们从 new-api 改成
+// uter）。抄本漂移后，测试会安静地测成另一个东西——过期令牌不再被识别为内部
+// 凭证，于是走「匿名」分支，断言照样「通过」，只是再也没测到过期这件事。
+func IssueExpiredAccessToken(identity AuthIdentity) (string, error) {
+	token, _, err := issueAccessTokenWithTTL(identity, -time.Minute)
+	return token, err
+}
+
+func issueAccessTokenWithTTL(identity AuthIdentity, ttl time.Duration) (string, int64, error) {
 	if identity.UserID <= 0 || identity.SessionID == "" || identity.UserAuthVersion <= 0 || identity.SessionVersion <= 0 {
 		return "", 0, ErrAuthTokenInvalid
 	}
 	now := time.Now()
-	expiresAt := now.Add(AccessTokenTTL)
+	expiresAt := now.Add(ttl)
 	claims := authClaims{
 		TokenUse:        accessTokenUse,
 		SessionID:       identity.SessionID,

@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	"github.com/uter-ai/uter/common"
-
+	pluginruntime "github.com/uter-ai/uter/pkg/jsplugin"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -52,9 +52,10 @@ func TestDecodePluginProtocolEventResultPreservesStatePresence(t *testing.T) {
 				assert.Empty(t, result.State.Value)
 			}
 
-			if result.State.Present {
-				_, err = result.State.PluginValue()
-				require.NoError(t, err)
+			if testCase.wantPresent && !testCase.wantNull {
+				assert.Equal(t, pluginruntime.RawJSON(result.State.Value), result.State.PluginValue())
+			} else {
+				assert.Nil(t, result.State.PluginValue())
 			}
 		})
 	}

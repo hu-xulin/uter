@@ -1,14 +1,12 @@
 package controller
 
 import (
-	"github.com/uter-ai/uter/i18n"
 	"net/http"
 	"sort"
 	"strconv"
 	"strings"
 
 	"github.com/uter-ai/uter/common"
-
 	"github.com/uter-ai/uter/model"
 
 	"github.com/gin-gonic/gin"
@@ -113,7 +111,7 @@ func CreateModelMeta(c *gin.Context) {
 		return
 	}
 	if m.ModelName == "" {
-		common.ApiErrorI18n(c, i18n.MsgModelName_required)
+		common.ApiErrorT(c, "Model name cannot be empty")
 		return
 	}
 	if err := model.ValidateMetadataValues(model.MetadataValues{Endpoints: m.Endpoints, Status: m.Status, NameRule: m.NameRule}); err != nil {
@@ -125,7 +123,7 @@ func CreateModelMeta(c *gin.Context) {
 		common.ApiError(c, err)
 		return
 	} else if dup {
-		common.ApiErrorI18n(c, i18n.MsgModelName_exists)
+		common.ApiErrorT(c, "Model name already exists")
 		return
 	}
 
@@ -148,7 +146,7 @@ func UpdateModelMeta(c *gin.Context) {
 		return
 	}
 	if m.Id == 0 {
-		common.ApiErrorI18n(c, i18n.MsgCommonMissing_model_id)
+		common.ApiErrorT(c, "Missing model ID")
 		return
 	}
 
@@ -164,7 +162,7 @@ func UpdateModelMeta(c *gin.Context) {
 		}
 	} else {
 		if strings.TrimSpace(m.ModelName) == "" {
-			common.ApiErrorI18n(c, i18n.MsgModelName_required)
+			common.ApiErrorT(c, "Model name cannot be empty")
 			return
 		}
 		if err := model.ValidateMetadataValues(model.MetadataValues{Endpoints: m.Endpoints, Status: m.Status, NameRule: m.NameRule}); err != nil {
@@ -176,7 +174,7 @@ func UpdateModelMeta(c *gin.Context) {
 			common.ApiError(c, err)
 			return
 		} else if dup {
-			common.ApiErrorI18n(c, i18n.MsgModelName_exists)
+			common.ApiErrorT(c, "Model name already exists")
 			return
 		}
 

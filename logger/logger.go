@@ -11,7 +11,6 @@ import (
 	"time"
 
 	"github.com/uter-ai/uter/common"
-
 	"github.com/uter-ai/uter/setting/operation_setting"
 
 	"github.com/bytedance/gopkg/util/gopool"
@@ -47,7 +46,7 @@ func SetupLogger() {
 	if *common.LogDir != "" {
 		ok := setupLogLock.TryLock()
 		if !ok {
-			log.Println("setup log is already working")
+			log.Println(common.LogText("setup log is already working"))
 			return
 		}
 		defer func() {
@@ -56,7 +55,7 @@ func SetupLogger() {
 		logPath := filepath.Join(*common.LogDir, fmt.Sprintf("oneapi-%s.log", time.Now().Format("20060102150405")))
 		fd, err := os.OpenFile(logPath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 		if err != nil {
-			log.Fatal("failed to open log file")
+			log.Fatal(common.LogText("failed to open log file"))
 		}
 		currentLogPathMu.Lock()
 		oldFile := currentLogFile
@@ -89,12 +88,11 @@ func LogError(ctx context.Context, msg string) {
 	logHelper(ctx, loggerError, msg)
 }
 
+// LogDebug formats msg with common.LogText only when debug logging is on, so
+// callers pass the format and its arguments instead of a formatted string.
 func LogDebug(ctx context.Context, msg string, args ...any) {
 	if common.DebugEnabled {
-		if len(args) > 0 {
-			msg = fmt.Sprintf(msg, args...)
-		}
-		logHelper(ctx, loggerDebug, msg)
+		logHelper(ctx, loggerDebug, common.LogText(msg, args...))
 	}
 }
 
@@ -123,7 +121,35 @@ func logHelper(ctx context.Context, level string, msg string) {
 	}
 }
 
-func formatQuotaValue(quota int) string {
+// LogQuota formats a quota for a server log line.
+func LogQuota(quota int) string {
+	// 新逻辑：根据额度展示类型输出
+	q := float64(quota)
+	switch operation_setting.GetQuotaDisplayType() {
+	case operation_setting.QuotaDisplayTypeCNY:
+		usd := q / common.QuotaPerUnit
+		cny := usd * operation_setting.USDExchangeRate
+		return common.LogText("¥%.6f quota", cny)
+	case operation_setting.QuotaDisplayTypeCustom:
+		usd := q / common.QuotaPerUnit
+		rate := operation_setting.GetGeneralSetting().CustomCurrencyExchangeRate
+		symbol := operation_setting.GetGeneralSetting().CustomCurrencySymbol
+		if symbol == "" {
+			symbol = "¤"
+		}
+		if rate <= 0 {
+			rate = 1
+		}
+		v := usd * rate
+		return common.LogText("%s%.6f quota", symbol, v)
+	case operation_setting.QuotaDisplayTypeTokens:
+		return common.LogText("%d quota points", quota)
+	default: // USD
+		return common.LogText("＄%.6f quota", q/common.QuotaPerUnit)
+	}
+}
+
+func FormatQuota(quota int) string {
 	q := float64(quota)
 	switch operation_setting.GetQuotaDisplayType() {
 	case operation_setting.QuotaDisplayTypeCNY:
@@ -144,18 +170,9 @@ func formatQuotaValue(quota int) string {
 		return fmt.Sprintf("%s%.6f", symbol, v)
 	case operation_setting.QuotaDisplayTypeTokens:
 		return fmt.Sprintf("%d", quota)
-	default: // USD
+	default:
 		return fmt.Sprintf("＄%.6f", q/common.QuotaPerUnit)
 	}
-}
-
-func LogQuota(quota int) string {
-	// 新逻辑：根据额度展示类型输出
-	return formatQuotaValue(quota) + " 额度"
-}
-
-func FormatQuota(quota int) string {
-	return formatQuotaValue(quota)
 }
 
 // LogJson 仅供测试使用 only for test
@@ -165,7 +182,7 @@ func LogJson(ctx context.Context, msg string, obj any) {
 	}
 	jsonStr, err := common.Marshal(obj)
 	if err != nil {
-		LogError(ctx, fmt.Sprintf("json marshal failed: %s", err.Error()))
+		LogError(ctx, common.LogText("json marshal failed: %s", err.Error()))
 		return
 	}
 	LogDebug(ctx, "%s | %s", msg, jsonStr)

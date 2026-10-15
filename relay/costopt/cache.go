@@ -219,7 +219,7 @@ func billCached(c *gin.Context, info *relaycommon.RelayInfo, usage *dto.Usage) {
 	hasAudioRatio := ratio_setting.ContainsAudioRatio(info.OriginModelName) ||
 		ratio_setting.ContainsAudioCompletionRatio(info.OriginModelName)
 	if hasAudio && hasAudioRatio {
-		service.PostAudioConsumeQuota(c, info, usage, "")
+		service.PostAudioConsumeQuota(c, info, usage, nil)
 	} else {
 		service.PostTextConsumeQuota(c, info, usage, nil)
 	}

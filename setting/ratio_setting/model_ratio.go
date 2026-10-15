@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	"github.com/uter-ai/uter/common"
-
 	"github.com/uter-ai/uter/setting/operation_setting"
 	hostreasoning "github.com/uter-ai/uter/setting/reasoning"
 	"github.com/uter-ai/uter/types"
@@ -22,7 +21,7 @@ const (
 // https://platform.openai.com/docs/models/model-endpoint-compatibility
 // https://cloud.baidu.com/doc/WENXINWORKSHOP/s/Blfmc9dlf
 // https://openai.com/pricing
-// TODO: when a uter is enabled, check the pricing here
+// TODO: when a new api is enabled, check the pricing here
 // 1 === $0.002 / 1K tokens
 // 1 === ￥0.014 / 1k tokens
 
@@ -219,7 +218,7 @@ var defaultModelRatio = map[string]float64{
 	"SparkDesk-v4.0":                           1.2858,
 	"hunyuan":                                  7.143, // ¥0.1 / 1k tokens  // https://cloud.tencent.com/document/product/1729/97731#e0e6be58-60c8-469f-bdeb-6c264ce3b4d0
 	// https://platform.lingyiwanwu.com/docs#-计费单元
-	// 已经按照 7.2 来换算美元定价
+	// 已经按照 7.2 来换算美元价格
 	"yi-34b-chat-0205":       0.18,
 	"yi-34b-chat-200k":       0.864,
 	"yi-vl-plus":             0.432,
@@ -357,7 +356,7 @@ func UpdateModelPriceByJSONString(jsonStr string) error {
 	return types.LoadFromJsonStringWithCallback(modelPriceMap, jsonStr, InvalidateExposedDataCache)
 }
 
-// GetModelPrice 返回模型的定价，如果模型不存在则返回-1，false
+// GetModelPrice 返回模型的价格，如果模型不存在则返回-1，false
 func GetModelPrice(name string, printErr bool) (float64, bool) {
 	name = FormatMatchingModelName(name)
 
@@ -366,7 +365,7 @@ func GetModelPrice(name string, printErr bool) (float64, bool) {
 	}
 
 	if printErr {
-		common.SysError("model price not found: " + name)
+		common.SysError(common.LogText("model price not found: %s", name))
 	}
 	return -1, false
 }
@@ -396,7 +395,7 @@ func GetModelRatio(name string) (float64, bool, string) {
 func DefaultModelRatio2JSONString() string {
 	jsonBytes, err := common.Marshal(defaultModelRatio)
 	if err != nil {
-		common.SysError("error marshalling model ratio: " + err.Error())
+		common.SysError(common.LogText("error marshalling model ratio: %s", err.Error()))
 	}
 	return string(jsonBytes)
 }
@@ -740,7 +739,7 @@ func FormatMatchingModelName(name string) string {
 	return name
 }
 
-// result: 倍率or定价， usePrice， exist
+// result: 倍率or价格， usePrice， exist
 func GetModelRatioOrPrice(model string) (float64, bool, bool) { // price or ratio
 	price, usePrice := GetModelPrice(model, false)
 	if usePrice {

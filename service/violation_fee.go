@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/uter-ai/uter/common"
-
 	"github.com/uter-ai/uter/logger"
 	"github.com/uter-ai/uter/model"
 	relaycommon "github.com/uter-ai/uter/relay/common"
@@ -28,7 +27,7 @@ func IsViolationFeeCode(code types.ErrorCode) bool {
 	return strings.HasPrefix(string(code), ViolationFeeCodePrefix)
 }
 
-func HasCSAMViolationMarker(err *types.UterError) bool {
+func HasCSAMViolationMarker(err *types.NewAPIError) bool {
 	if err == nil {
 		return false
 	}
@@ -39,7 +38,7 @@ func HasCSAMViolationMarker(err *types.UterError) bool {
 	return strings.Contains(msg, CSAMViolationMarker) || strings.Contains(err.Error(), ContentViolatesUsageMarker)
 }
 
-func WrapAsViolationFeeGrokCSAM(err *types.UterError) *types.UterError {
+func WrapAsViolationFeeGrokCSAM(err *types.NewAPIError) *types.NewAPIError {
 	if err == nil {
 		return nil
 	}
@@ -54,7 +53,7 @@ func WrapAsViolationFeeGrokCSAM(err *types.UterError) *types.UterError {
 // - if error.code already has the violation-fee prefix, skip-retry is enabled.
 //
 // It must be called before retry decision logic.
-func NormalizeViolationFeeError(err *types.UterError) *types.UterError {
+func NormalizeViolationFeeError(err *types.NewAPIError) *types.NewAPIError {
 	if err == nil {
 		return nil
 	}
@@ -71,7 +70,7 @@ func NormalizeViolationFeeError(err *types.UterError) *types.UterError {
 	return err
 }
 
-func shouldChargeViolationFee(err *types.UterError) bool {
+func shouldChargeViolationFee(err *types.NewAPIError) bool {
 	if err == nil {
 		return false
 	}
@@ -101,7 +100,7 @@ func calcViolationFeeQuota(amount, groupRatio float64) int {
 
 // ChargeViolationFeeIfNeeded charges an additional fee after the normal flow finishes (including refund).
 // It uses Grok fee settings as the fee policy.
-func ChargeViolationFeeIfNeeded(ctx *gin.Context, relayInfo *relaycommon.RelayInfo, apiErr *types.UterError) bool {
+func ChargeViolationFeeIfNeeded(ctx *gin.Context, relayInfo *relaycommon.RelayInfo, apiErr *types.NewAPIError) bool {
 	if ctx == nil || relayInfo == nil || apiErr == nil {
 		return false
 	}
@@ -124,15 +123,7 @@ func ChargeViolationFeeIfNeeded(ctx *gin.Context, relayInfo *relaycommon.RelayIn
 	}
 
 	if err := PostConsumeQuota(relayInfo, feeQuota, 0, true); err != nil {
-		// Funding sources are debited before the token, so a failure here can
-		// leave money already moved with no consume log to balance it. No log is
-		// written on purpose — the amount actually taken is unknown, and a
-		// guessed value would break the invariant from the other side. A system
-		// error is raised instead so the discrepancy is reconcilable.
-		common.SysError(fmt.Sprintf(
-			"violation fee post-consume failed, possible unlogged debit (userId=%d, channelId=%d, quota=%d): %s",
-			relayInfo.UserId, relayInfo.ChannelId, feeQuota, err.Error()))
-		logger.LogError(ctx, fmt.Sprintf("failed to charge violation fee: %s", err.Error()))
+		logger.LogError(ctx, common.LogText("failed to charge violation fee: %s", err.Error()))
 		return false
 	}
 
@@ -161,7 +152,7 @@ func ChargeViolationFeeIfNeeded(ctx *gin.Context, relayInfo *relaycommon.RelayIn
 		ModelName:      relayInfo.OriginModelName,
 		TokenName:      tokenName,
 		Quota:          feeQuota,
-		Content:        "Violation fee charged",
+		Content:        []*common.Message{common.NewMessage("Violation fee charged")},
 		TokenId:        relayInfo.TokenId,
 		UseTimeSeconds: int(useTimeSeconds),
 		IsStream:       relayInfo.IsStream,

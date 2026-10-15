@@ -21,8 +21,6 @@ func ChannelType2APIType(channelType int) (int, bool) {
 		apiType = constant.APITypeXunfei
 	case constant.ChannelTypeAIProxyLibrary:
 		apiType = constant.APITypeAIProxyLibrary
-	case constant.ChannelTypeFastGPT:
-		apiType = constant.APITypeOpenAI
 	case constant.ChannelTypeTencent:
 		apiType = constant.APITypeTencent
 	case constant.ChannelTypeGemini:
@@ -77,16 +75,12 @@ func ChannelType2APIType(channelType int) (int, bool) {
 		apiType = constant.APITypeReplicate
 	case constant.ChannelTypeCodex:
 		apiType = constant.APITypeCodex
-	case constant.ChannelTypeAdvancedCustom:
-		apiType = constant.APITypeAdvancedCustom
-	case constant.ChannelTypeBrandedShared,
-		constant.ChannelTypeBrandedAggregate,
-		constant.ChannelTypeBrandedProxy:
+	case constant.ChannelTypeAdvancedCustom, constant.ChannelTypeVLLM, constant.ChannelTypeSGLang:
 		apiType = constant.APITypeAdvancedCustom
 	case constant.ChannelTypeSub2API:
 		apiType = constant.APITypeSub2API
-	case constant.ChannelTypeUter:
-		apiType = constant.APITypeUter
+	case constant.ChannelTypeNewAPI:
+		apiType = constant.APITypeNewAPI
 	}
 	if apiType == -1 {
 		// Task plugin channels are served by the task relay and must never
@@ -105,7 +99,7 @@ func SupportsResponsesCompact(channelType, apiType int) bool {
 		constant.APITypeCodex,
 		constant.APITypeAdvancedCustom,
 		constant.APITypeSub2API,
-		constant.APITypeUter:
+		constant.APITypeNewAPI:
 		return true
 	default:
 		return false

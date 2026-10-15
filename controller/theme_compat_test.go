@@ -7,7 +7,6 @@ import (
 	"testing"
 
 	"github.com/uter-ai/uter/common"
-
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -25,7 +24,7 @@ func TestUpdateOptionRejectsRetiredFrontendTheme(t *testing.T) {
 	UpdateOption(context)
 
 	assert.Equal(t, http.StatusOK, response.Code)
-	assert.JSONEq(t, `{"success":false,"message":"The Classic frontend was removed. The theme can only be set to default."}`, response.Body.String())
+	assert.JSONEq(t, `{"success":false,"message":"The Classic frontend has been removed. The theme can only be set to default","message_key":"The Classic frontend has been removed. The theme can only be set to default"}`, response.Body.String())
 }
 
 func TestGetStatusAdvertisesDefaultDashboard(t *testing.T) {

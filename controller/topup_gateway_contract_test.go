@@ -262,7 +262,7 @@ func TestGatewayRechargeAmountAlwaysComesFromLocalOrder(t *testing.T) {
 			src := readSource(t, gateway.file)
 			idx := strings.Index(src, gateway.rechargeCall)
 			require.GreaterOrEqualf(t, idx, 0, "找不到入账调用 %s", gateway.rechargeCall)
-			call := src[idx:min(idx+200, len(src))]
+			call := src[idx:minInt(idx+200, len(src))]
 			require.NotContainsf(t, call, ".Money)",
 				"%s: 入账不得直接使用回调回传金额（%s 的实参含 .Money）",
 				gateway.handler, gateway.rechargeCall)
@@ -369,7 +369,7 @@ func readSource(t *testing.T, name string) string {
 	return string(src)
 }
 
-func min(a, b int) int {
+func minInt(a, b int) int {
 	if a < b {
 		return a
 	}

@@ -17,8 +17,8 @@ func requestOpenAI2Zhipu(request dto.GeneralOpenAIRequest) *dto.GeneralOpenAIReq
 					// check if base64
 					if strings.HasPrefix(imageUrl.Url, "data:image/") {
 						// 去除base64数据的URL前缀（如果有）
-						if _, after, found := strings.Cut(imageUrl.Url, ","); found {
-							imageUrl.Url = after
+						if idx := strings.Index(imageUrl.Url, ","); idx != -1 {
+							imageUrl.Url = imageUrl.Url[idx+1:]
 						}
 					}
 					mediaMessage.ImageUrl = imageUrl
@@ -42,15 +42,16 @@ func requestOpenAI2Zhipu(request dto.GeneralOpenAIRequest) *dto.GeneralOpenAIReq
 		Stop, _ = request.Stop.([]string)
 	}
 	out := &dto.GeneralOpenAIRequest{
-		Model:       request.Model,
-		Stream:      request.Stream,
-		Messages:    messages,
-		Temperature: request.Temperature,
-		TopP:        request.TopP,
-		Stop:        Stop,
-		Tools:       request.Tools,
-		ToolChoice:  request.ToolChoice,
-		THINKING:    request.THINKING,
+		Model:           request.Model,
+		Stream:          request.Stream,
+		Messages:        messages,
+		Temperature:     request.Temperature,
+		TopP:            request.TopP,
+		Stop:            Stop,
+		Tools:           request.Tools,
+		ToolChoice:      request.ToolChoice,
+		THINKING:        request.THINKING,
+		ReasoningEffort: request.ReasoningEffort,
 	}
 	if request.MaxTokens != nil || request.MaxCompletionTokens != nil {
 		maxTokens := request.GetMaxTokens()

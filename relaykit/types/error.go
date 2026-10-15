@@ -415,3 +415,13 @@ func IsRecordErrorLog(e *UterError) bool {
 	}
 	return *e.recordErrorLog
 }
+
+// 上游 new-api 的公开名保持可用：uter 分支把 NewAPIError 系列重命名为 UterError
+// 系列，但合并进来的上游代码仍按 NewAPIError 引用，这里给出等价别名，避免两份
+// 类型并存导致的赋值/断言失败。
+type NewAPIError = UterError
+
+type NewAPIErrorOptions = UterErrorOptions
+
+// ErrorTypeNewAPIError 与 ErrorTypeUterError 同值（"uter_error"）。
+const ErrorTypeNewAPIError = ErrorTypeUterError

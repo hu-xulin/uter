@@ -14,13 +14,13 @@ import (
 	"time"
 
 	"github.com/uter-ai/uter/common"
-
-	"github.com/alicebob/miniredis/v2"
-	"github.com/go-redis/redis/v8"
 	"github.com/uter-ai/uter/i18n"
 	"github.com/uter-ai/uter/middleware"
 	"github.com/uter-ai/uter/model"
+	"github.com/uter-ai/uter/service"
 	"github.com/uter-ai/uter/service/authz"
+	"github.com/alicebob/miniredis/v2"
+	"github.com/go-redis/redis/v8"
 
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
@@ -32,7 +32,7 @@ func setupManageUserTestDB(t *testing.T) *gorm.DB {
 	t.Helper()
 	require.NoError(t, i18n.Init())
 	previousDB, previousLogDB := model.DB, model.LOG_DB
-	previousRedisEnabled := common.RedisEnabled
+	previousRedisEnabled, previousSecret := common.RedisEnabled, common.SessionSecret
 	previousMainDatabaseType, previousLogDatabaseType := common.MainDatabaseType(), common.LogDatabaseType()
 	dialect := os.Getenv("TEST_MANAGE_USER_DIALECT")
 	if dialect == "" {
@@ -50,11 +50,12 @@ func setupManageUserTestDB(t *testing.T) *gorm.DB {
 	}
 	model.DB, model.LOG_DB = db, logDB
 	common.RedisEnabled = false
+	common.SessionSecret = "manage-user-test-secret"
 	common.SetDatabaseTypes(databaseTypes[dialect], databaseTypes[dialect])
 
 	t.Cleanup(func() {
 		model.DB, model.LOG_DB = previousDB, previousLogDB
-		common.RedisEnabled = previousRedisEnabled
+		common.RedisEnabled, common.SessionSecret = previousRedisEnabled, previousSecret
 		common.SetDatabaseTypes(previousMainDatabaseType, previousLogDatabaseType)
 		sqlDB, err := db.DB()
 		if err == nil {
@@ -67,7 +68,7 @@ func setupManageUserTestDB(t *testing.T) *gorm.DB {
 			}
 		}
 	})
-	require.NoError(t, db.AutoMigrate(&model.User{}, &model.UserSession{}, &model.CasbinRule{}, &model.AuthzRole{}))
+	require.NoError(t, db.AutoMigrate(&model.User{}, &model.UserSession{}, &model.CasbinRule{}, &model.AuthzRole{}, &model.AuthFlow{}, &model.TwoFA{}, &model.PasskeyCredential{}, &model.UserAccessToken{}))
 	require.NoError(t, logDB.AutoMigrate(&model.Log{}, &model.AuditLog{}))
 	versionQuery := "SELECT version()"
 	if dialect == "sqlite" {
@@ -81,17 +82,47 @@ func setupManageUserTestDB(t *testing.T) *gorm.DB {
 
 func performManageUserRequest(t *testing.T, body string) *httptest.ResponseRecorder {
 	t.Helper()
+	return performVerifiedManageUserRequest(t, body, service.AuthIdentity{UserID: 9999}, "")
+}
+
+// performVerifiedManageUserRequest drives ManageUser as the root operator from
+// a dashboard login session, carrying the step-up proof status or role changes need.
+func performVerifiedManageUserRequest(t *testing.T, body string, identity service.AuthIdentity, proof string) *httptest.ResponseRecorder {
+	t.Helper()
 	gin.SetMode(gin.TestMode)
 	recorder := httptest.NewRecorder()
 	c, _ := gin.CreateTestContext(recorder)
 	c.Request = httptest.NewRequest(http.MethodPost, "/api/user/manage", strings.NewReader(body))
 	c.Request.Header.Set("Content-Type", "application/json")
-	c.Set("id", 9999)
+	if proof != "" {
+		c.Request.Header.Set("X-Security-Proof", proof)
+	}
+	c.Set("id", identity.UserID)
 	c.Set("role", common.RoleRootUser)
 	c.Set("username", "root-operator")
+	c.Set("session_id", identity.SessionID)
+	c.Set("auth_version", identity.UserAuthVersion)
+	c.Set("session_version", identity.SessionVersion)
 	c.Set(common.RequestIdKey, "quota-test-request")
 	ManageUser(c)
 	return recorder
+}
+
+// manageUserProof signs the root operator in and issues a password-method proof
+// bound to one ManageUser operation.
+func manageUserProof(t *testing.T, db *gorm.DB, operation service.VerificationOperation) (service.AuthIdentity, string) {
+	t.Helper()
+	operator := createQuotaTestOperator(t, db, common.RoleRootUser)
+	require.NoError(t, model.PublishUserAuthCache(operator.Id))
+	bundle, err := service.CreateLoginSession(operator.Id, "password", "127.0.0.1", "manage-user-test")
+	require.NoError(t, err)
+	identity, err := service.ParseAccessToken(bundle.AccessToken)
+	require.NoError(t, err)
+	binding, err := service.BindVerificationOperation(operation)
+	require.NoError(t, err)
+	proof, _, err := service.IssueSecurityProof(identity, service.VerificationMethodPassword, binding)
+	require.NoError(t, err)
+	return identity, proof
 }
 
 func TestManageUserDisableAdvancesAuthVersionOnceAndRevokesSession(t *testing.T) {
@@ -108,7 +139,8 @@ func TestManageUserDisableAdvancesAuthVersionOnceAndRevokesSession(t *testing.T)
 		LastActiveAt: now, ExpiresAt: now + 3600,
 	}).Error)
 
-	recorder := performManageUserRequest(t, fmt.Sprintf(`{"id":%d,"action":"disable"}`, user.Id))
+	identity, proof := manageUserProof(t, db, service.VerificationOperation{Scope: service.VerificationScopeAdminUserManage, Context: []byte(fmt.Sprintf(`{"user_id":%d,"action":"disable"}`, user.Id))})
+	recorder := performVerifiedManageUserRequest(t, fmt.Sprintf(`{"id":%d,"action":"disable"}`, user.Id), identity, proof)
 	assert.Equal(t, http.StatusOK, recorder.Code)
 	assert.Contains(t, recorder.Body.String(), `"success":true`)
 
@@ -149,7 +181,8 @@ func TestManageUserDemoteAdvancesAuthVersionAndRevokesSessionsOnce(t *testing.T)
 		}
 	}))
 
-	recorder := performManageUserRequest(t, fmt.Sprintf(`{"id":%d,"action":"demote"}`, user.Id))
+	identity, proof := manageUserProof(t, db, service.VerificationOperation{Scope: service.VerificationScopeAdminUserManage, Context: []byte(fmt.Sprintf(`{"user_id":%d,"action":"demote"}`, user.Id))})
+	recorder := performVerifiedManageUserRequest(t, fmt.Sprintf(`{"id":%d,"action":"demote"}`, user.Id), identity, proof)
 	assert.Equal(t, http.StatusOK, recorder.Code)
 	assert.Contains(t, recorder.Body.String(), `"success":true`)
 
@@ -175,7 +208,8 @@ func TestManageUserDeleteReturnsImmediatelyAndUnknownActionFails(t *testing.T) {
 	}
 	require.NoError(t, db.Create(&deleted).Error)
 
-	recorder := performManageUserRequest(t, fmt.Sprintf(`{"id":%d,"action":"delete"}`, deleted.Id))
+	identity, proof := manageUserProof(t, db, service.VerificationOperation{Scope: service.VerificationScopeAdminUserDelete, Context: []byte(fmt.Sprintf(`{"user_id":%d}`, deleted.Id))})
+	recorder := performVerifiedManageUserRequest(t, fmt.Sprintf(`{"id":%d,"action":"delete"}`, deleted.Id), identity, proof)
 	assert.Contains(t, recorder.Body.String(), `"success":true`)
 	var deletedCount int64
 	require.NoError(t, db.Unscoped().Model(&model.User{}).Where("id = ? AND deleted_at IS NOT NULL", deleted.Id).Count(&deletedCount).Error)
@@ -198,7 +232,7 @@ func createQuotaTestOperator(t *testing.T, db *gorm.DB, role int) model.User {
 	if role == 0 {
 		role = common.RoleRootUser
 	}
-	operator := model.User{Id: 9999, Username: "root-operator", Role: role, Status: common.UserStatusEnabled, AuthVersion: 1, AffCode: "root-operator-aff"}
+	operator := model.User{Id: 9999, Username: "root-operator", Password: "root-operator-hash", Role: role, Status: common.UserStatusEnabled, AuthVersion: 1, AffCode: "root-operator-aff"}
 	require.NoError(t, db.Create(&operator).Error)
 	return operator
 }
@@ -228,7 +262,7 @@ func TestManageUserQuotaRecordsTopupAndAudit(t *testing.T) {
 			require.NoError(t, db.First(&user, user.Id).Error)
 			assert.Equal(t, tc.wantQuota, user.Quota)
 
-			logs, total, err := model.GetAllLogs(model.LogTypeTopup, 0, 0, "", "", "", 0, 20, 0, "", "", "", nil)
+			logs, total, err := model.GetAllLogs(model.LogFilter{Type: model.LogTypeTopup}, 0, 20)
 			require.NoError(t, err)
 			assert.EqualValues(t, 1, total)
 			require.Len(t, logs, 1)
@@ -240,7 +274,7 @@ func TestManageUserQuotaRecordsTopupAndAudit(t *testing.T) {
 			require.NoError(t, common.UnmarshalJsonStr(logs[0].Other, &other))
 			assert.Equal(t, &model.AuditAdminInfo{AdminID: 9999, AdminUsername: "root-operator", AdminRole: common.RoleRootUser, AuthMethod: "session"}, other.AdminInfo)
 
-			logs, total, err = model.GetUserLogs(user.Id, model.LogTypeTopup, 0, 0, "", "", 0, 20, "", "", "")
+			logs, total, err = model.GetUserLogs(user.Id, model.LogFilter{Type: model.LogTypeTopup}, 0, 20)
 			require.NoError(t, err)
 			assert.EqualValues(t, 1, total)
 			require.Len(t, logs, 1)
@@ -261,7 +295,7 @@ func TestManageUserQuotaRecordsTopupAndAudit(t *testing.T) {
 			assert.Equal(t, "quota-test-request", logs[0].RequestId)
 			assert.Empty(t, logs[0].Ip, "recipient logs must not disclose the administrator IP")
 
-			logs, total, err = model.GetUserLogs(9999, model.LogTypeTopup, 0, 0, "", "", 0, 20, "", "", "")
+			logs, total, err = model.GetUserLogs(9999, model.LogFilter{Type: model.LogTypeTopup}, 0, 20)
 			require.NoError(t, err)
 			assert.Zero(t, total)
 			assert.Empty(t, logs)
@@ -361,79 +395,6 @@ func TestManageUserQuotaLogFailureKeepsSuccessfulAdjustment(t *testing.T) {
 			}
 		})
 	}
-}
-
-// TestManageUserQuotaRespectsOrganizationBoundary 固化一条安全不变量：
-// 「额度调整」同样受组织/部门范围约束。
-//
-// 缺陷背景：ManageUser 里 add_quota 在加载目标用户与组织范围校验**之前**就 return，
-// 直接进 manageUserQuota → model.AdjustUserQuota，而后者只比较 role 大小、不看
-// organization_id。于是「改余额」成为唯一一条不受组织边界约束的用户管理动作。
-//
-// 门禁现在放在 manageUserQuota 内部（而不是 ManageUser 的后半段），这样既能覆盖
-// 早退分支，又不破坏「一次失败请求仍留一条带具体 failure_reason 的审计」这一约定。
-// quotaOf 查询用户当前余额。每次都用全新的 model.User —— 复用同一个结构体时
-// GORM 会把上一轮的自增主键带进 WHERE，导致 `id = X AND id = Y` 查不到行。
-func quotaOf(t *testing.T, db *gorm.DB, id int) int {
-	t.Helper()
-	var user model.User
-	require.NoError(t, db.First(&user, id).Error)
-	return user.Quota
-}
-
-func TestManageUserQuotaRespectsOrganizationBoundary(t *testing.T) {
-	gin.SetMode(gin.TestMode)
-	db := setupManageUserTestDB(t)
-
-	// 操作者：属于组织 7 的平台管理员（organization_id > 0）。
-	createQuotaTestOperator(t, db, common.RoleAdminUser)
-	require.NoError(t, db.Model(&model.User{}).Where("id = ?", 9999).
-		Update("organization_id", 7).Error)
-
-	inside := model.User{
-		Username: "inside-org", Role: common.RoleCommonUser, Quota: 1000,
-		OrganizationId: 7, AffCode: "inside-org-aff",
-	}
-	outside := model.User{
-		Username: "outside-org", Role: common.RoleCommonUser, Quota: 1000,
-		OrganizationId: 8, AffCode: "outside-org-aff",
-	}
-	require.NoError(t, db.Create(&inside).Error)
-	require.NoError(t, db.Create(&outside).Error)
-
-	manageAs := func(t *testing.T, targetID int) *httptest.ResponseRecorder {
-		t.Helper()
-		recorder := httptest.NewRecorder()
-		c, _ := gin.CreateTestContext(recorder)
-		c.Request = httptest.NewRequest(http.MethodPost, "/api/user/manage",
-			strings.NewReader(fmt.Sprintf(`{"id":%d,"action":"add_quota","mode":"add","value":500}`, targetID)))
-		c.Request.Header.Set("Content-Type", "application/json")
-		c.Set("id", 9999)
-		c.Set("role", common.RoleAdminUser)
-		c.Set("organization_id", 7)
-		c.Set("username", "root-operator")
-		c.Set(common.RequestIdKey, "org-scope-quota-request")
-		ManageUser(c)
-		return recorder
-	}
-
-	// 本组织成员：允许。
-	require.Contains(t, manageAs(t, inside.Id).Body.String(), `"success":true`)
-	assert.Equal(t, 1500, quotaOf(t, db, inside.Id))
-
-	// 其他组织成员：拒绝，且余额纹丝不动。
-	recorder := manageAs(t, outside.Id)
-	require.Contains(t, recorder.Body.String(), `"success":false`)
-	assert.Equal(t, 1000, quotaOf(t, db, outside.Id), "越权加额度不得改变目标用户余额")
-
-	// 拒绝也要留下一条审计（与其余失败分支口径一致）。
-	var audit model.AuditLog
-	require.NoError(t, model.LOG_DB.Where("request_id = ?", "org-scope-quota-request").
-		Order("id DESC").First(&audit).Error)
-	assert.False(t, audit.Success)
-	params, err := common.Marshal(audit.Other.Op.Params)
-	require.NoError(t, err)
-	assert.Contains(t, string(params), `"failure_reason":"permission_denied"`)
 }
 
 func TestManageUserQuotaTargetsAndWalletBounds(t *testing.T) {
@@ -563,45 +524,43 @@ func TestManageUserQuotaConcurrentSnapshots(t *testing.T) {
 	db := setupManageUserTestDB(t)
 	user := model.User{Username: "concurrent-quota", Quota: 1000}
 	require.NoError(t, db.Create(&user).Error)
-
-	// Run two adjustments concurrently. The DB layer serializes the underlying
-	// transactions (BEGIN IMMEDIATE for SQLite, SELECT ... FOR UPDATE elsewhere),
-	// so we assert the end state rather than forcing a specific interleaving.
-	// The previous barrier hooked the users-table query, but with immediate
-	// transactions the second goroutine blocks at BEGIN before issuing any
-	// query, so it never signalled readiness and the test deadlocked.
+	var ready sync.WaitGroup
+	ready.Add(2)
+	release := make(chan struct{})
+	require.NoError(t, db.Callback().Query().Before("gorm:query").Register("test:concurrent_quota_start", func(tx *gorm.DB) {
+		if tx.Statement.Table == "users" {
+			ready.Done()
+			<-release
+		}
+	}))
 	type result struct {
 		adjustment *model.UserQuotaAdjustment
 		err        error
 		value      int
 	}
 	results := make(chan result, 2)
-	var wg sync.WaitGroup
-	wg.Add(2)
 	for _, value := range []int{10, 20} {
 		go func(value int) {
-			defer wg.Done()
 			adjustment, err := model.AdjustUserQuota(user.Id, common.RoleRootUser, "add", value)
 			results <- result{adjustment, err, value}
 		}(value)
 	}
-	wg.Wait()
-	close(results)
-
+	ready.Wait()
+	close(release)
 	var committed []model.UserQuotaAdjustment
-	var totalAdjusted int
-	for r := range results {
-		if r.err != nil {
-			// Row-locking databases may serialize one of the two adjustments.
-			assert.Contains(t, strings.ToLower(r.err.Error()), "locked")
-			assert.Nil(t, r.adjustment)
+	for range 2 {
+		result := <-results
+		if result.err != nil {
+			require.True(t, common.UsingMainDatabase(common.DatabaseTypeSQLite), "row-locking databases must serialize both adjustments: %v", result.err)
+			assert.Contains(t, strings.ToLower(result.err.Error()), "locked")
+			assert.Nil(t, result.adjustment)
 			continue
 		}
-		require.NotNil(t, r.adjustment)
-		assert.Equal(t, r.value, r.adjustment.After-r.adjustment.Before)
-		committed = append(committed, *r.adjustment)
-		totalAdjusted += r.value
+		require.NotNil(t, result.adjustment)
+		assert.Equal(t, result.value, result.adjustment.After-result.adjustment.Before)
+		committed = append(committed, *result.adjustment)
 	}
+	require.NoError(t, db.Callback().Query().Remove("test:concurrent_quota_start"))
 	require.NotEmpty(t, committed)
 	sort.Slice(committed, func(i, j int) bool { return committed[i].Before < committed[j].Before })
 	balance := 1000
@@ -610,8 +569,7 @@ func TestManageUserQuotaConcurrentSnapshots(t *testing.T) {
 		balance = adjustment.After
 	}
 	require.NoError(t, db.First(&user, user.Id).Error)
-	// The final balance must reflect every committed adjustment exactly once.
-	assert.Equal(t, 1000+totalAdjusted, user.Quota)
+	assert.Equal(t, balance, user.Quota)
 }
 
 func TestManageUserQuotaCacheUsesCommittedIntegerDifference(t *testing.T) {

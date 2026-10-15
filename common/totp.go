@@ -2,6 +2,7 @@ package common
 
 import (
 	"crypto/rand"
+	"errors"
 	"fmt"
 	"os"
 	"strconv"
@@ -64,20 +65,14 @@ func GenerateBackupCodes() ([]string, error) {
 func generateRandomBackupCode() (string, error) {
 	const charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 	code := make([]byte, BackupCodeLength)
-	charsetLen := len(charset)
 
 	for i := range code {
-		// 拒绝采样：避免取模偏置（256 % 36 != 0 会让前几个字符概率偏高）
-		for {
-			randomBytes := make([]byte, 1)
-			if _, err := rand.Read(randomBytes); err != nil {
-				return "", err
-			}
-			if int(randomBytes[0]) < 256-(256%charsetLen) {
-				code[i] = charset[int(randomBytes[0])%charsetLen]
-				break
-			}
+		randomBytes := make([]byte, 1)
+		_, err := rand.Read(randomBytes)
+		if err != nil {
+			return "", err
 		}
+		code[i] = charset[int(randomBytes[0])%len(charset)]
 	}
 
 	// 格式化为 XXXX-XXXX 格式
@@ -136,12 +131,12 @@ func ValidateNumericCode(code string) (string, error) {
 	code = strings.ReplaceAll(code, " ", "")
 
 	if len(code) != 6 {
-		return "", fmt.Errorf("验证码必须是6位数字")
+		return "", errors.New("the verification code must be 6 digits")
 	}
 
 	// 检查是否为纯数字
 	if _, err := strconv.Atoi(code); err != nil {
-		return "", fmt.Errorf("验证码只能包含数字")
+		return "", errors.New("the verification code must contain only digits")
 	}
 
 	return code, nil

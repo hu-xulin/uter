@@ -13,16 +13,15 @@ import (
 	"time"
 
 	"github.com/uter-ai/uter/common"
-
+	"github.com/uter-ai/uter/constant"
+	"github.com/uter-ai/uter/middleware"
+	"github.com/uter-ai/uter/model"
+	"github.com/uter-ai/uter/pkg/jsplugin"
 	"github.com/gin-contrib/gzip"
 	"github.com/gin-gonic/gin"
 	"github.com/glebarez/sqlite"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"github.com/uter-ai/uter/constant"
-	"github.com/uter-ai/uter/middleware"
-	"github.com/uter-ai/uter/model"
-	"github.com/uter-ai/uter/pkg/jsplugin"
 	"gorm.io/gorm"
 )
 
@@ -219,10 +218,7 @@ func TestWebCacheHeadersDoNotLeakOntoPluginRoutes(t *testing.T) {
 	assert.Empty(t, pluginResponse.Header().Get("Cache-Version"))
 
 	fallbackResponse := performPluginRequest(outer, http.MethodGet, "/unknown")
-	// Only fingerprinted build artifacts (`/static/…`, `/_next/static/…`) are
-	// cached for a week; every other path revalidates — a replaced logo.png
-	// stayed invisible for a week under the long max-age (middleware/cache.go).
-	assert.Equal(t, "no-cache", fallbackResponse.Header().Get("Cache-Control"))
+	assert.Equal(t, "max-age=604800", fallbackResponse.Header().Get("Cache-Control"))
 	assert.NotEmpty(t, fallbackResponse.Header().Get("Cache-Version"))
 }
 
@@ -911,7 +907,7 @@ func TestWebFallbackDoesNotCacheMissingAPIOrAssets(t *testing.T) {
 func TestSecurityRoutesDisableCachingBeforeAuthentication(t *testing.T) {
 	outer := gin.New()
 	SetApiRouter(outer)
-	for _, path := range []string{"/api/user/token/status", "/api/user/token", "/api/audit/self", "/api/audit"} {
+	for _, path := range []string{"/api/user/access_tokens", "/api/user/access_tokens/catalog", "/api/user/access_tokens/scopes", "/api/audit/self", "/api/audit"} {
 		t.Run(path, func(t *testing.T) {
 			response := performPluginRequest(outer, http.MethodGet, path)
 			assert.Equal(t, http.StatusUnauthorized, response.Code)

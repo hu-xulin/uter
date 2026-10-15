@@ -2,17 +2,14 @@ package model
 
 import (
 	"errors"
-	"fmt"
 	"sort"
 	"strings"
 	"sync"
 
 	"github.com/uter-ai/uter/common"
-
 	"github.com/uter-ai/uter/dto"
 
 	"github.com/samber/lo"
-	"github.com/uter-ai/uter/setting/channel_weight"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
@@ -78,7 +75,7 @@ func getPriority(group string, model string, retry int) (int, error) {
 
 	if len(priorities) == 0 {
 		// 如果没有查询到优先级，则返回错误
-		return 0, errors.New("数据库一致性被破坏")
+		return 0, errors.New("database consistency is broken")
 	}
 
 	// 确定要使用的优先级
@@ -215,30 +212,13 @@ func identityFilterRequiresKey(filters []dto.ChannelFilter) bool {
 	return false
 }
 
-// effectiveChannelPriority returns the per-model priority override for
-// (channel, model) when configured, otherwise the channel-level priority.
-func effectiveChannelPriority(channel *Channel, model string) *int64 {
-	if p, ok := channel_weight.GetChannelModelPriority(channel.Id, model); ok {
-		return &p
-	}
-	return channel.Priority
-}
-
-// effectiveChannelWeight returns the per-model weight override for
-// (channel, model) when configured, otherwise the channel-level weight.
-func effectiveChannelWeight(channel *Channel, model string) int {
-	if w, ok := channel_weight.GetChannelModelWeight(channel.Id, model); ok {
-		return w
-	}
-	return channel.GetWeight()
-}
-
 func (channel *Channel) AddAbilities(tx *gorm.DB) error {
 	models_ := strings.Split(channel.Models, ",")
+	groups_ := strings.Split(channel.Group, ",")
 	abilitySet := make(map[string]struct{})
 	abilities := make([]Ability, 0, len(models_))
 	for _, model := range models_ {
-		for group := range strings.SplitSeq(channel.Group, ",") {
+		for _, group := range groups_ {
 			key := group + "|" + model
 			if _, exists := abilitySet[key]; exists {
 				continue
@@ -249,8 +229,8 @@ func (channel *Channel) AddAbilities(tx *gorm.DB) error {
 				Model:     model,
 				ChannelId: channel.Id,
 				Enabled:   channel.Status == common.ChannelStatusEnabled,
-				Priority:  effectiveChannelPriority(channel, model),
-				Weight:    uint(effectiveChannelWeight(channel, model)),
+				Priority:  channel.Priority,
+				Weight:    uint(channel.GetWeight()),
 				Tag:       channel.Tag,
 			}
 			abilities = append(abilities, ability)
@@ -306,10 +286,11 @@ func (channel *Channel) UpdateAbilities(tx *gorm.DB) error {
 
 	// Then add new abilities
 	models_ := channel.GetModels()
+	groups_ := strings.Split(channel.Group, ",")
 	abilitySet := make(map[string]struct{})
 	abilities := make([]Ability, 0, len(models_))
 	for _, model := range models_ {
-		for group := range strings.SplitSeq(channel.Group, ",") {
+		for _, group := range groups_ {
 			key := group + "|" + model
 			if _, exists := abilitySet[key]; exists {
 				continue
@@ -320,8 +301,8 @@ func (channel *Channel) UpdateAbilities(tx *gorm.DB) error {
 				Model:     model,
 				ChannelId: channel.Id,
 				Enabled:   channel.Status == common.ChannelStatusEnabled,
-				Priority:  effectiveChannelPriority(channel, model),
-				Weight:    uint(effectiveChannelWeight(channel, model)),
+				Priority:  channel.Priority,
+				Weight:    uint(channel.GetWeight()),
 				Tag:       channel.Tag,
 			}
 			abilities = append(abilities, ability)
@@ -375,7 +356,7 @@ var fixLock = sync.Mutex{}
 func FixAbility() (int, int, error) {
 	lock := fixLock.TryLock()
 	if !lock {
-		return 0, 0, errors.New("已经有一个修复任务在运行中，请稍后再试")
+		return 0, 0, common.NewMessage("A repair task is already running. Please try again later")
 	}
 	defer fixLock.Unlock()
 
@@ -383,13 +364,13 @@ func FixAbility() (int, int, error) {
 	if common.UsingMainDatabase(common.DatabaseTypeSQLite) {
 		err := DB.Exec("DELETE FROM abilities").Error
 		if err != nil {
-			common.SysLog(fmt.Sprintf("Delete abilities failed: %s", err.Error()))
+			common.SysLog(common.LogText("Delete abilities failed: %s", err.Error()))
 			return 0, 0, err
 		}
 	} else {
 		err := DB.Exec("TRUNCATE TABLE abilities").Error
 		if err != nil {
-			common.SysLog(fmt.Sprintf("Truncate abilities failed: %s", err.Error()))
+			common.SysLog(common.LogText("Truncate abilities failed: %s", err.Error()))
 			return 0, 0, err
 		}
 	}
@@ -409,7 +390,7 @@ func FixAbility() (int, int, error) {
 		// Delete all abilities of this channel
 		err = DB.Where("channel_id IN ?", ids).Delete(&Ability{}).Error
 		if err != nil {
-			common.SysLog(fmt.Sprintf("Delete abilities failed: %s", err.Error()))
+			common.SysLog(common.LogText("Delete abilities failed: %s", err.Error()))
 			failCount += len(chunk)
 			continue
 		}
@@ -417,7 +398,7 @@ func FixAbility() (int, int, error) {
 		for _, channel := range chunk {
 			err = channel.AddAbilities(nil)
 			if err != nil {
-				common.SysLog(fmt.Sprintf("Add abilities for channel %d failed: %s", channel.Id, err.Error()))
+				common.SysLog(common.LogText("Add abilities for channel %d failed: %s", channel.Id, err.Error()))
 				failCount++
 			} else {
 				successCount++

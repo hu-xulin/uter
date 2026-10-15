@@ -7,13 +7,12 @@ import (
 	"time"
 
 	"github.com/uter-ai/uter/common"
-
+	"github.com/uter-ai/uter/model"
+	"github.com/uter-ai/uter/service"
 	"github.com/gin-gonic/gin"
 	"github.com/glebarez/sqlite"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"github.com/uter-ai/uter/model"
-	"github.com/uter-ai/uter/service"
 	"gorm.io/gorm"
 )
 
@@ -108,7 +107,13 @@ func TestWriteAuthSessionErrorMapsSessionGrowthLimits(t *testing.T) {
 	}
 }
 
-func TestActiveSessionLimitEvictsOldestSessionThenSucceeds(t *testing.T) {
+// TestSessionLimitEvictsOldestIdleSessionToAllowNewLogin verifies uter's
+// deliberate "graceful eviction" policy: rather than hard-rejecting a login once
+// UserSessionActiveLimit is reached (upstream's 409 behavior), the least-recently
+// active existing session is signed out so the new login can proceed. This mirrors
+// the "kick the oldest device" model of mainstream SaaS and prevents the
+// super-admin lockout a fixed ceiling can cause.
+func TestSessionLimitEvictsOldestIdleSessionToAllowNewLogin(t *testing.T) {
 	previousDB := model.DB
 	previousRedis := common.RedisEnabled
 	previousActiveLimit := common.UserSessionActiveLimit
@@ -132,7 +137,7 @@ func TestActiveSessionLimitEvictsOldestSessionThenSucceeds(t *testing.T) {
 
 	const previousLastLoginAt = int64(123)
 	user := &model.User{
-		Username: "rejected-login-audit-user", Password: "unused", Role: common.RoleCommonUser,
+		Username: "evicted-login-audit-user", Password: "unused", Role: common.RoleCommonUser,
 		Status: common.UserStatusEnabled, Group: "default", AuthVersion: 1, LastLoginAt: previousLastLoginAt,
 	}
 	require.NoError(t, db.Create(user).Error)
@@ -147,21 +152,26 @@ func TestActiveSessionLimitEvictsOldestSessionThenSucceeds(t *testing.T) {
 	recorder := httptest.NewRecorder()
 	c, _ := gin.CreateTestContext(recorder)
 	c.Request = httptest.NewRequest(http.MethodPost, "/api/user/login", nil)
-	setupLogin(user, c)
+	setupLogin(user, nil, c)
 
+	// Uter evicts the oldest idle session and lets the new login succeed,
+	// rather than returning a 409.
 	assert.Equal(t, http.StatusOK, recorder.Code)
+
+	// The pre-existing session must now be revoked.
+	var oldSession model.UserSession
+	require.NoError(t, db.Where("sid = ?", "existing-active-session").First(&oldSession).Error)
+	assert.Equal(t, model.UserSessionStatusRevoked, oldSession.Status)
+
+	// Exactly one session remains active for the user.
+	var activeCount int64
+	require.NoError(t, db.Model(&model.UserSession{}).
+		Where("user_id = ? AND status = ?", user.Id, model.UserSessionStatusActive).
+		Count(&activeCount).Error)
+	assert.Equal(t, int64(1), activeCount)
+
+	// A successful login updates LastLoginAt (it was not a rejected attempt).
 	var stored model.User
 	require.NoError(t, db.First(&stored, user.Id).Error)
-	assert.NotEqual(t, previousLastLoginAt, stored.LastLoginAt, "evict-then-login should record a successful login")
-
-	// The previously-existing session must have been revoked to make room.
-	evicted, err := model.GetUserSessionBySID("existing-active-session")
-	require.NoError(t, err)
-	assert.Equal(t, model.UserSessionStatusRevoked, evicted.Status)
-	assert.Equal(t, model.UserSessionLimitEvictionReason, evicted.RevokedReason)
-
-	// Exactly one active session remains (the brand new one).
-	active, err := model.CountActiveUserSessions(user.Id, time.Now().Unix())
-	require.NoError(t, err)
-	assert.Equal(t, int64(1), active)
+	assert.NotEqual(t, previousLastLoginAt, stored.LastLoginAt)
 }

@@ -5,6 +5,8 @@ import (
 	"cmp"
 	"context"
 	"encoding/base64"
+	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"maps"
@@ -41,6 +43,27 @@ type requestDescriptor struct {
 	Method         string            `json:"method"`
 	Headers        map[string]string `json:"headers"`
 	Body           any               `json:"body"`
+	Credentialless bool              `json:"credentialless"`
+	Action         string            `json:"action"`
+	Model          string            `json:"model"`
+	RewriteModel   string            `json:"rewriteModel"`
+	BodyType       string            `json:"bodyType"`
+	Parts          []requestPart     `json:"parts"`
+	// BodyText is the body as JSON.stringify wrote it, for a plugin that
+	// preserves JSON order; it is sent to the upstream byte for byte so the
+	// members keep the order the client sent.
+	BodyText json.RawMessage `json:"-"`
+}
+
+// orderedRequestDescriptor is requestDescriptor as a plugin that preserves
+// JSON order returns it: the body arrives as the text JSON.stringify wrote,
+// which a json.RawMessage member receives.
+type orderedRequestDescriptor struct {
+	ResponseType   string            `json:"responseType"`
+	URL            string            `json:"url"`
+	Method         string            `json:"method"`
+	Headers        map[string]string `json:"headers"`
+	Body           json.RawMessage   `json:"body"`
 	Credentialless bool              `json:"credentialless"`
 	Action         string            `json:"action"`
 	Model          string            `json:"model"`
@@ -89,6 +112,9 @@ type TaskAdaptor struct {
 	routeRequest   *pluginruntime.RouteRequestContext
 	requestHeaders map[string]string
 	files          []map[string]any
+	// requestBodyText 是解码后的 requestBody 的 JSON 文本，保留 JSON 顺序的插件
+	// 的钩子收到的就是它而不是 Go 值。
+	requestBodyText json.RawMessage
 }
 
 func New(plugin *pluginruntime.LoadedPlugin) *TaskAdaptor { return &TaskAdaptor{plugin: plugin} }
@@ -99,7 +125,10 @@ func (a *TaskAdaptor) ValidateRequestAndSetAction(c *gin.Context, info *relaycom
 		if pinned, ok := pinnedValue.(pluginruntime.PinnedEndpoint); ok && pinned.Plugin == a.plugin {
 			if protocolValue, present := c.Get(pluginruntime.ContextKeyProtocolRequest); present {
 				if protocolContext, valid := protocolValue.(pluginruntime.ProtocolRequestContext); valid {
-					resolvedValue, callErr := a.plugin.Engine.CallPath(context.WithoutCancel(c.Request.Context()), "protocols", []string{pinned.Protocol, "decodeRequest"}, protocolContext.JSValue())
+					resolvedValue, requestBodyText, callErr := a.plugin.Engine.CallPathWithMemberJSON(
+						context.WithoutCancel(c.Request.Context()), 0, a.plugin.Meta.JSONTextMember("requestBody"),
+						"protocols", []string{pinned.Protocol, "decodeRequest"}, protocolContext.JSValueFor(a.plugin.Meta),
+					)
 					resolved, resolvedOK := resolvedValue.(map[string]any)
 					resolvedModel, modelOK := resolved["model"].(string)
 					if callErr != nil || !resolvedOK || !modelOK || resolvedModel != pinned.Model {
@@ -110,6 +139,9 @@ func (a *TaskAdaptor) ValidateRequestAndSetAction(c *gin.Context, info *relaycom
 					}
 					if body, present := resolved["requestBody"]; present {
 						c.Set("task_request", body)
+					}
+					if requestBodyText != nil {
+						c.Set(pluginruntime.ContextKeyRequestBodyText, requestBodyText)
 					}
 					if action, valid := resolved["action"].(string); valid && strings.TrimSpace(action) != "" {
 						c.Set("task_action", action)
@@ -127,7 +159,7 @@ func (a *TaskAdaptor) ValidateRequestAndSetAction(c *gin.Context, info *relaycom
 	request, hasRequest := c.Get("task_request")
 	hasUsageProfiles := len(a.plugin.Meta.UsageProfiles) > 0
 	if hasRequest && !hasUsageProfiles {
-		if err := a.validateResolvedUsageRequest(request, ""); err != nil {
+		if err := a.validateResolvedUsageRequest(request); err != nil {
 			return service.TaskErrorWrapperLocal(err, "plugin_usage_invalid", http.StatusBadRequest)
 		}
 	}
@@ -137,8 +169,9 @@ func (a *TaskAdaptor) ValidateRequestAndSetAction(c *gin.Context, info *relaycom
 	// The descriptor may rewrite the model. Validate profiled requests against
 	// that final model before any quota calculation or upstream submission.
 	if hasRequest && hasUsageProfiles {
-		usageModel := cmp.Or(info.UpstreamModelName, info.OriginModelName)
-		if err := a.validateResolvedUsageRequest(request, usageModel); err != nil {
+		// 先最终上游模型、再客户侧模型：渠道映射把已声明的模型映到厂商端点 ID 时，
+		// 仍要命中那个已声明模型的 profile。
+		if err := a.validateResolvedUsageRequest(request, info.UpstreamModelName, info.OriginModelName); err != nil {
 			return service.TaskErrorWrapperLocal(err, "plugin_usage_invalid", http.StatusBadRequest)
 		}
 	}
@@ -186,7 +219,7 @@ func (a *TaskAdaptor) ExtractUsageFactsValidated(c *gin.Context, info *relaycomm
 	if !ok {
 		return nil, fmt.Errorf("plugin usage hook must return an object")
 	}
-	if _, err = a.validatedUsageRatios(facts, cmp.Or(info.UpstreamModelName, info.OriginModelName)); err != nil {
+	if _, err = a.validatedUsageRatios(facts, info.UpstreamModelName, info.OriginModelName); err != nil {
 		return nil, err
 	}
 	return facts, nil
@@ -213,11 +246,12 @@ func (a *TaskAdaptor) AdjustBillingOnComplete(task *model.Task, result *relaycom
 	if err != nil {
 		return 0
 	}
-	usageModel := ""
+	// 两个模型候选都传：任务持久化的是最终上游模型，老任务可能只有客户侧模型。
+	var usageModels []string
 	if task != nil {
-		usageModel = cmp.Or(task.Properties.UpstreamModelName, task.Properties.OriginModelName)
+		usageModels = []string{task.Properties.UpstreamModelName, task.Properties.OriginModelName}
 	}
-	a.applyCompletionUsageFacts(result, value, usageModel)
+	a.applyCompletionUsageFacts(result, value, usageModels...)
 	return 0
 }
 
@@ -253,13 +287,13 @@ func (a *TaskAdaptor) BuildRequestBody(c *gin.Context, info *relaycommon.RelayIn
 		writer := multipart.NewWriter(&body)
 		for _, part := range descriptor.Parts {
 			if part.FileRef == "" {
-				header := make(textproto.MIMEHeader)
+				partHeader := make(textproto.MIMEHeader)
 				disposition := mime.FormatMediaType("form-data", map[string]string{"name": part.Name})
 				if disposition == "" {
 					return nil, fmt.Errorf("invalid multipart name")
 				}
-				header.Set("Content-Disposition", disposition)
-				destination, createErr := writer.CreatePart(header)
+				partHeader.Set("Content-Disposition", disposition)
+				destination, createErr := writer.CreatePart(partHeader)
 				if createErr != nil {
 					return nil, createErr
 				}
@@ -268,28 +302,27 @@ func (a *TaskAdaptor) BuildRequestBody(c *gin.Context, info *relaycommon.RelayIn
 				}
 				continue
 			}
-			field := strings.TrimPrefix(part.FileRef, "request_file:")
-			files := form.File[field]
-			if len(files) == 0 {
-				return nil, fmt.Errorf("unknown file reference %q", part.FileRef)
+			fileHeader, resolveErr := pluginruntime.ResolveFileRef(form.File, part.FileRef)
+			if resolveErr != nil {
+				return nil, resolveErr
 			}
-			file, openErr := files[0].Open()
+			file, openErr := fileHeader.Open()
 			if openErr != nil {
 				return nil, openErr
 			}
 			filename := part.Filename
 			if filename == "" {
-				filename = files[0].Filename
+				filename = fileHeader.Filename
 			}
-			header := make(textproto.MIMEHeader)
+			partHeader := make(textproto.MIMEHeader)
 			disposition := mime.FormatMediaType("form-data", map[string]string{"name": part.Name, "filename": filename})
 			if disposition == "" {
 				file.Close()
 				return nil, fmt.Errorf("invalid multipart name or filename")
 			}
-			header.Set("Content-Disposition", disposition)
-			header.Set("Content-Type", files[0].Header.Get("Content-Type"))
-			destination, copyErr := writer.CreatePart(header)
+			partHeader.Set("Content-Disposition", disposition)
+			partHeader.Set("Content-Type", fileHeader.Header.Get("Content-Type"))
+			destination, copyErr := writer.CreatePart(partHeader)
 			if copyErr == nil {
 				_, copyErr = io.Copy(destination, file)
 			}
@@ -301,7 +334,18 @@ func (a *TaskAdaptor) BuildRequestBody(c *gin.Context, info *relaycommon.RelayIn
 		if err = writer.Close(); err != nil {
 			return nil, err
 		}
-		c.Request.Header.Set("Content-Type", writer.FormDataContentType())
+		// 插件常把「客户端原始 Content-Type」原样回传，而重建后的 body 用的是
+		// 新 boundary。两者不一致时，BuildRequestHeader 会把旧 boundary 发给上游，
+		// 上游按它切分新 body，第一个 part 就撞上 EOF。所以这里把新 boundary
+		// 写回缓存好的 header，保证发给上游的 header 与 body 永远同源。
+		contentType := writer.FormDataContentType()
+		if a.submit != nil {
+			if a.submit.Headers == nil {
+				a.submit.Headers = map[string]string{}
+			}
+			a.submit.Headers["Content-Type"] = contentType
+		}
+		c.Request.Header.Set("Content-Type", contentType)
 		return bytes.NewReader(body.Bytes()), nil
 	}
 	if descriptor.Body == nil {
@@ -310,7 +354,18 @@ func (a *TaskAdaptor) BuildRequestBody(c *gin.Context, info *relaycommon.RelayIn
 	if text, ok := descriptor.Body.(string); ok {
 		return strings.NewReader(text), nil
 	}
-	inlined, err := inlineJSONFilePlaceholders(c, descriptor.Body)
+	value := descriptor.Body
+	if descriptor.BodyText != nil {
+		if !bytes.Contains(descriptor.BodyText, []byte(`"__fileRef":`)) {
+			return bytes.NewReader(descriptor.BodyText), nil
+		}
+		// 文件占位符只能在解码后的值里解析，而那条路会把成员按序写出；
+		// 上传本身没有要保留的客户端 JSON 顺序。
+		if err := common.Unmarshal(descriptor.BodyText, &value); err != nil {
+			return nil, err
+		}
+	}
+	inlined, err := inlineJSONFilePlaceholders(c, value)
 	if err != nil {
 		return nil, err
 	}
@@ -392,12 +447,10 @@ func encodeFilePlaceholder(placeholder map[string]any, form *multipart.Form, lim
 	if form == nil {
 		return "", fmt.Errorf("unknown file reference %q", ref)
 	}
-	field := strings.TrimPrefix(ref, "request_file:")
-	files := form.File[field]
-	if len(files) == 0 {
-		return "", fmt.Errorf("unknown file reference %q", ref)
+	header, resolveErr := pluginruntime.ResolveFileRef(form.File, ref)
+	if resolveErr != nil {
+		return "", resolveErr
 	}
-	header := files[0]
 	maxBytes := limit
 	if raw, exists := placeholder["maxBytes"]; exists {
 		n, ok := usageNumber(raw, false)
@@ -571,7 +624,7 @@ func (a *TaskAdaptor) ParseResponse(c *gin.Context, resp *http.Response, info *r
 		logger.LogWarn(c, fmt.Sprintf("task plugin %s completion usage failed; retaining reserved quota: %v", a.plugin.Meta.Key, err))
 		return response, nil
 	}
-	if err := a.applyCompletionUsageFacts(immediate, facts, cmp.Or(info.UpstreamModelName, info.OriginModelName)); err != nil {
+	if err := a.applyCompletionUsageFacts(immediate, facts, info.UpstreamModelName, info.OriginModelName); err != nil {
 		logger.LogWarn(c, fmt.Sprintf("task plugin %s completion usage rejected; retaining reserved quota: %v", a.plugin.Meta.Key, err))
 	}
 	return response, nil
@@ -594,11 +647,11 @@ func (a *TaskAdaptor) FetchBatchTasks(baseURL, key string, tasks []*model.Task, 
 	if err != nil {
 		return nil, err
 	}
-	value, err := a.plugin.Engine.Call(context.Background(), "buildBatchQueryRequest", ctx, taskContexts)
+	descriptor, err := a.requestDescriptor(pluginruntime.WithFetcher(context.Background(), a.hookFetcher(baseURL, proxy)), "buildBatchQueryRequest", ctx, taskContexts)
 	if err != nil {
 		return nil, err
 	}
-	return a.doFetchDescriptor(baseURL, proxy, value)
+	return a.doFetchDescriptor(baseURL, proxy, descriptor)
 }
 
 func (a *TaskAdaptor) FetchTask(baseURL, key string, task *model.Task, proxy string) (*http.Response, error) {
@@ -606,11 +659,11 @@ func (a *TaskAdaptor) FetchTask(baseURL, key string, task *model.Task, proxy str
 	if err != nil {
 		return nil, err
 	}
-	value, err := a.plugin.Engine.Call(context.Background(), "buildQueryRequest", ctx)
+	descriptor, err := a.requestDescriptor(pluginruntime.WithFetcher(context.Background(), a.hookFetcher(baseURL, proxy)), "buildQueryRequest", ctx)
 	if err != nil {
 		return nil, err
 	}
-	return a.doFetchDescriptor(baseURL, proxy, value)
+	return a.doFetchDescriptor(baseURL, proxy, descriptor)
 }
 
 func (a *TaskAdaptor) doFetchDescriptor(baseURL, proxy string, value any) (*http.Response, error) {
@@ -625,6 +678,8 @@ func (a *TaskAdaptor) doFetchDescriptor(baseURL, proxy string, value any) (*http
 	if descriptor.Body != nil {
 		if bodyText, ok := descriptor.Body.(string); ok {
 			requestBody = strings.NewReader(bodyText)
+		} else if descriptor.BodyText != nil {
+			requestBody = bytes.NewReader(descriptor.BodyText)
 		} else {
 			encoded, marshalErr := common.Marshal(descriptor.Body)
 			if marshalErr != nil {
@@ -691,7 +746,7 @@ func (a *TaskAdaptor) ParseBatchResult(tasks []*model.Task, resp *http.Response,
 	if err != nil {
 		return nil, err
 	}
-	value, err := a.plugin.Engine.Call(context.Background(), "parseBatchResult", ctx, input, hookHTTPResponse(resp))
+	value, err := a.plugin.Engine.Call(pluginruntime.WithFetcher(context.Background(), a.hookFetcher(baseURL, proxy)), "parseBatchResult", ctx, input, hookHTTPResponse(resp))
 	if err != nil {
 		logger.LogDebug(context.Background(), "task_plugin subsystem=adaptor event=parse_batch_failed plugin=%q reason=hook_failed body_bytes=%d elapsed_ms=%d", a.plugin.Meta.Key, len(body), time.Since(started).Milliseconds())
 		return nil, err
@@ -743,7 +798,8 @@ func (a *TaskAdaptor) ParseBatchResult(tasks []*model.Task, resp *http.Response,
 			facts, hookErr := a.plugin.Engine.Call(context.Background(), "extractUsageOnComplete", itemCtx, jsonValue(&info), usageBody)
 			if hookErr == nil {
 				usageModel, _ := itemCtx["upstreamModel"].(string)
-				a.applyCompletionUsageFacts(&info, facts, usageModel)
+				originModel, _ := itemCtx["model"].(string)
+				a.applyCompletionUsageFacts(&info, facts, usageModel, originModel)
 			}
 		}
 		results[item.TaskID] = &service.BatchTaskResult{TaskInfo: info, Action: item.Action, SubmitTime: item.SubmitTime, StartTime: item.StartTime, FinishTime: item.FinishTime, Data: item.Data}
@@ -775,7 +831,7 @@ func (a *TaskAdaptor) ParseTaskResult(task *model.Task, resp *http.Response, bod
 	if err != nil {
 		return nil, err
 	}
-	value, err := a.plugin.Engine.Call(context.Background(), "parseTaskResult", ctx, input, hookHTTPResponse(resp))
+	value, err := a.plugin.Engine.Call(pluginruntime.WithFetcher(context.Background(), a.hookFetcher(baseURL, proxy)), "parseTaskResult", ctx, input, hookHTTPResponse(resp))
 	if err != nil {
 		logger.LogDebug(context.Background(), "task_plugin subsystem=adaptor event=parse_task_failed plugin=%q reason=hook_failed body_bytes=%d elapsed_ms=%d", a.plugin.Meta.Key, len(body), time.Since(started).Milliseconds())
 		return nil, err
@@ -809,7 +865,8 @@ func (a *TaskAdaptor) ParseTaskResult(task *model.Task, resp *http.Response, bod
 		facts, hookErr := a.plugin.Engine.Call(context.Background(), "extractUsageOnComplete", ctx, jsonValue(result), input)
 		if hookErr == nil {
 			usageModel, _ := ctx["upstreamModel"].(string)
-			a.applyCompletionUsageFacts(result, facts, usageModel)
+			originModel, _ := ctx["model"].(string)
+			a.applyCompletionUsageFacts(result, facts, usageModel, originModel)
 		}
 	}
 	taskStatus := model.TaskStatus(result.Status)
@@ -824,8 +881,8 @@ func (a *TaskAdaptor) ParseTaskResult(task *model.Task, resp *http.Response, bod
 	return result, nil
 }
 
-func (a *TaskAdaptor) applyCompletionUsageFacts(result *relaycommon.TaskInfo, facts any, modelName string) error {
-	values, err := a.validatedCompletionUsageFacts(facts, modelName)
+func (a *TaskAdaptor) applyCompletionUsageFacts(result *relaycommon.TaskInfo, facts any, models ...string) error {
+	values, err := a.validatedCompletionUsageFacts(facts, models...)
 	if err != nil {
 		a.logRejectedUsage("extractUsageOnComplete", err)
 		return err
@@ -907,8 +964,13 @@ func (a *TaskAdaptor) ListArtifacts(task *model.Task) ([]channel.TaskArtifact, e
 	return validateTaskArtifacts(value)
 }
 
-func (a *TaskAdaptor) BuildContentRequest(task *model.Task, artifactKey string, clientRequest channel.TaskArtifactClientRequest) (*channel.TaskContentRequest, error) {
-	if !a.hasHook(context.Background(), "buildContentRequest") {
+// BuildContentRequest 实现 channel.TaskContentRequestProvider；上游把 context 提升为首个入参
+// （用于取消/超时透传），这里同步签名并向下透传，插件侧行为不变。
+func (a *TaskAdaptor) BuildContentRequest(ctxGo context.Context, task *model.Task, artifactKey string, clientRequest channel.TaskArtifactClientRequest) (*channel.TaskContentRequest, error) {
+	if ctxGo == nil {
+		ctxGo = context.Background()
+	}
+	if !a.hasHook(ctxGo, "buildContentRequest") {
 		return nil, nil
 	}
 	if a.info == nil {
@@ -926,21 +988,13 @@ func (a *TaskAdaptor) BuildContentRequest(task *model.Task, artifactKey string, 
 	ctx["baseUrl"] = a.info.ChannelBaseUrl
 	ctx["clientRequest"] = jsonValue(clientRequest)
 	proxy := a.info.ChannelSetting.Proxy
-	auth, err := resolveAuth(a.plugin.Meta.Auth, a.info.ApiKey, proxy)
-	if err != nil {
+	if err = a.applyUpstreamAuth(ctx, a.info.ApiKey, proxy); err != nil {
 		return nil, err
 	}
-	ctx["auth"] = auth
-	ctx["authHeader"] = auth["authHeader"]
-	if a.plugin.Meta.Auth.Type == "" || a.plugin.Meta.Auth.Type == "none" || a.plugin.Meta.Auth.Type == "api_key" {
-		ctx["apiKey"] = a.info.ApiKey
-	}
-	value, err := a.plugin.Engine.Call(context.Background(), "buildContentRequest", ctx)
+	// utils.fetch 受插件 allowedHosts 与渠道 base URL 约束，见 hookFetcher。
+	hookCtx := pluginruntime.WithFetcher(ctxGo, a.hookFetcher(a.info.ChannelBaseUrl, proxy))
+	descriptor, err := a.requestDescriptor(hookCtx, "buildContentRequest", ctx)
 	if err != nil {
-		return nil, err
-	}
-	var descriptor requestDescriptor
-	if err = convert(value, &descriptor); err != nil {
 		return nil, err
 	}
 	method := strings.ToUpper(strings.TrimSpace(descriptor.Method))
@@ -971,6 +1025,8 @@ func (a *TaskAdaptor) BuildContentRequest(task *model.Task, artifactKey string, 
 	if descriptor.Body != nil {
 		if text, ok := descriptor.Body.(string); ok {
 			body = []byte(text)
+		} else if descriptor.BodyText != nil {
+			body = descriptor.BodyText
 		} else {
 			body, err = common.Marshal(descriptor.Body)
 			if err != nil {
@@ -1057,28 +1113,16 @@ func (a *TaskAdaptor) queryContext(task *model.Task, key, baseURL, proxy string)
 			key = task.PrivateData.Key
 		}
 	}
-	auth, err := resolveAuth(a.plugin.Meta.Auth, key, proxy)
-	if err != nil {
+	if err := a.applyUpstreamAuth(ctx, key, proxy); err != nil {
 		return nil, err
-	}
-	ctx["auth"] = auth
-	ctx["authHeader"] = auth["authHeader"]
-	if a.plugin.Meta.Auth.Type == "" || a.plugin.Meta.Auth.Type == "none" || a.plugin.Meta.Auth.Type == "api_key" {
-		ctx["apiKey"] = key
 	}
 	return ctx, nil
 }
 
 func (a *TaskAdaptor) batchQueryContext(key, baseURL, proxy string, tasks []map[string]any) (map[string]any, error) {
 	ctx := map[string]any{"baseUrl": baseURL, "tasks": tasks}
-	auth, err := resolveAuth(a.plugin.Meta.Auth, key, proxy)
-	if err != nil {
+	if err := a.applyUpstreamAuth(ctx, key, proxy); err != nil {
 		return nil, err
-	}
-	ctx["auth"] = auth
-	ctx["authHeader"] = auth["authHeader"]
-	if a.plugin.Meta.Auth.Type == "" || a.plugin.Meta.Auth.Type == "none" || a.plugin.Meta.Auth.Type == "api_key" {
-		ctx["apiKey"] = key
 	}
 	return ctx, nil
 }
@@ -1177,27 +1221,66 @@ func validateTaskArtifacts(value any) ([]channel.TaskArtifact, error) {
 	return artifacts, nil
 }
 
+// requestDescriptor 跑一个构造请求的钩子。保留 JSON 顺序的插件，其 descriptor
+// 从结果的 JSON.stringify 文本解码，body 也以那段文本（BodyText）的形式留给上游，
+// 成员顺序因此与客户端发送的一致；其余插件走宿主编解码。
+func (a *TaskAdaptor) requestDescriptor(ctx context.Context, hook string, args ...any) (requestDescriptor, error) {
+	if !a.plugin.Meta.PreservesJSONOrder() {
+		var descriptor requestDescriptor
+		err := a.plugin.Engine.CallInto(ctx, &descriptor, hook, args...)
+		return descriptor, err
+	}
+	var ordered orderedRequestDescriptor
+	if err := a.plugin.Engine.CallJSONInto(ctx, &ordered, hook, args...); err != nil {
+		return requestDescriptor{}, err
+	}
+	descriptor := requestDescriptor{
+		ResponseType: ordered.ResponseType, URL: ordered.URL, Method: ordered.Method, Headers: ordered.Headers,
+		Credentialless: ordered.Credentialless, Action: ordered.Action, Model: ordered.Model,
+		RewriteModel: ordered.RewriteModel, BodyType: ordered.BodyType, Parts: ordered.Parts,
+	}
+	switch {
+	case len(ordered.Body) == 0 || string(ordered.Body) == "null":
+	case ordered.Body[0] == '"':
+		// 字符串 body 是插件自己的文本，原样发送。
+		var text string
+		if err := common.Unmarshal(ordered.Body, &text); err != nil {
+			return requestDescriptor{}, err
+		}
+		descriptor.Body = text
+	default:
+		descriptor.Body, descriptor.BodyText = ordered.Body, ordered.Body
+	}
+	return descriptor, nil
+}
+
+// requestDescriptorFailureReason 把 descriptor 失败归成日志里的一个原因词。
+func requestDescriptorFailureReason(err error) string {
+	var invalid *pluginruntime.ResultError
+	if errors.As(err, &invalid) {
+		return "invalid_descriptor"
+	}
+	return "hook_failed"
+}
+
 func (a *TaskAdaptor) buildSubmit(c *gin.Context, info *relaycommon.RelayInfo) (*requestDescriptor, error) {
 	if a.submit != nil {
 		return a.submit, nil
 	}
 	started := time.Now()
-	value, err := a.plugin.Engine.Call(c.Request.Context(), "buildSubmitRequest", a.submitContext(c, info))
+	// buildSubmitRequest 跑在配额预留之前，一次失败的 fetch 不花钱；真正发起
+	// 厂商工作的请求仍以 descriptor 为准。
+	fetchContext := c.Request.Context()
+	if info.HasChannelMeta() {
+		fetchContext = pluginruntime.WithFetcher(fetchContext, a.hookFetcher(info.ChannelBaseUrl, info.ChannelSetting.Proxy))
+	}
+	descriptor, err := a.requestDescriptor(fetchContext, "buildSubmitRequest", a.submitContext(c, info))
 	if err != nil {
 		logger.LogDebug(
 			c,
-			"task_plugin subsystem=adaptor event=build_submit_failed plugin=%q stage=build_submit_request reason=hook_failed elapsed_ms=%d",
+			"task_plugin subsystem=adaptor event=build_submit_failed plugin=%q stage=build_submit_request reason=%s elapsed_ms=%d",
 			a.plugin.Meta.Key,
-			time.Since(started).Milliseconds(),
-		)
-		return nil, err
-	}
-	var descriptor requestDescriptor
-	if err = convert(value, &descriptor); err != nil {
-		logger.LogDebug(
-			c,
-			"task_plugin subsystem=adaptor event=build_submit_failed plugin=%q stage=build_submit_request reason=invalid_descriptor elapsed_ms=%d",
-			a.plugin.Meta.Key,
+			requestDescriptorFailureReason(err),
 			time.Since(started).Milliseconds(),
 		)
 		return nil, err
@@ -1283,7 +1366,11 @@ func (a *TaskAdaptor) submitContext(c *gin.Context, info *relaycommon.RelayInfo)
 			}
 		}
 		if taskRequest, exists := c.Get("task_request"); exists {
-			routeRequest.RequestBody = jsonValue(taskRequest)
+			routeRequest.RequestBody = normalizeRequestBody(taskRequest)
+		}
+		a.requestBodyText = nil
+		if text, exists := c.Get(pluginruntime.ContextKeyRequestBodyText); exists && a.plugin.Meta.PreservesJSONOrder() {
+			a.requestBodyText, _ = text.(json.RawMessage)
 		}
 		if c.Request != nil {
 			if routeRequest.Path == "" {
@@ -1310,8 +1397,8 @@ func (a *TaskAdaptor) submitContext(c *gin.Context, info *relaycommon.RelayInfo)
 				if form, err := common.ParseMultipartFormReusable(c); err == nil {
 					defer form.RemoveAll()
 					for field, headers := range form.File {
-						for _, header := range headers {
-							files = append(files, map[string]any{"ref": "request_file:" + field, "field": field, "filename": header.Filename, "mimeType": header.Header.Get("Content-Type"), "size": header.Size})
+						for index, header := range headers {
+							files = append(files, map[string]any{"ref": pluginruntime.EncodeFileRef(field, index), "field": field, "filename": header.Filename, "mimeType": header.Header.Get("Content-Type"), "size": header.Size})
 						}
 					}
 				}
@@ -1324,7 +1411,12 @@ func (a *TaskAdaptor) submitContext(c *gin.Context, info *relaycommon.RelayInfo)
 		a.files = append(a.files[:0], files...)
 	}
 	ctx := routeRequest.JSValue()
-	ctx["requestBody"] = jsonValue(routeRequest.RequestBody)
+	if a.requestBodyText != nil {
+		// 钩子要读请求体，所以每次都就地解析这段文本，成员保持客户端顺序。
+		ctx["requestBody"] = pluginruntime.RawJSON(a.requestBodyText)
+	} else {
+		ctx["requestBody"] = normalizeRequestBody(routeRequest.RequestBody)
+	}
 	ctx["requestHeaders"] = requestHeaders
 	ctx["files"] = files
 	ctx["action"] = info.Action
@@ -1355,13 +1447,9 @@ func (a *TaskAdaptor) submitContext(c *gin.Context, info *relaycommon.RelayInfo)
 	ctx["userSetting"] = info.UserSetting
 	proxy := ""
 	proxy = info.ChannelSetting.Proxy
-	if auth, err := resolveAuth(a.plugin.Meta.Auth, info.ApiKey, proxy); err == nil {
-		ctx["auth"] = auth
-		ctx["authHeader"] = auth["authHeader"]
-		if a.plugin.Meta.Auth.Type == "" || a.plugin.Meta.Auth.Type == "none" || a.plugin.Meta.Auth.Type == "api_key" {
-			ctx["apiKey"] = info.ApiKey
-		}
-	} else {
+	// 解析失败不阻断请求：把原因写进 ctx.authError 让插件自己决定降级，
+	// 而不是让一次凭证问题把整个任务打死。
+	if err := a.applyUpstreamAuth(ctx, info.ApiKey, proxy); err != nil {
 		ctx["authError"] = err.Error()
 	}
 	return ctx
@@ -1402,8 +1490,8 @@ func (a *TaskAdaptor) usageRatios(ctx context.Context, modelName, hook string, a
 	return ratios, nil
 }
 
-func (a *TaskAdaptor) validateResolvedUsageRequest(request any, modelName string) error {
-	schema, _ := a.plugin.Meta.UsageForModel(modelName)
+func (a *TaskAdaptor) validateResolvedUsageRequest(request any, models ...string) error {
+	schema, _ := a.plugin.Meta.UsageForModels(models...)
 	return a.validateResolvedUsageValue(jsonValue(request), schema)
 }
 
@@ -1411,13 +1499,20 @@ func (a *TaskAdaptor) validateResolvedUsageValue(value any, usageSchema map[stri
 	switch typed := value.(type) {
 	case map[string]any:
 		for key, item := range typed {
-			if schema, declared := usageSchema[key]; declared {
-				if _, err := validateUsageValue(item, schema, true); err != nil {
-					return err
-				}
-			} else if limit, canonical := canonicalUsageLimit(key); canonical {
-				if err := validateUsageLimit(item, limit, true); err != nil {
-					return err
+			// duration-auto@1 的 -1 是发布出去的「智能时长」哨兵。它同时也是
+			// 负数，无论字段声明在 usageSchema 里还是走规范字段，通用校验都会
+			// 拒绝它，所以统一在这里放行——只对声明了该能力的插件生效，
+			// 且只认 -1（-2 与其余负数照旧越界）。
+			autoDuration := a.plugin.Meta.AcceptsAutoDuration() && isAutoDurationSentinel(key, item)
+			if !autoDuration {
+				if schema, declared := usageSchema[key]; declared {
+					if _, err := validateUsageValue(item, schema, true); err != nil {
+						return err
+					}
+				} else if limit, canonical := canonicalUsageLimit(key); canonical {
+					if err := validateUsageLimit(item, limit, true); err != nil {
+						return err
+					}
 				}
 			}
 			if err := a.validateResolvedUsageValue(item, usageSchema); err != nil {
@@ -1434,8 +1529,8 @@ func (a *TaskAdaptor) validateResolvedUsageValue(value any, usageSchema map[stri
 	return nil
 }
 
-func (a *TaskAdaptor) validatedUsageRatios(facts map[string]any, modelName string) (map[string]float64, error) {
-	usageSchema, _ := a.plugin.Meta.UsageForModel(modelName)
+func (a *TaskAdaptor) validatedUsageRatios(facts map[string]any, models ...string) (map[string]float64, error) {
+	usageSchema, _ := a.plugin.Meta.UsageForModels(models...)
 	ratios := make(map[string]float64)
 	for key, value := range facts {
 		if schema, declared := usageSchema[key]; declared {
@@ -1475,8 +1570,8 @@ func (a *TaskAdaptor) validatedUsageRatios(facts map[string]any, modelName strin
 	return ratios, nil
 }
 
-func (a *TaskAdaptor) validatedCompletionUsageFacts(facts any, modelName string) (map[string]any, error) {
-	usageSchema, _ := a.plugin.Meta.UsageForModel(modelName)
+func (a *TaskAdaptor) validatedCompletionUsageFacts(facts any, models ...string) (map[string]any, error) {
+	usageSchema, _ := a.plugin.Meta.UsageForModels(models...)
 	if facts == nil {
 		return nil, nil
 	}
@@ -1604,24 +1699,63 @@ func usageNumber(value any, allowNumericString bool) (float64, bool) {
 }
 
 func canonicalUsageLimit(key string) (int, bool) {
-	normalized := strings.NewReplacer("_", "", "-", "").Replace(strings.ToLower(key))
-	switch normalized {
-	case "duration", "durationseconds", "second", "seconds":
+	switch classifyUsageKey(key) {
+	case usageFieldDuration:
 		return relaycommon.MaxTaskDurationSeconds, true
-	case "n", "count", "imagecount", "samplecount", "batchcount", "numimages":
+	case usageFieldImageCount:
 		return kitdto.MaxImageN, true
 	default:
 		return 0, false
 	}
 }
 
+// usageFieldKind 是宿主认识的规范计费字段族。
+type usageFieldKind int
+
+const (
+	usageFieldOther usageFieldKind = iota
+	usageFieldDuration
+	usageFieldImageCount
+)
+
+// classifyUsageKey 把字段名归入规范族：大小写、连字符与下划线都不参与区分，
+// 于是 "durationSeconds"、"duration_seconds" 与 "durationseconds" 等价。
+func classifyUsageKey(key string) usageFieldKind {
+	switch strings.NewReplacer("_", "", "-", "").Replace(strings.ToLower(key)) {
+	case "duration", "durationseconds", "second", "seconds":
+		return usageFieldDuration
+	case "n", "count", "imagecount", "samplecount", "batchcount", "numimages":
+		return usageFieldImageCount
+	default:
+		return usageFieldOther
+	}
+}
+
+// autoDurationSentinel 是 duration-auto@1 插件用来表示「智能时长」的值。
+const autoDurationSentinel = -1
+
+// isAutoDurationSentinel 判断 value 是否是「智能时长」哨兵。
+//
+// 只认 -1：它是发布在插件契约里的值，而 -2 与任何其他负数依旧越界。只对
+// duration 族字段生效，"count": -1 这类负数不因此放行。
+func isAutoDurationSentinel(key string, value any) bool {
+	if classifyUsageKey(key) != usageFieldDuration {
+		return false
+	}
+	number, ok := usageNumber(value, true)
+	return ok && number == autoDurationSentinel
+}
+
 func (a *TaskAdaptor) logRejectedUsage(hook string, _ error) {
 	common.SysError(fmt.Sprintf("task plugin %s rejected invalid %s billing facts", a.plugin.Meta.Key, hook))
 }
 
-func (a *TaskAdaptor) hasHook(ctx context.Context, hook string) bool {
-	has, err := a.plugin.Engine.HasExport(ctx, hook)
-	return err == nil && has
+// hasHook 报告插件是否导出了该契约钩子。
+//
+// Engine.HasExport 读的是 Compile 时冻结的导出名集合，不碰运行时，因此不需要
+// ctx：判定一次加载期事实，用请求上下文做超时没有意义（上游亦如此）。
+func (a *TaskAdaptor) hasHook(_ context.Context, hook string) bool {
+	return a.plugin.Engine.HasExport(hook)
 }
 func convert(value any, target any) error {
 	data, err := common.Marshal(value)
@@ -1644,6 +1778,27 @@ func jsonValue(value any) any {
 		return value
 	}
 	return normalized
+}
+
+// isPlainJSONValue 判定 value 是否已是「规整的 JSON 值」——即不经一次
+// encode/decode 往返也能稳定还原。与 cloneJSONValue 共用同一次遍历，
+// 免得两处判据各自演化后悄悄打架。
+func isPlainJSONValue(value any, depth int) bool {
+	_, ok := cloneJSONValue(value, depth)
+	return ok
+}
+
+// normalizeRequestBody 把 task_request 归一化成插件可用的 JSON 值。
+//
+// 分两条路是有意的：规整的值就地深拷贝（插件改写碰不到宿主那份），否则走一趟
+// 编解码修掉非法 UTF-8、超范围整数这类问题。之所以不一律走编解码，是因为那会
+// 把本可无损表示的 int64 压成 float64——units: 2 这类计费量在插件侧看着没变，
+// 回写时精度却已经漂移过一轮。
+func normalizeRequestBody(value any) any {
+	if isPlainJSONValue(value, 0) {
+		return pluginruntime.ClonePluginRequestValue(value)
+	}
+	return jsonValue(value)
 }
 
 // Already-parsed JSON and Sobek's plain exported values do not need another
@@ -1682,7 +1837,10 @@ func cloneJSONValue(value any, depth int) (any, bool) {
 		return cloned, true
 	case []any:
 		if typed == nil {
-			return nil, true
+			// nil 切片不是「规整的 JSON 值」：它编码成 null，解码回来是
+			// interface 的 nil 而不是 []any(nil)，稳定性不如走一趟编解码。
+			// 走编解码路径的结果与就地归一化完全相同（都是 nil），只是慢些。
+			return nil, false
 		}
 		cloned := make([]any, len(typed))
 		for index, item := range typed {

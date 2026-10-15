@@ -2,13 +2,11 @@ package controller
 
 import (
 	"errors"
-	"github.com/uter-ai/uter/i18n"
 	"net/http"
 	"strconv"
 	"strings"
 
 	"github.com/uter-ai/uter/common"
-
 	"github.com/uter-ai/uter/model"
 
 	"github.com/gin-gonic/gin"
@@ -63,6 +61,10 @@ func CreateVendorMeta(c *gin.Context) {
 		vendorAPIError(c, err)
 		return
 	}
+	if err := v.Insert(); err != nil {
+		vendorAPIError(c, err)
+		return
+	}
 	// 名称命中历史合并规则：直接返回当时的合并目标，而不是新建一条会被规则
 	// 立刻重定向走的孤儿记录（它会永远看不见，却占用名称并制造误解）。
 	if targetID := model.ResolveVendorMergeTarget(v.Name); targetID > 0 {
@@ -74,10 +76,6 @@ func CreateVendorMeta(c *gin.Context) {
 			common.ApiSuccess(c, target)
 			return
 		}
-	}
-	if err := v.Insert(); err != nil {
-		vendorAPIError(c, err)
-		return
 	}
 	recordManageAudit(c, "vendor.metadata.save", map[string]any{"vendor_id": v.Id, "name": v.Name})
 	common.ApiSuccess(c, &v)
@@ -91,7 +89,7 @@ func UpdateVendorMeta(c *gin.Context) {
 		return
 	}
 	if v.Id == 0 {
-		common.ApiErrorI18n(c, i18n.MsgCommonMissing_vendor_id)
+		common.ApiErrorT(c, "Missing vendor ID")
 		return
 	}
 	// 负 ID 对应定价广场上的合成"默认品牌"供应商，没有持久化记录。

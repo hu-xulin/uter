@@ -6,20 +6,18 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/hex"
+	"errors"
 	"fmt"
 	"math"
 	"net/url"
-	"reflect"
 	"sort"
 	"strconv"
 	"strings"
 	"time"
 
+	"github.com/Calcium-Ion/moejs"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
-	"github.com/grafana/sobek"
-
-	"github.com/uter-ai/uter/common"
 )
 
 type volcSignRequest struct {
@@ -34,292 +32,284 @@ type volcSignRequest struct {
 	Timestamp int64             `json:"timestamp"`
 }
 
-// maxDurationSeconds is the largest media duration durationAuto will echo.
-// Anything beyond it is not a plausible generation length and collapses to
-// the "let the plugin decide" null rather than travelling to an upstream.
+// injectGlobals installs utils and console. currentCall returns the hook call
+// running on runtime, or nil outside one; utils.fetch reads its fetcher and
+// budget there, so no request data lives in the runtime's globals.
+// maxDurationSeconds 是 durationAuto 认可的最长时长（24 小时）。超出即视为不可信。
 const maxDurationSeconds = 24 * 60 * 60
 
-// durationSelectorKeys are the object fields durationAuto reads, in priority
-// order. It reads only these keys and never exports the whole object, so the
-// cost is O(1) in the object's size.
+// durationSelectorKeys 是 durationAuto 读取的对象字段，按优先级排列。
+// 只读这几个键、绝不整体导出对象，因此代价是O(1) 而不与对象大小相关。
 var durationSelectorKeys = [...]string{"seconds", "duration", "duration_seconds", "durationSeconds"}
 
-// extractDurationSeconds normalizes a sobek-exported number (sobek emits whole
-// numbers as int64 and fractional ones as float64) to seconds. It returns false
-// for non-numeric values and for NaN/Inf so callers never fabricate a duration.
-func extractDurationSeconds(v any) (float64, bool) {
-	switch n := v.(type) {
-	case float64:
-		if math.IsNaN(n) || math.IsInf(n, 0) {
-			return 0, false
-		}
-		return n, true
-	case int64:
-		return float64(n), true
-	case int:
-		return float64(n), true
-	case uint64:
-		return float64(n), true
-	case int32:
-		return float64(n), true
+// durationSecondsOrNull 回显一个有限、可信的时长，其余一律折叠为 null。
+//
+// 负值是被刻意拒绝的：wan3.0 系插件用 "-1" 表示「智能时长」，回显它等于让调用方
+// 把这个哨兵当成真实秒数提交。
+func durationSecondsOrNull(r *moejs.Realm, seconds float64) moejs.Value {
+	if seconds < 0 || seconds > maxDurationSeconds || math.IsNaN(seconds) || math.IsInf(seconds, 0) {
+		return moejs.Null()
 	}
-	return 0, false
+	return moejs.Number(seconds)
 }
 
-// durationSecondsOrNull echoes a finite, plausible duration and collapses
-// everything else to null. Negative values are rejected on purpose: wan3.0
-// plugins pass "-1" as the "smart duration" sentinel, so echoing it would let
-// a caller mistake the marker for a real length.
-func durationSecondsOrNull(runtime *sobek.Runtime, seconds float64) sobek.Value {
-	if seconds < 0 || seconds > maxDurationSeconds {
-		return sobek.Null()
-	}
-	return runtime.ToValue(seconds)
-}
-
-func injectGlobals(runtime *sobek.Runtime, identity func() string, now func() time.Time, logOutput func(string)) error {
+func injectGlobals(runtime *moejs.Runtime, identity func() string, now func() time.Time, logOutput func(string), currentCall func() *runtimeCall) error {
 	utils := map[string]any{
-		"hasCapability": HasCapability,
+		"fetch": runtime.Function("fetch", 1, func(r *moejs.Realm, _ moejs.Value, args []moejs.Value) (moejs.Value, error) {
+			call := currentCall()
+			if call == nil {
+				return moejs.Undefined(), fmt.Errorf("utils.fetch is not available outside hooks")
+			}
+			return call.fetch(r, moejs.Arg(args, 0))
+		}),
+		"hasCapability": runtime.Function("hasCapability", 1, func(r *moejs.Realm, _ moejs.Value, args []moejs.Value) (moejs.Value, error) {
+			name, err := stringValue(r, moejs.Arg(args, 0))
+			if err != nil {
+				return moejs.Undefined(), err
+			}
+			return moejs.Bool(HasCapability(name)), nil
+		}),
 		"json": map[string]any{
-			"clone": func(call sobek.FunctionCall) sobek.Value {
-				if sobek.IsUndefined(call.Argument(0)) {
-					panic(runtime.NewTypeError("json.clone requires a JSON value"))
+			"clone": runtime.Function("clone", 1, func(r *moejs.Realm, _ moejs.Value, args []moejs.Value) (moejs.Value, error) {
+				if moejs.Arg(args, 0).IsUndefined() {
+					return moejs.Undefined(), r.TypeError("json.clone requires a JSON value")
 				}
-				budget := &jsonStateBudget{ctx: context.Background(), bytes: MaxJSONToolBytes, nodes: maxJSONToolNodes}
-				value, err := newJSONStateNode(call.Argument(0), 0, budget)
+				budget := &jsonStateBudget{ctx: context.Background(), bytes: MaxJSONToolBytes, nodes: maxJSONToolNodes, realm: r}
+				value, err := newJSONStateNode(moejs.Arg(args, 0), 0, budget)
 				if err != nil {
-					panic(runtime.NewTypeError("json.clone: %s", err))
-				}
-				cloned, err := value.jsValue(runtime)
-				if err != nil {
-					panic(runtime.NewGoError(err))
-				}
-				return cloned
-			},
-			// order re-emits a JSON value as a fresh object/array whose object keys
-			// are sorted by the optional priority map. Keys absent from the map keep
-			// their original insertion order and are emitted after the mapped ones.
-			// It is the host-side backing for the json-order@1 capability.
-			"order": func(call sobek.FunctionCall) sobek.Value {
-				if sobek.IsUndefined(call.Argument(0)) {
-					panic(runtime.NewTypeError("json.order requires a JSON value"))
-				}
-				orderMap := map[string]int{}
-				if !sobek.IsUndefined(call.Argument(1)) {
-					arg := call.Argument(1)
-					object, ok := arg.(*sobek.Object)
-					if !ok || object.ClassName() != "Object" {
-						panic(runtime.NewTypeError("json.order order map must be a plain object"))
+					var exception *moejs.Exception
+					var interrupted *moejs.InterruptedError
+					if errors.As(err, &exception) || errors.As(err, &interrupted) {
+						return moejs.Undefined(), err
 					}
-					for _, key := range object.Keys() {
-						switch number := object.Get(key).Export().(type) {
-						case float64:
-							orderMap[key] = int(number)
-						case int64:
-							orderMap[key] = int(number)
-						case int:
-							orderMap[key] = number
+					return moejs.Undefined(), r.TypeError("json.clone: %s", err)
+				}
+				return value.jsValue(r)
+			}),
+		},
+		// durationAuto 把厂商五花八门的"时长"字段归一成「秒数或 null」：
+		//   - "auto"/""/null/undefined -> null（与厂商无关的"自动"标记）
+		//   - 数字字符串              -> 解析出的秒数
+		//   - 对象                   -> 其中的 seconds/duration 字段，没有则 null
+		//   - 负数或超过 24 小时      -> null（绝不回显哨兵或荒谬长度）
+		"durationAuto": runtime.Function("durationAuto", 1, func(r *moejs.Realm, _ moejs.Value, args []moejs.Value) (moejs.Value, error) {
+			argument := moejs.Arg(args, 0)
+			if argument.IsNullish() {
+				return moejs.Null(), nil
+			}
+			// 先按声明类型分派再读取任何值：对象逐键读取、绝不整体导出，
+			// 插件因此无法把一次时长查询变成无界的深拷贝。
+			// 数组也走末尾的数值分支（时长本身可能就是数组形态的秒数），
+			// 因此这里只把「非数组对象」当作需逐键查找的候选。
+			if argument.IsObject() {
+				object := argument.AsObject()
+				for _, key := range durationSelectorKeys {
+					field, err := object.GetProp(r, r.KeyFromGoString(key))
+					if err != nil {
+						return moejs.Undefined(), err
+					}
+					if field.IsNullish() {
+						continue
+					}
+					seconds, err := r.ToNumber(field)
+					if err != nil {
+						// 字段不是数字：继续试下一个候选键，而不是直接判死。
+						continue
+					}
+					return durationSecondsOrNull(r, seconds), nil
+				}
+				return moejs.Null(), nil
+			}
+			if argument.IsString() {
+				trimmed := strings.TrimSpace(argument.String())
+				if trimmed == "" || trimmed == "auto" {
+					return moejs.Null(), nil
+				}
+				parsed, err := strconv.ParseFloat(trimmed, 64)
+				if err != nil {
+					return moejs.Null(), nil
+				}
+				return durationSecondsOrNull(r, parsed), nil
+			}
+			seconds, err := r.ToNumber(argument)
+			if err != nil {
+				return moejs.Null(), nil
+			}
+			return durationSecondsOrNull(r, seconds), nil
+		}),
+		"unixNow": runtime.Function("unixNow", 0, func(*moejs.Realm, moejs.Value, []moejs.Value) (moejs.Value, error) {
+			return moejs.Int(now().Unix()), nil
+		}),
+		"jwtSignHS256": runtime.Function("jwtSignHS256", 2, func(r *moejs.Realm, _ moejs.Value, args []moejs.Value) (moejs.Value, error) {
+			var claims map[string]any
+			if argument := moejs.Arg(args, 0); !argument.IsNullish() {
+				exported, err := r.ToGoStrict(argument)
+				if err != nil {
+					return moejs.Undefined(), err
+				}
+				var ok bool
+				if claims, ok = exported.(map[string]any); !ok {
+					return moejs.Undefined(), r.TypeError("jwtSignHS256 claims must be an object")
+				}
+			}
+			secret, err := stringValue(r, moejs.Arg(args, 1))
+			if err != nil {
+				return moejs.Undefined(), err
+			}
+			token, err := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims(claims)).SignedString([]byte(secret))
+			if err != nil {
+				return moejs.Undefined(), err
+			}
+			return moejs.String(token), nil
+		}),
+		"hmacSHA256": runtime.Function("hmacSHA256", 2, func(r *moejs.Realm, _ moejs.Value, args []moejs.Value) (moejs.Value, error) {
+			message, err := stringValue(r, moejs.Arg(args, 0))
+			if err != nil {
+				return moejs.Undefined(), err
+			}
+			secret, err := stringValue(r, moejs.Arg(args, 1))
+			if err != nil {
+				return moejs.Undefined(), err
+			}
+			mac := hmac.New(sha256.New, []byte(secret))
+			_, _ = mac.Write([]byte(message))
+			return moejs.String(hex.EncodeToString(mac.Sum(nil))), nil
+		}),
+		"base64": runtime.Function("base64", 1, func(r *moejs.Realm, _ moejs.Value, args []moejs.Value) (moejs.Value, error) {
+			value, err := stringValue(r, moejs.Arg(args, 0))
+			if err != nil {
+				return moejs.Undefined(), err
+			}
+			return moejs.String(base64.StdEncoding.EncodeToString([]byte(value))), nil
+		}),
+		"base64URL": runtime.Function("base64URL", 1, func(r *moejs.Realm, _ moejs.Value, args []moejs.Value) (moejs.Value, error) {
+			value, err := stringValue(r, moejs.Arg(args, 0))
+			if err != nil {
+				return moejs.Undefined(), err
+			}
+			return moejs.String(base64.RawURLEncoding.EncodeToString([]byte(value))), nil
+		}),
+		"base64URLDecode": runtime.Function("base64URLDecode", 1, func(r *moejs.Realm, _ moejs.Value, args []moejs.Value) (moejs.Value, error) {
+			value, err := stringValue(r, moejs.Arg(args, 0))
+			if err != nil {
+				return moejs.Undefined(), err
+			}
+			decoded, err := base64.RawURLEncoding.DecodeString(value)
+			if err != nil {
+				return moejs.Undefined(), err
+			}
+			return moejs.String(string(decoded)), nil
+		}),
+		"uuid": runtime.Function("uuid", 0, func(*moejs.Realm, moejs.Value, []moejs.Value) (moejs.Value, error) {
+			return moejs.String(uuid.NewString()), nil
+		}),
+		"volcSignV4": runtime.Function("volcSignV4", 1, func(r *moejs.Realm, _ moejs.Value, args []moejs.Value) (moejs.Value, error) {
+			// Fields are read by their Go names, as plugins have always
+			// passed them.
+			var request volcSignRequest
+			argument := moejs.Arg(args, 0)
+			if !argument.IsNullish() && !argument.IsObject() {
+				return moejs.Undefined(), r.TypeError("volcSignV4 request must be an object")
+			}
+			if argument.IsObject() {
+				object := argument.AsObject()
+				fields := []struct {
+					name   string
+					target *string
+				}{
+					{"Method", &request.Method}, {"URL", &request.URL}, {"Body", &request.Body},
+					{"AccessKey", &request.AccessKey}, {"SecretKey", &request.SecretKey},
+					{"Region", &request.Region}, {"Service", &request.Service},
+				}
+				for _, field := range fields {
+					value, err := object.GetProp(r, r.KeyFromGoString(field.name))
+					if err != nil {
+						return moejs.Undefined(), err
+					}
+					if *field.target, err = stringValue(r, value); err != nil {
+						return moejs.Undefined(), err
+					}
+				}
+				headers, err := object.GetProp(r, r.KeyFromGoString("Headers"))
+				if err != nil {
+					return moejs.Undefined(), err
+				}
+				if headers.IsObject() {
+					keys, err := r.EnumerableOwnKeys(headers.AsObject())
+					if err != nil {
+						return moejs.Undefined(), err
+					}
+					request.Headers = make(map[string]string, len(keys))
+					for _, key := range keys {
+						value, err := headers.AsObject().GetProp(r, key)
+						if err != nil {
+							return moejs.Undefined(), err
+						}
+						if request.Headers[key.GoString()], err = stringValue(r, value); err != nil {
+							return moejs.Undefined(), err
 						}
 					}
 				}
-				budget := &jsonStateBudget{ctx: context.Background(), bytes: MaxJSONToolBytes, nodes: maxJSONToolNodes}
-				result, err := orderJSONTree(runtime, call.Argument(0), orderMap, 0, budget)
+				timestamp, err := object.GetProp(r, r.KeyFromGoString("Timestamp"))
 				if err != nil {
-					panic(runtime.NewTypeError("json.order: %s", err))
+					return moejs.Undefined(), err
 				}
-				return result
-			},
-		},
-		"unixNow": func() int64 { return now().Unix() },
-		"jwtSignHS256": func(claims map[string]any, secret string) (string, error) {
-			return jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims(claims)).SignedString([]byte(secret))
-		},
-		"hmacSHA256": func(message, secret string) string {
-			mac := hmac.New(sha256.New, []byte(secret))
-			_, _ = mac.Write([]byte(message))
-			return hex.EncodeToString(mac.Sum(nil))
-		},
-		"base64": func(value string) string { return base64.StdEncoding.EncodeToString([]byte(value)) },
-		"base64URL": func(value string) string {
-			return base64.RawURLEncoding.EncodeToString([]byte(value))
-		},
-		"base64URLDecode": func(value string) (string, error) {
-			decoded, err := base64.RawURLEncoding.DecodeString(value)
-			return string(decoded), err
-		},
-		"uuid": func() string { return uuid.NewString() },
-		"volcSignV4": func(request volcSignRequest) (map[string]string, error) {
-			return signVolcV4(request, now)
-		},
-		// durationAuto is the host-side backing for the duration-auto@1
-		// capability. It normalizes a duration selector the plugin already knows
-		// about; it never fabricates a duration, so a misconfigured caller can
-		// only ever observe a null (treated as "let the plugin decide") or an
-		// explicit value it already supplied. Contracts:
-		//   - finite number  -> echoed as the same seconds value
-		//   - "auto"/""/null/undefined -> null (host-neutral "auto" marker)
-		//   - numeric string  -> parsed seconds
-		//   - object-> the seconds/duration field if present, else null
-		//   - negative or > 24h -> null (never a sentinel or an absurd length)
-		// Cost is O(1) in the argument's size: objects are read key by key
-		// instead of being exported wholesale, so a plugin cannot turn a
-		// duration lookup into an unbounded deep copy.
-		"durationAuto": func(call sobek.FunctionCall) sobek.Value {
-			arg := call.Argument(0)
-			if sobek.IsUndefined(arg) || sobek.IsNull(arg) {
-				return sobek.Null()
-			}
-			// Dispatch on the declared type before exporting anything. Objects
-			// are read key by key and never exported wholesale, so a plugin
-			// cannot turn a duration lookup into an unbounded deep copy.
-			switch arg.ExportType() {
-			case reflect.TypeFor[map[string]any]():
-				object, ok := arg.(*sobek.Object)
-				if !ok {
-					return sobek.Null()
-				}
-				for _, key := range durationSelectorKeys {
-					field := object.Get(key)
-					if field == nil || sobek.IsUndefined(field) || sobek.IsNull(field) {
-						continue
+				if !timestamp.IsNullish() {
+					seconds, err := r.ToNumber(timestamp)
+					if err != nil {
+						return moejs.Undefined(), err
 					}
-					if n, ok := extractDurationSeconds(field.Export()); ok {
-						return durationSecondsOrNull(runtime, n)
+					if !math.IsNaN(seconds) && !math.IsInf(seconds, 0) {
+						request.Timestamp = int64(seconds)
 					}
 				}
-				return sobek.Null()
-			case reflect.TypeFor[string]():
-				trimmed := strings.TrimSpace(arg.Export().(string))
-				if trimmed == "" || trimmed == "auto" {
-					return sobek.Null()
-				}
-				if n, err := strconv.ParseFloat(trimmed, 64); err == nil {
-					return durationSecondsOrNull(runtime, n)
-				}
-				return sobek.Null()
 			}
-			if n, ok := extractDurationSeconds(arg.Export()); ok {
-				return durationSecondsOrNull(runtime, n)
+			signed, err := signVolcV4(request, now)
+			if err != nil {
+				return moejs.Undefined(), err
 			}
-			return sobek.Null()
-		},
+			return r.FromGo(signed)
+		}),
 	}
-	if err := runtime.Set("utils", utils); err != nil {
+	if err := runtime.SetGlobal("utils", utils); err != nil {
 		return err
 	}
-	console := runtime.NewObject()
-	if err := console.Set("log", func(call sobek.FunctionCall) sobek.Value {
-		parts := make([]string, len(call.Arguments))
-		for i, argument := range call.Arguments {
-			parts[i] = argument.String()
-		}
-		if logOutput != nil {
-			logOutput(identity() + " " + strings.Join(parts, " "))
-		}
-		return sobek.Undefined()
-	}); err != nil {
-		return err
-	}
-	return runtime.Set("console", console)
+	return runtime.SetGlobal("console", map[string]any{
+		"log": runtime.Function("log", 0, func(r *moejs.Realm, _ moejs.Value, args []moejs.Value) (moejs.Value, error) {
+			parts := make([]string, len(args))
+			for i, argument := range args {
+				if argument.IsSymbol() {
+					parts[i] = argument.String()
+					continue
+				}
+				text, err := r.ToString(argument)
+				if err != nil {
+					return moejs.Undefined(), err
+				}
+				parts[i] = text.GoString()
+			}
+			if logOutput != nil {
+				logOutput(identity() + " " + strings.Join(parts, " "))
+			}
+			return moejs.Undefined(), nil
+		}),
+	})
 }
 
-// orderJSONTree re-emits a JS JSON value as a new sobek value whose object keys
-// are reordered by orderMap at every level (unlisted keys keep insertion order
-// and follow listed ones). It reuses the bounded accounting used by json.clone
-// so a malicious plugin cannot allocate unbounded memory.
-func orderJSONTree(runtime *sobek.Runtime, value sobek.Value, orderMap map[string]int, depth int, budget *jsonStateBudget) (sobek.Value, error) {
-	if depth > maxJSONToolDepth {
-		return nil, fmt.Errorf("JSON state exceeds depth limit")
+// stringValue reads a host function's string parameter: undefined and null
+// read as "", other values as JavaScript's String(value).
+func stringValue(r *moejs.Realm, value moejs.Value) (string, error) {
+	if value.IsNullish() {
+		return "", nil
 	}
-	if sobek.IsUndefined(value) {
-		return nil, fmt.Errorf("undefined is not a JSON value")
+	if value.IsString() {
+		return value.AsString().GoString(), nil
 	}
-	if sobek.IsNull(value) {
-		return runtime.ToValue(nil), nil
-	}
-	if object, ok := value.(*sobek.Object); ok {
-		switch object.ClassName() {
-		case "Object":
-			keys := object.Keys()
-			if len(keys) > budget.nodes {
-				return nil, fmt.Errorf("JSON object exceeds node limit")
-			}
-			if err := budget.spend(2, 0); err != nil {
-				return nil, err
-			}
-			sorted := make([]string, len(keys))
-			copy(sorted, keys)
-			sort.SliceStable(sorted, func(i, j int) bool {
-				pi, oki := orderMap[sorted[i]]
-				pj, okj := orderMap[sorted[j]]
-				if oki && okj {
-					return pi < pj
-				}
-				if oki != okj {
-					return oki
-				}
-				return false
-			})
-			result := runtime.NewObject()
-			for _, key := range sorted {
-				child, err := orderJSONTree(runtime, object.Get(key), orderMap, depth+1, budget)
-				if err != nil {
-					return nil, err
-				}
-				if err = result.DefineDataProperty(key, child, sobek.FLAG_TRUE, sobek.FLAG_TRUE, sobek.FLAG_TRUE); err != nil {
-					return nil, err
-				}
-			}
-			return result, nil
-		case "Array":
-			length := object.Get("length").ToInteger()
-			if length < 0 || length > int64(budget.nodes) {
-				return nil, fmt.Errorf("JSON array exceeds node limit")
-			}
-			if err := budget.spend(2+max(0, int(length)-1), 0); err != nil {
-				return nil, err
-			}
-			items := make([]any, length)
-			for index := range items {
-				raw := object.Get(strconv.Itoa(index))
-				if raw == nil {
-					return nil, fmt.Errorf("sparse arrays are not JSON values")
-				}
-				elem, err := orderJSONTree(runtime, raw, orderMap, depth+1, budget)
-				if err != nil {
-					return nil, err
-				}
-				items[index] = elem
-			}
-			return runtime.NewArray(items...), nil
-		default:
-			return nil, fmt.Errorf("json.order accepts only plain objects, arrays and JSON scalars")
-		}
-	}
-	exported := value.Export()
-	switch typed := exported.(type) {
-	case int:
-		exported = float64(typed)
-	case int64:
-		exported = float64(typed)
-	}
-	switch scalar := exported.(type) {
-	case float64:
-		if math.IsNaN(scalar) || math.IsInf(scalar, 0) {
-			return nil, fmt.Errorf("JSON numbers must be finite")
-		}
-	case nil, bool, string:
-	default:
-		return nil, fmt.Errorf("value must contain only JSON objects, arrays and scalars")
-	}
-	encoded, err := common.Marshal(exported)
+	text, err := r.ToString(value)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
-	if err = budget.spend(len(encoded), 0); err != nil {
-		return nil, err
-	}
-	return runtime.ToValue(exported), nil
+	return text.GoString(), nil
 }
 
 func signVolcV4(request volcSignRequest, now func() time.Time) (map[string]string, error) {

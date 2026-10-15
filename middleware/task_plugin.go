@@ -3,6 +3,7 @@ package middleware
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -86,6 +87,12 @@ func PrepareTaskPluginRoute() gin.HandlerFunc {
 			if errors.Is(err, errTaskPluginUnsupportedMediaType) {
 				status = http.StatusUnsupportedMediaType
 			}
+			// 超限要回 413 而不是 400：调用方该缩小载荷或调高上限，重传没有意义。
+			// 排在415 之后，两类原因互斥（超限的 body 仍可能声明了错的 Content-Type，
+			// 但那时真正的病因是 Content-Type）。
+			if common.IsRequestBodyTooLargeError(err) {
+				status = http.StatusRequestEntityTooLarge
+			}
 			abortTaskPluginRouteErrorDetail(c, status, err.Error())
 			return
 		}
@@ -136,7 +143,11 @@ func PrepareTaskPluginRoute() gin.HandlerFunc {
 		}
 
 		hookStarted := time.Now()
-		resolvedValue, err := pinned.Plugin.Engine.CallMember(c.Request.Context(), "native", pinned.Route.Decode, requestContext.JSValue())
+		// JSValueFor 而非 JSValue：声明 json-order@1 的插件必须拿到客户端原始
+		// JSON 文本（成员保持原序），否则签名类解码器会算出错。
+		resolvedValue, resolvedText, err := pinned.Plugin.Engine.CallPathWithMemberJSON(
+			c.Request.Context(), 0, pinned.Plugin.Meta.JSONTextMember("requestBody"),
+			"native", []string{pinned.Route.Decode}, requestContext.JSValueFor(pinned.Plugin.Meta))
 		if err != nil {
 			logger.LogWarn(
 				c,
@@ -237,6 +248,9 @@ func PrepareTaskPluginRoute() gin.HandlerFunc {
 				c.Set(pluginruntime.ContextKeyRouteRequest, requestContext)
 			}
 			c.Set("task_request", requestContext.RequestBody)
+			if resolvedText != nil {
+				c.Set(pluginruntime.ContextKeyRequestBodyText, resolvedText)
+			}
 			c.Set("resolved_task_model", modelName)
 			c.Set("expected_task_plugin_key", pinned.Plugin.Meta.Key)
 			c.Set("task_plugin_key", pinned.Plugin.Meta.Key)
@@ -327,7 +341,7 @@ func PinTaskPluginEndpoint() gin.HandlerFunc {
 		modelRequest, err := getModelFromRequest(c)
 		if err != nil {
 			if _, _, protocolPath := pluginruntime.LookupHostProtocolOperation(c.Request.Method, c.Request.URL.Path); protocolPath {
-				abortWithOpenAiMessage(c, http.StatusBadRequest, "Invalid task protocol request")
+				abortTaskPluginRequestBodyError(c, err)
 				return
 			}
 			c.Next()
@@ -611,6 +625,7 @@ func PrepareTaskPluginEndpoint() gin.HandlerFunc {
 		}
 		accepted := make([]pluginruntime.ProtocolBinding, 0, len(candidates))
 		var resolved map[string]any
+		var resolvedBodyText json.RawMessage
 		var failures []string
 		rejectedPlugins := make(map[string][]string)
 		for _, candidate := range candidates {
@@ -619,9 +634,10 @@ func PrepareTaskPluginEndpoint() gin.HandlerFunc {
 			candidateContext.Operation = candidate.Operation.Name
 			// Parsing belongs to durable submission; disconnecting only stops
 			// the later Responses observation.
-			resolvedValue, callErr := candidate.Plugin.Engine.CallPathWithAdmissionTimeout(
+			resolvedValue, candidateBodyText, callErr := candidate.Plugin.Engine.CallPathWithMemberJSON(
 				context.WithoutCancel(c.Request.Context()), pluginruntime.DefaultCallTimeout,
-				"protocols", []string{candidate.Protocol, "decodeRequest"}, candidateContext.JSValue(),
+				candidate.Plugin.Meta.JSONTextMember("requestBody"),
+				"protocols", []string{candidate.Protocol, "decodeRequest"}, candidateContext.JSValueFor(candidate.Plugin.Meta),
 			)
 			result, resultOK := resolvedValue.(map[string]any)
 			detail := ""
@@ -655,6 +671,8 @@ func PrepareTaskPluginEndpoint() gin.HandlerFunc {
 				continue
 			}
 			accepted = append(accepted, candidate)
+			// 只有被接受的候选，其解码出的正文文本才作数：被拒候选的结果不可用。
+			resolvedBodyText = candidateBodyText
 			if resolved == nil {
 				resolved = result
 				protocolContext = candidateContext
@@ -698,6 +716,9 @@ func PrepareTaskPluginEndpoint() gin.HandlerFunc {
 		}
 		c.Set(pluginruntime.ContextKeyRouteRequest, requestContext)
 		c.Set("task_request", requestContext.RequestBody)
+		if resolvedBodyText != nil {
+			c.Set(pluginruntime.ContextKeyRequestBodyText, resolvedBodyText)
+		}
 		c.Set("resolved_task_model", resolvedModel)
 		c.Set("expected_task_plugin_key", pinned.Plugin.Meta.Key)
 		c.Set("task_plugin_key", pinned.Plugin.Meta.Key)
@@ -792,6 +813,13 @@ func buildTaskPluginRouteRequest(c *gin.Context) (pluginruntime.RouteRequestCont
 			return requestContext, err
 		}
 		requestContext.Body = map[string]any{"kind": string(pluginruntime.BodyJSON), "value": value}
+		// 原始字节同时留给 JSValueFor：声明 json-order@1 的插件要按客户端
+		// 书写的成员顺序读body（签名类算法依赖它），而上面这份 Go 值是
+		// map[string]any、键序已被打乱。
+		//
+		// 刻意不拷贝：宿主不会改写这些字节，引擎也只是原地解析，
+		// 且引擎会在调用结束时释放对它们的引用。
+		requestContext.BodyText = json.RawMessage(raw)
 	case mediaType == "application/x-www-form-urlencoded":
 		storage, storageErr := common.GetBodyStorage(c)
 		if storageErr != nil {
@@ -934,7 +962,7 @@ func buildTaskPluginRouteRequest(c *gin.Context) (pluginruntime.RouteRequestCont
 			if !utf8.ValidString(field) || len(field) > maxTaskPluginFieldNameBytes {
 				return requestContext, fmt.Errorf("invalid multipart file field name")
 			}
-			for _, header := range headers {
+			for index, header := range headers {
 				if !utf8.ValidString(header.Filename) || len(header.Filename) > maxTaskPluginFilenameBytes {
 					return requestContext, fmt.Errorf("invalid multipart filename")
 				}
@@ -948,7 +976,8 @@ func buildTaskPluginRouteRequest(c *gin.Context) (pluginruntime.RouteRequestCont
 				if header.Size < 0 || header.Size > int64(fileLimitMB)<<20 {
 					return requestContext, fmt.Errorf("multipart file exceeds %d MB", fileLimitMB)
 				}
-				ref := "request_file:" + field
+				// 同字段的多个文件必须各有唯一 ref，否则插件分不清拿到的是哪一张。
+				ref := pluginruntime.EncodeFileRef(field, index)
 				files = append(files, map[string]any{"ref": ref, "field": field, "filename": header.Filename, "mimeType": header.Header.Get("Content-Type"), "size": header.Size})
 			}
 		}
@@ -1167,7 +1196,11 @@ func renderTaskPluginQuery(
 	views := make([]map[string]any, 0, len(taskIDs))
 	for _, taskID := range taskIDs {
 		task := tasksByID[taskID]
-		if task == nil {
+		// ResultDiscarded 的任务是提交时 retainResult: false 的那一种：结果当时
+		// 已经内联返回，上游快照从未写入，因此它取不回来。必须与「任务根本不存在」
+		// 走同一条分支，否则请求方能靠状态码区分「曾经提交过但结果已丢弃」和
+		// 「这个 ID 从来不属于你」。
+		if task == nil || !task.ResultRetrievable() {
 			logger.LogDebug(
 				c,
 				"task_plugin subsystem=query event=lookup_failed generation=%d plugin=%q reason=task_not_found requested=%d found=%d",
@@ -1350,6 +1383,19 @@ func taskPluginHookDetail(err error) string {
 	return ""
 }
 
+// abortTaskPluginRequestBodyError 把「读请求体失败」按真实原因回给调用方。
+//
+// 不能一律回 400 "Invalid task protocol request"：超限（413）与读中断（400，
+// 如 unexpected EOF）是两类完全不同的问题——前者要缩小载荷或调高上限，
+// 后者要重传。一律吞成 400 会让调用方按错误方向排查，且把 413 降级成 400
+// 还会被网关当成普通客户端错误继续重试。
+//
+// 文案沿用底层错误里已本地化的那一层（getModelFromRequest 套过前缀），
+// 不再叠一层，避免变成"请求不合法：请求不合法：…"。
+func abortTaskPluginRequestBodyError(c *gin.Context, err error) {
+	abortDistributorRequestError(c, err)
+}
+
 func logTaskPluginChannelDecision(c *gin.Context, channel *model.Channel, modelName, event, reason string) {
 	expectedPlugin := c.GetString("expected_task_plugin_key")
 	if expectedPlugin == "" {
@@ -1413,7 +1459,12 @@ func PrepareTaskPluginSubmit() gin.HandlerFunc {
 		)
 		var requestBody map[string]any
 		if err := common.UnmarshalBodyReusable(c, &requestBody); err != nil {
-			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": gin.H{"message": err.Error(), "type": "invalid_request_error"}})
+			// 超限要回 413 而不是 400：调用方该缩小载荷或调高上限，重传没有意义。
+			status := http.StatusBadRequest
+			if common.IsRequestBodyTooLargeError(err) {
+				status = http.StatusRequestEntityTooLarge
+			}
+			c.AbortWithStatusJSON(status, gin.H{"error": gin.H{"message": err.Error(), "type": "invalid_request_error"}})
 			return
 		}
 		modelName, _ := requestBody["model"].(string)
@@ -1443,6 +1494,20 @@ func PrepareTaskPluginSubmit() gin.HandlerFunc {
 			}
 		}
 		c.Set("task_request", requestBody)
+		// 声明 json-order@1 的插件需要客户端原始 JSON 文本（成员保持原序）。
+		// 取的是存储里改写模型名【之后】的字节——签名类插件要签的就是这份。
+		if plugin.Meta.PreservesJSONOrder() {
+			storage, storageErr := common.GetBodyStorage(c)
+			var raw []byte
+			if storageErr == nil {
+				raw, storageErr = storage.Bytes()
+			}
+			if storageErr != nil {
+				c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": gin.H{"message": storageErr.Error(), "type": "invalid_request_error"}})
+				return
+			}
+			c.Set(pluginruntime.ContextKeyRequestBodyText, json.RawMessage(raw))
+		}
 		c.Set("resolved_task_model", modelName)
 		c.Set("expected_task_plugin_key", pluginKey)
 		service.AppendTaskPluginIdentityFilter(c, pluginKey)

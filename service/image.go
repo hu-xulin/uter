@@ -11,7 +11,6 @@ import (
 	"strings"
 
 	"github.com/uter-ai/uter/common"
-
 	"github.com/uter-ai/uter/constant"
 
 	"golang.org/x/image/webp"
@@ -20,8 +19,8 @@ import (
 // return image.Config, format, clean base64 string, error
 func DecodeBase64ImageData(base64String string) (image.Config, string, string, error) {
 	// 去除base64数据的URL前缀（如果有）
-	if _, after, found := strings.Cut(base64String, ","); found {
-		base64String = after
+	if idx := strings.Index(base64String, ","); idx != -1 {
+		base64String = base64String[idx+1:]
 	}
 
 	if len(base64String) == 0 {
@@ -31,7 +30,7 @@ func DecodeBase64ImageData(base64String string) (image.Config, string, string, e
 	// 将base64字符串解码为字节切片
 	decodedData, err := base64.StdEncoding.DecodeString(base64String)
 	if err != nil {
-		fmt.Println("Error: Failed to decode base64 string")
+		fmt.Println(common.LogText("Error: Failed to decode base64 string"))
 		return image.Config{}, "", "", fmt.Errorf("failed to decode base64 string: %s", err.Error())
 	}
 
@@ -43,25 +42,26 @@ func DecodeBase64ImageData(base64String string) (image.Config, string, string, e
 
 func DecodeBase64FileData(base64String string) (string, string, error) {
 	var mimeType string
-	before, after, found := strings.Cut(base64String, ",")
-	if !found {
+	var idx int
+	idx = strings.Index(base64String, ",")
+	if idx == -1 {
 		_, file_type, base64, err := DecodeBase64ImageData(base64String)
 		return "image/" + file_type, base64, err
 	}
-	mimeType = before
-	base64String = after
-	before, _, found = strings.Cut(mimeType, ";")
-	if !found {
+	mimeType = base64String[:idx]
+	base64String = base64String[idx+1:]
+	idx = strings.Index(mimeType, ";")
+	if idx == -1 {
 		_, file_type, base64, err := DecodeBase64ImageData(base64String)
 		return "image/" + file_type, base64, err
 	}
-	mimeType = before
-	_, after, found = strings.Cut(mimeType, ":")
-	if !found {
+	mimeType = mimeType[:idx]
+	idx = strings.Index(mimeType, ":")
+	if idx == -1 {
 		_, file_type, base64, err := DecodeBase64ImageData(base64String)
 		return "image/" + file_type, base64, err
 	}
-	mimeType = after
+	mimeType = mimeType[idx+1:]
 	return mimeType, base64String, nil
 }
 
@@ -119,7 +119,7 @@ func GetImageFromUrl(url string) (mimeType string, data string, err error) {
 func DecodeUrlImageData(imageUrl string) (image.Config, string, error) {
 	response, err := DoDownloadRequest(imageUrl)
 	if err != nil {
-		common.SysLog(fmt.Sprintf("fail to get image from url: %s", err.Error()))
+		common.SysLog(common.LogText("fail to get image from url: %s", err.Error()))
 		return image.Config{}, "", err
 	}
 	defer response.Body.Close()
@@ -137,7 +137,7 @@ func DecodeUrlImageData(imageUrl string) (image.Config, string, error) {
 
 	var readData []byte
 	for _, limit := range []int64{1024 * 8, 1024 * 24, 1024 * 64} {
-		common.SysLog(fmt.Sprintf("try to decode image config with limit: %d", limit))
+		common.SysLog(common.LogText("try to decode image config with limit: %d", limit))
 
 		// 从response.Body读取更多的数据直到达到当前的限制
 		additionalData := make([]byte, limit-int64(len(readData)))
@@ -170,13 +170,13 @@ func getImageConfig(reader io.Reader) (image.Config, string, error) {
 	if err == nil {
 		return config, format, nil
 	}
-	common.SysLog(fmt.Sprintf("fail to decode image config(gif, jpg, png): %s", err.Error()))
+	common.SysLog(common.LogText("fail to decode image config(gif, jpg, png): %s", err.Error()))
 
 	config, err = webp.DecodeConfig(bytes.NewReader(data))
 	if err == nil {
 		return config, "webp", nil
 	}
-	common.SysLog(fmt.Sprintf("fail to decode image config(webp): %s", err.Error()))
+	common.SysLog(common.LogText("fail to decode image config(webp): %s", err.Error()))
 
 	// Try HEIF/HEIC: parse ISOBMFF ispe box for dimensions
 	if heifMime := detectHEIF(data); heifMime != "" {

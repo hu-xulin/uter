@@ -3,6 +3,7 @@ package service
 import (
 	"errors"
 	"fmt"
+	"math"
 	"net/http"
 	"strings"
 	"sync"
@@ -14,6 +15,7 @@ import (
 	relaycommon "github.com/uter-ai/uter/relay/common"
 	"github.com/uter-ai/uter/relaykit/dto"
 	"github.com/uter-ai/uter/relaykit/types"
+	"github.com/uter-ai/uter/setting/operation_setting"
 
 	"github.com/bytedance/gopkg/util/gopool"
 	"github.com/gin-gonic/gin"
@@ -434,8 +436,11 @@ func (s *BillingSession) shouldTrust(c *gin.Context) bool {
 		return false
 	}
 
-	trustQuota := common.GetTrustQuota()
-	if trustQuota <= 0 {
+	// 门槛取管理员配置的 quota_setting.trust_quota_usd（美元），换算成 quota 单位。
+	// 这里必须读配置而不是常量：管理员调低门槛是为了让小钱包也免预扣，写死默认值
+	// 会让这个开关完全失效。NaN/Inf 同样按「禁用」处理，坏配置不得放宽预扣。
+	trustQuota := operation_setting.GetQuotaSetting().TrustQuotaUSD * common.QuotaPerUnit
+	if trustQuota <= 0 || math.IsNaN(trustQuota) || math.IsInf(trustQuota, 0) {
 		return false
 	}
 
@@ -443,7 +448,7 @@ func (s *BillingSession) shouldTrust(c *gin.Context) bool {
 	tokenTrusted := s.relayInfo.TokenUnlimited
 	if !tokenTrusted {
 		tokenQuota := c.GetInt("token_quota")
-		tokenTrusted = tokenQuota > trustQuota
+		tokenTrusted = float64(tokenQuota) > trustQuota
 	}
 	if !tokenTrusted {
 		return false
@@ -451,7 +456,7 @@ func (s *BillingSession) shouldTrust(c *gin.Context) bool {
 
 	switch s.funding.Source() {
 	case BillingSourceWallet:
-		return s.relayInfo.UserQuota > trustQuota
+		return float64(s.relayInfo.UserQuota) > trustQuota
 	case BillingSourceSubscription:
 		// 订阅不能启用信任旁路。原因：
 		// 1. PreConsumeUserSubscription 要求 amount>0 来创建预扣记录并锁定订阅
@@ -507,7 +512,16 @@ func NewBillingSession(c *gin.Context, relayInfo *relaycommon.RelayInfo, preCons
 			// 缓存出资组织，供请求路径后续判断复用（尤其是后台 goroutine ——
 			// 那里不得再访问数据库，见 RelayInfo.OrganizationId 的说明）。
 			relayInfo.OrganizationId = orgId
-			if gateErr := model.EnforceOrgQuota(relayInfo.UserId, int64(preConsumedQuota)); gateErr != nil {
+			// EnforceOrgQuota 按契约把 amount<=0 当作「无需校验」直接放行，
+			// 而按量计费的预扣额可以为 0（例如本次请求没有可计数的输入 token，
+			// 或模型按 legacy 策略算出 0）。组织一旦越过预算就必须**一律拒绝**，
+			// 与本次请求贵贱无关 —— 否则「零预扣」的请求会一直被放行，形成白嫖。
+			// 这里把校验额抬到最小正数，让闸门照常判预算，而不改变任何扣费金额。
+			gateAmount := int64(preConsumedQuota)
+			if gateAmount <= 0 {
+				gateAmount = 1
+			}
+			if gateErr := model.EnforceOrgQuota(relayInfo.UserId, gateAmount); gateErr != nil {
 				return nil, types.NewErrorWithStatusCode(gateErr, types.ErrorCodeInsufficientUserQuota, http.StatusForbidden,
 					types.ErrOptionWithSkipRetry(), types.ErrOptionWithNoRecordErrorLog())
 			}

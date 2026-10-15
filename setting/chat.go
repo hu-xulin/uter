@@ -14,15 +14,13 @@ var Chats = []map[string]string{
 		"Cherry Studio": "cherrystudio://providers/api-keys?v=1&data={cherryConfig}",
 	},
 	{
-		"AionUi": "aionui://provider/add?v=1&data={aionuiConfig}",
+		"AionUI": "aionui://provider/add?v=1&data={aionuiConfig}",
 	},
 	{
 		"流畅阅读": "fluentread",
 	},
 	{
-		// CC Switch deep link: https://ccswitch.io/en/docs?item=deeplink
-		// `endpoint` is the Anthropic-style base URL; the client appends /v1 itself.
-		"CC Switch": "ccswitch://v1/import?resource=provider&app=claude&name=Uter&endpoint={address}&apiKey={key}",
+		"CC Switch": "ccswitch",
 	},
 	{
 		"DeepChat": "deepchat://provider/install?v=1&data={deepchatConfig}",
@@ -31,7 +29,7 @@ var Chats = []map[string]string{
 		"AQBot": "aqbot://providers?{aqbotConfig}",
 	},
 	{
-		"Lobe Chat": "https://chat-preview.lobehub.com/?settings={\"keyVaults\":{\"openai\":{\"apiKey\":\"{key}\",\"baseURL\":\"{address}/v1\"}}}",
+		"Lobe Chat 官方示例": "https://chat-preview.lobehub.com/?settings={\"keyVaults\":{\"openai\":{\"apiKey\":\"{key}\",\"baseURL\":\"{address}/v1\"}}}",
 	},
 	{
 		"AI as Workspace": "https://aiaw.app/set-provider?provider={\"type\":\"openai\",\"settings\":{\"apiKey\":\"{key}\",\"baseURL\":\"{address}/v1\",\"compatibility\":\"strict\"}}",
@@ -52,7 +50,7 @@ func UpdateChatsByJsonString(jsonString string) error {
 func Chats2JsonString() string {
 	jsonBytes, err := json.Marshal(Chats)
 	if err != nil {
-		common.SysLog("error marshalling chats: " + err.Error())
+		common.SysLog(common.LogText("error marshalling chats: %s", err.Error()))
 		return "[]"
 	}
 	return string(jsonBytes)

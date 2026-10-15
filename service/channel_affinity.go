@@ -1,7 +1,6 @@
 package service
 
 import (
-	"fmt"
 	"hash/fnv"
 	"maps"
 	"regexp"
@@ -11,15 +10,14 @@ import (
 	"time"
 
 	"github.com/uter-ai/uter/common"
-
-	"github.com/gin-gonic/gin"
-	"github.com/samber/hot"
-	"github.com/tidwall/gjson"
 	"github.com/uter-ai/uter/model"
 	"github.com/uter-ai/uter/pkg/cachex"
 	"github.com/uter-ai/uter/relaykit/dto"
 	"github.com/uter-ai/uter/relaykit/types"
 	"github.com/uter-ai/uter/setting/operation_setting"
+	"github.com/gin-gonic/gin"
+	"github.com/samber/hot"
+	"github.com/tidwall/gjson"
 )
 
 const (
@@ -29,8 +27,8 @@ const (
 	ginKeyChannelAffinityLogInfo    = "channel_affinity_log_info"
 	ginKeyChannelAffinitySkipRetry  = "channel_affinity_skip_retry_on_failure"
 
-	channelAffinityCacheNamespace           = "uter:channel_affinity:v1"
-	channelAffinityUsageCacheStatsNamespace = "uter:channel_affinity_usage_cache_stats:v1"
+	channelAffinityCacheNamespace           = "new-api:channel_affinity:v1"
+	channelAffinityUsageCacheStatsNamespace = "new-api:channel_affinity_usage_cache_stats:v1"
 )
 
 var (
@@ -146,7 +144,7 @@ func GetChannelAffinityCacheStats() ChannelAffinityCacheStats {
 
 	keys, err := cache.Keys()
 	if err != nil {
-		common.SysError(fmt.Sprintf("channel affinity cache list keys failed: err=%v", err))
+		common.SysError(common.LogText("channel affinity cache list keys failed: err=%v", err))
 		keys = nil
 	}
 	total := len(keys)
@@ -202,12 +200,12 @@ func ClearChannelAffinityCacheAll() int {
 	cache := getChannelAffinityCache()
 	keys, err := cache.Keys()
 	if err != nil {
-		common.SysError(fmt.Sprintf("channel affinity cache list keys failed: err=%v", err))
+		common.SysError(common.LogText("channel affinity cache list keys failed: err=%v", err))
 		keys = nil
 	}
 	if len(keys) > 0 {
 		if _, err := cache.DeleteMany(keys); err != nil {
-			common.SysError(fmt.Sprintf("channel affinity cache delete many failed: err=%v", err))
+			common.SysError(common.LogText("channel affinity cache delete many failed: err=%v", err))
 		}
 	}
 	return len(keys)
@@ -216,12 +214,12 @@ func ClearChannelAffinityCacheAll() int {
 func ClearChannelAffinityCacheByRuleName(ruleName string) (int, error) {
 	ruleName = strings.TrimSpace(ruleName)
 	if ruleName == "" {
-		return 0, fmt.Errorf("rule_name 不能为空")
+		return 0, common.NewMessage("rule_name cannot be empty")
 	}
 
 	setting := operation_setting.GetChannelAffinitySetting()
 	if setting == nil {
-		return 0, fmt.Errorf("channel_affinity_setting 未初始化")
+		return 0, common.NewMessage("Channel affinity settings are not initialized")
 	}
 
 	var matchedRule *operation_setting.ChannelAffinityRule
@@ -234,10 +232,10 @@ func ClearChannelAffinityCacheByRuleName(ruleName string) (int, error) {
 		break
 	}
 	if matchedRule == nil {
-		return 0, fmt.Errorf("未知规则名称")
+		return 0, common.NewMessage("Unknown rule name")
 	}
 	if !matchedRule.IncludeRuleName {
-		return 0, fmt.Errorf("该规则未启用 include_rule_name，无法按规则清空缓存")
+		return 0, common.NewMessage("This rule does not have include_rule_name enabled, so its cache cannot be cleared by rule")
 	}
 
 	cache := getChannelAffinityCache()
@@ -446,6 +444,35 @@ func cloneStringAnyMap(src map[string]any) map[string]any {
 	return dst
 }
 
+func mergeChannelOverride(base map[string]any, tpl map[string]any) map[string]any {
+	if len(base) == 0 && len(tpl) == 0 {
+		return map[string]any{}
+	}
+	if len(tpl) == 0 {
+		return base
+	}
+	out := cloneStringAnyMap(base)
+	for k, v := range tpl {
+		if strings.EqualFold(strings.TrimSpace(k), "operations") {
+			baseOps, hasBaseOps := extractParamOperations(out[k])
+			tplOps, hasTplOps := extractParamOperations(v)
+			if hasTplOps {
+				if hasBaseOps {
+					out[k] = append(tplOps, baseOps...)
+				} else {
+					out[k] = tplOps
+				}
+				continue
+			}
+		}
+		if _, exists := out[k]; exists {
+			continue
+		}
+		out[k] = v
+	}
+	return out
+}
+
 func extractParamOperations(value any) ([]any, bool) {
 	switch ops := value.(type) {
 	case []any:
@@ -514,43 +541,14 @@ func ApplyChannelAffinityOverrideTemplate(c *gin.Context, paramOverride map[stri
 		return paramOverride, false
 	}
 
-	var mergedParam map[string]any
-	{
-		base := paramOverride
-		tpl := meta.ParamTemplate
-		if len(base) == 0 && len(tpl) == 0 {
-			mergedParam = map[string]any{}
-		} else if len(tpl) == 0 {
-			mergedParam = base
-		} else {
-			out := cloneStringAnyMap(base)
-			for k, v := range tpl {
-				if strings.EqualFold(strings.TrimSpace(k), "operations") {
-					baseOps, hasBaseOps := extractParamOperations(out[k])
-					tplOps, hasTplOps := extractParamOperations(v)
-					if hasTplOps {
-						if hasBaseOps {
-							out[k] = append(tplOps, baseOps...)
-						} else {
-							out[k] = tplOps
-						}
-						continue
-					}
-				}
-				if _, exists := out[k]; exists {
-					continue
-				}
-				out[k] = v
-			}
-			mergedParam = out
-		}
-	}
+	mergedParam := mergeChannelOverride(paramOverride, meta.ParamTemplate)
 	appendChannelAffinityTemplateAdminInfo(c, meta)
 	return mergedParam, true
 }
 
 func GetPreferredChannelByAffinity(c *gin.Context, modelName string, usingGroup string) (int, bool) {
 	setting := operation_setting.GetChannelAffinitySetting()
+	state := RequestPolicy(c)
 	if setting == nil || !setting.Enabled {
 		return 0, false
 	}
@@ -595,11 +593,13 @@ func GetPreferredChannelByAffinity(c *gin.Context, modelName string, usingGroup 
 		}
 		cacheKeySuffix := buildChannelAffinityCacheKeySuffix(rule, modelName, usingGroup, affinityValue)
 		cacheKeyFull := channelAffinityCacheNamespace + ":" + cacheKeySuffix
+		state.SessionMode, state.SessionModeSource = EffectiveSessionMode(setting, rule)
+		state.RuleName = rule.Name
 		setChannelAffinityContext(c, channelAffinityMeta{
 			CacheKey:       cacheKeyFull,
 			TTLSeconds:     ttlSeconds,
 			RuleName:       rule.Name,
-			SkipRetry:      rule.SkipRetryOnFailure,
+			SkipRetry:      state.SessionMode == "strict",
 			ParamTemplate:  cloneStringAnyMap(rule.ParamOverrideTemplate),
 			KeySourceType:  strings.TrimSpace(usedSource.Type),
 			KeySourceKey:   strings.TrimSpace(usedSource.Key),
@@ -611,10 +611,14 @@ func GetPreferredChannelByAffinity(c *gin.Context, modelName string, usingGroup 
 			RequestPath:    path,
 		})
 
+		state.AddEvent(PolicyEvent{Decision: PolicyDecision{Action: "match", Reason: "session_rule_matched", Source: "session_rule"}})
+		if state.SessionMode == "off" {
+			return 0, false
+		}
 		cache := getChannelAffinityCache()
 		channelID, found, err := cache.Get(cacheKeySuffix)
 		if err != nil {
-			common.SysError(fmt.Sprintf("channel affinity cache get failed: key=%s, err=%v", cacheKeyFull, err))
+			common.SysError(common.LogText("channel affinity cache get failed: key=%s, err=%v", cacheKeyFull, err))
 			return 0, false
 		}
 		if found {
@@ -655,7 +659,7 @@ func ClearCurrentChannelAffinityCache(c *gin.Context) bool {
 	cache := getChannelAffinityCache()
 	deleted, err := cache.DeleteMany([]string{cacheKey})
 	if err != nil {
-		common.SysError(fmt.Sprintf("channel affinity cache delete current failed: err=%v", err))
+		common.SysError(common.LogText("channel affinity cache delete current failed: err=%v", err))
 		return false
 	}
 	c.Set(ginKeyChannelAffinitySkipRetry, false)
@@ -709,6 +713,13 @@ func AppendChannelAffinityAdminInfo(c *gin.Context, other *model.LogOther) {
 	if !ok || anyInfo == nil {
 		return
 	}
+	// The hint can be the whole session value for short keys; logs keep only
+	// the fingerprint.
+	if info, ok := anyInfo.(map[string]any); ok {
+		sanitized := cloneStringAnyMap(info)
+		delete(sanitized, "key_hint")
+		anyInfo = sanitized
+	}
 	other.SetAdmin("channel_affinity", anyInfo)
 }
 
@@ -717,6 +728,9 @@ func RecordChannelAffinity(c *gin.Context, channelID int) {
 		return
 	}
 	setting := operation_setting.GetChannelAffinitySetting()
+	if RequestPolicy(c).SessionMode == "off" {
+		return
+	}
 	if setting == nil || !setting.Enabled {
 		return
 	}
@@ -737,7 +751,7 @@ func RecordChannelAffinity(c *gin.Context, channelID int) {
 	}
 	cache := getChannelAffinityCache()
 	if err := cache.SetWithTTL(cacheKey, channelID, time.Duration(ttlSeconds)*time.Second); err != nil {
-		common.SysError(fmt.Sprintf("channel affinity cache set failed: key=%s, err=%v", cacheKey, err))
+		common.SysError(common.LogText("channel affinity cache set failed: key=%s, err=%v", cacheKey, err))
 	}
 }
 
@@ -864,24 +878,7 @@ func observeChannelAffinityUsageCache(statsCtx ChannelAffinityStatsContext, usag
 		}
 	}
 	next.Total++
-	var hit bool
-	var cachedTokens int64
-	var promptCacheHitTokens int64
-	if usage != nil {
-		cached := int64(0)
-		if usage.PromptTokensDetails.CachedTokens > 0 {
-			cached = int64(usage.PromptTokensDetails.CachedTokens)
-		} else if usage.InputTokensDetails != nil && usage.InputTokensDetails.CachedTokens > 0 {
-			cached = int64(usage.InputTokensDetails.CachedTokens)
-		}
-		pcht := int64(0)
-		if usage.PromptCacheHitTokens > 0 {
-			pcht = int64(usage.PromptCacheHitTokens)
-		}
-		hit = cached > 0 || pcht > 0
-		cachedTokens = cached
-		promptCacheHitTokens = pcht
-	}
+	hit, cachedTokens, promptCacheHitTokens := usageCacheSignals(usage)
 	if hit {
 		next.Hit++
 	}
@@ -927,6 +924,24 @@ func channelAffinityUsageCacheEntryKey(ruleName, usingGroup, keyFp string) strin
 		return ""
 	}
 	return ruleName + "\n" + usingGroup + "\n" + keyFp
+}
+
+func usageCacheSignals(usage *dto.Usage) (hit bool, cachedTokens int64, promptCacheHitTokens int64) {
+	if usage == nil {
+		return false, 0, 0
+	}
+
+	cached := int64(0)
+	if usage.PromptTokensDetails.CachedTokens > 0 {
+		cached = int64(usage.PromptTokensDetails.CachedTokens)
+	} else if usage.InputTokensDetails != nil && usage.InputTokensDetails.CachedTokens > 0 {
+		cached = int64(usage.InputTokensDetails.CachedTokens)
+	}
+	pcht := int64(0)
+	if usage.PromptCacheHitTokens > 0 {
+		pcht = int64(usage.PromptCacheHitTokens)
+	}
+	return cached > 0 || pcht > 0, cached, pcht
 }
 
 func usagePromptTokens(usage *dto.Usage) int {

@@ -12,7 +12,6 @@ import (
 	"strings"
 
 	"github.com/uter-ai/uter/common"
-
 	"github.com/uter-ai/uter/logger"
 	"github.com/uter-ai/uter/relaykit/types"
 
@@ -24,19 +23,19 @@ import (
 func GetFileTypeFromUrl(c *gin.Context, url string, reason ...string) (string, error) {
 	response, err := DoDownloadRequest(url, []string{"get_mime_type", strings.Join(reason, ", ")}...)
 	if err != nil {
-		common.SysLog(fmt.Sprintf("fail to get file type from url: %s, error: %s", url, err.Error()))
+		common.SysLog(common.LogText("fail to get file type from url: %s, error: %s", url, err.Error()))
 		return "", err
 	}
 	defer response.Body.Close()
 
 	if response.StatusCode != 200 {
-		logger.LogError(c, fmt.Sprintf("failed to download file from %s, status code: %d", url, response.StatusCode))
+		logger.LogError(c, common.LogText("failed to download file from %s, status code: %d", url, response.StatusCode))
 		return "", fmt.Errorf("failed to download file, status code: %d", response.StatusCode)
 	}
 
 	if headerType := strings.TrimSpace(response.Header.Get("Content-Type")); headerType != "" {
-		if before, _, found := strings.Cut(headerType, ";"); found {
-			headerType = before
+		if i := strings.Index(headerType, ";"); i != -1 {
+			headerType = headerType[:i]
 		}
 		if headerType != "application/octet-stream" {
 			return headerType, nil
@@ -67,8 +66,8 @@ func GetFileTypeFromUrl(c *gin.Context, url string, reason ...string) (string, e
 	}
 
 	cleanedURL := url
-	if before, _, found := strings.Cut(cleanedURL, "?"); found {
-		cleanedURL = before
+	if q := strings.Index(cleanedURL, "?"); q != -1 {
+		cleanedURL = cleanedURL[:q]
 	}
 	if slash := strings.LastIndex(cleanedURL, "/"); slash != -1 && slash+1 < len(cleanedURL) {
 		last := cleanedURL[slash+1:]

@@ -2,13 +2,11 @@ package model
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"strings"
 	"time"
 
 	"github.com/uter-ai/uter/common"
-
 	"github.com/uter-ai/uter/logger"
 	"github.com/uter-ai/uter/types"
 
@@ -58,17 +56,21 @@ func sanitizeClickHouseLikePattern(input string) (string, error) {
 }
 
 type Log struct {
-	Id                int    `json:"id" gorm:"index:idx_created_at_id,priority:2;index:idx_user_id_id,priority:2"`
-	UserId            int    `json:"user_id" gorm:"index;index:idx_user_id_id,priority:1"`
-	CreatedAt         int64  `json:"created_at" gorm:"bigint;index:idx_created_at_id,priority:1;index:idx_created_at_type"`
-	Type              int    `json:"type" gorm:"index:idx_created_at_type"`
-	Content           string `json:"content"`
-	Username          string `json:"username" gorm:"index;index:index_username_model_name,priority:2;default:''"`
-	TokenName         string `json:"token_name" gorm:"index;default:''"`
-	ModelName         string `json:"model_name" gorm:"index;index:index_username_model_name,priority:1;default:''"`
-	Quota             int    `json:"quota" gorm:"default:0"`
-	PromptTokens      int    `json:"prompt_tokens" gorm:"default:0"`
-	CompletionTokens  int    `json:"completion_tokens" gorm:"default:0"`
+	Id               int    `json:"id" gorm:"index:idx_created_at_id,priority:2;index:idx_user_id_id,priority:2"`
+	UserId           int    `json:"user_id" gorm:"index;index:idx_user_id_id,priority:1"`
+	CreatedAt        int64  `json:"created_at" gorm:"bigint;index:idx_created_at_id,priority:1;index:idx_created_at_type"`
+	Type             int    `json:"type" gorm:"index:idx_created_at_type"`
+	Content          string `json:"content"`
+	Username         string `json:"username" gorm:"index;index:index_username_model_name,priority:2;default:''"`
+	TokenName        string `json:"token_name" gorm:"index;default:''"`
+	ModelName        string `json:"model_name" gorm:"index;index:index_username_model_name,priority:1;default:''"`
+	Quota            int    `json:"quota" gorm:"default:0"`
+	PromptTokens     int    `json:"prompt_tokens" gorm:"default:0"`
+	CompletionTokens int    `json:"completion_tokens" gorm:"default:0"`
+	// 缓存 token 已从 other 里的 JSON 提升为独立列：汇总恒显示这两个数，
+	// 单条日志只在 >0 时展示（见 controller 的 FormatAdminLogs）。
+	CacheReadTokens   int    `json:"cache_read_tokens" gorm:"default:0"`
+	CacheWriteTokens  int    `json:"cache_write_tokens" gorm:"default:0"`
 	UseTime           int    `json:"use_time" gorm:"default:0"`
 	IsStream          bool   `json:"is_stream"`
 	ChannelId         int    `json:"channel" gorm:"index"`
@@ -79,15 +81,6 @@ type Log struct {
 	RequestId         string `json:"request_id,omitempty" gorm:"type:varchar(64);index:idx_logs_request_id;default:''"`
 	UpstreamRequestId string `json:"upstream_request_id,omitempty" gorm:"type:varchar(128);index:idx_logs_upstream_request_id;default:''"`
 	Other             string `json:"other"`
-	// CacheReadTokens / CacheWriteTokens 是从 Other 的 JSON 里提升出来的独立列。
-	//
-	// 缓存用量此前只存在于 other 的 JSON 文本中，SQL 无法直接聚合
-	// （json_extract 在 MySQL/PostgreSQL 上语法不同，且对非法 JSON 会直接报错），
-	// 所以所有统计接口都拿不到缓存维度，只能看到 quota/rpm/tpm。
-	// 提升为独立列后 SUM() 在三种数据库上都可用。历史行由
-	// backfillLogCacheTokenColumns 回填。
-	CacheReadTokens  int `json:"cache_read_tokens" gorm:"default:0"`
-	CacheWriteTokens int `json:"cache_write_tokens" gorm:"default:0"`
 }
 
 // don't use iota, avoid change log type value
@@ -108,37 +101,6 @@ func ensureLogRequestId(log *Log) {
 	}
 }
 
-// logWriteAttempts bounds the insert retries for a single log record. The
-// consume/refund logs are the only record of a quota movement that already
-// happened (the charge lands in the main database, the log in LOG_DB, so the
-// two cannot share a transaction), which makes a lost write an accounting
-// divergence rather than a missing audit line.
-const logWriteAttempts = 3
-
-// isMoneyLogType reports whether a log type records a quota movement. These
-// are the ones whose loss breaks the balance/ledger correspondence.
-func isMoneyLogType(logType int) bool {
-	switch logType {
-	case LogTypeConsume, LogTypeRefund, LogTypeTopup:
-		return true
-	default:
-		return false
-	}
-}
-
-// reportLogWriteFailure escalates a write that failed on every attempt. The
-// record itself supplies the type, so a caller cannot report one type while
-// writing another — passing the type separately is how a consume log ends up
-// downgraded to a plain log line while an error log is escalated as money.
-// Money logs are reported as errors so they surface in the error log (and the
-// admin error view) instead of being buried in the general log stream.
-func reportLogWriteFailure(log *Log, err error) {
-	if isMoneyLogType(log.Type) {
-		common.SysError(fmt.Sprintf("failed to persist quota log (type=%d): %s", log.Type, err.Error()))
-		return
-	}
-	common.SysLog("failed to record log: " + err.Error())
-}
 
 // logAlreadyPersisted reports whether a row with the same (request_id, type)
 // is already in the log store. It is only consulted after an insert failed, to
@@ -158,26 +120,7 @@ func logAlreadyPersisted(log *Log) bool {
 
 func createLog(log *Log) error {
 	ensureLogRequestId(log)
-	var err error
-	for attempt := range logWriteAttempts {
-		if createErr := LOG_DB.Create(log).Error; createErr == nil {
-			return nil
-		} else {
-			err = createErr
-		}
-		if attempt == logWriteAttempts-1 {
-			break
-		}
-		if logAlreadyPersisted(log) {
-			common.SysLog("log insert returned an error but the record is already stored, treating as written: " + err.Error())
-			return nil
-		}
-		// A failed insert can still have allocated the primary key; clear it so
-		// the retry is a fresh insert rather than a duplicate-key collision.
-		log.Id = 0
-		time.Sleep(time.Duration(50*(attempt+1)) * time.Millisecond)
-	}
-	return err
+	return LOG_DB.Create(log).Error
 }
 
 func clickHouseLogOrder(prefix string) string {
@@ -224,21 +167,23 @@ func GetLogByTokenId(tokenId int) (logs []*Log, err error) {
 	return logs, err
 }
 
-func RecordLog(userId int, logType int, content string) {
+func RecordLog(userId int, logType int, content *common.Message) {
 	if logType == LogTypeConsume && !common.LogConsumeEnabled {
 		return
 	}
 	username, _ := GetUsernameById(userId, false)
+	other := NewLogOther()
 	log := &Log{
 		UserId:    userId,
 		Username:  username,
 		CreatedAt: common.GetTimestamp(),
 		Type:      logType,
-		Content:   content,
+		Content:   other.setContent([]*common.Message{content}),
+		Other:     other.JSONString(),
 	}
 	err := createLog(log)
 	if err != nil {
-		reportLogWriteFailure(log, err)
+		common.SysLog(common.LogText("failed to record log: %s", err.Error()))
 	}
 }
 
@@ -274,13 +219,13 @@ func RecordLogWithAdminInfo(userId int, logType int, content string, adminInfo *
 	if adminInfo != nil || operation != nil {
 		data, err := common.Marshal(AuditOther{AdminInfo: adminInfo, Op: operation})
 		if err != nil {
-			common.SysError("failed to encode log admin info: " + err.Error())
+			common.SysError(common.LogText("failed to encode log admin info: %s", err.Error()))
 			return
 		}
 		log.Other = string(data)
 	}
 	if err := createLog(log); err != nil {
-		reportLogWriteFailure(log, err)
+		common.SysLog(common.LogText("failed to record log: %s", err.Error()))
 	}
 }
 
@@ -326,7 +271,7 @@ func RecordOperationAuditLog(logUserId, actorRole int, content string, ip string
 	RecordAuditLog(c, AuditLog{UserId: logUserId, Username: username, ActorRole: actorRole, Category: category, Action: action, Content: content, Ip: ip, Status: status, Success: success, Other: other})
 }
 
-func RecordTopupLog(userId int, content string, callerIp string, paymentMethod string, callbackPaymentMethod string) {
+func RecordTopupLog(userId int, content *common.Message, callerIp string, paymentMethod string, callbackPaymentMethod string) {
 	username, _ := GetUsernameById(userId, false)
 	other := NewLogOther()
 	other.MergeAdmin(map[string]any{
@@ -342,19 +287,19 @@ func RecordTopupLog(userId int, content string, callerIp string, paymentMethod s
 		Username:  username,
 		CreatedAt: common.GetTimestamp(),
 		Type:      LogTypeTopup,
-		Content:   content,
+		Content:   other.setContent([]*common.Message{content}),
 		Ip:        callerIp,
 		Other:     other.JSONString(),
 	}
 	err := createLog(log)
 	if err != nil {
-		reportLogWriteFailure(log, err)
+		common.SysLog(common.LogText("failed to record topup log: %s", err.Error()))
 	}
 }
 
 func RecordErrorLog(c *gin.Context, userId int, channelId int, modelName string, tokenName string, content string, tokenId int, useTimeSeconds int,
 	isStream bool, group string, other *LogOther) {
-	logger.LogInfo(c, fmt.Sprintf("record error log: userId=%d, channelId=%d, modelName=%s, tokenName=%s, content=%s", userId, channelId, modelName, tokenName, common.LocalLogPreview(content)))
+	logger.LogInfo(c, common.LogText("record error log: userId=%d, channelId=%d, modelName=%s, tokenName=%s, content=%s", userId, channelId, modelName, tokenName, common.LocalLogPreview(content)))
 	username := c.GetString("username")
 	requestId := c.GetString(common.RequestIdKey)
 	upstreamRequestId := c.GetString(common.UpstreamRequestIdKey)
@@ -394,43 +339,37 @@ func RecordErrorLog(c *gin.Context, userId int, channelId int, modelName string,
 	}
 	err := createLog(log)
 	if err != nil {
-		logger.LogError(c, "failed to record log: "+err.Error())
-		reportLogWriteFailure(log, err)
+		logger.LogError(c, common.LogText("failed to record log: %s", err.Error()))
 	}
 }
 
 type RecordConsumeLogParams struct {
-	ChannelId        int       `json:"channel_id"`
-	PromptTokens     int       `json:"prompt_tokens"`
-	CompletionTokens int       `json:"completion_tokens"`
-	ModelName        string    `json:"model_name"`
-	TokenName        string    `json:"token_name"`
-	Quota            int       `json:"quota"`
-	Content          string    `json:"content"`
-	TokenId          int       `json:"token_id"`
-	UseTimeSeconds   int       `json:"use_time_seconds"`
-	IsStream         bool      `json:"is_stream"`
-	Group            string    `json:"group"`
-	Other            *LogOther `json:"other"`
-	CacheReadTokens  int       `json:"cache_read_tokens"`
-	CacheWriteTokens int       `json:"cache_write_tokens"`
+	ChannelId        int               `json:"channel_id"`
+	PromptTokens     int               `json:"prompt_tokens"`
+	CompletionTokens int               `json:"completion_tokens"`
+	ModelName        string            `json:"model_name"`
+	TokenName        string            `json:"token_name"`
+	Quota            int               `json:"quota"`
+	Content          []*common.Message `json:"content"`
+	TokenId          int               `json:"token_id"`
+	UseTimeSeconds   int               `json:"use_time_seconds"`
+	IsStream         bool              `json:"is_stream"`
+	Group            string            `json:"group"`
+	Other            *LogOther         `json:"other"`
 }
 
 func RecordConsumeLog(c *gin.Context, userId int, params RecordConsumeLogParams) {
 	if !common.LogConsumeEnabled {
 		return
 	}
-	// 原来这里无条件 LogInfo 打印整份 params（含 Content 全文 + Other 15+ 字段的
-	// JSON 序列化），每个请求因此多一次全量 Marshal + 一次全量写盘，且没有 debug 门控。
-	// 排障需要参数时用 LogDebug，它自带 common.DebugEnabled 门控。
-	if common.DebugEnabled {
-		logger.LogDebug(c, "record consume log: userId=%d, params=%s", userId, common.GetJsonString(params))
-	}
+	logger.LogInfo(c, common.LogText("record consume log: userId=%d, params=%s", userId, common.GetJsonString(params)))
 	username := c.GetString("username")
 	requestId := c.GetString(common.RequestIdKey)
 	upstreamRequestId := c.GetString(common.UpstreamRequestIdKey)
 	createdAt := common.GetTimestamp()
-	otherStr := params.Other.JSONString()
+	other := params.Other
+	content := other.setContent(params.Content)
+	otherStr := other.JSONString()
 	// 判断是否需要记录 IP
 	needRecordIp := false
 	if settingMap, err := GetUserSetting(userId, false); err == nil {
@@ -443,7 +382,7 @@ func RecordConsumeLog(c *gin.Context, userId int, params RecordConsumeLogParams)
 		Username:         username,
 		CreatedAt:        createdAt,
 		Type:             LogTypeConsume,
-		Content:          params.Content,
+		Content:          content,
 		PromptTokens:     params.PromptTokens,
 		CompletionTokens: params.CompletionTokens,
 		TokenName:        params.TokenName,
@@ -463,16 +402,10 @@ func RecordConsumeLog(c *gin.Context, userId int, params RecordConsumeLogParams)
 		RequestId:         requestId,
 		UpstreamRequestId: upstreamRequestId,
 		Other:             otherStr,
-		CacheReadTokens:   params.CacheReadTokens,
-		CacheWriteTokens:  params.CacheWriteTokens,
 	}
-	// 走批量写（group commit）：并发请求的写入被合并成一次批量 INSERT，
-	// 重试与 sleep 由整组共享，而不是每个请求各付一遍。队列满时 submitLogWrite
-	// 会退回同步写，绝不丢日志。
-	err := submitLogWrite(log)
+	err := createLog(log)
 	if err != nil {
-		logger.LogError(c, "failed to record log: "+err.Error())
-		reportLogWriteFailure(log, err)
+		logger.LogError(c, common.LogText("failed to record log: %s", err.Error()))
 	}
 	if common.DataExportEnabled {
 		LogQuotaData(QuotaDataLogParams{
@@ -493,7 +426,7 @@ func RecordConsumeLog(c *gin.Context, userId int, params RecordConsumeLogParams)
 type RecordTaskBillingLogParams struct {
 	UserId    int
 	LogType   int
-	Content   string
+	Content   []*common.Message
 	ChannelId int
 	ModelName string
 	Quota     int
@@ -515,23 +448,24 @@ func RecordTaskBillingLog(params RecordTaskBillingLogParams) {
 		}
 	}
 	createdAt := common.GetTimestamp()
+	other := params.Other
 	log := &Log{
 		UserId:    params.UserId,
 		Username:  username,
 		CreatedAt: createdAt,
 		Type:      params.LogType,
-		Content:   params.Content,
+		Content:   other.setContent(params.Content),
 		TokenName: tokenName,
 		ModelName: params.ModelName,
 		Quota:     params.Quota,
 		ChannelId: params.ChannelId,
 		TokenId:   params.TokenId,
 		Group:     params.Group,
-		Other:     params.Other.JSONString(),
+		Other:     other.JSONString(),
 	}
 	err := createLog(log)
 	if err != nil {
-		reportLogWriteFailure(log, err)
+		common.SysLog(common.LogText("failed to record task billing log: %s", err.Error()))
 	}
 	if params.LogType == LogTypeConsume && common.DataExportEnabled {
 		nodeName := params.NodeName
@@ -552,51 +486,73 @@ func RecordTaskBillingLog(params RecordTaskBillingLogParams) {
 	}
 }
 
-func GetAllLogs(logType int, startTimestamp int64, endTimestamp int64, modelName string, username string, tokenName string, startIdx int, num int, channel int, group string, requestId string, upstreamRequestId string, orgUsernames []string, userIds ...int) (logs []*Log, total int64, err error) {
-	var tx *gorm.DB
-	if logType == LogTypeUnknown {
-		tx = LOG_DB
-	} else {
-		tx = LOG_DB.Where("logs.type = ?", logType)
-	}
+// LogFilter is the usage-log search shared by the log list and the log export.
+// Username and Channel are administrator filters.
+type LogFilter struct {
+	Type              int
+	StartTimestamp    int64
+	EndTimestamp      int64
+	ModelName         string
+	Username          string
+	TokenName         string
+	Channel           int
+	Group             string
+	RequestId         string
+	UpstreamRequestId string
+	// ScopedUsernames / ScopedUserIds 是 Uter 的组织隔离过滤：组织管理者只能看到
+	// 本组织成员的日志（orgLogUsernames 给出用户名集合，user_id 是可选的更精确过滤）。
+	// 两者同时为空表示不施加范围过滤（平台管理员视角）。
+	ScopedUsernames []string
+	ScopedUserIds   []int
+}
 
-	if tx, err = applyExplicitLogTextFilter(tx, "logs.model_name", modelName); err != nil {
+func (f LogFilter) apply(tx *gorm.DB) (*gorm.DB, error) {
+	var err error
+	if f.Type != LogTypeUnknown {
+		tx = tx.Where("logs.type = ?", f.Type)
+	}
+	if tx, err = applyExplicitLogTextFilter(tx, "logs.model_name", f.ModelName); err != nil {
+		return nil, err
+	}
+	if tx, err = applyExplicitLogTextFilter(tx, "logs.username", f.Username); err != nil {
+		return nil, err
+	}
+	if f.TokenName != "" {
+		tx = tx.Where("logs.token_name = ?", f.TokenName)
+	}
+	if f.RequestId != "" {
+		tx = tx.Where("logs.request_id = ?", f.RequestId)
+	}
+	if f.UpstreamRequestId != "" {
+		tx = tx.Where("logs.upstream_request_id = ?", f.UpstreamRequestId)
+	}
+	if f.StartTimestamp != 0 {
+		tx = tx.Where("logs.created_at >= ?", f.StartTimestamp)
+	}
+	if f.EndTimestamp != 0 {
+		tx = tx.Where("logs.created_at <= ?", f.EndTimestamp)
+	}
+	if f.Channel != 0 {
+		tx = tx.Where("logs.channel_id = ?", f.Channel)
+	}
+	if f.Group != "" {
+		tx = tx.Where("logs."+logGroupCol+" = ?", f.Group)
+	}
+	if len(f.ScopedUsernames) > 0 {
+		tx = tx.Where("logs.username IN ?", f.ScopedUsernames)
+	}
+	if len(f.ScopedUserIds) > 0 {
+		tx = tx.Where("logs.user_id IN ?", f.ScopedUserIds)
+	}
+	return tx, nil
+}
+
+func GetAllLogs(filter LogFilter, startIdx int, num int) (logs []*Log, total int64, err error) {
+	tx, err := filter.apply(LOG_DB)
+	if err != nil {
 		return nil, 0, err
 	}
-	if tx, err = applyExplicitLogTextFilter(tx, "logs.username", username); err != nil {
-		return nil, 0, err
-	}
-	if tokenName != "" {
-		tx = tx.Where("logs.token_name = ?", tokenName)
-	}
-	if requestId != "" {
-		tx = tx.Where("logs.request_id = ?", requestId)
-	}
-	if upstreamRequestId != "" {
-		tx = tx.Where("logs.upstream_request_id = ?", upstreamRequestId)
-	}
-	if startTimestamp != 0 {
-		tx = tx.Where("logs.created_at >= ?", startTimestamp)
-	}
-	if endTimestamp != 0 {
-		tx = tx.Where("logs.created_at <= ?", endTimestamp)
-	}
-	if channel != 0 {
-		tx = tx.Where("logs.channel_id = ?", channel)
-	}
-	if group != "" {
-		tx = tx.Where("logs."+logGroupCol+" = ?", group)
-	}
-	if len(orgUsernames) > 0 {
-		tx = tx.Where("logs.username IN ?", orgUsernames)
-	}
-	if len(userIds) > 0 {
-		tx = tx.Where("logs.user_id IN ?", userIds)
-	}
-	// 与 GetUserLogs 对齐加硬上限：logs 是全站写入量最大的表，管理端不传
-	// 时间范围时 COUNT 就是一次无边界全表扫描。这里只截断 total，不改返回
-	// 结构与字段，前端读到的仍是「总条数」（上限内精确，超出即为 10000）。
-	err = tx.Model(&Log{}).Limit(logSearchCountLimit).Count(&total).Error
+	err = tx.Model(&Log{}).Count(&total).Error
 	if err != nil {
 		return nil, 0, err
 	}
@@ -657,39 +613,15 @@ func GetAllLogs(logType int, startTimestamp int64, endTimestamp int64, modelName
 
 const logSearchCountLimit = 10000
 
-func GetUserLogs(userId int, logType int, startTimestamp int64, endTimestamp int64, modelName string, tokenName string, startIdx int, num int, group string, requestId string, upstreamRequestId string) (logs []*Log, total int64, err error) {
-	var tx *gorm.DB
-	if logType == LogTypeUnknown {
-		tx = LOG_DB.Where("logs.user_id = ?", userId)
-	} else {
-		tx = LOG_DB.Where("logs.user_id = ? and logs.type = ?", userId, logType)
-	}
-
-	if tx, err = applyExplicitLogTextFilter(tx, "logs.model_name", modelName); err != nil {
+func GetUserLogs(userId int, filter LogFilter, startIdx int, num int) (logs []*Log, total int64, err error) {
+	tx, err := filter.apply(LOG_DB.Where("logs.user_id = ?", userId))
+	if err != nil {
 		return nil, 0, err
-	}
-	if tokenName != "" {
-		tx = tx.Where("logs.token_name = ?", tokenName)
-	}
-	if requestId != "" {
-		tx = tx.Where("logs.request_id = ?", requestId)
-	}
-	if upstreamRequestId != "" {
-		tx = tx.Where("logs.upstream_request_id = ?", upstreamRequestId)
-	}
-	if startTimestamp != 0 {
-		tx = tx.Where("logs.created_at >= ?", startTimestamp)
-	}
-	if endTimestamp != 0 {
-		tx = tx.Where("logs.created_at <= ?", endTimestamp)
-	}
-	if group != "" {
-		tx = tx.Where("logs."+logGroupCol+" = ?", group)
 	}
 	err = tx.Model(&Log{}).Limit(logSearchCountLimit).Count(&total).Error
 	if err != nil {
-		common.SysError("failed to count user logs: " + err.Error())
-		return nil, 0, errors.New("查询日志失败")
+		common.SysError(common.LogText("failed to count user logs: %s", err.Error()))
+		return nil, 0, common.NewMessage("Failed to query logs")
 	}
 	order := "logs.id desc"
 	if common.UsingLogDatabase(common.DatabaseTypeClickHouse) {
@@ -697,31 +629,91 @@ func GetUserLogs(userId int, logType int, startTimestamp int64, endTimestamp int
 	}
 	err = tx.Order(order).Limit(num).Offset(startIdx).Find(&logs).Error
 	if err != nil {
-		common.SysError("failed to search user logs: " + err.Error())
-		return nil, 0, errors.New("查询日志失败")
+		common.SysError(common.LogText("failed to search user logs: %s", err.Error()))
+		return nil, 0, common.NewMessage("Failed to query logs")
 	}
 
 	formatUserLogs(logs, startIdx)
 	return logs, total, err
 }
 
-type Stat struct {
-	Quota int `json:"quota"`
-	Rpm   int `json:"rpm"`
-	Tpm   int `json:"tpm"`
-	// CacheReadTokens / CacheWriteTokens 是筛选区间内缓存命中/写入的 token 总量。
-	// 只在后台确实产生过缓存用量时才需要展示，故用 omitempty 让前端以「无数据」
-	// 而非「0」来判断是否渲染。
-	CacheReadTokens  int `json:"cache_read_tokens,omitempty"`
-	CacheWriteTokens int `json:"cache_write_tokens,omitempty"`
+// StreamAllLogs calls fn with each log matching filter, newest first, as an
+// administrator with role sees it. Rows are read one at a time, so an export
+// never holds the whole result in memory.
+func StreamAllLogs(ctx context.Context, filter LogFilter, role int, fn func(*Log) error) error {
+	tx, err := filter.apply(LOG_DB.WithContext(ctx))
+	if err != nil {
+		return err
+	}
+	visibility := logOtherVisibilityAdmin
+	if role >= common.RoleRootUser {
+		visibility = logOtherVisibilityRoot
+	}
+	channelNames := make(map[int]string)
+	return streamLogs(tx, "logs.created_at desc, logs.id desc", func(log *Log) error {
+		if log.ChannelId != 0 {
+			name, ok := channelNames[log.ChannelId]
+			if !ok {
+				if channel, err := CacheGetChannel(log.ChannelId); err == nil {
+					name = channel.Name
+				}
+				channelNames[log.ChannelId] = name
+			}
+			log.ChannelName = name
+		}
+		log.Other = formatLogOtherJSON(log.Other, visibility)
+		return fn(log)
+	})
 }
 
-// SumUsedQuota 统计消费类日志的额度 / RPM / TPM / 缓存用量。
-//
-// orgUsernames 是组织/部门范围（nil 表示平台视角，不施加过滤）；
-// userIds 是调用方显式指定的「用户维度」过滤，最终结果与范围过滤取交集，
-// 因此越权传入范围外的用户 id 只会得到空集，不会泄漏数据。
-func SumUsedQuota(logType int, startTimestamp int64, endTimestamp int64, modelName string, username string, tokenName string, channel int, group string, orgUsernames []string, userIds ...int) (stat Stat, err error) {
+// StreamUserLogs is StreamAllLogs for one user's own logs, shaped like the
+// user log list.
+func StreamUserLogs(ctx context.Context, userId int, filter LogFilter, fn func(*Log) error) error {
+	tx, err := filter.apply(LOG_DB.WithContext(ctx).Where("logs.user_id = ?", userId))
+	if err != nil {
+		return err
+	}
+	count := 0
+	return streamLogs(tx, "logs.id desc", func(log *Log) error {
+		count++
+		log.Id = count
+		log.ChannelName = ""
+		log.Other = formatLogOtherJSON(log.Other, logOtherVisibilityUser)
+		return fn(log)
+	})
+}
+
+func streamLogs(tx *gorm.DB, order string, fn func(*Log) error) error {
+	if common.UsingLogDatabase(common.DatabaseTypeClickHouse) {
+		order = clickHouseLogOrder("logs.")
+	}
+	rows, err := tx.Model(&Log{}).Order(order).Rows()
+	if err != nil {
+		return err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var log Log
+		if err := LOG_DB.ScanRows(rows, &log); err != nil {
+			return err
+		}
+		if err := fn(&log); err != nil {
+			return err
+		}
+	}
+	return rows.Err()
+}
+
+type Stat struct {
+	Quota int `json:"quota"`
+	// 缓存 token 汇总：与 logs 表的独立列同名，恒返回（为 0 表示该时段无缓存命中）。
+	CacheReadTokens  int `json:"cache_read_tokens,omitempty"`
+	CacheWriteTokens int `json:"cache_write_tokens,omitempty"`
+	Rpm              int `json:"rpm"`
+	Tpm              int `json:"tpm"`
+}
+
+func SumUsedQuota(logType int, startTimestamp int64, endTimestamp int64, modelName string, username string, tokenName string, channel int, group string, scopedUsernames []string, scopedUserIds ...int) (stat Stat, err error) {
 	tx := LOG_DB.Table("logs").Select(
 		"COALESCE(sum(quota), 0) quota, " +
 			"COALESCE(sum(cache_read_tokens), 0) cache_read_tokens, " +
@@ -760,13 +752,13 @@ func SumUsedQuota(logType int, startTimestamp int64, endTimestamp int64, modelNa
 		tx = tx.Where(logGroupCol+" = ?", group)
 		rpmTpmQuery = rpmTpmQuery.Where(logGroupCol+" = ?", group)
 	}
-	if len(orgUsernames) > 0 {
-		tx = tx.Where("username IN ?", orgUsernames)
-		rpmTpmQuery = rpmTpmQuery.Where("username IN ?", orgUsernames)
+	if len(scopedUsernames) > 0 {
+		tx = tx.Where("username IN ?", scopedUsernames)
+		rpmTpmQuery = rpmTpmQuery.Where("username IN ?", scopedUsernames)
 	}
-	if len(userIds) > 0 {
-		tx = tx.Where("user_id IN ?", userIds)
-		rpmTpmQuery = rpmTpmQuery.Where("user_id IN ?", userIds)
+	if len(scopedUserIds) > 0 {
+		tx = tx.Where("user_id IN ?", scopedUserIds)
+		rpmTpmQuery = rpmTpmQuery.Where("user_id IN ?", scopedUserIds)
 	}
 
 	tx = tx.Where("type = ?", LogTypeConsume)
@@ -777,16 +769,16 @@ func SumUsedQuota(logType int, startTimestamp int64, endTimestamp int64, modelNa
 
 	// 执行查询
 	if err := tx.Scan(&stat).Error; err != nil {
-		common.SysError("failed to query log stat: " + err.Error())
-		return stat, errors.New("查询统计数据失败")
+		common.SysError(common.LogText("failed to query log stat: %s", err.Error()))
+		return stat, common.NewMessage("Failed to query statistics")
 	}
 	var rateStat struct {
 		Rpm int
 		Tpm int
 	}
 	if err := rpmTpmQuery.Scan(&rateStat).Error; err != nil {
-		common.SysError("failed to query rpm/tpm stat: " + err.Error())
-		return stat, errors.New("查询统计数据失败")
+		common.SysError(common.LogText("failed to query rpm/tpm stat: %s", err.Error()))
+		return stat, common.NewMessage("Failed to query statistics")
 	}
 	stat.Rpm = rateStat.Rpm
 	stat.Tpm = rateStat.Tpm
@@ -857,4 +849,21 @@ func DeleteOldLogBatch(ctx context.Context, targetTimestamp int64, limit int) (i
 		return 0, result.Error
 	}
 	return result.RowsAffected, nil
+}
+
+func reportLogWriteFailure(log *Log, err error) {
+	if isMoneyLogType(log.Type) {
+		common.SysError(fmt.Sprintf("failed to persist quota log (type=%d): %s", log.Type, err.Error()))
+		return
+	}
+	common.SysLog("failed to record log: " + err.Error())
+}
+
+func isMoneyLogType(logType int) bool {
+	switch logType {
+	case LogTypeConsume, LogTypeRefund, LogTypeTopup:
+		return true
+	default:
+		return false
+	}
 }

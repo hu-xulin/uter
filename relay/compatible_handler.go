@@ -12,7 +12,7 @@ import (
 	"github.com/samber/lo"
 	"github.com/uter-ai/uter/constant"
 	"github.com/uter-ai/uter/logger"
-	"github.com/uter-ai/uter/model"
+	"github.com/uter-ai/uter/middleware"
 	relaycommon "github.com/uter-ai/uter/relay/common"
 	relayconstant "github.com/uter-ai/uter/relay/constant"
 	costopt "github.com/uter-ai/uter/relay/costopt"
@@ -77,16 +77,11 @@ func resolveRewrittenModelMapping(c *gin.Context, info *relaycommon.RelayInfo, r
 	return true
 }
 
-// SetupSelectedChannelFunc 由 middleware 包在init 时注入，等价于
-// middleware.SetupContextForSelectedChannel。
+// SetupSelectedChannelFunc 是 middleware.SetupContextForSelectedChannel 的本地短名。
 //
-// 为什么绕这一圈：重选渠道需要写全套渠道上下文（base_url / key / model_mapping /
-// param_override …），那份逻辑在 middleware 包里。而 middleware 的测试文件会 import
-// relay（package middleware 的测试是同包测试），若 relay 反过来 import middleware 就构成
-// 测试期循环依赖（import cycle not allowed in test），编译能过但 go vet 会报错。
-//
-// 真正的依赖方向应该是 relay ← middleware，故这里用函数变量在运行时注入，避免编译期成环。
-var SetupSelectedChannelFunc func(c *gin.Context, channel *model.Channel, modelName string) *types.UterError
+// 依赖方向：relay → middleware（上游 rc.38 的 Responses WebSocket 中继确立了这一方向），
+// 因此不再需要运行时反向注入，直接引用即可。
+var SetupSelectedChannelFunc = middleware.SetupContextForSelectedChannel
 
 // reselectChannelForModel 按给定模型名重新选一次渠道，并把选中渠道写回 gin 上下文，
 // 使后续 DoApiRequest 用上新渠道（base_url / key / model_mapping / param_override 全部刷新）。
@@ -312,7 +307,7 @@ func TextHelper(c *gin.Context, info *relaycommon.RelayInfo) (uterError *types.U
 		var containsAudioRatios = ratio_setting.ContainsAudioRatio(info.OriginModelName) || ratio_setting.ContainsAudioCompletionRatio(info.OriginModelName)
 
 		if containAudioTokens && containsAudioRatios {
-			service.PostAudioConsumeQuota(c, info, usage, "")
+			service.PostAudioConsumeQuota(c, info, usage, nil)
 		} else {
 			service.PostTextConsumeQuota(c, info, usage, nil)
 		}
@@ -444,7 +439,7 @@ func TextHelper(c *gin.Context, info *relaycommon.RelayInfo) (uterError *types.U
 	var containsAudioRatios = ratio_setting.ContainsAudioRatio(info.OriginModelName) || ratio_setting.ContainsAudioCompletionRatio(info.OriginModelName)
 
 	if containAudioTokens && containsAudioRatios {
-		service.PostAudioConsumeQuota(c, info, u, "")
+		service.PostAudioConsumeQuota(c, info, u, nil)
 	} else {
 		service.PostTextConsumeQuota(c, info, u, nil)
 	}

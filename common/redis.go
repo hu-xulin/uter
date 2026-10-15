@@ -24,17 +24,17 @@ func RedisKeyCacheSeconds() int {
 func InitRedisClient() (err error) {
 	if os.Getenv("REDIS_CONN_STRING") == "" {
 		RedisEnabled = false
-		SysLog("REDIS_CONN_STRING not set, Redis is not enabled")
+		SysLog(LogText("REDIS_CONN_STRING not set, Redis is not enabled"))
 		return nil
 	}
 	if os.Getenv("SYNC_FREQUENCY") == "" {
-		SysLog("SYNC_FREQUENCY not set, use default value 60")
+		SysLog(LogText("SYNC_FREQUENCY not set, use default value 60"))
 		SyncFrequency = 60
 	}
-	SysLog("Redis is enabled")
+	SysLog(LogText("Redis is enabled"))
 	opt, err := redis.ParseURL(os.Getenv("REDIS_CONN_STRING"))
 	if err != nil {
-		FatalLog("failed to parse Redis connection string: " + err.Error())
+		FatalLog(LogText("failed to parse Redis connection string: %s", err.Error()))
 	}
 	opt.PoolSize = GetEnvOrDefault("REDIS_POOL_SIZE", 10)
 	RDB = redis.NewClient(opt)
@@ -44,11 +44,11 @@ func InitRedisClient() (err error) {
 
 	_, err = RDB.Ping(ctx).Result()
 	if err != nil {
-		FatalLog("Redis ping test failed: " + err.Error())
+		FatalLog(LogText("Redis ping test failed: %s", err.Error()))
 	}
 	if DebugEnabled {
-		SysLog(fmt.Sprintf("Redis connected to %s", opt.Addr))
-		SysLog(fmt.Sprintf("Redis database: %d", opt.DB))
+		SysLog(LogText("Redis connected to %s", opt.Addr))
+		SysLog(LogText("Redis database: %d", opt.DB))
 	}
 	return err
 }
@@ -56,79 +56,59 @@ func InitRedisClient() (err error) {
 func ParseRedisOption() *redis.Options {
 	opt, err := redis.ParseURL(os.Getenv("REDIS_CONN_STRING"))
 	if err != nil {
-		FatalLog("failed to parse Redis connection string: " + err.Error())
+		FatalLog(LogText("failed to parse Redis connection string: %s", err.Error()))
 	}
 	return opt
 }
 
-// redisOpTimeout 是每个 Redis 操作的超时预算。
-//
-// 这些封装此前一律用 context.Background()，没有 deadline。配合
-// REDIS_POOL_SIZE 默认 10 的小连接池，Redis 半死（连接仍建立但不回包）时
-// 每个调用方 goroutine 都会无限期挂起并占住一个连接，最终整个进程的 Redis
-// 用量被拖死。2s 与 pkg/cachex、pkg/perf_metrics 的既有规范保持一致。
-const redisOpTimeout = 2 * time.Second
-
-// redisOpCtx 返回带超时的操作上下文，调用方必须 defer cancel()。
-func redisOpCtx() (context.Context, context.CancelFunc) {
-	return context.WithTimeout(context.Background(), redisOpTimeout)
-}
-
 func RedisSet(key string, value string, expiration time.Duration) error {
 	if DebugEnabled {
-		SysLog(fmt.Sprintf("Redis SET: key=%s, value=%s, expiration=%v", key, value, expiration))
+		SysLog(LogText("Redis SET: key=%s, value=%s, expiration=%v", key, value, expiration))
 	}
-	ctx, cancel := redisOpCtx()
-	defer cancel()
+	ctx := context.Background()
 	return RDB.Set(ctx, key, value, expiration).Err()
 }
 
 func RedisGet(key string) (string, error) {
 	if DebugEnabled {
-		SysLog(fmt.Sprintf("Redis GET: key=%s", key))
+		SysLog(LogText("Redis GET: key=%s", key))
 	}
-	ctx, cancel := redisOpCtx()
-	defer cancel()
+	ctx := context.Background()
 	val, err := RDB.Get(ctx, key).Result()
 	return val, err
 }
 
 //func RedisExpire(key string, expiration time.Duration) error {
-//	ctx, cancel := redisOpCtx()
-//	defer cancel()
+//	ctx := context.Background()
 //	return RDB.Expire(ctx, key, expiration).Err()
 //}
 //
 //func RedisGetEx(key string, expiration time.Duration) (string, error) {
-//	ctx, cancel := redisOpCtx()
-//	defer cancel()
+//	ctx := context.Background()
 //	return RDB.GetSet(ctx, key, expiration).Result()
 //}
 
 func RedisDel(key string) error {
 	if DebugEnabled {
-		SysLog(fmt.Sprintf("Redis DEL: key=%s", key))
+		SysLog(LogText("Redis DEL: key=%s", key))
 	}
-	ctx, cancel := redisOpCtx()
-	defer cancel()
+	ctx := context.Background()
 	return RDB.Del(ctx, key).Err()
 }
 
 func RedisDelKey(key string) error {
 	if DebugEnabled {
-		SysLog(fmt.Sprintf("Redis DEL Key: key=%s", key))
+		SysLog(LogText("Redis DEL Key: key=%s", key))
 	}
-	ctx, cancel := redisOpCtx()
-	defer cancel()
+	ctx := context.Background()
 	return RDB.Del(ctx, key).Err()
 }
 
 func RedisHSetObj(key string, obj any, expiration time.Duration) error {
 	if DebugEnabled {
-		SysLog(fmt.Sprintf("Redis HSET: key=%s, obj=%+v, expiration=%v", key, obj, expiration))
+		SysLog(LogText("Redis HSET: key=%s, obj=%+v, expiration=%v", key, obj, expiration))
 	}
-	ctx, cancel := redisOpCtx()
-	defer cancel()
+	ctx := context.Background()
 
 	data := make(map[string]any)
 
@@ -180,10 +160,9 @@ func RedisHSetObj(key string, obj any, expiration time.Duration) error {
 
 func RedisHGetObj(key string, obj any) error {
 	if DebugEnabled {
-		SysLog(fmt.Sprintf("Redis HGETALL: key=%s", key))
+		SysLog(LogText("Redis HGETALL: key=%s", key))
 	}
-	ctx, cancel := redisOpCtx()
-	defer cancel()
+	ctx := context.Background()
 
 	result, err := RDB.HGetAll(ctx, key).Result()
 	if err != nil {
@@ -262,15 +241,10 @@ func RedisHGetObj(key string, obj any) error {
 // RedisIncr Add this function to handle atomic increments
 func RedisIncr(key string, delta int64) error {
 	if DebugEnabled {
-		SysLog(fmt.Sprintf("Redis INCR: key=%s, delta=%d", key, delta))
+		SysLog(LogText("Redis INCR: key=%s, delta=%d", key, delta))
 	}
-	// TTL 查询与后续 pipeline 必须共用同一个 ctx：否则两段各自计时，
-	// pipeline 会在 TTL 已被读到之后才发起，白白多占一个连接池槽位。
-	ctx, cancel := redisOpCtx()
-	defer cancel()
-
 	// 检查键的剩余生存时间
-	ttlCmd := RDB.TTL(ctx, key)
+	ttlCmd := RDB.TTL(context.Background(), key)
 	ttl, err := ttlCmd.Result()
 	if err != nil && !errors.Is(err, redis.Nil) {
 		return fmt.Errorf("failed to get TTL: %w", err)
@@ -278,6 +252,7 @@ func RedisIncr(key string, delta int64) error {
 
 	// 只有在 key 存在且有 TTL 时才需要特殊处理
 	if ttl > 0 {
+		ctx := context.Background()
 		// 开始一个Redis事务
 		txn := RDB.TxPipeline()
 
@@ -299,18 +274,16 @@ func RedisIncr(key string, delta int64) error {
 
 func RedisHIncrBy(key, field string, delta int64) error {
 	if DebugEnabled {
-		SysLog(fmt.Sprintf("Redis HINCRBY: key=%s, field=%s, delta=%d", key, field, delta))
+		SysLog(LogText("Redis HINCRBY: key=%s, field=%s, delta=%d", key, field, delta))
 	}
-	ctx, cancel := redisOpCtx()
-	defer cancel()
-
-	ttlCmd := RDB.TTL(ctx, key)
+	ttlCmd := RDB.TTL(context.Background(), key)
 	ttl, err := ttlCmd.Result()
 	if err != nil && !errors.Is(err, redis.Nil) {
 		return fmt.Errorf("failed to get TTL: %w", err)
 	}
 
 	if ttl > 0 {
+		ctx := context.Background()
 		txn := RDB.TxPipeline()
 
 		incrCmd := txn.HIncrBy(ctx, key, field, delta)
@@ -328,18 +301,16 @@ func RedisHIncrBy(key, field string, delta int64) error {
 
 func RedisHSetField(key, field string, value any) error {
 	if DebugEnabled {
-		SysLog(fmt.Sprintf("Redis HSET field: key=%s, field=%s, value=%v", key, field, value))
+		SysLog(LogText("Redis HSET field: key=%s, field=%s, value=%v", key, field, value))
 	}
-	ctx, cancel := redisOpCtx()
-	defer cancel()
-
-	ttlCmd := RDB.TTL(ctx, key)
+	ttlCmd := RDB.TTL(context.Background(), key)
 	ttl, err := ttlCmd.Result()
 	if err != nil && !errors.Is(err, redis.Nil) {
 		return fmt.Errorf("failed to get TTL: %w", err)
 	}
 
 	if ttl > 0 {
+		ctx := context.Background()
 		txn := RDB.TxPipeline()
 
 		hsetCmd := txn.HSet(ctx, key, field, value)

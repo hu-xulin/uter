@@ -62,7 +62,12 @@ const (
 	ChannelTypeBrandedShared    = 62
 	ChannelTypeBrandedAggregate = 63
 	ChannelTypeBrandedProxy     = 64
-	ChannelTypeDummy            // this one is only for count, do not add any channel after this
+	// 上游 rc.38 把 60 命名为 New API（uter 侧即 Uter 渠道），并在 62/63 引入 vLLM / SGLang。
+	// uter 的 62-64 已被三种品牌渠道占用，故新类型顺延到 65/66，保证渠道类型编号不漂移（会落库）。
+	ChannelTypeNewAPI = ChannelTypeUter
+	ChannelTypeVLLM   = 65
+	ChannelTypeSGLang = 66
+	ChannelTypeDummy  // this one is only for count, do not add any channel after this
 
 )
 
@@ -75,7 +80,15 @@ func IsAdvancedCustomChannelType(channelType int) bool {
 	return channelType == ChannelTypeAdvancedCustom ||
 		channelType == ChannelTypeBrandedShared ||
 		channelType == ChannelTypeBrandedAggregate ||
-		channelType == ChannelTypeBrandedProxy
+		channelType == ChannelTypeBrandedProxy ||
+		channelType == ChannelTypeVLLM ||
+		channelType == ChannelTypeSGLang
+}
+
+// IsAdvancedCustomChannel 是上游的等价入口（上游把 vLLM / SGLang 也归入高级自定义
+// 的处理链路），uter 侧的品牌渠道同样按高级自定义处理，故二者实现一致。
+func IsAdvancedCustomChannel(channelType int) bool {
+	return IsAdvancedCustomChannelType(channelType)
 }
 
 // ChannelBaseURLs 保存各渠道类型的内置默认 Base URL。
@@ -146,7 +159,12 @@ var ChannelBaseURLs = []string{
 	"",                                          //62 Branded Shared
 	"",                                          //63 Branded Aggregate
 	"",                                          //64 Branded Proxy
-	"",                                          //65 Dummy (count sentinel)
+	// 65 vLLM / 66 SGLang 不给默认地址。这两类是自托管推理服务，默认指向
+	// localhost 会让「渠道地址留空」变成一次静默的本地探测：管理员以为没配地址
+	// 用不了，实际请求带着渠道密钥打到了 localhost:8000/30000，并把探到的版本、
+	// 模型列表当成该渠道的真实状态展示。留空则由地址校验明确拒绝。
+	"", //65 vLLM
+	"", //66 SGLang
 }
 
 func GetChannelBaseURL(channelType int) string {
@@ -218,6 +236,8 @@ var ChannelTypeNames = map[int]string{
 	ChannelTypeBrandedShared:    "Branded Shared",
 	ChannelTypeBrandedAggregate: "Branded Aggregate",
 	ChannelTypeBrandedProxy:     "Branded Proxy",
+	ChannelTypeVLLM:             "vLLM",
+	ChannelTypeSGLang:           "SGLang",
 }
 
 func GetChannelTypeName(channelType int) string {

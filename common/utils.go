@@ -16,7 +16,6 @@ import (
 	"net/url"
 	"os"
 	"os/exec"
-	"path/filepath"
 	"runtime"
 	"runtime/debug"
 	"strconv"
@@ -164,31 +163,6 @@ func Bytes2Size(num int64) string {
 	return numStr + " " + unit
 }
 
-func Seconds2Time(num int) (time string) {
-	if num/31104000 > 0 {
-		time += strconv.Itoa(num/31104000) + " 年 "
-		num %= 31104000
-	}
-	if num/2592000 > 0 {
-		time += strconv.Itoa(num/2592000) + " 个月 "
-		num %= 2592000
-	}
-	if num/86400 > 0 {
-		time += strconv.Itoa(num/86400) + " 天 "
-		num %= 86400
-	}
-	if num/3600 > 0 {
-		time += strconv.Itoa(num/3600) + " 小时 "
-		num %= 3600
-	}
-	if num/60 > 0 {
-		time += strconv.Itoa(num/60) + " 分钟 "
-		num %= 60
-	}
-	time += strconv.Itoa(num) + " 秒"
-	return
-}
-
 func Interface2String(inter any) string {
 	switch inter.(type) {
 	case string:
@@ -319,10 +293,8 @@ func Any2Type[T any](data any) (T, error) {
 }
 
 // SaveTmpFile saves data to a temporary file. The filename would be apppended with a random string.
-// filename 仅作为 CreateTemp 的 pattern 前缀：若包含路径分隔符（如 "../"）可逃逸临时目录，
-// 这里先用 filepath.Base 截断到 basename，确保文件始终落在 os.TempDir() 内。
 func SaveTmpFile(filename string, data io.Reader) (string, error) {
-	f, err := os.CreateTemp(os.TempDir(), filepath.Base(filename))
+	f, err := os.CreateTemp(os.TempDir(), filename)
 	if err != nil {
 		return "", errors.Wrapf(err, "failed to create temporary file %s", filename)
 	}

@@ -1,15 +1,14 @@
 package middleware
 
 import (
-	"fmt"
+	"net/http"
 
 	"github.com/uter-ai/uter/common"
-
-	"github.com/gin-gonic/gin"
 	"github.com/uter-ai/uter/dto"
 	"github.com/uter-ai/uter/logger"
 	pluginruntime "github.com/uter-ai/uter/pkg/jsplugin"
 	"github.com/uter-ai/uter/relaykit/types"
+	"github.com/gin-gonic/gin"
 )
 
 func abortWithOpenAiMessage(c *gin.Context, statusCode int, message string, code ...types.ErrorCode) {
@@ -27,19 +26,28 @@ func abortWithOpenAiMessage(c *gin.Context, statusCode int, message string, code
 		c.JSON(statusCode, gin.H{
 			"error": gin.H{
 				"message": common.MessageWithRequestId(message, c.GetString(common.RequestIdKey)),
-				"type":    "uter_error",
+				"type":    "new_api_error",
 				"code":    codeStr,
 			},
 		})
 	}
 	c.Abort()
-	logger.LogError(c.Request.Context(), fmt.Sprintf("user %d | %s", userId, message))
+	logger.LogError(c.Request.Context(), common.LogText("user %d | %s", userId, message))
+}
+
+// invalidRequestStatus is the status of a request whose body could not be
+// read or parsed: 413 when the body exceeds MAX_REQUEST_BODY_MB, else 400.
+func invalidRequestStatus(err error) int {
+	if common.IsRequestBodyTooLargeError(err) {
+		return http.StatusRequestEntityTooLarge
+	}
+	return http.StatusBadRequest
 }
 
 func abortWithMidjourneyMessage(c *gin.Context, statusCode int, code int, description string) {
 	c.JSON(statusCode, gin.H{
 		"description": description,
-		"type":        "uter_error",
+		"type":        "new_api_error",
 		"code":        code,
 	})
 	c.Abort()

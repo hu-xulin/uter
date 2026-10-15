@@ -3,7 +3,6 @@ package model
 import (
 	"errors"
 	"fmt"
-	"strings"
 	"time"
 
 	"github.com/uter-ai/uter/common"
@@ -25,32 +24,6 @@ type TwoFA struct {
 	DeletedAt      gorm.DeletedAt `json:"-" gorm:"index"`
 }
 
-// BeforeSave 在落库前加密 TOTP 密钥（AES-GCM），避免明文入库。
-// 已是信封格式（v1: 前缀）则跳过，防止重复加密。
-func (t *TwoFA) BeforeSave(tx *gorm.DB) error {
-	if t.Secret != "" && !strings.HasPrefix(t.Secret, common.SecretEnvelopePrefix()) {
-		enc, err := common.EncryptSecret(t.Secret)
-		if err != nil {
-			return err
-		}
-		t.Secret = enc
-	}
-	return nil
-}
-
-// AfterFind 在加载后解密 TOTP 密钥，内存中始终为明文，对调用方透明。
-// 历史明文记录解密失败（非信封格式）时原样保留，向后兼容。
-func (t *TwoFA) AfterFind(tx *gorm.DB) error {
-	if t.Secret != "" {
-		dec, err := common.DecryptSecret(t.Secret)
-		if err != nil {
-			return err
-		}
-		t.Secret = dec
-	}
-	return nil
-}
-
 // TwoFABackupCode 备用码使用记录表
 type TwoFABackupCode struct {
 	Id        int            `json:"id" gorm:"primaryKey"`
@@ -65,7 +38,7 @@ type TwoFABackupCode struct {
 // GetTwoFAByUserId 根据用户ID获取2FA设置
 func GetTwoFAByUserId(userId int) (*TwoFA, error) {
 	if userId == 0 {
-		return nil, errors.New("用户ID不能为空")
+		return nil, errors.New("user ID is empty")
 	}
 
 	var twoFA TwoFA
@@ -91,7 +64,7 @@ func IsTwoFAEnabled(userId int) (bool, error) {
 
 func (t *TwoFA) updateUsageState() error {
 	if t.Id == 0 {
-		return errors.New("2FA记录ID不能为空")
+		return errors.New("2FA record ID is empty")
 	}
 	return DB.Model(&TwoFA{}).Where("id = ?", t.Id).Updates(map[string]any{
 		"failed_attempts": t.FailedAttempts,
@@ -110,7 +83,7 @@ func (t *TwoFA) ResetFailedAttempts() error {
 // IncrementFailedAttempts 增加失败尝试次数
 func (t *TwoFA) IncrementFailedAttempts() error {
 	if t.Id == 0 {
-		return errors.New("2FA记录ID不能为空")
+		return errors.New("2FA record ID is empty")
 	}
 
 	const maxUpdateRetries = 5
@@ -152,7 +125,7 @@ func (t *TwoFA) IncrementFailedAttempts() error {
 		return nil
 	}
 
-	return errors.New("更新2FA失败次数冲突，请重试")
+	return errors.New("conflicting updates to the 2FA failure count, please retry")
 }
 
 // IsLocked 检查账户是否被锁定
@@ -218,7 +191,7 @@ func replaceBackupCodesWithAuthVersion(userId int, codes []string, identity *Aut
 // ValidateBackupCode 验证并使用备用码
 func ValidateBackupCode(userId int, code string) (bool, error) {
 	if !common.ValidateBackupCode(code) {
-		return false, errors.New("验证码或备用码不正确")
+		return false, errors.New("the verification code or backup code is incorrect")
 	}
 
 	normalizedCode := common.NormalizeBackupCode(code)
@@ -299,7 +272,7 @@ func disableTwoFAWithAuthVersion(userId int, identity *AuthSessionIdentity) erro
 func (t *TwoFA) ValidateTOTPAndUpdateUsage(code string) (bool, error) {
 	// 检查是否被锁定
 	if t.IsLocked() {
-		return false, fmt.Errorf("账户已被锁定，请在%v后重试", t.LockedUntil.Format("2006-01-02 15:04:05"))
+		return false, fmt.Errorf("the account is locked, retry after %v", t.LockedUntil.Format("2006-01-02 15:04:05"))
 	}
 
 	// 验证TOTP码
@@ -328,7 +301,7 @@ func (t *TwoFA) ValidateTOTPAndUpdateUsage(code string) (bool, error) {
 func (t *TwoFA) ValidateBackupCodeAndUpdateUsage(code string) (bool, error) {
 	// 检查是否被锁定
 	if t.IsLocked() {
-		return false, fmt.Errorf("账户已被锁定，请在%v后重试", t.LockedUntil.Format("2006-01-02 15:04:05"))
+		return false, fmt.Errorf("the account is locked, retry after %v", t.LockedUntil.Format("2006-01-02 15:04:05"))
 	}
 
 	// 验证备用码

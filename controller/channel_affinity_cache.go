@@ -1,12 +1,11 @@
 package controller
 
 import (
-	"github.com/uter-ai/uter/i18n"
 	"net/http"
 	"strings"
 
+	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/service"
-
 	"github.com/gin-gonic/gin"
 )
 
@@ -36,19 +35,13 @@ func ClearChannelAffinityCache(c *gin.Context) {
 	}
 
 	if ruleName == "" {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"success": false,
-			"message": i18n.T(c, i18n.MsgChannelAffinity_rule_name_required),
-		})
+		common.ApiErrorStatus(c, http.StatusBadRequest, common.NewMessage("Missing parameter rule_name, or use all=true to clear everything"))
 		return
 	}
 
 	deleted, err := service.ClearChannelAffinityCacheByRuleName(ruleName)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"success": false,
-			"message": err.Error(),
-		})
+		common.ApiErrorStatus(c, http.StatusBadRequest, err)
 		return
 	}
 

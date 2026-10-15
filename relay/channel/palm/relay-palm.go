@@ -4,10 +4,8 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
-	"sync"
 
 	"github.com/uter-ai/uter/common"
-
 	"github.com/uter-ai/uter/constant"
 	relaycommon "github.com/uter-ai/uter/relay/common"
 	"github.com/uter-ai/uter/relay/helper"
@@ -52,32 +50,25 @@ func streamResponsePaLM2OpenAI(palmResponse *PaLMChatResponse) *dto.ChatCompleti
 	return &response
 }
 
-func palmStreamHandler(c *gin.Context, resp *http.Response) (*types.UterError, string) {
+func palmStreamHandler(c *gin.Context, resp *http.Response) (*types.NewAPIError, string) {
 	responseText := ""
 	responseId := helper.GetResponseID(c)
 	createdTime := common.GetTimestamp()
-	// 有缓冲 + select 保护：客户端断开时 gin 的 c.Stream 直接 return，
-	// 不再消费 dataChan。裸 `ch <- v` 会让生产者永久阻塞在发送上（goroutine
-	// 泄漏），且 stopChan 的多次裸发送同样会在消费方已退出时反向阻塞。
-	// 改为缓冲 + close(stopChan) 广播信号。
-	dataChan := make(chan string, 1)
-	stopChan := make(chan struct{})
-	var stopOnce sync.Once
-	stop := func() {
-		stopOnce.Do(func() { close(stopChan) })
-	}
+	dataChan := make(chan string)
+	stopChan := make(chan bool)
 	go func() {
-		defer stop()
 		responseBody, err := io.ReadAll(resp.Body)
 		if err != nil {
-			common.SysLog("error reading stream response: " + err.Error())
+			common.SysLog(common.LogText("error reading stream response: %s", err.Error()))
+			stopChan <- true
 			return
 		}
 		service.CloseResponseBodyGracefully(resp)
 		var palmResponse PaLMChatResponse
 		err = json.Unmarshal(responseBody, &palmResponse)
 		if err != nil {
-			common.SysLog("error unmarshalling stream response: " + err.Error())
+			common.SysLog(common.LogText("error unmarshalling stream response: %s", err.Error()))
+			stopChan <- true
 			return
 		}
 		fullTextResponse := streamResponsePaLM2OpenAI(&palmResponse)
@@ -88,18 +79,12 @@ func palmStreamHandler(c *gin.Context, resp *http.Response) (*types.UterError, s
 		}
 		jsonResponse, err := json.Marshal(fullTextResponse)
 		if err != nil {
-			common.SysLog("error marshalling stream response: " + err.Error())
+			common.SysLog(common.LogText("error marshalling stream response: %s", err.Error()))
+			stopChan <- true
 			return
 		}
-		select {
-		case dataChan <- string(jsonResponse):
-		case <-stopChan:
-		case <-c.Request.Context().Done():
-		}
-	}()
-	defer func() {
-		stop()
-		service.CloseResponseBodyGracefully(resp)
+		dataChan <- string(jsonResponse)
+		stopChan <- true
 	}()
 	helper.SetEventStreamHeaders(c)
 	c.Stream(func(w io.Writer) bool {
@@ -112,10 +97,11 @@ func palmStreamHandler(c *gin.Context, resp *http.Response) (*types.UterError, s
 			return false
 		}
 	})
+	service.CloseResponseBodyGracefully(resp)
 	return nil, responseText
 }
 
-func palmHandler(c *gin.Context, info *relaycommon.RelayInfo, resp *http.Response) (*dto.Usage, *types.UterError) {
+func palmHandler(c *gin.Context, info *relaycommon.RelayInfo, resp *http.Response) (*dto.Usage, *types.NewAPIError) {
 	responseBody, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, types.NewOpenAIError(err, types.ErrorCodeReadResponseBodyFailed, http.StatusInternalServerError)
