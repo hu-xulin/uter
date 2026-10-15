@@ -376,7 +376,6 @@ const (
 	MsgCommonUnsupported_operation              = "common.unsupported_operation"
 	MsgCommonNot_logged_in                      = "common.not_logged_in"
 	MsgCommonUser_not_found                     = "common.user_not_found"
-	MsgCommonInvalid_id                         = "common.invalid_id"
 	MsgCommonInvalid_user_id                    = "common.invalid_user_id"
 	MsgCommonInvalid_subscription_id            = "common.invalid_subscription_id"
 	MsgCommonInvalid_provider_id                = "common.invalid_provider_id"
@@ -402,7 +401,6 @@ const (
 	MsgTwofaSave_backup_failed                  = "twofa.save_backup_failed"
 	MsgTwofaBackup_regenerated                  = "twofa.backup_regenerated"
 	MsgTwofaInsufficient_privilege              = "twofa.insufficient_privilege"
-	MsgTwofaNot_enabled                         = "twofa.not_enabled"
 	MsgTwofaForce_disabled                      = "twofa.force_disabled"
 	MsgWechatLogin_disabled                     = "wechat.login_disabled"
 	MsgWechatUser_cancelled                     = "wechat.user_cancelled"
@@ -435,10 +433,7 @@ const (
 	MsgSettingAudio_complete_ratio_failed       = "setting.audio_complete_ratio_failed"
 	MsgSettingCache_ratio_failed                = "setting.cache_ratio_failed"
 	MsgSubscriptionTitle_required               = "subscription.title_required"
-	MsgSubscriptionPrice_negative               = "subscription.price_negative"
 	MsgSubscriptionPrice_too_high               = "subscription.price_too_high"
-	MsgSubscriptionPurchase_limit_negative      = "subscription.purchase_limit_negative"
-	MsgSubscriptionQuota_negative               = "subscription.quota_negative"
 	MsgSubscriptionUpgrade_group_not_found      = "subscription.upgrade_group_not_found"
 	MsgSubscriptionDowngrade_group_not_found    = "subscription.downgrade_group_not_found"
 	MsgSubscriptionReset_period_positive        = "subscription.reset_period_positive"
@@ -473,12 +468,10 @@ const (
 	MsgTopup_wechatAppid_mismatch               = "topup_wechat.appid_mismatch"
 	MsgTopup_wechatAmount_mismatch              = "topup_wechat.amount_mismatch"
 	MsgCheckinSuccess                           = "checkin.success"
-	MsgGroupName_exists                         = "group.name_exists"
 	MsgGroupName_type_required                  = "group.name_type_required"
 	MsgGroupMissing_id                          = "group.missing_id"
 	MsgChannelTag_required                      = "channel.tag_required"
 	MsgChannelKey_index_out_of_range            = "channel.key_index_out_of_range"
-	MsgChannelGet_tags_failed                   = "channel.get_tags_failed"
 	MsgChannelGet_tag_count_failed              = "channel.get_tag_count_failed"
 	MsgChannelGet_tag_channels_failed           = "channel.get_tag_channels_failed"
 	MsgChannelGet_channel_count_failed          = "channel.get_channel_count_failed"
@@ -510,11 +503,7 @@ const (
 	MsgRatioQuery_channel_failed                = "ratio.query_channel_failed"
 	MsgRatioNo_valid_upstream                   = "ratio.no_valid_upstream"
 	MsgModelName_required                       = "model.name_required"
-	MsgModelName_exists                         = "model.name_exists"
 	MsgPricingReset_ratio_success               = "pricing.reset_ratio_success"
-	MsgPerformanceDisk_cache_cleared            = "performance.disk_cache_cleared"
-	MsgPerformanceStats_reset                   = "performance.stats_reset"
-	MsgPerformanceGc_executed                   = "performance.gc_executed"
 	MsgRatioConfig_disabled                     = "ratio.config_disabled"
 	MsgCodexParse_credential_failed             = "codex.parse_credential_failed"
 	MsgMiscDb_connect_failed                    = "misc.db_connect_failed"
@@ -529,4 +518,74 @@ const (
 	MsgQuotaOrgSuspended        = "quota.org_suspended"
 	MsgQuotaUserNotEnough       = "quota.user_not_enough"
 	MsgQuotaTokenNotEnough      = "quota.token_not_enough"
+)
+
+// —— 上游 rc.38~rc.44 新增的后端消息键（Uter 同步时补齐）——
+// 分组与上游 i18n/keys.go 保持一致，便于后续继续对齐。
+
+// Errors returned to AI clients
+const (
+	MsgAuthClientIPUnresolved     = "auth.client_ip_unresolved"
+	MsgAuthTokenIPNotAllowed      = "auth.token_ip_not_allowed"
+	MsgAuthTokenGroupForbidden    = "auth.token_group_forbidden"
+	MsgAuthTokenGroupDeprecated   = "auth.token_group_deprecated"
+	MsgAuthChannelSelectForbidden = "auth.channel_select_forbidden"
+
+	MsgQuotaUserInsufficient             = "quota.user_insufficient"
+	MsgQuotaPreConsumeInsufficient       = "quota.pre_consume_insufficient"
+	MsgQuotaSubscriptionInsufficient     = "quota.subscription_insufficient"
+	MsgRelayModelPriceNotConfigured      = "relay.model_price_not_configured"
+	MsgRelayModelPriceNotConfiguredAdmin = "relay.model_price_not_configured_admin"
+	MsgRelayTaskChannelDisabled          = "relay.task_channel_disabled"
+	MsgRelayGroupSaturated               = "relay.group_saturated"
+	MsgRelayGroupUpstreamSaturated       = "relay.group_upstream_saturated"
+	MsgRelayRetryGetChannelFailed        = "relay.retry_get_channel_failed"
+	MsgRelayRetryNoAvailableChannel      = "relay.retry_no_available_channel"
+	MsgRelayAccessTokenUnsupported       = "relay.access_token_unsupported"
+)
+
+// Emails and the name of the token created at registration, in the
+// recipient's language
+const (
+	MsgUserDefaultTokenName = "user.default_token_name"
+
+	MsgEmailVerificationSubject  = "email.verification.subject"
+	MsgEmailVerificationGreeting = "email.verification.greeting"
+	MsgEmailVerificationCode     = "email.verification.code"
+	MsgEmailVerificationValidity = "email.verification.validity"
+
+	MsgEmailPasswordResetSubject      = "email.password_reset.subject"
+	MsgEmailPasswordResetGreeting     = "email.password_reset.greeting"
+	MsgEmailPasswordResetLink         = "email.password_reset.link"
+	MsgEmailPasswordResetLinkFallback = "email.password_reset.link_fallback"
+	MsgEmailPasswordResetValidity     = "email.password_reset.validity"
+)
+
+// Low-quota notices, in the recipient's saved language
+const (
+	MsgNotifyQuotaLowTitle             = "notify.quota_low_title"
+	MsgNotifySubscriptionQuotaLowTitle = "notify.subscription_quota_low_title"
+	MsgNotifyQuotaLowBark              = "notify.quota_low_bark"
+	MsgNotifyQuotaLowGotify            = "notify.quota_low_gotify"
+	MsgNotifyQuotaLowEmail             = "notify.quota_low_email"
+)
+
+// Channel notices sent to the root user and model update watchers
+const (
+	MsgChannelNotifyDisabledSubject = "channel.notify_disabled_subject"
+	MsgChannelNotifyDisabledContent = "channel.notify_disabled_content"
+	MsgChannelNotifyEnabledSubject  = "channel.notify_enabled_subject"
+	MsgChannelNotifyEnabledContent  = "channel.notify_enabled_content"
+	MsgChannelTestCompletedSubject  = "channel.test_completed_subject"
+	MsgChannelTestCompletedContent  = "channel.test_completed_content"
+	MsgChannelResponseTimeExceeded  = "channel.response_time_exceeded"
+
+	MsgChannelUpstreamUpdateNotifySubject   = "channel.upstream_update_notify_subject"
+	MsgChannelUpstreamUpdateSummary         = "channel.upstream_update_summary"
+	MsgChannelUpstreamUpdateChangedChannels = "channel.upstream_update_changed_channels"
+	MsgChannelUpstreamUpdateMoreChannels    = "channel.upstream_update_more_channels"
+	MsgChannelUpstreamUpdateAddedModels     = "channel.upstream_update_added_models"
+	MsgChannelUpstreamUpdateRemovedModels   = "channel.upstream_update_removed_models"
+	MsgChannelUpstreamUpdateFailedChannels  = "channel.upstream_update_failed_channels"
+	MsgChannelUpstreamUpdateMoreOmitted     = "channel.upstream_update_more_omitted"
 )
