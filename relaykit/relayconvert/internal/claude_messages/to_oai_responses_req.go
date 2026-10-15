@@ -1,19 +1,20 @@
 package claudemessages
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"strings"
 
 	"github.com/uter-ai/uter/relaykit/dto"
-
 	"github.com/uter-ai/uter/relaykit/relayconvert/convmeta"
+	"github.com/uter-ai/uter/relaykit/relayconvert/internal/convdiag"
 	kitutil "github.com/uter-ai/uter/relaykit/relayconvert/kitutil"
 	"github.com/uter-ai/uter/relaykit/relayconvert/reasoning"
 )
 
-func ClaudeMessagesRequestToOpenAIResponses(claudeRequest dto.ClaudeRequest, info convmeta.Meta) (*dto.OpenAIResponsesRequest, error) {
+func ClaudeMessagesRequestToOpenAIResponses(ctx context.Context, claudeRequest dto.ClaudeRequest, info convmeta.Meta) (*dto.OpenAIResponsesRequest, error) {
 	if strings.TrimSpace(claudeRequest.Model) == "" {
 		return nil, errors.New("model is required")
 	}
@@ -52,7 +53,7 @@ func ClaudeMessagesRequestToOpenAIResponses(claudeRequest dto.ClaudeRequest, inf
 		TopP:              claudeRequest.TopP,
 	}
 	if info != nil && !convmeta.OptionsOf(info).OpenRouterDialect {
-		// Keep the outgoing -thinking suffix so a cascaded downstream uter
+		// Keep the outgoing -thinking suffix so a cascaded downstream new-api
 		// can recover reasoning intent from the model name. This is an
 		// emission-side policy, not converter-side suffix parsing.
 		thinkingSuffix := "-thinking"
@@ -68,7 +69,7 @@ func ClaudeMessagesRequestToOpenAIResponses(claudeRequest dto.ClaudeRequest, inf
 		responsesRequest.MaxOutputTokens = &maxOutputTokens
 	}
 
-	reasoningIntent, effectiveEffort, err := claudeRequestReasoningIntent(&claudeRequest, info)
+	reasoningIntent, effectiveEffort, err := claudeRequestReasoningIntent(ctx, &claudeRequest, info)
 	if err != nil {
 		return nil, reasoning.AsClientError(err)
 	}
@@ -82,20 +83,22 @@ func ClaudeMessagesRequestToOpenAIResponses(claudeRequest dto.ClaudeRequest, inf
 	return responsesRequest, nil
 }
 
-func claudeRequestReasoningIntent(claudeRequest *dto.ClaudeRequest, info convmeta.Meta) (reasoning.Intent, reasoning.Effort, error) {
-	reasoningIntent, err := reasoning.FromClaude(claudeRequest)
+func claudeRequestReasoningIntent(ctx context.Context, claudeRequest *dto.ClaudeRequest, info convmeta.Meta) (reasoning.Intent, reasoning.Effort, error) {
+	reasoningIntent, diagnostics, err := reasoning.FromClaude(claudeRequest)
 	if err != nil {
 		return reasoning.Intent{}, "", err
 	}
+	convdiag.Add(ctx, diagnostics...)
 	sourceModel := claudeRequest.Model
 	if info != nil && info.GetOriginModelName() != "" {
 		sourceModel = info.GetOriginModelName()
 	}
 	if suffix := reasoning.IntentFromState(convmeta.ReasoningStateOf(info)); !suffix.IsEmpty() {
-		reasoningIntent, err = reasoning.MergeExplicitAndSuffix(reasoningIntent, suffix, sourceModel)
+		reasoningIntent, diagnostics, err = reasoning.MergeExplicitAndSuffix(reasoningIntent, suffix, sourceModel)
 		if err != nil {
 			return reasoning.Intent{}, "", err
 		}
+		convdiag.Add(ctx, diagnostics...)
 	}
 	reasoningIntent = reasoning.ResolveClaudeDefault(sourceModel, reasoningIntent)
 	return reasoningIntent, reasoning.EffectiveEffort(reasoningIntent), nil

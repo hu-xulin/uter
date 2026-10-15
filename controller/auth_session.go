@@ -2,16 +2,15 @@ package controller
 
 import (
 	"errors"
-	"fmt"
 	"net/http"
 	"strings"
 
+	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/logger"
-
-	"github.com/gin-gonic/gin"
 	"github.com/uter-ai/uter/middleware"
 	"github.com/uter-ai/uter/model"
 	"github.com/uter-ai/uter/service"
+	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
 
@@ -171,7 +170,7 @@ func writeAuthSessionError(c *gin.Context, err error) {
 		// The response body only carries the generic AUTH_INTERNAL_ERROR
 		// code; without this log the underlying Redis/database/session
 		// failure is indistinguishable from the client side.
-		logger.LogError(c.Request.Context(), fmt.Sprintf("auth session internal error (%s %s): %v", c.Request.Method, c.Request.URL.Path, err))
+		logger.LogError(c.Request.Context(), common.LogText("auth session internal error (%s %s): %v", c.Request.Method, c.Request.URL.Path, err))
 	}
 	c.JSON(status, gin.H{"success": false, "code": code, "message": http.StatusText(status)})
 }
@@ -180,7 +179,12 @@ func setAuthNoStore(c *gin.Context) {
 	c.Header("Cache-Control", "no-store")
 }
 
+// authRotationData is empty when the change came through an access token,
+// which has no browser session to rotate.
 func authRotationData(bundle *service.AuthBundle) gin.H {
+	if bundle == nil {
+		return gin.H{}
+	}
 	return gin.H{
 		"access_token":      bundle.AccessToken,
 		"token_type":        bundle.TokenType,

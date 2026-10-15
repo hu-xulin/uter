@@ -1,11 +1,11 @@
 package channel
 
 import (
+	"context"
 	"io"
 	"net/http"
 
 	taskdto "github.com/uter-ai/uter/dto"
-
 	"github.com/uter-ai/uter/model"
 	relaycommon "github.com/uter-ai/uter/relay/common"
 	"github.com/uter-ai/uter/relaykit/dto"
@@ -27,7 +27,7 @@ type Adaptor interface {
 	ConvertImageRequest(c *gin.Context, info *relaycommon.RelayInfo, request dto.ImageRequest) (any, error)
 	ConvertOpenAIResponsesRequest(c *gin.Context, info *relaycommon.RelayInfo, request dto.OpenAIResponsesRequest) (any, error)
 	DoRequest(c *gin.Context, info *relaycommon.RelayInfo, requestBody io.Reader) (any, error)
-	DoResponse(c *gin.Context, resp *http.Response, info *relaycommon.RelayInfo) (usage any, err *types.UterError)
+	DoResponse(c *gin.Context, resp *http.Response, info *relaycommon.RelayInfo) (usage any, err *types.NewAPIError)
 	GetModelList() []string
 	GetChannelName() string
 	ConvertClaudeRequest(c *gin.Context, info *relaycommon.RelayInfo, request *dto.ClaudeRequest) (any, error)
@@ -115,7 +115,7 @@ type TaskContentRequest struct {
 }
 
 type TaskContentRequestProvider interface {
-	BuildContentRequest(task *model.Task, artifactKey string, clientRequest TaskArtifactClientRequest) (*TaskContentRequest, error)
+	BuildContentRequest(ctx context.Context, task *model.Task, artifactKey string, clientRequest TaskArtifactClientRequest) (*TaskContentRequest, error)
 }
 
 type TaskUsageFactsProvider interface {

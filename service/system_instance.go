@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"github.com/uter-ai/uter/common"
-
 	"github.com/uter-ai/uter/logger"
 	"github.com/uter-ai/uter/model"
 
@@ -126,6 +125,6 @@ func ReportCurrentSystemInstance() error {
 
 func reportSystemInstanceWithLog() {
 	if err := ReportCurrentSystemInstance(); err != nil {
-		logger.LogWarn(context.Background(), fmt.Sprintf("system instance report failed: %v", err))
+		logger.LogWarn(context.Background(), common.LogText("system instance report failed: %v", err))
 	}
 }

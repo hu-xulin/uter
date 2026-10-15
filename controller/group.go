@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"github.com/uter-ai/uter/model"
-
 	"github.com/uter-ai/uter/service"
 	"github.com/uter-ai/uter/setting"
 	"github.com/uter-ai/uter/setting/ratio_setting"
@@ -30,7 +29,7 @@ func GetUserGroups(c *gin.Context) {
 	userId := c.GetInt("id")
 	userGroup, _ = model.GetUserGroup(userId, false)
 	userUsableGroups := service.GetUserUsableGroups(userGroup)
-	for groupName := range ratio_setting.GetGroupRatioCopy() {
+	for groupName, _ := range ratio_setting.GetGroupRatioCopy() {
 		// UserUsableGroups contains the groups that the user can use
 		if desc, ok := userUsableGroups[groupName]; ok {
 			usableGroups[groupName] = map[string]any{
@@ -41,7 +40,7 @@ func GetUserGroups(c *gin.Context) {
 	}
 	if _, ok := userUsableGroups["auto"]; ok {
 		usableGroups["auto"] = map[string]any{
-			"ratio": "自动",
+			"ratio": "auto",
 			"desc":  setting.GetUsableGroupDescription("auto"),
 		}
 	}

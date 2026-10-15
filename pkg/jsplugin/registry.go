@@ -121,15 +121,69 @@ type UsageProfile struct {
 // must be resolved by the host first; an unknown or ambiguous model uses the
 // plugin defaults. Profile examples never inherit the default examples.
 func (m Meta) UsageForModel(model string) (map[string]UsageFieldSchema, []UsageExample) {
-	folded := asciiFold(model)
-	for _, profile := range m.UsageProfiles {
-		for _, declared := range profile.Models {
-			if asciiFold(declared) == folded {
-				return profile.Schema, profile.Examples
+	return m.UsageForModels(model)
+}
+
+// UsageForModels returns the usage metadata of the first candidate that a
+// profile declares. Runtime callers pass the final upstream model before the
+// client-facing model, so a channel mapping that sends a declared model to a
+// vendor endpoint ID keeps the declared model's profile. When no candidate is
+// profiled, the plugin defaults apply.
+//
+// 上游 rc.42 引入（原为 moejs 侧改动无关的纯 Go 逻辑），Uter 一并同步。
+func (m Meta) UsageForModels(models ...string) (map[string]UsageFieldSchema, []UsageExample) {
+	for _, model := range models {
+		folded := asciiFold(model)
+		for _, profile := range m.UsageProfiles {
+			for _, declared := range profile.Models {
+				if asciiFold(declared) == folded {
+					return profile.Schema, profile.Examples
+				}
 			}
 		}
 	}
 	return m.UsageSchema, m.UsageExamples
+}
+
+// Upstream kinds a plugin driver can address. Every driver speaks to its
+// vendor; a driver that also builds its own native-route URLs when the channel
+// points at another Uter gateway declares UpstreamKindNewAPI in meta.upstreams,
+// which is what makes it bindable to a type-60 channel.
+const (
+	UpstreamKindVendor = "vendor"
+	UpstreamKindNewAPI = "new_api"
+)
+
+// SupportsUpstream reports whether the driver handles channels of the given
+// upstream kind. The vendor kind is implied for every plugin.
+func (m Meta) SupportsUpstream(kind string) bool {
+	return kind == UpstreamKindVendor || slices.Contains(m.Upstreams, kind)
+}
+
+// PreservesJSONOrder reports whether the plugin declared json-order@1: it needs
+// the request body as JSON text so its members reach it in the client's order.
+// Host code paths that build a request view must ask JSValueFor instead of
+// JSValue, or such a plugin silently receives a key-sorted object.
+func (m Meta) PreservesJSONOrder() bool {
+	return slices.Contains(m.RequiredCapabilities, CapabilityJSONOrder)
+}
+
+// AcceptsAutoDuration reports whether the plugin declared duration-auto@1:
+// request validation lets a duration of -1, the vendor's "the model picks the
+// length", through to its hooks. The plugin reserves the longest duration the
+// model can produce and settles the task on the usage the vendor reports.
+func (m Meta) AcceptsAutoDuration() bool {
+	return slices.Contains(m.RequiredCapabilities, CapabilityDurationAuto)
+}
+
+// JSONTextMember names the member of a hook result (a decoded requestBody, a
+// request descriptor's body) that the host also takes as JSON text, for a
+// plugin that preserves JSON order; it is empty for other plugins.
+func (m Meta) JSONTextMember(member string) string {
+	if !m.PreservesJSONOrder() {
+		return ""
+	}
+	return member
 }
 
 // ProtocolSupports reports whether the named protocol claim includes mode.
@@ -173,6 +227,20 @@ type UsageFieldSchema struct {
 type LoadedPlugin struct {
 	Meta   Meta
 	Engine *Engine
+}
+
+// UsesSubmitEventDelta reports whether SSE submissions go through
+// parseSubmitEventDelta: the plugin declares submit-sse-delta@1, or exports
+// parseSubmitEventDelta without parseSubmitEvent. A plugin that exports both
+// and declares nothing keeps the snapshot hook, as before.
+//
+// 从导出名推断而不是只看requiredCapabilities，是为了兼容**元数据声明不全**的
+// 上游插件：市场里的 alibaba 1.4.2 只声明了 duration-auto@1，却导出了
+// parseSubmitEventDelta。若只认声明，宿主会反过来索要 parseSubmitEvent 并判定
+// 插件不可用——而该插件恰恰能跑。
+func UsesSubmitEventDelta(meta Meta, engine *Engine) bool {
+	return slices.Contains(meta.RequiredCapabilities, CapabilitySubmitSSEDelta) ||
+		engine.HasExport("parseSubmitEventDelta") && !engine.HasExport("parseSubmitEvent")
 }
 
 // RegistrySnapshot is a read-only copy of the metadata currently stored in
@@ -298,7 +366,7 @@ func CompilePlugin(source string, options Options) (*LoadedPlugin, error) {
 	engine.version = meta.Version
 	requiredHooks := []string{"buildSubmitRequest", "parseSubmitResponse", "parseTaskResult"}
 	if slices.Contains(meta.SubmitResponseTypes, "sse") {
-		if slices.Contains(meta.RequiredCapabilities, CapabilitySubmitSSEDelta) {
+		if UsesSubmitEventDelta(meta, engine) {
 			requiredHooks = append(requiredHooks, "parseSubmitEventDelta")
 		} else {
 			requiredHooks = append(requiredHooks, "parseSubmitEvent")
@@ -320,11 +388,7 @@ func CompilePlugin(source string, options Options) (*LoadedPlugin, error) {
 	}
 	artifactHooks := make(map[string]bool, 2)
 	for _, hook := range []string{"listArtifacts", "buildContentRequest"} {
-		exported, exportErr := engine.HasExport(context.Background(), hook)
-		if exportErr != nil {
-			return nil, exportErr
-		}
-		if !exported {
+		if !engine.HasExport(hook) {
 			continue
 		}
 		callable, callableErr := engine.HasCallablePath(context.Background(), hook)
@@ -472,11 +536,7 @@ func CompilePlugin(source string, options Options) (*LoadedPlugin, error) {
 		}
 	}
 	for _, removed := range []string{"resolveRequest", "renderError", "renderers"} {
-		has, e := engine.HasExport(context.Background(), removed)
-		if e != nil {
-			return nil, e
-		}
-		if has {
+		if engine.HasExport(removed) {
 			return nil, fmt.Errorf("plugin %s export %q is no longer supported", meta.Key, removed)
 		}
 	}
@@ -1179,6 +1239,15 @@ func normalizeV1Meta(meta *Meta) error {
 		}
 		seenCapabilities[name] = true
 	}
+	// upstreams 只接受已实现的两类驱动，且不得重复：重复声明会让SupportsUpstream
+	// 的判定依赖于切片顺序而不是集合语义，元数据里的手误也会被静默接受。
+	seenUpstreams := make(map[string]bool, len(meta.Upstreams))
+	for _, kind := range meta.Upstreams {
+		if (kind != UpstreamKindVendor && kind != UpstreamKindNewAPI) || seenUpstreams[kind] {
+			return fmt.Errorf("unsupported or duplicate upstream kind %q", kind)
+		}
+		seenUpstreams[kind] = true
+	}
 	if meta.SortPriority < math.MinInt32 || meta.SortPriority > math.MaxInt32 {
 		return fmt.Errorf("plugin meta sortPriority must be a signed 32-bit integer")
 	}
@@ -1774,8 +1843,12 @@ func decodeRoutes(value any) ([]Route, error) {
 		if route.TaskIDParam, err = stringMetaField(object, "taskIdParam"); err != nil {
 			return nil, err
 		}
-		if route.RetainResult, err = boolMetaField(object, "retainResult"); err != nil {
-			return nil, fmt.Errorf("plugin meta route %d: %w", index, err)
+		if value, exists := object["retainResult"]; exists {
+			retain, ok := value.(bool)
+			if !ok {
+				return nil, fmt.Errorf("plugin meta route %d retainResult must be a boolean", index)
+			}
+			route.RetainResult = &retain
 		}
 		if _, exists := object["models"]; exists {
 			if route.Models, err = strictStringSlice(object, "models"); err != nil {

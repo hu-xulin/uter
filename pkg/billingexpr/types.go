@@ -17,6 +17,9 @@ type RequestInput struct {
 	// Duration is the media duration in seconds (e.g. generated video length),
 	// used by expressions that reference the `duration` variable. A nil value
 	// means the caller did not supply one and the engine falls back to zero.
+	//
+	// uter 侧按视频时长计费依赖该字段（setting/billing_setting 与 run.go 都在用），
+	// 上游当前版本没有，故在合并时保留。
 	Duration *float64
 }
 
@@ -74,6 +77,7 @@ type BillingSnapshot struct {
 	GroupRatio                float64        `json:"group_ratio"`
 	EstimatedPromptTokens     int            `json:"estimated_prompt_tokens"`
 	EstimatedCompletionTokens int            `json:"estimated_completion_tokens"`
+	PreConsumeMultiplier      float64        `json:"pre_consume_multiplier,omitempty"` // Reservation only; zero in older snapshots means 1.
 	EstimatedQuotaBeforeGroup float64        `json:"estimated_quota_before_group"`
 	EstimatedQuotaAfterGroup  int            `json:"estimated_quota_after_group"`
 	EstimatedTier             string         `json:"estimated_tier"`

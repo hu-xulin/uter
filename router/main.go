@@ -7,7 +7,6 @@ import (
 	"strings"
 
 	"github.com/uter-ai/uter/common"
-
 	"github.com/uter-ai/uter/middleware"
 
 	"github.com/gin-gonic/gin"
@@ -29,7 +28,7 @@ func SetRouter(router *gin.Engine, assets WebAssets) {
 	frontendBaseUrl := os.Getenv("FRONTEND_BASE_URL")
 	if common.IsMasterNode && frontendBaseUrl != "" {
 		frontendBaseUrl = ""
-		common.SysLog("FRONTEND_BASE_URL is ignored on master node")
+		common.SysLog(common.LogText("FRONTEND_BASE_URL is ignored on master node"))
 	}
 	if frontendBaseUrl == "" {
 		SetWebRouter(router, assets, pluginDispatcher)

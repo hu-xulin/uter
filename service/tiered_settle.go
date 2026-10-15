@@ -4,12 +4,11 @@ import (
 	"net/http"
 
 	"github.com/uter-ai/uter/common"
-
-	"github.com/gin-gonic/gin"
 	"github.com/uter-ai/uter/pkg/billingexpr"
 	relaycommon "github.com/uter-ai/uter/relay/common"
 	"github.com/uter-ai/uter/relaykit/dto"
 	"github.com/uter-ai/uter/relaykit/types"
+	"github.com/gin-gonic/gin"
 )
 
 // TieredResultWrapper wraps billingexpr.TieredResult for use at the service layer.
@@ -64,7 +63,7 @@ func BuildTieredTokenParams(usage *dto.Usage, isClaudeUsageSemantic bool, usedVa
 				cr -= imgCR
 				img -= imgCR
 			} else {
-				common.SysError("invalid image cache token breakdown; using aggregate cache billing")
+				common.SysError(common.LogText("invalid image cache token breakdown; using aggregate cache billing"))
 			}
 		}
 	}
@@ -165,7 +164,7 @@ func refreshTieredBillingGroup(relayInfo *relaycommon.RelayInfo) (*billingexpr.B
 // state before an upstream attempt. An existing session reserves any higher
 // estimate before sending. If the initial group was free and skipped
 // pre-consume, switching to a paid group creates the session at that point.
-func PrepareTieredBillingForSelectedGroup(c *gin.Context, relayInfo *relaycommon.RelayInfo) *types.UterError {
+func PrepareTieredBillingForSelectedGroup(c *gin.Context, relayInfo *relaycommon.RelayInfo) *types.NewAPIError {
 	snap, err := refreshTieredBillingGroup(relayInfo)
 	if err != nil {
 		return types.NewErrorWithStatusCode(

@@ -67,20 +67,12 @@ func runProgram(prog *vm.Program, requestRules []RequestRuleTrace, usedVars map[
 		trace.ImageCount = &imageCount
 	}
 
-	durationVal := 0.0
-	if request.Duration != nil {
-		durationVal = *request.Duration
-		if durationVal < 0 {
-			durationVal = 0
-		}
-	}
-
 	env := map[string]any{
 		"image_count": float64(imageCount),
-		"duration":    durationVal,
 		"p":           params.P,
 		"c":           params.C,
 		"len":         params.Len,
+		"duration":    derefFloat(request.Duration),
 		"cr":          params.CR,
 		"cc":          params.CC,
 		"cc1h":        params.CC1h,
@@ -164,6 +156,16 @@ func runProgram(prog *vm.Program, requestRules []RequestRuleTrace, usedVars map[
 		return 0, trace, fmt.Errorf("expr result is %T, want float64", out)
 	}
 	return f, trace, nil
+}
+
+// derefFloat returns the value pointed to by v, or 0 when v is nil. Used to bind
+// optional expression variables (e.g. `duration`) so a missing value falls back to
+// zero instead of a nil that would crash arithmetic in the expression evaluator.
+func derefFloat(v *float64) float64 {
+	if v == nil {
+		return 0
+	}
+	return *v
 }
 
 func timeInZone(tz string) time.Time {

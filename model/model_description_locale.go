@@ -133,6 +133,18 @@ func (JSONMapSerializer) Scan(_ context.Context, field *schema.Field, dst reflec
 	return target.Scan(rawDescriptionBytes(dbValue))
 }
 
+// GORM 的序列化器注册表是包级全局（schema.RegisterSerializer），不是
+// field.TagOptions 的一部分，必须在包初始化时注册一次，否则任何带
+// `serializer:jsonMap` 的字段在解析 schema 时就报
+// "invalid serializer type jsonMap"。
+//
+// 刻意放在本文件（模型描述多语的实现处）而不是 gorm_logger.go：
+// 后者会随上游改动被整文件覆盖，而这个注册一旦丢失，
+// models.descriptions 列的所有读写都会失败。
+func init() {
+	schema.RegisterSerializer("jsonMap", JSONMapSerializer{})
+}
+
 // descriptionFieldValue 定位 Descriptions 字段对应的 *LocalizedDescription。
 //
 // dst 可能是字段值本身，也可能是宿主结构（值或指针）；后一种需要按字段名

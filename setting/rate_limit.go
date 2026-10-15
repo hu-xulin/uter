@@ -31,10 +31,11 @@ func ModelRequestRateLimitGroup2JSONString() string {
 
 	jsonBytes, err := common.Marshal(ModelRequestRateLimitGroup)
 	if err != nil {
-		common.SysLog("error marshalling model ratio: " + err.Error())
+		common.SysLog(common.LogText("error marshalling model ratio: %s", err.Error()))
 	}
 	return string(jsonBytes)
 }
+
 
 func UpdateModelRequestRateLimitGroupByJSONString(jsonStr string) error {
 	// 先在局部解析，成功后再原子替换整体 map。

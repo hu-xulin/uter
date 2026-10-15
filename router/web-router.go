@@ -151,7 +151,7 @@ func SetWebRouter(router *gin.Engine, assets WebAssets, pluginDispatcher gin.Han
 		// 真正需要兜住的是**未命中文件、回落到 SPA 外壳**的导航请求，那才是每次都会
 		// 渲染整个应用的开销所在。
 		static.Serve("/", frontendFS),
-		middleware.GlobalWebRateLimit(),
+		middleware.GlobalWebRateLimit(frontendFS),
 		middleware.Cache(),
 		func(c *gin.Context) {
 			if strings.HasPrefix(c.Request.RequestURI, "/v1") || strings.HasPrefix(c.Request.RequestURI, "/api") || strings.HasPrefix(c.Request.RequestURI, "/assets") {

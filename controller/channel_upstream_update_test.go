@@ -9,14 +9,13 @@ import (
 	"testing"
 
 	"github.com/uter-ai/uter/common"
-
-	"github.com/gin-gonic/gin"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"github.com/uter-ai/uter/constant"
 	"github.com/uter-ai/uter/i18n"
 	"github.com/uter-ai/uter/model"
 	"github.com/uter-ai/uter/relaykit/dto"
+	"github.com/gin-gonic/gin"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func newAdvancedCustomModelListChannel(baseURL string, key string, upstreamPath string, auth *dto.AdvancedCustomRouteAuth) *model.Channel {
@@ -396,10 +395,10 @@ func TestFetchModelsUsesSharedChannelFetchBehavior(t *testing.T) {
 	require.JSONEq(t, `{"success":true,"message":"","data":["claude-sonnet"]}`, recorder.Body.String())
 }
 
-func TestFetchUterModelsUsesOpenAIContract(t *testing.T) {
+func TestFetchNewAPIModelsUsesOpenAIContract(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, "/v1/models", r.URL.Path)
-		assert.Equal(t, "Bearer uter-key", r.Header.Get("Authorization"))
+		assert.Equal(t, "Bearer new-api-key", r.Header.Get("Authorization"))
 		w.Header().Set("Content-Type", "application/json")
 		_, err := w.Write([]byte(`{"data":[{"id":"gpt-5"},{"id":" gpt-5-mini "}]}`))
 		assert.NoError(t, err)
@@ -408,8 +407,8 @@ func TestFetchUterModelsUsesOpenAIContract(t *testing.T) {
 
 	baseURL := server.URL
 	channel := &model.Channel{
-		Type:    constant.ChannelTypeUter,
-		Key:     "uter-key",
+		Type:    constant.ChannelTypeNewAPI,
+		Key:     "new-api-key",
 		BaseURL: &baseURL,
 	}
 
@@ -544,7 +543,9 @@ func TestBuildUpstreamModelUpdateTaskNotificationContent_OmitOverflowDetails(t *
 		})
 	}
 
+	require.NoError(t, i18n.Init())
 	content := buildUpstreamModelUpdateTaskNotificationContent(
+		i18n.LangEn,
 		24,
 		12,
 		56,
@@ -563,10 +564,14 @@ func TestBuildUpstreamModelUpdateTaskNotificationContent_OmitOverflowDetails(t *
 		},
 	)
 
-	require.Contains(t, content, "其余 4 个渠道已省略")
-	require.Contains(t, content, "其余 1 个已省略")
-	require.Contains(t, content, "失败渠道 ID（展示 10/12）")
-	require.Contains(t, content, "其余 2 个已省略")
+	require.Contains(t, content, i18n.Translate(i18n.LangEn, i18n.MsgChannelUpstreamUpdateMoreChannels, map[string]any{"Count": 4}))
+	require.Contains(t, content, i18n.Translate(i18n.LangEn, i18n.MsgChannelUpstreamUpdateMoreOmitted, map[string]any{"Count": 1}))
+	require.Contains(t, content, i18n.Translate(i18n.LangEn, i18n.MsgChannelUpstreamUpdateFailedChannels, map[string]any{
+		"Shown": 10,
+		"Total": 12,
+		"Ids":   "1, 2, 3, 4, 5, 6, 7, 8, 9, 10",
+	}))
+	require.Contains(t, content, i18n.Translate(i18n.LangEn, i18n.MsgChannelUpstreamUpdateMoreOmitted, map[string]any{"Count": 2}))
 }
 
 func TestShouldSendUpstreamModelUpdateNotification(t *testing.T) {
@@ -590,7 +595,6 @@ func TestShouldSendUpstreamModelUpdateNotification(t *testing.T) {
 }
 
 func TestDetectAllChannelUpstreamModelUpdatesRejectsExistingActiveTask(t *testing.T) {
-	_ = i18n.Init()
 	db := setupModelListControllerTestDB(t)
 	require.NoError(t, db.AutoMigrate(&model.SystemTask{}, &model.SystemTaskLock{}))
 
@@ -605,5 +609,5 @@ func TestDetectAllChannelUpstreamModelUpdatesRejectsExistingActiveTask(t *testin
 
 	require.Equal(t, http.StatusConflict, recorder.Code)
 	require.Contains(t, recorder.Body.String(), existing.TaskID)
-	require.Contains(t, recorder.Body.String(), "A model-update task is already running or queued")
+	require.Contains(t, recorder.Body.String(), "A model update task is already running or queued")
 }

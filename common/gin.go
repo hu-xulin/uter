@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"maps"
 	"mime"
 	"mime/multipart"
 	"net/http"
@@ -12,7 +13,6 @@ import (
 	"time"
 
 	"github.com/uter-ai/uter/constant"
-
 	"github.com/pkg/errors"
 
 	"github.com/gin-gonic/gin"
@@ -20,8 +20,21 @@ import (
 
 const KeyRequestBody = "key_request_body"
 const KeyBodyStorage = "key_body_storage"
+const keyBodyReadError = "key_body_read_error"
 
 var ErrRequestBodyTooLarge = errors.New("request body too large")
+
+// RequestBodyTooLargeMessage 给出请求体超限的可读文案，带上当前生效的上限。
+//
+// 中间件各处的报错都要经过它，理由是「超限」必须自解释：只说
+// "request body too large" 时，调用方无从判断该缩小载荷还是调高配置。
+func RequestBodyTooLargeMessage() string {
+	maxMB := constant.MaxRequestBodyMB
+	if maxMB <= 0 {
+		maxMB = 128
+	}
+	return fmt.Sprintf("request body exceeds %d MB: %s", maxMB, ErrRequestBodyTooLarge.Error())
+}
 
 func IsRequestBodyTooLargeError(err error) bool {
 	if err == nil {
@@ -58,6 +71,12 @@ func GetRequestBody(c *gin.Context) (io.Seeker, error) {
 		}
 	}
 
+	// A failed read has consumed and closed the body. Later readers get the
+	// same error instead of "http: invalid Read on closed Body".
+	if readErr, failed := c.Get(keyBodyReadError); failed {
+		return nil, readErr.(error)
+	}
+
 	maxMB := constant.MaxRequestBodyMB
 	if maxMB <= 0 {
 		maxMB = 128 // 默认 128MB
@@ -72,8 +91,9 @@ func GetRequestBody(c *gin.Context) (io.Seeker, error) {
 
 	if err != nil {
 		if IsRequestBodyTooLargeError(err) {
-			return nil, errors.Wrap(ErrRequestBodyTooLarge, fmt.Sprintf("request body exceeds %d MB", maxMB))
+			err = errors.Wrap(ErrRequestBodyTooLarge, fmt.Sprintf("request body exceeds %d MB", maxMB))
 		}
+		c.Set(keyBodyReadError, err)
 		return nil, err
 	}
 
@@ -227,11 +247,45 @@ func GetContextKeyType[T any](c *gin.Context, key constant.ContextKey) (T, bool)
 	return t, false
 }
 
+// ApiError responds with err's text. When err is or wraps a *Message, the
+// response also carries message_key and message_params for the web console.
 func ApiError(c *gin.Context, err error) {
-	c.JSON(http.StatusOK, gin.H{
+	ApiErrorStatus(c, http.StatusOK, err)
+}
+
+// ApiErrorStatus is ApiError with another HTTP status. fields adds response
+// fields such as a stable error code or data.
+func ApiErrorStatus(c *gin.Context, status int, err error, fields ...gin.H) {
+	body := gin.H{
 		"success": false,
 		"message": err.Error(),
-	})
+	}
+	var message *Message
+	if errors.As(err, &message) {
+		maps.Copy(body, message.Fields())
+	}
+	for _, extra := range fields {
+		maps.Copy(body, extra)
+	}
+	c.JSON(status, body)
+}
+
+// ApiErrorT responds with a web console message; key is the English source
+// text, which the web console translates with params.
+func ApiErrorT(c *gin.Context, key string, params ...map[string]any) {
+	ApiError(c, NewMessage(key, params...))
+}
+
+// ApiSuccessT is the success counterpart of ApiErrorT.
+func ApiSuccessT(c *gin.Context, key string, data any, params ...map[string]any) {
+	message := NewMessage(key, params...)
+	body := gin.H{
+		"success": true,
+		"message": message.Error(),
+		"data":    data,
+	}
+	maps.Copy(body, message.Fields())
+	c.JSON(http.StatusOK, body)
 }
 
 func ApiErrorMsg(c *gin.Context, msg string) {

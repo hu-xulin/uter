@@ -1,11 +1,10 @@
 package controller
 
 import (
-	"github.com/uter-ai/uter/i18n"
 	"net/http"
 
+	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/setting/billing_setting"
-
 	"github.com/uter-ai/uter/setting/ratio_setting"
 
 	"github.com/gin-gonic/gin"
@@ -13,10 +12,7 @@ import (
 
 func GetRatioConfig(c *gin.Context) {
 	if !ratio_setting.IsExposeRatioEnabled() {
-		c.JSON(http.StatusForbidden, gin.H{
-			"success": false,
-			"message": i18n.T(c, i18n.MsgRatioConfig_disabled),
-		})
+		common.ApiErrorStatus(c, http.StatusForbidden, common.NewMessage("The ratio config API is not enabled"))
 		return
 	}
 

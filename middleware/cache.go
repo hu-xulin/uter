@@ -37,13 +37,53 @@ func isFingerprintedAsset(path string) bool {
 		strings.HasPrefix(path, "/_next/static/")
 }
 
+// revalidatedExtensions are the file types served from a stable, un-hashed URL
+// where a replaced file would keep its old name. They get `no-cache` so the
+// browser reuses the bytes only after revalidating.
+var revalidatedExtensions = map[string]bool{
+	"png": true, "jpg": true, "jpeg": true, "gif": true, "webp": true,
+	"ico": true, "svg": true,
+	"woff": true, "woff2": true, "ttf": true, "otf": true,
+}
+
+// isRevalidatedAsset reports whether the request targets a file whose URL
+// carries no content hash, so a new build cannot rename it:
+//
+//   - `/docs-content/...`  the exported docs site (hot-updated via rsync)
+//   - `/plugins/...`       plugin bundles re-issued at runtime
+//   - top-level files such as `/logo.png`, `/favicon-legacy.ico` and
+//     `/uter-bimi.svg`, which are fetched **by name** (favicon probes, BIMI,
+//     feed readers) and therefore cannot be cache-busted with a `?v=` suffix.
+//
+// Paths deeper than one segment are excluded: `/static/...` assets are hashed
+// and are already handled by isFingerprintedAsset.
+func isRevalidatedAsset(path string) bool {
+	if strings.HasPrefix(path, "/docs-content/") || strings.HasPrefix(path, "/plugins/") {
+		return true
+	}
+	// Top-level file only: `/logo.png` qualifies, `/static/logo.png` does not.
+	if !strings.HasPrefix(path, "/") || strings.Count(path, "/") != 1 {
+		return false
+	}
+	dot := strings.LastIndexByte(path, '.')
+	if dot < 0 {
+		return false
+	}
+	return revalidatedExtensions[strings.ToLower(path[dot+1:])]
+}
+
 func Cache() func(c *gin.Context) {
 	return func(c *gin.Context) {
 		c.Header("Cache-Version", cacheVersion)
-		if isFingerprintedAsset(c.Request.URL.Path) {
+		switch path := c.Request.URL.Path; {
+		case isFingerprintedAsset(path):
 			c.Header("Cache-Control", "public, max-age=604800, immutable")
-		} else {
+		case isRevalidatedAsset(path):
+			// See the isFingerprintedAsset comment: a replaced file keeps its
+			// URL, so the browser must revalidate instead of reusing it.
 			c.Header("Cache-Control", "no-cache")
+		default:
+			c.Header("Cache-Control", "max-age=604800")
 		}
 		c.Next()
 	}

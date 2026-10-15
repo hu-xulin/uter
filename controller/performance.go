@@ -1,8 +1,6 @@
 package controller
 
 import (
-	"fmt"
-	"github.com/uter-ai/uter/i18n"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -13,9 +11,8 @@ import (
 	"time"
 
 	"github.com/uter-ai/uter/common"
-
-	"github.com/gin-gonic/gin"
 	"github.com/uter-ai/uter/logger"
+	"github.com/gin-gonic/gin"
 )
 
 // PerformanceStats 性能统计信息
@@ -151,30 +148,21 @@ func ClearDiskCache(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"success": true,
-		"message": i18n.T(c, i18n.MsgPerformanceDisk_cache_cleared),
-	})
+	common.ApiSuccessT(c, "Inactive disk cache cleared", nil)
 }
 
 // ResetPerformanceStats 重置性能统计
 func ResetPerformanceStats(c *gin.Context) {
 	common.ResetDiskCacheStats()
 
-	c.JSON(http.StatusOK, gin.H{
-		"success": true,
-		"message": i18n.T(c, i18n.MsgPerformanceStats_reset),
-	})
+	common.ApiSuccessT(c, "Statistics reset", nil)
 }
 
 // ForceGC 强制执行 GC
 func ForceGC(c *gin.Context) {
 	runtime.GC()
 
-	c.JSON(http.StatusOK, gin.H{
-		"success": true,
-		"message": i18n.T(c, i18n.MsgPerformanceGc_executed),
-	})
+	common.ApiSuccessT(c, "GC executed", nil)
 }
 
 // LogFileInfo 日志文件信息
@@ -324,19 +312,6 @@ func CleanupLogFiles(c *gin.Context) {
 	var failedFiles []string
 	for _, f := range toDelete {
 		fullPath := filepath.Join(*common.LogDir, f.Name)
-		// 防御性校验：确保待删文件仍在日志目录内，且不是符号链接，
-		// 防止目录列举 basename 之外的任何逃逸把删除指向目录外文件。
-		if rel, rerr := filepath.Rel(*common.LogDir, fullPath); rerr != nil || rel == ".." ||
-			strings.HasPrefix(rel, ".."+string(filepath.Separator)) || filepath.IsAbs(rel) {
-			common.SysLog("skipping log deletion that escapes log dir: " + fullPath)
-			failedFiles = append(failedFiles, f.Name)
-			continue
-		}
-		if fi, lerr := os.Lstat(fullPath); lerr == nil && fi.Mode()&os.ModeSymlink != 0 {
-			common.SysLog("skipping log deletion of symlink: " + fullPath)
-			failedFiles = append(failedFiles, f.Name)
-			continue
-		}
 		if err := os.Remove(fullPath); err != nil {
 			failedFiles = append(failedFiles, f.Name)
 			continue
@@ -352,11 +327,11 @@ func CleanupLogFiles(c *gin.Context) {
 	}
 
 	if len(failedFiles) > 0 {
-		c.JSON(http.StatusOK, gin.H{
-			"success": false,
-			"message": fmt.Sprintf("部分文件删除失败（%d/%d）", len(failedFiles), len(toDelete)),
-			"data":    result,
+		msg := common.NewMessage("Some files could not be deleted ({{failed}}/{{total}})", map[string]any{
+			"failed": len(failedFiles),
+			"total":  len(toDelete),
 		})
+		common.ApiErrorStatus(c, http.StatusOK, msg, gin.H{"data": result})
 		return
 	}
 

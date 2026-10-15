@@ -21,12 +21,16 @@ import (
 // 插件会顺利跑完、测试拿到 nil 错误；有看门狗则必须被中断并报错。
 func TestEngineInterruptsAllocationBomb(t *testing.T) {
 	// 超时给到 30s，确保「不是靠超时兜住的」——只有内存看门狗能拦下它。
+	// 用数组攒小块而不是拼一个巨型字符串：JS 单字符串长度上限约 5.36e8字符，
+	// 与512MiB 的内存上限几乎重合，拼接会先撞上RangeError（一个普通的 JS 异常，
+	// 不是内存看门狗），测试就分不清是谁拦下的。数组没有这个上限，
+	// 因此越限一定来自内存配额。
 	engine, err := Compile(`
 export function bomb(ctx) {
   const chunk = "x".repeat(1024 * 1024);
-  let sink = "";
+  const sink = [];
   for (let i = 0; i < 4000; i++) {
-    sink = sink + chunk;
+    sink.push(chunk + i);
   }
   return sink.length;
 }

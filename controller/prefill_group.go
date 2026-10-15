@@ -1,11 +1,9 @@
 package controller
 
 import (
-	"github.com/uter-ai/uter/i18n"
 	"strconv"
 
 	"github.com/uter-ai/uter/common"
-
 	"github.com/uter-ai/uter/model"
 
 	"github.com/gin-gonic/gin"
@@ -30,7 +28,7 @@ func CreatePrefillGroup(c *gin.Context) {
 		return
 	}
 	if g.Name == "" || g.Type == "" {
-		common.ApiErrorI18n(c, i18n.MsgGroupName_type_required)
+		common.ApiErrorT(c, "Group name and type cannot be empty")
 		return
 	}
 	// 创建前检查名称
@@ -38,7 +36,7 @@ func CreatePrefillGroup(c *gin.Context) {
 		common.ApiError(c, err)
 		return
 	} else if dup {
-		common.ApiErrorI18n(c, i18n.MsgGroupName_exists)
+		common.ApiErrorT(c, "Group name already exists")
 		return
 	}
 
@@ -57,7 +55,7 @@ func UpdatePrefillGroup(c *gin.Context) {
 		return
 	}
 	if g.Id == 0 {
-		common.ApiErrorI18n(c, i18n.MsgGroupMissing_id)
+		common.ApiErrorT(c, "Missing group ID")
 		return
 	}
 	// 名称冲突检查
@@ -65,7 +63,7 @@ func UpdatePrefillGroup(c *gin.Context) {
 		common.ApiError(c, err)
 		return
 	} else if dup {
-		common.ApiErrorI18n(c, i18n.MsgGroupName_exists)
+		common.ApiErrorT(c, "Group name already exists")
 		return
 	}
 

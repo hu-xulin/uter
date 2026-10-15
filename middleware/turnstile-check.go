@@ -1,12 +1,10 @@
 package middleware
 
 import (
-	"github.com/uter-ai/uter/i18n"
 	"net/http"
 	"net/url"
 
 	"github.com/uter-ai/uter/common"
-
 	"github.com/gin-gonic/gin"
 )
 
@@ -19,10 +17,7 @@ func TurnstileCheck() gin.HandlerFunc {
 		if common.TurnstileCheckEnabled {
 			response := c.Query("turnstile")
 			if response == "" {
-				c.JSON(http.StatusOK, gin.H{
-					"success": false,
-					"message": i18n.T(c, i18n.MsgTurnstileToken_empty),
-				})
+				common.ApiErrorT(c, "Turnstile token is empty")
 				c.Abort()
 				return
 			}
@@ -53,10 +48,7 @@ func TurnstileCheck() gin.HandlerFunc {
 				return
 			}
 			if !res.Success {
-				c.JSON(http.StatusOK, gin.H{
-					"success": false,
-					"message": i18n.T(c, i18n.MsgTurnstileVerify_failed),
-				})
+				common.ApiErrorT(c, "Turnstile verification failed, please refresh and try again!")
 				c.Abort()
 				return
 			}

@@ -2,40 +2,48 @@ package jsplugin
 
 import (
 	"context"
+	"encoding"
+	"encoding/json"
 	"errors"
 	"fmt"
+	"maps"
+	"math/big"
+	"reflect"
 	"regexp"
-	goruntime "runtime"
 	"slices"
 	"strings"
+	"sync"
 	"time"
+	"unsafe"
 
+	"github.com/Calcium-Ion/moejs"
+	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/logger"
-
-	"github.com/grafana/sobek"
-	"github.com/grafana/sobek/parser"
 )
 
 const (
 	DefaultCallTimeout = 5 * time.Second
 	DefaultConcurrency = 8
 
-	// DefaultHeapLimitBytes 是插件执行期间允许的进程堆增量上限。
+	// DefaultHeapLimitBytes 是单次插件调用期间允许的 JavaScript 分配上限。
 	//
-	// 为什么需要：Sobek 运行时没有内存配额，插件拿到的 utils.* 里虽有 jsonStateBudget
-	// 一类的显式预算，但插件本身仍可在 5 秒超时窗口内自由分配——例如一个 while 循环里
-	// 反复 push 一个不断变长的字符串，默认并发 8 意味着 8 个这样的插件可以同时把堆
-	// 撑到 OOM。超时拦不住快速分配，GC 也追不上瞬时峰值。
+	// 为什么需要：超时看门狗只约束「跑多久」，管不住「一次分配多少」。一个 while
+	// 循环里反复 push 一个不断变长的字符串，可以在超时窗口内把内存吃干——超时拦不住
+	// 快速分配，GC 也追不上瞬时峰值。默认并发 8 意味着 8 个这样的插件可以同时把堆
+	// 撑到 OOM。
 	//
-	// 这里盯的是【堆增量】而不是堆总量：进程自身的正常用量（渠道缓存、日志缓冲）
-	// 不该被算到插件头上，否则正常负载波动会误杀健康插件。
+	// 用 moejs 的 Options.MemoryLimit 而非采样 goruntime.ReadMemStats：前者是引擎
+	// 在分配点精确计费、按「距上次 reset」结算（ReleaseCallData 会自动重置），不引入
+	// STW 停顿，也不会把进程自身的正常用量（渠道缓存、日志缓冲）算到插件头上。
 	DefaultHeapLimitBytes = 512 << 20 // 512 MiB
-
-	// memoryWatchInterval 是堆用量采样间隔。取值需权衡：间隔太短会让 runtime.ReadMemStats
-	// 的 STW 停顿频繁落在插件热路径上（ReadMemStats 会短暂阻塞），太长则来不及在
-	// 分配爆炸时及时中断。50ms 足以在秒级爆炸里抢到几次干预机会，又不至于显著影响吞吐。
-	memoryWatchInterval = 50 * time.Millisecond
 )
+
+// ErrHeapLimitExceeded 表示插件单次调用的 JavaScript 分配超过了允许上限。
+//
+// 调用方看到的是 moejs 的 *InterruptedError（内含 *MemoryLimitError），
+// errors.Is(err, ErrHeapLimitExceeded) 为真——保留这个哨兵是为了让既有告警与
+// 指标口径不必跟着引擎更换而改写。
+var ErrHeapLimitExceeded = errors.New("plugin heap limit exceeded")
 
 var ErrCallAdmissionTimeout = errors.New("plugin call admission timed out")
 
@@ -64,6 +72,21 @@ func (e *HookError) Unwrap() error {
 	return e.wrapped
 }
 
+// ResultError reports a hook result that CallInto could not store: one the
+// host codec cannot encode (a NaN, an infinity, a cycle) or one the target's
+// type rejects. Its message is the codec's.
+type ResultError struct {
+	err error
+}
+
+func (e *ResultError) Error() string {
+	return e.err.Error()
+}
+
+func (e *ResultError) Unwrap() error {
+	return e.err
+}
+
 func newHookError(hook, rawMessage string, wrapped error) *HookError {
 	var b strings.Builder
 	b.Grow(len(rawMessage))
@@ -85,37 +108,6 @@ func newHookError(hook, rawMessage string, wrapped error) *HookError {
 	return &HookError{Hook: hook, Message: message, wrapped: wrapped}
 }
 
-func hookErrorFromException(hook string, exc *sobek.Exception, wrapped error) (hookErr *HookError) {
-	// Reading message/toString executes plugin getters, which can throw again
-	// and panic sobek. By this point the caller's recover is already consumed,
-	// so a second panic would crash the process; fall back to a blank message.
-	defer func() {
-		if recover() != nil {
-			hookErr = newHookError(hook, "", wrapped)
-		}
-	}()
-	raw := ""
-	if exc != nil {
-		if val := exc.Value(); val != nil && !sobek.IsUndefined(val) && !sobek.IsNull(val) {
-			gotMessage := false
-			if obj, ok := val.(*sobek.Object); ok {
-				if msg := obj.Get("message"); msg != nil && !sobek.IsUndefined(msg) && !sobek.IsNull(msg) {
-					raw = msg.String()
-					gotMessage = true
-				}
-			}
-			if !gotMessage {
-				if exported, ok := val.Export().(string); ok {
-					raw = exported
-				} else {
-					raw = val.String()
-				}
-			}
-		}
-	}
-	return newHookError(hook, raw, wrapped)
-}
-
 var forbiddenSyntax = regexp.MustCompile(`(?m)(^|[^A-Za-z0-9_$])(async|await|import)([^A-Za-z0-9_$]|$)`)
 
 type Options struct {
@@ -133,15 +125,36 @@ type Engine struct {
 	timeout   time.Duration
 	now       func() time.Time
 	log       func(string)
-	module    *sobek.SourceTextModuleRecord
+	module    *moejs.Module
 	pool      chan *runtimeInstance
 	semaphore chan struct{}
+	// parked bounds the runtimes that lent their slot to other calls while
+	// utils.fetch waits on the network; its capacity is the concurrency.
+	parked  chan struct{}
+	hooksMu sync.RWMutex
+	hooks   map[hookKey]moejs.Hook
+	// exports holds the exports that were not undefined once the module
+	// loaded; it is written only by Compile.
+	exports map[string]struct{}
 }
 
+// hookKey names a cached hook handle. Contract hooks are an export and at
+// most two members (protocols.<name>.<hook>); longer paths only come from
+// fixture requests and are resolved on every call.
+type hookKey struct {
+	export  string
+	members [2]string
+	depth   int
+}
+
+// Fixture requests name arbitrary members, so the handle cache is bounded.
+const maxCachedHooks = 256
+
 type runtimeInstance struct {
-	runtime    *sobek.Runtime
-	module     sobek.ModuleInstance
+	runtime    *moejs.Runtime
 	logContext *runtimeLogContext
+	// call is the hook call running on the runtime, nil between calls.
+	call *runtimeCall
 }
 
 type runtimeLogContext struct {
@@ -149,23 +162,21 @@ type runtimeLogContext struct {
 }
 
 // Compile performs upload-time syntax checks and compiles an ESM plugin once.
-// All Sobek-specific module and runtime handling is intentionally kept here.
+// All engine-specific module and runtime handling is intentionally kept here.
 func Compile(source string, options Options) (*Engine, error) {
 	if match := forbiddenSyntax.FindString(sourceWithoutCommentsAndStrings(source)); match != "" {
 		return nil, fmt.Errorf("unsupported plugin syntax %q: plugins must be synchronous and cannot import modules", strings.TrimSpace(match))
 	}
 
-	resolve := func(_ any, specifier string) (sobek.ModuleRecord, error) {
-		return nil, fmt.Errorf("plugin imports are disabled: %s", specifier)
-	}
-	// Plugin source is untrusted; without this option a sourceMappingURL
-	// comment makes the parser read arbitrary server files via os.ReadFile.
-	module, err := sobek.ParseModule(options.Key+".js", source, resolve, parser.WithDisableSourceMaps)
+	// The compiler never reads files, so a sourceMappingURL comment in
+	// untrusted source stays inert.
+	module, err := moejs.Compile(options.Key+".js", source)
 	if err != nil {
 		return nil, fmt.Errorf("compile plugin: %w", err)
 	}
-	if err = module.Link(); err != nil {
-		return nil, fmt.Errorf("link plugin: %w", err)
+	// export ... from has no import keyword; the host links no modules.
+	if requests := module.Requests(); len(requests) > 0 {
+		return nil, fmt.Errorf("unsupported plugin syntax: re-export from %q: plugins must be synchronous and cannot import modules", requests[0])
 	}
 
 	timeout := options.Timeout
@@ -189,20 +200,28 @@ func Compile(source string, options Options) (*Engine, error) {
 		log:       options.Log,
 		module:    module,
 		semaphore: make(chan struct{}, concurrency),
+		parked:    make(chan struct{}, concurrency),
 		pool:      make(chan *runtimeInstance, concurrency),
+		hooks:     make(map[hookKey]moejs.Hook),
+		exports:   make(map[string]struct{}),
 	}
 	instance, err := engine.newRuntime(context.Background())
 	if err != nil {
 		return nil, err
+	}
+	for _, name := range module.Exports() {
+		if value, found := instance.runtime.Export(name); found && !value.IsUndefined() {
+			engine.exports[name] = struct{}{}
+		}
 	}
 	instance.logContext.context = nil
 	engine.putRuntime(instance)
 	return engine, nil
 }
 
-// Export returns one module export without exposing Sobek values outside the
+// Export returns one module export without exposing engine values outside the
 // engine boundary. It is used for declarative exports such as meta.
-func (e *Engine) Export(ctx context.Context, exportName string) (result any, err error) {
+func (e *Engine) Export(ctx context.Context, exportName string) (any, error) {
 	select {
 	case e.semaphore <- struct{}{}:
 		defer func() { <-e.semaphore }()
@@ -223,57 +242,48 @@ func (e *Engine) Export(ctx context.Context, exportName string) (result any, err
 		}
 	}()
 	timedOut := errors.New("plugin export timed out")
-	stopInterrupt := watchRuntimeContext(instance.runtime, ctx, e.timeout, timedOut)
-	defer stopInterrupt()
-	defer func() {
-		if recovered := recover(); recovered != nil {
-			reusable = false
-			switch value := recovered.(type) {
-			case *sobek.InterruptedError:
-				err = fmt.Errorf("plugin %s@%s export %s interrupted: %v", e.key, e.version, exportName, value.Value())
-			case *sobek.Exception:
-				err = fmt.Errorf("plugin %s@%s export %s failed: %v", e.key, e.version, exportName, value)
-			default:
-				panic(recovered)
-			}
-		}
-	}()
-	value := instance.module.GetBindingValue(exportName)
-	if value == nil || sobek.IsUndefined(value) {
+	watchdog := watchRuntimeContext(instance.runtime, ctx, e.timeout, timedOut)
+	defer watchdog.stop()
+	value, found := instance.runtime.Export(exportName)
+	if !found || value.IsUndefined() {
 		return nil, fmt.Errorf("plugin export %q not found", exportName)
 	}
-	return value.Export(), nil
+	result, err := instance.runtime.ToGo(value)
+	if err == nil {
+		return result, nil
+	}
+	reusable = false
+	var interrupted *moejs.InterruptedError
+	if errors.As(err, &interrupted) {
+		return nil, fmt.Errorf("plugin %s@%s export %s interrupted: %w", e.key, e.version, exportName, interruptCause(interrupted))
+	}
+	var exception *moejs.Exception
+	errors.As(err, &exception)
+	return nil, fmt.Errorf("plugin %s@%s export %s failed: %w%s", e.key, e.version, exportName, err, thrownAt(instance.runtime, exception))
 }
 
-// HasExport reports whether a module export exists. Optional contract hooks
-// should be detected with this method instead of relying on engine errors.
-func (e *Engine) HasExport(ctx context.Context, exportName string) (bool, error) {
-	select {
-	case e.semaphore <- struct{}{}:
-		defer func() { <-e.semaphore }()
-	case <-ctx.Done():
-		return false, ctx.Err()
-	}
-	instance, err := e.getRuntime(ctx)
-	if err != nil {
-		return false, err
-	}
-	defer func() {
-		instance.logContext.context = nil
-		e.putRuntime(instance)
-	}()
-	value := instance.module.GetBindingValue(exportName)
-	return value != nil && !sobek.IsUndefined(value), nil
+// HasExport reports whether a module export was defined when the plugin
+// loaded: an export that was undefined then counts as absent, and a later
+// assignment is not seen. Optional contract hooks should be detected with
+// this method instead of relying on engine errors. It runs no JavaScript, so
+// it neither waits for nor takes a call slot.
+func (e *Engine) HasExport(exportName string) bool {
+	_, found := e.exports[exportName]
+	return found
 }
 
 // HasCallablePath reports whether an exported value, or a nested member below
 // it, exists and is callable.
-func (e *Engine) HasCallablePath(ctx context.Context, exportName string, members ...string) (found bool, err error) {
+func (e *Engine) HasCallablePath(ctx context.Context, exportName string, members ...string) (bool, error) {
 	select {
 	case e.semaphore <- struct{}{}:
 		defer func() { <-e.semaphore }()
 	case <-ctx.Done():
 		return false, ctx.Err()
+	}
+	hook, err := e.hook(exportName, members)
+	if err != nil {
+		return false, nil
 	}
 	instance, err := e.getRuntime(ctx)
 	if err != nil {
@@ -288,45 +298,72 @@ func (e *Engine) HasCallablePath(ctx context.Context, exportName string, members
 		}
 	}()
 	timedOut := errors.New("plugin inspection timed out")
-	stopInterrupt := watchRuntimeContext(instance.runtime, ctx, e.timeout, timedOut)
-	defer stopInterrupt()
-	defer func() {
-		if recovered := recover(); recovered != nil {
-			reusable = false
-			hookName := strings.Join(append([]string{exportName}, members...), ".")
-			switch value := recovered.(type) {
-			case *sobek.InterruptedError:
-				err = fmt.Errorf("plugin %s@%s hook %s inspection interrupted: %v", e.key, e.version, hookName, value.Value())
-			case *sobek.Exception:
-				err = fmt.Errorf("plugin %s@%s hook %s inspection failed: %v", e.key, e.version, hookName, value)
-			default:
-				panic(recovered)
-			}
-		}
-	}()
-	value, _, found := resolveExportPath(instance, exportName, members)
-	if !found {
-		return false, nil
+	watchdog := watchRuntimeContext(instance.runtime, ctx, e.timeout, timedOut)
+	defer watchdog.stop()
+	found, err := instance.runtime.Has(hook)
+	if err == nil {
+		return found, nil
 	}
-	_, callable := sobek.AssertFunction(value)
-	return callable, nil
+	reusable = false
+	var interrupted *moejs.InterruptedError
+	if errors.As(err, &interrupted) {
+		return false, fmt.Errorf("plugin %s@%s hook %s inspection interrupted: %w", e.key, e.version, hook.Name(), interruptCause(interrupted))
+	}
+	var exception *moejs.Exception
+	errors.As(err, &exception)
+	return false, fmt.Errorf("plugin %s@%s hook %s inspection failed: %w%s", e.key, e.version, hook.Name(), err, thrownAt(instance.runtime, exception))
 }
+
+// RawJSON is a hook argument given as JSON text: the hook receives JSON.parse
+// of it, members in order, whether it is an argument or inside one, with no Go
+// values built in between; text nested too deep for JSON.parse is decoded with
+// the host codec instead. The engine parses the bytes in place, without the
+// copy ParseJSON makes, and strings of the call's result may share them, so
+// the caller must never change them once passed.
+type RawJSON []byte
 
 // Call invokes one named module export and returns its JSON-compatible value.
 func (e *Engine) Call(ctx context.Context, exportName string, args ...any) (result any, err error) {
-	return e.call(ctx, 0, exportName, nil, args...)
+	result, _, err = e.call(ctx, callOptions{}, exportName, nil, args...)
+	return result, err
+}
+
+// CallInto invokes one named module export and stores its result in target as
+// the host codec decodes the encoding of the value Call returns, without that
+// round trip for plain results. A result the codec cannot encode or target's
+// type rejects is a *ResultError, and target may then hold part of it.
+func (e *Engine) CallInto(ctx context.Context, target any, exportName string, args ...any) error {
+	_, _, err := e.call(ctx, callOptions{target: target}, exportName, nil, args...)
+	return err
+}
+
+// CallJSONInto is CallInto with the semantics of JSON.stringify's text of the
+// result instead of the host codec's encoding: objects keep their member
+// order, which a json.RawMessage in target receives as text, members whose
+// value is undefined are left out and toJSON runs.
+func (e *Engine) CallJSONInto(ctx context.Context, target any, exportName string, args ...any) error {
+	_, _, err := e.call(ctx, callOptions{target: target, stringify: true}, exportName, nil, args...)
+	return err
 }
 
 // CallMember invokes a function stored on an exported object, such as a
 // renderer in the renderers export.
 func (e *Engine) CallMember(ctx context.Context, exportName, memberName string, args ...any) (result any, err error) {
-	return e.call(ctx, 0, exportName, []string{memberName}, args...)
+	result, _, err = e.call(ctx, callOptions{}, exportName, []string{memberName}, args...)
+	return result, err
 }
 
 // CallPath invokes a function nested below an exported object. It is used for
 // protocol hooks such as protocols.openai_responses.renderEvents.
 func (e *Engine) CallPath(ctx context.Context, exportName string, members []string, args ...any) (result any, err error) {
-	return e.call(ctx, 0, exportName, members, args...)
+	result, _, err = e.call(ctx, callOptions{}, exportName, members, args...)
+	return result, err
+}
+
+// CallPathInto is CallInto for a function nested below an exported object.
+func (e *Engine) CallPathInto(ctx context.Context, target any, exportName string, members []string, args ...any) error {
+	_, _, err := e.call(ctx, callOptions{target: target}, exportName, members, args...)
+	return err
 }
 
 // CallPathWithAdmissionTimeout gives long-lived observers a separate bound for
@@ -340,89 +377,191 @@ func (e *Engine) CallPathWithAdmissionTimeout(
 	members []string,
 	args ...any,
 ) (result any, err error) {
-	return e.call(ctx, admissionTimeout, exportName, members, args...)
+	result, _, err = e.call(ctx, callOptions{admissionTimeout: admissionTimeout}, exportName, members, args...)
+	return result, err
 }
 
-func (e *Engine) call(
+// CallPathWithMemberJSON is CallPathWithAdmissionTimeout that also returns the
+// result's member as the text JSON.stringify writes for it, which keeps the
+// member order of its objects. The text is nil when member is empty or the
+// result has no such member.
+func (e *Engine) CallPathWithMemberJSON(
 	ctx context.Context,
 	admissionTimeout time.Duration,
+	member string,
 	exportName string,
 	members []string,
 	args ...any,
-) (result any, err error) {
-	if err = e.acquireCallSlot(ctx, admissionTimeout); err != nil {
-		return nil, err
-	}
-	defer func() { <-e.semaphore }()
+) (result any, text json.RawMessage, err error) {
+	return e.call(ctx, callOptions{admissionTimeout: admissionTimeout, jsonMember: member}, exportName, members, args...)
+}
 
+// callOptions is what a hook call does besides calling: the bound on waiting
+// for a JavaScript slot, the Go value the result is stored in instead of
+// being returned (from its JSON.stringify text when stringify is set), and a
+// member of the result also returned as JSON text.
+type callOptions struct {
+	admissionTimeout time.Duration
+	target           any
+	stringify        bool
+	jsonMember       string
+}
+
+func (e *Engine) call(ctx context.Context, opts callOptions, exportName string, members []string, args ...any) (any, json.RawMessage, error) {
+	if err := e.acquireCallSlot(ctx, opts.admissionTimeout); err != nil {
+		return nil, nil, err
+	}
+	call := &runtimeCall{engine: e, ctx: ctx, holdsSlot: true}
+	// utils.fetch may lend the slot out; return what the call holds now.
+	defer call.release()
+
+	hook, err := e.hook(exportName, members)
+	if err != nil {
+		if len(members) == 0 {
+			return nil, nil, fmt.Errorf("plugin export %q not found", exportName)
+		}
+		return nil, nil, fmt.Errorf("plugin hook %q not found", exportName)
+	}
 	instance, err := e.getRuntime(ctx)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
+	call.runtime, call.hook = instance.runtime, hook.Name()
+	call.fetcher, _ = ctx.Value(fetcherContextKey{}).(Fetcher)
+	instance.call = call
 	reusable := true
 	defer func() {
 		instance.runtime.ClearInterrupt()
 		instance.logContext.context = nil
+		instance.call = nil
 		if reusable {
+			// An idle pooled runtime must not keep this call's request
+			// data alive.
+			instance.runtime.ReleaseCallData()
 			e.putRuntime(instance)
 		}
 	}()
 
-	hookName := strings.Join(append([]string{exportName}, members...), ".")
-	timedOut := errors.New("plugin call timed out")
-	stopInterrupt := watchRuntimeContext(instance.runtime, ctx, e.timeout, timedOut)
-	defer stopInterrupt()
-	defer func() {
-		if recovered := recover(); recovered != nil {
-			reusable = false
-			switch value := recovered.(type) {
-			case *sobek.InterruptedError:
-				err = fmt.Errorf("plugin %s@%s hook %s interrupted: %v", e.key, e.version, hookName, value.Value())
-			case *sobek.Exception:
-				wrapped := fmt.Errorf("plugin %s@%s hook %s failed: %v", e.key, e.version, hookName, value)
-				err = hookErrorFromException(hookName, value, wrapped)
-			default:
-				panic(recovered)
+	callArgs := make([]moejs.Value, 0, 4)
+	for index, arg := range args {
+		var converted moejs.Value
+		if raw, ok := arg.(RawJSON); !ok {
+			value, _ := pluginValue(instance.runtime, arg, 0)
+			converted, err = instance.runtime.FromGo(value)
+		} else if converted, err = instance.runtime.ParseJSONString(unsafe.String(unsafe.SliceData(raw), len(raw))); err != nil {
+			// JSON.parse stops at a lower nesting depth than the host codec.
+			var decoded any
+			if err = common.Unmarshal(raw, &decoded); err == nil {
+				converted, err = instance.runtime.FromGo(decoded)
 			}
 		}
-	}()
-
-	value, resolvedHookName, found := resolveExportPath(instance, exportName, members)
-	hookName = resolvedHookName
-	if !found {
-		if len(members) == 0 {
-			return nil, fmt.Errorf("plugin export %q not found", exportName)
+		if err != nil {
+			return nil, nil, fmt.Errorf("plugin %s@%s hook %s argument %d: %w", e.key, e.version, hook.Name(), index+1, err)
 		}
-		return nil, fmt.Errorf("plugin hook %q not found", hookName)
-	}
-	if value == nil || sobek.IsUndefined(value) {
-		return nil, fmt.Errorf("plugin export %q not found", exportName)
-	}
-	callable, ok := sobek.AssertFunction(value)
-	if !ok {
-		return nil, fmt.Errorf("plugin hook %q is not a function", hookName)
+		callArgs = append(callArgs, converted)
 	}
 
-	callArgs := make([]sobek.Value, len(args))
-	for i, arg := range args {
-		callArgs[i] = instance.runtime.ToValue(arg)
-	}
+	timedOut := errors.New("plugin call timed out")
+	call.watchdog = watchRuntimeContext(instance.runtime, ctx, e.timeout, timedOut)
+	// utils.fetch pauses and restarts the watchdog; stop whichever watch is
+	// current when the call ends.
+	defer call.watchdog.stop()
 
-	value, err = callable(sobek.Undefined(), callArgs...)
-	if err != nil {
-		var interrupted *sobek.InterruptedError
+	value, err := instance.runtime.Call(hook, callArgs...)
+	var interrupted *moejs.InterruptedError
+	var exception *moejs.Exception
+	if err == nil {
+		var result any
+		var memberText json.RawMessage
+		switch {
+		case opts.target != nil && opts.stringify:
+			err = instance.runtime.Unmarshal(value, opts.target)
+		case opts.target != nil:
+			err = instance.runtime.ToGoInto(value, opts.target)
+		default:
+			result, err = instance.runtime.ToGo(value)
+		}
+		if err == nil && opts.jsonMember != "" {
+			// After the result's Go value: AppendJSON may run a toJSON or
+			// a getter, which ToGo never does.
+			var member moejs.Value
+			if member, err = instance.runtime.Get(value, opts.jsonMember); err == nil && !member.IsUndefined() {
+				memberText, err = instance.runtime.AppendJSON(nil, member)
+			}
+		}
+		if err == nil {
+			return result, memberText, nil
+		}
 		if errors.As(err, &interrupted) {
 			reusable = false
-			return nil, fmt.Errorf("plugin %s@%s hook %s failed: %w", e.key, e.version, hookName, err)
+			return nil, nil, fmt.Errorf("plugin %s@%s hook %s interrupted: %w", e.key, e.version, hook.Name(), interruptCause(interrupted))
 		}
-		wrapped := fmt.Errorf("plugin %s@%s hook %s failed: %w", e.key, e.version, hookName, err)
-		var exc *sobek.Exception
-		if errors.As(err, &exc) {
-			return nil, hookErrorFromException(hookName, exc, wrapped)
+		// Past ToGo's errors, ToGoInto fails as json.Marshal and
+		// json.Unmarshal do, which is the host codec (common/json.go), and
+		// Unmarshal and AppendJSON as JSON.stringify does (a BigInt, a cycle).
+		var internal *moejs.InternalError
+		if (opts.target != nil || opts.jsonMember != "") && !errors.As(err, &exception) && !errors.As(err, &internal) {
+			return nil, nil, &ResultError{err: err}
 		}
-		return nil, wrapped
 	}
-	return value.Export(), nil
+	switch {
+	case errors.Is(err, moejs.ErrHookNotFound):
+		if len(members) == 0 {
+			return nil, nil, fmt.Errorf("plugin export %q not found", exportName)
+		}
+		// Name the path up to the first missing member, as far as data
+		// properties show it; getters on the path are not run again.
+		hookName := exportName
+		current, found := instance.runtime.Export(exportName)
+		for _, member := range members {
+			if !found || current.IsNullish() {
+				break
+			}
+			hookName += "." + member
+			if !current.IsObject() {
+				break
+			}
+			current, found = current.AsObject().GetOwnDataValue(instance.runtime.Realm().KeyFromGoString(member))
+		}
+		return nil, nil, fmt.Errorf("plugin hook %q not found", hookName)
+	case errors.Is(err, moejs.ErrNotCallable):
+		return nil, nil, fmt.Errorf("plugin hook %q is not a function", hook.Name())
+	case errors.As(err, &interrupted):
+		reusable = false
+		return nil, nil, fmt.Errorf("plugin %s@%s hook %s failed: %w", e.key, e.version, hook.Name(), interruptCause(interrupted))
+	case errors.As(err, &exception):
+		wrapped := fmt.Errorf("plugin %s@%s hook %s failed: %w%s", e.key, e.version, hook.Name(), err, thrownAt(instance.runtime, exception))
+		return nil, nil, newHookError(hook.Name(), exception.Message(), wrapped)
+	}
+	reusable = false
+	return nil, nil, fmt.Errorf("plugin %s@%s hook %s failed: %w", e.key, e.version, hook.Name(), err)
+}
+
+// hook resolves a hook path against the module's export table. Only
+// declared exports resolve; the handle is cached, while the bindings it
+// names are read live on every call.
+func (e *Engine) hook(exportName string, members []string) (moejs.Hook, error) {
+	key := hookKey{export: exportName, depth: len(members)}
+	cacheable := len(members) <= len(key.members)
+	if cacheable {
+		copy(key.members[:], members)
+		e.hooksMu.RLock()
+		hook, found := e.hooks[key]
+		e.hooksMu.RUnlock()
+		if found {
+			return hook, nil
+		}
+	}
+	hook, err := e.module.Hook(exportName, members...)
+	if err != nil || !cacheable {
+		return hook, err
+	}
+	e.hooksMu.Lock()
+	if len(e.hooks) < maxCachedHooks {
+		e.hooks[key] = hook
+	}
+	e.hooksMu.Unlock()
+	return hook, nil
 }
 
 func (e *Engine) acquireCallSlot(ctx context.Context, admissionTimeout time.Duration) error {
@@ -450,25 +589,153 @@ func (e *Engine) acquireCallSlot(ctx context.Context, admissionTimeout time.Dura
 	}
 }
 
-func resolveExportPath(instance *runtimeInstance, exportName string, members []string) (sobek.Value, string, bool) {
-	value := instance.module.GetBindingValue(exportName)
-	hookName := exportName
-	if value == nil || sobek.IsUndefined(value) || sobek.IsNull(value) {
-		return nil, hookName, false
+// interruptCause is what stopped a runtime: the context cause
+// watchRuntimeContext interrupted it with, so errors.Is sees a caller's
+// cancellation through the host error.
+func interruptCause(interrupted *moejs.InterruptedError) error {
+	// 分配超限时引擎抛出的中断值是 *moejs.MemoryLimitError。改写成 uter 自己的哨兵，
+	// 让既有的堆看门狗告警与 errors.Is(ErrHeapLimitExceeded) 判据继续成立——
+	// 否则换成 moejs 后这个越限事件会静默降级成一句普通的"interrupted"。
+	var limitErr *moejs.MemoryLimitError
+	if errors.As(interrupted, &limitErr) {
+		return fmt.Errorf("%w: %s", ErrHeapLimitExceeded, limitErr)
 	}
-	for _, member := range members {
-		hookName += "." + member
-		object := value.ToObject(instance.runtime)
-		own := slices.Contains(object.GetOwnPropertyNames(), member)
-		if !own {
-			return nil, hookName, false
+	if cause, ok := interrupted.Value.(error); ok {
+		return cause
+	}
+	return interrupted
+}
+
+// thrownAt is the frame an Error was thrown from, as " at fn (file:line:col)",
+// for host logs; it is empty for thrown values that are not Errors and for
+// errors that are not exceptions (exception is nil).
+func thrownAt(runtime *moejs.Runtime, exception *moejs.Exception) string {
+	_, frames, found := strings.Cut(runtime.StackTrace(exception), "\n    at ")
+	if !found {
+		return ""
+	}
+	frame, _, _ := strings.Cut(frames, "\n")
+	return " at " + frame
+}
+
+// maxPluginValueDepth bounds the argument walk; deeper values, which no
+// host-built argument reaches, are passed on as they are.
+const maxPluginValueDepth = 512
+
+// pluginValueContainers are the container types moejs converts; named types
+// with one of these underlying types are only retyped.
+var pluginValueContainers = []reflect.Type{
+	reflect.TypeFor[map[string]any](),
+	reflect.TypeFor[map[string]string](),
+	reflect.TypeFor[map[string][]string](),
+	reflect.TypeFor[[]any](),
+	reflect.TypeFor[[]string](),
+	reflect.TypeFor[[]map[string]any](),
+}
+
+// pluginValue returns a hook argument in the shapes moejs converts: nil,
+// booleans, numbers, strings, JSON-shaped maps and slices and engine values.
+// A RawJSON inside the argument becomes rt's parse of it (RawJSON); other Go
+// values (structs, pointers, maps and slices of other element types) take
+// their JSON form through the configured codec, and named scalars and
+// containers become their underlying type. changed is false when v has
+// supported shapes throughout, the usual case, so an argument is passed on
+// without a copy.
+func pluginValue(rt *moejs.Runtime, v any, depth int) (converted any, changed bool) {
+	if depth > maxPluginValueDepth {
+		return v, false
+	}
+	switch typed := v.(type) {
+	case nil, bool, string, int, int8, int16, int32, int64, uint, uint8, uint16, uint32, uint64,
+		float32, float64, json.Number, *big.Int, []byte, []string, map[string]string, map[string][]string,
+		moejs.Value, moejs.NativeFunc:
+		return v, false
+	case RawJSON:
+		if parsed, err := rt.ParseJSONString(unsafe.String(unsafe.SliceData(typed), len(typed))); err == nil {
+			return parsed, true
 		}
-		value = object.Get(member)
-		if value == nil || sobek.IsUndefined(value) || sobek.IsNull(value) {
-			return nil, hookName, false
+		// JSON.parse stops at a lower nesting depth than the host codec.
+		var decoded any
+		if err := common.Unmarshal(typed, &decoded); err != nil {
+			return v, false
+		}
+		return decoded, true
+	case map[string]any:
+		var copied map[string]any
+		for key, item := range typed {
+			if item, changed = pluginValue(rt, item, depth+1); changed {
+				if copied == nil {
+					copied = maps.Clone(typed)
+				}
+				copied[key] = item
+			}
+		}
+		if copied == nil {
+			return v, false
+		}
+		return copied, true
+	case []any:
+		var copied []any
+		for index, item := range typed {
+			if item, changed = pluginValue(rt, item, depth+1); changed {
+				if copied == nil {
+					copied = slices.Clone(typed)
+				}
+				copied[index] = item
+			}
+		}
+		if copied == nil {
+			return v, false
+		}
+		return copied, true
+	case []map[string]any:
+		var copied []map[string]any
+		for index, item := range typed {
+			if next, changed := pluginValue(rt, item, depth+1); changed {
+				if copied == nil {
+					copied = slices.Clone(typed)
+				}
+				copied[index] = next.(map[string]any)
+			}
+		}
+		if copied == nil {
+			return v, false
+		}
+		return copied, true
+	}
+	_, marshaler := v.(json.Marshaler)
+	_, textMarshaler := v.(encoding.TextMarshaler)
+	if !marshaler && !textMarshaler {
+		value := reflect.ValueOf(v)
+		switch value.Kind() {
+		case reflect.Bool:
+			return value.Bool(), true
+		case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+			return value.Int(), true
+		case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uintptr:
+			return value.Uint(), true
+		case reflect.Float32, reflect.Float64:
+			return value.Float(), true
+		case reflect.String:
+			return value.String(), true
+		case reflect.Map, reflect.Slice:
+			for _, container := range pluginValueContainers {
+				if value.Type().ConvertibleTo(container) {
+					converted, _ = pluginValue(rt, value.Convert(container).Interface(), depth)
+					return converted, true
+				}
+			}
 		}
 	}
-	return value, hookName, true
+	data, err := common.Marshal(v)
+	if err != nil {
+		return v, false
+	}
+	var decoded any
+	if err = common.Unmarshal(data, &decoded); err != nil {
+		return v, false
+	}
+	return decoded, true
 }
 
 // Idle runtimes are bounded by the execution limit and survive GC. Start with
@@ -490,85 +757,84 @@ func (e *Engine) getRuntime(ctx context.Context) (*runtimeInstance, error) {
 	}
 }
 
-// A timeout callback must finish before its runtime can be reused. Merely
-// stopping a timer does not wait for an already-started Interrupt call.
-// watchRuntimeContext 把「调用方 ctx 取消」「超过 timeout」和「堆增量超限」三类
-// 中断收敛到同一个 Sobek 中断点上，并返回停表函数。
-func watchRuntimeContext(runtime *sobek.Runtime, ctx context.Context, timeout time.Duration, timeoutError error) func() {
-	callContext, cancel := context.WithTimeoutCause(ctx, timeout, timeoutError)
+// runtimeWatchdog interrupts a runtime with timeoutError once it has run for
+// its timeout, or with the context's cause once ctx ends. utils.fetch pauses
+// it, so the timeout counts JavaScript time only. A timeout callback must
+// finish before its runtime can be reused: merely stopping a timer does not
+// wait for an already-started Interrupt call.
+type runtimeWatchdog struct {
+	runtime      *moejs.Runtime
+	ctx          context.Context
+	timeoutError error
+	remaining    time.Duration
+	started      time.Time
+	watch        context.Context
+	stopWatch    func() bool
+	cancel       context.CancelFunc
+	interrupted  chan struct{}
+	paused       bool
+}
+
+func watchRuntimeContext(runtime *moejs.Runtime, ctx context.Context, timeout time.Duration, timeoutError error) *runtimeWatchdog {
+	watchdog := &runtimeWatchdog{runtime: runtime, ctx: ctx, timeoutError: timeoutError, remaining: timeout}
+	watchdog.start()
+	return watchdog
+}
+
+func (w *runtimeWatchdog) start() {
+	watch, cancel := context.WithTimeoutCause(w.ctx, w.remaining, w.timeoutError)
 	interrupted := make(chan struct{})
-	stop := context.AfterFunc(callContext, func() {
-		runtime.Interrupt(context.Cause(callContext))
+	w.stopWatch = context.AfterFunc(watch, func() {
+		w.runtime.Interrupt(context.Cause(watch))
 		close(interrupted)
 	})
-	stopMemoryWatch := watchRuntimeHeap(runtime, callContext)
-	return func() {
-		stopMemoryWatch()
-		if !stop() {
-			<-interrupted
-		}
-		cancel()
+	w.watch, w.cancel, w.interrupted = watch, cancel, interrupted
+	w.started, w.paused = time.Now(), false
+}
+
+func (w *runtimeWatchdog) stop() {
+	if w.paused {
+		return
+	}
+	if !w.stopWatch() {
+		<-w.interrupted
+	}
+	w.cancel()
+}
+
+// pause stops the clock while a host function waits. It reports false when
+// the watchdog already fired: its interrupt is then ending the call, and the
+// host function must return instead of waiting.
+func (w *runtimeWatchdog) pause() bool {
+	if !w.stopWatch() {
+		<-w.interrupted
+		return false
+	}
+	w.cancel()
+	w.remaining -= time.Since(w.started)
+	w.paused = true
+	return true
+}
+
+// resume restarts the clock with the time left at pause and the same timeout
+// cause. When the time is up or ctx ended meanwhile, it waits for the
+// interrupt that follows, so the host function can return it.
+func (w *runtimeWatchdog) resume() {
+	w.start()
+	if w.watch.Err() != nil {
+		<-w.interrupted
 	}
 }
 
-// watchRuntimeHeap 在调用窗口内周期性采样堆增量，越限即中断运行时。
-//
-// 与超时看门狗共用 runtime.Interrupt：Sobek 的中断是协作式的，JS 引擎会在下一个
-// 可中断点抛出 InterruptedError，随后调用点的 recover 把它转成普通错误——因此
-// 插件既不会崩进程，也拿不到「继续跑完」的余地。
-//
-// 采到越限后立即 return：本次调用已被中断，继续采样没有意义；而下一次调用会重新
-// 建立自己的看门狗和基准值。
-func watchRuntimeHeap(runtime *sobek.Runtime, ctx context.Context) func() {
-	var before goruntime.MemStats
-	goruntime.ReadMemStats(&before)
-
-	stop := make(chan struct{})
-	done := make(chan struct{})
-	go func() {
-		defer close(done)
-		ticker := time.NewTicker(memoryWatchInterval)
-		defer ticker.Stop()
-		for {
-			select {
-			case <-stop:
-				return
-			case <-ctx.Done():
-				return
-			case <-ticker.C:
-				var current goruntime.MemStats
-				goruntime.ReadMemStats(&current)
-				// HeapAlloc 是不触发 GC 的当前堆占用，读它才能看到「尚未被回收的
-				// 垃圾」——那正是瞬时爆炸的信号；HeapInuse 会因为 GC 而滞后。
-				//
-				// 必须做饱和减法而不是直接相减：HeapAlloc 是 uint64，GC 一旦回收
-				// 掉本调用自己产生的垃圾，current 可能小于 before，直接相减会回绕成
-				// 接近 2^64 的天文数字，把一次正常的 GC 误判成堆爆炸并中断调用。
-				delta := uint64(0)
-				if current.HeapAlloc > before.HeapAlloc {
-					delta = current.HeapAlloc - before.HeapAlloc
-				}
-				if delta > DefaultHeapLimitBytes {
-					logger.LogWarn(ctx, "task_plugin subsystem=runtime event=heap_limit_exceeded limit_bytes=%d delta_bytes=%d",
-						DefaultHeapLimitBytes, delta)
-					runtime.Interrupt(ErrHeapLimitExceeded)
-					return
-				}
-			}
-		}
-	}()
-	return func() {
-		close(stop)
-		<-done
-	}
-}
-
-// ErrHeapLimitExceeded 表示插件执行期间的堆增量超过了允许上限。
-var ErrHeapLimitExceeded = errors.New("plugin heap limit exceeded")
-
-func (e *Engine) newRuntime(ctx context.Context) (instance *runtimeInstance, err error) {
-	runtime := sobek.New()
+func (e *Engine) newRuntime(ctx context.Context) (*runtimeInstance, error) {
+	// Code compiled from strings would bypass the upload-time syntax checks,
+	// so eval and the Function constructors throw an EvalError.
+	runtime := moejs.NewRuntime(moejs.Options{
+		DisableDynamicCode: true,
+		MemoryLimit:        DefaultHeapLimitBytes,
+	})
 	logContext := &runtimeLogContext{context: ctx}
+	instance := &runtimeInstance{runtime: runtime, logContext: logContext}
 	logOutput := e.log
 	if logOutput == nil {
 		logOutput = func(message string) {
@@ -577,36 +843,22 @@ func (e *Engine) newRuntime(ctx context.Context) (instance *runtimeInstance, err
 	}
 	if err := injectGlobals(runtime, func() string {
 		return fmt.Sprintf("[plugin:%s@%s]", e.key, e.version)
-	}, e.now, logOutput); err != nil {
+	}, e.now, logOutput, func() *runtimeCall { return instance.call }); err != nil {
 		return nil, fmt.Errorf("inject plugin utils: %w", err)
 	}
 	timedOut := errors.New("plugin initialization timed out")
-	stopInterrupt := watchRuntimeContext(runtime, ctx, e.timeout, timedOut)
-	defer func() {
-		stopInterrupt()
-		runtime.ClearInterrupt()
-	}()
-	defer func() {
-		if recovered := recover(); recovered != nil {
-			if interrupted, ok := recovered.(*sobek.InterruptedError); ok {
-				instance = nil
-				err = fmt.Errorf("initialize plugin %s@%s: %v", e.key, e.version, interrupted.Value())
-				return
-			}
-			panic(recovered)
-		}
-	}()
-	promise := runtime.CyclicModuleRecordEvaluate(e.module, func(_ any, specifier string) (sobek.ModuleRecord, error) {
-		return nil, fmt.Errorf("plugin imports are disabled: %s", specifier)
-	})
-	if promise.State() != sobek.PromiseStateFulfilled {
-		return nil, fmt.Errorf("evaluate plugin: %v", promise.Result().Export())
+	watchdog := watchRuntimeContext(runtime, ctx, e.timeout, timedOut)
+	err := runtime.Load(e.module)
+	watchdog.stop()
+	runtime.ClearInterrupt()
+	var interrupted *moejs.InterruptedError
+	if errors.As(err, &interrupted) {
+		return nil, fmt.Errorf("initialize plugin %s@%s: %w", e.key, e.version, interruptCause(interrupted))
 	}
-	return &runtimeInstance{
-		runtime:    runtime,
-		module:     runtime.GetModuleInstance(e.module),
-		logContext: logContext,
-	}, nil
+	if err != nil {
+		return nil, fmt.Errorf("evaluate plugin: %w", err)
+	}
+	return instance, nil
 }
 
 func sourceWithoutCommentsAndStrings(source string) string {

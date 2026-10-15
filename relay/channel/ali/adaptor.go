@@ -8,7 +8,6 @@ import (
 	"strings"
 
 	"github.com/uter-ai/uter/common"
-
 	"github.com/uter-ai/uter/relay/channel"
 	"github.com/uter-ai/uter/relay/channel/claude"
 	"github.com/uter-ai/uter/relay/channel/openai"
@@ -17,26 +16,16 @@ import (
 	"github.com/uter-ai/uter/relaykit/dto"
 	"github.com/uter-ai/uter/relaykit/types"
 	"github.com/uter-ai/uter/service"
-	"github.com/uter-ai/uter/setting/model_setting"
 
 	"github.com/gin-gonic/gin"
 	"github.com/samber/lo"
 )
 
-type Adaptor struct {
-	IsSyncImageModel bool
-}
+type Adaptor struct{}
 
 const aliAnthropicMessagesModelsEnv = "ALI_ANTHROPIC_MESSAGES_MODELS"
 const defaultAliAnthropicMessagesModels = "qwen,deepseek-v4,kimi,glm,minimax-m"
 
-/*
-	var syncModels = []string{
-		"z-image",
-		"qwen-image",
-		"wan2.6",
-	}
-*/
 func supportsAliAnthropicMessages(modelName string) bool {
 	normalizedModelName := strings.ToLower(strings.TrimSpace(modelName))
 	if normalizedModelName == "" {
@@ -56,16 +45,6 @@ func aliAnthropicMessagesModelPatterns() []string {
 	})
 }
 
-var syncModels = []string{
-	"z-image",
-	"qwen-image",
-	"wan2.6",
-}
-
-func isSyncImageModel(modelName string) bool {
-	return model_setting.IsSyncImageModel(modelName)
-}
-
 func (a *Adaptor) ConvertGeminiRequest(*gin.Context, *relaycommon.RelayInfo, *dto.GeminiChatRequest) (any, error) {
 	//TODO implement me
 	return nil, errors.New("not implemented")
@@ -73,6 +52,7 @@ func (a *Adaptor) ConvertGeminiRequest(*gin.Context, *relaycommon.RelayInfo, *dt
 
 func (a *Adaptor) ConvertClaudeRequest(c *gin.Context, info *relaycommon.RelayInfo, req *dto.ClaudeRequest) (any, error) {
 	if supportsAliAnthropicMessages(info.UpstreamModelName) {
+		ensureAnthropicWebSearchEntrypoint(req)
 		return req, nil
 	}
 
@@ -91,6 +71,18 @@ func (a *Adaptor) ConvertClaudeRequest(c *gin.Context, info *relaycommon.RelayIn
 }
 
 func (a *Adaptor) Init(info *relaycommon.RelayInfo) {
+	if info.RelayMode == constant.RelayModeResponses {
+		info.VendorToolUsage = aliResponsesToolUsage
+	}
+	if info.RelayFormat == types.RelayFormatClaude {
+		if supportsAliAnthropicMessages(info.UpstreamModelName) {
+			info.WebSearchBillingKey = aliSearchAgentKey
+		} else {
+			// Claude clients on models outside the Anthropic-compatible list
+			// are converted to compatible-mode Chat.
+			info.ConvOptions().WebSearch = encodeWebSearch(info)
+		}
+	}
 }
 
 func (a *Adaptor) GetRequestURL(info *relaycommon.RelayInfo) (string, error) {
@@ -109,21 +101,7 @@ func (a *Adaptor) GetRequestURL(info *relaycommon.RelayInfo) (string, error) {
 		case constant.RelayModeRerank:
 			fullRequestURL = fmt.Sprintf("%s/api/v1/services/rerank/text-rerank/text-rerank", info.ChannelBaseUrl)
 		case constant.RelayModeResponses:
-			fullRequestURL = fmt.Sprintf("%s/api/v2/apps/protocols/compatible-mode/v1/responses", info.ChannelBaseUrl)
-		case constant.RelayModeImagesGenerations:
-			if isSyncImageModel(info.UpstreamModelName) {
-				fullRequestURL = fmt.Sprintf("%s/api/v1/services/aigc/multimodal-generation/generation", info.ChannelBaseUrl)
-			} else {
-				fullRequestURL = fmt.Sprintf("%s/api/v1/services/aigc/text2image/image-synthesis", info.ChannelBaseUrl)
-			}
-		case constant.RelayModeImagesEdits:
-			if isOldWanModel(info.UpstreamModelName) {
-				fullRequestURL = fmt.Sprintf("%s/api/v1/services/aigc/image2image/image-synthesis", info.ChannelBaseUrl)
-			} else if isWanModel(info.UpstreamModelName) {
-				fullRequestURL = fmt.Sprintf("%s/api/v1/services/aigc/image-generation/generation", info.ChannelBaseUrl)
-			} else {
-				fullRequestURL = fmt.Sprintf("%s/api/v1/services/aigc/multimodal-generation/generation", info.ChannelBaseUrl)
-			}
+			fullRequestURL = fmt.Sprintf("%s/compatible-mode/v1/responses", info.ChannelBaseUrl)
 		case constant.RelayModeCompletions:
 			fullRequestURL = fmt.Sprintf("%s/compatible-mode/v1/completions", info.ChannelBaseUrl)
 		default:
@@ -142,19 +120,6 @@ func (a *Adaptor) SetupRequestHeader(c *gin.Context, req *http.Header, info *rel
 	}
 	if c.GetString("plugin") != "" {
 		req.Set("X-DashScope-Plugin", c.GetString("plugin"))
-	}
-	if info.RelayMode == constant.RelayModeImagesGenerations {
-		if isSyncImageModel(info.UpstreamModelName) {
-
-		} else {
-			req.Set("X-DashScope-Async", "enable")
-		}
-	}
-	if info.RelayMode == constant.RelayModeImagesEdits {
-		if isWanModel(info.UpstreamModelName) {
-			req.Set("X-DashScope-Async", "enable")
-		}
-		req.Set("Content-Type", "application/json")
 	}
 	return nil
 }
@@ -182,44 +147,18 @@ func (a *Adaptor) ConvertOpenAIRequest(c *gin.Context, info *relaycommon.RelayIn
 	}
 }
 
+// ConvertImageRequest 不再由原生链路承接：/v1/images/* 由 alibaba 任务插件
+// （openai_image 宿主协议）服务，插件声明了百炼全部图片模型。走到这个 adaptor 的
+// 模型要么插件没声明，要么与百炼模型表不同名，请求无法被服务。
+// 拒绝是一个跳过渠道重试的 400：同类型每个渠道都会拒绝同一个名字，可重试的 500
+// 只会把配置错误藏在无关渠道后面。
 func (a *Adaptor) ConvertImageRequest(c *gin.Context, info *relaycommon.RelayInfo, request dto.ImageRequest) (any, error) {
-	if info.RelayMode == constant.RelayModeImagesGenerations {
-		if isSyncImageModel(info.UpstreamModelName) {
-			a.IsSyncImageModel = true
-		}
-		aliRequest, err := oaiImage2AliImageRequest(info, request, a.IsSyncImageModel)
-		if err != nil {
-			return nil, fmt.Errorf("convert image request to async ali image request failed: %w", err)
-		}
-		return aliRequest, nil
-	} else if info.RelayMode == constant.RelayModeImagesEdits {
-		if isOldWanModel(info.UpstreamModelName) {
-			return oaiFormEdit2WanxImageEdit(c, info, request)
-		}
-		if isSyncImageModel(info.UpstreamModelName) {
-			if isWanModel(info.UpstreamModelName) {
-				a.IsSyncImageModel = false
-			} else {
-				a.IsSyncImageModel = true
-			}
-		}
-		// ali image edit https://bailian.console.aliyun.com/?tab=api#/api/?type=model&url=2976416
-		// 如果用户使用表单，则需要解析表单数据
-		if strings.Contains(c.Request.Header.Get("Content-Type"), "multipart/form-data") {
-			aliRequest, err := oaiFormEdit2AliImageEdit(c, info, request)
-			if err != nil {
-				return nil, fmt.Errorf("convert image edit form request failed: %w", err)
-			}
-			return aliRequest, nil
-		} else {
-			aliRequest, err := oaiImage2AliImageRequest(info, request, a.IsSyncImageModel)
-			if err != nil {
-				return nil, fmt.Errorf("convert image request to async ali image request failed: %w", err)
-			}
-			return aliRequest, nil
-		}
-	}
-	return nil, fmt.Errorf("unsupported image relay mode: %d", info.RelayMode)
+	return nil, types.NewErrorWithStatusCode(
+		fmt.Errorf("image model %q is not served by the alibaba task plugin; use a Bailian image model name declared by the plugin or map it with the channel model mapping", info.UpstreamModelName),
+		types.ErrorCodeInvalidRequest,
+		http.StatusBadRequest,
+		types.ErrOptionWithSkipRetry(),
+	)
 }
 
 func (a *Adaptor) ConvertRerankRequest(c *gin.Context, relayMode int, request dto.RerankRequest) (any, error) {
@@ -243,7 +182,7 @@ func (a *Adaptor) DoRequest(c *gin.Context, info *relaycommon.RelayInfo, request
 	return channel.DoApiRequest(a, c, info, requestBody)
 }
 
-func (a *Adaptor) DoResponse(c *gin.Context, resp *http.Response, info *relaycommon.RelayInfo) (usage any, err *types.UterError) {
+func (a *Adaptor) DoResponse(c *gin.Context, resp *http.Response, info *relaycommon.RelayInfo) (usage any, err *types.NewAPIError) {
 	switch info.RelayFormat {
 	case types.RelayFormatClaude:
 		if supportsAliAnthropicMessages(info.UpstreamModelName) {
@@ -255,10 +194,6 @@ func (a *Adaptor) DoResponse(c *gin.Context, resp *http.Response, info *relaycom
 		return adaptor.DoResponse(c, resp, info)
 	default:
 		switch info.RelayMode {
-		case constant.RelayModeImagesGenerations:
-			err, usage = aliImageHandler(a, c, resp, info)
-		case constant.RelayModeImagesEdits:
-			err, usage = aliImageHandler(a, c, resp, info)
 		case constant.RelayModeRerank:
 			err, usage = RerankHandler(c, resp, info)
 		default:

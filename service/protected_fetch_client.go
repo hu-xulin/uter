@@ -11,7 +11,6 @@ import (
 	"time"
 
 	"github.com/uter-ai/uter/common"
-
 	"github.com/uter-ai/uter/setting/system_setting"
 )
 
@@ -94,9 +93,6 @@ func newProtectedFetchHTTPClientWithProxy(resolver ssrfResolver, dialContext fun
 	}
 	if common.RelayTimeout != 0 {
 		client.Timeout = time.Duration(common.RelayTimeout) * time.Second
-	} else {
-		// 默认兜底超时，避免「接受连接但永不响应」的上游永久挂起 goroutine（慢速 DoS 面）
-		client.Timeout = 120 * time.Second
 	}
 	return client
 }
@@ -145,10 +141,16 @@ func (t *ssrfProtectedRoundTripper) transportFor(proxyURL *url.URL) *http.Transp
 }
 
 func (t *ssrfProtectedRoundTripper) newTransport(proxyURL *url.URL) *http.Transport {
-	protectedDialer := &protectedFetchDialer{
-		resolver:      t.resolver,
-		dialContext:   t.dialContext,
-		getProtection: t.getProtection,
+	dialContext := t.dialContext
+	proxyFunc := http.ProxyURL(proxyURL)
+	if proxyURL == nil {
+		protectedDialer := &protectedFetchDialer{
+			resolver:      t.resolver,
+			dialContext:   t.dialContext,
+			getProtection: t.getProtection,
+		}
+		dialContext = protectedDialer.DialContext
+		proxyFunc = nil
 	}
 
 	transport := &http.Transport{
@@ -156,35 +158,11 @@ func (t *ssrfProtectedRoundTripper) newTransport(proxyURL *url.URL) *http.Transp
 		MaxIdleConnsPerHost: common.RelayMaxIdleConnsPerHost,
 		IdleConnTimeout:     time.Duration(common.RelayIdleConnTimeout) * time.Second,
 		ForceAttemptHTTP2:   true,
-		DialContext:         protectedDialer.DialContext,
-		// 传输层超时：即便上游接受连接但迟迟不回响应头，也能及时失败（慢速 DoS 面）
-		ResponseHeaderTimeout: 30 * time.Second,
-		TLSHandshakeTimeout:   10 * time.Second,
-		ExpectContinueTimeout: 5 * time.Second,
+		Proxy:               proxyFunc,
+		DialContext:         dialContext,
 	}
 	if common.TLSInsecureSkipVerify {
-		transport.TLSClientConfig = common.InsecureTLSConfig
-	}
-	if proxyURL == nil {
-		// 无代理：直接走受保护拨号（拨号时校验目标 IP）
-		transport.Proxy = nil
-		return transport
-	}
-
-	// 有代理：默认经代理出站（运营商/沙箱常见场景）。但目标若为私网地址（含 DNS
-	// 重绑定到内网/云元数据），则绕过代理改为直连——直连仍由 protectedDialer 在拨号
-	// 时钉死 IP 校验，从而堵住「代理模式下拨号时校验被整段绕过」的 SSRF 漏洞。
-	envProxy := t.proxy
-	transport.Proxy = func(req *http.Request) (*url.URL, error) {
-		pu, err := envProxy(req)
-		if err != nil || pu == nil {
-			return pu, err
-		}
-		if err := ValidateSSRFProtectedFetchURL(req.URL.String()); err != nil {
-			// 私网目标：不走代理，交给受保护拨号
-			return nil, nil
-		}
-		return pu, nil
+		transport.TLSClientConfig = common.InsecureTLSConfig.Clone()
 	}
 	return transport
 }

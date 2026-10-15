@@ -2,20 +2,18 @@ package controller
 
 import (
 	"fmt"
-	"github.com/uter-ai/uter/i18n"
 	"net/http"
 	"net/url"
 	"strconv"
 	"time"
 
-	"github.com/uter-ai/uter/common"
-
 	"github.com/Calcium-Ion/go-epay/epay"
-	"github.com/gin-gonic/gin"
-	"github.com/samber/lo"
+	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/model"
 	"github.com/uter-ai/uter/service"
 	"github.com/uter-ai/uter/setting/operation_setting"
+	"github.com/gin-gonic/gin"
+	"github.com/samber/lo"
 )
 
 type SubscriptionEpayPayRequest struct {
@@ -30,7 +28,7 @@ func SubscriptionRequestEpay(c *gin.Context) {
 
 	var req SubscriptionEpayPayRequest
 	if err := c.ShouldBindJSON(&req); err != nil || req.PlanId <= 0 {
-		common.ApiErrorI18n(c, i18n.MsgCommonInvalid_param)
+		common.ApiErrorT(c, "Invalid parameters")
 		return
 	}
 
@@ -40,15 +38,15 @@ func SubscriptionRequestEpay(c *gin.Context) {
 		return
 	}
 	if !plan.Enabled {
-		common.ApiErrorI18n(c, i18n.MsgSubscriptionPlan_disabled)
+		common.ApiErrorT(c, "Subscription plan is not enabled")
 		return
 	}
 	if plan.PriceAmount < 0.01 {
-		common.ApiErrorI18n(c, i18n.MsgSubscriptionAmount_too_low)
+		common.ApiErrorT(c, "Plan amount is too low")
 		return
 	}
 	if !operation_setting.ContainsPayMethod(req.PaymentMethod) {
-		common.ApiErrorI18n(c, i18n.MsgSubscriptionPayment_method_not_found)
+		common.ApiErrorT(c, "Payment method does not exist")
 		return
 	}
 
@@ -60,7 +58,7 @@ func SubscriptionRequestEpay(c *gin.Context) {
 			return
 		}
 		if count >= int64(plan.MaxPurchasePerUser) {
-			common.ApiErrorI18n(c, i18n.MsgSubscriptionPurchase_limit_reached)
+			common.ApiErrorT(c, "Purchase limit for this plan has been reached")
 			return
 		}
 	}
@@ -68,12 +66,12 @@ func SubscriptionRequestEpay(c *gin.Context) {
 	callBackAddress := service.GetCallbackAddress()
 	returnUrl, err := url.Parse(callBackAddress + "/api/subscription/epay/return")
 	if err != nil {
-		common.ApiErrorI18n(c, i18n.MsgSubscriptionCallback_config_error)
+		common.ApiErrorT(c, "Callback URL configuration error")
 		return
 	}
 	notifyUrl, err := url.Parse(callBackAddress + "/api/subscription/epay/notify")
 	if err != nil {
-		common.ApiErrorI18n(c, i18n.MsgSubscriptionCallback_config_error)
+		common.ApiErrorT(c, "Callback URL configuration error")
 		return
 	}
 
@@ -82,7 +80,7 @@ func SubscriptionRequestEpay(c *gin.Context) {
 
 	client := GetEpayClient()
 	if client == nil {
-		common.ApiErrorI18n(c, i18n.MsgSubscriptionAdmin_payment_not_configured)
+		common.ApiErrorT(c, "Payment information has not been configured by administrator")
 		return
 	}
 
@@ -97,7 +95,7 @@ func SubscriptionRequestEpay(c *gin.Context) {
 		Status:          common.TopUpStatusPending,
 	}
 	if err := order.Insert(); err != nil {
-		common.ApiErrorI18n(c, i18n.MsgSubscriptionCreate_order_failed)
+		common.ApiErrorT(c, "Failed to create order")
 		return
 	}
 	uri, params, err := client.Purchase(&epay.PurchaseArgs{
@@ -111,7 +109,7 @@ func SubscriptionRequestEpay(c *gin.Context) {
 	})
 	if err != nil {
 		_ = model.ExpireSubscriptionOrder(tradeNo, model.PaymentProviderEpay)
-		common.ApiErrorI18n(c, i18n.MsgSubscriptionPay_failed)
+		common.ApiErrorT(c, "Failed to start payment")
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"message": "success", "data": params, "url": uri})

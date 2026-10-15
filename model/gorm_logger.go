@@ -8,15 +8,13 @@ import (
 	"os"
 	"time"
 
-	"github.com/uter-ai/uter/common"
-
 	"github.com/ClickHouse/clickhouse-go/v2/lib/proto"
+	"github.com/uter-ai/uter/common"
 	sqlitedriver "github.com/glebarez/go-sqlite"
 	"github.com/go-sql-driver/mysql"
 	"github.com/jackc/pgx/v5/pgconn"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
-	"gorm.io/gorm/schema"
 )
 
 const (
@@ -31,21 +29,10 @@ func newGormConfig(prepareStmt bool) *gorm.Config {
 	}
 }
 
-// 注册多语描述用的 map 序列化器。
-//
-// GORM 的序列化器注册表是包级全局（schema.RegisterSerializer），不是
-// gorm.Config 上的字段，因此必须在包初始化时注册一次：tag 里的
-// serializer:jsonMap 若查不到对应实现，GORM 会直接报
-// "invalid serializer type"，而缺了它 map 字段就会落到 database/sql 上并报
-// "unsupported type model.LocalizedDescription, a map"。
-func init() {
-	schema.RegisterSerializer("jsonMap", JSONMapSerializer{})
-}
-
 func newGormLogger(w io.Writer) logger.Interface {
 	slowThresholdMs := common.GetEnvOrDefault("SQL_SLOW_THRESHOLD_MS", defaultSlowThresholdMs)
 	if slowThresholdMs < 0 || slowThresholdMs > maxSlowThresholdMs {
-		common.SysError(fmt.Sprintf("invalid SQL_SLOW_THRESHOLD_MS %d (allowed 0-%d, 0 disables slow query log), using default %d", slowThresholdMs, maxSlowThresholdMs, defaultSlowThresholdMs))
+		common.SysError(common.LogText("invalid SQL_SLOW_THRESHOLD_MS %d (allowed 0-%d, 0 disables slow query log), using default %d", slowThresholdMs, maxSlowThresholdMs, defaultSlowThresholdMs))
 		slowThresholdMs = defaultSlowThresholdMs
 	}
 	// 在 Writer 层脱敏而非包装 logger.Interface:后者会让 gorm 的 FileWithLineNum

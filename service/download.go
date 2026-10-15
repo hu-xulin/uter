@@ -8,7 +8,6 @@ import (
 	"strings"
 
 	"github.com/uter-ai/uter/common"
-
 	"github.com/uter-ai/uter/setting/system_setting"
 )
 
@@ -32,13 +31,7 @@ func DoWorkerRequest(req *WorkerRequest) (*http.Response, error) {
 
 	// SSRF防护：验证请求URL
 	fetchSetting := system_setting.GetFetchSetting()
-	// Worker 模式：真正的取流在 Worker 侧完成，网关侧拨号时 IP 校验不参与，
-	// 因此强制 ApplyIPFilterForDomain=true，由网关在转发前拦掉私网目标（含 DNS 重绑定）。
-	applyIPFilter := fetchSetting.ApplyIPFilterForDomain
-	if !applyIPFilter {
-		applyIPFilter = true
-	}
-	if err := common.ValidateURLWithFetchSetting(req.URL, fetchSetting.EnableSSRFProtection, fetchSetting.AllowPrivateIp, fetchSetting.DomainFilterMode, fetchSetting.IpFilterMode, fetchSetting.DomainList, fetchSetting.IpList, fetchSetting.AllowedPorts, applyIPFilter); err != nil {
+	if err := common.ValidateURLWithFetchSetting(req.URL, fetchSetting.EnableSSRFProtection, fetchSetting.AllowPrivateIp, fetchSetting.DomainFilterMode, fetchSetting.IpFilterMode, fetchSetting.DomainList, fetchSetting.IpList, fetchSetting.AllowedPorts, fetchSetting.ApplyIPFilterForDomain); err != nil {
 		return nil, fmt.Errorf("request reject: %v", err)
 	}
 
@@ -58,7 +51,7 @@ func DoWorkerRequest(req *WorkerRequest) (*http.Response, error) {
 
 func DoDownloadRequest(originUrl string, reason ...string) (resp *http.Response, err error) {
 	if system_setting.EnableWorker() {
-		common.SysLog(fmt.Sprintf("downloading file from worker: %s, reason: %s", originUrl, strings.Join(reason, ", ")))
+		common.SysLog(common.LogText("downloading file from worker: %s, reason: %s", originUrl, strings.Join(reason, ", ")))
 		req := &WorkerRequest{
 			URL: originUrl,
 			Key: system_setting.WorkerValidKey,
@@ -70,7 +63,7 @@ func DoDownloadRequest(originUrl string, reason ...string) (resp *http.Response,
 			return nil, fmt.Errorf("request reject: %v", err)
 		}
 
-		common.SysLog(fmt.Sprintf("downloading from origin: %s, reason: %s", common.MaskSensitiveInfo(originUrl), strings.Join(reason, ", ")))
+		common.SysLog(common.LogText("downloading from origin: %s, reason: %s", common.MaskSensitiveInfo(originUrl), strings.Join(reason, ", ")))
 		return GetSSRFProtectedHTTPClient().Get(originUrl)
 	}
 }

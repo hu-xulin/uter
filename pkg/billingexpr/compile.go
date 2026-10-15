@@ -14,12 +14,6 @@ import (
 
 const maxCacheSize = 256
 
-// 计费表达式复杂度上限（加固项，防管理员配置了病态表达式拖垮编译/求值）。
-const (
-	maxBillingExprLen   = 4096 // 表达式原始长度上限（字符）
-	maxBillingExprNodes = 1024 // AST 节点数上限（同时约束超长扁平与超深嵌套）
-)
-
 // DefaultExprVersion is used when an expression string has no version prefix.
 const DefaultExprVersion = 1
 
@@ -143,7 +137,6 @@ var compileEnvPrototypeV1 = map[string]any{
 	"img_o":       float64(0),
 	"ai":          float64(0),
 	"ao":          float64(0),
-	"duration":    float64(0),
 	"tier":        func(string, float64) float64 { return 0 },
 	"fixed":       func(float64) float64 { return 0 },
 	"_trace":      func(int, bool, float64) float64 { return 1 },
@@ -191,25 +184,6 @@ func compileFromCacheByHash(exprStr, hash string) (*vm.Program, error) {
 	return entry.prog, nil
 }
 
-// exprNodeCounter 统计 AST 节点数，用于约束表达式复杂度（DoS 防护）。
-type exprNodeCounter struct{ count int }
-
-func (c *exprNodeCounter) Visit(_ *ast.Node) { c.count++ }
-
-// validateBillingExprComplexity 在编译前约束表达式长度与 AST 节点数，
-// 防止超长扁平或超深嵌套的病态表达式导致编译/求值 CPU 或栈耗尽。
-func validateBillingExprComplexity(body string, tree *parser.Tree) error {
-	if len(body) > maxBillingExprLen {
-		return fmt.Errorf("expr compile error: expression too long (%d > %d chars)", len(body), maxBillingExprLen)
-	}
-	counter := &exprNodeCounter{}
-	ast.Walk(&tree.Node, counter)
-	if counter.count > maxBillingExprNodes {
-		return fmt.Errorf("expr compile error: expression too complex (%d > %d nodes)", counter.count, maxBillingExprNodes)
-	}
-	return nil
-}
-
 func compileEntryFromCacheByHash(exprStr, hash string) (*cachedEntry, error) {
 	cacheMu.RLock()
 	if entry, ok := cache[hash]; ok {
@@ -224,9 +198,6 @@ func compileEntryFromCacheByHash(exprStr, hash string) (*cachedEntry, error) {
 	tree, err := parser.Parse(body)
 	if err != nil {
 		return nil, fmt.Errorf("expr compile error: %w", err)
-	}
-	if err := validateBillingExprComplexity(body, tree); err != nil {
-		return nil, err
 	}
 	fixedPricing := ast.Find(tree.Node, func(node ast.Node) bool {
 		identifier, ok := node.(*ast.IdentifierNode)

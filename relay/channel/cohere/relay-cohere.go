@@ -5,11 +5,9 @@ import (
 	"io"
 	"net/http"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/uter-ai/uter/common"
-
 	relaycommon "github.com/uter-ai/uter/relay/common"
 	"github.com/uter-ai/uter/relay/helper"
 	"github.com/uter-ai/uter/relaykit/dto"
@@ -82,57 +80,35 @@ func stopReasonCohere2OpenAI(reason string) string {
 	}
 }
 
-func cohereStreamHandler(c *gin.Context, info *relaycommon.RelayInfo, resp *http.Response) (*dto.Usage, *types.UterError) {
+func cohereStreamHandler(c *gin.Context, info *relaycommon.RelayInfo, resp *http.Response) (*dto.Usage, *types.NewAPIError) {
 	responseId := helper.GetResponseID(c)
 	createdTime := common.GetTimestamp()
 	usage := &dto.Usage{}
-	// 流式拼接用 strings.Builder：每 chunk 一次 `+=` 会在 responseText 非空时
-	// 退化为「重新分配 + 拷贝全部已有内容」，长输出下累计拷贝量是 O(n²/2)。
-	var responseTextBuilder strings.Builder
+	responseText := ""
 	scanner := helper.NewStreamScanner(resp.Body)
 	scanner.Split(func(data []byte, atEOF bool) (advance int, token []byte, err error) {
 		if atEOF && len(data) == 0 {
 			return 0, nil, nil
 		}
-		if before, _, found := strings.Cut(string(data), "\n"); found {
-			return len(before) + 1, []byte(before), nil
+		if i := strings.Index(string(data), "\n"); i >= 0 {
+			return i + 1, data[0:i], nil
 		}
 		if atEOF {
 			return len(data), data, nil
 		}
 		return 0, nil, nil
 	})
-	// 有缓冲 + select 保护：客户端断开时 gin 的 c.Stream 会直接 return，
-	// 不再消费 dataChan。若生产者用裸 `dataChan <- data`，它会永久阻塞在
-	// 这次发送上（goroutine 泄漏），并连带持有 resp.Body 使上游连接无法归还
-	// 连接池、继续为已放弃的请求消耗上游算力。stopChan 改用 close 而非发送，
-	// 避免消费方已退出时的反向阻塞。
-	dataChan := make(chan string, 10)
-	stopChan := make(chan struct{})
-	var stopOnce sync.Once
-	stop := func() {
-		stopOnce.Do(func() { close(stopChan) })
-	}
+	dataChan := make(chan string)
+	stopChan := make(chan bool)
 	go func() {
-		defer stop()
 		for scanner.Scan() {
-			select {
-			case dataChan <- scanner.Text():
-			case <-stopChan:
-				return
-			case <-c.Request.Context().Done():
-				return
-			}
+			data := scanner.Text()
+			dataChan <- data
 		}
 		if err := scanner.Err(); err != nil {
-			common.SysLog("error reading stream: " + err.Error())
+			common.SysLog(common.LogText("error reading stream: %s", err.Error()))
 		}
-	}()
-	// 无论消费方怎么退出（正常结束 / 客户端断开 / 提前 return），
-	// 都要让上游 body 被关闭，并唤醒可能仍在发送的生产者。
-	defer func() {
-		stop()
-		service.CloseResponseBodyGracefully(resp)
+		stopChan <- true
 	}()
 	helper.SetEventStreamHeaders(c)
 	isFirst := true
@@ -147,7 +123,7 @@ func cohereStreamHandler(c *gin.Context, info *relaycommon.RelayInfo, resp *http
 			var cohereResp CohereResponse
 			err := json.Unmarshal([]byte(data), &cohereResp)
 			if err != nil {
-				common.SysLog("error unmarshalling stream response: " + err.Error())
+				common.SysLog(common.LogText("error unmarshalling stream response: %s", err.Error()))
 				return true
 			}
 			var openaiResp dto.ChatCompletionsStreamResponse
@@ -178,11 +154,11 @@ func cohereStreamHandler(c *gin.Context, info *relaycommon.RelayInfo, resp *http
 						Index: 0,
 					},
 				}
-				responseTextBuilder.WriteString(cohereResp.Text)
+				responseText += cohereResp.Text
 			}
 			jsonStr, err := json.Marshal(openaiResp)
 			if err != nil {
-				common.SysLog("error marshalling stream response: " + err.Error())
+				common.SysLog(common.LogText("error marshalling stream response: %s", err.Error()))
 				return true
 			}
 			c.Render(-1, common.CustomEvent{Data: "data: " + string(jsonStr)})
@@ -193,12 +169,12 @@ func cohereStreamHandler(c *gin.Context, info *relaycommon.RelayInfo, resp *http
 		}
 	})
 	if usage.PromptTokens == 0 {
-		usage = service.ResponseText2Usage(c, responseTextBuilder.String(), info.UpstreamModelName, info.GetEstimatePromptTokens())
+		usage = service.ResponseText2Usage(c, responseText, info.UpstreamModelName, info.GetEstimatePromptTokens())
 	}
 	return usage, nil
 }
 
-func cohereHandler(c *gin.Context, info *relaycommon.RelayInfo, resp *http.Response) (*dto.Usage, *types.UterError) {
+func cohereHandler(c *gin.Context, info *relaycommon.RelayInfo, resp *http.Response) (*dto.Usage, *types.NewAPIError) {
 	createdTime := common.GetTimestamp()
 	responseBody, err := io.ReadAll(resp.Body)
 	if err != nil {
@@ -240,7 +216,7 @@ func cohereHandler(c *gin.Context, info *relaycommon.RelayInfo, resp *http.Respo
 	return &usage, nil
 }
 
-func cohereRerankHandler(c *gin.Context, resp *http.Response, info *relaycommon.RelayInfo) (*dto.Usage, *types.UterError) {
+func cohereRerankHandler(c *gin.Context, resp *http.Response, info *relaycommon.RelayInfo) (*dto.Usage, *types.NewAPIError) {
 	responseBody, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, types.NewError(err, types.ErrorCodeBadResponseBody)

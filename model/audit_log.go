@@ -7,11 +7,10 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/uter-ai/uter/common"
-
 	"github.com/ClickHouse/clickhouse-go/v2"
-	"github.com/gin-gonic/gin"
+	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/logger"
+	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
 
@@ -47,12 +46,13 @@ type AuditLog struct {
 }
 
 type AuditLogFilter struct {
-	SelfView bool // Server-selected metadata projection, independent of the viewer's actual role.
-	UserId   int
-	Username string
-	// Usernames 是「可见范围」过滤：非空时只返回这些 username 的记录。
-	// 调用方必须保证它来自可信的范围解析（如组织/部门成员列表）；范围为空时应传
-	// NoOrgMemberUsername 哨兵，因为空切片在这里同样表示「不施加过滤」。
+	SelfView        bool // Server-selected metadata projection, independent of the viewer's actual role.
+	UserId          int
+	Username        string
+	// Usernames 是 Uter 的组织隔离过滤：非空时把可见范围收窄到该集合，
+	// 用于组织/部门管理员只能审计本组织成员的操作。
+	// 空切片表示「不施加过滤」，所以调用方在范围为空时必须传哨兵
+	// （model.NoOrgMemberUsername）而不是空切片，否则会退化成看全站审计日志。
 	Usernames       []string
 	Category        string
 	TokenRef        string
@@ -107,7 +107,7 @@ func RecordAuditLog(c *gin.Context, entry AuditLog) {
 	switch entry.ActorRole {
 	case common.RoleCommonUser, common.RoleAdminUser, common.RoleRootUser:
 	default:
-		logger.LogError(ctx, fmt.Sprintf("audit actor role unavailable (request_id=%s, actor_role=%d)", entry.RequestId, entry.ActorRole))
+		logger.LogError(ctx, common.LogText("audit actor role unavailable (request_id=%s, actor_role=%d)", entry.RequestId, entry.ActorRole))
 		entry.ActorRole = 0 // Unknown actors remain visible to root only.
 	}
 	if entry.Username == "" {
@@ -118,14 +118,14 @@ func RecordAuditLog(c *gin.Context, entry AuditLog) {
 		entry.UserAgent = string(ua[:512])
 	}
 	if LOG_DB == nil {
-		logger.LogError(ctx, fmt.Sprintf("audit log write failed (request_id=%s): log database unavailable", entry.RequestId))
+		logger.LogError(ctx, common.LogText("audit log write failed (request_id=%s): log database unavailable", entry.RequestId))
 		return
 	}
 	var row any = &entry
 	if common.UsingLogDatabase(common.DatabaseTypeClickHouse) {
 		encoded, err := common.Marshal(entry.Other)
 		if err != nil {
-			logger.LogError(ctx, fmt.Sprintf("audit log write failed (request_id=%s): %v", entry.RequestId, err))
+			logger.LogError(ctx, common.LogText("audit log write failed (request_id=%s): %v", entry.RequestId, err))
 			return
 		}
 		// The ClickHouse GORM insert callback passes structs to the native
@@ -137,7 +137,7 @@ func RecordAuditLog(c *gin.Context, entry AuditLog) {
 		}{AuditLog: entry, EncodedOther: string(encoded)}
 	}
 	if err := LOG_DB.Table("audit_logs").Create(row).Error; err != nil {
-		logger.LogError(ctx, fmt.Sprintf("audit log write failed (request_id=%s): %v", entry.RequestId, err))
+		logger.LogError(ctx, common.LogText("audit log write failed (request_id=%s): %v", entry.RequestId, err))
 	}
 }
 
@@ -210,14 +210,21 @@ func GetAuditLogs(filter AuditLogFilter, start, limit, viewerRole int) ([]*Audit
 	return logs, total, nil
 }
 
+// UserAccessTokenStatus describes the legacy users.access_token credential.
+//
+// Deprecated: 旧版面板访问令牌，仅在升级后的过渡期内使用；删除 users.access_token 列时一并移除。
 type UserAccessTokenStatus struct {
 	Exists     bool   `json:"exists"`
+	TokenHint  string `json:"token_hint"`
 	TokenRef   string `json:"token_ref"`
 	CreatedAt  *int64 `json:"created_at"`
 	LastUsedAt *int64 `json:"last_used_at"`
 	LastUsedIp string `json:"last_used_ip"`
 }
 
+// GetUserAccessTokenStatus reads last use of the legacy token from the access audit.
+//
+// Deprecated: 旧版面板访问令牌，仅在升级后的过渡期内使用；删除 users.access_token 列时一并移除。
 func GetUserAccessTokenStatus(userId int) (*UserAccessTokenStatus, error) {
 	var user User
 	if err := DB.Select("id", "role", "access_token", "access_token_created_at").First(&user, userId).Error; err != nil {
@@ -228,6 +235,7 @@ func GetUserAccessTokenStatus(userId int) (*UserAccessTokenStatus, error) {
 		return status, nil
 	}
 	status.TokenRef = AccessTokenFingerprint(user.GetAccessToken())
+	status.TokenHint = AccessTokenHint(user.GetAccessToken())
 	status.CreatedAt = user.AccessTokenCreatedAt
 	var latest AuditLog
 	query := LOG_DB.Select("created_at", "ip").Where("user_id = ? AND token_ref = ? AND category = ?", userId, status.TokenRef, AuditCategoryAccessToken)

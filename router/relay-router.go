@@ -1,10 +1,9 @@
 package router
 
 import (
-	"net/http"
+	"strings"
 
 	"github.com/uter-ai/uter/constant"
-
 	"github.com/uter-ai/uter/controller"
 	"github.com/uter-ai/uter/middleware"
 	"github.com/uter-ai/uter/relay"
@@ -19,47 +18,6 @@ func SetRelayRouter(router *gin.Engine) {
 	router.Use(middleware.DecompressRequestMiddleware())
 	router.Use(middleware.BodyStorageCleanup()) // 清理请求体存储
 	router.Use(middleware.StatsMiddleware())
-
-	// 可观测性看板：暴露降本中间层聚合指标（MetricsEnabled 时）。
-	//
-	// 鉴权：AdminAuth。指标是**全平台聚合数据**（cache_hits / cascade_escalations /
-	// total_tokens_saved_est / total_requests 等），不属于任何单个令牌的所有者，
-	// 因此不能用 TokenAuth——那是中转 sk- 的鉴权语义，用在这里等于让任一持 Key
-	// 的普通用户读到全平台数据。AdminAuth 同时接受 dashboard 会话 Cookie、
-	// dashboard access token 与 PAT，并自动落管理操作审计。
-	//
-	// 注意：relay 路径的 gzip 不得在此处注册。gin 中分组级中间件晚于引擎级
-	// 全局中间件生效，而 SetWebRouter 会在其后以 router.Use 注册全局 gzip；
-	// 若把 costopt gzip 放进 relay 分组，实际不会压缩（开关形同虚设）。relay
-	// 的 gzip 统一由 router/gzip.go 的 GzipMiddleware（在 SetRouter 引擎级
-	// 注册一次）按 costopt.GzipEnabled 控制。这里只做路径分发。
-	router.GET("/api/costopt/metrics", middleware.AdminAuth(), func(c *gin.Context) {
-		if !costopt.MetricsEnabled() {
-			c.JSON(http.StatusNotFound, gin.H{"error": "metrics disabled"})
-			return
-		}
-		c.JSON(http.StatusOK, costopt.MetricsSnapshotNow())
-	})
-
-	// 独立的批量提交 API（智谱 GLM-4-Flash 等 Batch 上游）。
-	//
-	// 为何独立于 /v1/chat/completions：Batch 是异步的（智谱预计 24h 内出结果），
-	// 而 chat 调用方要同步拿到 completion。把同步流量自动转 batch 会让调用方收到
-	// 空响应＝破坏性，故这里只提供显式的离线提交/查询/下载端点，供后台脚本或
-	// 离线任务使用，对既有中转接口零影响。鉴权同为 AdminAuth（与 metrics 一致：
-	// 批任务跨租户聚合，且提交会消耗平台上游额度）。
-	batchRoute := router.Group("/api/costopt/batch")
-	batchRoute.Use(middleware.AdminAuth())
-	{
-		batchRoute.POST("/submit", costopt.SubmitBatchHTTP)
-		batchRoute.GET("/:id", costopt.BatchDetailHTTP)
-		batchRoute.GET("/:id/result", costopt.BatchResultHTTP)
-	}
-
-	// 启动期缓存预热（CacheWarmupEnabled 且配置了条目时写入精确缓存）。
-	costopt.WarmupCache()
-	// 启动批处理调度器（batch_enabled 时把 BatchQueue 驱动起来，定时 flush + 轮询）。
-	costopt.StartBatchScheduler()
 	// https://platform.openai.com/docs/api-reference/introduction
 	modelsRouter := router.Group("/v1/models")
 	modelsRouter.Use(middleware.RouteTag("relay"))
@@ -111,10 +69,35 @@ func SetRelayRouter(router *gin.Engine) {
 	{
 		playgroundRouter.POST("/chat/completions", controller.Playground)
 	}
+
+	// 降本（costopt）管理端点。
+	//
+	// /metrics 返回的是**全平台聚合指标**（cache_hits / total_tokens_saved_est /
+	// total_requests …），不属于任何单个中转令牌的所有者，所以必须 AdminAuth；
+	// /batch/* 会消耗平台上游额度，必须登录（匿名 401）。
+	costoptMetricsRouter := router.Group("/api/costopt")
+	costoptMetricsRouter.Use(middleware.RouteTag("relay"))
+	costoptMetricsRouter.Use(middleware.AdminAuth())
+	{
+		costoptMetricsRouter.GET("/metrics", costopt.MetricsHTTP)
+	}
+	costoptBatchRouter := router.Group("/api/costopt/batch")
+	costoptBatchRouter.Use(middleware.RouteTag("relay"))
+	costoptBatchRouter.Use(middleware.UserAuth())
+	{
+		costoptBatchRouter.POST("/submit", costopt.SubmitBatchHTTP)
+		costoptBatchRouter.GET("/:id", costopt.BatchDetailHTTP)
+		costoptBatchRouter.GET("/:id/result", costopt.BatchResultHTTP)
+	}
 	relayV1Router := router.Group("/v1")
 	relayV1Router.Use(middleware.RouteTag("relay"))
 	relayV1Router.Use(middleware.SystemPerformanceCheck())
 	relayV1Router.Use(middleware.TokenAuth())
+	{
+		// Responses WebSocket route. Channel selection happens after the first
+		// response.create event; each event runs the ordinary request limiter.
+		relayV1Router.GET("/responses", controller.ResponsesWebSocket)
+	}
 	relayV1Router.Use(middleware.ModelRequestRateLimit())
 	{
 		// WebSocket 路由（统一到 Relay）
@@ -154,14 +137,10 @@ func SetRelayRouter(router *gin.Engine) {
 			controller.Relay(c, types.RelayFormatOpenAIAlphaSearch)
 		})
 
-		// image related routes
+		// image related routes. /images/generations and /images/edits are
+		// host protocol endpoints (openai_image) registered by
+		// SetTaskPluginProtocolRouter; unclaimed models fall back to Relay.
 		httpRouter.POST("/edits", func(c *gin.Context) {
-			controller.Relay(c, types.RelayFormatOpenAIImage)
-		})
-		httpRouter.POST("/images/generations", func(c *gin.Context) {
-			controller.Relay(c, types.RelayFormatOpenAIImage)
-		})
-		httpRouter.POST("/images/edits", func(c *gin.Context) {
 			controller.Relay(c, types.RelayFormatOpenAIImage)
 		})
 
@@ -226,6 +205,15 @@ func SetRelayRouter(router *gin.Engine) {
 	//relayMjRouter.Use()
 
 	relayGeminiRouter := router.Group("/v1beta")
+	// :countTokens is not implemented. Answer it like an unregistered route
+	// before auth/channel selection instead of silently relaying it as
+	// generateContent (#7283).
+	relayGeminiRouter.Use(func(c *gin.Context) {
+		if strings.HasSuffix(c.Request.URL.Path, ":countTokens") {
+			controller.RelayNotFound(c)
+			c.Abort()
+		}
+	})
 	relayGeminiRouter.Use(middleware.RouteTag("relay"))
 	relayGeminiRouter.Use(middleware.SystemPerformanceCheck())
 	relayGeminiRouter.Use(middleware.TokenAuth())
@@ -240,13 +228,9 @@ func SetRelayRouter(router *gin.Engine) {
 }
 
 func registerMjRouterGroup(relayMjRouter *gin.RouterGroup) {
-	// 所有路由都必须注册在 Use(TokenAuth(), Distribute()) **之后**：Gin 的
-	// RouterGroup.Use 只作用于之后注册的路由，写在前面的路由拿不到中间件。
-	// 原先 /image/:id 注册在 Use 之前，等于一个完全匿名的图片代理（可枚举
-	// mj_id 下载他人生成内容），这里移进分组内。
+	relayMjRouter.GET("/image/:id", relay.RelayMidjourneyImage)
 	relayMjRouter.Use(middleware.TokenAuth(), middleware.Distribute())
 	{
-		relayMjRouter.GET("/image/:id", relay.RelayMidjourneyImage)
 		relayMjRouter.POST("/submit/action", controller.RelayMidjourney)
 		relayMjRouter.POST("/submit/shorten", controller.RelayMidjourney)
 		relayMjRouter.POST("/submit/modal", controller.RelayMidjourney)

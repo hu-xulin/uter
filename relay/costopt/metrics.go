@@ -3,8 +3,11 @@ package costopt
 import (
 	"encoding/json"
 	"fmt"
+	"net/http"
 	"strings"
 	"sync/atomic"
+
+	"github.com/gin-gonic/gin"
 
 	costoptcfg "github.com/uter-ai/uter/setting/costopt"
 
@@ -226,4 +229,19 @@ func MetricsSnapshotNow() MetricsSnapshot {
 		RAGHits:                    atomic.LoadInt64(&metrics.RAGHits),
 		RAGSkipped:                 atomic.LoadInt64(&metrics.RAGSkipped),
 	}
+}
+
+// MetricsHTTP GET /api/costopt/metrics —— 全平台聚合指标快照。
+//
+// 快照是**全平台**数据，不属于任何单个中转令牌的所有者，所以路由侧必须挂
+// AdminAuth（见 router/relay-router.go），普通账号一律不得读到。
+//
+// 开关兜底：指标被关掉时统一 404 而不是返回一坨 0 —— 否则"没采集"会被误读成
+// "采集了但没有命中"。鉴权守卫（401/403）在 AdminAuth 里，先于此处执行。
+func MetricsHTTP(c *gin.Context) {
+	if !MetricsEnabled() {
+		c.JSON(http.StatusNotFound, gin.H{"error": "metrics disabled"})
+		return
+	}
+	c.JSON(http.StatusOK, MetricsSnapshotNow())
 }

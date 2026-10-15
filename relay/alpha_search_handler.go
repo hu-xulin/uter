@@ -7,7 +7,6 @@ import (
 	"net/http"
 
 	"github.com/uter-ai/uter/common"
-
 	"github.com/uter-ai/uter/constant"
 	"github.com/uter-ai/uter/logger"
 	relaycommon "github.com/uter-ai/uter/relay/common"
@@ -19,17 +18,14 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func AlphaSearchHelper(c *gin.Context, info *relaycommon.RelayInfo) (uterError *types.UterError) {
+func AlphaSearchHelper(c *gin.Context, info *relaycommon.RelayInfo) (newAPIError *types.NewAPIError) {
 	info.InitChannelMeta(c)
 
 	switch info.ChannelType {
 	case constant.ChannelTypeSub2API,
-		constant.ChannelTypeUter,
+		constant.ChannelTypeNewAPI,
 		constant.ChannelTypeCodex,
-		constant.ChannelTypeAdvancedCustom,
-		constant.ChannelTypeBrandedShared,
-		constant.ChannelTypeBrandedAggregate,
-		constant.ChannelTypeBrandedProxy:
+		constant.ChannelTypeAdvancedCustom:
 	default:
 		// Allow retry onto another channel that may support this endpoint.
 		return types.NewError(
@@ -61,7 +57,7 @@ func AlphaSearchHelper(c *gin.Context, info *relaycommon.RelayInfo) (uterError *
 	if len(info.ParamOverride) > 0 {
 		jsonData, err = relaycommon.ApplyParamOverrideWithRelayInfo(jsonData, info)
 		if err != nil {
-			return uterErrorFromParamOverride(err)
+			return newAPIErrorFromParamOverride(err)
 		}
 	}
 
@@ -91,9 +87,9 @@ func AlphaSearchHelper(c *gin.Context, info *relaycommon.RelayInfo) (uterError *
 	defer httpResp.Body.Close()
 
 	if httpResp.StatusCode < 200 || httpResp.StatusCode >= 300 {
-		uterError = service.RelayErrorHandler(c.Request.Context(), httpResp, false)
-		service.ResetStatusCode(uterError, statusCodeMappingStr)
-		return uterError
+		newAPIError = service.RelayErrorHandler(c.Request.Context(), httpResp, false)
+		service.ResetStatusCode(newAPIError, statusCodeMappingStr)
+		return newAPIError
 	}
 
 	if contentType := httpResp.Header.Get("Content-Type"); contentType != "" {
@@ -105,18 +101,7 @@ func AlphaSearchHelper(c *gin.Context, info *relaycommon.RelayInfo) (uterError *
 	}
 
 	// Upstream alpha search returns no usage; bill one web_search_preview call.
-	if info.ResponsesUsageInfo == nil {
-		info.ResponsesUsageInfo = &relaycommon.ResponsesUsageInfo{
-			BuiltInTools: make(map[string]*relaycommon.BuildInToolInfo),
-		}
-	}
-	if info.ResponsesUsageInfo.BuiltInTools == nil {
-		info.ResponsesUsageInfo.BuiltInTools = make(map[string]*relaycommon.BuildInToolInfo)
-	}
-	info.ResponsesUsageInfo.BuiltInTools[dto.BuildInToolWebSearchPreview] = &relaycommon.BuildInToolInfo{
-		ToolName:  dto.BuildInToolWebSearchPreview,
-		CallCount: 1,
-	}
+	info.SetBillableToolCount(dto.BuildInToolWebSearchPreview, 1)
 
 	usage := &dto.Usage{}
 	service.PostTextConsumeQuota(c, info, usage, nil)

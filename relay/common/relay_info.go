@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"github.com/uter-ai/uter/common"
-
 	"github.com/uter-ai/uter/constant"
 	"github.com/uter-ai/uter/pkg/billingexpr"
 	relayconstant "github.com/uter-ai/uter/relay/constant"
@@ -24,7 +23,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	"github.com/tidwall/gjson"
-	"github.com/tidwall/sjson"
 )
 
 type ThinkingContentInfo struct {
@@ -50,9 +48,8 @@ type RerankerInfo struct {
 }
 
 type BuildInToolInfo struct {
-	ToolName          string
-	CallCount         int
-	SearchContextSize string
+	ToolName  string
+	CallCount int
 }
 
 type ResponsesUsageInfo struct {
@@ -85,12 +82,12 @@ type TokenCountMeta struct {
 }
 
 type RelayInfo struct {
-	TokenId    int
-	TokenKey   string
-	TokenGroup string
-	UserId     int
-	UsingGroup string // 使用的分组，当auto跨分组重试时，会变动
-	UserGroup  string // 用户所在分组
+	TokenId           int
+	TokenKey          string
+	TokenGroup        string
+	UserId            int
+	UsingGroup        string // 使用的分组，当auto跨分组重试时，会变动
+	UserGroup         string // 用户所在分组
 	// OrganizationId 是本次请求计费出资组织的 ID（0 = 平台直管用户，由个人钱包出资）。
 	// 在创建计费会话时解析一次并缓存于此，供请求路径后续判断复用。
 	//
@@ -109,6 +106,7 @@ type RelayInfo struct {
 	UsePrice               bool
 	RelayMode              int
 	OriginModelName        string
+	ResponseModel          *ResponseModel
 
 	// BillingModelName is the pricing identity for this request. It is kept
 	// separate from OriginModelName and UpstreamModelName so virtual pricing
@@ -202,13 +200,35 @@ type RelayInfo struct {
 	FinalRequestRelayFormat types.RelayFormat
 
 	StreamStatus *StreamStatus
-
-	// convOptions caches the converter settings snapshot (see ConvOptions).
-	convOptions *convmeta.Options
+	// VendorToolUsage reads the upstream's own billed tool counts from a raw
+	// response body (non-stream) or the raw terminal stream frame. The channel
+	// adaptor's Init sets it for upstreams whose usage extension names a billed
+	// count; it stays nil for everyone else. Keys are tool-price keys. A zero
+	// value suppresses the protocol items counted under that key, so a vendor
+	// count can supersede web_search_call items billed under a different key.
+	VendorToolUsage func(raw []byte) map[string]int
+	// WebSearchBillingKey overrides the tool-price key the Claude handler uses
+	// for usage.server_tool_use.web_search_requests. Set by a channel adaptor
+	// whose Anthropic-compatible endpoint bills search under its own price
+	// list; empty keeps the protocol default web_search.
+	WebSearchBillingKey string
+	// requestInferredToolKey is the tool-price key RecordRequestInferredToolCall
+	// billed for the current channel attempt.
+	requestInferredToolKey string
+	// PerformanceOutputTokens is captured by settlement and sampled once at
+	// the request boundary, independently of billing success or failure.
+	PerformanceOutputTokens      int64
+	PerformanceBusinessRejection bool
 
 	// costOptCacheKey 缓存降本中间层缓存键（精确缓存 + 负缓存同源）的计算结果。
 	// 见 CostOptCacheKey。
 	costOptCacheKey costOptCacheKeyMemo
+
+	// convOptions caches the converter settings snapshot (see ConvOptions).
+	convOptions *convmeta.Options
+	// responsesToolState is written by request conversion and read by the
+	// matching response conversion (see ResponsesToolState).
+	responsesToolState *convmeta.ResponsesToolState
 
 	conversionDiagnostics          []types.ConversionDiagnostic
 	conversionDiagnosticKeys       map[conversionDiagnosticKey]struct{}
@@ -223,6 +243,8 @@ type RelayInfo struct {
 	*TaskRelayInfo
 }
 
+// UpdateImageCount replaces the billable quantity without changing the frozen
+// request parameters or multiplying the legacy and expression prices together.
 // costOptCacheKeyMemo 记住本次请求已经算过的降本缓存键。
 //
 // 精确缓存键需要 json.Marshal 整个 req.Messages（400KB payload 约 2-5ms 外加
@@ -231,7 +253,7 @@ type RelayInfo struct {
 //
 // 有效性判据用**请求指针身份**而不是内容指纹：内容指纹本身就得先序列化一遍，
 // 等于把要省的开销又付回去。同一请求内两次调用拿到的是同一个指针；换渠道重试时
-// TextHelper 会DeepCopy 出新的 request 副本，指针随之变化，缓存自动失效重算，
+// TextHelper 会 DeepCopy 出新的 request 副本，指针随之变化，缓存自动失效重算，
 // 因此不会出现「拿旧请求的键去查新请求」的串号。
 type costOptCacheKeyMemo struct {
 	mu  sync.Mutex
@@ -263,8 +285,6 @@ func (info *RelayInfo) StoreCostOptCacheKey(req *dto.GeneralOpenAIRequest, key s
 	info.costOptCacheKey.key = key
 }
 
-// UpdateImageCount replaces the billable quantity without changing the frozen
-// request parameters or multiplying the legacy and expression prices together.
 func (info *RelayInfo) UpdateImageCount(count int64) {
 	if info == nil || count <= 0 || count > int64(dto.MaxImageN) {
 		return
@@ -292,6 +312,7 @@ func (info *RelayInfo) RequestedImageCount() int {
 }
 
 func (info *RelayInfo) InitChannelMeta(c *gin.Context) {
+	info.ResponseModel = nil
 	info.FinalRequestRelayFormat = ""
 	info.RequestConversionChain = nil
 	info.InitRequestConversionChain()
@@ -339,6 +360,15 @@ func (info *RelayInfo) InitChannelMeta(c *gin.Context) {
 		channelMeta.ChannelOtherSettings = channelOtherSettings
 	}
 
+	if channelType == constant.ChannelTypeAdvancedCustom &&
+		!channelMeta.ChannelSetting.PassThroughBodyEnabled &&
+		c.Request != nil && c.Request.URL != nil {
+		route, matched := channelMeta.ChannelOtherSettings.AdvancedCustom.MatchPathForModel(c.Request.URL.Path, info.OriginModelName)
+		if matched && route.PassThroughBodyEnabled {
+			channelMeta.ChannelSetting.PassThroughBodyEnabled = true
+		}
+	}
+
 	if streamSupportedChannels[channelMeta.ChannelType] {
 		channelMeta.SupportStreamOptions = true
 	}
@@ -348,6 +378,13 @@ func (info *RelayInfo) InitChannelMeta(c *gin.Context) {
 	// Channel identity feeds the converter options snapshot (e.g.
 	// OpenRouterDialect); drop the cache so a cross-channel retry rebuilds it.
 	info.convOptions = nil
+	// The adaptor Init of this attempt sets the vendor billing hooks again.
+	info.VendorToolUsage = nil
+	info.WebSearchBillingKey = ""
+	if info.requestInferredToolKey != "" && info.ResponsesUsageInfo != nil {
+		delete(info.ResponsesUsageInfo.BuiltInTools, info.requestInferredToolKey)
+	}
+	info.requestInferredToolKey = ""
 	if model_setting.GetGlobalSettings().PassThroughRequestEnabled || channelMeta.ChannelSetting.PassThroughBodyEnabled {
 		info.ReasoningEffort = ""
 		info.ReasoningConversion = nil
@@ -443,31 +480,33 @@ func (info *RelayInfo) ToString() string {
 
 // 定义支持流式选项的通道类型
 var streamSupportedChannels = map[int]bool{
-	constant.ChannelTypeOpenAI:           true,
-	constant.ChannelTypeAnthropic:        true,
-	constant.ChannelTypeAws:              true,
-	constant.ChannelTypeGemini:           true,
-	constant.ChannelCloudflare:           true,
-	constant.ChannelTypeAzure:            true,
-	constant.ChannelTypeVolcEngine:       true,
-	constant.ChannelTypeOllama:           true,
-	constant.ChannelTypeXai:              true,
-	constant.ChannelTypeDeepSeek:         true,
-	constant.ChannelTypeBaiduV2:          true,
-	constant.ChannelTypeZhipu_v4:         true,
-	constant.ChannelTypeAli:              true,
-	constant.ChannelTypeSubmodel:         true,
-	constant.ChannelTypeCodex:            true,
-	constant.ChannelTypeMoonshot:         true,
-	constant.ChannelTypeMiniMax:          true,
-	constant.ChannelTypeSiliconFlow:      true,
+	constant.ChannelTypeOpenAI:         true,
+	constant.ChannelTypeAnthropic:      true,
+	constant.ChannelTypeAws:            true,
+	constant.ChannelTypeGemini:         true,
+	constant.ChannelCloudflare:         true,
+	constant.ChannelTypeAzure:          true,
+	constant.ChannelTypeVolcEngine:     true,
+	constant.ChannelTypeOllama:         true,
+	constant.ChannelTypeXai:            true,
+	constant.ChannelTypeDeepSeek:       true,
+	constant.ChannelTypeBaiduV2:        true,
+	constant.ChannelTypeZhipu_v4:       true,
+	constant.ChannelTypeAli:            true,
+	constant.ChannelTypeSubmodel:       true,
+	constant.ChannelTypeCodex:          true,
+	constant.ChannelTypeMoonshot:       true,
+	constant.ChannelTypeMiniMax:        true,
+	constant.ChannelTypeSiliconFlow:    true,
 	constant.ChannelTypeAdvancedCustom:   true,
 	constant.ChannelTypeBrandedShared:    true,
 	constant.ChannelTypeBrandedAggregate: true,
 	constant.ChannelTypeBrandedProxy:     true,
 	constant.ChannelTypeSub2API:          true,
-	constant.ChannelTypeUter:             true,
-	constant.ChannelTypeTencent:          true,
+	constant.ChannelTypeNewAPI:           true,
+	constant.ChannelTypeVLLM:           true,
+	constant.ChannelTypeSGLang:         true,
+	constant.ChannelTypeTencent:        true,
 }
 
 func GenRelayInfoWs(c *gin.Context, ws *websocket.Conn) *RelayInfo {
@@ -529,14 +568,6 @@ func GenRelayInfoResponses(c *gin.Context, request *dto.OpenAIResponsesRequest) 
 				ToolName:  toolType,
 				CallCount: 0,
 			}
-			switch toolType {
-			case dto.BuildInToolWebSearchPreview:
-				searchContextSize := common.Interface2String(tool["search_context_size"])
-				if searchContextSize == "" {
-					searchContextSize = "medium"
-				}
-				info.ResponsesUsageInfo.BuiltInTools[toolType].SearchContextSize = searchContextSize
-			}
 		}
 	}
 	return info
@@ -588,6 +619,9 @@ func reasoningEffortFromRequest(request dto.Request) string {
 		if req != nil && req.GenerationConfig.ThinkingConfig != nil {
 			config := req.GenerationConfig.ThinkingConfig
 			effort = config.ThinkingLevel
+			if canonical, err := kitreasoning.ParseEffort(effort); err == nil {
+				effort = string(canonical)
+			}
 			if effort == "" && config.ThinkingBudget != nil {
 				effort = string(kitreasoning.EffortFromBudget(*config.ThinkingBudget))
 			}
@@ -643,9 +677,6 @@ func genBaseRelayInfo(c *gin.Context, request dto.Request) *RelayInfo {
 
 		TokenId:        common.GetContextKeyInt(c, constant.ContextKeyTokenId),
 		TokenKey:       common.GetContextKeyString(c, constant.ContextKeyTokenKey),
-		TokenUnlimited: common.GetContextKeyBool(c, constant.ContextKeyTokenUnlimited),
-		TokenGroup:     tokenGroup,
-
 		// 计费出资组织随登录态一起带进来：TokenAuth / UserAuth 都已通过
 		// UserBase.WriteContext 把 organization_id 写进 gin context（其数据来自
 		// GetUserCache，Redis 命中即零查库，未命中由 singleflight 收敛为一次回源）。
@@ -654,6 +685,8 @@ func genBaseRelayInfo(c *gin.Context, request dto.Request) *RelayInfo {
 		// 最多触发 7 次全行查询（Redis 关闭时）。这里补上后，RelayInfo 自创建起
 		// 就持有出资组织，下游 resolveOrgIdForBilling 无需再查。
 		OrganizationId: c.GetInt("organization_id"),
+		TokenUnlimited: common.GetContextKeyBool(c, constant.ContextKeyTokenUnlimited),
+		TokenGroup:     tokenGroup,
 
 		isFirstResponse: true,
 		RelayMode:       relayconstant.Path2RelayMode(c.Request.URL.Path),
@@ -949,6 +982,19 @@ func (info *RelayInfo) EnsureClaudeConvertInfo() *convmeta.ClaudeConvertInfo {
 	return info.ClaudeConvertInfo
 }
 
+func (info *RelayInfo) ResponsesToolState() *convmeta.ResponsesToolState {
+	if info == nil {
+		return nil
+	}
+	return info.responsesToolState
+}
+
+func (info *RelayInfo) SetResponsesToolState(state *convmeta.ResponsesToolState) {
+	if info != nil {
+		info.responsesToolState = state
+	}
+}
+
 func (info *RelayInfo) GetSendResponseCount() int {
 	if info == nil {
 		return 0
@@ -972,6 +1018,7 @@ func (info *RelayInfo) ConvOptions() *convmeta.Options {
 
 	claudeSettings := model_setting.GetClaudeSettings()
 	geminiSettings := model_setting.GetGeminiSettings()
+	channelType := info.GetChannelType()
 	options := &convmeta.Options{
 		Claude: convmeta.ClaudeOptions{
 			ThinkingAdapterEnabled:                claudeSettings.ThinkingAdapterEnabled,
@@ -984,6 +1031,11 @@ func (info *RelayInfo) ConvOptions() *convmeta.Options {
 			FunctionCallThoughtSignatureEnabled:   geminiSettings.FunctionCallThoughtSignatureEnabled,
 			SupportsImagine:                       model_setting.IsGeminiModelSupportImagine,
 			SafetySetting:                         model_setting.GetGeminiSafetySetting,
+			// Gemini API v1 has no parametersJsonSchema; v1beta and Vertex AI
+			// accept it.
+			SupportsJSONSchema: func(modelName string) bool {
+				return channelType == constant.ChannelTypeVertexAi || model_setting.GetGeminiVersionSetting(modelName) != "v1"
+			},
 		},
 		OpenRouterDialect:      info != nil && info.GetChannelType() == constant.ChannelTypeOpenRouter,
 		PreserveThinkingSuffix: model_setting.ShouldPreserveThinkingSuffix,
@@ -1153,73 +1205,70 @@ func RemoveDisabledFields(jsonData []byte, channelOtherSettings dto.ChannelOther
 	if !hasRemovableDisabledField(jsonData, channelOtherSettings) {
 		return jsonData, nil
 	}
-	// sjson 不会校验整段 JSON 的合法性，非法输入会静默产生错误结果；
-	// 这里先显式校验，保持与旧实现「解析失败则原样返回」一致的降级语义。
-	if !gjson.ValidBytes(jsonData) {
-		common.SysError("RemoveDisabledFields: invalid json payload, skipped field filtering")
+
+	var data map[string]any
+	if err := common.Unmarshal(jsonData, &data); err != nil {
+		common.SysError(common.LogText("RemoveDisabledFields Unmarshal error :%s", err.Error()))
 		return jsonData, nil
 	}
 
-	// 在 []byte 上直接按顶层 key 删除，不再 Unmarshal 成 map[string]any 再 Marshal 回来。
-	// 旧实现对含大 base64 字段的多模态请求会放大数倍内存（interface 装箱 + map bucket
-	// + 再次 marshal），这里对齐同包 applyOperationsLegacy 的写法，只改动必要的那几个字节。
-	result := jsonData
-	for _, field := range removableDisabledTopFields(jsonData, channelOtherSettings) {
-		next, err := sjson.DeleteBytes(result, escapeSjsonLiteralKey(field))
-		if err != nil {
-			common.SysError("RemoveDisabledFields delete " + field + " error: " + err.Error())
-			return jsonData, nil
+	// 默认移除 service_tier，除非明确允许（避免额外计费风险）
+	if !channelOtherSettings.AllowServiceTier {
+		if _, exists := data["service_tier"]; exists {
+			delete(data, "service_tier")
 		}
-		result = next
 	}
 
-	// 默认移除 stream_options.include_obfuscation（嵌套路径，不做字面量转义）
-	if !channelOtherSettings.AllowIncludeObfuscation &&
-		gjson.GetBytes(result, "stream_options.include_obfuscation").Exists() {
-		next, err := sjson.DeleteBytes(result, "stream_options.include_obfuscation")
-		if err != nil {
-			common.SysError("RemoveDisabledFields delete stream_options.include_obfuscation error: " + err.Error())
-			return jsonData, nil
+	// 默认移除 inference_geo，除非明确允许（避免在未授权情况下透传数据驻留区域）
+	if !channelOtherSettings.AllowInferenceGeo {
+		if _, exists := data["inference_geo"]; exists {
+			delete(data, "inference_geo")
 		}
-		result = next
-		// 旧实现：include_obfuscation 删完后 stream_options 变成空对象时会连带删掉整个
-		// stream_options，避免发出空对象改变上游行为，这里保持一致。
-		if streamOptions := gjson.GetBytes(result, "stream_options"); streamOptions.IsObject() && len(streamOptions.Map()) == 0 {
-			next, err = sjson.DeleteBytes(result, "stream_options")
-			if err != nil {
-				common.SysError("RemoveDisabledFields delete stream_options error: " + err.Error())
-				return jsonData, nil
+	}
+
+	// 默认移除 speed，除非明确允许（避免意外切换 Claude 推理速度模式）
+	if !channelOtherSettings.AllowSpeed {
+		if _, exists := data["speed"]; exists {
+			delete(data, "speed")
+		}
+	}
+
+	// 默认允许 store 透传，除非明确禁用（禁用可能影响 Codex 使用）
+	if channelOtherSettings.DisableStore {
+		if _, exists := data["store"]; exists {
+			delete(data, "store")
+		}
+	}
+
+	// 默认移除 safety_identifier，除非明确允许（保护用户隐私，避免向 OpenAI 报告用户信息）
+	if !channelOtherSettings.AllowSafetyIdentifier {
+		if _, exists := data["safety_identifier"]; exists {
+			delete(data, "safety_identifier")
+		}
+	}
+
+	// 默认移除 stream_options.include_obfuscation，除非明确允许（避免关闭响应流混淆保护）
+	if !channelOtherSettings.AllowIncludeObfuscation {
+		if streamOptionsAny, exists := data["stream_options"]; exists {
+			if streamOptions, ok := streamOptionsAny.(map[string]any); ok {
+				if _, includeExists := streamOptions["include_obfuscation"]; includeExists {
+					delete(streamOptions, "include_obfuscation")
+				}
+				if len(streamOptions) == 0 {
+					delete(data, "stream_options")
+				} else {
+					data["stream_options"] = streamOptions
+				}
 			}
-			result = next
 		}
 	}
 
-	return result, nil
-}
-
-// removableDisabledTopFields 返回本次需要从 payload 顶层删除的字段名。
-//
-// 只列出「渠道设置判定为需要删」且「确实出现在 payload 里」的字段：删除一个不存在的
-// key 仍会让 sjson 重新排布整段 JSON，白白付出内存与 CPU，所以先用 gjson 过滤一遍。
-func removableDisabledTopFields(jsonData []byte, channelOtherSettings dto.ChannelOtherSettings) []string {
-	candidates := [...]struct {
-		field   string
-		removes bool
-	}{
-		{"service_tier", !channelOtherSettings.AllowServiceTier},
-		{"inference_geo", !channelOtherSettings.AllowInferenceGeo},
-		{"speed", !channelOtherSettings.AllowSpeed},
-		{"store", channelOtherSettings.DisableStore},
-		{"safety_identifier", !channelOtherSettings.AllowSafetyIdentifier},
+	jsonDataAfter, err := common.Marshal(data)
+	if err != nil {
+		common.SysError(common.LogText("RemoveDisabledFields Marshal error :%s", err.Error()))
+		return jsonData, nil
 	}
-
-	fields := make([]string, 0, len(candidates))
-	for _, candidate := range candidates {
-		if candidate.removes && gjson.GetBytes(jsonData, escapeSjsonLiteralKey(candidate.field)).Exists() {
-			fields = append(fields, candidate.field)
-		}
-	}
-	return fields
+	return jsonDataAfter, nil
 }
 
 func hasRemovableDisabledField(jsonData []byte, channelOtherSettings dto.ChannelOtherSettings) bool {
@@ -1250,7 +1299,7 @@ func RemoveGeminiDisabledFields(jsonData []byte) ([]byte, error) {
 
 	var data map[string]any
 	if err := common.Unmarshal(jsonData, &data); err != nil {
-		common.SysError("RemoveGeminiDisabledFields Unmarshal error: " + err.Error())
+		common.SysError(common.LogText("RemoveGeminiDisabledFields Unmarshal error: %s", err.Error()))
 		return jsonData, nil
 	}
 
@@ -1279,7 +1328,7 @@ func RemoveGeminiDisabledFields(jsonData []byte) ([]byte, error) {
 
 	jsonDataAfter, err := common.Marshal(data)
 	if err != nil {
-		common.SysError("RemoveGeminiDisabledFields Marshal error: " + err.Error())
+		common.SysError(common.LogText("RemoveGeminiDisabledFields Marshal error: %s", err.Error()))
 		return jsonData, nil
 	}
 	return jsonDataAfter, nil

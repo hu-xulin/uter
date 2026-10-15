@@ -2,7 +2,6 @@ package controller
 
 import (
 	"context"
-	"github.com/uter-ai/uter/i18n"
 	"io"
 	"net/http"
 	"net/url"
@@ -11,12 +10,11 @@ import (
 	"time"
 
 	"github.com/uter-ai/uter/common"
-
-	"github.com/gin-gonic/gin"
 	"github.com/uter-ai/uter/middleware"
 	"github.com/uter-ai/uter/model"
 	"github.com/uter-ai/uter/oauth"
 	"github.com/uter-ai/uter/service"
+	"github.com/gin-gonic/gin"
 )
 
 // CustomOAuthProviderResponse is the response structure for custom OAuth providers
@@ -98,13 +96,13 @@ func GetCustomOAuthProvider(c *gin.Context) {
 	idStr := c.Param("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		common.ApiErrorI18n(c, i18n.MsgCommonInvalid_id)
+		common.ApiErrorT(c, "Invalid ID")
 		return
 	}
 
 	provider, err := model.GetCustomOAuthProviderById(id)
 	if err != nil {
-		common.ApiErrorI18n(c, i18n.MsgOauthProvider_not_found)
+		common.ApiErrorT(c, "OAuth provider not found")
 		return
 	}
 
@@ -146,7 +144,7 @@ type FetchCustomOAuthDiscoveryRequest struct {
 func FetchCustomOAuthDiscovery(c *gin.Context) {
 	var req FetchCustomOAuthDiscoveryRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		common.ApiErrorMsg(c, "无效的请求参数: "+err.Error())
+		common.ApiErrorT(c, "Invalid request parameters: {{error}}", map[string]any{"error": err.Error()})
 		return
 	}
 
@@ -154,7 +152,7 @@ func FetchCustomOAuthDiscovery(c *gin.Context) {
 	issuerURL := strings.TrimSpace(req.IssuerURL)
 
 	if wellKnownURL == "" && issuerURL == "" {
-		common.ApiErrorI18n(c, i18n.MsgOauthDiscovery_required)
+		common.ApiErrorT(c, "Enter the Discovery URL or Issuer URL first")
 		return
 	}
 
@@ -166,7 +164,7 @@ func FetchCustomOAuthDiscovery(c *gin.Context) {
 
 	parsedURL, err := url.Parse(targetURL)
 	if err != nil || parsedURL.Host == "" || (parsedURL.Scheme != "http" && parsedURL.Scheme != "https") {
-		common.ApiErrorI18n(c, i18n.MsgOauthDiscovery_invalid)
+		common.ApiErrorT(c, "Invalid Discovery URL. Only http and https are supported")
 		return
 	}
 
@@ -175,16 +173,15 @@ func FetchCustomOAuthDiscovery(c *gin.Context) {
 
 	httpReq, err := http.NewRequestWithContext(ctx, http.MethodGet, targetURL, nil)
 	if err != nil {
-		common.ApiErrorMsg(c, "创建 Discovery 请求失败: "+err.Error())
+		common.ApiErrorT(c, "Failed to create the Discovery request: {{error}}", map[string]any{"error": err.Error()})
 		return
 	}
 	httpReq.Header.Set("Accept", "application/json")
 
-	// 使用受 SSRF 防护的客户端，避免对任意 issuer/OIDC discovery URL 的裸请求打到内网
-	client := service.GetSSRFProtectedHTTPClient()
+	client := &http.Client{Timeout: 20 * time.Second}
 	resp, err := client.Do(httpReq)
 	if err != nil {
-		common.ApiErrorMsg(c, "获取 Discovery 配置失败: "+err.Error())
+		common.ApiErrorT(c, "Failed to fetch the Discovery configuration: {{error}}", map[string]any{"error": err.Error()})
 		return
 	}
 	defer resp.Body.Close()
@@ -195,13 +192,13 @@ func FetchCustomOAuthDiscovery(c *gin.Context) {
 		if message == "" {
 			message = resp.Status
 		}
-		common.ApiErrorMsg(c, "获取 Discovery 配置失败: "+message)
+		common.ApiErrorT(c, "Failed to fetch the Discovery configuration: {{error}}", map[string]any{"error": message})
 		return
 	}
 
 	var discovery map[string]any
 	if err = common.DecodeJson(resp.Body, &discovery); err != nil {
-		common.ApiErrorMsg(c, "解析 Discovery 配置失败: "+err.Error())
+		common.ApiErrorT(c, "Failed to parse the Discovery configuration: {{error}}", map[string]any{"error": err.Error()})
 		return
 	}
 
@@ -219,19 +216,19 @@ func FetchCustomOAuthDiscovery(c *gin.Context) {
 func CreateCustomOAuthProvider(c *gin.Context) {
 	var req CreateCustomOAuthProviderRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		common.ApiErrorMsg(c, "无效的请求参数: "+err.Error())
+		common.ApiErrorT(c, "Invalid request parameters: {{error}}", map[string]any{"error": err.Error()})
 		return
 	}
 
 	// Check if slug is already taken
 	if model.IsSlugTaken(req.Slug, 0) {
-		common.ApiErrorI18n(c, i18n.MsgOauthSlug_in_use)
+		common.ApiErrorT(c, "This slug is already in use")
 		return
 	}
 
 	// Check if slug conflicts with built-in providers
 	if oauth.IsProviderRegistered(req.Slug) && !oauth.IsCustomProvider(req.Slug) {
-		common.ApiErrorI18n(c, i18n.MsgOauthSlug_conflict)
+		common.ApiErrorT(c, "This slug conflicts with a built-in OAuth provider")
 		return
 	}
 
@@ -264,11 +261,7 @@ func CreateCustomOAuthProvider(c *gin.Context) {
 	// Register the provider in the OAuth registry
 	oauth.RegisterOrUpdateCustomProvider(provider)
 
-	c.JSON(http.StatusOK, gin.H{
-		"success": true,
-		"message": i18n.T(c, i18n.MsgOauthCreated),
-		"data":    toCustomOAuthProviderResponse(provider),
-	})
+	common.ApiSuccessT(c, "Provider created successfully", toCustomOAuthProviderResponse(provider))
 }
 
 // UpdateCustomOAuthProviderRequest is the request structure for updating a custom OAuth provider
@@ -298,20 +291,20 @@ func UpdateCustomOAuthProvider(c *gin.Context) {
 	idStr := c.Param("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		common.ApiErrorI18n(c, i18n.MsgCommonInvalid_id)
+		common.ApiErrorT(c, "Invalid ID")
 		return
 	}
 
 	var req UpdateCustomOAuthProviderRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		common.ApiErrorMsg(c, "无效的请求参数: "+err.Error())
+		common.ApiErrorT(c, "Invalid request parameters: {{error}}", map[string]any{"error": err.Error()})
 		return
 	}
 
 	// Get existing provider
 	provider, err := model.GetCustomOAuthProviderById(id)
 	if err != nil {
-		common.ApiErrorI18n(c, i18n.MsgOauthProvider_not_found)
+		common.ApiErrorT(c, "OAuth provider not found")
 		return
 	}
 
@@ -320,12 +313,12 @@ func UpdateCustomOAuthProvider(c *gin.Context) {
 	// Check if new slug is taken by another provider
 	if req.Slug != "" && req.Slug != provider.Slug {
 		if model.IsSlugTaken(req.Slug, id) {
-			common.ApiErrorI18n(c, i18n.MsgOauthSlug_in_use)
+			common.ApiErrorT(c, "This slug is already in use")
 			return
 		}
 		// Check if slug conflicts with built-in providers
 		if oauth.IsProviderRegistered(req.Slug) && !oauth.IsCustomProvider(req.Slug) {
-			common.ApiErrorI18n(c, i18n.MsgOauthSlug_conflict)
+			common.ApiErrorT(c, "This slug conflicts with a built-in OAuth provider")
 			return
 		}
 	}
@@ -397,11 +390,7 @@ func UpdateCustomOAuthProvider(c *gin.Context) {
 	}
 	oauth.RegisterOrUpdateCustomProvider(provider)
 
-	c.JSON(http.StatusOK, gin.H{
-		"success": true,
-		"message": i18n.T(c, i18n.MsgOauthUpdated),
-		"data":    toCustomOAuthProviderResponse(provider),
-	})
+	common.ApiSuccessT(c, "Provider updated successfully", toCustomOAuthProviderResponse(provider))
 }
 
 // DeleteCustomOAuthProvider deletes a custom OAuth provider
@@ -409,26 +398,26 @@ func DeleteCustomOAuthProvider(c *gin.Context) {
 	idStr := c.Param("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		common.ApiErrorI18n(c, i18n.MsgCommonInvalid_id)
+		common.ApiErrorT(c, "Invalid ID")
 		return
 	}
 
 	// Get existing provider to get slug
 	provider, err := model.GetCustomOAuthProviderById(id)
 	if err != nil {
-		common.ApiErrorI18n(c, i18n.MsgOauthProvider_not_found)
+		common.ApiErrorT(c, "OAuth provider not found")
 		return
 	}
 
 	// Check if there are any user bindings
 	count, err := model.GetBindingCountByProviderId(id)
 	if err != nil {
-		common.SysError("Failed to get binding count for provider " + strconv.Itoa(id) + ": " + err.Error())
-		common.ApiErrorI18n(c, i18n.MsgOauthCheck_bind_error)
+		common.SysError(common.LogText("Failed to get binding count for provider %s: %s", strconv.Itoa(id), err.Error()))
+		common.ApiErrorT(c, "Failed to check user bindings, please try again later")
 		return
 	}
 	if count > 0 {
-		common.ApiErrorI18n(c, i18n.MsgOauthCannot_delete_bound)
+		common.ApiErrorT(c, "This OAuth provider still has linked users and cannot be deleted. Unbind all users first.")
 		return
 	}
 
@@ -440,10 +429,7 @@ func DeleteCustomOAuthProvider(c *gin.Context) {
 	// Unregister the provider from the OAuth registry
 	oauth.UnregisterCustomProvider(provider.Slug)
 
-	c.JSON(http.StatusOK, gin.H{
-		"success": true,
-		"message": i18n.T(c, i18n.MsgOauthDeleted),
-	})
+	common.ApiSuccessT(c, "Provider deleted successfully", nil)
 }
 
 func buildUserOAuthBindingsResponse(userId int) ([]UserOAuthBindingResponse, error) {
@@ -452,20 +438,10 @@ func buildUserOAuthBindingsResponse(userId int) ([]UserOAuthBindingResponse, err
 		return nil, err
 	}
 
-	// provider 是全局小表且几乎不变，去重后一次取回，避免按绑定条数 N+1 查询。
-	providerIds := make([]int, 0, len(bindings))
-	for _, binding := range bindings {
-		providerIds = append(providerIds, binding.ProviderId)
-	}
-	providers, err := model.GetCustomOAuthProvidersByIds(providerIds)
-	if err != nil {
-		return nil, err
-	}
-
 	response := make([]UserOAuthBindingResponse, 0, len(bindings))
 	for _, binding := range bindings {
-		provider, ok := providers[binding.ProviderId]
-		if !ok {
+		provider, err := model.GetCustomOAuthProviderById(binding.ProviderId)
+		if err != nil {
 			continue
 		}
 		response = append(response, UserOAuthBindingResponse{
@@ -484,7 +460,7 @@ func buildUserOAuthBindingsResponse(userId int) ([]UserOAuthBindingResponse, err
 func GetUserOAuthBindings(c *gin.Context) {
 	userId := c.GetInt("id")
 	if userId == 0 {
-		common.ApiErrorI18n(c, i18n.MsgCommonNot_logged_in)
+		common.ApiErrorT(c, "Not logged in")
 		return
 	}
 
@@ -515,7 +491,8 @@ func GetUserOAuthBindingsByAdmin(c *gin.Context) {
 		return
 	}
 
-	if !canManageTargetUser(c, targetUser) {
+	myRole := c.GetInt("role")
+	if !canManageTargetRole(myRole, targetUser.Role) {
 		common.ApiErrorMsg(c, "no permission")
 		return
 	}
@@ -535,7 +512,7 @@ func GetUserOAuthBindingsByAdmin(c *gin.Context) {
 
 // UnbindCustomOAuth unbinds a custom OAuth provider from the current user
 func UnbindCustomOAuth(c *gin.Context) {
-	identity, ok := middleware.GetSessionAuthIdentity(c)
+	identity, ok := middleware.GetStepUpIdentity(c)
 	if !ok {
 		writeSecurityOperationError(c, service.ErrAuthTokenInvalid)
 		return
@@ -544,7 +521,7 @@ func UnbindCustomOAuth(c *gin.Context) {
 	providerIdStr := c.Param("provider_id")
 	providerId, err := strconv.Atoi(providerIdStr)
 	if err != nil || providerId <= 0 {
-		common.ApiErrorI18n(c, i18n.MsgCommonInvalid_provider_id)
+		common.ApiErrorT(c, "Invalid provider ID")
 		return
 	}
 
@@ -570,13 +547,9 @@ func UnbindCustomOAuth(c *gin.Context) {
 		writeSecurityOperationError(c, err)
 		return
 	}
-	notificationFailed = service.NotifyAccountSecurityChange(user.Email, "解除了登录方式绑定") != nil
+	notificationFailed = service.NotifyAccountSecurityChange(user.Email, "Login account unlinked") != nil
 
-	c.JSON(http.StatusOK, gin.H{
-		"success": true,
-		"message": i18n.T(c, i18n.MsgOauthUnbound),
-		"data":    gin.H{"notification_warning": notificationFailed},
-	})
+	common.ApiSuccessT(c, "Unbound successfully", gin.H{"notification_warning": notificationFailed})
 }
 
 func UnbindCustomOAuthByAdmin(c *gin.Context) {
@@ -593,15 +566,20 @@ func UnbindCustomOAuthByAdmin(c *gin.Context) {
 		return
 	}
 
-	if !canManageTargetUser(c, targetUser) {
+	myRole := c.GetInt("role")
+	if !canManageTargetRole(myRole, targetUser.Role) {
 		common.ApiErrorMsg(c, "no permission")
 		return
 	}
 
 	providerIdStr := c.Param("provider_id")
 	providerId, err := strconv.Atoi(providerIdStr)
-	if err != nil {
-		common.ApiErrorMsg(c, "invalid provider id")
+	if err != nil || providerId <= 0 {
+		common.ApiErrorT(c, "Invalid provider ID")
+		return
+	}
+	authorization := requireAdminUserProof(c, service.VerificationScopeAdminUserBindingClear, service.AdminUserBindingContext{UserID: userId, ProviderID: providerId})
+	if authorization == nil {
 		return
 	}
 
@@ -610,6 +588,12 @@ func UnbindCustomOAuthByAdmin(c *gin.Context) {
 		return
 	}
 
+	recordManageAuditFor(c, userId, "user.binding_clear", map[string]any{
+		"bindingType":         "custom_oauth",
+		"provider_id":         providerId,
+		"username":            targetUser.Username,
+		"verification_method": authorization.Method,
+	})
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
 		"message": "success",

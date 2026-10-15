@@ -4,11 +4,9 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"html"
 	"net/http"
 
 	"github.com/uter-ai/uter/common"
-
 	"github.com/uter-ai/uter/constant"
 	"github.com/uter-ai/uter/i18n"
 	"github.com/uter-ai/uter/logger"
@@ -27,10 +25,7 @@ import (
 func TestStatus(c *gin.Context) {
 	err := model.PingDB()
 	if err != nil {
-		c.JSON(http.StatusServiceUnavailable, gin.H{
-			"success": false,
-			"message": i18n.T(c, i18n.MsgMiscDb_connect_failed),
-		})
+		writeAccountStatusError(c, http.StatusServiceUnavailable, "Database connection failed")
 		return
 	}
 	// 获取HTTP统计信息
@@ -138,13 +133,11 @@ func GetStatus(c *gin.Context) {
 		"passkey_user_verification":   passkeySetting.UserVerification,
 		"passkey_attachment":          passkeySetting.AttachmentPreference,
 		"setup":                       constant.Setup,
-		// 用户协议/隐私政策默认启用：留空时由前端 legal-document 回退到内置
-		// docs 文档（content/legal/<lang>/<doc>.md），与充值协议表现一致；
-		// 管理员在系统信息填入自定义 Markdown/HTML/URL 时则走 DB 内容。
-		"user_agreement_enabled":     true,
-		"privacy_policy_enabled":     true,
-		"recharge_agreement_enabled": legalSetting.RechargeAgreement != "",
-		"checkin_enabled":            operation_setting.GetCheckinSetting().Enabled,
+		"user_agreement_enabled":      legalSetting.UserAgreement != "",
+		"privacy_policy_enabled":      legalSetting.PrivacyPolicy != "",
+		"checkin_enabled":             operation_setting.GetCheckinSetting().Enabled,
+		"log_export_enabled":          operation_setting.GetLogSetting().UserExportEnabled,
+		"log_max_range_days":          operation_setting.GetLogSetting().MaxRangeDays,
 	}
 
 	// 根据启用状态注入可选内容
@@ -245,33 +238,25 @@ func SendEmailVerification(c *gin.Context) {
 		return
 	}
 
-	// 不暴露邮箱是否已注册（防账号枚举）：统一返回成功，已注册邮箱不发送验证码。
 	if model.IsEmailAlreadyTaken(email) {
-		c.JSON(http.StatusOK, gin.H{"success": true, "message": ""})
+		common.ApiErrorT(c, "Email address is already in use")
 		return
 	}
-	code, err := common.GenerateNumericCode(6)
-	if err != nil {
-		logger.LogError(c.Request.Context(), fmt.Sprintf("failed to generate email verification code for %s: %s", common.MaskEmail(email), err.Error()))
-		common.ApiErrorI18n(c, i18n.MsgGenerateFailed)
-		return
-	}
+	code := common.GenerateVerificationCode(6)
 	common.RegisterVerificationCodeWithKey(email, code, common.EmailVerificationPurpose)
-	subject := common.BrandEmailSubject(fmt.Sprintf("电子邮件验证码： %s", code))
-	content := common.BuildBrandEmailHTML(common.BrandEmail{
-		Heading: "请验证您的邮箱地址",
-		Paragraphs: []string{
-			fmt.Sprintf("%s 收到了将 <strong>%s</strong> 用作账号的请求。", common.EmailBrandName, html.EscapeString(email)),
-			"请使用此验证码完成邮箱验证：",
-		},
-		Code: code,
-		Note: fmt.Sprintf("此验证码将在 %d 分钟后失效。如果这不是您发起的操作，可以放心地忽略这封电子邮件。", common.VerificationValidMinutes),
-	})
+	// The address may not belong to an account yet, so the mail follows the
+	// request language.
+	systemName := map[string]any{"SystemName": common.SystemName}
+	subject := i18n.T(c, i18n.MsgEmailVerificationSubject, systemName)
+	content := fmt.Sprintf("<p>%s</p>"+
+		"<p>%s</p>"+
+		"<p>%s</p>",
+		i18n.T(c, i18n.MsgEmailVerificationGreeting, systemName),
+		i18n.T(c, i18n.MsgEmailVerificationCode, map[string]any{"Code": code}),
+		i18n.T(c, i18n.MsgEmailVerificationValidity, map[string]any{"Minutes": common.VerificationValidMinutes}))
 	err = common.SendEmail(subject, email, content)
 	if err != nil {
-		// 仅记录内部错误，不向匿名客户端回显 SMTP/服务端细节
-		logger.LogError(c.Request.Context(), fmt.Sprintf("failed to send email verification to %s: %s", common.MaskEmail(email), err.Error()))
-		common.ApiErrorI18n(c, i18n.MsgCommonSystem_error)
+		common.ApiError(c, err)
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{
@@ -284,29 +269,34 @@ func SendEmailVerification(c *gin.Context) {
 func SendPasswordResetEmail(c *gin.Context) {
 	email := model.NormalizeEmail(c.Query("email"))
 	if err := common.Validate.Var(email, "required,email"); err != nil {
-		common.ApiErrorI18n(c, i18n.MsgInvalidParams)
+		common.ApiErrorT(c, "Invalid parameters")
 		return
 	}
-	if _, err := model.GetUniqueUserByEmail(email); err == nil {
+	if user, err := model.GetUniqueUserByEmail(email); err == nil {
 		code := common.GenerateVerificationCode(0)
 		common.RegisterVerificationCodeWithKey(email, code, common.PasswordResetPurpose)
 		link := fmt.Sprintf("%s/user/reset?email=%s&token=%s", system_setting.ServerAddress, email, code)
-		subject := common.BrandEmailSubject("密码重置")
-		content := common.BuildBrandEmailHTML(common.BrandEmail{
-			Heading: "重置您的密码",
-			Paragraphs: []string{
-				fmt.Sprintf("%s 收到了重置账号 <strong>%s</strong> 密码的请求。", common.EmailBrandName, html.EscapeString(email)),
-				fmt.Sprintf("点击 <a href='%s' style=\"color:#1a73e8;text-decoration:none;\">此处</a> 进行密码重置。如果链接无法点击，请将下面的链接复制到浏览器中打开：", html.EscapeString(link)),
-				fmt.Sprintf("<span style=\"color:#5f6368;word-break:break-all;\">%s</span>", html.EscapeString(link)),
-			},
-			Note: fmt.Sprintf("重置链接将在 %d 分钟后失效。如果这不是您发起的操作，可以放心地忽略这封电子邮件，您的密码不会被更改。", common.VerificationValidMinutes),
-		})
+		lang := user.GetSetting().Language
+		if lang == "" {
+			lang = i18n.StatedLang(c)
+		}
+		systemName := map[string]any{"SystemName": common.SystemName}
+		linkParams := map[string]any{"Link": link}
+		subject := i18n.Translate(lang, i18n.MsgEmailPasswordResetSubject, systemName)
+		content := fmt.Sprintf("<p>%s</p>"+
+			"<p>%s</p>"+
+			"<p>%s </p>"+
+			"<p>%s</p>",
+			i18n.Translate(lang, i18n.MsgEmailPasswordResetGreeting, systemName),
+			i18n.Translate(lang, i18n.MsgEmailPasswordResetLink, linkParams),
+			i18n.Translate(lang, i18n.MsgEmailPasswordResetLinkFallback, linkParams),
+			i18n.Translate(lang, i18n.MsgEmailPasswordResetValidity, map[string]any{"Minutes": common.VerificationValidMinutes}))
 		err := common.SendEmail(subject, email, content)
 		if err != nil {
-			logger.LogError(c.Request.Context(), fmt.Sprintf("failed to send password reset email to %s: %s", email, err.Error()))
+			logger.LogError(c.Request.Context(), common.LogText("failed to send password reset email to %s: %s", email, err.Error()))
 		}
 	} else if err != nil && !errors.Is(err, model.ErrEmailNotFound) {
-		logger.LogWarn(c.Request.Context(), fmt.Sprintf("skip password reset email for %s: %s", email, err.Error()))
+		logger.LogWarn(c.Request.Context(), common.LogText("skip password reset email for %s: %s", email, err.Error()))
 	}
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
@@ -323,33 +313,26 @@ func ResetPassword(c *gin.Context) {
 	var req PasswordResetRequest
 	err := json.NewDecoder(c.Request.Body).Decode(&req)
 	if err != nil {
-		common.ApiErrorI18n(c, i18n.MsgCommonInvalid_param_format)
+		common.ApiError(c, err)
 		return
 	}
 	req.Email = model.NormalizeEmail(req.Email)
 	if req.Email == "" || req.Token == "" {
-		common.ApiErrorI18n(c, i18n.MsgInvalidParams)
+		common.ApiErrorT(c, "Invalid parameters")
 		return
 	}
 	if !common.VerifyCodeWithKey(req.Email, req.Token, common.PasswordResetPurpose) {
-		common.ApiErrorI18n(c, i18n.MsgUserPasswordResetLinkInvalid)
+		common.ApiErrorT(c, "Password reset link is invalid or has expired")
 		return
 	}
-	// 临时口令使用密码学安全随机源，熵从 48 bit 提升至约 119 bit
-	password, err := common.GenerateRandomCharsKey(20)
-	if err != nil {
-		common.ApiErrorI18n(c, i18n.MsgCommonSystem_error)
-		return
-	}
+	password := common.GenerateVerificationCode(12)
 	err = model.ResetUserPasswordByEmail(req.Email, password)
 	if err != nil {
 		if errors.Is(err, model.ErrEmailNotFound) || errors.Is(err, model.ErrEmailAmbiguous) {
-			common.ApiErrorI18n(c, i18n.MsgUserPasswordResetLinkInvalid)
+			common.ApiErrorT(c, "Password reset link is invalid or has expired")
 			return
 		}
-		// 仅记录内部错误，不向匿名客户端回显数据库细节
-		logger.LogError(c.Request.Context(), fmt.Sprintf("failed to reset password for %s: %s", common.MaskEmail(req.Email), err.Error()))
-		common.ApiErrorI18n(c, i18n.MsgCommonSystem_error)
+		common.ApiError(c, err)
 		return
 	}
 	common.DeleteKey(req.Email, common.PasswordResetPurpose)

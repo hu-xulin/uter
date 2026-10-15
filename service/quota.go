@@ -7,12 +7,11 @@ import (
 	"time"
 
 	"github.com/uter-ai/uter/common"
-
 	"github.com/uter-ai/uter/constant"
+	"github.com/uter-ai/uter/i18n"
 	"github.com/uter-ai/uter/logger"
 	"github.com/uter-ai/uter/model"
 	"github.com/uter-ai/uter/pkg/billingexpr"
-	perfmetrics "github.com/uter-ai/uter/pkg/perf_metrics"
 	relaycommon "github.com/uter-ai/uter/relay/common"
 	"github.com/uter-ai/uter/relaykit/dto"
 	"github.com/uter-ai/uter/setting/custom_pricing"
@@ -184,7 +183,7 @@ func PreWssConsumeQuota(ctx *gin.Context, relayInfo *relaycommon.RelayInfo, usag
 		if err := relayInfo.Billing.Reserve(relayInfo.Billing.GetPreConsumedQuota() + quota); err != nil {
 			return err
 		}
-		logger.LogInfo(ctx, "realtime streaming consume quota success, quota: "+fmt.Sprintf("%d", quota))
+		logger.LogInfo(ctx, common.LogText("realtime streaming consume quota success, quota: %d", quota))
 		return nil
 	}
 
@@ -194,12 +193,12 @@ func PreWssConsumeQuota(ctx *gin.Context, relayInfo *relaycommon.RelayInfo, usag
 	if err != nil {
 		return err
 	}
-	logger.LogInfo(ctx, "realtime streaming consume quota success, quota: "+fmt.Sprintf("%d", quota))
+	logger.LogInfo(ctx, common.LogText("realtime streaming consume quota success, quota: %d", quota))
 	return nil
 }
 
 func PostWssConsumeQuota(ctx *gin.Context, relayInfo *relaycommon.RelayInfo, modelName string,
-	usage *dto.RealtimeUsage, extraContent string) {
+	usage *dto.RealtimeUsage, extraContent []*common.Message) {
 
 	var tieredResult *billingexpr.TieredResult
 	tieredOk, tieredQuota, tieredRes := TryTieredSettle(relayInfo, billingexpr.TokenParams{
@@ -250,12 +249,20 @@ func PostWssConsumeQuota(ctx *gin.Context, relayInfo *relaycommon.RelayInfo, mod
 	}
 
 	totalTokens := usage.TotalTokens
-	var logContent string
+	var logContent []*common.Message
 	if !usePrice {
-		logContent = fmt.Sprintf("模型倍率 %.2f，补全倍率 %.2f，音频倍率 %.2f，音频补全倍率 %.2f，分组倍率 %.2f",
-			modelRatio, completionRatio.InexactFloat64(), audioRatio.InexactFloat64(), audioCompletionRatio.InexactFloat64(), groupRatio)
+		logContent = append(logContent, common.NewMessage("Model ratio {{model_ratio}}, completion ratio {{completion_ratio}}, audio ratio {{audio_ratio}}, audio completion ratio {{audio_completion_ratio}}, group ratio {{group_ratio}}", map[string]any{
+			"model_ratio":            fmt.Sprintf("%.2f", modelRatio),
+			"completion_ratio":       fmt.Sprintf("%.2f", completionRatio.InexactFloat64()),
+			"audio_ratio":            fmt.Sprintf("%.2f", audioRatio.InexactFloat64()),
+			"audio_completion_ratio": fmt.Sprintf("%.2f", audioCompletionRatio.InexactFloat64()),
+			"group_ratio":            fmt.Sprintf("%.2f", groupRatio),
+		}))
 	} else {
-		logContent = fmt.Sprintf("模型定价 %.2f，分组倍率 %.2f", modelPrice, groupRatio)
+		logContent = append(logContent, common.NewMessage("Model price {{model_price}}, group ratio {{group_ratio}}", map[string]any{
+			"model_price": fmt.Sprintf("%.2f", modelPrice),
+			"group_ratio": fmt.Sprintf("%.2f", groupRatio),
+		}))
 	}
 
 	// record all the consume log even if quota is 0
@@ -263,52 +270,39 @@ func PostWssConsumeQuota(ctx *gin.Context, relayInfo *relaycommon.RelayInfo, mod
 		// in this case, must be some error happened
 		// we cannot just return, because we may have to return the pre-consumed quota
 		quota = 0
-		logContent += "（可能是上游超时）"
-		logger.LogError(ctx, fmt.Sprintf("total tokens is 0, cannot consume quota, userId %d, channelId %d, "+
-			"tokenId %d, model %s， pre-consumed quota %d", relayInfo.UserId, relayInfo.ChannelId, relayInfo.TokenId, modelName, relayInfo.FinalPreConsumedQuota))
+		logContent = append(logContent, common.NewMessage("Possibly an upstream timeout"))
+		logger.LogError(ctx, common.LogText("total tokens is 0, cannot consume quota, userId %d, channelId %d, tokenId %d, model %s， pre-consumed quota %d",
+			relayInfo.UserId, relayInfo.ChannelId, relayInfo.TokenId, modelName, relayInfo.FinalPreConsumedQuota))
 	} else {
 		recordMemberUsage(relayInfo, quota)
 		model.UpdateChannelUsedQuota(relayInfo.ChannelId, quota)
 	}
 
-	// 扣费结算：失败时如实记录，绝不能把「全额已扣」写入用量日志。
-	settleErr := SettleBilling(ctx, relayInfo, quota)
-	if settleErr != nil {
-		logger.LogError(ctx, "error settling billing: "+settleErr.Error())
+	if err := SettleBilling(ctx, relayInfo, quota); err != nil {
+		logger.LogError(ctx, common.LogText("error settling billing: %s", err.Error()))
 	}
 
 	logModel := modelName
-	if extraContent != "" {
-		logContent += ", " + extraContent
-	}
+	logContent = append(logContent, extraContent...)
 	other := GenerateWssOtherInfo(ctx, relayInfo, usage, modelRatio, groupRatio,
 		completionRatio.InexactFloat64(), audioRatio.InexactFloat64(), audioCompletionRatio.InexactFloat64(), modelPrice, relayInfo.PriceData.GroupRatioInfo.GroupSpecialRatio)
 	if tieredResult != nil {
 		InjectTieredBillingInfo(other, relayInfo, tieredResult)
 	}
 	attachQuotaSaturation(ctx, relayInfo, other)
-	// 落库（扣费）失败时，用量日志的 quota 记为 0 并打上失败标记。
-	recordedQuota := quota
-	if settleErr != nil {
-		recordedQuota = 0
-		other.SetPublic("settle_error", settleErr.Error())
-	}
 	model.RecordConsumeLog(ctx, relayInfo.UserId, model.RecordConsumeLogParams{
 		ChannelId:        relayInfo.ChannelId,
 		PromptTokens:     usage.InputTokens,
 		CompletionTokens: usage.OutputTokens,
 		ModelName:        logModel,
 		TokenName:        tokenName,
-		Quota:            recordedQuota,
+		Quota:            quota,
 		Content:          logContent,
 		TokenId:          relayInfo.TokenId,
 		UseTimeSeconds:   int(useTimeSeconds),
 		IsStream:         relayInfo.IsStream,
 		Group:            relayInfo.UsingGroup,
 		Other:            other,
-		// 实时/音频链路 cache 字段（如上游返回）一并落库，供统计接口聚合。
-		CacheReadTokens:  usage.InputTokenDetails.CachedTokens,
-		CacheWriteTokens: usage.InputTokenDetails.CacheWriteTokens,
 	})
 }
 
@@ -338,12 +332,10 @@ func CalcOpenRouterCacheCreateTokens(usage dto.Usage, priceData types.PriceData)
 	return quota
 }
 
-func PostAudioConsumeQuota(ctx *gin.Context, relayInfo *relaycommon.RelayInfo, usage *dto.Usage, extraContent string) {
+func PostAudioConsumeQuota(ctx *gin.Context, relayInfo *relaycommon.RelayInfo, usage *dto.Usage, extraContent []*common.Message) {
 	if usage == nil {
 		usage = &dto.Usage{PromptTokens: relayInfo.GetEstimatePromptTokens(), TotalTokens: relayInfo.GetEstimatePromptTokens()}
 	}
-	// 上游 cache 字段形式多样，先归一化到规范字段，统计接口才能正确聚合。
-	usage.NormalizeCacheTokens()
 
 	var tieredUsedVars map[string]bool
 	if snap := relayInfo.TieredBillingSnapshot; snap != nil {
@@ -396,12 +388,20 @@ func PostAudioConsumeQuota(ctx *gin.Context, relayInfo *relaycommon.RelayInfo, u
 	}
 
 	totalTokens := usage.TotalTokens
-	var logContent string
+	var logContent []*common.Message
 	if !usePrice {
-		logContent = fmt.Sprintf("模型倍率 %.2f，补全倍率 %.2f，音频倍率 %.2f，音频补全倍率 %.2f，分组倍率 %.2f",
-			modelRatio, completionRatio.InexactFloat64(), audioRatio.InexactFloat64(), audioCompletionRatio.InexactFloat64(), groupRatio)
+		logContent = append(logContent, common.NewMessage("Model ratio {{model_ratio}}, completion ratio {{completion_ratio}}, audio ratio {{audio_ratio}}, audio completion ratio {{audio_completion_ratio}}, group ratio {{group_ratio}}", map[string]any{
+			"model_ratio":            fmt.Sprintf("%.2f", modelRatio),
+			"completion_ratio":       fmt.Sprintf("%.2f", completionRatio.InexactFloat64()),
+			"audio_ratio":            fmt.Sprintf("%.2f", audioRatio.InexactFloat64()),
+			"audio_completion_ratio": fmt.Sprintf("%.2f", audioCompletionRatio.InexactFloat64()),
+			"group_ratio":            fmt.Sprintf("%.2f", groupRatio),
+		}))
 	} else {
-		logContent = fmt.Sprintf("模型定价 %.2f，分组倍率 %.2f", modelPrice, groupRatio)
+		logContent = append(logContent, common.NewMessage("Model price {{model_price}}, group ratio {{group_ratio}}", map[string]any{
+			"model_price": fmt.Sprintf("%.2f", modelPrice),
+			"group_ratio": fmt.Sprintf("%.2f", groupRatio),
+		}))
 	}
 
 	// record all the consume log even if quota is 0
@@ -409,68 +409,49 @@ func PostAudioConsumeQuota(ctx *gin.Context, relayInfo *relaycommon.RelayInfo, u
 		// in this case, must be some error happened
 		// we cannot just return, because we may have to return the pre-consumed quota
 		quota = 0
-		logContent += "（可能是上游超时）"
-		logger.LogError(ctx, fmt.Sprintf("total tokens is 0, cannot consume quota, userId %d, channelId %d, "+
-			"tokenId %d, model %s， pre-consumed quota %d", relayInfo.UserId, relayInfo.ChannelId, relayInfo.TokenId, billingModelName, relayInfo.FinalPreConsumedQuota))
+		logContent = append(logContent, common.NewMessage("Possibly an upstream timeout"))
+		logger.LogError(ctx, common.LogText("total tokens is 0, cannot consume quota, userId %d, channelId %d, tokenId %d, model %s， pre-consumed quota %d",
+			relayInfo.UserId, relayInfo.ChannelId, relayInfo.TokenId, billingModelName, relayInfo.FinalPreConsumedQuota))
 	} else {
 		recordMemberUsage(relayInfo, quota)
 		model.UpdateChannelUsedQuota(relayInfo.ChannelId, quota)
 	}
 
-	// 扣费结算：失败时如实记录，绝不能把「全额已扣」写入用量日志。
-	settleErr := SettleBilling(ctx, relayInfo, quota)
-	if settleErr != nil {
-		logger.LogError(ctx, "error settling billing: "+settleErr.Error())
+	if err := SettleBilling(ctx, relayInfo, quota); err != nil {
+		logger.LogError(ctx, common.LogText("error settling billing: %s", err.Error()))
 	}
 
 	logModel := billingModelName
-	if extraContent != "" {
-		logContent += ", " + extraContent
-	}
+	logContent = append(logContent, extraContent...)
 	other := GenerateAudioOtherInfo(ctx, relayInfo, usage, modelRatio, groupRatio,
 		completionRatio.InexactFloat64(), audioRatio.InexactFloat64(), audioCompletionRatio.InexactFloat64(), modelPrice, relayInfo.PriceData.GroupRatioInfo.GroupSpecialRatio)
 	if tieredResult != nil {
 		InjectTieredBillingInfo(other, relayInfo, tieredResult)
 	}
 	attachQuotaSaturation(ctx, relayInfo, other)
-	// 落库（扣费）失败时，用量日志的 quota 记为 0 并打上失败标记。
-	recordedQuota := quota
-	if settleErr != nil {
-		recordedQuota = 0
-		other.SetPublic("settle_error", settleErr.Error())
-	}
 	model.RecordConsumeLog(ctx, relayInfo.UserId, model.RecordConsumeLogParams{
 		ChannelId:        relayInfo.ChannelId,
 		PromptTokens:     usage.PromptTokens,
 		CompletionTokens: usage.CompletionTokens,
 		ModelName:        logModel,
 		TokenName:        tokenName,
-		Quota:            recordedQuota,
+		Quota:            quota,
 		Content:          logContent,
 		TokenId:          relayInfo.TokenId,
 		UseTimeSeconds:   int(useTimeSeconds),
 		IsStream:         relayInfo.IsStream,
 		Group:            relayInfo.UsingGroup,
 		Other:            other,
-		// 音频链路 cache 字段（如上游返回）一并落库，供统计接口聚合。
-		CacheReadTokens:  usage.PromptTokensDetails.CachedTokens,
-		CacheWriteTokens: usage.PromptTokensDetails.CacheCreationTokensTotal(),
 	})
-	gopool.Go(func() {
-		perfmetrics.RecordRelaySample(relayInfo, true, int64(usage.CompletionTokens))
-	})
+	relayInfo.PerformanceOutputTokens = int64(usage.CompletionTokens)
 }
 
 func PreConsumeTokenQuota(relayInfo *relaycommon.RelayInfo, quota int) error {
 	if quota < 0 {
-		return errors.New("quota 不能为负数！")
+		return errors.New("quota cannot be negative")
 	}
 	if relayInfo.IsPlayground {
 		return nil
-	}
-	// 组织共享钱包闸门：仅对组织成员生效，校验组织预算与员工子额度上限。
-	if err := model.EnforceOrgQuota(relayInfo.UserId, int64(quota)); err != nil {
-		return err
 	}
 	// 原子预扣：检查与扣减在同一操作中完成，并发请求不可能同时通过检查后超扣。
 	reserved, err := model.TryReserveTokenQuota(relayInfo.TokenId, relayInfo.TokenKey, quota, relayInfo.TokenUnlimited)
@@ -513,27 +494,7 @@ func postConsumeQuotaWithResult(relayInfo *relaycommon.RelayInfo, quota int, pre
 		}
 	} else {
 		// Wallet
-		orgId := 0
-		if relayInfo != nil {
-			// 优先复用计费会话已解析的组织归属；只有在会话未建立（旧路径）时才回查。
-			orgId = relayInfo.OrganizationId
-			if orgId == 0 && relayInfo.UserId > 0 {
-				if id, e := model.OrgIdOfUser(relayInfo.UserId); e == nil {
-					orgId = id
-					// 回写缓存，使 checkAndSendQuotaNotify 的后台 goroutine 无需查库
-					// （见 RelayInfo.OrganizationId 的说明）。
-					relayInfo.OrganizationId = id
-				}
-			}
-		}
-		if orgId > 0 {
-			// 组织成员：消耗由组织共享预算出资（used_quota 累加，余额 = quota - used_quota
-			// 自然递减），个人钱包不扣减。成员自身的 users.used_quota 由调用方的
-			// UpdateUserUsedQuotaAndRequestCount 统一累加，这里再写一次会重复计账。
-			if err := model.IncrOrgUsedQuota(orgId, int64(quota)); err != nil {
-				return result, err
-			}
-		} else if quota > 0 {
+		if quota > 0 {
 			err = model.DecreaseUserQuota(relayInfo.UserId, quota, false)
 		} else {
 			err = model.IncreaseUserQuota(relayInfo.UserId, -quota, false)
@@ -566,19 +527,7 @@ func postConsumeQuotaWithResult(relayInfo *relaycommon.RelayInfo, quota int, pre
 }
 
 func checkAndSendQuotaNotify(relayInfo *relaycommon.RelayInfo, quota int, preConsumedQuota int) {
-	// 组织归属必须在进入后台 goroutine 之前读取：goroutine 里不得访问数据库
-	// （会与请求 goroutine 争用连接池；SQLite `:memory:` 下新连接会打开空库）。
-	orgId := 0
-	if relayInfo != nil {
-		orgId = relayInfo.OrganizationId
-	}
 	gopool.Go(func() {
-		// 组织成员的出资方是组织共享预算，个人钱包余额与其消耗无关：
-		// 用个人余额做阈值判断只会给成员发一堆无意义的「额度即将用尽」提醒。
-		// 组织预算水位由组织侧（组织总览）呈现。
-		if orgId > 0 {
-			return
-		}
 		userSetting := relayInfo.UserSetting
 		threshold := common.QuotaRemindThreshold
 		if userSetting.QuotaWarningThreshold != 0 {
@@ -592,34 +541,12 @@ func checkAndSendQuotaNotify(relayInfo *relaycommon.RelayInfo, quota int, preCon
 			quotaTooLow = true
 		}
 		if quotaTooLow {
-			prompt := "您的额度即将用尽"
-			topUpLink := PaymentReturnURL("/wallet")
-
-			// 根据通知方式生成不同的内容格式
-			var content string
-			var values []any
-
-			notifyType := userSetting.NotifyType
-			if notifyType == "" {
-				notifyType = dto.NotifyTypeEmail
-			}
-
-			if notifyType == dto.NotifyTypeBark {
-				// Bark推送使用简短文本，不支持HTML
-				content = "{{value}}，剩余额度：{{value}}，请及时充值"
-				values = []any{prompt, logger.FormatQuota(relayInfo.UserQuota)}
-			} else if notifyType == dto.NotifyTypeGotify {
-				content = "{{value}}，当前剩余额度为 {{value}}，请及时充值。"
-				values = []any{prompt, logger.FormatQuota(relayInfo.UserQuota)}
-			} else {
-				// 默认内容格式，适用于Email和Webhook（支持HTML）
-				content = "{{value}}，当前剩余额度为 {{value}}，为了不影响您的使用，请及时充值。<br/>充值链接：<a href='{{value}}'>{{value}}</a>"
-				values = []any{prompt, logger.FormatQuota(relayInfo.UserQuota), topUpLink, topUpLink}
-			}
-
+			lang := userSetting.Language
+			prompt := i18n.Translate(lang, i18n.MsgNotifyQuotaLowTitle)
+			content, values := quotaNotifyContent(lang, userSetting.NotifyType, prompt, logger.FormatQuota(relayInfo.UserQuota))
 			err := NotifyUser(relayInfo.UserId, relayInfo.UserEmail, relayInfo.UserSetting, dto.NewNotify(dto.NotifyTypeQuotaExceed, prompt, content, values))
 			if err != nil {
-				common.SysError(fmt.Sprintf("failed to send quota notify to user %d: %s", relayInfo.UserId, err.Error()))
+				common.SysError(common.LogText("failed to send quota notify to user %d: %s", relayInfo.UserId, err.Error()))
 			}
 		}
 	})
@@ -646,29 +573,27 @@ func checkAndSendSubscriptionQuotaNotify(relayInfo *relaycommon.RelayInfo) {
 			return
 		}
 
-		prompt := "您的订阅额度即将用尽"
-		topUpLink := PaymentReturnURL("/wallet")
-
-		var content string
-		var values []any
-		notifyType := userSetting.NotifyType
-		if notifyType == "" {
-			notifyType = dto.NotifyTypeEmail
-		}
-
-		if notifyType == dto.NotifyTypeBark {
-			content = "{{value}}，剩余额度：{{value}}，请及时充值"
-			values = []any{prompt, logger.FormatQuota(int(remaining))}
-		} else if notifyType == dto.NotifyTypeGotify {
-			content = "{{value}}，当前剩余额度为 {{value}}，请及时充值。"
-			values = []any{prompt, logger.FormatQuota(int(remaining))}
-		} else {
-			content = "{{value}}，当前剩余额度为 {{value}}，为了不影响您的使用，请及时充值。<br/>充值链接：<a href='{{value}}'>{{value}}</a>"
-			values = []any{prompt, logger.FormatQuota(int(remaining)), topUpLink, topUpLink}
-		}
-
+		lang := userSetting.Language
+		prompt := i18n.Translate(lang, i18n.MsgNotifySubscriptionQuotaLowTitle)
+		content, values := quotaNotifyContent(lang, userSetting.NotifyType, prompt, logger.FormatQuota(int(remaining)))
 		if err := NotifyUser(relayInfo.UserId, relayInfo.UserEmail, relayInfo.UserSetting, dto.NewNotify(dto.NotifyTypeQuotaExceed, prompt, content, values)); err != nil {
-			common.SysError(fmt.Sprintf("failed to send subscription quota notify to user %d: %s", relayInfo.UserId, err.Error()))
+			common.SysError(common.LogText("failed to send subscription quota notify to user %d: %s", relayInfo.UserId, err.Error()))
 		}
 	})
+}
+
+// quotaNotifyContent renders a low-quota notice in the user's saved language.
+// Bark and Gotify get plain text; email and webhook get HTML with the top-up
+// link. values stay in the notify payload for webhook receivers.
+func quotaNotifyContent(lang string, notifyType string, prompt string, remaining string) (string, []any) {
+	switch notifyType {
+	case dto.NotifyTypeBark:
+		// Bark推送使用简短文本，不支持HTML
+		return i18n.Translate(lang, i18n.MsgNotifyQuotaLowBark, map[string]any{"Prompt": prompt, "Quota": remaining}), []any{prompt, remaining}
+	case dto.NotifyTypeGotify:
+		return i18n.Translate(lang, i18n.MsgNotifyQuotaLowGotify, map[string]any{"Prompt": prompt, "Quota": remaining}), []any{prompt, remaining}
+	default:
+		topUpLink := PaymentReturnURL("/wallet")
+		return i18n.Translate(lang, i18n.MsgNotifyQuotaLowEmail, map[string]any{"Prompt": prompt, "Quota": remaining, "Link": topUpLink}), []any{prompt, remaining, topUpLink, topUpLink}
+	}
 }

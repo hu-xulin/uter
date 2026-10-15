@@ -12,8 +12,8 @@ import (
 	"strings"
 
 	"github.com/uter-ai/uter/common"
-
 	"github.com/uter-ai/uter/dto"
+	pluginruntime "github.com/uter-ai/uter/pkg/jsplugin"
 )
 
 const (
@@ -102,15 +102,13 @@ type ProtocolState struct {
 	Value   json.RawMessage
 }
 
-func (s ProtocolState) PluginValue() (any, error) {
+// PluginValue returns the state as a hook argument: nil when it is absent or
+// null, otherwise its JSON text for the hook to receive parsed.
+func (s ProtocolState) PluginValue() any {
 	if !s.Present || s.Null {
-		return nil, nil
+		return nil
 	}
-	var value any
-	if err := common.Unmarshal(s.Value, &value); err != nil {
-		return nil, err
-	}
-	return value, nil
+	return pluginruntime.RawJSON(s.Value)
 }
 
 type ProtocolSemanticEvent struct {

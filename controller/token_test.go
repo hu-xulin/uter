@@ -6,23 +6,24 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"maps"
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"slices"
 	"strconv"
 	"strings"
 	"testing"
 	"time"
 
 	"github.com/uter-ai/uter/common"
-
+	"github.com/uter-ai/uter/middleware"
+	"github.com/uter-ai/uter/model"
+	"github.com/uter-ai/uter/service"
 	"github.com/gin-gonic/gin"
 	"github.com/glebarez/sqlite"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"github.com/uter-ai/uter/middleware"
-	"github.com/uter-ai/uter/model"
-	"github.com/uter-ai/uter/service"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -369,6 +370,8 @@ func runTokenMigrationCompatibilityTest(t *testing.T, db *gorm.DB, dialect strin
 	if migratedToken.AutoGroups != "" {
 		t.Fatalf("expected legacy token to inherit global Auto groups, got %q", migratedToken.AutoGroups)
 	}
+	require.True(t, db.Migrator().HasColumn(&model.Token{}, "allow_user_quota_query"))
+	assert.False(t, migratedToken.AllowUserQuotaQuery, "tokens created before the upgrade keep user quota queries off")
 
 	inserted := model.Token{
 		UserId:             8,
@@ -554,128 +557,154 @@ func TestUpdateTokenMasksKeyInResponse(t *testing.T) {
 
 func TestGetTokenKeyRequiresOwnershipAndReturnsFullKey(t *testing.T) {
 	db := setupTokenControllerTestDB(t)
-	require.NoError(t, db.AutoMigrate(&model.User{}, &model.UserSession{}, &model.Token{}, &model.TwoFA{}, &model.TwoFABackupCode{}, &model.PasskeyCredential{}, &model.AuthFlow{}, &model.UserOAuthBinding{}, &model.Option{}))
-	owner := &model.User{Username: "key-owner", Password: "placeholder", Role: common.RoleCommonUser, Status: common.UserStatusEnabled, Group: "default", AuthVersion: 1, AffCode: "key-owner"}
-	require.NoError(t, db.Create(owner).Error)
-	ownerSession := &model.UserSession{SID: "key-ownership-session", UserID: owner.Id, Version: 1, UserAuthVersion: 1, Status: model.UserSessionStatusActive, RefreshHash: "placeholder", LoginMethod: "password", LastActiveAt: time.Now().Unix(), ExpiresAt: time.Now().Add(time.Hour).Unix()}
-	require.NoError(t, model.CreateUserSession(ownerSession))
-	token := seedToken(t, db, owner.Id, "owned-token", "owner1234token5678")
+	token := seedToken(t, db, 1, "owned-token", "owner1234token5678")
 
-	other := &model.User{Username: "key-stranger", Password: "placeholder", Role: common.RoleCommonUser, Status: common.UserStatusEnabled, Group: "default", AuthVersion: 1, AffCode: "key-stranger"}
-	require.NoError(t, db.Create(other).Error)
-	otherSession := &model.UserSession{SID: "key-stranger-session", UserID: other.Id, Version: 1, UserAuthVersion: 1, Status: model.UserSessionStatusActive, RefreshHash: "placeholder", LoginMethod: "password", LastActiveAt: time.Now().Unix(), ExpiresAt: time.Now().Add(time.Hour).Unix()}
-	require.NoError(t, model.CreateUserSession(otherSession))
+	authorizedCtx, authorizedRecorder := newAuthenticatedContext(t, http.MethodPost, "/api/token/"+strconv.Itoa(token.Id)+"/key", nil, 1)
+	authorizedCtx.Params = gin.Params{{Key: "id", Value: strconv.Itoa(token.Id)}}
+	GetTokenKey(authorizedCtx)
 
-	previousSecret := common.SessionSecret
-	common.SessionSecret = "key-ownership-test-secret"
-	t.Cleanup(func() { common.SessionSecret = previousSecret })
-
-	ownerIdentity := service.AuthIdentity{UserID: owner.Id, SessionID: ownerSession.SID, UserAuthVersion: 1, SessionVersion: 1}
-	ownerJWT, _, err := service.IssueAccessToken(ownerIdentity)
-	require.NoError(t, err)
-	otherIdentity := service.AuthIdentity{UserID: other.Id, SessionID: otherSession.SID, UserAuthVersion: 1, SessionVersion: 1}
-	otherJWT, _, err := service.IssueAccessToken(otherIdentity)
-	require.NoError(t, err)
-
-	router := gin.New()
-	router.POST("/api/token/:id/key", middleware.UserAuth(), GetTokenKey)
-
-	doRequest := func(jwt, proof string) *httptest.ResponseRecorder {
-		request := httptest.NewRequest(http.MethodPost, "/api/token/"+strconv.Itoa(token.Id)+"/key", nil)
-		request.Header.Set("Authorization", "Bearer "+jwt)
-		request.Header.Set("Content-Type", "application/json")
-		if proof != "" {
-			request.Header.Set("X-Security-Proof", proof)
-		}
-		recorder := httptest.NewRecorder()
-		router.ServeHTTP(recorder, request)
-		return recorder
+	authorizedResponse := decodeAPIResponse(t, authorizedRecorder)
+	if !authorizedResponse.Success {
+		t.Fatalf("expected authorized key fetch to succeed, got message: %s", authorizedResponse.Message)
 	}
 
-	// The token owner, presenting a valid step-up security proof, may fetch the
-	// full key. Reading the plaintext sk- is gated behind RequireSecurityProof.
-	ownerBinding, berr := service.BindVerificationOperation(service.VerificationOperation{Scope: service.VerificationScopeTokenKeyRead})
-	require.NoError(t, berr)
-	ownerProof, _, perr := service.IssueSecurityProof(ownerIdentity, "password", ownerBinding)
-	require.NoError(t, perr)
-	recorder := doRequest(ownerJWT, ownerProof)
-	require.Equal(t, http.StatusOK, recorder.Code)
-	var resp tokenAPIResponse
-	require.NoError(t, common.Unmarshal(recorder.Body.Bytes(), &resp))
-	require.True(t, resp.Success, resp.Message)
 	var keyData tokenKeyResponse
-	require.NoError(t, common.Unmarshal(resp.Data, &keyData))
-	assert.Equal(t, token.GetFullKey(), keyData.Key)
+	if err := common.Unmarshal(authorizedResponse.Data, &keyData); err != nil {
+		t.Fatalf("failed to decode token key response: %v", err)
+	}
+	if keyData.Key != token.GetFullKey() {
+		t.Fatalf("expected full key %q, got %q", token.GetFullKey(), keyData.Key)
+	}
 
-	// A different user, even presenting their own valid proof, cannot read the
-	// owner's token: ownership is enforced after the proof gate and the raw key
-	// is never disclosed. Business errors return HTTP 200 with success=false.
-	otherBinding, berr2 := service.BindVerificationOperation(service.VerificationOperation{Scope: service.VerificationScopeTokenKeyRead})
-	require.NoError(t, berr2)
-	otherProof, _, perr2 := service.IssueSecurityProof(otherIdentity, "password", otherBinding)
-	require.NoError(t, perr2)
-	recorder = doRequest(otherJWT, otherProof)
-	var otherResp tokenAPIResponse
-	require.NoError(t, common.Unmarshal(recorder.Body.Bytes(), &otherResp))
-	require.False(t, otherResp.Success, otherResp.Message)
-	assert.NotContains(t, recorder.Body.String(), token.Key)
+	unauthorizedCtx, unauthorizedRecorder := newAuthenticatedContext(t, http.MethodPost, "/api/token/"+strconv.Itoa(token.Id)+"/key", nil, 2)
+	unauthorizedCtx.Params = gin.Params{{Key: "id", Value: strconv.Itoa(token.Id)}}
+	GetTokenKey(unauthorizedCtx)
+
+	unauthorizedResponse := decodeAPIResponse(t, unauthorizedRecorder)
+	if unauthorizedResponse.Success {
+		t.Fatalf("expected unauthorized key fetch to fail")
+	}
+	if strings.Contains(unauthorizedRecorder.Body.String(), token.Key) {
+		t.Fatalf("unauthorized key response leaked raw token key: %s", unauthorizedRecorder.Body.String())
+	}
 }
 
-func TestGetTokenKeyRequiresSecurityProof(t *testing.T) {
-	db := setupTokenControllerTestDB(t)
-	require.NoError(t, db.AutoMigrate(&model.User{}, &model.UserSession{}, &model.Token{}, &model.TwoFA{}, &model.TwoFABackupCode{}, &model.PasskeyCredential{}, &model.AuthFlow{}, &model.UserOAuthBinding{}, &model.Option{}))
-	user := &model.User{Username: "key-proof-owner", Password: "placeholder", Role: common.RoleCommonUser, Status: common.UserStatusEnabled, Group: "default", AuthVersion: 1, AffCode: "key-proof-owner"}
-	require.NoError(t, db.Create(user).Error)
-	session := &model.UserSession{SID: "key-proof-session", UserID: user.Id, Version: 1, UserAuthVersion: 1, Status: model.UserSessionStatusActive, RefreshHash: "placeholder", LoginMethod: "password", LastActiveAt: time.Now().Unix(), ExpiresAt: time.Now().Add(time.Hour).Unix()}
-	require.NoError(t, model.CreateUserSession(session))
-	token := seedToken(t, db, user.Id, "owned-token", "owner1234token5678")
+func TestTokenAllowUserQuotaQueryOnCreateAndUpdate(t *testing.T) {
+	for _, tc := range []struct {
+		name   string
+		target string
+		stored *bool // nil creates the token through the API
+		field  any   // nil omits allow_user_quota_query from the request
+		want   bool
+	}{
+		{name: "create without the field turns it on", target: "/api/token/", want: true},
+		{name: "create with false keeps it off", target: "/api/token/", field: false},
+		{name: "update without the field keeps it on", target: "/api/token/", stored: common.GetPointer(true), want: true},
+		{name: "update without the field keeps it off", target: "/api/token/", stored: common.GetPointer(false)},
+		{name: "update turns it off", target: "/api/token/", stored: common.GetPointer(true), field: false},
+		{name: "update turns it on", target: "/api/token/", stored: common.GetPointer(false), field: true, want: true},
+		{name: "status update leaves it alone", target: "/api/token/?status_only=true", stored: common.GetPointer(true), field: false, want: true},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			db := setupTokenControllerTestDB(t)
+			body := map[string]any{"name": "quota-query", "expired_time": -1, "unlimited_quota": true, "status": common.TokenStatusEnabled}
+			if tc.field != nil {
+				body["allow_user_quota_query"] = tc.field
+			}
+			var recorder *httptest.ResponseRecorder
+			if tc.stored == nil {
+				var ctx *gin.Context
+				ctx, recorder = newAuthenticatedContext(t, http.MethodPost, tc.target, body, 1)
+				AddToken(ctx)
+			} else {
+				token := seedToken(t, db, 1, "quota-query", "quota-query-key")
+				require.NoError(t, db.Model(token).Update("allow_user_quota_query", *tc.stored).Error)
+				body["id"] = token.Id
+				var ctx *gin.Context
+				ctx, recorder = newAuthenticatedContext(t, http.MethodPut, tc.target, body, 1)
+				UpdateToken(ctx)
+			}
+			response := decodeAPIResponse(t, recorder)
+			require.True(t, response.Success, response.Message)
 
-	previousSecret := common.SessionSecret
-	common.SessionSecret = "token-key-proof-test-secret"
-	t.Cleanup(func() { common.SessionSecret = previousSecret })
-
-	identity := service.AuthIdentity{UserID: user.Id, SessionID: session.SID, UserAuthVersion: 1, SessionVersion: 1}
-	jwt, _, err := service.IssueAccessToken(identity)
-	require.NoError(t, err)
-
-	router := gin.New()
-	router.POST("/api/token/:id/key", middleware.UserAuth(), GetTokenKey)
-
-	doRequest := func(proof string) *httptest.ResponseRecorder {
-		request := httptest.NewRequest(http.MethodPost, "/api/token/"+strconv.Itoa(token.Id)+"/key", nil)
-		request.Header.Set("Authorization", "Bearer "+jwt)
-		request.Header.Set("Content-Type", "application/json")
-		if proof != "" {
-			request.Header.Set("X-Security-Proof", proof)
-		}
-		recorder := httptest.NewRecorder()
-		router.ServeHTTP(recorder, request)
-		return recorder
+			var saved model.Token
+			require.NoError(t, db.Where("name = ?", "quota-query").First(&saved).Error)
+			assert.Equal(t, tc.want, saved.AllowUserQuotaQuery)
+			if tc.stored != nil {
+				var returned struct {
+					AllowUserQuotaQuery bool `json:"allow_user_quota_query"`
+				}
+				require.NoError(t, common.Unmarshal(response.Data, &returned))
+				assert.Equal(t, tc.want, returned.AllowUserQuotaQuery)
+			}
+		})
 	}
+}
 
-	// No proof → the high-risk key disclosure is rejected.
-	recorder := doRequest("")
-	require.Equal(t, http.StatusForbidden, recorder.Code)
-	assert.Contains(t, recorder.Body.String(), "SECURITY_PROOF_REQUIRED")
+func TestGetTokenUsageFollowsTheUserQuotaSwitchAndIPWhitelist(t *testing.T) {
+	for _, tc := range []struct {
+		name          string
+		allow         bool
+		expired       bool
+		allowIps      string
+		remoteAddr    string
+		wantStatus    int
+		wantUserQuota bool
+	}{
+		{name: "switch off", remoteAddr: "203.0.113.7:4321", wantStatus: http.StatusOK},
+		{name: "switch on without IP whitelist", allow: true, remoteAddr: "203.0.113.7:4321", wantStatus: http.StatusOK, wantUserQuota: true},
+		{name: "switch on with matching IP whitelist", allow: true, allowIps: "198.51.100.1\n203.0.113.0/24", remoteAddr: "203.0.113.7:4321", wantStatus: http.StatusOK, wantUserQuota: true},
+		{name: "expired key with the switch on", allow: true, expired: true, remoteAddr: "203.0.113.7:4321", wantStatus: http.StatusOK, wantUserQuota: true},
+		{name: "switch on from an IP outside the whitelist", allow: true, allowIps: "198.51.100.1", remoteAddr: "203.0.113.7:4321", wantStatus: http.StatusForbidden},
+		{name: "switch off from an IP outside the whitelist", allowIps: "198.51.100.1", remoteAddr: "203.0.113.7:4321", wantStatus: http.StatusForbidden},
+		{name: "unresolved client IP with a whitelist", allow: true, allowIps: "203.0.113.0/24", remoteAddr: "unresolved", wantStatus: http.StatusForbidden},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			db := setupTokenControllerTestDB(t)
+			require.NoError(t, db.AutoMigrate(&model.User{}))
+			// Initialize production column quoting for the token key lookup.
+			t.Setenv("LOG_SQL_DSN", "")
+			require.NoError(t, model.InitLogDB())
+			user := &model.User{Username: "quota-owner", Password: "placeholder", Role: common.RoleCommonUser, Status: common.UserStatusEnabled, Group: "default", Quota: 12345, UsedQuota: 678, AuthVersion: 1, AffCode: "quota-owner"}
+			require.NoError(t, db.Create(user).Error)
+			token := seedToken(t, db, user.Id, "usage-token", "usagekey1234")
+			updates := map[string]any{"allow_user_quota_query": tc.allow, "allow_ips": tc.allowIps, "used_quota": 30}
+			if tc.expired {
+				updates["status"], updates["expired_time"] = common.TokenStatusExpired, 1
+			}
+			require.NoError(t, db.Model(token).Updates(updates).Error)
 
-	// A valid step-up proof returns the full key.
-	binding, berr := service.BindVerificationOperation(service.VerificationOperation{Scope: service.VerificationScopeTokenKeyRead})
-	require.NoError(t, berr)
-	proof, _, perr := service.IssueSecurityProof(identity, "password", binding)
-	require.NoError(t, perr)
-	recorder = doRequest(proof)
-	require.Equal(t, http.StatusOK, recorder.Code)
-	var resp tokenAPIResponse
-	require.NoError(t, common.Unmarshal(recorder.Body.Bytes(), &resp))
-	require.True(t, resp.Success, resp.Message)
-	var keyData tokenKeyResponse
-	require.NoError(t, common.Unmarshal(resp.Data, &keyData))
-	assert.Equal(t, token.GetFullKey(), keyData.Key)
+			router := gin.New()
+			router.GET("/api/usage/token/", middleware.TokenAuthReadOnly(), GetTokenUsage)
+			request := httptest.NewRequest(http.MethodGet, "/api/usage/token/", nil)
+			request.Header.Set("Authorization", "Bearer sk-usagekey1234")
+			request.RemoteAddr = tc.remoteAddr
+			recorder := httptest.NewRecorder()
+			router.ServeHTTP(recorder, request)
 
-	// Replaying the now-consumed proof is rejected.
-	recorder = doRequest(proof)
-	require.Equal(t, http.StatusForbidden, recorder.Code)
-	assert.Contains(t, recorder.Body.String(), "SECURITY_PROOF_CONSUMED")
+			require.Equal(t, tc.wantStatus, recorder.Code, recorder.Body.String())
+			if tc.wantStatus != http.StatusOK {
+				assert.NotContains(t, recorder.Body.String(), "total_available")
+				return
+			}
+			var response struct {
+				Code bool                       `json:"code"`
+				Data map[string]json.RawMessage `json:"data"`
+			}
+			require.NoError(t, common.Unmarshal(recorder.Body.Bytes(), &response))
+			require.True(t, response.Code, recorder.Body.String())
+			fields := []string{"expires_at", "model_limits", "model_limits_enabled", "name", "object", "total_available", "total_granted", "total_used", "unlimited_quota"}
+			if tc.wantUserQuota {
+				fields = append(fields, "user_quota")
+			}
+			assert.Equal(t, fields, slices.Sorted(maps.Keys(response.Data)))
+			assert.JSONEq(t, `100`, string(response.Data["total_available"]))
+			assert.JSONEq(t, `30`, string(response.Data["total_used"]))
+			if tc.wantUserQuota {
+				assert.JSONEq(t, `{"total_available":12345,"total_used":678}`, string(response.Data["user_quota"]))
+			}
+		})
+	}
 }
 
 func TestAPITokenAuditDatabaseMatrix(t *testing.T) {
@@ -707,9 +736,9 @@ func TestAPITokenAuditDatabaseMatrix(t *testing.T) {
 				db, _ := newAuditTestDatabase(t, database.name, dsn)
 				model.DB = db
 				common.SetDatabaseTypes(database.typ, database.typ)
-			require.NoError(t, db.AutoMigrate(&model.User{}, &model.UserSession{}, &model.Token{}, &model.AuthFlow{}, &model.TwoFA{}, &model.TwoFABackupCode{}, &model.PasskeyCredential{}, &model.UserOAuthBinding{}, &model.Option{}))
-			// Initialize production column quoting as well as the existing audit table.
-			require.NoError(t, model.InitLogDB())
+				require.NoError(t, db.AutoMigrate(&model.User{}, &model.UserSession{}, &model.Token{}))
+				// Initialize production column quoting as well as the existing audit table.
+				require.NoError(t, model.InitLogDB())
 				if separateLog {
 					logDB, _ := newAuditTestDatabase(t, database.name, dsn)
 					model.LOG_DB = logDB
@@ -731,30 +760,6 @@ func TestAPITokenAuditDatabaseMatrix(t *testing.T) {
 			})
 		}
 	}
-}
-
-func TestValidateTokenAllowIpsAndExpiredTime(t *testing.T) {
-	now := common.GetTimestamp()
-	// Valid allowlists: nil, empty, single IP, CIDR, multi-line (one entry per
-	// line). This matches model.Token.GetIpLimits, so a value accepted here is
-	// also valid when the token is used at request time.
-	for _, ip := range []string{"", "203.0.113.5", "203.0.113.0/24", "203.0.113.5\n198.51.100.0/24"} {
-		require.NoError(t, validateTokenAllowIps(common.GetPointer(ip)), "allow_ips=%q", ip)
-	}
-	require.NoError(t, validateTokenAllowIps(nil))
-	// Invalid allowlists: bad CIDR prefix, garbage, mixed valid+invalid line.
-	// (A single comma-joined line is treated as one entry by GetIpLimits, so it
-	// is invalid too.)
-	for _, ip := range []string{"10.0.0.0/40", "not-an-ip", "203.0.113.0/24\nbad", "203.0.113.5,198.51.100.7"} {
-		require.Error(t, validateTokenAllowIps(common.GetPointer(ip)), "allow_ips=%q", ip)
-	}
-	// Expiry: -1 (never) and a future timestamp are valid; a past positive
-	// timestamp is rejected; 0 is allowed (the caller normalizes it to -1).
-	require.NoError(t, validateTokenExpiredTime(-1))
-	require.NoError(t, validateTokenExpiredTime(0))
-	require.NoError(t, validateTokenExpiredTime(now+3600))
-	require.Error(t, validateTokenExpiredTime(now-10))
-	require.Error(t, validateTokenExpiredTime(1))
 }
 
 func verifyAPITokenAudit(t *testing.T) {
@@ -794,9 +799,6 @@ func verifyAPITokenAudit(t *testing.T) {
 		params                           string
 		initialStatus                    int
 		failWrite, rateLimit, usePAT     bool
-		// blockedByProof marks a case that intentionally fails the step-up
-		// security proof (e.g. PAT auth has no live session to prove).
-		blockedByProof bool
 	}{
 		{name: "create", method: "POST", path: "/", body: `{"name":"created","expired_time":-1,"unlimited_quota":true}`, action: "token.create", success: true},
 		{name: "invalid create", method: "POST", path: "/", body: `{"name":"attempt","remain_quota":-1}`, action: "token.create", params: `{"name":"attempt"}`},
@@ -806,6 +808,7 @@ func verifyAPITokenAudit(t *testing.T) {
 		{name: "normalized update", method: "PUT", path: "/", body: `{"id":$id,"name":"renamed","expired_time":-1,"remain_quota":200,"unlimited_quota":true,"group":"default","cross_group_retry":true,"allow_ips":""}`, action: "token.update", success: true, params: `{"id":$id,"name":"renamed","changed_fields":["name","remain_quota","group","cross_group_retry","auto_groups"]}`},
 		{name: "configuration values stay private", method: "PUT", path: "/", body: `{"id":$id,"name":"owned","expired_time":42,"remain_quota":100,"unlimited_quota":false,"model_limits_enabled":true,"model_limits":"private-model-configuration","allow_ips":"203.0.113.57","group":"auto","cross_group_retry":true}`, action: "token.update", success: true, params: `{"id":$id,"name":"owned","changed_fields":["expired_time","unlimited_quota","model_limits_enabled","model_limits","allow_ips"]}`},
 		{name: "unchanged update", method: "PUT", path: "/", body: `{"id":$id,"name":"owned","expired_time":-1,"remain_quota":100,"unlimited_quota":true,"group":"auto","cross_group_retry":true,"allow_ips":""}`, action: "token.update", success: true, params: `{"id":$id,"name":"owned","changed_fields":[]}`},
+		{name: "user quota query update", method: "PUT", path: "/", body: `{"id":$id,"name":"owned","expired_time":-1,"remain_quota":100,"unlimited_quota":true,"group":"auto","cross_group_retry":true,"allow_ips":"","allow_user_quota_query":true}`, action: "token.update", success: true, params: `{"id":$id,"name":"owned","changed_fields":["allow_user_quota_query"]}`},
 		{name: "successful response exceeds audit buffer", method: "PUT", path: "/", body: `{"id":$id,"name":"owned","expired_time":-1,"remain_quota":100,"unlimited_quota":true,"group":"auto","cross_group_retry":true,"allow_ips":"","model_limits":"` + strings.Repeat("m", 64*1024-128) + `"}`, action: "token.update", success: true, params: `{"id":$id,"name":"owned","changed_fields":["model_limits"]}`},
 		{name: "update storage failure", method: "PUT", path: "/", body: `{"id":$id,"name":"failed-rename","unlimited_quota":true}`, action: "token.update", params: `{"id":$id,"name":"owned"}`, failWrite: true},
 		{name: "foreign update", method: "PUT", path: "/", body: `{"id":$other,"name":"forged-name","unlimited_quota":true}`, action: "token.update", params: `{"id":$other}`},
@@ -816,7 +819,7 @@ func verifyAPITokenAudit(t *testing.T) {
 		{name: "foreign delete", method: "DELETE", path: "/$other", action: "token.delete", params: `{"id":$other}`},
 		{name: "missing delete", method: "DELETE", path: "/999999", action: "token.delete", params: `{"id":999999}`},
 		{name: "key view", method: "POST", path: "/$id/key", action: "token.key_view", success: true, params: `{"id":$id,"name":"owned"}`},
-		{name: "PAT key view", method: "POST", path: "/$id/key", action: "token.key_view", success: false, params: `{"id":$id,"name":"owned"}`, usePAT: true, blockedByProof: true},
+		{name: "PAT key view", method: "POST", path: "/$id/key", action: "token.key_view", success: true, params: `{"id":$id,"name":"owned"}`, usePAT: true},
 		{name: "foreign key view", method: "POST", path: "/$other/key", action: "token.key_view", params: `{"id":$other}`},
 		{name: "rate limited key view", method: "POST", path: "/$id/key", action: "token.key_view", params: `{"id":$id}`, rateLimit: true},
 		{name: "batch delete partial and duplicate", method: "POST", path: "/batch", body: `{"ids":[$id,$id,$other,999999]}`, action: "token.delete_batch", success: true, params: `{"requested_ids":[$id,$id,$other,999999],"total":4,"count":1}`},
@@ -824,9 +827,6 @@ func verifyAPITokenAudit(t *testing.T) {
 		{name: "batch keys partial and duplicate", method: "POST", path: "/batch/keys", body: `{"ids":[$id,$id,$other,999999]}`, action: "token.key_view_batch", success: true, params: `{"requested_ids":[$id,$id,$other,999999],"total":4,"count":1,"returned_ids":[$id]}`},
 		{name: "batch keys no matches", method: "POST", path: "/batch/keys", body: `{"ids":[$other,999999]}`, action: "token.key_view_batch", success: true, params: `{"requested_ids":[$other,999999],"total":2,"count":0,"returned_ids":[]}`},
 		{name: "empty batch keys", method: "POST", path: "/batch/keys", body: `{"ids":[]}`, action: "token.key_view_batch", params: `{"requested_ids":[],"total":0}`},
-		{name: "invalid CIDR create", method: "POST", path: "/", body: `{"name":"bad-cidr","expired_time":-1,"unlimited_quota":true,"allow_ips":"10.0.0.0/40"}`, action: "token.create", params: `{"name":"bad-cidr"}`},
-		{name: "past expired time create", method: "POST", path: "/", body: `{"name":"past-expire","expired_time":1,"unlimited_quota":true}`, action: "token.create", params: `{"name":"past-expire"}`},
-		{name: "invalid CIDR update", method: "PUT", path: "/", body: `{"id":$id,"name":"owned","expired_time":-1,"unlimited_quota":true,"allow_ips":"not-an-ip","group":"auto","cross_group_retry":true}`, action: "token.update", params: `{"id":$id,"name":"owned"}`},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			empty := ""
@@ -862,16 +862,6 @@ func verifyAPITokenAudit(t *testing.T) {
 			}
 			request.Header.Set("Authorization", "Bearer "+credential)
 			request.Header.Set("Content-Type", "application/json")
-			// Key-view endpoints require a step-up security proof. Sessions can
-			// satisfy it; PATs cannot (no live session), so those cases are
-			// expected to be blocked by the proof gate.
-			if (tc.action == "token.key_view" || tc.action == "token.key_view_batch") && !tc.usePAT {
-				binding, berr := service.BindVerificationOperation(service.VerificationOperation{Scope: service.VerificationScopeTokenKeyRead})
-				require.NoError(t, berr)
-				proof, _, perr := service.IssueSecurityProof(service.AuthIdentity{UserID: user.Id, SessionID: session.SID, UserAuthVersion: 1, SessionVersion: 1}, "password", binding)
-				require.NoError(t, perr)
-				request.Header.Set("X-Security-Proof", proof)
-			}
 			request.Header.Set("User-Agent", "api-token-audit-client")
 			request.RemoteAddr = "192.0.2.12:4321"
 			if tc.rateLimit {
@@ -905,9 +895,6 @@ func verifyAPITokenAudit(t *testing.T) {
 			assert.Equal(t, response.Code, operation.Status)
 			if tc.rateLimit {
 				assert.Equal(t, 429, response.Code)
-			} else if tc.blockedByProof {
-				assert.Equal(t, http.StatusForbidden, response.Code)
-				assert.False(t, decodeAPIResponse(t, response).Success)
 			} else {
 				assert.Equal(t, 200, response.Code)
 				assert.Equal(t, tc.success, decodeAPIResponse(t, response).Success)
@@ -937,11 +924,11 @@ func verifyAPITokenAudit(t *testing.T) {
 				require.NoError(t, model.DB.Where("user_id = ? AND name = ?", user.Id, "created").First(&created).Error)
 				assert.JSONEq(t, fmt.Sprintf(`{"id":%d,"name":"created"}`, created.Id), string(params))
 				assert.NotContains(t, string(params), created.Key)
-		} else if tc.params == `{}` {
-			assert.Empty(t, operation.Other.Op.Params)
-		} else if !tc.blockedByProof {
-			assert.JSONEq(t, replace.Replace(tc.params), string(params))
-		}
+			} else if tc.params == `{}` {
+				assert.Empty(t, operation.Other.Op.Params)
+			} else {
+				assert.JSONEq(t, replace.Replace(tc.params), string(params))
+			}
 			encoded, err := common.Marshal(events)
 			require.NoError(t, err)
 			for _, secret := range []string{pat, jwt, owned.Key, foreign.Key, foreign.Name, "raw-body-secret", "raw-storage-error-secret", "private-model-configuration", "203.0.113.57", "Authorization"} {

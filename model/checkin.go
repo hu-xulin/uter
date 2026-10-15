@@ -1,13 +1,10 @@
 package model
 
 import (
-	"crypto/rand"
-	"errors"
-	"math/big"
+	"math/rand"
 	"time"
 
 	"github.com/uter-ai/uter/common"
-
 	"github.com/uter-ai/uter/setting/operation_setting"
 	"gorm.io/gorm"
 )
@@ -57,7 +54,7 @@ func HasCheckedInToday(userId int) (bool, error) {
 func UserCheckin(userId int) (*Checkin, error) {
 	setting := operation_setting.GetCheckinSetting()
 	if !setting.Enabled {
-		return nil, errors.New("签到功能未启用")
+		return nil, common.NewMessage("Check-in feature is not enabled")
 	}
 
 	// 检查今天是否已签到
@@ -66,17 +63,13 @@ func UserCheckin(userId int) (*Checkin, error) {
 		return nil, err
 	}
 	if hasChecked {
-		return nil, errors.New("今日已签到")
+		return nil, common.NewMessage("Already checked in today")
 	}
 
 	// 计算随机额度奖励
 	quotaAwarded := setting.MinQuota
 	if setting.MaxQuota > setting.MinQuota {
-		// 使用密码学安全随机数，避免可被预测的额度输出（math/rand 为线性可恢复 PRNG）
-		n := int64(setting.MaxQuota - setting.MinQuota + 1)
-		if r, err := rand.Int(rand.Reader, big.NewInt(n)); err == nil {
-			quotaAwarded = setting.MinQuota + int(r.Int64())
-		}
+		quotaAwarded = setting.MinQuota + rand.Intn(setting.MaxQuota-setting.MinQuota+1)
 	}
 
 	today := time.Now().Format("2006-01-02")
@@ -103,13 +96,13 @@ func userCheckinWithTransaction(checkin *Checkin, userId int, quotaAwarded int) 
 		// 步骤1: 创建签到记录
 		// 数据库有唯一约束 (user_id, checkin_date)，可以防止并发重复签到
 		if err := tx.Create(checkin).Error; err != nil {
-			return errors.New("签到失败，请稍后重试")
+			return common.NewMessage("Check-in failed, please try again later")
 		}
 
 		// 步骤2: 在事务中增加用户额度
 		if err := tx.Model(&User{}).Where("id = ?", userId).
 			Update("quota", gorm.Expr("quota + ?", quotaAwarded)).Error; err != nil {
-			return errors.New("签到失败：更新额度出错")
+			return common.NewMessage("Check-in failed: quota update error")
 		}
 
 		return nil
@@ -132,7 +125,7 @@ func userCheckinWithoutTransaction(checkin *Checkin, userId int, quotaAwarded in
 	// 步骤1: 创建签到记录
 	// 数据库有唯一约束 (user_id, checkin_date)，可以防止并发重复签到
 	if err := DB.Create(checkin).Error; err != nil {
-		return nil, errors.New("签到失败，请稍后重试")
+		return nil, common.NewMessage("Check-in failed, please try again later")
 	}
 
 	// 步骤2: 增加用户额度
@@ -140,7 +133,7 @@ func userCheckinWithoutTransaction(checkin *Checkin, userId int, quotaAwarded in
 	if err := IncreaseUserQuota(userId, quotaAwarded, true); err != nil {
 		// 如果增加额度失败，需要回滚签到记录
 		DB.Delete(checkin)
-		return nil, errors.New("签到失败：更新额度出错")
+		return nil, common.NewMessage("Check-in failed: quota update error")
 	}
 
 	return checkin, nil

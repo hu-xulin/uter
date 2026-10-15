@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"mime"
 	"net/http"
-	"slices"
 	"strings"
 	"time"
 
@@ -38,7 +37,11 @@ func (a *TaskAdaptor) readSubmitEvents(parent context.Context, resp *http.Respon
 	scanner := helper.NewStreamScanner(resp.Body, maxTaskPluginPersistedJSONBytes+1)
 	hook := "parseSubmitEvent"
 	var accumulated *pluginruntime.JSONState
-	if slices.Contains(a.plugin.Meta.RequiredCapabilities, pluginruntime.CapabilitySubmitSSEDelta) {
+	// 判定走 UsesSubmitEventDelta 而不是只查 requiredCapabilities：市场上
+	// 有插件（如 alibaba 1.4.2）元数据声明不全，只导出了
+	// parseSubmitEventDelta。只认声明的话，这里会去索要并不存在的
+	// parseSubmitEvent，把能跑的插件判成不可用。
+	if pluginruntime.UsesSubmitEventDelta(a.plugin.Meta, a.plugin.Engine) {
 		hook = "parseSubmitEventDelta"
 		accumulated = pluginruntime.NewJSONState(maxTaskPluginPersistedJSONBytes)
 	}

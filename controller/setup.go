@@ -1,15 +1,13 @@
 package controller
 
 import (
-	"github.com/uter-ai/uter/i18n"
 	"time"
 
 	"github.com/uter-ai/uter/common"
-
-	"github.com/gin-gonic/gin"
 	"github.com/uter-ai/uter/constant"
 	"github.com/uter-ai/uter/model"
 	"github.com/uter-ai/uter/setting/operation_setting"
+	"github.com/gin-gonic/gin"
 )
 
 type Setup struct {
@@ -48,35 +46,17 @@ func GetSetup(c *gin.Context) {
 func PostSetup(c *gin.Context) {
 	// Check if setup is already completed
 	if constant.Setup {
-		c.JSON(200, gin.H{
-			"success": false,
-			"message": i18n.T(c, i18n.MsgCommonAlready_initialized),
-		})
+		common.ApiErrorT(c, "The system is already initialized")
 		return
 	}
 
 	// Check if root user already exists
 	rootExists := model.RootUserExists()
 
-	// 安全加固（对应审计项 P2-5）：若 root 账号已存在但系统未标记初始化，说明是
-	// 「只迁移了 users 表 / setups 表缺失」之类的异常部署态。此时任意匿名请求仍可
-	// 经本接口改写「自用模式 / 演示站模式」并把系统标记为已初始化，属于未授权写。
-	// 直接拒绝，要求使用已有管理员账号正常登录。
-	if rootExists {
-		c.JSON(200, gin.H{
-			"success": false,
-			"message": i18n.T(c, i18n.MsgCommonAlready_initialized),
-		})
-		return
-	}
-
 	var req SetupRequest
 	err := c.ShouldBindJSON(&req)
 	if err != nil {
-		c.JSON(200, gin.H{
-			"success": false,
-			"message": i18n.T(c, i18n.MsgCommonInvalid_param),
-		})
+		common.ApiErrorT(c, "Invalid parameters")
 		return
 	}
 
@@ -84,18 +64,12 @@ func PostSetup(c *gin.Context) {
 	if !rootExists {
 		// Validate username length: max 12 characters to align with model.User validation
 		if len(req.Username) > 12 {
-			c.JSON(200, gin.H{
-				"success": false,
-				"message": i18n.T(c, i18n.MsgCommonUsername_too_long),
-			})
+			common.ApiErrorT(c, "Username must be {{max}} characters or fewer", map[string]any{"max": 12})
 			return
 		}
 		// Validate password
 		if req.Password != req.ConfirmPassword {
-			c.JSON(200, gin.H{
-				"success": false,
-				"message": i18n.T(c, i18n.MsgCommonPassword_mismatch),
-			})
+			common.ApiErrorT(c, "Passwords do not match")
 			return
 		}
 
@@ -110,10 +84,7 @@ func PostSetup(c *gin.Context) {
 		// Create root user
 		hashedPassword, err := common.HashAccountPassword(req.Password)
 		if err != nil {
-			c.JSON(200, gin.H{
-				"success": false,
-				"message": i18n.T(c, i18n.MsgCommonSystem_error),
-			})
+			common.ApiErrorT(c, "System error: {{error}}", map[string]any{"error": err.Error()})
 			return
 		}
 		rootUser := model.User{
@@ -127,10 +98,7 @@ func PostSetup(c *gin.Context) {
 		}
 		err = model.DB.Create(&rootUser).Error
 		if err != nil {
-			c.JSON(200, gin.H{
-				"success": false,
-				"message": i18n.T(c, i18n.MsgCommonCreate_admin_failed),
-			})
+			common.ApiErrorT(c, "Failed to create the administrator account: {{error}}", map[string]any{"error": err.Error()})
 			return
 		}
 	}
@@ -142,19 +110,13 @@ func PostSetup(c *gin.Context) {
 	// Save operation modes to database for persistence
 	err = model.UpdateOption("SelfUseModeEnabled", boolToString(req.SelfUseModeEnabled))
 	if err != nil {
-		c.JSON(200, gin.H{
-			"success": false,
-			"message": i18n.T(c, i18n.MsgCommonSave_self_use_mode_failed),
-		})
+		common.ApiErrorT(c, "Failed to save the self-use mode setting: {{error}}", map[string]any{"error": err.Error()})
 		return
 	}
 
 	err = model.UpdateOption("DemoSiteEnabled", boolToString(req.DemoSiteEnabled))
 	if err != nil {
-		c.JSON(200, gin.H{
-			"success": false,
-			"message": i18n.T(c, i18n.MsgCommonSave_demo_mode_failed),
-		})
+		common.ApiErrorT(c, "Failed to save the demo site mode setting: {{error}}", map[string]any{"error": err.Error()})
 		return
 	}
 
@@ -167,17 +129,11 @@ func PostSetup(c *gin.Context) {
 	}
 	err = model.DB.Create(&setup).Error
 	if err != nil {
-		c.JSON(200, gin.H{
-			"success": false,
-			"message": i18n.T(c, i18n.MsgCommonInit_failed),
-		})
+		common.ApiErrorT(c, "Failed to initialize the system: {{error}}", map[string]any{"error": err.Error()})
 		return
 	}
 
-	c.JSON(200, gin.H{
-		"success": true,
-		"message": i18n.T(c, i18n.MsgCommonInit_success),
-	})
+	common.ApiSuccessT(c, "System initialized successfully", nil)
 }
 
 func boolToString(b bool) string {

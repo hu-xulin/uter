@@ -5,7 +5,6 @@ import (
 	"os"
 
 	"github.com/uter-ai/uter/common"
-
 	"github.com/gin-gonic/gin"
 )
 
@@ -15,9 +14,7 @@ func ConfigureTrustedProxies(engine *gin.Engine) error {
 		return err
 	}
 	if usedDefaults {
-		log.Print("WARNING: TRUSTED_PROXIES is unset or blank; trusting ONLY loopback proxy addresses. X-Forwarded-For / X-Real-IP are ignored, so ClientIP() returns the direct peer. " +
-			"If uter runs behind a reverse proxy (nginx / Caddy / a cloud LB), set TRUSTED_PROXIES to that proxy's IP/CIDR, or TRUSTED_PROXIES=none to trust no proxies at all. " +
-			"Note: while unset, IP-based rate limits, token allow_ips, and audit log IPs all see the proxy address instead of the real client.")
+		log.Print(common.LogText("WARNING: TRUSTED_PROXIES is unset or blank; trusting loopback, RFC 1918, and IPv6 ULA proxy addresses for compatibility. Set TRUSTED_PROXIES=none to trust no proxies, or configure explicit proxy IPs/CIDRs to replace these defaults."))
 	}
 	return common.ConfigureTrustedProxies(engine, trustedProxies)
 }

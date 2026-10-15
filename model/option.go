@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/uter-ai/uter/common"
-
 	"github.com/uter-ai/uter/constant"
 	"github.com/uter-ai/uter/pkg/jsplugin"
 	"github.com/uter-ai/uter/setting"
@@ -53,15 +52,6 @@ func InitOptionMap() {
 	common.OptionMap["AutomaticEnableChannelEnabled"] = strconv.FormatBool(common.AutomaticEnableChannelEnabled)
 	common.OptionMap["LogConsumeEnabled"] = strconv.FormatBool(common.LogConsumeEnabled)
 	common.OptionMap["DisplayInCurrencyEnabled"] = strconv.FormatBool(common.DisplayInCurrencyEnabled)
-	common.OptionMap["CustomerServiceEnabled"] = strconv.FormatBool(common.CustomerServiceEnabled)
-	// 页面级开关以「全部页面键」落库而非空串：显式写出六项能让运营在配置界面
-	// 一眼看到当前生效范围，也避免「空串」与「未配置」两种语义在界面上混淆。
-	common.OptionMap["CustomerServicePages"] = strings.Join(common.CustomerServicePageKeys, ",")
-	// 管理员令牌默认空 = 未配置。它不加载自环境变量（避免把 uter-cs 的管理员凭证
-	// 写进 .env 明文），只经由 options 表由运营在后台粘贴。
-	common.OptionMap["CustomerServiceAdminToken"] = common.CustomerServiceAdminToken
-	// 大模型配置缓存：内存镜像，供「无令牌时直接展示已配置参数」使用（详见 common 注释）。
-	common.OptionMap["CustomerServiceLLMConfig"] = common.CustomerServiceLLMConfig
 	common.OptionMap["DisplayTokenStatEnabled"] = strconv.FormatBool(common.DisplayTokenStatEnabled)
 	common.OptionMap["DrawingEnabled"] = strconv.FormatBool(common.DrawingEnabled)
 	common.OptionMap["TaskEnabled"] = strconv.FormatBool(common.TaskEnabled)
@@ -97,20 +87,8 @@ func InitOptionMap() {
 	common.OptionMap["WorkerAllowHttpImageRequestEnabled"] = strconv.FormatBool(system_setting.WorkerAllowHttpImageRequestEnabled)
 	common.OptionMap["PayAddress"] = ""
 	common.OptionMap["CustomCallbackAddress"] = ""
-	common.OptionMap["PaymentSiteAddress"] = operation_setting.PaymentSiteAddress
 	common.OptionMap["EpayId"] = ""
 	common.OptionMap["EpayKey"] = ""
-	common.OptionMap["AlipayEnabled"] = "false"
-	common.OptionMap["AlipayAppId"] = ""
-	common.OptionMap["AlipayPrivateKey"] = ""
-	common.OptionMap["AlipayPublicKey"] = ""
-	common.OptionMap["WechatPayEnabled"] = "false"
-	common.OptionMap["WechatPayMchId"] = ""
-	common.OptionMap["WechatPayAppId"] = ""
-	common.OptionMap["WechatPayApiV3Key"] = ""
-	common.OptionMap["WechatPaySerialNo"] = ""
-	common.OptionMap["WechatPayPrivateKey"] = ""
-	common.OptionMap["WechatPayPlatformCert"] = ""
 	common.OptionMap["Price"] = strconv.FormatFloat(operation_setting.Price, 'f', -1, 64)
 	common.OptionMap["USDExchangeRate"] = strconv.FormatFloat(operation_setting.USDExchangeRate, 'f', -1, 64)
 	common.OptionMap["MinTopUp"] = strconv.Itoa(operation_setting.MinTopUp)
@@ -217,6 +195,13 @@ func InitOptionMap() {
 }
 
 func loadOptionsFromDatabase() {
+	requestPolicyOptionMutex.Lock()
+	defer requestPolicyOptionMutex.Unlock()
+	defer func() {
+		if err := refreshRequestPolicySnapshot(); err != nil {
+			common.SysError(common.LogText("invalid request policy: %s", err.Error()))
+		}
+	}()
 	passkeyOptionMutex.Lock()
 	defer passkeyOptionMutex.Unlock()
 	options, _ := AllOption()
@@ -228,7 +213,7 @@ func loadOptionsFromDatabase() {
 		}
 		err := updateOptionMap(option.Key, option.Value)
 		if err != nil {
-			common.SysLog("failed to update option map: " + err.Error())
+			common.SysLog(common.LogText("failed to update option map: %s", err.Error()))
 		}
 	}
 	applyPasskeyDomainOptions(passkeyOptions)
@@ -237,17 +222,26 @@ func loadOptionsFromDatabase() {
 func SyncOptions(frequency int) {
 	for {
 		time.Sleep(time.Duration(frequency) * time.Second)
-		common.SysLog("syncing options from database")
+		common.SysLog(common.LogText("syncing options from database"))
 		loadOptionsFromDatabase()
 	}
 }
 
 func validateOptionValue(key string, value string) error {
+	if key == legacyAccessTokenRetireAtKey {
+		return errLegacyRetireAtReadOnly
+	}
+	if err := operation_setting.ValidateQuotaOption(key, value); err != nil {
+		return err
+	}
 	if key == operation_setting.ToolPriceOptionKey {
 		return operation_setting.ValidateToolPricesJSON(value)
 	}
 	if key == operation_setting.ChannelTestConcurrencyOptionKey {
 		return operation_setting.ValidateChannelTestConcurrency(value)
+	}
+	if key == operation_setting.LogMaxRangeDaysOptionKey {
+		return operation_setting.ValidateLogMaxRangeDays(value)
 	}
 	if key == "MaxTokenAutoGroups" {
 		return setting.ValidateMaxTokenAutoGroups(value)
@@ -256,6 +250,9 @@ func validateOptionValue(key string, value string) error {
 }
 
 func UpdateOption(key string, value string) error {
+	if IsRequestPolicyOption(key) {
+		return UpdateRequestPolicyOptions(map[string]string{key: value})
+	}
 	if IsPasskeyDomainOption(key) {
 		_, err := UpdatePasskeyDomainOptions(map[string]string{key: value}, false, "")
 		return err
@@ -301,6 +298,26 @@ func UpdateOptionsBulk(values map[string]string) error {
 			return err
 		}
 	}
+	var policySnapshot *RequestPolicySnapshot
+	for key := range values {
+		if IsRequestPolicyOption(key) {
+			requestPolicyOptionMutex.Lock()
+			defer requestPolicyOptionMutex.Unlock()
+			options := maps.Clone(CurrentRequestPolicy().Options)
+			for key, value := range values {
+				if IsRequestPolicyOption(key) {
+					options[key] = value
+				}
+			}
+			var err error
+			policySnapshot, err = BuildRequestPolicy(options)
+			if err != nil {
+				return err
+			}
+			break
+		}
+	}
+
 	err := DB.Transaction(func(tx *gorm.DB) error {
 		for k, v := range values {
 			option := Option{Key: k}
@@ -322,11 +339,14 @@ func UpdateOptionsBulk(values map[string]string) error {
 			return err
 		}
 	}
+	if policySnapshot != nil {
+		requestPolicySnapshot.Store(policySnapshot)
+	}
 	return nil
 }
 
 func updateOptionMap(key string, value string) (err error) {
-	if key == retiredThemeOptionKey {
+	if key == retiredThemeOptionKey || key == legacyAccessTokenRetireAtKey {
 		common.OptionMapRWMutex.Lock()
 		delete(common.OptionMap, key)
 		common.OptionMapRWMutex.Unlock()
@@ -374,8 +394,6 @@ func updateOptionMap(key string, value string) (err error) {
 			common.TelegramOAuthEnabled = boolValue
 		case "TurnstileCheckEnabled":
 			common.TurnstileCheckEnabled = boolValue
-		case "CustomerServiceEnabled":
-			common.CustomerServiceEnabled = boolValue
 		case "RegisterEnabled":
 			common.RegisterEnabled = boolValue
 		case "EmailDomainRestrictionEnabled":
@@ -453,21 +471,6 @@ func updateOptionMap(key string, value string) (err error) {
 		jsplugin.DefaultRegistry.SetDisabledFactoryKeys(setting.ParseTaskPluginDisabledFactoryKeys(value))
 	}
 	switch key {
-	case "CustomerServicePages":
-		// 存原始值而不做规整：过滤/去重/排序由下发时的
-		// common.NormalizeCustomerServicePages 负责，避免同一份配置出现多种等价
-		// 写法（如 "home, pricing" 与 "pricing,home"）难以人工核对。
-		// 注意本分支是字符串分支——上面的 bool 分支以 HasSuffix(key,"Enabled")
-		// 为条件，CustomerServicePages 不匹配，放那里会变成死代码。
-		common.CustomerServicePages = value
-	case "CustomerServiceAdminToken":
-		// 透传凭证，原样存。不 trim：令牌本身可能含首尾空白作为安全字符，
-		// 误 trim 会让用户粘贴的 token 与 uter-cs 端不一致而稳定 401。
-		//（wire 上的 TrimSpace 已在 csDo 里做，存储值保持原样。）
-		common.CustomerServiceAdminToken = value
-	case "CustomerServiceLLMConfig":
-		// 大模型配置缓存（JSON 字符串）。仅在管理员接口下发，GetOptions 已排除。
-		common.CustomerServiceLLMConfig = value
 	case "EmailDomainWhitelist":
 		common.EmailDomainWhitelist = strings.Split(value, ",")
 	case "SMTPServer":
@@ -499,34 +502,10 @@ func updateOptionMap(key string, value string) (err error) {
 		err = setting.UpdateMaxTokenAutoGroups(value)
 	case "CustomCallbackAddress":
 		operation_setting.CustomCallbackAddress = value
-	case "PaymentSiteAddress":
-		operation_setting.PaymentSiteAddress = strings.TrimSpace(value)
 	case "EpayId":
 		operation_setting.EpayId = value
 	case "EpayKey":
 		operation_setting.EpayKey = value
-	case "AlipayEnabled":
-		operation_setting.AlipayEnabled = value == "true"
-	case "AlipayAppId":
-		operation_setting.AlipayAppId = value
-	case "AlipayPrivateKey":
-		operation_setting.AlipayPrivateKey = value
-	case "AlipayPublicKey":
-		operation_setting.AlipayPublicKey = value
-	case "WechatPayEnabled":
-		operation_setting.WechatPayEnabled = value == "true"
-	case "WechatPayMchId":
-		operation_setting.WechatPayMchId = value
-	case "WechatPayAppId":
-		operation_setting.WechatPayAppId = value
-	case "WechatPayApiV3Key":
-		operation_setting.WechatPayApiV3Key = value
-	case "WechatPaySerialNo":
-		operation_setting.WechatPaySerialNo = value
-	case "WechatPayPrivateKey":
-		operation_setting.WechatPayPrivateKey = value
-	case "WechatPayPlatformCert":
-		operation_setting.WechatPayPlatformCert = value
 	case "Price":
 		operation_setting.Price, _ = strconv.ParseFloat(value, 64)
 	case "USDExchangeRate":

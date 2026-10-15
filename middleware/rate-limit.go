@@ -11,6 +11,7 @@ import (
 
 	"github.com/uter-ai/uter/common"
 
+	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
 	"github.com/uter-ai/uter/logger"
 	"github.com/uter-ai/uter/service"
@@ -402,11 +403,25 @@ func SessionRateLimit(cookieName string, scope SessionRateLimitScope) func(c *gi
 	}
 }
 
-func GlobalWebRateLimit() func(c *gin.Context) {
+// GlobalWebRateLimit 把「页面导航」与「静态资源」分成两档配额：
+// 首屏要拉十几个构建产物，若与导航请求共用一档，页面会被自己的静态文件顶出限流。
+// 静态资源走 GLOBAL_STATIC_RATE_LIMIT_*（默认关闭），其余仍按 GLOBAL_WEB_RATE_LIMIT_*。
+func GlobalWebRateLimit(frontendFS static.ServeFileSystem) func(c *gin.Context) {
+	webLimit := defNext
 	if common.GlobalWebRateLimitEnable {
-		return rateLimitFactory(common.GlobalWebRateLimitNum, common.GlobalWebRateLimitDuration, "GW")
+		webLimit = rateLimitFactory(common.GlobalWebRateLimitNum, common.GlobalWebRateLimitDuration, "GW")
 	}
-	return defNext
+	staticLimit := defNext
+	if common.GlobalStaticRateLimitEnable {
+		staticLimit = rateLimitFactory(common.GlobalStaticRateLimitNum, common.GlobalStaticRateLimitDuration, "GS")
+	}
+	return func(c *gin.Context) {
+		if frontendFS != nil && frontendFS.Exists("/", c.Request.URL.Path) {
+			staticLimit(c)
+			return
+		}
+		webLimit(c)
+	}
 }
 
 // GlobalAPIRateLimit 限制 /api 下所有接口的调用频率，按客户端 IP 计数。

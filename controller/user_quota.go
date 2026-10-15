@@ -4,10 +4,8 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/uter-ai/uter/common"
-
 	"github.com/gin-gonic/gin"
-	"github.com/uter-ai/uter/i18n"
+	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/model"
 	"gorm.io/gorm"
 )
@@ -53,14 +51,17 @@ func manageUserQuota(c *gin.Context, req ManageRequest) {
 	//
 	// model.AdjustUserQuota 只比较 role 大小，不看 organization_id / department，
 	// 因此组织边界必须由本函数显式施加。
+	//
+	// Select 里取 department_name 而非 department_id：后者是已废弃、从不写入的列，
+	// 取出来恒为空会让部门管理员在任何情况下都被判为越权。
 	if req.Id > 0 {
 		var target model.User
 		if err := model.DB.Unscoped().
-			Select("id", "role", "organization_id", "department_id").
+			Select("id", "role", "organization_id", "department_name").
 			Where("id = ?", req.Id).First(&target).Error; err == nil {
 			if !canManageTargetUser(c, &target) {
 				params["failure_reason"] = "permission_denied"
-				common.ApiErrorI18n(c, i18n.MsgUserNoPermissionHigherLevel)
+				common.ApiErrorT(c, "No permission to update users of same or higher permission level")
 				return
 			}
 		}
@@ -75,16 +76,16 @@ func manageUserQuota(c *gin.Context, req ManageRequest) {
 		case errors.Is(err, model.ErrInvalidUserQuotaAdjustment):
 			params["failure_reason"] = "invalid_parameters"
 			if (req.Mode == "add" || req.Mode == "subtract") && req.Value <= 0 {
-				common.ApiErrorI18n(c, i18n.MsgUserQuotaChangeZero)
+				common.ApiErrorT(c, "Quota change amount cannot be zero")
 			} else {
-				common.ApiErrorI18n(c, i18n.MsgInvalidParams)
+				common.ApiErrorT(c, "Invalid parameters")
 			}
 		case errors.Is(err, model.ErrUserQuotaPermission):
 			params["failure_reason"] = "permission_denied"
-			common.ApiErrorI18n(c, i18n.MsgUserNoPermissionHigherLevel)
+			common.ApiErrorT(c, "No permission to update users of same or higher permission level")
 		case errors.Is(err, gorm.ErrRecordNotFound):
 			params["failure_reason"] = "target_not_found"
-			common.ApiErrorI18n(c, i18n.MsgUserNotExists)
+			common.ApiErrorT(c, "User does not exist")
 		case errors.Is(err, model.ErrWalletQuotaLimitExceeded):
 			params["failure_reason"] = "quota_limit_exceeded"
 			common.ApiError(c, err)

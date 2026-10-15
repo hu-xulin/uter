@@ -10,13 +10,12 @@ import (
 	"strings"
 
 	"github.com/uter-ai/uter/common"
-
-	"github.com/samber/lo"
 	relaycommon "github.com/uter-ai/uter/relay/common"
 	"github.com/uter-ai/uter/relay/helper"
 	"github.com/uter-ai/uter/relaykit/dto"
 	"github.com/uter-ai/uter/relaykit/types"
 	"github.com/uter-ai/uter/service"
+	"github.com/samber/lo"
 
 	"github.com/gin-gonic/gin"
 )
@@ -47,7 +46,7 @@ func convertCozeChatRequest(c *gin.Context, request dto.GeneralOpenAIRequest) *C
 	return cozeRequest
 }
 
-func cozeChatHandler(c *gin.Context, info *relaycommon.RelayInfo, resp *http.Response) (*dto.Usage, *types.UterError) {
+func cozeChatHandler(c *gin.Context, info *relaycommon.RelayInfo, resp *http.Response) (*dto.Usage, *types.NewAPIError) {
 	responseBody, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, types.NewError(err, types.ErrorCodeBadResponseBody)
@@ -98,7 +97,7 @@ func cozeChatHandler(c *gin.Context, info *relaycommon.RelayInfo, resp *http.Res
 	return &usage, nil
 }
 
-func cozeChatStreamHandler(c *gin.Context, info *relaycommon.RelayInfo, resp *http.Response) (*dto.Usage, *types.UterError) {
+func cozeChatStreamHandler(c *gin.Context, info *relaycommon.RelayInfo, resp *http.Response) (*dto.Usage, *types.NewAPIError) {
 	scanner := helper.NewStreamScanner(resp.Body)
 	scanner.Split(bufio.ScanLines)
 	helper.SetEventStreamHeaders(c)
@@ -157,7 +156,7 @@ func handleCozeEvent(c *gin.Context, event string, data string, responseText *st
 		var chatData CozeChatResponseData
 		err := json.Unmarshal([]byte(data), &chatData)
 		if err != nil {
-			common.SysLog("error_unmarshalling_stream_response: " + err.Error())
+			common.SysLog(common.LogText("error_unmarshalling_stream_response: %s", err.Error()))
 			return
 		}
 
@@ -174,14 +173,14 @@ func handleCozeEvent(c *gin.Context, event string, data string, responseText *st
 		var messageData CozeChatV3MessageDetail
 		err := json.Unmarshal([]byte(data), &messageData)
 		if err != nil {
-			common.SysLog("error_unmarshalling_stream_response: " + err.Error())
+			common.SysLog(common.LogText("error_unmarshalling_stream_response: %s", err.Error()))
 			return
 		}
 
 		var content string
 		err = json.Unmarshal(messageData.Content, &content)
 		if err != nil {
-			common.SysLog("error_unmarshalling_stream_response: " + err.Error())
+			common.SysLog(common.LogText("error_unmarshalling_stream_response: %s", err.Error()))
 			return
 		}
 
@@ -206,11 +205,11 @@ func handleCozeEvent(c *gin.Context, event string, data string, responseText *st
 		var errorData CozeError
 		err := json.Unmarshal([]byte(data), &errorData)
 		if err != nil {
-			common.SysLog("error_unmarshalling_stream_response: " + err.Error())
+			common.SysLog(common.LogText("error_unmarshalling_stream_response: %s", err.Error()))
 			return
 		}
 
-		common.SysLog(fmt.Sprintf("stream event error: %v %v", errorData.Code, errorData.Message))
+		common.SysLog(common.LogText("stream event error: %v %v", errorData.Code, errorData.Message))
 	}
 }
 

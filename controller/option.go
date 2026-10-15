@@ -10,8 +10,6 @@ import (
 	"strings"
 
 	"github.com/uter-ai/uter/common"
-
-	"github.com/uter-ai/uter/i18n"
 	"github.com/uter-ai/uter/model"
 	"github.com/uter-ai/uter/service"
 	"github.com/uter-ai/uter/setting"
@@ -91,14 +89,13 @@ func GetOptions(c *gin.Context) {
 			continue
 		}
 		value := common.Interface2String(v)
-		// 敏感键不再整条剔除（那会让前端拿不到任何密钥、保存后无法核对），
-		// 改为「保留键、值替换为掩码串」：管理员能确认填对了没，又拿不到明文。
-		// 含密钥的聚合体（大模型配置缓存）仍整条剔除——它不是单个可掩码字段。
-		if common.IsExcludedOptionKey(k) {
+		isSensitiveKey := strings.HasSuffix(k, "Token") ||
+			strings.HasSuffix(k, "Secret") ||
+			strings.HasSuffix(k, "Key") ||
+			strings.HasSuffix(k, "secret") ||
+			strings.HasSuffix(k, "api_key")
+		if isSensitiveKey {
 			continue
-		}
-		if common.IsSecretOptionKey(k) {
-			value = common.MaskSecretValue(value)
 		}
 		options = append(options, &model.Option{
 			Key:   k,
@@ -147,7 +144,7 @@ func UpdatePasskeyDomains(c *gin.Context) {
 		RemovalConfirmation string  `json:"removal_confirmation"`
 	}
 	if err := common.DecodeJson(c.Request.Body, &request); err != nil || request.RPID == nil || request.LegacyRPIDs == nil || request.Origins == nil {
-		common.ApiErrorI18n(c, i18n.MsgInvalidParams)
+		common.ApiErrorT(c, "Invalid parameters")
 		return
 	}
 	change, err := model.UpdatePasskeyDomainOptions(map[string]string{
@@ -169,9 +166,9 @@ func UpdatePasskeyDomains(c *gin.Context) {
 func writePasskeyDomainSettingsError(c *gin.Context, err error) {
 	var removal *model.PasskeyDomainRemovalError
 	if errors.As(err, &removal) {
-		c.JSON(http.StatusConflict, gin.H{
-			"success": false, "code": "PASSKEY_RP_ID_REMOVAL_CONFIRMATION_REQUIRED",
-			"message": i18n.T(c, i18n.MsgPasskeyRPIDRemovalConfirmation), "data": removal.Change,
+		common.ApiErrorStatus(c, http.StatusConflict, common.NewMessage("Review the affected Passkeys and confirm the domain removal. If the settings or impact have changed, confirmation is required again."), gin.H{
+			"code": "PASSKEY_RP_ID_REMOVAL_CONFIRMATION_REQUIRED",
+			"data": removal.Change,
 		})
 		return
 	}
@@ -186,10 +183,7 @@ func UpdateOption(c *gin.Context) {
 	var option OptionUpdateRequest
 	err := common.DecodeJson(c.Request.Body, &option)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"success": false,
-			"message": i18n.T(c, i18n.MsgCommonInvalid_param),
-		})
+		common.ApiErrorStatus(c, http.StatusBadRequest, common.NewMessage("Invalid parameters"))
 		return
 	}
 	switch option.Value.(type) {
@@ -205,91 +199,55 @@ func UpdateOption(c *gin.Context) {
 	switch option.Key {
 	case "QuotaForInviter", "QuotaForInvitee":
 		if isPositiveOptionValue(option.Value.(string)) && !operation_setting.IsPaymentComplianceConfirmed() {
-			common.ApiErrorI18n(c, i18n.MsgPaymentComplianceRequired)
+			common.ApiErrorT(c, "Payment, redemption, subscription, and invitation reward features are disabled. The administrator must confirm compliance terms before enabling them.")
 			return
 		}
 	default:
 		if isPaymentComplianceOptionKey(option.Key) {
-			common.ApiErrorI18n(c, i18n.MsgCommonCompliance_field_readonly)
+			common.ApiErrorT(c, "Compliance confirmation fields cannot be changed through the general settings API")
 			return
-		}
-	}
-
-	// 密钥类字段：前端保存时若原样回传掩码串（说明用户没改，只是把看到的
-	// 掩码又送了回来），则保留库中原密钥——避免掩码覆盖真实密钥导致功能失效。
-	// 传空串则视为「清空该密钥」，允许（有些场景确实要清）。
-	if common.IsSecretOptionKey(option.Key) {
-		if incoming, ok := option.Value.(string); ok && common.IsMaskedSecret(incoming) {
-			common.OptionMapRWMutex.RLock()
-			existingValue := common.Interface2String(common.OptionMap[option.Key])
-			common.OptionMapRWMutex.RUnlock()
-			if existingValue != "" {
-				option.Value = existingValue
-			}
 		}
 	}
 	if option.Key == "TaskPublicAddress" && option.Value.(string) != "" {
 		if err := service.ValidateTaskArtifactBaseURL(option.Value.(string)); err != nil {
-			common.ApiErrorMsg(c, err.Error())
+			common.ApiError(c, err)
 			return
 		}
 	}
 	switch option.Key {
 	case "GitHubOAuthEnabled":
 		if option.Value == "true" && common.GitHubClientId == "" {
-			c.JSON(http.StatusOK, gin.H{
-				"success": false,
-				"message": i18n.T(c, i18n.MsgSettingGithub_oauth_creds_required),
-			})
+			common.ApiErrorT(c, "Cannot enable {{provider}}. Enter the {{provider}} Client ID and Client Secret first.", map[string]any{"provider": "GitHub OAuth"})
 			return
 		}
 	case "discord.enabled":
 		if option.Value == "true" && system_setting.GetDiscordSettings().ClientId == "" {
-			c.JSON(http.StatusOK, gin.H{
-				"success": false,
-				"message": i18n.T(c, i18n.MsgSettingDiscord_oauth_creds_required),
-			})
+			common.ApiErrorT(c, "Cannot enable {{provider}}. Enter the {{provider}} Client ID and Client Secret first.", map[string]any{"provider": "Discord OAuth"})
 			return
 		}
 	case "oidc.enabled":
 		if option.Value == "true" && system_setting.GetOIDCSettings().ClientId == "" {
-			c.JSON(http.StatusOK, gin.H{
-				"success": false,
-				"message": i18n.T(c, i18n.MsgSettingOidc_creds_required),
-			})
+			common.ApiErrorT(c, "Cannot enable {{provider}}. Enter the {{provider}} Client ID and Client Secret first.", map[string]any{"provider": "OIDC"})
 			return
 		}
 	case "LinuxDOOAuthEnabled":
 		if option.Value == "true" && common.LinuxDOClientId == "" {
-			c.JSON(http.StatusOK, gin.H{
-				"success": false,
-				"message": i18n.T(c, i18n.MsgSettingLinuxdo_creds_required),
-			})
+			common.ApiErrorT(c, "Cannot enable {{provider}}. Enter the {{provider}} Client ID and Client Secret first.", map[string]any{"provider": "LinuxDO OAuth"})
 			return
 		}
 	case "EmailDomainRestrictionEnabled":
 		if option.Value == "true" && len(common.EmailDomainWhitelist) == 0 {
-			c.JSON(http.StatusOK, gin.H{
-				"success": false,
-				"message": i18n.T(c, i18n.MsgSettingEmail_domain_creds_required),
-			})
+			common.ApiErrorT(c, "Cannot enable the email domain restriction. Enter the allowed email domains first.")
 			return
 		}
 	case "WeChatAuthEnabled":
 		if option.Value == "true" && common.WeChatServerAddress == "" {
-			c.JSON(http.StatusOK, gin.H{
-				"success": false,
-				"message": i18n.T(c, i18n.MsgSettingWechat_login_creds_required),
-			})
+			common.ApiErrorT(c, "Cannot enable WeChat login. Enter the WeChat login settings first.")
 			return
 		}
 	case "TurnstileCheckEnabled":
 		if option.Value == "true" && common.TurnstileSiteKey == "" {
-			c.JSON(http.StatusOK, gin.H{
-				"success": false,
-				"message": i18n.T(c, i18n.MsgSettingTurnstile_creds_required),
-			})
-
+			common.ApiErrorT(c, "Cannot enable Turnstile verification. Enter the Turnstile settings first.")
 			return
 		}
 	case "TelegramOAuthEnabled":
@@ -303,115 +261,79 @@ func UpdateOption(c *gin.Context) {
 		}
 	case "theme.frontend":
 		if option.Value != "default" {
-			c.JSON(http.StatusOK, gin.H{
-				"success": false,
-				"message": i18n.T(c, i18n.MsgSettingClassic_theme_removed),
-			})
+			common.ApiErrorT(c, "The Classic frontend has been removed. The theme can only be set to default")
 			return
 		}
 	case "GroupRatio":
 		err = ratio_setting.CheckGroupRatio(option.Value.(string))
 		if err != nil {
-			c.JSON(http.StatusOK, gin.H{
-				"success": false,
-				"message": err.Error(),
-			})
+			common.ApiError(c, err)
 			return
 		}
 	case "gemini.safety_settings":
 		err = model_setting.ValidateGeminiSafetySettings(option.Value.(string))
 		if err != nil {
-			c.JSON(http.StatusOK, gin.H{
-				"success": false,
-				"message": err.Error(),
-			})
+			common.ApiError(c, err)
 			return
 		}
 	case "claude.default_max_tokens":
 		err = model_setting.ValidateClaudeDefaultMaxTokens(option.Value.(string))
 		if err != nil {
-			c.JSON(http.StatusOK, gin.H{
-				"success": false,
-				"message": err.Error(),
-			})
+			common.ApiError(c, err)
 			return
 		}
 	case operation_setting.ToolPriceOptionKey:
 		err = operation_setting.ValidateToolPricesJSON(option.Value.(string))
 		if err != nil {
-			c.JSON(http.StatusOK, gin.H{
-				"success": false,
-				"message": err.Error(),
-			})
+			common.ApiError(c, err)
 			return
 		}
 	case "ImageRatio":
 		err = ratio_setting.UpdateImageRatioByJSONString(option.Value.(string))
 		if err != nil {
-			c.JSON(http.StatusOK, gin.H{
-				"success": false,
-				"message": i18n.T(c, i18n.MsgSettingImage_ratio_failed),
-			})
+			common.ApiErrorT(c, "Failed to set the image ratio: {{error}}", map[string]any{"error": err.Error()})
 			return
 		}
 	case "AudioRatio":
 		err = ratio_setting.UpdateAudioRatioByJSONString(option.Value.(string))
 		if err != nil {
-			c.JSON(http.StatusOK, gin.H{
-				"success": false,
-				"message": i18n.T(c, i18n.MsgSettingAudio_ratio_failed),
-			})
+			common.ApiErrorT(c, "Failed to set the audio ratio: {{error}}", map[string]any{"error": err.Error()})
 			return
 		}
 	case "AudioCompletionRatio":
 		err = ratio_setting.UpdateAudioCompletionRatioByJSONString(option.Value.(string))
 		if err != nil {
-			c.JSON(http.StatusOK, gin.H{
-				"success": false,
-				"message": i18n.T(c, i18n.MsgSettingAudio_complete_ratio_failed),
-			})
+			common.ApiErrorT(c, "Failed to set the audio completion ratio: {{error}}", map[string]any{"error": err.Error()})
 			return
 		}
 	case "CreateCacheRatio":
 		err = ratio_setting.UpdateCreateCacheRatioByJSONString(option.Value.(string))
 		if err != nil {
-			c.JSON(http.StatusOK, gin.H{
-				"success": false,
-				"message": i18n.T(c, i18n.MsgSettingCache_ratio_failed),
-			})
+			common.ApiErrorT(c, "Failed to set the cache creation ratio: {{error}}", map[string]any{"error": err.Error()})
 			return
 		}
 	case "ModelRequestRateLimitGroup":
 		err = setting.CheckModelRequestRateLimitGroup(option.Value.(string))
 		if err != nil {
-			c.JSON(http.StatusOK, gin.H{
-				"success": false,
-				"message": err.Error(),
-			})
+			common.ApiError(c, err)
 			return
 		}
 	case "AutomaticDisableStatusCodes":
 		_, err = operation_setting.ParseHTTPStatusCodeRanges(option.Value.(string))
 		if err != nil {
-			c.JSON(http.StatusOK, gin.H{
-				"success": false,
-				"message": err.Error(),
-			})
+			common.ApiError(c, err)
 			return
 		}
 	case "AutomaticRetryStatusCodes":
 		_, err = operation_setting.ParseHTTPStatusCodeRanges(option.Value.(string))
 		if err != nil {
-			c.JSON(http.StatusOK, gin.H{
-				"success": false,
-				"message": err.Error(),
-			})
+			common.ApiError(c, err)
 			return
 		}
 	case "billing_setting.billing_expr":
 		expressions := make(map[string]string)
 		if err = common.UnmarshalJsonStr(option.Value.(string), &expressions); err != nil {
-			common.ApiErrorMsg(c, "计费表达式配置必须是模型到表达式的 JSON 对象: "+err.Error())
+			common.ApiErrorT(c, "Billing expressions must be a JSON object mapping models to expressions: {{error}}", map[string]any{"error": err.Error()})
 			return
 		}
 		models := make([]string, 0, len(expressions))
@@ -432,7 +354,7 @@ func UpdateOption(c *gin.Context) {
 				billing_setting.PluginBillingExprOption: variants,
 			})
 			if err != nil {
-				common.ApiErrorMsg(c, fmt.Sprintf("模型 %s 的计费表达式无效: %v", modelName, err))
+				common.ApiErrorT(c, "Invalid billing expression for model {{model}}: {{error}}", map[string]any{"model": modelName, "error": err.Error()})
 				return
 			}
 		}
@@ -451,44 +373,32 @@ func UpdateOption(c *gin.Context) {
 			if err = model.ValidateModelPricing(name, model.PricingValues{
 				billing_setting.PluginBillingExprOption: map[string]any{plugin: expression},
 			}); err != nil {
-				common.ApiErrorMsg(c, err.Error())
+				common.ApiError(c, err)
 				return
 			}
 		}
 	case "console_setting.api_info":
 		err = console_setting.ValidateConsoleSettings(option.Value.(string), "ApiInfo")
 		if err != nil {
-			c.JSON(http.StatusOK, gin.H{
-				"success": false,
-				"message": err.Error(),
-			})
+			common.ApiError(c, err)
 			return
 		}
 	case "console_setting.announcements":
 		err = console_setting.ValidateConsoleSettings(option.Value.(string), "Announcements")
 		if err != nil {
-			c.JSON(http.StatusOK, gin.H{
-				"success": false,
-				"message": err.Error(),
-			})
+			common.ApiError(c, err)
 			return
 		}
 	case "console_setting.faq":
 		err = console_setting.ValidateConsoleSettings(option.Value.(string), "FAQ")
 		if err != nil {
-			c.JSON(http.StatusOK, gin.H{
-				"success": false,
-				"message": err.Error(),
-			})
+			common.ApiError(c, err)
 			return
 		}
 	case "console_setting.uptime_kuma_groups":
 		err = console_setting.ValidateConsoleSettings(option.Value.(string), "UptimeKumaGroups")
 		if err != nil {
-			c.JSON(http.StatusOK, gin.H{
-				"success": false,
-				"message": err.Error(),
-			})
+			common.ApiError(c, err)
 			return
 		}
 	}

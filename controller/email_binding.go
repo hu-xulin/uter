@@ -3,11 +3,11 @@ package controller
 import (
 	"net/http"
 
-	"github.com/gin-gonic/gin"
 	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/middleware"
 	"github.com/uter-ai/uter/model"
 	"github.com/uter-ai/uter/service"
+	"github.com/gin-gonic/gin"
 )
 
 type emailBindRequest struct {
@@ -18,7 +18,7 @@ type emailBindRequest struct {
 }
 
 func EmailBindStart(c *gin.Context) {
-	identity, ok := middleware.GetSessionAuthIdentity(c)
+	identity, ok := middleware.GetStepUpIdentity(c)
 	if !ok {
 		writeSecurityOperationError(c, service.ErrAuthTokenInvalid)
 		return
@@ -56,7 +56,7 @@ func EmailBindStart(c *gin.Context) {
 }
 
 func EmailBindResend(c *gin.Context) {
-	identity, ok := middleware.GetSessionAuthIdentity(c)
+	identity, ok := middleware.GetStepUpIdentity(c)
 	if !ok {
 		writeSecurityOperationError(c, service.ErrAuthTokenInvalid)
 		return
@@ -80,7 +80,7 @@ func EmailBindResend(c *gin.Context) {
 }
 
 func EmailBind(c *gin.Context) {
-	identity, ok := middleware.GetSessionAuthIdentity(c)
+	identity, ok := middleware.GetStepUpIdentity(c)
 	if !ok {
 		writeSecurityOperationError(c, service.ErrAuthTokenInvalid)
 		return
@@ -100,8 +100,8 @@ func EmailBind(c *gin.Context) {
 		return
 	}
 	succeeded = true
-	notificationFailed = service.NotifyAccountSecurityChange(state.CurrentEmail, "邮箱地址已变更") != nil
-	if err := service.NotifyAccountSecurityChange(state.Email, "已确认新邮箱地址"); err != nil {
+	notificationFailed = service.NotifyAccountSecurityChange(state.CurrentEmail, "Email address changed") != nil
+	if err := service.NotifyAccountSecurityChange(state.Email, "Email address confirmed"); err != nil {
 		notificationFailed = true
 	}
 	if err := model.PublishUserAuthCache(identity.UserID); err != nil {

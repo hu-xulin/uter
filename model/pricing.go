@@ -1,13 +1,11 @@
 package model
 
 import (
-	"fmt"
 	"strings"
 	"sync"
 	"time"
 
 	"github.com/uter-ai/uter/common"
-
 	"github.com/uter-ai/uter/constant"
 	"github.com/uter-ai/uter/pkg/jsplugin"
 	"github.com/uter-ai/uter/relaykit/dto"
@@ -61,9 +59,6 @@ type PricingVendor struct {
 	Name        string `json:"name"`
 	Description string `json:"description,omitempty"`
 	Icon        string `json:"icon,omitempty"`
-	// ModelCount 是该供应商名下模型数，口径与管理页「关联模型数」完全一致
-	// （models 表 + 靠名称规则归因的默认品牌），便于两页一一对应核对。
-	ModelCount int64 `json:"model_count"`
 }
 
 var (
@@ -83,20 +78,6 @@ var (
 	modelSupportEndpointTypes = make(map[string][]constant.EndpointType)
 	modelSupportEndpointsLock = sync.RWMutex{}
 )
-
-// multiLangOrSelf 返回该模型的多语描述副本；只有单字段时把它归一为英文单语。
-//
-// 这样「尚未开启多语化、只有 description」的历史模型也会带上 descriptions，
-// 前端切换语言时至少有英文兜底，而不会因为缺字段回退成「暂无描述」。
-func multiLangOrSelf(meta *Model) map[string]string {
-	if len(meta.Descriptions) > 0 {
-		return meta.Descriptions
-	}
-	if text := strings.TrimSpace(meta.Description); text != "" {
-		return map[string]string{"en": text}
-	}
-	return nil
-}
 
 func GetPricing() []Pricing {
 	if time.Since(lastGetPricingTime) > time.Minute*1 || len(pricingMap) == 0 {
@@ -130,47 +111,6 @@ func GetVendors() []PricingVendor {
 	return vendorsList
 }
 
-// syncVendorModelCounts 用与管理页完全一致的口径（models 表 + 靠名称规则归因的
-// 默认品牌）给 vendorsList 的每个供应商附加关联模型数，保证定价页左侧供应商的
-// 模型数与管理页一一对应。返回时对齐 includeDefault 的可见性：已合并的默认品牌、
-// 以及与真实供应商同名的默认品牌不重复出现。
-func syncVendorModelCounts(vendorsList []PricingVendor, vendorMap map[int]*Vendor) []PricingVendor {
-	counts, err := GetEffectiveVendorModelCounts()
-	if err != nil {
-		return vendorsList
-	}
-	result := make([]PricingVendor, 0, len(vendorsList))
-	// 只有真实落库供应商（正 ID）才算「同名真实供应商」。vendorMap 里可能含
-	// getDisplayVendor 为按名称规则归因的模型物化出来的合成默认品牌（负 ID），
-	// 若把它们也计入会把该默认品牌自身判成重复而挤掉——正是「有模型的默认品牌
-	// 反而从定价页消失」的根因。
-	realNames := make(map[string]struct{}, len(vendorMap))
-	for _, v := range vendorMap {
-		if v.Id > 0 {
-			realNames[strings.ToLower(v.Name)] = struct{}{}
-		}
-	}
-	seen := make(map[int]struct{}, len(vendorsList))
-	for _, v := range vendorsList {
-		if _, dup := seen[v.ID]; dup {
-			continue
-		}
-		if v.ID < 0 {
-			// 合成默认品牌：已合并或已有同名真实供应商的，不重复计入（管理页同样隐藏）。
-			if VendorMergeTargetFor(v.Name, vendorMap) > 0 {
-				continue
-			}
-			if _, dup := realNames[strings.ToLower(v.Name)]; dup {
-				continue
-			}
-		}
-		seen[v.ID] = struct{}{}
-		v.ModelCount = counts[int64(v.ID)]
-		result = append(result, v)
-	}
-	return result
-}
-
 func GetModelSupportEndpointTypes(model string) []constant.EndpointType {
 	if model == "" {
 		return make([]constant.EndpointType, 0)
@@ -184,7 +124,7 @@ func GetModelSupportEndpointTypes(model string) []constant.EndpointType {
 }
 
 func getPricingEndpointTypesForAbility(ability AbilityWithChannel, advancedCustomConfigs map[int]*dto.AdvancedCustomConfig) []constant.EndpointType {
-	if !constant.IsAdvancedCustomChannelType(ability.ChannelType) {
+	if ability.ChannelType != constant.ChannelTypeAdvancedCustom {
 		return common.GetEndpointTypesByChannelType(ability.ChannelType, ability.Model)
 	}
 	if config := advancedCustomConfigs[ability.ChannelId]; config != nil {
@@ -205,7 +145,7 @@ func loadPricingAdvancedCustomConfigs(enableAbilities []AbilityWithChannel) map[
 	channelIDs := make([]int, 0)
 	seen := make(map[int]struct{})
 	for _, ability := range enableAbilities {
-		if !constant.IsAdvancedCustomChannelType(ability.ChannelType) {
+		if ability.ChannelType != constant.ChannelTypeAdvancedCustom {
 			continue
 		}
 		if _, exists := seen[ability.ChannelId]; exists {
@@ -233,10 +173,10 @@ func loadPricingAdvancedCustomConfigs(enableAbilities []AbilityWithChannel) map[
 	for _, channelID := range channelIDs {
 		channel, err := CacheGetChannel(channelID)
 		if err != nil {
-			common.SysLog(fmt.Sprintf("load advanced custom channel settings error: channel_id=%d, error=%v", channelID, err))
+			common.SysLog(common.LogText("load advanced custom channel settings error: channel_id=%d, error=%v", channelID, err))
 			continue
 		}
-		if !constant.IsAdvancedCustomChannelType(channel.Type) {
+		if channel.Type != constant.ChannelTypeAdvancedCustom {
 			continue
 		}
 		if config := channel.GetOtherSettings().AdvancedCustom; config != nil {
@@ -257,17 +197,12 @@ func updatePricing() {
 	//modelRatios := common.GetModelRatios()
 	enableAbilities, err := GetAllEnableAbilityWithChannels()
 	if err != nil {
-		common.SysLog(fmt.Sprintf("GetAllEnableAbilityWithChannels error: %v", err))
+		common.SysLog(common.LogText("GetAllEnableAbilityWithChannels error: %v", err))
 		return
 	}
 	// 预加载模型元数据与供应商一次，避免循环查询
 	var allMeta []Model
-	// Pricing is derived from these rows; continuing with an empty set would
-	// silently publish prices computed against no metadata at all.
-	if err := DB.Find(&allMeta).Error; err != nil {
-		common.SysLog(fmt.Sprintf("failed to load model metadata for pricing: %v", err))
-		return
-	}
+	_ = DB.Find(&allMeta).Error
 	names := make([]string, 0, len(enableAbilities))
 	for _, ability := range enableAbilities {
 		names = append(names, ability.Model)
@@ -276,10 +211,7 @@ func updatePricing() {
 
 	// 预加载供应商
 	var vendors []Vendor
-	if err := DB.Find(&vendors).Error; err != nil {
-		common.SysLog(fmt.Sprintf("failed to load vendors for pricing: %v", err))
-		return
-	}
+	_ = DB.Find(&vendors).Error
 	vendorMap := make(map[int]*Vendor)
 	for i := range vendors {
 		vendorMap[vendors[i].Id] = &vendors[i]
@@ -288,10 +220,8 @@ func updatePricing() {
 	// 初始化默认供应商映射
 	initDefaultVendorMapping(metaMap, vendorMap, enableAbilities)
 
-	// 构建对前端友好的供应商列表。除真实供应商外，也纳入定价广场按名称规则
-	// 生成的合成默认品牌，使定价页左侧的供应商集合与管理页完全一致；重复项与
-	// 已合并品牌由 syncVendorModelCounts 去重。
-	vendorsList = make([]PricingVendor, 0, len(vendorMap)+len(defaultBrandVendors()))
+	// 构建对前端友好的供应商列表
+	vendorsList = make([]PricingVendor, 0, len(vendorMap))
 	for _, v := range vendorMap {
 		vendorsList = append(vendorsList, PricingVendor{
 			ID:          v.Id,
@@ -300,14 +230,6 @@ func updatePricing() {
 			Icon:        v.Icon,
 		})
 	}
-	for _, v := range defaultBrandVendors() {
-		vendorsList = append(vendorsList, PricingVendor{
-			ID:   v.Id,
-			Name: v.Name,
-			Icon: v.Icon,
-		})
-	}
-	vendorsList = syncVendorModelCounts(vendorsList, vendorMap)
 
 	modelGroupsMap := make(map[string]*types.Set[string])
 
@@ -421,12 +343,6 @@ func updatePricing() {
 				continue
 			}
 			pricing.Description = meta.Description
-			// 全语种副本交给 controller 按访客语言解析出 Description，
-			// 这里只负责把数据带出去。只填了单字段的历史模型由
-			// normalizeModelDescriptions 补出英文位，使其同样能多语渲染。
-			if descriptions := LocalizedDescription(multiLangOrSelf(meta)); len(descriptions) > 0 {
-				pricing.Descriptions = map[string]string(descriptions)
-			}
 			pricing.Icon = meta.Icon
 			pricing.Tags = meta.Tags
 			pricing.VendorID = meta.VendorID

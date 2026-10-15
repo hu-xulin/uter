@@ -397,12 +397,16 @@ func migrateDB() error {
 		&SystemTaskLock{},
 		&CasbinRule{},
 		&AuthzRole{},
+		&UserAccessToken{},
 	)
 	if err != nil {
 		return err
 	}
 	if err := InitializeUserAuthVersions(); err != nil {
 		return err
+	}
+	if err := EnsureLegacyAccessTokenRetireAt(common.GetTimestamp()); err != nil {
+		return fmt.Errorf("initialize legacy access token deadline: %w", err)
 	}
 	if err := InitializeExternalIdentityClaims(); err != nil {
 		return err

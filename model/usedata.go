@@ -6,39 +6,21 @@ import (
 	"time"
 
 	"github.com/uter-ai/uter/common"
-
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
 
 // QuotaData 柱状图数据
-//
-// created_at 与其余七列共同构成聚合键（见 logQuotaDataCache 的 cache key）：
-// 同一 (user, model, hour, group, token, channel, node) 组合在库中只应有一行，
-// 刷盘时按增量累加。idx_qdt_agg_unique 是这条约束的落地点——没有它，
-// 多实例部署时两个节点会为同一个 key 各插一行，统计直接翻倍。
-//
-// ⚠️ 改这个 struct 的索引 tag 时注意两点，都实测踩过：
-//
-//  1. GORM 的复合索引用「同一列上出现多次 index:NAME,priority:N」的写法，每个
-//     priority 必须出现且连续。漏写某列的 priority 会让该列被【静默丢弃】（例如
-//     username 曾被漏掉，生成的索引少一列，ON CONFLICT 随即失配报错）。
-//  2. 必须写成 uniqueIndex 而非 index，否则生成的是普通 CREATE INDEX，
-//     SaveQuotaDataCache 的 ON CONFLICT 找不到唯一约束而报
-//     "ON CONFLICT clause does not match any PRIMARY KEY or UNIQUE constraint"。
-//
-// 改完务必跑 TestQuotaDataUniqueIndexColumnsAreComplete 与
-// TestSaveQuotaDataCacheUpsertsAggregate 验证。
 type QuotaData struct {
 	Id        int    `json:"id"`
 	UserID    int    `json:"user_id" gorm:"index;uniqueIndex:idx_qdt_agg_unique,priority:1"`
-	Username  string `json:"username" gorm:"index:idx_qdt_model_user_name,priority:2;index:idx_qdt_username_created,priority:1;uniqueIndex:idx_qdt_agg_unique,priority:2;size:64;default:''"`
-	ModelName string `json:"model_name" gorm:"index:idx_qdt_model_user_name,priority:1;uniqueIndex:idx_qdt_agg_unique,priority:3;size:64;default:''"`
-	CreatedAt int64  `json:"created_at" gorm:"bigint;index:idx_qdt_created_at,priority:2;uniqueIndex:idx_qdt_agg_unique,priority:4;index:idx_qdt_username_created,priority:2"`
-	UseGroup  string `json:"use_group" gorm:"index;uniqueIndex:idx_qdt_agg_unique,priority:5;size:64;default:''"`
-	TokenID   int    `json:"token_id" gorm:"index;uniqueIndex:idx_qdt_agg_unique,priority:6;default:0"`
-	ChannelID int    `json:"channel_id" gorm:"index;uniqueIndex:idx_qdt_agg_unique,priority:7;default:0"`
-	NodeName  string `json:"node_name" gorm:"index;uniqueIndex:idx_qdt_agg_unique,priority:8;size:64;default:''"`
+	Username  string `json:"username" gorm:"index:idx_qdt_model_user_name,priority:2;size:64;default:'';uniqueIndex:idx_qdt_agg_unique,priority:2"`
+	ModelName string `json:"model_name" gorm:"index:idx_qdt_model_user_name,priority:1;size:64;default:'';uniqueIndex:idx_qdt_agg_unique,priority:3"`
+	CreatedAt int64  `json:"created_at" gorm:"bigint;autoCreateTime:false;index:idx_qdt_created_at,priority:2;uniqueIndex:idx_qdt_agg_unique,priority:4"`
+	UseGroup  string `json:"use_group" gorm:"index;size:64;default:'';uniqueIndex:idx_qdt_agg_unique,priority:5"`
+	TokenID   int    `json:"token_id" gorm:"index;default:0;uniqueIndex:idx_qdt_agg_unique,priority:6"`
+	ChannelID int    `json:"channel_id" gorm:"index;default:0;uniqueIndex:idx_qdt_agg_unique,priority:7"`
+	NodeName  string `json:"node_name" gorm:"index;size:64;default:'';uniqueIndex:idx_qdt_agg_unique,priority:8"`
 	TokenUsed int    `json:"token_used" gorm:"default:0"`
 	Count     int    `json:"count" gorm:"default:0"`
 	Quota     int    `json:"quota" gorm:"default:0"`
@@ -60,7 +42,7 @@ type QuotaDataLogParams struct {
 func UpdateQuotaData() {
 	for {
 		if common.DataExportEnabled {
-			common.SysLog("正在更新数据看板数据...")
+			common.SysLog(common.LogText("updating dashboard data..."))
 			SaveQuotaDataCache()
 		}
 		time.Sleep(time.Duration(common.DataExportInterval) * time.Minute)
@@ -69,6 +51,21 @@ func UpdateQuotaData() {
 
 var CacheQuotaData = make(map[string]*QuotaData)
 var CacheQuotaDataLock = sync.Mutex{}
+
+func logQuotaDataCache(quotaData *QuotaData) {
+	key := quotaDataCacheKey(quotaData)
+	count := quotaData.Count
+	quota := quotaData.Quota
+	tokenUsed := quotaData.TokenUsed
+	cachedQuotaData, ok := CacheQuotaData[key]
+	if ok {
+		cachedQuotaData.Count += count
+		cachedQuotaData.Quota += quota
+		cachedQuotaData.TokenUsed += tokenUsed
+		quotaData = cachedQuotaData
+	}
+	CacheQuotaData[key] = quotaData
+}
 
 func LogQuotaData(params QuotaDataLogParams) {
 	// 只精确到小时
@@ -92,19 +89,6 @@ func LogQuotaData(params QuotaDataLogParams) {
 	logQuotaDataCache(quotaData)
 }
 
-// SaveQuotaDataCache 把内存聚合写入数据库。
-//
-// 两个必须同时满足的性质：
-//
-//  1.临界区只做指针交换。CacheQuotaDataLock 是全局最热的锁 —— 每条消费日志
-//     （LogQuotaData）都要拿它。若把整个写库循环放在锁内，万条缓存刷盘期间
-//     全站消费日志的聚合全部阻塞，进而拖慢 relay 响应。所以锁内只摘走 map
-//     并换一个新的，DB IO 全部在锁外做。
-//
-//  2. 批量 upsert 而不是「先查后写」。缓存 key 是八字段的完整组合，条目数等于
-//     「活跃用户 × 活跃模型 × 小时」，大租户上万条；旧的逐条 First + Create/Update
-//     是 2N 次 SQL。加上 idx_qdt_agg_unique 复合唯一索引后，冲突由数据库判定，
-//     多实例并发刷同一个 key 也不会双写、统计翻倍。
 func SaveQuotaDataCache() {
 	// 锁内：摘走整张缓存并换上空的。摘走的是旧 map，后续写入落进新 map，互不影响。
 	CacheQuotaDataLock.Lock()
@@ -179,21 +163,8 @@ func quotaDataCacheKey(quotaData *QuotaData) string {
 	)
 }
 
-func logQuotaDataCache(quotaData *QuotaData) {
-	key := quotaDataCacheKey(quotaData)
-	count := quotaData.Count
-	quota := quotaData.Quota
-	tokenUsed := quotaData.TokenUsed
-	cachedQuotaData, ok := CacheQuotaData[key]
-	if ok {
-		cachedQuotaData.Count += count
-		cachedQuotaData.Quota += quota
-		cachedQuotaData.TokenUsed += tokenUsed
-		quotaData = cachedQuotaData
-	}
-	CacheQuotaData[key] = quotaData
-}
-
+// GetQuotaDataByUsername 支持「用户维度」过滤：userIds 与组织范围取交集，
+// 越权的 id 只会得到空集。
 func GetQuotaDataByUsername(username string, startTime int64, endTime int64, userIds ...int) (quotaData []*QuotaData, err error) {
 	var quotaDatas []*QuotaData
 	// 从quota_data表中查询数据
@@ -260,6 +231,9 @@ func GetAllQuotaDates(startTime int64, endTime int64, username string, orgUserna
 		return GetQuotaDataByUsername(username, startTime, endTime, userIds...)
 	}
 	var quotaDatas []*QuotaData
+	// 从quota_data表中查询数据
+	// only select model_name, sum(count) as count, sum(quota) as quota, model_name, created_at from quota_data group by model_name, created_at;
+	//err = DB.Table("quota_data").Where("created_at >= ? and created_at <= ?", startTime, endTime).Find(&quotaDatas).Error
 	query := DB.Table("quota_data").Select("model_name, sum(count) as count, sum(quota) as quota, sum(token_used) as token_used, created_at").Where("created_at >= ? and created_at <= ?", startTime, endTime)
 	if len(orgUsernames) > 0 {
 		query = query.Where("username IN ?", orgUsernames)

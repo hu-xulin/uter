@@ -86,11 +86,13 @@ func TestOAuthRegistrationHonoursAccountEmailPolicy(t *testing.T) {
 
 	register := func(t *testing.T, email string) error {
 		t.Helper()
-		_, err := findOrCreateOAuthUser(&gin.Context{}, stubOAuthProvider{}, &oauth.OAuthUser{
+		// token 只在「 legacy GitHub 绑定续登」分支被用来拉取已验证邮箱列表，
+		// 这里给一个空令牌：注册路径用不到它，但签名要求它在位。
+		_, _, err := findOrCreateOAuthUser(&gin.Context{}, stubOAuthProvider{}, &oauth.OAuthUser{
 			ProviderUserID: "stub-" + email,
 			Username:       "stub-user",
 			Email:          email,
-		}, "")
+		}, &oauth.OAuthToken{}, "")
 		return err
 	}
 

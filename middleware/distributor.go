@@ -17,9 +17,8 @@ import (
 	"github.com/uter-ai/uter/logger"
 	"github.com/uter-ai/uter/model"
 	"github.com/uter-ai/uter/pkg/jsplugin"
-	"github.com/uter-ai/uter/relay"
-	"github.com/uter-ai/uter/relay/costopt"
 	relayconstant "github.com/uter-ai/uter/relay/constant"
+	"github.com/uter-ai/uter/relay/costopt"
 	"github.com/uter-ai/uter/relaykit/dto"
 	"github.com/uter-ai/uter/relaykit/types"
 	"github.com/uter-ai/uter/service"
@@ -35,19 +34,18 @@ type ModelRequest struct {
 	Group string `json:"group,omitempty"`
 }
 
-// init 把「写入选中渠道上下文」的能力注入 relay 包。
-//
-// 依赖方向：middleware → relay（distributor 之后才进 relay 处理）。relay 侧的 Cascade
-// 升级需要按新模型名重选渠道，若 relay 直接 import 本包的 SetupContextForSelectedChannel，
-// 则 middleware 的同包测试（会 import relay）将构成测试期循环依赖。故用函数变量在运行时
-// 反向注入，保持编译期依赖单向。
-func init() {
-	relay.SetupSelectedChannelFunc = SetupContextForSelectedChannel
-}
-
+// 依赖方向已随上游 rc.38 的 Responses WebSocket 中继反转为 relay → middleware：
+// relay 直接调用本包的 SetupContextForSelectedChannel，本包不再 import relay。
 func Distribute() func(c *gin.Context) {
 	return func(c *gin.Context) {
 		var channel *model.Channel
+		// 请求被拒（>=400）时把这次终止记进请求策略，否则 strict 模式在统计里
+		// 看不到「因为策略被拦」的失败，会把责任归到健康度/成功率上。
+		defer func() {
+			if c.Writer.Status() >= 400 {
+				service.RecordRequestPolicyTermination(c, types.NewErrorWithStatusCode(errors.New("request rejected"), types.ErrorCodeInvalidRequest, c.Writer.Status(), types.ErrOptionWithSkipRetry()))
+			}
+		}()
 		constraints := service.GetChannelConstraints(c)
 		constraints.AddFilter(taskdto.ChannelFilter{
 			Kind:        taskdto.FilterRequestPath,
@@ -56,7 +54,7 @@ func Distribute() func(c *gin.Context) {
 		service.AppendTaskPluginIdentityFilter(c, c.GetString("expected_task_plugin_key"))
 		modelRequest, shouldSelectChannel, err := getModelRequest(c)
 		if err != nil {
-			abortWithOpenAiMessage(c, http.StatusBadRequest, i18n.T(c, i18n.MsgDistributorInvalidRequest, map[string]any{"Error": err.Error()}))
+			abortDistributorRequestError(c, err)
 			return
 		}
 		// 降本改路前置：在选渠道之前应用「仅改模型名」的降本钩子（价值层 / 复杂度路由 /
@@ -146,66 +144,36 @@ func Distribute() func(c *gin.Context) {
 					}
 				}
 
-				if preferredChannelID, found := service.GetPreferredChannelByAffinity(c, modelRequest.Model, usingGroup); found {
-					affinityUsable := false
-					preferred, err := model.CacheGetChannel(preferredChannelID)
-					affinitySatisfied := false
-					if err == nil && preferred != nil && preferred.Status == common.ChannelStatusEnabled {
-						affinitySatisfied, _ = model.ChannelSatisfiesFilters(preferred, modelRequest.Model, constraints.Filters)
+				// 选路统一交给 service.SelectChannelForRequest：亲和（session 绑定）
+				// 与兜底随机选路必须共用一套「严格模式」判定，否则 strict 语义在
+				// 亲和命中与未命中两条路径上会给出不同答案。失败时它返回带状态码与
+				// 错误码的 ChannelSelectError，这里只负责翻译成响应。
+				var selectErr *service.ChannelSelectError
+				channel, selectGroup, selectErr = service.SelectChannelForRequest(c, modelRequest.Model, &service.RetryParam{
+					Ctx:         c,
+					ModelName:   modelRequest.Model,
+					TokenGroup:  usingGroup,
+					RequestPath: c.Request.URL.Path,
+					Retry:       common.GetPointer(0),
+				})
+				if selectErr != nil {
+					if selectErr.FilterKind == taskdto.FilterTaskPluginIdentity {
+						logTaskPluginChannelDecision(c, selectErr.Channel, modelRequest.Model, "channel_rejected", "identity_mismatch")
 					}
-					if affinitySatisfied {
-						if usingGroup == "auto" {
-							userGroup := common.GetContextKeyString(c, constant.ContextKeyUserGroup)
-							autoGroups := service.GetRequestAutoGroups(c, userGroup)
-							for _, g := range autoGroups {
-								if model.IsChannelEnabledForGroupModel(g, modelRequest.Model, preferred.Id) {
-									selectGroup = g
-									common.SetContextKey(c, constant.ContextKeyAutoGroup, g)
-									channel = preferred
-									affinityUsable = true
-									service.MarkChannelAffinityUsed(c, g, preferred.Id)
-									break
-								}
-							}
-						} else if model.IsChannelEnabledForGroupModel(usingGroup, modelRequest.Model, preferred.Id) {
-							channel = preferred
-							selectGroup = usingGroup
-							affinityUsable = true
-							service.MarkChannelAffinityUsed(c, usingGroup, preferred.Id)
-						}
+					message := selectErr.Message
+					if selectErr.NoAvailableChannel {
+						// 选路已在 service 内判定「无可用渠道」。这里补一条带全部
+						// 候选插件 key 的排障日志：noAvailableChannelMessage 只记被
+						// 钉住的那一个，多候选时看不出是哪个插件认领的。
+						logNoEligibleChannel(c, usingGroup, modelRequest.Model)
+						message = noAvailableChannelMessage(c, usingGroup, modelRequest.Model)
+					} else if selectErr.MessageID != "" {
+						message = i18n.T(c, selectErr.MessageID, selectErr.Params)
 					}
-					if !affinityUsable && !service.ShouldKeepChannelAffinityOnChannelDisabled() {
-						service.ClearCurrentChannelAffinityCache(c)
-					}
+					abortWithOpenAiMessage(c, selectErr.StatusCode, message, selectErr.Code)
+					return
 				}
-
-				if channel == nil {
-					channel, selectGroup, err = service.CacheGetRandomSatisfiedChannel(&service.RetryParam{
-						Ctx:         c,
-						ModelName:   modelRequest.Model,
-						TokenGroup:  usingGroup,
-						RequestPath: c.Request.URL.Path,
-						Retry:       common.GetPointer(0),
-					})
-					if err != nil {
-						showGroup := usingGroup
-						if usingGroup == "auto" {
-							showGroup = fmt.Sprintf("auto(%s)", selectGroup)
-						}
-						message := i18n.T(c, i18n.MsgDistributorGetChannelFailed, map[string]any{"Group": showGroup, "Model": modelRequest.Model, "Error": err.Error()})
-						// 如果错误，但是渠道不为空，说明是数据库一致性问题
-						//if channel != nil {
-						//	common.SysError(fmt.Sprintf("渠道不存在：%d", channel.Id))
-						//	message = "数据库一致性已被破坏，请联系管理员"
-						//}
-						abortWithOpenAiMessage(c, http.StatusServiceUnavailable, message, types.ErrorCodeModelNotFound)
-						return
-					}
-					if channel == nil {
-						abortWithOpenAiMessage(c, http.StatusServiceUnavailable, noAvailableChannelMessage(c, usingGroup, modelRequest.Model), types.ErrorCodeModelNotFound)
-						return
-					}
-				}
+				_ = selectGroup
 			}
 		}
 		if channel != nil {
@@ -213,6 +181,7 @@ func Distribute() func(c *gin.Context) {
 				if kind == taskdto.FilterTaskPluginIdentity {
 					logTaskPluginChannelDecision(c, channel, modelRequest.Model, "channel_rejected", "identity_mismatch")
 				}
+				logNoEligibleChannel(c, common.GetContextKeyString(c, constant.ContextKeyUsingGroup), modelRequest.Model)
 				abortWithOpenAiMessage(c, http.StatusServiceUnavailable, noAvailableChannelMessage(c, common.GetContextKeyString(c, constant.ContextKeyUsingGroup), modelRequest.Model), types.ErrorCodeModelNotFound)
 				return
 			}
@@ -226,24 +195,48 @@ func Distribute() func(c *gin.Context) {
 	}
 }
 
-// noAvailableChannelMessage explains a 503 for a task-plugin-claimed model.
-// It identifies all candidate plugins whose channels could serve the request.
-func noAvailableChannelMessage(c *gin.Context, group, modelName string) string {
+// logNoEligibleChannel 在返回 503 的同时把排障所需的细节写进服务端日志。
+//
+// 分工：给 API 调用方的文案是**脱敏**的（不暴露插件 key、不给运维指引），
+// 而「哪个插件认领了这个模型」这类信息只进日志——排障要的是它，公开它
+// 等于把内部插件拓扑泄露给任意调用方。
+func logNoEligibleChannel(c *gin.Context, group, modelName string) {
+	keys := pinnedTaskPluginKeys(c)
+	logger.LogWarn(
+		c,
+		"task_plugin subsystem=distribution event=no_eligible_channel group=%q model=%q candidates=%q reason=no_eligible_channel",
+		group,
+		modelName,
+		strings.Join(keys, ","),
+	)
+}
+
+// pinnedTaskPluginKeys 列出本次请求钉住或候选的全部任务插件 key。
+func pinnedTaskPluginKeys(c *gin.Context) []string {
 	value, exists := c.Get(jsplugin.ContextKeyPinnedPlugin)
 	pinned, ok := value.(jsplugin.PinnedPlugin)
-	if exists && ok && pinned.Plugin != nil {
-		keys := []string{pinned.Plugin.Meta.Key}
-		if value, exists := c.Get(jsplugin.ContextKeyPinnedEndpoint); exists {
-			if endpoint, ok := value.(jsplugin.PinnedEndpoint); ok && len(endpoint.Candidates) > 0 {
-				keys = nil
-				for _, candidate := range endpoint.Candidates {
-					if candidate.Plugin != nil {
-						keys = append(keys, candidate.Plugin.Meta.Key)
-					}
+	if !exists || !ok || pinned.Plugin == nil {
+		return nil
+	}
+	keys := []string{pinned.Plugin.Meta.Key}
+	if value, exists := c.Get(jsplugin.ContextKeyPinnedEndpoint); exists {
+		if endpoint, ok := value.(jsplugin.PinnedEndpoint); ok && len(endpoint.Candidates) > 0 {
+			keys = nil
+			for _, candidate := range endpoint.Candidates {
+				if candidate.Plugin != nil {
+					keys = append(keys, candidate.Plugin.Meta.Key)
 				}
 			}
 		}
-		return i18n.T(c, i18n.MsgDistributorNoAvailableChannelTaskPlugin, map[string]any{"Group": group, "Model": modelName, "Plugin": strings.Join(keys, ", ")})
+	}
+	return keys
+}
+
+// noAvailableChannelMessage explains a 503 for a task-plugin-claimed model.
+// It identifies all candidate plugins whose channels could serve the request.
+func noAvailableChannelMessage(c *gin.Context, group, modelName string) string {
+	if keys := pinnedTaskPluginKeys(c); len(keys) > 0 {
+		return i18n.T(c, i18n.MsgDistributorNoAvailableChannelTaskPlugin, map[string]any{"Group": group, "Model": modelName})
 	}
 	return i18n.T(c, i18n.MsgDistributorNoAvailableChannel, map[string]any{"Group": group, "Model": modelName})
 }
@@ -257,11 +250,20 @@ func channelMatchesExpectedTaskPlugin(c *gin.Context, channel *model.Channel, ex
 			return true
 		}
 	}
+	// 类型 60（uter 的 Uter 品牌渠道，上游称 New API）除单绑定外还能挂扩展插件列表，
+	// 类型 61 只有单绑定。两者都要在此判定，否则扩展列表里的插件会被判成
+	//「无可用渠道」而根本进不了分发。
+	//
+	// 空串 = 没有钉住插件。类型 61（任务插件渠道）**必须**绑上某个插件才有意义，
+	// 空串不算命中；类型 60 与普通渠道没有这个约束，照常走网关。
 	if channel.Type == constant.ChannelTypeTaskPlugin {
-		return expected != "" && channel.GetSetting().TaskPluginKey == expected
+		return channel.GetSetting().BindsTaskPlugin(expected)
 	}
 	if expected == "" {
 		return true
+	}
+	if channel.Type == constant.ChannelTypeNewAPI {
+		return channel.GetSetting().BindsTaskPlugin(expected)
 	}
 
 	if c == nil {
@@ -298,8 +300,13 @@ func pinnedEndpointCandidateForChannel(c *gin.Context, channel *model.Channel, e
 		if candidate.Plugin.Meta.Key == expected {
 			expectedOwned = true
 		}
-		if channel.Type == constant.ChannelTypeTaskPlugin {
-			if channel.GetSetting().TaskPluginKey == candidate.Plugin.Meta.Key {
+		// 类型 60/61 都按「渠道绑定了哪些插件」来判定：60 额外认扩展插件列表。
+		// 共享端点上多个候选插件服务同一模型时，实际执行的是该渠道绑定的那一个。
+		if channel.Type == constant.ChannelTypeTaskPlugin || channel.Type == constant.ChannelTypeNewAPI {
+			// 渠道同时绑住多个候选插件时，取**候选顺序里的第一个**：
+			// 候选表按注册/排序优先级生成，先到者优先，这样同一组绑定下的
+			// 选择是确定的，不受钉住插件的先后影响。
+			if selected.Plugin == nil && channel.GetSetting().BindsTaskPlugin(candidate.Plugin.Meta.Key) {
 				selected = candidate
 			}
 			continue
@@ -310,6 +317,47 @@ func pinnedEndpointCandidateForChannel(c *gin.Context, channel *model.Channel, e
 		}
 	}
 	return selected, expectedOwned && selected.Plugin != nil
+}
+
+// localizedInvalidRequest 把底层原因套进本地化前缀，同时保留 error 链。
+//
+// 为什么不能直接 errors.New(i18n.T(...))：那样 error 链就断了，
+// 上层再也判不出「请求体超限」——IsRequestBodyTooLargeError 靠 errors.Is
+// 认ErrRequestBodyTooLarge，链一断就恒为false，超限的 413 会被静默降级成
+// 400，调用方按错误方向排查（去重传而不是缩载荷），网关还会继续重试。
+type localizedInvalidRequest struct {
+	message string
+	cause   error
+}
+
+func (e *localizedInvalidRequest) Error() string { return e.message }
+func (e *localizedInvalidRequest) Unwrap() error { return e.cause }
+
+func newLocalizedInvalidRequest(message string, cause error) error {
+	return &localizedInvalidRequest{message: message, cause: cause}
+}
+
+// localizeInvalidRequestText 给错误套上「请求不合法：」前缀；已本地化过的原样返回，
+// 避免嵌套调用把前缀套两遍（"请求不合法：请求不合法：…"）。
+func localizeInvalidRequestText(c *gin.Context, err error) string {
+	var localized *localizedInvalidRequest
+	if errors.As(err, &localized) {
+		return err.Error()
+	}
+	return i18n.T(c, i18n.MsgDistributorInvalidRequest, map[string]any{"Error": err.Error()})
+}
+
+// abortDistributorRequestError 按真实原因回「读请求体 / 解析模型」失败。
+//
+// 为什么不一律 400：超限（413）与读中断（400）要采取的行动完全不同——
+// 前者缩小载荷或调高 MAX_REQUEST_BODY_MB，后者重传。把 413 降级成 400 会让
+// 调用方按错误方向排查，网关也会把一个注定失败的大请求继续重试。
+func abortDistributorRequestError(c *gin.Context, err error) {
+	status := http.StatusBadRequest
+	if common.IsRequestBodyTooLargeError(err) {
+		status = http.StatusRequestEntityTooLarge
+	}
+	abortWithOpenAiMessage(c, status, localizeInvalidRequestText(c, err))
 }
 
 // getModelFromRequest 从请求中读取模型信息
@@ -327,7 +375,7 @@ func getModelFromRequest(c *gin.Context) (*ModelRequest, error) {
 	if strings.HasPrefix(c.Request.Header.Get("Content-Type"), "application/json") {
 		modelRequest, err := getModelFromJSONBody(c)
 		if err != nil {
-			return nil, errors.New(i18n.T(c, i18n.MsgDistributorInvalidRequest, map[string]any{"Error": err.Error()}))
+			return nil, newLocalizedInvalidRequest(i18n.T(c, i18n.MsgDistributorInvalidRequest, map[string]any{"Error": err.Error()}), err)
 		}
 		return modelRequest, nil
 	}
@@ -335,7 +383,7 @@ func getModelFromRequest(c *gin.Context) (*ModelRequest, error) {
 	var modelRequest ModelRequest
 	err := common.UnmarshalBodyReusable(c, &modelRequest)
 	if err != nil {
-		return nil, errors.New(i18n.T(c, i18n.MsgDistributorInvalidRequest, map[string]any{"Error": err.Error()}))
+		return nil, newLocalizedInvalidRequest(i18n.T(c, i18n.MsgDistributorInvalidRequest, map[string]any{"Error": err.Error()}), err)
 	}
 	return &modelRequest, nil
 }
@@ -513,7 +561,7 @@ func getModelRequest(c *gin.Context) (*ModelRequest, bool, error) {
 			midjourneyRequest := taskdto.MidjourneyRequest{}
 			err = common.UnmarshalBodyReusable(c, &midjourneyRequest)
 			if err != nil {
-				return nil, false, errors.New(i18n.T(c, i18n.MsgDistributorInvalidMidjourney, map[string]any{"Error": err.Error()}))
+				return nil, false, newLocalizedInvalidRequest(i18n.T(c, i18n.MsgDistributorInvalidMidjourney, map[string]any{"Error": err.Error()}), err)
 			}
 			midjourneyModel, mjErr, success := service.GetMjRequestModel(relayMode, &midjourneyRequest)
 			if mjErr != nil {
@@ -661,6 +709,12 @@ func tokenModelLimitAllows(limit map[string]bool, model string) bool {
 		return true
 	}
 	return limit[ratio_setting.RoutingMatchModelName(model)]
+}
+
+// TokenModelLimitAllows 是 tokenModelLimitAllows 的导出入口，供 Responses WebSocket
+// 中继复用同一条规则——两种传输必须放行同一批模型名。
+func TokenModelLimitAllows(limit map[string]bool, model string) bool {
+	return tokenModelLimitAllows(limit, model)
 }
 
 // 修复 #4834: GET /v1/video/generations/:task_id && /v1/video/:task_id 此前不解析 model，

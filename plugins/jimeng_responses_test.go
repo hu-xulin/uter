@@ -4,11 +4,10 @@ import (
 	"testing"
 
 	"github.com/uter-ai/uter/common"
-
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"github.com/uter-ai/uter/pkg/jsplugin"
 	builtinplugins "github.com/uter-ai/uter/plugins"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestJimengResponsesProtocol(t *testing.T) {

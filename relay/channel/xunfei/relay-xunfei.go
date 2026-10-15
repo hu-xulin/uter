@@ -7,19 +7,16 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"net/http"
 	"net/url"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/uter-ai/uter/common"
-
-	"github.com/samber/lo"
 	"github.com/uter-ai/uter/constant"
 	"github.com/uter-ai/uter/relay/helper"
 	"github.com/uter-ai/uter/relaykit/dto"
 	"github.com/uter-ai/uter/relaykit/types"
+	"github.com/samber/lo"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
@@ -131,7 +128,7 @@ func buildXunfeiAuthUrl(hostUrl string, apiKey, apiSecret string) string {
 	return callUrl
 }
 
-func xunfeiStreamHandler(c *gin.Context, textRequest dto.GeneralOpenAIRequest, appId string, apiSecret string, apiKey string) (*dto.Usage, *types.UterError) {
+func xunfeiStreamHandler(c *gin.Context, textRequest dto.GeneralOpenAIRequest, appId string, apiSecret string, apiKey string) (*dto.Usage, *types.NewAPIError) {
 	domain, authUrl := getXunfeiAuthUrl(c, apiKey, apiSecret, textRequest.Model)
 	dataChan, stopChan, err := xunfeiMakeRequest(textRequest, domain, authUrl, appId)
 	if err != nil {
@@ -148,7 +145,7 @@ func xunfeiStreamHandler(c *gin.Context, textRequest dto.GeneralOpenAIRequest, a
 			response := streamResponseXunfei2OpenAI(&xunfeiResponse)
 			jsonResponse, err := json.Marshal(response)
 			if err != nil {
-				common.SysLog("error marshalling stream response: " + err.Error())
+				common.SysLog(common.LogText("error marshalling stream response: %s", err.Error()))
 				return true
 			}
 			c.Render(-1, common.CustomEvent{Data: "data: " + string(jsonResponse)})
@@ -161,16 +158,14 @@ func xunfeiStreamHandler(c *gin.Context, textRequest dto.GeneralOpenAIRequest, a
 	return &usage, nil
 }
 
-func xunfeiHandler(c *gin.Context, textRequest dto.GeneralOpenAIRequest, appId string, apiSecret string, apiKey string) (*dto.Usage, *types.UterError) {
+func xunfeiHandler(c *gin.Context, textRequest dto.GeneralOpenAIRequest, appId string, apiSecret string, apiKey string) (*dto.Usage, *types.NewAPIError) {
 	domain, authUrl := getXunfeiAuthUrl(c, apiKey, apiSecret, textRequest.Model)
 	dataChan, stopChan, err := xunfeiMakeRequest(textRequest, domain, authUrl, appId)
 	if err != nil {
 		return nil, types.NewError(err, types.ErrorCodeDoRequestFailed)
 	}
 	var usage dto.Usage
-	// 流式拼接用 strings.Builder：每帧一次 `+=` 在 content 非空时会退化为
-	// 「重新分配 + 拷贝全部已有内容」，长输出下累计拷贝量是 O(n²/2)。
-	var contentBuilder strings.Builder
+	var content string
 	var xunfeiResponse XunfeiChatResponse
 	stop := false
 	for !stop {
@@ -179,15 +174,13 @@ func xunfeiHandler(c *gin.Context, textRequest dto.GeneralOpenAIRequest, appId s
 			if len(xunfeiResponse.Payload.Choices.Text) == 0 {
 				continue
 			}
-			contentBuilder.WriteString(xunfeiResponse.Payload.Choices.Text[0].Content)
+			content += xunfeiResponse.Payload.Choices.Text[0].Content
 			usage.PromptTokens += xunfeiResponse.Payload.Usage.Text.PromptTokens
 			usage.CompletionTokens += xunfeiResponse.Payload.Usage.Text.CompletionTokens
 			usage.TotalTokens += xunfeiResponse.Payload.Usage.Text.TotalTokens
-		case <-stopChan:
-			stop = true
+		case stop = <-stopChan:
 		}
 	}
-	content := contentBuilder.String()
 	if len(xunfeiResponse.Payload.Choices.Text) == 0 {
 		xunfeiResponse.Payload.Choices.Text = []XunfeiChatResponseTextItem{
 			{
@@ -207,74 +200,48 @@ func xunfeiHandler(c *gin.Context, textRequest dto.GeneralOpenAIRequest, appId s
 	return &usage, nil
 }
 
-func xunfeiMakeRequest(textRequest dto.GeneralOpenAIRequest, domain, authUrl, appId string) (chan XunfeiChatResponse, chan struct{}, error) {
+func xunfeiMakeRequest(textRequest dto.GeneralOpenAIRequest, domain, authUrl, appId string) (chan XunfeiChatResponse, chan bool, error) {
 	d := websocket.Dialer{
 		HandshakeTimeout: 5 * time.Second,
 	}
 	conn, resp, err := d.Dial(authUrl, nil)
-	// gorilla/websocket 在握手失败时返回一个带 Body 的 *http.Response，
-	// 该 Body 由调用方负责关闭（库内部不Close）。同时 err != nil 时 resp
-	// 可能为 nil，直接取 resp.StatusCode 会 panic。
-	if err != nil || resp == nil || resp.StatusCode != http.StatusSwitchingProtocols {
-		if resp != nil && resp.Body != nil {
-			_ = resp.Body.Close()
-		}
+	if err != nil || resp.StatusCode != 101 {
 		return nil, nil, err
 	}
 
 	data := requestOpenAI2Xunfei(textRequest, appId, domain)
 	err = conn.WriteJSON(data)
 	if err != nil {
-		// 握手已成功但发送失败：必须关闭连接，否则每次失败泄漏一个 websocket。
-		_ = conn.Close()
-		if resp.Body != nil {
-			_ = resp.Body.Close()
-		}
 		return nil, nil, err
 	}
-	// 握手成功，resp.Body 归本函数负责（101 响应无实体，但仍显式关闭）。
-	if resp.Body != nil {
-		_ = resp.Body.Close()
-	}
 
-	// 有缓冲 + select 保护：消费方（c.Stream）因客户端断开而提前 return 后，
-	// 裸 `dataChan <- response` 会让读取 goroutine 永久阻塞，连带 defer 的
-	// conn.Close() 永不执行（websocket 连接泄漏）。stopChan 改用 close 广播。
-	dataChan := make(chan XunfeiChatResponse, 10)
-	stopChan := make(chan struct{})
-	var stopOnce sync.Once
-	stop := func() {
-		stopOnce.Do(func() { close(stopChan) })
-	}
+	dataChan := make(chan XunfeiChatResponse)
+	stopChan := make(chan bool)
 	go func() {
 		defer func() {
-			stop()
-			_ = conn.Close()
+			conn.Close()
 		}()
 		for {
 			_, msg, err := conn.ReadMessage()
 			if err != nil {
-				common.SysLog("error reading stream response: " + err.Error())
+				common.SysLog(common.LogText("error reading stream response: %s", err.Error()))
 				break
 			}
 			var response XunfeiChatResponse
 			err = json.Unmarshal(msg, &response)
 			if err != nil {
-				common.SysLog("error unmarshalling stream response: " + err.Error())
+				common.SysLog(common.LogText("error unmarshalling stream response: %s", err.Error()))
 				break
 			}
-			select {
-			case dataChan <- response:
-			case <-stopChan:
-				return
-			}
+			dataChan <- response
 			if response.Payload.Choices.Status == 2 {
 				if err != nil {
-					common.SysLog("error closing websocket connection: " + err.Error())
+					common.SysLog(common.LogText("error closing websocket connection: %s", err.Error()))
 				}
 				break
 			}
 		}
+		stopChan <- true
 	}()
 
 	return dataChan, stopChan, nil
@@ -320,6 +287,6 @@ func getAPIVersion(c *gin.Context, modelName string) string {
 		return apiVersion
 	}
 	apiVersion = "v1.1"
-	common.SysLog("api_version not found, using default: " + apiVersion)
+	common.SysLog(common.LogText("api_version not found, using default: %s", apiVersion))
 	return apiVersion
 }

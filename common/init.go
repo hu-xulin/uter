@@ -124,11 +124,16 @@ func InitEnv() {
 	GlobalApiRateLimitNum = GetEnvOrDefault("GLOBAL_API_RATE_LIMIT", 360)
 	GlobalApiRateLimitDuration = int64(GetEnvOrDefault("GLOBAL_API_RATE_LIMIT_DURATION", 180))
 	// 组织白名单：名单内组织的成员不受 GLOBAL_API_RATE_LIMIT 约束（见 constants.go）。
+	DefaultLanguage = os.Getenv("DEFAULT_LANGUAGE")
 	SetGlobalApiRateLimitOrgWhitelist(GetEnvOrDefaultIntList("GLOBAL_API_RATE_LIMIT_ORG_WHITELIST", nil))
 
 	GlobalWebRateLimitEnable = GetEnvOrDefaultBool("GLOBAL_WEB_RATE_LIMIT_ENABLE", true)
 	GlobalWebRateLimitNum = GetEnvOrDefault("GLOBAL_WEB_RATE_LIMIT", 120)
 	GlobalWebRateLimitDuration = int64(GetEnvOrDefault("GLOBAL_WEB_RATE_LIMIT_DURATION", 180))
+
+	GlobalStaticRateLimitEnable = GetEnvOrDefaultBool("GLOBAL_STATIC_RATE_LIMIT_ENABLE", false)
+	GlobalStaticRateLimitNum = GetEnvOrDefault("GLOBAL_STATIC_RATE_LIMIT", 1000)
+	GlobalStaticRateLimitDuration = int64(GetEnvOrDefault("GLOBAL_STATIC_RATE_LIMIT_DURATION", 180))
 
 	CriticalRateLimitEnable = GetEnvOrDefaultBool("CRITICAL_RATE_LIMIT_ENABLE", true)
 	CriticalRateLimitNum = GetEnvOrDefault("CRITICAL_RATE_LIMIT", 20)

@@ -11,14 +11,13 @@ import (
 	"time"
 
 	"github.com/uter-ai/uter/common"
-
-	"github.com/samber/lo"
 	"github.com/uter-ai/uter/constant"
 	relaycommon "github.com/uter-ai/uter/relay/common"
 	"github.com/uter-ai/uter/relay/helper"
 	"github.com/uter-ai/uter/relaykit/dto"
 	"github.com/uter-ai/uter/relaykit/types"
 	"github.com/uter-ai/uter/service"
+	"github.com/samber/lo"
 
 	"github.com/gin-gonic/gin"
 )
@@ -115,12 +114,12 @@ func embeddingResponseBaidu2OpenAI(response *BaiduEmbeddingResponse) *dto.OpenAI
 	return &openAIEmbeddingResponse
 }
 
-func baiduStreamHandler(c *gin.Context, info *relaycommon.RelayInfo, resp *http.Response) (*types.UterError, *dto.Usage) {
+func baiduStreamHandler(c *gin.Context, info *relaycommon.RelayInfo, resp *http.Response) (*types.NewAPIError, *dto.Usage) {
 	usage := &dto.Usage{}
 	helper.StreamScannerHandler(c, resp, info, func(data string, sr *helper.StreamResult) {
 		var baiduResponse BaiduChatStreamResponse
 		if err := common.Unmarshal([]byte(data), &baiduResponse); err != nil {
-			common.SysLog("error unmarshalling stream response: " + err.Error())
+			common.SysLog(common.LogText("error unmarshalling stream response: %s", err.Error()))
 			sr.Error(err)
 			return
 		}
@@ -131,7 +130,7 @@ func baiduStreamHandler(c *gin.Context, info *relaycommon.RelayInfo, resp *http.
 		}
 		response := streamResponseBaidu2OpenAI(&baiduResponse)
 		if err := helper.ObjectData(c, response); err != nil {
-			common.SysLog("error sending stream response: " + err.Error())
+			common.SysLog(common.LogText("error sending stream response: %s", err.Error()))
 			sr.Error(err)
 		}
 	})
@@ -139,7 +138,7 @@ func baiduStreamHandler(c *gin.Context, info *relaycommon.RelayInfo, resp *http.
 	return nil, usage
 }
 
-func baiduHandler(c *gin.Context, info *relaycommon.RelayInfo, resp *http.Response) (*types.UterError, *dto.Usage) {
+func baiduHandler(c *gin.Context, info *relaycommon.RelayInfo, resp *http.Response) (*types.NewAPIError, *dto.Usage) {
 	var baiduResponse BaiduChatResponse
 	responseBody, err := io.ReadAll(resp.Body)
 	if err != nil {
@@ -164,7 +163,7 @@ func baiduHandler(c *gin.Context, info *relaycommon.RelayInfo, resp *http.Respon
 	return nil, &fullTextResponse.Usage
 }
 
-func baiduEmbeddingHandler(c *gin.Context, info *relaycommon.RelayInfo, resp *http.Response) (*types.UterError, *dto.Usage) {
+func baiduEmbeddingHandler(c *gin.Context, info *relaycommon.RelayInfo, resp *http.Response) (*types.NewAPIError, *dto.Usage) {
 	var baiduResponse BaiduEmbeddingResponse
 	responseBody, err := io.ReadAll(resp.Body)
 	if err != nil {

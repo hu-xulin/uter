@@ -6,9 +6,10 @@ import (
 	"io"
 
 	kitutil "github.com/uter-ai/uter/relaykit/relayconvert/kitutil"
-
 	"github.com/gin-gonic/gin/binding"
 )
+
+type RawMessage = json.RawMessage
 
 // hostJSONCodec is the single place where the host chooses its JSON engine.
 // Swap the implementation here (for example to sonic.ConfigStd) and every
@@ -74,11 +75,11 @@ func IndentJson(data []byte) ([]byte, error) {
 	return buffer.Bytes(), nil
 }
 
-func GetJsonType(data json.RawMessage) string {
+func GetJsonType(data RawMessage) string {
 	return kitutil.GetJsonType(data)
 }
 
 // JsonRawMessageToString returns JSON strings as their decoded value and other JSON values as raw text.
-func JsonRawMessageToString(data json.RawMessage) string {
+func JsonRawMessageToString(data RawMessage) string {
 	return kitutil.JsonRawMessageToString(data)
 }

@@ -12,12 +12,11 @@ import (
 	"strings"
 
 	"github.com/uter-ai/uter/common"
-
+	kitreasoning "github.com/uter-ai/uter/relaykit/relayconvert/reasoning"
+	"github.com/uter-ai/uter/relaykit/types"
 	"github.com/samber/lo"
 	"github.com/tidwall/gjson"
 	"github.com/tidwall/sjson"
-	kitreasoning "github.com/uter-ai/uter/relaykit/relayconvert/reasoning"
-	"github.com/uter-ai/uter/relaykit/types"
 )
 
 var negativeIndexRegexp = regexp.MustCompile(`\.(-\d+)`)
@@ -57,10 +56,14 @@ type paramOverrideAuditRecorder struct {
 
 type ConditionOperation struct {
 	Path           string `json:"path"`             // JSON路径
-	Mode           string `json:"mode"`             // full, prefix, suffix, contains, gt, gte, lt, lte
+	Mode           string `json:"mode"`             // full, prefix, suffix, contains, regex, gt, gte, lt, lte
 	Value          any    `json:"value"`            // 匹配的值
 	Invert         bool   `json:"invert"`           // 反选功能，true表示取反结果
 	PassMissingKey bool   `json:"pass_missing_key"` // 未获取到json key时的行为
+
+	// Conditions are parsed per request. Reuse the lazily compiled pattern when
+	// pruning multiple objects; never compile before a matching key exists.
+	regex *regexp.Regexp
 }
 
 type ParamOperation struct {
@@ -103,7 +106,7 @@ func AsParamOverrideReturnError(err error) (*ParamOverrideReturnError, bool) {
 	return nil, false
 }
 
-func UterErrorFromParamOverride(err *ParamOverrideReturnError) *types.UterError {
+func NewAPIErrorFromParamOverride(err *ParamOverrideReturnError) *types.NewAPIError {
 	if err == nil {
 		return types.NewError(
 			errors.New("param override return error is nil"),
@@ -132,7 +135,7 @@ func UterErrorFromParamOverride(err *ParamOverrideReturnError) *types.UterError 
 		message = "request blocked by param override"
 	}
 
-	opts := make([]types.UterErrorOptions, 0, 1)
+	opts := make([]types.NewAPIErrorOptions, 0, 1)
 	if err.SkipRetry {
 		opts = append(opts, types.ErrOptionWithSkipRetry())
 	}
@@ -634,8 +637,8 @@ func checkConditions(data []byte, contextJSON string, conditions []ConditionOper
 		return true, nil // 没有条件，直接通过
 	}
 	results := make([]bool, len(conditions))
-	for i, condition := range conditions {
-		result, err := checkSingleCondition(data, contextJSON, condition)
+	for i := range conditions {
+		result, err := checkSingleCondition(data, contextJSON, &conditions[i])
 		if err != nil {
 			return false, err
 		}
@@ -648,7 +651,7 @@ func checkConditions(data []byte, contextJSON string, conditions []ConditionOper
 	return lo.SomeBy(results, func(item bool) bool { return item }), nil
 }
 
-func checkSingleCondition(data []byte, contextJSON string, condition ConditionOperation) (bool, error) {
+func checkSingleCondition(data []byte, contextJSON string, condition *ConditionOperation) (bool, error) {
 	// 处理负数索引
 	path := processNegativeIndex(data, condition.Path)
 	value := gjson.GetBytes(data, path)
@@ -669,7 +672,7 @@ func checkSingleCondition(data []byte, contextJSON string, condition ConditionOp
 	}
 	targetValue := gjson.ParseBytes(targetBytes)
 
-	result, err := compareGjsonValues(value, targetValue, strings.ToLower(condition.Mode))
+	result, err := condition.compareGjsonValues(value, targetValue)
 	if err != nil {
 		return false, fmt.Errorf("comparison failed for path %s: %v", condition.Path, err)
 	}
@@ -692,7 +695,7 @@ func processNegativeIndex(data []byte, path string) string {
 		negIndex := match[1]
 		index, _ := strconv.Atoi(negIndex)
 
-		arrayPath, _, _ := strings.Cut(path, negIndex)
+		arrayPath := strings.Split(path, negIndex)[0]
 		if strings.HasSuffix(arrayPath, ".") {
 			arrayPath = arrayPath[:len(arrayPath)-1]
 		}
@@ -711,7 +714,8 @@ func processNegativeIndex(data []byte, path string) string {
 }
 
 // compareGjsonValues 直接比较两个gjson.Result，支持所有比较模式
-func compareGjsonValues(jsonValue, targetValue gjson.Result, mode string) (bool, error) {
+func (condition *ConditionOperation) compareGjsonValues(jsonValue, targetValue gjson.Result) (bool, error) {
+	mode := strings.ToLower(condition.Mode)
 	switch mode {
 	case "full":
 		return compareEqual(jsonValue, targetValue)
@@ -721,6 +725,18 @@ func compareGjsonValues(jsonValue, targetValue gjson.Result, mode string) (bool,
 		return strings.HasSuffix(jsonValue.String(), targetValue.String()), nil
 	case "contains":
 		return strings.Contains(jsonValue.String(), targetValue.String()), nil
+	case "regex":
+		if targetValue.Type != gjson.String {
+			return false, fmt.Errorf("regex pattern must be a string")
+		}
+		if condition.regex == nil {
+			re, err := regexp.Compile(targetValue.String())
+			if err != nil {
+				return false, fmt.Errorf("invalid regex pattern: %w", err)
+			}
+			condition.regex = re
+		}
+		return condition.regex.MatchString(jsonValue.String()), nil
 	case "gt":
 		return compareNumeric(jsonValue, targetValue, "gt")
 	case "gte":
@@ -788,11 +804,11 @@ func compareNumeric(jsonValue, targetValue gjson.Result, operator string) (bool,
 
 // applyOperationsLegacy 原参数覆盖方法。
 //
-// 旧实现把整个 jsonData unmarshal 成 map[string]any 再 marshal 回来，
+// 旧实现把整个 jsonData unmarshal 成 map[string]interface{} 再 marshal 回来，
 // 对包含大 base64 字段（如 Gemini inlineData.data）的请求会放大数倍内存
 // （interface 装箱、map bucket、再次 marshal）。
 // 这里改成在 []byte 上直接调用 sjson.SetBytes，按顶层 key 逐个写入，
-// 不再把 payload 解码到 map[string]any。
+// 不再把 payload 解码到 map[string]interface{}。
 //
 // 语义保持：每个 paramOverride 顶层 key 视为字面 key（不解析点号路径），
 // 与旧的 reqMap[key] = value 一致。包含 `.` `*` `?` `\` 的 key 会被转义，
@@ -875,7 +891,13 @@ func applyOperations(jsonData []byte, operations []ParamOperation, conditionCont
 
 		switch op.Mode {
 		case "delete":
-			result, err = applySimplePathOp(result, auditRecorder, op, opPaths, nil, deleteValue)
+			for _, path := range opPaths {
+				result, err = deleteValue(result, path)
+				if err != nil {
+					break
+				}
+				auditRecorder.recordOperation("delete", path, "", "", nil)
+			}
 		case "set":
 			for _, path := range opPaths {
 				if op.KeepOrigin && gjson.GetBytes(result, path).Exists() {
@@ -905,38 +927,93 @@ func applyOperations(jsonData []byte, operations []ParamOperation, conditionCont
 				auditRecorder.recordOperation("copy", "", opFrom, opTo, nil)
 			}
 		case "prepend":
-			result, err = applySimplePathOp(result, auditRecorder, op, opPaths, op.Value,
-				func(r []byte, p string) ([]byte, error) { return modifyValue(r, p, op.Value, op.KeepOrigin, true) })
+			for _, path := range opPaths {
+				result, err = modifyValue(result, path, op.Value, op.KeepOrigin, true)
+				if err != nil {
+					break
+				}
+				auditRecorder.recordOperation("prepend", path, "", "", op.Value)
+			}
 		case "append":
-			result, err = applySimplePathOp(result, auditRecorder, op, opPaths, op.Value,
-				func(r []byte, p string) ([]byte, error) { return modifyValue(r, p, op.Value, op.KeepOrigin, false) })
+			for _, path := range opPaths {
+				result, err = modifyValue(result, path, op.Value, op.KeepOrigin, false)
+				if err != nil {
+					break
+				}
+				auditRecorder.recordOperation("append", path, "", "", op.Value)
+			}
 		case "trim_prefix":
-			result, err = applySimplePathOp(result, auditRecorder, op, opPaths, op.Value,
-				func(r []byte, p string) ([]byte, error) { return trimStringValue(r, p, op.Value, true) })
+			for _, path := range opPaths {
+				result, err = trimStringValue(result, path, op.Value, true)
+				if err != nil {
+					break
+				}
+				auditRecorder.recordOperation("trim_prefix", path, "", "", op.Value)
+			}
 		case "trim_suffix":
-			result, err = applySimplePathOp(result, auditRecorder, op, opPaths, op.Value,
-				func(r []byte, p string) ([]byte, error) { return trimStringValue(r, p, op.Value, false) })
+			for _, path := range opPaths {
+				result, err = trimStringValue(result, path, op.Value, false)
+				if err != nil {
+					break
+				}
+				auditRecorder.recordOperation("trim_suffix", path, "", "", op.Value)
+			}
 		case "ensure_prefix":
-			result, err = applySimplePathOp(result, auditRecorder, op, opPaths, op.Value,
-				func(r []byte, p string) ([]byte, error) { return ensureStringAffix(r, p, op.Value, true) })
+			for _, path := range opPaths {
+				result, err = ensureStringAffix(result, path, op.Value, true)
+				if err != nil {
+					break
+				}
+				auditRecorder.recordOperation("ensure_prefix", path, "", "", op.Value)
+			}
 		case "ensure_suffix":
-			result, err = applySimplePathOp(result, auditRecorder, op, opPaths, op.Value,
-				func(r []byte, p string) ([]byte, error) { return ensureStringAffix(r, p, op.Value, false) })
+			for _, path := range opPaths {
+				result, err = ensureStringAffix(result, path, op.Value, false)
+				if err != nil {
+					break
+				}
+				auditRecorder.recordOperation("ensure_suffix", path, "", "", op.Value)
+			}
 		case "trim_space":
-			result, err = applySimplePathOp(result, auditRecorder, op, opPaths, nil,
-				func(r []byte, p string) ([]byte, error) { return transformStringValue(r, p, strings.TrimSpace) })
+			for _, path := range opPaths {
+				result, err = transformStringValue(result, path, strings.TrimSpace)
+				if err != nil {
+					break
+				}
+				auditRecorder.recordOperation("trim_space", path, "", "", nil)
+			}
 		case "to_lower":
-			result, err = applySimplePathOp(result, auditRecorder, op, opPaths, nil,
-				func(r []byte, p string) ([]byte, error) { return transformStringValue(r, p, strings.ToLower) })
+			for _, path := range opPaths {
+				result, err = transformStringValue(result, path, strings.ToLower)
+				if err != nil {
+					break
+				}
+				auditRecorder.recordOperation("to_lower", path, "", "", nil)
+			}
 		case "to_upper":
-			result, err = applySimplePathOp(result, auditRecorder, op, opPaths, nil,
-				func(r []byte, p string) ([]byte, error) { return transformStringValue(r, p, strings.ToUpper) })
+			for _, path := range opPaths {
+				result, err = transformStringValue(result, path, strings.ToUpper)
+				if err != nil {
+					break
+				}
+				auditRecorder.recordOperation("to_upper", path, "", "", nil)
+			}
 		case "replace":
-			result, err = applyPathOpWithArgs(result, auditRecorder, op, opPaths,
-				func(r []byte, p string) ([]byte, error) { return replaceStringValue(r, p, op.From, op.To) })
+			for _, path := range opPaths {
+				result, err = replaceStringValue(result, path, op.From, op.To)
+				if err != nil {
+					break
+				}
+				auditRecorder.recordOperation("replace", path, op.From, op.To, nil)
+			}
 		case "regex_replace":
-			result, err = applyPathOpWithArgs(result, auditRecorder, op, opPaths,
-				func(r []byte, p string) ([]byte, error) { return regexReplaceStringValue(r, p, op.From, op.To) })
+			for _, path := range opPaths {
+				result, err = regexReplaceStringValue(result, path, op.From, op.To)
+				if err != nil {
+					break
+				}
+				auditRecorder.recordOperation("regex_replace", path, op.From, op.To, nil)
+			}
 		case "return_error":
 			auditRecorder.recordOperation("return_error", op.Path, "", "", op.Value)
 			returnErr, parseErr := parseParamOverrideReturnError(op.Value)
@@ -1027,34 +1104,6 @@ func applyOperations(jsonData []byte, operations []ParamOperation, conditionCont
 		if err != nil {
 			return nil, fmt.Errorf("operation %s failed: %w", op.Mode, err)
 		}
-	}
-	return result, nil
-}
-
-// applySimplePathOp 在 operation 的路径集合上逐个应用 transform，并在每次成功后记录审计。
-// 用于 delete / prepend / append / trim_* / ensure_* / to_lower / to_upper 等审计值保持 op.Value 或 nil 的模式。
-func applySimplePathOp(result []byte, recorder *paramOverrideAuditRecorder, op ParamOperation, opPaths []string, auditValue any, fn func([]byte, string) ([]byte, error)) ([]byte, error) {
-	var err error
-	for _, path := range opPaths {
-		result, err = fn(result, path)
-		if err != nil {
-			return result, err
-		}
-		recorder.recordOperation(op.Mode, path, "", "", auditValue)
-	}
-	return result, nil
-}
-
-// applyPathOpWithArgs 在 operation 的路径集合上逐个应用 transform，并使用 op.From / op.To 记录审计。
-// 用于 replace / regex_replace 等审计签名带 from/to 的模式。注意：prune_objects 原实现不记录审计，不可使用本函数。
-func applyPathOpWithArgs(result []byte, recorder *paramOverrideAuditRecorder, op ParamOperation, opPaths []string, fn func([]byte, string) ([]byte, error)) ([]byte, error) {
-	var err error
-	for _, path := range opPaths {
-		result, err = fn(result, path)
-		if err != nil {
-			return result, err
-		}
-		recorder.recordOperation(op.Mode, path, op.From, op.To, nil)
 	}
 	return result, nil
 }
@@ -2195,4 +2244,10 @@ func BuildParamOverrideContext(info *RelayInfo) map[string]any {
 
 	ctx["is_channel_test"] = info.IsChannelTest
 	return ctx
+}
+
+// UterErrorFromParamOverride 是 NewAPIErrorFromParamOverride 的 Uter 品牌别名
+// （上游原名随 NewAPIError 保留为类型别名，函数侧同理保留两个入口）。
+func UterErrorFromParamOverride(err *ParamOverrideReturnError) *types.UterError {
+	return NewAPIErrorFromParamOverride(err)
 }

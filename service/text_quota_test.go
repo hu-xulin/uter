@@ -1,7 +1,6 @@
 package service
 
 import (
-	"encoding/json"
 	"fmt"
 	"math"
 	"net/http/httptest"
@@ -10,7 +9,6 @@ import (
 	"time"
 
 	"github.com/uter-ai/uter/common"
-
 	"github.com/uter-ai/uter/constant"
 	"github.com/uter-ai/uter/model"
 	"github.com/uter-ai/uter/pkg/billingexpr"
@@ -195,7 +193,7 @@ func runFixedPriceAccountingCases(t *testing.T, db, logDB *gorm.DB) {
 				require.NoError(t, err)
 				assert.Equal(t, quota-reservation, held)
 				if tc.outboundImages > 0 {
-					reserveErr := PrepareImageBillingForRequest(ctx, info, tc.outboundImages, false)
+					reserveErr := PrepareImageBillingForRequest(ctx, info, tc.outboundImages)
 					if tc.reserveInsufficient {
 						require.NotNil(t, reserveErr)
 						assert.Equal(t, types.ErrorCodeInsufficientUserQuota, reserveErr.GetErrorCode())
@@ -232,9 +230,9 @@ func runFixedPriceAccountingCases(t *testing.T, db, logDB *gorm.DB) {
 					if tc.realtime {
 						PostWssConsumeQuota(ctx, info, info.OriginModelName, &dto.RealtimeUsage{
 							InputTokens: tc.usage.PromptTokens, OutputTokens: tc.usage.CompletionTokens, TotalTokens: tc.usage.TotalTokens,
-						}, "")
+						}, nil)
 					} else if tc.audio {
-						PostAudioConsumeQuota(ctx, info, tc.usage, "")
+						PostAudioConsumeQuota(ctx, info, tc.usage, nil)
 					} else {
 						PostTextConsumeQuota(ctx, info, tc.usage, nil)
 					}
@@ -243,7 +241,7 @@ func runFixedPriceAccountingCases(t *testing.T, db, logDB *gorm.DB) {
 					require.NoError(t, logDB.Where("user_id = ?", user.Id).Take(&log).Error)
 					assert.Equal(t, tc.want, log.Quota)
 					assert.Equal(t, tc.stream, log.IsStream)
-					assert.NotContains(t, log.Content, "无法扣费")
+					assert.NotContains(t, log.Content, "nothing was charged")
 					var other map[string]any
 					require.NoError(t, common.UnmarshalJsonStr(log.Other, &other))
 					assert.Equal(t, string(tc.unit), other["billing_unit"])
@@ -853,137 +851,6 @@ func TestCalculateTextQuotaSummaryBillsOpenAICacheWriteTokens(t *testing.T) {
 	})
 }
 
-func TestCalculateTextQuotaSummaryCapturesBothAnthropicCacheReadAndWrite(t *testing.T) {
-	gin.SetMode(gin.TestMode)
-	w := httptest.NewRecorder()
-	ctx, _ := gin.CreateTestContext(w)
-
-	relayInfo := &relaycommon.RelayInfo{
-		RelayFormat:     types.RelayFormatOpenAI,
-		OriginModelName: "claude-3-7-sonnet",
-		PriceData: hosttypes.PriceData{
-			ModelRatio:         1,
-			CompletionRatio:    5,
-			CacheRatio:         0.1,
-			CacheCreationRatio: 1.25,
-			GroupRatioInfo:     hosttypes.GroupRatioInfo{GroupRatio: 1},
-		},
-		StartTime: time.Now(),
-	}
-
-	// 创梦平台等 OpenAI 兼容网关代理 Claude 时，以 Anthropic 风格键名返回：
-	// prompt_tokens_details.cache_read_input_tokens / cache_creation_input_tokens
-	payload := `{
-		"prompt_tokens": 1200,
-		"completion_tokens": 95,
-		"prompt_tokens_details": {
-			"cache_read_input_tokens": 1000,
-			"cache_creation_input_tokens": 200
-		}
-	}`
-	var usage dto.Usage
-	if err := json.Unmarshal([]byte(payload), &usage); err != nil {
-		t.Fatal(err)
-	}
-	usage.NormalizeCacheTokens()
-
-	summary := calculateTextQuotaSummary(ctx, relayInfo, &usage)
-
-	// 缓存读取：cache_read_input_tokens 经 Normalize 折叠进 CachedTokens
-	require.Equal(t, 1000, summary.CacheTokens)
-	// 缓存写入：cache_creation_input_tokens 经 Normalize 折叠进 CacheWriteTokens，
-	// 再由 CacheCreationTokensTotal() 进入 summary.CacheCreationTokens
-	// （最终写入日志的 cache_write_tokens 列）
-	require.Equal(t, 200, summary.CacheCreationTokens)
-}
-
-// TestCalculateTextQuotaSummaryCapturesBothAnthropicCacheReadAndWriteRootLevel
-// 复现创梦平台在 OpenAI 兼容体中「原样转发 Claude 原生 usage」的真实形态：
-// cache_read_input_tokens / cache_creation_input_tokens 位于 usage 顶层而非
-// prompt_tokens_details 内。多缓存断点 + 部分命中时，同一次响应会同时携带
-// 两个值（例如工具被复用=读取、新系统提示=写入），这是 Claude 独有、能同时
-// 给出读取与写入两类数据的场景。
-func TestCalculateTextQuotaSummaryCapturesBothAnthropicCacheReadAndWriteRootLevel(t *testing.T) {
-	gin.SetMode(gin.TestMode)
-	w := httptest.NewRecorder()
-	ctx, _ := gin.CreateTestContext(w)
-
-	relayInfo := &relaycommon.RelayInfo{
-		RelayFormat:     types.RelayFormatOpenAI,
-		OriginModelName: "claude-sonnet-4-6",
-		PriceData: hosttypes.PriceData{
-			ModelRatio:         1,
-			CompletionRatio:    5,
-			CacheRatio:         0.1,
-			CacheCreationRatio: 1.25,
-			GroupRatioInfo:     hosttypes.GroupRatioInfo{GroupRatio: 1},
-		},
-		StartTime: time.Now(),
-	}
-
-	payload := `{
-		"prompt_tokens": 1200,
-		"completion_tokens": 95,
-		"cache_read_input_tokens": 1000,
-		"cache_creation_input_tokens": 200
-	}`
-	var usage dto.Usage
-	if err := json.Unmarshal([]byte(payload), &usage); err != nil {
-		t.Fatal(err)
-	}
-	usage.NormalizeCacheTokens()
-
-	summary := calculateTextQuotaSummary(ctx, relayInfo, &usage)
-
-	require.Equal(t, 1000, summary.CacheTokens)
-	require.Equal(t, 200, summary.CacheCreationTokens)
-}
-
-// TestCalculateTextQuotaSummaryCapturesAnthropicCacheReadOrWriteSingular 验证
-// Claude 在「仅创建缓存」（首次请求）与「仅命中缓存」（后续请求）两种单值场景
-// 下，对应的读取/写入维度都能被正确捕捉，而不是互相覆盖或归零。
-func TestCalculateTextQuotaSummaryCapturesAnthropicCacheReadOrWriteSingular(t *testing.T) {
-	gin.SetMode(gin.TestMode)
-	w := httptest.NewRecorder()
-	ctx, _ := gin.CreateTestContext(w)
-	baseRelay := func() *relaycommon.RelayInfo {
-		return &relaycommon.RelayInfo{
-			RelayFormat:     types.RelayFormatOpenAI,
-			OriginModelName: "claude-sonnet-4-6",
-			PriceData: hosttypes.PriceData{
-				ModelRatio:         1,
-				CompletionRatio:    5,
-				CacheRatio:         0.1,
-				CacheCreationRatio: 1.25,
-				GroupRatioInfo:     hosttypes.GroupRatioInfo{GroupRatio: 1},
-			},
-			StartTime: time.Now(),
-		}
-	}
-
-	t.Run("only creation (first request writes cache)", func(t *testing.T) {
-		var usage dto.Usage
-		if err := json.Unmarshal([]byte(`{"cache_creation_input_tokens":1772}`), &usage); err != nil {
-			t.Fatal(err)
-		}
-		usage.NormalizeCacheTokens()
-		summary := calculateTextQuotaSummary(ctx, baseRelay(), &usage)
-		require.Equal(t, 0, summary.CacheTokens)
-		require.Equal(t, 1772, summary.CacheCreationTokens)
-	})
-
-	t.Run("only read (follow-up request hits cache)", func(t *testing.T) {
-		var usage dto.Usage
-		if err := json.Unmarshal([]byte(`{"cache_read_input_tokens":1772}`), &usage); err != nil {
-			t.Fatal(err)
-		}
-		usage.NormalizeCacheTokens()
-		summary := calculateTextQuotaSummary(ctx, baseRelay(), &usage)
-		require.Equal(t, 1772, summary.CacheTokens)
-		require.Equal(t, 0, summary.CacheCreationTokens)
-	})
-}
-
 func TestCalculateTextQuotaSummarySeparatesOpenRouterCacheReadFromPromptBilling(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	w := httptest.NewRecorder()
@@ -1154,7 +1021,6 @@ func TestComposeTieredTextQuotaFallbackKeepsToolCallSurcharges(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	w := httptest.NewRecorder()
 	ctx, _ := gin.CreateTestContext(w)
-	ctx.Set("claude_web_search_requests", 2)
 
 	relayInfo := &relaycommon.RelayInfo{
 		OriginModelName: "claude-3-7-sonnet",
@@ -1162,6 +1028,11 @@ func TestComposeTieredTextQuotaFallbackKeepsToolCallSurcharges(t *testing.T) {
 			ModelRatio:      1,
 			CompletionRatio: 1,
 			GroupRatioInfo:  hosttypes.GroupRatioInfo{GroupRatio: 1.25},
+		},
+		ResponsesUsageInfo: &relaycommon.ResponsesUsageInfo{
+			BuiltInTools: map[string]*relaycommon.BuildInToolInfo{
+				dto.BuildInToolWebSearch: {ToolName: dto.BuildInToolWebSearch, CallCount: 2},
+			},
 		},
 		TieredBillingSnapshot: &billingexpr.BillingSnapshot{
 			BillingMode:               "tiered_expr",
@@ -1188,7 +1059,6 @@ func TestComposeTieredTextQuotaErrorFallbackUsesPreConsumedQuota(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	w := httptest.NewRecorder()
 	ctx, _ := gin.CreateTestContext(w)
-	ctx.Set("claude_web_search_requests", 2)
 
 	relayInfo := &relaycommon.RelayInfo{
 		OriginModelName: "claude-3-7-sonnet",
@@ -1196,6 +1066,11 @@ func TestComposeTieredTextQuotaErrorFallbackUsesPreConsumedQuota(t *testing.T) {
 			ModelRatio:      1,
 			CompletionRatio: 1,
 			GroupRatioInfo:  hosttypes.GroupRatioInfo{GroupRatio: 1.25},
+		},
+		ResponsesUsageInfo: &relaycommon.ResponsesUsageInfo{
+			BuiltInTools: map[string]*relaycommon.BuildInToolInfo{
+				dto.BuildInToolWebSearch: {ToolName: dto.BuildInToolWebSearch, CallCount: 2},
+			},
 		},
 		TieredBillingSnapshot: &billingexpr.BillingSnapshot{
 			BillingMode:               "tiered_expr",
@@ -1390,29 +1265,30 @@ func TestCalculateTextToolCallSurchargeDoesNotInferSearchForResponses(t *testing
 	assert.Empty(t, summary.ToolSurchargeItems)
 }
 
-func TestCalculateTextToolCallSurchargeMergesSameNameAndPrice(t *testing.T) {
+// Every BuiltInTools count is bounded by MaxBillableToolCallCount at
+// settlement, whatever recorded it (upstream-reported counts and per-item
+// counts alike).
+func TestCalculateTextToolCallSurchargeClampsCallCount(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	ctx, _ := gin.CreateTestContext(httptest.NewRecorder())
-	ctx.Set("claude_web_search_requests", 3)
 
-	relayInfo := &relaycommon.RelayInfo{
-		OriginModelName: "claude-3-7-sonnet",
-		ResponsesUsageInfo: &relaycommon.ResponsesUsageInfo{
-			BuiltInTools: map[string]*relaycommon.BuildInToolInfo{
-				dto.BuildInToolWebSearch: {CallCount: 2},
+	for recorded, billed := range map[int]int{5: 5, 10_000: 10_000, 10_005: 10_000} {
+		relayInfo := &relaycommon.RelayInfo{
+			OriginModelName: "claude-3-7-sonnet",
+			ResponsesUsageInfo: &relaycommon.ResponsesUsageInfo{
+				BuiltInTools: map[string]*relaycommon.BuildInToolInfo{
+					dto.BuildInToolWebSearch: {CallCount: recorded},
+				},
 			},
-		},
+		}
+		summary := &textQuotaSummary{ModelName: relayInfo.OriginModelName, GroupRatio: 1}
+
+		surcharge := calculateTextToolCallSurcharge(ctx, relayInfo, summary)
+
+		assert.Equal(t, []ToolSurchargeItem{{Name: dto.BuildInToolWebSearch, Count: billed, Price: 10}}, summary.ToolSurchargeItems, recorded)
+		expected := decimal.NewFromFloat(10.0 * float64(billed) / 1000).Mul(decimal.NewFromFloat(common.QuotaPerUnit))
+		assert.True(t, expected.Equal(surcharge), "recorded %d: got %s want %s", recorded, surcharge, expected)
 	}
-	summary := &textQuotaSummary{ModelName: relayInfo.OriginModelName, GroupRatio: 1}
-
-	surcharge := calculateTextToolCallSurcharge(ctx, relayInfo, summary)
-
-	require.Len(t, summary.ToolSurchargeItems, 1)
-	assert.Equal(t, dto.BuildInToolWebSearch, summary.ToolSurchargeItems[0].Name)
-	assert.Equal(t, 5, summary.ToolSurchargeItems[0].Count)
-	assert.Equal(t, 10.0, summary.ToolSurchargeItems[0].Price)
-	expected := decimal.NewFromFloat(10.0 * 5 / 1000).Mul(decimal.NewFromFloat(common.QuotaPerUnit))
-	assert.True(t, expected.Equal(surcharge), "got %s want %s", surcharge, expected)
 }
 
 func TestMergeToolSurchargeItemsSaturatesCountOverflow(t *testing.T) {
@@ -1483,10 +1359,16 @@ func TestCalculateTextQuotaSummaryDoesNotApplyRequestMultipliersToToolSurcharge(
 func TestCalculateTextToolCallSurchargeGeminiGoogleSearch(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	ctx, _ := gin.CreateTestContext(httptest.NewRecorder())
-	ctx.Set("gemini_google_search_call", true)
 
-	relayInfo := &relaycommon.RelayInfo{OriginModelName: "gemini-2.5-flash"}
-	summary := &textQuotaSummary{ModelName: "gemini-2.5-flash", GroupRatio: 1}
+	relayInfo := &relaycommon.RelayInfo{
+		OriginModelName: "gemini-3.7-flash",
+		ResponsesUsageInfo: &relaycommon.ResponsesUsageInfo{
+			BuiltInTools: map[string]*relaycommon.BuildInToolInfo{
+				dto.BuildInToolGoogleSearch: {ToolName: dto.BuildInToolGoogleSearch, CallCount: 1},
+			},
+		},
+	}
+	summary := &textQuotaSummary{ModelName: "gemini-3.7-flash", GroupRatio: 1}
 
 	surcharge := calculateTextToolCallSurcharge(ctx, relayInfo, summary)
 	expected := decimal.NewFromFloat(14.0 / 1000).Mul(decimal.NewFromFloat(common.QuotaPerUnit))
@@ -1634,250 +1516,70 @@ func TestAppendToolSurchargeLogInfoWritesOnlyStructuredFields(t *testing.T) {
 	assert.NotContains(t, fields, "image_generation_call_price")
 }
 
-// TestCalculateTextQuotaSummaryCapturesChuangMengRealKeys 用用户从创梦平台抓到的
-// 真实 usage JSON 实证：创梦代理 Claude 时使用的键名是
-//
-//	prompt_tokens_details.cached_tokens            (读取)
-//	prompt_tokens_details.cached_creation_tokens   (写入)
-//	usage.claude_cache_creation_5_m_tokens         (写入, 顶层 5m 断点)
-//
-// 而非 Anthropic 原生的 cache_read/cache_creation_input_tokens。这些键在
-// dto.Usage (d38ba7d) 已有 tag，因此读取与写入两维度都能被捕获——只是「创建缓存」
-// 回合只有写入、「命中缓存」回合只有读取（单次请求只会出现一个非零值，这是正确的
-// 缓存语义，不是 uter 丢字段）。跨两次请求，统计聚合 SUM 两列即可同时得到读取与写入。
-func TestCalculateTextQuotaSummaryCapturesChuangMengRealKeys(t *testing.T) {
+// A request whose upstream returns no usage is logged without a charge. The
+// reason is stored as content_parts, which the web console renders in the
+// viewer's language; content keeps the English text.
+func TestPostTextConsumeQuotaLogsMissingUsageAsStructuredContent(t *testing.T) {
+	truncate(t)
+	const userID, channelID = 62, 62
+	seedUser(t, userID, 10_000)
+	seedChannel(t, channelID)
 	gin.SetMode(gin.TestMode)
-	w := httptest.NewRecorder()
-	ctx, _ := gin.CreateTestContext(w)
-
-	relayInfo := &relaycommon.RelayInfo{
-		RelayFormat:     types.RelayFormatOpenAI,
-		OriginModelName: "claude-fable-5",
-		PriceData: hosttypes.PriceData{
-			ModelRatio:           1,
-			CompletionRatio:      5,
-			CacheRatio:           0.1,
-			CacheCreationRatio:   1.25,
-			CacheCreation5mRatio: 1.25,
-			CacheCreation1hRatio: 1.25,
-			GroupRatioInfo:       hosttypes.GroupRatioInfo{GroupRatio: 1},
-		},
-		StartTime: time.Now(),
+	ctx, _ := gin.CreateTestContext(httptest.NewRecorder())
+	ctx.Request = httptest.NewRequest("POST", "/v1/chat/completions", nil)
+	info := &relaycommon.RelayInfo{
+		UserId:          userID,
+		OriginModelName: "missing-usage-model",
+		UsingGroup:      "default",
+		StartTime:       time.Now(),
+		ChannelMeta:     &relaycommon.ChannelMeta{ChannelId: channelID},
+		PriceData:       hosttypes.PriceData{ModelRatio: 1, CompletionRatio: 1, GroupRatioInfo: hosttypes.GroupRatioInfo{GroupRatio: 1}},
 	}
 
-	t.Run("creation round: only write is non-zero", func(t *testing.T) {
-		// 用户真实抓取：msg_011CftVaV7vXQdi63pBmhPSD，缓存创建回合
-		raw := `{
-			"prompt_tokens": 32194,
-			"completion_tokens": 268,
-			"total_tokens": 32462,
-			"usage_semantic": "openai",
-			"usage_source": "anthropic",
-			"prompt_tokens_details": {
-				"cached_tokens": 0,
-				"cached_creation_tokens": 32192,
-				"text_tokens": 0,
-				"audio_tokens": 0,
-				"image_tokens": 0
-			},
-			"completion_tokens_details": {
-				"text_tokens": 0,
-				"audio_tokens": 0,
-				"image_tokens": 0,
-				"reasoning_tokens": 0
-			},
-			"input_tokens": 32194,
-			"output_tokens": 0,
-			"input_tokens_details": null,
-			"output_tokens_details": null,
-			"claude_cache_creation_5_m_tokens": 32192,
-			"claude_cache_creation_1_h_tokens": 0
-		}`
-		var usage dto.Usage
-		if err := json.Unmarshal([]byte(raw), &usage); err != nil {
-			t.Fatal(err)
-		}
-		usage.NormalizeCacheTokens()
+	PostTextConsumeQuota(ctx, info, &dto.Usage{}, nil)
 
-		summary := calculateTextQuotaSummary(ctx, relayInfo, &usage)
-
-		// 读取：cached_tokens=0（本次是创建回合，没有命中已有缓存）
-		require.Equal(t, 0, summary.CacheTokens)
-		// 写入：cached_creation_tokens=32192（被创建进缓存）
-		require.Equal(t, 32192, summary.CacheCreationTokens)
-		// 顶层 5m 断点也被捕获，且 cacheWriteTokensTotal 走 split 分支不重复计
-		require.Equal(t, 32192, summary.CacheCreationTokens5m)
-		require.Equal(t, 0, summary.CacheCreationTokens1h)
-		require.Equal(t, 32192, cacheWriteTokensTotal(summary))
-	})
-
-	t.Run("hit round: only read is non-zero", func(t *testing.T) {
-		// 推断的命中回合形态：cached_tokens 非零、cached_creation_tokens 归零
-		raw := `{
-			"prompt_tokens": 32462,
-			"completion_tokens": 268,
-			"total_tokens": 32730,
-			"usage_semantic": "openai",
-			"usage_source": "anthropic",
-			"prompt_tokens_details": {
-				"cached_tokens": 32192,
-				"cached_creation_tokens": 0,
-				"text_tokens": 0,
-				"audio_tokens": 0,
-				"image_tokens": 0
-			},
-			"claude_cache_creation_5_m_tokens": 0,
-			"claude_cache_creation_1_h_tokens": 0
-		}`
-		var usage dto.Usage
-		if err := json.Unmarshal([]byte(raw), &usage); err != nil {
-			t.Fatal(err)
-		}
-		usage.NormalizeCacheTokens()
-
-		summary := calculateTextQuotaSummary(ctx, relayInfo, &usage)
-
-		// 读取：cached_tokens=32192（命中已有缓存）
-		require.Equal(t, 32192, summary.CacheTokens)
-		// 写入：本次无新创建
-		require.Equal(t, 0, summary.CacheCreationTokens)
-		require.Equal(t, 0, cacheWriteTokensTotal(summary))
-	})
+	log := getLastLog(t)
+	require.NotNil(t, log)
+	assert.Zero(t, log.Quota)
+	assert.Equal(t, "Upstream returned no usage, so nothing was charged (possibly an upstream timeout)", log.Content)
+	var other map[string]any
+	require.NoError(t, common.UnmarshalJsonStr(log.Other, &other))
+	assert.Equal(t, []any{
+		map[string]any{"key": "Upstream returned no usage, so nothing was charged (possibly an upstream timeout)"},
+	}, other["content_parts"])
 }
 
-// TestChuangMengUsageIsRecordedWithoutDrift 用创梦（Dream Router）渠道实测抓到的
-// 真实 usage 载荷，锁死「上游报什么、就记什么」这条链路上的四个维度：
-//
-//	输入   prompt_tokens                -> logs.prompt_tokens
-//	输出   completion_tokens            -> logs.completion_tokens
-//	缓存读 prompt_tokens_details.cached_tokens        -> logs.cache_read_tokens
-//	缓存写 prompt_tokens_details.cached_creation_tokens -> logs.cache_write_tokens
-//
-// 背景（2026-10-13 实测）：对渠道 20「创梦渠道Dream Router」做端到端 A/B ——
-// 用同一份请求体分别经 uter 与直连上游发起，交错采样结果四维度逐项相等；同时
-// 抓取 uter 实际外发的请求字节，与客户端原始请求语义完全相同（仅 JSON 空白差异）。
-// 因此不存在「uter 改写/吞掉缓存字段」的缺陷，此测试把该结论固化为守卫：
-// 任何后续改动一旦让某个维度偏移 1 个 token 或整体丢失，本测试立刻红。
-func TestChuangMengUsageIsRecordedWithoutDrift(t *testing.T) {
+
+func TestClaudeCacheOnlyUsageRemainsBillable(t *testing.T) {
 	gin.SetMode(gin.TestMode)
-
-	cases := []struct {
-		name              string
-		usageJSON         string
-		wantPrompt        int
-		wantCompletion    int
-		wantCacheRead     int
-		wantCacheWrite    int
-		wantCreationSplit int
+	for _, tc := range []struct {
+		name      string
+		usage     dto.ClaudeUsage
+		wantQuota int
 	}{
-		{
-			// 创梦代理 Claude 的「缓存创建」回合：只有写入。
-			name: "creation round",
-			usageJSON: `{
-				"prompt_tokens": 32194,
-				"completion_tokens": 268,
-				"total_tokens": 32462,
-				"usage_semantic": "openai",
-				"usage_source": "anthropic",
-				"prompt_tokens_details": {
-					"cached_tokens": 0,
-					"cached_creation_tokens": 32192
-				},
-				"claude_cache_creation_5_m_tokens": 32192,
-				"claude_cache_creation_1_h_tokens": 0
-			}`,
-			wantPrompt:        32194,
-			wantCompletion:    268,
-			wantCacheRead:     0,
-			wantCacheWrite:    32192,
-			wantCreationSplit: 32192,
-		},
-		{
-			// 「缓存命中」回合：只有读取。
-			name: "hit round",
-			usageJSON: `{
-				"prompt_tokens": 32462,
-				"completion_tokens": 268,
-				"total_tokens": 32730,
-				"usage_semantic": "openai",
-				"usage_source": "anthropic",
-				"prompt_tokens_details": {
-					"cached_tokens": 32192,
-					"cached_creation_tokens": 0
-				},
-				"claude_cache_creation_5_m_tokens": 0,
-				"claude_cache_creation_1_h_tokens": 0
-			}`,
-			wantPrompt:        32462,
-			wantCompletion:    268,
-			wantCacheRead:     32192,
-			wantCacheWrite:    0,
-			wantCreationSplit: 0,
-		},
-		{
-			// 同时读写（部分命中 + 部分新建），用于盯住两个维度互不串扰。
-			name: "mixed round",
-			usageJSON: `{
-				"prompt_tokens": 40000,
-				"completion_tokens": 100,
-				"total_tokens": 40100,
-				"usage_semantic": "openai",
-				"usage_source": "anthropic",
-				"prompt_tokens_details": {
-					"cached_tokens": 30000,
-					"cached_creation_tokens": 5000
-				},
-				"claude_cache_creation_5_m_tokens": 5000,
-				"claude_cache_creation_1_h_tokens": 0
-			}`,
-			wantPrompt:        40000,
-			wantCompletion:    100,
-			wantCacheRead:     30000,
-			wantCacheWrite:    5000,
-			wantCreationSplit: 5000,
-		},
-	}
-
-	for _, tc := range cases {
+		{name: "one-hour cache write", usage: dto.ClaudeUsage{CacheCreationInputTokens: 20000, CacheCreation: &dto.ClaudeCacheCreationUsage{Ephemeral1hInputTokens: 20000}}, wantQuota: 100000},
+		{name: "five-minute cache write", usage: dto.ClaudeUsage{CacheCreationInputTokens: 100, CacheCreation: &dto.ClaudeCacheCreationUsage{Ephemeral5mInputTokens: 100}}, wantQuota: 313},
+		{name: "cache read", usage: dto.ClaudeUsage{CacheReadInputTokens: 100}, wantQuota: 25},
+		{name: "no usage", usage: dto.ClaudeUsage{}, wantQuota: 0},
+	} {
 		t.Run(tc.name, func(t *testing.T) {
-			var usage dto.Usage
-			require.NoError(t, json.Unmarshal([]byte(tc.usageJSON), &usage))
-			// 归一化只应搬运、不得凭空造值：读取维度来自 cached_tokens。
-			usage.NormalizeCacheTokens()
-
-			require.Equal(t, tc.wantCacheRead, usage.PromptTokensDetails.CachedTokens,
-				"缓存读必须等于上游 cached_tokens")
-			require.Equal(t, tc.wantCacheWrite,
-				usage.PromptTokensDetails.CacheCreationTokensTotal(),
-				"缓存写必须等于上游 cached_creation_tokens")
-
-			relayInfo := &relaycommon.RelayInfo{
-				RelayFormat:     types.RelayFormatOpenAI,
-				OriginModelName: "claude-fable-5",
-				PriceData: hosttypes.PriceData{
-					ModelRatio:           1,
-					CompletionRatio:      5,
-					CacheRatio:           0.1,
-					CacheCreationRatio:   1.25,
-					CacheCreation5mRatio: 1.25,
-					CacheCreation1hRatio: 1.25,
-					GroupRatioInfo:       hosttypes.GroupRatioInfo{GroupRatio: 1},
-				},
-				StartTime: time.Now(),
-			}
 			ctx, _ := gin.CreateTestContext(httptest.NewRecorder())
-			summary := calculateTextQuotaSummary(ctx, relayInfo, &usage)
-
-			require.Equal(t, tc.wantPrompt, summary.PromptTokens, "输入 token 必须原样透传")
-			require.Equal(t, tc.wantCompletion, summary.CompletionTokens, "输出 token 必须原样透传")
-			require.Equal(t, tc.wantCacheRead, summary.CacheTokens, "缓存读维度不得漂移")
-			require.Equal(t, tc.wantCacheWrite, cacheWriteTokensTotal(summary), "缓存写维度不得漂移")
-			require.Equal(t, tc.wantCreationSplit, summary.CacheCreationTokens5m, "5m 写入断点必须被捕获")
-
-			// 不变量：非OpenRouter 渠道不得像 OpenRouter 那样把缓存维度从输入里再减一遍
-			// （那样会重复计账并让 prompt_tokens 少于上游真实值）。
-			require.Equal(t, tc.wantPrompt, summary.PromptTokens,
-				"输入 token 不得被缓存维度二次扣减")
+			info := &relaycommon.RelayInfo{
+				RelayFormat:     types.RelayFormatClaude,
+				OriginModelName: "claude-opus-4-8",
+				PriceData: hosttypes.PriceData{
+					ModelRatio: 2.5, CompletionRatio: 5, CacheRatio: 0.1,
+					CacheCreationRatio: 1.25, CacheCreation5mRatio: 1.25, CacheCreation1hRatio: 2,
+					GroupRatioInfo: hosttypes.GroupRatioInfo{GroupRatio: 1},
+				},
+			}
+			usage := &dto.Usage{UsageSemantic: dto.BillingUsageSemanticAnthropic, BillingUsage: dto.NewClaudeMessagesBillingUsage(&tc.usage)}
+			summary := calculateTextQuotaSummary(ctx, info, effectiveBillingUsage(usage))
+			assert.Zero(t, summary.PromptTokens)
+			assert.Zero(t, summary.CompletionTokens)
+			assert.Equal(t, tc.wantQuota, summary.Quota)
+			assert.Equal(t, tc.wantQuota > 0, summary.hasBillableUsage())
+			t.Logf("input=%d output=%d quota=%d", summary.PromptTokens, summary.CompletionTokens, summary.Quota)
 		})
 	}
 }

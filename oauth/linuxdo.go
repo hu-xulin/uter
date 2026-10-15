@@ -12,12 +12,9 @@ import (
 	"time"
 
 	"github.com/uter-ai/uter/common"
-
-	"github.com/gin-gonic/gin"
-	"github.com/uter-ai/uter/i18n"
 	"github.com/uter-ai/uter/logger"
 	"github.com/uter-ai/uter/model"
-	"github.com/uter-ai/uter/setting/system_setting"
+	"github.com/gin-gonic/gin"
 )
 
 func init() {
@@ -46,7 +43,7 @@ func (p *LinuxDOProvider) IsEnabled() bool {
 
 func (p *LinuxDOProvider) ExchangeToken(ctx context.Context, code string, c *gin.Context) (*OAuthToken, error) {
 	if code == "" {
-		return nil, NewOAuthError(i18n.MsgOAuthInvalidCode, nil)
+		return nil, NewOAuthError(common.NewMessage(msgInvalidCode))
 	}
 
 	// Get access token using Basic auth
@@ -54,20 +51,12 @@ func (p *LinuxDOProvider) ExchangeToken(ctx context.Context, code string, c *gin
 	credentials := common.LinuxDOClientId + ":" + common.LinuxDOClientSecret
 	basicAuth := "Basic " + base64.StdEncoding.EncodeToString([]byte(credentials))
 
-	// Build the callback from the configured server address rather than the Host
-	// header: Host is attacker-controlled, and an authorization code sent to a
-	// spoofed domain leaks with it. Every other provider derives its callback
-	// from ServerAddress; only fall back to the request host when the address
-	// is unset (bare local deploy), where it is the only address we have.
-	base := strings.TrimRight(system_setting.ServerAddress, "/")
-	if base == "" {
-		scheme := "http"
-		if c.Request.TLS != nil {
-			scheme = "https"
-		}
-		base = scheme + "://" + c.Request.Host
+	// Get redirect URI from request
+	scheme := "http"
+	if c.Request.TLS != nil {
+		scheme = "https"
 	}
-	redirectURI := base + "/api/oauth/linuxdo"
+	redirectURI := fmt.Sprintf("%s://%s/api/oauth/linuxdo", scheme, c.Request.Host)
 
 	logger.LogDebug(ctx, "[OAuth-LinuxDO] ExchangeToken: token_endpoint=%s, redirect_uri=%s", tokenEndpoint, redirectURI)
 
@@ -84,11 +73,11 @@ func (p *LinuxDOProvider) ExchangeToken(ctx context.Context, code string, c *gin
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	req.Header.Set("Accept", "application/json")
 
-	client := newOAuthHTTPClient(5 * time.Second)
+	client := http.Client{Timeout: 5 * time.Second}
 	res, err := client.Do(req)
 	if err != nil {
-		logger.LogError(ctx, fmt.Sprintf("[OAuth-LinuxDO] ExchangeToken error: %s", err.Error()))
-		return nil, NewOAuthErrorWithRaw(i18n.MsgOAuthConnectFailed, map[string]any{"Provider": "Linux DO"}, err.Error())
+		logger.LogError(ctx, common.LogText("[OAuth-LinuxDO] ExchangeToken error: %s", err.Error()))
+		return nil, NewOAuthErrorWithRaw(common.NewMessage(msgConnectFailed, map[string]any{"provider": "Linux DO"}), err.Error())
 	}
 	defer res.Body.Close()
 
@@ -99,13 +88,13 @@ func (p *LinuxDOProvider) ExchangeToken(ctx context.Context, code string, c *gin
 		Message     string `json:"message"`
 	}
 	if err := json.NewDecoder(res.Body).Decode(&tokenRes); err != nil {
-		logger.LogError(ctx, fmt.Sprintf("[OAuth-LinuxDO] ExchangeToken decode error: %s", err.Error()))
+		logger.LogError(ctx, common.LogText("[OAuth-LinuxDO] ExchangeToken decode error: %s", err.Error()))
 		return nil, err
 	}
 
 	if tokenRes.AccessToken == "" {
-		logger.LogError(ctx, fmt.Sprintf("[OAuth-LinuxDO] ExchangeToken failed: %s", tokenRes.Message))
-		return nil, NewOAuthErrorWithRaw(i18n.MsgOAuthTokenFailed, map[string]any{"Provider": "Linux DO"}, tokenRes.Message)
+		logger.LogError(ctx, common.LogText("[OAuth-LinuxDO] ExchangeToken failed: %s", tokenRes.Message))
+		return nil, NewOAuthErrorWithRaw(common.NewMessage(msgTokenFailed, map[string]any{"provider": "Linux DO"}), tokenRes.Message)
 	}
 
 	logger.LogDebug(ctx, "[OAuth-LinuxDO] ExchangeToken success")
@@ -127,11 +116,11 @@ func (p *LinuxDOProvider) GetUserInfo(ctx context.Context, token *OAuthToken) (*
 	req.Header.Set("Authorization", "Bearer "+token.AccessToken)
 	req.Header.Set("Accept", "application/json")
 
-	client := newOAuthHTTPClient(5 * time.Second)
+	client := http.Client{Timeout: 5 * time.Second}
 	res, err := client.Do(req)
 	if err != nil {
-		logger.LogError(ctx, fmt.Sprintf("[OAuth-LinuxDO] GetUserInfo error: %s", err.Error()))
-		return nil, NewOAuthErrorWithRaw(i18n.MsgOAuthConnectFailed, map[string]any{"Provider": "Linux DO"}, err.Error())
+		logger.LogError(ctx, common.LogText("[OAuth-LinuxDO] GetUserInfo error: %s", err.Error()))
+		return nil, NewOAuthErrorWithRaw(common.NewMessage(msgConnectFailed, map[string]any{"provider": "Linux DO"}), err.Error())
 	}
 	defer res.Body.Close()
 
@@ -139,13 +128,13 @@ func (p *LinuxDOProvider) GetUserInfo(ctx context.Context, token *OAuthToken) (*
 
 	var linuxdoUser linuxdoUser
 	if err := json.NewDecoder(res.Body).Decode(&linuxdoUser); err != nil {
-		logger.LogError(ctx, fmt.Sprintf("[OAuth-LinuxDO] GetUserInfo decode error: %s", err.Error()))
+		logger.LogError(ctx, common.LogText("[OAuth-LinuxDO] GetUserInfo decode error: %s", err.Error()))
 		return nil, err
 	}
 
 	if linuxdoUser.Id == 0 {
-		logger.LogError(ctx, "[OAuth-LinuxDO] GetUserInfo failed: invalid user id")
-		return nil, NewOAuthError(i18n.MsgOAuthUserInfoEmpty, map[string]any{"Provider": "Linux DO"})
+		logger.LogError(ctx, common.LogText("[OAuth-LinuxDO] GetUserInfo failed: invalid user id"))
+		return nil, NewOAuthError(common.NewMessage(msgUserInfoEmpty, map[string]any{"provider": "Linux DO"}))
 	}
 
 	logger.LogDebug(ctx, "[OAuth-LinuxDO] GetUserInfo: id=%d, username=%s, name=%s, trust_level=%d, active=%v, silenced=%v",
@@ -153,7 +142,7 @@ func (p *LinuxDOProvider) GetUserInfo(ctx context.Context, token *OAuthToken) (*
 
 	// Check trust level
 	if linuxdoUser.TrustLevel < common.LinuxDOMinimumTrustLevel {
-		logger.LogWarn(ctx, fmt.Sprintf("[OAuth-LinuxDO] GetUserInfo: trust level too low (required=%d, current=%d)",
+		logger.LogWarn(ctx, common.LogText("[OAuth-LinuxDO] GetUserInfo: trust level too low (required=%d, current=%d)",
 			common.LinuxDOMinimumTrustLevel, linuxdoUser.TrustLevel))
 		return nil, &TrustLevelError{
 			Required: common.LinuxDOMinimumTrustLevel,

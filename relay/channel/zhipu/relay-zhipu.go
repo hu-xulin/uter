@@ -10,14 +10,13 @@ import (
 	"time"
 
 	"github.com/uter-ai/uter/common"
-
-	"github.com/samber/lo"
 	"github.com/uter-ai/uter/constant"
 	relaycommon "github.com/uter-ai/uter/relay/common"
 	"github.com/uter-ai/uter/relay/helper"
 	"github.com/uter-ai/uter/relaykit/dto"
 	"github.com/uter-ai/uter/relaykit/types"
 	"github.com/uter-ai/uter/service"
+	"github.com/samber/lo"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
@@ -42,8 +41,7 @@ func getZhipuToken(apikey string) string {
 
 	split := strings.Split(apikey, ".")
 	if len(split) != 2 {
-		// 绝不打印完整上游 key：渠道凭证以明文落到系统日志即可被日志采集链路直接盗用。
-		common.SysLog("invalid zhipu key format: " + common.MaskSensitiveInfo(apikey))
+		common.SysLog(common.LogText("invalid zhipu key: %s", apikey))
 		return ""
 	}
 
@@ -157,33 +155,14 @@ func streamMetaResponseZhipu2OpenAI(zhipuResponse *ZhipuStreamMetaResponse) (*dt
 	return &response, &zhipuResponse.Usage
 }
 
-func zhipuStreamHandler(c *gin.Context, info *relaycommon.RelayInfo, resp *http.Response) (*dto.Usage, *types.UterError) {
+func zhipuStreamHandler(c *gin.Context, info *relaycommon.RelayInfo, resp *http.Response) (*dto.Usage, *types.NewAPIError) {
 	var usage *dto.Usage
 	scanner := helper.NewStreamScanner(resp.Body)
 	scanner.Split(bufio.ScanLines)
-	// 有缓冲 + select 保护：客户端断开时 gin 的 c.Stream 直接 return，
-	// 不再消费 dataChan/metaChan。裸 `ch <- v` 会让生产者永久阻塞在发送上，
-	// 泄漏 goroutine 并持有 resp.Body 使上游连接无法归还。此处三个发送点
-	// 都必须走 select，且 stopChan 改用 close 而非发送。
-	dataChan := make(chan string, 10)
-	metaChan := make(chan string, 3)
-	stopChan := make(chan struct{})
-	var stopOnce sync.Once
-	stop := func() {
-		stopOnce.Do(func() { close(stopChan) })
-	}
-	sendOrStop := func(ch chan string, data string) bool {
-		select {
-		case ch <- data:
-			return true
-		case <-stopChan:
-			return false
-		case <-c.Request.Context().Done():
-			return false
-		}
-	}
+	dataChan := make(chan string)
+	metaChan := make(chan string)
+	stopChan := make(chan bool)
 	go func() {
-		defer stop()
 		for scanner.Scan() {
 			data := scanner.Text()
 			lines := strings.Split(data, "\n")
@@ -192,22 +171,19 @@ func zhipuStreamHandler(c *gin.Context, info *relaycommon.RelayInfo, resp *http.
 					continue
 				}
 				if line[:5] == "data:" {
-					if !sendOrStop(dataChan, line[5:]) {
-						return
-					}
-					if i != len(lines)-1 && !sendOrStop(dataChan, "\n") {
-						return
+					dataChan <- line[5:]
+					if i != len(lines)-1 {
+						dataChan <- "\n"
 					}
 				} else if line[:5] == "meta:" {
-					if !sendOrStop(metaChan, line[5:]) {
-						return
-					}
+					metaChan <- line[5:]
 				}
 			}
 		}
 		if err := scanner.Err(); err != nil {
-			common.SysLog("error reading stream: " + err.Error())
+			common.SysLog(common.LogText("error reading stream: %s", err.Error()))
 		}
+		stopChan <- true
 	}()
 	helper.SetEventStreamHeaders(c)
 	c.Stream(func(w io.Writer) bool {
@@ -216,7 +192,7 @@ func zhipuStreamHandler(c *gin.Context, info *relaycommon.RelayInfo, resp *http.
 			response := streamResponseZhipu2OpenAI(data)
 			jsonResponse, err := json.Marshal(response)
 			if err != nil {
-				common.SysLog("error marshalling stream response: " + err.Error())
+				common.SysLog(common.LogText("error marshalling stream response: %s", err.Error()))
 				return true
 			}
 			c.Render(-1, common.CustomEvent{Data: "data: " + string(jsonResponse)})
@@ -225,13 +201,13 @@ func zhipuStreamHandler(c *gin.Context, info *relaycommon.RelayInfo, resp *http.
 			var zhipuResponse ZhipuStreamMetaResponse
 			err := json.Unmarshal([]byte(data), &zhipuResponse)
 			if err != nil {
-				common.SysLog("error unmarshalling stream response: " + err.Error())
+				common.SysLog(common.LogText("error unmarshalling stream response: %s", err.Error()))
 				return true
 			}
 			response, zhipuUsage := streamMetaResponseZhipu2OpenAI(&zhipuResponse)
 			jsonResponse, err := json.Marshal(response)
 			if err != nil {
-				common.SysLog("error marshalling stream response: " + err.Error())
+				common.SysLog(common.LogText("error marshalling stream response: %s", err.Error()))
 				return true
 			}
 			usage = zhipuUsage
@@ -242,15 +218,11 @@ func zhipuStreamHandler(c *gin.Context, info *relaycommon.RelayInfo, resp *http.
 			return false
 		}
 	})
-	// 客户端断开时 c.Stream 会提前 return，这里统一关闭 body 并唤醒生产者。
-	defer func() {
-		stop()
-		service.CloseResponseBodyGracefully(resp)
-	}()
+	service.CloseResponseBodyGracefully(resp)
 	return usage, nil
 }
 
-func zhipuHandler(c *gin.Context, info *relaycommon.RelayInfo, resp *http.Response) (*dto.Usage, *types.UterError) {
+func zhipuHandler(c *gin.Context, info *relaycommon.RelayInfo, resp *http.Response) (*dto.Usage, *types.NewAPIError) {
 	var zhipuResponse ZhipuResponse
 	responseBody, err := io.ReadAll(resp.Body)
 	if err != nil {

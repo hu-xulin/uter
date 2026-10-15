@@ -8,9 +8,8 @@ import (
 	"strings"
 
 	"github.com/uter-ai/uter/common"
-	"github.com/uter-ai/uter/i18n"
-
 	"github.com/uter-ai/uter/constant"
+	"github.com/uter-ai/uter/i18n"
 	"github.com/uter-ai/uter/model"
 
 	"github.com/gin-gonic/gin"
@@ -32,8 +31,10 @@ var auditContentTemplates = map[string]string{
 	"user.binding_clear":        "Cleared ${bindingType} binding for user ${username}",
 	"user.2fa_disable":          "Force-disabled two-factor authentication for the user",
 	"user.passkey_register":     "Registered a passkey",
-	"access_token.generate":     "Generated a system access token",
-	"access_token.revoke":       "Revoked the system access token",
+	"access_token.generate":     "Generated an access token",
+	"access_token.revoke":       "Revoked an access token",
+	"access_token.rename":       "Renamed an access token",
+	"access_token.update":       "Changed access token permissions",
 	"user.2fa_setup":            "Started two-factor authentication setup",
 	"user.2fa_enable":           "Enabled two-factor authentication",
 	"user.2fa_disable_self":     "Disabled two-factor authentication",
@@ -71,8 +72,9 @@ var auditContentTemplates = map[string]string{
 	"redemption.create":       "Created ${count} redemption codes named ${name} (${quota} each)",
 	"redemption.delete_batch": "Batch deleted ${count} redemption codes",
 
-	"subscription.plan_reset":      "Reset active subscriptions for plan ${plan_id}",
-	"subscription.user_plan_reset": "Reset active plan ${plan_id} subscriptions for user ${target_user_id}",
+	"subscription.plan_reset":       "Reset active subscriptions for plan ${plan_id}",
+	"subscription.user_plan_reset":  "Reset active plan ${plan_id} subscriptions for user ${target_user_id}",
+	"subscription.user_quota_reset": "Administrator reset the quota of subscription plan ${plan_title} (ID: ${plan_id})",
 }
 
 func recordPasskeyDomainAudit(c *gin.Context, change *model.PasskeyDomainChange, confirmed bool, err error) {
@@ -211,6 +213,12 @@ func recordUserSecurityAudit(c *gin.Context, userId int, action string, params m
 		}
 		params["code"] = code
 	}
+	if c.GetBool("use_access_token") {
+		if params == nil {
+			params = map[string]any{}
+		}
+		params["token_ref"] = c.GetString("access_token_ref")
+	}
 	var auditInfo *model.AuditRequestInfo
 	if success, ok := params["success"].(bool); ok {
 		auditInfo = &model.AuditRequestInfo{
@@ -241,13 +249,6 @@ func tokenBatchAuditParams(c *gin.Context, ids []int) model.AuditFields {
 	return params
 }
 
-// GetOrganizationAuditLogs 返回组织内成员的审计日志（组织所有者 / 组织管理员 / 部门管理员）。
-//
-// 与 /api/audit（平台视角）不同：
-//   - 调用者必须属于目标组织（loadOrgForAuthority 校验）；
-//   - 范围被收窄到该组织（或在部门管理员视角下：本部门）—— 这是硬约束，
-//     通过 AuditLogFilter.Usernames 下推到 SQL，而不是事后过滤；
-//   - 仅 RoleCommonUser / RoleAdminUser 角色的记录可被看到，避免泄漏超管的内部操作；
 //   - user_id 过滤与范围取交集：越权的用户 id 只会得到空集。
 func GetOrganizationAuditLogs(c *gin.Context) {
 	orgId, err := strconv.Atoi(c.Param("id"))
