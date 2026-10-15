@@ -20,8 +20,6 @@ import { Eye, EyeOff } from 'lucide-react'
 import * as React from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { cn } from '@/lib/utils'
-
 import { Button } from './ui/button'
 import { Input } from './ui/input'
 
@@ -42,11 +40,12 @@ export function PasswordInput({
   const [showPassword, setShowPassword] = React.useState(false)
 
   return (
-    <div className={cn('relative rounded-md', className)}>
+    <div className='relative rounded-md'>
       <Input
         type={showPassword ? 'text' : 'password'}
         ref={ref}
         disabled={disabled}
+        className={className}
         {...props}
       />
       <Button
