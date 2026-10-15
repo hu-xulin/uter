@@ -1603,6 +1603,11 @@ func fetchPresetRaw(presetID int) (map[string]any, error) {
 		// The server process may inherit a stale proxy configuration
 		// (proxyconnect refused / handshake timeout). Retry once with a
 		// direct connection — these preset endpoints are public URLs.
+		// 先关闭首次响应（R1：被覆盖丢弃的 resp 必须就地关闭，否则连接泄漏）。
+		// 注意 client.Do 在少数情况下会同时返回非 nil 的 resp 与 err。
+		if resp != nil {
+			resp.Body.Close()
+		}
 		direct := &http.Client{
 			Timeout:   defaultTimeoutSeconds * time.Second,
 			Transport: &http.Transport{Proxy: nil},
