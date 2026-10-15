@@ -363,6 +363,7 @@ export function UserAuthForm({
                   <FormControl>
                     <Input
                       placeholder={t('Enter your username or email')}
+                      className='h-11'
                       {...field}
                     />
                   </FormControl>
@@ -381,6 +382,7 @@ export function UserAuthForm({
                   <FormControl>
                     <PasswordInput
                       placeholder={t('Enter password')}
+                      className='h-11'
                       {...field}
                     />
                   </FormControl>
@@ -398,7 +400,7 @@ export function UserAuthForm({
             {/* Submit Button */}
             <Button
               type='submit'
-              className='mt-2 w-full justify-center gap-2'
+              className='mt-2 w-full justify-center gap-2 h-11'
               disabled={isLoading}
             >
               {isLoading ? <Loader2 className='animate-spin' /> : <LogIn />}
@@ -446,6 +448,7 @@ export function UserAuthForm({
               <Button
                 type='button'
                 variant='outline'
+                className='h-11'
                 onClick={() => handleWeChatDialogChange(false)}
                 disabled={isWeChatSubmitting}
               >
@@ -453,13 +456,13 @@ export function UserAuthForm({
               </Button>
               <Button
                 type='button'
+                className='gap-2 h-11'
                 onClick={handleWeChatLogin}
                 disabled={
                   isWeChatSubmitting ||
                   !wechatCode.trim() ||
                   (requiresLegalConsent && !agreedToLegal)
                 }
-                className='gap-2'
               >
                 {isWeChatSubmitting ? (
                   <Loader2 className='h-4 w-4 animate-spin' />
@@ -487,6 +490,7 @@ export function UserAuthForm({
             <Input
               id='wechat-code'
               placeholder={t('Enter the verification code')}
+              className='h-11'
               value={wechatCode}
               onChange={(event) => setWeChatCode(event.target.value)}
               autoComplete='one-time-code'
