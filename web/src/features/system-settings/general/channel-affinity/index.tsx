@@ -123,37 +123,51 @@ function serializeRules(rules: AffinityRule[]): string {
   return JSON.stringify(rules.map(({ id: _, ...rest }) => rest))
 }
 
+// Fallback snapshot used when the section is rendered before a policy config
+// has loaded (or by a caller that drives the fields externally, e.g. the
+// react-hook-form routing page). Prevents an undefined-access crash; the
+// session-rules editor itself still needs its data source reconciled.
+const EMPTY_CHANNEL_AFFINITY_SETTINGS: ChannelAffinitySettings = {
+  'channel_affinity_setting.enabled': false,
+  'channel_affinity_setting.switch_on_success': false,
+  'channel_affinity_setting.keep_on_channel_disabled': false,
+  'channel_affinity_setting.max_entries': 0,
+  'channel_affinity_setting.default_ttl_seconds': 0,
+  'channel_affinity_setting.rules': '[]',
+}
+
 interface Props {
-  defaultValues: ChannelAffinitySettings
+  defaultValues?: ChannelAffinitySettings
 }
 
 export function ChannelAffinitySection(props: Props) {
   const { t } = useTranslation()
   const updateOption = useUpdateOption()
+  const dv = props.defaultValues ?? EMPTY_CHANNEL_AFFINITY_SETTINGS
 
   const [enabled, setEnabled] = useState(
-    props.defaultValues['channel_affinity_setting.enabled']
+    dv['channel_affinity_setting.enabled']
   )
   const [switchOnSuccess, setSwitchOnSuccess] = useState(
-    props.defaultValues['channel_affinity_setting.switch_on_success']
+    dv['channel_affinity_setting.switch_on_success']
   )
   const [keepOnChannelDisabled, setKeepOnChannelDisabled] = useState(
-    props.defaultValues['channel_affinity_setting.keep_on_channel_disabled']
+    dv['channel_affinity_setting.keep_on_channel_disabled']
   )
   const [maxEntries, setMaxEntries] = useState<NumberInputValue>(
-    props.defaultValues['channel_affinity_setting.max_entries']
+    dv['channel_affinity_setting.max_entries']
   )
   const [defaultTtl, setDefaultTtl] = useState<NumberInputValue>(
-    props.defaultValues['channel_affinity_setting.default_ttl_seconds']
+    dv['channel_affinity_setting.default_ttl_seconds']
   )
   const [rules, setRules] = useState<AffinityRule[]>(() =>
-    parseRules(props.defaultValues['channel_affinity_setting.rules'])
+    parseRules(dv['channel_affinity_setting.rules'])
   )
 
   const [editMode, setEditMode] = useState<'visual' | 'json'>('visual')
   const [jsonText, setJsonText] = useState(() =>
     JSON.stringify(
-      parseRules(props.defaultValues['channel_affinity_setting.rules']).map(
+      parseRules(dv['channel_affinity_setting.rules']).map(
         ({ id: _, ...r }) => r
       ),
       null,
@@ -172,19 +186,19 @@ export function ChannelAffinitySection(props: Props) {
   const [fillTemplateDialogOpen, setFillTemplateDialogOpen] = useState(false)
 
   useEffect(() => {
-    setEnabled(props.defaultValues['channel_affinity_setting.enabled'])
+    setEnabled(dv['channel_affinity_setting.enabled'])
     setSwitchOnSuccess(
-      props.defaultValues['channel_affinity_setting.switch_on_success']
+      dv['channel_affinity_setting.switch_on_success']
     )
     setKeepOnChannelDisabled(
-      props.defaultValues['channel_affinity_setting.keep_on_channel_disabled']
+      dv['channel_affinity_setting.keep_on_channel_disabled']
     )
-    setMaxEntries(props.defaultValues['channel_affinity_setting.max_entries'])
+    setMaxEntries(dv['channel_affinity_setting.max_entries'])
     setDefaultTtl(
-      props.defaultValues['channel_affinity_setting.default_ttl_seconds']
+      dv['channel_affinity_setting.default_ttl_seconds']
     )
     const parsed = parseRules(
-      props.defaultValues['channel_affinity_setting.rules']
+      dv['channel_affinity_setting.rules']
     )
     setRules(parsed)
     setJsonText(
@@ -194,7 +208,7 @@ export function ChannelAffinitySection(props: Props) {
         2
       )
     )
-  }, [props.defaultValues])
+  }, [dv])
 
   const refreshCache = useCallback(async () => {
     setCacheLoading(true)
@@ -265,7 +279,7 @@ export function ChannelAffinitySection(props: Props) {
     try {
       const updates: { key: string; value: string }[] = []
 
-      if (enabled !== props.defaultValues['channel_affinity_setting.enabled']) {
+      if (enabled !== dv['channel_affinity_setting.enabled']) {
         updates.push({
           key: 'channel_affinity_setting.enabled',
           value: String(enabled),
@@ -273,7 +287,7 @@ export function ChannelAffinitySection(props: Props) {
       }
       if (
         switchOnSuccess !==
-        props.defaultValues['channel_affinity_setting.switch_on_success']
+        dv['channel_affinity_setting.switch_on_success']
       ) {
         updates.push({
           key: 'channel_affinity_setting.switch_on_success',
@@ -282,7 +296,7 @@ export function ChannelAffinitySection(props: Props) {
       }
       if (
         keepOnChannelDisabled !==
-        props.defaultValues['channel_affinity_setting.keep_on_channel_disabled']
+        dv['channel_affinity_setting.keep_on_channel_disabled']
       ) {
         updates.push({
           key: 'channel_affinity_setting.keep_on_channel_disabled',
@@ -294,15 +308,15 @@ export function ChannelAffinitySection(props: Props) {
       // value instead of restoring the default.
       const maxEntriesValue =
         maxEntries === ''
-          ? props.defaultValues['channel_affinity_setting.max_entries']
+          ? dv['channel_affinity_setting.max_entries']
           : maxEntries
       const defaultTtlValue =
         defaultTtl === ''
-          ? props.defaultValues['channel_affinity_setting.default_ttl_seconds']
+          ? dv['channel_affinity_setting.default_ttl_seconds']
           : defaultTtl
       if (
         maxEntriesValue !==
-        props.defaultValues['channel_affinity_setting.max_entries']
+        dv['channel_affinity_setting.max_entries']
       ) {
         updates.push({
           key: 'channel_affinity_setting.max_entries',
@@ -311,7 +325,7 @@ export function ChannelAffinitySection(props: Props) {
       }
       if (
         defaultTtlValue !==
-        props.defaultValues['channel_affinity_setting.default_ttl_seconds']
+        dv['channel_affinity_setting.default_ttl_seconds']
       ) {
         updates.push({
           key: 'channel_affinity_setting.default_ttl_seconds',
@@ -319,7 +333,7 @@ export function ChannelAffinitySection(props: Props) {
         })
       }
 
-      const origRules = props.defaultValues['channel_affinity_setting.rules']
+      const origRules = dv['channel_affinity_setting.rules']
       const origSerialized = (() => {
         try {
           return JSON.stringify(JSON.parse(origRules || '[]'))

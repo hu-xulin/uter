@@ -272,6 +272,9 @@ export const channelFormSchema = z
     vertex_key_type: z.enum(['json', 'api_key']).optional(), // Vertex AI specific
     aws_key_type: z.enum(['ak_sk', 'api_key']).optional(), // AWS specific
     azure_responses_version: z.string().optional(), // Azure specific
+    responses_websocket_enabled: z.boolean().optional(), // Responses API over WebSocket
+    ollama_openai_chat: z.boolean().optional(), // Ollama: route through OpenAI-compatible chat
+    tls_insecure_skip_verify: z.boolean().optional(), // Skip upstream TLS verification
     // Field passthrough controls (stored in settings JSON)
     allow_service_tier: z.boolean().optional(), // OpenAI/Anthropic
     disable_store: z.boolean().optional(), // OpenAI only

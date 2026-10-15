@@ -32,13 +32,28 @@ export type SecurityProofScope =
   | '2fa.disable'
   | '2fa.backup_codes.regenerate'
   | 'access_token.generate'
+  | 'access_token.update'
   | 'access_token.revoke'
   | 'account.binding.bind'
   | 'account.binding.unbind'
   | 'account.password.set'
   | 'account.password.change'
   | 'account.delete'
+  | 'admin.user.manage'
+  | 'admin.user.delete'
+  | 'admin.user.2fa.disable'
+  | 'admin.user.passkey.reset'
+  | 'admin.user.binding.clear'
+  | 'admin.user.create'
+  | 'admin.user.update'
   | 'token.key.read'
+
+/** The administrative account actions guarded by the `admin.user.manage` scope. */
+export type AdminUserManageAction =
+  | 'disable'
+  | 'enable'
+  | 'promote'
+  | 'demote'
 
 export type VerificationOperation =
   | { scope: 'channel.key.read'; context: { channel_id: number } }
@@ -47,10 +62,34 @@ export type VerificationOperation =
       context: { provider: string; email?: string; code?: string }
     }
   | { scope: 'account.binding.unbind'; context: { provider_id: number } }
+  | { scope: 'admin.user.manage'; context: { user_id: number; action: AdminUserManageAction } }
+  | { scope: 'admin.user.delete'; context: { user_id: number } }
+  | { scope: 'admin.user.2fa.disable'; context: { user_id: number } }
+  | { scope: 'admin.user.passkey.reset'; context: { user_id: number } }
+  | {
+      scope: 'admin.user.binding.clear'
+      context: { user_id: number; binding_type: string } | { user_id: number; provider_id: number }
+    }
+  | {
+      scope: 'access_token.generate'
+      context: { scopes: string[]; expires_at: number }
+    }
+  | { scope: 'access_token.update'; context: { token_id: number; scopes: string[] } }
+  | { scope: 'access_token.revoke'; context: { token_id?: number; legacy?: boolean } }
   | {
       scope: Exclude<
         SecurityProofScope,
-        'channel.key.read' | 'account.binding.bind' | 'account.binding.unbind'
+        | 'channel.key.read'
+        | 'account.binding.bind'
+        | 'account.binding.unbind'
+        | 'admin.user.manage'
+        | 'admin.user.delete'
+        | 'admin.user.2fa.disable'
+        | 'admin.user.passkey.reset'
+        | 'admin.user.binding.clear'
+        | 'access_token.generate'
+        | 'access_token.update'
+        | 'access_token.revoke'
       >
       context?: Record<string, never>
     }

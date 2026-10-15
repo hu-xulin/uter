@@ -52,6 +52,8 @@ type UptimeSparklineProps = {
   series: UptimeDayPoint[]
   size?: SparklineSize
   showOverall?: boolean
+  /** Server-provided overall success rate; overrides the series average. */
+  overallSuccessRate?: number
   emptyLabel?: string
   className?: string
 }
@@ -77,7 +79,8 @@ export function UptimeSparkline(props: UptimeSparklineProps) {
   }
 
   const overall =
-    props.series.reduce((s, p) => s + p.uptime_pct, 0) / props.series.length
+    props.overallSuccessRate ??
+    (props.series.reduce((s, p) => s + p.uptime_pct, 0) / props.series.length)
 
   const containerHeight = size === 'sm' ? 'h-3.5' : 'h-5'
   const barWidth = size === 'sm' ? 'w-[3px]' : 'w-1'
