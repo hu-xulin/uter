@@ -133,8 +133,10 @@ func GetStatus(c *gin.Context) {
 		"passkey_user_verification":   passkeySetting.UserVerification,
 		"passkey_attachment":          passkeySetting.AttachmentPreference,
 		"setup":                       constant.Setup,
-		"user_agreement_enabled":      legalSetting.UserAgreement != "",
-		"privacy_policy_enabled":      legalSetting.PrivacyPolicy != "",
+		// 留空使用内置默认协议：只要存在内置默认协议（始终非空），即视为
+		// 需要用户同意，注册/登录的同意勾选不会被静默关闭。
+		"user_agreement_enabled":      legalSetting.GetUserAgreement() != "",
+		"privacy_policy_enabled":      legalSetting.GetPrivacyPolicy() != "",
 		"checkin_enabled":             operation_setting.GetCheckinSetting().Enabled,
 		"log_export_enabled":          operation_setting.GetLogSetting().UserExportEnabled,
 		"log_max_range_days":          operation_setting.GetLogSetting().MaxRangeDays,
@@ -202,15 +204,15 @@ func GetAbout(c *gin.Context) {
 }
 
 func GetUserAgreement(c *gin.Context) {
-	serveRevalidatedJSON(c, system_setting.GetLegalSettings().UserAgreement)
+	serveRevalidatedJSON(c, system_setting.GetLegalSettings().ResolveUserAgreement())
 }
 
 func GetPrivacyPolicy(c *gin.Context) {
-	serveRevalidatedJSON(c, system_setting.GetLegalSettings().PrivacyPolicy)
+	serveRevalidatedJSON(c, system_setting.GetLegalSettings().ResolvePrivacyPolicy())
 }
 
 func GetRechargeAgreement(c *gin.Context) {
-	serveRevalidatedJSON(c, system_setting.GetLegalSettings().RechargeAgreement)
+	serveRevalidatedJSON(c, system_setting.GetLegalSettings().ResolveRechargeAgreement())
 }
 
 func GetMidjourney(c *gin.Context) {
