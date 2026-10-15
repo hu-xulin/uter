@@ -90,7 +90,11 @@ const logSettingsSchema = z.object({
 type LogSettingsFormValues = z.infer<typeof logSettingsSchema>
 
 type LogSettingsSectionProps = {
-  defaultEnabled: boolean
+  defaultValues: {
+    LogConsumeEnabled: boolean
+    'log_setting.user_export_enabled'?: boolean
+    'log_setting.max_range_days'?: number
+  }
 }
 
 type ServerLogInfo = {
@@ -145,10 +149,11 @@ function isActiveLogCleanupTask(task: LogCleanupTask | null) {
 }
 
 export function LogSettingsSection({
-  defaultEnabled,
+  defaultValues,
 }: LogSettingsSectionProps) {
   const { t } = useTranslation()
   const updateOption = useUpdateOption()
+  const defaultEnabled = defaultValues.LogConsumeEnabled
   const form = useForm<LogSettingsFormValues>({
     resolver: zodResolver(logSettingsSchema),
     defaultValues: {
@@ -179,9 +184,11 @@ export function LogSettingsSection({
     }
   }, [])
 
+  const defaultValuesKey = JSON.stringify(defaultValues)
   useEffect(() => {
     form.reset({ LogConsumeEnabled: defaultEnabled })
-  }, [defaultEnabled, form])
+    // Re-sync only when the underlying setting changes, not every render.
+  }, [defaultValuesKey, defaultEnabled, form])
 
   useEffect(() => {
     fetchServerLogInfo()

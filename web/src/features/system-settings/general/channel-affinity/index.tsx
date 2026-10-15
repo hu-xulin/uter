@@ -138,15 +138,29 @@ const EMPTY_CHANNEL_AFFINITY_SETTINGS: ChannelAffinitySettings = {
 
 interface Props {
   defaultValues?: ChannelAffinitySettings
+  /**
+   * Form-driven mode used by the routing policy page. When provided, the
+   * rules JSON is owned by the surrounding react-hook-form and edits are
+   * pushed back through `onRulesChange`; `enabled`/`globalSessionMode` are
+   * controlled by the parent form (the page renders the Enable / session-mode
+   * controls). The remaining sub-settings stay component-owned and persist via
+   * the option store.
+   */
+  rulesJson?: string
+  onRulesChange?: (json: string) => void
+  enabled?: boolean
+  globalSessionMode?: '' | 'off' | 'prefer' | 'strict'
 }
 
 export function ChannelAffinitySection(props: Props) {
   const { t } = useTranslation()
   const updateOption = useUpdateOption()
   const dv = props.defaultValues ?? EMPTY_CHANNEL_AFFINITY_SETTINGS
+  const isFormMode =
+    props.onRulesChange !== undefined && props.rulesJson !== undefined
 
   const [enabled, setEnabled] = useState(
-    dv['channel_affinity_setting.enabled']
+    isFormMode ? Boolean(props.enabled) : dv['channel_affinity_setting.enabled']
   )
   const [switchOnSuccess, setSwitchOnSuccess] = useState(
     dv['channel_affinity_setting.switch_on_success']
@@ -161,7 +175,9 @@ export function ChannelAffinitySection(props: Props) {
     dv['channel_affinity_setting.default_ttl_seconds']
   )
   const [rules, setRules] = useState<AffinityRule[]>(() =>
-    parseRules(dv['channel_affinity_setting.rules'])
+    isFormMode
+      ? parseRules(props.rulesJson ?? '[]')
+      : parseRules(dv['channel_affinity_setting.rules'])
   )
 
   const [editMode, setEditMode] = useState<'visual' | 'json'>('visual')
@@ -186,7 +202,7 @@ export function ChannelAffinitySection(props: Props) {
   const [fillTemplateDialogOpen, setFillTemplateDialogOpen] = useState(false)
 
   useEffect(() => {
-    setEnabled(dv['channel_affinity_setting.enabled'])
+    setEnabled(isFormMode ? Boolean(props.enabled) : dv['channel_affinity_setting.enabled'])
     setSwitchOnSuccess(
       dv['channel_affinity_setting.switch_on_success']
     )
@@ -197,9 +213,9 @@ export function ChannelAffinitySection(props: Props) {
     setDefaultTtl(
       dv['channel_affinity_setting.default_ttl_seconds']
     )
-    const parsed = parseRules(
-      dv['channel_affinity_setting.rules']
-    )
+    const parsed = isFormMode
+      ? parseRules(props.rulesJson ?? '[]')
+      : parseRules(dv['channel_affinity_setting.rules'])
     setRules(parsed)
     setJsonText(
       JSON.stringify(
@@ -208,7 +224,7 @@ export function ChannelAffinitySection(props: Props) {
         2
       )
     )
-  }, [dv])
+  }, [dv, isFormMode, props.enabled, props.rulesJson])
 
   const refreshCache = useCallback(async () => {
     setCacheLoading(true)
@@ -242,9 +258,13 @@ export function ChannelAffinitySection(props: Props) {
       return { ...base, name }
     })
 
-    setRules((prev) =>
-      [...prev, ...templates].map((r, idx) => ({ ...r, id: idx }))
-    )
+    setRules((prev) => {
+      const next = [...prev, ...templates].map((r, idx) => ({ ...r, id: idx }))
+      if (isFormMode && props.onRulesChange) {
+        props.onRulesChange(serializeRules(next))
+      }
+      return next
+    })
     toast.success(t('Templates appended'))
     setFillTemplateDialogOpen(false)
   }
@@ -279,7 +299,10 @@ export function ChannelAffinitySection(props: Props) {
     try {
       const updates: { key: string; value: string }[] = []
 
-      if (enabled !== dv['channel_affinity_setting.enabled']) {
+      if (
+        !isFormMode &&
+        enabled !== dv['channel_affinity_setting.enabled']
+      ) {
         updates.push({
           key: 'channel_affinity_setting.enabled',
           value: String(enabled),
@@ -341,7 +364,7 @@ export function ChannelAffinitySection(props: Props) {
           return '[]'
         }
       })()
-      if (rulesJson !== origSerialized) {
+      if (!isFormMode && rulesJson !== origSerialized) {
         updates.push({
           key: 'channel_affinity_setting.rules',
           value: rulesJson,
@@ -369,20 +392,28 @@ export function ChannelAffinitySection(props: Props) {
       const existIdx = prev.findIndex(
         (r) => r.id === rule.id || (rule.name && r.name === editingRule?.name)
       )
-      if (existIdx >= 0) {
-        const next = [...prev]
-        next[existIdx] = { ...rule, id: existIdx }
-        return next
+      const next =
+        existIdx >= 0
+          ? prev.map((r, i) => (i === existIdx ? { ...rule, id: i } : r))
+          : [...prev, { ...rule, id: prev.length }]
+      if (isFormMode && props.onRulesChange) {
+        props.onRulesChange(serializeRules(next))
       }
-      return [...prev, { ...rule, id: prev.length }]
+      return next
     })
     setEditingRule(null)
   }
 
   const handleDeleteRule = (idx: number) => {
-    setRules((prev) =>
-      prev.filter((_, i) => i !== idx).map((r, i) => ({ ...r, id: i }))
-    )
+    setRules((prev) => {
+      const next = prev
+        .filter((_, i) => i !== idx)
+        .map((r, i) => ({ ...r, id: i }))
+      if (isFormMode && props.onRulesChange) {
+        props.onRulesChange(serializeRules(next))
+      }
+      return next
+    })
     toast.success(t('Deleted successfully'))
   }
 
@@ -441,6 +472,9 @@ export function ChannelAffinitySection(props: Props) {
             ({ id: i, ...r }) as AffinityRule
         )
       )
+      if (isFormMode && props.onRulesChange) {
+        props.onRulesChange(JSON.stringify(parsed, null, 2))
+      }
       setEditMode('visual')
     } catch {
       toast.error(t('Invalid rules JSON format'))
@@ -461,8 +495,8 @@ export function ChannelAffinitySection(props: Props) {
         {/* Basic Settings */}
         <div className='grid grid-cols-1 gap-4 md:grid-cols-3'>
           <SettingsSwitchField
-            checked={enabled}
-            onCheckedChange={setEnabled}
+            checked={isFormMode ? Boolean(props.enabled) : enabled}
+            onCheckedChange={isFormMode ? () => {} : setEnabled}
             label={t('Enable')}
             className='py-0'
           />

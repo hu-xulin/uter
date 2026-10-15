@@ -17,8 +17,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@uter.ai
 */
 import type { TFunction } from 'i18next'
+import dayjs from 'dayjs'
 
 import { loginMethodLabel } from '@/features/security/components/login-session-utils'
+import type { PermissionResourceDef } from '@/lib/admin-permissions'
 import { formatUserId } from '@/lib/format'
 import { ROLE } from '@/lib/roles'
 
@@ -323,13 +325,138 @@ function buildTokenAuditOperation(
   return { headline, summary, identifier, description, fields }
 }
 
-export function buildAuditDetails(entry: AuditLog, t: TFunction) {
+// Group an access token's granted scopes by resource, resolving each to its
+// catalog label. Without the catalog only the count is shown; scopes that no
+// longer map to a resource/action are tallied as unavailable rather than
+// leaking the raw `resource:action` string into the audit trail.
+function describeAccessTokenScopes(
+  scopes: string[],
+  scopeResources: PermissionResourceDef[] | undefined,
+  t: TFunction
+): string | Record<string, string> {
+  if (!scopeResources) {
+    return t('{{count}} permissions', { count: scopes.length })
+  }
+  const byResource = new Map<
+    string,
+    { label: string; actions: Map<string, string> }
+  >()
+  for (const resource of scopeResources) {
+    byResource.set(resource.resource, {
+      label: t(resource.label_key),
+      actions: new Map(
+        resource.actions.map((action) => [action.action, t(action.label_key)])
+      ),
+    })
+  }
+  const grouped: Record<string, string[]> = {}
+  let unavailable = 0
+  for (const scope of scopes) {
+    const separator = scope.indexOf(':')
+    const resource = separator >= 0 ? scope.slice(0, separator) : scope
+    const action = separator >= 0 ? scope.slice(separator + 1) : ''
+    const entry = byResource.get(resource)
+    const actionLabel = action ? entry?.actions.get(action) : undefined
+    if (entry && actionLabel) {
+      ;(grouped[entry.label] ??= []).push(actionLabel)
+    } else {
+      unavailable += 1
+    }
+  }
+  const labels = Object.keys(grouped)
+  if (labels.length === 0) {
+    return t('{{count}} permissions are no longer available', {
+      count: unavailable,
+    })
+  }
+  const result: Record<string, string> = {}
+  for (const label of labels) {
+    result[label] = grouped[label].join(', ')
+  }
+  if (unavailable > 0) {
+    result[t('Other')] = t('{{count}} permissions are no longer available', {
+      count: unavailable,
+    })
+  }
+  return result
+}
+
+function buildAccessTokenAuditOperation(
+  action: string,
+  params: Record<string, unknown>,
+  t: TFunction,
+  scopeResources: PermissionResourceDef[] | undefined
+): { summary: string; fields: AuditDetailField[] } | null {
+  const toScopeList = (value: unknown): string[] =>
+    Array.isArray(value)
+      ? value.filter((scope): scope is string => typeof scope === 'string')
+      : []
+  const permissionsField: AuditDetailField = {
+    label: t('Permissions'),
+    value: describeAccessTokenScopes(
+      toScopeList(params.scopes),
+      scopeResources,
+      t
+    ),
+  }
+  if (action === 'access_token.generate') {
+    const fields: AuditDetailField[] = [permissionsField]
+    if (typeof params.expires_at === 'number') {
+      fields.push({
+        label: t('Expiration'),
+        value:
+          params.expires_at === 0
+            ? t('Never expires')
+            : dayjs.unix(params.expires_at).format('YYYY-MM-DD HH:mm:ss'),
+      })
+    }
+    return { summary: t('Created an access token'), fields }
+  }
+  if (action === 'access_token.update') {
+    return {
+      summary: t('Changed access token permissions'),
+      fields: [
+        permissionsField,
+        {
+          label: t('Previous permissions'),
+          value: describeAccessTokenScopes(
+            toScopeList(params.previous_scopes),
+            scopeResources,
+            t
+          ),
+        },
+      ],
+    }
+  }
+  return null
+}
+
+export function buildAuditDetails(
+  entry: AuditLog,
+  t: TFunction,
+  options?: { scopeResources?: PermissionResourceDef[] }
+) {
   const metadata = isAuditDetailObject(entry.other) ? entry.other : {}
   const metadataUnavailable =
     entry.other != null && !isAuditDetailObject(entry.other)
   const op = isAuditDetailObject(metadata.op) ? metadata.op : {}
   const action = typeof op.action === 'string' ? op.action : entry.action || ''
   const params = isAuditDetailObject(op.params) ? { ...op.params } : {}
+  const accessTokenOperation = buildAccessTokenAuditOperation(
+    action,
+    params,
+    t,
+    options?.scopeResources
+  )
+  if (accessTokenOperation) {
+    // Consumed by the access-token renderer above; drop them so the generic
+    // param loop never emits the raw scope strings or token references.
+    delete params.scopes
+    delete params.previous_scopes
+    delete params.expires_at
+    delete params.token_id
+    delete params.token_ref
+  }
   const tokenOperation = buildTokenAuditOperation(
     action,
     params,
@@ -528,7 +655,7 @@ export function buildAuditDetails(entry: AuditLog, t: TFunction) {
     if (Object.keys(auditExtra).length) extra.audit_info = auditExtra
   }
   return {
-    summary: operation?.summary ?? summary,
+    summary: accessTokenOperation?.summary ?? operation?.summary ?? summary,
     tokenOperation,
     quotaOperation,
     operation,
@@ -536,7 +663,9 @@ export function buildAuditDetails(entry: AuditLog, t: TFunction) {
     actorRole,
     target,
     authentication,
-    fields,
+    fields: accessTokenOperation
+      ? [...accessTokenOperation.fields, ...fields]
+      : fields,
     extra,
     metadataUnavailable,
   }
