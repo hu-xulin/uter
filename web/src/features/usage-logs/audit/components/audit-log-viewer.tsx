@@ -141,7 +141,6 @@ export function AuditLogViewer(props: {
               scope={props.scope}
               accessOnly={props.accessOnly}
               tokenScope={tokenScope}
-              defaultTokenScope={defaultTokenScope}
               currentTokenRef={props.currentTokenRef}
               onTokenScopeChange={(value) => {
                 setTokenScope(value)

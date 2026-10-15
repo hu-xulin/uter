@@ -103,6 +103,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
 import { SecureVerificationDialog } from '@/features/auth/secure-verification'
+import { useOptionalNumberField } from '@/features/system-settings/utils/numeric-field'
 import { useCopyToClipboard } from '@/hooks/use-copy-to-clipboard'
 import { useHiddenClickUnlock } from '@/hooks/use-hidden-click-unlock'
 import {
@@ -115,7 +116,6 @@ import {
   type ChannelConnectionInfo,
 } from '@/lib/channel-connection-info'
 import { handleServerError } from '@/lib/handle-server-error'
-import { useOptionalNumberField } from '@/features/system-settings/utils/numeric-field'
 import { ROLE } from '@/lib/roles'
 import {
   requireServerSuccess,
@@ -173,6 +173,10 @@ import {
   validateModelMappingJson,
 } from '../../lib'
 import {
+  createAdvancedCustomRoute,
+  stringifyAdvancedCustomConfig,
+} from '../../lib/advanced-custom'
+import {
   getChannelConfigurationSection,
   getChannelConfigurationState,
   type ChannelConfigurationStatus,
@@ -196,10 +200,6 @@ import { ChannelPluginExtensions } from '../channel-plugin-extensions'
 import { ChannelTypeLogo } from '../channel-type-badge'
 import { useChannels } from '../channels-provider'
 import { AdvancedCustomEditorDialog } from '../dialogs/advanced-custom-editor-dialog'
-import {
-  createAdvancedCustomRoute,
-  stringifyAdvancedCustomConfig,
-} from '../../lib/advanced-custom'
 import { ConfigureModelsDialog } from '../dialogs/configure-models-dialog'
 import {
   MissingModelsConfirmationDialog,
@@ -208,6 +208,11 @@ import {
 import { ParamOverrideEditorDialog } from '../dialogs/param-override-editor-dialog'
 import { StatusCodeRiskDialog } from '../dialogs/status-code-risk-dialog'
 import { ModelMappingEditor } from '../model-mapping-editor'
+import {
+  PassthroughWarningDialog,
+  type PassthroughKind,
+} from '../dialogs/passthrough-warning-dialog'
+import { ChannelQuickOptions } from '../channel-quick-options'
 import { UpstreamModelSelection } from '../upstream-model-selection'
 import {
   ChannelConfiguration,
@@ -405,6 +410,12 @@ export function ChannelMutateDrawer({
     string[]
   >([])
   const statusCodeRiskResolveRef = useRef<
+    ((confirmed: boolean) => void) | null
+  >(null)
+  const [passthroughWarningOpen, setPassthroughWarningOpen] = useState(false)
+  const [passthroughWarningKind, setPassthroughWarningKind] =
+    useState<PassthroughKind | null>(null)
+  const passthroughWarningResolveRef = useRef<
     ((confirmed: boolean) => void) | null
   >(null)
   const [missingModelsDialogOpen, setMissingModelsDialogOpen] = useState(false)
@@ -725,26 +736,27 @@ export function ChannelMutateDrawer({
 
   const selectProvider = useCallback(
     (target: ChannelProviderTarget) => {
-    if (!canEditSensitive) return
-    // Two providers are "the same" only when their identity matches. For
-    // builtin providers the identity includes the branded preset, because
-    // every branded shortcut (共享渠道 / 聚合渠道 / 代理渠道) is a distinct type
-    // (62/63/64) but may still carry a different preset; comparing by type
-    // alone could skip re-applying a different preset, leaving the channel
-    // without its logo / display name.
-    const sameBuiltinProvider =
-      target.kind === 'builtin' &&
-      providerTarget?.kind === 'builtin' &&
-      target.type === providerTarget.type &&
-      (target.presetDisplayName || '') === (providerTarget.presetDisplayName || '')
-    const samePluginProvider =
-      target.kind === 'plugin' &&
-      providerTarget?.kind === 'plugin' &&
-      target.key === providerTarget.key
-    if (sameBuiltinProvider || samePluginProvider) {
-      setChoosingProvider(false)
-      return
-    }
+      if (!canEditSensitive) return
+      // Two providers are "the same" only when their identity matches. For
+      // builtin providers the identity includes the branded preset, because
+      // every branded shortcut (共享渠道 / 聚合渠道 / 代理渠道) is a distinct type
+      // (600/601/602) but may still carry a different preset; comparing by type
+      // alone could skip re-applying a different preset, leaving the channel
+      // without its logo / display name.
+      const sameBuiltinProvider =
+        target.kind === 'builtin' &&
+        providerTarget?.kind === 'builtin' &&
+        target.type === providerTarget.type &&
+        (target.presetDisplayName || '') ===
+          (providerTarget.presetDisplayName || '')
+      const samePluginProvider =
+        target.kind === 'plugin' &&
+        providerTarget?.kind === 'plugin' &&
+        target.key === providerTarget.key
+      if (sameBuiltinProvider || samePluginProvider) {
+        setChoosingProvider(false)
+        return
+      }
       if (target.kind === 'plugin') {
         if (!canBindTaskPlugin) return
         const plugin = taskPluginOptionsQuery.data?.find(
@@ -1315,6 +1327,34 @@ export function ChannelMutateDrawer({
       statusCodeRiskResolveRef.current(confirmed)
       statusCodeRiskResolveRef.current = null
     }
+  }, [])
+
+  const confirmEnablePassthrough = useCallback(
+    (kind: PassthroughKind): Promise<boolean> =>
+      new Promise((resolve) => {
+        passthroughWarningResolveRef.current = resolve
+        setPassthroughWarningKind(kind)
+        setPassthroughWarningOpen(true)
+      }),
+    []
+  )
+
+  const handlePassthroughWarningOpenChange = useCallback((open: boolean) => {
+    setPassthroughWarningOpen(open)
+    if (!open && passthroughWarningResolveRef.current) {
+      passthroughWarningResolveRef.current(false)
+      passthroughWarningResolveRef.current = null
+      setPassthroughWarningKind(null)
+    }
+  }, [])
+
+  const handlePassthroughWarningConfirm = useCallback(() => {
+    setPassthroughWarningOpen(false)
+    if (passthroughWarningResolveRef.current) {
+      passthroughWarningResolveRef.current(true)
+      passthroughWarningResolveRef.current = null
+    }
+    setPassthroughWarningKind(null)
   }, [])
 
   useEffect(() => {
@@ -4142,6 +4182,15 @@ export function ChannelMutateDrawer({
         section={configurationSection}
         onSectionChange={setConfigurationSection}
         statuses={configuration.sections}
+        quickOptions={
+          <ChannelQuickOptions
+            channelType={currentType}
+            sensitiveLocked={sensitiveLocked}
+            disabled={sensitiveLocked}
+            confirmEnablePassthrough={confirmEnablePassthrough}
+            form={form}
+          />
+        }
         connection={
           <>
             {basicSection}
@@ -4506,6 +4555,13 @@ export function ChannelMutateDrawer({
         }}
         detailItems={statusCodeRiskDetailItems}
         onConfirm={() => handleStatusCodeRiskAction(true)}
+      />
+
+      <PassthroughWarningDialog
+        open={passthroughWarningOpen}
+        kind={passthroughWarningKind}
+        onOpenChange={handlePassthroughWarningOpenChange}
+        handleConfirm={handlePassthroughWarningConfirm}
       />
     </>
   )

@@ -52,14 +52,18 @@ import { useUpdateOption } from '../hooks/use-update-option'
 
 const quotaSchema = z.object({
   QuotaForNewUser: z.coerce.number().min(0),
-  PreConsumedQuota: z.coerce.number().min(0),
+  PreConsumedQuota: z.coerce.number().min(0).optional(),
   QuotaForInviter: z.coerce.number().min(0),
   QuotaForInvitee: z.coerce.number().min(0),
   TopUpLink: z.string(),
-  general_setting: z.object({
-    docs_link: z.string(),
-  }),
+  general_setting: z
+    .object({
+      docs_link: z.string(),
+    })
+    .optional(),
   quota_setting: z.object({
+    trust_quota_usd: z.coerce.number(),
+    pre_consume_multiplier: z.coerce.number(),
     enable_free_model_pre_consume: z.boolean(),
   }),
 })
