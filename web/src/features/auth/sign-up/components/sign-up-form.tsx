@@ -286,7 +286,11 @@ export function SignUpForm({
             <FormItem>
               <FormLabel>{t('Username')}</FormLabel>
               <FormControl>
-                <Input placeholder={t('Enter your username')} {...field} />
+                <Input
+                  placeholder={t('Enter your username')}
+                  className='h-11'
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -317,6 +321,7 @@ export function SignUpForm({
               <FormControl>
                 <PasswordInput
                   placeholder={t('Enter password (8–18 characters)')}
+                  className='h-11'
                   {...field}
                 />
               </FormControl>
@@ -333,7 +338,11 @@ export function SignUpForm({
             <FormItem>
               <FormLabel>{t('Confirm password')}</FormLabel>
               <FormControl>
-                <PasswordInput placeholder={t('Confirm password')} {...field} />
+                <PasswordInput
+                  placeholder={t('Confirm password')}
+                  className='h-11'
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -356,6 +365,7 @@ export function SignUpForm({
                     <Input
                       placeholder={t('name@example.com')}
                       type='email'
+                      className='h-11'
                       {...field}
                     />
                   </FormControl>
@@ -369,6 +379,7 @@ export function SignUpForm({
               <div className='flex-1'>
                 <Input
                   placeholder={t('Verification code')}
+                  className='h-11'
                   value={verificationCode}
                   onChange={(e) => setVerificationCode(e.target.value)}
                 />
@@ -376,6 +387,7 @@ export function SignUpForm({
               <Button
                 variant='outline'
                 type='button'
+                className='h-11'
                 disabled={
                   isLoading ||
                   isSendingCode ||
@@ -412,7 +424,7 @@ export function SignUpForm({
         {/* Submit Button */}
         <Button
           type='submit'
-          className='mt-2 w-full justify-center gap-2'
+          className='mt-2 w-full justify-center gap-2 h-11'
           disabled={
             isLoading ||
             (requiresLegalConsent && !agreedToLegal) ||
@@ -451,6 +463,7 @@ export function SignUpForm({
               <Button
                 type='button'
                 variant='outline'
+                className='h-11'
                 onClick={() => handleWeChatDialogChange(false)}
                 disabled={isWeChatSubmitting}
               >
@@ -458,13 +471,13 @@ export function SignUpForm({
               </Button>
               <Button
                 type='button'
+                className='gap-2 h-11'
                 onClick={handleWeChatLogin}
                 disabled={
                   isWeChatSubmitting ||
                   !wechatCode.trim() ||
                   (requiresLegalConsent && !agreedToLegal)
                 }
-                className='gap-2'
               >
                 {isWeChatSubmitting ? (
                   <Loader2 className='h-4 w-4 animate-spin' />
@@ -492,6 +505,7 @@ export function SignUpForm({
             <Input
               id='wechat-code'
               placeholder={t('Enter the verification code')}
+              className='h-11'
               value={wechatCode}
               onChange={(event) => setWeChatCode(event.target.value)}
               autoComplete='one-time-code'
