@@ -19,11 +19,14 @@ For commercial licensing, please contact support@uter.ai
 import type { FieldErrors, FieldPath } from 'react-hook-form'
 
 import {
+  CHANNEL_TYPE_OLLAMA,
   CLAUDE_FIELD_PASSTHROUGH_TYPES,
   MODEL_FETCHABLE_TYPES,
   OPENAI_FIELD_PASSTHROUGH_TYPES,
 } from '../constants'
+import { CHANNEL_TYPE_ADVANCED_CUSTOM } from './advanced-custom'
 import { channelFormSchema, type ChannelFormValues } from './channel-form'
+import { supportsResponsesWebSocket } from './responses-websocket'
 
 export type ChannelProviderTarget =
   | {
@@ -68,6 +71,8 @@ const CONFIGURATION_BLOCKS = {
       'force_format',
       'thinking_to_content',
       'pass_through_body_enabled',
+      'responses_websocket_enabled',
+      'ollama_openai_chat',
       'system_prompt',
       'system_prompt_override',
     ],
@@ -90,6 +95,7 @@ const CONFIGURATION_BLOCKS = {
       'proxy',
       'http_protocol',
       'http2_connection_shards',
+      'tls_insecure_skip_verify',
       'disable_task_polling_sleep',
     ],
   },
@@ -158,7 +164,11 @@ export function getChannelConfigurationState(
     requestProcessing: Boolean(
       (values.type === 1 && values.force_format) ||
       values.thinking_to_content ||
-      values.pass_through_body_enabled ||
+      (values.type !== CHANNEL_TYPE_ADVANCED_CUSTOM &&
+        values.pass_through_body_enabled) ||
+      (supportsResponsesWebSocket(values.type) &&
+        values.responses_websocket_enabled) ||
+      (values.type === CHANNEL_TYPE_OLLAMA && values.ollama_openai_chat) ||
       values.system_prompt?.trim() ||
       values.system_prompt_override
     ),
@@ -177,6 +187,7 @@ export function getChannelConfigurationState(
       values.proxy?.trim() ||
       (values.http_protocol && values.http_protocol !== 'auto') ||
       (values.http2_connection_shards ?? 1) > 1 ||
+      values.tls_insecure_skip_verify ||
       values.disable_task_polling_sleep
     ),
     upstreamModelDetection:
