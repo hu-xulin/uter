@@ -31,13 +31,15 @@ export const CHANNEL_TYPE_ADVANCED_CUSTOM = 58
 // on the backend all treat them identically); the only difference is the preset
 // display name and logo seeded at creation time. We give them distinct type
 // numbers so they do not collide with Advanced Custom (58) in the channel list.
-export const CHANNEL_TYPE_BRANDED_SHARED = 62
-export const CHANNEL_TYPE_BRANDED_AGGREGATE = 63
-export const CHANNEL_TYPE_BRANDED_PROXY = 64
+// They are numbered from 600 to stay clear of upstream's 0–63 range; these values
+// mirror CHANNEL_TYPE_BRANDED_* in ../constants.
+export const CHANNEL_TYPE_BRANDED_SHARED = 600
+export const CHANNEL_TYPE_BRANDED_AGGREGATE = 601
+export const CHANNEL_TYPE_BRANDED_PROXY = 602
 
 /**
  * Whether a channel type behaves like an "Advanced Custom" channel (type 58).
- * The branded types (62/63/64) are variants of Advanced Custom and must be
+ * The branded types (600/601/602) are variants of Advanced Custom and must be
  * handled identically across the UI (advanced_custom editor, type column
  * override, model discovery, etc.).
  */

@@ -147,7 +147,7 @@ export function ChannelProviderPicker(props: ChannelProviderPickerProps) {
         if (props.isCreating && option.value === 16) continue
         if (props.isCreating && option.value === 7) continue
         if (replacedTypes.has(option.value)) continue
-        // The branded Advanced Custom variants (62/63/64) are surfaced below as
+        // The branded Advanced Custom variants (600/601/602) are surfaced below as
         // dedicated provider cards with their own logos. Skipping them here
         // avoids duplicate cards that look identical except for the generic Uter
         // logo used by the raw channel-type entries.
@@ -198,7 +198,7 @@ export function ChannelProviderPicker(props: ChannelProviderPickerProps) {
       }
     }
     // Branded shortcuts that are first-class variants of the "Advanced Custom"
-    // channel, each with its own distinct type number (62/63/64). They behave
+    // channel, each with its own distinct type number (600/601/602). They behave
     // exactly like an Advanced Custom channel; the only difference is the preset
     // display name and logo seeded at creation time. They surface under the same
     // filters as Advanced Custom (all + custom).

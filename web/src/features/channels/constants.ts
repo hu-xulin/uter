@@ -23,16 +23,23 @@ For commercial licensing, please contact support@uter.ai
 
 export const CHANNEL_TYPE_UTER = 60
 
+// New API relay (connect to another new-api/Uter instance) shares type 60 with
+// Uter; exported to match the Go backend (constant.ChannelTypeNewAPI) and new-api.
+export const CHANNEL_TYPE_NEW_API = 60
+
 export const CHANNEL_TYPE_TASK_PLUGIN = 61
 
 // Channel type constants aligned with the Go backend (constant/channel.go).
-// new-api numbers (OLLAMA/SUB2API) are reused where they coincide with uter.
-// vLLM/SGLang use uter's backend numbers (65/66), not new-api's 62/63, which
-// are reserved for uter's branded Shared/Aggregate channels.
+// Standard channel numbers adopt new-api's numbering as-is (OLLAMA/SUB2API/
+// VLLM/SGLang). Uter's own branded channel types are numbered from 600 to
+// avoid colliding with upstream's 0–63 range.
 export const CHANNEL_TYPE_OLLAMA = 4
 export const CHANNEL_TYPE_SUB2API = 59
-export const CHANNEL_TYPE_VLLM = 65
-export const CHANNEL_TYPE_SGLANG = 66
+export const CHANNEL_TYPE_VLLM = 62
+export const CHANNEL_TYPE_SGLANG = 63
+export const CHANNEL_TYPE_BRANDED_SHARED = 600
+export const CHANNEL_TYPE_BRANDED_AGGREGATE = 601
+export const CHANNEL_TYPE_BRANDED_PROXY = 602
 
 export const CHANNEL_TYPES = {
   0: 'Unknown',
@@ -93,11 +100,11 @@ export const CHANNEL_TYPES = {
   59: 'Sub2API',
   60: 'Uter',
   61: 'Task Plugin',
-  62: 'Shared Channel',
-  63: 'Aggregate Channel',
-  64: 'Proxy Channel',
-  65: 'vLLM',
-  66: 'SGLang',
+  62: 'vLLM',
+  63: 'SGLang',
+  600: 'Shared Channel',
+  601: 'Aggregate Channel',
+  602: 'Proxy Channel',
 } as const
 
 export type ChannelProviderPresentation = {
@@ -178,25 +185,25 @@ export const CHANNEL_PROVIDER_PRESENTATION: Partial<
     descriptionKey: 'Connect to model services from another Uter instance',
   },
   62: {
+    descriptionKey: 'Connect to self-hosted models served by vLLM',
+  },
+  63: {
+    descriptionKey: 'Connect to self-hosted models served by SGLang',
+  },
+  600: {
     descriptionKey: 'Shared channel description',
     detailKey:
       'Branded Advanced Custom channel — route requests across shared upstreams',
   },
-  63: {
+  601: {
     descriptionKey: 'Aggregate channel description',
     detailKey:
       'Branded Advanced Custom channel — combine multiple providers into one endpoint',
   },
-  64: {
+  602: {
     descriptionKey: 'Proxy channel description',
     detailKey:
       'Branded Advanced Custom channel — forward traffic to an upstream proxy',
-  },
-  65: {
-    descriptionKey: 'Connect to self-hosted models served by vLLM',
-  },
-  66: {
-    descriptionKey: 'Connect to self-hosted models served by SGLang',
   },
 } satisfies Record<
   Exclude<keyof typeof CHANNEL_TYPES, 0 | typeof CHANNEL_TYPE_TASK_PLUGIN>,
@@ -204,9 +211,9 @@ export const CHANNEL_PROVIDER_PRESENTATION: Partial<
 >
 
 const CHANNEL_TYPE_DISPLAY_ORDER: number[] = [
-  1, 14, 24, 33, 43, 3, 41, 17, 45, 25, 26, 23, 48, 60, 58, 59, 61, 42, 34, 20,
-  4, 40, 27, 15, 46, 18, 31, 35, 49, 19, 47, 37, 38, 39, 11, 8, 57, 22, 21, 44,
-  2, 5, 36, 50, 51, 52, 53, 54, 55, 56,
+  1, 14, 24, 33, 43, 3, 41, 17, 45, 25, 26, 23, 48, 60, 58, 59, 61, 600, 601,
+  602, 42, 34, 20, 4, 40, 27, 15, 46, 18, 31, 35, 49, 19, 47, 37, 38, 39, 11, 8,
+  57, 22, 21, 44, 2, 5, 36, 50, 51, 52, 53, 54, 55, 56,
 ]
 
 export const CHANNEL_TYPE_OPTIONS: { value: number; label: string }[] = (() => {
@@ -520,7 +527,7 @@ export const FIELD_DESCRIPTIONS = {
 
 export const MODEL_FETCHABLE_TYPES = new Set([
   1, 4, 14, 17, 20, 23, 24, 25, 26, 27, 31, 34, 35, 40, 42, 43, 47, 48, 57, 58,
-  59, 60, 62, 63, 64, 65, 66,
+  59, 60, 62, 63, 600, 601, 602,
 ])
 
 export const FIELD_PASSTHROUGH_TYPES = new Set([
@@ -530,9 +537,9 @@ export const FIELD_PASSTHROUGH_TYPES = new Set([
   58,
   59,
   CHANNEL_TYPE_UTER,
-  62,
-  63,
-  64,
+  CHANNEL_TYPE_BRANDED_SHARED,
+  CHANNEL_TYPE_BRANDED_AGGREGATE,
+  CHANNEL_TYPE_BRANDED_PROXY,
 ])
 
 export const OPENAI_FIELD_PASSTHROUGH_TYPES = new Set([
@@ -541,9 +548,9 @@ export const OPENAI_FIELD_PASSTHROUGH_TYPES = new Set([
   58,
   59,
   CHANNEL_TYPE_UTER,
-  62,
-  63,
-  64,
+  CHANNEL_TYPE_BRANDED_SHARED,
+  CHANNEL_TYPE_BRANDED_AGGREGATE,
+  CHANNEL_TYPE_BRANDED_PROXY,
 ])
 
 export const CLAUDE_FIELD_PASSTHROUGH_TYPES = new Set([
@@ -551,9 +558,9 @@ export const CLAUDE_FIELD_PASSTHROUGH_TYPES = new Set([
   58,
   59,
   CHANNEL_TYPE_UTER,
-  62,
-  63,
-  64,
+  CHANNEL_TYPE_BRANDED_SHARED,
+  CHANNEL_TYPE_BRANDED_AGGREGATE,
+  CHANNEL_TYPE_BRANDED_PROXY,
 ])
 
 export const TYPE_TO_KEY_PROMPT: Record<number, string> = {
@@ -567,8 +574,8 @@ export const TYPE_TO_KEY_PROMPT: Record<number, string> = {
   57: 'Paste Codex OAuth JSON credential (access_token / refresh_token / account_id)',
   59: 'Enter API key for this channel',
   60: 'Enter API key for this channel',
-  65: 'vLLM API key, or EMPTY if authentication is disabled',
-  66: 'SGLang API key, or EMPTY if authentication is disabled',
+  62: 'vLLM API key, or EMPTY if authentication is disabled',
+  63: 'SGLang API key, or EMPTY if authentication is disabled',
 }
 
 export const CHANNEL_TYPE_WARNINGS: Record<number, string> = {

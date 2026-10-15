@@ -57,23 +57,22 @@ const (
 	ChannelTypeCodex            = 57
 	ChannelTypeAdvancedCustom   = 58
 	ChannelTypeSub2API          = 59
-	ChannelTypeUter             = 60
-	ChannelTypeTaskPlugin       = 61
-	ChannelTypeBrandedShared    = 62
-	ChannelTypeBrandedAggregate = 63
-	ChannelTypeBrandedProxy     = 64
-	// 上游 rc.38 把 60 命名为 New API（uter 侧即 Uter 渠道），并在 62/63 引入 vLLM / SGLang。
-	// uter 的 62-64 已被三种品牌渠道占用，故新类型顺延到 65/66，保证渠道类型编号不漂移（会落库）。
-	ChannelTypeNewAPI = ChannelTypeUter
-	ChannelTypeVLLM   = 65
-	ChannelTypeSGLang = 66
-	ChannelTypeDummy  // this one is only for count, do not add any channel after this
+	ChannelTypeUter             = 60 // 中继到另一个 Uter 实例；上游同义类型称 New API
+	ChannelTypeNewAPI           = 60 // 上游 rc.38+ 命名，与 Uter 等价（「中继到同类平台实例」）
+	ChannelTypeTaskPlugin       = 61 // 上游同样定义为 61
+	ChannelTypeVLLM             = 62 // 采用上游编号（rc.38+ 起上游为 62）
+	ChannelTypeSGLang           = 63 // 采用上游编号（rc.38+ 起上游为 63）
+	// —— Uter 自有渠道类型：从 600 起编号，避开上游 0–63 的编号空间 ——
+	ChannelTypeBrandedShared    = 600
+	ChannelTypeBrandedAggregate = 601
+	ChannelTypeBrandedProxy     = 602
+	ChannelTypeDummy            // = 602，最大渠道类型上界；controller/model.go 的 1..Dummy 循环依赖它覆盖品牌渠道，勿删
 
 )
 
 // IsAdvancedCustomChannelType reports whether the channel type behaves like an
 // "Advanced Custom" channel (type 58) for routing, billing, pricing, model
-// preview and constraint purposes. The branded channel types (62/63/64) are
+// preview and constraint purposes. The branded channel types (600/601/602) are
 // first-class variants of Advanced Custom that only differ by their preset
 // display name and logo; they must be handled identically everywhere.
 func IsAdvancedCustomChannelType(channelType int) bool {
@@ -154,17 +153,16 @@ var ChannelBaseURLs = []string{
 	"https://chatgpt.com",                       //57
 	"",                                          //58
 	"",                                          //59
-	"",                                          //60
-	"",                                          //61
-	"",                                          //62 Branded Shared
-	"",                                          //63 Branded Aggregate
-	"",                                          //64 Branded Proxy
-	// 65 vLLM / 66 SGLang 不给默认地址。这两类是自托管推理服务，默认指向
+	"",                                          //60 NewAPI / Uter 中继（地址由用户填写）
+	"",                                          //61 TaskPlugin
+	// 62 vLLM / 63 SGLang 不给默认地址。这两类是自托管推理服务，默认指向
 	// localhost 会让「渠道地址留空」变成一次静默的本地探测：管理员以为没配地址
 	// 用不了，实际请求带着渠道密钥打到了 localhost:8000/30000，并把探到的版本、
 	// 模型列表当成该渠道的真实状态展示。留空则由地址校验明确拒绝。
-	"", //65 vLLM
-	"", //66 SGLang
+	// Uter 自有品牌渠道 600–602 不在此 Slice 中（超出 len，GetChannelBaseURL 返回
+	// 空串），同样交由地址校验拒绝。
+	"", //62 vLLM
+	"", //63 SGLang
 }
 
 func GetChannelBaseURL(channelType int) string {

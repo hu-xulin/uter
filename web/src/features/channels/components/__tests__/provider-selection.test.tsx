@@ -521,9 +521,7 @@ test.each([true, false])(
       ).toBeVisible()
     }
     expect(screen.getAllByRole('option')).toHaveLength(2)
-    await user.click(
-      screen.getByRole('option', { name: 'Uter Built-in #60' })
-    )
+    await user.click(screen.getByRole('option', { name: 'Uter Built-in #60' }))
     expect(select).toHaveBeenLastCalledWith({ kind: 'builtin', type: 60 })
     const search = screen.getByRole('combobox')
     await user.type(search, 'Sub2API')
@@ -562,7 +560,7 @@ test('custom providers have their own tab and keep the search when switching cat
   await user.click(within(tabs).getByRole('tab', { name: 'Custom' }))
   const panel = screen.getByRole('tabpanel', { name: 'Custom' })
   // Custom (8), Advanced Custom (58) and the three branded variants that
-  // behave exactly like Advanced Custom (62/63/64) share this category.
+  // behave exactly like Advanced Custom (600/601/602) share this category.
   expect(within(panel).getAllByRole('option')).toHaveLength(5)
   expect(
     within(panel).getByRole('option', { name: 'Advanced Custom Built-in #58' })
@@ -571,15 +569,15 @@ test('custom providers have their own tab and keep the search when switching cat
     within(panel).getByRole('option', { name: 'Custom Built-in #8' })
   ).toBeVisible()
   expect(
-    within(panel).getByRole('option', { name: 'Shared Channel Built-in #62' })
+    within(panel).getByRole('option', { name: 'Shared Channel Built-in #600' })
   ).toBeVisible()
   expect(
     within(panel).getByRole('option', {
-      name: 'Aggregate Channel Built-in #63',
+      name: 'Aggregate Channel Built-in #601',
     })
   ).toBeVisible()
   expect(
-    within(panel).getByRole('option', { name: 'Proxy Channel Built-in #64' })
+    within(panel).getByRole('option', { name: 'Proxy Channel Built-in #602' })
   ).toBeVisible()
   expect(
     within(panel).queryByRole('option', { name: /Plugin/ })
@@ -597,13 +595,13 @@ test('custom providers have their own tab and keep the search when switching cat
   ).not.toBeInTheDocument()
   // The branded Advanced Custom variants are Custom-only, never Built-in.
   expect(
-    screen.queryByRole('option', { name: 'Shared Channel Built-in #62' })
+    screen.queryByRole('option', { name: 'Shared Channel Built-in #600' })
   ).not.toBeInTheDocument()
   expect(
-    screen.queryByRole('option', { name: 'Aggregate Channel Built-in #63' })
+    screen.queryByRole('option', { name: 'Aggregate Channel Built-in #601' })
   ).not.toBeInTheDocument()
   expect(
-    screen.queryByRole('option', { name: 'Proxy Channel Built-in #64' })
+    screen.queryByRole('option', { name: 'Proxy Channel Built-in #602' })
   ).not.toBeInTheDocument()
   await user.type(screen.getByRole('combobox'), '58')
   expect(screen.queryByRole('option')).not.toBeInTheDocument()
