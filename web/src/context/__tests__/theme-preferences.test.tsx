@@ -30,7 +30,6 @@ import { initializeFrontendCache } from '@/lib/frontend-cache'
 const savedPreferences = {
   'newapi:theme:v1:mode': 'dark',
   'newapi:theme:v1:preset': 'rose-garden',
-  'newapi:theme:v1:font': 'serif',
   'newapi:theme:v1:radius': 'lg',
   'newapi:theme:v1:scale': 'sm',
   'newapi:theme:v1:content-layout': 'centered',
@@ -43,12 +42,6 @@ function ThemeControls() {
   return (
     <>
       <output aria-label='Theme mode'>{theme.theme}</output>
-      <button type='button' onClick={() => customization.setFont('sans')}>
-        Sans font
-      </button>
-      <button type='button' onClick={() => customization.setFont('default')}>
-        Auto font
-      </button>
       <button
         type='button'
         onClick={() => customization.setPreset('anthropic')}
@@ -63,7 +56,6 @@ function ThemeControls() {
         onClick={() => {
           theme.setTheme('dark')
           customization.setPreset('rose-garden')
-          customization.setFont('serif')
           customization.setRadius('lg')
           customization.setScale('sm')
           customization.setContentLayout('centered')
@@ -116,7 +108,6 @@ describe('theme preference persistence', () => {
   it('starts with defaults when only shared legacy theme cookies exist', () => {
     document.cookie = 'theme_preset=ocean-breeze; path=/'
     document.cookie = 'vite-ui-theme=dark; path=/'
-    document.cookie = 'theme_font=serif; path=/'
     document.cookie = 'theme_radius=xl; path=/'
     document.cookie = 'theme_scale=lg; path=/'
     document.cookie = 'theme_content_layout=centered; path=/'
@@ -126,7 +117,6 @@ describe('theme preference persistence', () => {
     expect(screen.getByLabelText('Theme mode')).toHaveTextContent('system')
     expect(document.documentElement).toHaveClass('light')
     expect(document.body).not.toHaveAttribute('data-theme-preset')
-    expect(document.body).toHaveAttribute('data-theme-font', 'system')
     expect(document.body).not.toHaveAttribute('data-theme-radius')
     expect(document.body).not.toHaveAttribute('data-theme-scale')
     expect(document.body).toHaveAttribute('data-theme-content-layout', 'full')
@@ -143,7 +133,6 @@ describe('theme preference persistence', () => {
     expect(screen.getByLabelText('Theme mode')).toHaveTextContent('dark')
     expect(document.documentElement).toHaveClass('dark')
     expect(document.body).toHaveAttribute('data-theme-preset', 'rose-garden')
-    expect(document.body).toHaveAttribute('data-theme-font', 'serif')
     expect(document.body).toHaveAttribute('data-theme-radius', 'lg')
     expect(document.body).toHaveAttribute('data-theme-scale', 'sm')
     expect(document.body).toHaveAttribute(
@@ -172,7 +161,6 @@ describe('theme preference persistence', () => {
     expect(screen.getByLabelText('Theme mode')).toHaveTextContent('system')
     expect(document.documentElement).toHaveClass('light')
     expect(document.body).not.toHaveAttribute('data-theme-preset')
-    expect(document.body).toHaveAttribute('data-theme-font', 'system')
     expect(document.body).not.toHaveAttribute('data-theme-radius')
     expect(document.body).not.toHaveAttribute('data-theme-scale')
     expect(document.body).toHaveAttribute('data-theme-content-layout', 'full')
@@ -194,7 +182,6 @@ describe('theme preference persistence', () => {
 
       expect(screen.getByLabelText('Theme mode')).toHaveTextContent('system')
       expect(document.body).not.toHaveAttribute('data-theme-preset')
-      expect(document.body).toHaveAttribute('data-theme-font', 'system')
       expect(document.body).not.toHaveAttribute('data-theme-radius')
       expect(document.body).not.toHaveAttribute('data-theme-scale')
       expect(document.body).toHaveAttribute('data-theme-content-layout', 'full')
@@ -249,53 +236,5 @@ describe('theme preference persistence', () => {
       expect(localStorage.getItem(key)).toBe(value)
     }
     expect(localStorage.getItem('stale-ui-cache')).toBeNull()
-  })
-})
-
-describe('theme font selection', () => {
-  it('keeps manually selected Sans after remounting and switching presets', async () => {
-    const user = userEvent.setup()
-    const first = render(<ThemeFixture />)
-
-    await user.click(screen.getByRole('button', { name: 'Sans font' }))
-    first.unmount()
-    render(<ThemeFixture />)
-
-    expect(document.body).toHaveAttribute('data-theme-font', 'sans')
-    expect(localStorage.getItem('newapi:theme:v1:font')).toBe('sans')
-
-    await user.click(screen.getByRole('button', { name: 'Anthropic preset' }))
-
-    expect(document.body).toHaveAttribute('data-theme-font', 'sans')
-  })
-
-  it('restores the browser font after selecting Auto and remounting', async () => {
-    localStorage.setItem('newapi:theme:v1:font', 'sans')
-    const user = userEvent.setup()
-    const first = render(<ThemeFixture />)
-
-    await user.click(screen.getByRole('button', { name: 'Auto font' }))
-
-    expect(document.body).toHaveAttribute('data-theme-font', 'system')
-    expect(localStorage.getItem('newapi:theme:v1:font')).toBeNull()
-
-    first.unmount()
-    render(<ThemeFixture />)
-
-    expect(document.body).toHaveAttribute('data-theme-font', 'system')
-  })
-
-  it('uses the preset font in Auto and restores the browser font on the default preset', async () => {
-    const user = userEvent.setup()
-    render(<ThemeFixture />)
-
-    await user.click(screen.getByRole('button', { name: 'Anthropic preset' }))
-
-    expect(document.body).toHaveAttribute('data-theme-font', 'serif')
-
-    await user.click(screen.getByRole('button', { name: 'Default preset' }))
-
-    expect(document.body).toHaveAttribute('data-theme-font', 'system')
-    expect(localStorage.getItem('newapi:theme:v1:font')).toBeNull()
   })
 })
