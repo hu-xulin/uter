@@ -74,15 +74,7 @@ function UpstreamUpdateHarness(props: { refresh?: () => Promise<void> }) {
       >
         Other channel
       </Button>
-      <UpstreamUpdateDialog
-        open={upstream.showModal}
-        addModels={upstream.addModels}
-        removeModels={upstream.removeModels}
-        preferredTab={upstream.preferredTab}
-        confirmLoading={upstream.applyLoading}
-        onConfirm={upstream.applyUpdates}
-        onCancel={upstream.closeModal}
-      />
+      <UpstreamUpdateDialog upstream={upstream} />
     </>
   )
 }
