@@ -84,7 +84,10 @@ describe('marketplace card logo', () => {
       )
     })
     expect(fetchMock).toHaveBeenCalledWith(
-      'https://raw.githubusercontent.com/uter-ai/uter-plugins/main/plugins/tasks/incho/icon.svg'
+      'https://raw.githubusercontent.com/uter-ai/uter-plugins/main/plugins/tasks/incho/icon.svg',
+      // The icon is revalidated with the host so a republished logo is never
+      // served from a stale browser cache.
+      expect.anything()
     )
   })
 

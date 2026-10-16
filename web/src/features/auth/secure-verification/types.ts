@@ -63,6 +63,8 @@ export type VerificationOperation =
     }
   | { scope: 'account.binding.unbind'; context: { provider_id: number } }
   | { scope: 'admin.user.manage'; context: { user_id: number; action: AdminUserManageAction } }
+  | { scope: 'admin.user.create'; context: { role: number } }
+  | { scope: 'admin.user.update'; context: { user_id: number } }
   | { scope: 'admin.user.delete'; context: { user_id: number } }
   | { scope: 'admin.user.2fa.disable'; context: { user_id: number } }
   | { scope: 'admin.user.passkey.reset'; context: { user_id: number } }
@@ -83,6 +85,8 @@ export type VerificationOperation =
         | 'account.binding.bind'
         | 'account.binding.unbind'
         | 'admin.user.manage'
+        | 'admin.user.create'
+        | 'admin.user.update'
         | 'admin.user.delete'
         | 'admin.user.2fa.disable'
         | 'admin.user.passkey.reset'

@@ -60,7 +60,6 @@ const previewSchemas = {
 }
 
 type SyntaxNode = ReturnType<typeof javascriptLanguage.parser.parse>['topNode']
-type SyntaxTree = ReturnType<typeof javascriptLanguage.parser.parse>
 const unresolved = Symbol('unresolved static metadata')
 type StaticValue =
   | string
@@ -69,6 +68,154 @@ type StaticValue =
   | null
   | StaticValue[]
   | { [key: string]: StaticValue }
+type StaticContext = {
+  constants: Map<string, SyntaxNode>
+  remainingValues: number
+}
+
+function isComment(node: SyntaxNode): boolean {
+  return node.name === 'LineComment' || node.name === 'BlockComment'
+}
+
+function readConstInitializer(variable: SyntaxNode): SyntaxNode | null {
+  let next = variable.nextSibling
+  while (next && isComment(next)) {
+    next = next.nextSibling
+  }
+  if (next?.name !== 'Equals') return null
+  next = next.nextSibling
+  while (next && isComment(next)) {
+    next = next.nextSibling
+  }
+  return next
+}
+
+/** Argument expressions of a `CallExpression`, skipping parens/commas/comments. */
+function callArguments(node: SyntaxNode): SyntaxNode[] {
+  const argList = node.getChild('ArgList')
+  if (!argList) return []
+  const args: SyntaxNode[] = []
+  for (let child = argList.firstChild; child; child = child.nextSibling) {
+    if (isComment(child)) continue
+    if (child.name === '(' || child.name === ')' || child.name === ',') continue
+    args.push(child)
+  }
+  return args
+}
+
+/** `Object.keys(obj)` / `arr.concat(...)` only read a constant, never mutate it. */
+function isSafeBuiltInReference(
+  source: string,
+  reference: SyntaxNode
+): boolean {
+  const argList = reference.parent
+  if (argList?.name !== 'ArgList' || argList.parent?.name !== 'CallExpression') {
+    return false
+  }
+  const callee = argList.parent.firstChild
+  if (callee?.name !== 'MemberExpression') return false
+  const property = callee.getChild('PropertyName')
+  if (!property) return false
+  const method = source.slice(property.from, property.to)
+  if (method === 'concat') return true
+  const base = callee.firstChild
+  return (
+    method === 'keys' &&
+    base?.name === 'VariableName' &&
+    source.slice(base.from, base.to) === 'Object'
+  )
+}
+
+/** Only local constants whose containers cannot escape or be mutated are previewable. */
+function collectStaticConstants(
+  source: string,
+  root: SyntaxNode,
+  meta: SyntaxNode
+): Map<string, SyntaxNode> {
+  const constants = new Map<string, SyntaxNode>()
+  const definitions = new Map<string, number>()
+  const owners = new Map<number, string>()
+  const dependencies = new Map<string, Set<string>>()
+  const unsafe = new Set<string>()
+  for (const declaration of root.getChildren('VariableDeclaration')) {
+    if (!declaration.getChild('const')) continue
+    for (const variable of declaration.getChildren('VariableDefinition')) {
+      const value = readConstInitializer(variable)
+      if (!value) continue
+      const name = source.slice(variable.from, variable.to)
+      if (constants.has(name)) unsafe.add(name)
+      constants.set(name, value)
+      definitions.set(name, variable.from)
+      owners.set(value.from, name)
+      dependencies.set(name, new Set())
+    }
+  }
+  root.toTree().iterate({
+    enter: (reference) => {
+      if (!['VariableName', 'VariableDefinition'].includes(reference.name)) {
+        return
+      }
+      const name = source.slice(reference.from, reference.to)
+      if (!constants.has(name)) return
+      if (reference.name === 'VariableDefinition') {
+        // Conservatively reject shadowed bindings instead of guessing their scope.
+        if (definitions.get(name) !== reference.from) unsafe.add(name)
+        return
+      }
+      let container = reference.node
+      while (container.parent) {
+        const parent = container.parent
+        if (parent.name === 'ArrayExpression') {
+          container = parent
+        } else if (
+          parent.name === 'Property' &&
+          (parent.getChild(':')?.to ?? Infinity) <= container.from &&
+          parent.parent?.name === 'ObjectExpression'
+        ) {
+          container = parent.parent
+        } else {
+          break
+        }
+      }
+      if (container.from === meta.from && container.to === meta.to) return
+      const owner = owners.get(container.from)
+      if (owner !== undefined) {
+        dependencies.get(owner)?.add(name)
+        return
+      }
+      // These membership checks neither mutate the receiver nor expose its members.
+      const member = reference.node.parent
+      const property = member?.getChild('PropertyName')
+      if (
+        constants.get(name)?.name === 'ArrayExpression' &&
+        member?.name === 'MemberExpression' &&
+        member.firstChild?.from === reference.from &&
+        member.getChild('.') &&
+        property &&
+        ['includes', 'indexOf', 'lastIndexOf'].includes(
+          source.slice(property.from, property.to)
+        ) &&
+        member.parent?.name === 'CallExpression' &&
+        member.parent.firstChild?.from === member.from
+      ) {
+        return
+      }
+      if (isSafeBuiltInReference(source, reference.node)) return
+      unsafe.add(name)
+    },
+  })
+  // Escaping an alias or containing object also exposes every referenced constant.
+  const pending = [...unsafe]
+  for (let i = 0; i < pending.length; i += 1) {
+    for (const dependency of dependencies.get(pending[i]) ?? []) {
+      if (unsafe.has(dependency)) continue
+      unsafe.add(dependency)
+      pending.push(dependency)
+    }
+  }
+  for (const name of unsafe) constants.delete(name)
+  return constants
+}
 
 /** Decode JavaScript string tokens without evaluating code, including JS-only escapes. */
 function readStaticString(token: string): string | typeof unresolved {
@@ -123,48 +270,6 @@ function readStaticString(token: string): string | typeof unresolved {
   return result
 }
 
-function isComment(node: SyntaxNode): boolean {
-  return node.name === 'LineComment' || node.name === 'BlockComment'
-}
-
-/**
- * Collect module-level `const`/`let`/`var` declarations so the static evaluator
- * can resolve identifiers that the plugin meta references (e.g. shared model
- * lists). Only pure, statically-resolvable inits resolve; anything else degrades
- * gracefully to `unresolved`.
- */
-function collectModuleScope(source: string, tree: SyntaxTree): Map<string, SyntaxNode> {
-  const scope = new Map<string, SyntaxNode>()
-  for (const declaration of tree.topNode.getChildren('VariableDeclaration')) {
-    if (!declaration.getChild('const') && !declaration.getChild('let') && !declaration.getChild('var')) {
-      continue
-    }
-    for (const variable of declaration.getChildren('VariableDefinition')) {
-      const name = source.slice(variable.from, variable.to)
-      let next = variable.nextSibling
-      while (next && isComment(next)) next = next.nextSibling
-      if (next?.name !== 'Equals') continue
-      next = next.nextSibling
-      while (next && isComment(next)) next = next.nextSibling
-      if (next) scope.set(name, next)
-    }
-  }
-  return scope
-}
-
-/** Argument expressions of a `CallExpression`, skipping parens/commas/comments. */
-function callArguments(node: SyntaxNode): SyntaxNode[] {
-  const argList = node.getChild('ArgList')
-  if (!argList) return []
-  const args: SyntaxNode[] = []
-  for (let child = argList.firstChild; child; child = child.nextSibling) {
-    if (isComment(child)) continue
-    if (child.name === '(' || child.name === ')' || child.name === ',') continue
-    args.push(child)
-  }
-  return args
-}
-
 /** Dynamic keys/spreads could replace any field, so the entire object is unknown. */
 function staticObjectProperties(
   source: string,
@@ -193,7 +298,7 @@ function staticObjectProperties(
     }
     const colon = property.getChild(':')
     let value = colon?.nextSibling ?? null
-    while (value && ['LineComment', 'BlockComment'].includes(value.name)) {
+    while (value && isComment(value)) {
       value = value.nextSibling
     }
     fields.set(key, fields.has(key) ? null : value)
@@ -204,11 +309,18 @@ function staticObjectProperties(
 function readStaticValue(
   source: string,
   node: SyntaxNode,
-  scope: Map<string, SyntaxNode>,
+  context: StaticContext,
   depth = 0
 ): StaticValue | typeof unresolved {
-  if (depth > 64) return unresolved
+  // Shared constants can expand a small source into an exponentially larger value.
+  if (depth > 64 || context.remainingValues-- <= 0) return unresolved
   const token = source.slice(node.from, node.to)
+  if (node.name === 'VariableName') {
+    const value = context.constants.get(token)
+    // Require initialization before use, which also rules out reference cycles.
+    if (!value || value.to >= node.from) return unresolved
+    return readStaticValue(source, value, context, depth + 1)
+  }
   if (node.name === 'String') return readStaticString(token)
   if (node.name === 'TemplateString' && !node.getChild('Interpolation')) {
     return readStaticString(token)
@@ -219,20 +331,13 @@ function readStaticValue(
   }
   if (node.name === 'BooleanLiteral') return token === 'true'
   if (node.name === 'null') return null
-  // Resolve a module-level constant the meta references (e.g. a shared model
-  // list). Unknown names stay unresolved so the field degrades gracefully.
-  if (node.name === 'VariableName') {
-    const init = scope.get(token)
-    if (!init) return unresolved
-    return readStaticValue(source, init, scope, depth + 1)
-  }
   if (node.name === 'UnaryExpression') {
     const operand = node.lastChild
     const operator = node.firstChild
     if (!operand || !operator || operand.name !== 'Number') return unresolved
     const sign = source.slice(operator.from, operator.to)
     if (sign !== '-' && sign !== '+') return unresolved
-    const value = readStaticValue(source, operand, scope, depth + 1)
+    const value = readStaticValue(source, operand, context, depth + 1)
     if (typeof value !== 'number') return unresolved
     return sign === '-' ? -value : value
   }
@@ -246,7 +351,7 @@ function readStaticValue(
       if (child.name === 'SpreadElement') {
         const expr = child.lastChild
         if (!expr) return unresolved
-        const spread = readStaticValue(source, expr, scope, depth + 1)
+        const spread = readStaticValue(source, expr, context, depth + 1)
         if (spread === unresolved || !Array.isArray(spread)) return unresolved
         values.push(...spread)
         expectsValue = false
@@ -258,7 +363,7 @@ function readStaticValue(
         continue
       }
       if (!expectsValue) return unresolved
-      const value = readStaticValue(source, child, scope, depth + 1)
+      const value = readStaticValue(source, child, context, depth + 1)
       if (value === unresolved) return unresolved
       values.push(value)
       expectsValue = false
@@ -271,14 +376,14 @@ function readStaticValue(
     const result: { [key: string]: StaticValue } = Object.create(null)
     for (const [key, valueNode] of properties) {
       if (!valueNode) return unresolved
-      const value = readStaticValue(source, valueNode, scope, depth + 1)
+      const value = readStaticValue(source, valueNode, context, depth + 1)
       if (value === unresolved) return unresolved
       result[key] = value
     }
     return result
   }
   // Bounded evaluation of the safe built-ins plugins use to build meta:
-  // `arr.concat(...)`, `Object.keys(obj)`, and inline identifier references.
+  // `arr.concat(...)` and `Object.keys(obj)`.
   if (node.name === 'CallExpression') {
     const callee = node.firstChild
     if (callee && callee.name === 'MemberExpression') {
@@ -286,22 +391,31 @@ function readStaticValue(
       const method = property ? source.slice(property.from, property.to) : ''
       const base = callee.firstChild
       if (!base) return unresolved
-      if (method === 'keys' && base.name === 'VariableName' && source.slice(base.from, base.to) === 'Object') {
+      if (
+        method === 'keys' &&
+        base.name === 'VariableName' &&
+        source.slice(base.from, base.to) === 'Object'
+      ) {
         const args = callArguments(node)
         if (args.length === 1) {
-          const object = readStaticValue(source, args[0], scope, depth + 1)
-          if (object !== unresolved && object !== null && typeof object === 'object' && !Array.isArray(object)) {
+          const object = readStaticValue(source, args[0], context, depth + 1)
+          if (
+            object !== unresolved &&
+            object !== null &&
+            typeof object === 'object' &&
+            !Array.isArray(object)
+          ) {
             return Object.keys(object)
           }
         }
         return unresolved
       }
       if (method === 'concat') {
-        const target = readStaticValue(source, base, scope, depth + 1)
+        const target = readStaticValue(source, base, context, depth + 1)
         if (target === unresolved || !Array.isArray(target)) return unresolved
         const merged: StaticValue[] = [...target]
         for (const arg of callArguments(node)) {
-          const value = readStaticValue(source, arg, scope, depth + 1)
+          const value = readStaticValue(source, arg, context, depth + 1)
           if (value === unresolved) return unresolved
           if (Array.isArray(value)) merged.push(...value)
           else merged.push(value)
@@ -314,7 +428,7 @@ function readStaticValue(
   return unresolved
 }
 
-/** Inspect only the exported literal declaration. Never compile or run the plugin. */
+/** Inspect literal declarations and safe local constants. Never compile or run the plugin. */
 export function parsePluginMetaPreview(source: string): PluginMetaPreview {
   const fields = Object.fromEntries(
     Object.keys(previewSchemas).map((key) => [key, { state: 'unknown' }])
@@ -322,7 +436,6 @@ export function parsePluginMetaPreview(source: string): PluginMetaPreview {
   const result: PluginMetaPreview = { status: 'unavailable', fields }
   if (pluginSourceByteLength(source) > MAX_PLUGIN_SOURCE_BYTES) return result
   const tree = javascriptLanguage.parser.parse(source)
-  const scope = collectModuleScope(source, tree)
   let invalid = false
   tree.iterate({
     enter: (node) => {
@@ -337,16 +450,8 @@ export function parsePluginMetaPreview(source: string): PluginMetaPreview {
     for (const variable of declaration.getChildren('VariableDefinition')) {
       if (source.slice(variable.from, variable.to) !== 'meta') continue
       if (meta) return result
-      let next = variable.nextSibling
-      while (next && ['LineComment', 'BlockComment'].includes(next.name)) {
-        next = next.nextSibling
-      }
-      if (next?.name !== 'Equals') return result
-      next = next.nextSibling
-      while (next && ['LineComment', 'BlockComment'].includes(next.name)) {
-        next = next.nextSibling
-      }
-      meta = next
+      meta = readConstInitializer(variable)
+      if (!meta) return result
     }
   }
   if (!meta) return result
@@ -365,6 +470,7 @@ export function parsePluginMetaPreview(source: string): PluginMetaPreview {
   if (invalid) return result
   const properties = staticObjectProperties(source, meta)
   if (!properties) return result
+  const constants = collectStaticConstants(source, tree.topNode, meta)
   result.status = 'parsed'
   for (const key of Object.keys(
     previewSchemas
@@ -374,7 +480,9 @@ export function parsePluginMetaPreview(source: string): PluginMetaPreview {
       continue
     }
     const node = properties.get(key)
-    const value = node ? readStaticValue(source, node, scope) : unresolved
+    const value = node
+      ? readStaticValue(source, node, { constants, remainingValues: 32_768 })
+      : unresolved
     const parsed = previewSchemas[key].safeParse(value)
     if (!parsed.success) {
       result.status = 'partial'
