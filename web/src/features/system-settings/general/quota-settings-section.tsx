@@ -17,6 +17,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@uter.ai
 */
 import { zodResolver } from '@hookform/resolvers/zod'
+import i18next from 'i18next'
 import type { ChangeEvent } from 'react'
 import type { Resolver } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
@@ -58,13 +59,22 @@ const quotaSchema = z.object({
   TopUpLink: z.string(),
   general_setting: z
     .object({
-      docs_link: z.string(),
+      docs_link: z.string().optional(),
     })
     .optional(),
   quota_setting: z.object({
-    trust_quota_usd: z.coerce.number(),
-    pre_consume_multiplier: z.coerce.number(),
     enable_free_model_pre_consume: z.boolean(),
+    trust_quota_usd: z.preprocess(
+      (value) => (value === '' ? undefined : value),
+      z.coerce
+        .number({ error: () => i18next.t('Please enter a valid number') })
+        .min(0, {
+          error: () => i18next.t('Must be greater than or equal to 0'),
+        })
+    ),
+    pre_consume_multiplier: z.coerce
+      .number({ error: () => i18next.t('Please enter a valid number') })
+      .positive({ error: () => i18next.t('Must be greater than 0') }),
   }),
 })
 
@@ -140,8 +150,8 @@ export function QuotaSettingsSection({
                 <FormItem>
                   <FormLabel>{t('New User Quota')}</FormLabel>
                   <FormControl>
-                    <Input autoComplete='off'
-                      placeholder='500000'
+                    <Input
+                      autoComplete='off'
                       type='number'
                       value={field.value ?? ''}
                       onChange={handleNumberChange(field.onChange)}
@@ -170,7 +180,8 @@ export function QuotaSettingsSection({
                 <FormItem>
                   <FormLabel>{t('Pre-Consumed Quota')}</FormLabel>
                   <FormControl>
-                    <Input autoComplete='off'
+                    <Input
+                      autoComplete='off'
                       placeholder='50000'
                       type='number'
                       value={field.value ?? ''}
@@ -190,13 +201,73 @@ export function QuotaSettingsSection({
 
             <FormField
               control={form.control}
+              name='quota_setting.trust_quota_usd'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    {t('Wallet pre-consume bypass threshold (USD)')}
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      autoComplete='off'
+                      type='number'
+                      min={0}
+                      step='any'
+                      value={field.value ?? ''}
+                      onChange={field.onChange}
+                      name={field.name}
+                      onBlur={field.onBlur}
+                      ref={field.ref}
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    {t(
+                      'Skip pre-consumption when the wallet balance and limited API key balance both exceed this amount. Set to 0 to always pre-consume. Subscriptions and asynchronous tasks always reserve quota.'
+                    )}
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name='quota_setting.pre_consume_multiplier'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t('Input pre-consume multiplier')}</FormLabel>
+                  <FormControl>
+                    <Input
+                      autoComplete='off'
+                      type='number'
+                      min={0}
+                      step='any'
+                      value={field.value ?? ''}
+                      onChange={field.onChange}
+                      name={field.name}
+                      onBlur={field.onBlur}
+                      ref={field.ref}
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    {t(
+                      'Reserve the estimated input cost multiplied by this value, without estimating output tokens. Defaults to 1; positive decimals such as 0.5 and 1.5 are supported. Final charges use actual usage. Per-request and task prices are unaffected.'
+                    )}
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
               name='QuotaForInviter'
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>{t('Inviter Reward')}</FormLabel>
                   <FormControl>
-                    <Input autoComplete='off'
-                      placeholder='100000'
+                    <Input
+                      autoComplete='off'
                       type='number'
                       value={field.value ?? ''}
                       onChange={handleNumberChange(field.onChange)}
@@ -225,8 +296,8 @@ export function QuotaSettingsSection({
                 <FormItem>
                   <FormLabel>{t('Invitee Reward')}</FormLabel>
                   <FormControl>
-                    <Input autoComplete='off'
-                      placeholder='100000'
+                    <Input
+                      autoComplete='off'
                       type='number'
                       value={field.value ?? ''}
                       onChange={handleNumberChange(field.onChange)}
@@ -278,7 +349,8 @@ export function QuotaSettingsSection({
                 <FormItem>
                   <FormLabel>{t('Top-Up Link')}</FormLabel>
                   <FormControl>
-                    <Input autoComplete='off'
+                    <Input
+                      autoComplete='off'
                       placeholder={t('https://example.com/topup')}
                       {...field}
                     />
@@ -298,7 +370,8 @@ export function QuotaSettingsSection({
                 <FormItem>
                   <FormLabel>{t('Documentation Link')}</FormLabel>
                   <FormControl>
-                    <Input autoComplete='off'
+                    <Input
+                      autoComplete='off'
                       placeholder={t('https://docs.example.com')}
                       {...field}
                     />
