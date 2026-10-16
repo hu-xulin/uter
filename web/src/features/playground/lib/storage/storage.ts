@@ -16,7 +16,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
-import { scopedKey } from '@/lib/scoped-storage'
+import { useAuthStore } from '@/stores/auth-store'
+
 import { MESSAGE_STATUS, STORAGE_KEYS } from '../../constants'
 import type { PlaygroundConfig, ParameterEnabled, Message } from '../../types'
 import {
@@ -47,7 +48,18 @@ const MIN_PREFIX_COLLAPSE_LENGTH = 2000
 const MIN_REPEATED_SECTION_COUNT = 3
 const SECTION_HEADING_LINE_PATTERN = /^#{2,6}\s+\d+\.\s+.+$/gm
 
-function readStoredValue(key: string): unknown | null {
+function getUserStorageKey(key: string): string | null {
+  // Legacy data has no owner; never assign it to the next signed-in account.
+  for (const legacyKey of Object.values(STORAGE_KEYS)) {
+    localStorage.removeItem(legacyKey)
+  }
+  const userId = useAuthStore.getState().auth.user?.id
+  return userId == null ? null : `${key}:${userId}`
+}
+
+function readStoredValue(baseKey: string): unknown | null {
+  const key = getUserStorageKey(baseKey)
+  if (!key) return null
   const saved = localStorage.getItem(key)
   if (!saved) return null
 
@@ -55,7 +67,8 @@ function readStoredValue(key: string): unknown | null {
 }
 
 function readStoredMessagesValue(): unknown | null {
-  const key = scopedKey(STORAGE_KEYS.MESSAGES)
+  const key = getUserStorageKey(STORAGE_KEYS.MESSAGES)
+  if (!key) return null
   const saved = localStorage.getItem(key)
   if (!saved) return null
 
@@ -94,7 +107,9 @@ function unwrapStoredValue(value: unknown): unknown {
   return value
 }
 
-function writeStoredValue<T>(key: string, data: T): void {
+function writeStoredValue<T>(baseKey: string, data: T): void {
+  const key = getUserStorageKey(baseKey)
+  if (!key) return
   const payload: StoredEnvelope<T> = {
     version: STORAGE_VERSION,
     data,
@@ -329,7 +344,7 @@ function trimMessagesByContentSize(messages: Message[]): Message[] {
  */
 export function loadConfig(): Partial<PlaygroundConfig> {
   try {
-    const saved = readStoredValue(scopedKey(STORAGE_KEYS.CONFIG))
+    const saved = readStoredValue(STORAGE_KEYS.CONFIG)
     if (!saved) return {}
 
     return playgroundConfigSchema.parse(unwrapStoredValue(saved))
@@ -346,7 +361,7 @@ export function loadConfig(): Partial<PlaygroundConfig> {
 export function saveConfig(config: Partial<PlaygroundConfig>): void {
   try {
     const parsed = playgroundConfigSchema.parse(config)
-    writeStoredValue(scopedKey(STORAGE_KEYS.CONFIG), parsed)
+    writeStoredValue(STORAGE_KEYS.CONFIG, parsed)
   } catch (error) {
     // eslint-disable-next-line no-console
     console.error('Failed to save config:', error)
@@ -358,7 +373,7 @@ export function saveConfig(config: Partial<PlaygroundConfig>): void {
  */
 export function loadParameterEnabled(): Partial<ParameterEnabled> {
   try {
-    const saved = readStoredValue(scopedKey(STORAGE_KEYS.PARAMETER_ENABLED))
+    const saved = readStoredValue(STORAGE_KEYS.PARAMETER_ENABLED)
     if (!saved) return {}
 
     return parameterEnabledSchema.parse(unwrapStoredValue(saved))
@@ -377,7 +392,7 @@ export function saveParameterEnabled(
 ): void {
   try {
     const parsed = parameterEnabledSchema.parse(parameterEnabled)
-    writeStoredValue(scopedKey(STORAGE_KEYS.PARAMETER_ENABLED), parsed)
+    writeStoredValue(STORAGE_KEYS.PARAMETER_ENABLED, parsed)
   } catch (error) {
     // eslint-disable-next-line no-console
     console.error('Failed to save parameter enabled:', error)
@@ -423,16 +438,15 @@ export function loadMessages(): Message[] | null {
  */
 export function saveMessages(messages: Message[]): void {
   try {
+    const key = getUserStorageKey(STORAGE_KEYS.MESSAGES)
+    if (!key) return
     const trimmed = trimMessages(messages)
     const parsed = messagesSchema.parse(trimmed) as Message[]
     const payload: StoredEnvelope<Message[]> = {
       version: STORAGE_VERSION,
       data: parsed,
     }
-    localStorage.setItem(
-      scopedKey(STORAGE_KEYS.MESSAGES),
-      obfuscateStored(JSON.stringify(payload))
-    )
+    localStorage.setItem(key, obfuscateStored(JSON.stringify(payload)))
   } catch (error) {
     // eslint-disable-next-line no-console
     console.error('Failed to save messages:', error)
@@ -440,13 +454,14 @@ export function saveMessages(messages: Message[]): void {
 }
 
 /**
- * Clear all playground data
+ * Clear the signed-in user's playground data
  */
 export function clearPlaygroundData(): void {
   try {
-    localStorage.removeItem(scopedKey(STORAGE_KEYS.CONFIG))
-    localStorage.removeItem(scopedKey(STORAGE_KEYS.PARAMETER_ENABLED))
-    localStorage.removeItem(scopedKey(STORAGE_KEYS.MESSAGES))
+    for (const baseKey of Object.values(STORAGE_KEYS)) {
+      const key = getUserStorageKey(baseKey)
+      if (key) localStorage.removeItem(key)
+    }
   } catch (error) {
     // eslint-disable-next-line no-console
     console.error('Failed to clear playground data:', error)

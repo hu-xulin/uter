@@ -131,10 +131,3 @@ export const CONTENT_LAYOUT_VALUES: ReadonlySet<ContentLayout> = new Set([
   'full',
   'centered',
 ])
-
-export const THEME_COOKIE_KEYS = {
-  preset: 'theme_preset',
-  radius: 'theme_radius',
-  scale: 'theme_scale',
-  contentLayout: 'theme_content_layout',
-} as const

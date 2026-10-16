@@ -16,6 +16,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 
 import { scopedKey } from '@/lib/scoped-storage'
+import { useAuthStore } from '@/stores/auth-store'
 
 import { STORAGE_KEYS } from '../../../constants'
 import { clearPlaygroundData, loadMessages, saveMessages } from '../storage'
@@ -41,11 +42,15 @@ function makeMessages() {
 
 describe('playground message storage obfuscation', () => {
   beforeEach(() => {
+    // Playground history is user-scoped: nothing is persisted for a signed-out
+    // visitor, so the obfuscation contract only applies once an account is set.
+    useAuthStore.getState().auth.setUser({ id: 1, username: 'A', role: 1 })
     clearPlaygroundData()
   })
 
   afterEach(() => {
     clearPlaygroundData()
+    useAuthStore.getState().auth.reset()
   })
 
   it('does not store message content as readable plaintext', () => {
