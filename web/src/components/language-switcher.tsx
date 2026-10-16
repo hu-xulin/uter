@@ -27,6 +27,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { parseUserSettings } from '@/features/profile/lib/format'
+import { ensureLocale } from '@/i18n/config'
 import {
   INTERFACE_LANGUAGE_OPTIONS,
   normalizeInterfaceLanguage,
@@ -41,13 +43,38 @@ export function LanguageSwitcher() {
   const currentLanguage = normalizeInterfaceLanguage(i18n.language)
   const handleChangeLanguage = useCallback(
     async (code: string) => {
-      await i18n.changeLanguage(code)
-      if (user) {
-        try {
-          await api.put('/api/user/self', { language: code })
-        } catch {
-          // Best-effort persistence; don't block the UI on failure
-        }
+      const next = normalizeInterfaceLanguage(code)
+      // Capture what is on screen *right now* rather than deriving the previous
+      // language from the saved setting: an account that never saved a language
+      // has no `setting.language`, and normalizing that would roll back to
+      // English instead of the language actually being displayed.
+      const previousLanguage = normalizeInterfaceLanguage(i18n.language)
+      // Load the locale bundle *before* switching so the chosen language's
+      // strings render immediately. The old order set `i18n.language` first
+      // while the bundle was still being fetched, the UI fell back to English,
+      // and only a second click (with the chunk now cached) made the switch
+      // stick — which read as "it snapped back to English".
+      await ensureLocale(next)
+      await i18n.changeLanguage(next)
+      if (!user) return
+      // Keep the in-memory auth store in sync with the choice so an auth-rotation
+      // response or silent refresh re-applies this language instead of the stale
+      // previously saved one (which would snap the UI back to English).
+      const existing =
+        typeof user.setting === 'string'
+          ? parseUserSettings(user.setting)
+          : (user.setting ?? {})
+      useAuthStore.getState().auth.setUser({
+        ...user,
+        setting: JSON.stringify({ ...existing, language: next }),
+      })
+      try {
+        await api.put('/api/user/self', { language: next })
+      } catch {
+        // Persistence failed: undo both the store and the UI so what is shown
+        // still matches what the account has saved.
+        useAuthStore.getState().auth.setUser(user)
+        await i18n.changeLanguage(previousLanguage)
       }
     },
     [i18n, user]
