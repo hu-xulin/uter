@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"strconv"
 	"sync/atomic"
 	"testing"
 	"time"
@@ -49,14 +50,14 @@ func TestModelRateLimitStreamFailuresDoNotConsumeSuccessLimit(t *testing.T) {
 	for _, backend := range []string{"memory", "redis"} {
 		for _, totalLimit := range []int{0, 2} {
 			t.Run(fmt.Sprintf("%s/total=%d", backend, totalLimit), func(t *testing.T) {
-				userID := 7200000 + int(modelRateLimitTestUsers.Add(1))
-				handler := memoryRateLimitHandler(60, totalLimit, 1)
+				subject := strconv.Itoa(7200000 + int(modelRateLimitTestUsers.Add(1)))
+				handler := memoryRateLimitHandler(subject, 60, totalLimit, 1)
 				if backend == "redis" {
 					useRateLimitMiniRedis(t)
-					handler = redisRateLimitHandler(60, totalLimit, 1)
+					handler = redisRateLimitHandler(subject, 60, totalLimit, 1)
 				}
 				router := gin.New()
-				router.GET("/:outcome", func(c *gin.Context) { c.Set("id", userID) }, handler, func(c *gin.Context) {
+				router.GET("/:outcome", handler, func(c *gin.Context) {
 					status := relaycommon.NewStreamStatus()
 					if c.Param("outcome") == "failed" {
 						status.MarkFailed("server_error", "", 0)
@@ -80,10 +81,10 @@ func TestModelRateLimitStreamFailuresDoNotConsumeSuccessLimit(t *testing.T) {
 
 func TestModelMemoryRateLimitReservesConcurrentSuccessAdmission(t *testing.T) {
 	require.NoError(t, i18n.Init())
-	userID := 7200000 + int(modelRateLimitTestUsers.Add(1))
+	subject := strconv.Itoa(7200000 + int(modelRateLimitTestUsers.Add(1)))
 	entered, release, finished := make(chan struct{}), make(chan struct{}), make(chan struct{})
 	router := gin.New()
-	router.GET("/:outcome", func(c *gin.Context) { c.Set("id", userID) }, memoryRateLimitHandler(60, 0, 1), func(c *gin.Context) {
+	router.GET("/:outcome", memoryRateLimitHandler(subject, 60, 0, 1), func(c *gin.Context) {
 		if c.Param("outcome") == "failed" {
 			close(entered)
 			<-release
@@ -118,12 +119,11 @@ func TestModelMemoryRateLimitRejectionsReturnOpenAIError(t *testing.T) {
 		{name: "success", successLimit: 1, messageKey: i18n.MsgRateLimitReached},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
-			userID := 7200000 + int(modelRateLimitTestUsers.Add(1))
+			subject := strconv.Itoa(7200000 + int(modelRateLimitTestUsers.Add(1)))
 			router := gin.New()
 			router.GET("/", func(c *gin.Context) {
-				c.Set("id", userID)
 				c.Set(common.RequestIdKey, "req-limited")
-			}, memoryRateLimitHandler(60, tc.totalLimit, tc.successLimit), func(c *gin.Context) {
+			}, memoryRateLimitHandler(subject, 60, tc.totalLimit, tc.successLimit), func(c *gin.Context) {
 				c.Status(http.StatusOK)
 			})
 			require.Equal(t, http.StatusOK, performRateLimitRequest(router, "/", "127.0.0.1:1000").Code)
@@ -138,6 +138,61 @@ func TestModelMemoryRateLimitRejectionsReturnOpenAIError(t *testing.T) {
 			}})
 			require.NoError(t, err)
 			assert.JSONEq(t, string(want), resp.Body.String())
+		})
+	}
+}
+
+// 配置了独立限流的分组按「用户:分组」单独计数；未配置的分组仍共用该用户的全局计数。
+// 回归上游 45fbb149f：此前分组只取限额值，计数却仍记在用户全局键上，
+// 导致小组的首个请求被大组的余量误判为 429。
+func TestModelRateLimitCountsConfiguredGroupsSeparately(t *testing.T) {
+	require.NoError(t, i18n.Init())
+	previousEnabled, previousMinutes := setting.ModelRequestRateLimitEnabled, setting.ModelRequestRateLimitDurationMinutes
+	previousTotal, previousSuccess := setting.ModelRequestRateLimitCount, setting.ModelRequestRateLimitSuccessCount
+	previousGroups, previousRedisEnabled := setting.ModelRequestRateLimitGroup, common.RedisEnabled
+	t.Cleanup(func() {
+		setting.ModelRequestRateLimitEnabled, setting.ModelRequestRateLimitDurationMinutes = previousEnabled, previousMinutes
+		setting.ModelRequestRateLimitCount, setting.ModelRequestRateLimitSuccessCount = previousTotal, previousSuccess
+		setting.ModelRequestRateLimitGroup, common.RedisEnabled = previousGroups, previousRedisEnabled
+	})
+	setting.ModelRequestRateLimitEnabled, setting.ModelRequestRateLimitDurationMinutes = true, 1
+	common.RedisEnabled = false
+
+	// 分组 a、b 各自有独立限额；分组 c、d 没有，共用全局限额。
+	steps := []struct {
+		group string
+		want  int
+	}{
+		{"a", http.StatusOK}, {"a", http.StatusTooManyRequests},
+		{"b", http.StatusOK}, {"b", http.StatusTooManyRequests},
+		{"c", http.StatusOK}, {"d", http.StatusTooManyRequests},
+	}
+	for _, tc := range []struct {
+		backend, limit string
+		counts         [2]int // [总限额, 成功限额]，同时用于 a/b 分组与全局
+	}{
+		{"memory", "success", [2]int{0, 1}},
+		{"redis", "success", [2]int{0, 1}},
+		{"memory", "total", [2]int{1, 1000}},
+	} {
+		t.Run(tc.backend+"/"+tc.limit, func(t *testing.T) {
+			if tc.backend == "redis" {
+				useRateLimitMiniRedis(t)
+			}
+			setting.ModelRequestRateLimitCount, setting.ModelRequestRateLimitSuccessCount = tc.counts[0], tc.counts[1]
+			setting.ModelRequestRateLimitGroup = map[string][2]int{"a": tc.counts, "b": tc.counts}
+			userID := 7200000 + int(modelRateLimitTestUsers.Add(1))
+			router := gin.New()
+			router.GET("/:group", func(c *gin.Context) {
+				c.Set("id", userID)
+				common.SetContextKey(c, constant.ContextKeyTokenGroup, c.Param("group"))
+			}, ModelRequestRateLimit(), func(c *gin.Context) {
+				c.Status(http.StatusOK)
+			})
+
+			for _, step := range steps {
+				assert.Equal(t, step.want, performRateLimitRequest(router, "/"+step.group, "127.0.0.1:1000").Code, "group %s", step.group)
+			}
 		})
 	}
 }
