@@ -23,6 +23,7 @@ import { toast } from 'sonner'
 
 import { Combobox } from '@/components/ui/combobox'
 import { TitledCard } from '@/components/ui/titled-card'
+import { ensureLocale } from '@/i18n/config'
 import {
   INTERFACE_LANGUAGE_OPTIONS,
   normalizeInterfaceLanguage,
@@ -64,6 +65,9 @@ export function LanguagePreferencesCard(props: LanguagePreferencesCardProps) {
     const previousLanguage = currentLanguage
     setCurrentLanguage(nextLanguage)
     setSaving(true)
+    // Load the locale bundle before switching so the new strings render
+    // immediately instead of flashing the English fallback on the first pick.
+    await ensureLocale(nextLanguage)
     await i18n.changeLanguage(nextLanguage)
 
     try {
