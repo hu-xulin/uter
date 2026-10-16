@@ -110,6 +110,8 @@ export function auditFieldLabel(key: string, t: TFunction): string {
       return t('Model Limits')
     case 'allow_ips':
       return t('IP Whitelist (supports CIDR)')
+    case 'allow_user_quota_query':
+      return t('Allow querying user quota')
     case 'auto_groups':
       return t('Auto Group Chain')
     case 'cross_group_retry':
@@ -162,6 +164,32 @@ export function auditFieldLabel(key: string, t: TFunction): string {
       return t('Operator Admin')
     case 'audit_info':
       return t('Request')
+    case 'token_id':
+      return t('Token ID')
+    case 'token_ref':
+      return t('Token identifier')
+    case 'scopes':
+      return t('Permissions')
+    case 'previous_scopes':
+      return t('Previous permissions')
+    case 'expires_at':
+      return t('Expiration')
+    case 'required_scope':
+      return t('Required permission')
+    case 'failure_reason':
+      return t('Failure reason')
+    case 'legacy':
+      return t('Legacy token')
+    case 'revoked_access_tokens':
+      return t('Revoked access tokens')
+    case 'verification_method':
+      return t('Verification method')
+    case 'password_reset':
+      return t('Reset password')
+    case 'admin_permissions_updated':
+      return t('Admin permissions updated')
+    case 'provider_id':
+      return t('Provider ID')
     default:
       return key
   }
@@ -601,6 +629,9 @@ export function buildAuditDetails(
   }
   if (typeof params.method === 'string') {
     params.method = loginMethodLabel(params.method, t)
+  }
+  if (typeof params.verification_method === 'string') {
+    params.verification_method = loginMethodLabel(params.verification_method, t)
   }
   if (
     action === 'channel.status_update_batch' &&

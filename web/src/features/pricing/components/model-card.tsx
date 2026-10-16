@@ -23,6 +23,11 @@ import { useTranslation } from 'react-i18next'
 import { CopyButton } from '@/components/copy-button'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card'
+import type { VisualPrice } from '@/features/pricing/lib/billing-expression/visual'
+import {
+  officialRequestPriceUSD,
+  officialTierVariablePriceUSD,
+} from '@/features/system-settings/models/model-pricing-core'
 import { colorIconName, getLobeIcon } from '@/lib/lobe-icon'
 import { resolveLocalizedText } from '@/lib/localized-text'
 import { cn } from '@/lib/utils'
@@ -30,18 +35,19 @@ import { useSystemConfigStore } from '@/stores/system-config-store'
 
 import { DEFAULT_TOKEN_UNIT } from '../constants'
 import { useBillingTime } from '../hooks/use-billing-time'
+import { getBillingModeLabelKey } from '../lib/billing-mode'
 import {
   formatDynamicUnitPrice,
   formatTaskUsageUnitPrice,
   getCardExamplePrice,
   getDynamicDisplayGroupRatio,
+  getDynamicPriceUnitLabelKey,
   getDynamicPricingSummary,
   isUnconfiguredTaskUsageModel,
   type DynamicPriceEntry,
 } from '../lib/dynamic-price'
 import { parseTags } from '../lib/filters'
 import { getDisplayGroupRatio, isTokenBasedModel } from '../lib/model-helpers'
-import { getBillingModeLabelKey } from '../lib/billing-mode'
 import {
   formatOfficialPrice,
   formatOfficialRequestPrice,
@@ -53,20 +59,15 @@ import {
   getOfficialPresetTokenUSD,
   getTokenPriceUSD,
 } from '../lib/price'
-import { taskPriceLabel } from '../lib/task-price-display'
+import { taskPriceLabel, taskUsageUnitLabel } from '../lib/task-price-display'
 import type { PricingModel, PriceType, TokenUnit } from '../types'
-import {
-  officialRequestPriceUSD,
-  officialTierVariablePriceUSD,
-} from '@/features/system-settings/models/model-pricing-core'
-import type { VisualPrice } from '@/features/pricing/lib/billing-expression/visual'
 import { DiscountTag } from './discount-tag'
 import { ModelBillingModeBadge } from './model-billing-mode-badge'
 import { ModelPerfBadge, type ModelPerfBadgeData } from './model-perf-badge'
 
 export interface ModelCardProps {
   model: PricingModel
-  onClick: () => void
+  onClick: (modelName: string) => void
   priceRate?: number
   usdExchangeRate?: number
   tokenUnit?: TokenUnit
@@ -215,6 +216,16 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
           : taskPriceLabel(e.description, e.shortLabel, i18n.language)
       const officialFor = (key: string) =>
         officialEntries.find((e) => e.key === key)
+      // 每个价格维度自带计费单位（1K/1M token、request、usage 单位…），
+      // 与上游 model-card 的 entry 级 unit label 保持一致：价格与单位相邻渲染。
+      const unitLabelFor = (entry: DynamicPriceEntry): string => {
+        const unitLabelKey = getDynamicPriceUnitLabelKey(entry)
+        return taskUsageUnitLabel(
+          entry,
+          i18n.language,
+          unitLabelKey ? t(unitLabelKey) : tokenUnitLabel
+        )
+      }
       priceSummary = (
         <>
           <div
@@ -264,13 +275,17 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
                 return (
                   <span
                     key={`o-${entry.key}`}
-                    className='text-muted-foreground text-xs tabular-nums whitespace-nowrap'
+                    className='text-muted-foreground text-xs whitespace-nowrap tabular-nums'
                   >
                     <span className={cn(dimDiscount && 'line-through')}>
                       {offText}
                     </span>
+                    <span className='font-normal'>
+                      {' '}
+                      / {unitLabelFor(entry)}
+                    </span>
                     {dimDiscount && (
-                      <span className='text-emerald-600 ml-1 font-bold'>
+                      <span className='ml-1 font-bold text-emerald-600'>
                         -{dimPercent}%
                       </span>
                     )}
@@ -283,26 +298,30 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
                 return (
                   <span
                     key={`o-${entry.key}`}
-                    className='text-muted-foreground text-xs tabular-nums whitespace-nowrap'
+                    className='text-muted-foreground text-xs whitespace-nowrap tabular-nums'
                   >
                     -
                   </span>
                 )
               }
               const off = officialFor(entry.key)
-              const offText = off
-                ? off.formattedRange ?? off.formatted
-                : '-'
+              const offText = off ? (off.formattedRange ?? off.formatted) : '-'
               return (
                 <span
                   key={`o-${entry.key}`}
-                  className='text-muted-foreground text-xs tabular-nums whitespace-nowrap'
+                  className='text-muted-foreground text-xs whitespace-nowrap tabular-nums'
                 >
                   <span className={cn(isDiscount && 'line-through')}>
                     {offText}
                   </span>
+                  {off && (
+                    <span className='font-normal'>
+                      {' '}
+                      / {unitLabelFor(entry)}
+                    </span>
+                  )}
                   {isDiscount && (
-                    <span className='text-emerald-600 ml-1 font-bold'>
+                    <span className='ml-1 font-bold text-emerald-600'>
                       -{discountPercent}%
                     </span>
                   )}
@@ -449,13 +468,13 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
         {dims.map((d) => (
           <span
             key={`o-${d.type}`}
-            className='text-muted-foreground text-xs tabular-nums whitespace-nowrap'
+            className='text-muted-foreground text-xs whitespace-nowrap tabular-nums'
           >
             <span className={cn(d.isDiscount && 'line-through')}>
               {d.official}
             </span>
             {d.isDiscount && (
-              <span className='text-emerald-600 ml-1 font-bold'>
+              <span className='ml-1 font-bold text-emerald-600'>
                 -{d.percent}%
               </span>
             )}
@@ -544,13 +563,13 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
         {dims.map((d) => (
           <span
             key={`o-${d.key}`}
-            className='text-muted-foreground text-xs tabular-nums whitespace-nowrap'
+            className='text-muted-foreground text-xs whitespace-nowrap tabular-nums'
           >
             <span className={cn(d.isDiscount && 'line-through')}>
               {d.official}
             </span>
             {d.isDiscount && (
-              <span className='text-emerald-600 ml-1 font-bold'>
+              <span className='ml-1 font-bold text-emerald-600'>
                 -{d.percent}%
               </span>
             )}
@@ -715,7 +734,11 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
           perf={props.perf}
           className='border-border/60 border-t pt-2'
         >
-          <Button variant='ghost' size='sm' onClick={props.onClick}>
+          <Button
+            variant='ghost'
+            size='sm'
+            onClick={() => props.onClick(props.model.model_name || '')}
+          >
             {t('Details')}
             <ChevronRight aria-hidden className='size-3.5' />
           </Button>
