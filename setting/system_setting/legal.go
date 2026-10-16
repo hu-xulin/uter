@@ -185,14 +185,17 @@ func isHTTPURL(s string) bool {
 }
 
 // isLocalDocPath 判断是否为本地文档路径引用（而非 URL 或直接粘贴的内容）。
-// 拒绝包含 ".." 的越权路径；以 .md/.markdown 结尾或含路径分隔符即视为路径引用。
+// 拒绝 URL 与包含 ".." 的越权路径；以 .md/.markdown 结尾或含路径分隔符即视为路径引用。
 func isLocalDocPath(s string) bool {
+	if isHTTPURL(s) {
+		return false
+	}
 	if strings.Contains(s, "..") {
 		return false
 	}
 	return strings.HasSuffix(s, ".md") ||
 		strings.HasSuffix(s, ".markdown") ||
-		(strings.Contains(s, "/") && !isHTTPURL(s))
+		strings.Contains(s, "/")
 }
 
 // readLegalDocFile 从可配置根目录读取文档内容。
