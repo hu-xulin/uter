@@ -80,7 +80,7 @@ export function UptimeSparkline(props: UptimeSparklineProps) {
 
   const overall =
     props.overallSuccessRate ??
-    (props.series.reduce((s, p) => s + p.uptime_pct, 0) / props.series.length)
+    props.series.reduce((s, p) => s + p.uptime_pct, 0) / props.series.length
 
   const containerHeight = size === 'sm' ? 'h-3.5' : 'h-5'
   const barWidth = size === 'sm' ? 'w-[3px]' : 'w-1'
@@ -116,9 +116,9 @@ export function UptimeSparkline(props: UptimeSparklineProps) {
                 aria-hidden
               />
             </TooltipTrigger>
-            <TooltipContent side='top' className='tabular-nums text-xs'>
+            <TooltipContent side='top' className='text-xs tabular-nums'>
               <div className='font-medium'>{day.date}</div>
-              <div>{day.uptime_pct.toFixed(2)}%</div>
+              <div>{formatUptimePct(day.uptime_pct)}</div>
               {day.outage_minutes > 0 && (
                 <div className='text-muted-foreground'>
                   {day.outage_minutes} min outage
@@ -135,7 +135,7 @@ export function UptimeSparkline(props: UptimeSparklineProps) {
             getSuccessRateTextClass(overall)
           )}
         >
-          {overall.toFixed(1)}%
+          {formatUptimePct(overall)}
         </span>
       )}
     </div>

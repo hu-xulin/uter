@@ -61,6 +61,7 @@ export function AuditLogFilterBar(props: {
   scope: 'all' | 'self' | 'org'
   accessOnly?: boolean
   tokenScope: string
+  defaultTokenScope: string
   currentTokenRef?: string
   onTokenScopeChange: (value: string) => void
   isFetching: boolean
@@ -237,7 +238,7 @@ export function AuditLogFilterBar(props: {
     [
       props.filters.success,
       props.filters.category,
-      props.tokenScope !== 'all',
+      props.tokenScope !== props.defaultTokenScope,
     ].filter(Boolean).length
   const hasFilters =
     filterCount > 0 ||
