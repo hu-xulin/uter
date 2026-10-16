@@ -57,13 +57,16 @@ func sanitizeClickHouseLikePattern(input string) (string, error) {
 
 type Log struct {
 	Id               int    `json:"id" gorm:"index:idx_created_at_id,priority:2;index:idx_user_id_id,priority:2"`
-	UserId           int    `json:"user_id" gorm:"index;index:idx_user_id_id,priority:1"`
+	// 裸 index 与 idx_user_id_id 的首列重复，会为同一列多维护一棵索引、
+	// 抬高最热写入表（logs 每请求一行）的写入放大，故只保留复合索引。
+	UserId           int    `json:"user_id" gorm:"index:idx_user_id_id,priority:1"`
 	CreatedAt        int64  `json:"created_at" gorm:"bigint;index:idx_created_at_id,priority:1;index:idx_created_at_type"`
 	Type             int    `json:"type" gorm:"index:idx_created_at_type"`
 	Content          string `json:"content"`
 	Username         string `json:"username" gorm:"index;index:index_username_model_name,priority:2;default:''"`
 	TokenName        string `json:"token_name" gorm:"index;default:''"`
-	ModelName        string `json:"model_name" gorm:"index;index:index_username_model_name,priority:1;default:''"`
+	// index_username_model_name 以 model_name 为首列，裸 index 冗余。
+	ModelName        string `json:"model_name" gorm:"index:index_username_model_name,priority:1;default:''"`
 	Quota            int    `json:"quota" gorm:"default:0"`
 	PromptTokens     int    `json:"prompt_tokens" gorm:"default:0"`
 	CompletionTokens int    `json:"completion_tokens" gorm:"default:0"`
