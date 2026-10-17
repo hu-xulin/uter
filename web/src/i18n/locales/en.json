@@ -3382,6 +3382,7 @@
     "Invalid Passkey registration response": "Invalid Passkey registration response",
     "Invalid Passkey response": "Invalid Passkey response",
     "Invalid payment redirect URL": "Invalid payment redirect URL",
+    "Failed to load organization data": "Failed to load organization data",
     "Invalid pricing value": "Invalid pricing value",
     "Invalid reset link, please request a new password reset": "Invalid reset link, please request a new password reset",
     "Invalid reset link, please request a new password reset.": "Invalid reset link, please request a new password reset.",

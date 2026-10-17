@@ -3382,6 +3382,7 @@
     "Invalid Passkey registration response": "Réponse d'enregistrement de passe-clé invalide",
     "Invalid Passkey response": "Réponse Passkey invalide",
     "Invalid payment redirect URL": "URL de redirection de paiement non valide",
+    "Failed to load organization data": "Échec du chargement des données de l'organisation",
     "Invalid pricing value": "Valeur tarifaire invalide",
     "Invalid reset link, please request a new password reset": "Lien de réinitialisation invalide, veuillez demander une nouvelle réinitialisation de mot de passe",
     "Invalid reset link, please request a new password reset.": "Lien de réinitialisation invalide, veuillez demander une nouvelle réinitialisation du mot de passe.",

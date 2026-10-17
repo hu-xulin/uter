@@ -65,6 +65,7 @@ export async function getOrganization(id: number): Promise<{
 
 export async function getOrganizationStats(id: number): Promise<{
   success: boolean
+  message?: string
   data?: OrgStats
 }> {
   const res = await api.get(`/api/organization/${id}/stats`)
@@ -73,7 +74,12 @@ export async function getOrganizationStats(id: number): Promise<{
 
 export async function getOrganizationMembers(
   id: number,
-  params: { p?: number; page_size?: number; department?: string; keyword?: string } = {}
+  params: {
+    p?: number
+    page_size?: number
+    department?: string
+    keyword?: string
+  } = {}
 ): Promise<OrgMembersResponse> {
   const res = await api.get(`/api/organization/${id}/members`, { params })
   return res.data
@@ -97,7 +103,11 @@ export async function addOrganizationMembers(
 export async function updateOrganizationMember(
   id: number,
   uid: number,
-  payload: { sub_quota_limit?: number; department_name?: string; org_role?: OrgRole }
+  payload: {
+    sub_quota_limit?: number
+    department_name?: string
+    org_role?: OrgRole
+  }
 ): Promise<ApiResult> {
   const res = await api.put(`/api/organization/${id}/members/${uid}`, payload)
   return res.data
@@ -113,7 +123,12 @@ export async function removeOrganizationMember(
 
 export async function updateOrganization(
   id: number,
-  payload: { name?: string; quota?: number; member_limit?: number; status?: number }
+  payload: {
+    name?: string
+    quota?: number
+    member_limit?: number
+    status?: number
+  }
 ): Promise<ApiResult> {
   const res = await api.put(`/api/organization/${id}`, payload)
   return res.data

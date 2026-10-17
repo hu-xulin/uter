@@ -3382,6 +3382,7 @@
     "Invalid Passkey registration response": "Неверный ответ на регистрацию Passkey",
     "Invalid Passkey response": "Недопустимый ответ Passkey",
     "Invalid payment redirect URL": "Недопустимый URL перенаправления для оплаты",
+    "Failed to load organization data": "Не удалось загрузить данные организации",
     "Invalid pricing value": "Недопустимое значение цены",
     "Invalid reset link, please request a new password reset": "Недействительная ссылка для сброса пароля, пожалуйста, запросите сброс пароля заново",
     "Invalid reset link, please request a new password reset.": "Недействительная ссылка для сброса, пожалуйста, запросите новый сброс пароля.",
