@@ -1,6 +1,7 @@
 package model
 
 import (
+	"errors"
 	"fmt"
 	"sync"
 	"testing"
@@ -105,6 +106,12 @@ func orgUsedQuotaForTest(t *testing.T, id int) int64 {
 }
 
 // 预扣必须在数据库里原子完成：预算刚好用尽后，下一笔立刻被拒，且账本不再变动。
+func TestReserveOrgQuotaRejectsNegativeAmountWithoutDatabaseAccess(t *testing.T) {
+	err := ReserveOrgQuota(1, 1, -1)
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "cannot be negative")
+}
+
 func TestReserveOrgQuotaEnforcesBudgetAtomically(t *testing.T) {
 	truncateTables(t)
 	insertOrgForTest(t, 1, 1_000)
@@ -352,6 +359,42 @@ func TestReserveThenSettleReconcilesMemberUsage(t *testing.T) {
 	assert.Equal(t, int64(500), int64(u.UsedQuota), "结算后 used_quota 应等于实际消耗，不得叠加预扣额")
 }
 
+func TestCreateOrganizationRejectsOwnerAlreadyInOrganization(t *testing.T) {
+	truncateTables(t)
+	insertOrgForTest(t, 1, 0)
+	insertOrgUserForTest(t, 7, 1, OrgRoleMember, 0, 0, "")
+
+	_, err := CreateOrganization("another organization", 7, 0)
+	require.ErrorIs(t, err, ErrOrgAlreadyMember)
+
+	var count int64
+	require.NoError(t, DB.Model(&Organization{}).Count(&count).Error)
+	assert.Equal(t, int64(1), count, "a rejected duplicate organization assignment must roll back the new organization")
+}
+
+func TestCreateOrganizationWithMemberLimitPersistsLimit(t *testing.T) {
+	truncateTables(t)
+	insertOrgUserForTest(t, 7, 0, "", 0, 0, "")
+
+	org, err := CreateOrganizationWithMemberLimit("limited organization", 7, 1000, 3)
+	require.NoError(t, err)
+	require.Equal(t, 3, org.MemberLimit)
+
+	var saved Organization
+	require.NoError(t, DB.First(&saved, org.Id).Error)
+	assert.Equal(t, 3, saved.MemberLimit, "the member limit must be stored in the initial organization row")
+}
+
+func TestCreateOrganizationWithMemberLimitRejectsNegativeLimit(t *testing.T) {
+	truncateTables(t)
+	_, err := CreateOrganizationWithMemberLimit("invalid organization", 7, 1000, -1)
+	require.Error(t, err)
+
+	var count int64
+	require.NoError(t, DB.Model(&Organization{}).Count(&count).Error)
+	assert.Zero(t, count, "invalid limits must not create an organization")
+}
+
 // 批量纳新遇到不存在的用户 ID 时必须显式失败，而不是让整批「静默成功」。
 //
 // 旧实现只对 organization_id / role 做三个 Count，不存在的 id 不匹配任何一行，
@@ -361,6 +404,8 @@ func TestAddMembersRejectsUnknownUserId(t *testing.T) {
 	truncateTables(t)
 	org := insertOrgForTest(t, 1, 0)
 	insertOrgUserForTest(t, 7, 0, "", 0, 0, "")
+	var before User
+	require.NoError(t, DB.Select("auth_version").Where("id = ?", 7).First(&before).Error)
 
 	err := org.AddMembers([]OrgMemberAdd{
 		{UserId: 999999, SubQuotaLimit: 0, DepartmentName: "研发"},
@@ -372,10 +417,11 @@ func TestAddMembersRejectsUnknownUserId(t *testing.T) {
 		{UserId: 7, SubQuotaLimit: 0, DepartmentName: "研发"},
 	}))
 	var user User
-	require.NoError(t, DB.Select("organization_id", "org_role", "department_name").Where("id = ?", 7).First(&user).Error)
+	require.NoError(t, DB.Select("organization_id", "org_role", "department_name", "auth_version").Where("id = ?", 7).First(&user).Error)
 	assert.Equal(t, 1, user.OrganizationId)
 	assert.Equal(t, OrgRoleMember, user.OrgRole)
 	assert.Equal(t, "研发", user.DepartmentName)
+	assert.Greater(t, user.AuthVersion, before.AuthVersion, "membership scope changes must bump auth_version in the same transaction")
 }
 
 // 已软删除的账号等同于不存在：不得被纳新复活成组织成员。
@@ -387,4 +433,279 @@ func TestAddMembersRejectsSoftDeletedUser(t *testing.T) {
 
 	err := org.AddMembers([]OrgMemberAdd{{UserId: 8, SubQuotaLimit: 0}})
 	require.ErrorIs(t, err, ErrOrgMemberUnknown)
+}
+
+
+func TestAddMembersAsRejectsDemotedOrganizationAdmin(t *testing.T) {
+	truncateTables(t)
+	org := insertOrgForTest(t, 1, 0)
+	admin := insertOrgUserForTest(t, 90, org.Id, OrgRoleAdmin, 0, 0, "")
+	target := insertOrgUserForTest(t, 91, 0, "", 0, 0, "")
+
+	// Simulate the authorization preflight succeeding, followed by an admin
+	// role revocation before the membership transaction obtains its locks.
+	require.NoError(t, DB.Model(&User{}).Where("id = ?", admin.Id).Update("org_role", OrgRoleMember).Error)
+
+	err := org.AddMembersAs(admin.Id, []OrgMemberAdd{{UserId: target.Id}})
+	require.ErrorIs(t, err, ErrOrgMembershipAuthorizationChanged)
+
+	var saved User
+	require.NoError(t, DB.Select("organization_id", "org_role").Where("id = ?", target.Id).First(&saved).Error)
+	assert.Zero(t, saved.OrganizationId, "a demoted admin must not add members from a stale request")
+	assert.Empty(t, saved.OrgRole)
+}
+
+func TestAddMembersEnforcesMemberLimitUnderConcurrency(t *testing.T) {
+	truncateTables(t)
+	org := insertOrgForTest(t, 1, 0)
+	org.MemberLimit = 5
+	require.NoError(t, DB.Model(&Organization{}).Where("id = ?", org.Id).Update("member_limit", org.MemberLimit).Error)
+
+	const attempts = 20
+	for i := 0; i < attempts; i++ {
+		insertOrgUserForTest(t, 100+i, 0, "", 0, 0, "")
+	}
+
+	var (
+		wg       sync.WaitGroup
+		mu       sync.Mutex
+		success  int
+		limitErr int
+		otherErr []error
+	)
+	for i := 0; i < attempts; i++ {
+		userID := 100 + i
+		wg.Go(func() {
+			err := org.AddMembers([]OrgMemberAdd{{UserId: userID}})
+			mu.Lock()
+			defer mu.Unlock()
+			switch {
+			case err == nil:
+				success++
+			case errors.Is(err, ErrOrgMemberLimit):
+				limitErr++
+			default:
+				// SQLite can return a transient writer-lock error when concurrent
+				// deferred transactions race. It must fail atomically, never exceed
+				// the cap; SQL databases with row locks should return ErrOrgMemberLimit.
+				otherErr = append(otherErr, err)
+			}
+		})
+	}
+	wg.Wait()
+
+	var count int64
+	require.NoError(t, DB.Model(&User{}).Where("organization_id = ? AND deleted_at IS NULL", org.Id).Count(&count).Error)
+	assert.LessOrEqual(t, count, int64(org.MemberLimit), "concurrent membership additions must never exceed the organization member limit")
+	assert.LessOrEqual(t, success, org.MemberLimit)
+	assert.Greater(t, success, 0, "at least one valid member addition should commit")
+	assert.Greater(t, limitErr+len(otherErr), 0, "requests beyond the cap should be rejected")
+	for _, err := range otherErr {
+		assert.Error(t, err)
+	}
+}
+
+
+func TestAddMembersPreventsConcurrentCrossOrganizationAssignment(t *testing.T) {
+	truncateTables(t)
+	orgA := insertOrgForTest(t, 1, 0)
+	orgB := insertOrgForTest(t, 2, 0)
+	insertOrgUserForTest(t, 7, 0, "", 0, 0, "")
+
+	var (
+		wg      sync.WaitGroup
+		mu      sync.Mutex
+		success int
+		errs    []error
+	)
+	for _, targetOrg := range []*Organization{orgA, orgB} {
+		org := targetOrg
+		wg.Go(func() {
+			err := org.AddMembers([]OrgMemberAdd{{UserId: 7, DepartmentName: "研发"}})
+			mu.Lock()
+			defer mu.Unlock()
+			if err == nil {
+				success++
+			} else {
+				errs = append(errs, err)
+			}
+		})
+	}
+	wg.Wait()
+
+	var user User
+	require.NoError(t, DB.Select("organization_id").Where("id = ?", 7).First(&user).Error)
+	assert.Equal(t, 1, success, "the same user must not be successfully assigned to two organizations")
+	assert.Contains(t, []int{orgA.Id, orgB.Id}, user.OrganizationId, "exactly one competing assignment should commit")
+	assert.Len(t, errs, 1, "the competing cross-organization assignment must be rejected")
+}
+
+
+func TestSetOrganizationOwnerAtomicallyTransfersOwnership(t *testing.T) {
+	truncateTables(t)
+	org := insertOrgForTest(t, 1, 0)
+	oldOwner := insertOrgUserForTest(t, 11, org.Id, OrgRoleOwner, 0, 0, "")
+	newOwner := insertOrgUserForTest(t, 12, org.Id, OrgRoleAdmin, 0, 0, "")
+	duplicateOwner := insertOrgUserForTest(t, 13, org.Id, OrgRoleOwner, 0, 0, "")
+	org.OwnerUserId = oldOwner.Id
+	require.NoError(t, DB.Model(&Organization{}).Where("id = ?", org.Id).Update("owner_user_id", oldOwner.Id).Error)
+
+	require.NoError(t, SetOrganizationOwner(org.Id, newOwner.Id))
+
+	var persistedOrg Organization
+	require.NoError(t, DB.First(&persistedOrg, "id = ?", org.Id).Error)
+	assert.Equal(t, newOwner.Id, persistedOrg.OwnerUserId)
+
+	var users []User
+	require.NoError(t, DB.Where("id IN ?", []int{oldOwner.Id, newOwner.Id, duplicateOwner.Id}).Order("id").Find(&users).Error)
+	require.Len(t, users, 3)
+	assert.Equal(t, OrgRoleAdmin, users[0].OrgRole, "previous owner must be demoted")
+	assert.Equal(t, OrgRoleOwner, users[1].OrgRole, "target must become the sole owner")
+	assert.Equal(t, OrgRoleAdmin, users[2].OrgRole, "stale duplicate owner roles must be normalized")
+}
+
+func TestSetOrganizationOwnerZeroFailsClosed(t *testing.T) {
+	truncateTables(t)
+	org := insertOrgForTest(t, 1, 0)
+	owner := insertOrgUserForTest(t, 21, org.Id, OrgRoleOwner, 0, 0, "")
+	admin := insertOrgUserForTest(t, 22, org.Id, OrgRoleAdmin, 0, 0, "")
+	require.NoError(t, DB.Model(&Organization{}).Where("id = ?", org.Id).Update("owner_user_id", owner.Id).Error)
+
+	require.NoError(t, SetOrganizationOwner(org.Id, 0))
+
+	var persistedOrg Organization
+	require.NoError(t, DB.First(&persistedOrg, "id = ?", org.Id).Error)
+	assert.Zero(t, persistedOrg.OwnerUserId)
+	var persistedUsers []User
+	require.NoError(t, DB.Where("id IN ?", []int{owner.Id, admin.Id}).Order("id").Find(&persistedUsers).Error)
+	require.Len(t, persistedUsers, 2)
+	assert.Equal(t, OrgRoleMember, persistedUsers[0].OrgRole, "without an owner pointer, the previous owner must lose manager authority")
+	assert.Equal(t, OrgRoleMember, persistedUsers[1].OrgRole, "without an owner pointer, organization admins must lose manager authority")
+}
+
+func TestSetOrganizationOwnerRejectsDisabledTarget(t *testing.T) {
+	truncateTables(t)
+	org := insertOrgForTest(t, 1, 0)
+	oldOwner := insertOrgUserForTest(t, 41, org.Id, OrgRoleOwner, 0, 0, "")
+	newOwner := insertOrgUserForTest(t, 42, org.Id, OrgRoleMember, 0, 0, "")
+	require.NoError(t, DB.Model(&Organization{}).Where("id = ?", org.Id).Update("owner_user_id", oldOwner.Id).Error)
+	require.NoError(t, DB.Model(&User{}).Where("id = ?", newOwner.Id).Update("status", common.UserStatusDisabled).Error)
+
+	err := SetOrganizationOwner(org.Id, newOwner.Id)
+	require.ErrorContains(t, err, "must be an enabled user")
+
+	var saved Organization
+	require.NoError(t, DB.First(&saved, "id = ?", org.Id).Error)
+	assert.Equal(t, oldOwner.Id, saved.OwnerUserId, "failed transfer must keep the previous owner")
+	var target User
+	require.NoError(t, DB.First(&target, "id = ?", newOwner.Id).Error)
+	assert.Equal(t, OrgRoleMember, target.OrgRole, "disabled member must not be promoted")
+}
+
+func TestSetOrganizationOwnerRejectsNonMemberTarget(t *testing.T) {
+	truncateTables(t)
+	org := insertOrgForTest(t, 1, 0)
+	oldOwner := insertOrgUserForTest(t, 31, org.Id, OrgRoleOwner, 0, 0, "")
+	insertOrgForTest(t, 2, 0)
+	foreignUser := insertOrgUserForTest(t, 32, 2, OrgRoleMember, 0, 0, "")
+	require.NoError(t, DB.Model(&Organization{}).Where("id = ?", org.Id).Update("owner_user_id", oldOwner.Id).Error)
+
+	err := SetOrganizationOwner(org.Id, foreignUser.Id)
+	require.Error(t, err)
+
+	var persistedOrg Organization
+	require.NoError(t, DB.First(&persistedOrg, "id = ?", org.Id).Error)
+	assert.Equal(t, oldOwner.Id, persistedOrg.OwnerUserId)
+	var persistedForeign User
+	require.NoError(t, DB.First(&persistedForeign, "id = ?", foreignUser.Id).Error)
+	assert.Equal(t, OrgRoleMember, persistedForeign.OrgRole)
+}
+
+func TestAddMembersRejectsNegativeSubQuotaLimit(t *testing.T) {
+	org := &Organization{Id: 1}
+	err := org.AddMembers([]OrgMemberAdd{{UserId: 10, SubQuotaLimit: -1}})
+	require.ErrorIs(t, err, ErrOrgSubQuotaInvalid)
+}
+
+
+
+func TestSetOrganizationOwnerIfCurrentRejectsStaleOwner(t *testing.T) {
+	truncateTables(t)
+	org := insertOrgForTest(t, 1, 0)
+	org.OwnerUserId = 30
+	require.NoError(t, DB.Model(&Organization{}).Where("id = ?", org.Id).
+		Update("owner_user_id", org.OwnerUserId).Error)
+	insertOrgUserForTest(t, 10, 1, OrgRoleAdmin, 0, 0, "")
+	insertOrgUserForTest(t, 20, 1, OrgRoleMember, 0, 0, "")
+	insertOrgUserForTest(t, 30, 1, OrgRoleOwner, 0, 0, "")
+
+	err := SetOrganizationOwnerIfCurrent(1, 20, 10)
+	require.ErrorIs(t, err, ErrOrgOwnerChanged)
+
+	var saved Organization
+	require.NoError(t, DB.First(&saved, "id = ?", 1).Error)
+	assert.Equal(t, 30, saved.OwnerUserId, "stale owner must not overwrite the current owner pointer")
+
+	var target User
+	require.NoError(t, DB.First(&target, "id = ?", 20).Error)
+	assert.Equal(t, OrgRoleMember, target.OrgRole, "failed transfer must not change the target role")
+
+	// Even if the pointer still names the caller, a demoted role must not retain
+	// owner-only transfer rights through a stale request.
+	require.NoError(t, DB.Model(&Organization{}).Where("id = ?", 1).
+		Update("owner_user_id", 10).Error)
+	err = SetOrganizationOwnerIfCurrent(1, 20, 10)
+	require.ErrorIs(t, err, ErrOrgOwnerChanged)
+	require.NoError(t, DB.First(&saved, "id = ?", 1).Error)
+	assert.Equal(t, 10, saved.OwnerUserId)
+	require.NoError(t, DB.First(&target, "id = ?", 20).Error)
+	assert.Equal(t, OrgRoleMember, target.OrgRole)
+}
+
+
+func TestUpdateOrganizationIfCurrentOwnerRejectsStaleOwner(t *testing.T) {
+	truncateTables(t)
+	org := insertOrgForTest(t, 1, 0)
+	org.OwnerUserId = 30
+	require.NoError(t, DB.Model(&Organization{}).Where("id = ?", org.Id).
+		Update("owner_user_id", org.OwnerUserId).Error)
+	insertOrgUserForTest(t, 10, 1, OrgRoleAdmin, 0, 0, "")
+	insertOrgUserForTest(t, 30, 1, OrgRoleOwner, 0, 0, "")
+
+	err := UpdateOrganizationIfCurrentOwner(1, 10, "stale update", 5)
+	require.ErrorIs(t, err, ErrOrgOwnerChanged)
+
+	var saved Organization
+	require.NoError(t, DB.First(&saved, "id = ?", 1).Error)
+	assert.Equal(t, "org-test", saved.Name)
+	assert.Zero(t, saved.MemberLimit)
+
+	// A pointer that still matches is insufficient if the caller's role was
+	// demoted concurrently; the owner role must also be checked transactionally.
+	require.NoError(t, DB.Model(&Organization{}).Where("id = ?", 1).
+		Update("owner_user_id", 10).Error)
+	err = UpdateOrganizationIfCurrentOwner(1, 10, "stale role update", 6)
+	require.ErrorIs(t, err, ErrOrgOwnerChanged)
+	require.NoError(t, DB.First(&saved, "id = ?", 1).Error)
+	assert.Equal(t, "org-test", saved.Name)
+	assert.Zero(t, saved.MemberLimit)
+}
+
+func TestCreateOrganizationRejectsDisabledOwner(t *testing.T) {
+	truncateTables(t)
+	owner := insertOrgUserForTest(t, 7, 0, "", 0, 0, "")
+	require.NoError(t, DB.Model(&User{}).Where("id = ?", owner.Id).
+		Update("status", common.UserStatusDisabled).Error)
+
+	_, err := CreateOrganizationWithMemberLimit("disabled owner", owner.Id, 0, 0)
+	require.ErrorContains(t, err, "must be an enabled user")
+
+	var count int64
+	require.NoError(t, DB.Model(&Organization{}).Count(&count).Error)
+	assert.Zero(t, count, "a disabled owner must not cause an organization to be created")
+
+	var saved User
+	require.NoError(t, DB.First(&saved, owner.Id).Error)
+	assert.Zero(t, saved.OrganizationId, "a disabled account must remain outside organizations")
+	assert.Empty(t, saved.OrgRole, "a disabled account must not receive the owner role")
 }

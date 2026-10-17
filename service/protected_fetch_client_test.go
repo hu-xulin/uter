@@ -172,10 +172,35 @@ func TestProtectedFetchDialerAllowsPrivateIPWhenWhitelisted(t *testing.T) {
 	require.Equal(t, []string{"10.1.2.3:80"}, dialed)
 }
 
-func TestProtectedFetchDialerSkipsResolvedIPCheckWhenDisabled(t *testing.T) {
+func TestProtectedFetchDialerRejectsPrivateResolvedIPWhenDomainIPFilterDisabled(t *testing.T) {
+	dialer := &protectedFetchDialer{
+		resolver: staticSSRFResolver{
+			"safe.example": {{IP: net.ParseIP("127.0.0.1")}},
+		},
+		dialContext: func(ctx context.Context, network, address string) (net.Conn, error) {
+			t.Fatalf("dialContext should not be called for blocked address %s", address)
+			return nil, nil
+		},
+		getProtection: staticProtection(&common.SSRFProtection{
+			AllowPrivateIp:         false,
+			DomainFilterMode:       false,
+			IpFilterMode:           false,
+			ApplyIPFilterForDomain: false,
+		}),
+	}
+
+	conn, err := dialer.DialContext(context.Background(), "tcp", "safe.example:80")
+	require.Error(t, err)
+	require.Nil(t, conn)
+	require.Contains(t, err.Error(), "private IP address not allowed")
+}
+
+func TestProtectedFetchDialerPinsPublicAddressWhenDomainIPFilterDisabled(t *testing.T) {
 	var dialed []string
 	dialer := &protectedFetchDialer{
-		resolver: staticSSRFResolver{},
+		resolver: staticSSRFResolver{
+			"safe.example": {{IP: net.ParseIP("8.8.8.8")}},
+		},
 		dialContext: func(ctx context.Context, network, address string) (net.Conn, error) {
 			dialed = append(dialed, address)
 			return testConn(t), nil
@@ -191,8 +216,7 @@ func TestProtectedFetchDialerSkipsResolvedIPCheckWhenDisabled(t *testing.T) {
 	conn, err := dialer.DialContext(context.Background(), "tcp", "safe.example:80")
 	require.NoError(t, err)
 	require.NotNil(t, conn)
-
-	require.Equal(t, []string{"safe.example:80"}, dialed)
+	require.Equal(t, []string{"8.8.8.8:80"}, dialed)
 }
 
 func TestGetSSRFProtectedHTTPClientFallsBackToDefaultClientWhenProtectionDisabled(t *testing.T) {
@@ -315,4 +339,56 @@ func TestProtectedFetchRoundTripperReusesTransportPerProxy(t *testing.T) {
 	require.NotSame(t, direct, proxied)
 	require.True(t, direct.ForceAttemptHTTP2)
 	require.False(t, direct.DisableKeepAlives)
+}
+
+func TestProtectedFetchProxyCannotResolveDomainWhenAddressFilteringIsRequired(t *testing.T) {
+	proxyURL := mustParseURL(t, "http://8.8.8.8:3128")
+	protection := &common.SSRFProtection{
+		AllowPrivateIp:         false,
+		DomainFilterMode:       false,
+		IpFilterMode:           false,
+		ApplyIPFilterForDomain: true,
+	}
+	require.Error(t, validateProtectedFetchProxyTarget("example.com", protection, true, proxyURL))
+	require.NoError(t, validateProtectedFetchProxyTarget("8.8.8.8", protection, true, proxyURL))
+	require.NoError(t, validateProtectedFetchProxyTarget("example.com", protection, false, proxyURL))
+	require.NoError(t, validateProtectedFetchProxyTarget("example.com", protection, true, nil))
+
+	privateBlockOnly := &common.SSRFProtection{
+		AllowPrivateIp:         false,
+		DomainFilterMode:       false,
+		IpFilterMode:           false,
+		ApplyIPFilterForDomain: false,
+	}
+	require.Error(t, validateProtectedFetchProxyTarget("example.com", privateBlockOnly, true, proxyURL))
+
+	explicitlyUnrestricted := &common.SSRFProtection{
+		AllowPrivateIp:         true,
+		DomainFilterMode:       false,
+		IpFilterMode:           false,
+		ApplyIPFilterForDomain: false,
+	}
+	require.NoError(t, validateProtectedFetchProxyTarget("example.com", explicitlyUnrestricted, true, proxyURL))
+}
+
+func TestProtectedFetchHTTPClientWithoutProxyDisablesProxyAndRejectsPrivateTargets(t *testing.T) {
+	configureSSRFTestFetchSetting(t)
+	client := GetSSRFProtectedHTTPClientWithoutProxy()
+	require.NotNil(t, client)
+	roundTripper, ok := client.Transport.(*ssrfProtectedRoundTripper)
+	require.True(t, ok, "client must use the SSRF-aware round tripper")
+
+	proxyURL, err := roundTripper.proxy(&http.Request{URL: mustParseURL(t, "https://identity.example/oauth/token")})
+	require.NoError(t, err)
+	require.Nil(t, proxyURL, "OAuth credentials must not be routed through an environment proxy")
+	require.Same(t, client, GetSSRFProtectedHTTPClientWithoutProxy(), "client transport should be reused")
+
+	req, err := http.NewRequest(http.MethodGet, "http://127.0.0.1:80/metadata", nil)
+	require.NoError(t, err)
+	resp, err := client.Do(req)
+	require.Error(t, err, "private target must be rejected by the configured SSRF policy")
+	if resp != nil && resp.Body != nil {
+		_ = resp.Body.Close()
+	}
+	require.Contains(t, err.Error(), "private IP address not allowed")
 }

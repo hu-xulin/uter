@@ -7495,6 +7495,11 @@
     "Verify to update user credentials": "認証してユーザーの認証情報を更新",
     "Verify to create administrator": "認証して管理者を作成",
     "Confirm your identity before creating an administrator account.": "管理者アカウントを作成する前に本人確認をしてください。",
-    "Type <username/> to confirm": "確認のため <username/> と入力してください"
+    "Type <username/> to confirm": "確認のため <username/> と入力してください",
+    "Invalid parameters": "パラメータが無効です",
+    "Organization Owner Username is required": "組織オーナーのユーザー名は必須です",
+    "Organization Owner Username": "組織オーナーのユーザー名",
+    "Existing unassigned ordinary user": "組織に未所属の既存一般ユーザー",
+    "The owner must be an enabled ordinary user who is not already in an organization.": "オーナーは有効な一般ユーザーで、他の組織に所属していない必要があります。"
   }
 }

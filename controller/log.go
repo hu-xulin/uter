@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -22,7 +23,7 @@ import (
 // 组织管理员就能通过 /api/log/、/api/log/search、/api/log/export 看到并导出
 // 全站日志——绕过 OrgDataScope 建立的租户边界。范围为空时 RequestOrgScope 已返回
 // 哨兵（NoOrgMemberUsername / NoOrgMemberId），不会退化成「不施加过滤」。
-func logFilterFromQuery(c *gin.Context, admin bool) model.LogFilter {
+func logFilterFromQuery(c *gin.Context, admin bool) (model.LogFilter, error) {
 	logType, _ := strconv.Atoi(c.Query("type"))
 	startTimestamp, _ := strconv.ParseInt(c.Query("start_timestamp"), 10, 64)
 	endTimestamp, _ := strconv.ParseInt(c.Query("end_timestamp"), 10, 64)
@@ -39,16 +40,39 @@ func logFilterFromQuery(c *gin.Context, admin bool) model.LogFilter {
 	if admin {
 		filter.Username = c.Query("username")
 		filter.Channel, _ = strconv.Atoi(c.Query("channel"))
-		if scope := middleware.RequestOrgScope(c); !scope.IsPlatformScope() {
-			if usernames, err := scope.Usernames(); err == nil {
-				filter.ScopedUsernames = usernames
-			}
-			if userIds, err := scope.UserIDs(); err == nil {
-				filter.ScopedUserIds = userIds
-			}
+		if err := applyOrgLogScope(&filter, middleware.RequestOrgScope(c)); err != nil {
+			return model.LogFilter{}, err
 		}
 	}
-	return filter
+	return filter, nil
+}
+
+// orgLogScope is the narrow contract required by applyOrgLogScope. Keeping the
+// lookup boundary explicit makes it possible to test database-error handling.
+type orgLogScope interface {
+	IsPlatformScope() bool
+	Usernames() ([]string, error)
+	UserIDs() ([]int, error)
+}
+
+// applyOrgLogScope fails closed if either membership lookup fails. A nil scope
+// is interpreted by the log query as "no filter", so silently swallowing a DB
+// error here would leak all-site logs to an organization-scoped administrator.
+func applyOrgLogScope(filter *model.LogFilter, scope orgLogScope) error {
+	if scope.IsPlatformScope() {
+		return nil
+	}
+	usernames, err := scope.Usernames()
+	if err != nil {
+		return fmt.Errorf("resolve organization log usernames: %w", err)
+	}
+	userIDs, err := scope.UserIDs()
+	if err != nil {
+		return fmt.Errorf("resolve organization log user IDs: %w", err)
+	}
+	filter.ScopedUsernames = usernames
+	filter.ScopedUserIds = userIDs
+	return nil
 }
 
 // QueryUserIds 解析组织日志/统计接口上的 user_id 过滤参数。
@@ -89,7 +113,12 @@ func limitLogTimeRange(startTimestamp int64, endTimestamp int64) (int64, error) 
 
 func GetAllLogs(c *gin.Context) {
 	pageInfo := common.GetPageQuery(c)
-	logs, total, err := model.GetAllLogs(logFilterFromQuery(c, true), pageInfo.GetStartIdx(), pageInfo.GetPageSize())
+	filter, err := logFilterFromQuery(c, true)
+	if err != nil {
+		common.ApiError(c, err)
+		return
+	}
+	logs, total, err := model.GetAllLogs(filter, pageInfo.GetStartIdx(), pageInfo.GetPageSize())
 	if err != nil {
 		common.ApiError(c, err)
 		return
@@ -107,7 +136,11 @@ func GetAllLogs(c *gin.Context) {
 
 func GetUserLogs(c *gin.Context) {
 	pageInfo := common.GetPageQuery(c)
-	filter := logFilterFromQuery(c, false)
+	filter, err := logFilterFromQuery(c, false)
+	if err != nil {
+		common.ApiError(c, err)
+		return
+	}
 	if c.GetInt("role") < common.RoleAdminUser {
 		startTimestamp, err := limitLogTimeRange(filter.StartTimestamp, filter.EndTimestamp)
 		if err != nil {
@@ -146,7 +179,11 @@ func ExportUserLogs(c *gin.Context) {
 // one export at a time, and every export stays within the longest log time
 // range.
 func exportLogs(c *gin.Context, all bool) {
-	filter := logFilterFromQuery(c, all)
+	filter, err := logFilterFromQuery(c, all)
+	if err != nil {
+		common.ApiError(c, err)
+		return
+	}
 	startTimestamp, err := limitLogTimeRange(filter.StartTimestamp, filter.EndTimestamp)
 	if err != nil {
 		common.ApiError(c, err)
@@ -233,6 +270,24 @@ func GetLogByKey(c *gin.Context) {
 	})
 }
 
+// resolveOrgLogStatScope returns both tenant filters used by the aggregate
+// quota/RPM/TPM query. An empty member scope is represented by sentinel IDs from
+// OrgDataScope and must never be converted to nil (nil means platform-wide).
+func resolveOrgLogStatScope(scope orgLogScope) ([]string, []int, error) {
+	if scope.IsPlatformScope() {
+		return nil, nil, nil
+	}
+	usernames, err := scope.Usernames()
+	if err != nil {
+		return nil, nil, fmt.Errorf("resolve organization log-stat usernames: %w", err)
+	}
+	userIDs, err := scope.UserIDs()
+	if err != nil {
+		return nil, nil, fmt.Errorf("resolve organization log-stat user IDs: %w", err)
+	}
+	return usernames, userIDs, nil
+}
+
 func GetLogsStat(c *gin.Context) {
 	logType, _ := strconv.Atoi(c.Query("type"))
 	startTimestamp, _ := strconv.ParseInt(c.Query("start_timestamp"), 10, 64)
@@ -242,7 +297,15 @@ func GetLogsStat(c *gin.Context) {
 	modelName := c.Query("model_name")
 	channel, _ := strconv.Atoi(c.Query("channel"))
 	group := c.Query("group")
-	stat, err := model.SumUsedQuota(logType, startTimestamp, endTimestamp, modelName, username, tokenName, channel, group, nil)
+	// AdminAuth also admits organization-scoped admins. Apply the same tenant
+	// boundaries to aggregate statistics as to the log list/export endpoints;
+	// otherwise a tenant admin can query platform-wide consumption totals.
+	scopedUsernames, scopedUserIDs, err := resolveOrgLogStatScope(middleware.RequestOrgScope(c))
+	if err != nil {
+		common.ApiError(c, err)
+		return
+	}
+	stat, err := model.SumUsedQuota(logType, startTimestamp, endTimestamp, modelName, username, tokenName, channel, group, scopedUsernames, scopedUserIDs...)
 	if err != nil {
 		common.ApiError(c, err)
 		return

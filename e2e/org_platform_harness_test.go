@@ -251,49 +251,45 @@ func (env *orgPlatformEnv) reloadOrg(t *testing.T, id int) *model.Organization {
 
 // seedOrganization 走真实 API 建组织（超管开通租户），随后把负责人转移给普通用户 owner，
 // 超管退出组织。
+
 func (env *orgPlatformEnv) seedOrganization(t *testing.T) {
 	t.Helper()
-	root := env.createUser(t, "root", common.RoleRootUser)
-	_ = root
+	env.createUser(t, "root", common.RoleRootUser)
+	// CreateOrganization requires an existing enabled, unassigned ordinary owner.
+	env.createUser(t, "owner", common.RoleCommonUser)
 	env.login(t, "root")
 
 	recorder := env.call(t, http.MethodPost, "/api/organizations", "root",
-		`{"name":"Acme 科技","quota":100000000,"member_limit":0}`)
+		`{"name":"Acme 科技","owner_username":"owner","quota":100000000,"member_limit":0}`)
 	require.Equal(t, http.StatusOK, recorder.Code, recorder.Body.String())
 	var created struct {
 		Success bool `json:"success"`
-		Data    struct {
-			Id          int    `json:"id"`
-			Name        string `json:"name"`
-			Quota       int64  `json:"quota"`
-			OwnerUserId int    `json:"owner_user_id"`
+		Data struct {
+			Id int `json:"id"`
+			Name string `json:"name"`
+			Quota int64 `json:"quota"`
+			OwnerUserId int `json:"owner_user_id"`
 		} `json:"data"`
 	}
 	require.NoError(t, common.Unmarshal(recorder.Body.Bytes(), &created))
 	require.True(t, created.Success, recorder.Body.String())
 	env.org = env.reloadOrg(t, created.Data.Id)
 	require.Equal(t, "Acme 科技", env.org.Name)
-	// 建组织会把 root 挂到组织并 bump 其 auth_version，旧会话立即失效，需重新登录。
-	env.login(t, "root")
+	require.Equal(t, env.uid("owner"), env.org.OwnerUserId)
 
-	// 组织内各角色 + 一个平台直管的外部用户
-	for _, name := range []string{"owner", "admin", "deptadmin", "m1", "m2", "outsider"} {
+	// Root remains platform-only; the named ordinary user owns this organization.
+	rootAfterCreate := env.reloadUser(t, "root")
+	require.Equal(t, 0, rootAfterCreate.OrganizationId)
+	require.Empty(t, rootAfterCreate.OrgRole)
+
+	for _, name := range []string{"admin", "deptadmin", "m1", "m2", "outsider"} {
 		env.createUser(t, name, common.RoleCommonUser)
 	}
 
-	// 超管把 owner 拉进组织并设为负责人
-	recorder = env.call(t, http.MethodPost, "/api/organization/"+strconv.Itoa(env.org.Id)+"/members", "root",
-		`{"members":[{"user_id":`+strconv.Itoa(env.uid("owner"))+`,"department_name":"总办"}]}`)
-	require.Equal(t, http.StatusOK, recorder.Code, recorder.Body.String())
-	recorder = env.call(t, http.MethodPut, "/api/organization/"+strconv.Itoa(env.org.Id)+"/members/"+strconv.Itoa(env.uid("owner")), "root",
-		`{"org_role":"owner"}`)
-	require.Equal(t, http.StatusOK, recorder.Code, recorder.Body.String())
-
-	// 其余成员
 	members := []struct {
-		actor  string
-		dept   string
-		role   string
+		actor string
+		dept string
+		role string
 		subQta int64
 	}{
 		{"admin", "总办", model.OrgRoleAdmin, 0},
@@ -312,14 +308,11 @@ func (env *orgPlatformEnv) seedOrganization(t *testing.T) {
 		}
 	}
 
-	// 超管退出组织：此后 root 仍是平台超管，但不再作为组织成员消耗组织预算。
-	recorder = env.call(t, http.MethodDelete, "/api/organization/"+strconv.Itoa(env.org.Id)+"/members/"+strconv.Itoa(env.uid("root")), "root", "")
-	require.Equal(t, http.StatusOK, recorder.Code, recorder.Body.String())
-	// 移出组织会 bump root 的 auth_version，旧会话失效。
-	env.login(t, "root")
-
-	// 另一个组织，用于验证跨租户隔离
-	recorder = env.call(t, http.MethodPost, "/api/organizations", "root", `{"name":"Other 公司","quota":100000000}`)
+	// A second tenant gets a dedicated owner. Keep outsider unassigned so cross-tenant
+	// authorization tests continue to exercise a genuinely external account.
+	env.createUser(t, "otherowner", common.RoleCommonUser)
+	recorder = env.call(t, http.MethodPost, "/api/organizations", "root",
+		`{"name":"Other 公司","owner_username":"otherowner","quota":100000000}`)
 	require.Equal(t, http.StatusOK, recorder.Code, recorder.Body.String())
 	var second struct {
 		Data struct {
@@ -328,12 +321,9 @@ func (env *orgPlatformEnv) seedOrganization(t *testing.T) {
 	}
 	require.NoError(t, common.Unmarshal(recorder.Body.Bytes(), &second))
 	env.orgB = env.reloadOrg(t, second.Data.Id)
-	// 建组织会把 root 挂到新组织，需再退出，否则 root 会消耗被测组织的预算。
-	env.login(t, "root")
-	recorder = env.call(t, http.MethodDelete, "/api/organization/"+strconv.Itoa(env.orgB.Id)+"/members/"+strconv.Itoa(env.uid("root")), "root", "")
-	require.Equal(t, http.StatusOK, recorder.Code, recorder.Body.String())
+	require.Equal(t, env.uid("otherowner"), env.orgB.OwnerUserId)
 
-	// 所有人重新登录（角色/归属刚变更，缓存与 auth_version 都已刷新）
+	// Refresh credentials only after all membership/role changes have committed.
 	for _, name := range []string{"root", "owner", "admin", "deptadmin", "m1", "m2", "outsider"} {
 		env.login(t, name)
 	}

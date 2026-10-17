@@ -668,7 +668,7 @@ func TestProxyTaskMediaAllowsOnlyCredentiallessCrossOriginRedirect(t *testing.T)
 	assert.Equal(t, http.StatusOK, recorder.Code)
 	assert.Equal(t, "redirected", recorder.Body.String())
 	assert.Empty(t, destinationAuthorization)
-	assert.Equal(t, "bytes=0-3", destinationRange)
+	assert.Empty(t, destinationRange, "client range headers must not cross an origin boundary on credentialless redirects")
 
 	destinationRange = ""
 	rejectedRecorder := httptest.NewRecorder()

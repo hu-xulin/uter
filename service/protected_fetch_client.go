@@ -109,7 +109,29 @@ func (t *ssrfProtectedRoundTripper) RoundTrip(req *http.Request) (*http.Response
 	if err != nil {
 		return nil, err
 	}
+	protection, enabled, err := t.getProtection()
+	if err != nil {
+		return nil, err
+	}
+	if err := validateProtectedFetchProxyTarget(req.URL.Hostname(), protection, enabled, proxyURL); err != nil {
+		return nil, err
+	}
 	return t.transportFor(proxyURL).RoundTrip(req)
+}
+
+
+// validateProtectedFetchProxyTarget prevents an HTTP proxy from resolving a
+// user-controlled hostname after local SSRF validation. Otherwise DNS rebinding
+// can make the proxy connect to a private address that the protected dialer never sees.
+func validateProtectedFetchProxyTarget(host string, protection *common.SSRFProtection, enabled bool, proxyURL *url.URL) error {
+	if !enabled || proxyURL == nil || protection == nil ||
+		(protection.AllowPrivateIp && !protection.ApplyIPFilterForDomain) {
+		return nil
+	}
+	if net.ParseIP(host) != nil {
+		return nil
+	}
+	return fmt.Errorf("SSRF domain IP filtering cannot be enforced through an HTTP proxy")
 }
 
 func (t *ssrfProtectedRoundTripper) CloseIdleConnections() {
@@ -191,7 +213,7 @@ func (d *protectedFetchDialer) DialContext(ctx context.Context, network, addr st
 	if ip := net.ParseIP(host); ip != nil {
 		return d.dialContext(ctx, network, net.JoinHostPort(ip.String(), portText))
 	}
-	if !protection.ApplyIPFilterForDomain {
+	if !protection.ApplyIPFilterForDomain && protection.AllowPrivateIp {
 		return d.dialContext(ctx, network, addr)
 	}
 
@@ -206,7 +228,12 @@ func (d *protectedFetchDialer) DialContext(ctx context.Context, network, addr st
 		if ip == nil || !networkAllowsIP(network, ip) {
 			continue
 		}
-		if err := protection.ValidateResolvedIP(host, ip); err != nil {
+		if protection.ApplyIPFilterForDomain {
+			err = protection.ValidateResolvedIP(host, ip)
+		} else {
+			err = protection.ValidateResolvedPrivateIP(host, ip)
+		}
+		if err != nil {
 			return nil, err
 		}
 		candidateIPs = append(candidateIPs, ip)
@@ -236,4 +263,21 @@ func networkAllowsIP(network string, ip net.IP) bool {
 	default:
 		return true
 	}
+}
+
+var protectedFetchNoProxyHTTPClientOnce sync.Once
+var protectedFetchNoProxyHTTPClient *http.Client
+
+// GetSSRFProtectedHTTPClientWithoutProxy returns a shared client whose outbound
+// targets are checked by the SSRF-protected dialer, without consulting proxy
+// environment variables. Credential-bearing protocols such as custom OAuth must
+// not send secrets through an inherited HTTP proxy.
+func GetSSRFProtectedHTTPClientWithoutProxy() *http.Client {
+	protectedFetchNoProxyHTTPClientOnce.Do(func() {
+		noProxy := func(*http.Request) (*url.URL, error) {
+			return nil, nil
+		}
+		protectedFetchNoProxyHTTPClient = newProtectedFetchHTTPClientWithProxy(nil, nil, nil, noProxy)
+	})
+	return protectedFetchNoProxyHTTPClient
 }

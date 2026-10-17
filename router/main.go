@@ -13,6 +13,11 @@ import (
 )
 
 func SetRouter(router *gin.Engine, assets WebAssets) {
+	// CORS must be installed before any route is registered; Gin snapshots the
+	// engine middleware chain when each route is added. Registering it later in
+	// SetRelayRouter leaves earlier API/dashboard routes without these headers.
+	router.Use(middleware.CORS())
+
 	// 单一引擎级 gzip 中间件：web/api/dashboard 等路径客户端支持 gzip 即压缩，
 	// relay 路径仅当 costopt.GzipEnabled 为真时压缩。详见 router/gzip.go。
 	// 整个进程只注册这一次，避免两层 gzip 叠加造成双重压缩乱码。

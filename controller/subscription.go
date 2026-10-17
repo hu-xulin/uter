@@ -18,6 +18,20 @@ type SubscriptionPlanDTO struct {
 	Plan model.SubscriptionPlan `json:"plan"`
 }
 
+// subscriptionPlanCurrency returns the persisted plan currency, defaulting legacy
+// rows without a currency to USD. Subscription checkout providers must use this
+// value rather than the site's wallet/top-up display preference.
+func subscriptionPlanCurrency(plan *model.SubscriptionPlan) string {
+	if plan == nil {
+		return "USD"
+	}
+	currency := strings.ToUpper(strings.TrimSpace(plan.Currency))
+	if currency == "" {
+		return "USD"
+	}
+	return currency
+}
+
 type BillingPreferenceRequest struct {
 	BillingPreference string `json:"billing_preference"`
 }

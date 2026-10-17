@@ -49,6 +49,9 @@ jobs:
               --repo "$GITHUB_REPOSITORY" \
               --json body,isPrerelease
           )"
+          # A Git tag may contain percent-encoded path bytes. Encode it as one
+          # API path segment so it cannot alter the GitCode endpoint path.
+          RELEASE_TAG_PATH="$(jq -rn --arg value "$RELEASE_TAG" '$value | @uri')"
           release_body="$(jq -r '.body // ""' <<< "$release_json" | sed "s/'/’/g")"
           release_prerelease="$(jq -r '.isPrerelease' <<< "$release_json")"
           if [[ "$release_prerelease" == "true" ]]; then
@@ -59,17 +62,17 @@ jobs:
 
           gitcode_release_json="$(mktemp)"
           gitcode_release_status="$(
-            curl -L -sS -o "$gitcode_release_json" -w "%{http_code}" \
+            curl -sS -o "$gitcode_release_json" -w "%{http_code}" \
               -H "PRIVATE-TOKEN: $GITCODE_TOKEN" \
               -H "Accept: application/json" \
-              "https://api.gitcode.com/api/v5/repos/$GITCODE_REPOSITORY/releases/tags/$RELEASE_TAG"
+              "https://api.gitcode.com/api/v5/repos/$GITCODE_REPOSITORY/releases/tags/$RELEASE_TAG_PATH"
           )"
 
           request_json="$(mktemp)"
           case "$gitcode_release_status" in
             200)
               request_method=PATCH
-              request_url="https://api.gitcode.com/api/v5/repos/$GITCODE_REPOSITORY/releases/$RELEASE_TAG"
+              request_url="https://api.gitcode.com/api/v5/repos/$GITCODE_REPOSITORY/releases/$RELEASE_TAG_PATH"
               request_action=update
               success_action=updated
               jq -n \
@@ -117,7 +120,7 @@ jobs:
 
           gitcode_response_json="$(mktemp)"
           request_status="$(
-            curl -L -sS -o "$gitcode_response_json" -w "%{http_code}" \
+            curl -sS -o "$gitcode_response_json" -w "%{http_code}" \
               -X "$request_method" \
               -H "PRIVATE-TOKEN: $GITCODE_TOKEN" \
               -H "Content-Type: application/json" \
@@ -183,6 +186,7 @@ jobs:
           RELEASE_TAG: ${{ inputs.tag_name }}
         run: |
           set -euo pipefail
+          RELEASE_TAG_PATH="$(jq -rn --arg value "$RELEASE_TAG" '$value | @uri')"
 
           local_assets="$(
             find release-assets -maxdepth 1 -type f -printf '%s\t%f\n' \
@@ -193,10 +197,10 @@ jobs:
 
           gitcode_release_json="$(mktemp)"
           gitcode_release_status="$(
-            curl -L -sS -o "$gitcode_release_json" -w "%{http_code}" \
+            curl -sS -o "$gitcode_release_json" -w "%{http_code}" \
               -H "PRIVATE-TOKEN: $GITCODE_TOKEN" \
               -H "Accept: application/json" \
-              "https://api.gitcode.com/api/v5/repos/$GITCODE_REPOSITORY/releases/tags/$RELEASE_TAG"
+              "https://api.gitcode.com/api/v5/repos/$GITCODE_REPOSITORY/releases/tags/$RELEASE_TAG_PATH"
           )"
           if [[ "$gitcode_release_status" != "200" ]]; then
             echo "::error::Failed to inspect GitCode release assets. Response code: $gitcode_release_status"

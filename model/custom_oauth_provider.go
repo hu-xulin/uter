@@ -3,6 +3,7 @@ package model
 import (
 	"errors"
 	"fmt"
+	"net/url"
 	"strings"
 	"time"
 
@@ -179,6 +180,18 @@ func IsSlugTaken(slug string, excludeId int) bool {
 	return count > 0
 }
 
+// validateCustomOAuthEndpointURL rejects non-HTTP(S), relative, opaque, userinfo-bearing,
+// or fragment-bearing endpoint URLs before they can be stored in provider configuration.
+func validateCustomOAuthEndpointURL(name, raw string) error {
+	endpoint, err := url.Parse(strings.TrimSpace(raw))
+	if err != nil || endpoint == nil || !endpoint.IsAbs() ||
+		(strings.ToLower(endpoint.Scheme) != "http" && strings.ToLower(endpoint.Scheme) != "https") ||
+		endpoint.Hostname() == "" || endpoint.User != nil || endpoint.Fragment != "" || endpoint.Opaque != "" {
+		return fmt.Errorf("%s must be an absolute HTTP(S) URL without userinfo or fragments", name)
+	}
+	return nil
+}
+
 // validateCustomOAuthProvider validates a custom OAuth provider configuration
 func validateCustomOAuthProvider(provider *CustomOAuthProvider) error {
 	if provider.Name == "" {
@@ -210,6 +223,19 @@ func validateCustomOAuthProvider(provider *CustomOAuthProvider) error {
 	}
 	if provider.UserInfoEndpoint == "" {
 		return errors.New("user info endpoint is required")
+	}
+
+	for _, endpoint := range []struct {
+		name  string
+		value string
+	}{
+		{name: "authorization_endpoint", value: provider.AuthorizationEndpoint},
+		{name: "token_endpoint", value: provider.TokenEndpoint},
+		{name: "user_info_endpoint", value: provider.UserInfoEndpoint},
+	} {
+		if err := validateCustomOAuthEndpointURL(endpoint.name, endpoint.value); err != nil {
+			return err
+		}
 	}
 
 	// Set defaults for field mappings if empty

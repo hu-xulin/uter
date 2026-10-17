@@ -71,9 +71,7 @@ func (p *GitHubProvider) ExchangeToken(ctx context.Context, code string, c *gin.
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Accept", "application/json")
 
-	client := http.Client{
-		Timeout: 20 * time.Second,
-	}
+	client := newOAuthHTTPClient(20 * time.Second)
 	res, err := client.Do(req)
 	if err != nil {
 		logger.LogError(ctx, common.LogText("[OAuth-GitHub] ExchangeToken error: %s", err.Error()))
@@ -82,9 +80,13 @@ func (p *GitHubProvider) ExchangeToken(ctx context.Context, code string, c *gin.
 	defer res.Body.Close()
 
 	logger.LogDebug(ctx, "[OAuth-GitHub] ExchangeToken response status: %d", res.StatusCode)
+	if res.StatusCode < http.StatusOK || res.StatusCode >= http.StatusMultipleChoices {
+		logger.LogWarn(ctx, common.LogText("[OAuth-GitHub] ExchangeToken rejected non-success status=%d", res.StatusCode))
+		return nil, NewOAuthError(common.NewMessage(msgTokenFailed, map[string]any{"provider": "GitHub"}))
+	}
 
 	var oAuthResponse gitHubOAuthResponse
-	err = json.NewDecoder(res.Body).Decode(&oAuthResponse)
+	err = decodeOAuthJSON(res.Body, &oAuthResponse)
 	if err != nil {
 		logger.LogError(ctx, common.LogText("[OAuth-GitHub] ExchangeToken decode error: %s", err.Error()))
 		return nil, err
@@ -113,9 +115,7 @@ func (p *GitHubProvider) GetUserInfo(ctx context.Context, token *OAuthToken) (*O
 	}
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token.AccessToken))
 
-	client := http.Client{
-		Timeout: 20 * time.Second,
-	}
+	client := newOAuthHTTPClient(20 * time.Second)
 	res, err := client.Do(req)
 	if err != nil {
 		logger.LogError(ctx, common.LogText("[OAuth-GitHub] GetUserInfo error: %s", err.Error()))
@@ -127,7 +127,7 @@ func (p *GitHubProvider) GetUserInfo(ctx context.Context, token *OAuthToken) (*O
 
 	// Check for non-200 status codes before attempting to decode
 	if res.StatusCode != http.StatusOK {
-		body, _ := io.ReadAll(res.Body)
+		body, _ := io.ReadAll(io.LimitReader(res.Body, 501))
 		bodyStr := string(body)
 		if len(bodyStr) > 500 {
 			bodyStr = bodyStr[:500] + "..."
@@ -137,7 +137,7 @@ func (p *GitHubProvider) GetUserInfo(ctx context.Context, token *OAuthToken) (*O
 	}
 
 	var githubUser gitHubUser
-	err = json.NewDecoder(res.Body).Decode(&githubUser)
+	err = decodeOAuthJSON(res.Body, &githubUser)
 	if err != nil {
 		logger.LogError(ctx, common.LogText("[OAuth-GitHub] GetUserInfo decode error: %s", err.Error()))
 		return nil, err
@@ -148,8 +148,7 @@ func (p *GitHubProvider) GetUserInfo(ctx context.Context, token *OAuthToken) (*O
 		return nil, NewOAuthError(common.NewMessage(msgUserInfoEmpty, map[string]any{"provider": "GitHub"}))
 	}
 
-	logger.LogDebug(ctx, "[OAuth-GitHub] GetUserInfo success: id=%d, login=%s, name=%s, email=%s",
-		githubUser.Id, githubUser.Login, githubUser.Name, githubUser.Email)
+	logger.LogDebug(ctx, "[OAuth-GitHub] GetUserInfo success")
 
 	return &OAuthUser{
 		ProviderUserID: strconv.FormatInt(githubUser.Id, 10), // Use numeric ID as primary identifier
@@ -173,9 +172,7 @@ func (p *GitHubProvider) GetVerifiedEmails(ctx context.Context, token *OAuthToke
 	req.Header.Set("Authorization", "Bearer "+token.AccessToken)
 	req.Header.Set("Accept", "application/vnd.github+json")
 
-	client := http.Client{
-		Timeout: 20 * time.Second,
-	}
+	client := newOAuthHTTPClient(20 * time.Second)
 	res, err := client.Do(req)
 	if err != nil {
 		logger.LogError(ctx, common.LogText("[OAuth-GitHub] GetVerifiedEmails error: %s", err.Error()))
@@ -189,7 +186,7 @@ func (p *GitHubProvider) GetVerifiedEmails(ctx context.Context, token *OAuthToke
 	}
 
 	var emails []gitHubEmail
-	if err := common.DecodeJson(res.Body, &emails); err != nil {
+	if err := decodeOAuthJSON(res.Body, &emails); err != nil {
 		logger.LogError(ctx, common.LogText("[OAuth-GitHub] GetVerifiedEmails decode error: %s", err.Error()))
 		return nil, err
 	}

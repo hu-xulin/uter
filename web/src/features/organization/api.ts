@@ -47,6 +47,7 @@ export async function getMyOrganization(): Promise<MyOrgResponse> {
  */
 export async function createOrganization(payload: {
   name: string
+  owner_username: string
   quota: number
   member_limit?: number
 }): Promise<MyOrgResponse> {

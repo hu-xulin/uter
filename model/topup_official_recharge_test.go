@@ -231,3 +231,41 @@ func TestRechargeOfficialKeepsRedisAndDatabaseCreditInSync(t *testing.T) {
 	require.NoError(t, err)
 	assert.Equal(t, 17, cached.Quota)
 }
+
+
+func TestRechargeCreemCreditsQuotaExactlyOnce(t *testing.T) {
+	truncateTables(t)
+	useFixedQuotaPerUnitForOfficialTest(t, 500000)
+
+	user := insertUserForPaymentGuardTest(t, 608, 0)
+	order := createOfficialTestOrder(t, user.Id, "CREEM-IDEMPOTENT", PaymentProviderCreem, PaymentMethodCreem, 2, 10.0)
+
+	// A valid payment webhook proves payment, not ownership of the billing email.
+	// Do not silently bind that address to an account with no verified email.
+	require.NoError(t, RechargeCreem(order.TradeNo, "victim@example.com", "Billing Name", "127.0.0.1"))
+	assert.Equal(t, 2, getUserQuotaForPaymentGuardTest(t, user.Id))
+	reloaded, err := GetUserById(user.Id, false)
+	require.NoError(t, err)
+	require.NotNil(t, reloaded)
+	assert.Empty(t, reloaded.Email, "payment billing details must not become verified account identity")
+
+	// A concurrent/duplicate webhook that observes the already-successful order
+	// must be acknowledged without a second credit or another top-up log.
+	require.NoError(t, RechargeCreem(order.TradeNo, "another@example.com", "Other Name", "127.0.0.1"))
+	assert.Equal(t, 2, getUserQuotaForPaymentGuardTest(t, user.Id))
+}
+
+func TestRechargeStripeCreditsQuotaExactlyOnce(t *testing.T) {
+	truncateTables(t)
+	useFixedQuotaPerUnitForOfficialTest(t, 500000)
+
+	user := insertUserForPaymentGuardTest(t, 609, 0)
+	order := createOfficialTestOrder(t, user.Id, "STRIPE-IDEMPOTENT", PaymentProviderStripe, PaymentMethodStripe, 10, 10.0)
+
+	require.NoError(t, Recharge(order.TradeNo, "cus_stripe_test", "127.0.0.1"))
+	expectedQuota := 10 * 500000
+	assert.Equal(t, expectedQuota, getUserQuotaForPaymentGuardTest(t, user.Id))
+
+	require.NoError(t, Recharge(order.TradeNo, "cus_stripe_test", "127.0.0.1"))
+	assert.Equal(t, expectedQuota, getUserQuotaForPaymentGuardTest(t, user.Id))
+}

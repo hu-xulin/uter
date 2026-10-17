@@ -1,7 +1,9 @@
 package controller
 
 import (
+	"bytes"
 	"context"
+	"fmt"
 	"io"
 	"net/http"
 	"net/url"
@@ -140,6 +142,38 @@ type FetchCustomOAuthDiscoveryRequest struct {
 	IssuerURL    string `json:"issuer_url"`
 }
 
+// maxCustomOAuthDiscoveryBytes limits memory consumed by an administrator-configured
+// OIDC discovery endpoint.
+const maxCustomOAuthDiscoveryBytes int64 = 2 << 20
+
+func sameCustomOAuthDiscoveryOrigin(from, to *url.URL) bool {
+	if from == nil || to == nil || from.User != nil || to.User != nil ||
+		from.Fragment != "" || to.Fragment != "" || from.Opaque != "" || to.Opaque != "" {
+		return false
+	}
+	fromOrigin, err := common.NormalizeOrigin(from.Scheme + "://" + from.Host)
+	if err != nil {
+		return false
+	}
+	toOrigin, err := common.NormalizeOrigin(to.Scheme + "://" + to.Host)
+	return err == nil && fromOrigin == toOrigin
+}
+
+func decodeCustomOAuthDiscovery(body io.Reader) (map[string]any, error) {
+	raw, err := io.ReadAll(io.LimitReader(body, maxCustomOAuthDiscoveryBytes+1))
+	if err != nil {
+		return nil, err
+	}
+	if int64(len(raw)) > maxCustomOAuthDiscoveryBytes {
+		return nil, fmt.Errorf("OIDC discovery document exceeds %d bytes", maxCustomOAuthDiscoveryBytes)
+	}
+	var discovery map[string]any
+	if err := common.DecodeJson(bytes.NewReader(raw), &discovery); err != nil {
+		return nil, err
+	}
+	return discovery, nil
+}
+
 // FetchCustomOAuthDiscovery fetches OIDC discovery document via backend (root-only route)
 func FetchCustomOAuthDiscovery(c *gin.Context) {
 	var req FetchCustomOAuthDiscoveryRequest
@@ -163,8 +197,14 @@ func FetchCustomOAuthDiscovery(c *gin.Context) {
 	targetURL = strings.TrimSpace(targetURL)
 
 	parsedURL, err := url.Parse(targetURL)
-	if err != nil || parsedURL.Host == "" || (parsedURL.Scheme != "http" && parsedURL.Scheme != "https") {
-		common.ApiErrorT(c, "Invalid Discovery URL. Only http and https are supported")
+	if err != nil || parsedURL.Host == "" ||
+		(parsedURL.Scheme != "http" && parsedURL.Scheme != "https") ||
+		parsedURL.User != nil || parsedURL.Fragment != "" || parsedURL.Opaque != "" {
+		common.ApiErrorT(c, "Invalid Discovery URL. Only absolute http/https URLs without userinfo or fragments are supported")
+		return
+	}
+	if _, err := common.NormalizeOrigin(parsedURL.Scheme + "://" + parsedURL.Host); err != nil {
+		common.ApiErrorT(c, "Invalid Discovery URL. Only absolute http/https URLs without userinfo or fragments are supported")
 		return
 	}
 
@@ -178,7 +218,26 @@ func FetchCustomOAuthDiscovery(c *gin.Context) {
 	}
 	httpReq.Header.Set("Accept", "application/json")
 
-	client := &http.Client{Timeout: 20 * time.Second}
+	// Use the shared SSRF-aware transport so redirects and DNS resolution are
+	// validated by the same policy as other configured outbound fetches.
+	protectedClient := service.GetSSRFProtectedHTTPClient()
+	client := &http.Client{
+		Transport: protectedClient.Transport,
+		Jar:       protectedClient.Jar,
+		Timeout:   20 * time.Second,
+	}
+	originalCheckRedirect := protectedClient.CheckRedirect
+	client.CheckRedirect = func(req *http.Request, via []*http.Request) error {
+		if len(via) == 0 || len(via) >= 5 ||
+			!sameCustomOAuthDiscoveryOrigin(via[0].URL, req.URL) {
+			// Return the 3xx response without following a cross-origin redirect.
+			return http.ErrUseLastResponse
+		}
+		if originalCheckRedirect != nil {
+			return originalCheckRedirect(req, via)
+		}
+		return nil
+	}
 	resp, err := client.Do(httpReq)
 	if err != nil {
 		common.ApiErrorT(c, "Failed to fetch the Discovery configuration: {{error}}", map[string]any{"error": err.Error()})
@@ -196,8 +255,8 @@ func FetchCustomOAuthDiscovery(c *gin.Context) {
 		return
 	}
 
-	var discovery map[string]any
-	if err = common.DecodeJson(resp.Body, &discovery); err != nil {
+	discovery, err := decodeCustomOAuthDiscovery(resp.Body)
+	if err != nil {
 		common.ApiErrorT(c, "Failed to parse the Discovery configuration: {{error}}", map[string]any{"error": err.Error()})
 		return
 	}

@@ -7495,6 +7495,11 @@
     "Verify to update user credentials": "Vérifier pour modifier les identifiants de l’utilisateur",
     "Verify to create administrator": "Vérifier pour créer un administrateur",
     "Confirm your identity before creating an administrator account.": "Confirmez votre identité avant de créer un compte administrateur.",
-    "Type <username/> to confirm": "Saisissez <username/> pour confirmer"
+    "Type <username/> to confirm": "Saisissez <username/> pour confirmer",
+    "Invalid parameters": "Paramètres invalides",
+    "Organization Owner Username is required": "Le nom d’utilisateur du propriétaire de l’organisation est requis",
+    "Organization Owner Username": "Nom d’utilisateur du propriétaire de l’organisation",
+    "Existing unassigned ordinary user": "Utilisateur standard existant sans organisation",
+    "The owner must be an enabled ordinary user who is not already in an organization.": "Le propriétaire doit être un utilisateur standard actif qui n’appartient pas déjà à une organisation."
   }
 }

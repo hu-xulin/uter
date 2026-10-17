@@ -4,3 +4,15 @@ updates:
     directory: "/web"
     schedule:
       interval: "weekly"
+  - package-ecosystem: "gomod"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "gomod"
+    directory: "/relaykit"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "gomod"
+    directory: "/tokenkit"
+    schedule:
+      interval: "weekly"

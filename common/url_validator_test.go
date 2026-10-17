@@ -32,9 +32,28 @@ func TestValidateRedirectURL(t *testing.T) {
 			wantErr:        false,
 		},
 		{
-			name:           "exact domain match with http",
+			name:           "external http redirect is rejected",
 			url:            "http://example.com/callback",
 			trustedDomains: []string{"example.com"},
+			wantErr:        true,
+			errContains:    "must use HTTPS",
+		},
+		{
+			name:           "localhost http is allowed for development",
+			url:            "http://localhost:3000/callback",
+			trustedDomains: []string{"localhost"},
+			wantErr:        false,
+		},
+		{
+			name:           "IPv4 loopback http is allowed for development",
+			url:            "http://127.0.0.1:3000/callback",
+			trustedDomains: []string{"127.0.0.1"},
+			wantErr:        false,
+		},
+		{
+			name:           "IPv6 loopback http is allowed for development",
+			url:            "http://[::1]:3000/callback",
+			trustedDomains: []string{"::1"},
 			wantErr:        false,
 		},
 		{
@@ -217,6 +236,27 @@ func TestInitSessionCookieSettingsRejectsNonOriginURLs(t *testing.T) {
 			t.Setenv("SESSION_COOKIE_SECURE", "true")
 			t.Setenv("SESSION_COOKIE_TRUSTED_URL", trustedURL)
 			require.Error(t, InitSessionCookieSettings())
+		})
+	}
+}
+
+
+func TestValidateRedirectURLRejectsUserInfoAndMissingHost(t *testing.T) {
+	originalDomains := constant.TrustedRedirectDomains
+	t.Cleanup(func() { constant.TrustedRedirectDomains = originalDomains })
+	constant.TrustedRedirectDomains = []string{"example.com"}
+
+	tests := []struct {
+		name string
+		url  string
+	}{
+		{name: "userinfo", url: "https://user@example.com/success"},
+		{name: "missing host", url: "https:///example.com/success"},
+		{name: "opaque URL", url: "https:example.com/success"},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			require.Error(t, ValidateRedirectURL(tc.url))
 		})
 	}
 }

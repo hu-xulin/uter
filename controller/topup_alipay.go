@@ -73,8 +73,17 @@ func normalizePayClient(client string) string {
 	}
 }
 
+
+const maxAlipayAPIResponseBodyBytes int64 = maxPaymentProviderAPIResponseBodyBytes
+
+// readAlipayAPIResponseBody caps network response buffering from the Alipay
+// gateway before decoding JSON returned by its pre-order APIs.
+func readAlipayAPIResponseBody(body io.Reader) ([]byte, error) {
+	return readPaymentProviderAPIResponseBody(body)
+}
+
 func isAlipayTopUpEnabled() bool {
-	return operation_setting.IsAlipayEnabled()
+	return isPaymentComplianceConfirmed() && operation_setting.IsAlipayEnabled()
 }
 
 func alipayAmountForStorage(amount int64) int64 {
@@ -162,7 +171,12 @@ func RequestAlipayMiniProgram(c *gin.Context) {
 		return
 	}
 	defer resp.Body.Close()
-	body, _ := io.ReadAll(resp.Body)
+	body, err := readAlipayAPIResponseBody(resp.Body)
+	if err != nil {
+		logger.LogError(c.Request.Context(), fmt.Sprintf("支付宝响应读取失败 user_id=%d trade_no=%s error=%q", id, tradeNo, err.Error()))
+		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "创建订单失败"})
+		return
+	}
 
 	var alipayResp struct {
 		AlipayTradeCreateResponse struct {
@@ -173,7 +187,7 @@ func RequestAlipayMiniProgram(c *gin.Context) {
 		} `json:"alipay_trade_create_response"`
 	}
 	if err := json.Unmarshal(body, &alipayResp); err != nil {
-		logger.LogError(c.Request.Context(), fmt.Sprintf("支付宝响应解析失败 user_id=%d trade_no=%s body=%q error=%q", id, tradeNo, string(body), err.Error()))
+		logger.LogError(c.Request.Context(), fmt.Sprintf("支付宝响应解析失败 user_id=%d trade_no=%s body_bytes=%d error=%q", id, tradeNo, len(body), err.Error()))
 		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "创建订单失败"})
 		return
 	}
@@ -347,7 +361,12 @@ func RequestAlipayWeb(c *gin.Context) {
 		return
 	}
 	defer resp.Body.Close()
-	body, _ := io.ReadAll(resp.Body)
+	body, err := readAlipayAPIResponseBody(resp.Body)
+	if err != nil {
+		logger.LogError(c.Request.Context(), fmt.Sprintf("支付宝响应读取失败 user_id=%d trade_no=%s error=%q", id, tradeNo, err.Error()))
+		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "创建订单失败"})
+		return
+	}
 
 	var alipayResp struct {
 		AlipayTradePrecreateResponse struct {
@@ -359,7 +378,7 @@ func RequestAlipayWeb(c *gin.Context) {
 		} `json:"alipay_trade_precreate_response"`
 	}
 	if err := json.Unmarshal(body, &alipayResp); err != nil {
-		logger.LogError(c.Request.Context(), fmt.Sprintf("支付宝响应解析失败 user_id=%d trade_no=%s body=%q error=%q", id, tradeNo, string(body), err.Error()))
+		logger.LogError(c.Request.Context(), fmt.Sprintf("支付宝响应解析失败 user_id=%d trade_no=%s body_bytes=%d error=%q", id, tradeNo, len(body), err.Error()))
 		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "创建订单失败"})
 		return
 	}
@@ -397,8 +416,9 @@ func RequestAlipayWeb(c *gin.Context) {
 func AlipayNotify(c *gin.Context) {
 	var params map[string]string
 	if c.Request.Method == "POST" {
+		limitPaymentWebhookFormBody(c.Writer, c.Request)
 		if err := c.Request.ParseForm(); err != nil {
-			logger.LogError(c.Request.Context(), fmt.Sprintf("支付宝 webhook POST 表单解析失败 path=%q client_ip=%s error=%q", c.Request.RequestURI, c.ClientIP(), err.Error()))
+			logger.LogError(c.Request.Context(), fmt.Sprintf("支付宝 webhook POST 表单解析失败 path=%q client_ip=%s error=%q", c.Request.URL.Path, c.ClientIP(), err.Error()))
 			c.String(http.StatusOK, "failure")
 			return
 		}
@@ -406,11 +426,11 @@ func AlipayNotify(c *gin.Context) {
 	} else {
 		params = loReduceForm(c.Request.URL.Query())
 	}
-	logger.LogInfo(c.Request.Context(), fmt.Sprintf("支付宝 webhook 收到请求 path=%q client_ip=%s method=%s params=%q", c.Request.RequestURI, c.ClientIP(), c.Request.Method, common.GetJsonString(params)))
+	logger.LogInfo(c.Request.Context(), fmt.Sprintf("支付宝 webhook 收到请求 path=%q client_ip=%s method=%s param_count=%d", c.Request.URL.Path, c.ClientIP(), c.Request.Method, len(params)))
 
 	sign := params["sign"]
 	if !service.AlipayVerifySign(params, operation_setting.AlipayPublicKey, sign) {
-		logger.LogWarn(c.Request.Context(), fmt.Sprintf("支付宝 webhook 验签失败 path=%q client_ip=%s", c.Request.RequestURI, c.ClientIP()))
+		logger.LogWarn(c.Request.Context(), fmt.Sprintf("支付宝 webhook 验签失败 path=%q client_ip=%s", c.Request.URL.Path, c.ClientIP()))
 		c.String(http.StatusOK, "failure")
 		return
 	}
@@ -420,12 +440,12 @@ func AlipayNotify(c *gin.Context) {
 	// 因此 app_id 缺失或不一致都必须拒绝，不得"空值即放行"。
 	appID := params["app_id"]
 	if appID == "" {
-		logger.LogWarn(c.Request.Context(), fmt.Sprintf("支付宝 webhook 缺少 app_id path=%q client_ip=%s", c.Request.RequestURI, c.ClientIP()))
+		logger.LogWarn(c.Request.Context(), fmt.Sprintf("支付宝 webhook 缺少 app_id path=%q client_ip=%s", c.Request.URL.Path, c.ClientIP()))
 		c.String(http.StatusOK, "failure")
 		return
 	}
 	if appID != operation_setting.AlipayAppId {
-		logger.LogWarn(c.Request.Context(), fmt.Sprintf("支付宝 webhook app_id 不匹配 path=%q client_ip=%s app_id=%s", c.Request.RequestURI, c.ClientIP(), appID))
+		logger.LogWarn(c.Request.Context(), fmt.Sprintf("支付宝 webhook app_id 不匹配 path=%q client_ip=%s app_id=%s", c.Request.URL.Path, c.ClientIP(), appID))
 		c.String(http.StatusOK, "failure")
 		return
 	}

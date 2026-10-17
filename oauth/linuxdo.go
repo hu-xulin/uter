@@ -3,7 +3,6 @@ package oauth
 import (
 	"context"
 	"encoding/base64"
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -58,7 +57,7 @@ func (p *LinuxDOProvider) ExchangeToken(ctx context.Context, code string, c *gin
 	}
 	redirectURI := fmt.Sprintf("%s://%s/api/oauth/linuxdo", scheme, c.Request.Host)
 
-	logger.LogDebug(ctx, "[OAuth-LinuxDO] ExchangeToken: token_endpoint=%s, redirect_uri=%s", tokenEndpoint, redirectURI)
+	logger.LogDebug(ctx, "[OAuth-LinuxDO] ExchangeToken started")
 
 	data := url.Values{}
 	data.Set("grant_type", "authorization_code")
@@ -73,7 +72,7 @@ func (p *LinuxDOProvider) ExchangeToken(ctx context.Context, code string, c *gin
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	req.Header.Set("Accept", "application/json")
 
-	client := http.Client{Timeout: 5 * time.Second}
+	client := newOAuthHTTPClient(5 * time.Second)
 	res, err := client.Do(req)
 	if err != nil {
 		logger.LogError(ctx, common.LogText("[OAuth-LinuxDO] ExchangeToken error: %s", err.Error()))
@@ -82,12 +81,16 @@ func (p *LinuxDOProvider) ExchangeToken(ctx context.Context, code string, c *gin
 	defer res.Body.Close()
 
 	logger.LogDebug(ctx, "[OAuth-LinuxDO] ExchangeToken response status: %d", res.StatusCode)
+	if res.StatusCode < http.StatusOK || res.StatusCode >= http.StatusMultipleChoices {
+		logger.LogWarn(ctx, common.LogText("[OAuth-LinuxDO] ExchangeToken rejected non-success status=%d", res.StatusCode))
+		return nil, NewOAuthError(common.NewMessage(msgTokenFailed, map[string]any{"provider": "Linux DO"}))
+	}
 
 	var tokenRes struct {
 		AccessToken string `json:"access_token"`
 		Message     string `json:"message"`
 	}
-	if err := json.NewDecoder(res.Body).Decode(&tokenRes); err != nil {
+	if err := decodeOAuthJSON(res.Body, &tokenRes); err != nil {
 		logger.LogError(ctx, common.LogText("[OAuth-LinuxDO] ExchangeToken decode error: %s", err.Error()))
 		return nil, err
 	}
@@ -107,7 +110,7 @@ func (p *LinuxDOProvider) ExchangeToken(ctx context.Context, code string, c *gin
 func (p *LinuxDOProvider) GetUserInfo(ctx context.Context, token *OAuthToken) (*OAuthUser, error) {
 	userEndpoint := common.GetEnvOrDefaultString("LINUX_DO_USER_ENDPOINT", "https://connect.linux.do/api/user")
 
-	logger.LogDebug(ctx, "[OAuth-LinuxDO] GetUserInfo: user_endpoint=%s", userEndpoint)
+	logger.LogDebug(ctx, "[OAuth-LinuxDO] GetUserInfo started")
 
 	req, err := http.NewRequestWithContext(ctx, "GET", userEndpoint, nil)
 	if err != nil {
@@ -116,7 +119,7 @@ func (p *LinuxDOProvider) GetUserInfo(ctx context.Context, token *OAuthToken) (*
 	req.Header.Set("Authorization", "Bearer "+token.AccessToken)
 	req.Header.Set("Accept", "application/json")
 
-	client := http.Client{Timeout: 5 * time.Second}
+	client := newOAuthHTTPClient(5 * time.Second)
 	res, err := client.Do(req)
 	if err != nil {
 		logger.LogError(ctx, common.LogText("[OAuth-LinuxDO] GetUserInfo error: %s", err.Error()))
@@ -125,9 +128,13 @@ func (p *LinuxDOProvider) GetUserInfo(ctx context.Context, token *OAuthToken) (*
 	defer res.Body.Close()
 
 	logger.LogDebug(ctx, "[OAuth-LinuxDO] GetUserInfo response status: %d", res.StatusCode)
+	if res.StatusCode != http.StatusOK {
+		logger.LogWarn(ctx, common.LogText("[OAuth-LinuxDO] GetUserInfo rejected non-success status=%d", res.StatusCode))
+		return nil, NewOAuthError(common.NewMessage(msgGetUserFailed))
+	}
 
 	var linuxdoUser linuxdoUser
-	if err := json.NewDecoder(res.Body).Decode(&linuxdoUser); err != nil {
+	if err := decodeOAuthJSON(res.Body, &linuxdoUser); err != nil {
 		logger.LogError(ctx, common.LogText("[OAuth-LinuxDO] GetUserInfo decode error: %s", err.Error()))
 		return nil, err
 	}
@@ -137,8 +144,7 @@ func (p *LinuxDOProvider) GetUserInfo(ctx context.Context, token *OAuthToken) (*
 		return nil, NewOAuthError(common.NewMessage(msgUserInfoEmpty, map[string]any{"provider": "Linux DO"}))
 	}
 
-	logger.LogDebug(ctx, "[OAuth-LinuxDO] GetUserInfo: id=%d, username=%s, name=%s, trust_level=%d, active=%v, silenced=%v",
-		linuxdoUser.Id, linuxdoUser.Username, linuxdoUser.Name, linuxdoUser.TrustLevel, linuxdoUser.Active, linuxdoUser.Silenced)
+	logger.LogDebug(ctx, "[OAuth-LinuxDO] GetUserInfo profile decoded trust_level=%d active=%v silenced=%v", linuxdoUser.TrustLevel, linuxdoUser.Active, linuxdoUser.Silenced)
 
 	// Check trust level
 	if linuxdoUser.TrustLevel < common.LinuxDOMinimumTrustLevel {
@@ -150,7 +156,7 @@ func (p *LinuxDOProvider) GetUserInfo(ctx context.Context, token *OAuthToken) (*
 		}
 	}
 
-	logger.LogDebug(ctx, "[OAuth-LinuxDO] GetUserInfo success: id=%d, username=%s", linuxdoUser.Id, linuxdoUser.Username)
+	logger.LogDebug(ctx, "[OAuth-LinuxDO] GetUserInfo success")
 
 	return &OAuthUser{
 		ProviderUserID: strconv.Itoa(linuxdoUser.Id),

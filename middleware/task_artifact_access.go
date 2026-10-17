@@ -22,6 +22,7 @@ const (
 	taskArtifactAccessRateWindow          = time.Minute
 	taskArtifactAccessCleanupInterval     = time.Minute
 	maxEncodedTaskArtifactAccessQuerySize = 128
+	maxTaskArtifactAccessRateEntries      = 16_384
 )
 
 type taskArtifactRateEntry struct {
@@ -65,7 +66,13 @@ func (l *taskArtifactAccessLimiter) invalidAttempt(now time.Time, ip string) boo
 		l.nextCleanup = now.Add(taskArtifactAccessCleanupInterval)
 	}
 
-	rate := l.rates[ip]
+	rate, exists := l.rates[ip]
+	// Invalid requests can come from many distinct addresses. Bound the map
+	// cardinality as well as the per-IP rate, so a high-cardinality flood cannot
+	// grow memory without limit between cleanup runs.
+	if !exists && len(l.rates) >= maxTaskArtifactAccessRateEntries {
+		return false
+	}
 	if rate.windowStart.IsZero() || now.Sub(rate.windowStart) >= taskArtifactAccessRateWindow {
 		rate = taskArtifactRateEntry{windowStart: now}
 	}
@@ -175,6 +182,11 @@ func popTaskArtifactAccessQuery(request *http.Request) (string, bool, bool) {
 func TokenOrTaskArtifactAccessAuth(taskParam, artifactParam string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.Header("Cache-Control", "private, no-store")
+		// Artifact URLs are bearer capabilities carried in a query parameter.
+		// Prevent browsers from forwarding that URL as a Referer when the
+		// returned media is used by another page or resource. The access query
+		// is separately stripped before application/router logging.
+		c.Header("Referrer-Policy", "no-referrer")
 
 		rawAccess := c.GetString(taskArtifactAccessRawContextKey)
 		present := c.GetBool(taskArtifactAccessPresentContextKey)

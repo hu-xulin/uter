@@ -5,7 +5,6 @@ import (
 	"context"
 	"embed"
 	"errors"
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -165,11 +164,20 @@ func main() {
 	}
 
 	if os.Getenv("ENABLE_PPROF") == "true" {
+		// pprof exposes heap, goroutine and execution profiles that may contain
+		// sensitive runtime data. Keep it loopback-only unless an operator
+		// explicitly chooses a different bind address.
+		pprofAddr := strings.TrimSpace(os.Getenv("PPROF_ADDR"))
+		if pprofAddr == "" {
+			pprofAddr = "127.0.0.1:8005"
+		}
 		gopool.Go(func() {
-			log.Println(http.ListenAndServe("0.0.0.0:8005", nil))
+			if err := http.ListenAndServe(pprofAddr, nil); err != nil && !errors.Is(err, http.ErrServerClosed) {
+				log.Printf("pprof server failed: %v", err)
+			}
 		})
 		go common.Monitor()
-		common.SysLog(common.LogText("pprof enabled"))
+		common.SysLog(common.LogText("pprof enabled addr=%s", pprofAddr))
 	}
 
 	err = common.StartPyroScope()
@@ -184,10 +192,12 @@ func main() {
 		return
 	}
 	server.Use(gin.CustomRecovery(func(c *gin.Context, err any) {
-		common.SysLog(common.LogText("panic detected: %v", err))
-		c.JSON(http.StatusInternalServerError, gin.H{
+		// Keep panic details in server logs only; panic values may include internal
+		// paths, SQL details, provider payloads, or other sensitive data.
+		common.SysError(common.LogText("panic detected: %v", err))
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
 			"error": gin.H{
-				"message": fmt.Sprintf("Panic detected, error: %v. Please submit a issue here: https://github.com/Calcium-Ion/new-api", err),
+				"message": "Internal server error",
 				"type":    "new_api_panic",
 			},
 		})
@@ -212,8 +222,11 @@ func main() {
 	}
 
 	srv := &http.Server{
-		Addr:    ":" + port,
-		Handler: server,
+		Addr:              ":" + port,
+		Handler:           server,
+		ReadHeaderTimeout: 10 * time.Second,
+		IdleTimeout:       120 * time.Second,
+		MaxHeaderBytes:    1 << 20,
 	}
 
 	go func() {

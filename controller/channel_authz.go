@@ -6,7 +6,7 @@ func channelHasSensitiveChanges(channel *PatchChannel, origin *model.Channel, re
 	if _, ok := requestData["type"]; ok && channel.Type != origin.Type {
 		return true
 	}
-	if _, ok := requestData["key"]; ok && channel.Key != "" && channel.Key != origin.Key {
+	if _, ok := requestData["key"]; ok && channel.Key != origin.Key {
 		return true
 	}
 	if _, ok := requestData["base_url"]; ok && !equalStringPtr(channel.BaseURL, origin.BaseURL) {
@@ -25,6 +25,12 @@ func channelHasSensitiveChanges(channel *PatchChannel, origin *model.Channel, re
 		return true
 	}
 	if _, ok := requestData["other"]; ok && channel.Other != origin.Other {
+		return true
+	}
+	// other_info contains server-maintained operational metadata such as
+	// status_reason. Changes to it must not be available to channel-write-only
+	// administrators because they can influence automatic disable/restore logic.
+	if _, ok := requestData["other_info"]; ok && channel.OtherInfo != origin.OtherInfo {
 		return true
 	}
 	if _, ok := requestData["settings"]; ok && channel.OtherSettings != origin.OtherSettings {
@@ -69,6 +75,7 @@ var channelSensitiveFields = map[string]struct{}{
 	"param_override":      {},
 	"setting":             {},
 	"other":               {},
+	"other_info":          {},
 	"settings":            {},
 	"key_mode":            {},
 }
@@ -128,7 +135,6 @@ var channelNonSensitiveFields = map[string]struct{}{
 	"status_code_mapping": {},
 	"priority":            {},
 	"auto_ban":            {},
-	"other_info":          {},
 	"tag":                 {},
 	"remark":              {},
 	"channel_info":        {},
