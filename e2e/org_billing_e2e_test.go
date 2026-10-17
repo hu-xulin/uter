@@ -206,6 +206,124 @@ func TestOrgBillingConcurrentMembers(t *testing.T) {
 		"并发后组织账本增量必须等于日志汇总（成功 %d 笔）", succeeded)
 }
 
+// TestOrgBillingOvershootBoundedByOneCall 预算低于单次实际成本时的有界超支。
+//
+// 这是超支策略最尖锐的边界：把预算压到 1000 —— 远低于一次调用的实际结算
+// 30000。由于本场景预扣额为 0，准入闸门形同虚设，第一笔必然放行，结算后
+// 账本被推到 30000，形成 29000 的超支。
+//
+// 断言把策略钉死：
+//  1. 超支额严格小于「一次调用的实际成本」——即最多只超一笔的钱，
+//     不会随调用次数累积（否则就是无界超支）。
+//  2. 越过预算后**一律拒绝**，账本与日志都不再变动——绝不能出现
+//     「账已超但仍持续放行」的白嫖。
+//
+// 注意这不是缺陷而是已确认的设计约束：结算阶段不能设扣费下限（失败请求
+// 同样消耗了上游 token，且消费日志必须与余额严格一致），所以准入是唯一
+// 能约束超支的位置，而准入在调用前并不知道真实成本。见
+// service/billing_session.go 中关于 admission 的注释。
+func TestOrgBillingOvershootBoundedByOneCall(t *testing.T) {
+	env := newBillingEnv(t)
+	// 1000：< 单笔实耗 30000（必然超支）；预扣为 0，故首笔必然放行。
+	env.setOrgQuota(t, env.orgId(), 1000)
+	key := env.createToken(t, "m1", "m1-key")
+
+	const oneCallCost = 30000
+	const budget = 1000
+
+	first := env.relay(t, key)
+	require.Equal(t, http.StatusOK, first.Code, first.Body.String())
+
+	used := env.orgUsed(t, env.orgId())
+	assert.Equal(t, int64(oneCallCost), used, "第一笔按实际成本结算")
+	assert.Equal(t, used, int64(env.sumLogQuota(t, env.uid("m1"))),
+		"账本增量必须等于日志汇总")
+
+	// 超支额必须被单次调用成本界定：1000 预算最多超到 30000。
+	overshoot := used - budget
+	assert.Less(t, overshoot, int64(oneCallCost),
+		"超支额 %d 必须小于单次调用成本 %d，否则即为无界超支", overshoot, oneCallCost)
+
+	// 越过预算后一律拒绝，且不在账本上留下任何痕迹。
+	for i := 0; i < 3; i++ {
+		blocked := env.relay(t, key)
+		require.NotEqual(t, http.StatusOK, blocked.Code,
+			"第 %d 次补充调用必须被拒：%s", i+1, blocked.Body.String())
+	}
+	assert.Equal(t, int64(oneCallCost), env.orgUsed(t, env.orgId()),
+		"被拒的请求不得改变账本")
+	assert.Equal(t, int64(oneCallCost), int64(env.sumLogQuota(t, env.uid("m1"))),
+		"被拒的请求不得记消费日志")
+}
+
+// TestOrgBillingOvershootConcurrent 并发下的超发放大与账本/日志一致性。
+//
+// ⚠️ 本测试记录的是一个**已量化的放大效应**，不是缺陷修复，也不代表期望行为：
+//
+// 预扣额为 0 时（本场景请求极小，prompt 估耗为 0），组织成员的
+// WalletFunding.PreConsume 会因 amount<=0 直接返回，ReserveOrgQuota 的原子
+// 预留根本不执行；此时唯一的预算闸门是 NewBillingSession 里的
+// EnforceOrgQuota —— 那是一道**只读**校验，并发下全员通过（TOCTOU）。
+// 于是一次并发突发可以让远超预算的请求全部放行，每笔再按实际成本结算。
+//
+// 实测（2026-10-17，单笔实耗 30000）：
+//   预算 1000、并发 8  → 放行 8  笔，账本 240000（超支 239000 ≈ 8 倍单笔成本）
+//   预算 40000、并发 20 → 放行 19 笔，账本 570000（超支 530000 ≈ 17.7 倍）
+// 即超支额 ≈ 放行笔数 × 单笔实耗，而放行笔数在并发突发下可达并发度量级，
+// 远大于顺序执行时「最多超一笔」的界。要成为硬上限需产品决策（见报告）。
+//
+// 本测试固化的是**无论如何都必须成立**的安全不变量：
+//  1. 账本 == 放行笔数 × 单笔实耗（每笔成功调用记且只记一次，无幻影扣费）。
+//  2. 账本 == 日志汇总（不许多扣也不许少扣）。
+//  3. 超支额被「并发度 × 单笔实耗」界定（不会无限增长）。
+//  4. 并发结束后再发一笔必须被拒，且账本不变（无白嫖）。
+func TestOrgBillingOvershootConcurrent(t *testing.T) {
+	env := newBillingEnv(t)
+	env.setOrgQuota(t, env.orgId(), 1000)
+	env.setSubQuota(t, "m1", 1000000)
+	key := env.createToken(t, "m1", "m1-key")
+
+	const oneCallCost = 30000
+	const budget = 1000
+	const concurrency = 8
+
+	var wg sync.WaitGroup
+	var mu sync.Mutex
+	succeeded := 0
+	for i := 0; i < concurrency; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			recorder := env.relay(t, key)
+			mu.Lock()
+			if recorder.Code == http.StatusOK {
+				succeeded++
+			}
+			mu.Unlock()
+		}()
+	}
+	wg.Wait()
+
+	require.Positive(t, succeeded, "预扣为 0 时只读闸门必然放行，至少应成功一笔")
+
+	used := env.orgUsed(t, env.orgId())
+	assert.Equal(t, succeeded*oneCallCost, int(used),
+		"每笔成功调用必须记且只记一次实际成本（无幻影扣费）")
+	assert.Equal(t, used, int64(env.sumLogQuota(t, env.uid("m1"))),
+		"并发后组织账本增量必须等于日志汇总（成功 %d 笔）", succeeded)
+
+	// 超支额受「并发度 × 单笔实耗」界定：放行笔数不可能超过并发度。
+	overshoot := used - budget
+	assert.LessOrEqual(t, overshoot, int64(concurrency*oneCallCost),
+		"超支额 %d 超过并发度 %d × 单笔实耗 %d 的理论上界", overshoot, concurrency, oneCallCost)
+
+	// 并发结束后预算已越过，再发一笔必须被拒且不改变账本。
+	blocked := env.relay(t, key)
+	require.NotEqual(t, http.StatusOK, blocked.Code,
+		"预算耗尽后必须拒绝：%s", blocked.Body.String())
+	assert.Equal(t, used, env.orgUsed(t, env.orgId()), "被拒的请求不得改变账本")
+}
+
 // TestOrgBillingExMemberUsesOwnWallet 成员退出组织后改由个人钱包出资。
 func TestOrgBillingExMemberUsesOwnWallet(t *testing.T) {
 	env := newBillingEnv(t)

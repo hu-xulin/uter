@@ -70,6 +70,123 @@ jobs:
       - name: Test root, relaykit, and tokenkit modules
         run: make test
 
+  # 竞态检测：只覆盖并发敏感且已验证无竞争的包。计费/钱包/组织权限/中继都在
+  # 这些目录里，而 -race 会把测试耗时拉长数倍，全量跑会顶到 timeout。
+  #
+  # ⚠️ e2e 与 model 暂不纳入，原因是同一处**测试隔离竞争**（非生产竞争）：
+  #   DecreaseUserQuota 等路径用 gopool.Go 起了 fire-and-forget 协程做缓存同步，
+  #   协程末尾读 common.RedisEnabled / common.RDB；而 e2e harness 的 t.Cleanup
+  #   （org_platform_harness_test.go:114）会把这两个全局变量改回原值。协程比
+  #   测试体活得久，于是「cleanup 写 vs 协程读」相撞。-race 实测 e2e 4 处、
+  #   model 1 处，全部同一写点。
+  #   生产环境这些全局量启动后不再改写，故不是线上缺陷。
+  #   彻底修法二选一：(a) 把 common.RedisEnabled 等改原子访问（约 65 处调用点，
+  #   机械但波及面大）；(b) 给缓存同步协程加可等待的屏障并由 harness 在 cleanup
+  #   前等待（注意 log_writer 等处有长生命周期协程，不能一刀切 WaitGroup）。
+  race:
+    name: Backend race detector
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      GOWORK: 'off'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          repository: ${{ github.event.pull_request.base.repo.full_name || github.repository }}
+          ref: ${{ github.sha }}
+
+      - name: Set up Go
+        uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6.5.0
+        with:
+          go-version-file: go.mod
+          cache-dependency-path: |
+            go.sum
+            relaykit/go.sum
+            tokenkit/go.sum
+
+      - name: Create frontend embed placeholder
+        run: |
+          mkdir -p web/dist
+          touch web/dist/index.html
+
+      - name: Race test concurrency-sensitive packages
+        run: go test -race -count=1 ./service/... ./relay/... ./middleware/...
+
+  # 覆盖率报告：只产出可追踪的工件，不设门槛——门槛应在看到基线之后再定，
+  # 一上来就设通过线会把 CI 变成阻碍。
+  coverage:
+    name: Backend coverage report
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      GOWORK: 'off'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          repository: ${{ github.event.pull_request.base.repo.full_name || github.repository }}
+          ref: ${{ github.sha }}
+
+      - name: Set up Go
+        uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6.5.0
+        with:
+          go-version-file: go.mod
+          cache-dependency-path: |
+            go.sum
+            relaykit/go.sum
+            tokenkit/go.sum
+
+      - name: Create frontend embed placeholder
+        run: |
+          mkdir -p web/dist
+          touch web/dist/index.html
+
+      - name: Test root module with coverage
+        # 用 xargs 传包列表：直接展开多行 shell 变量在部分 shell 里不会按空白
+        # 拆分，会把整串当成一个 import path 报 malformed。
+        run: |
+          go list -e ./... | grep -vxF "$(go list -m)" \
+            | xargs go test -covermode=set -coverprofile=coverage.out
+
+      - name: Coverage summary
+        run: go tool cover -func=coverage.out | tail -1
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: go-coverage
+          path: coverage.out
+          retention-days: 14
+
+  # Go 依赖漏洞扫描：覆盖三个模块各自的 go.mod。
+  vulnscan:
+    name: Go dependency vulnerability scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          repository: ${{ github.event.pull_request.base.repo.full_name || github.repository }}
+          ref: ${{ github.sha }}
+
+      - name: Scan root module
+        run: |
+          go install golang.org/x/vuln/cmd/govulncheck@latest
+          govulncheck ./...
+
+      - name: Scan relaykit
+        working-directory: relaykit
+        run: govulncheck ./...
+
+      - name: Scan tokenkit
+        working-directory: tokenkit
+        run: govulncheck ./...
+
   frontend:
     name: Frontend typecheck, tests, lint and production build
     if: github.event.action != 'closed' || github.event.pull_request.merged == true
@@ -102,6 +219,14 @@ jobs:
 
       - name: Lint
         run: bun run lint
+
+      # 版权头检查：只补缺失的 AGPL 头，不动任何代码格式，可安全设为必需。
+      # 格式检查（format:check）**不要**设为必需：它按仓库根目录递归跑 oxfmt，
+      # 会把 public/plugins 下的第三方插件与根级配置文件一起格式化，当前有
+      # 248 个文件不合规（含 190+ 项目源文件），设成必需会让 CI 立刻全红。
+      # 待格式基线统一后再纳入。
+      - name: Copyright headers
+        run: bun run copyright:check
 
       - name: Build production frontend
         run: bun run build:check

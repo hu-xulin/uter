@@ -80,15 +80,14 @@ afterEach(() => {
   cleanup()
 })
 
-it('renders the three compliance records as icon + text in one row below the platform tagline', async () => {
+it('renders the three compliance records as icon + text in one row under the brand name', async () => {
   const footer = await renderFooter()
-  const tagline = within(footer).getByText('Powerful API Management Platform')
 
-  // The tagline must stay on one line in every locale: English renders
-  // "Intelligent Model Service Platform" and the fr/ru translations are even
-  // longer, so a width-capped paragraph breaks them onto two lines.
-  expect(tagline).toHaveClass('whitespace-nowrap')
-  expect(tagline).not.toHaveClass('max-w-[200px]')
+  // The platform tagline was removed from the footer's brand column, so the
+  // records are the first content under the brand link.
+  expect(
+    within(footer).queryByText('Powerful API Management Platform')
+  ).toBeNull()
 
   const rows = within(footer).getAllByRole('listitem')
   expect(rows).toHaveLength(3)
@@ -120,9 +119,10 @@ it('renders the three compliance records as icon + text in one row below the pla
     expect(link?.getAttribute('rel')).toBe('noopener noreferrer')
   })
 
-  // The records follow the tagline in document order — they sit under it.
+  // The records sit directly under the brand link — nothing between them.
+  const brandLink = within(footer).getAllByRole('link')[0]
   expect(
-    tagline.compareDocumentPosition(rows[0]) &
+    brandLink.compareDocumentPosition(rows[0]) &
       Node.DOCUMENT_POSITION_FOLLOWING
   ).toBeTruthy()
 })

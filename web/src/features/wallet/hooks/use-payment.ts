@@ -35,6 +35,7 @@ import {
   isStripePayment,
   isWaffoPayment,
   isWaffoPancakePayment,
+  openPaymentRedirect,
   submitPaymentForm,
 } from '../lib'
 import type { AmountRequest, AmountResponse } from '../types'
@@ -59,11 +60,25 @@ const defaultPaymentAmountCalculators: PaymentAmountCalculators = {
   waffoPancake: calculateWaffoPancakeAmount,
 }
 
+/**
+ * 计价结果必须是有限且大于 0 的金额。
+ *
+ * 计价接口失败时不能把「0」当作应付金额：0 是「无需付款」的合法输入，
+ * 用它继续流程会让确认框显示 0 元并把用户送进收款流程。
+ */
+export function isPayableAmount(value: unknown): value is number {
+  return typeof value === 'number' && Number.isFinite(value) && value > 0
+}
+
+/**
+ * 计算应付金额。失败（接口错误、空值、非数字、非正数）一律返回 null，
+ * 由调用方决定提示与重试，绝不用 0 伪装成一次成功的计价。
+ */
 export async function requestPaymentAmount(
   topupAmount: number,
   paymentType: string,
   calculators: PaymentAmountCalculators = defaultPaymentAmountCalculators
-): Promise<number> {
+): Promise<number | null> {
   let calculator = calculators.regular
   if (isStripePayment(paymentType)) {
     calculator = calculators.stripe
@@ -74,16 +89,18 @@ export async function requestPaymentAmount(
   }
 
   const response = await calculator({ amount: topupAmount })
-  if (!isApiSuccess(response) || !response.data) {
-    return 0
+  if (!isApiSuccess(response) || response.data == null) {
+    return null
   }
 
-  return Number.parseFloat(response.data)
+  const amount = Number.parseFloat(response.data)
+  return isPayableAmount(amount) ? amount : null
 }
 
 export function usePayment() {
   const [amount, setAmount] = useState<number>(0)
   const [calculating, setCalculating] = useState(false)
+  const [calculatingError, setCalculatingError] = useState(false)
   const [processing, setProcessing] = useState(false)
 
   // Calculate payment amount
@@ -91,15 +108,18 @@ export function usePayment() {
     async (topupAmount: number, paymentType: string) => {
       try {
         setCalculating(true)
+        setCalculatingError(false)
         const calculatedAmount = await requestPaymentAmount(
           topupAmount,
           paymentType
         )
-        setAmount(calculatedAmount)
+        setAmount(calculatedAmount ?? 0)
+        setCalculatingError(calculatedAmount === null)
         return calculatedAmount
       } catch {
         setAmount(0)
-        return 0
+        setCalculatingError(true)
+        return null
       } finally {
         setCalculating(false)
       }
@@ -133,7 +153,11 @@ export function usePayment() {
 
         // Handle Stripe payment
         if (isStripe && response.data?.pay_link) {
-          window.open(response.data.pay_link as string, '_blank')
+          if (
+            !openPaymentRedirect(response.data.pay_link as string, 'stripe')
+          ) {
+            return false
+          }
           toast.success(i18next.t('Redirecting to payment page...'))
           return true
         }
@@ -142,7 +166,15 @@ export function usePayment() {
         if (!isStripe && response.data) {
           const url = (response as unknown as { url?: string }).url
           if (url) {
-            submitPaymentForm(url, response.data)
+            try {
+              submitPaymentForm(url, response.data)
+            } catch {
+              handleServerError(
+                new Error('invalid redirect'),
+                i18next.t('Invalid payment redirect URL')
+              )
+              return false
+            }
             toast.success(i18next.t('Redirecting to payment page...'))
             return true
           }
@@ -162,6 +194,7 @@ export function usePayment() {
   return {
     amount,
     calculating,
+    calculatingError,
     processing,
     calculatePaymentAmount,
     processPayment,

@@ -273,3 +273,67 @@ export function getFirstActiveKey(
   if (!Array.isArray(keys)) return undefined
   return keys.find((item) => item.status === API_KEY_STATUS.ENABLED)
 }
+
+// ============================================================================
+// Embedded chat isolation
+// ============================================================================
+
+export type ChatEmbedRejection = 'invalid-url' | 'same-origin'
+
+export type ChatEmbedPolicy =
+  | { embeddable: true; sandbox: string }
+  | { embeddable: false; reason: ChatEmbedRejection }
+
+/**
+ * iframe 的 sandbox 属性。
+ *
+ * `allow-scripts` + `allow-same-origin` 同时存在时，若被嵌入页与主应用同源，
+ * 沙箱等同于形同虚设：该页面可以访问父窗口 DOM 并自行移除 sandbox 属性。
+ * 因此同源嵌入时必须去掉 `allow-same-origin`（页面仍在唯一的不透明源里运行，
+ * 只是拿不到主应用的 origin/storage）。
+ */
+const BASE_EMBED_SANDBOX = 'allow-scripts allow-forms allow-popups allow-modals'
+
+/**
+ * 返回预设链接的主机名，用于在把 API 密钥交给第三方之前明确告知接收方。
+ * 无法解析时返回空字符串。
+ */
+export function chatPresetHost(url: string): string {
+  try {
+    return new URL(url).host
+  } catch {
+    return ''
+  }
+}
+
+export function resolveChatEmbedPolicy(
+  url: string,
+  appOrigin: string
+): ChatEmbedPolicy {
+  let parsed: URL
+  try {
+    parsed = new URL(url)
+  } catch {
+    return { embeddable: false, reason: 'invalid-url' }
+  }
+
+  if (parsed.protocol !== 'https:' && parsed.protocol !== 'http:') {
+    return { embeddable: false, reason: 'invalid-url' }
+  }
+
+  let sameOrigin = false
+  if (appOrigin) {
+    try {
+      sameOrigin = new URL(appOrigin).origin === parsed.origin
+    } catch {
+      sameOrigin = false
+    }
+  }
+
+  return {
+    embeddable: true,
+    sandbox: sameOrigin
+      ? BASE_EMBED_SANDBOX
+      : `${BASE_EMBED_SANDBOX} allow-same-origin`,
+  }
+}

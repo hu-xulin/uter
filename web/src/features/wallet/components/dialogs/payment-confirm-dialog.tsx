@@ -33,6 +33,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { formatLocalCurrencyAmount } from '@/lib/currency'
 
 import { DEFAULT_DISCOUNT_RATE } from '../../constants'
+import { isPayableAmount } from '../../hooks/use-payment'
 import { formatCurrency, getPaymentIcon } from '../../lib'
 import type { PaymentMethod } from '../../types'
 
@@ -47,6 +48,47 @@ interface PaymentConfirmDialogProps {
   processing: boolean
   discountRate?: number
   usdExchangeRate?: number
+}
+
+/**
+ * 「应付金额」区域的渲染。计价中显示骨架；计价失败（金额非有限正数）时
+ * 明确报错而不是显示 0 元 —— 0 是合法的「无需付款」，两者必须区分。
+ */
+function PayableAmountValue({
+  calculating,
+  paymentAmount,
+  hasDiscount,
+  originalAmount,
+}: {
+  calculating: boolean
+  paymentAmount: number
+  hasDiscount: boolean
+  originalAmount: number
+}) {
+  const { t } = useTranslation()
+
+  if (calculating) return <Skeleton className='h-6 w-24' />
+
+  if (!isPayableAmount(paymentAmount)) {
+    return (
+      <span className='text-destructive text-lg font-semibold'>
+        {t('Failed to calculate payment amount. Please try again.')}
+      </span>
+    )
+  }
+
+  return (
+    <div className='flex items-baseline gap-2'>
+      <span className='text-2xl font-semibold'>
+        {formatCurrency(paymentAmount)}
+      </span>
+      {hasDiscount && (
+        <span className='text-muted-foreground text-sm line-through'>
+          {formatCurrency(originalAmount)}
+        </span>
+      )}
+    </div>
+  )
 }
 
 export function PaymentConfirmDialog({
@@ -65,6 +107,9 @@ export function PaymentConfirmDialog({
   const hasDiscount = discountRate > 0 && discountRate < 1 && paymentAmount > 0
   const originalAmount = hasDiscount ? paymentAmount / discountRate : 0
   const discountAmount = hasDiscount ? originalAmount - paymentAmount : 0
+  // 应付金额无效（0 / NaN / 负数）时不允许确认：否则用户会看到「应付 0 元」
+  // 却仍能走进收款流程。计价失败应由上层拦在打开对话框之前，这里是兜底。
+  const amountInvalid = !isPayableAmount(paymentAmount)
 
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
@@ -96,20 +141,12 @@ export function PaymentConfirmDialog({
             <span className='text-muted-foreground text-sm'>
               {t('You Pay')}
             </span>
-            {calculating ? (
-              <Skeleton className='h-6 w-24' />
-            ) : (
-              <div className='flex items-baseline gap-2'>
-                <span className='text-2xl font-semibold'>
-                  {formatCurrency(paymentAmount)}
-                </span>
-                {hasDiscount && (
-                  <span className='text-muted-foreground text-sm line-through'>
-                    {formatCurrency(originalAmount)}
-                  </span>
-                )}
-              </div>
-            )}
+            <PayableAmountValue
+              calculating={calculating}
+              paymentAmount={paymentAmount}
+              hasDiscount={hasDiscount}
+              originalAmount={originalAmount}
+            />
           </div>
 
           {hasDiscount && !calculating && (
@@ -145,7 +182,10 @@ export function PaymentConfirmDialog({
           <AlertDialogCancel disabled={processing}>
             {t('Cancel')}
           </AlertDialogCancel>
-          <AlertDialogAction onClick={onConfirm} disabled={processing}>
+          <AlertDialogAction
+            onClick={onConfirm}
+            disabled={processing || calculating || amountInvalid}
+          >
             {processing && <Loader2 className='mr-2 h-4 w-4 animate-spin' />}
             {t('Confirm Payment')}
           </AlertDialogAction>
