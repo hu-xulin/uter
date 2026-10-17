@@ -82,6 +82,13 @@ const FOOTER_COMPLIANCE_ITEMS = [
   },
 ] as const
 
+// The row is inset by 6px so its icons optically centre under the brand logo
+// above them: the logo is `size-7` (28px) while these icons render at `h-4`
+// (16px), and half the difference is the 6px that lines the two up. Without it
+// the row starts flush with the logo's own left edge and reads as if it had
+// drifted out of the brand column.
+const COMPLIANCE_ROW_INSET = 'pl-1.5'
+
 // The interface languages the compliance row is rendered for.
 //
 // These are filings with mainland-China regulators — ICP, the national
@@ -386,7 +393,12 @@ export function Footer(props: FooterProps) {
               </span>
             </Link>
             {showComplianceRecords && (
-              <ul className='text-muted-foreground/60 mt-3 flex flex-wrap items-center gap-x-[30px] gap-y-1.5 text-[13px]'>
+              <ul
+                className={cn(
+                  'text-muted-foreground/60 mt-3 flex flex-wrap items-center gap-x-[30px] gap-y-1.5 text-[13px]',
+                  COMPLIANCE_ROW_INSET
+                )}
+              >
                 {FOOTER_COMPLIANCE_ITEMS.map((item) => {
                   // Only the filing number after the colon is a link — the icon
                   // and the label prefix stay plain text. The colon may be the
