@@ -96,6 +96,44 @@ func SettleBilling(ctx *gin.Context, relayInfo *relaycommon.RelayInfo, actualQuo
 	return nil
 }
 
+// LogOtherSettleErrorKey 是结算失败写在用量日志 other 上的标记键。
+//
+// 对账方据此把「结算未落地」的请求挑出来人工核对，而不是把日志里的额度当成
+// 已经扣干净的事实。
+const LogOtherSettleErrorKey = "settle_error"
+
+// SettleBillingForLog 执行结算，并返回**应当写入用量日志的额度**与是否发生了
+// 结算失败。
+//
+// BE-BIL-022：SettleBilling 只在「资金来源未提交」时返回错误——此时超出预扣的
+// 那部分并没有真正扣到用户账上（见 BillingSession.Settle 的分两步提交与
+// FundingSettled 的契约说明）。若仍按结算前的全额写日志，日志会宣称「全额已扣」
+// 而余额只少了预扣额，「初始余额 − 最终余额 == logs.Quota」这条 P0 不变量被
+// 打破，账单出现虚假已扣——用户看到的消费记录比实际扣款多。
+//
+// 这里收敛到**已经落地的预扣额**而不是写 0：预扣本身就是一次真实扣减，写 0 同样
+// 与余额对不上，只是把偏差翻到另一个方向。两者都不会虚报全额，但只有记预扣额能
+// 同时守住不变量与「绝不虚报已扣」。调用方拿到 settleFailed 后应在 other 上打
+// LogOtherSettleErrorKey 标记。
+func SettleBillingForLog(ctx *gin.Context, relayInfo *relaycommon.RelayInfo, actualQuota int) (loggedQuota int, settleFailed bool) {
+	if err := SettleBilling(ctx, relayInfo, actualQuota); err != nil {
+		logger.LogError(ctx, common.LogText("error settling billing: %s", err.Error()))
+		if relayInfo == nil {
+			return 0, true
+		}
+		return relayInfo.FinalPreConsumedQuota, true
+	}
+	return actualQuota, false
+}
+
+// markSettleError 把结算失败标记写进用量日志的 other。
+func markSettleError(other *model.LogOther, settleFailed bool) {
+	if !settleFailed || other == nil {
+		return
+	}
+	other.SetPublic(LogOtherSettleErrorKey, true)
+}
+
 // recordMemberUsage 在结算点记录成员用量。组织成员的实际 used_quota 已由 WalletFunding.Settle
 // 按「实际 - 预扣」差额并入（与预扣点的原子预留对账），这里只负责请求计数；其余情况
 // （非组织成员、或走旧路径无 BillingSession）仍按原逻辑累加 used_quota + request_count。

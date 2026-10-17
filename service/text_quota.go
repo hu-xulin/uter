@@ -460,9 +460,8 @@ func PostTextConsumeQuota(ctx *gin.Context, relayInfo *relaycommon.RelayInfo, us
 		model.UpdateChannelUsedQuota(relayInfo.ChannelId, summary.Quota)
 	}
 
-	if err := SettleBilling(ctx, relayInfo, summary.Quota); err != nil {
-		logger.LogError(ctx, common.LogText("error settling billing: %s", err.Error()))
-	}
+	// 结算失败时日志只记已经落地的预扣额，绝不虚报全额已扣（BE-BIL-022）。
+	loggedQuota, settleFailed := SettleBillingForLog(ctx, relayInfo, summary.Quota)
 
 	logModel := summary.ModelName
 	if strings.HasPrefix(logModel, "gpt-4-gizmo") {
@@ -534,6 +533,7 @@ func PostTextConsumeQuota(ctx *gin.Context, relayInfo *relaycommon.RelayInfo, us
 	}
 
 	attachQuotaSaturation(ctx, relayInfo, other)
+	markSettleError(other, settleFailed)
 
 	model.RecordConsumeLog(ctx, relayInfo.UserId, model.RecordConsumeLogParams{
 		ChannelId:        relayInfo.ChannelId,
@@ -541,7 +541,7 @@ func PostTextConsumeQuota(ctx *gin.Context, relayInfo *relaycommon.RelayInfo, us
 		CompletionTokens: summary.CompletionTokens,
 		ModelName:        logModel,
 		TokenName:        summary.TokenName,
-		Quota:            summary.Quota,
+		Quota:            loggedQuota,
 		Content:          extraContent,
 		TokenId:          relayInfo.TokenId,
 		UseTimeSeconds:   int(summary.UseTimeSeconds),
