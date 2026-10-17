@@ -3382,6 +3382,8 @@
     "Invalid Passkey registration response": "Invalid Passkey registration response",
     "Invalid Passkey response": "Invalid Passkey response",
     "Invalid payment redirect URL": "Invalid payment redirect URL",
+    "Failed to calculate payment amount. Please try again.": "Failed to calculate payment amount. Please try again.",
+    "The payment page was blocked by your browser. Allow pop-ups for this site and try again.": "The payment page was blocked by your browser. Allow pop-ups for this site and try again.",
     "Failed to load organization data": "Failed to load organization data",
     "Invalid pricing value": "Invalid pricing value",
     "Invalid reset link, please request a new password reset": "Invalid reset link, please request a new password reset",

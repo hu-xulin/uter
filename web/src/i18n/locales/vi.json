@@ -3382,6 +3382,8 @@
     "Invalid Passkey registration response": "Phản hồi đăng ký Passkey không hợp lệ",
     "Invalid Passkey response": "Phản hồi Passkey không hợp lệ",
     "Invalid payment redirect URL": "URL chuyển hướng thanh toán không hợp lệ",
+    "Failed to calculate payment amount. Please try again.": "Không tính được số tiền thanh toán. Vui lòng thử lại.",
+    "The payment page was blocked by your browser. Allow pop-ups for this site and try again.": "Trang thanh toán đã bị trình duyệt chặn. Hãy cho phép cửa sổ bật lên cho trang này rồi thử lại.",
     "Failed to load organization data": "Không tải được dữ liệu tổ chức",
     "Invalid pricing value": "Giá trị định giá không hợp lệ",
     "Invalid reset link, please request a new password reset": "Liên kết đặt lại không hợp lệ, vui lòng yêu cầu đặt lại mật khẩu mới",

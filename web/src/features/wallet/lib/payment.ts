@@ -25,6 +25,7 @@ import {
   DEFAULT_MIN_TOPUP,
 } from '../constants'
 import type { PaymentMethod, PresetAmount, TopupInfo } from '../types'
+import { resolvePaymentRedirectUrl } from './payment-redirect'
 
 // ============================================================================
 // Payment Processing Functions
@@ -58,14 +59,23 @@ function isSafariBrowser(): boolean {
 
 /**
  * Submit payment form (for non-Stripe payments)
+ *
+ * 表单 action 同样来自后端下发，必须先过协议校验：
+ * 未校验的 `javascript:` action 会让挂起的表单成为一次脚本执行。
  */
 export function submitPaymentForm(
   url: string,
   params: Record<string, unknown>
 ): void {
+  const safeUrl = resolvePaymentRedirectUrl(url)
+  if (!safeUrl) {
+    throw new Error('Invalid payment redirect URL')
+  }
+
   const form = document.createElement('form')
-  form.action = url
+  form.action = safeUrl
   form.method = 'POST'
+  form.rel = 'noopener noreferrer'
 
   // Don't open in new tab for Safari
   if (!isSafariBrowser()) {
