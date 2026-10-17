@@ -38,6 +38,10 @@
     <link rel="apple-touch-icon" sizes="180x180" href="/logo.png?v=4" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="google" content="notranslate" />
+    <!-- Reset links carry email+token in the query string. strict-origin-when-cross-origin
+         keeps the full path/query out of cross-origin Referer headers, so the
+         credential cannot leak to third-party origins the user navigates to. -->
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
 
     <!-- Primary Meta Tags -->
     <title>Uter</title>
