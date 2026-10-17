@@ -196,6 +196,11 @@ func telegramOAuthCallback(state, code string, identity service.AuthIdentity) *h
 	path := "/api/oauth/telegram?" + url.Values{"state": {state}, "code": {code}}.Encode()
 	return securityEnrollmentRequest("GET", path, "", "", identity, func(c *gin.Context) {
 		c.Params = gin.Params{{Key: "provider", Value: "telegram"}}
+		// Replay the login nonce cookie the browser would send for
+		// login-intent callbacks; bind/verify flows ignore it.
+		if nonce := oauthLoginNonceFromFlow(state); nonce != "" {
+			c.Request.AddCookie(&http.Cookie{Name: oauthLoginNonceCookie, Value: nonce})
+		}
 		HandleOAuth(c)
 	})
 }

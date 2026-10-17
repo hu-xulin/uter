@@ -81,7 +81,7 @@ func TestCreemOrderAmountsCoverOrder(t *testing.T) {
 	}
 }
 
-func TestCreemExpectedMinorUnits(t *testing.T) {
+func TestExpectedMinorUnits(t *testing.T) {
 	tests := []struct {
 		name     string
 		amount   float64
@@ -101,7 +101,7 @@ func TestCreemExpectedMinorUnits(t *testing.T) {
 	}
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			got, ok := creemExpectedMinorUnits(tc.amount, tc.currency)
+			got, ok := expectedMinorUnits(tc.amount, tc.currency)
 			assert.Equal(t, tc.wantOK, ok)
 			if tc.wantOK {
 				assert.Equal(t, tc.expected, got)
@@ -280,6 +280,9 @@ func TestStripeSubscriptionPriceMatchesLocalOrder(t *testing.T) {
 	}{
 		{name: "exact USD amount", providerAmount: 2999, providerCurrency: "usd", expectedMoney: 29.99, expectedCurrency: "USD", want: true},
 		{name: "exact CNY amount", providerAmount: 1200, providerCurrency: "CNY", expectedMoney: 12, expectedCurrency: "cny", want: true},
+		{name: "exact JPY amount in zero-decimal currency", providerAmount: 1200, providerCurrency: "jpy", expectedMoney: 1200, expectedCurrency: "JPY", want: true},
+		{name: "exact BHD amount in three-decimal currency", providerAmount: 1250, providerCurrency: "bhd", expectedMoney: 1.25, expectedCurrency: "BHD", want: true},
+		{name: "JPY fractional amount rejected", providerAmount: 1200, providerCurrency: "jpy", expectedMoney: 1200.5, expectedCurrency: "JPY", want: false},
 		{name: "underpriced Stripe Price rejected", providerAmount: 100, providerCurrency: "usd", expectedMoney: 29.99, expectedCurrency: "USD", want: false},
 		{name: "overpriced Stripe Price rejected", providerAmount: 3000, providerCurrency: "usd", expectedMoney: 29.99, expectedCurrency: "USD", want: false},
 		{name: "wrong currency rejected", providerAmount: 2999, providerCurrency: "eur", expectedMoney: 29.99, expectedCurrency: "USD", want: false},

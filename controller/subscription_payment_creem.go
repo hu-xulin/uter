@@ -78,7 +78,7 @@ func SubscriptionRequestCreemPay(c *gin.Context) {
 	referenceId := "sub_ref_" + common.Sha1([]byte(reference+time.Now().String()+user.Username))
 
 	currency := subscriptionPlanCurrency(plan)
-	if _, ok := creemExpectedMinorUnits(plan.PriceAmount, currency); !ok {
+	if _, ok := expectedMinorUnits(plan.PriceAmount, currency); !ok {
 		common.ApiErrorT(c, "Plan price/currency precision is invalid")
 		return
 	}

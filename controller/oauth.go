@@ -1,6 +1,9 @@
 package controller
 
 import (
+	"crypto/rand"
+	"crypto/subtle"
+	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"net/http"
@@ -20,6 +23,12 @@ import (
 
 const oauthAuthFlowTTL = 10 * time.Minute
 
+// oauthLoginNonceCookie binds a login-intent OAuth flow to the browser that
+// started it. Without this binding an attacker could complete a login flow
+// with their own account and trick a victim into visiting the callback URL,
+// silently signing the victim into the attacker's account.
+const oauthLoginNonceCookie = "oauth_login_nonce"
+
 type oauthStateRequest struct {
 	Provider string          `json:"provider"`
 	Intent   string          `json:"intent"`
@@ -30,10 +39,46 @@ type oauthStateRequest struct {
 
 type oauthFlowPayload struct {
 	AffiliateCode   string                         `json:"affiliate_code,omitempty"`
+	LoginNonce      string                         `json:"login_nonce,omitempty"`
 	Verification    *service.OAuthVerificationFlow `json:"verification,omitempty"`
 	Telegram        *oauth.TelegramOAuthFlow       `json:"telegram,omitempty"`
 	SessionIdentity *service.AuthIdentity          `json:"session_identity,omitempty"`
 	Authorization   *model.AuthFlowAuthorization   `json:"authorization,omitempty"`
+}
+
+// generateOAuthLoginNonce returns a fresh random nonce for binding a
+// login-intent OAuth flow to the requesting browser.
+func generateOAuthLoginNonce() (string, error) {
+	buf := make([]byte, 16)
+	if _, err := rand.Read(buf); err != nil {
+		return "", err
+	}
+	return hex.EncodeToString(buf), nil
+}
+
+// isSecureOAuthRequest reports whether the current request arrived over HTTPS,
+// honoring the reverse-proxy headers used elsewhere in this codebase.
+func isSecureOAuthRequest(c *gin.Context) bool {
+	scheme := strings.TrimSpace(strings.Split(c.Request.Header.Get("X-Forwarded-Proto"), ",")[0])
+	if scheme == "" {
+		return c.Request.TLS != nil
+	}
+	return strings.EqualFold(scheme, "https")
+}
+
+// setOAuthLoginNonceCookie stores the login nonce in a first-party HttpOnly
+// cookie scoped to the flow TTL.
+func setOAuthLoginNonceCookie(c *gin.Context, nonce string) {
+	c.SetSameSite(http.SameSiteLaxMode)
+	c.SetCookie(
+		oauthLoginNonceCookie,
+		nonce,
+		int(oauthAuthFlowTTL.Seconds()),
+		"/",
+		"",
+		isSecureOAuthRequest(c),
+		true,
+	)
 }
 
 // providerParams returns the params of messages that name the OAuth provider.
@@ -63,6 +108,14 @@ func GenerateOAuthCode(c *gin.Context) {
 	sessionID := ""
 	flowPayload := oauthFlowPayload{AffiliateCode: request.Aff}
 	bindingStarted := false
+	if request.Intent == model.AuthFlowIntentLogin {
+		loginNonce, err := generateOAuthLoginNonce()
+		if err != nil {
+			writeSecurityOperationError(c, err)
+			return
+		}
+		flowPayload.LoginNonce = loginNonce
+	}
 	if request.Provider == "telegram" {
 		telegramFlow, err := oauth.NewTelegramOAuthFlow()
 		if err != nil {
@@ -130,6 +183,9 @@ func GenerateOAuthCode(c *gin.Context) {
 		return
 	}
 	bindingStarted = request.Intent == model.AuthFlowIntentBind
+	if request.Intent == model.AuthFlowIntentLogin {
+		setOAuthLoginNonceCookie(c, flowPayload.LoginNonce)
+	}
 	data := gin.H{"flow_token": state, "expires_at": expiresAt.Unix()}
 	if flowPayload.Telegram != nil {
 		data["authorization_url"] = flowPayload.Telegram.AuthorizationURL(state)
@@ -200,6 +256,23 @@ func HandleOAuth(c *gin.Context) {
 	} else if pendingFlow.Intent != model.AuthFlowIntentLogin {
 		common.ApiErrorT(c, "Invalid parameters")
 		return
+	}
+
+	// Login callbacks must come from the browser that started the flow. The
+	// nonce cookie prevents an attacker from replaying a callback URL that
+	// would sign a victim into the attacker's account (login CSRF).
+	if pendingFlow.Intent == model.AuthFlowIntentLogin {
+		var loginPayload oauthFlowPayload
+		if err := common.UnmarshalJsonStr(pendingFlow.Payload, &loginPayload); err != nil {
+			writeSecurityOperationError(c, model.ErrAuthFlowInvalid)
+			return
+		}
+		cookieNonce, err := c.Cookie(oauthLoginNonceCookie)
+		if err != nil || loginPayload.LoginNonce == "" ||
+			subtle.ConstantTimeCompare([]byte(cookieNonce), []byte(loginPayload.LoginNonce)) != 1 {
+			writeAccountStatusError(c, http.StatusForbidden, "State parameter is empty or mismatched")
+			return
+		}
 	}
 
 	// 3. Check if provider is enabled
@@ -500,6 +573,24 @@ func findOrCreateOAuthUser(c *gin.Context, provider oauth.Provider, oauthUser *o
 	}
 	if oauthUser.Email != "" {
 		user.Email = model.NormalizeEmail(oauthUser.Email)
+		// The provider-reported address may be unverified and could belong to
+		// another person. When the provider can list the addresses it has
+		// confirmed, only trust one that appears there; otherwise create the
+		// account without an email instead of letting a stranger claim it.
+		// The list is fetched only here and never recorded.
+		if emailProvider, ok := provider.(oauth.VerifiedEmailProvider); ok {
+			emails, err := emailProvider.GetVerifiedEmails(c.Request.Context(), token)
+			if err != nil {
+				return nil, nil, err
+			}
+			if !slices.ContainsFunc(emails, func(email string) bool {
+				return model.NormalizeEmail(email) == user.Email
+			}) {
+				user.Email = ""
+			}
+		}
+	}
+	if user.Email != "" {
 		if err := model.EnsureEmailAvailable(user.Email, 0); err != nil {
 			if errors.Is(err, model.ErrEmailAlreadyTaken) {
 				return nil, nil, &OAuthEmailAlreadyTakenError{}

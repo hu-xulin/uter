@@ -13,7 +13,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/stripe/stripe-go/v81"
 	"github.com/stripe/stripe-go/v81/checkout/session"
-	"github.com/shopspring/decimal"
 	"github.com/thanhpk/randstr"
 )
 
@@ -144,20 +143,21 @@ func SubscriptionRequestStripePay(c *gin.Context) {
 // stripeSubscriptionPriceMatchesLocalOrder prevents a misconfigured Stripe Price ID
 // from silently charging a different amount or currency than the plan shown to users.
 func stripeSubscriptionPriceMatchesLocalOrder(providerAmount int64, providerCurrency string, expectedMoney float64, expectedCurrency string) bool {
-	// Subscription plans are configured as fixed cash prices. Do not silently
-	// round a misconfigured sub-cent plan amount to the nearest cent.
-	exactMoney := decimal.NewFromFloat(expectedMoney)
-	if !exactMoney.Equal(exactMoney.Round(2)) {
-		return false
-	}
-	expectedAmount, err := stripeMoneyToMinorUnits(expectedMoney)
-	if err != nil || providerAmount != expectedAmount {
-		return false
-	}
 	providerCurrency = strings.TrimSpace(providerCurrency)
 	expectedCurrency = strings.TrimSpace(expectedCurrency)
-	return providerCurrency != "" && expectedCurrency != "" &&
-		strings.EqualFold(providerCurrency, expectedCurrency)
+	if providerCurrency == "" || expectedCurrency == "" ||
+		!strings.EqualFold(providerCurrency, expectedCurrency) {
+		return false
+	}
+	// Stripe reports amounts in the currency's smallest unit, whose scale
+	// depends on the ISO 4217 exponent (e.g. JPY has none, KWD has three).
+	// Converting with a hard-coded factor of 100 would reject every plan in
+	// a non-two-decimal currency.
+	expectedAmount, ok := expectedMinorUnits(expectedMoney, expectedCurrency)
+	if !ok || providerAmount != expectedAmount {
+		return false
+	}
+	return true
 }
 
 func genStripeSubscriptionLink(referenceId string, customerId string, email string, priceId string) (string, int64, string, error) {

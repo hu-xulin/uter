@@ -12,6 +12,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"strconv"
 	"strings"
 	"sync"
 	"testing"
@@ -408,12 +409,11 @@ func TestSecurityLoginAllPrimaryTransportsRequireAdditionalVerification(t *testi
 					oauth.Register(slug, &boundLoginOAuthProvider{userID: user.Id})
 				}
 				t.Cleanup(func() { oauth.Unregister(slug) })
-				token, _, err := model.CreateAuthFlow(model.AuthFlowCreate{Purpose: model.AuthFlowPurposeOAuth, Provider: slug, Intent: model.AuthFlowIntentLogin, Payload: `{}`, ExpiresAt: time.Now().Add(time.Minute)})
-				require.NoError(t, err)
+				token, loginNonce := createOAuthLoginFlow(t, slug)
 				router := gin.New()
 				router.GET("/api/oauth/:provider", HandleOAuth)
 				response = httptest.NewRecorder()
-				router.ServeHTTP(response, httptest.NewRequest("GET", "/api/oauth/"+slug+"?state="+token+"&code=provider-code", nil))
+				router.ServeHTTP(response, withOAuthLoginNonceCookie(httptest.NewRequest("GET", "/api/oauth/"+slug+"?state="+token+"&code=provider-code", nil), loginNonce))
 			}
 			var result struct {
 				Success bool                   `json:"success"`
@@ -700,6 +700,44 @@ func setupAuthFlowControllerTest(t *testing.T) *authFlowTestOAuthProvider {
 	return provider
 }
 
+// createOAuthLoginFlow creates a login-intent auth flow whose payload carries
+// a fresh nonce, mirroring GenerateOAuthCode, and returns the flow token with
+// the nonce value a browser would replay as the login nonce cookie.
+func createOAuthLoginFlow(t *testing.T, provider string) (token string, nonce string) {
+	t.Helper()
+	nonce, err := generateOAuthLoginNonce()
+	require.NoError(t, err)
+	payload, err := common.Marshal(oauthFlowPayload{LoginNonce: nonce})
+	require.NoError(t, err)
+	token, _, err = model.CreateAuthFlow(model.AuthFlowCreate{
+		Purpose: model.AuthFlowPurposeOAuth, Provider: provider, Intent: model.AuthFlowIntentLogin,
+		Payload: string(payload), ExpiresAt: time.Now().Add(time.Minute),
+	})
+	require.NoError(t, err)
+	return token, nonce
+}
+
+// withOAuthLoginNonceCookie replays the login nonce cookie on a callback
+// request the way the browser that started the flow would send it.
+func withOAuthLoginNonceCookie(request *http.Request, nonce string) *http.Request {
+	request.AddCookie(&http.Cookie{Name: oauthLoginNonceCookie, Value: nonce})
+	return request
+}
+
+// oauthLoginNonceFromFlow reads the login nonce persisted in a flow payload,
+// or an empty string for intents that do not carry one.
+func oauthLoginNonceFromFlow(token string) string {
+	flow, err := model.GetAuthFlow(token, model.AuthFlowMatch{Purpose: model.AuthFlowPurposeOAuth})
+	if err != nil {
+		return ""
+	}
+	var payload oauthFlowPayload
+	if err := common.UnmarshalJsonStr(flow.Payload, &payload); err != nil {
+		return ""
+	}
+	return payload.LoginNonce
+}
+
 func TestGenerateOAuthCodeCarriesAffiliateInLoginFlow(t *testing.T) {
 	setupAuthFlowControllerTest(t)
 	recorder := httptest.NewRecorder()
@@ -725,8 +763,19 @@ func TestGenerateOAuthCodeCarriesAffiliateInLoginFlow(t *testing.T) {
 	var payload oauthFlowPayload
 	require.NoError(t, common.UnmarshalJsonStr(flow.Payload, &payload))
 	assert.Equal(t, "invite-code", payload.AffiliateCode)
+	assert.NotEmpty(t, payload.LoginNonce)
 	assert.Zero(t, flow.UserId)
 	assert.Empty(t, flow.SessionId)
+	// The login nonce must be mirrored in an HttpOnly cookie so the callback
+	// can prove it comes from the browser that started the flow.
+	var nonceCookie string
+	for _, cookie := range recorder.Result().Cookies() {
+		if cookie.Name == oauthLoginNonceCookie {
+			nonceCookie = cookie.Value
+			assert.True(t, cookie.HttpOnly)
+		}
+	}
+	assert.Equal(t, payload.LoginNonce, nonceCookie)
 }
 
 func TestGenerateOAuthCodeBindsFlowToAuthenticatedSession(t *testing.T) {
@@ -764,15 +813,11 @@ func TestOAuthLoginConsumesFlowOnlyAfterProviderIdentity(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			provider.exchangeErr = test.exchangeErr
 			provider.userInfoErr = test.userInfoErr
-			token, _, err := model.CreateAuthFlow(model.AuthFlowCreate{
-				Purpose: model.AuthFlowPurposeOAuth, Provider: "auth-flow-test", Intent: model.AuthFlowIntentLogin,
-				Payload: `{}`, ExpiresAt: time.Now().Add(time.Minute),
-			})
-			require.NoError(t, err)
+			token, loginNonce := createOAuthLoginFlow(t, "auth-flow-test")
 
 			router := gin.New()
 			router.GET("/api/oauth/:provider", HandleOAuth)
-			request := httptest.NewRequest(http.MethodGet, "/api/oauth/auth-flow-test?state="+token+"&code=test", nil)
+			request := withOAuthLoginNonceCookie(httptest.NewRequest(http.MethodGet, "/api/oauth/auth-flow-test?state="+token+"&code=test", nil), loginNonce)
 			response := httptest.NewRecorder()
 			router.ServeHTTP(response, request)
 
@@ -790,33 +835,65 @@ func TestOAuthLoginConsumesFlowAfterProviderIdentityAndOnProviderError(t *testin
 
 	provider.exchangeErr = nil
 	provider.userInfoErr = nil
-	successToken, _, err := model.CreateAuthFlow(model.AuthFlowCreate{
-		Purpose: model.AuthFlowPurposeOAuth, Provider: "auth-flow-test", Intent: model.AuthFlowIntentLogin,
-		Payload: `{invalid`, ExpiresAt: time.Now().Add(time.Minute),
-	})
-	require.NoError(t, err)
+	successToken, successNonce := createOAuthLoginFlow(t, "auth-flow-test")
 	router := gin.New()
 	router.GET("/api/oauth/:provider", HandleOAuth)
-	request := httptest.NewRequest(http.MethodGet, "/api/oauth/auth-flow-test?state="+successToken+"&code=test", nil)
+	request := withOAuthLoginNonceCookie(httptest.NewRequest(http.MethodGet, "/api/oauth/auth-flow-test?state="+successToken+"&code=test", nil), successNonce)
 	response := httptest.NewRecorder()
 	router.ServeHTTP(response, request)
-	_, err = model.GetAuthFlow(successToken, model.AuthFlowMatch{Purpose: model.AuthFlowPurposeOAuth})
+	_, err := model.GetAuthFlow(successToken, model.AuthFlowMatch{Purpose: model.AuthFlowPurposeOAuth})
 	assert.ErrorIs(t, err, model.ErrAuthFlowConsumed)
 	assert.Equal(t, 1, provider.exchangeCalls)
 	assert.Equal(t, 1, provider.userInfoCalls)
 
-	providerErrorToken, _, err := model.CreateAuthFlow(model.AuthFlowCreate{
-		Purpose: model.AuthFlowPurposeOAuth, Provider: "auth-flow-test", Intent: model.AuthFlowIntentLogin,
-		Payload: `{}`, ExpiresAt: time.Now().Add(time.Minute),
-	})
-	require.NoError(t, err)
-	request = httptest.NewRequest(http.MethodGet, "/api/oauth/auth-flow-test?state="+providerErrorToken+"&error=access_denied", nil)
+	providerErrorToken, providerErrorNonce := createOAuthLoginFlow(t, "auth-flow-test")
+	request = withOAuthLoginNonceCookie(httptest.NewRequest(http.MethodGet, "/api/oauth/auth-flow-test?state="+providerErrorToken+"&error=access_denied", nil), providerErrorNonce)
 	response = httptest.NewRecorder()
 	router.ServeHTTP(response, request)
 	_, err = model.GetAuthFlow(providerErrorToken, model.AuthFlowMatch{Purpose: model.AuthFlowPurposeOAuth})
 	assert.ErrorIs(t, err, model.ErrAuthFlowConsumed)
 	assert.Equal(t, 1, provider.exchangeCalls)
 	assert.Equal(t, 1, provider.userInfoCalls)
+}
+
+// TestOAuthLoginCallbackRejectsForeignFlowToken covers login CSRF: a flow
+// token minted for one browser must not complete a login in another browser
+// that lacks the matching nonce cookie.
+func TestOAuthLoginCallbackRejectsForeignFlowToken(t *testing.T) {
+	provider := setupAuthFlowControllerTest(t)
+
+	token, _ := createOAuthLoginFlow(t, "auth-flow-test")
+	router := gin.New()
+	router.GET("/api/oauth/:provider", HandleOAuth)
+
+	// Callback without the nonce cookie (e.g. a link opened in another browser).
+	response := httptest.NewRecorder()
+	router.ServeHTTP(response, httptest.NewRequest(http.MethodGet, "/api/oauth/auth-flow-test?state="+token+"&code=test", nil))
+	assert.Equal(t, http.StatusForbidden, response.Code)
+	assert.Contains(t, response.Body.String(), "State parameter is empty or mismatched")
+	assert.Zero(t, provider.exchangeCalls)
+	assert.Zero(t, provider.userInfoCalls)
+	flow, err := model.GetAuthFlow(token, model.AuthFlowMatch{
+		Purpose: model.AuthFlowPurposeOAuth, Provider: "auth-flow-test", Intent: model.AuthFlowIntentLogin,
+	})
+	require.NoError(t, err)
+	assert.Nil(t, flow.ConsumedAt)
+
+	// Callback with a nonce that does not match the flow.
+	wrongToken, _ := createOAuthLoginFlow(t, "auth-flow-test")
+	wrongResponse := httptest.NewRecorder()
+	router.ServeHTTP(wrongResponse, withOAuthLoginNonceCookie(
+		httptest.NewRequest(http.MethodGet, "/api/oauth/auth-flow-test?state="+wrongToken+"&code=test", nil),
+		"not-the-flow-nonce",
+	))
+	assert.Equal(t, http.StatusForbidden, wrongResponse.Code)
+	assert.Zero(t, provider.exchangeCalls)
+	assert.Zero(t, provider.userInfoCalls)
+	wrongFlow, err := model.GetAuthFlow(wrongToken, model.AuthFlowMatch{
+		Purpose: model.AuthFlowPurposeOAuth, Provider: "auth-flow-test", Intent: model.AuthFlowIntentLogin,
+	})
+	require.NoError(t, err)
+	assert.Nil(t, wrongFlow.ConsumedAt)
 }
 
 func TestOAuthBindProviderErrorConsumesSessionBoundFlow(t *testing.T) {
@@ -852,6 +929,7 @@ type legacyGitHubOAuthProvider struct {
 	authFlowTestOAuthProvider
 	providerUserID     string
 	legacyID           string
+	email              string
 	verifiedEmails     []string
 	verifiedEmailsErr  error
 	verifiedEmailCalls int
@@ -859,7 +937,7 @@ type legacyGitHubOAuthProvider struct {
 
 func (*legacyGitHubOAuthProvider) GetName() string { return "GitHub" }
 func (provider *legacyGitHubOAuthProvider) GetUserInfo(context.Context, *oauth.OAuthToken) (*oauth.OAuthUser, error) {
-	return &oauth.OAuthUser{ProviderUserID: provider.providerUserID, Username: provider.legacyID, Extra: map[string]any{"legacy_id": provider.legacyID}}, nil
+	return &oauth.OAuthUser{ProviderUserID: provider.providerUserID, Username: provider.legacyID, Email: provider.email, Extra: map[string]any{"legacy_id": provider.legacyID}}, nil
 }
 func (provider *legacyGitHubOAuthProvider) GetVerifiedEmails(context.Context, *oauth.OAuthToken) ([]string, error) {
 	provider.verifiedEmailCalls++
@@ -885,12 +963,11 @@ func legacyGitHubOAuthLogin(t *testing.T, provider *legacyGitHubOAuthProvider) *
 	const slug = "github-legacy-login-test"
 	oauth.Register(slug, provider)
 	t.Cleanup(func() { oauth.Unregister(slug) })
-	token, _, err := model.CreateAuthFlow(model.AuthFlowCreate{Purpose: model.AuthFlowPurposeOAuth, Provider: slug, Intent: model.AuthFlowIntentLogin, Payload: `{}`, ExpiresAt: time.Now().Add(time.Minute)})
-	require.NoError(t, err)
+	token, loginNonce := createOAuthLoginFlow(t, slug)
 	router := gin.New()
 	router.GET("/api/oauth/:provider", HandleOAuth)
 	response := httptest.NewRecorder()
-	router.ServeHTTP(response, httptest.NewRequest(http.MethodGet, "/api/oauth/"+slug+"?state="+token+"&code=provider-code", nil))
+	router.ServeHTTP(response, withOAuthLoginNonceCookie(httptest.NewRequest(http.MethodGet, "/api/oauth/"+slug+"?state="+token+"&code=provider-code", nil), loginNonce))
 	return response
 }
 
@@ -1011,6 +1088,42 @@ func TestOAuthLoginLegacyGitHubBindingRequiresAccountEvidence(t *testing.T) {
 			if test.expectAuditParams != "" {
 				assert.Equal(t, declined, result.Message)
 			}
+		})
+	}
+}
+
+// TestOAuthNewAccountDropsUnverifiedProviderEmail covers account squatting:
+// a new account may only claim a provider-reported email when the provider
+// has confirmed it.
+func TestOAuthNewAccountDropsUnverifiedProviderEmail(t *testing.T) {
+	tests := []struct {
+		name          string
+		providerEmail string
+		verified      []string
+		wantEmail     string
+	}{
+		{name: "verified email is kept", providerEmail: "new@example.com", verified: []string{"new@example.com"}, wantEmail: "new@example.com"},
+		{name: "unverified email is dropped", providerEmail: "squatted@example.com", verified: []string{"someone-else@example.com"}, wantEmail: ""},
+		{name: "no verified list drops the email", providerEmail: "unlisted@example.com", verified: nil, wantEmail: ""},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			setupSecurityEnrollmentTest(t)
+			providerUserID := "fresh-github-" + strconv.Itoa(len(test.name))
+			provider := &legacyGitHubOAuthProvider{
+				providerUserID: providerUserID,
+				email:          test.providerEmail,
+				verifiedEmails: test.verified,
+			}
+			response := legacyGitHubOAuthLogin(t, provider)
+			var body struct {
+				Success bool `json:"success"`
+			}
+			require.NoError(t, common.Unmarshal(response.Body.Bytes(), &body))
+			require.True(t, body.Success, response.Body.String())
+			var created model.User
+			require.NoError(t, model.DB.Where("github_id = ?", providerUserID).First(&created).Error)
+			assert.Equal(t, test.wantEmail, created.Email)
 		})
 	}
 }

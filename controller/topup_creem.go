@@ -124,7 +124,7 @@ func (*CreemAdaptor) RequestPay(c *gin.Context, req *CreemPayRequest) {
 		paymentError(c, common.NewMessage("Product price/currency configuration is invalid"))
 		return
 	}
-	if _, ok := creemExpectedMinorUnits(selectedProduct.Price, selectedProduct.Currency); !ok {
+	if _, ok := expectedMinorUnits(selectedProduct.Price, selectedProduct.Currency); !ok {
 		paymentError(c, common.NewMessage("Product price/currency precision is invalid"))
 		return
 	}
