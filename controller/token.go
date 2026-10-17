@@ -160,6 +160,37 @@ func SearchTokens(c *gin.Context) {
 	common.ApiSuccess(c, pageInfo)
 }
 
+// SearchTokensPost 与 SearchTokens 等价，但筛选条件走请求体。
+//
+// 密钥筛选值可能是一段完整的 API 密钥。放在 GET 查询串里会进入地址栏、
+// 浏览器历史、Referer 以及网关/反代的访问日志；请求体不会。因此密钥页面的
+// 按密钥筛选一律走这个端点，GET 端点保留给只需要名称关键字的既有调用方。
+func SearchTokensPost(c *gin.Context) {
+	userId := c.GetInt("id")
+
+	var req struct {
+		Keyword string `json:"keyword"`
+		Token   string `json:"token"`
+		P       int    `json:"p"`
+		Size    int    `json:"size"`
+	}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		common.ApiErrorMsg(c, "Invalid parameters")
+		return
+	}
+
+	pageInfo := common.NewPageInfo(req.P, req.Size)
+
+	tokens, total, err := model.SearchUserTokens(userId, req.Keyword, req.Token, pageInfo.GetStartIdx(), pageInfo.GetPageSize())
+	if err != nil {
+		common.ApiError(c, err)
+		return
+	}
+	pageInfo.SetTotal(int(total))
+	pageInfo.SetItems(buildMaskedTokenResponses(tokens))
+	common.ApiSuccess(c, pageInfo)
+}
+
 func GetToken(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	userId := c.GetInt("id")

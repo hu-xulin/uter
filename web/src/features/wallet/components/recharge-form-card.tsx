@@ -62,6 +62,9 @@ interface RechargeFormCardProps {
   onTopupAmountChange: (amount: number) => void
   paymentAmount: number
   calculating: boolean
+  /** 计价失败（接口错误 / 非数字 / 非正数）：显示错误与重试，而不是显示 0 元 */
+  calculatingError?: boolean
+  onRetryCalculate?: () => void
   onPaymentMethodSelect: (method: PaymentMethod) => void
   paymentLoading: string | null
   redemptionCode: string
@@ -83,6 +86,44 @@ interface RechargeFormCardProps {
   enableWaffoPancakeTopup?: boolean
 }
 
+/**
+ * 「应付金额」展示。计价中显示骨架；计价失败显示可点的重试入口 ——
+ * 绝不用 0 元冒充一次成功的计价（0 是合法的「无需付款」）。
+ */
+function PayableAmountValue({
+  calculating,
+  calculatingError,
+  paymentAmount,
+  onRetryCalculate,
+}: {
+  calculating: boolean
+  calculatingError: boolean
+  paymentAmount: number
+  onRetryCalculate?: () => void
+}) {
+  const { t } = useTranslation()
+
+  if (calculating) return <Skeleton className='h-5 w-16' />
+
+  if (calculatingError) {
+    return (
+      <button
+        type='button'
+        onClick={onRetryCalculate}
+        className='text-destructive text-xs font-medium underline-offset-2 hover:underline'
+      >
+        {t('Retry')}
+      </button>
+    )
+  }
+
+  return (
+    <span className='text-sm font-semibold'>
+      {formatCurrency(paymentAmount)}
+    </span>
+  )
+}
+
 export function RechargeFormCard({
   topupInfo,
   presetAmounts,
@@ -92,6 +133,8 @@ export function RechargeFormCard({
   onTopupAmountChange,
   paymentAmount,
   calculating,
+  calculatingError,
+  onRetryCalculate,
   onPaymentMethodSelect,
   paymentLoading,
   redemptionCode,
@@ -312,15 +355,23 @@ export function RechargeFormCard({
                     <span className='text-muted-foreground truncate text-xs'>
                       {t('Amount to pay:')}
                     </span>
-                    {calculating ? (
-                      <Skeleton className='h-5 w-16' />
-                    ) : (
-                      <span className='text-sm font-semibold'>
-                        {formatCurrency(paymentAmount)}
-                      </span>
-                    )}
+                    <PayableAmountValue
+                      calculating={calculating}
+                      calculatingError={Boolean(calculatingError)}
+                      paymentAmount={paymentAmount}
+                      onRetryCalculate={onRetryCalculate}
+                    />
                   </div>
                 </div>
+                {calculatingError && (
+                  <Alert variant='destructive'>
+                    <AlertDescription>
+                      {t(
+                        'Failed to calculate payment amount. Please try again.'
+                      )}
+                    </AlertDescription>
+                  </Alert>
+                )}
               </div>
 
               <div className='space-y-2.5 sm:space-y-3'>

@@ -31,6 +31,8 @@ import {
 import { useChatPresets } from '@/features/chat/hooks/use-chat-presets'
 import {
   chatLinkRequiresApiKey,
+  chatPresetHost,
+  resolveChatEmbedPolicy,
   resolveChatUrl,
 } from '@/features/chat/lib/chat-links'
 
@@ -62,6 +64,12 @@ function ChatRouteComponent() {
   }, [isWebLink, preset])
 
   const { activeKey, isPending, isError, error, reveal } = useActiveChatKey()
+
+  // 需要把明文密钥交给第三方页面时，先把接收方的主机名摆到用户面前。
+  const presetHost = useMemo(
+    () => (preset?.url ? chatPresetHost(preset.url) : ''),
+    [preset]
+  )
 
   const iframeSrc = useMemo(() => {
     if (!preset || !isWebLink) return ''
@@ -137,6 +145,15 @@ function ChatRouteComponent() {
               'This chat link needs your API key. Confirm your identity to reveal it and continue.'
             )}
           </p>
+          {presetHost && (
+            <Alert>
+              <AlertDescription>
+                {t('Your API key will be sent to {{host}}.', {
+                  host: presetHost,
+                })}
+              </AlertDescription>
+            </Alert>
+          )}
         </div>
         <Button onClick={() => void reveal()} disabled={isPending}>
           {isPending && <Loader2 className='size-4 animate-spin' />}
@@ -197,14 +214,35 @@ function ChatRouteComponent() {
     )
   }
 
+  // 内嵌隔离：拒绝非 http(s) 的嵌入目标（javascript:/data: 一类），
+  // 并由策略决定是否授予 allow-same-origin（同源时必须收回）。
+  const embedPolicy = resolveChatEmbedPolicy(
+    iframeSrc,
+    typeof window === 'undefined' ? '' : window.location.origin
+  )
+  if (!embedPolicy.embeddable) {
+    return (
+      <div className='flex h-full flex-col items-center justify-center p-6'>
+        <Alert variant='destructive' className='max-w-xl'>
+          <AlertTitle>{t('Unable to open chat')}</AlertTitle>
+          <AlertDescription>
+            {t('This chat link is not a valid web address.')}
+          </AlertDescription>
+        </Alert>
+      </div>
+    )
+  }
+
   return (
     <iframe
       src={iframeSrc}
       key={iframeSrc}
       className='h-full w-full border-0'
       allow='camera; microphone'
-      // 同源应用内嵌：预设聊天页需脚本执行 + 同源访问（读父页 origin/storage）。
-      sandbox='allow-scripts allow-same-origin allow-forms allow-popups allow-modals'
+      sandbox={embedPolicy.sandbox}
+      // 被嵌入的第三方站点不应得知用户是从哪个页面跳转而来，
+      // 也不应通过 Referer 拿到主应用的地址。
+      referrerPolicy='no-referrer'
       title={`Chat preset: ${preset.name}`}
     />
   )

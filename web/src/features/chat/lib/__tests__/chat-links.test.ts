@@ -19,9 +19,11 @@ For commercial licensing, please contact support@uter.ai
 import { afterEach, describe, expect, test, vi } from 'vitest'
 
 import {
+  chatPresetHost,
   getFirstActiveKey,
   isLaunchableChatUrl,
   launchChatUrl,
+  resolveChatEmbedPolicy,
   resolveChatUrl,
   toApiBaseUrl,
 } from '../chat-links'
@@ -162,6 +164,65 @@ describe('launchChatUrl', () => {
     )
     expect(clicked).toEqual([])
     click.mockRestore()
+  })
+})
+
+describe('resolveChatEmbedPolicy', () => {
+  test('rejects non-http embed targets', () => {
+    expect(
+      resolveChatEmbedPolicy('javascript:alert(1)', 'https://uter.ai')
+    ).toEqual({ embeddable: false, reason: 'invalid-url' })
+    expect(
+      resolveChatEmbedPolicy(
+        'data:text/html,<script>1</script>',
+        'https://uter.ai'
+      )
+    ).toEqual({ embeddable: false, reason: 'invalid-url' })
+  })
+
+  test('withholds allow-same-origin when the preset is same-origin', () => {
+    // 同源 + allow-scripts + allow-same-origin 时，被嵌入页能访问父窗口 DOM
+    // 并自行移除 sandbox 属性，等于没有沙箱。
+    const policy = resolveChatEmbedPolicy(
+      'https://uter.ai/chat-client',
+      'https://uter.ai'
+    )
+    expect(policy.embeddable).toBe(true)
+    if (!policy.embeddable) return
+    expect(policy.sandbox).not.toContain('allow-same-origin')
+    expect(policy.sandbox).toContain('allow-scripts')
+  })
+
+  test('keeps allow-same-origin for cross-origin presets', () => {
+    const policy = resolveChatEmbedPolicy(
+      'https://chat.example.com/app',
+      'https://uter.ai'
+    )
+    expect(policy.embeddable).toBe(true)
+    if (!policy.embeddable) return
+    expect(policy.sandbox).toContain('allow-same-origin')
+  })
+
+  test('does not treat a look-alike host as same-origin', () => {
+    const policy = resolveChatEmbedPolicy(
+      'https://uter.ai.evil.test/chat',
+      'https://uter.ai'
+    )
+    expect(policy.embeddable).toBe(true)
+    if (!policy.embeddable) return
+    expect(policy.sandbox).toContain('allow-same-origin')
+  })
+})
+
+describe('chatPresetHost', () => {
+  test('returns the host that will receive the API key', () => {
+    expect(chatPresetHost('https://chat.example.com/app?x=1')).toBe(
+      'chat.example.com'
+    )
+  })
+
+  test('returns an empty string for an unparsable URL', () => {
+    expect(chatPresetHost('not a url')).toBe('')
   })
 })
 

@@ -18,8 +18,11 @@ For commercial licensing, please contact support@uter.ai
 */
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
+import { toast } from 'sonner'
 
 import { SectionPageLayout } from '@/components/layout'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import { Button } from '@/components/ui/button'
 import { useStatus } from '@/hooks/use-status'
 import { useSystemConfig } from '@/hooks/use-system-config'
 import { getSelf } from '@/lib/api'
@@ -43,6 +46,7 @@ import {
   useCreemPayment,
   useWaffoPayment,
   useWaffoPancakePayment,
+  isPayableAmount,
 } from './hooks'
 import {
   getDefaultPaymentType,
@@ -67,6 +71,9 @@ export function Wallet(props: WalletProps) {
   const { t } = useTranslation()
   const [user, setUser] = useState<UserWalletData | null>(null)
   const [userLoading, setUserLoading] = useState(true)
+  // 区分「加载成功」「没有数据」和「请求失败」：失败时不能把 user 留空渲染成
+  // 「余额 0」，否则用户会把网络故障误读成账户状态。
+  const [userError, setUserError] = useState<string | null>(null)
   const [topupAmount, setTopupAmount] = useState(0)
   const [selectedPreset, setSelectedPreset] = useState<number | null>(null)
   const [selectedPaymentMethod, setSelectedPaymentMethod] =
@@ -103,6 +110,7 @@ export function Wallet(props: WalletProps) {
   const {
     amount: paymentAmount,
     calculating,
+    calculatingError,
     processing,
     calculatePaymentAmount,
     processPayment,
@@ -123,17 +131,21 @@ export function Wallet(props: WalletProps) {
   const fetchUser = useCallback(async () => {
     try {
       setUserLoading(true)
+      setUserError(null)
       const response = await getSelf()
       if (response.success && response.data) {
         setUser(response.data as UserWalletData)
+      } else {
+        setUserError(response.message || t('Failed to load'))
       }
     } catch (error) {
+      setUserError(t('Failed to load'))
       // eslint-disable-next-line no-console
       console.error('Failed to fetch user data:', error)
     } finally {
       setUserLoading(false)
     }
-  }, [])
+  }, [t])
 
   useEffect(() => {
     fetchUser()
@@ -192,8 +204,14 @@ export function Wallet(props: WalletProps) {
         return
       }
 
-      // Calculate payment amount and show confirmation dialog
-      await calculatePaymentAmount(topupAmount, method.type)
+      // Calculate payment amount and show confirmation dialog.
+      // 计价失败时不能打开确认框：确认框会把 amount=0 渲染成「应付 0 元」，
+      // 用户点确认就进入收款流程却不知道收了多少钱。
+      const amount = await calculatePaymentAmount(topupAmount, method.type)
+      if (!isPayableAmount(amount)) {
+        toast.error(t('Failed to calculate payment amount. Please try again.'))
+        return
+      }
       setConfirmDialogOpen(true)
     } finally {
       setPaymentLoading(null)
@@ -292,7 +310,14 @@ export function Wallet(props: WalletProps) {
     setPaymentLoading(loadingKey)
 
     try {
-      await calculatePaymentAmount(topupAmount, PAYMENT_TYPES.WAFFO)
+      const amount = await calculatePaymentAmount(
+        topupAmount,
+        PAYMENT_TYPES.WAFFO
+      )
+      if (!isPayableAmount(amount)) {
+        toast.error(t('Failed to calculate payment amount. Please try again.'))
+        return
+      }
       setConfirmDialogOpen(true)
     } finally {
       setPaymentLoading(null)
@@ -317,6 +342,23 @@ export function Wallet(props: WalletProps) {
         <SectionPageLayout.Title>{t('Wallet')}</SectionPageLayout.Title>
         <SectionPageLayout.Content>
           <div className='mx-auto flex w-full max-w-7xl flex-col gap-4 sm:gap-5'>
+            {userError && (
+              <Alert variant='destructive'>
+                <AlertTitle>{t('Failed to load')}</AlertTitle>
+                <AlertDescription className='flex flex-wrap items-center gap-3'>
+                  <span className='min-w-0 break-words'>{userError}</span>
+                  <Button
+                    variant='outline'
+                    size='sm'
+                    onClick={() => void fetchUser()}
+                    disabled={userLoading}
+                  >
+                    {t('Retry')}
+                  </Button>
+                </AlertDescription>
+              </Alert>
+            )}
+
             <WalletStatsCard user={user} loading={userLoading} />
 
             <div
@@ -336,6 +378,13 @@ export function Wallet(props: WalletProps) {
                   onTopupAmountChange={handleTopupAmountChange}
                   paymentAmount={paymentAmount}
                   calculating={calculating}
+                  calculatingError={calculatingError}
+                  onRetryCalculate={() =>
+                    void calculatePaymentAmount(
+                      topupAmount,
+                      getCurrentPaymentType()
+                    )
+                  }
                   onPaymentMethodSelect={handlePaymentMethodSelect}
                   paymentLoading={paymentLoading}
                   redemptionCode={redemptionCode}

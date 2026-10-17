@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/uter-ai/uter/common"
@@ -26,9 +27,13 @@ const (
 
 const maxLogCount = 1000000
 
-var logCount int
+// logCount / setupLogWorking 由并发请求路径的 logHelper 读写。原实现刻意不加锁
+// （“we don't need accurate count”），但无锁读写在 Go 内存模型下是数据竞争——
+// 属于未定义行为，且会让多个 goroutine 同时通过 !setupLogWorking 判断而重复触发
+// SetupLogger。改用 atomic 保持“计数不精确也没关系”的语义，同时消除竞争。
+var logCount atomic.Int64
 var setupLogLock sync.Mutex
-var setupLogWorking bool
+var setupLogWorking atomic.Bool
 var currentLogPath string
 var currentLogPathMu sync.RWMutex
 var currentLogFile *os.File
@@ -41,7 +46,7 @@ func GetCurrentLogPath() string {
 
 func SetupLogger() {
 	defer func() {
-		setupLogWorking = false
+		setupLogWorking.Store(false)
 	}()
 	if *common.LogDir != "" {
 		ok := setupLogLock.TryLock()
@@ -111,13 +116,15 @@ func logHelper(ctx context.Context, level string, msg string) {
 	}
 	_, _ = fmt.Fprintf(writer, "[%s] %v | %s | %s \n", level, now.Format("2006/01/02 - 15:04:05"), id, msg)
 	common.LogWriterMu.RUnlock()
-	logCount++ // we don't need accurate count, so no lock here
-	if logCount > maxLogCount && !setupLogWorking {
-		logCount = 0
-		setupLogWorking = true
-		gopool.Go(func() {
-			SetupLogger()
-		})
+	logCount.Add(1) // we don't need accurate count, so atomic (not a mutex) is enough
+	if logCount.Load() > maxLogCount && !setupLogWorking.Load() {
+		logCount.Store(0)
+		// CAS 保证只有一个 goroutine 能触发日志轮转，避免竞争下重复启动。
+		if setupLogWorking.CompareAndSwap(false, true) {
+			gopool.Go(func() {
+				SetupLogger()
+			})
+		}
 	}
 }
 
