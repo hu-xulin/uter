@@ -489,11 +489,11 @@ func providerCurrencyMatchesOrder(paidCurrency, expectedCurrency string) bool {
 }
 
 
-// creemCurrencyMinorUnitExponent returns the ISO 4217 minor-unit exponent for
+// currencyMinorUnitExponent returns the ISO 4217 minor-unit exponent for
 // currencies supported by provider order amounts. Unusual zero/three/four-decimal
 // currencies are listed explicitly; the standard exponent for other three-letter
 // currencies is two.
-func creemCurrencyMinorUnitExponent(currency string) (int, bool) {
+func currencyMinorUnitExponent(currency string) (int, bool) {
 	currency = strings.ToUpper(strings.TrimSpace(currency))
 	if len(currency) != 3 {
 		return 0, false
@@ -515,13 +515,13 @@ func creemCurrencyMinorUnitExponent(currency string) (int, bool) {
 	}
 }
 
-// creemExpectedMinorUnits converts a local major-unit order amount into the
+// expectedMinorUnits converts a local major-unit order amount into the
 // provider's minor units without silently rounding an unsupported precision.
-func creemExpectedMinorUnits(expectedMoney float64, currency string) (int64, bool) {
+func expectedMinorUnits(expectedMoney float64, currency string) (int64, bool) {
 	if expectedMoney <= 0 || math.IsNaN(expectedMoney) || math.IsInf(expectedMoney, 0) {
 		return 0, false
 	}
-	exponent, ok := creemCurrencyMinorUnitExponent(currency)
+	exponent, ok := currencyMinorUnitExponent(currency)
 	if !ok {
 		return 0, false
 	}
@@ -547,15 +547,15 @@ func creemExpectedMinorUnits(expectedMoney float64, currency string) (int64, boo
 // a lower subtotal is never allowed, since tax-inclusive amount_paid could
 // otherwise mask a product-price shortfall.
 func creemOrderAmountsCoverOrder(subtotalMinorUnits, amountDueMinorUnits, amountPaidMinorUnits int64, expectedMoney float64, currency string) (covered bool, subtotalOverpaid bool) {
-	expectedMinorUnits, ok := creemExpectedMinorUnits(expectedMoney, currency)
+	expectedAmount, ok := expectedMinorUnits(expectedMoney, currency)
 	if !ok || subtotalMinorUnits <= 0 || amountDueMinorUnits <= 0 ||
-		amountPaidMinorUnits < amountDueMinorUnits || amountPaidMinorUnits < expectedMinorUnits {
+		amountPaidMinorUnits < amountDueMinorUnits || amountPaidMinorUnits < expectedAmount {
 		return false, false
 	}
-	if subtotalMinorUnits < expectedMinorUnits {
+	if subtotalMinorUnits < expectedAmount {
 		return false, false
 	}
-	return true, subtotalMinorUnits > expectedMinorUnits
+	return true, subtotalMinorUnits > expectedAmount
 }
 
 func EpayNotify(c *gin.Context) {

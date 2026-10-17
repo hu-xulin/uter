@@ -43,6 +43,10 @@ func SubscriptionRequestWaffoPancakePay(c *gin.Context) {
 		common.ApiErrorT(c, "WaffoPancakeProductId is not configured for this plan")
 		return
 	}
+	if plan.PriceAmount <= 0 {
+		common.ApiErrorT(c, "Plan amount is too low")
+		return
+	}
 	// Plan targets its own Pancake product. The shared webhook still requires
 	// the merchant/store binding, but not the wallet's global product ID.
 	if !isWaffoPancakeWebhookEnabled() {
