@@ -30,7 +30,9 @@ const apiKeySearchSchema = z.object({
     .optional()
     .catch([]),
   filter: z.string().optional().catch(''),
-  token: z.string().optional().catch(''),
+  // 按 API 密钥筛选刻意**不进入 URL**：筛选值可能是一段完整密钥，
+  // 写进查询串会残留在地址栏、浏览器历史与复制的链接里。
+  // 该筛选改为表格组件内的局部状态。
 })
 
 export const Route = createFileRoute('/_authenticated/keys/')({
