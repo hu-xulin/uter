@@ -16,7 +16,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
-import i18n from 'i18next'
+import i18n, { type InitOptions } from 'i18next'
 import LanguageDetector from 'i18next-browser-languagedetector'
 import { initReactI18next } from 'react-i18next'
 
@@ -55,7 +55,11 @@ function mergeBundle(
     translation: Record<string, string>
   }
 ): boolean {
-  i18n.addResourceBundle(code, 'translation', bundle, true, true)
+  // The namespace content is the bundle's *keys*, not the wrapper object:
+  // registering the whole `{ translation: {...} }` nests every key one level
+  // too deep, so `t()` finds nothing for this language and silently falls
+  // back to English for the whole interface after a language switch.
+  i18n.addResourceBundle(code, 'translation', bundle.translation, true, true)
   return true
 }
 
@@ -76,27 +80,39 @@ export async function ensureLocale(code: InterfaceLanguageCode): Promise<void> {
   i18n.emit('loaded', i18n.isInitialized ? i18n.language : undefined)
 }
 
+export const i18nInitOptions = {
+  resources,
+  fallbackLng: 'en',
+  supportedLngs: ['en', 'zhCN', 'fr', 'ru', 'ja', 'vi', 'zhTW'],
+  load: 'currentOnly',
+  nsSeparator: false, // Allow literal colons in keys (e.g., URLs, labels)
+  debug: import.meta.env.DEV,
+  interpolation: {
+    escapeValue: false, // not needed for react as it escapes by default
+  },
+  detection: {
+    order: ['localStorage', 'navigator'],
+    caches: ['localStorage'],
+    // Browsers report `zh-CN`/`zh-TW`/`zh`; map them onto our `zhCN`/`zhTW`
+    // codes (non-Chinese codes pass through for normal supportedLngs matching).
+    convertDetectedLanguage,
+  },
+  // `loaded` must be bound on purpose: react-i18next's default `bindI18n` only
+  // includes `languageChanged`, so the `emit('loaded')` that `ensureLocale()`
+  // fires after merging a code-split bundle goes unheard — mounted components
+  // never re-read `t()` and keep rendering the old (English) strings until some
+  // unrelated re-render happens to occur. That is why a language switch after
+  // scrolling appeared to "fail" while the same switch at the top of the page
+  // (where the scroll listener repaints the header) looked fine.
+  react: {
+    bindI18n: 'languageChanged loaded',
+  },
+} satisfies InitOptions
+
 const initialized = i18n
   .use(LanguageDetector)
   .use(initReactI18next)
-  .init({
-    resources,
-    fallbackLng: 'en',
-    supportedLngs: ['en', 'zhCN', 'fr', 'ru', 'ja', 'vi', 'zhTW'],
-    load: 'currentOnly',
-    nsSeparator: false, // Allow literal colons in keys (e.g., URLs, labels)
-    debug: import.meta.env.DEV,
-    interpolation: {
-      escapeValue: false, // not needed for react as it escapes by default
-    },
-    detection: {
-      order: ['localStorage', 'navigator'],
-      caches: ['localStorage'],
-      // Browsers report `zh-CN`/`zh-TW`/`zh`; map them onto our `zhCN`/`zhTW`
-      // codes (non-Chinese codes pass through for normal supportedLngs matching).
-      convertDetectedLanguage,
-    },
-  })
+  .init(i18nInitOptions)
   .then(async () => {
     // A language switch has to pull in that locale's code-split chunk before
     // the new strings can render. Registered after the initial `ensureLocale`
