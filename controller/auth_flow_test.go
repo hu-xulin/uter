@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"strings"
 	"sync"
 	"testing"
@@ -29,6 +30,31 @@ import (
 	"github.com/stretchr/testify/require"
 	"gorm.io/gorm"
 )
+
+ // allowOAuthTestServerPort temporarily allows a local httptest OAuth endpoint.
+func allowOAuthTestServerPort(t *testing.T, endpoint string) {
+	t.Helper()
+	parsed, err := url.Parse(endpoint)
+	require.NoError(t, err)
+	port := parsed.Port()
+	require.NotEmpty(t, port)
+
+	fetchSetting := system_setting.GetFetchSetting()
+	previousPorts := append([]string(nil), fetchSetting.AllowedPorts...)
+	previousAllowPrivateIP := fetchSetting.AllowPrivateIp
+	t.Cleanup(func() {
+		fetchSetting.AllowedPorts = previousPorts
+		fetchSetting.AllowPrivateIp = previousAllowPrivateIP
+	})
+
+	fetchSetting.AllowPrivateIp = true
+	for _, allowedPort := range fetchSetting.AllowedPorts {
+		if allowedPort == port {
+			return
+		}
+	}
+	fetchSetting.AllowedPorts = append(fetchSetting.AllowedPorts, port)
+}
 
 func newSecurityLoginPasskey(t *testing.T, userID int) *ecdsa.PrivateKey {
 	t.Helper()
@@ -372,6 +398,7 @@ func TestSecurityLoginAllPrimaryTransportsRequireAdditionalVerification(t *testi
 						_, _ = w.Write([]byte(`{"sub":"bound-custom","name":"User"}`))
 					}))
 					t.Cleanup(upstream.Close)
+					allowOAuthTestServerPort(t, upstream.URL)
 					oauth.RegisterCustom(slug, oauth.NewGenericOAuthProvider(&model.CustomOAuthProvider{
 						Id: 42, Slug: slug, Name: "Custom login", Enabled: true, ClientId: "client", ClientSecret: "secret", UserIdField: "sub",
 						TokenEndpoint: upstream.URL + "/token", UserInfoEndpoint: upstream.URL + "/userinfo",

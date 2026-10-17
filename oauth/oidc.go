@@ -2,7 +2,6 @@ package oauth
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -62,7 +61,7 @@ func (p *OIDCProvider) ExchangeToken(ctx context.Context, code string, c *gin.Co
 	values.Set("grant_type", "authorization_code")
 	values.Set("redirect_uri", redirectUri)
 
-	logger.LogDebug(ctx, "[OAuth-OIDC] ExchangeToken: token_endpoint=%s, redirect_uri=%s", settings.TokenEndpoint, redirectUri)
+	logger.LogDebug(ctx, "[OAuth-OIDC] ExchangeToken started")
 
 	req, err := http.NewRequestWithContext(ctx, "POST", settings.TokenEndpoint, strings.NewReader(values.Encode()))
 	if err != nil {
@@ -71,9 +70,7 @@ func (p *OIDCProvider) ExchangeToken(ctx context.Context, code string, c *gin.Co
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	req.Header.Set("Accept", "application/json")
 
-	client := http.Client{
-		Timeout: 5 * time.Second,
-	}
+	client := newOAuthHTTPClient(5 * time.Second)
 	res, err := client.Do(req)
 	if err != nil {
 		logger.LogError(ctx, common.LogText("[OAuth-OIDC] ExchangeToken error: %s", err.Error()))
@@ -82,9 +79,13 @@ func (p *OIDCProvider) ExchangeToken(ctx context.Context, code string, c *gin.Co
 	defer res.Body.Close()
 
 	logger.LogDebug(ctx, "[OAuth-OIDC] ExchangeToken response status: %d", res.StatusCode)
+	if res.StatusCode < http.StatusOK || res.StatusCode >= http.StatusMultipleChoices {
+		logger.LogWarn(ctx, common.LogText("[OAuth-OIDC] ExchangeToken rejected non-success status=%d", res.StatusCode))
+		return nil, NewOAuthError(common.NewMessage(msgTokenFailed, map[string]any{"provider": "OIDC"}))
+	}
 
 	var oidcResponse oidcOAuthResponse
-	err = json.NewDecoder(res.Body).Decode(&oidcResponse)
+	err = decodeOAuthJSON(res.Body, &oidcResponse)
 	if err != nil {
 		logger.LogError(ctx, common.LogText("[OAuth-OIDC] ExchangeToken decode error: %s", err.Error()))
 		return nil, err
@@ -110,7 +111,7 @@ func (p *OIDCProvider) ExchangeToken(ctx context.Context, code string, c *gin.Co
 func (p *OIDCProvider) GetUserInfo(ctx context.Context, token *OAuthToken) (*OAuthUser, error) {
 	settings := system_setting.GetOIDCSettings()
 
-	logger.LogDebug(ctx, "[OAuth-OIDC] GetUserInfo: userinfo_endpoint=%s", settings.UserInfoEndpoint)
+	logger.LogDebug(ctx, "[OAuth-OIDC] GetUserInfo started")
 
 	req, err := http.NewRequestWithContext(ctx, "GET", settings.UserInfoEndpoint, nil)
 	if err != nil {
@@ -118,9 +119,7 @@ func (p *OIDCProvider) GetUserInfo(ctx context.Context, token *OAuthToken) (*OAu
 	}
 	req.Header.Set("Authorization", "Bearer "+token.AccessToken)
 
-	client := http.Client{
-		Timeout: 5 * time.Second,
-	}
+	client := newOAuthHTTPClient(5 * time.Second)
 	res, err := client.Do(req)
 	if err != nil {
 		logger.LogError(ctx, common.LogText("[OAuth-OIDC] GetUserInfo error: %s", err.Error()))
@@ -136,18 +135,18 @@ func (p *OIDCProvider) GetUserInfo(ctx context.Context, token *OAuthToken) (*OAu
 	}
 
 	var oidcUser oidcUser
-	err = json.NewDecoder(res.Body).Decode(&oidcUser)
+	err = decodeOAuthJSON(res.Body, &oidcUser)
 	if err != nil {
 		logger.LogError(ctx, common.LogText("[OAuth-OIDC] GetUserInfo decode error: %s", err.Error()))
 		return nil, err
 	}
 
 	if oidcUser.OpenID == "" || oidcUser.Email == "" {
-		logger.LogError(ctx, common.LogText("[OAuth-OIDC] GetUserInfo failed: empty fields (sub=%s, email=%s)", oidcUser.OpenID, oidcUser.Email))
+		logger.LogError(ctx, common.LogText("[OAuth-OIDC] GetUserInfo failed: required fields missing"))
 		return nil, NewOAuthError(common.NewMessage(msgUserInfoEmpty, map[string]any{"provider": "OIDC"}))
 	}
 
-	logger.LogDebug(ctx, "[OAuth-OIDC] GetUserInfo success: sub=%s, username=%s, name=%s, email=%s", oidcUser.OpenID, oidcUser.PreferredUsername, oidcUser.Name, oidcUser.Email)
+	logger.LogDebug(ctx, "[OAuth-OIDC] GetUserInfo success")
 
 	return &OAuthUser{
 		ProviderUserID: oidcUser.OpenID,

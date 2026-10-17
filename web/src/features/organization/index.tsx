@@ -61,6 +61,7 @@ import {
   updateOrganization,
   updateOrganizationMember,
 } from './api'
+import { parseSubQuotaAmount } from './sub-quota'
 import {
   ORG_STATUS_DISABLED,
   ORG_STATUS_ENABLED,
@@ -118,20 +119,35 @@ function SubQuotaInput({
   const [amount, setAmount] = useState(() =>
     quota > 0 ? String(Number((quota / config.quotaPerUnit).toFixed(6))) : ''
   )
+  const [badInput, setBadInput] = useState(false)
   useEffect(() => {
     setAmount(
       quota > 0 ? String(Number((quota / config.quotaPerUnit).toFixed(6))) : ''
     )
+    setBadInput(false)
   }, [quota, config.quotaPerUnit])
 
+  const restorePersistedAmount = () => {
+    setAmount(
+      quota > 0 ? String(Number((quota / config.quotaPerUnit).toFixed(6))) : ''
+    )
+    setBadInput(false)
+  }
+
   const commit = () => {
-    const parsed = Number(amount)
-    if (!Number.isFinite(parsed) || parsed <= 0) {
-      onCommit(0) // 空/0 = 不限量，跟随组织总池
-      setAmount('')
+    const result = parseSubQuotaAmount(amount, config.quotaPerUnit, badInput)
+    if (result.kind === 'invalid') {
+      // Never translate malformed/negative input to quota=0, because zero
+      // means unlimited and would silently remove the member's existing cap.
+      toast.error(t('Invalid parameters'))
+      restorePersistedAmount()
       return
     }
-    onCommit(Math.ceil(parsed * config.quotaPerUnit))
+    onCommit(result.quota)
+    if (result.kind === 'unlimited') {
+      setAmount('')
+    }
+    setBadInput(false)
   }
 
   return (
@@ -147,7 +163,10 @@ function SubQuotaInput({
           aria-label={t('Sub-quota Limit ({{currency}})', {
             currency: currencyLabel,
           })}
-          onChange={(e) => setAmount(e.target.value)}
+          onChange={(e) => {
+            setAmount(e.target.value)
+            setBadInput(e.target.validity.badInput)
+          }}
           onBlur={commit}
         />
         <span className='text-muted-foreground text-xs'>{currencyLabel}</span>
@@ -352,6 +371,7 @@ function CreateOrganizationCard({ onCreated }: { onCreated: () => void }) {
   const { config } = getCurrencyDisplay()
   const currencyLabel = getCurrencyLabel()
   const [name, setName] = useState('')
+  const [ownerUsername, setOwnerUsername] = useState('')
   // 预算以**金额**录入（单位跟随系统货币设置），提交时换算成 quota；
   // 空/0 表示不限量，与 SubQuotaInput 的约定保持一致。
   const [quota, setQuota] = useState('')
@@ -363,6 +383,10 @@ function CreateOrganizationCard({ onCreated }: { onCreated: () => void }) {
       toast.error(t('Organization Name is required'))
       return
     }
+    if (!ownerUsername.trim()) {
+      toast.error(t('Organization Owner Username is required'))
+      return
+    }
     setSubmitting(true)
     try {
       const amount = Number(quota)
@@ -372,6 +396,7 @@ function CreateOrganizationCard({ onCreated }: { onCreated: () => void }) {
           : 0
       const res = await createOrganization({
         name: name.trim(),
+        owner_username: ownerUsername.trim(),
         quota: quotaInTokens,
         member_limit: memberLimit ? Number(memberLimit) : 0,
       })
@@ -407,6 +432,18 @@ function CreateOrganizationCard({ onCreated }: { onCreated: () => void }) {
                 onChange={(e) => setName(e.target.value)}
                 placeholder={t('Organization Name')}
               />
+            </div>
+            <div className='flex flex-col gap-2'>
+              <Label>{t('Organization Owner Username')}</Label>
+              <Input
+                value={ownerUsername}
+                onChange={(e) => setOwnerUsername(e.target.value)}
+                placeholder={t('Existing unassigned ordinary user')}
+                autoComplete='off'
+              />
+              <p className='text-muted-foreground text-xs'>
+                {t('The owner must be an enabled ordinary user who is not already in an organization.')}
+              </p>
             </div>
             <div className='flex flex-col gap-2'>
               <Label>

@@ -321,3 +321,14 @@ func TestTaskPluginBindIsRootOnlyUntilGranted(t *testing.T) {
 	require.NoError(t, err)
 	assert.False(t, Can(2, common.RoleAdminUser, TaskPluginBind))
 }
+
+
+func TestSuperuserCannotAuthorizeUnknownPermission(t *testing.T) {
+	db := newAuthzTestDB(t)
+	require.NoError(t, Init(db))
+
+	assert.True(t, Can(1, common.RoleRootUser, ChannelRead))
+	assert.False(t, Can(0, common.RoleRootUser, ChannelRead))
+	assert.False(t, Can(1, common.RoleRootUser, Permission{Resource: "unknown_resource", Action: "read"}))
+	assert.False(t, Can(1, common.RoleRootUser, Permission{Resource: ResourceChannel, Action: "unknown_action"}))
+}

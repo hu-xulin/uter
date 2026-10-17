@@ -2,7 +2,6 @@ package oauth
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -69,9 +68,7 @@ func (p *DiscordProvider) ExchangeToken(ctx context.Context, code string, c *gin
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	req.Header.Set("Accept", "application/json")
 
-	client := http.Client{
-		Timeout: 5 * time.Second,
-	}
+	client := newOAuthHTTPClient(5 * time.Second)
 	res, err := client.Do(req)
 	if err != nil {
 		logger.LogError(ctx, common.LogText("[OAuth-Discord] ExchangeToken error: %s", err.Error()))
@@ -80,9 +77,13 @@ func (p *DiscordProvider) ExchangeToken(ctx context.Context, code string, c *gin
 	defer res.Body.Close()
 
 	logger.LogDebug(ctx, "[OAuth-Discord] ExchangeToken response status: %d", res.StatusCode)
+	if res.StatusCode < http.StatusOK || res.StatusCode >= http.StatusMultipleChoices {
+		logger.LogWarn(ctx, common.LogText("[OAuth-Discord] ExchangeToken rejected non-success status=%d", res.StatusCode))
+		return nil, NewOAuthError(common.NewMessage(msgTokenFailed, map[string]any{"provider": "Discord"}))
+	}
 
 	var discordResponse discordOAuthResponse
-	err = json.NewDecoder(res.Body).Decode(&discordResponse)
+	err = decodeOAuthJSON(res.Body, &discordResponse)
 	if err != nil {
 		logger.LogError(ctx, common.LogText("[OAuth-Discord] ExchangeToken decode error: %s", err.Error()))
 		return nil, err
@@ -114,9 +115,7 @@ func (p *DiscordProvider) GetUserInfo(ctx context.Context, token *OAuthToken) (*
 	}
 	req.Header.Set("Authorization", "Bearer "+token.AccessToken)
 
-	client := http.Client{
-		Timeout: 5 * time.Second,
-	}
+	client := newOAuthHTTPClient(5 * time.Second)
 	res, err := client.Do(req)
 	if err != nil {
 		logger.LogError(ctx, common.LogText("[OAuth-Discord] GetUserInfo error: %s", err.Error()))
@@ -132,7 +131,7 @@ func (p *DiscordProvider) GetUserInfo(ctx context.Context, token *OAuthToken) (*
 	}
 
 	var discordUser discordUser
-	err = json.NewDecoder(res.Body).Decode(&discordUser)
+	err = decodeOAuthJSON(res.Body, &discordUser)
 	if err != nil {
 		logger.LogError(ctx, common.LogText("[OAuth-Discord] GetUserInfo decode error: %s", err.Error()))
 		return nil, err
@@ -143,7 +142,7 @@ func (p *DiscordProvider) GetUserInfo(ctx context.Context, token *OAuthToken) (*
 		return nil, NewOAuthError(common.NewMessage(msgUserInfoEmpty, map[string]any{"provider": "Discord"}))
 	}
 
-	logger.LogDebug(ctx, "[OAuth-Discord] GetUserInfo success: uid=%s, username=%s, name=%s", discordUser.UID, discordUser.ID, discordUser.Name)
+	logger.LogDebug(ctx, "[OAuth-Discord] GetUserInfo success")
 
 	return &OAuthUser{
 		ProviderUserID: discordUser.UID,

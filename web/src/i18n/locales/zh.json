@@ -7495,6 +7495,11 @@
     "Verify to update user credentials": "验证后更新用户凭据",
     "Verify to create administrator": "验证后创建管理员",
     "Confirm your identity before creating an administrator account.": "创建管理员账号前，请先验证身份。",
-    "Type <username/> to confirm": "输入 <username/> 以确认"
+    "Type <username/> to confirm": "输入 <username/> 以确认",
+    "Invalid parameters": "参数无效",
+    "Organization Owner Username is required": "组织所有者用户名为必填项",
+    "Organization Owner Username": "组织所有者用户名",
+    "Existing unassigned ordinary user": "已有且未加入组织的普通用户",
+    "The owner must be an enabled ordinary user who is not already in an organization.": "所有者必须是已启用且尚未加入其他组织的普通用户。"
   }
 }

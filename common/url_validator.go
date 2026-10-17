@@ -2,6 +2,7 @@ package common
 
 import (
 	"fmt"
+	"net"
 	"net/url"
 	"strings"
 
@@ -25,6 +26,22 @@ func ValidateRedirectURL(rawURL string) error {
 
 	if parsedURL.Scheme != "http" && parsedURL.Scheme != "https" {
 		return fmt.Errorf("invalid URL scheme: only http and https are allowed")
+	}
+	// Trusted hostnames do not make cleartext redirects safe. Keep HTTP for
+	// explicit local development callbacks only; external redirect destinations
+	// must use HTTPS to protect post-checkout URLs and query parameters.
+	if parsedURL.Scheme == "http" {
+		host := strings.ToLower(strings.TrimSuffix(parsedURL.Hostname(), "."))
+		ip := net.ParseIP(host)
+		if host != "localhost" && (ip == nil || !ip.IsLoopback()) {
+			return fmt.Errorf("redirect URL must use HTTPS except for loopback development addresses")
+		}
+	}
+	if parsedURL.User != nil {
+		return fmt.Errorf("redirect URL must not contain user information")
+	}
+	if parsedURL.Hostname() == "" || parsedURL.Opaque != "" {
+		return fmt.Errorf("redirect URL must be an absolute HTTP(S) URL with a hostname")
 	}
 
 	domain := strings.ToLower(parsedURL.Hostname())

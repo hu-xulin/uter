@@ -1585,6 +1585,7 @@ func TestSecurityEnrollmentCustomOAuthUsesExistingBinding(t *testing.T) {
 		}
 	}))
 	t.Cleanup(upstream.Close)
+	allowOAuthTestServerPort(t, upstream.URL)
 	provider := oauth.NewGenericOAuthProvider(&model.CustomOAuthProvider{
 		Id: 42, Slug: "enrollment-custom", Name: "Custom provider", Enabled: true,
 		ClientId: "client", ClientSecret: "secret", UserIdField: "sub",

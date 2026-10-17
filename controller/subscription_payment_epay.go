@@ -120,6 +120,7 @@ func SubscriptionEpayNotify(c *gin.Context) {
 
 	if c.Request.Method == "POST" {
 		// POST 请求：从 POST body 解析参数
+		limitPaymentWebhookFormBody(c.Writer, c.Request)
 		if err := c.Request.ParseForm(); err != nil {
 			_, _ = c.Writer.Write([]byte("fail"))
 			return
@@ -157,6 +158,17 @@ func SubscriptionEpayNotify(c *gin.Context) {
 		return
 	}
 
+	subscriptionOrder := model.GetSubscriptionOrderByTradeNo(verifyInfo.ServiceTradeNo)
+	if subscriptionOrder == nil {
+		_, _ = c.Writer.Write([]byte("fail"))
+		return
+	}
+	if !providerPaidAmountMatchesOrder(verifyInfo.Money, subscriptionOrder.Money) {
+		common.SysLog(fmt.Sprintf("Epay subscription callback amount mismatch trade_no=%s", verifyInfo.ServiceTradeNo))
+		_, _ = c.Writer.Write([]byte("fail"))
+		return
+	}
+
 	LockOrder(verifyInfo.ServiceTradeNo)
 	defer UnlockOrder(verifyInfo.ServiceTradeNo)
 
@@ -175,6 +187,7 @@ func SubscriptionEpayReturn(c *gin.Context) {
 
 	if c.Request.Method == "POST" {
 		// POST 请求：从 POST body 解析参数
+		limitPaymentWebhookFormBody(c.Writer, c.Request)
 		if err := c.Request.ParseForm(); err != nil {
 			c.Redirect(http.StatusFound, paymentReturnPath("/wallet?pay=fail"))
 			return
@@ -207,6 +220,12 @@ func SubscriptionEpayReturn(c *gin.Context) {
 		return
 	}
 	if verifyInfo.TradeStatus == epay.StatusTradeSuccess {
+		subscriptionOrder := model.GetSubscriptionOrderByTradeNo(verifyInfo.ServiceTradeNo)
+		if subscriptionOrder == nil || !providerPaidAmountMatchesOrder(verifyInfo.Money, subscriptionOrder.Money) {
+			common.SysLog(fmt.Sprintf("Epay subscription return amount/order mismatch trade_no=%s", verifyInfo.ServiceTradeNo))
+			c.Redirect(http.StatusFound, paymentReturnPath("/wallet?pay=fail"))
+			return
+		}
 		LockOrder(verifyInfo.ServiceTradeNo)
 		defer UnlockOrder(verifyInfo.ServiceTradeNo)
 		if err := model.CompleteSubscriptionOrder(verifyInfo.ServiceTradeNo, common.GetJsonString(verifyInfo), model.PaymentProviderEpay, verifyInfo.Type); err != nil {

@@ -21,6 +21,10 @@ type TopUp struct {
 	TradeNo         string  `json:"trade_no" gorm:"unique;type:varchar(255);index"`
 	PaymentMethod   string  `json:"payment_method" gorm:"type:varchar(50)"`
 	PaymentProvider string  `json:"payment_provider" gorm:"type:varchar(50);default:''"`
+	// ProviderAmount/Currency store the payment provider's checkout pricing snapshot,
+	// independently from the local quota-calculation Money field.
+	ProviderAmount   int64  `json:"-" gorm:"not null;default:0"`
+	ProviderCurrency string `json:"-" gorm:"type:varchar(3);not null;default:''"`
 	CreateTime      int64   `json:"create_time"`
 	CompleteTime    int64   `json:"complete_time"`
 	Status          string  `json:"status"`
@@ -168,7 +172,13 @@ func UpdatePendingTopUpStatus(tradeNo string, expectedPaymentProvider string, ta
 	return DB.Transaction(func(tx *gorm.DB) error {
 		topUp := &TopUp{}
 		if err := lockForUpdate(tx).Where(refCol+" = ?", tradeNo).First(topUp).Error; err != nil {
-			return ErrTopUpNotFound
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				return ErrTopUpNotFound
+			}
+			// Do not turn a transient database failure into a permanent
+			// "order not found" result. Webhook handlers use that sentinel to
+			// decide whether the provider should retry delivery.
+			return err
 		}
 		if expectedPaymentProvider != "" && topUp.PaymentProvider != expectedPaymentProvider {
 			return ErrPaymentMethodMismatch
@@ -200,7 +210,12 @@ func RechargeEpay(tradeNo string, actualPaymentMethod string, callerIp string) (
 	topUp := &TopUp{}
 	err = DB.Transaction(func(tx *gorm.DB) error {
 		if err := lockForUpdate(tx).Where(refCol+" = ?", tradeNo).First(topUp).Error; err != nil {
-			return ErrTopUpNotFound
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				return ErrTopUpNotFound
+			}
+			// Keep transient database/query failures distinct so webhook handlers
+			// can request a provider retry instead of acknowledging a missing order.
+			return err
 		}
 		if topUp.PaymentProvider != PaymentProviderEpay {
 			return ErrPaymentMethodMismatch
@@ -262,7 +277,12 @@ func rechargeOfficial(tradeNo string, provider string, actualMethod string, call
 	topUp := &TopUp{}
 	err = DB.Transaction(func(tx *gorm.DB) error {
 		if err := lockForUpdate(tx).Where(refCol+" = ?", tradeNo).First(topUp).Error; err != nil {
-			return ErrTopUpNotFound
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				return ErrTopUpNotFound
+			}
+			// Keep transient database/query failures distinct so webhook handlers
+			// can request a provider retry instead of acknowledging a missing order.
+			return err
 		}
 		if topUp.PaymentProvider != provider {
 			return ErrPaymentMethodMismatch
@@ -323,6 +343,7 @@ func Recharge(referenceId string, customerId string, callerIp string) (err error
 	}
 
 	var quota int
+	alreadyDone := false
 	topUp := &TopUp{}
 
 	refCol := "`trade_no`"
@@ -340,6 +361,10 @@ func Recharge(referenceId string, customerId string, callerIp string) (err error
 			return ErrPaymentMethodMismatch
 		}
 
+		if topUp.Status == common.TopUpStatusSuccess {
+			alreadyDone = true
+			return nil
+		}
 		if topUp.Status != common.TopUpStatusPending {
 			return errors.New("充值订单状态错误")
 		}
@@ -365,6 +390,9 @@ func Recharge(referenceId string, customerId string, callerIp string) (err error
 	if err != nil {
 		common.SysError("topup failed: " + err.Error())
 		return errors.New("充值失败，请稍后重试")
+	}
+	if alreadyDone {
+		return nil
 	}
 	syncCreditUserQuotaCache(topUp.UserId, quota, "stripe topup")
 
@@ -634,12 +662,16 @@ func ManualCompleteTopUp(tradeNo string, callerIp string) error {
 	RecordTopupLog(userId, common.NewMessage("Administrator completed the order, amount added: {{quota}}, payment amount: {{amount}}", map[string]any{"quota": logger.FormatQuota(quotaToAdd), "amount": fmt.Sprintf("%f", payMoney)}), callerIp, paymentMethod, "admin")
 	return nil
 }
-func RechargeCreem(referenceId string, customerEmail string, customerName string, callerIp string) (err error) {
+// RechargeCreem credits the order without treating payment-provider billing details
+// as verified account identity. customer/billing email ownership is not established
+// by a signed payment webhook, so this function must not bind it to the user account.
+func RechargeCreem(referenceId string, _ string, _ string, callerIp string) (err error) {
 	if referenceId == "" {
 		return errors.New("payment order number not provided")
 	}
 
 	var quota int
+	alreadyDone := false
 	topUp := &TopUp{}
 
 	refCol := "`trade_no`"
@@ -657,6 +689,10 @@ func RechargeCreem(referenceId string, customerEmail string, customerName string
 			return ErrPaymentMethodMismatch
 		}
 
+		if topUp.Status == common.TopUpStatusSuccess {
+			alreadyDone = true
+			return nil
+		}
 		if topUp.Status != common.TopUpStatusPending {
 			return errors.New("充值订单状态错误")
 		}
@@ -674,30 +710,17 @@ func RechargeCreem(referenceId string, customerEmail string, customerName string
 			return ErrInvalidTopUpQuota
 		}
 
-		// 构建更新字段，优先使用邮箱，如果邮箱为空则使用用户名
-		updateFields := map[string]any{}
-
-		// 如果有客户邮箱，尝试更新用户邮箱（仅当用户邮箱为空时）
-		if customerEmail != "" {
-			// 先检查用户当前邮箱是否为空
-			var user User
-			err = tx.Where("id = ?", topUp.UserId).First(&user).Error
-			if err != nil {
-				return err
-			}
-
-			// 如果用户邮箱为空，则更新为支付时使用的邮箱
-			if user.Email == "" {
-				updateFields["email"] = customerEmail
-			}
-		}
-
-		return creditTopUpQuota(tx, topUp.UserId, quota, updateFields)
+		// Billing email/name from the provider are not identity-verification signals.
+		// Account email changes must go through the explicit email-binding flow.
+		return creditTopUpQuota(tx, topUp.UserId, quota, nil)
 	})
 
 	if err != nil {
 		common.SysError("creem topup failed: " + err.Error())
 		return errors.New("充值失败，请稍后重试")
+	}
+	if alreadyDone {
+		return nil
 	}
 	syncCreditUserQuotaCache(topUp.UserId, quota, "creem topup")
 

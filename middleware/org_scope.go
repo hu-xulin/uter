@@ -153,9 +153,25 @@ func OrgAdminAuth() gin.HandlerFunc {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"success": false, "code": "AUTH_USER_INVALID", "message": common.TranslateMessage(c, i18n.MsgAuthUserInfoInvalid)})
 			return
 		}
+
+		// Organization routes intentionally require a browser session. Keep the
+		// custom organization-role path subject to the same PAT route declaration
+		// used by UserAuth/AdminAuth; otherwise a scoped PAT could bypass the
+		// session-only rules in access_token_routes.go.
+		var tokenLookup *accessTokenLookup
+		if useAccessToken {
+			tokenLookup = requestAccessTokenLookup(c)
+			if tokenLookup == nil || !enforceAccessTokenRoute(c, tokenLookup, true) {
+				return
+			}
+		}
+
 		// 超管放行（可视化所有组织）。
 		if user.Role >= common.RoleRootUser {
 			setDashboardAuthContext(c, user, identity, useAccessToken)
+			if tokenLookup != nil {
+				setAccessTokenContext(c, tokenLookup)
+			}
 			auditWriter := beginAdminAudit(c)
 			c.Next()
 			finishAdminAudit(c, auditWriter)
@@ -169,6 +185,9 @@ func OrgAdminAuth() gin.HandlerFunc {
 		switch user.OrgRole {
 		case model.OrgRoleOwner, model.OrgRoleAdmin, model.OrgRoleDepartmentAdmin:
 			setDashboardAuthContext(c, user, identity, useAccessToken)
+			if tokenLookup != nil {
+				setAccessTokenContext(c, tokenLookup)
+			}
 			// 组织写操作审计兜底：组织 owner / org admin / 部门管理员的
 			// 纳新、改角色、改子额度、踢人、改组织信息等敏感写操作此前完全无审计
 			// 留痕，这里与 AdminAuth/RootAuth 一致地包裹写方法（对应审计项 P2-1）。

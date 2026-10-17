@@ -10,7 +10,6 @@ import (
 	"github.com/uter-ai/uter/logger"
 	"github.com/uter-ai/uter/model"
 	"github.com/uter-ai/uter/service"
-	"github.com/uter-ai/uter/setting"
 	"github.com/gin-gonic/gin"
 	"github.com/shopspring/decimal"
 	"github.com/thanhpk/randstr"
@@ -44,11 +43,15 @@ func SubscriptionRequestWaffoPancakePay(c *gin.Context) {
 		common.ApiErrorT(c, "WaffoPancakeProductId is not configured for this plan")
 		return
 	}
-	// Plan targets its own Pancake product, so we only require credentials
-	// here — not the gateway-level WaffoPancakeProductID.
-	if strings.TrimSpace(setting.WaffoPancakeMerchantID) == "" ||
-		strings.TrimSpace(setting.WaffoPancakePrivateKey) == "" {
-		common.ApiErrorT(c, "Waffo Pancake is not configured or key is invalid")
+	// Plan targets its own Pancake product. The shared webhook still requires
+	// the merchant/store binding, but not the wallet's global product ID.
+	if !isWaffoPancakeWebhookEnabled() {
+		common.ApiErrorT(c, "Waffo Pancake webhook/merchant/store configuration is incomplete")
+		return
+	}
+	planCurrency := subscriptionPlanCurrency(plan)
+	if planCurrency != "USD" {
+		common.ApiErrorT(c, "Waffo Pancake subscription plans must use USD")
 		return
 	}
 
@@ -86,6 +89,7 @@ func SubscriptionRequestWaffoPancakePay(c *gin.Context) {
 		TradeNo:         tradeNo,
 		PaymentMethod:   model.PaymentMethodWaffoPancake,
 		PaymentProvider: model.PaymentProviderWaffoPancake,
+		ProviderCurrency: strings.ToLower(planCurrency),
 		CreateTime:      time.Now().Unix(),
 		Status:          common.TopUpStatusPending,
 	}

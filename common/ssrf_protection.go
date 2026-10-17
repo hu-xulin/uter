@@ -7,6 +7,8 @@ import (
 	"slices"
 	"strconv"
 	"strings"
+
+	"golang.org/x/net/idna"
 )
 
 // SSRFProtection SSRF防护配置
@@ -79,11 +81,13 @@ var privateIPv6Nets = func() []net.IPNet {
 		"::ffff:0:0/96", // IPv4-mapped
 		"2002::/16",     // 6to4（可嵌入 IPv4 内网地址，如 2002:7f00:1:: -> 127.0.0.1）
 		"::/96",         // IPv4-compatible（已废弃，::a.b.c.d 可嵌入内网）
-		"64:ff9b::/96",  // IPv4/IPv6 translation
+		"64:ff9b::/96",  // Well-known IPv4/IPv6 translation prefix
+		"64:ff9b:1::/48", // Local-use IPv4/IPv6 translation (RFC 8215); may embed private IPv4
 		"100::/64",      // Discard-Only
 		"2001::/23",     // IETF Protocol Assignments
 		"2001:db8::/32", // 文档
 		"fc00::/7",      // Unique Local Address (ULA)
+		"fec0::/10",     // Deprecated IPv6 site-local range; still internal on legacy networks
 		"fe80::/10",     // 链路本地
 		"ff00::/8",      // 组播
 	}
@@ -129,15 +133,9 @@ func isPrivateIP(ip net.IP) bool {
 			return true
 		}
 	}
-	// 兜底：任何「内嵌 IPv4」的 IPv6 写法（如 6in4/ISATAP/Teredo 变体）都按 IPv4 私有表再核一次
-	if embedded := ip.To16()[12:16]; ip.To4() == nil && (embedded[0] != 0 || embedded[1] != 0 || embedded[2] != 0 || embedded[3] != 0) {
-		v4 := net.IP(embedded)
-		for _, privateNet := range privateIPv4Nets {
-			if privateNet.Contains(v4) {
-				return true
-			}
-		}
-	}
+	// Only interpret IPv4 data in explicitly enumerated transition/tunnel prefixes above.
+	// A generic last-32-bit check classifies many ordinary public IPv6 addresses as
+	// IPv4 0/8 or private ranges and causes false positives.
 	// 兜底: Go 标准库识别的其他私有地址
 	if ip.IsPrivate() {
 		return true
@@ -213,25 +211,105 @@ func (p *SSRFProtection) isAllowedPort(port int) bool {
 }
 
 // isDomainWhitelisted 检查域名是否在白名单中
+func normalizeSSRFDomain(domain string) string {
+	// A terminal dot is DNS-equivalent to the same absolute name without it.
+	// IDNA normalization makes Unicode and Punycode spellings obey the same
+	// exact or wildcard domain rules.
+	domain = strings.ToLower(strings.TrimSuffix(strings.TrimSpace(domain), "."))
+	wildcard := ""
+	if after, ok := strings.CutPrefix(domain, "*."); ok {
+		wildcard = "*."
+		domain = after
+	}
+	if ascii, err := idna.Lookup.ToASCII(domain); err == nil {
+		domain = strings.ToLower(ascii)
+	}
+	return wildcard + domain
+}
+
+func isIPNumberComponent(label string) bool {
+	if label == "" {
+		return false
+	}
+	allDecimal := true
+	for _, r := range label {
+		if r < '0' || r > '9' {
+			allDecimal = false
+			break
+		}
+	}
+	if allDecimal {
+		return true
+	}
+
+	lower := strings.ToLower(label)
+	base := 0
+	switch {
+	case strings.HasPrefix(lower, "0x"):
+		base, lower = 16, lower[2:]
+	case strings.HasPrefix(lower, "0o"):
+		base, lower = 8, lower[2:]
+	case strings.HasPrefix(lower, "0b"):
+		base, lower = 2, lower[2:]
+	}
+	if base == 0 || lower == "" {
+		return false
+	}
+	for _, r := range lower {
+		switch {
+		case r >= '0' && r <= '9':
+			if int(r-'0') >= base {
+				return false
+			}
+		case r >= 'a' && r <= 'f':
+			if base <= 10 || int(r-'a')+10 >= base {
+				return false
+			}
+		default:
+			return false
+		}
+	}
+	return true
+}
+
+func isNonCanonicalIPLiteral(host string) bool {
+	host = strings.TrimSuffix(strings.TrimSpace(host), ".")
+	if host == "" {
+		return false
+	}
+	// Some URL parsers and resolver stacks accept alternative IPv4 spellings
+	// (e.g. 127.1, 2130706433, 0x7f000001, 0x7f.0.0.1). Go's net.ParseIP
+	// intentionally accepts only canonical literals, so never treat a host
+	// composed entirely of numeric IP components as an ordinary DNS name.
+	for _, label := range strings.Split(host, ".") {
+		if !isIPNumberComponent(label) {
+			return false
+		}
+	}
+	return true
+}
+
 func isDomainListed(domain string, list []string) bool {
 	if len(list) == 0 {
 		return false
 	}
 
-	domain = strings.ToLower(domain)
+	domain = normalizeSSRFDomain(domain)
 	for _, item := range list {
-		item = strings.ToLower(strings.TrimSpace(item))
+		item = normalizeSSRFDomain(item)
 		if item == "" {
 			continue
 		}
-		// 精确匹配
+		// Exact match
 		if domain == item {
 			return true
 		}
-		// 通配符匹配 (*.example.com)
+		// Wildcard match (*.example.com) intentionally requires at least
+		// one subdomain label. The apex example.com must be listed explicitly;
+		// otherwise a typo/overbroad allowlist entry silently expands access.
 		if after, ok := strings.CutPrefix(item, "*."); ok {
 			suffix := after
-			if strings.HasSuffix(domain, "."+suffix) || domain == suffix {
+			if strings.HasSuffix(domain, "."+suffix) {
 				return true
 			}
 		}
@@ -296,7 +374,7 @@ func (p *SSRFProtection) ipAccessError(host string, ip net.IP) error {
 // ValidateNetworkTarget validates the host and port before dialing.
 func (p *SSRFProtection) ValidateNetworkTarget(host string, port int) error {
 	host = strings.TrimSpace(host)
-	if host == "" {
+	if host == "" || strings.HasSuffix(host, "..") {
 		return fmt.Errorf("invalid host")
 	}
 	if port < 1 || port > 65535 {
@@ -306,13 +384,33 @@ func (p *SSRFProtection) ValidateNetworkTarget(host string, port int) error {
 		return fmt.Errorf("port %d is not allowed", port)
 	}
 
+	if strings.Contains(host, "%") {
+		// Reject IPv6 zone identifiers and percent-encoded host tricks. Zone
+		// identifiers are interface-local and cannot be safely normalized into
+		// a globally meaningful network target.
+		return fmt.Errorf("IPv6 zone identifiers and percent escapes are not allowed in hosts")
+	}
 	if ip := net.ParseIP(host); ip != nil {
 		if !p.IsIPAccessAllowed(ip) {
 			return p.ipAccessError("", ip)
 		}
 		return nil
 	}
+	// A trailing dot is valid on DNS names, but can also be used to hide a
+	// literal IPv4 address from net.ParseIP (for example, 127.0.0.1.).
+	if ip := net.ParseIP(strings.TrimSuffix(host, ".")); ip != nil {
+		if !p.IsIPAccessAllowed(ip) {
+			return p.ipAccessError("", ip)
+		}
+		return nil
+	}
+	if isNonCanonicalIPLiteral(host) {
+		return fmt.Errorf("non-canonical IP address literal is not allowed: %s", host)
+	}
 
+	if _, err := idna.Lookup.ToASCII(host); err != nil {
+		return fmt.Errorf("invalid domain name")
+	}
 	if !p.isDomainAllowed(host) {
 		if p.DomainFilterMode {
 			return fmt.Errorf("domain not in whitelist: %s", host)
@@ -322,9 +420,19 @@ func (p *SSRFProtection) ValidateNetworkTarget(host string, port int) error {
 	return nil
 }
 
-// ValidateResolvedIP validates a domain's resolved IP immediately before dialing it.
+// ValidateResolvedIP validates a domain's resolved IP against private-address and
+// configured IP allow/deny rules immediately before dialing it.
 func (p *SSRFProtection) ValidateResolvedIP(host string, ip net.IP) error {
 	if !p.IsIPAccessAllowed(ip) {
+		return p.ipAccessError(host, ip)
+	}
+	return nil
+}
+
+// ValidateResolvedPrivateIP enforces the private/reserved-address guard for a
+// domain even when the optional IP allow/deny list is disabled.
+func (p *SSRFProtection) ValidateResolvedPrivateIP(host string, ip net.IP) error {
+	if isPrivateIP(ip) && !p.AllowPrivateIp {
 		return p.ipAccessError(host, ip)
 	}
 	return nil
@@ -338,9 +446,20 @@ func (p *SSRFProtection) ValidateURL(urlStr string) error {
 		return fmt.Errorf("invalid URL format: %v", err)
 	}
 
-	// 只允许HTTP/HTTPS协议
+	// Only absolute HTTP(S) URLs without embedded credentials, opaque forms or
+	// fragments are accepted. Userinfo is especially risky in fetch URLs because
+	// net/http may turn it into an Authorization header sent to the target host.
 	if u.Scheme != "http" && u.Scheme != "https" {
 		return fmt.Errorf("unsupported protocol: %s (only http/https allowed)", u.Scheme)
+	}
+	if u.User != nil {
+		return fmt.Errorf("URL must not contain user information")
+	}
+	if u.Opaque != "" || u.Host == "" || u.Hostname() == "" {
+		return fmt.Errorf("URL must be absolute and contain a hostname")
+	}
+	if u.Fragment != "" {
+		return fmt.Errorf("URL fragment is not allowed")
 	}
 
 	// 解析主机和端口
@@ -365,18 +484,26 @@ func (p *SSRFProtection) ValidateURL(urlStr string) error {
 		return err
 	}
 
-	// 如果 host 是 IP，或未启用对域名应用 IP 过滤，则到此通过。
-	if net.ParseIP(host) != nil || !p.ApplyIPFilterForDomain {
+	// Literal IPs were already checked above. If domain IP-list filtering is off,
+	// private/reserved IPs must still be rejected unless explicitly allowed.
+	if net.ParseIP(host) != nil || (!p.ApplyIPFilterForDomain && p.AllowPrivateIp) {
 		return nil
 	}
 
-	// 解析域名对应IP并检查
 	ips, err := net.LookupIP(host)
 	if err != nil {
 		return fmt.Errorf("DNS resolution failed for %s: %v", host, err)
 	}
+	if len(ips) == 0 {
+		return fmt.Errorf("DNS resolution returned no addresses for %s", host)
+	}
 	for _, ip := range ips {
-		if err := p.ValidateResolvedIP(host, ip); err != nil {
+		if p.ApplyIPFilterForDomain {
+			err = p.ValidateResolvedIP(host, ip)
+		} else {
+			err = p.ValidateResolvedPrivateIP(host, ip)
+		}
+		if err != nil {
 			return err
 		}
 	}

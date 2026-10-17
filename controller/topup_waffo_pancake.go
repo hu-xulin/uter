@@ -2,7 +2,6 @@ package controller
 
 import (
 	"fmt"
-	"io"
 	"net/http"
 	"strings"
 	"time"
@@ -93,6 +92,16 @@ func normalizeWaffoPancakeTopUpAmount(amount int64) int64 {
 
 func formatWaffoPancakeAmount(payMoney float64) string {
 	return decimal.NewFromFloat(payMoney).StringFixed(2)
+}
+
+// Waffo Pancake sessions have always been created in USD. Empty snapshots are
+// legacy orders created before ProviderCurrency was stored; treating those as
+// USD preserves pending checkouts without relaxing amount validation.
+func waffoPancakeOrderCurrency(snapshot string) string {
+	if strings.TrimSpace(snapshot) == "" {
+		return "usd"
+	}
+	return strings.ToLower(strings.TrimSpace(snapshot))
 }
 
 func getWaffoPancakeBuyerEmail(user *model.User) string {
@@ -385,6 +394,7 @@ func RequestWaffoPancakePay(c *gin.Context) {
 		TradeNo:         tradeNo,
 		PaymentMethod:   model.PaymentMethodWaffoPancake,
 		PaymentProvider: model.PaymentProviderWaffoPancake,
+		ProviderCurrency: "usd",
 		CreateTime:      time.Now().Unix(),
 		Status:          common.TopUpStatusPending,
 	}
@@ -430,7 +440,7 @@ func RequestWaffoPancakePay(c *gin.Context) {
 
 func WaffoPancakeWebhook(c *gin.Context) {
 	if !isWaffoPancakeWebhookEnabled() {
-		logger.LogWarn(c.Request.Context(), common.LogText("Waffo Pancake webhook rejected reason=webhook_disabled path=%q client_ip=%s", c.Request.RequestURI, c.ClientIP()))
+		logger.LogWarn(c.Request.Context(), common.LogText("Waffo Pancake webhook rejected reason=webhook_disabled path=%q client_ip=%s", c.Request.URL.Path, c.ClientIP()))
 		c.String(http.StatusForbidden, "webhook disabled")
 		return
 	}
@@ -442,25 +452,29 @@ func WaffoPancakeWebhook(c *gin.Context) {
 	if expectedEnv != "test" && expectedEnv != "prod" {
 		logger.LogWarn(c.Request.Context(), common.LogText(
 			"Waffo Pancake webhook invalid env path segment env=%q path=%q client_ip=%s",
-			expectedEnv, c.Request.RequestURI, c.ClientIP(),
+			expectedEnv, c.Request.URL.Path, c.ClientIP(),
 		))
 		c.String(http.StatusNotFound, "unknown env")
 		return
 	}
 
-	bodyBytes, err := io.ReadAll(c.Request.Body)
+	bodyBytes, err := readPaymentWebhookBody(c.Request.Body)
 	if err != nil {
-		logger.LogError(c.Request.Context(), common.LogText("Waffo Pancake webhook failed to read request body path=%q client_ip=%s error=%q", c.Request.RequestURI, c.ClientIP(), err.Error()))
+		if err == errPaymentWebhookBodyTooLarge {
+			c.Status(http.StatusRequestEntityTooLarge)
+			return
+		}
+		logger.LogError(c.Request.Context(), common.LogText("Waffo Pancake webhook failed to read request body path=%q client_ip=%s error=%q", c.Request.URL.Path, c.ClientIP(), err.Error()))
 		c.String(http.StatusBadRequest, "bad request")
 		return
 	}
 
 	signature := c.GetHeader("X-Waffo-Signature")
-	logger.LogInfo(c.Request.Context(), common.LogText("Waffo Pancake webhook received request path=%q client_ip=%s signature=%q body=%q", c.Request.RequestURI, c.ClientIP(), signature, string(bodyBytes)))
+	logger.LogInfo(c.Request.Context(), common.LogText("Waffo Pancake webhook received request path=%q client_ip=%s body_bytes=%d", c.Request.URL.Path, c.ClientIP(), len(bodyBytes)))
 
 	event, err := service.VerifyConfiguredWaffoPancakeWebhook(string(bodyBytes), signature)
 	if err != nil {
-		logger.LogWarn(c.Request.Context(), common.LogText("Waffo Pancake webhook signature verification failed path=%q client_ip=%s signature=%q body=%q error=%q", c.Request.RequestURI, c.ClientIP(), signature, string(bodyBytes), err.Error()))
+		logger.LogWarn(c.Request.Context(), common.LogText("Waffo Pancake webhook signature verification failed path=%q client_ip=%s error=%q", c.Request.URL.Path, c.ClientIP(), err.Error()))
 		c.String(http.StatusUnauthorized, "invalid signature")
 		return
 	}
@@ -486,12 +500,30 @@ func WaffoPancakeWebhook(c *gin.Context) {
 	isSubscription := strings.HasPrefix(rawTradeNo, "WAFFO_PANCAKE_SUB-")
 
 	if isSubscription {
-		tradeNo, err := service.ResolveWaffoPancakeSubscriptionTradeNo(event)
+		subscriptionOrder, err := service.ResolveWaffoPancakeSubscriptionOrder(event)
+		tradeNo := ""
+		if subscriptionOrder != nil {
+			tradeNo = subscriptionOrder.TradeNo
+		}
 		if err != nil {
 			logger.LogError(c.Request.Context(), common.LogText(
 				"Waffo Pancake webhook failed to resolve subscription order event_id=%s order_id=%s buyer_identity=%q client_ip=%s error=%q",
 				event.ID, event.Data.OrderID, event.Data.MerchantProvidedBuyerIdentity, c.ClientIP(), err.Error(),
 			))
+			if service.WaffoPancakeResolutionShouldRetry(err) {
+				c.String(http.StatusInternalServerError, "retry")
+			} else {
+				c.String(http.StatusOK, "OK")
+			}
+			return
+		}
+		if !providerCurrencyMatchesOrder(event.Data.Currency, waffoPancakeOrderCurrency(subscriptionOrder.ProviderCurrency)) {
+			logger.LogError(c.Request.Context(), common.LogText("Waffo Pancake subscription currency mismatch trade_no=%s event_id=%s", tradeNo, event.ID))
+			c.String(http.StatusOK, "OK")
+			return
+		}
+		if !providerPaidAmountMatchesOrder(event.Data.Amount, subscriptionOrder.Money) {
+			logger.LogError(c.Request.Context(), common.LogText("Waffo Pancake subscription amount mismatch trade_no=%s event_id=%s", tradeNo, event.ID))
 			c.String(http.StatusOK, "OK")
 			return
 		}
@@ -507,33 +539,44 @@ func WaffoPancakeWebhook(c *gin.Context) {
 		return
 	}
 
-	tradeNo, err := service.ResolveWaffoPancakeTradeNo(event)
+	topUp, err := service.ResolveWaffoPancakeTopUpOrder(event)
+	tradeNo := ""
+	if topUp != nil {
+		tradeNo = topUp.TradeNo
+	}
 	if err != nil {
-		// LogError (not LogWarn): covers order-not-found and buyer-identity
-		// mismatch — both warrant human attention. 200 OK so Waffo doesn't
-		// retry a permanently-unresolvable webhook.
+		// Unknown/mismatched authenticated events are permanent. Query errors are
+		// transient and must be retried or a real payment could be acknowledged
+		// without crediting the corresponding order.
 		logger.LogError(c.Request.Context(), common.LogText(
 			"Waffo Pancake webhook failed to resolve order event_id=%s order_id=%s buyer_identity=%q client_ip=%s error=%q",
 			event.ID, event.Data.OrderID, event.Data.MerchantProvidedBuyerIdentity, c.ClientIP(), err.Error(),
 		))
-		c.String(http.StatusOK, "OK")
+		if service.WaffoPancakeResolutionShouldRetry(err) {
+			c.String(http.StatusInternalServerError, "retry")
+		} else {
+			c.String(http.StatusOK, "OK")
+		}
 		return
 	}
 
 	// 金额校验：回调实付金额必须与本地订单应付金额一致。缺失/不匹配一律拒绝
 	// （fail-closed）——只验签不验金额时，实付与订单金额脱钩，存在少付多充风险。
 	// 下单金额由 formatWaffoPancakeAmount 生成，这里用同一函数反向比对。
-	if topUp := model.GetTopUpByTradeNo(tradeNo); topUp != nil {
-		expected := formatWaffoPancakeAmount(topUp.Money)
-		paid := strings.TrimSpace(event.Data.Amount)
-		paidDec, paidErr := decimal.NewFromString(paid)
-		expectedDec, expectedErr := decimal.NewFromString(expected)
-		if paid == "" || paidErr != nil || expectedErr != nil || !paidDec.Equal(expectedDec) {
-			logger.LogError(c.Request.Context(), common.LogText("Waffo Pancake webhook amount mismatch trade_no=%s paid=%q expected=%s event_id=%s order_id=%s client_ip=%s",
-				tradeNo, paid, expected, event.ID, event.Data.OrderID, c.ClientIP()))
-			c.String(http.StatusOK, "OK")
-			return
-		}
+	if !providerCurrencyMatchesOrder(event.Data.Currency, waffoPancakeOrderCurrency(topUp.ProviderCurrency)) {
+		logger.LogError(c.Request.Context(), common.LogText("Waffo Pancake top-up currency mismatch trade_no=%s event_id=%s", tradeNo, event.ID))
+		c.String(http.StatusOK, "OK")
+		return
+	}
+	expected := formatWaffoPancakeAmount(topUp.Money)
+	paid := strings.TrimSpace(event.Data.Amount)
+	paidDec, paidErr := decimal.NewFromString(paid)
+	expectedDec, expectedErr := decimal.NewFromString(expected)
+	if paid == "" || paidErr != nil || expectedErr != nil || !paidDec.Equal(expectedDec) {
+		logger.LogError(c.Request.Context(), common.LogText("Waffo Pancake webhook amount mismatch trade_no=%s paid=%q expected=%s event_id=%s order_id=%s client_ip=%s",
+			tradeNo, paid, expected, event.ID, event.Data.OrderID, c.ClientIP()))
+		c.String(http.StatusOK, "OK")
+		return
 	}
 
 	LockOrder(tradeNo)

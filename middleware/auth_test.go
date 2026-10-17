@@ -521,3 +521,36 @@ func TestApplyWebSocketSubprotocolAuthorizationReadsRepeatedHeaders(t *testing.T
 	assert.True(t, applyWebSocketSubprotocolAuthorization(header))
 	assert.Equal(t, "Bearer sk-later-field", header.Get("Authorization"))
 }
+
+
+func TestOrgAdminAuthRejectsScopedTokenOnSessionOnlyRoutes(t *testing.T) {
+	setupDashboardAuthMiddlewareTest(t)
+	gin.SetMode(gin.TestMode)
+
+	user := &model.User{
+		Username:       "org-admin-scoped-token",
+		Password:       "password-placeholder",
+		Role:           common.RoleCommonUser,
+		Status:         common.UserStatusEnabled,
+		Group:          "default",
+		AffCode:        "org-admin-scoped-token-aff",
+		AuthVersion:    1,
+		OrganizationId: 17,
+		OrgRole:        model.OrgRoleOwner,
+	}
+	require.NoError(t, model.DB.Create(user).Error)
+	scopedToken, _ := createMiddlewareScopedToken(t, user.Id, 0, "profile:read")
+
+	router := gin.New()
+	handlerCalled := false
+	router.GET("/api/organization/self", OrgAdminAuth(), func(c *gin.Context) {
+		handlerCalled = true
+		c.Status(http.StatusNoContent)
+	})
+
+	response := middlewareBearerRequest(router, "/api/organization/self", scopedToken)
+
+	require.Equal(t, http.StatusForbidden, response.Code, response.Body.String())
+	assert.Contains(t, response.Body.String(), "AUTH_SESSION_REQUIRED")
+	assert.False(t, handlerCalled, "personal access tokens must not enter organization-role handlers")
+}

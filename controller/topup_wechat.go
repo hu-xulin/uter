@@ -22,7 +22,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/uter-ai/uter/i18n"
-	"io"
 	"net/http"
 	"net/url"
 	"regexp"
@@ -46,7 +45,7 @@ var cnPayHTTPClient = &http.Client{Timeout: 30 * time.Second}
 var wechatOpenidRe = regexp.MustCompile(`^[A-Za-z0-9_\-]{1,128}$`)
 
 func isWechatPayTopUpEnabled() bool {
-	return operation_setting.IsWechatPayEnabled()
+	return isPaymentComplianceConfirmed() && operation_setting.IsWechatPayEnabled()
 }
 
 func wechatAmountForStorage(amount int64) int64 {
@@ -148,10 +147,15 @@ func RequestWechatPayMiniProgram(c *gin.Context) {
 		return
 	}
 	defer resp.Body.Close()
-	respBody, _ := io.ReadAll(resp.Body)
+	respBody, err := readPaymentProviderAPIResponseBody(resp.Body)
+	if err != nil {
+		logger.LogError(c.Request.Context(), fmt.Sprintf("微信支付响应读取失败 user_id=%d trade_no=%s error=%q", id, tradeNo, err.Error()))
+		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "创建订单失败"})
+		return
+	}
 
 	if resp.StatusCode != http.StatusOK {
-		logger.LogError(c.Request.Context(), fmt.Sprintf("微信支付下单失败 user_id=%d trade_no=%s status=%d body=%q", id, tradeNo, resp.StatusCode, string(respBody)))
+		logger.LogError(c.Request.Context(), fmt.Sprintf("微信支付下单失败 user_id=%d trade_no=%s status=%d body_bytes=%d", id, tradeNo, resp.StatusCode, len(respBody)))
 		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "创建订单失败"})
 		return
 	}
@@ -160,7 +164,7 @@ func RequestWechatPayMiniProgram(c *gin.Context) {
 		PrepayId string `json:"prepay_id"`
 	}
 	if err := json.Unmarshal(respBody, &wxResp); err != nil || wxResp.PrepayId == "" {
-		logger.LogError(c.Request.Context(), fmt.Sprintf("微信支付响应解析失败 user_id=%d trade_no=%s body=%q error=%q", id, tradeNo, string(respBody), err))
+		logger.LogError(c.Request.Context(), fmt.Sprintf("微信支付响应解析失败 user_id=%d trade_no=%s body_bytes=%d error=%q", id, tradeNo, len(respBody), err))
 		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "创建订单失败"})
 		return
 	}
@@ -313,10 +317,15 @@ func RequestWechatPayWeb(c *gin.Context) {
 		return
 	}
 	defer resp.Body.Close()
-	respBody, _ := io.ReadAll(resp.Body)
+	respBody, err := readPaymentProviderAPIResponseBody(resp.Body)
+	if err != nil {
+		logger.LogError(c.Request.Context(), fmt.Sprintf("微信支付响应读取失败 user_id=%d trade_no=%s error=%q", id, tradeNo, err.Error()))
+		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "创建订单失败"})
+		return
+	}
 
 	if resp.StatusCode != http.StatusOK {
-		logger.LogError(c.Request.Context(), fmt.Sprintf("微信支付下单失败 user_id=%d trade_no=%s path=%s status=%d body=%q", id, tradeNo, apiPath, resp.StatusCode, string(respBody)))
+		logger.LogError(c.Request.Context(), fmt.Sprintf("微信支付下单失败 user_id=%d trade_no=%s path=%s status=%d body_bytes=%d", id, tradeNo, apiPath, resp.StatusCode, len(respBody)))
 		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "创建订单失败"})
 		return
 	}
@@ -326,7 +335,7 @@ func RequestWechatPayWeb(c *gin.Context) {
 		H5Url   string `json:"h5_url"`
 	}
 	if err := json.Unmarshal(respBody, &wxResp); err != nil {
-		logger.LogError(c.Request.Context(), fmt.Sprintf("微信支付响应解析失败 user_id=%d trade_no=%s body=%q error=%q", id, tradeNo, string(respBody), err))
+		logger.LogError(c.Request.Context(), fmt.Sprintf("微信支付响应解析失败 user_id=%d trade_no=%s body_bytes=%d error=%q", id, tradeNo, len(respBody), err))
 		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "创建订单失败"})
 		return
 	}
@@ -335,7 +344,7 @@ func RequestWechatPayWeb(c *gin.Context) {
 	switch client {
 	case "mobile":
 		if wxResp.H5Url == "" {
-			logger.LogError(c.Request.Context(), fmt.Sprintf("微信支付未返回 h5_url user_id=%d trade_no=%s body=%q", id, tradeNo, string(respBody)))
+			logger.LogError(c.Request.Context(), fmt.Sprintf("微信支付未返回 h5_url user_id=%d trade_no=%s body_bytes=%d", id, tradeNo, len(respBody)))
 			c.JSON(http.StatusOK, gin.H{"message": "error", "data": "创建订单失败"})
 			return
 		}
@@ -345,7 +354,7 @@ func RequestWechatPayWeb(c *gin.Context) {
 		data = map[string]string{"trade_no": tradeNo, "h5_url": payUrl}
 	default:
 		if wxResp.CodeUrl == "" {
-			logger.LogError(c.Request.Context(), fmt.Sprintf("微信支付未返回 code_url user_id=%d trade_no=%s body=%q", id, tradeNo, string(respBody)))
+			logger.LogError(c.Request.Context(), fmt.Sprintf("微信支付未返回 code_url user_id=%d trade_no=%s body_bytes=%d", id, tradeNo, len(respBody)))
 			c.JSON(http.StatusOK, gin.H{"message": "error", "data": "创建订单失败"})
 			return
 		}
@@ -396,8 +405,12 @@ func WechatPayNotify(c *gin.Context) {
 	nonce := c.GetHeader("Wechatpay-Nonce")
 	signature := c.GetHeader("Wechatpay-Signature")
 
-	bodyBytes, err := io.ReadAll(c.Request.Body)
+	bodyBytes, err := readPaymentWebhookBody(c.Request.Body)
 	if err != nil {
+		if err == errPaymentWebhookBodyTooLarge {
+			c.JSON(http.StatusRequestEntityTooLarge, gin.H{"code": "FAIL", "message": "Request body too large"})
+			return
+		}
 		c.JSON(http.StatusOK, gin.H{"code": "FAIL", "message": i18n.T(c, i18n.MsgTopup_wechatRead_failed)})
 		return
 	}
@@ -410,14 +423,14 @@ func WechatPayNotify(c *gin.Context) {
 	} else {
 		now := time.Now().Unix()
 		if now-ts > 300 || ts-now > 300 {
-			logger.LogWarn(c.Request.Context(), fmt.Sprintf("微信支付 webhook 时间戳异常 path=%q client_ip=%s timestamp=%s", c.Request.RequestURI, c.ClientIP(), timestamp))
+			logger.LogWarn(c.Request.Context(), fmt.Sprintf("微信支付 webhook 时间戳异常 path=%q client_ip=%s timestamp=%s", c.Request.URL.Path, c.ClientIP(), timestamp))
 			c.JSON(http.StatusOK, gin.H{"code": "FAIL", "message": i18n.T(c, i18n.MsgTopup_wechatTimestamp_abnormal)})
 			return
 		}
 	}
 
 	if !service.WechatPayVerifyNotify(timestamp, nonce, bodyStr, signature, operation_setting.WechatPayPlatformCert) {
-		logger.LogWarn(c.Request.Context(), fmt.Sprintf("微信支付 webhook 验签失败 path=%q client_ip=%s", c.Request.RequestURI, c.ClientIP()))
+		logger.LogWarn(c.Request.Context(), fmt.Sprintf("微信支付 webhook 验签失败 path=%q client_ip=%s", c.Request.URL.Path, c.ClientIP()))
 		c.JSON(http.StatusOK, gin.H{"code": "FAIL", "message": i18n.T(c, i18n.MsgTopup_wechatSign_verify_failed)})
 		return
 	}
@@ -439,7 +452,7 @@ func WechatPayNotify(c *gin.Context) {
 		operation_setting.WechatPayApiV3Key,
 	)
 	if err != nil {
-		logger.LogError(c.Request.Context(), fmt.Sprintf("微信支付 webhook 解密失败 path=%q client_ip=%s error=%q", c.Request.RequestURI, c.ClientIP(), err.Error()))
+		logger.LogError(c.Request.Context(), fmt.Sprintf("微信支付 webhook 解密失败 path=%q client_ip=%s error=%q", c.Request.URL.Path, c.ClientIP(), err.Error()))
 		c.JSON(http.StatusOK, gin.H{"code": "FAIL", "message": i18n.T(c, i18n.MsgTopup_wechatDecrypt_failed)})
 		return
 	}
@@ -450,7 +463,8 @@ func WechatPayNotify(c *gin.Context) {
 		Mchid      string `json:"mchid"`
 		Appid      string `json:"appid"`
 		Amount     struct {
-			Total int64 `json:"total"`
+			Total    int64  `json:"total"`
+			Currency string `json:"currency"`
 		} `json:"amount"`
 	}
 	if err := json.Unmarshal([]byte(plaintext), &dec); err != nil {
@@ -485,6 +499,12 @@ func WechatPayNotify(c *gin.Context) {
 	if topUp == nil {
 		logger.LogWarn(c.Request.Context(), fmt.Sprintf("微信支付回调订单不存在 trade_no=%s client_ip=%s", dec.OutTradeNo, c.ClientIP()))
 		c.JSON(http.StatusOK, gin.H{"code": "FAIL", "message": i18n.T(c, i18n.MsgTopup_wechatProcess_failed)})
+		return
+	}
+	// 微信支付下单时固定使用 CNY；回调币种必须一致，不能只凭相同的数值入账。
+	if !providerCurrencyMatchesOrder(dec.Amount.Currency, "CNY") {
+		logger.LogWarn(c.Request.Context(), fmt.Sprintf("微信支付回调币种不匹配 trade_no=%s currency=%s client_ip=%s", dec.OutTradeNo, dec.Amount.Currency, c.ClientIP()))
+		c.JSON(http.StatusOK, gin.H{"code": "FAIL", "message": i18n.T(c, i18n.MsgTopup_wechatAmount_mismatch)})
 		return
 	}
 	// 微信以分为单位下发 total，本地 Money 以元为单位。

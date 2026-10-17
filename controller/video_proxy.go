@@ -415,6 +415,7 @@ func taskMediaRedirectClient(base *http.Client, proxy string, c *gin.Context, cl
 		if isSelfTaskMediaURL(c, req.URL) {
 			return fmt.Errorf("%w: proxy loop", errTaskMediaRequestRejected)
 		}
+		forwardClientHeaders := true
 		if len(via) > 0 && !sameTaskMediaOrigin(via[len(via)-1].URL, req.URL) {
 			if !credentialless {
 				return fmt.Errorf("%w: credentialed cross-origin redirect", errTaskMediaRequestRejected)
@@ -425,20 +426,44 @@ func taskMediaRedirectClient(base *http.Client, proxy string, c *gin.Context, cl
 			req.Body = http.NoBody
 			req.GetBody = nil
 			req.ContentLength = 0
+			forwardClientHeaders = false
 		}
-		for name, value := range clientHeaders {
-			req.Header.Set(name, value)
+		if forwardClientHeaders {
+			for name, value := range clientHeaders {
+				req.Header.Set(name, value)
+			}
 		}
 		return nil
 	}
 	return &cloned
 }
 
+// validateTaskMediaProxyTarget blocks proxy-side DNS resolution whenever private-IP
+// denial or configured IP allow/deny rules must be enforced. The proxy cannot be
+// forced to use an address that this process validated.
+func validateTaskMediaProxyTarget(rawURL, proxy string, fetchSetting *system_setting.FetchSetting) error {
+	if proxy == "" || fetchSetting == nil || !fetchSetting.EnableSSRFProtection ||
+		(fetchSetting.AllowPrivateIp && !fetchSetting.ApplyIPFilterForDomain) {
+		return nil
+	}
+	parsedURL, err := url.Parse(rawURL)
+	if err != nil {
+		return err
+	}
+	if net.ParseIP(parsedURL.Hostname()) == nil {
+		return fmt.Errorf("SSRF domain IP filtering cannot be enforced through a channel proxy")
+	}
+	return nil
+}
+
 func validateTaskMediaURL(rawURL, proxy string) error {
+	fetchSetting := system_setting.GetFetchSetting()
+	if err := validateTaskMediaProxyTarget(rawURL, proxy, fetchSetting); err != nil {
+		return err
+	}
 	if proxy == "" {
 		return service.ValidateSSRFProtectedFetchURL(rawURL)
 	}
-	fetchSetting := system_setting.GetFetchSetting()
 	return common.ValidateURLWithFetchSetting(
 		rawURL,
 		fetchSetting.EnableSSRFProtection,

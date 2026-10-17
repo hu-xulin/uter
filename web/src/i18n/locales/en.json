@@ -7495,6 +7495,11 @@
     "Verify to update user credentials": "Verify to update user credentials",
     "Verify to create administrator": "Verify to create administrator",
     "Confirm your identity before creating an administrator account.": "Confirm your identity before creating an administrator account.",
-    "Type <username/> to confirm": "Type <username/> to confirm"
+    "Type <username/> to confirm": "Type <username/> to confirm",
+    "Invalid parameters": "Invalid parameters",
+    "Organization Owner Username is required": "Organization Owner Username is required",
+    "Organization Owner Username": "Organization Owner Username",
+    "Existing unassigned ordinary user": "Existing unassigned ordinary user",
+    "The owner must be an enabled ordinary user who is not already in an organization.": "The owner must be an enabled ordinary user who is not already in an organization."
   }
 }

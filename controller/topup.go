@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/uter-ai/uter/i18n"
 	"maps"
+	"math"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -329,6 +330,10 @@ func rejectInvalidTopUpQuota(c *gin.Context, userId int, amount int64) bool {
 }
 
 func RequestEpay(c *gin.Context) {
+	if !isEpayTopUpEnabled() {
+		paymentError(c, common.NewMessage("Epay payment is not enabled or configured"))
+		return
+	}
 	var req EpayRequest
 	err := c.ShouldBindJSON(&req)
 	if err != nil {
@@ -406,7 +411,7 @@ func RequestEpay(c *gin.Context) {
 		paymentError(c, common.NewMessage("Failed to create the order"))
 		return
 	}
-	logger.LogInfo(c.Request.Context(), fmt.Sprintf("易支付 充值订单创建成功 user_id=%d trade_no=%s payment_method=%s amount=%d money=%.2f uri=%q params=%q", id, tradeNo, req.PaymentMethod, req.Amount, payMoney, uri, common.GetJsonString(params)))
+	logger.LogInfo(c.Request.Context(), fmt.Sprintf("易支付 充值订单创建成功 user_id=%d trade_no=%s payment_method=%s amount=%d money=%.2f uri_length=%d param_count=%d", id, tradeNo, req.PaymentMethod, req.Amount, payMoney, len(uri), len(params)))
 	c.JSON(http.StatusOK, gin.H{"message": "success", "data": params, "url": uri})
 }
 
@@ -469,28 +474,93 @@ func paidAmountMatchesOrder(paid decimal.Decimal, expectedMoney float64) bool {
 	return paid.Equal(decimal.NewFromFloat(expectedMoney).Round(2))
 }
 
-// creemPaidCoversOrder 是 Creem 专用的金额判定（实付单位：分）。
-//
-// 不能用 paidAmountMatchesOrder 的严格相等：Creem 的商品价格保存在商户后台，
-// 本地 CreemProducts[].price 只是运营者配置的镜像值，两者可能因配置漂移而不等，
-// 严格相等会把正常支付全部拒掉（直接损失收入）。
-// 因此只拦截「实付少于应付」这一确定的欺诈方向；实付多于应付时放行并按本地
-// 订单额度入账，同时告警提示配置漂移。
-func creemPaidCoversOrder(paidMinorUnits int64, expectedMoney float64) (covered bool, overpaid bool) {
-	if paidMinorUnits <= 0 {
+// providerPaidAmountMatchesOrder validates a gateway amount expressed in major currency units.
+func providerPaidAmountMatchesOrder(paid string, expectedMoney float64) bool {
+	amount, err := decimal.NewFromString(strings.TrimSpace(paid))
+	return err == nil && paidAmountMatchesOrder(amount, expectedMoney)
+}
+
+// providerCurrencyMatchesOrder fails closed when either side of a provider
+// currency comparison is absent.
+func providerCurrencyMatchesOrder(paidCurrency, expectedCurrency string) bool {
+	paidCurrency = strings.TrimSpace(paidCurrency)
+	expectedCurrency = strings.TrimSpace(expectedCurrency)
+	return paidCurrency != "" && expectedCurrency != "" && strings.EqualFold(paidCurrency, expectedCurrency)
+}
+
+
+// creemCurrencyMinorUnitExponent returns the ISO 4217 minor-unit exponent for
+// currencies supported by provider order amounts. Unusual zero/three/four-decimal
+// currencies are listed explicitly; the standard exponent for other three-letter
+// currencies is two.
+func creemCurrencyMinorUnitExponent(currency string) (int, bool) {
+	currency = strings.ToUpper(strings.TrimSpace(currency))
+	if len(currency) != 3 {
+		return 0, false
+	}
+	for _, r := range currency {
+		if r < 'A' || r > 'Z' {
+			return 0, false
+		}
+	}
+	switch currency {
+	case "BIF", "CLP", "DJF", "GNF", "ISK", "JPY", "KMF", "KRW", "PYG", "RWF", "UGX", "VND", "VUV", "XAF", "XOF", "XPF":
+		return 0, true
+	case "BHD", "IQD", "JOD", "KWD", "LYD", "OMR", "TND":
+		return 3, true
+	case "CLF", "UYW":
+		return 4, true
+	default:
+		return 2, true
+	}
+}
+
+// creemExpectedMinorUnits converts a local major-unit order amount into the
+// provider's minor units without silently rounding an unsupported precision.
+func creemExpectedMinorUnits(expectedMoney float64, currency string) (int64, bool) {
+	if expectedMoney <= 0 || math.IsNaN(expectedMoney) || math.IsInf(expectedMoney, 0) {
+		return 0, false
+	}
+	exponent, ok := creemCurrencyMinorUnitExponent(currency)
+	if !ok {
+		return 0, false
+	}
+	scale := int64(1)
+	for range exponent {
+		scale *= 10
+	}
+	expected := decimal.NewFromFloat(expectedMoney).Mul(decimal.NewFromInt(scale))
+	if !expected.Equal(expected.Truncate(0)) {
+		return 0, false
+	}
+	bigAmount := expected.BigInt()
+	if !bigAmount.IsInt64() {
+		return 0, false
+	}
+	return bigAmount.Int64(), true
+}
+
+// creemOrderAmountsCoverOrder validates the provider's pre-tax subtotal against
+// the local price and separately ensures that the paid amount covers the final
+// due amount (which may include tax). A higher subtotal is allowed because
+// Creem's merchant-catalog price may be newer than the local price snapshot;
+// a lower subtotal is never allowed, since tax-inclusive amount_paid could
+// otherwise mask a product-price shortfall.
+func creemOrderAmountsCoverOrder(subtotalMinorUnits, amountDueMinorUnits, amountPaidMinorUnits int64, expectedMoney float64, currency string) (covered bool, subtotalOverpaid bool) {
+	expectedMinorUnits, ok := creemExpectedMinorUnits(expectedMoney, currency)
+	if !ok || subtotalMinorUnits <= 0 || amountDueMinorUnits <= 0 ||
+		amountPaidMinorUnits < amountDueMinorUnits || amountPaidMinorUnits < expectedMinorUnits {
 		return false, false
 	}
-	paid := decimal.NewFromInt(paidMinorUnits).Div(decimal.NewFromInt(100))
-	expected := decimal.NewFromFloat(expectedMoney).Round(2)
-	if paid.LessThan(expected) {
+	if subtotalMinorUnits < expectedMinorUnits {
 		return false, false
 	}
-	return true, paid.GreaterThan(expected)
+	return true, subtotalMinorUnits > expectedMinorUnits
 }
 
 func EpayNotify(c *gin.Context) {
 	if !isEpayWebhookEnabled() {
-		logger.LogWarn(c.Request.Context(), fmt.Sprintf("易支付 webhook 被拒绝 reason=webhook_disabled path=%q client_ip=%s", c.Request.RequestURI, c.ClientIP()))
+		logger.LogWarn(c.Request.Context(), fmt.Sprintf("易支付 webhook 被拒绝 reason=webhook_disabled path=%q client_ip=%s", c.Request.URL.Path, c.ClientIP()))
 		_, _ = c.Writer.Write([]byte("fail"))
 		return
 	}
@@ -499,8 +569,9 @@ func EpayNotify(c *gin.Context) {
 
 	if c.Request.Method == "POST" {
 		// POST 请求：从 POST body 解析参数
+		limitPaymentWebhookFormBody(c.Writer, c.Request)
 		if err := c.Request.ParseForm(); err != nil {
-			logger.LogError(c.Request.Context(), fmt.Sprintf("易支付 webhook POST 表单解析失败 path=%q client_ip=%s error=%q", c.Request.RequestURI, c.ClientIP(), err.Error()))
+			logger.LogError(c.Request.Context(), fmt.Sprintf("易支付 webhook POST 表单解析失败 path=%q client_ip=%s error=%q", c.Request.URL.Path, c.ClientIP(), err.Error()))
 			_, _ = c.Writer.Write([]byte("fail"))
 			return
 		}
@@ -515,35 +586,35 @@ func EpayNotify(c *gin.Context) {
 			return r
 		}, map[string]string{})
 	}
-	logger.LogInfo(c.Request.Context(), fmt.Sprintf("易支付 webhook 收到请求 path=%q client_ip=%s method=%s params=%q", c.Request.RequestURI, c.ClientIP(), c.Request.Method, common.GetJsonString(params)))
+	logger.LogInfo(c.Request.Context(), fmt.Sprintf("易支付 webhook 收到请求 path=%q client_ip=%s method=%s param_count=%d", c.Request.URL.Path, c.ClientIP(), c.Request.Method, len(params)))
 
 	if len(params) == 0 {
-		logger.LogWarn(c.Request.Context(), fmt.Sprintf("易支付 webhook 参数为空 path=%q client_ip=%s", c.Request.RequestURI, c.ClientIP()))
+		logger.LogWarn(c.Request.Context(), fmt.Sprintf("易支付 webhook 参数为空 path=%q client_ip=%s", c.Request.URL.Path, c.ClientIP()))
 		_, _ = c.Writer.Write([]byte("fail"))
 		return
 	}
 	client := GetEpayClient()
 	if client == nil {
-		logger.LogError(c.Request.Context(), fmt.Sprintf("易支付 client 未初始化 path=%q client_ip=%s", c.Request.RequestURI, c.ClientIP()))
+		logger.LogError(c.Request.Context(), fmt.Sprintf("易支付 client 未初始化 path=%q client_ip=%s", c.Request.URL.Path, c.ClientIP()))
 		_, err := c.Writer.Write([]byte("fail"))
 		if err != nil {
-			logger.LogError(c.Request.Context(), fmt.Sprintf("易支付 webhook 响应写入失败 path=%q client_ip=%s error=%q", c.Request.RequestURI, c.ClientIP(), err.Error()))
+			logger.LogError(c.Request.Context(), fmt.Sprintf("易支付 webhook 响应写入失败 path=%q client_ip=%s error=%q", c.Request.URL.Path, c.ClientIP(), err.Error()))
 		}
 		return
 	}
 	verifyInfo, err := client.Verify(params)
 	if err != nil || !verifyInfo.VerifyStatus {
 		if _, writeErr := c.Writer.Write([]byte("fail")); writeErr != nil {
-			logger.LogError(c.Request.Context(), fmt.Sprintf("易支付 webhook 响应写入失败 path=%q client_ip=%s error=%q", c.Request.RequestURI, c.ClientIP(), writeErr.Error()))
+			logger.LogError(c.Request.Context(), fmt.Sprintf("易支付 webhook 响应写入失败 path=%q client_ip=%s error=%q", c.Request.URL.Path, c.ClientIP(), writeErr.Error()))
 		}
 		if err != nil {
-			logger.LogWarn(c.Request.Context(), fmt.Sprintf("易支付 webhook 验签失败 path=%q client_ip=%s verify_error=%q", c.Request.RequestURI, c.ClientIP(), err.Error()))
+			logger.LogWarn(c.Request.Context(), fmt.Sprintf("易支付 webhook 验签失败 path=%q client_ip=%s verify_error=%q", c.Request.URL.Path, c.ClientIP(), err.Error()))
 		} else {
-			logger.LogWarn(c.Request.Context(), fmt.Sprintf("易支付 webhook 验签失败 path=%q client_ip=%s verify_status=false", c.Request.RequestURI, c.ClientIP()))
+			logger.LogWarn(c.Request.Context(), fmt.Sprintf("易支付 webhook 验签失败 path=%q client_ip=%s verify_status=false", c.Request.URL.Path, c.ClientIP()))
 		}
 		return
 	}
-	logger.LogInfo(c.Request.Context(), fmt.Sprintf("易支付 webhook 验签成功 trade_no=%s callback_type=%s trade_status=%s client_ip=%s verify_info=%q", verifyInfo.ServiceTradeNo, verifyInfo.Type, verifyInfo.TradeStatus, c.ClientIP(), common.GetJsonString(verifyInfo)))
+	logger.LogInfo(c.Request.Context(), fmt.Sprintf("易支付 webhook 验签成功 trade_no=%s callback_type=%s trade_status=%s client_ip=%s", verifyInfo.ServiceTradeNo, verifyInfo.Type, verifyInfo.TradeStatus, c.ClientIP()))
 
 	if verifyInfo.TradeStatus == epay.StatusTradeSuccess {
 		// 金额校验：易支付回传的实付金额必须与本地订单应付金额一致。
@@ -569,7 +640,7 @@ func EpayNotify(c *gin.Context) {
 		if err != nil {
 			switch {
 			case errors.Is(err, model.ErrTopUpNotFound):
-				logger.LogWarn(c.Request.Context(), fmt.Sprintf("易支付 回调订单不存在 trade_no=%s callback_type=%s client_ip=%s verify_info=%q", verifyInfo.ServiceTradeNo, verifyInfo.Type, c.ClientIP(), common.GetJsonString(verifyInfo)))
+				logger.LogWarn(c.Request.Context(), fmt.Sprintf("易支付 回调订单不存在 trade_no=%s callback_type=%s client_ip=%s", verifyInfo.ServiceTradeNo, verifyInfo.Type, c.ClientIP()))
 			case errors.Is(err, model.ErrPaymentMethodMismatch):
 				logger.LogWarn(c.Request.Context(), fmt.Sprintf("易支付 订单支付网关不匹配 trade_no=%s callback_type=%s client_ip=%s", verifyInfo.ServiceTradeNo, verifyInfo.Type, c.ClientIP()))
 			case errors.Is(err, model.ErrTopUpStatusInvalid):
@@ -588,7 +659,7 @@ func EpayNotify(c *gin.Context) {
 			logger.LogInfo(c.Request.Context(), fmt.Sprintf("易支付 充值成功 trade_no=%s callback_type=%s client_ip=%s", verifyInfo.ServiceTradeNo, verifyInfo.Type, c.ClientIP()))
 		}
 	} else {
-		logger.LogInfo(c.Request.Context(), fmt.Sprintf("易支付 webhook 忽略事件 trade_no=%s callback_type=%s trade_status=%s client_ip=%s verify_info=%q", verifyInfo.ServiceTradeNo, verifyInfo.Type, verifyInfo.TradeStatus, c.ClientIP(), common.GetJsonString(verifyInfo)))
+		logger.LogInfo(c.Request.Context(), fmt.Sprintf("易支付 webhook 忽略事件 trade_no=%s callback_type=%s trade_status=%s client_ip=%s", verifyInfo.ServiceTradeNo, verifyInfo.Type, verifyInfo.TradeStatus, c.ClientIP()))
 	}
 	if _, writeErr := c.Writer.Write([]byte("success")); writeErr != nil {
 		logger.LogError(c.Request.Context(), fmt.Sprintf("易支付 webhook 响应写入失败 trade_no=%s client_ip=%s error=%q", verifyInfo.ServiceTradeNo, c.ClientIP(), writeErr.Error()))

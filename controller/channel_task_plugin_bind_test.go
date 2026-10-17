@@ -128,6 +128,20 @@ export function parseTaskResult() { return {}; }
 	UpdateChannel(context)
 	assert.Contains(t, recorder.Body.String(), "task plugin channels require the task_plugin.bind permission")
 	assert.Contains(t, recorder.Body.String(), `"success":false`)
+
+	// Partial updates may omit Type. Authorization must use the persisted channel
+	// type, not the zero value produced by JSON decoding.
+	partialRecorder := httptest.NewRecorder()
+	partialContext, _ := gin.CreateTestContext(partialRecorder)
+	partialContext.Set("id", 2)
+	partialContext.Set("role", common.RoleAdminUser)
+	partialContext.Request = httptest.NewRequest(http.MethodPut, "/api/channel", strings.NewReader(
+		fmt.Sprintf(`{"id":%d,"name":"renamed-without-bind-permission"}`, channel.Id),
+	))
+	partialContext.Request.Header.Set("Content-Type", "application/json")
+	UpdateChannel(partialContext)
+	assert.Contains(t, partialRecorder.Body.String(), "task plugin channels require the task_plugin.bind permission")
+	assert.Contains(t, partialRecorder.Body.String(), `"success":false`)
 }
 
 func TestAddChannelTaskPluginPersistsPluginDefaultBaseURLAndAuditsSource(t *testing.T) {

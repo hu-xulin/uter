@@ -1109,6 +1109,17 @@ func UpdateChannel(c *gin.Context) {
 		common.ApiError(c, err)
 		return
 	}
+	// Do not trust the request's Type field for authorization: partial updates
+	// may omit it, while GORM ignores zero-valued fields and keeps the stored
+	// channel type. Existing task-plugin channels still require the bind permission.
+	if originChannel.Type == constant.ChannelTypeTaskPlugin &&
+		!authz.Can(c.GetInt("id"), c.GetInt("role"), authz.TaskPluginBind) {
+		c.JSON(http.StatusOK, gin.H{
+			"success": false,
+			"message": "task plugin channels require the task_plugin.bind permission",
+		})
+		return
+	}
 	originProxy := originChannel.GetSetting().Proxy
 	proxyChanged := false
 	_, settingProvided := requestData["setting"]

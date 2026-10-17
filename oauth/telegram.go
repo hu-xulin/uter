@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -139,7 +138,7 @@ func (p *TelegramProvider) ExchangeToken(ctx context.Context, code string, c *gi
 		return nil, fmt.Errorf("%w: token endpoint status %d", ErrTelegramOAuthFailed, response.StatusCode)
 	}
 	var token OAuthToken
-	if err := common.DecodeJson(io.LimitReader(response.Body, 1<<20), &token); err != nil {
+	if err := decodeOAuthJSONLimit(response.Body, &token, 1<<20); err != nil {
 		return nil, fmt.Errorf("%w: %v", ErrTelegramOAuthFailed, err)
 	}
 	if token.IDToken == "" {

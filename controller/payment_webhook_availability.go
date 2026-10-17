@@ -1,6 +1,10 @@
 package controller
 
 import (
+	"errors"
+	"fmt"
+	"io"
+	"net/http"
 	"strings"
 
 	"github.com/uter-ai/uter/setting"
@@ -12,12 +16,17 @@ func isPaymentComplianceConfirmed() bool {
 	return operation_setting.IsPaymentComplianceConfirmed()
 }
 
+func isStripeAPIConfigured() bool {
+	secret := strings.TrimSpace(setting.StripeApiSecret)
+	return strings.HasPrefix(secret, "sk_") || strings.HasPrefix(secret, "rk_")
+}
+
 func isStripeTopUpEnabled() bool {
 	if !isPaymentComplianceConfirmed() {
 		return false
 	}
-	return strings.TrimSpace(setting.StripeApiSecret) != "" &&
-		strings.TrimSpace(setting.StripeWebhookSecret) != "" &&
+	return isStripeAPIConfigured() &&
+		isStripeWebhookConfigured() &&
 		strings.TrimSpace(setting.StripePriceId) != ""
 }
 
@@ -25,8 +34,13 @@ func isStripeWebhookConfigured() bool {
 	return strings.TrimSpace(setting.StripeWebhookSecret) != ""
 }
 
+// Webhook handling must not depend on the wallet top-up Price ID, because the
+// same signed endpoint also settles subscription orders priced by each plan.
+// A checkout toggle, missing wallet catalog, or compliance UI state must not
+// strand already-paid orders; the signed callback and local order checks remain
+// the settlement authority.
 func isStripeWebhookEnabled() bool {
-	return isStripeTopUpEnabled()
+	return isStripeWebhookConfigured()
 }
 
 func isCreemTopUpEnabled() bool {
@@ -36,7 +50,8 @@ func isCreemTopUpEnabled() bool {
 	products := strings.TrimSpace(setting.CreemProducts)
 	return strings.TrimSpace(setting.CreemApiKey) != "" &&
 		products != "" &&
-		products != "[]"
+		products != "[]" &&
+		isCreemWebhookConfigured()
 }
 
 func isCreemWebhookConfigured() bool {
@@ -44,7 +59,10 @@ func isCreemWebhookConfigured() bool {
 }
 
 func isCreemWebhookEnabled() bool {
-	return isCreemTopUpEnabled() && isCreemWebhookConfigured()
+	// The webhook secret verifies provider authenticity. New checkout availability
+	// is controlled separately; existing paid orders must still settle when the
+	// wallet catalog, API key, or compliance UI gate is changed.
+	return isCreemWebhookConfigured()
 }
 
 func isWaffoTopUpEnabled() bool {
@@ -71,7 +89,10 @@ func isWaffoWebhookConfigured() bool {
 }
 
 func isWaffoWebhookEnabled() bool {
-	return isWaffoTopUpEnabled()
+	// Do not stop confirmed callback processing just because new Waffo checkouts
+	// are disabled; verification credentials, rather than the checkout toggle,
+	// are the prerequisite for settling existing orders.
+	return isWaffoWebhookConfigured()
 }
 
 func isWaffoPancakeTopUpEnabled() bool {
@@ -88,11 +109,16 @@ func isWaffoPancakeTopUpEnabled() bool {
 }
 
 func isWaffoPancakeWebhookConfigured() bool {
-	return isWaffoPancakeTopUpEnabled()
+	return strings.TrimSpace(setting.WaffoPancakeMerchantID) != "" &&
+		strings.TrimSpace(setting.WaffoPancakePrivateKey) != "" &&
+		strings.TrimSpace(setting.WaffoPancakeStoreID) != ""
 }
 
 func isWaffoPancakeWebhookEnabled() bool {
-	return isWaffoPancakeTopUpEnabled()
+	// One endpoint receives both wallet top-ups and subscription callbacks.
+	// Keep existing order settlement available when new checkout creation is
+	// disabled; webhook verification and StoreID binding remain mandatory.
+	return isWaffoPancakeWebhookConfigured()
 }
 
 func isEpayTopUpEnabled() bool {
@@ -109,5 +135,58 @@ func isEpayWebhookConfigured() bool {
 }
 
 func isEpayWebhookEnabled() bool {
-	return isEpayTopUpEnabled()
+	// PayMethods and payment-compliance confirmation control new checkout options,
+	// not the verification of a signed callback for an already-created order.
+	return isEpayWebhookConfigured()
+}
+
+
+// Payment provider callbacks are unauthenticated until their signatures are
+// verified. Bound their raw bodies before buffering them for signature checks,
+// so invalid or hostile payloads cannot force unbounded memory allocation.
+const maxPaymentWebhookBodyBytes int64 = 2 << 20
+
+var errPaymentWebhookBodyTooLarge = errors.New("payment webhook request body exceeds size limit")
+
+func readPaymentWebhookBody(body io.Reader) ([]byte, error) {
+	if body == nil {
+		return nil, errors.New("payment webhook request body is nil")
+	}
+	payload, err := io.ReadAll(io.LimitReader(body, maxPaymentWebhookBodyBytes+1))
+	if err != nil {
+		return nil, err
+	}
+	if int64(len(payload)) > maxPaymentWebhookBodyBytes {
+		return nil, errPaymentWebhookBodyTooLarge
+	}
+	return payload, nil
+}
+
+
+// limitPaymentWebhookFormBody caps URL-encoded payment callback bodies before
+// ParseForm reads them. This complements readPaymentWebhookBody for JSON/raw
+// providers while preserving the standard library's form parsing behavior.
+func limitPaymentWebhookFormBody(w http.ResponseWriter, r *http.Request) {
+	if r != nil && r.Body != nil {
+		r.Body = http.MaxBytesReader(w, r.Body, maxPaymentWebhookBodyBytes)
+	}
+}
+
+
+const maxPaymentProviderAPIResponseBodyBytes int64 = 1 << 20
+
+// readPaymentProviderAPIResponseBody bounds network response buffering from
+// payment gateways before their JSON responses are decoded.
+func readPaymentProviderAPIResponseBody(body io.Reader) ([]byte, error) {
+	if body == nil {
+		return nil, errors.New("payment provider API response body is nil")
+	}
+	data, err := io.ReadAll(io.LimitReader(body, maxPaymentProviderAPIResponseBodyBytes+1))
+	if err != nil {
+		return nil, err
+	}
+	if int64(len(data)) > maxPaymentProviderAPIResponseBodyBytes {
+		return nil, fmt.Errorf("payment provider API response exceeds %d bytes", maxPaymentProviderAPIResponseBodyBytes)
+	}
+	return data, nil
 }

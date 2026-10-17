@@ -30,7 +30,7 @@ func confirmPaymentComplianceForTest(t *testing.T) {
 	paymentSetting.ComplianceTermsVersion = operation_setting.CurrentComplianceTermsVersion
 }
 
-func TestStripeWebhookEnabledRequiresTopUpAndWebhookConfig(t *testing.T) {
+func TestStripeTopUpEnabledRequiresTopUpAndWebhookConfig(t *testing.T) {
 	confirmPaymentComplianceForTest(t)
 	originalAPISecret := setting.StripeApiSecret
 	originalWebhookSecret := setting.StripeWebhookSecret
@@ -44,16 +44,71 @@ func TestStripeWebhookEnabledRequiresTopUpAndWebhookConfig(t *testing.T) {
 	setting.StripeWebhookSecret = ""
 	setting.StripeApiSecret = "sk_test_123"
 	setting.StripePriceId = "price_123"
-	require.False(t, isStripeWebhookEnabled())
+	require.False(t, isStripeTopUpEnabled())
 
 	setting.StripeWebhookSecret = "whsec_test"
-	require.True(t, isStripeWebhookEnabled())
+	require.True(t, isStripeTopUpEnabled())
 
 	setting.StripePriceId = ""
-	require.False(t, isStripeWebhookEnabled())
+	require.False(t, isStripeTopUpEnabled())
+
+	setting.StripePriceId = "price_123"
+	operation_setting.GetPaymentSetting().ComplianceConfirmed = false
+	require.False(t, isStripeTopUpEnabled())
 }
 
-func TestCreemWebhookEnabledRequiresTopUpAndWebhookConfig(t *testing.T) {
+func TestStripeWebhookEnabledDoesNotRequireWalletPrice(t *testing.T) {
+	originalAPISecret := setting.StripeApiSecret
+	originalWebhookSecret := setting.StripeWebhookSecret
+	originalPriceID := setting.StripePriceId
+	originalConfirmed := operation_setting.GetPaymentSetting().ComplianceConfirmed
+	t.Cleanup(func() {
+		setting.StripeApiSecret = originalAPISecret
+		setting.StripeWebhookSecret = originalWebhookSecret
+		setting.StripePriceId = originalPriceID
+		operation_setting.GetPaymentSetting().ComplianceConfirmed = originalConfirmed
+	})
+
+	// Subscription plans carry their own Stripe Price IDs, so the shared webhook
+	// must remain available without the wallet top-up Price ID or API key.
+	setting.StripeApiSecret = ""
+	setting.StripeWebhookSecret = "whsec_test"
+	setting.StripePriceId = ""
+	operation_setting.GetPaymentSetting().ComplianceConfirmed = false
+	require.True(t, isStripeWebhookEnabled())
+
+	setting.StripeWebhookSecret = ""
+	require.False(t, isStripeWebhookEnabled())
+}
+func TestCreemWebhookEnabledRequiresOnlyWebhookSecret(t *testing.T) {
+	originalAPIKey := setting.CreemApiKey
+	originalProducts := setting.CreemProducts
+	originalWebhookSecret := setting.CreemWebhookSecret
+	originalConfirmed := operation_setting.GetPaymentSetting().ComplianceConfirmed
+	t.Cleanup(func() {
+		setting.CreemApiKey = originalAPIKey
+		setting.CreemProducts = originalProducts
+		setting.CreemWebhookSecret = originalWebhookSecret
+		operation_setting.GetPaymentSetting().ComplianceConfirmed = originalConfirmed
+	})
+
+	// Existing orders must still settle if an operator removes the wallet catalog,
+	// API key, or checkout-compliance flag. Signed webhook verification still fails
+	// closed when its secret is missing.
+	setting.CreemApiKey = ""
+	setting.CreemProducts = "[]"
+	setting.CreemWebhookSecret = ""
+	require.False(t, isCreemWebhookEnabled())
+
+	setting.CreemWebhookSecret = "creem_secret"
+	operation_setting.GetPaymentSetting().ComplianceConfirmed = false
+	require.True(t, isCreemWebhookEnabled())
+
+	setting.CreemProducts = ""
+	require.True(t, isCreemWebhookEnabled())
+}
+
+func TestCreemTopUpEnabledRequiresCheckoutConfiguration(t *testing.T) {
 	confirmPaymentComplianceForTest(t)
 	originalAPIKey := setting.CreemApiKey
 	originalProducts := setting.CreemProducts
@@ -64,19 +119,18 @@ func TestCreemWebhookEnabledRequiresTopUpAndWebhookConfig(t *testing.T) {
 		setting.CreemWebhookSecret = originalWebhookSecret
 	})
 
-	setting.CreemWebhookSecret = ""
 	setting.CreemApiKey = "creem_api_key"
-	setting.CreemProducts = `[{"productId":"prod_123"}]`
-	require.False(t, isCreemWebhookEnabled())
-
-	setting.CreemWebhookSecret = "creem_secret"
-	require.True(t, isCreemWebhookEnabled())
-
 	setting.CreemProducts = "[]"
-	require.False(t, isCreemWebhookEnabled())
-}
+	setting.CreemWebhookSecret = "creem_secret"
+	require.False(t, isCreemTopUpEnabled())
 
-func TestWaffoWebhookEnabledRequiresTopUpAndWebhookConfig(t *testing.T) {
+	setting.CreemProducts = "[{}]"
+	require.True(t, isCreemTopUpEnabled())
+
+	operation_setting.GetPaymentSetting().ComplianceConfirmed = false
+	require.False(t, isCreemTopUpEnabled())
+}
+func TestWaffoWebhookEnabledDoesNotDependOnCheckoutToggle(t *testing.T) {
 	confirmPaymentComplianceForTest(t)
 	originalEnabled := setting.WaffoEnabled
 	originalSandbox := setting.WaffoSandbox
@@ -97,7 +151,6 @@ func TestWaffoWebhookEnabledRequiresTopUpAndWebhookConfig(t *testing.T) {
 		setting.WaffoSandboxPublicCert = originalSandboxPublicCert
 	})
 
-	setting.WaffoEnabled = true
 	setting.WaffoSandbox = false
 	setting.WaffoApiKey = ""
 	setting.WaffoPrivateKey = "private"
@@ -105,12 +158,18 @@ func TestWaffoWebhookEnabledRequiresTopUpAndWebhookConfig(t *testing.T) {
 	require.False(t, isWaffoWebhookEnabled())
 
 	setting.WaffoApiKey = "api"
+	setting.WaffoEnabled = true
 	require.True(t, isWaffoWebhookEnabled())
+	require.True(t, isWaffoTopUpEnabled())
 
 	setting.WaffoEnabled = false
-	require.False(t, isWaffoWebhookEnabled())
+	require.True(t, isWaffoWebhookEnabled())
+	require.False(t, isWaffoTopUpEnabled())
 
-	setting.WaffoEnabled = true
+	operation_setting.GetPaymentSetting().ComplianceConfirmed = false
+	require.True(t, isWaffoWebhookEnabled())
+	require.False(t, isWaffoTopUpEnabled())
+
 	setting.WaffoSandbox = true
 	setting.WaffoSandboxApiKey = ""
 	setting.WaffoSandboxPrivateKey = "sandbox_private"
@@ -120,8 +179,7 @@ func TestWaffoWebhookEnabledRequiresTopUpAndWebhookConfig(t *testing.T) {
 	setting.WaffoSandboxApiKey = "sandbox_api"
 	require.True(t, isWaffoWebhookEnabled())
 }
-
-func TestWaffoPancakeWebhookEnabledRequiresTopUpAndWebhookConfig(t *testing.T) {
+func TestWaffoPancakeWebhookEnabledDoesNotRequireWalletProduct(t *testing.T) {
 	confirmPaymentComplianceForTest(t)
 	originalMerchantID := setting.WaffoPancakeMerchantID
 	originalPrivateKey := setting.WaffoPancakePrivateKey
@@ -134,14 +192,6 @@ func TestWaffoPancakeWebhookEnabledRequiresTopUpAndWebhookConfig(t *testing.T) {
 		setting.WaffoPancakeStoreID = originalStoreID
 	})
 
-	// Presence of all four credentials enables the gateway. Webhook public
-	// keys are bundled in the SDK and there is no separate Enabled toggle —
-	// clear any of the four fields to disable.
-	//
-	// StoreID is mandatory: the SDK verification key is a global shared public
-	// key that cannot attribute an event to a merchant, so StoreID is the only
-	// binding that separates a genuine in-store event from a forged one signed
-	// with an attacker's own merchant account.
 	setting.WaffoPancakeStoreID = "store"
 	setting.WaffoPancakeMerchantID = ""
 	setting.WaffoPancakePrivateKey = "private"
@@ -152,7 +202,8 @@ func TestWaffoPancakeWebhookEnabledRequiresTopUpAndWebhookConfig(t *testing.T) {
 	require.True(t, isWaffoPancakeWebhookEnabled())
 
 	setting.WaffoPancakeProductID = ""
-	require.False(t, isWaffoPancakeWebhookEnabled())
+	require.True(t, isWaffoPancakeWebhookEnabled())
+	require.False(t, isWaffoPancakeTopUpEnabled())
 
 	setting.WaffoPancakeProductID = "product"
 	setting.WaffoPancakePrivateKey = ""
@@ -163,10 +214,11 @@ func TestWaffoPancakeWebhookEnabledRequiresTopUpAndWebhookConfig(t *testing.T) {
 	require.False(t, isWaffoPancakeWebhookEnabled())
 
 	setting.WaffoPancakeStoreID = "store"
+	operation_setting.GetPaymentSetting().ComplianceConfirmed = false
 	require.True(t, isWaffoPancakeWebhookEnabled())
+	require.False(t, isWaffoPancakeTopUpEnabled())
 }
-
-func TestEpayWebhookEnabledRequiresTopUpAndWebhookConfig(t *testing.T) {
+func TestEpayWebhookEnabledDoesNotDependOnPayMethods(t *testing.T) {
 	confirmPaymentComplianceForTest(t)
 	originalPayAddress := operation_setting.PayAddress
 	originalEpayID := operation_setting.EpayId
@@ -187,11 +239,17 @@ func TestEpayWebhookEnabledRequiresTopUpAndWebhookConfig(t *testing.T) {
 
 	operation_setting.EpayKey = "epay_key"
 	require.True(t, isEpayWebhookEnabled())
+	require.True(t, isEpayTopUpEnabled())
 
 	operation_setting.PayMethods = nil
-	require.False(t, isEpayWebhookEnabled())
-}
+	require.True(t, isEpayWebhookEnabled())
+	require.False(t, isEpayTopUpEnabled())
 
+	operation_setting.PayMethods = []map[string]string{{"type": "alipay"}}
+	operation_setting.GetPaymentSetting().ComplianceConfirmed = false
+	require.True(t, isEpayWebhookEnabled())
+	require.False(t, isEpayTopUpEnabled())
+}
 func TestEpayCallbacksVerifyBeforeSettlement(t *testing.T) {
 	confirmPaymentComplianceForTest(t)
 	originalPayAddress := operation_setting.PayAddress
@@ -297,4 +355,93 @@ func TestEpayCallbacksVerifyBeforeSettlement(t *testing.T) {
 			}
 		}
 	}
+}
+
+
+func TestChinaPaymentTopUpHelpersRequireComplianceConfirmation(t *testing.T) {
+	paymentSetting := operation_setting.GetPaymentSetting()
+	originalConfirmed := paymentSetting.ComplianceConfirmed
+	originalTermsVersion := paymentSetting.ComplianceTermsVersion
+	originalAlipayEnabled := operation_setting.AlipayEnabled
+	originalAlipayAppID := operation_setting.AlipayAppId
+	originalAlipayPrivateKey := operation_setting.AlipayPrivateKey
+	originalAlipayPublicKey := operation_setting.AlipayPublicKey
+	originalWechatEnabled := operation_setting.WechatPayEnabled
+	originalWechatMchID := operation_setting.WechatPayMchId
+	originalWechatAppID := operation_setting.WechatPayAppId
+	originalWechatAPIv3Key := operation_setting.WechatPayApiV3Key
+	originalWechatSerialNo := operation_setting.WechatPaySerialNo
+	originalWechatPrivateKey := operation_setting.WechatPayPrivateKey
+	originalWechatPlatformCert := operation_setting.WechatPayPlatformCert
+	t.Cleanup(func() {
+		paymentSetting.ComplianceConfirmed = originalConfirmed
+		paymentSetting.ComplianceTermsVersion = originalTermsVersion
+		operation_setting.AlipayEnabled = originalAlipayEnabled
+		operation_setting.AlipayAppId = originalAlipayAppID
+		operation_setting.AlipayPrivateKey = originalAlipayPrivateKey
+		operation_setting.AlipayPublicKey = originalAlipayPublicKey
+		operation_setting.WechatPayEnabled = originalWechatEnabled
+		operation_setting.WechatPayMchId = originalWechatMchID
+		operation_setting.WechatPayAppId = originalWechatAppID
+		operation_setting.WechatPayApiV3Key = originalWechatAPIv3Key
+		operation_setting.WechatPaySerialNo = originalWechatSerialNo
+		operation_setting.WechatPayPrivateKey = originalWechatPrivateKey
+		operation_setting.WechatPayPlatformCert = originalWechatPlatformCert
+	})
+	operation_setting.AlipayEnabled = true
+	operation_setting.AlipayAppId = "app"
+	operation_setting.AlipayPrivateKey = "private"
+	operation_setting.AlipayPublicKey = "public"
+	operation_setting.WechatPayEnabled = true
+	operation_setting.WechatPayMchId = "merchant"
+	operation_setting.WechatPayAppId = "app"
+	operation_setting.WechatPayApiV3Key = strings.Repeat("k", 32)
+	operation_setting.WechatPaySerialNo = "serial"
+	operation_setting.WechatPayPrivateKey = "private"
+	operation_setting.WechatPayPlatformCert = "cert"
+	paymentSetting.ComplianceConfirmed = false
+	paymentSetting.ComplianceTermsVersion = operation_setting.CurrentComplianceTermsVersion
+
+	require.False(t, isAlipayTopUpEnabled())
+	require.False(t, isWechatPayTopUpEnabled())
+
+	paymentSetting.ComplianceConfirmed = true
+	require.True(t, isAlipayTopUpEnabled())
+	require.True(t, isWechatPayTopUpEnabled())
+}
+
+
+func TestReadPaymentWebhookBodyEnforcesSizeLimit(t *testing.T) {
+	withinLimit := strings.Repeat("x", int(maxPaymentWebhookBodyBytes))
+	got, err := readPaymentWebhookBody(strings.NewReader(withinLimit))
+	require.NoError(t, err)
+	require.Equal(t, withinLimit, string(got))
+
+	got, err = readPaymentWebhookBody(strings.NewReader(withinLimit + "x"))
+	require.Nil(t, got)
+	require.ErrorIs(t, err, errPaymentWebhookBodyTooLarge)
+}
+
+
+func TestLimitPaymentWebhookFormBody(t *testing.T) {
+	writer := httptest.NewRecorder()
+	body := strings.Repeat("x", int(maxPaymentWebhookBodyBytes+1))
+	request := httptest.NewRequest(http.MethodPost, "/", strings.NewReader(body))
+	request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+
+	limitPaymentWebhookFormBody(writer, request)
+	err := request.ParseForm()
+	require.Error(t, err, "form payload larger than the payment callback limit must be rejected")
+}
+
+
+func TestReadPaymentProviderAPIResponseBodyEnforcesSizeLimit(t *testing.T) {
+	withinLimit := strings.Repeat("x", int(maxPaymentProviderAPIResponseBodyBytes))
+	data, err := readPaymentProviderAPIResponseBody(strings.NewReader(withinLimit))
+	require.NoError(t, err)
+	require.Len(t, data, len(withinLimit))
+
+	data, err = readPaymentProviderAPIResponseBody(strings.NewReader(withinLimit + "x"))
+	require.Error(t, err)
+	require.Nil(t, data)
 }

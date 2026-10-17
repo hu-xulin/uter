@@ -220,6 +220,9 @@ type SubscriptionOrder struct {
 	TradeNo         string `json:"trade_no" gorm:"unique;type:varchar(255);index"`
 	PaymentMethod   string `json:"payment_method" gorm:"type:varchar(50)"`
 	PaymentProvider string `json:"payment_provider" gorm:"type:varchar(50);default:''"`
+	// ProviderAmount/Currency snapshot provider-side cash pricing at order creation.
+	ProviderAmount   int64  `json:"-" gorm:"not null;default:0"`
+	ProviderCurrency string `json:"-" gorm:"type:varchar(3);not null;default:''"`
 	Status          string `json:"status"`
 	CreateTime      int64  `json:"create_time"`
 	CompleteTime    int64  `json:"complete_time"`
@@ -592,7 +595,10 @@ func CompleteSubscriptionOrder(tradeNo string, providerPayload string, expectedP
 	err := DB.Transaction(func(tx *gorm.DB) error {
 		var order SubscriptionOrder
 		if err := lockForUpdate(tx).Where(refCol+" = ?", tradeNo).First(&order).Error; err != nil {
-			return ErrSubscriptionOrderNotFound
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				return ErrSubscriptionOrderNotFound
+			}
+			return err
 		}
 		if expectedPaymentProvider != "" && order.PaymentProvider != expectedPaymentProvider {
 			return ErrPaymentMethodMismatch
@@ -672,8 +678,10 @@ func upsertSubscriptionTopUpTx(tx *gorm.DB, order *SubscriptionOrder) error {
 				Amount:        0,
 				Money:         order.Money,
 				TradeNo:       order.TradeNo,
-				PaymentMethod: order.PaymentMethod,
-				CreateTime:    order.CreateTime,
+				PaymentMethod:   order.PaymentMethod,
+				ProviderAmount:   order.ProviderAmount,
+				ProviderCurrency: order.ProviderCurrency,
+				CreateTime:       order.CreateTime,
 				CompleteTime:  now,
 				Status:        common.TopUpStatusSuccess,
 			}
@@ -682,6 +690,12 @@ func upsertSubscriptionTopUpTx(tx *gorm.DB, order *SubscriptionOrder) error {
 		return err
 	}
 	topup.Money = order.Money
+	if order.ProviderAmount > 0 {
+		topup.ProviderAmount = order.ProviderAmount
+	}
+	if strings.TrimSpace(order.ProviderCurrency) != "" {
+		topup.ProviderCurrency = strings.ToLower(strings.TrimSpace(order.ProviderCurrency))
+	}
 	if topup.PaymentMethod == "" {
 		topup.PaymentMethod = order.PaymentMethod
 	} else if topup.PaymentMethod != order.PaymentMethod {
@@ -706,7 +720,10 @@ func ExpireSubscriptionOrder(tradeNo string, expectedPaymentProvider string) err
 	return DB.Transaction(func(tx *gorm.DB) error {
 		var order SubscriptionOrder
 		if err := lockForUpdate(tx).Where(refCol+" = ?", tradeNo).First(&order).Error; err != nil {
-			return ErrSubscriptionOrderNotFound
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				return ErrSubscriptionOrderNotFound
+			}
+			return err
 		}
 		if expectedPaymentProvider != "" && order.PaymentProvider != expectedPaymentProvider {
 			return ErrPaymentMethodMismatch
@@ -715,6 +732,36 @@ func ExpireSubscriptionOrder(tradeNo string, expectedPaymentProvider string) err
 			return nil
 		}
 		order.Status = common.TopUpStatusExpired
+		order.CompleteTime = common.GetTimestamp()
+		return tx.Save(&order).Error
+	})
+}
+
+// FailPendingSubscriptionOrder marks a delayed-payment subscription order failed.
+// It is idempotent and never downgrades an order that has already succeeded.
+func FailPendingSubscriptionOrder(tradeNo string, expectedPaymentProvider string) error {
+	if tradeNo == "" {
+		return errors.New("tradeNo is empty")
+	}
+	refCol := "`trade_no`"
+	if common.UsingMainDatabase(common.DatabaseTypePostgreSQL) {
+		refCol = `"trade_no"`
+	}
+	return DB.Transaction(func(tx *gorm.DB) error {
+		var order SubscriptionOrder
+		if err := lockForUpdate(tx).Where(refCol+" = ?", tradeNo).First(&order).Error; err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				return ErrSubscriptionOrderNotFound
+			}
+			return err
+		}
+		if expectedPaymentProvider != "" && order.PaymentProvider != expectedPaymentProvider {
+			return ErrPaymentMethodMismatch
+		}
+		if order.Status != common.TopUpStatusPending {
+			return nil
+		}
+		order.Status = common.TopUpStatusFailed
 		order.CompleteTime = common.GetTimestamp()
 		return tx.Save(&order).Error
 	})

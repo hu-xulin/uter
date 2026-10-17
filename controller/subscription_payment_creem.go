@@ -1,16 +1,14 @@
 package controller
 
 import (
-	"bytes"
-	"io"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/logger"
 	"github.com/uter-ai/uter/model"
 	"github.com/uter-ai/uter/setting"
-	"github.com/uter-ai/uter/setting/operation_setting"
 	"github.com/gin-gonic/gin"
 	"github.com/thanhpk/randstr"
 )
@@ -25,15 +23,6 @@ func SubscriptionRequestCreemPay(c *gin.Context) {
 	}
 
 	var req SubscriptionCreemPayRequest
-
-	// Keep body for debugging consistency (like RequestCreemPay)
-	bodyBytes, err := io.ReadAll(c.Request.Body)
-	if err != nil {
-		logger.LogError(c.Request.Context(), common.LogText("Creem failed to read subscription payment request error=%q", err.Error()))
-		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "read query error"})
-		return
-	}
-	c.Request.Body = io.NopCloser(bytes.NewReader(bodyBytes))
 
 	if err := c.ShouldBindJSON(&req); err != nil || req.PlanId <= 0 {
 		paymentError(c, common.NewMessage("Invalid parameters"))
@@ -53,7 +42,11 @@ func SubscriptionRequestCreemPay(c *gin.Context) {
 		common.ApiErrorT(c, "CreemProductId is not configured for this plan")
 		return
 	}
-	if setting.CreemWebhookSecret == "" && !setting.CreemTestMode {
+	if plan.PriceAmount <= 0 {
+		common.ApiErrorT(c, "Plan amount is too low")
+		return
+	}
+	if setting.CreemWebhookSecret == "" {
 		common.ApiErrorT(c, "Creem webhook is not configured")
 		return
 	}
@@ -84,6 +77,12 @@ func SubscriptionRequestCreemPay(c *gin.Context) {
 	reference := "sub-creem-ref-" + randstr.String(6)
 	referenceId := "sub_ref_" + common.Sha1([]byte(reference+time.Now().String()+user.Username))
 
+	currency := subscriptionPlanCurrency(plan)
+	if _, ok := creemExpectedMinorUnits(plan.PriceAmount, currency); !ok {
+		common.ApiErrorT(c, "Plan price/currency precision is invalid")
+		return
+	}
+
 	// create pending order first
 	order := &model.SubscriptionOrder{
 		UserId:          userId,
@@ -91,8 +90,9 @@ func SubscriptionRequestCreemPay(c *gin.Context) {
 		Money:           plan.PriceAmount,
 		TradeNo:         referenceId,
 		PaymentMethod:   model.PaymentMethodCreem,
-		PaymentProvider: model.PaymentProviderCreem,
-		CreateTime:      time.Now().Unix(),
+		PaymentProvider:  model.PaymentProviderCreem,
+		ProviderCurrency: strings.ToLower(currency),
+		CreateTime:       time.Now().Unix(),
 		Status:          common.TopUpStatusPending,
 	}
 	if err := order.Insert(); err != nil {
@@ -101,15 +101,6 @@ func SubscriptionRequestCreemPay(c *gin.Context) {
 	}
 
 	// Reuse Creem checkout generator by building a lightweight product reference.
-	currency := "USD"
-	switch operation_setting.GetGeneralSetting().QuotaDisplayType {
-	case operation_setting.QuotaDisplayTypeCNY:
-		currency = "CNY"
-	case operation_setting.QuotaDisplayTypeUSD:
-		currency = "USD"
-	default:
-		currency = "USD"
-	}
 	product := &CreemProduct{
 		ProductId: plan.CreemProductId,
 		Name:      plan.Title,
@@ -121,6 +112,8 @@ func SubscriptionRequestCreemPay(c *gin.Context) {
 	checkoutUrl, err := genCreemLink(c.Request.Context(), referenceId, product, user.Email, user.Username)
 	if err != nil {
 		logger.LogError(c.Request.Context(), common.LogText("Creem failed to create subscription payment link trade_no=%s product_id=%s error=%q", referenceId, product.ProductId, err.Error()))
+		order.Status = common.TopUpStatusFailed
+		_ = order.Update()
 		paymentError(c, common.NewMessage("Failed to start payment"))
 		return
 	}

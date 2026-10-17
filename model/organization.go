@@ -3,6 +3,7 @@ package model
 import (
 	"errors"
 	"fmt"
+	"sort"
 
 	"gorm.io/gorm"
 
@@ -28,15 +29,14 @@ func IsValidOrgRole(role string) bool {
 	return false
 }
 
-// bumpUserAuthVersionAfterOrgChange invalidates the cached auth snapshot after
-// an organization membership change. Failure leaves a stale organization_id /
-// org_role in the cache — the sidebar hides the org module and OrgAdminAuth
-// keeps applying the previous scope — so it has to be loud. It must not roll
-// back a membership change that already committed, hence log rather than return.
-func bumpUserAuthVersionAfterOrgChange(userId int) {
-	if _, err := BumpUserAuthVersion(userId); err != nil {
+// publishUserAuthCacheAfterOrgChange refreshes the cached identity after the
+// membership/role change and auth-version increment have committed atomically.
+// The version fence is published inside the transaction, so a failed fence
+// write rolls back the authorization change instead of leaving stale privileges.
+func publishUserAuthCacheAfterOrgChange(userId int) {
+	if err := PublishUserAuthCache(userId); err != nil {
 		common.SysError(fmt.Sprintf(
-			"failed to bump auth version for user %d after organization change: %s",
+			"failed to publish auth cache for user %d after organization change: %s",
 			userId, err.Error()))
 	}
 }
@@ -87,11 +87,155 @@ func (Organization) TableName() string { return "organizations" }
 // 传 0 表示组织暂时没有负责人（仅超管可继续管理），不会误匹配任何真实用户 id
 // （自增 id 从 1 开始），因此是 fail-closed 的。
 func SetOrganizationOwner(id int, ownerUserId int) error {
-	if id == 0 {
+	return setOrganizationOwner(id, ownerUserId, nil)
+}
+
+// SetOrganizationOwnerIfCurrent transfers ownership only if the actor still owns
+// the organization at commit time. This closes the TOCTOU window between an
+// HTTP authorization preflight and the ownership-changing transaction.
+func SetOrganizationOwnerIfCurrent(id int, ownerUserId int, expectedCurrentOwnerID int) error {
+	if expectedCurrentOwnerID <= 0 {
+		return ErrOrgOwnerChanged
+	}
+	return setOrganizationOwner(id, ownerUserId, &expectedCurrentOwnerID)
+}
+
+func setOrganizationOwner(id int, ownerUserId int, expectedCurrentOwnerID *int) error {
+	if id <= 0 {
 		return ErrOrgNotFound
 	}
-	return DB.Model(&Organization{}).Where("id = ?", id).
-		Update("owner_user_id", ownerUserId).Error
+
+	affectedUserIDs := make(map[int]struct{})
+	err := DB.Transaction(func(tx *gorm.DB) error {
+		// Serialize ownership transfers and validate the target membership against
+		// the current database state. Keep the pointer and role transitions atomic.
+		var org Organization
+		if err := lockForUpdate(tx).Where("id = ?", id).First(&org).Error; err != nil {
+			return ErrOrgNotFound
+		}
+		if expectedCurrentOwnerID != nil {
+			if org.OwnerUserId != *expectedCurrentOwnerID {
+				return ErrOrgOwnerChanged
+			}
+			var currentOwner User
+			if err := lockForUpdate(tx).Where("id = ? AND organization_id = ?", *expectedCurrentOwnerID, id).First(&currentOwner).Error; err != nil {
+				return ErrOrgOwnerChanged
+			}
+			// Empty org_role is accepted only for legacy records where the
+			// owner pointer is the sole authoritative ownership marker.
+			if currentOwner.OrgRole != OrgRoleOwner && currentOwner.OrgRole != "" {
+				return ErrOrgOwnerChanged
+			}
+		}
+
+		if ownerUserId > 0 {
+			var target User
+			if err := lockForUpdate(tx).Where("id = ? AND organization_id = ?", ownerUserId, id).First(&target).Error; err != nil {
+				return fmt.Errorf("new organization owner must be an active member of organization %d: %w", id, err)
+			}
+			if target.Role > common.RoleCommonUser {
+				return ErrOrgMemberPrivileged
+			}
+			if target.Status != common.UserStatusEnabled {
+				return fmt.Errorf("new organization owner must be an enabled user")
+			}
+		}
+
+		// owner_user_id is a single-owner pointer, so normalize role rows at the
+		// same time. Leaving the previous owner with org_role=owner would give
+		// them full management rights even after ownership had been transferred.
+		var existingOwners []User
+		if err := lockForUpdate(tx).Where("organization_id = ? AND org_role = ?", id, OrgRoleOwner).
+			Order("id ASC").Find(&existingOwners).Error; err != nil {
+			return err
+		}
+		if ownerUserId == 0 {
+			// No successor means the organization has no trusted owner. Fail closed:
+			// remove organization-management authority from both owners and admins
+			// until platform root explicitly restores an owner.
+			var managers []User
+			if err := lockForUpdate(tx).Where("organization_id = ? AND org_role IN ?", id, []string{OrgRoleOwner, OrgRoleAdmin}).
+				Order("id ASC").Find(&managers).Error; err != nil {
+				return err
+			}
+			for _, manager := range managers {
+				updates := map[string]any{"org_role": OrgRoleMember}
+				if manager.Role > common.RoleCommonUser {
+					// Privileged platform accounts are only temporary organization
+					// owners during bootstrap; never retain their tenant membership.
+					updates = map[string]any{
+						"organization_id": 0,
+						"department_id":   0,
+						"department_name": "",
+						"org_role":        "",
+						"sub_quota_limit": 0,
+					}
+				}
+				if err := tx.Model(&User{}).
+					Where("id = ? AND organization_id = ? AND org_role IN ?", manager.Id, id, []string{OrgRoleOwner, OrgRoleAdmin}).
+					Updates(updates).Error; err != nil {
+					return err
+				}
+				affectedUserIDs[manager.Id] = struct{}{}
+			}
+		} else {
+			for _, existing := range existingOwners {
+				if existing.Id == ownerUserId {
+					continue
+				}
+				updates := map[string]any{"org_role": OrgRoleAdmin}
+				if existing.Role > common.RoleCommonUser {
+					// A privileged platform owner must leave the tenant when
+					// ownership is transferred, so it can manage/create other orgs
+					// without carrying stale membership in this one.
+					updates = map[string]any{
+						"organization_id": 0,
+						"department_id":   0,
+						"department_name": "",
+						"org_role":        "",
+						"sub_quota_limit": 0,
+					}
+				}
+				if err := tx.Model(&User{}).
+					Where("id = ? AND organization_id = ? AND org_role = ?", existing.Id, id, OrgRoleOwner).
+					Updates(updates).Error; err != nil {
+					return err
+				}
+				affectedUserIDs[existing.Id] = struct{}{}
+			}
+			if err := tx.Model(&User{}).Where("id = ? AND organization_id = ?", ownerUserId, id).
+				Update("org_role", OrgRoleOwner).Error; err != nil {
+				return err
+			}
+			affectedUserIDs[ownerUserId] = struct{}{}
+		}
+
+		if err := tx.Model(&Organization{}).Where("id = ?", id).
+			Update("owner_user_id", ownerUserId).Error; err != nil {
+			return err
+		}
+		// Publish each user's deny fence before commit. If Redis is unavailable,
+		// the ownership transfer and role changes roll back together.
+		userIDs := make([]int, 0, len(affectedUserIDs))
+		for userID := range affectedUserIDs {
+			userIDs = append(userIDs, userID)
+		}
+		sort.Ints(userIDs)
+		for _, userID := range userIDs {
+			if _, err := IncrementUserAuthVersionWithTx(tx, userID); err != nil {
+				return err
+			}
+		}
+		return nil
+	})
+	if err != nil {
+		return err
+	}
+
+	for userID := range affectedUserIDs {
+		publishUserAuthCacheAfterOrgChange(userID)
+	}
+	return nil
 }
 
 // OrganizationMemberSummary 用于列表展示组织内成员的消耗概览。
@@ -108,8 +252,11 @@ var (
 	ErrOrgNotOwner      = errors.New("only the organization owner can perform this action")
 	// ErrOrgBudgetExceeded 组织共享预算已被本次消费耗尽（准入失败，未发生扣减）。
 	ErrOrgBudgetExceeded = errors.New("organization budget exceeded")
+	ErrOrgOwnerChanged = errors.New("organization owner changed during update")
+	ErrOrgMembershipAuthorizationChanged = errors.New("organization membership authorization changed")
 	// ErrOrgSubQuotaExceeded 成员子额度上限不足（准入失败，未发生扣减）。
 	ErrOrgSubQuotaExceeded = errors.New("organization member sub-quota exceeded")
+	ErrOrgSubQuotaInvalid = errors.New("organization member sub-quota limit cannot be negative")
 	// ErrOrgMemberForeign 目标用户已归属其它组织；加入组织不得跨租户搬迁账号。
 	ErrOrgMemberForeign = errors.New("user already belongs to another organization")
 	// ErrOrgMemberPrivileged 目标用户的系统角色高于普通用户（平台管理员/超管）。
@@ -155,33 +302,74 @@ func (e *OrgQuotaError) Is(target error) bool { return errors.Is(e.Kind, target)
 
 // CreateOrganization 创建组织并把创建者设为 owner。
 func CreateOrganization(name string, ownerUserId int, quota int64) (*Organization, error) {
+	return CreateOrganizationWithMemberLimit(name, ownerUserId, quota, 0)
+}
+
+func CreateOrganizationWithMemberLimit(name string, ownerUserId int, quota int64, memberLimit int) (*Organization, error) {
 	if name == "" {
 		return nil, ErrOrgNameRequired
+	}
+	if quota < 0 {
+		return nil, fmt.Errorf("organization quota cannot be negative")
+	}
+	if memberLimit < 0 {
+		return nil, fmt.Errorf("organization member limit cannot be negative")
 	}
 	org := &Organization{
 		Name:        name,
 		OwnerUserId: ownerUserId,
 		Quota:       quota,
 		UsedQuota:   0,
-		MemberLimit: 0,
+		MemberLimit: memberLimit,
 		Status:      OrgStatusEnabled,
 	}
-	if err := DB.Create(org).Error; err != nil {
+	if err := DB.Transaction(func(tx *gorm.DB) error {
+		// Serialize concurrent organization creation for the same owner. Without
+		// locking and checking the current membership, two requests can both pass
+		// the controller's preflight check and leave one user pointed at two orgs.
+		var owner User
+		if err := lockForUpdate(tx).Where("id = ?", ownerUserId).First(&owner).Error; err != nil {
+			return ErrOrgMemberUnknown
+		}
+		if owner.OrganizationId != 0 {
+			return ErrOrgAlreadyMember
+		}
+		// Platform root may temporarily own a newly created organization so it
+		// can transfer ownership to an ordinary member. Other privileged platform
+		// accounts must not become organization owners.
+		if owner.Role > common.RoleCommonUser && owner.Role != common.RoleRootUser {
+			return ErrOrgMemberPrivileged
+		}
+		// Revalidate account status under the same row lock as membership so a
+		// user disabled after controller preflight cannot become an organization owner.
+		if owner.Status != common.UserStatusEnabled {
+			return fmt.Errorf("organization owner must be an enabled user")
+		}
+		if err := tx.Create(org).Error; err != nil {
+			return err
+		}
+		// 把创建者挂到组织并标记 owner，但【不】晋升全局 Admin 角色。
+		// 组织归属与系统角色（common.Role*）正交：组织内权限由 org_role + OrgAdminAuth 中间件约束，
+		// 这样公司负责人只能访问组织范围接口，无法触及平台级 Admin 接口（如删除任意用户）。
+		result := tx.Model(&User{}).Where("id = ? AND organization_id = 0", ownerUserId).Updates(map[string]any{
+			"organization_id": org.Id,
+			"org_role":        OrgRoleOwner,
+			"department_id":   0,
+		})
+		if result.Error != nil {
+			return result.Error
+		}
+		if result.RowsAffected == 0 {
+			return ErrOrgAlreadyMember
+		}
+		// The deny fence and auth-version change are part of this transaction:
+		// a cache/fence failure must not leave a committed membership change.
+		_, err := IncrementUserAuthVersionWithTx(tx, ownerUserId)
+		return err
+	}); err != nil {
 		return nil, err
 	}
-	// 把创建者挂到组织并标记 owner，但【不】晋升全局 Admin 角色。
-	// 组织归属与系统角色（common.Role*）正交：组织内权限由 org_role + OrgAdminAuth 中间件约束，
-	// 这样公司负责人只能访问组织范围接口，无法触及平台级 Admin 接口（如删除任意用户）。
-	if err := DB.Model(&User{}).Where("id = ?", ownerUserId).Updates(map[string]any{
-		"organization_id": org.Id,
-		"org_role":        OrgRoleOwner,
-		"department_id":   0,
-	}).Error; err != nil {
-		return nil, err
-	}
-	// 组织归属/角色变更必须刷新 Redis 用户认证缓存：登录会话与后端 OrgAdminAuth
-	// 都从缓存读 organization_id，若不失效则仍读旧值 0 —— 侧栏组织模块不显示、组织接口 403。
-	bumpUserAuthVersionAfterOrgChange(ownerUserId)
+	publishUserAuthCacheAfterOrgChange(ownerUserId)
 	return org, nil
 }
 
@@ -239,6 +427,44 @@ func UpdateOrganization(id int, name string, quota int64, memberLimit int, statu
 	return DB.Model(&Organization{}).Where("id = ?", id).Updates(updates).Error
 }
 
+// UpdateOrganizationIfCurrentOwner applies owner-editable metadata only while
+// the caller remains the authoritative owner. The owner pointer and role are
+// rechecked under the same transaction as the update to prevent stale requests
+// from modifying organization metadata after an ownership transfer.
+func UpdateOrganizationIfCurrentOwner(id int, ownerUserID int, name string, memberLimit int) error {
+	if id <= 0 || ownerUserID <= 0 {
+		return ErrOrgOwnerChanged
+	}
+	updates := map[string]any{}
+	if name != "" {
+		updates["name"] = name
+	}
+	if memberLimit >= 0 {
+		updates["member_limit"] = memberLimit
+	}
+	if len(updates) == 0 {
+		return nil
+	}
+	return DB.Transaction(func(tx *gorm.DB) error {
+		var org Organization
+		if err := lockForUpdate(tx).Where("id = ?", id).First(&org).Error; err != nil {
+			return ErrOrgNotFound
+		}
+		if org.OwnerUserId != ownerUserID {
+			return ErrOrgOwnerChanged
+		}
+		var owner User
+		if err := lockForUpdate(tx).Where("id = ? AND organization_id = ?", ownerUserID, id).First(&owner).Error; err != nil {
+			return ErrOrgOwnerChanged
+		}
+		if owner.OrgRole != OrgRoleOwner && owner.OrgRole != "" {
+			return ErrOrgOwnerChanged
+		}
+		return tx.Model(&Organization{}).Where("id = ? AND owner_user_id = ?", id, ownerUserID).
+			Updates(updates).Error
+	})
+}
+
 // OrgMemberAdd 描述一次「加入组织」请求中的单个成员及其专属子额度上限与部门。
 // 同一批次里每个用户可以有不同的 sub_quota_limit 与 department_name，
 // 满足「给不同成员单独设上限 / 单独归到不同部门」的需求。
@@ -252,15 +478,31 @@ type OrgMemberAdd struct {
 // 已归属其它组织的账号一律拒绝：组织归属是租户边界，跨组织搬迁必须由平台超管
 // 显式操作，否则任意组织管理员都能把别家客户/平台用户「拉」进自己的租户。
 func (org *Organization) AddMembers(members []OrgMemberAdd) error {
-	// 停用组织不得继续纳新：停用通常意味着欠费/合规问题，此时把新成员挂进来会立即
-	// 得到一批「一上线就被拒绝」的账号。
-	if org.IsOrgSuspended() {
-		return ErrOrgSuspended
+	return org.addMembers(0, members)
+}
+
+// AddMembersAs revalidates the caller's current organization authority in the
+// same transaction as the membership changes. An HTTP preflight check alone
+// leaves a TOCTOU window if ownership or the caller's role changes concurrently.
+func (org *Organization) AddMembersAs(actorUserID int, members []OrgMemberAdd) error {
+	if actorUserID <= 0 {
+		return ErrOrgMembershipAuthorizationChanged
 	}
+	return org.addMembers(actorUserID, members)
+}
+
+func (org *Organization) addMembers(actorUserID int, members []OrgMemberAdd) error {
+	if org == nil || org.Id <= 0 {
+		return ErrOrgNotFound
+	}
+
 	ids := make([]int, 0, len(members))
 	quotaByID := make(map[int]int64, len(members))
 	quotaByDept := make(map[int]string, len(members))
 	for _, m := range members {
+		if m.SubQuotaLimit < 0 {
+			return ErrOrgSubQuotaInvalid
+		}
 		if m.UserId <= 0 {
 			continue
 		}
@@ -273,95 +515,131 @@ func (org *Organization) AddMembers(members []OrgMemberAdd) error {
 	if len(ids) == 0 {
 		return ErrOrgNoValidMember
 	}
-	if org.MemberLimit > 0 {
-		var count int64
-		// 只把「本次真正新增」的人数计入上限：ids 中已属于本组织的用户
-		// 属于更新场景（见下方 ErrOrgAlreadyMember），若一并计数会让他们
-		// 既挡住重放、又在同一请求里把组织顶到超限。
-		DB.Model(&User{}).Where("organization_id = ? AND deleted_at IS NULL", org.Id).
-			Where("id NOT IN ?", ids).Count(&count)
-		if int(count)+len(ids) > org.MemberLimit {
-			return ErrOrgMemberLimit
+
+	// Membership admission and writes must be one transaction. Lock the
+	// organization row so concurrent AddMembers calls serialize the member-limit
+	// check on PostgreSQL/MySQL; SQLite's single-writer model rejects a conflicting
+	// transaction rather than allowing both calls to pass a stale count.
+	err := DB.Transaction(func(tx *gorm.DB) error {
+		var lockedOrg Organization
+		if err := lockForUpdate(tx).Where("id = ?", org.Id).First(&lockedOrg).Error; err != nil {
+			return err
 		}
-	}
-	// 纳新与改属性必须在数据层分离：
-	//  - 目标已属于其它组织：跨租户搬迁账号，不允许；
-	//  - 目标已属于本组织：应走 UpdateOrganizationMember 携带角色合法性校验，
-	//    若在此处放行会无条件覆写 org_role/sub_quota_limit，使组织管理员得以
-	//    自我提权（清零自身子额度上限）并把 owner 降级为 member，而修复方
-	//    （仅超管）反而无权改回，组织将失去唯一 owner；
-	//  - 目标系统角色高于普通用户：平台直管的管理员/超管不属于任何组织，
-	//    纳入会改写其组织归属，越出「组织只管自己租户」的边界。
-	// 目标用户必须真实存在。不存在的 id 会同时躲过下面三个 Count（不匹配任何行），
-	// 若不先拦下，最终 `UPDATE ... WHERE id IN ?` 只命中其余行而不报错，接口却返回
-	// 成功——调用方无法察觉有人根本没被加进来（BE-ORG-006/007）。
-	var unknown int64
-	if err := DB.Model(&User{}).Where("id IN ?", ids).Count(&unknown).Error; err != nil {
-		return err
-	}
-	if found := int64(len(ids)) - unknown; found != 0 {
-		// 明确列出缺失的 id，便于逐行回执；软删除的账号同样视为不存在。
-		missing := make([]int, 0, found)
-		for _, id := range ids {
+		if lockedOrg.IsOrgSuspended() {
+			return ErrOrgSuspended
+		}
+
+		// Revalidate the actor after acquiring the organization lock. This uses
+		// the database role and membership, not the earlier HTTP context, so a
+		// removed/demoted manager cannot finish a stale in-flight add-members call.
+		if actorUserID > 0 {
+			var actor User
+			if err := lockForUpdate(tx).Where("id = ?", actorUserID).First(&actor).Error; err != nil {
+				return ErrOrgMembershipAuthorizationChanged
+			}
+			if actor.Status != common.UserStatusEnabled {
+				return ErrOrgMembershipAuthorizationChanged
+			}
+			if actor.Role < common.RoleRootUser {
+				if actor.OrganizationId != lockedOrg.Id {
+					return ErrOrgMembershipAuthorizationChanged
+				}
+				switch actor.OrgRole {
+				case OrgRoleOwner, "":
+					if lockedOrg.OwnerUserId != actor.Id {
+						return ErrOrgMembershipAuthorizationChanged
+					}
+				case OrgRoleAdmin:
+					// Organization admins can add ordinary, unassigned members.
+				default:
+					return ErrOrgMembershipAuthorizationChanged
+				}
+			}
+		}
+
+		// Lock target users in stable ID order as well as the organization row.
+		// This serializes attempts to add the same unassigned account to different
+		// organizations: after waiting for the first transaction, the second sees
+		// the committed organization_id and rejects the cross-tenant move.
+		var targetUsers []User
+		if err := lockForUpdate(tx).Where("id IN ?", ids).Order("id ASC").Find(&targetUsers).Error; err != nil {
+			return err
+		}
+		if len(targetUsers) != len(ids) {
+			found := make(map[int]struct{}, len(targetUsers))
+			for _, target := range targetUsers {
+				found[target.Id] = struct{}{}
+			}
+			missing := make([]int, 0, len(ids)-len(targetUsers))
+			for _, id := range ids {
+				if _, ok := found[id]; !ok {
+					missing = append(missing, id)
+				}
+			}
+			return fmt.Errorf("%w: %v", ErrOrgMemberUnknown, missing)
+		}
+
+		for _, target := range targetUsers {
+			if target.OrganizationId == lockedOrg.Id {
+				return ErrOrgAlreadyMember
+			}
+			if target.OrganizationId != 0 {
+				return ErrOrgMemberForeign
+			}
+			if target.Role > common.RoleCommonUser {
+				return ErrOrgMemberPrivileged
+			}
+		}
+
+		// Count after all target validation. The organization-row lock makes
+		// this check mutually exclusive with other membership additions.
+		if lockedOrg.MemberLimit > 0 {
 			var count int64
-			if err := DB.Model(&User{}).Where("id = ?", id).Count(&count).Error; err != nil {
+			if err := tx.Model(&User{}).
+				Where("organization_id = ? AND deleted_at IS NULL", lockedOrg.Id).
+				Count(&count).Error; err != nil {
 				return err
 			}
-			if count == 0 {
-				missing = append(missing, id)
+			if count+int64(len(ids)) > int64(lockedOrg.MemberLimit) {
+				return ErrOrgMemberLimit
 			}
 		}
-		return fmt.Errorf("%w: %v", ErrOrgMemberUnknown, missing)
-	}
-	var existing, foreign, privileged int64
-	base := DB.Model(&User{}).Where("id IN ?", ids)
-	if err := base.Session(&gorm.Session{}).Where("organization_id = ?", org.Id).
-		Count(&existing).Error; err != nil {
-		return err
-	}
-	if existing > 0 {
-		return ErrOrgAlreadyMember
-	}
-	if err := base.Session(&gorm.Session{}).
-		Where("organization_id <> 0").Count(&foreign).Error; err != nil {
-		return err
-	}
-	if foreign > 0 {
-		return ErrOrgMemberForeign
-	}
-	if err := base.Session(&gorm.Session{}).
-		Where("role > ?", common.RoleCommonUser).Count(&privileged).Error; err != nil {
-		return err
-	}
-	if privileged > 0 {
-		return ErrOrgMemberPrivileged
-	}
-	// 每个成员可归属不同部门：先统一挂到组织并标记为基础成员，
-	// 随后按成员逐个写入各自的 department_name 与 sub_quota_limit。
-	// 上面的准入检查已保证此处全是「尚不属于任何组织」的账号，故本 UPDATE
-	// 只会纳新，不会改写既有成员的属性。
-	if err := DB.Model(&User{}).Where("id IN ?", ids).Updates(map[string]any{
-		"organization_id": org.Id,
-		"org_role":        OrgRoleMember,
-	}).Error; err != nil {
-		return err
-	}
-	for _, id := range ids {
-		dept := quotaByDept[id]
-		if err := DB.Model(&User{}).Where("id = ? AND organization_id = ?", id, org.Id).
-			Update("department_name", dept).Error; err != nil {
+
+		// The preceding checks guarantee these are unassigned ordinary users.
+		if err := tx.Model(&User{}).Where("id IN ?", ids).Updates(map[string]any{
+			"organization_id": lockedOrg.Id,
+			"org_role":        OrgRoleMember,
+		}).Error; err != nil {
 			return err
 		}
-	}
-	for _, id := range ids {
-		if err := DB.Model(&User{}).Where("id = ? AND organization_id = ?", id, org.Id).
-			Update("sub_quota_limit", quotaByID[id]).Error; err != nil {
-			return err
+		for _, id := range ids {
+			if err := tx.Model(&User{}).Where("id = ? AND organization_id = ?", id, lockedOrg.Id).
+				Update("department_name", quotaByDept[id]).Error; err != nil {
+				return err
+			}
 		}
+		for _, id := range ids {
+			if err := tx.Model(&User{}).Where("id = ? AND organization_id = ?", id, lockedOrg.Id).
+				Update("sub_quota_limit", quotaByID[id]).Error; err != nil {
+				return err
+			}
+		}
+		// Role and tenant-scope updates must commit with the auth-version bump.
+		// The fence is written before commit; a failed fence aborts the batch.
+		for _, id := range ids {
+			if _, err := IncrementUserAuthVersionWithTx(tx, id); err != nil {
+				return err
+			}
+		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
-	// 见 CreateOrganization 注释：成员加入后刷新各自认证缓存，使侧栏与后端鉴权立即生效。
+
+	// Refresh cached identity after the durable auth-version fence has committed.
 	for _, id := range ids {
-		bumpUserAuthVersionAfterOrgChange(id)
+		publishUserAuthCacheAfterOrgChange(id)
 	}
 	return nil
 }
@@ -370,21 +648,29 @@ func (org *Organization) AddMembers(members []OrgMemberAdd) error {
 // 必须同时限定 organization_id，否则调用方只要拿到 uid 就能重置任意其他组织成员
 // 的归属（跨租户破坏）。
 func (org *Organization) RemoveMember(userId int) error {
-	res := DB.Model(&User{}).Where("id = ? AND organization_id = ?", userId, org.Id).Updates(map[string]any{
-		"organization_id": 0,
-		"department_id":   0,
-		"department_name": "",
-		"org_role":        "",
-		"sub_quota_limit": 0,
+	err := DB.Transaction(func(tx *gorm.DB) error {
+		res := tx.Model(&User{}).Where("id = ? AND organization_id = ?", userId, org.Id).Updates(map[string]any{
+			"organization_id": 0,
+			"department_id":   0,
+			"department_name": "",
+			"org_role":        "",
+			"sub_quota_limit": 0,
+		})
+		if res.Error != nil {
+			return res.Error
+		}
+		if res.RowsAffected == 0 {
+			return ErrOrgNotFound
+		}
+		// If the deny fence cannot be published, roll back the removal rather
+		// than leave the former manager's cached organization role active.
+		_, err := IncrementUserAuthVersionWithTx(tx, userId)
+		return err
 	})
-	if res.Error != nil {
-		return res.Error
+	if err != nil {
+		return err
 	}
-	if res.RowsAffected == 0 {
-		return ErrOrgNotFound
-	}
-	// 移出组织后刷新缓存，避免旧 organization_id 残留导致侧栏/接口仍按组织成员放行。
-	bumpUserAuthVersionAfterOrgChange(userId)
+	publishUserAuthCacheAfterOrgChange(userId)
 	return nil
 }
 
@@ -488,62 +774,60 @@ func GetOrgMemberSubQuotaState(orgId int, userId int) (subQuotaLimit int64, used
 // 子额度上限 sub_quota_limit<=0 表示不限量（组织未给该成员设上限），此时只校验组织预算；
 // 组织预算 quota<=0 同理表示不限量。
 func ReserveOrgQuota(orgId int, userId int, amount int64) error {
-	if orgId <= 0 || amount <= 0 {
+	if orgId <= 0 {
 		return nil
 	}
-	// 1) 原子预留成员子额度：闸门与记账同一条条件 UPDATE。
-	mres := DB.Model(&User{}).
-		Where("id = ? AND organization_id = ? AND (sub_quota_limit <= 0 OR used_quota + ? <= sub_quota_limit)",
-			userId, orgId, amount).
-		Update("used_quota", gorm.Expr("used_quota + ?", amount))
-	if mres.Error != nil {
-		return mres.Error
+	if amount < 0 {
+		return fmt.Errorf("organization quota reservation cannot be negative")
 	}
-	if mres.RowsAffected == 0 {
-		// 读回成员账本给出真实数值：条件 UPDATE 不命中既可能是子额度不足，
-		// 也可能是成员已被移出组织，读权威值才能给出准确、可本地化的提示。
-		limit, used, stateErr := GetOrgMemberSubQuotaState(orgId, userId)
-		if stateErr != nil {
-			return fmt.Errorf("%w: org %d member %d over sub-quota limit on reserve %d",
-				ErrOrgSubQuotaExceeded, orgId, userId, amount)
-		}
-		return &OrgQuotaError{Kind: ErrOrgSubQuotaExceeded, Used: int64(used), Limit: limit, Required: amount}
+	if amount == 0 {
+		return nil
 	}
-	// 2) 原子预留组织预算（与成员预留同口径）。
-	ores := DB.Model(&Organization{}).
-		Where("id = ? AND (quota <= 0 OR used_quota + ? <= quota) AND COALESCE(status, ?) <> ?",
-			orgId, amount, OrgStatusEnabled, OrgStatusDisabled).
-		Update("used_quota", gorm.Expr("used_quota + ?", amount))
-	if ores.Error != nil {
-		reserveOrgQuotaRollbackMember(orgId, userId, amount)
-		return ores.Error
-	}
-	if ores.RowsAffected == 0 {
-		reserveOrgQuotaRollbackMember(orgId, userId, amount)
-		// 单条 UPDATE 未命中只可能是「预算不足」或「组织已停用」；读回原始行给出准确原因
-		// （只有失败路径才付这次查询）。status 为 NULL 的历史行按未停用处理，与
-		// IsOrgSuspended 只认 OrgStatusDisabled 的口径一致。
-		org, err := GetOrganizationById(orgId)
-		if err != nil {
-			return ErrOrgBudgetExceeded
-		}
-		if org.IsOrgSuspended() {
-			return fmt.Errorf("%w: org %d", ErrOrgSuspended, org.Id)
-		}
-		return fmt.Errorf("%w: used %s / budget %s", ErrOrgBudgetExceeded,
-			logger.FormatQuota(int(org.UsedQuota)), logger.FormatQuota(int(org.Quota)))
-	}
-	return nil
-}
 
-// reserveOrgQuotaRollbackMember 撤销 ReserveOrgQuota 已记入成员子额度账本的预留，
-// 仅用于组织预算预留失败时的回滚（钳制在 0，避免并发回滚把用量记成负数）。
-func reserveOrgQuotaRollbackMember(orgId int, userId int, amount int64) {
-	if err := DB.Model(&User{}).Where("id = ? AND organization_id = ?", userId, orgId).
-		Update("used_quota", gorm.Expr("CASE WHEN used_quota - ? < 0 THEN 0 ELSE used_quota - ? END", amount, amount)).Error; err != nil {
-		common.SysLog(fmt.Sprintf("reserveOrgQuota rollback member used_quota failed (org=%d, user=%d, amount=%d): %s",
-			orgId, userId, amount, err.Error()))
-	}
+	// Reserve the organization first so concurrent callers serialize on the
+	// shared budget row. The member reservation runs in the same transaction:
+	// if either guard fails, the database rolls back both counters atomically.
+	return DB.Transaction(func(tx *gorm.DB) error {
+		ores := tx.Model(&Organization{}).
+			Where("id = ? AND (quota <= 0 OR used_quota + ? <= quota) AND COALESCE(status, ?) <> ?",
+				orgId, amount, OrgStatusEnabled, OrgStatusDisabled).
+			Update("used_quota", gorm.Expr("used_quota + ?", amount))
+		if ores.Error != nil {
+			return ores.Error
+		}
+		if ores.RowsAffected == 0 {
+			var org Organization
+			if err := tx.Where("id = ?", orgId).First(&org).Error; err != nil {
+				return ErrOrgBudgetExceeded
+			}
+			if org.IsOrgSuspended() {
+				return fmt.Errorf("%w: org %d", ErrOrgSuspended, org.Id)
+			}
+			return fmt.Errorf("%w: used %s / budget %s", ErrOrgBudgetExceeded,
+				logger.FormatQuota(int(org.UsedQuota)), logger.FormatQuota(int(org.Quota)))
+		}
+
+		mres := tx.Model(&User{}).
+			Where("id = ? AND organization_id = ? AND (sub_quota_limit <= 0 OR used_quota + ? <= sub_quota_limit)",
+				userId, orgId, amount).
+			Update("used_quota", gorm.Expr("used_quota + ?", amount))
+		if mres.Error != nil {
+			return mres.Error
+		}
+		if mres.RowsAffected == 0 {
+			var member User
+			if err := tx.Where("id = ? AND organization_id = ?", userId, orgId).First(&member).Error; err != nil {
+				return &OrgQuotaError{Kind: ErrOrgSubQuotaExceeded, Required: amount}
+			}
+			return &OrgQuotaError{
+				Kind:     ErrOrgSubQuotaExceeded,
+				Used:     int64(member.UsedQuota),
+				Limit:    member.SubQuotaLimit,
+				Required: amount,
+			}
+		}
+		return nil
+	})
 }
 
 // OrgRemainingQuota 返回组织共享预算的剩余额度。unlimited 为 true 时表示未设上限

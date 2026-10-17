@@ -220,6 +220,19 @@ func TestOrgRemoveMemberAuthority(t *testing.T) {
 	requireOK(t, recorder)
 	assert.Equal(t, 0, env.reloadUser(t, "m1").OrganizationId)
 	assert.Equal(t, "", env.reloadUser(t, "m1").OrgRole)
+
+	recorder = env.call(t, http.MethodDelete, orgPath+"/members/"+strconv.Itoa(env.uid("owner")), "root", "")
+	requireOK(t, recorder)
+	ownerless := env.reloadOrg(t, env.orgId())
+	assert.Zero(t, ownerless.OwnerUserId, "removing the sole owner must clear the owner pointer")
+	assert.Zero(t, env.reloadUser(t, "owner").OrganizationId)
+	assert.Empty(t, env.reloadUser(t, "owner").OrgRole)
+	assert.Equal(t, model.OrgRoleMember, env.reloadUser(t, "admin").OrgRole,
+		"without a successor, organization-level admin authority must be revoked")
+
+	recorder = env.call(t, http.MethodPut, orgPath, "admin", `{"name":"unauthorized change"}`)
+	requireDenied(t, recorder)
+	assert.Equal(t, "Acme 科技", env.reloadOrg(t, env.orgId()).Name)
 }
 
 // TestOrgAddMemberRejectsForeignAndPrivileged 纳新不得跨租户搬迁账号，

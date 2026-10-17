@@ -46,6 +46,20 @@ func TestChannelHasSensitiveChanges(t *testing.T) {
 		assert.True(t, channelHasSensitiveChanges(&updated, origin, map[string]any{"key": updated.Key}))
 	})
 
+	t.Run("clearing key is also sensitive", func(t *testing.T) {
+		updated := PatchChannel{Channel: *origin}
+		updated.Key = ""
+
+		assert.True(t, channelHasSensitiveChanges(&updated, origin, map[string]any{"key": ""}))
+	})
+
+	t.Run("omitted key is not treated as a change", func(t *testing.T) {
+		updated := PatchChannel{Channel: *origin}
+		updated.Key = ""
+
+		assert.False(t, channelHasSensitiveChanges(&updated, origin, map[string]any{"name": "renamed"}))
+	})
+
 	t.Run("base url change", func(t *testing.T) {
 		updated := PatchChannel{Channel: *origin}
 		newBaseURL := "https://leak.example.com"
@@ -60,6 +74,29 @@ func TestChannelHasSensitiveChanges(t *testing.T) {
 		updated.HeaderOverride = &newHeaderOverride
 
 		assert.True(t, channelHasSensitiveChanges(&updated, origin, map[string]any{"header_override": newHeaderOverride}))
+	})
+
+	t.Run("other_info operational metadata change", func(t *testing.T) {
+		originWithStatus := &model.Channel{
+			OtherInfo: `{"status_reason":"All keys are disabled","status_time":123}`,
+		}
+		updated := PatchChannel{Channel: *originWithStatus}
+		updated.OtherInfo = `{"status_reason":"","status_time":456}`
+
+		assert.True(t, channelHasSensitiveChanges(&updated, originWithStatus, map[string]any{
+			"other_info": updated.OtherInfo,
+		}))
+	})
+
+	t.Run("unchanged other_info is not sensitive", func(t *testing.T) {
+		originWithStatus := &model.Channel{
+			OtherInfo: `{"status_reason":"All keys are disabled","status_time":123}`,
+		}
+		updated := PatchChannel{Channel: *originWithStatus}
+
+		assert.False(t, channelHasSensitiveChanges(&updated, originWithStatus, map[string]any{
+			"other_info": updated.OtherInfo,
+		}))
 	})
 
 	t.Run("omitted sensitive fields do not use zero values", func(t *testing.T) {

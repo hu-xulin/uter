@@ -7495,6 +7495,11 @@
     "Verify to update user credentials": "Подтвердить для изменения учётных данных пользователя",
     "Verify to create administrator": "Подтвердить для создания администратора",
     "Confirm your identity before creating an administrator account.": "Подтвердите личность перед созданием аккаунта администратора.",
-    "Type <username/> to confirm": "Введите <username/> для подтверждения"
+    "Type <username/> to confirm": "Введите <username/> для подтверждения",
+    "Invalid parameters": "Недопустимые параметры",
+    "Organization Owner Username is required": "Требуется имя пользователя владельца организации",
+    "Organization Owner Username": "Имя пользователя владельца организации",
+    "Existing unassigned ordinary user": "Существующий обычный пользователь без организации",
+    "The owner must be an enabled ordinary user who is not already in an organization.": "Владелец должен быть активным обычным пользователем, который ещё не состоит в организации."
   }
 }

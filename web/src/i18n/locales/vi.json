@@ -7495,6 +7495,11 @@
     "Verify to update user credentials": "Xác minh để cập nhật thông tin đăng nhập của người dùng",
     "Verify to create administrator": "Xác minh để tạo quản trị viên",
     "Confirm your identity before creating an administrator account.": "Xác minh danh tính trước khi tạo tài khoản quản trị viên.",
-    "Type <username/> to confirm": "Nhập <username/> để xác nhận"
+    "Type <username/> to confirm": "Nhập <username/> để xác nhận",
+    "Invalid parameters": "Tham số không hợp lệ",
+    "Organization Owner Username is required": "Bắt buộc nhập tên người dùng của chủ sở hữu tổ chức",
+    "Organization Owner Username": "Tên người dùng của chủ sở hữu tổ chức",
+    "Existing unassigned ordinary user": "Người dùng thông thường hiện có chưa thuộc tổ chức nào",
+    "The owner must be an enabled ordinary user who is not already in an organization.": "Chủ sở hữu phải là người dùng thông thường đang hoạt động và chưa thuộc tổ chức nào."
   }
 }

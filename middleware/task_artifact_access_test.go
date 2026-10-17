@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"bytes"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -48,6 +49,8 @@ func TestTaskArtifactAccessIsRedactedAndVerifiedBeforeHandler(t *testing.T) {
 	router.ServeHTTP(recorder, request)
 
 	assert.Equal(t, http.StatusNoContent, recorder.Code)
+	assert.Equal(t, "private, no-store", recorder.Header().Get("Cache-Control"))
+	assert.Equal(t, "no-referrer", recorder.Header().Get("Referrer-Policy"))
 }
 
 func TestTaskArtifactAccessRejectsTamperedAndEmptyCapabilitiesAsNotFound(t *testing.T) {
@@ -156,4 +159,26 @@ func TestSetUpLoggerNeverWritesTaskArtifactAccess(t *testing.T) {
 func urlQueryEscape(value string) string {
 	replacer := strings.NewReplacer("+", "%2B", "=", "%3D")
 	return replacer.Replace(value)
+}
+
+
+func TestTaskArtifactAccessRateMapHasCapacityLimit(t *testing.T) {
+	limits := system_setting.TaskArtifactAccessLimits{
+		InvalidRatePerMinute: system_setting.DefaultTaskArtifactInvalidRateLimitPerMinute,
+		GlobalConcurrency:    system_setting.DefaultTaskArtifactGlobalConcurrency,
+		IPConcurrency:        system_setting.DefaultTaskArtifactIPConcurrency,
+		ObjectConcurrency:    system_setting.DefaultTaskArtifactObjectConcurrency,
+	}
+	limiter := newTaskArtifactAccessLimiter(limits)
+	now := time.Unix(2000, 0)
+	for i := 0; i < maxTaskArtifactAccessRateEntries; i++ {
+		limiter.rates[fmt.Sprintf("ip-%d", i)] = taskArtifactRateEntry{
+			windowStart: now,
+			count:       1,
+		}
+	}
+	limiter.nextCleanup = now.Add(time.Second)
+
+	assert.False(t, limiter.invalidAttempt(now, "new-ip"), "a full rate map must fail closed without adding an entry")
+	assert.Len(t, limiter.rates, maxTaskArtifactAccessRateEntries)
 }

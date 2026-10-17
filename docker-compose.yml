@@ -12,11 +12,11 @@
 #   - 切勿把真实密码写回本文件或提交到仓库。
 #   - 端口暴露面已最小化：仅应用 3000 对外；PostgreSQL / Redis 仅在内部网络互通，无 published 端口。
 #   - SESSION_COOKIE_SECURE=true 要求全站 HTTPS。请在宿主机前置 nginx / Caddy / Traefik 做 TLS 终止，
-#     并把下方应用端口改为 127.0.0.1:3000:3000（见 uter.ports 注释），避免明文直曝。
+#     应用端口默认绑定 127.0.0.1:3000:3000，避免明文直曝。
 #
 # 密钥生成（在宿主机执行）：
-#   openssl rand -base64 24      # PG_PASSWORD / REDIS_PASSWORD
-#   openssl rand -base64 48      # SESSION_SECRET
+#   openssl rand -hex 24         # PG_PASSWORD / REDIS_PASSWORD (URL-safe)
+#   openssl rand -hex 48         # SESSION_SECRET
 
 services:
   uter:
@@ -27,9 +27,10 @@ services:
     container_name: uter
     restart: always
     command: --log-dir /app/logs
-    # 仅暴露应用端口。若由同机 TLS 反代前置，改为 127.0.0.1:3000:3000 避免明文直曝
+    # 默认仅绑定回环地址，要求通过同机 TLS 反向代理访问，避免明文 HTTP 直接暴露。
+    # 如确需直接对外暴露，请显式覆盖并自行确保 TLS 与访问控制。
     ports:
-      - "3000:3000"
+      - "127.0.0.1:3000:3000"
     volumes:
       - ./data:/data
       - ./logs:/app/logs
@@ -50,6 +51,8 @@ services:
       - SESSION_COOKIE_SECURE=${SESSION_COOKIE_SECURE:-true}
       # SESSION_COOKIE_SECURE=true 时必填，精确 HTTPS Origin（英文逗号分隔，不支持通配符/路径）
       - SESSION_COOKIE_TRUSTED_URL=${SESSION_COOKIE_TRUSTED_URL}
+      # Exact comma-separated browser origins allowed to make cross-origin API requests.
+      - CORS_ALLOWED_ORIGINS=${CORS_ALLOWED_ORIGINS:-}
       # 可信反向代理网段；留空=信任回环/RFC1918 并告警，none 为严格模式
       # - TRUSTED_PROXIES=172.20.0.0/16
     depends_on:
