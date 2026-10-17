@@ -58,8 +58,8 @@ const UTER_FOOTER_ATTRIBUTION_KEY = [
   'projectAttributionSuffix',
 ].join('.')
 
-// Regulatory records shown as icon + text in one row under the platform
-// tagline in the footer's brand column, each linking to its official filing
+// Regulatory records shown as icon + text in one row under the brand name
+// in the footer's brand column, each linking to its official filing
 // portal. The icons are decorative — each item's translated label carries the
 // meaning — while the filing numbers stay verbatim in every locale because
 // they are identifiers, not prose.
@@ -372,10 +372,7 @@ export function Footer(props: FooterProps) {
                 {brandName}
               </span>
             </Link>
-            <p className='text-muted-foreground/60 mt-3 text-[13px] leading-relaxed whitespace-nowrap'>
-              {t('Powerful API Management Platform')}
-            </p>
-            <ul className='text-muted-foreground/60 mt-3 flex flex-wrap items-center gap-x-[30px] gap-y-1.5 text-[12px]'>
+            <ul className='text-muted-foreground/60 mt-3 flex flex-wrap items-center gap-x-[30px] gap-y-1.5 text-[13px]'>
               {FOOTER_COMPLIANCE_ITEMS.map((item) => {
                 // Only the filing number after the colon is a link — the icon
                 // and the label prefix stay plain text. The colon may be the
