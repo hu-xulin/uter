@@ -3382,6 +3382,7 @@
     "Invalid Passkey registration response": "Phản hồi đăng ký Passkey không hợp lệ",
     "Invalid Passkey response": "Phản hồi Passkey không hợp lệ",
     "Invalid payment redirect URL": "URL chuyển hướng thanh toán không hợp lệ",
+    "Failed to load organization data": "Không tải được dữ liệu tổ chức",
     "Invalid pricing value": "Giá trị định giá không hợp lệ",
     "Invalid reset link, please request a new password reset": "Liên kết đặt lại không hợp lệ, vui lòng yêu cầu đặt lại mật khẩu mới",
     "Invalid reset link, please request a new password reset.": "Liên kết đặt lại không hợp lệ, vui lòng yêu cầu đặt lại mật khẩu mới.",

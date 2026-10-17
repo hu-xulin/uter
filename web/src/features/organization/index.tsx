@@ -17,11 +17,12 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@uter.ai
 */
 
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 
 import { SectionPageLayout } from '@/components/layout'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
@@ -193,6 +194,10 @@ export function OrganizationPage() {
   const [members, setMembers] = useState<OrgMember[]>([])
   const [total, setTotal] = useState(0)
   const [page, setPage] = useState(1)
+  // 页面级错误态：初始化失败与数据加载失败分开，避免把「请求失败」渲染成
+  // 「余额/成员数为 0」这种看起来正常的业务数据。
+  const [initError, setInitError] = useState<string | null>(null)
+  const [dataError, setDataError] = useState<string | null>(null)
 
   const isOwner = myRole === 'owner'
   const isAdmin = myRole === 'admin'
@@ -209,48 +214,78 @@ export function OrganizationPage() {
   // 授予 owner 仅超管或当前所有者（与后端 UpdateOrganizationMember 的判据一致）。
   const canGrantOwner = isSuperAdmin || isOwner
 
-  async function loadAll(orgId: number, targetPage = 1) {
-    const [statsRes, membersRes] = await Promise.all([
-      getOrganizationStats(orgId),
-      getOrganizationMembers(orgId, { p: targetPage, page_size: PAGE_SIZE }),
-    ])
-    if (statsRes.success && statsRes.data) {
-      setStats({
-        used_quota: statsRes.data.used_quota,
-        remaining: statsRes.data.remaining,
-      })
+  const loadAll = useCallback(
+    async (orgId: number, targetPage = 1) => {
+      // 统计与成员列表相互独立：任一失败都保留另一份已渲染的数据，
+      // 并把错误暴露给页面（重试入口在 LoadErrorCard），而不是静默留空。
+      setDataError(null)
+      const [statsRes, membersRes] = await Promise.allSettled([
+        getOrganizationStats(orgId),
+        getOrganizationMembers(orgId, { p: targetPage, page_size: PAGE_SIZE }),
+      ])
+
+      if (statsRes.status === 'fulfilled') {
+        const res = statsRes.value
+        if (res.success && res.data) {
+          setStats({
+            used_quota: res.data.used_quota,
+            remaining: res.data.remaining,
+          })
+        } else {
+          setDataError(res.message || t('Failed to load organization data'))
+        }
+      } else {
+        setDataError(t('Failed to load organization data'))
+      }
+
+      if (membersRes.status === 'fulfilled') {
+        const res = membersRes.value
+        if (res.success && res.data) {
+          setMembers(res.data.items)
+          setTotal(res.data.total)
+          setPage(targetPage)
+        } else {
+          setDataError((prev) => prev || res.message || t('Failed to load'))
+        }
+      } else {
+        setDataError((prev) => prev || t('Failed to load'))
+      }
+    },
+    [t]
+  )
+
+  // 初始化只跑一次：t 与 loadAll 都是稳定引用（t 随语言包常驻，loadAll 仅依赖 t），
+  // 把它们列入依赖是为了让 exhaustive-deps 认可，不会造成重复请求。
+  const initialize = useCallback(async () => {
+    setLoading(true)
+    setInitError(null)
+    try {
+      const res = await getMyOrganization()
+      if (res.success && res.data?.organization) {
+        setOrg(res.data.organization)
+        setMyRole(res.data.role ?? 'member')
+        setCanViewBudget(res.data.can_view_budget ?? false)
+        setMySubQuota(res.data.my_sub_quota_limit ?? 0)
+        setMyUsedQuota(res.data.my_used_quota ?? 0)
+        // 普通成员（can_view_budget=false）不加载组织总预算与成员列表，
+        // 仅查看自己被分配的额度（MyQuotaCard）。
+        if (res.data.can_view_budget) {
+          await loadAll(res.data.organization.id, 1)
+        }
+      } else {
+        setOrg(null)
+      }
+    } catch {
+      setOrg(null)
+      setInitError(t('Failed to load organization data'))
+    } finally {
+      setLoading(false)
     }
-    if (membersRes.success && membersRes.data) {
-      setMembers(membersRes.data.items)
-      setTotal(membersRes.data.total)
-    }
-    setPage(targetPage)
-  }
+  }, [loadAll, t])
 
   useEffect(() => {
-    ;(async () => {
-      setLoading(true)
-      try {
-        const res = await getMyOrganization()
-        if (res.success && res.data?.organization) {
-          setOrg(res.data.organization)
-          setMyRole(res.data.role ?? 'member')
-          setCanViewBudget(res.data.can_view_budget ?? false)
-          setMySubQuota(res.data.my_sub_quota_limit ?? 0)
-          setMyUsedQuota(res.data.my_used_quota ?? 0)
-          // 普通成员（can_view_budget=false）不加载组织总预算与成员列表，
-          // 仅查看自己被分配的额度（MyQuotaCard）。
-          if (res.data.can_view_budget) {
-            await loadAll(res.data.organization.id, 1)
-          }
-        } else {
-          setOrg(null)
-        }
-      } finally {
-        setLoading(false)
-      }
-    })()
-  }, [])
+    void initialize()
+  }, [initialize])
 
   if (loading) {
     return (
@@ -267,10 +302,24 @@ export function OrganizationPage() {
   if (!org) {
     // 组织是受控租户（预算 0 = 不限量），创建权限仅限超管：
     // 普通用户不得自助开通，否则等于绕过个人钱包计费。
-    return isSuperAdmin ? (
-      <CreateOrganizationCard onCreated={() => location.reload()} />
-    ) : (
-      <NoOrganizationCard />
+    return (
+      <>
+        {initError && (
+          <SectionPageLayout>
+            <SectionPageLayout.Content>
+              <LoadErrorCard
+                message={initError}
+                onRetry={() => window.location.reload()}
+              />
+            </SectionPageLayout.Content>
+          </SectionPageLayout>
+        )}
+        {isSuperAdmin ? (
+          <CreateOrganizationCard onCreated={() => location.reload()} />
+        ) : (
+          <NoOrganizationCard />
+        )}
+      </>
     )
   }
 
@@ -281,6 +330,12 @@ export function OrganizationPage() {
       </SectionPageLayout.Title>
       <SectionPageLayout.Content>
         <div className='flex flex-col gap-6'>
+          {canViewBudget && (
+            <LoadErrorCard
+              message={dataError}
+              onRetry={() => void loadAll(org.id, page)}
+            />
+          )}
           {!canViewBudget ? (
             <MyQuotaCard
               org={org}
@@ -375,7 +430,12 @@ function CreateOrganizationCard({ onCreated }: { onCreated: () => void }) {
   // 预算以**金额**录入（单位跟随系统货币设置），提交时换算成 quota；
   // 空/0 表示不限量，与 SubQuotaInput 的约定保持一致。
   const [quota, setQuota] = useState('')
+  // <input type="number"> 在部分输入（如仅 "-"、"1e"）下 value 为空字符串但
+  // validity.badInput 为真。若不单独记录，这类输入会被 Number('') 判成 0，
+  // 从而把「无效输入」静默提交为「不限额」。
+  const [quotaBadInput, setQuotaBadInput] = useState(false)
   const [memberLimit, setMemberLimit] = useState('')
+  const [memberLimitBadInput, setMemberLimitBadInput] = useState(false)
   const [submitting, setSubmitting] = useState(false)
 
   async function submit() {
@@ -387,18 +447,36 @@ function CreateOrganizationCard({ onCreated }: { onCreated: () => void }) {
       toast.error(t('Organization Owner Username is required'))
       return
     }
+
+    // 负数/非数字/溢出必须拦在提交之前：后端虽拒负数，但「非法输入 → 0」
+    // 会让预算变成不限额，等于凭空放大组织额度。
+    const budget = parseSubQuotaAmount(
+      quota,
+      config.quotaPerUnit,
+      quotaBadInput
+    )
+    if (budget.kind === 'invalid') {
+      toast.error(t('Invalid parameters'))
+      return
+    }
+
+    const limitValue = Number(memberLimit)
+    if (
+      memberLimitBadInput ||
+      (memberLimit.trim() !== '' &&
+        (!Number.isInteger(limitValue) || limitValue < 0))
+    ) {
+      toast.error(t('Invalid parameters'))
+      return
+    }
+
     setSubmitting(true)
     try {
-      const amount = Number(quota)
-      const quotaInTokens =
-        Number.isFinite(amount) && amount > 0
-          ? Math.ceil(amount * config.quotaPerUnit)
-          : 0
       const res = await createOrganization({
         name: name.trim(),
         owner_username: ownerUsername.trim(),
-        quota: quotaInTokens,
-        member_limit: memberLimit ? Number(memberLimit) : 0,
+        quota: budget.quota,
+        member_limit: Number.isInteger(limitValue) ? limitValue : 0,
       })
       if (res.success) {
         toast.success(t('Organization created'))
@@ -442,7 +520,9 @@ function CreateOrganizationCard({ onCreated }: { onCreated: () => void }) {
                 autoComplete='off'
               />
               <p className='text-muted-foreground text-xs'>
-                {t('The owner must be an enabled ordinary user who is not already in an organization.')}
+                {t(
+                  'The owner must be an enabled ordinary user who is not already in an organization.'
+                )}
               </p>
             </div>
             <div className='flex flex-col gap-2'>
@@ -454,7 +534,10 @@ function CreateOrganizationCard({ onCreated }: { onCreated: () => void }) {
                 min='0'
                 step='0.01'
                 value={quota}
-                onChange={(e) => setQuota(e.target.value)}
+                onChange={(e) => {
+                  setQuota(e.target.value)
+                  setQuotaBadInput(e.target.validity.badInput)
+                }}
                 placeholder='0.00'
               />
               <p className='text-muted-foreground text-xs'>
@@ -468,8 +551,13 @@ function CreateOrganizationCard({ onCreated }: { onCreated: () => void }) {
               <Label>{t('Member Limit')}</Label>
               <Input
                 type='number'
+                min='0'
+                step='1'
                 value={memberLimit}
-                onChange={(e) => setMemberLimit(e.target.value)}
+                onChange={(e) => {
+                  setMemberLimit(e.target.value)
+                  setMemberLimitBadInput(e.target.validity.badInput)
+                }}
                 placeholder='0'
               />
             </div>
@@ -491,6 +579,34 @@ function CreateOrganizationCard({ onCreated }: { onCreated: () => void }) {
  * 组织由平台侧开通并指定负责人，普通用户不能自助创建，因此这里只给出说明，
  * 不提供任何创建入口。
  */
+// ----------------------------------------------------------------------------
+
+/**
+ * 请求失败提示条。`message` 为 null 时不渲染 —— 有数据时保留旧数据展示，
+ * 只在顶部提示「部分数据未刷新」，避免把失败渲染成空列表。
+ */
+function LoadErrorCard({
+  message,
+  onRetry,
+}: {
+  message: string | null
+  onRetry: () => void
+}) {
+  const { t } = useTranslation()
+  if (!message) return null
+  return (
+    <Alert variant='destructive'>
+      <AlertTitle>{t('Failed to load')}</AlertTitle>
+      <AlertDescription className='flex flex-wrap items-center gap-3'>
+        <span className='min-w-0 break-words'>{message}</span>
+        <Button variant='outline' size='sm' onClick={onRetry}>
+          {t('Retry')}
+        </Button>
+      </AlertDescription>
+    </Alert>
+  )
+}
+
 function NoOrganizationCard() {
   const { t } = useTranslation()
   return (
@@ -592,10 +708,8 @@ function OrgOverviewCard({
     const n = Number(q)
     return n > 0 ? String(Number((n / config.quotaPerUnit).toFixed(6))) : ''
   }
-  const amountToQuota = (raw: string) => {
-    const n = Number(raw)
-    return Number.isFinite(n) && n > 0 ? Math.ceil(n * config.quotaPerUnit) : 0
-  }
+  const [quotaBadInput, setQuotaBadInput] = useState(false)
+  const [memberLimitBadInput, setMemberLimitBadInput] = useState(false)
 
   const [editing, setEditing] = useState(false)
   const [name, setName] = useState(org.name)
@@ -627,6 +741,33 @@ function OrgOverviewCard({
   const canEditBudget = isSuperAdmin
 
   async function save() {
+    // 预算与成员上限都必须显式校验：把「无效输入」静默折成 0 等于把组织预算
+    // 改成不限额（0 在后端语义即 unlimited），比报错危险得多。
+    let nextQuota = org.quota
+    if (canEditBudget) {
+      const budget = parseSubQuotaAmount(
+        quota,
+        config.quotaPerUnit,
+        quotaBadInput
+      )
+      if (budget.kind === 'invalid') {
+        toast.error(t('Invalid parameters'))
+        return
+      }
+      nextQuota = budget.quota
+    }
+
+    const limitValue = Number(memberLimit)
+    if (
+      memberLimitBadInput ||
+      (memberLimit.trim() !== '' &&
+        (!Number.isInteger(limitValue) || limitValue < 0))
+    ) {
+      toast.error(t('Invalid parameters'))
+      return
+    }
+    const nextMemberLimit = Number.isInteger(limitValue) ? limitValue : 0
+
     setSaving(true)
     try {
       // quota/status 仅超管可提交；其余角色**完全省略**这两个字段。
@@ -634,18 +775,16 @@ function OrgOverviewCard({
       // 「把预算改成不限量 / 把状态写成非法值」并被拒绝（见 controller.UpdateOrganization）。
       const r = await updateOrganization(org.id, {
         name: name.trim(),
-        ...(canEditBudget
-          ? { quota: amountToQuota(quota), status: Number(status) }
-          : {}),
-        member_limit: Number(memberLimit) || 0,
+        ...(canEditBudget ? { quota: nextQuota, status: Number(status) } : {}),
+        member_limit: nextMemberLimit,
       })
       if (r.success) {
         toast.success(t('Settings updated'))
         onUpdated({
           ...org,
           name: name.trim(),
-          quota: canEditBudget ? amountToQuota(quota) : org.quota,
-          member_limit: Number(memberLimit) || 0,
+          quota: canEditBudget ? nextQuota : org.quota,
+          member_limit: nextMemberLimit,
           status: canEditBudget ? Number(status) : org.status,
         })
         setEditing(false)
@@ -707,15 +846,23 @@ function OrgOverviewCard({
                 value={quota}
                 placeholder='0.00'
                 disabled={!canEditBudget}
-                onChange={(e) => setQuota(e.target.value)}
+                onChange={(e) => {
+                  setQuota(e.target.value)
+                  setQuotaBadInput(e.target.validity.badInput)
+                }}
               />
             </div>
             <div className='flex flex-col gap-2'>
               <Label>{t('Member Limit')}</Label>
               <Input
                 type='number'
+                min='0'
+                step='1'
                 value={memberLimit}
-                onChange={(e) => setMemberLimit(e.target.value)}
+                onChange={(e) => {
+                  setMemberLimit(e.target.value)
+                  setMemberLimitBadInput(e.target.validity.badInput)
+                }}
               />
             </div>
             <div className='flex flex-col gap-2'>
