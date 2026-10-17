@@ -17,6 +17,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@uter.ai
 */
 import { createFileRoute, useSearch } from '@tanstack/react-router'
+import { useEffect, useRef } from 'react'
 
 import {
   ResetPasswordConfirm,
@@ -31,5 +32,27 @@ function ResetPassword() {
   const search = useSearch({
     from: '/(auth)/reset',
   }) as ResetPasswordSearchParams
-  return <ResetPasswordConfirm email={search?.email} token={search?.token} />
+
+  // 重置链接里的 email/token 是可直接兑换新密码的一次性凭证。参数取到后立刻
+  // 从地址栏抹掉，避免它们留在浏览器历史、被复制进截图/工单，或作为 Referer
+  // 发往后续导航。取到的值保存在 ref 里继续提交，不依赖 URL。
+  const credentialsRef = useRef<ResetPasswordSearchParams>({})
+  if (!credentialsRef.current.token && !credentialsRef.current.email) {
+    credentialsRef.current = {
+      email: search?.email,
+      token: search?.token,
+    }
+  }
+
+  useEffect(() => {
+    if (!search?.email && !search?.token) return
+    window.history.replaceState({}, '', window.location.pathname)
+  }, [search?.email, search?.token])
+
+  return (
+    <ResetPasswordConfirm
+      email={credentialsRef.current.email}
+      token={credentialsRef.current.token}
+    />
+  )
 }
