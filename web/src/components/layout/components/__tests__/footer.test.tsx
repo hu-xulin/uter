@@ -25,6 +25,7 @@ import {
   RouterProvider,
 } from '@tanstack/react-router'
 import { cleanup, render, screen, within } from '@testing-library/react'
+import i18next from 'i18next'
 import { afterEach, expect, it } from 'vitest'
 
 import { STATUS_QUERY_KEY } from '@/lib/status-query'
@@ -51,7 +52,11 @@ const COMPLIANCE_RECORDS = [
   },
 ]
 
-function renderFooter() {
+// The suite's shared i18n instance starts at `en` (see `src/test-setup.ts`),
+// the one language the compliance row is *not* rendered for, so each test has
+// to ask for its language explicitly and hand it back afterwards.
+async function renderFooter(language: string) {
+  await i18next.changeLanguage(language)
   const root = createRootRoute()
   const index = createRoute({
     getParentRoute: () => root,
@@ -76,12 +81,13 @@ function renderFooter() {
   return screen.findByRole('contentinfo')
 }
 
-afterEach(() => {
+afterEach(async () => {
   cleanup()
+  await i18next.changeLanguage('en')
 })
 
 it('renders the three compliance records as icon + text in one row under the brand name', async () => {
-  const footer = await renderFooter()
+  const footer = await renderFooter('zhCN')
 
   // The platform tagline was removed from the footer's brand column, so the
   // records are the first content under the brand link.
@@ -126,3 +132,34 @@ it('renders the three compliance records as icon + text in one row under the bra
       Node.DOCUMENT_POSITION_FOLLOWING
   ).toBeTruthy()
 })
+
+it('renders the compliance records under the traditional-Chinese interface too', async () => {
+  const footer = await renderFooter('zhTW')
+
+  expect(within(footer).getAllByRole('listitem')).toHaveLength(3)
+})
+
+it('renders the compliance records for a browser-detected zh-CN tag', async () => {
+  const footer = await renderFooter('zh-CN')
+
+  expect(within(footer).getAllByRole('listitem')).toHaveLength(3)
+})
+
+// The filings are mainland-China regulatory records whose labels are only
+// written out in the Chinese locales; under every other interface language the
+// row would be three unexplained alphanumeric strings, so it is not rendered.
+it.each(['en', 'fr', 'ru', 'ja', 'vi'])(
+  'omits the compliance records under the %s interface',
+  async (language) => {
+    const footer = await renderFooter(language)
+
+    expect(within(footer).queryAllByRole('listitem')).toHaveLength(0)
+    COMPLIANCE_RECORDS.forEach((record) => {
+      expect(within(footer).queryByText(record.labelKey)).toBeNull()
+      expect(footer.querySelector(`a[href="${record.href}"]`)).toBeNull()
+    })
+
+    // The brand column itself is still there — only the row is dropped.
+    expect(within(footer).getAllByRole('link').length).toBeGreaterThan(0)
+  }
+)

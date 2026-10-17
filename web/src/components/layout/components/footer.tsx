@@ -23,6 +23,7 @@ import { useTranslation } from 'react-i18next'
 import { HtmlContent } from '@/components/html-content'
 import { useStatus } from '@/hooks/use-status'
 import { useSystemConfig } from '@/hooks/use-system-config'
+import { normalizeInterfaceLanguage } from '@/i18n/languages'
 import { localizedBrandName } from '@/lib/brand'
 import { DEFAULT_LOGO } from '@/lib/constants'
 import {
@@ -80,6 +81,15 @@ const FOOTER_COMPLIANCE_ITEMS = [
     href: 'https://beian.mps.gov.cn',
   },
 ] as const
+
+// The interface languages the compliance row is rendered for.
+//
+// These are filings with mainland-China regulators — ICP, the national
+// enterprise credit register and public-network security — and their labels
+// are only written out in the Chinese locales. Under any other interface
+// language the row would read as three unexplained alphanumeric strings, so it
+// is dropped and the brand column ends with the brand link itself.
+const COMPLIANCE_RECORD_LANGUAGES = new Set(['zhCN', 'zhTW'])
 
 function FooterLinkItem(props: { link: FooterLink }) {
   const { t } = useTranslation()
@@ -266,6 +276,9 @@ export function Footer(props: FooterProps) {
   const brandName = localizedBrandName(i18n.language)
   const isDemoSiteMode = Boolean(demoSiteEnabled)
   const currentYear = new Date().getFullYear()
+  const showComplianceRecords = COMPLIANCE_RECORD_LANGUAGES.has(
+    normalizeInterfaceLanguage(i18n.language)
+  )
 
   const fallbackColumns = useMemo<FooterColumnProps[]>(
     () => [
@@ -372,36 +385,40 @@ export function Footer(props: FooterProps) {
                 {brandName}
               </span>
             </Link>
-            <ul className='text-muted-foreground/60 mt-3 flex flex-wrap items-center gap-x-[30px] gap-y-1.5 text-[13px]'>
-              {FOOTER_COMPLIANCE_ITEMS.map((item) => {
-                // Only the filing number after the colon is a link — the icon
-                // and the label prefix stay plain text. The colon may be the
-                // full-width "：" (zh) or half-width ":" (other locales); the
-                // filing number keeps its verbatim value regardless of locale.
-                const label = t(item.labelKey)
-                const sep = label.search(/[：:]/)
-                const prefix = sep === -1 ? label : label.slice(0, sep + 1)
-                const value = sep === -1 ? '' : label.slice(sep + 1).trimStart()
-                return (
-                  <li key={item.labelKey} className='flex items-center gap-2'>
-                    <img
-                      src={item.icon}
-                      alt=''
-                      className='h-4 w-auto shrink-0 object-contain'
-                    />
-                    <span>{prefix}</span>
-                    <a
-                      href={item.href}
-                      target='_blank'
-                      rel='noopener noreferrer'
-                      className='hover:text-foreground transition-colors duration-200'
-                    >
-                      {value}
-                    </a>
-                  </li>
-                )
-              })}
-            </ul>
+            {showComplianceRecords && (
+              <ul className='text-muted-foreground/60 mt-3 flex flex-wrap items-center gap-x-[30px] gap-y-1.5 text-[13px]'>
+                {FOOTER_COMPLIANCE_ITEMS.map((item) => {
+                  // Only the filing number after the colon is a link — the icon
+                  // and the label prefix stay plain text. The colon may be the
+                  // full-width "：" (zh) or half-width ":" (other locales); the
+                  // filing number keeps its verbatim value regardless of
+                  // locale.
+                  const label = t(item.labelKey)
+                  const sep = label.search(/[：:]/)
+                  const prefix = sep === -1 ? label : label.slice(0, sep + 1)
+                  const value =
+                    sep === -1 ? '' : label.slice(sep + 1).trimStart()
+                  return (
+                    <li key={item.labelKey} className='flex items-center gap-2'>
+                      <img
+                        src={item.icon}
+                        alt=''
+                        className='h-4 w-auto shrink-0 object-contain'
+                      />
+                      <span>{prefix}</span>
+                      <a
+                        href={item.href}
+                        target='_blank'
+                        rel='noopener noreferrer'
+                        className='hover:text-foreground transition-colors duration-200'
+                      >
+                        {value}
+                      </a>
+                    </li>
+                  )
+                })}
+              </ul>
+            )}
           </div>
 
           {/* Links columns */}
