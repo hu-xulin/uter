@@ -21,8 +21,8 @@ import { withDocsBasePath } from '@/lib/docs-base-path';
  */
 export const metadata: Metadata = {
   icons: {
-    icon: [{ url: withDocsBasePath('/logo.png?v=4'), type: 'image/png' }],
-    apple: [{ url: withDocsBasePath('/logo.png?v=4') }],
+    icon: [{ url: withDocsBasePath('/logo.png?v=5'), type: 'image/png' }],
+    apple: [{ url: withDocsBasePath('/logo.png?v=5') }],
   },
 };
 
