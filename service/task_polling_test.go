@@ -563,19 +563,25 @@ func TestUpdateVideoTasksSlowChannelDoesNotBlockOtherChannels(t *testing.T) {
 	t.Cleanup(func() { GetTaskAdaptorFunc = previousFactory })
 
 	errCh := make(chan error, 1)
+	// 先把上游 ID 取成本地值：UpdateVideoTasks 会在 goroutine 内经 GORM 并发改写
+	// 这些 *Task 的 PrivateData/TaskID，在轮询闭包里反复读取同一对象会与写操作
+	// 构成数据竞争（-race 可复现）。快照后闭包只读不可变的字符串。
+	slowUpstreamID := slowTask.GetUpstreamTaskID()
+	fastFirstUpstreamID := fastFirst.GetUpstreamTaskID()
+	fastSecondUpstreamID := fastSecond.GetUpstreamTaskID()
 	gopool.Go(func() {
 		errCh <- UpdateVideoTasks(context.Background(), constant.TaskPlatform("kling"), map[int][]string{
 			slowChannelID: {
-				slowTask.GetUpstreamTaskID(),
+				slowUpstreamID,
 			},
 			fastChannelID: {
-				fastFirst.GetUpstreamTaskID(),
-				fastSecond.GetUpstreamTaskID(),
+				fastFirstUpstreamID,
+				fastSecondUpstreamID,
 			},
 		}, map[string]*model.Task{
-			slowTask.GetUpstreamTaskID():   slowTask,
-			fastFirst.GetUpstreamTaskID():  fastFirst,
-			fastSecond.GetUpstreamTaskID(): fastSecond,
+			slowUpstreamID:       slowTask,
+			fastFirstUpstreamID:  fastFirst,
+			fastSecondUpstreamID: fastSecond,
 		})
 	})
 
@@ -588,16 +594,16 @@ func TestUpdateVideoTasksSlowChannelDoesNotBlockOtherChannels(t *testing.T) {
 	require.Eventually(t, func() bool {
 		fetchedTaskIDs := adaptor.fetchedTaskIDs()
 		return len(fetchedTaskIDs) == 2 &&
-			fetchedTaskIDs[0] == fastFirst.GetUpstreamTaskID() &&
-			fetchedTaskIDs[1] == fastSecond.GetUpstreamTaskID()
+			fetchedTaskIDs[0] == fastFirstUpstreamID &&
+			fetchedTaskIDs[1] == fastSecondUpstreamID
 	}, 500*time.Millisecond, 10*time.Millisecond)
 
 	releaseBlockedTask()
 	require.NoError(t, <-errCh)
 	assert.ElementsMatch(t, []string{
-		slowTask.GetUpstreamTaskID(),
-		fastFirst.GetUpstreamTaskID(),
-		fastSecond.GetUpstreamTaskID(),
+		slowUpstreamID,
+		fastFirstUpstreamID,
+		fastSecondUpstreamID,
 	}, adaptor.fetchedTaskIDs())
 }
 
