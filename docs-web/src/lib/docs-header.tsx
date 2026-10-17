@@ -226,7 +226,7 @@ export function DocsHeader({ locale }: { locale: DocsLocale }) {
       // emits `src` verbatim instead of folding in the basePath — add it here
       // or the header asks for `/logo.png`, which the SPA fallback answers
       // with index.html and the mark renders blank.
-      src={withDocsBasePath('/logo.png?v=6')}
+      src={withDocsBasePath('/logo.png?v=7')}
       alt={brand}
       width={28}
       height={28}
