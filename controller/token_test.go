@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"maps"
 	"net/http"
 	"net/http/httptest"
@@ -93,6 +94,9 @@ func openTokenControllerTestDB(t *testing.T) *gorm.DB {
 	}
 	model.DB = db
 	model.LOG_DB = db
+	// 按密钥筛选会拼 `commonKeyCol LIKE ?`；直接赋值 DB 的测试必须初始化列名，
+	// 否则列名为空会生成 `WHERE  LIKE ?` 并报 SQL 语法错误而非可读信息。
+	model.InitColumnNames()
 
 	t.Cleanup(func() {
 		sqlDB, err := db.DB()
@@ -148,6 +152,7 @@ func openTokenControllerExternalDB(t *testing.T, dialect string, dsn string) (*g
 
 	model.DB = db
 	model.LOG_DB = db
+	model.InitColumnNames()
 
 	if db.Migrator().HasTable("tokens") {
 		t.Skipf("refusing to run %s migration compatibility test against external database because tokens table already exists", dialect)
@@ -491,6 +496,79 @@ func TestSearchTokensMasksKeyInResponse(t *testing.T) {
 	}
 	if strings.Contains(recorder.Body.String(), token.Key) {
 		t.Fatalf("search response leaked raw token key: %s", recorder.Body.String())
+	}
+}
+
+func TestSearchTokensPostMasksKeyInResponse(t *testing.T) {
+	db := setupTokenControllerTestDB(t)
+	token := seedToken(t, db, 1, "post-searchable-token", "postsearch1234mnop")
+
+	ctx, recorder := newAuthenticatedContext(t, http.MethodPost, "/api/token/search", map[string]any{
+		"token": token.Key,
+		"p":     1,
+		"size":  10,
+	}, 1)
+	SearchTokensPost(ctx)
+
+	response := decodeAPIResponse(t, recorder)
+	if !response.Success {
+		t.Fatalf("expected success response, got message: %s", response.Message)
+	}
+
+	var page tokenPageResponse
+	if err := common.Unmarshal(response.Data, &page); err != nil {
+		t.Fatalf("failed to decode search response: %v", err)
+	}
+	if len(page.Items) != 1 {
+		t.Fatalf("expected exactly one search result, got %d", len(page.Items))
+	}
+	if page.Items[0].Key != token.GetMaskedKey() {
+		t.Fatalf("expected masked search key %q, got %q", token.GetMaskedKey(), page.Items[0].Key)
+	}
+	if strings.Contains(recorder.Body.String(), token.Key) {
+		t.Fatalf("search response leaked raw token key: %s", recorder.Body.String())
+	}
+}
+
+// 密钥筛选必须能走 POST：GET 查询串会把完整密钥写进地址栏、浏览器历史、
+// Referer 与反代访问日志。POST 端点是前端唯一使用的按密钥筛选通道。
+func TestSearchTokensPostFiltersByTokenInBody(t *testing.T) {
+	db := setupTokenControllerTestDB(t)
+	mine := seedToken(t, db, 1, "mine", "needle0001aaaa")
+	seedToken(t, db, 1, "other", "zzzzzz9999bbbb")
+	seedToken(t, db, 2, "foreign", "needle0001cccc")
+
+	ctx, recorder := newAuthenticatedContext(t, http.MethodPost, "/api/token/search", map[string]any{
+		"token": "sk-" + mine.Key,
+		"p":     1,
+		"size":  10,
+	}, 1)
+	SearchTokensPost(ctx)
+
+	response := decodeAPIResponse(t, recorder)
+	if !response.Success {
+		t.Fatalf("expected success response, got message: %s", response.Message)
+	}
+
+	var page tokenPageResponse
+	if err := common.Unmarshal(response.Data, &page); err != nil {
+		t.Fatalf("failed to decode search response: %v", err)
+	}
+	if len(page.Items) != 1 || page.Items[0].ID != mine.Id {
+		t.Fatalf("expected only the owned matching token, got %+v", page.Items)
+	}
+}
+
+func TestSearchTokensPostRejectsMalformedBody(t *testing.T) {
+	setupTokenControllerTestDB(t)
+
+	ctx, recorder := newAuthenticatedContext(t, http.MethodPost, "/api/token/search", nil, 1)
+	ctx.Request.Body = io.NopCloser(strings.NewReader("{not-json"))
+	SearchTokensPost(ctx)
+
+	response := decodeAPIResponse(t, recorder)
+	if response.Success {
+		t.Fatal("expected failure response for a malformed body")
 	}
 }
 

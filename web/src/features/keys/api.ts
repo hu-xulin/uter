@@ -42,16 +42,20 @@ export async function getApiKeys(
 }
 
 // Search API keys by keyword or token (with pagination)
+//
+// The filters travel in the request body, not the query string: `token` may hold
+// a full API key, and a GET query string ends up in the address bar, browser
+// history, Referer headers and reverse-proxy access logs.
 export async function searchApiKeys(
   params: SearchApiKeysParams
 ): Promise<GetApiKeysResponse> {
   const { keyword = '', token = '', p, size } = params
-  const queryParams = new URLSearchParams()
-  if (keyword) queryParams.set('keyword', keyword)
-  if (token) queryParams.set('token', token)
-  if (p != null) queryParams.set('p', String(p))
-  if (size != null) queryParams.set('size', String(size))
-  const res = await api.get(`/api/token/search?${queryParams.toString()}`)
+  const res = await api.post('/api/token/search', {
+    keyword,
+    token,
+    p: p ?? 1,
+    size: size ?? 20,
+  })
   return res.data
 }
 
@@ -117,9 +121,7 @@ export async function fetchTokenKey(
   const res = await api.post(
     `/api/token/${id}/key`,
     undefined,
-    proofToken
-      ? { headers: { 'X-Security-Proof': proofToken } }
-      : undefined
+    proofToken ? { headers: { 'X-Security-Proof': proofToken } } : undefined
   )
   return res.data
 }
@@ -137,9 +139,7 @@ export async function fetchTokenKeysBatch(
   const res = await api.post(
     '/api/token/batch/keys',
     { ids },
-    proofToken
-      ? { headers: { 'X-Security-Proof': proofToken } }
-      : undefined
+    proofToken ? { headers: { 'X-Security-Proof': proofToken } } : undefined
   )
   return res.data
 }

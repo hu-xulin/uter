@@ -38,6 +38,22 @@ func (p *PageInfo) SetItems(items any) {
 	p.Items = items
 }
 
+// NewPageInfo 按 GetPageQuery 的口径归一化显式传入的分页参数：
+// 页码至少为 1，页大小缺省为 ItemsPerPage 且上限 100。
+// 用于筛选条件走请求体、无法再走查询串的接口。
+func NewPageInfo(page int, pageSize int) *PageInfo {
+	if page < 1 {
+		page = 1
+	}
+	if pageSize <= 0 {
+		pageSize = ItemsPerPage
+	}
+	if pageSize > 100 {
+		pageSize = 100
+	}
+	return &PageInfo{Page: page, PageSize: pageSize}
+}
+
 func GetPageQuery(c *gin.Context) *PageInfo {
 	pageInfo := &PageInfo{}
 	// 手动获取并处理每个参数

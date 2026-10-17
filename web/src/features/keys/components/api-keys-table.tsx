@@ -27,7 +27,6 @@ import {
   DISABLED_ROW_DESKTOP,
   DISABLED_ROW_MOBILE,
   DataTablePage,
-  useDebouncedColumnFilter,
   useDataTable,
 } from '@/components/data-table'
 import { StatusBadge } from '@/components/status-badge'
@@ -40,6 +39,7 @@ import {
 } from '@/components/ui/empty'
 import { Input } from '@/components/ui/input'
 import { Skeleton } from '@/components/ui/skeleton'
+import { useDebounce } from '@/hooks/use-debounce'
 import { useTableUrlState } from '@/hooks/use-table-url-state'
 import { createServerError } from '@/lib/server-error-message'
 import { cn } from '@/lib/utils'
@@ -242,21 +242,13 @@ export function ApiKeysTable() {
     navigate: route.useNavigate(),
     pagination: { defaultPage: 1, defaultPageSize: 20 },
     globalFilter: { enabled: true, key: 'filter' },
-    columnFilters: [
-      { columnId: 'status', searchKey: 'status', type: 'array' },
-      { columnId: '_tokenSearch', searchKey: 'token', type: 'string' },
-    ],
+    columnFilters: [{ columnId: 'status', searchKey: 'status', type: 'array' }],
   })
 
-  const {
-    value: tokenFilter,
-    inputValue: tokenFilterInput,
-    setInputValue: setTokenFilterInput,
-  } = useDebouncedColumnFilter({
-    columnFilters,
-    columnId: '_tokenSearch',
-    onColumnFiltersChange,
-  })
+  // 按 API 密钥筛选保持在组件局部状态，不写 URL：筛选值可能是一段完整密钥，
+  // 持久化到查询串会暴露在地址栏、浏览器历史与复制的链接中。
+  const [tokenFilterInput, setTokenFilterInput] = useState('')
+  const tokenFilter = useDebounce(tokenFilterInput, 500)
   const shouldSearch = Boolean(globalFilter?.trim() || tokenFilter.trim())
 
   // Fetch data with React Query
