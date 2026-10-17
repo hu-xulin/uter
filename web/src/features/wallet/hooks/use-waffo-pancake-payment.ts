@@ -23,7 +23,7 @@ import { toast } from 'sonner'
 import { handleServerError } from '@/lib/handle-server-error'
 
 import { requestWaffoPancakePayment, isApiSuccess } from '../api'
-import { getPaymentErrorTranslation } from '../lib'
+import { getPaymentErrorTranslation, resolvePaymentRedirectUrl } from '../lib'
 
 function getCheckoutUrl(data: unknown): string | null {
   if (!data || typeof data !== 'object') {
@@ -35,23 +35,6 @@ function getCheckoutUrl(data: unknown): string | null {
   }
 
   return null
-}
-
-/**
- * Reject non-navigable schemes (e.g. javascript:, data:) and relative URLs.
- * Only http/https are allowed for backend-provided redirect targets.
- */
-function isSafeHttpCheckoutUrl(value: string): boolean {
-  const trimmed = value.trim()
-  if (!trimmed) {
-    return false
-  }
-  try {
-    const u = new URL(trimmed)
-    return u.protocol === 'http:' || u.protocol === 'https:'
-  } catch {
-    return false
-  }
 }
 
 function getErrorMessage(message: string | undefined, data: unknown): string {
@@ -70,6 +53,7 @@ function getErrorMessage(message: string | undefined, data: unknown): string {
  *
  * Same-tab redirect (window.location.href) rather than window.open: the
  * user-gesture context is lost across the await, so popups get blocked.
+ * The URL still goes through the shared redirect validation.
  */
 export function useWaffoPancakePayment() {
   const [processing, setProcessing] = useState(false)
@@ -87,12 +71,13 @@ export function useWaffoPancakePayment() {
           const checkoutUrl = getCheckoutUrl(response.data)
 
           if (checkoutUrl) {
-            if (!isSafeHttpCheckoutUrl(checkoutUrl)) {
+            const safeUrl = resolvePaymentRedirectUrl(checkoutUrl, 'waffo')
+            if (!safeUrl) {
               toast.error(i18next.t('Invalid payment redirect URL'))
               return false
             }
             toast.success(i18next.t('Redirecting to payment page...'))
-            window.location.href = checkoutUrl
+            window.location.href = safeUrl
             return true
           }
         }
