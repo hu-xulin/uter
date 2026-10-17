@@ -36,7 +36,7 @@ export const DEFAULT_SYSTEM_NAME = 'Uter'
  * Keep this in sync with the `link rel="icon"` href in `web/index.html`,
  * which is a static template and cannot import this constant.
  */
-export const LOGO_ASSET_VERSION = '5'
+export const LOGO_ASSET_VERSION = '6'
 export const DEFAULT_LOGO = `/logo.png?v=${LOGO_ASSET_VERSION}`
 
 // LocalStorage Keys
