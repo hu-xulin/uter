@@ -3382,6 +3382,8 @@
     "Invalid Passkey registration response": "無效的 Passkey 註冊回應",
     "Invalid Passkey response": "無效的 Passkey 回應",
     "Invalid payment redirect URL": "無效的支付跳轉連結",
+    "Your API key will be sent to {{host}}.": "您的 API 金鑰將會傳送到 {{host}}。",
+    "This chat link is not a valid web address.": "此聊天連結不是有效的網頁網址。",
     "Failed to calculate payment amount. Please try again.": "付款金額計算失敗，請重試。",
     "The payment page was blocked by your browser. Allow pop-ups for this site and try again.": "付款頁面被瀏覽器阻擋，請允許本站彈出視窗後重試。",
     "Failed to load organization data": "組織資料載入失敗",
