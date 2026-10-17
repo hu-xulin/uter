@@ -23,8 +23,8 @@ import { useTranslation } from 'react-i18next'
 import { HtmlContent } from '@/components/html-content'
 import { useStatus } from '@/hooks/use-status'
 import { useSystemConfig } from '@/hooks/use-system-config'
-import { DEFAULT_LOGO } from '@/lib/constants'
 import { localizedBrandName } from '@/lib/brand'
+import { DEFAULT_LOGO } from '@/lib/constants'
 import {
   isBundledDocsHref,
   legalDocsPathFor,
@@ -57,6 +57,29 @@ const UTER_FOOTER_ATTRIBUTION_KEY = [
   'uter',
   'projectAttributionSuffix',
 ].join('.')
+
+// Regulatory records shown as icon + text in one row under the platform
+// tagline in the footer's brand column, each linking to its official filing
+// portal. The icons are decorative — each item's translated label carries the
+// meaning — while the filing numbers stay verbatim in every locale because
+// they are identifiers, not prose.
+const FOOTER_COMPLIANCE_ITEMS = [
+  {
+    icon: '/icp-filing.png',
+    labelKey: 'ICP Filing Number',
+    href: 'https://beian.miit.gov.cn',
+  },
+  {
+    icon: '/enterprise-credit.png',
+    labelKey: 'Enterprise Credit Number',
+    href: 'https://www.gsxt.gov.cn',
+  },
+  {
+    icon: '/police-filing.png',
+    labelKey: 'Police Filing Number',
+    href: 'https://beian.mps.gov.cn',
+  },
+] as const
 
 function FooterLinkItem(props: { link: FooterLink }) {
   const { t } = useTranslation()
@@ -349,9 +372,39 @@ export function Footer(props: FooterProps) {
                 {brandName}
               </span>
             </Link>
-            <p className='text-muted-foreground/60 mt-3 max-w-[200px] text-[13px] leading-relaxed'>
+            <p className='text-muted-foreground/60 mt-3 text-[13px] leading-relaxed whitespace-nowrap'>
               {t('Powerful API Management Platform')}
             </p>
+            <ul className='text-muted-foreground/60 mt-3 flex flex-wrap items-center gap-x-[30px] gap-y-1.5 text-[12px]'>
+              {FOOTER_COMPLIANCE_ITEMS.map((item) => {
+                // Only the filing number after the colon is a link — the icon
+                // and the label prefix stay plain text. The colon may be the
+                // full-width "：" (zh) or half-width ":" (other locales); the
+                // filing number keeps its verbatim value regardless of locale.
+                const label = t(item.labelKey)
+                const sep = label.search(/[：:]/)
+                const prefix = sep === -1 ? label : label.slice(0, sep + 1)
+                const value = sep === -1 ? '' : label.slice(sep + 1).trimStart()
+                return (
+                  <li key={item.labelKey} className='flex items-center gap-2'>
+                    <img
+                      src={item.icon}
+                      alt=''
+                      className='h-4 w-auto shrink-0 object-contain'
+                    />
+                    <span>{prefix}</span>
+                    <a
+                      href={item.href}
+                      target='_blank'
+                      rel='noopener noreferrer'
+                      className='hover:text-foreground transition-colors duration-200'
+                    >
+                      {value}
+                    </a>
+                  </li>
+                )
+              })}
+            </ul>
           </div>
 
           {/* Links columns */}
