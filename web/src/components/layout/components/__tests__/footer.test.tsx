@@ -103,14 +103,17 @@ it('renders the three compliance records beside the brand link, pinned to the to
     COMPLIANCE_RECORDS.map((record) => record.labelKey)
   )
 
-  // The records share one wrapping flex row with a 30px gap between items,
-  // packed to that row's right edge so they line up with the attribution on
-  // the copyright row below.
+  // The records share one wrapping flex row with a 30px gap between items.
+  // Down at phone widths — where the three records wrap onto a line each —
+  // those lines centre on the page; from `md` up the row is packed to the
+  // top row's right edge instead, so it lines up with the attribution on the
+  // copyright row below.
   const list = rows[0].parentElement as HTMLElement
   expect(list.tagName).toBe('UL')
   expect(list).toHaveClass('flex-wrap')
   expect(list).toHaveClass('gap-x-[30px]')
-  expect(list).toHaveClass('justify-end')
+  expect(list).toHaveClass('justify-center')
+  expect(list).toHaveClass('md:justify-end')
 
   // Each record shows a decorative icon and its translated label, and links
   // only the filing number (after the colon) to its official filing portal,
