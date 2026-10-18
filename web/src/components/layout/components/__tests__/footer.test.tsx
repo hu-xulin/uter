@@ -86,11 +86,11 @@ afterEach(async () => {
   await i18next.changeLanguage('en')
 })
 
-it('renders the three compliance records as icon + text in one row under the brand name', async () => {
+it('renders the three compliance records beside the brand link, pinned to the top row’s right edge', async () => {
   const footer = await renderFooter('zhCN')
 
-  // The platform tagline was removed from the footer's brand column, so the
-  // records are the first content under the brand link.
+  // The platform tagline was removed from the footer's brand column, which
+  // now holds nothing but the brand link itself.
   expect(
     within(footer).queryByText('Powerful API Management Platform')
   ).toBeNull()
@@ -103,11 +103,14 @@ it('renders the three compliance records as icon + text in one row under the bra
     COMPLIANCE_RECORDS.map((record) => record.labelKey)
   )
 
-  // The records share one wrapping flex row with a 30px gap between items.
+  // The records share one wrapping flex row with a 30px gap between items,
+  // packed to that row's right edge so they line up with the attribution on
+  // the copyright row below.
   const list = rows[0].parentElement as HTMLElement
   expect(list.tagName).toBe('UL')
   expect(list).toHaveClass('flex-wrap')
   expect(list).toHaveClass('gap-x-[30px]')
+  expect(list).toHaveClass('justify-end')
 
   // Each record shows a decorative icon and its translated label, and links
   // only the filing number (after the colon) to its official filing portal,
@@ -125,8 +128,14 @@ it('renders the three compliance records as icon + text in one row under the bra
     expect(link?.getAttribute('rel')).toBe('noopener noreferrer')
   })
 
-  // The records sit directly under the brand link — nothing between them.
+  // The row shares the footer's top line with the brand link: it is a sibling
+  // column inside that row, no longer nested under the brand column, and it
+  // still follows the brand link in the document so the pair reads left to
+  // right.
   const brandLink = within(footer).getAllByRole('link')[0]
+  const brandColumn = brandLink.parentElement as HTMLElement
+  expect(list.parentElement).toBe(brandColumn.parentElement)
+  expect(list.parentElement).not.toBe(brandColumn)
   expect(
     brandLink.compareDocumentPosition(rows[0]) &
       Node.DOCUMENT_POSITION_FOLLOWING
