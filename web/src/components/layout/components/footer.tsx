@@ -89,10 +89,14 @@ const FOOTER_COMPLIANCE_ITEMS = [
 // `md:mt-1` optically centres the row's 20px content against the `size-7`
 // (28px) brand logo it now sits beside — half the 8px difference is the 4px
 // that levels the two — and `md:self-start` keeps the row on the brand's line
-// when the link columns make the row taller than either. Full width below
-// `md`, where the row stacks and has no neighbour to align with.
+// when the link columns make the row taller than either.
+//
+// Below `md` the row stacks under the brand column and its three records wrap
+// onto one line each, so `justify-center` centres those lines instead of
+// pushing them against the right edge — there is no copyright row next to
+// them down there to line up with.
 const COMPLIANCE_ROW_ALIGN =
-  'w-full justify-end md:mt-1 md:w-auto md:self-start'
+  'w-full justify-center md:mt-1 md:w-auto md:justify-end md:self-start'
 
 // The interface languages the compliance row is rendered for.
 //
