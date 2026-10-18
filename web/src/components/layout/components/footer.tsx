@@ -59,11 +59,10 @@ const UTER_FOOTER_ATTRIBUTION_KEY = [
   'projectAttributionSuffix',
 ].join('.')
 
-// Regulatory records shown as icon + text in one row under the brand name
-// in the footer's brand column, each linking to its official filing
-// portal. The icons are decorative — each item's translated label carries the
-// meaning — while the filing numbers stay verbatim in every locale because
-// they are identifiers, not prose.
+// Regulatory records shown as icon + text in one row beside the brand link,
+// each linking to its official filing portal. The icons are decorative — each
+// item's translated label carries the meaning — while the filing numbers stay
+// verbatim in every locale because they are identifiers, not prose.
 const FOOTER_COMPLIANCE_ITEMS = [
   {
     icon: '/icp-filing.png',
@@ -82,12 +81,18 @@ const FOOTER_COMPLIANCE_ITEMS = [
   },
 ] as const
 
-// The row is inset by 6px so its icons optically centre under the brand logo
-// above them: the logo is `size-7` (28px) while these icons render at `h-4`
-// (16px), and half the difference is the 6px that lines the two up. Without it
-// the row starts flush with the logo's own left edge and reads as if it had
-// drifted out of the brand column.
-const COMPLIANCE_ROW_INSET = 'pl-1.5'
+// The row shares the footer's top line with the brand link instead of sitting
+// under it, so it is pinned to that row's right edge: every row in the footer
+// is the same `max-w-6xl` column, which puts the row's right edge on top of the
+// project attribution below and reads as one right-hand column of small print.
+//
+// `md:mt-1` optically centres the row's 20px content against the `size-7`
+// (28px) brand logo it now sits beside — half the 8px difference is the 4px
+// that levels the two — and `md:self-start` keeps the row on the brand's line
+// when the link columns make the row taller than either. Full width below
+// `md`, where the row stacks and has no neighbour to align with.
+const COMPLIANCE_ROW_ALIGN =
+  'w-full justify-end md:mt-1 md:w-auto md:self-start'
 
 // The interface languages the compliance row is rendered for.
 //
@@ -392,45 +397,6 @@ export function Footer(props: FooterProps) {
                 {brandName}
               </span>
             </Link>
-            {showComplianceRecords && (
-              <ul
-                className={cn(
-                  'text-muted-foreground/60 mt-3 flex flex-wrap items-center gap-x-[30px] gap-y-1.5 text-[13px]',
-                  COMPLIANCE_ROW_INSET
-                )}
-              >
-                {FOOTER_COMPLIANCE_ITEMS.map((item) => {
-                  // Only the filing number after the colon is a link — the icon
-                  // and the label prefix stay plain text. The colon may be the
-                  // full-width "：" (zh) or half-width ":" (other locales); the
-                  // filing number keeps its verbatim value regardless of
-                  // locale.
-                  const label = t(item.labelKey)
-                  const sep = label.search(/[：:]/)
-                  const prefix = sep === -1 ? label : label.slice(0, sep + 1)
-                  const value =
-                    sep === -1 ? '' : label.slice(sep + 1).trimStart()
-                  return (
-                    <li key={item.labelKey} className='flex items-center gap-2'>
-                      <img
-                        src={item.icon}
-                        alt=''
-                        className='h-4 w-auto shrink-0 object-contain'
-                      />
-                      <span>{prefix}</span>
-                      <a
-                        href={item.href}
-                        target='_blank'
-                        rel='noopener noreferrer'
-                        className='hover:text-foreground transition-colors duration-200'
-                      >
-                        {value}
-                      </a>
-                    </li>
-                  )
-                })}
-              </ul>
-            )}
           </div>
 
           {/* Links columns */}
@@ -451,6 +417,48 @@ export function Footer(props: FooterProps) {
                 </div>
               ))}
             </div>
+          )}
+
+          {/* Compliance records — siblings of the brand column inside the
+              footer's top row, not children of it: as the row's last item they
+              land on its right edge, sharing the line with the brand link. */}
+          {showComplianceRecords && (
+            <ul
+              className={cn(
+                'text-muted-foreground/60 flex flex-wrap items-center gap-x-[30px] gap-y-1.5 text-[13px]',
+                COMPLIANCE_ROW_ALIGN
+              )}
+            >
+              {FOOTER_COMPLIANCE_ITEMS.map((item) => {
+                // Only the filing number after the colon is a link — the icon
+                // and the label prefix stay plain text. The colon may be the
+                // full-width "：" (zh) or half-width ":" (other locales); the
+                // filing number keeps its verbatim value regardless of
+                // locale.
+                const label = t(item.labelKey)
+                const sep = label.search(/[：:]/)
+                const prefix = sep === -1 ? label : label.slice(0, sep + 1)
+                const value = sep === -1 ? '' : label.slice(sep + 1).trimStart()
+                return (
+                  <li key={item.labelKey} className='flex items-center gap-2'>
+                    <img
+                      src={item.icon}
+                      alt=''
+                      className='h-4 w-auto shrink-0 object-contain'
+                    />
+                    <span>{prefix}</span>
+                    <a
+                      href={item.href}
+                      target='_blank'
+                      rel='noopener noreferrer'
+                      className='hover:text-foreground transition-colors duration-200'
+                    >
+                      {value}
+                    </a>
+                  </li>
+                )
+              })}
+            </ul>
           )}
         </div>
 
