@@ -11,6 +11,8 @@ import type { Node as PageTreeNode, Root as PageTreeRoot, Folder as PageTreeFold
 import type { TOCItemType } from 'fumadocs-core/toc';
 
 import { DocsEmbedBridge } from '@/lib/docs-embed-bridge';
+import { DocsBreadcrumb } from '@/lib/docs-breadcrumb';
+import { DocsPageFooter } from '@/lib/docs-page-footer';
 import { DocsHeader } from '@/lib/docs-header';
 import { DocsSidebarHeader } from '@/lib/docs-sidebar-header';
 import { DocsSidebarFolder, DocsSidebarItem, type SectionedItem } from '@/lib/docs-sidebar-tree';
@@ -137,7 +139,22 @@ export function DocsShell({
   entries?: SidebarEntry[];
   children: ReactNode;
 }) {
-  const tree = buildPageTree(entries ?? sidebarEntries(locale, `/docs/${locale}`));
+  const sidebar = entries ?? sidebarEntries(locale, `/docs/${locale}`);
+  const tree = buildPageTree(sidebar);
+
+  /*
+   * Clerk's TOC numbers its top-level entries with filled circles
+   * (`item._step`) and hangs sub-entries off the connecting line
+   * unnumbered. Fumadocs sets `_step` in its MDX pipeline from a
+   * `data-fd-step` heading property; our TOC comes from `planHeadings()`
+   * instead, so number the h2 entries here. Without this the clerk style
+   * degrades to the default look — the circle branch checks
+   * `_step !== undefined`.
+   */
+  let step = 0;
+  const numberedToc = toc.map((item) =>
+    item.depth <= 2 ? ({ ...item, _step: ++step } as TOCItemType) : item
+  );
 
   return (
     <div className='flex min-h-screen flex-col'>
@@ -216,13 +233,24 @@ export function DocsShell({
           i18n={false}
         >
           <DocsPage
-            toc={toc}
+            toc={numberedToc}
             full
+            /*
+             * The built-in breadcrumb/footer slots are off: Fumadocs'
+             * breadcrumb matches the current URL strictly against
+             * trailing-slashed tree URLs and silently renders `null` on
+             * every page, and its footer expects `items` that only its
+             * source loader computes. The Clerk-style equivalents
+             * (breadcrumb chain above the title, prev/next cards under
+             * the body) are rendered as children below — they live in
+             * the same container, and plain-data props keep them
+             * serializable across the server/client boundary.
+             */
             footer={{
               enabled: false,
             }}
             breadcrumb={{
-              enabled: true,
+              enabled: false,
             }}
             tableOfContent={{
               /*
@@ -232,11 +260,21 @@ export function DocsShell({
                * TOC itself so a page never has to say it twice.
                */
               enabled: toc.length > 0,
+              /*
+               * Clerk's numbered TOC: items carry a step number in a
+               * filled circle and the group is joined by a connecting
+               * line that follows the active item — the same
+               * "On this page" treatment as the docs this visual
+               * language is borrowed from.
+               */
+              style: 'clerk',
             }}
           >
+            <DocsBreadcrumb entries={sidebar} locale={locale} />
             <DocsTitle>{title}</DocsTitle>
             {description ? <DocsDescription>{description}</DocsDescription> : null}
             <DocsBody>{children}</DocsBody>
+            <DocsPageFooter entries={sidebar} locale={locale} />
           </DocsPage>
         </DocsLayout>
       </div>

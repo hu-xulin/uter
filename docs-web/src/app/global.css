@@ -704,3 +704,69 @@ html[data-docs-embed='true'] #nd-subnav > a {
 .dark .ug-shot-dark {
   display: block;
 }
+
+/*
+ * ── Clerk-style prose tables ─────────────────────────────────────────
+ *
+ * Fumadocs' typography preset renders tables with a background on every
+ * cell and no ruling at all, which reads as floating grey blocks. These
+ * unlayered rules (unlayered beats every layer, so they survive the
+ * prose preset regardless of order) restyle tables the way clerk.com
+ * docs does: a hairline outer border with rounded corners, ruling
+ * between rows and columns, a muted header band, and a soft hover on
+ * body rows. Token-driven so the dark theme follows automatically.
+ *
+ * The `:where([class~='not-prose'] …)` exclusion keeps the rule off the
+ * self-drawn components (card grids, the partner wall) that opt out of
+ * the prose typography.
+ */
+.prose :where(table):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 1px solid var(--color-fd-border);
+  border-radius: 10px;
+}
+
+.prose :where(table th, table td):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+  border-right: 1px solid var(--color-fd-border);
+  border-bottom: 1px solid var(--color-fd-border);
+  padding: 9px 14px;
+}
+
+.prose :where(table tr th:last-child, table tr td:last-child):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+  border-right: none;
+}
+
+.prose :where(table tbody tr:last-child th, table tbody tr:last-child td):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+  border-bottom: none;
+}
+
+.prose :where(table thead th):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+  background-color: var(--color-fd-muted);
+  font-weight: 600;
+}
+
+.prose :where(table tbody tr):not(:where([class~='not-prose'], [class~='not-prose'] *)):hover {
+  background-color: color-mix(in oklab, var(--color-fd-accent) 45%, transparent);
+}
+
+/*
+ * Rounded outer corners: the table's own radius cannot clip the header
+ * band painted on the cells (backgrounds overflow a rounded border on a
+ * separate-collapse table), so round the corner cells to match.
+ */
+.prose :where(table thead tr th:first-child, table tr:first-child td:first-child):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+  border-top-left-radius: 9px;
+}
+
+.prose :where(table thead tr th:last-child, table tr:first-child td:last-child):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+  border-top-right-radius: 9px;
+}
+
+.prose :where(table tbody tr:last-child td:first-child, table tbody tr:last-child th:first-child):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+  border-bottom-left-radius: 9px;
+}
+
+.prose :where(table tbody tr:last-child td:last-child):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+  border-bottom-right-radius: 9px;
+}
