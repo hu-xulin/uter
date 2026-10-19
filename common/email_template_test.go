@@ -1,6 +1,9 @@
 package common
 
 import (
+	"encoding/base64"
+	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 
@@ -30,7 +33,7 @@ func TestBuildBrandEmailHTML(t *testing.T) {
 	require.Contains(t, html, "此验证码将在 10 分钟后失效。")
 	// 品牌头部 logo（base64 内嵌 PNG，记号+字标一体）与页脚落款
 	require.Contains(t, html, `src="data:image/png;base64,`)
-	require.Contains(t, html, `width="61" height="64" alt="Uter.ai"`)
+	require.Contains(t, html, `width="64" height="64" alt="Uter.ai"`)
 	require.Contains(t, html, "深圳优特网络有限公司")
 	// 空段落被跳过，不会产生空 <p>
 	require.NotContains(t, html, "<p style=\"margin:0 0 16px;font-size:14px;line-height:1.7;color:#3c4043;\">   </p>")
@@ -68,4 +71,18 @@ func TestBuildBrandEmailHTMLStripsLinkUnderline(t *testing.T) {
 	require.Contains(t, html2, `<a href='https://uter.ai/reset' style="color:#1a73e8;text-decoration:none;">此处</a>`)
 	// 不应出现两个 style 属性
 	require.Equal(t, 1, strings.Count(html2, `style="color:#1a73e8;text-decoration:none;"`))
+}
+
+// 邮件头部 logo 是 base64 内嵌的，与 web/public/logo.png 没有任何联动：站点
+// 换了 logo 而这里不换，用户收的邮件就会继续显示旧图。这条用例把两者绑在
+// 一起，换 logo 时漏改邮件会直接失败。
+func TestBrandEmailLogoMatchesSiteLogo(t *testing.T) {
+	siteLogo, err := os.ReadFile(filepath.Join("..", "web", "public", "logo.png"))
+	if err != nil {
+		t.Skipf("站点 logo 不可读，跳过与邮件 logo 的一致性校验: %v", err)
+	}
+
+	embedded, err := base64.StdEncoding.DecodeString(brandEmailLogoBase64)
+	require.NoError(t, err)
+	require.Equal(t, siteLogo, embedded, "邮件内嵌 logo 与 web/public/logo.png 不一致，换 logo 后需同步替换 common/email_template.go 的 brandEmailLogoBase64")
 }
