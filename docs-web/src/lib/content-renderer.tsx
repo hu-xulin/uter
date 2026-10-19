@@ -554,15 +554,22 @@ function BlockView({ block, locale }: { block: Block; locale: DocsLocale }) {
       return <CodeBlock code={block.value} lang={block.lang} labels={codeCopyLabels(locale)} />;
 
     case 'table':
+      /*
+       * Clerk-style table: hairline rounded card, a solid muted header
+       * band, horizontal ruling between rows only (no vertical column
+       * lines), generous cell padding, and the label column emphasized.
+       * `not-prose` opts out of the prose typography preset, which would
+       * otherwise paint a background on every cell.
+       */
       return (
-        <div className='not-prose my-4 overflow-x-auto rounded-lg border border-fd-border'>
+        <div className='not-prose my-4 overflow-x-auto rounded-[10px] border border-fd-border'>
           <table className='w-full border-collapse text-doc-body'>
-            <thead className='bg-fd-card/40'>
+            <thead className='bg-fd-muted'>
               <tr>
                 {block.head.map((cell, i) => (
                   <th
                     key={i}
-                    className='border-b border-fd-border px-3 py-2 text-start font-semibold text-fd-foreground'
+                    className='border-b border-fd-border px-4 py-3 text-start font-semibold text-fd-foreground'
                   >
                     <InlineRuns nodes={cell} />
                   </th>
@@ -575,7 +582,11 @@ function BlockView({ block, locale }: { block: Block; locale: DocsLocale }) {
                   {row.map((cell, j) => (
                     <td
                       key={j}
-                      className='border-b border-fd-border/60 px-3 py-2 align-top text-fd-muted-foreground last:border-b-0'
+                      className={`border-b border-fd-border/60 px-4 py-3 align-top last:border-b-0 ${
+                        j === 0
+                          ? 'font-medium text-fd-foreground'
+                          : 'text-fd-muted-foreground'
+                      }`}
                     >
                       <InlineRuns nodes={cell} />
                     </td>
