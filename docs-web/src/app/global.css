@@ -712,9 +712,10 @@ html[data-docs-embed='true'] #nd-subnav > a {
  * cell and no ruling at all, which reads as floating grey blocks. These
  * unlayered rules (unlayered beats every layer, so they survive the
  * prose preset regardless of order) restyle tables the way clerk.com
- * docs does: a hairline outer border with rounded corners, ruling
- * between rows and columns, a muted header band, and a soft hover on
- * body rows. Token-driven so the dark theme follows automatically.
+ * docs does: a hairline outer border with rounded corners, horizontal
+ * ruling between rows only (no vertical column lines), a muted header
+ * band over a transparent body, and a soft hover on body rows.
+ * Token-driven so the dark theme follows automatically.
  *
  * The `:where([class~='not-prose'] …)` exclusion keeps the rule off the
  * self-drawn components (card grids, the partner wall) that opt out of
@@ -728,13 +729,9 @@ html[data-docs-embed='true'] #nd-subnav > a {
 }
 
 .prose :where(table th, table td):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
-  border-right: 1px solid var(--color-fd-border);
+  background-color: transparent;
   border-bottom: 1px solid var(--color-fd-border);
-  padding: 9px 14px;
-}
-
-.prose :where(table tr th:last-child, table tr td:last-child):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
-  border-right: none;
+  padding: 12px 16px;
 }
 
 .prose :where(table tbody tr:last-child th, table tbody tr:last-child td):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
