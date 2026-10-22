@@ -1,7 +1,6 @@
 package service
 
 import (
-	"fmt"
 	"html"
 
 	"github.com/uter-ai/uter/common"
@@ -49,9 +48,13 @@ func NotifyAccountSecurityChange(lang, email, eventKey string, eventArgs ...map[
 		return nil
 	}
 	event := html.EscapeString(i18n.Translate(lang, eventKey, eventArgs...))
-	subject := i18n.Translate(lang, i18n.MsgEmailSecurityNoticeSubject, map[string]any{"SystemName": common.SystemName})
-	content := fmt.Sprintf("<p>%s</p><p>%s</p>",
-		i18n.Translate(lang, i18n.MsgEmailSecurityNoticeChanged, map[string]any{"Event": event}),
-		i18n.Translate(lang, i18n.MsgEmailSecurityNoticeAdvice))
+	subject := common.BrandEmailSubject(i18n.Translate(lang, i18n.MsgEmailSecurityNoticeSubject, map[string]any{"SystemName": common.SystemName}))
+	content := common.BuildBrandEmailHTML(common.BrandEmail{
+		Heading: i18n.Translate(lang, i18n.MsgEmailSecurityNoticeSubject, map[string]any{"SystemName": common.SystemName}),
+		Paragraphs: []string{
+			i18n.Translate(lang, i18n.MsgEmailSecurityNoticeChanged, map[string]any{"Event": event}),
+			i18n.Translate(lang, i18n.MsgEmailSecurityNoticeAdvice),
+		},
+	})
 	return common.SendEmail(subject, email, content)
 }
