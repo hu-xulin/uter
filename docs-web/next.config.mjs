@@ -26,6 +26,12 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
+  // Pin the Turbopack root to this package. Without it Next.js walks up and
+  // may treat an unrelated package.json in a parent directory as the
+  // workspace root, which makes the build scan far outside this project.
+  turbopack: {
+    root: import.meta.dirname,
+  },
 };
 
 export default nextConfig;
