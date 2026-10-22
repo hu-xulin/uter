@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/uter-ai/uter/common"
+	"github.com/uter-ai/uter/i18n"
 	"github.com/uter-ai/uter/middleware"
 	"github.com/uter-ai/uter/model"
 	"github.com/uter-ai/uter/service"
@@ -157,7 +158,7 @@ func WeChatBind(c *gin.Context) {
 		writeSecurityOperationError(c, err)
 		return
 	}
-	notificationFailed = service.NotifyAccountSecurityChange(user.Email, "WeChat account linked") != nil
+	notificationFailed = service.NotifyAccountSecurityChange(service.AccountMailLanguage(c, user.Id), user.Email, i18n.MsgSecurityEventWeChatLinked) != nil
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
 		"message": "",

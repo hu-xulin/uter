@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/uter-ai/uter/common"
+	"github.com/uter-ai/uter/i18n"
 	"github.com/uter-ai/uter/middleware"
 	"github.com/uter-ai/uter/model"
 	"github.com/uter-ai/uter/oauth"
@@ -606,7 +607,7 @@ func UnbindCustomOAuth(c *gin.Context) {
 		writeSecurityOperationError(c, err)
 		return
 	}
-	notificationFailed = service.NotifyAccountSecurityChange(user.Email, "Login account unlinked") != nil
+	notificationFailed = service.NotifyAccountSecurityChange(service.AccountMailLanguage(c, user.Id), user.Email, i18n.MsgSecurityEventLoginUnlinked) != nil
 
 	common.ApiSuccessT(c, "Unbound successfully", gin.H{"notification_warning": notificationFailed})
 }

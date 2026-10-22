@@ -5,10 +5,11 @@ import (
 	"html"
 
 	"github.com/uter-ai/uter/common"
-
+	"github.com/uter-ai/uter/i18n"
 	"github.com/uter-ai/uter/model"
 	"github.com/uter-ai/uter/oauth"
 	"github.com/uter-ai/uter/setting/system_setting"
+	"github.com/gin-gonic/gin"
 )
 
 func UnbindAccountOAuth(identity AuthIdentity, providerID int) error {
@@ -30,19 +31,27 @@ func UnbindAccountOAuth(identity AuthIdentity, providerID int) error {
 	return model.UnbindUserOAuthForSession(identity, providerID, enabled)
 }
 
+// AccountMailLanguage is the language of mail about a user's account: the
+// language the user saved, else the one the request stated.
+func AccountMailLanguage(c *gin.Context, userId int) string {
+	if lang := model.GetUserLanguage(userId); lang != "" {
+		return lang
+	}
+	return i18n.StatedLang(c)
+}
+
 // NotifyAccountSecurityChange never includes credentials or tokens. The caller
 // records delivery failure independently from the already-committed change.
-func NotifyAccountSecurityChange(email, event string) error {
+// eventKey names the change; the notice is written in lang (see
+// AccountMailLanguage).
+func NotifyAccountSecurityChange(lang, email, eventKey string, eventArgs ...map[string]any) error {
 	if email == "" {
 		return nil
 	}
-	subject := common.BrandEmailSubject("安全提醒")
-	content := common.BuildBrandEmailHTML(common.BrandEmail{
-		Heading: "安全提醒",
-		Paragraphs: []string{
-			fmt.Sprintf("您的 %s 账号发生了安全相关变更：%s。", common.EmailBrandName, html.EscapeString(event)),
-			"如果这不是您本人的操作，请立即前往账号安全设置，撤销其他登录会话并联系管理员。",
-		},
-	})
+	event := html.EscapeString(i18n.Translate(lang, eventKey, eventArgs...))
+	subject := i18n.Translate(lang, i18n.MsgEmailSecurityNoticeSubject, map[string]any{"SystemName": common.SystemName})
+	content := fmt.Sprintf("<p>%s</p><p>%s</p>",
+		i18n.Translate(lang, i18n.MsgEmailSecurityNoticeChanged, map[string]any{"Event": event}),
+		i18n.Translate(lang, i18n.MsgEmailSecurityNoticeAdvice))
 	return common.SendEmail(subject, email, content)
 }
