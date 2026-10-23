@@ -14,6 +14,9 @@ import (
 	"testing"
 	"time"
 
+	"github.com/gin-gonic/gin"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/constant"
 	"github.com/uter-ai/uter/relay/channel"
@@ -23,9 +26,6 @@ import (
 	"github.com/uter-ai/uter/service"
 	"github.com/uter-ai/uter/setting/operation_setting"
 	"github.com/uter-ai/uter/setting/system_setting"
-	"github.com/gin-gonic/gin"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 func TestRelayKeepAliveDuringImagePreparation(t *testing.T) {
@@ -285,8 +285,8 @@ func TestRelayStreamErrorAfterKeepAlive(t *testing.T) {
 			writeRelayStreamError(c, format, apiError)
 			require.Equal(t, http.StatusOK, recorder.Code)
 			require.Equal(t, "text/event-stream", recorder.Header().Get("Content-Type"))
-		require.Contains(t, recorder.Body.String(), "upstream rejected input")
-		status, ok := common.GetContextKeyType[*relaycommon.StreamStatus](c, constant.ContextKeyResponseStreamStatus)
+			require.Contains(t, recorder.Body.String(), "upstream rejected input")
+			status, ok := common.GetContextKeyType[*relaycommon.StreamStatus](c, constant.ContextKeyResponseStreamStatus)
 			require.True(t, ok)
 			require.True(t, status.ResponseFailed(), "stream errors must not consume the successful-request rate limit")
 			require.Equal(t, http.StatusBadRequest, status.OutcomeSnapshot().ErrorStatus)
