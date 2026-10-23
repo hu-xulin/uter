@@ -57,6 +57,26 @@ func TestShouldRetryRelayErrorHonorsChannelPinOnChannelError(t *testing.T) {
 	}
 }
 
+func TestDecideRelayRetryStopsAfterOutputWritten(t *testing.T) {
+	upstream := func(status int) *types.NewAPIError {
+		return types.NewOpenAIError(errors.New("upstream"), types.ErrorCodeBadResponseStatusCode, status)
+	}
+
+	c, _ := gin.CreateTestContext(httptest.NewRecorder())
+	assert.Equal(t, "retry", DecideRelayRetry(c, upstream(http.StatusTooManyRequests), 1).Action,
+		"没有写出响应体时仍允许重试")
+
+	_, err := c.Writer.WriteString("data: {\"choices\":[]}\n\n")
+	require.NoError(t, err)
+
+	assert.Equal(t, PolicyDecision{Action: "stop", Reason: "response_already_written", Source: "system"},
+		DecideRelayRetry(c, upstream(http.StatusTooManyRequests), 1))
+	assert.False(t, ShouldRetryRelayError(c, upstream(http.StatusTooManyRequests), 1))
+
+	// 渠道错误同样不能重试：换渠道重发只会让客户端收到第二段流式内容。
+	assert.Equal(t, "stop", DecideRelayRetry(c, types.NewError(errors.New("no key"), types.ErrorCodeChannelNoAvailableKey), 0).Action)
+}
+
 func TestProcessChannelErrorMasksDisableReasonAndNotification(t *testing.T) {
 	previousDB, previousType := model.DB, common.MainDatabaseType()
 	previousCache, previousRedis := common.MemoryCacheEnabled, common.RedisEnabled
