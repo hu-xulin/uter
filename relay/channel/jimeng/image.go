@@ -3,10 +3,11 @@ package jimeng
 import (
 	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 
 	relaycommon "github.com/uter-ai/uter/relay/common"
+
+	"github.com/uter-ai/uter/common"
 
 	"github.com/uter-ai/uter/relaykit/dto"
 	"github.com/uter-ai/uter/relaykit/types"
@@ -52,7 +53,7 @@ func responseJimeng2OpenAIImage(_ *gin.Context, response *ImageResponse, info *r
 // jimengImageHandler handles the Jimeng image generation response
 func jimengImageHandler(c *gin.Context, resp *http.Response, info *relaycommon.RelayInfo) (*dto.Usage, *types.UterError) {
 	var jimengResponse ImageResponse
-	responseBody, err := io.ReadAll(resp.Body)
+	responseBody, err := common.ReadUpstreamBody(resp.Body)
 	if err != nil {
 		return nil, types.NewOpenAIError(err, types.ErrorCodeReadResponseBodyFailed, http.StatusInternalServerError)
 	}
