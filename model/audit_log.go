@@ -8,9 +8,9 @@ import (
 	"strings"
 
 	"github.com/ClickHouse/clickhouse-go/v2"
+	"github.com/gin-gonic/gin"
 	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/logger"
-	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
 
@@ -46,9 +46,9 @@ type AuditLog struct {
 }
 
 type AuditLogFilter struct {
-	SelfView        bool // Server-selected metadata projection, independent of the viewer's actual role.
-	UserId          int
-	Username        string
+	SelfView bool // Server-selected metadata projection, independent of the viewer's actual role.
+	UserId   int
+	Username string
 	// Usernames 是 Uter 的组织隔离过滤：非空时把可见范围收窄到该集合，
 	// 用于组织/部门管理员只能审计本组织成员的操作。
 	// 空切片表示「不施加过滤」，所以调用方在范围为空时必须传哨兵
