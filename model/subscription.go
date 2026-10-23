@@ -8,10 +8,10 @@ import (
 	"sync"
 	"time"
 
-	"github.com/uter-ai/uter/common"
-	"github.com/uter-ai/uter/pkg/cachex"
 	"github.com/samber/hot"
 	"github.com/shopspring/decimal"
+	"github.com/uter-ai/uter/common"
+	"github.com/uter-ai/uter/pkg/cachex"
 	"gorm.io/gorm"
 )
 
@@ -223,9 +223,9 @@ type SubscriptionOrder struct {
 	// ProviderAmount/Currency snapshot provider-side cash pricing at order creation.
 	ProviderAmount   int64  `json:"-" gorm:"not null;default:0"`
 	ProviderCurrency string `json:"-" gorm:"type:varchar(3);not null;default:''"`
-	Status          string `json:"status"`
-	CreateTime      int64  `json:"create_time"`
-	CompleteTime    int64  `json:"complete_time"`
+	Status           string `json:"status"`
+	CreateTime       int64  `json:"create_time"`
+	CompleteTime     int64  `json:"complete_time"`
 
 	ProviderPayload string `json:"provider_payload" gorm:"type:text"`
 }
@@ -254,7 +254,7 @@ func GetSubscriptionOrderByTradeNo(tradeNo string) *SubscriptionOrder {
 
 // User subscription instance
 type UserSubscription struct {
-	Id     int `json:"id"`
+	Id int `json:"id"`
 	// 裸 index 与 idx_user_sub_active 首列重复，去掉以避免同一列双索引。
 	UserId int `json:"user_id" gorm:"index:idx_user_sub_active,priority:1"`
 	PlanId int `json:"plan_id" gorm:"index"`
@@ -674,16 +674,16 @@ func upsertSubscriptionTopUpTx(tx *gorm.DB, order *SubscriptionOrder) error {
 	if err := tx.Where("trade_no = ?", order.TradeNo).First(&topup).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			topup = TopUp{
-				UserId:        order.UserId,
-				Amount:        0,
-				Money:         order.Money,
-				TradeNo:       order.TradeNo,
-				PaymentMethod:   order.PaymentMethod,
+				UserId:           order.UserId,
+				Amount:           0,
+				Money:            order.Money,
+				TradeNo:          order.TradeNo,
+				PaymentMethod:    order.PaymentMethod,
 				ProviderAmount:   order.ProviderAmount,
 				ProviderCurrency: order.ProviderCurrency,
 				CreateTime:       order.CreateTime,
-				CompleteTime:  now,
-				Status:        common.TopUpStatusSuccess,
+				CompleteTime:     now,
+				Status:           common.TopUpStatusSuccess,
 			}
 			return tx.Create(&topup).Error
 		}
