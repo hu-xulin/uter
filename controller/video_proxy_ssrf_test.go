@@ -25,7 +25,6 @@ func TestValidateTaskMediaProxyTargetPreventsProxyDNSBypass(t *testing.T) {
 	require.NoError(t, validateTaskMediaProxyTarget("https://example.com/video.mp4", "http://proxy.example:8080", &system_setting.FetchSetting{EnableSSRFProtection: true, ApplyIPFilterForDomain: false, AllowPrivateIp: true}))
 }
 
-
 func TestTaskMediaRedirectClientDoesNotForwardClientHeadersAcrossOrigins(t *testing.T) {
 	fetchSetting := system_setting.GetFetchSetting()
 	original := *fetchSetting
@@ -45,8 +44,8 @@ func TestTaskMediaRedirectClientDoesNotForwardClientHeadersAcrossOrigins(t *test
 	require.NoError(t, err)
 
 	clientHeaders := map[string]string{
-		"Range":            "bytes=0-1023",
-		"If-None-Match":    "\"client-etag\"",
+		"Range":         "bytes=0-1023",
+		"If-None-Match": "\"client-etag\"",
 	}
 	client := taskMediaRedirectClient(&http.Client{}, "", c, clientHeaders, true)
 
