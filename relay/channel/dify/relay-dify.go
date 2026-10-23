@@ -11,6 +11,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/samber/lo"
 	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/constant"
 	relaycommon "github.com/uter-ai/uter/relay/common"
@@ -18,7 +19,6 @@ import (
 	"github.com/uter-ai/uter/relaykit/dto"
 	"github.com/uter-ai/uter/relaykit/types"
 	"github.com/uter-ai/uter/service"
-	"github.com/samber/lo"
 
 	"github.com/gin-gonic/gin"
 )
@@ -265,7 +265,7 @@ func difyStreamHandler(c *gin.Context, info *relaycommon.RelayInfo, resp *http.R
 
 func difyHandler(c *gin.Context, info *relaycommon.RelayInfo, resp *http.Response) (*dto.Usage, *types.NewAPIError) {
 	var difyResponse DifyChatCompletionResponse
-	responseBody, err := io.ReadAll(resp.Body)
+	responseBody, err := common.ReadUpstreamBody(resp.Body)
 
 	if err != nil {
 		return nil, types.NewError(err, types.ErrorCodeBadResponseBody)
