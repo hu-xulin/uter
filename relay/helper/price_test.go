@@ -6,6 +6,9 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/gin-gonic/gin"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/i18n"
 	"github.com/uter-ai/uter/pkg/billingexpr"
@@ -18,9 +21,6 @@ import (
 	"github.com/uter-ai/uter/setting/model_setting"
 	"github.com/uter-ai/uter/setting/operation_setting"
 	"github.com/uter-ai/uter/setting/ratio_setting"
-	"github.com/gin-gonic/gin"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 func TestModelPriceHelperTieredUsesPreloadedRequestInput(t *testing.T) {
