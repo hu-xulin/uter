@@ -8,8 +8,8 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/uter-ai/uter/common"
 	"github.com/go-redis/redis/v8"
+	"github.com/uter-ai/uter/common"
 )
 
 const (
