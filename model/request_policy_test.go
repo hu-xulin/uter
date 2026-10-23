@@ -8,11 +8,11 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/uter-ai/uter/common"
-	"github.com/uter-ai/uter/setting/operation_setting"
 	"github.com/glebarez/sqlite"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/uter-ai/uter/common"
+	"github.com/uter-ai/uter/setting/operation_setting"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
