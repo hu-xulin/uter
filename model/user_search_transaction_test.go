@@ -8,12 +8,16 @@ import (
 )
 
 // TestSearchUsersScopedRejectsBadKeywordWithoutLeakingTransaction 对应审查报告
-// 「建议补充的回归测试 #3」：传 "%" / "%%" / "a%" 这类非法搜索词，断言事务已回滚。
+// 「建议补充的回归测试 #3」：传 "%" / "%%" / "a%" 这类非法搜索词，断言连接不被遗弃。
 //
 // 这是一条**可打瘫**的确定性缺陷：validateLikePattern 在这些输入上必然报错，
-// 而修复前的错误路径直接 return，既没 Commit 也没 Rollback。defer 只兜 panic，
-// 兜不住普通 return，于是每次请求稳定泄漏一个数据库连接。任意用户在搜索框输入
+// 而最早的实现里错误路径直接 return，既没 Commit 也没 Rollback（defer 只兜 panic，
+// 兜不住普通 return），每次请求稳定泄漏一个数据库连接。任意用户在搜索框输入
 // 一个字符就能触发，连接池耗尽后全站 500。
+//
+// 现在的实现是**只读查询不开事务**（见 SearchUsersScoped 注释），从根上消除了
+// 可泄漏的对象；这条用例保留为回归守卫：无论将来怎么改，非法搜索词都不得留下
+// 未归还的连接。
 //
 // 断言方式是「连接数不增长」而非「不返回错误」——前者才是这个 bug 的本质。
 func TestSearchUsersScopedRejectsBadKeywordWithoutLeakingTransaction(t *testing.T) {
