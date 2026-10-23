@@ -134,7 +134,6 @@ export function getPaymentIcon(
         />
       )
     case PAYMENT_TYPES.ALIPAY_WEB:
-    case PAYMENT_TYPES.ALIPAY_MINIPROGRAM:
       return (
         <IconAlipay
           className={className}

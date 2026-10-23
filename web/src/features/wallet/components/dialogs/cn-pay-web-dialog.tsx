@@ -61,7 +61,8 @@ const POLL_TIMEOUT_MS = 300_000
  * Website payment cashier for the official Alipay / WeChat Pay gateways.
  *
  * Two cashier forms, chosen by the client form factor:
- * - PC     → QR code (Alipay precreate / WeChat Native) + balance polling.
+ * - PC     → Alipay: redirect to PC cashier (alipay.trade.page.pay) via pay_url;
+ *            WeChat: QR code (Native) + balance polling.
  * - Mobile → direct browser redirect to the provider cashier
  *            (Alipay wap / WeChat H5), which then returns via return_url.
  */
@@ -127,7 +128,9 @@ export function CnPayWebDialog({
           window.location.href = redirectUrl
           return
         }
-        const content = data.qr_code || data.code_url || ''
+        // PC WeChat Pay renders a Native QR; Alipay always comes back as pay_url
+        // above, so it never reaches this branch.
+        const content = data.code_url || ''
         if (!content) {
           setError(t('Failed to create payment order'))
           return

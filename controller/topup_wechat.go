@@ -429,7 +429,7 @@ func WechatPayNotify(c *gin.Context) {
 		}
 	}
 
-	if !service.WechatPayVerifyNotify(timestamp, nonce, bodyStr, signature, operation_setting.WechatPayPlatformCert) {
+	if !service.WechatPayVerifyNotify(timestamp, nonce, bodyStr, signature, operation_setting.WechatPayPublicKey) {
 		logger.LogWarn(c.Request.Context(), fmt.Sprintf("微信支付 webhook 验签失败 path=%q client_ip=%s", c.Request.URL.Path, c.ClientIP()))
 		c.JSON(http.StatusOK, gin.H{"code": "FAIL", "message": i18n.T(c, i18n.MsgTopup_wechatSign_verify_failed)})
 		return
@@ -472,8 +472,8 @@ func WechatPayNotify(c *gin.Context) {
 		return
 	}
 
-	// 身份校验：确认回执属于本商户/本小程序。平台证书为微信支付全局共用，
-	// 若平台证书配置错误或与他人共用，解密内容可能属于其它商户，
+	// 身份校验：确认回执属于本商户/本小程序。微信支付公钥由微信支付全局共用，
+	// 若公钥配置错误或与他人共用，解密内容可能属于其它商户，
 	// 必须校验 mchid / appid 后再入账，否则可能为无关订单入账。
 	if dec.Mchid != operation_setting.WechatPayMchId {
 		logger.LogWarn(c.Request.Context(), fmt.Sprintf("微信支付 webhook 商户号不匹配 trade_no=%s mchid=%s client_ip=%s", dec.OutTradeNo, dec.Mchid, c.ClientIP()))

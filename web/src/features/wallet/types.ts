@@ -78,23 +78,23 @@ export type CnPayPaymentResponse = ApiResponse<{
 }> & { url?: string }
 
 /**
- * Mini-program payment request. openid (WeChat) / buyer_id (Alipay) is obtained
- * by the mini-program after login and sent to the server to create the order.
+ * Mini-program payment request. Only the WeChat mini-program remains: it obtains
+ * the user's openid after login and sends it to the server to create the order.
+ * (Alipay mini-program payment was removed — we only contracted computer/mobile
+ * website payment, so there is no alipay_miniprogram method.)
  */
 export interface CnMiniProgramPaymentRequest {
   /** Topup amount */
   amount: number
-  /** Payment method identifier (alipay_miniprogram / wechat_miniprogram) */
+  /** Payment method identifier (wechat_miniprogram) */
   payment_method: string
   /** WeChat mini-program user openid */
   openid?: string
-  /** Alipay mini-program user user_id (buyer_id) */
-  buyer_id?: string
 }
 
 /**
  * Website payment (web cashier) request.
- * `client` selects the cashier form: "pc" (QR code) or "mobile" (redirect).
+ * `client` selects the cashier form: "pc" or "mobile".
  * The server whitelists the value and falls back to "pc" for anything unknown.
  */
 export interface CnWebPaymentRequest {
@@ -108,12 +108,12 @@ export interface CnWebPaymentRequest {
 
 /**
  * Website payment response.
- * - PC: `qr_code` (Alipay precreate) or `code_url` (WeChat Native) → render QR.
- * - Mobile: `pay_url` (Alipay wap) or `h5_url` (WeChat H5) → redirect the browser.
+ * - Alipay: `pay_url` on both form factors — 电脑网站支付 (PC cashier page) /
+ *   手机网站支付 (mobile), always an HTTP redirect target.
+ * - WeChat Pay: `code_url` on PC (Native QR), `h5_url` on mobile (H5) → redirect.
  */
 export type CnWebPaymentResponse = ApiResponse<{
   trade_no?: string
-  qr_code?: string
   code_url?: string
   pay_url?: string
   h5_url?: string

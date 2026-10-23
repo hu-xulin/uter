@@ -102,7 +102,7 @@ func GetTopUpInfo(c *gin.Context) {
 		}
 	}
 
-	// 支付宝网站支付（PC 扫码 / 手机网站）
+	// 支付宝网站支付（电脑网站支付 alipay.trade.page.pay / 手机网站支付 alipay.trade.wap.pay）
 	enableAlipay := isAlipayTopUpEnabled()
 	if enableAlipay {
 		hasAlipay := false
@@ -487,7 +487,6 @@ func providerCurrencyMatchesOrder(paidCurrency, expectedCurrency string) bool {
 	expectedCurrency = strings.TrimSpace(expectedCurrency)
 	return paidCurrency != "" && expectedCurrency != "" && strings.EqualFold(paidCurrency, expectedCurrency)
 }
-
 
 // currencyMinorUnitExponent returns the ISO 4217 minor-unit exponent for
 // currencies supported by provider order amounts. Unusual zero/three/four-decimal

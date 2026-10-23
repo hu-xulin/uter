@@ -58,11 +58,11 @@ var secretOptionKeys = map[string]struct{}{
 
 	// 微信支付（站点与品牌 → 集成 → 微信支付）的敏感字段。键名取自
 	// web/src/features/system-settings/integrations/wechat-pay-settings-section.tsx
-	// 的 save key（WechatPayApiV3Key / WechatPayPrivateKey / WechatPayPlatformCert）。
+	// 的 save key（WechatPayApiV3Key / WechatPayPrivateKey / WechatPayPublicKey）。
 	// 此前未登记，GET /api/option/ 会明文下发这三值，与 uter 密钥掩码规则不符。
-	"WechatPayApiV3Key":      {},
-	"WechatPayPrivateKey":    {},
-	"WechatPayPlatformCert": {},
+	"WechatPayApiV3Key":   {},
+	"WechatPayPrivateKey": {},
+	"WechatPayPublicKey":  {},
 
 	// 支付 / 签名凭据。与微信支付同类：这些键都在 OptionMap 里，但此前
 	// 没有登记，GET /api/option/ 会明文下发。影响最大的是
@@ -78,6 +78,14 @@ var secretOptionKeys = map[string]struct{}{
 	"WaffoSandboxApiKey":     {},
 	"WaffoSandboxPrivateKey": {},
 	"WorkerValidKey":         {},
+
+	// 对端公钥 / 证书：与私钥同一套处理（读取时掩码、掩码串不落库、
+	// 前端统一走 Secret 组件），与上面微信支付的 WechatPayPublicKey 同类。
+	// 它们本身不是机密，但明文回显对排错没有帮助（核对时直接去商户平台
+	// 看），反而多了一份容易与私钥混淆、被误粘贴或误覆盖的长 PEM 文本。
+	"AlipayPublicKey":        {},
+	"WaffoPublicCert":        {},
+	"WaffoSandboxPublicCert": {},
 }
 
 // 明确登记为「必须原样下发给浏览器」的公开值。这些键名以 key/token 结尾，
@@ -86,8 +94,6 @@ var secretOptionKeys = map[string]struct{}{
 var publicOptionKeys = map[string]struct{}{
 	// Cloudflare 设计上就发给前端的 challenge 公钥。
 	"TurnstileSiteKey": {},
-	// 支付宝公钥，用于校验支付宝回调签名，非机密。
-	"AlipayPublicKey": {},
 	// Stripe 的可发布公钥（secret 侧的 StripeSecretKey 已另行登记）。
 	"StripePublishableKey": {},
 }
@@ -160,6 +166,11 @@ func IsSecretOptionKey(key string) bool {
 // 这些键不是单个可掩码字段，而是含密钥的聚合体，掩码没有意义，直接剔除。
 var excludedOptionKeys = map[string]struct{}{
 	"CustomerServiceLLMConfig": {},
+	// Resend 的 API Key 由前端以「是否已配置」布尔位 + 仅新值输入框使用
+	// （见 web/src/features/system-settings/integrations/email-settings-section.tsx），
+	// 回传掩码串反而会被当成待保存值展示，因此读取时整条剔除，
+	// 只暴露 GetOptions 附带的 ResendKeyConfigured。
+	"ResendApiKey": {},
 }
 
 // IsExcludedOptionKey 判断某个 option key 是否应整条从选项列表中剔除。

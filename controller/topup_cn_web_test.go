@@ -17,7 +17,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 package controller
 
-import "testing"
+import (
+	"encoding/json"
+	"testing"
+)
 
 // TestNormalizePayClient 锁定网站支付收银台形态的收敛规则：
 // 客户端只能传白名单值，任何未知/异常输入一律降级为 pc，
@@ -78,6 +81,90 @@ func TestWithH5RedirectUrl(t *testing.T) {
 	// 非法 URL 原样返回。
 	if got3 := withH5RedirectUrl("://not a url", "x"); got3 != "://not a url" {
 		t.Fatalf("invalid URL must be returned as-is, got %q", got3)
+	}
+}
+
+// TestBuildAlipayWebPayParams 锁定支付宝「网站支付」两种形态的下单参数。
+//
+// 站点只签约了「电脑网站支付」与「手机网站支付」两类产品，因此下单方法只能是
+// alipay.trade.page.pay（product_code=FAST_INSTANT_TRADE_PAY）或
+// alipay.trade.wap.pay（product_code=QUICK_WAP_WAY）。当面付扫码（precreate）
+// 与小程序下单（alipay.trade.create）均不在签约范围内，一旦重新出现在
+// params["method"] 里，说明签约产品与实际下单不一致，下单必然被支付宝拒绝。
+func TestBuildAlipayWebPayParams(t *testing.T) {
+	const (
+		appId     = "2021000000000000"
+		timestamp = "2026-10-23 09:00:00"
+		tradeNo   = "USR1NOabcdefgh1234567890"
+		amount    = int64(500000)
+		payMoney  = 10.0
+		notifyUrl = "https://uter.cc/api/user/alipay/notify"
+		returnUrl = "https://uter.cc/wallet?pay=success"
+		quitUrl   = "https://uter.cc/wallet"
+	)
+
+	cases := []struct {
+		name            string
+		client          string
+		wantMethod      string
+		wantProductCode string
+		wantQuitUrl     bool
+	}{
+		{"pc", "pc", alipayMethodPagePay, alipayProductCodePC, false},
+		{"mobile", "mobile", alipayMethodWapPay, alipayProductCodeMobile, true},
+		// 兜底：任何非 "mobile" 的取值都不得落到第三种下单形态。
+		{"unknown falls back to pc", "weird", alipayMethodPagePay, alipayProductCodePC, false},
+		{"empty falls back to pc", "", alipayMethodPagePay, alipayProductCodePC, false},
+	}
+
+	for _, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
+			params := buildAlipayWebPayParams(c.client, appId, timestamp, tradeNo, amount, payMoney, notifyUrl, returnUrl, quitUrl)
+
+			if got := params["method"]; got != c.wantMethod {
+				t.Errorf("method = %q, want %q", got, c.wantMethod)
+			}
+			if got := params["app_id"]; got != appId {
+				t.Errorf("app_id = %q, want %q", got, appId)
+			}
+			if got := params["timestamp"]; got != timestamp {
+				t.Errorf("timestamp = %q, want %q", got, timestamp)
+			}
+			if got := params["notify_url"]; got != notifyUrl {
+				t.Errorf("notify_url = %q, want %q", got, notifyUrl)
+			}
+			if got := params["return_url"]; got != returnUrl {
+				t.Errorf("return_url = %q, want %q", got, returnUrl)
+			}
+			if _, signed := params["sign"]; signed {
+				t.Error("buildAlipayWebPayParams must not include sign")
+			}
+
+			var biz map[string]string
+			if err := json.Unmarshal([]byte(params["biz_content"]), &biz); err != nil {
+				t.Fatalf("biz_content is not valid JSON: %v (%q)", err, params["biz_content"])
+			}
+			if got := biz["product_code"]; got != c.wantProductCode {
+				t.Errorf("biz_content.product_code = %q, want %q", got, c.wantProductCode)
+			}
+			if got := biz["out_trade_no"]; got != tradeNo {
+				t.Errorf("biz_content.out_trade_no = %q, want %q", got, tradeNo)
+			}
+			if got := biz["total_amount"]; got != "10.00" {
+				t.Errorf("biz_content.total_amount = %q, want %q", got, "10.00")
+			}
+			if biz["subject"] == "" {
+				t.Error("biz_content.subject must not be empty")
+			}
+
+			quit, hasQuit := biz["quit_url"]
+			if hasQuit != c.wantQuitUrl {
+				t.Fatalf("biz_content.quit_url present = %v, want %v", hasQuit, c.wantQuitUrl)
+			}
+			if c.wantQuitUrl && quit != quitUrl {
+				t.Errorf("biz_content.quit_url = %q, want %q", quit, quitUrl)
+			}
+		})
 	}
 }
 

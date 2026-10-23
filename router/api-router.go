@@ -149,7 +149,6 @@ func SetApiRouter(router *gin.Engine) {
 				selfRoute.POST("/stripe/pay", middleware.CriticalRateLimit(), anonymousRequestBodyLimit, controller.RequestStripePay)
 				selfRoute.POST("/stripe/amount", anonymousRequestBodyLimit, controller.RequestStripeAmount)
 				selfRoute.POST("/creem/pay", middleware.CriticalRateLimit(), anonymousRequestBodyLimit, controller.RequestCreemPay)
-				selfRoute.POST("/alipay/pay", middleware.CriticalRateLimit(), anonymousRequestBodyLimit, controller.RequestAlipayMiniProgram)
 				selfRoute.POST("/wechat/pay", middleware.CriticalRateLimit(), anonymousRequestBodyLimit, controller.RequestWechatPayMiniProgram)
 				selfRoute.POST("/alipay/webpay", middleware.CriticalRateLimit(), anonymousRequestBodyLimit, controller.RequestAlipayWeb)
 				selfRoute.POST("/wechat/webpay", middleware.CriticalRateLimit(), anonymousRequestBodyLimit, controller.RequestWechatPayWeb)
@@ -358,12 +357,12 @@ func SetApiRouter(router *gin.Engine) {
 			tokenRoute.POST("/search", middleware.SearchRateLimit(), controller.SearchTokensPost)
 			tokenRoute.GET("/auto-groups", controller.GetTokenAutoGroups)
 			tokenRoute.GET("/:id", controller.GetToken)
-			tokenRoute.POST("/:id/key", middleware.CriticalRateLimit(), middleware.DisableCache(), controller.GetTokenKey)
+			tokenRoute.POST("/:id/key", middleware.CriticalRateLimit(), middleware.DisableCache(), middleware.TokenKeySecureVerificationRequired(), controller.GetTokenKey)
 			tokenRoute.POST("/", controller.AddToken)
 			tokenRoute.PUT("/", controller.UpdateToken)
 			tokenRoute.DELETE("/:id", controller.DeleteToken)
 			tokenRoute.POST("/batch", controller.DeleteTokenBatch)
-			tokenRoute.POST("/batch/keys", middleware.CriticalRateLimit(), middleware.DisableCache(), controller.GetTokenKeysBatch)
+			tokenRoute.POST("/batch/keys", middleware.CriticalRateLimit(), middleware.DisableCache(), middleware.TokenKeySecureVerificationRequired(), controller.GetTokenKeysBatch)
 		}
 
 		usageRoute := apiRouter.Group("/usage")

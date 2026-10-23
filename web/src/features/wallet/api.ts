@@ -186,23 +186,6 @@ export async function requestWaffoPancakePayment(
 }
 
 /**
- * Request official Alipay mini-program payment (alipay.trade.create).
- * The mini-program obtains buyer_id after login and passes it here. The server
- * returns data.trade_no, which the mini-program forwards to my.tradePay.
- */
-export async function requestAlipayMiniProgramPayment(
-  request: CnMiniProgramPaymentRequest
-): Promise<CnPayPaymentResponse> {
-  const res = await api.post('/api/user/alipay/pay', request, {
-    skipBusinessError: true,
-  } as Record<string, unknown>)
-  return {
-    ...res.data,
-    url: (res.data as { url?: string }).url,
-  }
-}
-
-/**
  * Request official WeChat Pay mini-program payment (JSAPI).
  * The mini-program obtains openid after login and passes it here. The server
  * returns the full wx.requestPayment parameter set in data.
@@ -220,8 +203,8 @@ export async function requestWechatMiniProgramPayment(
 }
 
 /**
- * Request official Alipay website payment.
- * PC → alipay.trade.precreate returns data.qr_code (render as QR).
+ * Request official Alipay website payment (电脑网站支付 / 手机网站支付).
+ * PC → alipay.trade.page.pay returns data.pay_url (redirect to the cashier page).
  * Mobile → alipay.trade.wap.pay returns data.pay_url (redirect the browser).
  */
 export async function requestAlipayWebPayment(
