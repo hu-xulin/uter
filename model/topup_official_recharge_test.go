@@ -232,7 +232,6 @@ func TestRechargeOfficialKeepsRedisAndDatabaseCreditInSync(t *testing.T) {
 	assert.Equal(t, 17, cached.Quota)
 }
 
-
 func TestRechargeCreemCreditsQuotaExactlyOnce(t *testing.T) {
 	truncateTables(t)
 	useFixedQuotaPerUnitForOfficialTest(t, 500000)
