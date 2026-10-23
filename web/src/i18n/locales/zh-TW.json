@@ -7467,6 +7467,7 @@
     "Auto-disable disabled": "不參與自動停用",
     "Requires global auto-disable and this channel option.": "需同時開啟全域自動停用和本通道開關。",
     "Request checks": "請求檢查",
+    "Sessions and retries": "工作階段與重試",
     "Request text filtering": "請求文字過濾",
     "Checks text extracted from supported requests against keywords, ignoring case. A match rejects the request before upstream processing and does not affect channel health. Images, audio and generated responses are not checked.": "對支援的請求中擷取的文字進行關鍵詞比對，不區分大小寫。符合時在傳送上游前拒絕請求，不影響渠道健康狀態。不檢查圖片、音訊或產生的回應內容。",
     "Prompt text filtering is active with the current form values.": "依目前表單設定，提示詞文字過濾已生效。",

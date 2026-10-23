@@ -7467,6 +7467,7 @@
     "Auto-disable disabled": "Désactivation automatique inactive",
     "Requires global auto-disable and this channel option.": "Nécessite l’activation globale et celle de ce canal.",
     "Request checks": "Contrôle des requêtes",
+    "Sessions and retries": "Sessions et tentatives",
     "Request text filtering": "Filtrage du texte des requêtes",
     "Checks text extracted from supported requests against keywords, ignoring case. A match rejects the request before upstream processing and does not affect channel health. Images, audio and generated responses are not checked.": "Compare les textes extraits des requêtes prises en charge aux mots-clés, sans tenir compte de la casse. Une correspondance rejette la requête avant son envoi au fournisseur, sans affecter la santé du canal. Images, audio et réponses générées ne sont pas vérifiés.",
     "Prompt text filtering is active with the current form values.": "Le filtrage des prompts est actif avec les valeurs du formulaire.",
