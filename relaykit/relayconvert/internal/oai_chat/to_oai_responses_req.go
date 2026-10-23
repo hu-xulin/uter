@@ -7,11 +7,11 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/samber/lo"
 	"github.com/uter-ai/uter/relaykit/dto"
 	"github.com/uter-ai/uter/relaykit/relayconvert/internal/convdiag"
 	kitutil "github.com/uter-ai/uter/relaykit/relayconvert/kitutil"
 	"github.com/uter-ai/uter/relaykit/relayconvert/reasoning"
-	"github.com/samber/lo"
 )
 
 func normalizeChatImageURLToString(v any) any {
