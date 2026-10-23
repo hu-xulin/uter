@@ -9,6 +9,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/samber/lo"
 	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/constant"
 	relaycommon "github.com/uter-ai/uter/relay/common"
@@ -16,7 +17,6 @@ import (
 	"github.com/uter-ai/uter/relaykit/dto"
 	"github.com/uter-ai/uter/relaykit/types"
 	"github.com/uter-ai/uter/service"
-	"github.com/samber/lo"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
@@ -161,7 +161,9 @@ func zhipuStreamHandler(c *gin.Context, info *relaycommon.RelayInfo, resp *http.
 	scanner.Split(bufio.ScanLines)
 	dataChan := make(chan string)
 	metaChan := make(chan string)
-	stopChan := make(chan bool)
+	// 带缓冲：消费方退出后发送不得阻塞，否则读取协程永久卡住。
+	stopChan := make(chan bool, 1)
+	ctx := c.Request.Context()
 	go func() {
 		for scanner.Scan() {
 			data := scanner.Text()
@@ -171,12 +173,16 @@ func zhipuStreamHandler(c *gin.Context, info *relaycommon.RelayInfo, resp *http.
 					continue
 				}
 				if line[:5] == "data:" {
-					dataChan <- line[5:]
-					if i != len(lines)-1 {
-						dataChan <- "\n"
+					if !helper.SendStreamChunk(ctx, dataChan, line[5:]) {
+						return
+					}
+					if i != len(lines)-1 && !helper.SendStreamChunk(ctx, dataChan, "\n") {
+						return
 					}
 				} else if line[:5] == "meta:" {
-					metaChan <- line[5:]
+					if !helper.SendStreamChunk(ctx, metaChan, line[5:]) {
+						return
+					}
 				}
 			}
 		}
@@ -224,7 +230,7 @@ func zhipuStreamHandler(c *gin.Context, info *relaycommon.RelayInfo, resp *http.
 
 func zhipuHandler(c *gin.Context, info *relaycommon.RelayInfo, resp *http.Response) (*dto.Usage, *types.NewAPIError) {
 	var zhipuResponse ZhipuResponse
-	responseBody, err := io.ReadAll(resp.Body)
+	responseBody, err := common.ReadUpstreamBody(resp.Body)
 	if err != nil {
 		return nil, types.NewOpenAIError(err, types.ErrorCodeReadResponseBodyFailed, http.StatusInternalServerError)
 	}
