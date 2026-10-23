@@ -3,12 +3,12 @@ package oaichat
 import (
 	"testing"
 
-	"github.com/uter-ai/uter/relaykit/dto"
-	"github.com/uter-ai/uter/relaykit/relayconvert/convmeta"
-	kitutil "github.com/uter-ai/uter/relaykit/relayconvert/kitutil"
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/uter-ai/uter/relaykit/dto"
+	"github.com/uter-ai/uter/relaykit/relayconvert/convmeta"
+	kitutil "github.com/uter-ai/uter/relaykit/relayconvert/kitutil"
 )
 
 func TestChatCompletionsResponseToResponsesPreservesTextToolCallsAndUsage(t *testing.T) {
