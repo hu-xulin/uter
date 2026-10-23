@@ -129,7 +129,7 @@ export function WechatPaySettingsSection() {
                   />
                 </FormControl>
                 <FormDescription>
-                  {t('Bound website payment AppID')}
+                  {t('AppID bound to the merchant (official account / mini program / mobile app)')}
                 </FormDescription>
                 <FormMessage />
               </FormItem>

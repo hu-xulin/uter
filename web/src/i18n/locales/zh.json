@@ -794,7 +794,7 @@
     "Enable official Alipay website payment": "启用支付宝官方网站支付",
     "Configuration for WeChat Pay website payment integration": "微信支付网站支付接入配置（PC Native 扫码 / 手机 H5）",
     "Enable official WeChat Pay website payment": "启用微信支付官方网站支付",
-    "Bound website payment AppID": "绑定的网站支付 AppID",
+    "AppID bound to the merchant (official account / mini program / mobile app)": "已与商户号绑定的 AppID（公众号 / 小程序 / 移动应用）",
     "Enable Alipay PC website payment and mobile website payment products": "在支付宝开放平台开通「电脑网站支付」（PC 收银台）与「手机网站支付」（移动端）",
     "Enable WeChat Pay Native (PC QR) and H5 (mobile) payment products": "在微信支付商户平台开通 Native（PC 扫码）与 H5（移动端）支付",
     "Register the ICP-filed payment domain (e.g. uter.cc) in the merchant platform": "在商户平台登记已完成 ICP 备案的支付域名",
