@@ -31,7 +31,6 @@ func TestValidateWorkerRequestURLScheme(t *testing.T) {
 	}
 }
 
-
 func TestValidateWorkerRequestTargetPreventsDNSRebinding(t *testing.T) {
 	tests := []struct {
 		name                 string
