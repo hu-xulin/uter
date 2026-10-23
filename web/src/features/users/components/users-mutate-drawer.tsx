@@ -31,6 +31,7 @@ import {
   sideDrawerFormClassName,
   sideDrawerHeaderClassName,
 } from '@/components/drawer-layout'
+import { PasswordInput } from '@/components/password-input'
 import { PermissionMatrix } from '@/components/permission-matrix'
 import { Button } from '@/components/ui/button'
 import { Combobox } from '@/components/ui/combobox'
@@ -190,7 +191,7 @@ export function UsersMutateDrawer({
       if (!accountPasswordSchema.safeParse(data.password ?? '').success) {
         form.setError('password', {
           type: 'manual',
-          message: t('Password must contain between 8 and 18 characters.'),
+          message: t('Password must contain between 8 and 128 characters.'),
         })
         return
       }
@@ -541,13 +542,12 @@ export function UsersMutateDrawer({
                     <FormItem>
                       <FormLabel>{t('Password')}</FormLabel>
                       <FormControl>
-                        <Input
+                        <PasswordInput
                           {...field}
-                          type='password'
                           placeholder={
                             isUpdate
                               ? t('Leave empty to keep unchanged')
-                              : t('Enter password (8–18 characters)')
+                              : t('Enter password (8–128 characters)')
                           }
                         />
                       </FormControl>
