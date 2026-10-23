@@ -4,11 +4,11 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/gin-gonic/gin"
 	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/logger"
 	"github.com/uter-ai/uter/model"
 	"github.com/uter-ai/uter/setting/operation_setting"
-	"github.com/gin-gonic/gin"
 )
 
 // GetCheckinStatus 获取用户签到状态和历史记录
