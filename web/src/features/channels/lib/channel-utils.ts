@@ -43,6 +43,11 @@ export function getChannelTypeLabel(type: number): string {
 /**
  * Get channel type icon name for getLobeIcon
  * Maps channel types to Lobe icon names using type number (language-independent)
+ *
+ * `Uter*` keys resolve to the custom icons registered in `@/lib/lobe-icon`
+ * (`@lobehub/icons` ships no "Uter" brand). The three branded Advanced Custom
+ * variants each keep their own glyph so shared / aggregate / proxy channels
+ * stay distinguishable wherever only the channel type number is available.
  */
 export function getChannelTypeIcon(type: number): string {
   const TYPE_TO_ICON: Record<number, string> = {
@@ -54,9 +59,9 @@ export function getChannelTypeIcon(type: number): string {
     58: 'Uter', // Advanced Custom
     59: 'Sub2API', // Sub2API
     60: 'Uter', // Uter
-    600: 'Uter', // Branded Shared
-    601: 'Uter', // Branded Aggregate
-    602: 'Uter', // Branded Proxy
+    600: 'UterShared', // Branded Shared
+    601: 'UterAggregate', // Branded Aggregate
+    602: 'UterProxy', // Branded Proxy
     3: 'Azure', // Azure
 
     // Anthropic
