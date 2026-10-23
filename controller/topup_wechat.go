@@ -24,7 +24,6 @@ import (
 	"github.com/uter-ai/uter/i18n"
 	"net/http"
 	"net/url"
-	"regexp"
 	"strconv"
 	"time"
 
@@ -41,9 +40,6 @@ import (
 // cnPayHTTPClient 带超时的共享 HTTP 客户端，避免向下游支付网关请求时因连接挂起而耗尽 goroutine。
 var cnPayHTTPClient = &http.Client{Timeout: 30 * time.Second}
 
-// wechatOpenidRe 校验小程序支付所需的 openid（微信用户标识）。
-var wechatOpenidRe = regexp.MustCompile(`^[A-Za-z0-9_\-]{1,128}$`)
-
 func isWechatPayTopUpEnabled() bool {
 	return isPaymentComplianceConfirmed() && operation_setting.IsWechatPayEnabled()
 }
@@ -55,161 +51,6 @@ func wechatAmountForStorage(amount int64) int64 {
 		return dAmount.Div(dQuotaPerUnit).IntPart()
 	}
 	return amount
-}
-
-// RequestWechatPayMiniProgram 创建微信支付小程序支付（JSAPI）预下单。
-// 需要小程序端传入 openid，返回 wx.requestPayment 所需的全部参数。
-func RequestWechatPayMiniProgram(c *gin.Context) {
-	var req CnMiniProgramRequest
-	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "参数错误"})
-		return
-	}
-	if !isWechatPayTopUpEnabled() {
-		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "当前未启用微信支付"})
-		return
-	}
-	if req.PaymentMethod != model.PaymentMethodWechatPayMiniProgram {
-		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "支付方式不存在"})
-		return
-	}
-	if req.Openid == "" || !wechatOpenidRe.MatchString(req.Openid) {
-		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "缺少有效的微信用户标识（openid）"})
-		return
-	}
-	if req.Amount < getMinTopup() {
-		c.JSON(http.StatusOK, gin.H{"message": "error", "data": fmt.Sprintf("充值数量不能小于 %d", getMinTopup())})
-		return
-	}
-	id := c.GetInt("id")
-	if rejectInvalidTopUpQuota(c, id, req.Amount) {
-		return
-	}
-	group, err := model.GetUserGroup(id, true)
-	if err != nil {
-		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "获取用户分组失败"})
-		return
-	}
-	payMoney := getPayMoney(req.Amount, group)
-	if payMoney < 0.01 {
-		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "充值金额过低"})
-		return
-	}
-
-	tradeNo := fmt.Sprintf("USR%dNO%s%s", id, common.GetRandomString(8), strconv.FormatInt(time.Now().Unix(), 10))
-	callBackAddress := service.GetCallbackAddress()
-	notifyUrl := callBackAddress + "/api/user/wechat/notify"
-	// 用 decimal 精确换算成分，避免 float64 * 100 的取整误差导致与微信侧金额偏差 1 分。
-	totalCents := decimal.NewFromFloat(payMoney).Mul(decimal.NewFromInt(100)).Round(0).IntPart()
-
-	bodyMap := map[string]any{
-		"mchid":        operation_setting.WechatPayMchId,
-		"appid":        operation_setting.WechatPayAppId,
-		"description":  fmt.Sprintf("%s 充值 %d", common.EmailBrandName, req.Amount),
-		"out_trade_no": tradeNo,
-		"notify_url":   notifyUrl,
-		"amount": map[string]any{
-			"total":    totalCents,
-			"currency": "CNY",
-		},
-		"payer": map[string]any{
-			"openid": req.Openid,
-		},
-	}
-	bodyBytes, _ := json.Marshal(bodyMap)
-	bodyStr := string(bodyBytes)
-
-	auth, err := service.WechatPayBuildAuthHeader(
-		"POST", "/v3/pay/transactions/jsapi", bodyStr,
-		operation_setting.WechatPayMchId, operation_setting.WechatPaySerialNo, operation_setting.WechatPayPrivateKey,
-	)
-	if err != nil {
-		logger.LogError(c.Request.Context(), fmt.Sprintf("微信支付签名失败 user_id=%d trade_no=%s error=%q", id, tradeNo, err.Error()))
-		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "创建订单失败"})
-		return
-	}
-
-	fullURL := operation_setting.WechatPayGateway + "/v3/pay/transactions/jsapi"
-	httpReq, err := http.NewRequest("POST", fullURL, bytes.NewReader(bodyBytes))
-	if err != nil {
-		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "创建订单失败"})
-		return
-	}
-	httpReq.Header.Set("Authorization", auth)
-	httpReq.Header.Set("Content-Type", "application/json")
-	httpReq.Header.Set("Accept", "application/json")
-	httpReq.Header.Set("User-Agent", "Uter/1.0")
-
-	resp, err := cnPayHTTPClient.Do(httpReq)
-	if err != nil {
-		logger.LogError(c.Request.Context(), fmt.Sprintf("微信支付下单请求失败 user_id=%d trade_no=%s error=%q", id, tradeNo, err.Error()))
-		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "创建订单失败"})
-		return
-	}
-	defer resp.Body.Close()
-	respBody, err := readPaymentProviderAPIResponseBody(resp.Body)
-	if err != nil {
-		logger.LogError(c.Request.Context(), fmt.Sprintf("微信支付响应读取失败 user_id=%d trade_no=%s error=%q", id, tradeNo, err.Error()))
-		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "创建订单失败"})
-		return
-	}
-
-	if resp.StatusCode != http.StatusOK {
-		logger.LogError(c.Request.Context(), fmt.Sprintf("微信支付下单失败 user_id=%d trade_no=%s status=%d body_bytes=%d", id, tradeNo, resp.StatusCode, len(respBody)))
-		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "创建订单失败"})
-		return
-	}
-
-	var wxResp struct {
-		PrepayId string `json:"prepay_id"`
-	}
-	if err := json.Unmarshal(respBody, &wxResp); err != nil || wxResp.PrepayId == "" {
-		logger.LogError(c.Request.Context(), fmt.Sprintf("微信支付响应解析失败 user_id=%d trade_no=%s body_bytes=%d error=%q", id, tradeNo, len(respBody), err))
-		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "创建订单失败"})
-		return
-	}
-
-	topUp := &model.TopUp{
-		UserId:          id,
-		Amount:          wechatAmountForStorage(req.Amount),
-		Money:           payMoney,
-		TradeNo:         tradeNo,
-		PaymentMethod:   model.PaymentMethodWechatPayMiniProgram,
-		PaymentProvider: model.PaymentProviderWechatPay,
-		CreateTime:      time.Now().Unix(),
-		Status:          common.TopUpStatusPending,
-	}
-	if err := topUp.Insert(); err != nil {
-		logger.LogError(c.Request.Context(), fmt.Sprintf("微信支付创建充值订单失败 user_id=%d trade_no=%s error=%q", id, tradeNo, err.Error()))
-		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "创建订单失败"})
-		return
-	}
-
-	// 构造小程序调起支付参数（wx.requestPayment）。
-	timeStamp := strconv.FormatInt(time.Now().Unix(), 10)
-	nonceStr := common.GetRandomString(32)
-	paySign, err := service.WechatPayBuildJsapiPaySign(
-		operation_setting.WechatPayAppId, timeStamp, nonceStr, wxResp.PrepayId,
-		operation_setting.WechatPayPrivateKey,
-	)
-	if err != nil {
-		logger.LogError(c.Request.Context(), fmt.Sprintf("微信支付 paySign 生成失败 user_id=%d trade_no=%s error=%q", id, tradeNo, err.Error()))
-		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "创建订单失败"})
-		return
-	}
-
-	logger.LogInfo(c.Request.Context(), fmt.Sprintf("微信小程序充值订单创建成功 user_id=%d trade_no=%s amount=%d money=%.2f", id, tradeNo, req.Amount, payMoney))
-	c.JSON(http.StatusOK, gin.H{
-		"message": "success",
-		"data": map[string]string{
-			"appId":     operation_setting.WechatPayAppId,
-			"timeStamp": timeStamp,
-			"nonceStr":  nonceStr,
-			"package":   "prepay_id=" + wxResp.PrepayId,
-			"signType":  "RSA",
-			"paySign":   paySign,
-		},
-	})
 }
 
 // RequestWechatPayWeb 创建微信支付网站支付订单。
