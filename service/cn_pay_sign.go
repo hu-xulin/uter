@@ -96,22 +96,6 @@ func parseRSAPublicKey(content string) (*rsa.PublicKey, error) {
 	return nil, errors.New("unsupported public key format")
 }
 
-func parseWechatPlatformCert(pemContent string) (*rsa.PublicKey, error) {
-	block, _ := pem.Decode([]byte(pemContent))
-	if block == nil {
-		return nil, errors.New("invalid platform cert")
-	}
-	cert, err := x509.ParseCertificate(block.Bytes)
-	if err != nil {
-		return nil, err
-	}
-	pub, ok := cert.PublicKey.(*rsa.PublicKey)
-	if !ok {
-		return nil, errors.New("cert public key is not RSA")
-	}
-	return pub, nil
-}
-
 func cnRandomString(n int) string {
 	b := make([]byte, n)
 	_, _ = rand.Read(b)
@@ -224,12 +208,15 @@ func WechatPayBuildAuthHeader(method, urlPath, body, mchId, serialNo, privateKey
 }
 
 // WechatPayVerifyNotify 校验微信支付回调签名。
-func WechatPayVerifyNotify(timestamp, nonce, body, signature, platformCert string) bool {
+// publicKey 为商户平台下载的「微信支付公钥」（pub_key.pem，PKCS#1 或 PKIX RSA 公钥 PEM，
+// 也兼容只贴 base64 主体的单行形式）。注意这里不接受平台证书（CERTIFICATE PEM）：
+// 新商户在商户平台只能拿到微信支付公钥，uter 只支持这一种载体。
+func WechatPayVerifyNotify(timestamp, nonce, body, signature, publicKey string) bool {
 	raw, err := base64.StdEncoding.DecodeString(strings.TrimSpace(signature))
 	if err != nil {
 		return false
 	}
-	pub, err := parseWechatPlatformCert(platformCert)
+	pub, err := parseRSAPublicKey(publicKey)
 	if err != nil {
 		return false
 	}
