@@ -23,10 +23,13 @@ import (
 	"crypto/rsa"
 	"crypto/sha256"
 	"crypto/x509"
+	"crypto/x509/pkix"
 	"encoding/base64"
 	"encoding/pem"
+	"math/big"
 	"strings"
 	"testing"
+	"time"
 )
 
 // genTestRSAKey 生成一段 PKCS8 PEM 私钥与对应的公钥，供签名/验签自测使用。
@@ -175,4 +178,59 @@ func mustPKCS1PubPEM(t *testing.T, pub *rsa.PublicKey) string {
 	t.Helper()
 	der := x509.MarshalPKCS1PublicKey(pub)
 	return string(pem.EncodeToMemory(&pem.Block{Type: "RSA PUBLIC KEY", Bytes: der}))
+}
+
+// TestWechatPayVerifyNotifyAcceptsWechatPayPublicKey 锁定回调验签只接受
+// 「微信支付公钥」（PUBLIC KEY PEM）：新商户在商户平台只能下载该公钥，
+// 验签必须成立，否则表现为「用户已扣款但额度不到账」。
+// 同时反向锁定：平台证书（CERTIFICATE PEM，存量商户形态）不再被接受——
+// uter 只支持微信支付公钥这一种载体，把两种形态的预期都钉住，
+// 避免回退到"两种都认"的模糊状态。
+func TestWechatPayVerifyNotifyAcceptsWechatPayPublicKey(t *testing.T) {
+	privPEM, pub := genTestRSAKey(t)
+	priv, err := parseRSAPrivateKey(privPEM)
+	if err != nil {
+		t.Fatalf("parse private key: %v", err)
+	}
+
+	timestamp := "1700000000"
+	nonce := "abcdef1234567890"
+	body := `{"id":"EV-2026010100000001","event_type":"TRANSACTION.SUCCESS"}`
+	hashed := sha256.Sum256([]byte(timestamp + "\n" + nonce + "\n" + body + "\n"))
+	raw, err := rsa.SignPKCS1v15(rand.Reader, priv, crypto.SHA256, hashed[:])
+	if err != nil {
+		t.Fatalf("sign notify: %v", err)
+	}
+	signature := base64.StdEncoding.EncodeToString(raw)
+
+	// 微信支付公钥：PKIX PEM（pub_key.pem 的下载形态）。
+	pubDER, err := x509.MarshalPKIXPublicKey(pub)
+	if err != nil {
+		t.Fatalf("marshal public key: %v", err)
+	}
+	pubPEM := string(pem.EncodeToMemory(&pem.Block{Type: "PUBLIC KEY", Bytes: pubDER}))
+
+	if !WechatPayVerifyNotify(timestamp, nonce, body, signature, pubPEM) {
+		t.Fatal("valid notify signature must verify against the WeChat Pay public key")
+	}
+	// 篡改报文后必须验签失败。
+	if WechatPayVerifyNotify(timestamp, nonce, body+" ", signature, pubPEM) {
+		t.Fatal("tampered body must NOT verify")
+	}
+
+	// 平台证书（存量商户形态）不再被接受：uter 只支持微信支付公钥。
+	tmpl := &x509.Certificate{
+		SerialNumber: big.NewInt(1),
+		Subject:      pkix.Name{CommonName: "Tenpay.com Root CA"},
+		NotBefore:    time.Now().Add(-time.Hour),
+		NotAfter:     time.Now().Add(24 * time.Hour),
+	}
+	certDER, err := x509.CreateCertificate(rand.Reader, tmpl, tmpl, pub, priv)
+	if err != nil {
+		t.Fatalf("create cert: %v", err)
+	}
+	certPEM := string(pem.EncodeToMemory(&pem.Block{Type: "CERTIFICATE", Bytes: certDER}))
+	if WechatPayVerifyNotify(timestamp, nonce, body, signature, certPEM) {
+		t.Fatal("platform certificate must NOT verify: only the WeChat Pay public key is supported")
+	}
 }
