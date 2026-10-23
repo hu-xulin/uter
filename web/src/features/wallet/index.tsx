@@ -385,6 +385,7 @@ export function Wallet(props: WalletProps) {
                   }
                   onPaymentMethodSelect={handlePaymentMethodSelect}
                   paymentLoading={paymentLoading}
+                  selectedPaymentMethod={selectedPaymentMethod}
                   redemptionCode={redemptionCode}
                   onRedemptionCodeChange={setRedemptionCode}
                   onRedeem={handleRedeem}

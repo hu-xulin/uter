@@ -38,7 +38,7 @@ import {
   requestWechatWebPayment,
   isApiSuccess,
 } from '../../api'
-import { detectPayClient, isAlipayWebPayment } from '../../lib'
+import { detectPayClient, formatCNYAmount, isAlipayWebPayment } from '../../lib'
 import type { PaymentMethod } from '../../types'
 
 interface CnPayWebDialogProps {
@@ -264,11 +264,11 @@ export function CnPayWebDialog({
           <div className='flex w-full items-center justify-between text-sm'>
             <span className='text-muted-foreground'>{t('You Pay')}</span>
             <span className='font-semibold'>
-              {formatLocalCurrencyAmount(paymentAmount, {
-                digitsLarge: 2,
-                digitsSmall: 2,
-                abbreviate: false,
-              })}
+              {/* 官方直连（支付宝/微信）的下单金额恒为人民币：后端
+                  getPayMoney = amount × Price（Price 是每美元额度的人民币价），
+                  原样提交给网关。此处必须强制 ¥，跟随 quotaDisplayType 会在
+                  USD 显示配置下错显成 $。 */}
+              {formatCNYAmount(paymentAmount)}
             </span>
           </div>
 

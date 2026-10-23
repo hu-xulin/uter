@@ -34,7 +34,7 @@ import { formatLocalCurrencyAmount } from '@/lib/currency'
 
 import { DEFAULT_DISCOUNT_RATE } from '../../constants'
 import { isPayableAmount } from '../../hooks/use-payment'
-import { formatCurrency, getPaymentIcon } from '../../lib'
+import { formatPaymentAmount, getPaymentIcon } from '../../lib'
 import type { PaymentMethod } from '../../types'
 
 interface PaymentConfirmDialogProps {
@@ -53,17 +53,22 @@ interface PaymentConfirmDialogProps {
 /**
  * 「应付金额」区域的渲染。计价中显示骨架；计价失败（金额非有限正数）时
  * 明确报错而不是显示 0 元 —— 0 是合法的「无需付款」，两者必须区分。
+ *
+ * 币种由支付通道决定（formatPaymentAmount）：易支付 / 官方直连支付宝·微信
+ * 恒为人民币，Stripe/Waffo/Creem 为美元——不跟随 quotaDisplayType。
  */
 function PayableAmountValue({
   calculating,
   paymentAmount,
   hasDiscount,
   originalAmount,
+  paymentType,
 }: {
   calculating: boolean
   paymentAmount: number
   hasDiscount: boolean
   originalAmount: number
+  paymentType: string | undefined
 }) {
   const { t } = useTranslation()
 
@@ -80,11 +85,11 @@ function PayableAmountValue({
   return (
     <div className='flex items-baseline gap-2'>
       <span className='text-2xl font-semibold'>
-        {formatCurrency(paymentAmount)}
+        {formatPaymentAmount(paymentAmount, paymentType)}
       </span>
       {hasDiscount && (
         <span className='text-muted-foreground text-sm line-through'>
-          {formatCurrency(originalAmount)}
+          {formatPaymentAmount(originalAmount, paymentType)}
         </span>
       )}
     </div>
@@ -146,6 +151,7 @@ export function PaymentConfirmDialog({
               paymentAmount={paymentAmount}
               hasDiscount={hasDiscount}
               originalAmount={originalAmount}
+              paymentType={paymentMethod?.type}
             />
           </div>
 
@@ -154,7 +160,7 @@ export function PaymentConfirmDialog({
               <div className='flex items-center justify-between text-sm'>
                 <span className='text-muted-foreground'>{t('You save')}</span>
                 <span className='font-semibold text-green-600'>
-                  {formatCurrency(discountAmount)}
+                  {formatPaymentAmount(discountAmount, paymentMethod?.type)}
                 </span>
               </div>
             </div>
