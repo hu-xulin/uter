@@ -4,9 +4,9 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/uter-ai/uter/common"
-	"github.com/stretchr/testify/require"
 	"github.com/glebarez/sqlite"
+	"github.com/stretchr/testify/require"
+	"github.com/uter-ai/uter/common"
 	"gorm.io/gorm"
 )
 
