@@ -45,6 +45,17 @@ jobs:
           mkdir -p web/dist
           touch web/dist/index.html
 
+      - name: Check gofmt
+        # 格式门禁：只检查受版本控制的 Go 文件，避免 node_modules / dist 之类的
+        # 目录拖慢或误报。gofmt 只改空白与 import 顺序，不会改语义。
+        run: |
+          unformatted="$(gofmt -l $(git ls-files '*.go'))"
+          if [ -n "$unformatted" ]; then
+            echo "以下文件未通过 gofmt，请执行 gofmt -w 后提交："
+            echo "$unformatted"
+            exit 1
+          fi
+
       - name: Vet root module
         run: go vet ./...
 
@@ -80,9 +91,14 @@ jobs:
   #   测试体活得久，于是「cleanup 写 vs 协程读」相撞。-race 实测 e2e 4 处、
   #   model 1 处，全部同一写点。
   #   生产环境这些全局量启动后不再改写，故不是线上缺陷。
-  #   彻底修法二选一：(a) 把 common.RedisEnabled 等改原子访问（约 65 处调用点，
+  #   彻底修法二选一：(a) 把 common.RedisEnabled 等改原子访问（约 203 处调用点，
   #   机械但波及面大）；(b) 给缓存同步协程加可等待的屏障并由 harness 在 cleanup
   #   前等待（注意 log_writer 等处有长生命周期协程，不能一刀切 WaitGroup）。
+  #   ✅ relay 包已用第三条更轻的路修掉同类竞争：relay/testmain_test.go 在
+  #   TestMain 里进程级设 common.RedisEnabled=false，各测试不再自行赋值/还原
+  #   （同 relay/channel/testmain_test.go 处理 gin.SetMode 的既有范式）。
+  #   修前该包 -race 约 40% 概率失败，修后连跑 6 次 0 竞争。e2e/model 若要纳入，
+  #   可照此办理。
   race:
     name: Backend race detector
     runs-on: ubuntu-latest
