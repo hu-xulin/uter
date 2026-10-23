@@ -5,9 +5,9 @@ import (
 	"regexp"
 	"testing"
 
-	"github.com/uter-ai/uter/relaykit/types"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/uter-ai/uter/relaykit/types"
 )
 
 func TestAdvancedCustomValidateResponsesToChatConverterPath(t *testing.T) {
