@@ -3,10 +3,10 @@ package dto
 import (
 	"testing"
 
-	kitutil "github.com/uter-ai/uter/relaykit/relayconvert/kitutil"
-	"github.com/uter-ai/uter/relaykit/types"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	kitutil "github.com/uter-ai/uter/relaykit/relayconvert/kitutil"
+	"github.com/uter-ai/uter/relaykit/types"
 )
 
 // Agent loops replay tool definitions, tool calls, and tool output on every
