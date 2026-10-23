@@ -119,7 +119,6 @@ func (t *ssrfProtectedRoundTripper) RoundTrip(req *http.Request) (*http.Response
 	return t.transportFor(proxyURL).RoundTrip(req)
 }
 
-
 // validateProtectedFetchProxyTarget prevents an HTTP proxy from resolving a
 // user-controlled hostname after local SSRF validation. Otherwise DNS rebinding
 // can make the proxy connect to a private address that the protected dialer never sees.
