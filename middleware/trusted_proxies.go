@@ -4,8 +4,8 @@ import (
 	"log"
 	"os"
 
-	"github.com/uter-ai/uter/common"
 	"github.com/gin-gonic/gin"
+	"github.com/uter-ai/uter/common"
 )
 
 func ConfigureTrustedProxies(engine *gin.Engine) error {
