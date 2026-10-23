@@ -242,7 +242,7 @@ export function WechatPaySettingsSection() {
                   <span className='text-muted-foreground'>
                     {' — '}
                     {t(
-                      'Official account platform (mp.weixin.qq.com) → Register → Service account. A subscription account cannot open WeChat Pay, and WeChat verification (annual fee) must be completed before the account can be linked to a merchant. The AppID (starts with wx) is shown in the account’s basic configuration.'
+                      'Official account platform (mp.weixin.qq.com) → Register → Service account.'
                     )}
                   </span>
                 </li>
@@ -253,7 +253,7 @@ export function WechatPaySettingsSection() {
                   <span className='text-muted-foreground'>
                     {' — '}
                     {t(
-                      'WeChat Pay merchant platform (pay.weixin.qq.com) → Become a merchant → submit business license, legal person ID and settlement account, and enter the service account AppID from step 1 in the associated AppID field. The merchant entity must match the service account subject. Approval takes 1–5 business days; the merchant number (10 digits, starting with 1) is issued afterwards and is required by every step below.'
+                      'WeChat Pay merchant platform (pay.weixin.qq.com) → Become a merchant → submit business license, legal person ID and settlement account, and enter the service account AppID from step 1 in the associated AppID field.'
                     )}
                   </span>
                 </li>
@@ -264,7 +264,7 @@ export function WechatPaySettingsSection() {
                   <span className='text-muted-foreground'>
                     {' — '}
                     {t(
-                      'WeChat Pay merchant platform (pay.weixin.qq.com) → Product center → My products → enable “Native Pay”. Desktop users scan a QR code with WeChat; no domain registration is needed, so PC payment works as soon as the product is enabled.'
+                      'WeChat Pay merchant platform (pay.weixin.qq.com) → Product center → My products → enable “Native Pay”.'
                     )}
                   </span>
                 </li>
@@ -277,7 +277,7 @@ export function WechatPaySettingsSection() {
                   <span className='text-muted-foreground'>
                     {' — '}
                     {t(
-                      'On the same page enable “H5 Pay”, then Product center → Development configuration → H5 pay domain: register your ICP-filed domain whose registrant matches the merchant entity (e.g. uter.cc). Mobile users are redirected to the WeChat cashier only after the domain is approved — skipping it leaves mobile payment broken even though PC Native works.'
+                      'On the same page enable “H5 Pay”, then Product center → Development configuration → H5 pay domain: register your ICP-filed domain whose registrant matches the merchant entity (e.g. uter.cc).'
                     )}
                   </span>
                 </li>
@@ -299,7 +299,7 @@ export function WechatPaySettingsSection() {
                   <span className='text-muted-foreground'>
                     {' — '}
                     {t(
-                      'WeChat Pay merchant platform (pay.weixin.qq.com) → Account center → API security → Set APIv3 key. It must be exactly 32 characters; save a copy, it is shown only once.'
+                      'WeChat Pay merchant platform (pay.weixin.qq.com) → Account center → API security → Set APIv3 key.'
                     )}
                   </span>
                 </li>
@@ -310,7 +310,7 @@ export function WechatPaySettingsSection() {
                   <span className='text-muted-foreground'>
                     {' — '}
                     {t(
-                      'WeChat Pay merchant platform (pay.weixin.qq.com) → Account center → API security → Apply for API certificate. The certificate tool outputs apiclient_key.pem (private key) and a serial number; select apiclient_key.pem in “Merchant Private Key (apiclient_key.pem)” and paste the serial number into “Certificate Serial No”.'
+                      'WeChat Pay merchant platform (pay.weixin.qq.com) → Account center → API security → Apply for API certificate.'
                     )}
                   </span>
                 </li>
@@ -321,7 +321,7 @@ export function WechatPaySettingsSection() {
                   <span className='text-muted-foreground'>
                     {' — '}
                     {t(
-                      'WeChat Pay merchant platform (pay.weixin.qq.com) → Account center → API security → WeChat Pay public key → download pub_key.pem, then select it in “WeChat Pay Public Key (pub_key.pem)”. This is required: without it every callback fails signature verification and paid orders never credit.'
+                      'WeChat Pay merchant platform (pay.weixin.qq.com) → Account center → API security → WeChat Pay public key → download pub_key.pem.'
                     )}
                   </span>
                 </li>
@@ -332,7 +332,7 @@ export function WechatPaySettingsSection() {
                   <span className='text-muted-foreground'>
                     {' — '}
                     {t(
-                      'No manual entry needed: Native and H5 share the same async callback at /api/user/wechat/notify on this server. If the payment domain differs from the server address, set the payment site address in the General tab so the return URL points at the filed domain.'
+                      'No manual entry needed: Native and H5 share the same async callback at /api/user/wechat/notify on this server.'
                     )}
                   </span>
                 </li>

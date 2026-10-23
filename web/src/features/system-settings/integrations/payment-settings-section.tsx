@@ -1103,7 +1103,8 @@ export function PaymentSettingsSection({
                           {t('Price (local currency / USD)')}
                         </FormLabel>
                         <FormControl>
-                          <Input autoComplete='off'
+                          <Input
+                            autoComplete='off'
                             placeholder='1.00'
                             type='number'
                             step='0.01'
@@ -1128,7 +1129,8 @@ export function PaymentSettingsSection({
                       <FormItem>
                         <FormLabel>{t('Minimum top-up (USD)')}</FormLabel>
                         <FormControl>
-                          <Input autoComplete='off'
+                          <Input
+                            autoComplete='off'
                             placeholder='1'
                             type='number'
                             step='0.01'
@@ -1152,7 +1154,8 @@ export function PaymentSettingsSection({
                     <FormItem>
                       <FormLabel>{t('Payment site address')}</FormLabel>
                       <FormControl>
-                        <Input autoComplete='off'
+                        <Input
+                          autoComplete='off'
                           placeholder={t('https://gateway.example.com')}
                           {...field}
                           onChange={(event) =>
@@ -1162,7 +1165,7 @@ export function PaymentSettingsSection({
                       </FormControl>
                       <FormDescription>
                         {t(
-                          'Site origin where users pay and are redirected to after payment, for example https://pay.example.com. Mainland China gateways (Alipay / WeChat Pay) require this domain to be ICP filed. Leave blank to use the server address.'
+                          'Site origin where users are redirected back to after payment. Mainland China gateways (Alipay / WeChat Pay) require this domain to be ICP filed: for this site use https://uter.cc (filed), not the operating domain https://uter.ai (not filed). Leave blank to use the server address.'
                         )}
                       </FormDescription>
                       <FormMessage />
@@ -1391,7 +1394,8 @@ export function PaymentSettingsSection({
                       <FormItem>
                         <FormLabel>{t('Epay endpoint')}</FormLabel>
                         <FormControl>
-                          <Input autoComplete='off'
+                          <Input
+                            autoComplete='off'
                             placeholder={t('https://pay.example.com')}
                             {...field}
                             onChange={(event) =>
@@ -1414,7 +1418,8 @@ export function PaymentSettingsSection({
                       <FormItem>
                         <FormLabel>{t('Callback address')}</FormLabel>
                         <FormControl>
-                          <Input autoComplete='off'
+                          <Input
+                            autoComplete='off'
                             placeholder={t('https://gateway.example.com')}
                             {...field}
                             onChange={(event) =>
@@ -1575,7 +1580,8 @@ export function PaymentSettingsSection({
                       <FormItem>
                         <FormLabel>{t('Price ID')}</FormLabel>
                         <FormControl>
-                          <Input autoComplete='off'
+                          <Input
+                            autoComplete='off'
                             placeholder={t('price_xxx')}
                             {...field}
                             onChange={(event) =>
@@ -1602,7 +1608,8 @@ export function PaymentSettingsSection({
                           {t('Unit price (local currency / USD)')}
                         </FormLabel>
                         <FormControl>
-                          <Input autoComplete='off'
+                          <Input
+                            autoComplete='off'
                             placeholder='1.00'
                             type='number'
                             step='0.01'
@@ -1625,7 +1632,8 @@ export function PaymentSettingsSection({
                       <FormItem>
                         <FormLabel>{t('Minimum top-up (USD)')}</FormLabel>
                         <FormControl>
-                          <Input autoComplete='off'
+                          <Input
+                            autoComplete='off'
                             placeholder='1'
                             type='number'
                             step='0.01'
