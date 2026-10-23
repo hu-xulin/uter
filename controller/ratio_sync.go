@@ -431,6 +431,11 @@ func FetchUpstreamRatios(c *gin.Context) {
 		return
 	}
 
+	// Per-channel alias resolvers (built once, shared by the fetch goroutines).
+	// A nil resolver per channel is a no-op, so the goroutine may call apply
+	// unconditionally.
+	aliasResolvers := buildPriceSyncAliasResolvers(upstreams)
+
 	var wg sync.WaitGroup
 	ch := make(chan upstreamResult, len(upstreams))
 
@@ -559,6 +564,7 @@ func FetchUpstreamRatios(c *gin.Context) {
 					ch <- upstreamResult{Name: uniqueName, Err: err.Error()}
 					return
 				}
+				converted, _ = aliasResolvers[chItem.ID].apply(converted)
 				ch <- upstreamResult{Name: uniqueName, Data: converted}
 				return
 			}
@@ -571,6 +577,7 @@ func FetchUpstreamRatios(c *gin.Context) {
 					ch <- upstreamResult{Name: uniqueName, Err: err.Error()}
 					return
 				}
+				converted, _ = aliasResolvers[chItem.ID].apply(converted)
 				ch <- upstreamResult{Name: uniqueName, Data: converted}
 				return
 			}
@@ -582,6 +589,10 @@ func FetchUpstreamRatios(c *gin.Context) {
 				return
 			}
 
+			converted, renames := aliasResolvers[chItem.ID].apply(converted)
+			for _, r := range renames {
+				logger.LogInfo(c.Request.Context(), "price sync alias resolved on "+uniqueName+": "+r)
+			}
 			ch <- upstreamResult{Name: uniqueName, Data: converted}
 		}(chn)
 	}
