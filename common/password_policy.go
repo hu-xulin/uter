@@ -1,6 +1,7 @@
 package common
 
 import (
+	"errors"
 	"strings"
 	"unicode"
 )
@@ -8,10 +9,12 @@ import (
 // Password length bounds. These mirror web/src/lib/password-policy.ts so the
 // client can reject weak passwords before spending a round trip; the server
 // stays the authority because a browser-side check is trivially bypassable.
-// The upper bound also protects bcrypt-like hashing from very long inputs.
+// The upper bound matches MaxAccountPasswordLength: account passwords are hashed
+// with Argon2id, which has no bcrypt-style 72-byte truncation, so capping at 18
+// would reject passphrases that are strictly better than what we accept.
 const (
-	PasswordMinLength = 8
-	PasswordMaxLength = 18
+	PasswordMinLength = MinAccountPasswordLength
+	PasswordMaxLength = MaxAccountPasswordLength
 )
 
 // PasswordPolicyViolation identifies which rule a password breaks, so callers
@@ -37,6 +40,10 @@ const (
 // or PasswordOK. username and email are optional; when non-empty they must not
 // appear inside the password (NIST SP 800-63B forbids such composition rules
 // being satisfiable with the subscriber's own identifier).
+//
+// This is the account password policy. It is the server-side counterpart of
+// web/src/lib/password-policy.ts, and every path that stores a new password
+// must call it: the client-side copy only saves a round trip.
 func ValidatePasswordStrength(password, username, email string) PasswordPolicyViolation {
 	length := len([]rune(password))
 	if length < PasswordMinLength {
@@ -56,6 +63,40 @@ func ValidatePasswordStrength(password, username, email string) PasswordPolicyVi
 		return PasswordTooCommon
 	}
 	return PasswordOK
+}
+
+// ErrPasswordPolicyViolations maps each violation onto the message the API
+// returns, so callers do not have to re-derive the mapping and the client can
+// show an actionable hint instead of a generic failure.
+var ErrPasswordPolicyViolations = map[PasswordPolicyViolation]error{
+	PasswordTooShort:        errors.New("Use at least 8 characters for your password."),
+	PasswordTooLong:         errors.New("Keep your password within 128 characters."),
+	PasswordTooSimple:       errors.New("Your password needs at least two of these: letters, numbers, symbols."),
+	PasswordTooCommon:       errors.New("That password is too common or easy to guess. Please choose a different one."),
+	PasswordContainsAccount: errors.New("Your password can't contain your username or email."),
+}
+
+// PasswordPolicyViolationError converts a violation into the error a caller
+// should surface. PasswordOK has no error.
+func PasswordPolicyViolationError(violation PasswordPolicyViolation) error {
+	if err, ok := ErrPasswordPolicyViolations[violation]; ok {
+		return err
+	}
+	return nil
+}
+
+// ValidateNewAccountPasswordStrength is the single entry point for every path
+// that stores a new account password. It applies the full policy (length,
+// account identifiers, composition, common patterns) and reports the first
+// problem, or nil when the password is acceptable.
+//
+// username and email are optional; supply them when known so a password cannot
+// embed the account's own identifier.
+func ValidateNewAccountPasswordStrength(password, username, email string) error {
+	if err := ValidateNewAccountPassword(password); err != nil {
+		return err
+	}
+	return PasswordPolicyViolationError(ValidatePasswordStrength(password, username, email))
 }
 
 // hasCharacterVariety requires at least two of the three classes: letters
