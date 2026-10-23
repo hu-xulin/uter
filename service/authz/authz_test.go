@@ -322,7 +322,6 @@ func TestTaskPluginBindIsRootOnlyUntilGranted(t *testing.T) {
 	assert.False(t, Can(2, common.RoleAdminUser, TaskPluginBind))
 }
 
-
 func TestSuperuserCannotAuthorizeUnknownPermission(t *testing.T) {
 	db := newAuthzTestDB(t)
 	require.NoError(t, Init(db))
