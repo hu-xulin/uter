@@ -10,14 +10,14 @@ import (
 	"sync"
 	"testing"
 
+	"github.com/gin-gonic/gin"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"github.com/uter-ai/uter/constant"
 	"github.com/uter-ai/uter/pkg/billingexpr"
 	relaycommon "github.com/uter-ai/uter/relay/common"
 	relayconstant "github.com/uter-ai/uter/relay/constant"
 	"github.com/uter-ai/uter/relaykit/dto"
-	"github.com/gin-gonic/gin"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 func newImageTestContext(t *testing.T, body, contentType string, isStream bool) (*gin.Context, *httptest.ResponseRecorder, *http.Response, *relaycommon.RelayInfo) {
