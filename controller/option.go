@@ -89,12 +89,20 @@ func GetOptions(c *gin.Context) {
 			continue
 		}
 		value := common.Interface2String(v)
-		isSensitiveKey := strings.HasSuffix(k, "Token") ||
-			strings.HasSuffix(k, "Secret") ||
-			strings.HasSuffix(k, "Key") ||
-			strings.HasSuffix(k, "secret") ||
-			strings.HasSuffix(k, "api_key")
-		if isSensitiveKey {
+		if common.IsExcludedOptionKey(k) {
+			continue
+		}
+		if common.IsSecretOptionKey(k) {
+			// 密钥按掩码下发：管理员能看出「已配置」并核对前后各 4 位，
+			// 但浏览器永远拿不到明文。此前这里按后缀把敏感键整条剔除，
+			// 前端因此只能显示空输入框——既看不出是否已配置，也让
+			// 「展示态显示掩码串」的约定失效；而漏判后缀的键（如
+			// WechatPayPublicKey）又会明文下发。
+			// 写入侧由 UpdateOption 识别掩码串并保留库中原密钥。
+			options = append(options, &model.Option{
+				Key:   k,
+				Value: common.MaskSecretValue(value),
+			})
 			continue
 		}
 		options = append(options, &model.Option{
@@ -414,6 +422,14 @@ func UpdateOption(c *gin.Context) {
 		}
 		recordPasskeyDomainAudit(c, change, false, nil)
 		common.ApiSuccess(c, change)
+		return
+	}
+	// 敏感键回传掩码串（展示态原样提交）时视为「未修改」：保留库中原密钥，
+	// 而不是用 abcd****wxyz 覆盖真实凭据。这是「密钥输入框保存后仍可核对」
+	// 的写入侧保障——没有它，任何一次不带改动的保存都会把密钥写成掩码。
+	if common.IsSecretOptionKey(option.Key) &&
+		common.IsMaskedSecret(option.Value.(string)) {
+		common.ApiSuccess(c, nil)
 		return
 	}
 	err = model.UpdateOption(option.Key, option.Value.(string))
