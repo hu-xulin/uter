@@ -435,7 +435,6 @@ func TestAddMembersRejectsSoftDeletedUser(t *testing.T) {
 	require.ErrorIs(t, err, ErrOrgMemberUnknown)
 }
 
-
 func TestAddMembersAsRejectsDemotedOrganizationAdmin(t *testing.T) {
 	truncateTables(t)
 	org := insertOrgForTest(t, 1, 0)
@@ -505,7 +504,6 @@ func TestAddMembersEnforcesMemberLimitUnderConcurrency(t *testing.T) {
 	}
 }
 
-
 func TestAddMembersPreventsConcurrentCrossOrganizationAssignment(t *testing.T) {
 	truncateTables(t)
 	orgA := insertOrgForTest(t, 1, 0)
@@ -539,7 +537,6 @@ func TestAddMembersPreventsConcurrentCrossOrganizationAssignment(t *testing.T) {
 	assert.Contains(t, []int{orgA.Id, orgB.Id}, user.OrganizationId, "exactly one competing assignment should commit")
 	assert.Len(t, errs, 1, "the competing cross-organization assignment must be rejected")
 }
-
 
 func TestSetOrganizationOwnerAtomicallyTransfersOwnership(t *testing.T) {
 	truncateTables(t)
@@ -627,8 +624,6 @@ func TestAddMembersRejectsNegativeSubQuotaLimit(t *testing.T) {
 	require.ErrorIs(t, err, ErrOrgSubQuotaInvalid)
 }
 
-
-
 func TestSetOrganizationOwnerIfCurrentRejectsStaleOwner(t *testing.T) {
 	truncateTables(t)
 	org := insertOrgForTest(t, 1, 0)
@@ -661,7 +656,6 @@ func TestSetOrganizationOwnerIfCurrentRejectsStaleOwner(t *testing.T) {
 	require.NoError(t, DB.First(&target, "id = ?", 20).Error)
 	assert.Equal(t, OrgRoleMember, target.OrgRole)
 }
-
 
 func TestUpdateOrganizationIfCurrentOwnerRejectsStaleOwner(t *testing.T) {
 	truncateTables(t)
