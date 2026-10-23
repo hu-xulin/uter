@@ -39,3 +39,14 @@ export function maskSecret(value: string): string {
   const middle = '*'.repeat(Math.min(len - 8, 12))
   return head + middle + tail
 }
+
+/**
+ * 判断一个值是否是掩码串（含 `*`），即「后端下发的展示值」而不是真实密钥。
+ *
+ * 用途：保存前拦截。若把掩码串当新值提交，真实密钥会被 `abcd****wxyz`
+ * 覆盖（后端同样会识别并保留原值，但前端应当先拦住，避免无谓请求与误导）。
+ * 规则与后端 common.IsMaskedSecret 保持一致：含星号即视为掩码串。
+ */
+export function isMaskedSecret(value: string): boolean {
+  return value.includes('*')
+}
