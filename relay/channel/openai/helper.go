@@ -7,7 +7,6 @@ import (
 	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/logger"
 	relaycommon "github.com/uter-ai/uter/relay/common"
-	relayconstant "github.com/uter-ai/uter/relay/constant"
 	"github.com/uter-ai/uter/relay/helper"
 	"github.com/uter-ai/uter/relaykit/dto"
 	"github.com/uter-ai/uter/relaykit/relayconvert"
@@ -137,22 +136,14 @@ func ProcessStreamResponse(streamResponse dto.ChatCompletionsStreamResponse, res
 	return nil
 }
 
-func processTokenData(info *relaycommon.RelayInfo, data string, responseTextBuilder *strings.Builder, toolCount *int) error {
-	switch info.RelayMode {
-	case relayconstant.RelayModeChatCompletions:
-		var streamResponse dto.ChatCompletionsStreamResponse
-		if err := common.UnmarshalJsonStr(data, &streamResponse); err != nil {
-			return err
-		}
-		info.ObserveResponseModel(streamResponse.Model)
-		return ProcessStreamResponse(streamResponse, responseTextBuilder, toolCount)
-	case relayconstant.RelayModeCompletions:
-		var streamResponse dto.CompletionsStreamResponse
-		if err := common.UnmarshalJsonStr(data, &streamResponse); err != nil {
-			return err
-		}
-		processCompletionsStreamResponse(streamResponse, responseTextBuilder)
+// processCompletionsChunk 解析 completions 模式的流式 chunk 并累加文本。
+// chat 模式由调用方解析一次后直接复用，避免重复解码。
+func processCompletionsChunk(data string, responseTextBuilder *strings.Builder) error {
+	var streamResponse dto.CompletionsStreamResponse
+	if err := common.UnmarshalJsonStr(data, &streamResponse); err != nil {
+		return err
 	}
+	processCompletionsStreamResponse(streamResponse, responseTextBuilder)
 	return nil
 }
 
