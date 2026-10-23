@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"io"
 	"net/http"
 	"sort"
 	"strconv"
@@ -12,6 +11,8 @@ import (
 	"time"
 
 	costoptcfg "github.com/uter-ai/uter/setting/costopt"
+
+	"github.com/uter-ai/uter/common"
 
 	"github.com/uter-ai/uter/relaykit/dto"
 )
@@ -120,7 +121,7 @@ func queryRAG(ctx context.Context, cfg *costoptcfg.CostOptSetting, query string)
 		return nil, err
 	}
 	defer resp.Body.Close()
-	body, err := io.ReadAll(resp.Body)
+	body, err := common.ReadUpstreamBody(resp.Body)
 	if err != nil {
 		return nil, err
 	}
