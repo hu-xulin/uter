@@ -174,7 +174,7 @@ export function AlipaySettingsSection() {
                   <span className='text-muted-foreground'>
                     {' — '}
                     {t(
-                      'Alipay Open Platform → Console → Web & mobile apps → Create app. After approval, copy the AppID (16 digits starting with 2021) into “App ID”.'
+                      'Alipay Open Platform (open.alipay.com) → Console → Web & mobile apps → Create app.'
                     )}
                   </span>
                 </li>
@@ -185,7 +185,7 @@ export function AlipaySettingsSection() {
                   <span className='text-muted-foreground'>
                     {' — '}
                     {t(
-                      'App details → Development settings → Interface signing method → set RSA2 (SHA256), then use the Alipay key generator to create an RSA 2048 pair. It outputs the application private key (keep it offline) and the application public key.'
+                      'Alipay Open Platform (open.alipay.com) → your app → Development settings → Interface signing method → set RSA2 (SHA256), then use the Alipay key generator to create an RSA 2048 pair.'
                     )}
                   </span>
                 </li>
@@ -198,7 +198,7 @@ export function AlipaySettingsSection() {
                   <span className='text-muted-foreground'>
                     {' — '}
                     {t(
-                      'Upload the application public key from step 2 in the same page; Alipay then issues the “Alipay public key”. Save that string as a .txt or .pem file and select it in “Alipay Public Key”. This is required: without it every callback fails signature verification and paid orders never credit.'
+                      'Stay on the same page of the Alipay Open Platform (open.alipay.com): upload the application public key from step 2, and Alipay then issues the “Alipay public key”.'
                     )}
                   </span>
                 </li>
@@ -220,7 +220,7 @@ export function AlipaySettingsSection() {
                   <span className='text-muted-foreground'>
                     {' — '}
                     {t(
-                      'Console → Products → request “Computer website payment” (alipay.trade.page.pay) and “Mobile website payment” (alipay.trade.wap.pay). Orders are rejected until both products are signed.'
+                      'Alipay Open Platform (open.alipay.com) → your app → Product binding → request “Computer website payment” (alipay.trade.page.pay) and “Mobile website payment” (alipay.trade.wap.pay).'
                     )}
                   </span>
                 </li>
@@ -231,7 +231,7 @@ export function AlipaySettingsSection() {
                   <span className='text-muted-foreground'>
                     {' — '}
                     {t(
-                      'The website domain you submit when signing the products must be ICP-filed and its registrant must match the app entity. Otherwise the product application is rejected or callbacks never arrive.'
+                      'The website domain you submit when signing the products in the Alipay Open Platform (open.alipay.com) must be ICP-filed and its registrant must match the app entity.'
                     )}
                   </span>
                 </li>
@@ -242,7 +242,18 @@ export function AlipaySettingsSection() {
                   <span className='text-muted-foreground'>
                     {' — '}
                     {t(
-                      'Async callbacks go to /api/user/alipay/notify on this server; no fixed configuration is needed in the open platform. The payment return URL uses the payment site address: set it in the General tab when the payment domain differs from the server address.'
+                      'Async callbacks go to /api/user/alipay/notify on this server; no fixed configuration is needed in the Alipay Open Platform (open.alipay.com).'
+                    )}
+                  </span>
+                </li>
+                <li>
+                  <span className='font-medium'>
+                    {t('Check the settlement account in the merchant center')}
+                  </span>
+                  <span className='text-muted-foreground'>
+                    {' — '}
+                    {t(
+                      'Alipay merchant center (b.alipay.com) → Account center → settlement account — only when you need to check where funds land or change bank details.'
                     )}
                   </span>
                 </li>
