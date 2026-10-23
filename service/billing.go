@@ -90,6 +90,17 @@ func SettleBilling(ctx *gin.Context, relayInfo *relaycommon.RelayInfo, actualQuo
 			return err
 		}
 
+		// DEF-6：触发计费上限截断时，上面那条「charging the difference」是按
+		// 截断前的 actualQuota 写的，与实际扣减不符；补一条告警把真实生效额
+		// 暴露出来，便于对账方识别「上游花了但只收到上限额」的会话。
+		if reporter, ok := relayInfo.Billing.(settledQuotaReporter); ok {
+			if effective, clamped := reporter.SettledQuota(); clamped {
+				logger.LogWarn(ctx, common.LogText(
+					"wallet billing ceiling clamped settlement: actual %s, billed %s, pre-consumed %s (userId=%d)",
+					logger.FormatQuota(actualQuota), logger.FormatQuota(effective), logger.FormatQuota(preConsumed), relayInfo.UserId))
+			}
+		}
+
 		// 发送额度通知（订阅计费使用订阅剩余额度）
 		if actualQuota != 0 {
 			if relayInfo.BillingSource == BillingSourceSubscription {
@@ -128,6 +139,10 @@ const LogOtherSettleErrorKey = "settle_error"
 // 与余额对不上，只是把偏差翻到另一个方向。两者都不会虚报全额，但只有记预扣额能
 // 同时守住不变量与「绝不虚报已扣」。调用方拿到 settleFailed 后应在 other 上打
 // LogOtherSettleErrorKey 标记。
+//
+// DEF-6：会话触发计费上限截断（BillingSession.SettledQuota 的 clamped）时，
+// 落到账上的只有截断后的额度，日志必须记同一个数——否则日志宣称「全额已扣」
+// 而余额只少了一部分，正是本条不变量要防的假账。
 func SettleBillingForLog(ctx *gin.Context, relayInfo *relaycommon.RelayInfo, actualQuota int) (loggedQuota int, settleFailed bool) {
 	if err := SettleBilling(ctx, relayInfo, actualQuota); err != nil {
 		logger.LogError(ctx, common.LogText("error settling billing: %s", err.Error()))
@@ -136,7 +151,22 @@ func SettleBillingForLog(ctx *gin.Context, relayInfo *relaycommon.RelayInfo, act
 		}
 		return relayInfo.FinalPreConsumedQuota, true
 	}
+	if relayInfo != nil {
+		if reporter, ok := relayInfo.Billing.(settledQuotaReporter); ok {
+			if effective, clamped := reporter.SettledQuota(); clamped {
+				return effective, false
+			}
+		}
+	}
 	return actualQuota, false
+}
+
+// settledQuotaReporter 是 BillingSession 实现的可选接口：结算被计费上限
+// 截断时，用量日志需要拿到真正扣到账上的额度（见 SettleBillingForLog）。
+// 单列为可选接口而非加进 relaycommon.BillingSettler：其余实现（含测试替身）
+// 没有截断概念，不该被迫回答这个问题。
+type settledQuotaReporter interface {
+	SettledQuota() (quota int, clamped bool)
 }
 
 // markSettleError 把结算失败标记写进用量日志的 other。
