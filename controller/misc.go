@@ -135,13 +135,13 @@ func GetStatus(c *gin.Context) {
 		"setup":                       constant.Setup,
 		// 留空使用内置默认协议：只要存在内置默认协议（始终非空），即视为
 		// 需要用户同意，注册/登录的同意勾选不会被静默关闭。
-		"user_agreement_enabled":      legalSetting.GetUserAgreement() != "",
-		"privacy_policy_enabled":      legalSetting.GetPrivacyPolicy() != "",
-		"checkin_enabled":             operation_setting.GetCheckinSetting().Enabled,
-		"log_export_enabled":          operation_setting.GetLogSetting().UserExportEnabled,
-		"log_max_range_days":          operation_setting.GetLogSetting().MaxRangeDays,
-		"quota_remind_enabled":        common.QuotaRemindEnabled,
-		"quota_remind_threshold":      common.QuotaRemindThreshold,
+		"user_agreement_enabled": legalSetting.GetUserAgreement() != "",
+		"privacy_policy_enabled": legalSetting.GetPrivacyPolicy() != "",
+		"checkin_enabled":        operation_setting.GetCheckinSetting().Enabled,
+		"log_export_enabled":     operation_setting.GetLogSetting().UserExportEnabled,
+		"log_max_range_days":     operation_setting.GetLogSetting().MaxRangeDays,
+		"quota_remind_enabled":   common.QuotaRemindEnabled,
+		"quota_remind_threshold": common.QuotaRemindThreshold,
 	}
 
 	// 根据启用状态注入可选内容
@@ -329,7 +329,9 @@ func ResetPassword(c *gin.Context) {
 		common.ApiErrorT(c, "Password reset link is invalid or has expired")
 		return
 	}
-	password := common.GenerateVerificationCode(12)
+	// The reset flow emails a fresh credential, so it must satisfy the same
+	// policy a user-chosen password does; a hex slice of a UUID would not.
+	password := common.GenerateAccountPassword(16)
 	err = model.ResetUserPasswordByEmail(req.Email, password)
 	if err != nil {
 		if errors.Is(err, model.ErrEmailNotFound) || errors.Is(err, model.ErrEmailAmbiguous) {
