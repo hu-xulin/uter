@@ -2,8 +2,8 @@ package controller
 
 import (
 	"net/http"
-	"strings"
 	"net/http/httptest"
+	"strings"
 	"testing"
 )
 
@@ -25,7 +25,6 @@ func TestVerifyCreemSignatureValidatesHMAC(t *testing.T) {
 		t.Fatal("modified signature must be rejected")
 	}
 }
-
 
 func TestCreemModeMatchesConfigured(t *testing.T) {
 	tests := []struct {
@@ -77,7 +76,6 @@ func TestCreemAPIClientDoesNotFollowRedirects(t *testing.T) {
 		t.Fatal("client followed an API redirect; credential-bearing requests must not leave the fixed provider endpoint")
 	}
 }
-
 
 func TestReadCreemAPIResponseBodyEnforcesSizeLimit(t *testing.T) {
 	withinLimit := strings.Repeat("x", int(maxCreemAPIResponseBodyBytes))
