@@ -7,6 +7,9 @@ import (
 	"slices"
 	"testing"
 
+	"github.com/gin-gonic/gin"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/constant"
 	"github.com/uter-ai/uter/model"
@@ -16,9 +19,6 @@ import (
 	taskplugin "github.com/uter-ai/uter/relay/channel/task/jsplugin"
 	relaycommon "github.com/uter-ai/uter/relay/common"
 	"github.com/uter-ai/uter/service"
-	"github.com/gin-gonic/gin"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 func TestHailuoResponsesProtocol(t *testing.T) {
