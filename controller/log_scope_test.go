@@ -8,16 +8,16 @@ import (
 )
 
 type testOrgLogScope struct {
-	platform      bool
-	usernames     []string
-	userIDs       []int
-	usernamesErr  error
-	userIDsErr    error
+	platform     bool
+	usernames    []string
+	userIDs      []int
+	usernamesErr error
+	userIDsErr   error
 }
 
-func (s testOrgLogScope) IsPlatformScope() bool         { return s.platform }
-func (s testOrgLogScope) Usernames() ([]string, error)   { return s.usernames, s.usernamesErr }
-func (s testOrgLogScope) UserIDs() ([]int, error)        { return s.userIDs, s.userIDsErr }
+func (s testOrgLogScope) IsPlatformScope() bool        { return s.platform }
+func (s testOrgLogScope) Usernames() ([]string, error) { return s.usernames, s.usernamesErr }
+func (s testOrgLogScope) UserIDs() ([]int, error)      { return s.userIDs, s.userIDsErr }
 
 func TestApplyOrgLogScopeFailsClosedOnMembershipLookupErrors(t *testing.T) {
 	tests := []struct {
