@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io"
 	"net/http"
 	"strings"
 
@@ -15,6 +14,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
+	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/relaykit/dto"
 	"github.com/uter-ai/uter/relaykit/types"
 )
@@ -144,7 +144,7 @@ func getContentTypeByEncoding(encoding string) string {
 }
 
 func handleTTSResponse(c *gin.Context, resp *http.Response, info *relaycommon.RelayInfo, encoding string) (usage any, err *types.UterError) {
-	body, readErr := io.ReadAll(resp.Body)
+	body, readErr := common.ReadUpstreamBody(resp.Body)
 	if readErr != nil {
 		return nil, types.NewErrorWithStatusCode(
 			errors.New("failed to read volcengine response"),
