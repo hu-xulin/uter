@@ -27,10 +27,10 @@ import { Dialog } from '@/components/dialog'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { SecretInput } from '@/components/ui/secret-input'
 import { Label } from '@/components/ui/label'
+import { SecretInput } from '@/components/ui/secret-input'
+import { SecretTextarea } from '@/components/ui/secret-textarea'
 import { Separator } from '@/components/ui/separator'
-import { Textarea } from '@/components/ui/textarea'
 
 import { SettingsSwitchField } from '../components/settings-form-layout'
 
@@ -207,26 +207,22 @@ export function WaffoSettingsSection({
         <div className='grid grid-cols-2 gap-4'>
           <div className='grid gap-1.5'>
             <Label>{t('RSA Private Key (Production)')}</Label>
-            <Textarea
+            <SecretTextarea
               rows={3}
-              placeholder="-----BEGIN RSA PRIVATE KEY-----"
+              placeholder='-----BEGIN RSA PRIVATE KEY-----'
               value={values.WaffoPrivateKey}
-              onChange={(event) =>
-                onValueChange('WaffoPrivateKey', event.target.value)
-              }
-              className='font-mono text-xs'
+              onChange={(value) => onValueChange('WaffoPrivateKey', value)}
             />
           </div>
           <div className='grid gap-1.5'>
             <Label>{t('RSA Private Key (Sandbox)')}</Label>
-            <Textarea
+            <SecretTextarea
               rows={3}
-              placeholder="-----BEGIN RSA PRIVATE KEY-----"
+              placeholder='-----BEGIN RSA PRIVATE KEY-----'
               value={values.WaffoSandboxPrivateKey}
-              onChange={(event) =>
-                onValueChange('WaffoSandboxPrivateKey', event.target.value)
+              onChange={(value) =>
+                onValueChange('WaffoSandboxPrivateKey', value)
               }
-              className='font-mono text-xs'
             />
           </div>
         </div>
@@ -234,26 +230,22 @@ export function WaffoSettingsSection({
         <div className='grid grid-cols-2 gap-4'>
           <div className='grid gap-1.5'>
             <Label>{t('Waffo Public Key (Production)')}</Label>
-            <Textarea
+            <SecretTextarea
               rows={3}
-              placeholder="-----BEGIN CERTIFICATE-----"
+              placeholder='-----BEGIN CERTIFICATE-----'
               value={values.WaffoPublicCert}
-              onChange={(event) =>
-                onValueChange('WaffoPublicCert', event.target.value)
-              }
-              className='font-mono text-xs'
+              onChange={(value) => onValueChange('WaffoPublicCert', value)}
             />
           </div>
           <div className='grid gap-1.5'>
             <Label>{t('Waffo Public Key (Sandbox)')}</Label>
-            <Textarea
+            <SecretTextarea
               rows={3}
-              placeholder="-----BEGIN CERTIFICATE-----"
+              placeholder='-----BEGIN CERTIFICATE-----'
               value={values.WaffoSandboxPublicCert}
-              onChange={(event) =>
-                onValueChange('WaffoSandboxPublicCert', event.target.value)
+              onChange={(value) =>
+                onValueChange('WaffoSandboxPublicCert', value)
               }
-              className='font-mono text-xs'
             />
           </div>
         </div>
