@@ -6,10 +6,10 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/gin-gonic/gin"
 	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/model"
 	"github.com/uter-ai/uter/service"
-	"github.com/gin-gonic/gin"
 )
 
 // SecureVerificationRequired protects channel key disclosure. Other sensitive
@@ -27,6 +27,19 @@ func SecureVerificationRequired() gin.HandlerFunc {
 			return
 		}
 		if RequireSecurityProof(c, service.VerificationOperation{Scope: service.VerificationScopeChannelKeyRead, Context: context}) == nil {
+			return
+		}
+		c.Set("secure_verified", true)
+		c.Next()
+	}
+}
+
+// TokenKeySecureVerificationRequired protects API key disclosure for both the
+// single and batch endpoints. The proof carries no parameters, so one step-up
+// covers the reads a page performs; each controller still checks ownership.
+func TokenKeySecureVerificationRequired() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		if RequireSecurityProof(c, service.VerificationOperation{Scope: service.VerificationScopeTokenKeyRead}) == nil {
 			return
 		}
 		c.Set("secure_verified", true)
