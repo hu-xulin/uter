@@ -6,6 +6,8 @@ import (
 	"slices"
 	"strings"
 
+	"github.com/gin-gonic/gin"
+	"github.com/go-webauthn/webauthn/protocol"
 	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/logger"
 	"github.com/uter-ai/uter/middleware"
@@ -14,8 +16,6 @@ import (
 	"github.com/uter-ai/uter/service"
 	passkeysvc "github.com/uter-ai/uter/service/passkey"
 	"github.com/uter-ai/uter/setting/system_setting"
-	"github.com/gin-gonic/gin"
-	"github.com/go-webauthn/webauthn/protocol"
 )
 
 func GetVerificationMethods(c *gin.Context) {
