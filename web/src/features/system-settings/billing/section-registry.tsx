@@ -132,6 +132,17 @@ const BILLING_SECTIONS = [
           CreemWebhookSecret: settings.CreemWebhookSecret,
           CreemTestMode: settings.CreemTestMode,
           CreemProducts: settings.CreemProducts,
+          AlipayEnabled: settings.AlipayEnabled ?? false,
+          AlipayAppId: settings.AlipayAppId ?? '',
+          AlipayPrivateKey: settings.AlipayPrivateKey ?? '',
+          AlipayPublicKey: settings.AlipayPublicKey ?? '',
+          WechatPayEnabled: settings.WechatPayEnabled ?? false,
+          WechatPayMchId: settings.WechatPayMchId ?? '',
+          WechatPayAppId: settings.WechatPayAppId ?? '',
+          WechatPayApiV3Key: settings.WechatPayApiV3Key ?? '',
+          WechatPaySerialNo: settings.WechatPaySerialNo ?? '',
+          WechatPayPrivateKey: settings.WechatPayPrivateKey ?? '',
+          WechatPayPublicKey: settings.WechatPayPublicKey ?? '',
         }}
         waffoDefaultValues={{
           WaffoEnabled: settings.WaffoEnabled ?? false,
@@ -157,21 +168,6 @@ const BILLING_SECTIONS = [
         }}
         waffoPancakeProvisionedStoreID={settings.WaffoPancakeStoreID ?? ''}
         waffoPancakeProvisionedProductID={settings.WaffoPancakeProductID ?? ''}
-        alipayDefaultValues={{
-          enabled: settings.AlipayEnabled ?? false,
-          appId: settings.AlipayAppId ?? '',
-          privateKey: settings.AlipayPrivateKey ?? '',
-          publicKey: settings.AlipayPublicKey ?? '',
-        }}
-        wechatPayDefaultValues={{
-          enabled: settings.WechatPayEnabled ?? false,
-          mchId: settings.WechatPayMchId ?? '',
-          appId: settings.WechatPayAppId ?? '',
-          apiV3Key: settings.WechatPayApiV3Key ?? '',
-          serialNo: settings.WechatPaySerialNo ?? '',
-          privateKey: settings.WechatPayPrivateKey ?? '',
-          platformCert: settings.WechatPayPlatformCert ?? '',
-        }}
         complianceDefaults={{
           confirmed: settings['payment_setting.compliance_confirmed'] ?? false,
           termsVersion:

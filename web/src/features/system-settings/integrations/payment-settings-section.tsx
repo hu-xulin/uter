@@ -1357,13 +1357,11 @@ export function PaymentSettingsSection({
             </TabsContent>
 
             <TabsContent value='alipay' className={paymentTabContentClassName}>
-              <AlipaySettingsSection defaultValues={alipayDefaultValues} />
+              <AlipaySettingsSection />
             </TabsContent>
 
             <TabsContent value='wechat' className={paymentTabContentClassName}>
-              <WechatPaySettingsSection
-                defaultValues={wechatPayDefaultValues}
-              />
+              <WechatPaySettingsSection />
             </TabsContent>
 
             <TabsContent value='epay' className={paymentTabContentClassName}>
