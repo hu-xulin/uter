@@ -5,13 +5,13 @@ import (
 	"testing"
 	"time"
 
-	"github.com/uter-ai/uter/common"
-	"github.com/uter-ai/uter/constant"
-	"github.com/uter-ai/uter/relaykit/dto"
 	"github.com/alicebob/miniredis/v2"
 	"github.com/go-redis/redis/v8"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/uter-ai/uter/common"
+	"github.com/uter-ai/uter/constant"
+	"github.com/uter-ai/uter/relaykit/dto"
 )
 
 // 限流窗口必须由 NOTIFICATION_LIMIT_DURATION_MINUTE 决定，不能在整点被重置
