@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/uter-ai/uter/common"
 	"github.com/gin-gonic/gin"
+	"github.com/uter-ai/uter/common"
 )
 
 type turnstileCheckResponse struct {
