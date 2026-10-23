@@ -40,6 +40,7 @@ import { SecretInput } from '@/components/ui/secret-input'
 import { Switch } from '@/components/ui/switch'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { handleServerError } from '@/lib/handle-server-error'
+import { maskSecret } from '@/lib/secret'
 
 import { FormDirtyIndicator } from '../components/form-dirty-indicator'
 import { FormNavigationGuard } from '../components/form-navigation-guard'
@@ -237,6 +238,24 @@ const normalizeFormValues = (values: OAuthFormValues): FlatOAuthDefaults => ({
   WeChatAccountQRCodeImageURL: values.WeChatAccountQRCodeImageURL,
 })
 
+// OAuth 凭据类字段：保存后按掩码回填展示态，与 SecretInput 的约定一致。
+const OAUTH_SECRET_KEYS = [
+  'GitHubClientSecret',
+  'discord.client_secret',
+  'oidc.client_secret',
+  'telegram.client_secret',
+  'LinuxDOClientSecret',
+  'WeChatServerToken',
+] as const satisfies ReadonlyArray<keyof FlatOAuthDefaults>
+
+const maskOAuthSecrets = (values: FlatOAuthDefaults): FlatOAuthDefaults => {
+  const masked = { ...values }
+  for (const key of OAUTH_SECRET_KEYS) {
+    masked[key] = maskSecret(masked[key])
+  }
+  return masked
+}
+
 type OAuthSectionProps = {
   defaultValues: FlatOAuthDefaults
   serverAddress: string
@@ -383,9 +402,12 @@ export function OAuthSection(props: OAuthSectionProps) {
       })
     }
 
-    baselineRef.current = normalized
-    baselineSerializedRef.current = JSON.stringify(normalized)
-    form.reset(buildFormDefaults(normalized))
+    // 凭据字段只按掩码回填：明文不留在表单与基线里，下一次保存也不会
+    // 把掩码串当「已修改值」提交。
+    const maskedBaseline = maskOAuthSecrets(normalized)
+    baselineRef.current = maskedBaseline
+    baselineSerializedRef.current = JSON.stringify(maskedBaseline)
+    form.reset(buildFormDefaults(maskedBaseline))
   }
 
   const handleReset = () => {
