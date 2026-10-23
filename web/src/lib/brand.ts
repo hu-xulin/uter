@@ -16,6 +16,16 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
+/**
+ * The brand mark box shared by the public header and the console top bar.
+ *
+ * Both surfaces must render the logo at the same size; keeping the class in one
+ * place stops the two from drifting apart again (the console had shrunk to
+ * `size-5` while the public header stayed at `size-7`).
+ */
+export const BRAND_LOGO_BOX_CLASS =
+  'flex size-7 shrink-0 items-center justify-center overflow-hidden rounded-lg'
+
 /*
  * Localized brand name for the public site.
  *
