@@ -124,7 +124,7 @@ func TestOrgMemberReserveRollbackIsSymmetric(t *testing.T) {
 func TestOrgMemberReserveRejectsWhenSubQuotaExhausted(t *testing.T) {
 	truncate(t)
 	const orgId, userId = 720, 721
-	seedOrganization(t, orgId, 10_000_000)          // 组织预算充足
+	seedOrganization(t, orgId, 10_000_000)                          // 组织预算充足
 	seedOrgMember(t, userId, orgId, model.OrgRoleMember, 0, 50_000) // 子额度很小
 
 	funding := &WalletFunding{userId: userId}
