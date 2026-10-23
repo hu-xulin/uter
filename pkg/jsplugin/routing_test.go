@@ -1089,7 +1089,6 @@ func routingProtocolExport(name string) string {
 	}};`, name)
 }
 
-
 func TestFileReferenceRoundTripAddressesRepeatedFieldFiles(t *testing.T) {
 	assert.Equal(t, "request_file:image[]", FileReference("image[]", 0))
 	assert.Equal(t, "request_file:image[]#2", FileReference("image[]", 2))
