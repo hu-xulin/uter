@@ -21,6 +21,10 @@ import (
 	"testing"
 	"time"
 
+	"github.com/gin-gonic/gin"
+	"github.com/pquerna/otp/totp"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/i18n"
 	"github.com/uter-ai/uter/model"
@@ -28,10 +32,6 @@ import (
 	"github.com/uter-ai/uter/relaykit/dto"
 	"github.com/uter-ai/uter/service"
 	"github.com/uter-ai/uter/setting/system_setting"
-	"github.com/gin-gonic/gin"
-	"github.com/pquerna/otp/totp"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"gorm.io/gorm"
 )
 
@@ -394,7 +394,7 @@ func TestSecurityAccountPasswordRequiresCurrentPassword(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			user, identity := setupSecurityEnrollmentTest(t)
 			proof := issueSecurityEnrollmentProof(t, identity, service.VerificationOperation{Scope: service.VerificationScopePasswordChange}, service.VerificationMethodPassword)
-			request, err := common.Marshal(map[string]string{"password": "password123", "original_password": test.original})
+			request, err := common.Marshal(map[string]string{"password": "Str0ng-Pass!42", "original_password": test.original})
 			require.NoError(t, err)
 			response := securityEnrollmentRequest(http.MethodPut, "/api/user/self", string(request), proof, identity, UpdateSelf)
 			var result securityEnrollmentResponse
@@ -403,7 +403,7 @@ func TestSecurityAccountPasswordRequiresCurrentPassword(t *testing.T) {
 			stored, err := model.GetUserById(user.Id, true)
 			require.NoError(t, err)
 			if test.success {
-				assert.True(t, common.ValidatePasswordAndHash("password123", stored.Password))
+				assert.True(t, common.ValidatePasswordAndHash("Str0ng-Pass!42", stored.Password))
 				assert.True(t, strings.HasPrefix(stored.Password, "$argon2id$"))
 			} else {
 				assert.Equal(t, "CURRENT_PASSWORD_INVALID", result.Code)
@@ -859,7 +859,7 @@ func TestSecurityAccountFirstPasswordRace(t *testing.T) {
 	require.NoError(t, model.DB.Model(user).Update("password", "").Error)
 	require.NoError(t, model.DB.Create(&model.PasskeyCredential{UserID: user.Id, CredentialID: "existing-key", PublicKey: "public-key"}).Error)
 	proof := issueSecurityEnrollmentProof(t, identity, service.VerificationOperation{Scope: service.VerificationScopePasswordSet}, service.VerificationMethodPasskey)
-	request := `{"password":"initial-account-password!42"}`
+	request := `{"password":"initial-account-cred!42"}`
 	response := securityEnrollmentRequest("PUT", "/api/user/self", request, proof, identity, UpdateSelf)
 	var result securityEnrollmentResponse
 	require.NoError(t, common.Unmarshal(response.Body.Bytes(), &result))
@@ -867,7 +867,7 @@ func TestSecurityAccountFirstPasswordRace(t *testing.T) {
 	user, identity = setupSecurityEnrollmentTest(t)
 	require.NoError(t, model.DB.Model(user).Update("password", "").Error)
 	start, results := make(chan struct{}), make(chan error, 2)
-	for _, password := range []string{"first-password!42", "second-password!42"} {
+	for _, password := range []string{"first-cred!42", "second-cred!42"} {
 		go func(password string) {
 			<-start
 			results <- model.ChangeUserPassword(identity, &model.User{Id: user.Id, Password: password}, true)
@@ -878,7 +878,7 @@ func TestSecurityAccountFirstPasswordRace(t *testing.T) {
 	assert.NotEqual(t, first == nil, second == nil, "only one concurrent first password may succeed: %v / %v", first, second)
 	stored, err := model.GetUserById(user.Id, true)
 	require.NoError(t, err)
-	assert.True(t, common.ValidatePasswordAndHash("first-password!42", stored.Password) || common.ValidatePasswordAndHash("second-password!42", stored.Password))
+	assert.True(t, common.ValidatePasswordAndHash("first-cred!42", stored.Password) || common.ValidatePasswordAndHash("second-cred!42", stored.Password))
 }
 
 func TestSecurityAccountUnbindPreservesUsableLoginMethod(t *testing.T) {
