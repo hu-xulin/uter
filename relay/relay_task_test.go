@@ -87,9 +87,10 @@ func TestRealtimeFetchRefundsTaskItFindsFailed(t *testing.T) {
 	require.NoError(t, database.AutoMigrate(&model.Task{}, &model.User{}, &model.Log{}))
 	previousLogDB := model.LOG_DB
 	previousFactory := service.GetTaskAdaptorFunc
-	previousRedis := common.RedisEnabled
 	model.LOG_DB = database
-	common.RedisEnabled = false
+	// Redis 由 TestMain 在进程级关闭（见 testmain_test.go），此处不再改动
+	// common.RedisEnabled：退款路径会用 gopool.Go 起协程做配额缓存同步，协程里
+	// 读这个变量，若在这里写它就构成数据竞争。
 	service.GetTaskAdaptorFunc = func(platform constant.TaskPlatform) service.TaskPollingAdaptor {
 		if adaptor := GetTaskAdaptor(platform); adaptor != nil {
 			return adaptor
@@ -99,7 +100,6 @@ func TestRealtimeFetchRefundsTaskItFindsFailed(t *testing.T) {
 	t.Cleanup(func() {
 		model.LOG_DB = previousLogDB
 		service.GetTaskAdaptorFunc = previousFactory
-		common.RedisEnabled = previousRedis
 	})
 	service.InitHttpClient()
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
