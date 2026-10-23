@@ -65,6 +65,16 @@ export function useUpdateOption() {
         // If updating frontend-display-related config, also refresh status
         if (STATUS_RELATED_KEYS.has(variables.key)) {
           queryClient.invalidateQueries({ queryKey: ['status'] })
+          // 强制重拉并写入系统配置 store：钱包页等消费端读的是 zustand persist
+          // store，其 currency 仅靠 /api/status 的 fetchStatus 副作用 setConfig
+          // 更新。`invalidate` 只标记 stale，若 5 分钟 staleTime 内该查询已被其他
+          // observer 重新拉取成 fresh，钱包页挂载时不会重新拉取，导致汇率/货币展示
+          // 不同步。这里改用 refetch 无视 staleTime 与 observer 是否挂载，确保
+          // fetchStatus 立即执行并 setConfig，同标签页内即时同步。
+          void queryClient.refetchQueries({
+            queryKey: ['status'],
+            type: 'all',
+          })
           try {
             window.localStorage.removeItem('status')
           } catch {
