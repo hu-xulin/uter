@@ -10,9 +10,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/gin-gonic/gin"
 	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/logger"
-	"github.com/gin-gonic/gin"
 )
 
 // PerformanceStats 性能统计信息
