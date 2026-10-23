@@ -19,7 +19,7 @@ For commercial licensing, please contact support@uter.ai
 
 import { describe, expect, it } from 'vitest'
 
-import { maskSecret } from './secret'
+import { isMaskedSecret, maskSecret } from './secret'
 
 /**
  * 掩码规则必须与后端 common.MaskSecretValue 完全一致，
@@ -59,5 +59,34 @@ describe('maskSecret', () => {
     ]) {
       expect(maskSecret(value)).not.toBe(value)
     }
+  })
+})
+describe('isMaskedSecret', () => {
+  it('detects masked values produced by maskSecret', () => {
+    for (const value of [
+      '****',
+      'abcd*',
+      'abcd****ijkl',
+      `sk-0${'*'.repeat(12)}wxyz`,
+    ]) {
+      expect(isMaskedSecret(value)).toBe(true)
+    }
+  })
+
+  it('treats real credentials as unmasked', () => {
+    for (const value of [
+      '',
+      '0123456789abcdef0123456789abcdef',
+      '-----BEGIN PRIVATE KEY-----MIIEvgIBADANBg-----END PRIVATE KEY-----',
+      'whsec_abcdef1234567890',
+    ]) {
+      expect(isMaskedSecret(value)).toBe(false)
+    }
+  })
+
+  it('round-trips maskSecret output', () => {
+    expect(isMaskedSecret(maskSecret('sk-real-secret-key-value-123456'))).toBe(
+      true
+    )
   })
 })
