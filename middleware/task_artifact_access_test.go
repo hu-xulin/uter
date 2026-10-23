@@ -161,7 +161,6 @@ func urlQueryEscape(value string) string {
 	return replacer.Replace(value)
 }
 
-
 func TestTaskArtifactAccessRateMapHasCapacityLimit(t *testing.T) {
 	limits := system_setting.TaskArtifactAccessLimits{
 		InvalidRatePerMinute: system_setting.DefaultTaskArtifactInvalidRateLimitPerMinute,
