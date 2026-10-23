@@ -85,7 +85,6 @@ func TestConvertClaudeRequestPreservesAdaptiveThinkingForCompatibleModel(t *test
 	assert.Equal(t, "gpt-5.6-sol", info.UpstreamModelName)
 }
 
-
 func TestAdaptorInheritsNewAPIResponsesCompactSupport(t *testing.T) {
 	adaptor := &Adaptor{}
 	info := &relaycommon.RelayInfo{
