@@ -36,16 +36,6 @@ import (
 	"github.com/shopspring/decimal"
 )
 
-// CnMiniProgramRequest 微信小程序支付（JSAPI）下单请求。
-// openid 由小程序客户端在登录后获取并传入，仅用于构造微信支付订单，
-// 充值入账始终绑定到当前登录用户（c.GetInt("id")）。
-type CnMiniProgramRequest struct {
-	Amount        int64  `json:"amount"`
-	PaymentMethod string `json:"payment_method"`
-	// WeChat 小程序：微信用户 openid（同一 appid 下）。
-	Openid string `json:"openid"`
-}
-
 // CnWebPaymentRequest 网站支付（Web 收银台）下单请求。
 // client 决定收银台形态，由前端按视口/UA 传入；服务端只接受白名单值，
 // 未知值一律降级为 pc，避免客户端下发任意字符串影响下单参数。
