@@ -7632,7 +7632,7 @@
     "Enable the payment products": "Activer les produits de paiement",
     "Merchant platform → Products → enable “Native Pay” (PC QR) and “H5 Pay” (mobile web).": "Plateforme marchande → Produits → activez « Native Pay » (QR sur PC) et « H5 Pay » (web mobile).",
     "Bind the AppID and copy it into “App ID”": "Associer l'AppID et le reporter dans « App ID »",
-    "Products → AppID account management → bind the website app / official account / mini program, then copy its AppID (starts with wx).": "Produits → Gestion des comptes AppID → associez l'application web / le compte officiel / le mini-programme, puis copiez son AppID (commence par wx).",
+    "Products → AppID account management → bind a certified official account / mini program / mobile app, then copy its AppID (starts with wx). Website apps cannot be used for WeChat Pay.": "Produits → Gestion des comptes AppID → associez un compte officiel / mini-programme / application mobile certifié, puis copiez son AppID (commence par wx). Les applications web ne permettent pas d'utiliser WeChat Pay.",
     "Copy the merchant ID into “Merchant ID”": "Copier l'identifiant marchand dans « Merchant ID »",
     "Account center → Merchant info → WeChat Pay merchant ID (10 digits).": "Centre de compte → Informations marchand → identifiant marchand WeChat Pay (10 chiffres).",
     "Set the APIv3 key and copy it into “APIv3 Key”": "Définir la clé APIv3 et la reporter dans « APIv3 Key »",

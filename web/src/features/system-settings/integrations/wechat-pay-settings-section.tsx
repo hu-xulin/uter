@@ -251,7 +251,7 @@ export function WechatPaySettingsSection() {
                   <span className='text-muted-foreground'>
                     {' — '}
                     {t(
-                      'Products → AppID account management → bind the website app / official account / mini program, then copy its AppID (starts with wx).'
+                      'Products → AppID account management → bind a certified official account / mini program / mobile app, then copy its AppID (starts with wx). Website apps cannot be used for WeChat Pay.'
                     )}
                   </span>
                 </li>
