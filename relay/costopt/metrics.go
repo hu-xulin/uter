@@ -35,17 +35,17 @@ type MetricsSnapshot struct {
 
 	// ===== 各降本钩子命中率（定位"开了但没生效"） =====
 	// 分母 = 进入降本钩子段的请求数；各钩子分子 = 该钩子实际改写了请求/注入了上下文的次数。
-	CostOptRequests     int64 `json:"costopt_requests"`       // 进入降本钩子段的请求数（命中率分母）
-	ValueTierHits       int64 `json:"value_tier_hits"`       // 价值层下沉改写模型次数
-	ComplexityHits      int64 `json:"complexity_hits"`       // 复杂度路由降级次数
-	CascadeHits         int64 `json:"cascade_hits"`          // 级联降级次数
-	RouterLMHits        int64 `json:"router_lm_hits"`        // RouterLM 选模改写次数
-	CompressionRequests int64 `json:"compression_requests"`  // Prompt 压缩尝试次数
-	CompressionHits     int64 `json:"compression_hits"`      // Prompt 压缩生效（至少改写 1 段）次数
-	CompressionEmpty    int64 `json:"compression_empty"`     // 压缩返回空内容次数（静默失败告警计数）
-	RAGRequests         int64 `json:"rag_requests"`          // RAG 检索尝试次数
-	RAGHits             int64 `json:"rag_hits"`              // RAG 注入成功次数
-	RAGSkipped          int64 `json:"rag_skipped"`           // RAG 被净收益闸门跳过次数
+	CostOptRequests     int64 `json:"costopt_requests"`     // 进入降本钩子段的请求数（命中率分母）
+	ValueTierHits       int64 `json:"value_tier_hits"`      // 价值层下沉改写模型次数
+	ComplexityHits      int64 `json:"complexity_hits"`      // 复杂度路由降级次数
+	CascadeHits         int64 `json:"cascade_hits"`         // 级联降级次数
+	RouterLMHits        int64 `json:"router_lm_hits"`       // RouterLM 选模改写次数
+	CompressionRequests int64 `json:"compression_requests"` // Prompt 压缩尝试次数
+	CompressionHits     int64 `json:"compression_hits"`     // Prompt 压缩生效（至少改写 1 段）次数
+	CompressionEmpty    int64 `json:"compression_empty"`    // 压缩返回空内容次数（静默失败告警计数）
+	RAGRequests         int64 `json:"rag_requests"`         // RAG 检索尝试次数
+	RAGHits             int64 `json:"rag_hits"`             // RAG 注入成功次数
+	RAGSkipped          int64 `json:"rag_skipped"`          // RAG 被净收益闸门跳过次数
 }
 
 var metrics MetricsSnapshot
