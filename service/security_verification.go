@@ -16,12 +16,17 @@ import (
 )
 
 const (
-	VerificationMethodTwoFA              = "2fa"
-	VerificationMethodPasskey            = "passkey"
-	VerificationMethodPassword           = "password"
-	VerificationMethodOAuth              = "oauth"
-	VerificationMethodSession            = "session"
-	VerificationScopeChannelKeyRead      = "channel.key.read"
+	VerificationMethodTwoFA         = "2fa"
+	VerificationMethodPasskey       = "passkey"
+	VerificationMethodPassword      = "password"
+	VerificationMethodOAuth         = "oauth"
+	VerificationMethodSession       = "session"
+	VerificationScopeChannelKeyRead = "channel.key.read"
+	// VerificationScopeTokenKeyRead guards disclosing an API key in clear. The
+	// scope binds no parameters: the frontend asks for one proof and reuses it
+	// for the single and batch reads it then performs, and the controller still
+	// enforces per-request ownership.
+	VerificationScopeTokenKeyRead        = "token.key.read"
 	VerificationScopePasskeyRegister     = "passkey.register"
 	VerificationScopePasskeyDelete       = "passkey.delete"
 	VerificationScopeTwoFASetup          = "2fa.setup"
@@ -261,7 +266,8 @@ func BindVerificationOperation(operation VerificationOperation) (VerificationBin
 		normalized = context
 	case VerificationScopePasskeyRegister, VerificationScopePasskeyDelete, VerificationScopeTwoFASetup,
 		VerificationScopeTwoFADisable, VerificationScopeTwoFABackupCodes,
-		VerificationScopePasswordSet, VerificationScopePasswordChange, VerificationScopeAccountDelete:
+		VerificationScopePasswordSet, VerificationScopePasswordChange, VerificationScopeAccountDelete,
+		VerificationScopeTokenKeyRead:
 		if len(fields) != 0 {
 			return VerificationBinding{}, ErrVerificationContextInvalid
 		}
@@ -319,7 +325,7 @@ func securityVerificationPolicy(scope string, state model.UserVerificationState)
 		methods = append(methods, VerificationMethodPasskey)
 	}
 	switch scope {
-	case VerificationScopeChannelKeyRead, VerificationScopePasskeyDelete, VerificationScopeLogin:
+	case VerificationScopeChannelKeyRead, VerificationScopeTokenKeyRead, VerificationScopePasskeyDelete, VerificationScopeLogin:
 	case VerificationScopeTwoFADisable, VerificationScopeTwoFABackupCodes:
 		if !state.HasTwoFA {
 			return nil, model.ErrTwoFANotEnabled
