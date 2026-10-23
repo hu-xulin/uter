@@ -4,8 +4,8 @@ import (
 	"os"
 	"testing"
 
-	"github.com/uter-ai/uter/common"
 	"github.com/glebarez/sqlite"
+	"github.com/uter-ai/uter/common"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
