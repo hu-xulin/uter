@@ -55,9 +55,12 @@ func palmStreamHandler(c *gin.Context, resp *http.Response) (*types.NewAPIError,
 	responseId := helper.GetResponseID(c)
 	createdTime := common.GetTimestamp()
 	dataChan := make(chan string)
-	stopChan := make(chan bool)
+	// 带缓冲：消费方（c.Stream）在客户端断开后立即返回，此后发送不能阻塞，
+	// 否则读取协程会永久卡在这里，上游 resp.Body 也再不关闭。
+	stopChan := make(chan bool, 1)
+	ctx := c.Request.Context()
 	go func() {
-		responseBody, err := io.ReadAll(resp.Body)
+		responseBody, err := common.ReadUpstreamBody(resp.Body)
 		if err != nil {
 			common.SysLog(common.LogText("error reading stream response: %s", err.Error()))
 			stopChan <- true
@@ -83,7 +86,9 @@ func palmStreamHandler(c *gin.Context, resp *http.Response) (*types.NewAPIError,
 			stopChan <- true
 			return
 		}
-		dataChan <- string(jsonResponse)
+		if !helper.SendStreamChunk(ctx, dataChan, string(jsonResponse)) {
+			return
+		}
 		stopChan <- true
 	}()
 	helper.SetEventStreamHeaders(c)
@@ -102,7 +107,7 @@ func palmStreamHandler(c *gin.Context, resp *http.Response) (*types.NewAPIError,
 }
 
 func palmHandler(c *gin.Context, info *relaycommon.RelayInfo, resp *http.Response) (*dto.Usage, *types.NewAPIError) {
-	responseBody, err := io.ReadAll(resp.Body)
+	responseBody, err := common.ReadUpstreamBody(resp.Body)
 	if err != nil {
 		return nil, types.NewOpenAIError(err, types.ErrorCodeReadResponseBodyFailed, http.StatusInternalServerError)
 	}
