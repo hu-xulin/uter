@@ -6,10 +6,10 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	relaycommon "github.com/uter-ai/uter/relay/common"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	relaycommon "github.com/uter-ai/uter/relay/common"
 )
 
 func TestNewTaskAPIRequestInheritsClientCancellation(t *testing.T) {
