@@ -6,15 +6,15 @@ import (
 	"strings"
 	"time"
 
+	"github.com/gin-gonic/gin"
+	"github.com/shopspring/decimal"
+	"github.com/thanhpk/randstr"
 	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/logger"
 	"github.com/uter-ai/uter/model"
 	"github.com/uter-ai/uter/service"
 	"github.com/uter-ai/uter/setting"
 	"github.com/uter-ai/uter/setting/operation_setting"
-	"github.com/gin-gonic/gin"
-	"github.com/shopspring/decimal"
-	"github.com/thanhpk/randstr"
 )
 
 type WaffoPancakePayRequest struct {
@@ -388,15 +388,15 @@ func RequestWaffoPancakePay(c *gin.Context) {
 
 	tradeNo := fmt.Sprintf("WAFFO_PANCAKE-%d-%d-%s", id, time.Now().UnixMilli(), randstr.String(6))
 	topUp := &model.TopUp{
-		UserId:          id,
-		Amount:          normalizeWaffoPancakeTopUpAmount(req.Amount),
-		Money:           payMoney,
-		TradeNo:         tradeNo,
-		PaymentMethod:   model.PaymentMethodWaffoPancake,
-		PaymentProvider: model.PaymentProviderWaffoPancake,
+		UserId:           id,
+		Amount:           normalizeWaffoPancakeTopUpAmount(req.Amount),
+		Money:            payMoney,
+		TradeNo:          tradeNo,
+		PaymentMethod:    model.PaymentMethodWaffoPancake,
+		PaymentProvider:  model.PaymentProviderWaffoPancake,
 		ProviderCurrency: "usd",
-		CreateTime:      time.Now().Unix(),
-		Status:          common.TopUpStatusPending,
+		CreateTime:       time.Now().Unix(),
+		Status:           common.TopUpStatusPending,
 	}
 	if err := topUp.Insert(); err != nil {
 		logger.LogError(c.Request.Context(), common.LogText("Waffo Pancake failed to create top-up order user_id=%d trade_no=%s amount=%d error=%q", id, tradeNo, req.Amount, err.Error()))
