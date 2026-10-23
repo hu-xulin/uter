@@ -39,8 +39,6 @@ import type {
   WaffoPaymentResponse,
   WaffoPancakePaymentRequest,
   WaffoPancakePaymentResponse,
-  CnPayPaymentResponse,
-  CnMiniProgramPaymentRequest,
   CnWebPaymentRequest,
   CnWebPaymentResponse,
 } from './types'
@@ -183,23 +181,6 @@ export async function requestWaffoPancakePayment(
     skipBusinessError: true,
   } as Record<string, unknown>)
   return res.data
-}
-
-/**
- * Request official WeChat Pay mini-program payment (JSAPI).
- * The mini-program obtains openid after login and passes it here. The server
- * returns the full wx.requestPayment parameter set in data.
- */
-export async function requestWechatMiniProgramPayment(
-  request: CnMiniProgramPaymentRequest
-): Promise<CnPayPaymentResponse> {
-  const res = await api.post('/api/user/wechat/pay', request, {
-    skipBusinessError: true,
-  } as Record<string, unknown>)
-  return {
-    ...res.data,
-    url: (res.data as { url?: string }).url,
-  }
 }
 
 /**
