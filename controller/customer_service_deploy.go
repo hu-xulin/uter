@@ -102,7 +102,7 @@ func csDo(c *gin.Context, method, path string, body []byte) ([]byte, int, error)
 		return nil, 0, err
 	}
 	defer resp.Body.Close()
-	respBody, _ := io.ReadAll(resp.Body)
+	respBody, _ := common.ReadUpstreamBody(resp.Body)
 	return respBody, resp.StatusCode, nil
 }
 
