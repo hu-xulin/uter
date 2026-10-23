@@ -403,7 +403,7 @@ export type BillingSettings = {
   WechatPayApiV3Key: string
   WechatPaySerialNo: string
   WechatPayPrivateKey: string
-  WechatPayPlatformCert: string
+  WechatPayPublicKey: string
   'checkin_setting.enabled': boolean
   'checkin_setting.min_quota': number
   'checkin_setting.max_quota': number
