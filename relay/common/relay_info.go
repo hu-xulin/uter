@@ -82,12 +82,12 @@ type TokenCountMeta struct {
 }
 
 type RelayInfo struct {
-	TokenId           int
-	TokenKey          string
-	TokenGroup        string
-	UserId            int
-	UsingGroup        string // 使用的分组，当auto跨分组重试时，会变动
-	UserGroup         string // 用户所在分组
+	TokenId    int
+	TokenKey   string
+	TokenGroup string
+	UserId     int
+	UsingGroup string // 使用的分组，当auto跨分组重试时，会变动
+	UserGroup  string // 用户所在分组
 	// OrganizationId 是本次请求计费出资组织的 ID（0 = 平台直管用户，由个人钱包出资）。
 	// 在创建计费会话时解析一次并缓存于此，供请求路径后续判断复用。
 	//
@@ -487,33 +487,33 @@ func (info *RelayInfo) ToString() string {
 
 // 定义支持流式选项的通道类型
 var streamSupportedChannels = map[int]bool{
-	constant.ChannelTypeOpenAI:         true,
-	constant.ChannelTypeAnthropic:      true,
-	constant.ChannelTypeAws:            true,
-	constant.ChannelTypeGemini:         true,
-	constant.ChannelCloudflare:         true,
-	constant.ChannelTypeAzure:          true,
-	constant.ChannelTypeVolcEngine:     true,
-	constant.ChannelTypeOllama:         true,
-	constant.ChannelTypeXai:            true,
-	constant.ChannelTypeDeepSeek:       true,
-	constant.ChannelTypeBaiduV2:        true,
-	constant.ChannelTypeZhipu_v4:       true,
-	constant.ChannelTypeAli:            true,
-	constant.ChannelTypeSubmodel:       true,
-	constant.ChannelTypeCodex:          true,
-	constant.ChannelTypeMoonshot:       true,
-	constant.ChannelTypeMiniMax:        true,
-	constant.ChannelTypeSiliconFlow:    true,
+	constant.ChannelTypeOpenAI:           true,
+	constant.ChannelTypeAnthropic:        true,
+	constant.ChannelTypeAws:              true,
+	constant.ChannelTypeGemini:           true,
+	constant.ChannelCloudflare:           true,
+	constant.ChannelTypeAzure:            true,
+	constant.ChannelTypeVolcEngine:       true,
+	constant.ChannelTypeOllama:           true,
+	constant.ChannelTypeXai:              true,
+	constant.ChannelTypeDeepSeek:         true,
+	constant.ChannelTypeBaiduV2:          true,
+	constant.ChannelTypeZhipu_v4:         true,
+	constant.ChannelTypeAli:              true,
+	constant.ChannelTypeSubmodel:         true,
+	constant.ChannelTypeCodex:            true,
+	constant.ChannelTypeMoonshot:         true,
+	constant.ChannelTypeMiniMax:          true,
+	constant.ChannelTypeSiliconFlow:      true,
 	constant.ChannelTypeAdvancedCustom:   true,
 	constant.ChannelTypeBrandedShared:    true,
 	constant.ChannelTypeBrandedAggregate: true,
 	constant.ChannelTypeBrandedProxy:     true,
 	constant.ChannelTypeSub2API:          true,
 	constant.ChannelTypeNewAPI:           true,
-	constant.ChannelTypeVLLM:           true,
-	constant.ChannelTypeSGLang:         true,
-	constant.ChannelTypeTencent:        true,
+	constant.ChannelTypeVLLM:             true,
+	constant.ChannelTypeSGLang:           true,
+	constant.ChannelTypeTencent:          true,
 }
 
 func GenRelayInfoWs(c *gin.Context, ws *websocket.Conn) *RelayInfo {
@@ -682,8 +682,8 @@ func genBaseRelayInfo(c *gin.Context, request dto.Request) *RelayInfo {
 
 		OriginModelName: originModelName,
 
-		TokenId:        common.GetContextKeyInt(c, constant.ContextKeyTokenId),
-		TokenKey:       common.GetContextKeyString(c, constant.ContextKeyTokenKey),
+		TokenId:  common.GetContextKeyInt(c, constant.ContextKeyTokenId),
+		TokenKey: common.GetContextKeyString(c, constant.ContextKeyTokenKey),
 		// 计费出资组织随登录态一起带进来：TokenAuth / UserAuth 都已通过
 		// UserBase.WriteContext 把 organization_id 写进 gin context（其数据来自
 		// GetUserCache，Redis 命中即零查库，未命中由 singleflight 收敛为一次回源）。
