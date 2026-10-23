@@ -7,11 +7,11 @@ import (
 	"strings"
 	"unicode/utf8"
 
+	"github.com/gin-gonic/gin"
 	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/middleware"
 	"github.com/uter-ai/uter/model"
 	"github.com/uter-ai/uter/service"
-	"github.com/gin-gonic/gin"
 )
 
 // accessTokenMinLifetimeSecs is the shortest expiry a new access token may have.
