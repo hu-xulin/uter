@@ -61,36 +61,14 @@ export type WaffoPancakePaymentResponse = ApiResponse<
 >
 
 /**
- * Official China payment (Alipay / WeChat mini-program) response.
- * - Alipay mini-program: data.trade_no (pass to my.tradePay).
- * - WeChat mini-program: data.appId / timeStamp / nonceStr / package /
- *   signType / paySign (pass to wx.requestPayment).
- * `url` mirrors the primary identifier for convenience.
+ * Official China payment (Alipay / WeChat website payment) response.
+ * `url` carries the primary identifier: Alipay returns a cashier pay_url,
+ * WeChat PC returns code_url and mobile returns h5_url.
  */
 export type CnPayPaymentResponse = ApiResponse<{
   trade_no?: string
-  appId?: string
-  timeStamp?: string
-  nonceStr?: string
-  package?: string
-  signType?: string
-  paySign?: string
+  url?: string
 }> & { url?: string }
-
-/**
- * Mini-program payment request. Only the WeChat mini-program remains: it obtains
- * the user's openid after login and sends it to the server to create the order.
- * (Alipay mini-program payment was removed — we only contracted computer/mobile
- * website payment, so there is no alipay_miniprogram method.)
- */
-export interface CnMiniProgramPaymentRequest {
-  /** Topup amount */
-  amount: number
-  /** Payment method identifier (wechat_miniprogram) */
-  payment_method: string
-  /** WeChat mini-program user openid */
-  openid?: string
-}
 
 /**
  * Website payment (web cashier) request.
