@@ -249,7 +249,7 @@ func tokenBatchAuditParams(c *gin.Context, ids []int) model.AuditFields {
 	return params
 }
 
-//   - user_id 过滤与范围取交集：越权的用户 id 只会得到空集。
+// - user_id 过滤与范围取交集：越权的用户 id 只会得到空集。
 func GetOrganizationAuditLogs(c *gin.Context) {
 	orgId, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
