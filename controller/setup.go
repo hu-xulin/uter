@@ -3,11 +3,11 @@ package controller
 import (
 	"time"
 
+	"github.com/gin-gonic/gin"
 	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/constant"
 	"github.com/uter-ai/uter/model"
 	"github.com/uter-ai/uter/setting/operation_setting"
-	"github.com/gin-gonic/gin"
 )
 
 type Setup struct {
@@ -25,18 +25,17 @@ type SetupRequest struct {
 }
 
 func GetSetup(c *gin.Context) {
+	// 三个字段在两个状态下都有意义，统一填充后单一返回路径：
+	// status——是否已完成初始化（constant.Setup == true 即「初始化已完成」）；
+	// root_init——根用户是否已存在（初始化流程的另一半状态）；
+	// database_type——未初始化时前端据此展示即将使用的库，已初始化时运维
+	// 据此确认当前库型。此前已初始化分支提前返回，database_type 停留在零值，
+	// 前端据此渲染会出现空值。
 	setup := Setup{
-		Status: constant.Setup,
+		Status:       constant.Setup,
+		RootInit:     model.RootUserExists(),
+		DatabaseType: string(common.MainDatabaseType()),
 	}
-	if constant.Setup {
-		c.JSON(200, gin.H{
-			"success": true,
-			"data":    setup,
-		})
-		return
-	}
-	setup.RootInit = model.RootUserExists()
-	setup.DatabaseType = string(common.MainDatabaseType())
 	c.JSON(200, gin.H{
 		"success": true,
 		"data":    setup,
@@ -73,7 +72,7 @@ func PostSetup(c *gin.Context) {
 			return
 		}
 
-		if err := common.ValidateNewAccountPassword(req.Password); err != nil {
+		if err := common.ValidateNewAccountPasswordStrength(req.Password, req.Username, ""); err != nil {
 			c.JSON(200, gin.H{
 				"success": false,
 				"message": err.Error(),
