@@ -38,13 +38,9 @@ const (
 	PaymentMethodBalance      = "balance"
 	// 网站支付（Web 收银台）：PC 跳转支付宝/微信支付页面收银台，移动端跳转支付方 App / H5 收银台。
 	// 这是面向 Web 站点的主通道——支付发生在浏览器中，不受 Apple IAP 约束，费率约 0.6%。
+	// 微信侧形态为 Native 扫码（PC）与 H5 支付（移动端）；小程序支付已移除。
 	PaymentMethodAlipay    = "alipay_web"
 	PaymentMethodWechatPay = "wechat_web"
-	// 小程序支付：保留给微信/支付宝小程序客户端。
-	// ⚠️ 微信小程序自 2026-04-01 起对虚拟商品强制 wx.requestVirtualPayment（iOS 12% 抽成），
-	// 因此小程序不作为额度充值的主收款口；该支付方式默认不在 Web 支付方式列表中下发。
-	// 支付宝侧未签约小程序支付，故无对应的 alipay_miniprogram 方法。
-	PaymentMethodWechatPayMiniProgram = "wechat_miniprogram"
 )
 
 const (
