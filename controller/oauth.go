@@ -497,7 +497,13 @@ func findOrCreateOAuthUser(c *gin.Context, provider oauth.Provider, oauthUser *o
 	// IDs and never take part in the comparison.
 	legacyID, _ := oauthUser.Extra["legacy_id"].(string)
 	if strings.ContainsFunc(legacyID, func(r rune) bool { return r < '0' || r > '9' }) && provider.IsUserIDTaken(legacyID) {
-		if err := provider.FillUserByProviderID(user, legacyID); err != nil {
+		err := provider.FillUserByProviderID(user, legacyID)
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			// IsUserIDTaken (unscoped) can match a soft-deleted row that
+			// FillUserByProviderID no longer resolves. Treat it as not found so a
+			// new account can still be registered instead of failing the login.
+			user = &model.User{}
+		} else if err != nil {
 			return nil, nil, err
 		}
 		if user.Id != 0 {

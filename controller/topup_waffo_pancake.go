@@ -419,7 +419,7 @@ func RequestWaffoPancakePay(c *gin.Context) {
 	if err != nil {
 		logger.LogError(c.Request.Context(), common.LogText("Waffo Pancake failed to create checkout session user_id=%d trade_no=%s error=%q", id, tradeNo, err.Error()))
 		topUp.Status = common.TopUpStatusFailed
-		_ = topUp.Update()
+		persistTopUpFailedStatus(c, topUp)
 		paymentError(c, common.NewMessage("Failed to start payment"))
 		return
 	}
@@ -573,8 +573,8 @@ func WaffoPancakeWebhook(c *gin.Context) {
 	paidDec, paidErr := decimal.NewFromString(paid)
 	expectedDec, expectedErr := decimal.NewFromString(expected)
 	if paid == "" || paidErr != nil || expectedErr != nil || !paidDec.Equal(expectedDec) {
-		logger.LogError(c.Request.Context(), common.LogText("Waffo Pancake webhook amount mismatch trade_no=%s paid=%q expected=%s event_id=%s order_id=%s client_ip=%s",
-			tradeNo, paid, expected, event.ID, event.Data.OrderID, c.ClientIP()))
+		logger.LogError(c.Request.Context(), common.LogText("Waffo Pancake webhook amount mismatch trade_no=%s event_id=%s order_id=%s client_ip=%s",
+			tradeNo, event.ID, event.Data.OrderID, c.ClientIP()))
 		c.String(http.StatusOK, "OK")
 		return
 	}

@@ -531,6 +531,12 @@ func ManualCompleteTopUp(tradeNo string, callerIp string) error {
 	var quotaToAdd int
 	var payMoney float64
 	var paymentMethod string
+	// F-06/F-19: track whether this invocation actually completed the order. On
+	// the idempotent path (order already succeeded) the post-transaction cache
+	// sync and audit log must be skipped, otherwise they run with the zero-value
+	// locals (userId 0, quota 0) captured above and corrupt the wrong user's
+	// cache or emit a misleading completion log.
+	alreadyCompleted := false
 
 	err := DB.Transaction(func(tx *gorm.DB) error {
 		topUp := &TopUp{}
@@ -541,6 +547,7 @@ func ManualCompleteTopUp(tradeNo string, callerIp string) error {
 
 		// 幂等处理：已成功直接返回
 		if topUp.Status == common.TopUpStatusSuccess {
+			alreadyCompleted = true
 			return nil
 		}
 
@@ -585,6 +592,14 @@ func ManualCompleteTopUp(tradeNo string, callerIp string) error {
 
 	if err != nil {
 		return err
+	}
+
+	// F-06/F-19: on the idempotent repeat call the order was already completed in
+	// a previous invocation, so the transaction never populated userId /
+	// quotaToAdd / payMoney / paymentMethod. Skipping the cache sync and audit
+	// log here avoids touching user 0's cache and writing a false completion.
+	if alreadyCompleted {
+		return nil
 	}
 
 	// 事务外记录日志，避免阻塞

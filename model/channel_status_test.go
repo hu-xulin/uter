@@ -52,6 +52,57 @@ func TestUpdateChannelStatusPersistsMultiKeyState(t *testing.T) {
 	assert.Equal(t, 1, stored.ChannelInfo.MultiKeyPollingIndex)
 }
 
+func TestUpdateChannelStatusUnknownKeyAbortsSave(t *testing.T) {
+	setupChannelStatusTest(t)
+
+	channel := Channel{
+		Name:   "multi-key-unknown-key",
+		Key:    "key-a\nkey-b",
+		Status: common.ChannelStatusEnabled,
+		ChannelInfo: ChannelInfo{
+			IsMultiKey:   true,
+			MultiKeySize: 2,
+			MultiKeyMode: constant.MultiKeyModePolling,
+		},
+	}
+	require.NoError(t, DB.Create(&channel).Error)
+
+	// F-05: a usingKey that does not match any configured key must abort the
+	// save (return false) and leave the database untouched.
+	changed := UpdateChannelStatus(channel.Id, "key-ghost", common.ChannelStatusAutoDisabled, "provider rejected key")
+	require.False(t, changed, "unknown usingKey must abort the update and return false")
+
+	var stored Channel
+	require.NoError(t, DB.First(&stored, channel.Id).Error)
+	assert.Equal(t, common.ChannelStatusEnabled, stored.Status, "status must stay unchanged on abort")
+	assert.Nil(t, stored.ChannelInfo.MultiKeyStatusList, "no partial multi-key status should be persisted")
+}
+
+func TestUpdateChannelStatusManualOperationIgnoresMissingKey(t *testing.T) {
+	setupChannelStatusTest(t)
+
+	channel := Channel{
+		Name:   "multi-key-manual",
+		Key:    "key-a\nkey-b",
+		Status: common.ChannelStatusEnabled,
+		ChannelInfo: ChannelInfo{
+			IsMultiKey:   true,
+			MultiKeySize: 2,
+			MultiKeyMode: constant.MultiKeyModePolling,
+		},
+	}
+	require.NoError(t, DB.Create(&channel).Error)
+
+	// Manual operations pass an empty usingKey and must still target the whole
+	// channel (status flips to manually disabled) without the unknown-key abort.
+	changed := UpdateChannelStatus(channel.Id, "", common.ChannelStatusManuallyDisabled, "manual operation")
+	require.True(t, changed)
+
+	var stored Channel
+	require.NoError(t, DB.First(&stored, channel.Id).Error)
+	assert.Equal(t, common.ChannelStatusManuallyDisabled, stored.Status)
+}
+
 func TestSaveStatusStateFromSingleKeySnapshotPreservesUnownedColumns(t *testing.T) {
 	setupChannelStatusTest(t)
 

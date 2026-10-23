@@ -190,10 +190,18 @@ jobs:
           repository: ${{ github.event.pull_request.base.repo.full_name || github.repository }}
           ref: ${{ github.sha }}
 
-      - name: Scan root module
+      - name: Install govulncheck (pinned) and put Go bin on PATH
+        # F-14: the previous job ran `go install ...@latest` and then called
+        # `govulncheck` directly, but $(go env GOPATH)/bin is not on PATH in the
+        # runner, so the scan never actually executed ("govulncheck: command not
+        # found"). Install once, pin the version (no @latest drift), and export
+        # GOPATH/bin onto PATH for the scans below.
         run: |
-          go install golang.org/x/vuln/cmd/govulncheck@latest
-          govulncheck ./...
+          go install golang.org/x/vuln/cmd/govulncheck@v1.9.0
+          echo "PATH=$PATH:$(go env GOPATH)/bin" >> "$GITHUB_ENV"
+
+      - name: Scan root module
+        run: govulncheck ./...
 
       - name: Scan relaykit
         working-directory: relaykit

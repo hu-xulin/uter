@@ -436,7 +436,7 @@ func fulfillOrder(ctx context.Context, event stripe.Event, referenceId string, c
 		return err
 	}
 
-	logger.LogInfo(ctx, common.LogText("Stripe top-up succeeded trade_no=%s checkout_subtotal_minor=%s amount_total_minor=%s currency=%s event_type=%s client_ip=%s", referenceId, amountSubtotal, amountTotal, currency, string(event.Type), callerIp))
+	logger.LogInfo(ctx, common.LogText("Stripe top-up succeeded trade_no=%s currency=%s event_type=%s client_ip=%s", referenceId, currency, string(event.Type), callerIp))
 	return nil
 }
 

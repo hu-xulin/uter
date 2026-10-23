@@ -675,7 +675,13 @@ func CleanupChannelPollingLocks() {
 	})
 }
 
-func handlerMultiKeyUpdate(channel *Channel, usingKey string, status int, reason string) {
+// handlerMultiKeyUpdate mutates channel in-memory state for a multi-key channel.
+// It returns an explicit error when a non-empty usingKey is supplied but does not
+// match any of the channel's configured keys: in that case the caller must abort
+// the subsequent persistence, because silently dropping the update would leave
+// the database inconsistent with the caller's intent. The empty usingKey path
+// still targets the whole channel (manual operations) and returns nil.
+func handlerMultiKeyUpdate(channel *Channel, usingKey string, status int, reason string) error {
 	keys := channel.GetKeys()
 	if len(keys) == 0 {
 		channel.Status = status
@@ -690,14 +696,14 @@ func handlerMultiKeyUpdate(channel *Channel, usingKey string, status int, reason
 		if keyIndex < 0 {
 			if usingKey != "" {
 				common.SysLog(common.LogText("failed to update multi-key status: channel_id=%d, using key not found", channel.Id))
-				return
+				return fmt.Errorf("multi-key channel #%d: using key %q not found among configured keys", channel.Id, usingKey)
 			}
 			channel.Status = status
 			info := channel.GetOtherInfo()
 			info["status_reason"] = reason
 			info["status_time"] = common.GetTimestamp()
 			channel.SetOtherInfo(info)
-			return
+			return nil
 		}
 		if channel.ChannelInfo.MultiKeyStatusList == nil {
 			channel.ChannelInfo.MultiKeyStatusList = make(map[int]int)
@@ -725,6 +731,7 @@ func handlerMultiKeyUpdate(channel *Channel, usingKey string, status int, reason
 			channel.Status = common.ChannelStatusEnabled
 		}
 	}
+	return nil
 }
 
 func hasEnabledMultiKey(keys []string, statusList map[int]int) bool {
@@ -753,26 +760,13 @@ func UpdateChannelStatus(channelId int, usingKey string, status int, reason stri
 	pollingLock.Lock()
 	defer pollingLock.Unlock()
 
+	// CH-001: do NOT mutate the in-memory cache before the database write
+	// succeeds. We only read the cache here for the trivial "already at target
+	// status" short-circuit; the real cache sync happens after saveStatusState.
 	if common.MemoryCacheEnabled {
-		channelCache, _ := CacheGetChannel(channelId)
-		if channelCache == nil {
+		if channelCache, _ := CacheGetChannel(channelId); channelCache != nil &&
+			!channelCache.ChannelInfo.IsMultiKey && channelCache.Status == status {
 			return false
-		}
-		if channelCache.ChannelInfo.IsMultiKey {
-			beforeStatus := channelCache.Status
-			// 如果是多Key模式，更新缓存中的状态
-			handlerMultiKeyUpdate(channelCache, usingKey, status, reason)
-			if beforeStatus != channelCache.Status {
-				CacheUpdateChannelStatus(channelId, channelCache.Status)
-			}
-			//CacheUpdateChannel(channelCache)
-			//return true
-		} else {
-			// 如果缓存渠道存在，且状态已是目标状态，直接返回
-			if channelCache.Status == status {
-				return false
-			}
-			CacheUpdateChannelStatus(channelId, status)
 		}
 	}
 
@@ -800,7 +794,13 @@ func UpdateChannelStatus(channelId int, usingKey string, status int, reason stri
 
 		if channel.ChannelInfo.IsMultiKey {
 			beforeStatus := channel.Status
-			handlerMultiKeyUpdate(channel, usingKey, status, reason)
+			if err := handlerMultiKeyUpdate(channel, usingKey, status, reason); err != nil {
+				// F-05: an unknown usingKey must not silently drop the update.
+				// Abort before persisting so the database keeps its prior,
+				// still-consistent state instead of a partial one.
+				common.SysLog(common.LogText("aborted channel status update: channel_id=%d, using_key=%q, error=%v", channel.Id, usingKey, err))
+				return false
+			}
 			if beforeStatus != channel.Status {
 				shouldUpdateAbilities = true
 			}
@@ -816,6 +816,12 @@ func UpdateChannelStatus(channelId int, usingKey string, status int, reason stri
 		if err != nil {
 			common.SysLog(common.LogText("failed to update channel status: channel_id=%d, status=%d, error=%v", channel.Id, status, err))
 			return false
+		}
+		// CH-001: only after the DB write committed, mirror it into the in-memory
+		// cache. A failed persistence now leaves the cache reflecting the old,
+		// still-correct state instead of a status the database never stored.
+		if common.MemoryCacheEnabled {
+			CacheUpdateChannel(channel)
 		}
 	}
 	return true

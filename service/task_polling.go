@@ -164,27 +164,32 @@ func RunTaskPollingOnce(ctx context.Context, report func(processed, total int)) 
 		summary.PlatformsScanned++
 		taskChannelM := make(map[int][]string)
 		taskM := make(map[string]*model.Task)
-		nullTaskIds := make([]int64, 0)
+		nullTasks := make([]*model.Task, 0)
 		for _, task := range tasks {
 			upstreamID := task.GetUpstreamTaskID()
 			if upstreamID == "" {
-				// 统计失败的未完成任务
-				nullTaskIds = append(nullTaskIds, task.ID)
+				// TASK-001: a task with no upstream ID can never be polled to a
+				// terminal state, so it must fail through the unified terminal
+				// path (CAS win + finalizeTerminalTask refund) rather than a blind
+				// bulk write that skips refund. Collect the objects so we can route
+				// them through failTasksFromPoll below.
+				nullTasks = append(nullTasks, task)
 				continue
 			}
 			taskM[upstreamID] = task
 			taskChannelM[task.ChannelId] = append(taskChannelM[task.ChannelId], upstreamID)
 		}
-		if len(nullTaskIds) > 0 {
-			summary.NullTasksFailed += len(nullTaskIds)
-			err := model.TaskBulkUpdateByID(nullTaskIds, map[string]any{
-				"status":   "FAILURE",
-				"progress": "100%",
-			})
-			if err != nil {
-				logger.LogError(ctx, common.LogText("Fix null task_id task error: %v", err))
+		if len(nullTasks) > 0 {
+			summary.NullTasksFailed += len(nullTasks)
+			// Route through failTasksFromPoll so the CAS winner settles/refunds.
+			// The adaptor is only used for success settlement; failures refund
+			// regardless, so a nil adaptor here is safe to skip.
+			if adaptor := GetTaskAdaptorFunc(platform); adaptor != nil {
+				if err := failTasksFromPoll(ctx, adaptor, nullTasks, "No upstream task ID"); err != nil {
+					logger.LogError(ctx, common.LogText("Fix null task_id task error: %v", err))
+				}
 			} else {
-				logger.LogInfo(ctx, common.LogText("Fix null task_id task success: %v", nullTaskIds))
+				logger.LogError(ctx, common.LogText("Fix null task_id task skipped: no adaptor for platform %s", platform))
 			}
 		}
 		if len(taskChannelM) == 0 {
@@ -245,20 +250,20 @@ func updateBatchTasks(ctx context.Context, adaptor BatchTaskPollingAdaptor, chan
 	ch, err := model.CacheGetChannel(channelId)
 	if err != nil {
 		common.SysLog(common.LogText("CacheGetChannel: %v", err))
-		// Collect DB primary key IDs for bulk update (taskIds are upstream IDs, not task_id column values)
-		var failedIDs []int64
+		// TASK-001: a channel we cannot load means these tasks can never be
+		// polled, so fail them through the unified terminal path (CAS win +
+		// finalizeTerminalTask refund) instead of a blind bulk write that
+		// bypasses finalizeTerminalTask.
+		var failedTasks []*model.Task
 		for _, upstreamID := range taskIds {
 			if t, ok := taskM[upstreamID]; ok {
-				failedIDs = append(failedIDs, t.ID)
+				failedTasks = append(failedTasks, t)
 			}
 		}
-		err = model.TaskBulkUpdateByID(failedIDs, map[string]any{
-			"fail_reason": "Failed to get the channel information. Please contact the administrator",
-			"status":      "FAILURE",
-			"progress":    "100%",
-		})
-		if err != nil {
-			common.SysLog(common.LogText("UpdateSunoTask error: %v", err))
+		if len(failedTasks) > 0 {
+			if ferr := failTasksFromPoll(ctx, adaptor, failedTasks, "Failed to get the channel information. Please contact the administrator"); ferr != nil {
+				common.SysLog(common.LogText("UpdateSunoTask error: %v", ferr))
+			}
 		}
 		return err
 	}
@@ -429,28 +434,28 @@ func updateVideoTasks(ctx context.Context, platform constant.TaskPlatform, chann
 	if len(taskIds) == 0 {
 		return nil
 	}
-	cacheGetChannel, err := model.CacheGetChannel(channelId)
-	if err != nil {
-		// Collect DB primary key IDs for bulk update (taskIds are upstream IDs, not task_id column values)
-		var failedIDs []int64
-		for _, upstreamID := range taskIds {
-			if t, ok := taskM[upstreamID]; ok {
-				failedIDs = append(failedIDs, t.ID)
-			}
-		}
-		errUpdate := model.TaskBulkUpdateByID(failedIDs, map[string]any{
-			"fail_reason": "Failed to get the channel information. Please contact the administrator",
-			"status":      "FAILURE",
-			"progress":    "100%",
-		})
-		if errUpdate != nil {
-			common.SysLog(common.LogText("UpdateVideoTask error: %v", errUpdate))
-		}
-		return fmt.Errorf("CacheGetChannel failed: %w", err)
-	}
 	adaptor := GetTaskAdaptorFunc(platform)
 	if adaptor == nil {
 		return fmt.Errorf("video adaptor not found")
+	}
+	cacheGetChannel, err := model.CacheGetChannel(channelId)
+	if err != nil {
+		// TASK-001: a channel we cannot load means these tasks can never be
+		// polled, so fail them through the unified terminal path (CAS win +
+		// finalizeTerminalTask refund) instead of a blind bulk write that skips
+		// refund.
+		var failedTasks []*model.Task
+		for _, upstreamID := range taskIds {
+			if t, ok := taskM[upstreamID]; ok {
+				failedTasks = append(failedTasks, t)
+			}
+		}
+		if len(failedTasks) > 0 {
+			if ferr := failTasksFromPoll(ctx, adaptor, failedTasks, "Failed to get the channel information. Please contact the administrator"); ferr != nil {
+				common.SysLog(common.LogText("UpdateVideoTask error: %v", ferr))
+			}
+		}
+		return fmt.Errorf("CacheGetChannel failed: %w", err)
 	}
 	info := &relaycommon.RelayInfo{}
 	info.ChannelMeta = &relaycommon.ChannelMeta{

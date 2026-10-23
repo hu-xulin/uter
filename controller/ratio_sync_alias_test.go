@@ -116,12 +116,13 @@ func TestPriceSyncAliasSurvivesTheDiffPipeline(t *testing.T) {
 		"doubao-seedance-2-5-260628",
 	))
 	converted, _ := resolver.apply(parsed)
+	normalized, _ := effectivePricingSyncData(converted)
 
 	local := map[string]any{"model_ratio": map[string]any{}}
 	diff := buildDifferences(local, []struct {
 		name string
 		data map[string]any
-	}{{"dreamrouter", effectivePricingSyncData(converted)}})
+	}{{"dreamrouter", normalized}})
 
 	for _, declared := range []string{
 		"doubao-seedance-2-0-260128",

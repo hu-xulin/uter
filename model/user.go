@@ -1141,7 +1141,12 @@ func (user *User) FillUserById() error {
 	if user.Id == 0 {
 		return common.NewMessage("ID is empty!")
 	}
-	DB.Where(User{Id: user.Id}).First(user)
+	// USER-002: surface the query error instead of swallowing it. A non-nil error
+	// (including not-found) means the user was not loaded and the caller must
+	// abort, not proceed with a zero/partial struct.
+	if err := DB.Where(User{Id: user.Id}).First(user).Error; err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -1149,7 +1154,9 @@ func (user *User) FillUserByEmail() error {
 	if user.Email == "" {
 		return common.NewMessage("Email is empty!")
 	}
-	DB.Where(User{Email: user.Email}).First(user)
+	if err := DB.Where(User{Email: user.Email}).First(user).Error; err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -1157,7 +1164,9 @@ func (user *User) FillUserByGitHubId() error {
 	if user.GitHubId == "" {
 		return common.NewMessage("GitHub ID is empty!")
 	}
-	DB.Where(User{GitHubId: user.GitHubId}).First(user)
+	if err := DB.Where(User{GitHubId: user.GitHubId}).First(user).Error; err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -1165,7 +1174,9 @@ func (user *User) FillUserByDiscordId() error {
 	if user.DiscordId == "" {
 		return common.NewMessage("Discord ID is empty!")
 	}
-	DB.Where(User{DiscordId: user.DiscordId}).First(user)
+	if err := DB.Where(User{DiscordId: user.DiscordId}).First(user).Error; err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -1173,7 +1184,9 @@ func (user *User) FillUserByOidcId() error {
 	if user.OidcId == "" {
 		return common.NewMessage("OIDC ID is empty!")
 	}
-	DB.Where(User{OidcId: user.OidcId}).First(user)
+	if err := DB.Where(User{OidcId: user.OidcId}).First(user).Error; err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -1181,7 +1194,9 @@ func (user *User) FillUserByWeChatId() error {
 	if user.WeChatId == "" {
 		return common.NewMessage("WeChat ID is empty!")
 	}
-	DB.Where(User{WeChatId: user.WeChatId}).First(user)
+	if err := DB.Where(User{WeChatId: user.WeChatId}).First(user).Error; err != nil {
+		return err
+	}
 	return nil
 }
 

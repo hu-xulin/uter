@@ -46,11 +46,12 @@ func TestPricingSyncIsStrictlyModelNameKeyed(t *testing.T) {
 	// The local catalogue as it looks on a Doubao-plugin channel: the plugin's
 	// declared Ark model IDs, none of them priced yet.
 	local := map[string]any{"model_ratio": map[string]any{}}
+	normalized, _ := effectivePricingSyncData(parsed)
 
 	diff := buildDifferences(local, []struct {
 		name string
 		data map[string]any
-	}{{"dreamrouter", effectivePricingSyncData(parsed)}})
+	}{{"dreamrouter", normalized}})
 
 	// Every entry the upstream advertises survives the pipeline — nothing is
 	// dropped for being mis-shaped. The gap is purely the name.
