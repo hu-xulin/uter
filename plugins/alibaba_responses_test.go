@@ -11,6 +11,9 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/gin-gonic/gin"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/model"
 	"github.com/uter-ai/uter/pkg/billingexpr"
@@ -20,9 +23,6 @@ import (
 	relaychannel "github.com/uter-ai/uter/relay/channel"
 	taskplugin "github.com/uter-ai/uter/relay/channel/task/jsplugin"
 	relaycommon "github.com/uter-ai/uter/relay/common"
-	"github.com/gin-gonic/gin"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 func TestAlibabaResponsesProtocol(t *testing.T) {
