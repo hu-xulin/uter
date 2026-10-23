@@ -30,8 +30,9 @@ func TestSecretOptionKeysStayInSyncWithOptionMap(t *testing.T) {
 
 	// 显式登记为公开值、且键名带密钥语义的键。这些不得被判为密钥。
 	publicKeys := map[string]struct{}{
-		"TurnstileSiteKey":     {}, // Cloudflare challenge 公钥
-		"AlipayPublicKey":      {}, // 支付宝公钥（验签用，非机密）
+		"TurnstileSiteKey": {}, // Cloudflare challenge 公钥
+		// 注：AlipayPublicKey 与 Waffo 的两个 PublicCert 已不再是公开值，
+		// 与私钥同等待遇走掩码（见 common/secret_option_keys.go）。
 		"StripePublishableKey": {},
 	}
 
