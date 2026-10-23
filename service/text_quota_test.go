@@ -1562,7 +1562,6 @@ func TestPostTextConsumeQuotaLogsMissingUsageAsStructuredContent(t *testing.T) {
 	}, other["content_parts"])
 }
 
-
 func TestClaudeCacheOnlyUsageRemainsBillable(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	for _, tc := range []struct {
