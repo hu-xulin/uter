@@ -4,11 +4,11 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"io"
 	"net/http"
 	"strings"
 	"time"
 
+	"github.com/uter-ai/uter/common"
 	costoptcfg "github.com/uter-ai/uter/setting/costopt"
 )
 
@@ -94,7 +94,7 @@ func openAIChat(ctx context.Context, base, key, model, system, user string, maxT
 		return "", err
 	}
 	defer resp.Body.Close()
-	body, err := io.ReadAll(resp.Body)
+	body, err := common.ReadUpstreamBody(resp.Body)
 	if err != nil {
 		return "", err
 	}
@@ -142,7 +142,7 @@ func openAIEmbed(ctx context.Context, base, key, model, endpoint string, texts [
 		return nil, err
 	}
 	defer resp.Body.Close()
-	body, err := io.ReadAll(resp.Body)
+	body, err := common.ReadUpstreamBody(resp.Body)
 	if err != nil {
 		return nil, err
 	}
