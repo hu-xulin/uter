@@ -320,7 +320,7 @@ export function SignUpForm({
               </FormLabel>
               <FormControl>
                 <PasswordInput
-                  placeholder={t('Enter password (8–18 characters)')}
+                  placeholder={t('Enter password (8–128 characters)')}
                   className='h-11'
                   {...field}
                 />
