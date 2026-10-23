@@ -10,6 +10,9 @@ import (
 	"testing"
 	"time"
 
+	"github.com/bytedance/gopkg/util/gopool"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/constant"
 	taskdto "github.com/uter-ai/uter/dto"
@@ -17,9 +20,6 @@ import (
 	"github.com/uter-ai/uter/pkg/billingexpr"
 	relaycommon "github.com/uter-ai/uter/relay/common"
 	"github.com/uter-ai/uter/relaykit/dto"
-	"github.com/bytedance/gopkg/util/gopool"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 type taskPollingFetchAdaptor struct {
