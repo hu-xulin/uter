@@ -25,9 +25,10 @@ import { Button } from '@/components/ui/button'
 import { Combobox } from '@/components/ui/combobox'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
+import { SecretTextarea } from '@/components/ui/secret-textarea'
 import { getPaymentErrorTranslation } from '@/features/wallet/lib/payment'
 import { handleServerError } from '@/lib/handle-server-error'
+import { isMaskedSecret } from '@/lib/secret'
 
 import { removeTrailingSlash } from './utils'
 import {
@@ -97,8 +98,8 @@ export function WaffoPancakeSettingsSection({
   const fetchSerialRef = React.useRef(0)
 
   // Mount-only — never re-sync from props after the first render. The
-  // backend strips PrivateKey from GET /api/option/, so a re-sync would
-  // wipe whatever the operator just typed.
+  // backend returns PrivateKey masked from GET /api/option/, so a re-sync
+  // would wipe whatever the operator just typed.
   const didMountRef = React.useRef(false)
   React.useEffect(() => {
     const parsed = JSON.parse(defaultsSignature) as WaffoPancakeSettingsValues
@@ -227,7 +228,8 @@ export function WaffoPancakeSettingsSection({
   React.useEffect(() => {
     const m = watchedMerchantID.trim()
     const k = watchedPrivateKey.trim()
-    if (!m || !k) return
+    // 掩码串是后端下发的展示值，不是可校验的新密钥。
+    if (!m || !k || isMaskedSecret(k)) return
     const signature = `${m}|${k}`
     if (signature === lastVerifiedSignature.current) return
     const timer = setTimeout(() => {
@@ -238,9 +240,10 @@ export function WaffoPancakeSettingsSection({
     return () => clearTimeout(timer)
   }, [watchedMerchantID, watchedPrivateKey, verifyAndFetchCatalog])
 
-  // Initial-load verify: GET /api/option/ strips PrivateKey so a returning
-  // admin opens the page with empty key. Send blank creds in the body —
-  // the catalog controller falls back to the persisted OptionMap creds.
+  // Initial-load verify: GET /api/option/ returns PrivateKey masked, so a
+  // returning admin opens the page with a mask instead of the real key.
+  // Send blank creds in the body — the catalog controller falls back to the
+  // persisted OptionMap creds.
   const initialLoadRef = React.useRef(false)
   React.useEffect(() => {
     if (initialLoadRef.current) return
@@ -261,7 +264,9 @@ export function WaffoPancakeSettingsSection({
     const formMerchant = (values.WaffoPancakeMerchantID || '').trim()
     const formKey = (values.WaffoPancakePrivateKey || '').trim()
     const saved = (defaultValues.WaffoPancakeMerchantID || '').trim()
-    const edited = formMerchant !== saved || formKey.length > 0
+    // 掩码串 = 已保存但未修改，等同于空：让后端回落到已保存凭据。
+    const typedKey = formKey.length > 0 && !isMaskedSecret(formKey)
+    const edited = formMerchant !== saved || typedKey
     if (!edited) return { merchantID: '', privateKey: '' }
     return { merchantID: formMerchant, privateKey: formKey }
   }
@@ -351,11 +356,13 @@ export function WaffoPancakeSettingsSection({
   const savedMerchantID = (defaultValues.WaffoPancakeMerchantID || '').trim()
   const formMerchantID = watchedMerchantID.trim()
   const formPrivateKey = watchedPrivateKey.trim()
-  const credsEdited =
-    formMerchantID !== savedMerchantID || formPrivateKey.length > 0
+  // 掩码串 = 已保存但未修改，不算「编辑过」。
+  const typedPrivateKey =
+    formPrivateKey.length > 0 && !isMaskedSecret(formPrivateKey)
+  const credsEdited = formMerchantID !== savedMerchantID || typedPrivateKey
   const hasSavedCreds = savedMerchantID.length > 0
   const credsReady = credsEdited
-    ? formMerchantID.length > 0 && formPrivateKey.length > 0
+    ? formMerchantID.length > 0 && typedPrivateKey
     : hasSavedCreds
   const hasCatalog = catalog.length > 0
 
@@ -436,15 +443,11 @@ export function WaffoPancakeSettingsSection({
 
         <div className='grid gap-1.5'>
           <Label>{t('API Private Key')}</Label>
-          <Textarea
+          <SecretTextarea
             rows={4}
             placeholder={t('Leave blank to keep the existing key')}
-            autoComplete='new-password'
             value={values.WaffoPancakePrivateKey}
-            onChange={(event) =>
-              onValueChange('WaffoPancakePrivateKey', event.target.value)
-            }
-            className='font-mono text-xs'
+            onChange={(value) => onValueChange('WaffoPancakePrivateKey', value)}
           />
           <p className='text-muted-foreground text-sm'>
             {t(
