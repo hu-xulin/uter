@@ -9,13 +9,13 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/gin-gonic/gin"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/middleware"
 	"github.com/uter-ai/uter/service"
 	"github.com/uter-ai/uter/service/authz"
-	"github.com/gin-gonic/gin"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 // accessTokenExemptRoutes are /api routes that never reach dashboard
