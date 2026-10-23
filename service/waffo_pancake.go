@@ -14,9 +14,9 @@ import (
 
 // Waffo Pancake webhook resolution errors that are safe to acknowledge permanently.
 var (
-	ErrWaffoPancakeOrderNotFound     = errors.New("Waffo Pancake order not found")
-	ErrWaffoPancakeIdentityMismatch  = errors.New("Waffo Pancake buyer identity mismatch")
-	ErrWaffoPancakeInvalidWebhook    = errors.New("invalid Waffo Pancake webhook order reference")
+	ErrWaffoPancakeOrderNotFound    = errors.New("Waffo Pancake order not found")
+	ErrWaffoPancakeIdentityMismatch = errors.New("Waffo Pancake buyer identity mismatch")
+	ErrWaffoPancakeInvalidWebhook   = errors.New("invalid Waffo Pancake webhook order reference")
 )
 
 // WaffoPancakeResolutionShouldRetry distinguishes a permanent, authenticated but
