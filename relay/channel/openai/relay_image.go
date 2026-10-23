@@ -3,7 +3,6 @@ package openai
 import (
 	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 	"strings"
 	"time"
@@ -26,7 +25,7 @@ import (
 func OpenaiImageHandler(c *gin.Context, info *relaycommon.RelayInfo, resp *http.Response) (*dto.Usage, *types.NewAPIError) {
 	defer service.CloseResponseBodyGracefully(resp)
 
-	responseBody, err := io.ReadAll(resp.Body)
+	responseBody, err := common.ReadUpstreamBody(resp.Body)
 	if err != nil {
 		return nil, types.NewOpenAIError(err, types.ErrorCodeReadResponseBodyFailed, http.StatusInternalServerError)
 	}
@@ -260,7 +259,7 @@ func extractOpenAIImageStreamErrorMessage(data []byte) string {
 func openaiImageJSONAsStreamHandler(c *gin.Context, info *relaycommon.RelayInfo, resp *http.Response) (*dto.Usage, *types.NewAPIError) {
 	defer service.CloseResponseBodyGracefully(resp)
 
-	responseBody, err := io.ReadAll(resp.Body)
+	responseBody, err := common.ReadUpstreamBody(resp.Body)
 	if err != nil {
 		return nil, types.NewOpenAIError(err, types.ErrorCodeReadResponseBodyFailed, http.StatusInternalServerError)
 	}
