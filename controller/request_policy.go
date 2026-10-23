@@ -3,8 +3,8 @@ package controller
 import (
 	"net/http"
 
-	"github.com/uter-ai/uter/model"
 	"github.com/gin-gonic/gin"
+	"github.com/uter-ai/uter/model"
 )
 
 func GetRequestPolicy(c *gin.Context) {
