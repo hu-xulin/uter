@@ -14,8 +14,8 @@ import (
 // allowed to settle a minute late, which is fine because tiers are thresholds
 // over a whole month.
 const (
-	monthlyQuotaCacheTTL         = 60 * time.Second
-	monthlyQuotaCacheMaxEntries  = 4096
+	monthlyQuotaCacheTTL        = 60 * time.Second
+	monthlyQuotaCacheMaxEntries = 4096
 )
 
 type monthlyQuotaEntry struct {
