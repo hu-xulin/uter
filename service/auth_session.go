@@ -7,10 +7,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/uter-ai/uter/common"
-	"github.com/uter-ai/uter/model"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"github.com/uter-ai/uter/common"
+	"github.com/uter-ai/uter/model"
 )
 
 const RefreshCookieName = "new_api_refresh"
