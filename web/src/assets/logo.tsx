@@ -27,18 +27,17 @@ import { cn } from '@/lib/utils'
  * `uter.svg` master; keep the two in step when the mark is revised. The raster
  * and BIMI copies live in `web/public/logo.png` and `web/public/uter-bimi.svg`.
  */
-export function Logo({ className, ...props }: SVGProps<SVGSVGElement>) {
+/**
+ * The Uter brand mark geometry, shared by every rendering of the logo so the
+ * header, the sidebar and the channel-type icons can never drift apart.
+ *
+ * Geometry, colours and ordering are transcribed verbatim from the approved
+ * `uter.svg` master; keep the two in step when the mark is revised. The raster
+ * and BIMI copies live in `web/public/logo.png` and `web/public/uter-bimi.svg`.
+ */
+export function UterLogoPaths() {
   return (
-    <svg
-      id='Uter-logo'
-      viewBox='0 0 200 200'
-      xmlns='http://www.w3.org/2000/svg'
-      height='24'
-      width='24'
-      className={cn('size-6', className)}
-      {...props}
-    >
-      <title>Uter</title>
+    <>
       <path
         d='M37.6407 53.4241C37.6895 60.3393 39.4297 66.9403 42.5547 72.9889C50.3223 88.0249 66.6465 99.6475 86.8106 104.1732C80.834 105.516 74.5215 106.2347 67.9922 106.2347C57.084 106.2347 46.7735 104.2282 37.6387 100.6607C15.3223 91.9494 0 73.9319 0 53.1174L0 14.7018C0 11.2839 1.5137 8.1284 4.0449 5.6244L4.0449 5.6229C7.4981 2.2049 12.8457 0 18.8184 0C23.9922 0 28.6992 1.6541 32.1114 4.3198C33.0774 5.0739 33.9367 5.9073 34.6739 6.8054C36.5489 9.0897 37.6387 11.8027 37.6387 14.7034L37.6387 53.1174C37.6387 53.2196 37.6387 53.3218 37.6407 53.4241Z'
         fill='#FFD166'
@@ -68,6 +67,23 @@ export function Logo({ className, ...props }: SVGProps<SVGSVGElement>) {
         fill='#FFD166'
         transform='translate(31.6289 21.8788)'
       />
+    </>
+  )
+}
+
+export function Logo({ className, ...props }: SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      id='Uter-logo'
+      viewBox='0 0 200 200'
+      xmlns='http://www.w3.org/2000/svg'
+      height='24'
+      width='24'
+      className={cn('size-6', className)}
+      {...props}
+    >
+      <title>Uter</title>
+      <UterLogoPaths />
     </svg>
   )
 }
