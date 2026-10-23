@@ -3,9 +3,9 @@ package common
 import (
 	"testing"
 
+	"github.com/stretchr/testify/assert"
 	"github.com/uter-ai/uter/constant"
 	"github.com/uter-ai/uter/setting/model_setting"
-	"github.com/stretchr/testify/assert"
 )
 
 func TestRelayInfoConvOptionsUsesNormalizedGeminiSafetySettings(t *testing.T) {
