@@ -112,6 +112,6 @@ describe('accountPasswordSchema', () => {
 
   it('exposes bounds matching the backend', () => {
     expect(ACCOUNT_PASSWORD_MIN_LENGTH).toBe(8)
-    expect(ACCOUNT_PASSWORD_MAX_LENGTH).toBe(18)
+    expect(ACCOUNT_PASSWORD_MAX_LENGTH).toBe(128)
   })
 })
