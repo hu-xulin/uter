@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/gin-gonic/gin"
 	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/constant"
 	"github.com/uter-ai/uter/dto"
@@ -13,7 +14,6 @@ import (
 	"github.com/uter-ai/uter/model"
 	"github.com/uter-ai/uter/pkg/jsplugin"
 	"github.com/uter-ai/uter/relaykit/types"
-	"github.com/gin-gonic/gin"
 )
 
 func GetChannelConstraints(c *gin.Context) *dto.ChannelConstraints {
