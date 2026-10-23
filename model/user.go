@@ -7,6 +7,7 @@ import (
 	"math"
 	"strconv"
 	"strings"
+	"sync/atomic"
 
 	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/logger"
@@ -308,7 +309,7 @@ func CheckUserExistOrDeleted(username string, email string) (bool, error) {
 	if email == "" {
 		err = DB.Unscoped().First(&user, "username = ?", username).Error
 	} else {
-		err = DB.Unscoped().First(&user, "username = ? or LOWER(email) = ?", username, email).Error
+		err = DB.Unscoped().First(&user, "username = ? or "+emailLookupCondition(), username, email).Error
 	}
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -326,11 +327,25 @@ func NormalizeEmail(email string) string {
 	return strings.ToLower(strings.TrimSpace(email))
 }
 
+// emailLookupNormalized 表示 users.email 已完成小写回填（见 user_email_migration.go）。
+// 为真时查询用等值比较命中 idx_users_email；为假时继续用 LOWER(email) 兜底——
+// 存量库存在「仅大小写不同」的重复邮箱时不能切换口径，否则历史大写行会查不到，
+// 反而放行重复注册。
+var emailLookupNormalized atomic.Bool
+
+// emailLookupCondition 返回 email 查询条件，占位符由调用方补齐。
+func emailLookupCondition() string {
+	if emailLookupNormalized.Load() {
+		return "email = ?"
+	}
+	return "LOWER(email) = ?"
+}
+
 func emailQuery(tx *gorm.DB, email string) *gorm.DB {
 	if tx == nil {
 		tx = DB
 	}
-	return tx.Unscoped().Model(&User{}).Where("LOWER(email) = ?", NormalizeEmail(email))
+	return tx.Unscoped().Model(&User{}).Where(emailLookupCondition(), NormalizeEmail(email))
 }
 
 func CountUsersByEmail(email string) (int64, error) {
@@ -415,19 +430,9 @@ func GetMaxUserId() int {
 }
 
 func GetAllUsers(orgId int, departmentName string, excludeRoles []int, pageInfo *common.PageInfo, sortOptions ...UserSortOptions) (users []*User, total int64, err error) {
-	// Start transaction
-	tx := DB.Begin()
-	if tx.Error != nil {
-		return nil, 0, tx.Error
-	}
-	defer func() {
-		if r := recover(); r != nil {
-			tx.Rollback()
-		}
-	}()
-
-	// Get total count within transaction
-	query := tx.Unscoped().Model(&User{})
+	// 只读列表查询不开事务：Begin/Commit 每次多两个往返并占住连接池，
+	// 而这里没有任何写操作需要原子性。
+	query := DB.Unscoped().Model(&User{})
 	if orgId > 0 {
 		// 组织范围管理员：仅看本组织（本部门）成员。
 		// 部门按名称过滤：department_id 列已废弃、从不写入，按它过滤等于不过滤。
@@ -442,20 +447,13 @@ func GetAllUsers(orgId int, departmentName string, excludeRoles []int, pageInfo 
 	}
 	err = query.Count(&total).Error
 	if err != nil {
-		tx.Rollback()
 		return nil, 0, err
 	}
 
-	// Get paginated users within same transaction
+	// 分页数据
 	order := resolveUserSortOptions(sortOptions)
 	err = order.Apply(query).Limit(pageInfo.GetPageSize()).Offset(pageInfo.GetStartIdx()).Omit("password", "access_token").Find(&users).Error
 	if err != nil {
-		tx.Rollback()
-		return nil, 0, err
-	}
-
-	// Commit transaction
-	if err = tx.Commit().Error; err != nil {
 		return nil, 0, err
 	}
 
@@ -475,27 +473,10 @@ func SearchUsersScoped(keyword string, group string, role *int, status *int, sta
 	var total int64
 	var err error
 
-	// 开始事务
-	tx := DB.Begin()
-	if tx.Error != nil {
-		return nil, 0, tx.Error
-	}
-	// 业务错误路径必须显式回滚：defer 只能兜住 panic。像下面 likeContains 的
-	// 非法搜索词（%%、% 超 2 个、去 % 后不足 2 字符）就直接 return，若不在这里
-	// 兜底，事务既不 Commit 也不 Rollback，每次请求稳定泄漏一个连接。
-	committed := false
-	defer func() {
-		if r := recover(); r != nil {
-			tx.Rollback()
-			return
-		}
-		if !committed {
-			tx.Rollback()
-		}
-	}()
-
-	// 构建基础查询
-	query := tx.Unscoped().Model(&User{})
+	// 只读查询不开事务：此前的 Begin/Commit 既多付两个往返，又让 likeContains
+	// 的非法搜索词（%%、% 超 2 个）走 return 时漏回滚、稳定泄漏连接。没有事务
+	// 就没有可泄漏的连接。
+	query := DB.Unscoped().Model(&User{})
 	if orgId > 0 {
 		// 组织范围管理员：仅看本组织（本部门）成员。
 		// 部门按名称过滤：department_id 列已废弃、从不写入，按它过滤等于不过滤。
@@ -553,12 +534,6 @@ func SearchUsersScoped(keyword string, group string, role *int, status *int, sta
 	if err != nil {
 		return nil, 0, err
 	}
-
-	// 提交事务
-	if err = tx.Commit().Error; err != nil {
-		return nil, 0, err
-	}
-	committed = true
 
 	return users, total, nil
 }
@@ -689,6 +664,12 @@ func (user *User) prepareForInsert(tx *gorm.DB) error {
 	}
 	if user.Password == "" {
 		return nil
+	}
+	// The policy is re-applied here even though the controllers already check
+	// it: this is the transaction that stores the credential, and a caller that
+	// skips the controller must not be able to bypass the policy.
+	if err := common.ValidateNewAccountPasswordStrength(user.Password, user.Username, user.Email); err != nil {
+		return err
 	}
 	var err error
 	user.Password, err = common.HashAccountPassword(user.Password)
@@ -870,12 +851,20 @@ func (user *User) Update(updatePassword bool) error {
 func (user *User) UpdateWithTx(tx *gorm.DB, updatePassword bool) error {
 	var err error
 	if updatePassword {
+		// The policy is re-applied here even though the controller already
+		// checked it: this is the transaction that stores the credential.
+		if err = common.ValidateNewAccountPasswordStrength(user.Password, user.Username, user.Email); err != nil {
+			return err
+		}
 		user.Password, err = common.HashAccountPassword(user.Password)
 		if err != nil {
 			return err
 		}
 	}
 	newUser := *user
+	// 邮箱写入必须与查询口径一致：查询用等值比较命中 idx_users_email，
+	// 这里若写入原始大小写，该用户之后按小写邮箱就查不到了。
+	newUser.Email = NormalizeEmail(newUser.Email)
 	current := User{}
 	if err = tx.First(&current, user.Id).Error; err != nil {
 		return err
@@ -931,6 +920,11 @@ func (user *User) Edit(updatePassword bool) error {
 func (user *User) EditWithTx(tx *gorm.DB, updatePassword bool) error {
 	var err error
 	if updatePassword {
+		// The policy is re-applied here even though the controller already
+		// checked it: this is the transaction that stores the credential.
+		if err = common.ValidateNewAccountPasswordStrength(user.Password, user.Username, user.Email); err != nil {
+			return err
+		}
 		user.Password, err = common.HashAccountPassword(user.Password)
 		if err != nil {
 			return err
@@ -1213,7 +1207,7 @@ func GetUniqueUserByEmail(email string) (*User, error) {
 		return nil, ErrEmailNotFound
 	}
 	var users []User
-	if err := DB.Where("LOWER(email) = ?", email).Limit(2).Find(&users).Error; err != nil {
+	if err := DB.Where(emailLookupCondition(), email).Limit(2).Find(&users).Error; err != nil {
 		return nil, err
 	}
 	switch len(users) {
