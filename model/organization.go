@@ -251,12 +251,12 @@ var (
 	ErrOrgAlreadyMember = errors.New("user already belongs to an organization")
 	ErrOrgNotOwner      = errors.New("only the organization owner can perform this action")
 	// ErrOrgBudgetExceeded 组织共享预算已被本次消费耗尽（准入失败，未发生扣减）。
-	ErrOrgBudgetExceeded = errors.New("organization budget exceeded")
-	ErrOrgOwnerChanged = errors.New("organization owner changed during update")
+	ErrOrgBudgetExceeded                 = errors.New("organization budget exceeded")
+	ErrOrgOwnerChanged                   = errors.New("organization owner changed during update")
 	ErrOrgMembershipAuthorizationChanged = errors.New("organization membership authorization changed")
 	// ErrOrgSubQuotaExceeded 成员子额度上限不足（准入失败，未发生扣减）。
 	ErrOrgSubQuotaExceeded = errors.New("organization member sub-quota exceeded")
-	ErrOrgSubQuotaInvalid = errors.New("organization member sub-quota limit cannot be negative")
+	ErrOrgSubQuotaInvalid  = errors.New("organization member sub-quota limit cannot be negative")
 	// ErrOrgMemberForeign 目标用户已归属其它组织；加入组织不得跨租户搬迁账号。
 	ErrOrgMemberForeign = errors.New("user already belongs to another organization")
 	// ErrOrgMemberPrivileged 目标用户的系统角色高于普通用户（平台管理员/超管）。
