@@ -123,7 +123,6 @@ var accessTokenRouteRules = map[string]accessTokenRouteRule{
 	"DELETE /api/user/:id/2fa":                         accessTokenScopeRule("user:write"),
 	// Uter payment gateways, same shape as the epay ones above.
 	"POST /api/user/alipay/webpay": accessTokenScopeRule("wallet:write"),
-	"POST /api/user/wechat/pay":    accessTokenScopeRule("wallet:write"),
 	"POST /api/user/wechat/webpay": accessTokenScopeRule("wallet:write"),
 
 	// router/api-router.go: /api/organization, /api/organizations
