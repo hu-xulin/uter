@@ -32,6 +32,7 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { SecretInput } from '@/components/ui/secret-input'
+import { isMaskedSecret, maskSecret } from '@/lib/secret'
 import { Switch } from '@/components/ui/switch'
 
 import {
@@ -88,7 +89,11 @@ export function WorkerSettingsSection({
       updates.push({ key: 'WorkerUrl', value: sanitizedUrl })
     }
 
-    if (sanitizedKey !== initialKey || sanitizedUrl === '') {
+    // 掩码串是后端下发的展示值：不提交，保留库中原密钥。
+    if (
+      !isMaskedSecret(sanitizedKey) &&
+      (sanitizedKey !== initialKey || sanitizedUrl === '')
+    ) {
       updates.push({ key: 'WorkerValidKey', value: sanitizedKey })
     }
 
@@ -105,6 +110,8 @@ export function WorkerSettingsSection({
     for (const update of updates) {
       await updateOption.mutateAsync(update)
     }
+    // 保存后密钥字段回到掩码展示态，明文不留在表单里。
+    form.setValue('WorkerValidKey', maskSecret(sanitizedKey))
   }
 
   return (
