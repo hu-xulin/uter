@@ -9,16 +9,16 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/gin-gonic/gin"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+	"github.com/tidwall/gjson"
 	"github.com/uter-ai/uter/common"
 	relaycommon "github.com/uter-ai/uter/relay/common"
 	"github.com/uter-ai/uter/relay/constant"
 	relayhelper "github.com/uter-ai/uter/relay/helper"
 	"github.com/uter-ai/uter/relaykit/dto"
 	"github.com/uter-ai/uter/relaykit/types"
-	"github.com/gin-gonic/gin"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
-	"github.com/tidwall/gjson"
 )
 
 func TestConvertOpenAIRequestFiltersThinkingBudgetByUpstreamModel(t *testing.T) {
