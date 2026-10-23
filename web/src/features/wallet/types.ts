@@ -183,6 +183,16 @@ export interface TopupInfo {
   enable_online_topup: boolean
   /** Whether Stripe topup is enabled */
   enable_stripe_topup: boolean
+  /**
+   * Whether official Alipay website payment (alipay_web) is available.
+   * Returned by the server when the Alipay app id / keys are configured.
+   */
+  enable_alipay_topup?: boolean
+  /**
+   * Whether official WeChat Pay website payment (wechat_web) is available.
+   * Returned by the server when the WeChat Pay merchant credentials are configured.
+   */
+  enable_wechat_pay_topup?: boolean
   /** Available payment methods */
   pay_methods: PaymentMethod[]
   /** Minimum topup amount for online topup */
