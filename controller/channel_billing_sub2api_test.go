@@ -5,11 +5,11 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/uter-ai/uter/constant"
-	"github.com/uter-ai/uter/model"
 	"github.com/glebarez/sqlite"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/uter-ai/uter/constant"
+	"github.com/uter-ai/uter/model"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 )
