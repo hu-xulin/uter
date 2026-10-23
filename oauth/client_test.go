@@ -72,7 +72,6 @@ func TestOAuthHTTPClientDoesNotReplayCredentialsToRedirectTarget(t *testing.T) {
 	}
 }
 
-
 func TestOAuthHTTPClientAllowsSameOriginRedirect(t *testing.T) {
 	configureOAuthFetchSettingForTest(t, false)
 	var finalRequests atomic.Int32
@@ -131,7 +130,6 @@ func TestReadOAuthResponseBodyAcceptsResponseWithinLimit(t *testing.T) {
 		t.Fatalf("body = %q, want %q", data, want)
 	}
 }
-
 
 func TestDecodeOAuthJSONLimitRejectsOversizedResponse(t *testing.T) {
 	body := strings.NewReader(`{"access_token":"valid"}` + strings.Repeat(" ", int((1<<20)+1)))
