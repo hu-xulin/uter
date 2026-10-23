@@ -26,6 +26,7 @@ import {
 } from '@/components/ui/sidebar'
 import { useStatus } from '@/hooks/use-status'
 import { useSystemConfig } from '@/hooks/use-system-config'
+import { BRAND_LOGO_BOX_CLASS } from '@/lib/brand'
 import { cn } from '@/lib/utils'
 
 type SystemBrandProps = {
@@ -58,15 +59,18 @@ export function SystemBrand(props: SystemBrandProps) {
         to='/'
         aria-label={t('Go to home')}
         className={cn(
-          'text-foreground inline-flex h-7 min-w-0 items-center gap-1.5 rounded-md px-1.5 text-lg font-medium transition-colors outline-none select-none',
+          'text-foreground inline-flex h-7 min-w-0 items-center gap-2.5 rounded-md px-1.5 text-lg font-medium transition-colors outline-none select-none',
           'hover:bg-accent focus-visible:ring-ring/40 focus-visible:ring-2'
         )}
       >
-        <div className='flex size-5 shrink-0 items-center justify-center overflow-hidden rounded-md'>
+        {/* Logo box, radius and gap mirror the public header (public-header.tsx)
+            so the brand renders at the same size in the console and on the
+            marketing pages. */}
+        <div className={BRAND_LOGO_BOX_CLASS}>
           <img
             src={logo}
             alt={t('Logo')}
-            className='size-full rounded-md object-cover'
+            className='size-full rounded-lg object-cover'
           />
         </div>
         <span className='font-brand max-w-[12rem] truncate'>{name}</span>
