@@ -12,8 +12,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/uter-ai/uter/constant"
 	"github.com/pkg/errors"
+	"github.com/uter-ai/uter/constant"
 
 	"github.com/gin-gonic/gin"
 )
