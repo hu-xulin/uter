@@ -36,6 +36,7 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { SecretInput } from '@/components/ui/secret-input'
+import { isMaskedSecret, maskSecret } from '@/lib/secret'
 import { Switch } from '@/components/ui/switch'
 import { testDeploymentConnectionWithKey } from '@/features/models/api'
 
@@ -94,7 +95,11 @@ export function IoNetDeploymentSettingsSection({
       })
     }
 
-    if ((values.apiKey || '') !== (defaultValues.apiKey || '')) {
+    // 掩码串是后端下发的展示值：不提交，保留库中原密钥。
+    if (
+      (values.apiKey || '') !== (defaultValues.apiKey || '') &&
+      !isMaskedSecret(values.apiKey || '')
+    ) {
       updates.push({
         key: 'model_deployment.ionet.api_key',
         value: String(values.apiKey || ''),
@@ -110,7 +115,8 @@ export function IoNetDeploymentSettingsSection({
       await updateOption.mutateAsync(update)
     }
 
-    form.reset(values)
+    // 保存后密钥字段回到掩码展示态，明文不留在表单里。
+    form.reset({ ...values, apiKey: maskSecret(values.apiKey || '') })
   }
 
   const handleTestConnection = async () => {
