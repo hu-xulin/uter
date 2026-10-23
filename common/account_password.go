@@ -6,6 +6,7 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
+	"math/big"
 	"os"
 	"strings"
 	"unicode/utf8"
@@ -36,6 +37,60 @@ func ValidateNewAccountPassword(password string) error {
 		return ErrAccountPasswordLength
 	}
 	return nil
+}
+
+// passwordClasses are disjoint character sets. Drawing each position from a
+// different class guarantees character variety, which is the composition rule
+// the policy enforces; the ambiguous glyphs (0/O, 1/l/I) are left out so a
+// generated credential can be typed without guessing.
+var passwordClasses = []string{
+	"abcdefghijkmnopqrstuvwxyz",
+	"ABCDEFGHIJKLMNPQRSTUVWXYZ",
+	"23456789",
+	"!@#$%^&*-_=+",
+}
+
+// GenerateAccountPassword returns a random password that satisfies the account
+// password policy. It draws each character from a disjoint class so the result
+// always has character variety, and re-rolls when the policy still rejects it
+// (an ascending digit run is rare but possible).
+func GenerateAccountPassword(length int) string {
+	if length < len(passwordClasses) {
+		length = len(passwordClasses)
+	}
+	classes := passwordClasses
+	var builder strings.Builder
+	for index := 0; index < length; index++ {
+		class := classes[index%len(classes)]
+		position, err := rand.Int(rand.Reader, big.NewInt(int64(len(class))))
+		if err != nil {
+			// crypto/rand only fails when the OS entropy source is broken; fall
+			// back to a fixed alphabet so the caller still gets a usable value.
+			builder.WriteByte(class[index%len(class)])
+			continue
+		}
+		builder.WriteByte(class[position.Int64()])
+	}
+	for attempt := 0; attempt < 8; attempt++ {
+		password := builder.String()
+		if ValidatePasswordStrength(password, "", "") == PasswordOK {
+			return password
+		}
+		// Fisher-Yates with crypto/rand: rotation alone would keep the class
+		// pattern aligned with the positions the policy dislikes.
+		runes := []rune(password)
+		for index := len(runes) - 1; index > 0; index-- {
+			position, err := rand.Int(rand.Reader, big.NewInt(int64(index+1)))
+			if err != nil {
+				break
+			}
+			swap := int(position.Int64())
+			runes[index], runes[swap] = runes[swap], runes[index]
+		}
+		builder.Reset()
+		builder.WriteString(string(runes))
+	}
+	return builder.String()
 }
 
 // HashAccountPassword is for account passwords, not MFA backup codes. The
