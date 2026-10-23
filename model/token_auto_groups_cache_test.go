@@ -3,9 +3,9 @@ package model
 import (
 	"testing"
 
-	"github.com/uter-ai/uter/common"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/uter-ai/uter/common"
 )
 
 func TestTokenAutoGroupsRoundTripThroughRedisHashCache(t *testing.T) {
