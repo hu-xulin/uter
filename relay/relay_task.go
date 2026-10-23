@@ -10,6 +10,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/gin-gonic/gin"
 	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/constant"
 	"github.com/uter-ai/uter/dto"
@@ -25,7 +26,6 @@ import (
 	"github.com/uter-ai/uter/service"
 	"github.com/uter-ai/uter/setting/billing_setting"
 	"github.com/uter-ai/uter/types"
-	"github.com/gin-gonic/gin"
 )
 
 type TaskSubmitResult struct {
@@ -360,7 +360,7 @@ func RelayTaskSubmit(c *gin.Context, info *relaycommon.RelayInfo) (*TaskSubmitRe
 	// Any 2xx is a successful submission: task APIs commonly answer 201 Created
 	// or 202 Accepted, and parseSubmitResponse receives the exact status code.
 	if resp.StatusCode/100 != 2 {
-		responseBody, _ := io.ReadAll(resp.Body)
+		responseBody, _ := common.ReadUpstreamBody(resp.Body)
 		return nil, service.TaskErrorWrapper(fmt.Errorf("%s", string(responseBody)), "fail_to_fetch_task", resp.StatusCode)
 	}
 
@@ -560,7 +560,7 @@ func tryRealtimeFetch(task *model.Task, isOpenAIVideoAPI bool) []byte {
 		return nil
 	}
 	defer resp.Body.Close()
-	body, err := io.ReadAll(resp.Body)
+	body, err := common.ReadUpstreamBody(resp.Body)
 	if err != nil {
 		return nil
 	}
