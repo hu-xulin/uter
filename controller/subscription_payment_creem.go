@@ -5,12 +5,12 @@ import (
 	"strings"
 	"time"
 
+	"github.com/gin-gonic/gin"
+	"github.com/thanhpk/randstr"
 	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/logger"
 	"github.com/uter-ai/uter/model"
 	"github.com/uter-ai/uter/setting"
-	"github.com/gin-gonic/gin"
-	"github.com/thanhpk/randstr"
 )
 
 type SubscriptionCreemPayRequest struct {
@@ -85,15 +85,15 @@ func SubscriptionRequestCreemPay(c *gin.Context) {
 
 	// create pending order first
 	order := &model.SubscriptionOrder{
-		UserId:          userId,
-		PlanId:          plan.Id,
-		Money:           plan.PriceAmount,
-		TradeNo:         referenceId,
-		PaymentMethod:   model.PaymentMethodCreem,
+		UserId:           userId,
+		PlanId:           plan.Id,
+		Money:            plan.PriceAmount,
+		TradeNo:          referenceId,
+		PaymentMethod:    model.PaymentMethodCreem,
 		PaymentProvider:  model.PaymentProviderCreem,
 		ProviderCurrency: strings.ToLower(currency),
 		CreateTime:       time.Now().Unix(),
-		Status:          common.TopUpStatusPending,
+		Status:           common.TopUpStatusPending,
 	}
 	if err := order.Insert(); err != nil {
 		paymentError(c, common.NewMessage("Failed to create order"))
