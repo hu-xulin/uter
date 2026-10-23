@@ -6,6 +6,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/constant"
 	"github.com/uter-ai/uter/pkg/jsplugin"
@@ -13,8 +15,6 @@ import (
 	"github.com/uter-ai/uter/setting/billing_setting"
 	"github.com/uter-ai/uter/setting/config"
 	"github.com/uter-ai/uter/setting/ratio_setting"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 func pricingUsagePluginSource(version, usageSchema string) string {
