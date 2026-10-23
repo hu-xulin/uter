@@ -5,10 +5,10 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/uter-ai/uter/common"
-	"github.com/uter-ai/uter/pkg/jsplugin"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/uter-ai/uter/common"
+	"github.com/uter-ai/uter/pkg/jsplugin"
 )
 
 var expectedKeys = []string{"alibaba", "doubao", "google", "hailuo", "jimeng", "kling", "sora", "sunoapi", "vertex-ai", "vidu", "xai"}
