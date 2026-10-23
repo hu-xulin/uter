@@ -3,12 +3,12 @@ package service
 import (
 	"html"
 
+	"github.com/gin-gonic/gin"
 	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/i18n"
 	"github.com/uter-ai/uter/model"
 	"github.com/uter-ai/uter/oauth"
 	"github.com/uter-ai/uter/setting/system_setting"
-	"github.com/gin-gonic/gin"
 )
 
 func UnbindAccountOAuth(identity AuthIdentity, providerID int) error {
