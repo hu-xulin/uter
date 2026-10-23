@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/http"
 
+	"github.com/samber/lo"
 	channelconstant "github.com/uter-ai/uter/constant"
 	"github.com/uter-ai/uter/relay/channel"
 	"github.com/uter-ai/uter/relay/channel/claude"
@@ -15,7 +16,6 @@ import (
 	"github.com/uter-ai/uter/relaykit/dto"
 	"github.com/uter-ai/uter/relaykit/types"
 	"github.com/uter-ai/uter/service"
-	"github.com/samber/lo"
 
 	"github.com/gin-gonic/gin"
 )
