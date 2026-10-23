@@ -7468,6 +7468,7 @@
     "Auto-disable disabled": "不参与自动停用",
     "Requires global auto-disable and this channel option.": "需同时开启全局自动停用和本渠道开关。",
     "Request checks": "请求检查",
+    "Sessions and retries": "会话与重试",
     "Request text filtering": "请求文本过滤",
     "Checks text extracted from supported requests against keywords, ignoring case. A match rejects the request before upstream processing and does not affect channel health. Images, audio and generated responses are not checked.": "对支持的请求中提取的文本进行关键词匹配，不区分大小写。命中后在发送上游前拒绝请求，不影响渠道健康状态。不检查图片、音频或生成的响应内容。",
     "Prompt text filtering is active with the current form values.": "按当前表单设置，提示词文本过滤已生效。",

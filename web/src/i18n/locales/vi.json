@@ -7467,6 +7467,7 @@
     "Auto-disable disabled": "Tự động vô hiệu hóa đã tắt",
     "Requires global auto-disable and this channel option.": "Cần bật tự động vô hiệu hóa cả toàn cục lẫn kênh này.",
     "Request checks": "Kiểm tra yêu cầu",
+    "Sessions and retries": "Phiên và thử lại",
     "Request text filtering": "Lọc văn bản yêu cầu",
     "Checks text extracted from supported requests against keywords, ignoring case. A match rejects the request before upstream processing and does not affect channel health. Images, audio and generated responses are not checked.": "Đối chiếu văn bản trích xuất từ yêu cầu được hỗ trợ với từ khóa, không phân biệt hoa thường. Khi khớp, yêu cầu bị từ chối trước khi gửi đến thượng nguồn và không ảnh hưởng tình trạng kênh. Không kiểm tra hình ảnh, âm thanh hay phản hồi được tạo.",
     "Prompt text filtering is active with the current form values.": "Với giá trị biểu mẫu hiện tại, lọc văn bản lời nhắc đang hoạt động.",

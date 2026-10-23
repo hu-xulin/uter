@@ -7467,6 +7467,7 @@
     "Auto-disable disabled": "Auto-disable disabled",
     "Requires global auto-disable and this channel option.": "Requires global auto-disable and this channel option.",
     "Request checks": "Request checks",
+    "Sessions and retries": "Sessions and retries",
     "Request text filtering": "Request text filtering",
     "Checks text extracted from supported requests against keywords, ignoring case. A match rejects the request before upstream processing and does not affect channel health. Images, audio and generated responses are not checked.": "Checks text extracted from supported requests against keywords, ignoring case. A match rejects the request before upstream processing and does not affect channel health. Images, audio and generated responses are not checked.",
     "Prompt text filtering is active with the current form values.": "Prompt text filtering is active with the current form values.",
