@@ -2,9 +2,9 @@ package openai
 
 import (
 	"fmt"
-	"io"
 	"net/http"
 
+	"github.com/gin-gonic/gin"
 	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/logger"
 	relaycommon "github.com/uter-ai/uter/relay/common"
@@ -13,7 +13,6 @@ import (
 	"github.com/uter-ai/uter/relaykit/relayconvert"
 	"github.com/uter-ai/uter/relaykit/types"
 	"github.com/uter-ai/uter/service"
-	"github.com/gin-gonic/gin"
 )
 
 func OaiChatToResponsesHandler(c *gin.Context, info *relaycommon.RelayInfo, resp *http.Response) (*dto.Usage, *types.NewAPIError) {
@@ -22,7 +21,7 @@ func OaiChatToResponsesHandler(c *gin.Context, info *relaycommon.RelayInfo, resp
 	}
 	defer service.CloseResponseBodyGracefully(resp)
 
-	body, err := io.ReadAll(resp.Body)
+	body, err := common.ReadUpstreamBody(resp.Body)
 	if err != nil {
 		return nil, types.NewOpenAIError(err, types.ErrorCodeReadResponseBodyFailed, http.StatusInternalServerError)
 	}
