@@ -189,6 +189,9 @@ func initConstantEnv() {
 	constant.StreamScannerMaxBufferMB = GetEnvOrDefault("STREAM_SCANNER_MAX_BUFFER_MB", 128)
 	// MaxRequestBodyMB 请求体最大大小（解压后），用于防止超大请求/zip bomb导致内存暴涨
 	constant.MaxRequestBodyMB = GetEnvOrDefault("MAX_REQUEST_BODY_MB", 128)
+	// MaxUpstreamResponseMB 单个上游响应体最大大小，防止异常上游把进程内存打满。
+	// 默认与请求体一致（128MB），足以容纳 base64 图片/音频等大响应。
+	constant.MaxUpstreamResponseMB = GetEnvOrDefault("MAX_UPSTREAM_RESPONSE_MB", 128)
 	constant.AnonymousRequestBodyLimitKB = GetEnvOrDefault("ANONYMOUS_REQUEST_BODY_LIMIT_KB", 512)
 	// ForceStreamOption 覆盖请求参数，强制返回usage信息
 	constant.ForceStreamOption = GetEnvOrDefaultBool("FORCE_STREAM_OPTION", true)
