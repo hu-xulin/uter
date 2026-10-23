@@ -4,10 +4,10 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/uter-ai/uter/common"
-	"github.com/uter-ai/uter/model"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/uter-ai/uter/common"
+	"github.com/uter-ai/uter/model"
 )
 
 // Model metadata may declare endpoints either as a type array or as a path map.
