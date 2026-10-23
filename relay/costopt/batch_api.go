@@ -30,6 +30,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
+	"github.com/uter-ai/uter/common"
 	costoptcfg "github.com/uter-ai/uter/setting/costopt"
 )
 
@@ -279,7 +280,7 @@ func batchAuthorizedGet(url string, cfg *costoptcfg.CostOptSetting) ([]byte, str
 		return nil, "", err
 	}
 	defer resp.Body.Close()
-	body, err := io.ReadAll(resp.Body)
+	body, err := common.ReadUpstreamBody(resp.Body)
 	if err != nil {
 		return nil, "", err
 	}
