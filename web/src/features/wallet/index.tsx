@@ -29,7 +29,6 @@ import { getSelf } from '@/lib/api'
 
 import { AffiliateRewardsCard } from './components/affiliate-rewards-card'
 import { BillingHistoryDialog } from './components/dialogs/billing-history-dialog'
-import { CnPayMiniProgramDialog } from './components/dialogs/cn-pay-miniprogram-dialog'
 import { CnPayWebDialog } from './components/dialogs/cn-pay-web-dialog'
 import { CreemConfirmDialog } from './components/dialogs/creem-confirm-dialog'
 import { PaymentConfirmDialog } from './components/dialogs/payment-confirm-dialog'
@@ -52,7 +51,6 @@ import {
   getDefaultPaymentType,
   getMinTopupAmount,
   dispatchSelectedPayment,
-  isCnMiniProgramPayment,
   isCnWebPayment,
 } from './lib'
 import type {
@@ -90,7 +88,6 @@ export function Wallet(props: WalletProps) {
   const [selectedCreemProduct, setSelectedCreemProduct] =
     useState<CreemProduct | null>(null)
   const [showSubscriptionPanel, setShowSubscriptionPanel] = useState(true)
-  const [cnPayOpen, setCnPayOpen] = useState(false)
   const [cnWebPayOpen, setCnWebPayOpen] = useState(false)
   const [cnWebPayMethod, setCnWebPayMethod] = useState<
     PaymentMethod | undefined
@@ -231,10 +228,12 @@ export function Wallet(props: WalletProps) {
       return
     }
 
-    // Official China payments (WeChat mini-program) must be completed
-    // inside the mini-program; open the guidance + balance-poll dialog.
-    if (isCnMiniProgramPayment(selectedPaymentMethod.type)) {
-      setCnPayOpen(true)
+    // Official China payments (Alipay / WeChat website payment) open the
+    // web cashier: a QR code on PC, a redirect to the provider cashier on
+    // mobile. Both poll the wallet balance until it is credited.
+    if (isCnWebPayment(selectedPaymentMethod.type)) {
+      setCnWebPayMethod(selectedPaymentMethod)
+      setCnWebPayOpen(true)
       setConfirmDialogOpen(false)
       return
     }
@@ -473,18 +472,6 @@ export function Wallet(props: WalletProps) {
         onSuccess={() => {
           setCnWebPayOpen(false)
           setCnWebPayMethod(undefined)
-          void fetchUser()
-        }}
-      />
-
-      <CnPayMiniProgramDialog
-        open={cnPayOpen}
-        onOpenChange={setCnPayOpen}
-        topupAmount={topupAmount}
-        paymentAmount={paymentAmount}
-        initialQuota={user?.quota ?? 0}
-        onSuccess={() => {
-          setCnPayOpen(false)
           void fetchUser()
         }}
       />
