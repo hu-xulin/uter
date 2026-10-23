@@ -8,6 +8,8 @@ import (
 	"net/http"
 	"time"
 
+	utercommon "github.com/uter-ai/uter/common"
+
 	"github.com/uter-ai/uter/relay/channel"
 
 	"github.com/uter-ai/uter/relay/common"
@@ -76,7 +78,7 @@ func (a *Adaptor) DoRequest(c *gin.Context, info *common.RelayInfo, requestBody 
 	}
 	// 解析 resp
 	var cozeResponse CozeChatResponse
-	respBody, err := io.ReadAll(resp.Body)
+	respBody, err := utercommon.ReadUpstreamBody(resp.Body)
 	if err != nil {
 		return nil, err
 	}
