@@ -1,7 +1,6 @@
 package common_handler
 
 import (
-	"io"
 	"net/http"
 
 	"github.com/uter-ai/uter/common"
@@ -18,7 +17,7 @@ import (
 )
 
 func RerankHandler(c *gin.Context, info *relaycommon.RelayInfo, resp *http.Response) (*dto.Usage, *types.UterError) {
-	responseBody, err := io.ReadAll(resp.Body)
+	responseBody, err := common.ReadUpstreamBody(resp.Body)
 	if err != nil {
 		return nil, types.NewOpenAIError(err, types.ErrorCodeReadResponseBodyFailed, http.StatusInternalServerError)
 	}
