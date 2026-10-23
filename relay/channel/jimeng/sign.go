@@ -15,9 +15,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/gin-gonic/gin"
 	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/logger"
-	"github.com/gin-gonic/gin"
 )
 
 // SignRequestForJimeng 对即梦 API 请求进行签名，支持 http.Request 或 header+url+body 方式
