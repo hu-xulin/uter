@@ -3,12 +3,12 @@ package service
 import (
 	"strings"
 
+	"github.com/gin-gonic/gin"
 	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/constant"
 	"github.com/uter-ai/uter/model"
 	"github.com/uter-ai/uter/setting"
 	"github.com/uter-ai/uter/setting/ratio_setting"
-	"github.com/gin-gonic/gin"
 )
 
 func GetUserUsableGroups(userGroup string) map[string]string {
