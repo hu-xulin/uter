@@ -146,15 +146,15 @@ func (*CreemAdaptor) RequestPay(c *gin.Context, req *CreemPayRequest) {
 
 	// 先创建订单记录，使用产品配置的金额和充值额度
 	topUp := &model.TopUp{
-		UserId:          id,
-		Amount:          selectedProduct.Quota, // 充值额度
-		Money:           selectedProduct.Price, // 支付金额
-		TradeNo:         referenceId,
-		PaymentMethod:   model.PaymentMethodCreem,
+		UserId:           id,
+		Amount:           selectedProduct.Quota, // 充值额度
+		Money:            selectedProduct.Price, // 支付金额
+		TradeNo:          referenceId,
+		PaymentMethod:    model.PaymentMethodCreem,
 		PaymentProvider:  model.PaymentProviderCreem,
 		ProviderCurrency: strings.ToLower(strings.TrimSpace(selectedProduct.Currency)),
 		CreateTime:       time.Now().Unix(),
-		Status:          common.TopUpStatusPending,
+		Status:           common.TopUpStatusPending,
 	}
 	err = topUp.Insert()
 	if err != nil {
