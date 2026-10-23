@@ -121,10 +121,11 @@ describe('email delivery settings', () => {
     expect(
       screen.queryByRole('textbox', { name: 'SMTP Host' })
     ).not.toBeInTheDocument()
-    expect(screen.getByLabelText('Resend API key')).toHaveAttribute(
-      'type',
-      'password'
-    )
+    // 展示态用 text 呈现掩码串（可核对前4后4），进入编辑态才切成 password。
+    const resendKey = screen.getByLabelText('Resend API key')
+    expect(resendKey).toHaveAttribute('type', 'text')
+    await user.click(resendKey)
+    expect(resendKey).toHaveAttribute('type', 'password')
     await user.click(screen.getByRole('radio', { name: 'SMTP' }))
     expect(screen.getByRole('textbox', { name: 'SMTP Host' })).toHaveValue(
       'draft.smtp.example.com'
@@ -158,8 +159,9 @@ describe('email delivery settings', () => {
       { key: 'ResendApiKey', value: 'test-key' },
       { key: 'EmailProvider', value: 'resend' },
     ])
+    // 保存后密钥字段回到掩码展示态：只保留前 4 位，明文不留在表单里。
     await waitFor(() =>
-      expect(screen.getByLabelText('Resend API key')).toHaveValue('')
+      expect(screen.getByLabelText('Resend API key')).toHaveValue('test****')
     )
   })
 
