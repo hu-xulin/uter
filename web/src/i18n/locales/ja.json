@@ -7646,6 +7646,22 @@
     "Confirm the callback address": "コールバックアドレスを確認",
     "No manual entry needed: async callbacks go to /api/user/wechat/notify on this server. If the payment domain differs from the server address, set the payment site address in the General tab so the return URL points at the filed domain.": "手動入力は不要です：非同期コールバックはこのサーバーの /api/user/wechat/notify に送られます。支払いドメインがサーバーアドレスと異なる場合は、「一般」タブで支払いサイトアドレスを設定し、リターン URL が ICP 届出済みドメインを指すようにしてください。",
     "Turn on the switch and save": "スイッチをオンにして保存",
-    "WeChat Pay only appears in the wallet once the switch is on, every field above is filled, and the APIv3 key is exactly 32 characters.": "スイッチがオン、上記すべての項目が入力済み、かつ APIv3 キーがちょうど 32 文字の場合にのみ、ウォレットに WeChat Pay が表示されます。"
+    "WeChat Pay only appears in the wallet once the switch is on, every field above is filled, and the APIv3 key is exactly 32 characters.": "スイッチがオン、上記すべての項目が入力済み、かつ APIv3 キーがちょうど 32 文字の場合にのみ、ウォレットに WeChat Pay が表示されます。",
+    "Signs payment requests (RSA2). Select the private key file output by the Alipay key generator; PEM (PKCS#8 / PKCS#1) and single-line base64 are both accepted.": "支払いリクエストへの署名（RSA2）に使用します。Alipay キー生成ツールが出力したアプリ秘密鍵ファイルを選択してください。PEM（PKCS#8 / PKCS#1）と 1 行の base64 の両方に対応しています。",
+    "Verifies async callback signatures. Alipay issues this value after you upload the application public key; a PEM public key file or a single-line base64 string is accepted.": "非同期通知の署名検証に使用します。この値はアプリ公開鍵をアップロードした後に Alipay が発行します。PEM 公開鍵ファイルでも 1 行の base64 文字列でも受け付けます。",
+    "Create the app and copy its AppID": "アプリを作成して AppID をコピーする",
+    "Alipay Open Platform → Console → Web & mobile apps → Create app. After approval, copy the AppID (16 digits starting with 2021) into “App ID”.": "Alipay オープンプラットフォーム → コンソール → ウェブ＆モバイルアプリ → アプリ作成。承認後、AppID（2021 で始まる 16 桁）を「App ID」にコピーします。",
+    "Generate the RSA2 key pair": "RSA2 キーペアを生成する",
+    "App details → Development settings → Interface signing method → set RSA2 (SHA256), then use the Alipay key generator to create an RSA 2048 pair. It outputs the application private key (keep it offline) and the application public key.": "アプリ詳細 → 開発設定 → インターフェース署名方式 → RSA2（SHA256）を設定し、Alipay キー生成ツールで RSA 2048 のキーペアを作成します。アプリ秘密鍵（オフラインで保管）とアプリ公開鍵が出力されます。",
+    "Upload the application public key and copy the Alipay public key": "アプリ公開鍵をアップロードし、Alipay 公開鍵をコピーする",
+    "Upload the application public key from step 2 in the same page; Alipay then issues the “Alipay public key”. Save that string as a .txt or .pem file and select it in “Alipay Public Key”. This is required: without it every callback fails signature verification and paid orders never credit.": "同じ画面で手順 2 のアプリ公開鍵をアップロードすると、Alipay が「Alipay 公開鍵」を発行します。その文字列を .txt または .pem ファイルとして保存し、「Alipay Public Key」でそのファイルを選択します。これは必須です。未設定の場合、すべての通知の署名検証が失敗し、支払い済みの注文が入金されません。",
+    "Select the application private key file": "アプリ秘密鍵ファイルを選択する",
+    "In “Application Private Key”, select the private key file from step 2. Both PEM files (PKCS#8 or PKCS#1) and single-line base64 text files are accepted.": "「Application Private Key」で手順 2 の秘密鍵ファイルを選択します。PEM ファイル（PKCS#8 または PKCS#1）でも 1 行の base64 テキストファイルでも構いません。",
+    "Sign the payment products": "決済プロダクトを契約する",
+    "Console → Products → request “Computer website payment” (alipay.trade.page.pay) and “Mobile website payment” (alipay.trade.wap.pay). Orders are rejected until both products are signed.": "コンソール → プロダクト → 「コンピュータウェブサイト決済」（alipay.trade.page.pay）と「モバイルウェブサイト決済」（alipay.trade.wap.pay）を申し込みます。両方の契約が完了するまで注文は拒否されます。",
+    "The website domain you submit when signing the products must be ICP-filed and its registrant must match the app entity. Otherwise the product application is rejected or callbacks never arrive.": "契約時に申請するウェブサイトのドメインは ICP 备案済みで、备案主体がアプリの主体と一致している必要があります。一致しない場合、プロダクト申請が却下されるか、通知が届かなくなります。",
+    "Confirm the callback and return address": "通知アドレスと復帰アドレスを確認する",
+    "Async callbacks go to /api/user/alipay/notify on this server; no fixed configuration is needed in the open platform. The payment return URL uses the payment site address: set it in the General tab when the payment domain differs from the server address.": "非同期通知は本サーバーの /api/user/alipay/notify に送信されます。オープンプラットフォーム側での固定設定は不要です。支払い後の復帰 URL は決済サイトアドレスを使用します。決済ドメインがサーバーアドレスと異なる場合は「General」タブで設定してください。",
+    "Alipay only appears in the wallet once the switch is on and App ID, application private key, and Alipay public key are all filled.": "Alipay は、スイッチがオンで、App ID・アプリ秘密鍵・Alipay 公開鍵のすべてが入力されている場合にのみウォレットに表示されます。"
   }
 }

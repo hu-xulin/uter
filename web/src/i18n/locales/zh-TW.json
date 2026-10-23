@@ -7646,6 +7646,22 @@
     "Confirm the callback address": "確認回調位址",
     "No manual entry needed: async callbacks go to /api/user/wechat/notify on this server. If the payment domain differs from the server address, set the payment site address in the General tab so the return URL points at the filed domain.": "無需手填：異步回調固定發往本站的 /api/user/wechat/notify。若支付網域與伺服器位址不同，請在「一般」頁設定支付站點位址，使同步回跳位址指向已備案網域。",
     "Turn on the switch and save": "開啟開關並儲存",
-    "WeChat Pay only appears in the wallet once the switch is on, every field above is filled, and the APIv3 key is exactly 32 characters.": "只有開關已開啟、以上各項均已填寫、且 APIv3 金鑰恰好 32 個字元時，錢包裡才會出現微信支付。"
+    "WeChat Pay only appears in the wallet once the switch is on, every field above is filled, and the APIv3 key is exactly 32 characters.": "只有開關已開啟、以上各項均已填寫、且 APIv3 金鑰恰好 32 個字元時，錢包裡才會出現微信支付。",
+    "Signs payment requests (RSA2). Select the private key file output by the Alipay key generator; PEM (PKCS#8 / PKCS#1) and single-line base64 are both accepted.": "用於對支付請求簽章（RSA2）。請選擇支付寶金鑰工具輸出的應用私鑰檔案；PEM（PKCS#8 / PKCS#1）與單行 base64 皆可。",
+    "Verifies async callback signatures. Alipay issues this value after you upload the application public key; a PEM public key file or a single-line base64 string is accepted.": "用於驗證非同步回調簽章。上傳應用公鑰後支付寶會產生此值；PEM 公鑰檔案與單行 base64 字串皆可。",
+    "Create the app and copy its AppID": "建立應用並複製 AppID",
+    "Alipay Open Platform → Console → Web & mobile apps → Create app. After approval, copy the AppID (16 digits starting with 2021) into “App ID”.": "支付寶開放平臺 → 主控台 → 網頁&行動應用 → 建立應用。審核通過後複製 AppID（以 2021 開頭的 16 位數字）填入「App ID」。",
+    "Generate the RSA2 key pair": "產生 RSA2 金鑰對",
+    "App details → Development settings → Interface signing method → set RSA2 (SHA256), then use the Alipay key generator to create an RSA 2048 pair. It outputs the application private key (keep it offline) and the application public key.": "應用詳情 → 開發設定 → 介面加簽方式 → 設定 RSA2（SHA256），再用支付寶金鑰工具產生 RSA 2048 金鑰對。工具會輸出應用私鑰（請離線保存）與應用公鑰。",
+    "Upload the application public key and copy the Alipay public key": "上傳應用公鑰並複製支付寶公鑰",
+    "Upload the application public key from step 2 in the same page; Alipay then issues the “Alipay public key”. Save that string as a .txt or .pem file and select it in “Alipay Public Key”. This is required: without it every callback fails signature verification and paid orders never credit.": "在同一頁面上傳第 2 步產生的應用公鑰；支付寶隨後核發「支付寶公鑰」。將該字串存成 .txt 或 .pem 檔案，再於「支付寶公鑰」處選取該檔案。此為必填：缺失時所有回調都會驗證失敗，使用者已付款但額度不入帳。",
+    "Select the application private key file": "選取應用私鑰檔案",
+    "In “Application Private Key”, select the private key file from step 2. Both PEM files (PKCS#8 or PKCS#1) and single-line base64 text files are accepted.": "在「應用私鑰」處選取第 2 步取得的私鑰檔案。PEM 檔案（PKCS#8 或 PKCS#1）與單行 base64 文字檔皆可。",
+    "Sign the payment products": "簽約支付產品",
+    "Console → Products → request “Computer website payment” (alipay.trade.page.pay) and “Mobile website payment” (alipay.trade.wap.pay). Orders are rejected until both products are signed.": "主控台 → 產品中心 → 申請「電腦網站支付」（alipay.trade.page.pay）與「手機網站支付」（alipay.trade.wap.pay）。兩項產品未完成簽約前，下單都會被拒絕。",
+    "The website domain you submit when signing the products must be ICP-filed and its registrant must match the app entity. Otherwise the product application is rejected or callbacks never arrive.": "簽約時提交的網站網域必須已完成 ICP 備案，且備案主體與應用主體一致，否則產品申請會被駁回，或回調永遠不會送達。",
+    "Confirm the callback and return address": "確認回調與回跳位址",
+    "Async callbacks go to /api/user/alipay/notify on this server; no fixed configuration is needed in the open platform. The payment return URL uses the payment site address: set it in the General tab when the payment domain differs from the server address.": "非同步回調固定送往本站的 /api/user/alipay/notify，開放平臺無須固定設定。付款完成後的回跳位址使用支付網站位址：若支付網域與伺服器位址不同，請於「一般」頁籤設定。",
+    "Alipay only appears in the wallet once the switch is on and App ID, application private key, and Alipay public key are all filled.": "只有開關已開啟，且 App ID、應用私鑰、支付寶公鑰三項皆已填寫時，錢包中才會出現支付寶。"
   }
 }
