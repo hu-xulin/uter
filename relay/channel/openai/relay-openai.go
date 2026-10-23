@@ -2,7 +2,6 @@ package openai
 
 import (
 	"fmt"
-	"io"
 	"net/http"
 	"strings"
 
@@ -11,6 +10,7 @@ import (
 	"github.com/uter-ai/uter/logger"
 	"github.com/uter-ai/uter/relay/channel/openrouter"
 	relaycommon "github.com/uter-ai/uter/relay/common"
+	relayconstant "github.com/uter-ai/uter/relay/constant"
 	"github.com/uter-ai/uter/relay/helper"
 	"github.com/uter-ai/uter/relaykit/dto"
 	"github.com/uter-ai/uter/relaykit/types"
@@ -135,10 +135,25 @@ func OaiStreamHandler(c *gin.Context, info *relaycommon.RelayInfo, resp *http.Re
 			}
 
 			lastStreamData = data
-			observeStreamChoices(info, data, seenStreamToolCalls, &streamFunctionCallNames)
-			if err := processTokenData(info, data, &responseTextBuilder, &toolCount); err != nil {
-				logger.LogError(c, common.LogText("error processing stream token data: %s", err.Error()))
-				sr.Error(err)
+			// 一个 chunk 只解析一次：观察（工具计费）与文本累加共用同一份解析结果。
+			// 之前两条路径各解析一遍，2000 chunk 的请求等于多做 2000 次 json.Unmarshal
+			// （审核规范 T3）。
+			switch info.RelayMode {
+			case relayconstant.RelayModeChatCompletions:
+				var chunk dto.ChatCompletionsStreamResponse
+				if err := common.UnmarshalJsonStr(data, &chunk); err != nil {
+					logger.LogError(c, common.LogText("error processing stream token data: %s", err.Error()))
+					sr.Error(err)
+					break
+				}
+				observeStreamChoices(info, &chunk, seenStreamToolCalls, &streamFunctionCallNames)
+				info.ObserveResponseModel(chunk.Model)
+				_ = ProcessStreamResponse(chunk, &responseTextBuilder, &toolCount)
+			case relayconstant.RelayModeCompletions:
+				if err := processCompletionsChunk(data, &responseTextBuilder); err != nil {
+					logger.LogError(c, common.LogText("error processing stream token data: %s", err.Error()))
+					sr.Error(err)
+				}
 			}
 		}
 	})
@@ -199,11 +214,7 @@ func OaiStreamHandler(c *gin.Context, info *relaycommon.RelayInfo, resp *http.Re
 
 // observeStreamChoices collects billable function call names and records the
 // finish reason facts used by health sampling from one parsed chunk.
-func observeStreamChoices(info *relaycommon.RelayInfo, data string, seen map[string]struct{}, names *[]string) {
-	var streamResponse dto.ChatCompletionsStreamResponse
-	if err := common.UnmarshalJsonStr(data, &streamResponse); err != nil {
-		return
-	}
+func observeStreamChoices(info *relaycommon.RelayInfo, streamResponse *dto.ChatCompletionsStreamResponse, seen map[string]struct{}, names *[]string) {
 	for _, choice := range streamResponse.Choices {
 		if choice.FinishReason != nil && *choice.FinishReason != "" {
 			if *choice.FinishReason == constant.FinishReasonContentFilter {
@@ -253,7 +264,7 @@ func OpenaiHandler(c *gin.Context, info *relaycommon.RelayInfo, resp *http.Respo
 	defer service.CloseResponseBodyGracefully(resp)
 
 	var simpleResponse dto.OpenAITextResponse
-	responseBody, err := io.ReadAll(resp.Body)
+	responseBody, err := common.ReadUpstreamBody(resp.Body)
 	if err != nil {
 		return nil, types.NewOpenAIError(err, types.ErrorCodeReadResponseBodyFailed, http.StatusInternalServerError)
 	}
