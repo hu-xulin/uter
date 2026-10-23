@@ -41,6 +41,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form'
+import { PasswordInput } from '@/components/password-input'
 import { Input } from '@/components/ui/input'
 import { handleServerError } from '@/lib/handle-server-error'
 import { requireServerSuccess } from '@/lib/server-error-message'
@@ -376,8 +377,7 @@ export function UpdateConfigDialog({
                         <FormItem>
                           <FormLabel>{t('Registry secret')}</FormLabel>
                           <FormControl>
-                            <Input
-                              type='password'
+                            <PasswordInput
                               autoComplete='off'
                               {...field}
                             />
