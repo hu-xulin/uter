@@ -4,14 +4,14 @@ import (
 	"encoding/json"
 	"time"
 
+	"github.com/gin-gonic/gin"
+	"github.com/go-webauthn/webauthn/protocol"
+	webauthnlib "github.com/go-webauthn/webauthn/webauthn"
 	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/i18n"
 	"github.com/uter-ai/uter/model"
 	"github.com/uter-ai/uter/service"
 	passkeysvc "github.com/uter-ai/uter/service/passkey"
-	"github.com/gin-gonic/gin"
-	"github.com/go-webauthn/webauthn/protocol"
-	webauthnlib "github.com/go-webauthn/webauthn/webauthn"
 )
 
 func VerifyLogin(c *gin.Context) {
