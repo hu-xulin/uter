@@ -22,7 +22,10 @@ import * as React from 'react'
 import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
 
-type SecretInputProps = {
+type SecretInputProps = Omit<
+  React.ComponentProps<'input'>,
+  'value' | 'onChange' | 'type' | 'children'
+> & {
   /**
    * 已保存的值。可能是：
    * - 后端回传的**掩码串**（如 `abcd****wxyz`）——管理后台读取选项时即如此；
@@ -31,10 +34,6 @@ type SecretInputProps = {
   value: string
   /** 回传值。非编辑态被锁定，只在真正改值时调用；绝不回传掩码串。 */
   onChange: (value: string) => void
-  placeholder?: string
-  disabled?: boolean
-  className?: string
-  name?: string
 }
 
 /**
@@ -57,6 +56,8 @@ export function SecretInput({
   disabled,
   className,
   name,
+  onBlur,
+  ...rest
 }: SecretInputProps) {
   const [editing, setEditing] = React.useState(false)
   const [draft, setDraft] = React.useState('')
@@ -83,6 +84,7 @@ export function SecretInput({
       <Input
         ref={inputRef}
         name={name}
+        {...rest}
         // 展示态用 text 呈现掩码串（可读、可核对前4后4）；编辑态用 password
         // 避免新输入的密钥被旁观者看到。两者都不允许把掩码串当成输入值。
         type={editing ? (revealed ? 'text' : 'password') : 'text'}
@@ -105,13 +107,15 @@ export function SecretInput({
           setDraft(v)
           onChange(v)
         }}
-        onBlur={() => {
+        onBlur={(event) => {
           // 未输入任何内容就失焦：还原为原值，避免把已保存密钥误清成空。
           if (draft.trim() === '') {
             onChange(originalRef.current)
           }
           setEditing(false)
           setDraft('')
+          // 保留 react-hook-form 的失焦校验语义。
+          onBlur?.(event)
         }}
         className={cn('pr-9', editing && 'border-ring')}
       />
