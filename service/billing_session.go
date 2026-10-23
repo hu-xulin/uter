@@ -39,6 +39,35 @@ type BillingSession struct {
 	refunded         bool // Refund 已调用
 	refundDone       chan struct{}
 	mu               sync.Mutex
+
+	// billingCeiling 是本会话向个人钱包计费的上限：准入时读到的余额减去
+	// 配置的债务下限（WALLET_DEBT_FLOOR_QUOTA）。ceilingSet 为真时才生效，
+	// 且仅在「平台直管用户 + 钱包出资」的准入分支设置——组织成员的出资方是
+	// 组织共享预算，其透支由 ReserveOrgQuota 的原子闸门负责，按设计不在
+	// 结算点截断（见 funding_source.go 中组织 true-up 的说明）。
+	//
+	// 为什么需要它（DEF-6）：准入只能按「预扣估算额」校验余额，而请求的
+	// 真实成本在结算时才可知——无 max_tokens 的流式请求尤其没有上界。
+	// 信任旁路（shouldTrust）连估算额都不扣，结算时的补扣于是可以把钱包
+	// 打到任意深度（实测余额 100、实扣 10000 → -9900）。把准入时的余额
+	// 口径延续成会话级上限后，「实扣上限 ≤ 可用额度 + 债务下限」成为硬不变量。
+	billingCeiling int
+	ceilingSet     bool
+
+	// settledQuota / settledQuotaClamped 记录结算最终实际生效的额度：
+	// 触发计费上限截断时它小于调用方传入的 actualQuota。用量日志必须记这个
+	// 值而不是原始 actualQuota，否则「初始余额 − 最终余额 == logs.Quota」
+	// 这条 P0 不变量会在被截断的会话上破裂（日志宣称全额已扣，余额只少了一部分）。
+	settledQuota        int
+	settledQuotaClamped bool
+}
+
+// SettledQuota 返回结算最终生效的额度，以及是否发生了计费上限截断。
+// 实现供 SettleBillingForLog 使用的可选接口（settledQuotaReporter）。
+func (s *BillingSession) SettledQuota() (int, bool) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	return s.settledQuota, s.settledQuotaClamped
 }
 
 // Settle 根据实际消耗额度进行结算。
@@ -50,7 +79,18 @@ func (s *BillingSession) Settle(actualQuota int) error {
 	if s.settled {
 		return nil
 	}
-	delta := actualQuota - s.preConsumedQuota
+	// DEF-6 硬闸门：钱包出资的会话，实际计费额不得突破准入时确定的余额上限
+	// （可用额度 + 债务下限）。截断只可能发生在「真实成本远超估算」的请求上
+	// ——信任旁路下预扣为 0、无 max_tokens 的流式请求是典型。被截断时令牌
+	// 账本与资金来源按同一生效额调整，用量日志记生效额（见 SettledQuota），
+	// 三条账本始终一致。
+	effectiveQuota := actualQuota
+	if s.ceilingSet && s.funding.Source() == BillingSourceWallet && effectiveQuota > s.billingCeiling {
+		effectiveQuota = s.billingCeiling
+		s.settledQuotaClamped = true
+	}
+	s.settledQuota = effectiveQuota
+	delta := effectiveQuota - s.preConsumedQuota
 	if delta == 0 {
 		s.settled = true
 		return nil
@@ -574,6 +614,11 @@ func NewBillingSession(c *gin.Context, relayInfo *relaycommon.RelayInfo, preCons
 		session := &BillingSession{
 			relayInfo: relayInfo,
 			funding:   &WalletFunding{userId: relayInfo.UserId},
+			// DEF-6：把准入余额延续为会话级计费上限。准入只按估算额校验过
+			// 一次，真实成本结算时才可知；没有这条上限，信任旁路 + 无
+			// max_tokens 的组合可以把钱包打到任意深度。
+			billingCeiling: userQuota - common.GetWalletDebtFloorQuota(),
+			ceilingSet:     true,
 		}
 		if apiErr := session.preConsume(c, preConsumedQuota); apiErr != nil {
 			return nil, apiErr
