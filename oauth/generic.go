@@ -13,13 +13,13 @@ import (
 	"strings"
 	"time"
 
+	"github.com/gin-gonic/gin"
+	"github.com/samber/lo"
+	"github.com/tidwall/gjson"
 	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/logger"
 	"github.com/uter-ai/uter/model"
 	"github.com/uter-ai/uter/setting/system_setting"
-	"github.com/gin-gonic/gin"
-	"github.com/samber/lo"
-	"github.com/tidwall/gjson"
 )
 
 // AuthStyle defines how to send client credentials
@@ -84,7 +84,6 @@ func (p *GenericOAuthProvider) IsEnabled() bool {
 func (p *GenericOAuthProvider) GetConfig() *model.CustomOAuthProvider {
 	return p.config
 }
-
 
 func (p *GenericOAuthProvider) ExchangeToken(ctx context.Context, code string, c *gin.Context) (*OAuthToken, error) {
 	if code == "" {
