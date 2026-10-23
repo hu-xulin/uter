@@ -123,23 +123,8 @@ export function isWaffoPancakePayment(paymentType: string): boolean {
 }
 
 /**
- * Check if payment method is official WeChat Pay mini-program (JSAPI).
- */
-export function isWechatPayMiniProgramPayment(paymentType: string): boolean {
-  return paymentType === PAYMENT_TYPES.WECHAT_PAY_MINIPROGRAM
-}
-
-/**
- * Check if payment method is an official China payment that must be completed
- * inside the WeChat mini-program (instead of a web redirect / QR).
- */
-export function isCnMiniProgramPayment(paymentType: string): boolean {
-  return isWechatPayMiniProgramPayment(paymentType)
-}
-
-/**
  * Check if payment method is official Alipay website payment
- * (alipay.trade.precreate on PC / alipay.trade.wap.pay on mobile).
+ * (alipay.trade.page.pay on PC / alipay.trade.wap.pay on mobile).
  */
 export function isAlipayWebPayment(paymentType: string): boolean {
   return paymentType === PAYMENT_TYPES.ALIPAY_WEB
