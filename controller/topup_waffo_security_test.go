@@ -30,7 +30,6 @@ func TestWaffoPaidAmountMatchesOrder(t *testing.T) {
 	}
 }
 
-
 func TestWaffoOrderStatusIsTerminalFailure(t *testing.T) {
 	tests := []struct {
 		status string
@@ -93,4 +92,3 @@ func TestWaffoTerminalFailureUpdateNeedsRetry(t *testing.T) {
 		})
 	}
 }
-
