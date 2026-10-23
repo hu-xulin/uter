@@ -5,10 +5,10 @@ import (
 	"os"
 	"testing"
 
-	"github.com/uter-ai/uter/common"
-	"github.com/uter-ai/uter/pkg/billingexpr"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/uter-ai/uter/common"
+	"github.com/uter-ai/uter/pkg/billingexpr"
 )
 
 func TestFixedPriceBranches(t *testing.T) {
