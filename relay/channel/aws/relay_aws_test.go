@@ -12,10 +12,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/uter-ai/uter/common"
-	relaycommon "github.com/uter-ai/uter/relay/common"
-	"github.com/uter-ai/uter/relaykit/dto"
-	relaytypes "github.com/uter-ai/uter/relaykit/types"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/aws/protocol/eventstream"
 	"github.com/aws/aws-sdk-go-v2/aws/protocol/eventstream/eventstreamapi"
@@ -24,6 +20,10 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/uter-ai/uter/common"
+	relaycommon "github.com/uter-ai/uter/relay/common"
+	"github.com/uter-ai/uter/relaykit/dto"
+	relaytypes "github.com/uter-ai/uter/relaykit/types"
 )
 
 const awsTestModel = "anthropic.claude-3-5-sonnet-20240620-v1:0"
