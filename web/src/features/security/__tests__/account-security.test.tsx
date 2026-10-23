@@ -458,7 +458,7 @@ it('allows a common new password after verifying the current password once', asy
   render(
     <ChangePasswordDialog open username='user' onOpenChange={onOpenChange} />
   )
-  expect(screen.getByText('Use 8–18 characters.')).toBeVisible()
+  expect(screen.getByText('Use 8–128 characters.')).toBeVisible()
   await user.type(screen.getByLabelText('Current Password'), 'current-password')
   // A dictionary-free strong password: the shared policy rejects breach-list
   // values like "password123" before the verification ceremony can start.
