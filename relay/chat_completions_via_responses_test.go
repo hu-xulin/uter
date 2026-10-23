@@ -8,6 +8,9 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/gin-gonic/gin"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/constant"
 	openaichannel "github.com/uter-ai/uter/relay/channel/openai"
@@ -17,9 +20,6 @@ import (
 	"github.com/uter-ai/uter/relaykit/relayconvert"
 	relaytypes "github.com/uter-ai/uter/relaykit/types"
 	hosttypes "github.com/uter-ai/uter/types"
-	"github.com/gin-gonic/gin"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 func TestPrepareResponsesRequestRetainsConvertedAdaptor(t *testing.T) {
