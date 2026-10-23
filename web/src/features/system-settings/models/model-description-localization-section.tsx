@@ -52,6 +52,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { SecretInput } from '@/components/ui/secret-input'
 import { Switch } from '@/components/ui/switch'
+import { isMaskedSecret } from '@/lib/secret'
 import {
   SettingsForm,
   SettingsSwitchContent,
@@ -128,6 +129,8 @@ export function ModelDescriptionLocalizationSection({ defaultValues }: Props) {
   const onSubmit = (values: FormValues) => {
     // useUpdateOption 是单键更新，toast 与错误处理都由 hook 统一负责，
     // 这里只负责把表单值按后端 Options 表期望的字符串逐项提交。
+    // 掩码串是后端下发的展示值，不是新密钥：跳过，保留库中原密钥。
+    const translateApiKey = values.ModelDescriptionTranslateApiKey.trim()
     const entries: Array<[keyof FormValues, string]> = [
       [
         'ModelDescriptionSyncEnabled',
@@ -142,10 +145,6 @@ export function ModelDescriptionLocalizationSection({ defaultValues }: Props) {
         values.ModelDescriptionTranslateBaseURL.trim(),
       ],
       [
-        'ModelDescriptionTranslateApiKey',
-        values.ModelDescriptionTranslateApiKey.trim(),
-      ],
-      [
         'ModelDescriptionTranslateModel',
         values.ModelDescriptionTranslateModel.trim(),
       ],
@@ -154,6 +153,11 @@ export function ModelDescriptionLocalizationSection({ defaultValues }: Props) {
         values.ModelDescriptionTranslateLocales.trim(),
       ],
     ]
+    // 掩码串（展示态）整条跳过：既不能用掩码覆盖真密钥，也不能把空串
+    // 当成「清空密钥」提交，否则每次保存都会把已配置的翻译密钥抹掉。
+    if (!isMaskedSecret(translateApiKey)) {
+      entries.push(['ModelDescriptionTranslateApiKey', translateApiKey])
+    }
     for (const [key, value] of entries) {
       updateOption.mutate({ key, value })
     }
