@@ -34,11 +34,12 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
-import { formatNumber } from '@/lib/format'
+import { formatLocalCurrencyAmount } from '@/lib/currency'
 import { cn } from '@/lib/utils'
 
 import {
-  formatCurrency,
+  formatCNYAmount,
+  formatPaymentAmount,
   getDiscountLabel,
   getPaymentIcon,
   getMinTopupAmount,
@@ -67,6 +68,8 @@ interface RechargeFormCardProps {
   onRetryCalculate?: () => void
   onPaymentMethodSelect: (method: PaymentMethod) => void
   paymentLoading: string | null
+  /** 当前选中的支付方式——「应付金额」按它的通道决定币种（人民币/美元）。 */
+  selectedPaymentMethod?: PaymentMethod
   redemptionCode: string
   onRedemptionCodeChange: (code: string) => void
   onRedeem: () => void
@@ -89,16 +92,21 @@ interface RechargeFormCardProps {
 /**
  * 「应付金额」展示。计价中显示骨架；计价失败显示可点的重试入口 ——
  * 绝不用 0 元冒充一次成功的计价（0 是合法的「无需付款」）。
+ *
+ * 币种由支付通道决定（formatPaymentAmount）：易支付 / 官方直连支付宝·微信
+ * 恒为人民币，Stripe/Waffo/Creem 为美元——不跟随 quotaDisplayType。
  */
 function PayableAmountValue({
   calculating,
   calculatingError,
   paymentAmount,
+  paymentType,
   onRetryCalculate,
 }: {
   calculating: boolean
-  calculatingError: boolean
+  calculatingError?: boolean
   paymentAmount: number
+  paymentType: string | undefined
   onRetryCalculate?: () => void
 }) {
   const { t } = useTranslation()
@@ -119,7 +127,7 @@ function PayableAmountValue({
 
   return (
     <span className='text-sm font-semibold'>
-      {formatCurrency(paymentAmount)}
+      {formatPaymentAmount(paymentAmount, paymentType)}
     </span>
   )
 }
@@ -137,6 +145,7 @@ export function RechargeFormCard({
   onRetryCalculate,
   onPaymentMethodSelect,
   paymentLoading,
+  selectedPaymentMethod,
   redemptionCode,
   onRedemptionCodeChange,
   onRedeem,
@@ -306,7 +315,11 @@ export function RechargeFormCard({
                         >
                           <div className='flex w-full items-center justify-between'>
                             <div className='text-base font-semibold sm:text-lg'>
-                              {formatNumber(displayValue)}
+                              {formatLocalCurrencyAmount(displayValue, {
+                                digitsLarge: 2,
+                                digitsSmall: 2,
+                                abbreviate: false,
+                              })}
                             </div>
                             {hasDiscount && (
                               <div className='text-xs font-medium text-green-600'>
@@ -320,8 +333,8 @@ export function RechargeFormCard({
                                 t={t}
                                 i18nKey='Pay {{amount}} <savings>• Save {{saved}}</savings>'
                                 values={{
-                                  amount: formatCurrency(actualPrice),
-                                  saved: formatCurrency(savedAmount),
+                                  amount: formatCNYAmount(actualPrice),
+                                  saved: formatCNYAmount(savedAmount),
                                 }}
                                 components={{
                                   savings: <span className='text-green-600' />,
@@ -329,7 +342,7 @@ export function RechargeFormCard({
                               />
                             ) : (
                               t('Pay {{amount}}', {
-                                amount: formatCurrency(actualPrice),
+                                amount: formatCNYAmount(actualPrice),
                               })
                             )}
                           </div>
@@ -365,6 +378,7 @@ export function RechargeFormCard({
                       calculating={calculating}
                       calculatingError={Boolean(calculatingError)}
                       paymentAmount={paymentAmount}
+                      paymentType={selectedPaymentMethod?.type}
                       onRetryCalculate={onRetryCalculate}
                     />
                   </div>

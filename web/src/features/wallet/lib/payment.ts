@@ -25,6 +25,7 @@ import {
   DEFAULT_MIN_TOPUP,
 } from '../constants'
 import type { PaymentMethod, PresetAmount, TopupInfo } from '../types'
+import { formatCNYAmount } from './format'
 import { resolvePaymentRedirectUrl } from './payment-redirect'
 
 // ============================================================================
@@ -162,6 +163,46 @@ export function isWechatPayWebPayment(paymentType: string): boolean {
  */
 export function isCnWebPayment(paymentType: string): boolean {
   return isAlipayWebPayment(paymentType) || isWechatPayWebPayment(paymentType)
+}
+
+/**
+ * Format a payable amount with the symbol of the currency it is actually
+ * charged in — the currency is decided by the payment channel, NOT by the
+ * admin's quotaDisplayType:
+ *
+ * - regular（易支付 Epay / 官方直连支付宝·微信）→ 人民币 ¥：
+ *   后端 getPayMoney = amount × Price（Price 是每美元额度的人民币价），
+ *   下单金额原样提交给境内网关，恒为人民币。
+ * - stripe / waffo / waffo_pancake / creem → 美元 $：境外网关以美元结算。
+ *
+ * 历史包袱：这些金额曾用不带符号的 formatCurrency 或跟随 quotaDisplayType 的
+ * formatLocalCurrencyAmount 展示，系统配 USD 显示时会把人民币金额显示成
+ * `$73`，与真实扣款币种不符。
+ */
+export function formatPaymentAmount(
+  amount: number | string,
+  paymentType: string | undefined
+): string {
+  const isUsdChannel =
+    isStripePayment(paymentType ?? '') ||
+    isWaffoPayment(paymentType ?? '') ||
+    isWaffoPancakePayment(paymentType ?? '') ||
+    paymentType === PAYMENT_TYPES.CREEM
+
+  if (isUsdChannel) {
+    const numeric =
+      typeof amount === 'number' ? amount : Number.parseFloat(String(amount))
+    if (!Number.isFinite(numeric)) return '-'
+    return new Intl.NumberFormat(undefined, {
+      style: 'currency',
+      currency: 'USD',
+      currencyDisplay: 'narrowSymbol',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: Math.abs(numeric) >= 1 ? 2 : 4,
+    }).format(numeric)
+  }
+
+  return formatCNYAmount(amount)
 }
 
 /**

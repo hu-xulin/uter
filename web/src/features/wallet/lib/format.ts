@@ -64,6 +64,29 @@ export function formatCurrency(amount: number | string): string {
 }
 
 /**
+ * Format an amount in CNY (RMB), always with the ¥ symbol.
+ *
+ * 为什么不能跟随 quotaDisplayType：regular 通道（易支付 Epay / 官方直连
+ * 支付宝·微信支付）的应付金额由后端 `getPayMoney = amount × Price` 得出，
+ * `Price` 是「每 1 美元额度的人民币价」（默认 7.3），下单时原样作为
+ * total_amount 提交给支付宝/微信——这笔钱恒为人民币。若系统配了 USD 显示，
+ * 跟随配置会显示成 `$73`，与实际扣款（¥73）币种不符，误导用户。
+ */
+export function formatCNYAmount(amount: number | string): string {
+  const numeric =
+    typeof amount === 'number' ? amount : Number.parseFloat(String(amount))
+  if (!Number.isFinite(numeric)) return '-'
+
+  return new Intl.NumberFormat(undefined, {
+    style: 'currency',
+    currency: 'CNY',
+    currencyDisplay: 'narrowSymbol',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: Math.abs(numeric) >= 1 ? 2 : 4,
+  }).format(numeric)
+}
+
+/**
  * Get discount label for display (e.g., "20% OFF")
  */
 export function getDiscountLabel(discount: number, t: TFunction): string {
