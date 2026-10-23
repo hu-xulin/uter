@@ -39,6 +39,7 @@ var DefaultCollapseSidebar = false // default value of collapse sidebar
 
 var SessionSecret = uuid.New().String()
 var CryptoSecret = uuid.New().String()
+
 // DefaultLanguage 是 DEFAULT_LANGUAGE 环境变量：后端日志/通知/客户端错误的默认语言。
 var DefaultLanguage string
 var SessionCookieSecure = false
