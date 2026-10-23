@@ -7,6 +7,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/gin-gonic/gin"
 	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/constant"
 	"github.com/uter-ai/uter/pkg/billingexpr"
@@ -14,7 +15,6 @@ import (
 	"github.com/uter-ai/uter/relay/helper"
 	"github.com/uter-ai/uter/relaykit/types"
 	"github.com/uter-ai/uter/service"
-	"github.com/gin-gonic/gin"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -67,10 +67,10 @@ func (s *recordedSettlement) Settle(quota int) error {
 	s.settled = append(s.settled, quota)
 	return nil
 }
-func (s *recordedSettlement) Refund(*gin.Context)    { s.refunded = true }
-func (*recordedSettlement) NeedsRefund() bool        { return false }
-func (*recordedSettlement) GetPreConsumedQuota() int { return 0 }
-func (*recordedSettlement) Reserve(int) error        { return nil }
+func (s *recordedSettlement) Refund(*gin.Context)         { s.refunded = true }
+func (*recordedSettlement) NeedsRefund() bool             { return false }
+func (*recordedSettlement) GetPreConsumedQuota() int      { return 0 }
+func (*recordedSettlement) Reserve(int) error             { return nil }
 func (*recordedSettlement) ReserveBeforeSubmit(int) error { return nil }
 
 // /v1/tools/search and /v1/tools/fetch follow /v1/alpha/search: the raw body
