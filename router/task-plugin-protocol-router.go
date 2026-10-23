@@ -3,11 +3,11 @@ package router
 import (
 	"fmt"
 
+	"github.com/gin-gonic/gin"
 	"github.com/uter-ai/uter/controller"
 	"github.com/uter-ai/uter/middleware"
 	pluginruntime "github.com/uter-ai/uter/pkg/jsplugin"
 	"github.com/uter-ai/uter/relaykit/types"
-	"github.com/gin-gonic/gin"
 )
 
 func SetTaskPluginProtocolRouter(router *gin.Engine) {
