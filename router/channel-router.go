@@ -4,10 +4,10 @@ import (
 	"net/http"
 	"path"
 
+	"github.com/gin-gonic/gin"
 	"github.com/uter-ai/uter/controller"
 	"github.com/uter-ai/uter/middleware"
 	"github.com/uter-ai/uter/service/authz"
-	"github.com/gin-gonic/gin"
 )
 
 type permissionRoute struct {
