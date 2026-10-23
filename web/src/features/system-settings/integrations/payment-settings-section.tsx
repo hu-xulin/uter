@@ -49,6 +49,7 @@ import { Switch } from '@/components/ui/switch'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { formatUserId } from '@/lib/format'
 import { handleServerError } from '@/lib/handle-server-error'
+import { isMaskedSecret, maskSecret } from '@/lib/secret'
 import { cn } from '@/lib/utils'
 
 import { confirmPaymentCompliance } from '../api'
@@ -61,10 +62,7 @@ import { SettingsPageFormActions } from '../components/settings-page-context'
 import { SettingsSection } from '../components/settings-section'
 import { useUpdateOption } from '../hooks/use-update-option'
 import { safeNumberFieldProps } from '../utils/numeric-field'
-import {
-  AlipaySettingsSection,
-  type AlipaySettingsValues,
-} from './alipay-settings-section'
+import { AlipaySettingsSection } from './alipay-settings-section'
 import { AmountDiscountVisualEditor } from './amount-discount-visual-editor'
 import { AmountOptionsVisualEditor } from './amount-options-visual-editor'
 import { CreemProductsVisualEditor } from './creem-products-visual-editor'
@@ -86,10 +84,7 @@ import {
   WaffoSettingsSection,
   type WaffoSettingsValues,
 } from './waffo-settings-section'
-import {
-  WechatPaySettingsSection,
-  type WechatPaySettingsValues,
-} from './wechat-pay-settings-section'
+import { WechatPaySettingsSection } from './wechat-pay-settings-section'
 
 function isHttpOriginUrl(value: string) {
   const trimmed = value.trim()
@@ -193,6 +188,19 @@ const paymentSchema = z.object({
   WaffoPancakeMerchantID: z.string(),
   WaffoPancakePrivateKey: z.string(),
   WaffoPancakeReturnURL: z.string(),
+  // 支付宝与微信支付（官方直连）的字段同样由本表单持有：页级动作区是 portal，
+  // 子配置段若自带表单就会再渲染一个「保存所有设置」按钮，且会形成 form 嵌套 form。
+  AlipayEnabled: z.boolean(),
+  AlipayAppId: z.string(),
+  AlipayPrivateKey: z.string(),
+  AlipayPublicKey: z.string(),
+  WechatPayEnabled: z.boolean(),
+  WechatPayMchId: z.string(),
+  WechatPayAppId: z.string(),
+  WechatPayApiV3Key: z.string(),
+  WechatPaySerialNo: z.string(),
+  WechatPayPrivateKey: z.string(),
+  WechatPayPublicKey: z.string(),
 })
 
 type PaymentFormValues = z.infer<typeof paymentSchema>
@@ -218,8 +226,6 @@ type PaymentSettingsSectionProps = {
   waffoPancakeDefaultValues: WaffoPancakeSettingsValues
   waffoPancakeProvisionedStoreID?: string
   waffoPancakeProvisionedProductID?: string
-  alipayDefaultValues: AlipaySettingsValues
-  wechatPayDefaultValues: WechatPaySettingsValues
   complianceDefaults: PaymentComplianceDefaults
 }
 
@@ -238,8 +244,6 @@ export function PaymentSettingsSection({
   waffoPancakeDefaultValues,
   waffoPancakeProvisionedStoreID,
   waffoPancakeProvisionedProductID,
-  alipayDefaultValues,
-  wechatPayDefaultValues,
   complianceDefaults,
 }: PaymentSettingsSectionProps) {
   const { t } = useTranslation()
@@ -479,6 +483,17 @@ export function PaymentSettingsSection({
       WaffoPancakeReturnURL: removeTrailingSlash(
         values.WaffoPancakeReturnURL.trim()
       ),
+      AlipayEnabled: values.AlipayEnabled,
+      AlipayAppId: values.AlipayAppId.trim(),
+      AlipayPrivateKey: values.AlipayPrivateKey.trim(),
+      AlipayPublicKey: values.AlipayPublicKey.trim(),
+      WechatPayEnabled: values.WechatPayEnabled,
+      WechatPayMchId: values.WechatPayMchId.trim(),
+      WechatPayAppId: values.WechatPayAppId.trim(),
+      WechatPayApiV3Key: values.WechatPayApiV3Key.trim(),
+      WechatPaySerialNo: values.WechatPaySerialNo.trim(),
+      WechatPayPrivateKey: values.WechatPayPrivateKey.trim(),
+      WechatPayPublicKey: values.WechatPayPublicKey.trim(),
     }
 
     const initial = {
@@ -529,6 +544,17 @@ export function PaymentSettingsSection({
       WaffoPancakeReturnURL: removeTrailingSlash(
         initialRef.current.WaffoPancakeReturnURL.trim()
       ),
+      AlipayEnabled: initialRef.current.AlipayEnabled,
+      AlipayAppId: initialRef.current.AlipayAppId.trim(),
+      AlipayPrivateKey: initialRef.current.AlipayPrivateKey.trim(),
+      AlipayPublicKey: initialRef.current.AlipayPublicKey.trim(),
+      WechatPayEnabled: initialRef.current.WechatPayEnabled,
+      WechatPayMchId: initialRef.current.WechatPayMchId.trim(),
+      WechatPayAppId: initialRef.current.WechatPayAppId.trim(),
+      WechatPayApiV3Key: initialRef.current.WechatPayApiV3Key.trim(),
+      WechatPaySerialNo: initialRef.current.WechatPaySerialNo.trim(),
+      WechatPayPrivateKey: initialRef.current.WechatPayPrivateKey.trim(),
+      WechatPayPublicKey: initialRef.current.WechatPayPublicKey.trim(),
     }
 
     const updates: Array<{ key: string; value: string | number | boolean }> = []
@@ -541,7 +567,11 @@ export function PaymentSettingsSection({
       updates.push({ key: 'EpayId', value: sanitized.EpayId })
     }
 
-    if (sanitized.EpayKey && sanitized.EpayKey !== initial.EpayKey) {
+    if (
+      sanitized.EpayKey &&
+      !isMaskedSecret(sanitized.EpayKey) &&
+      sanitized.EpayKey !== initial.EpayKey
+    ) {
       updates.push({ key: 'EpayKey', value: sanitized.EpayKey })
     }
 
@@ -596,6 +626,7 @@ export function PaymentSettingsSection({
 
     if (
       sanitized.StripeApiSecret &&
+      !isMaskedSecret(sanitized.StripeApiSecret) &&
       sanitized.StripeApiSecret !== initial.StripeApiSecret
     ) {
       updates.push({ key: 'StripeApiSecret', value: sanitized.StripeApiSecret })
@@ -603,6 +634,7 @@ export function PaymentSettingsSection({
 
     if (
       sanitized.StripeWebhookSecret &&
+      !isMaskedSecret(sanitized.StripeWebhookSecret) &&
       sanitized.StripeWebhookSecret !== initial.StripeWebhookSecret
     ) {
       updates.push({
@@ -635,6 +667,7 @@ export function PaymentSettingsSection({
 
     if (
       sanitized.CreemApiKey &&
+      !isMaskedSecret(sanitized.CreemApiKey) &&
       sanitized.CreemApiKey !== initial.CreemApiKey
     ) {
       updates.push({ key: 'CreemApiKey', value: sanitized.CreemApiKey })
@@ -693,33 +726,50 @@ export function PaymentSettingsSection({
       updates.push({ key: 'WaffoReturnUrl', value: sanitized.WaffoReturnUrl })
     }
 
-    if (sanitized.WaffoPublicCert !== initial.WaffoPublicCert) {
+    // 公钥证书与私钥同等待遇：掩码串是后端下发的展示值，不是新值。
+    if (
+      sanitized.WaffoPublicCert &&
+      !isMaskedSecret(sanitized.WaffoPublicCert)
+    ) {
       updates.push({ key: 'WaffoPublicCert', value: sanitized.WaffoPublicCert })
     }
 
-    if (sanitized.WaffoSandboxPublicCert !== initial.WaffoSandboxPublicCert) {
+    if (
+      sanitized.WaffoSandboxPublicCert &&
+      !isMaskedSecret(sanitized.WaffoSandboxPublicCert)
+    ) {
       updates.push({
         key: 'WaffoSandboxPublicCert',
         value: sanitized.WaffoSandboxPublicCert,
       })
     }
 
-    if (sanitized.WaffoApiKey) {
+    // 掩码串是后端下发的展示值，不是新密钥：一律不当新值提交。
+    if (sanitized.WaffoApiKey && !isMaskedSecret(sanitized.WaffoApiKey)) {
       updates.push({ key: 'WaffoApiKey', value: sanitized.WaffoApiKey })
     }
 
-    if (sanitized.WaffoPrivateKey) {
+    if (
+      sanitized.WaffoPrivateKey &&
+      !isMaskedSecret(sanitized.WaffoPrivateKey)
+    ) {
       updates.push({ key: 'WaffoPrivateKey', value: sanitized.WaffoPrivateKey })
     }
 
-    if (sanitized.WaffoSandboxApiKey) {
+    if (
+      sanitized.WaffoSandboxApiKey &&
+      !isMaskedSecret(sanitized.WaffoSandboxApiKey)
+    ) {
       updates.push({
         key: 'WaffoSandboxApiKey',
         value: sanitized.WaffoSandboxApiKey,
       })
     }
 
-    if (sanitized.WaffoSandboxPrivateKey) {
+    if (
+      sanitized.WaffoSandboxPrivateKey &&
+      !isMaskedSecret(sanitized.WaffoSandboxPrivateKey)
+    ) {
       updates.push({
         key: 'WaffoSandboxPrivateKey',
         value: sanitized.WaffoSandboxPrivateKey,
@@ -733,9 +783,89 @@ export function PaymentSettingsSection({
       updates.push({ key: 'WaffoPayMethods', value: sanitized.WaffoPayMethods })
     }
 
+    if (sanitized.AlipayEnabled !== initial.AlipayEnabled) {
+      updates.push({ key: 'AlipayEnabled', value: sanitized.AlipayEnabled })
+    }
+
+    if (sanitized.AlipayAppId !== initial.AlipayAppId) {
+      updates.push({ key: 'AlipayAppId', value: sanitized.AlipayAppId })
+    }
+
+    // 密钥字段：掩码串是后端下发的展示值，不是新密钥，一律跳过以保留库中已存值。
+    if (
+      sanitized.AlipayPrivateKey !== initial.AlipayPrivateKey &&
+      !isMaskedSecret(sanitized.AlipayPrivateKey)
+    ) {
+      updates.push({
+        key: 'AlipayPrivateKey',
+        value: sanitized.AlipayPrivateKey,
+      })
+    }
+
+    if (
+      sanitized.AlipayPublicKey !== initial.AlipayPublicKey &&
+      !isMaskedSecret(sanitized.AlipayPublicKey)
+    ) {
+      updates.push({ key: 'AlipayPublicKey', value: sanitized.AlipayPublicKey })
+    }
+
+    if (sanitized.WechatPayEnabled !== initial.WechatPayEnabled) {
+      updates.push({
+        key: 'WechatPayEnabled',
+        value: sanitized.WechatPayEnabled,
+      })
+    }
+
+    if (sanitized.WechatPayMchId !== initial.WechatPayMchId) {
+      updates.push({ key: 'WechatPayMchId', value: sanitized.WechatPayMchId })
+    }
+
+    if (sanitized.WechatPayAppId !== initial.WechatPayAppId) {
+      updates.push({ key: 'WechatPayAppId', value: sanitized.WechatPayAppId })
+    }
+
+    if (
+      sanitized.WechatPayApiV3Key !== initial.WechatPayApiV3Key &&
+      !isMaskedSecret(sanitized.WechatPayApiV3Key)
+    ) {
+      updates.push({
+        key: 'WechatPayApiV3Key',
+        value: sanitized.WechatPayApiV3Key,
+      })
+    }
+
+    if (sanitized.WechatPaySerialNo !== initial.WechatPaySerialNo) {
+      updates.push({
+        key: 'WechatPaySerialNo',
+        value: sanitized.WechatPaySerialNo,
+      })
+    }
+
+    if (
+      sanitized.WechatPayPrivateKey !== initial.WechatPayPrivateKey &&
+      !isMaskedSecret(sanitized.WechatPayPrivateKey)
+    ) {
+      updates.push({
+        key: 'WechatPayPrivateKey',
+        value: sanitized.WechatPayPrivateKey,
+      })
+    }
+
+    if (
+      sanitized.WechatPayPublicKey !== initial.WechatPayPublicKey &&
+      !isMaskedSecret(sanitized.WechatPayPublicKey)
+    ) {
+      updates.push({
+        key: 'WechatPayPublicKey',
+        value: sanitized.WechatPayPublicKey,
+      })
+    }
+
     const hasWaffoPancakeChanges =
       sanitized.WaffoPancakeMerchantID !== initial.WaffoPancakeMerchantID ||
-      sanitized.WaffoPancakePrivateKey.length > 0 ||
+      // 掩码串代表「已保存但未修改」，不构成变更。
+      (sanitized.WaffoPancakePrivateKey.length > 0 &&
+        !isMaskedSecret(sanitized.WaffoPancakePrivateKey)) ||
       sanitized.WaffoPancakeReturnURL !== initial.WaffoPancakeReturnURL ||
       waffoPancakeSelection.storeID !== waffoPancakeSavedBinding.storeID ||
       waffoPancakeSelection.productID !== waffoPancakeSavedBinding.productID
@@ -748,6 +878,30 @@ export function PaymentSettingsSection({
     for (const update of updates) {
       await updateOption.mutateAsync(update)
     }
+    // 保存后密钥字段回到掩码展示态：明文不留在表单内存里，也不会在
+    // 下一次保存时被当作「未修改值」与掩码串比对。与 SecretInput 的约定一致。
+    form.reset({
+      ...values,
+      EpayKey: maskSecret(values.EpayKey),
+      StripeApiSecret: maskSecret(values.StripeApiSecret),
+      StripeWebhookSecret: maskSecret(values.StripeWebhookSecret),
+      CreemApiKey: maskSecret(values.CreemApiKey),
+      CreemWebhookSecret: maskSecret(values.CreemWebhookSecret),
+      WaffoApiKey: maskSecret(values.WaffoApiKey),
+      WaffoPrivateKey: maskSecret(values.WaffoPrivateKey),
+      // 公钥证书与私钥同等待遇：保存后同样只留掩码串。
+      WaffoPublicCert: maskSecret(values.WaffoPublicCert),
+      WaffoSandboxApiKey: maskSecret(values.WaffoSandboxApiKey),
+      WaffoSandboxPrivateKey: maskSecret(values.WaffoSandboxPrivateKey),
+      WaffoSandboxPublicCert: maskSecret(values.WaffoSandboxPublicCert),
+      WaffoPancakePrivateKey: maskSecret(values.WaffoPancakePrivateKey),
+      // 支付宝 / 微信支付的密钥与证书同等待遇：保存后只留掩码串，明文不驻留表单。
+      AlipayPrivateKey: maskSecret(values.AlipayPrivateKey),
+      AlipayPublicKey: maskSecret(values.AlipayPublicKey),
+      WechatPayApiV3Key: maskSecret(values.WechatPayApiV3Key),
+      WechatPayPrivateKey: maskSecret(values.WechatPayPrivateKey),
+      WechatPayPublicKey: maskSecret(values.WechatPayPublicKey),
+    })
 
     if (!hasWaffoPancakeChanges) {
       return
@@ -766,7 +920,11 @@ export function PaymentSettingsSection({
     try {
       const body = await saveWaffoPancakeConfig({
         merchantID: sanitized.WaffoPancakeMerchantID,
-        privateKey: sanitized.WaffoPancakePrivateKey,
+        // 私钥未修改（展示态掩码串）时传空，让后端回落到已保存凭据；
+        // 否则等于把掩码串当新密钥去校验，必然失败。
+        privateKey: isMaskedSecret(sanitized.WaffoPancakePrivateKey)
+          ? ''
+          : sanitized.WaffoPancakePrivateKey,
         returnURL: sanitized.WaffoPancakeReturnURL,
         storeID: waffoPancakeSelection.storeID,
         productID: waffoPancakeSelection.productID,

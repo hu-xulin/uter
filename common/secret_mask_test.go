@@ -75,6 +75,10 @@ func TestIsSecretOptionKey(t *testing.T) {
 		// 支付 / 签名凭据：此前未登记，GET /api/option/ 会明文下发。
 		"EpayKey",
 		"AlipayPrivateKey",
+		// 对端公钥 / 证书与私钥同等待遇（见 secret_option_keys.go 的说明）。
+		"AlipayPublicKey",
+		"WaffoPublicCert",
+		"WaffoSandboxPublicCert",
 		"StripeApiSecret",
 		"StripeWebhookSecret",
 		"CreemWebhookSecret",
@@ -100,7 +104,6 @@ func TestIsSecretOptionKey(t *testing.T) {
 	// 公开值必须按普通文本原样展示，否则管理员无法核对。
 	publicKeys := []string{
 		"TurnstileSiteKey", // Cloudflare设计上就是公开值
-		"AlipayPublicKey",  // 支付宝公钥，用于校验回调签名，非机密
 		"StripePublishableKey",
 		"GitHubClientId",
 		"GitHubOAuthEnabled",
@@ -133,7 +136,9 @@ func TestSecretOptionKeySuffixFallbackIsExhaustive(t *testing.T) {
 	for _, key := range []string{
 		"EpayKey",
 		"AlipayPrivateKey",
-		"AlipayPublicKey", //豁免
+		"AlipayPublicKey",
+		"WaffoPublicCert",
+		"WaffoSandboxPublicCert",
 		"StripeApiSecret",
 		"StripeWebhookSecret",
 		"StripeSecretKey",
@@ -149,7 +154,7 @@ func TestSecretOptionKeySuffixFallbackIsExhaustive(t *testing.T) {
 		"WorkerValidKey",
 		"WechatPayApiV3Key",
 		"WechatPayPrivateKey",
-		"WechatPayPlatformCert",
+		"WechatPayPublicKey",
 		"TurnstileSecretKey",
 		"TurnstileSiteKey", // 豁免
 	} {

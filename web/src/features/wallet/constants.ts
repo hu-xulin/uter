@@ -32,11 +32,12 @@ export const DEFAULT_PRESET_MULTIPLIERS = [1, 5, 10, 30, 50, 100, 300, 500]
 export const PAYMENT_TYPES = {
   ALIPAY: 'alipay',
   WECHAT: 'wxpay',
-  // 官方直连 · 网站支付（Web 收银台：PC 扫码 / 移动端跳转 App）
+  // 官方直连 · 网站支付（Web 收银台）：
+  // 支付宝走「电脑网站支付」（PC 跳转页面收银台）与「手机网站支付」（移动端跳转支付方 App / H5）；
+  // 微信支付走 Native 扫码（PC）与 H5 支付（移动端）。
   ALIPAY_WEB: 'alipay_web',
   WECHAT_PAY_WEB: 'wechat_web',
-  // 官方直连 · 小程序支付：保留给小程序客户端，Web 不下发
-  ALIPAY_MINIPROGRAM: 'alipay_miniprogram',
+  // 官方直连 · 小程序支付：仅微信保留给小程序客户端，Web 不下发
   WECHAT_PAY_MINIPROGRAM: 'wechat_miniprogram',
   STRIPE: 'stripe',
   CREEM: 'creem',
@@ -57,7 +58,6 @@ export const PAYMENT_ICON_COLORS = {
   [PAYMENT_TYPES.WECHAT]: '#07C160',
   [PAYMENT_TYPES.ALIPAY_WEB]: '#1677FF',
   [PAYMENT_TYPES.WECHAT_PAY_WEB]: '#07C160',
-  [PAYMENT_TYPES.ALIPAY_MINIPROGRAM]: '#1677FF',
   [PAYMENT_TYPES.WECHAT_PAY_MINIPROGRAM]: '#07C160',
   [PAYMENT_TYPES.STRIPE]: '#635BFF',
   [PAYMENT_TYPES.CREEM]: '#6366F1',

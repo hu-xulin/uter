@@ -16,15 +16,12 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
+import { useFormContext, useFormState, useWatch } from 'react-hook-form'
 import { toast } from 'sonner'
-import { z } from 'zod'
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import {
-  Form,
   FormControl,
   FormDescription,
   FormField,
@@ -33,309 +30,313 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { SecretFileInput } from '@/components/ui/secret-file-input'
 import { SecretInput } from '@/components/ui/secret-input'
 import { Switch } from '@/components/ui/switch'
-import { Textarea } from '@/components/ui/textarea'
-import { maskSecret } from '@/lib/secret'
 
 import {
-  SettingsForm,
   SettingsSwitchContent,
   SettingsSwitchItem,
 } from '../components/settings-form-layout'
-import { SettingsPageFormActions } from '../components/settings-page-context'
-import { useUpdateOption } from '../hooks/use-update-option'
 
-export type WechatPaySettingsValues = {
-  enabled: boolean
-  mchId: string
-  appId: string
-  apiV3Key: string
-  serialNo: string
-  privateKey: string
-  platformCert: string
+/**
+ * 微信支付（APIv3）在「支付网关」表单里注册的字段。
+ *
+ * 这些字段由 `PaymentSettingsSection` 的父表单持有，本组件只负责渲染：
+ * 独立表单 + 独立保存按钮会在页面头部渲染出**第二个**「保存所有设置」按钮
+ * （页级动作区是 portal，父子各渲染一份就会重复），并且会在父表单内部
+ * 形成 `<form>` 嵌套 `<form>` 的非法结构。改由父表单统一持有后，页头只保留
+ * 一个保存按钮，一次提交覆盖全部网关页签。
+ */
+export interface WechatPayFormValues {
+  WechatPayEnabled: boolean
+  WechatPayMchId: string
+  WechatPayAppId: string
+  WechatPayApiV3Key: string
+  WechatPaySerialNo: string
+  WechatPayPrivateKey: string
+  WechatPayPublicKey: string
 }
 
-const wechatPaySchema = z.object({
-  enabled: z.boolean(),
-  mchId: z.string().optional(),
-  appId: z.string().optional(),
-  apiV3Key: z.string().optional(),
-  serialNo: z.string().optional(),
-  privateKey: z.string().optional(),
-  platformCert: z.string().optional(),
-})
-
-type FormValues = z.input<typeof wechatPaySchema>
-
-export function WechatPaySettingsSection({
-  defaultValues,
-}: {
-  defaultValues: WechatPaySettingsValues
-}) {
+export function WechatPaySettingsSection() {
   const { t } = useTranslation()
-  const updateOption = useUpdateOption()
-
-  const form = useForm<FormValues>({
-    resolver: zodResolver(wechatPaySchema),
-    defaultValues: {
-      enabled: defaultValues.enabled,
-      mchId: defaultValues.mchId ?? '',
-      appId: defaultValues.appId ?? '',
-      apiV3Key: defaultValues.apiV3Key ?? '',
-      serialNo: defaultValues.serialNo ?? '',
-      privateKey: defaultValues.privateKey ?? '',
-      platformCert: defaultValues.platformCert ?? '',
-    },
-  })
-
-  const { isDirty, isSubmitting } = form.formState
-  const enabled = form.watch('enabled')
-
-  async function onSubmit(values: FormValues) {
-    const updates: Array<{ key: string; value: string }> = []
-
-    if (values.enabled !== defaultValues.enabled) {
-      updates.push({ key: 'WechatPayEnabled', value: String(values.enabled) })
-    }
-    if ((values.mchId ?? '') !== (defaultValues.mchId ?? '')) {
-      updates.push({ key: 'WechatPayMchId', value: values.mchId ?? '' })
-    }
-    if ((values.appId ?? '') !== (defaultValues.appId ?? '')) {
-      updates.push({ key: 'WechatPayAppId', value: values.appId ?? '' })
-    }
-    if ((values.apiV3Key ?? '') !== (defaultValues.apiV3Key ?? '')) {
-      updates.push({ key: 'WechatPayApiV3Key', value: values.apiV3Key ?? '' })
-    }
-    if ((values.serialNo ?? '') !== (defaultValues.serialNo ?? '')) {
-      updates.push({ key: 'WechatPaySerialNo', value: values.serialNo ?? '' })
-    }
-    if ((values.privateKey ?? '') !== (defaultValues.privateKey ?? '')) {
-      updates.push({
-        key: 'WechatPayPrivateKey',
-        value: values.privateKey ?? '',
-      })
-    }
-    if ((values.platformCert ?? '') !== (defaultValues.platformCert ?? '')) {
-      updates.push({
-        key: 'WechatPayPlatformCert',
-        value: values.platformCert ?? '',
-      })
-    }
-
-    if (updates.length === 0) {
-      toast.info(t('No changes to save'))
-      return
-    }
-    for (const update of updates) {
-      await updateOption.mutateAsync(update)
-    }
-    // 保存后把三个密钥字段重置为掩码串展示（与 uter 密钥规则一致：
-    // 展示态只显示前4后4，真实值留在后端；再次保存时后端会识别掩码串并保留原密钥）。
-    form.reset({
-      ...values,
-      apiV3Key: maskSecret(values.apiV3Key ?? ''),
-      privateKey: maskSecret(values.privateKey ?? ''),
-      platformCert: maskSecret(values.platformCert ?? ''),
-    })
-    toast.success(t('Saved successfully'))
-  }
+  const { control } = useFormContext<WechatPayFormValues>()
+  const { isSubmitting } = useFormState()
+  const enabled = useWatch({ control, name: 'WechatPayEnabled' })
 
   return (
-    <Form {...form}>
-      <SettingsForm onSubmit={form.handleSubmit(onSubmit)} autoComplete='off'>
-        <SettingsPageFormActions
-          onSave={form.handleSubmit(onSubmit)}
-          isSaving={updateOption.isPending || isSubmitting}
-          isSaveDisabled={!isDirty}
-          saveLabel={t('Save all settings')}
-        />
+    <div className='space-y-4'>
+      <div>
+        <h3 className='text-lg font-medium'>{t('WeChat Pay Gateway')}</h3>
+        <p className='text-muted-foreground text-sm'>
+          {t('Configuration for WeChat Pay website payment integration')}
+        </p>
+      </div>
 
-        <div className='space-y-4'>
-          <div>
-            <h3 className='text-lg font-medium'>{t('WeChat Pay Gateway')}</h3>
-            <p className='text-muted-foreground text-sm'>
-              {t('Configuration for WeChat Pay website payment integration')}
-            </p>
-          </div>
+      <FormField
+        control={control}
+        name='WechatPayEnabled'
+        render={({ field }) => (
+          <SettingsSwitchItem>
+            <SettingsSwitchContent>
+              <FormLabel>{t('Enable WeChat Pay')}</FormLabel>
+              <FormDescription>
+                {t('Enable official WeChat Pay website payment')}
+              </FormDescription>
+            </SettingsSwitchContent>
+            <FormControl>
+              <Switch
+                checked={field.value}
+                onCheckedChange={(v) => field.onChange(v)}
+                disabled={isSubmitting}
+              />
+            </FormControl>
+          </SettingsSwitchItem>
+        )}
+      />
 
+      {enabled ? (
+        <>
           <FormField
-            control={form.control}
-            name='enabled'
+            control={control}
+            name='WechatPayMchId'
             render={({ field }) => (
-              <SettingsSwitchItem>
-                <SettingsSwitchContent>
-                  <FormLabel>{t('Enable WeChat Pay')}</FormLabel>
-                  <FormDescription>
-                    {t('Enable official WeChat Pay website payment')}
-                  </FormDescription>
-                </SettingsSwitchContent>
+              <FormItem>
+                <FormLabel>{t('Merchant ID')}</FormLabel>
                 <FormControl>
-                  <Switch
-                    checked={field.value}
-                    onCheckedChange={(v) => field.onChange(v)}
-                    disabled={updateOption.isPending || isSubmitting}
+                  <Input
+                    placeholder='1900000000'
+                    autoComplete='off'
+                    {...field}
                   />
                 </FormControl>
-              </SettingsSwitchItem>
+                <FormDescription>
+                  {t('WeChat Pay merchant ID')}
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
             )}
           />
-
-          {enabled ? (
-            <>
-              <FormField
-                control={form.control}
-                name='mchId'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('Merchant ID')}</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder='1900000000'
-                        autoComplete='off'
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormDescription>
-                      {t('WeChat Pay merchant ID')}
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name='appId'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('App ID')}</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder='wx1234567890abcdef'
-                        autoComplete='off'
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormDescription>
-                      {t('Bound website payment AppID')}
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name='apiV3Key'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('APIv3 Key')}</FormLabel>
-                    <FormControl>
-                      <SecretInput
-                        value={String(field.value ?? '')}
-                        onChange={field.onChange}
-                        placeholder='32-byte APIv3 key'
-                      />
-                    </FormControl>
-                    <FormDescription>
-                      {t('32-byte APIv3 key for callback decryption')}
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name='serialNo'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('Certificate Serial No')}</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder='1234567890abcdef1234567890abcdef'
-                        autoComplete='off'
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormDescription>
-                      {t('Merchant API certificate serial number')}
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name='privateKey'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('Merchant Private Key')}</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        placeholder={t('PKCS8 PEM private key')}
-                        rows={3}
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormDescription>
-                      {t('Used to sign payment requests (RSA)')}
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name='platformCert'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      {t('WeChat Pay Platform Certificate')}
-                    </FormLabel>
-                    <FormControl>
-                      <Textarea
-                        placeholder={t('PEM platform certificate')}
-                        rows={3}
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormDescription>
-                      {t('Used to verify async callback signature')}
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <Alert variant='default'>
-                <AlertTitle>{t('Setup notes')}</AlertTitle>
-                <AlertDescription>
-                  <ul className='list-disc space-y-1 pl-5'>
-                    <li>
-                      {t(
-                        'Enable WeChat Pay Native (PC QR) and H5 (mobile) payment products'
-                      )}
-                    </li>
-                    <li>
-                      {t(
-                        'Register the ICP-filed payment domain in the merchant platform'
-                      )}
-                    </li>
-                    <li>
-                      {t(
-                        'Async callback URL is registered automatically by the server'
-                      )}
-                    </li>
-                    <li>
-                      {t(
-                        'Set the payment site address in the General tab when the payment domain differs from the server address.'
-                      )}
-                    </li>
-                  </ul>
-                </AlertDescription>
-              </Alert>
-            </>
-          ) : null}
-        </div>
-      </SettingsForm>
-    </Form>
+          <FormField
+            control={control}
+            name='WechatPayAppId'
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t('App ID')}</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder='wx1234567890abcdef'
+                    autoComplete='off'
+                    {...field}
+                  />
+                </FormControl>
+                <FormDescription>
+                  {t('Bound website payment AppID')}
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={control}
+            name='WechatPayApiV3Key'
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t('APIv3 Key')}</FormLabel>
+                <FormControl>
+                  <SecretInput
+                    value={String(field.value ?? '')}
+                    onChange={field.onChange}
+                    placeholder='32-byte APIv3 key'
+                  />
+                </FormControl>
+                <FormDescription>
+                  {t('32-byte APIv3 key for callback decryption')}
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={control}
+            name='WechatPaySerialNo'
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t('Certificate Serial No')}</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder='1234567890abcdef1234567890abcdef'
+                    autoComplete='off'
+                    {...field}
+                  />
+                </FormControl>
+                <FormDescription>
+                  {t('Merchant API certificate serial number')}
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={control}
+            name='WechatPayPrivateKey'
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>
+                  {t('Merchant Private Key (apiclient_key.pem)')}
+                </FormLabel>
+                <FormControl>
+                  <SecretFileInput
+                    value={field.value ?? ''}
+                    onChange={field.onChange}
+                    expectedPemType={['PRIVATE KEY', 'RSA PRIVATE KEY']}
+                    accept='.pem,.key,.txt,text/plain'
+                    onError={(message) => toast.error(message)}
+                  />
+                </FormControl>
+                <FormDescription>
+                  {t(
+                    'Signs payment requests (RSA). Choose the apiclient_key.pem file from the merchant platform.'
+                  )}
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={control}
+            name='WechatPayPublicKey'
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>
+                  {t('WeChat Pay Public Key (pub_key.pem)')}
+                </FormLabel>
+                <FormControl>
+                  <SecretFileInput
+                    value={field.value ?? ''}
+                    onChange={field.onChange}
+                    expectedPemType={['PUBLIC KEY', 'RSA PUBLIC KEY']}
+                    accept='.pem,.key,.txt,text/plain'
+                    onError={(message) => toast.error(message)}
+                  />
+                </FormControl>
+                <FormDescription>
+                  {t(
+                    'Verifies async callback signatures. Choose the pub_key.pem file from the merchant platform.'
+                  )}
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <Alert variant='default'>
+            <AlertTitle>{t('Setup steps')}</AlertTitle>
+            <AlertDescription>
+              <ol className='list-decimal space-y-2 pl-5'>
+                <li>
+                  <span className='font-medium'>
+                    {t('Enable the payment products')}
+                  </span>
+                  <span className='text-muted-foreground'>
+                    {' — '}
+                    {t(
+                      'Merchant platform → Products → enable “Native Pay” (PC QR) and “H5 Pay” (mobile web).'
+                    )}
+                  </span>
+                </li>
+                <li>
+                  <span className='font-medium'>
+                    {t('Bind the AppID and copy it into “App ID”')}
+                  </span>
+                  <span className='text-muted-foreground'>
+                    {' — '}
+                    {t(
+                      'Products → AppID account management → bind the website app / official account / mini program, then copy its AppID (starts with wx).'
+                    )}
+                  </span>
+                </li>
+                <li>
+                  <span className='font-medium'>
+                    {t('Copy the merchant ID into “Merchant ID”')}
+                  </span>
+                  <span className='text-muted-foreground'>
+                    {' — '}
+                    {t(
+                      'Account center → Merchant info → WeChat Pay merchant ID (10 digits).'
+                    )}
+                  </span>
+                </li>
+                <li>
+                  <span className='font-medium'>
+                    {t('Set the APIv3 key and copy it into “APIv3 Key”')}
+                  </span>
+                  <span className='text-muted-foreground'>
+                    {' — '}
+                    {t(
+                      'Account center → API security → Set APIv3 key. It must be exactly 32 characters; save a copy, it is shown only once.'
+                    )}
+                  </span>
+                </li>
+                <li>
+                  <span className='font-medium'>
+                    {t('Apply for the merchant API certificate')}
+                  </span>
+                  <span className='text-muted-foreground'>
+                    {' — '}
+                    {t(
+                      'Account center → API security → Apply for API certificate. The certificate tool outputs apiclient_key.pem (private key) and a serial number; select apiclient_key.pem in “Merchant Private Key (apiclient_key.pem)” and paste the serial number into “Certificate Serial No”.'
+                    )}
+                  </span>
+                </li>
+                <li>
+                  <span className='font-medium'>
+                    {t('Download the WeChat Pay public key')}
+                  </span>
+                  <span className='text-muted-foreground'>
+                    {' — '}
+                    {t(
+                      'Account center → API security → WeChat Pay public key → download pub_key.pem, then select it in “WeChat Pay Public Key (pub_key.pem)”. This is required: without it every callback fails signature verification and paid orders never credit.'
+                    )}
+                  </span>
+                </li>
+                <li>
+                  <span className='font-medium'>
+                    {t('Register the ICP-filed payment domain')}
+                  </span>
+                  <span className='text-muted-foreground'>
+                    {' — '}
+                    {t(
+                      'Products → Development configuration → H5 pay domain and JSAPI pay authorization directory. The domain must be ICP-filed and its registrant must match the merchant entity.'
+                    )}
+                  </span>
+                </li>
+                <li>
+                  <span className='font-medium'>
+                    {t('Confirm the callback address')}
+                  </span>
+                  <span className='text-muted-foreground'>
+                    {' — '}
+                    {t(
+                      'No manual entry needed: async callbacks go to /api/user/wechat/notify on this server. If the payment domain differs from the server address, set the payment site address in the General tab so the return URL points at the filed domain.'
+                    )}
+                  </span>
+                </li>
+                <li>
+                  <span className='font-medium'>
+                    {t('Turn on the switch and save')}
+                  </span>
+                  <span className='text-muted-foreground'>
+                    {' — '}
+                    {t(
+                      'WeChat Pay only appears in the wallet once the switch is on, every field above is filled, and the APIv3 key is exactly 32 characters.'
+                    )}
+                  </span>
+                </li>
+              </ol>
+            </AlertDescription>
+          </Alert>
+        </>
+      ) : null}
+    </div>
   )
 }

@@ -25,9 +25,9 @@ type TopUp struct {
 	// independently from the local quota-calculation Money field.
 	ProviderAmount   int64  `json:"-" gorm:"not null;default:0"`
 	ProviderCurrency string `json:"-" gorm:"type:varchar(3);not null;default:''"`
-	CreateTime      int64   `json:"create_time"`
-	CompleteTime    int64   `json:"complete_time"`
-	Status          string  `json:"status"`
+	CreateTime       int64  `json:"create_time"`
+	CompleteTime     int64  `json:"complete_time"`
+	Status           string `json:"status"`
 }
 
 const (
@@ -36,14 +36,14 @@ const (
 	PaymentMethodWaffo        = "waffo"
 	PaymentMethodWaffoPancake = "waffo_pancake"
 	PaymentMethodBalance      = "balance"
-	// 网站支付（Web 收银台）：PC 走扫码、移动端跳转支付方 App / H5 收银台。
+	// 网站支付（Web 收银台）：PC 跳转支付宝/微信支付页面收银台，移动端跳转支付方 App / H5 收银台。
 	// 这是面向 Web 站点的主通道——支付发生在浏览器中，不受 Apple IAP 约束，费率约 0.6%。
 	PaymentMethodAlipay    = "alipay_web"
 	PaymentMethodWechatPay = "wechat_web"
-	// 小程序支付：保留给小程序客户端（需 openid / buyer_id）。
+	// 小程序支付：保留给微信/支付宝小程序客户端。
 	// ⚠️ 微信小程序自 2026-04-01 起对虚拟商品强制 wx.requestVirtualPayment（iOS 12% 抽成），
-	// 因此小程序不作为额度充值的主收款口；这两个方法默认不在 Web 支付方式列表中下发。
-	PaymentMethodAlipayMiniProgram    = "alipay_miniprogram"
+	// 因此小程序不作为额度充值的主收款口；该支付方式默认不在 Web 支付方式列表中下发。
+	// 支付宝侧未签约小程序支付，故无对应的 alipay_miniprogram 方法。
 	PaymentMethodWechatPayMiniProgram = "wechat_miniprogram"
 )
 
@@ -327,7 +327,7 @@ func rechargeOfficial(tradeNo string, provider string, actualMethod string, call
 	return false, nil
 }
 
-// RechargeAlipay 完成一笔支付宝当面付订单的充值入账。
+// RechargeAlipay 完成一笔支付宝网站支付（电脑/手机网站支付）订单的充值入账。
 func RechargeAlipay(tradeNo string, actualPaymentMethod string, callerIp string) (alreadyDone bool, err error) {
 	return rechargeOfficial(tradeNo, PaymentProviderAlipay, actualPaymentMethod, callerIp)
 }
@@ -410,35 +410,16 @@ func topUpQueryCutoff() int64 {
 }
 
 func GetUserTopUps(userId int, pageInfo *common.PageInfo) (topups []*TopUp, total int64, err error) {
-	// Start transaction
-	tx := DB.Begin()
-	if tx.Error != nil {
-		return nil, 0, tx.Error
-	}
-	defer func() {
-		if r := recover(); r != nil {
-			tx.Rollback()
-		}
-	}()
-
+	// 只读列表查询不开事务：没有写操作需要原子性，省掉两个往返与一段连接占用。
 	cutoff := topUpQueryCutoff()
 
-	// Get total count within transaction
-	err = tx.Model(&TopUp{}).Where("user_id = ? AND create_time >= ?", userId, cutoff).Count(&total).Error
+	err = DB.Model(&TopUp{}).Where("user_id = ? AND create_time >= ?", userId, cutoff).Count(&total).Error
 	if err != nil {
-		tx.Rollback()
 		return nil, 0, err
 	}
 
-	// Get paginated topups within same transaction
-	err = tx.Where("user_id = ? AND create_time >= ?", userId, cutoff).Order("id desc").Limit(pageInfo.GetPageSize()).Offset(pageInfo.GetStartIdx()).Find(&topups).Error
+	err = DB.Where("user_id = ? AND create_time >= ?", userId, cutoff).Order("id desc").Limit(pageInfo.GetPageSize()).Offset(pageInfo.GetStartIdx()).Find(&topups).Error
 	if err != nil {
-		tx.Rollback()
-		return nil, 0, err
-	}
-
-	// Commit transaction
-	if err = tx.Commit().Error; err != nil {
 		return nil, 0, err
 	}
 
@@ -450,32 +431,17 @@ func GetUserTopUps(userId int, pageInfo *common.PageInfo) (topups []*TopUp, tota
 // 管理员经 middleware.RequestOrgScope 拿到范围内成员 id（空范围时传 NoOrgMemberId
 // 哨兵），从而把只读接口收敛到本租户，杜绝跨租户泄露（对应审计项 P2-3）。
 func GetAllTopUps(pageInfo *common.PageInfo, userIds []int) (topups []*TopUp, total int64, err error) {
-	tx := DB.Begin()
-	if tx.Error != nil {
-		return nil, 0, tx.Error
-	}
-	defer func() {
-		if r := recover(); r != nil {
-			tx.Rollback()
-		}
-	}()
-
-	query := tx.Model(&TopUp{})
+	// 只读列表查询不开事务。
+	query := DB.Model(&TopUp{})
 	if len(userIds) > 0 {
 		query = query.Where("user_id IN ?", userIds)
 	}
 
 	if err = query.Count(&total).Error; err != nil {
-		tx.Rollback()
 		return nil, 0, err
 	}
 
 	if err = query.Order("id desc").Limit(pageInfo.GetPageSize()).Offset(pageInfo.GetStartIdx()).Find(&topups).Error; err != nil {
-		tx.Rollback()
-		return nil, 0, err
-	}
-
-	if err = tx.Commit().Error; err != nil {
 		return nil, 0, err
 	}
 
@@ -488,40 +454,24 @@ const searchTopUpCountHardLimit = 10000
 
 // SearchUserTopUps 按订单号搜索某用户的充值记录
 func SearchUserTopUps(userId int, keyword string, pageInfo *common.PageInfo) (topups []*TopUp, total int64, err error) {
-	tx := DB.Begin()
-	if tx.Error != nil {
-		return nil, 0, tx.Error
-	}
-	defer func() {
-		if r := recover(); r != nil {
-			tx.Rollback()
-		}
-	}()
-
-	query := tx.Model(&TopUp{}).Where("user_id = ? AND create_time >= ?", userId, topUpQueryCutoff())
+	// 只读搜索不开事务。
+	query := DB.Model(&TopUp{}).Where("user_id = ? AND create_time >= ?", userId, topUpQueryCutoff())
 	if keyword != "" {
 		pattern, perr := sanitizeLikePattern(keyword)
 		if perr != nil {
-			tx.Rollback()
 			return nil, 0, perr
 		}
 		query = query.Where("trade_no LIKE ? ESCAPE '!'", pattern)
 	}
 
 	if err = query.Limit(searchTopUpCountHardLimit).Count(&total).Error; err != nil {
-		tx.Rollback()
 		common.SysError("failed to count search topups: " + err.Error())
 		return nil, 0, errors.New("搜索充值记录失败")
 	}
 
 	if err = query.Order("id desc").Limit(pageInfo.GetPageSize()).Offset(pageInfo.GetStartIdx()).Find(&topups).Error; err != nil {
-		tx.Rollback()
 		common.SysError("failed to search topups: " + err.Error())
 		return nil, 0, errors.New("搜索充值记录失败")
-	}
-
-	if err = tx.Commit().Error; err != nil {
-		return nil, 0, err
 	}
 	return topups, total, nil
 }
@@ -529,43 +479,27 @@ func SearchUserTopUps(userId int, keyword string, pageInfo *common.PageInfo) (to
 // SearchAllTopUps 按订单号搜索充值记录（管理员使用，不限制时间窗口）。
 // userIds 非空时仅搜索归属这些用户的订单，语义与 GetAllTopUps 一致（对应审计项 P2-3）。
 func SearchAllTopUps(keyword string, pageInfo *common.PageInfo, userIds []int) (topups []*TopUp, total int64, err error) {
-	tx := DB.Begin()
-	if tx.Error != nil {
-		return nil, 0, tx.Error
-	}
-	defer func() {
-		if r := recover(); r != nil {
-			tx.Rollback()
-		}
-	}()
-
-	query := tx.Model(&TopUp{})
+	// 只读搜索不开事务。
+	query := DB.Model(&TopUp{})
 	if len(userIds) > 0 {
 		query = query.Where("user_id IN ?", userIds)
 	}
 	if keyword != "" {
 		pattern, perr := sanitizeLikePattern(keyword)
 		if perr != nil {
-			tx.Rollback()
 			return nil, 0, perr
 		}
 		query = query.Where("trade_no LIKE ? ESCAPE '!'", pattern)
 	}
 
 	if err = query.Limit(searchTopUpCountHardLimit).Count(&total).Error; err != nil {
-		tx.Rollback()
 		common.SysError("failed to count search topups: " + err.Error())
 		return nil, 0, errors.New("搜索充值记录失败")
 	}
 
 	if err = query.Order("id desc").Limit(pageInfo.GetPageSize()).Offset(pageInfo.GetStartIdx()).Find(&topups).Error; err != nil {
-		tx.Rollback()
 		common.SysError("failed to search topups: " + err.Error())
 		return nil, 0, errors.New("搜索充值记录失败")
-	}
-
-	if err = tx.Commit().Error; err != nil {
-		return nil, 0, err
 	}
 	return topups, total, nil
 }
@@ -662,6 +596,7 @@ func ManualCompleteTopUp(tradeNo string, callerIp string) error {
 	RecordTopupLog(userId, common.NewMessage("Administrator completed the order, amount added: {{quota}}, payment amount: {{amount}}", map[string]any{"quota": logger.FormatQuota(quotaToAdd), "amount": fmt.Sprintf("%f", payMoney)}), callerIp, paymentMethod, "admin")
 	return nil
 }
+
 // RechargeCreem credits the order without treating payment-provider billing details
 // as verified account identity. customer/billing email ownership is not established
 // by a signed payment webhook, so this function must not bind it to the user account.

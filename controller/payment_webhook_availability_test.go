@@ -8,13 +8,13 @@ import (
 	"testing"
 
 	"github.com/Calcium-Ion/go-epay/epay"
+	"github.com/gin-gonic/gin"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"github.com/uter-ai/uter/model"
 	"github.com/uter-ai/uter/setting"
 	"github.com/uter-ai/uter/setting/operation_setting"
 	"github.com/uter-ai/uter/setting/system_setting"
-	"github.com/gin-gonic/gin"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 func confirmPaymentComplianceForTest(t *testing.T) {
@@ -357,7 +357,6 @@ func TestEpayCallbacksVerifyBeforeSettlement(t *testing.T) {
 	}
 }
 
-
 func TestChinaPaymentTopUpHelpersRequireComplianceConfirmation(t *testing.T) {
 	paymentSetting := operation_setting.GetPaymentSetting()
 	originalConfirmed := paymentSetting.ComplianceConfirmed
@@ -372,7 +371,7 @@ func TestChinaPaymentTopUpHelpersRequireComplianceConfirmation(t *testing.T) {
 	originalWechatAPIv3Key := operation_setting.WechatPayApiV3Key
 	originalWechatSerialNo := operation_setting.WechatPaySerialNo
 	originalWechatPrivateKey := operation_setting.WechatPayPrivateKey
-	originalWechatPlatformCert := operation_setting.WechatPayPlatformCert
+	originalWechatPublicKey := operation_setting.WechatPayPublicKey
 	t.Cleanup(func() {
 		paymentSetting.ComplianceConfirmed = originalConfirmed
 		paymentSetting.ComplianceTermsVersion = originalTermsVersion
@@ -386,7 +385,7 @@ func TestChinaPaymentTopUpHelpersRequireComplianceConfirmation(t *testing.T) {
 		operation_setting.WechatPayApiV3Key = originalWechatAPIv3Key
 		operation_setting.WechatPaySerialNo = originalWechatSerialNo
 		operation_setting.WechatPayPrivateKey = originalWechatPrivateKey
-		operation_setting.WechatPayPlatformCert = originalWechatPlatformCert
+		operation_setting.WechatPayPublicKey = originalWechatPublicKey
 	})
 	operation_setting.AlipayEnabled = true
 	operation_setting.AlipayAppId = "app"
@@ -398,7 +397,7 @@ func TestChinaPaymentTopUpHelpersRequireComplianceConfirmation(t *testing.T) {
 	operation_setting.WechatPayApiV3Key = strings.Repeat("k", 32)
 	operation_setting.WechatPaySerialNo = "serial"
 	operation_setting.WechatPayPrivateKey = "private"
-	operation_setting.WechatPayPlatformCert = "cert"
+	operation_setting.WechatPayPublicKey = "public-key"
 	paymentSetting.ComplianceConfirmed = false
 	paymentSetting.ComplianceTermsVersion = operation_setting.CurrentComplianceTermsVersion
 
@@ -409,7 +408,6 @@ func TestChinaPaymentTopUpHelpersRequireComplianceConfirmation(t *testing.T) {
 	require.True(t, isAlipayTopUpEnabled())
 	require.True(t, isWechatPayTopUpEnabled())
 }
-
 
 func TestReadPaymentWebhookBodyEnforcesSizeLimit(t *testing.T) {
 	withinLimit := strings.Repeat("x", int(maxPaymentWebhookBodyBytes))
@@ -422,7 +420,6 @@ func TestReadPaymentWebhookBodyEnforcesSizeLimit(t *testing.T) {
 	require.ErrorIs(t, err, errPaymentWebhookBodyTooLarge)
 }
 
-
 func TestLimitPaymentWebhookFormBody(t *testing.T) {
 	writer := httptest.NewRecorder()
 	body := strings.Repeat("x", int(maxPaymentWebhookBodyBytes+1))
@@ -433,7 +430,6 @@ func TestLimitPaymentWebhookFormBody(t *testing.T) {
 	err := request.ParseForm()
 	require.Error(t, err, "form payload larger than the payment callback limit must be rejected")
 }
-
 
 func TestReadPaymentProviderAPIResponseBodyEnforcesSizeLimit(t *testing.T) {
 	withinLimit := strings.Repeat("x", int(maxPaymentProviderAPIResponseBodyBytes))

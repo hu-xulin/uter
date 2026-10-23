@@ -31,9 +31,6 @@ import { Button } from '@/components/ui/button'
 import { getSelf } from '@/lib/api'
 import { formatLocalCurrencyAmount } from '@/lib/currency'
 
-import { isAlipayMiniProgramPayment } from '../../lib'
-import type { PaymentMethod } from '../../types'
-
 interface CnPayMiniProgramDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
@@ -43,7 +40,6 @@ interface CnPayMiniProgramDialogProps {
   paymentAmount: number
   /** Baseline wallet quota before payment, used to detect success. */
   initialQuota: number
-  paymentMethod: PaymentMethod | undefined
   onSuccess: () => void
 }
 
@@ -56,7 +52,6 @@ export function CnPayMiniProgramDialog({
   topupAmount,
   paymentAmount,
   initialQuota,
-  paymentMethod,
   onSuccess,
 }: CnPayMiniProgramDialogProps) {
   const { t } = useTranslation()
@@ -70,12 +65,14 @@ export function CnPayMiniProgramDialog({
   initialQuotaRef.current = initialQuota
   onSuccessRef.current = onSuccess
 
-  const isAlipay = isAlipayMiniProgramPayment(paymentMethod?.type ?? '')
-  const providerName = isAlipay ? t('Alipay') : t('WeChat Pay')
+  // Only the WeChat mini-program channel remains in this dialog; Alipay dropped
+  // mini-program payment in favour of computer/mobile website payment.
+  const providerName = t('WeChat Pay')
 
   // Poll wallet balance until it increases (payment success) or timeout.
-  // The actual order is created and paid inside the mini-program; on success the
-  // async callback recharges this same user account, which we detect here.
+  // The actual order is created and paid inside the WeChat mini-program; on
+  // success the async callback recharges this same user account, which we
+  // detect here.
   useEffect(() => {
     if (!open) return
     setLoading(true)

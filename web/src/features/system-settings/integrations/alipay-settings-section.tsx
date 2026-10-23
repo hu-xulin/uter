@@ -16,15 +16,12 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
+import { useFormContext, useFormState, useWatch } from 'react-hook-form'
 import { toast } from 'sonner'
-import { z } from 'zod'
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import {
-  Form,
   FormControl,
   FormDescription,
   FormField,
@@ -33,214 +30,238 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { SecretFileInput } from '@/components/ui/secret-file-input'
 import { Switch } from '@/components/ui/switch'
-import { Textarea } from '@/components/ui/textarea'
 
 import {
-  SettingsForm,
   SettingsSwitchContent,
   SettingsSwitchItem,
 } from '../components/settings-form-layout'
-import { SettingsPageFormActions } from '../components/settings-page-context'
-import { useUpdateOption } from '../hooks/use-update-option'
 
-export type AlipaySettingsValues = {
-  enabled: boolean
-  appId: string
-  privateKey: string
-  publicKey: string
+/**
+ * 支付宝在「支付网关」表单里注册的字段。
+ *
+ * 与微信支付同构：字段由 `PaymentSettingsSection` 的父表单持有，本组件只负责
+ * 渲染。这样页头只有一个「保存所有设置」按钮（页级动作区是 portal，若子配置段
+ * 自带表单就会多渲染一个），也不会出现 `<form>` 嵌套 `<form>` 的非法结构。
+ * 密钥一律走「选择 PEM 文件」：粘贴极易漏掉 PEM 首尾行，而 `pem.Decode`
+ * 失败的表现是「参数齐全但回调验签必然失败」，排查成本极高。
+ */
+export interface AlipayFormValues {
+  AlipayEnabled: boolean
+  AlipayAppId: string
+  AlipayPrivateKey: string
+  AlipayPublicKey: string
 }
 
-const alipaySchema = z.object({
-  enabled: z.boolean(),
-  appId: z.string().optional(),
-  privateKey: z.string().optional(),
-  publicKey: z.string().optional(),
-})
-
-type FormValues = z.input<typeof alipaySchema>
-
-export function AlipaySettingsSection({
-  defaultValues,
-}: {
-  defaultValues: AlipaySettingsValues
-}) {
+export function AlipaySettingsSection() {
   const { t } = useTranslation()
-  const updateOption = useUpdateOption()
-
-  const form = useForm<FormValues>({
-    resolver: zodResolver(alipaySchema),
-    defaultValues: {
-      enabled: defaultValues.enabled,
-      appId: defaultValues.appId ?? '',
-      privateKey: defaultValues.privateKey ?? '',
-      publicKey: defaultValues.publicKey ?? '',
-    },
-  })
-
-  const { isDirty, isSubmitting } = form.formState
-  const enabled = form.watch('enabled')
-
-  async function onSubmit(values: FormValues) {
-    const updates: Array<{ key: string; value: string }> = []
-
-    if (values.enabled !== defaultValues.enabled) {
-      updates.push({ key: 'AlipayEnabled', value: String(values.enabled) })
-    }
-    if ((values.appId ?? '') !== (defaultValues.appId ?? '')) {
-      updates.push({ key: 'AlipayAppId', value: values.appId ?? '' })
-    }
-    if ((values.privateKey ?? '') !== (defaultValues.privateKey ?? '')) {
-      updates.push({ key: 'AlipayPrivateKey', value: values.privateKey ?? '' })
-    }
-    if ((values.publicKey ?? '') !== (defaultValues.publicKey ?? '')) {
-      updates.push({ key: 'AlipayPublicKey', value: values.publicKey ?? '' })
-    }
-
-    if (updates.length === 0) {
-      toast.info(t('No changes to save'))
-      return
-    }
-    for (const update of updates) {
-      await updateOption.mutateAsync(update)
-    }
-    form.reset(values)
-    toast.success(t('Saved successfully'))
-  }
+  const { control } = useFormContext<AlipayFormValues>()
+  const { isSubmitting } = useFormState()
+  const enabled = useWatch({ control, name: 'AlipayEnabled' })
 
   return (
-    <Form {...form}>
-      <SettingsForm onSubmit={form.handleSubmit(onSubmit)} autoComplete='off'>
-        <SettingsPageFormActions
-          onSave={form.handleSubmit(onSubmit)}
-          isSaving={updateOption.isPending || isSubmitting}
-          isSaveDisabled={!isDirty}
-          saveLabel={t('Save all settings')}
-        />
+    <div className='space-y-4'>
+      <div>
+        <h3 className='text-lg font-medium'>{t('Alipay Gateway')}</h3>
+        <p className='text-muted-foreground text-sm'>
+          {t('Configuration for Alipay website payment integration')}
+        </p>
+      </div>
 
-        <div className='space-y-4'>
-          <div>
-            <h3 className='text-lg font-medium'>{t('Alipay Gateway')}</h3>
-            <p className='text-muted-foreground text-sm'>
-              {t('Configuration for Alipay website payment integration')}
-            </p>
-          </div>
+      <FormField
+        control={control}
+        name='AlipayEnabled'
+        render={({ field }) => (
+          <SettingsSwitchItem>
+            <SettingsSwitchContent>
+              <FormLabel>{t('Enable Alipay payments')}</FormLabel>
+              <FormDescription>
+                {t('Enable official Alipay website payment')}
+              </FormDescription>
+            </SettingsSwitchContent>
+            <FormControl>
+              <Switch
+                checked={field.value}
+                onCheckedChange={(v) => field.onChange(v)}
+                disabled={isSubmitting}
+              />
+            </FormControl>
+          </SettingsSwitchItem>
+        )}
+      />
 
+      {enabled ? (
+        <>
           <FormField
-            control={form.control}
-            name='enabled'
+            control={control}
+            name='AlipayAppId'
             render={({ field }) => (
-              <SettingsSwitchItem>
-                <SettingsSwitchContent>
-                  <FormLabel>{t('Enable Alipay payments')}</FormLabel>
-                  <FormDescription>
-                    {t('Enable official Alipay website payment')}
-                  </FormDescription>
-                </SettingsSwitchContent>
+              <FormItem>
+                <FormLabel>{t('App ID')}</FormLabel>
                 <FormControl>
-                  <Switch
-                    checked={field.value}
-                    onCheckedChange={(v) => field.onChange(v)}
-                    disabled={updateOption.isPending || isSubmitting}
+                  <Input
+                    placeholder='2021xxxxxxxxxxxx'
+                    autoComplete='off'
+                    {...field}
                   />
                 </FormControl>
-              </SettingsSwitchItem>
+                <FormDescription>
+                  {t('Alipay open platform app ID')}
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
             )}
           />
-
-          {enabled ? (
-            <>
-              <FormField
-                control={form.control}
-                name='appId'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('App ID')}</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder='2021xxxxxxxxxxxx'
-                        autoComplete='off'
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormDescription>
-                      {t('Alipay open platform app ID')}
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name='privateKey'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('Application Private Key')}</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        placeholder={t('PEM or base64 private key')}
-                        rows={3}
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormDescription>
-                      {t('Used to sign payment requests (RSA2)')}
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name='publicKey'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('Alipay Public Key')}</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        placeholder={t('PEM public key')}
-                        rows={3}
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormDescription>
-                      {t('Used to verify async callback signature')}
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <Alert variant='default'>
-                <AlertTitle>{t('Setup notes')}</AlertTitle>
-                <AlertDescription>
-                  <ul className='list-disc space-y-1 pl-5'>
-                    <li>
-                      {t(
-                        'Enable Alipay face-to-face (PC QR) and mobile website payment products'
-                      )}
-                    </li>
-                    <li>
-                      {t(
-                        'Register the ICP-filed payment domain in the merchant platform'
-                      )}
-                    </li>
-                    <li>
-                      {t(
-                        'Async callback URL is registered automatically by the server'
-                      )}
-                    </li>
-                    <li>
-                      {t(
-                        'Set the payment site address in the General tab when the payment domain differs from the server address.'
-                      )}
-                    </li>
-                  </ul>
-                </AlertDescription>
-              </Alert>
-            </>
-          ) : null}
-        </div>
-      </SettingsForm>
-    </Form>
+          <FormField
+            control={control}
+            name='AlipayPrivateKey'
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t('Application Private Key')}</FormLabel>
+                <FormControl>
+                  <SecretFileInput
+                    value={field.value ?? ''}
+                    onChange={field.onChange}
+                    expectedPemType={['PRIVATE KEY', 'RSA PRIVATE KEY']}
+                    allowBase64
+                    accept='.pem,.key,.txt,text/plain'
+                    onError={(message) => toast.error(message)}
+                  />
+                </FormControl>
+                <FormDescription>
+                  {t(
+                    'Signs payment requests (RSA2). Select the private key file output by the Alipay key generator; PEM (PKCS#8 / PKCS#1) and single-line base64 are both accepted.'
+                  )}
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={control}
+            name='AlipayPublicKey'
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t('Alipay Public Key')}</FormLabel>
+                <FormControl>
+                  <SecretFileInput
+                    value={field.value ?? ''}
+                    onChange={field.onChange}
+                    expectedPemType={['PUBLIC KEY', 'RSA PUBLIC KEY']}
+                    allowBase64
+                    accept='.pem,.key,.txt,text/plain'
+                    onError={(message) => toast.error(message)}
+                  />
+                </FormControl>
+                <FormDescription>
+                  {t(
+                    'Verifies async callback signatures. Alipay issues this value after you upload the application public key; a PEM public key file or a single-line base64 string is accepted.'
+                  )}
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <Alert variant='default'>
+            <AlertTitle>{t('Setup steps')}</AlertTitle>
+            <AlertDescription>
+              <ol className='list-decimal space-y-2 pl-5'>
+                <li>
+                  <span className='font-medium'>
+                    {t('Create the app and copy its AppID')}
+                  </span>
+                  <span className='text-muted-foreground'>
+                    {' — '}
+                    {t(
+                      'Alipay Open Platform → Console → Web & mobile apps → Create app. After approval, copy the AppID (16 digits starting with 2021) into “App ID”.'
+                    )}
+                  </span>
+                </li>
+                <li>
+                  <span className='font-medium'>
+                    {t('Generate the RSA2 key pair')}
+                  </span>
+                  <span className='text-muted-foreground'>
+                    {' — '}
+                    {t(
+                      'App details → Development settings → Interface signing method → set RSA2 (SHA256), then use the Alipay key generator to create an RSA 2048 pair. It outputs the application private key (keep it offline) and the application public key.'
+                    )}
+                  </span>
+                </li>
+                <li>
+                  <span className='font-medium'>
+                    {t(
+                      'Upload the application public key and copy the Alipay public key'
+                    )}
+                  </span>
+                  <span className='text-muted-foreground'>
+                    {' — '}
+                    {t(
+                      'Upload the application public key from step 2 in the same page; Alipay then issues the “Alipay public key”. Save that string as a .txt or .pem file and select it in “Alipay Public Key”. This is required: without it every callback fails signature verification and paid orders never credit.'
+                    )}
+                  </span>
+                </li>
+                <li>
+                  <span className='font-medium'>
+                    {t('Select the application private key file')}
+                  </span>
+                  <span className='text-muted-foreground'>
+                    {' — '}
+                    {t(
+                      'In “Application Private Key”, select the private key file from step 2. Both PEM files (PKCS#8 or PKCS#1) and single-line base64 text files are accepted.'
+                    )}
+                  </span>
+                </li>
+                <li>
+                  <span className='font-medium'>
+                    {t('Sign the payment products')}
+                  </span>
+                  <span className='text-muted-foreground'>
+                    {' — '}
+                    {t(
+                      'Console → Products → request “Computer website payment” (alipay.trade.page.pay) and “Mobile website payment” (alipay.trade.wap.pay). Orders are rejected until both products are signed.'
+                    )}
+                  </span>
+                </li>
+                <li>
+                  <span className='font-medium'>
+                    {t('Register the ICP-filed payment domain')}
+                  </span>
+                  <span className='text-muted-foreground'>
+                    {' — '}
+                    {t(
+                      'The website domain you submit when signing the products must be ICP-filed and its registrant must match the app entity. Otherwise the product application is rejected or callbacks never arrive.'
+                    )}
+                  </span>
+                </li>
+                <li>
+                  <span className='font-medium'>
+                    {t('Confirm the callback and return address')}
+                  </span>
+                  <span className='text-muted-foreground'>
+                    {' — '}
+                    {t(
+                      'Async callbacks go to /api/user/alipay/notify on this server; no fixed configuration is needed in the open platform. The payment return URL uses the payment site address: set it in the General tab when the payment domain differs from the server address.'
+                    )}
+                  </span>
+                </li>
+                <li>
+                  <span className='font-medium'>
+                    {t('Turn on the switch and save')}
+                  </span>
+                  <span className='text-muted-foreground'>
+                    {' — '}
+                    {t(
+                      'Alipay only appears in the wallet once the switch is on and App ID, application private key, and Alipay public key are all filled.'
+                    )}
+                  </span>
+                </li>
+              </ol>
+            </AlertDescription>
+          </Alert>
+        </>
+      ) : null}
+    </div>
   )
 }

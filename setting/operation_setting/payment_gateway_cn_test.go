@@ -34,7 +34,7 @@ func TestWechatPayEnabledRequiresSerialNo(t *testing.T) {
 	origApiV3Key := WechatPayApiV3Key
 	origSerialNo := WechatPaySerialNo
 	origPrivateKey := WechatPayPrivateKey
-	origCert := WechatPayPlatformCert
+	origPublicKey := WechatPayPublicKey
 	t.Cleanup(func() {
 		WechatPayEnabled = origEnabled
 		WechatPayMchId = origMchId
@@ -42,7 +42,7 @@ func TestWechatPayEnabledRequiresSerialNo(t *testing.T) {
 		WechatPayApiV3Key = origApiV3Key
 		WechatPaySerialNo = origSerialNo
 		WechatPayPrivateKey = origPrivateKey
-		WechatPayPlatformCert = origCert
+		WechatPayPublicKey = origPublicKey
 	})
 
 	WechatPayEnabled = true
@@ -51,7 +51,7 @@ func TestWechatPayEnabledRequiresSerialNo(t *testing.T) {
 	WechatPayApiV3Key = strings.Repeat("k", 32)
 	WechatPaySerialNo = "SERIAL_NO_ABC"
 	WechatPayPrivateKey = "private"
-	WechatPayPlatformCert = "cert"
+	WechatPayPublicKey = "public-key"
 
 	assert.True(t, IsWechatPayEnabled())
 

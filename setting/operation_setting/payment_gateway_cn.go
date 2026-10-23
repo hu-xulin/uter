@@ -18,9 +18,13 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 package operation_setting
 
 // 支付宝（官方直连）配置。
-// 启用前提：已在支付宝开放平台开通「当面付」（PC 扫码，alipay.trade.precreate）
-// 与「手机网站支付」（移动端，alipay.trade.wap.pay），并取得以下参数。
+// 启用前提：已在支付宝开放平台签约「电脑网站支付」（PC 跳转收银台，
+// alipay.trade.page.pay，product_code=FAST_INSTANT_TRADE_PAY）与
+// 「手机网站支付」（移动端，alipay.trade.wap.pay，product_code=QUICK_WAP_WAY），
+// 并取得以下参数。
 // ⚠️ 签约时支付宝要求支付域名已完成 ICP 备案且备案主体与商户主体一致。
+//    本站以 uter.cc（已备案）作为支付站点（PaymentSiteAddress），
+//    uter.ai 为运营主体站（.ai 后缀无法备案，主站可用，但不得作为支付回跳域名）。
 var (
 	AlipayEnabled    = false
 	AlipayAppId      = ""
@@ -31,20 +35,20 @@ var (
 
 // 微信支付（官方直连，APIv3）配置。
 // 启用前提：已申请微信支付商户号并开通「Native 支付」（PC 扫码）与「H5 支付」（移动端），
-// 在商户平台「开发配置」登记已备案的支付域名，并配置 APIv3 密钥与平台证书。
+// 在商户平台「开发配置」登记已备案的支付域名，并配置 APIv3 密钥与微信支付公钥。
 // ⚠️ 经营性网站还需 ICP 许可证；备案主体须与商户号主体一致。
 var (
-	WechatPayEnabled      = false
-	WechatPayMchId        = ""
-	WechatPayAppId        = ""
-	WechatPayApiV3Key     = "" // 32 字节 APIv3 密钥
-	WechatPaySerialNo     = "" // 商户 API 证书序列号
-	WechatPayPrivateKey   = "" // 商户私钥（PKCS8 PEM）
-	WechatPayPlatformCert = "" // 微信支付平台证书（PEM，用于回调验签）
-	WechatPayGateway      = "https://api.mch.weixin.qq.com"
+	WechatPayEnabled    = false
+	WechatPayMchId      = ""
+	WechatPayAppId      = ""
+	WechatPayApiV3Key   = "" // 32 字节 APIv3 密钥
+	WechatPaySerialNo   = "" // 商户 API 证书序列号
+	WechatPayPrivateKey = "" // 商户私钥（PKCS8 PEM）
+	WechatPayPublicKey  = "" // 微信支付公钥（PEM，用于回调验签）
+	WechatPayGateway    = "https://api.mch.weixin.qq.com"
 )
 
-// IsAlipayEnabled 支付宝小程序支付是否可对外提供。
+// IsAlipayEnabled 支付宝网站支付（电脑网站支付 / 手机网站支付）是否可对外提供。
 func IsAlipayEnabled() bool {
 	return AlipayEnabled && AlipayAppId != "" && AlipayPrivateKey != "" && AlipayPublicKey != ""
 }
@@ -60,5 +64,5 @@ func IsWechatPayEnabled() bool {
 		len(WechatPayApiV3Key) == 32 &&
 		WechatPaySerialNo != "" &&
 		WechatPayPrivateKey != "" &&
-		WechatPayPlatformCert != ""
+		WechatPayPublicKey != ""
 }

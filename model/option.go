@@ -90,8 +90,24 @@ func InitOptionMap() {
 	common.OptionMap["WorkerAllowHttpImageRequestEnabled"] = strconv.FormatBool(system_setting.WorkerAllowHttpImageRequestEnabled)
 	common.OptionMap["PayAddress"] = ""
 	common.OptionMap["CustomCallbackAddress"] = ""
+	common.OptionMap["PaymentSiteAddress"] = operation_setting.PaymentSiteAddress
 	common.OptionMap["EpayId"] = ""
 	common.OptionMap["EpayKey"] = ""
+	// 支付宝 / 微信支付（官方直连）凭据。这些键必须在此登记，否则后台
+	// 保存后只会写进 Option 表，loadOptionsFromDatabase 找不到对应键的
+	// 默认值，运行时变量永不赋值——表现为「填了参数、开关也打开了，
+	// 钱包里却始终没有对应支付方式」。
+	common.OptionMap["AlipayEnabled"] = strconv.FormatBool(operation_setting.AlipayEnabled)
+	common.OptionMap["AlipayAppId"] = operation_setting.AlipayAppId
+	common.OptionMap["AlipayPrivateKey"] = operation_setting.AlipayPrivateKey
+	common.OptionMap["AlipayPublicKey"] = operation_setting.AlipayPublicKey
+	common.OptionMap["WechatPayEnabled"] = strconv.FormatBool(operation_setting.WechatPayEnabled)
+	common.OptionMap["WechatPayMchId"] = operation_setting.WechatPayMchId
+	common.OptionMap["WechatPayAppId"] = operation_setting.WechatPayAppId
+	common.OptionMap["WechatPayApiV3Key"] = operation_setting.WechatPayApiV3Key
+	common.OptionMap["WechatPaySerialNo"] = operation_setting.WechatPaySerialNo
+	common.OptionMap["WechatPayPrivateKey"] = operation_setting.WechatPayPrivateKey
+	common.OptionMap["WechatPayPublicKey"] = operation_setting.WechatPayPublicKey
 	common.OptionMap["Price"] = strconv.FormatFloat(operation_setting.Price, 'f', -1, 64)
 	common.OptionMap["USDExchangeRate"] = strconv.FormatFloat(operation_setting.USDExchangeRate, 'f', -1, 64)
 	common.OptionMap["MinTopUp"] = strconv.Itoa(operation_setting.MinTopUp)
@@ -529,6 +545,30 @@ func updateOptionMap(key string, value string) (err error) {
 		err = setting.UpdateMaxTokenAutoGroups(value)
 	case "CustomCallbackAddress":
 		operation_setting.CustomCallbackAddress = value
+	case "PaymentSiteAddress":
+		operation_setting.PaymentSiteAddress = strings.TrimSpace(value)
+	case "AlipayEnabled":
+		operation_setting.AlipayEnabled = value == "true"
+	case "AlipayAppId":
+		operation_setting.AlipayAppId = strings.TrimSpace(value)
+	case "AlipayPrivateKey":
+		operation_setting.AlipayPrivateKey = value
+	case "AlipayPublicKey":
+		operation_setting.AlipayPublicKey = value
+	case "WechatPayEnabled":
+		operation_setting.WechatPayEnabled = value == "true"
+	case "WechatPayMchId":
+		operation_setting.WechatPayMchId = strings.TrimSpace(value)
+	case "WechatPayAppId":
+		operation_setting.WechatPayAppId = strings.TrimSpace(value)
+	case "WechatPayApiV3Key":
+		operation_setting.WechatPayApiV3Key = value
+	case "WechatPaySerialNo":
+		operation_setting.WechatPaySerialNo = strings.TrimSpace(value)
+	case "WechatPayPrivateKey":
+		operation_setting.WechatPayPrivateKey = value
+	case "WechatPayPublicKey":
+		operation_setting.WechatPayPublicKey = value
 	case "EpayId":
 		operation_setting.EpayId = value
 	case "EpayKey":

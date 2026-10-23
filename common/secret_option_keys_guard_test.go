@@ -19,6 +19,12 @@ func TestSecretOptionKeySuffixFallbackExhaustive(t *testing.T) {
 		// 支付 / 签名（影响最大：StripeWebhookSecret 泄漏可伪造回调入账）
 		"EpayKey",
 		"AlipayPrivateKey",
+		// 对端公钥 / 证书：与私钥同等待遇，读取时掩码。
+		// 键名不以密钥后缀结尾（如 WaffoPublicCert 以 "cert" 结尾），
+		// 只能靠显式登记，漏掉就会明文下发。
+		"AlipayPublicKey",
+		"WaffoPublicCert",
+		"WaffoSandboxPublicCert",
 		"StripeApiSecret",
 		"StripeWebhookSecret",
 		"StripeSecretKey",
@@ -32,6 +38,7 @@ func TestSecretOptionKeySuffixFallbackExhaustive(t *testing.T) {
 		"WaffoSandboxPrivateKey",
 		"WechatPayApiV3Key",
 		"WechatPayPrivateKey",
+		"WechatPayPublicKey",
 		"WorkerValidKey",
 
 		// 认证 / OAuth
@@ -76,7 +83,6 @@ func TestSecretOptionKeySuffixFallbackExhaustive(t *testing.T) {
 	// 公开值：设计上就要原样下发给浏览器，掩码会让管理员无法核对。
 	mustStayPublic := []string{
 		"TurnstileSiteKey",
-		"AlipayPublicKey",
 		"StripePublishableKey",
 	}
 	for _, key := range mustStayPublic {
