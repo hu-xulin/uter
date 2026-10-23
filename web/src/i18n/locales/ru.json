@@ -794,7 +794,7 @@
     "Enable official Alipay website payment": "Включить официальную веб-оплату Alipay",
     "Configuration for WeChat Pay website payment integration": "Настройка интеграции веб-оплаты WeChat Pay",
     "Enable official WeChat Pay website payment": "Включить официальную веб-оплату WeChat Pay",
-    "Bound website payment AppID": "Привязанный AppID веб-оплаты",
+    "AppID bound to the merchant (official account / mini program / mobile app)": "AppID, привязанный к мерчанту (официальный аккаунт / мини-программа / мобильное приложение)",
     "Enable Alipay PC website payment and mobile website payment products": "Подключите продукты Alipay «оплата на компьютерном сайте» (переход в кассу) и «оплата через мобильный сайт»",
     "Enable WeChat Pay Native (PC QR) and H5 (mobile) payment products": "Подключите продукты оплаты WeChat Pay Native (QR на ПК) и H5 (мобильный)",
     "Register the ICP-filed payment domain (e.g. uter.cc) in the merchant platform": "Зарегистрируйте платёжный домен с ICP-регистрацией в платформе продавца",

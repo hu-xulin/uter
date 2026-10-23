@@ -794,7 +794,7 @@
     "Enable official Alipay website payment": "Enable official Alipay website payment",
     "Configuration for WeChat Pay website payment integration": "Configuration for WeChat Pay website payment integration",
     "Enable official WeChat Pay website payment": "Enable official WeChat Pay website payment",
-    "Bound website payment AppID": "Bound website payment AppID",
+    "AppID bound to the merchant (official account / mini program / mobile app)": "AppID bound to the merchant (official account / mini program / mobile app)",
     "Enable Alipay PC website payment and mobile website payment products": "Enable Alipay PC website payment and mobile website payment products",
     "Enable WeChat Pay Native (PC QR) and H5 (mobile) payment products": "Enable WeChat Pay Native (PC QR) and H5 (mobile) payment products",
     "Register the ICP-filed payment domain (e.g. uter.cc) in the merchant platform": "Register the ICP-filed payment domain in the merchant platform",
