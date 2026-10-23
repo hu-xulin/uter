@@ -405,6 +405,11 @@ func migrateDB() error {
 	if err := InitializeUserAuthVersions(); err != nil {
 		return err
 	}
+	// 邮箱回填必须排在 AutoMigrate 之后（users 表已存在），且要在任何按邮箱查用户
+	// 的请求之前完成——它决定了查询走等值比较还是 LOWER() 兜底。
+	if err := migrateUserEmailNormalization(DB); err != nil {
+		return err
+	}
 	if err := EnsureLegacyAccessTokenRetireAt(common.GetTimestamp()); err != nil {
 		return fmt.Errorf("initialize legacy access token deadline: %w", err)
 	}
@@ -430,7 +435,15 @@ func migrateLOGDB() error {
 	if common.UsingLogDatabase(common.DatabaseTypeClickHouse) {
 		return migrateClickHouseLogDB()
 	}
-	return LOG_DB.AutoMigrate(&Log{})
+	if err := LOG_DB.AutoMigrate(&Log{}); err != nil {
+		return err
+	}
+	// AutoMigrate 只建不删：存量库里被复合索引覆盖的单列索引要在这里补删，
+	// 否则 logs 这棵最热的写入表会一直背着多余的写放大。失败不拦启动。
+	if err := migrateLogIndexRedundancy(LOG_DB); err != nil {
+		common.SysError("failed to drop redundant log indexes: " + err.Error())
+	}
+	return nil
 }
 
 // logCacheTokensBackfillKey 是回填的持久标记，写在 options 表里。
