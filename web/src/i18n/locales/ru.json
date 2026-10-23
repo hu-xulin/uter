@@ -7632,7 +7632,7 @@
     "Enable the payment products": "Подключите платёжные продукты",
     "Merchant platform → Products → enable “Native Pay” (PC QR) and “H5 Pay” (mobile web).": "Платформа мерчанта → Продукты → включите «Native Pay» (QR на ПК) и «H5 Pay» (мобильный веб).",
     "Bind the AppID and copy it into “App ID”": "Привяжите AppID и вставьте его в «App ID»",
-    "Products → AppID account management → bind the website app / official account / mini program, then copy its AppID (starts with wx).": "Продукты → Управление аккаунтами AppID → привяжите веб-приложение / официальный аккаунт / мини-программу и скопируйте AppID (начинается с wx).",
+    "Products → AppID account management → bind a certified official account / mini program / mobile app, then copy its AppID (starts with wx). Website apps cannot be used for WeChat Pay.": "Продукты → Управление аккаунтами AppID → привяжите сертифицированный официальный аккаунт / мини-программу / мобильное приложение и скопируйте его AppID (начинается с wx). Веб-приложения не подходят для WeChat Pay.",
     "Copy the merchant ID into “Merchant ID”": "Скопируйте номер мерчанта в «Merchant ID»",
     "Account center → Merchant info → WeChat Pay merchant ID (10 digits).": "Центр аккаунта → Информация о мерчанте → номер мерчанта WeChat Pay (10 цифр).",
     "Set the APIv3 key and copy it into “APIv3 Key”": "Задайте ключ APIv3 и вставьте его в «APIv3 Key»",

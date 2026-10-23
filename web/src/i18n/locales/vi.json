@@ -7632,7 +7632,7 @@
     "Enable the payment products": "Bật các sản phẩm thanh toán",
     "Merchant platform → Products → enable “Native Pay” (PC QR) and “H5 Pay” (mobile web).": "Nền tảng merchant → Sản phẩm → bật “Native Pay” (QR trên PC) và “H5 Pay” (web di động).",
     "Bind the AppID and copy it into “App ID”": "Liên kết AppID và điền vào “App ID”",
-    "Products → AppID account management → bind the website app / official account / mini program, then copy its AppID (starts with wx).": "Sản phẩm → Quản lý tài khoản AppID → liên kết ứng dụng web / tài khoản chính thức / mini program, rồi sao chép AppID (bắt đầu bằng wx).",
+    "Products → AppID account management → bind a certified official account / mini program / mobile app, then copy its AppID (starts with wx). Website apps cannot be used for WeChat Pay.": "Sản phẩm → Quản lý tài khoản AppID → liên kết tài khoản chính thức / mini program / ứng dụng di động đã xác thực, rồi sao chép AppID (bắt đầu bằng wx). Ứng dụng web không dùng được cho WeChat Pay.",
     "Copy the merchant ID into “Merchant ID”": "Sao chép mã merchant vào “Merchant ID”",
     "Account center → Merchant info → WeChat Pay merchant ID (10 digits).": "Trung tâm tài khoản → Thông tin merchant → mã merchant WeChat Pay (10 chữ số).",
     "Set the APIv3 key and copy it into “APIv3 Key”": "Đặt khóa APIv3 và điền vào “APIv3 Key”",

@@ -7633,7 +7633,7 @@
     "Enable the payment products": "开通支付产品",
     "Merchant platform → Products → enable “Native Pay” (PC QR) and “H5 Pay” (mobile web).": "商户平台 → 产品中心 → 开通「Native 支付」（PC 扫码）与「H5 支付」（移动端网页）。",
     "Bind the AppID and copy it into “App ID”": "关联 AppID 并填入「App ID」",
-    "Products → AppID account management → bind the website app / official account / mini program, then copy its AppID (starts with wx).": "产品中心 → AppID 账号管理 → 关联网站应用 / 公众号 / 小程序，复制其 AppID（以 wx 开头）。",
+    "Products → AppID account management → bind a certified official account / mini program / mobile app, then copy its AppID (starts with wx). Website apps cannot be used for WeChat Pay.": "产品中心 → AppID 账号管理 → 关联已认证的公众号 / 小程序 / 移动应用，复制其 AppID（以 wx 开头）。网站应用不能用于微信支付。",
     "Copy the merchant ID into “Merchant ID”": "复制商户号填入「商户号」",
     "Account center → Merchant info → WeChat Pay merchant ID (10 digits).": "账户中心 → 商户信息 → 微信支付商户号（10 位数字）。",
     "Set the APIv3 key and copy it into “APIv3 Key”": "设置 APIv3 密钥并填入「APIv3 密钥」",
