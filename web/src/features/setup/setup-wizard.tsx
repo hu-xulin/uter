@@ -229,9 +229,9 @@ export function SetupWizard() {
     if (!accountPasswordSchema.safeParse(password).success) {
       form.setError('password', {
         type: 'manual',
-        message: t('Password must contain between 8 and 18 characters.'),
+        message: t('Password must contain between 8 and 128 characters.'),
       })
-      toast.error(t('Password must contain between 8 and 18 characters.'))
+      toast.error(t('Password must contain between 8 and 128 characters.'))
       return false
     }
 
