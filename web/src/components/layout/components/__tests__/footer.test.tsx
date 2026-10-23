@@ -34,16 +34,18 @@ import { Footer } from '../footer'
 
 // The test i18n setup registers no translation resources, so `t()` resolves
 // every key to itself — these are the keys rendered by the compliance items.
+// The order below is the display order: enterprise credit, ICP filing, police
+// filing.
 const COMPLIANCE_RECORDS = [
-  {
-    labelKey: 'ICP Filing Number',
-    icon: '/icp-filing.png',
-    href: 'https://beian.miit.gov.cn',
-  },
   {
     labelKey: 'Enterprise Credit Number',
     icon: '/enterprise-credit.png',
     href: 'https://www.gsxt.gov.cn',
+  },
+  {
+    labelKey: 'ICP Filing Number',
+    icon: '/icp-filing.png',
+    href: 'https://beian.miit.gov.cn',
   },
   {
     labelKey: 'Police Filing Number',
@@ -115,9 +117,9 @@ it('renders the three compliance records beside the brand link, pinned to the to
   expect(list).toHaveClass('justify-center')
   expect(list).toHaveClass('md:justify-end')
 
-  // Each record shows a decorative icon and its translated label, and links
-  // only the filing number (after the colon) to its official filing portal,
-  // opened safely in a new tab.
+  // Each record shows a decorative icon and its translated label, and the
+  // whole item links to its official filing portal, opened safely in a new
+  // tab.
   rows.forEach((row, index) => {
     const icon = row.querySelector('img')
     expect(icon).not.toBeNull()
@@ -126,6 +128,7 @@ it('renders the three compliance records beside the brand link, pinned to the to
 
     const link = row.querySelector('a')
     expect(link).not.toBeNull()
+    expect(link?.textContent).toBe(COMPLIANCE_RECORDS[index].labelKey)
     expect(link?.getAttribute('href')).toBe(COMPLIANCE_RECORDS[index].href)
     expect(link?.getAttribute('target')).toBe('_blank')
     expect(link?.getAttribute('rel')).toBe('noopener noreferrer')
