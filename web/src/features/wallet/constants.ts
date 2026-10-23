@@ -37,8 +37,6 @@ export const PAYMENT_TYPES = {
   // 微信支付走 Native 扫码（PC）与 H5 支付（移动端）。
   ALIPAY_WEB: 'alipay_web',
   WECHAT_PAY_WEB: 'wechat_web',
-  // 官方直连 · 小程序支付：仅微信保留给小程序客户端，Web 不下发
-  WECHAT_PAY_MINIPROGRAM: 'wechat_miniprogram',
   STRIPE: 'stripe',
   CREEM: 'creem',
   WAFFO: 'waffo',
@@ -58,7 +56,6 @@ export const PAYMENT_ICON_COLORS = {
   [PAYMENT_TYPES.WECHAT]: '#07C160',
   [PAYMENT_TYPES.ALIPAY_WEB]: '#1677FF',
   [PAYMENT_TYPES.WECHAT_PAY_WEB]: '#07C160',
-  [PAYMENT_TYPES.WECHAT_PAY_MINIPROGRAM]: '#07C160',
   [PAYMENT_TYPES.STRIPE]: '#635BFF',
   [PAYMENT_TYPES.CREEM]: '#6366F1',
   [PAYMENT_TYPES.WAFFO]: '#2563EB',
