@@ -6,11 +6,11 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/uter-ai/uter/controller"
-	"github.com/uter-ai/uter/service/authz"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/uter-ai/uter/controller"
+	"github.com/uter-ai/uter/service/authz"
 )
 
 func TestChannelDefaultBaseURLsRequireReadPermission(t *testing.T) {
