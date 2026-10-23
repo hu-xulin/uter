@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 	"io"
 
-	kitutil "github.com/uter-ai/uter/relaykit/relayconvert/kitutil"
 	"github.com/gin-gonic/gin/binding"
+	kitutil "github.com/uter-ai/uter/relaykit/relayconvert/kitutil"
 )
 
 type RawMessage = json.RawMessage
