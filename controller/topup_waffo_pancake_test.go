@@ -8,9 +8,9 @@ import (
 	"github.com/uter-ai/uter/common"
 
 	"github.com/stretchr/testify/require"
+	"github.com/uter-ai/uter/service"
 	"github.com/uter-ai/uter/setting"
 	"github.com/uter-ai/uter/setting/operation_setting"
-	"github.com/uter-ai/uter/service"
 )
 
 func TestWaffoPancakeOrderCurrencySupportsLegacyOrders(t *testing.T) {
@@ -125,7 +125,6 @@ func TestWaffoPancakeTopUpRequiresStoreID(t *testing.T) {
 	setting.WaffoPancakeStoreID = "store-1"
 	require.True(t, isWaffoPancakeTopUpEnabled(), "绑定店铺 ID 后应可启用")
 }
-
 
 func TestWaffoPancakeResolutionShouldRetryOnlyTransientErrors(t *testing.T) {
 	require.False(t, service.WaffoPancakeResolutionShouldRetry(nil))
