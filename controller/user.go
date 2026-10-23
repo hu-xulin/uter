@@ -239,6 +239,10 @@ func Register(c *gin.Context) {
 		common.ApiErrorT(c, "Invalid input {{error}}", map[string]any{"error": err.Error()})
 		return
 	}
+	if err := common.ValidateNewAccountPasswordStrength(user.Password, user.Username, user.Email); err != nil {
+		common.ApiError(c, err)
+		return
+	}
 	if common.EmailVerificationEnabled {
 		if user.Email == "" || user.VerificationCode == "" {
 			common.ApiErrorT(c, "Email verification is enabled, please enter email address and verification code")
@@ -767,6 +771,15 @@ func UpdateUser(c *gin.Context) {
 		auditParams["password_reset"] = updatePassword
 		auditParams["admin_permissions_updated"] = updatedUser.AdminPermissions != nil
 	}
+	if updatePassword {
+		// The strength policy is checked only after the operation is
+		// authorized: an unauthorized caller must not be able to probe which
+		// passwords the policy accepts.
+		if err := common.ValidateNewAccountPasswordStrength(updatedUser.Password, updatedUser.Username, originUser.Email); err != nil {
+			common.ApiError(c, err)
+			return
+		}
+	}
 	authzTouched := false
 	if err := model.DB.Transaction(func(tx *gorm.DB) error {
 		if err := updatedUser.EditWithTx(tx, updatePassword); err != nil {
@@ -960,6 +973,13 @@ func UpdateSelf(c *gin.Context) {
 		if middleware.RequireSecurityProof(c, service.VerificationOperation{Scope: scope}) == nil {
 			return
 		}
+		// The strength policy is checked only after the operation is
+		// authorized: an unauthenticated caller must not be able to probe
+		// which passwords the policy accepts.
+		if err := common.ValidateNewAccountPasswordStrength(user.Password, user.Username, ""); err != nil {
+			common.ApiError(c, err)
+			return
+		}
 		cleanUser.OriginalPassword = user.OriginalPassword
 		if err := model.ChangeUserPassword(identity, &cleanUser, firstPassword); err != nil {
 			writeSecurityOperationError(c, err)
@@ -1098,6 +1118,13 @@ func CreateUser(c *gin.Context) {
 			return
 		}
 		auditParams["verification_method"] = authorization.Method
+	}
+	// The strength policy is checked only after the operation is authorized: an
+	// unauthorized caller must not be able to probe which passwords the policy
+	// accepts.
+	if err := common.ValidateNewAccountPasswordStrength(user.Password, user.Username, user.Email); err != nil {
+		common.ApiError(c, err)
+		return
 	}
 	// Even for admin users, we cannot fully trust them!
 	cleanUser := model.User{
@@ -1311,6 +1338,15 @@ type topUpRequest struct {
 	Key string `json:"key"`
 }
 
+// topUpLocks 按用户维度串行化充值请求（TryLock 语义：并发直接拒绝，不排队）。
+//
+// 这张表只增不删是**有意为之**，不要"顺手"补 Delete：TryLock 与 map 删除之间存在
+// 窗口——A 解锁后删除条目，C 恰好 Load 到旧锁，D 同时新建一把新锁，两人会同时
+// 通过互斥，同一用户并发兑换就成立了。要安全删除必须像 LockOrder 那样做引用计数
+// （controller/topup.go 的 refCountedMutex）。
+//
+// 代价可接受：条目只有一条 chan 指针，数量上限是"发起过充值的用户数"，随用户表
+// 规模线性增长，不会随请求数增长。
 var topUpLocks sync.Map
 var topUpCreateLock sync.Mutex
 
@@ -1386,11 +1422,15 @@ func TopUp(c *gin.Context) {
 }
 
 type UpdateUserSettingRequest struct {
-	QuotaWarningType                 string  `json:"notify_type"`
-	QuotaWarningThreshold            float64 `json:"quota_warning_threshold"`
-	QuotaWarningEnabled              *bool   `json:"quota_warning_enabled,omitempty"`
-	WebhookUrl                       string  `json:"webhook_url,omitempty"`
-	WebhookSecret                    string  `json:"webhook_secret,omitempty"`
+	QuotaWarningType      string  `json:"notify_type"`
+	QuotaWarningThreshold float64 `json:"quota_warning_threshold"`
+	QuotaWarningEnabled   *bool   `json:"quota_warning_enabled,omitempty"`
+	WebhookUrl            string  `json:"webhook_url,omitempty"`
+	// WebhookSecret 是指针：通知设置表单通常不回传已存的 HMAC 密钥
+	//（隐藏或掩码展示），用指针才能把「请求没带这个字段」与「显式提交空串」
+	// 区分开——前者必须保留原值，否则用户每次保存其它字段都会把签名密钥
+	// 静默清空（DEF-7），接收端校验全挂且无任何提示。
+	WebhookSecret                    *string `json:"webhook_secret,omitempty"`
 	NotificationEmail                string  `json:"notification_email,omitempty"`
 	BarkUrl                          string  `json:"bark_url,omitempty"`
 	GotifyUrl                        string  `json:"gotify_url,omitempty"`
@@ -1430,6 +1470,16 @@ func UpdateUserSetting(c *gin.Context) {
 		// 验证URL格式
 		if _, err := url.ParseRequestURI(req.WebhookUrl); err != nil {
 			common.ApiErrorT(c, "Invalid Webhook URL")
+			return
+		}
+		// 检查是否是HTTP或HTTPS（DEF-8：与 Bark / Gotify 同一口径）。
+		// url.ParseRequestURI 接受 file:// 等任意 scheme，此前 webhook 是唯一
+		// 没有协议限制的通知方式——保存阶段就应拒绝，不能只依赖发送时的 SSRF
+		// 拦截：那会把坏配置留到真正发通知时才暴露。大小写不敏感地比较，
+		// "HTTP://" 同样是合法 http URL。
+		scheme := strings.ToLower(req.WebhookUrl)
+		if !strings.HasPrefix(scheme, "https://") && !strings.HasPrefix(scheme, "http://") {
+			common.ApiErrorT(c, "URL must start with http:// or https://")
 			return
 		}
 	}
@@ -1508,7 +1558,11 @@ func UpdateUserSetting(c *gin.Context) {
 		}
 	}
 
-	// 只保留所选通知方式的配置，其他方式的配置清空
+	// 只保留所选通知方式的配置，其他方式的配置清空。
+	// webhook_secret 例外：它是可选的 HMAC 凭据，清空块之后若请求没有回传
+	// 新值，要把这里暂存的原值放回去——否则每次保存设置都会把签名密钥
+	// 静默清空（DEF-7）。
+	storedWebhookSecret := settings.WebhookSecret
 	settings.WebhookUrl, settings.WebhookSecret = "", ""
 	settings.NotificationEmail = ""
 	settings.BarkUrl = ""
@@ -1516,7 +1570,14 @@ func UpdateUserSetting(c *gin.Context) {
 	switch req.QuotaWarningType {
 	case dto.NotifyTypeWebhook:
 		settings.WebhookUrl = req.WebhookUrl
-		settings.WebhookSecret = req.WebhookSecret
+		// 请求未携带 webhook_secret 时保留原值（DEF-7）：HMAC 密钥是可选
+		// 凭据，表单为隐藏/掩码展示，用户改其它字段不应顺带把它清空。
+		// 显式提交空串（指针非 nil 且值为空）视为用户主动移除密钥。
+		if req.WebhookSecret != nil {
+			settings.WebhookSecret = *req.WebhookSecret
+		} else {
+			settings.WebhookSecret = storedWebhookSecret
+		}
 	case dto.NotifyTypeEmail:
 		settings.NotificationEmail = req.NotificationEmail
 	case dto.NotifyTypeBark:
