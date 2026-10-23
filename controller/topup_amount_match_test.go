@@ -176,8 +176,6 @@ func TestCreemCurrencyMatchesOrder(t *testing.T) {
 	}
 }
 
-
-
 func TestProviderCurrencyMatchesOrder(t *testing.T) {
 	tests := []struct {
 		name     string
@@ -198,7 +196,6 @@ func TestProviderCurrencyMatchesOrder(t *testing.T) {
 	}
 }
 
-
 func TestStripeWebhookNeedsRetry(t *testing.T) {
 	tests := []struct {
 		name string
@@ -215,7 +212,6 @@ func TestStripeWebhookNeedsRetry(t *testing.T) {
 		})
 	}
 }
-
 
 func TestStripeCheckoutTotalIsPayable(t *testing.T) {
 	tests := []struct {
@@ -241,7 +237,6 @@ func TestStripeCheckoutTotalIsPayable(t *testing.T) {
 		})
 	}
 }
-
 
 func TestStripeMoneyToMinorUnits(t *testing.T) {
 	tests := []struct {
