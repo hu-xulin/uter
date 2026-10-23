@@ -2,7 +2,6 @@ package mokaai
 
 import (
 	"encoding/json"
-	"io"
 	"net/http"
 
 	"github.com/uter-ai/uter/common"
@@ -55,7 +54,7 @@ func embeddingResponseMoka2OpenAI(response *dto.EmbeddingResponse) *dto.OpenAIEm
 
 func mokaEmbeddingHandler(c *gin.Context, info *relaycommon.RelayInfo, resp *http.Response) (*dto.Usage, *types.UterError) {
 	var baiduResponse dto.EmbeddingResponse
-	responseBody, err := io.ReadAll(resp.Body)
+	responseBody, err := common.ReadUpstreamBody(resp.Body)
 	if err != nil {
 		return nil, types.NewError(err, types.ErrorCodeBadResponseBody)
 	}
