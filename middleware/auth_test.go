@@ -9,16 +9,16 @@ import (
 	"testing"
 	"time"
 
-	"github.com/uter-ai/uter/common"
-	"github.com/uter-ai/uter/i18n"
-	"github.com/uter-ai/uter/model"
-	"github.com/uter-ai/uter/service"
-	"github.com/uter-ai/uter/service/authz"
 	"github.com/gin-gonic/gin"
 	"github.com/glebarez/sqlite"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/uter-ai/uter/common"
+	"github.com/uter-ai/uter/i18n"
+	"github.com/uter-ai/uter/model"
+	"github.com/uter-ai/uter/service"
+	"github.com/uter-ai/uter/service/authz"
 	"gorm.io/gorm"
 )
 
@@ -521,7 +521,6 @@ func TestApplyWebSocketSubprotocolAuthorizationReadsRepeatedHeaders(t *testing.T
 	assert.True(t, applyWebSocketSubprotocolAuthorization(header))
 	assert.Equal(t, "Bearer sk-later-field", header.Get("Authorization"))
 }
-
 
 func TestOrgAdminAuthRejectsScopedTokenOnSessionOnlyRoutes(t *testing.T) {
 	setupDashboardAuthMiddlewareTest(t)
