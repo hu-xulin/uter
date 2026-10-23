@@ -140,7 +140,6 @@ func isEpayWebhookEnabled() bool {
 	return isEpayWebhookConfigured()
 }
 
-
 // Payment provider callbacks are unauthenticated until their signatures are
 // verified. Bound their raw bodies before buffering them for signature checks,
 // so invalid or hostile payloads cannot force unbounded memory allocation.
@@ -162,7 +161,6 @@ func readPaymentWebhookBody(body io.Reader) ([]byte, error) {
 	return payload, nil
 }
 
-
 // limitPaymentWebhookFormBody caps URL-encoded payment callback bodies before
 // ParseForm reads them. This complements readPaymentWebhookBody for JSON/raw
 // providers while preserving the standard library's form parsing behavior.
@@ -171,7 +169,6 @@ func limitPaymentWebhookFormBody(w http.ResponseWriter, r *http.Request) {
 		r.Body = http.MaxBytesReader(w, r.Body, maxPaymentWebhookBodyBytes)
 	}
 }
-
 
 const maxPaymentProviderAPIResponseBodyBytes int64 = 1 << 20
 
