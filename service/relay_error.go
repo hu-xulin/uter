@@ -21,6 +21,13 @@ func DecideRelayRetry(c *gin.Context, err *types.NewAPIError, retryTimes int) Po
 	if err == nil {
 		return PolicyDecision{Action: "stop", Reason: "request_completed", Source: "system"}
 	}
+	// 已经向客户端写出响应体字节后不得换渠道重发：SSE 消费方会把两次应答拼成
+	// 一段重复内容，上游也按两次调用计费（审核规范 C4.1）。这里用 Size() 而不是
+	// Written()——websocket 升级会把 Written() 置真但 size 仍为 0，实时链路的
+	// 重试由 responses_websocket 自己判定，不能被这条规则误伤。
+	if c != nil && c.Writer != nil && c.Writer.Size() > 0 {
+		return PolicyDecision{Action: "stop", Reason: "response_already_written", Source: "system"}
+	}
 	if ShouldSkipRetryAfterChannelAffinityFailure(c) {
 		source := RequestPolicy(c).SessionModeSource
 		if source == "" {
