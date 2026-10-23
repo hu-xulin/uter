@@ -99,11 +99,14 @@ func cohereStreamHandler(c *gin.Context, info *relaycommon.RelayInfo, resp *http
 		return 0, nil, nil
 	})
 	dataChan := make(chan string)
-	stopChan := make(chan bool)
+	// 带缓冲：消费方退出后发送不得阻塞，否则读取协程永久卡住。
+	stopChan := make(chan bool, 1)
+	ctx := c.Request.Context()
 	go func() {
 		for scanner.Scan() {
-			data := scanner.Text()
-			dataChan <- data
+			if !helper.SendStreamChunk(ctx, dataChan, scanner.Text()) {
+				return
+			}
 		}
 		if err := scanner.Err(); err != nil {
 			common.SysLog(common.LogText("error reading stream: %s", err.Error()))
@@ -176,7 +179,7 @@ func cohereStreamHandler(c *gin.Context, info *relaycommon.RelayInfo, resp *http
 
 func cohereHandler(c *gin.Context, info *relaycommon.RelayInfo, resp *http.Response) (*dto.Usage, *types.NewAPIError) {
 	createdTime := common.GetTimestamp()
-	responseBody, err := io.ReadAll(resp.Body)
+	responseBody, err := common.ReadUpstreamBody(resp.Body)
 	if err != nil {
 		return nil, types.NewError(err, types.ErrorCodeBadResponseBody)
 	}
@@ -217,7 +220,7 @@ func cohereHandler(c *gin.Context, info *relaycommon.RelayInfo, resp *http.Respo
 }
 
 func cohereRerankHandler(c *gin.Context, resp *http.Response, info *relaycommon.RelayInfo) (*dto.Usage, *types.NewAPIError) {
-	responseBody, err := io.ReadAll(resp.Body)
+	responseBody, err := common.ReadUpstreamBody(resp.Body)
 	if err != nil {
 		return nil, types.NewError(err, types.ErrorCodeBadResponseBody)
 	}
