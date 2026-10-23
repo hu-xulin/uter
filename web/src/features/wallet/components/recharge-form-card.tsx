@@ -173,9 +173,15 @@ export function RechargeFormCard({
     }
   }
 
+  // 官方直连（支付宝 alipay_web / 微信支付 wechat_web）不在 Epay 易支付通道内，
+  // 但同样属于「可配置的在线充值」——后端在密钥就绪时会自动把它们追加进
+  // pay_methods，因此这里必须一并计入，否则只配了官方直连的站点
+  // （未配 EpayId/EpayKey/PayAddress）会连金额与支付方式一起被隐藏。
   const hasConfigurableTopup =
     topupInfo?.enable_online_topup ||
     topupInfo?.enable_stripe_topup ||
+    topupInfo?.enable_alipay_topup ||
+    topupInfo?.enable_wechat_pay_topup ||
     enableWaffoTopup ||
     enableWaffoPancakeTopup
   const hasAnyTopup = hasConfigurableTopup || enableCreemTopup
