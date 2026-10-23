@@ -11,12 +11,12 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/uter-ai/uter/common"
-	kitreasoning "github.com/uter-ai/uter/relaykit/relayconvert/reasoning"
-	"github.com/uter-ai/uter/relaykit/types"
 	"github.com/samber/lo"
 	"github.com/tidwall/gjson"
 	"github.com/tidwall/sjson"
+	"github.com/uter-ai/uter/common"
+	kitreasoning "github.com/uter-ai/uter/relaykit/relayconvert/reasoning"
+	"github.com/uter-ai/uter/relaykit/types"
 )
 
 var negativeIndexRegexp = regexp.MustCompile(`\.(-\d+)`)
