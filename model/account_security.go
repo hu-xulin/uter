@@ -19,6 +19,12 @@ var (
 // password under the same user lock as the credential update. Only self-profile
 // fields are accepted; a stale snapshot cannot restore roles or account status.
 func ChangeUserPassword(identity AuthSessionIdentity, update *User, firstPassword bool) error {
+	// The policy is re-applied here even though the controller already checked
+	// it: this is the transaction that stores the credential, and a caller that
+	// skips the controller must not be able to bypass the policy.
+	if err := common.ValidateNewAccountPasswordStrength(update.Password, update.Username, ""); err != nil {
+		return err
+	}
 	hash, err := common.HashAccountPassword(update.Password)
 	if err != nil {
 		return err
