@@ -7,8 +7,8 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/uter-ai/uter/common"
 	"github.com/go-redis/redis/v8"
+	"github.com/uter-ai/uter/common"
 )
 
 //go:embed lua/rate_limit.lua
