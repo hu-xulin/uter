@@ -8,15 +8,15 @@ import (
 	"strings"
 	"time"
 
+	"github.com/gin-gonic/gin"
+	"github.com/shopspring/decimal"
+	"github.com/thanhpk/randstr"
 	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/logger"
 	"github.com/uter-ai/uter/model"
 	"github.com/uter-ai/uter/service"
 	"github.com/uter-ai/uter/setting"
 	"github.com/uter-ai/uter/setting/operation_setting"
-	"github.com/gin-gonic/gin"
-	"github.com/shopspring/decimal"
-	"github.com/thanhpk/randstr"
 	waffo "github.com/waffo-com/waffo-go"
 	"github.com/waffo-com/waffo-go/config"
 	"github.com/waffo-com/waffo-go/core"
@@ -245,15 +245,15 @@ func RequestWaffoPay(c *gin.Context) {
 
 	// 创建本地订单
 	topUp := &model.TopUp{
-		UserId:          id,
-		Amount:          amount,
-		Money:           payMoney,
-		TradeNo:         merchantOrderId,
-		PaymentMethod:   model.PaymentMethodWaffo,
-		PaymentProvider: model.PaymentProviderWaffo,
+		UserId:           id,
+		Amount:           amount,
+		Money:            payMoney,
+		TradeNo:          merchantOrderId,
+		PaymentMethod:    model.PaymentMethodWaffo,
+		PaymentProvider:  model.PaymentProviderWaffo,
 		ProviderCurrency: strings.ToLower(getWaffoCurrency()),
-		CreateTime:      time.Now().Unix(),
-		Status:          common.TopUpStatusPending,
+		CreateTime:       time.Now().Unix(),
+		Status:           common.TopUpStatusPending,
 	}
 	if err := topUp.Insert(); err != nil {
 		logger.LogError(c.Request.Context(), common.LogText("Waffo failed to create top-up order user_id=%d trade_no=%s amount=%d error=%q", id, merchantOrderId, req.Amount, err.Error()))
