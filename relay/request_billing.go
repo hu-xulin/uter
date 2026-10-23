@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/gin-gonic/gin"
+	"github.com/samber/lo"
 	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/constant"
 	"github.com/uter-ai/uter/logger"
@@ -15,8 +17,6 @@ import (
 	"github.com/uter-ai/uter/relaykit/types"
 	"github.com/uter-ai/uter/service"
 	"github.com/uter-ai/uter/setting"
-	"github.com/gin-gonic/gin"
-	"github.com/samber/lo"
 )
 
 // PrepareRequestBilling estimates and reserves one request's charge. Transports
