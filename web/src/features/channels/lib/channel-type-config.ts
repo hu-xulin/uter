@@ -183,7 +183,7 @@ export const CHANNEL_TYPE_CONFIGS: Record<number, ChannelTypeConfig> = {
   600: {
     id: 600,
     name: CHANNEL_TYPES[600],
-    icon: 'Uter',
+    icon: 'UterShared',
     hints: {
       baseUrl: 'Fallback base URL',
       key: 'Used by route auth templates',
@@ -193,7 +193,7 @@ export const CHANNEL_TYPE_CONFIGS: Record<number, ChannelTypeConfig> = {
   601: {
     id: 601,
     name: CHANNEL_TYPES[601],
-    icon: 'Uter',
+    icon: 'UterAggregate',
     hints: {
       baseUrl: 'Fallback base URL',
       key: 'Used by route auth templates',
@@ -203,7 +203,7 @@ export const CHANNEL_TYPE_CONFIGS: Record<number, ChannelTypeConfig> = {
   602: {
     id: 602,
     name: CHANNEL_TYPES[602],
-    icon: 'Uter',
+    icon: 'UterProxy',
     hints: {
       baseUrl: 'Fallback base URL',
       key: 'Used by route auth templates',
