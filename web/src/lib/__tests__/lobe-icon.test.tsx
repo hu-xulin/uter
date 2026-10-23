@@ -141,4 +141,50 @@ describe('Lobe icons', () => {
       ])
     )
   })
+
+  // `@lobehub/icons` ships no "Uter" brand. Before these registrations every
+  // channel type mapping to it (58 / 60 / 600 / 601 / 602) rendered the grey
+  // single-letter placeholder circle instead of a logo.
+  it.each(['Uter', 'UterShared', 'UterAggregate', 'UterProxy'])(
+    'renders the custom %s icon at the requested size',
+    (name) => {
+      const { container } = render(getLobeIcon(`${name}.Color`, 18))
+      const icon = container.querySelector('svg')
+      expect(icon).not.toBeNull()
+      expect(icon).toHaveAttribute('width', '18')
+      expect(icon).toHaveAttribute('height', '18')
+      // The placeholder is a <div> carrying the first letter of the icon name.
+      expect(container.querySelector('div')).toBeNull()
+    }
+  )
+
+  it('gives the three branded Advanced Custom variants distinct glyphs', () => {
+    const paths = (name: string) => {
+      const { container, unmount } = render(getLobeIcon(name, 20))
+      const svg = container.querySelector('svg')
+      const signature = [...(svg?.querySelectorAll('path') ?? [])]
+        .map((path) => path.getAttribute('d'))
+        .join('|')
+      unmount()
+      return signature
+    }
+    const shared = paths('UterShared')
+    const aggregate = paths('UterAggregate')
+    const proxy = paths('UterProxy')
+    expect(shared).not.toBe('')
+    expect(aggregate).not.toBe('')
+    expect(proxy).not.toBe('')
+    expect(new Set([shared, aggregate, proxy]).size).toBe(3)
+  })
+
+  it('exposes the Uter icons through the selector registry', () => {
+    expect(getLobeIconNames()).toEqual(
+      expect.arrayContaining([
+        'Uter',
+        'UterShared',
+        'UterAggregate',
+        'UterProxy',
+      ])
+    )
+  })
 })
