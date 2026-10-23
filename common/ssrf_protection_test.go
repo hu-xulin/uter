@@ -60,7 +60,6 @@ func TestNewSSRFProtectionFromFetchSettingParsesPortRanges(t *testing.T) {
 	require.Error(t, protection.ValidateNetworkTarget("example.com", 9000))
 }
 
-
 func TestSSRFProtectionRejectsNonCanonicalIPHostForms(t *testing.T) {
 	protection := &SSRFProtection{
 		AllowPrivateIp:         false,
@@ -96,7 +95,6 @@ func TestSSRFProtectionDomainBlacklistNormalizesTrailingDot(t *testing.T) {
 	require.NoError(t, protection.ValidateNetworkTarget("allowed.example.test.", 443))
 }
 
-
 func TestSSRFProtectionDomainBlacklistNormalizesIDN(t *testing.T) {
 	protection := &SSRFProtection{
 		AllowPrivateIp:   false,
@@ -119,7 +117,6 @@ func TestSSRFProtectionRejectsMultipleTrailingDots(t *testing.T) {
 	require.Error(t, protection.ValidateNetworkTarget("blocked.example.test..", 443))
 }
 
-
 func TestSSRFProtectionAllowsPublicIPv6Addresses(t *testing.T) {
 	protection := &SSRFProtection{
 		AllowPrivateIp:   false,
@@ -137,7 +134,6 @@ func TestSSRFProtectionAllowsPublicIPv6Addresses(t *testing.T) {
 	}
 }
 
-
 func TestSSRFProtectionEnforcesPrivateIPWhenDomainIPFilteringDisabled(t *testing.T) {
 	protection := &SSRFProtection{
 		AllowPrivateIp:         false,
@@ -149,7 +145,6 @@ func TestSSRFProtectionEnforcesPrivateIPWhenDomainIPFilteringDisabled(t *testing
 	require.Error(t, protection.ValidateResolvedPrivateIP("metadata.example", net.ParseIP("169.254.169.254")))
 	require.NoError(t, protection.ValidateResolvedPrivateIP("public.example", net.ParseIP("8.8.8.8")))
 }
-
 
 func TestSSRFProtectionRejectsUnsafeURLShapes(t *testing.T) {
 	protection := &SSRFProtection{
@@ -175,7 +170,6 @@ func TestSSRFProtectionRejectsUnsafeURLShapes(t *testing.T) {
 		})
 	}
 }
-
 
 func TestSSRFWildcardRequiresSubdomain(t *testing.T) {
 	wildcard := []string{"*.example.test"}
