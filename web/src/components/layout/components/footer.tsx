@@ -59,20 +59,22 @@ const UTER_FOOTER_ATTRIBUTION_KEY = [
   'projectAttributionSuffix',
 ].join('.')
 
-// Regulatory records shown as icon + text in one row beside the brand link,
-// each linking to its official filing portal. The icons are decorative — each
-// item's translated label carries the meaning — while the filing numbers stay
-// verbatim in every locale because they are identifiers, not prose.
+// Regulatory records shown as icon + text in one row beside the brand link.
+// Each record is one link wrapping its icon and translated label, pointing at
+// the official filing portal and opened in a new tab. The icons are decorative
+// — each item's translated label carries the meaning — while the filing
+// numbers stay verbatim in every locale because they are identifiers, not
+// prose.
 const FOOTER_COMPLIANCE_ITEMS = [
-  {
-    icon: '/icp-filing.png',
-    labelKey: 'ICP Filing Number',
-    href: 'https://beian.miit.gov.cn',
-  },
   {
     icon: '/enterprise-credit.png',
     labelKey: 'Enterprise Credit Number',
     href: 'https://www.gsxt.gov.cn',
+  },
+  {
+    icon: '/icp-filing.png',
+    labelKey: 'ICP Filing Number',
+    href: 'https://beian.miit.gov.cn',
   },
   {
     icon: '/police-filing.png',
@@ -433,35 +435,23 @@ export function Footer(props: FooterProps) {
                 COMPLIANCE_ROW_ALIGN
               )}
             >
-              {FOOTER_COMPLIANCE_ITEMS.map((item) => {
-                // Only the filing number after the colon is a link — the icon
-                // and the label prefix stay plain text. The colon may be the
-                // full-width "：" (zh) or half-width ":" (other locales); the
-                // filing number keeps its verbatim value regardless of
-                // locale.
-                const label = t(item.labelKey)
-                const sep = label.search(/[：:]/)
-                const prefix = sep === -1 ? label : label.slice(0, sep + 1)
-                const value = sep === -1 ? '' : label.slice(sep + 1).trimStart()
-                return (
-                  <li key={item.labelKey} className='flex items-center gap-2'>
+              {FOOTER_COMPLIANCE_ITEMS.map((item) => (
+                <li key={item.labelKey}>
+                  <a
+                    href={item.href}
+                    target='_blank'
+                    rel='noopener noreferrer'
+                    className='hover:text-foreground flex items-center gap-2 transition-colors duration-200'
+                  >
                     <img
                       src={item.icon}
                       alt=''
                       className='h-4 w-auto shrink-0 object-contain'
                     />
-                    <span>{prefix}</span>
-                    <a
-                      href={item.href}
-                      target='_blank'
-                      rel='noopener noreferrer'
-                      className='hover:text-foreground transition-colors duration-200'
-                    >
-                      {value}
-                    </a>
-                  </li>
-                )
-              })}
+                    <span>{t(item.labelKey)}</span>
+                  </a>
+                </li>
+              ))}
             </ul>
           )}
         </div>
