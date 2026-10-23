@@ -3,8 +3,8 @@ package billingexpr_test
 import (
 	"testing"
 
-	"github.com/uter-ai/uter/pkg/billingexpr"
 	"github.com/stretchr/testify/assert"
+	"github.com/uter-ai/uter/pkg/billingexpr"
 )
 
 func TestUsedUsageKeysExtractsLiteralCallsAndSkipsDynamicArguments(t *testing.T) {
