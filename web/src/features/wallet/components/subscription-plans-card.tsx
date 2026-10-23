@@ -72,16 +72,12 @@ interface SubscriptionPlansCardProps {
 
 /**
  * 订阅购买弹窗的「网站支付」区块只支持 Epay 表单提交（paySubscriptionEpay），
- * 因此必须剔除 Stripe / Creem，以及官方直连接口（alipay_web / wechat_web /
- * wechat_miniprogram）——后者在充值表单走专门的收银台弹窗，若混进这里会被
- * 当成 Epay type 参数提交，下单必然失败。
+ * 因此必须剔除 Stripe / Creem，以及官方直连接口（alipay_web / wechat_web）
+ * ——后者在充值表单走专门的收银台弹窗，若混进这里会被当成 Epay type 参数提交，
+ * 下单必然失败。
  */
 function getEpayMethods(payMethods: PaymentMethod[] = []): PaymentMethod[] {
-  const officialDirectTypes = new Set([
-    'alipay_web',
-    'wechat_web',
-    'wechat_miniprogram',
-  ])
+  const officialDirectTypes = new Set(['alipay_web', 'wechat_web'])
   return payMethods.filter(
     (m) =>
       m?.type &&
