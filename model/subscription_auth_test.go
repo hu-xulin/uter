@@ -9,11 +9,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/uter-ai/uter/common"
 	"github.com/glebarez/sqlite"
 	"github.com/go-redis/redis/v8"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/uter-ai/uter/common"
 	"gorm.io/gorm"
 )
 
