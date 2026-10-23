@@ -76,20 +76,20 @@ var privateIPv4Nets = []net.IPNet{
 // https://www.iana.org/assignments/iana-ipv6-special-registry/
 var privateIPv6Nets = func() []net.IPNet {
 	cidrs := []string{
-		"::/128",        // 未指定地址
-		"::1/128",       // 回环
-		"::ffff:0:0/96", // IPv4-mapped
-		"2002::/16",     // 6to4（可嵌入 IPv4 内网地址，如 2002:7f00:1:: -> 127.0.0.1）
-		"::/96",         // IPv4-compatible（已废弃，::a.b.c.d 可嵌入内网）
-		"64:ff9b::/96",  // Well-known IPv4/IPv6 translation prefix
+		"::/128",         // 未指定地址
+		"::1/128",        // 回环
+		"::ffff:0:0/96",  // IPv4-mapped
+		"2002::/16",      // 6to4（可嵌入 IPv4 内网地址，如 2002:7f00:1:: -> 127.0.0.1）
+		"::/96",          // IPv4-compatible（已废弃，::a.b.c.d 可嵌入内网）
+		"64:ff9b::/96",   // Well-known IPv4/IPv6 translation prefix
 		"64:ff9b:1::/48", // Local-use IPv4/IPv6 translation (RFC 8215); may embed private IPv4
-		"100::/64",      // Discard-Only
-		"2001::/23",     // IETF Protocol Assignments
-		"2001:db8::/32", // 文档
-		"fc00::/7",      // Unique Local Address (ULA)
-		"fec0::/10",     // Deprecated IPv6 site-local range; still internal on legacy networks
-		"fe80::/10",     // 链路本地
-		"ff00::/8",      // 组播
+		"100::/64",       // Discard-Only
+		"2001::/23",      // IETF Protocol Assignments
+		"2001:db8::/32",  // 文档
+		"fc00::/7",       // Unique Local Address (ULA)
+		"fec0::/10",      // Deprecated IPv6 site-local range; still internal on legacy networks
+		"fe80::/10",      // 链路本地
+		"ff00::/8",       // 组播
 	}
 	nets := make([]net.IPNet, 0, len(cidrs))
 	for _, c := range cidrs {
