@@ -5,6 +5,7 @@ import (
 	"io"
 	"net/http"
 
+	"github.com/gin-gonic/gin"
 	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/logger"
 	relaychannel "github.com/uter-ai/uter/relay/channel"
@@ -14,7 +15,6 @@ import (
 	"github.com/uter-ai/uter/relaykit/dto"
 	"github.com/uter-ai/uter/relaykit/types"
 	"github.com/uter-ai/uter/setting/model_setting"
-	"github.com/gin-gonic/gin"
 )
 
 // PrepareResponsesRequest applies the same model, conversion and channel rules
