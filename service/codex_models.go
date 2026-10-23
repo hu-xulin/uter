@@ -3,7 +3,6 @@ package service
 import (
 	"context"
 	"fmt"
-	"io"
 	"net/http"
 	"net/url"
 	"strings"
@@ -194,7 +193,7 @@ func FetchCodexModels(
 	}
 	defer resp.Body.Close()
 
-	body, err := io.ReadAll(resp.Body)
+	body, err := common.ReadUpstreamBody(resp.Body)
 	if err != nil {
 		return resp.StatusCode, nil, err
 	}
