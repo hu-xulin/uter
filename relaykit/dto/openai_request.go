@@ -7,9 +7,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/samber/lo"
 	kitutil "github.com/uter-ai/uter/relaykit/relayconvert/kitutil"
 	"github.com/uter-ai/uter/relaykit/types"
-	"github.com/samber/lo"
 )
 
 type ResponseFormat struct {
