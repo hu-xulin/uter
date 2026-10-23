@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/gin-gonic/gin"
 	relaycommon "github.com/uter-ai/uter/relay/common"
 	"github.com/uter-ai/uter/relaykit/dto"
 	"github.com/uter-ai/uter/relaykit/relayconvert/convmeta"
@@ -11,7 +12,6 @@ import (
 	"github.com/uter-ai/uter/relaykit/types"
 	"github.com/uter-ai/uter/setting/model_setting"
 	hostreasoning "github.com/uter-ai/uter/setting/reasoning"
-	"github.com/gin-gonic/gin"
 )
 
 // ApplyReasoningModelSuffix parses host-private reasoning suffixes from the
