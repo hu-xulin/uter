@@ -33,7 +33,7 @@ import { useSystemConfig } from '@/hooks/use-system-config'
 import { useScrolled } from '@/hooks/use-scrolled'
 import { useTopNavLinks } from '@/hooks/use-top-nav-links'
 import { cn } from '@/lib/utils'
-import { localizedBrandName } from '@/lib/brand'
+import { BRAND_LOGO_BOX_CLASS, localizedBrandName } from '@/lib/brand'
 import { useAuthStore } from '@/stores/auth-store'
 
 import { defaultTopNavLinks } from '../config/top-nav.config'
@@ -214,7 +214,12 @@ export function PublicHeader(props: PublicHeaderProps) {
                 to={homeUrl}
                 className='group flex min-w-0 items-center gap-2.5'
               >
-                <div className='flex size-7 shrink-0 items-center justify-center transition-all duration-300 group-hover:scale-105'>
+                <div
+                  className={cn(
+                    BRAND_LOGO_BOX_CLASS,
+                    'transition-all duration-300 group-hover:scale-105'
+                  )}
+                >
                   {logoContent}
                 </div>
                 <span
