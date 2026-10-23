@@ -70,7 +70,7 @@ func TestRechargeTopUpDistinguishesMissingOrderFromDatabaseFailure(t *testing.T)
 				_, err := rechargeOfficial("trade", PaymentProviderAlipay, "", "")
 				return err
 			},
-			},
+		},
 	}
 
 	for _, recharge := range recharges {
@@ -97,4 +97,3 @@ func TestRechargeTopUpDistinguishesMissingOrderFromDatabaseFailure(t *testing.T)
 		})
 	}
 }
-
