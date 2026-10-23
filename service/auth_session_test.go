@@ -8,14 +8,14 @@ import (
 	"testing"
 	"time"
 
-	"github.com/uter-ai/uter/common"
-	"github.com/uter-ai/uter/model"
 	"github.com/alicebob/miniredis/v2"
 	"github.com/gin-gonic/gin"
 	"github.com/glebarez/sqlite"
 	"github.com/go-redis/redis/v8"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/uter-ai/uter/common"
+	"github.com/uter-ai/uter/model"
 	"gorm.io/gorm"
 )
 
