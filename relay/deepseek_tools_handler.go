@@ -3,8 +3,9 @@ package relay
 import (
 	"errors"
 	"fmt"
-	"io"
 	"net/http"
+
+	"github.com/uter-ai/uter/common"
 
 	"github.com/uter-ai/uter/constant"
 	"github.com/uter-ai/uter/logger"
@@ -97,7 +98,7 @@ func DeepSeekToolsHelper(c *gin.Context, info *relaycommon.RelayInfo) (newAPIErr
 		return newAPIError
 	}
 
-	responseBody, err := io.ReadAll(httpResp.Body)
+	responseBody, err := common.ReadUpstreamBody(httpResp.Body)
 	if err != nil {
 		return types.NewOpenAIError(err, types.ErrorCodeReadResponseBodyFailed, http.StatusInternalServerError, types.ErrOptionWithSkipRetry())
 	}
