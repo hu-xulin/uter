@@ -5,13 +5,13 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io"
 	"mime/multipart"
 	"net/http"
 	"strings"
 	"sync"
 	"time"
 
+	"github.com/uter-ai/uter/common"
 	costoptcfg "github.com/uter-ai/uter/setting/costopt"
 )
 
@@ -195,7 +195,7 @@ func uploadBatchFile(ctx context.Context, cfg *costoptcfg.CostOptSetting, jsonl 
 		return "", err
 	}
 	defer resp.Body.Close()
-	body, err := io.ReadAll(resp.Body)
+	body, err := common.ReadUpstreamBody(resp.Body)
 	if err != nil {
 		return "", err
 	}
@@ -244,7 +244,7 @@ func createBatch(ctx context.Context, cfg *costoptcfg.CostOptSetting, fileID str
 		return "", err
 	}
 	defer resp.Body.Close()
-	body, err := io.ReadAll(resp.Body)
+	body, err := common.ReadUpstreamBody(resp.Body)
 	if err != nil {
 		return "", err
 	}
@@ -287,7 +287,7 @@ func BatchStatus(batchID string) (string, error) {
 		return "", err
 	}
 	defer resp.Body.Close()
-	body, err := io.ReadAll(resp.Body)
+	body, err := common.ReadUpstreamBody(resp.Body)
 	if err != nil {
 		return "", err
 	}
