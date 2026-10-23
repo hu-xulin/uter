@@ -9,6 +9,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/gin-gonic/gin"
 	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/constant"
 	"github.com/uter-ai/uter/dto"
@@ -20,7 +21,6 @@ import (
 	relaycommon "github.com/uter-ai/uter/relay/common"
 	"github.com/uter-ai/uter/service"
 	"github.com/uter-ai/uter/types"
-	"github.com/gin-gonic/gin"
 )
 
 type taskArtifactResponse struct {
