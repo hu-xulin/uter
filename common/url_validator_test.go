@@ -240,7 +240,6 @@ func TestInitSessionCookieSettingsRejectsNonOriginURLs(t *testing.T) {
 	}
 }
 
-
 func TestValidateRedirectURLRejectsUserInfoAndMissingHost(t *testing.T) {
 	originalDomains := constant.TrustedRedirectDomains
 	t.Cleanup(func() { constant.TrustedRedirectDomains = originalDomains })
