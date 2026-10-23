@@ -2,10 +2,10 @@ package openai
 
 import (
 	"bytes"
-	"io"
 	"math"
 	"net/http"
 
+	"github.com/gin-gonic/gin"
 	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/constant"
 	"github.com/uter-ai/uter/logger"
@@ -14,7 +14,6 @@ import (
 	"github.com/uter-ai/uter/relaykit/dto"
 	"github.com/uter-ai/uter/relaykit/types"
 	"github.com/uter-ai/uter/service"
-	"github.com/gin-gonic/gin"
 )
 
 func OpenaiTTSHandler(c *gin.Context, resp *http.Response, info *relaycommon.RelayInfo) *dto.Usage {
@@ -56,7 +55,7 @@ func OpenaiTTSHandler(c *gin.Context, resp *http.Response, info *relaycommon.Rel
 	} else {
 		common.SetContextKey(c, constant.ContextKeyLocalCountTokens, true)
 		// 读取响应体到缓冲区
-		bodyBytes, err := io.ReadAll(resp.Body)
+		bodyBytes, err := common.ReadUpstreamBody(resp.Body)
 		if err != nil {
 			logger.LogError(c, common.LogText("failed to read TTS response body: %v", err))
 			c.Writer.WriteHeaderNow()
@@ -117,7 +116,7 @@ func OpenaiTTSHandler(c *gin.Context, resp *http.Response, info *relaycommon.Rel
 func OpenaiSTTHandler(c *gin.Context, resp *http.Response, info *relaycommon.RelayInfo, responseFormat string) (*types.NewAPIError, *dto.Usage) {
 	defer service.CloseResponseBodyGracefully(resp)
 
-	responseBody, err := io.ReadAll(resp.Body)
+	responseBody, err := common.ReadUpstreamBody(resp.Body)
 	if err != nil {
 		return types.NewOpenAIError(err, types.ErrorCodeReadResponseBodyFailed, http.StatusInternalServerError), nil
 	}
