@@ -184,7 +184,6 @@ func sameOAuthOrigin(from, to *url.URL) bool {
 		normalizePort(from) == normalizePort(to)
 }
 
-
 // maxOAuthResponseBodyBytes bounds data received from OAuth token/user-info
 // endpoints. These responses are untrusted network input, even when the
 // endpoint itself is configured by an administrator.
