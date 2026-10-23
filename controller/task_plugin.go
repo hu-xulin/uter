@@ -15,6 +15,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/gin-gonic/gin"
 	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/constant"
 	"github.com/uter-ai/uter/logger"
@@ -22,7 +23,6 @@ import (
 	"github.com/uter-ai/uter/pkg/jsplugin"
 	"github.com/uter-ai/uter/plugins"
 	"github.com/uter-ai/uter/setting"
-	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
 
