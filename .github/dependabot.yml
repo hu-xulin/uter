@@ -1,18 +1,25 @@
 version: 2
 updates:
+  # 依赖升级 PR 已关闭：open-pull-requests-limit: 0 表示不为该生态开任何版本升级 PR/分支。
+  # 如需恢复，把 0 改回 10 即可。安全漏洞修复 PR 由仓库设置中的
+  # "Dependabot security updates" 单独控制，不受此处影响。
   - package-ecosystem: "bun"
     directory: "/web"
     schedule:
       interval: "weekly"
+    open-pull-requests-limit: 0
   - package-ecosystem: "gomod"
     directory: "/"
     schedule:
       interval: "weekly"
+    open-pull-requests-limit: 0
   - package-ecosystem: "gomod"
     directory: "/relaykit"
     schedule:
       interval: "weekly"
+    open-pull-requests-limit: 0
   - package-ecosystem: "gomod"
     directory: "/tokenkit"
     schedule:
       interval: "weekly"
+    open-pull-requests-limit: 0
