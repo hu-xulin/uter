@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/gin-gonic/gin"
 	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/logger"
 	relaycommon "github.com/uter-ai/uter/relay/common"
@@ -13,7 +14,6 @@ import (
 	"github.com/uter-ai/uter/relaykit/relayconvert"
 	"github.com/uter-ai/uter/relaykit/types"
 	"github.com/uter-ai/uter/service"
-	"github.com/gin-gonic/gin"
 )
 
 func ClaudeResponsesStreamHandler(c *gin.Context, resp *http.Response, info *relaycommon.RelayInfo) (*dto.Usage, *types.NewAPIError) {
