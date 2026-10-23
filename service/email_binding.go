@@ -27,7 +27,7 @@ var (
 	// message. These strings double as i18next keys on the frontend.
 	ErrAccountEmailDomainRestricted error = emailPolicyError("This email domain is not supported. Please use an email address from another domain.")
 	ErrAccountEmailAliasRestricted  error = emailPolicyError("Email aliases are not supported. Please use an email address without +, -, _ or . in the part before @, then try again.")
-	ErrEmailBindingDelivery         = errors.New("Verification email could not be sent. Start email verification again.")
+	ErrEmailBindingDelivery               = errors.New("Verification email could not be sent. Start email verification again.")
 )
 
 // emailPolicyError is one email-policy rejection that reports its own message
