@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
 	"net/http"
 	"sort"
 	"strings"
@@ -308,7 +307,7 @@ func callOpenAIChat(ctx context.Context, base, key, chatModel, system, user stri
 		return "", err
 	}
 	defer resp.Body.Close()
-	body, err := io.ReadAll(resp.Body)
+	body, err := common.ReadUpstreamBody(resp.Body)
 	if err != nil {
 		return "", err
 	}
