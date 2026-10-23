@@ -6,10 +6,10 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/uter-ai/uter/common"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/uter-ai/uter/common"
 )
 
 func TestUpdateOptionRejectsRetiredFrontendTheme(t *testing.T) {
