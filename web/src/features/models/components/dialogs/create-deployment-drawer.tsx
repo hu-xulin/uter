@@ -43,6 +43,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form'
+import { PasswordInput } from '@/components/password-input'
 import { Input } from '@/components/ui/input'
 import {
   Select,
@@ -762,8 +763,7 @@ export function CreateDeploymentDrawer({
                       <FormItem>
                         <FormLabel>{t('Registry secret')}</FormLabel>
                         <FormControl>
-                          <Input
-                            type='password'
+                          <PasswordInput
                             autoComplete='off'
                             {...field}
                           />
