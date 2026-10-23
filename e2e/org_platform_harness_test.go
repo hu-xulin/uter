@@ -264,11 +264,11 @@ func (env *orgPlatformEnv) seedOrganization(t *testing.T) {
 	require.Equal(t, http.StatusOK, recorder.Code, recorder.Body.String())
 	var created struct {
 		Success bool `json:"success"`
-		Data struct {
-			Id int `json:"id"`
-			Name string `json:"name"`
-			Quota int64 `json:"quota"`
-			OwnerUserId int `json:"owner_user_id"`
+		Data    struct {
+			Id          int    `json:"id"`
+			Name        string `json:"name"`
+			Quota       int64  `json:"quota"`
+			OwnerUserId int    `json:"owner_user_id"`
 		} `json:"data"`
 	}
 	require.NoError(t, common.Unmarshal(recorder.Body.Bytes(), &created))
@@ -287,9 +287,9 @@ func (env *orgPlatformEnv) seedOrganization(t *testing.T) {
 	}
 
 	members := []struct {
-		actor string
-		dept string
-		role string
+		actor  string
+		dept   string
+		role   string
 		subQta int64
 	}{
 		{"admin", "总办", model.OrgRoleAdmin, 0},
