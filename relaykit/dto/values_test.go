@@ -3,9 +3,9 @@ package dto
 import (
 	"testing"
 
-	kitutil "github.com/uter-ai/uter/relaykit/relayconvert/kitutil"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	kitutil "github.com/uter-ai/uter/relaykit/relayconvert/kitutil"
 )
 
 func TestIntValueUnmarshalJSON(t *testing.T) {
