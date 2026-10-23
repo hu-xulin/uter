@@ -3,12 +3,12 @@ package middleware
 import (
 	"net/http"
 
+	"github.com/gin-gonic/gin"
 	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/dto"
 	"github.com/uter-ai/uter/logger"
 	pluginruntime "github.com/uter-ai/uter/pkg/jsplugin"
 	"github.com/uter-ai/uter/relaykit/types"
-	"github.com/gin-gonic/gin"
 )
 
 func abortWithOpenAiMessage(c *gin.Context, statusCode int, message string, code ...types.ErrorCode) {
