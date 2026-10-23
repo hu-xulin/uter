@@ -3,12 +3,12 @@ package plugins_test
 import (
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/pkg/jsplugin"
 	builtinplugins "github.com/uter-ai/uter/plugins"
 	"github.com/uter-ai/uter/relay"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 func TestVertexAIResponsesProtocol(t *testing.T) {
