@@ -21,7 +21,6 @@ import { useMemo } from 'react'
 import { useForm, useWatch } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
-import { PasswordInput } from '@/components/password-input'
 import {
   Form,
   FormControl,
@@ -34,10 +33,12 @@ import {
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
+import { SecretInput } from '@/components/ui/secret-input'
 import { Switch } from '@/components/ui/switch'
 import { getCurrencyDisplay, getCurrencyLabel } from '@/lib/currency'
 import { parseQuotaFromDollars, quotaUnitsToDollars } from '@/lib/format'
 import { handleServerError } from '@/lib/handle-server-error'
+import { isMaskedSecret, maskSecret } from '@/lib/secret'
 
 import {
   SettingsControlGroup,
@@ -146,7 +147,10 @@ export function EmailSettingsSection({
         updates.push({ key: 'ResendFrom', value: sender })
       }
       const key = values.ResendApiKey.trim()
-      if (key) updates.push({ key: 'ResendApiKey', value: key })
+      // 掩码串是后端下发的展示值，不是新密钥：跳过即可，保留库中原密钥。
+      if (key && !isMaskedSecret(key)) {
+        updates.push({ key: 'ResendApiKey', value: key })
+      }
     } else {
       if (sanitized.SMTPServer !== initial.SMTPServer) {
         updates.push({ key: 'SMTPServer', value: sanitized.SMTPServer })
@@ -164,7 +168,12 @@ export function EmailSettingsSection({
         updates.push({ key: 'SMTPFrom', value: sanitized.SMTPFrom })
       }
 
-      if (sanitized.SMTPToken && sanitized.SMTPToken !== initial.SMTPToken) {
+      // 掩码串（后端展示值）一律不当新值提交；未输入则保留库中原凭据。
+      if (
+        sanitized.SMTPToken &&
+        !isMaskedSecret(sanitized.SMTPToken) &&
+        sanitized.SMTPToken !== initial.SMTPToken
+      ) {
         updates.push({ key: 'SMTPToken', value: sanitized.SMTPToken })
       }
 
@@ -218,7 +227,10 @@ export function EmailSettingsSection({
           form.setValue('ResendKeyConfigured', true)
         }
       }
-      form.setValue('ResendApiKey', '')
+      // 保存后密钥字段回到掩码展示态：与 SecretInput 的约定一致
+      // （表单里只保留前后各 4 位，明文不留在内存里）。
+      form.setValue('ResendApiKey', maskSecret(values.ResendApiKey.trim()))
+      form.setValue('SMTPToken', maskSecret(values.SMTPToken.trim()))
     } catch (error) {
       handleServerError(error)
     }
@@ -327,10 +339,9 @@ export function EmailSettingsSection({
                   <FormItem>
                     <FormLabel>{t('Resend API key')}</FormLabel>
                     <FormControl>
-                      <PasswordInput
-                        {...field}
-                        autoComplete='new-password'
-                        disabled={isSaving}
+                      <SecretInput
+                        value={field.value ?? ''}
+                        onChange={field.onChange}
                         placeholder={t('Enter new token to update')}
                       />
                     </FormControl>
@@ -557,12 +568,10 @@ export function EmailSettingsSection({
                   <FormItem>
                     <FormLabel>{t('Password / Access Token')}</FormLabel>
                     <FormControl>
-                      <Input
-                        autoComplete='off'
-                        type='password'
+                      <SecretInput
+                        value={field.value ?? ''}
+                        onChange={field.onChange}
                         placeholder={t('Enter new token to update')}
-                        {...field}
-                        onChange={(event) => field.onChange(event.target.value)}
                       />
                     </FormControl>
                     <FormDescription>
