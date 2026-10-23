@@ -129,10 +129,10 @@ func alipayAmountForStorage(amount int64) int64 {
 //
 // 收银台形态由 req.Client 决定（服务端收敛，未知值降级为 pc）：
 //   - pc     → 电脑网站支付 alipay.trade.page.pay，服务端生成带签名的跳转 URL，
-//              前端整体上 document.location 到支付宝 PC 收银台，用户付款后由
-//              return_url 回到站内钱包页。
+//     前端整体上 document.location 到支付宝 PC 收银台，用户付款后由
+//     return_url 回到站内钱包页。
 //   - mobile → 手机网站支付 alipay.trade.wap.pay，同样返回 pay_url 由前端跳转；
-//              额外带 quit_url，用户中途退出时回到站内钱包页而不是落在空白页。
+//     额外带 quit_url，用户中途退出时回到站内钱包页而不是落在空白页。
 //
 // 两者共用同一套异步回调与入账链路（/api/user/alipay/notify）。
 // 开通前提：支付宝开放平台已签约「电脑网站支付」（page.pay）与「手机网站支付」（wap）。

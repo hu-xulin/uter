@@ -1,6 +1,8 @@
 package controller
 
 import (
+	"errors"
+
 	"github.com/uter-ai/uter/common"
 
 	"github.com/gin-gonic/gin"
@@ -9,35 +11,60 @@ import (
 	"github.com/uter-ai/uter/setting/operation_setting"
 )
 
+// writeBillingErrorResponse emits the OpenAI-compatible error envelope used by
+// the subscription/usage endpoints. Centralised so the token and user quota
+// branches handle errors the same way and never fall through to a nil/zero read.
+func writeBillingErrorResponse(c *gin.Context, err error, errType string) {
+	c.JSON(200, gin.H{
+		"error": types.OpenAIError{
+			Message: err.Error(),
+			Type:    errType,
+		},
+	})
+}
+
 func GetSubscription(c *gin.Context) {
 	var remainQuota int
 	var usedQuota int
-	var err error
 	var token *model.Token
 	var expiredTime int64
 	if common.DisplayTokenStatEnabled {
 		tokenId := c.GetInt("token_id")
+		var err error
 		token, err = model.GetTokenById(tokenId)
+		// BILL-001: never read token fields before confirming the lookup
+		// succeeded. A missing/deleted token or a DB error must return an error
+		// response, not dereference a zero/partial token.
+		if err != nil {
+			writeBillingErrorResponse(c, err, "upstream_error")
+			return
+		}
+		if token == nil {
+			writeBillingErrorResponse(c, errors.New("token not found"), "upstream_error")
+			return
+		}
 		expiredTime = token.ExpiredTime
 		remainQuota = token.RemainQuota
 		usedQuota = token.UsedQuota
 	} else {
 		userId := c.GetInt("id")
+		var err error
+		// BILL-002: check each query's error independently. The original code
+		// overwrote `err`, so a GetUserQuota failure silently became "success"
+		// when GetUserUsedQuota happened to succeed.
 		remainQuota, err = model.GetUserQuota(userId, false)
+		if err != nil {
+			writeBillingErrorResponse(c, err, "upstream_error")
+			return
+		}
 		usedQuota, err = model.GetUserUsedQuota(userId)
+		if err != nil {
+			writeBillingErrorResponse(c, err, "upstream_error")
+			return
+		}
 	}
 	if expiredTime <= 0 {
 		expiredTime = 0
-	}
-	if err != nil {
-		openAIError := types.OpenAIError{
-			Message: err.Error(),
-			Type:    "upstream_error",
-		}
-		c.JSON(200, gin.H{
-			"error": openAIError,
-		})
-		return
 	}
 	quota := remainQuota + usedQuota
 	amount := float64(quota)
@@ -76,6 +103,15 @@ func GetUsage(c *gin.Context) {
 	if common.DisplayTokenStatEnabled {
 		tokenId := c.GetInt("token_id")
 		token, err = model.GetTokenById(tokenId)
+		// BILL-001: check the lookup result before reading token fields.
+		if err != nil {
+			writeBillingErrorResponse(c, err, "uter_error")
+			return
+		}
+		if token == nil {
+			writeBillingErrorResponse(c, errors.New("token not found"), "uter_error")
+			return
+		}
 		quota = token.UsedQuota
 	} else {
 		userId := c.GetInt("id")

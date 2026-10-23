@@ -268,3 +268,34 @@ func TestRechargeStripeCreditsQuotaExactlyOnce(t *testing.T) {
 	require.NoError(t, Recharge(order.TradeNo, "cus_stripe_test", "127.0.0.1"))
 	assert.Equal(t, expectedQuota, getUserQuotaForPaymentGuardTest(t, user.Id))
 }
+
+// countTopupLogsForUser counts audit logs of type LogTypeTopup for a user.
+func countTopupLogsForUser(t *testing.T, userId int) int64 {
+	t.Helper()
+	var count int64
+	require.NoError(t, DB.Model(&Log{}).Where("user_id = ? AND type = ?", userId, LogTypeTopup).Count(&count).Error)
+	return count
+}
+
+// TestManualCompleteTopUpIdempotentSkipsZeroValueSideEffects covers F-06/F-19:
+// a repeat call to ManualCompleteTopUp on an already-completed order must be a
+// clean no-op. Previously the idempotent early-return left userId / quotaToAdd /
+// payMoney at their zero values, so the post-transaction cache sync and audit
+// log still ran against user 0 and emitted a false "completed" log.
+func TestManualCompleteTopUpIdempotentSkipsZeroValueSideEffects(t *testing.T) {
+	truncateTables(t)
+	useFixedQuotaPerUnitForOfficialTest(t, 500000)
+
+	user := insertUserForPaymentGuardTest(t, 707, 0)
+	order := createOfficialTestOrder(t, user.Id, "MANUAL-F0619", PaymentProviderAlipay, PaymentMethodAlipay, 2, 10.0)
+
+	require.NoError(t, ManualCompleteTopUp(order.TradeNo, "127.0.0.1"))
+	expectedQuota := 2 * 500000
+	assert.Equal(t, expectedQuota, getUserQuotaForPaymentGuardTest(t, user.Id))
+	assert.Equal(t, int64(1), countTopupLogsForUser(t, user.Id), "first completion writes one log for the real user")
+
+	// The repeat call must not credit again and must not touch user 0.
+	require.NoError(t, ManualCompleteTopUp(order.TradeNo, "127.0.0.1"))
+	assert.Equal(t, expectedQuota, getUserQuotaForPaymentGuardTest(t, user.Id), "repeat call must not double-credit")
+	assert.Equal(t, int64(0), countTopupLogsForUser(t, 0), "idempotent repeat must not write a false log for user 0")
+}

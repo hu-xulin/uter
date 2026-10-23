@@ -142,11 +142,29 @@ func getLocalPricingSyncData() map[string]any {
 	return data
 }
 
+// InvalidPricingValue records a numeric pricing field that was present but
+// could not be trusted. F-11: such values used to be silently dropped by
+// effectivePricingSyncData, making a corrupted upstream price indistinguishable
+// from a model that the upstream simply does not price. They are now surfaced
+// explicitly so an operator can tell "missing" apart from "invalid".
+type InvalidPricingValue struct {
+	Field  string `json:"field"`
+	Model  string `json:"model"`
+	Raw    any    `json:"raw"`
+	Reason string `json:"reason"`
+}
+
 // effectivePricingSyncData follows the billing engine's mode precedence. An
 // inactive expression and numeric settings covered by an active expression
 // are not separate prices and must not appear as synchronization differences.
-func effectivePricingSyncData(data map[string]any) map[string]any {
+//
+// It returns the cleaned data plus any values it refused to trust. Invalid
+// entries (NaN / Inf / negative / non-numeric) are excluded from the result so
+// they can never be applied, but they are reported instead of vanished — a
+// missing model and a corrupt model must not look identical to a reviewer.
+func effectivePricingSyncData(data map[string]any) (map[string]any, []InvalidPricingValue) {
 	result := make(map[string]any, len(pricingSyncFields))
+	var invalid []InvalidPricingValue
 	names := make(map[string]struct{})
 	for _, field := range pricingSyncFields {
 		entries := make(map[string]any)
@@ -154,7 +172,18 @@ func effectivePricingSyncData(data map[string]any) map[string]any {
 			value := normalizeSyncValue(field, raw)
 			if numericPricingSyncFields[field] {
 				number, ok := value.(float64)
-				if !ok || math.IsNaN(number) || math.IsInf(number, 0) || number < 0 {
+				if !ok {
+					if raw != nil {
+						invalid = append(invalid, InvalidPricingValue{Field: field, Model: name, Raw: raw, Reason: "non-numeric value"})
+					}
+					continue
+				}
+				if math.IsNaN(number) || math.IsInf(number, 0) {
+					invalid = append(invalid, InvalidPricingValue{Field: field, Model: name, Raw: raw, Reason: "NaN or Inf"})
+					continue
+				}
+				if number < 0 {
+					invalid = append(invalid, InvalidPricingValue{Field: field, Model: name, Raw: raw, Reason: "negative value"})
 					continue
 				}
 			}
@@ -198,7 +227,7 @@ func effectivePricingSyncData(data map[string]any) map[string]any {
 			}
 		}
 	}
-	return result
+	return result, invalid
 }
 
 func modelPricingSyncValues(data map[string]any, name string) map[string]any {
@@ -600,13 +629,14 @@ func FetchUpstreamRatios(c *gin.Context) {
 	wg.Wait()
 	close(ch)
 
-	localData := effectivePricingSyncData(getLocalPricingSyncData())
+	localData, localInvalid := effectivePricingSyncData(getLocalPricingSyncData())
 
 	var testResults []dto.TestResult
 	var successfulChannels []struct {
 		name string
 		data map[string]any
 	}
+	var allInvalid []InvalidPricingValue
 
 	for r := range ch {
 		if r.Err != "" {
@@ -620,10 +650,16 @@ func FetchUpstreamRatios(c *gin.Context) {
 				Name:   r.Name,
 				Status: "success",
 			})
+			// F-11: record (not ignore) any values the upstream returned that
+			// cannot be trusted, so a corrupt price is reported alongside the
+			// preview instead of silently disappearing.
+			normalizedChannelData, channelInvalid := effectivePricingSyncData(r.Data)
 			successfulChannels = append(successfulChannels, struct {
 				name string
 				data map[string]any
-			}{name: r.Name, data: effectivePricingSyncData(r.Data)})
+			}{name: r.Name, data: normalizedChannelData})
+
+			allInvalid = append(allInvalid, channelInvalid...)
 		}
 	}
 
@@ -651,12 +687,23 @@ func FetchUpstreamRatios(c *gin.Context) {
 		prices[name] = row
 	}
 
+	// F-11: surface any untrusted values explicitly so an operator can tell a
+	// deliberately-unpriced model from a corrupted one. These are never applied
+	// (they were dropped before reaching differences), only reported.
+	invalidPrices := make([]InvalidPricingValue, 0, len(localInvalid)+len(allInvalid))
+	invalidPrices = append(invalidPrices, localInvalid...)
+	invalidPrices = append(invalidPrices, allInvalid...)
+
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
 		"data": gin.H{
 			"differences":  differences,
 			"prices":       prices,
 			"test_results": testResults,
+			"invalid_prices": gin.H{
+				"count": len(invalidPrices),
+				"items": invalidPrices,
+			},
 		},
 	})
 }
@@ -666,13 +713,13 @@ func buildDifferences(localData map[string]any, successfulChannels []struct {
 	data map[string]any
 }) map[string]map[string]dto.DifferenceItem {
 	differences := make(map[string]map[string]dto.DifferenceItem)
-	localData = effectivePricingSyncData(localData)
+	localData, _ = effectivePricingSyncData(localData)
 	normalizedChannels := make([]struct {
 		name string
 		data map[string]any
 	}, 0, len(successfulChannels))
 	for _, channel := range successfulChannels {
-		channel.data = effectivePricingSyncData(channel.data)
+		channel.data, _ = effectivePricingSyncData(channel.data)
 		normalizedChannels = append(normalizedChannels, channel)
 	}
 	successfulChannels = normalizedChannels

@@ -167,15 +167,12 @@ func fetchJSON[T any](ctx context.Context, url string, out *upstreamEnvelope[T])
 					lastErr = errors.New("upstream metadata exceeds size limit")
 					return
 				}
-				// cache body and ETag
-				cacheMutex.Lock()
-				if et := resp.Header.Get("ETag"); et != "" {
-					etagCache[url] = et
-				}
-				bodyCache[url] = buf
-				cacheMutex.Unlock()
 
-				// Try decode as envelope first
+				// SY-001: parse and validate BEFORE caching. The previous order wrote
+				// the raw body and ETag into the cache and only then attempted to
+				// decode it, so a malformed payload would be stored and then re-served
+				// verbatim on every subsequent 304 response — the bad cache could
+				// never recover. Only cache once we know the payload decodes.
 				if err := common.Unmarshal(buf, out); err != nil {
 					// Try decode as pure array
 					var arr []T
@@ -191,6 +188,14 @@ func fetchJSON[T any](ctx context.Context, url string, out *upstreamEnvelope[T])
 						out.Success = true
 					}
 				}
+
+				// Cache only after a successful decode.
+				cacheMutex.Lock()
+				if et := resp.Header.Get("ETag"); et != "" {
+					etagCache[url] = et
+				}
+				bodyCache[url] = buf
+				cacheMutex.Unlock()
 				lastErr = nil
 			case http.StatusNotModified:
 				// use cache

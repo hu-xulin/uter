@@ -36,6 +36,12 @@ const STATUS_RELATED_KEYS = new Set([
   'log_setting.max_range_days',
   'QuotaPerUnit',
   'USDExchangeRate',
+  // 支付定价汇率：Price 是「每 1 美元额度的人民币价」(status.price)，直接驱动
+  // 钱包预付面额卡片与应付金额的展示；StripeUnitPrice 同样经 /api/status 下发。
+  // 两者都不在白名单时，保存后状态查询不会重拉，钱包里的「汇率/应付金额」会
+  // 停留在修改前的旧值（与 USDExchangeRate 同一个实时同步问题）。
+  'Price',
+  'StripeUnitPrice',
   'DisplayInCurrencyEnabled',
   'DisplayTokenStatEnabled',
   'general_setting.quota_display_type',

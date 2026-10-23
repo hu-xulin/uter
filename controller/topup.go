@@ -627,7 +627,7 @@ func EpayNotify(c *gin.Context) {
 		}
 		paidMoney, moneyErr := decimal.NewFromString(strings.TrimSpace(verifyInfo.Money))
 		if moneyErr != nil || !paidAmountMatchesOrder(paidMoney, topUp.Money) {
-			logger.LogWarn(c.Request.Context(), fmt.Sprintf("易支付回调金额不匹配 trade_no=%s 回调金额=%q 本地应付=%.2f client_ip=%s", verifyInfo.ServiceTradeNo, verifyInfo.Money, topUp.Money, c.ClientIP()))
+			logger.LogWarn(c.Request.Context(), fmt.Sprintf("易支付回调金额不匹配 trade_no=%s client_ip=%s", verifyInfo.ServiceTradeNo, c.ClientIP()))
 			_, _ = c.Writer.Write([]byte("fail"))
 			return
 		}

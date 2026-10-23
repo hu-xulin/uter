@@ -335,6 +335,14 @@ func AddToken(c *gin.Context) {
 		return
 	}
 	token := request.Token
+	isAdmin := c.GetInt("role") == common.RoleAdminUser || c.GetInt("role") == common.RoleRootUser
+	// TOK-001/002: UnlimitedQuota is server-controlled. A normal user creating a
+	// token must not be able to enable unlimited quota; only administrators may.
+	// RemainQuota stays client-supplied but is validated by the range checks
+	// below.
+	if !isAdmin {
+		token.UnlimitedQuota = false
+	}
 	if len(token.Name) > 50 {
 		common.ApiErrorT(c, "Token name is too long")
 		return
@@ -400,6 +408,17 @@ func AddToken(c *gin.Context) {
 		common.ApiError(c, err)
 		return
 	}
+	// TOK-003: the pre-insert count check is a fast path; enforce the cap even
+	// under concurrency by re-counting and rolling back if we still exceeded it,
+	// so two racing requests cannot both slip past the limit.
+	total, cerr := model.CountUserTokens(c.GetInt("id"))
+	if cerr == nil && int(total) > maxTokens {
+		if derr := cleanToken.Delete(); derr != nil {
+			common.SysLog(common.LogText("failed to roll back over-limit token creation user_id=%d token_id=%d: %v", c.GetInt("id"), cleanToken.Id, derr))
+		}
+		common.ApiErrorT(c, "Maximum number of tokens reached ({{max}})", map[string]any{"max": maxTokens})
+		return
+	}
 	params["id"] = cleanToken.Id
 	common.SetContextKey(c, constant.ContextKeyTokenAuditSucceeded, true)
 	c.JSON(http.StatusOK, gin.H{
@@ -440,6 +459,7 @@ func UpdateToken(c *gin.Context) {
 		return
 	}
 	token := request.Token
+	isAdmin := c.GetInt("role") == common.RoleAdminUser || c.GetInt("role") == common.RoleRootUser
 	params := tokenAuditParams(c)
 	if token.Id > 0 {
 		params["id"] = token.Id
@@ -466,6 +486,16 @@ func UpdateToken(c *gin.Context) {
 	}
 	params["name"] = cleanToken.Name
 	previous := *cleanToken
+	if !isAdmin {
+		// TOK-001/002: a normal user cannot grant unlimited quota to a token that
+		// does not already have it (privilege escalation). They may still turn it
+		// off on a token that already carries it, and they may edit every other
+		// field. RemainQuota remains client-supplied and is validated/audited as
+		// before.
+		if token.UnlimitedQuota && !cleanToken.UnlimitedQuota {
+			token.UnlimitedQuota = false
+		}
+	}
 	if token.Status == common.TokenStatusEnabled {
 		if cleanToken.Status == common.TokenStatusExpired && cleanToken.ExpiredTime <= common.GetTimestamp() && cleanToken.ExpiredTime != -1 {
 			common.ApiErrorT(c, "Token has expired and cannot be enabled. Please modify the expiration time or set it to never expire")

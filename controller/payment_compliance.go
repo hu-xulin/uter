@@ -56,11 +56,14 @@ func ConfirmPaymentCompliance(c *gin.Context) {
 		"payment_setting.compliance_confirmed_ip":  clientIP,
 	}
 
-	for key, value := range updates {
-		if err := model.UpdateOption(key, value); err != nil {
-			common.ApiError(c, err)
-			return
-		}
+	// PAY-001: write all five compliance fields atomically. The previous loop
+	// called model.UpdateOption once per field, so a mid-loop failure left
+	// compliance_confirmed=true with stale or missing terms version / timestamp
+	// / operator / IP. UpdateOptionsBulk commits them in a single transaction,
+	// so either all five land or none do.
+	if err := model.UpdateOptionsBulk(updates); err != nil {
+		common.ApiError(c, err)
+		return
 	}
 
 	logger.LogInfo(c.Request.Context(), common.LogText(

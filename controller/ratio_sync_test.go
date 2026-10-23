@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"math"
 	"testing"
 
 	"github.com/uter-ai/uter/common"
@@ -45,6 +46,40 @@ func TestPricingSyncExpressionPriority(t *testing.T) {
 			assert.ElementsMatch(t, tt.wantFields, fields)
 		})
 	}
+}
+
+func TestEffectivePricingSyncDataFlagsInvalidValues(t *testing.T) {
+	// F-11: values that cannot be trusted must be reported, not silently dropped,
+	// and a legitimate zero (free) price must survive.
+	input := map[string]any{
+		"model_ratio": map[string]any{
+			"good":     float64(1),
+			"free":     float64(0),
+			"negative": float64(-1),
+			"nan":      math.NaN(),
+			"inf":      math.Inf(1),
+			"badtype":  "not-a-number",
+		},
+	}
+	cleaned, invalid := effectivePricingSyncData(input)
+
+	assert.Equal(t, float64(1), valueMap(cleaned["model_ratio"])["good"], "valid value preserved")
+	assert.Equal(t, float64(0), valueMap(cleaned["model_ratio"])["free"], "zero (free) price preserved")
+	assert.NotContains(t, valueMap(cleaned["model_ratio"]), "negative")
+	assert.NotContains(t, valueMap(cleaned["model_ratio"]), "nan")
+	assert.NotContains(t, valueMap(cleaned["model_ratio"]), "inf")
+	assert.NotContains(t, valueMap(cleaned["model_ratio"]), "badtype")
+
+	require.Len(t, invalid, 4, "all four untrusted values must be reported")
+	byModel := make(map[string]InvalidPricingValue)
+	for _, v := range invalid {
+		byModel[v.Model] = v
+		assert.Equal(t, "model_ratio", v.Field)
+	}
+	assert.Equal(t, "negative value", byModel["negative"].Reason)
+	assert.Equal(t, "NaN or Inf", byModel["nan"].Reason)
+	assert.Equal(t, "NaN or Inf", byModel["inf"].Reason)
+	assert.Equal(t, "non-numeric value", byModel["badtype"].Reason)
 }
 
 func TestRatioConfigExportsEffectiveExpressions(t *testing.T) {

@@ -23,12 +23,14 @@ var USDExchangeRate = 7.3
 // 默认值只保留官方直连的网站支付：
 //   - alipay_web  ：支付宝「电脑网站支付」（PC 收银台）+「手机网站支付」（移动端跳转）
 //   - wechat_web  ：微信支付 Native（PC 扫码）+ H5（移动端跳转）
+//
 // controller/topup.go 会在对应密钥就绪时按 type 去重追加，钱包前端据此
 // 打开各自的收银台弹窗，而不是提交 Epay 表单。
 //
 // ⚠️ 不要把历史上的 "alipay" / "wxpay" / "custom1" 加回默认值：它们属于
-//    易支付（Epay）通道，需要 PayAddress / EpayId / EpayKey 三件套齐备，
-//    未配置时用户点了必然下单失败。纯 Epay 部署请在后台显式配置。
+//
+//	易支付（Epay）通道，需要 PayAddress / EpayId / EpayKey 三件套齐备，
+//	未配置时用户点了必然下单失败。纯 Epay 部署请在后台显式配置。
 var PayMethods = []map[string]string{
 	{
 		"name": "支付宝",

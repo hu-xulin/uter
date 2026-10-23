@@ -4,6 +4,7 @@ import (
 	"errors"
 	"time"
 
+	"github.com/uter-ai/uter/common"
 	"gorm.io/gorm"
 )
 
@@ -53,10 +54,16 @@ func GetUserByOAuthBinding(providerId int, providerUserId string) (*User, error)
 	return &user, nil
 }
 
-// IsProviderUserIdTaken checks if a provider user ID is already bound to any user
+// IsProviderUserIdTaken checks if a provider user ID is already bound to any user.
+// On a DB failure it fails closed (returns true) so the caller aborts the
+// binding/creation flow instead of treating the error as "not taken" and
+// proceeding on a false negative (AUTH-004).
 func IsProviderUserIdTaken(providerId int, providerUserId string) bool {
 	var count int64
-	DB.Model(&UserOAuthBinding{}).Where("provider_id = ? AND provider_user_id = ?", providerId, providerUserId).Count(&count)
+	if err := DB.Model(&UserOAuthBinding{}).Where("provider_id = ? AND provider_user_id = ?", providerId, providerUserId).Count(&count).Error; err != nil {
+		common.SysError(common.LogText("IsProviderUserIdTaken query failed (provider_id=%d): %v", providerId, err))
+		return true
+	}
 	return count > 0
 }
 

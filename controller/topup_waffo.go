@@ -166,6 +166,16 @@ func RequestWaffoAmount(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "success", "data": strconv.FormatFloat(payMoney, 'f', 2, 64)})
 }
 
+// persistTopUpFailedStatus records a top-up order as failed. F-08: the previous
+// code discarded the persistence error with `_ = topUp.Update()`. A lost write
+// here leaves a permanently pending order that the user can never recover from,
+// so we surface any persistence failure instead of ignoring it.
+func persistTopUpFailedStatus(c *gin.Context, topUp *model.TopUp) {
+	if err := topUp.Update(); err != nil {
+		logger.LogError(c.Request.Context(), common.LogText("failed to persist top-up failed status trade_no=%s error=%q", topUp.TradeNo, err.Error()))
+	}
+}
+
 // RequestWaffoPay 创建 Waffo 支付订单
 func RequestWaffoPay(c *gin.Context) {
 	if !isWaffoTopUpEnabled() {
@@ -226,7 +236,15 @@ func RequestWaffoPay(c *gin.Context) {
 	}
 	// resolvedPayMethodType/Name 为空时，Waffo 自动选择支付方式
 
-	group, _ := model.GetUserGroup(id, true)
+	// F-09: do not fall back to a zero/undefined group on lookup failure. A
+	// missing or erroring group must abort the request rather than charging the
+	// wrong (default) price tier.
+	group, err := model.GetUserGroup(id, true)
+	if err != nil {
+		logger.LogError(c.Request.Context(), common.LogText("Waffo failed to get user group user_id=%d error=%q", id, err.Error()))
+		paymentError(c, common.NewMessage("Failed to get the user group"))
+		return
+	}
 	payMoney := getWaffoPayMoney(float64(req.Amount), group)
 	if payMoney < 0.01 {
 		paymentError(c, common.NewMessage("Payment amount is too low"))
@@ -265,7 +283,7 @@ func RequestWaffoPay(c *gin.Context) {
 	if err != nil {
 		logger.LogError(c.Request.Context(), common.LogText("Waffo SDK initialization failed user_id=%d trade_no=%s error=%q", id, merchantOrderId, err.Error()))
 		topUp.Status = common.TopUpStatusFailed
-		_ = topUp.Update()
+		persistTopUpFailedStatus(c, topUp)
 		paymentError(c, common.NewMessage("Payment configuration error"))
 		return
 	}
@@ -311,14 +329,14 @@ func RequestWaffoPay(c *gin.Context) {
 	if err != nil {
 		logger.LogError(c.Request.Context(), common.LogText("Waffo failed to create order user_id=%d trade_no=%s error=%q", id, merchantOrderId, err.Error()))
 		topUp.Status = common.TopUpStatusFailed
-		_ = topUp.Update()
+		persistTopUpFailedStatus(c, topUp)
 		paymentError(c, common.NewMessage("Failed to start payment"))
 		return
 	}
 	if !resp.IsSuccess() {
 		logger.LogWarn(c.Request.Context(), common.LogText("Waffo order creation rejected user_id=%d trade_no=%s code=%s message_bytes=%d response_bytes=%d", id, merchantOrderId, resp.Code, len(resp.Message), len(common.GetJsonString(resp))))
 		topUp.Status = common.TopUpStatusFailed
-		_ = topUp.Update()
+		persistTopUpFailedStatus(c, topUp)
 		paymentError(c, common.NewMessage("Failed to start payment"))
 		return
 	}
@@ -483,8 +501,8 @@ func handleWaffoPayment(c *gin.Context, wh *core.WebhookHandler, result *core.Pa
 	}
 	expected := formatWaffoAmount(topUp.Money, expectedCurrency)
 	if !waffoPaidAmountMatchesOrder(paidAmount, expected) {
-		logger.LogWarn(c.Request.Context(), common.LogText("Waffo callback amount mismatch trade_no=%s paid=%s expected=%s client_ip=%s",
-			merchantOrderId, paidAmount, expected, c.ClientIP()))
+		logger.LogWarn(c.Request.Context(), common.LogText("Waffo callback amount mismatch trade_no=%s client_ip=%s",
+			merchantOrderId, c.ClientIP()))
 		sendWaffoWebhookResponse(c, wh, false, "金额不匹配")
 		return
 	}
