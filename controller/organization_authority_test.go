@@ -237,7 +237,6 @@ func TestOrgMemberUpdateRequestPartialSemantics(t *testing.T) {
 	}
 }
 
-
 func TestCanViewOrganizationBudget(t *testing.T) {
 	org := &model.Organization{Id: 7, OwnerUserId: 100}
 	tests := []struct {
@@ -302,7 +301,6 @@ func TestRedactOrganizationBudget(t *testing.T) {
 	}
 }
 
-
 func TestOrgAdminMayAssignRole(t *testing.T) {
 	tests := []struct {
 		role string
@@ -322,7 +320,6 @@ func TestOrgAdminMayAssignRole(t *testing.T) {
 		})
 	}
 }
-
 
 func TestOrganizationMemberWriteQueryRejectsFormerOwner(t *testing.T) {
 	previousDB := model.DB
@@ -391,7 +388,6 @@ func TestOrganizationMemberWriteQueryRejectsFormerOwner(t *testing.T) {
 	require.NoError(t, db.Where("id = ?", 101).First(&saved).Error)
 	require.Equal(t, int64(40), saved.SubQuotaLimit)
 }
-
 
 func TestPrepareOrganizationMemberBatch(t *testing.T) {
 	items := []model.OrgMemberAdd{
