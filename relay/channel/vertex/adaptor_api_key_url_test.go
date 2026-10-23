@@ -3,10 +3,10 @@ package vertex
 import (
 	"testing"
 
-	relaycommon "github.com/uter-ai/uter/relay/common"
-	"github.com/uter-ai/uter/relaykit/dto"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	relaycommon "github.com/uter-ai/uter/relay/common"
+	"github.com/uter-ai/uter/relaykit/dto"
 )
 
 func TestGetRequestURLWithAPIKey(t *testing.T) {
