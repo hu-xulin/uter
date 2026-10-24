@@ -13,8 +13,8 @@ import (
 // NormalizeIconKey 把 @lobehub/icons 的图标名统一收敛到非彩色（单色）变体。
 //
 // 单色变体跟随 currentColor，能自适应深浅色主题；彩色变体（"X.Color"）在深色
-// 底上容易糊、且无法统一色调。平台侧提供的默认值（默认供应商图标、官方元数据
-// 同步下发的图标）一律走这里，保证"默认全部非彩色"。
+// 底上容易糊、且无法统一色调。需要刻意保持单色的展示位（如定价页左侧供应商
+// 筛选 chips）经前端 monoIconName 收敛，语义与本函数一致。
 //
 // 只剥离结尾的 .Color 段，其余链式属性（如 "Claude.Avatar.type={'platform'}"）
 // 原样保留，避免破坏高级写法。
@@ -31,6 +31,45 @@ func NormalizeIconKey(icon string) string {
 		return trimmed
 	}
 	return strings.TrimSpace(base)
+}
+
+// NormalizeColorIconKey 把图标名升级到品牌彩色变体，与上游元数据
+// （basellm llm-metadata）下发的彩色键规则一致：裸品牌名优先落到 ".Color"，
+// 品牌没有 Color 变体时回落 ".Avatar"（品牌底色 + 对比字形），两者皆无的
+// 品牌原样返回。
+//
+// 已经指向某个变体的键（"X.Color" / "X.Avatar"）以及带链式属性的高级写法
+// （"Claude.Avatar.type={'platform'}"）一律原样保留，不做二次升级。
+//
+// 同步链路（官方元数据同步、上游供应商同步、默认品牌图标）与存量订正迁移
+// 统一走本函数，保证"同步进来的新模型与历史模型都是彩色图标"。
+func NormalizeColorIconKey(icon string) string {
+	trimmed := strings.TrimSpace(icon)
+	if trimmed == "" {
+		return ""
+	}
+	_, rest, found := strings.Cut(trimmed, ".")
+	if !found {
+		// 裸品牌名：查变体表升级；未登记（无任何彩色变体）则原样返回。
+		variant, ok := lobeIconVariants[trimmed]
+		if !ok {
+			return trimmed
+		}
+		switch {
+		case variant.hasColor:
+			return trimmed + ".Color"
+		case variant.hasAvatar:
+			return trimmed + ".Avatar"
+		default:
+			return trimmed
+		}
+	}
+	// 已带后缀：仅当首段就是彩色变体名（Color/Avatar）时视为"已是彩色"，
+	// 原样返回；其余（含链式属性）同样不动。
+	if strings.EqualFold(rest, "Color") || strings.EqualFold(rest, "Avatar") {
+		return trimmed
+	}
+	return trimmed
 }
 
 // Vendor 用于存储供应商信息，供模型引用

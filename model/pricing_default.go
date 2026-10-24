@@ -46,8 +46,9 @@ var defaultVendorRules = map[string]string{
 }
 
 // 供应商默认图标映射
-// 统一使用非彩色（单色）图标：不带 ".Color" 后缀的 @lobehub/icons 变体跟随
-// currentColor，能自适应深浅色主题；彩色变体在深色底上容易糊、且颜色无法统一。
+// 统一收敛到品牌彩色变体（经 getDefaultVendorIcon → NormalizeColorIconKey）：
+// 与上游 basellm 元数据下发的彩色键同规则（优先 ".Color"，无 Color 的品牌
+// 回落 ".Avatar"），保证同步进来的新模型与历史模型在定价页都是彩色图标。
 // 键名与 defaultVendorRules 的品牌名保持一致（同样只用英文名）。
 var defaultVendorIcons = map[string]string{
 	"OpenAI":     "OpenAI",
@@ -205,7 +206,7 @@ func getDisplayVendor(vendorName string, vendorMap map[int]*Vendor) int {
 // 获取供应商默认图标
 func getDefaultVendorIcon(vendorName string) string {
 	if icon, exists := defaultVendorIcons[vendorName]; exists {
-		return NormalizeIconKey(icon)
+		return NormalizeColorIconKey(icon)
 	}
 	return ""
 }
