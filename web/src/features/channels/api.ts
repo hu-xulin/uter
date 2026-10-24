@@ -166,10 +166,14 @@ export async function getChannel(id: number): Promise<GetChannelResponse> {
 export async function getChannelOps(
   autoBan?: boolean
 ): Promise<ChannelOpsResponse> {
-  const res = await api.get('/api/channel/ops', {
+  // Keep the config in a single `ApiRequestConfig`-typed binding: passing the
+  // object literal straight to `api.get` lets axios infer the query-params
+  // generic from `{ auto_ban }`, which then rejects the spread helper config.
+  const config: ApiRequestConfig = {
     ...channelActionConfig(),
     params: autoBan === undefined ? undefined : { auto_ban: autoBan },
-  })
+  }
+  const res = await api.get('/api/channel/ops', config)
   return res.data
 }
 
