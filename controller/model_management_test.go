@@ -1103,10 +1103,10 @@ func TestVendorManagementDatabaseMatrix(t *testing.T) {
 				vendors := model.GetVendors()
 				require.Len(t, vendors, 1)
 				assert.Equal(t, "Google", vendors[0].Name)
-				// uter 把品牌图标统一成 @lobehub/icons 的单色变体（不带 .Color），
-				// 这样图标跟随 currentColor、深浅色主题都清晰；读取路径因此会把
-				// "Gemini.Color" 归一为 "Gemini"。见 model.NormalizeIconKey。
-				assert.Equal(t, "Gemini", vendors[0].Icon)
+				// uter 把品牌图标统一成 @lobehub/icons 的彩色变体（.Color），
+				// 定价页等消费方直接渲染彩色图标；读取路径保留彩色键。
+				// 见 model.NormalizeColorIconKey。
+				assert.Equal(t, "Gemini.Color", vendors[0].Icon)
 				assert.Negative(t, vendors[0].ID)
 				var count int64
 				require.NoError(t, db.Model(&model.Vendor{}).Count(&count).Error)
