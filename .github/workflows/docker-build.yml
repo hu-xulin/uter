@@ -13,8 +13,20 @@ on:
         type: string
 
 jobs:
+  # 发布门禁：与 release.yml 共用同一个 release-gate.yml。镜像发布前必须让
+  # 测试、vet、构建、漏洞扫描、桌面端与前端检查全部通过——否则不会产出镜像，
+  # 也不会进入签名与推送阶段。
+  #
+  # 注意：workflow_dispatch 指定旧 tag 时，门禁校验的是当前 HEAD 而不是该 tag
+  # 指向的 commit（workflow_call 无法动态指定 ref）。真要重发历史版本，请先在
+  # 本地跑一遍 `make test` 与四模块 govulncheck。
+  gate:
+    name: Release gate (tests, vet, build, vulnerability scan)
+    uses: ./.github/workflows/release-gate.yml
+
   build_single_arch:
     name: Build & push (${{ matrix.arch }})
+    needs: [gate]
     strategy:
       fail-fast: false
       matrix:

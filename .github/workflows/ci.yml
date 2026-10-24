@@ -42,8 +42,10 @@ jobs:
 
       - name: Create frontend embed placeholder
         run: |
-          mkdir -p web/dist
-          touch web/dist/index.html
+          # 只测后端：造一个最小的 embed 骨架让 go build 通过。必须包含
+          # docs-content/_next，否则 //go:embed all:web/dist/docs-content/_next
+          # 会因找不到匹配文件而编译失败。
+          ./scripts/make-frontend-placeholder.sh
 
       - name: Check gofmt
         # 格式门禁：只检查受版本控制的 Go 文件，避免 node_modules / dist 之类的
@@ -94,14 +96,17 @@ jobs:
   #   model/user_cache.go 与 model/user_cache_auth_version_test.go 的
   #   useUserCacheMiniRedis / useFailingRedis）。修后连续 3 次 -race 0 竞争。
   #
-  # ⚠️ e2e 仍未纳入，原因与上面不同：该包在本机（含 HEAD 干净副本）就有既有的
-  #   功能失败——org 计费用例拿到 401「token 无效」，与 -race 无关，属另一条
-  #   待排查的线索。功能本身不绿之前纳入 -race 只会制造噪声，等 e2e 恢复后
-  #   按上面同样的方式接入即可。
+  # e2e 也已纳入。此前它被排除，理由是「组织计费用例拿到 401 token 无效」——该
+  # 问题已修复（测试夹具给非管理员用户误设 unlimited_quota，被生产规则强制置为
+  # 有限额度后 remain_quota 缺省为 0，令牌开箱即耗尽）。修复后又暴露出第二处
+  # 同型隔离竞争：relay 路径上 perf_metrics.RecordRelayResult 用 gopool 起的
+  # 落库协程读 common.RedisEnabled / common.RDB，而 harness 的 t.Cleanup 会
+  # 改写并还原它们。修法同样是加屏障：perfmetrics.WaitRecordForTest()，
+  # 由 e2e/org_platform_harness_test.go 在改写与还原前后各调用一次。
   race:
     name: Backend race detector
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 40
     env:
       GOWORK: 'off'
 
@@ -123,11 +128,18 @@ jobs:
 
       - name: Create frontend embed placeholder
         run: |
-          mkdir -p web/dist
-          touch web/dist/index.html
+          # 只测后端：造一个最小的 embed 骨架让 go build 通过。必须包含
+          # docs-content/_next，否则 //go:embed all:web/dist/docs-content/_next
+          # 会因找不到匹配文件而编译失败。
+          ./scripts/make-frontend-placeholder.sh
 
       - name: Race test concurrency-sensitive packages
         run: go test -race -count=1 ./service/... ./relay/... ./middleware/... ./model/...
+
+      # e2e 单独一步：它是覆盖组织计费全链路的最重的一套用例，-race 下耗时
+      # 数分钟，与上面的单元测试分开跑便于定位是哪一侧出的问题。
+      - name: Race test end-to-end billing flows
+        run: go test -race -count=1 ./e2e/...
 
   # 覆盖率报告 + 门禁：既产出可追踪的工件，也对关键包设下限。
   # 门槛只覆盖资金/权限所在的包，且取当前基线往下留 2 个点——总覆盖率会被
@@ -157,8 +169,10 @@ jobs:
 
       - name: Create frontend embed placeholder
         run: |
-          mkdir -p web/dist
-          touch web/dist/index.html
+          # 只测后端：造一个最小的 embed 骨架让 go build 通过。必须包含
+          # docs-content/_next，否则 //go:embed all:web/dist/docs-content/_next
+          # 会因找不到匹配文件而编译失败。
+          ./scripts/make-frontend-placeholder.sh
 
       - name: Test root module with coverage
         # 用 xargs 传包列表：直接展开多行 shell 变量在部分 shell 里不会按空白
@@ -221,6 +235,45 @@ jobs:
       - name: Scan tokenkit
         working-directory: tokenkit
         run: govulncheck ./...
+
+      # 嵌套模块 tokenkit/tokenkit 是独立的 Go module（自己的 go.mod/go.sum），
+      # 不被上面任何一个 `./...` 覆盖。漏掉它等于「根模块通过就以为全部通过」。
+      - name: Scan nested tokenkit/tokenkit
+        working-directory: tokenkit/tokenkit
+        run: govulncheck ./...
+
+  # 桌面端（Electron）密钥持久化。
+  #
+  # SESSION_SECRET / CRYPTO_SECRET 必须跨重启稳定，否则重启后刷新令牌校验、
+  # 加密数据与带签名的任务资源链接全部失效。这些行为只在 Node 侧实现，
+  # Go 测试覆盖不到，因此单独设一道门禁。用 Node 内置 test runner，
+  # 不需要安装 Electron 运行时。
+  desktop:
+    name: Electron desktop secret persistence
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          repository: ${{ github.event.pull_request.base.repo.full_name || github.repository }}
+          ref: ${{ github.sha }}
+
+      # 这里用 tag 而不是像其他 action 那样 pin SHA：electron/ 目录此前没有
+      # CI 覆盖，尚未建立 SHA 台账。如需与其他 job 对齐，按同样方式替换即可。
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Syntax check Electron main process
+        working-directory: electron
+        run: node --check main.js
+
+      - name: Test desktop secret persistence
+        working-directory: electron
+        run: node --test desktop-secrets.test.js
 
   frontend:
     name: Frontend typecheck, tests, lint and production build

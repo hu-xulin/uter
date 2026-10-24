@@ -61,32 +61,56 @@ func (w *WalletFunding) Source() string { return BillingSourceWallet }
 
 // resolveOrgId 返回该资金来源对应的组织归属。构造时已解析的结果优先，
 // 只有未解析时才回查（构造点未覆盖的路径），并就地定型供后续调用复用。
-func (w *WalletFunding) resolveOrgId() int {
+//
+// 解析失败必须上抛，不能回落为「0 = 平台直管用户」：那会把组织成员的资金来源
+// 静默改判成个人钱包，一次查询抖动就足以让组织账本与个人账本同时错位。
+// 计费路径宁可拒绝请求，也不能猜错出资方。
+func (w *WalletFunding) resolveOrgId() (int, error) {
 	if w.orgIdResolved {
-		return w.orgId
+		return w.orgId, nil
 	}
 	orgId, err := model.OrgIdOfUser(w.userId)
 	if err != nil {
-		return 0
+		return 0, fmt.Errorf("%w: cannot resolve organization of user %d: %v",
+			model.ErrOrgQuotaUnverifiable, w.userId, err)
 	}
 	w.orgId = orgId
 	w.orgIdResolved = true
-	return orgId
+	return orgId, nil
+}
+
+// OrgFunded 报告本会话是否由组织共享预算出资。
+func (w *WalletFunding) OrgFunded() bool {
+	orgId, err := w.resolveOrgId()
+	return err == nil && orgId > 0
 }
 
 func (w *WalletFunding) PreConsume(amount int) error {
-	if amount <= 0 {
-		return nil
+	orgId, err := w.resolveOrgId()
+	if err != nil {
+		return err
 	}
 	// 组织成员由组织共享预算出资：在【预扣点】就把额度记到组织账本上，与个人钱包
 	// 路径（TryReserveUserQuota 立刻扣减）保持同一时序。否则预扣额度从未落账，
 	// 结算时只补 delta = actual − preConsumed，组织被系统性少收一整笔预扣额。
 	// ReserveOrgQuota 内部以单条条件 UPDATE 同时完成预算上限与成员子额度校验。
-	if orgId := w.resolveOrgId(); orgId > 0 {
-		if err := model.ReserveOrgQuota(orgId, w.userId, int64(amount)); err != nil {
+	//
+	// 零预估请求同样预留：amount<=0 时抬到 OrgAdmissionReserveAmount 的最小准入额，
+	// 让「预算已耗尽」在准入点就一律拒绝。若在这里直接 return nil（旧行为），
+	// ReserveOrgQuota 的原子闸门根本不执行，唯一的约束退化成只读校验，
+	// 并发突发会全员通过——组织预算形同虚设。
+	//
+	// 预留额与 BillingSession.preConsume 里的 effectiveQuota 必须用同一个函数算出，
+	// 否则会出现「记了 1 却没进 preConsumedQuota」的永久残留。
+	if orgId > 0 {
+		reserved := int(model.OrgAdmissionReserveAmount(int64(amount)))
+		if err := model.ReserveOrgQuota(orgId, w.userId, int64(reserved)); err != nil {
 			return err
 		}
-		w.consumed += amount
+		w.consumed += reserved
+		return nil
+	}
+	if amount <= 0 {
 		return nil
 	}
 	reserved, err := model.TryReserveUserQuota(w.userId, amount)
@@ -105,7 +129,11 @@ func (w *WalletFunding) Settle(delta int) error {
 	if delta == 0 {
 		return nil
 	}
-	if orgId := w.resolveOrgId(); orgId > 0 {
+	orgId, err := w.resolveOrgId()
+	if err != nil {
+		return err
+	}
+	if orgId > 0 {
 		// 组织账本按差额 true-up（如实累加，不截断；防线在准入点 ReserveOrgQuota）。
 		if err := model.IncrOrgUsedQuota(orgId, int64(delta)); err != nil {
 			return err
@@ -127,14 +155,21 @@ func (w *WalletFunding) Refund() error {
 		return nil
 	}
 	// 组织成员：预扣同时记在组织预算账本与成员子额度账本上，按 consumed 一并回减。
-	if orgId := w.resolveOrgId(); orgId > 0 {
+	// 归属解析失败时**不得**回退到个人钱包（那会把组织预扣退成个人余额，两本账
+	// 同时错位且不可逆），必须上抛让调用方重试或转人工对账。
+	orgId, err := w.resolveOrgId()
+	if err != nil {
+		return err
+	}
+	if orgId > 0 {
 		if err := model.IncrOrgUsedQuota(orgId, -int64(w.consumed)); err != nil {
-			common.SysLog("error rolling back organization funding reserve: " + err.Error())
+			return fmt.Errorf("roll back organization %d reserve of %d: %w", orgId, w.consumed, err)
 		}
 		// 撤销预扣点在 members.used_quota 上的原子预留，避免成员用量被永久多记。
 		if err := model.IncrUserUsedQuotaClamped(w.userId, -w.consumed); err != nil {
-			common.SysLog("error rolling back member sub-quota reserve: " + err.Error())
+			return fmt.Errorf("roll back member %d sub-quota reserve of %d: %w", w.userId, w.consumed, err)
 		}
+		w.consumed = 0
 		return nil
 	}
 	// IncreaseUserQuota 是 quota += N 的非幂等操作，不能重试，否则会多退额度。

@@ -1,6 +1,9 @@
 module github.com/uter-ai/uter/relaykit
 
-go 1.25.1
+// 与根模块保持一致：go 1.27.1 的标准库带 11 个已公布漏洞（net/http、
+// net/http2、crypto/tls、crypto/x509、net/textproto），全部在 go1.27.3 修复。
+// 独立构建 relaykit 时也必须落到修好标准库的工具链上。
+go 1.27.3
 
 require (
 	github.com/google/uuid v1.6.0
@@ -17,7 +20,7 @@ require (
 	github.com/rogpeppe/go-internal v1.10.0 // indirect
 	github.com/tidwall/match v1.1.1 // indirect
 	github.com/tidwall/pretty v1.2.0 // indirect
-	golang.org/x/text v0.35.0 // indirect
+	golang.org/x/text v0.43.0 // indirect
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

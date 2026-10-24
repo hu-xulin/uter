@@ -1265,11 +1265,17 @@ func TestSecurityEnrollmentSetupAndEnableRollback(t *testing.T) {
 	require.NoError(t, model.DB.Callback().Create().Remove("security_setup_failure"))
 	pending, err := model.GetTwoFAByUserId(user.Id)
 	require.NoError(t, err)
-	assert.Equal(t, setup.Secret, pending.Secret)
+	// 种子必须加密后落库：Secret 列里不允许出现明文 TOTP 种子，否则数据库
+	// 备份或导出文件泄露就等于交出用户的第二因子。
+	assert.True(t, common.IsSecretEnvelope(pending.Secret), "库里的种子必须是密文信封")
+	assert.NotContains(t, pending.Secret, setup.Secret, "密文中不得出现原始种子")
+	plainSecret, err := pending.PlainSecret()
+	require.NoError(t, err)
+	assert.Equal(t, setup.Secret, plainSecret, "解密后必须还原出同一个种子，验证才能继续可用")
 	count, err := model.GetUnusedBackupCodeCount(user.Id)
 	require.NoError(t, err)
 	assert.Equal(t, common.BackupCodeCount, count)
-	code, err := totp.GenerateCode(setup.Secret, time.Now())
+	code, err := totp.GenerateCode(plainSecret, time.Now())
 	require.NoError(t, err)
 	require.NoError(t, model.DB.Callback().Update().Before("gorm:update").Register("security_enable_failure", func(tx *gorm.DB) {
 		if tx.Statement.Table == "two_fas" {
@@ -1396,8 +1402,14 @@ func TestSecurityEnrollmentEncryptedPasswordVerification(t *testing.T) {
 
 func TestSecurityEnrollmentTwoFAFailureAccountingAndStorageErrors(t *testing.T) {
 	user, identity := setupSecurityEnrollmentTest(t)
-	twoFA := &model.TwoFA{UserId: user.Id, Secret: "JBSWY3DPEHPK3PXP", IsEnabled: true}
+	// 走 SetPlainSecret 落库，与生产路径一致：Secret 列存的是密文。
+	twoFA := &model.TwoFA{UserId: user.Id, IsEnabled: true}
+	require.NoError(t, twoFA.SetPlainSecret("JBSWY3DPEHPK3PXP"))
 	require.NoError(t, model.DB.Create(twoFA).Error)
+	// 验证路径一律先集中解密，不允许直接读 Secret 列。
+	plainSecret, err := twoFA.PlainSecret()
+	require.NoError(t, err)
+	require.Equal(t, "JBSWY3DPEHPK3PXP", plainSecret)
 	for _, endpoint := range []struct {
 		path    string
 		handler gin.HandlerFunc
@@ -1421,7 +1433,7 @@ func TestSecurityEnrollmentTwoFAFailureAccountingAndStorageErrors(t *testing.T) 
 	assert.Zero(t, stored.FailedAttempts, "missing required input must not count as a failed verification")
 	wrongCode := ""
 	for _, candidate := range []string{"000000", "111111", "222222", "333333"} {
-		if !common.ValidateTOTPCode(twoFA.Secret, candidate) {
+		if !common.ValidateTOTPCode(plainSecret, candidate) {
 			wrongCode = candidate
 			break
 		}
@@ -1440,7 +1452,12 @@ func TestSecurityEnrollmentTwoFAFailureAccountingAndStorageErrors(t *testing.T) 
 	stored.LockedUntil = &until
 	assert.ErrorIs(t, service.VerifyTwoFactorCode(stored, "ABCD-1234"), service.ErrVerificationLocked)
 	stored.LockedUntil = nil
-	code, err := totp.GenerateCode(stored.Secret, time.Now())
+	// 从库里重新读一行再取明文，确认「读库 → 解密 → 生成正确码」这条链是通的。
+	reloaded, err := model.GetTwoFAByUserId(user.Id)
+	require.NoError(t, err)
+	reloadedPlain, err := reloaded.PlainSecret()
+	require.NoError(t, err)
+	code, err := totp.GenerateCode(reloadedPlain, time.Now())
 	require.NoError(t, err)
 	failure := errors.New("usage storage failed")
 	require.NoError(t, model.DB.Callback().Update().Before("gorm:update").Register("security_usage_failure", func(tx *gorm.DB) {

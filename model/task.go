@@ -69,6 +69,24 @@ type Task struct {
 	// 禁止返回给用户，内部可能包含key等隐私信息
 	PrivateData TaskPrivateData `json:"-" gorm:"column:private_data;type:json"`
 	Data        json.RawMessage `json:"data" gorm:"type:json"`
+
+	// 计费状态机字段（见 task_billing_state.go）。
+	//
+	// 这四个字段把「已经请求处理」与「账本确已完成」区分开：settle/refund
+	// 先抢占 settlement_pending/refund_pending，动账成功后才进终态。缺了它们，
+	// 轮询重试或人工重跑会按过期的 task.Quota 再算一次差额，直接表现为重复
+	// 扣费或重复退款。
+	BillingState          string `json:"-" gorm:"type:varchar(40);index"`
+	BillingIdempotencyKey string `json:"-" gorm:"type:varchar(191);index"`
+	BillingRetryCount     int    `json:"-" gorm:"default:0"`
+	BillingLastError      string `json:"-" gorm:"type:varchar(512)"`
+	BillingUpdatedAt      int64  `json:"-" gorm:"index"`
+	// BillingTargetQuota 是本次结算意图达到的最终额度，抢占结算执行权时一并固化。
+	//
+	// 结算失败被释放后，任务回到可重试状态，但重试需要「当初算出来的目标额度」——
+	// 上游用量结果此时已经拿不到了，重新求值会得到一个不同的数，按它重放就会
+	// 与第一次尝试扣不同的钱。没有这个字段，对账任务只能把任务转人工。
+	BillingTargetQuota int `json:"-" gorm:"default:0"`
 }
 
 func (t *Task) SetData(data any) {
@@ -121,6 +139,17 @@ type TaskPrivateData struct {
 	TokenId        int                 `json:"token_id,omitempty"`        // 令牌 ID，用于令牌额度退款
 	NodeName       string              `json:"node_name,omitempty"`       // 发起任务的节点名，轮询结算阶段据此归属日志而非最后查询节点
 	BillingContext *TaskBillingContext `json:"billing_context,omitempty"` // 计费参数快照（用于轮询阶段重新计算）
+	// OrganizationId 是**提交时**固化的出资组织快照。
+	//
+	// 异步任务的提交与结算之间可能隔很久：期间用户可能被移出组织、组织可能被停用，
+	// OrgIdOfUser 的返回值会变。结算时若重新解析归属，就会把任务记到与提交时不同
+	// 的账本上——组织少收一笔、个人钱包被凭空扣一笔（或反过来），两本账同时错位。
+	//
+	// 用指针而不是 int：nil 表示「提交时没有留下快照」（历史任务），与「提交时
+	// 明确解析为 0（平台直管用户）」是两种不同的状态，结算端必须区别对待。
+	// 客户端无法改写这个字段：它只写在服务端的 TaskPrivateData 里，且任务创建后
+	// 不再接受外部更新。
+	OrganizationId *int `json:"organization_id,omitempty"`
 	// ResponsesBackground records that the openai_responses create request
 	// asked for background:true. Every task is durable and survives client
 	// disconnect regardless; this only echoes the protocol-level request
@@ -213,6 +242,7 @@ func (p TaskPrivateData) Value() (driver.Value, error) {
 	if p.Key == "" && p.UpstreamTaskID == "" && p.ResultURL == "" &&
 		p.Execution == nil && p.BillingSource == "" && p.SubscriptionId == 0 &&
 		p.TokenId == 0 && p.NodeName == "" && p.BillingContext == nil &&
+		p.OrganizationId == nil &&
 		!p.ResponsesBackground && len(p.PluginState) == 0 && p.PollFailures == 0 &&
 		!p.ResultDiscarded {
 		return nil, nil

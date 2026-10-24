@@ -1,25 +1,41 @@
 version: 2
 updates:
-  # 依赖升级 PR 已关闭：open-pull-requests-limit: 0 表示不为该生态开任何版本升级 PR/分支。
-  # 如需恢复，把 0 改回 10 即可。安全漏洞修复 PR 由仓库设置中的
-  # "Dependabot security updates" 单独控制，不受此处影响。
+  # 版本升级 PR 上限恢复为 10：此前 open-pull-requests-limit: 0 会静默关掉
+  # 整个生态的升级 PR，导致依赖只能靠人工感知，x/net、x/image、x/text 这类
+  # 安全版本就一直停在有漏洞的旧版上。安全漏洞修复 PR 由仓库设置中的
+  # "Dependabot security updates" 单独控制，不受此上限影响。
   - package-ecosystem: "bun"
     directory: "/web"
     schedule:
       interval: "weekly"
-    open-pull-requests-limit: 0
+    open-pull-requests-limit: 10
   - package-ecosystem: "gomod"
     directory: "/"
     schedule:
       interval: "weekly"
-    open-pull-requests-limit: 0
+    open-pull-requests-limit: 10
+  # 多模块仓库：每个 Go 模块都要单独登记，否则 Dependabot 只会扫描根模块。
+  # relaykit 与 tokenkit 此前各自独立成条，这里保持同样的粒度。
   - package-ecosystem: "gomod"
     directory: "/relaykit"
     schedule:
       interval: "weekly"
-    open-pull-requests-limit: 0
+    open-pull-requests-limit: 10
   - package-ecosystem: "gomod"
     directory: "/tokenkit"
     schedule:
       interval: "weekly"
-    open-pull-requests-limit: 0
+    open-pull-requests-limit: 10
+  # tokenkit/tokenkit 是嵌套模块（自己的 go.mod，不在根模块的模块树内），
+  # 曾长期既不在 CI 的 govulncheck 覆盖范围内，也不在 Dependabot 覆盖范围内。
+  - package-ecosystem: "gomod"
+    directory: "/tokenkit/tokenkit"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+  # CI 自身使用的第三方 action 同样是供应链入口，一并纳入。
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10

@@ -47,20 +47,12 @@ func InitEnv() {
 		os.Exit(0)
 	}
 
-	if os.Getenv("SESSION_SECRET") != "" {
-		ss := os.Getenv("SESSION_SECRET")
-		if ss == "random_string" {
-			log.Println("WARNING: SESSION_SECRET is set to the default value 'random_string', please change it to a random string.")
-			log.Println("警告：SESSION_SECRET被设置为默认值'random_string'，请修改为随机字符串。")
-			log.Fatal("Please set SESSION_SECRET to a random string.")
-		} else {
-			SessionSecret = ss
-		}
-	}
-	if os.Getenv("CRYPTO_SECRET") != "" {
-		CryptoSecret = os.Getenv("CRYPTO_SECRET")
-	} else {
-		CryptoSecret = SessionSecret
+	// 会话签名密钥与数据加密密钥：空值、部署模板占位值、过短密钥都会让启动失败。
+	// 此前的实现只拒绝字面量 "random_string"，.env.example 里的实际占位值
+	// `__CHANGE_ME_SESSION_SECRET__` 会被照单全收，等于接受一个任何人都能
+	// 从模板推断出来的固定密钥。
+	if err := InitSecretKeys(); err != nil {
+		log.Fatal(err)
 	}
 	if err := InitSessionCookieSettings(); err != nil {
 		log.Fatal(err)

@@ -104,8 +104,10 @@ func RefundMidjourneyQuota(ctx context.Context, task *model.Midjourney, reason s
 	}
 
 	if task.TokenId > 0 {
-		tokenKey := resolveTokenKey(ctx, task.TokenId, task.MjId)
-		if tokenKey != "" {
+		tokenKey, keyErr := resolveTokenKey(ctx, task.TokenId, task.MjId)
+		if keyErr != nil {
+			logger.LogWarn(ctx, common.LogText("failed to resolve the token key for Midjourney task %s: %s", task.MjId, keyErr.Error()))
+		} else if tokenKey != "" {
 			if err := model.IncreaseTokenQuota(task.TokenId, tokenKey, quota); err != nil {
 				logger.LogWarn(ctx, common.LogText("failed to refund Midjourney token quota, task %s: %s", task.MjId, err.Error()))
 			}

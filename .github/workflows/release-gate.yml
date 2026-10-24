@@ -1,0 +1,176 @@
+name: Release gate (tests, vet, build, vulnerability scan)
+
+# 发布门禁：被 release.yml / docker-build.yml / electron-build.yml 以
+# workflow_call 方式复用。三个发布流程都把它设为第一个作业的依赖，
+# 因此「测试、vet、构建、漏洞扫描、桌面端测试、前端检查」任何一项失败，
+# 发布作业都不会进入构建与发布阶段。
+#
+# 为什么在发布流程里重跑一遍而不是只依赖 CI：
+#   1. CI 只在 push 到 main / PR 时触发，打 tag 时往往没有对应的 CI 运行；
+#   2. 门禁必须跑在**即将发布的那一个 commit** 上，而不是某个分支的最新状态；
+#   3. 发布日志里要能直接看到执行了哪些测试与扫描（验收标准要求可追溯）。
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+# 同一个 tag 只会有一个门禁在跑；不用 cancel-in-progress，避免手动重跑时
+# 把正在进行的门禁取消掉，进而让依赖它的发布作业拿到一个被取消的结果。
+concurrency:
+  group: release-gate-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  backend:
+    name: Backend gofmt, vet, build, test
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      GOWORK: 'off'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          repository: ${{ github.event.pull_request.base.repo.full_name || github.repository }}
+          ref: ${{ github.sha }}
+
+      - name: Set up Go
+        uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6.5.0
+        with:
+          go-version-file: go.mod
+          cache-dependency-path: |
+            go.sum
+            relaykit/go.sum
+            tokenkit/go.sum
+
+      # 与 CI 相同：//go:embed web/dist 需要目录存在，发布门禁只测后端，
+      # 不需要真的前端产物。用共享脚本生成，保证两处骨架一致。
+      - name: Create frontend embed placeholder
+        run: |
+          # 只测后端：造一个最小的 embed 骨架让 go build 通过。必须包含
+          # docs-content/_next，否则 //go:embed all:web/dist/docs-content/_next
+          # 会因找不到匹配文件而编译失败。
+          ./scripts/make-frontend-placeholder.sh
+
+      - name: Check gofmt
+        run: |
+          unformatted="$(gofmt -l $(git ls-files '*.go'))"
+          if [ -n "$unformatted" ]; then
+            echo "以下文件未通过 gofmt，请执行 gofmt -w 后提交："
+            echo "$unformatted"
+            exit 1
+          fi
+
+      - name: Vet and build every maintained Go module
+        run: |
+          set -euo pipefail
+          for module in . relaykit tokenkit tokenkit/tokenkit; do
+            echo "::group::go vet + build ($module)"
+            if [ "$module" = "." ]; then
+              go vet ./...
+              go build ./...
+            else
+              (cd "$module" && go vet ./... && go build ./...)
+            fi
+            echo "::endgroup::"
+          done
+
+      - name: Test root, relaykit, and tokenkit modules
+        run: make test
+
+      # 嵌套模块 tokenkit/tokenkit 是独立的 Go module，不被 make test 覆盖
+      # （make test 只跑根模块与 relaykit/tokenkit）。发布门禁必须四个模块
+      # 全测，否则会发布一个嵌套模块编译不过的版本。
+      - name: Test nested tokenkit/tokenkit module
+        working-directory: tokenkit/tokenkit
+        run: go test ./...
+
+  vulnscan:
+    name: Go dependency vulnerability scan (all modules)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          repository: ${{ github.event.pull_request.base.repo.full_name || github.repository }}
+          ref: ${{ github.sha }}
+
+      - name: Install govulncheck (pinned) and put Go bin on PATH
+        # 与 CI 的 vulnscan job 保持同一个 pin 版本，避免「CI 过、门禁不过」。
+        run: |
+          go install golang.org/x/vuln/cmd/govulncheck@v1.9.0
+          echo "PATH=$PATH:$(go env GOPATH)/bin" >> "$GITHUB_ENV"
+
+      - name: Scan every maintained Go module
+        run: |
+          set -euo pipefail
+          for module in . relaykit tokenkit tokenkit/tokenkit; do
+            echo "::group::govulncheck ($module)"
+            if [ "$module" = "." ]; then
+              govulncheck ./...
+            else
+              (cd "$module" && govulncheck ./...)
+            fi
+            echo "::endgroup::"
+          done
+
+  desktop:
+    name: Electron desktop secret persistence
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          repository: ${{ github.event.pull_request.base.repo.full_name || github.repository }}
+          ref: ${{ github.sha }}
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Syntax check Electron main process
+        working-directory: electron
+        run: node --check main.js
+
+      - name: Test desktop secret persistence
+        working-directory: electron
+        run: node --test desktop-secrets.test.js
+
+  frontend:
+    name: Frontend typecheck, tests and lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: web
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          repository: ${{ github.event.pull_request.base.repo.full_name || github.repository }}
+          ref: ${{ github.sha }}
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version: '1.4.0'
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Typecheck
+        run: bun run typecheck
+
+      - name: Test
+        run: bun run test
+
+      - name: Lint
+        run: bun run lint

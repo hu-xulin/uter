@@ -400,6 +400,11 @@ func updateOptionMap(key string, value string) (err error) {
 	}
 	common.OptionMapRWMutex.Lock()
 	defer common.OptionMapRWMutex.Unlock()
+	// OptionMap 由 InitOptionMap 在启动时填充。测试或非常规装配顺序下它可能是 nil，
+	// 直接赋值会 panic；这里惰性初始化，语义不变（空表 + 本次写入）。
+	if common.OptionMap == nil {
+		common.OptionMap = make(map[string]string)
+	}
 	common.OptionMap[key] = value
 
 	// 检查是否是模型配置 - 使用更规范的方式处理

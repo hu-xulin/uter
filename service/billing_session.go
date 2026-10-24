@@ -308,8 +308,21 @@ func (s *BillingSession) preConsume(c *gin.Context, quota int) *types.UterError 
 		s.trusted = true
 		effectiveQuota = 0
 		logger.LogInfo(c, fmt.Sprintf("用户 %d 额度充足, 信任且不需要预扣费 (funding=%s)", s.relayInfo.UserId, s.funding.Source()))
-	} else if effectiveQuota > 0 {
-		logger.LogInfo(c, fmt.Sprintf("用户 %d 需要预扣费 %s (funding=%s)", s.relayInfo.UserId, logger.FormatQuota(effectiveQuota), s.funding.Source()))
+	} else {
+		// 组织成员：把「校验额」与「实际预留额」统一到同一个口径上。
+		//
+		// 旧实现在 NewBillingSession 里用 max(preConsumedQuota,1) 做只读预检查，
+		// 实际预扣却仍用原始 preConsumedQuota（可能是 0）——校验完就把闸门绕过去了：
+		// 零预估请求既不触发 ReserveOrgQuota，也留下了「已经检查过」的假象，
+		// 并发突发下全员通过。现在校验与预留共用 OrgAdmissionReserveAmount：
+		// effectiveQuota 同时决定令牌预扣、组织原子预留和 preConsumedQuota，
+		// 三者恒等，因此不存在「预留了却没记账」的残留。
+		if wf, ok := s.funding.(*WalletFunding); ok && wf.OrgFunded() {
+			effectiveQuota = int(model.OrgAdmissionReserveAmount(int64(effectiveQuota)))
+		}
+		if effectiveQuota > 0 {
+			logger.LogInfo(c, fmt.Sprintf("用户 %d 需要预扣费 %s (funding=%s)", s.relayInfo.UserId, logger.FormatQuota(effectiveQuota), s.funding.Source()))
+		}
 	}
 
 	// ---- 1) 预扣令牌额度 ----
@@ -341,6 +354,13 @@ func (s *BillingSession) preConsume(c *gin.Context, quota int) *types.UterError 
 				types.ErrorCodeInsufficientUserQuota, http.StatusForbidden,
 				types.ErrOptionWithSkipRetry(), types.ErrOptionWithNoRecordErrorLog())
 		}
+		// 组织预算/子额度不足或组织已停用：ReserveOrgQuota 是唯一的原子闸门，
+		// 其错误必须映射成「额度不足」而不是通用数据错误，否则客户端只会看到
+		// 500 级别的模糊失败，也无法按计费偏好做有意义的回退判断。
+		if orgErr := model.AsOrgQuotaError(err); orgErr != nil {
+			return types.NewErrorWithStatusCode(orgErr, types.ErrorCodeInsufficientUserQuota, http.StatusForbidden,
+				types.ErrOptionWithSkipRetry(), types.ErrOptionWithNoRecordErrorLog())
+		}
 		errMsg := err.Error()
 		if strings.Contains(errMsg, "no active subscription") || strings.Contains(errMsg, "subscription quota insufficient") {
 			return types.NewErrorWithStatusCode(fmt.Errorf("订阅额度不足或未配置订阅: %s", errMsg), types.ErrorCodeInsufficientUserQuota, http.StatusForbidden, types.ErrOptionWithSkipRetry(), types.ErrOptionWithNoRecordErrorLog())
@@ -368,7 +388,11 @@ func (s *BillingSession) reserveFunding(delta int, requireAvailableQuota bool) e
 		// 注意这里的顺序：组织判断放在 requireAvailableQuota 之前，因为
 		// requireAvailableQuota 只反映「图片请求」，而组织成员可能发的是文本
 		// 或 Realtime 请求。
-		if orgId, err := model.OrgIdOfUser(funding.userId); err == nil && orgId > 0 {
+		orgId, orgErr := funding.resolveOrgId()
+		if orgErr != nil {
+			return types.NewError(orgErr, types.ErrorCodeQueryDataError, types.ErrOptionWithSkipRetry())
+		}
+		if orgId > 0 {
 			if err := model.ReserveOrgQuota(orgId, funding.userId, int64(delta)); err != nil {
 				return types.NewErrorWithStatusCode(err, types.ErrorCodeInsufficientUserQuota, http.StatusForbidden, types.ErrOptionWithSkipRetry(), types.ErrOptionWithNoRecordErrorLog())
 			}
@@ -421,7 +445,17 @@ func (s *BillingSession) rollbackFundingReserve(delta int) {
 		// 两笔回减与 reserveFunding 里的 ReserveOrgQuota 严格对称：正向用
 		// 一次原子预留同时写 organizations.used_quota 与 members.used_quota，
 		// 故这里也必须两笔都减。只减其一会让两本账永久错位。
-		if orgId, err := model.OrgIdOfUser(funding.userId); err == nil && orgId > 0 {
+		//
+		// 归属解析失败时**不得**退化成「退到个人钱包」：那会把组织的预扣额
+		// 变成个人余额，两本账同时错位。此时直接上抛，让调用方保留
+		// funding.consumed 并重试（见 BillingSession.Refund 的错误上报）。
+		orgId, orgErr := funding.resolveOrgId()
+		if orgErr != nil {
+			common.SysError(fmt.Sprintf("cannot roll back organization funding reserve (userId=%d, amount=%d): %s",
+				funding.userId, delta, orgErr.Error()))
+			return
+		}
+		if orgId > 0 {
 			if err := model.IncrOrgUsedQuota(orgId, -int64(delta)); err != nil {
 				common.SysLog("error rolling back organization funding reserve: " + err.Error())
 			} else {
@@ -480,7 +514,10 @@ func (s *BillingSession) shouldTrust(c *gin.Context) bool {
 	// 组织成员不享信任旁路。信任旁路会把 effectiveQuota 归零，从而跳过
 	// PreConsumeTokenQuota 里的 EnforceOrgQuota —— 组织预算上限与成员子额度上限
 	// 会同时失守（余额越大的成员反而越不受约束，方向恰好相反）。
-	if orgId, err := resolveOrgIdForBilling(s.relayInfo); err == nil && orgId > 0 {
+	//
+	// 归属解析失败同样返回 false（fail-closed）：无法确认是不是组织成员时
+	// 授予信任旁路，等于把「查询抖动」变成「免预扣通行证」。
+	if orgId, err := resolveOrgIdForBilling(s.relayInfo); err != nil || orgId > 0 {
 		return false
 	}
 
@@ -551,36 +588,42 @@ func NewBillingSession(c *gin.Context, relayInfo *relaycommon.RelayInfo, preCons
 	// 钱包路径需要先检查用户额度
 	tryWallet := func() (*BillingSession, *types.UterError) {
 		// 组织成员：出资方是组织共享预算，个人钱包余额不参与扣费。准入必须以
-		// 「组织剩余预算 + 成员子额度」为准（EnforceOrgQuota 读数据库权威值）。
+		// 「组织剩余预算 + 成员子额度」为准。
 		// 用个人钱包做闸门会造成两种相反的错误：额度为 0 的成员被全面拒绝，
 		// 余额充足的成员则因为余额永不被扣减而变成事实上的无限额度。
 		// 优先复用外层已解析的组织归属（NewBillingSession 开头已解析过一次），
 		// 避免紧邻的重复查库。
-		if orgId, orgErr := resolveOrgIdForBilling(relayInfo); orgErr == nil && orgId > 0 {
+		orgId, orgErr := resolveOrgIdForBilling(relayInfo)
+		if orgErr != nil {
+			// 归属无法确认时**不得**退回个人钱包：那等于把组织成员的资金来源
+			// 静默改判，组织账本与个人账本会同时错位。安全策略是拒绝。
+			return nil, types.NewErrorWithStatusCode(
+				fmt.Errorf("%w: %v", model.ErrOrgQuotaUnverifiable, orgErr),
+				types.ErrorCodeQueryDataError, http.StatusServiceUnavailable,
+				types.ErrOptionWithSkipRetry())
+		}
+		if orgId > 0 {
 			// 缓存出资组织，供请求路径后续判断复用（尤其是后台 goroutine ——
 			// 那里不得再访问数据库，见 RelayInfo.OrganizationId 的说明）。
 			relayInfo.OrganizationId = orgId
-			// EnforceOrgQuota 按契约把 amount<=0 当作「无需校验」直接放行，
-			// 而按量计费的预扣额可以为 0（例如本次请求没有可计数的输入 token，
-			// 或模型按 legacy 策略算出 0）。组织一旦越过预算就必须**一律拒绝**，
-			// 与本次请求贵贱无关 —— 否则「零预扣」的请求会一直被放行，形成白嫖。
-			// 这里把校验额抬到最小正数，让闸门照常判预算，而不改变任何扣费金额。
-			gateAmount := int64(preConsumedQuota)
-			if gateAmount <= 0 {
-				gateAmount = 1
-			}
-			if gateErr := model.EnforceOrgQuota(relayInfo.UserId, gateAmount); gateErr != nil {
-				return nil, types.NewErrorWithStatusCode(gateErr, types.ErrorCodeInsufficientUserQuota, http.StatusForbidden,
-					types.ErrOptionWithSkipRetry(), types.ErrOptionWithNoRecordErrorLog())
-			}
 			if remaining, unlimited, remainingErr := model.OrgRemainingQuota(orgId); remainingErr == nil && !unlimited {
-				// 让额度提醒/日志反映真正的出资方余额。
+				// 让额度提醒/日志反映真正的出资方余额（展示用途，不承担闸门职责）。
 				relayInfo.UserQuota = int(remaining)
 			}
 			session := &BillingSession{
 				relayInfo: relayInfo,
 				funding:   &WalletFunding{userId: relayInfo.UserId, orgId: orgId, orgIdResolved: true},
 			}
+			// 组织预算与成员子额度的闸门只有一处：preConsume → WalletFunding.PreConsume
+			// → ReserveOrgQuota 的单条条件 UPDATE（校验与记账原子完成）。
+			//
+			// 旧实现先在这里跑一遍只读的 EnforceOrgQuota，且用 max(preConsumedQuota,1)
+			// 当校验额，而实际预扣用的是原始 preConsumedQuota（零预估请求为 0）：
+			//   - 校验额与实际预留额口径不一致；
+			//   - 只读校验与后续写入之间存在 TOCTOU 窗口，并发请求会同时通过；
+			//   - 零预估请求根本不触发 ReserveOrgQuota，闸门完全没执行。
+			// 现在只保留原子预留这一道闸门，预检查不再单独存在，因此不可能出现
+			// 「检查过 1、实际预留 0」的错位。
 			if apiErr := session.preConsume(c, preConsumedQuota); apiErr != nil {
 				return nil, apiErr
 			}
@@ -651,7 +694,17 @@ func NewBillingSession(c *gin.Context, relayInfo *relaycommon.RelayInfo, preCons
 	// 组织成员的出资方恒为组织共享预算：个人钱包与订阅都不参与扣费，
 	// 因此计费偏好（subscription_first / wallet_first …）对成员不适用，
 	// 直接走组织钱包路径，避免「组织成员却先扣订阅/个人钱包」的口径分裂。
-	if orgId, orgErr := resolveOrgIdForBilling(relayInfo); orgErr == nil && orgId > 0 {
+	//
+	// 归属解析失败必须拒绝，不能落到下面的计费偏好分支：那会让组织成员按
+	// 订阅/个人钱包计费，组织账本少收一笔、个人账本多扣一笔，且两者都不可逆。
+	orgId, orgErr := resolveOrgIdForBilling(relayInfo)
+	if orgErr != nil {
+		return nil, types.NewErrorWithStatusCode(
+			fmt.Errorf("%w: %v", model.ErrOrgQuotaUnverifiable, orgErr),
+			types.ErrorCodeQueryDataError, http.StatusServiceUnavailable,
+			types.ErrOptionWithSkipRetry())
+	}
+	if orgId > 0 {
 		// 缓存出资组织：tryWallet 内的组织分支、shouldTrust、recordMemberUsage
 		// 都复用这一结果，不必再查一次库。
 		relayInfo.OrganizationId = orgId

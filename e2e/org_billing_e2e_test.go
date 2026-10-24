@@ -209,8 +209,8 @@ func TestOrgBillingConcurrentMembers(t *testing.T) {
 // TestOrgBillingOvershootBoundedByOneCall 预算低于单次实际成本时的有界超支。
 //
 // 这是超支策略最尖锐的边界：把预算压到 1000 —— 远低于一次调用的实际结算
-// 30000。由于本场景预扣额为 0，准入闸门形同虚设，第一笔必然放行，结算后
-// 账本被推到 30000，形成 29000 的超支。
+// 30000。准入按最小预留额放行第一笔（预算还剩 1000 个单位，足够占位），
+// 结算后账本被推到 30000，形成 29000 的超支。
 //
 // 断言把策略钉死：
 //  1. 超支额严格小于「一次调用的实际成本」——即最多只超一笔的钱，
@@ -224,7 +224,7 @@ func TestOrgBillingConcurrentMembers(t *testing.T) {
 // service/billing_session.go 中关于 admission 的注释。
 func TestOrgBillingOvershootBoundedByOneCall(t *testing.T) {
 	env := newBillingEnv(t)
-	// 1000：< 单笔实耗 30000（必然超支）；预扣为 0，故首笔必然放行。
+	// 1000：< 单笔实耗 30000（必然超支）；预扣估算远小于预算，故首笔必然放行。
 	env.setOrgQuota(t, env.orgId(), 1000)
 	key := env.createToken(t, "m1", "m1-key")
 
@@ -258,21 +258,20 @@ func TestOrgBillingOvershootBoundedByOneCall(t *testing.T) {
 
 // TestOrgBillingOvershootConcurrent 并发下的超发放大与账本/日志一致性。
 //
-// ⚠️ 本测试记录的是一个**已量化的放大效应**，不是缺陷修复，也不代表期望行为：
+// ⚠️ 本测试记录的是「超支被单次调用成本 × 并发度界定」这一已确认的计费策略，
+// 不是缺陷修复，也不代表期望行为：
 //
-// 预扣额为 0 时（本场景请求极小，prompt 估耗为 0），组织成员的
-// WalletFunding.PreConsume 会因 amount<=0 直接返回，ReserveOrgQuota 的原子
-// 预留根本不执行；此时唯一的预算闸门是 NewBillingSession 里的
-// EnforceOrgQuota —— 那是一道**只读**校验，并发下全员通过（TOCTOU）。
-// 于是一次并发突发可以让远超预算的请求全部放行，每笔再按实际成本结算。
+// 准入只能按「预扣估算额」校验，而真实成本在结算时才可知。零预估请求现在会
+// 预留一个受控的最小额度（model.OrgAdmissionReserveFloor），因此：
+//   - 预算已耗尽的组织**一律**在准入点被拒（不再有「零预估反复白嫖」）；
+//   - 但预算尚有余量时，每笔请求只占住 1 个单位的预留，仍可能在结算时
+//     以远超预留的实际成本顶穿预算——超支额被「放行笔数 × 单笔实耗」界定，
+//     而放行笔数受预算/最小预留额限制，不会无限增长。
 //
-// 实测（2026-10-17，单笔实耗 30000）：
+// 历史实测（2026-10-17，修复前，零预估请求完全不预留）：
 //
-//	预算 1000、并发 8  → 放行 8  笔，账本 240000（超支 239000 ≈ 8 倍单笔成本）
-//	预算 40000、并发 20 → 放行 19 笔，账本 570000（超支 530000 ≈ 17.7 倍）
-//
-// 即超支额 ≈ 放行笔数 × 单笔实耗，而放行笔数在并发突发下可达并发度量级，
-// 远大于顺序执行时「最多超一笔」的界。要成为硬上限需产品决策（见报告）。
+//	预算 1000、并发 8  → 放行 8  笔，账本 240000（超支 239000）
+//	预算 40000、并发 20 → 放行 19 笔，账本 570000（超支 530000）
 //
 // 本测试固化的是**无论如何都必须成立**的安全不变量：
 //  1. 账本 == 放行笔数 × 单笔实耗（每笔成功调用记且只记一次，无幻影扣费）。
@@ -306,7 +305,7 @@ func TestOrgBillingOvershootConcurrent(t *testing.T) {
 	}
 	wg.Wait()
 
-	require.Positive(t, succeeded, "预扣为 0 时只读闸门必然放行，至少应成功一笔")
+	require.Positive(t, succeeded, "预算尚有余量时至少应放行一笔")
 
 	used := env.orgUsed(t, env.orgId())
 	assert.Equal(t, succeeded*oneCallCost, int(used),
