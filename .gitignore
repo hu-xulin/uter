@@ -69,6 +69,8 @@ uter-bin*
 node_modules/
 .playwright-cli/
 .workbuddy/
+# AI 协作过程数据（工作日志、会话记忆），属于本机状态而非源码
+.workbuddy-ai/
 
 # Local audit / analysis reports (deliverables for review, not source)
 _reports/
