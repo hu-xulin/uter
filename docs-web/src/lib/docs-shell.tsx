@@ -143,19 +143,15 @@ export function DocsShell({
   const tree = buildPageTree(sidebar);
 
   /*
-   * Clerk's TOC numbers its top-level entries with filled circles
-   * (`item._step`) and hangs sub-entries off the connecting line
-   * unnumbered. Fumadocs sets `_step` in its MDX pipeline from a
-   * `data-fd-step` heading property; our TOC comes from `planHeadings()`
-   * instead, so number the h2 entries here. Without this the clerk style
-   * degrades to the default look — the circle branch checks
-   * `_step !== undefined`.
+   * The right-hand TOC keeps Fumadocs' `clerk` connecting tree line and
+   * active highlight, but carries NO numeric numbering. The numbers used
+   * to come from a `_step` we assigned to every h2-and-above item here;
+   * that has been removed by product decision. Fumadocs' clerk TOC gates
+   * the filled-circle-with-number branch on `_step !== undefined`, so
+   * leaving it unset drops the numbers (and their circles) while the tree
+   * line and the active track — both independent of `_step` — keep
+   * rendering exactly as before.
    */
-  let step = 0;
-  const numberedToc = toc.map((item) =>
-    item.depth <= 2 ? ({ ...item, _step: ++step } as TOCItemType) : item
-  );
-
   return (
     <div className='flex min-h-screen flex-col'>
       {/*
@@ -233,7 +229,7 @@ export function DocsShell({
           i18n={false}
         >
           <DocsPage
-            toc={numberedToc}
+            toc={toc}
             full
             /*
              * The built-in breadcrumb/footer slots are off: Fumadocs'
@@ -261,11 +257,12 @@ export function DocsShell({
                */
               enabled: toc.length > 0,
               /*
-               * Clerk's numbered TOC: items carry a step number in a
-               * filled circle and the group is joined by a connecting
-               * line that follows the active item — the same
-               * "On this page" treatment as the docs this visual
-               * language is borrowed from.
+               * Clerk-style TOC: entries hang off a connecting line that
+               * follows the active item — the same "On this page"
+               * treatment as the docs this visual language is borrowed
+               * from. Deliberately unnumbered: `_step` is left unset (see
+               * above), so the circle/number branch does not render and
+               * only the tree line remains.
                */
               style: 'clerk',
             }}
