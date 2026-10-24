@@ -7665,6 +7665,20 @@
     "The website domain you submit when signing the products in the Alipay Open Platform (open.alipay.com) must be ICP-filed and its registrant must match the app entity.": "Домен сайта, указываемый при подписании продуктов на открытой платформе Alipay (open.alipay.com), должен быть зарегистрирован (ICP), а его владелец — совпадать с приложением.",
     "Async callbacks go to /api/user/alipay/notify on this server; no fixed configuration is needed in the Alipay Open Platform (open.alipay.com).": "Асинхронные callback'и идут на /api/user/alipay/notify на этом сервере; фиксированная настройка на открытой платформе Alipay (open.alipay.com) не требуется.",
     "Check the settlement account in the merchant center": "Проверить расчётный счёт в центре мерчанта",
-    "Alipay merchant center (b.alipay.com) → Account center → settlement account — only when you need to check where funds land or change bank details.": "Центр мерчанта Alipay (b.alipay.com) → Центр аккаунтов → расчётный счёт — только если нужно проверить, куда поступают средства, или изменить банковские реквизиты."
+    "Alipay merchant center (b.alipay.com) → Account center → settlement account — only when you need to check where funds land or change bank details.": "Центр мерчанта Alipay (b.alipay.com) → Центр аккаунтов → расчётный счёт — только если нужно проверить, куда поступают средства, или изменить банковские реквизиты.",
+    "Signs Waffo requests. Select the private key file Waffo issued; PKCS#8 / PKCS#1 PEM and single-line base64 are all accepted.": "Используется для подписи запросов Waffo. Выберите файл закрытого ключа, выданный Waffo; поддерживаются PEM (PKCS#8 / PKCS#1) и base64 одной строкой.",
+    "Signs Waffo requests in sandbox mode. Same format as the production key.": "Используется для подписи запросов Waffo в песочнице. Тот же формат, что и у рабочего ключа.",
+    "Verifies Waffo callback signatures. A public key PEM, the certificate Waffo issued, or single-line base64 is accepted.": "Проверяет подписи callback-запросов Waffo. Поддерживаются PEM открытого ключа, сертификат от Waffo и base64 одной строкой.",
+    "Verifies Waffo sandbox callback signatures. Same format as the production key.": "Проверяет подписи callback-запросов Waffo в песочнице. Тот же формат, что и у рабочего ключа.",
+    "Select the RSA private key file from the Pancake dashboard (PKCS#8 / PKCS#1 PEM or single-line base64). The environment (test vs production) is decided by the key you configure here — use the Test key while integrating, then swap to the Production key when going live.": "Выберите файл закрытого ключа RSA из панели Pancake (PEM PKCS#8 / PKCS#1 или base64 одной строкой). Окружение (тестовое или рабочее) определяется ключом, настроенным здесь: используйте тестовый ключ при интеграции, затем замените его на рабочий при запуске.",
+    "Syncing": "Синхронизация",
+    "Sync now": "Синхронизировать",
+    "Not synced yet": "Ещё не синхронизировано",
+    "Last synced: {{time}}": "Последняя синхронизация: {{time}}",
+    "Failed to sync exchange rate": "Не удалось синхронизировать курс",
+    "Exchange rate synced: 1 USD = {{rate}}": "Курс синхронизирован: 1 USD = {{rate}}",
+    "Fetched automatically from the market USD to CNY rate every 10 minutes, so this field is read-only. The payment price in the Payment Gateway settings is derived from it as A + {{markup}}.": "Курс USD/CNY автоматически загружается с рынка каждые 10 минут, поэтому поле доступно только для чтения. Цена в разделе «Платёжный шлюз» рассчитывается как это значение + {{markup}}.",
+    "Charged for each 1 USD of balance. Derived automatically as the exchange rate + {{markup}} and refreshed every 10 minutes, so this field is read-only. Applies to every payment method that settles in CNY (Alipay, WeChat Pay, Epay).": "Стоимость каждых 1 USD баланса. Рассчитывается автоматически как курс + {{markup}} и обновляется каждые 10 минут, поэтому поле доступно только для чтения. Применяется ко всем способам оплаты с расчётом в юанях (Alipay, WeChat Pay, Epay).",
+    "Smallest USD amount users can recharge. Applies to every payment method (Alipay, WeChat Pay, Epay).": "Минимальная сумма в USD для пополнения. Применяется ко всем способам оплаты (Alipay, WeChat Pay, Epay)."
   }
 }

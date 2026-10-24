@@ -7665,6 +7665,20 @@
     "The website domain you submit when signing the products in the Alipay Open Platform (open.alipay.com) must be ICP-filed and its registrant must match the app entity.": "The website domain you submit when signing the products in the Alipay Open Platform (open.alipay.com) must be ICP-filed and its registrant must match the app entity.",
     "Async callbacks go to /api/user/alipay/notify on this server; no fixed configuration is needed in the Alipay Open Platform (open.alipay.com).": "Async callbacks go to /api/user/alipay/notify on this server; no fixed configuration is needed in the Alipay Open Platform (open.alipay.com).",
     "Check the settlement account in the merchant center": "Check the settlement account in the merchant center",
-    "Alipay merchant center (b.alipay.com) → Account center → settlement account — only when you need to check where funds land or change bank details.": "Alipay merchant center (b.alipay.com) → Account center → settlement account — only when you need to check where funds land or change bank details."
+    "Alipay merchant center (b.alipay.com) → Account center → settlement account — only when you need to check where funds land or change bank details.": "Alipay merchant center (b.alipay.com) → Account center → settlement account — only when you need to check where funds land or change bank details.",
+    "Signs Waffo requests. Select the private key file Waffo issued; PKCS#8 / PKCS#1 PEM and single-line base64 are all accepted.": "Signs Waffo requests. Select the private key file Waffo issued; PKCS#8 / PKCS#1 PEM and single-line base64 are all accepted.",
+    "Signs Waffo requests in sandbox mode. Same format as the production key.": "Signs Waffo requests in sandbox mode. Same format as the production key.",
+    "Verifies Waffo callback signatures. A public key PEM, the certificate Waffo issued, or single-line base64 is accepted.": "Verifies Waffo callback signatures. A public key PEM, the certificate Waffo issued, or single-line base64 is accepted.",
+    "Verifies Waffo sandbox callback signatures. Same format as the production key.": "Verifies Waffo sandbox callback signatures. Same format as the production key.",
+    "Select the RSA private key file from the Pancake dashboard (PKCS#8 / PKCS#1 PEM or single-line base64). The environment (test vs production) is decided by the key you configure here — use the Test key while integrating, then swap to the Production key when going live.": "Select the RSA private key file from the Pancake dashboard (PKCS#8 / PKCS#1 PEM or single-line base64). The environment (test vs production) is decided by the key you configure here — use the Test key while integrating, then swap to the Production key when going live.",
+    "Syncing": "Syncing",
+    "Sync now": "Sync now",
+    "Not synced yet": "Not synced yet",
+    "Last synced: {{time}}": "Last synced: {{time}}",
+    "Failed to sync exchange rate": "Failed to sync exchange rate",
+    "Exchange rate synced: 1 USD = {{rate}}": "Exchange rate synced: 1 USD = {{rate}}",
+    "Fetched automatically from the market USD to CNY rate every 10 minutes, so this field is read-only. The payment price in the Payment Gateway settings is derived from it as A + {{markup}}.": "Fetched automatically from the market USD to CNY rate every 10 minutes, so this field is read-only. The payment price in the Payment Gateway settings is derived from it as A + {{markup}}.",
+    "Charged for each 1 USD of balance. Derived automatically as the exchange rate + {{markup}} and refreshed every 10 minutes, so this field is read-only. Applies to every payment method that settles in CNY (Alipay, WeChat Pay, Epay).": "Charged for each 1 USD of balance. Derived automatically as the exchange rate + {{markup}} and refreshed every 10 minutes, so this field is read-only. Applies to every payment method that settles in CNY (Alipay, WeChat Pay, Epay).",
+    "Smallest USD amount users can recharge. Applies to every payment method (Alipay, WeChat Pay, Epay).": "Smallest USD amount users can recharge. Applies to every payment method (Alipay, WeChat Pay, Epay)."
   }
 }
