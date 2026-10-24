@@ -3,19 +3,26 @@
   <head>
     <meta charset="UTF-8" />
     <script>
-      // Apply the theme class before first paint to avoid a light flash.
-      // Mirrors the SPA ThemeProvider default: dark unless the user stored
-      // an explicit preference in the `vite-ui-theme` cookie.
+      // Apply the theme class before first paint to avoid a flash.
+      //
+      // The authoritative theme is the `newapi:theme:v1:mode` localStorage
+      // entry (see src/lib/theme-storage.ts and context/theme-provider.tsx).
+      // Read it directly so the first paint matches what the app resolves
+      // to, then fall back to dark. The `vite-ui-theme` cookie is a legacy
+      // leftover the SPA never writes, so keying the pre-paint off it pinned
+      // every load to dark until React re-applied the stored theme.
       (function () {
         try {
-          var m = /(?:^|; )vite-ui-theme=(dark|light|system)/.exec(
-            document.cookie
-          )
-          var t = m ? m[1] : 'dark'
+          var t = null
+          try {
+            t = window.localStorage.getItem('newapi:theme:v1:mode')
+          } catch (e) {}
+          if (t !== 'dark' && t !== 'light' && t !== 'system') t = 'dark'
           var d =
             t === 'dark' ||
             (t === 'system' &&
               window.matchMedia('(prefers-color-scheme: dark)').matches)
+          document.documentElement.classList.remove('light', 'dark')
           document.documentElement.classList.add(d ? 'dark' : 'light')
         } catch (e) {
           document.documentElement.classList.add('dark')
