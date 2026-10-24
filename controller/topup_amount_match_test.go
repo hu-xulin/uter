@@ -240,22 +240,29 @@ func TestStripeCheckoutTotalIsPayable(t *testing.T) {
 
 func TestStripeMoneyToMinorUnits(t *testing.T) {
 	tests := []struct {
-		name    string
-		amount  float64
-		want    int64
-		wantErr bool
+		name     string
+		amount   float64
+		currency string
+		want     int64
+		wantErr  bool
 	}{
-		{name: "whole currency amount", amount: 8, want: 800},
-		{name: "two decimal amount", amount: 1.25, want: 125},
-		{name: "rounds to displayed cents", amount: 1.239, want: 124},
-		{name: "zero rejected", amount: 0, wantErr: true},
-		{name: "negative rejected", amount: -1, wantErr: true},
-		{name: "nan rejected", amount: math.NaN(), wantErr: true},
-		{name: "infinity rejected", amount: math.Inf(1), wantErr: true},
+		{name: "whole currency amount", amount: 8, currency: "usd", want: 800},
+		{name: "two decimal amount", amount: 1.25, currency: "usd", want: 125},
+		{name: "rounds to displayed cents", amount: 1.239, currency: "usd", want: 124},
+		{name: "cny uses cents too", amount: 9.99, currency: "cny", want: 999},
+		// F-18：零小数货币的最小单位就是 1，不能再乘 100，否则实收 100 倍。
+		{name: "zero decimal currency is not scaled", amount: 1000, currency: "jpy", want: 1000},
+		{name: "zero decimal currency rejects fractional unit", amount: 1000.5, currency: "jpy", wantErr: true},
+		{name: "three decimal currency uses thousandths", amount: 1.234, currency: "kwd", want: 1234},
+		{name: "zero rejected", amount: 0, currency: "usd", wantErr: true},
+		{name: "negative rejected", amount: -1, currency: "usd", wantErr: true},
+		{name: "nan rejected", amount: math.NaN(), currency: "usd", wantErr: true},
+		{name: "infinity rejected", amount: math.Inf(1), currency: "usd", wantErr: true},
+		{name: "malformed currency rejected", amount: 1, currency: "us", wantErr: true},
 	}
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			got, err := stripeMoneyToMinorUnits(tc.amount)
+			got, err := stripeMoneyToMinorUnits(tc.amount, tc.currency)
 			assert.Equal(t, tc.wantErr, err != nil)
 			if err == nil {
 				assert.Equal(t, tc.want, got)

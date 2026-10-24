@@ -329,6 +329,19 @@ func rejectInvalidTopUpQuota(c *gin.Context, userId int, amount int64) bool {
 	return false
 }
 
+// markTopUpFailed closes a locally created pending order as failed and stores
+// the reason with it.
+//
+// F-07: use this only when the payment provider is known NOT to have created
+// (or has definitively rejected) the order. When the provider state is unknown
+// the order must stay pending — marking it failed would hide a possibly paid
+// order from the callback that has to credit it.
+func markTopUpFailed(c *gin.Context, topUp *model.TopUp, reason string) {
+	if err := topUp.MarkFailed(reason); err != nil {
+		logger.LogError(c.Request.Context(), fmt.Sprintf("failed to persist top-up failure reason trade_no=%s reason=%q error=%q", topUp.TradeNo, reason, err.Error()))
+	}
+}
+
 func RequestEpay(c *gin.Context) {
 	if !isEpayTopUpEnabled() {
 		paymentError(c, common.NewMessage("Epay payment is not enabled or configured"))
@@ -375,20 +388,6 @@ func RequestEpay(c *gin.Context) {
 		paymentError(c, common.NewMessage("Payment information has not been configured by administrator"))
 		return
 	}
-	uri, params, err := client.Purchase(&epay.PurchaseArgs{
-		Type:           req.PaymentMethod,
-		ServiceTradeNo: tradeNo,
-		Name:           fmt.Sprintf("TUC%d", req.Amount),
-		Money:          strconv.FormatFloat(payMoney, 'f', 2, 64),
-		Device:         epay.PC,
-		NotifyUrl:      notifyUrl,
-		ReturnUrl:      returnUrl,
-	})
-	if err != nil {
-		logger.LogError(c.Request.Context(), fmt.Sprintf("易支付 拉起支付失败 user_id=%d trade_no=%s payment_method=%s amount=%d error=%q", id, tradeNo, req.PaymentMethod, req.Amount, err.Error()))
-		paymentError(c, common.NewMessage("Failed to start payment"))
-		return
-	}
 	amount := req.Amount
 	if operation_setting.GetQuotaDisplayType() == operation_setting.QuotaDisplayTypeTokens {
 		dAmount := decimal.NewFromInt(int64(amount))
@@ -405,10 +404,31 @@ func RequestEpay(c *gin.Context) {
 		CreateTime:      time.Now().Unix(),
 		Status:          common.TopUpStatusPending,
 	}
-	err = topUp.Insert()
-	if err != nil {
+	// F-07: persist the local pending order BEFORE handing the user a payment
+	// URL. The provider only learns about this order when the user pays at the
+	// gateway, so a local insert that failed after the URL was issued left the
+	// user paying for an order the callback could never find — money received
+	// but never credited. Writing the order first closes that window.
+	if err := topUp.Insert(); err != nil {
 		logger.LogError(c.Request.Context(), fmt.Sprintf("易支付 创建充值订单失败 user_id=%d trade_no=%s payment_method=%s amount=%d error=%q", id, tradeNo, req.PaymentMethod, req.Amount, err.Error()))
 		paymentError(c, common.NewMessage("Failed to create the order"))
+		return
+	}
+	uri, params, err := client.Purchase(&epay.PurchaseArgs{
+		Type:           req.PaymentMethod,
+		ServiceTradeNo: tradeNo,
+		Name:           fmt.Sprintf("TUC%d", req.Amount),
+		Money:          strconv.FormatFloat(payMoney, 'f', 2, 64),
+		Device:         epay.PC,
+		NotifyUrl:      notifyUrl,
+		ReturnUrl:      returnUrl,
+	})
+	if err != nil {
+		// The provider was never contacted, so this order can be closed as
+		// failed with a recorded reason instead of lingering as pending.
+		logger.LogError(c.Request.Context(), fmt.Sprintf("易支付 拉起支付失败 user_id=%d trade_no=%s payment_method=%s amount=%d error=%q", id, tradeNo, req.PaymentMethod, req.Amount, err.Error()))
+		markTopUpFailed(c, topUp, "epay checkout url build failed: "+err.Error())
+		paymentError(c, common.NewMessage("Failed to start payment"))
 		return
 	}
 	logger.LogInfo(c.Request.Context(), fmt.Sprintf("易支付 充值订单创建成功 user_id=%d trade_no=%s payment_method=%s amount=%d money=%.2f uri_length=%d param_count=%d", id, tradeNo, req.PaymentMethod, req.Amount, payMoney, len(uri), len(params)))
@@ -795,9 +815,16 @@ func AdminCompleteTopUp(c *gin.Context) {
 		}
 	}
 
-	if err := model.ManualCompleteTopUp(req.TradeNo, c.ClientIP()); err != nil {
+	outcome, err := model.ManualCompleteTopUp(req.TradeNo, c.ClientIP())
+	if err != nil {
 		common.ApiError(c, err)
 		return
 	}
-	common.ApiSuccess(c, nil)
+	// F-19: tell the operator which of the two outcomes happened. `completed`
+	// means this call credited the account; `already_completed` means the order
+	// had been settled earlier and nothing was credited again.
+	common.ApiSuccess(c, gin.H{
+		"completed":         outcome.Completed,
+		"already_completed": !outcome.Completed,
+	})
 }

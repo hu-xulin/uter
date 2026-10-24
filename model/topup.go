@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"maps"
+	"strings"
 
 	"github.com/uter-ai/uter/common"
 
@@ -25,9 +26,14 @@ type TopUp struct {
 	// independently from the local quota-calculation Money field.
 	ProviderAmount   int64  `json:"-" gorm:"not null;default:0"`
 	ProviderCurrency string `json:"-" gorm:"type:varchar(3);not null;default:''"`
-	CreateTime       int64  `json:"create_time"`
-	CompleteTime     int64  `json:"complete_time"`
-	Status           string `json:"status"`
+	// FailReason records why a top-up order was marked failed. F-07: the reason
+	// has to be persisted, not only written to the log, otherwise a reconciliation
+	// pass cannot tell an order the provider rejected apart from one whose
+	// checkout never completed.
+	FailReason   string `json:"fail_reason" gorm:"type:varchar(255);not null;default:''"`
+	CreateTime   int64  `json:"create_time"`
+	CompleteTime int64  `json:"complete_time"`
+	Status       string `json:"status"`
 }
 
 const (
@@ -135,6 +141,105 @@ func (topUp *TopUp) Update() error {
 	return err
 }
 
+// topUpRefColumn returns the quoted `trade_no` column name for the active
+// dialect. Kept in one place so every money transition quotes it the same way.
+func topUpRefColumn() string {
+	if common.UsingMainDatabase(common.DatabaseTypePostgreSQL) {
+		return `"trade_no"`
+	}
+	return "`trade_no`"
+}
+
+// claimPendingTopUp moves a pending order to success with a single conditional
+// UPDATE and reports whether this transaction won the transition.
+//
+// F-12: every recharge path used to rely on `SELECT ... FOR UPDATE` plus an
+// in-memory status check. That is correct on MySQL/PostgreSQL, but
+// `lockForUpdate` deliberately degrades to a plain SELECT on SQLite, where two
+// concurrent callbacks (provider retry + admin manual completion, or two
+// instances behind the same webhook URL) can both read `pending` and both
+// credit the wallet. The `status = 'pending'` predicate makes the transition
+// decided by the database itself: only one statement can move the row, on every
+// backend, so only the winner credits quota.
+//
+// Returns:
+//   - (true, nil)  — this call owns the transition; the caller must credit the
+//     wallet inside the same transaction;
+//   - (false, nil) — the order was already completed by a concurrent
+//     transaction; the caller must treat it as an idempotent repeat;
+//   - (false, err) — the row is in some other state (expired/failed) or the
+//     database failed; the caller must abort.
+func claimPendingTopUp(tx *gorm.DB, tradeNo string, extra map[string]any) (bool, error) {
+	refCol := topUpRefColumn()
+
+	updates := make(map[string]any, len(extra)+2)
+	maps.Copy(updates, extra)
+	updates["status"] = common.TopUpStatusSuccess
+	updates["complete_time"] = common.GetTimestamp()
+
+	result := tx.Model(&TopUp{}).
+		Where(refCol+" = ? AND status = ?", tradeNo, common.TopUpStatusPending).
+		Updates(updates)
+	if result.Error != nil {
+		return false, result.Error
+	}
+	if result.RowsAffected == 1 {
+		return true, nil
+	}
+
+	// Nothing moved: find out whether a concurrent transaction already
+	// completed the order (idempotent repeat) or the order is simply not
+	// completable anymore (expired / failed / refunded).
+	var status string
+	if err := tx.Model(&TopUp{}).Where(refCol+" = ?", tradeNo).Pluck("status", &status).Error; err != nil {
+		return false, err
+	}
+	if status == common.TopUpStatusSuccess {
+		return false, nil
+	}
+	return false, ErrTopUpStatusInvalid
+}
+
+// maxFailReasonLength matches the fail_reason column width.
+const maxFailReasonLength = 255
+
+// MarkFailed marks the order as failed and stores the reason next to it.
+//
+// F-07: the transition is conditional on the order still being pending, so a
+// callback that completed the order concurrently is never downgraded to
+// failed (which would hide real money from the user). The reason is persisted
+// in the same statement as the status, so a reconciliation pass can tell why a
+// checkout never completed instead of guessing from the logs.
+func (topUp *TopUp) MarkFailed(reason string) error {
+	reason = strings.TrimSpace(reason)
+	if len(reason) > maxFailReasonLength {
+		reason = reason[:maxFailReasonLength]
+	}
+
+	refCol := "`trade_no`"
+	if common.UsingMainDatabase(common.DatabaseTypePostgreSQL) {
+		refCol = `"trade_no"`
+	}
+
+	result := DB.Model(&TopUp{}).
+		Where(refCol+" = ? AND status = ?", topUp.TradeNo, common.TopUpStatusPending).
+		Updates(map[string]any{
+			"status":      common.TopUpStatusFailed,
+			"fail_reason": reason,
+		})
+	if result.Error != nil {
+		return result.Error
+	}
+	// Only mirror the transition when the row was actually moved. A concurrent
+	// callback may have completed the order first; in that case the order keeps
+	// its success state and the in-memory copy must not pretend otherwise.
+	if result.RowsAffected > 0 {
+		topUp.Status = common.TopUpStatusFailed
+		topUp.FailReason = reason
+	}
+	return nil
+}
+
 func GetTopUpById(id int) *TopUp {
 	var topUp *TopUp
 	var err error
@@ -223,8 +328,13 @@ func RechargeEpay(tradeNo string, actualPaymentMethod string, callerIp string) (
 		if topUp.Status != common.TopUpStatusPending {
 			return ErrTopUpStatusInvalid
 		}
+		// The provider reports the method the user actually paid with, which may
+		// differ from the one chosen before redirect. Persist it together with
+		// the status so both land in one statement.
+		claimUpdates := map[string]any{}
 		if actualPaymentMethod != "" && topUp.PaymentMethod != actualPaymentMethod {
 			topUp.PaymentMethod = actualPaymentMethod
+			claimUpdates["payment_method"] = actualPaymentMethod
 		}
 		var quotaErr error
 		quotaToAdd, quotaErr = common.WalletQuotaFromDecimalStrict(
@@ -233,11 +343,17 @@ func RechargeEpay(tradeNo string, actualPaymentMethod string, callerIp string) (
 		if quotaErr != nil || quotaToAdd <= 0 {
 			return ErrInvalidTopUpQuota
 		}
+		claimed, claimErr := claimPendingTopUp(tx, tradeNo, claimUpdates)
+		if claimErr != nil {
+			return claimErr
+		}
+		if !claimed {
+			// 并发回调已抢先完成该订单：本次按幂等重复处理，绝不二次入账。
+			alreadyDone = true
+			return nil
+		}
 		topUp.CompleteTime = common.GetTimestamp()
 		topUp.Status = common.TopUpStatusSuccess
-		if err := tx.Save(topUp).Error; err != nil {
-			return err
-		}
 		return creditTopUpQuota(tx, topUp.UserId, quotaToAdd, nil)
 	})
 	if err != nil {
@@ -290,8 +406,13 @@ func rechargeOfficial(tradeNo string, provider string, actualMethod string, call
 		if topUp.Status != common.TopUpStatusPending {
 			return ErrTopUpStatusInvalid
 		}
+		// The provider reports the method the user actually paid with, which may
+		// differ from the one chosen before redirect. Persist it together with
+		// the status so both land in one statement.
+		claimUpdates := map[string]any{}
 		if actualMethod != "" && topUp.PaymentMethod != actualMethod {
 			topUp.PaymentMethod = actualMethod
+			claimUpdates["payment_method"] = actualMethod
 		}
 		var quotaErr error
 		quotaToAdd, quotaErr = common.WalletQuotaFromDecimalStrict(
@@ -300,11 +421,17 @@ func rechargeOfficial(tradeNo string, provider string, actualMethod string, call
 		if quotaErr != nil || quotaToAdd <= 0 {
 			return ErrInvalidTopUpQuota
 		}
+		claimed, claimErr := claimPendingTopUp(tx, tradeNo, claimUpdates)
+		if claimErr != nil {
+			return claimErr
+		}
+		if !claimed {
+			// 并发回调已抢先完成该订单：本次按幂等重复处理，绝不二次入账。
+			alreadyDone = true
+			return nil
+		}
 		topUp.CompleteTime = common.GetTimestamp()
 		topUp.Status = common.TopUpStatusSuccess
-		if err := tx.Save(topUp).Error; err != nil {
-			return err
-		}
 		return creditTopUpQuota(tx, topUp.UserId, quotaToAdd, nil)
 	})
 	if err != nil {
@@ -365,19 +492,23 @@ func Recharge(referenceId string, customerId string, callerIp string) (err error
 			return errors.New("充值订单状态错误")
 		}
 
-		topUp.CompleteTime = common.GetTimestamp()
-		topUp.Status = common.TopUpStatusSuccess
-		err = tx.Save(topUp).Error
-		if err != nil {
-			return err
-		}
-
 		quota, err = common.WalletQuotaFromDecimalStrict(
 			decimal.NewFromFloat(topUp.Money).Mul(decimal.NewFromFloat(common.QuotaPerUnit)),
 		)
 		if err != nil || quota <= 0 {
 			return ErrInvalidTopUpQuota
 		}
+		claimed, claimErr := claimPendingTopUp(tx, referenceId, nil)
+		if claimErr != nil {
+			return claimErr
+		}
+		if !claimed {
+			// 并发回调已抢先完成该订单：本次按幂等重复处理，绝不二次入账。
+			alreadyDone = true
+			return nil
+		}
+		topUp.CompleteTime = common.GetTimestamp()
+		topUp.Status = common.TopUpStatusSuccess
 		return creditTopUpQuota(tx, topUp.UserId, quota, map[string]any{
 			"stripe_customer": customerId,
 		})
@@ -516,10 +647,27 @@ func GetTopUpUserIDByTradeNo(tradeNo string) (int, error) {
 	return userId, nil
 }
 
+// ManualTopUpOutcome reports what a manual completion actually did.
+//
+// F-19: the admin UI used to get a bare `nil` for both "I just credited the
+// order" and "the order was already credited before". That makes a double click
+// (or two admins working the same queue) look identical to a real completion,
+// so the operator cannot tell whether the money moved now or earlier.
+type ManualTopUpOutcome struct {
+	// Completed is true only when this call transitioned the order from pending
+	// to success and credited the quota.
+	Completed bool
+	// UserId / QuotaAdded describe the credit applied by this call; both are
+	// zero on the already-completed path.
+	UserId     int
+	QuotaAdded int
+}
+
 // ManualCompleteTopUp 管理员手动完成订单并给用户充值
-func ManualCompleteTopUp(tradeNo string, callerIp string) error {
+func ManualCompleteTopUp(tradeNo string, callerIp string) (ManualTopUpOutcome, error) {
+	var outcome ManualTopUpOutcome
 	if tradeNo == "" {
-		return errors.New("未提供订单号")
+		return outcome, errors.New("未提供订单号")
 	}
 
 	refCol := "`trade_no`"
@@ -572,12 +720,18 @@ func ManualCompleteTopUp(tradeNo string, callerIp string) error {
 			return ErrInvalidTopUpQuota
 		}
 
-		// 标记完成
+		// 标记完成：条件更新 pending -> success，由数据库决定归属，避免
+		// SQLite 上并发的「回调 + 人工补单」同时读到 pending 而重复入账。
+		claimed, claimErr := claimPendingTopUp(tx, tradeNo, nil)
+		if claimErr != nil {
+			return claimErr
+		}
+		if !claimed {
+			alreadyCompleted = true
+			return nil
+		}
 		topUp.CompleteTime = common.GetTimestamp()
 		topUp.Status = common.TopUpStatusSuccess
-		if err := tx.Save(topUp).Error; err != nil {
-			return err
-		}
 
 		// 增加用户额度（立即写库，保持一致性）
 		if err := creditTopUpQuota(tx, topUp.UserId, quotaToAdd, nil); err != nil {
@@ -591,7 +745,7 @@ func ManualCompleteTopUp(tradeNo string, callerIp string) error {
 	})
 
 	if err != nil {
-		return err
+		return outcome, err
 	}
 
 	// F-06/F-19: on the idempotent repeat call the order was already completed in
@@ -599,13 +753,13 @@ func ManualCompleteTopUp(tradeNo string, callerIp string) error {
 	// quotaToAdd / payMoney / paymentMethod. Skipping the cache sync and audit
 	// log here avoids touching user 0's cache and writing a false completion.
 	if alreadyCompleted {
-		return nil
+		return outcome, nil
 	}
 
 	// 事务外记录日志，避免阻塞
 	syncCreditUserQuotaCache(userId, quotaToAdd, "manual topup")
 	RecordTopupLog(userId, common.NewMessage("Administrator completed the order, amount added: {{quota}}, payment amount: {{amount}}", map[string]any{"quota": logger.FormatQuota(quotaToAdd), "amount": fmt.Sprintf("%f", payMoney)}), callerIp, paymentMethod, "admin")
-	return nil
+	return ManualTopUpOutcome{Completed: true, UserId: userId, QuotaAdded: quotaToAdd}, nil
 }
 
 // RechargeCreem credits the order without treating payment-provider billing details
@@ -643,18 +797,23 @@ func RechargeCreem(referenceId string, _ string, _ string, callerIp string) (err
 			return errors.New("充值订单状态错误")
 		}
 
-		topUp.CompleteTime = common.GetTimestamp()
-		topUp.Status = common.TopUpStatusSuccess
-		err = tx.Save(topUp).Error
-		if err != nil {
-			return err
-		}
-
 		// Creem 直接使用 Amount 作为充值额度（整数）
 		quota, err = common.WalletQuotaFromDecimalStrict(decimal.NewFromInt(topUp.Amount))
 		if err != nil || quota <= 0 {
 			return ErrInvalidTopUpQuota
 		}
+
+		claimed, claimErr := claimPendingTopUp(tx, referenceId, nil)
+		if claimErr != nil {
+			return claimErr
+		}
+		if !claimed {
+			// 并发回调已抢先完成该订单：本次按幂等重复处理，绝不二次入账。
+			alreadyDone = true
+			return nil
+		}
+		topUp.CompleteTime = common.GetTimestamp()
+		topUp.Status = common.TopUpStatusSuccess
 
 		// Billing email/name from the provider are not identity-verification signals.
 		// Account email changes must go through the explicit email-binding flow.
@@ -681,6 +840,7 @@ func RechargeWaffo(tradeNo string, callerIp string) (err error) {
 	}
 
 	var quotaToAdd int
+	alreadyDone := false
 	topUp := &TopUp{}
 
 	refCol := "`trade_no`"
@@ -699,6 +859,7 @@ func RechargeWaffo(tradeNo string, callerIp string) (err error) {
 		}
 
 		if topUp.Status == common.TopUpStatusSuccess {
+			alreadyDone = true
 			return nil // 幂等：已成功直接返回
 		}
 
@@ -713,11 +874,17 @@ func RechargeWaffo(tradeNo string, callerIp string) (err error) {
 			return ErrInvalidTopUpQuota
 		}
 
+		claimed, claimErr := claimPendingTopUp(tx, tradeNo, nil)
+		if claimErr != nil {
+			return claimErr
+		}
+		if !claimed {
+			// 并发回调已抢先完成该订单：本次按幂等重复处理，绝不二次入账。
+			alreadyDone = true
+			return nil
+		}
 		topUp.CompleteTime = common.GetTimestamp()
 		topUp.Status = common.TopUpStatusSuccess
-		if err := tx.Save(topUp).Error; err != nil {
-			return err
-		}
 
 		return creditTopUpQuota(tx, topUp.UserId, quotaToAdd, nil)
 	})
@@ -725,6 +892,9 @@ func RechargeWaffo(tradeNo string, callerIp string) (err error) {
 	if err != nil {
 		common.SysError("waffo topup failed: " + err.Error())
 		return errors.New("充值失败，请稍后重试")
+	}
+	if alreadyDone {
+		return nil
 	}
 	syncCreditUserQuotaCache(topUp.UserId, quotaToAdd, "waffo topup")
 
@@ -741,6 +911,7 @@ func RechargeWaffoPancake(tradeNo string) (err error) {
 	}
 
 	var quotaToAdd int
+	alreadyDone := false
 	topUp := &TopUp{}
 
 	refCol := "`trade_no`"
@@ -759,6 +930,7 @@ func RechargeWaffoPancake(tradeNo string) (err error) {
 		}
 
 		if topUp.Status == common.TopUpStatusSuccess {
+			alreadyDone = true
 			return nil
 		}
 
@@ -773,11 +945,17 @@ func RechargeWaffoPancake(tradeNo string) (err error) {
 			return ErrInvalidTopUpQuota
 		}
 
+		claimed, claimErr := claimPendingTopUp(tx, tradeNo, nil)
+		if claimErr != nil {
+			return claimErr
+		}
+		if !claimed {
+			// 并发回调已抢先完成该订单：本次按幂等重复处理，绝不二次入账。
+			alreadyDone = true
+			return nil
+		}
 		topUp.CompleteTime = common.GetTimestamp()
 		topUp.Status = common.TopUpStatusSuccess
-		if err := tx.Save(topUp).Error; err != nil {
-			return err
-		}
 
 		return creditTopUpQuota(tx, topUp.UserId, quotaToAdd, nil)
 	})
@@ -785,6 +963,9 @@ func RechargeWaffoPancake(tradeNo string) (err error) {
 	if err != nil {
 		common.SysError("waffo pancake topup failed: " + err.Error())
 		return errors.New("充值失败，请稍后重试")
+	}
+	if alreadyDone {
+		return nil
 	}
 	syncCreditUserQuotaCache(topUp.UserId, quotaToAdd, "waffo pancake topup")
 

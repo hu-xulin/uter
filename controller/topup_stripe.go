@@ -505,17 +505,41 @@ func stripeCheckoutCurrency() string {
 	return "usd"
 }
 
-// stripeMoneyToMinorUnits mirrors the two-decimal amount shown to the client.
-func stripeMoneyToMinorUnits(amount float64) (int64, error) {
+// stripeMoneyToMinorUnits converts the quoted major-unit amount into the
+// smallest currency unit Stripe expects.
+//
+// F-18: this used to hardcode ×100, which is only correct for two-decimal
+// currencies. Stripe's contract is "smallest currency unit", and that unit is
+// not always 1/100 — JPY/KRW have no minor unit, KWD/BHD use 1/1000. Today
+// stripeCheckoutCurrency only returns usd/cny, so nothing is wrong yet, but the
+// coupling was invisible: adding a zero-decimal currency there would have
+// silently charged 100×. Deriving the scale from the currency keeps the two in
+// sync by construction.
+func stripeMoneyToMinorUnits(amount float64, currency string) (int64, error) {
 	if amount <= 0 || math.IsNaN(amount) || math.IsInf(amount, 0) {
 		return 0, errors.New("invalid Stripe checkout amount")
 	}
-	formatted := strconv.FormatFloat(amount, 'f', 2, 64)
+	exponent, ok := currencyMinorUnitExponent(currency)
+	if !ok {
+		return 0, errors.New("invalid Stripe checkout currency")
+	}
+	// The console quotes every price with two decimals, so round there first —
+	// but never coarser than the currency's own unit, or a three-decimal
+	// currency would lose its last digit (1.234 KWD -> 1.23 -> 1230).
+	// Rounding before scaling also keeps float noise (9.999999999) from being
+	// rejected as "too precise"; amounts genuinely finer than the currency's
+	// unit still fail the integrality check below.
+	decimals := max(2, exponent)
+	formatted := strconv.FormatFloat(amount, 'f', decimals, 64)
 	rounded, err := decimal.NewFromString(formatted)
 	if err != nil {
 		return 0, fmt.Errorf("invalid Stripe checkout amount: %w", err)
 	}
-	minor := rounded.Mul(decimal.NewFromInt(100))
+	scale := decimal.NewFromInt(1)
+	for range exponent {
+		scale = scale.Mul(decimal.NewFromInt(10))
+	}
+	minor := rounded.Mul(scale)
 	if !minor.Equal(minor.Truncate(0)) || !minor.BigInt().IsInt64() || minor.Sign() <= 0 {
 		return 0, errors.New("Stripe checkout amount is outside the supported range")
 	}
@@ -529,7 +553,10 @@ func genStripeLink(referenceId string, customerId string, email string, payMoney
 	if strings.TrimSpace(setting.StripePriceId) == "" {
 		return "", 0, "", errors.New("Stripe product price is not configured")
 	}
-	unitAmount, err := stripeMoneyToMinorUnits(payMoney)
+	// 币种必须先确定：Stripe 的 amount 是最小货币单位，而最小单位随币种变化
+	// （见 stripeMoneyToMinorUnits 的 F-18 说明）。
+	currency := stripeCheckoutCurrency()
+	unitAmount, err := stripeMoneyToMinorUnits(payMoney, currency)
 	if err != nil {
 		return "", 0, "", err
 	}
@@ -556,7 +583,6 @@ func genStripeLink(referenceId string, customerId string, email string, payMoney
 		cancelURL = paymentReturnPath("/wallet")
 	}
 
-	currency := stripeCheckoutCurrency()
 	params := &stripe.CheckoutSessionParams{
 		ClientReferenceID: stripe.String(referenceId),
 		SuccessURL:        stripe.String(successURL),
