@@ -102,16 +102,23 @@ function FilterChip(props: {
   if (props.option.suffix) {
     badgeClass = 'bg-green-600/80 text-white'
   } else if (props.active) {
-    badgeClass = 'bg-background text-foreground'
+    // 选中态是品牌主色底，徽标跟着转白字，整块读起来才是一体的。
+    badgeClass = 'bg-primary-foreground/20 text-primary-foreground'
   }
   return (
     <Button
       type='button'
-      variant={props.active ? 'default' : 'outline'}
+      variant='outline'
       size='sm'
       onClick={props.onClick}
       aria-pressed={props.active}
-      className='h-auto max-w-full gap-1.5 px-2 py-1 text-xs'
+      className={cn(
+        'h-auto max-w-full gap-1.5 px-2 py-1 text-xs',
+        // 选中态与工具栏的「标准/充值」分段控件同一套规则：品牌主色底 + 白字。
+        // Base UI 的 Button 输出 aria-pressed（不是 data-state），故用 aria-pressed 变体。
+        props.active &&
+          'aria-pressed:border-primary aria-pressed:bg-primary aria-pressed:text-primary-foreground aria-pressed:shadow-none aria-pressed:hover:bg-primary/90 aria-pressed:hover:text-primary-foreground'
+      )}
       title={props.option.label}
     >
       {props.option.icon && (

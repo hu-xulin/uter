@@ -28,7 +28,7 @@ import {
   officialRequestPriceUSD,
   officialTierVariablePriceUSD,
 } from '@/features/system-settings/models/model-pricing-core'
-import { colorIconName, getLobeIcon } from '@/lib/lobe-icon'
+import { getLobeIcon, resolveModelIconKey } from '@/lib/lobe-icon'
 import { resolveLocalizedText } from '@/lib/localized-text'
 import { cn } from '@/lib/utils'
 import { useSystemConfigStore } from '@/stores/system-config-store'
@@ -105,11 +105,14 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
   )
   const groups = props.model.enable_groups || []
   const endpoints = props.model.supported_endpoint_types || []
-  const modelIconKey = props.model.icon || props.model.vendor_icon
+  const modelIconKey = resolveModelIconKey(
+    props.model.icon,
+    props.model.vendor_icon
+  )
   // Model logos render in their brand colors so cards stay scannable at a
-  // glance; the vendor filter in the sidebar deliberately stays monochrome.
+  // glance; a vendor's company logo standing in for a model stays monochrome.
   const modelIcon = modelIconKey
-    ? getLobeIcon(colorIconName(modelIconKey), 28)
+    ? getLobeIcon(modelIconKey, 28)
     : null
   const initial = props.model.model_name?.charAt(0).toUpperCase() || '?'
   const isUnconfiguredTaskUsage = isUnconfiguredTaskUsageModel(props.model)

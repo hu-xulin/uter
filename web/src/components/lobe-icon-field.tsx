@@ -21,7 +21,12 @@ import { useTranslation } from 'react-i18next'
 
 import { Button } from '@/components/ui/button'
 import { Combobox } from '@/components/ui/combobox'
-import { colorIconName, getLobeIcon, getLobeIconNames } from '@/lib/lobe-icon'
+import {
+  colorIconName,
+  getLobeIcon,
+  getLobeIconNames,
+  monoIconName,
+} from '@/lib/lobe-icon'
 
 export function LobeIconField(props: {
   id?: string
@@ -44,6 +49,16 @@ export function LobeIconField(props: {
     []
   )
   const effectiveIcon = props.value || props.inheritedIcon
+  // A vendor's company logo is monochrome; a model's own product logo renders
+  // in brand colors. The inherited value is the vendor's logo, so it stays
+  // monochrome even inside the model editor.
+  let previewIcon = ''
+  if (effectiveIcon) {
+    const isCustomModelIcon = Boolean(props.allowInheritance && props.value)
+    previewIcon = isCustomModelIcon
+      ? colorIconName(effectiveIcon)
+      : monoIconName(effectiveIcon)
+  }
   return (
     <div className='space-y-3'>
       {props.allowInheritance && (
@@ -97,7 +112,7 @@ export function LobeIconField(props: {
       )}
       <div className='bg-muted/40 flex items-center gap-3 rounded-lg border p-3'>
         <span className='flex size-9 shrink-0 items-center justify-center'>
-          {getLobeIcon(colorIconName(effectiveIcon), 28)}
+          {getLobeIcon(previewIcon, 28)}
         </span>
         <div className='min-w-0 text-xs'>
           <p className='font-medium'>{t('Effective icon')}</p>

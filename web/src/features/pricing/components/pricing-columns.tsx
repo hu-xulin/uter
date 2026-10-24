@@ -26,7 +26,7 @@ import {
 } from '@/components/data-table'
 import { GroupBadge } from '@/components/group-badge'
 import { StatusBadge } from '@/components/status-badge'
-import { colorIconName, getLobeIcon } from '@/lib/lobe-icon'
+import { getLobeIcon, monoIconName, resolveModelIconKey } from '@/lib/lobe-icon'
 
 import { parseTags } from '../lib/filters'
 import type { PricingModel } from '../types'
@@ -68,9 +68,9 @@ export function usePricingColumns(
       ),
       cell: ({ row }) => {
         const model = row.original
-        const modelIconKey = model.icon || model.vendor_icon
+        const modelIconKey = resolveModelIconKey(model.icon, model.vendor_icon)
         const modelIcon = modelIconKey
-          ? getLobeIcon(colorIconName(modelIconKey), 14)
+          ? getLobeIcon(modelIconKey, 14)
           : null
 
         return (
@@ -142,7 +142,7 @@ export function usePricingColumns(
           return <span className='text-muted-foreground/50 text-xs'>—</span>
         }
         const vendorIcon = model.vendor_icon
-          ? getLobeIcon(model.vendor_icon, 12)
+          ? getLobeIcon(monoIconName(model.vendor_icon), 12)
           : null
         return (
           <BadgeCell className='gap-1.5'>

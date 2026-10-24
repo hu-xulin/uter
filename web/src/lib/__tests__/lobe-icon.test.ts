@@ -18,7 +18,7 @@ For commercial licensing, please contact support@uter.ai
 */
 import { describe, expect, test } from 'vitest'
 
-import { colorIconName, monoIconName } from '../lobe-icon'
+import { colorIconName, monoIconName, resolveModelIconKey } from '../lobe-icon'
 
 describe('colorIconName', () => {
   test('upgrades a monochrome brand key to its color variant', () => {
@@ -75,5 +75,26 @@ describe('monoIconName', () => {
   test('handles empty input', () => {
     expect(monoIconName('')).toBe('')
     expect(monoIconName('   ')).toBe('')
+  })
+})
+
+describe('resolveModelIconKey', () => {
+  test("renders a model's own product logo in brand colors", () => {
+    // Model logos stay colored: Claude.Color for the model, Anthropic for the
+    // company that serves it.
+    expect(resolveModelIconKey('Claude', 'Anthropic')).toBe('Claude.Color')
+    expect(resolveModelIconKey('Qwen', 'Alibaba')).toBe('Qwen.Color')
+  })
+
+  test('falls back to the vendor company logo in monochrome', () => {
+    // No model icon of its own: the vendor's company logo stands in, and a
+    // company logo is black-and-white.
+    expect(resolveModelIconKey('', 'Anthropic')).toBe('Anthropic')
+    expect(resolveModelIconKey(undefined, 'Anthropic.Color')).toBe('Anthropic')
+  })
+
+  test('reports no icon when neither is available', () => {
+    expect(resolveModelIconKey('', '')).toBe('')
+    expect(resolveModelIconKey(undefined, undefined)).toBe('')
   })
 })

@@ -46,7 +46,14 @@ var defaultVendorRules = map[string]string{
 }
 
 // 供应商默认图标映射
-// 值是品牌裸名（如 Anthropic→Claude、Meta→Meta）。两个消费方：
+//
+// 值是**公司 logo** 的图标键（不是大模型/产品 logo）：Anthropic 供应商用
+// Anthropic 公司的 logo，Google 供应商用 Google 公司的 logo，ByteDance 用
+// 字节跳动的 logo，Alibaba 用阿里巴巴的 logo，Tencent 用腾讯的 logo。
+// 大模型自己的产品 logo 由模型自身的 icon 字段承载，两者是不同的东西：
+// 供应商列公司 logo（黑白），模型列产品 logo（彩色）。
+//
+// 两个消费方：
 //   - 写入路径 defaultVendorIconForSync：新建供应商时直接存这个裸名；
 //   - 展示路径 getDefaultVendorIcon：合成品牌与归因兜底时再彩色化
 //     （经 NormalizeColorIconKey），彩色化只发生在展示层。
@@ -55,20 +62,20 @@ var defaultVendorRules = map[string]string{
 //
 // ⚠️ 这张表只用于「新建」供应商的初始图标与默认品牌展示，绝不用于改写已存在的
 // 供应商记录——后者是运营在「模型-供应商」里设置的配置，只能由运营本人修改。
-// 表值必须是该品牌自身的图标键：品牌映射错了会让供应商显示别家的 logo
-// （如 Meta 误映射到 Ollama）。
+// 表值必须是该公司自身的图标键：映射错了会让供应商显示别家的 logo
+// （如 Anthropic 误映射到 Claude、Meta 误映射到 Ollama）。
 var defaultVendorIcons = map[string]string{
 	"OpenAI":     "OpenAI",
-	"Anthropic":  "Claude",
-	"Google":     "Gemini",
+	"Anthropic":  "Anthropic",
+	"Google":     "Google",
 	"Moonshot":   "Moonshot",
 	"Z.AI":       "ZAI",
-	"Alibaba":    "Qwen",
+	"Alibaba":    "Alibaba",
 	"DeepSeek":   "DeepSeek",
 	"MiniMax":    "Minimax",
-	"Baidu":      "Wenxin",
+	"Baidu":      "Baidu",
 	"iFlytek":    "Spark",
-	"Tencent":    "Hunyuan",
+	"Tencent":    "Tencent",
 	"Cohere":     "Cohere",
 	"Cloudflare": "Cloudflare",
 	"360":        "Ai360",
@@ -77,13 +84,15 @@ var defaultVendorIcons = map[string]string{
 	"Mistral":    "Mistral",
 	"xAI":        "XAI",
 	"Meta":       "Meta",
-	"ByteDance":  "Doubao",
+	"ByteDance":  "ByteDance",
+	"Volcengine": "ByteDance",
 	"Kling":      "Kling",
-	"Jimeng":     "Jimeng",
+	"Jimeng":     "ByteDance",
+	"LongCat":    "Tencent",
 	"Vidu":       "Vidu",
-	"微软":         "AzureAI",
-	"Microsoft":  "AzureAI",
-	"Azure":      "AzureAI",
+	"微软":         "Microsoft",
+	"Microsoft":  "Microsoft",
+	"Azure":      "Microsoft",
 }
 
 // defaultVendorPatterns 名称匹配规则，按"长规则优先"排序：同一模型名可能命中多条规则时，
