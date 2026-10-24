@@ -28,7 +28,7 @@ import { LoadingState } from '@/components/loading-state'
 import { Button } from '@/components/ui/button'
 import { Combobox } from '@/components/ui/combobox'
 import { Label } from '@/components/ui/label'
-import { getLobeIcon } from '@/lib/lobe-icon'
+import { getLobeIcon, monoIconName } from '@/lib/lobe-icon'
 import { createServerError } from '@/lib/server-error-message'
 
 import { getVendors } from '../../api'
@@ -68,7 +68,7 @@ export function VendorOperationDialog(props: {
     (vendor) => ({
       value: String(vendor.id),
       label: vendor.name,
-      icon: getLobeIcon(vendor.icon, 18),
+      icon: getLobeIcon(monoIconName(vendor.icon), 18),
     })
   )
   if (action === 'assign') {

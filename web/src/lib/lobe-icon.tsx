@@ -208,8 +208,8 @@ export function colorIconName(iconName: string | undefined | null): string {
  * brand names on sync), so stripping ".Avatar" here keeps the sidebar
  * monochrome next to the colored model cards.
  */
-export function monoIconName(iconName: string): string {
-  const trimmed = iconName.trim()
+export function monoIconName(iconName: string | undefined | null): string {
+  const trimmed = (iconName ?? '').trim()
   const dot = trimmed.indexOf('.')
   if (dot === -1) return trimmed
   const suffix = trimmed.slice(dot + 1).trim()
@@ -221,6 +221,26 @@ export function monoIconName(iconName: string): string {
 function isBareVariantSuffix(suffix: string): boolean {
   const lower = suffix.toLowerCase()
   return lower === 'color' || lower === 'avatar'
+}
+
+/**
+ * Pick the icon for a model entry.
+ *
+ * A model's own icon is its product logo and renders in brand colors. When the
+ * model carries no icon of its own, the vendor's company logo stands in, and
+ * that one stays monochrome — the two kinds of logo then remain
+ * distinguishable at a glance: colored product logos on the cards, black-and-
+ * white company logos everywhere a vendor is named.
+ */
+export function resolveModelIconKey(
+  modelIcon: string | undefined | null,
+  vendorIcon: string | undefined | null
+): string {
+  const own = (modelIcon ?? '').trim()
+  if (own) return colorIconName(own)
+  const vendor = (vendorIcon ?? '').trim()
+  if (vendor) return monoIconName(vendor)
+  return ''
 }
 
 /**

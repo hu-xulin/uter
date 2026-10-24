@@ -59,8 +59,8 @@ func TestDefaultVendorIconsAreColor(t *testing.T) {
 			t.Errorf("vendor %q default icon %q normalizes to %q, want %q", name, icon, got, want)
 		}
 	}
-	if got := getDefaultVendorIcon("ByteDance"); got != "Doubao.Color" {
-		t.Errorf(`getDefaultVendorIcon("ByteDance") = %q, want "Doubao.Color"`, got)
+	if got := getDefaultVendorIcon("ByteDance"); got != "ByteDance.Color" {
+		t.Errorf(`getDefaultVendorIcon("ByteDance") = %q, want "ByteDance.Color"`, got)
 	}
 }
 
@@ -109,30 +109,63 @@ func TestNormalizeColorIconKeyIdempotent(t *testing.T) {
 	}
 }
 
-// 同步创建供应商时，已知品牌取品牌映射里的品牌裸名，而不是盲从中游下发的图标。
-// 这正是对用户反馈「claude-haiku-5-5 没改成彩色 / gemini 系列仍用 Google logo」的根因修复：
-// Google 供应商绝不能落到 Google.Color，Meta 供应商绝不能落到 Ollama。
-//
-// 存的是裸名而不是彩色键：供应商图标是运营在「模型-供应商」里设置的配置，
-// 存储值必须与运营选择一致，彩色化由渲染层负责。
+// 同步创建供应商时，已知品牌取公司 logo 的品牌裸名，而不是盲从中游下发的图标。
+// 上游下发的是产品 logo（Anthropic→Claude.Color、Google→Gemini.Color），
+// 供应商要显示的是公司 logo；模型自己的产品 logo 由模型 icon 承载。
 func TestDefaultVendorIconForSyncUsesAuthoritativeMapping(t *testing.T) {
 	cases := []struct {
 		name     string
 		upstream string
 		want     string
 	}{
-		{"Google", "Google.Color", "Gemini"},
-		{"Google", "Google", "Gemini"},
-		{"Google", "Google.Avatar", "Gemini"},
-		{"Anthropic", "Anthropic.Avatar", "Claude"},
-		{"Anthropic", "Anthropic", "Claude"},
+		{"Google", "Google.Color", "Google"},
+		{"Google", "Google", "Google"},
+		{"Google", "Gemini.Color", "Google"},
+		{"Anthropic", "Anthropic.Avatar", "Anthropic"},
+		{"Anthropic", "Claude.Color", "Anthropic"},
 		{"OpenAI", "OpenAI.Avatar", "OpenAI"},
-		{"ByteDance", "ByteDance", "Doubao"},
+		{"ByteDance", "Doubao.Color", "ByteDance"},
+		{"Alibaba", "Qwen.Color", "Alibaba"},
+		{"Tencent", "Hunyuan.Color", "Tencent"},
+		{"Baidu", "Wenxin.Color", "Baidu"},
 		{"Meta", "Ollama.Avatar", "Meta"},
 	}
 	for _, c := range cases {
 		if got := defaultVendorIconForSync(c.name, c.upstream); got != c.want {
 			t.Errorf("defaultVendorIconForSync(%q, %q) = %q, want %q", c.name, c.upstream, got, c.want)
+		}
+	}
+}
+
+// 供应商图标必须是公司 logo，不能是别家的产品 logo。
+// 上游元数据按厂商给的是产品 logo（Claude / Gemini / Doubao / Qwen / Hunyuan），
+// 直接落库会让供应商列显示成大模型 logo。
+func TestDefaultVendorIconsUseCompanyLogos(t *testing.T) {
+	companyLogos := map[string]string{
+		"Anthropic": "Anthropic",
+		"Google":    "Google",
+		"ByteDance": "ByteDance",
+		"Alibaba":   "Alibaba",
+		"Tencent":   "Tencent",
+		"Baidu":     "Baidu",
+		"Meta":      "Meta",
+		"Azure":     "Microsoft",
+	}
+	for name, want := range companyLogos {
+		if got := defaultVendorIcons[name]; got != want {
+			t.Errorf("defaultVendorIcons[%q] = %q, want %q", name, got, want)
+		}
+	}
+	// 产品 logo 不得出现在供应商映射里。
+	// 注：01.AI 与 iFlytek 在 @lobehub/icons 里没有对应的公司品牌，保留其产品
+	// logo（Yi / Spark）是唯一可渲染的选择，故不在此列。
+	productLogos := map[string]bool{
+		"Claude": true, "Gemini": true, "Doubao": true, "Qwen": true,
+		"Hunyuan": true, "Wenxin": true, "Ollama": true, "AzureAI": true,
+	}
+	for name, icon := range defaultVendorIcons {
+		if productLogos[icon] {
+			t.Errorf("defaultVendorIcons[%q] = %q is a product logo, want a company logo", name, icon)
 		}
 	}
 }
@@ -186,8 +219,8 @@ func TestVendorIconForAttributionPrefersConfiguredVendorIcon(t *testing.T) {
 		t.Errorf("vendorIconForAttribution(anthropic) = %q, want %q", got, "Claude.Color")
 	}
 	// 供应商没有设置图标时回退到品牌默认。
-	if got := vendorIconForAttribution(vendors, "ByteDance"); got != "Doubao.Color" {
-		t.Errorf("vendorIconForAttribution(ByteDance) = %q, want %q", got, "Doubao.Color")
+	if got := vendorIconForAttribution(vendors, "ByteDance"); got != "ByteDance.Color" {
+		t.Errorf("vendorIconForAttribution(ByteDance) = %q, want %q", got, "ByteDance.Color")
 	}
 	// 未登记品牌没有默认图标，也不臆造。
 	if got := vendorIconForAttribution(vendors, "BrandNotKnown"); got != "" {

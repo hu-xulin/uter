@@ -102,11 +102,11 @@ func TestDeriveMetadataValuesFallsBackToKeywords(t *testing.T) {
 		wantCaption string
 	}{
 		{
-			model: "doubao-seedream-5-0-260128", wantVendor: "ByteDance", wantIcon: "Doubao.Color",
+			model: "doubao-seedream-5-0-260128", wantVendor: "ByteDance", wantIcon: "ByteDance.Color",
 			wantTags: "Files,Vision", wantCaption: "image generation",
 		},
 		{
-			model: "doubao-seedance-2-0-mini-260615", wantVendor: "ByteDance", wantIcon: "Doubao.Color",
+			model: "doubao-seedance-2-0-mini-260615", wantVendor: "ByteDance", wantIcon: "ByteDance.Color",
 			wantTags: "Vision", wantCaption: "video generation",
 		},
 		{

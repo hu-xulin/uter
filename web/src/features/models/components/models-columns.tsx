@@ -37,7 +37,7 @@ import {
 import { modelPricingDisplay } from '@/features/model-pricing/pricing'
 import { ModelPriceCell } from '@/features/pricing/components/model-price-cell'
 import { formatTimestampToDate } from '@/lib/format'
-import { getLobeIcon } from '@/lib/lobe-icon'
+import { getLobeIcon, resolveModelIconKey } from '@/lib/lobe-icon'
 
 import { getNameRuleConfig } from '../constants'
 import { parseModelTags, formatEndpointsDisplay } from '../lib'
@@ -100,11 +100,19 @@ export function useModelsColumns(
       cell: ({ row }) => {
         const model = row.original
         const vendor = vendorMap.get(model.vendor_id ?? 0)
-        const iconKey = model.icon || vendor?.icon || model.model_name[0]
+        // The model's own product logo renders in brand colors; a vendor's
+        // company logo standing in for it stays monochrome.
+        const iconKey = resolveModelIconKey(model.icon, vendor?.icon)
         return (
           <div className='flex max-w-[320px] min-w-0 items-start gap-2.5 py-1'>
             <span className='mt-1 flex size-6 shrink-0 items-center justify-center'>
-              {getLobeIcon(iconKey, 24)}
+              {iconKey ? (
+                getLobeIcon(iconKey, 24)
+              ) : (
+                <span className='text-muted-foreground text-xs'>
+                  {model.model_name[0]}
+                </span>
+              )}
             </span>
             <div className='min-w-0 flex-1'>
               <div className='flex min-w-0 items-center gap-1'>
