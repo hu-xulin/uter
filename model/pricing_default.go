@@ -46,10 +46,17 @@ var defaultVendorRules = map[string]string{
 }
 
 // 供应商默认图标映射
-// 统一收敛到品牌彩色变体（经 getDefaultVendorIcon → NormalizeColorIconKey）：
-// 与上游 basellm 元数据下发的彩色键同规则（优先 ".Color"，无 Color 的品牌
-// 回落 ".Avatar"），保证同步进来的新模型与历史模型在定价页都是彩色图标。
+// 值是品牌裸名（如 Anthropic→Claude、Meta→Meta）。两个消费方：
+//   - 写入路径 defaultVendorIconForSync：新建供应商时直接存这个裸名；
+//   - 展示路径 getDefaultVendorIcon：合成品牌与归因兜底时再彩色化
+//     （经 NormalizeColorIconKey），彩色化只发生在展示层。
+//
 // 键名与 defaultVendorRules 的品牌名保持一致（同样只用英文名）。
+//
+// ⚠️ 这张表只用于「新建」供应商的初始图标与默认品牌展示，绝不用于改写已存在的
+// 供应商记录——后者是运营在「模型-供应商」里设置的配置，只能由运营本人修改。
+// 表值必须是该品牌自身的图标键：品牌映射错了会让供应商显示别家的 logo
+// （如 Meta 误映射到 Ollama）。
 var defaultVendorIcons = map[string]string{
 	"OpenAI":     "OpenAI",
 	"Anthropic":  "Claude",
@@ -69,7 +76,7 @@ var defaultVendorIcons = map[string]string{
 	"Jina":       "Jina",
 	"Mistral":    "Mistral",
 	"xAI":        "XAI",
-	"Meta":       "Ollama",
+	"Meta":       "Meta",
 	"ByteDance":  "Doubao",
 	"Kling":      "Kling",
 	"Jimeng":     "Jimeng",
@@ -211,18 +218,22 @@ func getDefaultVendorIcon(vendorName string) string {
 	return ""
 }
 
-// defaultVendorIconForSync 返回同步创建/更新供应商时应持久化的图标：
-// 已知品牌一律收敛到权威彩色映射 defaultVendorIcons（避免上游下发图标漂移，
-// 例如 Google→Google.Color、Anthropic→Anthropic.Avatar 这类错误品牌 logo），
-// 未知品牌则信任上游下发的彩色键（同样走彩色归一化）。
+// defaultVendorIconForSync 返回同步创建供应商时应持久化的图标。
 //
-// 这样「每次同步大模型信息」写入的新供应商，其图标都会与展示侧 getDefaultVendorIcon
-// 保持一致——定价页回退到厂商图标时不会再露出错误的品牌 logo。
+// 已知品牌取品牌映射 defaultVendorIcons 里的品牌裸名（避免上游下发图标漂移，
+// 例如 Google 供应商不能落到 Google.Color、Meta 供应商不能落到 Ollama）；
+// 未知品牌则取上游下发图标并收敛为品牌裸名。
+//
+// 存裸名而不是彩色键：供应商图标是运营在「模型-供应商」里设置的配置，存储值
+// 必须与运营选择一致，彩色化交给渲染层（前端 colorIconName）完成。
+//
+// 这个函数只决定**新建**供应商的初始图标——既有供应商的图标只有运营本人
+// 在管理端保存才会改变，同步不会改写。
 func defaultVendorIconForSync(vendorName, upstreamIcon string) string {
-	if icon := getDefaultVendorIcon(vendorName); icon != "" {
+	if icon, exists := defaultVendorIcons[vendorName]; exists {
 		return icon
 	}
-	return NormalizeColorIconKey(upstreamIcon)
+	return NormalizeVendorIconKey(upstreamIcon)
 }
 
 // defaultBrandVendors 返回定价广场按名称规则匹配、但没有持久化元数据的模型所对应

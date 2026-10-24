@@ -113,7 +113,7 @@ func PlanOfficialMetadataFill(
 			// The catalog has no entry for this model. Rather than leaving the
 			// row permanently blank, derive what the name and the catalog's own
 			// relatives assert. A name that yields nothing stays skipped.
-			resolved, ok := DeriveMetadataValuesFromCatalog(name, upstream)
+			resolved, ok := deriveMetadataValuesFromCatalog(name, upstream, vendors)
 			if !ok {
 				result.SkippedUpstream++
 				continue

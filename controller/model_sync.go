@@ -301,7 +301,7 @@ func fetchMetadataCatalogContext(ctx context.Context, locale string) (metadataSy
 		if vendor.Name == "" {
 			continue
 		}
-		vendors[vendor.Name] = model.Vendor{Name: vendor.Name, Description: vendor.Description, Icon: model.NormalizeColorIconKey(vendor.Icon), Status: vendor.Status}
+		vendors[vendor.Name] = model.Vendor{Name: vendor.Name, Description: vendor.Description, Icon: model.NormalizeVendorIconKey(vendor.Icon), Status: vendor.Status}
 	}
 	for _, item := range modelsEnv.Data {
 		if strings.TrimSpace(item.ModelName) == "" {
