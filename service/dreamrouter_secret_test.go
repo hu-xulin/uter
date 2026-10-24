@@ -43,7 +43,8 @@ import (
 // 「以 Uter/uter 开头的口令字面量」就失败。它是回归防线：防止后来者又把
 // 密钥写回常量。
 func TestDreamRouterSyncSourceHasNoPlaintextPassword(t *testing.T) {
-	// 匹配形如 "Uter.ai#2026." / "uter#2026" 这类带年份后缀的账号口令字面量。
+	// 匹配形如 "Uter.ai#<四位年份>." / "uter#<四位年份>" 这类带年份后缀的
+	// 账号口令字面量（此处不写出完整样本，避免明文再出现在仓库里）。
 	pattern := regexp.MustCompile(`(?i)"(uter[.\w-]*#\d{4}[^"]*)"`)
 
 	root := ".."
