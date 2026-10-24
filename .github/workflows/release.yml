@@ -55,6 +55,8 @@ jobs:
       # 二进制，所以文档必须在 go build 之前构建完；只构建 web 会得到一个
       # 「能跑但没有文档」的二进制，而编译不会报错。
       - name: Build Docs Site
+        env:
+          NODE_OPTIONS: "--max-old-space-size=4096"
         run: |
           cd docs-web
           bun install --frozen-lockfile
@@ -128,6 +130,8 @@ jobs:
           DISABLE_ESLINT_PLUGIN='true' VITE_REACT_APP_VERSION=$VERSION bun run build
           cd ..
       - name: Build Docs Site
+        env:
+          NODE_OPTIONS: "--max-old-space-size=4096"
         run: |
           cd docs-web
           bun install --frozen-lockfile
@@ -195,6 +199,8 @@ jobs:
           DISABLE_ESLINT_PLUGIN='true' VITE_REACT_APP_VERSION=$VERSION bun run build
           cd ..
       - name: Build Docs Site
+        env:
+          NODE_OPTIONS: "--max-old-space-size=4096"
         run: |
           cd docs-web
           bun install --frozen-lockfile

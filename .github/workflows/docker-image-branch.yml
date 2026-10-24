@@ -81,6 +81,20 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@bb05f3f5519dd87d3ba754cc423b652a5edd6d2c # v4.2.0
 
+      - name: Verify Docker Hub credentials are configured
+        # CI-002: fail fast, before login, when the secrets are empty.
+        # docker/login-action otherwise surfaces only the opaque
+        # "Username and password required" after checkout and buildx setup.
+        # Presence check only: the credential values are never printed.
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+        run: |
+          if [ -z "$DOCKERHUB_USERNAME" ] || [ -z "$DOCKERHUB_TOKEN" ]; then
+            echo "::error::DOCKERHUB_USERNAME / DOCKERHUB_TOKEN are not configured. Set them under Settings > Secrets and variables > Actions (or the bound Environment), confirm the names match this workflow exactly, then re-run."
+            exit 1
+          fi
+
       - name: Log in to Docker Hub
         uses: docker/login-action@c99871dec2022cc055c062a10cc1a1310835ceb4 # v4.3.0
         with:
@@ -132,6 +146,18 @@ jobs:
     permissions:
       id-token: write
     steps:
+      - name: Verify Docker Hub credentials are configured
+        # CI-002: same presence check as the build jobs, before the manifest
+        # job logs in. Never echoes the credential values.
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+        run: |
+          if [ -z "$DOCKERHUB_USERNAME" ] || [ -z "$DOCKERHUB_TOKEN" ]; then
+            echo "::error::DOCKERHUB_USERNAME / DOCKERHUB_TOKEN are not configured. Set them under Settings > Secrets and variables > Actions (or the bound Environment), confirm the names match this workflow exactly, then re-run."
+            exit 1
+          fi
+
       - name: Log in to Docker Hub
         uses: docker/login-action@c99871dec2022cc055c062a10cc1a1310835ceb4 # v4.3.0
         with:
