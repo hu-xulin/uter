@@ -9,8 +9,15 @@ name: Release gate (tests, vet, build, vulnerability scan)
 #   1. CI 只在 push 到 main / PR 时触发，打 tag 时往往没有对应的 CI 运行；
 #   2. 门禁必须跑在**即将发布的那一个 commit** 上，而不是某个分支的最新状态；
 #   3. 发布日志里要能直接看到执行了哪些测试与扫描（验收标准要求可追溯）。
+#
+# 额外提供 workflow_dispatch：只靠 workflow_call 时，这个门禁没有任何手动入口——
+# 想单独验证「某个 commit 过不过门禁」只能打 tag，而打 tag 会顺带触发
+# release.yml / docker-build.yml / electron-build.yml 的真实发布动作。
+# 加了手动触发后，可以直接在 Actions 页对任意分支/commit 跑一遍门禁，
+# 不产生任何发布副作用（本工作流只读代码、跑测试与扫描，不推送镜像也不发版）。
 on:
   workflow_call:
+  workflow_dispatch:
 
 permissions:
   contents: read
