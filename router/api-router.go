@@ -326,6 +326,8 @@ func SetApiRouter(router *gin.Engine) {
 			ratioSyncRoute.GET("/channels", controller.GetSyncableChannels)
 			ratioSyncRoute.POST("/fetch", controller.FetchUpstreamRatios)
 			ratioSyncRoute.GET("/preset_prices", controller.GetPresetPrices)
+			ratioSyncRoute.POST("/dreamrouter/run", controller.RunDreamRouterSync)
+			ratioSyncRoute.GET("/dreamrouter/status", controller.GetDreamRouterSyncStatus)
 		}
 		taskPluginRoute := apiRouter.Group("/plugin/task")
 		taskPluginRoute.Use(middleware.RootAuth())

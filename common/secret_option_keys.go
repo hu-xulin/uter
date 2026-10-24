@@ -86,6 +86,10 @@ var secretOptionKeys = map[string]struct{}{
 	"AlipayPublicKey":        {},
 	"WaffoPublicCert":        {},
 	"WaffoSandboxPublicCert": {},
+
+	// 上游渠道凭据。创梦（DreamRouter）账号密码用于每日价格同步登录其
+	// /api/pricing；密码键已随后缀兜底掩码，这里显式登记保持真源唯一。
+	"DreamRouterSyncPassword": {},
 }
 
 // 明确登记为「必须原样下发给浏览器」的公开值。这些键名以 key/token 结尾，
