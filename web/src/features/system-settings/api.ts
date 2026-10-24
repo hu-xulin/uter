@@ -44,6 +44,28 @@ export async function updateSystemOption(request: UpdateOptionRequest) {
   return res.data
 }
 
+export type SyncExchangeRateResponse = {
+  success: boolean
+  message: string
+  data?: {
+    usd_exchange_rate: number
+    price: number
+    price_markup_rate: number
+    exchange_rate_updated_at: number
+  }
+}
+
+/**
+ * 立即拉取一次外部行情，刷新 A（USDExchangeRate）与 B（Price = A + 0.2）。
+ * 定时任务每 10 分钟自动跑一次，这个接口只是让管理员不必等下一个周期。
+ */
+export async function syncExchangeRate() {
+  const res = await api.post<SyncExchangeRateResponse>(
+    '/api/option/exchange_rate/sync'
+  )
+  return res.data
+}
+
 export async function updatePasskeyDomains(
   request: UpdatePasskeyDomainsRequest
 ) {

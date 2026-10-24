@@ -97,12 +97,15 @@ export function Wallet(props: WalletProps) {
   const { currency } = useSystemConfig()
   const { topupInfo, presetAmounts, loading: topupLoading } = useTopupInfo()
 
-  // Calculate effective exchange rate - when display type is USD, use rate of 1
+  // 钱包里的汇率 C = B：B 就是 /api/status 下发的 price（「支付定价」= A + 0.2），
+  // 也是后端下单实扣金额所用的单价。USD 展示模式下额度本身以美元计，换算系数为 1；
+  // CNY / 自定义货币模式下按 B 换算，保证面额卡片的大字金额与「应付 ¥X」是同一个数，
+  // 不会出现「大字按 A、实扣按 B」的错位。
+  const payRate = (status?.price as number) || 0
   const effectiveUsdExchangeRate = useMemo(() => {
-    return currency?.quotaDisplayType === 'USD'
-      ? 1
-      : currency?.usdExchangeRate || 1
-  }, [currency?.quotaDisplayType, currency?.usdExchangeRate])
+    if (currency?.quotaDisplayType === 'USD') return 1
+    return payRate > 0 ? payRate : currency?.usdExchangeRate || 1
+  }, [currency?.quotaDisplayType, payRate, currency?.usdExchangeRate])
   const {
     amount: paymentAmount,
     calculating,
@@ -167,6 +170,17 @@ export function Wallet(props: WalletProps) {
       calculatePaymentAmount(minTopup, defaultPaymentType)
     }
   }, [topupInfo, calculatePaymentAmount])
+
+  // 汇率（status.price）被后台修改并即时同步到钱包后，重新计价，使「应付金额」也
+  // 立即跟随，无需用户重新点选面额。面额 / 支付方式变更走各自的处理函数，不在此触发。
+  useEffect(() => {
+    if (topupAmount > 0) {
+      void calculatePaymentAmount(topupAmount, getCurrentPaymentType())
+    }
+    // 仅在汇率变化时重算；calculatePaymentAmount / getCurrentPaymentType 的引用
+    // 变化已由各自的处理函数覆盖，这里刻意不列入依赖以避免重复计价。
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [status?.price])
 
   // Get current payment type (selected or default)
   const getCurrentPaymentType = useCallback(() => {

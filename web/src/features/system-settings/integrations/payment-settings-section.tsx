@@ -1110,11 +1110,13 @@ export function PaymentSettingsSection({
                             step='0.01'
                             min={0}
                             {...safeNumberFieldProps(field)}
+                            disabled
                           />
                         </FormControl>
                         <FormDescription>
                           {t(
-                            'How much to charge for each US dollar of balance (Epay)'
+                            'Charged for each 1 USD of balance. Derived automatically as the exchange rate + {{markup}} and refreshed every 10 minutes, so this field is read-only. Applies to every payment method that settles in CNY (Alipay, WeChat Pay, Epay).',
+                            { markup: '0.20' }
                           )}
                         </FormDescription>
                         <FormMessage />
@@ -1133,13 +1135,15 @@ export function PaymentSettingsSection({
                             autoComplete='off'
                             placeholder='1'
                             type='number'
-                            step='0.01'
+                            step='1'
                             min={0}
                             {...safeNumberFieldProps(field)}
                           />
                         </FormControl>
                         <FormDescription>
-                          {t('Smallest USD amount users can recharge (Epay)')}
+                          {t(
+                            'Smallest USD amount users can recharge. Applies to every payment method (Alipay, WeChat Pay, Epay).'
+                          )}
                         </FormDescription>
                         <FormMessage />
                       </FormItem>

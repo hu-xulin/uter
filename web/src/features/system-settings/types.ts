@@ -311,6 +311,8 @@ export type BillingSettings = {
   'quota_setting.pre_consume_multiplier': number
   QuotaPerUnit: number
   USDExchangeRate: number
+  /** A 最近一次成功同步外部行情的时间（Unix 秒，0 表示从未同步）。 */
+  USDExchangeRateUpdatedAt: number
   'general_setting.quota_display_type': string
   'general_setting.custom_currency_symbol': string
   'general_setting.custom_currency_exchange_rate': number

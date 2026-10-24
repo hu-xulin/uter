@@ -212,7 +212,9 @@ func getPayMoney(amount int64, group string) float64 {
 	}
 
 	dTopupGroupRatio := decimal.NewFromFloat(topupGroupRatio)
-	dPrice := decimal.NewFromFloat(operation_setting.Price)
+	// 计价统一走「汇率」：与 GetStatus 下发的 price、钱包页展示的应付金额保持一致，
+	// 避免管理员只改「汇率」时出现展示与实扣错位（详见 operation_setting.EffectivePayPrice）。
+	dPrice := decimal.NewFromFloat(operation_setting.EffectivePayPrice())
 	// apply optional preset discount by the original request amount (if configured), default 1.0
 	discount := 1.0
 	if ds, ok := operation_setting.GetPaymentSetting().AmountDiscount[int(amount)]; ok {
