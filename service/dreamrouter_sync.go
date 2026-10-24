@@ -92,13 +92,20 @@ const (
 	dreamRouterHTTPTimeout      = 30 * time.Second
 )
 
-// 上游账号初始值。该账号仅对 https://dreamrouter.ai/pricing 有只读定价
-// 数据访问权限；option 中配置了同名键时以 option 为准，部署方可在
-// 「系统设置 → 选项」中覆盖（密码键已登记为 secret，读时掩码、写时掩码串
-// 不落库，详见 common/secret_option_keys.go）。
+// 上游账号的默认用户名。该账号仅对 https://dreamrouter.ai/pricing 有只读
+// 定价数据访问权限；option 中配置了同名键时以 option 为准，部署方可在
+// 「系统设置 → 选项」中覆盖。
+//
+// 🔴 **口令不在源码里留明文兜底**（此前是 `dreamRouterDefaultPassword` 常量）。
+// 密钥写进仓库等于公开：任何拿到源码/镜像的人都能用它登录上游渠道账号。
+// 现在口令只从 option `DreamRouterSyncPassword` 读——该键已登记为 secret
+// （见 common/secret_option_keys.go），读时掩码、写时掩码串不落库，真值只存
+// 在数据库与进程内存里。未配置时同步任务直接报错，不做明文兜底。
+//
+// 首次配置方式：在「系统设置 → 选项」里新增 `DreamRouterSyncPassword`
+// （值为上游 DreamRouter 账号口令）。同理 `DreamRouterSyncUsername`。
 const (
 	dreamRouterDefaultUsername = "Uter.ai"
-	dreamRouterDefaultPassword = "Uter.ai#2026."
 )
 
 // dreamRouterTieredBaseline 是 C 类（billing_expr 分层计费）模型的
@@ -203,12 +210,15 @@ type DreamRouterSyncConfig struct {
 }
 
 // LoadDreamRouterSyncConfig 从 option 读取配置，未配置时用内置默认值。
+//
+// 口令（DreamRouterSyncPassword）**没有明文兜底**：未配置时返回空串，由
+// SyncDreamRouterPricing 报错提示去后台配置，绝不在此处回退到硬编码密钥。
 func LoadDreamRouterSyncConfig() DreamRouterSyncConfig {
 	cfg := DreamRouterSyncConfig{
 		Enabled:   true,
 		ChannelID: dreamRouterDefaultChannelID,
 		Username:  dreamRouterDefaultUsername,
-		Password:  dreamRouterDefaultPassword,
+		Password:  "",
 		Step:      dreamRouterDefaultStep,
 	}
 	if v := strings.TrimSpace(common.OptionMap[dreamRouterSyncEnabledKey]); v != "" {
@@ -373,6 +383,12 @@ func SyncDreamRouterPricing(ctx context.Context, opts DreamRouterSyncOptions) (*
 	cfg := LoadDreamRouterSyncConfig()
 	if !cfg.Enabled {
 		return nil, fmt.Errorf("dreamrouter sync is disabled (option %s=false)", dreamRouterSyncEnabledKey)
+	}
+	// 口令必须由部署方在后台配置（option DreamRouterSyncPassword，secret 键）。
+	// 源码里不再保留明文兜底，因此这里显式拦一次：否则会拿空口令去打上游
+	// 登录接口，得到一个含义不明的「login rejected」，排查方向会被带偏。
+	if strings.TrimSpace(cfg.Password) == "" {
+		return nil, fmt.Errorf("dreamrouter sync is not configured: option %s is empty; set it in system settings (secret option, never committed to source)", dreamRouterSyncPasswordKey)
 	}
 
 	result := &DreamRouterSyncResult{

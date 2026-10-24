@@ -21,6 +21,7 @@ package controller
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 
@@ -50,6 +51,9 @@ func RunDreamRouterSync(c *gin.Context) {
 }
 
 // GetDreamRouterSyncStatus 返回同步配置与最近一次运行状态。
+//
+// 口令**不回显**（它是 secret option，真值只在库与进程内存里）：只给出
+// `password_configured` 布尔标志，运维据此判断「是否已配置」，无需知道明文。
 func GetDreamRouterSyncStatus(c *gin.Context) {
 	cfg := service.LoadDreamRouterSyncConfig()
 	c.JSON(http.StatusOK, gin.H{
@@ -60,10 +64,11 @@ func GetDreamRouterSyncStatus(c *gin.Context) {
 			"channel_id":    cfg.ChannelID,
 			"step":          cfg.Step,
 			"username":      cfg.Username,
-			"last_run_at":   common.OptionMap["DreamRouterSyncLastRunAt"],
-			"last_run_date": common.OptionMap["DreamRouterSyncLastRunDate"],
-			"last_error":    common.OptionMap["DreamRouterSyncLastError"],
-			"last_result":   common.OptionMap["DreamRouterSyncLastResult"],
+			"password_configured": strings.TrimSpace(cfg.Password) != "",
+			"last_run_at":          common.OptionMap["DreamRouterSyncLastRunAt"],
+			"last_run_date":        common.OptionMap["DreamRouterSyncLastRunDate"],
+			"last_error":           common.OptionMap["DreamRouterSyncLastError"],
+			"last_result":          common.OptionMap["DreamRouterSyncLastResult"],
 		},
 	})
 }
