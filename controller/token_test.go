@@ -814,7 +814,7 @@ func TestAPITokenAuditDatabaseMatrix(t *testing.T) {
 				db, _ := newAuditTestDatabase(t, database.name, dsn)
 				model.DB = db
 				common.SetDatabaseTypes(database.typ, database.typ)
-				require.NoError(t, db.AutoMigrate(&model.User{}, &model.UserSession{}, &model.Token{}))
+				require.NoError(t, db.AutoMigrate(&model.User{}, &model.UserSession{}, &model.Token{}, &model.UserAccessToken{}))
 				// Initialize production column quoting as well as the existing audit table.
 				require.NoError(t, model.InitLogDB())
 				if separateLog {
@@ -842,9 +842,13 @@ func TestAPITokenAuditDatabaseMatrix(t *testing.T) {
 
 func verifyAPITokenAudit(t *testing.T) {
 	t.Helper()
-	pat := "api-token-audit-pat-secret"
-	user := &model.User{Username: "token-owner", Password: "placeholder", Role: common.RoleCommonUser, Status: common.UserStatusEnabled, Group: "default", AuthVersion: 1, AccessToken: &pat, AffCode: "token-owner"}
+	user := &model.User{Username: "token-owner", Password: "placeholder", Role: common.RoleCommonUser, Status: common.UserStatusEnabled, Group: "default", AuthVersion: 1, AffCode: "token-owner"}
 	require.NoError(t, model.DB.Create(user).Error)
+	// 用新版个人访问令牌（带前缀、按哈希查找）构造 PAT 请求。
+	// 旧的明文 users.access_token 已被 ACCESS_TOKEN_LEGACY_RETIRED 策略下线：
+	// 用它发请求只会在鉴权阶段就被拒，既进不到令牌操作审计，也验证不了
+	// 「一次 PAT 请求同时留下访问审计与操作审计两条记录」这个断言。
+	pat, _ := createScopedAccessToken(t, user.Id, 0, "api_key:reveal")
 	other := &model.User{Username: "other-owner", Password: "placeholder", Role: common.RoleCommonUser, Status: common.UserStatusEnabled, Group: "default", AuthVersion: 1, AffCode: "other-owner"}
 	require.NoError(t, model.DB.Create(other).Error)
 	session := &model.UserSession{SID: "token-audit-session", UserID: user.Id, Version: 1, UserAuthVersion: 1, Status: model.UserSessionStatusActive, RefreshHash: "placeholder", LoginMethod: "password", LastActiveAt: time.Now().Unix(), ExpiresAt: time.Now().Add(time.Hour).Unix()}
