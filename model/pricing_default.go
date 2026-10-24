@@ -211,6 +211,20 @@ func getDefaultVendorIcon(vendorName string) string {
 	return ""
 }
 
+// defaultVendorIconForSync 返回同步创建/更新供应商时应持久化的图标：
+// 已知品牌一律收敛到权威彩色映射 defaultVendorIcons（避免上游下发图标漂移，
+// 例如 Google→Google.Color、Anthropic→Anthropic.Avatar 这类错误品牌 logo），
+// 未知品牌则信任上游下发的彩色键（同样走彩色归一化）。
+//
+// 这样「每次同步大模型信息」写入的新供应商，其图标都会与展示侧 getDefaultVendorIcon
+// 保持一致——定价页回退到厂商图标时不会再露出错误的品牌 logo。
+func defaultVendorIconForSync(vendorName, upstreamIcon string) string {
+	if icon := getDefaultVendorIcon(vendorName); icon != "" {
+		return icon
+	}
+	return NormalizeColorIconKey(upstreamIcon)
+}
+
 // defaultBrandVendors 返回定价广场按名称规则匹配、但没有持久化元数据的模型所对应
 // 的"默认品牌"供应商。这些供应商使用保留的负 ID，不会写入数据库，仅用于展示。
 // 管理后台的供应商列表会合并它们，以便运营人员将这些品牌提升为可管理的真实记录。

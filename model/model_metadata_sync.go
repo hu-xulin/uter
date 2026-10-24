@@ -246,7 +246,7 @@ func ApplyMetadataSync(updates []MetadataSyncUpdate, upstreamVendors map[string]
 							if !ok {
 								return fmt.Errorf("upstream vendor not found: %s", name)
 							}
-							vendor = &Vendor{Name: name, Description: up.Description, Icon: NormalizeColorIconKey(up.Icon), Status: 1, CreatedTime: common.GetTimestamp(), UpdatedTime: common.GetTimestamp()}
+							vendor = &Vendor{Name: name, Description: up.Description, Icon: defaultVendorIconForSync(name, up.Icon), Status: 1, CreatedTime: common.GetTimestamp(), UpdatedTime: common.GetTimestamp()}
 							if err := validateVendorMetadata(tx, vendor); err != nil {
 								return err
 							}

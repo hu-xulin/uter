@@ -21,6 +21,10 @@ package model
 import (
 	"strings"
 	"testing"
+
+	"github.com/glebarez/sqlite"
+	"github.com/stretchr/testify/require"
+	"gorm.io/gorm"
 )
 
 // Vendor icons default to the monochrome (non ".Color") variant so they follow
@@ -105,6 +109,93 @@ func TestNormalizeColorIconKeyIdempotent(t *testing.T) {
 		once := NormalizeColorIconKey(in)
 		if twice := NormalizeColorIconKey(once); twice != once {
 			t.Errorf("NormalizeColorIconKey(%q) not idempotent: %q -> %q", in, once, twice)
+		}
+	}
+}
+
+// 同步创建/更新供应商时，已知品牌必须收敛到权威彩色映射，而不是盲从中游下发的图标。
+// 这正是对用户反馈「claude-haiku-5-5 没改成彩色 / gemini 系列仍用 Google logo」的根因修复：
+// Google 供应商绝不能落到 Google.Color，Anthropic 绝不能落到 Anthropic.Avatar。
+func TestDefaultVendorIconForSyncUsesAuthoritativeMapping(t *testing.T) {
+	cases := []struct {
+		name     string
+		upstream string
+		want     string
+	}{
+		{"Google", "Google.Color", "Gemini.Color"},
+		{"Google", "Google", "Gemini.Color"},
+		{"Google", "Google.Avatar", "Gemini.Color"},
+		{"Anthropic", "Anthropic.Avatar", "Claude.Color"},
+		{"Anthropic", "Anthropic", "Claude.Color"},
+		{"OpenAI", "OpenAI.Avatar", "OpenAI.Avatar"},
+		{"ByteDance", "ByteDance", "Doubao.Color"},
+	}
+	for _, c := range cases {
+		if got := defaultVendorIconForSync(c.name, c.upstream); got != c.want {
+			t.Errorf("defaultVendorIconForSync(%q, %q) = %q, want %q", c.name, c.upstream, got, c.want)
+		}
+	}
+}
+
+// 未知品牌不在权威映射内，应信任上游下发的图标（经彩色归一化）。
+func TestDefaultVendorIconForSyncFallsBackToUpstream(t *testing.T) {
+	if got := defaultVendorIconForSync("BrandNotInDefaults", "Foo.Bar"); got != NormalizeColorIconKey("Foo.Bar") {
+		t.Errorf("defaultVendorIconForSync unknown brand = %q, want %q", got, NormalizeColorIconKey("Foo.Bar"))
+	}
+	// 未知品牌上游为空时，不应臆造图标。
+	if got := defaultVendorIconForSync("BrandNotInDefaults", ""); got != "" {
+		t.Errorf("defaultVendorIconForSync unknown brand empty upstream = %q, want empty", got)
+	}
+}
+
+// 对齐迁移必须把漂移过的已知品牌供应商图标订正到权威彩色键。
+// 用内存库模拟 Google/Anthropic 漂移记录，断言迁移后变为 Gemini.Color / Claude.Color。
+func TestAlignVendorIconsToDefaults(t *testing.T) {
+	originalDB := DB
+	t.Cleanup(func() { DB = originalDB })
+	var err error
+	DB, err = gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
+	require.NoError(t, err)
+	require.NoError(t, DB.AutoMigrate(&Vendor{}))
+
+	seed := []Vendor{
+		{Name: "Google", Icon: "Google.Color", Status: 1},
+		{Name: "Anthropic", Icon: "Anthropic.Avatar", Status: 1},
+		{Name: "OpenAI", Icon: "OpenAI.Avatar", Status: 1},
+		{Name: "Moonshot", Icon: "Moonshot.Color", Status: 1},
+		{Name: "UnknownBrand", Icon: "Whatever", Status: 1},
+	}
+	for i := range seed {
+		require.NoError(t, DB.Create(&seed[i]).Error)
+	}
+	if err := alignVendorIconsToDefaults(); err != nil {
+		t.Fatalf("alignVendorIconsToDefaults: %v", err)
+	}
+	var got []Vendor
+	require.NoError(t, DB.Order("id").Find(&got).Error)
+	want := map[string]string{
+		"Google":       "Gemini.Color",
+		"Anthropic":    "Claude.Color",
+		"OpenAI":       "OpenAI.Avatar",
+		"Moonshot":     "Moonshot.Avatar",
+		"UnknownBrand": "Whatever",
+	}
+	for _, v := range got {
+		w, ok := want[v.Name]
+		if !ok || v.Icon != w {
+			t.Errorf("vendor %q icon = %q, want %q", v.Name, v.Icon, w)
+		}
+	}
+	// 幂等：二次运行不应产生不同结果。
+	if err := alignVendorIconsToDefaults(); err != nil {
+		t.Fatalf("alignVendorIconsToDefaults second run: %v", err)
+	}
+	var got2 []Vendor
+	require.NoError(t, DB.Order("id").Find(&got2).Error)
+	for _, v := range got2 {
+		w, ok := want[v.Name]
+		if !ok || v.Icon != w {
+			t.Errorf("vendor %q icon (2nd) = %q, want %q", v.Name, v.Icon, w)
 		}
 	}
 }

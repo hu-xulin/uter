@@ -39,6 +39,14 @@ func MigrateLobeIconColorKeys() error {
 	if err := colorizeModelIcons(); err != nil {
 		migrationErrors = append(migrationErrors, errors.Join(errors.New("colorize model icons"), err))
 	}
+	// 把已知品牌的供应商图标对齐回权威彩色映射（defaultVendorIcons）：
+	// 同步链路曾盲目信任上游下发图标，导致 Google→Google.Color、
+	// Anthropic→Anthropic.Avatar 这类漂移；定价页回退到厂商图标时会露出
+	// 错误的品牌 logo（如 gemini 系列显示 Google、claude 系列显示 Anthropic）。
+	// 本步骤放在最后，确保权威彩色键是最终落点。
+	if err := alignVendorIconsToDefaults(); err != nil {
+		migrationErrors = append(migrationErrors, errors.Join(errors.New("align vendor icons to defaults"), err))
+	}
 	return errors.Join(migrationErrors...)
 }
 
@@ -76,6 +84,37 @@ func colorizeModelIcons() error {
 		}
 		if err := DB.Model(&Model{}).Where("id = ?", models[i].Id).
 			Update("icon", colored).Error; err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// alignVendorIconsToDefaults 把已知品牌（已登记进 defaultVendorIcons）的供应
+// 商图标对齐回权威彩色映射。同步链路此前盲目信任上游下发图标，导致
+// Google→Google.Color、Anthropic→Anthropic.Avatar 这类漂移——定价页回退到
+// 厂商图标时就会露出错误的品牌 logo（如 gemini 系列显示 Google、claude 系列
+// 显示 Anthropic）。本步骤把漂移过的持久化供应商图标纠正为 defaultVendorIcons
+// 定义的权威彩色键（Gemini.Color / Claude.Color 等），与展示侧的
+// getDefaultVendorIcon 保持一致。
+//
+// 幂等：图标已符合权威映射则不产生写入，可重复执行。
+func alignVendorIconsToDefaults() error {
+	var vendors []Vendor
+	if err := DB.Find(&vendors).Error; err != nil {
+		return err
+	}
+	for i := range vendors {
+		target := getDefaultVendorIcon(vendors[i].Name)
+		if target == "" {
+			// 未登记品牌：交由 colorize* 处理，这里不动。
+			continue
+		}
+		if vendors[i].Icon == target {
+			continue
+		}
+		if err := DB.Model(&Vendor{}).Where("id = ?", vendors[i].Id).
+			Update("icon", target).Error; err != nil {
 			return err
 		}
 	}
