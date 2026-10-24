@@ -34,10 +34,22 @@ func getWaffoSDK() (*waffo.Waffo, error) {
 		privateKey = setting.WaffoPrivateKey
 		publicKey = setting.WaffoPublicCert
 	}
+	// The SDK only speaks bare Base64 DER, while operators configure key
+	// material as files. Normalizing here lets the settings accept a PEM file
+	// (PKCS#8 / PKCS#1 / the certificate Waffo issues) and keeps existing
+	// Base64-only configurations working unchanged.
+	normalizedPrivateKey, err := service.NormalizeWaffoPrivateKey(privateKey)
+	if err != nil {
+		return nil, err
+	}
+	normalizedPublicKey, err := service.NormalizeWaffoPublicKey(publicKey)
+	if err != nil {
+		return nil, err
+	}
 	builder := config.NewConfigBuilder().
 		APIKey(apiKey).
-		PrivateKey(privateKey).
-		WaffoPublicKey(publicKey).
+		PrivateKey(normalizedPrivateKey).
+		WaffoPublicKey(normalizedPublicKey).
 		Environment(env)
 	if setting.WaffoMerchantId != "" {
 		builder = builder.MerchantID(setting.WaffoMerchantId)

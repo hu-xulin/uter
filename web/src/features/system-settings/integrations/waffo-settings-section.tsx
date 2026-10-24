@@ -28,8 +28,8 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { SecretFileInput } from '@/components/ui/secret-file-input'
 import { SecretInput } from '@/components/ui/secret-input'
-import { SecretTextarea } from '@/components/ui/secret-textarea'
 import { Separator } from '@/components/ui/separator'
 
 import { SettingsSwitchField } from '../components/settings-form-layout'
@@ -195,7 +195,8 @@ export function WaffoSettingsSection({
 
         <div className='grid gap-1.5'>
           <Label>{t('Merchant ID')}</Label>
-          <Input autoComplete='off'
+          <Input
+            autoComplete='off'
             placeholder='merchant_id'
             value={values.WaffoMerchantId}
             onChange={(event) =>
@@ -206,47 +207,87 @@ export function WaffoSettingsSection({
 
         <div className='grid grid-cols-2 gap-4'>
           <div className='grid gap-1.5'>
-            <Label>{t('RSA Private Key (Production)')}</Label>
-            <SecretTextarea
-              rows={3}
-              placeholder='-----BEGIN RSA PRIVATE KEY-----'
+            <Label htmlFor='waffo-private-key'>
+              {t('RSA Private Key (Production)')}
+            </Label>
+            <SecretFileInput
+              id='waffo-private-key'
               value={values.WaffoPrivateKey}
               onChange={(value) => onValueChange('WaffoPrivateKey', value)}
+              expectedPemType={['PRIVATE KEY', 'RSA PRIVATE KEY']}
+              allowBase64
+              accept='.pem,.key,.txt,text/plain'
+              onError={(message) => toast.error(message)}
             />
+            <p className='text-muted-foreground text-xs'>
+              {t(
+                'Signs Waffo requests. Select the private key file Waffo issued; PKCS#8 / PKCS#1 PEM and single-line base64 are all accepted.'
+              )}
+            </p>
           </div>
           <div className='grid gap-1.5'>
-            <Label>{t('RSA Private Key (Sandbox)')}</Label>
-            <SecretTextarea
-              rows={3}
-              placeholder='-----BEGIN RSA PRIVATE KEY-----'
+            <Label htmlFor='waffo-sandbox-private-key'>
+              {t('RSA Private Key (Sandbox)')}
+            </Label>
+            <SecretFileInput
+              id='waffo-sandbox-private-key'
               value={values.WaffoSandboxPrivateKey}
               onChange={(value) =>
                 onValueChange('WaffoSandboxPrivateKey', value)
               }
+              expectedPemType={['PRIVATE KEY', 'RSA PRIVATE KEY']}
+              allowBase64
+              accept='.pem,.key,.txt,text/plain'
+              onError={(message) => toast.error(message)}
             />
+            <p className='text-muted-foreground text-xs'>
+              {t(
+                'Signs Waffo requests in sandbox mode. Same format as the production key.'
+              )}
+            </p>
           </div>
         </div>
 
         <div className='grid grid-cols-2 gap-4'>
           <div className='grid gap-1.5'>
-            <Label>{t('Waffo Public Key (Production)')}</Label>
-            <SecretTextarea
-              rows={3}
-              placeholder='-----BEGIN CERTIFICATE-----'
+            <Label htmlFor='waffo-public-cert'>
+              {t('Waffo Public Key (Production)')}
+            </Label>
+            <SecretFileInput
+              id='waffo-public-cert'
               value={values.WaffoPublicCert}
               onChange={(value) => onValueChange('WaffoPublicCert', value)}
+              expectedPemType={['PUBLIC KEY', 'RSA PUBLIC KEY', 'CERTIFICATE']}
+              allowBase64
+              accept='.pem,.key,.crt,.cer,.txt,text/plain'
+              onError={(message) => toast.error(message)}
             />
+            <p className='text-muted-foreground text-xs'>
+              {t(
+                'Verifies Waffo callback signatures. A public key PEM, the certificate Waffo issued, or single-line base64 is accepted.'
+              )}
+            </p>
           </div>
           <div className='grid gap-1.5'>
-            <Label>{t('Waffo Public Key (Sandbox)')}</Label>
-            <SecretTextarea
-              rows={3}
-              placeholder='-----BEGIN CERTIFICATE-----'
+            <Label htmlFor='waffo-sandbox-public-cert'>
+              {t('Waffo Public Key (Sandbox)')}
+            </Label>
+            <SecretFileInput
+              id='waffo-sandbox-public-cert'
               value={values.WaffoSandboxPublicCert}
               onChange={(value) =>
                 onValueChange('WaffoSandboxPublicCert', value)
               }
+              expectedPemType={['PUBLIC KEY', 'RSA PUBLIC KEY', 'CERTIFICATE']}
+              allowBase64
+              accept='.pem,.key,.crt,.cer,.txt,text/plain'
+              onError={(message) => toast.error(message)}
             />
+            <p className='text-muted-foreground text-xs'>
+              {t(
+                'Verifies Waffo sandbox callback signatures. Same format as the production key.'
+              )}
+            </p>
           </div>
         </div>
 
@@ -257,7 +298,8 @@ export function WaffoSettingsSection({
           </div>
           <div className='grid gap-1.5'>
             <Label>{t('Unit price (USD)')}</Label>
-            <Input autoComplete='off'
+            <Input
+              autoComplete='off'
               type='number'
               step={0.1}
               min={0}
@@ -273,7 +315,8 @@ export function WaffoSettingsSection({
           </div>
           <div className='grid gap-1.5'>
             <Label>{t('Minimum top-up quantity')}</Label>
-            <Input autoComplete='off'
+            <Input
+              autoComplete='off'
               type='number'
               min={1}
               placeholder='1'
@@ -291,7 +334,8 @@ export function WaffoSettingsSection({
         <div className='grid grid-cols-2 gap-4'>
           <div className='grid gap-1.5'>
             <Label>{t('Callback notification URL')}</Label>
-            <Input autoComplete='off'
+            <Input
+              autoComplete='off'
               placeholder='https://example.com/api/waffo/webhook'
               value={values.WaffoNotifyUrl}
               onChange={(event) =>
@@ -301,7 +345,8 @@ export function WaffoSettingsSection({
           </div>
           <div className='grid gap-1.5'>
             <Label>{t('Payment return URL')}</Label>
-            <Input autoComplete='off'
+            <Input
+              autoComplete='off'
               placeholder='https://example.com/wallet'
               value={values.WaffoReturnUrl}
               onChange={(event) =>
@@ -404,7 +449,8 @@ export function WaffoSettingsSection({
         <div className='space-y-3'>
           <div className='grid gap-1.5'>
             <Label required>{t('Display name')}</Label>
-            <Input autoComplete='off'
+            <Input
+              autoComplete='off'
               placeholder='Credit Card'
               value={methodForm.name}
               onChange={(e) =>
@@ -463,7 +509,8 @@ export function WaffoSettingsSection({
           </div>
           <div className='grid gap-1.5'>
             <Label>{t('Payment method type')}</Label>
-            <Input autoComplete='off'
+            <Input
+              autoComplete='off'
               value={methodForm.payMethodType}
               onChange={(e) =>
                 setMethodForm((p) => ({
@@ -476,7 +523,8 @@ export function WaffoSettingsSection({
           </div>
           <div className='grid gap-1.5'>
             <Label>{t('Payment method name')}</Label>
-            <Input autoComplete='off'
+            <Input
+              autoComplete='off'
               placeholder='Credit Card'
               value={methodForm.payMethodName}
               onChange={(e) =>
