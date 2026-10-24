@@ -61,41 +61,49 @@
 }
 
 /*
- * ── Docs / About content type scale — GitHub-aligned 3 tiers ───────
+ * ── Docs / About content type scale — Clerk-aligned ───────
  *
- * The documentation and about pages standardized on three steps, taken
- * from GitHub's markdown scale (h1 = 2em, h2 = 1.5em, body = 1em on a
- * 16px base):
+ * The documentation and about pages follow Clerk's typographic scale
+ * (extracted from clerk.com's rendered CSS, 16px base). The step values
+ * coincide with GitHub's markdown scale, so the reading column keeps the
+ * proportions the SPA already uses:
  *
- /*
- *   --text-doc-h1  一级标题 (page title) … 32px
- *   --text-doc-h2  二级标题 (h2 / h3) ……… 24px
- *   --text-doc-body 正文 (p / li / td / …)  16px / 28px
+ *   --text-doc-h1      一级标题 (page title) … 32px   (Clerk heading-lg)
+ *   --text-doc-h2      二级标题 (h2) ………………… 24px
+ *   --text-doc-h3      三级标题 (h3) ………………… 20px   (Clerk heading-sm)
+ *   --text-doc-body    正文 (p / li / td / …)  16px / 28px
+ *   --text-doc-chrome  导航 / 侧栏 / 目录 ………… 14px   (Clerk body-sm)
+ *   --text-doc-caption 图注 / 元信息 ………………… 12px   (Clerk caption)
  *
- * Body leading is 1.75, not GitHub's 1.625 — same reason as the prose
- * override below: 1.625 is a Latin-text ratio and CJK needs more air.
+ * Body leading is 1.75, not Clerk's 1.5 — 1.5 is tuned for Latin text,
+ * while CJK is a full-square script with higher ink density and needs
+ * more air (same reason as the prose override below).
  *
  * These generate the `text-doc-*` utilities used by `content-renderer`
- * and the prose override at the end of this file. Weights stay out of
- * the tokens: headings are 600 (semibold) and body 400, matching the
- * SPA's GitHub vocabulary.
+ * and the prose / chrome overrides at the end of this file. Weights stay
+ * out of the tokens: headings are 600 (semibold) and body 400, matching
+ * the SPA's vocabulary.
  *
- * `--text-doc-code` is the fourth tier, for code inside a fenced block.
- * It is deliberately *not* the `text-xs` (12px) the blocks used to be
- * drawn at: a shell command is read token by token, and at 12px the
- * punctuation that separates them stops being distinguishable. 14px is
- * GitHub's code size and holds a full-width line of a `curl` example
- * without the guide's examples wrapping on a laptop.
- * `--text-doc-code-line` is the gutter's own step; it matches the code so
- * a line number sits on its line rather than a few pixels off it.
+ * `--text-doc-code` is the fenced-block step. It is deliberately *not*
+ * `text-xs` (12px): a shell command is read token by token, and at 12px
+ * the separating punctuation stops being distinguishable. 14px holds a
+ * full-width `curl` line without the guide's examples wrapping.
+ * `--text-doc-code-line` is the gutter step; it matches the code so a
+ * line number sits on its line rather than a few pixels off it.
  */
 @theme {
   --text-doc-h1: 2rem;
   --text-doc-h1--line-height: 2.5rem;
   --text-doc-h2: 1.5rem;
   --text-doc-h2--line-height: 2rem;
+  --text-doc-h3: 1.25rem;
+  --text-doc-h3--line-height: 1.7rem;
   --text-doc-body: 1rem;
   --text-doc-body--line-height: 1.75rem;
+  --text-doc-chrome: 0.875rem;
+  --text-doc-chrome--line-height: 1.5rem;
+  --text-doc-caption: 0.75rem;
+  --text-doc-caption--line-height: 1.25rem;
   --text-doc-code: 0.875rem;
   --text-doc-code--line-height: 1.5rem;
   --text-doc-code-line: 0.875rem;
@@ -606,11 +614,18 @@ html[data-docs-embed='true'] #nd-subnav > a {
   line-height: 1.75;
 }
 
-.prose :is(h2, h3) {
+.prose :is(h2) {
   font-size: var(--text-doc-h2);
   font-weight: 600;
   line-height: 1.35;
   letter-spacing: -0.01em;
+}
+
+.prose :is(h3) {
+  font-size: var(--text-doc-h3);
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: -0.005em;
 }
 
 .prose :is(p, li, td, th, blockquote, dd, dt) {
@@ -626,9 +641,13 @@ html[data-docs-embed='true'] #nd-subnav > a {
  * ── Chrome type — sidebar / TOC / drawer at one step ────────────────
  *
  * Body copy is 16px; every navigation surface sits one step below it at
- * 14px so the three columns read as content → chrome. Two of these are
- * corrections rather than declarations:
+ * 14px (Clerk `body-sm`, `--text-doc-chrome`) so the three columns read
+ * as content → chrome. All three surfaces are now pinned to the token
+ * rather than a literal, and to each other:
  *
+ * · `#nd-sidebar` — Fumadocs' sidebar container carries `text-sm` (14px)
+ *   only as a default; this pins it explicitly so the desktop panel
+ *   cannot drift if the framework class list changes.
  * · `#nd-toc a` — Fumadocs puts `prose` on every TOC item (it wants the
  *   prose link colour), so the `.prose` rule above silently made the
  *   table of contents render at the 16px *body* size. The id selector
@@ -641,13 +660,14 @@ html[data-docs-embed='true'] #nd-subnav > a {
  * TOC leading is tightened to 1.5: 1.75 is right for reading prose but
  * makes a link list feel like paragraphs.
  */
+#nd-sidebar,
 #nd-toc a {
-  font-size: 14px;
+  font-size: var(--text-doc-chrome);
   line-height: 1.5;
 }
 
 #nd-sidebar-mobile {
-  font-size: 14px;
+  font-size: var(--text-doc-chrome);
 }
 
 /*
