@@ -1,7 +1,9 @@
 package model
 
 import (
+	"context"
 	"errors"
+	"net"
 	"sync/atomic"
 	"testing"
 	"time"
@@ -17,6 +19,10 @@ import (
 
 func useUserCacheMiniRedis(t *testing.T) *miniredis.Miniredis {
 	t.Helper()
+	// F-15: 配额缓存同步是 fire-and-forget 协程，协程里会读 common.RedisEnabled /
+	// common.RDB。若上一个测试留下的协程还在跑，这里改写全局量就是数据竞争
+	// （go test -race 必现）。改写前后各等一次在途同步，把它变成确定的顺序。
+	WaitCacheSyncForTest()
 	server := miniredis.RunT(t)
 	oldRedisEnabled := common.RedisEnabled
 	oldRDB := common.RDB
@@ -25,12 +31,33 @@ func useUserCacheMiniRedis(t *testing.T) *miniredis.Miniredis {
 	common.SyncFrequency = 2
 	common.RDB = redis.NewClient(&redis.Options{Addr: server.Addr()})
 	t.Cleanup(func() {
+		WaitCacheSyncForTest()
 		_ = common.RDB.Close()
 		common.RedisEnabled = oldRedisEnabled
 		common.RDB = oldRDB
 		common.SyncFrequency = oldSyncFrequency
 	})
 	return server
+}
+
+// useFailingRedis 把 Redis 指向一个必然连接失败的客户端，用来验证缓存不可用时的
+// 数据库回退路径。全局量改写与还原同样要先等在途缓存同步落定（见 F-15）。
+func useFailingRedis(t *testing.T) {
+	t.Helper()
+	WaitCacheSyncForTest()
+	oldRedisEnabled, oldRDB := common.RedisEnabled, common.RDB
+	common.RedisEnabled = true
+	common.RDB = redis.NewClient(&redis.Options{
+		Dialer: func(context.Context, string, string) (net.Conn, error) {
+			return nil, errors.New("forced redis failure")
+		},
+		MaxRetries: -1,
+	})
+	t.Cleanup(func() {
+		WaitCacheSyncForTest()
+		_ = common.RDB.Close()
+		common.RedisEnabled, common.RDB = oldRedisEnabled, oldRDB
+	})
 }
 
 func TestUserAuthFenceRollbackExpiresAndRecovers(t *testing.T) {

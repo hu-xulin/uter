@@ -67,6 +67,10 @@ func newOrgPlatformEnv(t *testing.T) *orgPlatformEnv {
 	service.InitHttpClient()
 
 	previousDB, previousLogDB := model.DB, model.LOG_DB
+	// F-15: 配额缓存同步是 fire-and-forget 协程，协程里会读 common.RedisEnabled /
+	// common.RDB。改写这两个全局量前先等在途同步落定，否则「cleanup 写 vs 协程读」
+	// 会被 -race 判为数据竞争（生产环境启动后不再改写，故非线上缺陷）。
+	model.WaitCacheSyncForTest()
 	previousRedis := common.RedisEnabled
 	previousPasswordLogin := common.PasswordLoginEnabled
 	previousSSRF := *system_setting.GetFetchSetting()
@@ -110,6 +114,9 @@ func newOrgPlatformEnv(t *testing.T) *orgPlatformEnv {
 		apiKey:    map[string]string{},
 	}
 	t.Cleanup(func() {
+		// 还原全局量前必须等缓存同步协程结束，否则协程仍会读 common.RedisEnabled /
+		// common.RDB，与这里的写构成数据竞争（见 F-15）。
+		model.WaitCacheSyncForTest()
 		model.DB, model.LOG_DB = previousDB, previousLogDB
 		common.RedisEnabled = previousRedis
 		common.PasswordLoginEnabled = previousPasswordLogin

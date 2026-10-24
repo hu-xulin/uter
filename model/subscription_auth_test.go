@@ -1,16 +1,12 @@
 package model
 
 import (
-	"context"
-	"errors"
 	"fmt"
-	"net"
 	"strings"
 	"testing"
 	"time"
 
 	"github.com/glebarez/sqlite"
-	"github.com/go-redis/redis/v8"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/uter-ai/uter/common"
@@ -123,18 +119,7 @@ func TestSubscriptionGroupCacheRefreshFailureDoesNotChangeCommittedResult(t *tes
 	require.NoError(t, DB.Create(plan).Error)
 	InvalidateSubscriptionPlanCache(plan.Id)
 
-	oldRedisEnabled, oldRDB := common.RedisEnabled, common.RDB
-	common.RedisEnabled = true
-	common.RDB = redis.NewClient(&redis.Options{
-		Dialer: func(context.Context, string, string) (net.Conn, error) {
-			return nil, errors.New("forced redis failure")
-		},
-		MaxRetries: -1,
-	})
-	t.Cleanup(func() {
-		_ = common.RDB.Close()
-		common.RedisEnabled, common.RDB = oldRedisEnabled, oldRDB
-	})
+	useFailingRedis(t)
 
 	message, err := AdminBindSubscription(user.Id, plan.Id, "test")
 	require.NoError(t, err)

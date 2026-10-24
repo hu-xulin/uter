@@ -3,6 +3,9 @@ package model
 import (
 	"errors"
 	"fmt"
+	"sync"
+
+	"github.com/bytedance/gopkg/util/gopool"
 
 	"github.com/uter-ai/uter/common"
 
@@ -12,6 +15,33 @@ import (
 	"github.com/gin-gonic/gin"
 	"golang.org/x/sync/singleflight"
 )
+
+// cacheSyncBarrier 记录在途的「异步缓存同步」协程数量。
+//
+// 缓存同步是 fire-and-forget 的：调用方提交事务后立刻返回，协程里再读
+// common.RedisEnabled / common.RDB 决定是否写 Redis。生产环境这两个变量只在启动
+// 时写一次，没问题；但测试会临时把它们指向 miniredis 再改回原值，于是「测试
+// cleanup 写 vs 协程读」构成数据竞争（go test -race 必现）。登记到这个屏障上，
+// 测试就能在改动全局量之前等所有在途同步落定。
+var cacheSyncBarrier sync.WaitGroup
+
+// runCacheSync 把一次缓存同步交给后台协程，并登记到 cacheSyncBarrier。
+// 语义与原 gopool.Go 完全一致（异步、不阻塞调用方），只是让协程可被等待。
+func runCacheSync(fn func()) {
+	cacheSyncBarrier.Add(1)
+	gopool.Go(func() {
+		defer cacheSyncBarrier.Done()
+		fn()
+	})
+}
+
+// WaitCacheSyncForTest 阻塞到所有在途缓存同步协程结束。
+//
+// 仅供测试使用：测试在改动 common.RedisEnabled / common.RDB 前后各调用一次，
+// 避免与仍在运行的同步协程相撞。生产代码不要调用——它会抹掉「异步」的意义。
+func WaitCacheSyncForTest() {
+	cacheSyncBarrier.Wait()
+}
 
 // 版本 3：新增 DepartmentName。部门管理员的数据可见范围按部门【名称】判定
 // （department_id 列已废弃、从不写入），旧哈希缺少该字段会让部门范围失效，

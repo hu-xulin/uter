@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/bytedance/gopkg/util/gopool"
 	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/setting/operation_setting"
 	"gorm.io/gorm"
@@ -382,7 +381,7 @@ func IncreaseTokenQuota(tokenId int, key string, quota int) (err error) {
 		return errors.New("quota cannot be negative")
 	}
 	if common.RedisEnabled {
-		gopool.Go(func() {
+		runCacheSync(func() {
 			// 守卫式增量：哈希不存在时跳过，由下次读取从数据库水合，
 			// 绝不创建只有配额字段的残缺哈希。
 			if _, err := cacheApplyTokenQuotaDelta(tokenId, key, int64(quota)); err != nil {
@@ -413,7 +412,7 @@ func DecreaseTokenQuota(id int, key string, quota int) (err error) {
 		return errors.New("quota cannot be negative")
 	}
 	if common.RedisEnabled {
-		gopool.Go(func() {
+		runCacheSync(func() {
 			if _, err := cacheApplyTokenQuotaDelta(id, key, int64(-quota)); err != nil {
 				common.SysLog(common.LogText("failed to decrease token quota: %s", err.Error()))
 			}
