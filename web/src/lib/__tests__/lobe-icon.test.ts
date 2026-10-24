@@ -58,6 +58,13 @@ describe('monoIconName', () => {
     expect(monoIconName('  Qwen.Color ')).toBe('Qwen')
   })
 
+  test('strips a bare avatar variant (backend now persists color keys)', () => {
+    // Sync writes "OpenAI.Avatar" / "Anthropic.Avatar" for brands without a
+    // ".Color" glyph; the sidebar must still render them monochrome.
+    expect(monoIconName('OpenAI.Avatar')).toBe('OpenAI')
+    expect(monoIconName(' Anthropic.Avatar ')).toBe('Anthropic')
+  })
+
   test('leaves monochrome and advanced chain forms untouched', () => {
     expect(monoIconName('OpenAI')).toBe('OpenAI')
     expect(monoIconName(`Claude.Avatar.type={'platform'}`)).toBe(

@@ -219,7 +219,7 @@ func ApplyMetadataSync(updates []MetadataSyncUpdate, upstreamVendors map[string]
 				case "description":
 					fields[field] = update.Values.Description
 				case "icon":
-					fields[field] = NormalizeIconKey(update.Values.Icon)
+					fields[field] = NormalizeColorIconKey(update.Values.Icon)
 				case "tags":
 					fields[field] = update.Values.Tags
 				case "endpoints":
@@ -246,7 +246,7 @@ func ApplyMetadataSync(updates []MetadataSyncUpdate, upstreamVendors map[string]
 							if !ok {
 								return fmt.Errorf("upstream vendor not found: %s", name)
 							}
-							vendor = &Vendor{Name: name, Description: up.Description, Icon: NormalizeIconKey(up.Icon), Status: 1, CreatedTime: common.GetTimestamp(), UpdatedTime: common.GetTimestamp()}
+							vendor = &Vendor{Name: name, Description: up.Description, Icon: NormalizeColorIconKey(up.Icon), Status: 1, CreatedTime: common.GetTimestamp(), UpdatedTime: common.GetTimestamp()}
 							if err := validateVendorMetadata(tx, vendor); err != nil {
 								return err
 							}

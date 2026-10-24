@@ -195,18 +195,29 @@ export function colorIconName(iconName: string): string {
 /**
  * Downgrade an icon key to its monochrome rendering.
  *
- * Mirrors the backend's `model.NormalizeIconKey`: only a bare "X.Color" key is
- * rewritten to "X", so advanced chain forms such as
- * "Claude.Avatar.type={'platform'}" are never mangled. The result follows
- * `currentColor`, which is what the vendor filter chips want.
+ * Pairs with the backend's icon-key normalizers: a bare "X.Color" or "X.Avatar"
+ * key is rewritten to "X" so the glyph follows `currentColor`, which is what the
+ * vendor filter chips want. Advanced chain forms such as
+ * "Claude.Avatar.type={'platform'}" are never mangled — only a key whose sole
+ * suffix is the variant name is stripped.
+ *
+ * Backend storage persists color keys (NormalizeColorIconKey upgrades bare
+ * brand names on sync), so stripping ".Avatar" here keeps the sidebar
+ * monochrome next to the colored model cards.
  */
 export function monoIconName(iconName: string): string {
   const trimmed = iconName.trim()
   const dot = trimmed.indexOf('.')
   if (dot === -1) return trimmed
   const suffix = trimmed.slice(dot + 1).trim()
-  if (suffix.toLowerCase() !== 'color') return trimmed
+  if (!isBareVariantSuffix(suffix)) return trimmed
   return trimmed.slice(0, dot).trim()
+}
+
+/** Whether the segment after the first dot is exactly a color variant name. */
+function isBareVariantSuffix(suffix: string): boolean {
+  const lower = suffix.toLowerCase()
+  return lower === 'color' || lower === 'avatar'
 }
 
 /**
