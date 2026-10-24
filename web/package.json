@@ -46,12 +46,12 @@
     "@visactor/react-vchart": "^2.1.2",
     "@visactor/vchart": "^2.1.2",
     "ai": "^7.0.14",
-    "axios": "^1.18.1",
+    "axios": "^1.20.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
     "dayjs": "^1.11.21",
-    "dompurify": "3.4.16",
+    "dompurify": "3.4.17",
     "i18next": "^26.3.4",
     "i18next-browser-languagedetector": "^8.2.1",
     "input-otp": "^1.4.2",
@@ -83,7 +83,7 @@
     "vaul": "^1.1.2",
     "yace": "^1.1.0",
     "yaml": "^2.9.0",
-    "zod": "^4.4.3",
+    "zod": "^4.6.7",
     "zustand": "^5.0.14"
   },
   "devDependencies": {
@@ -111,17 +111,18 @@
     "vitest": "^5.0.4"
   },
   "overrides": {
-    "brace-expansion": "2.1.1",
-    "dompurify": "3.4.16",
-    "katex": "0.18.2",
-    "fast-uri": "3.1.2",
-    "hono": "4.12.22",
-    "ip-address": "10.2.0",
+    "brace-expansion": "2.1.7",
+    "dompurify": "3.4.17",
+    "fast-uri": "3.1.9",
+    "follow-redirects": "^1.16.1",
+    "hono": "4.13.13",
+    "ip-address": "10.7.4",
     "js-cookie": "3.0.7",
-    "mermaid": "11.15.0",
+    "katex": "0.18.2",
+    "mermaid": "11.17.2",
     "minimist": "1.2.8",
-    "postcss": "8.5.15",
-    "qs": "6.15.2",
+    "postcss": "8.5.31",
+    "qs": "6.16.1",
     "uuid": "14.0.0"
   }
 }
