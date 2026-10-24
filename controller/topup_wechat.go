@@ -131,18 +131,46 @@ func RequestWechatPayWeb(c *gin.Context) {
 	bodyBytes, _ := json.Marshal(bodyMap)
 	bodyStr := string(bodyBytes)
 
+	// F-07: persist the local pending order BEFORE calling WeChat. WeChat's
+	// /v3/pay/transactions/* really creates an order on the provider side, so
+	// creating it after the local insert left a window where the user could pay
+	// an order the callback had no local record for — money received but never
+	// credited. The provider amount/currency snapshot is stored alongside so
+	// the callback compares against exactly what was sent.
+	topUp := &model.TopUp{
+		UserId:           id,
+		Amount:           wechatAmountForStorage(req.Amount),
+		Money:            payMoney,
+		TradeNo:          tradeNo,
+		PaymentMethod:    model.PaymentMethodWechatPay,
+		PaymentProvider:  model.PaymentProviderWechatPay,
+		ProviderAmount:   totalCents,
+		ProviderCurrency: "CNY",
+		CreateTime:       time.Now().Unix(),
+		Status:           common.TopUpStatusPending,
+	}
+	if err := topUp.Insert(); err != nil {
+		logger.LogError(c.Request.Context(), fmt.Sprintf("微信支付创建充值订单失败 user_id=%d trade_no=%s error=%q", id, tradeNo, err.Error()))
+		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "创建订单失败"})
+		return
+	}
+
 	auth, err := service.WechatPayBuildAuthHeader(
 		"POST", apiPath, bodyStr,
 		operation_setting.WechatPayMchId, operation_setting.WechatPaySerialNo, operation_setting.WechatPayPrivateKey,
 	)
 	if err != nil {
 		logger.LogError(c.Request.Context(), fmt.Sprintf("微信支付签名失败 user_id=%d trade_no=%s error=%q", id, tradeNo, err.Error()))
+		// Signing happens locally, WeChat never saw this order.
+		markTopUpFailed(c, topUp, "wechat pay request signing failed: "+err.Error())
 		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "创建订单失败"})
 		return
 	}
 
 	httpReq, err := http.NewRequest("POST", operation_setting.WechatPayGateway+apiPath, bytes.NewReader(bodyBytes))
 	if err != nil {
+		logger.LogError(c.Request.Context(), fmt.Sprintf("微信支付请求构造失败 user_id=%d trade_no=%s error=%q", id, tradeNo, err.Error()))
+		markTopUpFailed(c, topUp, "wechat pay request build failed: "+err.Error())
 		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "创建订单失败"})
 		return
 	}
@@ -154,6 +182,10 @@ func RequestWechatPayWeb(c *gin.Context) {
 	resp, err := cnPayHTTPClient.Do(httpReq)
 	if err != nil {
 		logger.LogError(c.Request.Context(), fmt.Sprintf("微信支付下单请求失败 user_id=%d trade_no=%s error=%q", id, tradeNo, err.Error()))
+		// The provider state is unknown: the request may have reached WeChat and
+		// created an order. Keep the local order pending so a later callback can
+		// still credit it, and leave a trail for reconciliation.
+		logger.LogWarn(c.Request.Context(), fmt.Sprintf("微信支付下单结果不确定，保留 pending 待对账 user_id=%d trade_no=%s error=%q", id, tradeNo, err.Error()))
 		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "创建订单失败"})
 		return
 	}
@@ -161,12 +193,16 @@ func RequestWechatPayWeb(c *gin.Context) {
 	respBody, err := readPaymentProviderAPIResponseBody(resp.Body)
 	if err != nil {
 		logger.LogError(c.Request.Context(), fmt.Sprintf("微信支付响应读取失败 user_id=%d trade_no=%s error=%q", id, tradeNo, err.Error()))
+		logger.LogWarn(c.Request.Context(), fmt.Sprintf("微信支付下单结果不确定，保留 pending 待对账 user_id=%d trade_no=%s error=%q", id, tradeNo, err.Error()))
 		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "创建订单失败"})
 		return
 	}
 
 	if resp.StatusCode != http.StatusOK {
 		logger.LogError(c.Request.Context(), fmt.Sprintf("微信支付下单失败 user_id=%d trade_no=%s path=%s status=%d body_bytes=%d", id, tradeNo, apiPath, resp.StatusCode, len(respBody)))
+		// WeChat answered with a rejection, so no order exists on the provider
+		// side and the local order can be closed with the reason recorded.
+		markTopUpFailed(c, topUp, fmt.Sprintf("wechat pay order rejected: http_status=%d", resp.StatusCode))
 		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "创建订单失败"})
 		return
 	}
@@ -177,6 +213,9 @@ func RequestWechatPayWeb(c *gin.Context) {
 	}
 	if err := json.Unmarshal(respBody, &wxResp); err != nil {
 		logger.LogError(c.Request.Context(), fmt.Sprintf("微信支付响应解析失败 user_id=%d trade_no=%s body_bytes=%d error=%q", id, tradeNo, len(respBody), err))
+		// HTTP 200 means WeChat created the order; only the response body is
+		// unusable. Keep the order pending so the callback can still credit it.
+		logger.LogWarn(c.Request.Context(), fmt.Sprintf("微信支付已创建订单但响应无法解析，保留 pending 待对账 user_id=%d trade_no=%s", id, tradeNo))
 		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "创建订单失败"})
 		return
 	}
@@ -186,6 +225,7 @@ func RequestWechatPayWeb(c *gin.Context) {
 	case "mobile":
 		if wxResp.H5Url == "" {
 			logger.LogError(c.Request.Context(), fmt.Sprintf("微信支付未返回 h5_url user_id=%d trade_no=%s body_bytes=%d", id, tradeNo, len(respBody)))
+			logger.LogWarn(c.Request.Context(), fmt.Sprintf("微信支付已创建订单但缺少支付链接，保留 pending 待对账 user_id=%d trade_no=%s", id, tradeNo))
 			c.JSON(http.StatusOK, gin.H{"message": "error", "data": "创建订单失败"})
 			return
 		}
@@ -196,26 +236,11 @@ func RequestWechatPayWeb(c *gin.Context) {
 	default:
 		if wxResp.CodeUrl == "" {
 			logger.LogError(c.Request.Context(), fmt.Sprintf("微信支付未返回 code_url user_id=%d trade_no=%s body_bytes=%d", id, tradeNo, len(respBody)))
+			logger.LogWarn(c.Request.Context(), fmt.Sprintf("微信支付已创建订单但缺少支付链接，保留 pending 待对账 user_id=%d trade_no=%s", id, tradeNo))
 			c.JSON(http.StatusOK, gin.H{"message": "error", "data": "创建订单失败"})
 			return
 		}
 		data = map[string]string{"trade_no": tradeNo, "code_url": wxResp.CodeUrl}
-	}
-
-	topUp := &model.TopUp{
-		UserId:          id,
-		Amount:          wechatAmountForStorage(req.Amount),
-		Money:           payMoney,
-		TradeNo:         tradeNo,
-		PaymentMethod:   model.PaymentMethodWechatPay,
-		PaymentProvider: model.PaymentProviderWechatPay,
-		CreateTime:      time.Now().Unix(),
-		Status:          common.TopUpStatusPending,
-	}
-	if err := topUp.Insert(); err != nil {
-		logger.LogError(c.Request.Context(), fmt.Sprintf("微信支付创建充值订单失败 user_id=%d trade_no=%s error=%q", id, tradeNo, err.Error()))
-		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "创建订单失败"})
-		return
 	}
 
 	logger.LogInfo(c.Request.Context(), fmt.Sprintf("微信支付%s订单创建成功 user_id=%d trade_no=%s amount=%d money=%.2f", apiPath, id, tradeNo, req.Amount, payMoney))
@@ -342,14 +367,22 @@ func WechatPayNotify(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"code": "FAIL", "message": i18n.T(c, i18n.MsgTopup_wechatProcess_failed)})
 		return
 	}
+	// F-18: 回调只能与可信的本地快照比较。下单时已把实际发给微信的金额
+	// （分）与币种落到 ProviderAmount / ProviderCurrency，这里优先使用该快照；
+	// 存量订单（快照为空）才回退到由 Money 换算，避免用两套口径判等。
+	expectedCents := topUp.ProviderAmount
+	expectedCurrency := topUp.ProviderCurrency
+	if expectedCents <= 0 || expectedCurrency == "" {
+		expectedCents = decimal.NewFromFloat(topUp.Money).Mul(decimal.NewFromInt(100)).Round(0).IntPart()
+		expectedCurrency = "CNY"
+	}
 	// 微信支付下单时固定使用 CNY；回调币种必须一致，不能只凭相同的数值入账。
-	if !providerCurrencyMatchesOrder(dec.Amount.Currency, "CNY") {
-		logger.LogWarn(c.Request.Context(), fmt.Sprintf("微信支付回调币种不匹配 trade_no=%s currency=%s client_ip=%s", dec.OutTradeNo, dec.Amount.Currency, c.ClientIP()))
+	if !providerCurrencyMatchesOrder(dec.Amount.Currency, expectedCurrency) {
+		logger.LogWarn(c.Request.Context(), fmt.Sprintf("微信支付回调币种不匹配 trade_no=%s currency=%s expected=%s client_ip=%s", dec.OutTradeNo, dec.Amount.Currency, expectedCurrency, c.ClientIP()))
 		c.JSON(http.StatusOK, gin.H{"code": "FAIL", "message": i18n.T(c, i18n.MsgTopup_wechatAmount_mismatch)})
 		return
 	}
 	// 微信以分为单位下发 total，本地 Money 以元为单位。
-	expectedCents := decimal.NewFromFloat(topUp.Money).Mul(decimal.NewFromInt(100)).Round(0).IntPart()
 	if dec.Amount.Total <= 0 || dec.Amount.Total != expectedCents {
 		logger.LogWarn(c.Request.Context(), fmt.Sprintf("微信支付回调金额不匹配 trade_no=%s 回调金额(分)=%d 本地应付(分)=%d client_ip=%s", dec.OutTradeNo, dec.Amount.Total, expectedCents, c.ClientIP()))
 		c.JSON(http.StatusOK, gin.H{"code": "FAIL", "message": i18n.T(c, i18n.MsgTopup_wechatAmount_mismatch)})
