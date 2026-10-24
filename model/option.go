@@ -110,6 +110,7 @@ func InitOptionMap() {
 	common.OptionMap["WechatPayPublicKey"] = operation_setting.WechatPayPublicKey
 	common.OptionMap["Price"] = strconv.FormatFloat(operation_setting.Price, 'f', -1, 64)
 	common.OptionMap["USDExchangeRate"] = strconv.FormatFloat(operation_setting.USDExchangeRate, 'f', -1, 64)
+	common.OptionMap["USDExchangeRateUpdatedAt"] = strconv.FormatInt(operation_setting.USDExchangeRateUpdatedAt, 10)
 	common.OptionMap["MinTopUp"] = strconv.Itoa(operation_setting.MinTopUp)
 	common.OptionMap["StripeMinTopUp"] = strconv.Itoa(setting.StripeMinTopUp)
 	common.OptionMap["StripeApiSecret"] = setting.StripeApiSecret
@@ -581,6 +582,8 @@ func updateOptionMap(key string, value string) (err error) {
 		operation_setting.Price, _ = strconv.ParseFloat(value, 64)
 	case "USDExchangeRate":
 		operation_setting.USDExchangeRate, _ = strconv.ParseFloat(value, 64)
+	case "USDExchangeRateUpdatedAt":
+		operation_setting.USDExchangeRateUpdatedAt, _ = strconv.ParseInt(value, 10, 64)
 	case "MinTopUp":
 		operation_setting.MinTopUp, _ = strconv.Atoi(value)
 	case "StripeApiSecret":

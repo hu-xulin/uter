@@ -131,6 +131,10 @@ func main() {
 	// Codex credential auto-refresh check every 10 minutes, refresh when expires within 1 day
 	service.StartCodexCredentialAutoRefreshTask()
 
+	// 美元汇率自动同步：每 10 分钟拉取一次外部行情（A），并据此重算支付定价（B = A + 0.2）。
+	// 钱包展示与下单计价都取 B，三者由这条任务统一维护，无需人工改配置。
+	service.StartExchangeRateSync()
+
 	// Subscription quota reset task (daily/weekly/monthly/custom)
 	service.StartSubscriptionQuotaResetTask()
 

@@ -17,10 +17,15 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@uter.ai
 */
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useQueryClient } from '@tanstack/react-query'
+import { RefreshCw } from 'lucide-react'
+import { useEffect, useState } from 'react'
 import type { Resolver } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
+import { toast } from 'sonner'
 import * as z from 'zod'
 
+import { Button } from '@/components/ui/button'
 import {
   Form,
   FormControl,
@@ -40,8 +45,10 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Switch } from '@/components/ui/switch'
+import { cn } from '@/lib/utils'
 import { DEFAULT_CURRENCY_CONFIG } from '@/stores/system-config-store'
 
+import { syncExchangeRate } from '../api'
 import { FormDirtyIndicator } from '../components/form-dirty-indicator'
 import { FormNavigationGuard } from '../components/form-navigation-guard'
 import {
@@ -52,7 +59,7 @@ import {
 import { SettingsPageFormActions } from '../components/settings-page-context'
 import { SettingsSection } from '../components/settings-section'
 import { useSettingsForm } from '../hooks/use-settings-form'
-import { useUpdateOption } from '../hooks/use-update-option'
+import { syncStatusNow, useUpdateOption } from '../hooks/use-update-option'
 import { safeNumberFieldProps } from '../utils/numeric-field'
 
 const createPricingSchema = (t: (key: string) => string) =>
@@ -99,11 +106,26 @@ type PricingFormValues = z.infer<ReturnType<typeof createPricingSchema>>
 
 type PricingSectionProps = {
   defaultValues: PricingFormValues
+  /** A 最近一次成功同步的时间（Unix 秒，0 / 缺省表示从未同步）。 */
+  exchangeRateUpdatedAt?: number
+  /** B 相对 A 的加价，由后端下发（PriceMarkupRate）。 */
+  priceMarkupRate?: number
 }
 
-export function PricingSection({ defaultValues }: PricingSectionProps) {
+export function PricingSection({
+  defaultValues,
+  exchangeRateUpdatedAt = 0,
+  priceMarkupRate = 0.2,
+}: PricingSectionProps) {
   const { t } = useTranslation()
   const updateOption = useUpdateOption()
+  const queryClient = useQueryClient()
+  const [lastSyncedAt, setLastSyncedAt] = useState(exchangeRateUpdatedAt)
+  const [syncing, setSyncing] = useState(false)
+
+  useEffect(() => {
+    setLastSyncedAt(exchangeRateUpdatedAt)
+  }, [exchangeRateUpdatedAt])
 
   const pricingSchema = createPricingSchema(t)
 
@@ -135,6 +157,36 @@ export function PricingSection({ defaultValues }: PricingSectionProps) {
         }
       },
     })
+
+  // 立即拉取一次行情：后端会同时写入 A（汇率）与 B（定价 = A + 0.2），
+  // 这里就地刷新 A 的显示、同步时间，并把 system-options / status 缓存打新，
+  // 让「支付网关」页与钱包不必等下一个 10 分钟周期。
+  const handleSyncExchangeRate = async () => {
+    if (syncing) return
+    setSyncing(true)
+    try {
+      const result = await syncExchangeRate()
+      if (!result.success || !result.data) {
+        toast.error(result.message || t('Failed to sync exchange rate'))
+        return
+      }
+      form.setValue('USDExchangeRate', result.data.usd_exchange_rate, {
+        shouldDirty: false,
+      })
+      setLastSyncedAt(result.data.exchange_rate_updated_at)
+      queryClient.invalidateQueries({ queryKey: ['system-options'] })
+      await syncStatusNow(queryClient)
+      toast.success(
+        t('Exchange rate synced: 1 USD = {{rate}}', {
+          rate: result.data.usd_exchange_rate.toFixed(2),
+        })
+      )
+    } catch {
+      toast.error(t('Failed to sync exchange rate'))
+    } finally {
+      setSyncing(false)
+    }
+  }
 
   const displayType = form.watch('general_setting.quota_display_type') ?? 'USD'
   const displayInCurrencyEnabled = form.watch('DisplayInCurrencyEnabled')
@@ -243,18 +295,44 @@ export function PricingSection({ defaultValues }: PricingSectionProps) {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>{exchangeRateLabel}</FormLabel>
-                    <FormControl>
-                      <Input autoComplete='off'
-                        placeholder='7.25'
-                        type='number'
-                        step='0.01'
-                        {...safeNumberFieldProps(field)}
-                      />
-                    </FormControl>
+                    <div className='flex flex-wrap items-start gap-2'>
+                      <FormControl>
+                        <Input
+                          autoComplete='off'
+                          placeholder='7.25'
+                          type='number'
+                          step='0.01'
+                          className='flex-1'
+                          {...safeNumberFieldProps(field)}
+                          disabled
+                        />
+                      </FormControl>
+                      <Button
+                        type='button'
+                        variant='outline'
+                        onClick={handleSyncExchangeRate}
+                        disabled={syncing}
+                      >
+                        <RefreshCw
+                          className={cn('h-4 w-4', syncing && 'animate-spin')}
+                        />
+                        {syncing ? t('Syncing') : t('Sync now')}
+                      </Button>
+                    </div>
                     <FormDescription>
                       {t(
-                        'Real exchange rate between USD and your payment gateway currency'
+                        'Fetched automatically from the market USD to CNY rate every 10 minutes, so this field is read-only. The payment price in the Payment Gateway settings is derived from it as A + {{markup}}.',
+                        { markup: priceMarkupRate.toFixed(2) }
                       )}
+                    </FormDescription>
+                    <FormDescription>
+                      {lastSyncedAt > 0
+                        ? t('Last synced: {{time}}', {
+                            time: new Date(
+                              lastSyncedAt * 1000
+                            ).toLocaleString(),
+                          })
+                        : t('Not synced yet')}
                     </FormDescription>
                     <FormMessage />
                   </FormItem>

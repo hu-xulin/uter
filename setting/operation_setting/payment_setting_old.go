@@ -6,16 +6,62 @@ This file is the old version of the payment settings file. If you need to add ne
 package operation_setting
 
 import (
+	"math"
+
 	"github.com/uter-ai/uter/common"
+)
+
+// 计价体系由三个值串成一条链，全部由 service.StartExchangeRateSync 定时维护：
+//
+//	A = USDExchangeRate  「货币展示」里的美元汇率，取外部行情（USD→CNY），每 10 分钟刷新。
+//	B = Price            「支付网关」里的定价（本地货币 / 美元），恒等于 A + PriceMarkupRate，
+//	                     每 10 分钟随 A 重算。所有按人民币结算的支付方式（支付宝 / 微信 /
+//	                     Epay）下单金额都按 B 计算。
+//	C                    钱包页展示与结算用的汇率，直接取 B（/api/status 的 price 字段），
+//	                     因此钱包「$10 → 应付 ¥X」与后端实扣金额天然一致。
+//
+// 历史包袱：A 与 B 曾经是两个互不相干的手工配置项，管理员只改其中一个就会造成
+// 「钱包显示按 A、实扣按 B」的错位。现在 B 不再是独立配置，而是 A 的派生值。
+const (
+	// DefaultUSDExchangeRate 是行情拿不到时的兜底汇率。
+	DefaultUSDExchangeRate = 7.3
+	// PriceMarkupRate 是 B 相对 A 的加价，用于覆盖支付通道手续费与行情波动。
+	PriceMarkupRate = 0.2
 )
 
 var PayAddress = ""
 var CustomCallbackAddress = ""
 var EpayId = ""
 var EpayKey = ""
-var Price = 7.3
 var MinTopUp = 1
-var USDExchangeRate = 7.3
+
+// USDExchangeRate 即 A：面向用户展示的美元汇率（外部行情）。
+var USDExchangeRate = DefaultUSDExchangeRate
+
+// Price 即 B：实际计价单价（本地货币 / 美元），恒为 A + PriceMarkupRate。
+var Price = DerivedPriceFromExchangeRate(DefaultUSDExchangeRate)
+
+// USDExchangeRateUpdatedAt 是 A 最近一次成功同步的时间（Unix 秒，0 表示从未同步）。
+var USDExchangeRateUpdatedAt int64
+
+// DerivedPriceFromExchangeRate 由 A 推导 B：B = A + PriceMarkupRate，保留 2 位小数。
+func DerivedPriceFromExchangeRate(exchangeRate float64) float64 {
+	if exchangeRate <= 0 {
+		exchangeRate = DefaultUSDExchangeRate
+	}
+	return math.Round((exchangeRate+PriceMarkupRate)*100) / 100
+}
+
+// EffectivePayPrice 返回充值时实际使用的计价单价，即 B。
+//
+// 正常情况下 Price 由同步任务写入；若库里从未写过（或写入了非法值），
+// 这里按 B = A + PriceMarkupRate 现场推导，避免出现 0 元订单。
+func EffectivePayPrice() float64 {
+	if Price > 0 {
+		return Price
+	}
+	return DerivedPriceFromExchangeRate(USDExchangeRate)
+}
 
 // PayMethods 是「钱包 → 充值」页下发的支付方式列表，后台「支付设置」的
 // 可视化编辑器可改；库里无此键时（新部署 / 未配置过）用下面的默认值。

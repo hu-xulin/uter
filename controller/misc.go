@@ -94,9 +94,14 @@ func GetStatus(c *gin.Context) {
 
 		"password_login_encryption_enabled": common.PasswordLoginEncryptionEnabled,
 
-		"usd_exchange_rate": operation_setting.USDExchangeRate,
-		"price":             operation_setting.Price,
-		"stripe_unit_price": setting.StripeUnitPrice,
+		// 计价链路：usd_exchange_rate = A（展示用行情汇率），price = B（实际计价单价，
+		// 恒为 A + 0.2），钱包按 price 计算应付金额，因此 C = B。两者都由后台的
+		// 汇率同步任务维护，这里只负责下发，不做二次换算。
+		"usd_exchange_rate":        operation_setting.USDExchangeRate,
+		"price":                    operation_setting.EffectivePayPrice(),
+		"exchange_rate_updated_at": operation_setting.USDExchangeRateUpdatedAt,
+		"price_markup_rate":        operation_setting.PriceMarkupRate,
+		"stripe_unit_price":        setting.StripeUnitPrice,
 
 		// 面板启用开关
 		"api_info_enabled":      cs.ApiInfoEnabled,

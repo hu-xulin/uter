@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"net/http"
@@ -8,6 +9,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/model"
@@ -448,5 +450,36 @@ func UpdateOption(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
 		"message": "",
+	})
+}
+
+// SyncExchangeRate 立即拉取一次外部行情，刷新 A（USDExchangeRate）与 B（Price = A + 0.2）。
+//
+// 定时任务每 10 分钟跑一次，这个接口只是让管理员不必等待下一个周期。
+// 返回写入后的两个值与同步时间，前端据此就地刷新设置页展示。
+func SyncExchangeRate(c *gin.Context) {
+	ctx, cancel := context.WithTimeout(c.Request.Context(), 15*time.Second)
+	defer cancel()
+
+	exchangeRate, price, err := service.SyncExchangeRateOnce(ctx)
+	if err != nil {
+		common.ApiError(c, errors.New(common.LogText("failed to sync exchange rate: %s", err.Error())))
+		return
+	}
+
+	recordManageAudit(c, "option.exchange_rate.sync", map[string]any{
+		"usd_exchange_rate": exchangeRate,
+		"price":             price,
+	})
+
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "",
+		"data": gin.H{
+			"usd_exchange_rate":        exchangeRate,
+			"price":                    price,
+			"price_markup_rate":        operation_setting.PriceMarkupRate,
+			"exchange_rate_updated_at": operation_setting.USDExchangeRateUpdatedAt,
+		},
 	})
 }
