@@ -81,24 +81,23 @@ jobs:
       - name: Test root, relaykit, and tokenkit modules
         run: make test
 
-  # 竞态检测：只覆盖并发敏感且已验证无竞争的包。计费/钱包/组织权限/中继都在
+  # 竞态检测：覆盖并发敏感且已验证无竞争的包。计费/钱包/组织权限/中继都在
   # 这些目录里，而 -race 会把测试耗时拉长数倍，全量跑会顶到 timeout。
   #
-  # ⚠️ e2e 与 model 暂不纳入，原因是同一处**测试隔离竞争**（非生产竞争）：
-  #   DecreaseUserQuota 等路径用 gopool.Go 起了 fire-and-forget 协程做缓存同步，
-  #   协程末尾读 common.RedisEnabled / common.RDB；而 e2e harness 的 t.Cleanup
-  #   （org_platform_harness_test.go:114）会把这两个全局变量改回原值。协程比
-  #   测试体活得久，于是「cleanup 写 vs 协程读」相撞。-race 实测 e2e 4 处、
-  #   model 1 处，全部同一写点。
+  # F-15：model 已纳入。原先它被排除，是因为同一处**测试隔离竞争**（非生产竞争）：
+  #   DecreaseUserQuota 等路径用 gopool 起了 fire-and-forget 协程做缓存同步，
+  #   协程末尾读 common.RedisEnabled / common.RDB；而测试会把这两个全局变量临时
+  #   指向 miniredis 再还原。协程比测试体活得久，于是「cleanup 写 vs 协程读」相撞。
   #   生产环境这些全局量启动后不再改写，故不是线上缺陷。
-  #   彻底修法二选一：(a) 把 common.RedisEnabled 等改原子访问（约 203 处调用点，
-  #   机械但波及面大）；(b) 给缓存同步协程加可等待的屏障并由 harness 在 cleanup
-  #   前等待（注意 log_writer 等处有长生命周期协程，不能一刀切 WaitGroup）。
-  #   ✅ relay 包已用第三条更轻的路修掉同类竞争：relay/testmain_test.go 在
-  #   TestMain 里进程级设 common.RedisEnabled=false，各测试不再自行赋值/还原
-  #   （同 relay/channel/testmain_test.go 处理 gin.SetMode 的既有范式）。
-  #   修前该包 -race 约 40% 概率失败，修后连跑 6 次 0 竞争。e2e/model 若要纳入，
-  #   可照此办理。
+  #   修法：缓存同步统一走 model.runCacheSync 登记到 WaitGroup，测试通过
+  #   model.WaitCacheSyncForTest() 在改写/还原全局量前后各等一次（见
+  #   model/user_cache.go 与 model/user_cache_auth_version_test.go 的
+  #   useUserCacheMiniRedis / useFailingRedis）。修后连续 3 次 -race 0 竞争。
+  #
+  # ⚠️ e2e 仍未纳入，原因与上面不同：该包在本机（含 HEAD 干净副本）就有既有的
+  #   功能失败——org 计费用例拿到 401「token 无效」，与 -race 无关，属另一条
+  #   待排查的线索。功能本身不绿之前纳入 -race 只会制造噪声，等 e2e 恢复后
+  #   按上面同样的方式接入即可。
   race:
     name: Backend race detector
     runs-on: ubuntu-latest
@@ -128,10 +127,11 @@ jobs:
           touch web/dist/index.html
 
       - name: Race test concurrency-sensitive packages
-        run: go test -race -count=1 ./service/... ./relay/... ./middleware/...
+        run: go test -race -count=1 ./service/... ./relay/... ./middleware/... ./model/...
 
-  # 覆盖率报告：只产出可追踪的工件，不设门槛——门槛应在看到基线之后再定，
-  # 一上来就设通过线会把 CI 变成阻碍。
+  # 覆盖率报告 + 门禁：既产出可追踪的工件，也对关键包设下限。
+  # 门槛只覆盖资金/权限所在的包，且取当前基线往下留 2 个点——总覆盖率会被
+  # 体量大的低风险包稀释，单看一个总数挡不住「成批删掉支付测试」。
   coverage:
     name: Backend coverage report
     runs-on: ubuntu-latest
@@ -169,6 +169,17 @@ jobs:
 
       - name: Coverage summary
         run: go tool cover -func=coverage.out | tail -1
+
+      # F-15：关键路径覆盖率下限。基线（本次测量）：controller 41.6%、
+      # model 47.7%、service 45.7%、middleware 66.4%。阈值各留约 2 个点余量，
+      # 既容得下正常重构，又能挡住成批删除测试。
+      - name: Enforce critical-path coverage thresholds
+        run: |
+          ./scripts/coverage-gate.sh coverage.out "$(go list -m)" \
+            controller=39 \
+            model=45 \
+            service=43 \
+            middleware=62
 
       - name: Upload coverage report
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
