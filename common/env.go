@@ -183,14 +183,9 @@ func NormalizeCustomerServicePages(value string) []string {
 	return pages
 }
 
-// CustomerServicePages 是智能客服入口的**页面级**开关（可在「站点与品牌 → 智能客服」
-// 里逐页切换），以逗号分隔的页面键存储，例如 "home,pricing,docs"。
-//
-// 与 CustomerServiceEnabled 是**递进**关系而非并列：总开关关闭时本项不生效；总开关
-// 开启时，只有命中本列表的页面才渲染入口。两种特殊值：
-//   - ""（默认/未配置）= 不限制 = 全部页面都开（向后兼容）；
-//   - "none" = 显式全部关闭，对应界面上六个开关全关。
-var CustomerServicePages = ""
+// CustomerServicePages 的已保存值经 common.OptionMap["CustomerServicePages"] 下发
+// （见 controller/misc.go 的 /api/status）；本文件不再保留独立全局变量，
+// 避免「写入 option 后从未读回」导致页面级入口开关不生效。
 
 // CustomerServiceAdminToken 是 Uter 后端调用智能客服（uter-cs）**管理端** API 时
 // 携带的 Bearer token（由运营在「站点与品牌 → 智能客服」里粘贴 uter-cs 的 admin

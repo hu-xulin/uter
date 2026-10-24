@@ -63,6 +63,10 @@ const STATUS_RELATED_KEYS = new Set([
   'passkey.origins',
   'QuotaRemindEnabled',
   'QuotaRemindThreshold',
+  // 智能客服入口的页面级开关。/api/status 会下发 customer_service_pages，
+  // 挂件据此决定在哪些页面渲染入口；不刷新的话，运营保存后入口显隐不会立刻
+  // 变化（挂件已挂载时读的是旧快照），须硬刷新页面才生效。
+  'CustomerServicePages',
 ])
 
 /**

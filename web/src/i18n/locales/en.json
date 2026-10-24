@@ -7208,6 +7208,7 @@
     "Paste the uter-cs admin bearer token so Uter can read and save its model configuration on your behalf.": "Paste the uter-cs admin bearer token so Uter can read and save its model configuration on your behalf.",
     "Token cannot be empty": "Token cannot be empty",
     "Save token": "Save token",
+    "Save customer service settings": "Save customer service settings",
     "Admin token saved": "Admin token saved",
     "Model Configuration": "Model Configuration",
     "Large model settings for the customer service assistant. Changes are pushed to the connected uter-cs deployment.": "Large model settings for the customer service assistant. Changes are pushed to the connected uter-cs deployment.",

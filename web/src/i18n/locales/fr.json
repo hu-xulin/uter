@@ -7208,6 +7208,7 @@
     "Paste the uter-cs admin bearer token so Uter can read and save its model configuration on your behalf.": "Collez le jeton Bearer admin uter-cs pour que Uter lise et enregistre sa configuration de modèle pour vous.",
     "Token cannot be empty": "Le jeton ne peut pas être vide",
     "Save token": "Enregistrer le jeton",
+    "Save customer service settings": "Enregistrer les paramètres du service client",
     "Admin token saved": "Jeton d'administrateur enregistré",
     "Model Configuration": "Configuration du modèle",
     "Large model settings for the customer service assistant. Changes are pushed to the connected uter-cs deployment.": "Paramètres des grands modèles pour l'assistant de service client. Les modifications sont envoyées au déploiement uter-cs connecté.",

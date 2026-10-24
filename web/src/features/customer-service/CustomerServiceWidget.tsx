@@ -16,8 +16,11 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
-import { useEffect, useRef, useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useLocation } from '@tanstack/react-router'
+
+import { statusQueryOptions } from '@/lib/status-query'
 
 import {
   shouldShowCustomerService,
@@ -127,41 +130,33 @@ function currentLang(): string {
 // 任一不成立都返回空串，调用方 `if (!base) return null` 即隐藏入口。
 //
 // 第三个门是**递进**关系而非并列：总开关关掉时页面级配置不生效。
+//
+// ⚠️ 这里走项目统一的 statusQueryOptions（见 lib/status-query.ts）而不是裸 fetch：
+// /api/status 的唯一数据源是 React Query 缓存，裸 fetch 会绕过缓存、造成重复请求，
+// 且拿不到运营保存选项后的刷新——挂件已挂载时读的是旧快照，「保存后入口不变化」。
+// 改用共享查询后，useUpdateOption 保存 CustomerServicePages 会触发 status 刷新，
+// 挂件随之重渲染，入口显隐立即生效。
 function useCustomerServiceGates(): {
   base: string
   pages: CustomerServicePageKey[] | null
 } {
-  const [base, setBase] = useState('')
+  const { data: status } = useQuery(statusQueryOptions)
+
   // null = 后端未下发该字段（未升级），与「已下发但空数组=一个页面都不开」区分开：
   // 前者沿用旧行为（全开），后者是真的全关。缺省 null 故「未升级」不会被误判成全关。
-  const [pages, setPages] = useState<CustomerServicePageKey[] | null>(null)
-  useEffect(() => {
-    let alive = true
-    fetch('/api/status', { credentials: 'include' })
-      .then((r) => (r.ok ? r.json() : null))
-      .then((j) => {
-        if (!alive || !j) return
-        // /api/status 的响应是 { success, message, data } 三层包裹，字段在 data 里；
-        // 用 `j.data ?? j` 兼容直接返回裸对象的形态，否则读顶层恒为 undefined、
-        // base 一直为空，挂件会被 return null 静默隐藏。
-        const payload = (j as { data?: Record<string, unknown> }).data ?? j
-        // 只在显式为 false 时关闭：字段缺失（后端未升级）时保持旧行为，仍按地址判断。
-        if (payload.customer_service_enabled === false) {
-          setBase('')
-          return
-        }
-        const rawPages = payload.customer_service_pages
-        if (Array.isArray(rawPages)) {
-          // 后端已规整过（去空白/去未知键/固定顺序），这里只做类型收窄。
-          setPages(rawPages as CustomerServicePageKey[])
-        }
-        setBase(String(payload.customer_service_url || '').replace(/\/+$/, ''))
-      })
-      .catch(() => {})
-    return () => {
-      alive = false
-    }
-  }, [])
+  const pages = useMemo(() => {
+    const rawPages = status?.customer_service_pages
+    if (!Array.isArray(rawPages)) return null
+    // 后端已规整过（去空白/去未知键/固定顺序），这里只做类型收窄。
+    return rawPages as CustomerServicePageKey[]
+  }, [status])
+
+  const base = useMemo(() => {
+    // 只在显式为 false 时关闭：字段缺失（后端未升级）时保持旧行为，仍按地址判断。
+    if (status?.customer_service_enabled === false) return ''
+    return String(status?.customer_service_url || '').replace(/\/+$/, '')
+  }, [status])
+
   return { base, pages }
 }
 

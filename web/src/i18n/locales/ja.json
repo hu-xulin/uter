@@ -7208,6 +7208,7 @@
     "Paste the uter-cs admin bearer token so Uter can read and save its model configuration on your behalf.": "Uter がモデル構成を代わりに読み取り・保存できるよう、uter-cs の管理者 Bearer トークンを貼り付けてください。",
     "Token cannot be empty": "トークンは空にできません",
     "Save token": "トークンを保存",
+    "Save customer service settings": "カスタマーサポートの設定を保存",
     "Admin token saved": "管理者トークンを保存しました",
     "Model Configuration": "モデル設定",
     "Large model settings for the customer service assistant. Changes are pushed to the connected uter-cs deployment.": "カスタマーサポートアシスタントの大規模モデル設定。変更は接続された uter-cs デプロイに反映されます。",

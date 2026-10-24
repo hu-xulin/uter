@@ -7208,6 +7208,7 @@
     "Paste the uter-cs admin bearer token so Uter can read and save its model configuration on your behalf.": "Dán mã Bearer quản trị viên uter-cs để Uter đọc và lưu cấu hình mô hình thay bạn.",
     "Token cannot be empty": "Mã thông báo không được để trống",
     "Save token": "Lưu mã thông báo",
+    "Save customer service settings": "Lưu cài đặt dịch vụ khách hàng",
     "Admin token saved": "Đã lưu mã thông báo quản trị viên",
     "Model Configuration": "Cấu hình mô hình",
     "Large model settings for the customer service assistant. Changes are pushed to the connected uter-cs deployment.": "Cài đặt mô hình lớn cho trợ lý hỗ trợ khách hàng. Các thay đổi được đẩy đến bản triển khai uter-cs đã kết nối.",

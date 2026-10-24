@@ -120,7 +120,7 @@ func GetStatus(c *gin.Context) {
 		// NormalizeCustomerServicePages 展开为全部页面，故前端无需区分
 		// 「未配置」与「全开」两种情况；显式哨兵 "none" 则展开为空数组，
 		// 让入口在所有页面都不渲染。
-		"customer_service_pages": common.NormalizeCustomerServicePages(common.CustomerServicePages),
+		"customer_service_pages": common.NormalizeCustomerServicePages(common.OptionMap["CustomerServicePages"]),
 
 		// 模块管理配置
 		"HeaderNavModules":    common.OptionMap["HeaderNavModules"],

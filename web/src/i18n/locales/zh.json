@@ -7209,6 +7209,7 @@
     "Paste the uter-cs admin bearer token so Uter can read and save its model configuration on your behalf.": "请粘贴 uter-cs 的管理员 Bearer 令牌，以便 Uter 代您读取并保存其大模型配置。",
     "Token cannot be empty": "令牌不能为空",
     "Save token": "保存令牌",
+    "Save customer service settings": "保存智能客服设置",
     "Admin token saved": "管理员令牌已保存",
     "Model Configuration": "模型配置",
     "Large model settings for the customer service assistant. Changes are pushed to the connected uter-cs deployment.": "智能客服助手的大模型设置。更改会推送到已连接的 uter-cs 部署。",

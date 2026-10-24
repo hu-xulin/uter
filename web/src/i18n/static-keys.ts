@@ -816,6 +816,11 @@ export const STATIC_I18N_KEYS = [
   'Home page',
   'Management',
   'Documentation',
+  // 智能客服的保存按钮文案。它经 `saveLabel` prop 传给 SettingsPageFormActions
+  // 再由那里 t(saveLabel)，源码里没有字面量 t('...')，故门禁脚本扫不到——
+  // 缺失时中文界面会直接漏出英文（2026-10-25 修复）。在此登记，让
+  // check-i18n-keys 能一并守住。
+  'Save customer service settings',
   // Channel priority ordering API errors.
   'Channel priorities changed. Refresh and try again.',
   'Invalid channel priority move',
