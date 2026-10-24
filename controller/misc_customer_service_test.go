@@ -35,12 +35,26 @@ import (
 // 与总开关不同，这里下发的是**已规整的字符串数组**而不是原始逗号串：前端要拿它
 // 直接与当前路由比对，原始串还得再解析一遍并自行过滤未知键。空配置必须已展开为
 // 全部页面，前端才不必区分「未配置」与「全开」。
+//
+// ⚠️ 数据源是 common.OptionMap["CustomerServicePages"]（运营在后台保存的 option），
+// 不是某个独立全局变量：此前 /api/status 读的是一个**从未被赋值**的全局变量，
+// 恒为 ""，于是永远下发「全部页面都开」——后台把六个开关关掉也不生效（入口控制失灵）。
+// 这里直接写 OptionMap 来覆盖三种取值，与真实链路（UpdateOption → updateOptionMap
+// → OptionMap）一致。
 func TestGetStatusPublishesCustomerServicePages(t *testing.T) {
 	gin.SetMode(gin.TestMode)
-	originalPages := common.CustomerServicePages
+	// OptionMap 是 nil 初始化的包级 map（common/constants.go），往 nil map 写入
+	// 会 panic。controller 包没有 TestMain 保证它已初始化，这里显式准备一份并
+	// 在结束时还原，避免污染同包其它用例。
+	originalOptionMap := common.OptionMap
+	common.OptionMap = map[string]string{}
+	t.Cleanup(func() {
+		common.OptionMap = originalOptionMap
+	})
+	originalPages := common.OptionMap["CustomerServicePages"]
 	originalEnabled := common.CustomerServiceEnabled
 	t.Cleanup(func() {
-		common.CustomerServicePages = originalPages
+		common.OptionMap["CustomerServicePages"] = originalPages
 		common.CustomerServiceEnabled = originalEnabled
 	})
 	// 页面级开关只在总开关开启时才有意义，这里固定为「开 + 有地址」，
@@ -84,7 +98,7 @@ func TestGetStatusPublishesCustomerServicePages(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			common.CustomerServicePages = tt.pages
+			common.OptionMap["CustomerServicePages"] = tt.pages
 
 			response := httptest.NewRecorder()
 			context, _ := gin.CreateTestContext(response)
