@@ -7665,6 +7665,20 @@
     "The website domain you submit when signing the products in the Alipay Open Platform (open.alipay.com) must be ICP-filed and its registrant must match the app entity.": "Tên miền website nộp khi ký sản phẩm trên nền tảng mở Alipay (open.alipay.com) phải đã ICP 备案 và chủ thể đăng ký phải khớp với chủ thể ứng dụng.",
     "Async callbacks go to /api/user/alipay/notify on this server; no fixed configuration is needed in the Alipay Open Platform (open.alipay.com).": "Callback bất đồng bộ đi tới /api/user/alipay/notify trên máy chủ này; không cần cấu hình cố định nào trên nền tảng mở Alipay (open.alipay.com).",
     "Check the settlement account in the merchant center": "Kiểm tra tài khoản thanh toán trong trung tâm merchant",
-    "Alipay merchant center (b.alipay.com) → Account center → settlement account — only when you need to check where funds land or change bank details.": "Trung tâm merchant Alipay (b.alipay.com) → Trung tâm tài khoản → tài khoản thanh toán —— chỉ khi cần kiểm tra tiền về đâu hoặc đổi thông tin ngân hàng."
+    "Alipay merchant center (b.alipay.com) → Account center → settlement account — only when you need to check where funds land or change bank details.": "Trung tâm merchant Alipay (b.alipay.com) → Trung tâm tài khoản → tài khoản thanh toán —— chỉ khi cần kiểm tra tiền về đâu hoặc đổi thông tin ngân hàng.",
+    "Signs Waffo requests. Select the private key file Waffo issued; PKCS#8 / PKCS#1 PEM and single-line base64 are all accepted.": "Dùng để ký các yêu cầu Waffo. Chọn tệp khóa riêng do Waffo cấp; chấp nhận PEM (PKCS#8 / PKCS#1) và base64 một dòng.",
+    "Signs Waffo requests in sandbox mode. Same format as the production key.": "Dùng để ký các yêu cầu Waffo ở chế độ sandbox. Định dạng giống khóa production.",
+    "Verifies Waffo callback signatures. A public key PEM, the certificate Waffo issued, or single-line base64 is accepted.": "Dùng để xác minh chữ ký callback của Waffo. Chấp nhận PEM khóa công khai, chứng chỉ do Waffo cấp hoặc base64 một dòng.",
+    "Verifies Waffo sandbox callback signatures. Same format as the production key.": "Dùng để xác minh chữ ký callback Waffo ở chế độ sandbox. Định dạng giống khóa production.",
+    "Select the RSA private key file from the Pancake dashboard (PKCS#8 / PKCS#1 PEM or single-line base64). The environment (test vs production) is decided by the key you configure here — use the Test key while integrating, then swap to the Production key when going live.": "Chọn tệp khóa riêng RSA từ bảng điều khiển Pancake (PEM PKCS#8 / PKCS#1 hoặc base64 một dòng). Môi trường (test hay production) được quyết định bởi khóa bạn cấu hình tại đây — dùng khóa Test khi tích hợp, sau đó đổi sang khóa Production khi chạy chính thức.",
+    "Syncing": "Đang đồng bộ",
+    "Sync now": "Đồng bộ ngay",
+    "Not synced yet": "Chưa đồng bộ",
+    "Last synced: {{time}}": "Đồng bộ lần cuối: {{time}}",
+    "Failed to sync exchange rate": "Đồng bộ tỷ giá thất bại",
+    "Exchange rate synced: 1 USD = {{rate}}": "Đã đồng bộ tỷ giá: 1 USD = {{rate}}",
+    "Fetched automatically from the market USD to CNY rate every 10 minutes, so this field is read-only. The payment price in the Payment Gateway settings is derived from it as A + {{markup}}.": "Tỷ giá USD/CNY được tự động lấy từ thị trường mỗi 10 phút nên trường này chỉ để đọc. Giá trong «Cổng thanh toán» được tính tự động bằng giá trị này + {{markup}}.",
+    "Charged for each 1 USD of balance. Derived automatically as the exchange rate + {{markup}} and refreshed every 10 minutes, so this field is read-only. Applies to every payment method that settles in CNY (Alipay, WeChat Pay, Epay).": "Số tiền thu cho mỗi 1 USD số dư. Được tính tự động bằng tỷ giá + {{markup}} và làm mới mỗi 10 phút nên trường này chỉ để đọc. Áp dụng cho mọi phương thức thanh toán bằng CNY (Alipay, WeChat Pay, Epay).",
+    "Smallest USD amount users can recharge. Applies to every payment method (Alipay, WeChat Pay, Epay).": "Số tiền USD tối thiểu người dùng có thể nạp. Áp dụng cho mọi phương thức thanh toán (Alipay, WeChat Pay, Epay)."
   }
 }

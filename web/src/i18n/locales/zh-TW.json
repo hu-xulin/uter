@@ -7665,6 +7665,20 @@
     "The website domain you submit when signing the products in the Alipay Open Platform (open.alipay.com) must be ICP-filed and its registrant must match the app entity.": "在支付寶開放平台（open.alipay.com）簽約產品時提交的網站網域必須已完成備案，且備案主體與應用主體一致。",
     "Async callbacks go to /api/user/alipay/notify on this server; no fixed configuration is needed in the Alipay Open Platform (open.alipay.com).": "非同步回調固定發往本伺服器的 /api/user/alipay/notify，無需在支付寶開放平台（open.alipay.com）做任何固定設定。",
     "Check the settlement account in the merchant center": "在商家中心核對結算帳戶",
-    "Alipay merchant center (b.alipay.com) → Account center → settlement account — only when you need to check where funds land or change bank details.": "支付寶商家中心（b.alipay.com）→ 帳戶中心 → 結算帳戶 —— 僅當需要確認資金入帳去向或變更銀行資訊時操作。"
+    "Alipay merchant center (b.alipay.com) → Account center → settlement account — only when you need to check where funds land or change bank details.": "支付寶商家中心（b.alipay.com）→ 帳戶中心 → 結算帳戶 —— 僅當需要確認資金入帳去向或變更銀行資訊時操作。",
+    "Signs Waffo requests. Select the private key file Waffo issued; PKCS#8 / PKCS#1 PEM and single-line base64 are all accepted.": "用於對 Waffo 請求簽名。請選擇 Waffo 下發的私鑰檔案；PEM（PKCS#8 / PKCS#1）與單行 base64 均可。",
+    "Signs Waffo requests in sandbox mode. Same format as the production key.": "用於沙盒模式下對 Waffo 請求簽名。格式與生產金鑰相同。",
+    "Verifies Waffo callback signatures. A public key PEM, the certificate Waffo issued, or single-line base64 is accepted.": "用於校驗 Waffo 回呼簽名。支援 PEM 公鑰、Waffo 下發的憑證以及單行 base64。",
+    "Verifies Waffo sandbox callback signatures. Same format as the production key.": "用於校驗 Waffo 沙盒回呼簽名。格式與生產公鑰相同。",
+    "Select the RSA private key file from the Pancake dashboard (PKCS#8 / PKCS#1 PEM or single-line base64). The environment (test vs production) is decided by the key you configure here — use the Test key while integrating, then swap to the Production key when going live.": "請選擇 Pancake 後台的 RSA 私鑰檔案（PEM（PKCS#8 / PKCS#1）或單行 base64）。此處配置的金鑰決定使用測試環境還是生產環境——對接階段使用測試金鑰，上線後換成生產金鑰。",
+    "Syncing": "同步中",
+    "Sync now": "立即同步",
+    "Not synced yet": "尚未同步",
+    "Last synced: {{time}}": "上次同步：{{time}}",
+    "Failed to sync exchange rate": "匯率同步失敗",
+    "Exchange rate synced: 1 USD = {{rate}}": "匯率已同步：1 美元 = {{rate}}",
+    "Fetched automatically from the market USD to CNY rate every 10 minutes, so this field is read-only. The payment price in the Payment Gateway settings is derived from it as A + {{markup}}.": "每 10 分鐘自動從市場行情取得美元兌人民幣匯率，因此本欄位唯讀。「支付閘道」裡的定價由它加 {{markup}} 自動推導。",
+    "Charged for each 1 USD of balance. Derived automatically as the exchange rate + {{markup}} and refreshed every 10 minutes, so this field is read-only. Applies to every payment method that settles in CNY (Alipay, WeChat Pay, Epay).": "每 1 美元額度收取的本地貨幣金額。由匯率自動加 {{markup}} 推導，每 10 分鐘更新一次，因此本欄位唯讀。對所有以人民幣結算的支付方式生效（支付寶、微信支付、易支付）。",
+    "Smallest USD amount users can recharge. Applies to every payment method (Alipay, WeChat Pay, Epay).": "使用者單次可充值的最小美元金額，對所有支付方式生效（支付寶、微信支付、易支付）。"
   }
 }

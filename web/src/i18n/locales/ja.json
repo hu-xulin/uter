@@ -7665,6 +7665,20 @@
     "The website domain you submit when signing the products in the Alipay Open Platform (open.alipay.com) must be ICP-filed and its registrant must match the app entity.": "Alipay 開放平台（open.alipay.com）で製品を契約する際に提出するウェブサイトドメインは ICP 备案済みで、登録主体がアプリ主体と一致している必要があります。",
     "Async callbacks go to /api/user/alipay/notify on this server; no fixed configuration is needed in the Alipay Open Platform (open.alipay.com).": "非同期コールバックはこのサーバーの /api/user/alipay/notify に送られます。Alipay 開放平台（open.alipay.com）での固定設定は不要です。",
     "Check the settlement account in the merchant center": "マーチャントセンターで決済口座を確認する",
-    "Alipay merchant center (b.alipay.com) → Account center → settlement account — only when you need to check where funds land or change bank details.": "Alipay マーチャントセンター（b.alipay.com）→ アカウントセンター → 決済口座 —— 資金の入金先を確認したり銀行情報を変更したりする場合にのみ操作します。"
+    "Alipay merchant center (b.alipay.com) → Account center → settlement account — only when you need to check where funds land or change bank details.": "Alipay マーチャントセンター（b.alipay.com）→ アカウントセンター → 決済口座 —— 資金の入金先を確認したり銀行情報を変更したりする場合にのみ操作します。",
+    "Signs Waffo requests. Select the private key file Waffo issued; PKCS#8 / PKCS#1 PEM and single-line base64 are all accepted.": "Waffo リクエストの署名に使用します。Waffo が発行した秘密鍵ファイルを選択してください。PEM（PKCS#8 / PKCS#1）と 1 行の base64 のいずれも使用できます。",
+    "Signs Waffo requests in sandbox mode. Same format as the production key.": "サンドボックスモードで Waffo リクエストの署名に使用します。本番キーと同じ形式です。",
+    "Verifies Waffo callback signatures. A public key PEM, the certificate Waffo issued, or single-line base64 is accepted.": "Waffo コールバックの署名を検証します。PEM 公開鍵、Waffo が発行した証明書、1 行の base64 を使用できます。",
+    "Verifies Waffo sandbox callback signatures. Same format as the production key.": "Waffo サンドボックスのコールバック署名を検証します。本番キーと同じ形式です。",
+    "Select the RSA private key file from the Pancake dashboard (PKCS#8 / PKCS#1 PEM or single-line base64). The environment (test vs production) is decided by the key you configure here — use the Test key while integrating, then swap to the Production key when going live.": "Pancake ダッシュボードの RSA 秘密鍵ファイルを選択してください（PEM（PKCS#8 / PKCS#1）または 1 行の base64）。ここで設定したキーによって環境（テスト/本番）が決まります。統合中はテストキーを使用し、本番公開時に本番キーへ切り替えてください。",
+    "Syncing": "同期中",
+    "Sync now": "今すぐ同期",
+    "Not synced yet": "未同期",
+    "Last synced: {{time}}": "最終同期：{{time}}",
+    "Failed to sync exchange rate": "為替レートの同期に失敗しました",
+    "Exchange rate synced: 1 USD = {{rate}}": "為替レートを同期しました：1 USD = {{rate}}",
+    "Fetched automatically from the market USD to CNY rate every 10 minutes, so this field is read-only. The payment price in the Payment Gateway settings is derived from it as A + {{markup}}.": "10 分ごとに市場の USD/CNY レートを自動取得するため、この項目は読み取り専用です。「決済ゲートウェイ」の価格はこの値に {{markup}} を加えて自動算出されます。",
+    "Charged for each 1 USD of balance. Derived automatically as the exchange rate + {{markup}} and refreshed every 10 minutes, so this field is read-only. Applies to every payment method that settles in CNY (Alipay, WeChat Pay, Epay).": "残高 1 USD あたりの請求額。為替レートに {{markup}} を加えて自動算出され、10 分ごとに更新されるため、この項目は読み取り専用です。人民元で決済するすべての支払い方法（Alipay、WeChat Pay、Epay）に適用されます。",
+    "Smallest USD amount users can recharge. Applies to every payment method (Alipay, WeChat Pay, Epay).": "ユーザーが 1 回にチャージできる最小の USD 金額。すべての支払い方法（Alipay、WeChat Pay、Epay）に適用されます。"
   }
 }
