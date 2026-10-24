@@ -638,31 +638,38 @@ html[data-docs-embed='true'] #nd-subnav > a {
 }
 
 /*
- * ── Chrome type — sidebar / TOC / drawer at one step ────────────────
+ * ── Chrome type — sidebar / TOC / drawer ────────────────────────────
  *
- * Body copy is 16px; every navigation surface sits one step below it at
- * 14px (Clerk `body-sm`, `--text-doc-chrome`) so the three columns read
- * as content → chrome. All three surfaces are now pinned to the token
- * rather than a literal, and to each other:
+ * Body copy is 16px. The left navigation panel and the mobile drawer stay
+ * one step below it at 14px (Clerk `body-sm`, `--text-doc-chrome`) so the
+ * columns read as content → chrome. The right-hand table of contents, by
+ * contrast, is pinned to the 16px body size so it matches the prose it
+ * sits beside — the brief asks for the TOC to read at the same size as
+ * the page body on both the docs and the about pages.
  *
  * · `#nd-sidebar` — Fumadocs' sidebar container carries `text-sm` (14px)
  *   only as a default; this pins it explicitly so the desktop panel
  *   cannot drift if the framework class list changes.
  * · `#nd-toc a` — Fumadocs puts `prose` on every TOC item (it wants the
- *   prose link colour), so the `.prose` rule above silently made the
- *   table of contents render at the 16px *body* size. The id selector
- *   is unlayered and outranks both the `.prose` font-size and the
- *   component's own `text-sm`.
+ *   prose link colour), so the `.prose` rule above already renders the
+ *   list at the 16px *body* size; the id selector pins that explicitly
+ *   (and outranks the component's own `text-sm`) so it cannot drift.
  * · `#nd-sidebar-mobile` — Fumadocs hardcodes `text-[0.9375rem]` (15px)
  *   on the drawer only, so the same navigation was 14px at desktop and
  *   15px on a phone. Now one size everywhere.
  *
- * TOC leading is tightened to 1.5: 1.75 is right for reading prose but
- * makes a link list feel like paragraphs.
+ * TOC / sidebar leading is tightened to 1.5: 1.75 is right for reading
+ * prose but makes a link list feel like paragraphs.
  */
-#nd-sidebar,
-#nd-toc a {
+#nd-sidebar {
   font-size: var(--text-doc-chrome);
+  line-height: 1.5;
+}
+
+/* 右侧目录（TOC）与正文同字号 16px，覆盖 fumadocs 默认 14px
+ * （文档页与关于页共用 #nd-toc）。 */
+#nd-toc a {
+  font-size: var(--text-doc-body);
   line-height: 1.5;
 }
 
