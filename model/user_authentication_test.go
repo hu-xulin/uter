@@ -1,15 +1,11 @@
 package model
 
 import (
-	"context"
 	"encoding/base64"
-	"errors"
-	"net"
 	"sync"
 	"testing"
 	"time"
 
-	"github.com/go-redis/redis/v8"
 	"github.com/go-webauthn/webauthn/webauthn"
 	"github.com/pquerna/otp/totp"
 	"github.com/stretchr/testify/assert"
@@ -43,18 +39,7 @@ func TestHardDeleteUserFailsClosedWhenAuthFenceCannotPublish(t *testing.T) {
 		UserId: user.Id, ExpiresAt: time.Now().Add(time.Minute),
 	}).Error)
 
-	oldRedisEnabled, oldRDB := common.RedisEnabled, common.RDB
-	common.RedisEnabled = true
-	common.RDB = redis.NewClient(&redis.Options{
-		Dialer: func(context.Context, string, string) (net.Conn, error) {
-			return nil, errors.New("forced redis failure")
-		},
-		MaxRetries: -1,
-	})
-	t.Cleanup(func() {
-		_ = common.RDB.Close()
-		common.RedisEnabled, common.RDB = oldRedisEnabled, oldRDB
-	})
+	useFailingRedis(t)
 
 	_, err := HardDeleteUserById(user.Id)
 	require.Error(t, err)
