@@ -25,7 +25,7 @@ import { Button } from '@/components/ui/button'
 import { Combobox } from '@/components/ui/combobox'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { SecretTextarea } from '@/components/ui/secret-textarea'
+import { SecretFileInput } from '@/components/ui/secret-file-input'
 import { getPaymentErrorTranslation } from '@/features/wallet/lib/payment'
 import { handleServerError } from '@/lib/handle-server-error'
 import { isMaskedSecret } from '@/lib/secret'
@@ -442,16 +442,21 @@ export function WaffoPancakeSettingsSection({
         </div>
 
         <div className='grid gap-1.5'>
-          <Label>{t('API Private Key')}</Label>
-          <SecretTextarea
-            rows={4}
-            placeholder={t('Leave blank to keep the existing key')}
+          <Label htmlFor='waffo-pancake-private-key'>
+            {t('API Private Key')}
+          </Label>
+          <SecretFileInput
+            id='waffo-pancake-private-key'
             value={values.WaffoPancakePrivateKey}
             onChange={(value) => onValueChange('WaffoPancakePrivateKey', value)}
+            expectedPemType={['PRIVATE KEY', 'RSA PRIVATE KEY']}
+            allowBase64
+            accept='.pem,.key,.txt,text/plain'
+            onError={(message) => toast.error(message)}
           />
           <p className='text-muted-foreground text-sm'>
             {t(
-              'The environment (test vs production) is decided by the key you paste here — use the Test key while integrating, then swap to the Production key when going live.'
+              'Select the RSA private key file from the Pancake dashboard (PKCS#8 / PKCS#1 PEM or single-line base64). The environment (test vs production) is decided by the key you configure here — use the Test key while integrating, then swap to the Production key when going live.'
             )}
           </p>
         </div>
@@ -507,7 +512,8 @@ export function WaffoPancakeSettingsSection({
           <div className='space-y-1.5'>
             <Label>{t('Payment return URL')}</Label>
             <div className='flex gap-2'>
-              <Input autoComplete='off'
+              <Input
+                autoComplete='off'
                 placeholder='https://example.com/wallet'
                 value={returnURL}
                 onChange={(event) =>

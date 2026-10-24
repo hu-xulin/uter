@@ -212,7 +212,10 @@ export function SecretFileInput({
               type='file'
               accept={accept}
               className='peer absolute inset-0 z-10 size-full cursor-pointer opacity-0 disabled:cursor-not-allowed'
-              aria-label={chooseLabel}
+              // 传了 id 说明外层有 `<label htmlFor>`（FormControl / 手写 Label），
+              // 此时可访问名必须来自那个标签——否则同页多个密钥框会一起叫
+              // 「Choose PEM file」，读屏用户无法区分。没有 id 时才退化成按钮文案。
+              aria-label={id ? undefined : chooseLabel}
               disabled={disabled}
               onChange={(e) => void handleFile(e.target.files?.[0])}
               {...aria}
