@@ -173,9 +173,12 @@ function iconHasVariant(baseKey: string, variant: string): boolean {
  * recognizable colored logo instead of a flat currentColor silhouette. Names
  * that already target a variant, and brands without any variant, are returned
  * untouched.
+ *
+ * A missing icon key stays missing: the caller renders the same placeholder
+ * `getLobeIcon` would render for an empty key.
  */
-export function colorIconName(iconName: string): string {
-  const segments = iconName
+export function colorIconName(iconName: string | undefined | null): string {
+  const segments = (iconName ?? '')
     .trim()
     .split('.')
     .filter((segment) => segment !== '')

@@ -21,10 +21,6 @@ package model
 import (
 	"strings"
 	"testing"
-
-	"github.com/glebarez/sqlite"
-	"github.com/stretchr/testify/require"
-	"gorm.io/gorm"
 )
 
 // Vendor icons default to the monochrome (non ".Color") variant so they follow
@@ -113,22 +109,26 @@ func TestNormalizeColorIconKeyIdempotent(t *testing.T) {
 	}
 }
 
-// 同步创建/更新供应商时，已知品牌必须收敛到权威彩色映射，而不是盲从中游下发的图标。
+// 同步创建供应商时，已知品牌取品牌映射里的品牌裸名，而不是盲从中游下发的图标。
 // 这正是对用户反馈「claude-haiku-5-5 没改成彩色 / gemini 系列仍用 Google logo」的根因修复：
-// Google 供应商绝不能落到 Google.Color，Anthropic 绝不能落到 Anthropic.Avatar。
+// Google 供应商绝不能落到 Google.Color，Meta 供应商绝不能落到 Ollama。
+//
+// 存的是裸名而不是彩色键：供应商图标是运营在「模型-供应商」里设置的配置，
+// 存储值必须与运营选择一致，彩色化由渲染层负责。
 func TestDefaultVendorIconForSyncUsesAuthoritativeMapping(t *testing.T) {
 	cases := []struct {
 		name     string
 		upstream string
 		want     string
 	}{
-		{"Google", "Google.Color", "Gemini.Color"},
-		{"Google", "Google", "Gemini.Color"},
-		{"Google", "Google.Avatar", "Gemini.Color"},
-		{"Anthropic", "Anthropic.Avatar", "Claude.Color"},
-		{"Anthropic", "Anthropic", "Claude.Color"},
-		{"OpenAI", "OpenAI.Avatar", "OpenAI.Avatar"},
-		{"ByteDance", "ByteDance", "Doubao.Color"},
+		{"Google", "Google.Color", "Gemini"},
+		{"Google", "Google", "Gemini"},
+		{"Google", "Google.Avatar", "Gemini"},
+		{"Anthropic", "Anthropic.Avatar", "Claude"},
+		{"Anthropic", "Anthropic", "Claude"},
+		{"OpenAI", "OpenAI.Avatar", "OpenAI"},
+		{"ByteDance", "ByteDance", "Doubao"},
+		{"Meta", "Ollama.Avatar", "Meta"},
 	}
 	for _, c := range cases {
 		if got := defaultVendorIconForSync(c.name, c.upstream); got != c.want {
@@ -137,10 +137,13 @@ func TestDefaultVendorIconForSyncUsesAuthoritativeMapping(t *testing.T) {
 	}
 }
 
-// 未知品牌不在权威映射内，应信任上游下发的图标（经彩色归一化）。
+// 未知品牌不在权威映射内，取上游下发的图标并收敛为品牌裸名。
 func TestDefaultVendorIconForSyncFallsBackToUpstream(t *testing.T) {
-	if got := defaultVendorIconForSync("BrandNotInDefaults", "Foo.Bar"); got != NormalizeColorIconKey("Foo.Bar") {
-		t.Errorf("defaultVendorIconForSync unknown brand = %q, want %q", got, NormalizeColorIconKey("Foo.Bar"))
+	if got := defaultVendorIconForSync("BrandNotInDefaults", "Foo.Bar"); got != "Foo.Bar" {
+		t.Errorf("defaultVendorIconForSync unknown brand = %q, want %q", got, "Foo.Bar")
+	}
+	if got := defaultVendorIconForSync("BrandNotInDefaults", "Foo.Color"); got != "Foo" {
+		t.Errorf("defaultVendorIconForSync unknown brand color key = %q, want %q", got, "Foo")
 	}
 	// 未知品牌上游为空时，不应臆造图标。
 	if got := defaultVendorIconForSync("BrandNotInDefaults", ""); got != "" {
@@ -148,54 +151,80 @@ func TestDefaultVendorIconForSyncFallsBackToUpstream(t *testing.T) {
 	}
 }
 
-// 对齐迁移必须把漂移过的已知品牌供应商图标订正到权威彩色键。
-// 用内存库模拟 Google/Anthropic 漂移记录，断言迁移后变为 Gemini.Color / Claude.Color。
-func TestAlignVendorIconsToDefaults(t *testing.T) {
-	originalDB := DB
-	t.Cleanup(func() { DB = originalDB })
-	var err error
-	DB, err = gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
-	require.NoError(t, err)
-	require.NoError(t, DB.AutoMigrate(&Vendor{}))
+// 供应商图标存品牌裸名：彩色与头像变体后缀都要剥掉，链式高级写法保持原样。
+func TestNormalizeVendorIconKeyStripsColorVariants(t *testing.T) {
+	cases := map[string]string{
+		"Claude":                          "Claude",
+		"Claude.Color":                    "Claude",
+		"  Claude.Avatar ":                "Claude",
+		"OpenAI.Avatar":                   "OpenAI",
+		"Claude.Avatar.type={'platform'}": "Claude.Avatar.type={'platform'}",
+		"Foo.Bar":                         "Foo.Bar",
+		"":                                "",
+	}
+	for in, want := range cases {
+		if got := NormalizeVendorIconKey(in); got != want {
+			t.Errorf("NormalizeVendorIconKey(%q) = %q, want %q", in, got, want)
+		}
+	}
+}
 
-	seed := []Vendor{
-		{Name: "Google", Icon: "Google.Color", Status: 1},
-		{Name: "Anthropic", Icon: "Anthropic.Avatar", Status: 1},
-		{Name: "OpenAI", Icon: "OpenAI.Avatar", Status: 1},
-		{Name: "Moonshot", Icon: "Moonshot.Color", Status: 1},
-		{Name: "UnknownBrand", Icon: "Whatever", Status: 1},
+// 供应商图标以运营在「模型-供应商」里设置的值为准：归因到该供应商的模型必须
+// 携带同一个图标键，定价页（model.icon || vendor_icon）才会与设置一致。
+// 品牌默认只在供应商没有设置图标时兜底。
+func TestVendorIconForAttributionPrefersConfiguredVendorIcon(t *testing.T) {
+	vendors := map[string]*Vendor{
+		"Meta":      {Name: "Meta", Icon: "Meta.Color"},
+		"Anthropic": {Name: "Anthropic", Icon: "Claude.Color"},
+		"ByteDance": {Name: "ByteDance", Icon: ""},
 	}
-	for i := range seed {
-		require.NoError(t, DB.Create(&seed[i]).Error)
+	if got := vendorIconForAttribution(vendors, "Meta"); got != "Meta.Color" {
+		t.Errorf("vendorIconForAttribution(Meta) = %q, want %q", got, "Meta.Color")
 	}
-	if err := alignVendorIconsToDefaults(); err != nil {
-		t.Fatalf("alignVendorIconsToDefaults: %v", err)
+	// 供应商名大小写不敏感。
+	if got := vendorIconForAttribution(vendors, "anthropic"); got != "Claude.Color" {
+		t.Errorf("vendorIconForAttribution(anthropic) = %q, want %q", got, "Claude.Color")
 	}
-	var got []Vendor
-	require.NoError(t, DB.Order("id").Find(&got).Error)
-	want := map[string]string{
-		"Google":       "Gemini.Color",
-		"Anthropic":    "Claude.Color",
-		"OpenAI":       "OpenAI.Avatar",
-		"Moonshot":     "Moonshot.Avatar",
-		"UnknownBrand": "Whatever",
+	// 供应商没有设置图标时回退到品牌默认。
+	if got := vendorIconForAttribution(vendors, "ByteDance"); got != "Doubao.Color" {
+		t.Errorf("vendorIconForAttribution(ByteDance) = %q, want %q", got, "Doubao.Color")
 	}
-	for _, v := range got {
-		w, ok := want[v.Name]
-		if !ok || v.Icon != w {
-			t.Errorf("vendor %q icon = %q, want %q", v.Name, v.Icon, w)
-		}
+	// 未登记品牌没有默认图标，也不臆造。
+	if got := vendorIconForAttribution(vendors, "BrandNotKnown"); got != "" {
+		t.Errorf("vendorIconForAttribution(unknown) = %q, want empty", got)
 	}
-	// 幂等：二次运行不应产生不同结果。
-	if err := alignVendorIconsToDefaults(); err != nil {
-		t.Fatalf("alignVendorIconsToDefaults second run: %v", err)
+}
+
+// 关键词归因（官方目录没有该模型）写出的模型图标必须是供应商设置的那个。
+func TestDerivedMetadataUsesVendorConfiguredIcon(t *testing.T) {
+	vendors := map[string]*Vendor{
+		"Meta": {Name: "Meta", Icon: "Meta.Color"},
 	}
-	var got2 []Vendor
-	require.NoError(t, DB.Order("id").Find(&got2).Error)
-	for _, v := range got2 {
-		w, ok := want[v.Name]
-		if !ok || v.Icon != w {
-			t.Errorf("vendor %q icon (2nd) = %q, want %q", v.Name, v.Icon, w)
-		}
+	values, ok := deriveMetadataValuesFromKeywords("llama-3-1-70b", vendors)
+	if !ok {
+		t.Fatal("keyword attribution must resolve llama-* to a brand")
+	}
+	if values.Vendor != "Meta" {
+		t.Fatalf("vendor = %q, want %q", values.Vendor, "Meta")
+	}
+	if values.Icon != "Meta.Color" {
+		t.Errorf("icon = %q, want %q", values.Icon, "Meta.Color")
+	}
+}
+
+// 官方目录里已有的型号沿用目录给的图标（模型自身的官方图标优先于供应商图标）。
+func TestDerivedMetadataKeepsCatalogIconOverVendorIcon(t *testing.T) {
+	catalog := map[string]MetadataValues{
+		"kimi-k2.6": {Description: "Moonshot Kimi", Icon: "Moonshot", Vendor: "Moonshot AI", NameRule: NameRuleExact, Status: 1},
+	}
+	vendors := map[string]*Vendor{
+		"Moonshot AI": {Name: "Moonshot AI", Icon: "Moonshot.Color"},
+	}
+	values, ok := deriveMetadataValuesFromCatalog("kimi-k2.6-flare", catalog, vendors)
+	if !ok {
+		t.Fatal("catalog relative must resolve")
+	}
+	if values.Icon != "Moonshot" {
+		t.Errorf("icon = %q, want %q", values.Icon, "Moonshot")
 	}
 }

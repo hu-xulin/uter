@@ -21,7 +21,7 @@ import { useTranslation } from 'react-i18next'
 
 import { Button } from '@/components/ui/button'
 import { Combobox } from '@/components/ui/combobox'
-import { getLobeIcon, getLobeIconNames } from '@/lib/lobe-icon'
+import { colorIconName, getLobeIcon, getLobeIconNames } from '@/lib/lobe-icon'
 
 export function LobeIconField(props: {
   id?: string
@@ -97,7 +97,7 @@ export function LobeIconField(props: {
       )}
       <div className='bg-muted/40 flex items-center gap-3 rounded-lg border p-3'>
         <span className='flex size-9 shrink-0 items-center justify-center'>
-          {getLobeIcon(effectiveIcon, 28)}
+          {getLobeIcon(colorIconName(effectiveIcon), 28)}
         </span>
         <div className='min-w-0 text-xs'>
           <p className='font-medium'>{t('Effective icon')}</p>

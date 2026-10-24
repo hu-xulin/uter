@@ -72,6 +72,27 @@ func NormalizeColorIconKey(icon string) string {
 	return trimmed
 }
 
+// NormalizeVendorIconKey 把图标键收敛到品牌裸名：剥离结尾的 .Color / .Avatar
+// 变体后缀，其余链式属性（如 "Claude.Avatar.type={'platform'}"）原样保留。
+//
+// 供应商图标一律以品牌裸名存储，彩色化只发生在渲染层（前端 colorIconName）。
+// 这样运营在「模型-供应商」里设置的值就是最终存储值，任何写入路径都不会把
+// 它改写成另一个键，供应商与其模型在任何页面也都渲染成同一个 logo。
+func NormalizeVendorIconKey(icon string) string {
+	trimmed := strings.TrimSpace(icon)
+	if trimmed == "" {
+		return ""
+	}
+	base, suffix, found := strings.Cut(trimmed, ".")
+	if !found {
+		return trimmed
+	}
+	if strings.EqualFold(suffix, "Color") || strings.EqualFold(suffix, "Avatar") {
+		return strings.TrimSpace(base)
+	}
+	return trimmed
+}
+
 // Vendor 用于存储供应商信息，供模型引用
 // Name 唯一，用于在模型中关联
 // Icon 采用 @lobehub/icons 的图标名，前端可直接渲染

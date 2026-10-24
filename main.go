@@ -421,9 +421,6 @@ func InitResources() error {
 		if err := model.MigrateRetiredFrontendOptions(); err != nil {
 			common.SysError(common.LogText("failed to migrate retired frontend options: %s", err.Error()))
 		}
-		if err := model.MigrateLobeIconColorKeys(); err != nil {
-			common.SysError(common.LogText("failed to migrate lobe icon color keys: %s", err.Error()))
-		}
 	}
 	model.InitOptionMap()
 
