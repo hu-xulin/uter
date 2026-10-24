@@ -54,8 +54,14 @@ const EMBED_BOOTSTRAP = `(function(){try{
 if(window.self===window.top)return;
 var root=document.documentElement;
 root.setAttribute('data-docs-embed','true');
-var m=/(?:^|;\\s*)vite-ui-theme=(dark|light|system)/.exec(document.cookie);
-var theme=m?m[1]:'dark';
+// Seed next-themes from the SPA's authoritative theme. The SPA keeps the
+// light/dark mode in localStorage under 'newapi:theme:v1:mode' (see the
+// SPA's theme-storage.ts) and, being same-origin, this frame shares that
+// store — so read it directly. The legacy 'vite-ui-theme' cookie is never
+// written by the SPA, so keying the initial paint off it made every framed
+// page fall back to dark even while the host was light.
+var theme=null;try{theme=window.localStorage.getItem('newapi:theme:v1:mode');}catch(e){}
+if(theme!=='dark'&&theme!=='light'&&theme!=='system'){theme='dark';}
 if(theme==='system'){theme=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'}
 window.localStorage.setItem('theme',theme);
 }catch(e){}})();`;
