@@ -6,6 +6,7 @@ import (
 
 	"github.com/uter-ai/uter/common"
 
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/uter-ai/uter/model"
 )
@@ -120,7 +121,10 @@ func TestTaskAdjustFundingRefundsOrganizationLedger(t *testing.T) {
 	seedOrganization(t, orgId, budget)
 	seedOrgMember(t, userId, orgId, model.OrgRoleMember, 1_000_000, 0)
 
+	// 提交时固化的组织快照：结算端只认这一份，不再重新解析用户当前归属。
+	orgSnapshot := orgId
 	task := &model.Task{UserId: userId, TaskID: "task-org-refund", Platform: "suno"}
+	task.PrivateData.OrganizationId = &orgSnapshot
 
 	// 先扣（正数）：走组织账本，个人钱包不动。
 	require.NoError(t, taskAdjustFunding(task, quota))
@@ -135,6 +139,71 @@ func TestTaskAdjustFundingRefundsOrganizationLedger(t *testing.T) {
 	require.Equal(t, 1_000_000, personal, "组织成员的退款不得进个人钱包")
 }
 
+// 用户在任务执行期间被移出组织后，结算仍必须用提交时的快照。
+//
+// 这正是「资金来源漂移」的直接回归：若结算端重新解析 OrgIdOfUser，此时会得到 0，
+// 于是退款改道个人钱包——组织 used_quota 永不回减，用户钱包却被凭空加钱。
+func TestTaskAdjustFundingIgnoresMembershipChangeAfterSubmit(t *testing.T) {
+	const (
+		orgId  = 900_400
+		userId = 900_401
+		budget = int64(5_000_000)
+		quota  = 250_000
+	)
+	seedOrganization(t, orgId, budget)
+	seedOrgMember(t, userId, orgId, model.OrgRoleMember, 1_000_000, 0)
+
+	orgSnapshot := orgId
+	task := &model.Task{UserId: userId, TaskID: "task-org-drift", Platform: "suno"}
+	task.PrivateData.OrganizationId = &orgSnapshot
+	require.NoError(t, taskAdjustFunding(task, quota))
+	require.Equal(t, int64(quota), orgLedgerUsed(t, orgId))
+
+	// 任务执行期间把成员移出组织（组织归属变成 0）。
+	require.NoError(t, model.DB.Model(&model.User{}).Where("id = ?", userId).
+		Update("organization_id", 0).Error)
+
+	require.NoError(t, taskAdjustFunding(task, -quota))
+	assert.Equal(t, int64(0), orgLedgerUsed(t, orgId),
+		"退款必须回到提交时的组织账本，不得因为成员已退出而改道")
+
+	personal, err := model.GetUserQuota(userId, false)
+	require.NoError(t, err)
+	assert.Equal(t, 1_000_000, personal, "移出组织不得让退款改道到个人钱包")
+}
+
+// 历史任务（提交时没有组织快照）不得被静默记到另一本账上。
+//
+// 旧实现此时会重新解析 OrgIdOfUser：查得到就记组织、查不到就记个人钱包，
+// 等于用一个「此刻」的归属去解释「当时」的扣费，猜错时两本账同时错位。
+// 现在一律 fail-closed，交由人工核对。
+func TestTaskAdjustFundingFailsClosedWithoutSnapshot(t *testing.T) {
+	const (
+		orgId  = 900_500
+		userId = 900_501
+		quota  = 120_000
+	)
+	seedOrganization(t, orgId, 5_000_000)
+	seedOrgMember(t, userId, orgId, model.OrgRoleMember, 1_000_000, 0)
+
+	// OrganizationId 保持 nil：模拟这条改动之前创建的历史任务。
+	task := &model.Task{UserId: userId, TaskID: "task-legacy", Platform: "suno"}
+
+	err := taskAdjustFunding(task, quota)
+	require.ErrorIs(t, err, ErrTaskFundingSourceUnresolved,
+		"没有提交时快照时必须拒绝，而不是猜一个账本")
+	assert.Equal(t, int64(0), orgLedgerUsed(t, orgId), "拒绝时不得动组织账本")
+	assert.Equal(t, int64(0), orgLedgerUsed(t, orgId))
+
+	personal, err := model.GetUserQuota(userId, false)
+	require.NoError(t, err)
+	assert.Equal(t, 1_000_000, personal, "拒绝时不得动个人钱包")
+
+	err = taskAdjustFunding(task, -quota)
+	require.ErrorIs(t, err, ErrTaskFundingSourceUnresolved,
+		"退款路径同样不得在缺少快照时猜账本")
+}
+
 func TestTaskAdjustFundingUsesPersonalWalletForUnaffiliatedUser(t *testing.T) {
 	const (
 		userId = 900_301
@@ -143,7 +212,10 @@ func TestTaskAdjustFundingUsesPersonalWalletForUnaffiliatedUser(t *testing.T) {
 	)
 	seedWalletUser(t, userId, open)
 
+	// 提交时明确解析为 0（平台直管）：有快照，正常走个人钱包。
+	orgSnapshot := 0
 	task := &model.Task{UserId: userId, TaskID: "task-personal-refund", Platform: "suno"}
+	task.PrivateData.OrganizationId = &orgSnapshot
 	require.NoError(t, taskAdjustFunding(task, quota))
 	require.NoError(t, taskAdjustFunding(task, -quota))
 

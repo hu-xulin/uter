@@ -9,7 +9,15 @@ on:
   workflow_dispatch:  # Allows manual triggering
 
 jobs:
+  # 发布门禁：与 release.yml 共用同一个 release-gate.yml。桌面端打包前必须让
+  # 测试、vet、构建、漏洞扫描、桌面端与前端检查全部通过——否则不会产出安装包，
+  # 也不会挂到 GitHub Release 上。
+  gate:
+    name: Release gate (tests, vet, build, vulnerability scan)
+    uses: ./.github/workflows/release-gate.yml
+
   build:
+    needs: gate
     strategy:
       matrix:
         # os: [macos-latest, windows-latest]
@@ -63,6 +71,10 @@ jobs:
           go mod download
           go build -ldflags "-s -w -X 'uter/common.Version=$(git describe --tags)'" -o uter.exe
 
+      # 版本号必须先改：npm version --no-git-tag-version 会同时更新 package.json
+      # 与 package-lock.json 的 version 字段，两者保持一致后 npm ci 才愿意装。
+      # 反过来的话（先 npm ci 再改版本）lock 与 manifest 版本不一致，构建出的
+      # 安装包版本号对不上。
       - name: Update Electron version
         run: |
           cd electron
@@ -75,9 +87,9 @@ jobs:
             MINOR=${BASH_REMATCH[2]}
             PATCH=${BASH_REMATCH[3]}
             REST=${BASH_REMATCH[4]}
-          
+
             VERSION="$MAJOR.$MINOR.$PATCH"
-          
+
             # If there's extra content, append it without adding -dev
             if [[ -n "$REST" ]]; then
               VERSION="$VERSION$REST"
@@ -85,10 +97,13 @@ jobs:
           fi
           npm version $VERSION --no-git-tag-version --allow-same-version
 
-      - name: Install Electron dependencies
+      # 可复现安装：npm ci 只按 package-lock.json 装，绝不顺手升级依赖。
+      # 原来用 npm install，会按 semver 范围解析出当时最新的传递依赖——同一个
+      # tag 两次构建可能装到不同的 electron-builder，也就无法复现安装包。
+      - name: Install Electron dependencies (frozen lockfile)
         run: |
           cd electron
-          npm install
+          npm ci
 
       # - name: Build Electron app (macOS)
       #   if: runner.os == 'macOS'

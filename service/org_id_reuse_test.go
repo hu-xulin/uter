@@ -73,14 +73,46 @@ func TestWalletFundingResolvesOrgIdOnce(t *testing.T) {
 	// 直管用户：首次解析后必须被标记为已定型，后续调用不再回查
 	// （用不存在的 userId 构造同类对象来证明定型值不会回落查库）。
 	funding := &WalletFunding{userId: 910_010}
-	require.Equal(t, 0, funding.resolveOrgId())
+	resolved, err := funding.resolveOrgId()
+	require.NoError(t, err)
+	require.Equal(t, 0, resolved)
 	require.True(t, funding.orgIdResolved, "a resolved organization id must be pinned so later calls skip the lookup")
-	require.Equal(t, 0, funding.resolveOrgId())
-	require.Equal(t, 0, funding.resolveOrgId())
+	for i := 0; i < 2; i++ {
+		again, err := funding.resolveOrgId()
+		require.NoError(t, err)
+		require.Equal(t, 0, again)
+	}
 
 	// 构造时注入的组织归属必须被直接采用：把 userId 换成一个不存在的值，
 	// 若仍回查数据库就会得到 record-not-found。
 	injected := &WalletFunding{userId: 999_999_998, orgId: 7, orgIdResolved: true}
-	require.Equal(t, 7, injected.resolveOrgId())
-	require.Equal(t, 7, injected.resolveOrgId())
+	for i := 0; i < 2; i++ {
+		got, err := injected.resolveOrgId()
+		require.NoError(t, err)
+		require.Equal(t, 7, got)
+	}
+}
+
+// 组织归属解析失败必须上抛，而不是回落成「0 = 平台直管用户」。
+//
+// 回落会让组织成员的预扣/Settle/Refund 全部改走个人钱包：组织账本少收一笔、
+// 个人余额被凭空扣减或凭空退还，两本账同时错位且不可逆。fail-closed 是唯一
+// 安全取向——宁可拒绝请求，也不能猜错出资方。
+func TestWalletFundingFailsClosedWhenOrgLookupFails(t *testing.T) {
+	// userId 不存在 → OrgIdOfUser 返回 record-not-found。
+	funding := &WalletFunding{userId: 999_999_997}
+	orgId, err := funding.resolveOrgId()
+	require.Error(t, err, "a failed organization lookup must not be silently treated as a platform user")
+	require.Zero(t, orgId)
+	require.False(t, funding.orgIdResolved, "a failed lookup must not pin a guessed value")
+
+	require.Error(t, funding.PreConsume(100), "预扣必须失败，而不是记到个人钱包")
+	require.Error(t, funding.Settle(100), "结算必须失败，而不是调整个人钱包")
+	require.Zero(t, funding.consumed, "解析失败时不得产生任何预扣记账")
+
+	// Refund 只有在 consumed>0 时才真正回减；模拟「预扣成功、退款时归属查不到」
+	// （例如用户行在请求期间被硬删除），此时必须上抛而不是退到个人钱包。
+	funding.consumed = 100
+	require.Error(t, funding.Refund(), "退款必须失败，而不是退到个人钱包")
+	require.Equal(t, 100, funding.consumed, "退款未成功时不得清零预扣计数，否则额度永久丢失")
 }

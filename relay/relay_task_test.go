@@ -109,12 +109,17 @@ func TestRealtimeFetchRefundsTaskItFindsFailed(t *testing.T) {
 	channel := &model.Channel{Name: "realtime-refund", Type: constant.ChannelTypeGemini, Key: "channel-key", BaseURL: &server.URL}
 	require.NoError(t, database.Create(channel).Error)
 	require.NoError(t, database.Create(&model.User{Id: 7, Username: "realtime-owner", Quota: 100}).Error)
+	// 提交时 controller/relay.go 必然固化组织快照（平台直管用户为 0）。
+	// 这里必须显式给出：缺快照的任务会被判定为「资金来源无法可靠确定」而
+	// 拒绝退款——那是防止猜错账户的安全行为，不是可以让夹具跳过的细节。
+	platformOrgId := 0
 	task := &model.Task{
 		TaskID: "public-task", Platform: constant.TaskPlatform(strconv.Itoa(constant.ChannelTypeGemini)),
 		UserId: 7, ChannelId: channel.Id, Quota: 1000,
 		Status: model.TaskStatusInProgress, Progress: "50%",
 		PrivateData: model.TaskPrivateData{
 			Key: "channel-key", UpstreamTaskID: base64.RawURLEncoding.EncodeToString([]byte("operations/task-1")),
+			OrganizationId: &platformOrgId,
 		},
 	}
 	require.NoError(t, database.Create(task).Error)

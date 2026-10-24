@@ -20,6 +20,21 @@ const (
 	OrgRoleMember          = "member"           // 普通成员
 )
 
+// OrgAdmissionReserveFloor 是组织成员「预估额度为 0 或负」时的最小准入预留额。
+//
+// 按量计费的预扣估算额可以为 0（本次请求没有可计数的输入 token，或模型按
+// legacy 策略算出 0）。若此时直接跳过原子预留，准入就退化成一道只读校验，
+// 并发突发下所有请求会同时通过，预算耗尽的组织仍能被反复放行——这正是
+// ReserveOrgQuota 要关闭的 TOCTOU 窗口。因此零预估请求也必须预留一个
+// **受控且极小**的额度，让所有请求竞争同一行 organizations.used_quota：
+//   - 预算已耗尽（used_quota + 1 > quota）时一律拒绝，与请求贵贱无关；
+//   - 预留额极小，不会为了「占位」而多扣用户的钱——结算按实际消耗 true-up，
+//     差额（含这 1 个单位）在 Settle 中如实退回。
+//
+// 取值 1 是「最小可竞争单位」：只要预算还有 1 个单位的余量，请求就能进来，
+// 因此不会因为这道闸门而拒绝本应放行的请求。
+const OrgAdmissionReserveFloor int64 = 1
+
 // IsValidOrgRole 校验组织内角色字符串合法。
 func IsValidOrgRole(role string) bool {
 	switch role {
@@ -272,6 +287,12 @@ var (
 	// ErrOrgMemberUnknown 目标用户不存在（含已被硬删除的账号）。批量纳新时按行返回，
 	// 让调用方能区分「该行失败」与「其余行成功」，而不是整体静默成功。
 	ErrOrgMemberUnknown = errors.New("user does not exist")
+	// ErrOrgQuotaUnverifiable 组织额度无法核实（成员关系、组织行或成员子额度查询失败）。
+	//
+	// 这是一个**拒绝型**错误：计费准入无法确认用户的出资方与剩余额度时，必须拒绝
+	// 请求，而不是按「非组织用户」放行。旧实现把查询异常统一当成 nil 返回，等于
+	// 在数据库/缓存抖动时把组织预算与成员子额度整段关掉。
+	ErrOrgQuotaUnverifiable = errors.New("organization quota cannot be verified")
 )
 
 // OrgQuotaError 携带额度超限的具体数值。用户在界面上看到的是**本地化后的可读文案**，
@@ -299,6 +320,31 @@ func (e *OrgQuotaError) Error() string {
 
 // Is 让 errors.Is(err, ErrOrgSubQuotaExceeded) / ErrOrgBudgetExceeded 继续成立。
 func (e *OrgQuotaError) Is(target error) bool { return errors.Is(e.Kind, target) }
+
+// AsOrgQuotaError 判断 err 是否属于「组织额度闸门拒绝」这一类，是则原样返回，
+// 否则返回 nil。调用方据此把这类失败映射成「额度不足」而非通用数据错误。
+//
+// 覆盖三种情形：预算/子额度超限（OrgQuotaError 及其哨兵包装）、组织已停用、额度无法核实。
+func AsOrgQuotaError(err error) error {
+	if err == nil {
+		return nil
+	}
+	var quotaErr *OrgQuotaError
+	if errors.As(err, &quotaErr) {
+		return err
+	}
+	for _, sentinel := range []error{
+		ErrOrgBudgetExceeded,
+		ErrOrgSubQuotaExceeded,
+		ErrOrgSuspended,
+		ErrOrgQuotaUnverifiable,
+	} {
+		if errors.Is(err, sentinel) {
+			return err
+		}
+	}
+	return nil
+}
 
 // CreateOrganization 创建组织并把创建者设为 owner。
 func CreateOrganization(name string, ownerUserId int, quota int64) (*Organization, error) {
@@ -707,8 +753,16 @@ func PreConsumeOrgQuota(org *Organization, amount int64) bool {
 //
 // 停用组织（Status == OrgStatusDisabled）在此**一律拒绝**：这是 organizations.status 的
 // 主要读取点，也是「停用」真正生效的地方 —— 否则该字段只是一个装饰。
-// 注意这里与其它分支的取向相反：缓存/数据库抖动时我们会 fail-open（不误判越权），
-// 但「组织已停用」是明确读到的业务事实，必须 fail-closed。
+//
+// 失败取向（fail-closed）：本函数是计费准入的一道闸门，任何「无法确认」的状态都必须
+// 拒绝，而不是放行。旧实现把三类查询异常（成员关系、组织行、成员子额度）都当作
+// 「非组织用户」返回 nil，于是数据库/缓存抖动期间组织预算与子额度会整段失效——抖动
+// 越严重，绕过越彻底，方向恰好相反。现在：
+//   - 成员关系查询失败 → 拒绝（无法确认出资方，不得猜成个人钱包）；
+//   - 组织行读取失败（含不存在）→ 拒绝（预算与停用状态都无从判断）；
+//   - 成员子额度读取失败 → 拒绝（无法确认是否越限）。
+//
+// 只有「明确读到 organization_id == 0」才放行——那是确定的平台直管用户。
 //
 // 两处数值都取数据库权威值：
 //   - 组织预算：读 organizations 行（缓存里根本没有组织账本）；
@@ -720,14 +774,18 @@ func EnforceOrgQuota(userId int, quota int64) error {
 		return nil
 	}
 	orgId, err := OrgIdOfUser(userId)
-	if err != nil || orgId == 0 {
-		// 取不到归属时按「非组织用户」放行：缓存/数据库抖动不应把成员误判成越权，
-		// 真正落账时的 ReserveOrgQuota 仍会按数据库中的归属重新判定。
+	if err != nil {
+		return fmt.Errorf("%w: cannot resolve organization membership of user %d: %v",
+			ErrOrgQuotaUnverifiable, userId, err)
+	}
+	if orgId == 0 {
+		// 明确读到「平台直管用户」，与组织无关，放行。
 		return nil
 	}
 	org, err := GetOrganizationById(orgId)
 	if err != nil {
-		return nil
+		return fmt.Errorf("%w: cannot read organization %d budget: %v",
+			ErrOrgQuotaUnverifiable, orgId, err)
 	}
 	if org.IsOrgSuspended() {
 		return fmt.Errorf("%w: org %d", ErrOrgSuspended, org.Id)
@@ -737,12 +795,26 @@ func EnforceOrgQuota(userId int, quota int64) error {
 	}
 	subQuotaLimit, usedQuota, err := GetOrgMemberSubQuotaState(orgId, userId)
 	if err != nil {
-		return nil
+		return fmt.Errorf("%w: cannot read sub-quota state of user %d in org %d: %v",
+			ErrOrgQuotaUnverifiable, userId, orgId, err)
 	}
 	if subQuotaLimit > 0 && int64(usedQuota)+quota > subQuotaLimit {
 		return &OrgQuotaError{Kind: ErrOrgSubQuotaExceeded, Used: int64(usedQuota), Limit: subQuotaLimit, Required: quota}
 	}
 	return nil
+}
+
+// OrgAdmissionReserveAmount 把「准入预留额」规范化：预估额低于最小准入预留额时
+// 抬到 OrgAdmissionReserveFloor，保证零预估请求同样参与原子预留竞争。
+//
+// 必须由「校验额」与「实际预留额」共用同一个函数——这正是旧实现的缺陷所在：
+// 校验用 max(preConsumedQuota,1)，预留却用原始 preConsumedQuota（0），
+// 两者口径不一致，等于校验完就把闸门绕过去了。
+func OrgAdmissionReserveAmount(amount int64) int64 {
+	if amount < OrgAdmissionReserveFloor {
+		return OrgAdmissionReserveFloor
+	}
+	return amount
 }
 
 // GetOrgMemberSubQuotaState 读取成员在组织内的子额度上限与已用额度（数据库权威值）。
@@ -773,6 +845,10 @@ func GetOrgMemberSubQuotaState(orgId int, userId int) (subQuotaLimit int64, used
 //
 // 子额度上限 sub_quota_limit<=0 表示不限量（组织未给该成员设上限），此时只校验组织预算；
 // 组织预算 quota<=0 同理表示不限量。
+//
+// amount==0 是**空操作**（没有任何额度需要预留）。准入路径不得直接传 0：零预估请求
+// 也必须参与原子预留竞争，调用方应先经 OrgAdmissionReserveAmount 取到受控的最小
+// 预留额，再调用本函数。传 0 等于跳过闸门，这正是零预估请求可以绕过预算的成因。
 func ReserveOrgQuota(orgId int, userId int, amount int64) error {
 	if orgId <= 0 {
 		return nil
@@ -798,13 +874,21 @@ func ReserveOrgQuota(orgId int, userId int, amount int64) error {
 		if ores.RowsAffected == 0 {
 			var org Organization
 			if err := tx.Where("id = ?", orgId).First(&org).Error; err != nil {
-				return ErrOrgBudgetExceeded
+				// 组织行读不到：无法判断预算与停用状态，按「无法核实」拒绝。
+				return fmt.Errorf("%w: organization %d not found while reserving %d",
+					ErrOrgQuotaUnverifiable, orgId, amount)
 			}
 			if org.IsOrgSuspended() {
 				return fmt.Errorf("%w: org %d", ErrOrgSuspended, org.Id)
 			}
-			return fmt.Errorf("%w: used %s / budget %s", ErrOrgBudgetExceeded,
-				logger.FormatQuota(int(org.UsedQuota)), logger.FormatQuota(int(org.Quota)))
+			// 返回带数值的 OrgQuotaError（而不是裸的哨兵包装）：上层需要把这类
+			// 失败映射成「额度不足」，并能在提示里给出 used/budget/need。
+			return &OrgQuotaError{
+				Kind:     ErrOrgBudgetExceeded,
+				Used:     int64(org.UsedQuota),
+				Limit:    int64(org.Quota),
+				Required: amount,
+			}
 		}
 
 		mres := tx.Model(&User{}).

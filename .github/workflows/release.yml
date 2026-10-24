@@ -14,8 +14,16 @@ on:
       - '!*-alpha*'
 
 jobs:
+  # 发布门禁：测试、vet、构建、漏洞扫描、桌面端与前端检查全部通过后才允许
+  # 进入构建与发布。任何一项失败，下面的 linux/macos/windows 作业都不会启动
+  # ——不会产出一个测试没过或带已知漏洞的版本。
+  gate:
+    name: Release gate (tests, vet, build, vulnerability scan)
+    uses: ./.github/workflows/release-gate.yml
+
   linux:
     name: Linux Release
+    needs: gate
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -42,6 +50,16 @@ jobs:
           bun install --frozen-lockfile
           DISABLE_ESLINT_PLUGIN='true' VITE_REACT_APP_VERSION=$VERSION bun run build
           cd ..
+      # 文档静态站是独立的 Next.js 工程，它的 postbuild 会把静态导出拷贝进
+      # web/dist/docs-content。Go 用 go:embed web/dist 把前端与文档一起打进
+      # 二进制，所以文档必须在 go build 之前构建完；只构建 web 会得到一个
+      # 「能跑但没有文档」的二进制，而编译不会报错。
+      - name: Build Docs Site
+        run: |
+          cd docs-web
+          bun install --frozen-lockfile
+          bun run build
+          cd ..
       - name: Set up Go
         uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6.5.0
         with:
@@ -55,6 +73,18 @@ jobs:
           sudo apt-get update
           DEBIAN_FRONTEND=noninteractive sudo apt-get install -y gcc-aarch64-linux-gnu
           CC=aarch64-linux-gnu-gcc CGO_ENABLED=1 GOOS=linux GOARCH=arm64 go build -ldflags "-s -w -X 'uter/common.Version=$VERSION' -extldflags '-static'" -o uter-arm64-$VERSION
+      # 发布前完整性检查：产物必须同时包含 SPA 与文档静态页，缺任何一个都
+      # 不允许进入发布步骤。
+      - name: Verify release artifacts
+        run: |
+          ./scripts/verify-docs-artifacts.sh web/dist
+          for binary in "uter-$VERSION" "uter-arm64-$VERSION"; do
+            if [ ! -s "$binary" ]; then
+              echo "::error::missing or empty binary: $binary"
+              exit 1
+            fi
+          done
+          echo "release artifacts verified for $VERSION"
       - name: Generate checksums
         run: sha256sum uter-* > checksums-linux.txt
 
@@ -70,6 +100,7 @@ jobs:
 
   macos:
     name: macOS Release
+    needs: gate
     runs-on: macos-latest
     steps:
       - name: Checkout
@@ -96,6 +127,12 @@ jobs:
           bun install --frozen-lockfile
           DISABLE_ESLINT_PLUGIN='true' VITE_REACT_APP_VERSION=$VERSION bun run build
           cd ..
+      - name: Build Docs Site
+        run: |
+          cd docs-web
+          bun install --frozen-lockfile
+          bun run build
+          cd ..
       - name: Set up Go
         uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6.5.0
         with:
@@ -104,6 +141,14 @@ jobs:
         run: |
           go mod download
           go build -ldflags "-X 'uter/common.Version=$VERSION'" -o uter-macos-$VERSION
+      - name: Verify release artifacts
+        run: |
+          ./scripts/verify-docs-artifacts.sh web/dist
+          if [ ! -s "uter-macos-$VERSION" ]; then
+            echo "::error::missing or empty binary: uter-macos-$VERSION"
+            exit 1
+          fi
+          echo "release artifacts verified for $VERSION"
       - name: Generate checksums
         run: shasum -a 256 uter-macos-* > checksums-macos.txt
 
@@ -119,6 +164,7 @@ jobs:
 
   windows:
     name: Windows Release
+    needs: gate
     runs-on: windows-latest
     defaults:
       run:
@@ -148,6 +194,12 @@ jobs:
           bun install --frozen-lockfile
           DISABLE_ESLINT_PLUGIN='true' VITE_REACT_APP_VERSION=$VERSION bun run build
           cd ..
+      - name: Build Docs Site
+        run: |
+          cd docs-web
+          bun install --frozen-lockfile
+          bun run build
+          cd ..
       - name: Set up Go
         uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6.5.0
         with:
@@ -156,6 +208,14 @@ jobs:
         run: |
           go mod download
           go build -ldflags "-s -w -X 'uter/common.Version=$VERSION'" -o uter-$VERSION.exe
+      - name: Verify release artifacts
+        run: |
+          ./scripts/verify-docs-artifacts.sh web/dist
+          if [ ! -s "uter-$VERSION.exe" ]; then
+            echo "::error::missing or empty binary: uter-$VERSION.exe"
+            exit 1
+          fi
+          echo "release artifacts verified for $VERSION"
       - name: Generate checksums
         run: sha256sum uter-*.exe > checksums-windows.txt
 

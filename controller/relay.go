@@ -656,6 +656,13 @@ func executeTaskSubmissionWith(
 	task.PrivateData.SubscriptionId = relayInfo.SubscriptionId
 	task.PrivateData.TokenId = relayInfo.TokenId
 	task.PrivateData.NodeName = common.NodeName
+	// 固化提交时的出资组织快照。NewBillingSession 已经把组织归属解析一次并缓存到
+	// relayInfo.OrganizationId（组织成员 > 0，平台直管用户 = 0）。异步任务的提交与
+	// 结算之间可能隔很久，期间用户可能被移出组织——结算时若重新解析 OrgIdOfUser，
+	// 就会把任务记到另一本账上。这里连同「0 = 平台直管」一起固化，让结算端永远不必
+	// 再猜。
+	orgSnapshot := relayInfo.OrganizationId
+	task.PrivateData.OrganizationId = &orgSnapshot
 	task.PrivateData.BillingContext = &model.TaskBillingContext{
 		ModelPrice:      relayInfo.PriceData.ModelPrice,
 		GroupRatio:      relayInfo.PriceData.GroupRatioInfo.GroupRatio,

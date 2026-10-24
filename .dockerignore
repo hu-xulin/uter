@@ -1,27 +1,87 @@
-.github
-.git
-*.md
-.vscode
-.gitignore
-Makefile
-docs
-.eslintcache
-.gocache
-/web/node_modules
-/web/dist
-!THIRD-PARTY-LICENSES.md
+# Docker 构建上下文排除规则。
+#
+# 维护原则：与 .gitignore 中「不入仓的本地产物」保持一致。曾经这里只覆盖了
+# 一部分，结果仓库根目录下的本地编译产物（Uter、uter-bin*，合计约 1.3GB）
+# 全被打进构建上下文，首次 docker build 极慢。新增本地产物时请同步到这里。
+#
+# 注意：Docker 的 *.md 只匹配上下文根目录的 .md，不匹配嵌套路径，所以
+# docs-web/content/**.md 不受影响；根目录的 THIRD-PARTY-LICENSES.md 由下面的
+# 反向规则显式放行（最终镜像要 COPY 它）。
 
-# 运行时 / 非构建内容：排除后可避免把 .workbuddy(614M)、docs-web/node_modules(465M)、
-# db、logs、bin 等打进镜像构建上下文，否则 docker build 首次会极慢甚至卡死。
-# 说明：web/ 前端由 Dockerfile 在 builder 内 bun install 重新安装，无需宿主 node_modules；
-# docs-web/ 是独立 Next.js 文档站，不在主镜像内，可整体排除。
+# --- 版本控制 / 编辑器 / AI 协作数据 ---
+.git
+.github
+.idea
+.vscode
+.zed
+.history
+.cursor
+.claude
+.plans
 .workbuddy
+.workbuddy-ai
+_reports
+.local-tests
+.review
+.cache
+.playwright-mcp
+.playwright-cli
+.gomodcache
+.gocache
+.gocache-temp
+.gopath
+.eslintcache
+tiktoken_cache
+.DS_Store
+**/.DS_Store
+
+# --- 本地数据库与备份 ---
+*.db
+*.db-journal
+*.db-shm
+*.db-wal
+*.bak
+*.bak-shm
+*.bak-wal
+
+# --- 本地编译产物（.gitignore 的 uter-bin* / Uter / one-api / new-api）---
+# 这一组曾经漏了，导致约 1.3GB 的本地二进制进入构建上下文。
+uter-bin*
+/Uter
+/Uter.exe
+one-api
+new-api
+/__debug_bin*
+*.exe
+build
+
+# --- 运行时数据 ---
 logs
 data
-bin
-node_modules
-docs-web
+upload
+
+# --- 前端：镜像内重新 bun install + build，不需要宿主产物 ---
+/web/node_modules
+/web/dist
+
+# --- 文档站：源码必须进上下文（Dockerfile 要在镜像内构建它），
+#     只排除它的重产物。注意不能像以前那样整体排除 docs-web——那会让
+#     Dockerfile 的文档构建阶段拿不到源码，产出一个「能跑但没有文档」的镜像。
+docs-web/node_modules
+docs-web/.next
+docs-web/out
+docs-web/tsconfig.tsbuildinfo
+docs-web/next-env.d.ts
+
+# --- Electron：不进主镜像 ---
 electron
-*.db
-*.db-wal
-*.db-shm
+
+# --- Go workspace（模块间用 replace，不用 go.work）---
+go.work
+go.work.sum
+
+# --- Makefile 不在镜像内使用（发布门禁在 CI 里跑 make test）---
+Makefile
+
+# --- 最终镜像要 COPY 的许可证文件（*.md 会误伤，显式放行）---
+!THIRD-PARTY-LICENSES.md

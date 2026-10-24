@@ -14,7 +14,7 @@ import (
 type TwoFA struct {
 	Id             int            `json:"id" gorm:"primaryKey"`
 	UserId         int            `json:"user_id" gorm:"unique;not null;index"`
-	Secret         string         `json:"-" gorm:"type:varchar(255);not null"` // TOTP密钥，不返回给前端
+	Secret         string         `json:"-" gorm:"type:varchar(255);not null"` // TOTP密钥密文，不返回给前端
 	IsEnabled      bool           `json:"is_enabled"`
 	FailedAttempts int            `json:"failed_attempts" gorm:"default:0"`
 	LockedUntil    *time.Time     `json:"locked_until,omitempty"`
@@ -22,6 +22,83 @@ type TwoFA struct {
 	CreatedAt      time.Time      `json:"created_at"`
 	UpdatedAt      time.Time      `json:"updated_at"`
 	DeletedAt      gorm.DeletedAt `json:"-" gorm:"index"`
+}
+
+// ErrTwoFASecretUndecryptable 表示库里的 TOTP 种子无法用当前密钥解开。
+//
+// 它区别于 ErrTwoFACodeInvalid：后者是用户输错码，可以重试；前者是密钥被
+// 轮换或数据被篡改，重试多少次都不会有用，必须按密钥轮换流程处理。
+var ErrTwoFASecretUndecryptable = errors.New("the stored two-factor secret cannot be decrypted with the current key")
+
+// SetPlainSecret 把 TOTP 种子加密后写入 Secret 字段。
+//
+// 落库一律走这里：Secret 列里不允许再出现明文种子。数据库备份、只读账号或
+// 导出文件一旦泄露，拿到手的也只是一段无法解开的密文。
+func (t *TwoFA) SetPlainSecret(secret string) error {
+	encrypted, err := common.EncryptSecret(secret)
+	if err != nil {
+		return err
+	}
+	t.Secret = encrypted
+	return nil
+}
+
+// PlainSecret 返回解密后的 TOTP 种子。所有验证路径都必须经过这里，
+// 不允许各自直接读 t.Secret——那既是明文泄露，也让解密失败无法统一处理。
+//
+// 库里可能并存两种形态：
+//
+//   - 密文信封（新写入）：必须解密成功。密钥不匹配时返回
+//     ErrTwoFASecretUndecryptable，绝不把密文当明文拿去验证。
+//   - 历史明文（迁移前的行）：取到明文的同时立即升级为密文并回写
+//     （惰性迁移），避免长期停留在明文状态。
+func (t *TwoFA) PlainSecret() (string, error) {
+	plain, err := common.DecryptSecret(t.Secret)
+	if err != nil {
+		if errors.Is(err, common.ErrSecretKeyRotated) {
+			return "", fmt.Errorf("%w：%v", ErrTwoFASecretUndecryptable, err)
+		}
+		return "", fmt.Errorf("%w：%v", ErrTwoFASecretUndecryptable, err)
+	}
+	if common.IsSecretEnvelope(t.Secret) {
+		return plain, nil
+	}
+	if _, err := t.upgradePlainSecret(plain); err != nil {
+		// 升级失败不影响本次验证（明文已经取到），但必须留痕：否则没人知道
+		// 库里还躺着明文种子。明文行原样保留，下次仍会再次尝试升级。
+		common.SysLog(common.LogText("twofa: failed to encrypt legacy plaintext secret user_id=%d twofa_id=%d: %s",
+			t.UserId, t.Id, err.Error()))
+	}
+	return plain, nil
+}
+
+// upgradePlainSecret 把一段历史明文升级为密文。第二个返回值报告本次是否真的
+// 完成了升级。
+//
+// 用条件 UPDATE 而不是直接 Update：只把「id 匹配且 secret 仍等于那段明文」的
+// 行升级，于是重复执行是幂等的，并发下也只有一个请求能命中，不会把另一个
+// 请求刚写入的密文覆盖成用相同明文重新加密的结果。
+func (t *TwoFA) upgradePlainSecret(plain string) (bool, error) {
+	// 拒绝把已是密文的值再加密一层。二次加密不会更安全，只会让这条记录
+	// 再也解不回原始种子（解密一次只得到一层密文），等于静默销毁 2FA。
+	if common.IsSecretEnvelope(plain) {
+		return false, errors.New("refusing to re-encrypt an already-encrypted secret")
+	}
+	encrypted, err := common.EncryptSecret(plain)
+	if err != nil {
+		return false, err
+	}
+	result := DB.Model(&TwoFA{}).
+		Where("id = ? AND secret = ?", t.Id, t.Secret).
+		Update("secret", encrypted)
+	if result.Error != nil {
+		return false, result.Error
+	}
+	if result.RowsAffected != 1 {
+		return false, nil
+	}
+	t.Secret = encrypted
+	return true, nil
 }
 
 // TwoFABackupCode 备用码使用记录表
@@ -275,8 +352,14 @@ func (t *TwoFA) ValidateTOTPAndUpdateUsage(code string) (bool, error) {
 		return false, fmt.Errorf("the account is locked, retry after %v", t.LockedUntil.Format("2006-01-02 15:04:05"))
 	}
 
+	// 集中解密：Secret 列存的是密文，验证路径不允许直接读它。
+	secret, err := t.PlainSecret()
+	if err != nil {
+		return false, err
+	}
+
 	// 验证TOTP码
-	if !common.ValidateTOTPCode(t.Secret, code) {
+	if !common.ValidateTOTPCode(secret, code) {
 		// 增加失败次数
 		if err := t.IncrementFailedAttempts(); err != nil {
 			return false, err

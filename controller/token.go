@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"errors"
 	"net/http"
 	"strconv"
 	"strings"
@@ -372,6 +373,13 @@ func AddToken(c *gin.Context) {
 		common.ApiErrorT(c, "Maximum number of tokens reached ({{max}})", map[string]any{"max": maxTokens})
 		return
 	}
+	if maxTokens <= 0 {
+		// 非正数上限不允许创建任何令牌。前置 count >= maxTokens 在 count 为 0、
+		// maxTokens 为 0 时已经会拦住，这里再兜一层，防止上限被改小后
+		// 只依赖 InsertWithinLimit 的路径被绕过。
+		common.ApiErrorT(c, "Maximum number of tokens reached ({{max}})", map[string]any{"max": maxTokens})
+		return
+	}
 	if token.Group == "auto" {
 		if !setTokenAutoGroups(c, &token, request.AutoGroups.Groups) {
 			return
@@ -403,20 +411,17 @@ func AddToken(c *gin.Context) {
 		AutoGroups:         token.AutoGroups,
 	}
 	cleanToken.AllowUserQuotaQuery = request.AllowUserQuotaQuery == nil || *request.AllowUserQuotaQuery
-	err = cleanToken.Insert()
+	// TOK-003: 上面的 COUNT 只是快速路径，真正的上限由 InsertWithinLimit 的
+	// 单事务保证——插入与复核计数共享同一事务，并发创建无法双双越过上限。
+	// 复核计数失败时必须拒绝：把查询异常当成"未超限"放行，等于让一次数据库
+	// 抖动就绕过配额闸门。
+	err = cleanToken.InsertWithinLimit(maxTokens)
 	if err != nil {
-		common.ApiError(c, err)
-		return
-	}
-	// TOK-003: the pre-insert count check is a fast path; enforce the cap even
-	// under concurrency by re-counting and rolling back if we still exceeded it,
-	// so two racing requests cannot both slip past the limit.
-	total, cerr := model.CountUserTokens(c.GetInt("id"))
-	if cerr == nil && int(total) > maxTokens {
-		if derr := cleanToken.Delete(); derr != nil {
-			common.SysLog(common.LogText("failed to roll back over-limit token creation user_id=%d token_id=%d: %v", c.GetInt("id"), cleanToken.Id, derr))
+		if errors.Is(err, model.ErrTokenLimitExceeded) {
+			common.ApiErrorT(c, "Maximum number of tokens reached ({{max}})", map[string]any{"max": maxTokens})
+			return
 		}
-		common.ApiErrorT(c, "Maximum number of tokens reached ({{max}})", map[string]any{"max": maxTokens})
+		common.ApiError(c, err)
 		return
 	}
 	params["id"] = cleanToken.Id

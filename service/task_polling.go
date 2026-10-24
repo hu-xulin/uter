@@ -141,6 +141,9 @@ func RunTaskPollingOnce(ctx context.Context, report func(processed, total int)) 
 
 	common.SysLog(common.LogText("task progress polling started"))
 	sweepTimedOutTasks(ctx)
+	// 计费对账与超时清理并列：前者负责「终态已定但钱货未两讫」的任务，
+	// 后者负责「永远不结束的任务」。少任何一个都会留下一批无人处理的残局。
+	ReconcileStuckTaskBilling(ctx)
 	allTasks := model.GetAllUnFinishSyncTasks(constant.TaskQueryLimit)
 	summary.UnfinishedTasks = len(allTasks)
 	platformTask := make(map[constant.TaskPlatform][]*model.Task)

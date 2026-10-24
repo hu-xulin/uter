@@ -307,6 +307,52 @@ func (token *Token) Insert() error {
 	return err
 }
 
+// ErrTokenLimitExceeded 表示这次创建会使用户的令牌总数越过配置上限。
+// 调用方必须把它与普通数据库错误区分开：前者对客户端表现为「已达上限」，
+// 后者是服务端故障，两者都不能被当成创建成功。
+var ErrTokenLimitExceeded = errors.New("token count limit exceeded")
+
+// InsertWithinLimit 在单个事务内创建令牌并复核该用户的令牌总数。
+//
+// TOK-003：上限只靠「先 COUNT 再 INSERT」无法在并发下成立——两个请求可以
+// 同时读到 count == maxTokens-1 并双双插入。因此把插入与复核放进同一个事务：
+// 复核看到的是本事务插入后的真实状态，一旦超过上限就整体回滚，不会留下
+// 「已插入但超限」的孤儿行，也无需依赖事后 Delete（删除失败即永久超限）。
+//
+// 计数或插入本身失败时错误原样上抛，调用方不得据此认为创建成功。
+func (token *Token) InsertWithinLimit(maxTokens int) error {
+	if maxTokens <= 0 {
+		// 上限非正数意味着不允许创建任何令牌；这里必须 fail-closed，
+		// 否则一次误配就会把上限检查整个跳过。
+		return ErrTokenLimitExceeded
+	}
+
+	tx := DB.Begin()
+	if tx.Error != nil {
+		return tx.Error
+	}
+
+	if err := tx.Create(token).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	var total int64
+	if err := tx.Model(&Token{}).Where("user_id = ?", token.UserId).Count(&total).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+	if int(total) > maxTokens {
+		tx.Rollback()
+		return ErrTokenLimitExceeded
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		return err
+	}
+	return nil
+}
+
 // Update Make sure your token's fields is completed, because this will update non-zero values
 func (token *Token) Update() (err error) {
 	// 写库前失效缓存并设置 fence，防止并发读者把过期快照重新写回缓存。

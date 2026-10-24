@@ -20,6 +20,22 @@ import (
 
 var hotBuckets sync.Map
 
+// recordBarrier 登记在途的指标落库协程，供测试等待。
+//
+// 这些协程读 common.RedisEnabled / common.RDB，而测试会在 cleanup 时改写并
+// 还原这两个全局量。不等待就构成「cleanup 写 vs 协程读」的数据竞争，与
+// model 包缓存同步协程的同型问题（F-15，见 model.WaitCacheSyncForTest）一致。
+// 生产环境启动后不再改写这两个全局量，故非线上缺陷。
+var recordBarrier sync.WaitGroup
+
+// WaitRecordForTest 阻塞到所有在途的指标落库协程结束。
+//
+// 仅供测试使用：测试在改动 common.RedisEnabled / common.RDB 前后各调用一次，
+// 避免与仍在运行的协程相撞。生产代码不要调用——它会抹掉「异步」的意义。
+func WaitRecordForTest() {
+	recordBarrier.Wait()
+}
+
 // seriesSchema is a stable client cache/schema marker. Do not change it when
 // hiding fields or making response-only privacy hardening changes.
 const seriesSchema = "dbcd0a3c01b55203"
@@ -123,7 +139,9 @@ func Record(sample Sample) {
 	}
 	actual, _ := hotBuckets.LoadOrStore(key, &atomicBucket{})
 	actual.(*atomicBucket).add(sample)
+	recordBarrier.Add(1)
 	gopool.Go(func() {
+		defer recordBarrier.Done()
 		recordRedis(key, sample)
 	})
 }

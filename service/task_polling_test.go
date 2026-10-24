@@ -324,7 +324,7 @@ func TestUpdateBatchTasksSettlesTieredUsageForTerminalStates(t *testing.T) {
 			seedTaskPollingChannel(t, channelID, true)
 
 			expression := `tier("actual", u("units"))`
-			task := makeTask(userID, channelID, preConsumedQuota, tokenID, BillingSourceWallet, 0)
+			task := makeTask(t, userID, channelID, preConsumedQuota, tokenID, BillingSourceWallet, 0)
 			task.TaskID = "task_batch_tiered_" + string(testCase.status)
 			task.Platform = "batch-plugin"
 			task.PrivateData.UpstreamTaskID = "upstream_batch_tiered_" + string(testCase.status)
@@ -337,7 +337,6 @@ func TestUpdateBatchTasksSettlesTieredUsageForTerminalStates(t *testing.T) {
 				ExprVersion:      1,
 				TaskUsageBilling: true,
 			}
-			require.NoError(t, model.DB.Create(task).Error)
 
 			upstreamID := task.GetUpstreamTaskID()
 			reason := ""
@@ -390,7 +389,7 @@ func TestUpdateBatchTasksRefundsFailedTieredTask(t *testing.T) {
 	seedTaskPollingChannel(t, channelID, true)
 
 	expression := `tier("actual", u("units"))`
-	task := makeTask(userID, channelID, preConsumedQuota, tokenID, BillingSourceWallet, 0)
+	task := makeTask(t, userID, channelID, preConsumedQuota, tokenID, BillingSourceWallet, 0)
 	task.TaskID = "task_batch_tiered_refund"
 	task.Platform = "batch-plugin"
 	task.PrivateData.UpstreamTaskID = "upstream_batch_tiered_refund"
@@ -404,7 +403,6 @@ func TestUpdateBatchTasksRefundsFailedTieredTask(t *testing.T) {
 		UsageFacts:       map[string]any{"units": float64(5)},
 		EstimatedTier:    "actual",
 	}
-	require.NoError(t, model.DB.Create(task).Error)
 
 	upstreamID := task.GetUpstreamTaskID()
 	adaptor := &batchPollingAdaptor{results: map[string]*BatchTaskResult{
@@ -446,13 +444,12 @@ func TestUpdateBatchTasksRefundsFailedTaskWithoutUsageSettlement(t *testing.T) {
 	seedToken(t, tokenID, userID, "sk-batch-refund", tokenRemain)
 	seedTaskPollingChannel(t, channelID, true)
 
-	task := makeTask(userID, channelID, preConsumedQuota, tokenID, BillingSourceWallet, 0)
+	task := makeTask(t, userID, channelID, preConsumedQuota, tokenID, BillingSourceWallet, 0)
 	task.TaskID = "task_batch_refund"
 	task.Platform = "batch-plugin"
 	task.Properties.OriginModelName = "missing-batch-token-price"
 	task.PrivateData.UpstreamTaskID = "upstream_batch_refund"
 	task.PrivateData.BillingContext.OriginModelName = "missing-batch-token-price"
-	require.NoError(t, model.DB.Create(task).Error)
 
 	upstreamID := task.GetUpstreamTaskID()
 	adaptor := &batchPollingAdaptor{results: map[string]*BatchTaskResult{
@@ -669,14 +666,13 @@ func TestUpdateSunoTasksStalePollsRefundExactlyOnce(t *testing.T) {
 		BaseURL: &baseURL,
 	}).Error)
 
-	task := makeTask(userID, channelID, taskQuota, tokenID, BillingSourceWallet, 0)
+	task := makeTask(t, userID, channelID, taskQuota, tokenID, BillingSourceWallet, 0)
 	task.TaskID = publicTaskID
 	task.Platform = constant.TaskPlatformSuno
 	task.Status = model.TaskStatusInProgress
 	task.Progress = "50%"
 	task.SubmitTime = time.Now().Unix()
 	task.PrivateData.UpstreamTaskID = upstreamTaskID
-	require.NoError(t, model.DB.Create(task).Error)
 
 	var firstPollTask model.Task
 	var staleSecondPollTask model.Task
@@ -716,13 +712,12 @@ func TestRunTaskPollingOnceDoesNotRefundHistoricalFailedTask(t *testing.T) {
 	const userID, initialQuota, taskQuota = 402, 10_000, 1_200
 	seedUser(t, userID, initialQuota)
 
-	task := makeTask(userID, 0, taskQuota, 0, BillingSourceWallet, 0)
+	task := makeTask(t, userID, 0, taskQuota, 0, BillingSourceWallet, 0)
 	task.TaskID = "historical_failed_already_refunded"
 	task.Status = model.TaskStatusFailure
 	task.Progress = "100%"
 	task.SubmitTime = time.Now().Add(-90 * 24 * time.Hour).Unix()
 	task.UpdatedAt = time.Now().Add(-time.Minute).Unix()
-	require.NoError(t, model.DB.Create(task).Error)
 
 	previousFactory := GetTaskAdaptorFunc
 	GetTaskAdaptorFunc = func(constant.TaskPlatform) TaskPollingAdaptor {
@@ -749,17 +744,15 @@ func TestSweepTimedOutTasksHonorsRefundRolloutBoundary(t *testing.T) {
 	)
 	seedUser(t, userID, initialQuota)
 
-	legacyTask := makeTask(userID, 0, legacyTaskQuota, 0, BillingSourceWallet, 0)
+	// SubmitTime 必须随 makeTask 一起落库：sweep 从数据库读回任务后用它判断
+	// 是否属于「旧系统遗留」，落库后再改内存对象不会写回数据库。
+	legacyTask := makeTask(t, userID, 0, legacyTaskQuota, 0, BillingSourceWallet, 0, 1771718399) // 2026-02-21 23:59:59 UTC
 	legacyTask.TaskID = "legacy_timeout_without_refund"
 	legacyTask.Progress = "50%"
-	legacyTask.SubmitTime = 1771718399 // 2026-02-21 23:59:59 UTC
-	require.NoError(t, model.DB.Create(legacyTask).Error)
 
-	modernTask := makeTask(userID, 0, modernTaskQuota, 0, BillingSourceWallet, 0)
+	modernTask := makeTask(t, userID, 0, modernTaskQuota, 0, BillingSourceWallet, 0, 1771718400) // 2026-02-22 00:00:00 UTC
 	modernTask.TaskID = "modern_timeout_with_refund"
 	modernTask.Progress = "50%"
-	modernTask.SubmitTime = 1771718400 // 2026-02-22 00:00:00 UTC
-	require.NoError(t, model.DB.Create(modernTask).Error)
 
 	previousTimeout := constant.TaskTimeoutMinutes
 	constant.TaskTimeoutMinutes = 1
@@ -935,14 +928,13 @@ func TestUpdateVideoSingleTaskPollClassification(t *testing.T) {
 				t.Cleanup(func() { constant.TaskPollMaxFailures = previous })
 			}
 
-			task := makeTask(userID, channelID, preConsumed, tokenID, BillingSourceWallet, 0)
+			task := makeTask(t, userID, channelID, preConsumed, tokenID, BillingSourceWallet, 0)
 			task.TaskID = "task_poll_class"
 			task.PrivateData.UpstreamTaskID = "upstream_poll_class"
 			task.PrivateData.PollFailures = testCase.priorFailures
 			if testCase.priorState != "" {
 				task.PrivateData.PluginState = []byte(testCase.priorState)
 			}
-			require.NoError(t, model.DB.Create(task).Error)
 
 			adaptor := &scriptedPollingAdaptor{statusCode: testCase.statusCode, fetchErr: testCase.fetchErr, parse: testCase.parse, parseErr: testCase.parseErr}
 			require.NoError(t, updateVideoSingleTask(context.Background(), adaptor, ch, task.GetUpstreamTaskID(), map[string]*model.Task{
@@ -1017,10 +1009,9 @@ func TestUpdateBatchTasksPollClassification(t *testing.T) {
 			seedToken(t, tokenID, userID, "sk-batch-class", tokenRemain)
 			seedTaskPollingChannel(t, channelID, true)
 
-			task := makeTask(userID, channelID, preConsumed, tokenID, BillingSourceWallet, 0)
+			task := makeTask(t, userID, channelID, preConsumed, tokenID, BillingSourceWallet, 0)
 			task.TaskID = "task_batch_class"
 			task.PrivateData.UpstreamTaskID = "upstream_batch_class"
-			require.NoError(t, model.DB.Create(task).Error)
 			upstreamID := task.GetUpstreamTaskID()
 
 			adaptor := &scriptedBatchPollingAdaptor{

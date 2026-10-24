@@ -84,7 +84,10 @@ func CheckSetup() {
 		if RootUserExists() {
 			common.SysLog("system is not initialized, but root user exists")
 			// Create setup record
+			// 固定主键哨兵行：与 InitializeSystem 同一个口径，避免自增 id 让
+			// 「只能初始化一次」失去唯一约束的落点。
 			newSetup := Setup{
+				ID:            SetupSingletonID,
 				Version:       common.Version,
 				InitializedAt: time.Now().Unix(),
 			}

@@ -15,6 +15,7 @@ import (
 	"github.com/uter-ai/uter/constant"
 	"github.com/uter-ai/uter/i18n"
 	"github.com/uter-ai/uter/model"
+	perfmetrics "github.com/uter-ai/uter/pkg/perf_metrics"
 	"github.com/uter-ai/uter/router"
 	"github.com/uter-ai/uter/service"
 	"github.com/uter-ai/uter/setting/ratio_setting"
@@ -71,6 +72,9 @@ func newOrgPlatformEnv(t *testing.T) *orgPlatformEnv {
 	// common.RDB。改写这两个全局量前先等在途同步落定，否则「cleanup 写 vs 协程读」
 	// 会被 -race 判为数据竞争（生产环境启动后不再改写，故非线上缺陷）。
 	model.WaitCacheSyncForTest()
+	// perf_metrics 的落库协程同样读这两个全局量（relay 结束后由 RecordRelayResult
+	// 触发），必须一起等，否则 e2e 无法纳入 -race 门禁。
+	perfmetrics.WaitRecordForTest()
 	previousRedis := common.RedisEnabled
 	previousPasswordLogin := common.PasswordLoginEnabled
 	previousSSRF := *system_setting.GetFetchSetting()
@@ -117,6 +121,8 @@ func newOrgPlatformEnv(t *testing.T) *orgPlatformEnv {
 		// 还原全局量前必须等缓存同步协程结束，否则协程仍会读 common.RedisEnabled /
 		// common.RDB，与这里的写构成数据竞争（见 F-15）。
 		model.WaitCacheSyncForTest()
+		// 同理，relay 路径上 perf_metrics 起的落库协程也要等干净。
+		perfmetrics.WaitRecordForTest()
 		model.DB, model.LOG_DB = previousDB, previousLogDB
 		common.RedisEnabled = previousRedis
 		common.PasswordLoginEnabled = previousPasswordLogin
@@ -357,13 +363,24 @@ func (env *orgPlatformEnv) seedChannel(t *testing.T, upstreamURL string) {
 		`{"`+orgE2EModel+`":1}`))
 }
 
+// e2eTokenQuota 是测试令牌的有限剩余额度。
+//
+// 必须用「足够大的有限额度」而不是 unlimited_quota:true：生产创建接口
+// （controller/token.go，TOK-001/002）对非管理员一律把 UnlimitedQuota 强制
+// 置为 false，而 remain_quota 缺省为 0，于是 model.ValidateUserToken 立刻判定
+// 令牌耗尽，整个组织账单 E2E 在鉴权阶段就以 401 结束——计费逻辑一次都没跑过。
+// 这里改用生产校验规则允许的有限额度，且额度足够覆盖全部用例的实际消耗
+// （最重的一例是 8 并发 × 单笔 30000）。
+const e2eTokenQuota = 100_000_000
+
 // createToken 以某角色身份通过 API 创建 API 令牌，返回令牌 key。
 //
 // 平台创建接口出于安全只回 success，不回 key（明文只此一次、存放在库里），
 // 因此这里按「用户名 + 令牌名」回读拿到 key。
 func (env *orgPlatformEnv) createToken(t *testing.T, actor, name string) string {
 	t.Helper()
-	body := `{"name":"` + name + `","unlimited_quota":true,"expired_time":-1,"model_limits_enabled":false}`
+	body := `{"name":"` + name + `","unlimited_quota":false,"remain_quota":` +
+		strconv.Itoa(e2eTokenQuota) + `,"expired_time":-1,"model_limits_enabled":false}`
 	recorder := env.call(t, http.MethodPost, "/api/token/", actor, body)
 	require.Equal(t, http.StatusOK, recorder.Code, recorder.Body.String())
 	require.True(t, decodeSuccess(recorder.Body.Bytes()), recorder.Body.String())
@@ -372,6 +389,11 @@ func (env *orgPlatformEnv) createToken(t *testing.T, actor, name string) string 
 	err := model.DB.Where("user_id = ? AND name = ?", env.uid(actor), name).First(&token).Error
 	require.NoError(t, err, "令牌未落库，创建可能被拒绝")
 	require.NotEmpty(t, token.Key)
+	// 夹具自检：令牌必须真的可用于鉴权，否则测试会在 401 处静默退化成
+	// 「鉴权失败用例」，而不是计费用例。任何让令牌重新变得不可用的改动
+	// 都必须在这里失败，而不是在后面某个计费断言上表现成「额度不符」。
+	require.Equal(t, common.TokenStatusEnabled, token.Status, "令牌状态必须为启用")
+	require.Positive(t, token.RemainQuota, "令牌必须有正数剩余额度，否则鉴权阶段即被拒")
 	env.apiKey[actor] = token.Key
 	return token.Key
 }

@@ -219,6 +219,21 @@ function checkServerAvailability(port, maxRetries = 30, retryDelay = 1000) {
   });
 }
 
+// LOOPBACK_HOST 是桌面形态下后端唯一允许的监听地址。
+//
+// 窗口只访问 http://127.0.0.1:PORT，因此后端没有必要监听任何其他地址；
+// 而它带着 Root 权限与匿名 /api/setup 初始化入口，一旦监听局域网，
+// 同网段其他设备即可在首次初始化时抢先创建 Root。
+const LOOPBACK_HOST = '127.0.0.1';
+
+// 桌面端密钥的持久化逻辑独立成模块，便于在没有 Electron 运行时的情况下
+// 对「重启后密钥不变」「不静默轮换」「损坏时补全而非抹掉」做回归测试。
+const {
+  SECRET_FILE_NAME,
+  secretFilePath,
+  ensureDesktopSecrets,
+} = require('./desktop-secrets');
+
 function startServer() {
   return new Promise((resolve, reject) => {
     const isDev = process.env.NODE_ENV === 'development';
@@ -255,14 +270,36 @@ function startServer() {
     }
 
     // 生产模式：启动二进制服务器
-    const env = { ...process.env, PORT: PORT.toString() };
+    //
+    // 桌面形态下后端**只允许监听回环地址**：它带着 Root 权限与匿名初始化入口，
+    // 一旦监听 0.0.0.0/局域网地址，同网段任何设备都能访问桌面应用后端，并在
+    // 首次初始化时抢先创建 Root 账户。因此这里显式设置：
+    //   - UTER_DESKTOP=1：让 Go 侧强制绑定 127.0.0.1（即便 HOST 被误配也不生效）
+    //   - HOST=127.0.0.1：双保险，直接给出目标绑定地址
+    // 服务端部署由部署方自行设置 HOST，与桌面形态无关。
+    const env = { ...process.env, PORT: PORT.toString(), HOST: LOOPBACK_HOST, UTER_DESKTOP: '1' };
 
     if (!fs.existsSync(dataDir)) {
       fs.mkdirSync(dataDir, { recursive: true });
     }
 
     env.SQLITE_PATH = path.join(dataDir, 'uter.db');
-    
+
+    // 会话签名密钥 / 数据加密密钥必须跨重启稳定：后端每次启动都用随机值时，
+    // 重启后刷新令牌校验、加密数据与带签名的任务资源链接会全部失效。
+    // 这里首次启动时生成随机密钥，写入用户数据目录（0600），之后每次复用。
+    // 密钥值本身绝不打印到日志或诊断输出。
+    const secretFile = secretFilePath(userDataPath);
+    try {
+      const secrets = ensureDesktopSecrets(secretFile);
+      env.SESSION_SECRET = secrets.SESSION_SECRET;
+      env.CRYPTO_SECRET = secrets.CRYPTO_SECRET;
+    } catch (err) {
+      console.error('✗ 无法初始化桌面端密钥文件:', err.message);
+      reject(err);
+      return;
+    }
+
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
     console.log('📁 您的数据存储位置：');
     console.log('   ' + dataDir);

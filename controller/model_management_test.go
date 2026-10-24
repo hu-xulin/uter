@@ -32,6 +32,10 @@ import (
 
 func modelManagementDB(t *testing.T, kind, dsn string) *gorm.DB {
 	t.Helper()
+	// 上一个用例可能还留着在途的缓存同步协程（runCacheSync 是 fire-and-forget 的），
+	// 它们会读 common.OptionMap / common.RedisEnabled。在改写这些全局量之前先等
+	// 它们落定，否则「本用例写 vs 上个用例的协程读」就是数据竞争。
+	model.WaitCacheSyncForTest()
 	database, isolatedDSN := newAuditTestDatabase(t, kind, dsn)
 	previousDB, previousLogDB := model.DB, model.LOG_DB
 	previousMain, previousLog := common.MainDatabaseType(), common.LogDatabaseType()
@@ -79,6 +83,11 @@ func modelManagementDB(t *testing.T, kind, dsn string) *gorm.DB {
 	require.NoError(t, database.Raw(query).Scan(&version).Error)
 	t.Logf("database version: %s", version)
 	t.Cleanup(func() {
+		// 先把在途的缓存同步协程等完，再恢复全局量。这些协程读
+		// common.OptionMap / common.RedisEnabled，而下面就要把它们改回原值；
+		// 不等就是「cleanup 写 vs 协程读」的数据竞争（go test -race 会抓到，
+		// 且在 b63bf5ad4 基线上就已经时对时错地复现）。
+		model.WaitCacheSyncForTest()
 		for _, value := range restoreRatios {
 			require.NoError(t, value.restore(value.value))
 		}

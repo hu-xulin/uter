@@ -43,7 +43,11 @@ func CreateTwoFAEnrollment(identity AuthSessionIdentity, authorization *AuthFlow
 				return err
 			}
 		}
-		pending := &TwoFA{UserId: identity.UserID, Secret: secret}
+		pending := &TwoFA{UserId: identity.UserID}
+		// 种子加密后落库：Secret 列里不允许出现明文 TOTP 种子。
+		if err := pending.SetPlainSecret(secret); err != nil {
+			return err
+		}
 		if err := tx.Create(pending).Error; err != nil {
 			return err
 		}
@@ -93,11 +97,18 @@ func EnableTwoFAEnrollment(identity AuthSessionIdentity, token, code string) err
 			}
 			return err
 		}
-		secretHash := common.GenerateHMACWithKey([]byte("twofa-enrollment:"+common.SessionSecret), pending.Secret)
+		// 种子从库里取到时是密文，先集中解密，再用解密后的明文算绑定摘要
+		// 与校验 TOTP 码。直接拿 t.Secret 参与运算会同时踩两个坑：
+		// 密文算出的摘要永远对不上（启用必失败），以及把密文当明文用。
+		plainSecret, err := pending.PlainSecret()
+		if err != nil {
+			return err
+		}
+		secretHash := common.GenerateHMACWithKey([]byte("twofa-enrollment:"+common.SessionSecret), plainSecret)
 		if !hmac.Equal([]byte(payload.SecretHash), []byte(secretHash)) {
 			return ErrTwoFASetupInvalid
 		}
-		if !common.ValidateTOTPCode(pending.Secret, cleanCode) {
+		if !common.ValidateTOTPCode(plainSecret, cleanCode) {
 			return ErrTwoFACodeInvalid
 		}
 		if _, err := IncrementUserAuthVersionWithTx(tx, identity.UserID); err != nil {

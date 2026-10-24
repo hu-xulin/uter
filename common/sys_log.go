@@ -2,6 +2,7 @@ package common
 
 import (
 	"fmt"
+	"net"
 	"os"
 	"sync"
 	"time"
@@ -36,12 +37,26 @@ func FatalLog(v ...any) {
 	os.Exit(1)
 }
 
-func LogStartupSuccess(startTime time.Time, port string) {
+// LogStartupSuccess 打印启动横幅。
+//
+// listenAddr 是 http.Server 实际使用的 "host:port"。只监听回环时不再宣传
+// 「Network: http://<lan-ip>:port」——那会让运维以为服务对局域网开放，也会在
+// 桌面形态下把「其实只有本机可达」误报成「全网可达」。
+func LogStartupSuccess(startTime time.Time, listenAddr string) {
 	duration := time.Since(startTime)
 	durationMs := duration.Milliseconds()
 
-	// Get network IPs
-	networkIps := GetNetworkIps()
+	host, port, err := net.SplitHostPort(listenAddr)
+	if err != nil {
+		host, port = listenAddr, ""
+	}
+	loopbackOnly := IsLoopbackAddr(listenAddr)
+
+	// Get network IPs（仅在实际对外监听时才需要）
+	var networkIps []string
+	if !loopbackOnly {
+		networkIps = GetNetworkIps()
+	}
 
 	LogWriterMu.RLock()
 	defer LogWriterMu.RUnlock()
@@ -58,12 +73,16 @@ func LogStartupSuccess(startTime time.Time, port string) {
 	fmt.Fprintf(gin.DefaultWriter, "  \033[32m%s %s\033[0m  %s\n", SystemName, Version, LogText("ready in %d ms", durationMs))
 	fmt.Fprintf(gin.DefaultWriter, "\n")
 
-	if !IsRunningInContainer() {
-		fmt.Fprintf(gin.DefaultWriter, "  ➜  \033[1m%-8s\033[0m http://localhost:%s/\n", LogText("Local:"), port)
-	}
-
-	for _, ip := range networkIps {
-		fmt.Fprintf(gin.DefaultWriter, "  ➜  \033[1m%-8s\033[0m http://%s:%s/\n", LogText("Network:"), ip, port)
+	if loopbackOnly {
+		fmt.Fprintf(gin.DefaultWriter, "  ➜  \033[1m%-8s\033[0m http://%s/\n", LogText("Local:"), net.JoinHostPort(host, port))
+		fmt.Fprintf(gin.DefaultWriter, "  \033[2m%s\033[0m\n", LogText("bound to loopback only: not reachable from other devices on the network"))
+	} else {
+		if !IsRunningInContainer() {
+			fmt.Fprintf(gin.DefaultWriter, "  ➜  \033[1m%-8s\033[0m http://localhost:%s/\n", LogText("Local:"), port)
+		}
+		for _, ip := range networkIps {
+			fmt.Fprintf(gin.DefaultWriter, "  ➜  \033[1m%-8s\033[0m http://%s:%s/\n", LogText("Network:"), ip, port)
+		}
 	}
 
 	fmt.Fprintf(gin.DefaultWriter, "\n")
