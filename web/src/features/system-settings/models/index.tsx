@@ -158,6 +158,17 @@ const defaultModelSettings: ModelSettings = {
   // 待补译语种 = 除英语外的全部 6 语。上游目录只提供 zh/en/ja 且覆盖不全，
   // 故 zh/ja 也纳入兜底；补译只填空白位，已存在的描述不会被覆盖。
   ModelDescriptionTranslateLocales: 'zh, zh-TW, fr, ja, ru, vi',
+  // ===== 渠道登录与同步（默认值与后端 service/dreamrouter_sync.go 对齐）=====
+  // 默认开启同步：上游口径的模型与折扣每日一变，不开同步会让定价长期滞后。
+  // 口令默认空串 = 未配置；后端会明确报错提示去后台填，不会用明文兜底。
+  DreamRouterSyncEnabled: true,
+  DreamRouterSyncProvider: 'dreamrouter',
+  DreamRouterSyncChannelID: '20',
+  DreamRouterSyncUsername: '',
+  DreamRouterSyncPassword: '',
+  DreamRouterSyncHour: '0',
+  DreamRouterSyncRuleDirection: 'increase',
+  DreamRouterSyncRuleAmount: '0.1',
 }
 
 export function ModelSettings() {

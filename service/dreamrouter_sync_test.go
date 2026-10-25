@@ -81,7 +81,9 @@ func TestDreamRouterComputeTargetPerToken(t *testing.T) {
 		CacheRatio:      0.1,
 		EnableGroups:    []string{"claude"},
 	}
-	change := dreamRouterComputeTarget(rec, 0.6, 0.1)
+	// 第三个参数是**价格规则作用后的系数**（r + amount），不是 amount 本身。
+	factor := dreamRouterRuleFactor(0.6, 0.1, DreamRouterRuleDirectionIncrease)
+	change := dreamRouterComputeTarget(rec, 0.6, factor)
 	if change.BillingClass != "per_token" {
 		t.Fatalf("billing class = %s, want per_token", change.BillingClass)
 	}
@@ -107,7 +109,8 @@ func TestDreamRouterComputeTargetPerCall(t *testing.T) {
 		QuotaType:  1,
 		ModelPrice: 0.029,
 	}
-	change := dreamRouterComputeTarget(rec, 0.85, 0.1)
+	factor := dreamRouterRuleFactor(0.85, 0.1, DreamRouterRuleDirectionIncrease)
+	change := dreamRouterComputeTarget(rec, 0.85, factor)
 	if change.BillingClass != "per_call" {
 		t.Fatalf("billing class = %s, want per_call", change.BillingClass)
 	}
@@ -131,7 +134,8 @@ func TestDreamRouterComputeTargetTiered(t *testing.T) {
 		EnableGroups:    []string{"openai"},
 		BillingExpr:     `len <= 272000 ? tier("standard", p * 5 + c * 30 + cr * 0.5) : tier("long_context", p * 10 + c * 45 + cr * 1)`,
 	}
-	change := dreamRouterComputeTarget(rec, 0.6, 0.1)
+	factor := dreamRouterRuleFactor(0.6, 0.1, DreamRouterRuleDirectionIncrease)
+	change := dreamRouterComputeTarget(rec, 0.6, factor)
 	if change.BillingClass != "tiered" {
 		t.Fatalf("billing class = %s, want tiered", change.BillingClass)
 	}
@@ -142,9 +146,55 @@ func TestDreamRouterComputeTargetTiered(t *testing.T) {
 		t.Errorf("CompletionRatio = %v, want 6（基线 out/in = 18/3）", change.CompletionRatio)
 	}
 
-	change = dreamRouterComputeTarget(rec, 0.5, 0.1)
+	factor = dreamRouterRuleFactor(0.5, 0.1, DreamRouterRuleDirectionIncrease)
+	change = dreamRouterComputeTarget(rec, 0.5, factor)
 	if !nearlyEqualSync(change.NewModelRatio, 1.5) {
 		t.Errorf("NewModelRatio(r=0.5) = %v, want 1.5（基线线性缩放）", change.NewModelRatio)
+	}
+}
+
+// TestDreamRouterRuleFactor 锁定价格规则两个方向的系数语义。
+//
+//	increase：r + amount（加价）
+//	decrease：r - amount（降价）
+//
+// 降价幅度 ≥ 上游折扣时系数非正——必须返回 0（调用方据此跳过该模型），
+// 绝不能返回负数：负系数会算出负价格并被写进倍率表。
+func TestDreamRouterRuleFactor(t *testing.T) {
+	if got := dreamRouterRuleFactor(0.6, 0.1, DreamRouterRuleDirectionIncrease); !nearlyEqualSync(got, 0.7) {
+		t.Errorf("increase factor = %v, want 0.7", got)
+	}
+	if got := dreamRouterRuleFactor(0.6, 0.1, DreamRouterRuleDirectionDecrease); !nearlyEqualSync(got, 0.5) {
+		t.Errorf("decrease factor = %v, want 0.5", got)
+	}
+	// 幅度恰好等于折扣 → 系数为 0（非正）→ 调用方跳过。
+	if got := dreamRouterRuleFactor(0.6, 0.6, DreamRouterRuleDirectionDecrease); got != 0 {
+		t.Errorf("decrease factor = %v, want 0（幅度等于折扣时必须非正）", got)
+	}
+	// 幅度超过折扣 → 系数为 0，绝不为负。
+	if got := dreamRouterRuleFactor(0.6, 0.8, DreamRouterRuleDirectionDecrease); got != 0 {
+		t.Errorf("decrease factor = %v, want 0（幅度超过折扣时不得为负）", got)
+	}
+	// 未知方向按加价处理（保守：不会意外降价）。
+	if got := dreamRouterRuleFactor(0.6, 0.1, "unknown"); !nearlyEqualSync(got, 0.7) {
+		t.Errorf("unknown direction factor = %v, want 0.7（按加价兜底）", got)
+	}
+}
+
+// TestDreamRouterComputeTargetDecrease 锁定「降价」方向的实际算价结果。
+func TestDreamRouterComputeTargetDecrease(t *testing.T) {
+	// 与 TestDreamRouterComputeTargetPerToken 同一模型，但规则为降价 0.1 折：
+	// r=0.6 − 0.1 = 0.5 → ModelRatio = 2.5 × 0.5 = 1.25（$2.5/1M）。
+	rec := dreamRouterRecord{
+		ModelName:    "claude-opus-4-5",
+		QuotaType:    0,
+		ModelRatio:   2.5,
+		EnableGroups: []string{"claude"},
+	}
+	factor := dreamRouterRuleFactor(0.6, 0.1, DreamRouterRuleDirectionDecrease)
+	change := dreamRouterComputeTarget(rec, 0.6, factor)
+	if !nearlyEqualSync(change.NewModelRatio, 1.25) {
+		t.Errorf("NewModelRatio = %v, want 1.25（2.5 × 0.5）", change.NewModelRatio)
 	}
 }
 
@@ -156,7 +206,8 @@ func TestDreamRouterComputeTargetUnregisteredTiered(t *testing.T) {
 		ModelRatio:  1,
 		BillingExpr: `tier("base", p * 1)`,
 	}
-	change := dreamRouterComputeTarget(rec, 0.6, 0.1)
+	factor := dreamRouterRuleFactor(0.6, 0.1, DreamRouterRuleDirectionIncrease)
+	change := dreamRouterComputeTarget(rec, 0.6, factor)
 	if change.BillingClass != "tiered_unregistered" {
 		t.Errorf("billing class = %s, want tiered_unregistered", change.BillingClass)
 	}

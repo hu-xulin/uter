@@ -299,6 +299,18 @@ export type ModelSettings = {
   ModelDescriptionTranslateApiKey: string
   ModelDescriptionTranslateModel: string
   ModelDescriptionTranslateLocales: string
+  /**
+   * 渠道登录与同步：上游渠道凭据 + 同步时刻 + 价格规则。
+   * 口令是 secret 键，GET /api/option/ 以掩码串下发（不返回明文）。
+   */
+  DreamRouterSyncEnabled: boolean
+  DreamRouterSyncProvider: string
+  DreamRouterSyncChannelID: string
+  DreamRouterSyncUsername: string
+  DreamRouterSyncPassword: string
+  DreamRouterSyncHour: string
+  DreamRouterSyncRuleDirection: string
+  DreamRouterSyncRuleAmount: string
 }
 
 export type BillingSettings = {
