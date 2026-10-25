@@ -1,0 +1,74 @@
+/*
+Copyright (C) 2023-2026 Uter.ai
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+
+For commercial licensing, please contact support@uter.ai
+*/
+/* ── Layer 2 · Semantic colors ────────────────────────────────────────
+ * UTER 已经有一套经过验证的颜色 Token（`styles/theme.css` 的
+ * `--background` / `--foreground` / `--card` / … 以及 `.dark` 覆盖）。
+ * 文档明确要求「使用已有且经过验证的颜色 Token，避免创建重复的颜色
+ * 体系」，所以这里**不新建调色板**，只把业务语义映射到既有 Token 上。
+ *
+ * 新增颜色的唯一合法路径：
+ *   1. 在 theme.css 的 `:root` / `.dark` 里定义原始颜色；
+ *   2. 在这里映射出一条 `--ds-color-*` 语义；
+ *   3. 在 docs/design-system/colors.md 登记用途。
+ * 组件里直接写 `#0F172A`、`rgb(...)`、`text-[#333]` 都是违规的。
+ */
+
+:root {
+  /* ── 文本 ──────────────────────────────────────────────────────────── */
+  --ds-color-text-primary: var(--foreground);
+  --ds-color-text-secondary: var(--muted-foreground);
+  --ds-color-text-disabled: color-mix(
+    in oklch,
+    var(--muted-foreground) 55%,
+    transparent
+  );
+  --ds-color-text-inverse: var(--primary-foreground);
+  --ds-color-text-danger: var(--destructive);
+  --ds-color-text-success: var(--success);
+  --ds-color-text-warning: var(--warning);
+  --ds-color-text-info: var(--info);
+
+  /* ── 表面 ──────────────────────────────────────────────────────────── */
+  --ds-color-surface-page: var(--background);
+  --ds-color-surface-card: var(--card);
+  --ds-color-surface-popover: var(--popover);
+  --ds-color-surface-muted: var(--muted);
+  --ds-color-surface-secondary: var(--secondary);
+  --ds-color-surface-accent: var(--accent);
+  --ds-color-surface-sidebar: var(--sidebar);
+
+  /* ── 主操作 ────────────────────────────────────────────────────────── */
+  --ds-color-action-primary: var(--primary);
+  --ds-color-action-primary-hover: var(--hover-primary, var(--primary));
+  --ds-color-action-primary-foreground: var(--primary-foreground);
+  --ds-color-action-destructive: var(--destructive);
+  --ds-color-action-destructive-hover: var(
+    --hover-destructive,
+    var(--destructive)
+  );
+  --ds-color-action-success: var(--success);
+  --ds-color-action-success-hover: var(--hover-success, var(--success));
+
+  /* ── 描边与焦点 ────────────────────────────────────────────────────── */
+  --ds-color-border: var(--border);
+  --ds-color-border-input: var(--input);
+  --ds-color-border-sidebar: var(--sidebar-border);
+  --ds-color-border-destructive: var(--destructive);
+  --ds-color-focus-ring: var(--ring);
+}

@@ -1,0 +1,64 @@
+/*
+Copyright (C) 2023-2026 Uter.ai
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+
+For commercial licensing, please contact support@uter.ai
+*/
+/* ── Foundations · Accessibility ──────────────────────────────────────
+ * 三条硬约束：
+ *   1. 键盘焦点必须可见 —— 统一 2px 外扩环，不允许组件用
+ *      `outline: none` 把它抹掉；
+ *   2. 尊重 `prefers-reduced-motion`；
+ *   3. 触控目标不小于 24×24（WCAG 2.2 AA · Target Size）。
+ */
+
+@layer base {
+  /* 只在键盘导航时显示焦点环，鼠标点击不显示（:focus-visible 语义） */
+  :where(a, button, [role='button'], [tabindex]):focus-visible {
+    outline: var(--ds-focus-ring-width) solid var(--ds-color-focus-ring);
+    outline-offset: 2px;
+  }
+
+  /* 屏幕阅读器专用文本 */
+  .ds-sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border-width: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* 触控目标下限：仅对声明了 ds-touch-target 的控件生效，避免影响
+   密集表格里的图标按钮布局 */
+.ds-touch-target {
+  min-width: 1.5rem;
+  min-height: 1.5rem;
+}

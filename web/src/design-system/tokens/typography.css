@@ -1,0 +1,75 @@
+/*
+Copyright (C) 2023-2026 Uter.ai
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+
+For commercial licensing, please contact support@uter.ai
+*/
+/* ── Layer 1 · Typography scale（唯一字号阶梯）────────────────────────
+ * 九档语义字号，与 docs/design-system/typography.md 的表格逐行对应：
+ *
+ *   display  36 / 700 / 40   页面主视觉标题（营销页 hero）
+ *   h1       30 / 600 / 36   页面标题
+ *   h2       24 / 600 / 32   区块标题
+ *   h3       18 / 600 / 28   卡片标题、弹窗标题
+ *   body     16 / 400 / 24   正文段落、卡片正文
+ *   body-sm  14 / 400 / 20   次要正文、表格单元格
+ *   label    14 / 500 / 20   按钮文字、表单标签、导航项
+ *   caption  12 / 400 / 16   说明、占位符、徽标
+ *   mono     16 / 400 / 24   代码、金额、等宽标识（见 exceptions.md E2/E3）
+ *
+ * ⚠️ 必须声明在 `@theme` 里，不能写在 `:root`。
+ * Tailwind v4 只从 `@theme` 读取主题值：写在 `:root` 的 `--text-*`
+ * 只能被 `var(--text-*)` 直接读到，`text-sm` 这类工具类会静默退回
+ * Tailwind 内置默认值。之前项目里就出现过「改了刻度、页面没变」的
+ * 情况，根因就是这个。`@theme`（非 inline）同时会把变量输出到
+ * `:root`，所以 `var(--text-sm)` 的写法仍然可用。
+ *
+ * 密度档位（`[data-theme-scale]`）覆盖的是 `--text-*` 本身，因此
+ * 这里的阶梯同时也是密度缩放的基线。
+ */
+@theme {
+  --text-xs: 0.75rem; /* 12px — caption */
+  --text-xs--line-height: 1rem; /* 16px */
+
+  --text-sm: 0.875rem; /* 14px — body-sm / label */
+  --text-sm--line-height: 1.25rem; /* 20px */
+
+  --text-base: 1rem; /* 16px — body / mono */
+  --text-base--line-height: 1.5rem; /* 24px */
+
+  --text-lg: 1.125rem; /* 18px — h3 */
+  --text-lg--line-height: 1.75rem; /* 28px */
+
+  --text-xl: 1.25rem; /* 20px — 兼容档，文档九档之外的既有标题 */
+  --text-xl--line-height: 1.75rem; /* 28px */
+
+  --text-2xl: 1.5rem; /* 24px — h2 */
+  --text-2xl--line-height: 2rem; /* 32px */
+
+  --text-3xl: 1.875rem; /* 30px — h1 */
+  --text-3xl--line-height: 2.25rem; /* 36px */
+
+  --text-4xl: 2.25rem; /* 36px — display */
+  --text-4xl--line-height: 2.5rem; /* 40px */
+
+  /* 阶梯到此为止。更大的尺寸（48/60px）不纳入系统 —— 需要时先确认是否
+     真的必要，并按 exceptions.md 的流程登记。 */
+
+  /* ── 字重阶梯：全站只用这四档 */
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+}
