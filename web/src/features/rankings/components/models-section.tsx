@@ -172,7 +172,7 @@ export function ModelsSection(props: ModelsSectionProps) {
             <BarChart3 className='text-primary size-4' />
             {t('Top Models')}
           </h2>
-          <p className='text-muted-foreground mt-1 text-sm'>
+          <p className='text-muted-foreground mt-1 text-base'>
             {t(PERIOD_DESCRIPTIONS[props.period])}
           </p>
         </div>
@@ -180,7 +180,7 @@ export function ModelsSection(props: ModelsSectionProps) {
           <div className='text-foreground text-2xl font-semibold tabular-nums'>
             {formatTokens(totalTokens)}
           </div>
-          <div className='text-muted-foreground/80 text-xs font-medium uppercase'>
+          <div className='text-muted-foreground/80 text-sm font-medium uppercase'>
             {t('tokens')}
           </div>
         </div>
@@ -199,7 +199,7 @@ export function ModelsSection(props: ModelsSectionProps) {
               option={VCHART_OPTION}
             />
           ) : (
-            <div className='text-muted-foreground/80 flex h-full items-center justify-center text-xs'>
+            <div className='text-muted-foreground/80 flex h-full items-center justify-center text-sm'>
               {t('No history data available')}
             </div>
           )}
@@ -209,16 +209,16 @@ export function ModelsSection(props: ModelsSectionProps) {
       {/* Leaderboard block ----------------------------------------------- */}
       <div className='border-t'>
         <header className='px-5 pt-4 pb-2'>
-          <h3 className='text-foreground inline-flex items-center gap-2 text-sm font-semibold'>
+          <h3 className='text-foreground inline-flex items-center gap-2 text-base font-semibold'>
             <Trophy className='size-3.5 text-amber-500' />
             {t('LLM Leaderboard')}
           </h3>
-          <p className='text-muted-foreground/80 mt-0.5 text-xs'>
+          <p className='text-muted-foreground/80 mt-0.5 text-sm'>
             {t('Compare the most popular models on the platform')}
           </p>
         </header>
         {props.rows.length === 0 ? (
-          <div className='text-muted-foreground/80 px-5 py-8 text-center text-sm'>
+          <div className='text-muted-foreground/80 px-5 py-8 text-center text-base'>
             {t('No models match the selected filters')}
           </div>
         ) : (

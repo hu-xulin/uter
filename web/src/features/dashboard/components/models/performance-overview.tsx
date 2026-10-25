@@ -61,7 +61,7 @@ export function PerformanceOverview() {
 
   if (!loading && !hasData) {
     return (
-      <div className='text-muted-foreground overflow-hidden rounded-lg border px-4 py-3 text-center text-xs'>
+      <div className='text-muted-foreground overflow-hidden rounded-lg border px-4 py-3 text-center text-sm'>
         {t('No performance data available')}
       </div>
     )
@@ -75,7 +75,7 @@ export function PerformanceOverview() {
           <IconBadge tone='success' size='xs'>
             <HeartPulse />
           </IconBadge>
-          <span className='text-xs font-semibold whitespace-nowrap'>
+          <span className='text-sm font-semibold whitespace-nowrap'>
             {t('Performance health')}
           </span>
         </div>
@@ -149,10 +149,10 @@ function InlineMetric(props: {
       <IconBadge tone={props.tone} size='xs'>
         <Icon />
       </IconBadge>
-      <span className='text-muted-foreground text-xs'>{props.label}</span>
+      <span className='text-muted-foreground text-sm'>{props.label}</span>
       <span
         className={cn(
-          'text-xs font-semibold tabular-nums',
+          'text-sm font-semibold tabular-nums',
           props.valueClassName
         )}
       >
@@ -179,7 +179,7 @@ function ModelBadge(props: { model: PerfModelSummary }) {
       />
       <span
         className={cn(
-          'text-xs font-semibold tabular-nums',
+          'text-sm font-semibold tabular-nums',
           getSuccessRateTextClass(model.success_rate)
         )}
       >

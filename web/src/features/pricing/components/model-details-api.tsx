@@ -507,7 +507,7 @@ function CodeSamplesSection(props: {
                 <TabsTrigger
                   key={ep.type}
                   value={ep.type}
-                  className='h-7 px-2.5 text-xs'
+                  className='h-7 px-2.5 text-sm'
                 >
                   {ep.type}
                 </TabsTrigger>
@@ -523,7 +523,7 @@ function CodeSamplesSection(props: {
         >
           <TabsList className='bg-muted/40 h-8 p-0.5'>
             {(Object.keys(LANG_LABELS) as Lang[]).map((l) => (
-              <TabsTrigger key={l} value={l} className='h-7 px-2.5 text-xs'>
+              <TabsTrigger key={l} value={l} className='h-7 px-2.5 text-sm'>
                 {LANG_LABELS[l]}
               </TabsTrigger>
             ))}
@@ -537,7 +537,7 @@ function CodeSamplesSection(props: {
         </CodeBlock>
       </div>
 
-      <p className='text-muted-foreground mt-2 text-xs'>
+      <p className='text-muted-foreground mt-2 text-sm'>
         {t('Replace')}{' '}
         <code className='bg-muted rounded px-1 py-0.5 font-mono text-[0.8125rem]'>
           {'<YOUR_API_KEY>'}
@@ -578,11 +578,11 @@ function SupportedParametersSection(props: { model: PricingModel }) {
             cellClassName: tableStyles.topCell,
             cell: (p) => (
               <div className='flex items-center gap-1.5'>
-                <code className='font-mono text-sm font-medium'>{p.name}</code>
+                <code className='font-mono text-base font-medium'>{p.name}</code>
                 {p.required && (
                   <Badge
                     variant='outline'
-                    className='h-6 border-rose-500/40 px-2 text-sm text-rose-600 dark:text-rose-400'
+                    className='h-6 border-rose-500/40 px-2 text-base text-rose-600 dark:text-rose-400'
                   >
                     {t('required')}
                   </Badge>
@@ -598,7 +598,7 @@ function SupportedParametersSection(props: { model: PricingModel }) {
             cell: (p) => (
               <Badge
                 variant='secondary'
-                className='h-7 rounded-full px-2.5 font-mono text-sm font-normal'
+                className='h-7 rounded-full px-2.5 font-mono text-base font-normal'
               >
                 {p.type}
               </Badge>
@@ -629,19 +629,19 @@ function ParamRangeCell(props: { param: SupportedParameter }) {
   if (defaultValue !== undefined) {
     return (
       <div className='flex flex-wrap items-center gap-1'>
-        <span className='text-muted-foreground text-sm'>=</span>
-        <code className='bg-muted rounded px-1.5 py-0.5 font-mono text-sm'>
+        <span className='text-muted-foreground text-base'>=</span>
+        <code className='bg-muted rounded px-1.5 py-0.5 font-mono text-base'>
           {String(defaultValue)}
         </code>
         {range && (
-          <span className='text-muted-foreground text-sm'>{range}</span>
+          <span className='text-muted-foreground text-base'>{range}</span>
         )}
       </div>
     )
   }
   if (range) {
     return (
-      <span className='text-muted-foreground font-mono text-sm'>{range}</span>
+      <span className='text-muted-foreground font-mono text-base'>{range}</span>
     )
   }
   if (enumValues && enumValues.length > 0) {
@@ -650,7 +650,7 @@ function ParamRangeCell(props: { param: SupportedParameter }) {
         {enumValues.map((v) => (
           <code
             key={v}
-            className='bg-muted text-muted-foreground rounded px-1.5 py-0.5 font-mono text-sm'
+            className='bg-muted text-muted-foreground rounded px-1.5 py-0.5 font-mono text-base'
           >
             {v}
           </code>
@@ -658,7 +658,7 @@ function ParamRangeCell(props: { param: SupportedParameter }) {
       </div>
     )
   }
-  return <span className='text-muted-foreground/60 text-sm'>—</span>
+  return <span className='text-muted-foreground/60 text-base'>—</span>
 }
 
 // ---------------------------------------------------------------------------
@@ -711,7 +711,7 @@ function RateLimitsSection(props: { model: PricingModel }) {
           },
         ]}
       />
-      <p className='text-muted-foreground mt-2 text-xs leading-relaxed'>
+      <p className='text-muted-foreground mt-2 text-sm leading-relaxed'>
         {t(
           'RPM = requests per minute, TPM = tokens per minute, RPD = requests per day. Limits apply per token group.'
         )}
@@ -731,7 +731,7 @@ function AuthSection() {
       <SectionTitle icon={KeyRound}>{t('Authentication')}</SectionTitle>
       <div className='border-border/60 bg-muted/20 flex items-start gap-2 rounded-lg border p-3'>
         <ChevronRight className='text-muted-foreground mt-0.5 size-3.5 shrink-0' />
-        <div className='space-y-1.5 text-xs leading-relaxed'>
+        <div className='space-y-1.5 text-sm leading-relaxed'>
           <p>
             {t('All requests must include')}{' '}
             <code className='bg-muted rounded px-1 py-0.5 font-mono text-[0.8125rem]'>
@@ -782,7 +782,7 @@ function SectionTitle(props: {
 }) {
   const Icon = props.icon
   return (
-    <h3 className='text-foreground mb-3 flex items-center gap-1.5 text-sm font-semibold'>
+    <h3 className='text-foreground mb-3 flex items-center gap-1.5 text-base font-semibold'>
       <Icon className='text-muted-foreground/70 size-3.5' />
       {props.children}
     </h3>

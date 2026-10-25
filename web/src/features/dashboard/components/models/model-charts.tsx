@@ -98,10 +98,10 @@ export function ModelCharts(props: ModelChartsProps) {
           <IconBadge tone='chart-4' size='sm'>
             <PieChartIcon />
           </IconBadge>
-          <div className='text-sm font-semibold'>
+          <div className='text-base font-semibold'>
             {t('Model Call Analytics')}
           </div>
-          <span className='text-muted-foreground text-xs'>
+          <span className='text-muted-foreground text-sm'>
             {t('Total:')} {chartData.totalCountDisplay}
           </span>
         </div>
@@ -112,7 +112,7 @@ export function ModelCharts(props: ModelChartsProps) {
               key={tab.value}
               type='button'
               onClick={() => setActiveTab(tab.value)}
-              className={`shrink-0 rounded-md px-3 text-xs font-medium transition-colors ${
+              className={`shrink-0 rounded-md px-3 text-sm font-medium transition-colors ${
                 activeTab === tab.value
                   ? 'bg-background text-foreground shadow-sm'
                   : 'text-muted-foreground hover:text-foreground'

@@ -42,9 +42,9 @@ function PanelHeader(props: {
 }) {
   const heading = (
     <div className='flex flex-col gap-1'>
-      <div className='text-sm font-semibold'>{props.title}</div>
+      <div className='text-base font-semibold'>{props.title}</div>
       {props.description != null && (
-        <div className='text-muted-foreground text-xs'>{props.description}</div>
+        <div className='text-muted-foreground text-sm'>{props.description}</div>
       )}
     </div>
   )
@@ -89,7 +89,7 @@ export function PanelWrapper(props: PanelWrapperProps) {
         <PanelHeader title={props.title} description={props.description} />
         <div
           className={cn(
-            'text-muted-foreground flex items-center justify-center px-4 text-sm',
+            'text-muted-foreground flex items-center justify-center px-4 text-base',
             height,
             props.contentClassName
           )}

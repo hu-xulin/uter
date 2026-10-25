@@ -118,7 +118,7 @@ import { ModelDetailsPerformance } from './model-details-performance'
 
 function SectionTitle(props: { children: React.ReactNode }) {
   return (
-    <h2 className='text-muted-foreground mb-3 text-xs font-semibold uppercase'>
+    <h2 className='text-muted-foreground mb-3 text-sm font-semibold uppercase'>
       {props.children}
     </h2>
   )
@@ -147,7 +147,7 @@ function UnconfiguredTaskPricingNotice(props: { model: PricingModel }) {
 
   return (
     <div className='bg-muted/20 flex flex-col gap-3 rounded-lg border p-3'>
-      <p className='text-muted-foreground text-sm'>
+      <p className='text-muted-foreground text-base'>
         {t(
           'This model is billed by usage, but the administrator has not configured its pricing yet.'
         )}
@@ -159,10 +159,10 @@ function UnconfiguredTaskPricingNotice(props: { model: PricingModel }) {
               key={field}
               className='flex items-baseline justify-between gap-3'
             >
-              <dt className='text-sm'>
+              <dt className='text-base'>
                 {taskPriceLabel(definition.description, field, i18n.language)}
               </dt>
-              <dd className='text-muted-foreground text-xs'>
+              <dd className='text-muted-foreground text-sm'>
                 {taskUsageUnitLabel(
                   definition,
                   i18n.language,
@@ -176,10 +176,10 @@ function UnconfiguredTaskPricingNotice(props: { model: PricingModel }) {
               key={field}
               className='flex items-baseline justify-between gap-3'
             >
-              <dt className='text-sm'>
+              <dt className='text-base'>
                 <code>{field}</code>
               </dt>
-              <dd className='text-muted-foreground text-right text-xs'>
+              <dd className='text-muted-foreground text-right text-sm'>
                 {(definition.enum ?? []).join(', ')}
               </dd>
             </div>
@@ -256,12 +256,12 @@ function OverviewMetric(props: {
     <div className='flex min-w-0 items-center gap-2 px-3 py-2'>
       <Icon className='text-muted-foreground/70 size-3.5 shrink-0' />
       <div className='min-w-0 flex-1'>
-        <div className='text-muted-foreground truncate text-xs font-medium uppercase'>
+        <div className='text-muted-foreground truncate text-sm font-medium uppercase'>
           {props.label}
         </div>
         <div
           className={cn(
-            'text-foreground truncate text-sm font-semibold tabular-nums',
+            'text-foreground truncate text-base font-semibold tabular-nums',
             props.valueClassName
           )}
         >
@@ -314,7 +314,7 @@ function CatalogPillList(props: { items: string[] }) {
       {props.items.map((item) => (
         <span
           key={item}
-          className='bg-muted text-muted-foreground rounded-md px-2 py-1 text-xs font-medium'
+          className='bg-muted text-muted-foreground rounded-md px-2 py-1 text-sm font-medium'
         >
           {item}
         </span>
@@ -325,7 +325,7 @@ function CatalogPillList(props: { items: string[] }) {
 
 function CatalogTextValue(props: { children: React.ReactNode }) {
   return (
-    <span className='text-foreground min-w-0 truncate text-sm font-semibold'>
+    <span className='text-foreground min-w-0 truncate text-base font-semibold'>
       {props.children}
     </span>
   )
@@ -334,7 +334,7 @@ function CatalogTextValue(props: { children: React.ReactNode }) {
 function CatalogInfoCell(props: { label: string; children: React.ReactNode }) {
   return (
     <div className='bg-card flex min-w-0 flex-col gap-1 px-3 py-2.5'>
-      <span className='text-muted-foreground text-xs font-medium uppercase'>
+      <span className='text-muted-foreground text-sm font-medium uppercase'>
         {props.label}
       </span>
       {props.children}
@@ -441,15 +441,15 @@ function ModelBackendQuickStats(props: { model: PricingModel }) {
             key={stat.key}
             className='bg-background flex min-w-0 flex-col gap-0.5 px-3 py-2.5'
           >
-            <span className='text-muted-foreground inline-flex min-w-0 items-center gap-1 text-xs font-medium uppercase'>
+            <span className='text-muted-foreground inline-flex min-w-0 items-center gap-1 text-sm font-medium uppercase'>
               <Icon className='size-3 shrink-0' />
               <span className='truncate'>{stat.label}</span>
             </span>
-            <span className='text-foreground truncate text-sm font-semibold tabular-nums'>
+            <span className='text-foreground truncate text-base font-semibold tabular-nums'>
               {stat.value}
             </span>
             {stat.hint && (
-              <span className='text-muted-foreground/60 truncate text-xs'>
+              <span className='text-muted-foreground/60 truncate text-sm'>
                 {stat.hint}
               </span>
             )}
@@ -496,7 +496,7 @@ function ModelBackendSignalsSection(props: { model: PricingModel }) {
           <div className='grid gap-2 sm:grid-cols-2'>
             {inputModalities.length > 0 && (
               <div className='flex items-center justify-between gap-3 rounded-lg border px-3 py-2'>
-                <span className='text-muted-foreground text-xs font-medium'>
+                <span className='text-muted-foreground text-sm font-medium'>
                   {t('Input')}
                 </span>
                 <CatalogTextValue>
@@ -506,7 +506,7 @@ function ModelBackendSignalsSection(props: { model: PricingModel }) {
             )}
             {outputModalities.length > 0 && (
               <div className='flex items-center justify-between gap-3 rounded-lg border px-3 py-2'>
-                <span className='text-muted-foreground text-xs font-medium'>
+                <span className='text-muted-foreground text-sm font-medium'>
                   {t('Output')}
                 </span>
                 <CatalogTextValue>
@@ -641,18 +641,18 @@ function ModelHeader(props: {
           aria-label={t('Copy model name')}
         />
       </div>
-      <div className='mt-1 flex flex-wrap items-center gap-1.5 text-xs'>
+      <div className='mt-1 flex flex-wrap items-center gap-1.5 text-sm'>
         {model.vendor_name && (
           <span className='text-muted-foreground'>{model.vendor_name}</span>
         )}
         <span className='text-muted-foreground/30'>·</span>
         <ModelBillingModeBadge model={model} />
-        <span className='rounded bg-muted px-1.5 py-0.5 text-xs font-medium text-muted-foreground'>
+        <span className='rounded bg-muted px-1.5 py-0.5 text-sm font-medium text-muted-foreground'>
           {sourceLabel}
         </span>
       </div>
       {description && (
-        <p className='text-muted-foreground mt-2 text-sm leading-relaxed'>
+        <p className='text-muted-foreground mt-2 text-base leading-relaxed'>
           {description}
         </p>
       )}
@@ -745,10 +745,10 @@ function PriceSection(props: {
         <section>
           <SectionTitle>{t('Base Price')}</SectionTitle>
           <div className='rounded-lg border border-amber-200/70 bg-amber-50/70 p-3 dark:border-amber-500/20 dark:bg-amber-500/10'>
-            <div className='text-sm font-medium text-amber-800 dark:text-amber-200'>
+            <div className='text-base font-medium text-amber-800 dark:text-amber-200'>
               {t('Special billing expression')}
             </div>
-            <p className='text-muted-foreground mt-1 text-xs'>
+            <p className='text-muted-foreground mt-1 text-sm'>
               {t(
                 pricingDisplayFallbackKey(
                   dynamicSummary.rawExpression,
@@ -757,10 +757,10 @@ function PriceSection(props: {
               )}
             </p>
             <div className='mt-3'>
-              <div className='text-muted-foreground mb-1 text-xs font-medium uppercase'>
+              <div className='text-muted-foreground mb-1 text-sm font-medium uppercase'>
                 {t('Raw expression')}
               </div>
-              <code className='text-muted-foreground bg-background/80 block max-h-28 overflow-auto rounded-md border px-2 py-1.5 font-mono text-xs break-all'>
+              <code className='text-muted-foreground bg-background/80 block max-h-28 overflow-auto rounded-md border px-2 py-1.5 font-mono text-sm break-all'>
                 {dynamicSummary.rawExpression}
               </code>
             </div>
@@ -773,14 +773,14 @@ function PriceSection(props: {
       <section>
         <SectionTitle>{t('Base Price')}</SectionTitle>
         {dynamicSummary.providerCount && (
-          <p className='text-muted-foreground mb-2 text-xs'>
+          <p className='text-muted-foreground mb-2 text-sm'>
             {t('{{count}} providers', { count: dynamicSummary.providerCount })}
             {dynamicSummary.hasUnconfiguredProviders &&
               ` · ${t('Not configured for some providers')}`}
           </p>
         )}
         {dynamicSummary.isMixedBilling && (
-          <p className='text-muted-foreground mb-2 text-xs'>
+          <p className='text-muted-foreground mb-2 text-sm'>
             {t('Token or per-call pricing')}
           </p>
         )}
@@ -803,12 +803,12 @@ function PriceSection(props: {
                   key={entry.key}
                   className='bg-muted/20 rounded-lg border p-3'
                 >
-                  <div className='text-muted-foreground text-xs'>
+                  <div className='text-muted-foreground text-sm'>
                     <DynamicPriceEntryLabel entry={entry} />
                   </div>
                   <div className='text-foreground mt-1 text-base font-semibold tabular-nums'>
                     {entry.formattedRange ?? entry.formatted}
-                    <span className='text-muted-foreground/40 ml-1 text-xs font-normal'>
+                    <span className='text-muted-foreground/40 ml-1 text-sm font-normal'>
                       / {unitLabel}
                     </span>
                   </div>
@@ -817,7 +817,7 @@ function PriceSection(props: {
             })}
           </div>
         ) : (
-          <p className='text-muted-foreground text-sm'>
+          <p className='text-muted-foreground text-base'>
             {dynamicSummary.hasUnconfiguredProviders
               ? t('Not configured')
               : t('Dynamic Pricing')}
@@ -838,12 +838,12 @@ function PriceSection(props: {
                     key={entry.key}
                     className='flex items-baseline justify-between gap-4'
                   >
-                    <span className='text-muted-foreground/70 text-sm'>
+                    <span className='text-muted-foreground/70 text-base'>
                       <DynamicPriceEntryLabel entry={entry} />
                     </span>
-                    <span className='text-muted-foreground text-sm tabular-nums'>
+                    <span className='text-muted-foreground text-base tabular-nums'>
                       {entry.formattedRange ?? entry.formatted}
-                      <span className='text-muted-foreground/40 ml-1 text-xs font-normal'>
+                      <span className='text-muted-foreground/40 ml-1 text-sm font-normal'>
                         / {unitLabel}
                       </span>
                     </span>
@@ -871,10 +871,10 @@ function PriceSection(props: {
       <section>
         <SectionTitle>{t('Base Price')}</SectionTitle>
         <div className='flex items-baseline justify-between'>
-          <span className='text-muted-foreground text-sm'>
+          <span className='text-muted-foreground text-base'>
             {t('Per request')}
           </span>
-          <span className='text-foreground text-sm font-semibold tabular-nums'>
+          <span className='text-foreground text-base font-semibold tabular-nums'>
             {formatFixedPrice(
               props.model,
               baseGroupKey,
@@ -902,7 +902,7 @@ function PriceSection(props: {
         props.usdExchangeRate,
         baseGroupRatioMap
       )}
-      <span className='text-muted-foreground/40 ml-1 text-xs font-normal'>
+      <span className='text-muted-foreground/40 ml-1 text-sm font-normal'>
         / {tokenUnitLabel}
       </span>
     </>
@@ -914,7 +914,7 @@ function PriceSection(props: {
       <div className='grid grid-cols-2 gap-2'>
         {primaryPriceTypes.map((item) => (
           <div key={item.type} className='bg-muted/20 rounded-lg border p-3'>
-            <div className='text-muted-foreground text-xs'>{item.label}</div>
+            <div className='text-muted-foreground text-sm'>{item.label}</div>
             <div className='text-foreground mt-1 text-base font-semibold tabular-nums'>
               {renderPrice(item.type)}
             </div>
@@ -929,10 +929,10 @@ function PriceSection(props: {
                 key={item.type}
                 className='flex items-baseline justify-between gap-4'
               >
-                <span className='text-muted-foreground/70 text-sm'>
+                <span className='text-muted-foreground/70 text-base'>
                   {item.label}
                 </span>
-                <span className='text-muted-foreground text-sm tabular-nums'>
+                <span className='text-muted-foreground text-base tabular-nums'>
                   {renderPrice(item.type)}
                 </span>
               </div>
@@ -960,7 +960,7 @@ function AutoGroupChain(props: { model: PricingModel; autoGroups: string[] }) {
   if (autoChain.length === 0) return null
 
   return (
-    <div className='text-muted-foreground mb-3 flex flex-wrap items-center gap-1 text-xs'>
+    <div className='text-muted-foreground mb-3 flex flex-wrap items-center gap-1 text-sm'>
       <span className='font-medium'>{t('Auto Group Chain')}</span>
       <span className='text-muted-foreground/40'>→</span>
       {autoChain.map((g, idx) => (
@@ -1122,7 +1122,7 @@ function ProviderGroupPricingSection(
           <SectionTitle>{t('Pricing by Group')}</SectionTitle>
         )}
         <AutoGroupChain model={props.model} autoGroups={props.autoGroups} />
-        <p className='text-muted-foreground text-sm'>
+        <p className='text-muted-foreground text-base'>
           {t(
             'This model is not available in any group, or no group pricing information is configured.'
           )}
@@ -1132,7 +1132,7 @@ function ProviderGroupPricingSection(
   }
 
   const thClass = cn(
-    'text-muted-foreground py-2 text-xs font-medium whitespace-normal break-words',
+    'text-muted-foreground py-2 text-sm font-medium whitespace-normal break-words',
     !props.model.billing_usage_schema && ' uppercase'
   )
 
@@ -1164,10 +1164,10 @@ function ProviderGroupPricingSection(
           )}
           <AutoGroupChain model={props.model} autoGroups={props.autoGroups} />
           <div className='rounded-lg border border-amber-200/70 bg-amber-50/70 p-3 dark:border-amber-500/20 dark:bg-amber-500/10'>
-            <div className='text-sm font-medium text-amber-800 dark:text-amber-200'>
+            <div className='text-base font-medium text-amber-800 dark:text-amber-200'>
               {t('Special billing expression')}
             </div>
-            <p className='text-muted-foreground mt-1 text-xs'>
+            <p className='text-muted-foreground mt-1 text-sm'>
               {t(
                 pricingDisplayFallbackKey(
                   props.model.billing_expr || '',
@@ -1176,10 +1176,10 @@ function ProviderGroupPricingSection(
               )}
             </p>
             <div className='mt-3'>
-              <div className='text-muted-foreground mb-1 text-xs font-medium uppercase'>
+              <div className='text-muted-foreground mb-1 text-sm font-medium uppercase'>
                 {t('Raw expression')}
               </div>
-              <code className='text-muted-foreground bg-background/80 block max-h-28 overflow-auto rounded-md border px-2 py-1.5 font-mono text-xs break-all'>
+              <code className='text-muted-foreground bg-background/80 block max-h-28 overflow-auto rounded-md border px-2 py-1.5 font-mono text-sm break-all'>
                 {props.model.billing_expr}
               </code>
             </div>
@@ -1225,7 +1225,7 @@ function ProviderGroupPricingSection(
         )}
         <AutoGroupChain model={props.model} autoGroups={props.autoGroups} />
         {officialDynamicSummary?.primaryEntries.length ? (
-          <p className='text-muted-foreground/60 text-xs tabular-nums'>
+          <p className='text-muted-foreground/60 text-sm tabular-nums'>
             {t('Official price (1x)')}:{' '}
             {officialDynamicSummary.primaryEntries
               .slice(0, 2)
@@ -1248,13 +1248,13 @@ function ProviderGroupPricingSection(
               <div key={group} className='overflow-hidden rounded-lg border'>
                 <div className='bg-muted/20 flex items-center justify-between gap-3 border-b px-3 py-2'>
                   <GroupBadge group={group} size='sm' />
-                  <span className='text-muted-foreground tabular-nums text-xs'>
+                  <span className='text-muted-foreground tabular-nums text-sm'>
                     {ratio}x
                   </span>
                 </div>
                 <StaticDataTable
                   className='rounded-none border-0'
-                  tableClassName='text-sm'
+                  tableClassName='text-base'
                   headerRowClassName='hover:bg-transparent'
                   data={dynamicTiers}
                   getRowKey={(tier, tierIndex) =>
@@ -1336,12 +1336,12 @@ function ProviderGroupPricingSection(
                 />
                 {usageExampleRows.length > 0 ? (
                   <div className='border-t'>
-                    <div className='text-muted-foreground px-3 pt-2 text-xs font-medium uppercase'>
+                    <div className='text-muted-foreground px-3 pt-2 text-sm font-medium uppercase'>
                       {t('Price examples')}
                     </div>
                     <StaticDataTable
                       className='rounded-none border-0'
-                      tableClassName='text-sm'
+                      tableClassName='text-base'
                       headerRowClassName='hover:bg-transparent'
                       data={usageExampleRows}
                       getRowKey={(row) => `${group}-${row.label}`}
@@ -1369,7 +1369,7 @@ function ProviderGroupPricingSection(
                         },
                       ]}
                     />
-                    <p className='text-muted-foreground/40 px-3 pb-2 text-xs'>
+                    <p className='text-muted-foreground/40 px-3 pb-2 text-sm'>
                       {t('Approximate prices for common specs.')}
                     </p>
                   </div>
@@ -1377,7 +1377,7 @@ function ProviderGroupPricingSection(
               </div>
             )
           })}
-          <p className='text-muted-foreground/40 mt-1.5 text-xs'>
+          <p className='text-muted-foreground/40 mt-1.5 text-sm'>
             {dynamicTiers.some(
               (tier) => 'unitPrices' in tier || tier.billingUnit === 'request'
             )
@@ -1427,7 +1427,7 @@ function ProviderGroupPricingSection(
       {!props.hideTitle && <SectionTitle>{t('Pricing by Group')}</SectionTitle>}
       <AutoGroupChain model={props.model} autoGroups={props.autoGroups} />
       {isTokenBased ? (
-        <p className='text-muted-foreground/60 text-xs tabular-nums'>
+        <p className='text-muted-foreground/60 text-sm tabular-nums'>
           {t('Official price (1x)')}: {t('Input')}{' '}
           {formatOfficialPrice(
             props.model,
@@ -1449,7 +1449,7 @@ function ProviderGroupPricingSection(
           / {tokenUnitLabel}
         </p>
       ) : (
-        <p className='text-muted-foreground/60 text-xs tabular-nums'>
+        <p className='text-muted-foreground/60 text-sm tabular-nums'>
           {t('Official price (1x)')}:{' '}
           {formatOfficialRequestPrice(
             props.model,
@@ -1462,7 +1462,7 @@ function ProviderGroupPricingSection(
       )}
       <StaticDataTable
         className='-mx-4 rounded-none border-0 sm:mx-0'
-        tableClassName='text-sm'
+        tableClassName='text-base'
         headerRowClassName='hover:bg-transparent'
         data={availableGroups}
         getRowKey={(group) => group}
@@ -1518,7 +1518,7 @@ function ProviderGroupPricingSection(
       />
       <div className='-mx-4 sm:mx-0'>
         {isTokenBased && (
-          <p className='text-muted-foreground/40 mt-1.5 px-4 text-xs sm:px-0'>
+          <p className='text-muted-foreground/40 mt-1.5 px-4 text-sm sm:px-0'>
             {t('Prices shown per {{unit}} tokens', { unit: tokenUnitLabel })}
           </p>
         )}
@@ -1592,7 +1592,7 @@ export function ModelDetailsContent(props: ModelDetailsContentProps) {
               <TabsTrigger
                 key={value}
                 value={value}
-                className='h-8 min-w-0 gap-1.5 rounded-md px-3 text-xs sm:text-sm'
+                className='h-8 min-w-0 gap-1.5 rounded-md px-3 text-sm sm:text-base'
               >
                 <Icon className='size-3.5' />
                 <span className='truncate'>{t(TAB_META[value].labelKey)}</span>
@@ -1754,7 +1754,7 @@ export function ModelDetails() {
           <h2 className='mb-1 text-base font-semibold'>
             {t('Model not found')}
           </h2>
-          <p className='text-muted-foreground mb-4 text-sm'>
+          <p className='text-muted-foreground mb-4 text-base'>
             {t("The model you're looking for doesn't exist.")}
           </p>
           <Button onClick={handleBack} variant='outline' size='sm'>
@@ -1772,7 +1772,7 @@ export function ModelDetails() {
           variant='ghost'
           size='sm'
           onClick={handleBack}
-          className='text-muted-foreground hover:text-foreground mb-4 h-auto gap-1 px-0 py-1 text-xs'
+          className='text-muted-foreground hover:text-foreground mb-4 h-auto gap-1 px-0 py-1 text-sm'
         >
           <ArrowLeft className='size-3.5' />
           {t('Back')}

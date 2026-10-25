@@ -166,7 +166,7 @@ export function LogStatCards(props: LogStatCardsProps) {
                 <div className='text-muted-foreground mt-1 text-base leading-tight font-bold tabular-nums sm:mt-2 sm:text-2xl sm:leading-normal'>
                   --
                 </div>
-                <div className='text-muted-foreground/40 mt-1 hidden text-xs md:block'>
+                <div className='text-muted-foreground/40 mt-1 hidden text-sm md:block'>
                   {it.desc}
                 </div>
               </>
@@ -180,7 +180,7 @@ export function LogStatCards(props: LogStatCardsProps) {
                 >
                   {it.value}
                 </div>
-                <div className='text-muted-foreground/60 mt-1 hidden text-xs md:block'>
+                <div className='text-muted-foreground/60 mt-1 hidden text-sm md:block'>
                   {it.desc}
                 </div>
               </>
@@ -209,7 +209,7 @@ export function LogStatCards(props: LogStatCardsProps) {
                   <Icon />
                 </IconBadge>
                 <div
-                  className='text-muted-foreground truncate text-xs leading-4 font-medium uppercase sm:text-xs sm:'
+                  className='text-muted-foreground truncate text-sm leading-4 font-medium uppercase sm:text-sm sm:'
                   title={it.title}
                 >
                   {it.title}
@@ -221,7 +221,7 @@ export function LogStatCards(props: LogStatCardsProps) {
           )
         })}
       </div>
-      {/*<p className='text-muted-foreground border-t px-3 py-2 text-xs'>*/}
+      {/*<p className='text-muted-foreground border-t px-3 py-2 text-sm'>*/}
       {/*  {t(*/}
       {/*    'Cache usage is recorded only after the upgrade; historical data is not backfilled.'*/}
       {/*  )}*/}

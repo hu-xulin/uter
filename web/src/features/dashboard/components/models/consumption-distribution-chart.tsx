@@ -99,8 +99,8 @@ export function ConsumptionDistributionChart(
           <IconBadge tone='success' size='sm'>
             <WalletCards />
           </IconBadge>
-          <div className='text-sm font-semibold'>{t('Quota Distribution')}</div>
-          <span className='text-muted-foreground text-xs'>
+          <div className='text-base font-semibold'>{t('Quota Distribution')}</div>
+          <span className='text-muted-foreground text-sm'>
             {t('Total:')} {chartData.totalQuotaDisplay}
           </span>
         </div>
@@ -113,7 +113,7 @@ export function ConsumptionDistributionChart(
                 key={item.value}
                 type='button'
                 onClick={() => setChartType(item.value)}
-                className={`inline-flex shrink-0 items-center gap-1.5 rounded-md px-3 text-xs font-medium transition-colors ${
+                className={`inline-flex shrink-0 items-center gap-1.5 rounded-md px-3 text-sm font-medium transition-colors ${
                   chartType === item.value
                     ? 'bg-background text-foreground shadow-sm'
                     : 'text-muted-foreground hover:text-foreground'
