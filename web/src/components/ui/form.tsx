@@ -266,7 +266,7 @@ function FormMessage({ className, ...props }: React.ComponentProps<'p'>) {
       data-slot='form-message'
       data-form-root={formContext?.id}
       id={formMessageId}
-      className={cn('text-destructive text-sm', className)}
+      className={cn('text-destructive text-sm leading-5', className)}
       {...props}
     >
       {translatedBody}

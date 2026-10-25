@@ -24,6 +24,8 @@ import {
   type ReactNode,
 } from 'react'
 
+import { Heading } from '@/design-system'
+
 import { Main } from './main'
 import { PageFooterProvider } from './page-footer'
 
@@ -93,9 +95,11 @@ export function SectionPageLayout(props: SectionPageLayoutProps) {
                   : 'min-w-0 flex-1'
               }
             >
-              <h2 className='truncate text-3xl font-semibold'>
+              {/* 页面标题走设计系统：视觉 30/600/36，语义保持 h2（应用内
+                  已有一个 h1 用于品牌，这里不抢层级）。 */}
+              <Heading variant='page-title' level={2} truncate>
                 {title}
-              </h2>
+              </Heading>
             </div>
             {actions != null && (
               <div className='flex max-w-full shrink-0 flex-wrap items-center justify-end gap-2 sm:gap-x-4'>
