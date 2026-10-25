@@ -21,7 +21,6 @@ import { Fragment, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { HtmlContent } from '@/components/html-content'
-import { useStatus } from '@/hooks/use-status'
 import { useSystemConfig } from '@/hooks/use-system-config'
 import { normalizeInterfaceLanguage } from '@/i18n/languages'
 import { localizedBrandName } from '@/lib/brand'
@@ -158,9 +157,9 @@ const LEGAL_ROUTES = {
 type LegalDocId = keyof typeof LEGAL_ROUTES
 
 // Renders User Agreement / Privacy Policy / Recharge Agreement links inline
-// with the parent's copyright row when they are configured in System
-// Settings → Site. Emits fragmented siblings so the parent flex container's
-// gap controls spacing.
+// with the footer's bottom-left row, always on (the footer is contractually
+// required to surface all three). Emits fragmented siblings so the parent flex
+// container's gap controls spacing.
 //
 // Each link keeps a real, independently resolvable destination as its `href`
 // — the bundled docs page, `/docs/<locale>/legal/<doc>/` — but a plain left
@@ -175,32 +174,30 @@ type LegalDocId = keyof typeof LEGAL_ROUTES
 // so the `href` becomes the SPA route itself.
 function LegalLinks(props: { leadingSeparator?: boolean }) {
   const { t, i18n } = useTranslation()
-  const { status } = useStatus()
   const navigate = useNavigate()
   const docsLocale = resolveDocsLocaleCode(i18n.language)
-  const useDocsPages = isBundledDocsHref(resolveDocsHref(status?.docs_link))
-  const items: { id: LegalDocId; label: string; href: string }[] = []
-  if (status?.user_agreement_enabled) {
-    items.push({
+  // Always point the links at the bundled legal-doc pages; admins that repoint
+  // `docs_link` elsewhere lose the bundled pages, but the site footer is fixed
+  // to surface User Agreement / Privacy Policy / Recharge Agreement, so we fall
+  // back to the default bundled entry and let the SPA routes carry the reader.
+  const useDocsPages = isBundledDocsHref(resolveDocsHref(undefined))
+  const items: { id: LegalDocId; label: string; href: string }[] = [
+    {
       id: 'user-agreement',
       label: t('User Agreement'),
       href: legalPageHref('user-agreement', useDocsPages, docsLocale),
-    })
-  }
-  if (status?.privacy_policy_enabled) {
-    items.push({
+    },
+    {
       id: 'privacy-policy',
       label: t('Privacy Policy'),
       href: legalPageHref('privacy-policy', useDocsPages, docsLocale),
-    })
-  }
-  if (status?.recharge_agreement_enabled) {
-    items.push({
+    },
+    {
       id: 'recharge-agreement',
       label: t('Recharge Agreement'),
       href: legalPageHref('recharge-agreement', useDocsPages, docsLocale),
-    })
-  }
+    },
+  ]
 
   // Modified clicks and non-primary buttons stay with the browser, so the
   // standalone docs page remains one keystroke away; everything else is
@@ -230,7 +227,7 @@ function LegalLinks(props: { leadingSeparator?: boolean }) {
           <a
             href={item.href}
             onClick={(event) => openInApp(event, item.id)}
-            className='hover:text-foreground text-sm transition-colors duration-200'
+            className='text-muted-foreground hover:text-foreground text-sm transition-colors duration-200'
           >
             {item.label}
           </a>
@@ -456,15 +453,11 @@ export function Footer(props: FooterProps) {
           )}
         </div>
 
-        {/* Copyright + optional legal links inline on the left, project
-            attribution on the right; wraps on narrow screens. */}
+        {/* Bottom row: legal links on the left (replacing the copyright line),
+            project attribution on the right; wraps on narrow screens. */}
         <div className='border-border/30 mt-12 flex flex-col items-center justify-between gap-x-3 gap-y-2 border-t pt-6 sm:flex-row'>
-          <div className='text-muted-foreground/40 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-sm sm:justify-start'>
-            <span>
-              &copy; {currentYear} {brandName}.{' '}
-              {props.copyright ?? t('footer.defaultCopyright')}
-            </span>
-            <LegalLinks leadingSeparator />
+          <div className='flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-sm sm:justify-start'>
+            <LegalLinks />
           </div>
           <ProjectAttribution currentYear={currentYear} brandName={brandName} />
         </div>
