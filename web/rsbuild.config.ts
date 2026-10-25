@@ -170,6 +170,11 @@ export default defineConfig(({ envMode }) => {
       host: '0.0.0.0',
       strictPort: false,
       proxy: devProxy,
+      // Bulk-copying `public/` through Node's fs.cp trips the sandboxed
+      // bulk-delete guard in restricted environments (it unlinks each
+      // destination file before copying). Setting this flag lets the caller
+      // skip that copy and place `public/` into `dist/` itself.
+      ...(process.env.UTER_SKIP_PUBLIC_COPY === '1' ? { publicDir: false } : {}),
     },
     output: {
       // Production optimizations
