@@ -220,7 +220,7 @@ function LegalLinks(props: { leadingSeparator?: boolean }) {
       {items.map((item, index) => (
         <Fragment key={item.id}>
           {(props.leadingSeparator || index > 0) && (
-            <span aria-hidden='true' className='text-muted-foreground/30'>
+            <span aria-hidden='true' className='text-muted-foreground/60'>
               ·
             </span>
           )}
