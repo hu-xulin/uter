@@ -17,37 +17,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@uter.ai
 */
 import { type ClassValue, clsx } from 'clsx'
-import { extendTailwindMerge } from 'tailwind-merge'
-
-/**
- * 本项目自定义的字号刻度（Tailwind v4 的 `--text-*` 命名空间，见
- * `styles/theme.css` 里的 `--text-uk-caption` / `--text-uk-body` 等）。
- *
- * ⚠️ 必须把它们登记进 tailwind-merge，否则 twMerge 会把 `text-uk-caption`
- * 当成「文字颜色」类（`text-` 前缀默认只解析颜色与 T-shirt 尺寸），
- * 于是同一次合并里的颜色类会被删掉——例如按钮选中态的
- * `text-primary-foreground` 被 `text-uk-caption` 顶掉，结果是紫底配深色字，
- * 文字看不清。
- */
-const twMerge = extendTailwindMerge({
-  extend: {
-    theme: {
-      text: [
-        'uk-eyebrow',
-        'uk-caption',
-        'uk-code',
-        'uk-label',
-        'uk-body',
-        'uk-body-lg',
-        'uk-lead',
-        'uk-h4',
-        'uk-h3',
-        'uk-h2',
-        'uk-display',
-      ],
-    },
-  },
-})
+import { twMerge } from 'tailwind-merge'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
