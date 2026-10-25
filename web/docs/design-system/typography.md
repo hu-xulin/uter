@@ -75,3 +75,31 @@ import { Heading, Text } from '@/design-system'
 
 注意：预设只覆盖字号，不覆盖 `--text-*--line-height`，因此放大档位的行高仍按
 基础阶梯计算。这是已知的待改进项。
+
+## 多行主标题的行高（E7）
+
+`display` 档的单行行高是 40px（36px × 1.11）。这个比例在单行时是对的，但中文
+营销主标题常折成 3–4 行，1.11 会让行与行挤在一起。
+
+因此给多行场景单独一档：
+
+```css
+--ds-line-display-multiline: 1.5; /* 无单位比例，随字号缩放 */
+```
+
+用 `Heading` 的 `multiline` 开启：
+
+```tsx
+<Heading variant='display' level={1} multiline>
+  Uter.ai 优特智能，一个入口，直达全球大模型
+</Heading>
+```
+
+两个刻意的设计：
+
+1. **无单位比例而不是像素**。响应式下移动端 30px × 1.5 ≈ 40.5px、桌面
+   36px × 1.5 ≈ 48.6px，行高跟着字号走，不会出现「字号变小、行高还是 48px」
+   的倒挂。
+2. **规则放在 `@layer components` 之外**。调用方要保留 Tailwind 的响应式字号
+   （`text-3xl md:text-4xl`），只覆盖行高；放在 components 层会被 utilities 层
+   的 `line-height` 覆盖，等于没写。这是全站唯一一处刻意的层外规则，仅此一例。

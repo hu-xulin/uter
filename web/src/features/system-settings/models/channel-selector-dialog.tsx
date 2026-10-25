@@ -361,9 +361,9 @@ export function ChannelSelectorDialog({
           getColumnClassName={(columnId, part) => {
             if (columnId === 'select') return 'w-11 text-center align-middle'
             if (columnId === 'status') {
-              return part === 'header' ? 'h-11 align-middle' : 'align-middle'
+ return part === 'header' ? 'align-middle' : 'align-middle'
             }
-            return part === 'header' ? 'h-11 align-middle' : 'align-middle'
+ return part === 'header' ? 'align-middle' : 'align-middle'
           }}
           emptyContent={t('No channels found')}
           emptyCellClassName='h-24 text-center'

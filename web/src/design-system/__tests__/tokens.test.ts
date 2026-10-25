@@ -125,6 +125,40 @@ describe('语义 Token 指向正确的阶梯档位', () => {
     expect(readVar(semanticCss, name)).toBe(expected)
   })
 
+  it('多行主标题行高是无单位比例（E7）', () => {
+    // 必须是纯数字：写成 rem 就丢了「随响应式字号缩放」的语义。
+    expect(readVar(semanticCss, 'ds-line-display-multiline')).toBe('1.5')
+  })
+
+  it('多行主标题行高在 layers 之外，且引用语义 Token', () => {
+    const foundations = read('foundations/typography.css')
+    const rule = /\.ds-heading--display-multiline\s*\{([^}]*)\}/.exec(foundations)
+    expect(rule, '缺少 .ds-heading--display-multiline').toBeTruthy()
+    expect(rule?.[1]).toContain('var(--ds-line-display-multiline)')
+    // 必须落在 @layer components 之外，否则会被 utilities 层的
+    // text-3xl / text-4xl 自带的 line-height 覆盖。
+    expect(foundations.indexOf('@layer components')).toBeLessThan(
+      foundations.indexOf('.ds-heading--display-multiline')
+    )
+  })
+
+  it('多行主标题行高是无单位比例（E7）', () => {
+    // 必须是纯数字：写成 rem 就丢了「随响应式字号缩放」的语义。
+    expect(readVar(semanticCss, 'ds-line-display-multiline')).toBe('1.5')
+  })
+
+  it('多行主标题行高在 layers 之外，且引用语义 Token', () => {
+    const foundations = read('foundations/typography.css')
+    const rule = /\.ds-heading--display-multiline\s*\{([^}]*)\}/.exec(foundations)
+    expect(rule, '缺少 .ds-heading--display-multiline').toBeTruthy()
+    expect(rule?.[1]).toContain('var(--ds-line-display-multiline)')
+    // 必须落在 @layer components 之外，否则会被 utilities 层的
+    // text-3xl / text-4xl 自带的 line-height 覆盖。
+    expect(foundations.indexOf('@layer components')).toBeLessThan(
+      foundations.indexOf('.ds-heading--display-multiline')
+    )
+  })
+
   it('语义行高的兜底值与阶梯行高一致', () => {
     // 兜底值是 `var(--text-x--line-height, <fallback>)` 里的 fallback，
     // 一旦和 typography.css 对不上，说明有人只改了一边。
@@ -154,10 +188,10 @@ describe('语义 Token 指向正确的阶梯档位', () => {
 describe('圆角 Token 对应文档 1.3 Shape', () => {
   it('六个圆角档位与文档一致', () => {
     const SHAPE: Array<[string, number]> = [
-      ['xs', 2],
-      ['sm', 4],
-      ['md', 6],
-      ['lg', 8],
+      ['xs', 4],
+      ['sm', 6],
+      ['md', 8],
+      ['lg', 10],
       ['xl', 12],
       ['2xl', 16],
     ]
@@ -167,6 +201,48 @@ describe('圆角 Token 对应文档 1.3 Shape', () => {
         ? readVar(read('tokens/primitives.css'), `primitive-radius-${step}`)
         : value
       expect(toPx(primitive as string), `圆角 ${step}`).toBe(px)
+    }
+  })
+})
+
+describe('theme.css 圆角阶梯与文档一致', () => {
+  /** 把 `var(--radius)` 或 `calc(var(--radius) * N)` 按基准值解析成 px。 */
+  function resolveLadderPx(declaration: string, base: number): number {
+    const scaled = /^calc\(var\(--radius\)\s*\*\s*([\d.]+)\)$/.exec(declaration)
+    if (scaled) return base * Number.parseFloat(scaled[1])
+    if (declaration === 'var(--radius)') return base
+    return Number.NaN
+  }
+
+  it('默认基准 8px 推出 4/6/8/10/12/16/20/24 八档', () => {
+    // theme.css 的 `--radius-*` 阶梯是 Tailwind `rounded-*` 工具类的真实
+    // 来源（@theme inline 内联 + :root 运行时变量双出口）。它与
+    // primitives.css 是同一套刻度的两种声明，改一边忘了另一边就会
+    // 出现「文档 8px、页面 6px」，这里把差异钉死。
+    const themeCss = readFileSync(
+      join(process.cwd(), 'src', 'styles', 'theme.css'),
+      'utf8'
+    )
+    const base = toPx(readVar(themeCss, 'radius') as string)
+    expect(base, '默认基准 --radius').toBe(8)
+
+    const EXPECTED: Array<[string, number]> = [
+      ['xs', 4],
+      ['sm', 6],
+      ['md', 8],
+      ['lg', 10],
+      ['xl', 12],
+      ['2xl', 16],
+      ['3xl', 20],
+      ['4xl', 24],
+    ]
+    for (const [step, px] of EXPECTED) {
+      const declaration = readVar(themeCss, `radius-${step}`) as string
+      expect(declaration, `--radius-${step} 未声明`).toBeDefined()
+      expect(
+        resolveLadderPx(declaration, base),
+        `圆角 ${step}`
+      ).toBe(px)
     }
   })
 })

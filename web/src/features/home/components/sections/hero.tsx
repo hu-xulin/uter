@@ -23,6 +23,7 @@ import { useTranslation } from 'react-i18next'
 
 import { fullPageAnchorProps } from '@/components/layout/lib/url-utils'
 import { Button } from '@/components/ui/button'
+import { Heading, Text } from '@/design-system'
 import { useStatus } from '@/hooks/use-status'
 import { isBundledDocsHref, resolveDocsHref } from '@/lib/docs-link'
 
@@ -71,7 +72,7 @@ export function Hero(props: HeroProps) {
     return (
       <Button
         variant='outline'
-        className='group border-border/50 hover:border-border hover:bg-muted/50 inline-flex h-11 items-center gap-1.5 rounded-lg px-5 text-sm font-medium'
+        className='group border-border/50 hover:border-border hover:bg-muted/50 inline-flex items-center gap-1.5 px-5'
         render={rendered}
       >
         <BookOpen className='text-muted-foreground/80 group-hover:text-foreground size-4 transition-colors duration-200' />
@@ -105,7 +106,7 @@ export function Hero(props: HeroProps) {
         <div className='flex flex-col items-start text-left lg:col-span-6'>
           {/* Top Pill Badge */}
           <div
-            className='landing-animate-fade-up mb-5 inline-flex items-center gap-1.5 rounded-full border border-blue-500/20 bg-blue-500/5 px-3 py-1.5 text-sm font-medium text-blue-600 opacity-0 shadow-xs dark:border-blue-400/20 dark:bg-blue-400/5 dark:text-blue-400'
+            className='landing-animate-fade-up mb-5 inline-flex items-center gap-1.5 rounded-full border border-blue-500/20 bg-blue-500/5 px-3 py-1.5 text-sm font-medium text-blue-600 opacity-0 dark:border-blue-400/20 dark:bg-blue-400/5 dark:text-blue-400'
             style={{ animationDelay: '0ms' }}
           >
             <span className='relative flex size-1.5'>
@@ -115,8 +116,13 @@ export function Hero(props: HeroProps) {
             <span>{t('AI Application Infrastructure Foundation')}</span>
           </div>
 
-          <h1
-            className='landing-animate-fade-up text-3xl font-bold md:text-4xl'
+          {/* 主标题会折成 3–4 行，用多行 display 行高（1.35）而不是
+              单行的 40px，否则行与行会挤在一起。 */}
+          <Heading
+            variant='display'
+            level={1}
+            multiline
+            className='landing-animate-fade-up text-3xl md:text-4xl'
             style={{ animationDelay: '60ms' }}
           >
             {(() => {
@@ -160,15 +166,17 @@ export function Hero(props: HeroProps) {
             <span className='bg-gradient-to-r from-blue-400 via-violet-400 to-purple-500 bg-clip-text text-transparent'>
               {t('Vast Range of AI Models')}
             </span>
-          </h1>
-          <p
-            className='landing-animate-fade-up text-muted-foreground/80 mt-5 max-w-xl text-base leading-6 opacity-0'
+          </Heading>
+          <Text
+            as='p'
+            variant='body'
+            className='landing-animate-fade-up text-muted-foreground/80 mt-5 max-w-xl leading-6 opacity-0'
             style={{ animationDelay: '120ms' }}
           >
             {t(
               'Access a vast selection of models via a standard, unified API protocol. Power AI applications, manage digital assets, and connect the Future.'
             )}
-          </p>
+          </Text>
 
           <div
             className='landing-animate-fade-up mt-8 flex flex-wrap items-center gap-3 opacity-0'
@@ -177,7 +185,7 @@ export function Hero(props: HeroProps) {
             {props.isAuthenticated ? (
               <>
                 <Button
-                  className='group h-11 rounded-lg px-5 text-sm font-medium'
+                  className='group px-5'
                   render={<Link to='/dashboard' />}
                 >
                   {t('Go to Dashboard')}
@@ -188,7 +196,7 @@ export function Hero(props: HeroProps) {
             ) : (
               <>
                 <Button
-                  className='group h-11 rounded-lg px-5 text-sm font-medium'
+                  className='group px-5'
                   render={<Link to='/sign-up' />}
                 >
                   {t('Get Started')}
@@ -196,7 +204,7 @@ export function Hero(props: HeroProps) {
                 </Button>
                 <Button
                   variant='outline'
-                  className='border-border/50 hover:border-border hover:bg-muted/50 h-11 rounded-lg px-5 text-sm font-medium'
+                  className='border-border/50 hover:border-border hover:bg-muted/50 px-5'
                   render={<Link to='/pricing' />}
                 >
                   {t('View Pricing')}
@@ -212,10 +220,10 @@ export function Hero(props: HeroProps) {
             style={{ animationDelay: '240ms' }}
           >
             <div className='mb-4 flex flex-col gap-1'>
-              <span className='text-muted-foreground/50 text-sm font-bold uppercase'>
+              <span className='text-muted-foreground/50 text-sm font-medium uppercase'>
                 {t('Supported Applications')}
               </span>
-              <p className='text-muted-foreground/60 text-sm leading-relaxed'>
+              <p className='text-muted-foreground/60 text-sm leading-5'>
                 {t(
                   'Supports one-click configuration and perfectly adapts to Uter multi-protocol configuration.'
                 )}
@@ -227,7 +235,7 @@ export function Hero(props: HeroProps) {
                 href='https://cherry-ai.com'
                 target='_blank'
                 rel='noopener noreferrer'
-                className='group border-border/40 bg-muted/15 text-foreground/80 hover:border-border hover:bg-muted/30 hover:text-foreground flex items-center gap-3 rounded-full border px-5 py-2.5 text-base font-medium shadow-[0_1px_2.5px_rgba(0,0,0,0.01)] backdrop-blur-xs transition-all duration-300 hover:scale-[1.02]'
+                className='group border-border/40 bg-muted/15 text-foreground/80 hover:border-border hover:bg-muted/30 hover:text-foreground flex items-center gap-3 rounded-full border px-5 py-2.5 text-sm font-medium backdrop-blur-xs transition-all duration-300 hover:scale-[1.02]'
               >
                 <CherryStudio.Color size={24} className='shrink-0' />
                 <span>Cherry Studio</span>
@@ -238,7 +246,7 @@ export function Hero(props: HeroProps) {
                 href='https://ccswitch.io'
                 target='_blank'
                 rel='noopener noreferrer'
-                className='group border-border/40 bg-muted/15 text-foreground/80 hover:border-border hover:bg-muted/30 hover:text-foreground flex items-center gap-3 rounded-full border px-5 py-2.5 text-base font-medium shadow-[0_1px_2.5px_rgba(0,0,0,0.01)] backdrop-blur-xs transition-all duration-300 hover:scale-[1.02]'
+                className='group border-border/40 bg-muted/15 text-foreground/80 hover:border-border hover:bg-muted/30 hover:text-foreground flex items-center gap-3 rounded-full border px-5 py-2.5 text-sm font-medium backdrop-blur-xs transition-all duration-300 hover:scale-[1.02]'
               >
                 <img
                   src='https://ccswitch.io/favicon.png'
@@ -253,7 +261,7 @@ export function Hero(props: HeroProps) {
                 />
                 <span
                   style={{ display: 'none' }}
-                  className='size-6 shrink-0 items-center justify-center rounded-md bg-blue-500/10 text-sm font-bold text-blue-600 dark:bg-blue-400/10 dark:text-blue-400'
+                  className='size-6 shrink-0 items-center justify-center rounded-md bg-blue-500/10 text-sm font-semibold text-blue-600 dark:bg-blue-400/10 dark:text-blue-400'
                 >
                   CC
                 </span>
@@ -261,7 +269,7 @@ export function Hero(props: HeroProps) {
               </a>
 
               {/* "更多" */}
-              <div className='group border-border/40 bg-muted/15 text-foreground/55 hover:border-border hover:bg-muted/30 hover:text-foreground flex cursor-default items-center gap-2.5 rounded-full border px-5 py-2.5 text-base font-medium shadow-[0_1px_2.5px_rgba(0,0,0,0.01)] backdrop-blur-xs transition-all duration-300 hover:scale-[1.02]'>
+              <div className='group border-border/40 bg-muted/15 text-foreground/55 hover:border-border hover:bg-muted/30 hover:text-foreground flex cursor-default items-center gap-2.5 rounded-full border px-5 py-2.5 text-sm font-medium backdrop-blur-xs transition-all duration-300 hover:scale-[1.02]'>
                 <MoreIcon />
                 <span>{t('More Apps')}</span>
               </div>

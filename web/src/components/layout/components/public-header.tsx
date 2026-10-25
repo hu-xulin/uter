@@ -112,16 +112,13 @@ export function PublicHeader(props: PublicHeaderProps) {
   if (loading) logoContent = <Skeleton className='size-full rounded-lg' />
 
   let authContent = (
-    <Button
-      size='sm'
-      className='h-8 rounded-lg px-3.5 text-xs font-medium'
-      render={<Link to='/sign-in' />}
-    >
+    // 字号字重交给 Button 自己的 label 档位，调用处不覆盖。
+    <Button className='px-3.5' render={<Link to='/sign-in' />}>
       {t('Sign in')}
     </Button>
   )
   if (isAuthenticated) authContent = <ProfileDropdown />
-  if (loading) authContent = <Skeleton className='h-8 w-20 rounded-lg' />
+  if (loading) authContent = <Skeleton className='h-(--ds-button-height-md) w-20 rounded-md' />
 
   useEffect(() => {
     document.body.style.overflow = mobileOpen ? 'hidden' : ''
@@ -202,7 +199,7 @@ export function PublicHeader(props: PublicHeaderProps) {
         className={cn(
           'fixed inset-x-0 top-0 z-50 transition-[background-color,box-shadow,border-color,backdrop-filter] duration-300',
           scrolled
-            ? 'bg-background/85 border-b border-border/60 shadow-sm backdrop-blur-xl'
+            ? 'bg-background/85 border-b border-border/60 backdrop-blur-xl'
             : 'border-b border-transparent bg-transparent'
         )}
       >
@@ -251,7 +248,7 @@ export function PublicHeader(props: PublicHeaderProps) {
                       tabIndex={link.disabled ? -1 : undefined}
                       onClick={(event) => handleNavLinkClick(event, link)}
                       className={cn(
-                        'text-muted-foreground hover:text-foreground min-w-0 truncate rounded-lg px-3 py-1.5 text-sm font-medium transition-colors duration-200',
+                        'text-muted-foreground hover:text-foreground min-w-0 truncate rounded-lg px-3 py-2 text-sm leading-5 font-medium transition-colors duration-200',
                         link.disabled && 'pointer-events-none opacity-50'
                       )}
                     >
@@ -267,10 +264,10 @@ export function PublicHeader(props: PublicHeaderProps) {
                     disabled={link.disabled}
                     onClick={(event) => handleNavLinkClick(event, link)}
                     className={cn(
-                      'min-w-0 truncate rounded-lg px-3 py-1.5 text-sm transition-colors duration-200',
+                      'min-w-0 truncate rounded-lg px-3 py-2 text-sm leading-5 font-medium transition-colors duration-200',
                       isActive
-                        ? 'text-black font-semibold dark:text-white'
-                        : 'text-muted-foreground font-medium hover:text-foreground',
+                        ? 'text-foreground bg-muted/60'
+                        : 'text-muted-foreground hover:text-foreground',
                       link.disabled && 'pointer-events-none opacity-50'
                     )}
                   >
@@ -362,13 +359,13 @@ export function PublicHeader(props: PublicHeaderProps) {
             {links.map((link, i) => {
               const isActive = getTopNavActive(pathname, link, links)
               const linkClassName = cn(
-                'flex items-center gap-3 py-3 text-base transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]',
+                // 移动端全屏菜单是触屏列表，用正文档 16/24 而非桌面
+                // 一级导航的 14/20，兼顾可读性与点按面积。
+                'flex items-center gap-3 py-3 text-base leading-6 font-medium transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]',
                 mobileOpen
                   ? 'translate-y-0 opacity-100'
                   : 'translate-y-4 opacity-0',
-                isActive
-                  ? 'text-black font-semibold dark:text-white'
-                  : 'text-muted-foreground font-medium',
+                isActive ? 'text-foreground' : 'text-muted-foreground',
                 link.disabled && 'pointer-events-none opacity-50'
               )
               const transitionStyle = {
@@ -415,13 +412,18 @@ export function PublicHeader(props: PublicHeaderProps) {
             style={{ transitionDelay: mobileOpen ? '250ms' : '0ms' }}
           >
             {showAuthButtons && (
-              <Link
-                to={isAuthenticated ? '/dashboard' : '/sign-in'}
-                onClick={() => setMobileOpen(false)}
-                className='bg-foreground text-background inline-flex h-10 items-center justify-center rounded-lg text-sm font-medium transition-opacity hover:opacity-90 active:opacity-80'
+              // 移动端主操作也走 Button，不在这里重写一份高度/圆角/字号。
+              <Button
+                className='w-full'
+                render={
+                  <Link
+                    to={isAuthenticated ? '/dashboard' : '/sign-in'}
+                    onClick={() => setMobileOpen(false)}
+                  />
+                }
               >
                 {isAuthenticated ? t('Go to Dashboard') : t('Sign in')}
-              </Link>
+              </Button>
             )}
           </div>
         </div>

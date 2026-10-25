@@ -58,10 +58,12 @@ function getPinnedColumnClassName(
   pinnedColumn: DataTablePinnedColumn,
   kind: 'header' | 'cell'
 ) {
+  // 固定列的「浮起来」靠不透明底色 + 1px 分隔边表达，不用投影：
+  // 规范 1.5 规定投影只留给弹窗与浮层。
   const edgeClassName =
     pinnedColumn.side === 'left'
-      ? 'shadow-[8px_0_10px_-10px_hsl(var(--foreground))]'
-      : 'shadow-[-8px_0_10px_-10px_hsl(var(--foreground))]'
+      ? 'after:absolute after:inset-y-0 after:right-0 after:w-px after:bg-border after:content-[""]'
+      : 'after:absolute after:inset-y-0 after:left-0 after:w-px after:bg-border after:content-[""]'
 
   return cn(
     'sticky whitespace-nowrap',

@@ -238,7 +238,7 @@ function PluginDetailContent(props: { plugin: TaskPluginListItem }) {
         <div className='shrink-0 overflow-x-auto border-b px-4 sm:px-6'>
           <TabsList
             variant='line'
-            className='min-w-max justify-start gap-4 group-data-horizontal/tabs:h-11'
+ className='min-w-max justify-start gap-4 group-data-horizontal/tabs:'
             aria-label={t('Plugin details')}
           >
             <TabsTrigger value='overview'>{t('Overview')}</TabsTrigger>

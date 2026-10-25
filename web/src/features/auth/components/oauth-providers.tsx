@@ -170,7 +170,7 @@ export function OAuthProviders({
               disabled={disabled || isLoading || extraDisabled}
               onClick={onClick}
               className={cn(
-                'h-11 w-full justify-center gap-2',
+ 'w-full justify-center gap-2',
                 hoverClassName
               )}
             >

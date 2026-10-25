@@ -57,6 +57,11 @@ export type HeadingProps = {
   color?: 'primary' | 'secondary' | 'inherit'
   truncate?: boolean
   clamp?: 1 | 2
+  /**
+   * 多行主标题行高（1.5 比例，随字号缩放）。只对会折成 3 行以上的
+   * 营销主标题开启；单行标题保持 40px 的紧行高。
+   */
+  multiline?: boolean
   className?: string
   style?: CSSProperties
   id?: string
@@ -75,6 +80,7 @@ export function Heading({
   color = 'primary',
   truncate = false,
   clamp,
+  multiline = false,
   className,
   style,
   id,
@@ -98,6 +104,7 @@ export function Heading({
         `ds-heading--${color}`,
         truncate && 'ds-text--truncate',
         clamp != null && `ds-heading--clamp-${clamp}`,
+        multiline && 'ds-heading--display-multiline',
         className
       )}
       style={style}
