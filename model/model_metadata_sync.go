@@ -229,6 +229,11 @@ func ApplyMetadataSync(updates []MetadataSyncUpdate, upstreamVendors map[string]
 				case "status":
 					fields[field] = update.Values.Status
 				case "vendor":
+					// 已存在的供应商只取 Id，名称/简介/图标一律不回写：这三项是
+					// 运营在「模型-供应商」里逐条维护的配置，同步只负责把模型挂到
+					// 供应商下。曾经在这里做过「按品牌映射对齐图标」的批量订正，
+					// 结果运营设置的 Anthropic/Google/Meta 被换成了 Claude/Gemini/
+					// Ollama 的 logo，不要再加回来。
 					vendorID := 0
 					name := update.Values.Vendor
 					if name != "" {

@@ -19,6 +19,8 @@ For commercial licensing, please contact support@uter.ai
 package model
 
 import (
+	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 )
@@ -259,5 +261,30 @@ func TestDerivedMetadataKeepsCatalogIconOverVendorIcon(t *testing.T) {
 	}
 	if values.Icon != "Moonshot" {
 		t.Errorf("icon = %q, want %q", values.Icon, "Moonshot")
+	}
+}
+
+// 供应商图标是运营在「模型-供应商」里逐条设置的配置，不是可以由同步或迁移
+// 批量推导出来的派生数据。
+//
+// 历史上出现过两次「存量订正」：一次是启动迁移 alignVendorIconsToDefaults，
+// 一次是 bin/ 下的 SQL 脚本，都把运营设置的 Anthropic / Google / Meta 改写成
+// Claude.Color / Gemini.Color / Ollama.Avatar——运营看到的是「我选的图标被换
+// 成了别家的 logo」。启动迁移已删除，这条测试守住另一半：bin/ 下不得再出现
+// 批量改写 vendors.icon 的脚本。图标只能由管理端保存单条记录时改变。
+func TestNoBulkVendorIconRewriteScript(t *testing.T) {
+	paths, err := filepath.Glob("../bin/*.sql")
+	if err != nil {
+		t.Fatalf("glob sql scripts: %v", err)
+	}
+	for _, path := range paths {
+		body, err := os.ReadFile(path)
+		if err != nil {
+			t.Fatalf("read %s: %v", path, err)
+		}
+		sql := strings.ToUpper(string(body))
+		if strings.Contains(sql, "UPDATE VENDORS") && strings.Contains(sql, "ICON") {
+			t.Errorf("%s 批量改写 vendors.icon；供应商图标只能由运营在管理端逐条保存", path)
+		}
 	}
 }
