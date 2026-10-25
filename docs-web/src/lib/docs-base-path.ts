@@ -38,3 +38,24 @@ export function withDocsBasePath(url: string): string {
 
   return `${DOCS_BASE_PATH}${url}`;
 }
+
+/**
+ * Attributes a link to the **host app** (the Uter SPA) must carry so it works
+ * from inside the framed docs site.
+ *
+ * The docs export is mounted at {@link DOCS_BASE_PATH} and is normally
+ * rendered inside the SPA's iframe (`web/src/features/docs/docs-viewer.tsx`).
+ * A plain `<a href='/sign-in'>` inside that frame navigates **the frame
+ * itself**, so the browser resolves it against the frame's own base —
+ * `/docs-content/docs/zh/…/sign-in`, which does not exist. The reader presses
+ * 「登录」 and nothing happens: no navigation, no error, no console output.
+ *
+ * `target="_top"` makes the link address the top-level window instead. The
+ * frame's sandbox additionally needs `allow-top-navigation-by-user-activation`
+ * for the browser to permit that navigation at all — that half lives on the
+ * host side, in `docs-viewer.tsx`.
+ *
+ * Kept here, next to {@link DOCS_BASE_PATH}, because both halves of the same
+ * contract live in one place and are easy to break in isolation.
+ */
+export const HOST_APP_LINK_TARGET = '_top';
