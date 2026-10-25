@@ -55,6 +55,29 @@ const ROUTE_MESSAGE = 'Uter:docs:route'
 const SPA_HEADER_HEIGHT = '4rem'
 
 /**
+ * The framed docs site's `sandbox` attribute.
+ *
+ * `allow-scripts` + `allow-same-origin` are required for the embed bridge
+ * (the host pins every postMessage to `window.location.origin`, and a frame
+ * without `allow-same-origin` would post from an opaque "null" origin and have
+ * every message rejected).
+ *
+ * `allow-top-navigation-by-user-activation` is what makes the framed site's
+ * own chrome work. The docs header links to the SPA's `/sign-in` and `/` — a
+ * **top-level** destination, not an in-frame one. Without this token the
+ * sandbox blocks that navigation and the click does nothing at all: the
+ * reader presses 「登录」 and the page stays put, which reads as the app
+ * crashing. The token only permits navigation the user explicitly activated
+ * and grants no origin access beyond the `allow-same-origin` already relied
+ * on.
+ *
+ * Exported so a test can pin it: the failure mode is a **silent** no-op
+ * (no error, no console message), so nothing else would catch its removal.
+ */
+export const DOCS_IFRAME_SANDBOX =
+  'allow-scripts allow-same-origin allow-top-navigation-by-user-activation'
+
+/**
  * In-app docs page for `/docs` and `/docs/$`.
  *
  * The docs content is a Next.js static export mounted by the gateway at
@@ -256,13 +279,24 @@ export function DocsViewer() {
           allow-scripts + allow-same-origin combo as a generic heuristic,
           but here the content is our own trusted docs export and the
           combo is required for the bridge — the rule is disabled for this
-          file via an override in `.oxlintrc.json`. */}
+          file via an override in `.oxlintrc.json`.
+
+          `allow-top-navigation-by-user-activation` is what makes the
+          framed site's own chrome work. The docs header carries a
+          「登录」 link pointing at the SPA's `/sign-in` (see
+          `docs-web/src/lib/docs-header.tsx`), i.e. a **top-level**
+          destination, not an in-frame one. Without this token the sandbox
+          silently blocks the navigation and the click does nothing at all
+          — the reader presses 「登录」 and the page stays put, which reads
+          as the app crashing. The token only permits navigation that the
+          user explicitly activated, and it grants no extra origin access
+          beyond the `allow-same-origin` we already rely on. */}
       <iframe
         ref={frameRef}
         src={frameSrc}
         title={t('Docs')}
         onLoad={syncTheme}
-        sandbox='allow-scripts allow-same-origin'
+        sandbox={DOCS_IFRAME_SANDBOX}
         className='w-full border-0'
         style={{ height: `calc(100svh - ${SPA_HEADER_HEIGHT})` }}
       />
