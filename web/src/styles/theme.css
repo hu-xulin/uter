@@ -154,39 +154,46 @@ For commercial licensing, please contact support@uter.ai
     'Source Han Sans CN', '思源黑体', 'Noto Sans SC Variable', 'Noto Sans SC',
     'PingFang SC', 'Microsoft YaHei', sans-serif;
 
-  /* ── Type scale — GitHub 8-step ladder ───────────────────────────────
-   * rem values assume a 16px root. Mirrors GitHub's type scale
-   * (12 / 14 / 16 / 20 / 24 / 32 / 40 / 48, with 56/64 for hero display).
-   * 14px (`--text-sm`) is GitHub's UI base size. Each step carries its
-   * GitHub line-height as the `--text-<size>--line-height` companion so the
-   * `text-*` utilities inherit a consistent vertical rhythm (1.5 at body,
-   * tightening toward display sizes). Overridden per density by the
-   * `[data-theme-scale='...']` blocks in theme-presets.css. */
+  /* ── Type scale — the one size ladder ──────────────────────────────
+   * rem sizes with unitless line-heights, so the ladder stays tied to
+   * the root size and every step inherits the same vertical rhythm.
+   *
+   *   12px  辅助文字    — captions, meta, table notes
+   *   14px  全局正文    — body copy, navigation, buttons  (400 / 1.5)
+   *   16px  长文本正文  — paragraphs and long-form reading (400 / 1.5)
+   *   18px  卡片标题                                    (600)
+   *   24px  分区标题                                    (600)
+   *   30px  页面主标题                                  (600)
+   *
+   * 20px sits between the card title and the section title, and 36px
+   * above the page title, for the rare place that needs one more step.
+   * Code and tokens are monospace at 13px — a separate ladder, applied
+   * with `text-[0.8125rem]`. */
   --text-xs: 0.75rem; /* 12px */
-  --text-xs--line-height: 1.125rem; /* 18px */
-  --text-sm: 0.875rem; /* 14px — GitHub UI base */
-  --text-sm--line-height: 1.3125rem; /* 21px */
+  --text-xs--line-height: 1.5;
+  --text-sm: 0.875rem; /* 14px */
+  --text-sm--line-height: 1.5;
   --text-base: 1rem; /* 16px */
-  --text-base--line-height: 1.5rem; /* 24px */
-  --text-lg: 1.25rem; /* 20px */
-  --text-lg--line-height: 1.75rem; /* 28px */
-  --text-xl: 1.5rem; /* 24px */
-  --text-xl--line-height: 2rem; /* 32px */
-  --text-2xl: 2rem; /* 32px */
-  --text-2xl--line-height: 2.5rem; /* 40px */
-  --text-3xl: 2.5rem; /* 40px */
-  --text-3xl--line-height: 3rem; /* 48px */
-  --text-4xl: 3rem; /* 48px */
-  --text-4xl--line-height: 3.5rem; /* 56px */
-  --text-5xl: 3.5rem; /* 56px */
-  --text-5xl--line-height: 4rem; /* 64px */
-  --text-6xl: 4rem; /* 64px */
-  --text-6xl--line-height: 4.5rem; /* 72px */
+  --text-base--line-height: 1.5;
+  --text-lg: 1.125rem; /* 18px */
+  --text-lg--line-height: 1.5;
+  --text-xl: 1.25rem; /* 20px */
+  --text-xl--line-height: 1.4;
+  --text-2xl: 1.5rem; /* 24px */
+  --text-2xl--line-height: 1.3;
+  --text-3xl: 1.875rem; /* 30px */
+  --text-3xl--line-height: 1.2;
+  --text-4xl: 2.25rem; /* 36px */
+  --text-4xl--line-height: 1.15;
+  --text-5xl: 3rem; /* 48px */
+  --text-5xl--line-height: 1.1;
+  --text-6xl: 3.75rem; /* 60px */
+  --text-6xl--line-height: 1;
 
-  /* ── Font-weight vocabulary — GitHub discipline ──────────────────────
-   * Only three weights are used app-wide: 400 (body), 500 (medium
-   * emphasis), 600 (headings / strong). 700 is reserved for deliberate
-   * `.font-bold` emphasis and the brand mark. */
+  /* ── Font-weight vocabulary — the project ladder ─────────────────────
+   * Four weights are used app-wide: 400 (body), 500 (medium emphasis /
+   * navigation), 600 (headings / strong), 700 (deliberate emphasis and
+   * the brand mark). Nothing else is ever used. */
   --font-weight-normal: 400;
   --font-weight-medium: 500;
   --font-weight-semibold: 600;

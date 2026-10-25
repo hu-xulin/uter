@@ -140,7 +140,7 @@ function SummaryField<TData>({
       className={cn('bg-muted/20 min-w-0 rounded-md px-2 py-1.5', className)}
     >
       {label != null && label !== '' && (
-        <div className='text-muted-foreground mb-1 text-[11px] leading-none font-medium select-none'>
+        <div className='text-muted-foreground mb-1 text-xs leading-none font-medium select-none'>
           {label}
         </div>
       )}

@@ -126,7 +126,7 @@ function FilterChip(props: {
       )}
       <span className='truncate'>{props.option.label}</span>
       {(props.option.suffix || props.option.count != null) && (
-        <span className={cn('rounded-md px-1.5 py-0.5 text-[12px]', badgeClass)}>
+        <span className={cn('rounded-md px-1.5 py-0.5 text-xs', badgeClass)}>
           {props.option.suffix ?? props.option.count}
         </span>
       )}

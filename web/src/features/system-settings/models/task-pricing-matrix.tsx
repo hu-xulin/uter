@@ -216,7 +216,7 @@ function TaskMatrixTable(props: TaskMatrixTableProps) {
                       i18n.language
                     )}
                   </span>
-                  <span className='text-muted-foreground text-[11px] font-normal'>
+                  <span className='text-muted-foreground text-xs font-normal'>
                     {(props.currency ?? USD_PRICING_CURRENCY).symbol}/
                     {taskUsageUnitLabel(
                       definition,
@@ -243,7 +243,7 @@ function TaskMatrixTable(props: TaskMatrixTableProps) {
                     'Added to the usage cost. Set to 0 for no additional charge.'
                   )}
                 </span>
-                <span className='text-muted-foreground text-[11px] font-normal'>
+                <span className='text-muted-foreground text-xs font-normal'>
                   {(props.currency ?? USD_PRICING_CURRENCY).symbol}/
                   {t('request')}
                 </span>

@@ -116,7 +116,7 @@ export function Hero(props: HeroProps) {
           </div>
 
           <h1
-            className='landing-animate-fade-up text-[1.75rem] md:text-[3rem] leading-[1.5] font-bold tracking-tight'
+            className='landing-animate-fade-up text-[1.75rem] md:text-[3rem] leading-[1.5] font-bold'
             style={{ animationDelay: '60ms' }}
           >
             {(() => {
@@ -212,7 +212,7 @@ export function Hero(props: HeroProps) {
             style={{ animationDelay: '240ms' }}
           >
             <div className='mb-4 flex flex-col gap-1'>
-              <span className='text-muted-foreground/50 text-xs font-bold tracking-[0.15em] uppercase'>
+              <span className='text-muted-foreground/50 text-xs font-bold uppercase'>
                 {t('Supported Applications')}
               </span>
               <p className='text-muted-foreground/60 text-xs leading-relaxed'>

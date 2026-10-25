@@ -163,7 +163,7 @@ export function LogStatCards(props: LogStatCardsProps) {
           } else if (error) {
             valueContent = (
               <>
-                <div className='text-muted-foreground mt-1 text-base leading-tight font-bold tracking-tight tabular-nums sm:mt-2 sm:text-2xl sm:leading-normal'>
+                <div className='text-muted-foreground mt-1 text-base leading-tight font-bold tabular-nums sm:mt-2 sm:text-2xl sm:leading-normal'>
                   --
                 </div>
                 <div className='text-muted-foreground/40 mt-1 hidden text-xs md:block'>
@@ -175,7 +175,7 @@ export function LogStatCards(props: LogStatCardsProps) {
             valueContent = (
               <>
                 <div
-                  className='text-foreground mt-1 max-w-full truncate text-base leading-tight font-bold tracking-tight tabular-nums sm:mt-2 sm:text-2xl sm:leading-normal'
+                  className='text-foreground mt-1 max-w-full truncate text-base leading-tight font-bold tabular-nums sm:mt-2 sm:text-2xl sm:leading-normal'
                   title={it.fullValue}
                 >
                   {it.value}
@@ -209,7 +209,7 @@ export function LogStatCards(props: LogStatCardsProps) {
                   <Icon />
                 </IconBadge>
                 <div
-                  className='text-muted-foreground truncate text-[11px] leading-4 font-medium tracking-wide uppercase sm:text-xs sm:tracking-wider'
+                  className='text-muted-foreground truncate text-xs leading-4 font-medium uppercase sm:text-xs sm:'
                   title={it.title}
                 >
                   {it.title}

@@ -584,7 +584,7 @@ export function useCommonLogsColumns(
                 <Avatar className='ring-border/60 size-6 ring-1 max-sm:hidden'>
                   <AvatarFallback
                     className={cn(
-                      'text-[11px] font-semibold',
+                      'text-xs font-semibold',
                       !sensitiveVisible && 'bg-muted text-muted-foreground'
                     )}
                     style={
@@ -759,12 +759,12 @@ export function useCommonLogsColumns(
                 {t('Output')} {completionTokens.toLocaleString()}
               </span>
               {cacheReadTokens > 0 && (
-                <span className='text-muted-foreground/60 font-mono text-[11px] tabular-nums'>
+                <span className='text-muted-foreground/60 font-mono text-[0.8125rem] tabular-nums'>
                   {t('Cache Read')} ↓ {cacheReadTokens.toLocaleString()}
                 </span>
               )}
               {cacheWriteTokens > 0 && (
-                <span className='text-muted-foreground/60 font-mono text-[11px] tabular-nums'>
+                <span className='text-muted-foreground/60 font-mono text-[0.8125rem] tabular-nums'>
                   {t('Cache Write')} ↑ {cacheWriteTokens.toLocaleString()}
                 </span>
               )}

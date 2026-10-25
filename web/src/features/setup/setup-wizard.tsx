@@ -305,7 +305,7 @@ export function SetupWizard() {
           {systemConfigLoading ? (
             <Skeleton className='h-7 w-40' />
           ) : (
-            <h1 className='text-2xl font-semibold tracking-tight'>
+            <h1 className='text-3xl font-semibold'>
               {t('Initialize')} {systemName}
             </h1>
           )}
@@ -318,7 +318,7 @@ export function SetupWizard() {
 
         <Card className='shadow-lg'>
           <CardHeader className='space-y-2'>
-            <CardTitle className='text-xl font-semibold'>
+            <CardTitle>
               {t('System setup wizard')}
             </CardTitle>
             <CardDescription>

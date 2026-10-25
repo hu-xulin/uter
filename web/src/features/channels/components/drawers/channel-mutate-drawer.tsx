@@ -371,7 +371,7 @@ function CardHeading(props: {
           {props.icon}
         </IconBadge>
       )}
-      <h3 className='min-w-0 flex-1 text-sm font-semibold tracking-tight'>
+      <h3 className='min-w-0 flex-1 text-sm font-semibold'>
         {props.title}
       </h3>
       {props.status && (
@@ -394,7 +394,7 @@ function SubHeading(props: {
           {props.icon}
         </IconBadge>
       )}
-      <h4 className='text-muted-foreground text-xs font-medium tracking-wide uppercase'>
+      <h4 className='text-muted-foreground text-xs font-medium uppercase'>
         {props.title}
       </h4>
       {props.status && (

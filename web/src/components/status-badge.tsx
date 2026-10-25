@@ -184,7 +184,7 @@ export function StatusBadge({
     <span
       data-slot='status-badge'
       className={cn(
-        'inline-flex w-fit max-w-full min-w-0 shrink items-center font-medium tracking-normal whitespace-nowrap transition-colors',
+        'inline-flex w-fit max-w-full min-w-0 shrink items-center font-medium whitespace-nowrap transition-colors',
         isBadge
           ? cn('rounded-4xl', sizeMap[size ?? 'sm'])
           : textSizeMap[size ?? 'sm'],

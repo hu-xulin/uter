@@ -41,7 +41,7 @@ export function ContentSection({
     <section className='mt-8'>
       <h2
         id={id}
-        className='mb-4 text-doc-h2 font-semibold tracking-tight text-fd-foreground'
+        className='mb-4 text-doc-h2 font-semibold text-fd-foreground'
       >
         {heading}
       </h2>
@@ -346,7 +346,7 @@ export function FeatureList({
       {heading ? (
         <h2
           id={headingId}
-          className='mt-8 mb-4 text-doc-h2 font-semibold tracking-tight text-fd-foreground'
+          className='mt-8 mb-4 text-doc-h2 font-semibold text-fd-foreground'
         >
           {heading}
         </h2>
@@ -422,7 +422,7 @@ function InlineRuns({ nodes }: { nodes: Inline[] }) {
             return (
               <code
                 key={i}
-                className='rounded bg-fd-muted px-1 py-0.5 font-mono text-[0.85em] text-fd-foreground'
+                className='rounded bg-fd-muted px-1 py-0.5 font-mono text-[0.8125rem] text-fd-foreground'
               >
                 {node.value}
               </code>
@@ -654,7 +654,7 @@ export function BlockSection({
     <section className='mt-8 first:mt-0'>
       <h2
         id={id}
-        className='mb-4 text-doc-h2 font-semibold tracking-tight text-fd-foreground'
+        className='mb-4 text-doc-h2 font-semibold text-fd-foreground'
       >
         {heading}
       </h2>
