@@ -93,10 +93,12 @@ For commercial licensing, please contact support@uter.ai
      * 思源黑体 (Source Han Sans) for Chinese. `--font-body` is a fixed
      * alias of `--font-ui` (declared in theme.css) — the font switcher
      * has been removed, so there is nothing left to swap.
-     * Body uses GitHub's base size (14px) and regular weight (400). */
+     * Body uses the global body size (14px) and regular weight (400),
+     * on the ladder's unitless 1.5 leading. */
     font-family: var(--font-body);
     font-size: var(--text-sm);
     font-weight: 400;
+    line-height: 1.5;
   }
 
   /* Keep sticky headers stable while primitives lock body scrolling. */
@@ -104,7 +106,7 @@ For commercial licensing, please contact support@uter.ai
     overflow: unset !important;
   }
 
-  /* Headings and bold elements use GitHub's semibold (600) — the single
+  /* Headings and bold elements use semibold (600) — the single
    * authoritative heading weight. `.font-bold` (700) is intentionally left
    * to Tailwind's utility for deliberate emphasis only. */
   h1,

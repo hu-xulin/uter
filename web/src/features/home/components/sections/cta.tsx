@@ -53,7 +53,7 @@ export function CTA(props: CTAProps) {
         className='mx-auto max-w-2xl text-center'
         animation='scale-in'
       >
-        <h2 className='text-2xl leading-tight font-bold tracking-tight md:text-4xl'>
+        <h2 className='text-2xl leading-tight font-semibold'>
           {t('Ready to simplify')}
           <br />
           <span className='bg-gradient-to-r from-blue-400 via-violet-400 to-purple-500 bg-clip-text text-transparent'>

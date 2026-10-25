@@ -53,10 +53,10 @@ export function HowItWorks() {
     <section className='border-border/40 relative z-10 border-t px-6 py-24 md:py-32'>
       <div className='mx-auto max-w-6xl'>
         <AnimateInView className='mb-16 text-center md:mb-20'>
-          <p className='text-muted-foreground mb-3 text-sm font-medium tracking-widest uppercase'>
+          <p className='text-muted-foreground mb-3 text-sm font-medium uppercase'>
             {t('How It Works')}
           </p>
-          <h2 className='text-2xl font-bold tracking-tight md:text-3xl'>
+          <h2 className='text-2xl font-semibold'>
             {t('Three steps to get started')}
           </h2>
         </AnimateInView>

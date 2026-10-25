@@ -37,12 +37,12 @@ import { getNodeKey } from './response-content'
 import type { BlockRendererOptions } from './response-types'
 
 const headingClasses = {
-  1: 'mt-6 mb-3 text-xl font-semibold tracking-normal',
-  2: 'mt-6 mb-3 text-lg font-semibold tracking-normal',
-  3: 'mt-5 mb-2 text-base font-semibold tracking-normal',
-  4: 'mt-5 mb-2 text-sm font-semibold tracking-normal',
-  5: 'text-muted-foreground mt-4 mb-2 text-sm font-semibold tracking-normal',
-  6: 'text-muted-foreground mt-4 mb-2 text-xs font-semibold tracking-normal uppercase',
+  1: 'mt-6 mb-3 text-xl font-semibold',
+  2: 'mt-6 mb-3 text-lg font-semibold',
+  3: 'mt-5 mb-2 text-base font-semibold',
+  4: 'mt-5 mb-2 text-sm font-semibold',
+  5: 'text-muted-foreground mt-4 mb-2 text-sm font-semibold',
+  6: 'text-muted-foreground mt-4 mb-2 text-xs font-semibold uppercase',
 } satisfies Record<1 | 2 | 3 | 4 | 5 | 6, string>
 
 export function renderHeading(

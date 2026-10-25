@@ -111,7 +111,7 @@ export function CachedPriceCell(props: {
             </span>
           </div>
         ))}
-        <div className='text-muted-foreground/50 text-[10px]'>
+        <div className='text-muted-foreground/50 text-xs'>
           / {tokenUnitLabel}
         </div>
       </div>
@@ -155,11 +155,11 @@ export function CachedPriceCell(props: {
   return (
     <div className='max-w-full min-w-0'>
       <span className='text-sm tabular-nums'>{cachedPrice}</span>
-      <div className='text-muted-foreground/50 text-[10px]'>
+      <div className='text-muted-foreground/50 text-xs'>
         / {tokenUnitLabel}
       </div>
       {cacheDiscounted && (
-        <div className='text-muted-foreground/50 text-[10px] tabular-nums'>
+        <div className='text-muted-foreground/50 text-xs tabular-nums'>
           {t('Official')}:{' '}
           <span className='line-through'>{officialCache}</span> / {tokenUnitLabel}
         </div>

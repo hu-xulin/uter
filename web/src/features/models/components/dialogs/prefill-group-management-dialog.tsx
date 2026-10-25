@@ -238,7 +238,7 @@ export function PrefillGroupManagementDialog({
               </div>
             </CardHeader>
             <CardContent className='space-y-3'>
-              <div className='text-muted-foreground flex flex-wrap items-center gap-2 text-xs font-medium tracking-wide uppercase'>
+              <div className='text-muted-foreground flex flex-wrap items-center gap-2 text-xs font-medium uppercase'>
                 <span>Items</span>
                 <StatusBadge
                   label={`${parsedItems.length} item${parsedItems.length === 1 ? '' : 's'}`}
@@ -355,7 +355,7 @@ export function PrefillGroupManagementDialog({
                     </p>
                   )}
                 </div>
-                <div className='text-muted-foreground mt-2 text-xs font-medium tracking-wide uppercase'>
+                <div className='text-muted-foreground mt-2 text-xs font-medium uppercase'>
                   {parsedItems.length} item
                   {parsedItems.length === 1 ? '' : 's'}
                 </div>

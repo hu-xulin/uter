@@ -179,7 +179,7 @@ export function SecretFileInput({
 
           {!isBlank ? (
             revealed && !isMasked ? (
-              <pre className='text-muted-foreground mt-1.5 max-h-28 overflow-auto font-mono text-[11px] leading-relaxed break-all whitespace-pre-wrap'>
+              <pre className='text-muted-foreground mt-1.5 max-h-28 overflow-auto font-mono text-[0.8125rem] leading-relaxed break-all whitespace-pre-wrap'>
                 {value}
               </pre>
             ) : (

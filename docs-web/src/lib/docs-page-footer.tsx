@@ -77,7 +77,7 @@ export function DocsPageFooter({
           href={previous.url}
           className='group hover:bg-fd-accent flex flex-col gap-1 rounded-2xl border border-fd-border p-4 transition-colors'
         >
-          <span className='text-fd-muted-foreground flex items-center gap-1.5 text-[13px]'>
+          <span className='text-fd-muted-foreground flex items-center gap-1.5 text-sm'>
             <ArrowLeft className='size-3.5 transition-transform group-hover:-translate-x-0.5' />
             {LABELS[locale]?.previous ?? LABELS.en!.previous}
           </span>
@@ -93,7 +93,7 @@ export function DocsPageFooter({
           href={next.url}
           className='group hover:bg-fd-accent flex flex-col items-end gap-1 rounded-2xl border border-fd-border p-4 text-right transition-colors'
         >
-          <span className='text-fd-muted-foreground flex items-center gap-1.5 text-[13px]'>
+          <span className='text-fd-muted-foreground flex items-center gap-1.5 text-sm'>
             {LABELS[locale]?.next ?? LABELS.en!.next}
             <ArrowRight className='size-3.5 transition-transform group-hover:translate-x-0.5' />
           </span>

@@ -109,7 +109,7 @@ export function usePricingColumns(
       header: ({ column }) => (
         <div className='flex flex-col items-start gap-0.5'>
           <DataTableColumnHeader column={column} title={t('Price')} />
-          <span className='rounded bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground'>
+          <span className='rounded bg-muted px-1.5 py-0.5 text-xs font-medium text-muted-foreground'>
             {sourceLabel}
           </span>
         </div>

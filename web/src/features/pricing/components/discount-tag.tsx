@@ -50,7 +50,7 @@ export const DiscountTag = memo(function DiscountTag(props: DiscountTagProps) {
   return (
     <span
       className={cn(
-        'inline-flex items-center rounded-[0.6rem] px-1.5 py-[5px] text-[11px] font-semibold leading-none text-white bg-emerald-600/80',
+        'inline-flex items-center rounded-[0.6rem] px-1.5 py-[5px] text-xs font-semibold leading-none text-white bg-emerald-600/80',
         props.className
       )}
       title={`-${Math.round(info.percent)}%`}

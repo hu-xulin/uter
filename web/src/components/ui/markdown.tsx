@@ -775,19 +775,27 @@ export function Markdown(props: MarkdownProps) {
   return (
     <div
       className={cn(
-        'prose prose-sm dark:prose-invert max-w-none',
-        '[&_h1]:mt-6 [&_h1]:mb-3 [&_h1]:text-2xl [&_h1]:font-semibold',
-        '[&_h2]:mt-5 [&_h2]:mb-3 [&_h2]:text-xl [&_h2]:font-semibold',
+        /* Long-form body copy: 16px / 400 / 1.5 (长文本正文).
+         * `prose` / `prose-sm` are inert here — @tailwindcss/typography is
+         * not a dependency — so the scale is pinned with explicit
+         * descendant selectors instead: h1 30px, h2 24px, h3 18px,
+         * h4 16px, body 16px, inline + fenced code 13px monospace. */
+        'max-w-none text-base',
+        '[&_h1]:mt-6 [&_h1]:mb-3 [&_h1]:text-3xl [&_h1]:font-semibold',
+        '[&_h2]:mt-5 [&_h2]:mb-3 [&_h2]:text-2xl [&_h2]:font-semibold',
         '[&_h3]:mt-4 [&_h3]:mb-2 [&_h3]:text-lg [&_h3]:font-semibold',
-        '[&_h4]:mt-4 [&_h4]:mb-2 [&_h4]:font-semibold',
-        '[&_p]:my-2 [&_p]:leading-relaxed [&_strong]:font-semibold [&_em]:italic',
+        '[&_h4]:mt-4 [&_h4]:mb-2 [&_h4]:text-base [&_h4]:font-semibold',
+        '[&_p]:my-2 [&_p]:text-base [&_p]:leading-relaxed [&_strong]:font-semibold [&_em]:italic',
         '[&_a]:text-primary hover:[&_a]:text-primary/80',
         '[&_ol]:my-2 [&_ul]:my-2 [&_ol]:list-decimal [&_ul]:list-disc [&_ol]:pl-5 [&_ul]:pl-5 [&_li]:my-1 [&_li]:pl-1',
+        '[&_li]:text-base',
         '[&_blockquote]:my-3 [&_blockquote]:border-l-2 [&_blockquote]:border-primary [&_blockquote]:bg-muted/50 [&_blockquote]:py-1 [&_blockquote]:pl-4',
-        '[&_code]:rounded [&_code]:bg-muted [&_code]:px-1 [&_code]:py-0.5 [&_code]:font-mono',
-        '[&_pre]:my-3 [&_pre]:overflow-x-auto [&_pre]:rounded-md [&_pre]:border [&_pre]:bg-muted [&_pre]:p-3 [&_table]:my-4 [&_table]:block [&_table]:w-full [&_table]:overflow-x-auto',
-        '[&_pre_code]:bg-transparent [&_pre_code]:p-0 [&_pre_code]:text-sm',
+        '[&_code]:rounded [&_code]:bg-muted [&_code]:px-1 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-[0.8125rem]',
+        '[&_pre]:my-3 [&_pre]:overflow-x-auto [&_pre]:rounded-md [&_pre]:border [&_pre]:bg-muted [&_pre]:p-3 [&_pre]:text-[0.8125rem] [&_table]:my-4 [&_table]:block [&_table]:w-full [&_table]:overflow-x-auto',
+        '[&_pre_code]:bg-transparent [&_pre_code]:p-0 [&_pre_code]:text-[0.8125rem]',
         '[&_thead]:bg-muted [&_th]:border [&_td]:border [&_th]:px-3 [&_td]:px-3 [&_th]:py-2 [&_td]:py-2 [&_th]:text-left',
+        '[&_td]:text-base',
+        '[&_figcaption]:text-xs',
         '[&_hr]:my-6 [&_img]:my-4 [&_img]:max-w-full [&_img]:rounded-lg',
         '[&_.katex-display]:my-4 [&_.katex-display]:overflow-x-auto [&_.katex-display]:overflow-y-hidden',
         '[&_.markdown-page-break]:my-6 [&_.markdown-page-break]:border-dashed',

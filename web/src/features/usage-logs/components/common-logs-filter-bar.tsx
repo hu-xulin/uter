@@ -423,7 +423,7 @@ export function CommonLogsFilterBar<TData>(
             {selectedLogType?.deprecated && (
               <Badge
                 variant='secondary'
-                className='h-4 px-1.5 text-[10px] font-normal'
+                className='h-4 px-1.5 text-xs font-normal'
                 title={deprecatedTypeDescription}
               >
                 {t('Deprecated')}
@@ -449,7 +449,7 @@ export function CommonLogsFilterBar<TData>(
                 {type.deprecated && (
                   <Badge
                     variant='secondary'
-                    className='h-4 px-1.5 text-[10px] font-normal'
+                    className='h-4 px-1.5 text-xs font-normal'
                     title={deprecatedTypeDescription}
                   >
                     {t('Deprecated')}

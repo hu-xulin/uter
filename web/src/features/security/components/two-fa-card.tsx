@@ -87,7 +87,7 @@ export function TwoFACard({ loading: pageLoading }: TwoFACardProps) {
     <>
       <Card data-card-hover='false' className='gap-0 overflow-hidden py-0'>
         <CardHeader className='p-3 sm:p-5'>
-          <CardTitle className='text-lg tracking-tight sm:text-xl'>
+          <CardTitle>
             {t('Two-Factor Authentication')}
           </CardTitle>
           <CardDescription className='text-xs sm:text-sm'>

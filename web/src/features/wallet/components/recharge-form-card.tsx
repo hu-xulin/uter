@@ -281,7 +281,7 @@ export function RechargeFormCard({
             <>
               {presetAmounts.length > 0 && (
                 <div className='space-y-2.5 sm:space-y-3'>
-                  <Label className='text-muted-foreground text-xs font-medium tracking-wider uppercase'>
+                  <Label className='text-muted-foreground text-xs font-medium uppercase'>
                     {t('Amount')}
                   </Label>
                   <div className='grid grid-cols-2 gap-1.5 sm:gap-3 md:grid-cols-4'>
@@ -356,7 +356,7 @@ export function RechargeFormCard({
               <div className='space-y-2.5 sm:space-y-3'>
                 <Label
                   htmlFor='topup-amount'
-                  className='text-muted-foreground text-xs font-medium tracking-wider uppercase'
+                  className='text-muted-foreground text-xs font-medium uppercase'
                 >
                   {t('Custom Amount')}
                 </Label>
@@ -395,7 +395,7 @@ export function RechargeFormCard({
               </div>
 
               <div className='space-y-2.5 sm:space-y-3'>
-                <Label className='text-muted-foreground text-xs font-medium tracking-wider uppercase'>
+                <Label className='text-muted-foreground text-xs font-medium uppercase'>
                   {t('Payment Method')}
                 </Label>
                 {hasStandardPaymentMethods ? (
@@ -444,7 +444,7 @@ export function RechargeFormCard({
                               {method.name}
                             </span>
                             {disabledLabel && (
-                              <span className='text-muted-foreground max-w-full truncate text-[11px] leading-4 font-normal'>
+                              <span className='text-muted-foreground max-w-full truncate text-xs leading-4 font-normal'>
                                 {disabledLabel}
                               </span>
                             )}
@@ -480,7 +480,7 @@ export function RechargeFormCard({
                 hasWaffoPaymentMethods &&
                 onWaffoMethodSelect && (
                   <div className='space-y-2.5 sm:space-y-3'>
-                    <Label className='text-muted-foreground text-xs font-medium tracking-wider uppercase'>
+                    <Label className='text-muted-foreground text-xs font-medium uppercase'>
                       {t('Waffo Payment')}
                     </Label>
                     <div className='grid grid-cols-2 gap-1.5 sm:gap-3 lg:grid-cols-3'>
@@ -533,7 +533,7 @@ export function RechargeFormCard({
                                 {method.name}
                               </span>
                               {disabledLabel && (
-                                <span className='text-muted-foreground max-w-full truncate text-[11px] leading-4 font-normal'>
+                                <span className='text-muted-foreground max-w-full truncate text-xs leading-4 font-normal'>
                                   {disabledLabel}
                                 </span>
                               )}
@@ -574,7 +574,7 @@ export function RechargeFormCard({
         creemProducts.length > 0 &&
         onCreemProductSelect && (
           <div className='space-y-2.5 border-t pt-4 sm:space-y-3 sm:pt-6'>
-            <Label className='text-muted-foreground text-xs font-medium tracking-wider uppercase'>
+            <Label className='text-muted-foreground text-xs font-medium uppercase'>
               {t('Creem Payment')}
             </Label>
             <CreemProductsSection
@@ -593,7 +593,7 @@ export function RechargeFormCard({
             </IconBadge>
             <Label
               htmlFor='redemption-code'
-              className='text-muted-foreground text-xs font-medium tracking-wider uppercase'
+              className='text-muted-foreground text-xs font-medium uppercase'
             >
               {t('Have a Code?')}
             </Label>

@@ -149,7 +149,7 @@ function InlineMetric(props: {
       <IconBadge tone={props.tone} size='xs'>
         <Icon />
       </IconBadge>
-      <span className='text-muted-foreground text-[11px]'>{props.label}</span>
+      <span className='text-muted-foreground text-xs'>{props.label}</span>
       <span
         className={cn(
           'text-xs font-semibold tabular-nums',
@@ -167,7 +167,7 @@ function ModelBadge(props: { model: PerfModelSummary }) {
 
   return (
     <span className='bg-muted/50 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1'>
-      <span className='max-w-[10rem] truncate font-mono text-[11px]'>
+      <span className='max-w-[10rem] truncate font-mono text-[0.8125rem]'>
         {model.model_name}
       </span>
       <span
@@ -179,7 +179,7 @@ function ModelBadge(props: { model: PerfModelSummary }) {
       />
       <span
         className={cn(
-          'text-[11px] font-semibold tabular-nums',
+          'text-xs font-semibold tabular-nums',
           getSuccessRateTextClass(model.success_rate)
         )}
       >

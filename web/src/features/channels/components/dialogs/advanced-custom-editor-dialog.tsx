@@ -1154,7 +1154,7 @@ function DisplayPreviewBadge(props: {
           onError={() => setLogoBroken(true)}
         />
       ) : (
-        <span className='bg-background inline-flex size-4 items-center justify-center rounded-full text-[10px] font-medium'>
+        <span className='bg-background inline-flex size-4 items-center justify-center rounded-full text-xs font-medium'>
           {label.slice(0, 1).toUpperCase()}
         </span>
       )}
@@ -1689,7 +1689,7 @@ function RouteEditor({
                         variant={ruleKind === 'regex' ? 'outline' : 'secondary'}
                         className='max-w-full gap-1.5 font-mono'
                       >
-                        <span className='font-sans text-[10px] font-semibold tracking-normal uppercase'>
+                        <span className='font-sans text-xs font-semibold uppercase'>
                           {t(ruleKind === 'regex' ? 'Regex' : 'Exact')}
                         </span>
                         <span className='truncate'>{displayModel}</span>

@@ -71,7 +71,7 @@ export function DocsBreadcrumb({
   return (
     <nav
       aria-label={LABELS[locale] ?? LABELS.en}
-      className='text-fd-muted-foreground mb-3 flex items-center gap-1.5 text-[13px]'
+      className='text-fd-muted-foreground mb-3 flex items-center gap-1.5 text-sm'
     >
       {chain.map((item, index) => {
         const isCurrent = index === chain.length - 1;

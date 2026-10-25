@@ -48,11 +48,11 @@ export function getMessageContentStyles() {
     'group-[.is-assistant]:text-foreground/90',
 
     // Preferred readable widths and wrapping
-    'text-[0.95rem]',
+    'text-base',
     'leading-6',
     'break-words',
     'whitespace-pre-wrap',
-    'sm:text-[0.975rem]',
+    'sm:text-base',
     'sm:leading-7',
 
     // Cap user bubble width so it does not look like a banner

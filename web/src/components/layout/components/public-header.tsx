@@ -223,7 +223,7 @@ export function PublicHeader(props: PublicHeaderProps) {
                   {logoContent}
                 </div>
                 <span
-                  className='font-brand max-w-48 truncate text-lg font-semibold tracking-tight'
+                  className='font-brand max-w-48 truncate text-lg font-semibold'
                   title={brandName}
                 >
                   {loading ? (
@@ -362,7 +362,7 @@ export function PublicHeader(props: PublicHeaderProps) {
             {links.map((link, i) => {
               const isActive = getTopNavActive(pathname, link, links)
               const linkClassName = cn(
-                'flex items-center gap-3 py-3 text-base tracking-tight transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]',
+                'flex items-center gap-3 py-3 text-base transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]',
                 mobileOpen
                   ? 'translate-y-0 opacity-100'
                   : 'translate-y-4 opacity-0',

@@ -198,7 +198,7 @@ export function ProfileHeader({ profile, loading }: ProfileHeaderProps) {
 
           <div className='min-w-0 flex-1 space-y-1.5 sm:space-y-3'>
             <div className='flex min-w-0 items-center gap-2'>
-              <h1 className='truncate text-xl font-semibold tracking-tight sm:text-2xl'>
+              <h1 className='truncate text-xl font-semibold sm:text-2xl'>
                 {displayName}
               </h1>
               <StatusBadge
@@ -257,12 +257,12 @@ export function ProfileHeader({ profile, loading }: ProfileHeaderProps) {
                 <IconBadge tone={item.tone} size='stat'>
                   <item.icon />
                 </IconBadge>
-                <div className='text-muted-foreground truncate text-xs font-medium tracking-wider uppercase'>
+                <div className='text-muted-foreground truncate text-xs font-medium uppercase'>
                   {item.label}
                 </div>
               </div>
 
-              <div className='text-foreground mt-1.5 truncate text-lg font-bold tracking-tight tabular-nums sm:mt-2 sm:text-2xl'>
+              <div className='text-foreground mt-1.5 truncate text-lg font-bold tabular-nums sm:mt-2 sm:text-2xl'>
                 {item.value}
               </div>
               <div className='text-muted-foreground/60 mt-1 hidden text-xs md:block'>

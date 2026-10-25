@@ -4,12 +4,12 @@ import Image from 'next/image';
 import { usePathname } from 'fumadocs-core/framework';
 import { Languages, Moon, Sun } from 'lucide-react';
 import { withDocsBasePath } from '@/lib/docs-base-path';
-import { HOST_APP_LINK_TARGET } from './docs-base-path';
 import { useTheme } from 'next-themes';
 import { useEffect, useState, type ReactNode } from 'react';
 import { LanguageSelect } from 'fumadocs-ui/layouts/shared/slots/language-select';
 
 import type { DocsLocale } from '@/lib/i18n';
+import { HOST_APP_LINK_TARGET } from './docs-base-path';
 
 /**
  * Site-wide top navigation links rendered in the docs header.
@@ -282,7 +282,7 @@ export function DocsHeader({ locale }: { locale: DocsLocale }) {
                   {logo}
                 </div>
                 <span
-                  className='Uter-brand-wordmark max-w-48 truncate text-lg tracking-tight'
+                  className='Uter-brand-wordmark max-w-48 truncate text-lg'
                   title={brand}
                 >
                   {brand}
@@ -396,7 +396,7 @@ export function DocsHeader({ locale }: { locale: DocsLocale }) {
                 target={HOST_APP_LINK_TARGET}
                 onClick={() => setMobileOpen(false)}
                 className={cx(
-                  'flex items-center gap-3 py-3 text-base font-medium tracking-tight transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]',
+                  'flex items-center gap-3 py-3 text-base font-medium transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]',
                   mobileOpen
                     ? 'translate-y-0 opacity-100'
                     : 'translate-y-4 opacity-0',

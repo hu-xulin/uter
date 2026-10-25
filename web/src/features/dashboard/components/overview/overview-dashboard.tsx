@@ -206,10 +206,10 @@ function SetupGuideBackdrop(props: { compact?: boolean }) {
       >
         <pre
           className={cn(
-            'absolute right-3 [mask-image:linear-gradient(90deg,transparent_0%,black_30%,black_82%,transparent_100%)] text-right tracking-[0.38em] whitespace-pre',
+            'absolute right-3 [mask-image:linear-gradient(90deg,transparent_0%,black_30%,black_82%,transparent_100%)] text-right whitespace-pre',
             props.compact
-              ? '-top-6 text-[9px] leading-4'
-              : 'top-1 text-[11px] leading-5'
+              ? '-top-6 text-xs leading-4'
+              : 'top-1 text-xs leading-5'
           )}
         >
           {SETUP_GUIDE_CODE_PATTERN}
@@ -671,14 +671,14 @@ export function OverviewDashboard() {
                       <div className='flex min-w-0 flex-col gap-5'>
                         <div className='flex flex-wrap items-start justify-between gap-3'>
                           <div className='flex max-w-2xl flex-col gap-1'>
-                            <div className='text-muted-foreground flex items-center gap-2 text-xs font-medium tracking-wider uppercase'>
+                            <div className='text-muted-foreground flex items-center gap-2 text-xs font-medium uppercase'>
                               <ListChecks
                                 className='size-3.5'
                                 aria-hidden='true'
                               />
                               {t('Get started')}
                             </div>
-                            <h3 className='text-xl font-semibold tracking-tight sm:text-2xl'>
+                            <h3 className='text-xl font-semibold sm:text-2xl'>
                               {t('Build on your API gateway in minutes')}
                             </h3>
                             <p className='text-muted-foreground max-w-xl text-sm leading-relaxed'>
@@ -728,10 +728,10 @@ export function OverviewDashboard() {
                 <CardStaggerItem className='bg-card h-full rounded-2xl border p-4 shadow-xs sm:p-5'>
                   <div className='flex h-full flex-col gap-4'>
                     <div className='flex flex-col gap-1'>
-                      <div className='text-muted-foreground text-xs font-medium tracking-wider uppercase'>
+                      <div className='text-muted-foreground text-xs font-medium uppercase'>
                         {t('Recommended actions')}
                       </div>
-                      <h3 className='text-lg font-semibold tracking-tight'>
+                      <h3 className='text-lg font-semibold'>
                         {t('Keep the platform ready')}
                       </h3>
                     </div>
