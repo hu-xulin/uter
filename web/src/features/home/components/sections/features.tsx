@@ -29,6 +29,7 @@ import {
 import { useTranslation } from 'react-i18next'
 
 import { AnimateInView } from '@/components/animate-in-view'
+import { Heading, Text } from '@/design-system'
 
 interface FeaturesProps {
   className?: string
@@ -112,7 +113,7 @@ export function Features(_props: FeaturesProps) {
             (step, i) => (
               <div key={step} className='flex items-center gap-2'>
                 <div
-                  className={`flex size-6 items-center justify-center rounded-full text-sm font-bold ${
+                  className={`flex size-6 items-center justify-center rounded-full text-sm font-semibold ${
                     i === 1
                       ? 'border border-blue-500/30 bg-blue-500/20 text-blue-500'
                       : 'border-border/40 bg-muted text-muted-foreground border'
@@ -183,14 +184,19 @@ export function Features(_props: FeaturesProps) {
     <section className='relative z-10 px-6 py-24 md:py-32'>
       <div className='mx-auto max-w-6xl'>
         <AnimateInView className='mb-16 max-w-lg'>
-          <p className='text-muted-foreground mb-3 text-base font-medium uppercase'>
+          <Text
+            as='p'
+            variant='label'
+            color='secondary'
+            className='mb-3 uppercase'
+          >
             {t('Core Features')}
-          </p>
-          <h2 className='text-2xl leading-tight font-semibold'>
+          </Text>
+          <Heading variant='section-title'>
             {t('Built for developers,')}
             <br />
             {t('designed for scale')}
-          </h2>
+          </Heading>
         </AnimateInView>
 
         {/* Bento grid */}
@@ -206,11 +212,13 @@ export function Features(_props: FeaturesProps) {
                 <span className='border-border/40 bg-muted text-muted-foreground flex size-7 items-center justify-center rounded-md border text-sm font-semibold tabular-nums'>
                   {f.num}
                 </span>
-                <h3 className='text-base font-semibold'>{f.title}</h3>
+                <Heading variant='card-title' level={3}>
+                  {f.title}
+                </Heading>
               </div>
-              <p className='text-muted-foreground text-base leading-relaxed'>
+              <Text as='p' variant='body' className='text-muted-foreground'>
                 {f.desc}
-              </p>
+              </Text>
               {f.visual}
             </AnimateInView>
           ))}
@@ -228,10 +236,16 @@ export function Features(_props: FeaturesProps) {
               <div className='text-muted-foreground border-border/50 bg-muted/30 group-hover:text-foreground mb-3 flex size-12 items-center justify-center rounded-xl border transition-colors'>
                 {f.icon}
               </div>
-              <h3 className='mb-1.5 text-base font-semibold'>{f.title}</h3>
-              <p className='text-muted-foreground max-w-[200px] text-base leading-relaxed'>
+              <Heading variant='card-title' level={3} className='mb-1.5'>
+                {f.title}
+              </Heading>
+              <Text
+                as='p'
+                variant='body'
+                className='text-muted-foreground max-w-[200px]'
+              >
                 {f.desc}
-              </p>
+              </Text>
             </AnimateInView>
           ))}
         </div>

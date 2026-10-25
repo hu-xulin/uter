@@ -188,7 +188,7 @@ export function UpstreamRatioSyncTable(props: UpstreamRatioSyncTableProps) {
         splitHeader
         getColumnClassName={(_, part) =>
           part === 'header'
-            ? 'h-11 px-3 align-middle'
+ ? 'px-3 align-middle'
             : 'h-14 px-3 py-2 align-middle'
         }
         getRowClassName={() => 'align-middle'}

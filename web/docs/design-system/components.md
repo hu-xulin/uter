@@ -47,6 +47,12 @@
 输出真实 `h1`–`h6`。视觉与语义分离：需要「看起来是 h3、结构上是 h2」时传
 `level={2}`。
 
+`multiline` 把行高换成 1.5 比例（E7），只用于折 3 行以上的营销主标题：
+
+```tsx
+<Heading variant='display' level={1} multiline>...</Heading>
+```
+
 ### PageHeader
 
 ```tsx
@@ -63,13 +69,13 @@
 
 | 组件 | 字号 | 字重 | 行高 | 圆角 |
 | --- | --- | --- | --- | --- |
-| Button | 14px（`label`） | 500 | 20px | `--radius-md` 6px |
-| Input / Textarea | 16px（例外 E1） | 400 | 24px | `--radius-md` 6px |
+| Button | 14px（`label`） | 500 | 20px | `--radius-md` 8px |
+| Input / Textarea | 14px（`body-sm`） | 400 | 20px | `--radius-md` 8px |
 | Label | 14px（`label`） | 500 | 20px | — |
 | Badge | 12px（`caption`） | 400 | 16px | `--radius-full` |
-| Card 标题 | 18px（`h3`） | 600 | 28px | `--radius-lg` 8px |
+| Card 标题 | 18px（`h3`） | 600 | 28px | `--radius-lg` 10px |
 | Card 描述 | 14px（`body-sm`） | 400 | 20px | — |
-| Dialog 标题 | 18px（`h3`） | 600 | 28px | `--radius-lg` 8px |
+| Dialog 标题 | 18px（`h3`） | 600 | 28px | `--radius-lg` 10px |
 | Dialog 描述 | 14px（`body-sm`） | 400 | 20px | — |
 | Table 表头 | 14px（`label`） | 500 | 20px | — |
 | Table 单元格 | 14px（`body-sm`） | 400 | 20px | — |

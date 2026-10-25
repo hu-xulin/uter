@@ -20,6 +20,7 @@ import { Settings, Zap, BarChart3 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
 import { AnimateInView } from '@/components/animate-in-view'
+import { Heading, Text } from '@/design-system'
 
 export function HowItWorks() {
   const { t } = useTranslation()
@@ -53,12 +54,17 @@ export function HowItWorks() {
     <section className='border-border/40 relative z-10 border-t px-6 py-24 md:py-32'>
       <div className='mx-auto max-w-6xl'>
         <AnimateInView className='mb-16 text-center md:mb-20'>
-          <p className='text-muted-foreground mb-3 text-sm font-medium uppercase'>
+          <Text
+            as='p'
+            variant='label'
+            color='secondary'
+            className='mb-3 uppercase'
+          >
             {t('How It Works')}
-          </p>
-          <h2 className='text-2xl font-semibold'>
+          </Text>
+          <Heading variant='section-title'>
             {t('Three steps to get started')}
-          </h2>
+          </Heading>
         </AnimateInView>
 
         <div className='grid gap-8 md:grid-cols-3 md:gap-12'>
@@ -73,14 +79,23 @@ export function HowItWorks() {
                 <div className='text-muted-foreground border-border/50 bg-muted/30 flex size-16 items-center justify-center rounded-2xl border transition-colors'>
                   {step.icon}
                 </div>
-                <div className='bg-foreground text-background absolute -top-2 -right-2 flex size-6 items-center justify-center rounded-full text-xs font-bold'>
+                <div className='bg-foreground text-background absolute -top-2 -right-2 flex size-6 items-center justify-center rounded-full text-xs font-semibold'>
                   {step.num}
                 </div>
               </div>
-              <h3 className='mb-2 text-base font-semibold'>{step.title}</h3>
-              <p className='text-muted-foreground max-w-[240px] text-sm leading-relaxed'>
+              <Heading variant='card-title' level={3} className='mb-2'>
+                {step.title}
+              </Heading>
+              {/* 卡片正文统一 16/400/24（规范：卡片正文 16px）。
+                  这里曾用 body-sm（14px），与「核心功能」区块的 16px
+                  不一致，同一页面里两种卡片正文。 */}
+              <Text
+                as='p'
+                variant='body'
+                className='text-muted-foreground max-w-[260px]'
+              >
                 {step.desc}
-              </p>
+              </Text>
             </AnimateInView>
           ))}
         </div>

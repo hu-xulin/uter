@@ -52,12 +52,16 @@ Tailwind v4 只从 `@theme` 读取主题值。写在 `:root` 的 `--text-*` 不�
 | --- | --- | --- | --- |
 | 颜色主题 | `data-theme-preset` | 背景、文本、边框、状态色 | 字号、间距 |
 | 圆角 | `data-theme-radius` | 圆角基准 `--radius` | 字号、颜色 |
-| 字号/密度 | `data-theme-scale` | 字号阶梯 + 密度 Token | 颜色、圆角 |
+| 密度 | `data-theme-scale` | `--spacing` + `--ds-*` 控件/表格/卡片尺寸 | 字号阶梯、颜色 |
 | 明暗 | `.dark` | 颜色 Token 取值 | 尺寸 |
 
-`data-theme-scale` 同时承担字号缩放与密度，这是**有意**的：它既是无障碍的
-「放大文字」入口，也是紧凑/宽松模式的入口。再另造一个 `data-density` 属性只会
-和它打架。
+`data-theme-scale` 只承担密度（间距与控件尺寸），**不再缩放字号阶梯** ——
+规范第八节明确密度不得改动默认正文语义。它曾经也缩放 `--text-*`，等于让
+「紧凑模式顺手把 16px 正文压到 13px」，已移除（见 `exceptions.md` D4）。
+需要放大文字的用户走「Simple Large-font」预设（E11）。
+
+> 唯一的颜色主题例外：`simple-large` 预设自带一套大字阶梯，因为「大字」就是
+> 这个预设的产品语义，详见 `exceptions.md` E11。
 
 ## 3. 唯一入口
 
@@ -90,6 +94,7 @@ npm run test -- src/design-system   # Token 与文档一致性
 | T3 | 任意行高工具类 `leading-[26px]` |
 | T4 | 内联字号 `style={{ fontSize: 13 }}` |
 | T5 | CSS 硬编码 `font-size: 15px` |
+| T6 | 非浮层投影 `shadow-sm` / `shadow-[…]`（弹窗与浮层走 `OVERLAY_ALLOWLIST`，`shadow-none` 不计违规） |
 
 例外必须写进 `scripts/check-design-tokens.mjs` 的 `ALLOWLIST` 并给出理由，
 同时登记到 [exceptions.md](./exceptions.md)。
@@ -100,30 +105,42 @@ npm run test -- src/design-system   # Token 与文档一致性
 
 - 字号阶梯进入 `@theme`，成为工具类的真实来源；
 - 语义 Token 全量建立，行高兜底值与阶梯由测试锁死；
-- 圆角基准改为 8px（2/4/6/8/12/16 六档），按钮与输入框默认 6px；
+- 圆角基准 `--radius` = 8px，Tailwind 档位与 `--ds-radius-*` 一一对齐：
+  `xs` 4 / `sm` 6 / `md` 8 / `lg` 10 / `xl` 12 / `2xl` 16 / `full` 9999。
+  按钮与输入框 `rounded-md`（8px）、卡片与弹窗 `rounded-lg`（10px）、
+  图标按钮 `rounded-lg`（10px）；
+- 输入控件文字统一 14px（`body-sm`），移除移动端 16px 强制规则与例外 E1；
 - `Text` / `Heading` / `PageHeader` 落地，标题输出真实 `h1`–`h6`；
 - 徽标、表头、弹窗标题、卡片描述按文档对齐；
+- 控件高度由密度 Token 驱动（按钮 36 / 输入框 40，`sm` 档 32 / 36）；
+- 非浮层投影清零，并由扫描规则 T6 长期看守；
+- 密度不再缩放字号阶梯（D4），`data-theme-scale` 只管间距与控件尺寸；
 - 全站任意字号清零（`lint:design:strict` 通过）。
+- 首页卡片正文统一 16/400/24：`how-it-works` 曾用 `body-sm`（14px），与
+  `features` 的 16px 不一致，已按「卡片正文 16px」归一。
 
-尚未完成（见 [exceptions.md](./exceptions.md) 的「待办」）：
-
-- 控件高度（按钮 36px / 输入框 40px）尚未整体抬升；
-- 「除弹窗与浮层外不投影」尚未完成全站清理；
-- 业务组件尚未逐个改写为组合基础组件。
+原「尚未完成」三项（控件高度 / 投影清理 / 业务组件改写）已按文档执行完毕，
+记在 [exceptions.md](./exceptions.md) 的「已完成」一节；其中密度改字号这一项
+是在复查时新发现并修掉的（D4）。
 
 ## 6. 运行时实测（1440×900）
 
-| 元素 | 字号 | 字重 | 行高 | 圆角 |
-| --- | --- | --- | --- | --- |
-| 首页 hero `h1`（display） | 36px | 700 | 40px | — |
-| 首页 hero 描述（body） | 16px | 400 | 24px | — |
-| 一级导航项（label） | 14px | 500 | 20px | 8px |
-| 登录输入框（E1） | 16px | 400 | 24px | 6px |
-| 表单标签（label） | 14px | 500 | 20px | — |
-| 登录按钮（label） | 14px | 500 | 20px | 6px |
+> 下表由 Playwright 读 `getComputedStyle` 实测，不是从文档抄的。
 
-移动端 390px：输入框 16px / 圆角 6px，按钮 14px / 圆角 6px。
+| 元素 | 字号 | 字重 | 行高 | 圆角 | 高度 |
+| --- | --- | --- | --- | --- | --- |
+| 首页 hero `h1`（display, multiline） | 36px | 700 | 54px | — | — |
+| 首页 hero 描述（body） | 16px | 400 | 24px | — | — |
+| 一级导航项（label） | 14px | 500 | 20px | 8px | — |
+| 登录输入框（body-sm） | 14px | 400 | 20px | 8px | 40px |
+| 表单标签（label） | 14px | 500 | 20px | — | — |
+| 登录按钮（label） | 14px | 500 | 20px | 8px | 36px |
+
+移动端 390px：输入框 14px / 圆角 8px / 高 40px，按钮 14px / 圆角 8px / 高 36px。
 
 Token 解析值：`--text-xs` 12/16 · `--text-sm` 14/20 · `--text-base` 16/24 ·
 `--text-lg` 18/28 · `--text-2xl` 24/32 · `--text-3xl` 30/36 · `--text-4xl` 36/40 ·
-`--radius-sm` 4px · `--radius-md` 6px · `--radius-lg` 8px。
+`--radius-xs` 4px · `--radius-sm` 6px · `--radius-md` 8px · `--radius-lg` 10px ·
+`--radius-xl` 12px · `--radius-2xl` 16px ·
+`--ds-line-display-multiline` 1.5 · `--ds-button-height-md` 36px ·
+`--ds-control-height-md` 40px。

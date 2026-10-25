@@ -631,44 +631,26 @@ For commercial licensing, please contact support@uter.ai
 }
 
 /* ── Density scale ────────────────────────────────────────────────────── */
-/* `sm` = compact UI; `lg` = comfortable; `xl` = extra readable. Default keeps Tailwind defaults.
+/* `sm` = compact UI; `lg` = comfortable; `xl` = extra roomy. Default keeps
+ * the base ladder.
  *
- * The presets rescale the SAME ladder (see theme.css) rather than inventing
- * their own steps: every density step is a multiple of the base ladder, so
- * a page keeps the same proportions whichever density is picked. The floor
- * is 12px — `sm` never drops the auxiliary-text step below it, so no
- * density can render smaller than the project standard allows. */
+ * 密度**只允许改间距，不允许改字号**（设计规范第八节：密度管表格行高、控件
+ * 高度、组件内边距，不管默认正文语义）。这里曾经按档位缩放 `--text-*`，
+ * 等于让「紧凑模式把 16px 正文改成 12px」，与规范直接冲突，已移除。
+ *
+ * 字号阶梯的唯一来源是 `design-system/tokens/typography.css` 的 `@theme`；
+ * 控件高度由 `design-system/tokens/spacing.css` 的 `--ds-*` 分档驱动。
+ * 本文件只保留 `--spacing`（Tailwind 的 4px 基数）这一项间距缩放。 */
 [data-theme-scale='sm'] {
-  /* Compact — ~0.9× the base ladder, floored at 12px. */
-  --text-xs: 0.75rem; /* 12px */
-  --text-sm: 0.8125rem; /* 13px */
-  --text-base: 0.875rem; /* 14px */
-  --text-lg: 1rem; /* 16px */
-  --text-xl: 1.125rem; /* 18px */
-  --text-2xl: 1.375rem; /* 22px */
-  --text-3xl: 1.75rem; /* 28px */
+  /* Compact — tighter spacing only, typography untouched. */
   --spacing: 0.225rem;
 }
 [data-theme-scale='lg'] {
-  /* Comfortable — ~1.15× the base ladder. */
-  --text-xs: 0.875rem; /* 14px */
-  --text-sm: 1rem; /* 16px */
-  --text-base: 1.125rem; /* 18px */
-  --text-lg: 1.25rem; /* 20px */
-  --text-xl: 1.375rem; /* 22px */
-  --text-2xl: 1.75rem; /* 28px */
-  --text-3xl: 2.25rem; /* 36px */
+  /* Comfortable — roomier spacing only, typography untouched. */
   --spacing: 0.28rem;
 }
 [data-theme-scale='xl'] {
-  /* Extra readable — ~1.3× the base ladder. */
-  --text-xs: 0.9375rem; /* 15px */
-  --text-sm: 1.0625rem; /* 17px */
-  --text-base: 1.1875rem; /* 19px */
-  --text-lg: 1.375rem; /* 22px */
-  --text-xl: 1.5rem; /* 24px */
-  --text-2xl: 1.875rem; /* 30px */
-  --text-3xl: 2.375rem; /* 38px */
+  /* Extra roomy — widest spacing only, typography untouched. */
   --spacing: 0.3rem;
 }
 

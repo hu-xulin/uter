@@ -308,7 +308,7 @@ export function UserAuthForm({
             variant='outline'
             disabled={passkeyButtonDisabled}
             onClick={handlePasskeyLogin}
-            className='h-11 w-full justify-center gap-2 hover:bg-primary hover:text-primary-foreground hover:border-transparent dark:hover:bg-primary dark:hover:text-primary-foreground dark:hover:border-transparent hover:[&_svg]:text-primary-foreground dark:hover:[&_svg]:text-primary-foreground'
+ className='w-full justify-center gap-2 hover:bg-primary hover:text-primary-foreground hover:border-transparent dark:hover:bg-primary dark:hover:text-primary-foreground dark:hover:border-transparent hover:[&_svg]:text-primary-foreground dark:hover:[&_svg]:text-primary-foreground'
           >
             {isPasskeyLoading ? (
               <Loader2 className='h-4 w-4 animate-spin' />
@@ -363,7 +363,7 @@ export function UserAuthForm({
                   <FormControl>
                     <Input
                       placeholder={t('Enter your username or email')}
-                      className='h-11'
+ className=''
                       {...field}
                     />
                   </FormControl>
@@ -382,7 +382,7 @@ export function UserAuthForm({
                   <FormControl>
                     <PasswordInput
                       placeholder={t('Enter password')}
-                      className='h-11'
+ className=''
                       {...field}
                     />
                   </FormControl>
@@ -400,7 +400,7 @@ export function UserAuthForm({
             {/* Submit Button */}
             <Button
               type='submit'
-              className='mt-2 w-full justify-center gap-2 h-11'
+ className='mt-2 w-full justify-center gap-2'
               disabled={isLoading}
             >
               {isLoading ? <Loader2 className='animate-spin' /> : <LogIn />}
@@ -448,7 +448,7 @@ export function UserAuthForm({
               <Button
                 type='button'
                 variant='outline'
-                className='h-11'
+ className=''
                 onClick={() => handleWeChatDialogChange(false)}
                 disabled={isWeChatSubmitting}
               >
@@ -456,7 +456,7 @@ export function UserAuthForm({
               </Button>
               <Button
                 type='button'
-                className='gap-2 h-11'
+ className='gap-2'
                 onClick={handleWeChatLogin}
                 disabled={
                   isWeChatSubmitting ||
@@ -490,7 +490,7 @@ export function UserAuthForm({
             <Input
               id='wechat-code'
               placeholder={t('Enter the verification code')}
-              className='h-11'
+ className=''
               value={wechatCode}
               onChange={(event) => setWeChatCode(event.target.value)}
               autoComplete='one-time-code'
