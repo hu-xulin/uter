@@ -1,0 +1,35 @@
+/*
+Copyright (C) 2023-2026 Uter.ai
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+
+For commercial licensing, please contact support@uter.ai
+*/
+/* ── Foundations · Motion ─────────────────────────────────────────────
+ * 只保留两档时长（100ms 状态反馈 / 200ms 展开收起），全部引用
+ * `--ds-motion-*`。组件里写 `duration-300`、`duration-500` 属于
+ * 未登记的自定义节奏，新增代码请改用这两个类。
+ */
+
+@layer utilities {
+  .ds-motion-fast {
+    transition-duration: var(--ds-motion-fast);
+    transition-timing-function: var(--ds-motion-ease);
+  }
+
+  .ds-motion-base {
+    transition-duration: var(--ds-motion-base);
+    transition-timing-function: var(--ds-motion-ease);
+  }
+}

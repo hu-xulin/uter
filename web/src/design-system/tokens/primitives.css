@@ -1,0 +1,78 @@
+/*
+Copyright (C) 2023-2026 Uter.ai
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+
+For commercial licensing, please contact support@uter.ai
+*/
+/* ── Layer 1 · Primitive tokens ────────────────────────────────────────
+ * 原始设计值。这一层只回答「系统里允许出现哪些数值」，不表达任何
+ * 业务含义，也**不允许组件直接引用**。
+ *
+ * 直接引用原始值的后果：想把全站正文行高从 24px 改成 25px 时，必须
+ * 逐个翻组件。因此组件只能引用 `semantic.css` 里的 `--ds-*`，语义层
+ * 再指向这里的原始值 —— 改一处，全站跟着变。
+ *
+ * 说明：字号与间距的原始阶梯同时是 Tailwind 工具类的来源，因此它们
+ * 声明在 `@theme`（见 `typography.css` / `spacing.css`）而不是这里。
+ * 这一层只收 Tailwind 没有对应工具类的原始值。
+ */
+
+:root {
+  /* ── Font size primitives（与 typography.css 的 @theme 阶梯一一对应） */
+  --primitive-font-size-12: 0.75rem;
+  --primitive-font-size-14: 0.875rem;
+  --primitive-font-size-16: 1rem;
+  --primitive-font-size-18: 1.125rem;
+  --primitive-font-size-20: 1.25rem;
+  --primitive-font-size-24: 1.5rem;
+  --primitive-font-size-30: 1.875rem;
+  --primitive-font-size-36: 2.25rem;
+
+  /* ── Line height primitives */
+  --primitive-line-16: 1rem;
+  --primitive-line-20: 1.25rem;
+  --primitive-line-24: 1.5rem;
+  --primitive-line-28: 1.75rem;
+  --primitive-line-32: 2rem;
+  --primitive-line-36: 2.25rem;
+  --primitive-line-40: 2.5rem;
+
+  /* ── Font weight primitives */
+  --primitive-weight-regular: 400;
+  --primitive-weight-medium: 500;
+  --primitive-weight-semibold: 600;
+  --primitive-weight-bold: 700;
+
+  /* ── Space primitives（Tailwind 间距单位 4px 的倍数） */
+  --primitive-space-0-5: 0.125rem; /* 2px */
+  --primitive-space-1: 0.25rem; /* 4px */
+  --primitive-space-1-5: 0.375rem; /* 6px */
+  --primitive-space-2: 0.5rem; /* 8px */
+  --primitive-space-2-5: 0.625rem; /* 10px */
+  --primitive-space-3: 0.75rem; /* 12px */
+  --primitive-space-4: 1rem; /* 16px */
+  --primitive-space-5: 1.25rem; /* 20px */
+  --primitive-space-6: 1.5rem; /* 24px */
+  --primitive-space-8: 2rem; /* 32px */
+
+  /* ── Radius primitives（组件圆角，6/8px 是默认语言） */
+  --primitive-radius-xs: 2px;
+  --primitive-radius-sm: 4px;
+  --primitive-radius-md: 6px;
+  --primitive-radius-lg: 8px;
+  --primitive-radius-xl: 12px;
+  --primitive-radius-2xl: 16px;
+  --primitive-radius-full: 9999px;
+}

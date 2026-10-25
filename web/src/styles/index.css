@@ -38,6 +38,15 @@ For commercial licensing, please contact support@uter.ai
 @import './theme.css';
 @import './theme-presets.css';
 
+/* ── Design system ────────────────────────────────────────────────────
+ * 唯一设计值来源。`tokens/` 必须先于 `foundations/`：基础样式里的
+ * `.ds-text--*` 工具类全部引用 `--ds-*` 语义 Token。
+ *
+ * 导入顺序有约束：`tokens/typography.css` 里的 `@theme` 必须晚于
+ * `@import 'tailwindcss'`，否则覆盖不了内置字号阶梯。 */
+@import '../design-system/tokens/index.css';
+@import '../design-system/foundations/index.css';
+
 @layer components {
   .json-code-editor-textarea {
     overflow: auto !important;

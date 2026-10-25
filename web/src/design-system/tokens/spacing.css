@@ -1,0 +1,70 @@
+/*
+Copyright (C) 2023-2026 Uter.ai
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+
+For commercial licensing, please contact support@uter.ai
+*/
+/* ── Layer 1 · Spacing & density tokens ───────────────────────────────
+ * 间距阶梯就是 Tailwind 的 4px 单位，因此这里不再重复声明一套
+ * `--spacing-*`；只有「密度」需要受控 Token —— 密度只允许改变明确
+ * 列出的尺寸（文档第八节），不能顺手把正文改小。
+ *
+ * 默认值 = comfortable。`[data-theme-scale]` 是既有的无障碍字号
+ * 档位，这里扩展它来同时承载密度，而不是另造一个 `data-density`
+ * 属性去和它打架。
+ */
+
+:root,
+[data-theme-scale='lg'] {
+  /* 默认（comfortable） */
+  --ds-table-row-padding-y: 0.75rem; /* 12px */
+  --ds-table-cell-padding-x: 0.75rem; /* 12px */
+  --ds-control-height-md: 2.5rem; /* 40px */
+  --ds-control-height-sm: 2.25rem; /* 36px */
+  --ds-button-height-md: 2.25rem; /* 36px */
+  --ds-button-height-sm: 2rem; /* 32px */
+  --ds-form-field-gap: 0.5rem; /* 8px */
+  --ds-card-padding: 1.5rem; /* 24px */
+  --ds-page-gutter: 1.5rem; /* 24px */
+  --ds-section-gap: 1.5rem; /* 24px */
+}
+
+[data-theme-scale='sm'] {
+  /* 紧凑：只收行高与内边距，不动正文语义 */
+  --ds-table-row-padding-y: 0.5rem; /* 8px */
+  --ds-table-cell-padding-x: 0.5rem; /* 8px */
+  --ds-control-height-md: 2.25rem; /* 36px */
+  --ds-control-height-sm: 2rem; /* 32px */
+  --ds-button-height-md: 2rem; /* 32px */
+  --ds-button-height-sm: 1.75rem; /* 28px */
+  --ds-form-field-gap: 0.375rem; /* 6px */
+  --ds-card-padding: 1rem; /* 16px */
+  --ds-page-gutter: 1rem; /* 16px */
+  --ds-section-gap: 1rem; /* 16px */
+}
+
+[data-theme-scale='xl'] {
+  /* 宽松：加大留白，不动正文语义 */
+  --ds-table-row-padding-y: 0.875rem; /* 14px */
+  --ds-table-cell-padding-x: 0.875rem; /* 14px */
+  --ds-control-height-md: 2.75rem; /* 44px */
+  --ds-control-height-sm: 2.5rem; /* 40px */
+  --ds-button-height-md: 2.5rem; /* 40px */
+  --ds-button-height-sm: 2.25rem; /* 36px */
+  --ds-form-field-gap: 0.625rem; /* 10px */
+  --ds-card-padding: 1.75rem; /* 28px */
+  --ds-page-gutter: 2rem; /* 32px */
+  --ds-section-gap: 2rem; /* 32px */
+}

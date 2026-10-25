@@ -1,0 +1,28 @@
+/*
+Copyright (C) 2023-2026 Uter.ai
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+
+For commercial licensing, please contact support@uter.ai
+*/
+/* ── Design system · Foundations entry ────────────────────────────────
+ * 全局基础样式。`reset.css` 有意留空：项目已经用 `@layer base`
+ * （`styles/index.css`）做了一次 reset，再叠一份只会互相打架 ——
+ * 基础重置只保留一个实现位置。
+ *
+ * 顺序：排版工具类 → 无障碍 → 动效。
+ */
+@import './typography.css';
+@import './accessibility.css';
+@import './motion.css';

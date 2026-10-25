@@ -1,0 +1,132 @@
+/*
+Copyright (C) 2023-2026 Uter.ai
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+
+For commercial licensing, please contact support@uter.ai
+*/
+/* ── Foundations · Typography utilities ───────────────────────────────
+ * `Text` / `Heading` 组件的样式来源。之所以做成工具类而不是内联样式：
+ *   · 内联 `style` 会压过 Tailwind 类，导致调用方无法用 `className`
+ *     做必要的局部微调；
+ *   · 工具类参与 Tailwind 的层叠顺序，和 `dark:` / `sm:` 变体天然兼容。
+ *
+ * 每一个 `.ds-text--*` / `.ds-heading--*` 都只引用语义 Token，因此
+ * 调整 `--ds-text-*` / `--ds-line-*` 就能全站生效。
+ */
+
+@layer components {
+  /* ── 基础排版 ─────────────────────────────────────────────────────── */
+  .ds-text,
+  .ds-heading {
+    font-family: var(--font-ui);
+    font-weight: var(--ds-weight-regular);
+    letter-spacing: 0;
+    text-wrap: pretty;
+  }
+
+  .ds-text--truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .ds-text--clamp-2,
+  .ds-heading--clamp-2 {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    overflow: hidden;
+  }
+
+  /* ── 颜色 ─────────────────────────────────────────────────────────── */
+  .ds-text--primary,
+  .ds-heading--primary {
+    color: var(--ds-color-text-primary);
+  }
+  .ds-text--secondary,
+  .ds-heading--secondary {
+    color: var(--ds-color-text-secondary);
+  }
+  .ds-text--danger,
+  .ds-heading--danger {
+    color: var(--ds-color-text-danger);
+  }
+  .ds-text--success,
+  .ds-heading--success {
+    color: var(--ds-color-text-success);
+  }
+  .ds-text--inherit,
+  .ds-heading--inherit {
+    color: inherit;
+  }
+
+  /* ── Text 变体 ────────────────────────────────────────────────────── */
+  .ds-text--body {
+    font-size: var(--ds-text-body);
+    line-height: var(--ds-line-body);
+  }
+  .ds-text--body-sm {
+    font-size: var(--ds-text-body-sm);
+    line-height: var(--ds-line-body-sm);
+  }
+  .ds-text--label {
+    font-size: var(--ds-text-label);
+    line-height: var(--ds-line-label);
+    font-weight: var(--ds-weight-medium);
+  }
+  .ds-text--caption {
+    font-size: var(--ds-text-caption);
+    line-height: var(--ds-line-caption);
+  }
+  .ds-text--code {
+    font-family: var(--font-mono);
+    font-size: var(--ds-text-mono);
+    line-height: var(--ds-line-mono);
+  }
+  /* 密集等宽：表格单元格、日志列、行内代码（例外 E2 / E3） */
+  .ds-text--code-dense {
+    font-family: var(--font-mono);
+    font-size: var(--ds-text-body-sm);
+    line-height: var(--ds-line-mono-dense);
+  }
+
+  /* ── Heading 变体 ─────────────────────────────────────────────────── */
+  .ds-heading--display {
+    font-size: var(--ds-text-display);
+    line-height: var(--ds-line-display);
+    font-weight: var(--ds-weight-bold);
+  }
+  .ds-heading--page-title {
+    font-size: var(--ds-text-page-title);
+    line-height: var(--ds-line-page-title);
+    font-weight: var(--ds-weight-semibold);
+  }
+  .ds-heading--section-title {
+    font-size: var(--ds-text-section-title);
+    line-height: var(--ds-line-section-title);
+    font-weight: var(--ds-weight-semibold);
+  }
+  .ds-heading--card-title {
+    font-size: var(--ds-text-card-title);
+    line-height: var(--ds-line-card-title);
+    font-weight: var(--ds-weight-semibold);
+  }
+  .ds-heading--dialog-title {
+    font-size: var(--ds-text-dialog-title);
+    line-height: var(--ds-line-dialog-title);
+    font-weight: var(--ds-weight-semibold);
+  }
+}

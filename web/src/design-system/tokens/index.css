@@ -1,0 +1,36 @@
+/*
+Copyright (C) 2023-2026 Uter.ai
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+
+For commercial licensing, please contact support@uter.ai
+*/
+/* ── Design system · Token entry ──────────────────────────────────────
+ * 顺序有意义，不要重排：
+ *
+ *   1. typography.css  —— `@theme` 声明字号阶梯，必须由 Tailwind 处理，
+ *                          并且要晚于 `@import 'tailwindcss'` 才能覆盖
+ *                          内置默认值；
+ *   2. primitives.css  —— 原始值（被语义层引用）；
+ *   3. semantic.css    —— 语义层，组件的唯一入口；
+ *   4. spacing.css     —— 密度 Token（按 data-theme-scale 分档）；
+ *   5. colors.css      —— 颜色语义别名（指向既有主题 Token）；
+ *   6. elevation.css   —— 阴影、动效时长。
+ */
+@import './typography.css';
+@import './primitives.css';
+@import './semantic.css';
+@import './spacing.css';
+@import './colors.css';
+@import './elevation.css';
