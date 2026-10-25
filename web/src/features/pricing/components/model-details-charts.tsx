@@ -161,7 +161,7 @@ export function LatencyTrendChart(props: {
     return (
       <div
         className={cn(
-          'text-muted-foreground flex h-48 items-center justify-center rounded-lg border text-xs',
+          'text-muted-foreground flex h-48 items-center justify-center rounded-lg border text-sm',
           props.className
         )}
       >
@@ -289,7 +289,7 @@ export function UptimeTrendChart(props: {
     return (
       <div
         className={cn(
-          'text-muted-foreground flex h-48 items-center justify-center rounded-lg border text-xs',
+          'text-muted-foreground flex h-48 items-center justify-center rounded-lg border text-sm',
           props.className
         )}
       >

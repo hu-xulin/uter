@@ -154,7 +154,7 @@ export function UserCharts(props: UserChartsProps) {
               <TabsTrigger
                 key={preset.days}
                 value={String(preset.days)}
-                className='px-2.5 text-xs'
+                className='px-2.5 text-sm'
               >
                 {t(preset.label)}
               </TabsTrigger>
@@ -174,7 +174,7 @@ export function UserCharts(props: UserChartsProps) {
               <TabsTrigger
                 key={opt.value}
                 value={opt.value}
-                className='px-2.5 text-xs'
+                className='px-2.5 text-sm'
               >
                 {t(opt.label)}
               </TabsTrigger>
@@ -188,14 +188,14 @@ export function UserCharts(props: UserChartsProps) {
           className='shrink-0'
         >
           <TabsList>
-            <span className='text-muted-foreground px-2 text-xs font-medium whitespace-nowrap'>
+            <span className='text-muted-foreground px-2 text-sm font-medium whitespace-nowrap'>
               {t('Top Users')}
             </span>
             {TOP_USER_LIMIT_OPTIONS.map((limit) => (
               <TabsTrigger
                 key={limit}
                 value={String(limit)}
-                className='px-2.5 text-xs'
+                className='px-2.5 text-sm'
               >
                 {t('Top {{count}}', { count: limit })}
               </TabsTrigger>
@@ -221,7 +221,7 @@ export function UserCharts(props: UserChartsProps) {
                 <IconBadge tone='info' size='sm'>
                   <Users />
                 </IconBadge>
-                <div className='text-sm font-semibold'>{t(chart.labelKey)}</div>
+                <div className='text-base font-semibold'>{t(chart.labelKey)}</div>
               </div>
 
               <div className='h-[300px] p-1.5 sm:h-96 sm:p-2'>

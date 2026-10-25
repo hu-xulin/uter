@@ -72,7 +72,7 @@ export function UptimeSparkline(props: UptimeSparklineProps) {
 
   if (props.series.length === 0) {
     return (
-      <span className={cn('text-muted-foreground text-xs', props.className)}>
+      <span className={cn('text-muted-foreground text-sm', props.className)}>
         {props.emptyLabel ?? '—'}
       </span>
     )
@@ -116,7 +116,7 @@ export function UptimeSparkline(props: UptimeSparklineProps) {
                 aria-hidden
               />
             </TooltipTrigger>
-            <TooltipContent side='top' className='text-xs tabular-nums'>
+            <TooltipContent side='top' className='text-sm tabular-nums'>
               <div className='font-medium'>{day.date}</div>
               <div>{formatUptimePct(day.uptime_pct)}</div>
               {day.outage_minutes > 0 && (
@@ -131,7 +131,7 @@ export function UptimeSparkline(props: UptimeSparklineProps) {
       {showOverall && (
         <span
           className={cn(
-            'text-sm font-semibold tabular-nums',
+            'text-base font-semibold tabular-nums',
             getSuccessRateTextClass(overall)
           )}
         >
@@ -193,12 +193,12 @@ export function UptimeStatusRow(props: {
     >
       <div className='flex items-center gap-2'>
         <StatusIcon className={cn('size-4 shrink-0', statusColour)} />
-        <span className='text-sm font-medium'>{t('Last 30 days uptime')}</span>
+        <span className='text-base font-medium'>{t('Last 30 days uptime')}</span>
       </div>
 
       <UptimeSparkline series={props.series} className='ml-auto' />
 
-      <div className='flex items-center gap-3 text-xs'>
+      <div className='flex items-center gap-3 text-sm'>
         <span className={cn('font-medium', statusColour)}>{statusLabel}</span>
         {summary.incidents > 0 && (
           <span className='text-muted-foreground'>

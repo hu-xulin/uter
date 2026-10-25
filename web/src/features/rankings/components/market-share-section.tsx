@@ -219,7 +219,7 @@ export function MarketShareSection(props: MarketShareSectionProps) {
           <PieChart className='text-primary size-4' />
           {t('Market Share')}
         </h2>
-        <p className='text-muted-foreground mt-1 text-sm'>
+        <p className='text-muted-foreground mt-1 text-base'>
           {t(PERIOD_DESCRIPTIONS[props.period])}
         </p>
       </header>
@@ -237,7 +237,7 @@ export function MarketShareSection(props: MarketShareSectionProps) {
               option={VCHART_OPTION}
             />
           ) : (
-            <div className='text-muted-foreground/80 flex h-full items-center justify-center text-xs'>
+            <div className='text-muted-foreground/80 flex h-full items-center justify-center text-sm'>
               {t('No history data available')}
             </div>
           )}
@@ -247,15 +247,15 @@ export function MarketShareSection(props: MarketShareSectionProps) {
       {/* Vendor list block ----------------------------------------------- */}
       <div className='border-t'>
         <header className='px-5 pt-4 pb-2'>
-          <h3 className='text-foreground text-sm font-semibold'>
+          <h3 className='text-foreground text-base font-semibold'>
             {t('By model author')}
           </h3>
-          <p className='text-muted-foreground/80 mt-0.5 text-xs'>
+          <p className='text-muted-foreground/80 mt-0.5 text-sm'>
             {t('Vendors ranked by aggregated token volume')}
           </p>
         </header>
         {visible.length === 0 ? (
-          <div className='text-muted-foreground/80 px-5 py-8 text-center text-sm'>
+          <div className='text-muted-foreground/80 px-5 py-8 text-center text-base'>
             {t('No vendor data available')}
           </div>
         ) : (
@@ -279,7 +279,7 @@ function VendorList(props: {
     <ul>
       {props.rows.map((vendor) => (
         <li key={vendor.vendor} className='flex items-center gap-3 py-2.5'>
-          <span className='text-muted-foreground/80 w-6 shrink-0 text-right text-xs tabular-nums'>
+          <span className='text-muted-foreground/80 w-6 shrink-0 text-right text-sm tabular-nums'>
             {vendor.rank}.
           </span>
           <span
@@ -291,15 +291,15 @@ function VendorList(props: {
           />
           <VendorLink
             vendor={vendor.vendor}
-            className='text-foreground min-w-0 flex-1 truncate text-sm font-medium'
+            className='text-foreground min-w-0 flex-1 truncate text-base font-medium'
           >
             {vendor.vendor}
           </VendorLink>
           <div className='shrink-0 text-right'>
-            <div className='text-foreground text-sm font-semibold tabular-nums'>
+            <div className='text-foreground text-base font-semibold tabular-nums'>
               {formatTokens(vendor.total_tokens)}
             </div>
-            <div className='text-muted-foreground/80 text-xs tabular-nums'>
+            <div className='text-muted-foreground/80 text-sm tabular-nums'>
               {formatShare(vendor.share)}
             </div>
           </div>

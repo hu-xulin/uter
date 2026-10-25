@@ -105,20 +105,20 @@ export function PricingToolbar(props: PricingToolbarProps) {
             <Filter className='size-4' />
             {t('Filter')}
             {props.activeFilterCount > 0 && (
-              <Badge className='ml-0.5 size-5 justify-center p-0 text-xs'>
+              <Badge className='ml-0.5 size-5 justify-center p-0 text-sm'>
                 {props.activeFilterCount}
               </Badge>
             )}
           </Button>
 
-          <div className='text-muted-foreground flex items-baseline gap-1 text-sm'>
+          <div className='text-muted-foreground flex items-baseline gap-1 text-base'>
             <span className='text-foreground font-semibold tabular-nums'>
               {props.filteredCount.toLocaleString()}
             </span>
             <span>{props.filteredCount === 1 ? t('model') : t('models')}</span>
             {props.totalCount != null &&
               props.filteredCount !== props.totalCount && (
-                <span className='text-muted-foreground/60 text-xs'>
+                <span className='text-muted-foreground/60 text-sm'>
                   / {props.totalCount.toLocaleString()}
                 </span>
               )}
@@ -170,7 +170,7 @@ export function PricingToolbar(props: PricingToolbarProps) {
                   type='button'
                   variant='outline'
                   size='sm'
-                  className='h-8 gap-1.5 px-3 text-xs'
+                  className='h-8 gap-1.5 px-3 text-sm'
                 />
               }
             >

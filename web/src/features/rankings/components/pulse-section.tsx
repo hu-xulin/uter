@@ -87,11 +87,11 @@ function PulseCard(props: {
   return (
     <div className='bg-card overflow-hidden rounded-lg border'>
       <header className='border-b px-4 py-3'>
-        <h3 className='text-foreground inline-flex items-center gap-2 text-sm font-semibold'>
+        <h3 className='text-foreground inline-flex items-center gap-2 text-base font-semibold'>
           {props.icon}
           {props.title}
         </h3>
-        <p className='text-muted-foreground/80 mt-0.5 text-xs'>
+        <p className='text-muted-foreground/80 mt-0.5 text-sm'>
           {props.description}
         </p>
       </header>
@@ -102,7 +102,7 @@ function PulseCard(props: {
 
 function PulseEmpty(props: { label: string }) {
   return (
-    <div className='text-muted-foreground/80 px-4 py-6 text-center text-xs'>
+    <div className='text-muted-foreground/80 px-4 py-6 text-center text-sm'>
       {props.label}
     </div>
   )
@@ -115,11 +115,11 @@ function MoverRow(props: { row: RankingMover; intent: 'up' | 'down' }) {
       <div className='min-w-0 flex-1'>
         <ModelLink
           modelName={props.row.model_name}
-          className='text-foreground block truncate font-mono text-xs font-medium'
+          className='text-foreground block truncate font-mono text-sm font-medium'
         >
           {props.row.model_name}
         </ModelLink>
-        <p className='text-muted-foreground/80 truncate text-xs'>
+        <p className='text-muted-foreground/80 truncate text-sm'>
           #{props.row.current_rank} ·{' '}
           <VendorLink vendor={props.row.vendor}>
             {props.row.vendor.toLowerCase()}
@@ -128,7 +128,7 @@ function MoverRow(props: { row: RankingMover; intent: 'up' | 'down' }) {
       </div>
       <span
         className={cn(
-          'inline-flex shrink-0 items-center gap-0.5 text-xs font-semibold tabular-nums',
+          'inline-flex shrink-0 items-center gap-0.5 text-sm font-semibold tabular-nums',
           props.intent === 'up'
             ? 'text-emerald-600 dark:text-emerald-400'
             : 'text-rose-600 dark:text-rose-400'

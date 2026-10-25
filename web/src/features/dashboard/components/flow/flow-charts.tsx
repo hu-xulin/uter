@@ -554,7 +554,7 @@ export function FlowCharts(props: FlowChartsProps) {
         <div className='flex min-w-0 flex-wrap items-end gap-2'>
           <div className='flex min-w-0 flex-col gap-1.5'>
             <div className='flex items-center gap-1.5'>
-              <span className='text-muted-foreground text-xs font-medium'>
+              <span className='text-muted-foreground text-sm font-medium'>
                 {t('Flow width metric')}
               </span>
               <TooltipProvider>
@@ -588,7 +588,7 @@ export function FlowCharts(props: FlowChartsProps) {
                     <TabsTrigger
                       key={option.value}
                       value={option.value}
-                      className='gap-1.5 px-2.5 text-xs'
+                      className='gap-1.5 px-2.5 text-sm'
                     >
                       <Icon data-icon='inline-start' aria-hidden='true' />
                       {t(option.labelKey)}
@@ -600,7 +600,7 @@ export function FlowCharts(props: FlowChartsProps) {
           </div>
 
           <div className='flex min-w-0 flex-col gap-1.5'>
-            <span className='text-muted-foreground text-xs font-medium'>
+            <span className='text-muted-foreground text-sm font-medium'>
               {t('Display limit')}
             </span>
             <Tabs
@@ -613,7 +613,7 @@ export function FlowCharts(props: FlowChartsProps) {
                   <TabsTrigger
                     key={limit}
                     value={String(limit)}
-                    className='px-2.5 text-xs'
+                    className='px-2.5 text-sm'
                   >
                     {t('Top {{count}}', { count: limit })}
                   </TabsTrigger>
@@ -623,7 +623,7 @@ export function FlowCharts(props: FlowChartsProps) {
           </div>
 
           <div className='flex min-w-0 flex-col gap-1.5'>
-            <span className='text-muted-foreground text-xs font-medium'>
+            <span className='text-muted-foreground text-sm font-medium'>
               {t('Overflow items')}
             </span>
             <Tabs
@@ -638,7 +638,7 @@ export function FlowCharts(props: FlowChartsProps) {
                   <TabsTrigger
                     key={option.value}
                     value={option.value}
-                    className='px-2.5 text-xs'
+                    className='px-2.5 text-sm'
                   >
                     {t(option.labelKey)}
                   </TabsTrigger>
@@ -688,7 +688,7 @@ export function FlowCharts(props: FlowChartsProps) {
             <IconBadge tone='info' size='sm'>
               <GitBranch />
             </IconBadge>
-            <div className='text-sm font-semibold'>{chartTitle}</div>
+            <div className='text-base font-semibold'>{chartTitle}</div>
           </div>
           <TooltipProvider>
             <div className='flex min-w-0 items-center gap-1 overflow-x-auto pb-1 lg:justify-end lg:pb-0'>

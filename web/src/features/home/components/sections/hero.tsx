@@ -71,7 +71,7 @@ export function Hero(props: HeroProps) {
     return (
       <Button
         variant='outline'
-        className='group border-border/50 hover:border-border hover:bg-muted/50 inline-flex h-11 items-center gap-1.5 rounded-lg px-5 text-sm font-medium'
+        className='group border-border/50 hover:border-border hover:bg-muted/50 inline-flex h-11 items-center gap-1.5 rounded-lg px-5 text-base font-medium'
         render={rendered}
       >
         <BookOpen className='text-muted-foreground/80 group-hover:text-foreground size-4 transition-colors duration-200' />
@@ -105,7 +105,7 @@ export function Hero(props: HeroProps) {
         <div className='flex flex-col items-start text-left lg:col-span-6'>
           {/* Top Pill Badge */}
           <div
-            className='landing-animate-fade-up mb-5 inline-flex items-center gap-1.5 rounded-full border border-blue-500/20 bg-blue-500/5 px-3 py-1.5 text-xs font-medium text-blue-600 opacity-0 shadow-xs dark:border-blue-400/20 dark:bg-blue-400/5 dark:text-blue-400'
+            className='landing-animate-fade-up mb-5 inline-flex items-center gap-1.5 rounded-full border border-blue-500/20 bg-blue-500/5 px-3 py-1.5 text-sm font-medium text-blue-600 opacity-0 shadow-xs dark:border-blue-400/20 dark:bg-blue-400/5 dark:text-blue-400'
             style={{ animationDelay: '0ms' }}
           >
             <span className='relative flex size-1.5'>
@@ -177,7 +177,7 @@ export function Hero(props: HeroProps) {
             {props.isAuthenticated ? (
               <>
                 <Button
-                  className='group h-11 rounded-lg px-5 text-sm font-medium'
+                  className='group h-11 rounded-lg px-5 text-base font-medium'
                   render={<Link to='/dashboard' />}
                 >
                   {t('Go to Dashboard')}
@@ -188,7 +188,7 @@ export function Hero(props: HeroProps) {
             ) : (
               <>
                 <Button
-                  className='group h-11 rounded-lg px-5 text-sm font-medium'
+                  className='group h-11 rounded-lg px-5 text-base font-medium'
                   render={<Link to='/sign-up' />}
                 >
                   {t('Get Started')}
@@ -196,7 +196,7 @@ export function Hero(props: HeroProps) {
                 </Button>
                 <Button
                   variant='outline'
-                  className='border-border/50 hover:border-border hover:bg-muted/50 h-11 rounded-lg px-5 text-sm font-medium'
+                  className='border-border/50 hover:border-border hover:bg-muted/50 h-11 rounded-lg px-5 text-base font-medium'
                   render={<Link to='/pricing' />}
                 >
                   {t('View Pricing')}
@@ -212,10 +212,10 @@ export function Hero(props: HeroProps) {
             style={{ animationDelay: '240ms' }}
           >
             <div className='mb-4 flex flex-col gap-1'>
-              <span className='text-muted-foreground/50 text-xs font-bold uppercase'>
+              <span className='text-muted-foreground/50 text-sm font-bold uppercase'>
                 {t('Supported Applications')}
               </span>
-              <p className='text-muted-foreground/60 text-xs leading-relaxed'>
+              <p className='text-muted-foreground/60 text-sm leading-relaxed'>
                 {t(
                   'Supports one-click configuration and perfectly adapts to Uter multi-protocol configuration.'
                 )}
@@ -227,7 +227,7 @@ export function Hero(props: HeroProps) {
                 href='https://cherry-ai.com'
                 target='_blank'
                 rel='noopener noreferrer'
-                className='group border-border/40 bg-muted/15 text-foreground/80 hover:border-border hover:bg-muted/30 hover:text-foreground flex items-center gap-3 rounded-full border px-5 py-2.5 text-sm font-medium shadow-[0_1px_2.5px_rgba(0,0,0,0.01)] backdrop-blur-xs transition-all duration-300 hover:scale-[1.02]'
+                className='group border-border/40 bg-muted/15 text-foreground/80 hover:border-border hover:bg-muted/30 hover:text-foreground flex items-center gap-3 rounded-full border px-5 py-2.5 text-base font-medium shadow-[0_1px_2.5px_rgba(0,0,0,0.01)] backdrop-blur-xs transition-all duration-300 hover:scale-[1.02]'
               >
                 <CherryStudio.Color size={24} className='shrink-0' />
                 <span>Cherry Studio</span>
@@ -238,7 +238,7 @@ export function Hero(props: HeroProps) {
                 href='https://ccswitch.io'
                 target='_blank'
                 rel='noopener noreferrer'
-                className='group border-border/40 bg-muted/15 text-foreground/80 hover:border-border hover:bg-muted/30 hover:text-foreground flex items-center gap-3 rounded-full border px-5 py-2.5 text-sm font-medium shadow-[0_1px_2.5px_rgba(0,0,0,0.01)] backdrop-blur-xs transition-all duration-300 hover:scale-[1.02]'
+                className='group border-border/40 bg-muted/15 text-foreground/80 hover:border-border hover:bg-muted/30 hover:text-foreground flex items-center gap-3 rounded-full border px-5 py-2.5 text-base font-medium shadow-[0_1px_2.5px_rgba(0,0,0,0.01)] backdrop-blur-xs transition-all duration-300 hover:scale-[1.02]'
               >
                 <img
                   src='https://ccswitch.io/favicon.png'
@@ -253,7 +253,7 @@ export function Hero(props: HeroProps) {
                 />
                 <span
                   style={{ display: 'none' }}
-                  className='size-6 shrink-0 items-center justify-center rounded-md bg-blue-500/10 text-xs font-bold text-blue-600 dark:bg-blue-400/10 dark:text-blue-400'
+                  className='size-6 shrink-0 items-center justify-center rounded-md bg-blue-500/10 text-sm font-bold text-blue-600 dark:bg-blue-400/10 dark:text-blue-400'
                 >
                   CC
                 </span>

@@ -98,7 +98,7 @@ export function FlowNodeFilterControl(props: FlowNodeFilterControlProps) {
 
   return (
     <div className='flex min-w-0 flex-col gap-1.5'>
-      <span className='text-muted-foreground text-xs font-medium'>
+      <span className='text-muted-foreground text-sm font-medium'>
         {t('Node filters')}
       </span>
       <div className='flex min-w-0 flex-wrap items-center gap-1.5'>
@@ -167,7 +167,7 @@ export function FlowNodeFilterControl(props: FlowNodeFilterControlProps) {
                             <span className='min-w-0 flex-1 truncate'>
                               {option.label}
                             </span>
-                            <span className='text-muted-foreground flex shrink-0 items-center gap-1 text-xs'>
+                            <span className='text-muted-foreground flex shrink-0 items-center gap-1 text-sm'>
                               <span>{props.metricLabel}</span>
                               <span className='font-mono'>
                                 {metricValueLabel}

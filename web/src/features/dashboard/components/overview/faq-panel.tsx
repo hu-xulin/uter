@@ -66,12 +66,12 @@ export function FAQPanel() {
                 className='border-border/60'
               >
                 <AccordionTrigger className='text-start hover:no-underline'>
-                  <Markdown className='text-sm leading-relaxed font-semibold'>
+                  <Markdown className='text-base leading-relaxed font-semibold'>
                     {item.question}
                   </Markdown>
                 </AccordionTrigger>
                 <AccordionContent>
-                  <Markdown className='text-muted-foreground/60 text-sm'>
+                  <Markdown className='text-muted-foreground/60 text-base'>
                     {item.answer}
                   </Markdown>
                 </AccordionContent>

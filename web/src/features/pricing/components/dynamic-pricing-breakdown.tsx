@@ -352,16 +352,16 @@ export function DynamicPricingBreakdown({
               <div className='text-foreground text-base font-medium'>
                 {t('Special billing expression')}
               </div>
-              <div className='text-muted-foreground text-xs'>
+              <div className='text-muted-foreground text-sm'>
                 {t(pricingDisplayFallbackKey(expr, usageSchema))}
               </div>
             </div>
           </div>
         )}
-        <div className='text-muted-foreground mb-1 text-xs font-medium uppercase'>
+        <div className='text-muted-foreground mb-1 text-sm font-medium uppercase'>
           {t('Raw expression')}
         </div>
-        <code className='text-muted-foreground block text-xs break-all'>
+        <code className='text-muted-foreground block text-sm break-all'>
           {expr}
         </code>
       </section>
@@ -466,7 +466,7 @@ export function DynamicPricingBreakdown({
             <div className='text-foreground text-base font-medium'>
               {t('Dynamic Pricing')}
             </div>
-            <div className='text-muted-foreground text-xs'>
+            <div className='text-muted-foreground text-sm'>
               {t('Prices vary by usage tier and request conditions')}
             </div>
           </div>
@@ -479,8 +479,8 @@ export function DynamicPricingBreakdown({
             <div
               className={
                 compact
-                  ? 'text-muted-foreground mb-1.5 text-xs font-medium'
-                  : 'text-foreground mb-2 text-sm font-semibold'
+                  ? 'text-muted-foreground mb-1.5 text-sm font-medium'
+                  : 'text-foreground mb-2 text-base font-semibold'
               }
             >
               {t('Tiered price table')}
@@ -534,7 +534,7 @@ export function DynamicPricingBreakdown({
                     )}
                   </div>
                   {condSummary && (
-                    <div className='text-muted-foreground mb-1.5 text-xs'>
+                    <div className='text-muted-foreground mb-1.5 text-sm'>
                       {condSummary}
                     </div>
                   )}
@@ -548,13 +548,13 @@ export function DynamicPricingBreakdown({
                       const value = field.value(tier)
                       return (
                         <div key={field.id} className='min-w-0'>
-                          <div className='text-muted-foreground text-xs font-medium break-words whitespace-normal'>
+                          <div className='text-muted-foreground text-sm font-medium break-words whitespace-normal'>
                             {breakdownPriceFieldLabel(field, t)}
                           </div>
                           <div
                             className={cn(
                               'break-words tabular-nums',
-                              compact ? 'text-xs' : 'text-sm font-semibold'
+                              compact ? 'text-sm' : 'text-base font-semibold'
                             )}
                           >
                             {value > 0 ||
@@ -584,8 +584,8 @@ export function DynamicPricingBreakdown({
             className='hidden rounded-none border-0 sm:block'
             tableClassName={
               compact
-                ? '[&_td]:text-xs [&_td_*]:text-xs [&_th]:text-xs [&_th_*]:text-xs'
-                : 'text-sm'
+                ? '[&_td]:text-sm [&_td_*]:text-sm [&_th]:text-sm [&_th_*]:text-sm'
+                : 'text-base'
             }
             headerRowClassName='hover:bg-transparent'
             data={tiers}
@@ -653,7 +653,7 @@ export function DynamicPricingBreakdown({
                         )}
                       </div>
                       {condSummary && (
-                        <div className='text-muted-foreground mt-1 text-xs'>
+                        <div className='text-muted-foreground mt-1 text-sm'>
                           {condSummary}
                         </div>
                       )}
@@ -703,8 +703,8 @@ export function DynamicPricingBreakdown({
           <div
             className={
               compact
-                ? 'text-muted-foreground mb-1.5 text-xs font-medium'
-                : 'text-foreground mb-2 text-sm font-semibold'
+                ? 'text-muted-foreground mb-1.5 text-sm font-medium'
+                : 'text-foreground mb-2 text-base font-semibold'
             }
           >
             {t('Conditional multipliers')}
@@ -727,7 +727,7 @@ export function DynamicPricingBreakdown({
                   <span
                     className={cn(
                       'text-foreground break-all',
-                      compact ? 'text-xs' : 'text-sm'
+                      compact ? 'text-sm' : 'text-base'
                     )}
                   >
                     {describeGroup(group, t, i18n.language)}

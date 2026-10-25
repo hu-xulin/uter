@@ -66,8 +66,8 @@ export function PerformanceHealthPanel() {
         <IconBadge tone='success' size='sm'>
           <HeartPulse />
         </IconBadge>
-        <h3 className='text-sm font-semibold'>{t('Performance health')}</h3>
-        <span className='text-muted-foreground ml-auto text-xs'>
+        <h3 className='text-base font-semibold'>{t('Performance health')}</h3>
+        <span className='text-muted-foreground ml-auto text-sm'>
           {t('Performance metrics for the last 24 hours')}
         </span>
       </div>
@@ -109,7 +109,7 @@ export function PerformanceHealthPanel() {
         ) : (
           hasData && (
             <div>
-              <span className='text-muted-foreground mb-1 block text-xs font-medium'>
+              <span className='text-muted-foreground mb-1 block text-sm font-medium'>
                 {t('Top models by traffic')}
               </span>
               <div className='grid grid-cols-1 gap-x-4 sm:grid-cols-2'>
@@ -131,7 +131,7 @@ export function PerformanceHealthPanel() {
                       />
                       <span
                         className={cn(
-                          'text-xs font-semibold tabular-nums',
+                          'text-sm font-semibold tabular-nums',
                           getSuccessRateTextClass(model.success_rate)
                         )}
                       >
@@ -160,7 +160,7 @@ function MetricCell(props: {
   const Icon = props.icon
   return (
     <div className='bg-muted/40 rounded-xl px-3 py-2.5'>
-      <div className='text-muted-foreground flex items-center gap-1.5 text-xs font-medium'>
+      <div className='text-muted-foreground flex items-center gap-1.5 text-sm font-medium'>
         <IconBadge tone={props.tone} size='xs'>
           <Icon />
         </IconBadge>
@@ -171,7 +171,7 @@ function MetricCell(props: {
       ) : (
         <div
           className={cn(
-            'mt-1.5 text-sm font-semibold tabular-nums',
+            'mt-1.5 text-base font-semibold tabular-nums',
             props.valueClassName
           )}
         >
