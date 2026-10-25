@@ -204,7 +204,7 @@ export function renderMathBlock(node: MathBlockNode, key: string): ReactNode {
 export function renderMathInline(node: MathInlineNode, key: string): ReactNode {
   return (
     <code
-      className='bg-muted/70 text-foreground rounded px-1 py-0.5 font-mono text-[0.9em]'
+      className='bg-muted/70 text-foreground rounded px-1 py-0.5 font-mono text-sm'
       key={key}
     >
       {node.content}

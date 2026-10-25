@@ -81,7 +81,7 @@ export function TitledCard({
               </CardTitle>
               {description != null && (
                 <CardDescription
-                  className={cn('text-xs sm:text-sm', descriptionClassName)}
+                  className={cn(descriptionClassName)}
                 >
                   {description}
                 </CardDescription>
