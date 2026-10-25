@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { usePathname } from 'fumadocs-core/framework';
 import { Languages, Moon, Sun } from 'lucide-react';
 import { withDocsBasePath } from '@/lib/docs-base-path';
+import { HOST_APP_LINK_TARGET } from './docs-base-path';
 import { useTheme } from 'next-themes';
 import { useEffect, useState, type ReactNode } from 'react';
 import { LanguageSelect } from 'fumadocs-ui/layouts/shared/slots/language-select';
@@ -80,6 +81,22 @@ const BRAND_NAME: Record<DocsLocale, string> = {
   vi: 'Uter.ai',
 };
 
+/**
+ * Links that point at the **host app** (the Uter SPA) rather than at a docs
+ * page must carry `target="_top"`.
+ *
+ * The docs site is exported with `basePath: '/docs-content'` and is normally
+ * rendered inside the SPA's iframe (see `web/src/features/docs/docs-viewer.tsx`).
+ * A plain `<a href='/sign-in'>` inside that frame navigates **the frame
+ * itself**, so the browser resolves it against the frame's own base — i.e.
+ * `/docs-content/docs/zh/.../sign-in`, which does not exist. The reader presses
+ * 「登录」 and nothing happens: no navigation, no error, no console output.
+ *
+ * `target="_top"` makes the link address the top-level window instead, which is
+ * what a link to the host app has to do. (The frame's sandbox also needs
+ * `allow-top-navigation-by-user-activation` for the browser to allow that
+ * navigation at all — that half is the host's side, in `docs-viewer.tsx`.)
+ */
 const COPY = {
   zh: {
     signIn: '登录',
@@ -256,7 +273,11 @@ export function DocsHeader({ locale }: { locale: DocsLocale }) {
           >
             {/* Brand */}
             <div className='flex min-w-0 flex-1 items-center gap-1 lg:min-w-36'>
-              <a href='/' className='group flex min-w-0 items-center gap-2.5'>
+              <a
+                href='/'
+                target={HOST_APP_LINK_TARGET}
+                className='group flex min-w-0 items-center gap-2.5'
+              >
                 <div className='flex size-7 shrink-0 items-center justify-center transition-all duration-300 group-hover:scale-105'>
                   {logo}
                 </div>
@@ -275,6 +296,7 @@ export function DocsHeader({ locale }: { locale: DocsLocale }) {
                 <a
                   key={`${link.title}:${link.href}`}
                   href={link.href}
+                  target={HOST_APP_LINK_TARGET}
                   title={link.title}
                   className={cx(
                     'Uter-brand-radius min-w-0 truncate px-3 py-1.5 text-sm font-medium transition-colors duration-200',
@@ -302,6 +324,7 @@ export function DocsHeader({ locale }: { locale: DocsLocale }) {
 
               <a
                 href='/sign-in'
+                target={HOST_APP_LINK_TARGET}
                 className='Uter-brand-cta inline-flex h-8 items-center px-3.5 text-xs font-medium transition-colors duration-200'
               >
                 {copy.signIn}
@@ -370,6 +393,7 @@ export function DocsHeader({ locale }: { locale: DocsLocale }) {
               <a
                 key={`${link.title}:${link.href}`}
                 href={link.href}
+                target={HOST_APP_LINK_TARGET}
                 onClick={() => setMobileOpen(false)}
                 className={cx(
                   'flex items-center gap-3 py-3 text-base font-medium tracking-tight transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]',
@@ -400,6 +424,7 @@ export function DocsHeader({ locale }: { locale: DocsLocale }) {
           >
             <a
               href='/sign-in'
+              target={HOST_APP_LINK_TARGET}
               onClick={() => setMobileOpen(false)}
               className='Uter-brand-radius bg-fd-foreground text-fd-background inline-flex h-10 items-center justify-center text-sm font-medium transition-opacity hover:opacity-90 active:opacity-80'
             >
