@@ -164,6 +164,30 @@ func redisFixedWindowRefund(ctx context.Context, key string) error {
 	return err
 }
 
+// RefundIPRateLimit 按「档位标记 + 客户端 IP」撤销一次已计入的限流计数。
+//
+// 用途：**登录成功后退款**。登录接口走 CriticalRateLimit（默认 20 次 / 20 分钟，
+// 按 IP 计数），而该档位此前**成功与失败同样计数且从不退款**。于是用户只要
+// 连续输错几次密码（或反复点登录、忘记密码重试），配额就被打满；此后无论
+// 密码是否正确，每次点击登录都会被 429 拒绝 —— 在前端表现为「点登录就崩」。
+//
+// 退款只撤销**这一次**成功登录所占的计数，因此：
+//   - 成功登录不消耗配额，失败尝试仍然照常计数（防爆破语义不变）；
+//   - 连续失败 20 次以上仍会被限流，保护强度不降；
+//   - 内存限流器（Redis 未启用）无法按同一键退款，此处静默跳过 —— 那条路径
+//     下仍是旧行为，不引入新的失败。
+//
+// 调用方应在**认证成功**之后调用；失败请求不退款（那正是要计数的对象）。
+func RefundIPRateLimit(ctx context.Context, mark string, clientIP string) {
+	if !common.RedisEnabled {
+		return
+	}
+	key := redisIPRateLimitKey(mark, clientIP)
+	if err := redisFixedWindowRefund(ctx, key); err != nil {
+		logger.LogError(ctx, fmt.Sprintf("rate limit refund failed (key=%s): %v", key, err))
+	}
+}
+
 // writeRateLimited rejects the request with 429 and a Retry-After hint so
 // clients can back off instead of treating the rejection as a fatal error.
 // The in-memory limiter cannot report the remaining window, so callers
@@ -444,9 +468,16 @@ func GlobalAPIRateLimit() func(c *gin.Context) {
 	)
 }
 
+// CriticalRateLimitMark 是 CriticalRateLimit 档位在限流键里的标记。
+//
+// 导出它是为了让「登录成功后按同一键退款」能定位到正确的计数桶——
+// 退款必须与计数使用完全相同的键，否则退款会打到别的桶上（见
+// RefundIPRateLimit）。
+const CriticalRateLimitMark = "CT"
+
 func CriticalRateLimit() func(c *gin.Context) {
 	if common.CriticalRateLimitEnable {
-		return rateLimitFactory(common.CriticalRateLimitNum, common.CriticalRateLimitDuration, "CT")
+		return rateLimitFactory(common.CriticalRateLimitNum, common.CriticalRateLimitDuration, CriticalRateLimitMark)
 	}
 	return defNext
 }

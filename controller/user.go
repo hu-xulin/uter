@@ -201,6 +201,11 @@ func writeLoginResponse(c *gin.Context, user *model.User, bundle *service.AuthBu
 	service.WriteRefreshCookie(c, bundle.RefreshToken)
 	setAuthNoStore(c)
 	recordLoginAudit(user, c)
+	// 登录成功后退还本次占用的限流计数：登录档（CriticalRateLimit）此前对成功与
+	// 失败一视同仁地计数且从不退款，于是「输错几次密码 → 之后每次点登录都被
+	// 429 拒绝」成了常态，前端表现为「点登录就崩」。失败尝试仍照常计数，
+	// 防爆破强度不变（详见 middleware.RefundIPRateLimit 的说明）。
+	middleware.RefundIPRateLimit(c.Request.Context(), middleware.CriticalRateLimitMark, c.ClientIP())
 	c.JSON(http.StatusOK, gin.H{
 		"message": "",
 		"success": true,
