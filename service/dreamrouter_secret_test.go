@@ -111,3 +111,45 @@ func TestSyncDreamRouterPricingRequiresConfiguredPassword(t *testing.T) {
 	assert.Contains(t, err.Error(), dreamRouterSyncPasswordKey,
 		"未配置口令时的错误应指明是哪个 option 缺失，避免排查方向被带偏")
 }
+
+// TestLoadDreamRouterSyncConfigRuleAndSchedule 锁定「渠道登录与同步」新增配置的
+// 读取口径：同步时刻、价格规则方向/幅度、上游渠道。
+//
+// 关键点——**向后兼容**：历史部署只配了 DreamRouterSyncStep=0.1（固定加价），
+// 没有配新的方向/幅度。此时规则必须仍是「加价 0.1 折」，否则升级即静默改价。
+func TestLoadDreamRouterSyncConfigRuleAndSchedule(t *testing.T) {
+	previous := common.OptionMap
+	common.OptionMap = map[string]string{}
+	t.Cleanup(func() { common.OptionMap = previous })
+
+	// 默认值：每天 0 点、加价 0.1 折、创梦渠道。
+	cfg := LoadDreamRouterSyncConfig()
+	assert.Equal(t, 0, cfg.SyncHour, "默认同步时刻应为每天 0 点")
+	assert.Equal(t, DreamRouterRuleDirectionIncrease, cfg.RuleDirection)
+	assert.Equal(t, 0.1, cfg.RuleAmount)
+	assert.Equal(t, DreamRouterProviderDreamRouter, cfg.Provider)
+
+	// 历史部署只有 step=0.1：规则沿用为「加价 0.1 折」，价格不变。
+	common.OptionMap[dreamRouterSyncStepKey] = "0.1"
+	cfg = LoadDreamRouterSyncConfig()
+	assert.Equal(t, DreamRouterRuleDirectionIncrease, cfg.RuleDirection)
+	assert.Equal(t, 0.1, cfg.RuleAmount, "未配规则幅度时应沿用历史 step，避免升级即改价")
+
+	// 显式配置生效：降价方向 + 幅度 0.05 + 每天 3 点。
+	common.OptionMap[dreamRouterSyncRuleDirectionKey] = DreamRouterRuleDirectionDecrease
+	common.OptionMap[dreamRouterSyncRuleAmountKey] = "0.05"
+	common.OptionMap[dreamRouterSyncHourKey] = "3"
+	cfg = LoadDreamRouterSyncConfig()
+	assert.Equal(t, DreamRouterRuleDirectionDecrease, cfg.RuleDirection)
+	assert.Equal(t, 0.05, cfg.RuleAmount)
+	assert.Equal(t, 3, cfg.SyncHour)
+
+	// 非法值一律回退默认，不接受越界输入。
+	common.OptionMap[dreamRouterSyncHourKey] = "99"
+	common.OptionMap[dreamRouterSyncRuleAmountKey] = "5"
+	common.OptionMap[dreamRouterSyncRuleDirectionKey] = "sideways"
+	cfg = LoadDreamRouterSyncConfig()
+	assert.Equal(t, 0, cfg.SyncHour, "非法同步时刻应回退默认")
+	assert.Equal(t, 0.1, cfg.RuleAmount, "非法幅度应回退默认")
+	assert.Equal(t, DreamRouterRuleDirectionIncrease, cfg.RuleDirection, "非法方向应回退默认")
+}

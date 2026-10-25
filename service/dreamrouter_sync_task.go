@@ -39,24 +39,41 @@ const dreamRouterSyncOnStartEnv = "DREAMROUTER_SYNC_ON_START"
 
 // DreamRouterSyncTask 每日价格同步任务。
 //
-// 调度策略：每小时 tick 一次，当「今天」与上次运行日期不同时执行——
-// 即每天 0 点后第一次 tick（最长 1 小时内）触发。相比固定 24h 休眠，
-// 这种方式对服务重启友好：重启后若今天还没跑过，下一个 tick 会补跑，
+// 调度策略：每 10 分钟 tick 一次，当「今天」与上次运行日期不同时、且当前
+// 时刻已到达配置的同步时间（默认每天 0 点）时执行一次。
+//
+// 为什么 tick 粒度是 10 分钟而不是 1 小时：同步时间现在由运营在后台配置
+// （可设任意 0-23 点），小时级 tick 会让「每天 3 点」这类配置最多晚 1 小时
+// 才生效。10 分钟把偏差压到 10 分钟内，同时 tick 本身只是读一次 option，
+// 开销可忽略。
+//
+// 去重靠「上次运行日期」：同一天只跑一次，服务重启后当天未跑过会自动补跑，
 // 不会因为重启错过当天同步，也不会在一天内重复跑。
 func DreamRouterSyncTask() {
-	for range time.NewTicker(time.Hour).C {
+	for range time.NewTicker(dreamRouterSyncTickInterval).C {
 		DreamRouterSyncTaskTick()
 	}
 }
 
+// dreamRouterSyncTickInterval 是调度检查间隔。
+const dreamRouterSyncTickInterval = 10 * time.Minute
+
 // DreamRouterSyncTaskTick 执行一次「到点检查」，供测试与手动调用。
+//
+// 判定条件：已开启同步、今天还没跑过、且当前小时已到达配置��同步时间。
+// 「已到达」用 >= 而非 ==：服务在 3 点之后才启动时，当天仍应补跑一次。
 func DreamRouterSyncTaskTick() {
 	cfg := LoadDreamRouterSyncConfig()
 	if !cfg.Enabled {
 		return
 	}
-	today := time.Now().Format("2006-01-02")
+	now := time.Now()
+	today := now.Format("2006-01-02")
 	if common.OptionMap[dreamRouterSyncLastRunDateKey] == today {
+		return
+	}
+	if now.Hour() < cfg.SyncHour {
+		// 还没到配置的同步时间，等下一个 tick。
 		return
 	}
 	runDreamRouterSyncNow(today)

@@ -87,9 +87,36 @@ const (
 	dreamRouterSyncLastResultKey = "DreamRouterSyncLastResult"
 	dreamRouterSyncLastErrorKey  = "DreamRouterSyncLastError"
 
+	// ── 渠道登录与同步（前端「系统设置 → 模型 → 渠道登录与同步」）──────
+	//
+	// 上游渠道：目前仅创梦（DreamRouter）一种实现。新增渠道时在此登记
+	// provider id，并在下方 switch 里接上对应实现。
+	dreamRouterSyncProviderKey = "DreamRouterSyncProvider"
+	// 同步时间：每天几点（0-23，本地时区）。缺省 0 = 每天 0 点。
+	dreamRouterSyncHourKey = "DreamRouterSyncHour"
+	// 价格规则：方向（increase=加价 / decrease=降价）与幅度（折数，0-1）。
+	// 缺省 increase + 0.1，与历史 DreamRouterSyncStep=0.1 行为一致。
+	dreamRouterSyncRuleDirectionKey = "DreamRouterSyncRuleDirection"
+	dreamRouterSyncRuleAmountKey    = "DreamRouterSyncRuleAmount"
+
 	dreamRouterDefaultChannelID = 20
 	dreamRouterDefaultStep      = 0.1
+	dreamRouterDefaultSyncHour  = 0
 	dreamRouterHTTPTimeout      = 30 * time.Second
+)
+
+// 上游渠道标识。目前只有创梦一种；前端下拉框据此渲染。
+const (
+	// DreamRouterProviderDreamRouter 创梦渠道。
+	DreamRouterProviderDreamRouter = "dreamrouter"
+)
+
+// 价格规则的方向。
+const (
+	// DreamRouterRuleDirectionIncrease 在上游折后价基础上加价（uter 卖得更贵）。
+	DreamRouterRuleDirectionIncrease = "increase"
+	// DreamRouterRuleDirectionDecrease 在上游折后价基础上降价（uter 卖得更便宜）。
+	DreamRouterRuleDirectionDecrease = "decrease"
 )
 
 // 上游账号的默认用户名。该账号仅对 https://dreamrouter.ai/pricing 有只读
@@ -207,6 +234,14 @@ type DreamRouterSyncConfig struct {
 	Username  string
 	Password  string
 	Step      float64
+	// Provider 上游渠道标识（目前仅创梦 dreamrouter）。
+	Provider string
+	// SyncHour 每天几点执行（0-23，本地时区）。
+	SyncHour int
+	// RuleDirection 价格规则方向：increase 加价 / decrease 降价。
+	RuleDirection string
+	// RuleAmount 价格规则幅度（折数，0-1）。0 表示不加不减。
+	RuleAmount float64
 }
 
 // LoadDreamRouterSyncConfig 从 option 读取配置，未配置时用内置默认值。
@@ -215,11 +250,15 @@ type DreamRouterSyncConfig struct {
 // SyncDreamRouterPricing 报错提示去后台配置，绝不在此处回退到硬编码密钥。
 func LoadDreamRouterSyncConfig() DreamRouterSyncConfig {
 	cfg := DreamRouterSyncConfig{
-		Enabled:   true,
-		ChannelID: dreamRouterDefaultChannelID,
-		Username:  dreamRouterDefaultUsername,
-		Password:  "",
-		Step:      dreamRouterDefaultStep,
+		Enabled:       true,
+		ChannelID:     dreamRouterDefaultChannelID,
+		Username:      dreamRouterDefaultUsername,
+		Password:      "",
+		Step:          dreamRouterDefaultStep,
+		Provider:      DreamRouterProviderDreamRouter,
+		SyncHour:      dreamRouterDefaultSyncHour,
+		RuleDirection: DreamRouterRuleDirectionIncrease,
+		RuleAmount:    dreamRouterDefaultStep,
 	}
 	if v := strings.TrimSpace(common.OptionMap[dreamRouterSyncEnabledKey]); v != "" {
 		cfg.Enabled = v == "true"
@@ -240,7 +279,52 @@ func LoadDreamRouterSyncConfig() DreamRouterSyncConfig {
 			cfg.Step = step
 		}
 	}
+	// ── 渠道登录与同步：以下几项由前端设置区写入 ──
+	if v := strings.TrimSpace(common.OptionMap[dreamRouterSyncProviderKey]); v != "" {
+		cfg.Provider = v
+	}
+	if v := strings.TrimSpace(common.OptionMap[dreamRouterSyncHourKey]); v != "" {
+		if hour, err := strconv.Atoi(v); err == nil && hour >= 0 && hour <= 23 {
+			cfg.SyncHour = hour
+		}
+	}
+	if v := strings.TrimSpace(common.OptionMap[dreamRouterSyncRuleDirectionKey]); v != "" {
+		switch v {
+		case DreamRouterRuleDirectionIncrease, DreamRouterRuleDirectionDecrease:
+			cfg.RuleDirection = v
+		}
+	}
+	if v := strings.TrimSpace(common.OptionMap[dreamRouterSyncRuleAmountKey]); v != "" {
+		if amount, err := strconv.ParseFloat(v, 64); err == nil && amount >= 0 && amount < 1 {
+			cfg.RuleAmount = amount
+		}
+	}
+	// 向后兼容：历史部署只配了 DreamRouterSyncStep（固定加价 0.1），没有配
+	// 新的规则方向/幅度。此时沿用 step 作为加价幅度，保持既有价格不变——
+	// 否则升级即改价，运营会在毫无感知的情况下被重新定价。
+	if strings.TrimSpace(common.OptionMap[dreamRouterSyncRuleAmountKey]) == "" {
+		cfg.RuleAmount = cfg.Step
+	}
 	return cfg
+}
+
+// dreamRouterRuleFactor 返回价格规则作用在「上游折后价倍率 r」上的系数。
+//
+//	increase（加价）：uter = 官方基准 × (r + amount)
+//	decrease（降价）：uter = 官方基准 × (r - amount)
+//
+// 降价时 r - amount 必须仍为正——若上游折扣已很浅（r 接近 amount），
+// 结果会 ≤ 0，价格无意义。此时返回 0 并由调用方跳过该模型（宁可不改价，
+// 也不写成负价或零价）。
+func dreamRouterRuleFactor(r, amount float64, direction string) float64 {
+	if direction == DreamRouterRuleDirectionDecrease {
+		factor := r - amount
+		if factor <= 0 {
+			return 0
+		}
+		return factor
+	}
+	return r + amount
 }
 
 // dreamRouterGroupRatio 复算 default 组对某模型的实际倍率 r。
@@ -269,7 +353,10 @@ func dreamRouterGroupRatio(enableGroups []string, userGroupRatio, groupRatio map
 }
 
 // dreamRouterComputeTarget 按计费类别计算 uter 目标值。
-func dreamRouterComputeTarget(rec dreamRouterRecord, r, step float64) DreamRouterModelChange {
+//
+// factor 是价格规则作用后的倍率系数（见 dreamRouterRuleFactor）：
+// 加价 = r + amount，降价 = r - amount。它替代了历史的固定 (r + step)。
+func dreamRouterComputeTarget(rec dreamRouterRecord, r, factor float64) DreamRouterModelChange {
 	change := DreamRouterModelChange{
 		Name:       rec.ModelName,
 		GroupRatio: r,
@@ -284,7 +371,7 @@ func dreamRouterComputeTarget(rec dreamRouterRecord, r, step float64) DreamRoute
 			change.BillingClass = "tiered_unregistered"
 			return change
 		}
-		change.NewModelRatio = roundRatioValue(baseline.In / 2 * (r + step) / baseline.R0)
+		change.NewModelRatio = roundRatioValue(baseline.In / 2 * factor / baseline.R0)
 		if baseline.Out > 0 && baseline.In > 0 {
 			change.CompletionRatio = baseline.Out / baseline.In
 		}
@@ -294,11 +381,11 @@ func dreamRouterComputeTarget(rec dreamRouterRecord, r, step float64) DreamRoute
 	case rec.QuotaType != 0:
 		// B 类：按次计费（美元/次）。
 		change.BillingClass = "per_call"
-		change.NewModelPrice = roundRatioValue(rec.ModelPrice * (r + step))
+		change.NewModelPrice = roundRatioValue(rec.ModelPrice * factor)
 	default:
 		// A 类：按量计费。
 		change.BillingClass = "per_token"
-		change.NewModelRatio = roundRatioValue(rec.ModelRatio * (r + step))
+		change.NewModelRatio = roundRatioValue(rec.ModelRatio * factor)
 		change.CompletionRatio = rec.CompletionRatio
 		change.CacheRatio = rec.CacheRatio
 	}
@@ -431,7 +518,17 @@ func SyncDreamRouterPricing(ctx context.Context, opts DreamRouterSyncOptions) (*
 			continue
 		}
 		r := dreamRouterGroupRatio(rec.EnableGroups, userGroupRatio, payload.GroupRatio)
-		change := dreamRouterComputeTarget(rec, r, cfg.Step)
+		// 价格规则：加价 = r + amount，降价 = r - amount。
+		factor := dreamRouterRuleFactor(r, cfg.RuleAmount, cfg.RuleDirection)
+		if factor <= 0 {
+			// 降价幅度超过上游折扣本身，算出的价格无意义（≤0）。
+			// 宁可不改这个模型的价，也不写入负价/零价。
+			result.Warnings = append(result.Warnings,
+				fmt.Sprintf("模型 %s 的降价规则结果非正（上游折扣 %.4f，降价幅度 %.4f），已跳过不改价",
+					rec.ModelName, r, cfg.RuleAmount))
+			continue
+		}
+		change := dreamRouterComputeTarget(rec, r, factor)
 		change.OldModelRatio = modelRatio[rec.ModelName]
 		change.OldModelPrice = modelPrice[rec.ModelName]
 
