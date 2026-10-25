@@ -163,7 +163,7 @@ export function ChannelSyncSection({ defaultValues }: Props) {
 
   return (
     <SettingsSection title={t('Channel Login & Sync')}>
-      <p className='text-muted-foreground text-uk-body'>
+      <p className='text-muted-foreground text-sm'>
         {t(
           'Log in to an upstream channel, then sync its model list and discounted prices on a schedule. Prices are converted with the rule below and written into the ratio table automatically.'
         )}
