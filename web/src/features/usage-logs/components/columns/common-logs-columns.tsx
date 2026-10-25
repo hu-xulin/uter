@@ -759,12 +759,12 @@ export function useCommonLogsColumns(
                 {t('Output')} {completionTokens.toLocaleString()}
               </span>
               {cacheReadTokens > 0 && (
-                <span className='text-muted-foreground/60 font-mono text-[0.8125rem] tabular-nums'>
+                <span className='text-muted-foreground/60 font-mono text-sm tabular-nums'>
                   {t('Cache Read')} ↓ {cacheReadTokens.toLocaleString()}
                 </span>
               )}
               {cacheWriteTokens > 0 && (
-                <span className='text-muted-foreground/60 font-mono text-[0.8125rem] tabular-nums'>
+                <span className='text-muted-foreground/60 font-mono text-sm tabular-nums'>
                   {t('Cache Write')} ↑ {cacheWriteTokens.toLocaleString()}
                 </span>
               )}

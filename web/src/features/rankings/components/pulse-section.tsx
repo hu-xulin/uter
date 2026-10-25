@@ -91,7 +91,7 @@ function PulseCard(props: {
           {props.icon}
           {props.title}
         </h3>
-        <p className='text-muted-foreground/80 mt-0.5 text-sm'>
+        <p className='text-muted-foreground/80 mt-0.5 text-xs'>
           {props.description}
         </p>
       </header>
@@ -102,7 +102,7 @@ function PulseCard(props: {
 
 function PulseEmpty(props: { label: string }) {
   return (
-    <div className='text-muted-foreground/80 px-4 py-6 text-center text-sm'>
+    <div className='text-muted-foreground/80 px-4 py-6 text-center text-xs'>
       {props.label}
     </div>
   )
@@ -119,7 +119,7 @@ function MoverRow(props: { row: RankingMover; intent: 'up' | 'down' }) {
         >
           {props.row.model_name}
         </ModelLink>
-        <p className='text-muted-foreground/80 truncate text-sm'>
+        <p className='text-muted-foreground/80 truncate text-xs'>
           #{props.row.current_rank} ·{' '}
           <VendorLink vendor={props.row.vendor}>
             {props.row.vendor.toLowerCase()}
@@ -128,7 +128,7 @@ function MoverRow(props: { row: RankingMover; intent: 'up' | 'down' }) {
       </div>
       <span
         className={cn(
-          'inline-flex shrink-0 items-center gap-0.5 text-sm font-semibold tabular-nums',
+          'inline-flex shrink-0 items-center gap-0.5 text-xs font-semibold tabular-nums',
           props.intent === 'up'
             ? 'text-emerald-600 dark:text-emerald-400'
             : 'text-rose-600 dark:text-rose-400'

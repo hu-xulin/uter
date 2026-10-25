@@ -167,7 +167,7 @@ export function FlowNodeFilterControl(props: FlowNodeFilterControlProps) {
                             <span className='min-w-0 flex-1 truncate'>
                               {option.label}
                             </span>
-                            <span className='text-muted-foreground flex shrink-0 items-center gap-1 text-sm'>
+                            <span className='text-muted-foreground flex shrink-0 items-center gap-1 text-xs'>
                               <span>{props.metricLabel}</span>
                               <span className='font-mono'>
                                 {metricValueLabel}

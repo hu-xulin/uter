@@ -698,7 +698,7 @@ function ResetCreditItem(props: { credit: CodexResetCredit; index: number }) {
             </div>
           ) : null}
           {props.credit.id ? (
-            <div className='text-muted-foreground mt-1 font-mono text-[0.8125rem] break-all'>
+            <div className='text-muted-foreground mt-1 font-mono text-sm break-all'>
               {props.credit.id}
             </div>
           ) : null}

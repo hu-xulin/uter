@@ -188,7 +188,7 @@ export function UserCharts(props: UserChartsProps) {
           className='shrink-0'
         >
           <TabsList>
-            <span className='text-muted-foreground px-2 text-sm font-medium whitespace-nowrap'>
+            <span className='text-muted-foreground px-2 text-xs font-medium whitespace-nowrap'>
               {t('Top Users')}
             </span>
             {TOP_USER_LIMIT_OPTIONS.map((limit) => (
@@ -221,7 +221,7 @@ export function UserCharts(props: UserChartsProps) {
                 <IconBadge tone='info' size='sm'>
                   <Users />
                 </IconBadge>
-                <div className='text-base font-semibold'>{t(chart.labelKey)}</div>
+                <div className='text-lg font-semibold'>{t(chart.labelKey)}</div>
               </div>
 
               <div className='h-[300px] p-1.5 sm:h-96 sm:p-2'>

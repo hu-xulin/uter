@@ -76,7 +76,7 @@ export function usePricingColumns(
         return (
           <div className='flex max-w-full min-w-0 items-center gap-2'>
             {modelIcon}
-            <span className='truncate font-mono text-base font-medium'>
+            <span className='truncate font-mono text-sm font-medium'>
               {model.model_name}
             </span>
             <DiscountTag
@@ -109,7 +109,7 @@ export function usePricingColumns(
       header: ({ column }) => (
         <div className='flex flex-col items-start gap-0.5'>
           <DataTableColumnHeader column={column} title={t('Price')} />
-          <span className='rounded bg-muted px-1.5 py-0.5 text-sm font-medium text-muted-foreground'>
+          <span className='rounded bg-muted px-1.5 py-0.5 text-xs font-medium text-muted-foreground'>
             {sourceLabel}
           </span>
         </div>
@@ -139,7 +139,7 @@ export function usePricingColumns(
       cell: ({ row }) => {
         const model = row.original
         if (!model.vendor_name) {
-          return <span className='text-muted-foreground/50 text-sm'>—</span>
+          return <span className='text-muted-foreground/50 text-xs'>—</span>
         }
         const vendorIcon = model.vendor_icon
           ? getLobeIcon(monoIconName(model.vendor_icon), 12)

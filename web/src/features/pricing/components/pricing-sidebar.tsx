@@ -113,7 +113,7 @@ function FilterChip(props: {
       onClick={props.onClick}
       aria-pressed={props.active}
       className={cn(
-        'h-auto max-w-full gap-1.5 px-2 py-1 text-sm',
+        'h-auto max-w-full gap-1.5 px-2 py-1 text-xs',
         // 选中态与工具栏的「标准/充值」分段控件同一套规则：品牌主色底 + 白字。
         // Base UI 的 Button 输出 aria-pressed（不是 data-state），故用 aria-pressed 变体。
         props.active &&
@@ -126,7 +126,7 @@ function FilterChip(props: {
       )}
       <span className='truncate'>{props.option.label}</span>
       {(props.option.suffix || props.option.count != null) && (
-        <span className={cn('rounded-md px-1.5 py-0.5 text-sm', badgeClass)}>
+        <span className={cn('rounded-md px-1.5 py-0.5 text-xs', badgeClass)}>
           {props.option.suffix ?? props.option.count}
         </span>
       )}
@@ -141,7 +141,7 @@ function FilterSection(props: FilterSectionProps) {
       className='border-border/70 border-b pb-3 last:border-b-0'
     >
       <CollapsibleTrigger className='group flex w-full items-center justify-between py-2.5 text-left'>
-        <span className='text-foreground text-base font-semibold'>
+        <span className='text-foreground text-sm font-semibold'>
           {props.title}
         </span>
         <ChevronDown className='text-muted-foreground size-4 transition-transform group-data-[panel-open]:rotate-180' />
@@ -268,8 +268,8 @@ export function PricingSidebar(props: PricingSidebarProps) {
     <aside className={cn('bg-card rounded-xl border p-3', props.className)}>
       <div className='mb-2.5 flex items-center justify-between gap-2'>
         <div>
-          <h2 className='text-foreground text-base font-bold'>{t('Filter')}</h2>
-          <p className='text-muted-foreground mt-1 text-sm'>
+          <h2 className='text-foreground text-sm font-bold'>{t('Filter')}</h2>
+          <p className='text-muted-foreground mt-1 text-xs'>
             {t('Refine models by provider, group, type, and tags.')}
           </p>
         </div>
@@ -279,7 +279,7 @@ export function PricingSidebar(props: PricingSidebarProps) {
           size='sm'
           onClick={props.onClearFilters}
           disabled={!props.hasActiveFilters}
-          className='h-7 gap-1.5 px-2 text-sm'
+          className='h-7 gap-1.5 px-2 text-xs'
         >
           <RotateCcw className='size-3.5' />
           {t('Reset')}

@@ -146,18 +146,18 @@ export function ModelPriceCell(props: {
     if (dynamic.isSpecialExpression) {
       return (
         <span className='block max-w-full min-w-0'>
-          <span className='text-muted-foreground block truncate text-base'>
+          <span className='text-muted-foreground block truncate text-sm'>
             {t('Special billing expression')}
           </span>
           {providerCaption && (
-            <span className='text-muted-foreground block text-sm'>
+            <span className='text-muted-foreground block text-xs'>
               {[providerCaption, unconfiguredCaption]
                 .filter(Boolean)
                 .join(' · ')}
             </span>
           )}
           {props.showExpression !== false && (
-            <code className='text-muted-foreground mt-1 line-clamp-2 block text-sm break-all whitespace-normal'>
+            <code className='text-muted-foreground mt-1 line-clamp-2 block text-xs break-all whitespace-normal'>
               {dynamic.rawExpression}
             </code>
           )}
@@ -192,12 +192,12 @@ export function ModelPriceCell(props: {
       })
     if (metrics.length === 0) {
       return (
-        <span className='text-muted-foreground text-base'>
+        <span className='text-muted-foreground text-sm'>
           {dynamic.hasUnconfiguredProviders
             ? t('Not configured')
             : t('Dynamic Pricing')}
           {providerCaption && (
-            <span className='block text-sm'>
+            <span className='block text-xs'>
               {[providerCaption, unconfiguredCaption]
                 .filter(Boolean)
                 .join(' · ')}
@@ -219,7 +219,7 @@ export function ModelPriceCell(props: {
   } else {
     if (isUnconfiguredTaskUsageModel(props.model)) {
       return (
-        <span className='text-muted-foreground text-base'>
+        <span className='text-muted-foreground text-sm'>
           {t('Not configured')}
         </span>
       )
@@ -231,7 +231,7 @@ export function ModelPriceCell(props: {
       )
     ) {
       return (
-        <span className='text-muted-foreground text-base'>
+        <span className='text-muted-foreground text-sm'>
           {t('Unset price')}
         </span>
       )
@@ -326,25 +326,25 @@ export function ModelPriceCell(props: {
           {metrics.map((metric) => (
             <span
               key={`h-${metric.label}`}
-              className='text-muted-foreground text-sm whitespace-nowrap'
+              className='text-muted-foreground text-xs whitespace-nowrap'
               title={metric.label}
             >
               {metric.label}
             </span>
           ))}
-          <span className='text-sm font-semibold whitespace-nowrap'>
+          <span className='text-xs font-semibold whitespace-nowrap'>
             {uterRowLabel}
           </span>
           {metrics.map((metric) => (
             <span
               key={`u-${metric.label}`}
-              className='text-base font-semibold tabular-nums whitespace-nowrap'
+              className='text-sm font-semibold tabular-nums whitespace-nowrap'
               title={metric.value}
             >
               {metric.value}
             </span>
           ))}
-          <span className='text-muted-foreground text-sm whitespace-nowrap'>
+          <span className='text-muted-foreground text-xs whitespace-nowrap'>
             {t('Official')}
           </span>
           {metrics.map((metric) => {
@@ -366,7 +366,7 @@ export function ModelPriceCell(props: {
             return (
               <span
                 key={`o-${metric.label}`}
-                className='text-muted-foreground text-sm tabular-nums whitespace-nowrap'
+                className='text-muted-foreground text-xs tabular-nums whitespace-nowrap'
                 title={officialText(official)}
               >
                 <span className={cn(isDiscount && 'line-through')}>
@@ -408,24 +408,24 @@ export function ModelPriceCell(props: {
                 className='flex min-w-0 flex-col gap-y-0.5'
               >
                 <span
-                  className='text-muted-foreground min-w-0 truncate text-sm font-normal'
+                  className='text-muted-foreground min-w-0 truncate text-xs font-normal'
                   title={metric.label}
                 >
                   {metric.label}
                 </span>
                 <span
-                  className='min-w-0 text-base break-words whitespace-normal font-semibold tabular-nums'
+                  className='min-w-0 text-sm break-words whitespace-normal font-semibold tabular-nums'
                   title={metric.value}
                 >
                   {metric.value}
                   {isDiscount && (
-                    <span className='text-emerald-600 text-sm font-bold'>
+                    <span className='text-emerald-600 text-xs font-bold'>
                       {' '}
                       · -{discountPercent}%
                     </span>
                   )}
                 </span>
-                <span className='text-muted-foreground text-sm font-normal tabular-nums'>
+                <span className='text-muted-foreground text-xs font-normal tabular-nums'>
                   {t('Official')}: {officialText(official)}
                 </span>
               </span>
@@ -444,13 +444,13 @@ export function ModelPriceCell(props: {
             className='flex min-w-0 flex-col items-start gap-y-0.5 sm:flex-row sm:flex-wrap sm:items-baseline sm:gap-x-1.5'
           >
             <span
-              className='text-muted-foreground min-w-0 truncate text-sm font-normal'
+              className='text-muted-foreground min-w-0 truncate text-xs font-normal'
               title={metric.label}
             >
               {metric.label}
             </span>
             <span
-              className='min-w-0 text-base break-words whitespace-normal tabular-nums'
+              className='min-w-0 text-sm break-words whitespace-normal tabular-nums'
               title={metric.value}
             >
               {metric.value}
@@ -464,7 +464,7 @@ export function ModelPriceCell(props: {
     <span className='block w-full max-w-full min-w-0 space-y-1.5'>
       {priceNodes ?? renderMetricGrid()}
       {officialDynamic?.entries.length && !hasPresetOfficial ? (
-        <span className='text-muted-foreground block text-sm font-normal tabular-nums'>
+        <span className='text-muted-foreground block text-xs font-normal tabular-nums'>
           {t('Official')}:{' '}
           {officialDynamic.entries
             .map((e) =>
@@ -476,7 +476,7 @@ export function ModelPriceCell(props: {
         </span>
       ) : null}
       <span
-        className='text-muted-foreground block text-sm font-normal break-words whitespace-normal sm:truncate'
+        className='text-muted-foreground block text-xs font-normal break-words whitespace-normal sm:truncate'
         title={caption}
       >
         {caption}

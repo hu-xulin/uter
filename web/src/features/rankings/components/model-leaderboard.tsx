@@ -79,7 +79,7 @@ function ModelList(props: {
               : 'flex items-center gap-3 py-2.5'
           }
         >
-          <span className='text-muted-foreground/80 w-6 shrink-0 text-right text-sm tabular-nums'>
+          <span className='text-muted-foreground/80 w-6 shrink-0 text-right text-xs tabular-nums'>
             {row.rank}.
           </span>
           <span className='shrink-0'>
@@ -91,7 +91,7 @@ function ModelList(props: {
               className={
                 compact
                   ? 'text-foreground block truncate font-mono text-sm font-medium'
-                  : 'text-foreground block truncate font-mono text-base font-medium'
+                  : 'text-foreground block truncate font-mono text-sm font-medium'
               }
             >
               {row.model_name}
@@ -99,8 +99,8 @@ function ModelList(props: {
             <p
               className={
                 compact
-                  ? 'text-muted-foreground/80 truncate text-sm italic'
-                  : 'text-muted-foreground/80 truncate text-sm italic'
+                  ? 'text-muted-foreground/80 truncate text-xs italic'
+                  : 'text-muted-foreground/80 truncate text-xs italic'
               }
             >
               by{' '}
@@ -113,8 +113,8 @@ function ModelList(props: {
             <div
               className={
                 compact
-                  ? 'text-foreground text-sm font-semibold tabular-nums'
-                  : 'text-foreground text-base font-semibold tabular-nums'
+                  ? 'text-foreground text-xs font-semibold tabular-nums'
+                  : 'text-foreground text-sm font-semibold tabular-nums'
               }
             >
               {formatTokens(row.total_tokens)}
@@ -129,7 +129,7 @@ function ModelList(props: {
             </div>
             <GrowthText
               value={row.growth_pct}
-              className={compact ? 'text-sm' : 'text-sm'}
+              className={compact ? 'text-xs' : 'text-xs'}
             />
           </div>
         </li>

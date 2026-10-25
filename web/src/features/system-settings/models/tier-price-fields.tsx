@@ -602,13 +602,13 @@ export function TierPriceFields(props: TierPriceFieldsProps) {
                   <TabsList className='h-8'>
                     <TabsTrigger
                       value={CACHE_MODE_GENERIC}
-                      className='px-2 text-xs'
+                      className='px-2 text-sm'
                     >
                       {t('Generic cache')}
                     </TabsTrigger>
                     <TabsTrigger
                       value={CACHE_MODE_TIMED}
-                      className='px-2 text-xs'
+                      className='px-2 text-sm'
                     >
                       {t('Time-sliced cache (Claude)')}
                     </TabsTrigger>

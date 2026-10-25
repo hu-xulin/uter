@@ -53,9 +53,8 @@ export function CTA(props: CTAProps) {
         className='mx-auto max-w-2xl text-center'
         animation='scale-in'
       >
-        <h2 className='text-2xl leading-tight font-semibold'>
-          {t('Ready to simplify')}
-          <br />
+        <h2 className='flex flex-col items-center gap-3 text-2xl leading-tight font-semibold'>
+          <span>{t('Ready to simplify')}</span>
           <span className='bg-gradient-to-r from-blue-400 via-violet-400 to-purple-500 bg-clip-text text-transparent'>
             {t('your AI integration?')}
           </span>
@@ -66,13 +65,13 @@ export function CTA(props: CTAProps) {
           )}
         </p>
         <div className='mt-8 flex items-center justify-center gap-3'>
-          <Button className='group rounded-lg' render={<Link to='/sign-up' />}>
+          <Button className='group rounded-lg text-sm' render={<Link to='/sign-up' />}>
             {t('Get Started')}
             <ArrowRight className='ml-1 size-3.5 transition-transform duration-200 group-hover:translate-x-0.5' />
           </Button>
           <Button
             variant='outline'
-            className='border-border/50 hover:border-border hover:bg-muted/50 rounded-lg'
+            className='border-border/50 hover:border-border hover:bg-muted/50 rounded-lg text-sm'
             render={<Link to='/pricing' />}
           >
             {t('View Pricing')}

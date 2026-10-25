@@ -213,12 +213,12 @@ function StatCardDetails(props: { details: StatCardDetail[] }) {
           key={detail.label}
           className='bg-muted/40 rounded-lg border border-transparent px-2.5 py-2'
         >
-          <div className='text-muted-foreground truncate text-sm leading-none font-medium'>
+          <div className='text-muted-foreground truncate text-xs leading-none font-medium'>
             {detail.label}
           </div>
           <div
             className={cn(
-              'mt-1.5 truncate text-sm font-semibold tabular-nums',
+              'mt-1.5 truncate text-xs font-semibold tabular-nums',
               DETAIL_TONE_CLASSES[detail.tone ?? 'default']
             )}
             title={detail.value}
@@ -257,12 +257,12 @@ export function StatCard(props: StatCardProps) {
   } else if (props.error) {
     valueContent = (
       <div className='flex flex-col gap-1'>
-        <div className='text-muted-foreground mt-0.5 text-base font-bold break-all tabular-nums sm:text-2xl'>
+        <div className='text-muted-foreground mt-0.5 text-base font-semibold break-all tabular-nums sm:text-2xl'>
           --
         </div>
         <p
           className={cn(
-            'text-muted-foreground/60 line-clamp-1 text-sm sm:text-sm',
+            'text-muted-foreground/60 line-clamp-1 text-xs sm:text-xs',
             props.compactMobile && 'hidden sm:block'
           )}
         >
@@ -278,7 +278,7 @@ export function StatCard(props: StatCardProps) {
         </div>
         <p
           className={cn(
-            'text-muted-foreground/60 line-clamp-1 text-sm leading-relaxed sm:text-sm',
+            'text-muted-foreground/60 line-clamp-1 text-xs leading-relaxed sm:text-xs',
             props.compactMobile && 'hidden sm:block'
           )}
         >
@@ -305,7 +305,7 @@ export function StatCard(props: StatCardProps) {
       )}
     >
       <div className='flex items-start justify-between gap-1'>
-        <div className='text-muted-foreground flex items-center gap-1 text-sm font-medium sm:gap-2 sm:text-sm'>
+        <div className='text-muted-foreground flex items-center gap-1 text-xs font-medium sm:gap-2 sm:text-xs'>
           <IconBadge
             tone={iconTone}
             size='stat'

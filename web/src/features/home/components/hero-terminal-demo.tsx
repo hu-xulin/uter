@@ -243,7 +243,7 @@ export function HeroTerminalDemo(props: HeroTerminalDemoProps) {
           })}
           <div className='ml-auto flex items-center gap-2 pr-2 sm:pr-3'>
             <span className='inline-block size-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.45)]' />
-            <span className='text-foreground/40 font-mono text-[0.8125rem] uppercase'>
+            <span className='text-foreground/40 font-mono text-sm uppercase'>
               200 ok
             </span>
           </div>
@@ -258,7 +258,7 @@ export function HeroTerminalDemo(props: HeroTerminalDemoProps) {
         >
           <span
             className={cn(
-              'rounded-md px-1.5 py-0.5 font-mono text-[0.8125rem] font-semibold',
+              'rounded-md px-1.5 py-0.5 font-mono text-sm font-semibold',
               accent.badge
             )}
           >
@@ -266,7 +266,7 @@ export function HeroTerminalDemo(props: HeroTerminalDemoProps) {
           </span>
           <code
             className={cn(
-              'text-foreground/75 truncate font-mono text-[0.8125rem] transition-opacity duration-200',
+              'text-foreground/75 truncate font-mono text-sm transition-opacity duration-200',
               transitioning ? 'opacity-0' : 'opacity-100'
             )}
           >
@@ -275,7 +275,7 @@ export function HeroTerminalDemo(props: HeroTerminalDemoProps) {
         </div>
 
         {/* Body — fixed rows so neither block shifts when switching demos */}
-        <div className='grid h-[400px] grid-rows-[235px_minmax(0,1fr)] font-mono text-[0.8125rem] leading-[1.55]'>
+        <div className='grid h-[400px] grid-rows-[235px_minmax(0,1fr)] font-mono text-sm leading-[1.55]'>
           {/* Request */}
           <RequestBlock demo={demo} transitioning={transitioning} />
 
@@ -290,25 +290,25 @@ export function HeroTerminalDemo(props: HeroTerminalDemoProps) {
             'border-border/40 bg-muted/30 dark:border-white/[0.05] dark:bg-white/[0.02]'
           )}
         >
-          <div className='text-foreground/40 flex items-center gap-3 text-sm tabular-nums'>
+          <div className='text-foreground/40 flex items-center gap-3 text-xs tabular-nums'>
             <span className='flex items-center gap-1'>
               <span className='font-mono'>{demo.latency}</span>
-              <span className=' uppercase'>ms</span>
+              <span className='uppercase'>ms</span>
             </span>
             <span className='bg-foreground/15 size-1 rounded-full' />
             <span className='flex items-center gap-1'>
               <span className='font-mono'>{demo.tokens}</span>
-              <span className=' uppercase'>tokens</span>
+              <span className='uppercase'>tokens</span>
             </span>
             <span className='bg-foreground/15 size-1 rounded-full' />
             <span className='flex items-center gap-1'>
-              <span className=' uppercase'>cost</span>
+              <span className='uppercase'>cost</span>
               <span className='font-mono'>
                 ${(demo.tokens * 0.00003).toFixed(5)}
               </span>
             </span>
           </div>
-          <span className='text-foreground/30 font-mono text-[0.8125rem] uppercase'>
+          <span className='text-foreground/30 font-mono text-sm uppercase'>
             stream · sse
           </span>
         </div>
@@ -383,7 +383,7 @@ function ResponseBlock(props: { demo: ApiDemoConfig; transitioning: boolean }) {
 
 function SectionLabel(props: { children: ReactNode }) {
   return (
-    <span className='text-foreground/30 font-sans text-sm font-semibold uppercase'>
+    <span className='text-foreground/30 font-sans text-xs font-semibold uppercase'>
       {props.children}
     </span>
   )
@@ -466,7 +466,9 @@ function tokenize(input: string): ReactNode {
   matches.forEach((match) => {
     const start = match.index ?? 0
     if (start > cursor) {
-      segments.push(<Muted key={`m-${start}`}>{input.slice(cursor, start)}</Muted>)
+      segments.push(
+        <Muted key={`m-${start}`}>{input.slice(cursor, start)}</Muted>
+      )
     }
     const text = match[0]
     const after = input.slice(start + text.length).trimStart()

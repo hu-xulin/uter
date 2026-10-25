@@ -149,20 +149,20 @@ export const PriceMetricOfficial = memo(function PriceMetricOfficial(
 
   return (
     <div className={cn('flex min-w-0 flex-col gap-1', props.className)}>
-      <span className='text-muted-foreground text-sm'>{props.label}</span>
-      <span className='flex flex-wrap items-baseline gap-x-1 text-base font-semibold tabular-nums'>
+      <span className='text-muted-foreground text-xs'>{props.label}</span>
+      <span className='flex flex-wrap items-baseline gap-x-1 text-sm font-semibold tabular-nums'>
         <span>{current}</span>
-        <span className='text-muted-foreground text-sm font-normal whitespace-nowrap'>
+        <span className='text-muted-foreground text-xs font-normal whitespace-nowrap'>
           {' '}
           {props.unit}
         </span>
         {isDiscount && (
-          <span className='text-emerald-600 text-sm font-bold'>
+          <span className='text-emerald-600 text-xs font-bold'>
             · -{discountPercent}%
           </span>
         )}
       </span>
-      <span className='text-muted-foreground text-sm tabular-nums'>
+      <span className='text-muted-foreground text-xs tabular-nums'>
         {t('Official')}:{' '}
         <span className={cn(isDiscount && 'line-through')}>{official}</span>{' '}
         {props.unit}
