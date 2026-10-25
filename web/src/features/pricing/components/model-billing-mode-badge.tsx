@@ -51,7 +51,7 @@ export function ModelBillingModeBadge(props: ModelBillingModeBadgeProps) {
       type={isCaption ? 'text' : undefined}
       copyable={false}
       size='sm'
-      className={cn(isCaption && 'text-sm font-normal', props.className)}
+      className={cn(isCaption && 'text-xs font-normal', props.className)}
     />
   )
 }

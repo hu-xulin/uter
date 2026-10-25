@@ -208,8 +208,8 @@ function SetupGuideBackdrop(props: { compact?: boolean }) {
           className={cn(
             'absolute right-3 [mask-image:linear-gradient(90deg,transparent_0%,black_30%,black_82%,transparent_100%)] text-right whitespace-pre',
             props.compact
-              ? '-top-6 text-sm leading-4'
-              : 'top-1 text-sm leading-5'
+              ? '-top-6 text-xs leading-4'
+              : 'top-1 text-xs leading-5'
           )}
         >
           {SETUP_GUIDE_CODE_PATTERN}
@@ -260,13 +260,13 @@ function StartStepItem(props: {
             <Icon className='size-3.5' aria-hidden='true' />
           </span>
           <span className='flex min-w-0 flex-col gap-0.5'>
-            <span className='flex items-center gap-2 text-base font-medium'>
-              <span className='text-muted-foreground text-sm tabular-nums'>
+            <span className='flex items-center gap-2 text-sm font-medium'>
+              <span className='text-muted-foreground text-xs tabular-nums'>
                 {props.index + 1}.
               </span>
               <span className='truncate'>{props.step.title}</span>
             </span>
-            <span className='text-muted-foreground line-clamp-1 text-sm'>
+            <span className='text-muted-foreground line-clamp-1 text-xs'>
               {props.step.description}
             </span>
           </span>
@@ -358,10 +358,10 @@ function RequestPreview(props: {
             <TerminalSquare />
           </IconBadge>
           <div className='min-w-0'>
-            <div className='truncate text-base font-medium'>
+            <div className='truncate text-sm font-medium'>
               {t('First API request')}
             </div>
-            <div className='text-muted-foreground truncate text-sm'>
+            <div className='text-muted-foreground truncate text-xs'>
               {props.example.ready
                 ? props.example.keyName
                 : t('Create an API key to unlock the real request')}
@@ -372,7 +372,7 @@ function RequestPreview(props: {
           <Button
             variant='outline'
             size='sm'
-            className='h-7 gap-1.5 px-2 text-sm'
+            className='h-7 gap-1.5 px-2 text-xs'
             disabled={isCopying}
             onClick={handleCopyRequest}
             aria-label={t('Copy ready-to-run curl')}
@@ -387,7 +387,7 @@ function RequestPreview(props: {
         )}
       </div>
 
-      <div className='bg-foreground/[0.035] my-3 rounded-xl p-3 font-mono text-sm'>
+      <div className='bg-foreground/[0.035] my-3 rounded-xl p-3 font-mono text-xs'>
         <div className='mb-2 flex items-center gap-1.5'>
           <span className='bg-destructive size-2 rounded-full' />
           <span className='bg-warning size-2 rounded-full' />
@@ -419,11 +419,11 @@ function RequestPreview(props: {
                 <IconBadge tone={signal.tone} size='xs'>
                   <Icon />
                 </IconBadge>
-                <span className='truncate text-sm font-medium'>
+                <span className='truncate text-xs font-medium'>
                   {signal.label}
                 </span>
               </span>
-              <span className='text-muted-foreground shrink-0 text-sm'>
+              <span className='text-muted-foreground shrink-0 text-xs'>
                 {signal.value}
               </span>
             </div>
@@ -447,10 +447,10 @@ function QuickActionItem(props: { action: QuickAction }) {
         <Icon className='size-4' aria-hidden='true' />
       </span>
       <span className='flex min-w-0 flex-1 flex-col gap-0.5'>
-        <span className='truncate text-base font-medium'>
+        <span className='truncate text-sm font-medium'>
           {props.action.title}
         </span>
-        <span className='text-muted-foreground line-clamp-2 text-sm leading-relaxed'>
+        <span className='text-muted-foreground line-clamp-2 text-xs leading-relaxed'>
           {props.action.description}
         </span>
       </span>
@@ -671,7 +671,7 @@ export function OverviewDashboard() {
                       <div className='flex min-w-0 flex-col gap-5'>
                         <div className='flex flex-wrap items-start justify-between gap-3'>
                           <div className='flex max-w-2xl flex-col gap-1'>
-                            <div className='text-muted-foreground flex items-center gap-2 text-sm font-medium uppercase'>
+                            <div className='text-muted-foreground flex items-center gap-2 text-xs font-medium uppercase'>
                               <ListChecks
                                 className='size-3.5'
                                 aria-hidden='true'
@@ -681,7 +681,7 @@ export function OverviewDashboard() {
                             <h3 className='text-xl font-semibold sm:text-2xl'>
                               {t('Build on your API gateway in minutes')}
                             </h3>
-                            <p className='text-muted-foreground max-w-xl text-base leading-relaxed'>
+                            <p className='text-muted-foreground max-w-xl text-sm leading-relaxed'>
                               {t(
                                 'A focused home for keys, balance, routing, and service health.'
                               )}
@@ -728,7 +728,7 @@ export function OverviewDashboard() {
                 <CardStaggerItem className='bg-card h-full rounded-2xl border p-4 shadow-xs sm:p-5'>
                   <div className='flex h-full flex-col gap-4'>
                     <div className='flex flex-col gap-1'>
-                      <div className='text-muted-foreground text-sm font-medium uppercase'>
+                      <div className='text-muted-foreground text-xs font-medium uppercase'>
                         {t('Recommended actions')}
                       </div>
                       <h3 className='text-lg font-semibold'>
@@ -760,17 +760,17 @@ export function OverviewDashboard() {
                       </span>
                       <div className='min-w-0'>
                         <div className='flex items-center gap-2'>
-                          <h3 className='truncate text-base font-semibold'>
+                          <h3 className='truncate text-lg font-semibold'>
                             {t('Setup guide')}
                           </h3>
-                          <span className='text-muted-foreground bg-background/60 rounded-md border px-2 py-0.5 text-sm'>
+                          <span className='text-muted-foreground bg-background/60 rounded-md border px-2 py-0.5 text-xs'>
                             {t('Setup progress: {{completed}}/{{total}}', {
                               completed: completedStepCount,
                               total: startSteps.length,
                             })}
                           </span>
                         </div>
-                        <p className='text-muted-foreground line-clamp-1 text-sm'>
+                        <p className='text-muted-foreground line-clamp-1 text-xs'>
                           {t('Setup guide is collapsed. Expand it anytime.')}
                         </p>
                       </div>

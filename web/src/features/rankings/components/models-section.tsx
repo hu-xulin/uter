@@ -91,7 +91,7 @@ export function ModelsSection(props: ModelsSectionProps) {
         {
           orient: 'bottom',
           label: {
-            style: { fill: chartTextColor, fontSize: 10 },
+            style: { fill: chartTextColor, fontSize: 12 },
             autoHide: true,
             autoLimit: true,
           },
@@ -101,7 +101,7 @@ export function ModelsSection(props: ModelsSectionProps) {
           orient: 'left',
           label: {
             formatMethod: (val: number | string) => formatTokens(Number(val)),
-            style: { fill: chartTextColor, fontSize: 10 },
+            style: { fill: chartTextColor, fontSize: 12 },
           },
           grid: {
             visible: true,
@@ -168,11 +168,11 @@ export function ModelsSection(props: ModelsSectionProps) {
       {/* Chart block ----------------------------------------------------- */}
       <header className='flex items-start justify-between gap-4 px-5 py-4'>
         <div className='min-w-0 flex-1'>
-          <h2 className='text-foreground inline-flex items-center gap-2 text-base font-semibold'>
+          <h2 className='text-foreground inline-flex items-center gap-2 text-lg font-semibold'>
             <BarChart3 className='text-primary size-4' />
             {t('Top Models')}
           </h2>
-          <p className='text-muted-foreground mt-1 text-base'>
+          <p className='text-muted-foreground mt-1 text-sm'>
             {t(PERIOD_DESCRIPTIONS[props.period])}
           </p>
         </div>
@@ -180,7 +180,7 @@ export function ModelsSection(props: ModelsSectionProps) {
           <div className='text-foreground text-2xl font-semibold tabular-nums'>
             {formatTokens(totalTokens)}
           </div>
-          <div className='text-muted-foreground/80 text-sm font-medium uppercase'>
+          <div className='text-muted-foreground/80 text-xs font-medium uppercase'>
             {t('tokens')}
           </div>
         </div>
@@ -199,7 +199,7 @@ export function ModelsSection(props: ModelsSectionProps) {
               option={VCHART_OPTION}
             />
           ) : (
-            <div className='text-muted-foreground/80 flex h-full items-center justify-center text-sm'>
+            <div className='text-muted-foreground/80 flex h-full items-center justify-center text-xs'>
               {t('No history data available')}
             </div>
           )}
@@ -213,12 +213,12 @@ export function ModelsSection(props: ModelsSectionProps) {
             <Trophy className='size-3.5 text-amber-500' />
             {t('LLM Leaderboard')}
           </h3>
-          <p className='text-muted-foreground/80 mt-0.5 text-sm'>
+          <p className='text-muted-foreground/80 mt-0.5 text-xs'>
             {t('Compare the most popular models on the platform')}
           </p>
         </header>
         {props.rows.length === 0 ? (
-          <div className='text-muted-foreground/80 px-5 py-8 text-center text-base'>
+          <div className='text-muted-foreground/80 px-5 py-8 text-center text-sm'>
             {t('No models match the selected filters')}
           </div>
         ) : (

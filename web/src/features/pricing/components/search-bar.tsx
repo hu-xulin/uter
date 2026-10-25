@@ -62,7 +62,7 @@ export function SearchBar(props: SearchBarProps) {
           'border-border/60 bg-background placeholder:text-muted-foreground/50',
           'hover:border-border',
           'focus:border-primary/50 focus:ring-primary/20 focus:ring-2',
-          'h-10 w-full rounded-lg border pr-16 pl-10 text-base transition-all outline-none'
+          'h-10 w-full rounded-lg border pr-16 pl-10 text-sm transition-all outline-none'
         )}
         aria-label={t('Search models')}
       />
@@ -78,7 +78,7 @@ export function SearchBar(props: SearchBarProps) {
             <X className='size-4' />
           </Button>
         ) : (
-          <kbd className='bg-muted text-muted-foreground pointer-events-none hidden rounded border px-1.5 py-0.5 font-mono text-[0.8125rem] sm:inline-block'>
+          <kbd className='bg-muted text-muted-foreground pointer-events-none hidden rounded border px-1.5 py-0.5 font-mono text-xs sm:inline-block'>
             ⌘K
           </kbd>
         )}

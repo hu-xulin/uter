@@ -55,7 +55,7 @@ function StatCard(props: {
   const Icon = props.icon
   return (
     <div className='bg-background flex flex-col gap-1 rounded-lg border p-3'>
-      <span className='text-muted-foreground inline-flex items-center gap-1.5 text-sm font-medium uppercase'>
+      <span className='text-muted-foreground inline-flex items-center gap-1.5 text-xs font-medium uppercase'>
         <Icon className='size-3' />
         {props.label}
       </span>
@@ -68,7 +68,7 @@ function StatCard(props: {
         {props.value}
       </span>
       {props.hint && (
-        <span className='text-muted-foreground/70 text-sm'>
+        <span className='text-muted-foreground/70 text-xs'>
           {props.hint}
         </span>
       )}
@@ -161,7 +161,7 @@ export function ModelDetailsPerformance(props: { model: PricingModel }) {
 
   if (metricsQuery.isLoading || performances.length === 0) {
     return (
-      <div className='text-muted-foreground rounded-lg border p-6 text-center text-base'>
+      <div className='text-muted-foreground rounded-lg border p-6 text-center text-sm'>
         {t('Performance data is not yet available for this model.')}
       </div>
     )
@@ -209,7 +209,7 @@ export function ModelDetailsPerformance(props: { model: PricingModel }) {
         />
         <StaticDataTable
           className='rounded-lg'
-          tableClassName='text-base'
+          tableClassName='text-sm'
           headerRowClassName={tableStyles.compactHeaderRow}
           data={performances}
           getRowKey={(perf) => perf.group}
@@ -304,18 +304,18 @@ function SectionHeader(props: {
       <div className='flex min-w-0 items-center gap-2'>
         <Icon className='text-muted-foreground/70 size-3.5 shrink-0' />
         <div className='min-w-0'>
-          <div className='text-foreground text-base font-semibold'>
+          <div className='text-foreground text-sm font-semibold'>
             {props.title}
           </div>
           {props.description && (
-            <p className='text-muted-foreground/80 text-sm'>
+            <p className='text-muted-foreground/80 text-xs'>
               {props.description}
             </p>
           )}
         </div>
       </div>
       {props.accent && (
-        <div className='shrink-0 text-sm font-medium'>{props.accent}</div>
+        <div className='shrink-0 text-xs font-medium'>{props.accent}</div>
       )}
     </div>
   )

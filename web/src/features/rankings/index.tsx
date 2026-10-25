@@ -136,7 +136,7 @@ function RankingsError(props: { message: string }) {
       <h2 className='text-foreground text-base font-semibold'>
         {t('Unable to load rankings')}
       </h2>
-      <p className='text-muted-foreground mx-auto mt-2 max-w-md text-base'>
+      <p className='text-muted-foreground mx-auto mt-2 max-w-md text-sm'>
         {props.message}
       </p>
     </div>

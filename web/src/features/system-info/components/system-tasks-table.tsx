@@ -90,20 +90,20 @@ export function SystemTasksTable(props: SystemTasksTableProps) {
     <StaticDataTable tableClassName='min-w-[900px]'>
       <TableHeader>
         <TableRow className='bg-muted/40 hover:bg-muted/40'>
-          <TableHead className='h-9 w-[260px] px-4 text-xs'>
+          <TableHead className='h-9 w-[260px] px-4 text-sm'>
             {t('Type')}
           </TableHead>
-          <TableHead className='h-9 w-[130px] text-xs'>{t('Status')}</TableHead>
-          <TableHead className='h-9 w-[180px] text-xs'>
+          <TableHead className='h-9 w-[130px] text-sm'>{t('Status')}</TableHead>
+          <TableHead className='h-9 w-[180px] text-sm'>
             {t('Progress')}
           </TableHead>
-          <TableHead className='h-9 min-w-[260px] text-xs'>
+          <TableHead className='h-9 min-w-[260px] text-sm'>
             {t('Executor')}
           </TableHead>
-          <TableHead className='h-9 w-[190px] text-xs'>
+          <TableHead className='h-9 w-[190px] text-sm'>
             {t('Updated')}
           </TableHead>
-          <TableHead className='h-9 w-[220px] pr-4 text-xs'>
+          <TableHead className='h-9 w-[220px] pr-4 text-sm'>
             {t('Detail')}
           </TableHead>
         </TableRow>
@@ -118,7 +118,7 @@ export function SystemTasksTable(props: SystemTasksTableProps) {
                   <div className='font-medium'>
                     {t(SYSTEM_TASK_TYPE_LABEL[task.type] ?? task.type)}
                   </div>
-                  <div className='text-muted-foreground font-mono text-[0.8125rem]'>
+                  <div className='text-muted-foreground font-mono text-sm'>
                     {TYPE_DISPLAY_ID[task.type] ?? task.type}
                   </div>
                 </div>
@@ -149,7 +149,7 @@ export function SystemTasksTable(props: SystemTasksTableProps) {
                   </span>
                 </div>
               </TableCell>
-              <TableCell className='text-muted-foreground max-w-[280px] truncate py-3 align-middle font-mono text-xs'>
+              <TableCell className='text-muted-foreground max-w-[280px] truncate py-3 align-middle font-mono text-sm'>
                 {task.locked_by || '-'}
               </TableCell>
               <TableCell

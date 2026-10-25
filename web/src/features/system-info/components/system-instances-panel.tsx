@@ -207,7 +207,7 @@ function ResourceCell(props: ResourceCellProps) {
   const content = (
     <div className='flex items-center gap-2'>
       <RingProgress percent={percent} />
-      <span className='font-mono text-[0.8125rem] tabular-nums'>
+      <span className='font-mono text-sm tabular-nums'>
         {formatPercent(props.value)}
       </span>
     </div>
@@ -242,30 +242,30 @@ function SystemInstancesList(props: SystemInstancesTableProps) {
       <Table className='min-w-[1230px]'>
         <TableHeader>
           <TableRow className='bg-muted/40 hover:bg-muted/40'>
-            <TableHead className='h-9 min-w-[240px] px-4 text-xs'>
+            <TableHead className='h-9 min-w-[240px] px-4 text-sm'>
               {t('Instances')}
             </TableHead>
-            <TableHead className='h-9 w-[110px] text-xs'>
+            <TableHead className='h-9 w-[110px] text-sm'>
               {t('Status')}
             </TableHead>
-            <TableHead className='h-9 w-[100px] text-xs'>{t('Role')}</TableHead>
-            <TableHead className='h-9 w-[96px] text-xs'>{t('CPU')}</TableHead>
-            <TableHead className='h-9 w-[96px] text-xs'>
+            <TableHead className='h-9 w-[100px] text-sm'>{t('Role')}</TableHead>
+            <TableHead className='h-9 w-[96px] text-sm'>{t('CPU')}</TableHead>
+            <TableHead className='h-9 w-[96px] text-sm'>
               {t('Memory')}
             </TableHead>
-            <TableHead className='h-9 w-[96px] text-xs'>
+            <TableHead className='h-9 w-[96px] text-sm'>
               {t('Storage')}
             </TableHead>
-            <TableHead className='h-9 w-[140px] text-xs'>
+            <TableHead className='h-9 w-[140px] text-sm'>
               {t('Runtime')}
             </TableHead>
-            <TableHead className='h-9 w-[170px] text-xs'>
+            <TableHead className='h-9 w-[170px] text-sm'>
               {t('Started')}
             </TableHead>
-            <TableHead className='h-9 w-[170px] text-xs'>
+            <TableHead className='h-9 w-[170px] text-sm'>
               {t('Last Seen')}
             </TableHead>
-            <TableHead className='h-9 w-[90px] pr-4 text-right text-xs'>
+            <TableHead className='h-9 w-[90px] pr-4 text-right text-sm'>
               {t('Actions')}
             </TableHead>
           </TableRow>
@@ -327,7 +327,7 @@ function SystemInstancesList(props: SystemInstancesTableProps) {
                                   <div className='mb-1 font-medium'>
                                     {t('Example')}
                                   </div>
-                                  <code className='bg-muted block rounded-md px-2 py-1.5 font-mono text-[0.8125rem] break-all'>
+                                  <code className='bg-muted block rounded-md px-2 py-1.5 font-mono text-sm break-all'>
                                     NODE_NAME=uter-master-1
                                   </code>
                                 </div>
@@ -341,7 +341,7 @@ function SystemInstancesList(props: SystemInstancesTableProps) {
                           </Popover>
                         )}
                       </div>
-                      <div className='text-muted-foreground truncate font-mono text-[0.8125rem]'>
+                      <div className='text-muted-foreground truncate font-mono text-sm'>
                         {instance.info?.host?.hostname || '-'}
                       </div>
                     </div>
@@ -422,7 +422,7 @@ function SystemInstancesList(props: SystemInstancesTableProps) {
                     {runtimeLabel(instance)}
                   </div>
                 </TableCell>
-                <TableCell className='text-muted-foreground py-2.5 align-middle text-xs whitespace-nowrap'>
+                <TableCell className='text-muted-foreground py-2.5 align-middle text-sm whitespace-nowrap'>
                   {formatTimestampToDate(instance.started_at)}
                 </TableCell>
                 <TableCell

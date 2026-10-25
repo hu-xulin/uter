@@ -264,7 +264,7 @@ function TaskArtifactCard(props: { artifact: TaskArtifact }) {
             {props.artifact.key}
           </span>
           {props.artifact.mime_type ? (
-            <span className='block truncate font-mono text-[0.8125rem]'>
+            <span className='block truncate font-mono text-sm'>
               {props.artifact.mime_type}
             </span>
           ) : null}

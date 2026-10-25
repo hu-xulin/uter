@@ -39,7 +39,7 @@ export function EmptyState(props: EmptyStateProps) {
         {t('No models found')}
       </h3>
 
-      <p className='text-muted-foreground mb-5 max-w-xs text-base'>
+      <p className='text-muted-foreground mb-5 max-w-xs text-sm'>
         {hasSearch
           ? t(
               'No results for "{{query}}". Try adjusting your search or filters.',

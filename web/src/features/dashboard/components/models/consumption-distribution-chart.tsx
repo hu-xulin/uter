@@ -99,8 +99,8 @@ export function ConsumptionDistributionChart(
           <IconBadge tone='success' size='sm'>
             <WalletCards />
           </IconBadge>
-          <div className='text-base font-semibold'>{t('Quota Distribution')}</div>
-          <span className='text-muted-foreground text-sm'>
+          <div className='text-lg font-semibold'>{t('Quota Distribution')}</div>
+          <span className='text-muted-foreground text-xs'>
             {t('Total:')} {chartData.totalQuotaDisplay}
           </span>
         </div>

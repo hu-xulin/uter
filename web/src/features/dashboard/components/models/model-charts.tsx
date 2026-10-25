@@ -98,10 +98,10 @@ export function ModelCharts(props: ModelChartsProps) {
           <IconBadge tone='chart-4' size='sm'>
             <PieChartIcon />
           </IconBadge>
-          <div className='text-base font-semibold'>
+          <div className='text-lg font-semibold'>
             {t('Model Call Analytics')}
           </div>
-          <span className='text-muted-foreground text-sm'>
+          <span className='text-muted-foreground text-xs'>
             {t('Total:')} {chartData.totalCountDisplay}
           </span>
         </div>

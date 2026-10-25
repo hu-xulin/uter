@@ -131,14 +131,14 @@ export function ChannelPriorityGuide(props: {
         >
           <TabsTrigger
             value='same'
-            className='data-active:text-primary h-auto min-h-9 px-2 py-2 text-xs whitespace-normal'
+            className='data-active:text-primary h-auto min-h-9 px-2 py-2 text-sm whitespace-normal'
           >
             <Layers className='size-4 shrink-0' aria-hidden />
             <span>{t('Join the same priority tier')}</span>
           </TabsTrigger>
           <TabsTrigger
             value='insert'
-            className='h-auto min-h-9 px-2 py-2 text-xs whitespace-normal data-active:text-amber-700 dark:data-active:text-amber-400'
+            className='h-auto min-h-9 px-2 py-2 text-sm whitespace-normal data-active:text-amber-700 dark:data-active:text-amber-400'
           >
             <ArrowDownToLine className='size-4 shrink-0' aria-hidden />
             <span>{t('Insert a new priority tier')}</span>

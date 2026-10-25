@@ -166,7 +166,7 @@ export function PluginEndpoints(props: {
                 method={route.method}
                 path={route.path}
               >
-                <span className='text-muted-foreground font-mono text-[0.8125rem]'>
+                <span className='text-muted-foreground font-mono text-sm'>
                   {route.type}
                 </span>
                 <span className='text-muted-foreground text-xs'>

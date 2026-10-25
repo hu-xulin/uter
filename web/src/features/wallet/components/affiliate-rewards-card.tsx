@@ -102,7 +102,7 @@ export function AffiliateRewardsCard({
           <Input
             value={affiliateLink}
             readOnly
-            className='border-muted bg-background/70 h-9 min-w-0 flex-1 font-mono text-xs'
+            className='border-muted bg-background/70 h-9 min-w-0 flex-1 font-mono text-sm'
           />
           <CopyButton
             value={affiliateLink}

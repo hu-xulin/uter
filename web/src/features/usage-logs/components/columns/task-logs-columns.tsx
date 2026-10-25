@@ -101,7 +101,7 @@ export function useTaskLogsColumns(
               {formatTimestampToDate(submitTime, 'seconds')}
             </span>
             {log.finish_time ? (
-              <span className='text-muted-foreground/60 truncate font-mono text-[0.8125rem] tabular-nums'>
+              <span className='text-muted-foreground/60 truncate font-mono text-sm tabular-nums'>
                 {formatTimestampToDate(log.finish_time, 'seconds')}
               </span>
             ) : (
@@ -174,7 +174,7 @@ export function useTaskLogsColumns(
               <span className='truncate text-xs font-medium'>
                 {plugin.name || plugin.key}
               </span>
-              <span className='text-muted-foreground truncate font-mono text-[0.8125rem]'>
+              <span className='text-muted-foreground truncate font-mono text-sm'>
                 {plugin.key}
                 {plugin.version ? ` @ ${plugin.version}` : ''}
               </span>
