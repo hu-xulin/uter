@@ -39,7 +39,7 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { login, wechatLoginByCode } from '@/features/auth/api'
+import { login, startWeChatFlow, wechatLoginByCode } from '@/features/auth/api'
 import { LegalConsent } from '@/features/auth/components/legal-consent'
 import { OAuthProviders } from '@/features/auth/components/oauth-providers'
 import { loginFormSchema } from '@/features/auth/constants'
@@ -222,7 +222,8 @@ export function UserAuthForm({
 
     setIsWeChatSubmitting(true)
     try {
-      const res = await wechatLoginByCode(wechatCode)
+      const state = await startWeChatFlow('login')
+      const res = await wechatLoginByCode(wechatCode, state)
       if (res?.success) {
         handleWeChatDialogChange(false)
         if (await handleLoginResult(res.data, redirectTo)) {

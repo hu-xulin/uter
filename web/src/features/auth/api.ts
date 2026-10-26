@@ -223,10 +223,23 @@ export async function createOAuthFlow(
     .state
 }
 
-// WeChat login by authorization code
-export async function wechatLoginByCode(code: string): Promise<ApiResponse> {
-  const res = await api.get('/api/oauth/wechat', { params: { code } })
+// WeChat login by authorization code. `state` is the CSRF-bound flow token
+// issued by startWeChatFlow and must be paired with the oauth_login_nonce cookie.
+export async function wechatLoginByCode(code: string, state?: string): Promise<ApiResponse> {
+  const res = await api.get('/api/oauth/wechat', { params: state ? { code, state } : { code } })
   return res.data
+}
+
+// Start a CSRF-bound WeChat auth flow (login or bind) and return its state token.
+export async function startWeChatFlow(intent: 'login' | 'bind'): Promise<string> {
+  const res = await api.post('/api/oauth/wechat/state', { intent })
+  if (res.data?.success && typeof res.data.data?.flow_token === 'string') {
+    return res.data.data.flow_token
+  }
+  throw new AuthOperationError(
+    getServerErrorMessageKey(res.data) || getServerMessage(res.data) || 'Failed to start WeChat login',
+    res.data?.code
+  )
 }
 
 export async function telegramLogin(
