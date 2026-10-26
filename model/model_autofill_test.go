@@ -149,6 +149,36 @@ func TestPlanOfficialMetadataFillIgnoresVendorMissingUpstream(t *testing.T) {
 	require.Equal(t, []string{"description"}, findUpdate(t, updates, "orphan").Fields)
 }
 
+// 关键词归因（上游目录没有该型号）补建的行必须携带模型**自己的产品 logo**
+// （Claude、Meta……），而绝不携带供应商的公司 logo（Anthropic……）：定价页模型
+// 卡片只渲染模型自己的产品 logo，供应商公司 logo 只出现在供应商 surfaces。
+// 这条断言守住自动补全链路——曾经的回归点是每次渠道同步/自动补全都把供应商
+// 图标灌进 models.icon，卡片上全是公司 logo。
+func TestPlanOfficialMetadataFillDerivedRowsCarryNoVendorIcon(t *testing.T) {
+	vendors := map[string]*Vendor{
+		"Anthropic": {Id: 6, Name: "Anthropic", Icon: "Anthropic"},
+		"Meta":      {Id: 27, Name: "Meta", Icon: "Meta.Color"},
+	}
+	upstream := map[string]MetadataValues{}
+	upstreamVendors := map[string]Vendor{}
+
+	result, updates := PlanOfficialMetadataFill(
+		[]string{"claude-5-opus", "llama-5-400b"}, nil, vendors, upstream, upstreamVendors,
+	)
+
+	require.Equal(t, []string{"claude-5-opus", "llama-5-400b"}, result.CreatedModels)
+	require.Len(t, updates, 2)
+
+	claude := findUpdate(t, updates, "claude-5-opus")
+	require.True(t, claude.Create)
+	require.Equal(t, "Claude", claude.Values.Icon, "claude-5-opus must carry its own product logo")
+	require.NotEqual(t, "Anthropic", claude.Values.Icon, "must not carry the Anthropic company logo")
+
+	llama := findUpdate(t, updates, "llama-5-400b")
+	require.True(t, llama.Create)
+	require.Equal(t, "Meta", llama.Values.Icon, "llama-5-400b carries Meta (product == company)")
+}
+
 // A draft must be keyed by the option names the pricing engine persists, and a
 // per-call price must win outright so a preset quoting both cannot leave a
 // contradictory ratio behind.

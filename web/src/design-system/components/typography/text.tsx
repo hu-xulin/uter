@@ -28,8 +28,8 @@ import { cn } from '@/lib/utils'
  * - `body-sm`    14/400/20  次要正文、表格单元格
  * - `label`      14/500/20  按钮文字、表单标签、导航项
  * - `caption`    12/400/16  说明、占位符、徽标
- * - `code`       16/400/24  代码块、独立展示的密钥
- * - `code-dense` 14/400/22  表格/日志里的密钥与模型 ID（例外 E2/E3）
+ * - `code`       13/400/20  代码块、密钥、模型 ID、等宽金额
+ * - `code-dense` 13/400/20  `code` 的兼容别名，新代码用 `code`
  */
 export type TextVariant =
   | 'body'
@@ -60,7 +60,7 @@ export type TextProps = {
   as?: ElementType
   variant?: TextVariant
   color?: TextColor
-  /** 覆盖字重。视觉层级需要强调时使用，不要用 `font-bold` 类硬写。 */
+  /** 覆盖字重。视觉层级需要强调时使用，不要用 `font-semibold` 类硬写。 */
   weight?: TextWeight
   /** 单行截断。 */
   truncate?: boolean

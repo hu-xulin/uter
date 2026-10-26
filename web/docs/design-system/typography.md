@@ -15,7 +15,12 @@
 | body-sm | 次要正文、表格单元格 | 14px | 400 | 20px | `text-sm` | `Text variant="body-sm"` |
 | label | 按钮、表单标签、导航 | 14px | 500 | 20px | `text-sm font-medium` | `Text variant="label"` |
 | caption | 说明、占位符、徽标 | 12px | 400 | 16px | `text-xs` | `Text variant="caption"` |
-| mono | 代码、金额、等宽标识 | 16px | 400 | 24px | `font-mono text-base` | `Text variant="code"` |
+| mono | 代码、金额、等宽标识 | 13px | 400 | 20px | `text-mono` | `Text variant="code"` |
+
+**mono 是九档里唯一非 4 倍数的一档（13px）**。等宽字形比 Inter 同字号更宽，
+14px 等宽在表格列与固定高度代码卡里会溢出；13px 才与 `body-sm` 视觉等重。
+所有等宽文本统一用 `text-mono`（或 `Text variant="code"`），不要在 `font-mono`
+上再叠 `text-sm` / `text-xs` —— 那会让同一处的 mono 与语义档位脱钩。
 
 补充档（不在九档内，仅用于兼容）：
 
@@ -26,6 +31,9 @@
 阶梯到 `text-4xl`（36px）为止。**48px 以上不纳入系统**：营销页主视觉同样使用
 `display` 档（36/700/40），需要更大字号时按 [exceptions.md](./exceptions.md)
 的流程登记，而不是随手写 `text-[3rem]`。
+
+字号阶梯里只有 `mono` 不是 4 的倍数：它是**等宽专用档**，不与 Inter 各档互为
+缩放关系，仅由 `text-mono` 工具类暴露。
 
 ## 字体家族
 
@@ -54,6 +62,8 @@ import { Heading, Text } from '@/design-system'
 - `text-[15px]`、`text-[0.9em]`、`text-[1.75rem]` —— 任意字号，被 T2 拦截。
 - `leading-[26px]` —— 任意行高，被 T3 拦截。等宽密集场景用
   `leading-[var(--ds-line-mono-dense)]`。
+- 在 `font-mono` 旁边再写 `text-sm` / `text-xs` —— mono 的字号只有一个来源
+  （`text-mono` = 13/20），叠加语义档位会让等宽文本脱离 mono 档。
 - `style={{ fontSize: 13 }}` —— 内联字号，被 T4 拦截（图表 canvas 除外）。
 - 页面里自己写 `<h1 className="text-3xl font-bold">` —— 用 `Heading`。
 

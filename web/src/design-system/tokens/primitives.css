@@ -67,11 +67,11 @@ For commercial licensing, please contact support@uter.ai
   --primitive-space-6: 1.5rem; /* 24px */
   --primitive-space-8: 2rem; /* 32px */
 
-  /* ── Radius primitives（组件圆角，6/8px 是默认语言） */
-  --primitive-radius-xs: 2px;
-  --primitive-radius-sm: 4px;
-  --primitive-radius-md: 6px;
-  --primitive-radius-lg: 8px;
+  /* ── Radius primitives（组件圆角，8/10px 是默认语言） */
+  --primitive-radius-xs: 4px;
+  --primitive-radius-sm: 6px;
+  --primitive-radius-md: 8px;
+  --primitive-radius-lg: 10px;
   --primitive-radius-xl: 12px;
   --primitive-radius-2xl: 16px;
   --primitive-radius-full: 9999px;
