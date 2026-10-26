@@ -129,7 +129,14 @@ func sendEmailNotify(userEmail string, data dto.Notify) error {
 	for _, value := range data.Values {
 		content = strings.Replace(content, dto.ContentValueParam, fmt.Sprintf("%v", value), 1)
 	}
-	return common.SendEmail(data.Title, userEmail, content)
+	// 通用通知（额度告警/通道禁用/上游巡检等）沿用品牌邮件模板：调用方渲染的
+	// 正文HTML作为卡片正文，标题作为卡片大标题，保证所有发信点排版一致。
+	title := strings.TrimSpace(data.Title)
+	body := common.BuildBrandEmailHTML(common.BrandEmail{
+		Heading:    title,
+		Paragraphs: []string{content},
+	})
+	return common.SendEmail(common.BrandEmailSubject(title), userEmail, body)
 }
 
 func sendBarkNotify(barkURL string, data dto.Notify) error {
