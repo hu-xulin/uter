@@ -88,7 +88,15 @@ export function useTopNavLinks(): TopNavLink[] {
 
   // Console -> /dashboard (new console path)
   if (modules?.console !== false) {
-    links.push({ title: t('Console'), href: '/dashboard', area: 'console' })
+    // Require auth so a logged-out visitor is shown the sign-in prompt
+    // instead of silently refreshing a stale session cookie and landing on
+    // the dashboard already authenticated.
+    links.push({
+      title: t('Console'),
+      href: '/dashboard',
+      area: 'console',
+      requiresAuth: !isAuthed,
+    })
   }
 
   // Pricing

@@ -26,6 +26,7 @@ import {
   clearAuthenticatedClientState,
   createRefreshRunner,
   isAuthBundle,
+  resolveAuthentication,
   type AuthRefreshRuntime,
 } from './auth-session'
 
@@ -64,6 +65,22 @@ describe('authentication session coordination', () => {
       kind: 'authenticated',
       bundle,
     })
+  })
+
+  test('an anonymous boot verdict is final for the page session', async () => {
+    // No session hint cookie and nothing in memory: the public boot path
+    // concludes anonymous without contacting the server, exactly as a
+    // signed-out visitor on the homepage sees it.
+    useAuthStore.getState().auth.reset('idle')
+    expect(await bootstrapAuthentication()).toEqual({ kind: 'anonymous' })
+    expect(useAuthStore.getState().auth.bootstrapState).toBe('complete')
+
+    // Opening a protected route (管理 / Console) must then resolve to
+    // anonymous instead of silently refreshing a session the visitor was
+    // never shown as signed in with.
+    expect(await resolveAuthentication()).toEqual({ kind: 'anonymous' })
+    expect(useAuthStore.getState().auth.user).toBe(null)
+    expect(useAuthStore.getState().auth.accessToken).toBe(null)
   })
 
   test('a session mismatch clears only local state and retries without the stale SID', async () => {

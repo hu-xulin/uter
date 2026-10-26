@@ -338,6 +338,12 @@ async function requestRefresh(
       '/api/user/auth/refresh',
       undefined,
       {
+        // Bound the request: a refresh that never answers would otherwise keep
+        // the `uter:auth-refresh` Web Lock held forever, so every guarded route
+        // awaits a promise that never settles and the page appears frozen.
+        // On timeout the call rejects, the lock is released, and the caller
+        // falls back to the anonymous / sign-in path instead of hanging.
+        timeout: 15000,
         headers: expectedSID ? { 'X-Auth-Session': expectedSID } : undefined,
       }
     )
@@ -423,9 +429,16 @@ function currentValidAuthBundle(): AuthBundle | null {
  * Resolve authentication from memory, or from the server when memory is empty.
  *
  * Use this wherever the answer decides what the user sees: route guards that
- * redirect on the result, and the sign-in page. It contacts the server on a
- * cold cache even when no session hint is present, so a usable Refresh Cookie
- * is always honoured.
+ * redirect on the result, and the sign-in page.
+ *
+ * A cold cache reaches the server — except when this page session has already
+ * recorded an anonymous verdict (`bootstrapState === 'complete'` with no
+ * session in memory), which `bootstrapAuthentication` does for a visitor with
+ * no session hint. That verdict is final here on purpose: it is what stops a
+ * visitor the public pages rendered as signed out from being silently
+ * refreshed into an authenticated session by clicking 管理. A transient refresh
+ * failure resets the state to `idle`, so a genuinely valid session that merely
+ * failed to refresh once still gets another chance.
  */
 export async function resolveAuthentication(): Promise<RefreshOutcome> {
   const bundle = currentValidAuthBundle()
@@ -452,16 +465,24 @@ export async function resolveAuthentication(): Promise<RefreshOutcome> {
  * Resolve authentication on the public boot path, skipping a refresh that the
  * server's session hint says would fail.
  *
- * The skip leaves `bootstrapState` at `idle` rather than `complete`: a missing
- * hint is not a server verdict, so it must not be recorded as a finished
- * anonymous check. `resolveAuthentication` therefore still reaches the network
- * later, which is what lets a hintless visitor holding a valid Refresh Cookie
- * recover the moment authentication actually matters.
+ * The skip records the verdict as `complete` rather than leaving `idle`: a
+ * missing hint is not a server verdict, but re-asking the server every time a
+ * protected route is opened is what let a visitor the homepage had rendered as
+ * signed out get silently refreshed into an authenticated session the moment
+ * they clicked 管理. The verdict is therefore final for the page session — a
+ * visitor found anonymous only becomes authenticated through an explicit
+ * sign-in (a same-tab login, or a cross-tab session event, which reloads).
+ *
+ * A missing hint is still not proof of absence: `resolveAuthentication` on a
+ * cold cache with a *stale* in-memory session (sign-out in flight, session
+ * evicted server-side) keeps reaching the network, and any transient refresh
+ * failure resets the state back to `idle` so the retry can succeed.
  */
 export async function bootstrapAuthentication(): Promise<RefreshOutcome> {
   if (!currentValidAuthBundle() && !hasSessionHint()) {
     const auth = useAuthStore.getState().auth
     if (!auth.user && !auth.session) {
+      auth.setBootstrapState('complete')
       return { kind: 'anonymous' }
     }
   }
