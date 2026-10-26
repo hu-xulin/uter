@@ -653,7 +653,15 @@ func (user *User) TransferAffQuotaToQuota(quota int) error {
 	}
 
 	// 提交事务
-	return tx.Commit().Error
+	if err := tx.Commit().Error; err != nil {
+		return err
+	}
+
+	// 主额度已增加 quota，须同步 Redis 缓存余额，否则在缓存过期前
+	// 新转入的额度不可用（与 IncreaseUserQuota / syncCreditUserQuotaCache 一致）。
+	// Redis 未启用时 cacheIncrUserQuota 为空操作。
+	syncCreditUserQuotaCache(user.Id, quota, "transfer_aff_quota")
+	return nil
 }
 
 func (user *User) prepareForInsert(tx *gorm.DB) error {
