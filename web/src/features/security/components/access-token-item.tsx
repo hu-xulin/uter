@@ -93,7 +93,7 @@ export function AccessTokenItem(props: AccessTokenItemProps) {
           ))}
           {hiddenCount > 0 && <Badge variant='outline'>+{hiddenCount}</Badge>}
         </div>
-        <p className='text-muted-foreground flex flex-wrap gap-x-3 gap-y-1 text-xs'>
+        <p className='text-muted-foreground flex flex-wrap gap-x-3 gap-y-1 text-sm'>
           <span>
             {t('Created {{time}}', {
               time: props.formatTime(token.created_at),

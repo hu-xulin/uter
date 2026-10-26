@@ -19,11 +19,13 @@ For commercial licensing, please contact support@uter.ai
 import { createFileRoute, redirect } from '@tanstack/react-router'
 import z from 'zod'
 
-import { ModelDetails } from '@/features/pricing/components/model-details'
+import { Pricing } from '@/features/pricing'
+import { getPricing } from '@/features/pricing/api'
 import { getModuleAccessForGuard } from '@/lib/nav-modules'
+import { requireServerSuccess } from '@/lib/server-error-message'
 import { useAuthStore } from '@/stores/auth-store'
 
-const modelDetailsSearchSchema = z.object({
+const pricingSearchSchema = z.object({
   search: z.string().optional(),
   sort: z.string().optional(),
   vendor: z.string().optional(),
@@ -36,8 +38,8 @@ const modelDetailsSearchSchema = z.object({
   rechargePrice: z.boolean().optional(),
 })
 
-export const Route = createFileRoute('/pricing/$modelId/')({
-  validateSearch: modelDetailsSearchSchema,
+export const Route = createFileRoute('/_public/pricing/')({
+  validateSearch: pricingSearchSchema,
   beforeLoad: async ({ context, location }) => {
     const access = await getModuleAccessForGuard(context.queryClient, 'pricing')
     if (!access.enabled) {
@@ -52,6 +54,13 @@ export const Route = createFileRoute('/pricing/$modelId/')({
         })
       }
     }
+    // Prefetch pricing data while the guard resolves so the page renders
+    // immediately on navigation instead of flashing a skeleton. Mirrors the
+    // query in usePricingData so react-query serves the cached result.
+    await context.queryClient.fetchQuery({
+      queryKey: ['pricing'],
+      queryFn: async () => requireServerSuccess(await getPricing()),
+    })
   },
-  component: ModelDetails,
+  component: Pricing,
 })

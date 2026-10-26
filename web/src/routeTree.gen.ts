@@ -9,13 +9,9 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
 import { Route as authRouteRouteImport } from './routes/(auth)/route'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
-import { Route as DocsRouteImport } from './routes/docs'
-import { Route as PrivacyPolicyRouteImport } from './routes/privacy-policy'
-import { Route as RechargeAgreementRouteImport } from './routes/recharge-agreement'
-import { Route as UserAgreementRouteImport } from './routes/user-agreement'
+import { Route as PublicRouteRouteImport } from './routes/_public/route'
 import { Route as authForgotPasswordRouteImport } from './routes/(auth)/forgot-password'
 import { Route as authOauthRouteImport } from './routes/(auth)/oauth'
 import { Route as authOtpRouteImport } from './routes/(auth)/otp'
@@ -30,12 +26,12 @@ import { Route as errors500RouteImport } from './routes/(errors)/500'
 import { Route as errors503RouteImport } from './routes/(errors)/503'
 import { Route as AuthenticatedChat2linkRouteImport } from './routes/_authenticated/chat2link'
 import { Route as AuthenticatedSystemSettingsRouteRouteImport } from './routes/_authenticated/system-settings/route'
-import { Route as AboutIndexRouteImport } from './routes/about/index'
-import { Route as DocsIndexRouteImport } from './routes/docs/index'
-import { Route as DocsSplatRouteImport } from './routes/docs/$'
+import { Route as PublicIndexRouteImport } from './routes/_public/index'
+import { Route as PublicDocsRouteImport } from './routes/_public/docs'
+import { Route as PublicPrivacyPolicyRouteImport } from './routes/_public/privacy-policy'
+import { Route as PublicRechargeAgreementRouteImport } from './routes/_public/recharge-agreement'
+import { Route as PublicUserAgreementRouteImport } from './routes/_public/user-agreement'
 import { Route as OauthProviderRouteImport } from './routes/oauth/$provider'
-import { Route as PricingIndexRouteImport } from './routes/pricing/index'
-import { Route as RankingsIndexRouteImport } from './routes/rankings/index'
 import { Route as SetupIndexRouteImport } from './routes/setup/index'
 import { Route as authUserResetRouteImport } from './routes/(auth)/user/reset'
 import { Route as AuthenticatedChannelsIndexRouteImport } from './routes/_authenticated/channels/index'
@@ -60,7 +56,11 @@ import { Route as AuthenticatedUsageLogsSectionRouteImport } from './routes/_aut
 import { Route as AuthenticatedUsageLogsAuditRouteImport } from './routes/_authenticated/usage-logs/audit'
 import { Route as AuthenticatedUsersIndexRouteImport } from './routes/_authenticated/users/index'
 import { Route as AuthenticatedWalletIndexRouteImport } from './routes/_authenticated/wallet/index'
-import { Route as PricingModelIdIndexRouteImport } from './routes/pricing/$modelId/index'
+import { Route as PublicAboutIndexRouteImport } from './routes/_public/about/index'
+import { Route as PublicDocsIndexRouteImport } from './routes/_public/docs/index'
+import { Route as PublicDocsSplatRouteImport } from './routes/_public/docs/$'
+import { Route as PublicPricingIndexRouteImport } from './routes/_public/pricing/index'
+import { Route as PublicRankingsIndexRouteImport } from './routes/_public/rankings/index'
 import { Route as AuthenticatedSystemSettingsAuthIndexRouteImport } from './routes/_authenticated/system-settings/auth/index'
 import { Route as AuthenticatedSystemSettingsAuthSectionRouteImport } from './routes/_authenticated/system-settings/auth/$section'
 import { Route as AuthenticatedSystemSettingsBillingIndexRouteImport } from './routes/_authenticated/system-settings/billing/index'
@@ -77,12 +77,8 @@ import { Route as AuthenticatedSystemSettingsSecurityIndexRouteImport } from './
 import { Route as AuthenticatedSystemSettingsSecuritySectionRouteImport } from './routes/_authenticated/system-settings/security/$section'
 import { Route as AuthenticatedSystemSettingsSiteIndexRouteImport } from './routes/_authenticated/system-settings/site/index'
 import { Route as AuthenticatedSystemSettingsSiteSectionRouteImport } from './routes/_authenticated/system-settings/site/$section'
+import { Route as PublicPricingModelIdIndexRouteImport } from './routes/_public/pricing/$modelId/index'
 
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const authRouteRoute = authRouteRouteImport.update({
   id: '/(auth)',
   getParentRoute: () => rootRouteImport,
@@ -91,24 +87,8 @@ const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DocsRoute = DocsRouteImport.update({
-  id: '/docs',
-  path: '/docs',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PrivacyPolicyRoute = PrivacyPolicyRouteImport.update({
-  id: '/privacy-policy',
-  path: '/privacy-policy',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const RechargeAgreementRoute = RechargeAgreementRouteImport.update({
-  id: '/recharge-agreement',
-  path: '/recharge-agreement',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const UserAgreementRoute = UserAgreementRouteImport.update({
-  id: '/user-agreement',
-  path: '/user-agreement',
+const PublicRouteRoute = PublicRouteRouteImport.update({
+  id: '/_public',
   getParentRoute: () => rootRouteImport,
 } as any)
 const authForgotPasswordRoute = authForgotPasswordRouteImport.update({
@@ -182,34 +162,34 @@ const AuthenticatedSystemSettingsRouteRoute =
     path: '/system-settings',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const AboutIndexRoute = AboutIndexRouteImport.update({
-  id: '/about/',
-  path: '/about/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DocsIndexRoute = DocsIndexRouteImport.update({
+const PublicIndexRoute = PublicIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => DocsRoute,
+  getParentRoute: () => PublicRouteRoute,
 } as any)
-const DocsSplatRoute = DocsSplatRouteImport.update({
-  id: '/$',
-  path: '/$',
-  getParentRoute: () => DocsRoute,
+const PublicDocsRoute = PublicDocsRouteImport.update({
+  id: '/docs',
+  path: '/docs',
+  getParentRoute: () => PublicRouteRoute,
+} as any)
+const PublicPrivacyPolicyRoute = PublicPrivacyPolicyRouteImport.update({
+  id: '/privacy-policy',
+  path: '/privacy-policy',
+  getParentRoute: () => PublicRouteRoute,
+} as any)
+const PublicRechargeAgreementRoute = PublicRechargeAgreementRouteImport.update({
+  id: '/recharge-agreement',
+  path: '/recharge-agreement',
+  getParentRoute: () => PublicRouteRoute,
+} as any)
+const PublicUserAgreementRoute = PublicUserAgreementRouteImport.update({
+  id: '/user-agreement',
+  path: '/user-agreement',
+  getParentRoute: () => PublicRouteRoute,
 } as any)
 const OauthProviderRoute = OauthProviderRouteImport.update({
   id: '/oauth/$provider',
   path: '/oauth/$provider',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PricingIndexRoute = PricingIndexRouteImport.update({
-  id: '/pricing/',
-  path: '/pricing/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const RankingsIndexRoute = RankingsIndexRouteImport.update({
-  id: '/rankings/',
-  path: '/rankings/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SetupIndexRoute = SetupIndexRouteImport.update({
@@ -351,10 +331,30 @@ const AuthenticatedWalletIndexRoute =
     path: '/wallet/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const PricingModelIdIndexRoute = PricingModelIdIndexRouteImport.update({
-  id: '/pricing/$modelId/',
-  path: '/pricing/$modelId/',
-  getParentRoute: () => rootRouteImport,
+const PublicAboutIndexRoute = PublicAboutIndexRouteImport.update({
+  id: '/about/',
+  path: '/about/',
+  getParentRoute: () => PublicRouteRoute,
+} as any)
+const PublicDocsIndexRoute = PublicDocsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => PublicDocsRoute,
+} as any)
+const PublicDocsSplatRoute = PublicDocsSplatRouteImport.update({
+  id: '/$',
+  path: '/$',
+  getParentRoute: () => PublicDocsRoute,
+} as any)
+const PublicPricingIndexRoute = PublicPricingIndexRouteImport.update({
+  id: '/pricing/',
+  path: '/pricing/',
+  getParentRoute: () => PublicRouteRoute,
+} as any)
+const PublicRankingsIndexRoute = PublicRankingsIndexRouteImport.update({
+  id: '/rankings/',
+  path: '/rankings/',
+  getParentRoute: () => PublicRouteRoute,
 } as any)
 const AuthenticatedSystemSettingsAuthIndexRoute =
   AuthenticatedSystemSettingsAuthIndexRouteImport.update({
@@ -452,13 +452,15 @@ const AuthenticatedSystemSettingsSiteSectionRoute =
     path: '/site/$section',
     getParentRoute: () => AuthenticatedSystemSettingsRouteRoute,
   } as any)
+const PublicPricingModelIdIndexRoute =
+  PublicPricingModelIdIndexRouteImport.update({
+    id: '/pricing/$modelId/',
+    path: '/pricing/$modelId/',
+    getParentRoute: () => PublicRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '/docs': typeof DocsRouteWithChildren
-  '/privacy-policy': typeof PrivacyPolicyRoute
-  '/recharge-agreement': typeof RechargeAgreementRoute
-  '/user-agreement': typeof UserAgreementRoute
+  '/': typeof PublicIndexRoute
   '/system-settings': typeof AuthenticatedSystemSettingsRouteRouteWithChildren
   '/forgot-password': typeof authForgotPasswordRoute
   '/oauth': typeof authOauthRoute
@@ -473,12 +475,11 @@ export interface FileRoutesByFullPath {
   '/500': typeof errors500Route
   '/503': typeof errors503Route
   '/chat2link': typeof AuthenticatedChat2linkRoute
-  '/docs/$': typeof DocsSplatRoute
+  '/docs': typeof PublicDocsRouteWithChildren
+  '/privacy-policy': typeof PublicPrivacyPolicyRoute
+  '/recharge-agreement': typeof PublicRechargeAgreementRoute
+  '/user-agreement': typeof PublicUserAgreementRoute
   '/oauth/$provider': typeof OauthProviderRoute
-  '/about/': typeof AboutIndexRoute
-  '/docs/': typeof DocsIndexRoute
-  '/pricing/': typeof PricingIndexRoute
-  '/rankings/': typeof RankingsIndexRoute
   '/setup/': typeof SetupIndexRoute
   '/user/reset': typeof authUserResetRoute
   '/chat/$chatId': typeof AuthenticatedChatChatIdRoute
@@ -487,6 +488,7 @@ export interface FileRoutesByFullPath {
   '/models/$section': typeof AuthenticatedModelsSectionRoute
   '/usage-logs/$section': typeof AuthenticatedUsageLogsSectionRoute
   '/usage-logs/audit': typeof AuthenticatedUsageLogsAuditRoute
+  '/docs/$': typeof PublicDocsSplatRoute
   '/channels/': typeof AuthenticatedChannelsIndexRoute
   '/dashboard/': typeof AuthenticatedDashboardIndexRoute
   '/keys/': typeof AuthenticatedKeysIndexRoute
@@ -503,7 +505,10 @@ export interface FileRoutesByFullPath {
   '/usage-logs/': typeof AuthenticatedUsageLogsIndexRoute
   '/users/': typeof AuthenticatedUsersIndexRoute
   '/wallet/': typeof AuthenticatedWalletIndexRoute
-  '/pricing/$modelId/': typeof PricingModelIdIndexRoute
+  '/about/': typeof PublicAboutIndexRoute
+  '/docs/': typeof PublicDocsIndexRoute
+  '/pricing/': typeof PublicPricingIndexRoute
+  '/rankings/': typeof PublicRankingsIndexRoute
   '/system-settings/auth/$section': typeof AuthenticatedSystemSettingsAuthSectionRoute
   '/system-settings/billing/$section': typeof AuthenticatedSystemSettingsBillingSectionRoute
   '/system-settings/content/$section': typeof AuthenticatedSystemSettingsContentSectionRoute
@@ -520,12 +525,10 @@ export interface FileRoutesByFullPath {
   '/system-settings/request-policies/': typeof AuthenticatedSystemSettingsRequestPoliciesIndexRoute
   '/system-settings/security/': typeof AuthenticatedSystemSettingsSecurityIndexRoute
   '/system-settings/site/': typeof AuthenticatedSystemSettingsSiteIndexRoute
+  '/pricing/$modelId/': typeof PublicPricingModelIdIndexRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/privacy-policy': typeof PrivacyPolicyRoute
-  '/recharge-agreement': typeof RechargeAgreementRoute
-  '/user-agreement': typeof UserAgreementRoute
+  '/': typeof PublicIndexRoute
   '/forgot-password': typeof authForgotPasswordRoute
   '/oauth': typeof authOauthRoute
   '/otp': typeof authOtpRoute
@@ -539,12 +542,10 @@ export interface FileRoutesByTo {
   '/500': typeof errors500Route
   '/503': typeof errors503Route
   '/chat2link': typeof AuthenticatedChat2linkRoute
-  '/docs/$': typeof DocsSplatRoute
+  '/privacy-policy': typeof PublicPrivacyPolicyRoute
+  '/recharge-agreement': typeof PublicRechargeAgreementRoute
+  '/user-agreement': typeof PublicUserAgreementRoute
   '/oauth/$provider': typeof OauthProviderRoute
-  '/about': typeof AboutIndexRoute
-  '/docs': typeof DocsIndexRoute
-  '/pricing': typeof PricingIndexRoute
-  '/rankings': typeof RankingsIndexRoute
   '/setup': typeof SetupIndexRoute
   '/user/reset': typeof authUserResetRoute
   '/chat/$chatId': typeof AuthenticatedChatChatIdRoute
@@ -553,6 +554,7 @@ export interface FileRoutesByTo {
   '/models/$section': typeof AuthenticatedModelsSectionRoute
   '/usage-logs/$section': typeof AuthenticatedUsageLogsSectionRoute
   '/usage-logs/audit': typeof AuthenticatedUsageLogsAuditRoute
+  '/docs/$': typeof PublicDocsSplatRoute
   '/channels': typeof AuthenticatedChannelsIndexRoute
   '/dashboard': typeof AuthenticatedDashboardIndexRoute
   '/keys': typeof AuthenticatedKeysIndexRoute
@@ -569,7 +571,10 @@ export interface FileRoutesByTo {
   '/usage-logs': typeof AuthenticatedUsageLogsIndexRoute
   '/users': typeof AuthenticatedUsersIndexRoute
   '/wallet': typeof AuthenticatedWalletIndexRoute
-  '/pricing/$modelId': typeof PricingModelIdIndexRoute
+  '/about': typeof PublicAboutIndexRoute
+  '/docs': typeof PublicDocsIndexRoute
+  '/pricing': typeof PublicPricingIndexRoute
+  '/rankings': typeof PublicRankingsIndexRoute
   '/system-settings/auth/$section': typeof AuthenticatedSystemSettingsAuthSectionRoute
   '/system-settings/billing/$section': typeof AuthenticatedSystemSettingsBillingSectionRoute
   '/system-settings/content/$section': typeof AuthenticatedSystemSettingsContentSectionRoute
@@ -586,16 +591,13 @@ export interface FileRoutesByTo {
   '/system-settings/request-policies': typeof AuthenticatedSystemSettingsRequestPoliciesIndexRoute
   '/system-settings/security': typeof AuthenticatedSystemSettingsSecurityIndexRoute
   '/system-settings/site': typeof AuthenticatedSystemSettingsSiteIndexRoute
+  '/pricing/$modelId': typeof PublicPricingModelIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
   '/(auth)': typeof authRouteRouteWithChildren
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
-  '/docs': typeof DocsRouteWithChildren
-  '/privacy-policy': typeof PrivacyPolicyRoute
-  '/recharge-agreement': typeof RechargeAgreementRoute
-  '/user-agreement': typeof UserAgreementRoute
+  '/_public': typeof PublicRouteRouteWithChildren
   '/_authenticated/system-settings': typeof AuthenticatedSystemSettingsRouteRouteWithChildren
   '/(auth)/forgot-password': typeof authForgotPasswordRoute
   '/(auth)/oauth': typeof authOauthRoute
@@ -610,12 +612,12 @@ export interface FileRoutesById {
   '/(errors)/500': typeof errors500Route
   '/(errors)/503': typeof errors503Route
   '/_authenticated/chat2link': typeof AuthenticatedChat2linkRoute
-  '/docs/$': typeof DocsSplatRoute
+  '/_public/docs': typeof PublicDocsRouteWithChildren
+  '/_public/privacy-policy': typeof PublicPrivacyPolicyRoute
+  '/_public/recharge-agreement': typeof PublicRechargeAgreementRoute
+  '/_public/user-agreement': typeof PublicUserAgreementRoute
   '/oauth/$provider': typeof OauthProviderRoute
-  '/about/': typeof AboutIndexRoute
-  '/docs/': typeof DocsIndexRoute
-  '/pricing/': typeof PricingIndexRoute
-  '/rankings/': typeof RankingsIndexRoute
+  '/_public/': typeof PublicIndexRoute
   '/setup/': typeof SetupIndexRoute
   '/(auth)/user/reset': typeof authUserResetRoute
   '/_authenticated/chat/$chatId': typeof AuthenticatedChatChatIdRoute
@@ -624,6 +626,7 @@ export interface FileRoutesById {
   '/_authenticated/models/$section': typeof AuthenticatedModelsSectionRoute
   '/_authenticated/usage-logs/$section': typeof AuthenticatedUsageLogsSectionRoute
   '/_authenticated/usage-logs/audit': typeof AuthenticatedUsageLogsAuditRoute
+  '/_public/docs/$': typeof PublicDocsSplatRoute
   '/_authenticated/channels/': typeof AuthenticatedChannelsIndexRoute
   '/_authenticated/dashboard/': typeof AuthenticatedDashboardIndexRoute
   '/_authenticated/keys/': typeof AuthenticatedKeysIndexRoute
@@ -640,7 +643,10 @@ export interface FileRoutesById {
   '/_authenticated/usage-logs/': typeof AuthenticatedUsageLogsIndexRoute
   '/_authenticated/users/': typeof AuthenticatedUsersIndexRoute
   '/_authenticated/wallet/': typeof AuthenticatedWalletIndexRoute
-  '/pricing/$modelId/': typeof PricingModelIdIndexRoute
+  '/_public/about/': typeof PublicAboutIndexRoute
+  '/_public/docs/': typeof PublicDocsIndexRoute
+  '/_public/pricing/': typeof PublicPricingIndexRoute
+  '/_public/rankings/': typeof PublicRankingsIndexRoute
   '/_authenticated/system-settings/auth/$section': typeof AuthenticatedSystemSettingsAuthSectionRoute
   '/_authenticated/system-settings/billing/$section': typeof AuthenticatedSystemSettingsBillingSectionRoute
   '/_authenticated/system-settings/content/$section': typeof AuthenticatedSystemSettingsContentSectionRoute
@@ -657,15 +663,12 @@ export interface FileRoutesById {
   '/_authenticated/system-settings/request-policies/': typeof AuthenticatedSystemSettingsRequestPoliciesIndexRoute
   '/_authenticated/system-settings/security/': typeof AuthenticatedSystemSettingsSecurityIndexRoute
   '/_authenticated/system-settings/site/': typeof AuthenticatedSystemSettingsSiteIndexRoute
+  '/_public/pricing/$modelId/': typeof PublicPricingModelIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/docs'
-    | '/privacy-policy'
-    | '/recharge-agreement'
-    | '/user-agreement'
     | '/system-settings'
     | '/forgot-password'
     | '/oauth'
@@ -680,12 +683,11 @@ export interface FileRouteTypes {
     | '/500'
     | '/503'
     | '/chat2link'
-    | '/docs/$'
+    | '/docs'
+    | '/privacy-policy'
+    | '/recharge-agreement'
+    | '/user-agreement'
     | '/oauth/$provider'
-    | '/about/'
-    | '/docs/'
-    | '/pricing/'
-    | '/rankings/'
     | '/setup/'
     | '/user/reset'
     | '/chat/$chatId'
@@ -694,6 +696,7 @@ export interface FileRouteTypes {
     | '/models/$section'
     | '/usage-logs/$section'
     | '/usage-logs/audit'
+    | '/docs/$'
     | '/channels/'
     | '/dashboard/'
     | '/keys/'
@@ -710,7 +713,10 @@ export interface FileRouteTypes {
     | '/usage-logs/'
     | '/users/'
     | '/wallet/'
-    | '/pricing/$modelId/'
+    | '/about/'
+    | '/docs/'
+    | '/pricing/'
+    | '/rankings/'
     | '/system-settings/auth/$section'
     | '/system-settings/billing/$section'
     | '/system-settings/content/$section'
@@ -727,12 +733,10 @@ export interface FileRouteTypes {
     | '/system-settings/request-policies/'
     | '/system-settings/security/'
     | '/system-settings/site/'
+    | '/pricing/$modelId/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/privacy-policy'
-    | '/recharge-agreement'
-    | '/user-agreement'
     | '/forgot-password'
     | '/oauth'
     | '/otp'
@@ -746,12 +750,10 @@ export interface FileRouteTypes {
     | '/500'
     | '/503'
     | '/chat2link'
-    | '/docs/$'
+    | '/privacy-policy'
+    | '/recharge-agreement'
+    | '/user-agreement'
     | '/oauth/$provider'
-    | '/about'
-    | '/docs'
-    | '/pricing'
-    | '/rankings'
     | '/setup'
     | '/user/reset'
     | '/chat/$chatId'
@@ -760,6 +762,7 @@ export interface FileRouteTypes {
     | '/models/$section'
     | '/usage-logs/$section'
     | '/usage-logs/audit'
+    | '/docs/$'
     | '/channels'
     | '/dashboard'
     | '/keys'
@@ -776,7 +779,10 @@ export interface FileRouteTypes {
     | '/usage-logs'
     | '/users'
     | '/wallet'
-    | '/pricing/$modelId'
+    | '/about'
+    | '/docs'
+    | '/pricing'
+    | '/rankings'
     | '/system-settings/auth/$section'
     | '/system-settings/billing/$section'
     | '/system-settings/content/$section'
@@ -793,15 +799,12 @@ export interface FileRouteTypes {
     | '/system-settings/request-policies'
     | '/system-settings/security'
     | '/system-settings/site'
+    | '/pricing/$modelId'
   id:
     | '__root__'
-    | '/'
     | '/(auth)'
     | '/_authenticated'
-    | '/docs'
-    | '/privacy-policy'
-    | '/recharge-agreement'
-    | '/user-agreement'
+    | '/_public'
     | '/_authenticated/system-settings'
     | '/(auth)/forgot-password'
     | '/(auth)/oauth'
@@ -816,12 +819,12 @@ export interface FileRouteTypes {
     | '/(errors)/500'
     | '/(errors)/503'
     | '/_authenticated/chat2link'
-    | '/docs/$'
+    | '/_public/docs'
+    | '/_public/privacy-policy'
+    | '/_public/recharge-agreement'
+    | '/_public/user-agreement'
     | '/oauth/$provider'
-    | '/about/'
-    | '/docs/'
-    | '/pricing/'
-    | '/rankings/'
+    | '/_public/'
     | '/setup/'
     | '/(auth)/user/reset'
     | '/_authenticated/chat/$chatId'
@@ -830,6 +833,7 @@ export interface FileRouteTypes {
     | '/_authenticated/models/$section'
     | '/_authenticated/usage-logs/$section'
     | '/_authenticated/usage-logs/audit'
+    | '/_public/docs/$'
     | '/_authenticated/channels/'
     | '/_authenticated/dashboard/'
     | '/_authenticated/keys/'
@@ -846,7 +850,10 @@ export interface FileRouteTypes {
     | '/_authenticated/usage-logs/'
     | '/_authenticated/users/'
     | '/_authenticated/wallet/'
-    | '/pricing/$modelId/'
+    | '/_public/about/'
+    | '/_public/docs/'
+    | '/_public/pricing/'
+    | '/_public/rankings/'
     | '/_authenticated/system-settings/auth/$section'
     | '/_authenticated/system-settings/billing/$section'
     | '/_authenticated/system-settings/content/$section'
@@ -863,38 +870,24 @@ export interface FileRouteTypes {
     | '/_authenticated/system-settings/request-policies/'
     | '/_authenticated/system-settings/security/'
     | '/_authenticated/system-settings/site/'
+    | '/_public/pricing/$modelId/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
   authRouteRoute: typeof authRouteRouteWithChildren
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
-  DocsRoute: typeof DocsRouteWithChildren
-  PrivacyPolicyRoute: typeof PrivacyPolicyRoute
-  RechargeAgreementRoute: typeof RechargeAgreementRoute
-  UserAgreementRoute: typeof UserAgreementRoute
+  PublicRouteRoute: typeof PublicRouteRouteWithChildren
   errors401Route: typeof errors401Route
   errors403Route: typeof errors403Route
   errors404Route: typeof errors404Route
   errors500Route: typeof errors500Route
   errors503Route: typeof errors503Route
   OauthProviderRoute: typeof OauthProviderRoute
-  AboutIndexRoute: typeof AboutIndexRoute
-  PricingIndexRoute: typeof PricingIndexRoute
-  RankingsIndexRoute: typeof RankingsIndexRoute
   SetupIndexRoute: typeof SetupIndexRoute
-  PricingModelIdIndexRoute: typeof PricingModelIdIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/(auth)': {
       id: '/(auth)'
       path: ''
@@ -909,32 +902,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/docs': {
-      id: '/docs'
-      path: '/docs'
-      fullPath: '/docs'
-      preLoaderRoute: typeof DocsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/privacy-policy': {
-      id: '/privacy-policy'
-      path: '/privacy-policy'
-      fullPath: '/privacy-policy'
-      preLoaderRoute: typeof PrivacyPolicyRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/recharge-agreement': {
-      id: '/recharge-agreement'
-      path: '/recharge-agreement'
-      fullPath: '/recharge-agreement'
-      preLoaderRoute: typeof RechargeAgreementRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/user-agreement': {
-      id: '/user-agreement'
-      path: '/user-agreement'
-      fullPath: '/user-agreement'
-      preLoaderRoute: typeof UserAgreementRouteImport
+    '/_public': {
+      id: '/_public'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof PublicRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/(auth)/forgot-password': {
@@ -1035,46 +1007,46 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSystemSettingsRouteRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/about/': {
-      id: '/about/'
-      path: '/about'
-      fullPath: '/about/'
-      preLoaderRoute: typeof AboutIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/docs/': {
-      id: '/docs/'
+    '/_public/': {
+      id: '/_public/'
       path: '/'
-      fullPath: '/docs/'
-      preLoaderRoute: typeof DocsIndexRouteImport
-      parentRoute: typeof DocsRoute
+      fullPath: '/'
+      preLoaderRoute: typeof PublicIndexRouteImport
+      parentRoute: typeof PublicRouteRoute
     }
-    '/docs/$': {
-      id: '/docs/$'
-      path: '/$'
-      fullPath: '/docs/$'
-      preLoaderRoute: typeof DocsSplatRouteImport
-      parentRoute: typeof DocsRoute
+    '/_public/docs': {
+      id: '/_public/docs'
+      path: '/docs'
+      fullPath: '/docs'
+      preLoaderRoute: typeof PublicDocsRouteImport
+      parentRoute: typeof PublicRouteRoute
+    }
+    '/_public/privacy-policy': {
+      id: '/_public/privacy-policy'
+      path: '/privacy-policy'
+      fullPath: '/privacy-policy'
+      preLoaderRoute: typeof PublicPrivacyPolicyRouteImport
+      parentRoute: typeof PublicRouteRoute
+    }
+    '/_public/recharge-agreement': {
+      id: '/_public/recharge-agreement'
+      path: '/recharge-agreement'
+      fullPath: '/recharge-agreement'
+      preLoaderRoute: typeof PublicRechargeAgreementRouteImport
+      parentRoute: typeof PublicRouteRoute
+    }
+    '/_public/user-agreement': {
+      id: '/_public/user-agreement'
+      path: '/user-agreement'
+      fullPath: '/user-agreement'
+      preLoaderRoute: typeof PublicUserAgreementRouteImport
+      parentRoute: typeof PublicRouteRoute
     }
     '/oauth/$provider': {
       id: '/oauth/$provider'
       path: '/oauth/$provider'
       fullPath: '/oauth/$provider'
       preLoaderRoute: typeof OauthProviderRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/pricing/': {
-      id: '/pricing/'
-      path: '/pricing'
-      fullPath: '/pricing/'
-      preLoaderRoute: typeof PricingIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/rankings/': {
-      id: '/rankings/'
-      path: '/rankings'
-      fullPath: '/rankings/'
-      preLoaderRoute: typeof RankingsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/setup/': {
@@ -1245,12 +1217,40 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedWalletIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/pricing/$modelId/': {
-      id: '/pricing/$modelId/'
-      path: '/pricing/$modelId'
-      fullPath: '/pricing/$modelId/'
-      preLoaderRoute: typeof PricingModelIdIndexRouteImport
-      parentRoute: typeof rootRouteImport
+    '/_public/about/': {
+      id: '/_public/about/'
+      path: '/about'
+      fullPath: '/about/'
+      preLoaderRoute: typeof PublicAboutIndexRouteImport
+      parentRoute: typeof PublicRouteRoute
+    }
+    '/_public/docs/': {
+      id: '/_public/docs/'
+      path: '/'
+      fullPath: '/docs/'
+      preLoaderRoute: typeof PublicDocsIndexRouteImport
+      parentRoute: typeof PublicDocsRoute
+    }
+    '/_public/docs/$': {
+      id: '/_public/docs/$'
+      path: '/$'
+      fullPath: '/docs/$'
+      preLoaderRoute: typeof PublicDocsSplatRouteImport
+      parentRoute: typeof PublicDocsRoute
+    }
+    '/_public/pricing/': {
+      id: '/_public/pricing/'
+      path: '/pricing'
+      fullPath: '/pricing/'
+      preLoaderRoute: typeof PublicPricingIndexRouteImport
+      parentRoute: typeof PublicRouteRoute
+    }
+    '/_public/rankings/': {
+      id: '/_public/rankings/'
+      path: '/rankings'
+      fullPath: '/rankings/'
+      preLoaderRoute: typeof PublicRankingsIndexRouteImport
+      parentRoute: typeof PublicRouteRoute
     }
     '/_authenticated/system-settings/auth/': {
       id: '/_authenticated/system-settings/auth/'
@@ -1363,6 +1363,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/system-settings/site/$section'
       preLoaderRoute: typeof AuthenticatedSystemSettingsSiteSectionRouteImport
       parentRoute: typeof AuthenticatedSystemSettingsRouteRoute
+    }
+    '/_public/pricing/$modelId/': {
+      id: '/_public/pricing/$modelId/'
+      path: '/pricing/$modelId'
+      fullPath: '/pricing/$modelId/'
+      preLoaderRoute: typeof PublicPricingModelIdIndexRouteImport
+      parentRoute: typeof PublicRouteRoute
     }
   }
 }
@@ -1513,37 +1520,59 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
 const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
-interface DocsRouteChildren {
-  DocsSplatRoute: typeof DocsSplatRoute
-  DocsIndexRoute: typeof DocsIndexRoute
+interface PublicDocsRouteChildren {
+  PublicDocsSplatRoute: typeof PublicDocsSplatRoute
+  PublicDocsIndexRoute: typeof PublicDocsIndexRoute
 }
 
-const DocsRouteChildren: DocsRouteChildren = {
-  DocsSplatRoute: DocsSplatRoute,
-  DocsIndexRoute: DocsIndexRoute,
+const PublicDocsRouteChildren: PublicDocsRouteChildren = {
+  PublicDocsSplatRoute: PublicDocsSplatRoute,
+  PublicDocsIndexRoute: PublicDocsIndexRoute,
 }
 
-const DocsRouteWithChildren = DocsRoute._addFileChildren(DocsRouteChildren)
+const PublicDocsRouteWithChildren = PublicDocsRoute._addFileChildren(
+  PublicDocsRouteChildren,
+)
+
+interface PublicRouteRouteChildren {
+  PublicDocsRoute: typeof PublicDocsRouteWithChildren
+  PublicPrivacyPolicyRoute: typeof PublicPrivacyPolicyRoute
+  PublicRechargeAgreementRoute: typeof PublicRechargeAgreementRoute
+  PublicUserAgreementRoute: typeof PublicUserAgreementRoute
+  PublicIndexRoute: typeof PublicIndexRoute
+  PublicAboutIndexRoute: typeof PublicAboutIndexRoute
+  PublicPricingIndexRoute: typeof PublicPricingIndexRoute
+  PublicRankingsIndexRoute: typeof PublicRankingsIndexRoute
+  PublicPricingModelIdIndexRoute: typeof PublicPricingModelIdIndexRoute
+}
+
+const PublicRouteRouteChildren: PublicRouteRouteChildren = {
+  PublicDocsRoute: PublicDocsRouteWithChildren,
+  PublicPrivacyPolicyRoute: PublicPrivacyPolicyRoute,
+  PublicRechargeAgreementRoute: PublicRechargeAgreementRoute,
+  PublicUserAgreementRoute: PublicUserAgreementRoute,
+  PublicIndexRoute: PublicIndexRoute,
+  PublicAboutIndexRoute: PublicAboutIndexRoute,
+  PublicPricingIndexRoute: PublicPricingIndexRoute,
+  PublicRankingsIndexRoute: PublicRankingsIndexRoute,
+  PublicPricingModelIdIndexRoute: PublicPricingModelIdIndexRoute,
+}
+
+const PublicRouteRouteWithChildren = PublicRouteRoute._addFileChildren(
+  PublicRouteRouteChildren,
+)
 
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
   authRouteRoute: authRouteRouteWithChildren,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
-  DocsRoute: DocsRouteWithChildren,
-  PrivacyPolicyRoute: PrivacyPolicyRoute,
-  RechargeAgreementRoute: RechargeAgreementRoute,
-  UserAgreementRoute: UserAgreementRoute,
+  PublicRouteRoute: PublicRouteRouteWithChildren,
   errors401Route: errors401Route,
   errors403Route: errors403Route,
   errors404Route: errors404Route,
   errors500Route: errors500Route,
   errors503Route: errors503Route,
   OauthProviderRoute: OauthProviderRoute,
-  AboutIndexRoute: AboutIndexRoute,
-  PricingIndexRoute: PricingIndexRoute,
-  RankingsIndexRoute: RankingsIndexRoute,
   SetupIndexRoute: SetupIndexRoute,
-  PricingModelIdIndexRoute: PricingModelIdIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

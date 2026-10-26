@@ -33,6 +33,12 @@ export const Route = createFileRoute('/_authenticated')({
     // present. That skip is an optimization for public pages and must not
     // decide a protected route, so resolve against the server before
     // redirecting. An in-memory session returns without a request.
+    //
+    // What the root guard does decide is an *anonymous* verdict: a visitor it
+    // found anonymous (no session hint, nothing in memory) stays anonymous for
+    // this page session, so opening a protected route sends them to sign-in
+    // instead of silently refreshing a cookie they were never shown as signed
+    // in with. A transient refresh failure is retried below.
     let outcome = await resolveAuthentication()
 
     for (const delay of transientRefreshRetryDelays) {

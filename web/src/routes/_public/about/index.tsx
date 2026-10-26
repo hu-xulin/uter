@@ -18,8 +18,8 @@ For commercial licensing, please contact support@uter.ai
 */
 import { createFileRoute } from '@tanstack/react-router'
 
-import { PrivacyPolicy } from '@/features/legal'
+import { AboutViewer } from '@/features/about'
 
-export const Route = createFileRoute('/privacy-policy')({
-  component: PrivacyPolicy,
+export const Route = createFileRoute('/_public/about/')({
+  component: AboutViewer,
 })

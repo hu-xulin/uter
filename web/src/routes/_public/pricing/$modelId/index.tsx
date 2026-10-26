@@ -19,24 +19,27 @@ For commercial licensing, please contact support@uter.ai
 import { createFileRoute, redirect } from '@tanstack/react-router'
 import z from 'zod'
 
-import { Rankings } from '@/features/rankings'
+import { ModelDetails } from '@/features/pricing/components/model-details'
 import { getModuleAccessForGuard } from '@/lib/nav-modules'
 import { useAuthStore } from '@/stores/auth-store'
 
-const rankingsSearchSchema = z.object({
-  period: z
-    .enum(['today', 'week', 'month', 'year'])
-    .optional()
-    .catch(undefined),
+const modelDetailsSearchSchema = z.object({
+  search: z.string().optional(),
+  sort: z.string().optional(),
+  vendor: z.string().optional(),
+  group: z.string().optional(),
+  quotaType: z.string().optional(),
+  endpointType: z.string().optional(),
+  tag: z.string().optional(),
+  tokenUnit: z.enum(['M', 'K']).optional(),
+  view: z.enum(['card', 'table']).optional().catch(undefined),
+  rechargePrice: z.boolean().optional(),
 })
 
-export const Route = createFileRoute('/rankings/')({
-  validateSearch: rankingsSearchSchema,
+export const Route = createFileRoute('/_public/pricing/$modelId/')({
+  validateSearch: modelDetailsSearchSchema,
   beforeLoad: async ({ context, location }) => {
-    const access = await getModuleAccessForGuard(
-      context.queryClient,
-      'rankings'
-    )
+    const access = await getModuleAccessForGuard(context.queryClient, 'pricing')
     if (!access.enabled) {
       throw redirect({ to: '/' })
     }
@@ -50,5 +53,5 @@ export const Route = createFileRoute('/rankings/')({
       }
     }
   },
-  component: Rankings,
+  component: ModelDetails,
 })

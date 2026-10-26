@@ -32,8 +32,10 @@ export const Route = createFileRoute('/(auth)/sign-in')({
   component: SignIn,
   validateSearch: searchSchema,
   beforeLoad: async ({ search }) => {
-    // 根 guard 可能因为没有会话提示而跳过了 refresh。此处必须回源确认，
-    // 否则持有有效 Refresh Cookie 的用户会被要求重新输入密码。
+    // 已判定为「未登录」的页面会话不会在这里被静默翻成登录态：根 guard 对
+    // 无会话提示的访问者记录了 anonymous 结论，resolveAuthentication 直接复用，
+    // 点「管理」过来的访客因此停在登录页，而不是被 Refresh Cookie 自动登录后
+    // 弹回 dashboard。内存里仍有会话（含瞬时刷新失败）时会正常回源确认。
     await resolveAuthentication()
 
     const { auth } = useAuthStore.getState()

@@ -48,6 +48,6 @@ function DocsRoute() {
   )
 }
 
-export const Route = createFileRoute('/docs')({
+export const Route = createFileRoute('/_public/docs')({
   component: DocsRoute,
 })

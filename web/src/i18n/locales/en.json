@@ -7703,6 +7703,16 @@
     "Increase: Uter price = official base price × (upstream discount + amount). Decrease: Uter price = official base price × (upstream discount − amount).": "Increase: Uter price = official base price × (upstream discount + amount). Decrease: Uter price = official base price × (upstream discount − amount).",
     "Discount to add": "Discount to add",
     "Discount to subtract": "Discount to subtract",
-    "In discount steps: 0.1 means one tenth of the base price. A decrease larger than the upstream discount is skipped (it would produce a non-positive price).": "In discount steps: 0.1 means one tenth of the base price. A decrease larger than the upstream discount is skipped (it would produce a non-positive price)."
+    "In discount steps: 0.1 means one tenth of the base price. A decrease larger than the upstream discount is skipped (it would produce a non-positive price).": "In discount steps: 0.1 means one tenth of the base price. A decrease larger than the upstream discount is skipped (it would produce a non-positive price).",
+    "Administration": "Administration",
+    "API keys": "API keys",
+    "Billing management": "Billing management",
+    "Redemption codes": "Redemption codes",
+    "Reveal full keys": "Reveal full keys",
+    "Task plugins": "Task plugins",
+    "30 days": "30 days",
+    "90 days": "90 days",
+    "180 days": "180 days",
+    "1 year": "1 year"
   }
 }

@@ -20,6 +20,11 @@ import type { PermissionMatrixGroup } from '@/components/permission-matrix'
 
 import type { AccessTokenCatalog, AccessTokenGroup } from '../api'
 
+// Group names are i18n **keys**, not display strings: `PermissionMatrix`
+// renders them through `t()`. They must therefore exist verbatim in every
+// `i18n/locales/*.json`; a missing entry falls back to the English key and
+// makes the Access tokens card look untranslated. Guarded by
+// `__tests__/access-token-i18n.test.ts`.
 const GROUP_LABELS: Record<AccessTokenGroup, string> = {
   personal: 'Personal',
   admin: 'Administration',

@@ -298,7 +298,7 @@ export function CheckinCalendarCard({
                     {t('Daily Check-in')}
                   </h3>
                   {checkedToday && (
-                    <div className='inline-flex items-center gap-1 rounded-md bg-emerald-500/10 px-2 py-0.5 text-xs font-medium text-emerald-600 sm:gap-1.5 sm:px-2.5 sm:text-xs dark:text-emerald-400'>
+                    <div className='inline-flex items-center gap-1 rounded-md bg-success/10 px-2 py-0.5 text-xs font-medium text-success sm:gap-1.5 sm:px-2.5 sm:text-xs dark:text-success'>
                       <Sparkles className='h-2.5 w-2.5 sm:h-3 sm:w-3' />
                       {t('Checked in')}
                     </div>
@@ -311,7 +311,7 @@ export function CheckinCalendarCard({
                     )}
                   </span>
                 </div>
-                <p className='text-muted-foreground mt-1 line-clamp-2 text-xs sm:text-sm'>
+                <p className='text-muted-foreground mt-1 line-clamp-2 text-sm'>
                   {checkedToday && todayAward !== undefined
                     ? `${t('Today')} +${formatQuotaWithCurrency(todayAward)}`
                     : t('Check in daily to receive random quota rewards')}
@@ -337,7 +337,7 @@ export function CheckinCalendarCard({
                 <div className='text-lg font-semibold tabular-nums sm:text-xl'>
                   {checkinData?.stats?.total_checkins || 0}
                 </div>
-                <div className='text-muted-foreground mt-0.5 text-xs font-medium sm:mt-1 sm:text-xs'>
+                <div className='text-muted-foreground mt-0.5 text-sm font-medium sm:mt-1'>
                   {t('Total check-ins')}
                 </div>
               </div>
@@ -345,7 +345,7 @@ export function CheckinCalendarCard({
                 <div className='text-lg font-semibold tabular-nums sm:text-xl'>
                   {formatQuotaWithCurrency(monthlyQuota, { digitsLarge: 0 })}
                 </div>
-                <div className='text-muted-foreground mt-0.5 text-xs font-medium sm:mt-1 sm:text-xs'>
+                <div className='text-muted-foreground mt-0.5 text-sm font-medium sm:mt-1'>
                   {t('This month')}
                 </div>
               </div>
@@ -358,7 +358,7 @@ export function CheckinCalendarCard({
                     }
                   )}
                 </div>
-                <div className='text-muted-foreground mt-0.5 text-xs font-medium sm:mt-1 sm:text-xs'>
+                <div className='text-muted-foreground mt-0.5 text-sm font-medium sm:mt-1'>
                   {t('Total earned')}
                 </div>
               </div>
@@ -369,7 +369,7 @@ export function CheckinCalendarCard({
               <div className='space-y-3 sm:space-y-4'>
                 {/* Month navigation */}
                 <div className='flex items-center justify-between'>
-                  <h4 className='text-xs font-semibold sm:text-sm'>
+                  <h4 className='text-sm font-semibold'>
                     {dayjs(currentMonth).format('YYYY-MM')}
                   </h4>
                   <div className='flex items-center gap-0.5 sm:gap-1'>
@@ -458,11 +458,11 @@ export function CheckinCalendarCard({
                 </div>
 
                 {/* Footer hint */}
-                <div className='text-muted-foreground border-t pt-3 text-center text-xs sm:pt-4 sm:text-xs'>
+                <div className='text-muted-foreground border-t pt-3 text-center text-sm sm:pt-4'>
                   {t('You can only check in once per day')}
                 </div>
 
-                <div className='bg-muted/30 text-muted-foreground rounded-lg border p-3 text-xs'>
+                <div className='bg-muted/30 text-muted-foreground rounded-lg border p-3 text-sm'>
                   <ul className='list-disc space-y-1 pl-5'>
                     <li>
                       {t('Check in daily to receive random quota rewards')}

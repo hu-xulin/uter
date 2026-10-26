@@ -59,13 +59,13 @@ export function LoginSessionItem({ session, onRevoke }: LoginSessionItemProps) {
           </p>
           {session.current && <Badge variant='secondary'>{t('Current')}</Badge>}
         </div>
-        <p className='text-muted-foreground mt-1 text-xs'>
+        <p className='text-muted-foreground mt-1 text-sm'>
           {t('IP: {{ip}} · Method: {{method}}', {
             ip: session.ip || t('Unknown'),
             method: loginMethodLabel(session.login_method, t),
           })}
         </p>
-        <p className='text-muted-foreground mt-1 text-xs'>
+        <p className='text-muted-foreground mt-1 text-sm'>
           {t('Last active {{time}} · Expires {{expires}}', {
             time: formatTimestampRelative(
               session.last_active_at,

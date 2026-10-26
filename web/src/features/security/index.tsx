@@ -20,6 +20,7 @@ import { Link2 } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { Heading } from '@/design-system'
 import { SectionPageLayout } from '@/components/layout/components/section-page-layout'
 import { Button } from '@/components/ui/button'
 import {
@@ -79,9 +80,9 @@ export function Security() {
             aria-labelledby='security-authentication'
             className='space-y-3'
           >
-            <h3 id='security-authentication' className='text-sm font-semibold'>
+            <Heading variant='section-title' level={2} id='security-authentication'>
               {t('Login & Authentication')}
-            </h3>
+            </Heading>
             <AccountActionCard
               action='password'
               username={profile.username}
@@ -93,24 +94,22 @@ export function Security() {
               icon={<Link2 className='size-4' />}
               headerClassName='px-3 py-2.5 !pb-2.5 sm:px-4 sm:py-2.5 sm:!pb-2.5'
               contentClassName='p-3 sm:p-3'
-              titleClassName='text-sm sm:text-sm'
-              iconClassName='size-7 sm:size-7'
               disableHoverEffect
             >
               <AccountBindings profile={profile} onUpdate={refreshProfile} />
             </TitledCard>
           </section>
           <section aria-labelledby='security-access' className='space-y-4'>
-            <h3 id='security-access' className='text-sm font-semibold'>
+            <Heading variant='section-title' level={2} id='security-access'>
               {t('Sessions & Access')}
-            </h3>
+            </Heading>
             <LoginSessionsCard />
             <AccessTokensCard />
           </section>
           <section aria-labelledby='security-account' className='space-y-4'>
-            <h3 id='security-account' className='text-sm font-semibold'>
+            <Heading variant='section-title' level={2} id='security-account'>
               {t('Account Actions')}
-            </h3>
+            </Heading>
             <AccountActionCard action='delete' username={profile.username} />
           </section>
         </div>
@@ -119,16 +118,16 @@ export function Security() {
           className='min-w-0 space-y-4 sm:space-y-6 xl:sticky xl:top-0'
         >
           <div className='space-y-3'>
-            <h3 id='security-verification' className='text-sm font-semibold'>
+            <Heading variant='section-title' level={2} id='security-verification'>
               {t('Security verification')}
-            </h3>
+            </Heading>
             <PasskeyCard loading={loading} />
             <TwoFACard loading={loading} />
           </div>
           <section aria-labelledby='security-privacy' className='space-y-4'>
-            <h3 id='security-privacy' className='text-sm font-semibold'>
+            <Heading variant='section-title' level={2} id='security-privacy'>
               {t('Privacy')}
-            </h3>
+            </Heading>
             <PrivacyCard profile={profile} onUpdate={refreshProfile} />
           </section>
         </aside>

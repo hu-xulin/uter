@@ -202,7 +202,7 @@ export function NotificationTab({
                     className='h-auto min-h-14 w-full flex-col gap-1.5 px-3 py-3 sm:min-h-16'
                   >
                     <Icon className='h-4 w-4 sm:h-5 sm:w-5' />
-                    <span className='max-w-full truncate text-xs font-medium sm:text-sm'>
+                    <span className='max-w-full truncate text-sm font-medium'>
                       {t(method.label)}
                     </span>
                   </ToggleGroupItem>
@@ -270,7 +270,7 @@ export function NotificationTab({
                   'https://api.day.app/yourkey/{{title}}/{{content}}'
                 )}
               />
-              <p className='text-muted-foreground text-xs'>
+              <p className='text-muted-foreground text-sm'>
                 {t('Template variables:')} {'{{title}}'}, {'{{content}}'}
               </p>
             </div>
@@ -289,7 +289,7 @@ export function NotificationTab({
                   onChange={(e) => updateField('gotify_url', e.target.value)}
                   placeholder={t('https://gotify.example.com')}
                 />
-                <p className='text-muted-foreground text-xs'>
+                <p className='text-muted-foreground text-sm'>
                   {t('Enter the full URL of your Gotify server')}
                 </p>
               </div>
@@ -303,7 +303,7 @@ export function NotificationTab({
                   onChange={(e) => updateField('gotify_token', e.target.value)}
                   placeholder={t('Enter application token')}
                 />
-                <p className='text-muted-foreground text-xs'>
+                <p className='text-muted-foreground text-sm'>
                   {t('Token obtained from your Gotify application')}
                 </p>
               </div>
@@ -321,7 +321,7 @@ export function NotificationTab({
                   }
                   placeholder='5'
                 />
-                <p className='text-muted-foreground text-xs'>
+                <p className='text-muted-foreground text-sm'>
                   {t(
                     'Priority level from 0 (lowest) to 10 (highest), default is 5'
                   )}
@@ -331,14 +331,14 @@ export function NotificationTab({
                 <h5 className='mb-1.5 text-sm font-medium sm:mb-2'>
                   {t('Setup Instructions')}
                 </h5>
-                <ol className='text-muted-foreground space-y-1 text-xs'>
+                <ol className='text-muted-foreground space-y-1 text-sm'>
                   <li>{t('1. Create an application in your Gotify server')}</li>
                   <li>{t('2. Copy the application token')}</li>
                   <li>
                     {t('3. Enter your Gotify server URL and token above')}
                   </li>
                 </ol>
-                <p className='text-muted-foreground mt-3 text-xs'>
+                <p className='text-muted-foreground mt-3 text-sm'>
                   {t('Learn more:')}{' '}
                   <a
                     href='https://gotify.net/'
@@ -398,7 +398,7 @@ export function NotificationTab({
                           quotaUnitsToDollars(quotaRemindThreshold)
                         )}
                       />
-                      <p className='text-muted-foreground text-xs'>
+                      <p className='text-muted-foreground text-sm'>
                         {t('Leave empty to use the site default ({{amount}})', {
                           amount: formatQuota(quotaRemindThreshold),
                         })}
@@ -448,7 +448,7 @@ export function NotificationTab({
       <div className='space-y-3'>
         <div>
           <h4 className='text-sm font-medium'>{t('Preferences')}</h4>
-          <p className='text-muted-foreground mt-1 text-xs'>
+          <p className='text-muted-foreground mt-1 text-sm'>
             {t('Configure your account behavior preferences')}
           </p>
         </div>
@@ -459,7 +459,7 @@ export function NotificationTab({
             <Label htmlFor='acceptUnsetPrice'>
               {t('Accept Unpriced Models')}
             </Label>
-            <p className='text-muted-foreground text-xs sm:text-sm'>
+            <p className='text-muted-foreground text-sm'>
               {t('Allow using models without price configuration')}
             </p>
           </div>

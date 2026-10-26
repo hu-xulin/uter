@@ -19,15 +19,14 @@ For commercial licensing, please contact support@uter.ai
 import { createFileRoute } from '@tanstack/react-router'
 
 /**
- * Clean docs URL: `/docs/<lang>/<page>` with no query string and no
- * percent-encoding. The splat (everything after `/docs/`) names the host page
- * the iframe's content is derived from — `/docs-content/docs/<lang>/<page>` —
- * so a reload or a shared link reopens the same page.
+ * Bare `/docs` entry. The docs shell and the framed page are rendered by
+ * the layout above (`routes/docs.tsx`), which owns the single iframe for the
+ * whole section; this route exists only to give the entry its own URL. That
+ * split is what keeps the frame mounted — a viewer rendered here instead
+ * would be unmounted the moment the reader opens a page inside the docs, and
+ * the reloaded iframe is exactly the "sudden page refresh" being avoided.
  *
- * Like the bare entry beside it, this route renders nothing: the shell and
- * the single frame belong to the layout (`routes/docs.tsx`), which stays
- * mounted when the reader moves between `/docs` and a page inside it. The
- * frame reads the page to show from the location, so all this route has to
- * do is give the page its own URL.
+ * A bare entry shows the locale landing (特性说明), resolved by `DocsViewer`
+ * from the UI language.
  */
-export const Route = createFileRoute('/docs/$')()
+export const Route = createFileRoute('/_public/docs/')()
