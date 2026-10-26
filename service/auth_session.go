@@ -11,6 +11,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/model"
+	"gorm.io/gorm"
 )
 
 const RefreshCookieName = "new_api_refresh"
@@ -28,6 +29,10 @@ var (
 	ErrLoginSessionMismatch = errors.New("login session does not match the expected session")
 	ErrRefreshTokenInvalid  = errors.New("refresh token is invalid")
 	ErrRefreshRace          = errors.New("refresh token was already rotated")
+	// ErrAuthInternal marks a transient infrastructure failure (database or
+	// Redis) during an authentication operation. It is deliberately NOT one of
+	// the cookie-clearing errors so a backend blip never logs the user out.
+	ErrAuthInternal = errors.New("auth service is temporarily unavailable")
 )
 
 type LoginSessionView struct {
@@ -258,7 +263,14 @@ func RefreshLoginSession(rawRefreshToken, expectedSID, ip, userAgent string) (*A
 		if errors.Is(err, model.ErrUserSessionInactive) {
 			return nil, nil, ErrLoginSessionRevoked
 		}
-		return nil, nil, ErrRefreshTokenInvalid
+		// A genuinely missing session row means the token is invalid; clear it.
+		// Any other error (database/Redis transient fault) is an internal
+		// failure: do NOT treat it as an invalid token, or a backend blip would
+		// silently log the user out and wipe their refresh cookie.
+		if errors.Is(err, gorm.ErrRecordNotFound) || errors.Is(err, model.ErrUserSessionInvalid) {
+			return nil, nil, ErrRefreshTokenInvalid
+		}
+		return nil, nil, ErrAuthInternal
 	}
 	if session.Status != model.UserSessionStatusActive || session.RevokedAt != 0 || session.ExpiresAt <= time.Now().Unix() {
 		return nil, nil, ErrLoginSessionRevoked
@@ -490,6 +502,8 @@ func authSessionErrorCode(err error) (int, string) {
 		return http.StatusUnauthorized, "AUTH_SESSION_REVOKED"
 	case errors.Is(err, ErrRefreshTokenInvalid), errors.Is(err, ErrAuthTokenInvalid):
 		return http.StatusUnauthorized, "AUTH_UNAUTHORIZED"
+	case errors.Is(err, ErrAuthInternal):
+		return http.StatusInternalServerError, "AUTH_INTERNAL_ERROR"
 	default:
 		return http.StatusInternalServerError, "AUTH_INTERNAL_ERROR"
 	}
