@@ -217,3 +217,57 @@ func TestChannelSatisfiesFilters(t *testing.T) {
 	assert.False(t, ok)
 	assert.Equal(t, dto.FilterRequestPath, kind)
 }
+
+// 站内调试台从 /pg/chat/completions 进来，渠道的 advanced_routes 按上游路径
+// /v1/chat/completions 登记。若比较前不做归一化，按上游路径配置的渠道会被整体
+// 判成不支持该端点，表现为「分组下没有可用渠道」（503）。
+func TestChannelSatisfiesFiltersNormalizesPlaygroundPath(t *testing.T) {
+	custom := &Channel{Id: 1, Type: constant.ChannelTypeAdvancedCustom}
+	custom.SetOtherSettings(kitdto.ChannelOtherSettings{
+		AdvancedCustom: &kitdto.AdvancedCustomConfig{
+			Routes: []kitdto.AdvancedCustomRoute{{
+				IncomingPath: "/v1/chat/completions",
+				Models:       []string{"claude-opus-5-5"},
+			}},
+		},
+	})
+	playgroundFilter := []dto.ChannelFilter{{
+		Kind:        dto.FilterRequestPath,
+		RequestPath: "/pg/chat/completions",
+	}}
+
+	ok, kind := ChannelSatisfiesFilters(custom, "claude-opus-5-5", playgroundFilter)
+	require.True(t, ok, "playground path must match the upstream-path route")
+	assert.Equal(t, dto.ChannelFilterKind(""), kind)
+
+	channelSyncLock.Lock()
+	previous := channelsIDM
+	channelsIDM = map[int]*Channel{1: custom}
+	kept, emptiedBy := filterCandidateIDs([]int{1}, "claude-opus-5-5", playgroundFilter)
+	channelsIDM = previous
+	channelSyncLock.Unlock()
+
+	assert.Equal(t, []int{1}, kept)
+	assert.Equal(t, dto.ChannelFilterKind(""), emptiedBy)
+}
+
+// 归一化不能放宽真实的路由限制：调试台打到 /v1/chat/completions 时，只登记了
+// /v1/responses 的渠道仍必须被拒。
+func TestChannelSatisfiesFiltersKeepsRealRouteMismatch(t *testing.T) {
+	custom := &Channel{Id: 1, Type: constant.ChannelTypeAdvancedCustom}
+	custom.SetOtherSettings(kitdto.ChannelOtherSettings{
+		AdvancedCustom: &kitdto.AdvancedCustomConfig{
+			Routes: []kitdto.AdvancedCustomRoute{{
+				IncomingPath: "/v1/responses",
+				Models:       []string{"claude-opus-5-5"},
+			}},
+		},
+	})
+
+	ok, kind := ChannelSatisfiesFilters(custom, "claude-opus-5-5", []dto.ChannelFilter{{
+		Kind:        dto.FilterRequestPath,
+		RequestPath: "/pg/chat/completions",
+	}})
+	assert.False(t, ok)
+	assert.Equal(t, dto.FilterRequestPath, kind)
+}
