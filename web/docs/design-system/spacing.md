@@ -68,5 +68,9 @@
 
 **除这两类之外一律不投影。** 卡片、表格、侧边栏、页面容器都不加阴影。
 
+唯一例外是首页 hero 的展示终端（`features/home/components/hero-terminal-demo.tsx`），
+它需要从 hero 背景中浮起、承担营销展示核心，属产品决策的刻意例外，登记在
+[exceptions.md](./exceptions.md) E10。应用内的常规卡片仍然不投影。
+
 历史代码里仍散落着 `shadow-xs` / `shadow-sm`，属于待清理项（见
 [exceptions.md](./exceptions.md)）；新增代码不要再写。

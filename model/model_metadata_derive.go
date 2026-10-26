@@ -70,14 +70,14 @@ var catalogRelativeStopWords = map[string]bool{
 // model's own name, its name rule and visibility, and the relative's icon,
 // vendor, endpoints and tags. The boolean reports whether anything was derived.
 func DeriveMetadataValuesFromCatalog(modelName string, catalog map[string]MetadataValues) (MetadataValues, bool) {
-	return deriveMetadataValuesFromCatalog(modelName, catalog, nil)
+	return deriveMetadataValuesFromCatalog(modelName, catalog)
 }
 
-// deriveMetadataValuesFromCatalog is the vendor-aware form: when the keyword
-// fallback has to attribute a model, the icon it carries is the one configured
-// on the vendor record rather than a brand default, so the model and its
-// vendor always show the same logo.
-func deriveMetadataValuesFromCatalog(modelName string, catalog map[string]MetadataValues, vendors map[string]*Vendor) (MetadataValues, bool) {
+// deriveMetadataValuesFromCatalog resolves against the official catalog. It
+// deliberately takes no vendor map: an icon is never taken from the vendor
+// record, because a vendor's company logo must never stand in for a model's
+// product logo (定价页模型卡片只渲染模型自己的彩色 logo，没有就显示首字母).
+func deriveMetadataValuesFromCatalog(modelName string, catalog map[string]MetadataValues) (MetadataValues, bool) {
 	modelName = strings.TrimSpace(modelName)
 	if modelName == "" {
 		return MetadataValues{}, false
@@ -98,7 +98,7 @@ func deriveMetadataValuesFromCatalog(modelName string, catalog map[string]Metada
 		values.Tags = DerivedMetadataTags(modelName, values.Tags)
 		return values, true
 	}
-	return deriveMetadataValuesFromKeywords(modelName, vendors)
+	return deriveMetadataValuesFromKeywords(modelName)
 }
 
 // nearestCatalogRelative finds the closest catalog entry for a model name.
@@ -354,16 +354,25 @@ func keywordDescription(modelName, capability string) string {
 // model. The capability and tags come from the model's own product keyword, and
 // the description says plainly that it was attributed by name.
 //
+// The derived row carries the model's **own product logo**, never the vendor's
+// company logo. A vendor's company logo belongs to the vendor surfaces
+// (筛选 chips、供应商列表); putting it on the model row is what made the pricing
+// plaza render company logos on model cards. The product logo comes from
+// defaultProductIconForModel and is only emitted when @lobehub/icons can
+// actually render it; a brand with no renderable product logo stays empty and
+// shows the initial-letter placeholder until an operator assigns one.
+//
 // Nothing is invented: a name that matches no brand rule yields nothing, so a
 // model is never filed under a vendor the name does not imply.
 func DeriveMetadataValuesFromKeywords(modelName string) (MetadataValues, bool) {
-	return deriveMetadataValuesFromKeywords(modelName, nil)
+	return deriveMetadataValuesFromKeywords(modelName)
 }
 
-// deriveMetadataValuesFromKeywords is the vendor-aware form of the keyword
-// attribution: the icon comes from the vendor record the model is filed under,
-// so an attributed model shows exactly the logo its vendor carries.
-func deriveMetadataValuesFromKeywords(modelName string, vendors map[string]*Vendor) (MetadataValues, bool) {
+// deriveMetadataValuesFromKeywords attributes a model from its name alone.
+//
+// See DeriveMetadataValuesFromKeywords for the icon policy: keyword-derived
+// rows carry the model's own product logo and never a vendor's company logo.
+func deriveMetadataValuesFromKeywords(modelName string) (MetadataValues, bool) {
 	modelName = strings.TrimSpace(modelName)
 	if modelName == "" {
 		return MetadataValues{}, false
@@ -375,30 +384,12 @@ func deriveMetadataValuesFromKeywords(modelName string, vendors map[string]*Vend
 	capability := modelCapabilityFromName(modelName)
 	return MetadataValues{
 		Description: keywordDescription(modelName, capability),
-		Icon:        vendorIconForAttribution(vendors, vendorName),
 		Tags:        DerivedMetadataTags(modelName, ""),
 		Vendor:      vendorName,
+		Icon:        defaultProductIconForModel(modelName),
 		NameRule:    NameRuleExact,
 		Status:      1,
 	}, true
-}
-
-// vendorIconForAttribution returns the icon an attributed model should carry.
-//
-// The pricing plaza resolves a model that has no icon of its own to its
-// vendor's icon, so an attributed model has to carry the same value or the two
-// views disagree. The icon configured on the vendor record is the operator's
-// own choice and therefore wins; the brand default is only a fallback for a
-// vendor that carries no icon at all.
-func vendorIconForAttribution(vendors map[string]*Vendor, vendorName string) string {
-	if vendors != nil {
-		if vendor := FindMetadataVendor(vendors, vendorName); vendor != nil {
-			if icon := strings.TrimSpace(vendor.Icon); icon != "" {
-				return icon
-			}
-		}
-	}
-	return getDefaultVendorIcon(vendorName)
 }
 
 // keywordVendorForModel resolves the brand a model name is filed under, but

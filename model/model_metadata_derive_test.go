@@ -93,24 +93,31 @@ func TestDeriveMetadataValuesFromCatalogRejectsUnknownFamilies(t *testing.T) {
 // otherwise every newly launched family stays blank in the admin table. The
 // vendor comes from the name rules the pricing plaza already uses, and the
 // description says it was attributed by name rather than copied.
+//
+// 关键词归因的行携带模型**自己的产品 logo**（如 Doubao、DeepSeek），但绝不携带
+// 供应商的公司 logo（如 ByteDance）：定价页卡片只渲染模型自己的彩色 logo。
 func TestDeriveMetadataValuesFallsBackToKeywords(t *testing.T) {
 	cases := []struct {
-		model       string
-		wantVendor  string
-		wantIcon    string
-		wantTags    string
-		wantCaption string
+		model          string
+		wantVendor     string
+		wantIcon       string
+		wantNotCompany string
+		wantTags       string
+		wantCaption    string
 	}{
 		{
-			model: "doubao-seedream-5-0-260128", wantVendor: "ByteDance", wantIcon: "ByteDance.Color",
+			model: "doubao-seedream-5-0-260128", wantVendor: "ByteDance",
+			wantIcon: "Doubao", wantNotCompany: "ByteDance",
 			wantTags: "Files,Vision", wantCaption: "image generation",
 		},
 		{
-			model: "doubao-seedance-2-0-mini-260615", wantVendor: "ByteDance", wantIcon: "ByteDance.Color",
+			model: "doubao-seedance-2-0-mini-260615", wantVendor: "ByteDance",
+			wantIcon: "Doubao", wantNotCompany: "ByteDance",
 			wantTags: "Vision", wantCaption: "video generation",
 		},
 		{
-			model: "deepseek-v9-turbo-29991231", wantVendor: "DeepSeek", wantIcon: "DeepSeek.Color",
+			model: "deepseek-v9-turbo-29991231", wantVendor: "DeepSeek",
+			wantIcon: "DeepSeek", wantNotCompany: "",
 			wantTags: "", wantCaption: "",
 		},
 	}
@@ -120,7 +127,10 @@ func TestDeriveMetadataValuesFallsBackToKeywords(t *testing.T) {
 			values, ok := DeriveMetadataValuesFromCatalog(tc.model, map[string]MetadataValues{})
 			require.True(t, ok)
 			require.Equal(t, tc.wantVendor, values.Vendor)
-			require.Equal(t, tc.wantIcon, values.Icon)
+			require.Equal(t, tc.wantIcon, values.Icon, "keyword-derived row must carry the model's own product logo")
+			if tc.wantNotCompany != "" {
+				require.NotEqual(t, tc.wantNotCompany, values.Icon, "must never carry the vendor company logo")
+			}
 			require.Equal(t, tc.wantTags, values.Tags)
 			require.Contains(t, values.Description, "attributed by model name")
 			if tc.wantCaption != "" {
@@ -130,6 +140,15 @@ func TestDeriveMetadataValuesFallsBackToKeywords(t *testing.T) {
 			require.Equal(t, 1, values.Status)
 		})
 	}
+}
+
+// Muse 是 Meta 的产品，@lobehub/icons 没有独立的 Muse 图标，因此回落到 Meta 公司
+// 图标（与 llama 系列同处理）——一个可渲染的图标，而不是渲染不出来的坏键。
+func TestKeywordAttributionMuseUsesMetaLogo(t *testing.T) {
+	values, ok := deriveMetadataValuesFromKeywords("muse-spark-1.1")
+	require.True(t, ok)
+	require.Equal(t, "Meta", values.Vendor)
+	require.Equal(t, "Meta", values.Icon, "Muse has no dedicated logo; falls back to Meta, never a broken key")
 }
 
 // A name that matches no brand rule must stay blank even when the catalog is

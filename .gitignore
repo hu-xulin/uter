@@ -15,6 +15,12 @@ build
 # 同样不得入仓；模式写在这里，后续任何 .bak-* 备份都自动忽略）。
 *.bak-shm
 *.bak-wal
+# SQLite 备份带时间戳后缀时（one-api.db.bak-20261025-214035）不匹配 *.bak，
+# 这里补一条，避免把几 MB 的数据库快照误提交。
+*.db.bak-*
+# Playwright MCP 的页面快照（调试用，非测试基准），曾误留在仓库根目录。
+home.yaml
+signin.yaml
 logs
 web/dist
 web/node_modules

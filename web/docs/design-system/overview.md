@@ -138,8 +138,9 @@ npm run test -- src/design-system   # Token 与文档一致性
 
 移动端 390px：输入框 14px / 圆角 8px / 高 40px，按钮 14px / 圆角 8px / 高 36px。
 
-Token 解析值：`--text-xs` 12/16 · `--text-sm` 14/20 · `--text-base` 16/24 ·
-`--text-lg` 18/28 · `--text-2xl` 24/32 · `--text-3xl` 30/36 · `--text-4xl` 36/40 ·
+Token 解析值：`--text-xs` 12/16 · `--text-sm` 14/20 · `--text-mono` 13/20 ·
+`--text-base` 16/24 · `--text-lg` 18/28 · `--text-2xl` 24/32 · `--text-3xl` 30/36 ·
+`--text-4xl` 36/40 ·
 `--radius-xs` 4px · `--radius-sm` 6px · `--radius-md` 8px · `--radius-lg` 10px ·
 `--radius-xl` 12px · `--radius-2xl` 16px ·
 `--ds-line-display-multiline` 1.5 · `--ds-button-height-md` 36px ·

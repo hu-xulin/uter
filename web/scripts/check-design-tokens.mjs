@@ -122,7 +122,7 @@ const ALLOWLIST = [
     match: /^features\/home\/components\/hero-terminal-demo\.tsx$/,
     rules: ['T6'],
     reason:
-      '仅剩「200 ok」live 状态点的彩色辉光 shadow-[0_0_8px_…]，是语义指示而非层级投影；卡片本体已按规范去掉投影（见 exceptions.md E10）。',
+      '卡片主体投影（light shadow-[0_20px_50px_-25px_…] / dark shadow-[0_20px_60px_-25px_…]）+「200 ok」live 状态点彩色辉光 shadow-[0_0_8px_…]。投影为有意加的产品决策，让 hero 终端从页面背景中浮起（见 exceptions.md E10）。',
   },
   {
     match: /^styles\/theme-presets\.css$/,
@@ -152,7 +152,8 @@ const ALLOWLIST = [
   {
     // 代码高亮：token 颜色由语言语法决定，无法用界面语义色表达
     // （与 T4 对 VChart canvas 字号的豁免同一理由）。
-    match: /^features\/task-plugins\/components\/(source-diff|javascript-viewer)\.tsx$/,
+    match:
+      /^features\/task-plugins\/components\/(source-diff|javascript-viewer)\.tsx$/,
     rules: ['T7'],
     reason: '代码高亮配色由语言语法决定，无法接入界面语义 Token。',
   },
@@ -166,13 +167,16 @@ const ALLOWLIST = [
     // 配色对齐 GitHub 官方规范，改语义 Token 会破坏与源文档的一致性。
     match: /^components\/ai-elements\/response-renderer-alert\.tsx$/,
     rules: ['T7'],
-    reason: 'GitHub 风格 markdown 警报配色须与 GitHub 官方一致，不用界面语义色。',
+    reason:
+      'GitHub 风格 markdown 警报配色须与 GitHub 官方一致，不用界面语义色。',
   },
   {
     // 多序列图表：序列之间必须可区分，语义 Token 只有四组状态色，不够分。
-    match: /^features\/pricing\/components\/(dynamic-pricing-breakdown|model-details-uptime-sparkline)\.tsx$/,
+    match:
+      /^features\/pricing\/components\/(dynamic-pricing-breakdown|model-details-uptime-sparkline)\.tsx$/,
     rules: ['T7'],
-    reason: '多序列图表的区分色，语义状态 Token 数量不足；同 VChart canvas 的豁免理由。',
+    reason:
+      '多序列图表的区分色，语义状态 Token 数量不足；同 VChart canvas 的豁免理由。',
   },
   {
     match: /^features\/channels\/components\/channel-priority-demo\.tsx$/,
@@ -183,7 +187,8 @@ const ALLOWLIST = [
     // 营销页装饰强调色。规范 §4 要求主色只有黑白两档、彩色只出现在
     // 危险/成功与一处荧光绿强调——首页的蓝紫渐变属于待决的视觉改造
     // （不在本次范围内），先登记测量，不静默放过。
-    match: /^features\/home\/components\/(sections\/(hero|features|cta)\.tsx|hero-terminal-demo\.tsx)$/,
+    match:
+      /^features\/home\/components\/(sections\/(hero|features|cta)\.tsx|hero-terminal-demo\.tsx)$/,
     rules: ['T7'],
     reason:
       '营销页装饰强调色。规范 §4 要求单色系，改造属视觉决策（本次范围外），先登记测量。',
@@ -296,7 +301,9 @@ for (const abs of walk(SRC)) {
       if (
         inner.startsWith('var(') ||
         inner.startsWith('#') ||
-        /^(rgb|rgba|hsl|hsla|oklch|oklab|lab|lch|color|color-mix)\(/.test(inner) ||
+        /^(rgb|rgba|hsl|hsla|oklch|oklab|lab|lch|color|color-mix)\(/.test(
+          inner
+        ) ||
         inner === 'Canvas' ||
         inner === 'CanvasText'
       ) {

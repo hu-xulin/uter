@@ -27,7 +27,10 @@ For commercial licensing, please contact support@uter.ai
  *   body-sm  14 / 400 / 20   次要正文、表格单元格
  *   label    14 / 500 / 20   按钮文字、表单标签、导航项
  *   caption  12 / 400 / 16   说明、占位符、徽标
- *   mono     16 / 400 / 24   代码、金额、等宽标识（见 exceptions.md E2/E3）
+ *   mono     13 / 400 / 20   代码、金额、等宽标识
+ *
+ * mono 是九档里唯一非 4 倍数的一档：等宽字形比 Inter 同字号更宽，
+ * 14px 等宽在表格列与固定高度代码卡里会溢出，13px 才与 body-sm 视觉等重。
  *
  * ⚠️ 必须声明在 `@theme` 里，不能写在 `:root`。
  * Tailwind v4 只从 `@theme` 读取主题值：写在 `:root` 的 `--text-*`
@@ -46,7 +49,10 @@ For commercial licensing, please contact support@uter.ai
   --text-sm: 0.875rem; /* 14px — body-sm / label */
   --text-sm--line-height: 1.25rem; /* 20px */
 
-  --text-base: 1rem; /* 16px — body / mono */
+  --text-mono: 0.8125rem; /* 13px — mono，代码与等宽标识 */
+  --text-mono--line-height: 1.25rem; /* 20px */
+
+  --text-base: 1rem; /* 16px — body */
   --text-base--line-height: 1.5rem; /* 24px */
 
   --text-lg: 1.125rem; /* 18px — h3 */

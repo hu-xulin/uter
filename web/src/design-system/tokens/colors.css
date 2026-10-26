@@ -44,6 +44,18 @@ For commercial licensing, please contact support@uter.ai
   --ds-color-text-warning: var(--warning);
   --ds-color-text-info: var(--info);
 
+  /* ── 柔和态（soft）状态色：浅底 + 深字徽标/提示条 ───────────────────
+   * 取值等于现状渲染值（见 styles/theme.css 的 --*-soft / --*-soft-foreground），
+   * 迁移零视觉变化，且避免直接 bg-*/10 + text-* 造成的可访问性回归。 */
+  --ds-color-success-soft: var(--success-soft);
+  --ds-color-success-soft-foreground: var(--success-soft-foreground);
+  --ds-color-destructive-soft: var(--destructive-soft);
+  --ds-color-destructive-soft-foreground: var(--destructive-soft-foreground);
+  --ds-color-warning-soft: var(--warning-soft);
+  --ds-color-warning-soft-foreground: var(--warning-soft-foreground);
+  --ds-color-info-soft: var(--info-soft);
+  --ds-color-info-soft-foreground: var(--info-soft-foreground);
+
   /* ── 表面 ──────────────────────────────────────────────────────────── */
   --ds-color-surface-page: var(--background);
   --ds-color-surface-card: var(--card);

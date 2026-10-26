@@ -204,46 +204,44 @@ func TestNormalizeVendorIconKeyStripsColorVariants(t *testing.T) {
 	}
 }
 
-// 供应商图标以运营在「模型-供应商」里设置的值为准：归因到该供应商的模型必须
-// 携带同一个图标键，定价页（model.icon || vendor_icon）才会与设置一致。
-// 品牌默认只在供应商没有设置图标时兜底。
-func TestVendorIconForAttributionPrefersConfiguredVendorIcon(t *testing.T) {
-	vendors := map[string]*Vendor{
-		"Meta":      {Name: "Meta", Icon: "Meta.Color"},
-		"Anthropic": {Name: "Anthropic", Icon: "Claude.Color"},
-		"ByteDance": {Name: "ByteDance", Icon: ""},
+// 供应商图标是运营在「模型-供应商」里逐条设置的配置：归因到该供应商的模型
+// **不得**把这个图标写进自己的 icon 字段。定价页模型卡片只渲染模型自己的
+// 产品 logo（彩色），没有产品 logo 就显示首字母占位，绝不退化为公司 logo。
+// 这条断言是防回归守卫：曾经的关键词归因把供应商图标灌进 models.icon，
+// 导致定价页卡片大面积显示公司 logo（用户多次投诉的回归点）。
+//
+// 关键词归因现在会给模型补上它**自己的产品 logo**（Claude、Gemini、Qwen……），
+// 但绝不携带供应商的公司 logo（Anthropic、Google、Alibaba……）。
+func TestKeywordAttributionNeverCarriesVendorIcon(t *testing.T) {
+	cases := []struct {
+		model          string
+		wantProduct    string
+		wantNotCompany string
+	}{
+		{"claude-4-opus", "Claude", "Anthropic"},
+		{"gemini-3-pro", "Gemini", "Google"},
+		{"qwen-4-max", "Qwen", "Alibaba"},
+		{"llama-3-1-70b", "Meta", ""},
 	}
-	if got := vendorIconForAttribution(vendors, "Meta"); got != "Meta.Color" {
-		t.Errorf("vendorIconForAttribution(Meta) = %q, want %q", got, "Meta.Color")
+	for _, tc := range cases {
+		values, ok := deriveMetadataValuesFromKeywords(tc.model)
+		if !ok {
+			t.Fatalf("keyword attribution must resolve %s to a brand", tc.model)
+		}
+		if values.Icon != tc.wantProduct {
+			t.Errorf("deriveMetadataValuesFromKeywords(%q) icon = %q, want product logo %q", tc.model, values.Icon, tc.wantProduct)
+		}
+		if tc.wantNotCompany != "" && values.Icon == tc.wantNotCompany {
+			t.Errorf("deriveMetadataValuesFromKeywords(%q) icon = %q, must not be the vendor company logo", tc.model, values.Icon)
+		}
 	}
-	// 供应商名大小写不敏感。
-	if got := vendorIconForAttribution(vendors, "anthropic"); got != "Claude.Color" {
-		t.Errorf("vendorIconForAttribution(anthropic) = %q, want %q", got, "Claude.Color")
-	}
-	// 供应商没有设置图标时回退到品牌默认。
-	if got := vendorIconForAttribution(vendors, "ByteDance"); got != "ByteDance.Color" {
-		t.Errorf("vendorIconForAttribution(ByteDance) = %q, want %q", got, "ByteDance.Color")
-	}
-	// 未登记品牌没有默认图标，也不臆造。
-	if got := vendorIconForAttribution(vendors, "BrandNotKnown"); got != "" {
-		t.Errorf("vendorIconForAttribution(unknown) = %q, want empty", got)
-	}
-}
-
-// 关键词归因（官方目录没有该模型）写出的模型图标必须是供应商设置的那个。
-func TestDerivedMetadataUsesVendorConfiguredIcon(t *testing.T) {
-	vendors := map[string]*Vendor{
-		"Meta": {Name: "Meta", Icon: "Meta.Color"},
-	}
-	values, ok := deriveMetadataValuesFromKeywords("llama-3-1-70b", vendors)
+	// 目录里没有该型号时走关键词归因：有供应商、有产品 logo，但绝不是公司 logo。
+	values, ok := deriveMetadataValuesFromCatalog("claude-4-opus", map[string]MetadataValues{})
 	if !ok {
-		t.Fatal("keyword attribution must resolve llama-* to a brand")
+		t.Fatal("empty catalog must still keyword-attribute claude-*")
 	}
-	if values.Vendor != "Meta" {
-		t.Fatalf("vendor = %q, want %q", values.Vendor, "Meta")
-	}
-	if values.Icon != "Meta.Color" {
-		t.Errorf("icon = %q, want %q", values.Icon, "Meta.Color")
+	if values.Icon != "Claude" {
+		t.Errorf("keyword fallback icon = %q, want product logo %q", values.Icon, "Claude")
 	}
 }
 
@@ -252,10 +250,7 @@ func TestDerivedMetadataKeepsCatalogIconOverVendorIcon(t *testing.T) {
 	catalog := map[string]MetadataValues{
 		"kimi-k2.6": {Description: "Moonshot Kimi", Icon: "Moonshot", Vendor: "Moonshot AI", NameRule: NameRuleExact, Status: 1},
 	}
-	vendors := map[string]*Vendor{
-		"Moonshot AI": {Name: "Moonshot AI", Icon: "Moonshot.Color"},
-	}
-	values, ok := deriveMetadataValuesFromCatalog("kimi-k2.6-flare", catalog, vendors)
+	values, ok := deriveMetadataValuesFromCatalog("kimi-k2.6-flare", catalog)
 	if !ok {
 		t.Fatal("catalog relative must resolve")
 	}

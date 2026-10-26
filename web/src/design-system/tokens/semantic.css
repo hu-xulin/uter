@@ -43,7 +43,7 @@ For commercial licensing, please contact support@uter.ai
   --ds-text-body-sm: var(--text-sm);
   --ds-text-label: var(--text-sm);
   --ds-text-caption: var(--text-xs);
-  --ds-text-mono: var(--text-base);
+  --ds-text-mono: var(--text-mono);
 
   /* ── 语义行高 ──────────────────────────────────────────────────────── */
   --ds-line-display: var(--text-4xl--line-height, 2.5rem);
@@ -60,7 +60,7 @@ For commercial licensing, please contact support@uter.ai
   --ds-line-body-sm: var(--text-sm--line-height, 1.25rem);
   --ds-line-label: var(--text-sm--line-height, 1.25rem);
   --ds-line-caption: var(--text-xs--line-height, 1rem);
-  --ds-line-mono: var(--text-base--line-height, 1.5rem);
+  --ds-line-mono: var(--text-mono--line-height, 1.25rem);
   /* 密集等宽（例外 E2/E3）：表格/日志/行内代码用 22px 行高 */
   --ds-line-mono-dense: 1.375rem; /* 22px */
 

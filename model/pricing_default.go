@@ -22,6 +22,7 @@ var defaultVendorRules = map[string]string{
 	"gemini":   "Google",
 	"moonshot": "Moonshot",
 	"kimi":     "Moonshot",
+	"muse":     "Meta",
 	"chatglm":  "Z.AI",
 	"glm-":     "Z.AI",
 	"qwen":     "Alibaba",
@@ -243,6 +244,103 @@ func defaultVendorIconForSync(vendorName, upstreamIcon string) string {
 		return icon
 	}
 	return NormalizeVendorIconKey(upstreamIcon)
+}
+
+// defaultProductIcons 把模型名 token 映射到模型**自己的产品 logo**（@lobehub/icons
+// 的品牌 id），与 defaultVendorIcons（供应商公司 logo）是两回事。
+//
+// 关键词归因的模型在官方目录里没有图标：如果不补产品 logo，卡片就显示首字母占位
+// 甚至「不存在」的坏图标；而它们所属的品牌明明有自己的产品 logo（Claude、Gemini、
+// Qwen、ChatGLM、Kimi、Doubao、Hunyuan、Aya……）。这张表让这类模型自动拿到正确的
+// 彩色产品 logo。
+//
+// 值必须是模型**产品** logo，绝不能填供应商公司 logo：Anthropic 的产品是 Claude、
+// Google 的产品是 Gemini、Z.AI 的产品是 ChatGLM、Moonshot 的产品是 Kimi、Baidu 的
+// 产品是 Wenxin、ByteDance 的产品是 Doubao。凡是「产品 == 公司」的品牌（OpenAI、
+// DeepSeek、Meta、Mistral、Cohere、MiniMax……）则直接填公司 logo（两者同一图标）。
+//
+// 未在此表登记、或登记了但 @lobehub/icons 没有对应可用变体的品牌，一律回落到空串
+// （首字母占位），绝不把不可渲染的键写进 models.icon——这正是用户看到的
+// 「logo 变成不存在」的根因之一。
+var defaultProductIcons = map[string]string{
+	"chatglm":  "ChatGLM",
+	"glm":      "ChatGLM",
+	"kimi":     "Kimi",
+	"claude":   "Claude",
+	"gemini":   "Gemini",
+	"qwen":     "Qwen",
+	"hunyuan":  "Hunyuan",
+	"doubao":   "Doubao",
+	"deepseek": "DeepSeek",
+	"command":  "Cohere",
+	"c4ai-aya": "Aya",
+	"gpt":      "OpenAI",
+	"dall-e":   "Dalle",
+	"whisper":  "OpenAI",
+	"o1":       "OpenAI",
+	"o3":       "OpenAI",
+	"ernie":    "Wenxin",
+	"wenxin":   "Wenxin",
+	"spark":    "Spark",
+	"yi":       "Yi",
+	"abab":     "MiniMax",
+	"minimax":  "Minimax",
+	"llama":    "Meta",
+	"mistral":  "Mistral",
+	"grok":     "XAI",
+	"moonshot": "Moonshot",
+	// Muse 是 Meta 的产品，@lobehub/icons 没有独立的 Muse 图标，回落到 Meta 公司图标
+	// （与 llama 系列同处理）。
+	"muse": "Meta",
+}
+
+// defaultProductIconPatterns 与 defaultVendorPatterns 同样的「长规则优先」排序：
+// 同一模型名可能命中多条规则时取最长那条。
+var defaultProductIconPatterns = func() []string {
+	patterns := make([]string, 0, len(defaultProductIcons))
+	for pattern := range defaultProductIcons {
+		patterns = append(patterns, pattern)
+	}
+	slices.SortFunc(patterns, func(a, b string) int {
+		if len(a) != len(b) {
+			return len(b) - len(a)
+		}
+		return strings.Compare(a, b)
+	})
+	return patterns
+}()
+
+// defaultProductIconForModel 返回关键词归因模型的「自己的产品 logo」。
+//
+// 只在 @lobehub/icons 存在可渲染变体（lobeIconVariants）时才返回该键；否则返回
+// 空串，让卡片显示首字母占位而不是一个根本渲染不出来的坏键。这个函数**绝不**返回
+// 供应商公司 logo：产品与公司同名的品牌（OpenAI、Meta……）填的是两者的同一图标，
+// 而 Anthropic/Google/Z.AI/Moonshot 等都映射到各自的产品 logo，而非公司 logo。
+//
+// 匹配优先级：先按模型名**首段精确命中**（muse-spark 的首段是 muse，属于 Meta，
+// 不应被其中的 spark 子串误判成 iFlytek 的 Spark），首段未命中再按最长子串规则
+// （保留 c4ai-aya 这类非首段的精确匹配）。
+func defaultProductIconForModel(modelName string) string {
+	lower := strings.ToLower(strings.TrimSpace(modelName))
+	if lower == "" {
+		return ""
+	}
+	segments := strings.Split(lower, "-")
+	if productKey, ok := defaultProductIcons[segments[0]]; ok {
+		if _, renderable := lobeIconVariants[productKey]; renderable {
+			return productKey
+		}
+	}
+	for _, pattern := range defaultProductIconPatterns {
+		if strings.Contains(lower, pattern) {
+			productKey := defaultProductIcons[pattern]
+			if _, ok := lobeIconVariants[productKey]; ok {
+				return productKey
+			}
+			return ""
+		}
+	}
+	return ""
 }
 
 // defaultBrandVendors 返回定价广场按名称规则匹配、但没有持久化元数据的模型所对应

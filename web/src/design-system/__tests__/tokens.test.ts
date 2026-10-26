@@ -62,7 +62,8 @@ function toPx(value: string): number {
 const LADDER: Array<[string, number, number, string]> = [
   ['xs', 12, 16, 'caption'],
   ['sm', 14, 20, 'body-sm / label'],
-  ['base', 16, 24, 'body / mono'],
+  ['mono', 13, 20, 'mono 代码与等宽标识'],
+  ['base', 16, 24, 'body'],
   ['lg', 18, 28, 'h3 卡片标题 / 弹窗标题'],
   ['2xl', 24, 32, 'h2 区块标题'],
   ['3xl', 30, 36, 'h1 页面标题'],
@@ -118,7 +119,7 @@ describe('语义 Token 指向正确的阶梯档位', () => {
     ['ds-text-body-sm', 'var(--text-sm)'],
     ['ds-text-label', 'var(--text-sm)'],
     ['ds-text-caption', 'var(--text-xs)'],
-    ['ds-text-mono', 'var(--text-base)'],
+    ['ds-text-mono', 'var(--text-mono)'],
   ]
 
   it.each(MAPPING)('--%s → %s', (name, expected) => {

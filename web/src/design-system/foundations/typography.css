@@ -96,11 +96,13 @@ For commercial licensing, please contact support@uter.ai
     font-size: var(--ds-text-mono);
     line-height: var(--ds-line-mono);
   }
-  /* 密集等宽：表格单元格、日志列、行内代码（例外 E2 / E3） */
+  /* 兼容别名：mono 阶梯定为 13/20 后，「密集场景需要更小」的前提已消失
+   * （13px 本身就能塞进表格列），故 code-dense 与 code 同值。保留导出
+   * 只为不破坏既有调用方，新代码直接用 variant='code'。 */
   .ds-text--code-dense {
     font-family: var(--font-mono);
-    font-size: var(--ds-text-body-sm);
-    line-height: var(--ds-line-mono-dense);
+    font-size: var(--ds-text-mono);
+    line-height: var(--ds-line-mono);
   }
 
   /* ── Heading 变体 ─────────────────────────────────────────────────── */
@@ -129,4 +131,17 @@ For commercial licensing, please contact support@uter.ai
     line-height: var(--ds-line-dialog-title);
     font-weight: var(--ds-weight-semibold);
   }
+}
+
+/* ── 多行主标题行高 ───────────────────────────────────────────────────
+ * 这一条**故意放在 `@layer components` 之外**。
+ *
+ * 唯一用途就是压过 `text-3xl` / `text-4xl` 自带的 line-height：调用方
+ * 需要保留 Tailwind 的响应式字号（移动端 30px、桌面 36px），只把行高
+ * 换成多行档。放在 components 层会被 utilities 层覆盖，等于没写。
+ *
+ * 用法：<h1 className='ds-heading--display-multiline text-3xl md:text-4xl'>
+ */
+.ds-heading--display-multiline {
+  line-height: var(--ds-line-display-multiline);
 }
