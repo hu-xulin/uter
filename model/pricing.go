@@ -343,9 +343,23 @@ func updatePricing() {
 				continue
 			}
 			pricing.Description = meta.Description
-			pricing.Icon = meta.Icon
 			pricing.Tags = meta.Tags
 			pricing.VendorID = meta.VendorID
+			// 入库模型若图标为空，按名称归因到自己的产品 logo，
+			// 与同家族模型保持一致，避免卡片回落到首字母占位。
+			if meta.Icon != "" {
+				pricing.Icon = meta.Icon
+			} else if icon := defaultProductIconForModel(model); icon != "" {
+				pricing.Icon = icon
+			}
+		} else {
+			// 未入库（无元数据）的模型：按模型名归因到自己的产品 logo，
+			// 与同家族已入库模型保持一致。否则卡片会回落到首字母占位，
+			// 即用户看到的「logo 变成不存在」。defaultProductIconForModel
+			// 只在 @lobehub/icons 存在可渲染变体时才返回，否则回落空串。
+			if icon := defaultProductIconForModel(model); icon != "" {
+				pricing.Icon = icon
+			}
 		}
 		modelPrice, findPrice := ratio_setting.GetModelPrice(model, false)
 		if findPrice {
