@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"net/http"
 	"strings"
 	"testing"
 	"time"
@@ -498,4 +499,51 @@ func TestUserAuthVersionInvalidatesExistingSession(t *testing.T) {
 	assert.ErrorIs(t, err, ErrLoginSessionRevoked)
 	_, err = CreateLoginSessionAtAuthVersion(user.Id, identity.UserAuthVersion, "2fa", "127.0.0.1", "test-agent")
 	assert.ErrorIs(t, err, ErrLoginSessionRevoked, "a pending 2FA flow must not survive an auth-version change")
+}
+
+// A transient database/Redis failure during refresh must NOT be reported as an
+// invalid token. Mapping it to ErrRefreshTokenInvalid would make the controller
+// clear the refresh cookie and silently log the user out on a backend blip.
+func TestRefreshLoginSessionSurfacesInfraFailureInsteadOfInvalidatingToken(t *testing.T) {
+	useTestSessionSecret(t)
+	user := setupAuthSessionTestDB(t)
+	bundle, err := CreateLoginSession(user.Id, "password", "127.0.0.1", "test-agent")
+	require.NoError(t, err)
+
+	forcedErr := errors.New("forced session lookup failure")
+	callbackName := "test:fail_user_session_lookup"
+	require.NoError(t, model.DB.Callback().Query().Before("gorm:query").Register(callbackName, func(tx *gorm.DB) {
+		if tx.Statement != nil && tx.Statement.Table == "user_sessions" {
+			tx.AddError(forcedErr)
+		}
+	}))
+	t.Cleanup(func() { _ = model.DB.Callback().Query().Remove(callbackName) })
+
+	_, _, err = RefreshLoginSession(bundle.RefreshToken, bundle.Session.SID, "127.0.0.1", "test-agent")
+	assert.ErrorIs(t, err, ErrAuthInternal, "a DB/Redis transient fault must surface as an internal error")
+	assert.NotErrorIs(t, err, ErrRefreshTokenInvalid, "infra failure must not be reported as an invalid token (which would clear the cookie)")
+	assert.NotErrorIs(t, err, ErrLoginSessionRevoked, "infra failure must not be reported as a revoked session")
+}
+
+// A genuinely absent session row must still be treated as an invalid token so
+// the refresh cookie is cleared. This pins the regression the other direction:
+// the internal-error path must not swallow real "log me out" cases.
+func TestRefreshLoginSessionMissingSessionYieldsInvalidToken(t *testing.T) {
+	useTestSessionSecret(t)
+	user := setupAuthSessionTestDB(t)
+	bundle, err := CreateLoginSession(user.Id, "password", "127.0.0.1", "test-agent")
+	require.NoError(t, err)
+
+	require.NoError(t, model.DB.Where("sid = ?", bundle.Session.SID).Delete(&model.UserSession{}).Error)
+
+	_, _, err = RefreshLoginSession(bundle.RefreshToken, bundle.Session.SID, "127.0.0.1", "test-agent")
+	assert.ErrorIs(t, err, ErrRefreshTokenInvalid, "a genuinely absent session must be treated as an invalid token")
+}
+
+// AuthSessionErrorCode must map ErrAuthInternal to a 500, not to an
+// unauthorized response, so the client does not treat it as a logout.
+func TestAuthSessionErrorCodeMapsInternalErrorToServerError(t *testing.T) {
+	status, code := AuthSessionErrorCode(ErrAuthInternal)
+	assert.Equal(t, http.StatusInternalServerError, status)
+	assert.Equal(t, "AUTH_INTERNAL_ERROR", code)
 }
