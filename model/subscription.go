@@ -1399,7 +1399,10 @@ func PreConsumeUserSubscription(requestId string, userId int, modelName string, 
 			Where("user_id = ? AND status = ? AND end_time > ?", userId, "active", now).
 			Order("end_time asc, id asc").
 			Find(&subs).Error; err != nil {
-			return errors.New("no active subscription")
+			// Surface the real database error instead of masking it as
+			// "no active subscription", which would hide infra failures and
+			// incorrectly fall through to regular-quota billing.
+			return err
 		}
 		if len(subs) == 0 {
 			return errors.New("no active subscription")
