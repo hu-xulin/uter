@@ -187,6 +187,48 @@ func TestAdaptorReturnsErrorWhenNoRouteMatchesPath(t *testing.T) {
 	assert.Contains(t, err.Error(), "does not support request path")
 }
 
+func TestAdaptorResolvesPlaygroundPathAgainstUpstreamRoutes(t *testing.T) {
+	// 站内调试台从 /pg/chat/completions 进入，advanced_routes 按上游路径
+	// /v1/chat/completions 登记。适配器必须先把站内别名归一化，否则会判成
+	// 「渠道不支持该路径」，对外表现为分组下没有可用渠道。
+	c, _ := gin.CreateTestContext(httptest.NewRecorder())
+	c.Request = httptest.NewRequest(http.MethodPost, "/pg/chat/completions", nil)
+
+	adaptor := &Adaptor{}
+	info := advancedCustomRelayInfo(&dto.AdvancedCustomConfig{
+		Routes: []dto.AdvancedCustomRoute{
+			{
+				IncomingPath: "/v1/chat/completions",
+				UpstreamPath: "https://upstream.example/v1/chat/completions",
+			},
+		},
+	})
+
+	require.NoError(t, adaptor.resolve(c, info))
+	assert.Equal(t, "/v1/chat/completions", adaptor.route.IncomingPath)
+}
+
+func TestAdaptorStillRejectsRealRouteMismatchFromPlaygroundPath(t *testing.T) {
+	// 归一化不能放宽限制：调试台的 chat 请求打到一个只登记了 /v1/responses 的
+	// 渠道时，仍必须报「不支持该路径」。
+	c, _ := gin.CreateTestContext(httptest.NewRecorder())
+	c.Request = httptest.NewRequest(http.MethodPost, "/pg/chat/completions", nil)
+
+	adaptor := &Adaptor{}
+	info := advancedCustomRelayInfo(&dto.AdvancedCustomConfig{
+		Routes: []dto.AdvancedCustomRoute{
+			{
+				IncomingPath: "/v1/responses",
+				UpstreamPath: "https://upstream.example/v1/responses",
+			},
+		},
+	})
+
+	err := adaptor.resolve(c, info)
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), "does not support request path /v1/chat/completions")
+}
+
 func TestAdaptorReplacesModelPlaceholderInRouteURL(t *testing.T) {
 	adaptor := &Adaptor{}
 	info := advancedCustomRelayInfo(&dto.AdvancedCustomConfig{

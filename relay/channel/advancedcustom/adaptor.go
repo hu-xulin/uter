@@ -10,6 +10,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/samber/lo"
+	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/constant"
 	"github.com/uter-ai/uter/relay/channel"
 	"github.com/uter-ai/uter/relay/channel/claude"
@@ -381,12 +382,14 @@ func (a *Adaptor) resolve(c *gin.Context, info *relaycommon.RelayInfo) error {
 
 func incomingRequestPath(c *gin.Context, info *relaycommon.RelayInfo) string {
 	if c != nil && c.Request != nil && c.Request.URL != nil {
-		return c.Request.URL.Path
+		// 站内调试台从 /pg/* 进来，advanced_routes 按上游路径 /v1/* 登记；
+		// 不归一化就会在这里判成「渠道不支持该路径」。
+		return common.CanonicalUpstreamPath(c.Request.URL.Path)
 	}
 	if info == nil {
 		return ""
 	}
-	return strings.Split(info.RequestURLPath, "?")[0]
+	return common.CanonicalUpstreamPath(info.RequestURLPath)
 }
 
 func (a *Adaptor) routeURL(info *relaycommon.RelayInfo) (string, error) {
