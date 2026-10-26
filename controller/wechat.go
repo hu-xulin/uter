@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"crypto/subtle"
 	"errors"
 	"fmt"
 	"net/http"
@@ -61,6 +62,38 @@ func WeChatAuth(c *gin.Context) {
 		common.ApiErrorT(c, "{{provider}} login and registration has not been enabled by administrator", providerParams("WeChat"))
 		return
 	}
+	// CSRF protection: the login must be tied to a state token issued to this
+	// browser (the oauth_login_nonce cookie) when the flow started. Without it
+	// an attacker could force a victim's browser into an attacker-controlled
+	// WeChat login.
+	state := c.Query("state")
+	pendingFlow, err := model.GetAuthFlow(state, model.AuthFlowMatch{
+		Purpose:  model.AuthFlowPurposeOAuth,
+		Provider: "wechat",
+		Intent:   model.AuthFlowIntentLogin,
+	})
+	if err != nil {
+		common.ApiErrorT(c, "Invalid or expired login session")
+		return
+	}
+	var loginPayload oauthFlowPayload
+	if err := common.UnmarshalJsonStr(pendingFlow.Payload, &loginPayload); err != nil || loginPayload.LoginNonce == "" {
+		common.ApiErrorT(c, "Invalid or expired login session")
+		return
+	}
+	cookieNonce, err := c.Cookie(oauthLoginNonceCookie)
+	if err != nil || subtle.ConstantTimeCompare([]byte(cookieNonce), []byte(loginPayload.LoginNonce)) != 1 {
+		common.ApiErrorT(c, "Invalid or expired login session")
+		return
+	}
+	if _, err := model.ConsumeAuthFlow(state, model.AuthFlowMatch{
+		Purpose:  model.AuthFlowPurposeOAuth,
+		Provider: "wechat",
+		Intent:   model.AuthFlowIntentLogin,
+	}); err != nil {
+		common.ApiErrorT(c, "Invalid or expired login session")
+		return
+	}
 	code := c.Query("code")
 	wechatId, err := getWeChatIdByCode(code)
 	if err != nil {
@@ -105,13 +138,22 @@ func WeChatAuth(c *gin.Context) {
 }
 
 type wechatBindRequest struct {
-	Code string `json:"code"`
+	Code  string `json:"code"`
+	State string `json:"state"`
 }
 
 func WeChatBind(c *gin.Context) {
 	identity, ok := middleware.GetStepUpIdentity(c)
 	if !ok {
 		writeSecurityOperationError(c, service.ErrAuthTokenInvalid)
+		return
+	}
+	// Bind callbacks must be pinned to the authenticated session that started
+	// the flow, so a state token cannot be replayed against another session
+	// (cross-session binding CSRF).
+	sessionIdentity, ok := middleware.GetSessionAuthIdentity(c)
+	if !ok || sessionIdentity.UserID != identity.UserID || sessionIdentity.SessionID != identity.SessionID {
+		common.ApiErrorT(c, "Invalid or expired binding session")
 		return
 	}
 	succeeded, notificationFailed := false, false
@@ -125,6 +167,27 @@ func WeChatBind(c *gin.Context) {
 	var req wechatBindRequest
 	if err := common.DecodeJson(c.Request.Body, &req); err != nil {
 		common.ApiErrorT(c, "Invalid request")
+		return
+	}
+	state := strings.TrimSpace(req.State)
+	if _, err := model.GetAuthFlow(state, model.AuthFlowMatch{
+		Purpose:   model.AuthFlowPurposeOAuth,
+		Provider:  "wechat",
+		Intent:    model.AuthFlowIntentBind,
+		UserId:    sessionIdentity.UserID,
+		SessionId: sessionIdentity.SessionID,
+	}); err != nil {
+		common.ApiErrorT(c, "Invalid or expired binding session")
+		return
+	}
+	if _, err := model.ConsumeAuthFlow(state, model.AuthFlowMatch{
+		Purpose:   model.AuthFlowPurposeOAuth,
+		Provider:  "wechat",
+		Intent:    model.AuthFlowIntentBind,
+		UserId:    sessionIdentity.UserID,
+		SessionId: sessionIdentity.SessionID,
+	}); err != nil {
+		common.ApiErrorT(c, "Invalid or expired binding session")
 		return
 	}
 	code := strings.TrimSpace(req.Code)
@@ -165,4 +228,80 @@ func WeChatBind(c *gin.Context) {
 		"data":    gin.H{"notification_warning": notificationFailed},
 	})
 	return
+}
+
+// wechatStateRequest selects the WeChat auth intent for which a state token is
+// being minted.
+type wechatStateRequest struct {
+	Intent string `json:"intent"`
+}
+
+// GenerateWeChatCode issues a CSRF-bound state token for WeChat login or binding,
+// mirroring GenerateOAuthCode. Login tokens set the oauth_login_nonce cookie so
+// the callback can prove it originated from the browser that started the flow;
+// bind tokens are pinned to the authenticated session that requested them, which
+// WeChatBind later re-checks to prevent cross-session binding replay.
+func GenerateWeChatCode(c *gin.Context) {
+	var req wechatStateRequest
+	if err := common.DecodeJson(c.Request.Body, &req); err != nil {
+		common.ApiErrorT(c, "Invalid parameters")
+		return
+	}
+	req.Intent = strings.TrimSpace(req.Intent)
+	if req.Intent != model.AuthFlowIntentLogin && req.Intent != model.AuthFlowIntentBind {
+		common.ApiErrorT(c, "Invalid parameters")
+		return
+	}
+
+	payload := oauthFlowPayload{}
+	match := model.AuthFlowMatch{
+		Purpose:  model.AuthFlowPurposeOAuth,
+		Provider: "wechat",
+		Intent:   req.Intent,
+	}
+	expiresAt := time.Now().Add(oauthAuthFlowTTL)
+
+	if req.Intent == model.AuthFlowIntentLogin {
+		loginNonce, err := generateOAuthLoginNonce()
+		if err != nil {
+			writeSecurityOperationError(c, err)
+			return
+		}
+		payload.LoginNonce = loginNonce
+	} else {
+		identity, ok := middleware.GetSessionAuthIdentity(c)
+		if !ok {
+			writeAccountStatusError(c, http.StatusUnauthorized, "Sign in to bind an account")
+			return
+		}
+		match.UserId = identity.UserID
+		match.SessionId = identity.SessionID
+	}
+
+	payloadBytes, err := common.Marshal(payload)
+	if err != nil {
+		writeSecurityOperationError(c, err)
+		return
+	}
+	state, _, err := model.CreateAuthFlow(model.AuthFlowCreate{
+		Purpose:   model.AuthFlowPurposeOAuth,
+		Provider:  "wechat",
+		Intent:    req.Intent,
+		UserId:    match.UserId,
+		SessionId: match.SessionId,
+		Payload:   string(payloadBytes),
+		ExpiresAt: expiresAt,
+	})
+	if err != nil {
+		writeSecurityOperationError(c, err)
+		return
+	}
+	if req.Intent == model.AuthFlowIntentLogin {
+		setOAuthLoginNonceCookie(c, payload.LoginNonce)
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "",
+		"data":    gin.H{"flow_token": state, "expires_at": expiresAt.Unix()},
+	})
 }
