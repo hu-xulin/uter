@@ -359,7 +359,7 @@ export function PromptInputAttachment({
                 {filename || (isImage ? 'Image' : 'Attachment')}
               </h4>
               {data.mediaType && (
-                <p className='text-muted-foreground truncate font-mono text-xs'>
+                <p className='text-muted-foreground truncate font-mono text-mono'>
                   {data.mediaType}
                 </p>
               )}

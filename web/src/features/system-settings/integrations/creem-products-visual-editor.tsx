@@ -203,7 +203,7 @@ export function CreemProductsVisualEditor({
                 id: 'price',
                 header: t('Price'),
                 cell: (product) => (
-                  <span className='font-mono text-sm'>
+                  <span className='font-mono text-mono'>
                     {formatCreemPrice(product.price, product.currency)}
                   </span>
                 ),
@@ -212,7 +212,7 @@ export function CreemProductsVisualEditor({
                 id: 'quota',
                 header: t('Quota'),
                 cell: (product) => (
-                  <span className='font-mono text-sm'>
+                  <span className='font-mono text-mono'>
                     {formatQuotaShort(product.quota)}
                   </span>
                 ),

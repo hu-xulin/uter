@@ -100,9 +100,9 @@ export function useModelsColumns(
       cell: ({ row }) => {
         const model = row.original
         const vendor = vendorMap.get(model.vendor_id ?? 0)
-        // The model's own product logo renders in brand colors; a vendor's
-        // company logo standing in for it stays monochrome.
-        const iconKey = resolveModelIconKey(model.icon, vendor?.icon)
+        // 模型列只渲染模型自己的产品 logo（彩色）；供应商公司 logo 只在
+        // 供应商列/筛选处出现（monoIconName 渲染），不做模型图标回退。
+        const iconKey = resolveModelIconKey(model.icon)
         return (
           <div className='flex max-w-[320px] min-w-0 items-start gap-2.5 py-1'>
             <span className='mt-1 flex size-6 shrink-0 items-center justify-center'>
@@ -118,7 +118,7 @@ export function useModelsColumns(
               <div className='flex min-w-0 items-center gap-1'>
                 <Button
                   variant='link'
-                  className='text-foreground h-auto min-w-0 shrink justify-start p-0 font-mono text-sm'
+                  className='text-foreground h-auto min-w-0 shrink justify-start p-0 font-mono text-mono'
                   title={model.model_name}
                   onClick={() => {
                     setCurrentRow(model)

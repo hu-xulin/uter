@@ -207,7 +207,7 @@ function ResourceCell(props: ResourceCellProps) {
   const content = (
     <div className='flex items-center gap-2'>
       <RingProgress percent={percent} />
-      <span className='font-mono text-sm tabular-nums'>
+      <span className='font-mono text-mono tabular-nums'>
         {formatPercent(props.value)}
       </span>
     </div>
@@ -327,7 +327,7 @@ function SystemInstancesList(props: SystemInstancesTableProps) {
                                   <div className='mb-1 font-medium'>
                                     {t('Example')}
                                   </div>
-                                  <code className='bg-muted block rounded-md px-2 py-1.5 font-mono text-sm break-all'>
+                                  <code className='bg-muted block rounded-md px-2 py-1.5 font-mono text-mono break-all'>
                                     NODE_NAME=uter-master-1
                                   </code>
                                 </div>
@@ -341,7 +341,7 @@ function SystemInstancesList(props: SystemInstancesTableProps) {
                           </Popover>
                         )}
                       </div>
-                      <div className='text-muted-foreground truncate font-mono text-sm'>
+                      <div className='text-muted-foreground truncate font-mono text-mono'>
                         {instance.info?.host?.hostname || '-'}
                       </div>
                     </div>
@@ -418,7 +418,7 @@ function SystemInstancesList(props: SystemInstancesTableProps) {
                   />
                 </TableCell>
                 <TableCell className='py-2.5 align-middle'>
-                  <div className='truncate font-mono text-xs'>
+                  <div className='truncate font-mono text-mono'>
                     {runtimeLabel(instance)}
                   </div>
                 </TableCell>

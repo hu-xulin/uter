@@ -265,7 +265,7 @@ function TaskBillingPreview(props: TaskBillingPreviewProps) {
               t
             ) || t('All requests')}
           </Badge>
-          <code className='font-mono text-xs break-words'>{formula}</code>
+          <code className='font-mono text-mono break-words'>{formula}</code>
         </div>
       ) : (
         <p className='text-muted-foreground text-sm'>
@@ -630,7 +630,7 @@ export const TaskUsagePricingEditor = memo(function TaskUsagePricingEditor(
                 }
                 placeholder='(header("x-priority") == "high" ? 2 : 1)'
                 rows={3}
-                className='font-mono text-xs'
+                className='font-mono text-mono'
                 spellCheck={false}
               />
               <FieldDescription>
@@ -670,7 +670,7 @@ export const TaskUsagePricingEditor = memo(function TaskUsagePricingEditor(
               onChange={(event) => handleRawChange(event.target.value)}
               placeholder='tier("base", u("seconds") * 0.4)'
               rows={7}
-              className='font-mono text-xs'
+              className='font-mono text-mono'
               spellCheck={false}
             />
             <TaskBillingPreview

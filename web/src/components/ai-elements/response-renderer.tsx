@@ -122,7 +122,7 @@ function renderNode(
   if (node.type === 'inline_code' && 'code' in node) {
     return (
       <code
-        className='bg-muted/70 text-foreground rounded px-1 py-0.5 font-mono text-sm'
+        className='bg-muted/70 text-foreground rounded px-1 py-0.5 font-mono text-mono'
         key={key}
       >
         {String(node.code)}

@@ -165,7 +165,7 @@ export function ChatSettingsVisualEditor({
           {
             id: 'url',
             header: t('URL'),
-            cellClassName: 'max-w-md truncate font-mono text-sm',
+            cellClassName: 'max-w-md truncate font-mono text-mono',
             cell: (chat) => chat.url,
           },
           {

@@ -107,7 +107,7 @@ export function SecretTextarea({
           // 保留 react-hook-form 的失焦校验语义。
           onBlur?.(event)
         }}
-        className={cn('pr-9 font-mono text-xs', editing && 'border-ring')}
+        className={cn('pr-9 font-mono text-mono', editing && 'border-ring')}
       />
       {!editing && !isBlank && (
         <button

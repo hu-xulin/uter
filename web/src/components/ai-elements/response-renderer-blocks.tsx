@@ -193,7 +193,7 @@ function renderDefinitionItem(
 export function renderMathBlock(node: MathBlockNode, key: string): ReactNode {
   return (
     <pre
-      className='border-border bg-muted/40 my-4 overflow-x-auto rounded-lg border p-4 font-mono text-sm'
+      className='border-border bg-muted/40 my-4 overflow-x-auto rounded-lg border p-4 font-mono text-mono'
       key={key}
     >
       {node.content}
@@ -204,7 +204,7 @@ export function renderMathBlock(node: MathBlockNode, key: string): ReactNode {
 export function renderMathInline(node: MathInlineNode, key: string): ReactNode {
   return (
     <code
-      className='bg-muted/70 text-foreground rounded px-1 py-0.5 font-mono text-sm'
+      className='bg-muted/70 text-foreground rounded px-1 py-0.5 font-mono text-mono'
       key={key}
     >
       {node.content}

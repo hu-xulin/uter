@@ -86,7 +86,7 @@ export function PluginMetadataCard(props: PluginMetadataCardProps) {
               {t('Default base URL')}
             </dt>
             <dd className='flex items-start gap-2'>
-              <span className='min-w-0 flex-1 pt-1 font-mono text-xs break-all'>
+              <span className='min-w-0 flex-1 pt-1 font-mono text-mono break-all'>
                 {props.meta.baseUrl || t('Not declared')}
               </span>
               {canCopyBaseUrl && (

@@ -46,7 +46,7 @@ function ModelChangeList(props: { title: string; models: string[] }) {
         {props.title} ({formatNumber(props.models.length, locale)})
       </h3>
       {props.models.length ? (
-        <ul className='max-h-40 space-y-1 overflow-y-auto rounded-md border p-3 font-mono text-xs break-all'>
+        <ul className='max-h-40 space-y-1 overflow-y-auto rounded-md border p-3 font-mono text-mono break-all'>
           {props.models.map((model) => (
             <li key={model}>{model}</li>
           ))}

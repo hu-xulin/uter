@@ -395,7 +395,7 @@ export function MultiKeyManageDialog({
                     id: 'index',
                     header: t('Index'),
                     className: 'w-20',
-                    cellClassName: 'font-mono text-sm',
+                    cellClassName: 'font-mono text-mono',
                     cell: (key) => `#${key.index + 1}`,
                   },
                   {

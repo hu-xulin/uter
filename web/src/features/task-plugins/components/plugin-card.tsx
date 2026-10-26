@@ -81,7 +81,7 @@ function PluginCardComponent({ row }: { row: Row<TaskPluginListItem> }) {
             <div className='truncate text-sm font-medium'>
               {row.original.meta.name}
             </div>
-            <div className='text-muted-foreground truncate font-mono text-xs'>
+            <div className='text-muted-foreground truncate font-mono text-mono'>
               {row.original.meta.key}
             </div>
           </div>

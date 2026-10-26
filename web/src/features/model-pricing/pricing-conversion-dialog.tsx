@@ -114,7 +114,7 @@ export function PricingConversionDialog(props: {
       handleConfirm={props.onConfirm}
       className='max-h-[min(90dvh,var(--dialog-available-height))] overflow-y-auto data-[size=default]:max-w-[calc(100%-2rem)] data-[size=default]:sm:max-w-5xl'
     >
-      <p className='font-mono text-sm break-all'>{props.preview.modelName}</p>
+      <p className='font-mono text-mono break-all'>{props.preview.modelName}</p>
       <div className='grid min-w-0 gap-4 md:grid-cols-2'>
         <section
           aria-label={t('Before conversion')}
@@ -134,7 +134,7 @@ export function PricingConversionDialog(props: {
                   className='flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1'
                 >
                   <dt className='text-muted-foreground text-sm'>{row.label}</dt>
-                  <dd className='font-mono text-sm tabular-nums'>
+                  <dd className='font-mono text-mono tabular-nums'>
                     {row.value}
                     {row.unit !== 'none' && <> / {unitLabel}</>}
                   </dd>
@@ -162,7 +162,7 @@ export function PricingConversionDialog(props: {
                     {row.tierLabel && `${row.tierLabel} · `}
                     {t(row.label)}
                   </dt>
-                  <dd className='font-mono text-sm tabular-nums'>
+                  <dd className='font-mono text-mono tabular-nums'>
                     {formatPricingAmount(row.value, props.currency)} /{' '}
                     {unitLabel}
                   </dd>
@@ -175,7 +175,7 @@ export function PricingConversionDialog(props: {
                 className='flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1'
               >
                 <dt className='text-muted-foreground text-sm'>{row.label}</dt>
-                <dd className='font-mono text-sm tabular-nums'>{row.value}</dd>
+                <dd className='font-mono text-mono tabular-nums'>{row.value}</dd>
               </div>
             ))}
           </dl>

@@ -118,7 +118,7 @@ export function SystemTasksTable(props: SystemTasksTableProps) {
                   <div className='font-medium'>
                     {t(SYSTEM_TASK_TYPE_LABEL[task.type] ?? task.type)}
                   </div>
-                  <div className='text-muted-foreground font-mono text-sm'>
+                  <div className='text-muted-foreground font-mono text-mono'>
                     {TYPE_DISPLAY_ID[task.type] ?? task.type}
                   </div>
                 </div>
@@ -149,7 +149,7 @@ export function SystemTasksTable(props: SystemTasksTableProps) {
                   </span>
                 </div>
               </TableCell>
-              <TableCell className='text-muted-foreground max-w-[280px] truncate py-3 align-middle font-mono text-sm'>
+              <TableCell className='text-muted-foreground max-w-[280px] truncate py-3 align-middle font-mono text-mono'>
                 {task.locked_by || '-'}
               </TableCell>
               <TableCell

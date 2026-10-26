@@ -156,7 +156,7 @@ export function ServerLogFiles() {
                   <span className='text-muted-foreground'>
                     {t('Log Directory')}:
                   </span>{' '}
-                  <span className='font-mono text-xs'>
+                  <span className='font-mono text-mono'>
                     {serverLogInfo.log_dir}
                   </span>
                 </div>

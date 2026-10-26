@@ -300,7 +300,7 @@ export function UploadDialog(props: UploadDialogProps) {
 
         <CodeBlockEditor
           actions={
-            <span className='text-muted-foreground font-mono text-sm'>
+            <span className='text-muted-foreground font-mono text-mono'>
               {t('{{bytes}} bytes', { bytes: pluginSourceByteLength(source) })}
             </span>
           }

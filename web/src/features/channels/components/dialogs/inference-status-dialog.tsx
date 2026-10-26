@@ -450,7 +450,7 @@ export function InferenceStatusDialog(props: InferenceStatusDialogProps) {
           <dl className='grid grid-cols-2 gap-2 text-sm sm:grid-cols-4'>
             {Object.entries(snapshot.endpoints).map(([path, endpoint]) => (
               <div key={path} className='rounded-md border p-2'>
-                <dt className='font-mono text-xs'>{path}</dt>
+                <dt className='font-mono text-mono'>{path}</dt>
                 <dd
                   className={
                     endpoint.error ? 'text-destructive' : 'text-foreground'

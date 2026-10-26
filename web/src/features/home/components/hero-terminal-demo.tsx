@@ -243,7 +243,7 @@ export function HeroTerminalDemo(props: HeroTerminalDemoProps) {
           })}
           <div className='ml-auto flex items-center gap-2 pr-2 sm:pr-3'>
             <span className='inline-block size-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.45)]' />
-            <span className='text-foreground/40 font-mono text-sm uppercase'>
+            <span className='text-foreground/40 font-mono text-mono uppercase'>
               200 ok
             </span>
           </div>
@@ -258,7 +258,7 @@ export function HeroTerminalDemo(props: HeroTerminalDemoProps) {
         >
           <span
             className={cn(
-              'rounded-md px-1.5 py-0.5 font-mono text-sm font-semibold',
+              'rounded-md px-1.5 py-0.5 font-mono text-mono font-semibold',
               accent.badge
             )}
           >
@@ -266,7 +266,7 @@ export function HeroTerminalDemo(props: HeroTerminalDemoProps) {
           </span>
           <code
             className={cn(
-              'text-foreground/75 truncate font-mono text-sm transition-opacity duration-200',
+              'text-foreground/75 truncate font-mono text-mono transition-opacity duration-200',
               transitioning ? 'opacity-0' : 'opacity-100'
             )}
           >
@@ -275,7 +275,7 @@ export function HeroTerminalDemo(props: HeroTerminalDemoProps) {
         </div>
 
         {/* Body — fixed rows so neither block shifts when switching demos */}
-        <div className='grid h-[400px] grid-rows-[235px_minmax(0,1fr)] font-mono text-sm leading-[1.55]'>
+        <div className='grid h-[400px] grid-rows-[235px_minmax(0,1fr)] font-mono text-mono leading-[1.55]'>
           {/* Request */}
           <RequestBlock demo={demo} transitioning={transitioning} />
 

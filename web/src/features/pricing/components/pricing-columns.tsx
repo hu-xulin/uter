@@ -68,7 +68,8 @@ export function usePricingColumns(
       ),
       cell: ({ row }) => {
         const model = row.original
-        const modelIconKey = resolveModelIconKey(model.icon, model.vendor_icon)
+        // 模型列只渲染模型自己的产品 logo（彩色），不用供应商公司 logo。
+        const modelIconKey = resolveModelIconKey(model.icon)
         const modelIcon = modelIconKey
           ? getLobeIcon(modelIconKey, 14)
           : null
@@ -76,7 +77,7 @@ export function usePricingColumns(
         return (
           <div className='flex max-w-full min-w-0 items-center gap-2'>
             {modelIcon}
-            <span className='truncate font-mono text-sm font-medium'>
+            <span className='truncate font-mono text-mono font-medium'>
               {model.model_name}
             </span>
             <DiscountTag

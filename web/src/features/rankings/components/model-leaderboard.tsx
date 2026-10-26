@@ -90,8 +90,8 @@ function ModelList(props: {
               modelName={row.model_name}
               className={
                 compact
-                  ? 'text-foreground block truncate font-mono text-sm font-medium'
-                  : 'text-foreground block truncate font-mono text-sm font-medium'
+                  ? 'text-foreground block truncate font-mono text-mono font-medium'
+                  : 'text-foreground block truncate font-mono text-mono font-medium'
               }
             >
               {row.model_name}

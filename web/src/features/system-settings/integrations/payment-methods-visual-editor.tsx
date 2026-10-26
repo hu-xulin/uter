@@ -338,7 +338,7 @@ export function PaymentMethodsVisualEditor({
                         className='text-muted-foreground size-5 shrink-0'
                         title={iconName}
                       />
-                      <span className='text-muted-foreground truncate font-mono text-sm'>
+                      <span className='text-muted-foreground truncate font-mono text-mono'>
                         {iconName}
                       </span>
                     </div>
@@ -352,7 +352,7 @@ export function PaymentMethodsVisualEditor({
                 header: t('Min Top-up'),
                 cell: (method) =>
                   method.min_topup ? (
-                    <span className='font-mono text-sm'>
+                    <span className='font-mono text-mono'>
                       {method.min_topup}
                     </span>
                   ) : (
@@ -439,7 +439,7 @@ export function PaymentMethodsVisualEditor({
                             className='text-muted-foreground size-5 shrink-0'
                             title={iconName}
                           />
-                          <span className='text-muted-foreground truncate font-mono text-xs'>
+                          <span className='text-muted-foreground truncate font-mono text-mono'>
                             {iconName}
                           </span>
                         </div>

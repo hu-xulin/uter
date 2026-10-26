@@ -260,11 +260,11 @@ function TaskArtifactCard(props: { artifact: TaskArtifact }) {
           </span>
         </CardTitle>
         <CardDescription className='min-w-0'>
-          <span className='block truncate font-mono text-xs'>
+          <span className='block truncate font-mono text-mono'>
             {props.artifact.key}
           </span>
           {props.artifact.mime_type ? (
-            <span className='block truncate font-mono text-sm'>
+            <span className='block truncate font-mono text-mono'>
               {props.artifact.mime_type}
             </span>
           ) : null}

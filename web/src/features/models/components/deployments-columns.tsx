@@ -235,7 +235,7 @@ export function useDeploymentsColumns(opts: {
           ts = Number(row.original.created_at)
         }
         return (
-          <div className='min-w-[140px] font-mono text-sm'>
+          <div className='min-w-[140px] font-mono text-mono'>
             {formatTimestampToDate(ts)}
           </div>
         )

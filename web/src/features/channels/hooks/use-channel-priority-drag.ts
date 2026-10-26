@@ -401,7 +401,7 @@ export function useChannelPriorityDrag(options: DragOptions) {
           const priority = document.createElement('span')
           priority.dataset.columnId = 'priority'
           priority.className =
-            'text-muted-foreground shrink-0 font-mono text-xs'
+            'text-muted-foreground shrink-0 font-mono text-mono'
           const value = document.createElement('span')
           value.dataset.slot = 'numeric-spinner-value'
           value.textContent =

@@ -360,7 +360,7 @@ export function ModelMappingBatchDialog(props: ModelMappingBatchDialogProps) {
             {derivation.pairs.length > 0 && hasRule && (
               <ul
                 aria-label={t('Preview')}
-                className='flex max-h-56 flex-col gap-2 overflow-y-auto font-mono text-xs'
+                className='flex max-h-56 flex-col gap-2 overflow-y-auto font-mono text-mono'
               >
                 {derivation.pairs.map((pair) => (
                   <li

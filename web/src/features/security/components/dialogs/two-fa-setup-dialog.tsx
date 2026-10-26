@@ -140,7 +140,7 @@ export function TwoFASetupDialog(props: TwoFASetupDialogProps) {
                       <p className='text-muted-foreground text-xs'>
                         {t('Or enter this key manually:')}
                       </p>
-                      <code className='font-mono text-sm'>
+                      <code className='font-mono text-mono'>
                         {props.setupData.secret}
                       </code>
                     </div>
@@ -170,7 +170,7 @@ export function TwoFASetupDialog(props: TwoFASetupDialogProps) {
                     {props.setupData.backup_codes.map((code) => (
                       <div
                         key={code}
-                        className='bg-muted rounded-md p-2 text-center font-mono text-sm'
+                        className='bg-muted rounded-md p-2 text-center font-mono text-mono'
                       >
                         {code}
                       </div>

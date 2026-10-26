@@ -146,7 +146,7 @@ export function BillingHistoryDialog({
                       <div className='flex items-start justify-between gap-2'>
                         <div className='flex-1 space-y-1'>
                           <div className='flex min-w-0 items-center gap-2'>
-                            <code className='text-foreground truncate font-mono text-sm'>
+                            <code className='text-foreground truncate font-mono text-mono'>
                               {record.trade_no}
                             </code>
                             <Button

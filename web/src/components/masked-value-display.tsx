@@ -34,7 +34,7 @@ export function MaskedValueTrigger(props: ComponentProps<typeof Button>) {
       size='sm'
       {...props}
       className={cn(
-        'text-muted-foreground h-7 max-w-full min-w-0 justify-start truncate px-0 font-mono text-sm hover:bg-transparent aria-expanded:bg-transparent',
+        'text-muted-foreground h-7 max-w-full min-w-0 justify-start truncate px-0 font-mono text-mono hover:bg-transparent aria-expanded:bg-transparent',
         props.className
       )}
     />
@@ -71,7 +71,7 @@ export function MaskedValueDisplay(props: MaskedValueDisplayProps) {
           <div className='space-y-2'>
             <p className='text-muted-foreground text-xs'>{props.label}</p>
             <pre
-              className='bg-muted/50 max-h-[50vh] overflow-auto rounded-md border px-3 py-2 font-mono text-sm leading-[var(--ds-line-mono-dense)] break-all whitespace-pre-wrap'
+              className='bg-muted/50 max-h-[50vh] overflow-auto rounded-md border px-3 py-2 font-mono text-mono leading-[var(--ds-line-mono-dense)] break-all whitespace-pre-wrap'
               style={{ wordBreak: 'break-all' }}
             >
               {props.fullValue}

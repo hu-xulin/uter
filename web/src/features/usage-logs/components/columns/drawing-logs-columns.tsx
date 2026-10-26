@@ -95,7 +95,7 @@ export function useDrawingLogsColumns(
 
         return (
           <div className='flex min-w-0 flex-col gap-0.5'>
-            <span className='truncate font-mono text-xs tabular-nums'>
+            <span className='truncate font-mono text-mono tabular-nums'>
               {formatTimestampToDate(submitTime, 'milliseconds')}
             </span>
             <StatusBadge

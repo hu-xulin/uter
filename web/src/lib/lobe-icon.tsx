@@ -226,21 +226,19 @@ function isBareVariantSuffix(suffix: string): boolean {
 /**
  * Pick the icon for a model entry.
  *
- * A model's own icon is its product logo and renders in brand colors. When the
- * model carries no icon of its own, the vendor's company logo stands in, and
- * that one stays monochrome — the two kinds of logo then remain
- * distinguishable at a glance: colored product logos on the cards, black-and-
- * white company logos everywhere a vendor is named.
+ * A model renders **only its own product logo**, in brand colors. There is
+ * deliberately no vendor fallback: a vendor's company logo (black-and-white,
+ * configured per-vendor in 模型-供应商) belongs to vendor surfaces — filter
+ * chips, vendor lists, vendor columns — and must never stand in for a model's
+ * logo on a model card. A model without a product logo of its own renders the
+ * initial-letter placeholder at the call site.
+ *
+ * This is a hard product rule, not a styling preference: silently substituting
+ * the company logo is what repeatedly put company logos on pricing cards. The
+ * single-parameter signature keeps the fallback from being reintroduced.
  */
-export function resolveModelIconKey(
-  modelIcon: string | undefined | null,
-  vendorIcon: string | undefined | null
-): string {
-  const own = (modelIcon ?? '').trim()
-  if (own) return colorIconName(own)
-  const vendor = (vendorIcon ?? '').trim()
-  if (vendor) return monoIconName(vendor)
-  return ''
+export function resolveModelIconKey(modelIcon: string | undefined | null): string {
+  return colorIconName(modelIcon)
 }
 
 /**
