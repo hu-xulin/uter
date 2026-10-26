@@ -22,7 +22,7 @@ For commercial licensing, please contact support@uter.ai
  *
  * The Refresh Cookie is `HttpOnly` and scoped to `/api/user/auth`, so a page at
  * `/` cannot read it and cannot tell an anonymous visitor from a returning one.
- * The server therefore writes `uter_has_session=1` alongside it — same
+ * The server therefore writes `new_api_has_session=1` alongside it — same
  * expiry, `Path=/`, not `HttpOnly` — purely so the frontend can skip a refresh
  * that is certain to fail.
  *
@@ -33,8 +33,26 @@ For commercial licensing, please contact support@uter.ai
  * created before this cookie shipped). Callers must treat a missing hint as
  * "not worth a request right now", not as "signed out", and must still be able
  * to reach the server when authentication actually matters.
+ *
+ * Two names are accepted because the two sides drifted apart: the Go service
+ * still writes `new_api_has_session` (`service.SessionHintCookieName`), while
+ * the frontend used to look for `uter_has_session` alone. Reading only one of
+ * them made `hasSessionHint()` a constant `false`, so the public boot path
+ * concluded "anonymous" for visitors who still held a valid Refresh Cookie:
+ * the homepage rendered the signed-out header, and the first navigation that
+ * really needed a session (管理 / Console) silently refreshed the cookie and
+ * flipped the visitor to authenticated. Both names are read until the legacy
+ * one ages out of browsers.
  */
 export const SESSION_HINT_COOKIE_NAME = 'uter_has_session'
+
+/** The name the Go service writes today; kept for cookie-name compatibility. */
+export const LEGACY_SESSION_HINT_COOKIE_NAME = 'new_api_has_session'
+
+const SESSION_HINT_COOKIE_NAMES = [
+  SESSION_HINT_COOKIE_NAME,
+  LEGACY_SESSION_HINT_COOKIE_NAME,
+]
 
 /** Read a cookie value out of a `document.cookie`-shaped string. */
 export function readCookie(cookieHeader: string, name: string): string | null {
@@ -56,5 +74,7 @@ export function readCookie(cookieHeader: string, name: string): string | null {
  */
 export function hasSessionHint(): boolean {
   if (typeof document === 'undefined') return true
-  return readCookie(document.cookie, SESSION_HINT_COOKIE_NAME) !== null
+  return SESSION_HINT_COOKIE_NAMES.some(
+    (name) => readCookie(document.cookie, name) !== null
+  )
 }
