@@ -3,6 +3,7 @@ package model
 import (
 	"slices"
 
+	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/constant"
 	"github.com/uter-ai/uter/dto"
 )
@@ -97,7 +98,10 @@ func channelMatchesFilter(ch *Channel, modelName string, filter dto.ChannelFilte
 			return true
 		}
 		config := ch.GetOtherSettings().AdvancedCustom
-		return config != nil && config.SupportsPathForModel(filter.RequestPath, modelName)
+		// 渠道的 advanced_routes 按**上游路径**登记，而站内调试台从 /pg/*
+		// 进来（真正转发时才改写成 /v1/*）。不归一化会把 /pg/* 当成一个
+		// 没有渠道声明过的端点，把所有按上游路径配置的渠道全部判为不支持。
+		return config != nil && config.SupportsPathForModel(common.CanonicalUpstreamPath(filter.RequestPath), modelName)
 	case dto.FilterTaskPluginIdentity:
 		if filter.TaskPluginKey == "" {
 			return ch.Type != constant.ChannelTypeTaskPlugin
