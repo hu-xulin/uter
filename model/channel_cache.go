@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"math"
 	"math/rand"
+	"slices"
 	"sort"
 	"strings"
 	"sync"
@@ -173,11 +174,13 @@ func GetRandomSatisfiedChannel(
 
 	// First, try to find channels with the exact model name.
 	channels, _ := filterCandidateIDs(group2model2channels[group][model], model, filters)
+	channels = filterEnabledCandidateIDs(channels)
 
 	// If no channels found, try to find channels with the normalized model name.
 	if len(channels) == 0 {
 		normalizedModel := ratio_setting.RoutingMatchModelName(model)
 		channels, _ = filterCandidateIDs(group2model2channels[group][normalizedModel], model, filters)
+		channels = filterEnabledCandidateIDs(channels)
 	}
 
 	if len(channels) == 0 {
@@ -451,29 +454,98 @@ func CacheGetChannelInfo(id int) (*ChannelInfo, error) {
 	return &c.ChannelInfo, nil
 }
 
-func CacheUpdateChannelStatus(id int, status int) {
-	if !common.MemoryCacheEnabled {
+// syncChannelPoolMembership mirrors a channel's new status into the
+// (group, model) candidate pool.
+//
+// The pool is otherwise only rebuilt by InitChannelCache (every
+// SYNC_FREQUENCY seconds), so a runtime status change would stay invisible to
+// channel selection for up to a full sync interval: a channel auto-disabled
+// after relay errors keeps being picked by the weighted random selector, and a
+// channel re-enabled after a successful test stays unreachable — traffic is
+// routed to a channel that is down, or a healthy one returns 503.
+//
+// Caller must hold channelSyncLock.
+func syncChannelPoolMembership(channel *Channel) {
+	if group2model2channels == nil || channel == nil {
 		return
 	}
-	channelSyncLock.Lock()
-	defer channelSyncLock.Unlock()
-	if channel, ok := channelsIDM[id]; ok {
-		channel.Status = status
-	}
-	if status != common.ChannelStatusEnabled {
-		// delete the channel from group2model2channels
-		for group, model2channels := range group2model2channels {
-			for model, channels := range model2channels {
-				for i, channelId := range channels {
-					if channelId == id {
-						// remove the channel from the slice
-						group2model2channels[group][model] = append(channels[:i], channels[i+1:]...)
-						break
-					}
-				}
+	for group := range strings.SplitSeq(channel.Group, ",") {
+		group = strings.TrimSpace(group)
+		if group == "" {
+			continue
+		}
+		model2channels, ok := group2model2channels[group]
+		if !ok {
+			if channel.Status != common.ChannelStatusEnabled {
+				continue
 			}
+			// InitChannelCache pre-creates a map per group found in the ability
+			// table; a channel whose group has no ability row yet would panic on
+			// a nil-map write, so create it here instead.
+			model2channels = make(map[string][]int)
+			group2model2channels[group] = model2channels
+		}
+		for _, modelName := range channel.GetModels() {
+			if channel.Status == common.ChannelStatusEnabled {
+				if isChannelIDInList(model2channels[modelName], channel.Id) {
+					continue
+				}
+				model2channels[modelName] = append(model2channels[modelName], channel.Id)
+				continue
+			}
+			model2channels[modelName] = removeChannelID(model2channels[modelName], channel.Id)
 		}
 	}
+}
+
+// removeChannelID returns ids without the first occurrence of id. The input
+// slice is never mutated: it may alias the cached candidate list.
+func removeChannelID(ids []int, id int) []int {
+	index := slices.Index(ids, id)
+	if index < 0 {
+		return ids
+	}
+	updated := make([]int, 0, len(ids)-1)
+	updated = append(updated, ids[:index]...)
+	return append(updated, ids[index+1:]...)
+}
+
+// filterEnabledCandidateIDs drops candidates whose cached channel is no longer
+// enabled.
+//
+// The candidate pool is a snapshot rebuilt only by a full sync, so it can still
+// list a channel that was disabled after the last rebuild. Selection must not
+// hand such a channel to the relay: the request would fail and, because the
+// entry survives, the next request would pick it again until the sync catches
+// up. This is the belt to syncChannelPoolMembership's braces — it also covers
+// any future writer that changes a status without going through the pool sync.
+//
+// Caller must hold channelSyncLock. The input slice is never mutated: when
+// nothing is dropped the original slice is returned as-is, keeping the hot path
+// allocation-free.
+func filterEnabledCandidateIDs(ids []int) []int {
+	if len(ids) == 0 {
+		return ids
+	}
+	kept := ids
+	copied := false
+	for i, id := range ids {
+		channel, exists := channelsIDM[id]
+		if exists && channel.Status == common.ChannelStatusEnabled {
+			if copied {
+				kept = append(kept, id)
+			}
+			continue
+		}
+		if !copied {
+			// First drop: copy the surviving prefix so the cached slice is
+			// never mutated, and so survivors before this index are kept.
+			kept = make([]int, 0, len(ids)-1)
+			kept = append(kept, ids[:i]...)
+			copied = true
+		}
+	}
+	return kept
 }
 
 func CacheUpdateChannel(channel *Channel) {
@@ -489,10 +561,25 @@ func CacheUpdateChannel(channel *Channel) {
 	if channelsIDM == nil {
 		channelsIDM = make(map[int]*Channel)
 	}
-	if oldChannel, ok := channelsIDM[channel.Id]; ok {
+	oldChannel, existed := channelsIDM[channel.Id]
+	if existed {
 		logger.LogDebug(nil, "CacheUpdateChannel before: id=%d, name=%s, status=%d, polling_index=%d", channel.Id, channel.Name, channel.Status, oldChannel.ChannelInfo.MultiKeyPollingIndex)
+		// Preserve the live multi-key polling cursor. It is advanced in memory
+		// during relay selection and not always persisted, so the channel loaded
+		// from the database can carry a stale index. Mirrors InitChannelCache.
+		if channel.ChannelInfo.IsMultiKey && channel.ChannelInfo.MultiKeyMode == constant.MultiKeyModePolling &&
+			oldChannel.ChannelInfo.IsMultiKey && oldChannel.ChannelInfo.MultiKeyMode == constant.MultiKeyModePolling {
+			channel.ChannelInfo.MultiKeyPollingIndex = oldChannel.ChannelInfo.MultiKeyPollingIndex
+		}
 	}
 	channelsIDM[channel.Id] = channel
+	// A runtime status change must move the channel in the candidate pool too.
+	// UpdateChannelStatus is the only writer that flips a status without a full
+	// InitChannelCache rebuild, and it is the path the relay error handler uses
+	// to auto-disable a channel.
+	if existed && oldChannel.Status != channel.Status {
+		syncChannelPoolMembership(channel)
+	}
 	if channel2advancedCustomConfig == nil {
 		channel2advancedCustomConfig = make(map[int]*kitdto.AdvancedCustomConfig)
 	}
