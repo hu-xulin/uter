@@ -128,7 +128,7 @@ export function AccessTokensCard() {
                 …{legacy.token_hint}
               </code>
             </div>
-            <p className='text-muted-foreground flex flex-wrap gap-x-3 gap-y-1 text-xs'>
+            <p className='text-muted-foreground flex flex-wrap gap-x-3 gap-y-1 text-sm'>
               {legacy.created_at ? (
                 <span>
                   {t('Created {{time}}', {
@@ -229,7 +229,7 @@ export function AccessTokensCard() {
         </CardHeader>
         <CardContent className='space-y-2'>
           {atLimit && catalog && (
-            <p className='text-muted-foreground text-xs'>
+            <p className='text-muted-foreground text-sm'>
               {t('You can create up to {{count}} access tokens', {
                 count: catalog.max_tokens,
               })}

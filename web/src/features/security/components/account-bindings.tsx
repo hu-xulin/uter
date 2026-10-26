@@ -354,7 +354,7 @@ export function AccountBindings({ profile, onUpdate }: AccountBindingsProps) {
                       />
                     )}
                   </div>
-                  <p className='text-muted-foreground truncate text-xs'>
+                  <p className='text-muted-foreground truncate text-sm'>
                     {binding.value || t('Not bound')}
                   </p>
                 </div>
@@ -401,7 +401,7 @@ export function AccountBindings({ profile, onUpdate }: AccountBindingsProps) {
                       />
                     )}
                   </div>
-                  <p className='text-muted-foreground truncate text-xs'>
+                  <p className='text-muted-foreground truncate text-sm'>
                     {isBound
                       ? binding?.provider_user_id || t('Bound')
                       : t('Not bound')}

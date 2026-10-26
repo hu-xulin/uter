@@ -90,7 +90,7 @@ export function TwoFACard({ loading: pageLoading }: TwoFACardProps) {
           <CardTitle>
             {t('Two-Factor Authentication')}
           </CardTitle>
-          <CardDescription className='text-xs sm:text-sm'>
+          <CardDescription>
             {t('Add an extra layer of security to your account')}
           </CardDescription>
         </CardHeader>

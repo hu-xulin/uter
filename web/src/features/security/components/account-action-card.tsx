@@ -67,8 +67,8 @@ export function AccountActionCard(props: AccountActionCardProps) {
             <action.icon />
           </IconBadge>
           <div className='min-w-0 flex-1 space-y-0.5'>
-            <p className='text-sm font-medium'>{action.title}</p>
-            <p className='text-muted-foreground text-xs'>
+            <p className='text-base font-medium'>{action.title}</p>
+            <p className='text-muted-foreground text-sm'>
               {action.description}
             </p>
           </div>

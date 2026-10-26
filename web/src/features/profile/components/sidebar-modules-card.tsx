@@ -223,7 +223,7 @@ export function SidebarModulesCard() {
             <CardTitle>
               {t('Sidebar Personal Settings')}
             </CardTitle>
-            <CardDescription className='text-xs sm:text-sm'>
+            <CardDescription>
               {t('Customize sidebar display content')}
             </CardDescription>
           </div>
@@ -240,7 +240,7 @@ export function SidebarModulesCard() {
               <div className='flex items-start justify-between gap-3'>
                 <div className='min-w-0'>
                   <p className='text-sm font-medium'>{section.title}</p>
-                  <p className='text-muted-foreground text-xs'>
+                  <p className='text-muted-foreground text-sm'>
                     {section.description}
                   </p>
                 </div>
@@ -261,7 +261,7 @@ export function SidebarModulesCard() {
                       <p className='truncate text-sm font-medium'>
                         {mod.title}
                       </p>
-                      <p className='text-muted-foreground truncate text-xs'>
+                      <p className='text-muted-foreground truncate text-sm'>
                         {mod.description}
                       </p>
                     </div>

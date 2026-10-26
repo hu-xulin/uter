@@ -20,6 +20,6 @@ import { createFileRoute } from '@tanstack/react-router'
 
 import { RechargeAgreement } from '@/features/legal'
 
-export const Route = createFileRoute('/recharge-agreement')({
+export const Route = createFileRoute('/_public/recharge-agreement')({
   component: RechargeAgreement,
 })

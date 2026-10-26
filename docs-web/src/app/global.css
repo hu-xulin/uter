@@ -665,7 +665,7 @@ html[data-docs-embed='true'] #nd-subnav > a {
  * prose but makes a link list feel like paragraphs.
  */
 #nd-sidebar {
-  font-size: var(--text-doc-body);
+  font-size: var(--text-doc-chrome);
   line-height: 1.5;
 }
 
@@ -676,7 +676,7 @@ html[data-docs-embed='true'] #nd-subnav > a {
 }
 
 #nd-sidebar-mobile {
-  font-size: var(--text-doc-body);
+  font-size: var(--text-doc-chrome);
 }
 
 /*

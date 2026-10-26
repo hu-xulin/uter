@@ -19,29 +19,24 @@ For commercial licensing, please contact support@uter.ai
 import { createFileRoute, redirect } from '@tanstack/react-router'
 import z from 'zod'
 
-import { Pricing } from '@/features/pricing'
-import { getPricing } from '@/features/pricing/api'
+import { Rankings } from '@/features/rankings'
 import { getModuleAccessForGuard } from '@/lib/nav-modules'
-import { requireServerSuccess } from '@/lib/server-error-message'
 import { useAuthStore } from '@/stores/auth-store'
 
-const pricingSearchSchema = z.object({
-  search: z.string().optional(),
-  sort: z.string().optional(),
-  vendor: z.string().optional(),
-  group: z.string().optional(),
-  quotaType: z.string().optional(),
-  endpointType: z.string().optional(),
-  tag: z.string().optional(),
-  tokenUnit: z.enum(['M', 'K']).optional(),
-  view: z.enum(['card', 'table']).optional().catch(undefined),
-  rechargePrice: z.boolean().optional(),
+const rankingsSearchSchema = z.object({
+  period: z
+    .enum(['today', 'week', 'month', 'year'])
+    .optional()
+    .catch(undefined),
 })
 
-export const Route = createFileRoute('/pricing/')({
-  validateSearch: pricingSearchSchema,
+export const Route = createFileRoute('/_public/rankings/')({
+  validateSearch: rankingsSearchSchema,
   beforeLoad: async ({ context, location }) => {
-    const access = await getModuleAccessForGuard(context.queryClient, 'pricing')
+    const access = await getModuleAccessForGuard(
+      context.queryClient,
+      'rankings'
+    )
     if (!access.enabled) {
       throw redirect({ to: '/' })
     }
@@ -54,13 +49,6 @@ export const Route = createFileRoute('/pricing/')({
         })
       }
     }
-    // Prefetch pricing data while the guard resolves so the page renders
-    // immediately on navigation instead of flashing a skeleton. Mirrors the
-    // query in usePricingData so react-query serves the cached result.
-    await context.queryClient.fetchQuery({
-      queryKey: ['pricing'],
-      queryFn: async () => requireServerSuccess(await getPricing()),
-    })
   },
-  component: Pricing,
+  component: Rankings,
 })

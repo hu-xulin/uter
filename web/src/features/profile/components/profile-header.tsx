@@ -24,6 +24,7 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Card, CardContent } from '@/components/ui/card'
 import { IconBadge, type IconBadgeTone } from '@/components/ui/icon-badge'
 import { Skeleton } from '@/components/ui/skeleton'
+import { Heading } from '@/design-system'
 import { getUserAvatarFallback, getUserAvatarStyle } from '@/lib/avatar'
 import {
   formatBillingCurrencyFromUSD,
@@ -198,9 +199,9 @@ export function ProfileHeader({ profile, loading }: ProfileHeaderProps) {
 
           <div className='min-w-0 flex-1 space-y-1.5 sm:space-y-3'>
             <div className='flex min-w-0 items-center gap-2'>
-              <h1 className='truncate text-xl font-semibold sm:text-2xl'>
+              <Heading variant='section-title' level={1} truncate>
                 {displayName}
-              </h1>
+              </Heading>
               <StatusBadge
                 label={roleLabel}
                 variant='neutral'
@@ -213,7 +214,7 @@ export function ProfileHeader({ profile, loading }: ProfileHeaderProps) {
               />
             </div>
 
-            <div className='text-muted-foreground flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs sm:gap-x-4 sm:text-sm'>
+            <div className='text-muted-foreground flex flex-wrap items-center gap-x-2 gap-y-0.5 text-sm sm:gap-x-4'>
               <span className='truncate'>@{profile.username}</span>
               {profile.email && (
                 <>
@@ -230,7 +231,7 @@ export function ProfileHeader({ profile, loading }: ProfileHeaderProps) {
             </div>
 
             {inOrganization && (
-              <p className='text-muted-foreground flex items-center gap-1.5 text-xs sm:text-sm'>
+              <p className='text-muted-foreground flex items-center gap-1.5 text-sm'>
                 <Building2 className='size-3.5 shrink-0' />
                 <span className='truncate'>
                   {(profile.organization_name
@@ -262,10 +263,10 @@ export function ProfileHeader({ profile, loading }: ProfileHeaderProps) {
                 </div>
               </div>
 
-              <div className='text-foreground mt-1.5 truncate text-lg font-bold tabular-nums sm:mt-2 sm:text-2xl'>
+              <div className='text-foreground mt-1.5 truncate text-lg font-semibold tabular-nums sm:mt-2 sm:text-2xl'>
                 {item.value}
               </div>
-              <div className='text-muted-foreground/60 mt-1 hidden text-xs md:block'>
+              <div className='text-muted-foreground/60 mt-1 hidden text-sm md:block'>
                 {item.description}
               </div>
             </div>

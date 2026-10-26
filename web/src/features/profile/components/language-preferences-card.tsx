@@ -112,7 +112,7 @@ export function LanguagePreferencesCard(props: LanguagePreferencesCardProps) {
       <div className='flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4'>
         <div className='space-y-1'>
           <div className='text-sm font-medium'>{t('Interface Language')}</div>
-          <p className='text-muted-foreground line-clamp-2 text-xs sm:text-sm'>
+          <p className='text-muted-foreground line-clamp-2 text-sm'>
             {t(
               'Language preferences sync across your signed-in devices and affect API error messages.'
             )}
