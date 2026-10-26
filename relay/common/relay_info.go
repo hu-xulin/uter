@@ -369,7 +369,9 @@ func (info *RelayInfo) InitChannelMeta(c *gin.Context) {
 	if channelType == constant.ChannelTypeAdvancedCustom &&
 		!channelMeta.ChannelSetting.PassThroughBodyEnabled &&
 		c.Request != nil && c.Request.URL != nil {
-		route, matched := channelMeta.ChannelOtherSettings.AdvancedCustom.MatchPathForModel(c.Request.URL.Path, info.OriginModelName)
+		// advanced_routes 按上游路径登记，站内调试台的 /pg/* 需先归一化，
+		// 否则该路由上的 pass_through_body 开关不会生效。
+		route, matched := channelMeta.ChannelOtherSettings.AdvancedCustom.MatchPathForModel(common.CanonicalUpstreamPath(c.Request.URL.Path), info.OriginModelName)
 		if matched && route.PassThroughBodyEnabled {
 			channelMeta.ChannelSetting.PassThroughBodyEnabled = true
 		}
