@@ -104,7 +104,7 @@ function AdminSystemUpdateAction(props: SystemUpdateActionProps) {
           )}
           aria-hidden='true'
         />
-        <span className='hidden max-w-32 truncate font-mono text-xs @min-[22rem]/system-brand:inline'>
+        <span className='hidden max-w-32 truncate font-mono text-mono @min-[22rem]/system-brand:inline'>
           {version}
         </span>
         {update.shouldNotify && (

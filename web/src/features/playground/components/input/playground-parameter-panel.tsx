@@ -124,7 +124,7 @@ function PlaygroundParameterContent({
                     {t(control.labelKey)}
                   </label>
                   <Badge
-                    className='h-5 max-w-24 shrink-0 px-1.5 font-mono text-sm'
+                    className='h-5 max-w-24 shrink-0 px-1.5 font-mono text-mono'
                     variant='outline'
                   >
                     {t(getParameterControlValueText(control.key, value))}

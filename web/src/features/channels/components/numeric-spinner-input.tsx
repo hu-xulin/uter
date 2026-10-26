@@ -176,7 +176,7 @@ export function NumericSpinnerInput({
             onChange={handleInputChange}
             onBlur={commitValue}
             onKeyDown={handleKeyDown}
-            className='h-7 w-10 bg-transparent text-center font-mono text-sm outline-none'
+            className='h-7 w-10 bg-transparent text-center font-mono text-mono outline-none'
             autoFocus
           />
         ) : (
@@ -187,7 +187,7 @@ export function NumericSpinnerInput({
             disabled={disabled}
             title={localValue}
             className={cn(
-              'h-7 min-w-8 max-w-16 cursor-text truncate px-1 text-center font-mono text-sm tabular-nums',
+              'h-7 min-w-8 max-w-16 cursor-text truncate px-1 text-center font-mono text-mono tabular-nums',
               disabled && 'cursor-default opacity-50'
             )}
           >

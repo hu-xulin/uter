@@ -77,7 +77,7 @@ export function UsageSchemaTable(props: UsageSchemaTableProps) {
         <TableBody>
           {entries.map(([name, definition]) => (
             <TableRow key={name}>
-              <TableCell className='max-w-64 font-mono text-sm break-words whitespace-normal'>
+              <TableCell className='max-w-64 font-mono text-mono break-words whitespace-normal'>
                 {name}
               </TableCell>
               <TableCell>{t(getUsageTypeLabelKey(definition.type))}</TableCell>
@@ -88,7 +88,7 @@ export function UsageSchemaTable(props: UsageSchemaTableProps) {
                   formatUsageUnit(definition.unit, t)
                 )}
               </TableCell>
-              <TableCell className='max-w-64 font-mono text-sm break-words whitespace-normal'>
+              <TableCell className='max-w-64 font-mono text-mono break-words whitespace-normal'>
                 {definition.enum
                   ?.map((value) => {
                     const label = taskEnumLabel(

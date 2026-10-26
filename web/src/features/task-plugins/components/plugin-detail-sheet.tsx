@@ -207,7 +207,7 @@ function PluginDetailContent(props: { plugin: TaskPluginListItem }) {
           </span>
         </SheetTitle>
         <div className='flex min-w-0 items-center gap-1'>
-          <span className='text-muted-foreground min-w-0 font-mono text-xs break-all'>
+          <span className='text-muted-foreground min-w-0 font-mono text-mono break-all'>
             {key}
           </span>
           <CopyButton

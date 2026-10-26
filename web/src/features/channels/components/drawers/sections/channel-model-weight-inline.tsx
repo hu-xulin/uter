@@ -159,7 +159,7 @@ export function ChannelModelWeightInline({
           const e = entryFor(model)
           return (
             <div key={model} className='flex flex-wrap items-center gap-2'>
-              <span className='w-44 truncate font-mono text-xs' title={model}>
+              <span className='w-44 truncate font-mono text-mono' title={model}>
                 {model}
               </span>
               <Input

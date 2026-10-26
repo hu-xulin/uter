@@ -327,7 +327,7 @@ export function JsonCodeEditor({
       >
         <div
           ref={mountRef}
-          className='json-code-editor-yace text-foreground h-full font-mono text-sm leading-[var(--ds-line-mono-dense)]'
+          className='json-code-editor-yace text-foreground h-full font-mono text-mono leading-[var(--ds-line-mono-dense)]'
         />
       </div>
     </div>

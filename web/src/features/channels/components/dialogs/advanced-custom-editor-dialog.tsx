@@ -884,7 +884,7 @@ export function AdvancedCustomEditorDialog({
                         )}
                       />
                     </span>
-                    <span className='text-muted-foreground block truncate font-mono text-xs'>
+                    <span className='text-muted-foreground block truncate font-mono text-mono'>
                       {routeGroup.incomingPath}
                     </span>
                   </span>
@@ -1188,7 +1188,7 @@ function ManagementRouteEditor({
           <p className='text-muted-foreground mt-1 max-w-lg text-sm'>
             {description}
           </p>
-          <p className='text-muted-foreground mt-2 font-mono text-xs'>{path}</p>
+          <p className='text-muted-foreground mt-2 font-mono text-mono'>{path}</p>
         </div>
         <Button
           type='button'
@@ -1223,7 +1223,7 @@ function ManagementRouteEditor({
         <div>
           <p className='font-medium'>{title}</p>
           <p className='text-muted-foreground mt-1 text-sm'>{description}</p>
-          <p className='text-muted-foreground mt-1 font-mono text-xs'>{path}</p>
+          <p className='text-muted-foreground mt-1 font-mono text-mono'>{path}</p>
         </div>
         <Button
           type='button'

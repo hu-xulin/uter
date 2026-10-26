@@ -97,7 +97,7 @@ export function PluginChangelogPanel(props: PluginChangelogPanelProps) {
   return (
     <div className='min-w-0 space-y-4'>
       <div className='flex flex-wrap items-center justify-between gap-2'>
-        <span className='text-muted-foreground font-mono text-xs'>
+        <span className='text-muted-foreground font-mono text-mono'>
           v{changelog.version}
         </span>
         {sourceUrl && (

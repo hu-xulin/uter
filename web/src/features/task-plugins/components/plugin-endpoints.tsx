@@ -123,7 +123,7 @@ export function PluginEndpoints(props: {
         return (
           <div key={name} className='bg-muted/30 space-y-1.5 rounded-md p-3'>
             <div className='flex flex-wrap items-center gap-x-2 gap-y-1'>
-              <span className='text-muted-foreground min-w-0 font-mono text-xs break-all'>
+              <span className='text-muted-foreground min-w-0 font-mono text-mono break-all'>
                 {name}
               </span>
               {models?.length ? (
@@ -166,7 +166,7 @@ export function PluginEndpoints(props: {
                 method={route.method}
                 path={route.path}
               >
-                <span className='text-muted-foreground font-mono text-sm'>
+                <span className='text-muted-foreground font-mono text-mono'>
                   {route.type}
                 </span>
                 <span className='text-muted-foreground text-xs'>

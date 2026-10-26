@@ -185,7 +185,7 @@ export function ModelBadge(props: ModelBadgeProps) {
               <span className='text-muted-foreground text-xs'>
                 {t('Request Model:')}
               </span>
-              <span className='truncate font-mono text-sm font-medium'>
+              <span className='truncate font-mono text-mono font-medium'>
                 {props.modelName}
               </span>
             </div>
@@ -193,7 +193,7 @@ export function ModelBadge(props: ModelBadgeProps) {
               <span className='text-muted-foreground text-xs'>
                 {t('Actual Model:')}
               </span>
-              <span className='truncate font-mono text-sm font-medium'>
+              <span className='truncate font-mono text-mono font-medium'>
                 {props.actualModel}
               </span>
             </div>

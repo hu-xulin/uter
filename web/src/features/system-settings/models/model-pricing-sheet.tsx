@@ -1281,7 +1281,7 @@ export const ModelPricingEditorPanel = forwardRef<
                           className={cn(
                             'min-w-0 text-sm',
                             row.multiline
-                              ? 'font-mono text-xs leading-5 break-words whitespace-pre-wrap'
+                              ? 'font-mono text-mono leading-5 break-words whitespace-pre-wrap'
                               : 'truncate'
                           )}
                         >

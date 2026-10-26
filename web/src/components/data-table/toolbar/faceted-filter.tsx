@@ -141,13 +141,13 @@ function DataTableFacetedFilterInner<TData, TValue>({
                 let countNode = null
                 if (typeof option.count === 'number') {
                   countNode = (
-                    <span className='text-muted-foreground ms-auto flex h-4 min-w-4 items-center justify-center font-mono text-xs'>
+                    <span className='text-muted-foreground ms-auto flex h-4 min-w-4 items-center justify-center font-mono text-mono'>
                       {option.count}
                     </span>
                   )
                 } else if (facets?.get(option.value)) {
                   countNode = (
-                    <span className='ms-auto flex h-4 w-4 items-center justify-center font-mono text-xs'>
+                    <span className='ms-auto flex h-4 w-4 items-center justify-center font-mono text-mono'>
                       {facets.get(option.value)}
                     </span>
                   )

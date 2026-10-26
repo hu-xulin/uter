@@ -137,7 +137,7 @@ export function StatusCodeRiskDialog({
             </p>
             <ul className='list-inside list-disc text-sm'>
               {detailItems.map((item) => (
-                <li key={item} className='font-mono text-xs'>
+                <li key={item} className='font-mono text-mono'>
                   {item}
                 </li>
               ))}

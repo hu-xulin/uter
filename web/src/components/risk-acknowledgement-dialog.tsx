@@ -239,7 +239,7 @@ export function RiskAcknowledgementDialog({
               <Label className='text-sm font-medium'>
                 {inputPrompt ?? t('Please type the following text to confirm:')}
               </Label>
-              <div className='bg-background border-border rounded-md border px-3 py-2 font-mono text-sm leading-6 break-words whitespace-pre-wrap'>
+              <div className='bg-background border-border rounded-md border px-3 py-2 font-mono text-mono leading-6 break-words whitespace-pre-wrap'>
                 {requiredTextToDisplay}
               </div>
               {hasSegmentedRequiredText ? (
@@ -248,7 +248,7 @@ export function RiskAcknowledgementDialog({
                     part.type === 'static' ? (
                       <span
                         key={`static-${part.text}`}
-                        className='text-muted-foreground bg-background/70 border-border w-fit rounded-md border px-2 py-1.5 font-mono text-sm select-none'
+                        className='text-muted-foreground bg-background/70 border-border w-fit rounded-md border px-2 py-1.5 font-mono text-mono select-none'
                       >
                         {part.text}
                       </span>
@@ -272,7 +272,7 @@ export function RiskAcknowledgementDialog({
                         autoFocus={open && part.inputIndex === 0}
                         wrap='soft'
                         aria-invalid={hasTypedRequiredText && !typedMatched}
-                        className='min-h-10 resize-none overflow-hidden font-mono text-sm leading-6'
+                        className='min-h-10 resize-none overflow-hidden font-mono text-mono leading-6'
                       />
                     )
                   )}
@@ -288,7 +288,7 @@ export function RiskAcknowledgementDialog({
                   autoFocus={open}
                   wrap='soft'
                   aria-invalid={hasTypedRequiredText && !typedMatched}
-                  className='min-h-16 resize-none overflow-hidden font-mono text-sm leading-6'
+                  className='min-h-16 resize-none overflow-hidden font-mono text-mono leading-6'
                 />
               )}
               {hasTypedRequiredText && !typedMatched ? (

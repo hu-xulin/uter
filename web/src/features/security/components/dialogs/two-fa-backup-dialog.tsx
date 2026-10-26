@@ -107,7 +107,7 @@ export function TwoFABackupDialog(props: TwoFABackupDialogProps) {
           {backupCodes.map((code) => (
             <div
               key={code}
-              className='bg-muted rounded-md p-2 text-center font-mono text-sm'
+              className='bg-muted rounded-md p-2 text-center font-mono text-mono'
             >
               {code}
             </div>

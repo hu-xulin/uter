@@ -105,15 +105,10 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
   )
   const groups = props.model.enable_groups || []
   const endpoints = props.model.supported_endpoint_types || []
-  const modelIconKey = resolveModelIconKey(
-    props.model.icon,
-    props.model.vendor_icon
-  )
-  // Model logos render in their brand colors so cards stay scannable at a
-  // glance; a vendor's company logo standing in for a model stays monochrome.
-  const modelIcon = modelIconKey
-    ? getLobeIcon(modelIconKey, 28)
-    : null
+  // 模型卡片只渲染模型自己的产品 logo（彩色）；没有自己的 logo 时显示首字母
+  // 占位，绝不退化为供应商的公司 logo（运营在「模型-供应商」里设置的那个）。
+  const modelIconKey = resolveModelIconKey(props.model.icon)
+  const modelIcon = modelIconKey ? getLobeIcon(modelIconKey, 28) : null
   const initial = props.model.model_name?.charAt(0).toUpperCase() || '?'
   const isUnconfiguredTaskUsage = isUnconfiguredTaskUsageModel(props.model)
   const billingTime = useBillingTime(props.model.billing_expr)
@@ -199,7 +194,7 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
           <span className='text-warning'>
             {t('Special billing expression')}
           </span>
-          <code className='text-muted-foreground mt-1 line-clamp-2 block font-mono text-sm break-all'>
+          <code className='text-muted-foreground mt-1 line-clamp-2 block font-mono text-mono break-all'>
             {dynamicSummary.rawExpression}
           </code>
         </div>

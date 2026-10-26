@@ -539,7 +539,7 @@ function CodeSamplesSection(props: {
 
       <p className='text-muted-foreground mt-2 text-xs'>
         {t('Replace')}{' '}
-        <code className='bg-muted rounded px-1 py-0.5 font-mono text-sm'>
+        <code className='bg-muted rounded px-1 py-0.5 font-mono text-mono'>
           {'<YOUR_API_KEY>'}
         </code>{' '}
         {t('with the API key from your token settings.')}
@@ -578,11 +578,11 @@ function SupportedParametersSection(props: { model: PricingModel }) {
             cellClassName: tableStyles.topCell,
             cell: (p) => (
               <div className='flex items-center gap-1.5'>
-                <code className='font-mono text-sm font-medium'>{p.name}</code>
+                <code className='font-mono text-mono font-medium'>{p.name}</code>
                 {p.required && (
                   <Badge
                     variant='outline'
-                    className='h-6 border-rose-500/40 px-2 text-sm text-rose-600 dark:text-rose-400'
+                    className='h-6 border-destructive/40 px-2 text-sm text-destructive dark:text-destructive'
                   >
                     {t('required')}
                   </Badge>
@@ -598,7 +598,7 @@ function SupportedParametersSection(props: { model: PricingModel }) {
             cell: (p) => (
               <Badge
                 variant='secondary'
-                className='h-7 rounded-full px-2.5 font-mono text-sm font-normal'
+                className='h-7 rounded-full px-2.5 font-mono text-mono font-normal'
               >
                 {p.type}
               </Badge>
@@ -630,7 +630,7 @@ function ParamRangeCell(props: { param: SupportedParameter }) {
     return (
       <div className='flex flex-wrap items-center gap-1'>
         <span className='text-muted-foreground text-sm'>=</span>
-        <code className='bg-muted rounded px-1.5 py-0.5 font-mono text-sm'>
+        <code className='bg-muted rounded px-1.5 py-0.5 font-mono text-mono'>
           {String(defaultValue)}
         </code>
         {range && (
@@ -641,7 +641,7 @@ function ParamRangeCell(props: { param: SupportedParameter }) {
   }
   if (range) {
     return (
-      <span className='text-muted-foreground font-mono text-sm'>{range}</span>
+      <span className='text-muted-foreground font-mono text-mono'>{range}</span>
     )
   }
   if (enumValues && enumValues.length > 0) {
@@ -650,7 +650,7 @@ function ParamRangeCell(props: { param: SupportedParameter }) {
         {enumValues.map((v) => (
           <code
             key={v}
-            className='bg-muted text-muted-foreground rounded px-1.5 py-0.5 font-mono text-sm'
+            className='bg-muted text-muted-foreground rounded px-1.5 py-0.5 font-mono text-mono'
           >
             {v}
           </code>
@@ -734,11 +734,11 @@ function AuthSection() {
         <div className='space-y-1.5 text-xs leading-relaxed'>
           <p>
             {t('All requests must include')}{' '}
-            <code className='bg-muted rounded px-1 py-0.5 font-mono text-sm'>
+            <code className='bg-muted rounded px-1 py-0.5 font-mono text-mono'>
               Authorization: Bearer &lt;TOKEN&gt;
             </code>{' '}
             {t('header. Anthropic-formatted endpoints accept the')}{' '}
-            <code className='bg-muted rounded px-1 py-0.5 font-mono text-sm'>
+            <code className='bg-muted rounded px-1 py-0.5 font-mono text-mono'>
               x-api-key
             </code>{' '}
             {t('header instead.')}

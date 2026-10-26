@@ -609,7 +609,8 @@ function ModelHeader(props: {
 }) {
   const { t } = useTranslation()
   const model = props.model
-  const modelIconKey = resolveModelIconKey(model.icon, model.vendor_icon)
+  // 模型详情头部同样只渲染模型自己的产品 logo（彩色），不用供应商公司 logo。
+  const modelIconKey = resolveModelIconKey(model.icon)
   const modelIcon = modelIconKey
     ? getLobeIcon(modelIconKey, 20)
     : null
@@ -760,7 +761,7 @@ function PriceSection(props: {
               <div className='text-muted-foreground mb-1 text-xs font-medium uppercase'>
                 {t('Raw expression')}
               </div>
-              <code className='text-muted-foreground bg-background/80 block max-h-28 overflow-auto rounded-md border px-2 py-1.5 font-mono text-sm leading-[var(--ds-line-mono-dense)] break-all'>
+              <code className='text-muted-foreground bg-background/80 block max-h-28 overflow-auto rounded-md border px-2 py-1.5 font-mono text-mono leading-[var(--ds-line-mono-dense)] break-all'>
                 {dynamicSummary.rawExpression}
               </code>
             </div>
@@ -1179,7 +1180,7 @@ function ProviderGroupPricingSection(
               <div className='text-muted-foreground mb-1 text-xs font-medium uppercase'>
                 {t('Raw expression')}
               </div>
-              <code className='text-muted-foreground bg-background/80 block max-h-28 overflow-auto rounded-md border px-2 py-1.5 font-mono text-sm leading-[var(--ds-line-mono-dense)] break-all'>
+              <code className='text-muted-foreground bg-background/80 block max-h-28 overflow-auto rounded-md border px-2 py-1.5 font-mono text-mono leading-[var(--ds-line-mono-dense)] break-all'>
                 {props.model.billing_expr}
               </code>
             </div>

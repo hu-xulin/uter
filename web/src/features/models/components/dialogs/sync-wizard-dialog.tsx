@@ -609,7 +609,7 @@ export function SyncWizardDialog(props: {
                     id: 'name',
                     header: t('Model'),
                     cell: (item) => (
-                      <span className='block max-w-64 font-mono text-sm break-all whitespace-normal'>
+                      <span className='block max-w-64 font-mono text-mono break-all whitespace-normal'>
                         {item.model_name}
                       </span>
                     ),
@@ -702,7 +702,7 @@ export function SyncWizardDialog(props: {
           </div>
           {selected.map((item) => (
             <section key={item.model_name} className='space-y-2'>
-              <h3 className='font-mono text-sm font-semibold break-all'>
+              <h3 className='font-mono text-mono font-semibold break-all'>
                 {item.model_name} · {t(REASON_LABELS[item.kind])}
               </h3>
               <StaticDataTable
@@ -786,7 +786,7 @@ export function SyncWizardDialog(props: {
                 id: 'model',
                 header: t('Model'),
                 cell: (item) => (
-                  <span className='font-mono text-sm'>{item.model_name}</span>
+                  <span className='font-mono text-mono'>{item.model_name}</span>
                 ),
               },
               {

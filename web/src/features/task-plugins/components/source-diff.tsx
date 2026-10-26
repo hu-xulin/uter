@@ -76,7 +76,7 @@ export function SourceDiff(props: SourceDiffProps) {
   return (
     <div
       className={cn(
-        'max-h-96 overflow-auto rounded-md border font-mono text-xs',
+        'max-h-96 overflow-auto rounded-md border font-mono text-mono',
         props.className
       )}
       aria-label={t('Source diff')}

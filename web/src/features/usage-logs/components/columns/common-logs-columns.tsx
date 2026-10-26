@@ -372,7 +372,7 @@ export function useCommonLogsColumns(
 
           return (
             <div className='flex min-w-0 flex-col gap-0.5'>
-              <span className='truncate font-mono text-xs tabular-nums'>
+              <span className='truncate font-mono text-mono tabular-nums'>
                 {formatTimestampToDate(timestamp)}
               </span>
               <StatusBadge
@@ -456,7 +456,7 @@ export function useCommonLogsColumns(
                           showDot={false}
                           copyable={false}
                           variant='neutral'
-                          className='h-5 min-w-5 justify-center rounded-full px-1 font-mono text-xs'
+                          className='h-5 min-w-5 justify-center rounded-full px-1 font-mono text-mono'
                           aria-label={`${t('Key')} ${multiKeyIndex}`}
                         />
                       )}
@@ -752,19 +752,19 @@ export function useCommonLogsColumns(
 
           return (
             <div className='flex flex-col gap-0.5'>
-              <span className='font-mono text-xs font-medium tabular-nums'>
+              <span className='font-mono text-mono font-medium tabular-nums'>
                 {t('Input')} {promptTokens.toLocaleString()}
               </span>
-              <span className='font-mono text-xs font-medium tabular-nums'>
+              <span className='font-mono text-mono font-medium tabular-nums'>
                 {t('Output')} {completionTokens.toLocaleString()}
               </span>
               {cacheReadTokens > 0 && (
-                <span className='text-muted-foreground/60 font-mono text-sm tabular-nums'>
+                <span className='text-muted-foreground/60 font-mono text-mono tabular-nums'>
                   {t('Cache Read')} ↓ {cacheReadTokens.toLocaleString()}
                 </span>
               )}
               {cacheWriteTokens > 0 && (
-                <span className='text-muted-foreground/60 font-mono text-sm tabular-nums'>
+                <span className='text-muted-foreground/60 font-mono text-mono tabular-nums'>
                   {t('Cache Write')} ↑ {cacheWriteTokens.toLocaleString()}
                 </span>
               )}

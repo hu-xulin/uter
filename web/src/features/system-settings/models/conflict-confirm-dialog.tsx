@@ -77,7 +77,7 @@ export function ConflictConfirmDialog(props: ConflictConfirmDialogProps) {
           {
             id: 'model',
             header: t('Model'),
-            cellClassName: 'font-mono text-sm',
+            cellClassName: 'font-mono text-mono',
             cell: (conflict) => conflict.model,
           },
           {

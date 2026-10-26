@@ -82,19 +82,23 @@ describe('resolveModelIconKey', () => {
   test("renders a model's own product logo in brand colors", () => {
     // Model logos stay colored: Claude.Color for the model, Anthropic for the
     // company that serves it.
-    expect(resolveModelIconKey('Claude', 'Anthropic')).toBe('Claude.Color')
-    expect(resolveModelIconKey('Qwen', 'Alibaba')).toBe('Qwen.Color')
+    expect(resolveModelIconKey('Claude')).toBe('Claude.Color')
+    expect(resolveModelIconKey('Qwen')).toBe('Qwen.Color')
   })
 
-  test('falls back to the vendor company logo in monochrome', () => {
-    // No model icon of its own: the vendor's company logo stands in, and a
-    // company logo is black-and-white.
-    expect(resolveModelIconKey('', 'Anthropic')).toBe('Anthropic')
-    expect(resolveModelIconKey(undefined, 'Anthropic.Color')).toBe('Anthropic')
+  test('never falls back to the vendor company logo', () => {
+    // Hard product rule: a vendor's company logo (set per-vendor in
+    // 模型-供应商) belongs to vendor surfaces only. A model without its own
+    // product logo resolves to no icon, and the call site renders the
+    // initial-letter placeholder. Regressions here repeatedly put company
+    // logos on pricing cards — keep this assertion failing loudly.
+    expect(resolveModelIconKey('')).toBe('')
+    expect(resolveModelIconKey(undefined)).toBe('')
+    expect(resolveModelIconKey('   ')).toBe('')
   })
 
-  test('reports no icon when neither is available', () => {
-    expect(resolveModelIconKey('', '')).toBe('')
-    expect(resolveModelIconKey(undefined, undefined)).toBe('')
+  test('keeps an already-colored key untouched', () => {
+    expect(resolveModelIconKey('Claude.Color')).toBe('Claude.Color')
+    expect(resolveModelIconKey('OpenAI.Avatar')).toBe('OpenAI.Avatar')
   })
 })

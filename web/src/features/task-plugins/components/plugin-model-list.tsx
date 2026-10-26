@@ -52,7 +52,7 @@ export function PluginModelList(props: PluginModelListProps) {
           className='max-h-64 max-w-[calc(100vw-2rem)] overflow-y-auto'
         >
           <p className='mb-2 text-sm font-medium'>{props.collapsedLabel}</p>
-          <ul className='space-y-1 font-mono text-xs'>
+          <ul className='space-y-1 font-mono text-mono'>
             {props.models.map((model) => (
               <li key={model} className='break-all'>
                 {model}

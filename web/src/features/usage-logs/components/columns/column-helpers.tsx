@@ -92,7 +92,7 @@ export function createTimestampColumn<T>(config: {
         return <span className='text-muted-foreground/60 text-xs'>-</span>
       }
       return (
-        <span className='font-mono text-xs tabular-nums'>
+        <span className='font-mono text-mono tabular-nums'>
           {formatTimestampToDate(timestamp, unit)}
         </span>
       )
@@ -268,7 +268,7 @@ export function createProgressColumn<T>(config: {
         return <span className='text-muted-foreground/60 text-xs'>-</span>
       }
       return (
-        <span className='border-border/60 bg-muted/30 inline-flex items-center rounded-md border px-1.5 py-0.5 font-mono text-xs'>
+        <span className='border-border/60 bg-muted/30 inline-flex items-center rounded-md border px-1.5 py-0.5 font-mono text-mono'>
           {progress}
         </span>
       )

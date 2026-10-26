@@ -82,7 +82,7 @@ export function MarketplacePluginCard(props: MarketplacePluginCardProps) {
           </span>
           <div className='min-w-0'>
             <div className='truncate text-sm font-medium'>{plugin.name}</div>
-            <div className='text-muted-foreground truncate font-mono text-xs'>
+            <div className='text-muted-foreground truncate font-mono text-mono'>
               {plugin.key}
             </div>
           </div>
@@ -101,7 +101,7 @@ export function MarketplacePluginCard(props: MarketplacePluginCardProps) {
       <div className='grid grid-cols-3 gap-x-3 gap-y-1'>
         <div className='min-w-0'>
           <div className={labelClass}>{t('Latest version')}</div>
-          <div className='truncate font-mono text-xs'>{plugin.latest}</div>
+          <div className='truncate font-mono text-mono'>{plugin.latest}</div>
         </div>
         <div className='min-w-0'>
           <div className={labelClass}>{t('Channel type')}</div>

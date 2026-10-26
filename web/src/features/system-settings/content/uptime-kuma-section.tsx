@@ -311,13 +311,13 @@ export function UptimeKumaSection({ enabled, data }: UptimeKumaSectionProps) {
             {
               id: 'url',
               header: t('Uptime Kuma URL'),
-              cellClassName: 'text-primary max-w-xs truncate font-mono text-sm',
+              cellClassName: 'text-primary max-w-xs truncate font-mono text-mono',
               cell: (group) => group.url,
             },
             {
               id: 'slug',
               header: t('Status Page Slug'),
-              cellClassName: 'text-muted-foreground font-mono text-sm',
+              cellClassName: 'text-muted-foreground font-mono text-mono',
               cell: (group) => group.slug,
             },
             {

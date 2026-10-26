@@ -180,7 +180,7 @@ export function ChannelSelectorDialog({
           const url = row.getValue('base_url') as string
           return (
             <span
-              className='text-muted-foreground block max-w-xs truncate font-mono text-xs'
+              className='text-muted-foreground block max-w-xs truncate font-mono text-mono'
               title={url}
             >
               {url}
@@ -266,7 +266,7 @@ export function ChannelSelectorDialog({
                   value={currentEndpoint}
                   onChange={(e) => updateEndpoint(channel.id, e.target.value)}
                   placeholder={t('/your/endpoint')}
-                  className='h-8 min-w-0 flex-1 font-mono text-xs'
+                  className='h-8 min-w-0 flex-1 font-mono text-mono'
                 />
               )}
             </div>
