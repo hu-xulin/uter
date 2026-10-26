@@ -57,8 +57,13 @@ function ToggleGroup({
       data-spacing={spacing}
       data-orientation={orientation}
       style={{ '--gap': spacing } as React.CSSProperties}
+      // 注意：容器不能再加 `border border-input`。outline 变体的 ToggleGroupItem
+      // 自身就带 `border border-input`，容器再加一层会渲染成 2px 双线（外框贴着
+      // 按钮边框，且 spacing=0 时没有 padding 隔开）。分段控件的外框由子项边框
+      // 拼成：first 保留 border-l、其余 border-l-0，天然形成单线闭环。
+      // 保留 bg-background 是为了维持「白底药丸」的视觉（dark 下比 bg-card 更暗）。
       className={cn(
-        'group/toggle-group flex w-fit flex-row items-center gap-[--spacing(var(--gap))] rounded-lg border border-input bg-background data-vertical:flex-col data-vertical:items-stretch data-[size=sm]:rounded-md',
+        'group/toggle-group flex w-fit flex-row items-center gap-[--spacing(var(--gap))] rounded-lg bg-background data-vertical:flex-col data-vertical:items-stretch data-[size=sm]:rounded-md',
         className
       )}
       {...props}

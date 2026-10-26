@@ -98,7 +98,7 @@ const Toaster = (props: ToasterProps) => {
           '--error-border':
             'color-mix(in oklch, var(--destructive) 35%, var(--border))',
           '--error-text': 'var(--destructive)',
-          '--border-radius': 'var(--radius)',
+          '--border-radius': 'var(--radius-lg)',
         } as React.CSSProperties
       }
       {...props}
