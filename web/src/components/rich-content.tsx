@@ -16,8 +16,18 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
+import { Suspense, lazy } from 'react'
+
 import { HtmlContent, type HtmlContentVariant } from '@/components/html-content'
-import { Markdown } from '@/components/ui/markdown'
+
+// Markdown pulls in katex (with its stylesheet), marked and DOMPurify. Most
+// RichContent call sites — the homepage, the notification popover, legal docs —
+// render an iframe URL or plain HTML and never need the markdown renderer on
+// first paint. Lazy-load it so those paths don't ship katex/marked in the
+// initial chunk; this mirrors the dynamic import() the dialogs already use.
+const Markdown = lazy(() =>
+  import('@/components/ui/markdown').then((m) => ({ default: m.Markdown }))
+)
 
 type RichContentMode = 'markdown' | 'html'
 
@@ -41,8 +51,10 @@ export function RichContent(props: RichContentProps) {
   }
 
   return (
-    <Markdown breaks={props.breaks} className={props.className}>
-      {props.content}
-    </Markdown>
+    <Suspense fallback={null}>
+      <Markdown breaks={props.breaks} className={props.className}>
+        {props.content}
+      </Markdown>
+    </Suspense>
   )
 }
