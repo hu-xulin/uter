@@ -199,12 +199,13 @@ export function bindEmail(
 export function bindWeChat(
   code: string,
   proofToken: string,
+  state: string,
   signal: AbortSignal
 ): Promise<AccountSecurityResult> {
   return authResult(
     api.post(
       '/api/oauth/wechat/bind',
-      { code },
+      { code, state },
       {
         ...authRequestOptions,
         headers: { 'X-Security-Proof': proofToken },

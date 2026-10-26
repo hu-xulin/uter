@@ -36,6 +36,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { Spinner } from '@/components/ui/spinner'
 import { SecureVerificationDialog } from '@/features/auth/secure-verification'
+import { startWeChatFlow } from '@/features/auth/api'
 import { bindWeChat } from '@/features/profile/api'
 
 import { useAccountSecurity } from '../../hooks/use-account-security'
@@ -83,6 +84,7 @@ export function WeChatBindDialog(props: WeChatBindDialogProps) {
   }
   const submit = async (values: z.infer<typeof wechatBindingSchema>) => {
     const result = await security.run(async (signal) => {
+      const state = await startWeChatFlow('bind')
       const proof = await security.verify(
         {
           scope: 'account.binding.bind',
@@ -90,7 +92,7 @@ export function WeChatBindDialog(props: WeChatBindDialogProps) {
         },
         signal
       )
-      return bindWeChat(values.code, proof, signal)
+      return bindWeChat(values.code, proof, state, signal)
     })
     if (!result) return
     toast.success(t('Binding successful!'))
