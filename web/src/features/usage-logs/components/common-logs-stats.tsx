@@ -38,10 +38,10 @@ function StatBadge(props: {
   accent: string
 }) {
   return (
-    <span className='border-border/60 bg-muted/25 inline-flex h-7 items-center gap-2 rounded-md border px-2.5 text-xs shadow-xs'>
+    <span className='border-border/60 bg-muted/25 inline-flex h-7 items-center gap-2 rounded-md border px-2.5 text-sm'>
       <span className={cn('h-3.5 w-0.5 rounded-full', props.accent)} />
       <span className='text-muted-foreground'>{props.label}</span>
-      <span className='text-foreground/85 font-semibold tabular-nums'>
+      <span className='text-muted-foreground font-semibold tabular-nums'>
         {props.value}
       </span>
     </span>
@@ -98,29 +98,29 @@ export function CommonLogsStats() {
       <StatBadge
         label={t('Usage')}
         value={sensitiveVisible ? formatLogQuota(stats?.quota || 0) : '••••'}
-        accent='bg-sky-500/70'
+        accent='bg-info/70'
       />
       <StatBadge
         label={t('RPM')}
         value={stats?.rpm || 0}
-        accent='bg-rose-500/65'
+        accent='bg-destructive/65'
       />
       <StatBadge
         label={t('TPM')}
         value={stats?.tpm || 0}
-        accent='bg-slate-400/70'
+        accent='bg-muted/70'
       />
       {/* 缓存维度此前完全没有聚合统计，只有逐条日志的 other JSON 里有。
           这里恒显示（含 0），否则「统计不到」和「确实没命中缓存」无法区分。 */}
       <StatBadge
         label={t('Cache Write')}
         value={(stats?.cache_write_tokens || 0).toLocaleString()}
-        accent='bg-emerald-500/70'
+        accent='bg-success/70'
       />
       <StatBadge
         label={t('Cache Read')}
         value={(stats?.cache_read_tokens || 0).toLocaleString()}
-        accent='bg-violet-500/70'
+        accent='bg-info/70'
       />
     </div>
   )

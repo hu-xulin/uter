@@ -43,9 +43,7 @@ export function buildSearchParams(
     ...(filters.startTime && { startTime: filters.startTime.getTime() }),
     ...(filters.endTime && { endTime: filters.endTime.getTime() }),
     ...(filters.channel && { channel: filters.channel }),
-    ...(filters.userId && filters.userId > 0
-      ? { userId: filters.userId }
-      : {}),
+    ...(filters.userId && filters.userId > 0 ? { userId: filters.userId } : {}),
   }
 
   switch (logCategory) {

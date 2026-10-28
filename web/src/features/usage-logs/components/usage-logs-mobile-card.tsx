@@ -38,9 +38,9 @@ import { CommonLogMobileCard } from './common-log-mobile-card'
 
 const logTypeRowTint: Record<number, string> = {
   [LOG_TYPE_ENUM.ERROR]:
-    'bg-rose-50/40 dark:bg-rose-950/20 border-rose-200/50 dark:border-rose-900/30',
+    'bg-destructive-soft/40 dark:bg-destructive-soft/20 border-destructive-soft/50 dark:border-destructive-soft/30',
   [LOG_TYPE_ENUM.REFUND]:
-    'bg-blue-50/30 dark:bg-blue-950/15 border-blue-200/50 dark:border-blue-900/30',
+    'bg-info-soft/30 dark:bg-info-soft/15 border-info-soft/50 dark:border-info-soft/30',
 }
 
 interface UsageLogsMobileListProps<TData> {
@@ -105,7 +105,7 @@ function CompactCell<TData>({
   return (
     <div
       className={cn(
-        'min-w-0 overflow-hidden leading-tight [&_button]:max-w-full [&_span]:max-w-full',
+        'min-w-0 overflow-hidden [&_button]:max-w-full [&_span]:max-w-full',
         primaryOnly &&
           '[&_.flex-col]:min-w-0 [&_.flex-col>*:not(:first-child)]:hidden',
         className
@@ -114,7 +114,7 @@ function CompactCell<TData>({
       {cell ? (
         flexRender(cell.column.columnDef.cell, cell.getContext())
       ) : (
-        <span className='text-muted-foreground/50'>{fallback}</span>
+        <span className='text-muted-foreground'>{fallback}</span>
       )}
     </div>
   )
@@ -140,7 +140,7 @@ function SummaryField<TData>({
       className={cn('bg-muted/20 min-w-0 rounded-md px-2 py-1.5', className)}
     >
       {label != null && label !== '' && (
-        <div className='text-muted-foreground mb-1 text-xs leading-none font-medium select-none'>
+        <div className='text-muted-foreground mb-1 text-xs font-medium select-none'>
           {label}
         </div>
       )}
@@ -262,7 +262,7 @@ export function UsageLogsMobileList<TData>({
         <Empty className='border-none p-0'>
           <EmptyHeader>
             <EmptyMedia variant='icon'>
-              <Database className='size-6' />
+              <Database />
             </EmptyMedia>
             <EmptyTitle>{resolvedEmptyTitle}</EmptyTitle>
             <EmptyDescription>{resolvedEmptyDescription}</EmptyDescription>

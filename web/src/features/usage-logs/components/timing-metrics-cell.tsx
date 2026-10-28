@@ -87,7 +87,7 @@ export function TimingMetricsCell(props: TimingMetricsCellProps) {
   const labels = (
     <div
       className={cn(
-        'flex min-h-8 min-w-0 flex-col justify-center gap-0.5 text-xs leading-tight',
+        'flex min-h-8 min-w-0 flex-col justify-center gap-0.5 text-xs',
         props.compact &&
           'min-h-0 flex-row flex-wrap items-center gap-x-2.5 gap-y-1'
       )}
@@ -184,7 +184,7 @@ export function StreamTpsCell(props: StreamTpsCellProps) {
   return (
     <div
       className={cn(
-        'flex shrink-0 flex-col items-start justify-center gap-0.5 text-xs leading-tight',
+        'flex shrink-0 flex-col items-start justify-center gap-0.5 text-xs',
         props.compact && 'flex-row flex-wrap items-center gap-1.5',
         props.className
       )}
@@ -200,7 +200,7 @@ export function StreamTpsCell(props: StreamTpsCellProps) {
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger
-                render={<CircleAlert className='text-destructive size-3' />}
+                render={<CircleAlert className='text-destructive size-4' />}
               />
               <TooltipContent>
                 <div className='space-y-0.5 text-xs'>
@@ -221,7 +221,7 @@ export function StreamTpsCell(props: StreamTpsCellProps) {
       </span>
       {(!props.compact ||
         (props.isStream && props.tokensPerSecond != null)) && (
-        <span className='text-muted-foreground/60 px-0.5 tabular-nums'>
+        <span className='text-muted-foreground px-0.5 tabular-nums'>
           {tpsLabel}
         </span>
       )}

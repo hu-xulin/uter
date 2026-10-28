@@ -79,7 +79,7 @@ function ModelBadgeContent(props: ModelBadgeProps & { copyable: boolean }) {
         <span
           className={
             props.wrapText
-              ? 'line-clamp-2 leading-5 [overflow-wrap:anywhere]'
+              ? 'line-clamp-2 [overflow-wrap:anywhere]'
               : 'whitespace-nowrap'
           }
         >
@@ -118,9 +118,9 @@ export function ModelBadge(props: ModelBadgeProps) {
         <CopyButton
           value={props.modelName}
           aria-label={modelLabel}
-          size='sm'
+          size='inline'
           iconClassName='hidden'
-          className='h-auto min-h-8 max-w-full min-w-0 justify-start px-0 py-0 text-left font-normal whitespace-normal'
+          className='min-h-8 max-w-full min-w-0 justify-start text-left font-normal whitespace-normal'
         >
           <ModelBadgeContent {...props} copyable={false} />
         </CopyButton>
@@ -142,7 +142,7 @@ export function ModelBadge(props: ModelBadgeProps) {
       )}
       {!mismatch && props.actualModel && (
         <Route
-          className='text-muted-foreground size-3 shrink-0'
+          className='text-muted-foreground size-4 shrink-0'
           aria-hidden='true'
         />
       )}
@@ -156,7 +156,8 @@ export function ModelBadge(props: ModelBadgeProps) {
         aria-label={modelLabel}
         aria-haspopup='dialog'
         onClick={props.onInspect}
-        className='h-auto min-h-8 max-w-full min-w-0 flex-wrap justify-start gap-1 px-0 py-0 text-left font-normal whitespace-normal'
+        size='inline'
+        className='min-h-8 max-w-full min-w-0 flex-wrap justify-start text-left font-normal whitespace-normal'
       >
         {content}
       </Button>
@@ -170,7 +171,8 @@ export function ModelBadge(props: ModelBadgeProps) {
           <Button
             variant='ghost'
             aria-label={modelLabel}
-            className='h-auto max-w-full min-w-0 flex-wrap justify-start gap-1 p-0 font-normal'
+            size='inline'
+            className='max-w-full min-w-0 flex-wrap justify-start font-normal'
           />
         }
       >
@@ -185,7 +187,7 @@ export function ModelBadge(props: ModelBadgeProps) {
               <span className='text-muted-foreground text-xs'>
                 {t('Request Model:')}
               </span>
-              <span className='truncate font-mono text-mono font-medium'>
+              <span className='text-mono truncate font-mono font-medium'>
                 {props.modelName}
               </span>
             </div>
@@ -193,7 +195,7 @@ export function ModelBadge(props: ModelBadgeProps) {
               <span className='text-muted-foreground text-xs'>
                 {t('Actual Model:')}
               </span>
-              <span className='truncate font-mono text-mono font-medium'>
+              <span className='text-mono truncate font-mono font-medium'>
                 {props.actualModel}
               </span>
             </div>
@@ -241,7 +243,7 @@ export function ResponseModelDetails(props: {
         mono
       />
       {mismatch && (
-        <p className='text-muted-foreground text-xs'>
+        <p className='text-muted-foreground text-sm'>
           {t(
             'The upstream returned a model name different from both the requested and upstream models. Aliases or dated versions may also cause this; this warning alone does not prove model substitution.'
           )}

@@ -27,7 +27,12 @@ import { Button } from '@/components/ui/button'
 import { requireServerSuccess } from '@/lib/server-error-message'
 import { useAuthStore } from '@/stores/auth-store'
 
-import { getAuditLogs, getOrganizationAuditLogs, type AuditFilters, type AuditLog } from '../api'
+import {
+  getAuditLogs,
+  getOrganizationAuditLogs,
+  type AuditFilters,
+  type AuditLog,
+} from '../api'
 import { useAuditLogColumns } from './audit-log-columns'
 import { AuditLogFilterBar } from './audit-log-filter-bar'
 

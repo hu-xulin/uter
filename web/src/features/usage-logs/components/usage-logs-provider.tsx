@@ -115,9 +115,8 @@ export function useLogsViewScope() {
   // 注意：仅当「非平台管理员」时才启用组织视角——平台管理员即使属于某组织，
   // 也走全局接口而非组织接口（组织管理者按约定是普通用户，二者正交）。
   const isOrgManager = canManageOrganization(authUser)
-  const orgId = isOrgManager && !canManageScope
-    ? (authUser?.organization_id ?? 0)
-    : 0
+  const orgId =
+    isOrgManager && !canManageScope ? (authUser?.organization_id ?? 0) : 0
 
   return {
     canManageScope,

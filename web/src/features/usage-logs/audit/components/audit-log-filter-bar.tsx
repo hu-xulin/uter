@@ -21,9 +21,9 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { Combobox } from '@/components/ui/combobox'
-import { formatUserId, parseUserId } from '@/lib/format'
-import { useOrgManagerScope } from '@/features/organization/use-org-manager'
 import { OrgUserFilter } from '@/features/organization/org-user-filter'
+import { useOrgManagerScope } from '@/features/organization/use-org-manager'
+import { formatUserId, parseUserId } from '@/lib/format'
 
 import { CompactDateTimeRangePicker } from '../../components/compact-date-time-range-picker'
 import {
@@ -69,7 +69,7 @@ export function AuditLogFilterBar(props: {
   onReset: () => void
 }) {
   const { t } = useTranslation()
-  // 用户 ID 输入框保留原始字符串（同时接受 "1" 与展示编号 "uter100000001"），
+  // 用户 ID 输入框保留原始字符串（同时接受 "1" 与展示编号 "U100000001"），
   // null 表示「跟随已应用的 filters 渲染」；父组件 Reset 时清空。
   const [userIdRaw, setUserIdRaw] = useState<string | null>(null)
   const userIdInput =
@@ -166,12 +166,15 @@ export function AuditLogFilterBar(props: {
                   placeholder={t('Username')}
                   value={props.filters.username ?? ''}
                   onChange={(event) =>
-                    props.onChange({ username: event.target.value || undefined })
+                    props.onChange({
+                      username: event.target.value || undefined,
+                    })
                   }
                 />
               </LogsFilterField>
               <LogsFilterField>
                 <LogsFilterInput
+                  mono
                   aria-label={t('User ID')}
                   placeholder={t('User ID')}
                   inputMode='numeric'

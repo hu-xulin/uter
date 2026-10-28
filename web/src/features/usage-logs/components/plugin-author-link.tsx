@@ -16,8 +16,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
-import { LinkSquare01Icon } from '@hugeicons/core-free-icons'
-import { HugeiconsIcon } from '@hugeicons/react'
+
+import { SquareArrowOutUpRight } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
 
@@ -48,15 +48,10 @@ export function PluginAuthorLink(props: PluginAuthorLinkProps) {
         className='inline-flex min-w-0 items-center gap-1'
       >
         <span className='truncate'>{authorName}</span>
-        <HugeiconsIcon
-          icon={LinkSquare01Icon}
-          className='size-3 shrink-0'
-          strokeWidth={2}
-          aria-hidden='true'
-        />
+        <SquareArrowOutUpRight className='size-4 shrink-0' aria-hidden='true' />
       </a>
       {props.showUrl ? (
-        <span className='text-muted-foreground truncate font-mono text-mono'>
+        <span className='text-muted-foreground text-mono truncate font-mono'>
           {authorUrl}
         </span>
       ) : null}

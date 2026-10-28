@@ -32,8 +32,8 @@ export function AuditDetailValue(props: {
     <div className='flex min-w-0 items-start gap-1 text-xs'>
       <span
         className={cn(
-          'min-w-0 flex-1 leading-5 wrap-anywhere break-normal whitespace-pre-wrap',
-          props.mono && 'font-mono'
+          'min-w-0 flex-1 wrap-anywhere break-normal whitespace-pre-wrap',
+          props.mono && 'font-mono text-mono'
         )}
       >
         {props.value}

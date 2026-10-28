@@ -55,13 +55,13 @@ import { useLogsViewScope, type LogsViewAccess } from './usage-logs-provider'
 const route = getRouteApi('/_authenticated/usage-logs/$section')
 
 const logTypeRowTint: Record<number, string> = {
-  [LOG_TYPE_ENUM.ERROR]: 'bg-rose-50/40 dark:bg-rose-950/20',
-  [LOG_TYPE_ENUM.REFUND]: 'bg-blue-50/30 dark:bg-blue-950/15',
+  [LOG_TYPE_ENUM.ERROR]: 'bg-destructive-soft/40 dark:bg-destructive-soft/20',
+  [LOG_TYPE_ENUM.REFUND]: 'bg-info-soft/30 dark:bg-info-soft/15',
 }
 
 // Warning tint for logs where a quota conversion saturated (admin-only marker).
 // Takes precedence over the per-type tint since it flags a billing anomaly.
-const quotaSaturationRowTint = 'bg-amber-50/60 dark:bg-amber-950/25'
+const quotaSaturationRowTint = 'bg-warning-soft/60 dark:bg-warning-soft/25'
 
 function getColumnVisibilityStorageKey(
   logCategory: LogCategory,

@@ -101,7 +101,9 @@ it.each([
   await userEvent.click(screen.getByRole('button', { name: '详情' }))
   const dialog = await screen.findByRole('dialog', { name: '日志详情' })
   expect(within(dialog).getByText(label)).toBeVisible()
-  expect(within(dialog).getByText('literal-name (ID: uter100000001)')).toBeVisible()
+  expect(
+    within(dialog).getByText('literal-name (ID: U100000001)')
+  ).toBeVisible()
 })
 
 it('uses the returned authentication method for personal access records', async () => {
@@ -533,7 +535,7 @@ it('shows the quota target and committed balances before operator information', 
     },
   })
   expect(
-    within(dialog).getByText('Override quota for user “1” (ID: uter100000042)')
+    within(dialog).getByText('Override quota for user “1” (ID: U100000042)')
   ).toBeVisible()
   const target = within(dialog).getByText('Target username')
   const operator = within(dialog).getByText('Operator')
@@ -545,7 +547,7 @@ it('shows the quota target and committed balances before operator information', 
   expect(within(dialog).getByText('$1')).toBeVisible()
   expect(within(dialog).getAllByText('-$1')).toHaveLength(2)
   await user.click(within(dialog).getByRole('button', { name: 'Copy User ID' }))
-  expect(copy).toHaveBeenCalledWith('uter100000042')
+  expect(copy).toHaveBeenCalledWith('U100000042')
 })
 
 it('shows failed quota attempts without claiming a balance change', async () => {
@@ -568,7 +570,9 @@ it('shows failed quota attempts without claiming a balance change', async () => 
     },
   })
   expect(within(dialog).getByText('Failed')).toBeVisible()
-  expect(within(dialog).getByText('Decrease user quota (ID: uter100000042)')).toBeVisible()
+  expect(
+    within(dialog).getByText('Decrease user quota (ID: U100000042)')
+  ).toBeVisible()
   expect(
     within(dialog).getByText('Insufficient permission to adjust this user')
   ).toBeVisible()
@@ -594,7 +598,7 @@ it('distinguishes unchanged zero quota from missing or legacy balance metadata',
     },
     i18n.t
   )
-  expect(unchanged.summary).toBe('Override user quota (ID: uter100000042)')
+  expect(unchanged.summary).toBe('Override user quota (ID: U100000042)')
   expect(unchanged.operation?.description).toBe(
     'Requested quota: $0 · Quota unchanged · $0 → $0'
   )

@@ -70,7 +70,11 @@ export function LogsFilterField(props: LogsFilterFieldProps) {
   return (
     <div
       className={cn(
-        'min-w-0 [&_[data-slot=select-trigger]]:w-full [&_[data-slot=select-trigger]]:text-sm [&_[data-slot=select-value]]:leading-5',
+        // 筛选行是 32px（h-8）的紧凑行：输入框、Combobox、日期区间都写死 h-8。
+        // SelectTrigger 的高度由它自己的 `size` 档决定（default 40 / xs 32），
+        // 这里只负责把它撑满格子——用 CSS 去压 `data-[size=default]` 的
+        // 高度是无效的，那个属性选择器的优先级和本类相同，谁生效看产出顺序。
+        'min-w-0 [&_[data-slot=select-trigger]]:w-full [&_[data-slot=select-trigger]]:text-sm [&_[data-slot=select-value]]:',
         props.wide && 'sm:col-span-2',
         props.className
       )}
@@ -81,11 +85,14 @@ export function LogsFilterField(props: LogsFilterFieldProps) {
 }
 
 export function LogsFilterInput(props: ComponentProps<typeof Input>) {
+  // `text-sm` 只在非 mono 时加：`text-mono` 是自定义 token，twMerge 不认它是
+  // 字号类，两者会同时存在、由 CSS 源顺序决定胜负。等宽字段的字号只能来自
+  // `text-mono`（14/20）。
   return (
     <Input
       {...props}
       autoComplete='off'
-      className={cn('h-8 min-w-0 text-sm leading-5', props.className)}
+      className={cn('min-w-0', !props.mono && 'text-sm', props.className)}
     />
   )
 }
@@ -132,7 +139,7 @@ export function LogsFilterToolbar<TData>(props: LogsFilterToolbarProps<TData>) {
       )}
       <ChevronDown
         className={cn(
-          'size-3.5 transition-transform duration-200',
+          'size-4 transition-transform ds-motion-base',
           advancedOpen && 'rotate-180'
         )}
       />
@@ -155,7 +162,7 @@ export function LogsFilterToolbar<TData>(props: LogsFilterToolbarProps<TData>) {
                   aria-label={t('Filter')}
                   className={cn(
                     'text-muted-foreground hover:text-foreground gap-1 px-2',
-                    props.compactMobile && 'min-h-9 gap-1.5',
+                    props.compactMobile && 'gap-1.5',
                     activeMobileFilterCount > 0 &&
                       'text-primary hover:text-primary'
                   )}
@@ -270,9 +277,13 @@ export function LogsFilterToolbar<TData>(props: LogsFilterToolbarProps<TData>) {
         {props.stats}
         <div className='ms-auto flex flex-wrap items-center justify-end gap-1.5 sm:gap-2'>
           {props.actionStart}
+          {/* 操作按钮与筛选行里的输入框同高（`--ds-control-height-md`）。
+              Button 的高度写在 size 变体里，与这里的同名工具类同组，
+              twMerge 会让后写的这一个生效。 */}
           <Button
             type='button'
             variant='outline'
+            className='h-(--ds-control-height-md)'
             onClick={props.onReset}
             disabled={!props.hasActiveFilters}
           >
@@ -280,6 +291,7 @@ export function LogsFilterToolbar<TData>(props: LogsFilterToolbarProps<TData>) {
           </Button>
           <Button
             type='button'
+            className='h-(--ds-control-height-md)'
             onClick={props.onSearch}
             disabled={props.searchLoading}
           >

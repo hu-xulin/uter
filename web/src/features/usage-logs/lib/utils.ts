@@ -167,8 +167,14 @@ export function buildApiParams(config: {
   /** 组织管理者视角：非 0 时以组织接口范围查询，并允许按 username/user_id 过滤。 */
   orgId?: number
 }): GetLogsParams {
-  const { page, pageSize, searchParams, columnFilters = [], isAdmin, orgId } =
-    config
+  const {
+    page,
+    pageSize,
+    searchParams,
+    columnFilters = [],
+    isAdmin,
+    orgId,
+  } = config
 
   // Helper to process type parameter (single value from array)
   const processType = (value: unknown): number | undefined => {

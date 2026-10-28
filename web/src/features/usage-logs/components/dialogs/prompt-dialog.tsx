@@ -55,22 +55,22 @@ export function PromptDialog({
         <div className='space-y-4 py-4'>
           {/* Original Prompt */}
           <div className='space-y-2'>
-            <Label className='text-sm font-semibold'>{t('Prompt')}</Label>
+            <Label>{t('Prompt')}</Label>
             <div className='bg-muted/50 relative rounded-md border p-3'>
               <Button
                 variant='ghost'
-                size='sm'
-                className='absolute top-2 right-2 h-8 w-8 p-0'
+                size='icon-sm'
+                className='absolute top-2 right-2 p-0'
                 onClick={() => copyToClipboard(prompt)}
                 title={t('Copy to clipboard')}
               >
                 {copiedText === prompt ? (
-                  <Check className='size-4 text-green-600' />
+                  <Check className='text-success size-4.5' />
                 ) : (
-                  <Copy className='size-4' />
+                  <Copy className='size-4.5' />
                 )}
               </Button>
-              <p className='pr-10 text-sm leading-relaxed break-words whitespace-pre-wrap'>
+              <p className='pr-10 text-sm break-words whitespace-pre-wrap'>
                 {prompt || '-'}
               </p>
             </div>
@@ -79,24 +79,22 @@ export function PromptDialog({
           {/* English Prompt */}
           {promptEn && (
             <div className='space-y-2'>
-              <Label className='text-sm font-semibold'>
-                {t('Prompt (EN)')}
-              </Label>
+              <Label>{t('Prompt (EN)')}</Label>
               <div className='bg-muted/50 relative rounded-md border p-3'>
                 <Button
                   variant='ghost'
-                  size='sm'
-                  className='absolute top-2 right-2 h-8 w-8 p-0'
+                  size='icon-sm'
+                  className='absolute top-2 right-2 p-0'
                   onClick={() => copyToClipboard(promptEn)}
                   title={t('Copy to clipboard')}
                 >
                   {copiedText === promptEn ? (
-                    <Check className='size-4 text-green-600' />
+                    <Check className='text-success size-4.5' />
                   ) : (
-                    <Copy className='size-4' />
+                    <Copy className='size-4.5' />
                   )}
                 </Button>
-                <p className='pr-10 text-sm leading-relaxed break-words whitespace-pre-wrap'>
+                <p className='pr-10 text-sm break-words whitespace-pre-wrap'>
                   {promptEn}
                 </p>
               </div>

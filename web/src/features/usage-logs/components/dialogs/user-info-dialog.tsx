@@ -37,7 +37,7 @@ interface UserInfoDialogProps {
 function InfoItem({ label, value }: { label: string; value: string | number }) {
   return (
     <div className='space-y-1.5'>
-      <Label className='text-muted-foreground text-xs'>{label}</Label>
+      <Label className='text-muted-foreground text-sm'>{label}</Label>
       <div className='text-sm font-semibold'>{value}</div>
     </div>
   )
@@ -91,7 +91,7 @@ export function UserInfoDialog({
     >
       {isLoading && (
         <div className='flex items-center justify-center py-8'>
-          <Loader2 className='text-muted-foreground size-6 animate-spin' />
+          <Loader2 className='text-muted-foreground size-8 animate-spin' />
         </div>
       )}
       {!isLoading && userInfo && (
@@ -162,10 +162,10 @@ export function UserInfoDialog({
           {/* Remark */}
           {userInfo.remark && (
             <div className='space-y-1.5'>
-              <Label className='text-muted-foreground text-xs'>
+              <Label className='text-muted-foreground text-sm'>
                 {t('Remark')}
               </Label>
-              <div className='text-sm leading-relaxed font-semibold break-words'>
+              <div className='text-sm font-semibold break-words'>
                 {userInfo.remark}
               </div>
             </div>

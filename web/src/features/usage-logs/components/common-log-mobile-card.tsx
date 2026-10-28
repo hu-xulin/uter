@@ -142,7 +142,7 @@ export function CommonLogMobileCard<TData>(props: {
       cacheWrite > 0)
 
   return (
-    <div className='min-w-0 space-y-2.5 text-sm leading-5'>
+    <div className='min-w-0 space-y-2.5 text-sm'>
       <div className='flex min-w-0 flex-wrap items-start gap-x-3 gap-y-2'>
         {fields.model.visible && (
           <div className='min-w-0 flex-[1_1_10rem]'>
@@ -179,7 +179,8 @@ export function CommonLogMobileCard<TData>(props: {
               aria-label={`${t('Time')}: ${fields.time.value}`}
               aria-haspopup='dialog'
               onClick={() => setSelectedField('time')}
-              className='text-muted-foreground h-auto min-h-6 px-0 py-0 text-xs font-normal whitespace-normal tabular-nums'
+              size='inline'
+              className='text-muted-foreground min-h-6 font-normal whitespace-normal tabular-nums'
             >
               {dayjs.unix(log.created_at).format('MM-DD HH:mm:ss')}
             </Button>
@@ -268,7 +269,8 @@ export function CommonLogMobileCard<TData>(props: {
                     aria-label={`${field.label}: ${field.value}`}
                     aria-haspopup='dialog'
                     onClick={() => setSelectedField(id)}
-                    className='text-foreground h-auto min-h-8 min-w-0 flex-1 shrink justify-start px-0 py-1 text-left text-sm font-normal'
+                    size='inline'
+                    className='text-foreground min-h-8 min-w-0 flex-1 shrink justify-start py-1 text-left font-normal'
                   >
                     {fieldContent}
                   </Button>
@@ -348,7 +350,7 @@ export function CommonLogMobileCard<TData>(props: {
       >
         {activeField && (
           <div className='space-y-4'>
-            <p className='bg-muted rounded-lg p-4 text-base [overflow-wrap:anywhere] whitespace-pre-wrap'>
+            <p className='bg-muted rounded-lg p-4 text-sm [overflow-wrap:anywhere] whitespace-pre-wrap'>
               {activeField.value}
             </p>
             {selectedField === 'model' && model.responseModel && (
@@ -359,7 +361,7 @@ export function CommonLogMobileCard<TData>(props: {
               model.actualModel && (
                 <div className='space-y-2'>
                   <p className='text-muted-foreground'>{t('Actual Model')}</p>
-                  <p className='text-base [overflow-wrap:anywhere]'>
+                  <p className='text-sm [overflow-wrap:anywhere]'>
                     {model.actualModel}
                   </p>
                   <CopyButton value={model.actualModel} />
@@ -376,7 +378,6 @@ export function CommonLogMobileCard<TData>(props: {
             {selectedField === 'user' && (
               <Button
                 variant='outline'
-                className='min-h-11'
                 onClick={() => {
                   setSelectedField(null)
                   context.setSelectedUserId(log.user_id)

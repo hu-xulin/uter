@@ -90,7 +90,7 @@ function AudioClipCard({ clip }: { clip: AudioClip }) {
         </div>
 
         {tags && (
-          <p className='text-muted-foreground mb-2 truncate text-xs'>{tags}</p>
+          <p className='text-muted-foreground mb-2 truncate text-sm'>{tags}</p>
         )}
 
         {hasError ? (
@@ -101,7 +101,7 @@ function AudioClipCard({ clip }: { clip: AudioClip }) {
             <Button
               variant='outline'
               size='sm'
-              className='h-7 gap-1 text-xs'
+              className='gap-1 text-sm'
               onClick={() => window.open(audioUrl, '_blank')}
             >
               {t('Open in new tab')}
@@ -109,13 +109,13 @@ function AudioClipCard({ clip }: { clip: AudioClip }) {
             <Button
               variant='outline'
               size='sm'
-              className='h-7 gap-1 text-xs'
+              className='gap-1 text-sm'
               onClick={() => {
                 navigator.clipboard.writeText(audioUrl)
                 toast.success(t('Copied'))
               }}
             >
-              <Copy className='h-3 w-3' />
+              <Copy className='size-4.5' />
               {t('Copy Link')}
             </Button>
           </div>

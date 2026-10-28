@@ -22,14 +22,14 @@ import type { Table } from '@tanstack/react-table'
 import { useState, useEffect, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { OrgUserFilter } from '@/features/organization/org-user-filter'
+import { useOrgManagerScope } from '@/features/organization/use-org-manager'
 import { formatUserId, parseUserId } from '@/lib/format'
 
 import { buildSearchParams } from '../lib/filter'
 import { getDefaultTimeRange } from '../lib/utils'
 import type { DrawingLogFilters, LogCategory, TaskLogFilters } from '../types'
 import { CompactDateTimeRangePicker } from './compact-date-time-range-picker'
-import { useOrgManagerScope } from '@/features/organization/use-org-manager'
-import { OrgUserFilter } from '@/features/organization/org-user-filter'
 import {
   LogsFilterField,
   LogsFilterInput,
@@ -76,8 +76,11 @@ export function TaskLogsFilterBar<TData>(props: TaskLogsFilterBarProps<TData>) {
   const { isAdminView: isAdmin } = useLogsViewScope()
   // 平台管理员：内联「用户名 / 用户ID」文本输入（可见全部用户）。
   // 组织管理者（非平台管理员）：改为组织内成员双下拉，仅可在权限范围内下拉筛选、不可手动输入。
-  const { isOrgManager, members: orgMembers, isLoading: orgMembersLoading } =
-    useOrgManagerScope()
+  const {
+    isOrgManager,
+    members: orgMembers,
+    isLoading: orgMembersLoading,
+  } = useOrgManagerScope()
   const showOrgUserFilter = isOrgManager && !isAdmin
   const fetchingLogs = useIsFetching({ queryKey: ['logs'] })
 
@@ -241,43 +244,45 @@ export function TaskLogsFilterBar<TData>(props: TaskLogsFilterBarProps<TData>) {
   ) : null
   // 平台管理员：内联「用户名 / 用户ID」文本输入；组织管理者：组织内成员双下拉，
   // 仅可在权限范围内下拉筛选、不可手动输入（与分组、所有类型同一模式）。
-  const userDimensionFilter = isAdmin || showOrgUserFilter ? (
-    <>
-      {isAdmin && (
-        <>
-          <LogsFilterField>
-            <LogsFilterInput
-              aria-label={t('Username')}
-              placeholder={t('Username')}
-              value={filters.username || ''}
-              onChange={(e) => handleChange('username', e.target.value)}
-              onKeyDown={handleKeyDown}
-            />
-          </LogsFilterField>
-          <LogsFilterField>
-            <LogsFilterInput
-              aria-label={t('User ID')}
-              placeholder={t('User ID')}
-              inputMode='numeric'
-              value={userIdInput}
-              onChange={(e) => setUserIdRaw(e.target.value)}
-              onKeyDown={handleKeyDown}
-            />
-          </LogsFilterField>
-        </>
-      )}
-      {showOrgUserFilter && (
-        <OrgUserFilter
-          members={orgMembers}
-          username={filters.username}
-          userId={filters.userId}
-          onUsernameChange={(value) => handleChange('username', value)}
-          onUserIdChange={(value) => handleChange('userId', value)}
-          disabled={orgMembersLoading}
-        />
-      )}
-    </>
-  ) : null
+  const userDimensionFilter =
+    isAdmin || showOrgUserFilter ? (
+      <>
+        {isAdmin && (
+          <>
+            <LogsFilterField>
+              <LogsFilterInput
+                aria-label={t('Username')}
+                placeholder={t('Username')}
+                value={filters.username || ''}
+                onChange={(e) => handleChange('username', e.target.value)}
+                onKeyDown={handleKeyDown}
+              />
+            </LogsFilterField>
+            <LogsFilterField>
+              <LogsFilterInput
+                mono
+                aria-label={t('User ID')}
+                placeholder={t('User ID')}
+                inputMode='numeric'
+                value={userIdInput}
+                onChange={(e) => setUserIdRaw(e.target.value)}
+                onKeyDown={handleKeyDown}
+              />
+            </LogsFilterField>
+          </>
+        )}
+        {showOrgUserFilter && (
+          <OrgUserFilter
+            members={orgMembers}
+            username={filters.username}
+            userId={filters.userId}
+            onUsernameChange={(value) => handleChange('username', value)}
+            onUserIdChange={(value) => handleChange('userId', value)}
+            disabled={orgMembersLoading}
+          />
+        )}
+      </>
+    ) : null
 
   return (
     <LogsFilterToolbar

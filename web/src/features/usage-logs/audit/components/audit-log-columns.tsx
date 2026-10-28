@@ -39,7 +39,7 @@ export function useAuditLogColumns(
         header: t('Time'),
         size: 180,
         cell: ({ row }) => (
-          <span className='font-mono tabular-nums'>
+          <span className='text-mono font-mono tabular-nums'>
             {dayjs.unix(row.original.created_at).format('YYYY-MM-DD HH:mm:ss')}
           </span>
         ),
@@ -110,7 +110,7 @@ export function useAuditLogColumns(
         header: 'IP',
         size: 120,
         cell: ({ row }) => (
-          <span className='font-mono'>{row.original.ip || '—'}</span>
+          <span className='text-mono font-mono'>{row.original.ip || '—'}</span>
         ),
         meta: { label: 'IP' },
       },
@@ -130,7 +130,7 @@ export function useAuditLogColumns(
         header: t('Method'),
         size: 76,
         cell: ({ row }) => (
-          <span className='text-muted-foreground font-mono'>
+          <span className='text-muted-foreground text-mono font-mono'>
             {row.original.method || '—'}
           </span>
         ),
@@ -141,7 +141,7 @@ export function useAuditLogColumns(
         header: t('Route'),
         size: 220,
         cell: ({ row }) => (
-          <TruncatedCell className='max-w-60 font-mono'>
+          <TruncatedCell className='text-mono max-w-60 font-mono'>
             {row.original.route || '—'}
           </TruncatedCell>
         ),
@@ -152,7 +152,7 @@ export function useAuditLogColumns(
         header: 'HTTP',
         size: 60,
         cell: ({ row }) => (
-          <span className='font-mono tabular-nums'>
+          <span className='text-mono font-mono tabular-nums'>
             {row.original.status || '—'}
           </span>
         ),
