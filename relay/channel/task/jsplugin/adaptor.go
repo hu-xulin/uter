@@ -1832,10 +1832,14 @@ const (
 	usageFieldImageCount
 )
 
+// usageKeySeparators 提出包级变量：NewReplacer 每次调用都会重新编译替换表，
+// 而 classifyUsageKey 在每个 usage 字段上都会走一次（上游 0cce21db0 同款修复）。
+var usageKeySeparators = strings.NewReplacer("_", "", "-", "")
+
 // classifyUsageKey 把字段名归入规范族：大小写、连字符与下划线都不参与区分，
 // 于是 "durationSeconds"、"duration_seconds" 与 "durationseconds" 等价。
 func classifyUsageKey(key string) usageFieldKind {
-	switch strings.NewReplacer("_", "", "-", "").Replace(strings.ToLower(key)) {
+	switch usageKeySeparators.Replace(strings.ToLower(key)) {
 	case "duration", "durationseconds", "second", "seconds":
 		return usageFieldDuration
 	case "n", "count", "imagecount", "samplecount", "batchcount", "numimages":
