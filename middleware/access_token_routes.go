@@ -54,6 +54,8 @@ var accessTokenRouteRules = map[string]accessTokenRouteRule{
 	"POST /api/oauth/email/bind/resend":   accessTokenScopeRule("account_security:write"),
 	"POST /api/oauth/email/bind":          accessTokenScopeRule("account_security:write"),
 	"POST /api/oauth/wechat/bind":         accessTokenScopeRule("account_security:write"),
+	"POST /api/oauth/wechat-web/state":    accessTokenSessionRule,
+	"GET /api/oauth/wechat-web":           accessTokenSessionRule,
 	"POST /api/oauth/telegram/bind/start": accessTokenSessionRule,
 	"GET /api/oauth/:provider":            accessTokenSessionRule,
 	"GET /api/verify/methods":             accessTokenAnyRule,
