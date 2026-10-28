@@ -70,10 +70,10 @@ export function AffiliateRewardsCard({
             <Share2 />
           </IconBadge>
           <div className='min-w-0'>
-            <h3 className='truncate text-sm font-semibold'>
+            <h3 className='truncate text-lg font-semibold'>
               {t('Referral Program')}
             </h3>
-            <p className='text-muted-foreground line-clamp-1 text-xs'>
+            <p className='text-muted-foreground line-clamp-1 text-sm'>
               {t(
                 'Earn rewards when users join through your referral link. Transfer accumulated rewards to your balance anytime.'
               )}
@@ -88,7 +88,7 @@ export function AffiliateRewardsCard({
             [t('Invites'), String(user?.aff_count ?? 0)],
           ].map(([label, value]) => (
             <div key={label}>
-              <div className='text-muted-foreground truncate text-xs font-medium uppercase'>
+              <div className='text-muted-foreground truncate text-sm font-medium'>
                 {label}
               </div>
               <div className='mt-0.5 truncate text-sm font-semibold tabular-nums'>
@@ -102,7 +102,7 @@ export function AffiliateRewardsCard({
           <Input
             value={affiliateLink}
             readOnly
-            className='border-muted bg-background/70 h-9 min-w-0 flex-1 font-mono text-mono'
+            className='border-muted bg-background/70 text-mono min-w-0 flex-1 font-mono'
           />
           <CopyButton
             value={affiliateLink}
@@ -116,7 +116,7 @@ export function AffiliateRewardsCard({
             <Button
               onClick={onTransfer}
               disabled={!complianceConfirmed}
-              className='h-9 shrink-0 px-3'
+              className='shrink-0 px-3'
               size='sm'
             >
               {t('Transfer to Balance')}
@@ -124,7 +124,7 @@ export function AffiliateRewardsCard({
           )}
         </div>
         {!complianceConfirmed ? (
-          <p className='text-muted-foreground text-xs lg:col-span-3'>
+          <p className='text-muted-foreground text-sm lg:col-span-3'>
             {t(
               'Referral reward transfer is disabled until the administrator confirms compliance terms.'
             )}

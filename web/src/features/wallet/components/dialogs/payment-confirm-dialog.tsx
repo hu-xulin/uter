@@ -120,7 +120,7 @@ export function PaymentConfirmDialog({
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent className='max-sm:w-[calc(100vw-1.5rem)] sm:max-w-md'>
         <AlertDialogHeader>
-          <AlertDialogTitle className='text-xl font-semibold'>
+          <AlertDialogTitle className='font-semibold'>
             {t('Confirm Payment')}
           </AlertDialogTitle>
           <AlertDialogDescription>
@@ -159,7 +159,7 @@ export function PaymentConfirmDialog({
             <div className='bg-muted/50 rounded-lg p-3'>
               <div className='flex items-center justify-between text-sm'>
                 <span className='text-muted-foreground'>{t('You save')}</span>
-                <span className='font-semibold text-green-600'>
+                <span className='text-success font-semibold'>
                   {formatPaymentAmount(discountAmount, paymentMethod?.type)}
                 </span>
               </div>

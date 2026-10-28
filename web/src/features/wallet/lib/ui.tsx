@@ -20,7 +20,7 @@ import i18next from 'i18next'
 import { CreditCard, Landmark } from 'lucide-react'
 import type { ReactNode } from 'react'
 
-import { IconAlipay, IconWeChat, IconStripe } from '@/assets/brand-icons'
+import { IconAlipay, IconWeChatPay, IconStripe } from '@/assets/brand-icons'
 import { ReactIconByName } from '@/components/react-icon-by-name'
 
 import { PAYMENT_TYPES, PAYMENT_ICON_COLORS } from '../constants'
@@ -28,6 +28,37 @@ import { PAYMENT_TYPES, PAYMENT_ICON_COLORS } from '../constants'
 // ============================================================================
 // UI Helper Functions
 // ============================================================================
+
+/**
+ * 微信支付的两个通道类型。
+ *
+ * 它们要用「微信支付」的品牌标（绿色气泡里带一道勾），而不是微信聊天应用的
+ * 双气泡标 —— 后端 `pay_methods` 的默认图标恰好是 `SiWechat`，直接用会把
+ * 支付入口画成聊天软件。
+ */
+const WECHAT_PAY_TYPES = new Set<string>([
+  PAYMENT_TYPES.WECHAT,
+  PAYMENT_TYPES.WECHAT_PAY_WEB,
+])
+
+/**
+ * 「通用微信」图标别名。运营在后台选到这些时，说明他们想表达「微信」，
+ * 而这里的上下文恒为「微信支付」，因此升级成支付标而不是照搬聊天标。
+ * 自定义图片 URL 不在此列（无法重新着色，保持原图）。
+ */
+const GENERIC_WECHAT_ICONS = new Set([
+  'SiWechat',
+  'SiWeixin',
+  'RiWechatFill',
+  'RiWechatLine',
+  'FaWechat',
+  'FaWeixin',
+  'AiFillWechat',
+])
+
+function isWechatPayType(paymentType: string | undefined): boolean {
+  return paymentType != null && WECHAT_PAY_TYPES.has(paymentType)
+}
 
 /**
  * Resolves a backend-provided image URL to https only. Rejects http:,
@@ -61,6 +92,11 @@ function normalizeHttpIconUrl(raw: string | undefined | null): string | null {
  * When icon is provided, render a safe http(s) image URL or resolve it as a
  * react-icons component name. Invalid configured icons intentionally render
  * nothing instead of falling back to the payment type.
+ *
+ * 品牌色**不因运营配置了图标名而丢失**：后端默认的 pay_methods 就带
+ * `icon: "SiAlipay"` / `"SiWechat"`，早期实现走到 react-icons 分支后不再套色，
+ * 收银台因此显示成黑白图标。品牌色只由 `paymentType` 决定（运营改图标不改品牌），
+ * 自定义图片 URL 无法重新着色，保持原图。
  */
 export function getPaymentIcon(
   paymentType: string | undefined,
@@ -83,11 +119,24 @@ export function getPaymentIcon(
       />
     )
   }
+  const brandColor = paymentType ? PAYMENT_ICON_COLORS[paymentType] : undefined
   if (iconValue) {
+    // 「通用微信」别名在微信支付上下文里升级成支付标（见 GENERIC_WECHAT_ICONS）。
+    // 运营配置的显示名（`altName`）要跟着走，否则无障碍名称会退回英文默认值。
+    if (isWechatPayType(paymentType) && GENERIC_WECHAT_ICONS.has(iconValue)) {
+      return (
+        <IconWeChatPay
+          className={className}
+          style={{ color: brandColor }}
+          title={altName}
+        />
+      )
+    }
     return (
       <ReactIconByName
         name={iconValue}
         className={className}
+        color={brandColor}
         title={altName || paymentType || iconValue}
       />
     )
@@ -107,9 +156,10 @@ export function getPaymentIcon(
       )
     case PAYMENT_TYPES.WECHAT:
       return (
-        <IconWeChat
+        <IconWeChatPay
           className={className}
           style={{ color: PAYMENT_ICON_COLORS[PAYMENT_TYPES.WECHAT] }}
+          title={altName}
         />
       )
     case PAYMENT_TYPES.STRIPE:
@@ -141,12 +191,15 @@ export function getPaymentIcon(
         />
       )
     case PAYMENT_TYPES.WECHAT_PAY_WEB:
+      // 官方直连微信支付与易支付·微信走同一个品牌标：都是「微信支付」，
+      // 用聊天软件的双气泡标会让人以为要点开微信扫码聊天。
       return (
-        <IconWeChat
+        <IconWeChatPay
           className={className}
           style={{
             color: PAYMENT_ICON_COLORS[PAYMENT_TYPES.WECHAT_PAY_WEB],
           }}
+          title={altName}
         />
       )
     case PAYMENT_TYPES.WAFFO_PANCAKE:
@@ -155,7 +208,7 @@ export function getPaymentIcon(
       // with Stripe's S and Creem's Landmark.
       return (
         <span
-          className={`inline-flex items-center justify-center leading-none ${className}`}
+          className={`inline-flex items-center justify-center ${className}`}
           style={{ transform: 'scale(2)' }}
         >
           <img

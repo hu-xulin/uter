@@ -65,7 +65,9 @@ export function CreemConfirmDialog({
             {t('Cancel')}
           </Button>
           <Button onClick={onConfirm} disabled={processing}>
-            {processing && <Loader2 className='mr-2 h-4 w-4 animate-spin' />}
+            {processing && (
+              <Loader2 className='mr-2 h-4.5 w-4.5 animate-spin' />
+            )}
             {t('Confirm Payment')}
           </Button>
         </>

@@ -29,10 +29,7 @@ import {
   parseQuotaFromDollars,
   quotaUnitsToDollars,
 } from '@/lib/format'
-import {
-  handleNumberInput,
-  type NumberInputValue,
-} from '@/lib/number-input'
+import { handleNumberInput, type NumberInputValue } from '@/lib/number-input'
 import {
   DEFAULT_CURRENCY_CONFIG,
   useSystemConfigStore,
@@ -95,7 +92,7 @@ export function TransferDialog({
       title={t('Transfer Rewards')}
       description={t('Move affiliate rewards to your main balance')}
       contentClassName='max-sm:w-[calc(100vw-1.5rem)] sm:max-w-md'
-      titleClassName='text-xl font-semibold'
+      titleClassName='font-semibold'
       footerClassName='grid grid-cols-2 gap-2 sm:flex'
       contentHeight='auto'
       bodyClassName='space-y-4'
@@ -112,7 +109,9 @@ export function TransferDialog({
             onClick={handleConfirm}
             disabled={transferring || !canTransfer}
           >
-            {transferring && <Loader2 className='mr-2 h-4 w-4 animate-spin' />}
+            {transferring && (
+              <Loader2 className='mr-2 h-4.5 w-4.5 animate-spin' />
+            )}
             {t('Transfer')}
           </Button>
         </>
@@ -120,7 +119,7 @@ export function TransferDialog({
     >
       <div className='space-y-4 py-3 sm:space-y-6 sm:py-4'>
         <div className='space-y-2'>
-          <Label className='text-muted-foreground text-xs font-medium uppercase'>
+          <Label className='text-muted-foreground text-sm font-medium uppercase'>
             {t('Available Rewards')}
           </Label>
           <div className='text-2xl font-semibold'>
@@ -129,10 +128,7 @@ export function TransferDialog({
         </div>
 
         <div className='space-y-3'>
-          <Label
-            htmlFor='transfer-amount'
-            className='text-muted-foreground text-xs font-medium uppercase'
-          >
+          <Label htmlFor='transfer-amount' className='text-muted-foreground'>
             {t('Transfer Amount')}
           </Label>
           <Input
@@ -143,9 +139,9 @@ export function TransferDialog({
             min={minimumAmount}
             max={maximumAmount}
             step={minimumAmount}
-            className='font-mono text-mono'
+            className='text-mono font-mono'
           />
-          <p className='text-muted-foreground text-xs'>
+          <p className='text-muted-foreground text-sm'>
             {t('Minimum:')} {formatQuota(minimumQuota)}
           </p>
         </div>

@@ -182,7 +182,9 @@ export function formatPaymentAmount(
       style: 'currency',
       currency: 'USD',
       currencyDisplay: 'narrowSymbol',
-      minimumFractionDigits: 0,
+      // 与人民币一侧同口径：金额固定两位小数（$12.5 → $12.50），
+      // 不足 1 美元时放宽到 4 位，避免 $0.0098 被舍成 $0.00。
+      minimumFractionDigits: 2,
       maximumFractionDigits: Math.abs(numeric) >= 1 ? 2 : 4,
     }).format(numeric)
   }
@@ -270,8 +272,16 @@ export function getMinTopupAmount(topupInfo: TopupInfo | null): number {
     return DEFAULT_MIN_TOPUP
   }
 
-  if (topupInfo.enable_online_topup) {
-    return topupInfo.min_topup
+  // 支付宝 / 微信支付 / 易支付都以人民币结算，后端统一下发同一个 min_topup
+  // （operation_setting.MinTopUp）。此前这里只在 enable_online_topup（易支付）
+  // 分支读它，运营把最低额改成 0.01 后，用支付宝/微信充值时前端仍按写死的 1
+  // 拦截 —— 配置保存成功、库里也是 0.01，钱包页却坚持「最低 1 美元」。
+  if (
+    topupInfo.enable_online_topup ||
+    topupInfo.enable_alipay_topup ||
+    topupInfo.enable_wechat_pay_topup
+  ) {
+    return topupInfo.min_topup ?? DEFAULT_MIN_TOPUP
   }
 
   if (topupInfo.enable_stripe_topup) {
@@ -293,8 +303,10 @@ export function getMinTopupAmount(topupInfo: TopupInfo | null): number {
  * Generate preset amounts based on minimum topup
  */
 export function generatePresetAmounts(minAmount: number): PresetAmount[] {
+  // 最低额可以是 0（运营主动关闭下限）。此时按 1 生成预设，否则整排按钮都是 0。
+  const base = minAmount > 0 ? minAmount : DEFAULT_MIN_TOPUP
   return DEFAULT_PRESET_MULTIPLIERS.map((multiplier) => ({
-    value: minAmount * multiplier,
+    value: base * multiplier,
   }))
 }
 

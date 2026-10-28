@@ -46,6 +46,11 @@ export function WalletStatsCard(props: WalletStatsCardProps) {
     )
   }
 
+  // 余额与总用量一律两位小数：`$199` 无法区分「刚好 199」和「199.4 被截断」，
+  // 用户对账时看不出差额来自哪里。签到卡的 `$0.10–$0.50` 精度问题另由
+  // `CHECKIN_AMOUNT_FORMAT` 处理，两者不共用同一份精度配置。
+  const moneyFormat = { fixedFractionDigits: 2, abbreviate: false } as const
+
   const stats: {
     label: string
     value: string
@@ -55,14 +60,14 @@ export function WalletStatsCard(props: WalletStatsCardProps) {
   }[] = [
     {
       label: t('Current Balance'),
-      value: formatQuota(props.user?.quota ?? 0),
+      value: formatQuota(props.user?.quota ?? 0, moneyFormat),
       description: t('Remaining quota'),
       icon: WalletCards,
       tone: 'success',
     },
     {
       label: t('Total Usage'),
-      value: formatQuota(props.user?.used_quota ?? 0),
+      value: formatQuota(props.user?.used_quota ?? 0, moneyFormat),
       description: t('Total consumed quota'),
       icon: BarChart3,
       tone: 'info',
@@ -84,15 +89,15 @@ export function WalletStatsCard(props: WalletStatsCardProps) {
             <IconBadge tone={item.tone} size='stat'>
               <item.icon />
             </IconBadge>
-            <div className='text-muted-foreground truncate text-xs font-medium uppercase sm:text-xs'>
+            <div className='text-muted-foreground truncate text-sm font-medium'>
               {item.label}
             </div>
           </div>
 
-          <div className='text-foreground mt-1.5 text-sm font-bold break-all tabular-nums sm:mt-2.5 sm:text-2xl'>
+          <div className='text-foreground mt-1.5 text-lg font-semibold break-all tabular-nums sm:mt-2.5 sm:text-2xl'>
             {item.value}
           </div>
-          <div className='text-muted-foreground/60 mt-1 hidden text-xs md:block'>
+          <div className='text-muted-foreground mt-1 hidden text-sm md:block'>
             {item.description}
           </div>
         </div>

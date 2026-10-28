@@ -75,10 +75,12 @@ it('translates billing history statuses and updates them when the language chang
 
 it.each([
   {
+    // 货币金额固定两位小数：¥64.8 这种写法与同一屏的 ¥1,296 混排时，
+    // 看起来像被截断过。不足 1 元的场景仍保留 4 位（见下一个用例）。
     priceRatio: 7.3,
-    paid: '¥584',
-    saved: '¥146',
-    full: '¥146',
+    paid: '¥584.00',
+    saved: '¥146.00',
+    full: '¥146.00',
   },
   {
     priceRatio: 0.000123,

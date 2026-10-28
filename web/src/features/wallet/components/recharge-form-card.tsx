@@ -23,6 +23,7 @@ import { Trans, useTranslation } from 'react-i18next'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
+import { DiscountBadge } from '@/components/ui/discount-badge'
 import { IconBadge } from '@/components/ui/icon-badge'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -115,13 +116,15 @@ function PayableAmountValue({
 
   if (calculatingError) {
     return (
-      <button
+      <Button
         type='button'
+        variant='link'
+        size='inline'
         onClick={onRetryCalculate}
-        className='text-destructive text-xs font-medium underline-offset-2 hover:underline'
+        className='text-destructive underline-offset-2 hover:underline'
       >
         {t('Retry')}
-      </button>
+      </Button>
     )
   }
 
@@ -129,6 +132,45 @@ function PayableAmountValue({
     <span className='text-sm font-semibold'>
       {formatPaymentAmount(paymentAmount, paymentType)}
     </span>
+  )
+}
+
+/**
+ * 充值档位右上角的价差角标。
+ *
+ * - `discount < 1` → 绿色「20% OFF」；
+ * - `discount > 1` → 红色「+5%」——档位折扣允许运营填大于 1 的值（加价档位），
+ *   这类档位不能显示「0% OFF」，但也必须让用户看见自己在被加价；
+ * - 两者都不成立（等于 1，或折扣小到取整成 0%）→ 不渲染：只剩底色的空色块
+ *   会被当成状态指示器，实际什么也没说。
+ *
+ * 配色由 `DiscountBadge` 统一决定，与定价页的 `DiscountTag` 同一套 Token。
+ */
+function PresetDiscountBadge({
+  discount,
+  label,
+}: {
+  discount: number
+  label: string
+}) {
+  if (discount < 1) {
+    if (!label) return null
+    return (
+      <DiscountBadge
+        ratio={discount}
+        title={`-${Math.round((1 - discount) * 100)}%`}
+      >
+        {label}
+      </DiscountBadge>
+    )
+  }
+
+  const markupPercent = Math.round((discount - 1) * 100)
+  if (markupPercent <= 0) return null
+  return (
+    <DiscountBadge ratio={discount} title={`+${markupPercent}%`}>
+      +{markupPercent}%
+    </DiscountBadge>
   )
 }
 
@@ -168,16 +210,23 @@ export function RechargeFormCard({
   const [localAmount, setLocalAmount] = useState(topupAmount.toString())
 
   useEffect(() => {
-    // Empty string must survive, otherwise the field can never be cleared
-    setLocalAmount((prev) =>
-      prev === '' && topupAmount === 0 ? prev : topupAmount.toString()
-    )
+    setLocalAmount((prev) => {
+      // 空字符串必须保留，否则输入框永远清不掉。
+      if (prev === '' && topupAmount === 0) return prev
+      // 用户正在输入的中间态（`1.` / `0.50` / `1.0`）数值上已经等于当前金额，
+      // 原样保留。否则 `1.` 会被回写成 `1`，小数点永远打不进去 —— 最低充值
+      // 改成 0.01 之后，金额输入框不能只接受整数。
+      if (Number(prev) === topupAmount) return prev
+      return topupAmount.toString()
+    })
   }, [topupAmount])
 
   const handleAmountChange = (value: string) => {
     setLocalAmount(value)
-    const numValue = Number.parseInt(value) || 0
-    if (numValue >= 0) {
+    // 金额可以是小数（最低充值 0.01）。此前用 parseInt，用户输入 0.5 会被截成 0：
+    // 输入框里还显示 0.5，提交的却是 0，「0.01 起充」等于没生效。
+    const numValue = Number(value)
+    if (Number.isFinite(numValue) && numValue >= 0) {
       onTopupAmountChange(numValue)
     }
   }
@@ -267,7 +316,7 @@ export function RechargeFormCard({
             onClick={onOpenBilling}
             className='w-full gap-2 sm:w-auto'
           >
-            <Receipt className='h-4 w-4' />
+            <Receipt className='h-4.5 w-4.5' />
             {t('Order History')}
           </Button>
         ) : null
@@ -281,9 +330,7 @@ export function RechargeFormCard({
             <>
               {presetAmounts.length > 0 && (
                 <div className='space-y-2.5 sm:space-y-3'>
-                  <Label className='text-muted-foreground text-xs font-medium uppercase'>
-                    {t('Amount')}
-                  </Label>
+                  <Label className='text-muted-foreground'>{t('Amount')}</Label>
                   <div className='grid grid-cols-2 gap-1.5 sm:gap-3 md:grid-cols-4'>
                     {presetAmounts.map((preset) => {
                       const discount =
@@ -301,6 +348,12 @@ export function RechargeFormCard({
                         discount,
                         usdExchangeRate
                       )
+                      // 角标文案与底色同源：`discount < 1` 走「20% OFF」，`discount > 1`
+                      // 走「+5%」。文案为空时**不渲染**角标 —— 只剩底色的空色块会被
+                      // 当成一个状态指示器，实际什么也没说。
+                      const discountLabel = hasDiscount
+                        ? getDiscountLabel(discount, t)
+                        : ''
                       return (
                         <Button
                           key={preset.value}
@@ -314,20 +367,23 @@ export function RechargeFormCard({
                           onClick={() => onSelectPreset(preset)}
                         >
                           <div className='flex w-full items-center justify-between'>
-                            <div className='text-base font-semibold sm:text-lg'>
+                            {/* 档位金额是卡片里的主数值：18/600，不用 16/600
+                                （16px 在阶梯里只有 body 400 一档，做强调会与正文同号）。 */}
+                            <div className='text-lg font-semibold'>
                               {formatLocalCurrencyAmount(displayValue, {
                                 digitsLarge: 2,
                                 digitsSmall: 2,
                                 abbreviate: false,
                               })}
                             </div>
-                            {hasDiscount && (
-                              <div className='text-xs font-medium text-green-600'>
-                                {getDiscountLabel(discount, t)}
-                              </div>
-                            )}
+                            <PresetDiscountBadge
+                              discount={discount}
+                              label={discountLabel}
+                            />
                           </div>
-                          <div className='text-muted-foreground mt-1.5 w-full text-xs sm:mt-2'>
+                          {/* 「支付 ¥xx」是这一档的说明，属于 body-sm（14px）。
+                              12px 只给徽标/时间戳，用它会让实付金额看起来像脚注。 */}
+                          <div className='text-muted-foreground mt-1.5 w-full text-sm sm:mt-2'>
                             {hasDiscount && savedAmount > 0 ? (
                               <Trans
                                 t={t}
@@ -337,7 +393,7 @@ export function RechargeFormCard({
                                   saved: formatCNYAmount(savedAmount),
                                 }}
                                 components={{
-                                  savings: <span className='text-green-600' />,
+                                  savings: <span className='text-success' />,
                                 }}
                               />
                             ) : (
@@ -354,10 +410,7 @@ export function RechargeFormCard({
               )}
 
               <div className='space-y-2.5 sm:space-y-3'>
-                <Label
-                  htmlFor='topup-amount'
-                  className='text-muted-foreground text-xs font-medium uppercase'
-                >
+                <Label htmlFor='topup-amount' className='text-muted-foreground'>
                   {t('Custom Amount')}
                 </Label>
                 <div className='grid grid-cols-[minmax(0,1fr)_minmax(110px,0.55fr)] gap-2 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center'>
@@ -367,11 +420,16 @@ export function RechargeFormCard({
                     value={localAmount}
                     onChange={(e) => handleAmountChange(e.target.value)}
                     min={minTopup}
+                    /* 与后台「最低充值」同口径（最多两位小数）。不写 step 时
+                       type=number 默认 step=1，输入 0.01 会进入 :invalid 状态，
+                       浏览器的原生校验与上下箭头步进都按整数走。 */
+                    step='0.01'
                     placeholder={t('Minimum {{amount}}', { amount: minTopup })}
-                    className='h-9 text-base sm:h-10 sm:text-lg'
                   />
-                  <div className='bg-muted/30 flex min-h-9 items-center justify-between gap-2 rounded-md border px-3 lg:min-w-52'>
-                    <span className='text-muted-foreground truncate text-xs'>
+                  {/* 与同一行的输入框同高（--ds-control-height-md）：此前是
+                      min-h-9（36px），比左侧 40px 的输入框矮一截。 */}
+                  <div className='bg-muted/30 flex h-(--ds-control-height-md) items-center justify-between gap-2 rounded-md border px-3 lg:min-w-52'>
+                    <span className='text-muted-foreground truncate text-sm'>
                       {t('Amount to pay:')}
                     </span>
                     <PayableAmountValue
@@ -395,7 +453,7 @@ export function RechargeFormCard({
               </div>
 
               <div className='space-y-2.5 sm:space-y-3'>
-                <Label className='text-muted-foreground text-xs font-medium uppercase'>
+                <Label className='text-muted-foreground'>
                   {t('Payment Method')}
                 </Label>
                 {hasStandardPaymentMethods ? (
@@ -430,7 +488,7 @@ export function RechargeFormCard({
                           className='min-h-14 min-w-0 justify-start gap-2 rounded-lg px-3 py-2 text-left'
                         >
                           {paymentLoading === method.type ? (
-                            <Loader2 className='h-4 w-4 animate-spin' />
+                            <Loader2 className='h-4.5 w-4.5 animate-spin' />
                           ) : (
                             getPaymentIcon(
                               method.type,
@@ -444,7 +502,7 @@ export function RechargeFormCard({
                               {method.name}
                             </span>
                             {disabledLabel && (
-                              <span className='text-muted-foreground max-w-full truncate text-xs leading-4 font-normal'>
+                              <span className='text-muted-foreground max-w-full truncate text-xs font-normal'>
                                 {disabledLabel}
                               </span>
                             )}
@@ -480,7 +538,7 @@ export function RechargeFormCard({
                 hasWaffoPaymentMethods &&
                 onWaffoMethodSelect && (
                   <div className='space-y-2.5 sm:space-y-3'>
-                    <Label className='text-muted-foreground text-xs font-medium uppercase'>
+                    <Label className='text-muted-foreground'>
                       {t('Waffo Payment')}
                     </Label>
                     <div className='grid grid-cols-2 gap-1.5 sm:gap-3 lg:grid-cols-3'>
@@ -533,7 +591,7 @@ export function RechargeFormCard({
                                 {method.name}
                               </span>
                               {disabledLabel && (
-                                <span className='text-muted-foreground max-w-full truncate text-xs leading-4 font-normal'>
+                                <span className='text-muted-foreground max-w-full truncate text-xs font-normal'>
                                   {disabledLabel}
                                 </span>
                               )}
@@ -574,7 +632,7 @@ export function RechargeFormCard({
         creemProducts.length > 0 &&
         onCreemProductSelect && (
           <div className='space-y-2.5 border-t pt-4 sm:space-y-3 sm:pt-6'>
-            <Label className='text-muted-foreground text-xs font-medium uppercase'>
+            <Label className='text-muted-foreground'>
               {t('Creem Payment')}
             </Label>
             <CreemProductsSection
@@ -591,10 +649,7 @@ export function RechargeFormCard({
             <IconBadge tone='warning' size='xs'>
               <Gift />
             </IconBadge>
-            <Label
-              htmlFor='redemption-code'
-              className='text-muted-foreground text-xs font-medium uppercase'
-            >
+            <Label htmlFor='redemption-code' className='text-muted-foreground'>
               {t('Have a Code?')}
             </Label>
           </div>
@@ -604,20 +659,22 @@ export function RechargeFormCard({
               value={redemptionCode}
               onChange={(e) => onRedemptionCodeChange(e.target.value)}
               placeholder={t('Enter your redemption code')}
-              className='h-9 min-w-0'
+              className='min-w-0'
             />
             <Button
               onClick={onRedeem}
               disabled={redeeming}
               variant='outline'
-              className='h-9 px-4'
+              className='h-(--ds-control-height-md) px-4'
             >
-              {redeeming && <Loader2 className='mr-2 h-4 w-4 animate-spin' />}
+              {redeeming && (
+                <Loader2 className='mr-2 h-4.5 w-4.5 animate-spin' />
+              )}
               {t('Redeem')}
             </Button>
           </div>
           {topupLink && (
-            <p className='text-muted-foreground text-xs'>
+            <p className='text-muted-foreground text-sm'>
               {t('Need a redemption code?')}{' '}
               <a
                 href={topupLink}

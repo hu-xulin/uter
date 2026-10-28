@@ -16,6 +16,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
+import { PAYMENT_BRAND_COLORS } from '@/design-system/tokens/brand-colors'
+
 // ============================================================================
 // Wallet Constants
 // ============================================================================
@@ -50,17 +52,22 @@ export const DEFAULT_PAYMENT_TYPE = PAYMENT_TYPES.ALIPAY
 
 /**
  * Payment icon colors (HEX format for react-icons)
+ *
+ * 支付宝的蓝、微信支付的绿是对方的商标配色，改成语义 Token 等于改人家 logo，
+ * 所以取值集中声明在 `design-system/tokens/brand-colors`，这里只做枚举映射。
  */
-export const PAYMENT_ICON_COLORS = {
-  [PAYMENT_TYPES.ALIPAY]: '#1677FF',
-  [PAYMENT_TYPES.WECHAT]: '#07C160',
-  [PAYMENT_TYPES.ALIPAY_WEB]: '#1677FF',
-  [PAYMENT_TYPES.WECHAT_PAY_WEB]: '#07C160',
-  [PAYMENT_TYPES.STRIPE]: '#635BFF',
-  [PAYMENT_TYPES.CREEM]: '#6366F1',
-  [PAYMENT_TYPES.WAFFO]: '#2563EB',
-  [PAYMENT_TYPES.WAFFO_PANCAKE]: '#F97316',
-} as const
+export const PAYMENT_ICON_COLORS: Record<string, string> = {
+  [PAYMENT_TYPES.ALIPAY]: PAYMENT_BRAND_COLORS[PAYMENT_TYPES.ALIPAY],
+  [PAYMENT_TYPES.WECHAT]: PAYMENT_BRAND_COLORS[PAYMENT_TYPES.WECHAT],
+  [PAYMENT_TYPES.ALIPAY_WEB]: PAYMENT_BRAND_COLORS[PAYMENT_TYPES.ALIPAY_WEB],
+  [PAYMENT_TYPES.WECHAT_PAY_WEB]:
+    PAYMENT_BRAND_COLORS[PAYMENT_TYPES.WECHAT_PAY_WEB],
+  [PAYMENT_TYPES.STRIPE]: PAYMENT_BRAND_COLORS[PAYMENT_TYPES.STRIPE],
+  [PAYMENT_TYPES.CREEM]: PAYMENT_BRAND_COLORS[PAYMENT_TYPES.CREEM],
+  [PAYMENT_TYPES.WAFFO]: PAYMENT_BRAND_COLORS[PAYMENT_TYPES.WAFFO],
+  [PAYMENT_TYPES.WAFFO_PANCAKE]:
+    PAYMENT_BRAND_COLORS[PAYMENT_TYPES.WAFFO_PANCAKE],
+}
 
 /**
  * Default discount rate (no discount)
