@@ -34,6 +34,13 @@ type SecretInputProps = Omit<
   value: string
   /** 回传值。非编辑态被锁定，只在真正改值时调用；绝不回传掩码串。 */
   onChange: (value: string) => void
+  /**
+   * 是否用等宽字形渲染（默认 **开**）。
+   *
+   * 密钥是机器可读的值：等宽让 `0/O`、`1/l/I` 在小字号下仍可分辨，长度与
+   * 前后各 4 位的核对也更容易。极少数场景（例如把密钥当说明文字展示）可显式关掉。
+   */
+  mono?: boolean
 }
 
 /**
@@ -56,6 +63,7 @@ export function SecretInput({
   disabled,
   className,
   name,
+  mono = true,
   onBlur,
   ...rest
 }: SecretInputProps) {
@@ -91,6 +99,7 @@ export function SecretInput({
         disabled={disabled}
         autoComplete='new-password'
         readOnly={!editing}
+        mono={mono}
         placeholder={isBlank ? (placeholder ?? '') : undefined}
         value={editing ? draft : display}
         onFocus={() => {
@@ -125,9 +134,13 @@ export function SecretInput({
           tabIndex={-1}
           onClick={() => setRevealed((v) => !v)}
           aria-label={revealed ? 'Hide secret' : 'Reveal secret'}
-          className='text-muted-foreground hover:text-foreground absolute right-2 top-1/2 size-5 -translate-y-1/2'
+          className='text-muted-foreground hover:text-foreground absolute top-1/2 right-2 size-5 -translate-y-1/2'
         >
-          {revealed ? <EyeOff className='size-4' /> : <Eye className='size-4' />}
+          {revealed ? (
+            <EyeOff className='size-4' />
+          ) : (
+            <Eye className='size-4' />
+          )}
         </button>
       )}
     </div>

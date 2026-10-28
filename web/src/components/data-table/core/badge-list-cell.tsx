@@ -74,7 +74,7 @@ export function BadgeListCell({
               <Button
                 variant='ghost'
                 size='sm'
-                className='h-6 shrink-0 px-1'
+                className='shrink-0 px-1'
                 aria-label={expandLabel ?? t('Show all tags')}
               />
             }

@@ -20,12 +20,33 @@ import * as React from 'react'
 
 import { cn } from '@/lib/utils'
 
-function Textarea({ className, ...props }: React.ComponentProps<'textarea'>) {
+function Textarea({
+  className,
+  mono = false,
+  ...props
+}: React.ComponentProps<'textarea'> & {
+  /**
+   * 用等宽字形渲染**值**（域名清单 / 白名单 / 密钥 / 代码）。
+   *
+   * 与 `Input` 的 `mono` 同义：只管字形与字号档位，不管宽度或内边距。
+   */
+  mono?: boolean
+}) {
   return (
     <textarea
       data-slot='textarea'
+      data-mono={mono || undefined}
       className={cn(
-        'border-input placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 disabled:bg-input/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:bg-input/30 dark:disabled:bg-input/80 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 flex field-sizing-content max-h-96 min-h-16 w-full overflow-y-auto rounded-md border bg-transparent px-2.5 py-2 text-sm transition-colors outline-none focus-visible:ring-3 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:ring-3',
+        // 内边距沿用 Input 的 12×10px（px-3 py-2.5）；最小高度按规范
+        // 「最小约 3 行」= 3×20 + 2×10 + 2×1 ≈ 72px（min-h-18）。
+        // 此前 min-h-16（64px）在 14/20 字号下只能装 2 行多一点。
+        //
+        // 焦点环与 Input 同档 **1px 外扩**（规范 2.1 Textarea 写的就是 1px；
+        // 2px 会让「1px 边框 + 2px 环」看起来像双线框）。错误态同步收到 1px。
+        'border-input placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring disabled:bg-input/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:bg-input/30 dark:disabled:bg-input/80 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 flex field-sizing-content max-h-96 min-h-18 w-full overflow-y-auto rounded-md border bg-background px-3 py-2.5 transition-colors outline-none focus-visible:ring-1 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:ring-1',
+        // 与 Input 一致：字号只有一个来源。`text-mono` 是自定义 token，
+        // twMerge 不会把 `text-sm` 删掉，两者并存时谁生效取决于 CSS 源顺序。
+        mono ? 'font-mono text-mono' : 'text-sm',
         className
       )}
       {...props}

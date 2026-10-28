@@ -18,7 +18,6 @@ For commercial licensing, please contact support@uter.ai
 */
 import { ChevronDownIcon } from 'lucide-react'
 import * as React from 'react'
-import { enUS, fr, ja, ru, vi, zhCN, zhTW } from 'react-day-picker/locale'
 import { useTranslation } from 'react-i18next'
 
 import { Button } from '@/components/ui/button'
@@ -29,18 +28,9 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
+import { getCalendarLocale } from '@/lib/calendar-locale'
 import dayjs from '@/lib/dayjs'
 import { cn } from '@/lib/utils'
-
-const calendarLocales = {
-  en: enUS,
-  zhCN,
-  zhTW,
-  fr,
-  ru,
-  ja,
-  vi,
-} as const
 
 interface DateTimePickerProps {
   value?: Date
@@ -57,8 +47,7 @@ export function DateTimePicker({
 }: DateTimePickerProps) {
   const { t, i18n } = useTranslation()
   const placeholderText = placeholder ?? t('Select date')
-  const calendarLocale =
-    calendarLocales[i18n.language as keyof typeof calendarLocales] ?? enUS
+  const calendarLocale = getCalendarLocale(i18n.language)
   const currentYear = new Date().getFullYear()
   const [open, setOpen] = React.useState(false)
   const [date, setDate] = React.useState<Date | undefined>(value)
@@ -128,7 +117,7 @@ export function DateTimePicker({
           }
         >
           {date ? dayjs(date).format('YYYY-MM-DD') : placeholderText}
-          <ChevronDownIcon className='h-4 w-4 opacity-50' />
+          <ChevronDownIcon className='h-4.5 w-4.5 opacity-50' />
         </PopoverTrigger>
         <PopoverContent className='w-auto overflow-hidden p-0' align='start'>
           <Calendar

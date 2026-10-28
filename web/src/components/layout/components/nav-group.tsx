@@ -66,7 +66,7 @@ export function NavGroup({ title, items }: NavGroupProps) {
 
   return (
     <SidebarGroup className='px-2 py-1'>
-      <SidebarGroupLabel className='text-muted-foreground/70 px-2 text-xs uppercase'>
+      <SidebarGroupLabel className='text-muted-foreground px-2 text-xs uppercase'>
         {title}
       </SidebarGroupLabel>
       <SidebarMenu>
@@ -129,7 +129,9 @@ function SidebarMenuLink({ item, href }: { item: NavLink; href: string }) {
         isActive={isActive}
         tooltip={item.title}
         // The active row is called out by colour only — the theme swaps its
-        // colour via `data-active:text-primary`. Its weight stays at 500, the
+        // colour via `data-active:text-sidebar-active-foreground`（规范 §2.3
+        // 的专用前景色，不用 `text-primary`：品牌色落在选中浅底上只有
+        // 4.44:1，差 0.06 未达 AA）。Its weight stays at 500, the
         // same as every other row, so the whole column keeps one even texture.
         // (The top nav, by contrast, also bolds its active item — that is the
         // 首页 logic, and it lives in top-nav / public-header.)
@@ -183,21 +185,21 @@ function SidebarMenuCollapsible({
     >
       <CollapsibleTrigger
         className='group/collapsible-trigger'
-          render={
-            <SidebarMenuButton
-              tooltip={item.title}
-              // No `isActive` here: the parent row deliberately keeps its
-              // plain background — only the matching child gets the colour
-              // highlight. Weight stays at 500 either way, matching the rest
-              // of the column.
-              className='font-medium'
-            />
-          }
+        render={
+          <SidebarMenuButton
+            tooltip={item.title}
+            // No `isActive` here: the parent row deliberately keeps its
+            // plain background — only the matching child gets the colour
+            // highlight. Weight stays at 500 either way, matching the rest
+            // of the column.
+            className='font-medium'
+          />
+        }
       >
         {item.icon && <item.icon className='shrink-0' />}
         <span className='min-w-0 flex-1 truncate'>{item.title}</span>
         {item.badge && <NavBadge>{item.badge}</NavBadge>}
-        <ChevronRight className='ms-auto size-4 shrink-0 transition-transform duration-200 group-data-[panel-open]/collapsible-trigger:rotate-90' />
+        <ChevronRight className='ds-motion-base ms-auto size-4 shrink-0 transition-transform group-data-[panel-open]/collapsible-trigger:rotate-90' />
       </CollapsibleTrigger>
       <CollapsibleContent className='CollapsibleContent'>
         <SidebarMenuSub>
@@ -258,7 +260,7 @@ function SidebarMenuCollapsedDropdown({
           {item.icon && <item.icon className='shrink-0' />}
           <span className='min-w-0 flex-1 truncate'>{item.title}</span>
           {item.badge && <NavBadge>{item.badge}</NavBadge>}
-          <ChevronRight className='ms-auto size-4 shrink-0 transition-transform duration-200 group-data-[popup-open]/dropdown-trigger:rotate-90' />
+          <ChevronRight className='ds-motion-base ms-auto size-4 shrink-0 transition-transform group-data-[popup-open]/dropdown-trigger:rotate-90' />
         </DropdownMenuTrigger>
         <DropdownMenuContent side='right' align='start' sideOffset={4}>
           <DropdownMenuGroup>
@@ -272,7 +274,7 @@ function SidebarMenuCollapsedDropdown({
                 render={
                   <Link
                     to={sub.url}
-                    className={`${checkIsActive(href, sub) ? 'bg-secondary' : ''}`}
+                    className={`${checkIsActive(href, sub) ? 'bg-primary-subtle text-sidebar-active-foreground' : ''}`}
                   />
                 }
               >

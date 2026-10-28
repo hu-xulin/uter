@@ -113,7 +113,7 @@ function PresetHelpLink({
       tabIndex={0}
       title='Docs'
       aria-label='Docs'
-      className='ml-1 inline-flex h-4 w-4 shrink-0 cursor-pointer items-center justify-center rounded-full text-muted-foreground transition-colors hover:text-foreground'
+      className='text-muted-foreground hover:text-foreground ml-1 inline-flex h-4 w-4 shrink-0 cursor-pointer items-center justify-center rounded-full transition-colors'
       onClick={(e) => {
         e.preventDefault()
         e.stopPropagation()
@@ -127,7 +127,7 @@ function PresetHelpLink({
         }
       }}
     >
-      <CircleHelp className='h-3.5 w-3.5' />
+      <CircleHelp className='h-4 w-4' />
     </span>
   )
 }
@@ -463,15 +463,12 @@ export function ChatPresetsItem({ item }: { item: NavChatPresets }) {
           className='group/collapsible-trigger'
           onClick={handleParentActivate}
           render={
-            <SidebarMenuButton
-              isActive={chatActive}
-              className='font-medium'
-            />
+            <SidebarMenuButton isActive={chatActive} className='font-medium' />
           }
         >
           {item.icon && <item.icon className='shrink-0' />}
           <span className='min-w-0 flex-1 truncate'>{item.title}</span>
-          <ChevronRight className='ms-auto size-4 shrink-0 transition-transform duration-200 group-data-[panel-open]/collapsible-trigger:rotate-90' />
+          <ChevronRight className='ds-motion-base ms-auto size-4 shrink-0 transition-transform group-data-[panel-open]/collapsible-trigger:rotate-90' />
         </CollapsibleTrigger>
         <CollapsibleContent className='CollapsibleContent'>
           <SidebarMenuSub>

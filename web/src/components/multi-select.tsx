@@ -16,9 +16,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
-import { Add01Icon } from '@hugeicons/core-free-icons'
-import { HugeiconsIcon } from '@hugeicons/react'
-import { ArrowRightLeft } from 'lucide-react'
+import { ArrowRightLeft, Plus } from 'lucide-react'
 import * as React from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
@@ -311,7 +309,7 @@ export function MultiSelect(props: MultiSelectProps) {
           {(values: string[]) => {
             if (props.renderSelectedSummary) {
               return (
-                <span className='bg-muted text-muted-foreground flex h-[calc(--spacing(5.25))] w-fit items-center justify-center rounded-sm px-1.5 font-mono text-mono font-medium whitespace-nowrap'>
+                <span className='bg-muted text-muted-foreground text-mono flex h-(--ds-chip-height) w-fit items-center justify-center rounded-sm px-1.5 font-mono font-medium whitespace-nowrap'>
                   {props.renderSelectedSummary(values)}
                 </span>
               )
@@ -361,7 +359,7 @@ export function MultiSelect(props: MultiSelectProps) {
                           aria-hidden='true'
                           className='text-muted-foreground inline-flex shrink-0'
                         >
-                          <ArrowRightLeft className='size-3' />
+                          <ArrowRightLeft className='size-4' />
                         </span>
                       )}
                     </ComboboxChip>
@@ -377,7 +375,7 @@ export function MultiSelect(props: MultiSelectProps) {
                     }}
                     onPointerDown={(event) => event.stopPropagation()}
                     title={t('Show All')}
-                    className='bg-muted text-muted-foreground hover:bg-muted/80 hover:text-foreground flex h-[calc(--spacing(5.25))] w-fit cursor-pointer items-center justify-center rounded-sm px-1.5 text-xs font-medium whitespace-nowrap transition-colors'
+                    className='bg-muted text-muted-foreground hover:bg-muted/80 hover:text-foreground flex h-(--ds-chip-height) w-fit cursor-pointer items-center justify-center rounded-sm px-1.5 text-xs font-medium whitespace-nowrap transition-colors'
                   >
                     {t('+{{count}} more', { count: hiddenCount })}
                   </button>
@@ -394,7 +392,7 @@ export function MultiSelect(props: MultiSelectProps) {
                       }}
                       onPointerDown={(event) => event.stopPropagation()}
                       title={t('Collapse')}
-                      className='bg-muted text-muted-foreground hover:bg-muted/80 hover:text-foreground flex h-[calc(--spacing(5.25))] w-fit cursor-pointer items-center justify-center rounded-sm px-1.5 text-xs font-medium whitespace-nowrap transition-colors'
+                      className='bg-muted text-muted-foreground hover:bg-muted/80 hover:text-foreground flex h-(--ds-chip-height) w-fit cursor-pointer items-center justify-center rounded-sm px-1.5 text-xs font-medium whitespace-nowrap transition-colors'
                     >
                       {t('Collapse')}
                     </button>
@@ -433,9 +431,7 @@ export function MultiSelect(props: MultiSelectProps) {
                 >
                   {isCreate ? (
                     <>
-                      <HugeiconsIcon
-                        icon={Add01Icon}
-                        strokeWidth={2}
+                      <Plus
                         className='text-muted-foreground'
                         aria-hidden='true'
                       />

@@ -35,7 +35,7 @@ function Card({
         // （comfortable=24px / compact=16px / xl=28px）——这个 Token 在
         // spacing.css 里声明了三档却从未被引用，等于密度切换对卡片无效，
         // 本次一并接上。sm 尺寸档按 0.75 比例跟随，不另设死值。
-        'group/card bg-card text-card-foreground ring-foreground/10 flex flex-col gap-4 overflow-hidden rounded-lg py-(--ds-card-padding) text-base ring-1 has-data-[slot=card-footer]:pb-0 has-[>img:first-child]:pt-0 data-[size=sm]:gap-3 data-[size=sm]:py-[calc(var(--ds-card-padding)*0.75)] data-[size=sm]:has-data-[slot=card-footer]:pb-0 *:[img:first-child]:rounded-t-lg *:[img:last-child]:rounded-b-lg',
+        'group/card bg-card text-card-foreground ring-foreground/10 flex flex-col gap-4 overflow-hidden rounded-lg py-(--ds-card-padding) text-sm ring-1 has-data-[slot=card-footer]:pb-0 has-[>img:first-child]:pt-0 data-[size=sm]:gap-3 data-[size=sm]:py-[calc(var(--ds-card-padding)*0.75)] data-[size=sm]:has-data-[slot=card-footer]:pb-0 *:[img:first-child]:rounded-t-lg *:[img:last-child]:rounded-b-lg',
         className
       )}
       {...props}
@@ -63,8 +63,10 @@ function CardTitle({ className, ...props }: React.ComponentProps<'div'>) {
     <div
       data-slot='card-title'
       className={cn(
-        /* 卡片标题 18px / 600 / 26px */
-        'text-lg font-semibold group-data-[size=sm]/card:text-base',
+        /* 卡片标题 18px / 600 / 28px。sm 尺寸档只收紧内边距与间距，
+           不再把标题压到 16px —— 16px 在九档里只有 body(400) 一档，
+           压下去会让「卡片标题」与正文同号（规范 1.2 硬规则 1）。 */
+        'text-lg font-semibold',
         className
       )}
       {...props}

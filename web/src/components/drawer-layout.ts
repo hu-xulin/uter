@@ -88,15 +88,11 @@ export function SideDrawerSectionHeader(props: {
     createElement(
       'div',
       { className: 'min-w-0 flex-1' },
-      createElement(
-        'h3',
-        { className: 'text-sm leading-none font-semibold' },
-        props.title
-      ),
+      createElement('h3', { className: 'text-lg font-semibold' }, props.title),
       props.description
         ? createElement(
             'p',
-            { className: 'text-muted-foreground mt-1 text-xs leading-5' },
+            { className: 'text-muted-foreground mt-1 text-sm' },
             props.description
           )
         : null

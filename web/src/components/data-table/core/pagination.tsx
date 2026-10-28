@@ -75,8 +75,7 @@ export function DataTablePagination<TData>({
         <div className='flex items-center gap-2'>
           <Button
             variant='outline'
-            size='icon'
-            className='size-11'
+            size='icon-lg'
             aria-label={t('Go to previous page')}
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
@@ -88,8 +87,7 @@ export function DataTablePagination<TData>({
           </span>
           <Button
             variant='outline'
-            size='icon'
-            className='size-11'
+            size='icon-lg'
             aria-label={t('Go to next page')}
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
@@ -110,14 +108,14 @@ export function DataTablePagination<TData>({
     >
       <div className='flex min-w-0 shrink-0 items-center gap-2 @xl/pagination:gap-3'>
         <div className='flex shrink-0 items-baseline gap-1.5 text-xs font-medium whitespace-nowrap sm:text-sm'>
-          <span className='text-muted-foreground/80'>{t('Total:')}</span>
+          <span className='text-muted-foreground'>{t('Total:')}</span>
           <span className='text-foreground tabular-nums'>
             {totalRows.toLocaleString()}
           </span>
         </div>
 
         <div className='flex shrink-0 items-center gap-1.5 @lg/pagination:gap-2'>
-          <p className='text-muted-foreground/80 hidden text-sm font-medium whitespace-nowrap @2xl/pagination:block'>
+          <p className='text-muted-foreground hidden text-sm font-medium whitespace-nowrap @2xl/pagination:block'>
             {t('Rows per page')}
           </p>
           <Select
@@ -127,7 +125,15 @@ export function DataTablePagination<TData>({
               table.setPageSize(Number(value))
             }}
           >
-            <SelectTrigger className='text-foreground h-8 w-[64px] font-medium tabular-nums sm:w-[70px]'>
+            {/* 行高对齐：分页按钮是 `icon` 档（--ds-button-height-md），
+                下拉是 sm 档（--ds-control-height-sm）—— 这两个 Token 在
+                紧凑/默认/宽松三档密度下取值相同（28/32/40 与 32/36/40 中的
+                对应项），所以整行永远齐平。此前按钮用 icon-sm、下拉用默认档，
+                下拉比按钮高 8px。 */}
+            <SelectTrigger
+              size='sm'
+              className='text-foreground w-[64px] font-medium tabular-nums sm:w-[70px]'
+            >
               <SelectValue placeholder={pageSize} />
             </SelectTrigger>
             <SelectContent side='top' alignItemWithTrigger={false}>
@@ -144,35 +150,38 @@ export function DataTablePagination<TData>({
 
         <div className='flex min-w-0 shrink-0 items-center gap-1 @lg/pagination:gap-1.5 @xl/pagination:gap-2'>
           <Button
+            size='icon'
             variant='outline'
-            className='text-muted-foreground hover:text-foreground disabled:text-muted-foreground/50 size-8 p-0 @max-lg/pagination:hidden'
+            className='text-muted-foreground hover:text-foreground disabled:text-disabled p-0 @max-lg/pagination:hidden'
             onClick={() => table.setPageIndex(0)}
             disabled={!table.getCanPreviousPage()}
           >
             <span className='sr-only'>{t('Go to first page')}</span>
-            <DoubleArrowLeftIcon className='h-4 w-4' />
+            <DoubleArrowLeftIcon className='h-4.5 w-4.5' />
           </Button>
           <Button
+            size='icon'
             variant='outline'
-            className='text-muted-foreground hover:text-foreground disabled:text-muted-foreground/50 size-8 p-0'
+            className='text-muted-foreground hover:text-foreground disabled:text-disabled p-0'
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
           >
             <span className='sr-only'>{t('Go to previous page')}</span>
-            <ChevronLeftIcon className='h-4 w-4' />
+            <ChevronLeftIcon className='h-4.5 w-4.5' />
           </Button>
 
           {pageItems.map(({ page: pageNumber, key }) => (
             <div key={key} className='flex items-center'>
               {pageNumber === '...' ? (
-                <span className='text-muted-foreground/60 px-0.5 text-sm @lg/pagination:px-1'>
+                <span className='text-tertiary-foreground px-0.5 text-sm @lg/pagination:px-1'>
                   ...
                 </span>
               ) : (
                 <Button
+                  size='icon'
                   variant={currentPage === pageNumber ? 'default' : 'outline'}
                   className={cn(
-                    'h-8 min-w-8 px-2 tabular-nums',
+                    ' min-w-8 px-2 tabular-nums',
                     currentPage === pageNumber
                       ? 'font-semibold'
                       : 'text-muted-foreground hover:text-foreground'
@@ -189,22 +198,24 @@ export function DataTablePagination<TData>({
           ))}
 
           <Button
+            size='icon'
             variant='outline'
-            className='text-muted-foreground hover:text-foreground disabled:text-muted-foreground/50 size-8 p-0'
+            className='text-muted-foreground hover:text-foreground disabled:text-disabled p-0'
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
           >
             <span className='sr-only'>{t('Go to next page')}</span>
-            <ChevronRightIcon className='h-4 w-4' />
+            <ChevronRightIcon className='h-4.5 w-4.5' />
           </Button>
           <Button
+            size='icon'
             variant='outline'
-            className='text-muted-foreground hover:text-foreground disabled:text-muted-foreground/50 size-8 p-0 @max-lg/pagination:hidden'
+            className='text-muted-foreground hover:text-foreground disabled:text-disabled p-0 @max-lg/pagination:hidden'
             onClick={() => table.setPageIndex(table.getPageCount() - 1)}
             disabled={!table.getCanNextPage()}
           >
             <span className='sr-only'>{t('Go to last page')}</span>
-            <DoubleArrowRightIcon className='h-4 w-4' />
+            <DoubleArrowRightIcon className='h-4.5 w-4.5' />
           </Button>
         </div>
       </div>

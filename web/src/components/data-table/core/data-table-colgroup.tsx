@@ -18,12 +18,18 @@ For commercial licensing, please contact support@uter.ai
 */
 import type { Table as TanstackTable } from '@tanstack/react-table'
 
-import { isContentSizedColumn } from './content-sized-columns'
+import {
+  CONTENT_SIZED_COLUMN_WIDTH_PX,
+  isContentSizedColumn,
+} from './content-sized-columns'
 
 export function DataTableColgroup<TData>({
   table,
+  fit = false,
 }: {
   table: TanstackTable<TData>
+  /** 与 {@link getTableSizeStyle} 的 `fit` 保持一致（table-layout: fixed）。 */
+  fit?: boolean
 }) {
   const columns = table.getVisibleLeafColumns()
   const sizedColumns = columns.filter(
@@ -38,7 +44,8 @@ export function DataTableColgroup<TData>({
           table,
           column.id,
           column.getSize(),
-          totalSize
+          totalSize,
+          fit
         )
 
         return <col key={column.id} style={{ width }} />
@@ -51,10 +58,12 @@ function getColumnWidth<TData>(
   table: TanstackTable<TData>,
   columnId: string,
   columnSize: number,
-  totalSize: number
+  totalSize: number,
+  fit: boolean
 ) {
   if (isContentSizedColumn(columnId)) {
-    return '1%'
+    // fixed 布局下 1% 会被当成真的 1%，必须给确定宽度，否则操作列被压成缝。
+    return fit ? `${CONTENT_SIZED_COLUMN_WIDTH_PX}px` : '1%'
   }
 
   if (table.options.enableColumnResizing === true) {
@@ -65,5 +74,13 @@ function getColumnWidth<TData>(
     return undefined
   }
 
-  return `${(columnSize / totalSize) * 100}%`
+  const ratio = columnSize / totalSize
+
+  // fixed 布局：操作列已固定占掉 110px，其余列按比例切分「容器宽 - 110px」，
+  // 保证百分比之和刚好填满容器而不是溢出。
+  if (fit) {
+    return `calc((100% - ${CONTENT_SIZED_COLUMN_WIDTH_PX}px) * ${ratio})`
+  }
+
+  return `${ratio * 100}%`
 }

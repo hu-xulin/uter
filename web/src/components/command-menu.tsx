@@ -65,8 +65,8 @@ export function CommandMenu() {
             {navGroups.map((group) => (
               <CommandGroup key={group.id || group.title} heading={group.title}>
                 {group.items.map((navItem) => {
-                  if (navItem.url)
-                    {return (
+                  if (navItem.url) {
+                    return (
                       <CommandItem
                         key={navItem.url}
                         value={navItem.title}
@@ -75,11 +75,12 @@ export function CommandMenu() {
                         }}
                       >
                         <div className='flex size-4 items-center justify-center'>
-                          <ArrowRight className='text-muted-foreground/80 size-2' />
+                          <ArrowRight className='text-muted-foreground size-3' />
                         </div>
                         {navItem.title}
                       </CommandItem>
-                    )}
+                    )
+                  }
 
                   return navItem.items?.map((subItem) => (
                     <CommandItem
@@ -90,7 +91,7 @@ export function CommandMenu() {
                       }}
                     >
                       <div className='flex size-4 items-center justify-center'>
-                        <ArrowRight className='text-muted-foreground/80 size-2' />
+                        <ArrowRight className='text-muted-foreground size-3' />
                       </div>
                       {navItem.title} <ChevronRight /> {subItem.title}
                     </CommandItem>

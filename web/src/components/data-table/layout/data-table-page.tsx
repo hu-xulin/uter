@@ -238,6 +238,14 @@ export type DataTablePageProps<TData> = {
   tableClassName?: string
 
   /**
+   * 让桌面表格恒等于容器宽度（`table-layout: fixed`，不设 minWidth）。
+   *
+   * 打开后单元格里的 `truncate` 才生效，长文本省略而不是把表撑宽逼出横向滚动。
+   * 只给「列少、每列都能截断」的表用（API 密钥）；宽表保持默认行为。
+   */
+  fitContainer?: boolean
+
+  /**
    * Desktop `<TableHeader>` className override.
    * Use for header color/spacing overrides. Fixed-height pages keep the header
    * outside the scrollable body automatically.
@@ -441,6 +449,7 @@ function renderMobile<TData>(
           skeletonKeyPrefix={props.skeletonKeyPrefix}
           renderRow={props.renderRow}
           applyHeaderSize={props.applyHeaderSize}
+          fitContainer={props.fitContainer}
           tableHeaderClassName={cn(
             '[background-color:var(--table-header)]',
             props.tableHeaderClassName
@@ -448,7 +457,7 @@ function renderMobile<TData>(
           getColumnClassName={props.getColumnClassName}
           pinnedColumns={props.pinnedColumns}
           containerClassName={cn(
-            'transition-opacity duration-150',
+            'transition-opacity ds-motion-base',
             isFetchingOnly && 'pointer-events-none opacity-60',
             props.tableClassName
           )}
@@ -508,7 +517,7 @@ function renderDesktop<TData>(
       <div
         className={cn(
           fixedHeight && 'min-h-0 flex-1 overflow-y-auto',
-          'transition-opacity duration-150',
+          'transition-opacity ds-motion-base',
           isFetchingOnly && 'pointer-events-none opacity-60'
         )}
       >
@@ -540,6 +549,7 @@ function renderDesktop<TData>(
       skeletonKeyPrefix={props.skeletonKeyPrefix}
       renderRow={props.renderRow}
       applyHeaderSize={props.applyHeaderSize}
+      fitContainer={props.fitContainer}
       splitHeader={fixedHeight}
       tableContainerClassName={fixedHeight ? 'h-full min-h-0' : undefined}
       tableHeaderClassName={cn(
@@ -550,7 +560,7 @@ function renderDesktop<TData>(
       pinnedColumns={props.pinnedColumns}
       containerClassName={cn(
         fixedHeight && 'min-h-0 flex-1',
-        'transition-opacity duration-150',
+        'transition-opacity ds-motion-base',
         isFetchingOnly && 'pointer-events-none opacity-60',
         props.tableClassName
       )}

@@ -45,7 +45,14 @@ const tabsListVariants = cva(
   // 容器底色规范要求 Surface/secondary，default 变体原先被改成
   // bg-background（提交 875581015 的「白底药丸外框」），与规范不符，
   // 本次一并改回 secondary——激活触发器才是 background，未激活与容器同色。
-  'group/tabs-list inline-flex w-fit items-center justify-center rounded-lg p-1 text-muted-foreground group-data-horizontal/tabs:h-10 group-data-vertical/tabs:h-fit group-data-vertical/tabs:flex-col data-[variant=line]:rounded-none',
+  //
+  // 垂直居中靠 `items-stretch` + 触发器 `h-full`，不再用 `items-center`：
+  // 容器是固定 40px 的盒子，`items-center` 会把触发器当成 29px 的内容盒居中，
+  // 一旦触发器用 `h-[calc(100%-1px)]` 这种百分比高度，grid/flex 轨道会按
+  // 「内容高度」参与求解，实测得到上间距 5.5px、下间距 1.5px —— 也就是
+  // 「按钮上下不居中」。改为拉伸轨道、触发器吃满轨道高度，上下间距恒等于
+  // 容器的 p-1（4px），激活块与容器同心。
+  'group/tabs-list inline-flex w-fit items-stretch justify-center rounded-lg p-1 text-muted-foreground group-data-horizontal/tabs:h-10 group-data-vertical/tabs:h-fit group-data-vertical/tabs:flex-col data-[variant=line]:rounded-none',
   {
     variants: {
       variant: {
@@ -81,11 +88,16 @@ function TabsTrigger({ className, ...props }: TabsPrimitive.Tab.Props) {
       className={cn(
         // 规范 2.1 Tabs 触发器：内边距 12×6px。原 px-1.5(6px)/py-0.5(2px)
         // 偏窄，激活块在 40px 容器里显得局促。
-        // 高度保留 calc(100%-1px)：触发器自带 1px transparent 边框，
-        // 减 1px 才能让相邻触发器的边框叠成一条线，否则接缝处是 2px。
-        "text-foreground/60 hover:text-foreground focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:outline-ring dark:text-muted-foreground dark:hover:text-foreground relative inline-flex h-[calc(100%-1px)] flex-1 items-center justify-center gap-1.5 rounded-md border border-transparent px-3 py-1.5 text-sm font-medium whitespace-nowrap transition-all group-data-vertical/tabs:w-full group-data-vertical/tabs:justify-start focus-visible:ring-[3px] focus-visible:outline-1 disabled:pointer-events-none disabled:opacity-50 has-data-[icon=inline-end]:pr-2.5 has-data-[icon=inline-start]:pl-2.5 aria-disabled:pointer-events-none aria-disabled:opacity-50 group-data-[variant=line]/tabs-list:data-active:shadow-none [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        //
+        // 高度用 `h-full min-h-0` 而不是 `h-[calc(100%-1px)]`：后者在 grid
+        // 轨道里会把触发器压成「内容高度 + 1px 误差」，激活块相对容器偏下
+        // 1.5px（上 5.5 / 下 1.5），肉眼就是「按钮没对齐」。拉伸轨道后由
+        // 父级 items-stretch 决定高度，上下内边距恒定对称。
+        // 相邻触发器之间不需要靠 -1px 叠边框：每个触发器的边框都是
+        // transparent，激活态靠背景色而非边框表达。
+        "text-muted-foreground hover:text-foreground focus-visible:border-ring focus-visible:ring-ring focus-visible:outline-ring dark:text-muted-foreground dark:hover:text-foreground relative inline-flex h-full min-h-0 flex-1 items-center justify-center gap-1.5 rounded-md border border-transparent px-3 py-1.5 text-sm font-medium whitespace-nowrap transition-all group-data-vertical/tabs:w-full group-data-vertical/tabs:justify-start focus-visible:ring-2 focus-visible:outline-1 disabled:pointer-events-none disabled:opacity-50 has-data-[icon=inline-end]:pr-2.5 has-data-[icon=inline-start]:pl-2.5 aria-disabled:pointer-events-none aria-disabled:opacity-50 group-data-[variant=line]/tabs-list:data-active:shadow-none [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4.5",
         'group-data-[variant=line]/tabs-list:bg-transparent group-data-[variant=line]/tabs-list:data-active:bg-transparent dark:group-data-[variant=line]/tabs-list:data-active:border-transparent dark:group-data-[variant=line]/tabs-list:data-active:bg-transparent',
-        'data-active:bg-primary data-active:text-primary-foreground group-data-[variant=default]/tabs-list:data-active:hover:text-primary-foreground/80 dark:data-active:bg-primary dark:data-active:text-primary-foreground dark:group-data-[variant=default]/tabs-list:data-active:hover:text-primary-foreground/80',
+        'data-active:bg-primary data-active:text-primary-foreground group-data-[variant=default]/tabs-list:data-active:hover:text-primary-foreground dark:data-active:bg-primary dark:data-active:text-primary-foreground dark:group-data-[variant=default]/tabs-list:data-active:hover:text-primary-foreground',
         'group-data-[variant=line]/tabs-list:data-active:text-primary group-data-[variant=line]/tabs-list:data-active:hover:text-primary dark:group-data-[variant=line]/tabs-list:data-active:text-primary dark:group-data-[variant=line]/tabs-list:data-active:hover:text-primary',
         'after:bg-foreground after:absolute after:opacity-0 after:transition-opacity group-data-horizontal/tabs:after:inset-x-0 group-data-horizontal/tabs:after:bottom-[-5px] group-data-horizontal/tabs:after:h-0.5 group-data-vertical/tabs:after:inset-y-0 group-data-vertical/tabs:after:-right-1 group-data-vertical/tabs:after:w-0.5 group-data-[variant=line]/tabs-list:data-active:after:opacity-100',
         className

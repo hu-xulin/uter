@@ -70,7 +70,9 @@ export function DataTableViewModeToggle(props: DataTableViewModeToggleProps) {
       role='group'
       aria-label={t('View mode')}
       className={cn(
-        'bg-muted/60 inline-flex h-8 items-center rounded-lg border p-0.5',
+        // 与同一行的按钮同高：跟 --ds-button-height-sm 走，密度切换时一起变，
+        // 不再写死 h-8（紧凑密度下会比按钮高出 4px）。
+        'bg-muted/60 inline-flex h-(--ds-button-height-sm) items-center rounded-lg border p-0.5',
         props.className
       )}
     >
@@ -90,7 +92,7 @@ export function DataTableViewModeToggle(props: DataTableViewModeToggleProps) {
                   aria-pressed={isActive}
                   className='h-full w-7'
                 >
-                  <Icon className='size-3.5' />
+                  <Icon className='size-4' />
                 </Button>
               }
             />

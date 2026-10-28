@@ -27,7 +27,7 @@ export function Header({ className, children, ...props }: HeaderProps) {
   return (
     <header
       className={cn(
-        'sticky top-0 z-40 h-[var(--app-header-height,3rem)] w-full shrink-0 transition-[background-color,box-shadow,border-color,backdrop-filter] duration-300',
+        'sticky top-0 z-40 h-[var(--app-header-height,3rem)] w-full shrink-0 transition-[background-color,box-shadow,border-color,backdrop-filter] ds-motion-base',
         scrolled
           ? 'bg-background/85 border-b border-border/60 backdrop-blur-xl'
           : 'border-b border-transparent bg-transparent',

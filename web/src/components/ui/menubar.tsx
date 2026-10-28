@@ -20,8 +20,7 @@ For commercial licensing, please contact support@uter.ai
 
 import { Menu as MenuPrimitive } from '@base-ui/react/menu'
 import { Menubar as MenubarPrimitive } from '@base-ui/react/menubar'
-import { Tick02Icon } from '@hugeicons/core-free-icons'
-import { HugeiconsIcon } from '@hugeicons/react'
+import { Check } from 'lucide-react'
 import * as React from 'react'
 
 import {
@@ -46,7 +45,7 @@ function Menubar({ className, ...props }: MenubarPrimitive.Props) {
     <MenubarPrimitive
       data-slot='menubar'
       className={cn(
-        'flex h-8 items-center gap-0.5 rounded-lg border p-[3px]',
+        'flex h-8 items-center gap-0.5 rounded-lg border p-1',
         className
       )}
       {...props}
@@ -78,7 +77,7 @@ function MenubarTrigger({
     <DropdownMenuTrigger
       data-slot='menubar-trigger'
       className={cn(
-        'hover:bg-muted aria-expanded:bg-muted flex items-center rounded-sm px-1.5 py-[2px] text-sm font-medium outline-hidden select-none',
+        'hover:bg-muted aria-expanded:bg-muted flex items-center rounded-sm px-1.5 py-0.5 text-sm font-medium outline-hidden select-none',
         className
       )}
       {...props}
@@ -150,7 +149,7 @@ function MenubarCheckboxItem({
     >
       <span className="pointer-events-none absolute left-1.5 flex size-4 items-center justify-center [&_svg:not([class*='size-'])]:size-4">
         <MenuPrimitive.CheckboxItemIndicator>
-          <HugeiconsIcon icon={Tick02Icon} strokeWidth={2} />
+          <Check />
         </MenuPrimitive.CheckboxItemIndicator>
       </span>
       {children}
@@ -184,7 +183,7 @@ function MenubarRadioItem({
     >
       <span className="pointer-events-none absolute left-1.5 flex size-4 items-center justify-center [&_svg:not([class*='size-'])]:size-4">
         <MenuPrimitive.RadioItemIndicator>
-          <HugeiconsIcon icon={Tick02Icon} strokeWidth={2} />
+          <Check />
         </MenuPrimitive.RadioItemIndicator>
       </span>
       {children}

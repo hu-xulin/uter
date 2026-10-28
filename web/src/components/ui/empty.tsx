@@ -48,8 +48,12 @@ const emptyMediaVariants = cva(
   {
     variants: {
       variant: {
-        default: 'bg-transparent',
-        icon: "flex size-8 shrink-0 items-center justify-center rounded-lg bg-muted text-foreground [&_svg:not([class*='size-'])]:size-4",
+        // 无底框的空状态图标 = 规范 §2.2 的「空状态 32px」档。
+        default: "bg-transparent [&_svg:not([class*='size-'])]:size-8",
+        // 有底框时以容器为准：32px 方框里放 20px 字形（上下各 6px），
+        // 不跟着「空状态 32px」放大到 32px 字形（那会顶满整个方框）。
+        // 20px 就是默认档，与按钮内图标同值。
+        icon: "flex size-8 shrink-0 items-center justify-center rounded-lg bg-muted text-foreground [&_svg:not([class*='size-'])]:size-4.5",
       },
     },
     defaultVariants: {
@@ -88,7 +92,7 @@ function EmptyDescription({ className, ...props }: React.ComponentProps<'p'>) {
     <div
       data-slot='empty-description'
       className={cn(
-        'text-muted-foreground [&>a:hover]:text-primary text-sm leading-5.5',
+        'text-muted-foreground [&>a:hover]:text-primary text-sm.5',
         className
       )}
       {...props}

@@ -20,22 +20,37 @@ For commercial licensing, please contact support@uter.ai
 
 import * as React from 'react'
 
+import {
+  formLabelTierClassName,
+  useFormLabelTier,
+  type FormLabelTier,
+} from '@/components/ui/form-label-tier'
 import { cn } from '@/lib/utils'
 
 function Label({
   className,
   children,
   required = false,
-  ...props
-}: React.ComponentProps<'label'> & { required?: boolean }) {
+  tier,
+  ...others
+}: React.ComponentProps<'label'> & {
+  required?: boolean
+  tier?: FormLabelTier
+}) {
+  const activeTier = useFormLabelTier(tier)
+
   return (
     <label
       data-slot='label'
+      data-tier={activeTier}
       className={cn(
-        'flex items-center gap-2 text-sm leading-5 font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50',
+        'flex items-center gap-2 text-sm font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50',
+        // 档位类放在基础类之后：twMerge 会让后写的同名工具类胜出，
+        // 因此 `field` 档的 text-base / font-semibold 能覆盖上面的 text-sm。
+        formLabelTierClassName(activeTier),
         className
       )}
-      {...props}
+      {...others}
     >
       {required ? (
         <span>

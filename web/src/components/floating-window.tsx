@@ -16,9 +16,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
-import { ArrowExpand02Icon } from '@hugeicons/core-free-icons'
-import { HugeiconsIcon } from '@hugeicons/react'
-import { ChevronsUpDown, GripHorizontal, X } from 'lucide-react'
+import { ChevronsUpDown, GripHorizontal, Maximize2, X } from 'lucide-react'
 import {
   type PointerEvent as ReactPointerEvent,
   type ReactNode,
@@ -379,10 +377,10 @@ export function FloatingWindow(props: FloatingWindowProps) {
         )}
       >
         <GripHorizontal
-          className='text-muted-foreground size-3.5 shrink-0'
+          className='text-muted-foreground size-4 shrink-0'
           aria-hidden='true'
         />
-        <span className='text-sm font-semibold'>{props.title}</span>
+        <span className='text-base font-semibold'>{props.title}</span>
         {props.badge}
         <Button
           type='button'
@@ -420,7 +418,7 @@ export function FloatingWindow(props: FloatingWindowProps) {
         maxHeight: `calc(100vh - ${VIEWPORT_MARGIN * 2}px)`,
       }}
       className={cn(
-        'bg-background border-border z-50 flex flex-col overflow-hidden rounded-xl border shadow-xl',
+        'bg-background border-border z-50 flex flex-col overflow-hidden rounded-xl border shadow-lg',
         props.className
       )}
     >
@@ -429,10 +427,10 @@ export function FloatingWindow(props: FloatingWindowProps) {
         className='border-border/70 flex cursor-move touch-none items-center gap-2 border-b px-4 py-3 select-none'
       >
         <GripHorizontal
-          className='text-muted-foreground size-3.5 shrink-0'
+          className='text-muted-foreground size-4 shrink-0'
           aria-hidden='true'
         />
-        <h3 id={`${id}-title`} className='text-sm font-semibold'>
+        <h3 id={`${id}-title`} className='text-lg font-semibold'>
           {props.title}
         </h3>
         {props.badge}
@@ -489,8 +487,7 @@ export function FloatingWindow(props: FloatingWindowProps) {
           onPointerCancel={handleResizeEnd}
         >
           {direction === 'se' && (
-            <HugeiconsIcon
-              icon={ArrowExpand02Icon}
+            <Maximize2
               className='pointer-events-none size-4'
               aria-hidden='true'
             />

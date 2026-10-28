@@ -76,13 +76,9 @@ export function TitledCard({
               </IconBadge>
             )}
             <div className='min-w-0'>
-              <CardTitle className={cn(titleClassName)}>
-                {title}
-              </CardTitle>
+              <CardTitle className={cn(titleClassName)}>{title}</CardTitle>
               {description != null && (
-                <CardDescription
-                  className={cn(descriptionClassName)}
-                >
+                <CardDescription className={cn(descriptionClassName)}>
                   {description}
                 </CardDescription>
               )}

@@ -36,21 +36,21 @@ export function Search({ className = '', placeholder }: SearchProps) {
   const resolvedPlaceholder = placeholder ?? t('Search')
   return (
     <Button
+      size='sm'
       variant='outline'
       className={cn(
-        'bg-muted/25 group text-muted-foreground hover:bg-accent relative h-8 w-full flex-1 justify-start rounded-md text-sm font-normal shadow-none sm:w-40 sm:pe-12 md:flex-none lg:w-52 xl:w-64',
+        'bg-muted/25 group text-muted-foreground hover:bg-accent relative w-full flex-1 justify-start gap-2 rounded-md text-sm font-normal shadow-none sm:w-40 sm:pe-12 md:flex-none lg:w-52 xl:w-64',
         className
       )}
       onClick={() => setOpen(true)}
       aria-label={resolvedPlaceholder}
     >
-      <SearchIcon
-        aria-hidden='true'
-        className='absolute start-1.5 top-1/2 -translate-y-1/2'
-        size={16}
-      />
-      <span className='ms-4'>{resolvedPlaceholder}</span>
-      <kbd className='bg-muted group-hover:bg-accent pointer-events-none absolute end-[0.3rem] top-[0.3rem] hidden h-5 items-center gap-1 rounded border px-1.5 font-mono text-mono font-medium opacity-100 select-none sm:flex'>
+      {/* 图标走 flex 排布，不再用 `absolute start-1.5` + 文字 `ms-4` 目测错位：
+          图标与占位符靠 `gap-2` 排开，尺寸换成 18px（规范 §2.2 工具栏档）
+          也不需要重算文字缩进。 */}
+      <SearchIcon aria-hidden='true' className='size-4.5 shrink-0' />
+      <span className='truncate'>{resolvedPlaceholder}</span>
+      <kbd className='bg-background text-muted-foreground text-mono pointer-events-none absolute end-[0.3rem] top-[0.3rem] hidden h-5 items-center gap-1 rounded border px-1.5 font-mono font-medium opacity-100 select-none sm:flex'>
         <span className='text-xs'>⌘</span>
         {t('K')}
       </kbd>

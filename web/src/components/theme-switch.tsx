@@ -28,49 +28,47 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { useTheme } from '@/context/theme-provider'
+import { useThemeColor } from '@/lib/theme-color'
 import { cn } from '@/lib/utils'
 
 export function ThemeSwitch() {
   const { t } = useTranslation()
   const { theme, setTheme } = useTheme()
 
-  /* Update theme-color meta tag
-   * when theme is updated */
+  /* 浏览器 UI（iOS Safari / Android Chrome 地址栏）跟随主题背景色。
+   * 色值从 `--background` Token 解析，浅色/深色与主题预设都会同步，
+   * 不在组件里写死十六进制（旧实现是两个写死的浅/深底色，与 Token 脱钩）。 */
+  const backgroundColor = useThemeColor('--background')
   useEffect(() => {
-    const themeColor = theme === 'dark' ? '#020817' : '#fff'
+    if (!backgroundColor) return
     const metaThemeColor = document.querySelector("meta[name='theme-color']")
-    if (metaThemeColor) metaThemeColor.setAttribute('content', themeColor)
-  }, [theme])
+    if (metaThemeColor) metaThemeColor.setAttribute('content', backgroundColor)
+  }, [backgroundColor])
 
   return (
     <DropdownMenu modal={false}>
-      <DropdownMenuTrigger
-        render={<Button variant='ghost' size='icon' className='h-9 w-9' />}
-      >
-        <Sun className='size-[1.2rem] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90' />
-        <Moon className='absolute size-[1.2rem] scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0' />
+      <DropdownMenuTrigger render={<Button variant='ghost' size='icon' />}>
+        <Sun className='size-4.5 scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90' />
+        <Moon className='absolute size-4.5 scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0' />
         <span className='sr-only'>{t('Toggle theme')}</span>
       </DropdownMenuTrigger>
       <DropdownMenuContent align='end'>
         <DropdownMenuItem onClick={() => setTheme('light')}>
           {t('Light')}{' '}
           <Check
-            size={14}
-            className={cn('ms-auto', theme !== 'light' && 'hidden')}
+            className={cn('size-4 ms-auto', theme !== 'light' && 'hidden')}
           />
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => setTheme('dark')}>
           {t('Dark')}
           <Check
-            size={14}
-            className={cn('ms-auto', theme !== 'dark' && 'hidden')}
+            className={cn('size-4 ms-auto', theme !== 'dark' && 'hidden')}
           />
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => setTheme('system')}>
           {t('System')}
           <Check
-            size={14}
-            className={cn('ms-auto', theme !== 'system' && 'hidden')}
+            className={cn('size-4 ms-auto', theme !== 'system' && 'hidden')}
           />
         </DropdownMenuItem>
       </DropdownMenuContent>

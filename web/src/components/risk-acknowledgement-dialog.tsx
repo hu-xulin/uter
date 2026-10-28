@@ -190,10 +190,7 @@ export function RiskAcknowledgementDialog({
         <AlertDialogHeader className='shrink-0 px-4 pt-4 pb-3 text-left sm:px-6 sm:pt-6'>
           <AlertDialogTitle>{title}</AlertDialogTitle>
           {description ? (
-            <AlertDialogDescription
-              render={<div />}
-              className='mt-1 text-left leading-5'
-            >
+            <AlertDialogDescription render={<div />} className='mt-1 text-left'>
               {description}
             </AlertDialogDescription>
           ) : null}
@@ -201,7 +198,7 @@ export function RiskAcknowledgementDialog({
 
         <div className='min-h-0 flex-1 space-y-4 overflow-y-auto px-4 pb-4 sm:px-6'>
           {items.length > 0 ? (
-            <ol className='border-border/70 bg-muted/30 text-foreground list-decimal space-y-2 rounded-lg border px-4 py-3 pl-8 text-sm leading-6 sm:px-5 sm:py-4 sm:pl-9'>
+            <ol className='border-border/70 bg-muted/30 text-foreground list-decimal space-y-2 rounded-lg border px-4 py-3 pl-8 text-sm sm:px-5 sm:py-4 sm:pl-9'>
               {items.map((item) => (
                 <li key={item}>{item}</li>
               ))}
@@ -224,7 +221,7 @@ export function RiskAcknowledgementDialog({
                     />
                     <Label
                       htmlFor={id}
-                      className='text-muted-foreground text-sm leading-5 font-normal'
+                      className='text-muted-foreground text-sm font-normal'
                     >
                       {item}
                     </Label>
@@ -239,7 +236,7 @@ export function RiskAcknowledgementDialog({
               <Label className='text-sm font-medium'>
                 {inputPrompt ?? t('Please type the following text to confirm:')}
               </Label>
-              <div className='bg-background border-border rounded-md border px-3 py-2 font-mono text-mono leading-6 break-words whitespace-pre-wrap'>
+              <div className='bg-background border-border text-mono rounded-md border px-3 py-2 font-mono break-words whitespace-pre-wrap'>
                 {requiredTextToDisplay}
               </div>
               {hasSegmentedRequiredText ? (
@@ -248,7 +245,7 @@ export function RiskAcknowledgementDialog({
                     part.type === 'static' ? (
                       <span
                         key={`static-${part.text}`}
-                        className='text-muted-foreground bg-background/70 border-border w-fit rounded-md border px-2 py-1.5 font-mono text-mono select-none'
+                        className='text-muted-foreground bg-background/70 border-border text-mono w-fit rounded-md border px-2 py-1.5 font-mono select-none'
                       >
                         {part.text}
                       </span>
@@ -272,7 +269,7 @@ export function RiskAcknowledgementDialog({
                         autoFocus={open && part.inputIndex === 0}
                         wrap='soft'
                         aria-invalid={hasTypedRequiredText && !typedMatched}
-                        className='min-h-10 resize-none overflow-hidden font-mono text-mono leading-6'
+                        className='text-mono min-h-10 resize-none overflow-hidden font-mono'
                       />
                     )
                   )}
@@ -288,11 +285,11 @@ export function RiskAcknowledgementDialog({
                   autoFocus={open}
                   wrap='soft'
                   aria-invalid={hasTypedRequiredText && !typedMatched}
-                  className='min-h-16 resize-none overflow-hidden font-mono text-mono leading-6'
+                  className='text-mono min-h-16 resize-none overflow-hidden font-mono'
                 />
               )}
               {hasTypedRequiredText && !typedMatched ? (
-                <p className='text-destructive text-xs'>
+                <p className='text-destructive text-sm'>
                   {mismatchHint ??
                     t('The entered text does not match the required text.')}
                 </p>

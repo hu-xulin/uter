@@ -152,27 +152,27 @@ export const ReasoningTrigger = memo(
     return (
       <CollapsibleTrigger
         className={cn(
-          'text-muted-foreground hover:text-foreground inline-grid w-fit max-w-full grid-cols-[0.875rem_minmax(0,auto)_0.875rem] items-center gap-1.5 text-sm leading-none transition-colors [&_p]:m-0',
+          'text-muted-foreground hover:text-foreground inline-grid w-fit max-w-full grid-cols-[1rem_minmax(0,auto)_1rem] items-center gap-1.5 text-sm transition-colors [&_p]:m-0',
           className
         )}
         {...props}
       >
         {children ?? (
           <>
-            <span className='grid size-3.5 place-items-center'>
-              <BrainIcon className='size-3.5' />
+            <span className='grid size-4 place-items-center'>
+              <BrainIcon className='size-4' />
             </span>
-            <span className='min-w-0 truncate leading-none'>
+            <span className='min-w-0 truncate'>
               {isStreaming ? (
                 <Shimmer duration={1}>{t('Thinking...')}</Shimmer>
               ) : (
                 thinkingText
               )}
             </span>
-            <span className='grid size-3.5 place-items-center'>
+            <span className='grid size-4 place-items-center'>
               <ChevronDownIcon
                 className={cn(
-                  'size-3.5 transition-transform duration-200 ease-out',
+                  'size-4 transition-transform ds-motion-base',
                   isOpen ? 'rotate-180' : 'rotate-0'
                 )}
               />
@@ -197,15 +197,15 @@ export const ReasoningContent = memo(
     return (
       <CollapsibleContent
         className={cn(
-          'CollapsibleContent group/reasoning-content border-border/70 mt-2 ml-1.5 border-l pl-3 text-sm leading-5',
+          'CollapsibleContent group/reasoning-content border-border/70 mt-2 ml-1.5 border-l pl-3 text-sm',
           'text-muted-foreground outline-none',
           className
         )}
         {...props}
       >
-        <div className='transition-[opacity,transform] duration-200 ease-out group-data-[closed]/reasoning-content:-translate-y-1 group-data-[closed]/reasoning-content:opacity-0 group-data-[open]/reasoning-content:translate-y-0 group-data-[open]/reasoning-content:opacity-100 motion-reduce:transition-none'>
+        <div className='ds-motion-base transition-[opacity,transform] group-data-[closed]/reasoning-content:-translate-y-1 group-data-[closed]/reasoning-content:opacity-0 group-data-[open]/reasoning-content:translate-y-0 group-data-[open]/reasoning-content:opacity-100 motion-reduce:transition-none'>
           <Response
-            className='grid gap-1.5 [&_li]:my-0.5 [&_ol]:my-1.5 [&_p]:my-1.5 [&_p]:leading-5 [&_ul]:my-1.5'
+            className='grid gap-1.5 [&_li]:my-0.5 [&_ol]:my-1.5 [&_p]:my-1.5 [&_ul]:my-1.5'
             final={!isStreaming}
             parserId='uter-reasoning'
           >

@@ -110,7 +110,7 @@ function CompactContent<TData>({ row }: { row: Row<TData> }) {
             return (
               <div key={cell.id} className='min-w-0 flex-1 overflow-hidden'>
                 {label && (
-                  <div className='text-muted-foreground mb-0.5 text-xs leading-none select-none'>
+                  <div className='text-muted-foreground mb-0.5 text-xs select-none'>
                     {label}
                   </div>
                 )}

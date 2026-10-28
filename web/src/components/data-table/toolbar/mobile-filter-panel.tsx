@@ -67,7 +67,8 @@ export function DataTableMobileFilterPanel(
               size='icon'
               className={cn(
                 'text-muted-foreground hover:text-foreground',
-                props.compact ? 'size-9' : 'mr-auto size-7'
+                // 尺寸只走 size 档（icon = 36px）；这里只决定是否靠右占位。
+                !props.compact && 'mr-auto'
               )}
             />
           }
@@ -75,8 +76,7 @@ export function DataTableMobileFilterPanel(
           <ChevronDown
             aria-hidden='true'
             className={cn(
-              'transition-transform duration-200',
-              props.compact ? 'size-4' : 'size-3.5',
+              'size-4 transition-transform ds-motion-base',
               open && 'rotate-180'
             )}
           />

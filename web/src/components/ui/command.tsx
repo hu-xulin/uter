@@ -18,9 +18,8 @@ For commercial licensing, please contact support@uter.ai
 */
 'use client'
 
-import { SearchIcon, Tick02Icon } from '@hugeicons/core-free-icons'
-import { HugeiconsIcon } from '@hugeicons/react'
 import { Command as CommandPrimitive } from 'cmdk'
+import { Check, Search } from 'lucide-react'
 import * as React from 'react'
 
 import {
@@ -88,7 +87,10 @@ function CommandInput({
 }: React.ComponentProps<typeof CommandPrimitive.Input>) {
   return (
     <div data-slot='command-input-wrapper' className='p-1 pb-0'>
-      <InputGroup className='border-input/30 bg-input/30 h-8! rounded-lg! shadow-none! *:data-[slot=input-group-addon]:pl-2!'>
+      {/* 高度不再覆盖：InputGroup 与 Input 同高（--ds-control-height-md
+          40px，规范 2.1 Input / InputGroup）。此前 h-8!（32px）让命令面板
+          的搜索框比全站输入框矮一档。 */}
+      <InputGroup className='border-input/30 bg-input/30 rounded-lg! shadow-none! *:data-[slot=input-group-addon]:pl-2!'>
         <CommandPrimitive.Input
           data-slot='command-input'
           className={cn(
@@ -98,11 +100,7 @@ function CommandInput({
           {...props}
         />
         <InputGroupAddon>
-          <HugeiconsIcon
-            icon={SearchIcon}
-            strokeWidth={2}
-            className='size-4 shrink-0 opacity-50'
-          />
+          <Search className='size-4 shrink-0 opacity-50' />
         </InputGroupAddon>
       </InputGroup>
     </div>
@@ -182,11 +180,7 @@ function CommandItem({
       {...props}
     >
       {children}
-      <HugeiconsIcon
-        icon={Tick02Icon}
-        strokeWidth={2}
-        className='ml-auto opacity-0 group-has-data-[slot=command-shortcut]/command-item:hidden group-data-[checked=true]/command-item:opacity-100'
-      />
+      <Check className='ml-auto opacity-0 group-has-data-[slot=command-shortcut]/command-item:hidden group-data-[checked=true]/command-item:opacity-100' />
     </CommandPrimitive.Item>
   )
 }

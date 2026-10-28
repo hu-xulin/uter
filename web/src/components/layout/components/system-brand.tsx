@@ -60,7 +60,7 @@ export function SystemBrand(props: SystemBrandProps) {
         aria-label={t('Go to home')}
         className={cn(
           'text-foreground inline-flex h-7 min-w-0 items-center gap-2.5 rounded-md px-1.5 text-lg font-medium transition-colors outline-none select-none',
-          'hover:bg-accent focus-visible:ring-ring/40 focus-visible:ring-2'
+          'hover:bg-accent focus-visible:ring-ring focus-visible:ring-2'
         )}
       >
         {/* Logo box, radius and gap mirror the public header (public-header.tsx)
@@ -93,7 +93,7 @@ export function SystemBrand(props: SystemBrandProps) {
               className='size-full rounded-lg object-cover'
             />
           </div>
-          <div className='grid flex-1 text-start text-sm leading-tight group-data-[collapsible=icon]:hidden'>
+          <div className='grid flex-1 text-start text-sm group-data-[collapsible=icon]:hidden'>
             <span className='font-brand truncate'>{name}</span>
           </div>
         </SidebarMenuButton>

@@ -28,12 +28,18 @@ type PasswordInputProps = Omit<
   'type'
 > & {
   ref?: React.Ref<HTMLInputElement>
+  /**
+   * 等宽字形。密码 / 密钥 / Token 都是机器可读的值，默认开启（规范
+   * `typography.md`「等宽（mono）的适用范围」）。
+   */
+  mono?: boolean
 }
 
 export function PasswordInput({
   className,
   disabled,
   ref,
+  mono = true,
   ...props
 }: PasswordInputProps) {
   const { t } = useTranslation()
@@ -45,22 +51,23 @@ export function PasswordInput({
         type={showPassword ? 'text' : 'password'}
         ref={ref}
         disabled={disabled}
+        mono={mono}
         className={className}
         {...props}
       />
       <Button
         type='button'
-        size='icon'
         variant='ghost'
+        size='icon-xs'
         disabled={disabled}
-        className='text-muted-foreground absolute end-1 top-1/2 h-6 w-6 -translate-y-1/2 rounded-md'
+        className='text-muted-foreground absolute end-1 top-1/2 -translate-y-1/2 rounded-md'
         onClick={() => setShowPassword((prev) => !prev)}
         aria-label={t('Toggle password visibility')}
       >
         {showPassword ? (
-          <Eye size={18} aria-hidden='true' />
+          <Eye className='size-4.5' aria-hidden='true' />
         ) : (
-          <EyeOff size={18} aria-hidden='true' />
+          <EyeOff className='size-4.5' aria-hidden='true' />
         )}
       </Button>
     </div>

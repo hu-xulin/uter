@@ -56,7 +56,7 @@ function DrawerOverlay({
     <DrawerPrimitive.Overlay
       data-slot='drawer-overlay'
       className={cn(
-        'data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0 fixed inset-0 z-50 bg-black/10 supports-backdrop-filter:backdrop-blur-xs',
+        'data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0 fixed inset-0 z-50 bg-surface-overlay/10 supports-backdrop-filter:backdrop-blur-xs',
         className
       )}
       {...props}
@@ -128,7 +128,9 @@ function DrawerTitle({
   return (
     <DrawerPrimitive.Title
       data-slot='drawer-title'
-      className={cn('text-foreground text-base font-medium', className)}
+      // 规范 1.2：弹窗/抽屉标题恒为 h3 档（18/600）。原 16/500 与正文同号，
+      // 抽屉一打开就先「显得小」一档。
+      className={cn('text-foreground text-lg font-semibold', className)}
       {...props}
     />
   )

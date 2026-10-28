@@ -34,7 +34,7 @@ export function MaskedValueTrigger(props: ComponentProps<typeof Button>) {
       size='sm'
       {...props}
       className={cn(
-        'text-muted-foreground h-7 max-w-full min-w-0 justify-start truncate px-0 font-mono text-mono hover:bg-transparent aria-expanded:bg-transparent',
+        'text-muted-foreground max-w-full min-w-0 justify-start truncate px-0 font-mono text-mono hover:bg-transparent aria-expanded:bg-transparent',
         props.className
       )}
     />
@@ -69,9 +69,9 @@ export function MaskedValueDisplay(props: MaskedValueDisplayProps) {
           align='start'
         >
           <div className='space-y-2'>
-            <p className='text-muted-foreground text-xs'>{props.label}</p>
+            <p className='text-muted-foreground text-sm'>{props.label}</p>
             <pre
-              className='bg-muted/50 max-h-[50vh] overflow-auto rounded-md border px-3 py-2 font-mono text-mono leading-[var(--ds-line-mono-dense)] break-all whitespace-pre-wrap'
+              className='bg-muted/50 text-mono max-h-[50vh] overflow-auto rounded-md border px-3 py-2 font-mono leading-[var(--ds-line-mono-dense)] break-all whitespace-pre-wrap'
               style={{ wordBreak: 'break-all' }}
             >
               {props.fullValue}
@@ -82,7 +82,7 @@ export function MaskedValueDisplay(props: MaskedValueDisplayProps) {
       <CopyButton
         value={props.fullValue}
         className='size-7'
-        iconClassName='size-3.5'
+        iconClassName='size-4'
         tooltip={props.copyTooltip}
         aria-label={props.copyAriaLabel}
       />

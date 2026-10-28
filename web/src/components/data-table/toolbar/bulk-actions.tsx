@@ -178,14 +178,14 @@ export function DataTableBulkActions<TData>({
         onKeyDown={handleKeyDown}
         className={cn(
           placement === 'floating'
-            ? 'fixed bottom-6 left-1/2 z-50 w-max max-w-[calc(100vw-2rem)] -translate-x-1/2 rounded-xl transition-all delay-100 duration-300 ease-out hover:scale-105'
+            ? 'fixed bottom-6 left-1/2 z-50 w-max max-w-[calc(100vw-2rem)] -translate-x-1/2 rounded-xl transition-all delay-100 ds-motion-base hover:scale-105'
             : 'shrink-0 rounded-xl',
-          'focus-visible:ring-ring/50 focus-visible:ring-2 focus-visible:outline-none'
+          'focus-visible:ring-ring focus-visible:ring-2 focus-visible:outline-none'
         )}
       >
         <div
           className={cn(
-            'p-2 shadow-xl',
+            'p-2 shadow-lg',
             'rounded-xl border',
             'bg-background/95 supports-[backdrop-filter]:bg-background/60 backdrop-blur-lg',
             'flex flex-wrap items-center gap-2'
@@ -196,9 +196,8 @@ export function DataTableBulkActions<TData>({
               render={
                 <Button
                   variant='outline'
-                  size='icon'
+                  size='icon-xs'
                   onClick={handleClearSelection}
-                  className='size-6'
                   aria-label={t('Clear selection')}
                   title={t('Clear selection (Escape)')}
                 />

@@ -338,7 +338,7 @@ export function DataTableToolbar<TData>(props: DataTableToolbarProps<TData>) {
       {expanded ? t('Collapse') : t('Expand')}
       <ChevronDown
         className={cn(
-          'size-3.5 transition-transform duration-200',
+          'size-4 transition-transform ds-motion-base',
           expanded && 'rotate-180'
         )}
       />

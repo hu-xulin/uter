@@ -29,6 +29,10 @@ import {
 } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
+import {
+  useFormLabelTier,
+  type FormLabelTier,
+} from '@/components/ui/form-label-tier'
 import { Label } from '@/components/ui/label'
 import { cn } from '@/lib/utils'
 
@@ -199,9 +203,13 @@ function FormItem({ className, ...props }: React.ComponentProps<'div'>) {
 
 function FormLabel({
   className,
+  tier,
   ...props
 }: React.ComponentProps<typeof Label>) {
   const { error, formItemId } = useFormField()
+  // 档位可以显式传，也可以由容器（FormLabelTierProvider）下发；
+  // 字号类统一由 Label 拼接，避免两处各算一遍。
+  const activeTier = useFormLabelTier(tier)
 
   return (
     <Label
@@ -209,6 +217,7 @@ function FormLabel({
       data-error={!!error}
       className={cn('data-[error=true]:text-destructive', className)}
       htmlFor={formItemId}
+      tier={activeTier}
       {...props}
     />
   )
@@ -266,7 +275,7 @@ function FormMessage({ className, ...props }: React.ComponentProps<'p'>) {
       data-slot='form-message'
       data-form-root={formContext?.id}
       id={formMessageId}
-      className={cn('text-destructive text-sm leading-5', className)}
+      className={cn('text-destructive text-sm', className)}
       {...props}
     >
       {translatedBody}
@@ -284,3 +293,4 @@ export {
   FormMessage,
   FormField,
 }
+export type { FormLabelTier }

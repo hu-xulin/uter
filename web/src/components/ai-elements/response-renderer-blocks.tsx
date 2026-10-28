@@ -36,8 +36,12 @@ import { cn } from '@/lib/utils'
 import { getNodeKey } from './response-content'
 import type { BlockRendererOptions } from './response-types'
 
+/* Markdown 标题字号必须落在九档阶梯内（12 / 14 / 16 / 18 / 24 / 30 / 36）。
+ * 此前 h1 用的是 20px（`text-xl`）—— 那一档不在阶梯里，是历史遗留的
+ * 「兼容档」；正文流里的 h1 应该对齐区块标题（24/600），h2 对齐卡片标题
+ * （18/600），h3 起才逐级降到 16 / 14 / 12。 */
 const headingClasses = {
-  1: 'mt-6 mb-3 text-xl font-semibold',
+  1: 'mt-6 mb-3 text-2xl font-semibold',
   2: 'mt-6 mb-3 text-lg font-semibold',
   3: 'mt-5 mb-2 text-base font-semibold',
   4: 'mt-5 mb-2 text-sm font-semibold',
@@ -118,7 +122,7 @@ export function renderList(
   )
   const items = node.items.map((item, index) => (
     <li
-      className='marker:text-muted-foreground pl-1 leading-7'
+      className='marker:text-muted-foreground pl-1'
       key={getNodeKey(item, index)}
     >
       {options.renderChildren(item.children)}
@@ -193,7 +197,7 @@ function renderDefinitionItem(
 export function renderMathBlock(node: MathBlockNode, key: string): ReactNode {
   return (
     <pre
-      className='border-border bg-muted/40 my-4 overflow-x-auto rounded-lg border p-4 font-mono text-mono'
+      className='border-border bg-muted/40 text-mono my-4 overflow-x-auto rounded-lg border p-4 font-mono'
       key={key}
     >
       {node.content}
@@ -204,7 +208,7 @@ export function renderMathBlock(node: MathBlockNode, key: string): ReactNode {
 export function renderMathInline(node: MathInlineNode, key: string): ReactNode {
   return (
     <code
-      className='bg-muted/70 text-foreground rounded px-1 py-0.5 font-mono text-mono'
+      className='bg-muted/70 text-foreground text-mono rounded px-1 py-0.5 font-mono'
       key={key}
     >
       {node.content}

@@ -39,12 +39,16 @@ const iconBadgeVariants = cva(
         'chart-5': 'bg-chart-5/10 text-chart-5',
       },
       size: {
+        // 图标字形落在规范 §2.2 的合法档位上：16 / 24（2026-10-28 10:58 版
+        // 取消了 20px）。只有 20px 的 `xs` / `stat` 小屏档放不下 16px
+        // （上下各只剩 2px），才降到 12px —— 登记在 exceptions E23。
         xs: 'size-5 rounded-md [&>svg]:size-3',
-        sm: 'size-7 rounded-md [&>svg]:size-3.5',
+        sm: 'size-7 rounded-md [&>svg]:size-4',
         md: 'size-8 rounded-lg [&>svg]:size-4',
         title: 'size-8 rounded-lg sm:size-9 [&>svg]:size-4',
-        lg: 'size-10 rounded-xl [&>svg]:size-5',
-        stat: 'size-5 rounded-md sm:size-7 [&>svg]:size-3 sm:[&>svg]:size-3.5',
+        // 40px 方框放 16px 会空掉一圈，升到「强调型入口」的 24px 档。
+        lg: 'size-10 rounded-xl [&>svg]:size-6',
+        stat: 'size-5 rounded-md sm:size-7 [&>svg]:size-3 sm:[&>svg]:size-4',
       },
     },
     defaultVariants: {

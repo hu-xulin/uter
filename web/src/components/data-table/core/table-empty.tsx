@@ -74,9 +74,7 @@ export function TableEmpty({
       <TableCell colSpan={colSpan} className='h-[400px] p-0'>
         <Empty>
           <EmptyHeader>
-            <EmptyMedia variant='icon'>
-              {icon || <Database className='size-6' />}
-            </EmptyMedia>
+            <EmptyMedia variant='icon'>{icon || <Database />}</EmptyMedia>
             <EmptyTitle>{resolvedTitle}</EmptyTitle>
             <EmptyDescription>{resolvedDescription}</EmptyDescription>
           </EmptyHeader>

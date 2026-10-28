@@ -56,7 +56,7 @@ function BrandLogo({
   return (
     <Link
       to={homeUrl}
-      className='flex items-center gap-2 text-xl font-bold'
+      className='flex items-center gap-2 text-lg font-semibold'
       onClick={onClick}
     >
       <div className='relative h-6 w-6'>
@@ -118,7 +118,7 @@ function MobileUserProfile({ user, onNavigate }: MobileUserProfileProps) {
         <Link
           to='/profile'
           onClick={onNavigate}
-          className='text-primary/60 hover:text-primary/80 border-border flex items-center gap-2.5 border-b p-2.5 transition-colors'
+          className='text-foreground hover:text-primary border-border flex items-center gap-2.5 border-b p-2.5 transition-colors'
         >
           <User className='size-4' />
           {t('Profile')}
@@ -128,7 +128,7 @@ function MobileUserProfile({ user, onNavigate }: MobileUserProfileProps) {
           <Link
             to='/security'
             onClick={onNavigate}
-            className='text-primary/60 hover:text-primary/80 border-border flex items-center gap-2.5 border-b p-2.5 transition-colors'
+            className='text-foreground hover:text-primary border-border flex items-center gap-2.5 border-b p-2.5 transition-colors'
           >
             <ShieldCheck className='size-4' />
             {t('Security & Access')}
@@ -138,7 +138,7 @@ function MobileUserProfile({ user, onNavigate }: MobileUserProfileProps) {
         <Link
           to='/wallet'
           onClick={onNavigate}
-          className='text-primary/60 hover:text-primary/80 border-border flex items-center gap-2.5 border-b p-2.5 transition-colors'
+          className='text-foreground hover:text-primary border-border flex items-center gap-2.5 border-b p-2.5 transition-colors'
         >
           <Wallet className='size-4' />
           {t('Wallet')}
@@ -148,9 +148,9 @@ function MobileUserProfile({ user, onNavigate }: MobileUserProfileProps) {
         <Button
           variant='ghost'
           onClick={() => setSignOutOpen(true)}
-          className='text-destructive hover:text-destructive/80 h-auto w-full justify-start gap-2.5 p-2.5 hover:bg-transparent'
+          className='text-destructive hover:text-destructive h-auto w-full justify-start gap-2.5 p-2.5 hover:bg-transparent'
         >
-          <LogOut className='size-4' />
+          <LogOut className='size-4.5' />
           {t('Sign out')}
         </Button>
       </div>
@@ -173,7 +173,7 @@ function MobileSignInButton({ onNavigate }: MobileSignInButtonProps) {
     <Button
       variant='secondary'
       size='sm'
-      className='h-10 w-full'
+      className='w-full'
       render={<Link to='/sign-in' onClick={onNavigate} />}
     >
       {t('Sign in')}
@@ -257,7 +257,7 @@ export function MobileDrawer({
                   className='hover:text-primary cursor-pointer'
                   aria-label={t('Close menu')}
                 >
-                  <X className='size-5' />
+                  <X className='size-4.5' />
                 </Button>
               </div>
 
@@ -282,7 +282,7 @@ export function MobileDrawer({
                       >
                         <Link
                           to={link.href}
-                          className='text-primary/60 hover:text-primary/80 transition-colors'
+                          className='text-primary hover:text-primary transition-colors'
                           onClick={onClose}
                         >
                           {link.title}

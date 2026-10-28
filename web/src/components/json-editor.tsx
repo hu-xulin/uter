@@ -197,12 +197,12 @@ export function JsonEditor({
           >
             {mode === 'visual' ? (
               <>
-                <Code className='mr-2 h-4 w-4' />
+                <Code className='mr-2 h-4.5 w-4.5' />
                 {t('JSON Mode')}
               </>
             ) : (
               <>
-                <Table className='mr-2 h-4 w-4' />
+                <Table className='mr-2 h-4.5 w-4.5' />
                 {t('Visual Mode')}
               </>
             )}
@@ -211,8 +211,7 @@ export function JsonEditor({
             <Button
               type='button'
               variant='link'
-              size='sm'
-              className='h-auto p-0'
+              size='inline'
               onClick={handleFillTemplate}
               disabled={disabled}
             >
@@ -255,13 +254,12 @@ export function JsonEditor({
                   <Button
                     type='button'
                     variant='ghost'
-                    size='icon'
+                    size='icon-lg'
                     aria-label={t('Delete row')}
                     onClick={() => handleDeleteRow(row.id)}
                     disabled={disabled}
-                    className='h-10 w-10'
                   >
-                    <Trash2 className='h-4 w-4' aria-hidden='true' />
+                    <Trash2 className='h-4.5 w-4.5' aria-hidden='true' />
                   </Button>
                 </div>
               ))}
@@ -279,7 +277,7 @@ export function JsonEditor({
             disabled={disabled}
             className='w-full'
           >
-            <Plus className='mr-2 h-4 w-4' />
+            <Plus className='mr-2 h-4.5 w-4.5' />
             {t('Add Row')}
           </Button>
         </div>

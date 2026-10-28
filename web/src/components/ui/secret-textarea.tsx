@@ -32,6 +32,8 @@ type SecretTextareaProps = Omit<
   value: string
   /** 回传值。非编辑态被锁定，只在真正改值时调用；绝不回传掩码串。 */
   onChange: (value: string) => void
+  /** 是否用等宽字形渲染（默认 **开**），与 `SecretInput` 同义。 */
+  mono?: boolean
 }
 
 /**
@@ -54,6 +56,7 @@ export function SecretTextarea({
   className,
   name,
   rows = 4,
+  mono = true,
   onBlur,
   ...rest
 }: SecretTextareaProps) {
@@ -81,6 +84,7 @@ export function SecretTextarea({
         disabled={disabled}
         autoComplete='off'
         readOnly={!editing}
+        mono={mono}
         placeholder={isBlank ? (placeholder ?? '') : undefined}
         value={editing ? draft : value}
         onFocus={() => {
@@ -107,7 +111,7 @@ export function SecretTextarea({
           // 保留 react-hook-form 的失焦校验语义。
           onBlur?.(event)
         }}
-        className={cn('pr-9 font-mono text-mono', editing && 'border-ring')}
+        className={cn('pr-9', editing && 'border-ring')}
       />
       {!editing && !isBlank && (
         <button
@@ -115,9 +119,13 @@ export function SecretTextarea({
           tabIndex={-1}
           onClick={() => setRevealed((v) => !v)}
           aria-label={revealed ? 'Hide secret' : 'Reveal secret'}
-          className='text-muted-foreground hover:text-foreground absolute right-2 top-3 size-5'
+          className='text-muted-foreground hover:text-foreground absolute top-3 right-2 size-5'
         >
-          {revealed ? <EyeOff className='size-4' /> : <Eye className='size-4' />}
+          {revealed ? (
+            <EyeOff className='size-4' />
+          ) : (
+            <Eye className='size-4' />
+          )}
         </button>
       )}
     </div>
