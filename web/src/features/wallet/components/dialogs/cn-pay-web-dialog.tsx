@@ -38,7 +38,12 @@ import {
   requestWechatWebPayment,
   isApiSuccess,
 } from '../../api'
-import { detectPayClient, formatCNYAmount, isAlipayWebPayment } from '../../lib'
+import {
+  detectPayClient,
+  formatCNYAmount,
+  isAlipayWebPayment,
+  toPayAmount,
+} from '../../lib'
 import type { PaymentMethod } from '../../types'
 
 interface CnPayWebDialogProps {
@@ -107,7 +112,7 @@ export function CnPayWebDialog({
       setLoading(true)
       try {
         const request = {
-          amount: Math.floor(topupAmount),
+          amount: toPayAmount(topupAmount),
           payment_method: paymentMethod.type,
           client: detectPayClient(),
         }

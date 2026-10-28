@@ -37,6 +37,7 @@ import {
   isWaffoPancakePayment,
   openPaymentRedirect,
   submitPaymentForm,
+  toPayAmount,
 } from '../lib'
 import type { AmountRequest, AmountResponse } from '../types'
 
@@ -134,7 +135,7 @@ export function usePayment() {
         setProcessing(true)
 
         const isStripe = isStripePayment(paymentType)
-        const amount = Math.floor(topupAmount)
+        const amount = toPayAmount(topupAmount)
 
         const response = isStripe
           ? await requestStripePayment({

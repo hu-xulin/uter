@@ -49,6 +49,23 @@ export function getPaymentErrorTranslation(
 }
 
 /**
+ * Normalise a payable fiat amount to the two decimals the gateways accept.
+ *
+ * 这里**绝不能取整**：运营可以把最低充值配成 0.01，`Math.floor(0.01)` 会变成 0，
+ * 后端的「最小额」校验（`req.Amount < min_topup`）直接拒绝，而且那个分支不打日志 ——
+ * 前端只能看到一句「创建订单失败」，配置、库、日志三处都正常。
+ * 用四舍五入到分，既保住小额，也顺手抹掉 `0.1 + 0.2` 这类浮点尾巴，
+ * 避免把 0.30000000000000004 原样发给网关。
+ */
+export function toPayAmount(amount: number): number {
+  if (!Number.isFinite(amount)) return 0
+  // `+ Number.EPSILON` 只为修正「分」边界上的二进制表示误差：1.005 在 IEEE754
+  // 里是 1.00499999999999989…，直接 ×100 得 100.49999999999999，四舍五入会
+  // 掉成 1.00。加一个最小正数把它推回 100.5。对真实金额（两位小数以内）无影响。
+  return Math.round((amount + Number.EPSILON) * 100) / 100
+}
+
+/**
  * Check if browser is Safari
  */
 function isSafariBrowser(): boolean {

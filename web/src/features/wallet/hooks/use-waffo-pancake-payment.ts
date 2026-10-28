@@ -23,7 +23,11 @@ import { toast } from 'sonner'
 import { handleServerError } from '@/lib/handle-server-error'
 
 import { requestWaffoPancakePayment, isApiSuccess } from '../api'
-import { getPaymentErrorTranslation, resolvePaymentRedirectUrl } from '../lib'
+import {
+  getPaymentErrorTranslation,
+  resolvePaymentRedirectUrl,
+  toPayAmount,
+} from '../lib'
 
 function getCheckoutUrl(data: unknown): string | null {
   if (!data || typeof data !== 'object') {
@@ -64,7 +68,7 @@ export function useWaffoPancakePayment() {
 
       try {
         const response = await requestWaffoPancakePayment({
-          amount: Math.floor(topupAmount),
+          amount: toPayAmount(topupAmount),
         })
 
         if (isApiSuccess(response)) {
