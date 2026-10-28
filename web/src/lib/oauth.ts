@@ -88,6 +88,35 @@ export function buildLinuxDOOAuthUrl(clientId: string, state: string): string {
   return `https://connect.linux.do/oauth2/authorize?response_type=code&client_id=${clientId}&state=${state}`
 }
 
+/**
+ * Build WeChat Open Platform "website app" (网站应用) OAuth URL.
+ *
+ * The WeChat website-app flow uses the dedicated QR endpoint
+ * `open.weixin.qq.com/connect/qrconnect`. The `redirect_uri` host must sit
+ * under the 授权回调域 registered in the WeChat open platform console; we take
+ * that domain from `status.wechat_web_callback_domain` and fall back to the
+ * current site host when the operator left it blank.
+ */
+export function buildWeChatWebOAuthUrl(
+  appId: string,
+  callbackDomain: string | undefined,
+  state: string
+): string {
+  const host = (callbackDomain?.trim() || window.location.host).replace(
+    /^\/+/,
+    ''
+  )
+  const redirectUri = `https://${host}/oauth/wechat-web`
+  const url = new URL('https://open.weixin.qq.com/connect/qrconnect')
+  url.searchParams.set('appid', appId)
+  url.searchParams.set('redirect_uri', redirectUri)
+  url.searchParams.set('response_type', 'code')
+  url.searchParams.set('scope', 'snsapi_login')
+  url.searchParams.set('state', state)
+  url.hash = 'wechat_redirect'
+  return url.toString()
+}
+
 export function buildOAuthAuthorizationUrl(
   provider: string,
   state: string,
