@@ -49,6 +49,7 @@ var accessTokenRouteRules = map[string]accessTokenRouteRule{
 	"GET /api/perf-metrics":               accessTokenAnyRule,
 	"GET /api/rankings":                   accessTokenAnyRule,
 	"POST /api/oauth/state":               accessTokenSessionRule,
+	"POST /api/oauth/wechat/state":        accessTokenSessionRule,
 	"POST /api/oauth/email/bind/start":    accessTokenScopeRule("account_security:write"),
 	"POST /api/oauth/email/bind/resend":   accessTokenScopeRule("account_security:write"),
 	"POST /api/oauth/email/bind":          accessTokenScopeRule("account_security:write"),
@@ -219,6 +220,10 @@ var accessTokenRouteRules = map[string]accessTokenRouteRule{
 	"GET /api/ratio_sync/channels":              accessTokenScopeRule("option:read"),
 	"POST /api/ratio_sync/fetch":                accessTokenScopeRule("option:write"),
 	"GET /api/ratio_sync/preset_prices":         accessTokenScopeRule("option:read"),
+	// DreamRouter 同步：读接口只读定价，run 会写渠道与模型价格。
+	"GET /api/ratio_sync/dreamrouter/models": accessTokenScopeRule("option:read"),
+	"GET /api/ratio_sync/dreamrouter/status": accessTokenScopeRule("option:read"),
+	"POST /api/ratio_sync/dreamrouter/run":   accessTokenScopeRule("option:write"),
 
 	// router/api-router.go: /api/performance, /api/system-task, /api/system-info
 	"GET /api/performance/stats":                   accessTokenScopeRule("ops:read"),
