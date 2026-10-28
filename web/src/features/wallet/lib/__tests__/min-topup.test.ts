@@ -20,7 +20,11 @@ import { describe, expect, test } from 'vitest'
 
 import { DEFAULT_MIN_TOPUP } from '../../constants'
 import type { TopupInfo } from '../../types'
-import { generatePresetAmounts, getMinTopupAmount } from '../payment'
+import {
+  generatePresetAmounts,
+  getMinTopupAmount,
+  toPayAmount,
+} from '../payment'
 
 function buildTopupInfo(overrides: Partial<TopupInfo> = {}): TopupInfo {
   return {
@@ -82,5 +86,36 @@ describe('generatePresetAmounts', () => {
     const presets = generatePresetAmounts(0)
     expect(presets.every((preset) => preset.value > 0)).toBe(true)
     expect(presets[0].value).toBe(DEFAULT_MIN_TOPUP)
+  })
+})
+
+describe('toPayAmount', () => {
+  // 真实故障（2026-10-28）：最低充值放开到 0.01 后，收银台仍用
+  // `Math.floor(topupAmount)` 下单，0.01 被截成 0，后端最小额校验静默拒绝，
+  // 用户只看到「创建订单失败」。这里锁死「小额原样通过」。
+  test('keeps sub-dollar amounts instead of truncating them to zero', () => {
+    expect(toPayAmount(0.01)).toBe(0.01)
+    expect(toPayAmount(0.07)).toBe(0.07)
+    expect(toPayAmount(0.99)).toBe(0.99)
+  })
+
+  test('keeps whole amounts untouched', () => {
+    expect(toPayAmount(0)).toBe(0)
+    expect(toPayAmount(1)).toBe(1)
+    expect(toPayAmount(12.5)).toBe(12.5)
+  })
+
+  // 四舍五入到分：既不多扣，也不把浮点尾巴发给网关。
+  test('rounds to cents and strips float artefacts', () => {
+    expect(toPayAmount(0.1 + 0.2)).toBe(0.3)
+    expect(toPayAmount(0.005)).toBe(0.01)
+    expect(toPayAmount(1.005)).toBe(1.01)
+    expect(toPayAmount(1.004)).toBe(1)
+  })
+
+  // 非法输入不能变成 NaN 发给后端（NaN 会被序列化成 null）。
+  test('maps non-finite input to zero so the backend rejects it loudly', () => {
+    expect(toPayAmount(Number.NaN)).toBe(0)
+    expect(toPayAmount(Number.POSITIVE_INFINITY)).toBe(0)
   })
 })
