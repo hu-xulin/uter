@@ -78,3 +78,11 @@ export const DEFAULT_DISCOUNT_RATE = 1.0
  * Default minimum topup amount
  */
 export const DEFAULT_MIN_TOPUP = 1
+
+/**
+ * 支付宝收银台回跳后主动查单的重试次数与间隔。
+ * 支付宝侧交易状态在付款后可能有数秒延迟，单次查询容易拿到 pending；
+ * 4 次 × 2s 可覆盖绝大多数情况，仍为 pending 才提示「支付确认中」。
+ */
+export const ALIPAY_RETURN_QUERY_ATTEMPTS = 4
+export const ALIPAY_RETURN_QUERY_INTERVAL_MS = 2000

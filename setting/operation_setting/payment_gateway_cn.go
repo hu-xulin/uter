@@ -25,7 +25,14 @@ package operation_setting
 // ⚠️ 签约时支付宝要求支付域名已完成 ICP 备案且备案主体与商户主体一致。
 //
 //	本站以 uter.cc（已备案）作为支付站点（PaymentSiteAddress），
-//	uter.ai 为运营主体站（.ai 后缀无法备案，主站可用，但不得作为支付回跳域名）。
+//	uter.ai 为运营主体站（.ai 后缀无法备案，主站可用）。
+//
+// 两类地址的取值口径（见 controller/return_path.go）：
+//   - notify_url（异步回调）：优先 CustomCallbackAddress（备案域名，如 uter.cc），
+//     未配置时跟随当前请求站点。回调是服务端到服务端，必须打到能验签的实例上。
+//   - return_url（用户回跳）：始终跟随当前请求站点，用户从哪个域名进的收银台就回
+//     哪个域名的钱包页；本地/测试环境从 localhost 进来即回 localhost。
+//     支付宝不校验 return_url 域名（只做浏览器跳转），因此不受备案约束。
 var (
 	AlipayEnabled    = false
 	AlipayAppId      = ""

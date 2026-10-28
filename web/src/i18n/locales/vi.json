@@ -7205,6 +7205,8 @@
     "Payment successful": "Thanh toán thành công",
     "Customer Service": "Dịch vụ khách hàng",
     "Pages where the entry appears": "Các trang hiển thị mục",
+    "Payment is being confirmed": "Đang xác nhận thanh toán",
+    "This order was not paid. If you still need to top up, please place a new order.": "Đơn hàng này chưa được thanh toán. Nếu bạn vẫn muốn nạp tiền, vui lòng tạo đơn hàng mới.",
     "Customer Service Admin Token": "Mã thông báo quản trị viên hỗ trợ khách hàng",
     "Admin token is configured. Paste a new one to replace it.": "Đã cấu hình mã thông báo quản trị viên. Dán mã mới để thay thế.",
     "Configuration loaded from cache. Click Reload to fetch the latest from uter-cs.": "Cấu hình được tải từ bộ nhớ đệm. Nhấn Tải lại để lấy cấu hình mới nhất từ uter-cs.",

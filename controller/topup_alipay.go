@@ -19,6 +19,7 @@ package controller
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -173,8 +174,11 @@ func RequestAlipayWeb(c *gin.Context) {
 	}
 
 	tradeNo := fmt.Sprintf("USR%dNO%s%s", id, common.GetRandomString(8), strconv.FormatInt(time.Now().Unix(), 10))
-	callBackAddress := service.GetCallbackAddress()
-	notifyUrl := callBackAddress + "/api/user/alipay/notify"
+	// 回跳与回调默认跟随当前请求站点：本地测试从 localhost 进来就回 localhost，
+	// 生产从 uter.ai 进来就回 uter.ai，不再固定用配置的支付站点域名（uter.cc）。
+	// 运营显式配置 CustomCallbackAddress 时，异步回调仍以它为准（见 paymentNotifyURLFor）。
+	origin := requestOrigin(c)
+	notifyUrl := paymentNotifyURLFor(origin) + "/api/user/alipay/notify"
 	client := normalizePayClient(req.Client)
 
 	// 网关口径金额快照：支付宝只收人民币、以「元」传参，这里换算成「分」落库，
@@ -187,8 +191,10 @@ func RequestAlipayWeb(c *gin.Context) {
 	appId := operation_setting.AlipayAppId
 	timestamp := time.Now().Format("2006-01-02 15:04:05")
 
-	returnUrl := paymentReturnPath("/wallet?pay=success")
-	quitUrl := paymentReturnPath("/wallet")
+	// return_url 带上 trade_no：前端回到钱包页后可主动查单确认，作为「本地收不到
+	// 异步回调」时的兜底（见 controller.QueryAlipayOrder）。
+	returnUrl := paymentReturnURLFor(origin, "/wallet?pay=success&trade_no="+tradeNo)
+	quitUrl := paymentReturnURLFor(origin, "/wallet")
 	params := buildAlipayWebPayParams(client, appId, timestamp, tradeNo, payMoney, notifyUrl, returnUrl, quitUrl)
 
 	sign, err := service.AlipayBuildSign(params, operation_setting.AlipayPrivateKey)
@@ -223,6 +229,102 @@ func RequestAlipayWeb(c *gin.Context) {
 		"data":    map[string]string{"trade_no": tradeNo, "pay_url": payUrl},
 		"url":     payUrl,
 	})
+}
+
+// AlipayQueryRequest 主动查单请求。
+type AlipayQueryRequest struct {
+	TradeNo string `json:"trade_no"`
+}
+
+// QueryAlipayOrder 主动查询支付宝订单并确认入账。
+//
+// 异步回调（notify_url）在本地 / 内网环境不可达时会缺失，订单会一直停在 pending。
+// 用户从收银台回到站内（return_url 带 trade_no）后由前端调用本接口：服务端向支付宝
+// 查询真实状态，成功则走与异步回调完全相同的金额校验 + 幂等入账链路
+// （RechargeAlipay 的 CAS 保证只入账一次），因此可以安全地与回调并存。
+//
+// 返回的 data.status 有四种取值，前端据此决定是继续轮询还是直接告知用户：
+//   - success  已付款且金额一致，入账完成（或此前已入账）
+//   - pending  支付宝侧交易存在但尚未付清（WAIT_BUYER_PAY），值得继续等
+//   - unpaid   支付宝侧查无此交易，用户从未进入付款流程，再等也不会变
+//   - closed   支付宝侧交易已关闭（终态），本地订单同时置为过期
+func QueryAlipayOrder(c *gin.Context) {
+	var req AlipayQueryRequest
+	if err := c.ShouldBindJSON(&req); err != nil || strings.TrimSpace(req.TradeNo) == "" {
+		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "参数错误"})
+		return
+	}
+	if !isAlipayTopUpEnabled() {
+		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "当前未启用支付宝支付"})
+		return
+	}
+	id := c.GetInt("id")
+	topUp := model.GetTopUpByTradeNo(strings.TrimSpace(req.TradeNo))
+	// 归属校验：只能查询自己的支付宝订单，且 provider 必须是支付宝。
+	if topUp == nil || topUp.UserId != id || topUp.PaymentProvider != model.PaymentProviderAlipay {
+		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "订单不存在"})
+		return
+	}
+	if topUp.Status == common.TopUpStatusSuccess {
+		c.JSON(http.StatusOK, gin.H{"message": "success", "data": gin.H{"status": "success"}})
+		return
+	}
+
+	result, err := service.AlipayQueryOrder(c.Request.Context(), topUp.TradeNo)
+	if err != nil {
+		logger.LogWarn(c.Request.Context(), fmt.Sprintf("支付宝主动查单失败 trade_no=%s user_id=%d error=%q", topUp.TradeNo, id, err.Error()))
+		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "查询订单失败"})
+		return
+	}
+	// 未付清时按真实原因区分返回，不再一律回 pending。
+	//
+	// 这里曾经把「支付宝侧查无此交易」(TRADE_NOT_EXIST) 也归进 pending，结果是：
+	// 用户下单后没有真正付款，钱包里那条记录会一直停在「待确认」，既不变成功也
+	// 不变失败。查单拿到 TRADE_NOT_EXIST 意味着支付宝侧根本没有这笔交易，再轮询
+	// 一万次也不会有变化，必须如实告诉前端「未支付」而不是「确认中」。
+	//
+	// 注意：TRADE_NOT_EXIST 不改本地订单状态。用户仍可能重新打开下单时拿到的
+	// pay_url 完成付款，届时支付宝会用同一个 out_trade_no 建单并回调成功；提前
+	// 把订单置成过期会让他付了钱却入不了账。
+	if result.TradeStatus != "TRADE_SUCCESS" && result.TradeStatus != "TRADE_FINISHED" {
+		if result.TradeStatus == service.AlipayTradeStatusClosed {
+			// TRADE_CLOSED 是终态（超时未付款或用户主动关闭），不可能再付款成功，
+			// 因此可以安全地把本地订单落到过期，让列表不再显示「待确认」。
+			if err := model.UpdatePendingTopUpStatus(topUp.TradeNo, model.PaymentProviderAlipay, common.TopUpStatusExpired); err != nil &&
+				!errors.Is(err, model.ErrTopUpStatusInvalid) {
+				logger.LogWarn(c.Request.Context(), fmt.Sprintf("支付宝主动查单标记订单过期失败 trade_no=%s user_id=%d error=%q", topUp.TradeNo, id, err.Error()))
+			}
+			c.JSON(http.StatusOK, gin.H{"message": "success", "data": gin.H{"status": "closed"}})
+			return
+		}
+		status := "pending"
+		if result.TradeStatus == service.AlipayTradeStatusNotExist {
+			status = "unpaid"
+		}
+		c.JSON(http.StatusOK, gin.H{"message": "success", "data": gin.H{"status": status}})
+		return
+	}
+	paidAmount, parseErr := decimal.NewFromString(strings.TrimSpace(result.TotalAmount))
+	if parseErr != nil || !alipayPaidAmountMatchesOrder(paidAmount, topUp.ProviderAmount, topUp.Money) {
+		logger.LogWarn(c.Request.Context(), fmt.Sprintf("支付宝主动查单金额不匹配 trade_no=%s 查单金额=%q", topUp.TradeNo, result.TotalAmount))
+		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "订单金额不匹配"})
+		return
+	}
+
+	LockOrder(topUp.TradeNo)
+	defer UnlockOrder(topUp.TradeNo)
+	alreadyDone, err := model.RechargeAlipay(topUp.TradeNo, "", c.ClientIP())
+	if err != nil {
+		logger.LogError(c.Request.Context(), fmt.Sprintf("支付宝主动查单入账失败 trade_no=%s user_id=%d error=%q", topUp.TradeNo, id, err.Error()))
+		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "充值处理失败"})
+		return
+	}
+	if alreadyDone {
+		logger.LogInfo(c.Request.Context(), fmt.Sprintf("支付宝主动查单幂等忽略 trade_no=%s user_id=%d", topUp.TradeNo, id))
+	} else {
+		logger.LogInfo(c.Request.Context(), fmt.Sprintf("支付宝主动查单确认入账 trade_no=%s user_id=%d", topUp.TradeNo, id))
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "success", "data": gin.H{"status": "success"}})
 }
 
 // alipayPaidAmountMatchesOrder 校验支付宝回传的 total_amount（元）与本地订单一致。

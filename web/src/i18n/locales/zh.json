@@ -7206,6 +7206,8 @@
     "Payment successful": "支付成功",
     "Customer Service": "智能客服",
     "Pages where the entry appears": "入口显示的页面",
+    "Payment is being confirmed": "支付确认中，请稍候",
+    "This order was not paid. If you still need to top up, please place a new order.": "该订单未完成付款。如需充值，请重新下单。",
     "Customer Service Admin Token": "智能客服管理员令牌",
     "Admin token is configured. Paste a new one to replace it.": "管理员令牌已配置。如需更换，请粘贴新的令牌。",
     "Configuration loaded from cache. Click Reload to fetch the latest from uter-cs.": "配置来自本地缓存。点击「重新加载」可从 uter-cs 拉取最新配置。",
