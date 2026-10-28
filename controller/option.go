@@ -264,6 +264,11 @@ func UpdateOption(c *gin.Context) {
 			common.ApiErrorT(c, "Cannot enable WeChat login. Enter the WeChat login settings first.")
 			return
 		}
+	case "WeChatWebAuthEnabled":
+		if option.Value == "true" && (common.WeChatWebAppId == "" || common.WeChatWebAppSecret == "") {
+			common.ApiErrorT(c, "Cannot enable WeChat website-app login. Enter the WeChat website app ID and App Secret first.")
+			return
+		}
 	case "TurnstileCheckEnabled":
 		if option.Value == "true" && common.TurnstileSiteKey == "" {
 			common.ApiErrorT(c, "Cannot enable Turnstile verification. Enter the Turnstile settings first.")

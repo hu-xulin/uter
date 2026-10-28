@@ -46,6 +46,11 @@ func InitOptionMap() {
 	common.OptionMap["LinuxDOOAuthEnabled"] = strconv.FormatBool(common.LinuxDOOAuthEnabled)
 	common.OptionMap["TelegramOAuthEnabled"] = strconv.FormatBool(common.TelegramOAuthEnabled)
 	common.OptionMap["WeChatAuthEnabled"] = strconv.FormatBool(common.WeChatAuthEnabled)
+	common.OptionMap["WeChatWebAuthEnabled"] = strconv.FormatBool(common.WeChatWebAuthEnabled)
+	common.OptionMap["WeChatWebAppId"] = common.WeChatWebAppId
+	common.OptionMap["WeChatWebAppSecret"] = common.WeChatWebAppSecret
+	common.OptionMap["WeChatWebCallbackDomain"] = common.WeChatWebCallbackDomain
+	common.OptionMap["WeChatWebUseUnionId"] = strconv.FormatBool(common.WeChatWebUseUnionId)
 	common.OptionMap["TurnstileCheckEnabled"] = strconv.FormatBool(common.TurnstileCheckEnabled)
 	common.OptionMap["RegisterEnabled"] = strconv.FormatBool(common.RegisterEnabled)
 	common.OptionMap["AutomaticDisableChannelEnabled"] = strconv.FormatBool(common.AutomaticDisableChannelEnabled)
@@ -158,6 +163,7 @@ func InitOptionMap() {
 	common.OptionMap["WeChatServerAddress"] = ""
 	common.OptionMap["WeChatServerToken"] = ""
 	common.OptionMap["WeChatAccountQRCodeImageURL"] = ""
+	common.OptionMap["WeChatAccountQRCodeImagePath"] = ""
 	common.OptionMap["TurnstileSiteKey"] = ""
 	common.OptionMap["TurnstileSecretKey"] = ""
 	common.OptionMap["QuotaForNewUser"] = strconv.Itoa(common.QuotaForNewUser)
@@ -496,6 +502,10 @@ func updateOptionMap(key string, value string) (err error) {
 			common.LinuxDOOAuthEnabled = boolValue
 		case "WeChatAuthEnabled":
 			common.WeChatAuthEnabled = boolValue
+		case "WeChatWebAuthEnabled":
+			common.WeChatWebAuthEnabled = boolValue
+		case "WeChatWebUseUnionId":
+			common.WeChatWebUseUnionId = boolValue
 		case "TelegramOAuthEnabled":
 			common.TelegramOAuthEnabled = boolValue
 		case "TurnstileCheckEnabled":
@@ -728,6 +738,14 @@ func updateOptionMap(key string, value string) (err error) {
 		common.WeChatServerToken = value
 	case "WeChatAccountQRCodeImageURL":
 		common.WeChatAccountQRCodeImageURL = value
+		case "WeChatAccountQRCodeImagePath":
+			common.WeChatAccountQRCodeImagePath = value
+		case "WeChatWebAppId":
+			common.WeChatWebAppId = value
+		case "WeChatWebAppSecret":
+			common.WeChatWebAppSecret = value
+		case "WeChatWebCallbackDomain":
+			common.WeChatWebCallbackDomain = value
 	case "TelegramBotToken":
 		common.TelegramBotToken = value
 	case "TelegramBotName":
