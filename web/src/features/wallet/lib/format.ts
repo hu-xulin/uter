@@ -71,6 +71,13 @@ export function formatCurrency(amount: number | string): string {
  * `Price` 是「每 1 美元额度的人民币价」（默认 7.3），下单时原样作为
  * total_amount 提交给支付宝/微信——这笔钱恒为人民币。若系统配了 USD 显示，
  * 跟随配置会显示成 `$73`，与实际扣款（¥73）币种不符，误导用户。
+ *
+ * **金额一律两位小数**：`minimumFractionDigits: 0` 会让 ¥64.80 显示成 ¥64.8，
+ * 与同一屏的 ¥1,296 混排时，读者会以为前者被截断过、后者是整数价。货币金额
+ * 的小数位固定，不带零的写法只适合计数，不适合价格。
+ *
+ * **不足 1 元时放宽到 4 位**：这是唯一不能固定两位的场景 —— 0.0098 元按两位
+ * 会被舍成 ¥0.00，用户看到「应付 0 元」而实际会扣款。
  */
 export function formatCNYAmount(amount: number | string): string {
   const numeric =
@@ -81,7 +88,7 @@ export function formatCNYAmount(amount: number | string): string {
     style: 'currency',
     currency: 'CNY',
     currencyDisplay: 'narrowSymbol',
-    minimumFractionDigits: 0,
+    minimumFractionDigits: 2,
     maximumFractionDigits: Math.abs(numeric) >= 1 ? 2 : 4,
   }).format(numeric)
 }

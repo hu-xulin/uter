@@ -162,14 +162,19 @@ export function Wallet(props: WalletProps) {
   useEffect(() => {
     if (topupInfo && !topupAmountInitializedRef.current) {
       topupAmountInitializedRef.current = true
-      const minTopup = getMinTopupAmount(topupInfo)
-      setTopupAmount(minTopup)
+      // 默认金额取第一个预设档位，而不是「最低充值」。
+      // 运营把最低额调到 0.01 之后，直接拿 minTopup 当默认值会让钱包页一打开
+      // 就停在 0.01（应付 ¥0.06），既不像一次充值，也让「应付金额」看着像故障。
+      // 没有预设档位时才退回最低额。
+      const initialAmount =
+        presetAmounts[0]?.value ?? getMinTopupAmount(topupInfo)
+      setTopupAmount(initialAmount)
 
       // Calculate initial payment amount with default payment type
       const defaultPaymentType = getDefaultPaymentType(topupInfo)
-      calculatePaymentAmount(minTopup, defaultPaymentType)
+      calculatePaymentAmount(initialAmount, defaultPaymentType)
     }
-  }, [topupInfo, calculatePaymentAmount])
+  }, [topupInfo, presetAmounts, calculatePaymentAmount])
 
   // 汇率（status.price）被后台修改并即时同步到钱包后，重新计价，使「应付金额」也
   // 立即跟随，无需用户重新点选面额。面额 / 支付方式变更走各自的处理函数，不在此触发。

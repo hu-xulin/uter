@@ -195,7 +195,7 @@ export function CnPayWebDialog({
     if (error) {
       return (
         <div className='border-destructive/40 bg-destructive/5 flex w-full flex-col items-center gap-2 rounded-lg border p-4 text-center'>
-          <XCircle className='text-destructive h-7 w-7' />
+          <XCircle className='text-destructive size-8' />
           <p className='text-destructive text-sm'>{error}</p>
         </div>
       )
@@ -203,7 +203,7 @@ export function CnPayWebDialog({
     if (redirecting) {
       return (
         <div className='bg-muted/30 flex w-full flex-col items-center gap-2 rounded-lg border p-4 text-center'>
-          <Smartphone className='text-muted-foreground h-7 w-7' />
+          <Smartphone className='text-muted-foreground size-8' />
           <p className='text-muted-foreground text-sm'>
             {t('Redirecting to {{provider}}...', { provider: providerName })}
           </p>
@@ -213,7 +213,7 @@ export function CnPayWebDialog({
     if (qrContent) {
       return (
         <div className='bg-muted/30 flex w-full flex-col items-center gap-3 rounded-lg border p-4'>
-          <div className='rounded-lg bg-white p-3'>
+          <div className='bg-surface-pure rounded-lg p-3'>
             <QRCodeSVG value={qrContent} size={168} level='M' />
           </div>
           <p className='text-muted-foreground text-center text-sm'>
@@ -242,7 +242,7 @@ export function CnPayWebDialog({
     <AlertDialog open={open} onOpenChange={handleClose}>
       <AlertDialogContent className='max-sm:w-[calc(100vw-1.5rem)] sm:max-w-sm'>
         <AlertDialogHeader>
-          <AlertDialogTitle className='text-xl font-semibold'>
+          <AlertDialogTitle className='font-semibold'>
             {providerName}
           </AlertDialogTitle>
           <AlertDialogDescription>
@@ -275,13 +275,13 @@ export function CnPayWebDialog({
           {renderCashier()}
 
           {done && (
-            <div className='text-sm font-medium text-green-600'>
+            <div className='text-success text-sm font-medium'>
               {t('Payment successful')}
             </div>
           )}
           {!done && qrContent && !error && (
             <div className='text-muted-foreground flex items-center gap-1.5 text-xs'>
-              <Loader2 className='h-3.5 w-3.5 animate-spin' />
+              <Loader2 className='h-4 w-4 animate-spin' />
               {t('Waiting for payment confirmation...')}
             </div>
           )}

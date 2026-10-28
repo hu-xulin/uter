@@ -46,7 +46,7 @@ import {
 import { Skeleton } from '@/components/ui/skeleton'
 import { useCopyToClipboard } from '@/hooks/use-copy-to-clipboard'
 import { formatCurrencyFromUSD } from '@/lib/currency'
-import { formatNumber } from '@/lib/format'
+import { formatNumber, formatUserId } from '@/lib/format'
 
 import { useBillingHistory } from '../../hooks/use-billing-history'
 import {
@@ -97,140 +97,132 @@ export function BillingHistoryDialog({
   let recordsList
   if (loading) {
     recordsList = (
-              <div className='space-y-3'>
-                {['r1', 'r2', 'r3', 'r4', 'r5'].map((skeletonKey) => (
-                  <div
-                    key={skeletonKey}
-                    className='rounded-lg border p-3 sm:p-4'
-                  >
-                    <div className='flex items-start justify-between'>
-                      <div className='flex-1 space-y-2'>
-                        <Skeleton className='h-4 w-48' />
-                        <Skeleton className='h-3 w-32' />
-                      </div>
-                      <Skeleton className='h-5 w-16' />
-                    </div>
-                    <div className='mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4'>
-                      <Skeleton className='h-3 w-full' />
-                      <Skeleton className='h-3 w-full' />
-                      <Skeleton className='h-3 w-full' />
-                    </div>
-                  </div>
-                ))}
+      <div className='space-y-3'>
+        {['r1', 'r2', 'r3', 'r4', 'r5'].map((skeletonKey) => (
+          <div key={skeletonKey} className='rounded-lg border p-3 sm:p-4'>
+            <div className='flex items-start justify-between'>
+              <div className='flex-1 space-y-2'>
+                <Skeleton className='h-4 w-48' />
+                <Skeleton className='h-3 w-32' />
               </div>
+              <Skeleton className='h-5 w-16' />
+            </div>
+            <div className='mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4'>
+              <Skeleton className='h-3 w-full' />
+              <Skeleton className='h-3 w-full' />
+              <Skeleton className='h-3 w-full' />
+            </div>
+          </div>
+        ))}
+      </div>
     )
   } else if (records.length === 0) {
     recordsList = (
-              <div className='text-muted-foreground flex min-h-40 flex-col items-center justify-center py-10 text-center'>
-                <p className='text-sm font-medium'>
-                  {t('No billing records found')}
-                </p>
-                <p className='mt-1 text-xs'>
-                  {keyword
-                    ? t('Try adjusting your search')
-                    : t('Your transaction history will appear here')}
-                </p>
-              </div>
+      <div className='text-muted-foreground flex min-h-40 flex-col items-center justify-center py-10 text-center'>
+        <p className='text-sm font-medium'>{t('No billing records found')}</p>
+        <p className='mt-1 text-sm'>
+          {keyword
+            ? t('Try adjusting your search')
+            : t('Your transaction history will appear here')}
+        </p>
+      </div>
     )
   } else {
     recordsList = (
-              <div className='space-y-3'>
-                {records.map((record) => {
-                  const statusConfig = getStatusConfig(record.status)
-                  return (
-                    <div
-                      key={record.id}
-                      className='rounded-lg border p-3 sm:p-4'
+      <div className='space-y-3'>
+        {records.map((record) => {
+          const statusConfig = getStatusConfig(record.status)
+          return (
+            <div key={record.id} className='rounded-lg border p-3 sm:p-4'>
+              {/* Header Row */}
+              <div className='flex items-start justify-between gap-2'>
+                <div className='flex-1 space-y-1'>
+                  <div className='flex min-w-0 items-center gap-2'>
+                    <code className='text-foreground text-mono truncate font-mono'>
+                      {record.trade_no}
+                    </code>
+                    <Button
+                      variant='ghost'
+                      size='icon-xs'
+                      className='p-0'
+                      onClick={() => copyToClipboard(record.trade_no)}
                     >
-                      {/* Header Row */}
-                      <div className='flex items-start justify-between gap-2'>
-                        <div className='flex-1 space-y-1'>
-                          <div className='flex min-w-0 items-center gap-2'>
-                            <code className='text-foreground truncate font-mono text-mono'>
-                              {record.trade_no}
-                            </code>
-                            <Button
-                              variant='ghost'
-                              size='sm'
-                              className='h-5 w-5 p-0'
-                              onClick={() => copyToClipboard(record.trade_no)}
-                            >
-                              {copiedText === record.trade_no ? (
-                                <Check className='h-3 w-3' />
-                              ) : (
-                                <Copy className='h-3 w-3' />
-                              )}
-                            </Button>
-                            {isAdmin && record.user_id != null && (
-                              <StatusBadge
-                                label={`${t('User ID')}: ${record.user_id}`}
-                                variant='neutral'
-                                size='sm'
-                                copyText={String(record.user_id)}
-                              />
-                            )}
-                          </div>
-                          <div className='text-muted-foreground text-xs'>
-                            {formatTimestamp(record.create_time)}
-                          </div>
-                        </div>
-                        <StatusBadge
-                          label={t(statusConfig.label)}
-                          variant={statusConfig.variant}
-                          showDot
-                          copyable={false}
-                        />
-                      </div>
-
-                      {/* Details Grid */}
-                      <div className='mt-3 grid grid-cols-2 gap-3 sm:mt-4 sm:grid-cols-3 sm:gap-4'>
-                        <div className='space-y-1'>
-                          <Label className='text-muted-foreground text-xs'>
-                            {t('Payment Method')}
-                          </Label>
-                          <div className='text-sm font-medium'>
-                            {getPaymentMethodName(record.payment_method, t)}
-                          </div>
-                        </div>
-                        <div className='space-y-1'>
-                          <Label className='text-muted-foreground text-xs'>
-                            {t('Amount')}
-                          </Label>
-                          <div className='text-sm font-semibold'>
-                            {formatCurrencyFromUSD(record.amount, {
-                              digitsLarge: 2,
-                              digitsSmall: 2,
-                              abbreviate: false,
-                            })}
-                          </div>
-                        </div>
-                        <div className='space-y-1'>
-                          <Label className='text-muted-foreground text-xs'>
-                            {t('Payment')}
-                          </Label>
-                          <div className='text-sm font-semibold text-red-600'>
-                            {formatNumber(record.money)}
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Admin Actions */}
-                      {isAdmin && record.status === 'pending' && (
-                        <div className='mt-4 flex justify-end'>
-                          <Button
-                            size='sm'
-                            variant='outline'
-                            onClick={() => setConfirmTradeNo(record.trade_no)}
-                            disabled={completing}
-                          >
-                            {t('Complete Order')}
-                          </Button>
-                        </div>
+                      {copiedText === record.trade_no ? (
+                        <Check className='size-4' />
+                      ) : (
+                        <Copy className='size-4' />
                       )}
-                    </div>
-                  )
-                })}
+                    </Button>
+                    {isAdmin && record.user_id != null && (
+                      <StatusBadge
+                        label={`${t('User ID')}: ${formatUserId(record.user_id)}`}
+                        variant='neutral'
+                        size='sm'
+                        copyText={formatUserId(record.user_id)}
+                      />
+                    )}
+                  </div>
+                  <div className='text-muted-foreground text-xs'>
+                    {formatTimestamp(record.create_time)}
+                  </div>
+                </div>
+                <StatusBadge
+                  label={t(statusConfig.label)}
+                  variant={statusConfig.variant}
+                  showDot
+                  copyable={false}
+                />
               </div>
+
+              {/* Details Grid */}
+              <div className='mt-3 grid grid-cols-2 gap-3 sm:mt-4 sm:grid-cols-3 sm:gap-4'>
+                <div className='space-y-1'>
+                  <Label className='text-muted-foreground text-sm'>
+                    {t('Payment Method')}
+                  </Label>
+                  <div className='text-sm font-medium'>
+                    {getPaymentMethodName(record.payment_method, t)}
+                  </div>
+                </div>
+                <div className='space-y-1'>
+                  <Label className='text-muted-foreground text-sm'>
+                    {t('Amount')}
+                  </Label>
+                  <div className='text-sm font-semibold'>
+                    {formatCurrencyFromUSD(record.amount, {
+                      digitsLarge: 2,
+                      digitsSmall: 2,
+                      abbreviate: false,
+                    })}
+                  </div>
+                </div>
+                <div className='space-y-1'>
+                  <Label className='text-muted-foreground text-sm'>
+                    {t('Payment')}
+                  </Label>
+                  <div className='text-destructive text-sm font-semibold'>
+                    {formatNumber(record.money)}
+                  </div>
+                </div>
+              </div>
+
+              {/* Admin Actions */}
+              {isAdmin && record.status === 'pending' && (
+                <div className='mt-4 flex justify-end'>
+                  <Button
+                    size='sm'
+                    variant='outline'
+                    onClick={() => setConfirmTradeNo(record.trade_no)}
+                    disabled={completing}
+                  >
+                    {t('Complete Order')}
+                  </Button>
+                </div>
+              )}
+            </div>
+          )
+        })}
+      </div>
     )
   }
 
@@ -256,7 +248,7 @@ export function BillingHistoryDialog({
                 placeholder={t('Search by order number...')}
                 value={keyword}
                 onChange={(e) => handleSearch(e.target.value)}
-                className='h-9 pl-10'
+                className='pl-10'
               />
             </div>
             <Select
@@ -271,7 +263,7 @@ export function BillingHistoryDialog({
                 value !== null && handlePageSizeChange(Number.parseInt(value))
               }
             >
-              <SelectTrigger className='h-9 w-[92px] sm:w-32'>
+              <SelectTrigger className='w-[92px] sm:w-32'>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent alignItemWithTrigger={false}>
@@ -300,12 +292,12 @@ export function BillingHistoryDialog({
               <div className='flex items-center gap-2'>
                 <Button
                   variant='outline'
-                  size='sm'
+                  size='icon-sm'
                   onClick={() => handlePageChange(page - 1)}
                   disabled={page <= 1}
-                  className='h-8 w-8 p-0'
+                  className='p-0'
                 >
-                  <ChevronLeft className='h-4 w-4' />
+                  <ChevronLeft className='h-4.5 w-4.5' />
                 </Button>
                 <div className='text-muted-foreground flex items-center gap-1 text-sm'>
                   <span className='font-medium'>{page}</span>
@@ -314,12 +306,12 @@ export function BillingHistoryDialog({
                 </div>
                 <Button
                   variant='outline'
-                  size='sm'
+                  size='icon-sm'
                   onClick={() => handlePageChange(page + 1)}
                   disabled={page >= totalPages}
-                  className='h-8 w-8 p-0'
+                  className='p-0'
                 >
-                  <ChevronRight className='h-4 w-4' />
+                  <ChevronRight className='h-4.5 w-4.5' />
                 </Button>
               </div>
             </div>

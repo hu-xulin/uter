@@ -305,7 +305,7 @@ export function SubscriptionPlansCard({
                 )}
                 {allSubscriptions.length > activeSubscriptions.length && (
                   <>
-                    <span className='text-muted-foreground/30'>·</span>
+                    <span className='text-muted-foreground'>·</span>
                     <span className='text-muted-foreground'>
                       {allSubscriptions.length - activeSubscriptions.length}{' '}
                       {t('expired')}
@@ -347,7 +347,7 @@ export function SubscriptionPlansCard({
                 value={billingPreference}
                 onValueChange={(v) => v !== null && handlePreferenceChange(v)}
               >
-                <SelectTrigger className='h-8 flex-1 text-xs sm:w-[140px] sm:flex-none'>
+                <SelectTrigger className='flex-1 text-sm sm:w-[140px] sm:flex-none'>
                   <SelectValue>
                     {getBillingPreferenceLabel(billingPreference, t)}
                   </SelectValue>
@@ -379,20 +379,19 @@ export function SubscriptionPlansCard({
               </Select>
               <Button
                 variant='ghost'
-                size='icon'
-                className='h-8 w-8'
+                size='icon-sm'
                 onClick={handleRefresh}
                 disabled={refreshing}
               >
                 <RefreshCw
-                  className={`h-3.5 w-3.5 ${refreshing ? 'animate-spin' : ''}`}
+                  className={`h-4.5 w-4.5 ${refreshing ? 'animate-spin' : ''}`}
                 />
               </Button>
             </div>
           </div>
 
           {disablePref && isSubPref && (
-            <p className='text-muted-foreground mt-2 text-xs'>
+            <p className='text-muted-foreground mt-2 text-sm'>
               {billingPreference === 'subscription_only'
                 ? t(
                     'Preference saved as {{pref}}, but no active subscription. Requests will be rejected.',
@@ -527,7 +526,7 @@ export function SubscriptionPlansCard({
           )}
 
           {!hasAny && (
-            <p className='text-muted-foreground mt-2 text-xs'>
+            <p className='text-muted-foreground mt-2 text-sm'>
               {t('Subscribe to a plan for model access')}
             </p>
           )}
@@ -564,16 +563,18 @@ export function SubscriptionPlansCard({
                 <Card
                   key={plan.id}
                   data-card-hover='false'
-                  className={cn(isPopular && 'border-primary/70 shadow-sm')}
+                  className={cn(isPopular && 'border-primary/70')}
                 >
                   <CardContent className='flex h-full flex-col p-3.5 sm:p-4'>
                     <div className='mb-2 flex items-start justify-between gap-3'>
                       <div className='min-w-0'>
-                        <h4 className='truncate font-semibold'>
+                        {/* 套餐名是这张套餐卡的**卡片标题**（h3 18/600/28）。
+                            此前是 16/600，把卡片标题压到了「卡片内分组」档位。 */}
+                        <h4 className='truncate text-lg font-semibold'>
                           {plan.title || t('Subscription Plans')}
                         </h4>
                         {plan.subtitle && (
-                          <p className='text-muted-foreground truncate text-xs'>
+                          <p className='text-muted-foreground truncate text-sm'>
                             {plan.subtitle}
                           </p>
                         )}
@@ -584,14 +585,15 @@ export function SubscriptionPlansCard({
                           copyable={false}
                           className='shrink-0'
                         >
-                          <Sparkles className='h-3 w-3' />
+                          <Sparkles className='size-4' />
                           {t('Recommended')}
                         </StatusBadge>
                       )}
                     </div>
 
                     <div className='py-2'>
-                      <span className='text-primary text-2xl font-bold'>
+                      {/* 金额是数值不是链接：正文色 + 等宽数字（C-04）。 */}
+                      <span className='text-foreground text-2xl font-semibold tabular-nums'>
                         ${price}
                       </span>
                     </div>
@@ -602,7 +604,7 @@ export function SubscriptionPlansCard({
                           key={label}
                           className='text-muted-foreground flex items-center gap-2 text-xs'
                         >
-                          <Check className='text-primary h-3 w-3 shrink-0' />
+                          <Check className='text-primary size-4 shrink-0' />
                           <span>{label}</span>
                         </div>
                       ))}
