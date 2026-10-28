@@ -7743,6 +7743,20 @@
     "{{count}} drifted": "{{count}} en écart",
     "Synced at {{time}}": "Synchronisé à {{time}}",
     "Syncing…": "Synchronisation…",
+    "Authorization callback domain": "Domaine de rappel d'autorisation",
+    "Copy callback domain": "Copier le domaine de rappel",
+    "App Secret": "Secret d'application",
+    "WeChat Official Account": "Compte officiel WeChat",
+    "Enable WeChat Website App Login": "Activer la connexion par application Web WeChat",
+    "WeChat Website App": "Application Web WeChat",
+    "Use UnionID": "Utiliser UnionID",
+    "Create a website app in the WeChat Open Platform console, register the callback domain there, then fill in the credentials below.": "Créez une application Web dans la console WeChat Open Platform, enregistrez-y le domaine de rappel, puis renseignez les identifiants ci-dessous.",
+    "Allow users to sign in by scanning the QR code of the WeChat Open Platform website app": "Permettre aux utilisateurs de se connecter en scannant le QR code de l'application Web WeChat Open Platform",
+    "Failed to start WeChat login": "Échec du démarrage de la connexion WeChat",
+    "Your WeChat website app ID": "Votre ID d'application Web WeChat",
+    "Identify users by UnionID when available, so accounts under the same WeChat Open Platform app share one identity": "Identifier les utilisateurs par UnionID lorsque disponible, afin que les comptes sous la même application WeChat Open Platform partagent une seule identité",
+    "Your WeChat website app secret": "Le secret de votre application Web WeChat",
+    "The callback domain registered in the WeChat Open Platform console (no scheme, e.g. uter.cc). Leave empty to use the current site domain.": "Le domaine de rappel enregistré dans la console WeChat Open Platform (sans protocole, ex. uter.cc). Laissez vide pour utiliser le domaine du site actuel.",
     "Prices are in USD: per 1M tokens for token-billed models, per request for image and video models. The discount ratio is measured against the upstream list price.": "Les prix sont en USD : par million de tokens pour les modèles facturés au token, par requête pour les modèles d'image et de vidéo. Le coefficient de remise est mesuré par rapport au prix catalogue amont."
   }
 }

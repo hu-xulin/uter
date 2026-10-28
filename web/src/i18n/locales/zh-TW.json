@@ -7743,6 +7743,20 @@
     "{{count}} drifted": "{{count}} 個有偏差",
     "Synced at {{time}}": "同步於 {{time}}",
     "Syncing…": "同步中…",
+    "Authorization callback domain": "授權回調網域",
+    "Copy callback domain": "複製回調網域",
+    "App Secret": "應用密鑰",
+    "WeChat Official Account": "微信公眾號",
+    "Enable WeChat Website App Login": "啟用微信網站應用登入",
+    "WeChat Website App": "微信網站應用",
+    "Use UnionID": "使用 UnionID",
+    "Create a website app in the WeChat Open Platform console, register the callback domain there, then fill in the credentials below.": "在微信開放平台控制台建立網站應用並在其後台登記授權回調網域，然後填寫下方憑證。",
+    "Allow users to sign in by scanning the QR code of the WeChat Open Platform website app": "允許使用者掃描微信開放平台網站應用 QR Code 登入",
+    "Failed to start WeChat login": "微信登入啟動失敗",
+    "Your WeChat website app ID": "你的微信網站應用 AppID",
+    "Identify users by UnionID when available, so accounts under the same WeChat Open Platform app share one identity": "優先使用 UnionID 識別使用者，同一微信開放平台帳號下的各應用共享同一身分",
+    "Your WeChat website app secret": "你的微信網站應用密鑰",
+    "The callback domain registered in the WeChat Open Platform console (no scheme, e.g. uter.cc). Leave empty to use the current site domain.": "在微信開放平台控制台登記的授權回調網域（不含通訊協定，如 uter.cc）。留空則使用目前站台網域。",
     "Prices are in USD: per 1M tokens for token-billed models, per request for image and video models. The discount ratio is measured against the upstream list price.": "價格以美元計：按 token 計費的模型為每 100 萬 token 的價格，圖片與影片模型為每次請求的價格。折扣倍率以上游標價為基準。"
   }
 }

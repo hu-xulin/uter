@@ -7743,6 +7743,20 @@
     "{{count}} drifted": "{{count}} mục lệch",
     "Synced at {{time}}": "Đồng bộ lúc {{time}}",
     "Syncing…": "Đang đồng bộ…",
+    "Authorization callback domain": "Miền callback ủy quyền",
+    "Copy callback domain": "Sao chép miền callback",
+    "App Secret": "Khóa bí mật ứng dụng",
+    "WeChat Official Account": "Tài khoản chính thức WeChat",
+    "Enable WeChat Website App Login": "Bật đăng nhập ứng dụng web WeChat",
+    "WeChat Website App": "Ứng dụng web WeChat",
+    "Use UnionID": "Sử dụng UnionID",
+    "Create a website app in the WeChat Open Platform console, register the callback domain there, then fill in the credentials below.": "Tạo ứng dụng web trong bảng điều khiển WeChat Open Platform, đăng ký miền callback tại đó, sau đó điền thông tin xác thực bên dưới.",
+    "Allow users to sign in by scanning the QR code of the WeChat Open Platform website app": "Cho phép người dùng đăng nhập bằng cách quét mã QR của ứng dụng web WeChat Open Platform",
+    "Failed to start WeChat login": "Không thể bắt đầu đăng nhập WeChat",
+    "Your WeChat website app ID": "AppID ứng dụng web WeChat của bạn",
+    "Identify users by UnionID when available, so accounts under the same WeChat Open Platform app share one identity": "Xác định người dùng bằng UnionID khi có, để các tài khoản dưới cùng một ứng dụng WeChat Open Platform dùng chung một danh tính",
+    "Your WeChat website app secret": "Khóa bí mật ứng dụng web WeChat của bạn",
+    "The callback domain registered in the WeChat Open Platform console (no scheme, e.g. uter.cc). Leave empty to use the current site domain.": "Miền callback đã đăng ký trong bảng điều khiển WeChat Open Platform (không có giao thức, vd uter.cc). Để trống để dùng miền trang web hiện tại.",
     "Prices are in USD: per 1M tokens for token-billed models, per request for image and video models. The discount ratio is measured against the upstream list price.": "Giá tính bằng USD: trên 1 triệu token với mô hình tính theo token, trên mỗi yêu cầu với mô hình ảnh và video. Hệ số giảm giá được đo so với giá niêm yết của nguồn."
   }
 }
