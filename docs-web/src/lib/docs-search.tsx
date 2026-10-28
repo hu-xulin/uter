@@ -61,7 +61,7 @@ export function SidebarSearchButton() {
       onClick={() => setOpenSearch(true)}
       className='inline-flex h-9 min-w-0 flex-[3] items-center gap-2 rounded-lg border bg-fd-secondary/50 p-1.5 ps-2 text-sm text-fd-muted-foreground transition-colors hover:bg-fd-accent hover:text-fd-accent-foreground'
     >
-      <SearchIcon className='size-4 shrink-0' />
+      <SearchIcon className='size-4.5 shrink-0' />
       <span className='truncate'>{copy.trigger}</span>
       <span className='ms-auto inline-flex shrink-0 gap-0.5'>
         {hotKey.map((key, i) => (
@@ -138,7 +138,7 @@ export function DocsSearchDialog({
             onChange={(event) => setSearch(event.target.value)}
             placeholder={copy.placeholder}
             aria-label={copy.trigger}
-            className='w-0 flex-1 bg-transparent text-lg placeholder:text-fd-muted-foreground focus-visible:outline-none'
+            className='w-0 flex-1 bg-transparent text-sm placeholder:text-fd-muted-foreground focus-visible:outline-none'
           />
           <button
             type='button'

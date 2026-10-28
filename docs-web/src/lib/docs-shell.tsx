@@ -4,7 +4,6 @@ import {
   DocsPage,
   DocsBody,
   DocsTitle,
-  DocsDescription,
 } from 'fumadocs-ui/layouts/docs/page';
 import { SearchTrigger } from 'fumadocs-ui/layouts/shared/slots/search-trigger';
 import type { Node as PageTreeNode, Root as PageTreeRoot, Folder as PageTreeFolder } from 'fumadocs-core/page-tree';
@@ -269,7 +268,23 @@ export function DocsShell({
           >
             <DocsBreadcrumb entries={sidebar} locale={locale} />
             <DocsTitle>{title}</DocsTitle>
-            {description ? <DocsDescription>{description}</DocsDescription> : null}
+            {/*
+             * 不用 Fumadocs 的 `DocsDescription`：它固定 `text-lg`（18/28/400），
+             * 而规范 §1.2 里 18px 是 **h3 档（18/28/600，卡片标题）** —— 一段
+             * 400 的说明文字占着卡片标题的字号，页面描述与卡片标题同号，层级
+             * 就塌了。说明文字应落在 `body-long`（16/26）。
+             *
+             * 也不能靠 `<DocsDescription className='text-doc-body'>` 覆盖：
+             * 它内部用 `cn()`（tailwind-merge）合并类名，而 `text-doc-body` 不在
+             * tailwind-merge 的配置里，会被当成「文字颜色」类，反而把
+             * `text-fd-muted-foreground` 删掉、字号也没换掉。所以这里自己写
+             * 这个 `<p>`，两个类都显式给全。
+             */}
+            {description ? (
+              <p className='mb-8 text-doc-body text-fd-muted-foreground'>
+                {description}
+              </p>
+            ) : null}
             <DocsBody>{children}</DocsBody>
             <DocsPageFooter entries={sidebar} locale={locale} />
           </DocsPage>

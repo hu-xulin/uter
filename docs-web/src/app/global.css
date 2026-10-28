@@ -69,15 +69,29 @@
  * the docs does not re-learn the scale:
  *
  *   --text-doc-h1      一级标题 (page title) … 30px   (页面主标题)
- *   --text-doc-h2      二级标题 (h2) ………………… 24px   (分区标题)
- *   --text-doc-h3      三级标题 (h3) ………………… 18px   (卡片标题)
- *   --text-doc-body    正文 (p / li / td / …)  16px / 1.75   (长文本正文)
+ *   --text-doc-h2      二级标题 (h2) ………………… 24px   (界面分区标题)
+ *   --text-doc-h3      三级标题 (h3) ………………… 18px   (界面卡片标题)
+ *   --text-doc-body    正文 (p / li / td / …)  16px / 26px  (长文本正文)
  *   --text-doc-chrome  导航 / 侧栏 / 目录 ………… 14px   (导航与按钮)
  *   --text-doc-caption 图注 / 元信息 ………………… 12px   (辅助文字)
  *
- * Body leading is 1.75, not the ladder's 1.5 — 1.5 is tuned for Latin
- * text, while CJK is a full-square script with higher ink density and
- * needs more air (same reason as the prose override below).
+ * 内容标题另有一套 **prose 阶梯**（`web/docs/design-system/typography.md`
+ * 「内容排版（Markdown prose）」）：Markdown 的标题比界面低一到两档，因为把
+ * 正文里的 h1 抬到界面 30px 会让它比所在卡片的标题（18px）还大。
+ *
+ *   --text-doc-prose-h2  正文里最上面一层（Markdown h2）… 18px / 28px
+ *   --text-doc-prose-h3  正文里的子节（Markdown h3）……… 16px / 24px
+ *
+ * 文档的一级标题由 `DocsTitle` 按界面 h1（30）渲染，正文从 Markdown 的 h2
+ * 开始，所以正文里的第一层是 18 而不是 24。
+ *
+ * Body leading is **26px (1.625)**, the spec's `body-long` value
+ * (规范 §1.2：长文本 16px / 26px). It used to be 1.75 (28px) on a
+ * CJK-ink-density argument; that argument is real, but 28px is not a
+ * value the ladder has, and a framed docs page that reads looser than
+ * the app it sits in is the more visible drift of the two. If the
+ * looser CJK rhythm is wanted back, this is the one value to change —
+ * and it then needs an entry in `web/docs/design-system/exceptions.md`.
  *
  * These generate the `text-doc-*` utilities used by `content-renderer`
  * and the prose / chrome overrides at the end of this file. Weights stay
@@ -93,15 +107,20 @@
  */
 @theme {
   --text-doc-h1: 1.875rem;
-  --text-doc-h1--line-height: 1.25;
+  --text-doc-h1--line-height: 2.25rem; /* 36px —— 规范 h1 30/36 */
   --text-doc-h2: 1.5rem;
-  --text-doc-h2--line-height: 1.35;
+  --text-doc-h2--line-height: 2rem; /* 32px —— 规范 h2 24/32 */
   --text-doc-h3: 1.125rem;
-  --text-doc-h3--line-height: 1.4;
+  --text-doc-h3--line-height: 1.75rem; /* 28px —— 规范 h3 18/28 */
+  /* 内容排版（prose）阶梯：见文件头的说明与 typography.md「内容排版」。 */
+  --text-doc-prose-h2: 1.125rem;
+  --text-doc-prose-h2--line-height: 1.75rem; /* 18/28 */
+  --text-doc-prose-h3: 1rem;
+  --text-doc-prose-h3--line-height: 1.5rem; /* 16/24 */
   --text-doc-body: 1rem;
-  --text-doc-body--line-height: 1.75;
+  --text-doc-body--line-height: 1.625;
   --text-doc-chrome: 0.875rem;
-  --text-doc-chrome--line-height: 1.5;
+  --text-doc-chrome--line-height: 1.25rem; /* 20px —— 规范 label / body-sm 14/20 */
   --text-doc-caption: 0.75rem;
   --text-doc-caption--line-height: 1.25;
   --text-doc-code: 0.8125rem;
@@ -212,23 +231,22 @@ body {
 /*
  * ── Brand accent and layout metrics ─────────────────────────────────
  *
- * `--Uter-accent` derives from the SPA's Sign in button — the
- * literal declared as `--color-primary` in `web/src/styles/theme.css`.
- * The app declares that inside an `@theme inline` block, so Tailwind
- * bakes it into the `bg-primary` utilities at build time and it is *not*
- * readable as a custom property at runtime: there is nothing to inherit
- * across the frame, which is why a literal is repeated here.
+ * `--Uter-accent` is a lightness-shifted sibling of the brand primary
+ * `#5B5EE6` (规范 §1.1), used wherever this site needs that hue as a
+ * 14px *label* rather than as a fill: the sidebar panel's own accent
+ * token, the TOC marker, and the search `<mark>` highlight.
  *
- * Both modes shift the hue's lightness so the accent stays legible as
- * a 14px label sitting on the panel surface. The raw button colour
- * (`#6467f0`) reached only 3.92:1 against the plain light panel, and
- * 3.49:1 once an active entry painted its own 10% tint under the label
- * — short of the 4.5:1 that size requires.
+ * It is not the primary itself because on the panel surface (`#F1F1F1`)
+ * `#5B5EE6` measures 4.44:1 — the same figure 规范 §2.3 quotes for
+ * `#5B5EE6` on `#F0F0FF`, and short of the 4.5:1 a 14px label needs.
+ * Only the lightness moves; the hue stays put.
  *
- *   light  `#4b4ede` — same hue, about 25% deeper → 5.40:1 plain,
- *                      4.67:1 on the active entry's tint
- *   dark   `#8f91f5` — same hue, lighter → 6.4:1 on the dark panel
- *                      (`#6467f0` managed only 4.0:1 there)
+ *   light  `#4b4ede` — about 25% deeper → 5.40:1 on the panel
+ *   dark   `#8b8df5` — the SPA's own dark `--primary` and 规范 §2.3's
+ *                      dark foreground → 6.17:1 on the dark panel
+ *
+ * (历史值 `#6467f0` / `#8f91f5` 已随 §1.1 品牌主色统一为 `#5B5EE6` /
+ * `#8B8DF5` 一并作废；亮度位移量未变，只是基准色换了。)
  *
  * Ratios measured in the framed page by compositing the panel surface
  * and the entry's own tint on a canvas, so they reflect what is
@@ -250,19 +268,26 @@ body {
    * a legal page must not be able to tell the two bars apart. Both values
    * are therefore copies of the app's own, not of this site's scale:
    *
-   * `--Uter-brand-radius` is the app's `--radius` (`theme.css`, `:root`),
-   * which its `rounded-lg` resolves through (`--radius-lg:
-   * var(--radius)`). The docs' `rounded-lg` is Fumadocs' 0.5rem, so
-   * reusing that utility name here would silently draw a different shape
-   * for the same mark. Pinned rather than derived for the same reason
-   * `--Uter-accent` above is: the app's `--radius` is a user-facing theme
-   * axis, and this site mirrors the app's *default* theme. A non-default
-   * radius preset in the app therefore rounds the mark there and not
-   * here; follow it by updating this token.
+   * `--Uter-brand-radius` is the app's `--radius-lg`
+   * (`calc(var(--radius) * 1.25)` = **0.625rem** with the app's default
+   * `--radius: 0.5rem`), which is what the SPA header's nav links and icon
+   * buttons round with (`rounded-lg`). The docs' own `rounded-lg` is
+   * Fumadocs' 0.5rem, so reusing that utility name here would silently
+   * draw a different shape for the same mark. Pinned rather than derived
+   * for the same reason `--Uter-accent` above is: the app's `--radius` is
+   * a user-facing theme axis, and this site mirrors the app's *default*
+   * theme.
+   *
+   * `--Uter-brand-radius-md` is the app's `--radius-md` (= `--radius` =
+   * **0.5rem**) — the `r-md` the SPA's `Button` draws with (规范 §2.1
+   * Button → `r-md` 8px). The header CTA *is* a `Button`, so it must not
+   * borrow the 10px nav-link radius; before this was split the CTA was
+   * 1rem (16px), visibly rounder than the app's own Sign in button.
    *
    * `--Uter-brand-font` is the face declared at the top of this file.
    */
-  --Uter-brand-radius: 1rem;
+  --Uter-brand-radius: 0.625rem;
+  --Uter-brand-radius-md: 0.5rem;
   --Uter-brand-font: 'Inter Variable', 'Inter', 'Source Han Sans SC',
     'Source Han Sans CN', '思源黑体', 'Noto Sans SC Variable', 'Noto Sans SC',
     'Noto Sans CJK SC', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei',
@@ -273,22 +298,44 @@ body {
   /*
    * The header's primary CTA — the app's Sign in button. A literal for
    * the same reason the two lockup values above are: the app declares
-   * `--color-primary` inside an `@theme inline` block, so its built
+   * `--primary` inside an `@theme inline` block, so its built
    * `bg-primary` carries the value itself
-   * (`.bg-primary{background-color:#6467f0}`) and there is no custom
+   * (`.bg-primary{background-color:#5b5ee6}`) and there is no custom
    * property for this site to inherit.
+   *
+   * 规范 §1.1 把品牌主色统一成 **#5B5EE6**；这里此前是旧值 `#6467f0`，
+   * 与 SPA 的 `--primary` 已经脱钩，同一个按钮在两个站点上是两种紫。
    *
    * Deliberately *not* `--Uter-accent`. That token is this same hue
    * moved in lightness so a 14px label stays legible on the sidebar
-   * panel (`#4b4ede` light, `#8f91f5` dark) — a fill, not a label, so
+   * panel (`#4b4ede` light, `#8b8df5` dark) — a fill, not a label, so
    * reusing it would paint the button a visibly different colour from
    * the app's. No `.dark` override either: the app ships none, and its
    * button keeps this fill on either background.
    */
-  --Uter-brand-primary: #6467f0;
+  --Uter-brand-primary: #5b5ee6;
   --Uter-brand-primary-foreground: #fff;
+  /* 规范 §1.1.1：主按钮悬停 `--brand-hover` = #494CC7。 */
+  --Uter-brand-primary-hover: #494cc7;
 
   --Uter-accent: #4b4ede;
+  /*
+   * ── Left-panel selected state（规范 §2.3）──────────────────────────
+   *
+   * 规范把「左侧面板选中态」单列成一节，因为「品牌色 `#5B5EE6` 放在品牌浅底
+   * `#F0F0FF` 上只有 4.44:1」，未达 WCAG AA 普通文本 4.5:1。处方是**不动品牌
+   * 主色**，只给这个「浅底 + 小字号」组合换一个专用前景色：
+   *
+   *   浅色 `#5558D8` on `#F0F0FF` = 4.93:1
+   *   深色 `#8B8DF5` on `#25264A` = 4.97:1
+   *
+   * 所以这个站点的侧栏选中态不再用 `--Uter-accent`（那是「品牌色压暗以便放在
+   * 面板底色上」的另一种解法，取值 `#4b4ede`，与规范的 `#5558D8` 不同源），
+   * 而是用下面这对专用 Token —— 前景和底色必须成对使用，单独换一个都会让
+   * 对比度回到不合格区间。
+   */
+  --Uter-nav-active: #5558d8;
+  --Uter-nav-active-bg: #f0f0ff;
   --Uter-panel: #f1f1f1;
   --Uter-panel-hover: rgb(0 0 0 / 0.045);
   /* Inline start padding that lines the panel's content up with the
@@ -304,9 +351,23 @@ body {
 }
 
 .dark {
-  --Uter-accent: #8f91f5;
+  /* 与 SPA 深色主题的 `--primary` 同值（#8B8DF5）：6.14:1 on #0F172A。 */
+  --Uter-accent: #8b8df5;
+  /* 规范 §2.3 的深色组合：`#8B8DF5` on `#25264A` = 4.97:1。 */
+  --Uter-nav-active: #8b8df5;
+  --Uter-nav-active-bg: #25264a;
   --Uter-panel: var(--color-neutral-900);
   --Uter-panel-hover: rgb(255 255 255 / 0.055);
+}
+
+/*
+ * The two nav-selected tokens as utilities. `@theme` (not `@theme inline`) so
+ * `text-nav-active` / `bg-nav-active-bg` resolve through the custom property at
+ * runtime and follow the `.dark` values above.
+ */
+@theme {
+  --color-nav-active: var(--Uter-nav-active);
+  --color-nav-active-bg: var(--Uter-nav-active-bg);
 }
 
 /*
@@ -336,12 +397,12 @@ body {
 }
 
 /*
- * Pins the app's `--radius` onto an element whose `rounded-*` utility
+ * Pins the app's `--radius-lg` onto an element whose `rounded-*` utility
  * would otherwise draw this build's own scale. The header mirrors the
- * app's class lists verbatim, so every `rounded-lg` in it means 16px
- * there and 8px here — the nav links, the icon buttons and the mobile
- * CTA all need this. Fumadocs' own controls diverge further still: its
- * `LanguageSelect` trigger rounds to 6px.
+ * app's class lists verbatim, so every `rounded-lg` in it means 10px
+ * there and 8px here — the nav links and the icon buttons all need this.
+ * Fumadocs' own controls diverge further still: its `LanguageSelect`
+ * trigger rounds to 6px.
  */
 .Uter-brand-radius {
   border-radius: var(--Uter-brand-radius);
@@ -349,35 +410,68 @@ body {
 
 /*
  * The header's primary CTA. Its height, padding and type come from
- * utilities at the call site (`h-8 px-3.5 text-xs`); the four
- * properties below come from the app's `Button` at
- * `variant='default'`, which is what the SPA renders here:
+ * utilities at the call site (`h-9 px-3.5 text-sm` — the app's Button
+ * `md` 档：36px 高、`label` 14/20）；the four properties below come from
+ * the app's `Button` at `variant='default'`, which is what the SPA
+ * renders here:
  *
- *   fill    `bg-primary`   → `.bg-primary{background-color:#6467f0}`
+ *   fill    `bg-primary`   → `.bg-primary{background-color:#5b5ee6}`
  *   label   `text-primary-foreground`
- *   radius  `rounded-lg`   → the app's `--radius`, not this build's
- *                            0.5rem — see `--Uter-brand-radius`
+ *   radius  `rounded-md`   → the app's `--radius-md` 8px, **not** the
+ *                            10px nav-link radius — see
+ *                            `--Uter-brand-radius-md`
  *   border  `border border-transparent`, from the Button base. It is
  *           a real pixel of the button's width: without it the label
  *           box measures 52px against the app's 54px.
  *
- * `:hover` copies the app's `[a]:hover:bg-primary/80` — the fill dims
- * while the label stays at full strength. The call site therefore
- * carries no `hover:opacity-90`: opacity would fade the text with it.
+ * `:hover` uses the spec's `--brand-hover` (`#494CC7`, 规范 §1.1.1) —
+ * a same-hue step darker, not a dimmed fill, so the label keeps its
+ * contrast instead of fading with the background. The call site
+ * therefore carries no `hover:opacity-90`.
  */
 .Uter-brand-cta {
   border: 1px solid transparent;
-  border-radius: var(--Uter-brand-radius);
+  border-radius: var(--Uter-brand-radius-md);
   background-color: var(--Uter-brand-primary);
   color: var(--Uter-brand-primary-foreground);
 }
 
 .Uter-brand-cta:hover {
-  background-color: color-mix(
-    in oklab,
-    var(--Uter-brand-primary) 80%,
-    transparent
-  );
+  background-color: var(--Uter-brand-primary-hover);
+}
+
+/*
+ * ── Elevation ───────────────────────────────────────────────────────
+ *
+ * 规范 §1.5 的投影是**封闭集合**：`elevation-none` / `-popover` /
+ * `-overlay` / `-raised` / `-marketing`，加上状态语义 `glow-online`；
+ * 「除这五档之外，界面一律不投影」。
+ *
+ * 这个站点是独立构建，拿不到 SPA 的 `--ds-elevation-*`，所以把用到的两档
+ * 按规范原文抄在这里（值必须逐字一致，改规范时两处一起改）。之前 header
+ * 的滚动胶囊写的是一条自造投影 `0 2px 16px -6px rgba(0,0,0,.08), …`，
+ * 既不在集合里、又比 `popover` 重、比 `overlay` 轻，属于第六档。
+ */
+:root {
+  --ds-elevation-popover: 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  --ds-elevation-overlay:
+    0 4px 6px -4px rgba(0, 0, 0, 0.1), 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+/* 滚动后脱离页面平面的胶囊 header —— 规范 §1.5 的「浮层」档。 */
+.Uter-floating-bar {
+  box-shadow: var(--ds-elevation-overlay);
+}
+
+/*
+ * 卡片圆角（规范 §2.1 Card → `r-lg` = 10px）。
+ *
+ * 这个站点自己的 `rounded-lg` 是 Tailwind 的 0.5rem（8px），与规范的
+ * `r-lg` 10px 差 2px —— 首页/文档索引那些卡片此前就画的 8px。把规范值钉成
+ * 一个类，调用点写 `.Uter-card` 而不是 `rounded-lg`，避免同名不同形。
+ */
+.Uter-card {
+  border-radius: 0.625rem;
 }
 
 /*
@@ -539,6 +633,26 @@ a {
 }
 
 /*
+ * ── Fumadocs' own slot icons ────────────────────────────────────────
+ *
+ * The mobile sub-navigation bar (`#nd-subnav`) and the collapsed-sidebar
+ * panel (`[data-sidebar-panel]`) are rendered by Fumadocs itself, so their
+ * icons carry its default `size-4.5` — 18px, which is exactly 规范 §2.2
+ * 的默认档（按钮内 / 工具栏与卡片操作 / 侧边栏 / 主导航与 Tabs / 提示与状态）。
+ *
+ * 这里仍然显式钉住 1.125rem（= 18px），而不是删掉规则靠上游默认值：
+ * Fumadocs 升级后把默认改成 `size-4` 或 `size-5` 都不会有任何报错，
+ * 只会静默掉出档位表。显式钉住后，即使上游改了也还是 18px。
+ *
+ * Unlayered so it outranks the utility class Fumadocs puts on the icon.
+ */
+#nd-subnav :is(button, a) > svg.lucide,
+[data-sidebar-panel] :is(button, a) > svg.lucide {
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+/*
  * Embedded mode — the site is framed by the SPA's `/docs` route.
  *
  * `data-docs-embed` is set by the bootstrap script in `layout.tsx`
@@ -596,46 +710,134 @@ html[data-docs-embed='true'] #nd-subnav > a {
  * own `text-[1.75em]` utility. Code fences and image captions keep
  * their smaller meta size — they are not content headings or body.
  *
- * Body leading is 1.75, not the ladder's 1.5. 1.5 is tuned for Latin
- * text, where ascenders and descenders open the lines up on their own;
- * CJK is a full-square script with a much higher ink density and no
- * vertical relief, so the same ratio reads as a solid block. 1.75
- * (28px at 16px) is the CJK body-text range and is what most of these
- * pages are actually written in.
+ * Body leading is 26px (1.625) — 规范 §1.2 的 `body-long`：16px / 26px。
+ * That is also what `content-renderer` emits as `leading-relaxed`, so the
+ * two agree instead of fighting; this rule only pins it so a future
+ * `leading-*` utility cannot re-open the gap.
  */
 #nd-page > h1 {
   font-size: var(--text-doc-h1);
   font-weight: 600;
-  line-height: 1.25;
+  /* 36px，规范 h1 的 `30/36`。此前写 1.25（= 37.5px），差 1.5px —— 单看没事，
+   * 和 SPA 页面标题并排时基线会错开。 */
+  line-height: 2.25rem;
   letter-spacing: 0;
 }
 
 .prose {
   font-size: var(--text-doc-body);
-  line-height: 1.75;
+  line-height: 1.625;
+}
+
+/*
+ * ── Prose body colour（规范 §1.1.2）────────────────────────────────
+ *
+ * 「页面默认文字：body / body-sm 默认使用 text-primary；只有明确的辅助信息才
+ * 使用 text-secondary 或 text-tertiary」。Markdown 生成的段落没有自己的类名，
+ * 它们的颜色只能来自继承；此前继承到的是 Fumadocs 的 muted-foreground
+ * `#737373` —— 那是规范里 `text-disabled` 的档位，等于把整篇正文画成「禁用
+ * 文字」，只是对比度（4.6:1）侥幸过线，层级仍是错的。
+ *
+ * 三条约束，缺一条就会踩坑：
+ *
+ *  1. **只设继承色，不给 `p` / `li` 强加颜色**。显式写了
+ *     `text-fd-muted-foreground` 的元素（页面描述、卡片摘要、图注、表格次列）
+ *     靠元素自身的声明压过继承，仍然是次要色。写成
+ *     `.prose :is(p, li) { color: … }` 会把它们一起染黑。
+ *  2. **必须限定在 `#nd-page` 内**。Fumadocs 给右侧目录的每一项都挂了 `prose`
+ *     类（它要 prose 的链接样式），不限定作用域的话 `.prose { color }` 是
+ *     无层样式，会盖掉目录项自己的 `text-fd-muted-foreground`，整列目录变黑。
+ *  3. **不要用 `@layer`**：prose 预设的 `:where()` 规则特异性为 0，无层声明才能
+ *     稳定胜出，不必依赖顺序。
+ */
+#nd-page .prose {
+  color: var(--color-fd-foreground);
+}
+
+/*
+ * ── Inline links in body copy ───────────────────────────────────────
+ *
+ * Fumadocs' markdown renderer paints links with `text-fd-primary`, and this
+ * site leaves that token at its default (`--color-neutral-900`), so an inline
+ * link came out exactly the same colour as the paragraph around it. Together
+ * with the site-wide `a { text-decoration: none }` above, a link in the middle
+ * of a sentence had no affordance at all — same colour, same weight, no
+ * underline.
+ *
+ * 规范 §1.1：「链接、活动导航和选中控件可使用品牌色」。用 `--Uter-nav-active`
+ * 而不是 `--Uter-accent`：前者与正文色（`#0F172A`）的对比是 3.21:1，超过
+ * WCAG 1.4.1 判「颜色足以区分」所需的 3:1；`--Uter-accent`（`#4B4EDE`）只有
+ * 2.93:1，差一点。两者对页面底色的对比都过 AA（5.56:1 / 5.40:1）。
+ *
+ * 静止态只给颜色和字重、不给下划线 —— 这是上面那条站内约定（链接靠色与字重，
+ * 不靠下划线）。下划线作为**悬停/键盘焦点**的额外线索出现，正好满足 1.4.1 的
+ * F73（对比 ≥3:1 且悬停或聚焦时另有可见变化）。
+ */
+#nd-page .Uter-inline-link {
+  color: var(--Uter-nav-active);
+  font-weight: 500;
+}
+
+#nd-page .Uter-inline-link:hover,
+#nd-page .Uter-inline-link:focus-visible {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
 }
 
 .prose :is(h2) {
-  font-size: var(--text-doc-h2);
+  /* 内容排版（Markdown prose）的 h2 是 **18/28**，不是界面的 24/32：
+     `web/docs/design-system/typography.md`「内容排版」明确把 docs-web 的文档
+     正文归入 prose 阶梯（24 / 18 / 16 / 14），比界面层级低一到两档。文档的
+     一级标题已经由 `DocsTitle` 按界面 h1（30）渲染，正文里最上面这一层就是
+     Markdown 的 h2，所以取 18。 */
+  font-size: var(--text-doc-prose-h2);
   font-weight: 600;
-  line-height: 1.35;
+  line-height: var(--text-doc-prose-h2--line-height);
   letter-spacing: 0;
 }
 
-.prose :is(h3) {
-  font-size: var(--text-doc-h3);
+/*
+ * 卡片里的 `h3` 排除在外：`Uter-card` 的标题是**界面**层级（18/28，规范
+ * §1.2 h3 档），而正文里的 `h3` 是 prose 的第三层（16/24）。两者 DOM 标签
+ * 相同、语义不同，靠容器区分。
+ */
+.prose :is(h3):not(.Uter-card h3) {
+  font-size: var(--text-doc-prose-h3);
   font-weight: 600;
-  line-height: 1.4;
+  line-height: var(--text-doc-prose-h3--line-height);
   letter-spacing: 0;
 }
 
-.prose :is(p, li, td, th, blockquote, dd, dt) {
+.prose :is(p, li, blockquote, dd, dt) {
   font-size: var(--text-doc-body);
-  /* Pinned too: `content-renderer` emits `leading-relaxed` (1.625) on
-     most of these paragraphs, which would otherwise outrank the 1.75
-     inherited from `.prose` and leave half a page at 28px and half at
-     26px. This rule is unlayered, so it wins over that utility. */
-  line-height: 1.75;
+  /* Pinned too: a stray `leading-*` utility on one paragraph would
+     otherwise split the page between two rhythms. This rule is
+     unlayered, so it wins over any such utility. */
+  line-height: 1.625;
+}
+
+/*
+ * 表格单元格不在这条正文规则里：规范 §1.2 把「表格单元格」明确划给
+ * `body-sm`（14/20），与 16/26 的长文正文不是一档。表格自身的
+ * `text-doc-chrome`（14/20）负责取值，这里不再覆盖，否则单元格会被拉回
+ * 16/26 —— 此前正是如此，协议页的表格比正文还松。
+ */
+.prose :is(td, th) {
+  font-size: var(--text-doc-chrome);
+  line-height: var(--text-doc-chrome--line-height);
+}
+
+/*
+ * 围栏代码块。Fumadocs 只按 `em` 缩了 `code` 的字号，行高仍从正文的 1.625
+ * 继承下来，于是 Markdown 渲染的代码块是 13/21.1，而 `code-block.tsx` 那套
+ * 是 13/19.5（`--text-doc-code` 的 1.5）—— 同一个站点的代码块有两套行距。
+ * 两处统一到代码档；`pre` 也一起钉住，否则它自己还停在正文的 16/26。
+ */
+.prose pre,
+.prose pre code {
+  font-size: var(--text-doc-code);
+  line-height: var(--text-doc-code--line-height);
 }
 
 /*
@@ -661,18 +863,18 @@ html[data-docs-embed='true'] #nd-subnav > a {
  *   on the drawer only, so the same navigation was 14px at desktop and
  *   15px on a phone. Now one size everywhere.
  *
- * TOC / sidebar leading is tightened to 1.5: 1.75 is right for reading
+ * TOC / sidebar leading is tightened to 1.5: 1.625 is right for reading
  * prose but makes a link list feel like paragraphs.
  */
 #nd-sidebar {
   font-size: var(--text-doc-chrome);
-  line-height: 1.5;
+  line-height: var(--text-doc-chrome--line-height);
 }
 
 /* 右侧目录（TOC）保持 14px chrome 刻度，与正文（16px）拉开层次。 */
 #nd-toc a {
   font-size: var(--text-doc-chrome);
-  line-height: 1.5;
+  line-height: var(--text-doc-chrome--line-height);
 }
 
 #nd-sidebar-mobile {
