@@ -2,21 +2,23 @@ package controller
 
 import (
 	"math"
-	"testing"
-
-	"github.com/uter-ai/uter/common"
 	"net/http"
 	"net/http/httptest"
+	"testing"
 
 	"github.com/gin-gonic/gin"
+	"github.com/glebarez/sqlite"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/uter-ai/uter/common"
+	"github.com/uter-ai/uter/model"
 	"github.com/uter-ai/uter/relaykit/dto"
 	"github.com/uter-ai/uter/service"
 	"github.com/uter-ai/uter/setting/billing_setting"
 	"github.com/uter-ai/uter/setting/config"
 	"github.com/uter-ai/uter/setting/ratio_setting"
 	"github.com/uter-ai/uter/setting/system_setting"
+	"gorm.io/gorm"
 )
 
 func TestPricingSyncExpressionPriority(t *testing.T) {
@@ -105,6 +107,22 @@ func TestRatioConfigExportsEffectiveExpressions(t *testing.T) {
 	assert.Equal(t, `tier("base", p * 2)`, valueMap(response.Data["billing_expr"])["sync-export"])
 }
 
+// priceSyncTestDB 给 FetchUpstreamRatios 装一张空的内存 channels 表。
+//
+// 请求体里带了渠道 id，handler 会按 id 回库读 model_mapping 来反解上游别名
+// （见 buildPriceSyncAliasResolvers）。不建表时 model.DB 为 nil，测试直接
+// nil pointer panic —— 这曾让 TestPricingSyncCompleteSourcesAndArrayFormats
+// 长期是红的。
+func priceSyncTestDB(t *testing.T) {
+	t.Helper()
+	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
+	require.NoError(t, err)
+	require.NoError(t, db.AutoMigrate(&model.Channel{}))
+	previous := model.DB
+	model.DB = db
+	t.Cleanup(func() { model.DB = previous })
+}
+
 func allowPrivatePricingSyncTest(t *testing.T) {
 	t.Helper()
 	originalFetchSetting := *system_setting.GetFetchSetting()
@@ -118,6 +136,7 @@ func allowPrivatePricingSyncTest(t *testing.T) {
 func TestPricingSyncCompleteSourcesAndArrayFormats(t *testing.T) {
 	// 上游定价源用 httptest 随机端口（默认不在 AllowedPorts 白名单内），放行以便触达测试服务器。
 	allowPrivatePricingSyncTest(t)
+	priceSyncTestDB(t)
 	before := config.GlobalConfig.ExportAllConfigs()
 	oldRatios, oldCompletion := ratio_setting.ModelRatio2JSONString(), ratio_setting.CompletionRatio2JSONString()
 	t.Cleanup(func() {
@@ -189,4 +208,13 @@ func TestPricingSyncCompleteSourcesAndArrayFormats(t *testing.T) {
 	assert.Equal(t, float64(4), response.Data.Prices["sync-token"].Upstreams["Expressions(1)"]["completion_ratio"])
 	assert.Equal(t, float64(0), response.Data.Prices["sync-token"].Upstreams["Expressions(1)"]["cache_ratio"])
 	assert.Equal(t, float64(0), response.Data.Prices["sync-free"].Upstreams["Legacy(2)"]["model_ratio"])
+	assert.NotContains(t, response.Data.Prices, "sync-already")
+	body["include_unchanged"] = true
+	recorder = modelManagementRequest(t, FetchUpstreamRatios, http.MethodPost, "/api/ratio_sync/fetch", body, &response)
+	require.True(t, response.Success, recorder.Body.String())
+	assert.Equal(t, map[string]any{"billing_mode": "tiered_expr", "billing_expr": expression}, response.Data.Prices["sync-already"].Upstreams["Expressions(1)"])
+	assert.NotContains(t, response.Data.Prices["sync-already"].Upstreams, "Legacy(2)")
+	assert.NotContains(t, response.Data.Prices, "sync-unpriced")
+	assert.NotContains(t, response.Data.Prices, "sync-invalid-expression")
+	assert.NotContains(t, response.Data.Differences, "sync-already")
 }
