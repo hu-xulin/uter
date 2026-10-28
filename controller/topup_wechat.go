@@ -19,12 +19,15 @@ package controller
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/uter-ai/uter/i18n"
 	"net/http"
 	"net/url"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/uter-ai/uter/common"
@@ -421,4 +424,146 @@ func WechatPayNotify(c *gin.Context) {
 		logger.LogInfo(c.Request.Context(), fmt.Sprintf("微信支付充值成功 trade_no=%s client_ip=%s", dec.OutTradeNo, c.ClientIP()))
 	}
 	c.JSON(http.StatusOK, gin.H{"code": "SUCCESS", "message": i18n.T(c, i18n.MsgTopup_wechatSuccess)})
+}
+
+// WechatReconcileStatus 是「用一次查单结果推进本地订单」之后的结论。
+//
+// 它同时服务于两条入口：用户从收银台回跳后的主动查单接口，以及后台对账任务。
+// 两者必须走完全相同的判定与入账路径——否则「接口能入账、任务不能」这类分叉
+// 会让对账变成摆设。状态值与支付宝对齐，便于前端轮询 helper 复用。
+type WechatReconcileStatus string
+
+const (
+	// WechatReconcileSuccess 已付款且金额一致，入账完成（或此前已入账）。
+	WechatReconcileSuccess WechatReconcileStatus = "success"
+	// WechatReconcilePending 微信侧交易存在但尚未付清（NOTPAY / USERPAYING），值得继续等。
+	WechatReconcilePending WechatReconcileStatus = "pending"
+	// WechatReconcileUnpaid 微信侧查无此交易，用户从未进入付款流程（终态）。
+	WechatReconcileUnpaid WechatReconcileStatus = "unpaid"
+	// WechatReconcileClosed 微信侧交易已关闭 / 撤销 / 支付失败（终态）。
+	WechatReconcileClosed WechatReconcileStatus = "closed"
+	// WechatReconcileAmountMismatch 网关金额/币种与下单快照不符，拒绝入账。
+	WechatReconcileAmountMismatch WechatReconcileStatus = "amount_mismatch"
+	// WechatReconcileCreditFailed 入账写库失败，订单保持 pending 待重试。
+	WechatReconcileCreditFailed WechatReconcileStatus = "credit_failed"
+)
+
+// applyWechatQueryResult 用一次查单结果推进本地订单。
+//
+// 幂等由 model.RechargeWechatPay 的状态 CAS 保证：重复调用只会命中「已入账」，
+// 不会重复加额度。因此主动查单、后台对账、异步回调三者可以安全并存。
+// 金额/币种校验口径与异步回调 WechatPayNotify 完全一致，避免两条路径判等分歧。
+func applyWechatQueryResult(ctx context.Context, topUp *model.TopUp, result *service.WechatQueryResult, callerIp string) WechatReconcileStatus {
+	if topUp == nil || result == nil {
+		return WechatReconcileCreditFailed
+	}
+
+	// 终态 / 未付款先分流，避免落到下方的金额校验。
+	switch result.TradeState {
+	case service.WechatTradeStateSuccess:
+		// 继续走下方金额 + 币种校验与入账。
+	case service.WechatTradeStateClosed, "REVOKED", "PAYERROR":
+		// 这些状态不会再变为 SUCCESS，把本地订单落过期，让列表不再显示「待确认」。
+		if err := model.UpdatePendingTopUpStatus(topUp.TradeNo, model.PaymentProviderWechatPay, common.TopUpStatusExpired); err != nil &&
+			!errors.Is(err, model.ErrTopUpStatusInvalid) {
+			logger.LogWarn(ctx, fmt.Sprintf("微信对账标记订单过期失败 trade_no=%s user_id=%d error=%q", topUp.TradeNo, topUp.UserId, err.Error()))
+		}
+		return WechatReconcileClosed
+	case service.WechatTradeStateNotExist:
+		// 微信侧查无此交易：用户可能尚未付款或订单已失效，保留 pending 等待后续付款或回跳。
+		return WechatReconcileUnpaid
+	case "NOTPAY", "USERPAYING":
+		return WechatReconcilePending
+	default:
+		return WechatReconcilePending
+	}
+
+	// SUCCESS：币种 + 金额比对（与异步回调同一口径）。
+	expectedCurrency := topUp.ProviderCurrency
+	if expectedCurrency == "" {
+		expectedCurrency = "CNY"
+	}
+	if !providerCurrencyMatchesOrder(result.Currency, expectedCurrency) {
+		logger.LogWarn(ctx, fmt.Sprintf("微信查单币种不匹配 trade_no=%s currency=%s expected=%s", topUp.TradeNo, result.Currency, expectedCurrency))
+		return WechatReconcileAmountMismatch
+	}
+	expectedCents := providerExpectedMinorUnits(topUp.ProviderAmount, topUp.Money)
+	if expectedCents <= 0 || result.Total != expectedCents {
+		logger.LogWarn(ctx, fmt.Sprintf("微信查单金额不匹配 trade_no=%s 查单金额(分)=%d 本地应付(分)=%d", topUp.TradeNo, result.Total, expectedCents))
+		return WechatReconcileAmountMismatch
+	}
+
+	LockOrder(topUp.TradeNo)
+	defer UnlockOrder(topUp.TradeNo)
+	alreadyDone, err := model.RechargeWechatPay(topUp.TradeNo, "", callerIp)
+	if err != nil {
+		logger.LogError(ctx, fmt.Sprintf("微信查单入账失败 trade_no=%s user_id=%d error=%q", topUp.TradeNo, topUp.UserId, err.Error()))
+		return WechatReconcileCreditFailed
+	}
+	if alreadyDone {
+		logger.LogInfo(ctx, fmt.Sprintf("微信查单幂等忽略 trade_no=%s user_id=%d source=%s", topUp.TradeNo, topUp.UserId, callerIp))
+	} else {
+		logger.LogInfo(ctx, fmt.Sprintf("微信查单确认入账 trade_no=%s user_id=%d source=%s", topUp.TradeNo, topUp.UserId, callerIp))
+	}
+	return WechatReconcileSuccess
+}
+
+// WechatQueryRequest 主动查单请求。
+type WechatQueryRequest struct {
+	TradeNo string `json:"trade_no"`
+}
+
+// QueryWechatOrder 主动查询微信支付订单并确认入账。
+//
+// 异步回调（notify_url）在本地 / 内网环境不可达时会缺失，订单会一直停在 pending。
+// 用户从收银台回到站内（或在钱包页打开充值记录）后由前端调用本接口：服务端向微信
+// 查询真实状态，成功则走与异步回调完全相同的金额校验 + 幂等入账链路
+// （RechargeWechatPay 的 CAS 保证只入账一次），因此可以安全地与回调并存。
+//
+// 返回 data.status 的取值与支付宝对齐：
+//   - success 已付款且金额一致，入账完成（或此前已入账）
+//   - pending 微信侧交易存在但尚未付清（NOTPAY / USERPAYING），值得继续等
+//   - unpaid  微信侧查无此交易，用户从未进入付款流程（终态）
+//   - closed  微信侧交易已关闭（终态），本地订单同时置为过期
+func QueryWechatOrder(c *gin.Context) {
+	var req WechatQueryRequest
+	if err := c.ShouldBindJSON(&req); err != nil || strings.TrimSpace(req.TradeNo) == "" {
+		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "参数错误"})
+		return
+	}
+	if !isWechatPayTopUpEnabled() {
+		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "当前未启用微信支付"})
+		return
+	}
+	id := c.GetInt("id")
+	topUp := model.GetTopUpByTradeNo(strings.TrimSpace(req.TradeNo))
+	// 归属校验：只能查询自己的微信订单，且 provider 必须是微信支付。
+	if topUp == nil || topUp.UserId != id || topUp.PaymentProvider != model.PaymentProviderWechatPay {
+		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "订单不存在"})
+		return
+	}
+	if topUp.Status == common.TopUpStatusSuccess {
+		c.JSON(http.StatusOK, gin.H{"message": "success", "data": gin.H{"status": "success"}})
+		return
+	}
+
+	result, err := service.WechatQueryOrder(c.Request.Context(), topUp.TradeNo)
+	if err != nil {
+		logger.LogWarn(c.Request.Context(), fmt.Sprintf("微信主动查单失败 trade_no=%s user_id=%d error=%q", topUp.TradeNo, id, err.Error()))
+		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "查询订单失败"})
+		return
+	}
+	status := applyWechatQueryResult(c.Request.Context(), topUp, result, c.ClientIP())
+	switch status {
+	case WechatReconcileSuccess:
+		c.JSON(http.StatusOK, gin.H{"message": "success", "data": gin.H{"status": "success"}})
+	case WechatReconcileAmountMismatch:
+		c.JSON(http.StatusOK, gin.H{"message": "error", "data": gin.H{"status": "amount_mismatch"}})
+	case WechatReconcileCreditFailed:
+		c.JSON(http.StatusOK, gin.H{"message": "error", "data": gin.H{"status": "credit_failed"}})
+	default:
+		// pending / unpaid / closed 都是「查询成功，结论是还没付清或已终态」，
+		// 用 message=success 下发，让前端按 data.status 决定是继续等还是提示用户。
+		c.JSON(http.StatusOK, gin.H{"message": "success", "data": gin.H{"status": string(status)}})
+	}
 }

@@ -800,6 +800,7 @@ func GetUserTopUps(c *gin.Context) {
 	// 充值记录就能看到真实状态，不必等后台对账任务的下一轮。
 	// 无待确认订单时不产生任何网关请求。
 	reconcileUserPendingAlipayOrders(c.Request.Context(), userId)
+	reconcileUserPendingWechatOrders(c.Request.Context(), userId)
 	pageInfo := common.GetPageQuery(c)
 	keyword := c.Query("keyword")
 

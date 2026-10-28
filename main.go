@@ -209,6 +209,7 @@ func main() {
 	// 支付宝订单对账：每 3 分钟主动查单一次，补齐「异步回调打不到 + 用户没回跳」
 	// 时漏掉的支付状态，避免订单永久停在「待确认」。master-only，单飞保护。
 	controller.StartAlipayReconcileTask()
+	controller.StartWechatReconcileTask()
 
 	// Report this process as a system instance so the System Info page can show
 	// all currently alive nodes in multi-instance deployments.

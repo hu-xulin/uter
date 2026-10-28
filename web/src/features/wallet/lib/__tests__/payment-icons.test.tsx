@@ -41,7 +41,7 @@ test.each([
  *
  * 回归背景：后端 `pay_methods` 的默认图标是 `SiWechat`，收银台一度把
  * 「微信支付」画成聊天软件 —— 用户以为是点开微信扫码聊天。两个标靠 viewBox
- * 区分：支付标是 Remix Icon 的 24×24，聊天标是 1024×1024。
+ * 区分：支付标是收紧到图形边界的 24 网格（`2 3.4 20.1 17.8`），聊天标是 1024×1024。
  */
 test.each([PAYMENT_TYPES.WECHAT, PAYMENT_TYPES.WECHAT_PAY_WEB])(
   '%s renders the WeChat Pay brand mark, not the chat logo',
@@ -49,7 +49,7 @@ test.each([PAYMENT_TYPES.WECHAT, PAYMENT_TYPES.WECHAT_PAY_WEB])(
     const { container } = render(getPaymentIcon(type, 'h-6 w-6'))
     const svg = container.querySelector('svg')
     expect(svg).not.toBeNull()
-    expect(svg).toHaveAttribute('viewBox', '0 0 24 24')
+    expect(svg).toHaveAttribute('viewBox', '2 3.4 20.1 17.8')
     expect(svg?.querySelector('title')?.textContent).toBe('WeChat Pay')
   }
 )
@@ -71,7 +71,7 @@ test.each(['SiWechat', 'RiWechatFill', 'FaWeixin'])(
     )
     const title = await screen.findByTitle('Configured WeChat')
     const svg = title.closest('svg')
-    expect(svg).toHaveAttribute('viewBox', '0 0 24 24')
+    expect(svg).toHaveAttribute('viewBox', '2 3.4 20.1 17.8')
     expect(svg).toHaveStyle({
       color: PAYMENT_ICON_COLORS[PAYMENT_TYPES.WECHAT],
     })
