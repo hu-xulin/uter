@@ -17,15 +17,31 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@uter.ai
 */
 /* ── Layer 2 · Elevation ──────────────────────────────────────────────
- * 文档 1.5 Effect 的硬规则：**除弹窗与浮层外，界面一律不投影**，
- * 层级靠 1px 描边和表面色差表达。
+ * 规范 §1.5 Effect（2026-10-28 定档，四档 + 一档状态辉光）。
  *
- * 因此只有两个层级 Token：
- *   --ds-elevation-overlay  弹窗 / 抽屉 / 浮层
- *   --ds-elevation-popover  下拉面板 / 气泡 / 悬浮提示
+ * 总原则仍是「层级靠 1px 描边和表面色差表达」，投影只在**元素确实离开
+ * 文档流**时出现。判据是「这块面还有没有一个自己的平面位置」：
  *
- * 卡片、表格、侧边栏、页面容器都**不加阴影**。历史代码里散落的
- * `shadow-xs` / `shadow-sm` 属于待清理项，新增代码不要再写。
+ *   --ds-elevation-none       none                              静止的页面内元素
+ *   --ds-elevation-popover    0 1px 2px 0                       下拉面板 / 气泡 / 悬浮提示
+ *   --ds-elevation-overlay    0 4px 6px -4px, 0 10px 15px -3px  弹窗 / 抽屉 / 浮层
+ *   --ds-elevation-raised     0 12px 24px -12px, 0 2px 6px -2px 拖拽中的元素（瞬时离开文档流）
+ *   --ds-elevation-marketing  0 20px 50px -25px                 营销展示卡片（脱离页面平面）
+ *   --ds-glow-online          0 0 8px                           在线状态点（状态语义，不是层级）
+ *
+ * 为什么「拖拽」与「营销卡片」各占一档而不是复用 overlay：
+ *   1. 拖拽是**瞬时**状态：影子要够重才能让用户确认「它被我拿起来了」，
+ *      但持续时间只有几百毫秒，不会长期占据视觉重量；
+ *   2. 营销展示卡片是**静态**的展示物，影子必须大而柔（50px 模糊、-25px
+ *      收缩），overlay 的 15px 撑不住 2xl 圆角的展示卡片；
+ *   3. 复用 overlay 会让「弹窗」和「首页演示窗口」在视觉上无法区分层级。
+ *
+ * 除这四档之外一律不投影：卡片、表格、侧边栏、页面容器、按钮、徽标都
+ * 不加阴影。代码里写 `shadow-sm` / `shadow-lg` 会被门禁 T6 拦下，
+ * 引用 Token 的写法是 `shadow-(--ds-elevation-raised)`。
+ *
+ * 深色主题下 marketing 档需要更黑的影子（浅色主题的 0.18 在黑底上看不见），
+ * 所以单独覆盖。
  */
 
 :root {
@@ -33,9 +49,78 @@ For commercial licensing, please contact support@uter.ai
   --ds-elevation-overlay:
     0 4px 6px -4px rgb(0 0 0 / 0.1), 0 10px 15px -3px rgb(0 0 0 / 0.1);
   --ds-elevation-popover: 0 1px 2px 0 rgb(0 0 0 / 0.06);
+  /* 拖拽中的瞬时抬升：两层影子，近层收紧轮廓、远层拉开距离 */
+  --ds-elevation-raised:
+    0 12px 24px -12px rgb(0 0 0 / 0.18), 0 2px 6px -2px rgb(0 0 0 / 0.1);
+  /* 营销展示卡片：大而柔的下沉投影，让卡片明确离开页面平面 */
+  --ds-elevation-marketing: 0 20px 50px -25px rgb(15 23 42 / 0.18);
+  /* 在线状态点辉光：语义是「亮着」，不是层级 */
+  --ds-glow-online: 0 0 8px rgb(16 185 129 / 0.45);
 
-  /* 过渡时长：所有交互反馈走这两档，避免各处自定义 */
+  /* ── 动效时长（规范 §1.6 Motion）─────────────────────────────────
+   * 按「这段动效在表达什么」分五组，而不是按组件分：
+   *
+   *   交互反馈   fast 100 / base 200 / slow 350
+   *              fast  = 颜色、描边、透明度这类「一下就够」的状态变化
+   *              base  = 展开收起、宽度位移这类看得见过程的形变
+   *              slow  = 浮层视口 / 背板级的整块位移（巨型菜单换页），
+   *                      200ms 会让内容来不及看清就到了
+   *   营销节奏   marketing-fast 300 / marketing 500
+   *              公共站点的大区块位移与展开，比后台慢一档是刻意的 ——
+   *              营销页要「读」不要「点」，慢半拍才显得从容
+   *   内容入场   enter 600                 首屏元素的观看节奏
+   *   循环动画   loop-*                    周期由内容决定，不是一个固定数字
+   *   数据过渡   data-fast 250 / data 500   值在变化，不是操作被响应
+   */
   --ds-motion-fast: 100ms;
   --ds-motion-base: 200ms;
+  --ds-motion-slow: 350ms;
+  --ds-motion-marketing-fast: 300ms;
+  --ds-motion-marketing-base: 500ms;
+  --ds-motion-enter: 600ms;
+  /* 循环动画的周期不是「快慢」，是内容本身走完一圈需要多久：
+     骨架屏扫过整块、光标闪一次、在线点呼吸一次、加载圈转一圈、
+     跑马灯滚完一屏、流动描边跑完一个周长。 */
+  --ds-motion-loop-shimmer: 1.8s;
+  --ds-motion-loop-pulse: 1.5s;
+  --ds-motion-loop-caret: 1s;
+  --ds-motion-loop-spin: 0.8s;
+  --ds-motion-loop-marquee: 20s;
+  --ds-motion-loop-border: 3.2s;
+  --ds-motion-data-fast: 250ms;
+  --ds-motion-data: 500ms;
+  /* 后台交互的标准曲线：两端对称的 ease-in-out，不抢戏。 */
   --ds-motion-ease: cubic-bezier(0.4, 0, 0.2, 1);
+  /* 营销节奏用「先快后缓」曲线：起手干脆、收尾拉长，是营销页的常见语汇。
+     后台交互一律用上面的 --ds-motion-ease，不要借这一档。 */
+  --ds-motion-ease-marketing: cubic-bezier(0.16, 1, 0.3, 1);
+  /* 整块位移（巨型菜单视口、背板滑入）用略缓一档的 ease-out-quint：
+     位移距离大，用 marketing 曲线会在收尾处「冲」过头。 */
+  --ds-motion-ease-snappy: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ── Tailwind 的「过渡默认值」也必须落进上面这个封闭集合 ────────────────
+ *
+ * `transition-colors` / `transition-transform` / `transition-all` 这些工具类
+ * **不写时长**时，Tailwind 读 `--default-transition-duration`（内置 150ms）
+ * 和 `--default-transition-timing-function`。150ms 不在 fast/base/slow
+ * 三档里 —— 也就是说全站 103 处裸 `transition-*` 一直在用集合外的时长，
+ * 而门禁只检查**显式写出**的 `duration-*`，看不见它们。
+ *
+ * 把默认值指到 fast(100ms) + ease，封闭集合才对 100% 的过渡成立：
+ * 裸 `transition-colors` = 交互反馈最快一档；需要 200 / 350 的地方
+ * 显式写 `ds-motion-base` / `ds-motion-slow`。
+ *
+ * ⚠️ 这条只能写在 `@theme` 里 —— 写进 `:root` 的话 Tailwind 读不到，
+ * 生成的工具类仍旧用 150ms（与字号阶梯踩过的是同一个坑）。 */
+@theme {
+  --default-transition-duration: var(--ds-motion-fast);
+  --default-transition-timing-function: var(--ds-motion-ease);
+}
+
+/* 深色主题下营销卡片的影子要更黑：浅色主题的 0.18 在黑底上完全看不见。 */
+.dark {
+  --ds-elevation-marketing: 0 20px 60px -25px rgb(0 0 0 / 0.7);
+  --ds-elevation-raised:
+    0 12px 24px -12px rgb(0 0 0 / 0.6), 0 2px 6px -2px rgb(0 0 0 / 0.4);
 }

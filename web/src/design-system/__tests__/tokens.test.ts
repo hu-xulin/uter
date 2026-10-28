@@ -41,7 +41,14 @@ const semanticCss = read('tokens/semantic.css')
 /** 从 CSS 文本里取某个变量的声明值（取第一个匹配）。 */
 function readVar(css: string, name: string): string | undefined {
   const match = new RegExp(`--${name}:\\s*([^;]+);`).exec(css)
-  return match?.[1].trim()
+  if (!match) return undefined
+  // 格式化器会按行宽把声明折行（`var(\n  --primitive-radius-md\n)`）。token
+  // 的值没变，比较前必须先把空白压平，否则测试会因为一次格式化而变红。
+  return match[1]
+    .replaceAll(/\s+/g, ' ')
+    .replaceAll(/\(\s/g, '(')
+    .replaceAll(/\s\)/g, ')')
+    .trim()
 }
 
 /** px 值换算成 rem（16px 基准），用于比较两种写法。 */
@@ -62,7 +69,9 @@ function toPx(value: string): number {
 const LADDER: Array<[string, number, number, string]> = [
   ['xs', 12, 16, 'caption'],
   ['sm', 14, 20, 'body-sm / label'],
-  ['mono', 13, 20, 'mono 代码与等宽标识'],
+  ['mono', 14, 20, 'mono 正文等宽文本'],
+  ['mono-code', 13, 20, '等宽代码展示区'],
+  ['mono-title', 16, 22, '等宽卡片标题'],
   ['base', 16, 24, 'body'],
   ['lg', 18, 28, 'h3 卡片标题 / 弹窗标题'],
   ['2xl', 24, 32, 'h2 区块标题'],
@@ -99,11 +108,15 @@ describe('字号阶梯（tokens/typography.css）', () => {
   })
 
   it('字重阶梯只有 400 / 500 / 600 / 700', () => {
-    expect(toPx(readVar(typographyCss, 'font-weight-normal') as string)).toBe(400)
-    expect(toPx(readVar(typographyCss, 'font-weight-medium') as string)).toBe(500)
-    expect(
-      toPx(readVar(typographyCss, 'font-weight-semibold') as string)
-    ).toBe(600)
+    expect(toPx(readVar(typographyCss, 'font-weight-normal') as string)).toBe(
+      400
+    )
+    expect(toPx(readVar(typographyCss, 'font-weight-medium') as string)).toBe(
+      500
+    )
+    expect(toPx(readVar(typographyCss, 'font-weight-semibold') as string)).toBe(
+      600
+    )
     expect(toPx(readVar(typographyCss, 'font-weight-bold') as string)).toBe(700)
   })
 })
@@ -115,11 +128,15 @@ describe('语义 Token 指向正确的阶梯档位', () => {
     ['ds-text-section-title', 'var(--text-2xl)'],
     ['ds-text-card-title', 'var(--text-lg)'],
     ['ds-text-dialog-title', 'var(--text-lg)'],
-    ['ds-text-body', 'var(--text-base)'],
+    ['ds-text-group-title', 'var(--text-base)'],
+    ['ds-text-body', 'var(--text-sm)'],
+    ['ds-text-long', 'var(--text-long)'],
     ['ds-text-body-sm', 'var(--text-sm)'],
     ['ds-text-label', 'var(--text-sm)'],
     ['ds-text-caption', 'var(--text-xs)'],
     ['ds-text-mono', 'var(--text-mono)'],
+    ['ds-text-mono-code', 'var(--text-mono-code)'],
+    ['ds-text-mono-title', 'var(--text-mono-title)'],
   ]
 
   it.each(MAPPING)('--%s → %s', (name, expected) => {
@@ -133,7 +150,9 @@ describe('语义 Token 指向正确的阶梯档位', () => {
 
   it('多行主标题行高在 layers 之外，且引用语义 Token', () => {
     const foundations = read('foundations/typography.css')
-    const rule = /\.ds-heading--display-multiline\s*\{([^}]*)\}/.exec(foundations)
+    const rule = /\.ds-heading--display-multiline\s*\{([^}]*)\}/.exec(
+      foundations
+    )
     expect(rule, '缺少 .ds-heading--display-multiline').toBeTruthy()
     expect(rule?.[1]).toContain('var(--ds-line-display-multiline)')
     // 必须落在 @layer components 之外，否则会被 utilities 层的
@@ -150,7 +169,9 @@ describe('语义 Token 指向正确的阶梯档位', () => {
 
   it('多行主标题行高在 layers 之外，且引用语义 Token', () => {
     const foundations = read('foundations/typography.css')
-    const rule = /\.ds-heading--display-multiline\s*\{([^}]*)\}/.exec(foundations)
+    const rule = /\.ds-heading--display-multiline\s*\{([^}]*)\}/.exec(
+      foundations
+    )
     expect(rule, '缺少 .ds-heading--display-multiline').toBeTruthy()
     expect(rule?.[1]).toContain('var(--ds-line-display-multiline)')
     // 必须落在 @layer components 之外，否则会被 utilities 层的
@@ -168,7 +189,9 @@ describe('语义 Token 指向正确的阶梯档位', () => {
       ['ds-line-page-title', 'text-3xl--line-height', 36],
       ['ds-line-section-title', 'text-2xl--line-height', 32],
       ['ds-line-card-title', 'text-lg--line-height', 28],
-      ['ds-line-body', 'text-base--line-height', 24],
+      ['ds-line-group-title', 'text-base--line-height', 24],
+      ['ds-line-body', 'text-sm--line-height', 20],
+      ['ds-line-long', 'text-long--line-height', 26],
       ['ds-line-body-sm', 'text-sm--line-height', 20],
       ['ds-line-caption', 'text-xs--line-height', 16],
     ]
@@ -181,8 +204,28 @@ describe('语义 Token 指向正确的阶梯档位', () => {
         expectedPx
       )
       // 阶梯侧也必须是同一个值
-      expect(toPx(readVar(typographyCss, ladderName) as string)).toBe(expectedPx)
+      expect(toPx(readVar(typographyCss, ladderName) as string)).toBe(
+        expectedPx
+      )
     }
+  })
+})
+
+describe('分组标题档（group-title）', () => {
+  it('是 16/24/600，且比卡片标题低一档', () => {
+    // 页面层级第 4 层：30 页标题 → 24 区块 → 18 卡片 → 16 分组 → 14 标签。
+    // 一旦有人把分组标题调到 14（与 label 同号）或 18（与卡片标题撞车），
+    // 这一层的语义就消失了。
+    const rule = /\.ds-heading--group-title\s*\{([^}]*)\}/.exec(
+      read('foundations/typography.css')
+    )
+    expect(rule, '缺少 .ds-heading--group-title').toBeTruthy()
+    expect(rule?.[1]).toContain('var(--ds-text-group-title)')
+    expect(rule?.[1]).toContain('var(--ds-line-group-title)')
+    expect(rule?.[1]).toContain('var(--ds-weight-semibold)')
+
+    expect(readVar(semanticCss, 'ds-text-group-title')).toBe('var(--text-base)')
+    expect(readVar(semanticCss, 'ds-text-card-title')).toBe('var(--text-lg)')
   })
 })
 
@@ -240,10 +283,7 @@ describe('theme.css 圆角阶梯与文档一致', () => {
     for (const [step, px] of EXPECTED) {
       const declaration = readVar(themeCss, `radius-${step}`) as string
       expect(declaration, `--radius-${step} 未声明`).toBeDefined()
-      expect(
-        resolveLadderPx(declaration, base),
-        `圆角 ${step}`
-      ).toBe(px)
+      expect(resolveLadderPx(declaration, base), `圆角 ${step}`).toBe(px)
     }
   })
 })

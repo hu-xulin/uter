@@ -39,11 +39,23 @@ For commercial licensing, please contact support@uter.ai
   --ds-text-section-title: var(--text-2xl);
   --ds-text-card-title: var(--text-lg);
   --ds-text-dialog-title: var(--text-lg);
-  --ds-text-body: var(--text-base);
+  /* 分组标题：卡片内部再分组时的那一层（个人资料页「通知方式」「偏好设置」、
+     弹窗里的字段分组）。它是页面层级的第 4 层，低于 card-title（18/600），
+     高于表单标签（14/500）。 */
+  --ds-text-group-title: var(--text-base);
+  /* 常规正文：14/20（新规范 §1.2）。全站默认基准，不是 16px ——
+   * 16px 只留给 `body-long` 的连续阅读场景。 */
+  --ds-text-body: var(--text-sm);
   --ds-text-body-sm: var(--text-sm);
+  /* 长文本：16/26。文章、协议、帮助中心、隐私政策这类需要连续阅读的
+   * 内容才用它，控制台里的表单说明与普通段落仍是 body（14/20）。 */
+  --ds-text-long: var(--text-long);
   --ds-text-label: var(--text-sm);
   --ds-text-caption: var(--text-xs);
   --ds-text-mono: var(--text-mono);
+  /* 等宽派生档：只在等宽场景出现，见 docs/design-system/typography.md */
+  --ds-text-mono-code: var(--text-mono-code);
+  --ds-text-mono-title: var(--text-mono-title);
 
   /* ── 语义行高 ──────────────────────────────────────────────────────── */
   --ds-line-display: var(--text-4xl--line-height, 2.5rem);
@@ -56,12 +68,16 @@ For commercial licensing, please contact support@uter.ai
   --ds-line-section-title: var(--text-2xl--line-height, 2rem);
   --ds-line-card-title: var(--text-lg--line-height, 1.75rem);
   --ds-line-dialog-title: var(--text-lg--line-height, 1.75rem);
-  --ds-line-body: var(--text-base--line-height, 1.5rem);
+  --ds-line-group-title: var(--text-base--line-height, 1.5rem);
+  --ds-line-body: var(--text-sm--line-height, 1.25rem);
   --ds-line-body-sm: var(--text-sm--line-height, 1.25rem);
+  --ds-line-long: var(--text-long--line-height, 1.625rem);
   --ds-line-label: var(--text-sm--line-height, 1.25rem);
   --ds-line-caption: var(--text-xs--line-height, 1rem);
   --ds-line-mono: var(--text-mono--line-height, 1.25rem);
-  /* 密集等宽（例外 E2/E3）：表格/日志/行内代码用 22px 行高 */
+  --ds-line-mono-code: var(--text-mono-code--line-height, 1.25rem);
+  --ds-line-mono-title: var(--text-mono-title--line-height, 1.375rem);
+  /* 密集等宽（例外 E2）：表格/日志/行内代码用 22px 行高 */
   --ds-line-mono-dense: 1.375rem; /* 22px */
 
   /* ── 语义字重 ──────────────────────────────────────────────────────── */
@@ -73,11 +89,19 @@ For commercial licensing, please contact support@uter.ai
   /* ── 语义圆角（对应文档 1.3 Shape）────────────────────────────────── */
   --ds-radius-xs: var(--primitive-radius-xs); /* 4px 极小徽标、内嵌标记 */
   --ds-radius-sm: var(--primitive-radius-sm); /* 6px 关闭按钮、密集控件点击区 */
-  --ds-radius-md: var(--primitive-radius-md); /* 8px 按钮、输入框、标签页触发器（默认） */
-  --ds-radius-lg: var(--primitive-radius-lg); /* 10px 卡片、弹窗、标签页容器、图标按钮 */
-  --ds-radius-xl: var(--primitive-radius-xl); /* 12px 强调容器、大圆角方形头像 */
+  --ds-radius-md: var(
+    --primitive-radius-md
+  ); /* 8px 按钮、输入框、标签页触发器（默认） */
+  --ds-radius-lg: var(
+    --primitive-radius-lg
+  ); /* 10px 卡片、弹窗、标签页容器、图标按钮 */
+  --ds-radius-xl: var(
+    --primitive-radius-xl
+  ); /* 12px 强调容器、大圆角方形头像 */
   --ds-radius-2xl: var(--primitive-radius-2xl); /* 16px 展示型卡片 */
-  --ds-radius-full: var(--primitive-radius-full); /* 胶囊徽标、圆形头像、开关轨道 */
+  --ds-radius-full: var(
+    --primitive-radius-full
+  ); /* 胶囊徽标、圆形头像、开关轨道 */
 
   /* ── 语义描边（文档 1.4 Stroke）───────────────────────────────────── */
   --ds-stroke-width: 1px;
@@ -86,4 +110,44 @@ For commercial licensing, please contact support@uter.ai
   --ds-stroke-color-destructive: var(--destructive);
   --ds-focus-ring-width: 2px;
   --ds-focus-ring-color: var(--ring);
+
+  /* ── 语义图标（规范 §2.2 Icons，2026-10-28 13:24 版）──────────────────
+   *
+   * 「Lucide 线性图标；描边统一 2px；尺寸逐场景固定 16 / 18 / 24 / 32 / 48。」
+   *
+   * 规范 §2.2 的尺寸表逐场景给定尺寸，描边列每行都是 **2px**，三个
+   * `--icon-stroke-width*` Token 也全是 2px —— 所以全站描边统一 2，
+   * 不再按尺寸分三档粗细（2.25 / 1.75 / 2.5 是更早版本的取值）。
+   *
+   * · `--ds-icon-size` **18px**：默认档 —— 按钮内前置后置、工具栏与卡片操作、
+   *   **侧边栏**、主导航与 Tabs、提示与状态图标（13:24 版把默认档从 20 收到 18，
+   *   同时把侧边栏从 16 提到 18）；
+   * · `--ds-icon-size-compact` **16px**：只剩「密集信息里的辅助图标」一个落点，
+   *   以及 24px 容器（`icon-xs`）里放不下 18px 的图标；
+   * · `--ds-icon-size-emphasis` 24px：强调型功能入口；
+   * · `--ds-icon-size-empty` 32px：空状态图标；
+   * · `--ds-icon-size-display` 48px：**整页级空状态**；
+   * · `--ds-icon-frame` 是 Lucide 的 viewBox 坐标系（24px），只用于换算，
+   *   不参与布局。
+   *
+   * 规范文档里这三个描边 Token 写作 `--icon-stroke-width-sm` /
+   * `--icon-stroke-width` / `--icon-stroke-width-emphasis`。本项目语义层统一带
+   * `--ds-` 前缀，因此在下方给出同名别名 —— **两者同源**，`--ds-*` 是唯一实现。
+   *
+   * 颜色**没有**对应的 `--ds-icon-color`：规范要求跟随父级文字色，
+   * Lucide 内置 `stroke="currentColor"` 已满足。 */
+  --ds-icon-size: var(--primitive-icon-glyph);
+  --ds-icon-size-compact: var(--primitive-icon-glyph-compact);
+  --ds-icon-size-emphasis: var(--primitive-icon-glyph-emphasis);
+  --ds-icon-size-empty: var(--primitive-icon-glyph-empty);
+  --ds-icon-size-display: var(--primitive-icon-glyph-display);
+  --ds-icon-frame: var(--primitive-icon-frame);
+  --ds-icon-stroke-width-sm: var(--primitive-icon-stroke-sm);
+  --ds-icon-stroke-width: var(--primitive-icon-stroke);
+  --ds-icon-stroke-width-emphasis: var(--primitive-icon-stroke-emphasis);
+
+  /* 规范 §2.2 原文命名（别名，与上面三个同源） */
+  --icon-stroke-width-sm: var(--ds-icon-stroke-width-sm);
+  --icon-stroke-width: var(--ds-icon-stroke-width);
+  --icon-stroke-width-emphasis: var(--ds-icon-stroke-width-emphasis);
 }

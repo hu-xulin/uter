@@ -23,14 +23,27 @@ For commercial licensing, please contact support@uter.ai
  *   h1       30 / 600 / 36   页面标题
  *   h2       24 / 600 / 32   区块标题
  *   h3       18 / 600 / 28   卡片标题、弹窗标题
- *   body     16 / 400 / 24   正文段落、卡片正文
- *   body-sm  14 / 400 / 20   次要正文、表格单元格
+ *   body     14 / 400 / 20   常规正文、表单内容、普通说明（全站基准）
+ *   body-long 16 / 400 / 26  长文本：文章、协议、帮助文档、连续阅读
+ *   body-sm  14 / 400 / 20   紧凑辅助正文、表格单元格
  *   label    14 / 500 / 20   按钮文字、表单标签、导航项
  *   caption  12 / 400 / 16   说明、占位符、徽标
- *   mono     13 / 400 / 20   代码、金额、等宽标识
+ *   mono     14 / 400 / 20   正文里的等宽文本（模型 ID、密钥、金额、行内代码）
  *
- * mono 是九档里唯一非 4 倍数的一档：等宽字形比 Inter 同字号更宽，
- * 14px 等宽在表格列与固定高度代码卡里会溢出，13px 才与 body-sm 视觉等重。
+ * ⚠️ `body` 与 `body-sm` 在新规范里**同为 14/20**。两者保留两个名字是因为
+ * 语义不同（基准正文 vs 紧凑辅助），不是两档字号；把 `body` 当 16px 用是
+ * 旧规范（2026-10-27 之前）的写法，已废止。需要 16px 的连续阅读场景一律走
+ * `body-long`（16/26），不要拿 `text-base` 当正文。
+ *
+ * mono 档另有两个**等宽专用派生档**，只在等宽场景出现，不占九档位置
+ * （详见 docs/design-system/typography.md「mono 三档」）：
+ *
+ *   mono-code  13 / 400 / 20  固定高度的等宽代码容器（首页代码卡片、编辑器视口）
+ *   mono-title 16 / 600 / 22  用等宽字形的卡片标题（定价卡片模型名）
+ *
+ * 为什么正文等宽是 14px：等宽字形比 Inter 同字号更宽，13px 在正文里与
+ * 14px 的 body-sm 并排会明显偏小；只有整块等宽的代码展示区才需要 13px
+ * 来保证固定高度卡片里的行数与不溢出。
  *
  * ⚠️ 必须声明在 `@theme` 里，不能写在 `:root`。
  * Tailwind v4 只从 `@theme` 读取主题值：写在 `:root` 的 `--text-*`
@@ -46,13 +59,25 @@ For commercial licensing, please contact support@uter.ai
   --text-xs: 0.75rem; /* 12px — caption */
   --text-xs--line-height: 1rem; /* 16px */
 
-  --text-sm: 0.875rem; /* 14px — body-sm / label */
+  --text-sm: 0.875rem; /* 14px — body / body-sm / label */
   --text-sm--line-height: 1.25rem; /* 20px */
 
-  --text-mono: 0.8125rem; /* 13px — mono，代码与等宽标识 */
+  --text-mono: 0.875rem; /* 14px — mono，正文里的等宽文本 */
   --text-mono--line-height: 1.25rem; /* 20px */
 
-  --text-base: 1rem; /* 16px — body */
+  --text-mono-code: 0.8125rem; /* 13px — 固定高度的等宽代码容器（首页代码卡片、编辑器视口） */
+  --text-mono-code--line-height: 1.25rem; /* 20px */
+
+  --text-mono-title: 1rem; /* 16px — 等宽卡片标题（定价卡片模型名） */
+  --text-mono-title--line-height: 1.375rem; /* 22px */
+
+  /* body-long：16/26，只给连续阅读的长文本。行高 26 而不是 24，是因为
+   * 16px 中文正文在 1.5 倍行高下仍然偏挤，26/16 = 1.625 才接近印刷体
+   * 的阅读节奏。 */
+  --text-long: 1rem; /* 16px — body-long */
+  --text-long--line-height: 1.625rem; /* 26px */
+
+  --text-base: 1rem; /* 16px — group-title / body-long 的原始值，**不是**正文 */
   --text-base--line-height: 1.5rem; /* 24px */
 
   --text-lg: 1.125rem; /* 18px — h3 */
@@ -78,4 +103,45 @@ For commercial licensing, please contact support@uter.ai
   --font-weight-medium: 500;
   --font-weight-semibold: 600;
   --font-weight-bold: 700;
+}
+
+/* ── 无障碍大字档（`simple-large` 预设）───────────────────────────────
+ * 用户在主题里主动开启的「超大字体简易」预设。它是**同一套九档阶梯的放大
+ * 档**，不是第二套字号体系：档位名称、用途、相对顺序完全一致，只有取值按
+ * ~1.35× 放大，行高同比放大以维持原阶梯的阅读节奏。
+ *
+ * 为什么声明在这里而不是 `styles/theme-presets.css`：
+ * 规范第八节要求「字号、行高、字重、字体」由 Typography 统一管理，主题只管
+ * 颜色、密度只管间距。此前这段覆盖写在主题预设文件里，等于让字号阶梯出现
+ * 了第二个来源 —— 改 `typography.css` 的基准值对这个预设无效，改这个预设
+ * 也不会影响其他预设，两边迟早对不上。现在两个来源合一，`check-design-tokens`
+ * 的 T1 规则（`--text-*` 只能出现在本文件）也就不再需要例外。
+ *
+ * 声明在 `@theme` 之外：这些是**运行时按 data 属性切换**的覆盖值，不是主题
+ * 变量注册；放在 `@theme` 里会被 Tailwind 当成默认值再生成一遍工具类。 */
+[data-theme-preset='simple-large'] {
+  --text-xs: 1rem; /* 16px */
+  --text-xs--line-height: 1.375rem; /* 22px */
+  --text-sm: 1.125rem; /* 18px */
+  --text-sm--line-height: 1.625rem; /* 26px */
+  --text-mono: 1.0625rem; /* 17px — 与 body-sm 18px 保持等宽视觉等重 */
+  --text-mono--line-height: 1.5rem; /* 24px */
+  --text-mono-code: 1.0625rem; /* 17px */
+  --text-mono-code--line-height: 1.625rem; /* 26px */
+  --text-mono-title: 1.25rem; /* 20px */
+  --text-mono-title--line-height: 1.75rem; /* 28px */
+  --text-long: 1.25rem; /* 20px */
+  --text-long--line-height: 2rem; /* 32px */
+  --text-base: 1.25rem; /* 20px */
+  --text-base--line-height: 1.75rem; /* 28px */
+  --text-lg: 1.5rem; /* 24px */
+  --text-lg--line-height: 2rem; /* 32px */
+  --text-xl: 1.75rem; /* 28px */
+  --text-xl--line-height: 2.25rem; /* 36px */
+  --text-2xl: 2.25rem; /* 36px */
+  --text-2xl--line-height: 2.75rem; /* 44px */
+  --text-3xl: 2.75rem; /* 44px */
+  --text-3xl--line-height: 3.25rem; /* 52px */
+  --text-4xl: 3.375rem; /* 54px */
+  --text-4xl--line-height: 3.875rem; /* 62px */
 }

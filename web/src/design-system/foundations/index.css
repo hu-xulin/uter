@@ -21,8 +21,9 @@ For commercial licensing, please contact support@uter.ai
  * （`styles/index.css`）做了一次 reset，再叠一份只会互相打架 ——
  * 基础重置只保留一个实现位置。
  *
- * 顺序：排版工具类 → 无障碍 → 动效。
+ * 顺序：排版工具类 → 无障碍 → 动效 → 图标。
  */
 @import './typography.css';
 @import './accessibility.css';
 @import './motion.css';
+@import './icons.css';

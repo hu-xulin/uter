@@ -18,17 +18,24 @@ For commercial licensing, please contact support@uter.ai
 */
 /* ── Foundations · Accessibility ──────────────────────────────────────
  * 三条硬约束：
- *   1. 键盘焦点必须可见 —— 统一 2px 外扩环，不允许组件用
- *      `outline: none` 把它抹掉；
+ *   1. 键盘焦点必须可见 —— 全站只有**一种**焦点指示器：2px 环，贴着元素
+ *      边框外侧（几何与组件的 `focus-visible:ring-2` 完全一致）；
  *   2. 尊重 `prefers-reduced-motion`；
  *   3. 触控目标不小于 24×24（WCAG 2.2 AA · Target Size）。
+ *
+ * ⚠️ 焦点指示器的唯一来源是这里（原生元素）+ `components/ui/*` 的
+ *    `focus-visible:ring-2 focus-visible:ring-ring`（组件元素）。两者必须
+ *    是**同一种视觉**：`ring-2` 是 `box-shadow: 0 0 0 2px`，贴在边框外沿、
+ *    不带间隙，所以这里的 `outline-offset` 必须是 `0`。曾经写成 `2px`，
+ *    结果键盘 Tab 在原生 `<button>`（外扩 2px）和 `Button`（贴边）之间
+ *    跳变 —— 同一次 Tab 里焦点环会「跳一下」。
  */
 
 @layer base {
   /* 只在键盘导航时显示焦点环，鼠标点击不显示（:focus-visible 语义） */
   :where(a, button, [role='button'], [tabindex]):focus-visible {
-    outline: var(--ds-focus-ring-width) solid var(--ds-color-focus-ring);
-    outline-offset: 2px;
+    outline: var(--ds-focus-ring-width) solid var(--ds-focus-ring-color);
+    outline-offset: 0;
   }
 
   /* 屏幕阅读器专用文本 */
@@ -56,9 +63,25 @@ For commercial licensing, please contact support@uter.ai
   }
 }
 
-/* 触控目标下限：仅对声明了 ds-touch-target 的控件生效，避免影响
-   密集表格里的图标按钮布局 */
+/* 触控目标下限 24×24（WCAG 2.2 AA · 2.5.8）。
+ *
+ * 密集容器（徽标内的移除、表格行内的图标按钮）里视觉尺寸只能是 16–20px，
+ * 直接给 `min-width` 会把行高撑起来、把徽标顶开。所以这里**不改元素盒子**，
+ * 而是用一个居中的伪元素把**可点击区域**扩到 24px —— 视觉不变、布局不变，
+ * 只有命中区域变大。
+ *
+ * ⚠️ 用 `position: relative` + `::after` 覆盖，所以只能用在**没有**自己
+ * `::after` 的元素上（侧栏拖拽轨、进度环这类不要加）。 */
 .ds-touch-target {
-  min-width: 1.5rem;
-  min-height: 1.5rem;
+  position: relative;
+}
+
+.ds-touch-target::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: max(100%, 1.5rem);
+  height: max(100%, 1.5rem);
+  transform: translate(-50%, -50%);
 }

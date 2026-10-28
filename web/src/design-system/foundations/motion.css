@@ -17,19 +17,63 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@uter.ai
 */
 /* ── Foundations · Motion ─────────────────────────────────────────────
- * 只保留两档时长（100ms 状态反馈 / 200ms 展开收起），全部引用
- * `--ds-motion-*`。组件里写 `duration-300`、`duration-500` 属于
- * 未登记的自定义节奏，新增代码请改用这两个类。
+ * 规范 §1.6：动效时长按「这段动效在表达什么」分五组，全部落在
+ * `--ds-motion-*`。组件里写 `duration-300`、`duration-[0.35s]`、
+ * `ease-[cubic-bezier(...)]` 属于未登记的自定义节奏。
+ *
+ *   交互反馈  ds-motion-fast / ds-motion-base / ds-motion-slow
+ *   营销节奏  ds-motion-marketing-fast / ds-motion-marketing
+ *   数据过渡  ds-motion-data / ds-motion-data-fast
+ *
+ * 三组之外（内容入场、循环动画）写在 `styles/index.css` 的 keyframes 上，
+ * 因为它们必须和 `@keyframes` 一起声明，拆开反而更难读。
+ *
+ * 为什么时长和缓动捆在同一个类里：缓动曲线是**节奏的一部分**，不是独立
+ * 维度。营销面的 500ms 配 ease-in-out 会显得拖沓，后台的 100ms 配
+ * ease-out-expo 又会显得抽搐 —— 允许自由组合就等于允许组合出错的节奏。
+ *
+ * ⚠️ 必须写成 `@utility` 而不是 `@layer utilities { .ds-motion-x }`：
+ * 只有 `@utility` 注册的类才会被 Tailwind 的变体系统识别，
+ * `data-ending-style:ds-motion-fast` 这类写法才会生成对应选择器。写成
+ * 普通 CSS 类时变体静默失效 —— 类名挂在 DOM 上，样式一条都没生效。
  */
 
-@layer utilities {
-  .ds-motion-fast {
-    transition-duration: var(--ds-motion-fast);
-    transition-timing-function: var(--ds-motion-ease);
-  }
+@utility ds-motion-fast {
+  transition-duration: var(--ds-motion-fast);
+  transition-timing-function: var(--ds-motion-ease);
+}
 
-  .ds-motion-base {
-    transition-duration: var(--ds-motion-base);
-    transition-timing-function: var(--ds-motion-ease);
-  }
+@utility ds-motion-base {
+  transition-duration: var(--ds-motion-base);
+  transition-timing-function: var(--ds-motion-ease);
+}
+
+/* 浮层视口 / 背板整块位移。 */
+@utility ds-motion-slow {
+  transition-duration: var(--ds-motion-slow);
+  transition-timing-function: var(--ds-motion-ease-snappy);
+}
+
+/* 营销面的微交互（悬停、描边、下划线生长）。 */
+@utility ds-motion-marketing-fast {
+  transition-duration: var(--ds-motion-marketing-fast);
+  transition-timing-function: var(--ds-motion-ease-marketing);
+}
+
+/* 营销面的容器级位移（整块展开、移动端全屏菜单）。 */
+@utility ds-motion-marketing {
+  transition-duration: var(--ds-motion-marketing-base);
+  transition-timing-function: var(--ds-motion-ease-marketing);
+}
+
+/* 值在变化，不是操作被响应。进度环、数字滚动这类过渡必须比交互反馈
+   慢一档：100ms 的跳变读不出「它正在从 30% 走到 60%」。 */
+@utility ds-motion-data {
+  transition-duration: var(--ds-motion-data);
+  transition-timing-function: var(--ds-motion-ease);
+}
+
+@utility ds-motion-data-fast {
+  transition-duration: var(--ds-motion-data-fast);
+  transition-timing-function: var(--ds-motion-ease);
 }

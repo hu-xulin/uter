@@ -33,12 +33,24 @@ For commercial licensing, please contact support@uter.ai
   /* ── 文本 ──────────────────────────────────────────────────────────── */
   --ds-color-text-primary: var(--foreground);
   --ds-color-text-secondary: var(--muted-foreground);
+  /* 三级文字：页脚法规行 / 版权行这类辅助小字。取值与 `theme.css` 的
+   * `--color-tertiary-foreground` 同一表达式（那边有完整理由）：必须写成
+   * `color-mix()` 本身，才能在 `<body data-theme-preset>` 覆盖调色板时
+   * 跟着一起变。 */
+  --ds-color-text-tertiary: color-mix(
+    in oklch,
+    var(--muted-foreground) 88%,
+    var(--background)
+  );
   --ds-color-text-disabled: color-mix(
     in oklch,
     var(--muted-foreground) 55%,
     transparent
   );
   --ds-color-text-inverse: var(--primary-foreground);
+  /* 饱和填充（品牌色、成功/警告色块、头像渐变）上的文字：恒为白，
+   * 深浅主题一致。用于替代散落的 `text-white`（规范 C-03 禁止手写白字）。 */
+  --ds-color-text-on-emphasis: #ffffff;
   --ds-color-text-danger: var(--destructive);
   --ds-color-text-success: var(--success);
   --ds-color-text-warning: var(--warning);
@@ -46,7 +58,9 @@ For commercial licensing, please contact support@uter.ai
 
   /* ── 柔和态（soft）状态色：浅底 + 深字徽标/提示条 ───────────────────
    * 取值等于现状渲染值（见 styles/theme.css 的 --*-soft / --*-soft-foreground），
-   * 迁移零视觉变化，且避免直接 bg-*/10 + text-* 造成的可访问性回归。 */
+   * 迁移零视觉变化，且避免「底色加透明度 + 满色文字」造成的可访问性回归。
+   * 注意：注释里不要写 `bg-` 加斜杠加数字这类 Tailwind 写法，
+   * 其中的斜杠星号会提前闭合 CSS 注释。 */
   --ds-color-success-soft: var(--success-soft);
   --ds-color-success-soft-foreground: var(--success-soft-foreground);
   --ds-color-destructive-soft: var(--destructive-soft);
@@ -64,10 +78,24 @@ For commercial licensing, please contact support@uter.ai
   --ds-color-surface-secondary: var(--secondary);
   --ds-color-surface-accent: var(--accent);
   --ds-color-surface-sidebar: var(--sidebar);
+  /* 遮罩层：弹窗 / 抽屉 / 移动端全屏菜单背后压暗下层的那一层。
+   * 恒为黑，深浅主题同一取值 —— 遮罩的作用是「把后面压下去」，如果跟着
+   * 主题变浅，深色模式下就等于没有遮罩。浓淡由调用方的透明度修饰表达
+   * （`bg-surface-overlay/10`、`/50`），不在这里拆成两个 Token。
+   * 与 `--ds-color-text-on-emphasis` 同理，只在 `:root` 声明一次。 */
+  --ds-color-surface-overlay: #000000;
+  /* 纯白表面：二维码底、滑块手柄这类**必须**在深浅主题下都保持纯白的
+   * 表面。二维码是给摄像头读的，压成 `--card` 的暖白会掉对比度；滑块
+   * 手柄靠白与轨道色区分，跟着主题变深就看不见了。 */
+  --ds-color-surface-pure: #ffffff;
 
   /* ── 主操作 ────────────────────────────────────────────────────────── */
   --ds-color-action-primary: var(--primary);
+  /* 主按钮底：规范 1.1.1 要求实心主按钮用 `primary-strong`（与白字配对），
+   * 深色主题下它与 `primary` 取值不同，所以不能直接复用 primary。 */
+  --ds-color-action-primary-strong: var(--primary-strong, var(--primary));
   --ds-color-action-primary-hover: var(--hover-primary, var(--primary));
+  --ds-color-action-primary-active: var(--primary-active, var(--primary));
   --ds-color-action-primary-foreground: var(--primary-foreground);
   --ds-color-action-destructive: var(--destructive);
   --ds-color-action-destructive-hover: var(
@@ -77,10 +105,15 @@ For commercial licensing, please contact support@uter.ai
   --ds-color-action-success: var(--success);
   --ds-color-action-success-hover: var(--hover-success, var(--success));
 
-  /* ── 描边与焦点 ────────────────────────────────────────────────────── */
+  /* ── 品牌强调面 ────────────────────────────────────────────────────── */
+  --ds-color-primary-subtle: var(--primary-subtle, var(--accent));
+  --ds-color-primary-border: var(--primary-border, var(--border));
+
+  /* ── 描边 ──────────────────────────────────────────────────────────── */
   --ds-color-border: var(--border);
   --ds-color-border-input: var(--input);
   --ds-color-border-sidebar: var(--sidebar-border);
   --ds-color-border-destructive: var(--destructive);
-  --ds-color-focus-ring: var(--ring);
+  /* 焦点环色不在这里 —— 语义层的 `--ds-focus-ring-color` 是唯一来源，
+     两者曾同时存在（一个零引用），见 `tokens/semantic.css`。 */
 }

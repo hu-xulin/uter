@@ -75,4 +75,40 @@ For commercial licensing, please contact support@uter.ai
   --primitive-radius-xl: 12px;
   --primitive-radius-2xl: 16px;
   --primitive-radius-full: 9999px;
+
+  /* ── Icon primitives（规范 §2.2，2026-10-28 13:24 版）
+   *
+   * 规范原文：「图标统一使用 Lucide 线性图标……标准描边默认 2px，重要操作
+   * 可使用 2px；禁止在常规界面中继续使用 1px 描边。图标尺寸指 SVG 实际渲染
+   * 尺寸，不要把 14px 图形强行放进 24px 画框造成视觉过小。**默认 18px 图标配
+   * 24px 点击区域；紧凑场景可使用 16px 图标，导航和主要操作优先使用 18px
+   * 图标。**」
+   *
+   * 13:24 版把默认档从 20px 收到 **18px**，并且**侧边栏也回到 18px** ——
+   * 10:58 版曾压到 16 / 24 / 32 / 48，11:41 版恢复 20px，这一版定在 18。
+   * 尺寸表（逐场景固定，以表为准）：
+   *
+   *   按钮内前置后置 18 / 工具栏与卡片操作 18 / **侧边栏 18** /
+   *   主导航与 Tabs 18 / 提示与状态 18 / **紧凑型辅助 16** /
+   *   **强调型功能入口 24** / **空状态 32** / **整页级空状态 48**。
+   *
+   * 所以「默认档」（`--primitive-icon-glyph`）是 **18px**，
+   * `--primitive-icon-glyph-compact` 16px 只剩「密集信息里的辅助图标」一个
+   * 落点 —— 侧边栏不再用它。
+   *
+   * `--primitive-icon-frame: 24px` 是 **Lucide 的 viewBox 画框**，不是渲染尺寸
+   * —— 所有 Lucide 图标都画在 `viewBox="0 0 24 24"` 里，这是坐标系，不可改。
+   *
+   * 线宽按画框单位换算：`视觉线宽 = stroke-width × 渲染尺寸 / 24`。
+   * 规范给的就是画框值 2（16px 渲染 ≈ 1.33px，18px = 1.5px，24px = 2px，
+   * 32px ≈ 2.67px，48px = 4px）。 */
+  --primitive-icon-frame: 24px;
+  --primitive-icon-glyph: 18px;
+  --primitive-icon-glyph-compact: 16px;
+  --primitive-icon-glyph-emphasis: 24px;
+  --primitive-icon-glyph-empty: 32px;
+  --primitive-icon-glyph-display: 48px;
+  --primitive-icon-stroke-sm: 2;
+  --primitive-icon-stroke: 2;
+  --primitive-icon-stroke-emphasis: 2;
 }

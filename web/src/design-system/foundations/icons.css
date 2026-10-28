@@ -1,0 +1,67 @@
+/*
+Copyright (C) 2023-2026 Uter.ai
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+
+For commercial licensing, please contact support@uter.ai
+*/
+/* ── Foundations · Icons ──────────────────────────────────────────────
+ * 规范 §2.2（2026-10-28 13:24 版）：**Lucide 线性图标，描边统一 2px；
+ * 尺寸逐场景固定 16 / 18 / 24 / 32 / 48；颜色跟随父级文字色。**
+ *
+ * ## 三条硬规则与它们的落点
+ *
+ * | 规则 | 落点 |
+ * | --- | --- |
+ * | 图标库只有 Lucide | `design-system/__tests__/spec-guards.test.ts` 的 `icon library` 守卫 |
+ * | 默认 18px / 描边 2 | 本文件的 base 兜底 + `<LucideProvider size={18} strokeWidth={2}>` |
+ * | 颜色跟随父级文字色 | Lucide 内置 `stroke="currentColor"`，不做二次覆写 |
+ *
+ * ## 线宽是「画框单位」，不是渲染 px
+ *
+ * Lucide 的路径画在 `viewBox="0 0 24 24"` 里，`stroke-width` 是**画框单位**：
+ *
+ * ```
+ * 视觉线宽 = stroke-width × (渲染尺寸 / 24)
+ * 2 × 16 / 24 = 1.33px   ← 紧凑型辅助（16px 档，仅密集信息）
+ * 2 × 18 / 24 = 1.5px    ← 按钮内 / 工具栏 / 侧边栏 / 主导航与 Tabs / 状态图标（默认档）
+ * 2 × 24 / 24 = 2px      ← 强调型功能入口
+ * 2 × 32 / 24 = 2.67px   ← 空状态
+ * 2 × 48 / 24 = 4px      ← 整页级空状态
+ * ```
+ *
+ * 规范给的就是画框值 2，所以这里**不做 px 反推**。三档 Token
+ * （`--primitive-icon-stroke-sm` / `-` / `-emphasis`）取值都是 2 —— 保留三档
+ * 是为了让语义落点稳定，不是要造出三种粗细。
+ *
+ * ## 为什么这里只兜底「尺寸」
+ *
+ * `width` / `height` 的兜底放在 `@layer base`：Tailwind v4 的层级顺序是
+ * `theme < base < components < utilities`，**层顺序优先于选择器特异性**，
+ * 因此 `size-4` / `size-6` 等工具类永远能盖过这条兜底。
+ *
+ * `stroke-width` **不**放这里：CSS 声明会盖过 SVG 的 presentation
+ * attribute，从而吃掉调用点显式写的 `strokeWidth`。线宽改由
+ * `<LucideProvider strokeWidth={2}>` 全局下发 —— 调用点的显式 prop
+ * 优先级更高，不会被吞掉。
+ */
+
+@layer base {
+  /* 既没有 size prop、也没有 size class 的 Lucide 图标，
+   * 兜底到默认档 18px（避免落到 Lucide 默认的 24px）。 */
+  svg.lucide {
+    width: var(--ds-icon-size, 1.125rem);
+    height: var(--ds-icon-size, 1.125rem);
+  }
+}
