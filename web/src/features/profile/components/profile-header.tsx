@@ -30,11 +30,7 @@ import {
   formatBillingCurrencyFromUSD,
   getCurrencyDisplay,
 } from '@/lib/currency'
-import {
-  formatCompactNumber,
-  formatQuota,
-  formatUserId,
-} from '@/lib/format'
+import { formatCompactNumber, formatQuota, formatUserId } from '@/lib/format'
 import { getRoleLabel } from '@/lib/roles'
 
 import { getDisplayName } from '../lib'
@@ -190,7 +186,7 @@ export function ProfileHeader({ profile, loading }: ProfileHeaderProps) {
         <div className='flex items-center gap-3 text-left sm:gap-4'>
           <Avatar className='ring-background h-12 w-12 rounded-full text-sm ring-2 sm:h-16 sm:w-16 sm:text-lg sm:ring-4'>
             <AvatarFallback
-              className='rounded-full font-semibold text-white'
+              className='text-on-emphasis rounded-full font-semibold'
               style={avatarFallbackStyle}
             >
               {avatarFallback}
@@ -199,7 +195,7 @@ export function ProfileHeader({ profile, loading }: ProfileHeaderProps) {
 
           <div className='min-w-0 flex-1 space-y-1.5 sm:space-y-3'>
             <div className='flex min-w-0 items-center gap-2'>
-              <Heading variant='section-title' level={1} truncate>
+              <Heading variant='page-title' level={1} truncate>
                 {displayName}
               </Heading>
               <StatusBadge
@@ -232,7 +228,7 @@ export function ProfileHeader({ profile, loading }: ProfileHeaderProps) {
 
             {inOrganization && (
               <p className='text-muted-foreground flex items-center gap-1.5 text-sm'>
-                <Building2 className='size-3.5 shrink-0' />
+                <Building2 className='size-4 shrink-0' />
                 <span className='truncate'>
                   {(profile.organization_name
                     ? `${profile.organization_name} · `
@@ -258,7 +254,9 @@ export function ProfileHeader({ profile, loading }: ProfileHeaderProps) {
                 <IconBadge tone={item.tone} size='stat'>
                   <item.icon />
                 </IconBadge>
-                <div className='text-muted-foreground truncate text-xs font-medium uppercase'>
+                {/* 指标名是内容而不是徽标，按 label 档（14/500）走；
+                    12px 在中文指标名下会糊成一片。 */}
+                <div className='text-muted-foreground truncate text-sm font-medium'>
                   {item.label}
                 </div>
               </div>
@@ -266,7 +264,7 @@ export function ProfileHeader({ profile, loading }: ProfileHeaderProps) {
               <div className='text-foreground mt-1.5 truncate text-lg font-semibold tabular-nums sm:mt-2 sm:text-2xl'>
                 {item.value}
               </div>
-              <div className='text-muted-foreground/60 mt-1 hidden text-sm md:block'>
+              <div className='text-muted-foreground mt-1 hidden text-sm md:block'>
                 {item.description}
               </div>
             </div>

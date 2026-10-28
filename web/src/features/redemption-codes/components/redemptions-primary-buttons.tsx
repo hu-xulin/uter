@@ -65,11 +65,11 @@ export function RedemptionsPrimaryButtons() {
           variant='outline'
           onClick={() => setShowDeleteInvalidConfirm(true)}
         >
-          <Trash2 className='text-destructive h-4 w-4' />
+          <Trash2 className='text-destructive size-4' />
           {t('Delete Invalid')}
         </Button>
         <Button size='sm' onClick={() => setOpen('create')}>
-          <Plus className='h-4 w-4' />
+          <Plus className='size-4' />
           {t('Create Code')}
         </Button>
       </div>

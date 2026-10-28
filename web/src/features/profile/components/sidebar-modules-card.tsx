@@ -31,6 +31,7 @@ import {
 } from '@/components/ui/card'
 import { IconBadge } from '@/components/ui/icon-badge'
 import { Switch } from '@/components/ui/switch'
+import { Heading } from '@/design-system'
 import { api } from '@/lib/api'
 import { handleServerError } from '@/lib/handle-server-error'
 import { useAuthStore } from '@/stores/auth-store'
@@ -220,9 +221,7 @@ export function SidebarModulesCard() {
             <LayoutDashboard />
           </IconBadge>
           <div className='min-w-0'>
-            <CardTitle>
-              {t('Sidebar Personal Settings')}
-            </CardTitle>
+            <CardTitle>{t('Sidebar Personal Settings')}</CardTitle>
             <CardDescription>
               {t('Customize sidebar display content')}
             </CardDescription>
@@ -239,7 +238,9 @@ export function SidebarModulesCard() {
             >
               <div className='flex items-start justify-between gap-3'>
                 <div className='min-w-0'>
-                  <p className='text-sm font-medium'>{section.title}</p>
+                  <Heading variant='group-title' level={4}>
+                    {section.title}
+                  </Heading>
                   <p className='text-muted-foreground text-sm'>
                     {section.description}
                   </p>

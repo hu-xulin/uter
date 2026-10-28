@@ -16,12 +16,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
-import {
-  ArrowUp01Icon,
-  InformationCircleIcon,
-  RefreshIcon,
-} from '@hugeicons/core-free-icons'
-import { HugeiconsIcon } from '@hugeicons/react'
+import { ChevronUp, Info, RefreshCw } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -79,32 +74,38 @@ function AdminSystemUpdateAction(props: SystemUpdateActionProps) {
         : versionDescription
   }
 
+  // 三种状态的触发图标：用 if/else 而不是嵌套三元，避免 no-nested-ternary。
+  let triggerIcon = <RefreshCw data-icon='inline-start' aria-hidden='true' />
+  if (update.checking) {
+    triggerIcon = <Spinner data-icon='inline-start' aria-hidden='true' />
+  } else if (update.shouldNotify) {
+    triggerIcon = <ChevronUp data-icon='inline-start' aria-hidden='true' />
+  }
+
   let triggerContent = (
     <>
-      {update.checking ? (
-        <Spinner data-icon='inline-start' aria-hidden='true' />
-      ) : (
-        <HugeiconsIcon
-          icon={update.shouldNotify ? ArrowUp01Icon : RefreshIcon}
-          data-icon='inline-start'
-          aria-hidden='true'
-        />
-      )}
+      {triggerIcon}
       <span className={cn(compact && 'hidden lg:inline')}>{label}</span>
     </>
   )
   if (versionPresentation) {
     triggerContent = (
       <>
-        <HugeiconsIcon
-          icon={update.shouldNotify ? ArrowUp01Icon : InformationCircleIcon}
-          className={cn(
-            '@min-[22rem]/system-brand:hidden',
-            update.shouldNotify && 'text-primary'
-          )}
-          aria-hidden='true'
-        />
-        <span className='hidden max-w-32 truncate font-mono text-mono @min-[22rem]/system-brand:inline'>
+        {update.shouldNotify ? (
+          <ChevronUp
+            className={cn('@min-[22rem]/system-brand:hidden', 'text-primary')}
+            aria-hidden='true'
+          />
+        ) : (
+          <Info
+            className={cn(
+              '@min-[22rem]/system-brand:hidden',
+              update.shouldNotify && 'text-primary'
+            )}
+            aria-hidden='true'
+          />
+        )}
+        <span className='text-mono hidden max-w-32 truncate font-mono @min-[22rem]/system-brand:inline'>
           {version}
         </span>
         {update.shouldNotify && (
@@ -126,6 +127,7 @@ function AdminSystemUpdateAction(props: SystemUpdateActionProps) {
       update={update}
       trigger={
         <Button
+          size='sm'
           type='button'
           variant={
             !versionPresentation && update.shouldNotify ? 'outline' : 'ghost'
@@ -136,10 +138,10 @@ function AdminSystemUpdateAction(props: SystemUpdateActionProps) {
           className={cn(
             'relative',
             versionPresentation &&
-              'text-muted-foreground size-8 px-0 @min-[22rem]/system-brand:h-7 @min-[22rem]/system-brand:w-auto @min-[22rem]/system-brand:gap-1.5 @min-[22rem]/system-brand:px-1.5',
+              'text-muted-foreground px-0 @min-[22rem]/system-brand:w-auto @min-[22rem]/system-brand:gap-1.5 @min-[22rem]/system-brand:px-1.5',
             !versionPresentation &&
               compact &&
-              'size-8 px-0 lg:w-auto lg:gap-1.5 lg:px-2.5',
+              'px-0 lg:w-auto lg:gap-1.5 lg:px-2.5',
             !versionPresentation &&
               update.shouldNotify &&
               'border-primary/40 bg-primary/10 text-primary'

@@ -87,7 +87,7 @@ export function RedemptionsMobileList(props: RedemptionsMobileListProps) {
         <Empty className='border-none p-0'>
           <EmptyHeader>
             <EmptyMedia variant='icon'>
-              <Database className='size-6' />
+              <Database />
             </EmptyMedia>
             <EmptyTitle>{t('No Redemption Codes Found')}</EmptyTitle>
             <EmptyDescription>
@@ -124,10 +124,10 @@ export function RedemptionsMobileList(props: RedemptionsMobileListProps) {
           >
             <div className='flex items-start justify-between gap-3'>
               <div className='min-w-0'>
-                <div className='truncate text-sm font-semibold'>
+                <div className='truncate text-sm font-medium'>
                   {redemption.name}
                 </div>
-                <div className='text-muted-foreground text-xs'>
+                <div className='text-muted-foreground text-sm'>
                   {t('Redemption Code')}
                 </div>
               </div>

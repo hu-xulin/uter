@@ -32,6 +32,7 @@ import { ErrorState } from '@/components/error-state'
 import { Button } from '@/components/ui/button'
 import { NativeSelect, NativeSelectOption } from '@/components/ui/native-select'
 import { Skeleton } from '@/components/ui/skeleton'
+import { Heading } from '@/design-system'
 import { listSystemTasks } from '@/features/system-settings/api'
 import type {
   SystemTask,
@@ -121,8 +122,10 @@ export function SystemTaskHistory(props: { activeRefreshAt: number }) {
   return (
     <div className='space-y-3'>
       <div>
-        <h4 className='text-sm font-medium'>{t('Task History')}</h4>
-        <p className='text-muted-foreground mt-0.5 text-xs'>
+        <Heading variant='group-title' level={4}>
+          {t('Task History')}
+        </Heading>
+        <p className='text-muted-foreground mt-0.5 text-sm'>
           {t('Recently completed or failed system task runs.')}
         </p>
       </div>

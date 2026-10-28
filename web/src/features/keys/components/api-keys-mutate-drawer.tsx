@@ -538,7 +538,7 @@ export function ApiKeysMutateDrawer({
                           type='button'
                           variant='outline'
                           size='sm'
-                          className='px-2 text-xs sm:px-3 sm:text-sm'
+                          className='px-2 text-sm sm:px-3 sm:text-sm'
                           onClick={() => handleSetExpiry(0, 0, 0)}
                         >
                           {t('Never')}
@@ -547,7 +547,7 @@ export function ApiKeysMutateDrawer({
                           type='button'
                           variant='outline'
                           size='sm'
-                          className='px-2 text-xs sm:px-3 sm:text-sm'
+                          className='px-2 text-sm sm:px-3 sm:text-sm'
                           onClick={() => handleSetExpiry(1, 0, 0)}
                         >
                           {t('1 Month')}
@@ -556,7 +556,7 @@ export function ApiKeysMutateDrawer({
                           type='button'
                           variant='outline'
                           size='sm'
-                          className='px-2 text-xs sm:px-3 sm:text-sm'
+                          className='px-2 text-sm sm:px-3 sm:text-sm'
                           onClick={() => handleSetExpiry(0, 1, 0)}
                         >
                           {t('1 Day')}
@@ -565,7 +565,7 @@ export function ApiKeysMutateDrawer({
                           type='button'
                           variant='outline'
                           size='sm'
-                          className='px-2 text-xs sm:px-3 sm:text-sm'
+                          className='px-2 text-sm sm:px-3 sm:text-sm'
                           onClick={() => handleSetExpiry(0, 0, 1)}
                         >
                           {t('1 Hour')}
@@ -736,7 +736,7 @@ export function ApiKeysMutateDrawer({
                           <FormControl>
                             <Textarea
                               {...field}
-                              className='min-h-20 resize-none'
+                              className='resize-none'
                               placeholder={t(
                                 'One IP per line (empty for no restriction)'
                               )}
@@ -762,7 +762,7 @@ export function ApiKeysMutateDrawer({
                             <FormLabel className='text-sm'>
                               {t('Allow querying user quota')}
                             </FormLabel>
-                            <FormDescription className='text-xs'>
+                            <FormDescription className='text-sm'>
                               {t(
                                 "When enabled, this API key can be used to check your account's remaining and used quota."
                               )}

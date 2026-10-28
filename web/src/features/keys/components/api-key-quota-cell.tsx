@@ -60,10 +60,10 @@ export function ApiKeyQuotaCell(props: ApiKeyQuotaCellProps) {
     remaining <= 0 ||
     (props.apiKey.expired_time !== -1 &&
       props.apiKey.expired_time * 1000 <= props.now)
-  let progressColor = 'text-emerald-500'
-  if (isInactive) progressColor = 'text-muted-foreground/60'
-  else if (percentage <= 10) progressColor = 'text-rose-500'
-  else if (percentage <= 30) progressColor = 'text-amber-500'
+  let progressColor = 'text-success'
+  if (isInactive) progressColor = 'text-muted-foreground'
+  else if (percentage <= 10) progressColor = 'text-destructive'
+  else if (percentage <= 30) progressColor = 'text-warning'
   const usageDescription = `${t('Used amount')} ${formattedUsed}`
   const remainingDescription = hasProgress
     ? `${t('Remaining')} ${formattedRemaining}; ${t('Remaining percentage')} ${formattedPercentage}%`
@@ -124,12 +124,11 @@ export function ApiKeyQuotaCell(props: ApiKeyQuotaCellProps) {
     >
       <span
         data-slot='api-key-quota-values'
-        className={cn(
-          'grid w-full min-w-0 items-baseline gap-x-2 gap-y-1 text-sm',
-          props.variant === 'card'
-            ? 'grid-cols-[auto_minmax(0,1fr)]'
-            : 'grid-cols-2'
-        )}
+        // 「剩余 / 已用」两列：剩余按内容取宽，已用金额吃掉剩余空间。
+        // 表格变体曾是 `grid-cols-2`（两列等宽），半列只有 ~40px，而
+        // 「无限制」要 42px —— 于是被截成「无…」。等宽列在窄单元格里既截词
+        // 又截数字，按内容分配才两边都完整。
+        className='grid w-full min-w-0 grid-cols-[auto_minmax(0,1fr)] items-baseline gap-x-2 gap-y-1 text-sm'
       >
         {props.variant === 'card' && (
           <span className='text-muted-foreground'>
@@ -141,7 +140,7 @@ export function ApiKeyQuotaCell(props: ApiKeyQuotaCellProps) {
           className={cn(
             'min-w-0 truncate',
             props.variant === 'card'
-              ? 'text-right text-sm leading-5 font-normal'
+              ? 'text-right text-sm font-normal'
               : 'text-left font-medium',
             !props.apiKey.unlimited_quota && 'tabular-nums',
             !props.apiKey.unlimited_quota &&
@@ -160,7 +159,7 @@ export function ApiKeyQuotaCell(props: ApiKeyQuotaCellProps) {
         <span
           className={cn(
             'text-muted-foreground min-w-0 truncate text-right tabular-nums',
-            props.variant === 'card' && 'text-sm leading-5 font-normal'
+            props.variant === 'card' && 'text-sm font-normal'
           )}
         >
           {formattedUsed}

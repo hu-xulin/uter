@@ -21,8 +21,8 @@ import { ArrowRight } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
 import { AnimateInView } from '@/components/animate-in-view'
-import { Heading, Text } from '@/design-system'
 import { Button } from '@/components/ui/button'
+import { Heading, Text } from '@/design-system'
 
 interface CTAProps {
   className?: string
@@ -59,14 +59,14 @@ export function CTA(props: CTAProps) {
           className='flex flex-col items-center gap-3'
         >
           <span>{t('Ready to simplify')}</span>
-          <span className='bg-gradient-to-r from-blue-400 via-violet-400 to-purple-500 bg-clip-text text-transparent'>
+          <span className='from-primary via-primary-hover to-primary-active bg-gradient-to-r bg-clip-text text-transparent'>
             {t('your AI integration?')}
           </span>
         </Heading>
         <Text
           as='p'
           variant='body'
-          className='text-muted-foreground/80 mx-auto mt-5 max-w-md'
+          className='text-muted-foreground mx-auto mt-5 max-w-md'
         >
           {t(
             'Deploy your own gateway and start routing requests through your configured upstream services.'
@@ -75,7 +75,7 @@ export function CTA(props: CTAProps) {
         <div className='mt-8 flex items-center justify-center gap-3'>
           <Button className='group' render={<Link to='/sign-up' />}>
             {t('Get Started')}
-            <ArrowRight className='ml-1 size-3.5 transition-transform duration-200 group-hover:translate-x-0.5' />
+            <ArrowRight className='ds-motion-marketing-fast ml-1 size-4.5 transition-transform group-hover:translate-x-0.5' />
           </Button>
           <Button
             variant='outline'

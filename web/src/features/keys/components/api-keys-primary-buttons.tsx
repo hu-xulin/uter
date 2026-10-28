@@ -64,9 +64,9 @@ export function ApiKeysPrimaryButtons() {
     <div className='flex flex-wrap gap-2'>
       <Popover>
         <PopoverTrigger render={<Button variant='outline' size='sm' />}>
-          <Globe aria-hidden='true' />
+          <Globe aria-hidden='true' className='size-4' />
           {t('API Addresses')}
-          <ChevronDown aria-hidden='true' />
+          <ChevronDown aria-hidden='true' className='size-4' />
         </PopoverTrigger>
         <PopoverContent
           align='end'
@@ -89,7 +89,7 @@ export function ApiKeysPrimaryButtons() {
                     <ItemTitle className='line-clamp-none break-all'>
                       {address.route}
                     </ItemTitle>
-                    <code className='text-xs break-all select-text'>
+                    <code className='text-mono font-mono break-all select-text'>
                       {address.url}
                     </code>
                     {address.description && (
@@ -113,7 +113,7 @@ export function ApiKeysPrimaryButtons() {
         </PopoverContent>
       </Popover>
       <Button size='sm' onClick={() => setOpen('create')}>
-        <Plus className='h-4 w-4' />
+        <Plus className='size-4' />
         {t('Create API Key')}
       </Button>
     </div>

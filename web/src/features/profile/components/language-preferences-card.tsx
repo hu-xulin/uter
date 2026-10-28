@@ -111,7 +111,10 @@ export function LanguagePreferencesCard(props: LanguagePreferencesCardProps) {
     >
       <div className='flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4'>
         <div className='space-y-1'>
-          <div className='text-sm font-medium'>{t('Interface Language')}</div>
+          {/* 行标题 16/600：**用户明确指定**（2026-10-27 截图红字「16px，加粗」，
+              「界面语言」这一处）。`typography.md` 对「名称 + 说明成对出现的
+              列表行」写的是 16/500，这一处是按用户要求上调一档的登记例外。 */}
+          <div className='text-base font-medium'>{t('Interface Language')}</div>
           <p className='text-muted-foreground line-clamp-2 text-sm'>
             {t(
               'Language preferences sync across your signed-in devices and affect API error messages.'

@@ -16,10 +16,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
-import {
-  DEFAULT_GOTIFY_PRIORITY,
-  NOTIFICATION_METHODS,
-} from '../constants'
+import { DEFAULT_GOTIFY_PRIORITY, NOTIFICATION_METHODS } from '../constants'
 import type { NotifyType, UpdateUserSettingsRequest } from '../types'
 import { parseUserSettings } from './format'
 

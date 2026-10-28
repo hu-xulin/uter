@@ -185,7 +185,7 @@ export function DataTableRowActions<TData>({
               className={
                 isEnabled
                   ? 'text-destructive hover:text-destructive'
-                  : 'text-emerald-600 hover:text-emerald-600 dark:text-emerald-400 dark:hover:text-emerald-400'
+                  : 'text-success hover:text-success dark:text-success dark:hover:text-success'
               }
             />
           }
@@ -230,7 +230,7 @@ export function DataTableRowActions<TData>({
         >
           {t('Copy Key')}
           <DropdownMenuShortcut>
-            <Copy size={16} />
+            <Copy className='size-4' />
           </DropdownMenuShortcut>
         </DropdownMenuItem>
         <DropdownMenuItem
@@ -248,7 +248,7 @@ export function DataTableRowActions<TData>({
         >
           {t('Copy Connection Info')}
           <DropdownMenuShortcut>
-            <Link size={16} />
+            <Link className='size-4' />
           </DropdownMenuShortcut>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
@@ -263,7 +263,7 @@ export function DataTableRowActions<TData>({
         >
           {t('CC Switch')}
           <DropdownMenuShortcut>
-            <ArrowRightLeft size={16} />
+            <ArrowRightLeft className='size-4' />
           </DropdownMenuShortcut>
         </DropdownMenuItem>
         {hasChatPresets && (
@@ -292,7 +292,7 @@ export function DataTableRowActions<TData>({
         >
           {t('Delete')}
           <DropdownMenuShortcut>
-            <Trash2 size={16} />
+            <Trash2 className='size-4' />
           </DropdownMenuShortcut>
         </DropdownMenuItem>
       </DataTableRowActionMenu>

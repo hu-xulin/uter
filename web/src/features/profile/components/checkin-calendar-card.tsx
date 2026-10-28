@@ -41,6 +41,7 @@ import {
   TooltipTrigger,
   TooltipProvider,
 } from '@/components/ui/tooltip'
+import { Heading } from '@/design-system'
 import { formatQuotaWithCurrency } from '@/lib/currency'
 import dayjs from '@/lib/dayjs'
 import { handleServerError } from '@/lib/handle-server-error'
@@ -55,6 +56,15 @@ interface CheckinCalendarCardProps {
   turnstileEnabled: boolean
   turnstileSiteKey: string
 }
+
+/**
+ * 签到金额统一两位小数（四舍五入到分）。
+ *
+ * 签到单次奖励只有 $0.10–$0.50：默认精度（<1 四位小数）会把 $0.2381 原样
+ * 摊在卡片上，而把美元截成整数又会把 $2.68 显示成 $3。两者都不对 ——
+ * 「今天 +$0.2381」「累计 $3」曾经就是这两种错法各占一边。
+ */
+const CHECKIN_AMOUNT_FORMAT = { digitsLarge: 2, digitsSmall: 2 } as const
 
 export function CheckinCalendarCard({
   checkinEnabled,
@@ -117,13 +127,24 @@ export function CheckinCalendarCard({
     )
   }, [checkinData?.stats?.records])
 
+  // 「今天」以服务端为准。签到日由后端按服务器时区判定，浏览器本地日期在
+  // 跨时区（容器 UTC / 用户在 UTC+8）时可能差一天，此时日历会把今天的高亮
+  // 和奖励落在错误的格子上——用户看到的就是「签到了但今天没记上」。
   const todayString = useMemo(() => {
+    if (checkinData?.stats?.today) return checkinData.stats.today
     const d = new Date()
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
-  }, [])
+  }, [checkinData?.stats?.today])
 
   const checkedToday = checkinData?.stats?.checked_in_today === true
   const todayAward = checkinRecordsMap[todayString]
+
+  // 「本月」只在确实看的是当前月时才成立；翻到历史月份后仍写「本月」
+  // 会让用户拿上个月的合计去对本月账单。
+  const isViewingCurrentMonth = todayString.slice(0, 7) === currentMonthStr
+  const monthlyTotalLabel = isViewingCurrentMonth
+    ? t('This month')
+    : dayjs(currentMonth).format('YYYY-MM')
 
   const shouldTriggerTurnstile = useCallback(
     (message?: string) => {
@@ -283,23 +304,20 @@ export function CheckinCalendarCard({
           <div className='flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4'>
             <button
               type='button'
-              className='flex min-w-0 flex-1 items-start gap-3 rounded-lg text-left whitespace-normal outline-none'
+              className='focus-visible:ring-ring flex min-w-0 flex-1 items-start gap-3 rounded-lg text-left whitespace-normal outline-none focus-visible:ring-2'
               onClick={() => setCollapsed((v) => !v)}
             >
               <IconBadge tone='neutral' size='lg' className='sm:size-11'>
-                <CalendarDays
-                  className='h-4 w-4 sm:h-5 sm:w-5'
-                  strokeWidth={2}
-                />
+                <CalendarDays className='h-4 w-4 sm:h-5 sm:w-5' />
               </IconBadge>
               <div className='min-w-0 flex-1'>
                 <div className='flex flex-wrap items-center gap-1.5 sm:gap-2'>
-                  <h3 className='text-base font-semibold sm:text-lg'>
+                  <h3 className='text-lg font-semibold'>
                     {t('Daily Check-in')}
                   </h3>
                   {checkedToday && (
-                    <div className='inline-flex items-center gap-1 rounded-md bg-success/10 px-2 py-0.5 text-xs font-medium text-success sm:gap-1.5 sm:px-2.5 sm:text-xs dark:text-success'>
-                      <Sparkles className='h-2.5 w-2.5 sm:h-3 sm:w-3' />
+                    <div className='bg-success/10 text-success dark:text-success inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-xs font-medium sm:gap-1.5 sm:px-2.5 sm:text-xs'>
+                      <Sparkles className='size-3' />
                       {t('Checked in')}
                     </div>
                   )}
@@ -313,7 +331,7 @@ export function CheckinCalendarCard({
                 </div>
                 <p className='text-muted-foreground mt-1 line-clamp-2 text-sm'>
                   {checkedToday && todayAward !== undefined
-                    ? `${t('Today')} +${formatQuotaWithCurrency(todayAward)}`
+                    ? `${t('Today')} +${formatQuotaWithCurrency(todayAward, CHECKIN_AMOUNT_FORMAT)}`
                     : t('Check in daily to receive random quota rewards')}
                 </p>
               </div>
@@ -334,7 +352,7 @@ export function CheckinCalendarCard({
             {/* Stats */}
             <div className='grid grid-cols-3 gap-px border-b'>
               <div className='bg-card p-3 text-center sm:p-4'>
-                <div className='text-lg font-semibold tabular-nums sm:text-xl'>
+                <div className='text-2xl font-semibold tabular-nums'>
                   {checkinData?.stats?.total_checkins || 0}
                 </div>
                 <div className='text-muted-foreground mt-0.5 text-sm font-medium sm:mt-1'>
@@ -342,20 +360,22 @@ export function CheckinCalendarCard({
                 </div>
               </div>
               <div className='bg-card p-3 text-center sm:p-4'>
-                <div className='text-lg font-semibold tabular-nums sm:text-xl'>
-                  {formatQuotaWithCurrency(monthlyQuota, { digitsLarge: 0 })}
+                <div className='text-2xl font-semibold tabular-nums'>
+                  {/* 签到金额一律两位小数（四舍五入到分）。单次奖励只有
+                      $0.10–$0.50，默认的「<1 四位小数」会把 $0.2381 原样
+                      摊在卡片上；截成整数又会把 $2.68 显示成 $3。两种都不对，
+                      所以这里显式钉成两位。 */}
+                  {formatQuotaWithCurrency(monthlyQuota, CHECKIN_AMOUNT_FORMAT)}
                 </div>
                 <div className='text-muted-foreground mt-0.5 text-sm font-medium sm:mt-1'>
-                  {t('This month')}
+                  {monthlyTotalLabel}
                 </div>
               </div>
               <div className='bg-card p-3 text-center sm:p-4'>
-                <div className='text-lg font-semibold tabular-nums sm:text-xl'>
+                <div className='text-2xl font-semibold tabular-nums'>
                   {formatQuotaWithCurrency(
                     checkinData?.stats?.total_quota || 0,
-                    {
-                      digitsLarge: 0,
-                    }
+                    CHECKIN_AMOUNT_FORMAT
                   )}
                 </div>
                 <div className='text-muted-foreground mt-0.5 text-sm font-medium sm:mt-1'>
@@ -369,22 +389,20 @@ export function CheckinCalendarCard({
               <div className='space-y-3 sm:space-y-4'>
                 {/* Month navigation */}
                 <div className='flex items-center justify-between'>
-                  <h4 className='text-sm font-semibold'>
+                  <Heading variant='group-title' level={4}>
                     {dayjs(currentMonth).format('YYYY-MM')}
-                  </h4>
+                  </Heading>
                   <div className='flex items-center gap-0.5 sm:gap-1'>
                     <Button
                       variant='ghost'
-                      size='icon'
-                      className='h-7 w-7 sm:h-8 sm:w-8'
+                      size='icon-sm'
                       onClick={handlePrevMonth}
                     >
                       <ChevronLeft className='h-3.5 w-3.5 sm:h-4 sm:w-4' />
                     </Button>
                     <Button
                       variant='ghost'
-                      size='icon'
-                      className='h-7 w-7 sm:h-8 sm:w-8'
+                      size='icon-sm'
                       onClick={handleNextMonth}
                     >
                       <ChevronRight className='h-3.5 w-3.5 sm:h-4 sm:w-4' />
@@ -422,9 +440,9 @@ export function CheckinCalendarCard({
                         variant={isToday ? 'default' : 'ghost'}
                         disabled={!dayObj.isCurrentMonth}
                         className={cn(
-                          'relative flex h-9 w-full flex-col items-center justify-center rounded-lg px-0 text-xs font-medium sm:h-10 sm:text-sm',
+                          'relative flex w-full flex-col items-center justify-center rounded-lg px-0 text-xs font-medium sm:h-10 sm:text-sm',
                           !dayObj.isCurrentMonth &&
-                            'text-muted-foreground/40 cursor-default',
+                            'text-muted-foreground cursor-default',
                           !isToday && isCheckedIn && 'font-semibold'
                         )}
                       >

@@ -61,28 +61,39 @@ export function getSuccessRateLevel(rate: number): SuccessRateLevel {
 }
 
 const SUCCESS_RATE_TEXT_CLASS: Record<SuccessRateLevel, string> = {
-  excellent: 'text-emerald-600 dark:text-emerald-400',
-  good: 'text-emerald-500 dark:text-emerald-300',
-  warning: 'text-amber-600 dark:text-amber-400',
-  critical: 'text-red-600 dark:text-red-400',
+  excellent: 'text-success dark:text-success',
+  good: 'text-success dark:text-success-soft-foreground',
+  warning: 'text-warning dark:text-warning',
+  critical: 'text-destructive dark:text-destructive',
   unknown: 'text-muted-foreground',
 }
 
 const SUCCESS_RATE_DOT_CLASS: Record<SuccessRateLevel, string> = {
-  excellent: 'bg-emerald-500',
-  good: 'bg-emerald-400',
-  warning: 'bg-amber-500',
-  critical: 'bg-red-500',
+  excellent: 'bg-success',
+  good: 'bg-success',
+  warning: 'bg-warning',
+  critical: 'bg-destructive',
   unknown: 'bg-muted-foreground',
 }
 
-// Hex colors for non-CSS contexts (e.g. chart libraries that need raw values).
-const SUCCESS_RATE_HEX_COLOR: Record<SuccessRateLevel, string> = {
-  excellent: '#10b981', // emerald-500 (full green)
-  good: '#34d399', // emerald-400 (slightly lighter green)
-  warning: '#f59e0b', // amber-500
-  critical: '#ef4444', // red-500
-  unknown: '#9ca3af', // gray-400
+/**
+ * Canvas 取色用的**颜色表达式**（不是色值）。
+ *
+ * 成功率点的填充色由 VChart 画在 canvas 上，读不到 CSS 变量，历史上这里
+ * 写死了一组 emerald / amber / red 的 hex —— 那既绕过了语义层，也不会跟着
+ * 深色模式和 5 套主题预设变化。现在只声明「用哪个 Token」，由调用方
+ * 用 `useThemeColors` 解析成 rgba 再交给图表。
+ *
+ * `good` 比 `excellent` 浅一档：这两级在图上必须可区分，而语义 Token 只有
+ * 一个 `--success`，所以用 `color-mix()` 与页面底色混合出浅一档的同色相绿 ——
+ * 仍然是派生值，不是新写死的颜色。
+ */
+export const SUCCESS_RATE_COLOR_EXPR: Record<SuccessRateLevel, string> = {
+  excellent: 'var(--success)',
+  good: 'color-mix(in oklch, var(--success) 68%, var(--background))',
+  warning: 'var(--warning)',
+  critical: 'var(--destructive)',
+  unknown: 'var(--muted-foreground)',
 }
 
 export function getSuccessRateTextClass(rate: number): string {
@@ -93,6 +104,12 @@ export function getSuccessRateDotClass(rate: number): string {
   return SUCCESS_RATE_DOT_CLASS[getSuccessRateLevel(rate)]
 }
 
-export function getSuccessRateColor(rate: number): string {
-  return SUCCESS_RATE_HEX_COLOR[getSuccessRateLevel(rate)]
+/**
+ * 解析后的状态色表，来自 `useThemeColors(Object.values(SUCCESS_RATE_COLOR_EXPR))`。
+ */
+export function getSuccessRateColor(
+  rate: number,
+  resolvedColors: Record<string, string>
+): string | undefined {
+  return resolvedColors[SUCCESS_RATE_COLOR_EXPR[getSuccessRateLevel(rate)]]
 }

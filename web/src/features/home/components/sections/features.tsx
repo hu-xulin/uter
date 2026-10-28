@@ -47,14 +47,14 @@ export function Features(_props: FeaturesProps) {
         'Optimized network architecture ensures millisecond response times'
       ),
       span: 'md:col-span-2',
-      icon: <Zap className='size-4 text-blue-400' />,
+      icon: <Zap className='text-primary size-4' />,
       visual: (
         <div className='mt-4 grid grid-cols-3 gap-2'>
           {['OpenAI', 'Claude', 'Gemini', 'DeepSeek', 'Qwen', 'Llama'].map(
             (name) => (
               <div
                 key={name}
-                className='border-border/30 bg-muted/20 text-muted-foreground flex items-center justify-center rounded-lg border px-3 py-2 text-sm transition-colors duration-300 hover:border-blue-500/30 hover:bg-blue-500/5'
+                className='border-border/30 bg-muted/20 text-muted-foreground hover:border-primary-border hover:bg-primary-subtle ds-motion-marketing-fast flex items-center justify-center rounded-lg border px-3 py-2 text-sm transition-colors'
               >
                 {name}
               </div>
@@ -71,23 +71,22 @@ export function Features(_props: FeaturesProps) {
         'Enterprise-grade security with comprehensive permission management'
       ),
       span: 'md:col-span-1',
-      icon: <Shield className='size-4 text-emerald-400' />,
+      icon: <Shield className='text-success size-4' />,
       visual: (
         <div className='mt-4 flex items-center justify-center'>
           <div className='relative'>
-            <div className='flex size-16 items-center justify-center rounded-2xl border border-emerald-500/20 bg-emerald-500/5'>
-              <Shield
-                className='size-7 text-emerald-500/70'
-                strokeWidth={1.5}
-              />
+            <div className='border-success/20 bg-success-soft flex size-16 items-center justify-center rounded-2xl border'>
+              {/* 强调型功能入口：24px（规范 §2.2 的强调档），与下方四宫格
+                  入口保持同一档，不要因为容器大就放到 32px。 */}
+              <Shield className='text-success size-6' />
             </div>
-            <div className='absolute -top-1 -right-1 flex size-4 items-center justify-center rounded-full bg-emerald-500'>
+            <div className='bg-success absolute -top-1 -right-1 flex size-4 items-center justify-center rounded-full'>
               <svg
-                className='size-2.5 text-white'
+                className='text-on-emphasis size-2.5'
                 fill='none'
                 viewBox='0 0 24 24'
                 stroke='currentColor'
-                strokeWidth={3}
+                strokeWidth={2}
               >
                 <path
                   strokeLinecap='round'
@@ -106,7 +105,7 @@ export function Features(_props: FeaturesProps) {
       title: t('Global Coverage'),
       desc: t('Multi-region deployment for stable global access'),
       span: 'md:col-span-1',
-      icon: <Globe className='size-4 text-violet-400' />,
+      icon: <Globe className='text-primary size-4' />,
       visual: (
         <div className='mt-4 space-y-2'>
           {[t('Load Balancing'), t('Rate Limiting'), t('Cost Tracking')].map(
@@ -115,14 +114,14 @@ export function Features(_props: FeaturesProps) {
                 <div
                   className={`flex size-6 items-center justify-center rounded-full text-sm font-semibold ${
                     i === 1
-                      ? 'border border-blue-500/30 bg-blue-500/20 text-blue-500'
+                      ? 'border-primary-border bg-primary-subtle text-primary-subtle-foreground'
                       : 'border-border/40 bg-muted text-muted-foreground border'
                   }`}
                 >
                   {i + 1}
                 </div>
                 <div className='bg-border/40 h-px flex-1' />
-                <span className='text-muted-foreground text-base'>{step}</span>
+                <span className='text-muted-foreground text-sm'>{step}</span>
               </div>
             )
           )}
@@ -135,21 +134,24 @@ export function Features(_props: FeaturesProps) {
       title: t('Developer Friendly'),
       desc: t('Compatible API routes for common AI application workflows'),
       span: 'md:col-span-2',
-      icon: <Code className='size-4 text-amber-400' />,
+      icon: <Code className='text-primary size-4' />,
       visual: (
         <div className='mt-4 flex items-center gap-3'>
           <div className='flex -space-x-2'>
             {['API', 'SDK', 'CLI', 'Docs'].map((n) => (
               <div
                 key={n}
+                // 规范 §1.4：容器描边恒 1px。这里是**镂空环**——用页面背景色
+                // 画 2px 描边，把叠在一起的圆形头像「挖」出间隙，不是容器的
+                // 边框。镂空环的宽度必须够 2px，1px 会被相邻圆形的填充吃掉。
                 className='border-background from-muted to-muted/60 text-muted-foreground flex size-10 shrink-0 items-center justify-center rounded-full border-2 bg-gradient-to-br text-xs font-normal'
               >
                 {n}
               </div>
             ))}
           </div>
-          <div className='text-muted-foreground flex items-center gap-1.5 text-base'>
-            <Code className='size-3.5 text-blue-500' />
+          <div className='text-muted-foreground flex items-center gap-1.5 text-sm'>
+            <Code className='text-primary size-4' />
             {t('Multi-protocol Compatible')}
           </div>
         </div>
@@ -159,22 +161,22 @@ export function Features(_props: FeaturesProps) {
 
   const additionalFeatures = [
     {
-      icon: <Gauge className='size-5' strokeWidth={1.5} />,
+      icon: <Gauge className='size-6' />,
       title: t('High Performance'),
       desc: t('Support for high concurrency with automatic load balancing'),
     },
     {
-      icon: <DollarSign className='size-5' strokeWidth={1.5} />,
+      icon: <DollarSign className='size-6' />,
       title: t('Transparent Billing'),
       desc: t('Pay-as-you-go with real-time usage monitoring'),
     },
     {
-      icon: <Users className='size-5' strokeWidth={1.5} />,
+      icon: <Users className='size-6' />,
       title: t('Team Collaboration'),
       desc: t('Multi-user management with flexible permission allocation'),
     },
     {
-      icon: <HeartHandshake className='size-5' strokeWidth={1.5} />,
+      icon: <HeartHandshake className='size-6' />,
       title: t('Open Source'),
       desc: t('Community driven, self-hosted, and extensible'),
     },
@@ -206,7 +208,7 @@ export function Features(_props: FeaturesProps) {
               key={f.id}
               delay={i * 100}
               animation='scale-in'
-              className={`bg-background group hover:bg-muted/20 p-7 transition-colors duration-300 md:p-8 ${f.span}`}
+              className={`bg-background group hover:bg-muted/20 ds-motion-marketing-fast p-7 transition-colors md:p-8 ${f.span}`}
             >
               <div className='mb-3 flex items-center gap-3'>
                 <span className='border-border/40 bg-muted text-muted-foreground flex size-7 items-center justify-center rounded-md border text-sm font-semibold tabular-nums'>

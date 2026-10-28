@@ -24,6 +24,7 @@ import { BadgeCell } from '@/components/data-table'
 import { MaskedValueTrigger } from '@/components/masked-value-display'
 import { StatusBadge } from '@/components/status-badge'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import {
   Popover,
   PopoverContent,
@@ -74,13 +75,13 @@ export function ApiKeyCell({ apiKey }: { apiKey: ApiKey }) {
     if (ok) markKeyCopied(apiKey.id)
   }, [resolvedFullKey, resolveRealKey, apiKey.id, markKeyCopied])
 
-  let copyIcon = <Copy className='size-3.5' />
+  let copyIcon = <Copy className='size-4' />
   let copyTooltip = t('Copy API key')
   if (isLoading) {
-    copyIcon = <Loader2 className='size-3.5 animate-spin' />
+    copyIcon = <Loader2 className='size-4 animate-spin' />
     copyTooltip = t('Loading...')
   } else if (isCopied) {
-    copyIcon = <Check className='size-3.5 text-green-600' />
+    copyIcon = <Check className='text-success size-4' />
     copyTooltip = t('Copied!')
   }
 
@@ -95,21 +96,22 @@ export function ApiKeyCell({ apiKey }: { apiKey: ApiKey }) {
           align='start'
         >
           <div className='space-y-2'>
-            <p className='text-muted-foreground text-xs'>{t('Full API Key')}</p>
+            <p className='text-muted-foreground text-sm'>{t('Full API Key')}</p>
             {isLoading ? (
               <div className='flex items-center gap-2 py-2'>
-                <Loader2 className='size-3.5 animate-spin' />
+                <Loader2 className='size-4 animate-spin' />
                 <span className='text-muted-foreground text-xs'>
                   {t('Loading...')}
                 </span>
               </div>
             ) : (
-              <input
+              <Input
                 readOnly
+                mono
                 value={resolvedFullKey || maskedKey}
                 autoFocus
                 onFocus={(e) => e.target.select()}
-                className='bg-muted/50 w-full min-w-[280px] rounded-md border px-3 py-2 font-mono text-mono outline-none'
+                className='bg-muted/50 min-w-[280px]'
               />
             )}
           </div>
@@ -120,8 +122,8 @@ export function ApiKeyCell({ apiKey }: { apiKey: ApiKey }) {
           render={
             <Button
               variant='ghost'
-              size='icon'
-              className='size-7 shrink-0'
+              size='icon-sm'
+              className='shrink-0'
               onClick={handleCopy}
               disabled={isLoading}
             />
@@ -204,7 +206,7 @@ function ApiKeyRestrictionCell(props: {
   const details = (
     <div className='max-h-[200px] space-y-1 overflow-y-auto text-xs'>
       {props.items.map((item) => (
-        <div key={item} className='font-mono break-all'>
+        <div key={item} className='text-mono font-mono break-all'>
           {item}
         </div>
       ))}
@@ -220,7 +222,7 @@ function ApiKeyRestrictionCell(props: {
               variant='ghost'
               size='sm'
               aria-label={`${props.title}: ${props.label}`}
-              className='h-7 max-w-full justify-start px-0 text-xs font-normal'
+              className='max-w-full justify-start px-0 text-sm font-normal'
             />
           }
         >

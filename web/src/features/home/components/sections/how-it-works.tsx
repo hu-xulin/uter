@@ -32,7 +32,9 @@ export function HowItWorks() {
       desc: t(
         'Add your API keys, set up channels and configure access permissions'
       ),
-      icon: <Settings className='size-6' strokeWidth={1.5} />,
+      // 三步上手的图标属于「强调型功能入口」：24px（规范 §2.2 强调档），
+      // 与「核心功能」四宫格入口同档。64px 容器里放 32px 会盖过标题层级。
+      icon: <Settings className='size-6' />,
     },
     {
       num: '2',
@@ -40,13 +42,13 @@ export function HowItWorks() {
       desc: t(
         'Connect through OpenAI, Claude, Gemini, and other compatible API routes'
       ),
-      icon: <Zap className='size-6' strokeWidth={1.5} />,
+      icon: <Zap className='size-6' />,
     },
     {
       num: '3',
       title: t('Monitor'),
       desc: t('Track usage, costs and performance with real-time analytics'),
-      icon: <BarChart3 className='size-6' strokeWidth={1.5} />,
+      icon: <BarChart3 className='size-6' />,
     },
   ]
 
