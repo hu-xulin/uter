@@ -19,10 +19,10 @@ For commercial licensing, please contact support@uter.ai
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { DOCS_LEGAL_ROUTE_PATHS } from '@/components/layout/lib/url-utils'
 import { useStatus } from '@/hooks/use-status'
 import { isBundledDocsHref, resolveDocsHref } from '@/lib/docs-link'
 import { parseHeaderNavModulesFromStatus } from '@/lib/nav-modules'
-import { DOCS_LEGAL_ROUTE_PATHS } from '@/components/layout/lib/url-utils'
 import { useAuthStore } from '@/stores/auth-store'
 
 export type TopNavLink = {

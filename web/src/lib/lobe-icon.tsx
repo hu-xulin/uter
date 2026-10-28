@@ -237,7 +237,9 @@ function isBareVariantSuffix(suffix: string): boolean {
  * the company logo is what repeatedly put company logos on pricing cards. The
  * single-parameter signature keeps the fallback from being reintroduced.
  */
-export function resolveModelIconKey(modelIcon: string | undefined | null): string {
+export function resolveModelIconKey(
+  modelIcon: string | undefined | null
+): string {
   return colorIconName(modelIcon)
 }
 

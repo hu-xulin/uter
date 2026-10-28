@@ -90,6 +90,17 @@ export interface CurrencyFormatOptions {
   digitsLarge?: number
   /** Fraction digits to use when |value| < 1 */
   digitsSmall?: number
+  /**
+   * Force an exact number of fraction digits, ignoring the large/small split.
+   *
+   * 用于「金额一律两位小数」这类场景（钱包余额、总用量卡片）：`digitsLarge`
+   * 只给上限，`$199` 会显示成 `$199`，用户无法判断这是整数还是被四舍五入过。
+   * 设置本项后 `199 → 199.00`、`3.68 → 3.68`、`0.1234 → 0.12`。
+   *
+   * 注意：它**不会**把金额压成整数，`fixedFractionDigits: 0` 仅用于确实以整数
+   * 计价的场景（例如次数），金额卡片不要用。
+   */
+  fixedFractionDigits?: number
   /** Whether to abbreviate thousands with k suffix */
   abbreviate?: boolean
   /** Minimal absolute value to display when rounding would produce zero */
@@ -107,9 +118,11 @@ export interface CurrencyFormatOptions {
 
 type ResolvedCurrencyFormatOptions = Omit<
   Required<CurrencyFormatOptions>,
-  'locale'
+  'locale' | 'fixedFractionDigits'
 > & {
   locale: Intl.LocalesArgument | undefined
+  /** 未设置时按 large/small 两档取小数位，见 `CurrencyFormatOptions`。 */
+  fixedFractionDigits?: number
 }
 
 type DisplayMeta =
@@ -235,6 +248,7 @@ function mergeOptions(
   return {
     digitsLarge: options.digitsLarge ?? DEFAULT_FORMAT_OPTIONS.digitsLarge,
     digitsSmall: options.digitsSmall ?? DEFAULT_FORMAT_OPTIONS.digitsSmall,
+    fixedFractionDigits: options.fixedFractionDigits,
     abbreviate: options.abbreviate ?? DEFAULT_FORMAT_OPTIONS.abbreviate,
     minimumNonZero:
       options.minimumNonZero ?? DEFAULT_FORMAT_OPTIONS.minimumNonZero,
@@ -247,8 +261,10 @@ function mergeOptions(
 function getFractionDigits(
   value: number,
   digitsLarge: number,
-  digitsSmall: number
+  digitsSmall: number,
+  fixedFractionDigits?: number
 ): number {
+  if (fixedFractionDigits != null) return fixedFractionDigits
   return Math.abs(value) >= 1 ? digitsLarge : digitsSmall
 }
 
@@ -258,7 +274,12 @@ export function getCurrencyFractionDigits(
   options?: CurrencyFormatOptions
 ): number {
   const merged = mergeOptions(options)
-  return getFractionDigits(value, merged.digitsLarge, merged.digitsSmall)
+  return getFractionDigits(
+    value,
+    merged.digitsLarge,
+    merged.digitsSmall,
+    merged.fixedFractionDigits
+  )
 }
 
 function removeTrailingZeros(str: string): string {
@@ -320,15 +341,18 @@ function formatCurrencyValue(
   const digits = getFractionDigits(
     value,
     options.digitsLarge,
-    options.digitsSmall
+    options.digitsSmall,
+    options.fixedFractionDigits
   )
   const adjustedValue = adjustForMinimum(value, digits, options.minimumNonZero)
+  // 固定小数位时，最小与最大位数取同一个值：`$199` 才会显示成 `$199.00`。
+  const minimumFractionDigits = options.fixedFractionDigits ?? 0
 
   if (meta.kind === 'currency') {
     if (!options.showSymbol) {
       return new Intl.NumberFormat(options.locale, {
         notation: options.compact ? 'compact' : 'standard',
-        minimumFractionDigits: 0,
+        minimumFractionDigits,
         maximumFractionDigits: options.compact ? 1 : digits,
       }).format(adjustedValue)
     }
@@ -338,7 +362,7 @@ function formatCurrencyValue(
       currency: meta.currencyCode,
       currencyDisplay: 'narrowSymbol',
       notation: options.compact ? 'compact' : 'standard',
-      minimumFractionDigits: 0,
+      minimumFractionDigits,
       maximumFractionDigits: options.compact ? 1 : digits,
     }).format(adjustedValue)
     return formatted
@@ -346,7 +370,7 @@ function formatCurrencyValue(
 
   const decimal = new Intl.NumberFormat(options.locale, {
     notation: options.compact ? 'compact' : 'standard',
-    minimumFractionDigits: 0,
+    minimumFractionDigits,
     maximumFractionDigits: options.compact ? 1 : digits,
   }).format(adjustedValue)
 

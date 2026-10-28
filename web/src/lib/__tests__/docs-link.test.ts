@@ -69,9 +69,7 @@ describe('docs-link helpers', () => {
     // so omitting them made every reader fall through to the fallback
     // locale. zhCN → Simplified docs, zhTW → Traditional-Chinese docs.
     expect(DOCS_LOCALE_PAIRS.zh).toEqual(expect.arrayContaining(['zhCN']))
-    expect(DOCS_LOCALE_PAIRS['zh-TW']).toEqual(
-      expect.arrayContaining(['zhTW'])
-    )
+    expect(DOCS_LOCALE_PAIRS['zh-TW']).toEqual(expect.arrayContaining(['zhTW']))
   })
 
   test('docsLandingPathFor opens the docs on 特性说明, not on a landing page', () => {
@@ -215,9 +213,9 @@ describe('host vs frame splat', () => {
     expect(toDocsSplat('/docs/zh/guide/wiki/model-testing/')).toBe(
       'zh/guide/wiki/model-testing/'
     )
-    expect(
-      toDocsSplat('/docs-content/docs/zh/guide/wiki/model-testing/')
-    ).toBe('zh/guide/wiki/model-testing/')
+    expect(toDocsSplat('/docs-content/docs/zh/guide/wiki/model-testing/')).toBe(
+      'zh/guide/wiki/model-testing/'
+    )
   })
 
   test('toDocsHostSplat strips it for the address bar', () => {

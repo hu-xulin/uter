@@ -21,10 +21,7 @@ import userEvent from '@testing-library/user-event'
 import { useState } from 'react'
 import { describe, expect, test } from 'vitest'
 
-import {
-  handleNumberInput,
-  type NumberInputValue,
-} from '@/lib/number-input'
+import { handleNumberInput, type NumberInputValue } from '@/lib/number-input'
 
 /**
  * Mirrors the local `useState` numeric inputs (transfer dialog amount, channel

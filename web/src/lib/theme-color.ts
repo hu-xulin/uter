@@ -19,16 +19,17 @@ For commercial licensing, please contact support@uter.ai
 import { useEffect, useState } from 'react'
 
 /**
- * Resolve a theme color token (e.g. `--foreground`) to an `rgba()` string a
- * canvas chart can draw with. The token is read from `<body>` so theme preset
+ * Resolve any CSS color expression (a `var()` reference, a `color-mix()`
+ * derivation, …) to an `rgba()` string a canvas chart can draw with. The
+ * expression is evaluated on a probe element inside `<body>` so theme preset
  * overrides apply, and normalized through a canvas because tokens are written
  * as `oklch()` / `color-mix()`, which chart libraries do not parse.
  */
-export function resolveThemeColor(cssVariable: string): string | undefined {
+export function resolveCssColor(expression: string): string | undefined {
   if (typeof document === 'undefined') return undefined
 
   const probe = document.createElement('div')
-  probe.style.color = `var(${cssVariable})`
+  probe.style.color = expression
   probe.style.display = 'none'
   document.body.appendChild(probe)
   const computedColor = getComputedStyle(probe).color
@@ -41,6 +42,13 @@ export function resolveThemeColor(cssVariable: string): string | undefined {
   context.fillRect(0, 0, 1, 1)
   const [red, green, blue, alpha] = context.getImageData(0, 0, 1, 1).data
   return `rgba(${red}, ${green}, ${blue}, ${(alpha / 255).toFixed(2)})`
+}
+
+/**
+ * Resolve a theme color token (e.g. `--foreground`) to an `rgba()` string.
+ */
+export function resolveThemeColor(cssVariable: string): string | undefined {
+  return resolveCssColor(`var(${cssVariable})`)
 }
 
 /**
@@ -68,4 +76,43 @@ export function useThemeColor(cssVariable: string): string | undefined {
   }, [cssVariable])
 
   return color
+}
+
+/**
+ * Track several color expressions at once, keyed by the expression itself.
+ *
+ * Canvas 图表需要一整组色值（状态分级、序列区分），逐个调用
+ * `useThemeColor` 会重复建探针元素、并且要写 5 个 hook；这里用同一个
+ * 探针遍历解析，主题变化时一起刷新。
+ */
+export function useThemeColors(
+  expressions: readonly string[]
+): Record<string, string> {
+  const key = expressions.join('\n')
+  const [colors, setColors] = useState<Record<string, string>>({})
+
+  useEffect(() => {
+    const update = () => {
+      const next: Record<string, string> = {}
+      for (const expression of key.split('\n')) {
+        const color = resolveCssColor(expression)
+        if (color) next[expression] = color
+      }
+      setColors(next)
+    }
+    update()
+
+    const observer = new MutationObserver(update)
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['class'],
+    })
+    observer.observe(document.body, {
+      attributes: true,
+      attributeFilter: ['data-theme-preset'],
+    })
+    return () => observer.disconnect()
+  }, [key])
+
+  return colors
 }

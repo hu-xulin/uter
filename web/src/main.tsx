@@ -30,6 +30,7 @@ import { readCachedStatus, statusQueryOptions } from '@/lib/status-query'
 
 import { DirectionProvider } from './context/direction-provider'
 import { FontProvider } from './context/font-provider'
+import { IconProvider } from './context/icon-provider'
 import { ThemeProvider } from './context/theme-provider'
 import { initialized as i18nInitialized } from './i18n/config'
 // Generated Routes
@@ -115,11 +116,13 @@ if (!rootElement.innerHTML) {
       <StrictMode>
         <QueryClientProvider client={queryClient}>
           <ThemeProvider>
-            <FontProvider>
-              <DirectionProvider>
-                <RouterProvider router={router} />
-              </DirectionProvider>
-            </FontProvider>
+            <IconProvider>
+              <FontProvider>
+                <DirectionProvider>
+                  <RouterProvider router={router} />
+                </DirectionProvider>
+              </FontProvider>
+            </IconProvider>
           </ThemeProvider>
         </QueryClientProvider>
       </StrictMode>

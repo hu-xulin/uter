@@ -334,9 +334,7 @@ function balanceBraces(css: string): string {
  * leaving selectors untouched.
  */
 export function sanitizeStyleSheet(css: string): string {
-  let result = balanceBraces(
-    stripCssComments(css).replace(atRulePattern, '')
-  )
+  let result = balanceBraces(stripCssComments(css).replace(atRulePattern, ''))
 
   // Repeat until stable so rules nested in at-rules such as `@media` are
   // filtered too.

@@ -54,7 +54,10 @@ describe('sanitizeInlineStyle', () => {
 
   test('drops the escape-encoded spelling of url()', () => {
     // \75 rl( decodes to url(
-    assert.equal(sanitizeInlineStyle('background-image: \\75 rl(//evil.com)'), '')
+    assert.equal(
+      sanitizeInlineStyle('background-image: \\75 rl(//evil.com)'),
+      ''
+    )
   })
 
   test('rejects @import, expression and script URLs', () => {
@@ -68,7 +71,9 @@ describe('sanitizeInlineStyle', () => {
     }
 
     // A valid declaration alongside an @import survives; only the import goes.
-    const mixed = sanitizeInlineStyle('color: red; @import url(//evil.com/a.css)')
+    const mixed = sanitizeInlineStyle(
+      'color: red; @import url(//evil.com/a.css)'
+    )
     assert.equal(mixed, 'color: red')
     assert.equal(mixed.includes('@import'), false)
   })
@@ -95,7 +100,10 @@ describe('sanitizeInlineStyle', () => {
   })
 
   test('strips comments used to hide a payload', () => {
-    assert.equal(sanitizeInlineStyle('color: red/*; background: url(//e.com)'), 'color: red')
+    assert.equal(
+      sanitizeInlineStyle('color: red/*; background: url(//e.com)'),
+      'color: red'
+    )
   })
 })
 
@@ -137,7 +145,12 @@ describe('sanitizeStyleSheet', () => {
   })
 
   test('removes @charset', () => {
-    assert.equal(sanitizeStyleSheet('@charset "utf-8"; .a { color: red; }').includes('@charset'), false)
+    assert.equal(
+      sanitizeStyleSheet('@charset "utf-8"; .a { color: red; }').includes(
+        '@charset'
+      ),
+      false
+    )
   })
 
   test('filters a block the author left unclosed', () => {

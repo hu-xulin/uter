@@ -23,6 +23,7 @@ import {
   formatQuotaWithCurrency,
   getCurrencyDisplay,
   getCurrencyFractionDigits,
+  type CurrencyFormatOptions,
 } from './currency'
 
 // ============================================================================
@@ -69,12 +70,20 @@ export function formatCurrencyUSD(value: number | null | undefined): string {
 /**
  * Format quota into the configured display amount.
  * Quota is stored in units where `quotaPerUnit` equals 1 USD.
+ *
+ * `options` 覆盖默认精度。默认是「≥1 两位、<1 四位」且允许 k 缩写；需要
+ * 「金额一律两位小数」的场景（钱包余额 / 总用量）传
+ * `{ fixedFractionDigits: 2 }`。
  */
-export function formatQuota(quota: number): string {
+export function formatQuota(
+  quota: number,
+  options?: CurrencyFormatOptions
+): string {
   return formatQuotaWithCurrency(quota, {
     digitsLarge: 2,
     digitsSmall: 4,
     abbreviate: true,
+    ...options,
   })
 }
 
@@ -288,23 +297,35 @@ export function parseTimestampFromInput(value: string): number {
 // ============================================================================
 
 /**
- * 后台展示用用户 ID 的偏移基数：数据库自增 id=1 显示为对外编号 uter100000001。
+ * 后台展示用用户 ID 的偏移基数：数据库自增 id=1 显示为对外编号 U100000001。
  * 仅用于界面展示，业务/接口层仍使用原始数字 id。
  */
 export const USER_ID_DISPLAY_BASE = 100_000_000
 
 /**
- * 把数据库自增 user id 转成后台展示用的「对外编号」，例如 id=1 -> "uter100000001"。
+ * 对外编号的前缀。**全站唯一来源**：任何展示用户 ID 的地方都必须走
+ * `formatUserId`，不要自己拼字符串 —— 前端 `features/organization`、
+ * 审计日志、计费历史、看板筛选都曾各自写过一份，改规则时漏改一处就会出现
+ * 「同一个人两个 ID」。
+ *
+ * 历史写法 `uter100000001` 已废弃（2026-10-28 起统一为 `U100000001`），
+ * 但解析侧仍接受旧前缀，避免用户粘贴旧 ID 时查不到人。
+ */
+export const USER_ID_DISPLAY_PREFIX = 'U'
+
+/**
+ * 把数据库自增 user id 转成后台展示用的「对外编号」，例如 id=1 -> "U100000001"。
  * 纯展示用途，不要把它当作接口参数使用。id<=0（无用户）按原值返回。
  */
 export function formatUserId(id: number): string {
   if (!Number.isFinite(id) || id <= 0) return String(id)
-  return `uter${USER_ID_DISPLAY_BASE + id}`
+  return `${USER_ID_DISPLAY_PREFIX}${USER_ID_DISPLAY_BASE + id}`
 }
 
 /**
- * 把对外编号 uter100000001 反解成数据库 id=1；同时兼容裸数字 id（id<=0 返回 0）。
- * 接受多种写法："uter100000001"、"UTER100000001"、两侧带空格、"100000001"、"1"（无前缀也会按展示格式回退）。
+ * 把对外编号 U100000001 反解成数据库 id=1；同时兼容裸数字 id（id<=0 返回 0）。
+ * 接受多种写法："U100000001"、"u100000001"、旧前缀 "uter100000001"、
+ * 两侧带空格、"100000001"、"1"（无前缀也会按展示格式回退）。
  */
 export function parseUserId(value: string | number): number {
   if (typeof value === 'number') {
@@ -313,7 +334,7 @@ export function parseUserId(value: string | number): number {
   const trimmed = String(value).trim()
   if (!trimmed) return 0
   const lowered = trimmed.toLowerCase()
-  const match = /^uter(\d+)$/.exec(lowered)
+  const match = /^(?:u|uter)(\d+)$/.exec(lowered)
   if (match) {
     const raw = Number(match[1])
     return Number.isFinite(raw) && raw > USER_ID_DISPLAY_BASE

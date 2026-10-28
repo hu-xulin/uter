@@ -94,13 +94,17 @@ export const DOCS_CONTENT_PREFIX = '/docs-content/docs'
 
 /** Convert a host docs path (`/docs/<lang>/…`) to its content path. */
 export function hostToContent(hostPath: string): string {
-  if (!hostPath.startsWith(`${DOCS_ENTRY_PATH}/`)) return `${DOCS_CONTENT_PREFIX}${hostPath}`
+  if (!hostPath.startsWith(`${DOCS_ENTRY_PATH}/`)) {
+    return `${DOCS_CONTENT_PREFIX}${hostPath}`
+  }
   return `${DOCS_CONTENT_PREFIX}${hostPath.slice(DOCS_ENTRY_PATH.length)}`
 }
 
 /** Convert a content path (`/docs-content/docs/<lang>/…`) back to the host path. */
 export function contentToHost(contentPath: string): string {
-  if (!contentPath.startsWith(`${DOCS_CONTENT_PREFIX}/`)) return `${DOCS_ENTRY_PATH}${contentPath}`
+  if (!contentPath.startsWith(`${DOCS_CONTENT_PREFIX}/`)) {
+    return `${DOCS_ENTRY_PATH}${contentPath}`
+  }
   return `${DOCS_ENTRY_PATH}${contentPath.slice(DOCS_CONTENT_PREFIX.length)}`
 }
 
