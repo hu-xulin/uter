@@ -33,6 +33,7 @@ import {
 } from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
+import { Heading } from '@/design-system'
 import { formatTimestampToDate } from '@/lib/format'
 import { handleServerError } from '@/lib/handle-server-error'
 import { createServerError } from '@/lib/server-error-message'
@@ -207,10 +208,10 @@ export function HistoryLogCleanup() {
       className='flex min-w-0 flex-col gap-4'
     >
       <div>
-        <h4 id={titleId} className='font-medium'>
+        <Heading variant='group-title' level={4} id={titleId}>
           {t('Clean history logs')}
-        </h4>
-        <p className='text-muted-foreground mt-1 text-xs'>
+        </Heading>
+        <p className='text-muted-foreground mt-1 text-sm'>
           {t('Remove all log entries created before the selected timestamp.')}
         </p>
       </div>

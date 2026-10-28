@@ -172,9 +172,10 @@ function ChannelModelPicker({
     onClose()
   }
   return (
-    <div className='bg-popover space-y-2 rounded-lg border p-3 shadow-md'>
+    <div className='bg-popover space-y-2 rounded-lg border p-3'>
       <div className='flex items-center gap-2'>
-        <Input autoComplete='off'
+        <Input
+          autoComplete='off'
           className='flex-1'
           value={query}
           onChange={(event) => setQuery(event.target.value)}
@@ -187,7 +188,7 @@ function ChannelModelPicker({
       </div>
       <div className='bg-muted/20 max-h-56 space-y-1 overflow-y-auto rounded-md p-1'>
         {filtered.length === 0 ? (
-          <p className='text-muted-foreground px-2 py-3 text-xs'>
+          <p className='text-muted-foreground px-2 py-3 text-sm'>
             {t('No models configured for channel')}
           </p>
         ) : (
@@ -208,7 +209,7 @@ function ChannelModelPicker({
                   disabled={disabled}
                   onChange={() => toggle(model)}
                 />
-                <span className='font-mono break-all'>{model}</span>
+                <span className='text-mono font-mono break-all'>{model}</span>
                 {disabled && (
                   <span className='text-muted-foreground ml-auto text-xs'>
                     {t('Already added')}
@@ -422,7 +423,7 @@ export function ChannelModelWeightSection({
               <div className='flex flex-wrap items-end justify-between gap-3'>
                 <div className='flex min-w-0 flex-wrap items-end gap-3'>
                   <div className='space-y-1'>
-                    <Label className='text-muted-foreground text-sm'>
+                    <Label tier='default' className='text-muted-foreground'>
                       {t('Channel')}
                     </Label>
                     <Combobox
@@ -443,7 +444,7 @@ export function ChannelModelWeightSection({
                         patchRow(row.id, { enabled: checked })
                       }
                     />
-                    <Label className='text-xs'>{t('Enabled')}</Label>
+                    <Label tier='default'>{t('Enabled')}</Label>
                   </div>
                 </div>
                 <Button
@@ -466,7 +467,7 @@ export function ChannelModelWeightSection({
 
               <SettingsControlChildren className='space-y-2'>
                 <div className='flex flex-wrap items-center justify-between gap-2'>
-                  <Label className='text-muted-foreground text-sm'>
+                  <Label tier='default' className='text-muted-foreground'>
                     {t('Per-model overrides')}
                   </Label>
                   <Button
@@ -527,7 +528,8 @@ export function ChannelModelWeightSection({
                           placeholder='gpt-4o'
                           className='w-56'
                         />
-                        <Input autoComplete='off'
+                        <Input
+                          autoComplete='off'
                           className='w-24'
                           inputMode='decimal'
                           placeholder={t('Weight')}
@@ -538,7 +540,8 @@ export function ChannelModelWeightSection({
                             })
                           }
                         />
-                        <Input autoComplete='off'
+                        <Input
+                          autoComplete='off'
                           className='w-24'
                           inputMode='decimal'
                           placeholder={t('Priority')}

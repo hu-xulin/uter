@@ -188,7 +188,7 @@ export function UpstreamRatioSyncTable(props: UpstreamRatioSyncTableProps) {
         splitHeader
         getColumnClassName={(_, part) =>
           part === 'header'
- ? 'px-3 align-middle'
+            ? 'px-3 align-middle'
             : 'h-14 px-3 py-2 align-middle'
         }
         getRowClassName={() => 'align-middle'}
@@ -215,7 +215,8 @@ export function UpstreamRatioSyncTable(props: UpstreamRatioSyncTableProps) {
               className='text-muted-foreground absolute top-1/2 left-2 size-4 -translate-y-1/2'
               aria-hidden
             />
-            <Input autoComplete='off'
+            <Input
+              autoComplete='off'
               value={search}
               onChange={(event) => {
                 setSearch(event.target.value)

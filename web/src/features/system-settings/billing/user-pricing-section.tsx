@@ -211,6 +211,8 @@ export function UserPricingSection({
               setDraft((prev) => ({ ...prev, enabled: checked }))
             }
             label={t('Enabled')}
+            // 整段功能的总开关也是一条配置项标题：与全站设置页统一 16/600，
+            // 不再单独放大到 18px。
             description={t(
               'Give users a different rate depending on how much they spent this month.'
             )}
@@ -219,7 +221,7 @@ export function UserPricingSection({
 
         <SettingsFormGridItem span='full'>
           <div className='bg-muted/20 space-y-3 rounded-xl border p-3'>
-            <div className='text-muted-foreground grid grid-cols-[1fr_1fr_1fr_1.2fr_auto] items-center gap-2 text-xs'>
+            <div className='text-muted-foreground grid grid-cols-[1fr_1fr_1fr_1.2fr_auto] items-center gap-2 text-sm'>
               <span>
                 {t('Monthly spend from')} ({currencyUnit})
               </span>
@@ -235,7 +237,8 @@ export function UserPricingSection({
                 key={tier.id}
                 className='grid grid-cols-[1fr_1fr_1fr_1.2fr_auto] items-center gap-2'
               >
-                <Input autoComplete='off'
+                <Input
+                  autoComplete='off'
                   inputMode='decimal'
                   placeholder='0'
                   value={tier.min}
@@ -243,7 +246,8 @@ export function UserPricingSection({
                     patchTier(tier.id, { min: event.target.value })
                   }
                 />
-                <Input autoComplete='off'
+                <Input
+                  autoComplete='off'
                   inputMode='decimal'
                   placeholder={t('No upper limit')}
                   value={tier.max}
@@ -251,7 +255,8 @@ export function UserPricingSection({
                     patchTier(tier.id, { max: event.target.value })
                   }
                 />
-                <Input autoComplete='off'
+                <Input
+                  autoComplete='off'
                   inputMode='decimal'
                   placeholder='1'
                   value={tier.ratio}
@@ -259,7 +264,8 @@ export function UserPricingSection({
                     patchTier(tier.id, { ratio: event.target.value })
                   }
                 />
-                <Input autoComplete='off'
+                <Input
+                  autoComplete='off'
                   placeholder={t('Description')}
                   value={tier.label}
                   onChange={(event) =>

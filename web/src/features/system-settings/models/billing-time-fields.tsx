@@ -78,11 +78,7 @@ export function BillingTimeProbeFields(props: {
           probe && props.onChange(probe, props.timezone || 'UTC')
         }
       >
-        <SelectTrigger
-          aria-label={t('Condition input')}
-          className='w-44'
-          size='sm'
-        >
+        <SelectTrigger aria-label={t('Condition input')} className='w-44'>
           <SelectValue />
         </SelectTrigger>
         <SelectContent alignItemWithTrigger={false}>
@@ -142,7 +138,6 @@ export function BillingConditionValueInput(props: {
         onValueChange={(value) => value !== null && props.onChange(value)}
       >
         <SelectTrigger
-          size='sm'
           className='w-32'
           aria-label={props.label ?? t('Condition value')}
           aria-invalid={props.invalid || undefined}
@@ -170,7 +165,8 @@ export function BillingConditionValueInput(props: {
     )
   }
   return (
-    <Input autoComplete='off'
+    <Input
+      autoComplete='off'
       type='text'
       inputMode='numeric'
       aria-label={props.label ?? t('Condition value')}

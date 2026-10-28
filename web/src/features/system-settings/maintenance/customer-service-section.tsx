@@ -17,17 +17,18 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@uter.ai
 */
 import { zodResolver } from '@hookform/resolvers/zod'
+import { Eye, EyeOff } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import * as z from 'zod'
 
+import { Button } from '@/components/ui/button'
 import { Form, FormControl, FormItem, FormLabel } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Switch } from '@/components/ui/switch'
 import { api } from '@/lib/api'
-import { Eye, EyeOff } from 'lucide-react'
 import { maskSecret } from '@/lib/secret'
 
 import { SettingsForm } from '../components/settings-form-layout'
@@ -106,6 +107,8 @@ const LLM_FIELDS: {
   key: string
   labelKey: string
   sensitive?: boolean
+  /** 机器可读的值（URL / 模型 ID）——用等宽，便于逐字符核对。 */
+  mono?: boolean
   placeholderKey?: string
   descriptionKey?: string
 }[] = [
@@ -113,17 +116,21 @@ const LLM_FIELDS: {
   {
     key: 'base',
     labelKey: 'API Base URL',
+    mono: true,
     placeholderKey: 'https://api.example.com/v1',
   },
   {
     key: 'model',
     labelKey: 'Primary Model',
-    descriptionKey: 'Primary chat model used by the assistant for conversations.',
+    mono: true,
+    descriptionKey:
+      'Primary chat model used by the assistant for conversations.',
     placeholderKey: 'deepseek-ai/DeepSeek-V3',
   },
   {
     key: 'fallback_model',
     labelKey: 'Fallback Model',
+    mono: true,
     descriptionKey:
       'Fallback model: automatically used when the primary model fails or is unavailable.',
     placeholderKey: 'Qwen/Qwen3-8B',
@@ -131,6 +138,7 @@ const LLM_FIELDS: {
   {
     key: 'embed_model',
     labelKey: 'Embedding Model',
+    mono: true,
     descriptionKey:
       'Embedding model: vectorizes the knowledge base for semantic retrieval.',
     placeholderKey: 'BAAI/bge-m3',
@@ -144,11 +152,13 @@ const LLM_FIELDS: {
   {
     key: 'backup_base',
     labelKey: 'Backup Base URL',
+    mono: true,
     placeholderKey: 'https://backup.example.com/v1',
   },
   {
     key: 'backup_model',
     labelKey: 'Backup Model',
+    mono: true,
     descriptionKey:
       'Cross-vendor backup: only used when base URL, model, and API key are all filled.',
     placeholderKey: 'glm-4-flash',
@@ -272,9 +282,10 @@ export function CustomerServiceSection({
                   key={option.key}
                   className='flex flex-row items-center justify-between gap-4'
                 >
-                  <FormLabel className='text-sm font-normal'>
-                    {t(option.labelKey)}
-                  </FormLabel>
+                  {/* 不再硬写 text-sm font-normal：那会把标签压回 14px、与
+                      下方 14px 说明同号同重。档位由外层 SettingsForm 的
+                      FormLabelTierProvider（field = 16/600）下发。 */}
+                  <FormLabel>{t(option.labelKey)}</FormLabel>
                   <FormControl>
                     <Switch
                       checked={on}
@@ -304,6 +315,28 @@ export function CustomerServiceSection({
       </Form>
     </SettingsSection>
   )
+}
+
+/**
+ * 判断一个值是否**形如** uter-cs 的管理令牌。
+ *
+ * 现在有合法形态两种（见 uter-cs 的 server/auth.js）：
+ *   1. 长期服务令牌：单段不透明串（`openssl rand -hex 32` → 64 字符），不过期；
+ *   2. 登录令牌：`header.payload.signature` 三段 base64url，约 150+ 字符，默认 7 天过期。
+ * 管理员密码（如 `admin123`、`Uter.ai2026`）只有 8–11 个字符，一眼可辨。
+ *
+ * 为什么要在保存前挡一道：令牌框填密码不会报错，会**保存成功**，然后所有读取
+ * 都返回 401，页面表现为「参数怎么都显示不出来 / 刷新后清空」——实测踩过。
+ * 与其让运营对着一串 HTTP 401 猜，不如在输入时就说明「这不是令牌」。
+ */
+function looksLikeUterCSAdminToken(value: string): boolean {
+  const v = value.trim()
+  if (v.length < 32) return false
+  // 单段服务令牌：不含点即视为不透明串（长度已过门槛）。
+  if (!v.includes('.')) return true
+  // 含点时必须是完整的三段式，避免把粘了一半的令牌存进去。
+  const parts = v.split('.')
+  return parts.length === 3 && parts.every((part) => part.length > 0)
 }
 
 /**
@@ -367,6 +400,15 @@ function AdminTokenField({
       toast.error(t('Token cannot be empty'))
       return
     }
+    // 形态校验先于写库：填密码/随手字符串时立即拦住，避免「保存成功但读取恒 401」。
+    if (!looksLikeUterCSAdminToken(v)) {
+      toast.error(
+        t(
+          'This is not a uter-cs admin token. Use the three-part login token or a service token of at least 32 characters; the admin password is not a token.'
+        )
+      )
+      return
+    }
     try {
       await updateOption.mutateAsync({
         key: 'CustomerServiceAdminToken',
@@ -401,6 +443,11 @@ function AdminTokenField({
               'Paste the uter-cs admin bearer token so Uter can read and save its model configuration on your behalf.'
             )}
       </p>
+      <p className='text-muted-foreground text-sm'>
+        {t(
+          'Where to get it: use the long-lived service token (uter-cs server/deploy/admin-service-token, never expires), or copy scs_token from DevTools → Application → Local Storage (expires after 7 days). Never paste the admin password.'
+        )}
+      </p>
       <div className='flex flex-col gap-2 sm:flex-row'>
         <div className='relative flex-1'>
           <Input
@@ -409,6 +456,7 @@ function AdminTokenField({
             placeholder='Bearer …'
             value={displayValue}
             disabled={updateOption.isPending}
+            mono
             onFocus={beginEdit}
             onChange={(e) => {
               if (editing) setDraft(e.target.value)
@@ -417,28 +465,33 @@ function AdminTokenField({
             className='pr-9'
           />
           {!editing && token && (
-            <button
+            <Button
               type='button'
+              variant='ghost'
+              size='icon-xs'
               tabIndex={-1}
               onClick={() => setRevealed((v) => !v)}
               aria-label={revealed ? 'Hide token' : 'Reveal token'}
-              className='text-muted-foreground hover:text-foreground absolute right-2 top-1/2 size-5 -translate-y-1/2'
+              className='text-muted-foreground absolute top-1/2 right-1.5 -translate-y-1/2'
             >
-              {revealed ? <EyeOff className='size-4' /> : <Eye className='size-4' />}
-            </button>
+              {revealed ? (
+                <EyeOff className='size-4' />
+              ) : (
+                <Eye className='size-4' />
+              )}
+            </Button>
           )}
         </div>
-        <button
+        <Button
           type='button'
-          className='bg-primary text-primary-foreground shrink-0 rounded-md px-4 py-2 text-sm font-medium disabled:opacity-50'
+          className='shrink-0'
           onClick={save}
           disabled={
-            updateOption.isPending ||
-            (editing ? !draft.trim() : !token.trim())
+            updateOption.isPending || (editing ? !draft.trim() : !token.trim())
           }
         >
           {t('Save token')}
-        </button>
+        </Button>
       </div>
     </div>
   )
@@ -503,13 +556,9 @@ function MaskedConfigField({
 
   return (
     <FormItem className='flex flex-col gap-1.5'>
-      <FormLabel className='text-sm font-normal'>
-        {t(labelKey)}
-      </FormLabel>
+      <FormLabel>{t(labelKey)}</FormLabel>
       {descriptionKey && (
-        <p className='text-muted-foreground text-sm'>
-          {t(descriptionKey)}
-        </p>
+        <p className='text-muted-foreground text-sm'>{t(descriptionKey)}</p>
       )}
       <FormControl>
         <div className='relative'>
@@ -517,6 +566,7 @@ function MaskedConfigField({
             type={inputType}
             autoComplete='new-password'
             readOnly={!editing}
+            mono
             placeholder={isBlank ? (placeholderKey ?? '') : undefined}
             value={display}
             onFocus={() => {
@@ -540,15 +590,21 @@ function MaskedConfigField({
             className='pr-9'
           />
           {!editing && !isBlank && (
-            <button
+            <Button
               type='button'
+              variant='ghost'
+              size='icon-xs'
               tabIndex={-1}
               onClick={() => setRevealed((v) => !v)}
               aria-label={revealed ? 'Hide secret' : 'Reveal secret'}
-              className='text-muted-foreground hover:text-foreground absolute right-2 top-1/2 size-5 -translate-y-1/2'
+              className='text-muted-foreground absolute top-1/2 right-1.5 -translate-y-1/2'
             >
-              {revealed ? <EyeOff className='size-4' /> : <Eye className='size-4' />}
-            </button>
+              {revealed ? (
+                <EyeOff className='size-4' />
+              ) : (
+                <Eye className='size-4' />
+              )}
+            </Button>
           )}
         </div>
       </FormControl>
@@ -580,51 +636,73 @@ function ModelConfigPanel({ reloadSignal = 0 }: { reloadSignal?: number }) {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [needToken, setNeedToken] = useState(false)
+  const [tokenInvalid, setTokenInvalid] = useState(false)
   const [fromCache, setFromCache] = useState(false)
   const [stale, setStale] = useState(false)
   const [note, setNote] = useState('')
   const [error, setError] = useState('')
 
-  const load = useCallback(async () => {
-    setLoading(true)
-    setError('')
-    setNeedToken(false)
-    setFromCache(false)
-    setStale(false)
-    setNote('')
-    try {
-      const res = await api.get<{
-        success: boolean
-        data: { llm: LLMConfig; fromCache?: boolean; stale?: boolean; message?: string }
-      }>('/api/customer-service/deploy/llm')
-      const data = res.data
-      if (data && data.success) {
-        setConfig(normalizeLLM(data.data?.llm))
-        setFromCache(Boolean(data.data?.fromCache))
-        setStale(Boolean(data.data?.stale))
-        if (data.data?.message) setNote(data.data.message)
-      } else {
-        setError(t('Failed to load model configuration'))
-        setConfig(normalizeLLM(null))
+  const load = useCallback(
+    async (opts?: { silent?: boolean }) => {
+      // silent：保存成功后回读用。不切 loading，避免表单被卸载重建（输入框闪一下、焦点丢失）。
+      if (!opts?.silent) setLoading(true)
+      setError('')
+      setNeedToken(false)
+      setTokenInvalid(false)
+      setFromCache(false)
+      setStale(false)
+      setNote('')
+      try {
+        const res = await api.get<{
+          success: boolean
+          data: {
+            llm: LLMConfig
+            fromCache?: boolean
+            stale?: boolean
+            message?: string
+          }
+        }>('/api/customer-service/deploy/llm')
+        const data = res.data
+        if (data && data.success) {
+          setConfig(normalizeLLM(data.data?.llm))
+          setFromCache(Boolean(data.data?.fromCache))
+          setStale(Boolean(data.data?.stale))
+          if (data.data?.message) setNote(data.data.message)
+        } else {
+          setError(t('Failed to load model configuration'))
+          // 读不到时保留上一次成功读到的值：把已填内容清空只会让人以为「保存丢了」，
+          // 真正的原因在 error 里。首次加载 prev 为 null，仍然是空表单。
+          setConfig((prev) => prev ?? normalizeLLM(null))
+        }
+      } catch (e: unknown) {
+        const err = e as {
+          response?: {
+            data?: {
+              needToken?: boolean
+              tokenInvalid?: boolean
+              message?: string
+            }
+          }
+        }
+        if (err?.response?.data?.needToken) {
+          setNeedToken(true)
+          setTokenInvalid(Boolean(err?.response?.data?.tokenInvalid))
+          // 后端已把「令牌无效/未配置」翻成可操作的话（含去哪拿），优先展示它。
+          if (err.response?.data?.message) setNote(err.response.data.message)
+        } else {
+          setError(
+            err?.response?.data?.message ||
+              t('Failed to load model configuration')
+          )
+        }
+        setConfig((prev) => prev ?? normalizeLLM(null))
+      } finally {
+        if (!opts?.silent) setLoading(false)
       }
-    } catch (e: unknown) {
-      const err = e as {
-        response?: { data?: { needToken?: boolean; message?: string } }
-      }
-      if (err?.response?.data?.needToken) {
-        setNeedToken(true)
-      } else {
-        setError(
-          err?.response?.data?.message ||
-            t('Failed to load model configuration')
-        )
-      }
-      setConfig(normalizeLLM(null))
-    } finally {
-      setLoading(false)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [t])
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    },
+    [t]
+  )
 
   useEffect(() => {
     void load()
@@ -641,6 +719,10 @@ function ModelConfigPanel({ reloadSignal = 0 }: { reloadSignal?: number }) {
       )
       if (res.data?.success) {
         toast.success(res.data.message || t('Model configuration saved'))
+        // 保存成功后立刻回读一次，用服务端的真实值覆盖本地状态：
+        // 这样「写进去了但读不出来」（例如令牌同时失效）会当场暴露，
+        // 而不是等用户刷新页面才发现表单是空的。
+        await load({ silent: true })
       } else {
         setError(res.data?.message || t('Failed to save model configuration'))
       }
@@ -656,7 +738,7 @@ function ModelConfigPanel({ reloadSignal = 0 }: { reloadSignal?: number }) {
 
   return (
     <div className='mt-6 space-y-3 rounded-lg border p-4'>
-      <h3 className='text-base font-medium'>{t('Model Configuration')}</h3>
+      <h3 className='text-lg font-semibold'>{t('Model Configuration')}</h3>
       <p className='text-muted-foreground text-sm'>
         {t(
           'Large model settings for the customer service assistant. Changes are pushed to the connected uter-cs deployment.'
@@ -673,10 +755,15 @@ function ModelConfigPanel({ reloadSignal = 0 }: { reloadSignal?: number }) {
       )}
 
       {!loading && needToken && (
-        <p className='text-sm text-amber-600'>
-          {t(
-            'Admin token not configured. Paste the uter-cs admin token above first.'
-          )}
+        <p
+          className={
+            tokenInvalid ? 'text-destructive text-sm' : 'text-warning text-sm'
+          }
+        >
+          {note ||
+            t(
+              'Admin token not configured. Paste the uter-cs admin token above first.'
+            )}
         </p>
       )}
 
@@ -692,9 +779,7 @@ function ModelConfigPanel({ reloadSignal = 0 }: { reloadSignal?: number }) {
         <p className='text-muted-foreground text-sm'>{note}</p>
       )}
 
-      {!loading && error && (
-        <p className='text-destructive text-sm'>{error}</p>
-      )}
+      {!loading && error && <p className='text-destructive text-sm'>{error}</p>}
 
       {!loading && config && (
         <div className='space-y-3'>
@@ -711,9 +796,7 @@ function ModelConfigPanel({ reloadSignal = 0 }: { reloadSignal?: number }) {
               />
             ) : (
               <FormItem key={field.key} className='flex flex-col gap-1.5'>
-                <FormLabel className='text-sm font-normal'>
-                  {t(field.labelKey)}
-                </FormLabel>
+                <FormLabel>{t(field.labelKey)}</FormLabel>
                 {field.descriptionKey && (
                   <p className='text-muted-foreground text-sm'>
                     {t(field.descriptionKey)}
@@ -725,6 +808,7 @@ function ModelConfigPanel({ reloadSignal = 0 }: { reloadSignal?: number }) {
                     autoComplete='off'
                     placeholder={field.placeholderKey ?? ''}
                     value={config[field.key] ?? ''}
+                    mono={field.mono ?? false}
                     onChange={(e) =>
                       setConfig({ ...config, [field.key]: e.target.value })
                     }
@@ -736,22 +820,23 @@ function ModelConfigPanel({ reloadSignal = 0 }: { reloadSignal?: number }) {
           )}
 
           <div className='flex justify-end gap-2 pt-1'>
-            <button
+            <Button
               type='button'
-              className='rounded-md border px-3 py-1.5 text-sm'
+              variant='outline'
+              size='sm'
               onClick={() => void load()}
               disabled={saving}
             >
               {t('Reload')}
-            </button>
-            <button
+            </Button>
+            <Button
               type='button'
-              className='bg-primary text-primary-foreground rounded-md px-4 py-1.5 text-sm font-medium disabled:opacity-50'
+              size='sm'
               onClick={() => void update()}
               disabled={saving}
             >
               {saving ? t('Saving…') : t('Save model configuration')}
-            </button>
+            </Button>
           </div>
         </div>
       )}

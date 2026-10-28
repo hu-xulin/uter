@@ -42,7 +42,7 @@ export function PolicyDecisionRecord(props: {
           <p
             className={
               event.decision.action === 'stop'
-                ? 'font-medium text-amber-700 dark:text-amber-400'
+                ? 'text-warning dark:text-warning font-medium'
                 : 'font-medium'
             }
           >
@@ -54,14 +54,14 @@ export function PolicyDecisionRecord(props: {
               ? ` · HTTP ${event.status}`
               : ''}
           </p>
-          <p className='text-muted-foreground text-xs break-words'>
+          <p className='text-muted-foreground text-sm break-words'>
             {event.attempt > 0 ? `${t('Attempt')} ${event.attempt} · ` : ''}
             {event.elapsed_ms} ms
             {event.group ? ` · ${event.group}` : ''}
             {event.rule ? ` · ${event.rule}` : ''}
             {event.status ? ` · HTTP ${event.status}` : ''}
           </p>
-          <p className='text-muted-foreground text-xs'>
+          <p className='text-muted-foreground text-sm'>
             {t('Source')}: {policyLabel(t, event.decision.source)}
             {event.health ? ` · ${policyLabel(t, event.health)}` : ''}
           </p>

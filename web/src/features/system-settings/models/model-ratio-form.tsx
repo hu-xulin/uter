@@ -158,9 +158,7 @@ function ModelJsonTextareaField(props: {
               textareaRef={field.ref}
             />
           </FormControl>
-          <FormDescription className='leading-5'>
-            {props.description}
-          </FormDescription>
+          <FormDescription>{props.description}</FormDescription>
           <FormMessage />
         </FormItem>
       )}
@@ -273,7 +271,7 @@ export const ModelRatioForm = memo(function ModelRatioForm({
               onClick={onReset}
               disabled={isResetting}
             >
-              <RotateCcw data-icon='inline-start' />
+              <RotateCcw data-icon='inline-start' className='size-4' />
               {t('Reset prices')}
             </Button>
             {editMode === 'json' && (
@@ -283,19 +281,19 @@ export const ModelRatioForm = memo(function ModelRatioForm({
                 onClick={handleSave}
                 disabled={isSaving}
               >
-                <Save data-icon='inline-start' />
+                <Save data-icon='inline-start' className='size-4' />
                 {isSaving ? t('Saving...') : t('Save model prices')}
               </Button>
             )}
             <Button variant='outline' size='sm' onClick={toggleEditMode}>
               {editMode === 'visual' ? (
                 <>
-                  <Code2 className='mr-2 h-4 w-4' />
+                  <Code2 className='mr-2 size-4' />
                   {t('Switch to JSON')}
                 </>
               ) : (
                 <>
-                  <Eye className='mr-2 h-4 w-4' />
+                  <Eye className='mr-2 size-4' />
                   {t('Switch to Visual')}
                 </>
               )}
@@ -352,7 +350,7 @@ export const ModelRatioForm = memo(function ModelRatioForm({
           </div>
         ) : (
           <SettingsForm onSubmit={form.handleSubmit(onSave)}>
-            <div className='grid min-w-0 gap-x-5 gap-y-8 lg:grid-cols-2 2xl:grid-cols-3'>
+            <div className='flex min-w-0 flex-col gap-8'>
               {modelJsonFields.map((config) => (
                 <ModelJsonTextareaField
                   key={config.name}

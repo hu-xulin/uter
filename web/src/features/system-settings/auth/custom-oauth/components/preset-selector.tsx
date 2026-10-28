@@ -23,6 +23,7 @@ import { useTranslation } from 'react-i18next'
 import { Combobox } from '@/components/ui/combobox'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Heading } from '@/design-system/components/typography/heading'
 
 import { SettingsControlGroup } from '../../../components/settings-form-layout'
 import { OAUTH_PRESETS, type CustomOAuthFormValues } from '../types'
@@ -103,7 +104,9 @@ export function PresetSelector(props: PresetSelectorProps) {
 
   return (
     <SettingsControlGroup className='space-y-3 border-dashed'>
-      <p className='text-sm font-medium'>{t('Quick Setup from Preset')}</p>
+      <Heading variant='group-title' level={4}>
+        {t('Quick Setup from Preset')}
+      </Heading>
       <div className='grid grid-cols-1 gap-3 sm:grid-cols-2'>
         <div className='space-y-1.5'>
           <Label>{t('Preset Template')}</Label>
@@ -123,7 +126,8 @@ export function PresetSelector(props: PresetSelectorProps) {
         </div>
         <div className='space-y-1.5'>
           <Label>{t('Base URL')}</Label>
-          <Input autoComplete='off'
+          <Input
+            autoComplete='off'
             placeholder={t('https://your-server.example.com')}
             value={baseUrl}
             onChange={(e) => handleBaseUrlChange(e.target.value)}

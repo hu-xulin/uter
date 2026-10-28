@@ -252,6 +252,7 @@ export function BasicAuthSection({ defaultValues }: BasicAuthSectionProps) {
                   <Textarea
                     placeholder={t('example.com\ncompany.com')}
                     rows={4}
+                    mono
                     {...field}
                   />
                 </FormControl>

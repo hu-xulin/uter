@@ -125,7 +125,8 @@ export function RateLimitVisualEditor({
       <div className='flex items-center gap-4'>
         <div className='relative flex-1'>
           <Search className='text-muted-foreground absolute top-2.5 left-2.5 h-4 w-4' />
-          <Input autoComplete='off'
+          <Input
+            autoComplete='off'
             placeholder={t('Search group names...')}
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
@@ -133,7 +134,7 @@ export function RateLimitVisualEditor({
           />
         </div>
         <Button onClick={handleAdd}>
-          <Plus className='mr-2 h-4 w-4' />
+          <Plus className='mr-2 h-4.5 w-4.5' />
           {t('Add group')}
         </Button>
       </div>
@@ -161,7 +162,7 @@ export function RateLimitVisualEditor({
             className: 'text-right',
             cellClassName: 'text-right',
             cell: (limit) => (
-              <span className='font-mono'>
+              <span className='text-mono font-mono'>
                 {limit.maxRequests === 0
                   ? t('Unlimited')
                   : limit.maxRequests.toLocaleString()}
@@ -174,7 +175,7 @@ export function RateLimitVisualEditor({
             className: 'text-right',
             cellClassName: 'text-right',
             cell: (limit) => (
-              <span className='font-mono'>
+              <span className='text-mono font-mono'>
                 {limit.maxSuccess.toLocaleString()}
               </span>
             ),

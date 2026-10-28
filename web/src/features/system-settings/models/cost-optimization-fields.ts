@@ -71,6 +71,14 @@ export type FieldDef = {
    * 聚焦可输入新值，绝不把掩码串写回后端。用于 API key / secret 等敏感字段。
    */
   secret?: boolean
+  /**
+   * 用等宽字形渲染（机器可读的值：接口地址、路径、端点、模型名、Header 名）。
+   *
+   * 这些值要逐字符核对（`/v4/batches` 与 `/v1/batches`、`embedding-2` 与
+   * `embedding-3`），等宽下 `1/l/I`、`0/O` 分得清，长度也一眼可比。
+   * 人读的名称（分组标题、说明）不要开。
+   */
+  mono?: boolean
   /** 保真分级（见 FidelityTier）：这一项是否以改变模型所见内容为代价。 */
   fidelity?: FidelityTier
   /**
@@ -278,6 +286,7 @@ export const GROUPS: Array<{
       {
         name: 'costopt_setting.batch_api_base_url',
         kind: 'text',
+        mono: true,
         fidelity: 'safe',
         label: 'Batch API base URL',
         gated: 'costopt_setting.batch_enabled',
@@ -297,6 +306,7 @@ export const GROUPS: Array<{
       {
         name: 'costopt_setting.batch_endpoint_path',
         kind: 'text',
+        mono: true,
         fidelity: 'safe',
         label: 'Batch submit path',
         gated: 'costopt_setting.batch_enabled',
@@ -306,6 +316,7 @@ export const GROUPS: Array<{
       {
         name: 'costopt_setting.batch_chat_endpoint',
         kind: 'text',
+        mono: true,
         fidelity: 'safe',
         label: 'Batch inner chat endpoint',
         gated: 'costopt_setting.batch_enabled',
@@ -315,6 +326,7 @@ export const GROUPS: Array<{
       {
         name: 'costopt_setting.batch_files_path',
         kind: 'text',
+        mono: true,
         fidelity: 'safe',
         label: 'Batch file upload path',
         gated: 'costopt_setting.batch_enabled',
@@ -324,6 +336,7 @@ export const GROUPS: Array<{
       {
         name: 'costopt_setting.batch_result_path',
         kind: 'text',
+        mono: true,
         fidelity: 'safe',
         label: 'Batch result path',
         gated: 'costopt_setting.batch_enabled',
@@ -390,6 +403,7 @@ export const GROUPS: Array<{
       {
         name: 'costopt_setting.batch_embed_base_url',
         kind: 'text',
+        mono: true,
         fidelity: 'safe',
         label: 'Batch embedding API base URL',
         gated: 'costopt_setting.batch_embed_enabled',
@@ -399,6 +413,7 @@ export const GROUPS: Array<{
       {
         name: 'costopt_setting.batch_embed_endpoint',
         kind: 'text',
+        mono: true,
         fidelity: 'safe',
         label: 'Batch embedding endpoint',
         gated: 'costopt_setting.batch_embed_enabled',
@@ -418,6 +433,7 @@ export const GROUPS: Array<{
       {
         name: 'costopt_setting.batch_embed_model',
         kind: 'text',
+        mono: true,
         fidelity: 'safe',
         label: 'Batch embedding model',
         gated: 'costopt_setting.batch_embed_enabled',
@@ -441,6 +457,7 @@ export const GROUPS: Array<{
       {
         name: 'costopt_setting.cdn_asset_base_url',
         kind: 'text',
+        mono: true,
         fidelity: 'safe',
         label: 'CDN base URL',
         gated: 'costopt_setting.cdn_enabled',
@@ -450,6 +467,7 @@ export const GROUPS: Array<{
       {
         name: 'costopt_setting.cdn_origin_url',
         kind: 'text',
+        mono: true,
         fidelity: 'safe',
         label: 'Origin URL',
         gated: 'costopt_setting.cdn_enabled',
@@ -485,6 +503,7 @@ export const GROUPS: Array<{
       {
         name: 'costopt_setting.cdn_signing_header',
         kind: 'text',
+        mono: true,
         fidelity: 'safe',
         label: 'Origin shield header',
         gated: 'costopt_setting.cdn_enabled',
@@ -518,6 +537,7 @@ export const GROUPS: Array<{
       {
         name: 'costopt_setting.rag_endpoint',
         kind: 'text',
+        mono: true,
         fidelity: 'lossy',
         label: 'RAG endpoint',
         gated: 'costopt_setting.rag_enabled',
@@ -591,6 +611,7 @@ export const GROUPS: Array<{
       {
         name: 'costopt_setting.rag_rerank_model',
         kind: 'text',
+        mono: true,
         fidelity: 'lossy',
         label: 'Rerank model',
         gated: 'costopt_setting.rag_enabled',
@@ -782,6 +803,7 @@ export const GROUPS: Array<{
       {
         name: 'costopt_setting.cost_per_success_field',
         kind: 'text',
+        mono: true,
         label: 'Success field name',
         gated: 'costopt_setting.cost_per_success_enabled',
         placeholder: 'success',

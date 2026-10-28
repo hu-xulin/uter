@@ -129,7 +129,7 @@ export function AmountDiscountVisualEditor({
           size='sm'
           className='w-full sm:w-auto'
         >
-          <Plus className='h-4 w-4 sm:mr-2' />
+          <Plus className='h-4.5 w-4.5 sm:mr-2' />
           <span className='sm:inline'>{t('Add discount tier')}</span>
         </Button>
       </div>
@@ -152,7 +152,9 @@ export function AmountDiscountVisualEditor({
                 id: 'amount',
                 header: t('Recharge Amount'),
                 cell: (discount) => (
-                  <span className='font-mono text-mono'>${discount.amount}</span>
+                  <span className='text-mono font-mono'>
+                    ${discount.amount}
+                  </span>
                 ),
               },
               {
@@ -170,7 +172,7 @@ export function AmountDiscountVisualEditor({
                 cell: (discount) => (
                   <StatusBadge
                     variant={discount.discountRate < 1 ? 'info' : 'neutral'}
-                    className='font-mono'
+                    className='text-mono font-mono'
                     copyable={false}
                   >
                     {formatPercentage(discount.discountRate)} {t('off')}
@@ -201,12 +203,12 @@ export function AmountDiscountVisualEditor({
               <div key={discount.amount} className='p-4'>
                 <div className='mb-3 flex items-start justify-between'>
                   <div className='flex-1'>
-                    <div className='mb-2 font-mono text-base font-medium'>
+                    <div className='text-mono mb-2 font-mono font-medium'>
                       ${discount.amount}
                     </div>
                     <StatusBadge
                       variant={discount.discountRate < 1 ? 'info' : 'neutral'}
-                      className='font-mono'
+                      className='text-mono font-mono'
                       copyable={false}
                     >
                       {formatPercentage(discount.discountRate)} {t('off')}
@@ -223,7 +225,7 @@ export function AmountDiscountVisualEditor({
                         handleEdit(discount)
                       }}
                     >
-                      <Pencil className='h-4 w-4' />
+                      <Pencil className='h-4.5 w-4.5' />
                     </Button>
                     <Button
                       type='button'
@@ -235,7 +237,7 @@ export function AmountDiscountVisualEditor({
                         handleDelete(discount.amount)
                       }}
                     >
-                      <Trash2 className='h-4 w-4' />
+                      <Trash2 className='h-4.5 w-4.5' />
                     </Button>
                   </div>
                 </div>
@@ -243,7 +245,7 @@ export function AmountDiscountVisualEditor({
                   <span className='text-muted-foreground'>
                     {t('Discount Rate:')}{' '}
                   </span>
-                  <code className='bg-muted rounded px-1.5 py-0.5 text-xs'>
+                  <code className='text-mono bg-muted rounded px-1.5 py-0.5 font-mono'>
                     {discount.discountRate.toFixed(2)}
                   </code>
                 </div>

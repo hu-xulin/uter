@@ -196,7 +196,11 @@ export function PaymentMethodDialog({
               <FormItem>
                 <FormLabel>{t('Name')}</FormLabel>
                 <FormControl>
-                  <Input autoComplete='off' placeholder={t('e.g., Alipay, WeChat')} {...field} />
+                  <Input
+                    autoComplete='off'
+                    placeholder={t('e.g., Alipay, WeChat')}
+                    {...field}
+                  />
                 </FormControl>
                 <FormDescription>
                   {t('Display name for this payment method.')}
@@ -247,7 +251,7 @@ export function PaymentMethodDialog({
                     allowCustomValue
                   />
                 </FormControl>
-                <FormDescription className='leading-relaxed'>
+                <FormDescription>
                   {t(
                     'Used to decide the payment flow. Built-in keys include stripe for Stripe and waffo_pancake for Waffo Pancake; other values are sent to Epay as the type parameter.'
                   )}
@@ -265,7 +269,8 @@ export function PaymentMethodDialog({
                 <FormLabel>{t('Icon')}</FormLabel>
                 <FormControl>
                   <div className='flex items-center gap-2'>
-                    <Input autoComplete='off'
+                    <Input
+                      autoComplete='off'
                       placeholder={t('e.g., SiAlipay')}
                       {...field}
                       className='flex-1'
@@ -273,7 +278,7 @@ export function PaymentMethodDialog({
                     {iconValue && (
                       <ReactIconByName
                         name={iconValue}
-                        className='text-muted-foreground size-5 shrink-0'
+                        className='text-muted-foreground size-4 shrink-0'
                         title={iconValue}
                       />
                     )}
@@ -296,7 +301,8 @@ export function PaymentMethodDialog({
               <FormItem>
                 <FormLabel>{t('Minimum top-up (optional)')}</FormLabel>
                 <FormControl>
-                  <Input autoComplete='off'
+                  <Input
+                    autoComplete='off'
                     type='number'
                     step='0.01'
                     placeholder={t('e.g., 50')}

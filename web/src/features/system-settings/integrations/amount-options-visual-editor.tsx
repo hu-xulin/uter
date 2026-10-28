@@ -109,10 +109,10 @@ export function AmountOptionsVisualEditor({
               <StatusBadge
                 key={amount}
                 variant='neutral'
-                className='text-base'
+                className='text-sm'
                 copyable={false}
               >
-                <span className='font-mono'>${amount}</span>
+                <span className='text-mono font-mono'>${amount}</span>
                 <Button
                   type='button'
                   variant='ghost'
@@ -125,7 +125,7 @@ export function AmountOptionsVisualEditor({
                   className='hover:bg-muted-foreground/20 size-auto p-0.5'
                   aria-label={t('Remove ${{amount}}', { amount })}
                 >
-                  <X className='h-3.5 w-3.5' />
+                  <X className='h-4.5 w-4.5' />
                 </Button>
               </StatusBadge>
             ))}
@@ -138,7 +138,8 @@ export function AmountOptionsVisualEditor({
           <Label htmlFor='new-amount' className='mb-2 block'>
             {t('Add new amount')}
           </Label>
-          <Input autoComplete='off'
+          <Input
+            autoComplete='off'
             id='new-amount'
             type='number'
             step='0.01'
@@ -159,7 +160,7 @@ export function AmountOptionsVisualEditor({
           disabled={!newAmount || Number.parseFloat(newAmount) <= 0}
           className='w-full sm:w-auto'
         >
-          <Plus className='h-4 w-4 sm:mr-2' />
+          <Plus className='h-4.5 w-4.5 sm:mr-2' />
           <span className='sm:inline'>{t('Add')}</span>
         </Button>
       </div>

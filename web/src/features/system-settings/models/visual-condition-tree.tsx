@@ -167,7 +167,7 @@ function ConditionActions(props: ConditionProps & { group: boolean }) {
               />
             }
           >
-            <Plus aria-hidden='true' className='size-3.5' />
+            <Plus aria-hidden='true' className='size-4.5' />
             {t('Add')}
           </DropdownMenuTrigger>
           <DropdownMenuContent align='end' className='w-48'>
@@ -338,7 +338,7 @@ function ConditionFields(props: ConditionProps) {
           <p
             key={`${issue.id}:${issue.message}`}
             role='alert'
-            className='text-destructive w-full text-xs'
+            className='text-destructive w-full text-sm'
           >
             {t(issue.message)}
           </p>
@@ -466,7 +466,7 @@ export function VisualConditionTree(props: ConditionProps) {
           <p
             key={`${issue.id}:${issue.message}`}
             role='alert'
-            className='text-destructive px-3 pb-2 text-xs'
+            className='text-destructive px-3 pb-2 text-sm'
           >
             {t(issue.message)}
           </p>

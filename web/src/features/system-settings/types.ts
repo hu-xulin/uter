@@ -369,6 +369,7 @@ export type BillingSettings = {
   PayMethods: string
   'payment_setting.amount_options': string
   'payment_setting.amount_discount': string
+  'payment_setting.order_title_prefix': string
   'payment_setting.compliance_confirmed': boolean
   'payment_setting.compliance_terms_version': string
   'payment_setting.compliance_confirmed_at': number
@@ -550,5 +551,94 @@ export type UpstreamRatiosResponse = {
     differences: DifferencesMap
     prices: PricingSyncModels
     test_results: TestResult[]
+  }
+}
+
+// ── 渠道登录与同步（上游 创梦 / DreamRouter）────────────────────────────
+//
+// 价格单位：按量/分层计费为美元 / 1M tokens，按次计费为美元 / 次。
+export type DreamRouterPriceLine = {
+  input: number
+  output: number
+  cache: number
+  create_cache: number
+}
+
+export type DreamRouterSyncModelRow = {
+  upstream_name: string
+  local_name: string
+  billing_class: 'per_token' | 'per_call' | 'tiered' | 'tiered_unparsable'
+  quota_type: number
+  group_ratio: number
+  official: DreamRouterPriceLine
+  upstream: DreamRouterPriceLine
+  uter: DreamRouterPriceLine
+  upstream_discount_percent: number
+  uter_discount_percent: number
+  upstream_zhe: number
+  uter_zhe: number
+  aligned: boolean
+  note?: string
+}
+
+export type DreamRouterSyncModelsResponse = {
+  success: boolean
+  message: string
+  data: {
+    synced: boolean
+    pricing_version?: string
+    synced_at?: string
+    rule_direction?: string
+    rule_amount?: number
+    channel_id?: number
+    models: DreamRouterSyncModelRow[]
+    summary: {
+      total?: number
+      aligned?: number
+      drifted?: number
+      all_aligned?: boolean
+    }
+  }
+}
+
+export type DreamRouterSyncStatusResponse = {
+  success: boolean
+  message: string
+  data: {
+    enabled: boolean
+    channel_id: number
+    step: number
+    username: string
+    provider: string
+    sync_hour: number
+    rule_direction: string
+    rule_amount: number
+    password_configured: boolean
+    last_run_at: string
+    last_run_date: string
+    last_error: string
+    last_result: string
+  }
+}
+
+export type DreamRouterRunResponse = {
+  success: boolean
+  message: string
+  data: {
+    // upstream_count 是上游 data[] 的原始记录数，含 vendor 缺失的孤儿记录；
+    // offered_count 才是真正同步进渠道的在售模型数。verifiable_count 是复核
+    // 的分母（排除孤儿记录与无法解析表达式的模型），因此
+    // verified === verifiable_count 才代表本轮完全对齐。
+    upstream_count: number
+    offered_count?: number
+    verifiable_count?: number
+    verified: number
+    misaligned?: string[]
+    added_models?: string[]
+    removed_models?: string[]
+    skipped_models?: { name: string; reason: string }[]
+    warnings?: string[]
+    applied: boolean
+    dry_run: boolean
   }
 }

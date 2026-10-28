@@ -254,7 +254,7 @@ export function SidebarModulesSection({
                   )}
                 />
 
-                <SettingsControlChildren className='grid gap-3 md:grid-cols-2'>
+                <SettingsControlChildren className='flex flex-col gap-3'>
                   {modules.map(([moduleKey]) => {
                     const moduleInfo = moduleMeta[sectionKey]?.[moduleKey] ?? {
                       title: toTitleCase(moduleKey),

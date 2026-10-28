@@ -43,6 +43,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { Heading } from '@/design-system'
 import { api } from '@/lib/api'
 import dayjs from '@/lib/dayjs'
 import { handleServerError } from '@/lib/handle-server-error'
@@ -137,10 +138,10 @@ export function ServerLogFiles() {
       className='flex min-w-0 flex-col gap-4'
     >
       <div>
-        <h4 id={titleId} className='font-medium'>
+        <Heading variant='group-title' level={4} id={titleId}>
           {t('Server Log Management')}
-        </h4>
-        <p className='text-muted-foreground mt-1 text-xs'>
+        </Heading>
+        <p className='text-muted-foreground mt-1 text-sm'>
           {t(
             'Manage server log files. Log files accumulate over time; regular cleanup is recommended to free disk space.'
           )}
@@ -156,7 +157,7 @@ export function ServerLogFiles() {
                   <span className='text-muted-foreground'>
                     {t('Log Directory')}:
                   </span>{' '}
-                  <span className='font-mono text-mono'>
+                  <span className='text-mono font-mono'>
                     {serverLogInfo.log_dir}
                   </span>
                 </div>
@@ -186,7 +187,7 @@ export function ServerLogFiles() {
 
             <div className='flex flex-wrap items-end gap-3'>
               <div className='grid gap-1.5'>
-                <Label className='text-xs'>{t('Cleanup Mode')}</Label>
+                <Label tier='default'>{t('Cleanup Mode')}</Label>
                 <Select
                   items={[
                     { value: 'by_count', label: t('Retain last N files') },
@@ -213,7 +214,7 @@ export function ServerLogFiles() {
                 </Select>
               </div>
               <div className='grid gap-1.5'>
-                <Label className='text-xs'>
+                <Label tier='default'>
                   {serverLogCleanupMode === 'by_count'
                     ? t('Files to Retain')
                     : t('Days to Retain')}

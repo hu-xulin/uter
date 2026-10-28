@@ -63,7 +63,7 @@ export function AlipaySettingsSection() {
   return (
     <div className='space-y-4'>
       <div>
-        <h3 className='text-lg font-medium'>{t('Alipay Gateway')}</h3>
+        <h3 className='text-lg font-semibold'>{t('Alipay Gateway')}</h3>
         <p className='text-muted-foreground text-sm'>
           {t('Configuration for Alipay website payment integration')}
         </p>

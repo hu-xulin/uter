@@ -219,7 +219,7 @@ export function HeaderNavigationSection({
             resetLabel='Reset to default'
             saveLabel='Save navigation'
           />
-          <div className='grid gap-4 md:grid-cols-2'>
+          <div className='flex flex-col gap-4'>
             {simpleModules.map((module) => (
               <FormField
                 key={module.key}
@@ -244,9 +244,11 @@ export function HeaderNavigationSection({
             ))}
           </div>
 
-          <div className='grid gap-4 lg:grid-cols-2'>
+          <div className='flex flex-col gap-4'>
             {accessModules.map((module) => (
               <SettingsControlGroup key={module.enabledKey}>
+                {/* 这一行是分组的标题（「定价」「排行榜」）：容器已下发
+                    field 档（16/600），直接渲染即可。 */}
                 <FormField
                   control={form.control}
                   name={module.enabledKey}
@@ -274,7 +276,12 @@ export function HeaderNavigationSection({
                     <SettingsControlChildren>
                       <SettingsSwitchItem className='py-2'>
                         <SettingsSwitchContent>
-                          <FormLabel>{module.requireAuthTitle}</FormLabel>
+                          {/* 这是分组里再缩进一层的子开关行：14/600（row 档），
+                              与上方 16/600 的分组标题、下方 14/400 的说明
+                              构成三层，不能跟着外层一起变成 16px。 */}
+                          <FormLabel tier='row'>
+                            {module.requireAuthTitle}
+                          </FormLabel>
                           <FormDescription>
                             {module.requireAuthDescription}
                           </FormDescription>

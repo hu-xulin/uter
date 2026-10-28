@@ -146,7 +146,7 @@ export function RateLimitSection({ defaultValues }: RateLimitSectionProps) {
             )}
           />
 
-          <div className='grid gap-4 md:grid-cols-3'>
+          <div className='flex flex-col gap-4'>
             <FormField
               control={form.control}
               name='ModelRequestRateLimitDurationMinutes'
@@ -155,7 +155,8 @@ export function RateLimitSection({ defaultValues }: RateLimitSectionProps) {
                   <FormLabel>{t('Limit period')}</FormLabel>
                   <FormControl>
                     <div className='flex items-center gap-2'>
-                      <Input autoComplete='off'
+                      <Input
+                        autoComplete='off'
                         placeholder='1'
                         type='number'
                         min={0}
@@ -186,7 +187,8 @@ export function RateLimitSection({ defaultValues }: RateLimitSectionProps) {
                   <FormLabel>{t('Max requests per period')}</FormLabel>
                   <FormControl>
                     <div className='flex items-center gap-2'>
-                      <Input autoComplete='off'
+                      <Input
+                        autoComplete='off'
                         placeholder='60'
                         type='number'
                         min={0}
@@ -218,7 +220,8 @@ export function RateLimitSection({ defaultValues }: RateLimitSectionProps) {
                   <FormLabel>{t('Max successful requests')}</FormLabel>
                   <FormControl>
                     <div className='flex items-center gap-2'>
-                      <Input autoComplete='off'
+                      <Input
+                        autoComplete='off'
                         placeholder='60'
                         type='number'
                         min={1}
@@ -258,12 +261,12 @@ export function RateLimitSection({ defaultValues }: RateLimitSectionProps) {
                   >
                     {useVisualEditor ? (
                       <>
-                        <Code2 className='mr-2 h-4 w-4' />
+                        <Code2 className='mr-2 h-4.5 w-4.5' />
                         {t('JSON Mode')}
                       </>
                     ) : (
                       <>
-                        <Palette className='mr-2 h-4 w-4' />
+                        <Palette className='mr-2 h-4.5 w-4.5' />
                         {t('Visual Mode')}
                       </>
                     )}

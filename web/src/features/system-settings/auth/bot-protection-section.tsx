@@ -119,12 +119,14 @@ export function BotProtectionSection({
             render={({ field }) => (
               <FormItem>
                 {/* Site Key 是 Cloudflare 设计上就要发给前端的公开值，
-                    按普通文本原样展示（掩码会让管理员无法核对）。 */}
+                    按普通文本原样展示（掩码会让管理员无法核对）。
+                    它是机器可读的标识，用等宽字形便于逐字符核对。 */}
                 <FormLabel>{t('Site Key')}</FormLabel>
                 <FormControl>
                   <Input
                     placeholder={t('Your Turnstile site key')}
                     autoComplete='off'
+                    mono
                     {...field}
                   />
                 </FormControl>

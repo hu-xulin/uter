@@ -77,7 +77,7 @@ describe('CustomerServiceSection render regression', () => {
           defaultPages='home,docs'
           defaultAdminToken={realToken}
         />
-      </QueryClientProvider>,
+      </QueryClientProvider>
     )
 
     // 整段（含模型配置面板）必须正常渲染出来。
@@ -90,7 +90,7 @@ describe('CustomerServiceSection render regression', () => {
         expect(text).toContain('API Base URL')
         expect(text).toContain('Primary Model')
       },
-      { timeout: 4000 },
+      { timeout: 4000 }
     )
 
     consoleSpy.mockRestore()
@@ -100,7 +100,7 @@ describe('CustomerServiceSection render regression', () => {
         e.includes('getFieldState') ||
         e.includes('useFormContext') ||
         e.includes('Cannot destructure') ||
-        e.includes('[ErrorBoundary]'),
+        e.includes('[ErrorBoundary]')
     )
     expect(formContextErrors, JSON.stringify(errors, null, 2)).toEqual([])
   })

@@ -37,6 +37,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { Heading } from '@/design-system'
 import {
   formatPricingAmount,
   type PricingCurrency,
@@ -226,7 +227,8 @@ export function RequestSimulation(props: RequestSimulationProps) {
             <FieldLabel htmlFor={imageCountId}>
               {t('Billable image count')}
             </FieldLabel>
-            <Input autoComplete='off'
+            <Input
+              autoComplete='off'
               placeholder='1'
               id={imageCountId}
               type='number'
@@ -285,7 +287,7 @@ export function RequestSimulation(props: RequestSimulationProps) {
             </Field>
           )
         })}
-        <div className='grid gap-4 sm:grid-cols-2'>
+        <div className='flex flex-col gap-4'>
           <Field>
             <FieldLabel htmlFor={bodyId}>
               {t('Simulated request body')}
@@ -299,9 +301,9 @@ export function RequestSimulation(props: RequestSimulationProps) {
             />
           </Field>
           <div role='group' aria-labelledby={headersId} className='space-y-2'>
-            <div id={headersId} className='text-sm font-medium'>
+            <Heading variant='group-title' level={4} id={headersId}>
               {t('Simulated request headers')}
-            </div>
+            </Heading>
             <JsonEditor
               value={headers}
               onChange={setHeaders}
@@ -330,12 +332,13 @@ export function RequestSimulation(props: RequestSimulationProps) {
             </SelectContent>
           </Select>
           {timeMode === 'fixed' && (
-            <Input autoComplete='off'
+            <Input
+              autoComplete='off'
               aria-label={t('Specified time')}
               value={fixedTime}
               onChange={(event) => setFixedTime(event.target.value)}
               placeholder='2026-09-07T09:00:00+08:00'
-              className='font-mono'
+              className='text-mono font-mono'
             />
           )}
           <FieldDescription>

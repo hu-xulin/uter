@@ -87,7 +87,7 @@ export function CustomOAuthSection(props: CustomOAuthSectionProps) {
               {t('OAuth callback URL')}
             </span>
             <span className='flex min-w-0 items-center gap-2'>
-              <code className='bg-muted text-foreground min-w-0 rounded px-1.5 py-0.5 text-xs break-all'>
+              <code className='text-mono bg-muted text-foreground min-w-0 rounded px-1.5 py-0.5 font-mono break-all'>
                 {callbackFormat}
               </code>
               <CopyButton

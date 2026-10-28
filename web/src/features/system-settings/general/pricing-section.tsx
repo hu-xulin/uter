@@ -61,6 +61,7 @@ import { SettingsSection } from '../components/settings-section'
 import { useSettingsForm } from '../hooks/use-settings-form'
 import { syncStatusNow, useUpdateOption } from '../hooks/use-update-option'
 import { safeNumberFieldProps } from '../utils/numeric-field'
+import { formatPriceAdjustment } from '../utils/price-adjustment'
 
 const createPricingSchema = (t: (key: string) => string) =>
   z
@@ -108,14 +109,14 @@ type PricingSectionProps = {
   defaultValues: PricingFormValues
   /** A 最近一次成功同步的时间（Unix 秒，0 / 缺省表示从未同步）。 */
   exchangeRateUpdatedAt?: number
-  /** B 相对 A 的加价，由后端下发（PriceMarkupRate）。 */
-  priceMarkupRate?: number
+  /** B 相对 A 的有符号调整量，由后端下发（PriceAdjustmentRate，当前 −0.2）。 */
+  priceAdjustmentRate?: number
 }
 
 export function PricingSection({
   defaultValues,
   exchangeRateUpdatedAt = 0,
-  priceMarkupRate = 0.2,
+  priceAdjustmentRate = -0.2,
 }: PricingSectionProps) {
   const { t } = useTranslation()
   const updateOption = useUpdateOption()
@@ -158,7 +159,7 @@ export function PricingSection({
       },
     })
 
-  // 立即拉取一次行情：后端会同时写入 A（汇率）与 B（定价 = A + 0.2），
+  // 立即拉取一次行情：后端会同时写入 A（汇率）与 B（定价 = A − 0.2），
   // 这里就地刷新 A 的显示、同步时间，并把 system-options / status 缓存打新，
   // 让「支付网关」页与钱包不必等下一个 10 分钟周期。
   const handleSyncExchangeRate = async () => {
@@ -225,7 +226,8 @@ export function PricingSection({
                   <FormItem>
                     <FormLabel>{t('Quota Per Unit')}</FormLabel>
                     <FormControl>
-                      <Input autoComplete='off'
+                      <Input
+                        autoComplete='off'
                         type='number'
                         step='0.01'
                         value={field.value as number}
@@ -321,8 +323,11 @@ export function PricingSection({
                     </div>
                     <FormDescription>
                       {t(
-                        'Fetched automatically from the market USD to CNY rate every 10 minutes, so this field is read-only. The payment price in the Payment Gateway settings is derived from it as A + {{markup}}.',
-                        { markup: priceMarkupRate.toFixed(2) }
+                        'Fetched automatically from the market USD to CNY rate every 10 minutes, so this field is read-only. The payment price in the Payment Gateway settings is derived from it as the exchange rate {{adjustment}}, which is deducted automatically.',
+                        {
+                          adjustment:
+                            formatPriceAdjustment(priceAdjustmentRate),
+                        }
                       )}
                     </FormDescription>
                     <FormDescription>
@@ -341,7 +346,7 @@ export function PricingSection({
             )}
 
             {displayType === 'CUSTOM' && (
-              <div className='grid gap-4 sm:grid-cols-2'>
+              <div className='flex flex-col gap-4'>
                 <FormField
                   control={form.control}
                   name='general_setting.custom_currency_symbol'
@@ -349,7 +354,8 @@ export function PricingSection({
                     <FormItem>
                       <FormLabel>{t('Custom Currency Symbol')}</FormLabel>
                       <FormControl>
-                        <Input autoComplete='off'
+                        <Input
+                          autoComplete='off'
                           type='text'
                           value={field.value ?? ''}
                           onChange={field.onChange}
@@ -374,7 +380,8 @@ export function PricingSection({
                     <FormItem>
                       <FormLabel>{t('Units per USD')}</FormLabel>
                       <FormControl>
-                        <Input autoComplete='off'
+                        <Input
+                          autoComplete='off'
                           type='number'
                           step='0.01'
                           value={field.value ?? ''}

@@ -175,13 +175,14 @@ export function MonitoringSettingsSection({
             onSave={form.handleSubmit(onSubmit)}
             isSaving={updateOption.isPending}
           />
-          <p className='text-muted-foreground text-xs'>
+          <p className='text-muted-foreground text-sm'>
             {t(
               'Collect relay latency and success-rate metrics for the model square.'
             )}
           </p>
 
-          <div className='grid grid-cols-1 gap-4 md:grid-cols-4'>
+          {/* 单列纵向排列：每个配置项各占一行，从上往下排。 */}
+          <div className='flex flex-col gap-4'>
             <FormField
               control={form.control}
               name='perf_metrics_setting.enabled'
@@ -205,10 +206,11 @@ export function MonitoringSettingsSection({
               control={form.control}
               name='perf_metrics_setting.flush_interval'
               render={({ field }) => (
-                <FormItem>
+                <FormItem className='max-w-md'>
                   <FormLabel>{t('Flush interval (minutes)')}</FormLabel>
                   <FormControl>
-                    <Input autoComplete='off'
+                    <Input
+                      autoComplete='off'
                       type='number'
                       min={1}
                       step={1}
@@ -224,7 +226,7 @@ export function MonitoringSettingsSection({
               control={form.control}
               name='perf_metrics_setting.bucket_time'
               render={({ field }) => (
-                <FormItem>
+                <FormItem className='max-w-md'>
                   <FormLabel>{t('Aggregation bucket')}</FormLabel>
                   <Select
                     items={[
@@ -237,7 +239,7 @@ export function MonitoringSettingsSection({
                     disabled={!perfMetricsEnabled}
                   >
                     <FormControl>
-                      <SelectTrigger>
+                      <SelectTrigger className='w-full'>
                         <SelectValue />
                       </SelectTrigger>
                     </FormControl>
@@ -257,10 +259,11 @@ export function MonitoringSettingsSection({
               control={form.control}
               name='perf_metrics_setting.retention_days'
               render={({ field }) => (
-                <FormItem>
+                <FormItem className='max-w-md'>
                   <FormLabel>{t('Retention days')}</FormLabel>
                   <FormControl>
-                    <Input autoComplete='off'
+                    <Input
+                      autoComplete='off'
                       type='number'
                       min={0}
                       step={1}

@@ -81,7 +81,8 @@ export type SafeNumberFieldProps = {
 export function safeNumberFieldProps<
   TFieldValues extends FieldValues,
   TName extends FieldPath<TFieldValues>,
->(field: ControllerRenderProps<TFieldValues, TName>): SafeNumberFieldProps {  const raw = field.value as unknown
+>(field: ControllerRenderProps<TFieldValues, TName>): SafeNumberFieldProps {
+  const raw = field.value as unknown
   const display: number | '' =
     typeof raw === 'number' && Number.isFinite(raw) ? raw : ''
 
@@ -146,10 +147,7 @@ export function safeNumberFieldProps<
 export function useOptionalNumberField<
   TFieldValues extends FieldValues,
   TName extends FieldPath<TFieldValues>,
->(
-  form: UseFormReturn<TFieldValues>,
-  name: TName
-): SafeNumberFieldProps {
+>(form: UseFormReturn<TFieldValues>, name: TName): SafeNumberFieldProps {
   const { field } = useController({ control: form.control, name })
   const watched = useWatch({ control: form.control, name })
 

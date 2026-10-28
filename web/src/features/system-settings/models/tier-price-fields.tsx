@@ -119,7 +119,7 @@ function PriceField({
             onCheckedChange={(checked) => onInclude(checked === true)}
           />
         )}
-        <Label htmlFor={id} className='text-muted-foreground text-sm'>
+        <Label htmlFor={id} tier='default' className='text-muted-foreground'>
           {label}
         </Label>
       </div>
@@ -146,7 +146,9 @@ function OfficialPriceField(props: {
 }) {
   return (
     <div className='w-36 space-y-0.5'>
-      <Label className='text-muted-foreground text-sm'>{props.label}</Label>
+      <Label tier='default' className='text-muted-foreground'>
+        {props.label}
+      </Label>
       <PricingAmountInput
         currency={props.currency}
         aria-label={props.label}
@@ -425,9 +427,7 @@ export function TierPriceFields(props: TierPriceFieldsProps) {
       {/* Token official prices (read-only reference from a pricing preset) */}
       <div className='space-y-2'>
         <div className='flex flex-wrap items-center justify-between gap-2'>
-          <Label className='text-sm font-semibold'>
-            {t('Token official prices')}
-          </Label>
+          <Label>{t('Token official prices')}</Label>
           {showReference && (
             <div className='flex items-center gap-2'>
               <Select
@@ -526,7 +526,7 @@ export function TierPriceFields(props: TierPriceFieldsProps) {
       {/* Discount ratio: regenerates the Uter prices from official prices */}
       {showReference && (
         <div className='flex flex-wrap items-center gap-2'>
-          <Label className='text-sm font-semibold'>{t('Discount ratio')}</Label>
+          <Label>{t('Discount ratio')}</Label>
           <InputGroup className='w-28'>
             <InputGroupAddon>x</InputGroupAddon>
             <PricingAmountInput
@@ -549,7 +549,7 @@ export function TierPriceFields(props: TierPriceFieldsProps) {
           </Button>
           {appliedDiscount != null &&
             discountSummaryText(appliedDiscount) !== '' && (
-              <span className='rounded-md bg-emerald-100 px-2 py-1 text-xs font-medium text-emerald-700 tabular-nums dark:bg-emerald-950 dark:text-emerald-300'>
+              <span className='bg-success-soft text-success dark:bg-success-soft dark:text-success-soft-foreground rounded-md px-2 py-1 text-xs font-medium tabular-nums'>
                 {discountSummaryText(appliedDiscount)}
               </span>
             )}
@@ -562,9 +562,7 @@ export function TierPriceFields(props: TierPriceFieldsProps) {
       {/* Token Uter prices (editable) */}
       <div className='space-y-2'>
         <div className='flex items-center justify-between gap-3'>
-          <Label className='text-sm font-semibold'>
-            {t('Token Uter prices')}
-          </Label>
+          <Label>{t('Token Uter prices')}</Label>
           <div className='flex items-center gap-2'>
             {showReference && (
               <Button
@@ -638,12 +636,12 @@ export function TierPriceFields(props: TierPriceFieldsProps) {
           type='button'
           variant='ghost'
           size='sm'
-          className='h-7 px-2 text-xs'
+          className='px-2 text-sm'
           onClick={() => setMediaOpen((prev) => !prev)}
         >
           <ChevronDown
             className={cn(
-              'mr-1 h-3 w-3 transition-transform',
+              'mr-1 size-4 transition-transform',
               mediaOpen && 'rotate-180'
             )}
           />

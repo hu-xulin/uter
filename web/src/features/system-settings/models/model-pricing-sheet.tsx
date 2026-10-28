@@ -929,7 +929,7 @@ export const ModelPricingEditorPanel = forwardRef<
         <div className='border-b p-4'>
           <div className='flex flex-wrap items-start justify-between gap-3'>
             <div className='min-w-0'>
-              <h3 className='truncate text-base font-medium'>
+              <h3 className='truncate text-lg font-semibold'>
                 {isEditMode ? t('Edit model pricing') : t('Add model pricing')}
               </h3>
             </div>
@@ -977,7 +977,8 @@ export const ModelPricingEditorPanel = forwardRef<
                       <FormItem>
                         <FormLabel>{t('Model name')}</FormLabel>
                         <FormControl>
-                          <Input autoComplete='off'
+                          <Input
+                            autoComplete='off'
                             placeholder={t('gpt-4')}
                             {...field}
                             disabled={isEditMode}
@@ -1029,8 +1030,11 @@ export const ModelPricingEditorPanel = forwardRef<
                     </TabsList>
 
                     {pricingMode !== 'tiered_expr' && (
-                      <Alert className='border-amber-500/40 bg-amber-500/10 p-4 text-amber-900 dark:text-amber-100'>
-                        <AlertTriangle aria-hidden='true' className='size-5' />
+                      <Alert className='border-warning/40 bg-warning/10 text-warning-soft-foreground dark:text-warning-soft-foreground p-4'>
+                        <AlertTriangle
+                          aria-hidden='true'
+                          className='size-4.5'
+                        />
                         <AlertDescription className='space-y-3 text-sm text-inherit'>
                           <p className='font-medium'>
                             {t(
@@ -1078,7 +1082,7 @@ export const ModelPricingEditorPanel = forwardRef<
                       {taskUsageSchema &&
                         Object.keys(taskUsageSchema).length > 0 && (
                           <Alert className='mb-4'>
-                            <AlertDescription className='flex flex-col gap-3 text-xs'>
+                            <AlertDescription className='flex flex-col gap-3 text-sm'>
                               <p>
                                 {t(
                                   'This is a task model billed by usage (e.g. seconds, resolution). Prices entered here act as a per-call base rate, not per-token prices.'
@@ -1101,7 +1105,7 @@ export const ModelPricingEditorPanel = forwardRef<
                             </AlertDescription>
                           </Alert>
                         )}
-                      <p className='text-muted-foreground mb-3 text-xs'>
+                      <p className='text-muted-foreground mb-3 text-sm'>
                         {embedded && (
                           <>
                             {t('{{currency}} price per 1M tokens.', {
@@ -1113,7 +1117,7 @@ export const ModelPricingEditorPanel = forwardRef<
                           'Unset legacy prices use the billing engine defaults.'
                         )}
                       </p>
-                      <p className='bg-muted/40 text-muted-foreground rounded-md border px-3 py-2 text-xs'>
+                      <p className='bg-muted/40 text-muted-foreground rounded-md border px-3 py-2 text-sm'>
                         {t(
                           'Token pricing is split into the official price (read-only reference) and the Uter price (editable). The discount per dimension is Uter price ÷ official price, computed live as you type.'
                         )}
@@ -1263,7 +1267,7 @@ export const ModelPricingEditorPanel = forwardRef<
                 <div className='divide-y'>
                   {pricingMode === 'per-token' && !effectivePreview && (
                     <p
-                      className='text-muted-foreground px-3 py-2 text-xs'
+                      className='text-muted-foreground px-3 py-2 text-sm'
                       role='status'
                     >
                       {pricePreview.isError
@@ -1281,7 +1285,7 @@ export const ModelPricingEditorPanel = forwardRef<
                           className={cn(
                             'min-w-0 text-sm',
                             row.multiline
-                              ? 'font-mono text-mono leading-5 break-words whitespace-pre-wrap'
+                              ? 'font-mono text-mono break-words whitespace-pre-wrap'
                               : 'truncate'
                           )}
                         >

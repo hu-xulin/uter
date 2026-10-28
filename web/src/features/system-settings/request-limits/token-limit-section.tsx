@@ -107,7 +107,8 @@ export function TokenLimitSection({ defaultValues }: TokenLimitSectionProps) {
               <FormItem>
                 <FormLabel>{t('Maximum tokens per user')}</FormLabel>
                 <FormControl>
-                  <Input autoComplete='off'
+                  <Input
+                    autoComplete='off'
                     placeholder='1000000'
                     type='number'
                     min={1}

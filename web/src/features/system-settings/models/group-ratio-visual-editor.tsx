@@ -120,7 +120,7 @@ type RegistryEntry = {
 }
 
 const sectionCardClassName =
-  'relative shadow-sm ring-0 before:pointer-events-none before:absolute before:inset-0 before:rounded-xl before:border before:border-border/90'
+  'relative ring-0 before:pointer-events-none before:absolute before:inset-0 before:rounded-xl before:border before:border-border/90'
 const sectionHeaderClassName = 'border-b bg-muted/20'
 
 let groupPricingIdCounter = 0
@@ -231,7 +231,7 @@ function UnknownGroupBadge() {
   const { t } = useTranslation()
   return (
     <StatusBadge variant='danger' copyable={false}>
-      <AlertTriangle className='mr-1 h-3 w-3' />
+      <AlertTriangle className='mr-1 size-4' />
       {t('Not in pricing table')}
     </StatusBadge>
   )
@@ -597,7 +597,7 @@ function GroupPricingTable({
             </CardDescription>
           </div>
           <Button onClick={addRow} size='sm' className='sm:self-start'>
-            <Plus className='mr-2 h-4 w-4' />
+            <Plus className='mr-2 h-4.5 w-4.5' />
             {t('Add group')}
           </Button>
         </div>
@@ -759,7 +759,7 @@ function GroupPricingTable({
                       disabled={!row.name.trim()}
                       aria-label={t('Details')}
                     >
-                      <Info className='h-4 w-4' />
+                      <Info className='h-4.5 w-4.5' />
                     </Button>
                     <Button
                       variant='ghost'
@@ -767,7 +767,7 @@ function GroupPricingTable({
                       onClick={() => removeRow(row._id)}
                       aria-label={t('Delete')}
                     >
-                      <Trash2 className='h-4 w-4' />
+                      <Trash2 className='h-4.5 w-4.5' />
                     </Button>
                   </div>
                 ),
@@ -928,7 +928,7 @@ function GroupOverrideRules({
             }}
             size='sm'
           >
-            <Plus className='mr-2 h-4 w-4' />
+            <Plus className='mr-2 h-4.5 w-4.5' />
             {t('Add user group')}
           </Button>
           {groupGroupRatioList.length === 0 && (
@@ -950,7 +950,8 @@ function GroupOverrideRules({
                         render={
                           <Button
                             variant='ghost'
-                            className='h-auto min-w-0 justify-start whitespace-normal'
+                            size='wrap'
+                            className='min-w-0 justify-start'
                           />
                         }
                         aria-label={t('Rules for {{group}}', {
@@ -958,7 +959,7 @@ function GroupOverrideRules({
                         })}
                       >
                         <ChevronDown
-                          className='size-4 shrink-0'
+                          className='size-4.5 shrink-0'
                           aria-hidden='true'
                         />
                         <span className='min-w-0 truncate font-semibold'>
@@ -966,7 +967,7 @@ function GroupOverrideRules({
                         </span>
                         {!registryNames.includes(userGroupData.userGroup) && (
                           <AlertTriangle
-                            className='text-destructive h-4 w-4'
+                            className='text-destructive h-4.5 w-4.5'
                             aria-label={t('Not in pricing table')}
                           />
                         )}
@@ -985,7 +986,7 @@ function GroupOverrideRules({
                             handleOverrideAdd(userGroupData.userGroup)
                           }
                         >
-                          <Plus className='h-4 w-4' />
+                          <Plus className='h-4.5 w-4.5' />
                         </Button>
                         <Button
                           variant='ghost'
@@ -997,7 +998,7 @@ function GroupOverrideRules({
                             handleUserGroupDelete(userGroupData.userGroup)
                           }
                         >
-                          <Trash2 className='h-4 w-4' />
+                          <Trash2 className='h-4.5 w-4.5' />
                         </Button>
                       </div>
                     </div>
@@ -1025,7 +1026,7 @@ function GroupOverrideRules({
                                       override.targetGroup
                                     ) && (
                                       <AlertTriangle
-                                        className='text-destructive h-3.5 w-3.5'
+                                        className='text-destructive h-4 w-4'
                                         aria-label={t('Not in pricing table')}
                                       />
                                     )}
@@ -1376,7 +1377,7 @@ function GroupDetailSheet(props: GroupDetailSheetProps) {
         {detail && (
           <div className={sideDrawerFormClassName('gap-5')}>
             <section className='space-y-2'>
-              <h3 className='text-sm font-semibold'>{t('Overview')}</h3>
+              <h3 className='text-lg font-semibold'>{t('Overview')}</h3>
               <dl className='space-y-1.5 text-sm'>
                 <div className='flex justify-between'>
                   <dt className='text-muted-foreground'>{t('Ratio')}</dt>
@@ -1422,7 +1423,7 @@ function GroupDetailSheet(props: GroupDetailSheetProps) {
             </section>
 
             <section className='space-y-2'>
-              <h3 className='text-sm font-semibold'>
+              <h3 className='text-lg font-semibold'>
                 {t('Ratio overrides when billed as this group')}
               </h3>
               {detail.incomingOverrides.length === 0 ? (
@@ -1445,7 +1446,7 @@ function GroupDetailSheet(props: GroupDetailSheetProps) {
             </section>
 
             <section className='space-y-2'>
-              <h3 className='text-sm font-semibold'>
+              <h3 className='text-lg font-semibold'>
                 {t('Ratio overrides for users of this group')}
               </h3>
               {detail.outgoingOverrides.length === 0 ? (
@@ -1470,7 +1471,7 @@ function GroupDetailSheet(props: GroupDetailSheetProps) {
             </section>
 
             <section className='space-y-2'>
-              <h3 className='text-sm font-semibold'>
+              <h3 className='text-lg font-semibold'>
                 {t('Special visibility rules')}
               </h3>
               {detail.visibilityRules.length === 0 ? (

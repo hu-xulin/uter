@@ -48,6 +48,7 @@ import {
 } from '@/components/ui/select'
 import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
+import { Heading } from '@/design-system'
 import { getServerMessage } from '@/lib/server-error-message'
 import { statusQueryOptions } from '@/lib/status-query'
 import { cn } from '@/lib/utils'
@@ -392,20 +393,16 @@ export function PasskeySection(props: PasskeySectionProps) {
           <SettingsControlGroup
             role='group'
             aria-labelledby={domainGroupTitleId}
-            className='grid items-start gap-4 space-y-0 p-4 lg:grid-cols-2'
+            className='flex flex-col gap-4 space-y-0 p-4'
           >
-            <h4
-              id={domainGroupTitleId}
-              className='text-sm font-medium lg:col-span-2'
-            >
+            <Heading variant='group-title' level={4} id={domainGroupTitleId}>
               {t('Passkey domains')}
-            </h4>
+            </Heading>
             <Alert
               role='status'
               className={cn(
-                'lg:col-span-2',
                 hasDomainWarning
-                  ? 'border-warning/40 bg-warning/10 text-amber-800 dark:text-amber-200'
+                  ? 'border-warning/40 bg-warning/10 text-warning dark:text-warning-soft-foreground'
                   : 'border-info/30 bg-info/10 text-info'
               )}
             >
@@ -435,8 +432,8 @@ export function PasskeySection(props: PasskeySectionProps) {
                     <Button
                       type='button'
                       variant='link'
-                      size='sm'
-                      className='h-auto p-0 font-semibold text-inherit'
+                      size='inline'
+                      className='font-semibold text-inherit'
                     >
                       {t('Why set this?')}
                     </Button>
@@ -559,10 +556,13 @@ export function PasskeySection(props: PasskeySectionProps) {
                     <Input
                       className={cn(
                         hasDomainWarning &&
-                          'border-amber-500 focus-visible:border-amber-500 focus-visible:ring-amber-500/20 dark:border-amber-400 dark:focus-visible:border-amber-400'
+                          'border-warning focus-visible:border-warning focus-visible:ring-warning/20 dark:border-warning dark:focus-visible:border-warning'
                       )}
                       placeholder={t('e.g. example.com')}
                       autoComplete='off'
+                      // 域名是机器可读的标识：等宽后 `.`、`-` 与大小写
+                      // 都能逐字符核对，不会把 `uter.ai` 看成 `uter.ai`。
+                      mono
                       value={field.value ?? ''}
                       onChange={(event) => field.onChange(event.target.value)}
                       name={field.name}
@@ -609,6 +609,8 @@ export function PasskeySection(props: PasskeySectionProps) {
                     <Textarea
                       rows={3}
                       placeholder='www.example.com'
+                      // 一行一个域名，等宽让每行长度与分隔位置一致。
+                      mono
                       {...field}
                     />
                   </FormControl>
@@ -742,6 +744,8 @@ export function PasskeySection(props: PasskeySectionProps) {
                   <Textarea
                     rows={4}
                     placeholder={currentOrigin}
+                    // 一行一个来源地址，等宽便于按行核对协议与端口。
+                    mono
                     value={field.value ?? ''}
                     onChange={(event) => field.onChange(event.target.value)}
                     name={field.name}
@@ -752,7 +756,7 @@ export function PasskeySection(props: PasskeySectionProps) {
                 <FormDescription
                   aria-live='polite'
                   className={cn(
-                    currentOriginMissing && 'text-amber-700 dark:text-amber-400'
+                    currentOriginMissing && 'text-warning dark:text-warning'
                   )}
                 >
                   {currentOriginMissing

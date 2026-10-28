@@ -34,6 +34,7 @@ import {
 } from '@/components/ui/form'
 import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
+import { Heading } from '@/design-system'
 import { handleServerError } from '@/lib/handle-server-error'
 
 import {
@@ -97,7 +98,9 @@ export function RequestChecksSection({
       <p className='text-muted-foreground text-sm'>
         {t('Source: global settings. Changes take effect after saving.')}
       </p>
-      <h3 className='text-sm font-medium'>{t('Request text filtering')}</h3>
+      <Heading variant='group-title' level={3}>
+        {t('Request text filtering')}
+      </Heading>
       <p className='text-muted-foreground text-sm'>
         {t(
           'Checks text extracted from supported requests against keywords, ignoring case. A match rejects the request before upstream processing and does not affect channel health. Images, audio and generated responses are not checked.'

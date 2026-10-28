@@ -56,7 +56,7 @@ export function ProviderTable(props: ProviderTableProps) {
           {t('Manage custom OAuth providers for user authentication')}
         </p>
         <Button size='sm' onClick={props.onCreate}>
-          <Plus className='mr-1.5 h-4 w-4' />
+          <Plus className='mr-1.5 h-4.5 w-4.5' />
           {t('Add Provider')}
         </Button>
       </div>
@@ -113,7 +113,7 @@ export function ProviderTable(props: ProviderTableProps) {
             id: 'client-id',
             header: t('Client ID'),
             cellClassName:
-              'text-muted-foreground max-w-[120px] truncate font-mono',
+              'text-muted-foreground max-w-[120px] truncate font-mono text-mono',
             cell: (provider) => provider.client_id,
           },
           {

@@ -32,8 +32,8 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { SecretInput } from '@/components/ui/secret-input'
-import { isMaskedSecret, maskSecret } from '@/lib/secret'
 import { Switch } from '@/components/ui/switch'
+import { isMaskedSecret, maskSecret } from '@/lib/secret'
 
 import {
   SettingsForm,
@@ -135,6 +135,7 @@ export function WorkerSettingsSection({
                     inputMode='url'
                     placeholder={t('https://worker.example.workers.dev')}
                     autoComplete='off'
+                    mono
                     {...field}
                     onChange={(event) => field.onChange(event.target.value)}
                   />

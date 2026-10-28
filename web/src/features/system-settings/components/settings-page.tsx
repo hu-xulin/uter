@@ -22,6 +22,7 @@ import { useTranslation } from 'react-i18next'
 
 import { ErrorState } from '@/components/error-state'
 import { SectionPageLayout } from '@/components/layout'
+import { FormLabelTierProvider } from '@/components/ui/form-label-tier'
 
 import { useSystemOptions, getOptionValue } from '../hooks/use-system-options'
 import type { SystemOption } from '../types'
@@ -67,28 +68,34 @@ function SettingsPageFrame(props: SettingsPageFrameProps) {
       actionsContainer={actionsContainer}
       titleStatusContainer={titleStatusContainer}
     >
-      <SectionPageLayout>
-        <SectionPageLayout.Title>
-          <span className='inline-flex max-w-full min-w-0 items-center gap-2 align-middle'>
-            <span className='truncate'>{props.title}</span>
-            <span
-              ref={setTitleStatusContainer}
-              className='inline-flex min-w-0 shrink-0 items-center'
+      {/* 整个系统设置页的字段标签统一走 `field` 档（16/600）。
+          设置页的标签都是「名称 + 说明」成对出现，14/500 会和 14/400
+          的说明糊成一层。一次声明覆盖全部 280 个 FormLabel，含弹窗与
+          嵌套卡片 —— 它们都渲染在这个 Provider 之下。 */}
+      <FormLabelTierProvider tier='field'>
+        <SectionPageLayout>
+          <SectionPageLayout.Title>
+            <span className='inline-flex max-w-full min-w-0 items-center gap-2 align-middle'>
+              <span className='truncate'>{props.title}</span>
+              <span
+                ref={setTitleStatusContainer}
+                className='inline-flex min-w-0 shrink-0 items-center'
+              />
+            </span>
+          </SectionPageLayout.Title>
+          <SectionPageLayout.Actions>
+            <div
+              ref={setActionsContainer}
+              className='flex flex-wrap items-center justify-end gap-2'
             />
-          </span>
-        </SectionPageLayout.Title>
-        <SectionPageLayout.Actions>
-          <div
-            ref={setActionsContainer}
-            className='flex flex-wrap items-center justify-end gap-2'
-          />
-        </SectionPageLayout.Actions>
-        <SectionPageLayout.Content>
-          <div className='flex h-full min-h-0 w-full flex-col gap-4'>
-            {props.children}
-          </div>
-        </SectionPageLayout.Content>
-      </SectionPageLayout>
+          </SectionPageLayout.Actions>
+          <SectionPageLayout.Content>
+            <div className='flex h-full min-h-0 w-full flex-col gap-4'>
+              {props.children}
+            </div>
+          </SectionPageLayout.Content>
+        </SectionPageLayout>
+      </FormLabelTierProvider>
     </SettingsPageProvider>
   )
 }
