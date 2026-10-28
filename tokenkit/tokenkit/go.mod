@@ -1,6 +1,7 @@
 module github.com/QuantumNous/new-api/tokenkit
 
-go 1.26
+// 与根模块 / relaykit / tokenkit 保持一致，理由见 tokenkit/go.mod。
+go 1.27.3
 
 require (
 	github.com/stretchr/testify v1.11.1

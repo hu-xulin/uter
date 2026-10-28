@@ -9,6 +9,15 @@ updates:
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 10
+  # docs-web 同样只靠 bun 管理（Dockerfile 拷 bun.lock + `bun install
+  # --frozen-lockfile`）。此前靠 GitHub 对 package-lock.json 的默认自动扫描才被覆盖，
+  # 但 web/ 与 docs-web/ 的 package-lock.json 已删除（会与 bun.lock 漂移、导致 Dependabot
+  # 重复报「已修复」的漏洞），所以这里显式登记 bun 生态，保证删锁文件后仍有覆盖。
+  - package-ecosystem: "bun"
+    directory: "/docs-web"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
   - package-ecosystem: "gomod"
     directory: "/"
     schedule:

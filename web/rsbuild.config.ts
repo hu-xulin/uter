@@ -174,7 +174,9 @@ export default defineConfig(({ envMode }) => {
       // bulk-delete guard in restricted environments (it unlinks each
       // destination file before copying). Setting this flag lets the caller
       // skip that copy and place `public/` into `dist/` itself.
-      ...(process.env.UTER_SKIP_PUBLIC_COPY === '1' ? { publicDir: false } : {}),
+      ...(process.env.UTER_SKIP_PUBLIC_COPY === '1'
+        ? { publicDir: false }
+        : {}),
     },
     output: {
       // Production optimizations
@@ -201,7 +203,7 @@ export default defineConfig(({ envMode }) => {
             // Dev: avoid per-route async chunks (reduces white flash on navigation + faster HMR feedback).
             // Prod: keep route-based code splitting.
             autoCodeSplitting: isProd,
-          }),
+          })
         )
         return config
       },
