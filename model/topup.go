@@ -553,6 +553,34 @@ func GetUserTopUps(userId int, pageInfo *common.PageInfo) (topups []*TopUp, tota
 	return topups, total, nil
 }
 
+// ListPendingTopUpsForReconcile 取一批待对账的充值订单。
+//
+// 用途：异步回调打不到、用户又没从收银台回到站内时，订单会一直停在 pending。
+// 对账任务据此挑出「最近一段时间内创建、仍待确认、属于指定支付网关」的订单，
+// 主动向网关查单并把结果推进到本地订单。
+//
+// userId > 0 时只取该用户的订单（用户打开充值记录时的读时对账用）；<= 0 表示
+// 不限用户（后台对账任务用）。
+//
+// 时间窗口是必需的：没有窗口就等于对全表历史 pending 订单反复查单，既浪费
+// 网关配额，也会让早已放弃的订单永远被扫到。窗口外的订单仍可由用户在钱包页
+// 主动查单（QueryAlipayOrder）确认，只是不再自动对账。
+func ListPendingTopUpsForReconcile(provider string, userId int, createdAfter int64, limit int) ([]*TopUp, error) {
+	if provider == "" || limit <= 0 {
+		return nil, nil
+	}
+	query := DB.Where("status = ? AND payment_provider = ? AND create_time >= ?",
+		common.TopUpStatusPending, provider, createdAfter)
+	if userId > 0 {
+		query = query.Where("user_id = ?", userId)
+	}
+	var topups []*TopUp
+	if err := query.Order("id desc").Limit(limit).Find(&topups).Error; err != nil {
+		return nil, err
+	}
+	return topups, nil
+}
+
 // GetAllTopUps 获取充值记录（管理员使用，不限制时间窗口）。
 // userIds 非空时仅返回归属这些用户的订单：平台管理员传 nil 看全平台；组织 / 部门
 // 管理员经 middleware.RequestOrgScope 拿到范围内成员 id（空范围时传 NoOrgMemberId

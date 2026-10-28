@@ -795,6 +795,11 @@ func RequestAmount(c *gin.Context) {
 
 func GetUserTopUps(c *gin.Context) {
 	userId := c.GetInt("id")
+	// 读时对账：先把该用户近期仍待确认的支付宝订单向网关核一遍，再读列表。
+	// 这样「已付款但因回调打不到/用户没回跳而停在待确认」的记录，用户一打开
+	// 充值记录就能看到真实状态，不必等后台对账任务的下一轮。
+	// 无待确认订单时不产生任何网关请求。
+	reconcileUserPendingAlipayOrders(c.Request.Context(), userId)
 	pageInfo := common.GetPageQuery(c)
 	keyword := c.Query("keyword")
 
