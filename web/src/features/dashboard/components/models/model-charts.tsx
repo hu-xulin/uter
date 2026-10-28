@@ -34,7 +34,7 @@ import type {
 } from '@/features/dashboard/types'
 import { useThemeRadiusPx } from '@/lib/theme-radius'
 import type { TimeGranularity } from '@/lib/time'
-import { useChartTheme } from '@/lib/use-chart-theme'
+import { useChartAxisColors, useChartTheme } from '@/lib/use-chart-theme'
 import { VCHART_OPTION } from '@/lib/vchart'
 
 type ChartSpecKey = 'spec_model_line' | 'spec_pie' | 'spec_rank_bar'
@@ -55,6 +55,7 @@ interface ModelChartsProps {
 export function ModelCharts(props: ModelChartsProps) {
   const { t } = useTranslation()
   const { resolvedTheme, themeReady } = useChartTheme()
+  const { surfaceColor } = useChartAxisColors()
   const { customization } = useThemeCustomization()
   const chartRadius = useThemeRadiusPx(
     '--radius-md',
@@ -75,9 +76,10 @@ export function ModelCharts(props: ModelChartsProps) {
         props.loading ? [] : props.data,
         timeGranularity,
         t,
-        chartRadius
+        chartRadius,
+        surfaceColor
       ),
-    [props.data, props.loading, timeGranularity, t, chartRadius]
+    [props.data, props.loading, timeGranularity, t, chartRadius, surfaceColor]
   )
 
   const spec = chartData[CHART_SPEC_KEYS[activeTab]]
@@ -101,7 +103,8 @@ export function ModelCharts(props: ModelChartsProps) {
           <div className='text-lg font-semibold'>
             {t('Model Call Analytics')}
           </div>
-          <span className='text-muted-foreground text-xs'>
+          {/* 卡片标题旁的汇总值：14px（body-sm），见规范 §2.3。 */}
+          <span className='text-muted-foreground text-sm'>
             {t('Total:')} {chartData.totalCountDisplay}
           </span>
         </div>
@@ -114,7 +117,7 @@ export function ModelCharts(props: ModelChartsProps) {
               onClick={() => setActiveTab(tab.value)}
               className={`shrink-0 rounded-md px-3 text-sm font-medium transition-colors ${
                 activeTab === tab.value
-                  ? 'bg-background text-foreground shadow-sm'
+                  ? 'bg-background text-foreground'
                   : 'text-muted-foreground hover:text-foreground'
               }`}
             >

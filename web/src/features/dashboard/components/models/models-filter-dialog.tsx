@@ -34,8 +34,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { OrgUserFilter } from '@/features/organization/org-user-filter'
-import { useOrgManagerScope } from '@/features/organization/use-org-manager'
 import {
   TIME_GRANULARITY_OPTIONS,
   TIME_RANGE_PRESETS,
@@ -48,6 +46,8 @@ import type {
   DashboardChartPreferences,
   DashboardFilters,
 } from '@/features/dashboard/types'
+import { OrgUserFilter } from '@/features/organization/org-user-filter'
+import { useOrgManagerScope } from '@/features/organization/use-org-manager'
 import { formatUserId, parseUserId } from '@/lib/format'
 import { getRollingDateRange, type TimeGranularity } from '@/lib/time'
 import { cn } from '@/lib/utils'
@@ -107,8 +107,11 @@ export function ModelsFilter(props: ModelsFilterProps) {
   // 组织管理者（owner / admin / department_admin，且非平台管理员）：用「用户名 / 用户ID」
   // 双下拉替代平台管理员的纯文本输入；成员列表已由后端按角色收敛（admin 看不到 owner、
   // 部门 admin 只看本部门）。
-  const { isOrgManager, members, isLoading: membersLoading } =
-    useOrgManagerScope()
+  const {
+    isOrgManager,
+    members,
+    isLoading: membersLoading,
+  } = useOrgManagerScope()
   const showOrgUserFilter = isOrgManager && !isAdmin
 
   const [open, setOpen] = useState(false)
@@ -120,7 +123,7 @@ export function ModelsFilter(props: ModelsFilterProps) {
     detectQuickRangeDays(props.currentFilters)
   )
   // 用户 ID 用受控字符串保存原始输入，只在 apply 时归一成数字：
-  // 用户可以输入 "uter100000001" 或 "1"，直接受控成数字会把前者吃掉。
+  // 用户可以输入 "U100000001" 或 "1"，直接受控成数字会把前者吃掉。
   const [userIdInput, setUserIdInput] = useState<string>(() =>
     props.currentFilters?.user_id
       ? formatUserId(props.currentFilters.user_id)
@@ -196,7 +199,7 @@ export function ModelsFilter(props: ModelsFilterProps) {
       onOpenChange={handleOpenChange}
       trigger={
         <Button variant='outline' size='sm'>
-          <Filter className='mr-2 h-4 w-4' />
+          <Filter className='mr-2 h-4.5 w-4.5' />
           {t('Filter')}
         </Button>
       }
@@ -211,11 +214,11 @@ export function ModelsFilter(props: ModelsFilterProps) {
       footer={
         <>
           <Button onClick={handleReset} variant='outline' type='button'>
-            <RotateCcw className='mr-2 h-4 w-4' />
+            <RotateCcw className='mr-2 h-4.5 w-4.5' />
             {t('Reset')}
           </Button>
           <Button onClick={handleApply} type='submit'>
-            <Search className='mr-2 h-4 w-4' />
+            <Search className='mr-2 h-4.5 w-4.5' />
             {t('Apply Filters')}
           </Button>
         </>
@@ -341,6 +344,7 @@ export function ModelsFilter(props: ModelsFilterProps) {
               <div className='grid gap-2'>
                 <Label htmlFor='user_id'>{t('User ID')}</Label>
                 <Input
+                  mono
                   id='user_id'
                   inputMode='numeric'
                   autoComplete='off'
@@ -348,8 +352,8 @@ export function ModelsFilter(props: ModelsFilterProps) {
                   value={userIdInput}
                   onChange={(e) => setUserIdInput(e.target.value)}
                 />
-                <p className='text-muted-foreground text-xs'>
-                  {t('Accepts a raw user ID or the displayed uter… number.')}
+                <p className='text-muted-foreground text-sm'>
+                  {t('Accepts a raw user ID or the displayed U… number.')}
                 </p>
               </div>
             </>

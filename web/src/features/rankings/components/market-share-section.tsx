@@ -21,7 +21,13 @@ import { PieChart } from 'lucide-react'
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { useChartTheme } from '@/lib/use-chart-theme'
+import { Heading } from '@/design-system'
+import {
+  VENDOR_BRAND_COLORS,
+  VENDOR_FALLBACK_PALETTE,
+} from '@/design-system/tokens/brand-colors'
+import { CHART_FONT_SIZE } from '@/design-system/tokens/chart-typography'
+import { useChartAxisColors, useChartTheme } from '@/lib/use-chart-theme'
 import { VCHART_OPTION } from '@/lib/vchart'
 
 import { formatShare, formatTokens } from '../lib/format'
@@ -35,43 +41,14 @@ const PERIOD_DESCRIPTIONS: Record<RankingPeriod, string> = {
   year: 'Token share by model author across the past year',
 }
 
-/** Stable colour palette for vendors, used in both the share chart and the
- * legend dots. Falls back to a neutral palette for unknown vendors so that
- * future additions still render. */
-const VENDOR_COLOURS: Record<string, string> = {
-  OpenAI: '#10a37f',
-  Anthropic: '#d97757',
-  Google: '#4285f4',
-  DeepSeek: '#7c5cff',
-  Alibaba: '#ff9900',
-  xAI: '#1f2937',
-  Meta: '#1877f2',
-  Moonshot: '#ec4899',
-  Zhipu: '#06b6d4',
-  Mistral: '#ff7000',
-  ByteDance: '#3b82f6',
-  Tencent: '#22c55e',
-  MiniMax: '#a855f7',
-  Cohere: '#fb923c',
-  Baidu: '#ef4444',
-  Others: '#94a3b8',
-}
+/**
+ * 厂商 → 品牌色。色表集中在 `design-system/tokens/brand-colors`：
+ * 第三方商标配色无法语义化（改成 `--primary` 等于改人家 logo），
+ * 只能在设计系统里集中登记，不允许散落在组件中。
+ */
+const VENDOR_COLOURS = VENDOR_BRAND_COLORS
 
-const FALLBACK_PALETTE = [
-  '#0ea5e9',
-  '#22c55e',
-  '#a855f7',
-  '#f97316',
-  '#14b8a6',
-  '#eab308',
-  '#ec4899',
-  '#84cc16',
-  '#6366f1',
-  '#10b981',
-  '#f43f5e',
-  '#0891b2',
-  '#94a3b8',
-]
+const FALLBACK_PALETTE = VENDOR_FALLBACK_PALETTE
 
 function buildVendorColourMap(names: string[]): Record<string, string> {
   const result: Record<string, string> = {}
@@ -103,14 +80,8 @@ type MarketShareSectionProps = {
 export function MarketShareSection(props: MarketShareSectionProps) {
   const { t } = useTranslation()
   const { resolvedTheme, themeReady } = useChartTheme()
-  const chartTextColor =
-    resolvedTheme === 'dark'
-      ? 'rgba(255, 255, 255, 0.68)'
-      : 'rgba(15, 23, 42, 0.58)'
-  const chartGridColor =
-    resolvedTheme === 'dark'
-      ? 'rgba(255, 255, 255, 0.12)'
-      : 'rgba(15, 23, 42, 0.12)'
+  const { textColor: chartTextColor, gridColor: chartGridColor } =
+    useChartAxisColors()
 
   const colourMap = useMemo(
     () => buildVendorColourMap(props.history.vendors.map((v) => v.name)),
@@ -144,7 +115,7 @@ export function MarketShareSection(props: MarketShareSectionProps) {
         {
           orient: 'bottom',
           label: {
-            style: { fill: chartTextColor, fontSize: 12 },
+            style: { fill: chartTextColor, fontSize: CHART_FONT_SIZE },
             autoHide: true,
             autoLimit: true,
           },
@@ -157,7 +128,7 @@ export function MarketShareSection(props: MarketShareSectionProps) {
           label: {
             formatMethod: (val: number | string) =>
               `${Math.round(Number(val) * 100)}%`,
-            style: { fill: chartTextColor, fontSize: 12 },
+            style: { fill: chartTextColor, fontSize: CHART_FONT_SIZE },
           },
           grid: {
             visible: true,
@@ -215,10 +186,15 @@ export function MarketShareSection(props: MarketShareSectionProps) {
     <section className='bg-card overflow-hidden rounded-lg border'>
       {/* Chart block ----------------------------------------------------- */}
       <header className='px-5 py-4'>
-        <h2 className='text-foreground inline-flex items-center gap-2 text-lg font-semibold'>
+        {/* 这是榜单页的顶层区块标题（第 2 层 section-title 24/600/32），
+            此前是 18px，与卡片标题同档，页面层级塌了一层。 */}
+        <Heading
+          variant='section-title'
+          className='inline-flex items-center gap-2'
+        >
           <PieChart className='text-primary size-4' />
           {t('Market Share')}
-        </h2>
+        </Heading>
         <p className='text-muted-foreground mt-1 text-sm'>
           {t(PERIOD_DESCRIPTIONS[props.period])}
         </p>
@@ -237,7 +213,7 @@ export function MarketShareSection(props: MarketShareSectionProps) {
               option={VCHART_OPTION}
             />
           ) : (
-            <div className='text-muted-foreground/80 flex h-full items-center justify-center text-xs'>
+            <div className='text-muted-foreground flex h-full items-center justify-center text-xs'>
               {t('No history data available')}
             </div>
           )}
@@ -247,15 +223,16 @@ export function MarketShareSection(props: MarketShareSectionProps) {
       {/* Vendor list block ----------------------------------------------- */}
       <div className='border-t'>
         <header className='px-5 pt-4 pb-2'>
-          <h3 className='text-foreground text-base font-semibold'>
+          <h3 className='text-foreground text-lg font-semibold'>
             {t('By model author')}
           </h3>
-          <p className='text-muted-foreground/80 mt-0.5 text-xs'>
+          {/* 与上方「LLM 排行」说明同档：14/400，不用 12px caption。 */}
+          <p className='text-muted-foreground mt-1 text-sm'>
             {t('Vendors ranked by aggregated token volume')}
           </p>
         </header>
         {visible.length === 0 ? (
-          <div className='text-muted-foreground/80 px-5 py-8 text-center text-sm'>
+          <div className='text-muted-foreground px-5 py-8 text-center text-sm'>
             {t('No vendor data available')}
           </div>
         ) : (
@@ -279,14 +256,15 @@ function VendorList(props: {
     <ul>
       {props.rows.map((vendor) => (
         <li key={vendor.vendor} className='flex items-center gap-3 py-2.5'>
-          <span className='text-muted-foreground/80 w-6 shrink-0 text-right text-xs tabular-nums'>
+          <span className='text-muted-foreground w-6 shrink-0 text-right text-xs tabular-nums'>
             {vendor.rank}.
           </span>
           <span
             aria-hidden
             className='size-2.5 shrink-0 rounded-full'
             style={{
-              backgroundColor: props.colourMap[vendor.vendor] ?? '#94a3b8',
+              backgroundColor:
+                props.colourMap[vendor.vendor] ?? VENDOR_BRAND_COLORS.Others,
             }}
           />
           <VendorLink
@@ -299,7 +277,7 @@ function VendorList(props: {
             <div className='text-foreground text-sm font-semibold tabular-nums'>
               {formatTokens(vendor.total_tokens)}
             </div>
-            <div className='text-muted-foreground/80 text-xs tabular-nums'>
+            <div className='text-muted-foreground text-xs tabular-nums'>
               {formatShare(vendor.share)}
             </div>
           </div>

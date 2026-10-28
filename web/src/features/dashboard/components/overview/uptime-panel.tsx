@@ -33,10 +33,10 @@ import { cn } from '@/lib/utils'
 import { PanelWrapper } from '../ui/panel-wrapper'
 
 const STATUS_COLOR_MAP: Record<number, string> = {
-  1: 'bg-emerald-500',
-  0: 'bg-red-500',
-  2: 'bg-amber-500',
-  3: 'bg-blue-500',
+  1: 'bg-success',
+  0: 'bg-destructive',
+  2: 'bg-warning',
+  3: 'bg-info',
 }
 const DEFAULT_STATUS_COLOR = 'bg-muted-foreground/40'
 
@@ -113,13 +113,13 @@ export function UptimePanel() {
       headerActions={
         <Button
           variant='ghost'
-          size='sm'
+          size='icon-sm'
           onClick={handleRefresh}
           disabled={refreshing}
-          className='size-7 p-0'
+          className='p-0'
         >
           <RotateCw
-            className={cn('size-3.5', refreshing && 'animate-spin')}
+            className={cn('size-4', refreshing && 'animate-spin')}
             aria-label={t('Refresh')}
           />
         </Button>
@@ -131,10 +131,10 @@ export function UptimePanel() {
             <div key={group.categoryName}>
               <div className='bg-muted/30 border-border/60 border-b px-3 py-2 sm:px-5'>
                 <div className='flex items-center gap-2'>
-                  <h4 className='text-muted-foreground text-xs font-semibold uppercase'>
+                  <h4 className='text-muted-foreground text-sm font-medium uppercase'>
                     {group.categoryName}
                   </h4>
-                  <span className='text-muted-foreground/40 text-xs tabular-nums'>
+                  <span className='text-muted-foreground text-xs tabular-nums'>
                     {group.monitors?.length || 0}
                   </span>
                 </div>
@@ -157,7 +157,7 @@ export function UptimePanel() {
                       <StatusDot status={monitor.status} />
                       <span className='truncate text-sm'>{monitor.name}</span>
                       {monitor.group && (
-                        <span className='text-muted-foreground/40 shrink-0 text-xs'>
+                        <span className='text-muted-foreground shrink-0 text-xs'>
                           ({monitor.group})
                         </span>
                       )}

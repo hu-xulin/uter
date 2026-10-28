@@ -21,7 +21,9 @@ import { BarChart3, Trophy } from 'lucide-react'
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { useChartTheme } from '@/lib/use-chart-theme'
+import { Heading } from '@/design-system'
+import { CHART_FONT_SIZE } from '@/design-system/tokens/chart-typography'
+import { useChartAxisColors, useChartTheme } from '@/lib/use-chart-theme'
 import { VCHART_OPTION } from '@/lib/vchart'
 
 import { formatTokens } from '../lib/format'
@@ -51,14 +53,8 @@ type ModelsSectionProps = {
 export function ModelsSection(props: ModelsSectionProps) {
   const { t } = useTranslation()
   const { resolvedTheme, themeReady } = useChartTheme()
-  const chartTextColor =
-    resolvedTheme === 'dark'
-      ? 'rgba(255, 255, 255, 0.68)'
-      : 'rgba(15, 23, 42, 0.58)'
-  const chartGridColor =
-    resolvedTheme === 'dark'
-      ? 'rgba(255, 255, 255, 0.12)'
-      : 'rgba(15, 23, 42, 0.12)'
+  const { textColor: chartTextColor, gridColor: chartGridColor } =
+    useChartAxisColors()
 
   // Order points so the largest model appears at the bottom of every stack.
   const orderedPoints = useMemo(() => {
@@ -91,7 +87,7 @@ export function ModelsSection(props: ModelsSectionProps) {
         {
           orient: 'bottom',
           label: {
-            style: { fill: chartTextColor, fontSize: 12 },
+            style: { fill: chartTextColor, fontSize: CHART_FONT_SIZE },
             autoHide: true,
             autoLimit: true,
           },
@@ -101,7 +97,7 @@ export function ModelsSection(props: ModelsSectionProps) {
           orient: 'left',
           label: {
             formatMethod: (val: number | string) => formatTokens(Number(val)),
-            style: { fill: chartTextColor, fontSize: 12 },
+            style: { fill: chartTextColor, fontSize: CHART_FONT_SIZE },
           },
           grid: {
             visible: true,
@@ -168,10 +164,14 @@ export function ModelsSection(props: ModelsSectionProps) {
       {/* Chart block ----------------------------------------------------- */}
       <header className='flex items-start justify-between gap-4 px-5 py-4'>
         <div className='min-w-0 flex-1'>
-          <h2 className='text-foreground inline-flex items-center gap-2 text-lg font-semibold'>
+          {/* 榜单页顶层区块标题：第 2 层 section-title 24/600/32。 */}
+          <Heading
+            variant='section-title'
+            className='inline-flex items-center gap-2'
+          >
             <BarChart3 className='text-primary size-4' />
             {t('Top Models')}
-          </h2>
+          </Heading>
           <p className='text-muted-foreground mt-1 text-sm'>
             {t(PERIOD_DESCRIPTIONS[props.period])}
           </p>
@@ -180,7 +180,7 @@ export function ModelsSection(props: ModelsSectionProps) {
           <div className='text-foreground text-2xl font-semibold tabular-nums'>
             {formatTokens(totalTokens)}
           </div>
-          <div className='text-muted-foreground/80 text-xs font-medium uppercase'>
+          <div className='text-muted-foreground text-xs font-medium uppercase'>
             {t('tokens')}
           </div>
         </div>
@@ -199,7 +199,7 @@ export function ModelsSection(props: ModelsSectionProps) {
               option={VCHART_OPTION}
             />
           ) : (
-            <div className='text-muted-foreground/80 flex h-full items-center justify-center text-xs'>
+            <div className='text-muted-foreground flex h-full items-center justify-center text-xs'>
               {t('No history data available')}
             </div>
           )}
@@ -209,16 +209,18 @@ export function ModelsSection(props: ModelsSectionProps) {
       {/* Leaderboard block ----------------------------------------------- */}
       <div className='border-t'>
         <header className='px-5 pt-4 pb-2'>
-          <h3 className='text-foreground inline-flex items-center gap-2 text-base font-semibold'>
-            <Trophy className='size-3.5 text-amber-500' />
+          <h3 className='text-foreground inline-flex items-center gap-2 text-lg font-semibold'>
+            <Trophy className='text-warning size-4' />
             {t('LLM Leaderboard')}
           </h3>
-          <p className='text-muted-foreground/80 mt-0.5 text-xs'>
+          {/* 榜单卡片内的说明文字与正文同档（14/400），不再压到 12px 的
+              caption 档 —— 12px 只给真正的脚注、徽标与时间戳。 */}
+          <p className='text-muted-foreground mt-1 text-sm'>
             {t('Compare the most popular models on the platform')}
           </p>
         </header>
         {props.rows.length === 0 ? (
-          <div className='text-muted-foreground/80 px-5 py-8 text-center text-sm'>
+          <div className='text-muted-foreground px-5 py-8 text-center text-sm'>
             {t('No models match the selected filters')}
           </div>
         ) : (

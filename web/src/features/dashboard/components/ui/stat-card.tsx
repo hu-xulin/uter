@@ -177,7 +177,7 @@ function LineSparkline(props: { values?: number[]; tone: StatCardTone }) {
           stroke='currentColor'
           strokeLinecap='round'
           strokeLinejoin='round'
-          strokeWidth='2.25'
+          strokeWidth='2'
           vectorEffect='non-scaling-stroke'
         />
       </svg>
@@ -213,12 +213,12 @@ function StatCardDetails(props: { details: StatCardDetail[] }) {
           key={detail.label}
           className='bg-muted/40 rounded-lg border border-transparent px-2.5 py-2'
         >
-          <div className='text-muted-foreground truncate text-xs leading-none font-medium'>
+          <div className='text-muted-foreground truncate text-sm font-medium'>
             {detail.label}
           </div>
           <div
             className={cn(
-              'mt-1.5 truncate text-xs font-semibold tabular-nums',
+              'mt-1.5 truncate text-sm font-semibold tabular-nums',
               DETAIL_TONE_CLASSES[detail.tone ?? 'default']
             )}
             title={detail.value}
@@ -257,12 +257,12 @@ export function StatCard(props: StatCardProps) {
   } else if (props.error) {
     valueContent = (
       <div className='flex flex-col gap-1'>
-        <div className='text-muted-foreground mt-0.5 text-base font-semibold break-all tabular-nums sm:text-2xl'>
+        <div className='text-muted-foreground mt-0.5 text-2xl font-semibold break-all tabular-nums md:text-3xl'>
           --
         </div>
         <p
           className={cn(
-            'text-muted-foreground/60 line-clamp-1 text-xs sm:text-xs',
+            'text-muted-foreground line-clamp-1 text-sm',
             props.compactMobile && 'hidden sm:block'
           )}
         >
@@ -273,12 +273,12 @@ export function StatCard(props: StatCardProps) {
   } else {
     valueContent = (
       <div className='flex flex-col gap-1'>
-        <div className='text-foreground text-base font-semibold break-all tabular-nums sm:text-2xl'>
+        <div className='text-foreground text-2xl font-semibold break-all tabular-nums md:text-3xl'>
           {props.value}
         </div>
         <p
           className={cn(
-            'text-muted-foreground/60 line-clamp-1 text-xs leading-relaxed sm:text-xs',
+            'text-muted-foreground line-clamp-1 text-sm sm:text-sm',
             props.compactMobile && 'hidden sm:block'
           )}
         >
@@ -305,20 +305,18 @@ export function StatCard(props: StatCardProps) {
       )}
     >
       <div className='flex items-start justify-between gap-1'>
-        <div className='text-muted-foreground flex items-center gap-1 text-xs font-medium sm:gap-2 sm:text-xs'>
+        <div className='text-muted-foreground flex items-center gap-1 text-sm font-medium sm:gap-2'>
           <IconBadge
             tone={iconTone}
             size='stat'
             className={cn(
               props.compactMobile &&
-                'size-4 rounded-sm [&>svg]:size-2.5 sm:size-7 sm:rounded-md sm:[&>svg]:size-3.5'
+                'size-4 rounded-sm [&>svg]:size-2.5 sm:size-7 sm:rounded-md sm:[&>svg]:size-4'
             )}
           >
             <Icon />
           </IconBadge>
-          <span className='line-clamp-1 leading-snug sm:line-clamp-2'>
-            {props.title}
-          </span>
+          <span className='line-clamp-1 sm:line-clamp-2'>{props.title}</span>
         </div>
         {props.action && <div className='shrink-0'>{props.action}</div>}
       </div>

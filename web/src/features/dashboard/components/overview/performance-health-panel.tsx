@@ -23,6 +23,7 @@ import { useTranslation } from 'react-i18next'
 
 import { IconBadge, type IconBadgeTone } from '@/components/ui/icon-badge'
 import { Skeleton } from '@/components/ui/skeleton'
+import { Heading, Text } from '@/design-system'
 import { getPerfMetricsSummary } from '@/features/performance-metrics/api'
 import {
   formatLatency,
@@ -61,15 +62,21 @@ export function PerformanceHealthPanel() {
   const hasData = models.length > 0
 
   return (
-    <section className='bg-card h-full overflow-hidden rounded-2xl border shadow-xs'>
+    <section className='bg-card h-full overflow-hidden rounded-2xl border'>
       <div className='flex items-center gap-2 border-b px-4 py-3 sm:px-5'>
         <IconBadge tone='success' size='sm'>
           <HeartPulse />
         </IconBadge>
-        <h3 className='text-lg font-semibold'>{t('Performance health')}</h3>
-        <span className='text-muted-foreground ml-auto text-xs'>
+        <Heading variant='card-title' level={3}>
+          {t('Performance health')}
+        </Heading>
+        {/* 面板说明与其它面板（PanelWrapper 的 description）同档：
+            body-sm 14/400/20 + secondary 色。此前这里是 12px（text-xs），
+            同一行的「性能健康」是 18px 标题，说明被压成 caption 后
+            整条头部看起来像标题 + 脚注，层级断了。 */}
+        <Text variant='body-sm' color='secondary' className='ml-auto shrink-0'>
           {t('Performance metrics for the last 24 hours')}
-        </span>
+        </Text>
       </div>
 
       <div className='space-y-3 p-4 sm:p-5'>
@@ -109,7 +116,7 @@ export function PerformanceHealthPanel() {
         ) : (
           hasData && (
             <div>
-              <span className='text-muted-foreground mb-1 block text-xs font-medium'>
+              <span className='text-muted-foreground mb-1 block text-sm font-medium'>
                 {t('Top models by traffic')}
               </span>
               <div className='grid grid-cols-1 gap-x-4 sm:grid-cols-2'>
@@ -118,7 +125,7 @@ export function PerformanceHealthPanel() {
                     key={model.model_name}
                     className='flex items-center justify-between gap-2 rounded px-1.5 py-1'
                   >
-                    <span className='min-w-0 flex-1 truncate font-mono text-mono'>
+                    <span className='text-mono min-w-0 flex-1 truncate font-mono'>
                       {model.model_name}
                     </span>
                     <span className='inline-flex shrink-0 items-center gap-1'>
@@ -131,7 +138,7 @@ export function PerformanceHealthPanel() {
                       />
                       <span
                         className={cn(
-                          'text-xs font-semibold tabular-nums',
+                          'text-sm font-semibold tabular-nums',
                           getSuccessRateTextClass(model.success_rate)
                         )}
                       >
@@ -160,7 +167,7 @@ function MetricCell(props: {
   const Icon = props.icon
   return (
     <div className='bg-muted/40 rounded-xl px-3 py-2.5'>
-      <div className='text-muted-foreground flex items-center gap-1.5 text-xs font-medium'>
+      <div className='text-muted-foreground flex items-center gap-1.5 text-sm font-medium'>
         <IconBadge tone={props.tone} size='xs'>
           <Icon />
         </IconBadge>

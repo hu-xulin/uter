@@ -45,7 +45,7 @@ import type {
 } from '@/features/dashboard/types'
 import { requireServerSuccess } from '@/lib/server-error-message'
 import { getRollingDateRange, type TimeGranularity } from '@/lib/time'
-import { useChartTheme } from '@/lib/use-chart-theme'
+import { useChartAxisColors, useChartTheme } from '@/lib/use-chart-theme'
 import { VCHART_OPTION } from '@/lib/vchart'
 
 const USER_CHARTS: {
@@ -75,6 +75,7 @@ interface UserChartsProps {
 export function UserCharts(props: UserChartsProps) {
   const { t } = useTranslation()
   const { resolvedTheme, themeReady } = useChartTheme()
+  const { surfaceColor } = useChartAxisColors()
   const { orgId } = useDashboardScope()
 
   // The selection is owned by the dashboard parent so it persists across
@@ -136,14 +137,17 @@ export function UserCharts(props: UserChartsProps) {
         isLoading ? [] : (userData ?? []),
         timeGranularity,
         t,
-        topUserLimit
+        topUserLimit,
+        surfaceColor
       ),
-    [userData, isLoading, timeGranularity, t, topUserLimit]
+    [userData, isLoading, timeGranularity, t, topUserLimit, surfaceColor]
   )
 
   return (
     <div className='space-y-3'>
-      <div className='flex items-center gap-1.5 overflow-x-auto pb-1 sm:gap-2'>
+      {/* `items-end`：热门用户那组带上方标签，底部对齐才能与另外两组控件齐平
+          （分流工具栏用的是同一套对齐方式）。 */}
+      <div className='flex items-end gap-1.5 overflow-x-auto pb-1 sm:gap-2'>
         <Tabs
           value={String(selectedRange)}
           onValueChange={(value) => handleRangeChange(Number(value))}
@@ -182,26 +186,32 @@ export function UserCharts(props: UserChartsProps) {
           </TabsList>
         </Tabs>
 
-        <Tabs
-          value={String(topUserLimit)}
-          onValueChange={(value) => handleTopUserLimitChange(Number(value))}
-          className='shrink-0'
-        >
-          <TabsList>
-            <span className='text-muted-foreground px-2 text-xs font-medium whitespace-nowrap'>
-              {t('Top Users')}
-            </span>
-            {TOP_USER_LIMIT_OPTIONS.map((limit) => (
-              <TabsTrigger
-                key={limit}
-                value={String(limit)}
-                className='px-2.5 text-sm'
-              >
-                {t('Top {{count}}', { count: limit })}
-              </TabsTrigger>
-            ))}
-          </TabsList>
-        </Tabs>
+        <div className='flex min-w-0 flex-col gap-1.5'>
+          {/* 组标签在**控件上方**、14px —— 与分流工具栏（「连线粗细」「显示数量」
+              「超出项」「节点筛选」）同一套排布。此前它被塞进 TabsList 里当内联
+              前缀（12px），既比同页其他标签小一档，也把「前 10」挤到右边看起来
+              像同一个控件的一部分。 */}
+          <span className='text-muted-foreground text-sm font-medium'>
+            {t('Top Users')}
+          </span>
+          <Tabs
+            value={String(topUserLimit)}
+            onValueChange={(value) => handleTopUserLimitChange(Number(value))}
+            className='shrink-0'
+          >
+            <TabsList aria-label={t('Top Users')}>
+              {TOP_USER_LIMIT_OPTIONS.map((limit) => (
+                <TabsTrigger
+                  key={limit}
+                  value={String(limit)}
+                  className='px-2.5 text-sm'
+                >
+                  {t('Top {{count}}', { count: limit })}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          </Tabs>
+        </div>
 
         {isLoading && (
           <Loader2 className='text-muted-foreground size-4 animate-spin' />

@@ -60,7 +60,11 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
-import { getFlowQuotaDates, getOrgFlowQuotaDates } from '@/features/dashboard/api'
+import {
+  getFlowQuotaDates,
+  getOrgFlowQuotaDates,
+} from '@/features/dashboard/api'
+import { useDashboardScope } from '@/features/dashboard/hooks/use-dashboard-scope'
 import {
   buildDashboardFlowData,
   buildFlowSankeySpec,
@@ -70,7 +74,6 @@ import {
   getDefaultDays,
   getFlowStages,
 } from '@/features/dashboard/lib'
-import { useDashboardScope } from '@/features/dashboard/hooks/use-dashboard-scope'
 import {
   compactFlowSelectionLabel,
   flowDisplayState,
@@ -554,7 +557,7 @@ export function FlowCharts(props: FlowChartsProps) {
         <div className='flex min-w-0 flex-wrap items-end gap-2'>
           <div className='flex min-w-0 flex-col gap-1.5'>
             <div className='flex items-center gap-1.5'>
-              <span className='text-muted-foreground text-xs font-medium'>
+              <span className='text-muted-foreground text-sm font-medium'>
                 {t('Flow width metric')}
               </span>
               <TooltipProvider>
@@ -563,12 +566,12 @@ export function FlowCharts(props: FlowChartsProps) {
                     render={
                       <button
                         type='button'
-                        className='text-muted-foreground/60 hover:text-foreground flex size-5 shrink-0 items-center justify-center rounded-md'
+                        className='text-tertiary-foreground hover:text-foreground flex size-6 shrink-0 items-center justify-center rounded-md'
                         aria-label={t('Flow width metric')}
                       />
                     }
                   >
-                    <Info className='size-3.5' />
+                    <Info className='size-4' />
                   </TooltipTrigger>
                   <TooltipContent className='max-w-[14rem]'>
                     {t('Choose how flow widths are calculated.')}
@@ -590,7 +593,13 @@ export function FlowCharts(props: FlowChartsProps) {
                       value={option.value}
                       className='gap-1.5 px-2.5 text-sm'
                     >
-                      <Icon data-icon='inline-start' aria-hidden='true' />
+                      {/* 工具栏图标走紧凑档 16px（规范「工具栏/控件内图标」），
+                          不跟随 TabsTrigger 的 18px 兜底。 */}
+                      <Icon
+                        data-icon='inline-start'
+                        aria-hidden='true'
+                        className='size-4'
+                      />
                       {t(option.labelKey)}
                     </TabsTrigger>
                   )
@@ -600,7 +609,7 @@ export function FlowCharts(props: FlowChartsProps) {
           </div>
 
           <div className='flex min-w-0 flex-col gap-1.5'>
-            <span className='text-muted-foreground text-xs font-medium'>
+            <span className='text-muted-foreground text-sm font-medium'>
               {t('Display limit')}
             </span>
             <Tabs
@@ -623,7 +632,7 @@ export function FlowCharts(props: FlowChartsProps) {
           </div>
 
           <div className='flex min-w-0 flex-col gap-1.5'>
-            <span className='text-muted-foreground text-xs font-medium'>
+            <span className='text-muted-foreground text-sm font-medium'>
               {t('Overflow items')}
             </span>
             <Tabs
@@ -697,12 +706,12 @@ export function FlowCharts(props: FlowChartsProps) {
                   render={
                     <button
                       type='button'
-                      className='text-muted-foreground/60 hover:text-foreground flex size-6 shrink-0 items-center justify-center rounded-md'
+                      className='text-tertiary-foreground hover:text-foreground flex size-6 shrink-0 items-center justify-center rounded-md'
                       aria-label={t('Show or hide flow columns')}
                     />
                   }
                 >
-                  <Info className='size-3.5' />
+                  <Info className='size-4' />
                 </TooltipTrigger>
                 <TooltipContent className='max-w-[16rem]'>
                   {t('Click a stage to show or hide that column')}
@@ -714,7 +723,7 @@ export function FlowCharts(props: FlowChartsProps) {
                 return (
                   <Fragment key={stage}>
                     {index > 0 && (
-                      <ChevronRight className='text-muted-foreground/40 size-3.5 shrink-0' />
+                      <ChevronRight className='text-tertiary-foreground size-4 shrink-0' />
                     )}
                     <Tooltip>
                       <TooltipTrigger
@@ -729,7 +738,7 @@ export function FlowCharts(props: FlowChartsProps) {
                           />
                         }
                       >
-                        {!visible && <EyeOff className='size-3' />}
+                        {!visible && <EyeOff className='size-4' />}
                         {t(meta.labelKey)}
                       </TooltipTrigger>
                       <TooltipContent>{t(meta.descKey)}</TooltipContent>

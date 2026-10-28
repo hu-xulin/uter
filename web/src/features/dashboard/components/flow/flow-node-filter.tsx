@@ -109,11 +109,20 @@ export function FlowNodeFilterControl(props: FlowNodeFilterControlProps) {
                 type='button'
                 variant='outline'
                 size='sm'
+                // 与同排三个 TabsList 同高（40px）：工具栏里「下拉 + 分段控件」
+                // 混排时高度不齐会读成锯齿。Button 的高度来自 size 变体，
+                // 同名工具类后写生效。
+                className='h-10'
                 aria-label={t('Filter by node')}
               />
             }
           >
-            <Filter data-icon='inline-start' aria-hidden='true' />
+            {/* 工具栏图标紧凑档 16px，与分段控件里的图标同档。 */}
+            <Filter
+              data-icon='inline-start'
+              aria-hidden='true'
+              className='size-4'
+            />
             {selectedCount > 0 ? t('Selected nodes') : t('All nodes')}
             {selectedCount > 0 && (
               <Badge variant='secondary' className='rounded-sm px-1'>
@@ -169,7 +178,7 @@ export function FlowNodeFilterControl(props: FlowNodeFilterControlProps) {
                             </span>
                             <span className='text-muted-foreground flex shrink-0 items-center gap-1 text-xs'>
                               <span>{props.metricLabel}</span>
-                              <span className='font-mono'>
+                              <span className='text-mono font-mono'>
                                 {metricValueLabel}
                               </span>
                             </span>
@@ -208,7 +217,7 @@ export function FlowNodeFilterControl(props: FlowNodeFilterControlProps) {
             </span>
             <button
               type='button'
-              className='hover:bg-muted-foreground/15 flex size-4 shrink-0 items-center justify-center rounded-sm'
+              className='ds-touch-target hover:bg-muted-foreground/15 flex size-4 shrink-0 items-center justify-center rounded-sm'
               aria-label={t('Remove node filter')}
               onClick={() =>
                 props.onRemoveNode({ kind: option.kind, id: option.id })
@@ -223,7 +232,7 @@ export function FlowNodeFilterControl(props: FlowNodeFilterControlProps) {
           <Button
             type='button'
             variant='ghost'
-            size='xs'
+            size='sm'
             onClick={props.onClearNodes}
           >
             {t('Clear')}
