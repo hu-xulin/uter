@@ -234,7 +234,9 @@ export function EditTagDialog({ open, onOpenChange }: EditTagDialogProps) {
             {t('Cancel')}
           </Button>
           <Button onClick={handleSubmit} disabled={isSubmitting}>
-            {isSubmitting && <Loader2 className='mr-2 h-4 w-4 animate-spin' />}
+            {isSubmitting && (
+              <Loader2 className='mr-2 h-4.5 w-4.5 animate-spin' />
+            )}
             {t('Save Changes')}
           </Button>
         </>

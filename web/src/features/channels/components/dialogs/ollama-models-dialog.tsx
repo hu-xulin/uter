@@ -410,12 +410,12 @@ export function OllamaModelsDialog({
                 >
                   {isPulling ? (
                     <>
-                      <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+                      <Loader2 className='mr-2 h-4.5 w-4.5 animate-spin' />
                       {t('Pulling...')}
                     </>
                   ) : (
                     <>
-                      <Download className='mr-2 h-4 w-4' />
+                      <Download className='mr-2 h-4.5 w-4.5' />
                       {t('Pull')}
                     </>
                   )}
@@ -452,9 +452,9 @@ export function OllamaModelsDialog({
                 disabled={!channelId || isFetching}
               >
                 {isFetching ? (
-                  <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+                  <Loader2 className='mr-2 h-4.5 w-4.5 animate-spin' />
                 ) : (
-                  <RefreshCw className='mr-2 h-4 w-4' />
+                  <RefreshCw className='mr-2 h-4.5 w-4.5' />
                 )}
                 {t('Refresh')}
               </Button>
@@ -467,7 +467,7 @@ export function OllamaModelsDialog({
             <div className='flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between'>
               <div>
                 <p className='text-sm font-medium'>{t('Local models')}</p>
-                <p className='text-muted-foreground text-xs'>
+                <p className='text-muted-foreground text-sm'>
                   {t('Select models and apply to channel models list.')}
                 </p>
               </div>
@@ -528,7 +528,7 @@ export function OllamaModelsDialog({
                               aria-label={`Select model ${m.id}`}
                             />
                             <div className='min-w-0'>
-                              <div className='truncate font-mono text-mono'>
+                              <div className='text-mono truncate font-mono'>
                                 {m.id}
                               </div>
                               <div className='text-muted-foreground flex flex-wrap gap-x-3 gap-y-1 text-xs'>
@@ -554,7 +554,7 @@ export function OllamaModelsDialog({
                             }}
                             disabled={!channelId}
                           >
-                            <Trash2 className='h-4 w-4' />
+                            <Trash2 className='h-4.5 w-4.5' />
                           </Button>
                         </div>
                       )

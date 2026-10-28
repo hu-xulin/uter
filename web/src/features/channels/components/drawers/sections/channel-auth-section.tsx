@@ -31,10 +31,10 @@ export function ChannelAuthSection(props: ChannelAuthSectionProps) {
     <div className='border-border/60 flex flex-col gap-3 border-t pt-4'>
       <div className='flex items-center gap-2'>
         <KeyRound
-          className='text-muted-foreground h-3.5 w-3.5'
+          className='text-muted-foreground h-4 w-4'
           aria-hidden='true'
         />
-        <h4 className='text-muted-foreground text-xs font-medium uppercase'>
+        <h4 className='text-muted-foreground text-sm font-medium uppercase'>
           {t('Authentication')}
         </h4>
       </div>

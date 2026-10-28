@@ -205,7 +205,7 @@ export function TagBatchEditDialog({
             </Button>
             <Button onClick={handleSave} disabled={isSaving}>
               {isSaving ? (
-                <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+                <Loader2 className='mr-2 h-4.5 w-4.5 animate-spin' />
               ) : null}
               {isSaving ? t('Saving...') : t('Save Changes')}
             </Button>
@@ -220,7 +220,7 @@ export function TagBatchEditDialog({
       ) : (
         <div className='space-y-4 py-4'>
           <Alert>
-            <AlertCircle className='h-4 w-4' />
+            <AlertCircle className='h-4.5 w-4.5' />
             <AlertDescription>
               {t(
                 'All edits are overwrite operations. Leave fields empty to keep current values unchanged.'
@@ -238,7 +238,7 @@ export function TagBatchEditDialog({
               onChange={(e) => setNewTag(e.target.value)}
               disabled={isSaving}
             />
-            <p className='text-muted-foreground text-xs'>
+            <p className='text-muted-foreground text-sm'>
               {t('Leave empty to disband the tag')}
             </p>
           </div>
@@ -256,7 +256,7 @@ export function TagBatchEditDialog({
               disabled={isSaving}
               rows={3}
             />
-            <p className='text-muted-foreground text-xs'>
+            <p className='text-muted-foreground text-sm'>
               {t(
                 'Current models for the longest channel in this tag. May not include all models from all channels.'
               )}
@@ -286,7 +286,7 @@ export function TagBatchEditDialog({
                 placeholder={t('Select groups (leave empty to keep current)')}
               />
             )}
-            <p className='text-muted-foreground text-xs'>
+            <p className='text-muted-foreground text-sm'>
               {t('User groups that can access channels with this tag')}
             </p>
           </div>

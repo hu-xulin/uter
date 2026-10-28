@@ -89,7 +89,7 @@ export function StatusCodeRiskDialog({
       onOpenChange={onOpenChange}
       title={
         <>
-          <AlertTriangle className='h-5 w-5' />
+          <AlertTriangle className='h-4 w-4' />
           {t('High-risk operation confirmation')}
         </>
       }
@@ -137,7 +137,7 @@ export function StatusCodeRiskDialog({
             </p>
             <ul className='list-inside list-disc text-sm'>
               {detailItems.map((item) => (
-                <li key={item} className='font-mono text-mono'>
+                <li key={item} className='text-mono font-mono'>
                   {item}
                 </li>
               ))}
@@ -153,10 +153,7 @@ export function StatusCodeRiskDialog({
                 checked={checkedItems.has(idx)}
                 onCheckedChange={() => toggleCheck(idx)}
               />
-              <Label
-                htmlFor={`risk-check-${idx}`}
-                className='text-sm leading-tight'
-              >
+              <Label htmlFor={`risk-check-${idx}`} className='text-sm'>
                 {t(key)}
               </Label>
             </div>
@@ -166,7 +163,7 @@ export function StatusCodeRiskDialog({
         <div className='space-y-1.5'>
           <Label className='text-sm'>
             {t('Action confirmation')}:{' '}
-            <code className='bg-muted rounded px-1 text-xs'>
+            <code className='text-mono bg-muted rounded px-1 font-mono'>
               {requiredText}
             </code>
           </Label>
@@ -176,7 +173,7 @@ export function StatusCodeRiskDialog({
             placeholder={t('High-risk status code retry input placeholder')}
           />
           {confirmText && !textMatches && (
-            <p className='text-destructive text-xs'>
+            <p className='text-destructive text-sm'>
               {t('High-risk status code retry input mismatch')}
             </p>
           )}

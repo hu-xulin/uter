@@ -93,7 +93,7 @@ export function ChannelPriorityDemo(props: {
           'mb-3 grid gap-1.5 rounded-lg border p-3',
           same
             ? 'border-primary/30 bg-primary/5'
-            : 'border-amber-500/40 bg-amber-500/5'
+            : 'border-warning/40 bg-warning-soft'
         )}
       >
         <p className='text-sm font-medium'>
@@ -101,7 +101,7 @@ export function ChannelPriorityDemo(props: {
             ? t('Drop in the center to use the same priority.')
             : t('Drop at an edge to create a different priority.')}
         </p>
-        <p className='text-muted-foreground text-xs tabular-nums'>
+        <p className='text-muted-foreground text-sm tabular-nums'>
           {t('Priority')} {formatNumber(0, locale)} →{' '}
           {formatNumber(result, locale)}
         </p>
@@ -127,7 +127,7 @@ export function ChannelPriorityDemo(props: {
               transition={{ duration: reduced ? 0 : 0.6 }}
               className='absolute top-3 left-6 z-30'
             >
-              <MousePointer2 className='fill-primary text-primary-foreground size-5 drop-shadow' />
+              <MousePointer2 className='fill-primary text-primary-foreground size-4 drop-shadow' />
             </motion.li>
           </>
         )}
@@ -136,7 +136,7 @@ export function ChannelPriorityDemo(props: {
             aria-hidden
             role='presentation'
             className={cn(
-              'absolute z-20 rounded-full bg-amber-500',
+              'absolute z-20 rounded-full bg-warning',
               card
                 ? 'top-3 left-1/2 h-24 w-0.5'
                 : 'inset-x-3 top-[4.5rem] h-0.5'
@@ -182,13 +182,12 @@ export function ChannelPriorityDemo(props: {
                 layout,
                 peer && 'border-primary bg-primary/5',
                 target && same && 'border-primary',
-                target && !same && 'border-amber-500',
-                lifted && 'bg-background z-10 shadow-lg',
+                target && !same && 'border-warning',
+                // 规范 §1.5：拖拽中的元素瞬时离开文档流，用 raised 档投影
+                // 表达「被拿起来了」。这是瞬时态，不是常驻层级。
+                lifted && 'bg-background z-10 shadow-(--ds-elevation-raised)',
                 lifted && same && 'border-primary',
-                name === 'C' &&
-                  !same &&
-                  (lifted || reached) &&
-                  'border-amber-500'
+                name === 'C' && !same && (lifted || reached) && 'border-warning'
               )}
             >
               {target && (
@@ -198,7 +197,7 @@ export function ChannelPriorityDemo(props: {
                     'pointer-events-none absolute',
                     same
                       ? 'border-primary/60 bg-primary/10'
-                      : 'border-amber-500/60 bg-amber-500/10',
+                      : 'border-warning/60 bg-warning-soft',
                     card &&
                       same &&
                       'inset-y-0 inset-x-6 border-x border-dashed',
@@ -220,7 +219,7 @@ export function ChannelPriorityDemo(props: {
                   aria-hidden
                 >
                   <GripVertical
-                    className={cn('size-4', lifted && 'text-primary')}
+                    className={cn('size-3.5', lifted && 'text-primary')}
                   />
                 </span>
                 <span className='min-w-0 truncate text-sm font-medium'>
@@ -241,7 +240,7 @@ export function ChannelPriorityDemo(props: {
                 <MousePointer2
                   aria-hidden
                   className={cn(
-                    'fill-primary text-primary-foreground absolute top-1/2 size-5 drop-shadow',
+                    'fill-primary text-primary-foreground absolute top-1/2 size-4 drop-shadow',
                     same && reached ? 'left-1/2' : '-left-2'
                   )}
                 />
@@ -250,10 +249,7 @@ export function ChannelPriorityDemo(props: {
           )
         })}
       </ol>
-      <p
-        role='status'
-        className='text-muted-foreground mt-3 min-h-5 text-sm leading-5'
-      >
+      <p role='status' className='text-muted-foreground mt-3 min-h-5 text-sm'>
         {instruction}
       </p>
     </div>

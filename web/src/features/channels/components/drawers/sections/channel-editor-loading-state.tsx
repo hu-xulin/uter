@@ -30,7 +30,7 @@ export function ChannelEditorLoadingState() {
     >
       <div>
         <p className='text-sm font-medium'>{t('Loading channel details')}</p>
-        <p className='text-muted-foreground mt-1 text-xs'>
+        <p className='text-muted-foreground mt-1 text-sm'>
           {t('Please wait before editing to avoid overwriting saved values.')}
         </p>
       </div>

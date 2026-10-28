@@ -436,7 +436,7 @@ const percentTextClassName: Record<
   grey: 'text-muted-foreground',
   indigo: 'text-chart-1',
   'light-blue': 'text-info',
-  'light-green': 'text-emerald-500 dark:text-emerald-300',
+  'light-green': 'text-success dark:text-success-soft-foreground',
   lime: 'text-chart-3',
   orange: 'text-warning',
   pink: 'text-chart-5',
@@ -464,10 +464,8 @@ function RateLimitWindow(props: RateLimitWindowProps) {
       <CardHeader className='p-3 pb-2'>
         <div className='flex items-start justify-between gap-3'>
           <div className='min-w-0'>
-            <CardTitle>
-              {props.title}
-            </CardTitle>
-            <CardDescription className='mt-1 text-xs'>
+            <CardTitle>{props.title}</CardTitle>
+            <CardDescription className='mt-1'>
               {t('Window:')}{' '}
               {hasData
                 ? formatDurationSeconds(props.window?.limit_window_seconds, t)
@@ -475,9 +473,11 @@ function RateLimitWindow(props: RateLimitWindowProps) {
             </CardDescription>
           </div>
           <div className='shrink-0 text-right'>
+            {/* 这是指标数值（百分比），按规范走 24–32px 档；
+                20px 不在字号阶梯内。 */}
             <div
               className={cn(
-                'text-xl leading-none font-semibold tabular-nums',
+                'text-2xl font-semibold tabular-nums',
                 percentTextClassName[variant ?? 'neutral']
               )}
             >
@@ -549,9 +549,9 @@ function SectionHeading(props: {
   return (
     <div className='flex flex-wrap items-start justify-between gap-3'>
       <div className='min-w-0'>
-        <div className='text-sm font-semibold'>{props.title}</div>
+        <div className='text-lg font-semibold'>{props.title}</div>
         {props.description ? (
-          <div className='text-muted-foreground mt-1 text-xs leading-5'>
+          <div className='text-muted-foreground mt-1 text-sm'>
             {props.description}
           </div>
         ) : null}
@@ -584,10 +584,8 @@ function RateLimitGroupSection(props: RateLimitGroupSectionProps) {
       </SectionHeading>
       {props.meteredFeature ? (
         <div className='bg-background ring-border/60 inline-flex max-w-full flex-wrap items-center gap-x-2 gap-y-1 rounded-lg px-2 py-1 text-xs ring-1'>
-          <span className='text-muted-foreground text-xs'>
-            metered_feature
-          </span>
-          <span className='min-w-0 font-mono break-all'>
+          <span className='text-muted-foreground text-xs'>metered_feature</span>
+          <span className='text-mono min-w-0 font-mono break-all'>
             {props.meteredFeature}
           </span>
         </div>
@@ -619,14 +617,14 @@ function InfoField(props: {
         props.className
       )}
     >
-      <div className='text-muted-foreground text-xs font-medium'>
+      <div className='text-muted-foreground text-sm font-medium'>
         {props.label}
       </div>
       <div className='mt-1 flex min-w-0 items-start justify-between gap-2'>
         <span
           className={cn(
-            'min-w-0 flex-1 text-xs leading-5 break-all',
-            props.mono && 'font-mono tabular-nums'
+            'min-w-0 flex-1 text-xs break-all',
+            props.mono && 'font-mono text-mono tabular-nums'
           )}
         >
           {text || '-'}
@@ -654,12 +652,12 @@ function ResetCreditTimeField(props: {
 }) {
   return (
     <div className='min-w-0'>
-      <div className='text-muted-foreground text-xs font-medium'>
+      <div className='text-muted-foreground text-sm font-medium'>
         {props.label}
       </div>
       <div
         className={cn(
-          'mt-1 text-xs leading-5 tabular-nums',
+          'mt-1 text-xs tabular-nums',
           props.emphasis ? 'font-semibold' : 'text-foreground'
         )}
       >
@@ -693,18 +691,18 @@ function ResetCreditItem(props: { credit: CodexResetCredit; index: number }) {
             />
           </div>
           {props.credit.description ? (
-            <div className='text-muted-foreground mt-1 text-xs leading-5'>
+            <div className='text-muted-foreground mt-1 text-xs'>
               {props.credit.description}
             </div>
           ) : null}
           {props.credit.id ? (
-            <div className='text-muted-foreground mt-1 font-mono text-mono break-all'>
+            <div className='text-muted-foreground text-mono mt-1 font-mono break-all'>
               {props.credit.id}
             </div>
           ) : null}
         </div>
         <div className='shrink-0 text-right'>
-          <div className='text-muted-foreground text-xs font-medium'>
+          <div className='text-muted-foreground text-sm font-medium'>
             {t('Expires in')}
           </div>
           <div
@@ -833,7 +831,7 @@ function ResetCreditsPanel(props: {
       </div>
 
       <div className='flex flex-wrap items-center justify-between gap-2'>
-        <div className='text-muted-foreground text-xs leading-5'>
+        <div className='text-muted-foreground text-xs'>
           {t('Available credits are ordered by soonest expiration.')}
         </div>
         <Button
@@ -850,8 +848,8 @@ function ResetCreditsPanel(props: {
 
       <div className='bg-muted/30 flex flex-col gap-3 rounded-lg border p-3 sm:flex-row sm:items-center sm:justify-between'>
         <div className='min-w-0'>
-          <div className='text-sm font-semibold'>{t('Reset usage window')}</div>
-          <div className='text-muted-foreground mt-1 text-xs leading-5'>
+          <div className='text-sm font-medium'>{t('Reset usage window')}</div>
+          <div className='text-muted-foreground mt-1 text-sm'>
             {t(
               'Use one available reset credit to refresh the current Codex usage windows.'
             )}
@@ -1103,14 +1101,14 @@ export function CodexUsageDialog({
     >
       <div className='flex flex-col gap-4'>
         {errorMessage && (
-          <div className='rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-800 dark:bg-red-950/30 dark:text-red-400'>
+          <div className='border-destructive-soft bg-destructive-soft text-destructive dark:border-destructive dark:bg-destructive-soft/30 dark:text-destructive rounded-lg border px-4 py-3 text-sm'>
             {errorMessage}
           </div>
         )}
 
         <Card size='sm' className='bg-muted/30 gap-0 py-0'>
           <CardHeader className='p-4 pb-2'>
-            <CardTitle className='text-muted-foreground text-base'>
+            <CardTitle className='text-muted-foreground'>
               {t('Codex Account Status')}
             </CardTitle>
             {onRefresh ? (
@@ -1194,7 +1192,7 @@ export function CodexUsageDialog({
           >
             <div className='min-w-0'>
               <div className='flex flex-wrap items-center gap-2'>
-                <div className='text-sm font-semibold'>
+                <div className='text-lg font-semibold'>
                   {t('Reset Credits')}
                 </div>
                 <StatusBadge
@@ -1203,7 +1201,7 @@ export function CodexUsageDialog({
                   copyable={false}
                 />
               </div>
-              <div className='text-muted-foreground mt-1 text-xs leading-5'>
+              <div className='text-muted-foreground mt-1 text-xs'>
                 {t('View issued reset credits, grant dates, and expiration.')}
               </div>
             </div>
@@ -1314,7 +1312,7 @@ export function CodexUsageDialog({
                 </Button>
               </div>
               <ScrollArea className='max-h-[50vh]'>
-                <pre className='bg-muted/30 m-0 p-3 text-xs break-words whitespace-pre-wrap'>
+                <pre className='bg-muted/30 text-mono m-0 p-3 break-words whitespace-pre-wrap'>
                   {rawJsonText || '-'}
                 </pre>
               </ScrollArea>

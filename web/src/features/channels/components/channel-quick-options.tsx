@@ -199,10 +199,7 @@ export function ChannelQuickOptions(props: ChannelQuickOptionsProps) {
               onCheckedChange={option.onCheckedChange}
               disabled={option.disabled}
             />
-            <Label
-              htmlFor={`${id}-${option.key}`}
-              className='cursor-pointer text-xs font-medium'
-            >
+            <Label htmlFor={`${id}-${option.key}`} className='cursor-pointer'>
               {option.label}
             </Label>
           </div>
@@ -220,7 +217,7 @@ export function ChannelQuickOptions(props: ChannelQuickOptionsProps) {
         props.className
       )}
     >
-      <h3 id={`${id}-title`} className='mb-1 text-sm font-semibold'>
+      <h3 id={`${id}-title`} className='mb-1 text-lg font-semibold'>
         {t('Quick options')}
       </h3>
       <FieldGroup className='grid gap-x-6 gap-y-0 @sm:grid-cols-2'>
@@ -233,6 +230,9 @@ export function ChannelQuickOptions(props: ChannelQuickOptionsProps) {
             label={option.label}
             description={option.description}
             disabled={option.disabled}
+            // 弹窗里的紧凑两列快捷开关：14/600（row 档），不跟着设置页
+            // 的 16/600 走，否则两列并排的开关标题会挤在一起。
+            labelTier='row'
           />
         ))}
       </FieldGroup>

@@ -77,7 +77,7 @@ export function ChannelPluginExtensions(props: {
               {selectionLabel}
             </span>
             <ChevronRight
-              className='text-muted-foreground size-3 shrink-0'
+              className='text-muted-foreground size-4.5 shrink-0'
               aria-hidden='true'
             />
           </Button>

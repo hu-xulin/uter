@@ -594,19 +594,19 @@ const getOperationSummary = (
 
 const getModeTagTailwind = (mode: string): string => {
   if (mode.includes('header')) {
-    return 'bg-cyan-500/15 text-cyan-700 dark:text-cyan-300 border-cyan-500/20'
+    return 'bg-info/15 text-info dark:text-info-soft-foreground border-info/20'
   }
   if (mode.includes('replace') || mode.includes('trim')) {
-    return 'bg-violet-500/15 text-violet-700 dark:text-violet-300 border-violet-500/20'
+    return 'bg-info/15 text-info dark:text-info-soft-foreground border-info/20'
   }
   if (mode.includes('copy') || mode.includes('move')) {
-    return 'bg-blue-500/15 text-blue-700 dark:text-blue-300 border-blue-500/20'
+    return 'bg-info/15 text-info dark:text-info-soft-foreground border-info/20'
   }
   if (mode.includes('error') || mode.includes('prune')) {
-    return 'bg-red-500/15 text-red-700 dark:text-red-300 border-red-500/20'
+    return 'bg-destructive/15 text-destructive dark:text-destructive-soft-foreground border-destructive/20'
   }
   if (mode.includes('sync')) {
-    return 'bg-green-500/15 text-green-700 dark:text-green-300 border-green-500/20'
+    return 'bg-success/15 text-success dark:text-success-soft-foreground border-success/20'
   }
   return 'bg-muted text-muted-foreground'
 }
@@ -1830,7 +1830,7 @@ export function ParamOverrideEditorDialog(
             onValueChange={(v) =>
               setTemplatePresetKey(v || 'operations_default')
             }
-            className='h-8 w-[220px]'
+            className='w-[220px]'
           />
           <Button
             type='button'
@@ -1873,7 +1873,7 @@ export function ParamOverrideEditorDialog(
                 heightClassName='h-72 min-h-72 max-h-72'
                 ariaLabel={t('Legacy Format (JSON Object)')}
               />
-              <p className='text-muted-foreground mt-2 text-xs'>
+              <p className='text-muted-foreground mt-2 text-sm'>
                 {t(
                   'Edit JSON object directly. Suitable for simple parameter overrides.'
                 )}
@@ -1896,7 +1896,7 @@ export function ParamOverrideEditorDialog(
                     size='sm'
                     onClick={addOperation}
                   >
-                    <Plus className='h-4 w-4' />
+                    <Plus className='h-4.5 w-4.5' />
                   </Button>
                 </div>
 
@@ -1918,12 +1918,12 @@ export function ParamOverrideEditorDialog(
 
                 <div className='px-3 py-2'>
                   <div className='relative'>
-                    <Search className='text-muted-foreground absolute top-2.5 left-2.5 h-3.5 w-3.5' />
+                    <Search className='text-muted-foreground absolute top-2.5 left-2.5 h-4 w-4' />
                     <Input
                       value={operationSearch}
                       onChange={(e) => setOperationSearch(e.target.value)}
                       placeholder={t('Search rules...')}
-                      className='h-8 pl-8 text-xs'
+                      className='pl-8 text-sm'
                     />
                   </div>
                 </div>
@@ -1931,7 +1931,7 @@ export function ParamOverrideEditorDialog(
                 <ScrollArea className='flex-1'>
                   <div className='flex flex-col gap-1 px-3 pb-3'>
                     {filteredOperations.length === 0 ? (
-                      <p className='text-muted-foreground py-4 text-center text-xs'>
+                      <p className='text-muted-foreground py-4 text-center text-sm'>
                         {t('No matching rules')}
                       </p>
                     ) : (
@@ -1992,18 +1992,15 @@ export function ParamOverrideEditorDialog(
                                   <span className='text-xs font-semibold'>
                                     #{index + 1}
                                   </span>
-                                  <Badge
-                                    variant='outline'
-                                    className='text-xs'
-                                  >
+                                  <Badge variant='outline' className='text-xs'>
                                     {operation.conditions.length}
                                   </Badge>
                                 </div>
-                                <p className='text-muted-foreground mt-0.5 line-clamp-1 text-xs'>
+                                <p className='text-muted-foreground mt-0.5 line-clamp-1 text-sm'>
                                   {getOperationSummary(operation, index)}
                                 </p>
                                 {operation.description.trim() && (
-                                  <p className='text-muted-foreground mt-0.5 line-clamp-2 text-xs'>
+                                  <p className='text-muted-foreground mt-0.5 line-clamp-2 text-sm'>
                                     {operation.description}
                                   </p>
                                 )}
@@ -2066,7 +2063,7 @@ export function ParamOverrideEditorDialog(
 
                 {visualValidationError && (
                   <div className='border-t px-4 py-2'>
-                    <p className='text-destructive text-xs'>
+                    <p className='text-destructive text-sm'>
                       {visualValidationError}
                     </p>
                   </div>
@@ -2090,11 +2087,11 @@ export function ParamOverrideEditorDialog(
               aria-invalid={Boolean(jsonError)}
               ariaLabel={t('Advanced text editing')}
             />
-            <p className='text-muted-foreground mt-2 text-xs'>
+            <p className='text-muted-foreground mt-2 text-sm'>
               {t('Edit JSON text directly. Format will be validated on save.')}
             </p>
             {jsonError && (
-              <p className='text-destructive mt-1 text-xs'>{jsonError}</p>
+              <p className='text-destructive mt-1 text-sm'>{jsonError}</p>
             )}
           </div>
         )}
@@ -2187,7 +2184,7 @@ function RuleEditor(ruleEditorProps: RuleEditorProps) {
               size='sm'
               onClick={() => ruleEditorProps.duplicateOperation(operation.id)}
             >
-              <Copy className='mr-1 h-3.5 w-3.5' />
+              <Copy className='mr-1 h-4.5 w-4.5' />
               {t('Duplicate')}
             </Button>
             <Button
@@ -2197,7 +2194,7 @@ function RuleEditor(ruleEditorProps: RuleEditorProps) {
               className='text-destructive hover:text-destructive'
               onClick={() => ruleEditorProps.removeOperation(operation.id)}
             >
-              <Trash2 className='mr-1 h-3.5 w-3.5' />
+              <Trash2 className='mr-1 h-4.5 w-4.5' />
               {t('Delete')}
             </Button>
           </div>
@@ -2206,7 +2203,7 @@ function RuleEditor(ruleEditorProps: RuleEditorProps) {
         {/* Operation type + path */}
         <div className='grid gap-3 sm:grid-cols-2'>
           <div className='space-y-1.5'>
-            <label className='text-xs font-medium'>{t('Operation Type')}</label>
+            <label className='text-sm font-medium'>{t('Operation Type')}</label>
             <Combobox
               options={OPERATION_MODE_OPTIONS.map((o) => ({
                 value: o.value,
@@ -2219,12 +2216,11 @@ function RuleEditor(ruleEditorProps: RuleEditorProps) {
                   mode: nextMode,
                 })
               }
-              className='h-9'
             />
           </div>
           {(meta.path || meta.pathOptional) && (
             <div className='space-y-1.5'>
-              <label className='text-xs font-medium'>
+              <label className='text-sm font-medium'>
                 {t(getModePathLabel(mode))}
               </label>
               <Input
@@ -2235,7 +2231,6 @@ function RuleEditor(ruleEditorProps: RuleEditorProps) {
                   })
                 }
                 placeholder={getModePathPlaceholder(mode)}
-                className='h-9'
               />
             </div>
           )}
@@ -2243,7 +2238,7 @@ function RuleEditor(ruleEditorProps: RuleEditorProps) {
 
         {/* Mode description */}
         {MODE_DESCRIPTIONS[mode] && (
-          <p className='text-muted-foreground text-xs'>
+          <p className='text-muted-foreground text-sm'>
             {t(MODE_DESCRIPTIONS[mode])}
           </p>
         )}
@@ -2251,7 +2246,7 @@ function RuleEditor(ruleEditorProps: RuleEditorProps) {
         {/* Description */}
         <div className='space-y-1.5'>
           <div className='flex items-center justify-between'>
-            <label className='text-xs font-medium'>
+            <label className='text-sm font-medium'>
               {t('Rule Description (optional)')}
             </label>
             <span className='text-muted-foreground text-xs'>
@@ -2269,7 +2264,6 @@ function RuleEditor(ruleEditorProps: RuleEditorProps) {
               'e.g. Clean tool parameters to avoid upstream validation errors'
             )}
             maxLength={180}
-            className='h-9'
           />
         </div>
 
@@ -2296,7 +2290,7 @@ function RuleEditor(ruleEditorProps: RuleEditorProps) {
             {!returnErrorDraft && !pruneObjectsDraft && (
               <div className='space-y-1.5'>
                 <div className='flex items-center justify-between'>
-                  <label className='text-xs font-medium'>
+                  <label className='text-sm font-medium'>
                     {t(getModeValueLabel(mode))}
                   </label>
                   {operation.value_text.trim().startsWith('{') && (
@@ -2304,7 +2298,7 @@ function RuleEditor(ruleEditorProps: RuleEditorProps) {
                       type='button'
                       variant='ghost'
                       size='sm'
-                      className='text-muted-foreground h-auto px-1.5 py-0.5 text-xs'
+                      className='text-muted-foreground h-auto px-1.5 py-0.5 text-sm'
                       onClick={() => {
                         try {
                           const parsed = JSON.parse(operation.value_text)
@@ -2329,7 +2323,7 @@ function RuleEditor(ruleEditorProps: RuleEditorProps) {
                   }
                   placeholder={getModeValuePlaceholder(mode)}
                   rows={3}
-                  className='max-h-[200px] resize-y overflow-y-auto font-mono text-mono'
+                  className='text-mono max-h-[200px] resize-y overflow-y-auto font-mono'
                 />
               </div>
             )}
@@ -2366,7 +2360,7 @@ function RuleEditor(ruleEditorProps: RuleEditorProps) {
           <div className='grid gap-3 sm:grid-cols-2'>
             {(meta.from || meta.to === false) && (
               <div className='space-y-1.5'>
-                <label className='text-xs font-medium'>
+                <label className='text-sm font-medium'>
                   {t(getModeFromLabel(mode))}
                 </label>
                 <Input
@@ -2377,13 +2371,12 @@ function RuleEditor(ruleEditorProps: RuleEditorProps) {
                     })
                   }
                   placeholder={getModeFromPlaceholder(mode)}
-                  className='h-9'
                 />
               </div>
             )}
             {(meta.to || meta.to === false) && (
               <div className='space-y-1.5'>
-                <label className='text-xs font-medium'>
+                <label className='text-sm font-medium'>
                   {t(getModeToLabel(mode))}
                 </label>
                 <Input
@@ -2394,7 +2387,6 @@ function RuleEditor(ruleEditorProps: RuleEditorProps) {
                     })
                   }
                   placeholder={getModeToPlaceholder(mode)}
-                  className='h-9'
                 />
               </div>
             )}
@@ -2419,7 +2411,7 @@ function RuleEditor(ruleEditorProps: RuleEditorProps) {
                   })
                 }
               >
-                <SelectTrigger className='h-7 w-[120px] text-xs'>
+                <SelectTrigger className='w-[120px] text-sm'>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent alignItemWithTrigger={false}>
@@ -2437,20 +2429,20 @@ function RuleEditor(ruleEditorProps: RuleEditorProps) {
                     type='button'
                     variant='ghost'
                     size='sm'
-                    className='h-7 text-xs'
+                    className='text-sm'
                     onClick={ruleEditorProps.expandAllConditions}
                   >
-                    <ChevronDown className='mr-1 h-3 w-3' />
+                    <ChevronDown className='mr-1 size-4.5' />
                     {t('Expand All')}
                   </Button>
                   <Button
                     type='button'
                     variant='ghost'
                     size='sm'
-                    className='h-7 text-xs'
+                    className='text-sm'
                     onClick={ruleEditorProps.collapseAllConditions}
                   >
-                    <ChevronUp className='mr-1 h-3 w-3' />
+                    <ChevronUp className='mr-1 size-4.5' />
                     {t('Collapse All')}
                   </Button>
                 </>
@@ -2459,17 +2451,17 @@ function RuleEditor(ruleEditorProps: RuleEditorProps) {
                 type='button'
                 variant='outline'
                 size='sm'
-                className='h-7 text-xs'
+                className='text-sm'
                 onClick={() => ruleEditorProps.addCondition(operation.id)}
               >
-                <Plus className='mr-1 h-3 w-3' />
+                <Plus className='mr-1 size-4.5' />
                 {t('Add Condition')}
               </Button>
             </div>
           </div>
 
           {conditions.length === 0 ? (
-            <p className='text-muted-foreground text-xs'>
+            <p className='text-muted-foreground text-sm'>
               {t('When no conditions are set, the operation always executes.')}
             </p>
           ) : (
@@ -2539,9 +2531,9 @@ function ConditionEditor(conditionEditorProps: ConditionEditorProps) {
             </span>
           </div>
           {conditionEditorProps.expanded ? (
-            <ChevronUp className='text-muted-foreground h-3.5 w-3.5' />
+            <ChevronUp className='text-muted-foreground h-4 w-4' />
           ) : (
-            <ChevronDown className='text-muted-foreground h-3.5 w-3.5' />
+            <ChevronDown className='text-muted-foreground h-4 w-4' />
           )}
         </CollapsibleTrigger>
         <CollapsibleContent>
@@ -2554,7 +2546,7 @@ function ConditionEditor(conditionEditorProps: ConditionEditorProps) {
                 type='button'
                 variant='ghost'
                 size='sm'
-                className='text-destructive hover:text-destructive h-7 text-xs'
+                className='text-destructive hover:text-destructive text-sm'
                 onClick={() =>
                   conditionEditorProps.removeCondition(
                     conditionEditorProps.operationId,
@@ -2562,15 +2554,13 @@ function ConditionEditor(conditionEditorProps: ConditionEditorProps) {
                   )
                 }
               >
-                <Trash2 className='mr-1 h-3 w-3' />
+                <Trash2 className='mr-1 size-4.5' />
                 {t('Delete Condition')}
               </Button>
             </div>
             <div className='grid gap-2 sm:grid-cols-3'>
               <div className='space-y-1'>
-                <label className='text-xs font-medium'>
-                  {t('Field Path')}
-                </label>
+                <label className='text-sm font-medium'>{t('Field Path')}</label>
                 <Input
                   value={condition.path}
                   onChange={(e) =>
@@ -2581,13 +2571,11 @@ function ConditionEditor(conditionEditorProps: ConditionEditorProps) {
                     )
                   }
                   placeholder='model'
-                  className='h-8 text-xs'
+                  className='text-sm'
                 />
               </div>
               <div className='space-y-1'>
-                <label className='text-xs font-medium'>
-                  {t('Match Mode')}
-                </label>
+                <label className='text-sm font-medium'>{t('Match Mode')}</label>
                 <Combobox
                   aria-label={t('Match Mode')}
                   options={CONDITION_MODE_OPTIONS.map((o) => ({
@@ -2603,11 +2591,11 @@ function ConditionEditor(conditionEditorProps: ConditionEditorProps) {
                       { mode: v }
                     )
                   }
-                  className='h-8 text-xs'
+                  className='text-sm'
                 />
               </div>
               <div className='space-y-1'>
-                <label className='text-xs font-medium'>
+                <label className='text-sm font-medium'>
                   {t('Match Value')}
                 </label>
                 <Input
@@ -2621,12 +2609,12 @@ function ConditionEditor(conditionEditorProps: ConditionEditorProps) {
                     )
                   }
                   placeholder={condition.mode === 'regex' ? '^gpt-' : 'gpt'}
-                  className='h-8 text-xs'
+                  className='text-sm'
                 />
               </div>
             </div>
             <div className='flex flex-wrap gap-4'>
-              <label className='flex items-center gap-2 text-xs'>
+              <label className='flex items-center gap-2 text-sm'>
                 <Switch
                   checked={condition.invert}
                   onCheckedChange={(checked) =>
@@ -2639,7 +2627,7 @@ function ConditionEditor(conditionEditorProps: ConditionEditorProps) {
                 />
                 {t('Invert match')}
               </label>
-              <label className='flex items-center gap-2 text-xs'>
+              <label className='flex items-center gap-2 text-sm'>
                 <Switch
                   checked={condition.pass_missing_key}
                   onCheckedChange={(checked) =>
@@ -2689,7 +2677,7 @@ function ReturnErrorEditor(returnErrorEditorProps: ReturnErrorEditorProps) {
             type='button'
             variant={draft.simpleMode ? 'default' : 'outline'}
             size='sm'
-            className='h-7 text-xs'
+            className='text-sm'
             onClick={() =>
               returnErrorEditorProps.updateDraft(
                 returnErrorEditorProps.operationId,
@@ -2703,7 +2691,7 @@ function ReturnErrorEditor(returnErrorEditorProps: ReturnErrorEditorProps) {
             type='button'
             variant={draft.simpleMode ? 'outline' : 'default'}
             size='sm'
-            className='h-7 text-xs'
+            className='text-sm'
             onClick={() =>
               returnErrorEditorProps.updateDraft(
                 returnErrorEditorProps.operationId,
@@ -2717,7 +2705,7 @@ function ReturnErrorEditor(returnErrorEditorProps: ReturnErrorEditorProps) {
       </div>
 
       <div className='space-y-1.5'>
-        <Label required className='text-xs font-medium'>
+        <Label required className='text-sm font-medium'>
           {t('Error Message')}
         </Label>
         <Textarea
@@ -2730,12 +2718,12 @@ function ReturnErrorEditor(returnErrorEditorProps: ReturnErrorEditorProps) {
           }
           placeholder={t('e.g. This request does not meet access policy')}
           rows={2}
-          className='text-xs'
+          className='text-sm'
         />
       </div>
 
       {draft.simpleMode ? (
-        <p className='text-muted-foreground mt-2 text-xs'>
+        <p className='text-muted-foreground mt-2 text-sm'>
           {t(
             'Simple mode only returns message; status code and error type use system defaults.'
           )}
@@ -2744,7 +2732,7 @@ function ReturnErrorEditor(returnErrorEditorProps: ReturnErrorEditorProps) {
         <>
           <div className='mt-3 grid gap-3 sm:grid-cols-3'>
             <div className='space-y-1'>
-              <label className='text-xs font-medium'>{t('Status Code')}</label>
+              <label className='text-sm font-medium'>{t('Status Code')}</label>
               <Input
                 value={String(draft.statusCode ?? '')}
                 onChange={(e) =>
@@ -2754,11 +2742,11 @@ function ReturnErrorEditor(returnErrorEditorProps: ReturnErrorEditorProps) {
                   )
                 }
                 placeholder='400'
-                className='h-8 text-xs'
+                className='text-sm'
               />
             </div>
             <div className='space-y-1'>
-              <label className='text-xs font-medium'>
+              <label className='text-sm font-medium'>
                 {t('Error Code (optional)')}
               </label>
               <Input
@@ -2770,11 +2758,11 @@ function ReturnErrorEditor(returnErrorEditorProps: ReturnErrorEditorProps) {
                   )
                 }
                 placeholder='forced_bad_request'
-                className='h-8 text-xs'
+                className='text-sm'
               />
             </div>
             <div className='space-y-1'>
-              <label className='text-xs font-medium'>
+              <label className='text-sm font-medium'>
                 {t('Error Type (optional)')}
               </label>
               <Input
@@ -2786,7 +2774,7 @@ function ReturnErrorEditor(returnErrorEditorProps: ReturnErrorEditorProps) {
                   )
                 }
                 placeholder='invalid_request_error'
-                className='h-8 text-xs'
+                className='text-sm'
               />
             </div>
           </div>
@@ -2798,7 +2786,7 @@ function ReturnErrorEditor(returnErrorEditorProps: ReturnErrorEditorProps) {
               type='button'
               variant={draft.skipRetry ? 'default' : 'outline'}
               size='sm'
-              className='h-7 text-xs'
+              className='text-sm'
               onClick={() =>
                 returnErrorEditorProps.updateDraft(
                   returnErrorEditorProps.operationId,
@@ -2812,7 +2800,7 @@ function ReturnErrorEditor(returnErrorEditorProps: ReturnErrorEditorProps) {
               type='button'
               variant={draft.skipRetry ? 'outline' : 'default'}
               size='sm'
-              className='h-7 text-xs'
+              className='text-sm'
               onClick={() =>
                 returnErrorEditorProps.updateDraft(
                   returnErrorEditorProps.operationId,
@@ -2849,7 +2837,7 @@ function ReturnErrorEditor(returnErrorEditorProps: ReturnErrorEditorProps) {
                 type='button'
                 variant='outline'
                 size='sm'
-                className='h-6 text-xs'
+                className='text-sm'
                 onClick={() =>
                   returnErrorEditorProps.updateDraft(
                     returnErrorEditorProps.operationId,
@@ -2907,7 +2895,7 @@ function PruneObjectsEditor(pruneObjectsEditorProps: PruneObjectsEditorProps) {
             type='button'
             variant={draft.simpleMode ? 'default' : 'outline'}
             size='sm'
-            className='h-7 text-xs'
+            className='text-sm'
             onClick={() =>
               pruneObjectsEditorProps.updateDraft(
                 pruneObjectsEditorProps.operationId,
@@ -2921,7 +2909,7 @@ function PruneObjectsEditor(pruneObjectsEditorProps: PruneObjectsEditorProps) {
             type='button'
             variant={draft.simpleMode ? 'outline' : 'default'}
             size='sm'
-            className='h-7 text-xs'
+            className='text-sm'
             onClick={() =>
               pruneObjectsEditorProps.updateDraft(
                 pruneObjectsEditorProps.operationId,
@@ -2935,7 +2923,7 @@ function PruneObjectsEditor(pruneObjectsEditorProps: PruneObjectsEditorProps) {
       </div>
 
       <div className='space-y-1.5'>
-        <label className='text-xs font-medium'>{t('Type (common)')}</label>
+        <label className='text-sm font-medium'>{t('Type (common)')}</label>
         <Input
           value={draft.typeText}
           onChange={(e) =>
@@ -2945,19 +2933,19 @@ function PruneObjectsEditor(pruneObjectsEditorProps: PruneObjectsEditorProps) {
             )
           }
           placeholder='redacted_thinking'
-          className='h-8 text-xs'
+          className='text-sm'
         />
       </div>
 
       {draft.simpleMode ? (
-        <p className='text-muted-foreground mt-2 text-xs'>
+        <p className='text-muted-foreground mt-2 text-sm'>
           {t('Simple mode: prune objects by type, e.g. redacted_thinking.')}
         </p>
       ) : (
         <>
           <div className='mt-3 grid gap-3 sm:grid-cols-2'>
             <div className='space-y-1'>
-              <label className='text-xs font-medium'>{t('Logic')}</label>
+              <label className='text-sm font-medium'>{t('Logic')}</label>
               <Select
                 items={[
                   { value: 'AND', label: t('All Must Match (AND)') },
@@ -2971,7 +2959,7 @@ function PruneObjectsEditor(pruneObjectsEditorProps: PruneObjectsEditorProps) {
                   )
                 }
               >
-                <SelectTrigger className='h-8 text-xs'>
+                <SelectTrigger className='text-sm'>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent alignItemWithTrigger={false}>
@@ -2985,7 +2973,7 @@ function PruneObjectsEditor(pruneObjectsEditorProps: PruneObjectsEditorProps) {
               </Select>
             </div>
             <div className='space-y-1'>
-              <label className='text-xs font-medium'>
+              <label className='text-sm font-medium'>
                 {t('Recursion Strategy')}
               </label>
               <div className='flex gap-1'>
@@ -2993,7 +2981,7 @@ function PruneObjectsEditor(pruneObjectsEditorProps: PruneObjectsEditorProps) {
                   type='button'
                   variant={draft.recursive ? 'default' : 'outline'}
                   size='sm'
-                  className='h-8 text-xs'
+                  className='text-sm'
                   onClick={() =>
                     pruneObjectsEditorProps.updateDraft(
                       pruneObjectsEditorProps.operationId,
@@ -3007,7 +2995,7 @@ function PruneObjectsEditor(pruneObjectsEditorProps: PruneObjectsEditorProps) {
                   type='button'
                   variant={draft.recursive ? 'outline' : 'default'}
                   size='sm'
-                  className='h-8 text-xs'
+                  className='text-sm'
                   onClick={() =>
                     pruneObjectsEditorProps.updateDraft(
                       pruneObjectsEditorProps.operationId,
@@ -3030,19 +3018,19 @@ function PruneObjectsEditor(pruneObjectsEditorProps: PruneObjectsEditorProps) {
                 type='button'
                 variant='outline'
                 size='sm'
-                className='h-7 text-xs'
+                className='text-sm'
                 onClick={() =>
                   pruneObjectsEditorProps.addRule(
                     pruneObjectsEditorProps.operationId
                   )
                 }
               >
-                <Plus className='mr-1 h-3 w-3' />
+                <Plus className='mr-1 size-4.5' />
                 {t('Add Condition')}
               </Button>
             </div>
             {draft.rules.length === 0 ? (
-              <p className='text-muted-foreground text-xs'>
+              <p className='text-muted-foreground text-sm'>
                 {t(
                   'Without additional conditions, only the type above is used for pruning.'
                 )}
@@ -3062,7 +3050,7 @@ function PruneObjectsEditor(pruneObjectsEditorProps: PruneObjectsEditorProps) {
                         type='button'
                         variant='ghost'
                         size='sm'
-                        className='text-destructive hover:text-destructive h-6 text-xs'
+                        className='text-destructive hover:text-destructive text-sm'
                         onClick={() =>
                           pruneObjectsEditorProps.removeRule(
                             pruneObjectsEditorProps.operationId,
@@ -3070,13 +3058,13 @@ function PruneObjectsEditor(pruneObjectsEditorProps: PruneObjectsEditorProps) {
                           )
                         }
                       >
-                        <Trash2 className='mr-1 h-3 w-3' />
+                        <Trash2 className='mr-1 size-4.5' />
                         {t('Delete')}
                       </Button>
                     </div>
                     <div className='grid gap-2 sm:grid-cols-3'>
                       <div className='space-y-0.5'>
-                        <label className='text-xs font-medium'>
+                        <label className='text-sm font-medium'>
                           {t('Field Path')}
                         </label>
                         <Input
@@ -3089,11 +3077,11 @@ function PruneObjectsEditor(pruneObjectsEditorProps: PruneObjectsEditorProps) {
                             )
                           }
                           placeholder='type'
-                          className='h-7 text-xs'
+                          className='text-sm'
                         />
                       </div>
                       <div className='space-y-0.5'>
-                        <label className='text-xs font-medium'>
+                        <label className='text-sm font-medium'>
                           {t('Match Mode')}
                         </label>
                         <Combobox
@@ -3111,11 +3099,11 @@ function PruneObjectsEditor(pruneObjectsEditorProps: PruneObjectsEditorProps) {
                               { mode: v }
                             )
                           }
-                          className='h-7 text-xs'
+                          className='text-sm'
                         />
                       </div>
                       <div className='space-y-0.5'>
-                        <label className='text-xs font-medium'>
+                        <label className='text-sm font-medium'>
                           {t('Match Value (optional)')}
                         </label>
                         <Input
@@ -3129,12 +3117,12 @@ function PruneObjectsEditor(pruneObjectsEditorProps: PruneObjectsEditorProps) {
                             )
                           }
                           placeholder='redacted_thinking'
-                          className='h-7 text-xs'
+                          className='text-sm'
                         />
                       </div>
                     </div>
                     <div className='mt-1.5 flex flex-wrap gap-3'>
-                      <label className='flex items-center gap-1.5 text-xs'>
+                      <label className='flex items-center gap-1.5 text-sm'>
                         <Switch
                           checked={rule.invert}
                           onCheckedChange={(checked) =>
@@ -3147,7 +3135,7 @@ function PruneObjectsEditor(pruneObjectsEditorProps: PruneObjectsEditorProps) {
                         />
                         {t('Invert match')}
                       </label>
-                      <label className='flex items-center gap-1.5 text-xs'>
+                      <label className='flex items-center gap-1.5 text-sm'>
                         <Switch
                           checked={rule.pass_missing_key}
                           onCheckedChange={(checked) =>
@@ -3190,12 +3178,10 @@ function SyncFieldsEditor(syncFieldsEditorProps: SyncFieldsEditorProps) {
   const { t } = useTranslation()
   return (
     <div className='space-y-3'>
-      <label className='text-xs font-medium'>{t('Sync Endpoints')}</label>
+      <label className='text-sm font-medium'>{t('Sync Endpoints')}</label>
       <div className='grid gap-3 sm:grid-cols-2'>
         <div className='space-y-1.5'>
-          <label className='text-xs font-medium'>
-            {t('Source Endpoint')}
-          </label>
+          <label className='text-sm font-medium'>{t('Source Endpoint')}</label>
           <div className='flex gap-2'>
             <Select
               items={SYNC_TARGET_TYPE_OPTIONS.map((o) => ({
@@ -3216,7 +3202,7 @@ function SyncFieldsEditor(syncFieldsEditorProps: SyncFieldsEditorProps) {
                 )
               }
             >
-              <SelectTrigger className='h-8 w-[110px] text-xs'>
+              <SelectTrigger className='w-[110px] text-sm'>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent alignItemWithTrigger={false}>
@@ -3243,14 +3229,12 @@ function SyncFieldsEditor(syncFieldsEditorProps: SyncFieldsEditorProps) {
                 )
               }
               placeholder='session_id'
-              className='h-8 text-xs'
+              className='text-sm'
             />
           </div>
         </div>
         <div className='space-y-1.5'>
-          <label className='text-xs font-medium'>
-            {t('Target Endpoint')}
-          </label>
+          <label className='text-sm font-medium'>{t('Target Endpoint')}</label>
           <div className='flex gap-2'>
             <Select
               items={SYNC_TARGET_TYPE_OPTIONS.map((o) => ({
@@ -3271,7 +3255,7 @@ function SyncFieldsEditor(syncFieldsEditorProps: SyncFieldsEditorProps) {
                 )
               }
             >
-              <SelectTrigger className='h-8 w-[110px] text-xs'>
+              <SelectTrigger className='w-[110px] text-sm'>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent alignItemWithTrigger={false}>
@@ -3298,7 +3282,7 @@ function SyncFieldsEditor(syncFieldsEditorProps: SyncFieldsEditorProps) {
                 )
               }
               placeholder='prompt_cache_key'
-              className='h-8 text-xs'
+              className='text-sm'
             />
           </div>
         </div>
@@ -3321,7 +3305,7 @@ function SyncFieldsEditor(syncFieldsEditorProps: SyncFieldsEditorProps) {
             type='button'
             variant='outline'
             size='sm'
-            className='h-6 text-xs'
+            className='text-sm'
             onClick={() =>
               syncFieldsEditorProps.updateOperation(
                 syncFieldsEditorProps.operationId,

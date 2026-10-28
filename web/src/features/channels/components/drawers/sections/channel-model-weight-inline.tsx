@@ -21,10 +21,9 @@ import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { CHANNEL_MODEL_WEIGHT_OPTION_KEY } from '@/features/system-settings/billing/channel-model-weight-section'
 import { useSystemOptions } from '@/features/system-settings/hooks/use-system-options'
 import { useUpdateOption } from '@/features/system-settings/hooks/use-update-option'
-
-import { CHANNEL_MODEL_WEIGHT_OPTION_KEY } from '@/features/system-settings/billing/channel-model-weight-section'
 
 type Entry = { weight: string; priority: string }
 type ChannelEntry = Record<string, { weight: number; priority: number }>
@@ -57,14 +56,17 @@ export function ChannelModelWeightInline({
     if (!raw) return { enabled: false, channels: {} }
     try {
       const parsed = JSON.parse(raw) as Setting
-      return { enabled: parsed.enabled === true, channels: parsed.channels ?? {} }
+      return {
+        enabled: parsed.enabled === true,
+        channels: parsed.channels ?? {},
+      }
     } catch {
       return { enabled: false, channels: {} }
     }
   }, [options])
 
   const channelEntry: ChannelEntry =
-    channelId == null ? {} : existing.channels[String(channelId)] ?? {}
+    channelId == null ? {} : (existing.channels[String(channelId)] ?? {})
 
   const [draft, setDraft] = useState<Record<string, Entry>>({})
 
@@ -135,7 +137,7 @@ export function ChannelModelWeightInline({
 
   if (channelId == null) {
     return (
-      <p className='text-muted-foreground text-xs'>
+      <p className='text-muted-foreground text-sm'>
         {t('Save the channel before setting per-model routing')}
       </p>
     )
@@ -143,7 +145,7 @@ export function ChannelModelWeightInline({
 
   if (models.length === 0) {
     return (
-      <p className='text-muted-foreground text-xs'>
+      <p className='text-muted-foreground text-sm'>
         {t('Add at least one model to configure per-model routing')}
       </p>
     )
@@ -151,7 +153,7 @@ export function ChannelModelWeightInline({
 
   return (
     <div className='bg-muted/20 space-y-3 rounded-xl border p-3'>
-      <Label className='text-muted-foreground text-xs'>
+      <Label className='text-muted-foreground text-sm'>
         {t('Per-model routing')}
       </Label>
       <div className='space-y-2'>
@@ -159,7 +161,7 @@ export function ChannelModelWeightInline({
           const e = entryFor(model)
           return (
             <div key={model} className='flex flex-wrap items-center gap-2'>
-              <span className='w-44 truncate font-mono text-mono' title={model}>
+              <span className='text-mono w-44 truncate font-mono' title={model}>
                 {model}
               </span>
               <Input
@@ -192,7 +194,7 @@ export function ChannelModelWeightInline({
       >
         {t('Save channel model weight')}
       </Button>
-      <p className='text-muted-foreground text-xs'>
+      <p className='text-muted-foreground text-sm'>
         {t('Per-model weight & priority hint')}
       </p>
     </div>

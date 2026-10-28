@@ -114,9 +114,8 @@ export function DataTableBulkActions<TData>({
             render={
               <Button
                 variant='outline'
-                size='icon'
+                size='icon-sm'
                 onClick={handleEnableAll}
-                className='size-8'
                 aria-label={t('Enable selected channels')}
                 title={t('Enable selected channels')}
               />
@@ -135,9 +134,8 @@ export function DataTableBulkActions<TData>({
             render={
               <Button
                 variant='outline'
-                size='icon'
+                size='icon-sm'
                 onClick={handleDisableAll}
-                className='size-8'
                 aria-label={t('Disable selected channels')}
                 title={t('Disable selected channels')}
               />
@@ -156,9 +154,8 @@ export function DataTableBulkActions<TData>({
             render={
               <Button
                 variant='outline'
-                size='icon'
+                size='icon-sm'
                 onClick={() => setShowTagDialog(true)}
-                className='size-8'
                 aria-label={t('Set tag for selected channels')}
                 title={t('Set tag for selected channels')}
               />
@@ -179,14 +176,13 @@ export function DataTableBulkActions<TData>({
             render={
               <Button
                 variant='destructive'
-                size='icon'
+                size='icon-sm'
                 onClick={() => {
                   if (!canEditSensitive) return
                   setShowDeleteConfirm(true)
                 }}
                 aria-disabled={!canEditSensitive}
                 className={cn(
-                  'size-8',
                   !canEditSensitive && 'cursor-not-allowed opacity-50'
                 )}
                 aria-label={t('Delete selected channels')}

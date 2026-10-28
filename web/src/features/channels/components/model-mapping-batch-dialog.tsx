@@ -1,3 +1,4 @@
+import { ChevronRight } from 'lucide-react'
 /*
 Copyright (C) 2023-2026 QuantumNous
 
@@ -16,8 +17,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
-import { ArrowRight01Icon } from '@hugeicons/core-free-icons'
-import { HugeiconsIcon } from '@hugeicons/react'
 import { useId, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -214,7 +213,7 @@ export function ModelMappingBatchDialog(props: ModelMappingBatchDialogProps) {
           aria-labelledby={`${id}-models`}
           className='flex min-w-0 flex-col gap-3'
         >
-          <h3 id={`${id}-models`} className='text-sm font-semibold'>
+          <h3 id={`${id}-models`} className='text-lg font-semibold'>
             {direction === 'upstream'
               ? t('1. Select upstream models')
               : t('1. Select models users call')}
@@ -270,7 +269,7 @@ export function ModelMappingBatchDialog(props: ModelMappingBatchDialogProps) {
           aria-labelledby={`${id}-naming`}
           className='flex min-w-0 flex-col gap-3'
         >
-          <h3 id={`${id}-naming`} className='text-sm font-semibold'>
+          <h3 id={`${id}-naming`} className='text-lg font-semibold'>
             {direction === 'upstream'
               ? t('2. Set names users call')
               : t('2. Set upstream model names')}
@@ -349,7 +348,7 @@ export function ModelMappingBatchDialog(props: ModelMappingBatchDialogProps) {
             aria-labelledby={`${id}-preview`}
             className='mt-2 flex min-w-0 flex-col gap-3 rounded-lg border p-3'
           >
-            <h3 id={`${id}-preview`} className='text-sm font-semibold'>
+            <h3 id={`${id}-preview`} className='text-lg font-semibold'>
               {t('3. Review mappings')}
             </h3>
             <div className='text-muted-foreground grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] gap-2 text-xs'>
@@ -360,7 +359,7 @@ export function ModelMappingBatchDialog(props: ModelMappingBatchDialogProps) {
             {derivation.pairs.length > 0 && hasRule && (
               <ul
                 aria-label={t('Preview')}
-                className='flex max-h-56 flex-col gap-2 overflow-y-auto font-mono text-mono'
+                className='text-mono flex max-h-56 flex-col gap-2 overflow-y-auto font-mono'
               >
                 {derivation.pairs.map((pair) => (
                   <li
@@ -368,9 +367,8 @@ export function ModelMappingBatchDialog(props: ModelMappingBatchDialogProps) {
                     className='grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-start gap-2'
                   >
                     <span className='min-w-0 wrap-anywhere'>{pair.from}</span>
-                    <HugeiconsIcon
-                      icon={ArrowRight01Icon}
-                      className='size-3.5 shrink-0'
+                    <ChevronRight
+                      className='size-4 shrink-0'
                       aria-hidden='true'
                     />
                     <span className='min-w-0 wrap-anywhere'>{pair.to}</span>
@@ -386,19 +384,19 @@ export function ModelMappingBatchDialog(props: ModelMappingBatchDialogProps) {
               </p>
             )}
             {selected.length === 0 && (
-              <p className='text-muted-foreground text-xs'>
+              <p className='text-muted-foreground text-sm'>
                 {t('Example: users call gpt-4o; upstream receives gpt-4o-all.')}
               </p>
             )}
             {hasRule && derivation.unchanged.length > 0 && (
-              <p className='text-muted-foreground text-xs'>
+              <p className='text-muted-foreground text-sm'>
                 {t('{{count}} model(s) unchanged by the rule were skipped', {
                   count: derivation.unchanged.length,
                 })}
               </p>
             )}
             {hasRule && derivation.conflicts.length > 0 && (
-              <p className='text-warning text-xs'>
+              <p className='text-warning text-sm'>
                 {t(
                   '{{count}} model(s) skipped because another model derives the same request name',
                   { count: derivation.conflicts.length }
@@ -413,10 +411,7 @@ export function ModelMappingBatchDialog(props: ModelMappingBatchDialogProps) {
                 checked={syncModels}
                 onCheckedChange={(checked) => setSyncModels(checked === true)}
               />
-              <FieldLabel
-                htmlFor={`${id}-sync`}
-                className='leading-5 font-normal'
-              >
+              <FieldLabel htmlFor={`${id}-sync`} className='font-normal'>
                 {t(
                   'Publish the request names and remove the raw upstream names from the model list'
                 )}

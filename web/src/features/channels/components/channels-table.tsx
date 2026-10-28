@@ -591,10 +591,10 @@ export function ChannelsTable() {
                     render={
                       <Button
                         variant='ghost'
-                        size='icon'
+                        size='icon-sm'
                         onClick={() => setSensitiveVisible(!sensitiveVisible)}
                         aria-label={sensitiveVisible ? t('Hide') : t('Show')}
-                        className='text-muted-foreground hover:text-foreground size-8'
+                        className='text-muted-foreground hover:text-foreground'
                       />
                     }
                   >
@@ -613,11 +613,11 @@ export function ChannelsTable() {
                     render={
                       <Button
                         variant='ghost'
-                        size='icon'
+                        size='icon-sm'
                         onClick={() => void refetch()}
                         aria-label={t('Refresh')}
                         aria-busy={isFetching}
-                        className='text-muted-foreground hover:text-foreground size-8'
+                        className='text-muted-foreground hover:text-foreground'
                       />
                     }
                   >

@@ -35,7 +35,6 @@ import { ConfirmDialog } from '@/components/confirm-dialog'
 import { BadgeListCell } from '@/components/data-table'
 import { GroupBadge } from '@/components/group-badge'
 import { ProviderBadge } from '@/components/provider-badge'
-import { useTheme } from '@/context/theme-provider'
 import { StatusBadge, type StatusBadgeProps } from '@/components/status-badge'
 import { TableId } from '@/components/table-id'
 import { TruncatedText } from '@/components/truncated-text'
@@ -47,6 +46,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
+import { useTheme } from '@/context/theme-provider'
 import { toIntlLocale } from '@/i18n/languages'
 import {
   formatCurrencyFromUSD,
@@ -69,7 +69,6 @@ import {
   CHANNEL_TYPE_SGLANG,
   MODEL_FETCHABLE_TYPES,
 } from '../constants'
-import { isAdvancedCustomLikeChannelType } from '../lib/advanced-custom'
 import {
   formatRelativeTime,
   formatResponseTime,
@@ -89,6 +88,7 @@ import {
   isTagAggregateRow,
   type TagRow,
 } from '../lib'
+import { isAdvancedCustomLikeChannelType } from '../lib/advanced-custom'
 import { parseUpstreamUpdateMeta } from '../lib/upstream-update-utils'
 import type { Channel } from '../types'
 import { ChannelRowActionsLayoutContext } from './channel-row-actions-context'
@@ -709,8 +709,8 @@ export function useChannelsColumns(
               <div className='flex items-center gap-2'>
                 <Button
                   variant='ghost'
-                  size='sm'
-                  className='h-6 w-6 p-0'
+                  size='icon-xs'
+                  className='p-0'
                   onClick={row.getToggleExpandedHandler()}
                 >
                   {row.getIsExpanded() ? (
@@ -751,7 +751,7 @@ export function useChannelsColumns(
                       <Tooltip>
                         <TooltipTrigger
                           render={
-                            <AlertTriangle className='h-3.5 w-3.5 flex-shrink-0 text-amber-500' />
+                            <AlertTriangle className='text-warning h-4 w-4 flex-shrink-0' />
                           }
                         />
                         <TooltipContent side='top'>
@@ -767,7 +767,7 @@ export function useChannelsColumns(
                       <Tooltip>
                         <TooltipTrigger
                           render={
-                            <SlidersHorizontal className='text-info h-3.5 w-3.5 flex-shrink-0' />
+                            <SlidersHorizontal className='text-info h-4 w-4 flex-shrink-0' />
                           }
                         />
                         <TooltipContent side='top'>
@@ -783,7 +783,7 @@ export function useChannelsColumns(
                     <Tooltip>
                       <TooltipTrigger
                         render={
-                          <span className='text-muted-foreground text-xs' />
+                          <span className='text-muted-foreground text-sm' />
                         }
                       >
                         {truncateText(channel.remark, 40)}
@@ -867,7 +867,7 @@ export function useChannelsColumns(
                         <span className='border-border bg-muted text-primary inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-md border' />
                       }
                     >
-                      <MultiKeyModeIcon className='h-3 w-3' />
+                      <MultiKeyModeIcon className='size-4' />
                     </TooltipTrigger>
                     <TooltipContent side='top'>
                       {multiKeyTooltip}
@@ -896,7 +896,7 @@ export function useChannelsColumns(
                               src={customLogo}
                               alt=''
                               aria-hidden='true'
-                              className='size-[18px] rounded-full object-cover'
+                              className='size-4 rounded-full object-cover'
                             />
                           ) : undefined
                         }
@@ -945,7 +945,7 @@ export function useChannelsColumns(
                           {t('From IO.NET deployment')}
                         </div>
                         {deploymentId && (
-                          <div className='text-muted-foreground font-mono text-mono'>
+                          <div className='text-muted-foreground text-mono font-mono'>
                             {t('Deployment ID')}: {deploymentId}
                           </div>
                         )}
@@ -1118,7 +1118,7 @@ export function useChannelsColumns(
                   label={model}
                   autoColor={model}
                   size='sm'
-                  className='font-mono'
+                  className='text-mono font-mono'
                 />
               ))}
             />
@@ -1266,7 +1266,7 @@ export function useChannelsColumns(
                   }
                 />
                 <TooltipContent side='top'>
-                  <p className='font-mono text-mono'>{fullDate}</p>
+                  <p className='text-mono font-mono'>{fullDate}</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>

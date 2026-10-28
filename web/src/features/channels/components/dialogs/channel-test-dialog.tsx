@@ -922,9 +922,9 @@ function ChannelTestDialogContent({
                 }
               >
                 {isTestingModel ? (
-                  <Loader2 className='size-4 animate-spin' />
+                  <Loader2 className='size-4.5 animate-spin' />
                 ) : (
-                  <Gauge className='size-4' />
+                  <Gauge className='size-4.5' />
                 )}
               </TooltipTrigger>
               <TooltipContent>{t('Test Connection')}</TooltipContent>
@@ -990,7 +990,7 @@ function ChannelTestDialogContent({
                 className='w-full min-w-0'
                 placeholder={t('Auto detect (default)')}
               />
-              <p className='text-muted-foreground text-xs'>
+              <p className='text-muted-foreground text-sm'>
                 {t(
                   'Override the endpoint used for testing. Leave empty to auto detect.'
                 )}
@@ -1009,7 +1009,7 @@ function ChannelTestDialogContent({
                   {effectiveStreamTest ? t('Enabled') : t('Disabled')}
                 </span>
               </div>
-              <p className='text-muted-foreground text-xs'>
+              <p className='text-muted-foreground text-sm'>
                 {t('Enable streaming mode for the test request.')}
               </p>
             </div>
@@ -1019,7 +1019,7 @@ function ChannelTestDialogContent({
             <div className='flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between'>
               <div className='min-w-0 space-y-2'>
                 <p className='text-sm font-medium'>{t('Channel models')}</p>
-                <p className='text-muted-foreground text-xs'>
+                <p className='text-muted-foreground text-sm'>
                   {t('Select models to run batch tests.')}
                 </p>
                 <div className='flex flex-wrap items-center gap-2'>
@@ -1162,10 +1162,8 @@ function TestStatusCell({ result }: { result?: TestResult }) {
   if (result.status === 'testing') {
     return (
       <StatusBadge variant='info' copyable={false}>
-        <Loader2 className='size-3.5 shrink-0 animate-spin' />
-        <span className='min-w-0 truncate leading-normal'>
-          {t('Testing...')}
-        </span>
+        <Loader2 className='size-4 shrink-0 animate-spin' />
+        <span className='min-w-0 truncate'>{t('Testing...')}</span>
       </StatusBadge>
     )
   }
@@ -1246,7 +1244,7 @@ function FailureResultContent({
 
   return (
     <div className='flex min-w-0 items-center gap-2 text-xs whitespace-normal'>
-      <p className='text-muted-foreground line-clamp-2 min-w-0 flex-1 leading-snug wrap-break-word'>
+      <p className='text-muted-foreground line-clamp-2 min-w-0 flex-1 wrap-break-word'>
         {summary}
       </p>
       <div className='flex shrink-0 flex-wrap items-center justify-end gap-1.5'>
@@ -1254,12 +1252,12 @@ function FailureResultContent({
           <Button
             variant='outline'
             size='sm'
-            className='h-7 w-fit px-2 text-xs'
+            className='w-fit px-2 text-sm'
             onClick={() =>
               window.open('/system-settings/billing/model-pricing', '_blank')
             }
           >
-            <Settings className='mr-1 h-3 w-3 shrink-0' />
+            <Settings className='mr-1 size-4.5 shrink-0' />
             {t('Go to Settings')}
           </Button>
         )}
@@ -1267,11 +1265,11 @@ function FailureResultContent({
           <Button
             variant='ghost'
             size='sm'
-            className='h-7 w-fit px-2 text-xs'
+            className='w-fit px-2 text-sm'
             aria-haspopup='dialog'
             onClick={() => onOpenDetails({ model, summary, details })}
           >
-            <Info className='mr-1 h-3 w-3 shrink-0' />
+            <Info className='mr-1 size-4.5 shrink-0' />
             {t('Details')}
           </Button>
         )}
@@ -1320,7 +1318,7 @@ function FailureDetailsSheet({
                 <div className='text-muted-foreground text-xs font-medium'>
                   {t('Failed')}
                 </div>
-                <p className='text-muted-foreground text-sm leading-relaxed wrap-break-word'>
+                <p className='text-muted-foreground text-sm wrap-break-word'>
                   {details.summary}
                 </p>
               </section>
@@ -1328,7 +1326,7 @@ function FailureDetailsSheet({
                 <div className='text-muted-foreground text-xs font-medium'>
                   {t('Details')}
                 </div>
-                <pre className='bg-muted/30 text-muted-foreground m-0 max-w-full rounded-md border p-3 text-xs leading-relaxed wrap-break-word whitespace-pre-wrap'>
+                <pre className='bg-muted/30 text-muted-foreground text-mono m-0 max-w-full rounded-md border p-3 wrap-break-word whitespace-pre-wrap'>
                   {details.details}
                 </pre>
               </section>
@@ -1340,9 +1338,9 @@ function FailureDetailsSheet({
                 onClick={() => copyToClipboard(details.details)}
               >
                 {copiedText === details.details ? (
-                  <Check className='mr-2 h-4 w-4 text-green-600' />
+                  <Check className='text-success mr-2 h-4.5 w-4.5' />
                 ) : (
-                  <Copy className='mr-2 h-4 w-4' />
+                  <Copy className='mr-2 h-4.5 w-4.5' />
                 )}
                 {t('Copy')}
               </Button>

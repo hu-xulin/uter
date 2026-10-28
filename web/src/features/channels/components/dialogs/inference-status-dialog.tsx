@@ -27,6 +27,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
+import { Heading } from '@/design-system'
 import { toIntlLocale } from '@/i18n/languages'
 import {
   ADMIN_PERMISSION_ACTIONS,
@@ -450,7 +451,7 @@ export function InferenceStatusDialog(props: InferenceStatusDialogProps) {
           <dl className='grid grid-cols-2 gap-2 text-sm sm:grid-cols-4'>
             {Object.entries(snapshot.endpoints).map(([path, endpoint]) => (
               <div key={path} className='rounded-md border p-2'>
-                <dt className='font-mono text-mono'>{path}</dt>
+                <dt className='text-mono font-mono'>{path}</dt>
                 <dd
                   className={
                     endpoint.error ? 'text-destructive' : 'text-foreground'
@@ -467,7 +468,9 @@ export function InferenceStatusDialog(props: InferenceStatusDialogProps) {
             ))}
           </dl>
           <section className='space-y-2' aria-label={t('Models')}>
-            <h3 className='font-medium'>{t('Models')}</h3>
+            <Heading variant='group-title' level={3}>
+              {t('Models')}
+            </Heading>
             {snapshot.models.length === 0 && (
               <p className='text-muted-foreground text-sm'>
                 {snapshot.endpoints['/v1/models']?.error
@@ -499,9 +502,11 @@ export function InferenceStatusDialog(props: InferenceStatusDialogProps) {
               className='space-y-2'
               aria-label={group.title}
             >
-              <h3 className='font-medium'>{group.title}</h3>
+              <Heading variant='group-title' level={3}>
+                {group.title}
+              </Heading>
               {group.hint && (
-                <p className='text-muted-foreground text-xs'>{group.hint}</p>
+                <p className='text-muted-foreground text-sm'>{group.hint}</p>
               )}
               <dl className='grid gap-2 sm:grid-cols-2'>
                 {group.rows.map((row) => {
@@ -532,7 +537,7 @@ export function InferenceStatusDialog(props: InferenceStatusDialogProps) {
                         {value}
                       </dd>
                       {row.details && (
-                        <dd className='text-muted-foreground col-span-2 break-all text-xs'>
+                        <dd className='text-muted-foreground col-span-2 text-xs break-all'>
                           {row.details}
                         </dd>
                       )}
