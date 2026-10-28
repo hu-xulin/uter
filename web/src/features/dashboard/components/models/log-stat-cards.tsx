@@ -91,10 +91,12 @@ export function LogStatCards(props: LogStatCardsProps) {
     const timeDiff = (timeRange.end_timestamp - timeRange.start_timestamp) / 60
     setTimeRangeMinutes(timeDiff)
 
-    void (orgId
-      ? getOrgQuotaDates(orgId, buildQueryParams(timeRange, filters))
-      : getUserQuotaDates(buildQueryParams(timeRange, filters), isAdmin)
-    ).then((res) => {
+    void (
+      orgId
+        ? getOrgQuotaDates(orgId, buildQueryParams(timeRange, filters))
+        : getUserQuotaDates(buildQueryParams(timeRange, filters), isAdmin)
+    )
+      .then((res) => {
         if (abortController.signal.aborted) return
         const data = res?.data || []
         setStats(calculateDashboardStats(data))
@@ -163,10 +165,10 @@ export function LogStatCards(props: LogStatCardsProps) {
           } else if (error) {
             valueContent = (
               <>
-                <div className='text-muted-foreground mt-1 text-base leading-tight font-semibold tabular-nums sm:mt-2 sm:text-2xl sm:leading-normal'>
+                <div className='text-muted-foreground mt-1 text-2xl font-semibold tabular-nums sm:mt-2 md:text-3xl'>
                   --
                 </div>
-                <div className='text-muted-foreground/40 mt-1 hidden text-xs md:block'>
+                <div className='text-muted-foreground mt-1 hidden text-sm md:block'>
                   {it.desc}
                 </div>
               </>
@@ -175,12 +177,12 @@ export function LogStatCards(props: LogStatCardsProps) {
             valueContent = (
               <>
                 <div
-                  className='text-foreground mt-1 max-w-full truncate text-base leading-tight font-semibold tabular-nums sm:mt-2 sm:text-2xl sm:leading-normal'
+                  className='text-foreground mt-1 max-w-full truncate text-2xl font-semibold tabular-nums sm:mt-2 md:text-3xl'
                   title={it.fullValue}
                 >
                   {it.value}
                 </div>
-                <div className='text-muted-foreground/60 mt-1 hidden text-xs md:block'>
+                <div className='text-muted-foreground mt-1 hidden text-sm md:block'>
                   {it.desc}
                 </div>
               </>
@@ -204,12 +206,12 @@ export function LogStatCards(props: LogStatCardsProps) {
                 <IconBadge
                   tone={it.iconTone}
                   size='stat'
-                  className='size-4 rounded-sm sm:size-7 sm:rounded-md [&>svg]:size-2.5 sm:[&>svg]:size-3.5'
+                  className='size-4 rounded-sm sm:size-7 sm:rounded-md [&>svg]:size-2.5 sm:[&>svg]:size-4'
                 >
                   <Icon />
                 </IconBadge>
                 <div
-                  className='text-muted-foreground truncate text-xs leading-4 font-medium uppercase sm:text-xs sm:'
+                  className='text-muted-foreground truncate text-sm font-medium'
                   title={it.title}
                 >
                   {it.title}
@@ -221,7 +223,7 @@ export function LogStatCards(props: LogStatCardsProps) {
           )
         })}
       </div>
-      {/*<p className='text-muted-foreground border-t px-3 py-2 text-xs'>*/}
+      {/*<p className='text-muted-foreground border-t px-3 py-2 text-sm'>*/}
       {/*  {t(*/}
       {/*    'Cache usage is recorded only after the upgrade; historical data is not backfilled.'*/}
       {/*  )}*/}

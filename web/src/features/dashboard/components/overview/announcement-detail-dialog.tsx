@@ -21,6 +21,7 @@ import { useTranslation } from 'react-i18next'
 import { Dialog } from '@/components/dialog'
 import { RichContent } from '@/components/rich-content'
 import { ScrollArea } from '@/components/ui/scroll-area'
+import { Heading } from '@/design-system'
 import { formatDateTimeObject } from '@/lib/time'
 
 interface AnnouncementDetailModalProps {
@@ -59,15 +60,17 @@ export function AnnouncementDetailModal({
         <div className='space-y-4'>
           {announcement?.content && (
             <div>
-              <h4 className='mb-2 font-medium'>{t('Content')}</h4>
+              <Heading variant='group-title' level={4} className='mb-2'>
+                {t('Content')}
+              </Heading>
               <RichContent breaks content={announcement.content} />
             </div>
           )}
           {announcement?.extra && (
             <div>
-              <h4 className='mb-2 font-medium'>
+              <Heading variant='group-title' level={4} className='mb-2'>
                 {t('Additional Information')}
-              </h4>
+              </Heading>
               <RichContent
                 breaks
                 content={announcement.extra}

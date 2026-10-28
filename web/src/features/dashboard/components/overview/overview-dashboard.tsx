@@ -48,15 +48,16 @@ import {
 } from '@/components/page-transition'
 import { Button } from '@/components/ui/button'
 import { IconBadge, type IconBadgeTone } from '@/components/ui/icon-badge'
+import { Heading } from '@/design-system'
+import { useSecureVerification } from '@/features/auth/secure-verification'
 import { fetchTokenKey, getApiKeys } from '@/features/keys/api'
 import type { ApiKey } from '@/features/keys/types'
 import { useCopyToClipboard } from '@/hooks/use-copy-to-clipboard'
 import { getUserModels } from '@/lib/api'
 import { handleServerError } from '@/lib/handle-server-error'
-import { AuthOperationError } from '@/lib/secure-verification'
-import { useSecureVerification } from '@/features/auth/secure-verification'
 import { MOTION_TRANSITION } from '@/lib/motion'
 import { ROLE } from '@/lib/roles'
+import { AuthOperationError } from '@/lib/secure-verification'
 import { requireServerSuccess } from '@/lib/server-error-message'
 import { cn } from '@/lib/utils'
 import { useAuthStore } from '@/stores/auth-store'
@@ -199,17 +200,18 @@ function SetupGuideBackdrop(props: { compact?: boolean }) {
       />
       <div
         className={cn(
-          'text-foreground/5 dark:text-foreground/8 pointer-events-none absolute inset-y-0 right-0 hidden overflow-hidden font-mono sm:block',
-          props.compact ? 'w-1/2 opacity-45' : 'w-[58%] opacity-75'
+          // 背景水印是装饰图形而不是文字层级：颜色用实色 foreground，
+          // 淡出交给元素自身的 opacity（原来把 5%/8% 的透明度塞进文字色，
+          // 属规范禁止的 text-*/NN 写法）。
+          'text-foreground pointer-events-none absolute inset-y-0 right-0 hidden overflow-hidden font-mono text-mono sm:block',
+          props.compact ? 'w-1/2 opacity-[0.03]' : 'w-[58%] opacity-[0.05]'
         )}
         aria-hidden='true'
       >
         <pre
           className={cn(
             'absolute right-3 [mask-image:linear-gradient(90deg,transparent_0%,black_30%,black_82%,transparent_100%)] text-right whitespace-pre',
-            props.compact
-              ? '-top-6 text-xs leading-4'
-              : 'top-1 text-xs leading-5'
+            props.compact ? '-top-6 text-xs' : 'top-1 text-xs'
           )}
         >
           {SETUP_GUIDE_CODE_PATTERN}
@@ -241,7 +243,7 @@ function StartStepItem(props: {
       )}
       <span
         className={cn(
-          'bg-background relative z-10 flex size-8 shrink-0 items-center justify-center rounded-lg border shadow-xs',
+          'bg-background relative z-10 flex size-8 shrink-0 items-center justify-center rounded-lg border',
           props.step.completed && 'border-success/30 bg-success/10'
         )}
       >
@@ -253,20 +255,22 @@ function StartStepItem(props: {
 
       <Link
         to={props.step.to}
-        className='bg-background/70 hover:bg-muted/50 focus-visible:ring-ring flex min-w-0 flex-1 items-center justify-between gap-3 rounded-xl border px-3 py-2.5 text-left shadow-xs transition-colors outline-none focus-visible:ring-2'
+        className='bg-background/70 hover:bg-muted/50 focus-visible:ring-ring flex min-w-0 flex-1 items-center justify-between gap-3 rounded-xl border px-3 py-2.5 text-left transition-colors outline-none focus-visible:ring-2'
       >
         <span className='flex min-w-0 items-start gap-2.5'>
           <span className='bg-muted mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-lg'>
-            <Icon className='size-3.5' aria-hidden='true' />
+            <Icon className='size-4' aria-hidden='true' />
           </span>
           <span className='flex min-w-0 flex-col gap-0.5'>
+            {/* 行标题 16/500、副行 14/400——与「账户绑定」行同一套层级。
+                14/12 的组合会让这一列比下面的说明文字还小。 */}
             <span className='flex items-center gap-2 text-sm font-medium'>
-              <span className='text-muted-foreground text-xs tabular-nums'>
+              <span className='text-muted-foreground text-sm tabular-nums'>
                 {props.index + 1}.
               </span>
               <span className='truncate'>{props.step.title}</span>
             </span>
-            <span className='text-muted-foreground line-clamp-1 text-xs'>
+            <span className='text-muted-foreground line-clamp-1 text-sm'>
               {props.step.description}
             </span>
           </span>
@@ -305,10 +309,7 @@ function RequestPreview(props: {
         scope: 'token.key.read',
       })
       if (!proof) return
-      const result = await fetchTokenKey(
-        props.example.keyId,
-        proof.proof_token
-      )
+      const result = await fetchTokenKey(props.example.keyId, proof.proof_token)
       const key = result.success && result.data?.key ? result.data.key : ''
       if (!key) {
         handleServerError(result, t('Failed to copy to clipboard'))
@@ -341,7 +342,7 @@ function RequestPreview(props: {
       initial={shouldReduceMotion ? false : { opacity: 0, y: 10, scale: 0.98 }}
       animate={shouldReduceMotion ? undefined : { opacity: 1, y: 0, scale: 1 }}
       transition={MOTION_TRANSITION.slow}
-      className='bg-background/75 relative overflow-hidden rounded-2xl border p-3 shadow-sm backdrop-blur'
+      className='bg-background/75 relative overflow-hidden rounded-2xl border p-3 backdrop-blur'
     >
       {!shouldReduceMotion && (
         <motion.div
@@ -361,7 +362,7 @@ function RequestPreview(props: {
             <div className='truncate text-sm font-medium'>
               {t('First API request')}
             </div>
-            <div className='text-muted-foreground truncate text-xs'>
+            <div className='text-muted-foreground truncate text-sm'>
               {props.example.ready
                 ? props.example.keyName
                 : t('Create an API key to unlock the real request')}
@@ -372,7 +373,7 @@ function RequestPreview(props: {
           <Button
             variant='outline'
             size='sm'
-            className='h-7 gap-1.5 px-2 text-xs'
+            className='gap-1.5 px-2 text-sm'
             disabled={isCopying}
             onClick={handleCopyRequest}
             aria-label={t('Copy ready-to-run curl')}
@@ -387,7 +388,7 @@ function RequestPreview(props: {
         )}
       </div>
 
-      <div className='bg-foreground/[0.035] my-3 rounded-xl p-3 font-mono text-mono'>
+      <div className='bg-foreground/[0.035] text-mono my-3 rounded-xl p-3 font-mono'>
         <div className='mb-2 flex items-center gap-1.5'>
           <span className='bg-destructive size-2 rounded-full' />
           <span className='bg-warning size-2 rounded-full' />
@@ -419,11 +420,11 @@ function RequestPreview(props: {
                 <IconBadge tone={signal.tone} size='xs'>
                   <Icon />
                 </IconBadge>
-                <span className='truncate text-xs font-medium'>
+                <span className='truncate text-sm font-medium'>
                   {signal.label}
                 </span>
               </span>
-              <span className='text-muted-foreground shrink-0 text-xs'>
+              <span className='text-muted-foreground shrink-0 text-sm'>
                 {signal.value}
               </span>
             </div>
@@ -440,7 +441,8 @@ function QuickActionItem(props: { action: QuickAction }) {
   return (
     <Button
       variant='outline'
-      className='h-auto justify-start rounded-xl px-3 py-3 text-left'
+      size='wrap'
+      className='justify-start rounded-xl py-3 text-left'
       render={<Link to={props.action.to} />}
     >
       <span className='bg-muted flex size-9 shrink-0 items-center justify-center rounded-lg'>
@@ -450,7 +452,7 @@ function QuickActionItem(props: { action: QuickAction }) {
         <span className='truncate text-sm font-medium'>
           {props.action.title}
         </span>
-        <span className='text-muted-foreground line-clamp-2 text-xs leading-relaxed'>
+        <span className='text-muted-foreground line-clamp-2 text-sm'>
           {props.action.description}
         </span>
       </span>
@@ -465,7 +467,7 @@ function CompactQuickAction(props: { action: QuickAction }) {
     <Button
       variant='outline'
       size='sm'
-      className='bg-background/70 h-8 min-w-24 gap-1.5 px-2.5'
+      className='bg-background/70 min-w-24 gap-1.5 px-2.5'
       render={<Link to={props.action.to} />}
     >
       <Icon data-icon='inline-start' />
@@ -649,8 +651,8 @@ export function OverviewDashboard() {
           <Button
             ref={setupGuideToggleRef}
             variant='ghost'
-            size='sm'
-            className='text-muted-foreground hover:text-foreground h-auto min-h-7 max-w-[60vw] whitespace-normal'
+            size='wrap'
+            className='text-muted-foreground hover:text-foreground max-w-[60vw]'
             aria-expanded={setupGuideExpanded}
             aria-controls={setupGuideId}
             onClick={handleSetupGuideToggle}
@@ -664,7 +666,7 @@ export function OverviewDashboard() {
           <div id={setupGuideId} hidden={!setupGuideExpanded}>
             {setupGuideExpanded && (
               <CardStaggerContainer className='grid items-stretch gap-4 xl:grid-cols-[minmax(0,1fr)_22rem]'>
-                <CardStaggerItem className='bg-card h-full overflow-hidden rounded-2xl border shadow-xs'>
+                <CardStaggerItem className='bg-card h-full overflow-hidden rounded-2xl border'>
                   <div className='relative h-full overflow-hidden p-4 sm:p-5'>
                     <SetupGuideBackdrop />
                     <div className='relative grid gap-5 lg:grid-cols-[minmax(0,1fr)_21rem]'>
@@ -673,15 +675,15 @@ export function OverviewDashboard() {
                           <div className='flex max-w-2xl flex-col gap-1'>
                             <div className='text-muted-foreground flex items-center gap-2 text-xs font-medium uppercase'>
                               <ListChecks
-                                className='size-3.5'
+                                className='size-4'
                                 aria-hidden='true'
                               />
                               {t('Get started')}
                             </div>
-                            <h3 className='text-xl font-semibold sm:text-2xl'>
+                            <Heading variant='card-title' level={3}>
                               {t('Build on your API gateway in minutes')}
-                            </h3>
-                            <p className='text-muted-foreground max-w-xl text-sm leading-relaxed'>
+                            </Heading>
+                            <p className='text-muted-foreground max-w-xl text-sm'>
                               {t(
                                 'A focused home for keys, balance, routing, and service health.'
                               )}
@@ -725,15 +727,15 @@ export function OverviewDashboard() {
                   </div>
                 </CardStaggerItem>
 
-                <CardStaggerItem className='bg-card h-full rounded-2xl border p-4 shadow-xs sm:p-5'>
+                <CardStaggerItem className='bg-card h-full rounded-2xl border p-4 sm:p-5'>
                   <div className='flex h-full flex-col gap-4'>
                     <div className='flex flex-col gap-1'>
                       <div className='text-muted-foreground text-xs font-medium uppercase'>
                         {t('Recommended actions')}
                       </div>
-                      <h3 className='text-lg font-semibold'>
+                      <Heading variant='card-title' level={3}>
                         {t('Keep the platform ready')}
-                      </h3>
+                      </Heading>
                     </div>
                     <div className='grid gap-2'>
                       {visibleQuickActions.map((action) => (
@@ -747,12 +749,12 @@ export function OverviewDashboard() {
           </div>
           {!setupGuideExpanded && !setupComplete && (
             <CardStaggerContainer>
-              <CardStaggerItem className='bg-card overflow-hidden rounded-2xl border shadow-xs'>
+              <CardStaggerItem className='bg-card overflow-hidden rounded-2xl border'>
                 <div className='relative overflow-hidden px-4 py-3 sm:px-5'>
                   <SetupGuideBackdrop compact />
                   <div className='relative flex flex-wrap items-center justify-between gap-3'>
                     <div className='flex min-w-0 items-center gap-3'>
-                      <span className='bg-background/70 flex size-9 shrink-0 items-center justify-center rounded-xl border shadow-xs'>
+                      <span className='bg-background/70 flex size-9 shrink-0 items-center justify-center rounded-xl border'>
                         <Check
                           className='text-success size-4'
                           aria-hidden='true'
@@ -760,9 +762,9 @@ export function OverviewDashboard() {
                       </span>
                       <div className='min-w-0'>
                         <div className='flex items-center gap-2'>
-                          <h3 className='truncate text-lg font-semibold'>
+                          <Heading variant='card-title' level={3} truncate>
                             {t('Setup guide')}
-                          </h3>
+                          </Heading>
                           <span className='text-muted-foreground bg-background/60 rounded-md border px-2 py-0.5 text-xs'>
                             {t('Setup progress: {{completed}}/{{total}}', {
                               completed: completedStepCount,
@@ -770,7 +772,7 @@ export function OverviewDashboard() {
                             })}
                           </span>
                         </div>
-                        <p className='text-muted-foreground line-clamp-1 text-xs'>
+                        <p className='text-muted-foreground line-clamp-1 text-sm'>
                           {t('Setup guide is collapsed. Expand it anytime.')}
                         </p>
                       </div>
@@ -786,7 +788,7 @@ export function OverviewDashboard() {
                       <Button
                         variant='outline'
                         size='sm'
-                        className='bg-background/70 h-8 min-w-28'
+                        className='bg-background/70 min-w-28'
                         aria-expanded={setupGuideExpanded}
                         aria-controls={setupGuideId}
                         onClick={handleSetupGuideToggle}

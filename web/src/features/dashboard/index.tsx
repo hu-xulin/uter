@@ -34,12 +34,12 @@ import {
 import { ROLE } from '@/lib/roles'
 import { cn } from '@/lib/utils'
 import { useAuthStore } from '@/stores/auth-store'
-import { useDashboardScope } from './hooks/use-dashboard-scope'
 
 import { ModelsChartPreferences } from './components/models/models-chart-preferences'
 import { ModelsFilter } from './components/models/models-filter-dialog'
 import { OverviewDashboard } from './components/overview/overview-dashboard'
 import { DEFAULT_TIME_GRANULARITY } from './constants'
+import { useDashboardScope } from './hooks/use-dashboard-scope'
 import {
   buildDefaultDashboardFilters,
   getDefaultDays,
@@ -256,7 +256,8 @@ export function Dashboard() {
     () =>
       DASHBOARD_SECTION_IDS.filter(
         (section) =>
-          section !== 'overview' && (section !== 'users' || isAdmin || isOrgManager)
+          section !== 'overview' &&
+          (section !== 'users' || isAdmin || isOrgManager)
       ),
     [isAdmin, isOrgManager]
   )
@@ -294,14 +295,14 @@ export function Dashboard() {
             render={
               <Button
                 variant='ghost'
-                size='icon'
+                size='icon-sm'
                 onClick={() => setFlowSensitiveVisible((prev) => !prev)}
                 aria-label={
                   flowSensitiveVisible
                     ? t('Hide sensitive data')
                     : t('Show sensitive data')
                 }
-                className='text-muted-foreground hover:text-foreground size-8'
+                className='text-muted-foreground hover:text-foreground'
               />
             }
           >

@@ -34,7 +34,7 @@ import type {
 } from '@/features/dashboard/types'
 import { useThemeRadiusPx } from '@/lib/theme-radius'
 import type { TimeGranularity } from '@/lib/time'
-import { useChartTheme } from '@/lib/use-chart-theme'
+import { useChartAxisColors, useChartTheme } from '@/lib/use-chart-theme'
 import { VCHART_OPTION } from '@/lib/vchart'
 
 interface ConsumptionDistributionChartProps {
@@ -57,6 +57,7 @@ export function ConsumptionDistributionChart(
 ) {
   const { t } = useTranslation()
   const { resolvedTheme, themeReady } = useChartTheme()
+  const { surfaceColor } = useChartAxisColors()
   const { customization } = useThemeCustomization()
   const chartRadius = useThemeRadiusPx(
     '--radius-md',
@@ -77,9 +78,10 @@ export function ConsumptionDistributionChart(
         props.loading ? [] : props.data,
         timeGranularity,
         t,
-        chartRadius
+        chartRadius,
+        surfaceColor
       ),
-    [props.data, props.loading, timeGranularity, t, chartRadius]
+    [props.data, props.loading, timeGranularity, t, chartRadius, surfaceColor]
   )
   const spec = chartType === 'bar' ? chartData.spec_line : chartData.spec_area
   const specType = typeof spec?.type === 'string' ? spec.type : chartType
@@ -100,7 +102,10 @@ export function ConsumptionDistributionChart(
             <WalletCards />
           </IconBadge>
           <div className='text-lg font-semibold'>{t('Quota Distribution')}</div>
-          <span className='text-muted-foreground text-xs'>
+          {/* 卡片标题旁的汇总值：14px（body-sm）。规范 §2.3 规定
+              「标题 + 统计值」这类同级补充信息不得降到 12px caption —— 12px
+              只给不含数值的短说明。 */}
+          <span className='text-muted-foreground text-sm'>
             {t('Total:')} {chartData.totalQuotaDisplay}
           </span>
         </div>
@@ -115,11 +120,11 @@ export function ConsumptionDistributionChart(
                 onClick={() => setChartType(item.value)}
                 className={`inline-flex shrink-0 items-center gap-1.5 rounded-md px-3 text-sm font-medium transition-colors ${
                   chartType === item.value
-                    ? 'bg-background text-foreground shadow-sm'
+                    ? 'bg-background text-foreground'
                     : 'text-muted-foreground hover:text-foreground'
                 }`}
               >
-                <Icon className='size-3.5' />
+                <Icon className='size-4' />
                 {t(item.labelKey)}
               </button>
             )

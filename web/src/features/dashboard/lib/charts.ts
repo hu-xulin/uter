@@ -18,6 +18,11 @@ For commercial licensing, please contact support@uter.ai
 */
 import { dataScheme as vchartDefaultDataScheme } from '@visactor/vchart/esm/theme/color-scheme/builtin/default'
 
+import {
+  CHART_OTHER_SERIES_COLOR,
+  CATEGORICAL_CHART_PALETTE,
+} from '@/design-system/tokens/brand-colors'
+import { CHART_LABEL_FONT_SIZE } from '@/design-system/tokens/chart-typography'
 import { MAX_CHART_TREND_POINTS } from '@/features/dashboard/constants'
 import type {
   QuotaDataItem,
@@ -26,6 +31,7 @@ import type {
 } from '@/features/dashboard/types'
 import { getCurrencyDisplay } from '@/lib/currency'
 import { formatChartTime, type TimeGranularity } from '@/lib/time'
+import { chartLegendItemStyle } from '@/lib/use-chart-theme'
 
 type TFunction = (key: string) => string
 type TooltipLineItem = {
@@ -37,6 +43,22 @@ type TooltipLineItem = {
   shapeFill?: string
   shapeStroke?: string
   shapeSize?: number
+}
+
+/**
+ * 图表图例配置：图例项几乎都是模型 ID（`sf-qwen3-32b`、`claude-fable-5`）
+ * 与分组名，属于机器可读标识，统一用等宽字形。
+ *
+ * VChart 把图例文字画进 <canvas>，不继承 CSS 字体栈，字体必须显式下发；
+ * `chartLegendItemStyle()` 在运行时读 `--font-mono`（见 use-chart-theme.ts）。
+ */
+function monoLegend(extra: Record<string, unknown> = {}) {
+  return {
+    visible: true,
+    selectMode: 'single',
+    item: chartLegendItemStyle(),
+    ...extra,
+  }
 }
 
 export function getDashboardChartColors(domainLength: number): string[] {
@@ -71,7 +93,13 @@ export function processChartData(
   data: QuotaDataItem[],
   timeGranularity: TimeGranularity = 'day',
   t?: TFunction,
-  chartCornerRadius?: number
+  chartCornerRadius?: number,
+  /**
+   * 悬停/选中时的切片描边色。语义是「在图表底色上勾出轮廓」，所以由调用方
+   * 传入解析后的 `--background`。纯函数读不到 CSS 变量，历史上这里写死
+   * `'#000'` —— 深色模式下等于看不见。缺省透明 = 不描边，不会画出错误的边。
+   */
+  sliceOutlineColor = 'transparent'
 ): ProcessedChartData {
   const tt: TFunction = t ?? ((x) => x)
   const otherLabel = tt('Other')
@@ -172,7 +200,7 @@ export function processChartData(
         yField: 'Usage',
         seriesField: 'Model',
         stack: true,
-        legends: { visible: true, selectMode: 'single' },
+        legends: monoLegend(),
       },
       spec_area: {
         type: 'area',
@@ -181,7 +209,7 @@ export function processChartData(
         yField: 'Usage',
         seriesField: 'Model',
         stack: true,
-        legends: { visible: true, selectMode: 'single' },
+        legends: monoLegend(),
       },
       spec_model_line: {
         type: 'area',
@@ -189,7 +217,7 @@ export function processChartData(
         xField: 'Time',
         yField: 'Count',
         seriesField: 'Model',
-        legends: { visible: true, selectMode: 'single' },
+        legends: monoLegend(),
         title: {
           visible: true,
           text: tt('Call Trend'),
@@ -201,7 +229,7 @@ export function processChartData(
         xField: 'Model',
         yField: 'Count',
         seriesField: 'Model',
-        legends: { visible: true, selectMode: 'single' },
+        legends: monoLegend(),
         title: {
           visible: true,
           text: tt('Call Count Ranking'),
@@ -270,7 +298,7 @@ export function processChartData(
   const modelColorRange = getDashboardChartColors(modelColorDomain.length)
   const otherColor = modelColorRange[modelColorDomain.indexOf(otherLabel)]
   const otherTooltipColor =
-    typeof otherColor === 'string' ? otherColor : '#FF8A00'
+    typeof otherColor === 'string' ? otherColor : CHART_OTHER_SERIES_COLOR
   const modelColor = {
     type: 'ordinal',
     domain: modelColorDomain,
@@ -465,15 +493,23 @@ export function processChartData(
         style:
           chartCornerRadius == null ? {} : { cornerRadius: chartCornerRadius },
         state: {
-          hover: { outerRadius: 0.85, stroke: '#000', lineWidth: 1 },
-          selected: { outerRadius: 0.85, stroke: '#000', lineWidth: 1 },
+          hover: {
+            outerRadius: 0.85,
+            stroke: sliceOutlineColor,
+            lineWidth: 1,
+          },
+          selected: {
+            outerRadius: 0.85,
+            stroke: sliceOutlineColor,
+            lineWidth: 1,
+          },
         },
       },
       title: {
         visible: true,
         text: tt('Call Count Distribution'),
       },
-      legends: { visible: true, orient: 'left' },
+      legends: monoLegend({ orient: 'left' }),
       label: { visible: true },
       color: modelColor,
       tooltip: {
@@ -497,11 +533,11 @@ export function processChartData(
       yField: 'Usage',
       seriesField: 'Model',
       stack: true,
-      legends: { visible: true, selectMode: 'single' },
+      legends: monoLegend(),
       color: modelColor,
       bar: {
         state: {
-          hover: { stroke: '#000', lineWidth: 1 },
+          hover: { stroke: sliceOutlineColor, lineWidth: 1 },
         },
       },
       tooltip: {
@@ -535,7 +571,7 @@ export function processChartData(
       yField: 'Usage',
       seriesField: 'Model',
       stack: false,
-      legends: { visible: true, selectMode: 'single' },
+      legends: monoLegend(),
       color: modelColor,
       tooltip: {
         mark: {
@@ -583,7 +619,7 @@ export function processChartData(
       yField: 'Count',
       seriesField: 'Model',
       stack: false,
-      legends: { visible: true, selectMode: 'single' },
+      legends: monoLegend(),
       color: modelColor,
       title: {
         visible: true,
@@ -660,7 +696,7 @@ export function processChartData(
       xField: 'Model',
       yField: 'Count',
       seriesField: 'Model',
-      legends: { visible: true, selectMode: 'single' },
+      legends: monoLegend(),
       color: modelColor,
       title: {
         visible: true,
@@ -668,7 +704,7 @@ export function processChartData(
       },
       bar: {
         state: {
-          hover: { stroke: '#000', lineWidth: 1 },
+          hover: { stroke: sliceOutlineColor, lineWidth: 1 },
         },
       },
       tooltip: {
@@ -690,24 +726,20 @@ export function processChartData(
   }
 }
 
-const USER_COLORS = [
-  '#5B8FF9',
-  '#5AD8A6',
-  '#F6BD16',
-  '#E8684A',
-  '#6DC8EC',
-  '#9270CA',
-  '#FF9D4D',
-  '#269A99',
-  '#FF99C3',
-  '#5D7092',
-]
+/**
+ * 多序列分类调色板。取自 `design-system/tokens/brand-colors` 的唯一定义 ——
+ * 语义层只有 `chart-1…5` 五个槽位，一屏要区分十几个用户 / 模型时不够用，
+ * 这类「彼此可辨、不带成败含义」的分类色集中登记在品牌色模块里。
+ */
+const USER_COLORS = CATEGORICAL_CHART_PALETTE
 
 export function processUserChartData(
   data: QuotaDataItem[],
   timeGranularity: TimeGranularity = 'day',
   t?: TFunction,
-  limit = 10
+  limit = 10,
+  /** 见 `processChartData` 的同名参数。 */
+  sliceOutlineColor = 'transparent'
 ): ProcessedUserChartData {
   const tt: TFunction = t ?? ((x) => x)
   const { config } = getCurrencyDisplay()
@@ -743,7 +775,7 @@ export function processUserChartData(
         text: tt('User Consumption Trend'),
         subtext: tt('No data available'),
       },
-      legends: { visible: true, selectMode: 'single' },
+      legends: monoLegend(),
       color: { type: 'ordinal', range: USER_COLORS },
       point: { visible: false },
       background: { fill: 'transparent' },
@@ -759,9 +791,7 @@ export function processUserChartData(
     userQuotaTotal.set(username, prev + (Number(item.quota) || 0))
   })
 
-  const sorted = [...userQuotaTotal.entries()].sort(
-    (a, b) => b[1] - a[1]
-  )
+  const sorted = [...userQuotaTotal.entries()].sort((a, b) => b[1] - a[1])
   const topUsers = sorted.slice(0, limit).map(([u]) => u)
   const topUserSet = new Set(topUsers)
   const totalQuota = sorted.slice(0, limit).reduce((s, [, q]) => s + q, 0)
@@ -831,13 +861,13 @@ export function processUserChartData(
       },
       legends: { visible: false },
       bar: {
-        state: { hover: { stroke: '#000', lineWidth: 1 } },
+        state: { hover: { stroke: sliceOutlineColor, lineWidth: 1 } },
       },
       label: {
         visible: true,
         position: 'outside',
         formatMethod: (value: number) => formatVal(value),
-        style: { fontSize: 11 },
+        style: { fontSize: CHART_LABEL_FONT_SIZE },
       },
       axes: [
         { orient: 'left', type: 'band' },
@@ -885,7 +915,7 @@ export function processUserChartData(
         text: tt('User Consumption Trend'),
         subtext: `${tt('Total:')} ${formatVal(totalQuota)}`,
       },
-      legends: { visible: true, selectMode: 'single' },
+      legends: monoLegend(),
       axes: [
         { orient: 'bottom', type: 'band' },
         {

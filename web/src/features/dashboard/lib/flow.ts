@@ -16,6 +16,12 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
+import {
+  CHART_FALLBACK_SERIES_COLOR,
+  CHART_NO_THEME_STROKE_COLOR,
+  CHART_NO_THEME_TEXT_COLOR,
+} from '@/design-system/tokens/brand-colors'
+import { CHART_LABEL_FONT_SIZE } from '@/design-system/tokens/chart-typography'
 import type {
   DashboardFlowGraph,
   DashboardFlowLink,
@@ -98,11 +104,13 @@ const DEFAULT_FLOW_SANKEY_LABELS: FlowSankeyLabels = {
   share: 'Share',
 }
 
-const DEFAULT_FLOW_CHART_COLOR = '#1664FF'
+// 兜底色集中声明在 `design-system/tokens/brand-colors`：
+// 正常路径下颜色都由调用方从 Token 解析后传入，这几个只在无主题态生效。
+const DEFAULT_FLOW_CHART_COLOR = CHART_FALLBACK_SERIES_COLOR
 
 // Fallback when the caller does not pass the theme's text color.
-const DEFAULT_FLOW_LABEL_COLOR = '#475569'
-const DEFAULT_FLOW_ACTIVE_STROKE = 'rgba(15, 23, 42, 0.7)'
+const DEFAULT_FLOW_LABEL_COLOR = CHART_NO_THEME_TEXT_COLOR
+const DEFAULT_FLOW_ACTIVE_STROKE = CHART_NO_THEME_STROKE_COLOR
 
 const FLOW_NODE_KINDS: readonly FlowNodeKind[] = [
   'user',
@@ -1119,6 +1127,19 @@ function tooltipMetricLines(
   ]
 }
 
+/**
+ * 把已解析的颜色降不透明度，派生同色相的浅描边。
+ *
+ * 桑基图默认节点描边原本写死 `rgba(148, 163, 184, 0.45)`（slate-400），
+ * 换主题预设后仍然偏冷。改成从调用方传入的 `--foreground` 派生：
+ * 同一个色相、只降不透明度，深浅模式与预设都会自动跟随。
+ */
+function withAlpha(color: string, alpha: number): string {
+  const match = /^rgba?\(\s*([\d.]+)[,\s]+([\d.]+)[,\s]+([\d.]+)/.exec(color)
+  if (!match) return color
+  return `rgba(${match[1]}, ${match[2]}, ${match[3]}, ${alpha})`
+}
+
 export function buildFlowSankeySpec(
   flow: DashboardFlowGraph,
   title: string,
@@ -1220,7 +1241,7 @@ export function buildFlowSankeySpec(
       interactive: false,
       style: {
         fill: labelColor,
-        fontSize: 11,
+        fontSize: CHART_LABEL_FONT_SIZE,
         fontWeight: 600,
       },
     },
@@ -1237,7 +1258,7 @@ export function buildFlowSankeySpec(
         stroke: (datum: Record<string, unknown>) =>
           sankeyDatumFlag(datum, 'highlighted')
             ? activeStroke
-            : 'rgba(148, 163, 184, 0.45)',
+            : withAlpha(labelColor, 0.28),
         lineWidth: (datum: Record<string, unknown>) =>
           sankeyDatumFlag(datum, 'highlighted') ? 1.5 : 1,
         cursor: 'pointer',

@@ -53,14 +53,14 @@ export function ApiInfoItemComponent(props: ApiInfoItemProps) {
 
         <div className='flex min-w-0 flex-1 flex-col gap-0.5'>
           <div className='flex items-baseline gap-2'>
-            <span className='font-mono text-mono font-semibold'>
+            <span className='text-mono font-mono font-semibold'>
               {item.route}
             </span>
-            <span className='text-muted-foreground/60 hidden truncate text-xs md:inline'>
+            <span className='text-muted-foreground hidden truncate text-xs md:inline'>
               {item.description}
             </span>
           </div>
-          <span className='text-muted-foreground/40 truncate font-mono text-mono'>
+          <span className='text-muted-foreground text-mono truncate font-mono'>
             {item.url}
           </span>
         </div>
@@ -95,25 +95,23 @@ export function ApiInfoItemComponent(props: ApiInfoItemProps) {
         <div className='flex items-center gap-0.5'>
           <Button
             variant='ghost'
-            size='sm'
+            size='icon-sm'
             onClick={() => props.onTest(item.url)}
             disabled={status.testing}
-            className='size-7 p-0'
+            className='p-0'
             title={t('Test Latency')}
           >
-            <Zap
-              className={cn('size-3.5', status.testing && 'animate-pulse')}
-            />
+            <Zap className={cn('size-4', status.testing && 'animate-pulse')} />
           </Button>
 
           <Button
             variant='ghost'
-            size='sm'
+            size='icon-sm'
             onClick={() => openExternalSpeedTest(item.url)}
-            className='hidden size-7 p-0 sm:inline-flex'
+            className='hidden p-0 sm:inline-flex'
             title={t('External Speed Test')}
           >
-            <Gauge className='size-3.5' />
+            <Gauge className='size-4.5' />
           </Button>
 
           <CopyButton
@@ -121,18 +119,18 @@ export function ApiInfoItemComponent(props: ApiInfoItemProps) {
             variant='ghost'
             size='sm'
             className='size-7 p-0'
-            iconClassName='size-3.5'
+            iconClassName='size-4'
             tooltip={t('Copy URL')}
             aria-label={t('Copy URL')}
           />
 
           <Button
             variant='ghost'
-            size='sm'
-            className='hidden size-7 p-0 sm:inline-flex'
+            size='icon-sm'
+            className='hidden p-0 sm:inline-flex'
             title={t('Open in New Tab')}
             render={<a href={item.url} target='_blank' rel='noreferrer' />}
-           />
+          />
         </div>
       </div>
     </div>
