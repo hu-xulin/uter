@@ -122,7 +122,7 @@ export function DashboardSection({ defaultValues }: DashboardSectionProps) {
             )}
           />
 
-          <div className='grid gap-6 sm:grid-cols-2'>
+          <div className='flex flex-col gap-6'>
             <FormField
               control={form.control}
               name='DataExportInterval'
@@ -130,7 +130,8 @@ export function DashboardSection({ defaultValues }: DashboardSectionProps) {
                 <FormItem>
                   <FormLabel>{t('Refresh interval (minutes)')}</FormLabel>
                   <FormControl>
-                    <Input autoComplete='off'
+                    <Input
+                      autoComplete='off'
                       type='number'
                       min={1}
                       max={1440}

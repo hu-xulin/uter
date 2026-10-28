@@ -294,7 +294,7 @@ export function RuleEditorDialog(props: Props) {
           />
         </div>
 
-        <div className='grid gap-3 sm:grid-cols-2'>
+        <div className='flex flex-col gap-3'>
           <div className='grid gap-1.5'>
             <Label required>{t('Model Regex (one per line)')}</Label>
             <Textarea
@@ -336,7 +336,7 @@ export function RuleEditorDialog(props: Props) {
           </NativeSelect>
           <p
             id='rule-session-mode-description'
-            className='text-muted-foreground text-xs'
+            className='text-muted-foreground text-sm'
           >
             {t('Global default: {{mode}}', {
               mode: policyLabel(t, props.globalSessionMode || 'prefer'),
@@ -358,11 +358,11 @@ export function RuleEditorDialog(props: Props) {
                 setKeySources((prev) => [...prev, createKeySourceRow()])
               }
             >
-              <Plus className='mr-1 h-3 w-3' />
+              <Plus className='mr-1 size-4.5' />
               {t('Add')}
             </Button>
           </div>
-          <p className='text-muted-foreground mb-2 text-xs'>
+          <p className='text-muted-foreground mb-2 text-sm'>
             {t('Common Keys')}: {CONTEXT_KEY_PRESETS.join(', ')}
           </p>
           <div className='space-y-2'>
@@ -427,7 +427,7 @@ export function RuleEditorDialog(props: Props) {
                     setKeySources((prev) => prev.filter((_, i) => i !== idx))
                   }
                 >
-                  <Trash2 className='h-4 w-4' />
+                  <Trash2 className='h-4.5 w-4.5' />
                 </Button>
               </div>
             ))}
@@ -459,7 +459,7 @@ export function RuleEditorDialog(props: Props) {
               />
             </div>
 
-            <div className='grid gap-3 sm:grid-cols-2'>
+            <div className='flex flex-col gap-3'>
               <div className='grid gap-1.5'>
                 <Label>{t('Value Regex')}</Label>
                 <Input
@@ -507,7 +507,7 @@ export function RuleEditorDialog(props: Props) {
               />
             </div>
 
-            <div className='grid gap-3 sm:grid-cols-3'>
+            <div className='flex flex-col gap-3'>
               <SettingsSwitchField
                 checked={form.watch('include_using_group')}
                 onCheckedChange={(v) => form.setValue('include_using_group', v)}

@@ -235,7 +235,7 @@ export function FAQSection({ enabled, data }: FAQSectionProps) {
         <div className='flex flex-wrap items-center justify-between gap-2'>
           <div className='flex flex-wrap items-center gap-2'>
             <Button onClick={handleAdd} size='sm'>
-              <Plus className='mr-2 h-4 w-4' />
+              <Plus className='mr-2 h-4.5 w-4.5' />
               {t('Add FAQ')}
             </Button>
             <Button
@@ -244,7 +244,7 @@ export function FAQSection({ enabled, data }: FAQSectionProps) {
               variant='destructive'
               disabled={selectedIds.length === 0}
             >
-              <Trash2 className='mr-2 h-4 w-4' />
+              <Trash2 className='mr-2 h-4.5 w-4.5' />
               {t('Delete (')}
               {selectedIds.length})
             </Button>
@@ -254,7 +254,7 @@ export function FAQSection({ enabled, data }: FAQSectionProps) {
               variant='secondary'
               disabled={!hasChanges || updateOption.isPending}
             >
-              <Save className='mr-2 h-4 w-4' />
+              <Save className='mr-2 h-4.5 w-4.5' />
               {updateOption.isPending ? t('Saving...') : t('Save Settings')}
             </Button>
           </div>
@@ -262,6 +262,7 @@ export function FAQSection({ enabled, data }: FAQSectionProps) {
             checked={isEnabled}
             onCheckedChange={handleToggleEnabled}
             label={t('Enabled')}
+            labelTier='field'
             className='py-0'
           />
         </div>
@@ -356,7 +357,8 @@ export function FAQSection({ enabled, data }: FAQSectionProps) {
                 <FormItem>
                   <FormLabel>{t('Question')}</FormLabel>
                   <FormControl>
-                    <Input autoComplete='off'
+                    <Input
+                      autoComplete='off'
                       placeholder={t('How to reset my quota?')}
                       {...field}
                     />

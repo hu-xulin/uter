@@ -224,7 +224,10 @@ function AffinitySettings() {
                   <div key={mode} className='rounded-lg border'>
                     <Label
                       htmlFor={`global-session-${mode}`}
-                      className='hover:bg-muted/30 flex h-full cursor-pointer items-center gap-3 rounded-lg px-4 py-3 font-normal'
+                      // 选项文字走 label 档（14/500），不是字段标题：
+                      // 上面的「Session behavior」才是这一组的字段标签（16/600）。
+                      tier='default'
+                      className='hover:bg-muted/30 flex h-full cursor-pointer items-center gap-3 rounded-lg px-4 py-3'
                     >
                       <RadioGroupItem
                         id={`global-session-${mode}`}
@@ -305,7 +308,7 @@ function AffinitySettings() {
           keepMounted
         >
           <div className='space-y-4'>
-            <div className='grid gap-4 sm:grid-cols-2'>
+            <div className='flex flex-col gap-4'>
               {(
                 [
                   {

@@ -128,7 +128,7 @@ export function SettingsPageFormActions(props: SettingsPageFormActionsProps) {
           onClick={props.onReset}
           disabled={props.isResetDisabled || props.isSaving}
         >
-          <RotateCcw data-icon='inline-start' />
+          <RotateCcw data-icon='inline-start' className='size-4' />
           <span>{t(props.resetLabel ?? 'Reset')}</span>
         </Button>
       )}
@@ -139,7 +139,7 @@ export function SettingsPageFormActions(props: SettingsPageFormActionsProps) {
         onClick={props.onSave}
         disabled={props.isSaving || props.isSaveDisabled}
       >
-        <Save data-icon='inline-start' />
+        <Save data-icon='inline-start' className='size-4' />
         <span>{t(saveLabel)}</span>
       </Button>
     </SettingsPageActionsPortal>

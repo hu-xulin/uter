@@ -67,7 +67,7 @@ export function WechatPaySettingsSection() {
   return (
     <div className='space-y-4'>
       <div>
-        <h3 className='text-lg font-medium'>{t('WeChat Pay Gateway')}</h3>
+        <h3 className='text-lg font-semibold'>{t('WeChat Pay Gateway')}</h3>
         <p className='text-muted-foreground text-sm'>
           {t(
             'Native (PC QR) + H5 (mobile web) only, with a verified service account as the AppID source'

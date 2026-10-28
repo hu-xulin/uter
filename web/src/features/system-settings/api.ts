@@ -32,6 +32,9 @@ import type {
   UpdatePasskeyDomainsResponse,
   UpstreamChannelsResponse,
   UpstreamRatiosResponse,
+  DreamRouterSyncModelsResponse,
+  DreamRouterSyncStatusResponse,
+  DreamRouterRunResponse,
 } from './types'
 
 export async function getSystemOptions() {
@@ -50,7 +53,7 @@ export type SyncExchangeRateResponse = {
   data?: {
     usd_exchange_rate: number
     price: number
-    price_markup_rate: number
+    price_adjustment_rate: number
     exchange_rate_updated_at: number
   }
 }
@@ -144,6 +147,30 @@ export async function fetchUpstreamRatios(request: FetchUpstreamRatiosRequest) {
   const res = await api.post<UpstreamRatiosResponse>(
     '/api/ratio_sync/fetch',
     request
+  )
+  return res.data
+}
+
+// ── 渠道登录与同步（上游 创梦 / DreamRouter）────────────────────────────
+
+export async function getDreamRouterSyncModels() {
+  const res = await api.get<DreamRouterSyncModelsResponse>(
+    '/api/ratio_sync/dreamrouter/models'
+  )
+  return res.data
+}
+
+export async function getDreamRouterSyncStatus() {
+  const res = await api.get<DreamRouterSyncStatusResponse>(
+    '/api/ratio_sync/dreamrouter/status'
+  )
+  return res.data
+}
+
+export async function runDreamRouterSync(dryRun = false) {
+  const res = await api.post<DreamRouterRunResponse>(
+    '/api/ratio_sync/dreamrouter/run',
+    { dry_run: dryRun }
   )
   return res.data
 }

@@ -77,7 +77,7 @@ export function SyncPriceCell(props: { values: PricingSyncValues }) {
             )}
           </div>
         ) : (
-          <code className='block text-xs! leading-relaxed break-all whitespace-pre-wrap'>
+          <code className='text-mono-code block font-mono break-all whitespace-pre-wrap'>
             {props.values.billing_expr}
           </code>
         )}
@@ -103,10 +103,8 @@ function SyncPriceMetrics(props: {
     <dl className='flex min-w-0 flex-1 flex-wrap gap-x-4 gap-y-2'>
       {props.lines.map((line) => (
         <div key={line.label} className='min-w-0'>
-          <dt className='text-muted-foreground text-sm! leading-4'>
-            {line.label}
-          </dt>
-          <dd className='leading-5 font-medium tabular-nums'>{line.value}</dd>
+          <dt className='text-muted-foreground text-sm!'>{line.label}</dt>
+          <dd className='font-medium tabular-nums'>{line.value}</dd>
         </div>
       ))}
     </dl>

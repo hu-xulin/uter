@@ -51,6 +51,7 @@ import {
 import { SettingsPageFormActions } from '../components/settings-page-context'
 import { SettingsSection } from '../components/settings-section'
 import { useUpdateOption } from '../hooks/use-update-option'
+import { ChannelSyncModelsTable } from './channel-sync-models-table'
 
 /**
  * 渠道登录与同步（Channel Login & Sync）
@@ -210,7 +211,16 @@ export function ChannelSyncSection({ defaultValues }: Props) {
                     >
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue />
+                          {/* 必须显式给 children：Base UI 的 Value 在未展开过
+                              下拉时拿不到 item 文案，会直接渲染原始值
+                              （页面上就会出现英文枚举 `dreamrouter`）。 */}
+                          <SelectValue>
+                            {t(
+                              PROVIDER_OPTIONS.find(
+                                (option) => option.value === field.value
+                              )?.labelKey ?? 'DreamRouter'
+                            )}
+                          </SelectValue>
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -314,7 +324,11 @@ export function ChannelSyncSection({ defaultValues }: Props) {
                         disabled={updateOption.isPending}
                       >
                         <SelectTrigger>
-                          <SelectValue />
+                          <SelectValue>
+                            {t('Daily at {{hour}}:00', {
+                              hour: Number(asText(field.value) || '0'),
+                            })}
+                          </SelectValue>
                         </SelectTrigger>
                         <SelectContent>
                           {Array.from({ length: 24 }, (_, hour) => (
@@ -348,7 +362,13 @@ export function ChannelSyncSection({ defaultValues }: Props) {
                     >
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue />
+                          <SelectValue>
+                            {t(
+                              DIRECTION_OPTIONS.find(
+                                (option) => option.value === field.value
+                              )?.labelKey ?? 'Increase discount'
+                            )}
+                          </SelectValue>
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -407,6 +427,9 @@ export function ChannelSyncSection({ defaultValues }: Props) {
           )}
         </Form>
       </SettingsForm>
+      {/* 上游 / Uter 逐模型价格对照：即使关闭了定时同步也保留，管理员据此核对
+          现有价格是否仍与上游一致（数据来自最近一次成功同步的快照）。 */}
+      <ChannelSyncModelsTable />
     </SettingsSection>
   )
 }

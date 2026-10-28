@@ -187,7 +187,7 @@ function FieldHelp({ help }: { help: string }) {
         aria-label={t('Description')}
         className='text-muted-foreground hover:text-foreground ml-1 inline-flex size-4 shrink-0 items-center justify-center align-middle'
       >
-        <HelpCircle className='size-3.5' />
+        <HelpCircle className='size-4' />
       </PopoverTrigger>
       <PopoverContent align='start' className='w-72 text-xs'>
         {t(help)}
@@ -203,7 +203,7 @@ function FidelityBadge({ tier }: { tier: FidelityTier }) {
   const { t } = useTranslation()
   if (tier !== 'lossy') return null
   return (
-    <span className='ml-2 inline-flex shrink-0 items-center rounded bg-amber-500/10 px-1.5 py-0.5 align-middle text-xs text-amber-600 dark:text-amber-400'>
+    <span className='bg-warning/10 text-warning dark:text-warning ml-2 inline-flex shrink-0 items-center rounded px-1.5 py-0.5 align-middle text-xs'>
       {t('May reduce quality')}
     </span>
   )
@@ -295,7 +295,7 @@ function OptimizationField(props: {
               onChange={field.onChange}
               disabled={inputDisabled}
               placeholder={def.placeholder ?? '[]'}
-              className='font-mono text-mono'
+              className='text-mono font-mono'
             />
           )
         } else if (def.kind === 'number') {
@@ -325,6 +325,11 @@ function OptimizationField(props: {
               onChange={field.onChange}
               disabled={inputDisabled}
               placeholder={def.placeholder}
+              // `mono` 是字段定义里的显式声明：接口地址、路径、端点、模型名
+              // 这类要逐字符核对的值必须等宽，否则 /v4/batches 与 /v1/batches、
+              // embedding-2 与 embedding-3 在视觉上分不开。定义里写了却没接上，
+              // 等于这条规则从未生效。
+              mono={def.mono}
             />
           )
         }
@@ -453,7 +458,7 @@ export function CostOptimizationSection(props: Props) {
                 >
                   <span
                     className={cn(
-                      'text-sm font-medium leading-tight',
+                      'text-sm font-medium',
                       active ? 'text-primary' : 'text-foreground'
                     )}
                   >
@@ -464,7 +469,7 @@ export function CostOptimizationSection(props: Props) {
                       {group.fields.length}
                     </span>
                     {hasLossy && (
-                      <span className='inline-flex items-center rounded bg-amber-500/10 px-1.5 py-0.5 text-xs text-amber-600 dark:text-amber-400'>
+                      <span className='bg-warning/10 text-warning dark:text-warning inline-flex items-center rounded px-1.5 py-0.5 text-xs'>
                         {t('Lossy')}
                       </span>
                     )}

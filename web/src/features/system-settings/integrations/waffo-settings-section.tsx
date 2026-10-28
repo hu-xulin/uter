@@ -31,6 +31,7 @@ import { Label } from '@/components/ui/label'
 import { SecretFileInput } from '@/components/ui/secret-file-input'
 import { SecretInput } from '@/components/ui/secret-input'
 import { Separator } from '@/components/ui/separator'
+import { Heading } from '@/design-system'
 
 import { SettingsSwitchField } from '../components/settings-form-layout'
 
@@ -144,7 +145,7 @@ export function WaffoSettingsSection({
     <>
       <div className='space-y-4 pt-4'>
         <div>
-          <h3 className='text-lg font-medium'>
+          <h3 className='text-lg font-semibold'>
             {t('Waffo Aggregator Gateway')}
           </h3>
           <p className='text-muted-foreground text-sm'>
@@ -154,14 +155,14 @@ export function WaffoSettingsSection({
           </p>
         </div>
         <Alert>
-          <AlertDescription className='text-xs'>
+          <AlertDescription className='text-sm'>
             {t(
               'Obtain the API key, merchant ID, and RSA key pair from the Waffo dashboard, and configure the callback URL.'
             )}
           </AlertDescription>
         </Alert>
 
-        <div className='grid gap-4 sm:grid-cols-2'>
+        <div className='flex flex-col gap-4'>
           <SettingsSwitchField
             checked={values.WaffoEnabled}
             onCheckedChange={(v) => onValueChange('WaffoEnabled', v)}
@@ -176,7 +177,7 @@ export function WaffoSettingsSection({
           />
         </div>
 
-        <div className='grid grid-cols-2 gap-4'>
+        <div className='flex flex-col gap-4'>
           <div className='grid gap-1.5'>
             <Label>{t('API Key (Production)')}</Label>
             <SecretInput
@@ -205,7 +206,7 @@ export function WaffoSettingsSection({
           />
         </div>
 
-        <div className='grid grid-cols-2 gap-4'>
+        <div className='flex flex-col gap-4'>
           <div className='grid gap-1.5'>
             <Label htmlFor='waffo-private-key'>
               {t('RSA Private Key (Production)')}
@@ -219,7 +220,7 @@ export function WaffoSettingsSection({
               accept='.pem,.key,.txt,text/plain'
               onError={(message) => toast.error(message)}
             />
-            <p className='text-muted-foreground text-xs'>
+            <p className='text-muted-foreground text-sm'>
               {t(
                 'Signs Waffo requests. Select the private key file Waffo issued; PKCS#8 / PKCS#1 PEM and single-line base64 are all accepted.'
               )}
@@ -240,7 +241,7 @@ export function WaffoSettingsSection({
               accept='.pem,.key,.txt,text/plain'
               onError={(message) => toast.error(message)}
             />
-            <p className='text-muted-foreground text-xs'>
+            <p className='text-muted-foreground text-sm'>
               {t(
                 'Signs Waffo requests in sandbox mode. Same format as the production key.'
               )}
@@ -248,7 +249,7 @@ export function WaffoSettingsSection({
           </div>
         </div>
 
-        <div className='grid grid-cols-2 gap-4'>
+        <div className='flex flex-col gap-4'>
           <div className='grid gap-1.5'>
             <Label htmlFor='waffo-public-cert'>
               {t('Waffo Public Key (Production)')}
@@ -262,7 +263,7 @@ export function WaffoSettingsSection({
               accept='.pem,.key,.crt,.cer,.txt,text/plain'
               onError={(message) => toast.error(message)}
             />
-            <p className='text-muted-foreground text-xs'>
+            <p className='text-muted-foreground text-sm'>
               {t(
                 'Verifies Waffo callback signatures. A public key PEM, the certificate Waffo issued, or single-line base64 is accepted.'
               )}
@@ -283,7 +284,7 @@ export function WaffoSettingsSection({
               accept='.pem,.key,.crt,.cer,.txt,text/plain'
               onError={(message) => toast.error(message)}
             />
-            <p className='text-muted-foreground text-xs'>
+            <p className='text-muted-foreground text-sm'>
               {t(
                 'Verifies Waffo sandbox callback signatures. Same format as the production key.'
               )}
@@ -291,7 +292,7 @@ export function WaffoSettingsSection({
           </div>
         </div>
 
-        <div className='grid grid-cols-3 gap-4'>
+        <div className='flex flex-col gap-4'>
           <div className='grid gap-1.5'>
             <Label>{t('Currency')}</Label>
             <Input autoComplete='off' value={values.WaffoCurrency} disabled />
@@ -331,12 +332,13 @@ export function WaffoSettingsSection({
           </div>
         </div>
 
-        <div className='grid grid-cols-2 gap-4'>
+        <div className='flex flex-col gap-4'>
           <div className='grid gap-1.5'>
             <Label>{t('Callback notification URL')}</Label>
             <Input
               autoComplete='off'
               placeholder='https://example.com/api/waffo/webhook'
+              mono
               value={values.WaffoNotifyUrl}
               onChange={(event) =>
                 onValueChange('WaffoNotifyUrl', event.target.value)
@@ -348,6 +350,7 @@ export function WaffoSettingsSection({
             <Input
               autoComplete='off'
               placeholder='https://example.com/wallet'
+              mono
               value={values.WaffoReturnUrl}
               onChange={(event) =>
                 onValueChange('WaffoReturnUrl', event.target.value)
@@ -359,9 +362,11 @@ export function WaffoSettingsSection({
         <Separator />
 
         <div className='flex items-center justify-between'>
-          <h4 className='font-medium'>{t('Payment Methods')}</h4>
+          <Heading variant='group-title' level={4}>
+            {t('Payment Methods')}
+          </Heading>
           <Button type='button' variant='outline' size='sm' onClick={openAdd}>
-            <Plus className='mr-1 h-3 w-3' />
+            <Plus className='mr-1 size-4.5' />
             {t('Add payment method')}
           </Button>
         </div>

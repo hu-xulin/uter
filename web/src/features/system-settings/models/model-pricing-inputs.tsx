@@ -146,9 +146,9 @@ export function PriceReferenceFootnote(props: {
 }) {
   let toneClass = 'text-muted-foreground'
   if (props.reference.discountTone === 'discount') {
-    toneClass = 'text-emerald-600'
+    toneClass = 'text-success'
   } else if (props.reference.discountTone === 'markup') {
-    toneClass = 'text-amber-600'
+    toneClass = 'text-warning'
   }
   return (
     <div className='flex flex-wrap items-center gap-x-2 text-xs tabular-nums'>

@@ -180,7 +180,7 @@ export function ChannelSelectorDialog({
           const url = row.getValue('base_url') as string
           return (
             <span
-              className='text-muted-foreground block max-w-xs truncate font-mono text-mono'
+              className='text-muted-foreground text-mono block max-w-xs truncate font-mono'
               title={url}
             >
               {url}
@@ -248,7 +248,7 @@ export function ChannelSelectorDialog({
                 value={endpointType}
                 onValueChange={(v) => v !== null && handleTypeChange(v)}
               >
-                <SelectTrigger className='h-8 w-32'>
+                <SelectTrigger className='w-32'>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent alignItemWithTrigger={false}>
@@ -262,11 +262,12 @@ export function ChannelSelectorDialog({
                 </SelectContent>
               </Select>
               {endpointType === 'custom' && (
-                <Input autoComplete='off'
+                <Input
+                  autoComplete='off'
                   value={currentEndpoint}
                   onChange={(e) => updateEndpoint(channel.id, e.target.value)}
                   placeholder={t('/your/endpoint')}
-                  className='h-8 min-w-0 flex-1 font-mono text-mono'
+                  className='text-mono min-w-0 flex-1 font-mono'
                 />
               )}
             </div>
@@ -325,7 +326,7 @@ export function ChannelSelectorDialog({
       open={open}
       onOpenChange={onOpenChange}
       title={t('Select price sources')}
-      contentClassName='flex max-h-[min(90dvh,var(--dialog-available-height))] max-w-[calc(100%-2rem)] flex-col sm:max-w-[90vw] xl:max-w-[1400px]'
+      contentClassName='flex max-h-[min(90dvh,var(--dialog-available-height))] max-w-[calc(100%-2rem)] flex-col sm:max-w-[90vw] xl:max-w-[1280px]'
       contentHeight='min(72vh, 720px)'
       bodyClassName='flex h-full min-h-0 flex-col overflow-hidden'
       footer={
@@ -341,7 +342,8 @@ export function ChannelSelectorDialog({
         <div className='flex shrink-0 items-center gap-2'>
           <div className='relative flex-1'>
             <Search className='text-muted-foreground pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2' />
-            <Input autoComplete='off'
+            <Input
+              autoComplete='off'
               placeholder={t('Search by name or URL...')}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
@@ -361,9 +363,9 @@ export function ChannelSelectorDialog({
           getColumnClassName={(columnId, part) => {
             if (columnId === 'select') return 'w-11 text-center align-middle'
             if (columnId === 'status') {
- return part === 'header' ? 'align-middle' : 'align-middle'
+              return part === 'header' ? 'align-middle' : 'align-middle'
             }
- return part === 'header' ? 'align-middle' : 'align-middle'
+            return part === 'header' ? 'align-middle' : 'align-middle'
           }}
           emptyContent={t('No channels found')}
           emptyCellClassName='h-24 text-center'

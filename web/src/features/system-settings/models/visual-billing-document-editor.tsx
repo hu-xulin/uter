@@ -30,6 +30,7 @@ import {
 } from '@/components/ui/collapsible'
 import { DropdownMenuItem } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
+import { Heading } from '@/design-system'
 import {
   formatPricingAmount,
   type PricingCurrency,
@@ -79,7 +80,8 @@ function PricingTierFields(
       <div className='flex flex-wrap items-center justify-between gap-2'>
         <div className='flex min-w-0 items-center gap-2'>
           <Badge variant='secondary'>{t('Tier')}</Badge>
-          <Input autoComplete='off'
+          <Input
+            autoComplete='off'
             aria-label={t('Tier name')}
             value={node.label}
             onChange={(event) =>
@@ -179,7 +181,7 @@ function PricingTierFields(
         <p
           role='alert'
           key={`${issue.id}:${issue.message}`}
-          className='text-destructive text-xs'
+          className='text-destructive text-sm'
         >
           {t(issue.message)}
         </p>
@@ -288,12 +290,12 @@ function PricingRuleCard(
           aria-label={t('Pricing tier {{name}}', { name })}
         />
       }
-      className='bg-background min-w-0 overflow-hidden rounded-xl border data-open:border-blue-300 dark:data-open:border-blue-800'
+      className='bg-background data-open:border-info-soft dark:data-open:border-info min-w-0 overflow-hidden rounded-xl border'
     >
       <div className='flex items-start gap-1 p-3'>
         <CollapsibleTrigger
           aria-label={t('Edit pricing rule {{name}}', { name })}
-          className='flex min-w-0 flex-1 items-start gap-3 rounded-md text-left focus-visible:outline-2 focus-visible:outline-offset-2'
+          className='flex min-w-0 flex-1 items-start gap-3 rounded-md text-left focus-visible:outline-2 focus-visible:outline-offset-0'
         >
           <Badge variant='secondary' className='mt-0.5 shrink-0 tabular-nums'>
             {props.number}
@@ -390,7 +392,9 @@ function PricingRuleCard(
         <div className='space-y-4'>
           {node.kind === 'branch' && (
             <div className='space-y-2'>
-              <p className='text-sm font-medium'>{t('Tier conditions')}</p>
+              <Heading variant='group-title' level={5}>
+                {t('Tier conditions')}
+              </Heading>
               <VisualConditionTree
                 node={node.condition}
                 path={props.number}

@@ -34,6 +34,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { Separator } from '@/components/ui/separator'
 import { Switch } from '@/components/ui/switch'
+import { Heading } from '@/design-system'
 
 import {
   SettingsForm,
@@ -120,9 +121,9 @@ export function LogSettingsSection(props: LogSettingsSectionProps) {
             aria-labelledby={recordingTitleId}
             className='flex min-w-0 flex-col gap-4'
           >
-            <h4 id={recordingTitleId} className='font-medium'>
+            <Heading variant='group-title' level={4} id={recordingTitleId}>
               {t('Log recording')}
-            </h4>
+            </Heading>
             <FormField
               control={form.control}
               name='LogConsumeEnabled'
@@ -155,9 +156,9 @@ export function LogSettingsSection(props: LogSettingsSectionProps) {
             aria-labelledby={searchTitleId}
             className='flex min-w-0 flex-col gap-4'
           >
-            <h4 id={searchTitleId} className='font-medium'>
+            <Heading variant='group-title' level={4} id={searchTitleId}>
               {t('Log search and export')}
-            </h4>
+            </Heading>
             <SettingsFormGrid>
               <FormField
                 control={form.control}

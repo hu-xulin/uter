@@ -270,11 +270,11 @@ export const ToolPriceSettings = memo(function ToolPriceSettings({
           </div>
           <div>
             <span className='font-medium'>{t('Format')}:</span>{' '}
-            <code className='bg-muted rounded px-1 py-0.5 text-xs'>
+            <code className='text-mono bg-muted rounded px-1 py-0.5 font-mono'>
               web_search_preview
             </code>{' '}
             {t('is the default price; ')}
-            <code className='bg-muted rounded px-1 py-0.5 text-xs'>
+            <code className='text-mono bg-muted rounded px-1 py-0.5 font-mono'>
               web_search_preview:gpt-4o*
             </code>{' '}
             {t('overrides for matching model prefix.')}
@@ -287,7 +287,7 @@ export const ToolPriceSettings = memo(function ToolPriceSettings({
           {editMode === 'visual' ? (
             <>
               <Button variant='outline' size='sm' onClick={addRow}>
-                <Plus className='mr-2 h-4 w-4' />
+                <Plus className='mr-2 h-4.5 w-4.5' />
                 {t('Add')}
               </Button>
               <Button variant='ghost' size='sm' onClick={resetToDefault}>
@@ -297,7 +297,7 @@ export const ToolPriceSettings = memo(function ToolPriceSettings({
           ) : (
             <>
               <Button variant='ghost' size='sm' onClick={handleCopyJson}>
-                <Copy className='mr-2 h-4 w-4' />
+                <Copy className='mr-2 h-4.5 w-4.5' />
                 {t('Copy')}
               </Button>
               <Button variant='ghost' size='sm' onClick={resetToDefault}>
@@ -309,12 +309,12 @@ export const ToolPriceSettings = memo(function ToolPriceSettings({
         <Button variant='outline' size='sm' onClick={toggleEditMode}>
           {editMode === 'visual' ? (
             <>
-              <Code2 className='mr-2 h-4 w-4' />
+              <Code2 className='mr-2 h-4.5 w-4.5' />
               {t('Switch to JSON')}
             </>
           ) : (
             <>
-              <Eye className='mr-2 h-4 w-4' />
+              <Eye className='mr-2 h-4.5 w-4.5' />
               {t('Switch to Visual')}
             </>
           )}
@@ -332,9 +332,13 @@ export const ToolPriceSettings = memo(function ToolPriceSettings({
               id: 'tool',
               header: t('Tool identifier'),
               cell: (row) => (
-                <Input autoComplete='off'
+                <Input
+                  autoComplete='off'
                   value={row.key}
                   placeholder='web_search_preview:gpt-4o*'
+                  // 工具标识是机器可读的键（`web_search_preview:gpt-4o*`）：
+                  // 等宽后 `_` 与 `:` 位置稳定，多个近似键才能逐字对上。
+                  mono
                   onChange={(e) => updateRow(row.id, 'key', e.target.value)}
                 />
               ),
@@ -347,7 +351,8 @@ export const ToolPriceSettings = memo(function ToolPriceSettings({
                 const isInvalid = invalidRowIds.has(row.id)
                 return (
                   <Field data-invalid={isInvalid}>
-                    <Input autoComplete='off'
+                    <Input
+                      autoComplete='off'
                       type='number'
                       min={0}
                       step={0.0001}
@@ -379,7 +384,7 @@ export const ToolPriceSettings = memo(function ToolPriceSettings({
                   onClick={() => removeRow(row.id)}
                   aria-label={t('Delete')}
                 >
-                  <Trash2 className='text-destructive h-4 w-4' />
+                  <Trash2 className='text-destructive h-4.5 w-4.5' />
                 </Button>
               ),
             },

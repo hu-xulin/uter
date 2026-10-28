@@ -129,7 +129,8 @@ export function ChatDialog({
               <FormItem>
                 <FormLabel>{t('Chat Client Name')}</FormLabel>
                 <FormControl>
-                  <Input autoComplete='off'
+                  <Input
+                    autoComplete='off'
                     placeholder={t('Please enter chat client name')}
                     {...field}
                   />
@@ -149,7 +150,12 @@ export function ChatDialog({
               <FormItem>
                 <FormLabel>{t('URL')}</FormLabel>
                 <FormControl>
-                  <Input autoComplete='off' placeholder={t('Please enter the URL')} {...field} />
+                  <Input
+                    mono
+                    autoComplete='off'
+                    placeholder={t('Please enter the URL')}
+                    {...field}
+                  />
                 </FormControl>
                 <FormDescription>
                   {t('The URL for this chat client.')}

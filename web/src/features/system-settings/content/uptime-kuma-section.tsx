@@ -244,7 +244,7 @@ export function UptimeKumaSection({ enabled, data }: UptimeKumaSectionProps) {
         <div className='flex flex-wrap items-center justify-between gap-2'>
           <div className='flex flex-wrap items-center gap-2'>
             <Button onClick={handleAdd} size='sm'>
-              <Plus className='mr-2 h-4 w-4' />
+              <Plus className='mr-2 h-4.5 w-4.5' />
               {t('Add Group')}
             </Button>
             <Button
@@ -253,7 +253,7 @@ export function UptimeKumaSection({ enabled, data }: UptimeKumaSectionProps) {
               variant='destructive'
               disabled={selectedIds.length === 0}
             >
-              <Trash2 className='mr-2 h-4 w-4' />
+              <Trash2 className='mr-2 h-4.5 w-4.5' />
               {t('Delete (')}
               {selectedIds.length})
             </Button>
@@ -263,7 +263,7 @@ export function UptimeKumaSection({ enabled, data }: UptimeKumaSectionProps) {
               variant='secondary'
               disabled={!hasChanges || updateOption.isPending}
             >
-              <Save className='mr-2 h-4 w-4' />
+              <Save className='mr-2 h-4.5 w-4.5' />
               {updateOption.isPending ? t('Saving...') : t('Save Settings')}
             </Button>
           </div>
@@ -271,6 +271,7 @@ export function UptimeKumaSection({ enabled, data }: UptimeKumaSectionProps) {
             checked={isEnabled}
             onCheckedChange={handleToggleEnabled}
             label={t('Enabled')}
+            labelTier='field'
             className='py-0'
           />
         </div>
@@ -311,7 +312,8 @@ export function UptimeKumaSection({ enabled, data }: UptimeKumaSectionProps) {
             {
               id: 'url',
               header: t('Uptime Kuma URL'),
-              cellClassName: 'text-primary max-w-xs truncate font-mono text-mono',
+              cellClassName:
+                'text-primary max-w-xs truncate font-mono text-mono',
               cell: (group) => group.url,
             },
             {
@@ -378,7 +380,8 @@ export function UptimeKumaSection({ enabled, data }: UptimeKumaSectionProps) {
                 <FormItem>
                   <FormLabel>{t('Category Name')}</FormLabel>
                   <FormControl>
-                    <Input autoComplete='off'
+                    <Input
+                      autoComplete='off'
                       placeholder={t('e.g., Core APIs, OpenAI, Claude')}
                       {...field}
                     />
@@ -399,7 +402,9 @@ export function UptimeKumaSection({ enabled, data }: UptimeKumaSectionProps) {
                 <FormItem>
                   <FormLabel>{t('Uptime Kuma URL')}</FormLabel>
                   <FormControl>
-                    <Input autoComplete='off'
+                    <Input
+                      mono
+                      autoComplete='off'
                       placeholder={t('https://status.example.com')}
                       {...field}
                     />
@@ -418,7 +423,11 @@ export function UptimeKumaSection({ enabled, data }: UptimeKumaSectionProps) {
                 <FormItem>
                   <FormLabel>{t('Status Page Slug')}</FormLabel>
                   <FormControl>
-                    <Input autoComplete='off' placeholder={t('my-status')} {...field} />
+                    <Input
+                      autoComplete='off'
+                      placeholder={t('my-status')}
+                      {...field}
+                    />
                   </FormControl>
                   <FormDescription>
                     {t('The slug is appended to the URL:')} {'{url}'}

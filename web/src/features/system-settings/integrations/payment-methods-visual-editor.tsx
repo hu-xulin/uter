@@ -236,7 +236,8 @@ export function PaymentMethodsVisualEditor({
       <div className='flex flex-col gap-3 sm:flex-row sm:items-center'>
         <div className='relative flex-1'>
           <Search className='text-muted-foreground absolute top-2.5 left-2.5 h-4 w-4' />
-          <Input autoComplete='off'
+          <Input
+            autoComplete='off'
             placeholder={t('Search payment methods...')}
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
@@ -250,7 +251,7 @@ export function PaymentMethodsVisualEditor({
                 <Button variant='outline' className='flex-1 sm:flex-none' />
               }
             >
-              <Lightbulb className='h-4 w-4 sm:mr-2' />
+              <Lightbulb className='h-4.5 w-4.5 sm:mr-2' />
               <span className='sm:inline'>{t('Templates')}</span>
             </PopoverTrigger>
             <PopoverContent className='w-60'>
@@ -271,7 +272,7 @@ export function PaymentMethodsVisualEditor({
                         handleInsertTemplate(item.template)
                       }}
                     >
-                      <Plus className='mr-2 h-3 w-3' />
+                      <Plus className='mr-2 size-4.5' />
                       {item.name}
                     </Button>
                   ))}
@@ -288,7 +289,7 @@ export function PaymentMethodsVisualEditor({
             }}
             className='flex-1 sm:flex-none'
           >
-            <Plus className='h-4 w-4 sm:mr-2' />
+            <Plus className='h-4.5 w-4.5 sm:mr-2' />
             <span className='sm:inline'>{t('Add method')}</span>
           </Button>
         </div>
@@ -335,10 +336,10 @@ export function PaymentMethodsVisualEditor({
                     <div className='flex items-center gap-2'>
                       <ReactIconByName
                         name={iconName}
-                        className='text-muted-foreground size-5 shrink-0'
+                        className='text-muted-foreground size-4 shrink-0'
                         title={iconName}
                       />
-                      <span className='text-muted-foreground truncate font-mono text-mono'>
+                      <span className='text-muted-foreground text-mono truncate font-mono'>
                         {iconName}
                       </span>
                     </div>
@@ -352,7 +353,7 @@ export function PaymentMethodsVisualEditor({
                 header: t('Min Top-up'),
                 cell: (method) =>
                   method.min_topup ? (
-                    <span className='font-mono text-mono'>
+                    <span className='text-mono font-mono'>
                       {method.min_topup}
                     </span>
                   ) : (
@@ -396,7 +397,7 @@ export function PaymentMethodsVisualEditor({
                   <div className='mb-3 flex items-start justify-between'>
                     <div className='flex-1'>
                       <div className='mb-1 font-medium'>{method.name}</div>
-                      <code className='bg-muted rounded px-1.5 py-0.5 text-xs'>
+                      <code className='text-mono bg-muted rounded px-1.5 py-0.5 font-mono'>
                         {method.type}
                       </code>
                     </div>
@@ -411,7 +412,7 @@ export function PaymentMethodsVisualEditor({
                           handleEdit(method)
                         }}
                       >
-                        <Pencil className='h-4 w-4' />
+                        <Pencil className='h-4.5 w-4.5' />
                       </Button>
                       <Button
                         type='button'
@@ -423,7 +424,7 @@ export function PaymentMethodsVisualEditor({
                           handleDelete(method)
                         }}
                       >
-                        <Trash2 className='h-4 w-4' />
+                        <Trash2 className='h-4.5 w-4.5' />
                       </Button>
                     </div>
                   </div>
@@ -436,10 +437,10 @@ export function PaymentMethodsVisualEditor({
                         <div className='flex min-w-0 items-center gap-2'>
                           <ReactIconByName
                             name={iconName}
-                            className='text-muted-foreground size-5 shrink-0'
+                            className='text-muted-foreground size-4 shrink-0'
                             title={iconName}
                           />
-                          <span className='text-muted-foreground truncate font-mono text-mono'>
+                          <span className='text-muted-foreground text-mono truncate font-mono'>
                             {iconName}
                           </span>
                         </div>
@@ -452,7 +453,9 @@ export function PaymentMethodsVisualEditor({
                         <span className='text-muted-foreground min-w-20'>
                           {t('Min Top-up:')}
                         </span>
-                        <span className='font-mono'>{method.min_topup}</span>
+                        <span className='text-mono font-mono'>
+                          {method.min_topup}
+                        </span>
                       </div>
                     )}
                   </div>

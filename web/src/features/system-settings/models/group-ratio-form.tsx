@@ -111,18 +111,18 @@ export const GroupRatioForm = memo(function GroupRatioForm({
     <div className='space-y-6'>
       <div className='flex flex-wrap justify-end gap-2'>
         <Button variant='outline' size='sm' onClick={() => setGuideOpen(true)}>
-          <HelpCircle className='mr-2 h-4 w-4' />
+          <HelpCircle className='mr-2 size-4' />
           {t('Usage guide')}
         </Button>
         <Button variant='outline' size='sm' onClick={toggleEditMode}>
           {editMode === 'visual' ? (
             <>
-              <Code2 className='mr-2 h-4 w-4' />
+              <Code2 className='mr-2 size-4' />
               {t('Switch to JSON')}
             </>
           ) : (
             <>
-              <Eye className='mr-2 h-4 w-4' />
+              <Eye className='mr-2 size-4' />
               {t('Switch to Visual')}
             </>
           )}
@@ -439,7 +439,7 @@ type GroupPricingGuideProps = {
 
 function GuideCodeBlock({ children }: { children: string }) {
   return (
-    <pre className='bg-muted/60 overflow-x-auto rounded-lg border px-3 py-2 text-xs leading-6 whitespace-pre-wrap'>
+    <pre className='bg-muted/60 text-mono overflow-x-auto rounded-lg border px-3 py-2 whitespace-pre-wrap'>
       {children}
     </pre>
   )
@@ -453,7 +453,7 @@ function GuideStepRow({
   children: ReactNode
 }) {
   return (
-    <div className='flex items-start gap-2.5 text-sm leading-6'>
+    <div className='flex items-start gap-2.5 text-sm'>
       <span className='bg-muted text-muted-foreground mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-xs font-medium'>
         {chip}
       </span>
@@ -482,10 +482,10 @@ function GroupPricingGuide({ open, onOpenChange }: GroupPricingGuideProps) {
 
         <div className={sideDrawerFormClassName('gap-5')}>
           <section className='space-y-2'>
-            <h3 className='text-sm font-semibold'>
+            <h3 className='text-lg font-semibold'>
               {t('The two roles of a group')}
             </h3>
-            <div className='text-muted-foreground space-y-2 text-sm leading-6'>
+            <div className='text-muted-foreground space-y-2 text-sm'>
               <p>
                 {t(
                   'Every group name in the pricing table can be used in two places: on a user (the user group, assigned by admins) and on a token (the token group, chosen when creating the token). Same name pool, two different jobs.'
@@ -513,10 +513,10 @@ function GroupPricingGuide({ open, onOpenChange }: GroupPricingGuideProps) {
           </section>
 
           <section className='space-y-2'>
-            <h3 className='text-sm font-semibold'>
+            <h3 className='text-lg font-semibold'>
               {t('How a call is priced')}
             </h3>
-            <ol className='text-muted-foreground list-decimal space-y-2 pl-5 text-sm leading-6'>
+            <ol className='text-muted-foreground list-decimal space-y-2 pl-5 text-sm'>
               <li>
                 <span className='text-foreground font-medium'>
                   {t('Find the billing group.')}
@@ -542,7 +542,7 @@ function GroupPricingGuide({ open, onOpenChange }: GroupPricingGuideProps) {
                 )}
               </li>
             </ol>
-            <p className='text-muted-foreground text-sm leading-6'>
+            <p className='text-muted-foreground text-sm'>
               {t(
                 'Common pitfall: the user group base ratio is NOT a personal discount. It only applies when the user group itself is the billing group.'
               )}
@@ -550,8 +550,8 @@ function GroupPricingGuide({ open, onOpenChange }: GroupPricingGuideProps) {
           </section>
 
           <section className='space-y-3'>
-            <h3 className='text-sm font-semibold'>{t('Worked example')}</h3>
-            <p className='text-muted-foreground text-sm leading-6'>
+            <h3 className='text-lg font-semibold'>{t('Worked example')}</h3>
+            <p className='text-muted-foreground text-sm'>
               {t(
                 'The admin configured three groups and one special ratio rule:'
               )}
@@ -593,7 +593,7 @@ function GroupPricingGuide({ open, onOpenChange }: GroupPricingGuideProps) {
               <div className='bg-muted/40 border-b px-3 py-1.5 text-xs font-medium'>
                 {t('Special ratio rules')}
               </div>
-              <div className='p-3 text-sm leading-6'>
+              <div className='p-3 text-sm'>
                 {t('Users of vip, when billed as premium, pay ratio')}{' '}
                 <span className='bg-primary/10 ring-primary/40 rounded px-1.5 py-0.5 font-semibold ring-1'>
                   0.3
@@ -604,7 +604,7 @@ function GroupPricingGuide({ open, onOpenChange }: GroupPricingGuideProps) {
               </div>
             </div>
 
-            <p className='text-muted-foreground text-sm leading-6'>
+            <p className='text-muted-foreground text-sm'>
               {t(
                 'Three calls made by the same vip user. Assume the base price of one call is 10.'
               )}
@@ -686,7 +686,7 @@ function GroupPricingGuide({ open, onOpenChange }: GroupPricingGuideProps) {
             <AccordionItem value='groups'>
               <AccordionTrigger>{t('Pricing group example')}</AccordionTrigger>
               <AccordionContent className='space-y-3'>
-                <p className='text-muted-foreground text-sm leading-6'>
+                <p className='text-muted-foreground text-sm'>
                   {t(
                     'Use the pricing group table to manage the ratio and whether the group appears in the token creation dropdown.'
                   )}
@@ -697,7 +697,7 @@ standard     1.0     ${t('Yes')}               ${t('Standard price')}
 premium      0.5     ${t('Yes')}               ${t('Premium plan, half price')}
 vip          0.5     ${t('No')}                ${t('Assigned by administrator only')}`}
                 </GuideCodeBlock>
-                <p className='text-muted-foreground text-sm leading-6'>
+                <p className='text-muted-foreground text-sm'>
                   {t(
                     'Users only see groups marked as user selectable. Non-selectable groups can still be assigned by administrators.'
                   )}
@@ -708,13 +708,13 @@ vip          0.5     ${t('No')}                ${t('Assigned by administrator on
             <AccordionItem value='auto'>
               <AccordionTrigger>{t('Auto group behavior')}</AccordionTrigger>
               <AccordionContent className='space-y-3'>
-                <p className='text-muted-foreground text-sm leading-6'>
+                <p className='text-muted-foreground text-sm'>
                   {t(
                     'When a token uses the auto group, the system tries groups from top to bottom until it finds an available group.'
                   )}
                 </p>
                 <GuideCodeBlock>{`["default", "vip"]`}</GuideCodeBlock>
-                <p className='text-muted-foreground text-sm leading-6'>
+                <p className='text-muted-foreground text-sm'>
                   {t(
                     'If default auto group is enabled, newly created tokens start with auto instead of an empty group.'
                   )}
@@ -725,7 +725,7 @@ vip          0.5     ${t('No')}                ${t('Assigned by administrator on
             <AccordionItem value='special-ratio'>
               <AccordionTrigger>{t('Special ratio rules')}</AccordionTrigger>
               <AccordionContent className='space-y-3'>
-                <p className='text-muted-foreground text-sm leading-6'>
+                <p className='text-muted-foreground text-sm'>
                   {t(
                     'In JSON, the user group is the outer key and the billing group is the inner key. The example below means: vip users pay 0.8 when billed as standard, and 0.3 when billed as premium.'
                   )}
@@ -736,7 +736,7 @@ vip          0.5     ${t('No')}                ${t('Assigned by administrator on
     "premium": 0.3
   }
 }`}</GuideCodeBlock>
-                <p className='text-muted-foreground text-sm leading-6'>
+                <p className='text-muted-foreground text-sm'>
                   {t(
                     'Only configured combinations are overridden. All other calls keep the billing group base ratio.'
                   )}
@@ -749,7 +749,7 @@ vip          0.5     ${t('No')}                ${t('Assigned by administrator on
                 {t('Special usable group rules')}
               </AccordionTrigger>
               <AccordionContent className='space-y-3'>
-                <p className='text-muted-foreground text-sm leading-6'>
+                <p className='text-muted-foreground text-sm'>
                   {t(
                     'Special usable group rules make extra token groups visible to, or hide default ones from, users of a specific user group.'
                   )}
@@ -761,7 +761,7 @@ vip          0.5     ${t('No')}                ${t('Assigned by administrator on
     "special": "${t('Special group')}"
   }
 }`}</GuideCodeBlock>
-                <p className='text-muted-foreground text-sm leading-6'>
+                <p className='text-muted-foreground text-sm'>
                   {t(
                     'In the visual editor these appear as Extra visible and Hidden. In JSON, +: (or no prefix) adds a group and -: removes one.'
                   )}

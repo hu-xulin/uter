@@ -124,8 +124,9 @@ type FlatOAuthDefaults = {
   WeChatAccountQRCodeImageURL: string
 }
 
-const oauthTabContentClassName =
-  'grid min-w-0 gap-x-5 gap-y-6 lg:grid-cols-2 [&>[data-slot=form-item]]:min-w-0 lg:[&>[data-slot=form-item]:has([data-slot=switch])]:col-span-2'
+/* 单列纵向排列：每个 OAuth 配置项（启用开关 / Client ID / Client Secret）
+ * 各占一行，从上往下排，不再两两并排。 */
+const oauthTabContentClassName = 'flex min-w-0 flex-col gap-6'
 
 type OAuthSetupGuideRow = {
   label: ReactNode
@@ -142,7 +143,9 @@ type OAuthSetupGuideProps = {
 
 function OAuthSetupGuide(props: OAuthSetupGuideProps) {
   return (
-    <Alert className='lg:col-span-2'>
+    <Alert>
+      {/* 标题走 field 档（16/600），由外层 FormLabelTierProvider 下发：
+          截图红字要求「设置引导 16px，加粗」，说明文字保持 14px。 */}
       <AlertTitle>{props.title}</AlertTitle>
       <AlertDescription className='space-y-3 text-sm'>
         <div>{props.description}</div>
@@ -156,7 +159,8 @@ function OAuthSetupGuide(props: OAuthSetupGuideProps) {
                 {row.label}
               </span>
               <span className='flex min-w-0 items-center gap-2'>
-                <code className='bg-muted text-foreground min-w-0 rounded px-1.5 py-0.5 text-xs break-all'>
+                {/* 值本身是机器可读的 URL：等宽，14/20。 */}
+                <code className='text-mono bg-muted text-foreground min-w-0 rounded px-1.5 py-0.5 font-mono break-all'>
                   {row.value}
                 </code>
                 <CopyButton
@@ -491,6 +495,7 @@ export function OAuthSection(props: OAuthSectionProps) {
                         <Input
                           placeholder={t('Your GitHub OAuth Client ID')}
                           autoComplete='off'
+                          mono
                           value={field.value ?? ''}
                           onChange={(event) =>
                             field.onChange(event.target.value)
@@ -576,6 +581,7 @@ export function OAuthSection(props: OAuthSectionProps) {
                         <Input
                           placeholder={t('Your Discord OAuth Client ID')}
                           autoComplete='off'
+                          mono
                           value={field.value ?? ''}
                           onChange={(event) =>
                             field.onChange(event.target.value)
@@ -699,6 +705,7 @@ export function OAuthSection(props: OAuthSectionProps) {
                         <Input
                           placeholder={t('OIDC Client ID')}
                           autoComplete='off'
+                          mono
                           value={field.value ?? ''}
                           onChange={(event) =>
                             field.onChange(event.target.value)
@@ -744,6 +751,7 @@ export function OAuthSection(props: OAuthSectionProps) {
                             'https://provider.com/.well-known/openid-configuration'
                           )}
                           autoComplete='off'
+                          mono
                           value={field.value ?? ''}
                           onChange={(event) =>
                             field.onChange(event.target.value)
@@ -773,6 +781,7 @@ export function OAuthSection(props: OAuthSectionProps) {
                         <Input
                           placeholder={t('Override auto-discovered endpoint')}
                           autoComplete='off'
+                          mono
                           value={field.value ?? ''}
                           onChange={(event) =>
                             field.onChange(event.target.value)
@@ -797,6 +806,7 @@ export function OAuthSection(props: OAuthSectionProps) {
                         <Input
                           placeholder={t('Override auto-discovered endpoint')}
                           autoComplete='off'
+                          mono
                           value={field.value ?? ''}
                           onChange={(event) =>
                             field.onChange(event.target.value)
@@ -823,6 +833,7 @@ export function OAuthSection(props: OAuthSectionProps) {
                         <Input
                           placeholder={t('Override auto-discovered endpoint')}
                           autoComplete='off'
+                          mono
                           value={field.value ?? ''}
                           onChange={(event) =>
                             field.onChange(event.target.value)
@@ -884,7 +895,6 @@ export function OAuthSection(props: OAuthSectionProps) {
                       <FormLabel>{t('Client Secret')}</FormLabel>
                       <FormControl>
                         <SecretInput
-
                           value={field.value ?? ''}
                           onChange={field.onChange}
                           name={field.name}
@@ -907,6 +917,7 @@ export function OAuthSection(props: OAuthSectionProps) {
                             'Telegram OAuth Client ID from BotFather'
                           )}
                           autoComplete='off'
+                          mono
                           value={field.value ?? ''}
                           onChange={(event) =>
                             field.onChange(event.target.value)
@@ -977,6 +988,7 @@ export function OAuthSection(props: OAuthSectionProps) {
                         <Input
                           placeholder={t('LinuxDO Client ID')}
                           autoComplete='off'
+                          mono
                           value={field.value ?? ''}
                           onChange={(event) =>
                             field.onChange(event.target.value)
@@ -1070,6 +1082,7 @@ export function OAuthSection(props: OAuthSectionProps) {
                         <Input
                           placeholder={t('https://wechat-server.example.com')}
                           autoComplete='off'
+                          mono
                           value={field.value ?? ''}
                           onChange={(event) =>
                             field.onChange(event.target.value)
@@ -1113,6 +1126,7 @@ export function OAuthSection(props: OAuthSectionProps) {
                         <Input
                           placeholder={t('https://example.com/qr-code.png')}
                           autoComplete='off'
+                          mono
                           value={field.value ?? ''}
                           onChange={(event) =>
                             field.onChange(event.target.value)

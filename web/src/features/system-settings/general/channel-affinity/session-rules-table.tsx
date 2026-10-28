@@ -86,14 +86,16 @@ export function SessionRulesTable(props: SessionRulesTableProps) {
 
   return (
     <StaticDataTable
-      className='focus-visible:outline-ring overflow-x-auto rounded-none border-0 focus-visible:-outline-offset-2'
+      // 焦点环按规范 §1.7：贴边、`outline-offset: 0`。此前的 `-outline-offset-2`
+      // 把 2px 环画到容器内侧，与全站「外侧、不留缝」的几何相反。
+      className='focus-visible:outline-ring overflow-x-auto rounded-none border-0 focus-visible:outline-offset-0'
       containerProps={{
         role: 'region',
         'aria-label': t('Session rules table'),
         tabIndex: 0,
       }}
       tableProps={{ withContainer: false }}
-      tableClassName='min-w-[960px] table-fixed [&_th]:px-4 [&_th]:text-muted-foreground [&_td]:px-4 [&_td]:py-4 [&_code]:font-mono!'
+      tableClassName='min-w-[960px] table-fixed [&_th]:px-4 [&_th]:text-muted-foreground [&_td]:px-4 [&_td]:py-4 [&_code]:font-mono! [&_code]:text-mono!'
       headerRowClassName='bg-muted/35 hover:bg-muted/35'
       data={props.rules}
       getRowKey={(rule) => rule.id ?? rule.name}

@@ -62,6 +62,7 @@ import { SettingsPageFormActions } from '../components/settings-page-context'
 import { SettingsSection } from '../components/settings-section'
 import { useUpdateOption } from '../hooks/use-update-option'
 import { safeNumberFieldProps } from '../utils/numeric-field'
+import { formatPriceAdjustment } from '../utils/price-adjustment'
 import { AlipaySettingsSection } from './alipay-settings-section'
 import { AmountDiscountVisualEditor } from './amount-discount-visual-editor'
 import { AmountOptionsVisualEditor } from './amount-options-visual-editor'
@@ -100,6 +101,13 @@ function isHttpOriginUrl(value: string) {
   }
 }
 
+// 订单标题前缀的长度与字符约束，与后端 ValidatePaymentOrderTitlePrefix 同源：
+// 支付宝 subject 上限 256 字符且禁用特殊字符，微信 description 上限 127 字符，
+// 取交集后总标题按 127 算；扣掉最长的「 充值 123456789.99 元」后缀（18 字符），
+// 前缀上限为 100 字符。
+const ORDER_TITLE_PREFIX_MAX_LENGTH = 100
+const ORDER_TITLE_PREFIX_FORBIDDEN_CHARS = /[/=&?#%+<>"'|]/
+
 const paymentSchema = z.object({
   PayAddress: z.string().refine((value) => {
     const trimmed = value.trim()
@@ -110,6 +118,20 @@ const paymentSchema = z.object({
   EpayKey: z.string(),
   Price: z.coerce.number().min(0),
   MinTopUp: z.coerce.number().min(0),
+  // 订单标题前缀（支付宝 subject / 微信 description 的品牌部分）。
+  // 规则与后端 operation_setting.ValidatePaymentOrderTitlePrefix 保持一致：
+  // 上限 100 字符——微信 description 只有 127 字符，扣掉「 充值 68.80 元」后缀；
+  // 且拒绝支付宝明确禁止的特殊字符（会直接导致下单失败）。
+  OrderTitlePrefix: z
+    .string()
+    .max(
+      ORDER_TITLE_PREFIX_MAX_LENGTH,
+      `Use at most ${ORDER_TITLE_PREFIX_MAX_LENGTH} characters`
+    )
+    .refine(
+      (value) => !ORDER_TITLE_PREFIX_FORBIDDEN_CHARS.test(value),
+      'Alipay rejects these characters: / = & ? # % + < > " \' |'
+    ),
   CustomCallbackAddress: z
     .string()
     .refine(
@@ -448,6 +470,7 @@ export function PaymentSettingsSection({
       EpayKey: values.EpayKey.trim(),
       Price: values.Price,
       MinTopUp: values.MinTopUp,
+      OrderTitlePrefix: values.OrderTitlePrefix.trim(),
       CustomCallbackAddress: removeTrailingSlash(values.CustomCallbackAddress),
       PaymentSiteAddress: removeTrailingSlash(values.PaymentSiteAddress),
       PayMethods: values.PayMethods.trim(),
@@ -502,6 +525,7 @@ export function PaymentSettingsSection({
       EpayKey: initialRef.current.EpayKey.trim(),
       Price: initialRef.current.Price,
       MinTopUp: initialRef.current.MinTopUp,
+      OrderTitlePrefix: initialRef.current.OrderTitlePrefix.trim(),
       CustomCallbackAddress: removeTrailingSlash(
         initialRef.current.CustomCallbackAddress
       ),
@@ -581,6 +605,13 @@ export function PaymentSettingsSection({
 
     if (sanitized.MinTopUp !== initial.MinTopUp) {
       updates.push({ key: 'MinTopUp', value: sanitized.MinTopUp })
+    }
+
+    if (sanitized.OrderTitlePrefix !== initial.OrderTitlePrefix) {
+      updates.push({
+        key: 'payment_setting.order_title_prefix',
+        value: sanitized.OrderTitlePrefix,
+      })
     }
 
     if (sanitized.CustomCallbackAddress !== initial.CustomCallbackAddress) {
@@ -991,7 +1022,7 @@ export function PaymentSettingsSection({
     <SettingsSection title={t('Payment Gateway')}>
       {!complianceConfirmed ? (
         <Alert variant='destructive' className='mb-6'>
-          <ShieldAlert className='h-4 w-4' />
+          <ShieldAlert className='h-4.5 w-4.5' />
           <AlertTitle>{t('Compliance confirmation required')}</AlertTitle>
           <AlertDescription>
             <div className='space-y-3'>
@@ -1085,7 +1116,7 @@ export function PaymentSettingsSection({
             <TabsContent value='general' className={paymentTabContentClassName}>
               <div className='space-y-4'>
                 <div>
-                  <h3 className='text-lg font-medium'>
+                  <h3 className='text-lg font-semibold'>
                     {t('General Settings')}
                   </h3>
                   <p className='text-muted-foreground text-sm'>
@@ -1093,7 +1124,7 @@ export function PaymentSettingsSection({
                   </p>
                 </div>
 
-                <div className='grid gap-6 md:grid-cols-2'>
+                <div className='flex flex-col gap-6'>
                   <FormField
                     control={form.control}
                     name='Price'
@@ -1115,8 +1146,8 @@ export function PaymentSettingsSection({
                         </FormControl>
                         <FormDescription>
                           {t(
-                            'Charged for each 1 USD of balance. Derived automatically as the exchange rate + {{markup}} and refreshed every 10 minutes, so this field is read-only. Applies to every payment method that settles in CNY (Alipay, WeChat Pay, Epay).',
-                            { markup: '0.20' }
+                            'Charged for each 1 USD of balance. Derived automatically as the exchange rate {{adjustment}} and refreshed every 10 minutes, so this field is read-only. Applies to every payment method that settles in CNY (Alipay, WeChat Pay, Epay).',
+                            { adjustment: formatPriceAdjustment(-0.2) }
                           )}
                         </FormDescription>
                         <FormMessage />
@@ -1135,7 +1166,7 @@ export function PaymentSettingsSection({
                             autoComplete='off'
                             placeholder='1'
                             type='number'
-                            step='1'
+                            step='0.01'
                             min={0}
                             {...safeNumberFieldProps(field)}
                           />
@@ -1161,6 +1192,7 @@ export function PaymentSettingsSection({
                         <Input
                           autoComplete='off'
                           placeholder={t('https://gateway.example.com')}
+                          mono
                           {...field}
                           onChange={(event) =>
                             field.onChange(event.target.value)
@@ -1170,6 +1202,34 @@ export function PaymentSettingsSection({
                       <FormDescription>
                         {t(
                           'Site origin where users are redirected back to after payment. Mainland China gateways (Alipay / WeChat Pay) require this domain to be ICP filed: for this site use https://uter.cc (filed), not the operating domain https://uter.ai (not filed). Leave blank to use the server address.'
+                        )}
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name='OrderTitlePrefix'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('Order title prefix')}</FormLabel>
+                      <FormControl>
+                        <Input
+                          autoComplete='off'
+                          placeholder='Uter.ai 优特智能'
+                          maxLength={ORDER_TITLE_PREFIX_MAX_LENGTH}
+                          {...field}
+                          onChange={(event) =>
+                            field.onChange(event.target.value)
+                          }
+                        />
+                      </FormControl>
+                      <FormDescription>
+                        {t(
+                          'Brand prefix of the Alipay / WeChat Pay order title, which reads <prefix> 充值 68.80 元. Leave blank to use the default brand name. Max {{max}} characters: WeChat Pay limits the whole title to 127 and Alipay rejects / = & and similar characters.',
+                          { max: ORDER_TITLE_PREFIX_MAX_LENGTH }
                         )}
                       </FormDescription>
                       <FormMessage />
@@ -1195,12 +1255,12 @@ export function PaymentSettingsSection({
                         >
                           {payMethodsVisualMode ? (
                             <>
-                              <Code2 className='mr-2 h-3 w-3' />
+                              <Code2 className='mr-2 size-4.5' />
                               {t('JSON Editor')}
                             </>
                           ) : (
                             <>
-                              <Eye className='mr-2 h-3 w-3' />
+                              <Eye className='mr-2 size-4.5' />
                               {t('Visual Editor')}
                             </>
                           )}
@@ -1239,7 +1299,7 @@ export function PaymentSettingsSection({
                   )}
                 />
 
-                <div className='grid gap-6 md:grid-cols-2 md:items-start'>
+                <div className='flex flex-col gap-6'>
                   <FormField
                     control={form.control}
                     name='AmountOptions'
@@ -1260,12 +1320,12 @@ export function PaymentSettingsSection({
                           >
                             {amountOptionsVisualMode ? (
                               <>
-                                <Code2 className='mr-2 h-3 w-3' />
+                                <Code2 className='mr-2 size-4.5' />
                                 {t('JSON Editor')}
                               </>
                             ) : (
                               <>
-                                <Eye className='mr-2 h-3 w-3' />
+                                <Eye className='mr-2 size-4.5' />
                                 {t('Visual Editor')}
                               </>
                             )}
@@ -1320,12 +1380,12 @@ export function PaymentSettingsSection({
                           >
                             {amountDiscountVisualMode ? (
                               <>
-                                <Code2 className='mr-2 h-3 w-3' />
+                                <Code2 className='mr-2 size-4.5' />
                                 {t('JSON Editor')}
                               </>
                             ) : (
                               <>
-                                <Eye className='mr-2 h-3 w-3' />
+                                <Eye className='mr-2 size-4.5' />
                                 {t('Visual Editor')}
                               </>
                             )}
@@ -1374,14 +1434,14 @@ export function PaymentSettingsSection({
             <TabsContent value='epay' className={paymentTabContentClassName}>
               <div className='space-y-4'>
                 <div>
-                  <h3 className='text-lg font-medium'>{t('Epay Gateway')}</h3>
+                  <h3 className='text-lg font-semibold'>{t('Epay Gateway')}</h3>
                   <p className='text-muted-foreground text-sm'>
                     {t('Configuration for Epay payment integration')}
                   </p>
                 </div>
 
                 <Alert>
-                  <ShieldAlert className='h-4 w-4' />
+                  <ShieldAlert className='h-4.5 w-4.5' />
                   <AlertTitle>{t('Epay safety reminder')}</AlertTitle>
                   <AlertDescription>
                     {t(
@@ -1390,7 +1450,7 @@ export function PaymentSettingsSection({
                   </AlertDescription>
                 </Alert>
 
-                <div className='grid gap-6 md:grid-cols-2'>
+                <div className='flex flex-col gap-6'>
                   <FormField
                     control={form.control}
                     name='PayAddress'
@@ -1401,6 +1461,7 @@ export function PaymentSettingsSection({
                           <Input
                             autoComplete='off'
                             placeholder={t('https://pay.example.com')}
+                            mono
                             {...field}
                             onChange={(event) =>
                               field.onChange(event.target.value)
@@ -1423,6 +1484,7 @@ export function PaymentSettingsSection({
                         <FormLabel>{t('Callback address')}</FormLabel>
                         <FormControl>
                           <Input
+                            mono
                             autoComplete='off'
                             placeholder={t('https://gateway.example.com')}
                             {...field}
@@ -1442,7 +1504,7 @@ export function PaymentSettingsSection({
                   />
                 </div>
 
-                <div className='grid gap-6 md:grid-cols-2'>
+                <div className='flex flex-col gap-6'>
                   <FormField
                     control={form.control}
                     name='EpayId'
@@ -1491,30 +1553,32 @@ export function PaymentSettingsSection({
             <TabsContent value='stripe' className={paymentTabContentClassName}>
               <div className='space-y-4'>
                 <div>
-                  <h3 className='text-lg font-medium'>{t('Stripe Gateway')}</h3>
+                  <h3 className='text-lg font-semibold'>
+                    {t('Stripe Gateway')}
+                  </h3>
                   <p className='text-muted-foreground text-sm'>
                     {t('Configuration for Stripe payment integration')}
                   </p>
                 </div>
 
-                <div className='rounded-md bg-blue-50 p-4 text-sm text-blue-900 dark:bg-blue-950 dark:text-blue-100'>
+                <div className='bg-info-soft text-info-soft-foreground dark:bg-info-soft dark:text-info-soft-foreground rounded-md p-4 text-sm'>
                   <p className='mb-2 font-medium'>
                     {t('Webhook Configuration:')}
                   </p>
                   <ul className='list-inside list-disc space-y-1'>
                     <li>
                       {t('Webhook URL:')}{' '}
-                      <code className='rounded bg-blue-100 px-1 py-0.5 text-xs dark:bg-blue-900'>
+                      <code className='text-mono bg-info-soft dark:bg-info-soft rounded px-1 py-0.5 font-mono'>
                         {'<ServerAddress>/api/stripe/webhook'}
                       </code>
                     </li>
                     <li>
                       {t('Required events:')}{' '}
-                      <code className='rounded bg-blue-100 px-1 py-0.5 text-xs dark:bg-blue-900'>
+                      <code className='text-mono bg-info-soft dark:bg-info-soft rounded px-1 py-0.5 font-mono'>
                         {t('checkout.session.completed')}
                       </code>{' '}
                       {t('and')}{' '}
-                      <code className='rounded bg-blue-100 px-1 py-0.5 text-xs dark:bg-blue-900'>
+                      <code className='text-mono bg-info-soft dark:bg-info-soft rounded px-1 py-0.5 font-mono'>
                         {t('checkout.session.expired')}
                       </code>
                     </li>
@@ -1532,7 +1596,7 @@ export function PaymentSettingsSection({
                   </ul>
                 </div>
 
-                <div className='grid gap-6 md:grid-cols-3'>
+                <div className='flex flex-col gap-6'>
                   <FormField
                     control={form.control}
                     name='StripeApiSecret'
@@ -1602,7 +1666,7 @@ export function PaymentSettingsSection({
                   />
                 </div>
 
-                <div className='grid gap-6 md:grid-cols-3'>
+                <div className='flex flex-col gap-6'>
                   <FormField
                     control={form.control}
                     name='StripeUnitPrice'
@@ -1680,20 +1744,22 @@ export function PaymentSettingsSection({
             <TabsContent value='creem' className={paymentTabContentClassName}>
               <div className='space-y-4'>
                 <div>
-                  <h3 className='text-lg font-medium'>{t('Creem Gateway')}</h3>
+                  <h3 className='text-lg font-semibold'>
+                    {t('Creem Gateway')}
+                  </h3>
                   <p className='text-muted-foreground text-sm'>
                     {t('Configuration for Creem payment integration')}
                   </p>
                 </div>
 
-                <div className='rounded-md bg-blue-50 p-4 text-sm text-blue-900 dark:bg-blue-950 dark:text-blue-100'>
+                <div className='bg-info-soft text-info-soft-foreground dark:bg-info-soft dark:text-info-soft-foreground rounded-md p-4 text-sm'>
                   <p className='mb-2 font-medium'>
                     {t('Webhook Configuration:')}
                   </p>
                   <ul className='list-inside list-disc space-y-1'>
                     <li>
                       {t('Webhook URL:')}{' '}
-                      <code className='rounded bg-blue-100 px-1 py-0.5 text-xs dark:bg-blue-900'>
+                      <code className='text-mono bg-info-soft dark:bg-info-soft rounded px-1 py-0.5 font-mono'>
                         {'<ServerAddress>/api/creem/webhook'}
                       </code>
                     </li>
@@ -1701,7 +1767,7 @@ export function PaymentSettingsSection({
                   </ul>
                 </div>
 
-                <div className='grid gap-6 md:grid-cols-2'>
+                <div className='flex flex-col gap-6'>
                   <FormField
                     control={form.control}
                     name='CreemApiKey'
@@ -1786,12 +1852,12 @@ export function PaymentSettingsSection({
                         >
                           {creemProductsVisualMode ? (
                             <>
-                              <Code2 className='mr-2 h-3 w-3' />
+                              <Code2 className='mr-2 size-4.5' />
                               {t('JSON Editor')}
                             </>
                           ) : (
                             <>
-                              <Eye className='mr-2 h-3 w-3' />
+                              <Eye className='mr-2 size-4.5' />
                               {t('Visual Editor')}
                             </>
                           )}

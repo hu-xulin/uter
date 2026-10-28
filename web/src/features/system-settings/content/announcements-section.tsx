@@ -103,31 +103,31 @@ const typeOptions = [
   {
     value: 'default',
     label: 'Default',
-    color: 'bg-gray-500',
+    color: 'bg-muted',
     badgeVariant: 'neutral' as const,
   },
   {
     value: 'ongoing',
     label: 'Ongoing',
-    color: 'bg-blue-500',
+    color: 'bg-info',
     badgeVariant: 'info' as const,
   },
   {
     value: 'success',
     label: 'Success',
-    color: 'bg-green-500',
+    color: 'bg-success',
     badgeVariant: 'success' as const,
   },
   {
     value: 'warning',
     label: 'Warning',
-    color: 'bg-orange-500',
+    color: 'bg-warning',
     badgeVariant: 'warning' as const,
   },
   {
     value: 'error',
     label: 'Error',
-    color: 'bg-red-500',
+    color: 'bg-destructive',
     badgeVariant: 'danger' as const,
   },
 ]
@@ -306,7 +306,7 @@ export function AnnouncementsSection({
         <div className='flex flex-wrap items-center justify-between gap-2'>
           <div className='flex flex-wrap items-center gap-2'>
             <Button onClick={handleAdd} size='sm'>
-              <Plus className='mr-2 h-4 w-4' />
+              <Plus className='mr-2 h-4.5 w-4.5' />
               {t('Add Announcement')}
             </Button>
             <Button
@@ -315,7 +315,7 @@ export function AnnouncementsSection({
               variant='destructive'
               disabled={selectedIds.length === 0}
             >
-              <Trash2 className='mr-2 h-4 w-4' />
+              <Trash2 className='mr-2 h-4.5 w-4.5' />
               {t('Delete (')}
               {selectedIds.length})
             </Button>
@@ -325,7 +325,7 @@ export function AnnouncementsSection({
               variant='secondary'
               disabled={!hasChanges || updateOption.isPending}
             >
-              <Save className='mr-2 h-4 w-4' />
+              <Save className='mr-2 h-4.5 w-4.5' />
               {updateOption.isPending ? t('Saving...') : t('Save Settings')}
             </Button>
           </div>
@@ -333,6 +333,7 @@ export function AnnouncementsSection({
             checked={isEnabled}
             onCheckedChange={handleToggleEnabled}
             label={t('Enabled')}
+            labelTier='field'
             className='py-0'
           />
         </div>
@@ -564,7 +565,8 @@ export function AnnouncementsSection({
                 <FormItem>
                   <FormLabel>{t('Extra Notes (Optional)')}</FormLabel>
                   <FormControl>
-                    <Input autoComplete='off'
+                    <Input
+                      autoComplete='off'
                       placeholder={t('Additional information')}
                       {...field}
                     />

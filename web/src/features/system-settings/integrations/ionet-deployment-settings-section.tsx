@@ -36,9 +36,9 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { SecretInput } from '@/components/ui/secret-input'
-import { isMaskedSecret, maskSecret } from '@/lib/secret'
 import { Switch } from '@/components/ui/switch'
 import { testDeploymentConnectionWithKey } from '@/features/models/api'
+import { isMaskedSecret, maskSecret } from '@/lib/secret'
 
 import {
   SettingsForm,
@@ -198,7 +198,7 @@ export function IoNetDeploymentSettingsSection({
                         className='shrink-0'
                       >
                         {testState.loading ? (
-                          <Loader2 className='me-2 size-4 animate-spin' />
+                          <Loader2 className='me-2 size-4.5 animate-spin' />
                         ) : null}
                         {t('Test Connection')}
                       </Button>
@@ -239,7 +239,7 @@ export function IoNetDeploymentSettingsSection({
 
               {testState.ok === true ? (
                 <Alert variant='default' className='flex items-center gap-2'>
-                  <CheckCircle2 className='size-4 text-green-600' />
+                  <CheckCircle2 className='text-success size-4.5' />
                   <div>
                     <AlertTitle>{t('Connection successful')}</AlertTitle>
                     <AlertDescription>
@@ -254,7 +254,7 @@ export function IoNetDeploymentSettingsSection({
                   variant='destructive'
                   className='flex items-center gap-2'
                 >
-                  <XCircle className='size-4' />
+                  <XCircle className='size-4.5' />
                   <div>
                     <AlertTitle>{t('Connection failed')}</AlertTitle>
                     <AlertDescription>{t(testState.error)}</AlertDescription>

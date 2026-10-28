@@ -36,6 +36,7 @@ import { Switch } from '@/components/ui/switch'
 import {
   formatBillingCurrencyFromUSD,
   getCurrencyDisplay,
+  getCurrencyLabel,
 } from '@/lib/currency'
 
 import {
@@ -67,6 +68,17 @@ function formatQuotaHint(quota: number): string {
   if (!Number.isFinite(quota)) return '-'
   const { config } = getCurrencyDisplay()
   return formatBillingCurrencyFromUSD(quota / config.quotaPerUnit)
+}
+
+/**
+ * The field stores raw quota units, so its unit label has to follow the site's
+ * display type: with `quotaDisplayType: 'TOKENS'` one quota unit renders as one
+ * token and "Tokens" is accurate, but with USD/CNY/CUSTOM the same number is a
+ * fraction of a dollar and calling it "Tokens" makes operators configure the
+ * reward two orders of magnitude off.
+ */
+function quotaUnitLabel(t: (key: string) => string): string {
+  return getCurrencyLabel() === 'Tokens' ? t('Tokens') : t('Quota units')
 }
 
 export function CheckinSettingsSection({
@@ -169,7 +181,7 @@ export function CheckinSettingsSection({
           />
 
           {enabled && (
-            <div className='grid gap-6 sm:grid-cols-2'>
+            <div className='flex flex-col gap-6'>
               <FormField
                 control={form.control}
                 name='minQuota'
@@ -177,11 +189,12 @@ export function CheckinSettingsSection({
                   <FormItem>
                     <FormLabel>
                       {t('Minimum check-in quota ({{unit}})', {
-                        unit: t('Tokens'),
+                        unit: quotaUnitLabel(t),
                       })}
                     </FormLabel>
                     <FormControl>
-                      <Input autoComplete='off'
+                      <Input
+                        autoComplete='off'
                         type='number'
                         min={0}
                         placeholder={t('1000')}
@@ -206,11 +219,12 @@ export function CheckinSettingsSection({
                   <FormItem>
                     <FormLabel>
                       {t('Maximum check-in quota ({{unit}})', {
-                        unit: t('Tokens'),
+                        unit: quotaUnitLabel(t),
                       })}
                     </FormLabel>
                     <FormControl>
-                      <Input autoComplete='off'
+                      <Input
+                        autoComplete='off'
                         type='number'
                         min={0}
                         placeholder={t('10000')}

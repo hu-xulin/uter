@@ -123,8 +123,8 @@ function FillColumnPopover(props: FillColumnPopoverProps) {
           <Button
             type='button'
             variant='outline'
-            size='sm'
-            className='h-8 min-w-8 shrink-0 px-2'
+            size='icon-sm'
+            className='shrink-0'
             aria-label={t('Fill entire column')}
           />
         }
@@ -155,7 +155,7 @@ function FillColumnPopover(props: FillColumnPopoverProps) {
               event.preventDefault()
               handleSubmit()
             }}
-            className='font-mono'
+            className='text-mono font-mono'
           />
           <Button type='button' size='sm' onClick={handleSubmit}>
             {t('Apply to all rows')}
@@ -325,7 +325,7 @@ function TaskMatrixTable(props: TaskMatrixTableProps) {
                     onKeyDown={(event) =>
                       props.onPriceKeyDown(event, entry.index, field)
                     }
-                    className='min-w-28 font-mono'
+                    className='text-mono min-w-28 font-mono'
                   />
                 </TableCell>
               ))}
@@ -354,7 +354,7 @@ function TaskMatrixTable(props: TaskMatrixTableProps) {
                   onKeyDown={(event) =>
                     props.onPriceKeyDown(event, entry.index, 'constant')
                   }
-                  className='min-w-28 font-mono'
+                  className='text-mono min-w-28 font-mono'
                 />
               </TableCell>
               <TableCell className='px-1 text-center'>
@@ -363,7 +363,7 @@ function TaskMatrixTable(props: TaskMatrixTableProps) {
                     <TooltipTrigger
                       render={
                         <span
-                          className='inline-flex cursor-help text-amber-600 dark:text-amber-400'
+                          className='text-warning dark:text-warning inline-flex cursor-help'
                           tabIndex={0}
                         />
                       }
@@ -428,7 +428,7 @@ function TaskMatrixGroup(props: TaskMatrixGroupProps) {
             {t('{{count}} combinations', { count: props.entries.length })}
           </span>
           {!props.allRowsFree && freeCount > 0 ? (
-            <span className='inline-flex items-center gap-1 text-xs text-amber-600 dark:text-amber-400'>
+            <span className='text-warning dark:text-warning inline-flex items-center gap-1 text-xs'>
               <AlertTriangle aria-hidden='true' />
               {freeCount}
               <span className='sr-only'>
@@ -510,9 +510,9 @@ export function TaskPricingMatrix(props: TaskPricingMatrixProps) {
     <TooltipProvider>
       <div ref={containerRef} className='flex flex-col gap-3'>
         {allRowsFree ? (
-          <Alert className='border-amber-500/40 bg-amber-500/10 text-amber-800 dark:text-amber-200'>
+          <Alert className='border-warning/40 bg-warning/10 text-warning dark:text-warning-soft-foreground'>
             <AlertTriangle aria-hidden='true' />
-            <AlertDescription className='text-xs text-current'>
+            <AlertDescription className='text-sm text-current'>
               {t(
                 'All combinations are priced at zero. Matching requests will be billed as free.'
               )}

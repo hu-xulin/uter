@@ -53,7 +53,7 @@ import {
 } from '@/components/ui/select'
 
 const sectionCardClassName =
-  'relative shadow-sm ring-0 before:pointer-events-none before:absolute before:inset-0 before:rounded-xl before:border before:border-border/90'
+  'relative ring-0 before:pointer-events-none before:absolute before:inset-0 before:rounded-xl before:border before:border-border/90'
 const sectionHeaderClassName = 'border-b bg-muted/20'
 
 type Rule = {
@@ -190,22 +190,23 @@ function GroupSection(props: GroupSectionProps) {
             render={
               <Button
                 variant='ghost'
-                className='h-auto min-w-0 justify-start whitespace-normal'
+                size='wrap'
+                className='min-w-0 justify-start'
               />
             }
             aria-label={t('Rules for {{group}}', { group: props.groupName })}
           >
             {open ? (
-              <ChevronUp className='h-4 w-4' />
+              <ChevronUp className='h-4.5 w-4.5' />
             ) : (
-              <ChevronDown className='h-4 w-4' />
+              <ChevronDown className='h-4.5 w-4.5' />
             )}
             <span className='min-w-0 truncate font-semibold'>
               {props.groupName}
             </span>
             {!isKnownGroup && (
               <StatusBadge variant='danger' copyable={false}>
-                <AlertTriangle className='mr-1 h-3 w-3' />
+                <AlertTriangle className='mr-1 size-4.5' />
                 {t('Not in pricing table')}
               </StatusBadge>
             )}
@@ -216,24 +217,24 @@ function GroupSection(props: GroupSectionProps) {
           <div className='flex shrink-0 items-center gap-1'>
             <Button
               variant='ghost'
-              size='sm'
-              className='h-7 w-7 p-0'
+              size='icon-sm'
+              className='p-0'
               aria-label={t('Add rule')}
               onClick={() => {
                 props.onAdd(props.groupName)
                 setOpen(true)
               }}
             >
-              <Plus className='h-4 w-4' />
+              <Plus className='h-4.5 w-4.5' />
             </Button>
             <Button
               variant='ghost'
-              size='sm'
-              className='text-destructive h-7 w-7 p-0'
+              size='icon-sm'
+              className='text-destructive hover:text-destructive p-0'
               aria-label={t('Remove {{group}}', { group: props.groupName })}
               onClick={() => props.onRemoveGroup(props.groupName)}
             >
-              <Trash2 className='h-4 w-4' />
+              <Trash2 className='h-4.5 w-4.5' />
             </Button>
           </div>
         </div>
@@ -318,12 +319,12 @@ function GroupSection(props: GroupSectionProps) {
                 )}
                 <Button
                   variant='ghost'
-                  size='sm'
-                  className='text-destructive col-start-2 row-start-1 size-8 p-0 sm:col-start-auto sm:row-start-auto'
+                  size='icon-sm'
+                  className='text-destructive col-start-2 row-start-1 p-0 sm:col-start-auto sm:row-start-auto'
                   aria-label={t('Delete rule')}
                   onClick={() => props.onRemove(rule._id)}
                 >
-                  <Trash2 className='h-4 w-4' />
+                  <Trash2 className='h-4.5 w-4.5' />
                 </Button>
               </div>
             ))}

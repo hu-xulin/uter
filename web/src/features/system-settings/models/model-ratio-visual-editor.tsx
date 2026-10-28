@@ -765,7 +765,7 @@ const ModelRatioVisualEditorComponent = forwardRef<
             />
           ) : (
             <div className='bg-card text-muted-foreground flex h-full min-h-0 flex-col items-center justify-center gap-3 rounded-xl border border-dashed p-6 text-center'>
-              <div className='text-foreground text-base font-medium'>
+              <div className='text-foreground text-lg font-semibold'>
                 {t('Select a model to edit pricing')}
               </div>
               <p className='max-w-sm text-sm'>

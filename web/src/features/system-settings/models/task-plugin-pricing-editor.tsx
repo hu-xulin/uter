@@ -157,7 +157,7 @@ export function TaskPluginPricingEditor(props: TaskPluginPricingEditorProps) {
               </Alert>
               {separate && (
                 <>
-                  <code className='bg-muted/30 block max-h-40 overflow-auto rounded-md border p-3 text-xs break-all whitespace-pre-wrap'>
+                  <code className='text-mono-code bg-muted/30 block max-h-40 overflow-auto rounded-md border p-3 font-mono break-all whitespace-pre-wrap'>
                     {props.expressions[key]}
                   </code>
                   <Button
@@ -272,7 +272,7 @@ export function TaskPluginPricingEditor(props: TaskPluginPricingEditorProps) {
               />
             ) : (
               usesExpression && (
-                <code className='bg-muted/30 block max-h-40 overflow-auto rounded-md border p-3 text-xs break-all whitespace-pre-wrap'>
+                <code className='text-mono-code bg-muted/30 block max-h-40 overflow-auto rounded-md border p-3 font-mono break-all whitespace-pre-wrap'>
                   {expression}
                 </code>
               )

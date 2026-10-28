@@ -211,7 +211,7 @@ export function ChannelAffinitySection(props: Props) {
       >
         <div className='flex flex-col gap-1.5 px-4 pt-5 sm:px-5'>
           <div className='flex items-center gap-2'>
-            <h3 className='text-base font-semibold'>{t('Session rules')}</h3>
+            <h3 className='text-lg font-semibold'>{t('Session rules')}</h3>
             <Badge variant='secondary' className='tabular-nums'>
               {rules.length}
             </Badge>
@@ -311,7 +311,7 @@ export function ChannelAffinitySection(props: Props) {
               <Label htmlFor='channel-affinity-rules-json'>
                 {t('Rules JSON')}
               </Label>
-              <p className='text-muted-foreground text-xs'>
+              <p className='text-muted-foreground text-sm'>
                 {t('Switch to visual mode to add rules or apply templates.')}
               </p>
               <JsonCodeEditor

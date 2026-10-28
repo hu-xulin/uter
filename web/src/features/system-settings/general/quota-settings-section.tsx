@@ -352,6 +352,7 @@ export function QuotaSettingsSection({
                     <Input
                       autoComplete='off'
                       placeholder={t('https://example.com/topup')}
+                      mono
                       {...field}
                     />
                   </FormControl>
@@ -373,6 +374,7 @@ export function QuotaSettingsSection({
                     <Input
                       autoComplete='off'
                       placeholder={t('https://docs.example.com')}
+                      mono
                       {...field}
                     />
                   </FormControl>

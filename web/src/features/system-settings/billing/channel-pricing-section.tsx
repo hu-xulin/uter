@@ -185,9 +185,10 @@ function ChannelModelPicker({
     onClose()
   }
   return (
-    <div className='bg-popover space-y-2 rounded-lg border p-3 shadow-md'>
+    <div className='bg-popover space-y-2 rounded-lg border p-3'>
       <div className='flex items-center gap-2'>
-        <Input autoComplete='off'
+        <Input
+          autoComplete='off'
           className='flex-1'
           value={query}
           onChange={(event) => setQuery(event.target.value)}
@@ -200,7 +201,7 @@ function ChannelModelPicker({
       </div>
       <div className='bg-muted/20 max-h-56 space-y-1 overflow-y-auto rounded-md p-1'>
         {filtered.length === 0 ? (
-          <p className='text-muted-foreground px-2 py-3 text-xs'>
+          <p className='text-muted-foreground px-2 py-3 text-sm'>
             {t('No models configured for channel')}
           </p>
         ) : (
@@ -221,7 +222,7 @@ function ChannelModelPicker({
                   disabled={disabled}
                   onChange={() => toggle(model)}
                 />
-                <span className='font-mono break-all'>{model}</span>
+                <span className='text-mono font-mono break-all'>{model}</span>
                 {disabled && (
                   <span className='text-muted-foreground ml-auto text-xs'>
                     {t('Already added')}
@@ -413,6 +414,8 @@ export function ChannelPricingSection({
               setDraft((prev) => ({ ...prev, enabled: checked }))
             }
             label={t('Enabled')}
+            // 整段功能的总开关也是一条配置项标题：与全站设置页统一 16/600，
+            // 不再单独放大到 18px。
             description={t(
               'Charge requests differently depending on which upstream channel served them.'
             )}
@@ -432,8 +435,15 @@ export function ChannelPricingSection({
             <div className='bg-muted/20 space-y-3 rounded-xl border p-3'>
               <div className='flex flex-wrap items-end justify-between gap-3'>
                 <div className='flex min-w-0 flex-wrap items-end gap-3'>
-                  <div className='space-y-1'>
-                    <Label className='text-muted-foreground text-sm'>
+                  {/* 用 `flex flex-col gap-1` 而不是 `space-y-1`：Base UI 的
+                      Combobox 会在末尾渲染一个 `position: fixed` 的隐藏
+                      input，Tailwind v4 的 `space-y-*` 是
+                      `> :not(:last-child) { margin-bottom }`，这个隐藏节点
+                      把下拉框挤成「非最后一个子元素」，于是多出一份 4px 下
+                      边距 —— 三个控件在 `items-end` 里就差了 4px。
+                      flex 的 `gap` 不作用于脱离文档流的子元素，正好没有这个问题。 */}
+                  <div className='flex flex-col gap-1'>
+                    <Label tier='field' className='text-muted-foreground'>
                       {t('Channel')}
                     </Label>
                     <Combobox
@@ -444,15 +454,19 @@ export function ChannelPricingSection({
                       }
                       disabled={channelsQuery.isLoading}
                       placeholder={t('Select a channel')}
-                      className='w-64'
+                      // 与同一行的倍率输入框、启用开关同高
+                      // （--ds-control-height-md）：InputGroup 会按内容撑出
+                      // 2px，这里显式钉住高度。
+                      className='h-(--ds-control-height-md) w-64'
                     />
                   </div>
-                  <div className='space-y-1'>
-                    <Label className='text-muted-foreground text-sm'>
+                  <div className='flex flex-col gap-1'>
+                    <Label tier='field' className='text-muted-foreground'>
                       {t('Channel-wide multiplier')}
                     </Label>
-                    <Input autoComplete='off'
-                      className='w-32'
+                    <Input
+                      autoComplete='off'
+                      className='h-(--ds-control-height-md) w-32'
                       inputMode='decimal'
                       placeholder='1'
                       value={row.ratio}
@@ -461,14 +475,15 @@ export function ChannelPricingSection({
                       }
                     />
                   </div>
-                  <div className='flex items-center gap-2 pb-1'>
+                  {/* 开关组按控件高度居中，不再靠 pb-1 目测微调。 */}
+                  <div className='flex h-(--ds-control-height-md) items-center gap-2'>
                     <Switch
                       checked={row.enabled}
                       onCheckedChange={(checked) =>
                         patchRow(row.id, { enabled: checked })
                       }
                     />
-                    <Label className='text-xs'>{t('Enabled')}</Label>
+                    <Label tier='default'>{t('Enabled')}</Label>
                   </div>
                 </div>
                 <Button
@@ -494,7 +509,7 @@ export function ChannelPricingSection({
 
               <SettingsControlChildren className='space-y-2'>
                 <div className='flex flex-wrap items-center justify-between gap-2'>
-                  <Label className='text-muted-foreground text-sm'>
+                  <Label tier='default' className='text-muted-foreground'>
                     {t('Per-model overrides')}
                   </Label>
                   <Button
@@ -568,7 +583,8 @@ export function ChannelPricingSection({
                           }
                           className='w-40'
                         />
-                        <Input autoComplete='off'
+                        <Input
+                          autoComplete='off'
                           className='w-32'
                           inputMode='decimal'
                           placeholder={rule.mode === 'price' ? '2.5' : '0.8'}
@@ -598,9 +614,11 @@ export function ChannelPricingSection({
                     )
                   })
                 )}
+                {/* 「新增模型规则」是这一组里的主操作，用矩形描边按钮而不是
+                    无边框的文字按钮：它和底部的「新增渠道规则」同级，样式要一致。 */}
                 <Button
                   type='button'
-                  variant='ghost'
+                  variant='outline'
                   size='sm'
                   onClick={() =>
                     patchRow(row.id, {

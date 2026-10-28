@@ -50,6 +50,7 @@ import { Input } from '@/components/ui/input'
 import { Progress } from '@/components/ui/progress'
 import { Separator } from '@/components/ui/separator'
 import { Switch } from '@/components/ui/switch'
+import { Heading } from '@/design-system'
 import { api } from '@/lib/api'
 import { handleServerError } from '@/lib/handle-server-error'
 
@@ -333,15 +334,18 @@ export function PerformanceSection(props: Props) {
           />
           {/* Disk Cache Settings */}
           <div>
-            <h4 className='font-medium'>{t('Disk Cache Settings')}</h4>
-            <p className='text-muted-foreground mt-1 text-xs'>
+            <Heading variant='group-title' level={4}>
+              {t('Disk Cache Settings')}
+            </Heading>
+            <p className='text-muted-foreground mt-1 text-sm'>
               {t(
                 'When enabled, large request bodies are temporarily stored on disk instead of memory, significantly reducing memory usage. SSD recommended.'
               )}
             </p>
           </div>
 
-          <div className='grid grid-cols-1 gap-4 md:grid-cols-3'>
+          {/* 单列纵向排列：开关、阈值、上限各占一行。 */}
+          <div className='flex flex-col gap-4'>
             <FormField
               control={form.control}
               name='performance_setting.disk_cache_enabled'
@@ -363,10 +367,11 @@ export function PerformanceSection(props: Props) {
               control={form.control}
               name='performance_setting.disk_cache_threshold_mb'
               render={({ field }) => (
-                <FormItem>
+                <FormItem className='max-w-md'>
                   <FormLabel>{t('Disk Cache Threshold (MB)')}</FormLabel>
                   <FormControl>
-                    <Input autoComplete='off'
+                    <Input
+                      autoComplete='off'
                       type='number'
                       min={1}
                       step={1}
@@ -385,10 +390,11 @@ export function PerformanceSection(props: Props) {
               control={form.control}
               name='performance_setting.disk_cache_max_size_mb'
               render={({ field }) => (
-                <FormItem>
+                <FormItem className='max-w-md'>
                   <FormLabel>{t('Max Disk Cache Size (MB)')}</FormLabel>
                   <FormControl>
-                    <Input autoComplete='off'
+                    <Input
+                      autoComplete='off'
                       type='number'
                       min={100}
                       step={1}
@@ -427,7 +433,9 @@ export function PerformanceSection(props: Props) {
                 <FormItem className='max-w-md'>
                   <FormLabel>{t('Cache Directory')}</FormLabel>
                   <FormControl>
-                    <Input autoComplete='off'
+                    <Input
+                      mono
+                      autoComplete='off'
                       placeholder={t(
                         'Leave empty to use system temp directory'
                       )}
@@ -449,17 +457,17 @@ export function PerformanceSection(props: Props) {
 
           {/* System Performance Monitor */}
           <div>
-            <h4 className='font-medium'>
+            <Heading variant='group-title' level={4}>
               {t('System Performance Monitoring')}
-            </h4>
-            <p className='text-muted-foreground mt-1 text-xs'>
+            </Heading>
+            <p className='text-muted-foreground mt-1 text-sm'>
               {t(
                 'When performance monitoring is enabled and system resource usage exceeds the set threshold, new Relay requests will be rejected.'
               )}
             </p>
           </div>
 
-          <div className='grid grid-cols-1 gap-4 md:grid-cols-4'>
+          <div className='flex flex-col gap-4'>
             <FormField
               control={form.control}
               name='performance_setting.monitor_enabled'
@@ -481,10 +489,11 @@ export function PerformanceSection(props: Props) {
               control={form.control}
               name='performance_setting.monitor_cpu_threshold'
               render={({ field }) => (
-                <FormItem>
+                <FormItem className='max-w-md'>
                   <FormLabel>{t('CPU Threshold (%)')}</FormLabel>
                   <FormControl>
-                    <Input autoComplete='off'
+                    <Input
+                      autoComplete='off'
                       type='number'
                       min={0}
                       step={1}
@@ -500,10 +509,11 @@ export function PerformanceSection(props: Props) {
               control={form.control}
               name='performance_setting.monitor_memory_threshold'
               render={({ field }) => (
-                <FormItem>
+                <FormItem className='max-w-md'>
                   <FormLabel>{t('Memory Threshold (%)')}</FormLabel>
                   <FormControl>
-                    <Input autoComplete='off'
+                    <Input
+                      autoComplete='off'
                       type='number'
                       min={0}
                       max={100}
@@ -520,10 +530,11 @@ export function PerformanceSection(props: Props) {
               control={form.control}
               name='performance_setting.monitor_disk_threshold'
               render={({ field }) => (
-                <FormItem>
+                <FormItem className='max-w-md'>
                   <FormLabel>{t('Disk Threshold (%)')}</FormLabel>
                   <FormControl>
-                    <Input autoComplete='off'
+                    <Input
+                      autoComplete='off'
                       type='number'
                       min={0}
                       max={100}
@@ -545,7 +556,9 @@ export function PerformanceSection(props: Props) {
       {/* Performance Stats Dashboard */}
       <div className='space-y-4'>
         <div className='flex items-center gap-2'>
-          <h4 className='font-medium'>{t('Performance Monitor')}</h4>
+          <Heading variant='group-title' level={4}>
+            {t('Performance Monitor')}
+          </Heading>
           <Button variant='outline' size='sm' onClick={fetchStats}>
             {t('Refresh Stats')}
           </Button>
@@ -633,9 +646,9 @@ export function PerformanceSection(props: Props) {
 
             {stats.disk_space_info && stats.disk_space_info.total > 0 && (
               <div className='rounded-lg border p-4'>
-                <p className='mb-2 text-sm font-medium'>
+                <Heading variant='group-title' level={4} className='mb-2'>
                   {t('Cache Directory Disk Space')}
-                </p>
+                </Heading>
                 <Progress
                   value={Math.round(stats.disk_space_info.used_percent)}
                 />
@@ -655,9 +668,9 @@ export function PerformanceSection(props: Props) {
 
             {stats.memory_stats && (
               <div className='rounded-lg border p-4'>
-                <p className='mb-2 text-sm font-medium'>
+                <Heading variant='group-title' level={4} className='mb-2'>
                   {t('System Memory Stats')}
-                </p>
+                </Heading>
                 <div className='grid grid-cols-2 gap-2 text-xs md:grid-cols-5'>
                   <div>
                     <span className='text-muted-foreground'>
@@ -693,15 +706,15 @@ export function PerformanceSection(props: Props) {
 
             {stats.disk_cache_info && (
               <div className='rounded-lg border p-4'>
-                <p className='mb-2 text-sm font-medium'>
+                <Heading variant='group-title' level={4} className='mb-2'>
                   {t('Cache Directory Info')}
-                </p>
+                </Heading>
                 <div className='grid grid-cols-3 gap-2 text-xs'>
                   <div>
                     <span className='text-muted-foreground'>
                       {t('Cache Directory')}:
                     </span>{' '}
-                    <span className='font-mono'>
+                    <span className='text-mono font-mono'>
                       {stats.disk_cache_info.path}
                     </span>
                   </div>

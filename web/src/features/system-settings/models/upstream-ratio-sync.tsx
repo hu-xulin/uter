@@ -516,7 +516,7 @@ export function UpstreamRatioSync() {
                 onClick={() => setChannelDialogOpen(true)}
                 disabled={isLoading}
               >
-                <RefreshCcw className='size-4' aria-hidden />
+                <RefreshCcw className='size-4.5' aria-hidden />
                 {t('Select price sources')}
               </Button>
             }
@@ -565,7 +565,7 @@ export function UpstreamRatioSync() {
             isLoading
           }
         >
-          <CheckSquare className='size-4' aria-hidden />
+          <CheckSquare className='size-4.5' aria-hidden />
           {t('Apply Sync')}
         </Button>
       </div>

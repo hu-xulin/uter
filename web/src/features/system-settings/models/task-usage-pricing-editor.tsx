@@ -36,6 +36,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
+import { Heading } from '@/design-system'
 import {
   formatPricingAmount,
   USD_PRICING_CURRENCY,
@@ -142,7 +143,9 @@ function TaskBillingPreview(props: TaskBillingPreviewProps) {
   return (
     <div className='bg-muted/30 flex flex-col gap-3 rounded-md border p-3'>
       <div className='flex flex-col gap-1'>
-        <h4 className='text-sm font-medium'>{t('Cost calculator')}</h4>
+        <Heading variant='group-title' level={4}>
+          {t('Cost calculator')}
+        </Heading>
         <p className='text-muted-foreground text-sm'>
           {t(
             'Enter sample usage to estimate the cost. Group and request multipliers are not included.'
@@ -179,7 +182,7 @@ function TaskBillingPreview(props: TaskBillingPreviewProps) {
         </Field>
       ) : null}
       {enumFields.length + numberFields.length > 0 ? (
-        <div className='grid gap-3 sm:grid-cols-2'>
+        <div className='flex flex-col gap-3'>
           {enumFields.map(([field, definition]) => {
             const items = (definition.enum ?? []).map((value) => ({
               value,
@@ -218,7 +221,8 @@ function TaskBillingPreview(props: TaskBillingPreviewProps) {
                 })}
               </FieldLabel>
               <div className='flex items-center gap-2'>
-                <Input autoComplete='off'
+                <Input
+                  autoComplete='off'
                   type='number'
                   aria-label={t('Usage · {{price}}', {
                     price: taskPriceLabel(
@@ -237,7 +241,7 @@ function TaskBillingPreview(props: TaskBillingPreviewProps) {
                       Number.isFinite(value) && value >= 0 ? value : 0
                     )
                   }}
-                  className='font-mono'
+                  className='text-mono font-mono'
                 />
                 <span className='text-muted-foreground shrink-0 text-xs'>
                   {taskUsageUnitLabel(
@@ -265,7 +269,7 @@ function TaskBillingPreview(props: TaskBillingPreviewProps) {
               t
             ) || t('All requests')}
           </Badge>
-          <code className='font-mono text-mono break-words'>{formula}</code>
+          <code className='text-mono font-mono break-words'>{formula}</code>
         </div>
       ) : (
         <p className='text-muted-foreground text-sm'>
@@ -471,7 +475,7 @@ export const TaskUsagePricingEditor = memo(function TaskUsagePricingEditor(
       </div>
 
       <Alert>
-        <AlertDescription className='text-xs'>
+        <AlertDescription className='text-sm'>
           {t(
             'Prices are in {{currency}}, with units shown below. Use USD when editing expressions directly.',
             { currency: (props.currency ?? USD_PRICING_CURRENCY).label }
@@ -501,9 +505,9 @@ export const TaskUsagePricingEditor = memo(function TaskUsagePricingEditor(
             ) : (
               <>
                 {allRowsFree ? (
-                  <Alert className='border-amber-500/40 bg-amber-500/10 text-amber-800 dark:text-amber-200'>
+                  <Alert className='border-warning/40 bg-warning/10 text-warning dark:text-warning-soft-foreground'>
                     <AlertTriangle aria-hidden='true' />
-                    <AlertDescription className='text-xs text-current'>
+                    <AlertDescription className='text-sm text-current'>
                       {t(
                         'All combinations are priced at zero. Matching requests will be billed as free.'
                       )}
@@ -512,10 +516,8 @@ export const TaskUsagePricingEditor = memo(function TaskUsagePricingEditor(
                 ) : null}
                 <div className='flex flex-col gap-4'>
                   <div className='flex flex-col gap-2'>
-                    <Label className='text-xs font-medium'>
-                      {t('Usage prices')}
-                    </Label>
-                    <div className='grid gap-3 sm:grid-cols-2'>
+                    <Label tier='default'>{t('Usage prices')}</Label>
+                    <div className='flex flex-col gap-3'>
                       {numberFields.map(([field, definition]) => {
                         const description = taskPriceLabel(
                           definition.description,
@@ -550,7 +552,7 @@ export const TaskUsagePricingEditor = memo(function TaskUsagePricingEditor(
                                     },
                                   })
                                 }}
-                                className='font-mono'
+                                className='text-mono font-mono'
                               />
                               <span className='text-muted-foreground shrink-0 text-xs'>
                                 {
@@ -596,7 +598,7 @@ export const TaskUsagePricingEditor = memo(function TaskUsagePricingEditor(
                                     : 0,
                               })
                             }}
-                            className='font-mono'
+                            className='text-mono font-mono'
                           />
                           <span className='text-muted-foreground shrink-0 text-xs'>
                             {(props.currency ?? USD_PRICING_CURRENCY).symbol}/
@@ -630,7 +632,7 @@ export const TaskUsagePricingEditor = memo(function TaskUsagePricingEditor(
                 }
                 placeholder='(header("x-priority") == "high" ? 2 : 1)'
                 rows={3}
-                className='font-mono text-mono'
+                className='text-mono font-mono'
                 spellCheck={false}
               />
               <FieldDescription>
@@ -643,7 +645,7 @@ export const TaskUsagePricingEditor = memo(function TaskUsagePricingEditor(
         ) : (
           <div className='space-y-3'>
             <Alert>
-              <AlertDescription className='space-y-1 text-xs'>
+              <AlertDescription className='space-y-1 text-sm'>
                 <div>
                   {t('Usage parameters')}:{' '}
                   {Object.keys(props.usageSchema)
@@ -670,7 +672,7 @@ export const TaskUsagePricingEditor = memo(function TaskUsagePricingEditor(
               onChange={(event) => handleRawChange(event.target.value)}
               placeholder='tier("base", u("seconds") * 0.4)'
               rows={7}
-              className='font-mono text-mono'
+              className='text-mono font-mono'
               spellCheck={false}
             />
             <TaskBillingPreview

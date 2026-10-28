@@ -168,7 +168,11 @@ export function SystemInfoSection({ defaultValues }: SystemInfoSectionProps) {
                   <FormItem>
                     <FormLabel>{t('System Name')}</FormLabel>
                     <FormControl>
-                      <Input autoComplete='off' placeholder={t('Uter')} {...field} />
+                      <Input
+                        autoComplete='off'
+                        placeholder={t('Uter')}
+                        {...field}
+                      />
                     </FormControl>
                     <FormDescription>
                       {t('The name displayed across the application')}
@@ -185,7 +189,12 @@ export function SystemInfoSection({ defaultValues }: SystemInfoSectionProps) {
                   <FormItem>
                     <FormLabel>{t('Server Address')}</FormLabel>
                     <FormControl>
-                      <Input autoComplete='off' placeholder='https://yourdomain.com' {...field} />
+                      <Input
+                        autoComplete='off'
+                        mono
+                        placeholder='https://yourdomain.com'
+                        {...field}
+                      />
                     </FormControl>
                     <FormDescription>
                       {t(
@@ -204,8 +213,10 @@ export function SystemInfoSection({ defaultValues }: SystemInfoSectionProps) {
                   <FormItem>
                     <FormLabel>{t('Async Task Public Address')}</FormLabel>
                     <FormControl>
-                      <Input autoComplete='off'
+                      <Input
+                        autoComplete='off'
                         placeholder='https://media.example.com/tasks'
+                        mono
                         {...field}
                       />
                     </FormControl>
@@ -226,8 +237,10 @@ export function SystemInfoSection({ defaultValues }: SystemInfoSectionProps) {
                   <FormItem>
                     <FormLabel>{t('Logo URL')}</FormLabel>
                     <FormControl>
-                      <Input autoComplete='off'
+                      <Input
+                        autoComplete='off'
                         placeholder={t('https://example.com/logo.png')}
+                        mono
                         {...field}
                       />
                     </FormControl>
@@ -248,6 +261,7 @@ export function SystemInfoSection({ defaultValues }: SystemInfoSectionProps) {
                     <FormControl>
                       <Input
                         placeholder={t('https://docs.example.com')}
+                        mono
                         {...field}
                       />
                     </FormControl>
@@ -337,20 +351,21 @@ export function SystemInfoSection({ defaultValues }: SystemInfoSectionProps) {
                 name='legal.user_agreement'
                 render={({ field }) => (
                   <FormItem>
-                  <FormLabel>{t('User Agreement')}</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder={t(
-                        'Document address: a full URL or a repo-relative Markdown path, e.g. docs-web/content/legal/zh/user-agreement.md'
+                    <FormLabel>{t('User Agreement')}</FormLabel>
+                    <FormControl>
+                      <Input
+                        mono
+                        placeholder={t(
+                          'Document address: a full URL or a repo-relative Markdown path, e.g. docs-web/content/legal/zh/user-agreement.md'
+                        )}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      {t(
+                        'Reference a document address instead of pasting content. Accepts a full URL or a Markdown file path (resolved relative to the docs root). Leave empty to use the built-in default user agreement.'
                       )}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    {t(
-                      'Reference a document address instead of pasting content. Accepts a full URL or a Markdown file path (resolved relative to the docs root). Leave empty to use the built-in default user agreement.'
-                    )}
-                  </FormDescription>
+                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -361,20 +376,21 @@ export function SystemInfoSection({ defaultValues }: SystemInfoSectionProps) {
                 name='legal.privacy_policy'
                 render={({ field }) => (
                   <FormItem>
-                  <FormLabel>{t('Privacy Policy')}</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder={t(
-                        'Document address: a full URL or a repo-relative Markdown path, e.g. docs-web/content/legal/zh/privacy-policy.md'
+                    <FormLabel>{t('Privacy Policy')}</FormLabel>
+                    <FormControl>
+                      <Input
+                        mono
+                        placeholder={t(
+                          'Document address: a full URL or a repo-relative Markdown path, e.g. docs-web/content/legal/zh/privacy-policy.md'
+                        )}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      {t(
+                        'Reference a document address instead of pasting content. Accepts a full URL or a Markdown file path (resolved relative to the docs root). Leave empty to use the built-in default privacy policy.'
                       )}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    {t(
-                      'Reference a document address instead of pasting content. Accepts a full URL or a Markdown file path (resolved relative to the docs root). Leave empty to use the built-in default privacy policy.'
-                    )}
-                  </FormDescription>
+                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -385,20 +401,21 @@ export function SystemInfoSection({ defaultValues }: SystemInfoSectionProps) {
                 name='legal.recharge_agreement'
                 render={({ field }) => (
                   <FormItem>
-                  <FormLabel>{t('Recharge Agreement')}</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder={t(
-                        'Document address: a full URL or a repo-relative Markdown path, e.g. docs-web/content/legal/zh/recharge-agreement.md'
+                    <FormLabel>{t('Recharge Agreement')}</FormLabel>
+                    <FormControl>
+                      <Input
+                        mono
+                        placeholder={t(
+                          'Document address: a full URL or a repo-relative Markdown path, e.g. docs-web/content/legal/zh/recharge-agreement.md'
+                        )}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      {t(
+                        'Reference a document address instead of pasting content. Accepts a full URL or a Markdown file path (resolved relative to the docs root). Leave empty to use the built-in default recharge agreement.'
                       )}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    {t(
-                      'Reference a document address instead of pasting content. Accepts a full URL or a Markdown file path (resolved relative to the docs root). Leave empty to use the built-in default recharge agreement.'
-                    )}
-                  </FormDescription>
+                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}

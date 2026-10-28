@@ -89,7 +89,7 @@ function nearbyLabel(before) {
       // （早先直接剥 `{...}` 会把文案本身也抹掉，导致清单里看不到字段名）。
       .replaceAll(/\{[^{}]*\}/g, (_, inner) => {
         const m = /'([^']*)'|"([^"]*)"/.exec(inner)
-        return m ? m[1] ?? m[2] ?? '' : ''
+        return m ? (m[1] ?? m[2] ?? '') : ''
       })
       .replaceAll(/\s+/g, ' ')
       .trim()
@@ -116,7 +116,7 @@ for (const file of files.sort()) {
     for (const m of src.matchAll(re)) {
       // 跳过组件定义处（`function Xxx(`）与类型位置，只看 JSX 用法。
       const el = sliceElement(src, m.index)
-      if (!el.includes('/>') && !el.includes(`</${  name  }>`)) continue
+      if (!el.includes('/>') && !el.includes(`</${name}>`)) continue
       total++
       // disabled / readOnly 的控件无法被输入，示例没有意义（值由后端或逻辑给定），
       // 不计入缺失项，否则清单会混进根本不需要填的字段。
@@ -137,7 +137,9 @@ for (const file of files.sort()) {
         continue
       }
       const hasHint =
-        /\bplaceholder=/.test(el) || /\btitle=/.test(el) || /\baria-label=/.test(el)
+        /\bplaceholder=/.test(el) ||
+        /\btitle=/.test(el) ||
+        /\baria-label=/.test(el)
       if (hasHint) continue
       missing.push({
         file: path.relative('src', file),
@@ -150,20 +152,28 @@ for (const file of files.sort()) {
 }
 
 if (SUMMARY) {
-  console.log(`输入控件总数: ${total - totalSkipped}（另有${totalSkipped} 个 disabled/readOnly 不可输入，已跳过）；缺示例: ${missing.length}`)
+  console.log(
+    `输入控件总数: ${total - totalSkipped}（另有${totalSkipped} 个 disabled/readOnly 不可输入，已跳过）；缺示例: ${missing.length}`
+  )
   process.exit(missing.length > 0 ? 1 : 0)
 }
 
 if (missing.length === 0) {
-  console.log(`✅ ${total - totalSkipped} 个可输入控件全部具备默认值或填写示例（另有 ${totalSkipped} 个 disabled/readOnly 已跳过）。`)
+  console.log(
+    `✅ ${total - totalSkipped} 个可输入控件全部具备默认值或填写示例（另有 ${totalSkipped} 个 disabled/readOnly 已跳过）。`
+  )
 } else {
-  console.log(`共 ${total - totalSkipped} 个可输入控件，其中 ${missing.length} 个缺示例（另有 ${totalSkipped} 个 disabled/readOnly 已跳过）：\n`)
+  console.log(
+    `共 ${total - totalSkipped} 个可输入控件，其中 ${missing.length} 个缺示例（另有 ${totalSkipped} 个 disabled/readOnly 已跳过）：\n`
+  )
   const byFile = new Map()
   for (const it of missing) {
     if (!byFile.has(it.file)) byFile.set(it.file, [])
     byFile.get(it.file).push(it)
   }
-  for (const [f, items] of [...byFile].sort((a, b) => b[1].length - a[1].length)) {
+  for (const [f, items] of [...byFile].sort(
+    (a, b) => b[1].length - a[1].length
+  )) {
     console.log(`${f}  (${items.length})`)
     for (const it of items) {
       const name = it.label ? `  ← ${it.label}` : ''

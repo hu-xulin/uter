@@ -26,6 +26,7 @@ import { Combobox } from '@/components/ui/combobox'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { SecretFileInput } from '@/components/ui/secret-file-input'
+import { Heading } from '@/design-system'
 import { getPaymentErrorTranslation } from '@/features/wallet/lib/payment'
 import { handleServerError } from '@/lib/handle-server-error'
 import { isMaskedSecret } from '@/lib/secret'
@@ -386,27 +387,27 @@ export function WaffoPancakeSettingsSection({
   return (
     <div className='space-y-4 pt-4'>
       <div>
-        <h3 className='text-lg font-medium'>{t('Waffo Pancake MoR')}</h3>
+        <h3 className='text-lg font-semibold'>{t('Waffo Pancake MoR')}</h3>
         <p className='text-muted-foreground text-sm'>
           {t(
             'Start collecting payments globally without registering a company. Built for indie developers, OPC sole proprietorships, and startups. Waffo Pancake acts as your Merchant of Record, taking on the compliance burden of global payment collection — consumption tax, invoicing, subscription management, refunds, and chargebacks. Solo developers can launch fast and stay focused on product instead of compliance. Onboard in minutes — one prompt to a full integration.'
           )}
         </p>
       </div>
-      <div className='grid min-w-0 gap-x-5 gap-y-4 lg:grid-cols-2'>
+      <div className='flex min-w-0 flex-col gap-4'>
         {/* Blue box — webhook configuration only. */}
-        <div className='rounded-md bg-blue-50 p-4 text-sm text-blue-900 lg:col-span-2 dark:bg-blue-950 dark:text-blue-100'>
+        <div className='bg-info-soft text-info-soft-foreground dark:bg-info-soft dark:text-info-soft-foreground rounded-md p-4 text-sm'>
           <p className='mb-2 font-medium'>{t('Webhook Configuration:')}</p>
           <ul className='list-inside list-disc space-y-1'>
             <li>
               {t('Webhook URL (Test):')}{' '}
-              <code className='rounded bg-blue-100 px-1 py-0.5 text-xs dark:bg-blue-900'>
+              <code className='text-mono bg-info-soft dark:bg-info-soft rounded px-1 py-0.5 font-mono'>
                 {'<ServerAddress>/api/waffo-pancake/webhook/test'}
               </code>
             </li>
             <li>
               {t('Webhook URL (Production):')}{' '}
-              <code className='rounded bg-blue-100 px-1 py-0.5 text-xs dark:bg-blue-900'>
+              <code className='text-mono bg-info-soft dark:bg-info-soft rounded px-1 py-0.5 font-mono'>
                 {'<ServerAddress>/api/waffo-pancake/webhook/prod'}
               </code>
             </li>
@@ -471,11 +472,11 @@ export function WaffoPancakeSettingsSection({
           The two paths are split by an "or" divider so the operator never has
           to wonder which field belongs to which intent.
         */}
-        <div className='space-y-4 pt-2 lg:col-span-2'>
+        <div className='space-y-4 pt-2'>
           <div>
-            <h4 className='font-medium'>
+            <Heading variant='group-title' level={4}>
               {t('Bind a Pancake store + product')}
-            </h4>
+            </Heading>
             <p className='text-muted-foreground text-sm'>{bindStatusMessage}</p>
           </div>
 
@@ -485,7 +486,7 @@ export function WaffoPancakeSettingsSection({
               for. Subscriptions reuse the same Store but get their own
               per-plan product, configured in the Subscriptions admin.
             */}
-          <div className='rounded-md border border-blue-200 bg-blue-50 p-3 text-xs text-blue-900 dark:border-blue-900/60 dark:bg-blue-950/40 dark:text-blue-100'>
+          <div className='border-info-soft bg-info-soft text-info-soft-foreground dark:border-info-soft/60 dark:bg-info-soft/40 dark:text-info-soft-foreground rounded-md border p-3 text-xs'>
             <p className='mb-1 font-medium'>
               {t('Why only one store + product?')}
             </p>
@@ -515,6 +516,7 @@ export function WaffoPancakeSettingsSection({
               <Input
                 autoComplete='off'
                 placeholder='https://example.com/wallet'
+                mono
                 value={returnURL}
                 onChange={(event) =>
                   onValueChange('WaffoPancakeReturnURL', event.target.value)
@@ -550,7 +552,7 @@ export function WaffoPancakeSettingsSection({
                 <div className='flex-1 border-t' />
               </div>
 
-              <div className='grid grid-cols-2 gap-3'>
+              <div className='flex flex-col gap-3'>
                 <div className='grid gap-1.5'>
                   <Label>{t('Store')}</Label>
                   <Combobox

@@ -49,6 +49,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
+import { Heading } from '@/design-system'
 import {
   formatPricingAmount,
   USD_PRICING_CURRENCY,
@@ -312,7 +313,7 @@ function RawExprEditor({ exprString, onChange }: RawExprEditorProps) {
   return (
     <div className='space-y-3'>
       <Alert>
-        <AlertDescription className='space-y-1 text-xs'>
+        <AlertDescription className='space-y-1 text-sm'>
           <div>
             {t('Variables')}: <code>len</code>, <code>p</code>, <code>c</code>,{' '}
             <code>cr</code>, <code>cc</code>, <code>cc1h</code>,{' '}
@@ -339,7 +340,7 @@ function RawExprEditor({ exprString, onChange }: RawExprEditorProps) {
         onChange={(event) => onChange(event.target.value)}
         placeholder='tier("base", p * 3 + c * 15)'
         rows={6}
-        className='font-mono text-mono'
+        className='text-mono font-mono'
         spellCheck={false}
       />
     </div>
@@ -421,7 +422,7 @@ function RuleConditionRow({
         value={timeCond.mode}
         onValueChange={(v) => v !== null && handleModeChange(v)}
       >
-        <SelectTrigger className='w-32' size='sm'>
+        <SelectTrigger className='w-32'>
           <SelectValue>{getMatchLabel(timeCond.mode)}</SelectValue>
         </SelectTrigger>
         <SelectContent alignItemWithTrigger={false}>
@@ -458,7 +459,8 @@ function RuleConditionRow({
 
   const renderParamHeaderCondition = (phCond: ParamHeaderCondition) => (
     <>
-      <Input autoComplete='off'
+      <Input
+        autoComplete='off'
         value={phCond.path}
         onChange={(event) => onChange({ ...phCond, path: event.target.value })}
         placeholder={
@@ -474,7 +476,7 @@ function RuleConditionRow({
         value={phCond.mode}
         onValueChange={(v) => v !== null && handleModeChange(v)}
       >
-        <SelectTrigger className='w-32' size='sm'>
+        <SelectTrigger className='w-32'>
           <SelectValue>{getMatchLabel(phCond.mode)}</SelectValue>
         </SelectTrigger>
         <SelectContent alignItemWithTrigger={false}>
@@ -488,7 +490,8 @@ function RuleConditionRow({
         </SelectContent>
       </Select>
       {phCond.mode !== MATCH_EXISTS && (
-        <Input autoComplete='off'
+        <Input
+          autoComplete='off'
           value={phCond.value}
           onChange={(event) =>
             onChange({ ...phCond, value: event.target.value })
@@ -511,7 +514,7 @@ function RuleConditionRow({
         value={condition.source}
         onValueChange={(v) => v !== null && handleSourceChange(v)}
       >
-        <SelectTrigger className='w-28' size='sm'>
+        <SelectTrigger className='w-28'>
           <SelectValue>{sourceLabel}</SelectValue>
         </SelectTrigger>
         <SelectContent alignItemWithTrigger={false}>
@@ -532,10 +535,10 @@ function RuleConditionRow({
         aria-label={t('Remove condition')}
         className='ml-auto'
       >
-        <Trash2 className='text-destructive h-4 w-4' />
+        <Trash2 className='text-destructive h-4.5 w-4.5' />
       </Button>
       {condition.source === SOURCE_TIME && condition.mode === MATCH_RANGE && (
-        <p className='text-muted-foreground w-full text-xs'>
+        <p className='text-muted-foreground w-full text-sm'>
           {t('Start ≤ end: within the day; start > end: across midnight')}
         </p>
       )}
@@ -593,7 +596,7 @@ function RuleGroupCard({
           onClick={onRemove}
           aria-label={t('Remove rule group')}
         >
-          <Trash2 className='text-destructive h-4 w-4' />
+          <Trash2 className='text-destructive h-4.5 w-4.5' />
         </Button>
       </div>
 
@@ -620,7 +623,7 @@ function RuleGroupCard({
             size='sm'
             onClick={() => handleAddCondition(false)}
           >
-            <Plus className='mr-1 h-3 w-3' />
+            <Plus className='mr-1 size-4.5' />
             {t('Add param/header')}
           </Button>
           <Button
@@ -628,14 +631,14 @@ function RuleGroupCard({
             size='sm'
             onClick={() => handleAddCondition(true)}
           >
-            <Plus className='mr-1 h-3 w-3' />
+            <Plus className='mr-1 size-4.5' />
             {t('Add time condition')}
           </Button>
         </div>
       </div>
 
       <div className='flex items-center gap-2'>
-        <Label className='text-xs'>{t('Multiplier')}</Label>
+        <Label tier='default'>{t('Multiplier')}</Label>
         <DraftNumberInput
           min={0}
           step={0.000001}
@@ -676,7 +679,7 @@ function PresetSection({ applyPreset }: PresetSectionProps) {
           <Button
             variant='ghost'
             size='sm'
-            className='h-6 px-2 text-xs'
+            className='px-2 text-sm'
             onClick={() => setExpanded((prev) => !prev)}
           >
             {expanded ? t('Collapse') : t('More templates...')}
@@ -697,7 +700,7 @@ function PresetSection({ applyPreset }: PresetSectionProps) {
                 key={preset.key}
                 variant='outline'
                 size='sm'
-                className='h-7 text-xs'
+                className='text-sm'
                 onClick={() => applyPreset(preset)}
               >
                 {preset.label}
@@ -775,7 +778,9 @@ function CostEstimator({ effectiveExpr, fullExpr, currency }: EstimatorProps) {
   return (
     <div className='bg-muted/30 space-y-3 rounded-md border p-3'>
       <div className='space-y-1'>
-        <h4 className='text-sm font-medium'>{t('Token estimator')}</h4>
+        <Heading variant='group-title' level={4}>
+          {t('Token estimator')}
+        </Heading>
         <p className='text-muted-foreground text-sm'>
           {t(
             'Enter token counts to preview the estimated cost (excluding group multipliers).'
@@ -784,7 +789,7 @@ function CostEstimator({ effectiveExpr, fullExpr, currency }: EstimatorProps) {
       </div>
       <div className='grid grid-cols-2 gap-3'>
         <div className='space-y-1'>
-          <Label htmlFor={inputId} className='text-xs'>
+          <Label htmlFor={inputId} tier='default'>
             {t('Input tokens')}
           </Label>
           <DraftNumberInput
@@ -795,7 +800,7 @@ function CostEstimator({ effectiveExpr, fullExpr, currency }: EstimatorProps) {
           />
         </div>
         <div className='space-y-1'>
-          <Label htmlFor={outputId} className='text-xs'>
+          <Label htmlFor={outputId} tier='default'>
             {t('Output tokens')}
           </Label>
           <DraftNumberInput
@@ -810,7 +815,8 @@ function CostEstimator({ effectiveExpr, fullExpr, currency }: EstimatorProps) {
         <FieldLabel htmlFor={lengthId}>
           {t('Full input length override')}
         </FieldLabel>
-        <Input autoComplete='off'
+        <Input
+          autoComplete='off'
           id={lengthId}
           type='number'
           min={0}
@@ -832,7 +838,7 @@ function CostEstimator({ effectiveExpr, fullExpr, currency }: EstimatorProps) {
             ) as keyof ExtraTokenValues
             return (
               <div key={variable.key} className='space-y-1'>
-                <Label className='text-xs'>{t(variable.shortLabel)}</Label>
+                <Label tier='default'>{t(variable.shortLabel)}</Label>
                 <DraftNumberInput
                   min={0}
                   value={extras[stateKey]}
@@ -997,11 +1003,9 @@ function LlmPromptHelper({ modelName }: LlmPromptHelperProps) {
   return (
     <Collapsible open={open} onOpenChange={setOpen}>
       <CollapsibleTrigger
-        render={
-          <Button variant='ghost' size='sm' className='h-7 px-2 text-xs' />
-        }
+        render={<Button variant='ghost' size='sm' className='px-2 text-sm' />}
       >
-        <Copy className='mr-1.5 h-3 w-3' />
+        <Copy className='mr-1.5 size-4.5' />
         {t('LLM prompt helper')}
       </CollapsibleTrigger>
       <CollapsibleContent className='mt-2'>
@@ -1018,7 +1022,7 @@ function LlmPromptHelper({ modelName }: LlmPromptHelperProps) {
               className='ml-3 shrink-0'
               onClick={handleCopy}
             >
-              <Copy className='mr-1.5 h-3 w-3' />
+              <Copy className='mr-1.5 size-4.5' />
               {t('Copy prompt')}
             </Button>
           </div>
@@ -1026,7 +1030,7 @@ function LlmPromptHelper({ modelName }: LlmPromptHelperProps) {
             value={prompt}
             readOnly
             rows={8}
-            className='font-mono text-mono'
+            className='text-mono font-mono'
             spellCheck={false}
           />
         </div>
@@ -1246,9 +1250,9 @@ export const TieredPricingEditor = memo(function TieredPricingEditor({
         {editorMode === 'visual' && (
           <div className='space-y-3 border-t pt-3'>
             <div className='space-y-1'>
-              <h4 className='text-sm font-medium'>
+              <Heading variant='group-title' level={4}>
                 {t('Request rule pricing')}
-              </h4>
+              </Heading>
               <p className='text-muted-foreground text-sm'>
                 {t(
                   'When conditions match, the final price is multiplied by X. Multiple matches multiply together; values < 1 act as discounts.'
@@ -1258,7 +1262,7 @@ export const TieredPricingEditor = memo(function TieredPricingEditor({
 
             {ruleExpr && !canUseVisualRules ? (
               <Alert>
-                <AlertDescription className='text-xs'>
+                <AlertDescription className='text-sm'>
                   {t(
                     'This expression is too complex for the visual editor. Please switch to expression mode to edit.'
                   )}
@@ -1287,7 +1291,7 @@ export const TieredPricingEditor = memo(function TieredPricingEditor({
                 <Button
                   variant='outline'
                   size='sm'
-                  className='h-9 w-36 justify-center'
+                  className='w-36 justify-center'
                   onClick={() =>
                     handleRuleGroupsChange([
                       ...requestRuleGroups,
@@ -1295,7 +1299,7 @@ export const TieredPricingEditor = memo(function TieredPricingEditor({
                     ])
                   }
                 >
-                  <Plus className='mr-2 h-4 w-4' />
+                  <Plus className='mr-2 h-4.5 w-4.5' />
                   {t('Add rule group')}
                 </Button>
               </>

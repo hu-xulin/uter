@@ -149,7 +149,8 @@ export function CreemProductsVisualEditor({
       <div className='flex flex-col gap-3 sm:flex-row sm:items-center'>
         <div className='relative flex-1'>
           <Search className='text-muted-foreground absolute top-2.5 left-2.5 h-4 w-4' />
-          <Input autoComplete='off'
+          <Input
+            autoComplete='off'
             placeholder={t('Search products...')}
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
@@ -165,7 +166,7 @@ export function CreemProductsVisualEditor({
           }}
           className='flex-1 sm:flex-none'
         >
-          <Plus className='h-4 w-4 sm:mr-2' />
+          <Plus className='h-4.5 w-4.5 sm:mr-2' />
           <span className='sm:inline'>{t('Add product')}</span>
         </Button>
       </div>
@@ -203,7 +204,7 @@ export function CreemProductsVisualEditor({
                 id: 'price',
                 header: t('Price'),
                 cell: (product) => (
-                  <span className='font-mono text-mono'>
+                  <span className='text-mono font-mono'>
                     {formatCreemPrice(product.price, product.currency)}
                   </span>
                 ),
@@ -212,7 +213,7 @@ export function CreemProductsVisualEditor({
                 id: 'quota',
                 header: t('Quota'),
                 cell: (product) => (
-                  <span className='font-mono text-mono'>
+                  <span className='text-mono font-mono'>
                     {formatQuotaShort(product.quota)}
                   </span>
                 ),
@@ -242,7 +243,7 @@ export function CreemProductsVisualEditor({
                 <div className='mb-3 flex items-start justify-between'>
                   <div className='flex-1'>
                     <div className='mb-1 font-medium'>{product.name}</div>
-                    <code className='bg-muted rounded px-1.5 py-0.5 text-xs'>
+                    <code className='text-mono bg-muted rounded px-1.5 py-0.5 font-mono'>
                       {product.productId}
                     </code>
                   </div>
@@ -257,7 +258,7 @@ export function CreemProductsVisualEditor({
                         handleEdit(product)
                       }}
                     >
-                      <Pencil className='h-4 w-4' />
+                      <Pencil className='h-4.5 w-4.5' />
                     </Button>
                     <Button
                       type='button'
@@ -269,7 +270,7 @@ export function CreemProductsVisualEditor({
                         handleDelete(product)
                       }}
                     >
-                      <Trash2 className='h-4 w-4' />
+                      <Trash2 className='h-4.5 w-4.5' />
                     </Button>
                   </div>
                 </div>
@@ -278,7 +279,7 @@ export function CreemProductsVisualEditor({
                     <span className='text-muted-foreground min-w-16'>
                       {t('Price')}:
                     </span>
-                    <span className='font-mono'>
+                    <span className='text-mono font-mono'>
                       {formatCreemPrice(product.price, product.currency)}
                     </span>
                   </div>
@@ -286,7 +287,7 @@ export function CreemProductsVisualEditor({
                     <span className='text-muted-foreground min-w-16'>
                       {t('Quota')}:
                     </span>
-                    <span className='font-mono'>
+                    <span className='text-mono font-mono'>
                       {formatQuotaShort(product.quota)}
                     </span>
                   </div>

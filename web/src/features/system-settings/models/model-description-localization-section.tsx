@@ -53,6 +53,7 @@ import { Input } from '@/components/ui/input'
 import { SecretInput } from '@/components/ui/secret-input'
 import { Switch } from '@/components/ui/switch'
 import { isMaskedSecret } from '@/lib/secret'
+
 import {
   SettingsForm,
   SettingsSwitchContent,
@@ -90,7 +91,8 @@ interface Props {
 }
 
 const asBool = (v: unknown): boolean => v === true || v === 'true'
-const asText = (v: unknown): string => (v === undefined || v === null ? '' : String(v))
+const asText = (v: unknown): string =>
+  v === undefined || v === null ? '' : String(v)
 
 export function ModelDescriptionLocalizationSection({ defaultValues }: Props) {
   const { t } = useTranslation()
@@ -102,7 +104,9 @@ export function ModelDescriptionLocalizationSection({ defaultValues }: Props) {
     // 在 Options 表里可能压根不存在，故用默认值兜底。
     values: useMemo<FormValues>(
       () => ({
-        ModelDescriptionSyncEnabled: asBool(defaultValues.ModelDescriptionSyncEnabled),
+        ModelDescriptionSyncEnabled: asBool(
+          defaultValues.ModelDescriptionSyncEnabled
+        ),
         ModelDescriptionTranslateEnabled: asBool(
           defaultValues.ModelDescriptionTranslateEnabled
         ),
@@ -164,9 +168,7 @@ export function ModelDescriptionLocalizationSection({ defaultValues }: Props) {
   }
 
   return (
-    <SettingsSection
-      title={t('Model Description Localization')}
-    >
+    <SettingsSection title={t('Model Description Localization')}>
       <p className='text-muted-foreground text-sm'>
         {t(
           'After syncing upstream channel data, automatically fetch the official Chinese, English and Japanese descriptions, then use the site LLM to fill in the other six languages (zh, zh-TW, fr, ja, ru, vi). The upstream catalog does not cover every model, so Chinese and Japanese are included as a safety net. Only missing entries are filled in — existing text is never overwritten.'
@@ -202,7 +204,9 @@ export function ModelDescriptionLocalizationSection({ defaultValues }: Props) {
             <>
               <SettingsSwitchItem>
                 <SettingsSwitchContent>
-                  <FormLabel>{t('Translate missing languages with LLM')}</FormLabel>
+                  <FormLabel>
+                    {t('Translate missing languages with LLM')}
+                  </FormLabel>
                   <FormDescription>
                     {t(
                       'Requires the API base URL, API key and model below to be filled in. Each missing description costs one LLM call.'
@@ -229,10 +233,12 @@ export function ModelDescriptionLocalizationSection({ defaultValues }: Props) {
                       <FormItem>
                         <FormLabel>{t('Translation API Base URL')}</FormLabel>
                         <FormControl>
-                          <Input autoComplete='off'
+                          <Input
+                            autoComplete='off'
                             {...field}
                             value={asText(field.value)}
                             placeholder='https://api.example.com/v1'
+                            mono
                             disabled={updateOption.isPending}
                           />
                         </FormControl>
@@ -260,7 +266,9 @@ export function ModelDescriptionLocalizationSection({ defaultValues }: Props) {
                           />
                         </FormControl>
                         <FormDescription>
-                          {t('Stored masked; leaving it empty clears the saved key.')}
+                          {t(
+                            'Stored masked; leaving it empty clears the saved key.'
+                          )}
                         </FormDescription>
                         <FormMessage />
                       </FormItem>
@@ -274,10 +282,14 @@ export function ModelDescriptionLocalizationSection({ defaultValues }: Props) {
                       <FormItem>
                         <FormLabel>{t('Translation Model')}</FormLabel>
                         <FormControl>
-                          <Input autoComplete='off'
+                          <Input
+                            autoComplete='off'
                             {...field}
                             value={asText(field.value)}
                             placeholder='gpt-4o-mini'
+                            // 模型名是机器可读的值：等宽让 gpt-4o / gpt-4o-mini
+                            // 这类只差后缀的名字对得上、也看得出大小写。
+                            mono
                             disabled={updateOption.isPending}
                           />
                         </FormControl>
@@ -298,7 +310,8 @@ export function ModelDescriptionLocalizationSection({ defaultValues }: Props) {
                       <FormItem>
                         <FormLabel>{t('Locales to translate')}</FormLabel>
                         <FormControl>
-                          <Input autoComplete='off'
+                          <Input
+                            autoComplete='off'
                             {...field}
                             value={asText(field.value)}
                             placeholder='zh, zh-TW, fr, ja, ru, vi'

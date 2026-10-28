@@ -95,11 +95,7 @@ export function EmailSettingsSection({
 
   const [provider, smtpSSL, smtpStartTLS] = useWatch({
     control: form.control,
-    name: [
-      'EmailProvider',
-      'SMTPSSLEnabled',
-      'SMTPStartTLSEnabled',
-    ],
+    name: ['EmailProvider', 'SMTPSSLEnabled', 'SMTPStartTLSEnabled'],
   })
   const tokensOnly = getCurrencyDisplay().meta.kind === 'tokens'
   const isSaving = form.formState.isSubmitting || updateOption.isPending
@@ -299,6 +295,7 @@ export function EmailSettingsSection({
                         autoComplete='off'
                         disabled={isSaving}
                         type='email'
+                        mono
                         placeholder='noreply@example.com'
                       />
                     </FormControl>
@@ -365,6 +362,7 @@ export function EmailSettingsSection({
                       <Input
                         autoComplete='off'
                         placeholder={t('smtp.example.com')}
+                        mono
                         {...field}
                         onChange={(event) => field.onChange(event.target.value)}
                       />
@@ -377,7 +375,7 @@ export function EmailSettingsSection({
                 )}
               />
 
-              <div className='grid gap-6 md:grid-cols-2'>
+              <div className='flex flex-col gap-6'>
                 <FormField
                   control={form.control}
                   name='SMTPPort'
@@ -430,7 +428,8 @@ export function EmailSettingsSection({
                         <RadioGroupItem value='none' id='smtp-security-none' />
                         <Label
                           htmlFor='smtp-security-none'
-                          className='cursor-pointer font-normal'
+                          tier='default'
+                          className='cursor-pointer'
                         >
                           {t('No encryption')}
                         </Label>
@@ -442,7 +441,8 @@ export function EmailSettingsSection({
                         />
                         <Label
                           htmlFor='smtp-security-ssl-tls'
-                          className='cursor-pointer font-normal'
+                          tier='default'
+                          className='cursor-pointer'
                         >
                           {t('SSL/TLS')}
                         </Label>
@@ -454,7 +454,8 @@ export function EmailSettingsSection({
                         />
                         <Label
                           htmlFor='smtp-security-starttls'
-                          className='cursor-pointer font-normal'
+                          tier='default'
+                          className='cursor-pointer'
                         >
                           {t('STARTTLS')}
                         </Label>
@@ -525,6 +526,7 @@ export function EmailSettingsSection({
                       <Input
                         autoComplete='off'
                         placeholder={t('noreply@example.com')}
+                        mono
                         {...field}
                         onChange={(event) => field.onChange(event.target.value)}
                       />
@@ -549,6 +551,7 @@ export function EmailSettingsSection({
                       <Input
                         autoComplete='off'
                         placeholder={t('New API &lt;noreply@example.com&gt;')}
+                        mono
                         {...field}
                         onChange={(event) => field.onChange(event.target.value)}
                       />
@@ -588,26 +591,24 @@ export function EmailSettingsSection({
               control={form.control}
               name='QuotaRemindThreshold'
               render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>
-                        {t('Default reminder threshold')} ({getCurrencyLabel()})
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          autoComplete='off'
-                          type='number'
-                          min={0}
-                          step={tokensOnly ? 1 : 0.000001}
-                          {...field}
-                          onChange={(event) =>
-                            field.onChange(event.target.value)
-                          }
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <FormItem>
+                  <FormLabel>
+                    {t('Default reminder threshold')} ({getCurrencyLabel()})
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      autoComplete='off'
+                      type='number'
+                      min={0}
+                      step={tokensOnly ? 1 : 0.000001}
+                      {...field}
+                      onChange={(event) => field.onChange(event.target.value)}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           </SettingsControlGroup>
         </SettingsForm>
       </Form>

@@ -55,6 +55,7 @@ const baseDefaults = {
   EpayKey: '',
   Price: 1,
   MinTopUp: 1,
+  OrderTitlePrefix: '',
   CustomCallbackAddress: '',
   PaymentSiteAddress: '',
   PayMethods: '[]',

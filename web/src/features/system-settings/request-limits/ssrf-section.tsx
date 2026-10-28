@@ -310,9 +310,12 @@ export function SSRFSection({ defaultValues }: SSRFSectionProps) {
                   {domainFilterMode ? t('Whitelist') : t('Blacklist')}
                 </FormLabel>
                 <FormControl>
+                  {/* 域名是机器可读的值，一行一个：等宽后 `.`、`-` 与大小写
+                      都能逐字符核对。 */}
                   <Textarea
                     placeholder={t('example.com\nblocked-site.com')}
                     rows={4}
+                    mono
                     {...field}
                   />
                 </FormControl>
@@ -374,9 +377,12 @@ export function SSRFSection({ defaultValues }: SSRFSectionProps) {
                   {t('IP')} {ipFilterMode ? t('Whitelist') : t('Blacklist')}
                 </FormLabel>
                 <FormControl>
+                  {/* IP / CIDR 是机器可读的值：等宽让 0/O、1/l 可辨，CIDR 的
+                      斜杠与位数也更容易逐行核对。 */}
                   <Textarea
                     placeholder={t('192.168.1.1\n10.0.0.0/8')}
                     rows={4}
+                    mono
                     {...field}
                   />
                 </FormControl>
@@ -395,7 +401,13 @@ export function SSRFSection({ defaultValues }: SSRFSectionProps) {
               <FormItem>
                 <FormLabel>{t('Allowed Ports')}</FormLabel>
                 <FormControl>
-                  <Input autoComplete='off' placeholder={t('80,443,8080')} {...field} />
+                  {/* 端口号列表是机器可读的值，等宽便于逐段核对。 */}
+                  <Input
+                    autoComplete='off'
+                    placeholder={t('80,443,8080')}
+                    mono
+                    {...field}
+                  />
                 </FormControl>
                 <FormDescription>
                   {t(

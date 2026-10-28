@@ -44,6 +44,7 @@ import {
 import { Separator } from '@/components/ui/separator'
 import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
+import { Heading } from '@/design-system'
 import { handleServerError } from '@/lib/handle-server-error'
 import { parseHttpStatusCodeRules } from '@/lib/http-status-code-rules'
 
@@ -320,9 +321,9 @@ export function ChannelHealthSection({
           />
 
           <div className='flex min-w-0 flex-col gap-4'>
-            <h4 className='text-sm font-medium'>
+            <Heading variant='group-title' level={4}>
               {t('Channel health checks')}
-            </h4>
+            </Heading>
             <SettingsFormGrid>
               <SettingsControlGroup>
                 <FormField
@@ -351,7 +352,7 @@ export function ChannelHealthSection({
                 <SettingsControlChildren
                   role='group'
                   aria-label={t('Scheduled test options')}
-                  className='grid gap-x-5 gap-y-4 lg:grid-cols-2'
+                  className='flex flex-col gap-4'
                 >
                   <FormField
                     control={form.control}
@@ -489,7 +490,9 @@ export function ChannelHealthSection({
           <Separator />
 
           <div className='flex min-w-0 flex-col gap-4'>
-            <h4 className='text-sm font-medium'>{t('Auto-disable rules')}</h4>
+            <Heading variant='group-title' level={4}>
+              {t('Auto-disable rules')}
+            </Heading>
             <SettingsFormGrid>
               <FormField
                 control={form.control}

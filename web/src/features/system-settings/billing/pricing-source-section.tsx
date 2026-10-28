@@ -86,8 +86,11 @@ const SOURCE_HINT_KEYS: Record<PricingSourceValue, string> = {
  *
  * Whichever option is chosen here also decides the reference used for the
  * strike-through official price and the discount badge: when the platform price
- * is lower than the presets official price the official price is struck out and
- * a "-xx%" badge plus a green "xx折" tag are shown after the model name.
+ * is lower than the preset's official price the official price is struck out and
+ * a green `x0.7` multiplier tag is shown after the model name. When it is
+ * *higher* than the official price the tag turns amber and reads `x1.05` —
+ * both forms use the same "official price × multiplier" notation so they can be
+ * compared without converting units in your head.
  */
 export function PricingSourceSection({
   defaultSource,

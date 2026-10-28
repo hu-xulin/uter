@@ -242,7 +242,7 @@ export function ProviderFormDialog(props: ProviderFormDialogProps) {
                   {t('Authorization callback URL')}
                 </span>
                 <span className='flex min-w-0 items-center gap-2'>
-                  <code className='bg-muted text-foreground min-w-0 rounded px-1.5 py-0.5 text-xs break-all'>
+                  <code className='text-mono bg-muted text-foreground min-w-0 rounded px-1.5 py-0.5 font-mono break-all'>
                     {callbackUrl}
                   </code>
                   <CopyButton
@@ -259,7 +259,7 @@ export function ProviderFormDialog(props: ProviderFormDialogProps) {
 
           {/* Basic Info */}
           <div className='space-y-4'>
-            <h4 className='text-sm font-medium'>{t('Basic Info')}</h4>
+            <h4 className='text-lg font-semibold'>{t('Basic Info')}</h4>
 
             <FormField
               control={form.control}
@@ -282,7 +282,7 @@ export function ProviderFormDialog(props: ProviderFormDialogProps) {
               )}
             />
 
-            <div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
+            <div className='flex flex-col gap-4'>
               <FormField
                 control={form.control}
                 name='name'
@@ -309,6 +309,7 @@ export function ProviderFormDialog(props: ProviderFormDialogProps) {
                     <FormLabel>{t('Slug')}</FormLabel>
                     <FormControl>
                       <Input
+                        mono
                         placeholder={t('e.g. my-gitlab')}
                         autoComplete='off'
                         {...field}
@@ -330,11 +331,11 @@ export function ProviderFormDialog(props: ProviderFormDialogProps) {
                 <FormItem>
                   <FormLabel>{t('Icon')}</FormLabel>
                   <FormControl>
-                      <Input
-                        placeholder={t('Icon identifier (e.g. github, gitlab)')}
-                        autoComplete='off'
-                        {...field}
-                      />
+                    <Input
+                      placeholder={t('Icon identifier (e.g. github, gitlab)')}
+                      autoComplete='off'
+                      {...field}
+                    />
                   </FormControl>
                   <FormDescription>
                     {t('Optional icon identifier for the login button')}
@@ -349,8 +350,8 @@ export function ProviderFormDialog(props: ProviderFormDialogProps) {
 
           {/* Credentials */}
           <div className='space-y-4'>
-            <h4 className='text-sm font-medium'>{t('Credentials')}</h4>
-            <div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
+            <h4 className='text-lg font-semibold'>{t('Credentials')}</h4>
+            <div className='flex flex-col gap-4'>
               <FormField
                 control={form.control}
                 name='client_id'
@@ -359,6 +360,7 @@ export function ProviderFormDialog(props: ProviderFormDialogProps) {
                     <FormLabel>{t('Client ID')}</FormLabel>
                     <FormControl>
                       <Input
+                        mono
                         placeholder={t('OAuth Client ID')}
                         autoComplete='off'
                         {...field}
@@ -373,18 +375,18 @@ export function ProviderFormDialog(props: ProviderFormDialogProps) {
                 control={form.control}
                 name='client_secret'
                 render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('Client Secret')}</FormLabel>
-                  <FormControl>
-                    <SecretInput
-                      placeholder={t('OAuth Client Secret')}
-                      value={String(field.value ?? '')}
-                      onChange={field.onChange}
-                      name={field.name}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
+                  <FormItem>
+                    <FormLabel>{t('Client Secret')}</FormLabel>
+                    <FormControl>
+                      <SecretInput
+                        placeholder={t('OAuth Client Secret')}
+                        value={String(field.value ?? '')}
+                        onChange={field.onChange}
+                        name={field.name}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
                 )}
               />
             </div>
@@ -435,7 +437,7 @@ export function ProviderFormDialog(props: ProviderFormDialogProps) {
           {/* Endpoints */}
           <div className='space-y-4'>
             <div className='flex items-center justify-between'>
-              <h4 className='text-sm font-medium'>{t('Endpoints')}</h4>
+              <h4 className='text-lg font-semibold'>{t('Endpoints')}</h4>
               <DiscoveryButton form={form} />
             </div>
 
@@ -472,6 +474,7 @@ export function ProviderFormDialog(props: ProviderFormDialogProps) {
                   <FormLabel>{t('Authorization Endpoint')}</FormLabel>
                   <FormControl>
                     <Input
+                      mono
                       placeholder='https://provider.com/oauth/authorize'
                       autoComplete='off'
                       {...field}
@@ -490,6 +493,7 @@ export function ProviderFormDialog(props: ProviderFormDialogProps) {
                   <FormLabel>{t('Token Endpoint')}</FormLabel>
                   <FormControl>
                     <Input
+                      mono
                       placeholder='https://provider.com/oauth/token'
                       autoComplete='off'
                       {...field}
@@ -508,6 +512,7 @@ export function ProviderFormDialog(props: ProviderFormDialogProps) {
                   <FormLabel>{t('User Info Endpoint')}</FormLabel>
                   <FormControl>
                     <Input
+                      mono
                       placeholder='https://provider.com/api/user'
                       autoComplete='off'
                       {...field}
@@ -544,14 +549,14 @@ export function ProviderFormDialog(props: ProviderFormDialogProps) {
 
           {/* Field Mapping */}
           <div className='space-y-4'>
-            <h4 className='text-sm font-medium'>{t('Field Mapping')}</h4>
+            <h4 className='text-lg font-semibold'>{t('Field Mapping')}</h4>
             <FormDescription>
               {t(
                 'Map fields from the user info response to local user attributes. Supports nested paths (e.g. ocs.data.id).'
               )}
             </FormDescription>
 
-            <div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
+            <div className='flex flex-col gap-4'>
               <FormField
                 control={form.control}
                 name='user_id_field'
@@ -559,11 +564,7 @@ export function ProviderFormDialog(props: ProviderFormDialogProps) {
                   <FormItem>
                     <FormLabel>{t('User ID Field')}</FormLabel>
                     <FormControl>
-                      <Input
-                        placeholder='id'
-                        autoComplete='off'
-                        {...field}
-                      />
+                      <Input placeholder='id' autoComplete='off' {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -595,11 +596,7 @@ export function ProviderFormDialog(props: ProviderFormDialogProps) {
                   <FormItem>
                     <FormLabel>{t('Display Name Field')}</FormLabel>
                     <FormControl>
-                      <Input
-                        placeholder='name'
-                        autoComplete='off'
-                        {...field}
-                      />
+                      <Input placeholder='name' autoComplete='off' {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -630,7 +627,7 @@ export function ProviderFormDialog(props: ProviderFormDialogProps) {
 
           {/* Advanced */}
           <div className='space-y-4'>
-            <h4 className='text-sm font-medium'>{t('Advanced')}</h4>
+            <h4 className='text-lg font-semibold'>{t('Advanced')}</h4>
 
             <FormField
               control={form.control}
@@ -665,7 +662,7 @@ export function ProviderFormDialog(props: ProviderFormDialogProps) {
                     <Button
                       type='button'
                       variant='outline'
-                      size='xs'
+                      size='sm'
                       onClick={() =>
                         form.setValue(
                           'access_policy',
@@ -679,7 +676,7 @@ export function ProviderFormDialog(props: ProviderFormDialogProps) {
                     <Button
                       type='button'
                       variant='outline'
-                      size='xs'
+                      size='sm'
                       onClick={() =>
                         form.setValue(
                           'access_policy',
@@ -720,7 +717,7 @@ export function ProviderFormDialog(props: ProviderFormDialogProps) {
                     <Button
                       type='button'
                       variant='outline'
-                      size='xs'
+                      size='sm'
                       onClick={() =>
                         form.setValue(
                           'access_denied_message',
@@ -734,7 +731,7 @@ export function ProviderFormDialog(props: ProviderFormDialogProps) {
                     <Button
                       type='button'
                       variant='outline'
-                      size='xs'
+                      size='sm'
                       onClick={() =>
                         form.setValue(
                           'access_denied_message',

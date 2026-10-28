@@ -242,7 +242,7 @@ export function GlobalSettingsCard({ defaultValues }: GlobalSettingsCardProps) {
 
           <div className='space-y-4'>
             <div className='flex items-center gap-2'>
-              <h3 className='text-base font-semibold'>
+              <h3 className='text-lg font-semibold'>
                 {t('ChatCompletions -> Responses Compatibility')}
               </h3>
               <StatusBadge
@@ -348,7 +348,8 @@ export function GlobalSettingsCard({ defaultValues }: GlobalSettingsCardProps) {
               <FormItem>
                 <FormLabel>{t('Ping Interval (seconds)')}</FormLabel>
                 <FormControl>
-                  <Input autoComplete='off'
+                  <Input
+                    autoComplete='off'
                     type='number'
                     min={1}
                     disabled={!pingEnabled}

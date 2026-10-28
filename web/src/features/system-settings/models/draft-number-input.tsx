@@ -103,7 +103,8 @@ export function DraftNumberInput({
   }
 
   return (
-    <Input autoComplete='off'
+    <Input
+      autoComplete='off'
       {...props}
       type='number'
       value={draft}

@@ -269,7 +269,7 @@ export function ApiInfoSection({ enabled, data }: ApiInfoSectionProps) {
         <div className='flex flex-wrap items-center justify-between gap-2'>
           <div className='flex flex-wrap items-center gap-2'>
             <Button onClick={handleAdd} size='sm'>
-              <Plus className='mr-2 h-4 w-4' />
+              <Plus className='mr-2 h-4.5 w-4.5' />
               {t('Add API')}
             </Button>
             <Button
@@ -278,7 +278,7 @@ export function ApiInfoSection({ enabled, data }: ApiInfoSectionProps) {
               variant='destructive'
               disabled={selectedIds.length === 0}
             >
-              <Trash2 className='mr-2 h-4 w-4' />
+              <Trash2 className='mr-2 h-4.5 w-4.5' />
               {t('Delete (')}
               {selectedIds.length})
             </Button>
@@ -288,7 +288,7 @@ export function ApiInfoSection({ enabled, data }: ApiInfoSectionProps) {
               variant='secondary'
               disabled={!hasChanges || updateOption.isPending}
             >
-              <Save className='mr-2 h-4 w-4' />
+              <Save className='mr-2 h-4.5 w-4.5' />
               {updateOption.isPending ? t('Saving...') : t('Save Settings')}
             </Button>
           </div>
@@ -423,7 +423,9 @@ export function ApiInfoSection({ enabled, data }: ApiInfoSectionProps) {
                 <FormItem>
                   <FormLabel>{t('API URL')}</FormLabel>
                   <FormControl>
-                    <Input autoComplete='off'
+                    <Input
+                      mono
+                      autoComplete='off'
                       placeholder={t('https://api.example.com')}
                       {...field}
                     />
@@ -439,7 +441,11 @@ export function ApiInfoSection({ enabled, data }: ApiInfoSectionProps) {
                 <FormItem>
                   <FormLabel>{t('Route Description')}</FormLabel>
                   <FormControl>
-                    <Input autoComplete='off' placeholder={t('e.g., CN2 GIA')} {...field} />
+                    <Input
+                      autoComplete='off'
+                      placeholder={t('e.g., CN2 GIA')}
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -452,7 +458,8 @@ export function ApiInfoSection({ enabled, data }: ApiInfoSectionProps) {
                 <FormItem>
                   <FormLabel>{t('Description')}</FormLabel>
                   <FormControl>
-                    <Input autoComplete='off'
+                    <Input
+                      autoComplete='off'
                       placeholder={t(
                         'e.g., Recommended for China Mainland Users'
                       )}
