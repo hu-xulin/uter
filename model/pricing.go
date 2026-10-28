@@ -1,6 +1,7 @@
 package model
 
 import (
+	"maps"
 	"strings"
 	"sync"
 	"time"
@@ -343,6 +344,16 @@ func updatePricing() {
 				continue
 			}
 			pricing.Description = meta.Description
+			// 多语副本必须随定价一起下发：前端靠它在切换界面语言时本地重绘，
+			// 拿不到就只能一直显示 Description 这一种语言。
+			//
+			// 这里刻意复制一份而不是直接引用：pricingMap 是跨请求共享的缓存，
+			// 共享 meta.Descriptions 会让任何下游（如 controller 的按语言解析）
+			// 的原地修改污染缓存里的其他语种。
+			if len(meta.Descriptions) > 0 {
+				pricing.Descriptions = make(map[string]string, len(meta.Descriptions))
+				maps.Copy(pricing.Descriptions, meta.Descriptions)
+			}
 			pricing.Tags = meta.Tags
 			pricing.VendorID = meta.VendorID
 			// 入库模型若图标为空，按名称归因到自己的产品 logo，

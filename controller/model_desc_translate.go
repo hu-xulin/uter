@@ -48,7 +48,7 @@ func translateMissingDescriptions(ctx context.Context, names []string) (map[stri
 		return nil, nil
 	}
 	locales := translationLocales()
-	need, sources, err := loadMissingTranslations(names, locales)
+	need, sources, targets, err := loadMissingTranslations(names, locales)
 	if err != nil {
 		return nil, err
 	}
@@ -56,9 +56,15 @@ func translateMissingDescriptions(ctx context.Context, names []string) (map[stri
 		return nil, nil
 	}
 
+	// 超时按**单个模型**计，不按整批计。
+	//
+	// 整批共用一个 deadline 时，模型越多后面的模型越必然超时：59 个模型、
+	// 并发 4、每次请求数秒，60 秒的批级预算会在中途耗尽，于是后半批全部
+	// `context deadline exceeded`——表现为「有些卡片补了多语言，有些没有」，
+	// 而且重跑依然失败（每次都是同样的一批超时）。单个模型 60 秒足够完成
+	// 一次批量翻译（必要时还会降级为逐语种单发），整轮的总时长由调用方的
+	// context 决定（价格同步后置钩子给了 30 分钟）。
 	timeout := time.Duration(common.GetEnvOrDefault(translationTimeoutOptionKey, 60)) * time.Second
-	ctx, cancel := context.WithTimeout(ctx, timeout)
-	defer cancel()
 
 	// 每个元素是「单个模型 -> (locale -> 译文)」。用 nil 表示该模型失败，
 	// 便于最后只合并成功的部分。
@@ -68,12 +74,18 @@ func translateMissingDescriptions(ctx context.Context, names []string) (map[stri
 	var failed atomicCount
 
 	for i, name := range need {
+		modelLocales := targets[name]
+		if len(modelLocales) == 0 {
+			continue
+		}
 		wg.Add(1)
 		sem <- struct{}{}
-		go func(idx int, modelKey string, source string) {
+		go func(idx int, modelKey string, source string, locales []string) {
 			defer wg.Done()
 			defer func() { <-sem }()
-			translated, err := translateOneModel(ctx, base, key, modelName, modelKey, source, locales)
+			modelCtx, cancel := context.WithTimeout(ctx, timeout)
+			defer cancel()
+			translated, err := translateOneModel(modelCtx, base, key, modelName, modelKey, source, locales)
 			if err != nil {
 				failed.add()
 				common.SysLog(fmt.Sprintf("translate description for %s failed: %v", modelKey, err))
@@ -82,7 +94,7 @@ func translateMissingDescriptions(ctx context.Context, names []string) (map[stri
 			if len(translated) > 0 {
 				results[idx] = map[string]map[string]string{modelKey: translated}
 			}
-		}(i, name, sources[name])
+		}(i, name, sources[name], modelLocales)
 	}
 	wg.Wait()
 

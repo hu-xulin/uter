@@ -50,6 +50,52 @@ func RunDreamRouterSync(c *gin.Context) {
 	})
 }
 
+// GetDreamRouterSyncModels 返回上游与 uter 的逐模型价格对照表。
+//
+// 数据来自最近一次成功同步写入的快照（service.LoadDreamRouterSnapshot）：
+// 上游官方价、上游折扣、uter 售价与对齐结论都在同一条记录里，页面无需
+// 重新登录上游即可渲染。尚未同步过时返回空列表，由前端提示先执行同步。
+func GetDreamRouterSyncModels(c *gin.Context) {
+	snapshot := service.LoadDreamRouterSnapshot()
+	if snapshot == nil {
+		c.JSON(http.StatusOK, gin.H{
+			"success": true,
+			"message": "",
+			"data": gin.H{
+				"synced":  false,
+				"models":  []any{},
+				"summary": gin.H{},
+			},
+		})
+		return
+	}
+	aligned := 0
+	for _, row := range snapshot.Models {
+		if row.Aligned {
+			aligned++
+		}
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "",
+		"data": gin.H{
+			"synced":          true,
+			"pricing_version": snapshot.PricingVersion,
+			"synced_at":       snapshot.SyncedAt,
+			"rule_direction":  snapshot.RuleDirection,
+			"rule_amount":     snapshot.RuleAmount,
+			"channel_id":      snapshot.ChannelID,
+			"models":          snapshot.Models,
+			"summary": gin.H{
+				"total":       len(snapshot.Models),
+				"aligned":     aligned,
+				"drifted":     len(snapshot.Models) - aligned,
+				"all_aligned": aligned == len(snapshot.Models),
+			},
+		},
+	})
+}
+
 // GetDreamRouterSyncStatus 返回同步配置与最近一次运行状态。
 //
 // 口令**不回显**（它是 secret option，真值只在库与进程内存里）：只给出

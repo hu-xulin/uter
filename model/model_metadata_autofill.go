@@ -262,6 +262,143 @@ func derivedVendorResolvable(name string, vendors map[string]*Vendor) bool {
 //
 // A failure to reach the official catalog is reported to the caller; the
 // channel sync that triggered it must still succeed.
+// EnsureModelRows 为「已在上游渠道售卖、但本地还没有元数据行」的模型补一行
+// 最小元数据（只有名称与供应商归属），返回新建的模型名。
+//
+// 与 AutoFillOfficialMetadata 的分工：后者依赖官方目录（basellm / models.dev），
+// 目录不认识的模型会被跳过，于是渠道私有命名的模型（seedance-* 等）永远没有
+// 行 → 定价页拿不到 vendor_id → 按供应商筛选时整条模型不可见，用户看到的是
+// 「这个模型漏了」。
+//
+// 三条硬约束：
+//  1. 只建行，不改行：已存在的行一个字段都不动（运营手填的图标、名称、简介
+//     属于运营配置数据，任何自动流程都不得回写）。
+//  2. 只认「已存在的供应商名」：绝不为上游的新名字自动建供应商——供应商
+//     名称与图标同样是运营配置数据。匹配不到时先按同组模型的既有归属反推
+//     （见 inferUpstreamVendorIDs），仍推不出来就留空，模型仍会以首字母
+//     占位正常展示。
+//  3. 尊重名称规则：已被前缀/后缀/包含规则覆盖的模型不建显式行，否则会
+//     遮蔽运营设置的 catch-all 规则。
+func EnsureModelRows(vendorNameByModel map[string]string) ([]string, error) {
+	if len(vendorNameByModel) == 0 {
+		return nil, nil
+	}
+	locals, vendors, err := GetMetadataSyncState(DB)
+	if err != nil {
+		return nil, err
+	}
+	vendorIDByName := make(map[string]int, len(vendors))
+	for name, vendor := range vendors {
+		vendorIDByName[name] = vendor.Id
+	}
+	aliases := inferUpstreamVendorIDs(locals, vendorNameByModel, vendorIDByName)
+	patterns := make([]*Model, 0, len(locals))
+	for _, local := range locals {
+		if local.NameRule != NameRuleExact {
+			patterns = append(patterns, local)
+		}
+	}
+
+	names := make([]string, 0, len(vendorNameByModel))
+	for name := range vendorNameByModel {
+		names = append(names, name)
+	}
+	sort.Strings(names)
+
+	created := make([]string, 0)
+	for _, name := range names {
+		name = strings.TrimSpace(name)
+		if name == "" {
+			continue
+		}
+		if _, exists := locals[name]; exists {
+			continue
+		}
+		covered := false
+		for _, pattern := range patterns {
+			if pattern.MatchesName(name) {
+				covered = true
+				break
+			}
+		}
+		if covered {
+			continue
+		}
+		record := &Model{ModelName: name, Status: 1, SyncOfficial: 1}
+		vendorName := strings.TrimSpace(vendorNameByModel[name])
+		if vendorID, ok := vendorIDByName[vendorName]; ok {
+			record.VendorID = vendorID
+		} else if vendorID, ok := aliases[vendorName]; ok {
+			record.VendorID = vendorID
+		}
+		// 单个模型失败（例如并发插入撞唯一索引）不中断整批：下一轮同步会重试。
+		if err := record.Insert(); err != nil {
+			continue
+		}
+		created = append(created, name)
+	}
+	return created, nil
+}
+
+// inferUpstreamVendorIDs 反推「上游供应商名 → 本地供应商 ID」。
+//
+// 上游与本地不是同一套写法：创梦的 vendors[] 用中文名（字节跳动 / 阿里巴巴 /
+// 智谱 / 讯飞 / 快手 / 零一万物），本地 vendors 用英文名（ByteDance / Alibaba /
+// Z.AI …），而运营还会合并或删除重名供应商（本地 46 条里 21 条是软删除）。
+// 硬编码一张别名表既维护不过来，也会在运营改名后立刻失效。
+//
+// 这里用数据自身说话：同一上游供应商下，已经有本地元数据行且归属明确的模型
+// 就是证据——取出现次数最多的本地供应商作为该上游供应商的归属。反推只接受
+// **仍然启用**的本地供应商，绝不为上游名字新建供应商。
+func inferUpstreamVendorIDs(
+	locals map[string]*Model,
+	vendorNameByModel map[string]string,
+	vendorIDByName map[string]int,
+) map[string]int {
+	activeVendorIDs := make(map[int]struct{}, len(vendorIDByName))
+	for _, id := range vendorIDByName {
+		activeVendorIDs[id] = struct{}{}
+	}
+	votes := make(map[string]map[int]int)
+	for modelName, upstreamVendor := range vendorNameByModel {
+		upstreamVendor = strings.TrimSpace(upstreamVendor)
+		if upstreamVendor == "" {
+			continue
+		}
+		// 名字能直接命中就不用反推，避免把清晰的归属覆盖成投票结果。
+		if _, ok := vendorIDByName[upstreamVendor]; ok {
+			continue
+		}
+		local, ok := locals[modelName]
+		if !ok || local.VendorID == 0 {
+			continue
+		}
+		if _, ok := activeVendorIDs[local.VendorID]; !ok {
+			continue
+		}
+		if votes[upstreamVendor] == nil {
+			votes[upstreamVendor] = make(map[int]int)
+		}
+		votes[upstreamVendor][local.VendorID]++
+	}
+
+	aliases := make(map[string]int, len(votes))
+	for upstreamVendor, counts := range votes {
+		bestID, bestCount := 0, 0
+		for id, count := range counts {
+			// 票数相同取较小的 ID，保证同一份数据每次得出同一个结论。
+			if count > bestCount || (count == bestCount && bestID != 0 && id < bestID) {
+				bestID, bestCount = id, count
+			}
+		}
+		if bestID != 0 {
+			aliases[upstreamVendor] = bestID
+		}
+	}
+	return aliases
+}
+
+// AutoFillOfficialMetadata 用官方目录补齐渠道模型的元数据。
 func AutoFillOfficialMetadata(
 	names []string,
 	upstream map[string]MetadataValues,

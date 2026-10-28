@@ -1,11 +1,16 @@
 package controller
 
 import (
+	"fmt"
+	"strings"
 	"testing"
 
+	"github.com/glebarez/sqlite"
 	"github.com/uter-ai/uter/model"
+	"gorm.io/gorm"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 // TestLocalizePricingDescriptions 锁定定价接口按访客语言解析描述。
@@ -158,12 +163,65 @@ func TestTranslationLocalesDefault(t *testing.T) {
 	assert.ElementsMatch(t, []string{"zh", "zh-TW", "fr", "ja", "ru", "vi"}, translationLocales())
 }
 
-// TestHasMissingLocale 锁定「哪些模型需要补译」的判定。
-func TestHasMissingLocale(t *testing.T) {
+// TestMissingLocales 锁定「哪些语种需要补译」的判定：逐模型返回缺失语种
+// （而不是统一的全局列表），空白值等同于缺失，顺序与入参一致。
+func TestMissingLocales(t *testing.T) {
 	descriptions := model.LocalizedDescription{"en": "English"}
-	assert.True(t, hasMissingLocale(descriptions, []string{"zh-TW", "fr"}))
-	assert.False(t, hasMissingLocale(descriptions, []string{"en"}))
+	assert.Equal(t, []string{"zh-TW", "fr"}, missingLocales(descriptions, []string{"zh-TW", "fr"}))
+	assert.Empty(t, missingLocales(descriptions, []string{"en"}))
 	// 空白值等同于缺失。
-	assert.True(t, hasMissingLocale(model.LocalizedDescription{"en": "e", "fr": "  "}, []string{"fr"}))
-	assert.False(t, hasMissingLocale(nil, nil))
+	assert.Equal(t, []string{"fr"}, missingLocales(model.LocalizedDescription{"en": "e", "fr": "  "}, []string{"fr"}))
+	assert.Empty(t, missingLocales(nil, nil))
+}
+
+// TestLoadMissingTranslationsIncludesEnglishWhenAbsent 锁定「英文位缺席必须补 en」。
+//
+// descriptionTranslateLocales 不含 en，前提是源文即英文。渠道自建模型的源文
+// 常常只有中文（单语存量回填把中文写进 descriptions["zh"]），若照旧只补
+// zh-TW/fr/ja/ru/vi，en 位永远为空，前端回退链在英文界面会落到 zh —— 表现为
+// 「英文界面显示中文描述」。这条用例守住这个缺口，避免有人把 en 从待补语种里
+// 再拿掉。
+func TestLoadMissingTranslationsIncludesEnglishWhenAbsent(t *testing.T) {
+	db := setupDescriptionTestDB(t)
+	require.NoError(t, db.Create(&[]model.Model{
+		// 只有中文源文：en 必须成为待补语种。
+		{ModelName: "zh-only", Description: "中文描述", Descriptions: model.LocalizedDescription{"zh": "中文描述"}},
+		// 已有英文源文：en 不该出现在待补语种里。
+		{ModelName: "en-present", Description: "English copy", Descriptions: model.LocalizedDescription{"en": "English copy"}},
+		// 完全没有源文：跳过，不凭空生成。
+		{ModelName: "no-source"},
+	}).Error)
+
+	need, sources, targets, err := loadMissingTranslations(
+		[]string{"zh-only", "en-present", "no-source"},
+		translationLocales(),
+	)
+	require.NoError(t, err)
+	assert.ElementsMatch(t, []string{"zh-only", "en-present"}, need)
+	assert.Equal(t, "中文描述", sources["zh-only"], "源文回退到单字段")
+	assert.Equal(t, "English copy", sources["en-present"])
+
+	assert.Equal(t, []string{"en", "zh-TW", "fr", "ja", "ru", "vi"}, targets["zh-only"],
+		"中文源文的模型必须把 en 一起补上")
+	assert.NotContains(t, targets["en-present"], "en", "已有英文源文时不该重译英文")
+	assert.NotContains(t, targets, "no-source")
+}
+
+// setupDescriptionTestDB 为描述相关用例准备内存库（只建 models 表）。
+func setupDescriptionTestDB(t *testing.T) *gorm.DB {
+	t.Helper()
+	dsn := fmt.Sprintf("file:%s?mode=memory&cache=shared", strings.ReplaceAll(t.Name(), "/", "_"))
+	db, err := gorm.Open(sqlite.Open(dsn), &gorm.Config{})
+	require.NoError(t, err)
+	previous := model.DB
+	model.DB = db
+	t.Cleanup(func() {
+		model.DB = previous
+		sqlDB, err := db.DB()
+		if err == nil {
+			_ = sqlDB.Close()
+		}
+	})
+	require.NoError(t, db.AutoMigrate(&model.Model{}))
+	return db
 }

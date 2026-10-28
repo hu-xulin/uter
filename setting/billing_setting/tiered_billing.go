@@ -79,6 +79,41 @@ func GetBillingExpr(model string) (string, bool) {
 	return "", false
 }
 
+// ConfiguredBillingExpr 返回管理员为 model **显式配置**的表达式，不含内置表达式。
+//
+// 与 GetBillingExpr 的差别只在「内置」这一层：内置表达式无法通过删除配置项
+// 关掉（GetBillingMode 会继续返回 tiered_expr），而管理员配置的可以。上游同步
+// 需要区分两者，否则会把「本来就没有配置」误判成「有一条待清理的覆盖」。
+func ConfiguredBillingExpr(model string) (string, bool) {
+	expr, ok := billingSetting.BillingExpr[model]
+	if !ok || strings.TrimSpace(expr) == "" {
+		return "", false
+	}
+	return expr, true
+}
+
+// ConfiguredBillingMode 返回管理员为 model 显式配置的计费模式（可能为空）。
+func ConfiguredBillingMode(model string) string {
+	return billingSetting.BillingMode[model]
+}
+
+// GetConfiguredBillingExprSnapshot 返回「管理员显式配置」的表达式表副本，
+// 不含内置表达式。调用方可以安全地增删键，再整体写回。
+func GetConfiguredBillingExprSnapshot() map[string]string {
+	if billingSetting.BillingExpr == nil {
+		return map[string]string{}
+	}
+	return maps.Clone(billingSetting.BillingExpr)
+}
+
+// GetConfiguredBillingModeSnapshot 返回「管理员显式配置」的计费模式表副本。
+func GetConfiguredBillingModeSnapshot() map[string]string {
+	if billingSetting.BillingMode == nil {
+		return map[string]string{}
+	}
+	return maps.Clone(billingSetting.BillingMode)
+}
+
 func GetBuiltinBillingExpr(model string) (string, bool) {
 	expression, ok := builtinBillingExpr[model]
 	return expression, ok
