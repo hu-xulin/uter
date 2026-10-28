@@ -95,7 +95,7 @@ export function useDrawingLogsColumns(
 
         return (
           <div className='flex min-w-0 flex-col gap-0.5'>
-            <span className='truncate font-mono text-mono tabular-nums'>
+            <span className='text-mono truncate font-mono tabular-nums'>
               {formatTimestampToDate(submitTime, 'milliseconds')}
             </span>
             <StatusBadge
@@ -142,7 +142,7 @@ export function useDrawingLogsColumns(
       const mjId = row.getValue('mj_id') as string
 
       if (!mjId) {
-        return <span className='text-muted-foreground/60 text-xs'>-</span>
+        return <span className='text-muted-foreground text-sm'>-</span>
       }
 
       return (
@@ -152,7 +152,7 @@ export function useDrawingLogsColumns(
             copyText={mjId}
             variant='neutral'
             size='sm'
-            className='border-border/60 bg-muted/30 !text-foreground max-w-full truncate rounded-md border px-1.5 py-0.5 font-mono'
+            className='border-border/60 bg-muted/30 !text-foreground text-mono max-w-full truncate rounded-md border px-1.5 py-0.5 font-mono'
           />
         </div>
       )
@@ -199,18 +199,18 @@ export function useDrawingLogsColumns(
         const [dialogOpen, setDialogOpen] = useState(false)
 
         if (!imageUrl) {
-          return <span className='text-muted-foreground/60 text-xs'>-</span>
+          return <span className='text-muted-foreground text-sm'>-</span>
         }
 
         return (
           <>
             <button
               type='button'
-              className='group text-left text-xs'
+              className='group text-left text-sm'
               onClick={() => setDialogOpen(true)}
               title={t('Click to view image')}
             >
-              <span className='text-foreground group-hover: truncate leading-snug'>
+              <span className='text-foreground group-hover: truncate'>
                 {' '}
                 {t('View')}
               </span>
@@ -234,18 +234,18 @@ export function useDrawingLogsColumns(
         const [dialogOpen, setDialogOpen] = useState(false)
 
         if (!prompt) {
-          return <span className='text-muted-foreground/60 text-xs'>-</span>
+          return <span className='text-muted-foreground text-sm'>-</span>
         }
 
         return (
           <>
             <button
               type='button'
-              className='group flex max-w-[220px] items-center text-left text-xs'
+              className='group flex max-w-[220px] items-center text-left text-sm'
               onClick={() => setDialogOpen(true)}
               title={t('Click to view full prompt')}
             >
-              <span className='text-muted-foreground group-hover: truncate leading-snug'>
+              <span className='text-muted-foreground group-hover: truncate'>
                 {' '}
                 {prompt}
               </span>

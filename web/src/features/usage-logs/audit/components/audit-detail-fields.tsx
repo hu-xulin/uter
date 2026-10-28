@@ -38,7 +38,7 @@ export function AuditDetailFields(props: { fields: AuditDetailField[] }) {
       if (!entries.length) return null
       return (
         <div key={field.label} className='min-w-0 space-y-1'>
-          <div className='text-muted-foreground text-xs break-all'>
+          <div className='text-muted-foreground text-sm break-all'>
             {field.label}
           </div>
           <div className='space-y-1 border-l pl-2'>

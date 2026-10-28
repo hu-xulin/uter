@@ -218,10 +218,16 @@ it('keeps a selected group visible on focus and can clear it without choosing an
   )
 })
 
-it('keeps the compact input and masks the dropdown together with other sensitive filters', async () => {
+it('keeps the input on the shared control height and masks the dropdown together with other sensitive filters', async () => {
   await renderFilter()
   const input = screen.getByRole('combobox', { name: 'Group' })
-  expect(input).toHaveClass('h-8', 'text-sm', 'leading-5')
+  // 高度只来自控件高度 Token（40px）。此前这里断言 `h-8`（32px），
+  // 那是调用点覆盖高度的写法，规范 B-03 已禁止。
+  //
+  // 也不再断言 `leading-5`：规范 T9 要求行高由字号 Token 自带
+  // （`text-sm` 已是 14/20），组件里再写 `leading-*` 会被
+  // `check-design-tokens.mjs` 拦下，所以这条断言与更硬的规则冲突。
+  expect(input).toHaveClass('h-(--ds-control-height-md)', 'text-sm')
   await userEvent.click(screen.getByRole('button', { name: /^Hide$/ }))
   await userEvent.click(input)
   const option = await screen.findByRole('option', { name: 'premium' })

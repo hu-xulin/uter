@@ -39,8 +39,8 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
-import { useOrgManagerScope } from '@/features/organization/use-org-manager'
 import { OrgUserFilter } from '@/features/organization/org-user-filter'
+import { useOrgManagerScope } from '@/features/organization/use-org-manager'
 import { getGroups } from '@/features/users/api'
 import { getUserGroups } from '@/lib/api'
 import { formatUserId, parseUserId } from '@/lib/format'
@@ -129,8 +129,11 @@ export function CommonLogsFilterBar<TData>(
   const searchParams = route.useSearch()
   const { isAdminView: isAdmin } = useLogsViewScope()
   const { sensitiveVisible, setSensitiveVisible } = useUsageLogsContext()
-  const { isOrgManager, members: orgMembers, isLoading: orgMembersLoading } =
-    useOrgManagerScope()
+  const {
+    isOrgManager,
+    members: orgMembers,
+    isLoading: orgMembersLoading,
+  } = useOrgManagerScope()
   // 平台管理员：内联「用户名 / 用户ID」文本输入（可见全部用户，下拉不可行）。
   // 组织管理者（非平台管理员）：改为组织内成员双下拉（OrgUserFilter），仅可在
   // 自己权限范围内（owner/admin 看全组织，部门 admin 仅本部门）下拉筛选，不可手动输入。
@@ -212,11 +215,15 @@ export function CommonLogsFilterBar<TData>(
   // null 表示「跟随当前 filters 渲染」。与 activeDraft 同构：URL 变化后丢弃本地草稿。
   const [userIdRaw, setUserIdRaw] = useState<string | null>(null)
   const rawIsCurrent = draft.sourceKey === searchState.sourceKey
-  const userIdInput = (rawIsCurrent ? userIdRaw : null) ??
+  const userIdInput =
+    (rawIsCurrent ? userIdRaw : null) ??
     (filters.userId ? formatUserId(filters.userId) : '')
 
   const handleChange = useCallback(
-    (field: keyof CommonLogFilters, value: Date | string | number | undefined) => {
+    (
+      field: keyof CommonLogFilters,
+      value: Date | string | number | undefined
+    ) => {
       setDraft((current) => {
         const base =
           current.sourceKey === searchState.sourceKey ? current : searchState
@@ -335,7 +342,7 @@ export function CommonLogsFilterBar<TData>(
             size='icon'
             onClick={() => setSensitiveVisible(!sensitiveVisible)}
             aria-label={sensitiveVisible ? t('Hide') : t('Show')}
-            className='text-muted-foreground hover:text-foreground size-7 max-sm:size-11'
+            className='text-muted-foreground hover:text-foreground'
           />
         }
       >
@@ -366,6 +373,7 @@ export function CommonLogsFilterBar<TData>(
   const modelFilter = (
     <LogsFilterField>
       <LogsFilterInput
+        mono
         placeholder={t('Model Name')}
         value={filters.model || ''}
         onChange={(e) => handleChange('model', e.target.value)}
@@ -381,7 +389,7 @@ export function CommonLogsFilterBar<TData>(
         aria-label={t('Group')}
         emptyText={t('No group found.')}
         placeholder={t('Group')}
-        className='h-8 min-w-0 text-sm leading-5'
+        className='min-w-0 text-sm'
         popupClassName={sensitiveInputClass}
         value={filters.group || ''}
         onValueChange={(value) => handleChange('group', value ?? '')}
@@ -411,6 +419,8 @@ export function CommonLogsFilterBar<TData>(
         }}
       >
         <SelectTrigger
+          // 与同一行的 Input / Combobox 同高（`--ds-control-height-md`）。
+          // 此前是 sm 档（36px），比输入框矮 4px。
           aria-label={t('Type')}
           aria-description={
             selectedLogType?.deprecated ? deprecatedTypeDescription : undefined
@@ -466,6 +476,7 @@ export function CommonLogsFilterBar<TData>(
     <>
       <LogsFilterField>
         <LogsFilterInput
+          mono
           placeholder={t('Token Name')}
           className={sensitiveInputClass}
           value={filters.token || ''}
@@ -476,6 +487,7 @@ export function CommonLogsFilterBar<TData>(
       {isAdmin && (
         <LogsFilterField>
           <LogsFilterInput
+            mono
             placeholder={t('Channel ID')}
             value={filters.channel || ''}
             onChange={(e) => handleChange('channel', e.target.value)}
@@ -485,6 +497,7 @@ export function CommonLogsFilterBar<TData>(
       )}
       <LogsFilterField>
         <LogsFilterInput
+          mono
           placeholder={t('Request ID')}
           value={filters.requestId || ''}
           onChange={(e) => handleChange('requestId', e.target.value)}
@@ -493,6 +506,7 @@ export function CommonLogsFilterBar<TData>(
       </LogsFilterField>
       <LogsFilterField>
         <LogsFilterInput
+          mono
           placeholder={t('Upstream Request ID')}
           value={filters.upstreamRequestId || ''}
           onChange={(e) => handleChange('upstreamRequestId', e.target.value)}
@@ -518,6 +532,7 @@ export function CommonLogsFilterBar<TData>(
           </LogsFilterField>
           <LogsFilterField>
             <LogsFilterInput
+              mono
               aria-label={t('User ID')}
               placeholder={t('User ID')}
               inputMode='numeric'

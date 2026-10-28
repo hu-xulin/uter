@@ -16,17 +16,16 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
-import {
-  Alert02Icon,
-  Download01Icon,
-  File01Icon,
-  Image01Icon,
-  MusicNote01Icon,
-  RefreshIcon,
-  Video01Icon,
-} from '@hugeicons/core-free-icons'
-import { HugeiconsIcon } from '@hugeicons/react'
 import { useQuery } from '@tanstack/react-query'
+import {
+  CircleAlert,
+  Download,
+  File,
+  Image,
+  Music,
+  RefreshCw,
+  Video,
+} from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -75,13 +74,13 @@ import { AudioPreviewDialog } from './dialogs/audio-preview-dialog'
 function artifactIcon(type: TaskArtifactType) {
   switch (type) {
     case 'image':
-      return Image01Icon
+      return Image
     case 'video':
-      return Video01Icon
+      return Video
     case 'audio':
-      return MusicNote01Icon
+      return Music
     case 'file':
-      return File01Icon
+      return File
   }
 }
 
@@ -116,16 +115,11 @@ function LegacyAudioPreview(props: { taskId: string }) {
     <>
       <button
         type='button'
-        className='group flex items-center gap-1 text-left text-xs'
+        className='group flex items-center gap-1 text-left text-sm'
         onClick={() => setOpen(true)}
       >
-        <HugeiconsIcon
-          icon={MusicNote01Icon}
-          className='text-muted-foreground size-3'
-          strokeWidth={2}
-          aria-hidden='true'
-        />
-        <span className='text-foreground group-hover: leading-snug'>
+        <Music className='text-muted-foreground size-4' aria-hidden='true' />
+        <span className='text-foreground group-hover:'>
           {' '}
           {t('Click to preview audio')}
         </span>
@@ -185,21 +179,17 @@ function MediaFailure(props: { onRetry: () => void }) {
   const { t } = useTranslation()
   return (
     <Alert variant='destructive'>
-      <HugeiconsIcon icon={Alert02Icon} strokeWidth={2} aria-hidden='true' />
+      <CircleAlert aria-hidden='true' />
       <AlertTitle>{t('Media preview failed. Please try again.')}</AlertTitle>
       <AlertDescription>{t('Preview unavailable')}</AlertDescription>
       <AlertAction>
         <Button
           type='button'
           variant='outline'
-          size='xs'
+          size='sm'
           onClick={props.onRetry}
         >
-          <HugeiconsIcon
-            icon={RefreshIcon}
-            strokeWidth={2}
-            data-icon='inline-start'
-          />
+          <RefreshCw data-icon='inline-start' />
           {t('Retry')}
         </Button>
       </AlertAction>
@@ -211,7 +201,7 @@ function TaskArtifactCard(props: { artifact: TaskArtifact }) {
   const { t } = useTranslation()
   const [mediaFailed, setMediaFailed] = useState(false)
   const [mediaRevision, setMediaRevision] = useState(0)
-  const icon = artifactIcon(props.artifact.type)
+  const ArtifactIcon = artifactIcon(props.artifact.type)
   const isVisualArtifact =
     props.artifact.type === 'image' || props.artifact.type === 'video'
 
@@ -222,7 +212,7 @@ function TaskArtifactCard(props: { artifact: TaskArtifact }) {
         isVisualArtifact ? 'aspect-video min-h-48' : 'min-h-20'
       )}
     >
-      <HugeiconsIcon icon={icon} className='size-6' strokeWidth={1.5} />
+      <ArtifactIcon className='size-8' />
     </div>
   )
   if (mediaFailed) {
@@ -249,22 +239,17 @@ function TaskArtifactCard(props: { artifact: TaskArtifact }) {
     <Card size='sm'>
       <CardHeader>
         <CardTitle className='flex min-w-0 items-center gap-1.5'>
-          <HugeiconsIcon
-            icon={icon}
-            className='size-4 shrink-0'
-            strokeWidth={2}
-            aria-hidden='true'
-          />
+          <ArtifactIcon className='size-4 shrink-0' aria-hidden='true' />
           <span className='truncate'>
             {t(artifactTypeLabel(props.artifact.type))}
           </span>
         </CardTitle>
         <CardDescription className='min-w-0'>
-          <span className='block truncate font-mono text-mono'>
+          <span className='text-mono block truncate font-mono'>
             {props.artifact.key}
           </span>
           {props.artifact.mime_type ? (
-            <span className='block truncate font-mono text-mono'>
+            <span className='text-mono block truncate font-mono'>
               {props.artifact.mime_type}
             </span>
           ) : null}
@@ -285,11 +270,7 @@ function TaskArtifactCard(props: { artifact: TaskArtifact }) {
             />
           }
         >
-          <HugeiconsIcon
-            icon={Download01Icon}
-            strokeWidth={2}
-            data-icon='inline-start'
-          />
+          <Download data-icon='inline-start' />
           {t('Download')}
         </Button>
       </CardFooter>
@@ -327,25 +308,21 @@ function TaskArtifacts(props: TaskArtifactsProps) {
   if (artifactsQuery.isError) {
     return (
       <Alert variant='destructive'>
-        <HugeiconsIcon icon={Alert02Icon} strokeWidth={2} aria-hidden='true' />
+        <CircleAlert aria-hidden='true' />
         <AlertTitle>{t('Failed to load artifacts')}</AlertTitle>
         <AlertDescription>{t('Preview unavailable')}</AlertDescription>
         <AlertAction>
           <Button
             type='button'
             variant='outline'
-            size='xs'
+            size='sm'
             disabled={artifactsQuery.isFetching}
             onClick={() => void artifactsQuery.refetch()}
           >
             {artifactsQuery.isFetching ? (
               <Spinner data-icon='inline-start' />
             ) : (
-              <HugeiconsIcon
-                icon={RefreshIcon}
-                strokeWidth={2}
-                data-icon='inline-start'
-              />
+              <RefreshCw data-icon='inline-start' />
             )}
             {t('Retry')}
           </Button>
@@ -382,7 +359,7 @@ function EmptyTaskArtifacts() {
     <Empty>
       <EmptyHeader>
         <EmptyMedia variant='icon'>
-          <HugeiconsIcon icon={File01Icon} strokeWidth={2} aria-hidden='true' />
+          <File aria-hidden='true' />
         </EmptyMedia>
         <EmptyTitle>{t('Artifacts')}</EmptyTitle>
         <EmptyDescription>{t('None')}</EmptyDescription>
@@ -424,7 +401,7 @@ export function TaskArtifactsCell(props: { log: TaskLog }) {
     )
   }
   if (!shouldLoadTaskArtifacts(props.log, true)) {
-    return <span className='text-muted-foreground/60 text-xs'>-</span>
+    return <span className='text-muted-foreground text-xs'>-</span>
   }
   if (previewMode === 'legacy-suno') {
     return <LegacyAudioPreview taskId={props.log.task_id} />
@@ -433,25 +410,23 @@ export function TaskArtifactsCell(props: { log: TaskLog }) {
   return (
     <>
       {previewMode === 'legacy-video' ? (
-        <button
+        <Button
           type='button'
-          className='text-foreground text-xs'
+          variant='link'
+          size='inline'
+          className='text-foreground'
           onClick={() => setOpen(true)}
         >
           {t('Click to preview video')}
-        </button>
+        </Button>
       ) : (
         <Button
           type='button'
           variant='outline'
-          size='xs'
+          size='sm'
           onClick={() => setOpen(true)}
         >
-          <HugeiconsIcon
-            icon={File01Icon}
-            strokeWidth={2}
-            data-icon='inline-start'
-          />
+          <File data-icon='inline-start' />
           {t('Artifacts')}
         </Button>
       )}
@@ -463,10 +438,8 @@ export function TaskArtifactsCell(props: { log: TaskLog }) {
             t('Preview')
           ) : (
             <span className='flex items-center gap-2'>
-              <HugeiconsIcon
-                icon={File01Icon}
+              <File
                 className='text-muted-foreground size-4'
-                strokeWidth={2}
                 aria-hidden='true'
               />
               {t('Artifacts')}

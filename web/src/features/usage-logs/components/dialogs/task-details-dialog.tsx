@@ -16,8 +16,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
-import { Shield01Icon, Wrench01Icon } from '@hugeicons/core-free-icons'
-import { HugeiconsIcon } from '@hugeicons/react'
+import { Shield, Wrench } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
 import { Dialog } from '@/components/dialog'
@@ -39,11 +38,11 @@ function DetailRow(props: {
 }) {
   return (
     <div className='grid min-w-0 grid-cols-[6rem_minmax(0,1fr)] gap-2 text-sm sm:grid-cols-[8rem_minmax(0,1fr)]'>
-      <span className='text-muted-foreground text-xs'>{props.label}</span>
+      <span className='text-muted-foreground'>{props.label}</span>
       <span
         className={cn(
-          'min-w-0 text-xs break-all sm:wrap-break-word',
-          props.mono && 'font-mono'
+          'min-w-0 break-all sm:wrap-break-word',
+          props.mono && 'font-mono text-mono'
         )}
       >
         {props.value}
@@ -59,7 +58,7 @@ function DetailSection(props: {
 }) {
   return (
     <section className='min-w-0 space-y-1.5'>
-      <Label className='flex items-center gap-1.5 text-xs font-semibold'>
+      <Label className='flex items-center gap-1.5'>
         {props.icon}
         {props.label}
       </Label>
@@ -167,13 +166,7 @@ export function TaskDetailsDialog(props: TaskDetailsDialogProps) {
         {props.isAdmin ? (
           <DetailSection
             label={t('Admin Only')}
-            icon={
-              <HugeiconsIcon
-                icon={Shield01Icon}
-                className='size-3.5 text-blue-500'
-                strokeWidth={2}
-              />
-            }
+            icon={<Shield className='text-info size-4' />}
           >
             <DetailRow
               label={t('User')}
@@ -230,13 +223,7 @@ export function TaskDetailsDialog(props: TaskDetailsDialogProps) {
         {props.isRoot && props.log.root_info ? (
           <DetailSection
             label={t('Root Diagnostics')}
-            icon={
-              <HugeiconsIcon
-                icon={Wrench01Icon}
-                className='size-3.5 text-amber-500'
-                strokeWidth={2}
-              />
-            }
+            icon={<Wrench className='text-warning size-4' />}
           >
             {runtime ? (
               <>

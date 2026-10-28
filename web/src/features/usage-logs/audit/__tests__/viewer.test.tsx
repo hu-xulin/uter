@@ -45,6 +45,20 @@ import { useAuthStore } from '@/stores/auth-store'
 import { AuditLogs } from '..'
 import { AuditLogViewer } from '../components/audit-log-viewer'
 
+/**
+ * 日历格子带 `data-day`（`toLocaleDateString(locale.code)`，英文界面即
+ * `M/D/YYYY`）。用它精确定位某一天：`getByText('1')` 会同时命中上下月的补白格
+ * 以及页面上别的「1」。
+ */
+function calendarDay(date: Date) {
+  const key = date.toLocaleDateString('en-US')
+  const cell = document.querySelector<HTMLButtonElement>(
+    `[data-slot='calendar'] button[data-day="${key}"]`
+  )
+  if (!cell) throw new Error(`calendar day cell not found: ${key}`)
+  return cell
+}
+
 it.each([
   [
     'generic',
@@ -395,18 +409,10 @@ it.each([
     )
     // 同上：骨架屏铺满后才有真实行，1s 默认超时在慢机器上不够。
     expect(
-      await screen.findByRole(
-        'cell',
-        { name: single },
-        { timeout: 5000 }
-      )
+      await screen.findByRole('cell', { name: single }, { timeout: 5000 })
     ).toBeVisible()
     expect(
-      await screen.findByRole(
-        'cell',
-        { name: batch },
-        { timeout: 5000 }
-      )
+      await screen.findByRole('cell', { name: batch }, { timeout: 5000 })
     ).toBeVisible()
     expect(
       screen.queryByRole('cell', { name: 'channel.status_update' })
@@ -469,9 +475,11 @@ it('filters own access history by result, generation and time and resets paginat
     await screen.findByRole('option', { name: 'Historical tokens' })
   )
   await user.click(screen.getByRole('button', { name: 'Date Range' }))
-  fireEvent.change(screen.getByLabelText('Start Time'), {
-    target: { value: '2026-09-01T12:00' },
-  })
+  // 选择器已换成「日历选日 + 时间输入」：日期只能从日历上点，时间输入只提供
+  // 时分秒（`mergeDateTime(draft.from, startTime)`）。此前往时间框里塞
+  // `2026-09-01T12:00` 是 `datetime-local` 时代的写法，`type='time'` 会直接
+  // 丢掉这个值，`start_timestamp` 永远不会出现在请求里。
+  await user.click(calendarDay(new Date()))
   await user.click(screen.getByRole('button', { name: 'Confirm' }))
   await waitFor(() =>
     expect(get).toHaveBeenLastCalledWith('/api/audit/self', {

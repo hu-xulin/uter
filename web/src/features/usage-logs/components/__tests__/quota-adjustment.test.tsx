@@ -101,8 +101,9 @@ const cases = [
       to: 1000000,
     },
     english:
-      'Increase quota for user “quota-owner” (ID: uter100000042) · Requested quota: $1 · $1 → $2',
-    chinese: '增加用户「quota-owner」的额度（ID: uter100000042） · 请求数额：$1 · $1 → $2',
+      'Increase quota for user “quota-owner” (ID: U100000042) · Requested quota: $1 · $1 → $2',
+    chinese:
+      '增加用户「quota-owner」的额度（ID: U100000042） · 请求数额：$1 · $1 → $2',
   },
   {
     action: 'user.quota_add',

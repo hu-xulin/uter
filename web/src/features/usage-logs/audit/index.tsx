@@ -117,7 +117,7 @@ export function AuditLogs() {
       <SectionPageLayout.Content>
         <div className='flex h-full min-h-0 flex-col gap-3'>
           {accessRevoked && (
-            <p role='status' className='text-muted-foreground shrink-0 text-xs'>
+            <p role='status' className='text-muted-foreground shrink-0 text-sm'>
               {t('Audit access changed. Showing only your records.')}
             </p>
           )}

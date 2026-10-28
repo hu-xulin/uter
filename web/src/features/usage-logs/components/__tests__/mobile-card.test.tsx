@@ -173,11 +173,10 @@ it.each([false, true])(
     })
     const button = screen.getByRole('button', { name: `Model: ${longName}` })
     const modelText = within(button).getByText(longName)
-    expect(modelText).toHaveClass(
-      'line-clamp-2',
-      'leading-5',
-      '[overflow-wrap:anywhere]'
-    )
+    // 只断言「两行截断 + 长词可断」这两条真正的契约。行高不再断言：
+    // 规范 T9 要求行高由字号 Token 自带（`[&_button]:text-sm` 已给出 14/20），
+    // 组件里再写 `leading-5` 属于重复声明，会被 `check-design-tokens.mjs` 拦下。
+    expect(modelText).toHaveClass('line-clamp-2', '[overflow-wrap:anywhere]')
     expect(modelText.closest('[data-slot="status-badge"]')).toHaveClass(
       'max-w-full',
       'min-h-6',

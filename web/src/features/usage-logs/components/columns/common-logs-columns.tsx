@@ -372,7 +372,7 @@ export function useCommonLogsColumns(
 
           return (
             <div className='flex min-w-0 flex-col gap-0.5'>
-              <span className='truncate font-mono text-mono tabular-nums'>
+              <span className='text-mono truncate font-mono tabular-nums'>
                 {formatTimestampToDate(timestamp)}
               </span>
               <StatusBadge
@@ -447,7 +447,7 @@ export function useCommonLogsColumns(
                         copyText={String(log.channel)}
                         size='sm'
                         showDot={false}
-                        className='font-mono'
+                        className='text-mono font-mono'
                       />
                       {showMultiKeyIndex && (
                         <StatusBadge
@@ -456,7 +456,7 @@ export function useCommonLogsColumns(
                           showDot={false}
                           copyable={false}
                           variant='neutral'
-                          className='h-5 min-w-5 justify-center rounded-full px-1 font-mono text-mono'
+                          className='text-mono h-5 min-w-5 justify-center rounded-full px-1 font-mono'
                           aria-label={`${t('Key')} ${multiKeyIndex}`}
                         />
                       )}
@@ -466,14 +466,14 @@ export function useCommonLogsColumns(
                             render={
                               <button
                                 type='button'
-                                className='text-muted-foreground hover:text-foreground focus-visible:ring-ring inline-flex size-5 shrink-0 items-center justify-center rounded-full transition-colors focus-visible:ring-2 focus-visible:outline-none'
+                                className='ds-touch-target text-muted-foreground hover:text-foreground focus-visible:ring-ring inline-flex size-5 shrink-0 items-center justify-center rounded-full transition-colors focus-visible:ring-2 focus-visible:outline-none'
                                 aria-label={t('Retry Chain')}
                                 onClick={(e) => e.stopPropagation()}
                               />
                             }
                           >
                             <GitBranch
-                              className='size-3.5 text-amber-500'
+                              className='text-warning size-4'
                               aria-hidden='true'
                             />
                           </PopoverTrigger>
@@ -484,7 +484,7 @@ export function useCommonLogsColumns(
                           >
                             <div className='flex flex-col gap-1'>
                               <p className='font-medium'>{t('Retry Chain')}</p>
-                              <p className='text-muted-foreground font-mono break-all'>
+                              <p className='text-muted-foreground text-mono font-mono break-all'>
                                 {channelChain}
                               </p>
                             </div>
@@ -494,7 +494,7 @@ export function useCommonLogsColumns(
                       {affinity && (
                         <button
                           type='button'
-                          className='absolute -top-1 -right-1 leading-none text-amber-500'
+                          className='text-warning absolute -top-1 -right-1'
                           onClick={(e) => {
                             e.stopPropagation()
                             setAffinityTarget({
@@ -509,12 +509,12 @@ export function useCommonLogsColumns(
                             setAffinityDialogOpen(true)
                           }}
                         >
-                          <Sparkles className='size-3 fill-current' />
+                          <Sparkles className='size-4 fill-current' />
                         </button>
                       )}
                     </div>
                     {log.channel_name && (
-                      <span className='text-muted-foreground/70 truncate [font-family:var(--font-body)] !text-xs'>
+                      <span className='text-muted-foreground truncate [font-family:var(--font-body)] !text-xs'>
                         {channelName}
                       </span>
                     )}
@@ -525,12 +525,12 @@ export function useCommonLogsColumns(
                         {sensitiveVisible ? channelDisplay : channelIdDisplay}
                       </p>
                       {channelChain && (
-                        <p className='text-muted-foreground text-xs'>
+                        <p className='text-muted-foreground text-sm'>
                           {t('Chain')}: {channelChain}
                         </p>
                       )}
                       {showMultiKeyIndex && (
-                        <p className='text-muted-foreground text-xs'>
+                        <p className='text-muted-foreground text-sm'>
                           {t('Key')}: {multiKeyIndex}
                         </p>
                       )}
@@ -658,19 +658,19 @@ export function useCommonLogsColumns(
               </Tooltip>
             </TooltipProvider>
             {(group || groupRatio != null) && (
-              <span className='block max-w-full truncate text-xs leading-none'>
+              <span className='block max-w-full truncate text-xs'>
                 {group ? (
                   <GroupBadge
                     group={group}
                     label={sensitiveVisible ? undefined : '••••'}
                     type='text'
                     size='sm'
-                    className='inline align-baseline text-xs leading-none [&>span]:leading-none'
+                    className='inline align-baseline text-xs'
                   />
                 ) : null}
                 {group && groupRatio != null ? ' ' : null}
                 {groupRatio != null ? (
-                  <span className='text-muted-foreground/60 relative top-px align-baseline tabular-nums'>
+                  <span className='text-muted-foreground relative top-px align-baseline tabular-nums'>
                     {formatRatioCompact(groupRatio)}x
                   </span>
                 ) : null}
@@ -752,19 +752,19 @@ export function useCommonLogsColumns(
 
           return (
             <div className='flex flex-col gap-0.5'>
-              <span className='font-mono text-mono font-medium tabular-nums'>
+              <span className='text-mono font-mono font-medium tabular-nums'>
                 {t('Input')} {promptTokens.toLocaleString()}
               </span>
-              <span className='font-mono text-mono font-medium tabular-nums'>
+              <span className='text-mono font-mono font-medium tabular-nums'>
                 {t('Output')} {completionTokens.toLocaleString()}
               </span>
               {cacheReadTokens > 0 && (
-                <span className='text-muted-foreground/60 font-mono text-mono tabular-nums'>
+                <span className='text-muted-foreground text-mono font-mono tabular-nums'>
                   {t('Cache Read')} ↓ {cacheReadTokens.toLocaleString()}
                 </span>
               )}
               {cacheWriteTokens > 0 && (
-                <span className='text-muted-foreground/60 font-mono text-mono tabular-nums'>
+                <span className='text-muted-foreground text-mono font-mono tabular-nums'>
                   {t('Cache Write')} ↑ {cacheWriteTokens.toLocaleString()}
                 </span>
               )}
@@ -844,24 +844,17 @@ export function useCommonLogsColumns(
           const hasMore = segments.length > 1
           let primaryTextClass = 'text-foreground'
           if (primary?.muted) {
-            primaryTextClass = 'text-muted-foreground/60'
+            primaryTextClass = 'text-muted-foreground'
           } else if (primary?.danger) {
-            primaryTextClass = 'text-red-600 dark:text-red-400'
+            primaryTextClass = 'text-destructive dark:text-destructive'
           }
-          let detailPreview = (
-            <span className='text-muted-foreground/40'>—</span>
-          )
+          let detailPreview = <span className='text-muted-foreground'>—</span>
           if (primary) {
             detailPreview = (
-              <span
-                className={cn(
-                  'truncate leading-snug group-hover:',
-                  primaryTextClass
-                )}
-              >
+              <span className={cn('truncate group-hover:', primaryTextClass)}>
                 {primary.text}
                 {hasMore && (
-                  <span className='text-muted-foreground/40 ml-0.5'>
+                  <span className='text-muted-foreground ml-0.5'>
                     +{segments.length - 1}
                   </span>
                 )}
@@ -880,7 +873,7 @@ export function useCommonLogsColumns(
             <>
               <button
                 type='button'
-                className='group flex max-w-[200px] items-center gap-1 text-left text-xs'
+                className='ds-touch-target group flex max-w-[200px] items-center gap-1 text-left text-sm'
                 onClick={() => setDialogOpen(true)}
                 title={t('Click to view full details')}
               >

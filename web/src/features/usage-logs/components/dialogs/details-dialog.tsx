@@ -109,9 +109,9 @@ const CHANNEL_FIELD_LABELS: Record<string, string> = {
 function timingTextColorClass(
   variant: 'success' | 'warning' | 'danger'
 ): string {
-  if (variant === 'success') return 'text-emerald-600'
-  if (variant === 'warning') return 'text-amber-600'
-  return 'text-rose-600'
+  if (variant === 'success') return 'text-success'
+  if (variant === 'warning') return 'text-warning'
+  return 'text-destructive'
 }
 
 function formatRatio(ratio: number | undefined): string {
@@ -351,9 +351,7 @@ function BillingBreakdown(props: {
       ))}
       {usageFacts.length > 0 && (
         <>
-          <Label className='text-xs font-semibold'>
-            {t('Usage parameters')}
-          </Label>
+          <Label>{t('Usage parameters')}</Label>
           {usageFacts.map(([key, value]) => (
             <DetailRow
               key={`usage-fact-${key}`}
@@ -448,9 +446,7 @@ function TokenBreakdown(props: { log: UsageLog; other: LogOtherData }) {
           aria-label={t('Billable token breakdown')}
           className='space-y-2'
         >
-          <Label className='text-xs font-semibold'>
-            {t('Billable token breakdown')}
-          </Label>
+          <Label>{t('Billable token breakdown')}</Label>
           {BILLING_PRICING_VARS.map((variable) => {
             const count = other.billing_tokens?.[variable.key]
             if (count === undefined || !Number.isFinite(count)) return null
@@ -649,7 +645,7 @@ export function DetailsDialog(props: DetailsDialogProps) {
         isTieredBilling ? 'sm:max-w-4xl lg:max-w-5xl' : 'sm:max-w-lg'
       )}
       headerClassName='max-sm:gap-1'
-      titleClassName='flex items-center gap-2 text-base'
+      titleClassName='flex items-center gap-2'
       descriptionClassName='sr-only'
       contentHeight='min(72dvh, 720px)'
       bodyClassName='pr-2 sm:pr-4'
@@ -715,7 +711,7 @@ export function DetailsDialog(props: DetailsDialogProps) {
               label={t('IP Address')}
               value={
                 <span className='flex items-center gap-1'>
-                  <Globe className='size-3 text-amber-500' aria-hidden='true' />
+                  <Globe className='text-warning size-4' aria-hidden='true' />
                   {props.log.ip}
                 </span>
               }
@@ -766,16 +762,16 @@ export function DetailsDialog(props: DetailsDialogProps) {
             <div className='relative min-w-0'>
               <Button
                 variant='ghost'
-                size='sm'
-                className='absolute top-0 right-0 h-5 w-5 p-0'
+                size='icon-xs'
+                className='absolute top-0 right-0 p-0'
                 onClick={() => copyToClipboard(conversionLabel)}
                 title={t('Copy to clipboard')}
                 aria-label={t('Copy to clipboard')}
               >
                 {copiedText === conversionLabel ? (
-                  <Check className='size-3 text-green-600' />
+                  <Check className='text-success size-4' />
                 ) : (
-                  <Copy className='size-3' />
+                  <Copy className='size-4' />
                 )}
               </Button>
               <div className='min-w-0 space-y-1 pr-6'>
@@ -788,7 +784,7 @@ export function DetailsDialog(props: DetailsDialogProps) {
                 )}
                 <div className='flex min-w-0 items-center gap-1.5 text-xs'>
                   <Route
-                    className='text-muted-foreground size-3'
+                    className='text-muted-foreground size-4'
                     aria-hidden='true'
                   />
                   <span className='min-w-0 break-all sm:wrap-break-word'>
@@ -811,11 +807,11 @@ export function DetailsDialog(props: DetailsDialogProps) {
         ) : null}
         {props.isAdmin && other?.admin_info?.quota_saturation && (
           <DetailSection
-            icon={<AlertTriangle className='size-3.5' aria-hidden='true' />}
+            icon={<AlertTriangle className='size-4' aria-hidden='true' />}
             label={t('Quota clamped')}
             variant='danger'
           >
-            <p className='mb-1 text-xs wrap-break-word'>
+            <p className='mb-1 text-sm wrap-break-word'>
               {t('Quota saturation protection triggered')}
             </p>
             <DetailRow
@@ -846,18 +842,18 @@ export function DetailsDialog(props: DetailsDialogProps) {
         {/* Reject reason (admin only) */}
         {props.isAdmin && adminInfo?.reject_reason && (
           <DetailSection
-            icon={<AlertTriangle className='size-3.5' aria-hidden='true' />}
+            icon={<AlertTriangle className='size-4' aria-hidden='true' />}
             label={t('Reject Reason')}
             variant='danger'
           >
-            <p className='text-xs wrap-break-word'>{adminInfo.reject_reason}</p>
+            <p className='text-sm wrap-break-word'>{adminInfo.reject_reason}</p>
           </DetailSection>
         )}
 
         {/* Violation fee info */}
         {isViolation && other && (
           <DetailSection
-            icon={<AlertTriangle className='size-3.5' aria-hidden='true' />}
+            icon={<AlertTriangle className='size-4' aria-hidden='true' />}
             label={t('Violation Fee')}
             variant='danger'
           >
@@ -962,7 +958,7 @@ export function DetailsDialog(props: DetailsDialogProps) {
         {/* Top-up audit info (type=1, admin only) */}
         {showTopupAuditSection && (
           <DetailSection
-            icon={<ShieldCheck className='size-3.5' aria-hidden='true' />}
+            icon={<ShieldCheck className='size-4' aria-hidden='true' />}
             iconTone='success'
             label={t('Top-up Audit Info')}
           >
@@ -975,8 +971,8 @@ export function DetailsDialog(props: DetailsDialogProps) {
               />
             ))}
             {showLegacyTopupWarning && (
-              <div className='flex items-start gap-1.5 text-xs text-amber-600 dark:text-amber-400'>
-                <Info className='mt-0.5 size-3.5 shrink-0' aria-hidden='true' />
+              <div className='text-warning dark:text-warning flex items-start gap-1.5 text-xs'>
+                <Info className='mt-0.5 size-4 shrink-0' aria-hidden='true' />
                 <span>
                   {t(
                     'This historical record predates audit-info tracking and cannot be backfilled. The current instance already records server IP, callback IP, payment method, and system version for new top-ups going forward.'
@@ -999,7 +995,7 @@ export function DetailsDialog(props: DetailsDialogProps) {
             label={
               <span className='flex items-center gap-1.5'>
                 <UserCog
-                  className='text-muted-foreground size-3.5'
+                  className='text-muted-foreground size-4'
                   aria-hidden='true'
                 />
                 {t('Operator Admin')}
@@ -1013,7 +1009,7 @@ export function DetailsDialog(props: DetailsDialogProps) {
         {/* Operation audit info (type=3, admin only) */}
         {showManageAuditSection && (
           <DetailSection
-            icon={<ShieldCheck className='size-3.5' aria-hidden='true' />}
+            icon={<ShieldCheck className='size-4' aria-hidden='true' />}
             iconTone='info'
             label={t('Operation Audit Info')}
           >
@@ -1056,7 +1052,7 @@ export function DetailsDialog(props: DetailsDialogProps) {
         {/* Login audit info (type=7) */}
         {isLogin && loginAuditFields.length > 0 && (
           <DetailSection
-            icon={<LogIn className='size-3.5' aria-hidden='true' />}
+            icon={<LogIn className='size-4' aria-hidden='true' />}
             iconTone='info'
             label={t('Login Info')}
           >
@@ -1077,7 +1073,7 @@ export function DetailsDialog(props: DetailsDialogProps) {
         {/* Audio/WebSocket token breakdown */}
         {hasAudioTokens && other && (
           <DetailSection
-            icon={<Headphones className='size-3.5' aria-hidden='true' />}
+            icon={<Headphones className='size-4' aria-hidden='true' />}
             iconTone='chart-4'
             label={t('Audio Tokens')}
           >
@@ -1212,9 +1208,9 @@ export function DetailsDialog(props: DetailsDialogProps) {
               value={
                 <span className='flex items-center gap-1'>
                   {isUsageBillingPathLocal(other.admin_info) ? (
-                    <Monitor className='size-3 text-blue-500' />
+                    <Monitor className='text-info size-4' />
                   ) : (
-                    <Cloud className='size-3 text-emerald-500' />
+                    <Cloud className='text-success size-4' />
                   )}
                   <span className='text-xs'>
                     {getUsageBillingPathLabel(t, other.admin_info)}
@@ -1258,7 +1254,7 @@ export function DetailsDialog(props: DetailsDialogProps) {
             )}
             {Array.isArray(other.stream_status.errors) &&
               other.stream_status.errors.length > 0 && (
-                <pre className='bg-background/60 mt-1 max-h-32 overflow-y-auto rounded border p-2 font-mono text-mono leading-relaxed wrap-break-word whitespace-pre-wrap'>
+                <pre className='bg-background/60 text-mono mt-1 max-h-32 overflow-y-auto rounded border p-2 font-mono wrap-break-word whitespace-pre-wrap'>
                   {other.stream_status.errors.join('\n')}
                 </pre>
               )}
@@ -1316,7 +1312,7 @@ export function DetailsDialog(props: DetailsDialogProps) {
         {/* Param override */}
         {other?.po && Array.isArray(other.po) && other.po.length > 0 && (
           <DetailSection
-            icon={<Settings2 className='size-3.5' aria-hidden='true' />}
+            icon={<Settings2 className='size-4' aria-hidden='true' />}
             iconTone='chart-3'
             label={`${t('Param Override')} (${other.po.length})`}
           >
@@ -1334,7 +1330,7 @@ export function DetailsDialog(props: DetailsDialogProps) {
                     className='shrink-0 font-medium'
                     copyable={false}
                   />
-                  <span className='min-w-0 font-mono text-mono leading-relaxed break-all sm:wrap-break-word'>
+                  <span className='text-mono min-w-0 font-mono break-all sm:wrap-break-word'>
                     {parsed.content}
                   </span>
                 </div>
@@ -1346,23 +1342,23 @@ export function DetailsDialog(props: DetailsDialogProps) {
         {/* Content */}
         {details && (
           <div className='space-y-1.5'>
-            <Label className='text-xs font-semibold'>{t('Content')}</Label>
+            <Label>{t('Content')}</Label>
             <div className='bg-muted/30 relative min-w-0 overflow-hidden rounded-md border p-2.5'>
               <Button
                 variant='ghost'
-                size='sm'
-                className='absolute top-1.5 right-1.5 h-5 w-5 p-0'
+                size='icon-xs'
+                className='absolute top-1.5 right-1.5 p-0'
                 onClick={() => copyToClipboard(details)}
                 title={t('Copy to clipboard')}
                 aria-label={t('Copy to clipboard')}
               >
                 {copiedText === details ? (
-                  <Check className='size-3 text-green-600' />
+                  <Check className='text-success size-4' />
                 ) : (
-                  <Copy className='size-3' />
+                  <Copy className='size-4' />
                 )}
               </Button>
-              <p className='min-w-0 pr-6 text-xs leading-relaxed break-all whitespace-pre-wrap sm:wrap-break-word'>
+              <p className='min-w-0 pr-6 text-sm break-all whitespace-pre-wrap sm:wrap-break-word'>
                 {details}
               </p>
             </div>

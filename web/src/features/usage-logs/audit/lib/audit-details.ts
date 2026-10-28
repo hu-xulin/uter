@@ -16,8 +16,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
-import type { TFunction } from 'i18next'
 import dayjs from 'dayjs'
+import type { TFunction } from 'i18next'
 
 import { loginMethodLabel } from '@/features/security/components/login-session-utils'
 import type { PermissionResourceDef } from '@/lib/admin-permissions'

@@ -124,15 +124,42 @@ afterEach(async () => {
   await i18next.changeLanguage('en')
 })
 
+/**
+ * 日期区间选择器已从原生 `datetime-local` 换成「日历选日 + 两个时间输入」，
+ * 因此**日期必须从日历上点**：时间输入只提供时分秒，`applyDraft` 用
+ * `mergeDateTime(draft.from, startTime)` 拼装，日历没选日子时 `from` 为空，
+ * 时间改得再对也不会产生区间。
+ *
+ * 日历格子带 `data-day`（`toLocaleDateString(locale.code)`），用它精确定位某一天，
+ * 避免 `getByText('7')` 同时命中上下月的补白格。
+ */
+function calendarDay(date: Date) {
+  const key = date.toLocaleDateString('en-US')
+  const cell = document.querySelector<HTMLButtonElement>(
+    `[data-slot='calendar'] button[data-day="${key}"]`
+  )
+  if (!cell) throw new Error(`calendar day cell not found: ${key}`)
+  return cell
+}
+
 it('applies the selected mobile date range directly and resets pagination while retaining filters', async () => {
+  // 固定「今天」，让日历默认停在同一张月视图上（否则跨月时要点月份翻页，
+  // 用例会随执行日期随机失败）。只伪造 Date，userEvent 仍用真实定时器。
+  vi.useFakeTimers({ toFake: ['Date'] })
+  vi.setSystemTime(new Date(2026, 8, 8, 12))
   const router = await renderMobileFilter()
   const user = userEvent.setup()
   await user.click(screen.getByRole('button', { name: /^\d{4}-\d{2}/ }))
+  // 先清空默认区间：日历带着「已选中的完整区间」时，第一次点日只是重置/收缩
+  // 旧区间，两次点击未必落在同一个新区间上。清空后再点，语义才是「从 7 号拖到 8 号」。
+  await user.click(screen.getByRole('button', { name: 'Clear' }))
+  await user.click(calendarDay(new Date(2026, 8, 7)))
+  await user.click(calendarDay(new Date(2026, 8, 8)))
   fireEvent.change(screen.getByLabelText('Start Time'), {
-    target: { value: '2026-09-07T09:30' },
+    target: { value: '09:30:00' },
   })
   fireEvent.change(screen.getByLabelText('End Time'), {
-    target: { value: '2026-09-08T17:45' },
+    target: { value: '17:45:00' },
   })
   await user.click(screen.getByRole('button', { name: 'Confirm' }))
   await waitFor(() =>
@@ -140,8 +167,8 @@ it('applies the selected mobile date range directly and resets pagination while 
       page: 1,
       group: 'default',
       type: ['2'],
-      startTime: new Date('2026-09-07T09:30').getTime(),
-      endTime: new Date('2026-09-08T17:45').getTime(),
+      startTime: new Date(2026, 8, 7, 9, 30, 0).getTime(),
+      endTime: new Date(2026, 8, 8, 17, 45, 0).getTime(),
     })
   )
 })

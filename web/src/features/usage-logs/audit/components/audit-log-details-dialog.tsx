@@ -76,21 +76,19 @@ export function AuditLogDetailsDialog(props: { entry: AuditLog }) {
       description={t('View the complete details for this log entry')}
       descriptionClassName='sr-only'
       trigger={
-        <Button variant='ghost' size='sm' className='h-7 px-2'>
+        <Button variant='ghost' size='sm' className='px-2'>
           {t('Details')}
         </Button>
       }
       contentClassName='min-w-0 sm:max-w-lg max-sm:max-h-(--dialog-available-height) max-sm:w-[calc(100vw-1.5rem)] max-sm:max-w-[calc(100vw-1.5rem)]'
-      titleClassName='text-base'
+      titleClassName='flex items-center gap-2'
       contentHeight='auto'
       bodyClassName='space-y-3'
     >
       <div className='min-w-0 space-y-1.5'>
-        <p className='text-sm leading-relaxed font-medium break-words'>
-          {detail.summary}
-        </p>
+        <p className='text-sm font-medium break-words'>{detail.summary}</p>
         {detail.operation?.description && (
-          <p className='text-muted-foreground text-sm leading-relaxed break-words'>
+          <p className='text-muted-foreground text-sm break-words'>
             {detail.operation.description}
           </p>
         )}
@@ -137,7 +135,7 @@ export function AuditLogDetailsDialog(props: { entry: AuditLog }) {
           )}
           {!detail.operation && <AuditDetailFields fields={detail.fields} />}
           {detail.metadataUnavailable && (
-            <p className='text-muted-foreground text-xs'>
+            <p className='text-muted-foreground text-sm'>
               {t('Audit metadata is unavailable')}
             </p>
           )}

@@ -16,12 +16,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
-import {
-  CrownIcon,
-  Wallet01Icon,
-  Wrench01Icon,
-} from '@hugeicons/core-free-icons'
-import { HugeiconsIcon } from '@hugeicons/react'
+import { Crown, Wallet, Wrench } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
 import { StatusBadge } from '@/components/status-badge'
@@ -59,15 +54,8 @@ function ToolSurchargeMarker() {
             tabIndex={0}
             data-tool-surcharge-indicator='true'
           >
-            <HugeiconsIcon
-              icon={Wrench01Icon}
-              strokeWidth={2}
-              aria-hidden='true'
-            />
-            <span
-              className='text-xs leading-none font-bold'
-              aria-hidden='true'
-            >
+            <Wrench aria-hidden='true' />
+            <span className='text-xs font-semibold' aria-hidden='true'>
               +
             </span>
           </Badge>
@@ -120,12 +108,11 @@ export function LogCostDisplay(props: LogCostDisplayProps) {
                     aria-label={source}
                     tabIndex={0}
                   >
-                    <HugeiconsIcon
-                      icon={isSubscription ? CrownIcon : Wallet01Icon}
-                      className='size-3.5'
-                      strokeWidth={2}
-                      aria-hidden='true'
-                    />
+                    {isSubscription ? (
+                      <Crown className='size-4' aria-hidden='true' />
+                    ) : (
+                      <Wallet className='size-4' aria-hidden='true' />
+                    )}
                   </span>
                 }
               />

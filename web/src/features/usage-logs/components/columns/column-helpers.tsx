@@ -55,10 +55,10 @@ export function CacheTooltip({
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger
-          render={<Zap className={`size-3 flex-shrink-0 ${color}`} />}
-         />
+          render={<Zap className={`size-4 flex-shrink-0 ${color}`} />}
+        />
         <TooltipContent side='top'>
-          <p className='text-xs'>
+          <p className='text-sm'>
             {label}: {formatTokens(tokens)}
           </p>
         </TooltipContent>
@@ -89,10 +89,10 @@ export function createTimestampColumn<T>(config: {
     cell: ({ row }) => {
       const timestamp = row.getValue(accessorKey) as number
       if (!timestamp) {
-        return <span className='text-muted-foreground/60 text-xs'>-</span>
+        return <span className='text-muted-foreground text-sm'>-</span>
       }
       return (
-        <span className='font-mono text-mono tabular-nums'>
+        <span className='text-mono font-mono tabular-nums'>
           {formatTimestampToDate(timestamp, unit)}
         </span>
       )
@@ -133,7 +133,7 @@ export function createDurationColumn<T>(config: {
       )
 
       if (!duration) {
-        return <span className='text-muted-foreground/60 text-xs'>-</span>
+        return <span className='text-muted-foreground text-sm'>-</span>
       }
 
       const variant =
@@ -141,11 +141,11 @@ export function createDurationColumn<T>(config: {
 
       const durationBgMap: Record<string, string> = {
         success:
-          'border border-emerald-200/40 bg-emerald-50/35 !text-emerald-600 dark:border-emerald-900/40 dark:bg-emerald-950/15 dark:!text-emerald-400',
+          'border border-success-soft/40 bg-success-soft/35 !text-success dark:border-success-soft/40 dark:bg-success-soft/15 dark:!text-success',
         warning:
-          'border border-amber-200/45 bg-amber-50/35 !text-amber-600 dark:border-amber-900/40 dark:bg-amber-950/15 dark:!text-amber-400',
+          'border border-warning-soft/45 bg-warning-soft/35 !text-warning dark:border-warning-soft/40 dark:bg-warning-soft/15 dark:!text-warning',
         danger:
-          'border border-rose-200/50 bg-rose-50/35 !text-red-600 dark:border-rose-900/40 dark:bg-rose-950/15 dark:!text-red-400',
+          'border border-destructive-soft/50 bg-destructive-soft/35 !text-destructive dark:border-destructive-soft/40 dark:bg-destructive-soft/15 dark:!text-destructive',
       }
 
       return (
@@ -154,7 +154,10 @@ export function createDurationColumn<T>(config: {
           variant={variant}
           size='sm'
           copyable={false}
-          className={cn('rounded-md font-mono', durationBgMap[variant])}
+          className={cn(
+            'rounded-md font-mono text-mono',
+            durationBgMap[variant]
+          )}
         />
       )
     },
@@ -179,7 +182,7 @@ export function createChannelColumn<T>(config: {
     cell: ({ row }) => {
       const channelId = row.getValue(accessorKey) as number
       if (!channelId) {
-        return <span className='text-muted-foreground/60 text-xs'>-</span>
+        return <span className='text-muted-foreground text-sm'>-</span>
       }
       return (
         <StatusBadge
@@ -188,7 +191,7 @@ export function createChannelColumn<T>(config: {
           copyText={String(channelId)}
           size='sm'
           showDot={false}
-          className='font-mono'
+          className='text-mono font-mono'
         />
       )
     },
@@ -220,18 +223,18 @@ export function createFailReasonColumn<T>(config: {
       const [dialogOpen, setDialogOpen] = useState(false)
 
       if (!failReason) {
-        return <span className='text-muted-foreground/60 text-xs'>-</span>
+        return <span className='text-muted-foreground text-sm'>-</span>
       }
 
       return (
         <>
           <button
             type='button'
-            className='group flex max-w-[200px] items-center gap-1 text-left text-xs'
+            className='ds-touch-target group flex max-w-[200px] items-center gap-1 text-left text-sm'
             onClick={() => setDialogOpen(true)}
             title={cellTitle}
           >
-            <span className='group-hover: truncate leading-snug text-red-600 dark:text-red-400'>
+            <span className='group-hover: text-destructive dark:text-destructive truncate'>
               {' '}
               {failReason}
             </span>
@@ -265,10 +268,10 @@ export function createProgressColumn<T>(config: {
     cell: ({ row }) => {
       const progress = row.getValue(accessorKey) as string
       if (!progress) {
-        return <span className='text-muted-foreground/60 text-xs'>-</span>
+        return <span className='text-muted-foreground text-sm'>-</span>
       }
       return (
-        <span className='border-border/60 bg-muted/30 inline-flex items-center rounded-md border px-1.5 py-0.5 font-mono text-mono'>
+        <span className='border-border/60 bg-muted/30 text-mono inline-flex items-center rounded-md border px-1.5 py-0.5 font-mono'>
           {progress}
         </span>
       )
