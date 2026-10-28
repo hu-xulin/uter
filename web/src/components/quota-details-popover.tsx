@@ -72,9 +72,7 @@ export function QuotaDetailsPopover(props: QuotaDetailsPopoverProps) {
           ))}
         </dl>
         {props.description && (
-          <p className='text-muted-foreground text-xs leading-relaxed'>
-            {props.description}
-          </p>
+          <p className='text-muted-foreground text-sm'>{props.description}</p>
         )}
       </PopoverContent>
     </Popover>

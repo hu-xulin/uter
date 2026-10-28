@@ -19,3 +19,12 @@ For commercial licensing, please contact support@uter.ai
 export function isContentSizedColumn(columnId: string): boolean {
   return columnId === 'actions'
 }
+
+/**
+ * 内容自适应列在 `fitContainer`（table-layout: fixed）模式下的固定占位宽度。
+ *
+ * auto 布局里 `width: 1%` 表示「按内容收缩」，但 fixed 布局会把它当成真正的
+ * 1%，把操作列压成一条缝。fixed 布局必须给出确定的宽度，这里用行内图标按钮
+ * 的实测宽度（两个 icon-sm + 溢出菜单 ≈ 110px）。
+ */
+export const CONTENT_SIZED_COLUMN_WIDTH_PX = 110

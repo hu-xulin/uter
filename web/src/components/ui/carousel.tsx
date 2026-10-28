@@ -18,11 +18,10 @@ For commercial licensing, please contact support@uter.ai
 */
 'use client'
 
-import { ArrowLeft01Icon, ArrowRight01Icon } from '@hugeicons/core-free-icons'
-import { HugeiconsIcon } from '@hugeicons/react'
 import useEmblaCarousel, {
   type UseEmblaCarouselType,
 } from 'embla-carousel-react'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 import * as React from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -216,7 +215,7 @@ function CarouselPrevious({
       onClick={scrollPrev}
       {...props}
     >
-      <HugeiconsIcon icon={ArrowLeft01Icon} strokeWidth={2} />
+      <ChevronLeft />
       <span className='sr-only'>{t('Previous slide')}</span>
     </Button>
   )
@@ -247,7 +246,7 @@ function CarouselNext({
       onClick={scrollNext}
       {...props}
     >
-      <HugeiconsIcon icon={ArrowRight01Icon} strokeWidth={2} />
+      <ChevronRight />
       <span className='sr-only'>{t('Next slide')}</span>
     </Button>
   )

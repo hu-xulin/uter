@@ -24,6 +24,7 @@ import { useTranslation } from 'react-i18next'
 import { StickToBottom, useStickToBottomContext } from 'use-stick-to-bottom'
 
 import { Button } from '@/components/ui/button'
+import { Heading } from '@/design-system'
 import { cn } from '@/lib/utils'
 
 export type ConversationProps = ComponentProps<typeof StickToBottom>
@@ -80,7 +81,7 @@ export const ConversationEmptyState = ({
         <>
           {icon && <div className='text-muted-foreground'>{icon}</div>}
           <div className='space-y-1'>
-            <h3 className='text-sm font-medium'>{resolvedTitle}</h3>
+            <Heading variant='group-title'>{resolvedTitle}</Heading>
             {resolvedDescription && (
               <p className='text-muted-foreground text-sm'>
                 {resolvedDescription}
@@ -120,7 +121,7 @@ export const ConversationScrollButton = ({
         aria-label={t('Scroll to bottom')}
         {...props}
       >
-        <ArrowDownIcon className='size-4' aria-hidden='true' />
+        <ArrowDownIcon className='size-4.5' aria-hidden='true' />
       </Button>
     )
   )

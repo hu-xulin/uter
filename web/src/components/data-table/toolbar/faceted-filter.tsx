@@ -81,10 +81,17 @@ function DataTableFacetedFilterInner<TData, TValue>({
     <Popover>
       <PopoverTrigger
         render={
-          <Button variant='outline' size='sm' className='h-8 border-dashed' />
+          /* 高度跟随搜索框（同一 `--ds-control-height-md`）：此前写死 h-8
+             （32px），而 Input 是 40px，两者在同一 flex 行里居中后上下各差
+             4px，工具栏看起来像两排没对齐的控件。 */
+          <Button
+            variant='outline'
+            size='sm'
+            className='h-(--ds-control-height-md) border-dashed'
+          />
         }
       >
-        <PlusCircledIcon className='size-4' />
+        <PlusCircledIcon className='size-4.5' />
         {title}
         {selectedValues?.size > 0 && (
           <>
@@ -136,18 +143,20 @@ function DataTableFacetedFilterInner<TData, TValue>({
                     </span>
                   )
                 } else if (option.icon) {
-                  iconNode = <option.icon className='text-muted-foreground size-4' />
+                  iconNode = (
+                    <option.icon className='text-muted-foreground size-4' />
+                  )
                 }
                 let countNode = null
                 if (typeof option.count === 'number') {
                   countNode = (
-                    <span className='text-muted-foreground ms-auto flex h-4 min-w-4 items-center justify-center font-mono text-mono'>
+                    <span className='text-muted-foreground text-mono ms-auto flex h-4 min-w-4 items-center justify-center font-mono'>
                       {option.count}
                     </span>
                   )
                 } else if (facets?.get(option.value)) {
                   countNode = (
-                    <span className='ms-auto flex h-4 w-4 items-center justify-center font-mono text-mono'>
+                    <span className='text-mono ms-auto flex h-4 w-4 items-center justify-center font-mono'>
                       {facets.get(option.value)}
                     </span>
                   )

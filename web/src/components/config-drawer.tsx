@@ -94,7 +94,7 @@ export function ConfigDrawer() {
           />
         }
       >
-        <Palette className='size-[1.2rem]' aria-hidden='true' />
+        <Palette className='size-4.5' aria-hidden='true' />
       </SheetTrigger>
       <SheetContent className={sideDrawerContentClassName('sm:max-w-md')}>
         <SheetHeader className={sideDrawerHeaderClassName()}>
@@ -137,20 +137,19 @@ function SectionTitle(props: {
   return (
     <div
       className={cn(
-        'text-muted-foreground mb-2 flex items-center gap-2 text-sm font-semibold',
+        'text-muted-foreground mb-2 flex items-center gap-2 text-sm font-medium',
         props.className
       )}
     >
       {props.title}
       {props.showReset && props.onReset && (
         <Button
-          size='icon'
+          size='icon-xs'
           variant='secondary'
-          className='size-4'
           onClick={props.onReset}
           aria-label={t('Reset')}
         >
-          <RotateCcw className='size-3' aria-hidden='true' />
+          <RotateCcw className='size-4' aria-hidden='true' />
         </Button>
       )}
     </div>
@@ -169,14 +168,14 @@ function RadioGroupItem(props: {
   return (
     <Item
       value={props.item.value}
-      className={cn('group outline-none', 'transition duration-200 ease-in')}
+      className={cn('group outline-none', 'transition ds-motion-base')}
       aria-label={`Select ${props.item.label.toLowerCase()}`}
       aria-describedby={`${props.item.value}-description`}
     >
       <div
         className={cn(
           'ring-border relative rounded-md ring-[1px]',
-          'group-data-checked:ring-primary group-data-checked:shadow-2xl',
+          'group-data-checked:ring-primary group-data-checked:shadow-lg',
           'group-focus-visible:ring-2'
         )}
         role='img'
@@ -268,7 +267,7 @@ function PresetConfig() {
             <div
               className={cn(
                 'ring-border relative h-12 rounded-md ring-[1px] transition',
-                'group-data-checked:ring-primary group-data-checked:shadow-md',
+                'group-data-checked:ring-primary',
                 'group-focus-visible:ring-2',
                 'group-hover:ring-primary/60'
               )}
@@ -285,7 +284,7 @@ function PresetConfig() {
               />
               <CircleCheck
                 className={cn(
-                  'fill-primary absolute top-0 right-0 z-10 size-5 translate-x-1/2 -translate-y-1/2 stroke-white',
+                  'fill-primary absolute top-0 right-0 z-10 size-4 translate-x-1/2 -translate-y-1/2 stroke-white',
                   'group-data-unchecked:hidden'
                 )}
                 aria-hidden='true'
@@ -300,7 +299,6 @@ function PresetConfig() {
     </div>
   )
 }
-
 
 const RADIUS_OPTIONS: {
   value: ThemeRadius
@@ -344,14 +342,14 @@ function RadiusConfig() {
             <div
               className={cn(
                 'ring-border relative h-12 rounded-md ring-[1px] transition',
-                'group-data-checked:ring-primary group-data-checked:shadow-md',
+                'group-data-checked:ring-primary',
                 'group-focus-visible:ring-2',
                 'group-hover:ring-primary/60'
               )}
             >
               <CircleCheck
                 className={cn(
-                  'fill-primary absolute top-0 right-0 z-10 size-5 translate-x-1/2 -translate-y-1/2 stroke-white',
+                  'fill-primary absolute top-0 right-0 z-10 size-4 translate-x-1/2 -translate-y-1/2 stroke-white',
                   'group-data-unchecked:hidden'
                 )}
                 aria-hidden='true'
@@ -431,14 +429,14 @@ function ScaleConfig() {
             <div
               className={cn(
                 'ring-border relative h-12 rounded-md ring-[1px] transition',
-                'group-data-checked:ring-primary group-data-checked:shadow-md',
+                'group-data-checked:ring-primary',
                 'group-focus-visible:ring-2',
                 'group-hover:ring-primary/60'
               )}
             >
               <CircleCheck
                 className={cn(
-                  'fill-primary absolute top-0 right-0 z-10 size-5 translate-x-1/2 -translate-y-1/2 stroke-white',
+                  'fill-primary absolute top-0 right-0 z-10 size-4 translate-x-1/2 -translate-y-1/2 stroke-white',
                   'group-data-unchecked:hidden'
                 )}
                 aria-hidden='true'
@@ -572,14 +570,14 @@ function ContentLayoutConfig() {
             <div
               className={cn(
                 'ring-border relative h-12 rounded-md ring-[1px] transition',
-                'group-data-checked:ring-primary group-data-checked:shadow-md',
+                'group-data-checked:ring-primary',
                 'group-focus-visible:ring-2',
                 'group-hover:ring-primary/60'
               )}
             >
               <CircleCheck
                 className={cn(
-                  'fill-primary absolute top-0 right-0 z-10 size-5 translate-x-1/2 -translate-y-1/2 stroke-white',
+                  'fill-primary absolute top-0 right-0 z-10 size-4 translate-x-1/2 -translate-y-1/2 stroke-white',
                   'group-data-unchecked:hidden'
                 )}
                 aria-hidden='true'

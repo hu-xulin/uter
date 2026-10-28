@@ -59,7 +59,10 @@ function Slider({
           <SliderPrimitive.Thumb
             data-slot='slider-thumb'
             key={index}
-            className='border-ring ring-ring/50 relative block size-3 shrink-0 rounded-full border bg-white transition-[color,box-shadow] select-none after:absolute after:-inset-2 hover:ring-3 focus-visible:ring-3 focus-visible:outline-hidden active:ring-3 disabled:pointer-events-none disabled:opacity-50'
+            // 焦点环按规范 §1.7：2px、`ring` 满色。此前 `ring-ring/50` 把
+            // `--tw-ring-color` 设成半透明，`focus-visible:ring-2` 继承的就是
+            // 这个颜色 —— 宽度对了、颜色不对，等于第二套焦点色。
+            className='border-ring ring-ring bg-surface-pure relative block size-3 shrink-0 rounded-full border transition-[color,box-shadow] select-none after:absolute after:-inset-2 hover:ring-2 focus-visible:ring-2 focus-visible:outline-hidden active:ring-2 disabled:pointer-events-none disabled:opacity-50'
           />
         ))}
       </SliderPrimitive.Control>

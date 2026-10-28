@@ -16,11 +16,12 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
+import type { VariantProps } from 'class-variance-authority'
 import { Check, Copy } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { Button } from '@/components/ui/button'
+import { Button, type buttonVariants } from '@/components/ui/button'
 import {
   Tooltip,
   TooltipContent,
@@ -34,8 +35,10 @@ interface CopyButtonProps {
   children?: ReactNode
   className?: string
   iconClassName?: string
-  variant?: 'ghost' | 'outline' | 'default' | 'secondary' | 'destructive'
-  size?: 'default' | 'sm' | 'lg' | 'icon'
+  /** 直接继承 Button 的档位 —— 手写一份联合类型就等于开了第二个来源，
+   *  Button 新增 `inline` / `wrap` 档时这里会静默落后。 */
+  variant?: VariantProps<typeof buttonVariants>['variant']
+  size?: VariantProps<typeof buttonVariants>['size']
   tooltip?: string
   successTooltip?: string
   'aria-label'?: string

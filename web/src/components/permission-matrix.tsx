@@ -120,7 +120,7 @@ export function PermissionMatrix(props: PermissionMatrixProps) {
                   type='button'
                   variant='ghost'
                   size='sm'
-                  className='h-7 text-xs'
+                  className='text-xs'
                   disabled={props.disabled}
                   onClick={() => {
                     const next = { ...props.value }
@@ -175,14 +175,16 @@ function PermissionResourceRow(props: PermissionResourceRowProps) {
         <Tooltip>
           <TooltipTrigger
             render={
-              <button
+              <Button
                 type='button'
-                className='text-muted-foreground hover:text-foreground inline-flex'
+                variant='ghost'
+                size='icon-xs'
+                className='text-muted-foreground -ml-1'
                 aria-label={t('Details')}
               />
             }
           >
-            <Info className='size-3.5' aria-hidden='true' />
+            <Info className='size-4.5' aria-hidden='true' />
           </TooltipTrigger>
           <TooltipContent className='block max-w-sm py-2 text-left'>
             <dl className='space-y-1.5'>
@@ -221,7 +223,7 @@ function PermissionResourceRow(props: PermissionResourceRowProps) {
               className={cn(
                 'h-auto min-h-7 max-w-full font-normal whitespace-normal',
                 pressed &&
-                  'border-primary bg-primary/10! text-primary hover:bg-primary/15'
+                  'border-primary bg-primary-subtle! text-primary-subtle-foreground hover:bg-primary-subtle-hover'
               )}
             >
               {pressed && <Check aria-hidden='true' />}

@@ -24,7 +24,6 @@ import { HtmlContent } from '@/components/html-content'
 import { useSystemConfig } from '@/hooks/use-system-config'
 import { normalizeInterfaceLanguage } from '@/i18n/languages'
 import { localizedBrandName } from '@/lib/brand'
-import { DEFAULT_LOGO } from '@/lib/constants'
 import {
   isBundledDocsHref,
   legalDocsPathFor,
@@ -45,7 +44,6 @@ interface FooterColumnProps {
 }
 
 interface FooterProps {
-  logo?: string
   name?: string
   columns?: FooterColumnProps[]
   copyright?: string
@@ -58,55 +56,35 @@ const UTER_FOOTER_ATTRIBUTION_KEY = [
   'projectAttributionSuffix',
 ].join('.')
 
-// Regulatory records shown as icon + text in one row beside the brand link.
-// Each record is one link wrapping its icon and translated label, pointing at
-// the official filing portal and opened in a new tab. The icons are decorative
-// — each item's translated label carries the meaning — while the filing
-// numbers stay verbatim in every locale because they are identifiers, not
-// prose.
-const FOOTER_COMPLIANCE_ITEMS = [
+// The two regulatory filing numbers that sit at the end of the legal row.
+//
+// They are links to the official filing portals, opened in a new tab, and each
+// one is preceded by the same `·` separator the legal documents use — so the
+// row reads 用户协议 · 隐私政策 · 充值协议 · 粤ICP备… · 粤公网安备… . The
+// numbers are identifiers rather than prose, so the translated label carries
+// the whole string verbatim in every locale.
+const FOOTER_FILING_LINKS = [
   {
-    icon: '/enterprise-credit.png',
-    labelKey: 'Enterprise Credit Number',
-    href: 'https://www.gsxt.gov.cn',
-  },
-  {
-    icon: '/icp-filing.png',
     labelKey: 'ICP Filing Number',
     href: 'https://beian.miit.gov.cn',
   },
   {
-    icon: '/police-filing.png',
+    // The public-security filing portal resolves a record only through its
+    // `code` query, so the link carries the filing number itself — landing on
+    // the bare search page would leave the reader to type the number back in.
     labelKey: 'Police Filing Number',
-    href: 'https://beian.mps.gov.cn',
+    href: 'https://beian.mps.gov.cn/#/query/webSearch?code=44030002018502',
   },
 ] as const
 
-// The row shares the footer's top line with the brand link instead of sitting
-// under it, so it is pinned to that row's right edge: every row in the footer
-// is the same `max-w-6xl` column, which puts the row's right edge on top of the
-// project attribution below and reads as one right-hand column of small print.
+// The interface languages the filing numbers are rendered for.
 //
-// `md:mt-1` optically centres the row's 20px content against the `size-7`
-// (28px) brand logo it now sits beside — half the 8px difference is the 4px
-// that levels the two — and `md:self-start` keeps the row on the brand's line
-// when the link columns make the row taller than either.
-//
-// Below `md` the row stacks under the brand column and its three records wrap
-// onto one line each, so `justify-center` centres those lines instead of
-// pushing them against the right edge — there is no copyright row next to
-// them down there to line up with.
-const COMPLIANCE_ROW_ALIGN =
-  'w-full justify-center md:mt-1 md:w-auto md:justify-end md:self-start'
-
-// The interface languages the compliance row is rendered for.
-//
-// These are filings with mainland-China regulators — ICP, the national
-// enterprise credit register and public-network security — and their labels
-// are only written out in the Chinese locales. Under any other interface
-// language the row would read as three unexplained alphanumeric strings, so it
-// is dropped and the brand column ends with the brand link itself.
-const COMPLIANCE_RECORD_LANGUAGES = new Set(['zhCN', 'zhTW'])
+// These are filings with mainland-China regulators — ICP and public-network
+// security — and their labels are only written out in the Chinese locales.
+// Under any other interface language they would read as two unexplained
+// alphanumeric strings, so they are dropped and the legal row ends with the
+// recharge agreement.
+const FILING_LINK_LANGUAGES = new Set(['zhCN', 'zhTW'])
 
 function FooterLinkItem(props: { link: FooterLink }) {
   const { t } = useTranslation()
@@ -119,7 +97,7 @@ function FooterLinkItem(props: { link: FooterLink }) {
         href={props.link.href}
         target='_blank'
         rel='noopener noreferrer'
-        className='text-muted-foreground hover:text-foreground text-sm transition-colors duration-200'
+        className='text-tertiary-foreground hover:text-foreground ds-motion-marketing-fast text-sm transition-colors'
       >
         {label}
       </a>
@@ -129,7 +107,7 @@ function FooterLinkItem(props: { link: FooterLink }) {
   return (
     <Link
       to={props.link.href}
-      className='text-muted-foreground hover:text-foreground text-sm transition-colors duration-200'
+      className='text-tertiary-foreground hover:text-foreground ds-motion-marketing-fast text-sm transition-colors'
     >
       {label}
     </Link>
@@ -220,14 +198,14 @@ function LegalLinks(props: { leadingSeparator?: boolean }) {
       {items.map((item, index) => (
         <Fragment key={item.id}>
           {(props.leadingSeparator || index > 0) && (
-            <span aria-hidden='true' className='text-muted-foreground/60'>
+            <span aria-hidden='true' className='text-tertiary-foreground'>
               ·
             </span>
           )}
           <a
             href={item.href}
             onClick={(event) => openInApp(event, item.id)}
-            className='text-muted-foreground hover:text-foreground text-sm transition-colors duration-200'
+            className='text-tertiary-foreground hover:text-foreground ds-motion-marketing-fast text-sm transition-colors'
           >
             {item.label}
           </a>
@@ -251,6 +229,52 @@ function legalPageHref(
   return useDocsPages ? legalDocsPathFor(docsLocale, docId) : `/${docId}`
 }
 
+// The filing numbers, rendered as the middle block of the footer row.
+//
+// They used to trail the agreements inline (`… 充值协议 · 粤ICP备… · 粤公网安备…`),
+// which glued the two halves of the row to the left edge and left the whole
+// right side of the footer empty. They are now their own block, separated from
+// the agreements by the row's column gap, so the footer reads as three evenly
+// distributed groups: agreements · filings · attribution.
+//
+// Inside the block the numbers keep a single `·` between them; there is no
+// leading separator any more, because the block boundary already separates
+// them from the agreements. Rendered only for the Chinese locales.
+function FilingLinks(props: { className?: string }) {
+  const { t, i18n } = useTranslation()
+
+  if (!FILING_LINK_LANGUAGES.has(normalizeInterfaceLanguage(i18n.language))) {
+    return null
+  }
+
+  return (
+    <div
+      className={cn(
+        'flex flex-wrap items-center justify-center gap-x-2 gap-y-1',
+        props.className
+      )}
+    >
+      {FOOTER_FILING_LINKS.map((item, index) => (
+        <Fragment key={item.labelKey}>
+          {index > 0 && (
+            <span aria-hidden='true' className='text-tertiary-foreground'>
+              ·
+            </span>
+          )}
+          <a
+            href={item.href}
+            target='_blank'
+            rel='noopener noreferrer'
+            className='text-tertiary-foreground hover:text-foreground ds-motion-marketing-fast text-sm transition-colors'
+          >
+            {t(item.labelKey)}
+          </a>
+        </Fragment>
+      ))}
+    </div>
+  )
+}
+
 // inline=true returns just the inner span for composition in a parent flex
 // row. inline=false wraps in a centered/right-aligned div (default).
 function ProjectAttribution(props: {
@@ -259,14 +283,24 @@ function ProjectAttribution(props: {
   brandName?: string
 }) {
   const { t } = useTranslation()
+  // 整行与左侧的法律链接同色：三级文字色 `tertiary-foreground`。
+  // 历史：先是比链接更深的 `text-muted-foreground`（同一行左灰右黑），后改成
+  // 二级色 `text-muted-foreground`，仍然比用户期望的「页脚小字」重一档；
+  // 最终统一到三级色 —— 这就是「次级文本用浅色」的落点。
+  // **不要**再往下加不透明度（如 `/80`）：theme.css 里 `tertiary-foreground`
+  // 已是「更浅但不破线」的最大一档（4.6:1），叠 80% 会掉到约 3:1，
+  // 低于 colors.md 的 4.5:1 下限。想更浅只能改 Token 取值，不能就地压 alpha。
+  // 品牌名保留 hover 加深，因为它同时是一个外链；但**不加字重** ——
+  // 整行是同一档次级小字，500 会让「优特智能」在「© 2026 … 版权所有。」中间
+  // 凸出来，读成三个互不相干的碎片（用户红字：「都属于次级文本」）。
   const content = (
-    <span className='text-muted-foreground/45'>
+    <span className='text-tertiary-foreground'>
       &copy; {props.currentYear}{' '}
       <a
         href='https://uter.ai'
         target='_blank'
         rel='noopener noreferrer'
-        className='text-foreground/70 hover:text-foreground text-sm font-medium transition-colors'
+        className='hover:text-foreground transition-colors'
       >
         {props.brandName ?? t('Uter')}
       </a>
@@ -277,7 +311,7 @@ function ProjectAttribution(props: {
     return content
   }
   return (
-    <div className='text-muted-foreground/45 text-center text-sm sm:text-right'>
+    <div className='text-tertiary-foreground text-center text-sm sm:text-right'>
       {content}
     </div>
   )
@@ -285,15 +319,11 @@ function ProjectAttribution(props: {
 
 export function Footer(props: FooterProps) {
   const { t, i18n } = useTranslation()
-  const { logo: systemLogo, footerHtml, demoSiteEnabled } = useSystemConfig()
+  const { footerHtml, demoSiteEnabled } = useSystemConfig()
 
-  const displayLogo = systemLogo || props.logo || DEFAULT_LOGO
   const brandName = localizedBrandName(i18n.language)
   const isDemoSiteMode = Boolean(demoSiteEnabled)
   const currentYear = new Date().getFullYear()
-  const showComplianceRecords = COMPLIANCE_RECORD_LANGUAGES.has(
-    normalizeInterfaceLanguage(i18n.language)
-  )
 
   const fallbackColumns = useMemo<FooterColumnProps[]>(
     () => [
@@ -368,7 +398,7 @@ export function Footer(props: FooterProps) {
               className='custom-footer text-muted-foreground min-w-0 text-center text-sm sm:text-left'
               content={footerHtml}
             />
-            <div className='border-border/60 text-muted-foreground/45 flex w-full flex-wrap items-center justify-center gap-x-3 gap-y-1 border-t pt-4 text-sm sm:w-auto sm:justify-end sm:border-t-0 sm:border-l sm:pt-0 sm:pl-5'>
+            <div className='border-border/60 text-tertiary-foreground flex w-full flex-wrap items-center justify-center gap-x-3 gap-y-1 border-t pt-4 text-sm sm:w-auto sm:justify-end sm:border-t-0 sm:border-l sm:pt-0 sm:pl-5'>
               <LegalLinks />
               <ProjectAttribution
                 currentYear={currentYear}
@@ -387,27 +417,13 @@ export function Footer(props: FooterProps) {
       className={cn('border-border/40 relative z-10 border-t', props.className)}
     >
       <div className='mx-auto max-w-6xl px-6 py-12 md:py-16'>
-        <div className='flex flex-col justify-between gap-10 md:flex-row md:gap-16'>
-          {/* Brand column */}
-          <div className='shrink-0'>
-            <Link to='/' className='group flex items-center gap-2.5'>
-              <img
-                src={displayLogo}
-                alt={brandName}
-                className='size-7 rounded-lg object-contain'
-              />
-              <span className='font-brand text-sm font-semibold'>
-                {brandName}
-              </span>
-            </Link>
-          </div>
-
-          {/* Links columns */}
-          {isDemoSiteMode && (
+        {/* Links columns — demo sites only. */}
+        {isDemoSiteMode && (
+          <div className='mb-10 flex flex-col gap-10 md:flex-row md:gap-16'>
             <div className='grid grid-cols-3 gap-8 md:gap-16'>
               {displayColumns.map((column) => (
                 <div key={column.title}>
-                  <p className='text-muted-foreground/50 mb-3 text-sm font-medium uppercase'>
+                  <p className='text-tertiary-foreground mb-3 text-sm font-medium uppercase'>
                     {t(column.title)}
                   </p>
                   <ul className='space-y-2.5'>
@@ -420,46 +436,32 @@ export function Footer(props: FooterProps) {
                 </div>
               ))}
             </div>
-          )}
+          </div>
+        )}
 
-          {/* Compliance records — siblings of the brand column inside the
-              footer's top row, not children of it: as the row's last item they
-              land on its right edge, sharing the line with the brand link. */}
-          {showComplianceRecords && (
-            <ul
-              className={cn(
-                'text-muted-foreground/60 flex flex-wrap items-center gap-x-[30px] gap-y-1.5 text-sm',
-                COMPLIANCE_ROW_ALIGN
-              )}
-            >
-              {FOOTER_COMPLIANCE_ITEMS.map((item) => (
-                <li key={item.labelKey}>
-                  <a
-                    href={item.href}
-                    target='_blank'
-                    rel='noopener noreferrer'
-                    className='hover:text-foreground flex items-center gap-2 transition-colors duration-200'
-                  >
-                    <img
-                      src={item.icon}
-                      alt=''
-                      className='h-4 w-auto shrink-0 object-contain'
-                    />
-                    <span>{t(item.labelKey)}</span>
-                  </a>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-
-        {/* Bottom row: legal links on the left (replacing the copyright line),
-            project attribution on the right; wraps on narrow screens. */}
-        <div className='border-border/30 mt-12 flex flex-col items-center justify-between gap-x-3 gap-y-2 border-t pt-6 sm:flex-row'>
-          <div className='flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-sm sm:justify-start'>
+        {/* Legal row: three blocks distributed across the full width — the
+            agreements on the left, the filing numbers in the middle, the
+            project attribution on the right. They used to be two blocks glued
+            to the left (agreements + filings) with the attribution alone on
+            the right, which read as one dense run of text and a stray
+            copyright. The middle block is centred by construction — the two
+            sides are equal `1fr` tracks and the filings take their own width —
+            so the agreements are not squeezed into a fixed third and wrapped
+            onto a second line. The attribution is pinned to the third column
+            so it stays on the right in the locales that render no filing
+            numbers at all. The footer's own top border is the only divider
+            above it. */}
+        <div className='grid grid-cols-1 items-center gap-x-4 gap-y-2 text-sm sm:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]'>
+          <div className='flex flex-wrap items-center justify-center gap-x-2 gap-y-1 sm:justify-start'>
             <LegalLinks />
           </div>
-          <ProjectAttribution currentYear={currentYear} brandName={brandName} />
+          <FilingLinks />
+          <div className='flex justify-center sm:col-start-3 sm:justify-end'>
+            <ProjectAttribution
+              currentYear={currentYear}
+              brandName={brandName}
+            />
+          </div>
         </div>
       </div>
     </footer>

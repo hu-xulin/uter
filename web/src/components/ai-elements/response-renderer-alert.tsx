@@ -29,35 +29,42 @@ import type {
   BlockRendererOptions,
 } from './response-types'
 
+/* GitHub 的五种 markdown 警报在这里**映射到界面语义状态色**，而不是照抄
+ * GitHub 的调色板（blue / emerald / violet / amber / red）。
+ *
+ * 理由：规范 §1.1 要求「所有颜色按语义变量使用，不直接写死色值」，而
+ * NOTE/TIP/IMPORTANT/WARNING/CAUTION 在语义上就是「信息 / 成功 / 强调 /
+ * 警告 / 危险」这五档。用 `*-soft` 做浅底、`*-soft-foreground` 做文字，
+ * 深浅主题各自由 Token 给出，组件里不再需要写 `dark:` 分支。
+ *
+ * 与 GitHub 官方配色的差异是**有意的**：本站的主色是紫蓝 `#5B5EE6`，
+ * 让文档里的提示块跟界面状态色一致，比跟 GitHub 的蓝绿一致更重要。 */
 const alertConfig = {
   note: {
     label: 'Note',
-    className:
-      'border-blue-500/40 bg-blue-500/8 text-blue-950 dark:text-blue-100',
-    markerClassName: 'text-blue-600 dark:text-blue-300',
+    className: 'border-info/40 bg-info-soft text-info-soft-foreground',
+    markerClassName: 'text-info',
   },
   tip: {
     label: 'Tip',
-    className:
-      'border-emerald-500/40 bg-emerald-500/8 text-emerald-950 dark:text-emerald-100',
-    markerClassName: 'text-emerald-600 dark:text-emerald-300',
+    className: 'border-success/40 bg-success-soft text-success-soft-foreground',
+    markerClassName: 'text-success',
   },
   important: {
     label: 'Important',
-    className:
-      'border-violet-500/40 bg-violet-500/8 text-violet-950 dark:text-violet-100',
-    markerClassName: 'text-violet-600 dark:text-violet-300',
+    className: 'border-primary/40 bg-primary-subtle text-fg-secondary',
+    markerClassName: 'text-primary',
   },
   warning: {
     label: 'Warning',
-    className:
-      'border-amber-500/40 bg-amber-500/8 text-amber-950 dark:text-amber-100',
-    markerClassName: 'text-amber-600 dark:text-amber-300',
+    className: 'border-warning/40 bg-warning-soft text-warning-soft-foreground',
+    markerClassName: 'text-warning',
   },
   caution: {
     label: 'Caution',
-    className: 'border-red-500/40 bg-red-500/8 text-red-950 dark:text-red-100',
-    markerClassName: 'text-red-600 dark:text-red-300',
+    className:
+      'border-destructive/40 bg-destructive-soft text-destructive-soft-foreground',
+    markerClassName: 'text-destructive',
   },
 } satisfies Record<AlertKind, AlertConfig>
 

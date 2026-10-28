@@ -179,18 +179,18 @@ export function SecretFileInput({
 
           {!isBlank ? (
             revealed && !isMasked ? (
-              <pre className='text-muted-foreground mt-1.5 max-h-28 overflow-auto font-mono text-mono leading-[var(--ds-line-mono-dense)] break-all whitespace-pre-wrap'>
+              <pre className='text-muted-foreground text-mono mt-1.5 max-h-28 overflow-auto font-mono leading-[var(--ds-line-mono-dense)] break-all whitespace-pre-wrap'>
                 {value}
               </pre>
             ) : (
-              <p className='text-muted-foreground mt-1.5 truncate font-mono text-mono'>
+              <p className='text-muted-foreground text-mono mt-1.5 truncate font-mono'>
                 {value}
               </p>
             )
           ) : null}
 
           {!isBlank && !isMasked && lineCount > 1 ? (
-            <p className='text-muted-foreground mt-1 text-xs'>
+            <p className='text-muted-foreground mt-1 text-sm'>
               {t('{{count}} lines', { count: lineCount })}
             </p>
           ) : null}
@@ -226,7 +226,7 @@ export function SecretFileInput({
                 buttonVariants({ variant: 'outline', size: 'sm' }),
                 'pointer-events-none',
                 'peer-hover:bg-muted peer-hover:text-foreground',
-                'peer-focus-visible:border-ring peer-focus-visible:ring-3 peer-focus-visible:ring-ring/50',
+                'peer-focus-visible:border-ring peer-focus-visible:ring-2 peer-focus-visible:ring-ring',
                 (disabled || reading) && 'opacity-50'
               )}
             >
@@ -243,12 +243,12 @@ export function SecretFileInput({
             >
               {revealed ? (
                 <>
-                  <EyeOff className='size-3.5' />
+                  <EyeOff className='size-4.5' />
                   {t('Hide')}
                 </>
               ) : (
                 <>
-                  <Eye className='size-3.5' />
+                  <Eye className='size-4.5' />
                   {t('Reveal')}
                 </>
               )}
@@ -266,7 +266,7 @@ export function SecretFileInput({
                 onChange('')
               }}
             >
-              <X className='size-3.5' />
+              <X className='size-4.5' />
               {t('Clear')}
             </Button>
           ) : null}

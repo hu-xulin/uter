@@ -129,7 +129,7 @@ export function LobeIconField(props: {
         </div>
       </div>
       {usesCustom && (
-        <p className='text-muted-foreground text-xs'>
+        <p className='text-muted-foreground text-sm'>
           {t('Select a suggested icon or keep an existing advanced icon key.')}
         </p>
       )}

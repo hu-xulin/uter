@@ -42,6 +42,18 @@ import { useCopyToClipboard } from '@/hooks/use-copy-to-clipboard'
 import { stringToColor } from '@/lib/colors'
 import { cn } from '@/lib/utils'
 
+/**
+ * 状态色表：语义状态（success / warning / danger / info / neutral）**必须**
+ * 指向语义 Token，分类状态（purple / blue / cyan / lime / pink / teal /
+ * violet …）才可以用 `chart-N`。
+ *
+ * 分工见 `docs/design-system/colors.md`「图表色（chart-N）的正确用法」：
+ * `chart-N` 只是「为了区分彼此」的分类色，一旦用它表达成功/失败，
+ * 色盲用户与深浅主题会同时失效。守卫：`design-system/__tests__/semantic-colors.test.ts`。
+ *
+ * 需要「浅底 + 深字」的语义徽标时用 `bg-{status}-soft` +
+ * `text-{status}-soft-foreground`（柔和态 Token 已就位，取值等于原渲染值）。
+ */
 export const dotColorMap = {
   success: 'bg-success',
   warning: 'bg-warning',
@@ -56,7 +68,7 @@ export const dotColorMap = {
   grey: 'bg-neutral',
   indigo: 'bg-chart-1',
   'light-blue': 'bg-info',
-  'light-green': 'bg-emerald-400',
+  'light-green': 'bg-success',
   lime: 'bg-chart-3',
   orange: 'bg-warning',
   pink: 'bg-chart-5',
@@ -80,7 +92,7 @@ export const textColorMap = {
   grey: 'text-muted-foreground',
   indigo: 'text-chart-1',
   'light-blue': 'text-info',
-  'light-green': 'text-emerald-500 dark:text-emerald-300',
+  'light-green': 'text-success dark:text-success-soft-foreground',
   lime: 'text-chart-3',
   orange: 'text-warning',
   pink: 'text-chart-5',
@@ -107,15 +119,15 @@ export const StatusBadgeTypeContext =
   React.createContext<StatusBadgeType>('badge')
 
 const sizeMap = {
-  sm: 'h-5 gap-1 px-1.5 text-sm leading-none',
-  md: 'h-5 gap-1 px-1.5 text-sm leading-none',
-  lg: 'h-6 gap-1.5 px-2 text-sm leading-none',
+  sm: 'h-5 gap-1 px-1.5 text-sm',
+  md: 'h-5 gap-1 px-1.5 text-sm',
+  lg: 'h-6 gap-1.5 px-2 text-sm',
 } as const
 
 const textSizeMap = {
-  sm: 'gap-1 text-sm leading-none',
-  md: 'gap-1 text-sm leading-none',
-  lg: 'gap-1.5 text-sm leading-none',
+  sm: 'gap-1 text-sm',
+  md: 'gap-1 text-sm',
+  lg: 'gap-1.5 text-sm',
 } as const
 
 export interface StatusBadgeProps extends Omit<
@@ -171,9 +183,7 @@ export function StatusBadge({
 
   const content =
     children ??
-    (label ? (
-      <span className='min-w-0 truncate leading-normal'>{label}</span>
-    ) : null)
+    (label ? <span className='min-w-0 truncate'>{label}</span> : null)
 
   const isBadge = type === 'badge'
   const title = copyable
@@ -207,7 +217,7 @@ export function StatusBadge({
           aria-hidden='true'
         />
       )}
-      {Icon && <Icon className='size-3.5 shrink-0' />}
+      {Icon && <Icon className='size-4 shrink-0' />}
       {content}
     </span>
   )
@@ -228,7 +238,7 @@ export interface StatusBadgeListProps<T> extends Omit<
 export function StatusBadgeList<T>(props: StatusBadgeListProps<T>) {
   const {
     className,
-    empty = <span className='text-muted-foreground text-xs'>-</span>,
+    empty = <span className='text-muted-foreground text-sm'>-</span>,
     getKey,
     items,
     max = 2,

@@ -149,7 +149,7 @@ export function MobileCardList<TData>(props: MobileCardListProps<TData>) {
         <Empty className='border-none p-0'>
           <EmptyHeader>
             <EmptyMedia variant='icon'>
-              <Database className='size-6' />
+              <Database />
             </EmptyMedia>
             <EmptyTitle>{resolvedEmptyTitle}</EmptyTitle>
             <EmptyDescription>{resolvedEmptyDescription}</EmptyDescription>

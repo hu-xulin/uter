@@ -100,7 +100,7 @@ function renderNode(
 
   if (node.type === 'paragraph' && hasParsedChildren(node)) {
     return (
-      <p className='my-3 leading-7' key={key}>
+      <p className='my-3' key={key}>
         {options.renderChildren(node.children)}
       </p>
     )
@@ -122,7 +122,7 @@ function renderNode(
   if (node.type === 'inline_code' && 'code' in node) {
     return (
       <code
-        className='bg-muted/70 text-foreground rounded px-1 py-0.5 font-mono text-mono'
+        className='bg-muted/70 text-foreground text-mono rounded px-1 py-0.5 font-mono'
         key={key}
       >
         {String(node.code)}

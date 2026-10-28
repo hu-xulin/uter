@@ -242,7 +242,7 @@ function ChartTooltipContent({
                             {
                               'h-2.5 w-2.5': indicator === 'dot',
                               'w-1': indicator === 'line',
-                              'w-0 border-[1.5px] border-dashed bg-transparent':
+                              'w-0 border border-dashed bg-transparent':
                                 indicator === 'dashed',
                               'my-0.5': nestLabel && indicator === 'dashed',
                             }
@@ -258,7 +258,7 @@ function ChartTooltipContent({
                     )}
                     <div
                       className={cn(
-                        'flex flex-1 justify-between leading-none',
+                        'flex flex-1 justify-between',
                         nestLabel ? 'items-end' : 'items-center'
                       )}
                     >
@@ -269,7 +269,7 @@ function ChartTooltipContent({
                         </span>
                       </div>
                       {item.value != null && (
-                        <span className='text-foreground font-mono text-mono font-medium tabular-nums'>
+                        <span className='text-foreground text-mono font-mono font-medium tabular-nums'>
                           {typeof item.value === 'number'
                             ? item.value.toLocaleString()
                             : String(item.value)}

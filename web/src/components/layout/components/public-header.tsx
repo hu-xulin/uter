@@ -29,11 +29,11 @@ import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { SystemUpdateAction } from '@/features/system-update/system-update-action'
 import { useNotifications } from '@/hooks/use-notifications'
-import { useSystemConfig } from '@/hooks/use-system-config'
 import { useScrolled } from '@/hooks/use-scrolled'
+import { useSystemConfig } from '@/hooks/use-system-config'
 import { useTopNavLinks } from '@/hooks/use-top-nav-links'
-import { cn } from '@/lib/utils'
 import { BRAND_LOGO_BOX_CLASS, localizedBrandName } from '@/lib/brand'
+import { cn } from '@/lib/utils'
 import { useAuthStore } from '@/stores/auth-store'
 
 import { defaultTopNavLinks } from '../config/top-nav.config'
@@ -84,11 +84,7 @@ export function PublicHeader(props: PublicHeaderProps) {
   const [authPromptSecondsLeft, setAuthPromptSecondsLeft] =
     useState(AUTH_PROMPT_SECONDS)
   const { auth } = useAuthStore()
-  const {
-    logo: systemLogo,
-    loading,
-    logoLoaded,
-  } = useSystemConfig()
+  const { logo: systemLogo, loading, logoLoaded } = useSystemConfig()
   const dynamicLinks = useTopNavLinks()
   const notifications = useNotifications()
   const routerState = useRouterState()
@@ -118,7 +114,11 @@ export function PublicHeader(props: PublicHeaderProps) {
     </Button>
   )
   if (isAuthenticated) authContent = <ProfileDropdown />
-  if (loading) authContent = <Skeleton className='h-(--ds-button-height-md) w-20 rounded-md' />
+  if (loading) {
+    authContent = (
+      <Skeleton className='h-(--ds-button-height-md) w-20 rounded-md' />
+    )
+  }
 
   useEffect(() => {
     document.body.style.overflow = mobileOpen ? 'hidden' : ''
@@ -197,7 +197,7 @@ export function PublicHeader(props: PublicHeaderProps) {
       */}
       <header
         className={cn(
-          'fixed inset-x-0 top-0 z-50 transition-[background-color,box-shadow,border-color,backdrop-filter] duration-300',
+          'fixed inset-x-0 top-0 z-50 transition-[background-color,box-shadow,border-color,backdrop-filter] ds-motion-marketing-fast',
           scrolled
             ? 'bg-background/85 border-b border-border/60 backdrop-blur-xl'
             : 'border-b border-transparent bg-transparent'
@@ -214,7 +214,7 @@ export function PublicHeader(props: PublicHeaderProps) {
                 <div
                   className={cn(
                     BRAND_LOGO_BOX_CLASS,
-                    'transition-all duration-300 group-hover:scale-105'
+                    'ds-motion-marketing-fast transition-all group-hover:scale-105'
                   )}
                 >
                   {logoContent}
@@ -223,11 +223,7 @@ export function PublicHeader(props: PublicHeaderProps) {
                   className='font-brand max-w-48 truncate text-lg font-semibold'
                   title={brandName}
                 >
-                  {loading ? (
-                    <Skeleton className='h-4 w-16' />
-                  ) : (
-                    brandName
-                  )}
+                  {loading ? <Skeleton className='h-4 w-16' /> : brandName}
                 </span>
               </Link>
               <SystemUpdateAction presentation='action' />
@@ -248,7 +244,7 @@ export function PublicHeader(props: PublicHeaderProps) {
                       tabIndex={link.disabled ? -1 : undefined}
                       onClick={(event) => handleNavLinkClick(event, link)}
                       className={cn(
-                        'text-muted-foreground hover:text-foreground min-w-0 truncate rounded-lg px-3 py-2 text-sm leading-5 font-medium transition-colors duration-200',
+                        'text-muted-foreground hover:text-foreground min-w-0 truncate rounded-lg px-3 py-2 text-sm font-medium transition-colors ds-motion-marketing-fast',
                         link.disabled && 'pointer-events-none opacity-50'
                       )}
                     >
@@ -264,7 +260,7 @@ export function PublicHeader(props: PublicHeaderProps) {
                     disabled={link.disabled}
                     onClick={(event) => handleNavLinkClick(event, link)}
                     className={cn(
-                      'min-w-0 truncate rounded-lg px-3 py-2 text-sm leading-5 font-medium transition-colors duration-200',
+                      'min-w-0 truncate rounded-lg px-3 py-2 text-sm font-medium transition-colors ds-motion-marketing-fast',
                       isActive
                         ? 'text-foreground bg-muted/60'
                         : 'text-muted-foreground hover:text-foreground',
@@ -315,26 +311,25 @@ export function PublicHeader(props: PublicHeaderProps) {
                 type='button'
                 variant='ghost'
                 size='icon'
-                className='size-9'
                 onClick={() => setMobileOpen((v) => !v)}
                 aria-label={t('Toggle navigation menu')}
               >
                 <div className='relative size-4'>
                   <span
                     className={cn(
-                      'absolute inset-x-0 block h-[1.5px] origin-center rounded-full bg-current transition-all duration-300',
+                      'ds-motion-marketing-fast absolute inset-x-0 block h-[1.5px] origin-center rounded-full bg-current transition-all',
                       mobileOpen ? 'top-[7px] rotate-45' : 'top-[3px]'
                     )}
                   />
                   <span
                     className={cn(
-                      'absolute inset-x-0 top-[7px] block h-[1.5px] rounded-full bg-current transition-all duration-300',
+                      'ds-motion-marketing-fast absolute inset-x-0 top-[7px] block h-[1.5px] rounded-full bg-current transition-all',
                       mobileOpen ? 'scale-x-0 opacity-0' : 'opacity-100'
                     )}
                   />
                   <span
                     className={cn(
-                      'absolute inset-x-0 block h-[1.5px] origin-center rounded-full bg-current transition-all duration-300',
+                      'ds-motion-marketing-fast absolute inset-x-0 block h-[1.5px] origin-center rounded-full bg-current transition-all',
                       mobileOpen ? 'top-[7px] -rotate-45' : 'top-[11px]'
                     )}
                   />
@@ -348,7 +343,7 @@ export function PublicHeader(props: PublicHeaderProps) {
       {/* Mobile full-screen overlay */}
       <div
         className={cn(
-          'bg-background/98 fixed inset-0 z-40 backdrop-blur-2xl transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] lg:pointer-events-none lg:hidden',
+          'bg-background/98 ds-motion-marketing fixed inset-0 z-40 backdrop-blur-2xl transition-all lg:pointer-events-none lg:hidden',
           mobileOpen
             ? 'pointer-events-auto opacity-100'
             : 'pointer-events-none opacity-0'
@@ -359,9 +354,11 @@ export function PublicHeader(props: PublicHeaderProps) {
             {links.map((link, i) => {
               const isActive = getTopNavActive(pathname, link, links)
               const linkClassName = cn(
-                // 移动端全屏菜单是触屏列表，用正文档 16/24 而非桌面
-                // 一级导航的 14/20，兼顾可读性与点按面积。
-                'flex items-center gap-3 py-3 text-base leading-6 font-medium transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]',
+                // 规范 §3.2：移动端全屏菜单是触屏列表，一级项用 16/24
+                // （`text-base` + 500），不是桌面一级导航的 14/20。
+                // 触屏点按面积与可读性都要求大一档；此前注释写着 16/24、
+                // 类名却是 `text-sm`，注释和实现各说各话。
+                'ds-motion-marketing flex items-center gap-3 py-3 text-base font-medium transition-all',
                 mobileOpen
                   ? 'translate-y-0 opacity-100'
                   : 'translate-y-4 opacity-0',
@@ -404,7 +401,7 @@ export function PublicHeader(props: PublicHeaderProps) {
 
           <div
             className={cn(
-              'flex flex-col gap-3 transition-all duration-500',
+              'ds-motion-marketing flex flex-col gap-3 transition-all',
               mobileOpen
                 ? 'translate-y-0 opacity-100'
                 : 'translate-y-4 opacity-0'

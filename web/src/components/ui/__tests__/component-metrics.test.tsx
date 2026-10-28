@@ -46,13 +46,17 @@ function has(el: Element | null, token: string): boolean {
 }
 
 describe('规范 §2.1 组件度量', () => {
-  test('Badge：高 24px、内边距 10×2px、胶囊 r-full', () => {
+  test('Badge：高 24px、内边距 12×4px、胶囊 r-full', () => {
     const { container } = render(<Badge>运行中</Badge>)
     const badge = container.querySelector('[data-slot="badge"]')
 
     expect(has(badge, 'h-6')).toBe(true)
-    expect(has(badge, 'px-2.5')).toBe(true)
-    expect(has(badge, 'py-0.5')).toBe(true)
+    // 12×4 来自 §1.3 间距表（sp-2-5 / sp-0-5），不是 §2.1 原先写的 10×2：
+    // caption 行高 16 + 上下各 4 = 24，正好等于徽标高度，表里的值才自洽。
+    expect(has(badge, 'px-3')).toBe(true)
+    expect(has(badge, 'py-1')).toBe(true)
+    expect(has(badge, 'px-2.5')).toBe(false)
+    expect(has(badge, 'py-0.5')).toBe(false)
     // 胶囊形态不能依赖「半径 ≈ 高度」的巧合（原 rounded-4xl 在 20px 高时
     // 恰好也是胶囊，高度一改就露馅）。
     expect(has(badge, 'rounded-full')).toBe(true)
@@ -107,6 +111,30 @@ describe('规范 §2.1 组件度量', () => {
     expect(has(trigger, 'py-1.5')).toBe(true)
     expect(has(trigger, 'px-1.5')).toBe(false)
     expect(has(trigger, 'py-0.5')).toBe(false)
+  })
+
+  test('Tabs：触发器与容器同心，不吃 calc(100%-1px) 的偏差', () => {
+    // 历史 bug：触发器用 `h-[calc(100%-1px)]` + 容器 `items-center`，
+    // 在 grid 轨道里实测上间距 5.5px、下间距 1.5px —— 激活块明显偏下，
+    // 就是「按钮上下不居中」。改成容器 `items-stretch` + 触发器 `h-full`
+    // 后上下间距恒等于容器内边距。
+    const { container } = render(
+      <Tabs defaultValue='a'>
+        <TabsList>
+          <TabsTrigger value='a'>标准</TabsTrigger>
+          <TabsTrigger value='b'>充值</TabsTrigger>
+        </TabsList>
+      </Tabs>
+    )
+
+    const list = container.querySelector('[data-slot="tabs-list"]')
+    const trigger = container.querySelector('[data-slot="tabs-trigger"]')
+
+    expect(has(list, 'items-stretch')).toBe(true)
+    expect(has(list, 'items-center')).toBe(false)
+    expect(has(trigger, 'h-full')).toBe(true)
+    expect(has(trigger, 'min-h-0')).toBe(true)
+    expect(has(trigger, 'h-[calc(100%-1px)]')).toBe(false)
   })
 
   test('Button：md 内边距 12px/图文 4px，sm 内边距 8px/图文 0', () => {

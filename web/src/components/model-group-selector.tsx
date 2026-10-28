@@ -59,6 +59,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
+import { Heading } from '@/design-system'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { cn } from '@/lib/utils'
 
@@ -114,22 +115,21 @@ const ModelTriggerButton = React.forwardRef<
     size='sm'
     disabled={isDisabled}
     className={cn(
-      'flex h-8 items-center gap-2 border px-3 font-medium',
+      'flex items-center gap-2 border px-3 font-medium',
       'justify-center p-0 sm:w-auto sm:justify-start sm:px-3',
       'w-8',
       'bg-background text-foreground',
       'hover:bg-accent transition-colors',
-      'focus:!ring-0 focus:!outline-none',
       'shadow-none',
       triggerClassName
     )}
     {...props}
   >
-    <CpuIcon className='text-muted-foreground block size-4 sm:hidden' />
+    <CpuIcon className='text-muted-foreground block size-4.5 sm:hidden' />
     <span className='text-muted-foreground sm:text-foreground hidden truncate text-xs sm:block'>
       {currentLabel}
     </span>
-    <ChevronsUpDown className='text-muted-foreground hidden h-4 w-4 opacity-50 sm:block' />
+    <ChevronsUpDown className='text-muted-foreground hidden h-4.5 w-4.5 opacity-50 sm:block' />
   </Button>
 ))
 
@@ -150,22 +150,21 @@ const GroupTriggerButton = React.forwardRef<
     size='sm'
     disabled={isDisabled}
     className={cn(
-      'flex h-8 items-center gap-2 border px-3 font-medium',
+      'flex items-center gap-2 border px-3 font-medium',
       'justify-center p-0 sm:w-auto sm:justify-start sm:px-3',
       'w-8',
       'bg-background text-foreground',
       'hover:bg-accent transition-colors',
-      'focus:!ring-0 focus:!outline-none',
       'shadow-none',
       triggerClassName
     )}
     {...props}
   >
-    <LayersIcon className='text-muted-foreground block size-4 sm:hidden' />
+    <LayersIcon className='text-muted-foreground block size-4.5 sm:hidden' />
     <span className='text-muted-foreground sm:text-foreground hidden truncate text-xs sm:block'>
       {currentLabel}
     </span>
-    <ChevronsUpDown className='text-muted-foreground hidden h-4 w-4 opacity-50 sm:block' />
+    <ChevronsUpDown className='text-muted-foreground hidden h-4.5 w-4.5 opacity-50 sm:block' />
   </Button>
 ))
 
@@ -284,7 +283,7 @@ export const ModelSelector: React.FC<ModelSelectorProps> = React.memo(
                       onSelect={handleModelChange}
                       className={cn(
                         'mb-0.5 flex items-center justify-between rounded-lg px-2 py-1.5 text-xs',
-                        'transition-all duration-200',
+                        'transition-all ds-motion-base',
                         'hover:bg-accent',
                         'data-[selected=true]:bg-accent'
                       )}
@@ -429,7 +428,7 @@ export const GroupSelector: React.FC<GroupSelectorProps> = React.memo(
                 onSelect={handleGroupChange}
                 className={cn(
                   'mb-0.5 flex items-center justify-between rounded-lg px-2 py-2 text-xs',
-                  'transition-all duration-200',
+                  'transition-all ds-motion-base',
                   'hover:bg-accent',
                   'data-[selected=true]:bg-accent'
                 )}
@@ -440,7 +439,7 @@ export const GroupSelector: React.FC<GroupSelectorProps> = React.memo(
                       {group.label}
                     </span>
                     {(group.desc || group.description) && (
-                      <div className='text-muted-foreground truncate text-xs leading-tight'>
+                      <div className='text-muted-foreground truncate text-xs'>
                         {formatGroupDetail(group, t)}
                       </div>
                     )}
@@ -649,9 +648,10 @@ export const ModelGroupSelector: React.FC<ModelGroupSelectorProps> = ({
     <Button
       aria-expanded={open}
       className={cn(
-        'h-8 max-w-[15rem] justify-start gap-2 border px-2.5 font-medium shadow-none',
-        'bg-background/80 hover:bg-accent/70 text-foreground',
-        'focus:!ring-0 focus:!outline-none',
+        ' max-w-[15rem] justify-start gap-2 border px-2.5 font-medium shadow-none',
+        /* 不透明表面：规范 2.1 Button/Outline → Fill 为 Surface/background。
+         * 原 `bg-background/80` + `hover:bg-accent/70` 会让输入舱底色透出来。 */
+        'bg-background hover:bg-accent text-foreground',
         className
       )}
       disabled={disabled}
@@ -659,14 +659,14 @@ export const ModelGroupSelector: React.FC<ModelGroupSelectorProps> = ({
       size='sm'
       variant='outline'
     >
-      <CpuIcon className='text-muted-foreground size-4 shrink-0' />
+      <CpuIcon className='text-muted-foreground size-4.5 shrink-0' />
       <span className='min-w-0 truncate text-xs'>
         {currentModel?.label || t('Model')}
       </span>
       <span className='bg-muted text-muted-foreground hidden max-w-20 shrink-0 rounded px-1.5 py-0.5 text-xs sm:inline-flex'>
         {currentGroup?.label || t('Group')}
       </span>
-      <ChevronsUpDown className='text-muted-foreground ml-auto size-3.5 shrink-0 opacity-60' />
+      <ChevronsUpDown className='text-muted-foreground ml-auto size-4.5 shrink-0 opacity-60' />
     </Button>
   )
 
@@ -677,9 +677,9 @@ export const ModelGroupSelector: React.FC<ModelGroupSelectorProps> = ({
         !isMobile && modelGroupSelectorLayoutClasses.groupColumn
       )}
     >
-      <div className='text-muted-foreground px-1 text-xs leading-4 font-medium'>
+      <Heading variant='card-title' level={4}>
         {t('Model Group')}
-      </div>
+      </Heading>
       <div
         className={cn(
           'grid gap-1',
@@ -693,10 +693,10 @@ export const ModelGroupSelector: React.FC<ModelGroupSelectorProps> = ({
           return (
             <button
               className={cn(
-                'flex min-w-0 items-center justify-between gap-2 rounded-md px-2.5 py-2 text-left text-xs leading-4 transition-colors',
+                modelGroupSelectorLayoutClasses.groupItem,
                 isSelected
-                  ? 'bg-primary/10 text-foreground'
-                  : 'text-muted-foreground hover:bg-accent hover:text-foreground'
+                  ? modelGroupSelectorLayoutClasses.groupItemSelected
+                  : modelGroupSelectorLayoutClasses.groupItemUnselected
               )}
               disabled={disabled}
               key={group.value}
@@ -709,7 +709,7 @@ export const ModelGroupSelector: React.FC<ModelGroupSelectorProps> = ({
               </span>
               <Check
                 className={cn(
-                  'size-3.5 shrink-0',
+                  'size-4 shrink-0',
                   isSelected ? 'opacity-100' : 'opacity-0'
                 )}
               />
@@ -741,7 +741,7 @@ export const ModelGroupSelector: React.FC<ModelGroupSelectorProps> = ({
         }
       >
         {filteredModels.length === 0 ? (
-          <div className='text-muted-foreground px-3 py-8 text-center text-xs leading-5'>
+          <div className='text-muted-foreground px-3 py-8 text-center text-xs'>
             {t('No model found.')}
           </div>
         ) : (
@@ -775,7 +775,7 @@ export const ModelGroupSelector: React.FC<ModelGroupSelectorProps> = ({
                 </span>
                 <Check
                   className={cn(
-                    'size-3.5 shrink-0',
+                    'size-4 shrink-0',
                     selectedModel === model.value ? 'opacity-100' : 'opacity-0'
                   )}
                 />

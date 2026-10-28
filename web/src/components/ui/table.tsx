@@ -27,11 +27,20 @@ function Table({
   withContainer = true,
   ...props
 }: React.ComponentProps<'table'> & { withContainer?: boolean }) {
+  /**
+   * 这里**不要**再给 `:is(th,td) *` 加 `font-family: inherit`。
+   *
+   * 曾经有一条 `[&_:is(th,td)_*]:[font-family:inherit]`，本意是让单元格里的
+   * 按钮/输入框回到表格字体，实际把单元格内所有后代的 `font-mono` 一起按死
+   * —— API Key、模型 ID、工具标识这些「机器可读的值」全都渲染成了 Inter。
+   * 表单控件回到正文字体已由 preflight 的 `button, input, … { font-family:
+   * inherit }` 覆盖，不需要再写一条通配后代规则。
+   */
   const table = (
     <table
       data-slot='table'
       className={cn(
-        'w-full caption-bottom text-sm tabular-nums [font-family:var(--font-body)] [&_td]:text-sm [&_th]:text-sm [&_th]:font-medium [&_:is(th,td)_*]:[font-family:inherit] [&_:is(th,td)_*]:[font-size:inherit] [&_:is(th,td)_*]:[font-weight:inherit]',
+        'w-full caption-bottom text-sm tabular-nums [font-family:var(--font-body)] [&_td]:text-sm [&_th]:text-sm [&_th]:font-medium [&_:is(th,td)_*]:[font-size:inherit] [&_:is(th,td)_*]:[font-weight:inherit]',
         '[&_[data-table-text=secondary]]:text-xs [&_[data-table-text=secondary]]:font-normal',
         className
       )}
@@ -65,7 +74,7 @@ function TableBody({ className, ...props }: React.ComponentProps<'tbody'>) {
   return (
     <tbody
       data-slot='table-body'
-      className={cn('[&>tr]:h-15 [&_tr:last-child]:border-0', className)}
+      className={cn('[&>tr]:h-12 [&_tr:last-child]:border-0', className)}
       {...props}
     />
   )
@@ -102,7 +111,7 @@ function TableHead({ className, ...props }: React.ComponentProps<'th'>) {
     <th
       data-slot='table-head'
       className={cn(
-        'text-foreground h-10 px-2 text-left align-middle font-medium whitespace-nowrap [&:has([role=checkbox])]:pr-0',
+        'text-foreground h-10 px-3 py-2 text-left align-middle font-medium whitespace-nowrap [&:has([role=checkbox])]:pr-0',
         className
       )}
       {...props}
@@ -115,7 +124,7 @@ function TableCell({ className, ...props }: React.ComponentProps<'td'>) {
     <td
       data-slot='table-cell'
       className={cn(
-        'p-2 align-middle whitespace-nowrap [&:has([role=checkbox])]:pr-0',
+        'px-3 py-2 align-middle whitespace-nowrap [&:has([role=checkbox])]:pr-0',
         className
       )}
       {...props}

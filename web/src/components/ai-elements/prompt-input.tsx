@@ -319,13 +319,13 @@ export function PromptInputAttachment({
               />
             ) : (
               <div className='text-muted-foreground flex size-5 items-center justify-center'>
-                <PaperclipIcon className='size-3' />
+                <PaperclipIcon className='size-4.5' />
               </div>
             )}
           </div>
           <Button
             aria-label={t('Remove attachment')}
-            className='absolute inset-0 size-5 cursor-pointer rounded p-0 opacity-0 transition-opacity group-hover:pointer-events-auto group-hover:opacity-100 [&>svg]:size-2.5'
+            className='absolute inset-0 cursor-pointer rounded p-0 opacity-0 transition-opacity group-hover:pointer-events-auto group-hover:opacity-100 [&>svg]:size-2.5'
             onClick={(e) => {
               e.stopPropagation()
               attachments.remove(data.id)
@@ -355,11 +355,13 @@ export function PromptInputAttachment({
           )}
           <div className='flex items-center gap-2.5'>
             <div className='min-w-0 flex-1 space-y-1 px-0.5'>
-              <h4 className='truncate text-sm leading-none font-semibold'>
+              {/* 文件名 + 媒体类型成对出现，属「列表行标题」层（16/500）。
+                  此前是 14/600，把行标题压到了 body-sm 档。 */}
+              <h4 className='truncate text-sm font-medium'>
                 {filename || (isImage ? 'Image' : 'Attachment')}
               </h4>
               {data.mediaType && (
-                <p className='text-muted-foreground truncate font-mono text-mono'>
+                <p className='text-muted-foreground text-mono truncate font-mono'>
                   {data.mediaType}
                 </p>
               )}
@@ -736,36 +738,38 @@ export const PromptInput = ({
         }
         return item
       })
-    ).then((convertedFiles: FileUIPart[]) => {
-      try {
-        const result = onSubmit({ text, files: convertedFiles }, event)
+    )
+      .then((convertedFiles: FileUIPart[]) => {
+        try {
+          const result = onSubmit({ text, files: convertedFiles }, event)
 
-        // Handle both sync and async onSubmit
-        if (result instanceof Promise) {
-          result
-            .then(() => {
-              clear()
-              if (usingProvider) {
-                controller.textInput.clear()
-              }
-            })
-            .catch(() => {
-              // Don't clear on error - user may want to retry
-            })
-        } else {
-          // Sync function completed without throwing, clear attachments
-          clear()
-          if (usingProvider) {
-            controller.textInput.clear()
+          // Handle both sync and async onSubmit
+          if (result instanceof Promise) {
+            result
+              .then(() => {
+                clear()
+                if (usingProvider) {
+                  controller.textInput.clear()
+                }
+              })
+              .catch(() => {
+                // Don't clear on error - user may want to retry
+              })
+          } else {
+            // Sync function completed without throwing, clear attachments
+            clear()
+            if (usingProvider) {
+              controller.textInput.clear()
+            }
           }
+        } catch {
+          // Don't clear on error - user may want to retry
         }
-      } catch {
-        // Don't clear on error - user may want to retry
-      }
-    }).catch(() => {
-      // Blob 转 dataURL 失败：吞掉 rejection 避免 unhandled promise rejection，
-      // 不清空附件以便用户重试。
-    })
+      })
+      .catch(() => {
+        // Blob 转 dataURL 失败：吞掉 rejection 避免 unhandled promise rejection，
+        // 不清空附件以便用户重试。
+      })
   }
 
   // Render with or without local provider
@@ -844,9 +848,7 @@ export const PromptInputTextarea = ({
     ) {
       e.preventDefault()
       const lastAttachment =
-        attachments.files.length > 0
-          ? attachments.files.at(-1)
-          : undefined
+        attachments.files.length > 0 ? attachments.files.at(-1) : undefined
       if (lastAttachment) {
         attachments.remove(lastAttachment.id)
       }
@@ -891,7 +893,10 @@ export const PromptInputTextarea = ({
 
   return (
     <InputGroupTextarea
-      className={cn('field-sizing-content max-h-48 min-h-16 break-all', className)}
+      className={cn(
+        'field-sizing-content max-h-48 min-h-16 break-all',
+        className
+      )}
       name='message'
       onCompositionEnd={() => setIsComposing(false)}
       onCompositionStart={() => setIsComposing(true)}
@@ -1143,9 +1148,9 @@ export const PromptInputSpeechButton = ({
         // SpeechRecognitionResultList 在类型上是类数组（ArrayLike）而非可迭代对象，
         // 故不能直接用展开语法；Array.from 是此处唯一正确的转换方式。
         // oxlint-disable-next-line unicorn/prefer-spread
-        const results = Array.from(event.results as ArrayLike<
-          SpeechRecognitionResult
-        >)
+        const results = Array.from(
+          event.results as ArrayLike<SpeechRecognitionResult>
+        )
 
         for (const result of results) {
           if (result.isFinal) {
@@ -1198,7 +1203,7 @@ export const PromptInputSpeechButton = ({
   return (
     <PromptInputButton
       className={cn(
-        'relative transition-all duration-200',
+        'relative transition-all ds-motion-base',
         isListening && 'bg-accent text-accent-foreground animate-pulse',
         className
       )}

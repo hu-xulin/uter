@@ -166,7 +166,11 @@ function EmptyState({
     <Empty className='min-h-48 border-0 p-4'>
       <EmptyHeader>
         <EmptyMedia variant='icon'>{icon}</EmptyMedia>
-        <EmptyTitle>{title}</EmptyTitle>
+        {/* 空态/加载态文案是占位说明，不是标题：EmptyTitle 默认 18/600，
+            放在公告浮层里比正文还抢眼，这里降到 14px 次要色。 */}
+        <EmptyTitle className='text-muted-foreground text-sm font-normal'>
+          {title}
+        </EmptyTitle>
         {description ? (
           <EmptyDescription>{description}</EmptyDescription>
         ) : null}
@@ -309,12 +313,12 @@ export function NotificationPopover({
           <Button
             variant='ghost'
             size='icon'
-            className={cn('relative size-9', className)}
+            className={cn('relative', className)}
             aria-label={t('Notifications')}
           />
         }
       >
-        <Bell className='size-[1.2rem]' />
+        <Bell className='size-4.5' />
         {unreadCount > 0 ? (
           <Badge
             variant='destructive'
@@ -331,8 +335,13 @@ export function NotificationPopover({
         className='w-[min(26rem,calc(100vw-1rem))] gap-3 p-3'
       >
         <PopoverHeader className='gap-1 px-1'>
-          <PopoverTitle>{t('System Announcements')}</PopoverTitle>
-          <p className='text-muted-foreground text-xs'>
+          {/* 标题 18/600（h3 档）、副标题 14/400 次要色：PopoverContent 的
+              基础字号是 14px，标题此前只靠 `font-medium` 加粗、与副标题同号，
+              整块读起来没有层级。 */}
+          <PopoverTitle className='text-lg font-semibold'>
+            {t('System Announcements')}
+          </PopoverTitle>
+          <p className='text-muted-foreground text-sm'>
             {t('Latest platform updates and notices')}
           </p>
         </PopoverHeader>
@@ -343,11 +352,11 @@ export function NotificationPopover({
         >
           <TabsList className='grid w-full grid-cols-2'>
             <TabsTrigger value='notice' className='gap-1.5'>
-              <Bell className='size-3.5' />
+              <Bell className='size-4.5' />
               {t('Notice')}
             </TabsTrigger>
             <TabsTrigger value='announcements' className='gap-1.5'>
-              <Megaphone className='size-3.5' />
+              <Megaphone className='size-4.5' />
               {t('Timeline')}
             </TabsTrigger>
           </TabsList>

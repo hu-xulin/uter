@@ -266,7 +266,7 @@ export function JsonCodeEditor({
   return (
     <div
       className={cn(
-        'border-input bg-background focus-within:border-ring focus-within:ring-ring/50 overflow-hidden rounded-lg border transition-colors focus-within:ring-3',
+        'border-input bg-background focus-within:border-ring focus-within:ring-ring overflow-hidden rounded-lg border transition-colors focus-within:ring-2',
         className
       )}
       data-form-root={dataFormRoot}
@@ -276,7 +276,7 @@ export function JsonCodeEditor({
         <div className='text-muted-foreground flex min-w-0 items-center gap-1.5 text-xs font-medium'>
           <Braces className='h-3.5 w-3.5' aria-hidden='true' />
           <span>{t('JSON')}</span>
-          <span className='text-muted-foreground/70 font-mono'>
+          <span className='text-muted-foreground text-mono font-mono'>
             {cursorText}
           </span>
         </div>
@@ -284,7 +284,7 @@ export function JsonCodeEditor({
           <span
             className={cn(
               'flex items-center gap-1 text-xs',
-              jsonStatus.isValid ? 'text-emerald-600' : 'text-destructive'
+              jsonStatus.isValid ? 'text-success' : 'text-destructive'
             )}
           >
             {jsonStatus.isValid ? (
@@ -298,7 +298,7 @@ export function JsonCodeEditor({
             type='button'
             variant='ghost'
             size='sm'
-            className='h-6 px-2 text-xs'
+            className='px-2 text-xs'
             onClick={handleCopy}
             disabled={disabled || !value}
           >
@@ -309,7 +309,7 @@ export function JsonCodeEditor({
             type='button'
             variant='ghost'
             size='sm'
-            className='h-6 px-2 text-xs'
+            className='px-2 text-xs'
             onClick={formatJson}
             disabled={disabled || !jsonStatus.isValid || !value.trim()}
           >
@@ -327,7 +327,7 @@ export function JsonCodeEditor({
       >
         <div
           ref={mountRef}
-          className='json-code-editor-yace text-foreground h-full font-mono text-mono leading-[var(--ds-line-mono-dense)]'
+          className='json-code-editor-yace text-foreground text-mono h-full font-mono leading-[var(--ds-line-mono-dense)]'
         />
       </div>
     </div>

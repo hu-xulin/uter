@@ -56,6 +56,14 @@ export type DataTableViewProps<TData> = {
   getColumnClassName?: DataTableColumnClassName
   pinnedColumns?: DataTablePinnedColumn[]
   applyHeaderSize?: boolean
+  /**
+   * 让整表恒等于容器宽度（`table-layout: fixed`，不设 minWidth）。
+   *
+   * 打开后单元格里的 `truncate` 才真正生效，长文本被省略号截断而不是把表格
+   * 撑宽、逼出横向滚动。只适合「列少、每列都能截断」的表（API 密钥）；
+   * 列多且信息不可截断的宽表保持默认的 auto + 横向滚动。
+   */
+  fitContainer?: boolean
   tableClassName?: string
   tableHeaderClassName?: string
   tableHeaderRowClassName?: string

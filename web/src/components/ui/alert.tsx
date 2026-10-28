@@ -19,16 +19,21 @@ For commercial licensing, please contact support@uter.ai
 import { cva, type VariantProps } from 'class-variance-authority'
 import * as React from 'react'
 
+import {
+  formLabelTierClassName,
+  useFormLabelTier,
+  type FormLabelTier,
+} from '@/components/ui/form-label-tier'
 import { cn } from '@/lib/utils'
 
 const alertVariants = cva(
-  "group/alert relative grid w-full gap-0.5 rounded-lg border px-2.5 py-2 text-left text-sm has-data-[slot=alert-action]:relative has-data-[slot=alert-action]:pr-18 has-[>svg]:grid-cols-[auto_1fr] has-[>svg]:gap-x-2 *:[svg]:row-span-2 *:[svg]:translate-y-0.5 *:[svg]:text-current *:[svg:not([class*='size-'])]:size-4",
+  "group/alert relative grid w-full gap-0.5 rounded-lg border p-4 text-left text-sm has-data-[slot=alert-action]:relative has-data-[slot=alert-action]:pr-18 has-[>svg]:grid-cols-[auto_1fr] has-[>svg]:gap-x-3 *:[svg]:row-span-2 *:[svg]:translate-y-0.5 *:[svg]:text-current *:[svg:not([class*='size-'])]:size-4.5",
   {
     variants: {
       variant: {
         default: 'bg-card text-card-foreground',
         destructive:
-          'bg-card text-destructive *:data-[slot=alert-description]:text-destructive/90 *:[svg]:text-current',
+          'bg-card text-destructive *:data-[slot=alert-description]:text-destructive *:[svg]:text-current',
       },
     },
     defaultVariants: {
@@ -52,12 +57,27 @@ function Alert({
   )
 }
 
-function AlertTitle({ className, ...props }: React.ComponentProps<'div'>) {
+function AlertTitle({
+  className,
+  tier,
+  ...props
+}: React.ComponentProps<'div'> & {
+  /**
+   * 标题档位。提示块里的标题与同页的字段标签同属「名称」层，因此默认
+   * 跟随外层 `FormLabelTierProvider`：在设置页里自动是 16/600，与旁边
+   * 「Client Secret」这类标签同档；在普通页面仍是原来的 14/500 加粗。
+   */
+  tier?: FormLabelTier
+}) {
+  const activeTier = useFormLabelTier(tier)
   return (
     <div
       data-slot='alert-title'
+      data-tier={activeTier}
       className={cn(
         '[&_a]:hover:text-foreground font-medium group-has-[>svg]/alert:col-start-2',
+        // 档位类拼在 font-medium 之后，由 twMerge 覆盖字重。
+        formLabelTierClassName(activeTier),
         className
       )}
       {...props}

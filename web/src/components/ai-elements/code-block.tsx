@@ -188,25 +188,44 @@ const codeMirrorTheme = EditorView.theme({
   },
 })
 
+/* CodeMirror 的语法高亮配色走 `--syntax-*` Token，不再写死 One Dark 的
+ * 十六进制值：编辑器背景跟随 `--background`，深色模式下 One Dark 的
+ * `#98c379`（绿）在深底上偏灰，写死就没法跟着主题走。 */
 const codeMirrorHighlightStyle = syntaxHighlighting(
   HighlightStyle.define([
-    { tag: highlightTags.heading, color: '#e06c75', fontWeight: '600' },
-    { tag: [highlightTags.strong, highlightTags.emphasis], color: '#d19a66' },
-    { tag: [highlightTags.link, highlightTags.url], color: '#61afef' },
+    {
+      tag: highlightTags.heading,
+      color: 'var(--syntax-keyword)',
+      fontWeight: '600',
+    },
+    {
+      tag: [highlightTags.strong, highlightTags.emphasis],
+      color: 'var(--syntax-number)',
+    },
+    {
+      tag: [highlightTags.link, highlightTags.url],
+      color: 'var(--syntax-function)',
+    },
     {
       tag: [highlightTags.monospace, highlightTags.contentSeparator],
-      color: '#98c379',
+      color: 'var(--syntax-string)',
     },
     {
       tag: [highlightTags.keyword, highlightTags.processingInstruction],
-      color: '#c678dd',
+      color: 'var(--syntax-keyword)',
     },
     {
       tag: [highlightTags.atom, highlightTags.bool, highlightTags.number],
-      color: '#d19a66',
+      color: 'var(--syntax-number)',
     },
-    { tag: [highlightTags.string, highlightTags.inserted], color: '#98c379' },
-    { tag: [highlightTags.deleted, highlightTags.invalid], color: '#e06c75' },
+    {
+      tag: [highlightTags.string, highlightTags.inserted],
+      color: 'var(--syntax-string)',
+    },
+    {
+      tag: [highlightTags.deleted, highlightTags.invalid],
+      color: 'var(--syntax-keyword)',
+    },
     {
       tag: [highlightTags.meta, highlightTags.comment],
       color: 'var(--muted-foreground)',
@@ -435,7 +454,7 @@ export const CodeBlockFrame = ({
 }: CodeBlockFrameProps) => (
   <div
     className={cn(
-      'group/code-block bg-muted/20 text-foreground my-3 w-full max-w-full overflow-hidden rounded-lg border shadow-xs',
+      'group/code-block bg-muted/20 text-foreground my-3 w-full max-w-full overflow-hidden rounded-lg border',
       className
     )}
     {...props}
@@ -443,7 +462,7 @@ export const CodeBlockFrame = ({
     {showToolbar && (
       <div className='bg-muted/35 border-border/70 flex min-h-10 items-center gap-2 border-b px-2 py-1.5'>
         <div className='min-w-0 flex-1'>
-          <div className='text-muted-foreground truncate font-mono text-mono font-medium uppercase'>
+          <div className='text-muted-foreground text-mono truncate font-mono font-medium uppercase'>
             {title}
           </div>
         </div>
@@ -455,7 +474,7 @@ export const CodeBlockFrame = ({
     <div className='relative min-w-0'>
       <div
         className={cn(
-          'code-block-scroll max-w-full overflow-auto transition-[max-height] duration-200 ease-out',
+          'code-block-scroll max-w-full overflow-auto transition-[max-height] ds-motion-base',
           bodyClassName
         )}
         style={{ maxHeight: bodyMaxHeight }}
@@ -537,16 +556,15 @@ export const CodeBlock = ({
                   render={
                     <Button
                       aria-label={isCodeCollapsed ? t('Expand') : t('Collapse')}
-                      className='size-8'
                       onClick={() => setIsCollapsed((value) => !value)}
                       size='icon-sm'
                       type='button'
                       variant='ghost'
                     >
                       {isCodeCollapsed ? (
-                        <ChevronRightIcon className='size-4' />
+                        <ChevronRightIcon className='size-4.5' />
                       ) : (
-                        <ChevronDownIcon className='size-4' />
+                        <ChevronDownIcon className='size-4.5' />
                       )}
                     </Button>
                   }
@@ -562,13 +580,12 @@ export const CodeBlock = ({
                 render={
                   <Button
                     aria-label={t('Download')}
-                    className='size-8'
                     onClick={downloadCode}
                     size='icon-sm'
                     type='button'
                     variant='ghost'
                   >
-                    <DownloadIcon className='size-4' />
+                    <DownloadIcon className='size-4.5' />
                   </Button>
                 }
               />
@@ -675,14 +692,14 @@ export const CodeBlockCopyButton = ({
   const button = (
     <Button
       aria-label={isCopied ? t('Copied!') : t('Copy code')}
-      className={cn('size-8 shrink-0', className)}
+      className={cn('shrink-0', className)}
       onClick={copyToClipboard}
       size='icon-sm'
       type='button'
       variant='ghost'
       {...props}
     >
-      {children ?? <Icon size={14} />}
+      {children ?? <Icon className='size-4' />}
     </Button>
   )
 

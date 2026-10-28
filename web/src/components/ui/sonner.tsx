@@ -19,13 +19,12 @@ For commercial licensing, please contact support@uter.ai
 'use client'
 
 import {
-  CheckmarkCircle02Icon,
-  InformationCircleIcon,
-  Alert02Icon,
-  MultiplicationSignCircleIcon,
-  Loading03Icon,
-} from '@hugeicons/core-free-icons'
-import { HugeiconsIcon } from '@hugeicons/react'
+  CircleAlert,
+  CircleCheck,
+  Info,
+  LoaderCircle,
+  CircleX,
+} from 'lucide-react'
 import { Toaster as Sonner, type ToasterProps } from 'sonner'
 
 import { useTheme } from '@/context/theme-provider'
@@ -38,41 +37,11 @@ const Toaster = (props: ToasterProps) => {
       theme={resolvedTheme}
       className='toaster group'
       icons={{
-        success: (
-          <HugeiconsIcon
-            icon={CheckmarkCircle02Icon}
-            strokeWidth={2}
-            className='size-4'
-          />
-        ),
-        info: (
-          <HugeiconsIcon
-            icon={InformationCircleIcon}
-            strokeWidth={2}
-            className='size-4'
-          />
-        ),
-        warning: (
-          <HugeiconsIcon
-            icon={Alert02Icon}
-            strokeWidth={2}
-            className='size-4'
-          />
-        ),
-        error: (
-          <HugeiconsIcon
-            icon={MultiplicationSignCircleIcon}
-            strokeWidth={2}
-            className='size-4'
-          />
-        ),
-        loading: (
-          <HugeiconsIcon
-            icon={Loading03Icon}
-            strokeWidth={2}
-            className='size-4 animate-spin'
-          />
-        ),
+        success: <CircleCheck className='size-4.5' />,
+        info: <Info className='size-4.5' />,
+        warning: <CircleAlert className='size-4.5' />,
+        error: <CircleX className='size-4.5' />,
+        loading: <LoaderCircle className='size-4.5 animate-spin' />,
       }}
       style={
         {
