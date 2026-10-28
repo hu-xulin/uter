@@ -434,14 +434,53 @@ export function loadMessages(): Message[] | null {
 }
 
 /**
+ * 写入前把每条消息压到读取时的同一档上限。
+ *
+ * 读取侧对单条消息做 `MAX_LOADED_MESSAGE_CHARS` 截断、对整段会话做
+ * `MAX_LOADED_MESSAGES_CHARS` 预算；写入侧如果不管这两条，一条超长回复就会把
+ * 整个键写成超限内容，下次读取时 `readStoredMessagesValue` 判定超限并**整键删除**，
+ * 用户丢掉的是全部历史。这里只截断内容，不动 status —— 流式中的消息不能被提前定稿。
+ */
+function truncateMessagesForStorage(messages: Message[]): Message[] {
+  return messages.map((message) => {
+    let changed = false
+
+    const versions = message.versions.map((version) => {
+      const content = truncateText(version.content, MAX_LOADED_MESSAGE_CHARS)
+      if (content === version.content) return version
+
+      changed = true
+      return { ...version, content }
+    })
+
+    const reasoningContent = message.reasoning?.content
+    const reasoning =
+      message.reasoning && reasoningContent !== undefined
+        ? {
+            ...message.reasoning,
+            content: truncateText(reasoningContent, MAX_LOADED_MESSAGE_CHARS),
+          }
+        : message.reasoning
+
+    if (reasoning?.content !== reasoningContent) {
+      changed = true
+    }
+
+    return changed ? { ...message, versions, reasoning } : message
+  })
+}
+
+/**
  * Save messages to localStorage
  */
 export function saveMessages(messages: Message[]): void {
   try {
     const key = getUserStorageKey(STORAGE_KEYS.MESSAGES)
     if (!key) return
-    const trimmed = trimMessages(messages)
-    const parsed = messagesSchema.parse(trimmed) as Message[]
+    const budgeted = trimMessagesByContentSize(
+      truncateMessagesForStorage(trimMessages(messages))
+    )
+    const parsed = messagesSchema.parse(budgeted) as Message[]
     const payload: StoredEnvelope<Message[]> = {
       version: STORAGE_VERSION,
       data: parsed,

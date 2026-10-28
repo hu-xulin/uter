@@ -52,7 +52,12 @@ export function buildChatCompletionPayload(
     payload.top_p = config.top_p
   }
 
-  if (parameterEnabled.max_tokens) {
+  // `max_tokens: 0` 不是「不限制」。参数面板的输入框被清空后，
+  // `normalizeParameterNumberValue` 会把 `max_tokens` 归一化成 0（seed 例外，
+  // 它归一化成 null），若原样下发，OpenAI 兼容上游会以「max_tokens must be
+  // greater than 0」直接 400，Anthropic 系则按 0 产出空回复 —— 用户只是清空了
+  // 输入框，却收到一条报错/空白。这里把 0 当作「未设置」省略，与清空前的语义一致。
+  if (parameterEnabled.max_tokens && config.max_tokens > 0) {
     payload.max_tokens = config.max_tokens
   }
 

@@ -92,11 +92,34 @@ export function PlaygroundInput({
     setText('')
   }
 
+  /**
+   * 输入舱是**不透明**表面：规范 1.1 要求 Surface/background 用纯色、描边用
+   * 100% 的 `--border`。此前是 `bg-background/95` + `border-border/70` +
+   * `ring-foreground/5`，页面底色会从舱体透出来，整个输入框看起来蒙了一层灰。
+   *
+   * 焦点环按规范 §1.7：全站只有一种 —— 2px、`ring` 满色、贴着边框外沿
+   * （offset 0）。此前是 `ring-primary/15` 的 1px 半透明环，既不是 2px 也不是
+   * ring 色，和 Input / Textarea 的焦点态对不上。基础态留 `ring-2
+   * ring-transparent` 占位，是为了让 box-shadow 的宽度恒定、过渡时不跳。
+   * 舱体本身不可聚焦，所以用 `focus-within` 把内层 textarea 的焦点传上来。
+   */
+  const COMPOSER_SURFACE_CLASS =
+    'bg-background border-border shadow-(--ds-elevation-overlay) ring-2 ring-transparent rounded-xl overflow-hidden transition-all ds-motion-base focus-within:border-ring focus-within:ring-ring'
+
+  /** 底部工具条同为不透明表面：`bg-muted` 纯色，去掉 `backdrop-blur`。 */
+  const COMPOSER_FOOTER_CLASS = 'border-border bg-muted border-t px-3 py-2.5'
+
+  /**
+   * 输入文字全平台统一 14px（规范 2.1 Input）。原 `md:text-sm` 让移动端停在
+   * 16px、桌面才降 14px —— 同一个控件两套字号。
+   */
+  const COMPOSER_TEXTAREA_CLASS = 'min-h-20 px-5 pt-4 pb-3 text-sm md:min-h-24'
+
   return (
     <div className='grid shrink-0 gap-4 px-1 md:pb-4'>
       <PromptInput
         className='relative'
-        groupClassName='bg-background/95 dark:bg-background/80 border-border/70 shadow-[0_18px_60px_-32px_rgba(0,0,0,0.65)] ring-1 ring-foreground/5 rounded-xl overflow-hidden transition-all duration-200 focus-within:border-primary/45 focus-within:ring-primary/15 focus-within:shadow-[0_22px_70px_-34px_rgba(0,0,0,0.75)]'
+        groupClassName={COMPOSER_SURFACE_CLASS}
         onSubmit={handleSubmit}
       >
         <PromptInputTextarea
@@ -104,14 +127,14 @@ export function PlaygroundInput({
           autoCorrect='off'
           autoCapitalize='off'
           spellCheck={false}
-          className='min-h-20 px-5 pt-4 pb-3 leading-7 md:min-h-24 md:text-base'
+          className={COMPOSER_TEXTAREA_CLASS}
           disabled={disabled}
           onChange={(event) => setText(event.target.value)}
           placeholder={t('Ask anything')}
           value={text}
         />
 
-        <PromptInputFooter className='border-border/60 bg-muted/20 dark:bg-muted/10 border-t px-3 py-2.5 backdrop-blur'>
+        <PromptInputFooter className={COMPOSER_FOOTER_CLASS}>
           <PlaygroundInputControls
             disabled={disabled}
             groups={groups}

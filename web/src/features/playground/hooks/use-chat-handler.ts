@@ -30,10 +30,10 @@ import {
   updateLastAssistantMessage,
   parseRequestErrorDetails,
   applyChatCompletionResponse,
-  completeAssistantMessage,
+  finalizeCompletedGeneration,
+  finalizeStoppedGeneration,
   hasChatCompletionChoice,
-  isAssistantMessageFinal,
-  isAssistantMessagePending,
+  mergeStreamChunk,
 } from '../lib'
 import type { Message, PlaygroundConfig, ParameterEnabled } from '../types'
 import { useStreamRequest } from './use-stream-request'
@@ -51,17 +51,6 @@ type PendingStreamChunks = {
   generation: number
   content: string
   reasoning: string
-}
-
-function mergePendingStreamChunk(
-  currentChunk: string,
-  nextChunk: string
-): string {
-  if (!currentChunk || !nextChunk.startsWith(currentChunk)) {
-    return currentChunk + nextChunk
-  }
-
-  return nextChunk
 }
 
 /**
@@ -192,7 +181,7 @@ export function useChatHandler({
     (generation: number, type: 'reasoning' | 'content', chunk: string) => {
       if (generation !== requestGenerationRef.current) return
       if (pendingStreamChunksRef.current.generation !== generation) return
-      pendingStreamChunksRef.current[type] = mergePendingStreamChunk(
+      pendingStreamChunksRef.current[type] = mergeStreamChunk(
         pendingStreamChunksRef.current[type],
         chunk
       )
@@ -207,16 +196,15 @@ export function useChatHandler({
       if (generation !== requestGenerationRef.current) return
       flushStreamUpdates(generation)
       setIsRequesting(false)
+      const interruptedMessage = `${t(ERROR_MESSAGES.API_REQUEST_ERROR)}: ${t(
+        ERROR_MESSAGES.INTERRUPTED
+      )}`
       onMessageUpdate((prev) => {
         if (generation !== requestGenerationRef.current) return prev
-        return updateLastAssistantMessage(prev, (message) =>
-          isAssistantMessageFinal(message)
-            ? message
-            : completeAssistantMessage(message)
-        )
+        return finalizeCompletedGeneration(prev, interruptedMessage)
       })
     },
-    [flushStreamUpdates, onMessageUpdate]
+    [flushStreamUpdates, onMessageUpdate, t]
   )
 
   // Handle stream error
@@ -283,6 +271,9 @@ export function useChatHandler({
       )
       const generation = requestGenerationRef.current + 1
       const abortController = new AbortController()
+      const interruptedMessage = `${t(ERROR_MESSAGES.API_REQUEST_ERROR)}: ${t(
+        ERROR_MESSAGES.INTERRUPTED
+      )}`
 
       requestGenerationRef.current = generation
       stopStream()
@@ -310,7 +301,7 @@ export function useChatHandler({
 
         onMessageUpdate((prev) => {
           if (requestGenerationRef.current !== generation) return prev
-          return updateLastAssistantMessage(prev, (message) => {
+          const applied = updateLastAssistantMessage(prev, (message) => {
             const updatedMessage = applyChatCompletionResponse(
               message,
               response
@@ -318,6 +309,9 @@ export function useChatHandler({
 
             return updatedMessage ?? message
           })
+
+          // 200 + choices 但正文为空：和流式一样不能留一条看不见的助手消息。
+          return finalizeCompletedGeneration(applied, interruptedMessage)
         })
       } catch (error: unknown) {
         if (
@@ -343,6 +337,7 @@ export function useChatHandler({
       discardPendingStreamUpdates,
       onMessageUpdate,
       handleStreamError,
+      t,
     ]
   )
 
@@ -371,11 +366,7 @@ export function useChatHandler({
     setIsRequesting(false)
     onMessageUpdate((prev) => {
       if (requestGenerationRef.current !== idleGeneration) return prev
-      return updateLastAssistantMessage(prev, (message) =>
-        isAssistantMessagePending(message)
-          ? completeAssistantMessage(message)
-          : message
-      )
+      return finalizeStoppedGeneration(prev)
     })
   }, [
     stopStream,

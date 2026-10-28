@@ -82,22 +82,22 @@ export function PlaygroundInputControls({
   const renderSubmitButton = () =>
     shouldShowStop ? (
       <PromptInputButton
-        className='border-destructive/25 bg-destructive/10 text-destructive hover:bg-destructive/15 font-medium'
+        className='border-destructive/25 bg-destructive-subtle text-destructive hover:bg-destructive-subtle-hover font-medium'
         onClick={onStop}
         variant='secondary'
       >
-        <SquareIcon className='fill-current' size={16} />
+        <SquareIcon className='size-4.5 fill-current' />
         <span className='hidden sm:inline'>{t('Stop')}</span>
         <span className='sr-only sm:hidden'>{t('Stop')}</span>
       </PromptInputButton>
     ) : (
       <PromptInputButton
-        className='bg-primary text-primary-foreground hover:bg-primary/90 disabled:bg-muted disabled:text-muted-foreground h-8 px-3 font-medium shadow-sm'
+        className='bg-primary text-primary-foreground hover:bg-primary-hover disabled:bg-muted disabled:text-muted-foreground h-8 px-3 font-medium'
         disabled={!canSubmit}
         type='submit'
         variant='default'
       >
-        <SendIcon size={16} />
+        <SendIcon className='size-4.5' />
         <span className='hidden sm:inline'>{t('Send')}</span>
         <span className='sr-only sm:hidden'>{t('Send')}</span>
       </PromptInputButton>

@@ -36,7 +36,6 @@ export function getMessageContentStyles() {
     'group-[.is-user]:px-4',
     'group-[.is-user]:py-2.5',
     'group-[.is-user]:text-foreground',
-    'group-[.is-user]:shadow-sm',
     'group-[.is-user]:shadow-black/5',
 
     // Assistant response: flat reading surface using the active UI font axis.
@@ -45,15 +44,14 @@ export function getMessageContentStyles() {
     'group-[.is-assistant]:rounded-none',
     'group-[.is-assistant]:overflow-visible',
     'group-[.is-assistant]:[font-family:var(--font-body)]',
-    'group-[.is-assistant]:text-foreground/90',
+    'group-[.is-assistant]:text-muted-foreground',
 
-    // Preferred readable widths and wrapping
-    'text-base',
-    'leading-6',
+    // Preferred readable widths and wrapping. 对话是连续阅读场景，走
+    // body-long（16/26）而不是 body（14/20）——14px 长回答读起来太挤。
+    'text-long',
     'break-words',
     'whitespace-pre-wrap',
-    'sm:text-base',
-    'sm:leading-7',
+    'sm:text-long',
 
     // Cap user bubble width so it does not look like a banner
     'group-[.is-user]:max-w-[85%]',

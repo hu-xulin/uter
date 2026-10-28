@@ -23,10 +23,11 @@ import { getFreshAuthHeaders } from '@/lib/api'
 
 import { API_ENDPOINTS, ERROR_MESSAGES } from '../constants'
 import {
-  getStreamReadyStateError,
+  getStreamResponseCodeError,
   isStreamClosedReadyState,
   isStreamDoneMessage,
   parseStreamErrorDetails,
+  parseStreamErrorEvent,
   parseStreamMessageUpdates,
 } from '../lib'
 import type { ChatCompletionRequest } from '../types'
@@ -35,7 +36,13 @@ interface StreamEventSource {
   readyState?: number
   addEventListener: (
     type: string,
-    listener: (event: Event & { data?: string; readyState?: number }) => void
+    listener: (
+      event: Event & {
+        data?: string
+        readyState?: number
+        responseCode?: number
+      }
+    ) => void
   ) => void
   close: () => void
   stream: () => void
@@ -120,6 +127,12 @@ export function createStreamRequestController(
         return
       }
 
+      const streamError = parseStreamErrorEvent(data)
+      if (streamError) {
+        handleError(streamError.errorMessage, streamError.errorCode)
+        return
+      }
+
       try {
         const updates = parseStreamMessageUpdates(data)
 
@@ -139,20 +152,25 @@ export function createStreamRequestController(
         // eslint-disable-next-line no-console
         console.error('SSE Error:', event)
         const { errorCode, errorMessage } = parseStreamErrorDetails(event.data)
-        handleError(errorMessage, errorCode)
+        handleError(
+          getStreamResponseCodeError(errorMessage, event.responseCode),
+          errorCode
+        )
       }
     })
 
     nextSource.addEventListener('readystatechange', (event) => {
       if (!isCurrent() || completed) return
-      const errorMessage = getStreamReadyStateError(
-        event.readyState,
-        nextSource
-      )
+      if (!isStreamClosedReadyState(event.readyState)) return
 
-      if (errorMessage) {
-        handleError(errorMessage)
-      }
+      // 上游被截断、网关超时或连接被中途关掉时，服务端会直接结束响应而**不发**
+      // `[DONE]`，HTTP 状态仍是 200，于是既没有 `error` 事件也没有结束帧。
+      // 不在这里收尾，界面会永远停在「正在回复…」，停止按钮也一直亮着。
+      // 自己调用 close() 触发的关闭不会走到这里：那条路径已经先置 completed
+      // 或让 isCurrent() 失效。
+      completed = true
+      closeActiveSource(nextSource)
+      callbacks.onComplete()
     })
 
     try {

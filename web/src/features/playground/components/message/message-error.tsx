@@ -83,7 +83,7 @@ export function MessageError({
 
     return (
       <Alert variant='default' className={className}>
-        <AlertTriangle className='text-orange-500' />
+        <AlertTriangle className='text-warning' />
         <AlertTitle>{t('Model Price Not Configured')}</AlertTitle>
         <AlertDescription className='space-y-2'>
           <p>{content}</p>
@@ -100,7 +100,7 @@ export function MessageError({
                 })
               }
             >
-              <Settings className='mr-1 h-3.5 w-3.5' />
+              <Settings className='mr-1 h-4.5 w-4.5' />
               {t('Go to Settings')}
             </Button>
           )}

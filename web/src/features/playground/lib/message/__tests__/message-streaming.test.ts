@@ -127,3 +127,37 @@ describe('chat completion reasoning', () => {
     ])
   })
 })
+
+describe('streaming chunk accumulation', () => {
+  test('keeps repeated deltas such as blank lines and repeated words', () => {
+    let message = createLoadingAssistantMessage(0)
+
+    for (const chunk of ['para one', '\n', '\n', 'para two', ' ', ' ', 'ok']) {
+      message = applyStreamingChunk(message, 'content', chunk)
+    }
+
+    // 之前按「分片以已累积内容开头即视为累积快照」处理，连续两个 "\n" 会被
+    // 吞掉一个，Markdown 空行消失，两个空格也只剩一个。
+    expect(message.versions[0].content).toBe('para one\n\npara two  ok')
+  })
+
+  test('still de-duplicates cumulative snapshots from the same provider', () => {
+    let message = createLoadingAssistantMessage(0)
+
+    for (const chunk of ['Hel', 'Hello', 'Hello world']) {
+      message = applyStreamingChunk(message, 'content', chunk)
+    }
+
+    expect(message.versions[0].content).toBe('Hello world')
+  })
+
+  test('accumulates reasoning the same way', () => {
+    let message = createLoadingAssistantMessage(0)
+
+    for (const chunk of ['step 1', '\n', '\n', 'step 2']) {
+      message = applyStreamingChunk(message, 'reasoning', chunk)
+    }
+
+    expect(message.reasoning?.content).toBe('step 1\n\nstep 2')
+  })
+})

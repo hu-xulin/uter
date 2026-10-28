@@ -22,10 +22,10 @@ import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 
 import { ConfirmDialog } from '@/components/confirm-dialog'
+import { useSecureVerification } from '@/features/auth/secure-verification'
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from '@/features/keys/constants'
 import { handleServerError } from '@/lib/handle-server-error'
 import { AuthOperationError } from '@/lib/secure-verification'
-import { useSecureVerification } from '@/features/auth/secure-verification'
 
 import { createDefaultChatKey } from '../hooks/use-active-chat-key'
 
