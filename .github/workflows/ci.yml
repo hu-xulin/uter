@@ -260,10 +260,9 @@ jobs:
           repository: ${{ github.event.pull_request.base.repo.full_name || github.repository }}
           ref: ${{ github.sha }}
 
-      # 这里用 tag 而不是像其他 action 那样 pin SHA：electron/ 目录此前没有
-      # CI 覆盖，尚未建立 SHA 台账。如需与其他 job 对齐，按同样方式替换即可。
+      # electron/ 已有 CI 覆盖，按仓库 SHA 台账统一 pin 到 v6.4.0。
       - name: Set up Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
         with:
           node-version: '22'
 

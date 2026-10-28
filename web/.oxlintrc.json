@@ -1,13 +1,6 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": [
-    "typescript",
-    "unicorn",
-    "oxc",
-    "react",
-    "import",
-    "promise"
-  ],
+  "plugins": ["typescript", "unicorn", "oxc", "react", "import", "promise"],
   "categories": {
     "correctness": "error"
   },
@@ -29,10 +22,7 @@
     "public/plugins"
   ],
   "rules": {
-    "curly": [
-      "error",
-      "multi-line"
-    ],
+    "curly": ["error", "multi-line"],
     "eqeqeq": [
       "error",
       "always",
@@ -128,13 +118,13 @@
           "getModelsSectionNavItems",
           "getModelsSectionContent",
           "getModelsSectionMeta",
-        "getOperationsSectionNavItems",
-        "getOperationsSectionContent",
-        "getOperationsSectionMeta",
-        "getPolicySectionNavItems",
-        "getPolicySectionContent",
-        "getPolicySectionMeta",
-        "getSecuritySectionNavItems",
+          "getOperationsSectionNavItems",
+          "getOperationsSectionContent",
+          "getOperationsSectionMeta",
+          "getPolicySectionNavItems",
+          "getPolicySectionContent",
+          "getPolicySectionMeta",
+          "getSecuritySectionNavItems",
           "getSecuritySectionContent",
           "getSecuritySectionMeta",
           "getSiteSectionNavItems",
@@ -207,9 +197,7 @@
   },
   "overrides": [
     {
-      "files": [
-        "src/routes/**/*.{ts,tsx}"
-      ],
+      "files": ["src/routes/**/*.{ts,tsx}"],
       "rules": {
         "react/only-export-components": "off"
       }
@@ -225,20 +213,22 @@
       }
     },
     {
-      "files": [
-        "src/features/docs/docs-viewer.tsx"
-      ],
+      "files": ["src/features/docs/docs-viewer.tsx"],
       "rules": {
         "react/iframe-missing-sandbox": "off"
       }
     },
     {
-      "files": [
-        "**/scripts/**/*.{js,mjs,cjs}"
-      ],
+      "files": ["**/scripts/**/*.{js,mjs,cjs}"],
       "rules": {
         "no-console": "off",
         "prefer-node-protocol": "off"
+      }
+    },
+    {
+      "files": ["**/scripts/**/*.cjs"],
+      "rules": {
+        "typescript/no-require-imports": "off"
       }
     }
   ]

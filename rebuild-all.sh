@@ -1,5 +1,5 @@
 #!/bin/bash
-# rebuild-all.sh — 一键重建 + 发布 + 重启
+# rebuild-all.sh — 一键重建 + 发布 + 重启**全部服务**
 #
 # 覆盖所有前后端产物并重启服务，保证任何改动都生效：
 #   1. web/       React SPA        → rsbuild build    （产出 web/dist）
@@ -8,7 +8,14 @@
 #      构建时通过 -ldflags -X 注入仓库根 VERSION 文件里的版本号；
 #      构建成功后自动把 patch 位 +1 写回 VERSION，下次构建即递进
 #      （v1.0.0 → v1.0.1 → v1.0.2 ...），首页 logo 旁即显示该版本。
-#   4. 重启       杀掉旧进程后以独立会话启动 uter-bin，并做端口 + HTTP 体检
+#   4. uter-cs/   智能客服前端     → vite build       （产出 uter-cs/web/dist）
+#   5. 重启       杀掉旧进程后以独立会话启动 uter-bin，并做端口 + HTTP 体检
+#   6. 重启       同上，启动 uter-cs（Node/Fastify）并体检 /api/health
+#
+# 前置依赖 Redis：Uter 的 .env 配了 REDIS_CONN_STRING 时，启动即强 ping，
+# 不通就 FatalLog 退出（进程活不过 1 秒）。所以第 5 步会先把本机 Redis 拉起：
+# 端口已通 → 跳过；有 redis-server → 直接 spawn；有 docker daemon → 跑临时
+# 容器；都没有 → 明确报错并给安装指引（绝不静默降级成「无 Redis」）。
 #
 # 关键约束（改动前先读）：
 #   - 顺序不可换：rsbuild 会清空整个 web/dist（含 dist/docs），所以必须
@@ -18,6 +25,9 @@
 #   - 本仓库无 bun：一律用 ./node_modules/.bin/ 下的可执行文件。
 #   - 重启不能用 nohup &：终端会回收子进程。这里用 python Popen 的
 #     start_new_session=True 派生独立会话。
+#   - 本机若装了 ~/Library/LaunchAgents/ai.uter.backend.plist（launchd 托管），
+#     重启改走 launchctl kickstart -k；此时后端归 launchd 所有，不再受任何终端
+#     会话生命周期影响（关终端 / 关 IDE / agent 会话结束都不会再把它带走）。
 #
 # 关于「前端服务」：
 #   本项目没有独立的前端进程。SPA 构建产物 web/dist 由 Go 用 //go:embed
@@ -26,13 +36,25 @@
 #   需要热更新（HMR）开发时用 --dev：额外拉起 rsbuild dev（SPA）与
 #   next dev（文档站），API 与 /docs 资源仍代理到 3000 的 Go 后端。
 #
+# 关于「智能客服（uter-cs）」：
+#   uter-cs 是**独立仓库**（默认取同级目录 ../uter-cs，可用 UTER_CS_DIR 指定），
+#   独立进程、独立部署：Node + Fastify，默认端口 3200。浏览器按
+#   /api/status 下发的 CUSTOMER_SERVICE_URL 跨域直连它，Uter 后端不做反代。
+#   本脚本默认把它一并构建 + 拉起 + 体检，实现「一条命令起全部服务」。
+#   - 目录不存在时只警告并跳过，不影响 Uter 自身启动（Uter 是主服务）。
+#   - uter-cs 启动/构建失败不会让脚本以非零退出，但会在结尾醒目标红提示。
+#   - 只想要 Uter 时加 --no-cs。
+#
 # 用法：
-#   ./rebuild-all.sh                 # 全量：web + docs + Go + 重启
-#   ./rebuild-all.sh --no-restart    # 只构建，不重启服务
-#   ./rebuild-all.sh --no-docs       # 跳过文档站（改了 Go/SPA 时用）
-#   ./rebuild-all.sh --install       # 构建前先 npm install 两个前端
-#   ./rebuild-all.sh --dev           # 构建+重启后，再拉起前端 HMR 开发服务
-#   ./rebuild-all.sh --dev --no-build  # 不重新构建，只重启后端 + 拉起 dev 服务
+#   ./rebuild-all.sh                    # 全量：web + docs + Go + uter-cs + 重启全部
+#   ./rebuild-all.sh --no-restart       # 只构建，不重启任何服务
+#   ./rebuild-all.sh --no-docs          # 跳过文档站（改了 Go/SPA 时用）
+#   ./rebuild-all.sh --no-cs            # 跳过智能客服（只构建并重启 Uter）
+#   ./rebuild-all.sh --no-cs-build      # 不重建 uter-cs 前端，只重启它
+#   ./rebuild-all.sh --install          # 构建前先 npm install 各前端
+#   ./rebuild-all.sh --dev              # 构建+重启后，再拉起前端 HMR 开发服务
+#   ./rebuild-all.sh --dev --no-build   # 不重新构建，只重启后端 + 拉起 dev 服务
+#   ./rebuild-all.sh --no-build         # 不构建，只重启全部服务（最快的「拉起来」）
 #
 # 出站代理：启动时默认剔除所有指向 127.0.0.1/::1 的 HTTP(S)_PROXY 等变量
 # （会话注入的临时代理会让渠道测试间歇性报 connection refused，详见 spawn 说明）。
@@ -44,6 +66,17 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PORT=3000
 BIN="$ROOT/uter-bin"
 LOG=/tmp/uter-console.log
+# launchd 托管（推荐）：本机用 ~/Library/LaunchAgents/ai.uter.backend.plist 让后端
+# 脱离终端会话常驻。托管时重启必须走 launchctl kickstart —— 直接 kill 会被 launchd
+# 立刻按 KeepAlive 拉回来，与新进程抢 3000 端口。未托管（CI/别的机器）时行为不变。
+LAUNCHD_LABEL="${UTER_LAUNCHD_LABEL:-ai.uter.backend}"
+launchd_managed() { launchctl print "gui/$(id -u)/$1" >/dev/null 2>&1; }
+# 智能客服（uter-cs）：独立仓库，默认取同级目录。端口与
+# CUSTOMER_SERVICE_URL 的默认值必须一致，否则挂件会指向空端口。
+CS_DIR="${UTER_CS_DIR:-$(cd "$ROOT/.." && pwd)/uter-cs}"
+CS_PORT="${UTER_CS_PORT:-3200}"
+CS_LOG=/tmp/uter-cs-console.log
+REDIS_LOG=/tmp/uter-redis-console.log
 GO=/usr/local/go/bin/go
 # managed node 目录不写死版本号：WorkBuddy 升级 node 时会改写 versions/current
 # 指针，这里跟指针走，必要时回退到目录里版本号最高的那个，避免路径失效。
@@ -60,13 +93,16 @@ fi
 PYTHON=/usr/bin/python3
 
 NO_RESTART=0; NO_DOCS=0; INSTALL=0; DEV=0; NO_BUILD=0
+NO_CS=0; NO_CS_BUILD=0
 for arg in "$@"; do
   case "$arg" in
-    --no-build)   NO_BUILD=1 ;;
-    --no-restart) NO_RESTART=1 ;;
-    --no-docs)    NO_DOCS=1 ;;
-    --install)    INSTALL=1 ;;
-    --dev)        DEV=1 ;;
+    --no-build)    NO_BUILD=1 ;;
+    --no-restart)  NO_RESTART=1 ;;
+    --no-docs)     NO_DOCS=1 ;;
+    --no-cs)       NO_CS=1 ;;
+    --no-cs-build) NO_CS_BUILD=1 ;;
+    --install)     INSTALL=1 ;;
+    --dev)         DEV=1 ;;
     *) echo "未知参数: $arg"; exit 1 ;;
   esac
 done
@@ -85,11 +121,11 @@ export PATH="$NODE_DIR:$PATH"
 # 仍可被环境变量 USER_SESSION_ACTIVE_LIMIT 覆盖（例如临时调回 50）。
 export USER_SESSION_ACTIVE_LIMIT="${USER_SESSION_ACTIVE_LIMIT:-200}"
 
-# 智能客服（uter-cs）挂件地址：独立仓库 uter-ai/uter-cs，独立部署，
+# 智能客服（uter-cs）挂件地址：独立仓库 uter-ai/uter-cs，独立进程/部署，
 # 前端按此地址**跨域直连**，Uter 后端不做任何反向代理。
 # 该值经 /api/status 的 customer_service_url 下发给前端；留空则不渲染挂件。
-# 本地默认指向本机 3200；生产用 CUSTOMER_SERVICE_URL=https://cs.uter.ai 覆盖。
-export CUSTOMER_SERVICE_URL="${CUSTOMER_SERVICE_URL:-http://127.0.0.1:3200}"
+# 默认跟随 $CS_PORT（本机 3200）；生产用 CUSTOMER_SERVICE_URL=https://cs.uter.ai 覆盖。
+export CUSTOMER_SERVICE_URL="${CUSTOMER_SERVICE_URL:-http://127.0.0.1:$CS_PORT}"
 
 fail() { echo "✗ $1" >&2; exit 1; }
 stat_line() { stat -f '%Sm  %8z  %N' -t '%F %T' "$1" 2>/dev/null || echo "    缺失: $1"; }
@@ -104,6 +140,140 @@ wait_http() { # $1=port $2=重试次数；成功打印 HTTP 码
   done
   return 1
 }
+
+# ---- 智能客服（uter-cs）--------------------------------------------------
+# 「是否该处理 uter-cs」的判据不只看目录在不在：空目录或半克隆的仓库会让
+# node 报 MODULE_NOT_FOUND，比「目录不存在」难读得多。所以两处判定都直接
+# 盯 server/index.js（见 [4/6] 构建段与 [6/6] 启动段）。
+
+# 健康检查走 /api/health 而不是 /：静态目录存在时 / 恒 200，
+# 即使 sql.js 初始化失败、路由全挂，首页照样能吐 index.html。
+# /api/health 在 dbReady 之后才注册，能真反映「服务可用」。
+cs_healthy() {
+  local body
+  body="$(curl -s --noproxy '*' --max-time 3 "http://127.0.0.1:$CS_PORT/api/health" 2>/dev/null || true)"
+  case "$body" in *'"ok":true'*) return 0 ;; *) return 1 ;; esac
+}
+
+# 停掉占用指定端口的进程（先 TERM 再 KILL），供两个服务共用。
+stop_port() { # $1=port $2=显示名
+  local p="$1" name="$2" pids
+  pids="$(lsof -nP -iTCP:"$p" -sTCP:LISTEN -t 2>/dev/null || true)"
+  [ -n "$pids" ] || return 0
+  echo "    停止${name}旧进程: $(echo $pids | tr '\n' ' ')"
+  kill $pids 2>/dev/null || true
+  for _ in $(seq 1 20); do
+    lsof -nP -iTCP:"$p" -sTCP:LISTEN -t >/dev/null 2>&1 || return 0
+    sleep 0.5
+  done
+  if lsof -nP -iTCP:"$p" -sTCP:LISTEN -t >/dev/null 2>&1; then
+    kill -9 $(lsof -nP -iTCP:"$p" -sTCP:LISTEN -t) 2>/dev/null || true
+    sleep 1
+  fi
+}
+# ---- Redis ---------------------------------------------------------------
+# Uter 的 .env 一旦配了 REDIS_CONN_STRING，common/redis.go 就会在启动时强
+# ping，不通直接 FatalLog 退出。外部只看到「uter 起不来」，日志里只有一行
+# `Redis ping test failed: ... connection refused`，很容易被误判成代码问题
+# （本项目就踩过： uter-bin 进程根本活不过 1 秒）。
+#
+# 所以起 Uter 之前先把本机 Redis 拉起来。只处理回环地址 —— 远程 Redis 是
+# 显式配置，不归本脚本管，也绝不能替用户去连别人的实例。
+# 来源依次尝试：①端口已在监听 ②本机 redis-server ③docker。
+# 全都不行就返回非零，让 [5/6] 明确失败，而不是等到 Uter 退出再猜。
+ensure_redis() {
+  local url hp bin dir
+  # REDIS_HOST/REDIS_PORT 故意留作全局：结尾的「服务状态」要打印它们。
+  REDIS_HOST=""; REDIS_PORT=""
+  url="$(sed -n 's/^[[:space:]]*REDIS_CONN_STRING[[:space:]]*=[[:space:]]*//p' "$ROOT/.env" 2>/dev/null | tail -1)"
+  url="${url%\"}"; url="${url#\"}"; url="${url%\'}"; url="${url#\'}"
+  url="${url%"${url##*[![:space:]]}"}"   # 去掉尾部空白（值后常带空格）
+  if [ -z "$url" ]; then
+    echo "    Redis  : .env 未配置 REDIS_CONN_STRING，Uter 以无 Redis 模式运行"
+    return 0
+  fi
+
+  # redis://[user][:pass]@host:port/db —— 依次剥掉 scheme、认证段、db 段
+  hp="${url#*://}"; hp="${hp##*@}"; hp="${hp%%/*}"
+  REDIS_HOST="${hp%%:*}"; REDIS_PORT="${hp##*:}"
+  if [ "$REDIS_PORT" = "$hp" ] || [ -z "$REDIS_PORT" ]; then REDIS_PORT=6379; fi
+
+  case "$REDIS_HOST" in
+    127.0.0.1 | localhost | ::1 | 0.0.0.0) ;;
+    *)
+      echo "    Redis  : ${REDIS_HOST}:${REDIS_PORT} 为远程实例，不启动本地进程"
+      return 0
+      ;;
+  esac
+
+  if port_in_use "$REDIS_PORT"; then
+    # 端口被占用 ≠ 占用者就是 Redis（可能被别的服务抢了）。有 redis-cli 就
+    # 握个手：否则要等 Uter 起来 15 秒后才在日志里看到 ping failed，白白多
+    # 一轮排查。NOAUTH/WRONGPASS 说明对面确实是 Redis（只是要密码），也算通。
+    if command -v redis-cli >/dev/null 2>&1; then
+      local resp
+      resp="$(redis-cli -h "$REDIS_HOST" -p "$REDIS_PORT" --no-auth-warning PING 2>&1 || true)"
+      case "$resp" in
+        PONG | *NOAUTH* | *WRONGPASS*)
+          echo "    Redis  : 已在 ${REDIS_PORT} 监听（PING 正常）"
+          return 0
+          ;;
+        *)
+          echo "✗ ${REDIS_PORT} 被占用，但对方不是 Redis（PING 返回: ${resp}）" >&2
+          echo "  请先释放该端口，或改 .env 里的 REDIS_CONN_STRING 指向别的实例。" >&2
+          return 1
+          ;;
+      esac
+    fi
+    echo "    Redis  : 已在 ${REDIS_PORT} 监听"
+    return 0
+  fi
+
+  bin="$(command -v redis-server 2>/dev/null || true)"
+  if [ -z "$bin" ]; then
+    # brew 的 redis@X 是 keg-only，不软链进 PATH，只能按 opt 路径找。
+    # 通配不匹配时 shell 会原样保留 `*`，[ -x ] 自然为假，无需额外判断。
+    for c in /usr/local/opt/redis/bin/redis-server /opt/homebrew/opt/redis/bin/redis-server \
+      /usr/local/opt/redis@*/bin/redis-server /opt/homebrew/opt/redis@*/bin/redis-server; do
+      if [ -x "$c" ]; then bin="$c"; break; fi
+    done
+  fi
+
+  if [ -n "$bin" ]; then
+    # 数据目录放 /tmp：Uter 只把 Redis 当缓存/限流用，没必要在仓库里留 .rdb。
+    dir=/tmp/uter-redis
+    mkdir -p "$dir"
+    spawn "$REDIS_LOG" "$dir" "$bin" --port "$REDIS_PORT" --dir "$dir" --save '' --appendonly no
+  elif docker info >/dev/null 2>&1; then
+    echo "    本机无 redis-server，改用 docker 临时容器"
+    docker rm -f uter-redis >/dev/null 2>&1 || true
+    docker run -d --rm --name uter-redis -p "${REDIS_PORT}:6379" redis:7-alpine >/dev/null || {
+      echo "✗ Redis 容器启动失败（镜像拉取失败？）" >&2
+      return 1
+    }
+  else
+    echo "✗ 本机没有可用的 Redis：.env 配了 REDIS_CONN_STRING=${url}" >&2
+    echo "  但 127.0.0.1:${REDIS_PORT} 无人监听，且既无 redis-server 也无 docker daemon。" >&2
+    echo "  Uter 会因此启动即退出（Redis ping test failed）。请任选其一后重跑：" >&2
+    echo "    brew install redis && brew services start redis" >&2
+    echo "    open -a Docker        # 起 docker daemon，脚本会自动跑 redis 容器" >&2
+    echo "  确实不需要 Redis 的话，注释掉 .env 里的 REDIS_CONN_STRING。" >&2
+    return 1
+  fi
+
+  for _ in $(seq 1 20); do
+    sleep 0.3
+    if port_in_use "$REDIS_PORT"; then break; fi
+  done
+  if port_in_use "$REDIS_PORT"; then
+    echo "✓ Redis  : 已启动，监听 ${REDIS_PORT}（日志 ${REDIS_LOG}）"
+    return 0
+  fi
+  echo "✗ Redis 启动后 ${REDIS_PORT} 仍未监听，日志尾部:" >&2
+  tail -10 "$REDIS_LOG" >&2 2>/dev/null || true
+  return 1
+}
+
 # spawn：以独立会话派生，终端退出也不被回收。
 #
 # 派生前会剔除所有「指向本机回环地址」的代理环境变量（HTTP_PROXY/HTTPS_PROXY/
@@ -237,15 +407,21 @@ bump_version() {
 if [ "$NO_BUILD" = 1 ]; then
   echo "==> 跳过构建（--no-build），直接用现有 web/dist 与 $BIN"
 else
-echo "==> [1/5] 构建前端 SPA (web/)"
+echo "==> [1/6] 构建前端 SPA (web/)"
 cd "$ROOT/web"
 if [ "$INSTALL" = 1 ]; then "$NODE_DIR/npm" install; fi
 [ -x node_modules/.bin/rsbuild ] || fail "web/node_modules 缺失，先跑 $0 --install"
+# 先清掉上一次的 dist。文档站会在 [2/6] 把 docs-content 拷进 dist，若它残留到
+# 本次构建，Tailwind 的内容扫描会把它当成待扫源码（4351 个文件、数十 MB 的
+# _next 产物），SPA 构建从 ~20s 变成永不结束（实测 9 分钟仍卡在 fs 扫描，
+# 最终超时后 Go 构建报 `embed web/dist/index.html: no such file`）。
+# dist 是纯构建产物，清空安全 —— [2/6] 会重新拷入 docs-content。
+[ -d "$ROOT/web/dist" ] && rm -rf "$ROOT/web/dist"
 ./node_modules/.bin/rsbuild build
 echo "    产物: $(stat_line "$ROOT/web/dist/index.html")"
 ls "$ROOT"/web/dist/static/js/*.js >/dev/null 2>&1 || fail "web/dist/static/js 为空，SPA 构建异常"
 
-echo "==> [2/5] 构建文档站 (docs-web/ → web/dist/docs)"
+echo "==> [2/6] 构建文档站 (docs-web/ → web/dist/docs)"
 if [ "$NO_DOCS" = 0 ]; then
   cd "$ROOT/docs-web"
   if [ "$INSTALL" = 1 ]; then "$NODE_DIR/npm" install; fi
@@ -257,7 +433,7 @@ else
   echo "    跳过 (--no-docs)"
 fi
 
-echo "==> [3/5] 编译 Go 后端（内嵌 web/dist）"
+echo "==> [3/6] 编译 Go 后端（内嵌 web/dist）"
 cd "$ROOT"
 
 # 文档站完整性闸门：只要这次会编 Go，就必须带着 docs-content 进编译。
@@ -295,51 +471,70 @@ set -u
 echo "    VERSION = ${BUILD_VERSION}（二进制内嵌版本与 VERSION 文件一致）"
 fi
 
+# ---------------------------------------------------------------------------
+# uter-cs 前端构建
+#
+# 放在 Go 编译之后：uter-cs 是外部服务，它的构建失败不该连累 Uter
+# （主服务）的产物。所以这里**不 fail**，只记 CS_BUILD_OK 并在结尾提示；
+# 即使这次没构建成功，后面仍会用仓库里现有的 web/dist 尝试启动。
+# ---------------------------------------------------------------------------
+CS_BUILD_OK=1
+echo "==> [4/6] 构建智能客服前端 (uter-cs/web → uter-cs/web/dist)"
+cd "$ROOT"
+if [ "$NO_CS" = 1 ]; then
+  echo "    跳过 (--no-cs)"
+elif [ ! -f "$CS_DIR/server/index.js" ]; then
+  echo "    ⚠ 跳过：未找到 $CS_DIR/server/index.js"
+  echo "      用 UTER_CS_DIR=/path/to/uter-cs 指定仓库位置；或将 CUSTOMER_SERVICE_URL 置空关闭挂件。"
+  CS_BUILD_OK=0
+elif [ "$NO_BUILD" = 1 ]; then
+  echo "    跳过 (--no-build)"
+elif [ "$NO_CS_BUILD" = 1 ]; then
+  echo "    跳过 (--no-cs-build)，沿用现有 web/dist"
+elif [ ! -d "$CS_DIR/web" ]; then
+  echo "    ⚠ 跳过：$CS_DIR/web 不存在"
+  CS_BUILD_OK=0
+else
+  cd "$CS_DIR/web"
+  if [ "$INSTALL" = 1 ] && ! "$NODE_DIR/npm" install; then
+    echo "    ⚠ uter-cs 依赖安装失败"
+  fi
+  if [ ! -x node_modules/.bin/vite ]; then
+    echo "    ⚠ 跳过：uter-cs/web/node_modules 缺失，先跑 $0 --install"
+    CS_BUILD_OK=0
+  elif ./node_modules/.bin/vite build; then
+    echo "    产物: $(stat_line "$CS_DIR/web/dist/index.html")"
+  else
+    echo "    ⚠ uter-cs 前端构建失败，将沿用现有 web/dist（若存在）"
+    CS_BUILD_OK=0
+  fi
+  cd "$ROOT"
+fi
+
 if [ "$NO_RESTART" = 1 ]; then
   echo "==> 完成（未重启，--no-restart）"
   exit 0
 fi
 
-echo "==> [4/5] 重启服务 (端口 $PORT)"
+echo "==> [5/6] 重启 Uter（API + SPA + 文档站，端口 ${PORT}）"
 
-# 4.1 停掉旧进程（可能是 uter-bin，也可能是 go run 的临时二进制）
-old_pids="$(lsof -nP -iTCP:$PORT -sTCP:LISTEN -t 2>/dev/null || true)"
-if [ -n "$old_pids" ]; then
-  echo "    停止旧进程: $(echo $old_pids | tr '\n' ' ')"
-  kill $old_pids 2>/dev/null || true
-  for _ in $(seq 1 20); do
-    lsof -nP -iTCP:$PORT -sTCP:LISTEN -t >/dev/null 2>&1 || break
-    sleep 0.5
-  done
-  # 还占着端口就强杀
-  if lsof -nP -iTCP:$PORT -sTCP:LISTEN -t >/dev/null 2>&1; then
-    kill -9 $(lsof -nP -iTCP:$PORT -sTCP:LISTEN -t) 2>/dev/null || true
-    sleep 1
-  fi
-fi
+# 5.1 依赖保障：Redis（.env 配了 REDIS_CONN_STRING 时 Uter 强依赖，不通即退出）
+ensure_redis || fail "Redis 不可用，Uter 无法启动（见上方指引）"
 
-# 4.2 独立会话启动，日志追加到 $LOG
-spawn "$LOG" "$ROOT" "$BIN"
-
-# 4.2b 智能客服（uter-cs）**不在本仓库内**：独立仓库 uter-ai/uter-cs、
-# 独立进程、独立部署。Uter 只把 CUSTOMER_SERVICE_URL 经 /api/status 下发给前端，
-# 由浏览器跨域直连该服务，Go 后端不做任何反向代理。
-# 因此这里**只做可达性体检并提示**：不安装依赖、不拉起进程、不假设任何本地目录。
-# 挂件的启停与部署由 CS 仓库自己的方式负责。
-if [ -n "${CUSTOMER_SERVICE_URL:-}" ]; then
-  cs_code="$(curl -s --noproxy '*' -o /dev/null -w '%{http_code}' --max-time 3 "$CUSTOMER_SERVICE_URL/" 2>/dev/null || true)"
-  if [ -n "$cs_code" ] && [ "$cs_code" != "000" ]; then
-    echo "    智能客服（独立服务）可达: ${CUSTOMER_SERVICE_URL} (HTTP ${cs_code})"
-  else
-    echo "    ⚠ 智能客服不可达: ${CUSTOMER_SERVICE_URL}"
-    echo "      Uter 不会代为启动它。请到 uter-cs 仓库（https://github.com/uter-ai/uter-cs）按其README 部署后重试；"
-    echo "      或将 CUSTOMER_SERVICE_URL 置空以关闭挂件。"
-  fi
+# 5.2 重启：launchd 托管时用 kickstart（kill 会被 KeepAlive 立刻拉回，端口打架）；
+#     未托管时沿用「停端口 + 独立会话派生」。
+if launchd_managed "$LAUNCHD_LABEL"; then
+  LOG=/tmp/uter-backend.log   # 托管进程的 stdout/stderr 落在 plist 指定的文件里
+  launchctl kickstart -k "gui/$(id -u)/$LAUNCHD_LABEL"
 else
-  echo "    智能客服未启用（CUSTOMER_SERVICE_URL 为空，挂件不渲染）"
+  # 5.2 停掉旧进程（可能是 uter-bin，也可能是 go run 的临时二进制）
+  stop_port "$PORT" " Uter"
+
+  # 5.3 独立会话启动，日志追加到 $LOG
+  spawn "$LOG" "$ROOT" "$BIN"
 fi
 
-# 4.3 体检：端口监听 + HTTP 可达，失败把日志尾部甩出来
+# 5.4 体检：端口监听 + HTTP 可达，失败把日志尾部甩出来
 code="$(wait_http "$PORT" 30 || true)"
 if [ -z "$code" ] || [ "$code" = "000" ]; then
   echo "✗ 服务未就绪，日志尾部:" >&2
@@ -349,7 +544,7 @@ fi
 pid="$(lsof -nP -iTCP:$PORT -sTCP:LISTEN -t 2>/dev/null | head -1 || true)"
 echo "✓ 后端已重启（同时提供 API 与前端 SPA）: pid=$pid  http://127.0.0.1:$PORT/  (HTTP $code)"
 
-# 4.4 文档站落地校验：`/docs-content/...` 返回 200 不代表内容对——静态目录缺失时
+# 5.5 文档站落地校验：`/docs-content/...` 返回 200 不代表内容对——静态目录缺失时
 # Go 的 NoRoute 会把 SPA 壳返回给这个路径，状态码同样是 200。所以这里不看状态码，
 # 只确认响应体确实是文档站的 HTML（含 lang 标记）而不是 SPA 的 <!doctype html><html
 # lang="en"> 壳。缺文档站的二进制在这一步就会被当场发现，而不是等读者打开 /docs。
@@ -366,20 +561,89 @@ if [ "$NO_BUILD" = 0 ]; then
   echo "✓ 文档站已内嵌并可访问（/docs 与 /about 的 iframe 内容正常）"
 fi
 
-echo "  日志: $LOG"
-echo "  说明: 本项目生产形态是单端口 $PORT —— SPA 与文档站已内嵌进 Go 二进制，"
-echo "        没有独立前端端口。改前端源码后想热更新调试，用 $0 --dev（3001/3100）。"
+# ---------------------------------------------------------------------------
+# 6/6 智能客服（uter-cs）：独立仓库、独立进程
+#
+# 浏览器按 CUSTOMER_SERVICE_URL 跨域直连它，Uter 后端不做反代 —— 两边是
+# 并列的两个进程，没有启动顺序依赖。这里排在 Uter 体检之后，是为了让
+# Uter 失败时尽早退出，不留一个孤立的 CS 进程。
+#
+# 「目录不在」只警告并跳过（视为未安装）；「目录在但起不来」算本次失败，
+# 退出码非零 —— 否则「一键启动所有服务」会在只起来一半时谎报成功。
+# ---------------------------------------------------------------------------
+echo "==> [6/6] 智能客服 uter-cs（端口 ${CS_PORT}）"
+CS_STARTED=0; CS_FAILED=0
+if [ "$NO_CS" = 1 ]; then
+  echo "    跳过 (--no-cs)"
+elif [ ! -f "$CS_DIR/server/index.js" ]; then
+  echo "    ⚠ 跳过：未找到 $CS_DIR/server/index.js"
+  echo "      用 UTER_CS_DIR=/path/to/uter-cs 指定仓库位置；或 --no-cs 静默跳过。"
+elif [ ! -f "$CS_DIR/web/dist/index.html" ]; then
+  echo "    ⚠ 跳过：$CS_DIR/web/dist 缺失（前端未构建）"
+  echo "      先跑 $0 --install（不带 --no-cs）完成 uter-cs 构建。"
+else
+  stop_port "$CS_PORT" "智能客服"
+  # PORT / DB_PATH / WEB_DIST 与 uter-cs/ecosystem.config.js 对齐：
+  # 数据库落在仓库 data/ 下（不在 releases 内），发版不丢数据。
+  spawn "$CS_LOG" "$CS_DIR" \
+    "NODE_ENV=production" "PORT=$CS_PORT" \
+    "DB_PATH=$CS_DIR/data/app.sqljs.db" \
+    "WEB_DIST=$CS_DIR/web/dist" \
+    "$NODE_DIR/node" server/index.js
+  for _ in $(seq 1 40); do
+    sleep 0.5
+    if cs_healthy; then break; fi
+  done
+  if cs_healthy; then
+    cs_pid="$(lsof -nP -iTCP:$CS_PORT -sTCP:LISTEN -t 2>/dev/null | head -1 || true)"
+    echo "✓ 智能客服已重启: pid=$cs_pid  http://127.0.0.1:$CS_PORT/  (/api/health OK)"
+    CS_STARTED=1
+  else
+    echo "    ⚠ 智能客服未就绪：/api/health 没有返回 ok" >&2
+    tail -20 "$CS_LOG" >&2
+    CS_FAILED=1
+  fi
+fi
+
+# 汇总：一条命令起全部服务，最后必须能一眼看出谁起来了、谁没起来。
+echo
+echo "===== 服务状态 ====="
+if [ -n "${REDIS_PORT:-}" ]; then
+  echo "  Redis    : 127.0.0.1:${REDIS_PORT}   ✓ 运行中"
+else
+  echo "  Redis    : （未配置，Uter 以无 Redis 模式运行）"
+fi
+echo "  Uter     : http://127.0.0.1:$PORT/   ✓ 运行中（API + SPA + 文档站）"
+if [ "$CS_STARTED" = 1 ]; then
+  echo "  智能客服 : http://127.0.0.1:$CS_PORT/   ✓ 运行中"
+elif [ "$NO_CS" = 1 ]; then
+  echo "  智能客服 : （--no-cs 已跳过）"
+elif [ "$CS_FAILED" = 1 ]; then
+  echo "  智能客服 : ✗ 启动失败（挂件不显示，主站不受影响）"
+else
+  echo "  智能客服 : （未安装，已跳过）"
+fi
+echo "  日志     : Uter=$LOG"
+echo "             智能客服=$CS_LOG"
+echo "  说明     : Uter 生产形态是单端口 $PORT —— SPA 与文档站已内嵌进 Go 二进制，"
+echo "             没有独立前端端口。改前端源码后想热更新调试，用 $0 --dev（3001/3100）。"
+
+# CS 明确该起却没起来时，不能报成功（DEV 服务也就没必要再拉）。
+if [ "$CS_FAILED" = 1 ]; then
+  echo "✗ 智能客服启动失败，请检查 $CS_LOG 后单独重跑: $0 --no-build --no-cs-build" >&2
+  exit 1
+fi
 
 if [ "$DEV" = 0 ]; then exit 0; fi
 
 # ---------------------------------------------------------------------------
-# 5/5 前端 HMR 开发服务（可选，--dev）
+# 附加：前端 HMR 开发服务（可选，--dev）
 #
 # 生产模式下前端是 Go 内嵌的静态产物，改一行代码也要重编 Go。开发时把
 # rsbuild dev 拉起来可热更新：它把 /api 等代理到 $PORT 的 Go 后端，把
 # /docs、/about 代理到 next dev（NEXT_DOCS_PORT），所以后端仍是唯一数据源。
 # ---------------------------------------------------------------------------
-echo "==> [5/5] 启动前端开发服务（HMR）"
+echo "==> 启动前端开发服务（HMR）"
 
 DOCS_DEV_PORT="$PORT"
 if [ "$NO_DOCS" = 0 ]; then
