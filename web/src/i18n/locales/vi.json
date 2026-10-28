@@ -7205,6 +7205,8 @@
     "Payment successful": "Thanh toán thành công",
     "Customer Service": "Dịch vụ khách hàng",
     "Pages where the entry appears": "Các trang hiển thị mục",
+    "QR Code Relative Path": "Đường dẫn tương đối của mã QR",
+    "Relative path served by this site (e.g. /wechat-qr.png). Takes precedence over the image URL when set.": "Đường dẫn tương đối do trang này cung cấp (ví dụ: /wechat-qr.png). Được ưu tiên hơn URL hình ảnh khi được đặt.",
     "Payment is being confirmed": "Đang xác nhận thanh toán",
     "This order was not paid. If you still need to top up, please place a new order.": "Đơn hàng này chưa được thanh toán. Nếu bạn vẫn muốn nạp tiền, vui lòng tạo đơn hàng mới.",
     "Customer Service Admin Token": "Mã thông báo quản trị viên hỗ trợ khách hàng",

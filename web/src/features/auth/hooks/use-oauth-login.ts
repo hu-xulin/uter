@@ -32,7 +32,9 @@ import {
   buildOIDCOAuthUrl,
   buildLinuxDOOAuthUrl,
 } from '../lib/oauth'
+import { buildWeChatWebOAuthUrl } from '../../../lib/oauth'
 import { rememberOAuthLoginRedirect } from '../lib/oauth-callback-mode'
+import { startWeChatWebFlow } from '../api'
 import type { SystemStatus, CustomOAuthProviderInfo } from '../types'
 
 /**
@@ -195,8 +197,31 @@ export function useOAuthLogin(
     }
   }
 
-  const handleCustomOAuthLogin = async (provider: CustomOAuthProviderInfo) => {
-    if (!provider.authorization_endpoint || !provider.client_id) return
+  const handleWeChatWebLogin = async () => {
+    if (!status?.wechat_web_login || !status?.wechat_web_app_id) return
+
+    setIsLoading(true)
+    try {
+      await resetSession()
+      const state = await startWeChatWebFlow()
+      rememberOAuthLoginRedirect(state, redirectTo)
+
+      const url = buildWeChatWebOAuthUrl(
+        status.wechat_web_app_id,
+        status.wechat_web_callback_domain,
+        state
+      )
+      window.open(url, '_self')
+    } catch (error) {
+      handleServerError(
+        AuthOperationError.from(error, t('Failed to start WeChat login'))
+      )
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleCustomOAuthLogin = async (provider: CustomOAuthProviderInfo) => {    if (!provider.authorization_endpoint || !provider.client_id) return
 
     setIsLoading(true)
     try {
@@ -236,6 +261,7 @@ export function useOAuthLogin(
     handleOIDCLogin,
     handleLinuxDOLogin,
     handleTelegramLogin,
+    handleWeChatWebLogin,
     handleCustomOAuthLogin,
   }
 }

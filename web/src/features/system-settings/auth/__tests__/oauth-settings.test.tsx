@@ -65,6 +65,7 @@ const defaults: ComponentProps<typeof OAuthSection>['defaultValues'] = {
   WeChatServerAddress: '',
   WeChatServerToken: '',
   WeChatAccountQRCodeImageURL: '',
+  WeChatAccountQRCodeImagePath: '',
 }
 
 let testI18n: i18n

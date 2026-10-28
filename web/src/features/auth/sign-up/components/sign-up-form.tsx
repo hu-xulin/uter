@@ -143,6 +143,8 @@ export function SignUpForm({
 
   const wechatQrCodeUrl = useMemo(() => {
     return (
+      status?.wechat_qrcode_path ||
+      status?.data?.wechat_qrcode_path ||
       status?.wechat_qrcode ||
       status?.wechat_qr_code ||
       status?.wechat_qrcode_image_url ||

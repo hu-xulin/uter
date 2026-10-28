@@ -7205,6 +7205,8 @@
     "Payment successful": "支払い完了",
     "Customer Service": "カスタマーサービス",
     "Pages where the entry appears": "入口を表示するページ",
+    "QR Code Relative Path": "QRコードの相対パス",
+    "Relative path served by this site (e.g. /wechat-qr.png). Takes precedence over the image URL when set.": "このサイトが配信する相対パス（例: /wechat-qr.png）。設定時は画像URLより優先されます。",
     "Payment is being confirmed": "支払いを確認しています",
     "This order was not paid. If you still need to top up, please place a new order.": "この注文は支払われていません。チャージが必要な場合は、新しく注文してください。",
     "Customer Service Admin Token": "カスタマーサポート管理者トークン",

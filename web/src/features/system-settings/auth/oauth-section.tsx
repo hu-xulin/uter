@@ -92,6 +92,12 @@ const oauthSchema = z.object({
   WeChatServerAddress: z.string(),
   WeChatServerToken: z.string(),
   WeChatAccountQRCodeImageURL: z.string(),
+  WeChatAccountQRCodeImagePath: z.string(),
+  WeChatWebAuthEnabled: z.boolean(),
+  WeChatWebAppId: z.string(),
+  WeChatWebAppSecret: z.string(),
+  WeChatWebCallbackDomain: z.string(),
+  WeChatWebUseUnionId: z.boolean(),
 })
 
 type OAuthFormValues = z.infer<typeof oauthSchema>
@@ -122,6 +128,12 @@ type FlatOAuthDefaults = {
   WeChatServerAddress: string
   WeChatServerToken: string
   WeChatAccountQRCodeImageURL: string
+  WeChatAccountQRCodeImagePath: string
+  WeChatWebAuthEnabled?: boolean
+  WeChatWebAppId?: string
+  WeChatWebAppSecret?: string
+  WeChatWebCallbackDomain?: string
+  WeChatWebUseUnionId?: boolean
 }
 
 /* 单列纵向排列：每个 OAuth 配置项（启用开关 / Client ID / Client Secret）
@@ -212,6 +224,12 @@ const buildFormDefaults = (defaults: FlatOAuthDefaults): OAuthFormValues => ({
   WeChatServerAddress: defaults.WeChatServerAddress ?? '',
   WeChatServerToken: defaults.WeChatServerToken ?? '',
   WeChatAccountQRCodeImageURL: defaults.WeChatAccountQRCodeImageURL ?? '',
+  WeChatAccountQRCodeImagePath: defaults.WeChatAccountQRCodeImagePath ?? '',
+  WeChatWebAuthEnabled: defaults.WeChatWebAuthEnabled ?? false,
+  WeChatWebAppId: defaults.WeChatWebAppId ?? '',
+  WeChatWebAppSecret: defaults.WeChatWebAppSecret ?? '',
+  WeChatWebCallbackDomain: defaults.WeChatWebCallbackDomain ?? '',
+  WeChatWebUseUnionId: defaults.WeChatWebUseUnionId ?? false,
 })
 
 const normalizeFormValues = (values: OAuthFormValues): FlatOAuthDefaults => ({
@@ -240,6 +258,12 @@ const normalizeFormValues = (values: OAuthFormValues): FlatOAuthDefaults => ({
   WeChatServerAddress: values.WeChatServerAddress,
   WeChatServerToken: values.WeChatServerToken,
   WeChatAccountQRCodeImageURL: values.WeChatAccountQRCodeImageURL,
+  WeChatAccountQRCodeImagePath: values.WeChatAccountQRCodeImagePath,
+  WeChatWebAuthEnabled: values.WeChatWebAuthEnabled,
+  WeChatWebAppId: values.WeChatWebAppId,
+  WeChatWebAppSecret: values.WeChatWebAppSecret,
+  WeChatWebCallbackDomain: values.WeChatWebCallbackDomain,
+  WeChatWebUseUnionId: values.WeChatWebUseUnionId,
 })
 
 // OAuth 凭据类字段：保存后按掩码回填展示态，与 SecretInput 的约定一致。
@@ -250,12 +274,13 @@ const OAUTH_SECRET_KEYS = [
   'telegram.client_secret',
   'LinuxDOClientSecret',
   'WeChatServerToken',
+  'WeChatWebAppSecret',
 ] as const satisfies ReadonlyArray<keyof FlatOAuthDefaults>
 
 const maskOAuthSecrets = (values: FlatOAuthDefaults): FlatOAuthDefaults => {
   const masked = { ...values }
   for (const key of OAUTH_SECRET_KEYS) {
-    masked[key] = maskSecret(masked[key])
+    masked[key] = maskSecret(masked[key] ?? '')
   }
   return masked
 }
@@ -295,7 +320,15 @@ export function OAuthSection(props: OAuthSectionProps) {
     'linuxdo',
     t('Site URL')
   )
-
+  const wechatWebCallbackDomain = (
+    props.defaultValues.WeChatWebCallbackDomain ?? ''
+  ).trim()
+  // 微信开放平台「授权回调域」只接受域名（如 uter.cc）；未配置时回退到站点地址的
+  // host 部分。回调地址固定指向前端路由 /oauth/wechat-web，由它再调后端换码。
+  const wechatWebCallbackHost =
+    wechatWebCallbackDomain ||
+    props.serverAddress.replace(/^https?:\/\//, '').replace(/\/+$/, '')
+  const wechatWebCallbackUrl = `https://${wechatWebCallbackHost}/oauth/wechat-web`
   const formDefaults = useMemo(
     () => buildFormDefaults(props.defaultValues),
     [props.defaultValues]
@@ -387,6 +420,7 @@ export function OAuthSection(props: OAuthSectionProps) {
       'TelegramOAuthEnabled',
       'LinuxDOOAuthEnabled',
       'WeChatAuthEnabled',
+      'WeChatWebAuthEnabled',
     ])
     const changedKeys = (
       Object.keys(normalized) as Array<keyof FlatOAuthDefaults>
@@ -400,9 +434,13 @@ export function OAuthSection(props: OAuthSectionProps) {
     }
 
     for (const key of changedKeys) {
+      // WeChatWeb* 等可选字段可能为 undefined（功能未完全接入时），
+      // 不应把 undefined 当作「已修改值」写回 option 表。
+      const value = normalized[key]
+      if (value === undefined) continue
       await updateOption.mutateAsync({
         key,
-        value: normalized[key],
+        value,
       })
     }
 
@@ -435,13 +473,14 @@ export function OAuthSection(props: OAuthSectionProps) {
             <FormDirtyIndicator isDirty={form.formState.isDirty} />
 
             <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className='grid w-full grid-cols-6'>
+              <TabsList className='grid w-full grid-cols-7'>
                 <TabsTrigger value='github'>{t('GitHub')}</TabsTrigger>
                 <TabsTrigger value='discord'>{t('Discord')}</TabsTrigger>
                 <TabsTrigger value='oidc'>{t('OIDC')}</TabsTrigger>
                 <TabsTrigger value='telegram'>{t('Telegram')}</TabsTrigger>
                 <TabsTrigger value='linuxdo'>{t('LinuxDO')}</TabsTrigger>
-                <TabsTrigger value='wechat'>{t('WeChat')}</TabsTrigger>
+                <TabsTrigger value='wechat'>{t('WeChat Official Account')}</TabsTrigger>
+                <TabsTrigger value='wechat_web'>{t('WeChat Website App')}</TabsTrigger>
               </TabsList>
 
               <TabsContent value='github' className={oauthTabContentClassName}>
@@ -1138,6 +1177,182 @@ export function OAuthSection(props: OAuthSectionProps) {
                       </FormControl>
                       <FormMessage />
                     </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name='WeChatAccountQRCodeImagePath'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('QR Code Relative Path')}</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder='/wechat-qr.png'
+                          autoComplete='off'
+                          mono
+                          value={field.value ?? ''}
+                          onChange={(event) =>
+                            field.onChange(event.target.value)
+                          }
+                          name={field.name}
+                          onBlur={field.onBlur}
+                          ref={field.ref}
+                        />
+                      </FormControl>
+                      <FormDescription>
+                        {t(
+                          'Relative path served by this site (e.g. /wechat-qr.png). Takes precedence over the image URL when set.'
+                        )}
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </TabsContent>
+
+              <TabsContent
+                value='wechat_web'
+                className={oauthTabContentClassName}
+              >
+                <OAuthSetupGuide
+                  title={t('Setup guide')}
+                  description={t(
+                    'Create a website app in the WeChat Open Platform console, register the callback domain there, then fill in the credentials below.'
+                  )}
+                  rows={[
+                    {
+                      label: t('Authorization callback domain'),
+                      value: wechatWebCallbackHost,
+                      copyLabel: t('Copy callback domain'),
+                    },
+                    {
+                      label: t('Authorization callback URL'),
+                      value: wechatWebCallbackUrl,
+                      copyLabel: t('Copy callback URL'),
+                    },
+                  ]}
+                />
+
+                <FormField
+                  control={form.control}
+                  name='WeChatWebAuthEnabled'
+                  render={({ field }) => (
+                    <SettingsSwitchItem>
+                      <SettingsSwitchContent>
+                        <FormLabel>
+                          {t('Enable WeChat Website App Login')}
+                        </FormLabel>
+                        <FormDescription>
+                          {t(
+                            'Allow users to sign in by scanning the QR code of the WeChat Open Platform website app'
+                          )}
+                        </FormDescription>
+                      </SettingsSwitchContent>
+                      <FormControl>
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
+                    </SettingsSwitchItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name='WeChatWebAppId'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('App ID')}</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder={t('Your WeChat website app ID')}
+                          autoComplete='off'
+                          mono
+                          value={field.value ?? ''}
+                          onChange={(event) =>
+                            field.onChange(event.target.value)
+                          }
+                          name={field.name}
+                          onBlur={field.onBlur}
+                          ref={field.ref}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name='WeChatWebAppSecret'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('App Secret')}</FormLabel>
+                      <FormControl>
+                        <SecretInput
+                          placeholder={t('Your WeChat website app secret')}
+                          value={field.value ?? ''}
+                          onChange={field.onChange}
+                          name={field.name}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name='WeChatWebCallbackDomain'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('Authorization callback domain')}</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder='uter.cc'
+                          autoComplete='off'
+                          mono
+                          value={field.value ?? ''}
+                          onChange={(event) =>
+                            field.onChange(event.target.value)
+                          }
+                          name={field.name}
+                          onBlur={field.onBlur}
+                          ref={field.ref}
+                        />
+                      </FormControl>
+                      <FormDescription>
+                        {t(
+                          'The callback domain registered in the WeChat Open Platform console (no scheme, e.g. uter.cc). Leave empty to use the current site domain.'
+                        )}
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name='WeChatWebUseUnionId'
+                  render={({ field }) => (
+                    <SettingsSwitchItem>
+                      <SettingsSwitchContent>
+                        <FormLabel>{t('Use UnionID')}</FormLabel>
+                        <FormDescription>
+                          {t(
+                            'Identify users by UnionID when available, so accounts under the same WeChat Open Platform app share one identity'
+                          )}
+                        </FormDescription>
+                      </SettingsSwitchContent>
+                      <FormControl>
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
+                    </SettingsSwitchItem>
                   )}
                 />
               </TabsContent>
