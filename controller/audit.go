@@ -105,11 +105,11 @@ func recordPasskeyDomainAudit(c *gin.Context, change *model.PasskeyDomainChange,
 }
 
 // userDisplayIdBase 与前端 @/lib/format 的 USER_ID_DISPLAY_BASE 保持一致：
-// 数据库自增 user id=1 在后台审计日志中展示为对外编号 uter100000001。
+// 数据库自增 user id=1 在后台审计日志中展示为对外编号 U100000001。
 const userDisplayIdBase = 100_000_000
 
 // userIDAuditActions 是会在审计文案中嵌入「用户 ID」的 action 集合；这些 action
-// 的 ${id} 占位符渲染为对外编号 uter…，渠道类 action 的 ${id} 仍是渠道 ID，必须原样保留。
+// 的 ${id} 占位符渲染为对外编号 U…，渠道类 action 的 ${id} 仍是渠道 ID，必须原样保留。
 var userIDAuditActions = map[string]struct{}{
 	"user.update": {},
 	"user.delete": {},
@@ -118,11 +118,15 @@ var userIDAuditActions = map[string]struct{}{
 
 // formatUserDisplayId 把数据库自增 user id 转成对外编号（仅展示，params 中的
 // 原始数字 id 不变，供结构化审计字段使用）。
+//
+// 前缀是 `U`（2026-10-28 起）；历史 `uter…` 已废弃，与前端
+// `@/lib/format#formatUserId` 必须同步，否则同一个人在审计日志与用户列表里
+// 会显示成两个 ID。
 func formatUserDisplayId(id int) string {
 	if id <= 0 {
 		return fmt.Sprintf("%d", id)
 	}
-	return fmt.Sprintf("uter%d", userDisplayIdBase+id)
+	return fmt.Sprintf("U%d", userDisplayIdBase+id)
 }
 
 // anyToInt 把 params 中可能以 int/int64/float64 形态出现的数值统一转成 int。
