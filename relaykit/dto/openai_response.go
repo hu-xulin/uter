@@ -282,9 +282,22 @@ type InputTokenDetails struct {
 	// the canonical CachedTokens / CacheWriteTokens by Usage.NormalizeCacheTokens.
 	CacheReadInputTokens     int `json:"cache_read_input_tokens,omitempty"`
 	CacheCreationInputTokens int `json:"cache_creation_input_tokens,omitempty"`
-	TextTokens               int `json:"text_tokens"`
-	AudioTokens              int `json:"audio_tokens"`
-	ImageTokens              int `json:"image_tokens"`
+	// CacheWriteTokensDetails splits CacheWriteTokens by cache lifetime.
+	CacheWriteTokensDetails *CacheWriteTokenDetails `json:"cache_write_tokens_details,omitempty"`
+	TextTokens              int                     `json:"text_tokens"`
+	AudioTokens             int                     `json:"audio_tokens"`
+	ImageTokens             int                     `json:"image_tokens"`
+}
+
+// CacheWriteTokenDetails is OpenAI's split of cache writes by lifetime. The
+// two counts do not overlap and sum to cache_write_tokens.
+type CacheWriteTokenDetails struct {
+	TTL30mTokens int `json:"ttl_30m_tokens"`
+	TTL12hTokens int `json:"ttl_12h_tokens"`
+}
+
+func (d *CacheWriteTokenDetails) HasTokens() bool {
+	return d != nil && (d.TTL30mTokens != 0 || d.TTL12hTokens != 0)
 }
 
 // CachedTokenDetails describes subsets of cached_tokens. Pointers distinguish
@@ -317,6 +330,10 @@ func (d InputTokenDetails) Clone() InputTokenDetails {
 			cached.AudioTokens = &value
 		}
 		d.CachedTokensDetails = &cached
+	}
+	if d.CacheWriteTokensDetails != nil {
+		cacheWrite := *d.CacheWriteTokensDetails
+		d.CacheWriteTokensDetails = &cacheWrite
 	}
 	return d
 }
@@ -380,6 +397,15 @@ func (u *Usage) NormalizeCacheTokens() {
 			d.CacheWriteTokens = i.CacheCreationInputTokens
 		}
 	}
+}
+
+// CacheWrite12hTokens returns the 12-hour subset of the cache writes, bounded
+// by CacheCreationTokensTotal so it never bills more writes than reported.
+func (d InputTokenDetails) CacheWrite12hTokens() int {
+	if d.CacheWriteTokensDetails == nil {
+		return 0
+	}
+	return min(max(d.CacheWriteTokensDetails.TTL12hTokens, 0), d.CacheCreationTokensTotal())
 }
 
 type OutputTokenDetails struct {
