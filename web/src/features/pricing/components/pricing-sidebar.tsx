@@ -40,7 +40,11 @@ import {
 } from '../constants'
 import { hasTaskUsageSchema } from '../lib/dynamic-price'
 import { parseTags } from '../lib/filters'
-import { formatGroupRatio, groupRatioBadgeClass } from '../lib/group-ratio'
+import {
+  formatGroupRatio,
+  groupRatioBadgeClass,
+  hasGroupRatioBadge,
+} from '../lib/group-ratio'
 import { orderVendorsByModelCount } from '../lib/vendor-order'
 import type { PricingModel, PricingVendor } from '../types'
 
@@ -227,12 +231,16 @@ export function PricingSidebar(props: PricingSidebarProps) {
       label: t('All Groups'),
       count: props.groups.length,
     },
-    ...props.groups.map((group) => ({
-      value: group,
-      label: group,
-      suffix: formatGroupRatio(props.groupRatios?.[group]),
-      suffixRatio: props.groupRatios?.[group],
-    })),
+    ...props.groups.map((group) => {
+      const ratio = props.groupRatios?.[group]
+      return {
+        value: group,
+        label: group,
+        // 倍率为 0 = 该档未配置计价，渲染成 x0.0 会被误读成「免费」，直接不显示徽标。
+        suffix: hasGroupRatioBadge(ratio) ? formatGroupRatio(ratio) : undefined,
+        suffixRatio: ratio,
+      }
+    }),
   ]
 
   const quotaTypeOptions: FilterOption[] = [

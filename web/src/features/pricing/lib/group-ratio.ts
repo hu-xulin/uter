@@ -40,6 +40,17 @@ export function formatGroupRatio(
 }
 
 /**
+ * 倍率为 0 时是否展示徽标：不展示。
+ *
+ * 倍率 0 意味着运营把这一档配置成了「不开放计价」（或配置遗漏），渲染成
+ * `x0.0` 会像「免费」—— 这是个危险的误读。宁可什么都不显示，让用户看到
+ * 的第一信号是该档倍率未配置，而不是一个看似合法的价格刻度。
+ */
+export function hasGroupRatioBadge(ratio: number | undefined): boolean {
+  return ratio != null && ratio !== 0
+}
+
+/**
  * 倍率徽标的配色：`≤1` 一律染绿，`>1` 保持中性灰。
  *
  * 判据是「这一档对用户有没有利」。`x1.0`（VIP0）与 `x0.9`（VIP1）是同一把尺子
