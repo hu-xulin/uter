@@ -230,7 +230,7 @@ export function SubscriptionPurchaseDialog(props: Props) {
       onOpenChange={props.onOpenChange}
       title={
         <>
-          <Crown className='h-5 w-5' />
+          <Crown className='h-4 w-4' />
           {t('Purchase Subscription')}
         </>
       }
@@ -254,7 +254,7 @@ export function SubscriptionPurchaseDialog(props: Props) {
               {t('Validity Period')}
             </span>
             <span className='flex items-center gap-1 text-sm'>
-              <CalendarClock className='h-3.5 w-3.5' />
+              <CalendarClock className='h-4 w-4' />
               {formatDuration(plan, t)}
             </span>
           </div>
@@ -271,7 +271,7 @@ export function SubscriptionPurchaseDialog(props: Props) {
               {t('Plan Quota')}
             </span>
             <span className='flex items-center gap-1 text-sm'>
-              <Package className='h-3.5 w-3.5' />
+              <Package className='h-4 w-4' />
               {totalAmount > 0 ? formatQuota(totalAmount) : t('Unlimited')}
             </span>
           </div>
@@ -286,7 +286,10 @@ export function SubscriptionPurchaseDialog(props: Props) {
           <Separator />
           <div className='flex items-center justify-between'>
             <span className='text-sm font-medium'>{t('Amount Due')}</span>
-            <span className='text-primary text-lg font-bold'>${price}</span>
+            {/* 金额是数值不是链接：正文色 + 等宽数字（C-04）。 */}
+            <span className='text-foreground text-lg font-semibold tabular-nums'>
+              ${price}
+            </span>
           </div>
         </div>
 
@@ -334,7 +337,7 @@ export function SubscriptionPurchaseDialog(props: Props) {
 
         {hasAnyPayment && (
           <div className='space-y-3'>
-            <p className='text-muted-foreground text-xs'>
+            <p className='text-muted-foreground text-sm'>
               {t('Select payment method')}
             </p>
             {(hasStripe || hasCreem || hasWaffoPancake) && (

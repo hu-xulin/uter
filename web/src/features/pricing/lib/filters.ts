@@ -173,7 +173,9 @@ export function sortModels(
   const priceSort = PRICE_SORTS[sortBy as SortOption]
   if (priceSort) {
     // Extracting the price parses the billing expression, so compute once
-    const price = new Map(sorted.map((m) => [m, getSortPrice(m, priceSort.kind)]))
+    const price = new Map(
+      sorted.map((m) => [m, getSortPrice(m, priceSort.kind)])
+    )
     // Models without this kind of price stay last in both directions
     sorted.sort((a, b) => {
       const priceA = price.get(a)

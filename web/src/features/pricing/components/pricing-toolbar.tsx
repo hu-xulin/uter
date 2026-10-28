@@ -53,7 +53,16 @@ import { PricingSidebar } from './pricing-sidebar'
 // 标准/充值、/1M//1K 这两个 outline 分段控件原本选中为 aria-pressed:bg-muted，这里统一改成品牌主色。
 // 注意：Base UI 的 Toggle 实际输出 aria-pressed / data-pressed，并非 data-state=on（后者在本项目是死选择器，写它不生效）。
 const primarySelectedToggleClass =
-  'aria-pressed:border-primary aria-pressed:bg-primary aria-pressed:text-primary-foreground aria-pressed:shadow-none aria-pressed:hover:bg-primary/90 aria-pressed:hover:text-primary-foreground'
+  'aria-pressed:border-primary aria-pressed:bg-primary aria-pressed:text-primary-foreground aria-pressed:shadow-none aria-pressed:hover:bg-primary-hover aria-pressed:hover:text-primary-foreground'
+
+// 行高一致：同一行里的按钮、分段控件、视图切换必须等高。
+//
+// Toggle 的尺寸档是写死的 h-7（28px），而这一行其余控件都是 Button sm
+// （--ds-button-height-sm，默认密度 32px）和 h-8 的视图切换 —— 分段控件因此比
+// 邻居矮 4px，一行里出现三种高度。这里不用 `size='default'`（h-8 同样是写死
+// 值，密度切换时会再次错位），而是直接钉到按钮的高度 Token 上，三种控件跟随
+// 同一档密度。
+const toolbarSegmentClass = 'h-(--ds-button-height-sm)'
 
 export interface PricingToolbarProps {
   filteredCount: number
@@ -102,7 +111,7 @@ export function PricingToolbar(props: PricingToolbarProps) {
             onClick={() => setMobileFiltersOpen(true)}
             className='gap-1.5 xl:hidden'
           >
-            <Filter className='size-4' />
+            <Filter className='size-4.5' />
             {t('Filter')}
             {props.activeFilterCount > 0 && (
               <Badge className='ml-0.5 size-5 justify-center p-0 text-xs'>
@@ -118,7 +127,7 @@ export function PricingToolbar(props: PricingToolbarProps) {
             <span>{props.filteredCount === 1 ? t('model') : t('models')}</span>
             {props.totalCount != null &&
               props.filteredCount !== props.totalCount && (
-                <span className='text-muted-foreground/60 text-xs'>
+                <span className='text-muted-foreground text-xs'>
                   / {props.totalCount.toLocaleString()}
                 </span>
               )}
@@ -137,10 +146,16 @@ export function PricingToolbar(props: PricingToolbarProps) {
             size='sm'
             aria-label={t('Price display mode')}
           >
-            <ToggleGroupItem value='standard' className={primarySelectedToggleClass}>
+            <ToggleGroupItem
+              value='standard'
+              className={cn(primarySelectedToggleClass, toolbarSegmentClass)}
+            >
               {t('Standard')}
             </ToggleGroupItem>
-            <ToggleGroupItem value='recharge' className={primarySelectedToggleClass}>
+            <ToggleGroupItem
+              value='recharge'
+              className={cn(primarySelectedToggleClass, toolbarSegmentClass)}
+            >
               {t('Recharge')}
             </ToggleGroupItem>
           </ToggleGroup>
@@ -155,10 +170,16 @@ export function PricingToolbar(props: PricingToolbarProps) {
             size='sm'
             aria-label={t('Token unit')}
           >
-            <ToggleGroupItem value='M' className={primarySelectedToggleClass}>
+            <ToggleGroupItem
+              value='M'
+              className={cn(primarySelectedToggleClass, toolbarSegmentClass)}
+            >
               /1M
             </ToggleGroupItem>
-            <ToggleGroupItem value='K' className={primarySelectedToggleClass}>
+            <ToggleGroupItem
+              value='K'
+              className={cn(primarySelectedToggleClass, toolbarSegmentClass)}
+            >
               /1K
             </ToggleGroupItem>
           </ToggleGroup>
@@ -170,11 +191,11 @@ export function PricingToolbar(props: PricingToolbarProps) {
                   type='button'
                   variant='outline'
                   size='sm'
-                  className='h-8 gap-1.5 px-3 text-sm'
+                  className='gap-1.5 px-3 text-sm'
                 />
               }
             >
-              <ArrowUpDown className='size-3.5' />
+              <ArrowUpDown className='size-4.5' />
               <span>{sortLabels[props.sortBy as SortOption] || t('Sort')}</span>
             </DropdownMenuTrigger>
             <DropdownMenuContent align='end' className='w-44'>

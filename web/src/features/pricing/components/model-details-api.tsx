@@ -38,6 +38,7 @@ import {
 } from '@/components/data-table'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Heading } from '@/design-system'
 import { useStatus } from '@/hooks/use-status'
 
 import {
@@ -430,8 +431,9 @@ function buildSample(
 ): string {
   if (endpointType === 'anthropic') return buildAnthropicSample(lang, ctx)
   if (endpointType === 'gemini') return buildGeminiSample(lang, ctx)
-  if (endpointType === 'embeddings' || endpointType === 'jina-rerank')
-    {return buildEmbeddingSample(lang, ctx)}
+  if (endpointType === 'embeddings' || endpointType === 'jina-rerank') {
+    return buildEmbeddingSample(lang, ctx)
+  }
   if (endpointType === 'image-generation') return buildImageSample(lang, ctx)
   return buildChatSample(lang, ctx)
 }
@@ -537,9 +539,9 @@ function CodeSamplesSection(props: {
         </CodeBlock>
       </div>
 
-      <p className='text-muted-foreground mt-2 text-xs'>
+      <p className='text-muted-foreground mt-2 text-sm'>
         {t('Replace')}{' '}
-        <code className='bg-muted rounded px-1 py-0.5 font-mono text-mono'>
+        <code className='bg-muted text-mono rounded px-1 py-0.5 font-mono'>
           {'<YOUR_API_KEY>'}
         </code>{' '}
         {t('with the API key from your token settings.')}
@@ -578,11 +580,13 @@ function SupportedParametersSection(props: { model: PricingModel }) {
             cellClassName: tableStyles.topCell,
             cell: (p) => (
               <div className='flex items-center gap-1.5'>
-                <code className='font-mono text-mono font-medium'>{p.name}</code>
+                <code className='text-mono font-mono font-medium'>
+                  {p.name}
+                </code>
                 {p.required && (
                   <Badge
                     variant='outline'
-                    className='h-6 border-destructive/40 px-2 text-sm text-destructive dark:text-destructive'
+                    className='border-destructive/40 text-destructive dark:text-destructive h-6 px-2 text-sm'
                   >
                     {t('required')}
                   </Badge>
@@ -598,7 +602,7 @@ function SupportedParametersSection(props: { model: PricingModel }) {
             cell: (p) => (
               <Badge
                 variant='secondary'
-                className='h-7 rounded-full px-2.5 font-mono text-mono font-normal'
+                className='text-mono h-7 rounded-full px-2.5 font-mono font-normal'
               >
                 {p.type}
               </Badge>
@@ -630,7 +634,7 @@ function ParamRangeCell(props: { param: SupportedParameter }) {
     return (
       <div className='flex flex-wrap items-center gap-1'>
         <span className='text-muted-foreground text-sm'>=</span>
-        <code className='bg-muted rounded px-1.5 py-0.5 font-mono text-mono'>
+        <code className='bg-muted text-mono rounded px-1.5 py-0.5 font-mono'>
           {String(defaultValue)}
         </code>
         {range && (
@@ -641,7 +645,7 @@ function ParamRangeCell(props: { param: SupportedParameter }) {
   }
   if (range) {
     return (
-      <span className='text-muted-foreground font-mono text-mono'>{range}</span>
+      <span className='text-muted-foreground text-mono font-mono'>{range}</span>
     )
   }
   if (enumValues && enumValues.length > 0) {
@@ -650,7 +654,7 @@ function ParamRangeCell(props: { param: SupportedParameter }) {
         {enumValues.map((v) => (
           <code
             key={v}
-            className='bg-muted text-muted-foreground rounded px-1.5 py-0.5 font-mono text-mono'
+            className='bg-muted text-muted-foreground text-mono rounded px-1.5 py-0.5 font-mono'
           >
             {v}
           </code>
@@ -658,7 +662,7 @@ function ParamRangeCell(props: { param: SupportedParameter }) {
       </div>
     )
   }
-  return <span className='text-muted-foreground/60 text-sm'>—</span>
+  return <span className='text-muted-foreground text-sm'>—</span>
 }
 
 // ---------------------------------------------------------------------------
@@ -685,7 +689,7 @@ function RateLimitsSection(props: { model: PricingModel }) {
             id: 'group',
             header: t('Group'),
             className: 'h-9',
-            cellClassName: 'py-2 font-mono',
+            cellClassName: 'py-2 font-mono text-mono',
             cell: (limit) => limit.group,
           },
           {
@@ -711,7 +715,7 @@ function RateLimitsSection(props: { model: PricingModel }) {
           },
         ]}
       />
-      <p className='text-muted-foreground mt-2 text-xs leading-relaxed'>
+      <p className='text-muted-foreground mt-2 text-sm'>
         {t(
           'RPM = requests per minute, TPM = tokens per minute, RPD = requests per day. Limits apply per token group.'
         )}
@@ -730,15 +734,15 @@ function AuthSection() {
     <section>
       <SectionTitle icon={KeyRound}>{t('Authentication')}</SectionTitle>
       <div className='border-border/60 bg-muted/20 flex items-start gap-2 rounded-lg border p-3'>
-        <ChevronRight className='text-muted-foreground mt-0.5 size-3.5 shrink-0' />
-        <div className='space-y-1.5 text-xs leading-relaxed'>
+        <ChevronRight className='text-muted-foreground mt-0.5 size-4 shrink-0' />
+        <div className='space-y-1.5 text-xs'>
           <p>
             {t('All requests must include')}{' '}
-            <code className='bg-muted rounded px-1 py-0.5 font-mono text-mono'>
+            <code className='bg-muted text-mono rounded px-1 py-0.5 font-mono'>
               Authorization: Bearer &lt;TOKEN&gt;
             </code>{' '}
             {t('header. Anthropic-formatted endpoints accept the')}{' '}
-            <code className='bg-muted rounded px-1 py-0.5 font-mono text-mono'>
+            <code className='bg-muted text-mono rounded px-1 py-0.5 font-mono'>
               x-api-key
             </code>{' '}
             {t('header instead.')}
@@ -782,10 +786,14 @@ function SectionTitle(props: {
 }) {
   const Icon = props.icon
   return (
-    <h3 className='text-foreground mb-3 flex items-center gap-1.5 text-sm font-semibold'>
-      <Icon className='text-muted-foreground/70 size-3.5' />
+    <Heading
+      variant='group-title'
+      level={3}
+      className='mb-3 flex items-center gap-1.5'
+    >
+      <Icon className='text-muted-foreground size-4' />
       {props.children}
-    </h3>
+    </Heading>
   )
 }
 

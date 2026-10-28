@@ -24,6 +24,7 @@ import { ConfirmDialog } from '@/components/confirm-dialog'
 import { ErrorState } from '@/components/error-state'
 import { LoadingState } from '@/components/loading-state'
 import { Button } from '@/components/ui/button'
+import { Heading } from '@/design-system'
 import { DynamicPricingBreakdown } from '@/features/pricing/components/dynamic-pricing-breakdown'
 import { ModelPriceCell } from '@/features/pricing/components/model-price-cell'
 import { isDynamicPricingModel } from '@/features/pricing/lib/dynamic-price'
@@ -148,8 +149,9 @@ export function ModelPricingPanel(props: {
     }
     const refreshed = await query.refetch()
     setEntry(
-      refreshed.data?.entries.find((item) => item.model_name === props.modelName) ??
-        null
+      refreshed.data?.entries.find(
+        (item) => item.model_name === props.modelName
+      ) ?? null
     )
     setResetOpen(false)
     save.reset()
@@ -297,7 +299,7 @@ function CurrentBillingSection(props: {
     <>
       <div className='flex flex-wrap items-center justify-between gap-2'>
         <div className='min-w-0 flex-1 break-words'>
-          <p className='text-muted-foreground text-xs'>
+          <p className='text-muted-foreground text-sm'>
             {Object.keys(entry.configured).length
               ? t('Stored configuration with effective defaults')
               : t('Using built-in or default pricing')}
@@ -312,8 +314,13 @@ function CurrentBillingSection(props: {
           {t('Restore default pricing')}
         </Button>
       </div>
-      <section aria-label={t('Current Billing')} className='space-y-3 border-b pb-3'>
-        <h3 className='text-muted-foreground text-xs'>{t('Current Billing')}</h3>
+      <section
+        aria-label={t('Current Billing')}
+        className='space-y-3 border-b pb-3'
+      >
+        <Heading variant='group-title' level={3} color='secondary'>
+          {t('Current Billing')}
+        </Heading>
         <div className='max-w-2xl'>
           <ModelPriceCell
             model={effectivePricing}
@@ -339,7 +346,7 @@ function CurrentBillingSection(props: {
               {details.map((row) => (
                 <div key={row.key}>
                   <dt className='text-muted-foreground'>{row.label}</dt>
-                  <dd className='mt-1 font-mono tabular-nums'>
+                  <dd className='text-mono mt-1 font-mono tabular-nums'>
                     {row.value}
                     {row.unit !== 'none' && ' / 1M'}
                   </dd>

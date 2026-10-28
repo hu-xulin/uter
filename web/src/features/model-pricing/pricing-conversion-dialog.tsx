@@ -21,6 +21,7 @@ import { useTranslation } from 'react-i18next'
 import { ConfirmDialog } from '@/components/confirm-dialog'
 import { CopyButton } from '@/components/copy-button'
 import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Heading } from '@/design-system'
 import {
   parseTiersFromExpr,
   splitBillingExprAndRequestRules,
@@ -114,7 +115,7 @@ export function PricingConversionDialog(props: {
       handleConfirm={props.onConfirm}
       className='max-h-[min(90dvh,var(--dialog-available-height))] overflow-y-auto data-[size=default]:max-w-[calc(100%-2rem)] data-[size=default]:sm:max-w-5xl'
     >
-      <p className='font-mono text-mono break-all'>{props.preview.modelName}</p>
+      <p className='text-mono font-mono break-all'>{props.preview.modelName}</p>
       <div className='grid min-w-0 gap-4 md:grid-cols-2'>
         <section
           aria-label={t('Before conversion')}
@@ -134,7 +135,7 @@ export function PricingConversionDialog(props: {
                   className='flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1'
                 >
                   <dt className='text-muted-foreground text-sm'>{row.label}</dt>
-                  <dd className='font-mono text-mono tabular-nums'>
+                  <dd className='text-mono font-mono tabular-nums'>
                     {row.value}
                     {row.unit !== 'none' && <> / {unitLabel}</>}
                   </dd>
@@ -162,7 +163,7 @@ export function PricingConversionDialog(props: {
                     {row.tierLabel && `${row.tierLabel} · `}
                     {t(row.label)}
                   </dt>
-                  <dd className='font-mono text-mono tabular-nums'>
+                  <dd className='text-mono font-mono tabular-nums'>
                     {formatPricingAmount(row.value, props.currency)} /{' '}
                     {unitLabel}
                   </dd>
@@ -175,25 +176,29 @@ export function PricingConversionDialog(props: {
                 className='flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1'
               >
                 <dt className='text-muted-foreground text-sm'>{row.label}</dt>
-                <dd className='font-mono text-mono tabular-nums'>{row.value}</dd>
+                <dd className='text-mono font-mono tabular-nums'>
+                  {row.value}
+                </dd>
               </div>
             ))}
           </dl>
           <div className='space-y-2 border-t pt-3'>
             <div className='flex items-center justify-between gap-2'>
-              <h4 className='text-sm font-medium'>
+              <Heading variant='group-title' level={4}>
                 {t('Billing expression')} (USD)
-              </h4>
+              </Heading>
               <CopyButton value={props.preview.expression} />
             </div>
-            <pre className='bg-background rounded-md border p-3 text-xs break-words whitespace-pre-wrap'>
+            {/* 计费表达式是等宽内容，走 mono 档（14/20）；12px 会让它与
+                弹窗里 14px 的说明文字脱档，也低于等宽的下限。 */}
+            <pre className='bg-background text-mono rounded-md border p-3 font-mono break-words whitespace-pre-wrap'>
               <code>{props.preview.expression}</code>
             </pre>
           </div>
         </section>
       </div>
       <Alert>
-        <AlertDescription className='text-xs'>
+        <AlertDescription>
           {t(
             'After conversion, expression reservation and rounding rules apply. Effective unit prices are preserved; individual rounded charges may differ.'
           )}

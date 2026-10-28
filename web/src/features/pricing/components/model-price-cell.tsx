@@ -32,9 +32,10 @@ import {
   isUnconfiguredTaskUsageModel,
 } from '../lib/dynamic-price'
 import { isTokenBasedModel } from '../lib/model-helpers'
+import { getMarkupMultiplier } from '../lib/price'
 import { taskUsageUnitLabel } from '../lib/task-price-display'
-import { PriceMetricOfficial } from './price-with-official'
 import type { PricingModel, PriceType, TokenUnit } from '../types'
+import { PriceMetricOfficial } from './price-with-official'
 
 export type ModelPriceCellOptions = {
   tokenUnit?: TokenUnit
@@ -157,7 +158,7 @@ export function ModelPriceCell(props: {
             </span>
           )}
           {props.showExpression !== false && (
-            <code className='text-muted-foreground mt-1 line-clamp-2 block text-xs break-all whitespace-normal'>
+            <code className='text-mono-code text-muted-foreground mt-1 line-clamp-2 block font-mono break-all whitespace-normal'>
               {dynamic.rawExpression}
             </code>
           )}
@@ -168,28 +169,25 @@ export function ModelPriceCell(props: {
     const hasRequestPrice = allEntries.some(
       (entry) => entry.unit === 'request' || entry.unit === 'image'
     )
-    metrics = allEntries
-      .map((entry) => {
-        const unit = getDynamicPriceUnitLabelKey(entry)
-        const unitLabel = taskUsageUnitLabel(
-          entry,
-          i18n.language,
-          unit ? t(unit) : ''
-        )
-        let suffix = unitLabel ? `/${unitLabel}` : ''
-        if (entry.unit === 'token') {
-          suffix = `/${t('{{unit}} tokens', { unit: tokenUnitLabel })}`
-        }
-        return {
-          label:
-            entry.labelKind === 'schema'
-              ? entry.shortLabel
-              : t(entry.shortLabel),
-          value: `${entry.formattedRange ?? entry.formatted}${suffix}`,
-          variableKey: entry.variable?.key,
-          rawValue: entry.value,
-        }
-      })
+    metrics = allEntries.map((entry) => {
+      const unit = getDynamicPriceUnitLabelKey(entry)
+      const unitLabel = taskUsageUnitLabel(
+        entry,
+        i18n.language,
+        unit ? t(unit) : ''
+      )
+      let suffix = unitLabel ? `/${unitLabel}` : ''
+      if (entry.unit === 'token') {
+        suffix = `/${t('{{unit}} tokens', { unit: tokenUnitLabel })}`
+      }
+      return {
+        label:
+          entry.labelKind === 'schema' ? entry.shortLabel : t(entry.shortLabel),
+        value: `${entry.formattedRange ?? entry.formatted}${suffix}`,
+        variableKey: entry.variable?.key,
+        rawValue: entry.value,
+      }
+    })
     if (metrics.length === 0) {
       return (
         <span className='text-muted-foreground text-sm'>
@@ -338,7 +336,7 @@ export function ModelPriceCell(props: {
           {metrics.map((metric) => (
             <span
               key={`u-${metric.label}`}
-              className='text-sm font-semibold tabular-nums whitespace-nowrap'
+              className='text-sm font-semibold whitespace-nowrap tabular-nums'
               title={metric.value}
             >
               {metric.value}
@@ -363,18 +361,31 @@ export function ModelPriceCell(props: {
               isDiscount && official && metric.rawValue != null
                 ? Math.round((1 - metric.rawValue / official) * 100)
                 : 0
+            // 溢价：Uter 价高于官方价时给 `x1.05`，与模型名后的角标同口径。
+            const markup = getMarkupMultiplier(
+              metric.rawValue ?? Number.NaN,
+              official ?? Number.NaN
+            )
             return (
               <span
                 key={`o-${metric.label}`}
-                className='text-muted-foreground text-xs tabular-nums whitespace-nowrap'
+                className='text-muted-foreground text-xs whitespace-nowrap tabular-nums'
                 title={officialText(official)}
               >
                 <span className={cn(isDiscount && 'line-through')}>
                   {officialText(official)}
                 </span>
                 {isDiscount && (
-                  <span className='text-emerald-600 ml-1 font-bold'>
+                  <span className='text-success ml-1 font-bold'>
                     -{discountPercent}%
+                  </span>
+                )}
+                {markup != null && (
+                  <span
+                    className='text-warning ml-1 font-bold'
+                    title={`+${Math.round((markup - 1) * 100)}%`}
+                  >
+                    x{markup}
                   </span>
                 )}
               </span>
@@ -402,6 +413,10 @@ export function ModelPriceCell(props: {
               isDiscount && official && metric.rawValue != null
                 ? Math.round((1 - metric.rawValue / official) * 100)
                 : 0
+            const markup = getMarkupMultiplier(
+              metric.rawValue ?? Number.NaN,
+              official ?? Number.NaN
+            )
             return (
               <span
                 key={metric.label}
@@ -414,14 +429,23 @@ export function ModelPriceCell(props: {
                   {metric.label}
                 </span>
                 <span
-                  className='min-w-0 text-sm break-words whitespace-normal font-semibold tabular-nums'
+                  className='min-w-0 text-sm font-semibold break-words whitespace-normal tabular-nums'
                   title={metric.value}
                 >
                   {metric.value}
                   {isDiscount && (
-                    <span className='text-emerald-600 text-xs font-bold'>
+                    <span className='text-success text-xs font-bold'>
                       {' '}
                       · -{discountPercent}%
+                    </span>
+                  )}
+                  {markup != null && (
+                    <span
+                      className='text-warning text-xs font-bold'
+                      title={`+${Math.round((markup - 1) * 100)}%`}
+                    >
+                      {' '}
+                      · x{markup}
                     </span>
                   )}
                 </span>

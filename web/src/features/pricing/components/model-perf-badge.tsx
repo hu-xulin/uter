@@ -90,10 +90,10 @@ export const ModelPerfBadge = memo(function ModelPerfBadge(
             title={t(
               'Success rate excludes business rejections and includes the current partial hour.'
             )}
-            className='text-muted-foreground flex items-center justify-between gap-1 text-xs leading-4'
+            className='text-muted-foreground flex items-center justify-between gap-1 text-xs'
           >
             <span>{t('Status')}</span>
-            <span className='font-mono'>
+            <span className='text-mono font-mono'>
               {hasSuccessRate ? `${successRate.toFixed(2)}%` : '—'}
             </span>
           </dt>
@@ -120,18 +120,18 @@ export const ModelPerfBadge = memo(function ModelPerfBadge(
           </dd>
         </div>
         <div title={t('Average latency')} className='shrink-0'>
-          <dt className='text-muted-foreground text-xs leading-4'>
+          <dt className='text-muted-foreground text-xs'>
             {t('Latency short')}
           </dt>
-          <dd className='mt-1 font-mono whitespace-nowrap'>
+          <dd className='text-mono mt-1 font-mono whitespace-nowrap'>
             {latencyText === '—' ? '—s' : latencyText}
           </dd>
         </div>
         <div title={t('Throughput')} className='shrink-0'>
-          <dt className='text-muted-foreground text-xs leading-4'>
+          <dt className='text-muted-foreground text-xs'>
             {t('Throughput short')}
           </dt>
-          <dd className='mt-1 font-mono whitespace-nowrap'>
+          <dd className='text-mono mt-1 font-mono whitespace-nowrap'>
             {throughputText === '—' ? '—t/s' : throughputText}
           </dd>
         </div>

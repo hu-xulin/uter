@@ -36,7 +36,6 @@ import { useTranslation } from 'react-i18next'
 import { CopyButton } from '@/components/copy-button'
 import { StaticDataTable } from '@/components/data-table'
 import { sideDrawerContentClassName } from '@/components/drawer-layout'
-import { useIsSuperAdmin } from '@/hooks/use-admin'
 import { GroupBadge } from '@/components/group-badge'
 import { PublicLayout } from '@/components/layout'
 import { Button } from '@/components/ui/button'
@@ -49,6 +48,7 @@ import {
 } from '@/components/ui/sheet'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Heading } from '@/design-system'
 import { getPerfMetrics } from '@/features/performance-metrics/api'
 import {
   formatLatency,
@@ -57,6 +57,7 @@ import {
   getSuccessRateTextClass,
 } from '@/features/performance-metrics/lib/format'
 import { PluginIcon } from '@/features/task-plugins/components/plugin-icon'
+import { useIsSuperAdmin } from '@/hooks/use-admin'
 import { getLobeIcon, resolveModelIconKey } from '@/lib/lobe-icon'
 import { requireServerSuccess } from '@/lib/server-error-message'
 import { cn } from '@/lib/utils'
@@ -106,8 +107,8 @@ import type {
   PricingModel,
   TokenUnit,
 } from '../types'
-import { DynamicPricingBreakdown } from './dynamic-pricing-breakdown'
 import { DiscountTag } from './discount-tag'
+import { DynamicPricingBreakdown } from './dynamic-pricing-breakdown'
 import { ModelBillingModeBadge } from './model-billing-mode-badge'
 import { ModelDetailsApi } from './model-details-api'
 import { ModelDetailsPerformance } from './model-details-performance'
@@ -117,10 +118,12 @@ import { ModelDetailsPerformance } from './model-details-performance'
 // ----------------------------------------------------------------------------
 
 function SectionTitle(props: { children: React.ReactNode }) {
+  // 卡片内的分组标题 = group-title 16/600（规范 §1.2 硬规则 2）：
+  // 14px 加粗是 label 档，压在标题上会让整块内容显得比正文还小。
   return (
-    <h2 className='text-muted-foreground mb-3 text-xs font-semibold uppercase'>
+    <Heading variant='group-title' level={2} className='mb-3'>
       {props.children}
-    </h2>
+    </Heading>
   )
 }
 
@@ -254,7 +257,7 @@ function OverviewMetric(props: {
 
   return (
     <div className='flex min-w-0 items-center gap-2 px-3 py-2'>
-      <Icon className='text-muted-foreground/70 size-3.5 shrink-0' />
+      <Icon className='text-muted-foreground size-4 shrink-0' />
       <div className='min-w-0 flex-1'>
         <div className='text-muted-foreground truncate text-xs font-medium uppercase'>
           {props.label}
@@ -404,7 +407,7 @@ function ModelBackendQuickStats(props: { model: PricingModel }) {
         <span className='inline-flex items-center gap-1'>
           <ModalityLabels items={inputModalities} />
           {inputModalities.length > 0 && outputModalities.length > 0 && (
-            <span className='text-muted-foreground/40'>→</span>
+            <span className='text-muted-foreground'>→</span>
           )}
           <ModalityLabels items={outputModalities} />
         </span>
@@ -449,7 +452,7 @@ function ModelBackendQuickStats(props: { model: PricingModel }) {
               {stat.value}
             </span>
             {stat.hint && (
-              <span className='text-muted-foreground/60 truncate text-xs'>
+              <span className='text-muted-foreground truncate text-sm'>
                 {stat.hint}
               </span>
             )}
@@ -611,9 +614,7 @@ function ModelHeader(props: {
   const model = props.model
   // 模型详情头部同样只渲染模型自己的产品 logo（彩色），不用供应商公司 logo。
   const modelIconKey = resolveModelIconKey(model.icon)
-  const modelIcon = modelIconKey
-    ? getLobeIcon(modelIconKey, 20)
-    : null
+  const modelIcon = modelIconKey ? getLobeIcon(modelIconKey, 20) : null
   const description = model.description || model.vendor_description || null
 
   let sourceLabel = t('Official price')
@@ -625,14 +626,14 @@ function ModelHeader(props: {
     <header className='pb-4'>
       <div className='flex items-center gap-2.5'>
         {modelIcon}
-        <h1 className='font-mono text-xl font-bold sm:text-2xl'>
+        <Heading variant='page-title' level={1} className='font-mono'>
           {model.model_name}
           <DiscountTag
             model={model}
             officialPrices={props.officialPrices}
             className='ml-1.5 align-middle'
           />
-        </h1>
+        </Heading>
         <CopyButton
           value={model.model_name || ''}
           className='size-6'
@@ -646,16 +647,14 @@ function ModelHeader(props: {
         {model.vendor_name && (
           <span className='text-muted-foreground'>{model.vendor_name}</span>
         )}
-        <span className='text-muted-foreground/30'>·</span>
+        <span className='text-muted-foreground'>·</span>
         <ModelBillingModeBadge model={model} />
-        <span className='rounded bg-muted px-1.5 py-0.5 text-xs font-medium text-muted-foreground'>
+        <span className='bg-muted text-muted-foreground rounded px-1.5 py-0.5 text-xs font-medium'>
           {sourceLabel}
         </span>
       </div>
       {description && (
-        <p className='text-muted-foreground mt-2 text-sm leading-relaxed'>
-          {description}
-        </p>
+        <p className='text-muted-foreground mt-2 text-sm'>{description}</p>
       )}
     </header>
   )
@@ -745,11 +744,11 @@ function PriceSection(props: {
       return (
         <section>
           <SectionTitle>{t('Base Price')}</SectionTitle>
-          <div className='rounded-lg border border-amber-200/70 bg-amber-50/70 p-3 dark:border-amber-500/20 dark:bg-amber-500/10'>
-            <div className='text-sm font-medium text-amber-800 dark:text-amber-200'>
+          <div className='border-warning-soft/70 bg-warning-soft/70 dark:border-warning/20 dark:bg-warning/10 rounded-lg border p-3'>
+            <div className='text-warning dark:text-warning-soft-foreground text-sm font-medium'>
               {t('Special billing expression')}
             </div>
-            <p className='text-muted-foreground mt-1 text-xs'>
+            <p className='text-muted-foreground mt-1 text-sm'>
               {t(
                 pricingDisplayFallbackKey(
                   dynamicSummary.rawExpression,
@@ -761,7 +760,7 @@ function PriceSection(props: {
               <div className='text-muted-foreground mb-1 text-xs font-medium uppercase'>
                 {t('Raw expression')}
               </div>
-              <code className='text-muted-foreground bg-background/80 block max-h-28 overflow-auto rounded-md border px-2 py-1.5 font-mono text-mono leading-[var(--ds-line-mono-dense)] break-all'>
+              <code className='text-muted-foreground bg-background/80 text-mono block max-h-28 overflow-auto rounded-md border px-2 py-1.5 font-mono leading-[var(--ds-line-mono-dense)] break-all'>
                 {dynamicSummary.rawExpression}
               </code>
             </div>
@@ -774,14 +773,14 @@ function PriceSection(props: {
       <section>
         <SectionTitle>{t('Base Price')}</SectionTitle>
         {dynamicSummary.providerCount && (
-          <p className='text-muted-foreground mb-2 text-xs'>
+          <p className='text-muted-foreground mb-2 text-sm'>
             {t('{{count}} providers', { count: dynamicSummary.providerCount })}
             {dynamicSummary.hasUnconfiguredProviders &&
               ` · ${t('Not configured for some providers')}`}
           </p>
         )}
         {dynamicSummary.isMixedBilling && (
-          <p className='text-muted-foreground mb-2 text-xs'>
+          <p className='text-muted-foreground mb-2 text-sm'>
             {t('Token or per-call pricing')}
           </p>
         )}
@@ -809,7 +808,7 @@ function PriceSection(props: {
                   </div>
                   <div className='text-foreground mt-1 text-base font-semibold tabular-nums'>
                     {entry.formattedRange ?? entry.formatted}
-                    <span className='text-muted-foreground/40 ml-1 text-xs font-normal'>
+                    <span className='text-muted-foreground ml-1 text-sm font-normal'>
                       / {unitLabel}
                     </span>
                   </div>
@@ -839,12 +838,12 @@ function PriceSection(props: {
                     key={entry.key}
                     className='flex items-baseline justify-between gap-4'
                   >
-                    <span className='text-muted-foreground/70 text-sm'>
+                    <span className='text-muted-foreground text-sm'>
                       <DynamicPriceEntryLabel entry={entry} />
                     </span>
                     <span className='text-muted-foreground text-sm tabular-nums'>
                       {entry.formattedRange ?? entry.formatted}
-                      <span className='text-muted-foreground/40 ml-1 text-xs font-normal'>
+                      <span className='text-muted-foreground ml-1 text-sm font-normal'>
                         / {unitLabel}
                       </span>
                     </span>
@@ -903,7 +902,7 @@ function PriceSection(props: {
         props.usdExchangeRate,
         baseGroupRatioMap
       )}
-      <span className='text-muted-foreground/40 ml-1 text-xs font-normal'>
+      <span className='text-muted-foreground ml-1 text-sm font-normal'>
         / {tokenUnitLabel}
       </span>
     </>
@@ -930,7 +929,7 @@ function PriceSection(props: {
                 key={item.type}
                 className='flex items-baseline justify-between gap-4'
               >
-                <span className='text-muted-foreground/70 text-sm'>
+                <span className='text-muted-foreground text-sm'>
                   {item.label}
                 </span>
                 <span className='text-muted-foreground text-sm tabular-nums'>
@@ -963,12 +962,12 @@ function AutoGroupChain(props: { model: PricingModel; autoGroups: string[] }) {
   return (
     <div className='text-muted-foreground mb-3 flex flex-wrap items-center gap-1 text-xs'>
       <span className='font-medium'>{t('Auto Group Chain')}</span>
-      <span className='text-muted-foreground/40'>→</span>
+      <span className='text-muted-foreground'>→</span>
       {autoChain.map((g, idx) => (
         <span key={g} className='flex items-center gap-1'>
           <GroupBadge group={g} size='sm' />
           {idx < autoChain.length - 1 && (
-            <span className='text-muted-foreground/40'>→</span>
+            <span className='text-muted-foreground'>→</span>
           )}
         </span>
       ))}
@@ -1164,11 +1163,11 @@ function ProviderGroupPricingSection(
             <SectionTitle>{t('Pricing by Group')}</SectionTitle>
           )}
           <AutoGroupChain model={props.model} autoGroups={props.autoGroups} />
-          <div className='rounded-lg border border-amber-200/70 bg-amber-50/70 p-3 dark:border-amber-500/20 dark:bg-amber-500/10'>
-            <div className='text-sm font-medium text-amber-800 dark:text-amber-200'>
+          <div className='border-warning-soft/70 bg-warning-soft/70 dark:border-warning/20 dark:bg-warning/10 rounded-lg border p-3'>
+            <div className='text-warning dark:text-warning-soft-foreground text-sm font-medium'>
               {t('Special billing expression')}
             </div>
-            <p className='text-muted-foreground mt-1 text-xs'>
+            <p className='text-muted-foreground mt-1 text-sm'>
               {t(
                 pricingDisplayFallbackKey(
                   props.model.billing_expr || '',
@@ -1180,7 +1179,7 @@ function ProviderGroupPricingSection(
               <div className='text-muted-foreground mb-1 text-xs font-medium uppercase'>
                 {t('Raw expression')}
               </div>
-              <code className='text-muted-foreground bg-background/80 block max-h-28 overflow-auto rounded-md border px-2 py-1.5 font-mono text-mono leading-[var(--ds-line-mono-dense)] break-all'>
+              <code className='text-muted-foreground bg-background/80 text-mono block max-h-28 overflow-auto rounded-md border px-2 py-1.5 font-mono leading-[var(--ds-line-mono-dense)] break-all'>
                 {props.model.billing_expr}
               </code>
             </div>
@@ -1226,7 +1225,7 @@ function ProviderGroupPricingSection(
         )}
         <AutoGroupChain model={props.model} autoGroups={props.autoGroups} />
         {officialDynamicSummary?.primaryEntries.length ? (
-          <p className='text-muted-foreground/60 text-xs tabular-nums'>
+          <p className='text-muted-foreground text-sm tabular-nums'>
             {t('Official price (1x)')}:{' '}
             {officialDynamicSummary.primaryEntries
               .slice(0, 2)
@@ -1249,7 +1248,7 @@ function ProviderGroupPricingSection(
               <div key={group} className='overflow-hidden rounded-lg border'>
                 <div className='bg-muted/20 flex items-center justify-between gap-3 border-b px-3 py-2'>
                   <GroupBadge group={group} size='sm' />
-                  <span className='text-muted-foreground tabular-nums text-xs'>
+                  <span className='text-muted-foreground text-xs tabular-nums'>
                     {ratio}x
                   </span>
                 </div>
@@ -1370,7 +1369,7 @@ function ProviderGroupPricingSection(
                         },
                       ]}
                     />
-                    <p className='text-muted-foreground/40 px-3 pb-2 text-xs'>
+                    <p className='text-muted-foreground px-3 pb-2 text-sm'>
                       {t('Approximate prices for common specs.')}
                     </p>
                   </div>
@@ -1378,7 +1377,7 @@ function ProviderGroupPricingSection(
               </div>
             )
           })}
-          <p className='text-muted-foreground/40 mt-1.5 text-xs'>
+          <p className='text-muted-foreground mt-1.5 text-sm'>
             {dynamicTiers.some(
               (tier) => 'unitPrices' in tier || tier.billingUnit === 'request'
             )
@@ -1428,7 +1427,7 @@ function ProviderGroupPricingSection(
       {!props.hideTitle && <SectionTitle>{t('Pricing by Group')}</SectionTitle>}
       <AutoGroupChain model={props.model} autoGroups={props.autoGroups} />
       {isTokenBased ? (
-        <p className='text-muted-foreground/60 text-xs tabular-nums'>
+        <p className='text-muted-foreground text-sm tabular-nums'>
           {t('Official price (1x)')}: {t('Input')}{' '}
           {formatOfficialPrice(
             props.model,
@@ -1450,7 +1449,7 @@ function ProviderGroupPricingSection(
           / {tokenUnitLabel}
         </p>
       ) : (
-        <p className='text-muted-foreground/60 text-xs tabular-nums'>
+        <p className='text-muted-foreground text-sm tabular-nums'>
           {t('Official price (1x)')}:{' '}
           {formatOfficialRequestPrice(
             props.model,
@@ -1519,7 +1518,7 @@ function ProviderGroupPricingSection(
       />
       <div className='-mx-4 sm:mx-0'>
         {isTokenBased && (
-          <p className='text-muted-foreground/40 mt-1.5 px-4 text-xs sm:px-0'>
+          <p className='text-muted-foreground mt-1.5 px-4 text-sm sm:px-0'>
             {t('Prices shown per {{unit}} tokens', { unit: tokenUnitLabel })}
           </p>
         )}
@@ -1595,7 +1594,7 @@ export function ModelDetailsContent(props: ModelDetailsContentProps) {
                 value={value}
                 className='h-8 min-w-0 gap-1.5 rounded-md px-3 text-sm sm:text-sm'
               >
-                <Icon className='size-3.5' />
+                <Icon className='size-4' />
                 <span className='truncate'>{t(TAB_META[value].labelKey)}</span>
               </TabsTrigger>
             )
@@ -1605,7 +1604,7 @@ export function ModelDetailsContent(props: ModelDetailsContentProps) {
         <TabsContent value='overview' className='space-y-6 outline-none'>
           <OverviewSummaryGrid model={props.model} />
 
-          <section className='bg-card/60 space-y-5 rounded-xl border p-4 shadow-sm'>
+          <section className='bg-card/60 space-y-5 rounded-xl border p-4'>
             <SectionTitle>{t('Pricing')}</SectionTitle>
             {showBasePrices && (
               <PriceSection
@@ -1692,8 +1691,8 @@ export function ModelDetailsDrawer(props: ModelDetailsDrawerProps) {
 
 export function ModelDetails() {
   const { t } = useTranslation()
-  const { modelId } = useParams({ from: '/pricing/$modelId/' })
-  const search = useSearch({ from: '/pricing/$modelId/' })
+  const { modelId } = useParams({ from: '/_public/pricing/$modelId/' })
+  const search = useSearch({ from: '/_public/pricing/$modelId/' })
   const navigate = useNavigate()
 
   const {
@@ -1752,9 +1751,9 @@ export function ModelDetails() {
     return (
       <PublicLayout>
         <div className='mx-auto max-w-2xl px-4 text-center sm:px-6'>
-          <h2 className='mb-1 text-base font-semibold'>
+          <Heading variant='card-title' level={2} className='mb-1'>
             {t('Model not found')}
-          </h2>
+          </Heading>
           <p className='text-muted-foreground mb-4 text-sm'>
             {t("The model you're looking for doesn't exist.")}
           </p>
@@ -1771,11 +1770,11 @@ export function ModelDetails() {
       <div className='mx-auto max-w-5xl px-4 sm:px-6'>
         <Button
           variant='ghost'
-          size='sm'
+          size='inline'
           onClick={handleBack}
-          className='text-muted-foreground hover:text-foreground mb-4 h-auto gap-1 px-0 py-1 text-xs'
+          className='text-muted-foreground hover:text-foreground mb-4 gap-1 py-1 text-xs'
         >
-          <ArrowLeft className='size-3.5' />
+          <ArrowLeft className='size-4.5' />
           {t('Back')}
         </Button>
 

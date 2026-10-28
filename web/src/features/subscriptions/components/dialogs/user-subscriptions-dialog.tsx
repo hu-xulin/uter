@@ -271,7 +271,7 @@ export function UserSubscriptionsDialog(props: Props) {
                 onClick={handleCreate}
                 disabled={creating || !selectedPlanId}
               >
-                <Plus className='mr-1 h-4 w-4' />
+                <Plus className='mr-1 h-4.5 w-4.5' />
                 {t('Add subscription')}
               </Button>
             </div>
@@ -372,7 +372,7 @@ export function UserSubscriptionsDialog(props: Props) {
                         >
                           {t('Reset quota')}
                           <DropdownMenuShortcut>
-                            <RotateCcw size={16} />
+                            <RotateCcw className='size-4' />
                           </DropdownMenuShortcut>
                         </DropdownMenuItem>
                         <DropdownMenuItem
@@ -386,7 +386,7 @@ export function UserSubscriptionsDialog(props: Props) {
                         >
                           {t('Invalidate')}
                           <DropdownMenuShortcut>
-                            <Ban size={16} />
+                            <Ban className='size-4' />
                           </DropdownMenuShortcut>
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
@@ -401,7 +401,7 @@ export function UserSubscriptionsDialog(props: Props) {
                         >
                           {t('Delete')}
                           <DropdownMenuShortcut>
-                            <Trash2 size={16} />
+                            <Trash2 className='size-4' />
                           </DropdownMenuShortcut>
                         </DropdownMenuItem>
                       </DataTableRowActionMenu>

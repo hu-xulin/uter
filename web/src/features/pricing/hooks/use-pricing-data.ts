@@ -66,7 +66,9 @@ export function usePricingData(enabled = true) {
 
   const officialPrices = useMemo(() => {
     const raw = data?.official_prices
-    if (!raw || typeof raw !== 'object') return {} as Record<string, Record<string, number>>
+    if (!raw || typeof raw !== 'object') {
+      return {} as Record<string, Record<string, number>>
+    }
     return raw as Record<string, Record<string, number>>
   }, [data])
 

@@ -68,9 +68,7 @@ function StatCard(props: {
         {props.value}
       </span>
       {props.hint && (
-        <span className='text-muted-foreground/70 text-xs'>
-          {props.hint}
-        </span>
+        <span className='text-muted-foreground text-xs'>{props.hint}</span>
       )}
     </div>
   )
@@ -277,8 +275,8 @@ export function ModelDetailsPerformance(props: { model: PricingModel }) {
           )}
           accent={
             incidentCount > 0 ? (
-              <span className='inline-flex items-center gap-1 text-amber-600 dark:text-amber-400'>
-                <AlertTriangle className='size-3.5' />
+              <span className='text-warning dark:text-warning inline-flex items-center gap-1'>
+                <AlertTriangle className='size-4' />
                 {t('{{count}} incidents', {
                   count: incidentCount,
                 })}
@@ -302,15 +300,14 @@ function SectionHeader(props: {
   return (
     <div className='mb-2 flex flex-wrap items-center justify-between gap-2'>
       <div className='flex min-w-0 items-center gap-2'>
-        <Icon className='text-muted-foreground/70 size-3.5 shrink-0' />
+        <Icon className='text-muted-foreground size-4 shrink-0' />
         <div className='min-w-0'>
-          <div className='text-foreground text-sm font-semibold'>
+          {/* 「名称 + 说明」行标题恒 16/500（规范 §1.2 硬规则 6）。 */}
+          <div className='text-foreground text-base font-medium'>
             {props.title}
           </div>
           {props.description && (
-            <p className='text-muted-foreground/80 text-xs'>
-              {props.description}
-            </p>
+            <p className='text-muted-foreground text-sm'>{props.description}</p>
           )}
         </div>
       </div>

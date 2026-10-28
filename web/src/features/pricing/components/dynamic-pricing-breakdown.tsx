@@ -345,11 +345,11 @@ export function DynamicPricingBreakdown({
       <section className={cn('min-w-0', !compact && 'py-4')}>
         {!compact && (
           <div className='mb-3 flex items-center gap-2'>
-            <span className='inline-flex size-6 items-center justify-center rounded-lg bg-amber-100 text-amber-700 shadow-sm dark:bg-amber-500/20 dark:text-amber-300'>
-              <TagIcon className='size-3.5' />
+            <span className='bg-warning-soft text-warning-soft-foreground inline-flex size-6 items-center justify-center rounded-lg'>
+              <TagIcon className='size-4' />
             </span>
             <div>
-              <div className='text-foreground text-base font-medium'>
+              <div className='text-foreground text-sm font-medium'>
                 {t('Special billing expression')}
               </div>
               <div className='text-muted-foreground text-xs'>
@@ -361,7 +361,7 @@ export function DynamicPricingBreakdown({
         <div className='text-muted-foreground mb-1 text-xs font-medium uppercase'>
           {t('Raw expression')}
         </div>
-        <code className='text-muted-foreground block text-xs break-all'>
+        <code className='text-mono-code text-muted-foreground block font-mono break-all'>
           {expr}
         </code>
       </section>
@@ -459,11 +459,11 @@ export function DynamicPricingBreakdown({
     <section className={cn('min-w-0', !compact && 'py-3 sm:py-4')}>
       {!compact && !usageSchema && (
         <div className='mb-3 flex items-start gap-2 sm:mb-4'>
-          <span className='mt-0.5 inline-flex size-6 items-center justify-center rounded-lg bg-amber-100 text-amber-700 shadow-sm dark:bg-amber-500/20 dark:text-amber-300'>
-            <TagIcon className='size-3.5' />
+          <span className='bg-warning-soft text-warning-soft-foreground mt-0.5 inline-flex size-6 items-center justify-center rounded-lg'>
+            <TagIcon className='size-4' />
           </span>
           <div>
-            <div className='text-foreground text-base font-medium'>
+            <div className='text-foreground text-sm font-medium'>
               {t('Dynamic Pricing')}
             </div>
             <div className='text-muted-foreground text-xs'>
@@ -512,14 +512,14 @@ export function DynamicPricingBreakdown({
                   key={`tier-mobile-${rowKey}`}
                   className={cn(
                     'rounded-md border p-2',
-                    isMatched && 'border-emerald-500/40 bg-emerald-500/10'
+                    isMatched && 'border-success/40 bg-success-soft'
                   )}
                 >
                   <div className='mb-1.5 flex flex-wrap items-center gap-1.5'>
                     {!usageSchema && (
                       <Badge
                         variant='secondary'
-                        className='bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-300'
+                        className='bg-info-soft text-info-soft-foreground'
                       >
                         {tier.label || t('Default')}
                       </Badge>
@@ -527,7 +527,7 @@ export function DynamicPricingBreakdown({
                     {isMatched && (
                       <Badge
                         variant='secondary'
-                        className='bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300'
+                        className='bg-success-soft text-success-soft-foreground'
                       >
                         {t('Matched')}
                       </Badge>
@@ -599,10 +599,7 @@ export function DynamicPricingBreakdown({
                 matchedBillingUnit,
                 matchedFixedPrice
               )
-              return cn(
-                isMatched &&
-                  'bg-emerald-50/70 hover:bg-emerald-50/70 dark:bg-emerald-500/10 dark:hover:bg-emerald-500/10'
-              )
+              return cn(isMatched && 'bg-success-soft hover:bg-success-soft')
             }}
             columns={[
               {
@@ -638,7 +635,7 @@ export function DynamicPricingBreakdown({
                         {!usageSchema && (
                           <Badge
                             variant='secondary'
-                            className='bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-300'
+                            className='bg-info-soft text-info-soft-foreground'
                           >
                             {tier.label || t('Default')}
                           </Badge>
@@ -646,7 +643,7 @@ export function DynamicPricingBreakdown({
                         {isMatched && (
                           <Badge
                             variant='secondary'
-                            className='bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300'
+                            className='bg-success-soft text-success-soft-foreground'
                           >
                             {t('Matched')}
                           </Badge>
@@ -721,7 +718,7 @@ export function DynamicPricingBreakdown({
                   key={`group-${rowKey}`}
                   className={cn(
                     'bg-muted/50 flex items-center justify-between gap-3 rounded-md border border-transparent px-3 py-2',
-                    isMatched && 'border-emerald-500/40 bg-emerald-500/10'
+                    isMatched && 'border-success/40 bg-success-soft'
                   )}
                 >
                   <span
@@ -735,9 +732,9 @@ export function DynamicPricingBreakdown({
                   <Badge
                     variant='secondary'
                     className={cn(
-                      'shrink-0 bg-orange-100 text-orange-700 dark:bg-orange-500/20 dark:text-orange-300',
+                      'shrink-0 bg-warning-soft text-warning-soft-foreground',
                       isMatched &&
-                        'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300'
+                        'bg-success-soft text-success-soft-foreground'
                     )}
                   >
                     {group.multiplier}x{isMatched && ` · ${t('Matched')}`}

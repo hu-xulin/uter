@@ -293,7 +293,7 @@ export function SubscriptionsMutateDrawer({
           >
             {/* Basic Info */}
             <SideDrawerSection>
-              <h3 className='flex items-center gap-2 text-sm font-medium'>
+              <h3 className='flex items-center gap-2 text-lg font-semibold'>
                 <IconBadge tone='info' size='xs'>
                   <Settings2 />
                 </IconBadge>
@@ -573,7 +573,7 @@ export function SubscriptionsMutateDrawer({
 
             {/* Duration Settings */}
             <SideDrawerSection>
-              <h3 className='flex items-center gap-2 text-sm font-medium'>
+              <h3 className='flex items-center gap-2 text-lg font-semibold'>
                 <IconBadge tone='chart-4' size='xs'>
                   <CalendarClock />
                 </IconBadge>
@@ -667,7 +667,7 @@ export function SubscriptionsMutateDrawer({
 
             {/* Quota Reset */}
             <SideDrawerSection>
-              <h3 className='flex items-center gap-2 text-sm font-medium'>
+              <h3 className='flex items-center gap-2 text-lg font-semibold'>
                 <IconBadge tone='success' size='xs'>
                   <RefreshCw />
                 </IconBadge>
@@ -737,7 +737,7 @@ export function SubscriptionsMutateDrawer({
 
             {/* Payment Config */}
             <SideDrawerSection>
-              <h3 className='flex items-center gap-2 text-sm font-medium'>
+              <h3 className='flex items-center gap-2 text-lg font-semibold'>
                 <IconBadge tone='warning' size='xs'>
                   <CreditCard />
                 </IconBadge>
