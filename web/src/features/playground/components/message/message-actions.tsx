@@ -110,7 +110,7 @@ export function MessageActions({
 
   if (hasContent) {
     actions.push({
-      className: isCopied ? 'text-green-600' : '',
+      className: isCopied ? 'text-success' : '',
       icon: isCopied ? Check : Copy,
       label: isCopied
         ? MESSAGE_ACTION_LABELS.COPIED
@@ -185,13 +185,13 @@ export function MessageActions({
             render={
               <Button
                 aria-label={t('Open menu')}
-                className='data-popup-open:bg-muted text-muted-foreground hover:text-foreground size-11'
-                size='icon'
+                className='data-popup-open:bg-muted text-muted-foreground hover:text-foreground'
+                size='icon-lg'
                 variant='ghost'
               />
             }
           >
-            <MoreHorizontal className='size-4' />
+            <MoreHorizontal className='size-4.5' />
             <span className='sr-only'>{t('Open menu')}</span>
           </DropdownMenuTrigger>
           <DropdownMenuContent align='end' className='w-44'>

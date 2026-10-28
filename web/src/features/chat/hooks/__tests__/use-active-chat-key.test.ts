@@ -83,7 +83,10 @@ describe('fetchActiveChatKey', () => {
 
   test('forwards the security proof header when a proof token is provided', async () => {
     respondWithTokens([{ id: 9, status: 1 }])
-    const calls: Array<{ url: string; config?: { headers?: Record<string, string> } }> = []
+    const calls: Array<{
+      url: string
+      config?: { headers?: Record<string, string> }
+    }> = []
     apiClient.post = async (url, _data, config) => {
       calls.push({ url, config })
       return { data: { success: true, data: { key: 'abcdef' } } }
@@ -96,7 +99,10 @@ describe('fetchActiveChatKey', () => {
 
   test('omits the security proof header when no proof token is provided', async () => {
     respondWithTokens([{ id: 9, status: 1 }])
-    const calls: Array<{ url: string; config?: { headers?: Record<string, string> } }> = []
+    const calls: Array<{
+      url: string
+      config?: { headers?: Record<string, string> }
+    }> = []
     apiClient.post = async (url, _data, config) => {
       calls.push({ url, config })
       return { data: { success: true, data: { key: 'abcdef' } } }

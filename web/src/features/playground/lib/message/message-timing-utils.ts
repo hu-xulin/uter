@@ -69,7 +69,9 @@ export function completeReasoningTiming(
       startedAt,
       completedAt,
       durationMs,
-      duration: Math.ceil(durationMs / 1000),
+      // 推理可能在同一个事件循环内开始并结束（上游把整段推理一次性下发），
+      // 秒级取整会得到 0，界面上就成了「思考了 0 秒」。至少记 1 秒。
+      duration: Math.max(1, Math.ceil(durationMs / 1000)),
     },
   }
 }

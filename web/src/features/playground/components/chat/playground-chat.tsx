@@ -88,6 +88,10 @@ export function PlaygroundChat({
     messages.length - MAX_RENDERED_HISTORY_MESSAGES
   )
   const visibleMessages = messages.slice(visibleMessageOffset)
+  // 只渲染最近 N 条是为了控制重渲染成本（流式输出时 `messages` 每个 token 换一次
+  // 身份）。但截断必须是**可见**的：早期版本直接少渲染，用户往上滚发现对话凭空
+  // 断掉，会以为历史丢了。这里显式告知还剩多少条未展示，并说明请求仍带全量历史。
+  const hiddenMessageCount = visibleMessageOffset
 
   function handleToggleMessageSource(message: MessageType): void {
     setSourceMessageKeys((currentKeys) => {
@@ -224,7 +228,17 @@ export function PlaygroundChat({
     <Conversation>
       {/* Remove outer padding; apply padding to inner centered container to align with input */}
       <ConversationContent className='p-0'>
-        <div className='mx-auto w-full max-w-4xl px-4 py-4'>{chatContent}</div>
+        <div className='mx-auto w-full max-w-4xl px-4 py-4'>
+          {hiddenMessageCount > 0 && !isLoadingMessages ? (
+            <p className='text-tertiary-foreground py-2 text-center text-sm'>
+              {t(
+                'Only the latest {{count}} messages are shown; the full history is still sent with each request.',
+                { count: MAX_RENDERED_HISTORY_MESSAGES }
+              )}
+            </p>
+          ) : null}
+          {chatContent}
+        </div>
       </ConversationContent>
       <ConversationScrollButton />
     </Conversation>

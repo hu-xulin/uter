@@ -26,6 +26,7 @@ import {
 import { useTranslation } from 'react-i18next'
 
 import { Button } from '@/components/ui/button'
+import { Heading } from '@/design-system'
 
 type PlaygroundEmptyStateProps = {
   onSelectPrompt: (prompt: string) => void
@@ -47,14 +48,15 @@ export function PlaygroundEmptyState({
     <div className='flex min-h-[min(520px,calc(100svh-18rem))] items-center justify-center px-1 py-8 md:py-12'>
       <div className='grid w-full max-w-2xl gap-5 text-center'>
         <div className='bg-muted/50 text-muted-foreground mx-auto flex size-11 items-center justify-center rounded-xl border'>
-          <MessageSquarePlusIcon className='size-5' aria-hidden='true' />
+          <MessageSquarePlusIcon className='size-6' aria-hidden='true' />
         </div>
 
         <div className='grid gap-2'>
-          <h2 className='text-xl font-semibold text-balance md:text-2xl'>
+          {/* 空状态主标题：20px 不在阶梯内，统一 24/600（section-title 档）。 */}
+          <Heading variant='section-title' className='text-balance'>
             {t('Start a playground chat')}
-          </h2>
-          <p className='text-muted-foreground mx-auto max-w-lg text-sm leading-6 text-balance'>
+          </Heading>
+          <p className='text-muted-foreground mx-auto max-w-lg text-sm text-balance'>
             {t(
               'Test a model with a starter prompt, or write your own request below.'
             )}
@@ -67,12 +69,17 @@ export function PlaygroundEmptyState({
 
             return (
               <Button
-                className='h-auto min-h-11 justify-start gap-2 px-3 py-2.5 text-left whitespace-normal'
+                size='wrap'
+                className='min-h-11 justify-start gap-2 py-2.5 text-left'
                 key={text}
                 onClick={() => onSelectPrompt(prompt)}
                 variant='outline'
               >
-                <Icon className='text-muted-foreground size-4' />
+                {/* 按钮内前置图标 = 18px（规范 §2.2 默认档，`size-4.5`）。
+                    这里曾写 `size-4`（16px），显式类会盖掉 Button 的
+                    `[&_svg:not([class*='size-'])]:size-4.5` 兜底，于是四个
+                    起始提示的图标比同页其他按钮图标小一档。 */}
+                <Icon className='text-muted-foreground size-4.5' />
                 <span>{prompt}</span>
               </Button>
             )

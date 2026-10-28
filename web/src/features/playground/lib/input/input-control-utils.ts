@@ -42,11 +42,14 @@ export function getSubmittableInputText(
   message: SubmittableInputMessage,
   disabled?: boolean
 ): string | null {
-  if (disabled || !message.text?.trim()) {
+  const text = message.text?.trim()
+  if (disabled || !text) {
     return null
   }
 
-  return message.text
+  // 首尾空白对模型没有意义，却会原样进入会话记录、请求体和本地存储，
+  // 让气泡多出一段看不见的换行。
+  return text
 }
 
 export function getInputControlState({

@@ -30,14 +30,16 @@ const { ChatKeyDialog } = await import('../chat-key-dialog')
 // is created and `onCreated` never fires.
 vi.mock('@/features/auth/secure-verification', () => ({
   useSecureVerification: () => ({
-    requestVerification: vi.fn().mockResolvedValue({ proof_token: 'proof-123' }),
+    requestVerification: vi
+      .fn()
+      .mockResolvedValue({ proof_token: 'proof-123' }),
   }),
 }))
 
 type ApiMethod = (
   url: string,
   data?: unknown,
-  config?: unknown,
+  config?: unknown
 ) => Promise<{ data: unknown }>
 type MockableApi = { get: ApiMethod; post: ApiMethod }
 

@@ -19,6 +19,7 @@ For commercial licensing, please contact support@uter.ai
 import type { TFunction } from 'i18next'
 import { useTranslation } from 'react-i18next'
 
+import { toIntlLocale } from '@/i18n/languages'
 import { cn } from '@/lib/utils'
 
 import type { MessageAlignment } from '../../lib'
@@ -29,12 +30,22 @@ type MessageMetadataProps = {
   message: Message
 }
 
-function formatMessageTime(timestamp?: number): string | undefined {
+/**
+ * 消息时间按**界面语言**格式化，不用浏览器语言。
+ *
+ * `Intl.DateTimeFormat(undefined, …)` 取的是 `navigator.language`：中文界面 +
+ * 英文浏览器的用户会看到 `07:39:09 PM` 这种 12 小时制，和页面其余部分
+ * （24 小时制）对不上。全站统一走 `toIntlLocale(i18n.language)`。
+ */
+function formatMessageTime(
+  timestamp?: number,
+  locale?: string
+): string | undefined {
   if (typeof timestamp !== 'number' || !Number.isFinite(timestamp)) {
     return undefined
   }
 
-  return new Intl.DateTimeFormat(undefined, {
+  return new Intl.DateTimeFormat(locale, {
     hour: '2-digit',
     minute: '2-digit',
     second: '2-digit',
@@ -57,8 +68,11 @@ function formatDuration(
 }
 
 export function MessageMetadata(props: MessageMetadataProps) {
-  const { t } = useTranslation()
-  const messageTime = formatMessageTime(props.message.createdAt)
+  const { t, i18n } = useTranslation()
+  const messageTime = formatMessageTime(
+    props.message.createdAt,
+    toIntlLocale(i18n.resolvedLanguage || i18n.language)
+  )
   const duration = formatDuration(props.message.durationMs, t)
 
   if (!messageTime && !duration) {
@@ -68,7 +82,7 @@ export function MessageMetadata(props: MessageMetadataProps) {
   return (
     <div
       className={cn(
-        'text-muted-foreground mt-1 flex min-h-4 items-center gap-1.5 text-xs leading-none',
+        'text-muted-foreground mt-1 flex min-h-4 items-center gap-1.5 text-xs',
         props.alignment === 'right' && 'justify-end'
       )}
     >

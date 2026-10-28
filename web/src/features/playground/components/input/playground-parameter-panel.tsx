@@ -41,6 +41,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
+import { Heading } from '@/design-system'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { cn } from '@/lib/utils'
 
@@ -118,19 +119,19 @@ function PlaygroundParameterContent({
               <div className='min-w-0 space-y-1'>
                 <div className='flex min-w-0 items-center gap-2'>
                   <label
-                    className='truncate text-sm leading-5 font-medium'
+                    className='truncate text-base font-semibold'
                     htmlFor={controlId}
                   >
                     {t(control.labelKey)}
                   </label>
                   <Badge
-                    className='h-5 max-w-24 shrink-0 px-1.5 font-mono text-mono'
+                    className='text-mono h-5 max-w-24 shrink-0 px-1.5 font-mono'
                     variant='outline'
                   >
                     {t(getParameterControlValueText(control.key, value))}
                   </Badge>
                 </div>
-                <p className='text-muted-foreground text-xs leading-4'>
+                <p className='text-muted-foreground text-sm'>
                   {t(control.descriptionKey)}
                 </p>
               </div>
@@ -209,8 +210,12 @@ export function PlaygroundParameterPanel(props: PlaygroundParameterPanelProps) {
       disabled={props.disabled}
       variant='ghost'
     >
-      <SlidersHorizontalIcon size={16} />
-      <span className='bg-primary text-primary-foreground absolute -top-1 -right-1 flex h-3.5 min-w-3.5 items-center justify-center rounded-full px-1 text-xs leading-none font-semibold'>
+      {/* 工具条图标是 16px 档（规范 §2.2 紧凑型辅助）。
+          这里必须写 `size-4` 而不是 `size={16}`：`Button` 带
+          `[&_svg:not([class*='size-'])]:size-4.5` 兜底，CSS 会盖掉 lucide
+          的 width/height 属性，`size={16}` 实际渲染成 18px。 */}
+      <SlidersHorizontalIcon className='size-4' />
+      <span className='bg-primary text-primary-foreground absolute -top-1 -right-1 flex h-3.5 min-w-3.5 items-center justify-center rounded-full px-1 text-xs font-semibold'>
         {activeCount}
       </span>
     </PromptInputButton>
@@ -254,8 +259,10 @@ export function PlaygroundParameterPanel(props: PlaygroundParameterPanelProps) {
         sideOffset={8}
       >
         <div className='space-y-1 px-1'>
-          <div className='text-sm font-semibold'>{t('Parameter settings')}</div>
-          <div className='text-muted-foreground text-xs leading-4'>
+          <Heading variant='dialog-title' level={4}>
+            {t('Parameter settings')}
+          </Heading>
+          <div className='text-muted-foreground text-sm'>
             {t('Only enabled parameters are sent with the request.')}
           </div>
         </div>

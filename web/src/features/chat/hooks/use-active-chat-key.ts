@@ -16,19 +16,17 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
-import { useCallback, useState } from 'react'
 import { t } from 'i18next'
+import { useCallback, useState } from 'react'
 
+import { useSecureVerification } from '@/features/auth/secure-verification'
 import { createApiKey, fetchTokenKey, getApiKeys } from '@/features/keys/api'
 import { API_KEY_STATUS } from '@/features/keys/constants'
 import {
   getApiKeyFormDefaultValues,
   transformFormDataToPayload,
 } from '@/features/keys/lib'
-import {
-  createServerError,
-} from '@/lib/server-error-message'
-import { useSecureVerification } from '@/features/auth/secure-verification'
+import { createServerError } from '@/lib/server-error-message'
 import { useAuthStore } from '@/stores/auth-store'
 
 /**

@@ -20,6 +20,7 @@ import { t } from 'i18next'
 
 import { ERROR_MESSAGES, MESSAGE_ROLES, MESSAGE_STATUS } from '../../constants'
 import type { ChatCompletionResponse, Message } from '../../types'
+import { getAppendableStreamChunk } from '../streaming/stream-utils'
 import { parseThinkTags } from './message-reasoning-utils'
 import {
   completeAssistantTiming,
@@ -70,14 +71,6 @@ export function processStreamingContent(
 
 export type StreamChunkType = 'reasoning' | 'content'
 
-function getAppendableChunk(currentContent: string, chunk: string): string {
-  if (!currentContent || !chunk.startsWith(currentContent)) {
-    return chunk
-  }
-
-  return chunk.slice(currentContent.length)
-}
-
 export function applyStreamingChunk(
   message: Message,
   type: StreamChunkType,
@@ -89,7 +82,7 @@ export function applyStreamingChunk(
 
   if (type === 'reasoning') {
     const reasoning = startReasoningTiming(message)
-    const appendableChunk = getAppendableChunk(reasoning.content, chunk)
+    const appendableChunk = getAppendableStreamChunk(reasoning.content, chunk)
 
     return {
       ...message,
@@ -103,7 +96,10 @@ export function applyStreamingChunk(
   }
 
   const currentVersion = getCurrentVersion(message)
-  const appendableChunk = getAppendableChunk(currentVersion.content, chunk)
+  const appendableChunk = getAppendableStreamChunk(
+    currentVersion.content,
+    chunk
+  )
   const contentMessage = processStreamingContent(message, appendableChunk)
 
   return {

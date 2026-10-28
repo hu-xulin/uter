@@ -93,8 +93,11 @@ export function Playground() {
         />
       </div>
 
-      {/* Input area: center content and constrain to the same container width */}
-      <div className='mx-auto w-full max-w-4xl'>
+      {/* 输入区与消息列必须同宽同左边距。
+          消息列是 `max-w-4xl px-4`（内层再收 16px），这里此前只有 `max-w-4xl`：
+          输入卡片比消息左右各宽 12px，视觉上「输入框比对话内容宽一圈」。
+          `px-4` 补上同一条内边距，两列的外沿才对得上。 */}
+      <div className='mx-auto w-full max-w-4xl px-4'>
         <PlaygroundInput
           config={config}
           disabled={isGenerating}

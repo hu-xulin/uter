@@ -30,7 +30,9 @@ function makeMessages() {
     {
       key: 'm1',
       from: 'user' as const,
-      versions: [{ id: 'v1', content: `Please use ${SECRET} for this request` }],
+      versions: [
+        { id: 'v1', content: `Please use ${SECRET} for this request` },
+      ],
     },
     {
       key: 'm2',

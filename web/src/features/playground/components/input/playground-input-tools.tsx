@@ -94,7 +94,8 @@ export function PlaygroundInputTools({
 
   return (
     <>
-      <PromptInputTools className='bg-background/70 border-border/60 rounded-lg border p-1 shadow-xs'>
+      {/* 工具条是不透明药丸：`bg-background/70` 会让输入舱底色透进来。 */}
+      <PromptInputTools className='bg-background border-border rounded-lg border p-1'>
         <Tooltip>
           <DropdownMenu>
             <TooltipTrigger
@@ -103,13 +104,13 @@ export function PlaygroundInputTools({
                   render={
                     <PromptInputButton
                       aria-label={t('Attach')}
-                      className='text-muted-foreground hover:text-foreground hover:bg-muted/70 font-medium'
+                      className='text-muted-foreground hover:text-foreground hover:bg-muted font-medium'
                       disabled={disabled}
                       variant='ghost'
                     />
                   }
                 >
-                  <PaperclipIcon size={16} />
+                  <PaperclipIcon className='size-4' />
                 </DropdownMenuTrigger>
               }
             />
@@ -122,7 +123,7 @@ export function PlaygroundInputTools({
                   key={action}
                   onClick={() => handleFileAction(action)}
                 >
-                  <Icon className='mr-2' size={16} />
+                  <Icon className='mr-2 size-4' />
                   {t(label)}
                 </DropdownMenuItem>
               ))}
@@ -135,12 +136,12 @@ export function PlaygroundInputTools({
             render={
               <PromptInputButton
                 aria-label={t('Search')}
-                className='text-muted-foreground hover:text-foreground hover:bg-muted/70 font-medium'
+                className='text-muted-foreground hover:text-foreground hover:bg-muted font-medium'
                 disabled={disabled}
                 onClick={handleSearchAction}
                 variant='ghost'
               >
-                <GlobeIcon size={16} />
+                <GlobeIcon className='size-4' />
               </PromptInputButton>
             }
           />
@@ -162,12 +163,12 @@ export function PlaygroundInputTools({
             render={
               <PromptInputButton
                 aria-label={t('Clear chat history')}
-                className='text-muted-foreground hover:text-destructive hover:bg-destructive/10 font-medium'
+                className='text-muted-foreground hover:text-destructive hover:bg-destructive-subtle font-medium'
                 disabled={disabled || !hasMessages || !onClearMessages}
                 onClick={() => setClearConfirmOpen(true)}
                 variant='ghost'
               >
-                <Trash2Icon size={16} />
+                <Trash2Icon className='size-4' />
               </PromptInputButton>
             }
           />

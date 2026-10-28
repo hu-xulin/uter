@@ -111,7 +111,7 @@ export function PlaygroundMessageEditor({
           size='icon-sm'
           type='button'
         >
-          <Send className='size-4' />
+          <Send className='size-4.5' />
         </Button>
       )}
 
@@ -123,7 +123,7 @@ export function PlaygroundMessageEditor({
         type='button'
         variant={showSaveAndSubmit ? 'ghost' : 'default'}
       >
-        <Check className='size-4' />
+        <Check className='size-4.5' />
       </Button>
 
       {hasChanged && (
@@ -134,7 +134,7 @@ export function PlaygroundMessageEditor({
           type='button'
           variant='ghost'
         >
-          <RotateCcw className='size-4' />
+          <RotateCcw className='size-4.5' />
         </Button>
       )}
 
@@ -145,7 +145,7 @@ export function PlaygroundMessageEditor({
         type='button'
         variant='ghost'
       >
-        <X className='size-4' />
+        <X className='size-4.5' />
       </Button>
     </>
   )
@@ -163,7 +163,7 @@ export function PlaygroundMessageEditor({
         title={
           <span className='inline-flex items-center gap-2'>
             <span>{t('Edit')}</span>
-            <span className='text-muted-foreground/80 normal-case'>
+            <span className='text-muted-foreground normal-case'>
               {hasChanged ? t('Unsaved changes') : t('No changes')}
             </span>
           </span>
