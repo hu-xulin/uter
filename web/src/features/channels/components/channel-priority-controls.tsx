@@ -76,7 +76,7 @@ export function ChannelPriorityHandle(props: { id: number }) {
           onPointerDown={(event) => controls.start(event, props.id)}
           onKeyDown={(event) => controls.keyDown(event, props.id)}
         >
-          <GripVertical className='size-4' aria-hidden />
+          <GripVertical className='size-4.5' aria-hidden />
         </Button>
       </TooltipTrigger>
       <TooltipContent>{hint}</TooltipContent>
@@ -111,6 +111,10 @@ export function ChannelSortControl(props: {
       >
         <SelectTrigger
           aria-label={t('Sort channels by')}
+          // 与同一行的创建按钮、方向按钮、批量/标签开关组同高：
+          // 右侧操作区统一走紧凑档 --ds-button-height-sm（32px），下拉若吃
+          // default 档的 --ds-control-height-md（40px），整条工具栏就会参差 8px。
+          size='sm'
           className='bg-background min-w-24'
         >
           <SelectValue />
@@ -125,7 +129,7 @@ export function ChannelSortControl(props: {
       </Select>
       <Button
         type='button'
-        size='icon'
+        size='icon-sm'
         variant='outline'
         disabled={props.disabled}
         aria-label={props.desc ? t('Descending') : t('Ascending')}
@@ -133,9 +137,9 @@ export function ChannelSortControl(props: {
         onClick={() => props.onChange(props.field, !props.desc)}
       >
         {props.desc ? (
-          <ArrowDown aria-hidden className='size-4' />
+          <ArrowDown aria-hidden className='size-4.5' />
         ) : (
-          <ArrowUp aria-hidden className='size-4' />
+          <ArrowUp aria-hidden className='size-4.5' />
         )}
       </Button>
     </ButtonGroup>
@@ -189,7 +193,7 @@ export function ChannelPriorityModeToggle(props: {
           <Button
             type='button'
             variant='outline'
-            className='text-muted-foreground aria-pressed:border-primary/30 aria-pressed:bg-primary/10 aria-pressed:text-primary aria-pressed:hover:bg-primary/15'
+            className='text-muted-foreground aria-pressed:border-primary/30 aria-pressed:bg-primary-subtle aria-pressed:text-sidebar-active-foreground aria-pressed:hover:bg-primary-subtle-hover'
             aria-pressed={props.active}
             disabled={!!props.reason}
             onClick={() => {
@@ -199,7 +203,7 @@ export function ChannelPriorityModeToggle(props: {
               }
             }}
           >
-            <GripVertical className='size-4' aria-hidden />
+            <GripVertical className='size-4.5' aria-hidden />
             {props.active ? t('Finish reordering') : t('Drag mode')}
           </Button>
         </TooltipTrigger>
@@ -266,7 +270,7 @@ export function ChannelPriorityStatus(props: {
           disabled={order.active || order.saving}
           onClick={() => void order.restore()}
         >
-          <Undo2 className='size-3.5' aria-hidden />
+          <Undo2 className='size-4.5' aria-hidden />
           {t('Undo')}
         </Button>
       )}

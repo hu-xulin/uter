@@ -105,7 +105,7 @@ function ModelCategory(props: ModelCategoryProps) {
           <span className='text-muted-foreground ml-auto text-xs'>
             {selectedCount} / {props.models.length}
           </span>
-          <ChevronDown className='size-4' aria-hidden='true' />
+          <ChevronDown className='size-4.5' aria-hidden='true' />
         </CollapsibleTrigger>
       </div>
       <CollapsibleContent className='border-t px-3 py-2'>
@@ -147,9 +147,7 @@ function ModelCategory(props: ModelCategoryProps) {
               {props.redirectOnly.has(normalizeModelName(model)) && (
                 <Tooltip>
                   <TooltipTrigger
-                    render={
-                      <Info className='size-3.5 shrink-0 text-amber-500' />
-                    }
+                    render={<Info className='text-warning size-4 shrink-0' />}
                   />
                   <TooltipContent>
                     {t('From model redirect, not yet added to models list')}
@@ -378,7 +376,7 @@ export function UpstreamModelSelection(props: UpstreamModelSelectionProps) {
               value='removed'
               className='max-h-96 space-y-2 overflow-y-auto'
             >
-              <p className='text-muted-foreground text-xs'>
+              <p className='text-muted-foreground text-sm'>
                 {t(
                   'These models were not returned by the upstream. Uncheck to remove them, or select them again before saving. Model mapping source aliases are excluded.'
                 )}

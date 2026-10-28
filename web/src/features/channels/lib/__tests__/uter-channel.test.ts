@@ -76,8 +76,7 @@ describe('Uter channel', () => {
     }
 
     expect(
-      channelFormSchema.safeParse(uterForm('https://uter.example'))
-        .success
+      channelFormSchema.safeParse(uterForm('https://uter.example')).success
     ).toBe(true)
   })
 

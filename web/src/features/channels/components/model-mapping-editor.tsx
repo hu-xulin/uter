@@ -383,11 +383,11 @@ export function ModelMappingEditor(props: ModelMappingEditorProps) {
         <div className='flex flex-wrap items-center justify-between gap-3'>
           <TabsList>
             <TabsTrigger value='visual'>
-              <Table className='h-4 w-4' aria-hidden='true' />
+              <Table className='h-4.5 w-4.5' aria-hidden='true' />
               {t('Visual')}
             </TabsTrigger>
             <TabsTrigger value='json'>
-              <Code className='h-4 w-4' aria-hidden='true' />
+              <Code className='h-4.5 w-4.5' aria-hidden='true' />
               {t('JSON')}
             </TabsTrigger>
           </TabsList>
@@ -407,8 +407,7 @@ export function ModelMappingEditor(props: ModelMappingEditorProps) {
             <Button
               type='button'
               variant='link'
-              size='sm'
-              className='h-auto p-0'
+              size='inline'
               onClick={handleFillTemplate}
               disabled={props.disabled}
             >
@@ -434,7 +433,7 @@ export function ModelMappingEditor(props: ModelMappingEditorProps) {
         )}
 
         <TabsContent value='visual' className='space-y-2'>
-          <p className='text-muted-foreground text-xs'>
+          <p className='text-muted-foreground text-sm'>
             {t(
               'Users call the model on the left. The platform forwards the request to the upstream model on the right.'
             )}
@@ -450,7 +449,7 @@ export function ModelMappingEditor(props: ModelMappingEditorProps) {
                     onChange={(event) => setFilter(event.target.value)}
                   />
                   {filterKeyword && (
-                    <p className='text-muted-foreground text-xs'>
+                    <p className='text-muted-foreground text-sm'>
                       {t('Showing {{shown}} of {{total}} mappings', {
                         shown: visibleRows.length,
                         total: rows.length,
@@ -498,13 +497,12 @@ export function ModelMappingEditor(props: ModelMappingEditorProps) {
                   <Button
                     type='button'
                     variant='ghost'
-                    size='icon'
+                    size='icon-lg'
                     onClick={() => handleDeleteRow(row.id)}
                     disabled={props.disabled}
-                    className='h-10 w-10'
                     aria-label={t('Delete mapping')}
                   >
-                    <Trash2 className='h-4 w-4' aria-hidden='true' />
+                    <Trash2 className='h-4.5 w-4.5' aria-hidden='true' />
                   </Button>
                 </div>
               ))}
@@ -529,7 +527,7 @@ export function ModelMappingEditor(props: ModelMappingEditorProps) {
             disabled={props.disabled}
             className='w-full'
           >
-            <Plus className='mr-2 h-4 w-4' />
+            <Plus className='mr-2 h-4.5 w-4.5' />
             {t('Add Mapping')}
           </Button>
         </TabsContent>

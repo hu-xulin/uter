@@ -80,7 +80,7 @@ export function PassthroughWarningDialog(props: PassthroughWarningDialogProps) {
       onOpenChange={props.onOpenChange}
       title={
         <span className='text-destructive flex items-center gap-2'>
-          <AlertTriangle className='size-5 shrink-0' aria-hidden='true' />
+          <AlertTriangle className='size-4 shrink-0' aria-hidden='true' />
           {title}
         </span>
       }

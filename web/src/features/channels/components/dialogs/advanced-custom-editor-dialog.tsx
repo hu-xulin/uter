@@ -718,26 +718,26 @@ export function AdvancedCustomEditorDialog({
         <div className='border-b px-4 py-3'>
           <TabsList className='grid h-auto w-full grid-cols-2 gap-1 sm:grid-cols-5'>
             <TabsTrigger value='forwarding'>
-              <ListTree className='size-4' aria-hidden='true' />
+              <ListTree className='size-4.5' aria-hidden='true' />
               {t('Forwarding Routes')}
               <Badge variant='outline'>{routeRows.length}</Badge>
             </TabsTrigger>
             <TabsTrigger value='models'>
-              <ListTree className='size-4' aria-hidden='true' />
+              <ListTree className='size-4.5' aria-hidden='true' />
               {t('Model List')}
               <Badge variant='outline'>
                 {modelListRoute ? t('Configured') : t('Not configured')}
               </Badge>
             </TabsTrigger>
             <TabsTrigger value='balance'>
-              <CircleDollarSign className='size-4' aria-hidden='true' />
+              <CircleDollarSign className='size-4.5' aria-hidden='true' />
               {t('Balance Query')}
               <Badge variant='outline'>
                 {balanceRoute ? t('Configured') : t('Not configured')}
               </Badge>
             </TabsTrigger>
             <TabsTrigger value='display'>
-              <ImageUp className='size-4' aria-hidden='true' />
+              <ImageUp className='size-4.5' aria-hidden='true' />
               {t('Display')}
               <Badge variant='outline'>
                 {getAdvancedCustomDisplayName(normalizedConfig) ||
@@ -747,7 +747,7 @@ export function AdvancedCustomEditorDialog({
               </Badge>
             </TabsTrigger>
             <TabsTrigger value='json'>
-              <Code2 className='size-4' aria-hidden='true' />
+              <Code2 className='size-4.5' aria-hidden='true' />
               {t('Full JSON')}
             </TabsTrigger>
           </TabsList>
@@ -757,7 +757,7 @@ export function AdvancedCustomEditorDialog({
           <div className='flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between'>
             <div>
               <p className='font-medium'>{t('Forwarding Routes')}</p>
-              <p className='text-muted-foreground text-xs'>
+              <p className='text-muted-foreground text-sm'>
                 {t('Add routes individually or replace them from a template.')}
               </p>
             </div>
@@ -856,7 +856,7 @@ export function AdvancedCustomEditorDialog({
                   render={
                     <button
                       type='button'
-                      className='hover:bg-muted/50 focus-visible:ring-ring/50 flex min-h-11 w-full items-center gap-3 rounded-md px-3 py-2 text-left outline-none focus-visible:ring-3'
+                      className='hover:bg-muted/50 focus-visible:ring-ring flex min-h-11 w-full items-center gap-3 rounded-md px-3 py-2 text-left outline-none focus-visible:ring-2'
                     />
                   }
                 >
@@ -884,7 +884,7 @@ export function AdvancedCustomEditorDialog({
                         )}
                       />
                     </span>
-                    <span className='text-muted-foreground block truncate font-mono text-mono'>
+                    <span className='text-muted-foreground text-mono block truncate font-mono'>
                       {routeGroup.incomingPath}
                     </span>
                   </span>
@@ -981,11 +981,11 @@ export function AdvancedCustomEditorDialog({
             aria-invalid={Boolean(jsonError)}
             ariaLabel={t('Advanced text editing')}
           />
-          <p className='text-muted-foreground mt-2 text-xs'>
+          <p className='text-muted-foreground mt-2 text-sm'>
             {t('Edit JSON text directly. Format will be validated on save.')}
           </p>
           {jsonError ? (
-            <p className='text-destructive mt-1 text-xs'>{jsonError}</p>
+            <p className='text-destructive mt-1 text-sm'>{jsonError}</p>
           ) : null}
         </TabsContent>
       </Tabs>
@@ -1072,7 +1072,7 @@ function AdvancedCustomDisplayEditor(props: {
           placeholder={t('Advanced Custom')}
           maxLength={50}
         />
-        <p className='text-muted-foreground text-xs'>
+        <p className='text-muted-foreground text-sm'>
           {t(
             'Shown on channel cards and lists. Leave empty to use the default type name.'
           )}
@@ -1118,7 +1118,7 @@ function AdvancedCustomDisplayEditor(props: {
             </Button>
           )}
         </div>
-        <p className='text-muted-foreground text-xs'>
+        <p className='text-muted-foreground text-sm'>
           {t(
             'Paste an image URL or upload a local image (up to {{size}} KB). Leave empty to use the default logo.',
             { size: maxLogoKB }
@@ -1188,7 +1188,9 @@ function ManagementRouteEditor({
           <p className='text-muted-foreground mt-1 max-w-lg text-sm'>
             {description}
           </p>
-          <p className='text-muted-foreground mt-2 font-mono text-mono'>{path}</p>
+          <p className='text-muted-foreground text-mono mt-2 font-mono'>
+            {path}
+          </p>
         </div>
         <Button
           type='button'
@@ -1223,7 +1225,9 @@ function ManagementRouteEditor({
         <div>
           <p className='font-medium'>{title}</p>
           <p className='text-muted-foreground mt-1 text-sm'>{description}</p>
-          <p className='text-muted-foreground mt-1 font-mono text-mono'>{path}</p>
+          <p className='text-muted-foreground text-mono mt-1 font-mono'>
+            {path}
+          </p>
         </div>
         <Button
           type='button'
@@ -1301,7 +1305,7 @@ function ManagementRouteEditor({
           </>
         ) : null}
       </div>
-      <p className='text-muted-foreground text-xs'>
+      <p className='text-muted-foreground text-sm'>
         {t(upstreamPathDescriptionKey)}
       </p>
     </div>
@@ -1393,7 +1397,7 @@ function RouteGroupEditor({
               }))}
               value={incomingPath}
               onValueChange={onIncomingPathChange}
-              className='h-9 max-w-full lg:max-w-[420px]'
+              className='max-w-fullg:max-w-[420px]'
             />
           </div>
         </div>
@@ -1401,7 +1405,7 @@ function RouteGroupEditor({
 
       <div className={cn('px-3 py-2', !hideHeader && 'border-t')}>
         <div className='flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between'>
-          <p className='text-muted-foreground text-xs leading-relaxed'>
+          <p className='text-muted-foreground text-sm'>
             {isModelListGroup
               ? t(
                   'This route discovers upstream OpenAI models and cannot be split or matched by client model rules.'
@@ -1423,7 +1427,7 @@ function RouteGroupEditor({
           ) : null}
         </div>
         {groupHasError && validationError ? (
-          <p className='text-destructive mt-1 text-xs'>
+          <p className='text-destructive mt-1 text-sm'>
             {validationError.routeIndex !== undefined
               ? `${t('Route')} ${validationError.routeIndex + 1}: `
               : ''}
@@ -1687,7 +1691,7 @@ function RouteEditor({
                       <Badge
                         key={model}
                         variant={ruleKind === 'regex' ? 'outline' : 'secondary'}
-                        className='max-w-full gap-1.5 font-mono'
+                        className='text-mono max-w-full gap-1.5 font-mono'
                       >
                         <span className='font-sans text-xs font-semibold uppercase'>
                           {t(ruleKind === 'regex' ? 'Regex' : 'Exact')}
@@ -1719,7 +1723,7 @@ function RouteEditor({
               incomingPath
             )}
           />
-          <p className='text-muted-foreground text-xs leading-relaxed lg:hidden'>
+          <p className='text-muted-foreground text-sm lg:hidden'>
             {t(upstreamPathDescriptionKey)}
           </p>
         </FieldBlock>
@@ -1736,7 +1740,7 @@ function RouteEditor({
               setConverter(value as AdvancedCustomConverter)
             }
           >
-            <SelectTrigger className='w-full max-w-full lg:h-8'>
+            <SelectTrigger className='w-full max-w-full'>
               <SelectValue className='min-w-0 truncate'>
                 {t(converterTriggerLabel)}
               </SelectValue>
@@ -1752,7 +1756,7 @@ function RouteEditor({
                     value={option.value}
                     className={longSelectItemClass}
                   >
-                    <span className='min-w-0 leading-snug break-words whitespace-normal'>
+                    <span className='min-w-0 break-words whitespace-normal'>
                       {t(option.label)}
                     </span>
                   </SelectItem>
@@ -1773,7 +1777,7 @@ function RouteEditor({
               setAuthMode(value as AdvancedCustomAuthMode)
             }
           >
-            <SelectTrigger className='w-full max-w-full lg:h-8'>
+            <SelectTrigger className='w-full max-w-full'>
               <SelectValue className='min-w-0 truncate'>
                 {t(authLabel)}
               </SelectValue>
@@ -1810,7 +1814,7 @@ function RouteEditor({
               }
             />
           </div>
-          <p className='text-muted-foreground text-xs leading-relaxed lg:hidden'>
+          <p className='text-muted-foreground text-sm lg:hidden'>
             {t(passThroughDescriptionKey)}
           </p>
         </FieldBlock>
@@ -1844,7 +1848,7 @@ function RouteEditor({
       </div>
 
       {errorMessage ? (
-        <p className='text-destructive text-xs'>{t(errorMessage)}</p>
+        <p className='text-destructive text-sm'>{t(errorMessage)}</p>
       ) : null}
 
       {authMode === 'header' || authMode === 'query' ? (
@@ -1904,13 +1908,13 @@ function PassThroughHelpPopover() {
           <Button
             type='button'
             variant='ghost'
-            size='icon'
-            className='text-muted-foreground hover:text-foreground size-6'
+            size='icon-xs'
+            className='text-muted-foreground hover:text-foreground'
             aria-label={t('Pass-through help')}
           />
         }
       >
-        <Info className='size-3.5' aria-hidden='true' />
+        <Info className='size-4.5' aria-hidden='true' />
       </PopoverTrigger>
       <PopoverContent
         align='start'
@@ -1920,7 +1924,7 @@ function PassThroughHelpPopover() {
       >
         <PopoverHeader className='gap-1'>
           <PopoverTitle>{t('Pass-through')}</PopoverTitle>
-          <PopoverDescription className='text-xs leading-relaxed'>
+          <PopoverDescription className='text-xs'>
             {t(passThroughDescriptionKey)}
           </PopoverDescription>
         </PopoverHeader>
@@ -1939,13 +1943,13 @@ function ModelRuleHelpPopover() {
           <Button
             type='button'
             variant='ghost'
-            size='icon'
-            className='text-muted-foreground hover:text-foreground size-6'
+            size='icon-xs'
+            className='text-muted-foreground hover:text-foreground'
             aria-label={t('Client model matching help')}
           />
         }
       >
-        <Info className='size-3.5' aria-hidden='true' />
+        <Info className='size-4.5' aria-hidden='true' />
       </PopoverTrigger>
       <PopoverContent
         align='start'
@@ -1955,13 +1959,13 @@ function ModelRuleHelpPopover() {
       >
         <PopoverHeader className='gap-1'>
           <PopoverTitle>{t('Client model matching')}</PopoverTitle>
-          <PopoverDescription className='text-xs leading-relaxed'>
+          <PopoverDescription className='text-xs'>
             {t(
               'Rules match the original model value from the client request body.'
             )}
           </PopoverDescription>
         </PopoverHeader>
-        <div className='text-muted-foreground space-y-2 text-xs leading-relaxed'>
+        <div className='text-muted-foreground space-y-2 text-xs'>
           <p>
             {t(
               'Use exact model names such as gpt-4o, or regex rules prefixed with re: such as re:^gemini-.'

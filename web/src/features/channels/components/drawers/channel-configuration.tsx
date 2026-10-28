@@ -85,7 +85,7 @@ export function ChannelConfigurationStatusIndicator(props: {
           />
         }
       >
-        <StatusIcon className='size-3.5' aria-hidden='true' />
+        <StatusIcon className='size-4' aria-hidden='true' />
       </TooltipTrigger>
       <TooltipContent>{label}</TooltipContent>
     </Tooltip>

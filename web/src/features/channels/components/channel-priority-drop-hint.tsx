@@ -67,7 +67,7 @@ export function ChannelPriorityDropHint(props: {
     >
       <Badge
         variant={joining ? 'default' : 'warning'}
-        className='h-auto min-h-7 w-full justify-start gap-2 rounded-lg px-2.5 py-1.5 text-sm leading-snug whitespace-normal'
+        className='h-auto min-h-7 w-full justify-start gap-2 rounded-lg px-2.5 py-1.5 text-sm whitespace-normal'
       >
         {joining ? (
           <Layers aria-hidden className='shrink-0' />
@@ -82,9 +82,7 @@ export function ChannelPriorityDropHint(props: {
             : t('Release to insert a new priority tier')}
         </span>
       </Badge>
-      <p className='text-muted-foreground mt-2 text-xs leading-relaxed'>
-        {detail}
-      </p>
+      <p className='text-muted-foreground mt-2 text-sm'>{detail}</p>
     </div>,
     props.container
   )

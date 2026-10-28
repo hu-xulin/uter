@@ -91,7 +91,7 @@ export function DataTableTagRowActions({ row }: DataTableTagRowActionsProps) {
         <DropdownMenuItem onClick={handleBatchEdit}>
           {t('Batch Edit')}
           <DropdownMenuShortcut>
-            <Pencil size={16} />
+            <Pencil className='size-4' />
           </DropdownMenuShortcut>
         </DropdownMenuItem>
 
@@ -101,7 +101,7 @@ export function DataTableTagRowActions({ row }: DataTableTagRowActionsProps) {
         <DropdownMenuItem onClick={handleEnableAll}>
           {t('Enable All')}
           <DropdownMenuShortcut>
-            <Power size={16} />
+            <Power className='size-4' />
           </DropdownMenuShortcut>
         </DropdownMenuItem>
 
@@ -109,7 +109,7 @@ export function DataTableTagRowActions({ row }: DataTableTagRowActionsProps) {
         <DropdownMenuItem onClick={handleDisableAll}>
           {t('Disable All')}
           <DropdownMenuShortcut>
-            <PowerOff size={16} />
+            <PowerOff className='size-4' />
           </DropdownMenuShortcut>
         </DropdownMenuItem>
       </DataTableRowActionMenu>

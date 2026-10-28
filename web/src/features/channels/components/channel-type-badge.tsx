@@ -36,8 +36,8 @@ import { useAuthStore } from '@/stores/auth-store'
 
 import { getTaskPluginOptions } from '../api'
 import { CHANNEL_TYPE_OPTIONS, CHANNEL_TYPE_TASK_PLUGIN } from '../constants'
-import { getChannelTypeIcon } from '../lib/channel-utils'
 import { isAdvancedCustomLikeChannelType } from '../lib/advanced-custom'
+import { getChannelTypeIcon } from '../lib/channel-utils'
 
 export function ChannelTypeLogo(props: {
   type: number

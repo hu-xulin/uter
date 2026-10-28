@@ -27,6 +27,7 @@ import { LoadingState } from '@/components/loading-state'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Heading } from '@/design-system'
 import { toIntlLocale } from '@/i18n/languages'
 import { formatNumber } from '@/lib/format'
 
@@ -42,11 +43,11 @@ function ModelChangeList(props: { title: string; models: string[] }) {
   const locale = toIntlLocale(i18n.resolvedLanguage || i18n.language)
   return (
     <section aria-label={props.title} className='min-w-0 space-y-2'>
-      <h3 className='text-sm font-medium'>
+      <Heading variant='group-title' level={3}>
         {props.title} ({formatNumber(props.models.length, locale)})
-      </h3>
+      </Heading>
       {props.models.length ? (
-        <ul className='max-h-40 space-y-1 overflow-y-auto rounded-md border p-3 font-mono text-mono break-all'>
+        <ul className='text-mono max-h-40 space-y-1 overflow-y-auto rounded-md border p-3 font-mono break-all'>
           {props.models.map((model) => (
             <li key={model}>{model}</li>
           ))}
@@ -99,7 +100,7 @@ function UpstreamUpdateSession(props: UpstreamUpdateDialogProps) {
         }
         description={<span className='break-all'>{channelLabel}</span>}
         bodyClassName='space-y-4'
-        titleClassName='pr-6 leading-snug'
+        titleClassName='pr-6'
         footerClassName='sm:flex-wrap'
         footer={
           <>
@@ -113,7 +114,8 @@ function UpstreamUpdateSession(props: UpstreamUpdateDialogProps) {
             {isPreview && (
               <>
                 <Button
-                  className='h-auto min-h-8 max-w-full whitespace-normal'
+                  size='wrap'
+                  className='max-w-full'
                   variant='outline'
                   onClick={() =>
                     props.upstream.detectChannelUpdates(props.upstream.channel)
@@ -123,7 +125,8 @@ function UpstreamUpdateSession(props: UpstreamUpdateDialogProps) {
                   {t('Refresh preview')}
                 </Button>
                 <Button
-                  className='h-auto min-h-8 max-w-full whitespace-normal'
+                  size='wrap'
+                  className='max-w-full'
                   onClick={() => setConfirmOpen(true)}
                   disabled={
                     props.upstream.applyLoading ||
@@ -221,13 +224,13 @@ function UpstreamUpdateSession(props: UpstreamUpdateDialogProps) {
                 <TabsList className='grid w-full grid-cols-2 group-data-horizontal/tabs:h-auto'>
                   <TabsTrigger
                     value='add'
-                    className='h-auto min-h-7 whitespace-normal'
+                    className='h-auto min-h-8 whitespace-normal'
                   >
                     {t('Add Models')} ({props.upstream.addModels.length})
                   </TabsTrigger>
                   <TabsTrigger
                     value='remove'
-                    className='h-auto min-h-7 whitespace-normal'
+                    className='h-auto min-h-8 whitespace-normal'
                   >
                     {t('Remove Models')} ({props.upstream.removeModels.length})
                   </TabsTrigger>

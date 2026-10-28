@@ -320,7 +320,7 @@ export function MultiKeyManageDialog({
                 onClick={() => loadKeyStatus()}
                 disabled={isLoading}
               >
-                <RefreshCw className='h-4 w-4' />
+                <RefreshCw className='h-4.5 w-4.5' />
               </Button>
 
               {manualDisabledCount + autoDisabledCount > 0 && (
@@ -329,7 +329,7 @@ export function MultiKeyManageDialog({
                   size='sm'
                   onClick={() => setConfirmAction({ type: 'enable-all' })}
                 >
-                  <Power className='mr-2 h-4 w-4' />
+                  <Power className='mr-2 h-4.5 w-4.5' />
                   {t('Enable All')}
                 </Button>
               )}
@@ -340,7 +340,7 @@ export function MultiKeyManageDialog({
                   size='sm'
                   onClick={() => setConfirmAction({ type: 'disable-all' })}
                 >
-                  <PowerOff className='mr-2 h-4 w-4' />
+                  <PowerOff className='mr-2 h-4.5 w-4.5' />
                   {t('Disable All')}
                 </Button>
               )}
@@ -360,14 +360,14 @@ export function MultiKeyManageDialog({
                       : t('No permission to perform this action')
                   }
                 >
-                  <Trash2 className='mr-2 h-4 w-4' />
+                  <Trash2 className='mr-2 h-4.5 w-4.5' />
                   {t('Delete Auto-Disabled')}
                 </Button>
               )}
             </div>
           </div>
           {!canEditSensitive && (
-            <p className='text-muted-foreground text-xs'>
+            <p className='text-muted-foreground text-sm'>
               {t('No permission to perform this action')}
             </p>
           )}

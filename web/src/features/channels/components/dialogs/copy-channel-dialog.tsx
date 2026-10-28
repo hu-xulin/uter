@@ -91,7 +91,7 @@ export function CopyChannelDialog({
             {t('Cancel')}
           </Button>
           <Button onClick={handleCopy} disabled={isCopying}>
-            {isCopying && <Loader2 className='mr-2 h-4 w-4 animate-spin' />}
+            {isCopying && <Loader2 className='mr-2 h-4.5 w-4.5 animate-spin' />}
             {isCopying ? t('Copying...') : t('Copy Channel')}
           </Button>
         </>
@@ -107,7 +107,7 @@ export function CopyChannelDialog({
             onChange={(e) => setSuffix(e.target.value)}
             disabled={isCopying}
           />
-          <p className='text-muted-foreground text-xs'>
+          <p className='text-muted-foreground text-sm'>
             {t('New name will be:')} {currentRow.name}
             {suffix}
           </p>

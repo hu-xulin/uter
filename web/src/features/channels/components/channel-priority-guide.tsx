@@ -74,7 +74,7 @@ export function ChannelPriorityGuide(props: {
           aria-label={t('Drag mode help')}
           title={t('Drag mode help')}
         >
-          <CircleHelp className='size-4' aria-hidden />
+          <CircleHelp className='size-4.5' aria-hidden />
         </Button>
       }
       footerClassName='flex-row items-center justify-between sm:justify-between'
@@ -90,7 +90,7 @@ export function ChannelPriorityGuide(props: {
                 setPlayback((value) => value + 1)
               }}
             >
-              <RotateCcw className='size-4' aria-hidden />
+              <RotateCcw className='size-4.5' aria-hidden />
               {t('Replay drag demo')}
             </Button>
             {!reduced && (
@@ -105,9 +105,9 @@ export function ChannelPriorityGuide(props: {
                 onClick={() => setPlaying((value) => !value)}
               >
                 {playing ? (
-                  <Pause className='size-4' aria-hidden />
+                  <Pause className='size-4.5' aria-hidden />
                 ) : (
-                  <Play className='size-4' aria-hidden />
+                  <Play className='size-4.5' aria-hidden />
                 )}
               </Button>
             )}
@@ -133,14 +133,14 @@ export function ChannelPriorityGuide(props: {
             value='same'
             className='data-active:text-primary h-auto min-h-9 px-2 py-2 text-sm whitespace-normal'
           >
-            <Layers className='size-4 shrink-0' aria-hidden />
+            <Layers className='size-4.5 shrink-0' aria-hidden />
             <span>{t('Join the same priority tier')}</span>
           </TabsTrigger>
           <TabsTrigger
             value='insert'
-            className='h-auto min-h-9 px-2 py-2 text-sm whitespace-normal data-active:text-amber-700 dark:data-active:text-amber-400'
+            className='data-active:text-warning dark:data-active:text-warning h-auto min-h-9 px-2 py-2 text-sm whitespace-normal'
           >
-            <ArrowDownToLine className='size-4 shrink-0' aria-hidden />
+            <ArrowDownToLine className='size-4.5 shrink-0' aria-hidden />
             <span>{t('Insert a new priority tier')}</span>
           </TabsTrigger>
         </TabsList>
@@ -158,7 +158,7 @@ export function ChannelPriorityGuide(props: {
           </TabsContent>
         ))}
       </Tabs>
-      <p className='text-muted-foreground mt-3 border-t pt-3 text-xs leading-5'>
+      <p className='text-muted-foreground mt-3 border-t pt-3 text-sm'>
         {t('Changes save on drop. You can undo the last move.')}
       </p>
     </Dialog>

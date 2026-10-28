@@ -71,10 +71,10 @@ export function ChannelAdvancedSection(props: ChannelAdvancedSectionProps) {
             <Settings className='h-4 w-4' aria-hidden='true' />
           </span>
           <div className='flex flex-col gap-0.5'>
-            <div className='text-sm font-semibold'>
+            <div className='text-lg font-semibold'>
               {t('Advanced Settings')}
             </div>
-            <div className='text-muted-foreground text-xs'>
+            <div className='text-muted-foreground text-sm'>
               {props.summary ??
                 t(
                   'Request overrides, routing behavior, and upstream model automation'

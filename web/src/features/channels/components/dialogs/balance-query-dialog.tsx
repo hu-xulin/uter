@@ -214,7 +214,7 @@ export function BalanceQueryDialog(props: BalanceQueryDialogProps) {
                 </IconBadge>
                 <span>{t('Current Balance')}</span>
               </div>
-              <div className='text-2xl font-bold'>
+              <div className='text-2xl font-semibold'>
                 {balance !== null
                   ? formatBalance(balance)
                   : formatBalance(currentRow.balance)}
@@ -235,8 +235,8 @@ export function BalanceQueryDialog(props: BalanceQueryDialogProps) {
           onClick={handleQueryBalance}
           disabled={isQuerying}
         >
-          {isQuerying && <Loader2 className='mr-2 h-4 w-4 animate-spin' />}
-          {!isQuerying && <RefreshCw className='mr-2 h-4 w-4' />}
+          {isQuerying && <Loader2 className='mr-2 h-4.5 w-4.5 animate-spin' />}
+          {!isQuerying && <RefreshCw className='mr-2 h-4.5 w-4.5' />}
           {isQuerying ? t('Querying...') : t('Update Balance')}
         </Button>
       </div>

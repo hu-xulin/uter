@@ -178,7 +178,7 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
               />
             }
           >
-            <Pencil className='size-4' />
+            <Pencil className='size-4.5' />
           </TooltipTrigger>
           <TooltipContent>{t('Edit')}</TooltipContent>
         </Tooltip>
@@ -197,9 +197,9 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
           }
         >
           {isTesting ? (
-            <Loader2 className='size-4 animate-spin' />
+            <Loader2 className='size-4.5 animate-spin' />
           ) : (
-            <Gauge className='size-4' />
+            <Gauge className='size-4.5' />
           )}
         </TooltipTrigger>
         <TooltipContent>{t('Test Connection')}</TooltipContent>
@@ -220,7 +220,7 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
               />
             }
           >
-            <PlugZap className='size-4' />
+            <PlugZap className='size-4.5' />
           </TooltipTrigger>
           <TooltipContent>{t('Test Channel Connection')}</TooltipContent>
         </Tooltip>
@@ -254,12 +254,13 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
         <DropdownMenuTrigger
           render={
             <Button
+              size='icon-sm'
               variant='ghost'
-              className='data-popup-open:bg-muted flex h-8 w-8 p-0'
+              className='data-popup-open:bg-muted flex p-0'
             />
           }
         >
-          <MoreHorizontal className='h-4 w-4' />
+          <MoreHorizontal className='h-4.5 w-4.5' />
           <span className='sr-only'>{t('Open menu')}</span>
         </DropdownMenuTrigger>
         <DropdownMenuContent align='end' className='w-48'>
@@ -267,7 +268,7 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
             <DropdownMenuItem onClick={handleEdit}>
               {t('Edit')}
               <DropdownMenuShortcut>
-                <Pencil size={16} />
+                <Pencil className='size-4' />
               </DropdownMenuShortcut>
             </DropdownMenuItem>
           )}
@@ -276,7 +277,7 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
           <DropdownMenuItem onClick={handleTest}>
             {t('Test Connection')}
             <DropdownMenuShortcut>
-              <PlugZap size={16} />
+              <PlugZap className='size-4' />
             </DropdownMenuShortcut>
           </DropdownMenuItem>
 
@@ -284,7 +285,7 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
           <DropdownMenuItem onClick={handleQueryBalance}>
             {t('Query Balance')}
             <DropdownMenuShortcut>
-              <DollarSign size={16} />
+              <DollarSign className='size-4' />
             </DropdownMenuShortcut>
           </DropdownMenuItem>
 
@@ -292,7 +293,7 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
           <DropdownMenuItem onClick={handleFetchModels}>
             {t('Fetch Models')}
             <DropdownMenuShortcut>
-              <Download size={16} />
+              <Download className='size-4' />
             </DropdownMenuShortcut>
           </DropdownMenuItem>
 
@@ -303,7 +304,7 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
             >
               {t('Upstream Updates')}
               <DropdownMenuShortcut>
-                <RefreshCw size={16} />
+                <RefreshCw className='size-4' />
               </DropdownMenuShortcut>
             </DropdownMenuItem>
           )}
@@ -313,7 +314,7 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
             <DropdownMenuItem onClick={handleManageOllamaModels}>
               {t('Manage Ollama Models')}
               <DropdownMenuShortcut>
-                <Boxes size={16} />
+                <Boxes className='size-4' />
               </DropdownMenuShortcut>
             </DropdownMenuItem>
           )}
@@ -327,7 +328,7 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
           >
             {t('Copy Channel')}
             <DropdownMenuShortcut>
-              <Copy size={16} />
+              <Copy className='size-4' />
             </DropdownMenuShortcut>
           </DropdownMenuItem>
           {!canEditSensitive && (
@@ -341,7 +342,7 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
             <DropdownMenuItem onClick={handleManageKeys}>
               {t('Manage Keys')}
               <DropdownMenuShortcut>
-                <Key size={16} />
+                <Key className='size-4' />
               </DropdownMenuShortcut>
             </DropdownMenuItem>
           )}
@@ -360,7 +361,7 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
           >
             {t('Delete')}
             <DropdownMenuShortcut>
-              <Trash2 size={16} />
+              <Trash2 className='size-4' />
             </DropdownMenuShortcut>
           </DropdownMenuItem>
         </DropdownMenuContent>

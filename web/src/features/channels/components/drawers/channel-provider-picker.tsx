@@ -392,16 +392,19 @@ export function ChannelProviderPicker(props: ChannelProviderPickerProps) {
                               copyable={false}
                               size='sm'
                               className={
+                                // 徽标文字用语义色，不写 color-mix 硬编码：
+                                // warning 走已登记的 soft-foreground 档，
+                                // primary 直接用品牌色（浅底上对比度足够）。
                                 option.badge.tone === 'warning'
-                                  ? 'bg-warning/10 text-xs text-[color-mix(in_oklab,var(--warning)_50%,var(--foreground))]'
-                                  : 'bg-primary/10 text-xs text-[color-mix(in_oklab,var(--primary)_50%,var(--foreground))]'
+                                  ? 'bg-warning/10 text-warning-soft-foreground text-xs'
+                                  : 'bg-primary/10 text-primary text-xs'
                               }
                             />
                           )}
                         </span>
                         {option.description && (
                           <span
-                            className='text-muted-foreground mt-1 line-clamp-2 text-xs leading-relaxed break-words'
+                            className='text-muted-foreground mt-1 line-clamp-2 text-xs break-words'
                             title={option.detail || option.description}
                           >
                             {option.description}
@@ -428,7 +431,7 @@ export function ChannelProviderPicker(props: ChannelProviderPickerProps) {
                           title={option.extensionSummary}
                           className='text-muted-foreground flex min-w-0 items-center gap-1 text-xs'
                         >
-                          <Puzzle className='size-3' aria-hidden='true' />
+                          <Puzzle className='size-4' aria-hidden='true' />
                           <span className='truncate'>
                             {option.extensionNames}
                           </span>

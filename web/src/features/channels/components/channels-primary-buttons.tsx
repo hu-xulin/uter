@@ -111,13 +111,17 @@ export function ChannelsPrimaryButtons() {
       <div className='flex flex-wrap items-center gap-2'>
         <div ref={setPriorityActionContainer} className='empty:hidden' />
         {/* Desktop: Toggle switches visible */}
-        <div className='bg-muted/40 hidden h-8 shrink-0 items-center gap-2.5 rounded-lg border px-2.5 sm:flex'>
+        {/* 与同一行的创建按钮、排序控件、更多菜单同高：右侧操作区统一走
+            紧凑档 --ds-button-height-sm（32px）。原来写的是裸 `h-8`（同样是
+            32px），换成 Token 是为了「按钮档位改一处、整条工具栏跟着变」——
+            值不变，别再改回 default 档的 36px，否则左半截会凸出来 4px。 */}
+        <div className='bg-muted/40 hidden h-(--ds-button-height-sm) shrink-0 items-center gap-2.5 rounded-lg border px-2.5 sm:flex'>
           <div className='text-muted-foreground has-data-checked:text-foreground flex items-center gap-2'>
             <Label
               htmlFor='channel-batch-mode'
-              className='cursor-pointer gap-1.5 text-xs whitespace-nowrap'
+              className='cursor-pointer gap-1.5 whitespace-nowrap'
             >
-              <ListChecks className='size-3.5' aria-hidden />
+              <ListChecks className='size-4' aria-hidden />
               {t('Batch Operations')}
             </Label>
             <Switch
@@ -131,9 +135,9 @@ export function ChannelsPrimaryButtons() {
           <div className='text-muted-foreground has-data-checked:text-foreground flex items-center gap-2'>
             <Label
               htmlFor='tag-mode'
-              className='cursor-pointer gap-1.5 text-xs whitespace-nowrap'
+              className='cursor-pointer gap-1.5 whitespace-nowrap'
             >
-              <Tags className='size-3.5' aria-hidden />
+              <Tags className='size-4' aria-hidden />
               {t('Tag Mode')}
             </Label>
             <Switch
@@ -161,6 +165,7 @@ export function ChannelsPrimaryButtons() {
         <Tooltip>
           <TooltipTrigger render={<span className='inline-flex' />}>
             <Button
+              size='sm'
               onClick={() => {
                 if (!canEditSensitive) return
                 setCurrentRow(null)
@@ -168,7 +173,7 @@ export function ChannelsPrimaryButtons() {
               }}
               disabled={!canEditSensitive}
             >
-              <Plus className='h-4 w-4' />
+              <Plus className='size-4' />
               <span className='max-sm:hidden'>{t('Create Channel')}</span>
               <span className='sm:hidden'>{t('Create')}</span>
             </Button>
@@ -183,10 +188,10 @@ export function ChannelsPrimaryButtons() {
         {/* More Actions */}
         <DropdownMenu>
           <DropdownMenuTrigger
-            render={<Button variant='outline' size='icon' />}
+            render={<Button variant='outline' size='icon-sm' />}
             aria-label={t('More actions')}
           >
-            <MoreHorizontal className='size-4' aria-hidden />
+            <MoreHorizontal className='size-4.5' aria-hidden />
           </DropdownMenuTrigger>
           <DropdownMenuContent align='end' className='w-56'>
             {/* Mobile-only: toggle switches */}

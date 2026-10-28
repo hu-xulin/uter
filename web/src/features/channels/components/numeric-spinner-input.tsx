@@ -140,14 +140,17 @@ export function NumericSpinnerInput({
   return (
     <div className={cn('inline-flex items-center', className)}>
       {label && (
-        <Label className='text-muted-foreground mr-1.5 text-xs'>{label}</Label>
+        <Label className='text-muted-foreground mr-1.5 text-sm'>{label}</Label>
       )}
       <div
         onBlur={handleControlBlur}
         className={cn(
           'group/spinner border-input inline-flex h-7 items-center gap-0 rounded-md border transition-colors',
           !disabled && 'hover:bg-muted/60',
-          editing && 'bg-muted/60 ring-primary/30 ring-1'
+          // 编辑态只换底色，不再叠环：内层 input 已有规范 §1.7 的 2px `ring`
+          // 焦点环，容器上再画一圈 1px `ring-primary/30` 等于同一屏出现两套
+          // 焦点指示器（而且是半透明的第二套颜色）。
+          editing && 'bg-muted/60'
         )}
       >
         <button
@@ -157,7 +160,7 @@ export function NumericSpinnerInput({
           onClick={handleDecrement}
           disabled={disabled || atMin}
           className={cn(
-            'text-muted-foreground/0 group-hover/spinner:text-muted-foreground flex h-7 w-6 shrink-0 items-center justify-center rounded-l-md transition-colors',
+            'text-muted-foreground opacity-0 group-hover/spinner:opacity-100 flex h-7 w-6 shrink-0 items-center justify-center rounded-l-md transition-colors',
             !disabled &&
               !atMin &&
               'group-hover/spinner:hover:text-foreground group-hover/spinner:hover:bg-muted',
@@ -176,7 +179,7 @@ export function NumericSpinnerInput({
             onChange={handleInputChange}
             onBlur={commitValue}
             onKeyDown={handleKeyDown}
-            className='h-7 w-10 bg-transparent text-center font-mono text-mono outline-none'
+            className='text-mono focus-visible:ring-ring h-7 w-10 rounded-sm bg-transparent text-center font-mono outline-none focus-visible:ring-2'
             autoFocus
           />
         ) : (
@@ -202,7 +205,7 @@ export function NumericSpinnerInput({
           onClick={handleIncrement}
           disabled={disabled || atMax}
           className={cn(
-            'text-muted-foreground/0 group-hover/spinner:text-muted-foreground flex h-7 w-6 shrink-0 items-center justify-center rounded-r-md transition-colors',
+            'text-muted-foreground opacity-0 group-hover/spinner:opacity-100 flex h-7 w-6 shrink-0 items-center justify-center rounded-r-md transition-colors',
             !disabled &&
               !atMax &&
               'group-hover/spinner:hover:text-foreground group-hover/spinner:hover:bg-muted',

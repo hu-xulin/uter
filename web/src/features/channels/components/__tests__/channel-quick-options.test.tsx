@@ -32,10 +32,7 @@ import { beforeEach, describe, expect, test, vi } from 'vitest'
 import { Form } from '@/components/ui/form'
 import { api } from '@/lib/api'
 
-import {
-  CHANNEL_TYPE_SUB2API,
-  CHANNEL_TYPE_TASK_PLUGIN,
-} from '../../constants'
+import { CHANNEL_TYPE_SUB2API, CHANNEL_TYPE_TASK_PLUGIN } from '../../constants'
 import { CHANNEL_TYPE_ADVANCED_CUSTOM } from '../../lib/advanced-custom'
 import {
   CHANNEL_FORM_DEFAULT_VALUES,
@@ -277,20 +274,18 @@ test('task plugin channels hide both passthrough switches', () => {
 describe('responses websocket quick option', () => {
   const WEBSOCKET_SWITCH = { name: 'Responses WebSocket' }
 
-  test.each([
-    1,
-    57,
-    CHANNEL_TYPE_ADVANCED_CUSTOM,
-    CHANNEL_TYPE_SUB2API,
-  ])('is offered for channel type %s', (channelType) => {
-    render(
-      <QuickOptionsHarness
-        channelType={channelType}
-        confirm={() => Promise.resolve(true)}
-      />
-    )
-    expect(screen.getByRole('switch', WEBSOCKET_SWITCH)).toBeInTheDocument()
-  })
+  test.each([1, 57, CHANNEL_TYPE_ADVANCED_CUSTOM, CHANNEL_TYPE_SUB2API])(
+    'is offered for channel type %s',
+    (channelType) => {
+      render(
+        <QuickOptionsHarness
+          channelType={channelType}
+          confirm={() => Promise.resolve(true)}
+        />
+      )
+      expect(screen.getByRole('switch', WEBSOCKET_SWITCH)).toBeInTheDocument()
+    }
+  )
 
   test.each([14, CHANNEL_TYPE_TASK_PLUGIN])(
     'is hidden for channel type %s',

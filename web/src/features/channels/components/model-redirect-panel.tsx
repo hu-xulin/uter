@@ -84,10 +84,7 @@ export function ModelRedirectPanel(props: ModelRedirectPanelProps) {
               props.onSyncModelsChange(checked === true)
             }
           />
-          <Label
-            htmlFor={`${id}-sync`}
-            className='text-xs leading-5 font-normal'
-          >
+          <Label htmlFor={`${id}-sync`} className='text-sm font-normal'>
             {t(
               'Publish the request names and remove the raw upstream names from the model list'
             )}
