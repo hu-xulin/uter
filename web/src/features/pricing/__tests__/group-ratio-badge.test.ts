@@ -18,7 +18,11 @@ For commercial licensing, please contact support@uter.ai
 */
 import { describe, expect, it } from 'vitest'
 
-import { formatGroupRatio, groupRatioBadgeClass } from '../lib/group-ratio'
+import {
+  formatGroupRatio,
+  groupRatioBadgeClass,
+  hasGroupRatioBadge,
+} from '../lib/group-ratio'
 
 /**
  * 分组筛选（VIP0 … VIP5）的倍率徽标。
@@ -36,6 +40,15 @@ describe('分组倍率徽标', () => {
     expect(formatGroupRatio(1.05)).toBe('x1.05')
     expect(formatGroupRatio(0)).toBe('x0.0')
     expect(formatGroupRatio(undefined)).toBeUndefined()
+  })
+
+  it('倍率为 0 时不显示徽标（x0.0 会被误读成免费）', () => {
+    expect(hasGroupRatioBadge(0)).toBe(false)
+    // 未配置（undefined）与正常倍率仍照常处理。
+    expect(hasGroupRatioBadge(undefined)).toBe(false)
+    expect(hasGroupRatioBadge(1)).toBe(true)
+    expect(hasGroupRatioBadge(0.9)).toBe(true)
+    expect(hasGroupRatioBadge(1.2)).toBe(true)
   })
 
   it('≤1 与 VIP1 同色，溢价保持中性灰', () => {
