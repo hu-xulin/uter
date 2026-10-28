@@ -342,7 +342,7 @@ export function UserBindingDialog(props: Props) {
         onOpenChange={props.onOpenChange}
         title={
           <>
-            <Link2 className='h-5 w-5' />
+            <Link2 className='h-4 w-4' />
             {t('Account Binding Management')}
           </>
         }
@@ -355,7 +355,7 @@ export function UserBindingDialog(props: Props) {
       >
         {loading || statusLoading ? (
           <div className='flex items-center justify-center py-8'>
-            <Loader2 className='text-muted-foreground h-6 w-6 animate-spin' />
+            <Loader2 className='text-muted-foreground size-8 animate-spin' />
           </div>
         ) : (
           <div className='space-y-3'>
@@ -372,15 +372,15 @@ export function UserBindingDialog(props: Props) {
                       <Button
                         variant='ghost'
                         size='sm'
-                        className='h-7 gap-1.5 px-2 text-xs'
+                        className='gap-1.5 px-2 text-sm'
                         onClick={() => setShowBoundOnly((v) => !v)}
                       />
                     }
                   >
                     {showBoundOnly ? (
-                      <Eye className='h-3.5 w-3.5' />
+                      <Eye className='h-4.5 w-4.5' />
                     ) : (
-                      <EyeOff className='h-3.5 w-3.5' />
+                      <EyeOff className='h-4.5 w-4.5' />
                     )}
                     {showBoundOnly ? t('Show All') : t('Bound Only')}
                   </TooltipTrigger>
@@ -429,7 +429,7 @@ export function UserBindingDialog(props: Props) {
                               />
                             )}
                           </div>
-                          <p className='text-muted-foreground max-w-[140px] truncate text-xs'>
+                          <p className='text-muted-foreground max-w-[140px] truncate text-sm'>
                             {binding.isBound ? binding.value : t('Not bound')}
                           </p>
                         </div>
@@ -437,11 +437,11 @@ export function UserBindingDialog(props: Props) {
                       {binding.isBound && (
                         <Button
                           variant='ghost'
-                          size='sm'
-                          className='text-destructive hover:text-destructive h-7 w-7 shrink-0 p-0'
+                          size='icon-sm'
+                          className='text-destructive hover:text-destructive shrink-0 p-0'
                           onClick={() => setUnbindTarget(binding)}
                         >
-                          <Unlink className='h-3.5 w-3.5' />
+                          <Unlink className='h-4.5 w-4.5' />
                         </Button>
                       )}
                     </div>
@@ -450,7 +450,7 @@ export function UserBindingDialog(props: Props) {
               )}
             </ScrollArea>
 
-            <p className='text-muted-foreground text-xs'>
+            <p className='text-muted-foreground text-sm'>
               {t('Bound')}: {boundCount} / {allBindings.length}
             </p>
           </div>

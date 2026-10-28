@@ -82,6 +82,16 @@ const ROLE_LABEL_KEY: Record<OrgRole, string> = {
 const PAGE_SIZE = 20
 
 /**
+ * 组织表单的字段标签：16/600。
+ *
+ * `Label` 的公共默认是 14/500（表单控件标签档），但组织页的表单是
+ * 「标题 18 → 字段名 16 → 输入值 14」的三层结构，字段名若沿用 14/500
+ * 就会和输入框里的值（14px）同号同重，扫描表单时找不到分段边界。
+ * 16/600 对应设计系统的 `group-title` 档，是这一层的唯一正确选择。
+ */
+const FORM_FIELD_LABEL_CLASS = 'text-base font-semibold'
+
+/**
  * 组织额度一律按**金额**展示，不用 token 数。
  *
  * `users.sub_quota_limit` / `organizations.quota` 存的是 quota（token 数），
@@ -154,11 +164,11 @@ function SubQuotaInput({
   return (
     <div className='flex flex-col gap-0.5'>
       <div className='flex items-center gap-1'>
-        <input
+        <Input
           type='number'
           min='0'
           step='0.01'
-          className='border-border bg-background h-8 w-28 rounded-md border px-2 text-left text-sm'
+          className='w-28 text-left'
           value={amount}
           placeholder={t('Unlimited')}
           aria-label={t('Sub-quota Limit ({{currency}})', {
@@ -504,7 +514,9 @@ function CreateOrganizationCard({ onCreated }: { onCreated: () => void }) {
           </CardHeader>
           <CardContent className='flex flex-col gap-4'>
             <div className='flex flex-col gap-2'>
-              <Label>{t('Organization Name')}</Label>
+              <Label className={FORM_FIELD_LABEL_CLASS}>
+                {t('Organization Name')}
+              </Label>
               <Input
                 value={name}
                 onChange={(e) => setName(e.target.value)}
@@ -512,21 +524,23 @@ function CreateOrganizationCard({ onCreated }: { onCreated: () => void }) {
               />
             </div>
             <div className='flex flex-col gap-2'>
-              <Label>{t('Organization Owner Username')}</Label>
+              <Label className={FORM_FIELD_LABEL_CLASS}>
+                {t('Organization Owner Username')}
+              </Label>
               <Input
                 value={ownerUsername}
                 onChange={(e) => setOwnerUsername(e.target.value)}
                 placeholder={t('Existing unassigned ordinary user')}
                 autoComplete='off'
               />
-              <p className='text-muted-foreground text-xs'>
+              <p className='text-muted-foreground text-sm'>
                 {t(
                   'The owner must be an enabled ordinary user who is not already in an organization.'
                 )}
               </p>
             </div>
             <div className='flex flex-col gap-2'>
-              <Label>
+              <Label className={FORM_FIELD_LABEL_CLASS}>
                 {t('Budget ({{currency}})', { currency: currencyLabel })}
               </Label>
               <Input
@@ -540,7 +554,7 @@ function CreateOrganizationCard({ onCreated }: { onCreated: () => void }) {
                 }}
                 placeholder='0.00'
               />
-              <p className='text-muted-foreground text-xs'>
+              <p className='text-muted-foreground text-sm'>
                 {t(
                   'Enter the budget in {{currency}}. Leave it empty or set 0 for unlimited.',
                   { currency: currencyLabel }
@@ -548,7 +562,9 @@ function CreateOrganizationCard({ onCreated }: { onCreated: () => void }) {
               </p>
             </div>
             <div className='flex flex-col gap-2'>
-              <Label>{t('Member Limit')}</Label>
+              <Label className={FORM_FIELD_LABEL_CLASS}>
+                {t('Member Limit')}
+              </Label>
               <Input
                 type='number'
                 min='0'
@@ -561,7 +577,14 @@ function CreateOrganizationCard({ onCreated }: { onCreated: () => void }) {
                 placeholder='0'
               />
             </div>
-            <Button onClick={submit} disabled={submitting}>
+            {/* 按钮高度跟随输入框（同一 `--ds-control-height-md` token），
+                此前用 Button 默认档，在紧凑密度下比输入框矮 4px，末行按钮
+                与上面四个输入框的右边缘对不齐。 */}
+            <Button
+              className='h-(--ds-control-height-md)'
+              onClick={submit}
+              disabled={submitting}
+            >
               {t('Create')}
             </Button>
           </CardContent>
@@ -881,7 +904,7 @@ function OrgOverviewCard({
               </NativeSelect>
             </div>
             {!canEditBudget && (
-              <p className='text-muted-foreground text-xs sm:col-span-2 lg:col-span-4'>
+              <p className='text-muted-foreground text-sm sm:col-span-2 lg:col-span-4'>
                 {t(
                   'Only the platform administrator can change the budget and status.'
                 )}
@@ -1043,7 +1066,7 @@ function AddMemberCard({
                   onChange={(e) =>
                     updateRow(row.key, { userId: e.target.value })
                   }
-                  placeholder='uter100000001'
+                  placeholder='U100000001'
                 />
               </div>
               <Input
@@ -1089,7 +1112,7 @@ function AddMemberCard({
                 </Button>
               )}
               {row.status === 'error' && row.errorMsg && (
-                <p className='text-destructive col-span-full text-xs'>
+                <p className='text-destructive col-span-full text-sm'>
                   {row.errorMsg}
                 </p>
               )}
@@ -1220,7 +1243,7 @@ function MembersCard({
             <tbody>
               {members.map((m) => (
                 <tr key={m.id} className='border-b'>
-                  <td className='text-muted-foreground px-2 py-2 font-mono tabular-nums'>
+                  <td className='text-muted-foreground text-mono px-2 py-2 font-mono tabular-nums'>
                     {formatUserId(m.id)}
                   </td>
                   <td className='px-2 py-2 font-medium'>{m.username}</td>

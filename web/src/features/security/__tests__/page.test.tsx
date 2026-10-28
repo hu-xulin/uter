@@ -275,4 +275,36 @@ describe('security page migration', () => {
       await screen.findByRole('button', { name: 'Delete Account' })
     ).toBeVisible()
   })
+
+  // 「名称 + 说明」成对出现的列表行标题 = 16/500（`text-base font-medium`），
+  // 说明 = 14/400。这一档在规范里是「列表行标题」的标准值（typography.md
+  // 「页面层级」一节），16/600 只留给 `group-title`，不得下放到行标题。
+  it('renders card row titles at 16/500 above their 14px descriptions', async () => {
+    await renderPage()
+    const actions = await screen.findByRole('region', {
+      name: 'Account Actions',
+    })
+    const deleteTitle = within(actions).getByText('Delete Account', {
+      selector: 'p',
+    })
+    expect(deleteTitle).toHaveClass('text-base', 'font-medium')
+    expect(deleteTitle.className).not.toContain('font-semibold')
+
+    const login = await screen.findByRole('region', {
+      name: 'Login & Authentication',
+    })
+    const passwordTitle = within(login).getByText('Change Password', {
+      selector: 'p',
+    })
+    expect(passwordTitle).toHaveClass('text-base', 'font-medium')
+    expect(passwordTitle.className).not.toContain('font-semibold')
+
+    cleanup()
+    await renderPage('/profile')
+    const languageTitle = await screen.findByText('Interface Language', {
+      selector: 'div',
+    })
+    expect(languageTitle).toHaveClass('text-base', 'font-medium')
+    expect(languageTitle.className).not.toContain('font-semibold')
+  })
 })

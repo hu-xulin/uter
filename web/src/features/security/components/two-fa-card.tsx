@@ -71,11 +71,13 @@ export function TwoFACard({ loading: pageLoading }: TwoFACardProps) {
 
   if (error) {
     return (
-      <Card>
-        <CardHeader>
+      <Card data-card-hover='false' className='gap-0 overflow-hidden py-0'>
+        {/* 错误态与正常态用同一套内边距（p-3 sm:p-5）。此前错误态吃
+            Card 默认 24px，一旦接口报错，整张卡的内边距会跳一格。 */}
+        <CardHeader className='p-3 sm:p-5'>
           <CardTitle>{t('Two-Factor Authentication')}</CardTitle>
         </CardHeader>
-        <CardContent className='space-y-3'>
+        <CardContent className='space-y-3 p-3 sm:p-5'>
           <p role='alert'>{t(error)}</p>
           <Button onClick={() => void refetch()}>{t('Retry')}</Button>
         </CardContent>
@@ -87,9 +89,7 @@ export function TwoFACard({ loading: pageLoading }: TwoFACardProps) {
     <>
       <Card data-card-hover='false' className='gap-0 overflow-hidden py-0'>
         <CardHeader className='p-3 sm:p-5'>
-          <CardTitle>
-            {t('Two-Factor Authentication')}
-          </CardTitle>
+          <CardTitle>{t('Two-Factor Authentication')}</CardTitle>
           <CardDescription>
             {t('Add an extra layer of security to your account')}
           </CardDescription>
@@ -159,7 +159,7 @@ export function TwoFACard({ loading: pageLoading }: TwoFACardProps) {
                   className='flex-1'
                   onClick={() => dialogs.open('backup')}
                 >
-                  <RefreshCw className='mr-2 h-4 w-4' />
+                  <RefreshCw className='mr-2 h-4.5 w-4.5' />
                   {t('Regenerate Backup Codes')}
                 </Button>
                 <Button
@@ -167,7 +167,7 @@ export function TwoFACard({ loading: pageLoading }: TwoFACardProps) {
                   className='flex-1'
                   onClick={() => dialogs.open('disable')}
                 >
-                  <AlertTriangle className='mr-2 h-4 w-4' />
+                  <AlertTriangle className='mr-2 h-4.5 w-4.5' />
                   {t('Disable 2FA')}
                 </Button>
               </div>

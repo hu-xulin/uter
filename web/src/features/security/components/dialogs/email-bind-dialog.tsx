@@ -221,7 +221,7 @@ export function EmailBindDialog(props: EmailBindDialogProps) {
                 disabled={security.pending}
               >
                 {security.pending && (
-                  <Loader2 className='size-4 animate-spin' />
+                  <Loader2 className='size-4.5 animate-spin' />
                 )}
                 {t(flow ? 'Confirm email' : 'Continue')}
               </Button>
@@ -291,7 +291,7 @@ export function EmailBindDialog(props: EmailBindDialogProps) {
                         <FormLabel>
                           {t('Current email verification code')}
                         </FormLabel>
-                        <p className='text-muted-foreground text-xs'>
+                        <p className='text-muted-foreground text-sm'>
                           {flow.current_email}
                         </p>
                         <FormControl>

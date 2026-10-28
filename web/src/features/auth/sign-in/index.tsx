@@ -19,6 +19,7 @@ For commercial licensing, please contact support@uter.ai
 import { Link, useSearch } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 
+import { Heading } from '@/design-system'
 import { useStatus } from '@/hooks/use-status'
 
 import { AuthLayout } from '../auth-layout'
@@ -34,12 +35,16 @@ export function SignIn() {
     <AuthLayout>
       <div className='w-full space-y-8'>
         <div className='space-y-2'>
-          <h2 className='text-center text-2xl font-semibold sm:text-left'>
+          <Heading
+            variant='section-title'
+            level={1}
+            className='text-center sm:text-left'
+          >
             {t('Sign in')}
-          </h2>
+          </Heading>
           {!status?.self_use_mode_enabled &&
             status?.register_enabled !== false && (
-              <p className='text-muted-foreground text-left text-sm sm:text-base'>
+              <p className='text-muted-foreground text-left text-sm'>
                 {t("Don't have an account?")}{' '}
                 <Link to='/sign-up' className='hover:text-primary font-medium'>
                   {t('Sign up')}

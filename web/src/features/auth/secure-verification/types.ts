@@ -49,11 +49,7 @@ export type SecurityProofScope =
   | 'token.key.read'
 
 /** The administrative account actions guarded by the `admin.user.manage` scope. */
-export type AdminUserManageAction =
-  | 'disable'
-  | 'enable'
-  | 'promote'
-  | 'demote'
+export type AdminUserManageAction = 'disable' | 'enable' | 'promote' | 'demote'
 
 export type VerificationOperation =
   | { scope: 'channel.key.read'; context: { channel_id: number } }
@@ -62,7 +58,10 @@ export type VerificationOperation =
       context: { provider: string; email?: string; code?: string }
     }
   | { scope: 'account.binding.unbind'; context: { provider_id: number } }
-  | { scope: 'admin.user.manage'; context: { user_id: number; action: AdminUserManageAction } }
+  | {
+      scope: 'admin.user.manage'
+      context: { user_id: number; action: AdminUserManageAction }
+    }
   | { scope: 'admin.user.create'; context: { role: number } }
   | { scope: 'admin.user.update'; context: { user_id: number } }
   | { scope: 'admin.user.delete'; context: { user_id: number } }
@@ -70,14 +69,22 @@ export type VerificationOperation =
   | { scope: 'admin.user.passkey.reset'; context: { user_id: number } }
   | {
       scope: 'admin.user.binding.clear'
-      context: { user_id: number; binding_type: string } | { user_id: number; provider_id: number }
+      context:
+        | { user_id: number; binding_type: string }
+        | { user_id: number; provider_id: number }
     }
   | {
       scope: 'access_token.generate'
       context: { scopes: string[]; expires_at: number }
     }
-  | { scope: 'access_token.update'; context: { token_id: number; scopes: string[] } }
-  | { scope: 'access_token.revoke'; context: { token_id?: number; legacy?: boolean } }
+  | {
+      scope: 'access_token.update'
+      context: { token_id: number; scopes: string[] }
+    }
+  | {
+      scope: 'access_token.revoke'
+      context: { token_id?: number; legacy?: boolean }
+    }
   | {
       scope: Exclude<
         SecurityProofScope,

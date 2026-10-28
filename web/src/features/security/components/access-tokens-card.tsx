@@ -124,7 +124,7 @@ export function AccessTokensCard() {
           <div className='space-y-2 rounded-md border p-3'>
             <div className='flex flex-wrap items-center gap-2'>
               <Badge variant='outline'>{t('Legacy token')}</Badge>
-              <code className='text-muted-foreground text-xs'>
+              <code className='text-muted-foreground text-mono font-mono'>
                 …{legacy.token_hint}
               </code>
             </div>

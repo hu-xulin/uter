@@ -463,7 +463,10 @@ it('allows a common new password after verifying the current password once', asy
   // A dictionary-free strong password: the shared policy rejects breach-list
   // values like "password123" before the verification ceremony can start.
   await user.type(screen.getByLabelText('New Password'), 'Zq7#mKp2!LwRx4')
-  await user.type(screen.getByLabelText('Confirm New Password'), 'Zq7#mKp2!LwRx4')
+  await user.type(
+    screen.getByLabelText('Confirm New Password'),
+    'Zq7#mKp2!LwRx4'
+  )
   await user.click(screen.getByRole('button', { name: 'Change Password' }))
   await waitFor(() => expect(onOpenChange).toHaveBeenCalledWith(false))
   expect(get).toHaveBeenCalledWith(
@@ -515,10 +518,7 @@ it.each(['button', 'escape'])(
       screen.getByLabelText('Current Password'),
       'current-password'
     )
-    await user.type(
-      screen.getByLabelText('New Password'),
-      'Zq7#mKp2!LwRx4'
-    )
+    await user.type(screen.getByLabelText('New Password'), 'Zq7#mKp2!LwRx4')
     await user.type(
       screen.getByLabelText('Confirm New Password'),
       'Zq7#mKp2!LwRx4'
@@ -588,10 +588,7 @@ it.each(['unmount', 'account change'])(
       screen.getByLabelText('Current Password'),
       'current-password'
     )
-    await user.type(
-      screen.getByLabelText('New Password'),
-      'Zq7#mKp2!LwRx4'
-    )
+    await user.type(screen.getByLabelText('New Password'), 'Zq7#mKp2!LwRx4')
     await user.type(
       screen.getByLabelText('Confirm New Password'),
       'Zq7#mKp2!LwRx4'
@@ -657,10 +654,7 @@ it('sets a first password after verifying an existing factor without asking for 
     />
   )
   expect(screen.queryByLabelText('Current Password')).not.toBeInTheDocument()
-  await user.type(
-    screen.getByLabelText('New Password'),
-    'Zq7#mKp2!LwRx4'
-  )
+  await user.type(screen.getByLabelText('New Password'), 'Zq7#mKp2!LwRx4')
   await user.type(
     screen.getByLabelText('Confirm New Password'),
     'Zq7#mKp2!LwRx4'

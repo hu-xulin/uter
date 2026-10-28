@@ -143,7 +143,7 @@ export function UserQuotaDialog(props: UserQuotaDialogProps) {
                 size='sm'
                 className={cn(
                   mode === m &&
-                    'bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground'
+                    'bg-primary text-primary-foreground hover:bg-primary-hover hover:text-primary-foreground'
                 )}
                 onClick={() => {
                   setMode(m)

@@ -332,7 +332,7 @@ export function UsersMutateDrawer({
             >
               {/* Basic Information */}
               <SideDrawerSection>
-                <h3 className='text-sm font-medium'>
+                <h3 className='text-lg font-semibold'>
                   {t('Basic Information')}
                 </h3>
 
@@ -560,7 +560,9 @@ export function UsersMutateDrawer({
               {/* Group & Quota Settings (Update only) */}
               {isUpdate && (
                 <SideDrawerSection>
-                  <h3 className='text-sm font-medium'>{t('Group & Quota')}</h3>
+                  <h3 className='text-lg font-semibold'>
+                    {t('Group & Quota')}
+                  </h3>
 
                   <FormField
                     control={form.control}
@@ -612,7 +614,7 @@ export function UsersMutateDrawer({
                             variant='outline'
                             onClick={() => setQuotaDialogOpen(true)}
                           >
-                            <Pencil className='mr-1 h-4 w-4' />
+                            <Pencil className='mr-1 h-4.5 w-4.5' />
                             {t('Adjust Quota')}
                           </Button>
                         </div>
@@ -650,10 +652,10 @@ export function UsersMutateDrawer({
                 targetIsAdmin &&
                 permissionCatalog.resources.length > 0 && (
                   <SideDrawerSection>
-                    <h3 className='text-sm font-medium'>
+                    <h3 className='text-lg font-semibold'>
                       {t('Admin Permissions')}
                     </h3>
-                    <p className='text-muted-foreground text-xs'>
+                    <p className='text-muted-foreground text-sm'>
                       {t(
                         'Default administrator permissions can be overridden for this user.'
                       )}
@@ -679,7 +681,7 @@ export function UsersMutateDrawer({
                       }}
                     />
                     {currentUser && (
-                      <p className='text-muted-foreground text-xs'>
+                      <p className='text-muted-foreground text-sm'>
                         {hasPermission(
                           currentUser,
                           ADMIN_PERMISSION_RESOURCES.CHANNEL,
@@ -699,10 +701,10 @@ export function UsersMutateDrawer({
               {/* Binding Information (Read-only) */}
               {isUpdate && (
                 <SideDrawerSection>
-                  <h3 className='text-sm font-medium'>
+                  <h3 className='text-lg font-semibold'>
                     {t('Binding Information')}
                   </h3>
-                  <p className='text-muted-foreground text-xs'>
+                  <p className='text-muted-foreground text-sm'>
                     {t(
                       'Third-party account bindings (read-only, managed by user in Security & Access)'
                     )}
@@ -711,7 +713,7 @@ export function UsersMutateDrawer({
                   <div className='flex flex-col gap-3'>
                     {BINDING_FIELDS.map(({ key, label }) => (
                       <div key={key}>
-                        <Label className='text-muted-foreground text-xs'>
+                        <Label className='text-muted-foreground text-sm'>
                           {t(label)}
                         </Label>
                         <Input

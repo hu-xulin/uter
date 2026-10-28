@@ -190,16 +190,19 @@ describe('access token card UI i18n coverage', () => {
     expect(missing).toEqual([])
   })
 
-  it.each(NON_ENGLISH)('actually translates every card string in %s', (locale) => {
-    const translation = translationsFor(locale)
-    const untranslated = keys.filter(
-      (key) =>
-        key in translation &&
-        translation[key] === key &&
-        !UNTRANSLATABLE.has(key)
-    )
-    expect(untranslated).toEqual([])
-  })
+  it.each(NON_ENGLISH)(
+    'actually translates every card string in %s',
+    (locale) => {
+      const translation = translationsFor(locale)
+      const untranslated = keys.filter(
+        (key) =>
+          key in translation &&
+          translation[key] === key &&
+          !UNTRANSLATABLE.has(key)
+      )
+      expect(untranslated).toEqual([])
+    }
+  )
 
   it.each(NON_ENGLISH)('keeps interpolation tokens intact in %s', (locale) => {
     // A translation that drops or renames `{{count}}` silently renders a

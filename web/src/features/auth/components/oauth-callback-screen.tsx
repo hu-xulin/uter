@@ -21,6 +21,7 @@ import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { IconGithub, IconLinuxDo, IconWeChat } from '@/assets/brand-icons'
+import { Heading } from '@/design-system'
 
 import { AuthLayout } from '../auth-layout'
 
@@ -106,12 +107,10 @@ export function OAuthCallbackScreen({
             <Icon className='h-8 w-8' />
           </div>
           <div className='space-y-2'>
-            <h2 className='text-center text-2xl font-semibold'>
+            <Heading variant='section-title' level={1} className='text-center'>
               {headline}
-            </h2>
-            <p className='text-muted-foreground text-sm sm:text-base'>
-              {description}
-            </p>
+            </Heading>
+            <p className='text-muted-foreground text-sm'>{description}</p>
           </div>
         </div>
 
@@ -121,7 +120,7 @@ export function OAuthCallbackScreen({
             <span>{t('Processing OAuth response...')}</span>
           </div>
           <p className='text-muted-foreground text-sm'>{secondaryNote}</p>
-          <p className='text-muted-foreground text-xs'>
+          <p className='text-muted-foreground text-sm'>
             {t(
               'This may take a few moments while we validate the request and update your session.'
             )}

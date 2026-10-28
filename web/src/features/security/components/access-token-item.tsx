@@ -81,7 +81,7 @@ export function AccessTokenItem(props: AccessTokenItemProps) {
       <div className='min-w-0 flex-1 space-y-1.5'>
         <div className='flex flex-wrap items-center gap-x-2 gap-y-1'>
           <p className='font-medium break-all'>{token.name}</p>
-          <code className='text-muted-foreground text-xs'>
+          <code className='text-muted-foreground text-mono font-mono'>
             nap_…{token.token_hint}
           </code>
         </div>
@@ -110,13 +110,13 @@ export function AccessTokenItem(props: AccessTokenItemProps) {
         >
           {t('Edit')}
           <DropdownMenuShortcut>
-            <Pencil size={16} />
+            <Pencil className='size-4' />
           </DropdownMenuShortcut>
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => props.onShowRecords(token)}>
           {t('Access records')}
           <DropdownMenuShortcut>
-            <History size={16} />
+            <History className='size-4' />
           </DropdownMenuShortcut>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
@@ -127,7 +127,7 @@ export function AccessTokenItem(props: AccessTokenItemProps) {
         >
           {t('Revoke')}
           <DropdownMenuShortcut>
-            <Trash2 size={16} />
+            <Trash2 className='size-4' />
           </DropdownMenuShortcut>
         </DropdownMenuItem>
       </DataTableRowActionMenu>

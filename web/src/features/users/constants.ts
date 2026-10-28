@@ -91,7 +91,7 @@ export const ORG_ROLE_LABEL_KEYS: Record<string, string> = {
 export function getUserRoleDisplayKey(
   role: number,
   orgId?: number,
-  orgRole?: string,
+  orgRole?: string
 ): string {
   // 系统特权角色优先：Root/Admin 不被组织成员身份覆盖。
   if (role === USER_ROLE.ROOT) return 'Uter Root'

@@ -36,6 +36,7 @@ import {
 } from '@/components/ui/card'
 import { Form } from '@/components/ui/form'
 import { Skeleton } from '@/components/ui/skeleton'
+import { Heading } from '@/design-system'
 import { useSystemConfig } from '@/hooks/use-system-config'
 import { useTimeout } from '@/hooks/use-timeout'
 import { handleServerError } from '@/lib/handle-server-error'
@@ -298,29 +299,27 @@ export function SetupWizard() {
               <img
                 src={logo}
                 alt={t('System logo')}
-                className='h-12 w-12 rounded-full object-cover shadow-sm'
+                className='h-12 w-12 rounded-full object-cover'
               />
             )}
           </div>
           {systemConfigLoading ? (
             <Skeleton className='h-7 w-40' />
           ) : (
-            <h1 className='text-3xl font-semibold'>
+            <Heading variant='page-title'>
               {t('Initialize')} {systemName}
-            </h1>
+            </Heading>
           )}
-          <p className='text-muted-foreground text-center text-sm sm:text-base'>
+          <p className='text-muted-foreground text-center text-sm'>
             {t(
               'Follow the guided steps to prepare your workspace before the first login.'
             )}
           </p>
         </div>
 
-        <Card className='shadow-lg'>
+        <Card>
           <CardHeader className='space-y-2'>
-            <CardTitle>
-              {t('System setup wizard')}
-            </CardTitle>
+            <CardTitle>{t('System setup wizard')}</CardTitle>
             <CardDescription>
               {t('Complete these steps to finish the initial installation.')}
             </CardDescription>
@@ -353,10 +352,10 @@ export function SetupWizard() {
                         {index + 1}
                       </span>
                       <div className='space-y-1'>
-                        <p className='text-sm font-semibold'>
+                        <p className='text-sm font-medium'>
                           {t(step.titleKey)}
                         </p>
-                        <p className='text-muted-foreground text-xs'>
+                        <p className='text-muted-foreground text-sm'>
                           {t(step.descriptionKey)}
                         </p>
                       </div>

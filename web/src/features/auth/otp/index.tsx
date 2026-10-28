@@ -19,6 +19,8 @@ For commercial licensing, please contact support@uter.ai
 import { Link } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 
+import { Heading } from '@/design-system'
+
 import { AuthLayout } from '../auth-layout'
 import { OtpForm } from './components/otp-form'
 
@@ -28,13 +30,17 @@ export function Otp() {
     <AuthLayout>
       <div className='w-full space-y-8'>
         <div className='space-y-3'>
-          <h2 className='text-center text-2xl font-semibold sm:text-left'>
+          <Heading
+            variant='section-title'
+            level={1}
+            className='text-center sm:text-left'
+          >
             {t('Security verification')}
-          </h2>
-          <p className='text-muted-foreground text-left text-sm sm:text-base'>
+          </Heading>
+          <p className='text-muted-foreground text-left text-sm'>
             {t('Verify your identity to finish signing in.')}
           </p>
-          <p className='text-muted-foreground text-left text-sm sm:text-base'>
+          <p className='text-muted-foreground text-left text-sm'>
             {t('Session expired?')}{' '}
             <Link to='/sign-in' className='hover:text-primary font-medium'>
               {t('Re-login')}

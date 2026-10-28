@@ -160,9 +160,19 @@ export function OAuthProviders({
         </div>
       </div>
 
+      {/* 高度跟随输入框（同一 `--ds-control-height-md` token）：此前用 Button
+          默认档（--ds-button-height-md），比登录/注册表单里的输入框（含 1px
+          边线）矮 4px，与「登录 / 创建账户」按钮堆叠时整列控件高度不一。 */}
       <div className='flex flex-col gap-2'>
         {providerButtons.map(
-          ({ key, label, onClick, icon, disabled: extraDisabled, hoverClassName }) => (
+          ({
+            key,
+            label,
+            onClick,
+            icon,
+            disabled: extraDisabled,
+            hoverClassName,
+          }) => (
             <Button
               key={key}
               variant='outline'
@@ -170,7 +180,7 @@ export function OAuthProviders({
               disabled={disabled || isLoading || extraDisabled}
               onClick={onClick}
               className={cn(
- 'w-full justify-center gap-2',
+                'h-(--ds-control-height-md) w-full justify-center gap-2',
                 hoverClassName
               )}
             >
