@@ -214,6 +214,28 @@ func AlipayVerifySign(params map[string]string, publicKey, sign string) bool {
 	return rsa.VerifyPKCS1v15(pub, crypto.SHA256, hashed[:], raw) == nil
 }
 
+// AlipayVerifyResponse 校验支付宝开放平台接口的**响应**签名。
+//
+// 响应签名的待验签串是业务节点的原始 JSON 文本（如 alipay_trade_query_response），
+// 不含外层 sign 节点，也不同于请求签名/异步通知验签的口径。必须单独成函数：
+// 主动查单若不验签，中间人可伪造 TRADE_SUCCESS 触发入账（少付多充）。
+func AlipayVerifyResponse(content, sign, publicKey string) bool {
+	sign = strings.TrimSpace(sign)
+	if sign == "" || content == "" {
+		return false
+	}
+	pub, err := parseRSAPublicKey(publicKey)
+	if err != nil {
+		return false
+	}
+	raw, err := base64.StdEncoding.DecodeString(sign)
+	if err != nil {
+		return false
+	}
+	hashed := sha256.Sum256([]byte(content))
+	return rsa.VerifyPKCS1v15(pub, crypto.SHA256, hashed[:], raw) == nil
+}
+
 // ---------------------------------------------------------------------------
 // 微信支付 APIv3：请求签名 / 回调验签 / 回调解密
 // ---------------------------------------------------------------------------

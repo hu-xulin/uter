@@ -7205,6 +7205,8 @@
     "Payment successful": "Оплата выполнена",
     "Customer Service": "Поддержка клиентов",
     "Pages where the entry appears": "Страницы, на которых показывается запись",
+    "Payment is being confirmed": "Платёж подтверждается",
+    "This order was not paid. If you still need to top up, please place a new order.": "Этот заказ не был оплачен. Если вам всё ещё нужно пополнить баланс, создайте новый заказ.",
     "Customer Service Admin Token": "Токен администратора службы поддержки",
     "Admin token is configured. Paste a new one to replace it.": "Токен администратора настроен. Вставьте новый, чтобы заменить его.",
     "Configuration loaded from cache. Click Reload to fetch the latest from uter-cs.": "Конфигурация загружена из кэша. Нажмите «Обновить», чтобы получить актуальную конфигурацию из uter-cs.",

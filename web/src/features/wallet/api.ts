@@ -218,6 +218,24 @@ export async function requestWechatWebPayment(
 }
 
 /**
+ * 主动查询支付宝订单并确认入账。
+ *
+ * 支付宝异步回调（notify_url）在本地 / 内网环境不可达时会缺失，订单会停在
+ * pending；用户从收银台回到钱包页（return_url 带 trade_no）后调用本接口，
+ * 由服务端向支付宝查询真实状态并完成幂等入账。
+ */
+export async function queryAlipayOrder(tradeNo: string): Promise<{
+  message?: string
+  success?: boolean
+  data?: { status?: string }
+}> {
+  const res = await api.post('/api/user/alipay/query', { trade_no: tradeNo }, {
+    skipBusinessError: true,
+  } as Record<string, unknown>)
+  return res.data
+}
+
+/**
  * Get affiliate code
  */
 export async function getAffiliateCode(): Promise<AffiliateCodeResponse> {

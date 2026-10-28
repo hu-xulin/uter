@@ -92,6 +92,17 @@ var requiredGatewayCallbacks = []gatewayCallback{
 		rechargeCall:    "model.RechargeAlipay(",
 	},
 	{
+		// 主动查单不是网关回调，但它同样会入账，因此同样受三件套约束：
+		// 响应验签在 service.AlipayQueryOrder 内部完成（AlipayVerifyResponse），
+		// 这里以「调用该查单函数」作为验签已发生的特征。
+		handler:         "QueryAlipayOrder",
+		file:            "topup_alipay.go",
+		verifySign:      []string{"service.AlipayQueryOrder("},
+		idempotency:     []string{"LockOrder(", "alreadyDone"},
+		paidAmountMatch: []string{"alipayPaidAmountMatchesOrder("},
+		rechargeCall:    "model.RechargeAlipay(",
+	},
+	{
 		handler:         "WechatPayNotify",
 		file:            "topup_wechat.go",
 		verifySign:      []string{"service.WechatPayVerifyNotify("},

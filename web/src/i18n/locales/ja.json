@@ -7205,6 +7205,8 @@
     "Payment successful": "支払い完了",
     "Customer Service": "カスタマーサービス",
     "Pages where the entry appears": "入口を表示するページ",
+    "Payment is being confirmed": "支払いを確認しています",
+    "This order was not paid. If you still need to top up, please place a new order.": "この注文は支払われていません。チャージが必要な場合は、新しく注文してください。",
     "Customer Service Admin Token": "カスタマーサポート管理者トークン",
     "Admin token is configured. Paste a new one to replace it.": "管理者トークンは設定済みです。置き換えるには新しいトークンを貼り付けてください。",
     "Configuration loaded from cache. Click Reload to fetch the latest from uter-cs.": "設定はキャッシュから読み込まれました。uter-cs から最新の設定を取得するには「再読み込み」をクリックしてください。",

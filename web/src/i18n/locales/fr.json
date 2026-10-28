@@ -7205,6 +7205,8 @@
     "Payment successful": "Paiement réussi",
     "Customer Service": "Service client",
     "Pages where the entry appears": "Pages où l'entrée apparaît",
+    "Payment is being confirmed": "Paiement en cours de confirmation",
+    "This order was not paid. If you still need to top up, please place a new order.": "Cette commande n'a pas été payée. Si vous souhaitez toujours recharger, veuillez passer une nouvelle commande.",
     "Customer Service Admin Token": "Jeton d'administrateur du service client",
     "Admin token is configured. Paste a new one to replace it.": "Jeton d'administrateur configuré. Collez-en un nouveau pour le remplacer.",
     "Configuration loaded from cache. Click Reload to fetch the latest from uter-cs.": "Configuration chargée depuis le cache. Cliquez sur Recharger pour récupérer la dernière configuration depuis uter-cs.",

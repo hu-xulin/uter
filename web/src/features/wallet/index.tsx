@@ -27,6 +27,7 @@ import { useStatus } from '@/hooks/use-status'
 import { useSystemConfig } from '@/hooks/use-system-config'
 import { getSelf } from '@/lib/api'
 
+import { queryAlipayOrder } from './api'
 import { AffiliateRewardsCard } from './components/affiliate-rewards-card'
 import { BillingHistoryDialog } from './components/dialogs/billing-history-dialog'
 import { CnPayWebDialog } from './components/dialogs/cn-pay-web-dialog'
@@ -37,6 +38,7 @@ import { RechargeFormCard } from './components/recharge-form-card'
 import { SubscriptionPlansCard } from './components/subscription-plans-card'
 import { WalletStatsCard } from './components/wallet-stats-card'
 import { DEFAULT_DISCOUNT_RATE, PAYMENT_TYPES } from './constants'
+import { pollAlipayOrder } from './lib/alipay-return'
 import {
   useTopupInfo,
   usePayment,
@@ -149,6 +151,58 @@ export function Wallet(props: WalletProps) {
   useEffect(() => {
     fetchUser()
   }, [fetchUser])
+
+  // 支付宝收银台回跳：return_url 带 pay=success&trade_no。异步回调（notify_url）
+  // 在本地 / 内网环境不可达时订单会停在 pending，这里主动查单确认，与回调互为兜底。
+  //
+  // 刚付完款时支付宝侧状态可能有几秒延迟，所以带重试：命中 success 立即提示并刷新
+  // 余额，全部尝试仍为 pending 才提示「支付确认中」，避免订单一直显示待确认。
+  const alipayReturnHandledRef = useRef(false)
+  useEffect(() => {
+    if (alipayReturnHandledRef.current) return
+    const params = new URLSearchParams(window.location.search)
+    if (params.get('pay') !== 'success') return
+    const tradeNo = params.get('trade_no')
+    if (!tradeNo) return
+    alipayReturnHandledRef.current = true
+
+    // 清掉查询参数，避免刷新页面时重复查询。
+    params.delete('pay')
+    params.delete('trade_no')
+    const rest = params.toString()
+    window.history.replaceState(
+      {},
+      '',
+      window.location.pathname + (rest ? `?${rest}` : '')
+    )
+
+    let cancelled = false
+    void pollAlipayOrder(tradeNo, {
+      query: queryAlipayOrder,
+      onSuccess: async () => {
+        toast.success(t('Payment successful'))
+        await fetchUser()
+      },
+      onPending: () => {
+        toast.info(t('Payment is being confirmed'))
+      },
+      onUnpaid: async () => {
+        // 支付宝侧查无此交易 / 交易已关闭：再等也不会变成功，必须如实告知，
+        // 否则用户会一直以为系统正在确认，钱包里那条记录却永远停在「待确认」。
+        toast.warning(
+          t(
+            'This order was not paid. If you still need to top up, please place a new order.'
+          )
+        )
+        await fetchUser()
+      },
+      isCancelled: () => cancelled,
+    })
+
+    return () => {
+      cancelled = true
+    }
+  }, [fetchUser, t])
 
   useEffect(() => {
     if (props.initialShowHistory) {
