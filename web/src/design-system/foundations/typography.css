@@ -52,21 +52,33 @@ For commercial licensing, please contact support@uter.ai
   }
 
   /* ── 颜色 ─────────────────────────────────────────────────────────── */
+  /* 颜色一律带兜底值。
+   *
+   * `--ds-color-text-primary` / `--ds-color-text-secondary` 的声明在
+   * `tokens/colors.css` 里，但**构建产物中会丢**（已用两次生产构建复现：
+   * 三个纯别名声明 `--ds-color-text-primary`、`--ds-color-text-secondary`、
+   * `--ds-color-success-soft` 在压缩后消失，其余 93 个 `--ds-*` 都在）。
+   * 一旦变量缺失，`color: var(--x)` 就是无效声明，元素退回 `inherit` ——
+   * 表现是所有次要文字（卡片说明、占位符）渲染成正文黑，和主标题一个颜色。
+   *
+   * 兜底值让这两条规则在 Token 缺失时仍然指向同一个颜色来源，不再退回
+   * `inherit`。与 `tokens/semantic.css` 行高用 `var(--text-*--line-height, …)`
+   * 的兜底是同一套做法。 */
   .ds-text--primary,
   .ds-heading--primary {
-    color: var(--ds-color-text-primary);
+    color: var(--ds-color-text-primary, var(--foreground));
   }
   .ds-text--secondary,
   .ds-heading--secondary {
-    color: var(--ds-color-text-secondary);
+    color: var(--ds-color-text-secondary, var(--muted-foreground));
   }
   .ds-text--danger,
   .ds-heading--danger {
-    color: var(--ds-color-text-danger);
+    color: var(--ds-color-text-danger, var(--destructive));
   }
   .ds-text--success,
   .ds-heading--success {
-    color: var(--ds-color-text-success);
+    color: var(--ds-color-text-success, var(--success));
   }
   .ds-text--inherit,
   .ds-heading--inherit {
@@ -77,6 +89,14 @@ For commercial licensing, please contact support@uter.ai
   .ds-text--body {
     font-size: var(--ds-text-body);
     line-height: var(--ds-line-body);
+  }
+  /* 长文本：16/26。只给连续阅读（文章、协议、帮助中心、隐私政策）。
+   * 不要拿它当「大一号的正文」——控制台里的表单说明、卡片描述仍是
+   * body（14/20），放大只会让信息密度塌下来。 */
+  .ds-text--long,
+  .ds-text--body-long {
+    font-size: var(--ds-text-long);
+    line-height: var(--ds-line-long);
   }
   .ds-text--body-sm {
     font-size: var(--ds-text-body-sm);
@@ -96,8 +116,16 @@ For commercial licensing, please contact support@uter.ai
     font-size: var(--ds-text-mono);
     line-height: var(--ds-line-mono);
   }
-  /* 兼容别名：mono 阶梯定为 13/20 后，「密集场景需要更小」的前提已消失
-   * （13px 本身就能塞进表格列），故 code-dense 与 code 同值。保留导出
+  /* 固定高度的等宽代码容器（首页代码卡片、编辑器视口）：13/20。
+   * 与正文 mono（14/20）的差别只在字号——固定高度的代码卡里 14px 会
+   * 撑出行数溢出，13px 才能稳定容纳最长的那几行。 */
+  .ds-text--code-block {
+    font-family: var(--font-mono);
+    font-size: var(--ds-text-mono-code);
+    line-height: var(--ds-line-mono-code);
+  }
+  /* 兼容别名：mono 阶梯定档后「密集场景需要更小」的前提已消失
+   * （14px 与 body-sm 同档），故 code-dense 与 code 同值。保留导出
    * 只为不破坏既有调用方，新代码直接用 variant='code'。 */
   .ds-text--code-dense {
     font-family: var(--font-mono);
@@ -129,6 +157,28 @@ For commercial licensing, please contact support@uter.ai
   .ds-heading--dialog-title {
     font-size: var(--ds-text-dialog-title);
     line-height: var(--ds-line-dialog-title);
+    font-weight: var(--ds-weight-semibold);
+  }
+  /* 分组标题：16/24/600。卡片**内部**再分组时的那一层 —— 个人资料页的
+   * 「通知方式」「要接收的通知」「偏好设置」、弹窗里的字段分组（「基本信息」
+   * 「凭据」）、卡片内的列表分组标题。
+   *
+   * 它不替代 card-title：卡片标题仍是 18/600，分组标题只比它低一档。
+   * 也不用 14/500（label 档）——14px 压到分组标题上会让整块内容比正文
+   * 还小，这正是「管理页看着字小」的成因。 */
+  .ds-heading--group-title {
+    font-size: var(--ds-text-group-title);
+    line-height: var(--ds-line-group-title);
+    font-weight: var(--ds-weight-semibold);
+  }
+  /* 用等宽字形的卡片标题：16/22/600。与 `ds-heading--card-title` 同属
+   * 「卡片标题」这一语义层级，差别只在字形与补偿后的字号——16px 是因为
+   * 等宽字形在同等视觉重量下需要比 Inter 的 18px 小一档，行高也随之收紧。
+   * 放在最后，靠层叠顺序压过前面各档。 */
+  .ds-heading--mono-title {
+    font-family: var(--font-mono);
+    font-size: var(--ds-text-mono-title);
+    line-height: var(--ds-line-mono-title);
     font-weight: var(--ds-weight-semibold);
   }
 }

@@ -21,22 +21,33 @@ import type { CSSProperties, ElementType, ReactNode } from 'react'
 import { cn } from '@/lib/utils'
 
 /**
- * 文本语义变体。取值来自 `tokens/typography.css` 的九档字号阶梯，
+ * 文本语义变体。取值来自 `tokens/typography.css` 的字号阶梯，
  * 不允许在调用处覆盖 font-size —— 需要新档位就先加 Token。
  *
- * - `body`       16/400/24  正文段落、卡片正文
- * - `body-sm`    14/400/20  次要正文、表格单元格
+ * - `body`       14/400/20  常规正文、表单内容、普通说明（全站基准）
+ * - `body-long`  16/400/26  长文本：文章、协议、帮助中心、隐私政策
+ * - `body-sm`    14/400/20  紧凑辅助正文、表格单元格
  * - `label`      14/500/20  按钮文字、表单标签、导航项
  * - `caption`    12/400/16  说明、占位符、徽标
- * - `code`       13/400/20  代码块、密钥、模型 ID、等宽金额
- * - `code-dense` 13/400/20  `code` 的兼容别名，新代码用 `code`
+ * - `code`       14/400/20  正文里的等宽文本（模型 ID、密钥、金额、行内代码）
+ * - `code-block` 13/400/20  等宽代码展示区（首页代码卡片、代码块、编辑器视口）
+ * - `code-dense` 14/400/20  `code` 的兼容别名，新代码用 `code`
+ *
+ * `body` 与 `body-sm` 同值（14/20），差别只在语义：前者是默认基准，
+ * 后者是「明确要紧凑」的辅助正文。**正文不要用 16px** —— 需要连续阅读
+ * 的长文本走 `body-long`。
+ *
+ * 等宽只有这两档：正文 14px（与 body-sm 同档）、代码展示区 13px（固定高度
+ * 的卡片里要稳住行数）。两者混用会基线错位，所以同一容器内只用一档。
  */
 export type TextVariant =
   | 'body'
+  | 'body-long'
   | 'body-sm'
   | 'label'
   | 'caption'
   | 'code'
+  | 'code-block'
   | 'code-dense'
 
 export type TextColor =

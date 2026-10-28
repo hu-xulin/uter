@@ -28,6 +28,16 @@ import { cn } from '@/lib/utils'
  * - `section-title` 24/600/32  区块标题
  * - `card-title`    18/600/28  卡片标题
  * - `dialog-title`  18/600/28  弹窗标题
+ * - `group-title`   16/600/24  卡片内的分组标题（表单分组、列表分组）
+ * - `mono-title`    16/600/22  用等宽字形的卡片标题（定价卡片模型名）
+ *
+ * `group-title` 是页面层级的第 4 层：卡片内部再分组时用（个人资料页的
+ * 「通知方式」「偏好设置」、弹窗里的字段分组）。它比 `card-title` 低一档、
+ * 比表单标签（label 14/500）高一档，不能反过来当卡片标题用。
+ *
+ * `mono-title` 与 `card-title` 是**同一语义层级的两种字形**，不是两个层级：
+ * 需要等宽显示标识符的卡片标题（模型 ID）用 mono-title，其余用 card-title。
+ * 16px 是「等宽字形视觉上比 Inter 同字号更宽」的补偿值，不是新开一档标题。
  */
 export type HeadingVariant =
   | 'display'
@@ -35,6 +45,8 @@ export type HeadingVariant =
   | 'section-title'
   | 'card-title'
   | 'dialog-title'
+  | 'group-title'
+  | 'mono-title'
 
 export type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6
 
@@ -45,6 +57,8 @@ const DEFAULT_LEVEL: Record<HeadingVariant, HeadingLevel> = {
   'section-title': 2,
   'card-title': 3,
   'dialog-title': 3,
+  'group-title': 4,
+  'mono-title': 3,
 }
 
 export type HeadingProps = {

@@ -34,6 +34,11 @@ For commercial licensing, please contact support@uter.ai
  *   T4  内联字号数值       `style={{ fontSize: 13 }}`
  *   T5  CSS 硬编码字号     `font-size: 15px`
  *   T6  非浮层投影         `shadow-sm` / `shadow-[…]`（弹窗与浮层除外）
+ *   T7  调色板直用颜色     `bg-emerald-500`（未走语义 Token）
+ *   T8  裸色值             `'#6366f1'` / `rgba(15,23,42,…)`（未走 Token）
+ *   T9  行高覆盖           `leading-*`（行高由字号 Token 自带，不再单独覆盖）
+ *   T10 任意圆角           `rounded-[3px]`（圆角阶梯只有 xs/sm/md/lg/xl/2xl）
+ *   T11 未登记动效节奏     `duration-300` / `ease-[cubic-bezier(…)]`（§1.6 只有五组）
  *
  * 扫描不把硬编码一律判死：图表 canvas 的 `fontSize` 必须是数字、
  * 第三方控件的行内样式改不动、弹窗浮层本来就该有投影。这些进 ALLOWLIST，
@@ -76,129 +81,21 @@ const OVERLAY_ALLOWLIST = [
 ]
 
 /**
- * 已登记的例外。`match` 命中文件路径（相对 src，统一用 `/`），
- * `rules` 限定豁免哪几条规则，`reason` 必填。
+ * 例外清单：**当前为空**。
+ *
+ * 2026-10-27 全量整改后，原先 300 处登记例外已全部改为合规写法：
+ *   · T1 主题预设的字号覆盖   → 并入 `design-system/tokens/typography.css`
+ *   · T2 错误页 7rem 状态码   → 改用 display 档（`text-4xl`）
+ *   · T4 图表 canvas 字号     → 收敛到 `design-system/tokens/chart-typography.ts`
+ *   · T6 营销页/拖拽投影      → 删除（规范 §1.5：非浮层不投影）
+ *   · T7 调色板直用颜色       → 新增 `syntax-*` Token + 改走 `chart-*` /
+ *                              `*-soft` / 品牌色 / 状态色语义
+ *
+ * 需要新增例外时，必须同时满足：① 写明 `reason`；② 在
+ * `docs/design-system/exceptions.md` 登记编号与影响范围；③ 说明为什么
+ * 无法用 Token 表达。没有理由的例外等于没有规范。
  */
-const ALLOWLIST = [
-  {
-    match: /^features\/.*\/lib\/(charts|flow)\.ts$/,
-    rules: ['T4'],
-    reason:
-      'VChart 走 canvas 绘制，轴标签字号必须是数字，无法使用 CSS Token；取值须等于图表轴标签 12px。',
-  },
-  {
-    match: /^features\/dashboard\/components\/.*\.tsx$/,
-    rules: ['T4'],
-    reason: '同上：VChart option 里的 fontSize 是 canvas 配置，不是 DOM 样式。',
-  },
-  {
-    match: /^features\/rankings\/components\/.*\.tsx$/,
-    rules: ['T4'],
-    reason: '同上：VChart option 里的 fontSize 是 canvas 配置，不是 DOM 样式。',
-  },
-  {
-    match: /^features\/pricing\/components\/model-details-charts\.tsx$/,
-    rules: ['T4'],
-    reason: '同上：VChart option 里的 fontSize 是 canvas 配置，不是 DOM 样式。',
-  },
-  {
-    match: /^features\/customer-service\/CustomerServiceWidget\.tsx$/,
-    rules: ['T4'],
-    reason: '第三方客服挂件，样式由其自身注入，无法接入本项目 Token。',
-  },
-  {
-    match: /^features\/errors\/.*\.tsx$/,
-    rules: ['T2'],
-    reason:
-      '错误页的巨型状态码数字（7rem）是纯装饰性图形，不属于内容层级，不参与九档字号阶梯。',
-  },
-  {
-    match: /^features\/channels\/components\/channel-priority-demo\.tsx$/,
-    rules: ['T6'],
-    reason:
-      '拖拽中的瞬时浮起态，卡片离开文档流、z-index 提升，性质等同浮层（见 exceptions.md E9）。',
-  },
-  {
-    match: /^features\/home\/components\/hero-terminal-demo\.tsx$/,
-    rules: ['T6'],
-    reason:
-      '卡片主体投影（light shadow-[0_20px_50px_-25px_…] / dark shadow-[0_20px_60px_-25px_…]）+「200 ok」live 状态点彩色辉光 shadow-[0_0_8px_…]。投影为有意加的产品决策，让 hero 终端从页面背景中浮起（见 exceptions.md E10）。',
-  },
-  {
-    match: /^styles\/theme-presets\.css$/,
-    rules: ['T1'],
-    reason:
-      '「Simple Large-font」预设本身就是无障碍大字模式，用户在主题选择里主动开启，字号变化是该预设的显式契约而非副作用（见 exceptions.md E11）。',
-  },
-  // ── T7 调色板直用 ────────────────────────────────────────────────
-  // 规范 §1.1「所有颜色均按语义变量使用，不直接写死色值」。这里只登记
-  // **确实无法语义化**的三类：分类色、语法高亮、营销装饰色。
-  // 状态色（成功/警告/危险）**不在此列**——它们有 success/warning/
-  // destructive Token，出现在报告里就是待迁移项。
-  {
-    // 用户可选的分类色板：这个 Map 的存在意义就是把原始调色板暴露出来，
-    // 与 status 语义无关（avatarColorMap 已经走 Token，是正确样板）。
-    match: /^lib\/colors\.ts$/,
-    rules: ['T7'],
-    reason:
-      'colorToBgClass 是「用户自选分类色 → Tailwind 类」的查找表，语义就是原始调色板；同文件的 avatarColorMap 已改用语义 Token。',
-  },
-  {
-    // 插件图标的分类 tint：按插件类别区分，不表达成功/警告/危险。
-    match: /^features\/task-plugins\/lib\/plugin-icon\.ts$/,
-    rules: ['T7'],
-    reason: '插件类别的分类色，与状态语义无关，同 lib/colors.ts 的分类色板。',
-  },
-  {
-    // 代码高亮：token 颜色由语言语法决定，无法用界面语义色表达
-    // （与 T4 对 VChart canvas 字号的豁免同一理由）。
-    match:
-      /^features\/task-plugins\/components\/(source-diff|javascript-viewer)\.tsx$/,
-    rules: ['T7'],
-    reason: '代码高亮配色由语言语法决定，无法接入界面语义 Token。',
-  },
-  {
-    match: /^components\/json-code-editor\.tsx$/,
-    rules: ['T7'],
-    reason: '代码编辑器配色，同上。',
-  },
-  {
-    // GitHub 风格 markdown 警报（> [!NOTE]/[!WARNING]/[!DANGER]）的
-    // 配色对齐 GitHub 官方规范，改语义 Token 会破坏与源文档的一致性。
-    match: /^components\/ai-elements\/response-renderer-alert\.tsx$/,
-    rules: ['T7'],
-    reason:
-      'GitHub 风格 markdown 警报配色须与 GitHub 官方一致，不用界面语义色。',
-  },
-  {
-    // 多序列图表：序列之间必须可区分，语义 Token 只有四组状态色，不够分。
-    match:
-      /^features\/pricing\/components\/(dynamic-pricing-breakdown|model-details-uptime-sparkline)\.tsx$/,
-    rules: ['T7'],
-    reason:
-      '多序列图表的区分色，语义状态 Token 数量不足；同 VChart canvas 的豁免理由。',
-  },
-  {
-    match: /^features\/channels\/components\/channel-priority-demo\.tsx$/,
-    rules: ['T7'],
-    reason: '拖拽演示的分类色，仅用于示意，不进入生产界面。',
-  },
-  {
-    // 营销页装饰强调色。规范 §4 要求主色只有黑白两档、彩色只出现在
-    // 危险/成功与一处荧光绿强调——首页的蓝紫渐变属于待决的视觉改造
-    // （不在本次范围内），先登记测量，不静默放过。
-    match:
-      /^features\/home\/components\/(sections\/(hero|features|cta)\.tsx|hero-terminal-demo\.tsx)$/,
-    rules: ['T7'],
-    reason:
-      '营销页装饰强调色。规范 §4 要求单色系，改造属视觉决策（本次范围外），先登记测量。',
-  },
-  {
-    match: /^features\/rankings\/components\/.*\.tsx$/,
-    rules: ['T7'],
-    reason: '榜单营销页的装饰强调色，同 features/home 的处理。',
-  },
-]
+const ALLOWLIST = []
 
 const RULES = {
   T1: '字号阶梯重复声明（--text-* 只能出现在唯一来源）',
@@ -208,8 +105,33 @@ const RULES = {
   T5: 'CSS 硬编码字号（font-size: Npx）',
   T6: '非浮层投影（shadow-…，弹窗与浮层除外）',
   T7: '调色板直用颜色（bg/text/border-{slate|emerald|…}-{shade}，未走语义 Token）',
+  T8: '裸色值（#hex / rgba()，未走 Token）',
+  T9: '行高覆盖（leading-…，行高应由字号 Token 决定）',
+  T10: '任意圆角（rounded-[…]，圆角阶梯只有 xs/sm/md/lg/xl/2xl）',
+  T11: '未登记动效节奏（duration-N / ease-[cubic-bezier(…)]，§1.6 只有五组时长）',
 }
 
+/**
+ * 允许出现裸色值的位置（相对 src）。
+ *
+ * 这两类**不是例外，而是颜色的所有者**——它们本身就是 Token 的定义处：
+ *   · `design-system/tokens/brand-colors.ts`
+ *       第三方商标配色（支付宝蓝、微信绿、OpenAI 青绿）与多序列分类调色板。
+ *       前者改成 `--primary` 等于改人家 logo；后者一屏要区分十几个实体，
+ *       语义层只有 `chart-1…5` 五个槽位，不够用。集中声明，禁止散落。
+ *   · `assets/**` 里的 SVG 图标 / 插画
+ *       图形本身就是色彩，`fill='#fff'` 是画出来的形状，不是界面配色。
+ */
+const RAW_COLOR_OWNERS = [
+  /^design-system\/tokens\/brand-colors\.ts$/,
+  /^assets\//,
+  // Token 定义文件本身就是颜色的落点：调色板、语义层、主题预设、语法色。
+  /^design-system\/tokens\/[a-z-]+\.css$/,
+  /^styles\/(theme|theme-presets|globals)\.css$/,
+]
+
+/** 裸色值：`#rgb` / `#rrggbb` / `#rrggbbaa`、`rgb()` / `rgba()` 字面量。 */
+const RAW_COLOR_RE = /#[0-9a-fA-F]{3,8}\b|\brgba?\(\s*\d/g
 /**
  * T7 的目标调色板。`chart-*` 不在内——它们是 `--color-chart-N` 语义 Token，
  * 已经是正确写法。`white` / `black` 也不在内：二者是无彩色极值，
@@ -233,6 +155,29 @@ const PALETTE_CLASS_RE = new RegExp(
   'g'
 )
 
+/**
+ * 规范 §1.5 允许的全部投影 / 辉光 Token（2026-10-28 定档）。
+ *
+ * 四档投影按「元素是否离开文档流」分工，一档辉光表达状态语义：
+ *   none       静止的页面内元素
+ *   popover    下拉面板 / 气泡 / 悬浮提示
+ *   overlay    弹窗 / 抽屉 / 浮层
+ *   raised     拖拽中的元素（瞬时离开文档流）
+ *   marketing  营销展示卡片（脱离页面平面）
+ *   glow-online 在线状态点
+ *
+ * 新增档位必须先改 `design-system/tokens/elevation.css` 与规范 §1.5，
+ * 再往这个集合里加 —— 只改一边会被门禁拦下。
+ */
+const ELEVATION_TOKENS = new Set([
+  'shadow-(--ds-elevation-none)',
+  'shadow-(--ds-elevation-popover)',
+  'shadow-(--ds-elevation-overlay)',
+  'shadow-(--ds-elevation-raised)',
+  'shadow-(--ds-elevation-marketing)',
+  'shadow-(--ds-glow-online)',
+])
+
 const SCAN_EXT = new Set(['.ts', '.tsx', '.css'])
 
 function walk(dir, out = []) {
@@ -251,6 +196,10 @@ function walk(dir, out = []) {
 
 function isAllowed(rel, rule) {
   if (rule === 'T6' && OVERLAY_ALLOWLIST.some((re) => re.test(rel))) return true
+  if (rule === 'T8' && RAW_COLOR_OWNERS.some((re) => re.test(rel))) return true
+  // T8 只查界面代码。`*.test.ts(x)` 里的色值是断言用的夹具
+  // （例如验证 `resolveCssColor` 能把 `#abc` 解析成 rgba），不是界面配色。
+  if (rule === 'T8' && /\.test\.tsx?$/.test(rel)) return true
   return ALLOWLIST.some(
     (entry) => entry.rules.includes(rule) && entry.match.test(rel)
   )
@@ -265,10 +214,20 @@ function report(rule, file, line, text) {
 for (const abs of walk(SRC)) {
   const rel = relative(SRC, abs).split(sep).join('/')
   const source = readFileSync(abs, 'utf8')
-  const lines = source.split('\n')
+  // 注释里经常出现反例说明（「不要写 `text-[15px]`」「此前是 rounded-[2px]」），
+  // 逐行 `startsWith('*')` 只能盖住单行注释，盖不住 JSX 的 `{/* … */}` 与
+  // 跨行块注释。这里先把块注释内容整体抹成空格（换行保留，行号不变），
+  // 再逐行扫描 —— 否则规范文档自己会被判成违规。
+  const scannable = source.replaceAll(/\/\*[\s\S]*?\*\//g, (block) =>
+    block.replaceAll(/[^\n]/g, ' ')
+  )
+  const lines = scannable.split('\n')
+  const rawLines = source.split('\n')
 
   lines.forEach((raw, index) => {
     const line = index + 1
+    // 报错时给出**原始行**（抹过注释的行只剩空格，读不出问题）
+    const rawText = rawLines[index] ?? raw
 
     // 注释里经常出现反例说明（例如「不要写 text-[15px]」），跳过整行
     // 注释，否则规范文档自己会被判成违规。
@@ -285,7 +244,7 @@ for (const abs of walk(SRC)) {
     // T1：--text-* 的声明位置
     if (/^\s*--text-[a-z0-9]+(-{2}line-height)?:/.test(raw)) {
       if (rel !== LADDER_OWNER) {
-        report('T1', rel, line, raw)
+        report('T1', rel, line, rawText)
       }
     }
 
@@ -309,33 +268,104 @@ for (const abs of walk(SRC)) {
       ) {
         continue
       }
-      report('T2', rel, line, raw)
+      report('T2', rel, line, rawText)
       break
     }
 
     // T3：任意行高
     if (/leading-\[[0-9.]+(px|rem)\]/.test(raw)) {
-      report('T3', rel, line, raw)
+      report('T3', rel, line, rawText)
     }
 
     // T4：内联字号（图表 option 里的 fontSize 走 ALLOWLIST）
     if (/fontSize:\s*[0-9]/.test(raw)) {
-      report('T4', rel, line, raw)
+      report('T4', rel, line, rawText)
     }
 
     // T5：CSS 硬编码字号
     if (/font-size:\s*[0-9.]+px/.test(raw)) {
-      report('T5', rel, line, raw)
+      report('T5', rel, line, rawText)
     }
 
     // T6：非浮层投影。`shadow-none` / `!shadow-none` 是在取消投影，放行。
+    //
+    // 规范 §1.5 只认四档投影 + 一档状态辉光，写法必须是
+    // `shadow-(--ds-elevation-{none|popover|overlay|raised|marketing})`
+    // 或 `shadow-(--ds-glow-online)`。引用不存在的档位（例如自造
+    // `--ds-elevation-card`）同样是违规 —— 否则「只许四档」就形同虚设。
     if (/[a-z-]*shadow-(?:xs|sm|md|lg|xl|2xl|inner|\[[^\]]*\])/.test(raw)) {
-      report('T6', rel, line, raw)
+      report('T6', rel, line, rawText)
+    } else {
+      for (const hit of raw.match(
+        /shadow-\(--ds-(?:elevation|glow)-[a-z-]+\)/g
+      ) ?? []) {
+        if (ELEVATION_TOKENS.has(hit)) continue
+        report('T6', rel, line, rawText)
+        break
+      }
     }
 
     // T7：调色板直用颜色。`chart-*` 是语义 Token，不在匹配范围内。
     for (const hit of raw.match(PALETTE_CLASS_RE) ?? []) {
       report('T7', rel, line, hit)
+    }
+
+    // T8：裸色值
+    //
+    // 先剥掉 Tailwind 的任意变体选择器 `[&_…]`：recharts 的样式覆盖写的是
+    // `[&_.recharts-grid_line[stroke='#ccc']]:stroke-border` —— 那是**匹配**
+    // recharts 自己画的颜色再改掉，不是我们用了这个颜色，误报会淹没真问题。
+    const withoutSelectors = raw.replaceAll(/\[&_[^\]]*\]/g, '')
+    if (RAW_COLOR_RE.test(withoutSelectors)) {
+      report('T8', rel, line, rawText)
+    }
+
+    // T9：行高覆盖
+    //
+    // 规范里行高是**字号 Token 的一部分**（14/20、16/26、12/16…），
+    // `leading-tight` / `leading-6` 这类工具类会把它从阶梯上拽下来：
+    // `text-sm leading-relaxed` 实际是 14/22.75，`text-xs leading-5` 是
+    // 12/20 —— 都不在任何一档里。要松一点的行距就换 `text-long`（16/26）。
+    //
+    // `leading-[var(--ds-line-…)]` 放行：那是**引用 Token**，属于正确写法
+    // （等宽代码容器需要固定高度，只能显式锁行高）。
+    for (const hit of raw.match(/\bleading-(?:\[[^\]]*\]|[a-z0-9-]+)/g) ?? []) {
+      if (hit.startsWith('leading-[var(--')) continue
+      report('T9', rel, line, rawText)
+      break
+    }
+
+    // T10：任意圆角
+    //
+    // 圆角阶梯是 4/6/8/10/12/16/9999（见 tokens/radius）。`rounded-[3px]`
+    // 这类自造档位会让同一层级的控件圆角不一致。
+    // 放行 `rounded-[inherit]`：滚动区视口必须继承外层圆角，没有对应工具类；
+    // 放行 `rounded-[var(--radius-…)]`：引用 Token 是正确写法。
+    for (const hit of raw.match(/\brounded-\[[^\]]*\]/g) ?? []) {
+      if (hit === 'rounded-[inherit]' || hit.startsWith('rounded-[var(--')) {
+        continue
+      }
+      report('T10', rel, line, rawText)
+      break
+    }
+
+    // T11：未登记的动效节奏
+    //
+    // 规范 §1.6 把时长分成五组，写法只有两种：`ds-motion-*` 工具类
+    // （时长与缓动一起下发），或 keyframes 里的 `var(--ds-motion-*)`。
+    // `duration-300` / `duration-[0.35s]` / `ease-[cubic-bezier(…)]` 都是
+    // 在阶梯外自造节奏 —— 单看一处「只是慢了一点」，全站叠起来就是
+    // 每个页面各有一套呼吸频率。
+    //
+    // 例外：`animate-*` 的 `duration-*`（tw-animate 用它设 animation-duration）
+    // 不在此列 —— 那类写法必须和 `animate-in` / `animate-out` 同时出现。
+    if (
+      /\bduration-(?:\[[^\]]*\]|[0-9]+)\b/.test(raw) &&
+      !/\banimate-(in|out)\b/.test(raw)
+    ) {
+      report('T11', rel, line, rawText)
+    } else if (/\bease-\[cubic-bezier\(/.test(raw)) {
+      report('T11', rel, line, rawText)
     }
   })
 }
@@ -352,7 +382,7 @@ const totalFiles = new Set(violations.map((v) => v.file)).size
 
 if (violations.length === 0) {
   console.log(
-    `design-tokens: 通过。扫描 ${walk(SRC).length} 个文件，未发现违规字号。`
+    `design-tokens: 通过。扫描 ${walk(SRC).length} 个文件，字号 / 行高 / 圆角 / 投影 / 颜色均符合规范。`
   )
 } else {
   console.log(
@@ -370,13 +400,39 @@ if (violations.length === 0) {
   }
   console.log(
     '修复方式：字号用标准阶梯（text-xs/sm/base/lg/2xl/3xl）或 <Text> / <Heading>；\n' +
+      '行高由字号自带（不要写 leading-*）；颜色走语义 Token（text-foreground / bg-success-soft /\n' +
+      'chart-N / syntax-*）；第三方商标色与多序列分类色从 design-system/tokens/brand-colors 取；\n' +
+      '动效用 ds-motion-* 工具类或 var(--ds-motion-*)，不要写 duration-N / ease-[cubic-bezier(…)]。\n' +
       '确实无法接入 Token 的场景，在 scripts/check-design-tokens.mjs 的 ALLOWLIST 登记并写明理由。'
   )
 }
 
 const allowed = findings.length - violations.length
 if (allowed > 0) {
-  console.log(`\n已登记例外（不计入违规）：${allowed} 处`)
+  // 这些**都不是例外**，分开报数是为了避免误读：
+  //   · 浮层投影    规范 §1.5 明确规定「投影只留给弹窗与浮层」，是合规写法
+  //   · 颜色所有者  Token 定义处本身就该写色值（调色板、品牌色、SVG 图形）
+  //   · 已登记例外  ALLOWLIST 里逐条写了理由的真例外
+  const allowedFindings = findings.filter((f) => !violations.includes(f))
+  const overlayCount = allowedFindings.filter(
+    (f) => f.rule === 'T6' && OVERLAY_ALLOWLIST.some((re) => re.test(f.file))
+  ).length
+  const ownerCount = allowedFindings.filter(
+    (f) =>
+      f.rule === 'T8' &&
+      (RAW_COLOR_OWNERS.some((re) => re.test(f.file)) ||
+        /\.test\.tsx?$/.test(f.file))
+  ).length
+  const exceptionCount = allowed - overlayCount - ownerCount
+  if (overlayCount > 0) {
+    console.log(`\n浮层投影（规范 §1.5 允许，不计入违规）：${overlayCount} 处`)
+  }
+  if (ownerCount > 0) {
+    console.log(`Token 定义处色值（颜色的落点，不计入违规）：${ownerCount} 处`)
+  }
+  if (exceptionCount > 0) {
+    console.log(`已登记例外（不计入违规）：${exceptionCount} 处`)
+  }
 }
 
 if (STRICT && violations.length > 0) {

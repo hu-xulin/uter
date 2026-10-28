@@ -343,16 +343,11 @@ For commercial licensing, please contact support@uter.ai
   --skeleton-highlight: oklch(0.97 0 0);
 
   --radius: 0.5rem;
-  /* Large-font preset — sits above the `xl` density: ~1.35× the base ladder. */
-  --text-xs: 1rem; /* 16px */
-  --text-sm: 1.125rem; /* 18px */
-  --text-mono: 1.0625rem; /* 17px — 与 body-sm 18px 保持等宽视觉等重 */
-  --text-base: 1.25rem; /* 20px */
-  --text-lg: 1.5rem; /* 24px */
-  --text-xl: 1.75rem; /* 28px */
-  --text-2xl: 2.25rem; /* 36px */
-  --text-3xl: 2.75rem; /* 44px */
-  --text-4xl: 3.375rem; /* 54px */
+  /* 字号阶梯**不在这里声明**：唯一来源是
+   * `design-system/tokens/typography.css`。本预设的大字模式是那套阶梯的
+   * 无障碍放大档，声明在同文件的 `[data-theme-preset='simple-large']`
+   * 区块里，避免出现第二处 `--text-*` 定义（规范第八节：主题只管颜色，
+   * 密度只管间距，字号只有一套）。 */
   --spacing: 0.3rem;
 }
 .dark [data-theme-preset='simple-large'] {
@@ -415,6 +410,32 @@ For commercial licensing, please contact support@uter.ai
   --overview-accent-3: var(--chart-3);
 }
 
+/* ── Brand scale derived from the preset primary ──────────────────────── */
+/* 规范 1.1.1 把品牌色拆成 6 条语义出口（primary / primary-strong /
+ * hover-primary / primary-active / primary-subtle / primary-border）。
+ * `:root` 里写的是默认品牌 #5B5EE6 的实测值；预设改了 `--primary` 之后，
+ * 其余 5 条必须跟着走，否则 rose-garden 的主按钮会在悬停时变成紫色。
+ *
+ * 这里用 color-mix 从 `--primary` 推导，而不是给 7 个预设各抄一份色阶：
+ *   · 悬停/按下 = 同色相压暗 12% / 24%（深色主题改为提亮，方向与主题一致）
+ *   · 浅底      = 8% 品牌色叠在页面底色上（#5B5EE6 → #F0F0FF，与规范一致）
+ *   · 描边      = 30% 品牌色叠在页面底色上（→ #C7C8FF，与规范一致）
+ * 焦点环恒等于品牌色。 */
+[data-theme-preset]:not([data-theme-preset='default']) {
+  --primary-strong: var(--primary);
+  --hover-primary: color-mix(in oklch, var(--primary) 88%, oklch(0 0 0));
+  --primary-active: color-mix(in oklch, var(--primary) 76%, oklch(0 0 0));
+  --primary-subtle: color-mix(in oklch, var(--primary) 8%, var(--background));
+  --primary-border: color-mix(in oklch, var(--primary) 30%, var(--background));
+  --ring: var(--primary);
+  --sidebar-ring: var(--primary);
+}
+
+.dark [data-theme-preset]:not([data-theme-preset='default']) {
+  --hover-primary: color-mix(in oklch, var(--primary) 88%, oklch(1 0 0));
+  --primary-active: color-mix(in oklch, var(--primary) 76%, oklch(1 0 0));
+}
+
 /* ── Semantic surface bridge ──────────────────────────────────────────── */
 /* Color presets should tint the surfaces most components actually use, not
  * only primary buttons. These derived tokens keep the app theme-aware without
@@ -431,8 +452,8 @@ For commercial licensing, please contact support@uter.ai
  *     cards/borders rather than tinting them with the clay accent).
  *   - `simple-large`: keeps intentionally neutral, high-contrast surfaces. */
 [data-theme-preset]:not([data-theme-preset='default']):not(
-  [data-theme-preset='anthropic']
-):not([data-theme-preset='simple-large']) {
+    [data-theme-preset='anthropic']
+  ):not([data-theme-preset='simple-large']) {
   --card: color-mix(in oklch, var(--primary) 3%, var(--background));
   --popover: color-mix(in oklch, var(--primary) 5%, var(--background));
   --muted: color-mix(in oklch, var(--primary) 7%, var(--background));
@@ -612,6 +633,25 @@ For commercial licensing, please contact support@uter.ai
 
   --skeleton-base: oklch(0.305 0.004 60);
   --skeleton-highlight: oklch(0.41 0.004 60);
+}
+
+/* ── Sidebar active foreground（规范 §2.3）───────────────────────────────
+ *
+ * 左侧导航选中态的前景色必须与选中浅底 `primary-subtle` 配对达标
+ * （普通文本 ≥ 4.5:1）。默认主题用的是规范给定的 `#5558d8` / `#8b8df5`。
+ *
+ * 但预设主题会整体换掉 `--primary`（绿、玫红、青绿、橙……），若这里继续用
+ * 固定的紫蓝值，选中行就会出现「红主题里的蓝字」。因此预设下改为**从该预设
+ * 自己的 `--primary` 推导**：浅色压深一档、深色提亮一档，色相跟随预设。
+ *
+ * 这条规则放在所有预设块**之后**：选择器特异性相同（都是属性选择器），
+ * 靠顺序覆盖，所以不必逐个预设重复写 8 遍。
+ */
+[data-theme-preset] {
+  --sidebar-active-foreground: color-mix(in oklab, var(--primary) 90%, #000);
+}
+.dark [data-theme-preset] {
+  --sidebar-active-foreground: color-mix(in oklab, var(--primary) 90%, #fff);
 }
 
 /* ── Border radius ────────────────────────────────────────────────────── */

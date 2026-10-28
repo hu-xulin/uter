@@ -35,10 +35,35 @@ For commercial licensing, please contact support@uter.ai
   --ds-control-height-sm: 2.25rem; /* 36px */
   --ds-button-height-md: 2.25rem; /* 36px */
   --ds-button-height-sm: 2rem; /* 32px */
+  --ds-button-height-lg: 2.5rem; /* 40px */
+  /* 侧边栏 / 导航菜单项高度。之前是 h-8 / h-7 / h-12 写死，密度档对
+     导航完全无效；改由这里分档后 `data-theme-scale` 才真正贯通到侧边栏。 */
+  --ds-nav-height-md: 2rem; /* 32px */
+  --ds-nav-height-sm: 1.75rem; /* 28px */
+  --ds-nav-height-lg: 3rem; /* 48px */
   --ds-form-field-gap: 0.5rem; /* 8px */
   --ds-card-padding: 1.5rem; /* 24px */
   --ds-page-gutter: 1.5rem; /* 24px */
   --ds-section-gap: 1.5rem; /* 24px */
+
+  /* ── 内联胶囊（chip）高度，2026-10-28 定档 ────────────────────────
+   * 多选里的值胶囊、`+N more` / `Collapse` 徽标按钮是**同一行并排**的，
+   * 高度必须逐像素一致，否则换行时参差不齐。此前这个值在 4 个文件里
+   * 各写了一遍 `h-[calc(--spacing(5.25))]`（= 21px），改一处就错位。
+   *
+   * 21px 不是 4px 栅格的整数倍 —— 它由 `text-xs`(12/16) + 上下各 2.5px
+   * 光学补正得出，属于胶囊专用档，**不要**并进 `--ds-control-height-*`
+   * （那是表单控件的 24/32/44 三档）。 */
+  --ds-chip-height: 1.3125rem; /* 21px */
+
+  /* ── 内容区宽度（规范 §3.1 Layout，2026-10-28 定档）─────────────
+   * 标准内容区 1280px：超过这个宽度，14px 正文的单行字数会超出舒适阅读区间。
+   * 宽表模式 1800px：只给「模型 × 价格 × 供应商」这类需要横向比较的表格页，
+   * 1280px 会把价格列挤成换行，横向比较立刻失效。
+   *
+   * 宽度不跟密度档走 —— 密度改的是行高与内边距，宽度是另一个维度。 */
+  --ds-content-max: 80rem; /* 1280px */
+  --ds-content-max-wide: 112.5rem; /* 1800px */
 }
 
 [data-theme-scale='sm'] {
@@ -49,6 +74,10 @@ For commercial licensing, please contact support@uter.ai
   --ds-control-height-sm: 2rem; /* 32px */
   --ds-button-height-md: 2rem; /* 32px */
   --ds-button-height-sm: 1.75rem; /* 28px */
+  --ds-button-height-lg: 2.25rem; /* 36px */
+  --ds-nav-height-md: 1.75rem; /* 28px */
+  --ds-nav-height-sm: 1.5rem; /* 24px —— 触控下限 */
+  --ds-nav-height-lg: 2.5rem; /* 40px */
   --ds-form-field-gap: 0.375rem; /* 6px */
   --ds-card-padding: 1rem; /* 16px */
   --ds-page-gutter: 1rem; /* 16px */
@@ -63,6 +92,10 @@ For commercial licensing, please contact support@uter.ai
   --ds-control-height-sm: 2.5rem; /* 40px */
   --ds-button-height-md: 2.5rem; /* 40px */
   --ds-button-height-sm: 2.25rem; /* 36px */
+  --ds-button-height-lg: 2.75rem; /* 44px */
+  --ds-nav-height-md: 2.25rem; /* 36px */
+  --ds-nav-height-sm: 2rem; /* 32px */
+  --ds-nav-height-lg: 3.25rem; /* 52px */
   --ds-form-field-gap: 0.625rem; /* 10px */
   --ds-card-padding: 1.75rem; /* 28px */
   --ds-page-gutter: 2rem; /* 32px */

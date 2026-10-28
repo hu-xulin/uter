@@ -94,7 +94,7 @@ For commercial licensing, please contact support@uter.ai
     scrollbar-color: var(--border) transparent;
   }
   html {
-    @apply overflow-x-hidden font-inter;
+    @apply font-inter overflow-x-hidden;
   }
   body {
     @apply bg-background text-foreground has-[div[data-variant='inset']]:bg-sidebar min-h-svh w-full;
@@ -139,15 +139,6 @@ For commercial licensing, please contact support@uter.ai
   [role='button']:not(:disabled) {
     cursor: pointer;
   }
-
-  /* Prevent focus zoom on mobile devices */
-  @media screen and (max-width: 767px) {
-    input,
-    select,
-    textarea {
-      font-size: 16px !important;
-    }
-  }
 }
 
 /* Vercel Geist-style skeleton shimmer */
@@ -161,7 +152,7 @@ For commercial licensing, please contact support@uter.ai
     var(--skeleton-base) 100%
   );
   background-size: 300% 100%;
-  animation: skeleton-shimmer 1.8s ease-in-out infinite;
+  animation: skeleton-shimmer var(--ds-motion-loop-shimmer) ease-in-out infinite;
 }
 
 @keyframes skeleton-shimmer {
@@ -185,12 +176,22 @@ For commercial licensing, please contact support@uter.ai
   padding-inline: 2rem;
 }
 
+/* 内容区宽度的唯一写法（规范 §3.1）。
+ *
+ * 以前这里是写死的 1280px / 1536px，与 `design-system/tokens/spacing.css`
+ * 里的 `--ds-content-max*` 各说各话，于是业务代码宁可直接写
+ * `max-w-[1800px]` 也不来用这套工具类 —— 两套工具类长期零调用。
+ * 现在两者都读 Token，业务侧只认这两个类名。
+ *
+ * `max-w-container` 给标准内容区（1280px）；`max-w-container-wide` 只给
+ * 「模型 × 价格 × 供应商」这类必须横向比较的宽表页（1800px）。
+ * 弹窗 / 抽屉的宽度不属于内容区宽度，仍按各自档位单独写。 */
 @utility max-w-container {
-  max-width: 1280px;
+  max-width: var(--ds-content-max);
 }
 
-@utility max-w-container-lg {
-  max-width: 1536px;
+@utility max-w-container-wide {
+  max-width: var(--ds-content-max-wide);
 }
 
 @utility no-scrollbar {
@@ -257,10 +258,10 @@ For commercial licensing, please contact support@uter.ai
 }
 @media (prefers-reduced-motion: no-preference) {
   .CollapsibleContent[data-open] {
-    animation: slideDown 300ms ease-out;
+    animation: slideDown var(--ds-motion-base) var(--ds-motion-ease);
   }
   .CollapsibleContent:not([data-open]) {
-    animation: slideUp 300ms ease-out;
+    animation: slideUp var(--ds-motion-base) var(--ds-motion-ease);
   }
 }
 
@@ -365,11 +366,13 @@ For commercial licensing, please contact support@uter.ai
 
   /* Animations */
   .animate-appear {
-    animation: appear 0.6s forwards ease-out;
+    animation: appear var(--ds-motion-enter) var(--ds-motion-ease-marketing)
+      forwards;
   }
 
   .animate-appear-zoom {
-    animation: appear-zoom 0.6s forwards ease-out;
+    animation: appear-zoom var(--ds-motion-enter)
+      var(--ds-motion-ease-marketing) forwards;
   }
 
   .animation-delay-100 {
@@ -426,12 +429,12 @@ For commercial licensing, please contact support@uter.ai
   }
 
   .animate-scroll-up {
-    animation: scroll-up 20s linear infinite;
+    animation: scroll-up var(--ds-motion-loop-marquee) linear infinite;
     will-change: transform;
   }
 
   .animate-scroll-down {
-    animation: scroll-up 20s linear infinite reverse;
+    animation: scroll-up var(--ds-motion-loop-marquee) linear infinite reverse;
     will-change: transform;
   }
 
@@ -466,7 +469,8 @@ For commercial licensing, please contact support@uter.ai
 }
 
 [data-stream-fade] {
-  animation: stream-fade-in 250ms ease-out both;
+  animation: stream-fade-in var(--ds-motion-data-fast) var(--ds-motion-ease)
+    both;
   animation-delay: var(--stream-fade-delay, 0ms);
 }
 
@@ -527,19 +531,24 @@ For commercial licensing, please contact support@uter.ai
 }
 
 .landing-animate-fade-up {
-  animation: landing-fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: landing-fade-up var(--ds-motion-enter)
+    var(--ds-motion-ease-marketing) both;
 }
 .landing-animate-fade-in {
-  animation: landing-fade-in 0.6s ease-out both;
+  animation: landing-fade-in var(--ds-motion-enter)
+    var(--ds-motion-ease-marketing) both;
 }
 .landing-animate-scale-in {
-  animation: landing-scale-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: landing-scale-in var(--ds-motion-enter)
+    var(--ds-motion-ease-marketing) both;
 }
 .landing-animate-fade-left {
-  animation: landing-fade-left 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: landing-fade-left var(--ds-motion-enter)
+    var(--ds-motion-ease-marketing) both;
 }
 .landing-animate-fade-right {
-  animation: landing-fade-right 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: landing-fade-right var(--ds-motion-enter)
+    var(--ds-motion-ease-marketing) both;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -558,18 +567,17 @@ For commercial licensing, please contact support@uter.ai
 @media (prefers-reduced-motion: no-preference) {
   [data-slot='card']:not([data-card-hover='false']) {
     transition:
-      transform 150ms ease,
-      box-shadow 150ms ease;
+      transform var(--ds-motion-fast) var(--ds-motion-ease),
+      border-color var(--ds-motion-fast) var(--ds-motion-ease);
   }
 
   @media (min-width: 641px) {
+    /* 规范 §1.5：卡片一律不投影 —— 悬停反馈靠 1px 位移 + 描边加深，
+       不是浮起来。此前这里挂了 `box-shadow`（还分了深浅两套写死色值），
+       等于让全站卡片都变成浮层。 */
     [data-slot='card']:not([data-card-hover='false']):hover {
       transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgb(0 0 0 / 0.06);
-    }
-
-    .dark [data-slot='card']:not([data-card-hover='false']):hover {
-      box-shadow: 0 4px 12px rgb(0 0 0 / 0.3);
+      border-color: var(--primary-border);
     }
   }
 
@@ -579,12 +587,13 @@ For commercial licensing, please contact support@uter.ai
   }
 
   [data-slot='table'] tr {
-    transition: background-color 120ms ease;
+    transition: background-color var(--ds-motion-fast) var(--ds-motion-ease);
   }
 
   /* Only fill the entrance delay; completed animations must release transform/opacity. */
   [data-slot='table'] tbody tr {
-    animation: tableRowEnter 0.2s cubic-bezier(0.33, 1, 0.68, 1) backwards;
+    animation: tableRowEnter var(--ds-motion-base) var(--ds-motion-ease)
+      backwards;
   }
   [data-slot='table'] tbody tr:nth-child(2) {
     animation-delay: 25ms;
@@ -652,7 +661,7 @@ For commercial licensing, please contact support@uter.ai
   }
 }
 .terminal-demo-blink {
-  animation: terminal-demo-blink 1s step-end infinite;
+  animation: terminal-demo-blink var(--ds-motion-loop-caret) step-end infinite;
 }
 
 @keyframes terminal-demo-spin {
@@ -661,7 +670,7 @@ For commercial licensing, please contact support@uter.ai
   }
 }
 .terminal-demo-spin {
-  animation: terminal-demo-spin 0.8s linear infinite;
+  animation: terminal-demo-spin var(--ds-motion-loop-spin) linear infinite;
 }
 
 @keyframes terminal-demo-pulse {
@@ -674,7 +683,8 @@ For commercial licensing, please contact support@uter.ai
   }
 }
 .terminal-demo-pulse {
-  animation: terminal-demo-pulse 1.5s ease-in-out infinite;
+  animation: terminal-demo-pulse var(--ds-motion-loop-pulse) ease-in-out
+    infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -714,15 +724,19 @@ For commercial licensing, please contact support@uter.ai
     var(--primary) 342deg,
     transparent 360deg
   );
+  /* 这里的填充色是**蒙版模板**（mask stencil），不是界面配色：
+     只要不透明就能抠出 content-box 与 border-box 的差集，
+     所以用 `black` 关键字而不是 hex，避免被当成调色板直用。 */
   mask:
-    linear-gradient(#000 0 0) content-box,
-    linear-gradient(#000 0 0);
+    linear-gradient(black 0 0) content-box,
+    linear-gradient(black 0 0);
   -webkit-mask:
-    linear-gradient(#000 0 0) content-box,
-    linear-gradient(#000 0 0);
+    linear-gradient(black 0 0) content-box,
+    linear-gradient(black 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
-  animation: auto-group-flow-border-travel 3.2s linear infinite;
+  animation: auto-group-flow-border-travel var(--ds-motion-loop-border) linear
+    infinite;
 }
 
 .auto-group-flow-border-subtle {
@@ -734,7 +748,7 @@ For commercial licensing, please contact support@uter.ai
     var(--primary) 348deg,
     transparent 360deg
   );
-  animation-duration: 3s;
+  animation-duration: var(--ds-motion-loop-border);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -756,4 +770,3 @@ For commercial licensing, please contact support@uter.ai
 a {
   text-decoration: none;
 }
-
