@@ -159,6 +159,13 @@ func TextHelper(c *gin.Context, info *relaycommon.RelayInfo) (uterError *types.U
 		return newConvertRequestFailedError(c, info, err)
 	}
 
+	// 上游采样参数硬校验（如 claude-opus-5 只接受 temperature=1、gpt-5.5 不接受
+	// top_p）：必须在 model_mapping / 推理后缀都处理完之后按**上游模型名**判定，
+	// 否则映射前后不同代的模型会套错规则。见 helper/sampling_param_compat.go。
+	if dropped := helper.ApplySamplingParamCompat(request.Model, &request.TopP, &request.Temperature); len(dropped) > 0 {
+		logger.LogDebug(c, "dropped upstream-unsupported sampling params %v for model %s", dropped, request.Model)
+	}
+
 	// ===== 降本中间层 =====
 	// 🔑 模型保真：此处**不做任何跨模型改写**——客户选哪个模型就用哪个模型。
 	// 跨模型改写见 costopt/preroute.go。

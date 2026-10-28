@@ -43,6 +43,13 @@ func ClaudeHelper(c *gin.Context, info *relaycommon.RelayInfo) (uterError *types
 		return newConvertRequestFailedError(c, info, err)
 	}
 
+	// 上游采样参数硬校验：/v1/messages 进来同样会被上游 400 拒绝（claude-opus-5
+	// 只接受 temperature=1，Claude 5 代不接受 top_p）。判定口径与 chat 路径一致，
+	// 见 helper/sampling_param_compat.go。
+	if dropped := helper.ApplySamplingParamCompat(request.Model, &request.TopP, &request.Temperature); len(dropped) > 0 {
+		logger.LogDebug(c, "dropped upstream-unsupported sampling params %v for model %s", dropped, request.Model)
+	}
+
 	adaptor := GetAdaptor(info.ApiType)
 	if adaptor == nil {
 		return types.NewError(fmt.Errorf("invalid api type: %d", info.ApiType), types.ErrorCodeInvalidApiType, types.ErrOptionWithSkipRetry())

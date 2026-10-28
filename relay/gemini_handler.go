@@ -41,6 +41,14 @@ func GeminiHelper(c *gin.Context, info *relaycommon.RelayInfo) (newAPIError *typ
 		return newConvertRequestFailedError(c, info, err)
 	}
 
+	// 上游采样参数硬校验：Gemini 形态（topP / temperature 在 generationConfig 里）
+	// 转发到同一批上游模型时会被同样拒绝，判定口径与 chat 路径一致，
+	// 见 helper/sampling_param_compat.go。Gemini 请求的模型名在 URL 上，
+	// 因此用 info.UpstreamModelName（已完成 model_mapping）。
+	if dropped := helper.ApplySamplingParamCompat(info.UpstreamModelName, &request.GenerationConfig.TopP, &request.GenerationConfig.Temperature); len(dropped) > 0 {
+		logger.LogDebug(c, "dropped upstream-unsupported sampling params %v for model %s", dropped, info.UpstreamModelName)
+	}
+
 	adaptor := GetAdaptor(info.ApiType)
 	if adaptor == nil {
 		return types.NewError(fmt.Errorf("invalid api type: %d", info.ApiType), types.ErrorCodeInvalidApiType, types.ErrOptionWithSkipRetry())
