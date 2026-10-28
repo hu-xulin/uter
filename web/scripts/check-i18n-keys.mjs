@@ -165,7 +165,9 @@ async function main() {
   let staticKeyCount = 0
   try {
     const text = await fs.readFile(staticKeysFile, 'utf8')
-    const block = text.match(/STATIC_I18N_KEYS\s*=\s*\[([\s\S]*?)\]\s*as\s+const/)
+    const block = text.match(
+      /STATIC_I18N_KEYS\s*=\s*\[([\s\S]*?)\]\s*as\s+const/
+    )
     if (block) {
       // 只保留「一整行就是一个完整字符串字面量」的条目。该数组里存在
       // 多行拼接（'…' +\n  '…'）与行尾注释，直接全局匹配引号会把注释文字

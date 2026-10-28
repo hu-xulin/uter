@@ -76,17 +76,14 @@ describe('loadLocaleBundle', () => {
     ['ru', 'ru.json'],
     ['ja', 'ja.json'],
     ['vi', 'vi.json'],
-  ] as const)(
-    'loads %s from its own %s chunk',
-    async (code, file) => {
-      const { loadLocaleBundle } = await import('@/i18n/locale-loaders')
+  ] as const)('loads %s from its own %s chunk', async (code, file) => {
+    const { loadLocaleBundle } = await import('@/i18n/locale-loaders')
 
-      const bundle = await loadLocaleBundle(code)
+    const bundle = await loadLocaleBundle(code)
 
-      expect(bundle?.translation['Save changes']).toBeTruthy()
-      expect(dynamicImports).toEqual([file])
-    }
-  )
+    expect(bundle?.translation['Save changes']).toBeTruthy()
+    expect(dynamicImports).toEqual([file])
+  })
 
   it('imports a locale chunk only once across repeated calls', async () => {
     const { loadLocaleBundle } = await import('@/i18n/locale-loaders')

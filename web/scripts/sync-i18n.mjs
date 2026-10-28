@@ -141,9 +141,7 @@ function deepUnionKeyShape(...objects) {
         }
         continue
       }
-      out[k] = isPlainObject(obj[k])
-        ? deepUnionKeyShape({}, obj[k])
-        : obj[k]
+      out[k] = isPlainObject(obj[k]) ? deepUnionKeyShape({}, obj[k]) : obj[k]
     }
   }
   return out
@@ -154,7 +152,7 @@ function stableStringify(obj) {
   for (const key of OBFUSCATED_KEYS) {
     text = text.replaceAll(`"${key.runtime}":`, `"${key.serialized}":`)
   }
-  return `${text  }\n`
+  return `${text}\n`
 }
 
 function countLeafKeys(obj) {
@@ -208,7 +206,7 @@ function reorderLikeBase(
     }
 
     for (const key of Object.keys(t)) {
-      if (! Object.hasOwn(base, key)) {
+      if (!Object.hasOwn(base, key)) {
         const nextPath = [...currentPath, key].join('.')
         extras[nextPath] = t[key]
       }
@@ -265,8 +263,9 @@ function isLikelyUntranslated({ locale, baseValue, value }) {
   if (locale === 'ru') return true
 
   // For fr/vi: still useful but noisier; keep it conservative.
-  if (locale === 'fr' || locale === 'vi')
-    {return /\b(the|and|or|to|with|please)\b/i.test(s)}
+  if (locale === 'fr' || locale === 'vi') {
+    return /\b(the|and|or|to|with|please)\b/i.test(s)
+  }
 
   return false
 }
