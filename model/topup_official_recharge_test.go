@@ -26,7 +26,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func createOfficialTestOrder(t *testing.T, userId int, tradeNo string, provider string, method string, amount int64, money float64) TopUp {
+func createOfficialTestOrder(t *testing.T, userId int, tradeNo string, provider string, method string, amount float64, money float64) TopUp {
 	t.Helper()
 	order := TopUp{
 		UserId:          userId,

@@ -48,55 +48,122 @@ func genTestRSAKey(t *testing.T) (privPEM string, pub *rsa.PublicKey) {
 	return
 }
 
-// TestAlipaySignVerifyRoundTrip 验证支付宝 RSA2 签名可被同一公钥验签通过。
-func TestAlipaySignVerifyRoundTrip(t *testing.T) {
-	privPEM, pub := genTestRSAKey(t)
-
-	params := map[string]string{
-		"app_id":      "2021000000000000",
-		"method":      "alipay.trade.create",
-		"charset":     "utf-8",
-		"sign_type":   "RSA2",
-		"timestamp":   "2026-01-01 00:00:00",
-		"version":     "1.0",
-		"biz_content": `{"out_trade_no":"USR1NOtest","buyer_id":"2088000000000000"}`,
-		"empty":       "",
+// signRawContentWithKey 用给定私钥对任意字符串做 SHA256withRSA 签名，
+// 用来模拟「支付宝侧用支付宝私钥签出的回调」。
+func signRawContentWithKey(t *testing.T, content, privPEM string) string {
+	t.Helper()
+	block, _ := pem.Decode([]byte(privPEM))
+	if block == nil {
+		t.Fatalf("decode private key pem")
 	}
-	sign, err := AlipayBuildSign(params, privPEM)
+	key, err := x509.ParsePKCS8PrivateKey(block.Bytes)
 	if err != nil {
-		t.Fatalf("AlipayBuildSign: %v", err)
+		t.Fatalf("parse pkcs8: %v", err)
 	}
-	if sign == "" {
-		t.Fatal("expected non-empty sign")
+	priv, ok := key.(*rsa.PrivateKey)
+	if !ok {
+		t.Fatalf("not an RSA private key")
+	}
+	hashed := sha256.Sum256([]byte(content))
+	sig, err := rsa.SignPKCS1v15(rand.Reader, priv, crypto.SHA256, hashed[:])
+	if err != nil {
+		t.Fatalf("sign: %v", err)
+	}
+	return base64.StdEncoding.EncodeToString(sig)
+}
+
+// alipayNotifyParams 构造一份贴近真实支付宝异步通知的参数集。
+func alipayNotifyParams() map[string]string {
+	return map[string]string{
+		"app_id":       "2021000000000000",
+		"out_trade_no": "USR1NOabcdef1699999999",
+		"trade_no":     "2026102822001400000000000001",
+		"trade_status": "TRADE_SUCCESS",
+		"total_amount": "6.88",
+		"notify_time":  "2026-10-28 10:00:00",
+		"notify_type":  "trade_status_sync",
+		"charset":      "utf-8",
+		"version":      "1.0",
+		"sign_type":    "RSA2",
+	}
+}
+
+// TestAlipayNotifyVerifyAcceptsRealAlipaySignature 用「支付宝的签名口径」
+// （排除 sign 与 sign_type）签出回调，验证本地验签能通过。
+func TestAlipayNotifyVerifyAcceptsRealAlipaySignature(t *testing.T) {
+	privPEM, pub := genTestRSAKey(t)
+	params := alipayNotifyParams()
+
+	content, err := alipayNotifyVerifyContent(params)
+	if err != nil {
+		t.Fatalf("alipayNotifyVerifyContent: %v", err)
+	}
+	sign := signRawContentWithKey(t, content, privPEM)
+
+	verifyParams := map[string]string{}
+	for k, v := range params {
+		verifyParams[k] = v
+	}
+	verifyParams["sign"] = sign
+
+	if !AlipayVerifySign(verifyParams, mustPKCS1PubPEM(t, pub), sign) {
+		t.Fatal("AlipayVerifySign failed for a signature produced with Alipay's own rule")
 	}
 
-	// 验签时同样只包含 sign_type（不含 sign 本身），空值排除。
-	verifyParams := map[string]string{
-		"app_id":      params["app_id"],
-		"method":      params["method"],
-		"charset":     params["charset"],
-		"timestamp":   params["timestamp"],
-		"version":     params["version"],
-		"biz_content": params["biz_content"],
-		"sign":        sign,
-		"sign_type":   "RSA2",
+	// 篡改金额后验签必须失败。
+	tampered := map[string]string{}
+	for k, v := range verifyParams {
+		tampered[k] = v
 	}
-	if !AlipayVerifySign(verifyParams, mustPKCS1PubPEM(t, pub), sign) {
-		t.Fatal("AlipayVerifySign failed for a valid signature")
+	tampered["total_amount"] = "0.01"
+	if AlipayVerifySign(tampered, mustPKCS1PubPEM(t, pub), sign) {
+		t.Fatal("AlipayVerifySign must fail after tampering the amount")
 	}
-	// 篡改参数后验签必须失败。
-	bad := map[string]string{
-		"app_id":      "9999999999999999",
-		"method":      params["method"],
-		"charset":     params["charset"],
-		"timestamp":   params["timestamp"],
-		"version":     params["version"],
-		"biz_content": params["biz_content"],
-		"sign":        sign,
-		"sign_type":   "RSA2",
+}
+
+// TestAlipayNotifyVerifyRejectsRequestStyleSignature 锁死「回调验签不能复用
+// 请求签名的拼接口径」：把 sign_type 计入待验签串时，支付宝的真实签名必须被拒。
+//
+// 这正是旧实现的缺陷——验签沿用了请求签名的拼接函数（保留 sign_type），
+// 与支付宝的待签串相差一个 &sign_type=RSA2 片段，导致所有真实回调验签失败。
+func TestAlipayNotifyVerifyRejectsRequestStyleSignature(t *testing.T) {
+	privPEM, pub := genTestRSAKey(t)
+	params := alipayNotifyParams()
+
+	requestStyleContent, err := alipaySignContent(params)
+	if err != nil {
+		t.Fatalf("alipaySignContent: %v", err)
 	}
-	if AlipayVerifySign(bad, mustPKCS1PubPEM(t, pub), sign) {
-		t.Fatal("AlipayVerifySign must fail after tampering")
+	if !strings.Contains(requestStyleContent, "sign_type=") {
+		t.Fatal("request sign content must include sign_type")
+	}
+	sign := signRawContentWithKey(t, requestStyleContent, privPEM)
+
+	verifyParams := map[string]string{}
+	for k, v := range params {
+		verifyParams[k] = v
+	}
+	verifyParams["sign"] = sign
+
+	if AlipayVerifySign(verifyParams, mustPKCS1PubPEM(t, pub), sign) {
+		t.Fatal("verify must reject a signature computed over the request-style content")
+	}
+}
+
+// TestAlipayNotifyVerifyContentExcludesSignType 直接断言待验签串的构成。
+func TestAlipayNotifyVerifyContentExcludesSignType(t *testing.T) {
+	content, err := alipayNotifyVerifyContent(map[string]string{
+		"app_id":    "2021000000000000",
+		"trade_no":  "T1",
+		"sign_type": "RSA2",
+		"sign":      "SHOULD-BE-EXCLUDED",
+		"empty":     "",
+	})
+	if err != nil {
+		t.Fatalf("alipayNotifyVerifyContent: %v", err)
+	}
+	if content != "app_id=2021000000000000&trade_no=T1" {
+		t.Fatalf("unexpected verify content: %q", content)
 	}
 }
 

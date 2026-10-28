@@ -424,6 +424,13 @@ func InitResources() error {
 	}
 	model.InitOptionMap()
 
+	// 境内支付凭据体检：只判空不够，密钥格式不对时配置页仍显示「已启用」，
+	// 用户点充值才在下单那一刻失败。这里把可解析性提前到启动期，问题直接进日志。
+	// 不返回错误：支付是可选能力，未配置或配错不应阻断服务启动。
+	for _, problem := range service.InspectCnPayCredentials() {
+		common.SysError(common.LogText("cn payment credential invalid: %s", problem.String()))
+	}
+
 	// 清理旧的磁盘缓存文件
 	common.CleanupOldCacheFiles()
 

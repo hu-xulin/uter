@@ -44,13 +44,29 @@ func isWechatPayTopUpEnabled() bool {
 	return isPaymentComplianceConfirmed() && operation_setting.IsWechatPayEnabled()
 }
 
-func wechatAmountForStorage(amount int64) int64 {
+func wechatAmountForStorage(amount float64) float64 {
 	if operation_setting.GetQuotaDisplayType() == operation_setting.QuotaDisplayTypeTokens {
-		dAmount := decimal.NewFromInt(amount)
+		dAmount := decimal.NewFromFloat(amount)
 		dQuotaPerUnit := decimal.NewFromFloat(common.QuotaPerUnit)
-		return dAmount.Div(dQuotaPerUnit).IntPart()
+		return dAmount.Div(dQuotaPerUnit).InexactFloat64()
 	}
 	return amount
+}
+
+// buildWechatH5SceneInfo 构造 H5 支付的 scene_info（APIv3 口径）。
+//
+// 字段名必须是 type / app_name / app_url：APIv3 的 h5_info 没有 APIv2 统一
+// 订单里的 wap_url / wap_name，按旧名字传等于既缺 app_name/app_url、又塞了
+// 两个未定义字段。payer_client_ip 必填，微信用它做风控与归属判断。
+func buildWechatH5SceneInfo(clientIP, appURL string) map[string]any {
+	return map[string]any{
+		"payer_client_ip": clientIP,
+		"h5_info": map[string]any{
+			"type":     "Wap",
+			"app_name": "Uter",
+			"app_url":  appURL,
+		},
+	}
 }
 
 // RequestWechatPayWeb 创建微信支付网站支付订单。
@@ -76,7 +92,7 @@ func RequestWechatPayWeb(c *gin.Context) {
 		return
 	}
 	if req.Amount < getMinTopup() {
-		c.JSON(http.StatusOK, gin.H{"message": "error", "data": fmt.Sprintf("充值数量不能小于 %d", getMinTopup())})
+		c.JSON(http.StatusOK, gin.H{"message": "error", "data": fmt.Sprintf("充值数量不能小于 %s", formatTopUpAmount(getMinTopup()))})
 		return
 	}
 	id := c.GetInt("id")
@@ -108,7 +124,7 @@ func RequestWechatPayWeb(c *gin.Context) {
 	bodyMap := map[string]any{
 		"mchid":        operation_setting.WechatPayMchId,
 		"appid":        operation_setting.WechatPayAppId,
-		"description":  fmt.Sprintf("%s 充值 %d", common.EmailBrandName, req.Amount),
+		"description":  paymentOrderTitle(payMoney),
 		"out_trade_no": tradeNo,
 		"notify_url":   notifyUrl,
 		"amount": map[string]any{
@@ -117,16 +133,8 @@ func RequestWechatPayWeb(c *gin.Context) {
 		},
 	}
 	if client == "mobile" {
-		// H5 支付必填 scene_info：payer_client_ip 必须是用户真实终端 IP，
-		// 微信会用它做风控与归属判断，填错会直接下单失败。
-		bodyMap["scene_info"] = map[string]any{
-			"payer_client_ip": c.ClientIP(),
-			"h5_info": map[string]any{
-				"type":     "Wap",
-				"wap_url":  paymentReturnPath("/wallet"),
-				"wap_name": "Uter",
-			},
-		}
+		// H5 支付必填 scene_info（含 h5_info.type）；字段名见 buildWechatH5SceneInfo。
+		bodyMap["scene_info"] = buildWechatH5SceneInfo(c.ClientIP(), paymentReturnPath("/wallet"))
 	}
 	bodyBytes, _ := json.Marshal(bodyMap)
 	bodyStr := string(bodyBytes)
@@ -243,7 +251,7 @@ func RequestWechatPayWeb(c *gin.Context) {
 		data = map[string]string{"trade_no": tradeNo, "code_url": wxResp.CodeUrl}
 	}
 
-	logger.LogInfo(c.Request.Context(), fmt.Sprintf("微信支付%s订单创建成功 user_id=%d trade_no=%s amount=%d money=%.2f", apiPath, id, tradeNo, req.Amount, payMoney))
+	logger.LogInfo(c.Request.Context(), fmt.Sprintf("微信支付%s订单创建成功 user_id=%d trade_no=%s amount=%.2f money=%.2f", apiPath, id, tradeNo, req.Amount, payMoney))
 	c.JSON(http.StatusOK, gin.H{
 		"message": "success",
 		"data":    data,
@@ -370,10 +378,9 @@ func WechatPayNotify(c *gin.Context) {
 	// F-18: 回调只能与可信的本地快照比较。下单时已把实际发给微信的金额
 	// （分）与币种落到 ProviderAmount / ProviderCurrency，这里优先使用该快照；
 	// 存量订单（快照为空）才回退到由 Money 换算，避免用两套口径判等。
-	expectedCents := topUp.ProviderAmount
+	expectedCents := providerExpectedMinorUnits(topUp.ProviderAmount, topUp.Money)
 	expectedCurrency := topUp.ProviderCurrency
-	if expectedCents <= 0 || expectedCurrency == "" {
-		expectedCents = decimal.NewFromFloat(topUp.Money).Mul(decimal.NewFromInt(100)).Round(0).IntPart()
+	if expectedCurrency == "" {
 		expectedCurrency = "CNY"
 	}
 	// 微信支付下单时固定使用 CNY；回调币种必须一致，不能只凭相同的数值入账。

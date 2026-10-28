@@ -29,10 +29,13 @@ import (
 	"encoding/pem"
 	"errors"
 	"fmt"
+	"net/url"
 	"sort"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/uter-ai/uter/setting/operation_setting"
 )
 
 // ---------------------------------------------------------------------------
@@ -129,17 +132,43 @@ func AlipayBuildSign(params map[string]string, privateKey string) (string, error
 	return base64.StdEncoding.EncodeToString(sig), nil
 }
 
-// alipaySignContent 构造支付宝待签名/待验签串：
+// alipaySignContent 构造**请求签名**的待签名串：
 // 只排除 sign 本身与空值参数。
 //
-// ⚠️ sign_type 必须参与签名：支付宝开放平台「请求参数签名」的官方示例待签名串
-// 明确包含 sign_type（...&method=...&sign_type=RSA&timestamp=...）。网关验签时把
-// sign_type 计入，若本地签名把它剔除，两边待签串不一致，必然报 invalid-signature。
-// 下单签名与异步回调验签共用此函数，两侧口径必须一致。
+// ⚠️ sign_type 必须参与请求签名：支付宝开放平台「请求参数签名」的官方示例
+// 待签名串明确包含 sign_type（...&method=...&sign_type=RSA&timestamp=...）。
+// 网关验签时把 sign_type 计入，若本地签名把它剔除，两边待签串不一致，
+// 必然报 invalid-signature。
+//
+// 注意：**异步通知验签的口径不同**（要排除 sign 与 sign_type），
+// 见 alipayNotifyVerifyContent。两个场景不能共用一个函数。
 func alipaySignContent(params map[string]string) (string, error) {
+	return alipaySortedContent(params, false)
+}
+
+// alipayNotifyVerifyContent 构造**异步通知验签**的待验签串：
+// 排除 sign 与 sign_type 两个参数，其余非空参数按 key 字典序拼接。
+//
+// 依据支付宝官方文档《异步通知参数说明》：
+// 「在通知返回参数列表中，除去 sign、sign_type 两个参数外，凡是通知返回回来的
+// 参数皆是待验签的参数。」官方 SDK 的 AlipaySignature.getSignCheckContentV1
+// 同样是 remove("sign") + remove("sign_type")。
+//
+// 旧实现让验签复用请求签名的拼接函数（保留 sign_type），与支付宝的实际待签串
+// 相差一个 &sign_type=RSA2 片段，因此**所有真实回调都会验签失败**：用户付款成功、
+// 站点返回 failure、支付宝持续重试直到放弃，订单永远停在 pending。
+func alipayNotifyVerifyContent(params map[string]string) (string, error) {
+	return alipaySortedContent(params, true)
+}
+
+// alipaySortedContent 按 key 字典序拼接非空参数，可选排除 sign_type。
+func alipaySortedContent(params map[string]string, excludeSignType bool) (string, error) {
 	keys := make([]string, 0, len(params))
 	for k := range params {
 		if k == "sign" {
+			continue
+		}
+		if excludeSignType && k == "sign_type" {
 			continue
 		}
 		if params[k] == "" {
@@ -160,13 +189,16 @@ func alipaySignContent(params map[string]string) (string, error) {
 	return sb.String(), nil
 }
 
-// AlipayVerifySign 使用支付宝公钥验签回调参数。
+// AlipayVerifySign 使用支付宝公钥验签异步通知参数。
+//
+// publicKey 必须是**支付宝公钥**（开放平台「接口加签方式」里下载的那把），
+// 不是应用公钥。用应用公钥验签必然失败——应用公钥只用于「支付宝验证我们的请求」。
 func AlipayVerifySign(params map[string]string, publicKey, sign string) bool {
 	sign = strings.TrimSpace(sign)
 	if sign == "" {
 		return false
 	}
-	message, err := alipaySignContent(params)
+	message, err := alipayNotifyVerifyContent(params)
 	if err != nil {
 		return false
 	}
@@ -277,4 +309,82 @@ func WechatPayDecryptResource(ciphertext, nonce, associatedData, apiV3Key string
 		return "", err
 	}
 	return string(plaintext), nil
+}
+
+// ---------------------------------------------------------------------------
+// 启动期凭据体检
+// ---------------------------------------------------------------------------
+
+// CnPayCredentialProblem 描述一处境内支付凭据配置问题。
+type CnPayCredentialProblem struct {
+	Provider string
+	Field    string
+	Reason   string
+}
+
+func (p CnPayCredentialProblem) String() string {
+	return fmt.Sprintf("%s.%s: %s", p.Provider, p.Field, p.Reason)
+}
+
+// InspectCnPayCredentials 在启动时检查境内支付凭据是否**真的可用**。
+//
+// 只判空是不够的：密钥填了但格式不对（缺 PEM 头、把公钥贴进私钥字段、
+// 平台证书贴进公钥字段）时，配置页会显示「已启用」，用户点充值才在下单
+// 那一刻失败，错误还只能看到「创建订单失败」。这里把可解析性提前到启动期，
+// 让运维在日志里直接看到是哪一项、错在哪。
+//
+// 未启用的渠道不做检查——没开支付就不该因为没配密钥而报警。
+func InspectCnPayCredentials() []CnPayCredentialProblem {
+	var problems []CnPayCredentialProblem
+
+	if operation_setting.AlipayEnabled {
+		add := func(field, reason string) {
+			problems = append(problems, CnPayCredentialProblem{Provider: "alipay", Field: field, Reason: reason})
+		}
+		if strings.TrimSpace(operation_setting.AlipayAppId) == "" {
+			add("AppId", "empty")
+		}
+		if strings.TrimSpace(operation_setting.AlipayGateway) == "" {
+			add("Gateway", "empty")
+		} else if u, err := url.Parse(operation_setting.AlipayGateway); err != nil || u.Scheme != "https" || u.Host == "" {
+			add("Gateway", "must be an absolute https URL")
+		}
+		if _, err := parseRSAPrivateKey(operation_setting.AlipayPrivateKey); err != nil {
+			add("PrivateKey", err.Error())
+		}
+		if _, err := parseRSAPublicKey(operation_setting.AlipayPublicKey); err != nil {
+			add("PublicKey", err.Error())
+		}
+	}
+
+	if operation_setting.WechatPayEnabled {
+		add := func(field, reason string) {
+			problems = append(problems, CnPayCredentialProblem{Provider: "wechatpay", Field: field, Reason: reason})
+		}
+		if strings.TrimSpace(operation_setting.WechatPayMchId) == "" {
+			add("MchId", "empty")
+		}
+		if strings.TrimSpace(operation_setting.WechatPayAppId) == "" {
+			add("AppId", "empty")
+		}
+		if strings.TrimSpace(operation_setting.WechatPaySerialNo) == "" {
+			add("SerialNo", "empty")
+		}
+		if len(operation_setting.WechatPayApiV3Key) != 32 {
+			add("ApiV3Key", fmt.Sprintf("must be exactly 32 bytes, got %d", len(operation_setting.WechatPayApiV3Key)))
+		}
+		if _, err := parseRSAPrivateKey(operation_setting.WechatPayPrivateKey); err != nil {
+			add("PrivateKey", err.Error())
+		}
+		if _, err := parseRSAPublicKey(operation_setting.WechatPayPublicKey); err != nil {
+			add("PublicKey", err.Error())
+		}
+		if strings.TrimSpace(operation_setting.WechatPayGateway) == "" {
+			add("Gateway", "empty")
+		} else if u, err := url.Parse(operation_setting.WechatPayGateway); err != nil || u.Scheme != "https" || u.Host == "" {
+			add("Gateway", "must be an absolute https URL")
+		}
+	}
+
+	return problems
 }

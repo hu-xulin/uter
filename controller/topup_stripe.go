@@ -37,7 +37,7 @@ func stripeWebhookNeedsRetry(err error) bool {
 // StripePayRequest represents a payment request for Stripe checkout.
 type StripePayRequest struct {
 	// Amount is the quantity of units to purchase.
-	Amount int64 `json:"amount"`
+	Amount float64 `json:"amount"`
 	// PaymentMethod specifies the payment method (e.g., "stripe").
 	PaymentMethod string `json:"payment_method"`
 	// SuccessURL is the optional custom URL to redirect after successful payment.
@@ -52,6 +52,9 @@ type StripeAdaptor struct {
 }
 
 func (*StripeAdaptor) RequestAmount(c *gin.Context, req *StripePayRequest) {
+	if rejectInvalidTopUpAmount(c, req.Amount) {
+		return
+	}
 	if req.Amount < getStripeMinTopup() {
 		paymentError(c, common.NewMessage("Top-up amount cannot be less than {{min}}", map[string]any{"min": getStripeMinTopup()}))
 		return
@@ -84,6 +87,9 @@ func (*StripeAdaptor) RequestPay(c *gin.Context, req *StripePayRequest) {
 	}
 	if req.PaymentMethod != model.PaymentMethodStripe {
 		paymentError(c, common.NewMessage("Unsupported payment channel"))
+		return
+	}
+	if rejectInvalidTopUpAmount(c, req.Amount) {
 		return
 	}
 	if req.Amount < getStripeMinTopup() {
@@ -140,7 +146,7 @@ func (*StripeAdaptor) RequestPay(c *gin.Context, req *StripePayRequest) {
 		Status:          common.TopUpStatusPending,
 	}
 	if err := topUp.Insert(); err != nil {
-		logger.LogError(c.Request.Context(), common.LogText("Stripe failed to create top-up order user_id=%d trade_no=%s amount=%d error=%q", id, referenceId, req.Amount, err.Error()))
+		logger.LogError(c.Request.Context(), common.LogText("Stripe failed to create top-up order user_id=%d trade_no=%s amount=%.2f error=%q", id, referenceId, req.Amount, err.Error()))
 		paymentError(c, common.NewMessage("Failed to create order"))
 		return
 	}
@@ -151,7 +157,7 @@ func (*StripeAdaptor) RequestPay(c *gin.Context, req *StripePayRequest) {
 		if updateErr := topUp.Update(); updateErr != nil {
 			logger.LogError(c.Request.Context(), common.LogText("Stripe failed to mark top-up order as failed trade_no=%s error=%q", referenceId, updateErr.Error()))
 		}
-		logger.LogError(c.Request.Context(), common.LogText("Stripe failed to create Checkout Session user_id=%d trade_no=%s amount=%d error=%q", id, referenceId, req.Amount, err.Error()))
+		logger.LogError(c.Request.Context(), common.LogText("Stripe failed to create Checkout Session user_id=%d trade_no=%s amount=%.2f error=%q", id, referenceId, req.Amount, err.Error()))
 		paymentError(c, common.NewMessage("Failed to start payment"))
 		return
 	}
@@ -170,7 +176,7 @@ func (*StripeAdaptor) RequestPay(c *gin.Context, req *StripePayRequest) {
 		paymentError(c, common.NewMessage("Failed to create order"))
 		return
 	}
-	logger.LogInfo(c.Request.Context(), common.LogText("Stripe top-up order created user_id=%d trade_no=%s amount=%d money=%.2f", id, referenceId, req.Amount, chargedMoney))
+	logger.LogInfo(c.Request.Context(), common.LogText("Stripe top-up order created user_id=%d trade_no=%s amount=%.2f money=%.2f", id, referenceId, req.Amount, chargedMoney))
 	c.JSON(http.StatusOK, gin.H{
 		"message": "success",
 		"data": gin.H{
@@ -634,12 +640,12 @@ func GetChargedAmount(count float64, user model.User) float64 {
 	return count * topUpGroupRatio
 }
 
-func getStripeCreditedQuota(amount int64, group string) decimal.Decimal {
+func getStripeCreditedQuota(amount float64, group string) decimal.Decimal {
 	topUpGroupRatio := common.GetTopupGroupRatio(group)
 	if topUpGroupRatio == 0 {
 		topUpGroupRatio = 1
 	}
-	return decimal.NewFromInt(amount).
+	return decimal.NewFromFloat(amount).
 		Mul(decimal.NewFromFloat(topUpGroupRatio)).
 		Mul(decimal.NewFromFloat(common.QuotaPerUnit))
 }
@@ -665,10 +671,10 @@ func getStripePayMoney(amount float64, group string) float64 {
 	return payMoney
 }
 
-func getStripeMinTopup() int64 {
+func getStripeMinTopup() float64 {
 	minTopup := setting.StripeMinTopUp
 	if operation_setting.GetQuotaDisplayType() == operation_setting.QuotaDisplayTypeTokens {
-		minTopup = minTopup * int(common.QuotaPerUnit)
+		minTopup = minTopup * common.QuotaPerUnit
 	}
-	return int64(minTopup)
+	return minTopup
 }

@@ -111,8 +111,8 @@ func InitOptionMap() {
 	common.OptionMap["Price"] = strconv.FormatFloat(operation_setting.Price, 'f', -1, 64)
 	common.OptionMap["USDExchangeRate"] = strconv.FormatFloat(operation_setting.USDExchangeRate, 'f', -1, 64)
 	common.OptionMap["USDExchangeRateUpdatedAt"] = strconv.FormatInt(operation_setting.USDExchangeRateUpdatedAt, 10)
-	common.OptionMap["MinTopUp"] = strconv.Itoa(operation_setting.MinTopUp)
-	common.OptionMap["StripeMinTopUp"] = strconv.Itoa(setting.StripeMinTopUp)
+	common.OptionMap["MinTopUp"] = strconv.FormatFloat(operation_setting.MinTopUp, 'f', -1, 64)
+	common.OptionMap["StripeMinTopUp"] = strconv.FormatFloat(setting.StripeMinTopUp, 'f', -1, 64)
 	common.OptionMap["StripeApiSecret"] = setting.StripeApiSecret
 	common.OptionMap["StripeWebhookSecret"] = setting.StripeWebhookSecret
 	common.OptionMap["StripePriceId"] = setting.StripePriceId
@@ -136,13 +136,13 @@ func InitOptionMap() {
 	common.OptionMap["WaffoSubscriptionReturnUrl"] = setting.WaffoSubscriptionReturnUrl
 	common.OptionMap["WaffoCurrency"] = setting.WaffoCurrency
 	common.OptionMap["WaffoUnitPrice"] = strconv.FormatFloat(setting.WaffoUnitPrice, 'f', -1, 64)
-	common.OptionMap["WaffoMinTopUp"] = strconv.Itoa(setting.WaffoMinTopUp)
+	common.OptionMap["WaffoMinTopUp"] = strconv.FormatFloat(setting.WaffoMinTopUp, 'f', -1, 64)
 	common.OptionMap["WaffoPayMethods"] = setting.WaffoPayMethods2JsonString()
 	common.OptionMap["WaffoPancakeMerchantID"] = setting.WaffoPancakeMerchantID
 	common.OptionMap["WaffoPancakePrivateKey"] = setting.WaffoPancakePrivateKey
 	common.OptionMap["WaffoPancakeReturnURL"] = setting.WaffoPancakeReturnURL
 	common.OptionMap["WaffoPancakeUnitPrice"] = strconv.FormatFloat(setting.WaffoPancakeUnitPrice, 'f', -1, 64)
-	common.OptionMap["WaffoPancakeMinTopUp"] = strconv.Itoa(setting.WaffoPancakeMinTopUp)
+	common.OptionMap["WaffoPancakeMinTopUp"] = strconv.FormatFloat(setting.WaffoPancakeMinTopUp, 'f', -1, 64)
 	common.OptionMap["WaffoPancakeStoreID"] = setting.WaffoPancakeStoreID
 	common.OptionMap["WaffoPancakeProductID"] = setting.WaffoPancakeProductID
 	common.OptionMap["TopupGroupRatio"] = common.TopupGroupRatio2JSONString()
@@ -288,6 +288,42 @@ func validateOptionValue(key string, value string) error {
 	if key == "MaxTokenAutoGroups" {
 		return setting.ValidateMaxTokenAutoGroups(value)
 	}
+	if isMinTopUpOption(key) {
+		_, err := common.ParseTopUpAmountSetting(value)
+		return err
+	}
+	return nil
+}
+
+// isMinTopUpOption 判断 key 是否属于「最低充值金额」这一组配置。
+// 这四个值都按金额（USD/CNY 或 token 数）存库，允许两位小数。
+func isMinTopUpOption(key string) bool {
+	switch key {
+	case "MinTopUp", "StripeMinTopUp", "WaffoMinTopUp", "WaffoPancakeMinTopUp":
+		return true
+	}
+	return false
+}
+
+// applyMinTopUpOption 严格解析最低充值金额并写入对应的全局变量。
+//
+// 解析失败时保留原值并把错误向上返回——历史实现是 strconv.Atoi + 丢弃 error，
+// 配置 "0.01" 会静默变成 0，等于把下限校验关掉。这里不允许回退。
+func applyMinTopUpOption(key, value string) error {
+	amount, err := common.ParseTopUpAmountSetting(value)
+	if err != nil {
+		return err
+	}
+	switch key {
+	case "MinTopUp":
+		operation_setting.MinTopUp = amount
+	case "StripeMinTopUp":
+		setting.StripeMinTopUp = amount
+	case "WaffoMinTopUp":
+		setting.WaffoMinTopUp = amount
+	case "WaffoPancakeMinTopUp":
+		setting.WaffoPancakeMinTopUp = amount
+	}
 	return nil
 }
 
@@ -406,6 +442,25 @@ func updateOptionMap(key string, value string) (err error) {
 		common.OptionMap = make(map[string]string)
 	}
 	common.OptionMap[key] = value
+
+	// 智能客服管理员令牌：必须回填到全局变量。
+	//
+	// 此前该键只写进 OptionMap，`common.CustomerServiceAdminToken` 从声明起就没有
+	// 任何赋值点（既不在启动加载路径，也不在更新路径），于是运营在「站点与品牌 →
+	// 智能客服」里保存多少次令牌，代理侧读到的都还是空串，恒定返回 400
+	// 「未配置智能客服管理员令牌」——保存成功、页面依旧不可用（真实故障）。
+	// 放在这里是因为启动加载（loadOptionsFromDatabase）与运行时更新（UpdateOption）
+	// 都经由本函数，一处即覆盖两条路径。
+	if key == "CustomerServiceAdminToken" {
+		common.CustomerServiceAdminToken = value
+		return nil
+	}
+	// 同上：这是代理侧的内存缓存，持久化在 options 表里。回填后重启即可展示
+	// 「上一次成功读到的模型配置」，不必等 uter-cs 可达。
+	if key == "CustomerServiceLLMConfig" {
+		common.CustomerServiceLLMConfig = value
+		return nil
+	}
 
 	// 检查是否是模型配置 - 使用更规范的方式处理
 	if handleConfigUpdate(key, value) {
@@ -589,8 +644,8 @@ func updateOptionMap(key string, value string) (err error) {
 		operation_setting.USDExchangeRate, _ = strconv.ParseFloat(value, 64)
 	case "USDExchangeRateUpdatedAt":
 		operation_setting.USDExchangeRateUpdatedAt, _ = strconv.ParseInt(value, 10, 64)
-	case "MinTopUp":
-		operation_setting.MinTopUp, _ = strconv.Atoi(value)
+	case "MinTopUp", "StripeMinTopUp", "WaffoMinTopUp", "WaffoPancakeMinTopUp":
+		err = applyMinTopUpOption(key, value)
 	case "StripeApiSecret":
 		setting.StripeApiSecret = value
 	case "StripeWebhookSecret":
@@ -599,8 +654,6 @@ func updateOptionMap(key string, value string) (err error) {
 		setting.StripePriceId = value
 	case "StripeUnitPrice":
 		setting.StripeUnitPrice, _ = strconv.ParseFloat(value, 64)
-	case "StripeMinTopUp":
-		setting.StripeMinTopUp, _ = strconv.Atoi(value)
 	case "StripePromotionCodesEnabled":
 		setting.StripePromotionCodesEnabled = value == "true"
 	case "CreemApiKey":
@@ -639,8 +692,6 @@ func updateOptionMap(key string, value string) (err error) {
 		setting.WaffoCurrency = value
 	case "WaffoUnitPrice":
 		setting.WaffoUnitPrice, _ = strconv.ParseFloat(value, 64)
-	case "WaffoMinTopUp":
-		setting.WaffoMinTopUp, _ = strconv.Atoi(value)
 	case "WaffoPancakeMerchantID":
 		setting.WaffoPancakeMerchantID = value
 	case "WaffoPancakePrivateKey":
@@ -653,8 +704,6 @@ func updateOptionMap(key string, value string) (err error) {
 		setting.WaffoPancakeProductID = value
 	case "WaffoPancakeUnitPrice":
 		setting.WaffoPancakeUnitPrice, _ = strconv.ParseFloat(value, 64)
-	case "WaffoPancakeMinTopUp":
-		setting.WaffoPancakeMinTopUp, _ = strconv.Atoi(value)
 	case "TopupGroupRatio":
 		err = common.UpdateTopupGroupRatioByJSONString(value)
 	case "GitHubClientId":

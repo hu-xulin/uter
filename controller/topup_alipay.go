@@ -40,8 +40,8 @@ import (
 // client 决定收银台形态，由前端按视口/UA 传入；服务端只接受白名单值，
 // 未知值一律降级为 pc，避免客户端下发任意字符串影响下单参数。
 type CnWebPaymentRequest struct {
-	Amount        int64  `json:"amount"`
-	PaymentMethod string `json:"payment_method"`
+	Amount        float64 `json:"amount"`
+	PaymentMethod string  `json:"payment_method"`
 	// Client 取值："pc" 或 "mobile"。
 	// 支付宝两者均为页面跳转类收银台（PC 收银台页 / 移动端 App 或 WAP），
 	// 微信支付则为 Native 扫码（PC）与 H5 跳转（移动端）。
@@ -74,13 +74,16 @@ func normalizePayClient(client string) string {
 // client 必须是 normalizePayClient 收敛后的结果：本函数再兜一层，
 // 非 "mobile" 一律按 PC 处理，确保除「电脑/手机网站支付」外不会有第三种
 // 下单形态从此处泄漏出去。返回值为待签名的公共请求参数集合。
-func buildAlipayWebPayParams(client, appId, timestamp, tradeNo string, amount int64, payMoney float64, notifyUrl, returnUrl, quitUrl string) map[string]string {
+//
+// 金额口径：total_amount 与 subject 里的金额都是 payMoney（人民币实付），
+// 不再使用站内额度单位——支付宝只收人民币，标题里的数字必须与实扣一致。
+func buildAlipayWebPayParams(client, appId, timestamp, tradeNo string, payMoney float64, notifyUrl, returnUrl, quitUrl string) map[string]string {
 	method := alipayMethodPagePay
 	productCode := alipayProductCodePC
 	bizContent := map[string]string{
 		"out_trade_no": tradeNo,
 		"total_amount": strconv.FormatFloat(payMoney, 'f', 2, 64),
-		"subject":      fmt.Sprintf("%s 充值 %d", common.EmailBrandName, amount),
+		"subject":      paymentOrderTitle(payMoney),
 		"product_code": productCode,
 	}
 	if client == "mobile" {
@@ -116,11 +119,11 @@ func isAlipayTopUpEnabled() bool {
 	return isPaymentComplianceConfirmed() && operation_setting.IsAlipayEnabled()
 }
 
-func alipayAmountForStorage(amount int64) int64 {
+func alipayAmountForStorage(amount float64) float64 {
 	if operation_setting.GetQuotaDisplayType() == operation_setting.QuotaDisplayTypeTokens {
-		dAmount := decimal.NewFromInt(amount)
+		dAmount := decimal.NewFromFloat(amount)
 		dQuotaPerUnit := decimal.NewFromFloat(common.QuotaPerUnit)
-		return dAmount.Div(dQuotaPerUnit).IntPart()
+		return dAmount.Div(dQuotaPerUnit).InexactFloat64()
 	}
 	return amount
 }
@@ -151,7 +154,7 @@ func RequestAlipayWeb(c *gin.Context) {
 		return
 	}
 	if req.Amount < getMinTopup() {
-		c.JSON(http.StatusOK, gin.H{"message": "error", "data": fmt.Sprintf("充值数量不能小于 %d", getMinTopup())})
+		c.JSON(http.StatusOK, gin.H{"message": "error", "data": fmt.Sprintf("充值数量不能小于 %s", formatTopUpAmount(getMinTopup()))})
 		return
 	}
 	id := c.GetInt("id")
@@ -174,13 +177,19 @@ func RequestAlipayWeb(c *gin.Context) {
 	notifyUrl := callBackAddress + "/api/user/alipay/notify"
 	client := normalizePayClient(req.Client)
 
+	// 网关口径金额快照：支付宝只收人民币、以「元」传参，这里换算成「分」落库，
+	// 回调按同一个整数比对（与微信支付的 ProviderAmount 口径一致）。
+	// payMoney 已在 getPayMoney 出口收敛到分，×100 是精确整数，不会出现
+	// 「请求体写 6.88、快照算 689」这类偏差。
+	totalCents := decimal.NewFromFloat(payMoney).Mul(decimal.NewFromInt(100)).Round(0).IntPart()
+
 	// 公共请求参数（两个接口共用）。
 	appId := operation_setting.AlipayAppId
 	timestamp := time.Now().Format("2006-01-02 15:04:05")
 
 	returnUrl := paymentReturnPath("/wallet?pay=success")
 	quitUrl := paymentReturnPath("/wallet")
-	params := buildAlipayWebPayParams(client, appId, timestamp, tradeNo, req.Amount, payMoney, notifyUrl, returnUrl, quitUrl)
+	params := buildAlipayWebPayParams(client, appId, timestamp, tradeNo, payMoney, notifyUrl, returnUrl, quitUrl)
 
 	sign, err := service.AlipayBuildSign(params, operation_setting.AlipayPrivateKey)
 	if err != nil {
@@ -191,14 +200,16 @@ func RequestAlipayWeb(c *gin.Context) {
 	params["sign"] = sign
 
 	topUp := &model.TopUp{
-		UserId:          id,
-		Amount:          alipayAmountForStorage(req.Amount),
-		Money:           payMoney,
-		TradeNo:         tradeNo,
-		PaymentMethod:   model.PaymentMethodAlipay,
-		PaymentProvider: model.PaymentProviderAlipay,
-		CreateTime:      time.Now().Unix(),
-		Status:          common.TopUpStatusPending,
+		UserId:           id,
+		Amount:           alipayAmountForStorage(req.Amount),
+		Money:            payMoney,
+		TradeNo:          tradeNo,
+		PaymentMethod:    model.PaymentMethodAlipay,
+		PaymentProvider:  model.PaymentProviderAlipay,
+		ProviderAmount:   totalCents,
+		ProviderCurrency: "CNY",
+		CreateTime:       time.Now().Unix(),
+		Status:           common.TopUpStatusPending,
 	}
 	if err := topUp.Insert(); err != nil {
 		logger.LogError(c.Request.Context(), fmt.Sprintf("支付宝创建充值订单失败 user_id=%d trade_no=%s error=%q", id, tradeNo, err.Error()))
@@ -206,12 +217,28 @@ func RequestAlipayWeb(c *gin.Context) {
 		return
 	}
 	payUrl := operation_setting.AlipayGateway + "?" + toUrlValues(params).Encode()
-	logger.LogInfo(c.Request.Context(), fmt.Sprintf("支付宝%s订单创建成功 user_id=%d trade_no=%s amount=%d money=%.2f method=%s", alipayWebProductName(client), id, tradeNo, req.Amount, payMoney, params["method"]))
+	logger.LogInfo(c.Request.Context(), fmt.Sprintf("支付宝%s订单创建成功 user_id=%d trade_no=%s amount=%.2f money=%.2f method=%s", alipayWebProductName(client), id, tradeNo, req.Amount, payMoney, params["method"]))
 	c.JSON(http.StatusOK, gin.H{
 		"message": "success",
 		"data":    map[string]string{"trade_no": tradeNo, "pay_url": payUrl},
 		"url":     payUrl,
 	})
+}
+
+// alipayPaidAmountMatchesOrder 校验支付宝回传的 total_amount（元）与本地订单一致。
+//
+// 基准是下单时落库的 ProviderAmount（分）快照；存量订单（快照为空）才回退到
+// 由 Money（元）换算。两侧都折算成「分」这个整数口径再比，避免 6.88 与
+// 6.880000000000001 之类的浮点差异把合法回调判成不匹配。
+func alipayPaidAmountMatchesOrder(paid decimal.Decimal, providerAmount int64, money float64) bool {
+	if paid.LessThanOrEqual(decimal.Zero) {
+		return false
+	}
+	expectedCents := providerExpectedMinorUnits(providerAmount, money)
+	if expectedCents <= 0 {
+		return false
+	}
+	return paid.Mul(decimal.NewFromInt(100)).Round(0).Equal(decimal.NewFromInt(expectedCents))
 }
 
 // AlipayNotify 支付宝异步回调：验签 → 校验交易状态 → 充值入账。
@@ -252,9 +279,13 @@ func AlipayNotify(c *gin.Context) {
 		return
 	}
 
-	// 金额校验：total_amount 必须与本地订单应付金额一致。
+	// 金额校验：total_amount 必须与下单时发给支付宝的金额一致。
 	// 缺失此校验时，只要 out_trade_no 存在且验签通过即按本地订单金额入账，
 	// 与支付宝实际扣款金额脱钩，存在少付多充的风险。
+	//
+	// 比对基准是下单时落库的 ProviderAmount（分），而不是用 Money（元）现场
+	// 再换算一次：两套口径一旦分叉（取整规则变化、历史订单 Money 精度不同），
+	// 就会出现「网关按 X 扣款、本地判 Y 不匹配」的永久失败回调。
 	totalAmount := params["total_amount"]
 	paidAmount, parseErr := decimal.NewFromString(totalAmount)
 	if parseErr != nil {
@@ -277,8 +308,9 @@ func AlipayNotify(c *gin.Context) {
 		c.String(http.StatusOK, "failure")
 		return
 	}
-	if paidAmount.LessThanOrEqual(decimal.Zero) || !paidAmount.Equal(decimal.NewFromFloat(topUp.Money).Round(2)) {
-		logger.LogWarn(c.Request.Context(), fmt.Sprintf("支付宝回调金额不匹配 trade_no=%s 回调金额=%s 本地应付=%.2f client_ip=%s", tradeNo, totalAmount, topUp.Money, c.ClientIP()))
+	expectedCents := providerExpectedMinorUnits(topUp.ProviderAmount, topUp.Money)
+	if !alipayPaidAmountMatchesOrder(paidAmount, topUp.ProviderAmount, topUp.Money) {
+		logger.LogWarn(c.Request.Context(), fmt.Sprintf("支付宝回调金额不匹配 trade_no=%s 回调金额=%s 本地应付(分)=%d client_ip=%s", tradeNo, totalAmount, expectedCents, c.ClientIP()))
 		c.String(http.StatusOK, "failure")
 		return
 	}

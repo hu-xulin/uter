@@ -25,7 +25,7 @@ import (
 // 计价链路只有一条，全部由这里维护：
 //
 //	A = USDExchangeRate   外部行情（USD→CNY），每 10 分钟刷新一次
-//	B = Price             A + PriceMarkupRate（0.2），随 A 重算
+//	B = Price             A + PriceAdjustmentRate（当前 −0.2），随 A 重算
 //	C                     = B，钱包展示与下单实扣都取 B
 //
 // A 与 B 都会落库（后台设置页可见、重启后不丢），同时经 model.UpdateOption
@@ -161,7 +161,7 @@ func SyncExchangeRateOnce(ctx context.Context) (exchangeRate float64, price floa
 	if exchangeRate < exchangeRateMinSane {
 		return 0, 0, fmt.Errorf("USD/CNY rate %v is out of range after rounding", exchangeRate)
 	}
-	// B 由四舍五入后的 A 推导，保证 B 恒等于 A + PriceMarkupRate。
+	// B 由四舍五入后的 A 推导，保证 B 恒等于 A + PriceAdjustmentRate。
 	price = operation_setting.DerivedPriceFromExchangeRate(exchangeRate)
 
 	if current := operation_setting.USDExchangeRate; math.Abs(current-exchangeRate) > 1e-9 {
@@ -209,7 +209,7 @@ func StartExchangeRateSync() {
 		}
 
 		gopool.Go(func() {
-			logger.LogInfo(context.Background(), common.LogText("exchange rate sync task started: interval=%s markup=%.2f", exchangeRateSyncInterval, operation_setting.PriceMarkupRate))
+			logger.LogInfo(context.Background(), common.LogText("exchange rate sync task started: interval=%s adjustment=%.2f", exchangeRateSyncInterval, operation_setting.PriceAdjustmentRate))
 
 			// 启动即同步一次，避免重启后最长 10 分钟仍用旧汇率。
 			runExchangeRateSyncOnce()

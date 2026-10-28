@@ -19,7 +19,14 @@ package controller
 
 import (
 	"encoding/json"
+	"strings"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
+	"github.com/uter-ai/uter/common"
+	"github.com/uter-ai/uter/setting/operation_setting"
 )
 
 // TestNormalizePayClient 锁定网站支付收银台形态的收敛规则：
@@ -96,8 +103,7 @@ func TestBuildAlipayWebPayParams(t *testing.T) {
 		appId     = "2021000000000000"
 		timestamp = "2026-10-23 09:00:00"
 		tradeNo   = "USR1NOabcdefgh1234567890"
-		amount    = int64(500000)
-		payMoney  = 10.0
+		payMoney  = 68.8
 		notifyUrl = "https://uter.cc/api/user/alipay/notify"
 		returnUrl = "https://uter.cc/wallet?pay=success"
 		quitUrl   = "https://uter.cc/wallet"
@@ -119,7 +125,7 @@ func TestBuildAlipayWebPayParams(t *testing.T) {
 
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
-			params := buildAlipayWebPayParams(c.client, appId, timestamp, tradeNo, amount, payMoney, notifyUrl, returnUrl, quitUrl)
+			params := buildAlipayWebPayParams(c.client, appId, timestamp, tradeNo, payMoney, notifyUrl, returnUrl, quitUrl)
 
 			if got := params["method"]; got != c.wantMethod {
 				t.Errorf("method = %q, want %q", got, c.wantMethod)
@@ -150,11 +156,14 @@ func TestBuildAlipayWebPayParams(t *testing.T) {
 			if got := biz["out_trade_no"]; got != tradeNo {
 				t.Errorf("biz_content.out_trade_no = %q, want %q", got, tradeNo)
 			}
-			if got := biz["total_amount"]; got != "10.00" {
-				t.Errorf("biz_content.total_amount = %q, want %q", got, "10.00")
+			if got := biz["total_amount"]; got != "68.80" {
+				t.Errorf("biz_content.total_amount = %q, want %q", got, "68.80")
 			}
-			if biz["subject"] == "" {
-				t.Error("biz_content.subject must not be empty")
+			// 标题里的金额必须是人民币实付金额，而不是站内额度单位。
+			// 曾经写的是「充值 %d」（req.Amount），用户充 $10 额度时收银台
+			// 显示「充值 10」、实扣 ¥68.80，看起来像金额没有换算成人民币。
+			if got, want := biz["subject"], "充值 68.80 元"; !strings.HasSuffix(got, want) {
+				t.Errorf("biz_content.subject = %q, want suffix %q", got, want)
 			}
 
 			quit, hasQuit := biz["quit_url"]
@@ -166,6 +175,29 @@ func TestBuildAlipayWebPayParams(t *testing.T) {
 			}
 		})
 	}
+}
+
+// TestPaymentOrderTitleUsesConfiguredPrefix 锁定「订单标题前缀」配置真的进入网关标题。
+//
+// 支付宝 subject 与微信 description 共用 paymentOrderTitle：前缀取自
+// 「支付设置 → 订单标题前缀」，金额恒为人民币实付金额；前缀留空回退品牌名。
+// 总长度还必须落在微信 127 字符上限内，否则微信会直接拒单。
+func TestPaymentOrderTitleUsesConfiguredPrefix(t *testing.T) {
+	paymentSetting := operation_setting.GetPaymentSetting()
+	originalPrefix := paymentSetting.OrderTitlePrefix
+	t.Cleanup(func() { paymentSetting.OrderTitlePrefix = originalPrefix })
+
+	paymentSetting.OrderTitlePrefix = "优特智能"
+	assert.Equal(t, "优特智能 充值 68.80 元", paymentOrderTitle(68.8))
+
+	params := buildAlipayWebPayParams("pc", "app", "ts", "trade", 68.8, "notify", "return", "quit")
+	var biz map[string]string
+	require.NoError(t, json.Unmarshal([]byte(params["biz_content"]), &biz))
+	assert.Equal(t, "优特智能 充值 68.80 元", biz["subject"])
+	assert.LessOrEqual(t, len([]rune(biz["subject"])), operation_setting.PaymentOrderTitleMaxLength)
+
+	paymentSetting.OrderTitlePrefix = ""
+	assert.Equal(t, common.EmailBrandName+" 充值 68.80 元", paymentOrderTitle(68.8))
 }
 
 func containsAll(s string, subs ...string) bool {
