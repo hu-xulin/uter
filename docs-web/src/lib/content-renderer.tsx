@@ -41,17 +41,17 @@ export function ContentSection({
     <section className='mt-8'>
       <h2
         id={id}
-        className='mb-4 text-doc-h2 font-semibold text-fd-foreground'
+        className='mb-4 text-doc-prose-h2 font-semibold text-fd-foreground'
       >
         {heading}
       </h2>
       {paragraphs.map((p, i) => (
-        <p key={i} className='mb-3 text-doc-body leading-relaxed text-fd-muted-foreground'>
+        <p key={i} className='mb-3 text-doc-body text-fd-foreground'>
           {p}
         </p>
       ))}
       {list ? (
-        <ul className='mb-4 ml-6 list-disc space-y-1.5 text-doc-body text-fd-muted-foreground'>
+        <ul className='mb-4 ml-6 list-disc space-y-1.5 text-doc-body text-fd-foreground'>
           {list.map((item, i) => (
             <li key={i}>{item}</li>
           ))}
@@ -61,17 +61,17 @@ export function ContentSection({
         <div key={i} className='mt-6'>
           <h3
             id={subIds?.[i]}
-            className='mb-3 text-doc-h2 font-semibold text-fd-foreground'
+            className='mb-3 text-doc-prose-h3 font-semibold text-fd-foreground'
           >
             {sub.heading}
           </h3>
           {sub.paragraphs.map((p, j) => (
-            <p key={j} className='mb-2 text-doc-body leading-relaxed text-fd-muted-foreground'>
+            <p key={j} className='mb-2 text-doc-body text-fd-foreground'>
               {p}
             </p>
           ))}
           {sub.list ? (
-            <ul className='mb-4 ml-6 list-disc space-y-1.5 text-doc-body text-fd-muted-foreground'>
+            <ul className='mb-4 ml-6 list-disc space-y-1.5 text-doc-body text-fd-foreground'>
               {sub.list.map((item, k) => (
                 <li key={k}>{item}</li>
               ))}
@@ -88,7 +88,7 @@ export function ContentSection({
  *
  * Chapters are pages of their own, so the chapter's own title is the
  * page's `h1` (`DocsTitle`) and is deliberately not repeated here — what
- * this draws is everything under it, starting at `h3`.
+ * this draws is everything under it, starting at `h2`.
  *
  * The company profile says some of its headings as values rather than
  * as prose — a person and their title, a list of partner categories, a
@@ -111,12 +111,18 @@ export function AboutChapterBody({
     <section className='mt-2'>
       {section.subSections?.map((sub, i) => (
         <div key={i} className='mt-6'>
-          <h3
+          {/*
+           * `h2`，不是 `h3`：章节页的 `DocsTitle` 是这一页的 `h1`，这些子节
+           * 是它下面的**第一层**内容标题。原先写成 `h3` 跳过了 h2，大纲上
+           * 断了一层；尺寸也随之落错档 —— prose 阶梯里 h2 是 18/28、h3 是
+           * 16/24，第一层内容标题应该是 18。
+           */}
+          <h2
             id={subIds?.[i]}
-            className='mb-3 text-doc-h2 font-semibold text-fd-foreground'
+            className='mb-3 text-doc-prose-h2 font-semibold text-fd-foreground'
           >
             {sub.heading}
-          </h3>
+          </h2>
           {sub.profile ? (
             /*
              * `not-prose`: typography gives every `img` a `2em 0` margin,
@@ -124,7 +130,7 @@ export function AboutChapterBody({
              * name/role block out of line with it. The card is a UI
              * element, not prose.
              */
-            <div className='not-prose mb-3 flex items-center gap-4 rounded-lg border border-fd-border bg-fd-card/40 px-4 py-3'>
+            <div className='Uter-card not-prose mb-3 flex items-center gap-4 border border-fd-border bg-fd-card/40 px-4 py-3'>
               {sub.profile.avatar ? (
                 /*
                  * A plain `img`, not `next/image`: the export is
@@ -141,7 +147,7 @@ export function AboutChapterBody({
                 />
               ) : null}
               <div className='flex min-w-0 flex-col gap-0.5'>
-                <span className='text-doc-body font-semibold text-fd-foreground'>
+                <span className='text-doc-body font-medium text-fd-foreground'>
                   {sub.profile.name}
                 </span>
                 <span className='text-doc-body text-fd-muted-foreground'>
@@ -153,7 +159,7 @@ export function AboutChapterBody({
           {sub.paragraphs?.map((paragraph, j) => (
             <p
               key={j}
-              className='mb-2 text-doc-body leading-relaxed text-fd-muted-foreground'
+              className='mb-2 text-doc-body text-fd-foreground'
             >
               {paragraph}
             </p>
@@ -163,12 +169,12 @@ export function AboutChapterBody({
               {sub.entries.map((entry, k) => (
                 <div
                   key={k}
-                  className='rounded-lg border border-fd-border bg-fd-card/40 p-4'
+                  className='Uter-card border border-fd-border bg-fd-card/40 p-4'
                 >
-                  <dt className='text-doc-body font-semibold text-fd-foreground'>
+                  <dt className='text-doc-body font-medium text-fd-foreground'>
                     {entry.label}
                   </dt>
-                  <dd className='mt-1 text-doc-body leading-relaxed text-fd-muted-foreground'>
+                  <dd className='mt-1 text-doc-body text-fd-muted-foreground'>
                     {entry.value}
                   </dd>
                 </div>
@@ -176,17 +182,14 @@ export function AboutChapterBody({
             </dl>
           ) : null}
           {sub.email ? (
-            <a
-              href={`mailto:${sub.email}`}
-              className='text-doc-body font-medium text-fd-primary'
-            >
+            <a href={`mailto:${sub.email}`} className='Uter-inline-link'>
               {sub.email}
             </a>
           ) : null}
         </div>
       ))}
       {section.closing?.map((paragraph, i) => (
-        <p key={i} className='mt-4 text-doc-body leading-relaxed text-fd-muted-foreground'>
+        <p key={i} className='mt-4 text-doc-body text-fd-foreground'>
           {paragraph}
         </p>
       ))}
@@ -237,7 +240,7 @@ function PartnerWall({
                 return (
                   <li
                     key={partner.id}
-                    className='flex items-center gap-3 rounded-lg border border-fd-border bg-fd-card/40 px-3 py-2.5'
+                    className='Uter-card flex items-center gap-3 border border-fd-border bg-fd-card/40 px-3 py-2.5'
                   >
                     <PartnerLogo id={partner.id} monogram={monogram(name)} />
                     <span className='flex min-w-0 flex-col'>
@@ -303,13 +306,13 @@ export function ContentCardGrid({
         <li key={item.url}>
           <a
             href={withDocsBasePath(item.url)}
-            className='flex h-full flex-col rounded-lg border border-fd-border bg-fd-card/40 p-4 transition-colors hover:border-fd-primary/40 hover:bg-fd-primary/5'
+            className='Uter-card flex h-full flex-col border border-fd-border bg-fd-card/40 p-6 transition-colors hover:border-fd-primary/40 hover:bg-fd-primary/5'
           >
-            <span className='text-doc-body font-semibold text-fd-foreground'>
+            <span className='text-doc-h3 font-semibold text-fd-foreground'>
               {item.title}
             </span>
             {item.teaser ? (
-              <span className='mt-2 text-doc-body leading-relaxed text-fd-muted-foreground'>
+              <span className='mt-2 text-doc-body text-fd-muted-foreground'>
                 {item.teaser}
               </span>
             ) : null}
@@ -346,29 +349,29 @@ export function FeatureList({
       {heading ? (
         <h2
           id={headingId}
-          className='mt-8 mb-4 text-doc-h2 font-semibold text-fd-foreground'
+          className='mt-8 mb-4 text-doc-prose-h2 font-semibold text-fd-foreground'
         >
           {heading}
         </h2>
       ) : null}
       <ol className='mt-6 space-y-3'>
         {features.map((feature, i) => (
-          <li key={i} className='text-doc-body leading-relaxed text-fd-muted-foreground'>
+          <li key={i} className='text-doc-body text-fd-foreground'>
             <span className='mr-2 font-semibold text-fd-foreground'>{i + 1}.</span>
             {feature}
           </li>
         ))}
       </ol>
       {featureDetails?.map((detail, i) => (
-        <div key={i} className='mt-6 rounded-lg border border-fd-border bg-fd-card/40 p-4'>
+        <div key={i} className='Uter-card mt-6 border border-fd-border bg-fd-card/40 p-4'>
           <h3
             id={detailIds?.[i]}
-            className='mb-2 text-doc-body font-semibold text-fd-foreground'
+            className='mb-2 text-doc-h3 font-semibold text-fd-foreground'
           >
             {detail.text}
           </h3>
           {detail.subItems ? (
-            <ol className='ml-6 list-decimal space-y-1.5 text-doc-body text-fd-muted-foreground'>
+            <ol className='ml-6 list-decimal space-y-1.5 text-doc-body text-fd-foreground'>
               {detail.subItems.map((item, j) => (
                 <li key={j}>{item}</li>
               ))}
@@ -422,7 +425,7 @@ function InlineRuns({ nodes }: { nodes: Inline[] }) {
             return (
               <code
                 key={i}
-                className='rounded bg-fd-muted px-1 py-0.5 font-mono text-[0.8125rem] text-fd-foreground'
+                className='rounded bg-fd-muted px-1 py-0.5 font-mono text-sm text-fd-foreground'
               >
                 {node.value}
               </code>
@@ -447,7 +450,7 @@ function InlineRuns({ nodes }: { nodes: Inline[] }) {
             );
           case 'link':
             return (
-              <a key={i} href={node.href} className='text-fd-primary'>
+              <a key={i} href={node.href} className='Uter-inline-link'>
                 <InlineRuns nodes={node.children} />
               </a>
             );
@@ -473,7 +476,7 @@ function BlockView({ block, locale }: { block: Block; locale: DocsLocale }) {
   switch (block.kind) {
     case 'paragraph':
       return (
-        <p className='mb-3 text-doc-body leading-relaxed text-fd-muted-foreground'>
+        <p className='mb-3 text-doc-body text-fd-foreground'>
           <InlineRuns nodes={block.children} />
         </p>
       );
@@ -484,7 +487,7 @@ function BlockView({ block, locale }: { block: Block; locale: DocsLocale }) {
           <InlineRuns nodes={item} />
         </li>
       ));
-      const className = 'mb-4 ml-6 space-y-1.5 text-doc-body text-fd-muted-foreground';
+      const className = 'mb-4 ml-6 space-y-1.5 text-doc-body text-fd-foreground';
 
       return block.ordered ? (
         <ol className={`${className} list-decimal`}>{items}</ol>
@@ -502,11 +505,11 @@ function BlockView({ block, locale }: { block: Block; locale: DocsLocale }) {
       if (!block.src) {
         return (
           <figure className='not-prose my-5'>
-            <div className='flex flex-col items-center justify-center gap-1 rounded-lg border border-dashed border-fd-border bg-fd-card/40 px-4 py-8 text-center'>
+            <div className='Uter-card flex flex-col items-center justify-center gap-1 border border-dashed border-fd-border bg-fd-card/40 px-4 py-8 text-center'>
               {block.alt ? (
                 <span className='text-sm font-medium text-fd-muted-foreground'>{block.alt}</span>
               ) : null}
-              <span className='text-xs text-fd-muted-foreground/70'>
+              <span className='text-xs text-fd-muted-foreground'>
                 {PENDING_IMAGE_LABEL[locale]}
               </span>
             </div>
@@ -529,8 +532,8 @@ function BlockView({ block, locale }: { block: Block; locale: DocsLocale }) {
             alt={block.alt}
             className={
               block.srcDark
-                ? 'ug-shot ug-shot-light w-full rounded-lg border border-fd-border'
-                : 'w-full rounded-lg border border-fd-border'
+                ? 'ug-shot ug-shot-light Uter-card w-full border border-fd-border'
+                : 'Uter-card w-full border border-fd-border'
             }
           />
           {block.srcDark ? (
@@ -538,7 +541,7 @@ function BlockView({ block, locale }: { block: Block; locale: DocsLocale }) {
             <img
               src={block.srcDark}
               alt={block.alt}
-              className='ug-shot ug-shot-dark w-full rounded-lg border border-fd-border'
+              className='ug-shot ug-shot-dark Uter-card w-full border border-fd-border'
             />
           ) : null}
           {block.alt ? (
@@ -563,7 +566,7 @@ function BlockView({ block, locale }: { block: Block; locale: DocsLocale }) {
        */
       return (
         <div className='not-prose my-4 overflow-x-auto rounded-[10px] border border-fd-border'>
-          <table className='w-full border-collapse text-doc-body'>
+          <table className='w-full border-collapse text-doc-chrome'>
             <thead className='bg-fd-muted'>
               <tr>
                 {block.head.map((cell, i) => (
@@ -654,7 +657,7 @@ export function BlockSection({
     <section className='mt-8 first:mt-0'>
       <h2
         id={id}
-        className='mb-4 text-doc-h2 font-semibold text-fd-foreground'
+        className='mb-4 text-doc-prose-h2 font-semibold text-fd-foreground'
       >
         {heading}
       </h2>
@@ -663,7 +666,7 @@ export function BlockSection({
         <div key={i} className='mt-6'>
           <h3
             id={subIds?.[i]}
-            className='mb-3 text-doc-h2 font-semibold text-fd-foreground'
+            className='mb-3 text-doc-prose-h3 font-semibold text-fd-foreground'
           >
             {sub.heading}
           </h3>

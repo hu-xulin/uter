@@ -177,8 +177,8 @@ function DocsThemeToggle({ label }: { label: string }) {
       onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
       className='Uter-brand-radius relative inline-flex size-9 items-center justify-center text-fd-muted-foreground transition-colors duration-200 hover:bg-fd-accent hover:text-fd-accent-foreground'
     >
-      <Sun className='size-[1.2rem] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90' />
-      <Moon className='absolute size-[1.2rem] scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0' />
+      <Sun className='size-4.5 scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90' />
+      <Moon className='absolute size-4.5 scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0' />
     </button>
   );
 }
@@ -197,7 +197,7 @@ function DocsThemeToggle({ label }: { label: string }) {
  *    hover, and the mobile hamburger morphs into an X while the
  *    full-screen overlay staggers its links in.
  *
- * All transition timings (`duration-700` with
+ * All transition timings (`duration-500` with
  * `cubic-bezier(0.16,1,0.3,1)`) match the SPA exactly.
  *
  * Fumadocs' default docs header is mobile-only and doesn't surface the
@@ -259,15 +259,15 @@ export function DocsHeader({ locale }: { locale: DocsLocale }) {
       >
         <div
           className={cx(
-            'pointer-events-auto mx-auto transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]',
+            'pointer-events-auto mx-auto transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]',
             scrolled ? 'max-w-[52rem] px-3 pt-3' : 'max-w-7xl px-4 pt-0 md:px-6'
           )}
         >
           <nav
             className={cx(
-              'flex items-center justify-between gap-2 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]',
+              'flex items-center justify-between gap-2 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]',
               scrolled
-                ? 'bg-fd-background/60 ring-fd-border/50 h-12 rounded-2xl pr-1.5 pl-4 shadow-[0_2px_16px_-6px_rgba(0,0,0,0.08),0_0_0_0.5px_rgba(0,0,0,0.02)] ring-[0.5px] backdrop-blur-2xl dark:shadow-[0_2px_16px_-6px_rgba(0,0,0,0.4)]'
+                ? 'bg-fd-background/60 ring-fd-border/50 h-12 rounded-2xl pr-1.5 pl-4 Uter-floating-bar ring-[0.5px] backdrop-blur-2xl'
                 : 'h-16 px-2'
             )}
           >
@@ -315,7 +315,7 @@ export function DocsHeader({ locale }: { locale: DocsLocale }) {
                 className='Uter-brand-radius size-9'
                 aria-label={copy.chooseLanguage}
               >
-                <Languages className='size-[1.2rem]' />
+                <Languages className='size-4.5' />
               </LanguageSelect>
 
               <DocsThemeToggle label={copy.toggleTheme} />
@@ -325,7 +325,7 @@ export function DocsHeader({ locale }: { locale: DocsLocale }) {
               <a
                 href='/sign-in'
                 target={HOST_APP_LINK_TARGET}
-                className='Uter-brand-cta inline-flex h-8 items-center px-3.5 text-xs font-medium transition-colors duration-200'
+                className='Uter-brand-cta inline-flex h-9 items-center px-3.5 text-sm font-medium transition-colors duration-200'
               >
                 {copy.signIn}
               </a>
@@ -342,7 +342,7 @@ export function DocsHeader({ locale }: { locale: DocsLocale }) {
                 className='Uter-brand-radius size-9'
                 aria-label={copy.chooseLanguage}
               >
-                <Languages className='size-[1.2rem]' />
+                <Languages className='size-4.5' />
               </LanguageSelect>
               <DocsThemeToggle label={copy.toggleTheme} />
               <button

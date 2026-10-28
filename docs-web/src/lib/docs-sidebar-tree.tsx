@@ -216,21 +216,29 @@ function folderContainsCurrent(
 /**
  * The classes the docs layout puts on its own entries, restated.
  *
- * Hover and the brand accent are ours (`global.css` overrides them), so
- * only the geometry and the active state are repeated. Keep in step with
+ * Hover is ours (`global.css` overrides it), so only the geometry and the
+ * active state are repeated. Keep in step with
  * `fumadocs-ui/layouts/docs/slots/sidebar` on upgrade.
+ *
+ * 选中态按规范 §2.3 的三条硬规则：
+ *
+ *  1. **浅底 + 专用前景色**：`bg-nav-active-bg` / `text-nav-active`
+ *     （`#F0F0FF` + `#5558D8`，深色 `#25264A` + `#8B8DF5`）。不用
+ *     `bg-fd-primary/10 + text-fd-primary` —— 那是「品牌色 + 品牌色 10% 淡底」，
+ *     在浅色主题下只有 4.44:1，未达 AA 普通文本 4.5:1。
+ *  2. **图标不单独定色**：Lucide 走 `stroke="currentColor"`，行文字变色后图标
+ *     自动跟随。这里只锁尺寸（侧边栏 = 18px，§2.2 13:24 版已从 16 提到 18，
+ *     与主导航 / Tabs 同档）。
+ *  3. **字重整列统一 500**：选中只换前景色与背景，不加粗、不加边框、不加左侧
+ *     竖条。所以 `font-medium` 写在基类上，`data-active` 不再叠加任何字重或
+ *     装饰线（此前那条 `before:` 竖线已删除）。
  */
 const ITEM_CLASS =
-  'relative flex flex-row items-center gap-2 rounded-lg p-2 text-start text-fd-muted-foreground ' +
+  'relative flex flex-row items-center gap-2 rounded-lg p-2 text-start text-sm font-medium text-fd-muted-foreground ' +
   'wrap-anywhere cursor-pointer ' +
-  "[&_svg]:size-4 [&_svg]:shrink-0 " +
-  "data-[active=true]:bg-fd-primary/10 data-[active=true]:text-fd-primary";
-
-/** Extra marker the layout draws beside a nested active entry. */
-const NESTED_ACTIVE_CLASS =
-  "data-[active=true]:before:content-[''] data-[active=true]:before:bg-fd-primary " +
-  'data-[active=true]:before:absolute data-[active=true]:before:w-px ' +
-  'data-[active=true]:before:inset-y-2.5 data-[active=true]:before:inset-s-2.5';
+  '[&_svg]:size-4.5 [&_svg]:shrink-0 ' +
+  'data-[active=true]:bg-nav-active-bg data-[active=true]:text-nav-active ' +
+  'data-[active=true]:hover:bg-nav-active-bg';
 
 /** Inline start padding for an entry at `depth`, in the layout's scale. */
 function itemIndent(depth: number): string {
@@ -250,7 +258,7 @@ export const DocsSidebarItem: FC<{ item: PageTreeItem }> = ({ item }) => {
       external={item.external}
       icon={item.icon}
       active={isCurrent(item.url, pathname, hash, anchorsOf(item))}
-      className={depth >= 1 ? `${ITEM_CLASS} ${NESTED_ACTIVE_CLASS}` : ITEM_CLASS}
+      className={ITEM_CLASS}
       style={{ paddingInlineStart: itemIndent(depth) }}
     >
       {item.name}

@@ -78,7 +78,9 @@ export function DocsBreadcrumb({
         return (
           <span key={item.url} className='flex min-w-0 items-center gap-1.5'>
             {index > 0 && (
-              <ChevronRight className='size-3.5 shrink-0 opacity-60' />
+              /* 16px = 规范 §2.2「紧凑型辅助图标」档：面包屑分隔符是密集
+                 信息里的装饰性图标，不是主要操作图标，所以不跟默认 18px。 */
+              <ChevronRight className='size-4 shrink-0 opacity-60' />
             )}
             {isCurrent ? (
               <span className='text-fd-primary truncate font-medium'>

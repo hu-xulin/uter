@@ -75,13 +75,13 @@ export function DocsPageFooter({
       {previous ? (
         <Link
           href={previous.url}
-          className='group hover:bg-fd-accent flex flex-col gap-1 rounded-2xl border border-fd-border p-4 transition-colors'
+          className='Uter-card group hover:bg-fd-accent flex flex-col gap-1 border border-fd-border p-4 transition-colors'
         >
           <span className='text-fd-muted-foreground flex items-center gap-1.5 text-sm'>
-            <ArrowLeft className='size-3.5 transition-transform group-hover:-translate-x-0.5' />
+            <ArrowLeft className='size-4.5 transition-transform group-hover:-translate-x-0.5' />
             {LABELS[locale]?.previous ?? LABELS.en!.previous}
           </span>
-          <span className='text-fd-foreground truncate text-sm font-medium'>
+          <span className='text-fd-foreground truncate text-doc-body font-medium'>
             {previous.title}
           </span>
         </Link>
@@ -91,13 +91,13 @@ export function DocsPageFooter({
       {next ? (
         <Link
           href={next.url}
-          className='group hover:bg-fd-accent flex flex-col items-end gap-1 rounded-2xl border border-fd-border p-4 text-right transition-colors'
+          className='Uter-card group hover:bg-fd-accent flex flex-col items-end gap-1 border border-fd-border p-4 text-right transition-colors'
         >
           <span className='text-fd-muted-foreground flex items-center gap-1.5 text-sm'>
             {LABELS[locale]?.next ?? LABELS.en!.next}
-            <ArrowRight className='size-3.5 transition-transform group-hover:translate-x-0.5' />
+            <ArrowRight className='size-4.5 transition-transform group-hover:translate-x-0.5' />
           </span>
-          <span className='text-fd-foreground truncate text-sm font-medium'>
+          <span className='text-fd-foreground truncate text-doc-body font-medium'>
             {next.title}
           </span>
         </Link>

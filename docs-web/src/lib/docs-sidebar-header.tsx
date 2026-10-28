@@ -47,7 +47,7 @@ export function DocsSidebarHeader() {
         onClick={() => setCollapsed((prev) => !prev)}
         className='inline-flex h-9 min-w-0 flex-[1] items-center justify-center rounded-lg border bg-fd-secondary/50 text-fd-muted-foreground transition-colors hover:bg-fd-accent hover:text-fd-accent-foreground'
       >
-        <SidebarIcon className='size-4 shrink-0' />
+        <SidebarIcon className='size-4.5 shrink-0' />
       </button>
     </div>
   );

@@ -202,7 +202,7 @@ export function CodeBlock({
   const lines = code.replace(/\n$/, '').split('\n');
 
   return (
-    <div className='not-prose group my-4 overflow-hidden rounded-lg border border-fd-border bg-fd-card/40'>
+    <div className='Uter-card not-prose group my-4 overflow-hidden border border-fd-border bg-fd-card/40'>
       <div className='flex items-center justify-between border-b border-fd-border px-3 py-1.5'>
         <span className='font-mono text-xs font-medium text-fd-muted-foreground'>
           {lang ?? 'text'}
@@ -211,7 +211,7 @@ export function CodeBlock({
           type='button'
           onClick={copy}
           aria-label={labels.copy}
-          className='rounded px-2 py-0.5 text-xs font-medium text-fd-muted-foreground transition-colors hover:bg-fd-muted hover:text-fd-foreground'
+          className='rounded px-2 py-0.5 text-sm font-medium text-fd-muted-foreground transition-colors hover:bg-fd-muted hover:text-fd-foreground'
         >
           {copied ? labels.copied : labels.copy}
         </button>
@@ -232,7 +232,7 @@ export function CodeBlock({
           ))}
         </div>
 
-        <pre className='min-w-0 flex-1 overflow-x-auto px-3 py-3 font-mono text-doc-code leading-relaxed'>
+        <pre className='min-w-0 flex-1 overflow-x-auto px-3 py-3 font-mono text-doc-code'>
           <code>
             {lines.map((line, i) => {
               const tokens = tokenizeLine(line, lang);
