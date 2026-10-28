@@ -64,6 +64,16 @@ func (m *mockUterCS) handler() http.HandlerFunc {
 				json.NewEncoder(w).Encode(map[string]any{"ok": true})
 			}
 		case r.URL.Path == "/api/deploy/apply" && r.Method == http.MethodPost:
+			// 真实 uter-cs 是 Fastify：声明了 application/json 却发空 body 会直接 400
+			// （FST_ERR_CTP_EMPTY_JSON_BODY）。这里如实模拟，才能锁住「重载请求必须带 {}」。
+			if r.ContentLength == 0 {
+				w.WriteHeader(http.StatusBadRequest)
+				json.NewEncoder(w).Encode(map[string]any{
+					"code":    "FST_ERR_CTP_EMPTY_JSON_BODY",
+					"message": "Body cannot be empty when content-type is set to 'application/json'",
+				})
+				return
+			}
 			w.WriteHeader(m.applyStatus)
 			json.NewEncoder(w).Encode(map[string]any{
 				"ok":    m.applyStatus == http.StatusOK,
@@ -238,10 +248,13 @@ func TestUpdateCustomerServiceLLMConfig_HappyPath(t *testing.T) {
 
 	require.Equal(t, http.StatusOK, resp.Code)
 	var out struct {
-		Success bool `json:"success"`
+		Success   bool   `json:"success"`
+		ApplyNote string `json:"apply_note"`
 	}
 	require.NoError(t, common.Unmarshal(resp.Body.Bytes(), &out))
 	assert.True(t, out.Success)
+	// 重载必须真的成功：带空 body 会拿到 400 并写进 apply_note（曾经的常态）。
+	assert.Empty(t, out.ApplyNote, "重载引擎不应降级")
 	// 落盘路径 + 重载路径都被命中。
 	assert.Contains(t, m.calls, "PUT /api/deploy/section/llm")
 	assert.Contains(t, m.calls, "POST /api/deploy/apply")
@@ -266,4 +279,70 @@ func TestUpdateCustomerServiceLLMConfig_ApplyFailsDegrades(t *testing.T) {
 	require.NoError(t, common.Unmarshal(resp.Body.Bytes(), &out))
 	assert.True(t, out.Success)
 	assert.Contains(t, out.ApplyNote, "应用生效")
+}
+
+// TestGetCustomerServiceLLMConfig_TokenRejected 锁定「令牌被拒」与「上游故障」的分流。
+//
+// 真实误配：运营把管理员密码填进令牌框（实测存进去的是 11 字符的密码），uter-cs 对
+// 任何 /api/deploy/* 都稳定返回 401。若按 502「上游错误」呈现，页面只会显示
+// `HTTP 401 —— {"error":"unauthorized"}`，运营根本看不出该去换令牌。
+// 因此 401/403 必须是 400 + needToken + tokenInvalid，且消息点明「不是管理员密码」。
+func TestGetCustomerServiceLLMConfig_TokenRejected(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	origToken := common.CustomerServiceAdminToken
+	origCache := common.CustomerServiceLLMConfig
+	t.Cleanup(func() {
+		common.CustomerServiceAdminToken = origToken
+		common.CustomerServiceLLMConfig = origCache
+	})
+
+	for _, status := range []int{http.StatusUnauthorized, http.StatusForbidden} {
+		srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(status)
+			_, _ = w.Write([]byte(`{"error":"unauthorized"}`))
+		}))
+		t.Setenv("CUSTOMER_SERVICE_URL", srv.URL)
+		common.CustomerServiceAdminToken = "Uter.ai2026" // 把密码当令牌
+		common.CustomerServiceLLMConfig = ""
+
+		ctx, resp := setCtx(nil, http.MethodGet)
+		GetCustomerServiceLLMConfig(ctx)
+		srv.Close()
+
+		require.Equal(t, http.StatusBadRequest, resp.Code, "status=%d", status)
+		var body map[string]any
+		require.NoError(t, common.Unmarshal(resp.Body.Bytes(), &body))
+		assert.Equal(t, true, body["needToken"], "status=%d", status)
+		assert.Equal(t, true, body["tokenInvalid"], "status=%d", status)
+		msg, _ := body["message"].(string)
+		assert.Contains(t, msg, "不是管理员密码", "status=%d", status)
+	}
+}
+
+// TestUpdateCustomerServiceLLMConfig_TokenRejected 锁定保存路径同样把 401 翻成
+// 「令牌无效」，而不是让运营以为「保存成功了但参数没生效」。
+func TestUpdateCustomerServiceLLMConfig_TokenRejected(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	origToken := common.CustomerServiceAdminToken
+	t.Cleanup(func() {
+		common.CustomerServiceAdminToken = origToken
+	})
+
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusUnauthorized)
+		_, _ = w.Write([]byte(`{"error":"unauthorized"}`))
+	}))
+	t.Cleanup(func() { srv.Close() })
+	t.Setenv("CUSTOMER_SERVICE_URL", srv.URL)
+	common.CustomerServiceAdminToken = "Uter.ai2026"
+
+	ctx, resp := setCtx([]byte(`{"model":"new-model"}`), http.MethodPut)
+	UpdateCustomerServiceLLMConfig(ctx)
+
+	require.Equal(t, http.StatusBadRequest, resp.Code)
+	var body map[string]any
+	require.NoError(t, common.Unmarshal(resp.Body.Bytes(), &body))
+	assert.Equal(t, true, body["tokenInvalid"])
+	msg, _ := body["message"].(string)
+	assert.Contains(t, msg, "保存配置")
 }

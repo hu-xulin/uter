@@ -74,6 +74,37 @@ func proxyErrorMsg(action string, status int, body string) string {
 	return msg
 }
 
+// csTokenRejected 判断 uter-cs 是否**明确拒绝了我们的令牌**，而不是服务不可用。
+//
+// 401 = 令牌不是它的登录令牌 / 已过期；403 = 令牌有效但角色不是 admin。
+// 这两种情况运营要做的动作是「换令牌」，继续按 502「上游错误」呈现会把人引到
+// 排查网络和端口上——实测真实误配（把管理员密码填进令牌框）时，页面只显示
+// 「智能客服返回错误（读取配置）：HTTP 401 —— {"error":"unauthorized"}」，
+// 完全看不出该去补什么。
+func csTokenRejected(status int) bool {
+	return status == http.StatusUnauthorized || status == http.StatusForbidden
+}
+
+// csTokenHint 是令牌被拒时的可操作提示。
+//
+// 令牌是 uter-cs **登录接口返回的 token**（`header.payload.signature` 三段式，
+// 由 server/auth.js 的 signToken 用 HMAC 签发，默认 7 天过期），**不是管理员密码**。
+// 密码只在 POST /api/auth/login 里换一次令牌，之后所有管理请求都带令牌。
+const csTokenHint = "智能客服管理员令牌无效或已过期。" +
+	"请用 uter-cs 管理员账号登录其后台，从浏览器开发者工具 → Application → Local Storage 复制 scs_token，" +
+	"或用 POST /api/auth/login 取响应里的 token；这里要填的是登录令牌，不是管理员密码。"
+
+// csTokenRejectedJSON 是令牌被拒时的统一响应体。
+// needToken 让前端复用「先去上面填令牌」的提示位，tokenInvalid 区分「没填」与「填错了」。
+func csTokenRejectedJSON(action string, status int) gin.H {
+	return gin.H{
+		"success":      false,
+		"needToken":    true,
+		"tokenInvalid": true,
+		"message":      fmt.Sprintf("%s（%s HTTP %d）", csTokenHint, action, status),
+	}
+}
+
 // csProxyError 把 uter-cs 的响应翻译成 Uter 侧的友好错误。
 func csProxyError(c *gin.Context, action string, status int, body string) {
 	c.JSON(http.StatusBadGateway, gin.H{"success": false, "message": proxyErrorMsg(action, status, body)})
@@ -195,6 +226,12 @@ func GetCustomerServiceLLMConfig(c *gin.Context) {
 				})
 				return
 			}
+			// 令牌被拒（401/403）与上游故障（5xx/超时）是两类问题：前者要运营换令牌，
+			// 必须给出 400 + tokenInvalid，而不是 502 让人去查网络。
+			if csTokenRejected(status) {
+				c.JSON(http.StatusBadRequest, csTokenRejectedJSON("读取配置", status))
+				return
+			}
 			csProxyError(c, "读取配置", status, string(raw))
 			return
 		}
@@ -245,7 +282,7 @@ func GetCustomerServiceLLMConfig(c *gin.Context) {
 	}
 	c.JSON(http.StatusBadRequest, gin.H{
 		"success":   false,
-		"message":   "未配置智能客服管理员令牌",
+		"message":   "未配置智能客服管理员令牌（这里要填 uter-cs 登录后返回的 token，不是管理员密码）",
 		"needToken": true,
 	})
 }
@@ -278,7 +315,7 @@ func UpdateCustomerServiceLLMConfig(c *gin.Context) {
 	if strings.TrimSpace(common.CustomerServiceAdminToken) == "" {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"success":   false,
-			"message":   "未配置智能客服管理员令牌",
+			"message":   "未配置智能客服管理员令牌（这里要填 uter-cs 登录后返回的 token，不是管理员密码）",
 			"needToken": true,
 		})
 		return
@@ -311,13 +348,21 @@ func UpdateCustomerServiceLLMConfig(c *gin.Context) {
 		return
 	}
 	if status != http.StatusOK {
+		if csTokenRejected(status) {
+			c.JSON(http.StatusBadRequest, csTokenRejectedJSON("保存配置", status))
+			return
+		}
 		csProxyError(c, "保存配置", status, string(raw))
 		return
 	}
 
 	// 落盘成功，尝试重载引擎。失败降级为提示，不算写回失败。
+	// 必须带 `{}` 作为请求体：uter-cs 是 Fastify，对「Content-Type: application/json
+	// 但 body 为空」会直接 400（FST_ERR_CTP_EMPTY_JSON_BODY）。此前传 nil 导致每次
+	// 保存都提示「重载引擎返回 HTTP 400，请手动点应用生效」——配置写了文件却没进引擎，
+	// 运营以为保存没生效。
 	applyNote := ""
-	applyRaw, applyStatus, applyErr := csDo(c, http.MethodPost, "/api/deploy/apply", nil)
+	applyRaw, applyStatus, applyErr := csDo(c, http.MethodPost, "/api/deploy/apply", []byte("{}"))
 	if applyErr != nil {
 		applyNote = "已保存，但重载引擎失败（" + applyErr.Error() + "），请到智能客服后台手动点「应用生效」"
 	} else if applyStatus != http.StatusOK {
