@@ -29,15 +29,16 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
-import { getSelf } from '@/lib/api'
 import { formatLocalCurrencyAmount } from '@/lib/currency'
 import { handleServerError } from '@/lib/handle-server-error'
 
 import {
   requestAlipayWebPayment,
   requestWechatWebPayment,
+  queryWechatOrder,
   isApiSuccess,
 } from '../../api'
+import { pollAlipayOrder } from '../../lib/alipay-return'
 import {
   detectPayClient,
   formatCNYAmount,
@@ -58,9 +59,6 @@ interface CnPayWebDialogProps {
   paymentMethod: PaymentMethod | undefined
   onSuccess: () => void
 }
-
-const POLL_INTERVAL_MS = 3000
-const POLL_TIMEOUT_MS = 300_000
 
 /**
  * Website payment cashier for the official Alipay / WeChat Pay gateways.
@@ -90,6 +88,7 @@ export function CnPayWebDialog({
   const initialQuotaRef = useRef(initialQuota)
   const onSuccessRef = useRef(onSuccess)
   const doneRef = useRef(false)
+  const tradeNoRef = useRef('')
 
   initialQuotaRef.current = initialQuota
   onSuccessRef.current = onSuccess
@@ -126,6 +125,8 @@ export function CnPayWebDialog({
           return
         }
         const data = response.data
+        // 记录订单号，PC 微信扫码页据此按 trade_no 主动查单判定本单状态。
+        tradeNoRef.current = data.trade_no ?? ''
         // Mobile cashier: leave the page and let the provider app take over.
         const redirectUrl = data.pay_url || data.h5_url
         if (redirectUrl) {
@@ -160,35 +161,31 @@ export function CnPayWebDialog({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open])
 
-  // Poll wallet balance until it increases (payment success) or timeout.
+  // PC 微信支付：按 trade_no 主动查单判定本单状态，不再依赖余额变化。
+  // 复用支付宝回跳轮询 helper（它只关心 query 返回的 data.status）：
+  // 命中 success 即视为支付完成并通知父组件刷新；unpaid/closed 为终态立即停止；
+  // pending 继续轮询直到超时。与异步回调、后台对账共用同一套服务端验签/幂等入账。
   useEffect(() => {
     if (!open || !qrContent || done) return
-    let elapsed = 0
-    const timer = setInterval(async () => {
-      elapsed += POLL_INTERVAL_MS
-      if (elapsed >= POLL_TIMEOUT_MS) {
-        clearInterval(timer)
-        return
-      }
-      try {
-        const res = await getSelf()
-        if (res.success && res.data) {
-          const quota = (res.data as { quota?: number }).quota ?? 0
-          if (quota > initialQuotaRef.current) {
-            clearInterval(timer)
-            doneRef.current = true
-            setDone(true)
-            toast.success(t('Payment successful'))
-            setTimeout(() => onSuccessRef.current(), 600)
-          }
-        }
-      } catch {
-        // ignore transient poll errors
-      }
-    }, POLL_INTERVAL_MS)
-    return () => clearInterval(timer)
+    if (isAlipay) return
+    let cancelled = false
+    void pollAlipayOrder(tradeNoRef.current, {
+      query: queryWechatOrder,
+      onSuccess: async () => {
+        if (cancelled || doneRef.current) return
+        doneRef.current = true
+        setDone(true)
+        toast.success(t('Payment successful'))
+        setTimeout(() => onSuccessRef.current(), 600)
+      },
+      onPending: () => {},
+      isCancelled: () => cancelled || doneRef.current,
+    })
+    return () => {
+      cancelled = true
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open, qrContent, done])
+  }, [open, qrContent, done, isAlipay])
 
   const handleClose = (next: boolean) => {
     if (redirecting) return

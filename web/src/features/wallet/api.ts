@@ -236,6 +236,25 @@ export async function queryAlipayOrder(tradeNo: string): Promise<{
 }
 
 /**
+ * 主动查询微信支付订单并确认入账（与 queryAlipayOrder 同返回结构）。
+ *
+ * 微信支付异步回调（notify_url）缺失时，订单会停在 pending；PC 扫码页与钱包页
+ * 充值记录均按 trade_no 调用本接口，由服务端向微信支付查单并完成幂等入账。
+ * 返回 { data: { status } }，status ∈ success | pending | unpaid | closed，
+ * 供轮询 helper 判定本单状态（不再依赖余额变化）。
+ */
+export async function queryWechatOrder(tradeNo: string): Promise<{
+  message?: string
+  success?: boolean
+  data?: { status?: string }
+}> {
+  const res = await api.post('/api/user/wechat/query', { trade_no: tradeNo }, {
+    skipBusinessError: true,
+  } as Record<string, unknown>)
+  return res.data
+}
+
+/**
  * Get affiliate code
  */
 export async function getAffiliateCode(): Promise<AffiliateCodeResponse> {

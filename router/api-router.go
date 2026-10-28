@@ -66,6 +66,9 @@ func SetApiRouter(router *gin.Engine) {
 		apiRouter.POST("/oauth/wechat/state", middleware.CriticalRateLimit(), middleware.DisableCache(), middleware.TryUserAuth(), anonymousRequestBodyLimit, controller.GenerateWeChatCode)
 		apiRouter.GET("/oauth/wechat", middleware.CriticalRateLimit(), middleware.DisableCache(), controller.WeChatAuth)
 		apiRouter.POST("/oauth/wechat/bind", middleware.UserAuth(), middleware.CriticalRateLimit(), controller.WeChatBind)
+		// WeChat Open Platform website app (PC QR-code scan login).
+		apiRouter.POST("/oauth/wechat-web/state", middleware.CriticalRateLimit(), middleware.DisableCache(), middleware.TryUserAuth(), anonymousRequestBodyLimit, controller.GenerateWeChatWebCode)
+		apiRouter.GET("/oauth/wechat-web", middleware.CriticalRateLimit(), middleware.DisableCache(), controller.WeChatWebAuth)
 		apiRouter.GET("/oauth/telegram/login", middleware.CriticalRateLimit(), middleware.DisableCache(), controller.TelegramLegacyAuth)
 		apiRouter.POST("/oauth/telegram/bind/start", middleware.UserAuth(), middleware.CriticalRateLimit(), middleware.DisableCache(), controller.TelegramLegacyAuth)
 		apiRouter.GET("/oauth/telegram/bind/:flow_token", middleware.CriticalRateLimit(), middleware.DisableCache(), controller.TelegramLegacyAuth)
@@ -152,6 +155,7 @@ func SetApiRouter(router *gin.Engine) {
 				selfRoute.POST("/creem/pay", middleware.CriticalRateLimit(), anonymousRequestBodyLimit, controller.RequestCreemPay)
 				selfRoute.POST("/alipay/webpay", middleware.CriticalRateLimit(), anonymousRequestBodyLimit, controller.RequestAlipayWeb)
 				selfRoute.POST("/alipay/query", middleware.CriticalRateLimit(), anonymousRequestBodyLimit, controller.QueryAlipayOrder)
+			selfRoute.POST("/wechat/query", middleware.CriticalRateLimit(), anonymousRequestBodyLimit, controller.QueryWechatOrder)
 				selfRoute.POST("/wechat/webpay", middleware.CriticalRateLimit(), anonymousRequestBodyLimit, controller.RequestWechatPayWeb)
 				selfRoute.POST("/waffo/amount", anonymousRequestBodyLimit, controller.RequestWaffoAmount)
 				selfRoute.POST("/waffo/pay", middleware.CriticalRateLimit(), anonymousRequestBodyLimit, controller.RequestWaffoPay)
