@@ -25,7 +25,7 @@ import { cn } from '@/lib/utils'
 export type GroupRatio = number | string | null | undefined
 
 export const AUTO_GROUP_FRAME_CLASS_NAME =
-  'border-primary/40 relative overflow-visible border shadow-sm shadow-primary/10'
+  'border-primary/40 relative overflow-visible border'
 
 type AutoGroupFlowBorderProps = {
   shouldReduceMotion: boolean

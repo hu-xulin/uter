@@ -118,7 +118,7 @@ function ApiKeysMobileList({
         <Empty className='border-none p-0'>
           <EmptyHeader>
             <EmptyMedia variant='icon'>
-              <Database className='size-6' />
+              <Database />
             </EmptyMedia>
             <EmptyTitle>{t('No API Keys Found')}</EmptyTitle>
             <EmptyDescription>
@@ -148,13 +148,13 @@ function ApiKeysMobileList({
           <div
             key={row.id}
             className={cn(
-              'border-border/60 bg-card min-w-0 space-y-2 rounded-xl border p-3.5 text-xs leading-4',
+              'border-border/60 bg-card min-w-0 space-y-2 rounded-xl border p-3.5 text-xs',
               isDisabledApiKeyRow(apiKey) && DISABLED_ROW_MOBILE
             )}
           >
             <div className='flex items-start justify-between gap-3'>
               <div className='min-w-0'>
-                <div className='text-sm leading-5 font-semibold break-words'>
+                <div className='text-sm font-semibold break-words'>
                   {apiKey.name}
                 </div>
               </div>
@@ -342,6 +342,8 @@ export function ApiKeysTable() {
       )}
       skeletonKeyPrefix='api-keys-skeleton'
       applyHeaderSize
+      // 列少且每列都能截断：让整表恒等于容器宽度，操作列不再需要右滑才能看到。
+      fitContainer
       toolbarProps={{
         searchPlaceholder: t('Filter by name...'),
         searchDebounceMs: 500,

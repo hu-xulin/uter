@@ -21,6 +21,7 @@ import type { ColumnDef } from '@tanstack/react-table'
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { TruncatedCell } from '@/components/data-table'
 import { StatusBadge } from '@/components/status-badge'
 import { Checkbox } from '@/components/ui/checkbox'
 import { useMediaQuery } from '@/hooks'
@@ -90,7 +91,9 @@ export function useApiKeysColumns(now: number): ColumnDef<ApiKey>[] {
           <Checkbox
             checked={table.getIsAllPageRowsSelected()}
             indeterminate={table.getIsSomePageRowsSelected()}
-            onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+            onCheckedChange={(value) =>
+              table.toggleAllPageRowsSelected(!!value)
+            }
             aria-label={t('Select all')}
             className='translate-y-[2px]'
           />
@@ -105,22 +108,25 @@ export function useApiKeysColumns(now: number): ColumnDef<ApiKey>[] {
         ),
         enableSorting: false,
         enableHiding: false,
-        size: 40,
+        size: 28,
       },
       {
         accessorKey: 'name',
         header: t('Name'),
         cell: ({ row }) => (
-          <span className='font-medium'>{row.getValue('name')}</span>
+          <TruncatedCell className='max-w-full font-medium'>
+            {String(row.getValue('name') ?? '')}
+          </TruncatedCell>
         ),
-        size: 180,
+        size: 80,
         meta: { mobileTitle: true },
       },
       {
         accessorKey: 'status',
         header: t('Status'),
         cell: ({ row }) => {
-          const statusConfig = API_KEY_STATUSES[row.getValue('status') as number]
+          const statusConfig =
+            API_KEY_STATUSES[row.getValue('status') as number]
           if (!statusConfig) return null
           return (
             <StatusBadge
@@ -132,7 +138,9 @@ export function useApiKeysColumns(now: number): ColumnDef<ApiKey>[] {
           )
         },
         filterFn: (row, id, value) => value.includes(String(row.getValue(id))),
-        size: 120,
+        // `已启用` 徽标连内边距要 ~60px，加单元格内边距需要 84px；
+        // 72px（通用文本列下限）会把它截成 `已…`。
+        size: 84,
         meta: { mobileBadge: true },
       },
       {
@@ -141,15 +149,20 @@ export function useApiKeysColumns(now: number): ColumnDef<ApiKey>[] {
         header: t('API Key'),
         cell: ({ row }) => <ApiKeyCell apiKey={row.original} />,
         enableSorting: false,
-        size: 260,
+        // 脱敏密钥是 21 个等宽字符（`sk-` + 16 位 + 尾号），14px 等宽下约
+        // 176px；再加复制按钮（28px）与间距，低于 200px 就只能显示
+        // 「sk-3Enj****…」，复制按钮也会被挤出单元格。
+        size: 208,
       },
       {
         id: 'quota',
         accessorKey: 'remain_quota',
         header: `${t('Quota')} (${quotaUnit})`,
         cell: ({ row }) => <ApiKeyQuotaCell apiKey={row.original} now={now} />,
-        size: 260,
-        minSize: 260,
+        // 表格里是「剩余 / 已用」两列等宽网格：`无限制`(42px) + `2.06`(30px)
+        // + 8px 间距 = 80px 内容宽，加上内边距要 112px 才都不被截断。
+        size: 112,
+        minSize: 92,
       },
       {
         accessorKey: 'group',
@@ -166,7 +179,10 @@ export function useApiKeysColumns(now: number): ColumnDef<ApiKey>[] {
             />
           )
         },
-        size: 220,
+        // 「VIP0 + 倍率徽标」是最宽的一档：分组名约 34px + 间距 8px +
+        // `1x` 徽标 48px，再扣掉单元格左右内边距 —— 低于 118px 就只能
+        // 显示成「V…」，分组名被截掉而倍率徽标还占着位。
+        size: 118,
         meta: { mobileHidden: true },
       },
       {
@@ -175,7 +191,8 @@ export function useApiKeysColumns(now: number): ColumnDef<ApiKey>[] {
         header: t('Models'),
         cell: ({ row }) => <ModelLimitsCell apiKey={row.original} />,
         enableSorting: false,
-        size: 160,
+        // `无限制` 徽标要 ~60px，加内边距 84px 才不截成 `无…`。
+        size: 84,
         meta: { mobileHidden: true },
       },
       {
@@ -184,15 +201,17 @@ export function useApiKeysColumns(now: number): ColumnDef<ApiKey>[] {
         header: t('IP Restriction'),
         cell: ({ row }) => <IpRestrictionsCell apiKey={row.original} />,
         enableSorting: false,
-        size: 160,
+        size: 84,
         meta: { mobileHidden: true },
       },
       {
         id: 'activity_time',
         accessorKey: 'created_time',
         header: t('Time'),
-        cell: ({ row }) => <ApiKeyActivityCell apiKey={row.original} now={now} />,
-        size: 220,
+        cell: ({ row }) => (
+          <ApiKeyActivityCell apiKey={row.original} now={now} />
+        ),
+        size: 96,
         meta: { mobileHidden: true },
       },
       {
@@ -224,7 +243,7 @@ export function useApiKeysColumns(now: number): ColumnDef<ApiKey>[] {
             />
           )
         },
-        size: 180,
+        size: 94,
         meta: { mobileHidden: true },
       },
       {
@@ -234,14 +253,6 @@ export function useApiKeysColumns(now: number): ColumnDef<ApiKey>[] {
         meta: { pinned: 'right' as const },
       },
     ],
-    [
-      t,
-      justNowLabel,
-      locale,
-      quotaUnit,
-      groupRatios,
-      shouldReduceMotion,
-      now,
-    ]
+    [t, justNowLabel, locale, quotaUnit, groupRatios, shouldReduceMotion, now]
   )
 }

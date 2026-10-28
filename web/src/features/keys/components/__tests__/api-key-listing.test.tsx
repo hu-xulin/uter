@@ -63,7 +63,8 @@ import { ApiKeysTable } from '../api-keys-table'
 const mockRequestVerification = vi.fn()
 
 vi.mock('@/features/auth/secure-verification', async (importActual) => {
-  const actual = await importActual<typeof import('@/features/auth/secure-verification')>()
+  const actual =
+    await importActual<typeof import('@/features/auth/secure-verification')>()
   return {
     ...actual,
     useSecureVerification: () => ({
@@ -191,9 +192,11 @@ it('shows desktop remaining and used amounts side by side without labels, with t
   })
   expect(trigger).toHaveTextContent('80120')
   expect(trigger).not.toHaveTextContent(/Remaining|Used amount/)
+  // 两列按内容分配，不是 1:1 等分：等分时半列只有 ~40px，「无限制」需要
+  // 42px 就会被截成「无…」。剩余额度拿 auto（按内容），已用额度拿剩下的。
   expect(
     trigger.querySelector('[data-slot="api-key-quota-values"]')
-  ).toHaveClass('grid-cols-2')
+  ).toHaveClass('grid-cols-[auto_minmax(0,1fr)]')
   expect(within(trigger).getByText('80')).toHaveClass('text-left')
   expect(within(trigger).getByText('120')).toHaveClass('text-right')
   expect(trigger.parentElement).toHaveClass('max-w-45')
@@ -203,9 +206,9 @@ it('shows desktop remaining and used amounts side by side without labels, with t
 })
 
 it.each([
-  ['unused', 500000, 0, 100, 'text-emerald-500'],
-  ['low remaining', 150000, 350000, 30, 'text-amber-500'],
-  ['critical remaining', 50000, 450000, 10, 'text-rose-500'],
+  ['unused', 500000, 0, 100, 'text-success'],
+  ['low remaining', 150000, 350000, 30, 'text-warning'],
+  ['critical remaining', 50000, 450000, 10, 'text-destructive'],
   ['exhausted', 0, 500000, 0, null],
   ['overdrawn', -50000, 500000, 0, null],
   ['zero total', 0, 0, 0, null],
@@ -270,9 +273,7 @@ it.each([
   ['expired timestamp', { expired_time: now / 1000 - 1 }],
 ])('renders the %s progress bar in a neutral color', (_label, overrides) => {
   renderQuota({ ...key, ...overrides })
-  expect(screen.getByRole('progressbar')).toHaveClass(
-    'text-muted-foreground/60'
-  )
+  expect(screen.getByRole('progressbar')).toHaveClass('text-muted-foreground')
 })
 
 it('recalculates the progress when remaining quota is edited', () => {
@@ -470,7 +471,9 @@ it.each([true, false])(
       expect(post).toHaveBeenCalledWith(
         '/api/token/7/key',
         undefined,
-        expect.objectContaining({ headers: { 'X-Security-Proof': 'test-proof' } })
+        expect.objectContaining({
+          headers: { 'X-Security-Proof': 'test-proof' },
+        })
       )
     )
     if (success) {

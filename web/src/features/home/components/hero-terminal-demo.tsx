@@ -20,6 +20,19 @@ import { useState, useEffect, useRef, type ReactNode } from 'react'
 
 import { cn } from '@/lib/utils'
 
+/**
+ * 演示卡片的强调色。
+ *
+ * 规范 §4「Color Use」要求品牌色统一为紫蓝 `#5B5EE6`，界面上的强调色只有
+ * 品牌色一档（另有 success / warning / destructive 三个状态语义，仅用于表达
+ * 状态）。此前这里按 demo 各给一套 emerald / amber / blue / violet，等于在
+ * 营销页引入了第二套配色体系：切一个 tab 换一种颜色，与「单色系」直接冲突。
+ *
+ * 现在统一走品牌色：激活态用 `text-primary` + `border-primary`（规范 §1.1.1
+ * 「线型 Tabs 使用品牌色下划线」），方法徽标用 `primary-subtle` 浅底 + 品牌
+ * 文字。`AccentTone` 保留是为了不改 `API_DEMOS` 的数据形状 —— 四个 demo 的
+ * 语义仍然不同，只是不再用颜色区分。
+ */
 type AccentTone = 'emerald' | 'amber' | 'blue' | 'violet'
 
 interface ApiDemoConfig {
@@ -36,6 +49,7 @@ interface ApiDemoConfig {
   accent: AccentTone
 }
 
+/** 所有 tone 都映射到品牌色：颜色不再承载「哪个 demo」的信息。 */
 const ACCENT_CLASSES: Record<
   AccentTone,
   {
@@ -45,28 +59,24 @@ const ACCENT_CLASSES: Record<
   }
 > = {
   emerald: {
-    activeText: 'text-emerald-600 dark:text-emerald-400',
-    activeBorder: 'border-emerald-500 dark:border-emerald-400',
-    badge:
-      'bg-emerald-500/10 text-emerald-600 dark:bg-emerald-400/10 dark:text-emerald-400',
+    activeText: 'text-primary',
+    activeBorder: 'border-primary',
+    badge: 'bg-primary-subtle text-primary-subtle-foreground',
   },
   amber: {
-    activeText: 'text-amber-600 dark:text-amber-400',
-    activeBorder: 'border-amber-500 dark:border-amber-400',
-    badge:
-      'bg-amber-500/10 text-amber-600 dark:bg-amber-400/10 dark:text-amber-400',
+    activeText: 'text-primary',
+    activeBorder: 'border-primary',
+    badge: 'bg-primary-subtle text-primary-subtle-foreground',
   },
   blue: {
-    activeText: 'text-blue-600 dark:text-blue-400',
-    activeBorder: 'border-blue-500 dark:border-blue-400',
-    badge:
-      'bg-blue-500/10 text-blue-600 dark:bg-blue-400/10 dark:text-blue-400',
+    activeText: 'text-primary',
+    activeBorder: 'border-primary',
+    badge: 'bg-primary-subtle text-primary-subtle-foreground',
   },
   violet: {
-    activeText: 'text-violet-600 dark:text-violet-400',
-    activeBorder: 'border-violet-500 dark:border-violet-400',
-    badge:
-      'bg-violet-500/10 text-violet-600 dark:bg-violet-400/10 dark:text-violet-400',
+    activeText: 'text-primary',
+    activeBorder: 'border-primary',
+    badge: 'bg-primary-subtle text-primary-subtle-foreground',
   },
 }
 
@@ -210,16 +220,18 @@ export function HeroTerminalDemo(props: HeroTerminalDemoProps) {
     <div className={cn('mx-auto w-full max-w-2xl', props.className)}>
       <div
         className={cn(
-          'overflow-hidden rounded-2xl border backdrop-blur-sm',
-          'border-border/60 bg-white/95',
-          'dark:border-white/[0.06] dark:bg-[#0b0f17]/95'
+          // 规范 §1.5：营销展示卡片是**刻意**的一档 elevation —— 它要在明亮的
+          // hero 背景上明确脱离页面平面，1px 描边撑不住 2xl 圆角展示卡片的
+          // 视觉重量。应用内常规卡片仍然不投影。
+          'bg-card/95 overflow-hidden rounded-2xl border backdrop-blur-sm',
+          'border-border shadow-(--ds-elevation-marketing)'
         )}
       >
         {/* Tab strip */}
         <div
           className={cn(
             'flex items-center gap-1 border-b px-2 sm:gap-1.5 sm:px-3',
-            'border-border/50 dark:border-white/[0.05]'
+            'border-border'
           )}
         >
           {API_DEMOS.map((item, index) => {
@@ -234,7 +246,7 @@ export function HeroTerminalDemo(props: HeroTerminalDemoProps) {
                   'relative -mb-px flex items-center gap-1.5 border-b-2 px-2.5 py-2.5 text-sm font-medium transition-colors sm:px-3',
                   isActive
                     ? `${tone.activeBorder} ${tone.activeText}`
-                    : 'text-foreground/40 hover:text-foreground/70 border-transparent'
+                    : 'text-tertiary-foreground hover:text-muted-foreground border-transparent'
                 )}
               >
                 {item.label}
@@ -242,8 +254,9 @@ export function HeroTerminalDemo(props: HeroTerminalDemoProps) {
             )
           })}
           <div className='ml-auto flex items-center gap-2 pr-2 sm:pr-3'>
-            <span className='inline-block size-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.45)]' />
-            <span className='text-foreground/40 font-mono text-mono uppercase'>
+            {/* 在线指示点：辉光是状态语义（亮着 = 在线），不是层级投影 */}
+            <span className='bg-success inline-block size-1.5 rounded-full shadow-(--ds-glow-online)' />
+            <span className='text-tertiary-foreground text-mono-code font-mono uppercase'>
               200 ok
             </span>
           </div>
@@ -253,12 +266,12 @@ export function HeroTerminalDemo(props: HeroTerminalDemoProps) {
         <div
           className={cn(
             'flex items-center gap-2.5 border-b px-5 py-3',
-            'border-border/40 dark:border-white/[0.04]'
+            'border-border'
           )}
         >
           <span
             className={cn(
-              'rounded-md px-1.5 py-0.5 font-mono text-mono font-semibold',
+              'rounded-md px-1.5 py-0.5 font-mono text-mono-code font-semibold',
               accent.badge
             )}
           >
@@ -266,7 +279,7 @@ export function HeroTerminalDemo(props: HeroTerminalDemoProps) {
           </span>
           <code
             className={cn(
-              'text-foreground/75 truncate font-mono text-mono transition-opacity duration-200',
+              'text-muted-foreground truncate font-mono text-mono-code transition-opacity ds-motion-marketing-fast',
               transitioning ? 'opacity-0' : 'opacity-100'
             )}
           >
@@ -275,7 +288,7 @@ export function HeroTerminalDemo(props: HeroTerminalDemoProps) {
         </div>
 
         {/* Body — fixed rows so neither block shifts when switching demos */}
-        <div className='grid h-[400px] grid-rows-[235px_minmax(0,1fr)] font-mono text-mono leading-[1.55]'>
+        <div className='text-mono-code grid h-[400px] grid-rows-[235px_minmax(0,1fr)] font-mono'>
           {/* Request */}
           <RequestBlock demo={demo} transitioning={transitioning} />
 
@@ -287,28 +300,28 @@ export function HeroTerminalDemo(props: HeroTerminalDemoProps) {
         <div
           className={cn(
             'flex items-center justify-between border-t px-5 py-2.5',
-            'border-border/40 bg-muted/30 dark:border-white/[0.05] dark:bg-white/[0.02]'
+            'border-border bg-muted/30'
           )}
         >
-          <div className='text-foreground/40 flex items-center gap-3 text-xs tabular-nums'>
+          <div className='text-tertiary-foreground flex items-center gap-3 text-xs tabular-nums'>
             <span className='flex items-center gap-1'>
-              <span className='font-mono'>{demo.latency}</span>
+              <span className='text-mono-code font-mono'>{demo.latency}</span>
               <span className='uppercase'>ms</span>
             </span>
             <span className='bg-foreground/15 size-1 rounded-full' />
             <span className='flex items-center gap-1'>
-              <span className='font-mono'>{demo.tokens}</span>
+              <span className='text-mono-code font-mono'>{demo.tokens}</span>
               <span className='uppercase'>tokens</span>
             </span>
             <span className='bg-foreground/15 size-1 rounded-full' />
             <span className='flex items-center gap-1'>
               <span className='uppercase'>cost</span>
-              <span className='font-mono'>
+              <span className='text-mono-code font-mono'>
                 ${(demo.tokens * 0.00003).toFixed(5)}
               </span>
             </span>
           </div>
-          <span className='text-foreground/30 font-mono text-sm uppercase'>
+          <span className='text-tertiary-foreground text-mono-code font-mono uppercase'>
             stream · sse
           </span>
         </div>
@@ -325,7 +338,7 @@ function RequestBlock(props: { demo: ApiDemoConfig; transitioning: boolean }) {
       <SectionLabel>Request</SectionLabel>
       <div
         className={cn(
-          'mt-2 transition-opacity duration-200',
+          'mt-2 transition-opacity ds-motion-marketing-fast',
           transitioning ? 'opacity-0' : 'opacity-100'
         )}
       >
@@ -361,15 +374,12 @@ function ResponseBlock(props: { demo: ApiDemoConfig; transitioning: boolean }) {
 
   return (
     <div
-      className={cn(
-        'relative border-t px-5 py-4',
-        'border-border/40 bg-muted/20 dark:border-white/[0.05] dark:bg-white/[0.015]'
-      )}
+      className={cn('relative border-t px-5 py-4', 'border-border bg-muted/20')}
     >
       <SectionLabel>Response</SectionLabel>
       <div
         className={cn(
-          'mt-2 transition-opacity duration-200',
+          'mt-2 transition-opacity ds-motion-marketing-fast',
           transitioning ? 'opacity-0' : 'opacity-100'
         )}
       >
@@ -383,7 +393,7 @@ function ResponseBlock(props: { demo: ApiDemoConfig; transitioning: boolean }) {
 
 function SectionLabel(props: { children: ReactNode }) {
   return (
-    <span className='text-foreground/30 font-sans text-xs font-semibold uppercase'>
+    <span className='text-tertiary-foreground font-sans text-xs font-semibold uppercase'>
       {props.children}
     </span>
   )
@@ -505,40 +515,30 @@ function CodeLine(props: { children: ReactNode; indent?: number }) {
 
 function Command(props: { children: ReactNode }) {
   return (
-    <span className='font-medium text-emerald-600 dark:text-emerald-400'>
-      {props.children}
-    </span>
+    <span className='text-syntax-function font-medium'>{props.children}</span>
   )
 }
 
 function Flag(props: { children: ReactNode }) {
-  return (
-    <span className='text-blue-600 dark:text-blue-400'>{props.children}</span>
-  )
+  return <span className='text-syntax-property'>{props.children}</span>
 }
 
 function Key(props: { children: ReactNode }) {
-  return (
-    <span className='text-sky-700 dark:text-sky-300'>{props.children}</span>
-  )
+  return <span className='text-syntax-keyword'>{props.children}</span>
 }
 
 function StringText(props: { children: ReactNode }) {
-  return (
-    <span className='text-amber-700 dark:text-amber-300'>{props.children}</span>
-  )
+  return <span className='text-syntax-string'>{props.children}</span>
 }
 
 function NumberText(props: { children: ReactNode }) {
   return (
-    <span className='font-medium text-violet-600 dark:text-violet-300'>
-      {props.children}
-    </span>
+    <span className='text-syntax-number font-medium'>{props.children}</span>
   )
 }
 
 function Muted(props: { children: ReactNode }) {
-  return <span className='text-foreground/55'>{props.children}</span>
+  return <span className='text-tertiary-foreground'>{props.children}</span>
 }
 
 function Accent(props: { children: ReactNode; accent: AccentTone }) {

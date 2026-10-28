@@ -24,6 +24,7 @@ import { ErrorState } from '@/components/error-state'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
+import { Heading } from '@/design-system'
 import { listSystemTasks } from '@/features/system-settings/api'
 import { createServerError } from '@/lib/server-error-message'
 import { cn } from '@/lib/utils'
@@ -56,7 +57,7 @@ export function SystemTasksPanel() {
   const hasActiveTasks = activeTasks.length > 0
 
   return (
-    <section className='bg-card overflow-hidden rounded-lg border shadow-xs'>
+    <section className='bg-card overflow-hidden rounded-lg border'>
       <div className='flex flex-col gap-3 border-b px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-5'>
         <div className='min-w-0'>
           <div className='flex items-center gap-2'>
@@ -64,8 +65,8 @@ export function SystemTasksPanel() {
               <ListChecks className='size-4' aria-hidden='true' />
             </span>
             <div className='min-w-0'>
-              <h3 className='text-sm font-semibold'>{t('System Tasks')}</h3>
-              <p className='text-muted-foreground mt-0.5 text-xs'>
+              <h3 className='text-lg font-semibold'>{t('System Tasks')}</h3>
+              <p className='text-muted-foreground mt-0.5 text-sm'>
                 {t(
                   'Recent maintenance tasks running across instances and their execution status.'
                 )}
@@ -81,7 +82,7 @@ export function SystemTasksPanel() {
             <span
               className={cn(
                 'size-1.5 rounded-full',
-                hasActiveTasks ? 'bg-emerald-500' : 'bg-muted-foreground/40'
+                hasActiveTasks ? 'bg-success' : 'bg-muted-foreground/40'
               )}
               aria-hidden='true'
             />
@@ -101,7 +102,7 @@ export function SystemTasksPanel() {
           >
             <RefreshCw
               data-icon='inline-start'
-              className={cn('size-3.5', refreshing && 'animate-spin')}
+              className={cn('size-4', refreshing && 'animate-spin')}
               aria-hidden='true'
             />
             {refreshing ? t('Refreshing...') : t('Refresh')}
@@ -137,8 +138,10 @@ export function SystemTasksPanel() {
             <div>
               <div className='mb-2 flex items-center justify-between gap-3'>
                 <div>
-                  <h4 className='text-sm font-medium'>{t('Active Tasks')}</h4>
-                  <p className='text-muted-foreground mt-0.5 text-xs'>
+                  <Heading variant='group-title' level={4}>
+                    {t('Active Tasks')}
+                  </Heading>
+                  <p className='text-muted-foreground mt-0.5 text-sm'>
                     {t('Tasks currently pending or running.')}
                   </p>
                 </div>

@@ -70,7 +70,9 @@ export const DASHBOARD_ROOTS = [
  *     任何页面都会被算成首页、等于页面开关失效。
  *  2. 其余路径按**带段边界**的前缀匹配：`/pricing` 不应命中 `/pricing-foo`。
  */
-export function pageKeyForPath(pathname: string): CustomerServicePageKey | null {
+export function pageKeyForPath(
+  pathname: string
+): CustomerServicePageKey | null {
   const path = (pathname || '').toLowerCase()
   if (path === '/' || path === '') return 'home'
 
@@ -98,7 +100,7 @@ export function pageKeyForPath(pathname: string): CustomerServicePageKey | null 
  */
 export function shouldShowCustomerService(
   pathname: string,
-  pages: CustomerServicePageKey[] | null,
+  pages: CustomerServicePageKey[] | null
 ): boolean {
   if (pages === null) return true
   const current = pageKeyForPath(pathname)

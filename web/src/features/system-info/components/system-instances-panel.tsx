@@ -77,13 +77,14 @@ const INSTANCE_SKELETON_KEYS = [
 
 const STATUS_CLASS_NAME: Record<SystemInstanceStatus, string> = {
   online:
-    'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300',
-  stale: 'bg-amber-50 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300',
+    'bg-success-soft text-success dark:bg-success/15 dark:text-success-soft-foreground',
+  stale:
+    'bg-warning-soft text-warning dark:bg-warning/15 dark:text-warning-soft-foreground',
 }
 
 const STATUS_DOT_CLASS_NAME: Record<SystemInstanceStatus, string> = {
-  online: 'bg-emerald-500',
-  stale: 'bg-amber-500',
+  online: 'bg-success',
+  stale: 'bg-warning',
 }
 
 function roleLabel(instance: SystemInstance) {
@@ -137,10 +138,10 @@ function formatBytes(bytes?: number): string {
 }
 
 function ringColorClass(percent: number | null) {
-  if (percent === null) return 'text-muted-foreground/40'
-  if (percent >= 90) return 'text-red-500'
-  if (percent >= 70) return 'text-amber-500'
-  return 'text-emerald-500'
+  if (percent === null) return 'text-muted-foreground'
+  if (percent >= 90) return 'text-destructive'
+  if (percent >= 70) return 'text-warning'
+  return 'text-success'
 }
 
 type RingProgressProps = {
@@ -150,7 +151,7 @@ type RingProgressProps = {
 
 function RingProgress(props: RingProgressProps) {
   const size = props.size ?? 22
-  const stroke = 2.5
+  const stroke = 2
   const radius = (size - stroke) / 2
   const circumference = 2 * Math.PI * radius
   const offset =
@@ -186,7 +187,7 @@ function RingProgress(props: RingProgressProps) {
         strokeDasharray={circumference}
         strokeDashoffset={offset}
         className={cn(
-          'transition-[stroke-dashoffset] duration-500',
+          'ds-motion-data transition-[stroke-dashoffset]',
           ringColorClass(props.percent)
         )}
       />
@@ -207,7 +208,7 @@ function ResourceCell(props: ResourceCellProps) {
   const content = (
     <div className='flex items-center gap-2'>
       <RingProgress percent={percent} />
-      <span className='font-mono text-mono tabular-nums'>
+      <span className='text-mono font-mono tabular-nums'>
         {formatPercent(props.value)}
       </span>
     </div>
@@ -303,10 +304,10 @@ function SystemInstancesList(props: SystemInstancesTableProps) {
                             >
                               <Badge
                                 variant='outline'
-                                className='border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-500/30 dark:bg-amber-500/15 dark:text-amber-300'
+                                className='border-warning-soft bg-warning-soft text-warning dark:border-warning/30 dark:bg-warning/15 dark:text-warning-soft-foreground'
                               >
                                 <AlertTriangle
-                                  className='size-3'
+                                  className='size-4'
                                   aria-hidden='true'
                                 />
                               </Badge>
@@ -327,7 +328,7 @@ function SystemInstancesList(props: SystemInstancesTableProps) {
                                   <div className='mb-1 font-medium'>
                                     {t('Example')}
                                   </div>
-                                  <code className='bg-muted block rounded-md px-2 py-1.5 font-mono text-mono break-all'>
+                                  <code className='bg-muted text-mono block rounded-md px-2 py-1.5 font-mono break-all'>
                                     NODE_NAME=uter-master-1
                                   </code>
                                 </div>
@@ -341,7 +342,7 @@ function SystemInstancesList(props: SystemInstancesTableProps) {
                           </Popover>
                         )}
                       </div>
-                      <div className='text-muted-foreground truncate font-mono text-mono'>
+                      <div className='text-muted-foreground text-mono truncate font-mono'>
                         {instance.info?.host?.hostname || '-'}
                       </div>
                     </div>
@@ -396,19 +397,19 @@ function SystemInstancesList(props: SystemInstancesTableProps) {
                             <span className='text-muted-foreground'>
                               {t('Used')}
                             </span>
-                            <span className='font-mono'>
+                            <span className='text-mono font-mono'>
                               {formatBytes(storage.used_bytes)}
                             </span>
                             <span className='text-muted-foreground'>
                               {t('Free')}
                             </span>
-                            <span className='font-mono'>
+                            <span className='text-mono font-mono'>
                               {formatBytes(storage.free_bytes)}
                             </span>
                             <span className='text-muted-foreground'>
                               {t('Total')}
                             </span>
-                            <span className='font-mono'>
+                            <span className='text-mono font-mono'>
                               {formatBytes(storage.total_bytes)}
                             </span>
                           </div>
@@ -418,7 +419,7 @@ function SystemInstancesList(props: SystemInstancesTableProps) {
                   />
                 </TableCell>
                 <TableCell className='py-2.5 align-middle'>
-                  <div className='truncate font-mono text-mono'>
+                  <div className='text-mono truncate font-mono'>
                     {runtimeLabel(instance)}
                   </div>
                 </TableCell>
@@ -426,7 +427,7 @@ function SystemInstancesList(props: SystemInstancesTableProps) {
                   {formatTimestampToDate(instance.started_at)}
                 </TableCell>
                 <TableCell
-                  className='text-muted-foreground py-2.5 align-middle text-xs whitespace-nowrap'
+                  className='text-muted-foreground py-2.5 align-middle text-sm whitespace-nowrap'
                   title={formatTimestampToDate(instance.last_seen_at)}
                 >
                   {formatTimestampRelative(
@@ -456,11 +457,11 @@ function SystemInstancesList(props: SystemInstancesTableProps) {
                             >
                               {isDeletingThisInstance ? (
                                 <Loader2
-                                  className='size-3 animate-spin'
+                                  className='size-4 animate-spin'
                                   aria-hidden='true'
                                 />
                               ) : (
-                                <Trash2 className='size-3' aria-hidden='true' />
+                                <Trash2 className='size-4' aria-hidden='true' />
                               )}
                             </Button>
                           }
@@ -596,7 +597,7 @@ export function SystemInstancesPanel() {
       <div className='px-4 py-10 text-center sm:px-5'>
         <div className='bg-muted mx-auto mb-3 flex size-10 items-center justify-center rounded-lg'>
           <ServerCog
-            className='text-muted-foreground size-5'
+            className='text-muted-foreground size-4'
             aria-hidden='true'
           />
         </div>
@@ -622,7 +623,7 @@ export function SystemInstancesPanel() {
 
   return (
     <>
-      <section className='bg-card overflow-hidden rounded-lg border shadow-xs'>
+      <section className='bg-card overflow-hidden rounded-lg border'>
         <div className='flex flex-col gap-3 border-b px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-5'>
           <div className='min-w-0'>
             <div className='flex items-center gap-2'>
@@ -630,8 +631,8 @@ export function SystemInstancesPanel() {
                 <ServerCog className='size-4' aria-hidden='true' />
               </span>
               <div className='min-w-0'>
-                <h3 className='text-sm font-semibold'>{t('Instances')}</h3>
-                <p className='text-muted-foreground mt-0.5 text-xs'>
+                <h3 className='text-lg font-semibold'>{t('Instances')}</h3>
+                <p className='text-muted-foreground mt-0.5 text-sm'>
                   {t(
                     'Nodes reporting from this deployment and their latest heartbeat.'
                   )}
@@ -658,13 +659,13 @@ export function SystemInstancesPanel() {
                 {deleteStaleInstancesMutation.isPending ? (
                   <Loader2
                     data-icon='inline-start'
-                    className='size-3.5 animate-spin'
+                    className='size-4.5 animate-spin'
                     aria-hidden='true'
                   />
                 ) : (
                   <Trash2
                     data-icon='inline-start'
-                    className='size-3.5'
+                    className='size-4.5'
                     aria-hidden='true'
                   />
                 )}
@@ -681,7 +682,7 @@ export function SystemInstancesPanel() {
             >
               <RefreshCw
                 data-icon='inline-start'
-                className={cn('size-3.5', refreshing && 'animate-spin')}
+                className={cn('size-4', refreshing && 'animate-spin')}
                 aria-hidden='true'
               />
               {refreshing ? t('Refreshing...') : t('Refresh')}

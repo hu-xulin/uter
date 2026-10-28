@@ -111,14 +111,14 @@ export function DataTableRowActions<TData>({
               <>
                 {t('Disable')}
                 <DropdownMenuShortcut>
-                  <PowerOff size={16} />
+                  <PowerOff className='size-4' />
                 </DropdownMenuShortcut>
               </>
             ) : (
               <>
                 {t('Enable')}
                 <DropdownMenuShortcut>
-                  <Power size={16} />
+                  <Power className='size-4' />
                 </DropdownMenuShortcut>
               </>
             )}
@@ -134,7 +134,7 @@ export function DataTableRowActions<TData>({
         >
           {t('Delete')}
           <DropdownMenuShortcut>
-            <Trash2 size={16} />
+            <Trash2 className='size-4' />
           </DropdownMenuShortcut>
         </DropdownMenuItem>
       </DataTableRowActionMenu>

@@ -26,6 +26,7 @@ import { RichContent } from '@/components/rich-content'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
+import { Heading } from '@/design-system'
 import { useStatus } from '@/hooks/use-status'
 import { getSafeHttpUrl, isLikelyHtml } from '@/lib/content-format'
 import {
@@ -137,7 +138,7 @@ function ConfiguredLegalDocument({
           <Card className='border-dashed'>
             <CardHeader className='flex flex-row items-center gap-4'>
               <div className='bg-muted rounded-lg p-2'>
-                <FileWarning className='text-muted-foreground h-5 w-5' />
+                <FileWarning className='text-muted-foreground h-4 w-4' />
               </div>
               <div className='space-y-1'>
                 <CardTitle>{title}</CardTitle>
@@ -191,7 +192,7 @@ function ConfiguredLegalDocument({
       ) : (
         <div className='mx-auto max-w-4xl space-y-6 py-12'>
           <div className='space-y-2'>
-            <h1 className='text-3xl font-semibold'>{title}</h1>
+            <Heading variant='page-title'>{title}</Heading>
           </div>
 
           <RichContent

@@ -88,8 +88,7 @@ export function DataTableBulkActions<TData>({
             render={
               <Button
                 variant='outline'
-                size='icon'
-                className='size-8'
+                size='icon-sm'
                 onClick={handleBatchCopy}
                 disabled={isCopying}
                 aria-label={t('Copy selected keys')}
@@ -97,9 +96,9 @@ export function DataTableBulkActions<TData>({
             }
           >
             {isCopying ? (
-              <Loader2 className='size-4 animate-spin' />
+              <Loader2 className='size-4.5 animate-spin' />
             ) : (
-              <Copy className='size-4' />
+              <Copy className='size-4.5' />
             )}
           </TooltipTrigger>
           <TooltipContent>
@@ -112,9 +111,8 @@ export function DataTableBulkActions<TData>({
             render={
               <Button
                 variant='destructive'
-                size='icon'
+                size='icon-sm'
                 onClick={() => setShowDeleteConfirm(true)}
-                className='size-8'
                 aria-label={t('Delete selected API keys')}
               />
             }

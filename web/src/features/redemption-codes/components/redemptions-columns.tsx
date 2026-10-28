@@ -176,7 +176,7 @@ export function useRedemptionsColumns(): ColumnDef<Redemption>[] {
       meta: { mobileHidden: true },
       cell: ({ row }) => {
         return (
-          <div className='min-w-[160px] font-mono text-mono'>
+          <div className='text-mono min-w-[160px] font-mono'>
             {formatTimestampToDate(row.getValue('created_time'))}
           </div>
         )
@@ -202,7 +202,7 @@ export function useRedemptionsColumns(): ColumnDef<Redemption>[] {
         const isExpired = isTimestampExpired(expiredTime)
         return (
           <div
-            className={`min-w-[160px] font-mono text-mono ${isExpired ? 'text-destructive' : ''}`}
+            className={`text-mono min-w-[160px] font-mono ${isExpired ? 'text-destructive' : ''}`}
           >
             {formatTimestampToDate(expiredTime)}
           </div>
@@ -233,7 +233,7 @@ export function useRedemptionsColumns(): ColumnDef<Redemption>[] {
                   className='cursor-help'
                 />
               }
-             />
+            />
             <TooltipContent>
               <div className='space-y-1 text-xs'>
                 <div>

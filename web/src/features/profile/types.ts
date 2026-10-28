@@ -227,6 +227,8 @@ export interface CheckinRecord {
 export interface CheckinStats {
   /** Whether user has checked in today */
   checked_in_today: boolean
+  /** Server-side "today" (YYYY-MM-DD) — the calendar must use this, not the browser date */
+  today: string
   /** Total number of check-ins */
   total_checkins: number
   /** Total quota earned from check-ins */
@@ -243,6 +245,10 @@ export interface CheckinStats {
 export interface CheckinStatusResponse {
   /** Whether check-in feature is enabled */
   enabled: boolean
+  /** Minimum quota awarded per check-in (raw quota units) */
+  min_quota: number
+  /** Maximum quota awarded per check-in (raw quota units) */
+  max_quota: number
   /** Check-in statistics */
   stats: CheckinStats
 }

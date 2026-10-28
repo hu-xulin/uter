@@ -17,8 +17,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@uter.ai
 */
 import { useQuery } from '@tanstack/react-query'
-import { useEffect, useMemo, useRef, useState } from 'react'
 import { useLocation } from '@tanstack/react-router'
+import { useEffect, useMemo, useRef, useState } from 'react'
 
 import { statusQueryOptions } from '@/lib/status-query'
 
@@ -34,15 +34,16 @@ import {
 // 视觉：底色/描边/文字一律取自 shadcn 主题变量
 //（--background / --card / --popover / --border / --muted-foreground …），
 // 因此用户切换浅色/深色或使用主题预设时本挂件自动一致，无需维护第二套配色。
-// 品牌紫 #6467f0 用于：面板头部徽标（service02.svg 实填）、悬浮气泡圆底、
-// 发送气泡与发送按钮。
+// 品牌色用于：面板头部徽标、悬浮气泡圆底、发送气泡与发送按钮。
+// **一律读 `var(--primary)`**，不得写死色值——否则改品牌色 / 换主题预设时
+// 挂件会停在旧颜色上，成为全站唯一不同步的地方。
 // 文案配置（标题/欢迎语/预置问题）由后台「部署配置」实时下发。
 
-const BRAND = '#6467f0'
+const BRAND = 'var(--primary)'
 
 // 气泡图标：取自品牌 SVG service.svg / service02.svg（对话气泡 + 机器人，同一几何形）。
-// service02.svg 为品牌紫 #6467f0 实fill，直接用作品牌标志（面板头部）；
-// 白色填充则天然适配 #6467f0 圆底形成反白标志（悬浮气泡入口）。
+// service02.svg 的实填色由 `fill={BRAND}` 注入（SVG fill 接受 var()），
+// 因此跟随品牌色；白色填充则天然适配品牌色圆底形成反白标志（悬浮气泡入口）。
 // 原图 viewBox 为 0 0 200 175（宽高比 8:7），
 // 故按宽度缩放、高度按比例推导，避免直接设等宽等高把图形压扁。
 function BotIcon({
@@ -252,23 +253,25 @@ export function CustomerServiceWidget() {
     alignSelf: 'flex-end',
     maxWidth: '84%',
     padding: '10px 14px',
-    borderRadius: '14px 14px 4px 14px',
-    fontSize: 13.5,
-    lineHeight: 1.6,
+    borderRadius:
+      'var(--radius-xl) var(--radius-xl) var(--radius-xs) var(--radius-xl)',
+    fontSize: 'var(--ds-text-body)',
+    lineHeight: 'var(--ds-line-body)',
     whiteSpace: 'pre-wrap',
     wordBreak: 'break-word',
     background: BRAND,
-    color: '#fff',
-    boxShadow: '0 4px 12px rgba(100, 103, 240, 0.32)',
+    color: 'var(--primary-foreground)',
+    boxShadow: 'var(--ds-elevation-popover)',
   }
 
   const reply: React.CSSProperties = {
     alignSelf: 'flex-start',
     maxWidth: '84%',
     padding: '10px 14px',
-    borderRadius: '14px 14px 14px 4px',
-    fontSize: 13.5,
-    lineHeight: 1.6,
+    borderRadius:
+      'var(--radius-xl) var(--radius-xl) var(--radius-xl) var(--radius-xs)',
+    fontSize: 'var(--ds-text-body)',
+    lineHeight: 'var(--ds-line-body)',
     whiteSpace: 'pre-wrap',
     wordBreak: 'break-word',
     background: 'var(--card)',
@@ -300,7 +303,7 @@ export function CustomerServiceWidget() {
 
   return (
     <>
-      {/* 悬浮气泡：#6467f0 圆底 + 白色品牌图标（反白标志） */}
+      {/* 悬浮气泡：品牌色圆底 + 白色品牌图标（反白标志） */}
       <button
         type='button'
         aria-label={cfg.title}
@@ -313,25 +316,22 @@ export function CustomerServiceWidget() {
           zIndex: 2147483000,
           width: 56,
           height: 56,
-          borderRadius: '50%',
+          borderRadius: '9999px',
           display: 'grid',
           placeItems: 'center',
           background: BRAND,
           border: 'none',
           cursor: 'pointer',
-          boxShadow:
-            '0 6px 24px rgba(100, 103, 240, 0.38), 0 0 0 1px rgba(255, 255, 255, 0.10) inset',
+          boxShadow: 'var(--ds-elevation-overlay)',
           transition: 'transform .18s ease, box-shadow .18s ease',
         }}
         onMouseEnter={(e) => {
           e.currentTarget.style.transform = 'translateY(-2px)'
-          e.currentTarget.style.boxShadow =
-            '0 10px 30px rgba(100, 103, 240, 0.48), 0 0 0 1px rgba(255, 255, 255, 0.14) inset'
+          e.currentTarget.style.boxShadow = 'var(--ds-elevation-overlay)'
         }}
         onMouseLeave={(e) => {
           e.currentTarget.style.transform = 'none'
-          e.currentTarget.style.boxShadow =
-            '0 6px 24px rgba(100, 103, 240, 0.38), 0 0 0 1px rgba(255, 255, 255, 0.10) inset'
+          e.currentTarget.style.boxShadow = 'var(--ds-elevation-overlay)'
         }}
       >
         <BotIcon width={30} />
@@ -355,9 +355,8 @@ export function CustomerServiceWidget() {
             background: 'var(--popover)',
             color: 'var(--popover-foreground)',
             border: '1px solid var(--border)',
-            borderRadius: 16,
-            boxShadow:
-              '0 20px 60px rgba(0, 0, 0, 0.42), 0 0 0 1px rgba(100, 103, 240, 0.08)',
+            borderRadius: 'var(--radius-2xl)',
+            boxShadow: 'var(--ds-elevation-overlay)',
             fontFamily: 'var(--font-ui)',
             animation: 'cs-in .18s ease-out',
           }}
@@ -393,7 +392,7 @@ export function CustomerServiceWidget() {
             </span>
             <span
               style={{
-                fontSize: 14,
+                fontSize: 'var(--ds-text-body)',
                 fontWeight: 600,
                 flex: 1,
                 minWidth: 0,
@@ -413,10 +412,10 @@ export function CustomerServiceWidget() {
                 border: 'none',
                 color: 'var(--muted-foreground)',
                 cursor: 'pointer',
-                fontSize: 16,
+                fontSize: 'var(--ds-text-group-title)',
                 lineHeight: 1,
                 padding: 6,
-                borderRadius: 6,
+                borderRadius: 'var(--radius-sm)',
                 flexShrink: 0,
               }}
             >
@@ -455,7 +454,8 @@ export function CustomerServiceWidget() {
                   display: 'flex',
                   gap: 4,
                   padding: '12px 14px',
-                  borderRadius: '14px 14px 14px 4px',
+                  borderRadius:
+                    'var(--radius-xl) var(--radius-xl) var(--radius-xl) var(--radius-xs)',
                   background: 'var(--card)',
                   border: '1px solid var(--border)',
                 }}
@@ -466,7 +466,7 @@ export function CustomerServiceWidget() {
                     style={{
                       width: 5,
                       height: 5,
-                      borderRadius: '50%',
+                      borderRadius: '9999px',
                       background: 'var(--muted-foreground)',
                       animation: `cs-blink 1.2s ${i * 0.18}s infinite`,
                     }}
@@ -504,17 +504,17 @@ export function CustomerServiceWidget() {
                       background: 'var(--card)',
                       border: '1px solid var(--border)',
                       color: 'var(--muted-foreground)',
-                      fontSize: 12,
+                      fontSize: 'var(--ds-text-caption)',
                       fontFamily: 'inherit',
                       padding: '6px 12px',
-                      borderRadius: 999,
+                      borderRadius: '9999px',
                       cursor: 'pointer',
                       transition: 'color .15s, border-color .15s',
                     }}
                     onMouseEnter={(e) => {
                       e.currentTarget.style.color = BRAND
                       e.currentTarget.style.borderColor =
-                        'rgba(100, 103, 240, 0.5)'
+                        'var(--primary-border)'
                     }}
                     onMouseLeave={(e) => {
                       e.currentTarget.style.color = 'var(--muted-foreground)'
@@ -550,19 +550,19 @@ export function CustomerServiceWidget() {
                 flex: 1,
                 minWidth: 0,
                 padding: '10px 12px',
-                borderRadius: 10,
+                borderRadius: 'var(--radius-lg)',
                 border: '1px solid var(--border)',
                 background: 'var(--background)',
                 color: 'var(--foreground)',
                 fontFamily: 'inherit',
-                fontSize: 13,
+                fontSize: 'var(--ds-text-body)',
                 outline: 'none',
                 transition: 'border-color .15s, box-shadow .15s',
               }}
               onFocus={(e) => {
-                e.currentTarget.style.borderColor = 'rgba(100, 103, 240, 0.6)'
-                e.currentTarget.style.boxShadow =
-                  '0 0 0 3px rgba(100, 103, 240, 0.12)'
+                // 焦点环按规范 §1.4：2px、走 ring Token，不用 3px 半透明手写色。
+                e.currentTarget.style.borderColor = 'var(--ring)'
+                e.currentTarget.style.boxShadow = '0 0 0 2px var(--ring)'
               }}
               onBlur={(e) => {
                 e.currentTarget.style.borderColor = 'var(--border)'
@@ -576,13 +576,13 @@ export function CustomerServiceWidget() {
               aria-label='发送'
               style={{
                 background: BRAND,
-                color: '#fff',
+                color: 'var(--primary-foreground)',
                 border: 'none',
                 padding: '0 18px',
-                borderRadius: 10,
+                borderRadius: 'var(--radius-lg)',
                 cursor: input.trim() && !typing ? 'pointer' : 'not-allowed',
                 fontFamily: 'inherit',
-                fontSize: 13,
+                fontSize: 'var(--ds-text-body)',
                 fontWeight: 600,
                 opacity: input.trim() && !typing ? 1 : 0.5,
                 transition: 'opacity .15s, filter .15s',
@@ -605,7 +605,7 @@ export function CustomerServiceWidget() {
             <div
               style={{
                 textAlign: 'center',
-                fontSize: 10.5,
+                fontSize: 'var(--ds-text-caption)',
                 color: 'var(--muted-foreground)',
                 padding: '7px 0 8px',
                 background: 'var(--card)',

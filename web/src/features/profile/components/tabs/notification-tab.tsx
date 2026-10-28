@@ -27,6 +27,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
+import { Heading } from '@/design-system'
 import {
   SettingsControlChildren,
   SettingsControlGroup,
@@ -95,8 +96,8 @@ export function NotificationTab({
   const role = profile?.role ?? 0
   const isAdmin = role >= ROLE.ADMIN
   const [loading, setLoading] = useState(false)
-  const [settings, setSettings] = useState<NotificationSettingsDraft>(
-    () => normalizeUserSettings()
+  const [settings, setSettings] = useState<NotificationSettingsDraft>(() =>
+    normalizeUserSettings()
   )
   const [thresholdInput, setThresholdInput] = useState('')
 
@@ -178,7 +179,13 @@ export function NotificationTab({
         <>
           {/* Notification Type */}
           <div className='space-y-2.5'>
-            <Label>{t('Notification Method')}</Label>
+            {/* 分组标题走 group-title（16/600/24）：这一层比表单标签高、
+                比卡片标题（18/600）低，是页面层级第 4 层。此前用 Label
+                （14/500），比正文还小，「通知方式」看起来像个字段名而不是
+                一组设置的分组标题。 */}
+            <Heading variant='group-title' level={4}>
+              {t('Notification Method')}
+            </Heading>
             <ToggleGroup
               value={[notifyType]}
               onValueChange={(value) => {
@@ -199,10 +206,12 @@ export function NotificationTab({
                   <ToggleGroupItem
                     key={method.value}
                     value={method.value}
-                    className='h-auto min-h-14 w-full flex-col gap-1.5 px-3 py-3 sm:min-h-16'
+                    // 图标与文字左右排列（不是上下堆叠）：一排四个入口时，
+                    // 横排比竖排更像一个「选项」，也不会把 32px 的行高撑到 64px。
+                    className='h-auto min-h-11 w-full flex-row items-center justify-center gap-2 px-3 py-2'
                   >
-                    <Icon className='h-4 w-4 sm:h-5 sm:w-5' />
-                    <span className='max-w-full truncate text-sm font-medium'>
+                    <Icon className='h-4 w-4 shrink-0' />
+                    <span className='max-w-full truncate text-sm font-semibold'>
                       {t(method.label)}
                     </span>
                   </ToggleGroupItem>
@@ -214,11 +223,12 @@ export function NotificationTab({
           {/* Email Settings */}
           {notifyType === 'email' && (
             <div className='space-y-1.5'>
-              <Label htmlFor='notifyEmail'>{t('Notification Email')}</Label>
+              <Label htmlFor='notifyEmail' tier='field'>
+                {t('Notification Email')}
+              </Label>
               <Input
                 id='notifyEmail'
                 type='email'
-                className='h-9'
                 value={settings.notification_email}
                 onChange={(e) =>
                   updateField('notification_email', e.target.value)
@@ -232,18 +242,21 @@ export function NotificationTab({
           {notifyType === 'webhook' && (
             <>
               <div className='space-y-1.5'>
-                <Label htmlFor='webhookUrl'>{t('Webhook URL')}</Label>
+                <Label htmlFor='webhookUrl' tier='field'>
+                  {t('Webhook URL')}
+                </Label>
                 <Input
                   id='webhookUrl'
                   type='url'
-                  className='h-9'
                   value={settings.webhook_url}
                   onChange={(e) => updateField('webhook_url', e.target.value)}
                   placeholder={t('https://example.com/webhook')}
                 />
               </div>
               <div className='space-y-1.5'>
-                <Label htmlFor='webhookSecret'>{t('Webhook Secret')}</Label>
+                <Label htmlFor='webhookSecret' tier='field'>
+                  {t('Webhook Secret')}
+                </Label>
                 <PasswordInput
                   id='webhookSecret'
                   value={settings.webhook_secret}
@@ -259,11 +272,12 @@ export function NotificationTab({
           {/* Bark Settings */}
           {notifyType === 'bark' && (
             <div className='space-y-1.5'>
-              <Label htmlFor='barkUrl'>{t('Bark Push URL')}</Label>
+              <Label htmlFor='barkUrl' tier='field'>
+                {t('Bark Push URL')}
+              </Label>
               <Input
                 id='barkUrl'
                 type='url'
-                className='h-9'
                 value={settings.bark_url}
                 onChange={(e) => updateField('bark_url', e.target.value)}
                 placeholder={t(
@@ -280,11 +294,12 @@ export function NotificationTab({
           {notifyType === 'gotify' && (
             <>
               <div className='space-y-1.5'>
-                <Label htmlFor='gotifyUrl'>{t('Gotify Server URL')}</Label>
+                <Label htmlFor='gotifyUrl' tier='field'>
+                  {t('Gotify Server URL')}
+                </Label>
                 <Input
                   id='gotifyUrl'
                   type='url'
-                  className='h-9'
                   value={settings.gotify_url}
                   onChange={(e) => updateField('gotify_url', e.target.value)}
                   placeholder={t('https://gotify.example.com')}
@@ -294,7 +309,7 @@ export function NotificationTab({
                 </p>
               </div>
               <div className='space-y-1.5'>
-                <Label htmlFor='gotifyToken'>
+                <Label htmlFor='gotifyToken' tier='field'>
                   {t('Gotify Application Token')}
                 </Label>
                 <PasswordInput
@@ -308,11 +323,12 @@ export function NotificationTab({
                 </p>
               </div>
               <div className='space-y-1.5'>
-                <Label htmlFor='gotifyPriority'>{t('Message Priority')}</Label>
+                <Label htmlFor='gotifyPriority' tier='field'>
+                  {t('Message Priority')}
+                </Label>
                 <Input
                   id='gotifyPriority'
                   type='number'
-                  className='h-9'
                   min='0'
                   max='10'
                   value={settings.gotify_priority}
@@ -328,9 +344,13 @@ export function NotificationTab({
                 </p>
               </div>
               <div className='bg-muted/50 rounded-lg border p-3 sm:p-4'>
-                <h5 className='mb-1.5 text-sm font-medium sm:mb-2'>
+                <Heading
+                  variant='group-title'
+                  level={5}
+                  className='mb-1.5 sm:mb-2'
+                >
                   {t('Setup Instructions')}
-                </h5>
+                </Heading>
                 <ol className='text-muted-foreground space-y-1 text-sm'>
                   <li>{t('1. Create an application in your Gotify server')}</li>
                   <li>{t('2. Copy the application token')}</li>
@@ -355,9 +375,9 @@ export function NotificationTab({
 
           {/* Notifications to receive */}
           <div className='space-y-2.5'>
-            <h4 className='text-sm font-medium'>
+            <Heading variant='group-title' level={4}>
               {t('Notifications to receive')}
-            </h4>
+            </Heading>
             <SettingsControlGroup>
               {quotaRemindEnabled && (
                 <>
@@ -380,7 +400,6 @@ export function NotificationTab({
                       <Input
                         id='threshold'
                         type='number'
-                        className='h-9'
                         min={0}
                         step={tokensOnly ? 1 : 0.000001}
                         value={thresholdInput}
@@ -447,7 +466,9 @@ export function NotificationTab({
       {/* Preferences Section */}
       <div className='space-y-3'>
         <div>
-          <h4 className='text-sm font-medium'>{t('Preferences')}</h4>
+          <Heading variant='group-title' level={4}>
+            {t('Preferences')}
+          </Heading>
           <p className='text-muted-foreground mt-1 text-sm'>
             {t('Configure your account behavior preferences')}
           </p>
@@ -477,7 +498,7 @@ export function NotificationTab({
       {/* Save Button */}
       <div className='flex justify-end'>
         <Button onClick={handleSave} disabled={loading}>
-          {loading && <Loader2 className='mr-2 h-4 w-4 animate-spin' />}
+          {loading && <Loader2 className='mr-2 h-4.5 w-4.5 animate-spin' />}
           {loading ? t('Saving...') : t('Save Settings')}
         </Button>
       </div>

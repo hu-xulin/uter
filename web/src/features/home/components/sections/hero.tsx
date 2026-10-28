@@ -16,7 +16,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
-import { CherryStudio } from '@lobehub/icons'
 import { Link } from '@tanstack/react-router'
 import { ArrowRight, BookOpen } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
@@ -28,25 +27,16 @@ import { useStatus } from '@/hooks/use-status'
 import { isBundledDocsHref, resolveDocsHref } from '@/lib/docs-link'
 
 import { HeroTerminalDemo } from '../hero-terminal-demo'
+import { SUPPORTED_APPS } from '../supported-apps'
 
 interface HeroProps {
   className?: string
   isAuthenticated?: boolean
 }
 
-// Stylized three-dots indicator representing "More"
-const MoreIcon = () => (
-  <svg
-    className='text-muted-foreground/60 group-hover:text-foreground size-6 shrink-0 transition-colors'
-    viewBox='0 0 24 24'
-    fill='none'
-    xmlns='http://www.w3.org/2000/svg'
-  >
-    <circle cx='6' cy='12' r='2' fill='currentColor' />
-    <circle cx='12' cy='12' r='2' fill='currentColor' />
-    <circle cx='18' cy='12' r='2' fill='currentColor' />
-  </svg>
-)
+/** 「支持的客户端」胶囊的共用样式，三个入口必须完全一致。 */
+const APP_PILL_CLASS =
+  'group border-border/40 bg-muted/15 text-muted-foreground hover:border-border hover:bg-muted/30 hover:text-foreground flex items-center gap-3 rounded-full border px-5 py-2.5 text-sm font-medium backdrop-blur-xs ds-motion-marketing-fast transition-all hover:scale-[1.02]'
 
 export function Hero(props: HeroProps) {
   const { t } = useTranslation()
@@ -75,7 +65,7 @@ export function Hero(props: HeroProps) {
         className='group border-border/50 hover:border-border hover:bg-muted/50 inline-flex items-center gap-1.5 px-5'
         render={rendered}
       >
-        <BookOpen className='text-muted-foreground/80 group-hover:text-foreground size-4 transition-colors duration-200' />
+        <BookOpen className='text-muted-foreground group-hover:text-foreground ds-motion-marketing-fast size-4.5 transition-colors' />
         <span>{t('Docs')}</span>
       </Button>
     )
@@ -106,18 +96,19 @@ export function Hero(props: HeroProps) {
         <div className='flex flex-col items-start text-left lg:col-span-6'>
           {/* Top Pill Badge */}
           <div
-            className='landing-animate-fade-up mb-5 inline-flex items-center gap-1.5 rounded-full border border-blue-500/20 bg-blue-500/5 px-3 py-1.5 text-sm font-medium text-blue-600 opacity-0 dark:border-blue-400/20 dark:bg-blue-400/5 dark:text-blue-400'
+            className='landing-animate-fade-up border-primary-border bg-primary-subtle text-sidebar-active-foreground mb-5 inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm font-medium opacity-0'
             style={{ animationDelay: '0ms' }}
           >
             <span className='relative flex size-1.5'>
-              <span className='absolute inline-flex h-full w-full animate-ping rounded-full bg-blue-400 opacity-75' />
-              <span className='relative inline-flex size-1.5 rounded-full bg-blue-500 dark:bg-blue-400' />
+              <span className='bg-primary absolute inline-flex h-full w-full animate-ping rounded-full opacity-75' />
+              <span className='bg-primary relative inline-flex size-1.5 rounded-full' />
             </span>
             <span>{t('AI Application Infrastructure Foundation')}</span>
           </div>
 
-          {/* 主标题会折成 3–4 行，用多行 display 行高（1.35）而不是
-              单行的 40px，否则行与行会挤在一起。 */}
+          {/* 主标题会折成 3–4 行，用多行 display 行高（1.5）而不是
+              单行的 40px，否则行与行会挤在一起。行高值见
+              `--ds-line-display-multiline`（规范 §1.2）。 */}
           <Heading
             variant='display'
             level={1}
@@ -163,14 +154,26 @@ export function Hero(props: HeroProps) {
                 </>
               )
             })()}
-            <span className='bg-gradient-to-r from-blue-400 via-violet-400 to-purple-500 bg-clip-text text-transparent'>
+            {/* 首屏唯一的多色渐变。用 `chart-1/3/4`（蓝 → 紫 → 洋红）而不是
+                `blue-400 / violet-400 / purple-500`：调色板直用色是 T7 违规，
+                而 `chart-*` 是全站唯一登记过的多序列分类色阶，色相与原先几乎
+                一致（肉眼无差别），换掉只是为了让颜色走 Token、跟随主题。 */}
+            <span className='from-chart-1 via-chart-3 to-chart-4 bg-gradient-to-r bg-clip-text text-transparent'>
               {t('Vast Range of AI Models')}
             </span>
           </Heading>
+          {/* 副标题：首屏唯一的说明性长句，走长文本档 `body-long`（16/26）。
+              不能用 `body`(14px) —— 它会和下方「常用应用支持」那两行 14px
+              小字塌成同一档，层级直接消失。
+              行高交回档位自带（26px），不再用 `` 覆盖成 32px：
+              32px 是当年 14px 字号下「1.5 倍读着发闷」的权宜值，字号升到
+              16px 后 1.625 倍本身就不闷了，再留 2 倍反而散。
+              颜色保持 `muted-foreground`（二级正文色）：红字只要求字号，
+              而且它比下方那两行三级小字深一档，正好撑起层级。 */}
           <Text
             as='p'
-            variant='body'
-            className='landing-animate-fade-up text-muted-foreground/80 mt-5 max-w-xl leading-6 opacity-0'
+            variant='body-long'
+            className='landing-animate-fade-up text-muted-foreground mt-8 max-w-xl opacity-0'
             style={{ animationDelay: '120ms' }}
           >
             {t(
@@ -179,7 +182,7 @@ export function Hero(props: HeroProps) {
           </Text>
 
           <div
-            className='landing-animate-fade-up mt-8 flex flex-wrap items-center gap-3 opacity-0'
+            className='landing-animate-fade-up mt-10 flex flex-wrap items-center gap-3 opacity-0'
             style={{ animationDelay: '180ms' }}
           >
             {props.isAuthenticated ? (
@@ -189,18 +192,15 @@ export function Hero(props: HeroProps) {
                   render={<Link to='/dashboard' />}
                 >
                   {t('Go to Dashboard')}
-                  <ArrowRight className='ml-1.5 size-4 transition-transform duration-200 group-hover:translate-x-0.5' />
+                  <ArrowRight className='ds-motion-marketing-fast ml-1.5 size-4.5 transition-transform group-hover:translate-x-0.5' />
                 </Button>
                 {renderDocsButton()}
               </>
             ) : (
               <>
-                <Button
-                  className='group px-5'
-                  render={<Link to='/sign-up' />}
-                >
+                <Button className='group px-5' render={<Link to='/sign-up' />}>
                   {t('Get Started')}
-                  <ArrowRight className='ml-1.5 size-4 transition-transform duration-200 group-hover:translate-x-0.5' />
+                  <ArrowRight className='ds-motion-marketing-fast ml-1.5 size-4.5 transition-transform group-hover:translate-x-0.5' />
                 </Button>
                 <Button
                   variant='outline'
@@ -219,60 +219,37 @@ export function Hero(props: HeroProps) {
             className='landing-animate-fade-up mt-10 w-full max-w-xl opacity-0'
             style={{ animationDelay: '240ms' }}
           >
+            {/* 两行都是**次级文本**，统一走三级文字色 `tertiary-foreground`
+                （比 `muted-foreground` 再浅一档，且是 colors.md 4.5:1 下限
+                之前最浅的一档）。不要改回 `muted-foreground` —— 那会和上方
+                副标题同色，小字抢正文的注意力。 */}
             <div className='mb-4 flex flex-col gap-1'>
-              <span className='text-muted-foreground/50 text-sm font-medium uppercase'>
+              <span className='text-tertiary-foreground text-sm font-medium uppercase'>
                 {t('Supported Applications')}
               </span>
-              <p className='text-muted-foreground/60 text-sm leading-5'>
+              <p className='text-tertiary-foreground text-sm'>
                 {t(
                   'Supports one-click configuration and perfectly adapts to Uter multi-protocol configuration.'
                 )}
               </p>
             </div>
             <div className='flex flex-wrap items-center gap-3'>
-              {/* Cherry Studio */}
-              <a
-                href='https://cherry-ai.com'
-                target='_blank'
-                rel='noopener noreferrer'
-                className='group border-border/40 bg-muted/15 text-foreground/80 hover:border-border hover:bg-muted/30 hover:text-foreground flex items-center gap-3 rounded-full border px-5 py-2.5 text-sm font-medium backdrop-blur-xs transition-all duration-300 hover:scale-[1.02]'
-              >
-                <CherryStudio.Color size={24} className='shrink-0' />
-                <span>Cherry Studio</span>
-              </a>
-
-              {/* CC Switch */}
-              <a
-                href='https://ccswitch.io'
-                target='_blank'
-                rel='noopener noreferrer'
-                className='group border-border/40 bg-muted/15 text-foreground/80 hover:border-border hover:bg-muted/30 hover:text-foreground flex items-center gap-3 rounded-full border px-5 py-2.5 text-sm font-medium backdrop-blur-xs transition-all duration-300 hover:scale-[1.02]'
-              >
-                <img
-                  src='https://ccswitch.io/favicon.png'
-                  alt='CC Switch'
-                  className='size-6 shrink-0 rounded-md object-contain'
-                  onError={(e) => {
-                    // Fallback to a styled text avatar if the remote favicon fails to load in sandbox or local environments
-                    e.currentTarget.style.display = 'none'
-                    const fallback = e.currentTarget.nextSibling as HTMLElement
-                    if (fallback) fallback.style.display = 'flex'
-                  }}
-                />
-                <span
-                  style={{ display: 'none' }}
-                  className='size-6 shrink-0 items-center justify-center rounded-md bg-blue-500/10 text-sm font-semibold text-blue-600 dark:bg-blue-400/10 dark:text-blue-400'
+              {/* 三个都是真实可点的外链，指向各产品的官方站点：
+                  WorkBuddy AI 是桌面端工作台，DeepSeek Harness 与 Codex
+                  是官方 CLI 客户端，都可以把 Uter 的 OpenAI 兼容配置
+                  直接填进去用。 */}
+              {SUPPORTED_APPS.map((app) => (
+                <a
+                  key={app.name}
+                  href={app.href}
+                  target='_blank'
+                  rel='noopener noreferrer'
+                  className={APP_PILL_CLASS}
                 >
-                  CC
-                </span>
-                <span>CC Switch</span>
-              </a>
-
-              {/* "更多" */}
-              <div className='group border-border/40 bg-muted/15 text-foreground/55 hover:border-border hover:bg-muted/30 hover:text-foreground flex cursor-default items-center gap-2.5 rounded-full border px-5 py-2.5 text-sm font-medium backdrop-blur-xs transition-all duration-300 hover:scale-[1.02]'>
-                <MoreIcon />
-                <span>{t('More Apps')}</span>
-              </div>
+                  {app.icon}
+                  <span>{app.name}</span>
+                </a>
+              ))}
             </div>
           </div>
         </div>

@@ -218,9 +218,11 @@ export function DocsViewer() {
       if (event.origin !== window.location.origin) return
       if (event.source !== frameRef.current?.contentWindow) return
 
-      const data = event.data as
-        | { type?: unknown; path?: unknown; theme?: unknown }
-        | null
+      const data = event.data as {
+        type?: unknown
+        path?: unknown
+        theme?: unknown
+      } | null
       if (!data || typeof data !== 'object') return
 
       if (data.type === ROUTE_MESSAGE) {

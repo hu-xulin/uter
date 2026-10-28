@@ -104,8 +104,7 @@ export function DataTableBulkActions(props: DataTableBulkActionsProps) {
             render={
               <Button
                 variant='destructive'
-                size='icon'
-                className='size-8'
+                size='icon-sm'
                 aria-label={t('Delete selected redemption codes')}
                 disabled={deletion.isPending}
                 onClick={() =>

@@ -16,8 +16,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
-import { ArrowRight01Icon } from '@hugeicons/core-free-icons'
-import { HugeiconsIcon } from '@hugeicons/react'
+import { ChevronRight } from 'lucide-react'
 import { Reorder } from 'motion/react'
 import { useMemo, type ComponentProps } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -100,7 +99,7 @@ export function AutoGroupOrderEditor(props: AutoGroupOrderEditorProps) {
       className={cn('flex flex-col gap-3', props.className)}
     >
       <div className='flex items-center justify-between gap-3'>
-        <p className='text-muted-foreground text-xs' aria-live='polite'>
+        <p className='text-muted-foreground text-sm' aria-live='polite'>
           {isInheriting
             ? t('Using the complete global Auto order ({{count}} groups)', {
                 count: props.globalOptions.length,
@@ -155,12 +154,10 @@ export function AutoGroupOrderEditor(props: AutoGroupOrderEditorProps) {
           {props.globalOptions.map((option, index) => (
             <li key={option.value} className='flex min-w-0 items-center gap-1'>
               {index > 0 && (
-                <HugeiconsIcon
-                  icon={ArrowRight01Icon}
-                  strokeWidth={2}
+                <ChevronRight
                   aria-hidden='true'
                   data-slot='global-auto-order-connector'
-                  className='text-muted-foreground size-3.5 shrink-0'
+                  className='text-muted-foreground size-4 shrink-0'
                 />
               )}
               <span
