@@ -41,7 +41,7 @@ export function SignUp() {
           >
             {t('Create an account')}
           </Heading>
-          <p className='text-muted-foreground text-left text-sm'>
+          <p className='text-muted-foreground text-left text-base'>
             {t('Already have an account?')}{' '}
             <Link to='/sign-in' className='hover:text-primary font-medium'>
               {t('Sign in')}

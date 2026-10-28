@@ -311,7 +311,7 @@ export function SignUpForm({
                 {showPasswordHint && (
                   <span
                     className={cn(
-                      'text-sm font-normal',
+                      'text-base font-normal',
                       passwordHintIsError
                         ? 'text-destructive'
                         : 'text-muted-foreground'
@@ -494,7 +494,7 @@ export function SignUpForm({
               />
             </div>
           ) : (
-            <p className='text-muted-foreground text-sm'>
+            <p className='text-muted-foreground text-base'>
               {t('QR code is not configured. Please contact support.')}
             </p>
           )}
