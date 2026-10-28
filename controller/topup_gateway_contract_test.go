@@ -95,7 +95,13 @@ var requiredGatewayCallbacks = []gatewayCallback{
 		// 主动查单不是网关回调，但它同样会入账，因此同样受三件套约束：
 		// 响应验签在 service.AlipayQueryOrder 内部完成（AlipayVerifyResponse），
 		// 这里以「调用该查单函数」作为验签已发生的特征。
+		//
+		// 三件套里的「幂等 + 金额比对 + 入账」已抽到 applyAlipayQueryResult：
+		// 用户回跳后的主动查单、后台对账任务、以及打开充值记录时的读时对账
+		// 都走这一个函数，防护只可能同时生效或同时失效，不会出现「接口校验了、
+		// 后台任务没校验」的分叉。故 worker 指向该共用函数。
 		handler:         "QueryAlipayOrder",
+		worker:          "applyAlipayQueryResult",
 		file:            "topup_alipay.go",
 		verifySign:      []string{"service.AlipayQueryOrder("},
 		idempotency:     []string{"LockOrder(", "alreadyDone"},
