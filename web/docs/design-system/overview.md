@@ -52,9 +52,10 @@ features/      业务组件与页面：只做组合，不重新定义视觉规�
    `overlay`（弹窗、抽屉）、`raised`（拖拽中的元素）、`marketing`（营销展示
    卡片），外加 `glow-online`（在线状态点）。卡片、表格、侧边栏一律不投影，
    层级靠 1px 描边与表面色差。判据是「这块面还有没有自己的平面位置」。
-6. **焦点环默认 2px 品牌色，表单控件 1px**。`outline: none` 必须配替代焦点提示，
-   否则键盘用户丢失位置。`Input` / `Textarea` / `Select` 自带 1px 边框，外扩
-   2px 会读成双线框，因此收到 1px —— 这是唯一例外，其余场景仍是 2px。
+6. **焦点环恒 1px 品牌色**（规范 §1.4 `stroke-focus` / §1.7）。`outline: none`
+   必须配替代焦点提示，否则键盘用户丢失位置。原生元素走 `--ds-focus-ring-width`
+   的 `outline`，组件走 `focus-visible:ring-1`，两条路径同宽、同色、都贴边
+   （`outline-offset: 0`）—— 全站只有一种焦点指示器，不再有 2px 档。
 7. **圆角只有七档**。`xs 4 / sm 6 / md 8 / lg 10 / xl 12 / 2xl 16 / full 9999`，
    控件默认 8px、卡片与弹窗 10px，禁止 `rounded-[7px]`。
 

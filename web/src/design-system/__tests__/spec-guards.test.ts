@@ -740,8 +740,8 @@ describe('markdown prose ladder', () => {
 
 describe('focus indicator', () => {
   /**
-   * 规范 §1.7：**全站只有一种焦点指示器** —— 2px 环、`ring` 满色、贴着元素
-   * 边框外沿（`outline-offset: 0`）。
+   * 规范 §1.4 `stroke-focus`（Outside 1px）+ §1.7：**全站只有一种焦点指示器**
+   * —— 1px 环、`ring` 满色、贴着元素边框外沿（`outline-offset: 0`）。
    *
    * 回归背景（2026-10-28）：规范把「输入框外侧焦点环」写清之后，代码里仍有
    * 四种各自的版本 —— playground 输入舱 `ring-primary/15`（1px 半透明）、
@@ -750,46 +750,35 @@ describe('focus indicator', () => {
    * （宽度对、颜色半透明）。它们单看都「有个焦点效果」，合起来就是五种焦点
    * 语言。这条守卫把宽度、颜色、offset 三件事一起钉住。
    *
-   * 允许的两类例外：
+   * 宽度口径变更（2026-10-29）：此前是「表单控件 1px、其余 2px」两档，规范
+   * 已改为全站 1px。两档并存的代价是同一次 Tab 序列里焦点环粗细会跳（按钮
+   * 2px → 输入框 1px → 按钮 2px），而且 2px 环压在 1px 描边的卡片上会被读成
+   * 双线框。现在只有 1px 一种，2px / 3px / 4px 在任何位置都红。
+   *
+   * 允许的例外：
    * - `ring-0`：容器包裹输入框时，内层控件把环让给容器（InputGroup 体系）；
    * - `ring-destructive/*`、`ring-warning/*`：状态语义色，环跟随元素自身的
-   *   状态边框，不是另造一套焦点色。
+   *   状态边框，不是另造一套焦点色；
+   * - `aria-invalid:ring-2`：校验失败时的状态描边，不是焦点指示器（规范把
+   *   错误态与焦点态定义为两件事），宽度跟随 stroke-destructive 的 2px 强调档。
    */
   const SEMANTIC_RING_COLORS = /^focus-visible:ring-(?:destructive|warning)\//
 
-  /**
-   * 表单控件允许 1px 环的文件清单（2026-10-28 起）。
-   *
-   * 规范 2.1 给 Input / Textarea / Select 写的是「1px Brand/ring 外侧焦点环」：
-   * 这些控件本身带 1px 边框，再叠 2px 环会被看成双线框。其余场景（按钮、
-   * 卡片、输入舱、拖拽把手、原生元素兜底）仍是 2px —— 规范 spacing.md
-   * 「焦点环恒 2px」讲的是后者。
-   *
-   * 所以这里不是「放宽到 1px 也行」，而是把 1px 锁在这三个文件里：
-   * 别的组件写成 1px 依然红。
-   */
-  const ONE_PX_RING_FILES = new Set([
-    'components/ui/input.tsx',
-    'components/ui/textarea.tsx',
-    'components/ui/select.tsx',
-  ])
-
-  it('keeps the focus ring at 2px except on form controls', () => {
+  it('keeps every focus ring at 1px', () => {
     const hits: Hit[] = []
     for (const file of FILES) {
       file.lines.forEach((text, index) => {
         const match = text.match(/focus-visible:ring-(?:\[([\d.]+)px\]|(\d+))/)
         if (!match) return
         const px = Number(match[1] ?? match[2])
-        // 0 = 把环让给容器；2 = 规范值；1 = 仅限表单控件。
-        if (px === 0 || px === 2) return
-        if (px === 1 && ONE_PX_RING_FILES.has(file.rel)) return
+        // 0 = 把环让给容器；1 = 规范值。
+        if (px === 0 || px === 1) return
         hits.push({ file: file.rel, line: index + 1, text: text.trim() })
       })
     }
     expect(
       hits,
-      `规范 §1.7 / §2.1：焦点环宽度只有 2px（把环让给容器时用 ring-0）；1px 只允许出现在 Input / Textarea / Select（它们自带 1px 边框）。3px / 4px 在任何位置都会让同一屏出现两种粗细的焦点语言：\n${fmt(hits)}`
+      `规范 §1.4 / §1.7：焦点环恒 1px（把环让给容器时用 ring-0）。2px / 3px / 4px 会让同一屏出现两种粗细的焦点语言，且 2px 环压在 1px 描边上会被读成双线框：\n${fmt(hits)}`
     ).toEqual([])
   })
 
@@ -798,7 +787,7 @@ describe('focus indicator', () => {
     for (const file of FILES) {
       file.lines.forEach((text, index) => {
         // `ring-ring/50`、`ring-primary/15` 这类：宽度可能对，颜色是半透明。
-        // 它们把 `--tw-ring-color` 改成带 alpha 的值，`focus-visible:ring-2`
+        // 它们把 `--tw-ring-color` 改成带 alpha 的值，`focus-visible:ring-1`
         // 继承的就是这个颜色 —— 等于第二套焦点色。
         for (const token of text.match(/focus-visible:ring-[a-z-]+\/\d+/g) ??
           []) {
@@ -859,8 +848,8 @@ describe('focus indicator', () => {
     ).toContain('outline-offset: 0')
 
     const semantic = fileBody('design-system/tokens/semantic.css')
-    expect(semantic, '规范 §1.7：焦点环宽度 Token 唯一来源是语义层').toContain(
-      '--ds-focus-ring-width: 2px'
+    expect(semantic, '规范 §1.4 / §1.7：焦点环宽度 Token 唯一来源是语义层').toContain(
+      '--ds-focus-ring-width: 1px'
     )
   })
 
@@ -872,14 +861,15 @@ describe('focus indicator', () => {
     ]) {
       const body = fileBody(rel)
       // 规范 2.1：Input / Textarea / Select 写的是「1px Brand/ring 外侧焦点环」。
-      // 2px 会与控件自身的 1px 边框叠成双线框（2026-10-28 实测后收敛）。
+      // 2px 会与控件自身的 1px 边框叠成双线框（2026-10-28 实测后收敛），
+      // 2026-10-29 起这已是全站口径，不再只是表单控件的例外。
       expect(
         body,
-        `规范 §1.7 / §2.1：${rel} 的焦点环必须是 1px（与自身 1px 边框同宽）`
+        `规范 §1.4 / §2.1：${rel} 的焦点环必须是 1px（与自身 1px 边框同宽）`
       ).toContain('focus-visible:ring-1')
       expect(
         body,
-        `规范 §1.7 / §2.1：${rel} 的焦点环颜色必须是 ring`
+        `规范 §1.4 / §2.1：${rel} 的焦点环颜色必须是 ring`
       ).toContain('focus-visible:ring-ring')
       expect(
         body,
@@ -896,8 +886,12 @@ describe('focus indicator', () => {
     // 但宽度和颜色仍必须是全站那一套。
     expect(
       body,
-      '规范 §1.7：输入舱聚焦态必须是 2px 的 ring 满色环（曾用 ring-primary/15 的 1px 半透明环）'
+      '规范 §1.4 / §1.7：输入舱聚焦态必须是 1px 的 ring 满色环（曾用 ring-primary/15 的 1px 半透明环）'
     ).toContain('focus-within:ring-ring')
+    expect(
+      body,
+      '规范 §1.4 / §1.7：输入舱的占位环必须与聚焦环同宽（1px），否则过渡时盒子会跳'
+    ).toContain('ring-1 ring-transparent')
     expect(body, '规范 §1.7：输入舱不得再出现半透明品牌焦点环').not.toContain(
       'focus-within:ring-primary/'
     )

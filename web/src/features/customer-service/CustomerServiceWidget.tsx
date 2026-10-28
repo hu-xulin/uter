@@ -560,9 +560,9 @@ export function CustomerServiceWidget() {
                 transition: 'border-color .15s, box-shadow .15s',
               }}
               onFocus={(e) => {
-                // 焦点环按规范 §1.4：2px、走 ring Token，不用 3px 半透明手写色。
+                // 焦点环按规范 §1.4：1px（`stroke-focus` Outside 1px）、走 ring Token，不用 3px 半透明手写色。
                 e.currentTarget.style.borderColor = 'var(--ring)'
-                e.currentTarget.style.boxShadow = '0 0 0 2px var(--ring)'
+                e.currentTarget.style.boxShadow = '0 0 0 1px var(--ring)'
               }}
               onBlur={(e) => {
                 e.currentTarget.style.borderColor = 'var(--border)'

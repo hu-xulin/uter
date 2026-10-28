@@ -18,17 +18,21 @@ For commercial licensing, please contact support@uter.ai
 */
 /* ── Foundations · Accessibility ──────────────────────────────────────
  * 三条硬约束：
- *   1. 键盘焦点必须可见 —— 全站只有**一种**焦点指示器：2px 环，贴着元素
- *      边框外侧（几何与组件的 `focus-visible:ring-2` 完全一致）；
+ *   1. 键盘焦点必须可见 —— 全站只有**一种**焦点指示器：1px 环，贴着元素
+ *      边框外侧（几何与组件的 `focus-visible:ring-1` 完全一致）；
  *   2. 尊重 `prefers-reduced-motion`；
  *   3. 触控目标不小于 24×24（WCAG 2.2 AA · Target Size）。
  *
  * ⚠️ 焦点指示器的唯一来源是这里（原生元素）+ `components/ui/*` 的
- *    `focus-visible:ring-2 focus-visible:ring-ring`（组件元素）。两者必须
- *    是**同一种视觉**：`ring-2` 是 `box-shadow: 0 0 0 2px`，贴在边框外沿、
+ *    `focus-visible:ring-1 focus-visible:ring-ring`（组件元素）。两者必须
+ *    是**同一种视觉**：`ring-1` 是 `box-shadow: 0 0 0 1px`，贴在边框外沿、
  *    不带间隙，所以这里的 `outline-offset` 必须是 `0`。曾经写成 `2px`，
  *    结果键盘 Tab 在原生 `<button>`（外扩 2px）和 `Button`（贴边）之间
  *    跳变 —— 同一次 Tab 里焦点环会「跳一下」。
+ *
+ * 宽度 2026-10-29 由 2px 收窄到 1px（规范 §1.4 `stroke-focus` Outside 1px、
+ * §1.7「全站只有一种：1px 环」）。`--ds-focus-ring-width` 与组件层的
+ * `ring-1` 必须同步改，否则原生元素与组件又会跳变。
  */
 
 @layer base {

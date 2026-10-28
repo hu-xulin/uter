@@ -108,7 +108,11 @@ For commercial licensing, please contact support@uter.ai
   --ds-stroke-color-border: var(--border);
   --ds-stroke-color-input: var(--input);
   --ds-stroke-color-destructive: var(--destructive);
-  --ds-focus-ring-width: 2px;
+  /* 焦点环恒 1px（规范 §1.4 `stroke-focus` Outside 1px、§1.7 焦点指示器）。
+   * 2026-10-29 起全站统一收窄到 1px：此前是「表单控件 1px / 其余 2px」两档，
+   * 同一屏里 Tab 序列会在 1px 与 2px 之间跳，且 2px 环在 1px 描边的卡片上
+   * 会读成双线框。原生元素兜底与组件层同读这一个 Token。 */
+  --ds-focus-ring-width: 1px;
   --ds-focus-ring-color: var(--ring);
 
   /* ── 语义图标（规范 §2.2 Icons，2026-10-28 13:24 版）──────────────────

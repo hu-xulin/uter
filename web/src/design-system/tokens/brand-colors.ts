@@ -86,6 +86,31 @@ export const PAYMENT_BRAND_COLORS: Record<string, string> = {
   waffo_pancake: '#F97316',
 }
 
+/**
+ * 第三方登录（OAuth）渠道品牌色。
+ *
+ * 用途：登录 / 注册页的「继续使用 X」按钮 **hover 时的底色**。
+ * 按钮默认是描边态（图标与文字跟随正文色），悬停时换成渠道自己的品牌色、
+ * 图标与文字转白 —— 这样一排并列的渠道按钮能立刻被认出是「哪一家的登录」，
+ * 而不是一排看起来一模一样的灰框。
+ *
+ * key 与 `oauth-providers.tsx` 里 `providerButtons[].key` 的取值一一对应。
+ * 取值均为各渠道官方品牌规范里的主色，不是从截图里吸的。
+ */
+export const OAUTH_BRAND_COLORS: Record<string, string> = {
+  // 微信绿（与 PAYMENT_BRAND_COLORS.wxpay 同源：同一个品牌不能两个绿）
+  wechat: '#07C160',
+  // GitHub Primer 的深色底（官方 logo 的 #181717 在深色模式下与页面底几乎同色，
+  // 故按钮底取 Primer 的 canvas-inverse，白字对比度 14:1 以上）
+  github: '#24292F',
+  // Discord Blurple
+  discord: '#5865F2',
+  // Telegram 官方品牌蓝
+  telegram: '#229ED9',
+  // LinuxDO：取自其标志里的深色主体 #1d1d1f（黄 #feb005 作底会让白字只有 1.6:1）
+  linuxdo: '#1d1d1f',
+}
+
 // ---------------------------------------------------------------------------
 // 多序列分类调色板
 // ---------------------------------------------------------------------------

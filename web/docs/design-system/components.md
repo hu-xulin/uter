@@ -119,7 +119,7 @@ AI 对话气泡）。判据见 `typography.md`「body 与 body-long」。
 | Alert 内边距       | 16px                          | `Alert` 的 `p-4`，图标与文字间距 `gap-x-3`（12px）                              |
 | Sidebar 宽         | 240–280px                     | `SIDEBAR_WIDTH` = 15rem（240px，区间下限）                                      |
 | Toast 宽           | ≈356px                        | `sonner` 的默认宽度                                                             |
-| 焦点环             | 默认 2px 品牌色；表单控件 1px | `--ds-focus-ring-width` 2px + `--ring`（Input / Textarea / Select 用 `ring-1`） |
+| 焦点环             | 1px 品牌色                    | `--ds-focus-ring-width` 1px + `--ring`（组件层一律 `focus-visible:ring-1`）     |
 | 圆角               | 控件 8px / 卡片弹窗 10px      | `--radius-md` / `--radius-lg`                                                   |
 
 > 2026-10-27 调整记录：Table 行高 60px → 48px；单元格 `p-2` → `px-3 py-2`；
@@ -245,7 +245,7 @@ AI 对话气泡）。判据见 `typography.md`「body 与 body-long」。
 所有交互组件必须覆盖：
 
 - `default` / `hover` / `focus-visible` / `active` / `disabled` / `loading`
-- 键盘可聚焦，焦点环 2px（`--ds-focus-ring-*`），不允许 `outline: none` 抹掉
+- 键盘可聚焦，焦点环 1px（`--ds-focus-ring-*`），不允许 `outline: none` 抹掉
 - 加载态不能改变按钮尺寸（用 `loading` 属性，不要替换成 spinner 后丢掉文字宽度）
 - 图标按钮必须提供 `aria-label`
 
@@ -517,9 +517,9 @@ VChart 把文字画在 `<canvas>` 上，`fontSize` 必须是**数字**，既写�
    视觉与布局都不变。给 `min-width` 会撑起行高、顶开徽标，不要这么做。
 3. **键盘焦点由基座兜底，不需要每处手写**。`foundations/accessibility.css`
    对 `:where(a, button, [role='button'], [tabindex]):focus-visible` 画
-   2px 环；组件层写的是 `focus-visible:ring-2 focus-visible:ring-ring`，
+   1px 环；组件层写的是 `focus-visible:ring-1 focus-visible:ring-ring`，
    两者几何必须一致（都是**贴边**，`outline-offset: 0`）。**只有一种焦点
-   指示器**，不要引入非 0 的 `outline-offset` 或第二套颜色。
+   指示器**，不要引入非 0 的 `outline-offset`、第二套颜色或第二档宽度。
 4. 隐藏型（`hidden` / `sr-only` / `opacity-0` 覆盖层）不参与统计，也不受
    样式约束。
 
