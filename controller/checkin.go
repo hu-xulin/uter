@@ -11,6 +11,23 @@ import (
 	"github.com/uter-ai/uter/setting/operation_setting"
 )
 
+// isValidCheckinMonth 判断是否为合法的 YYYY-MM。
+func isValidCheckinMonth(month string) bool {
+	if len(month) != 7 || month[4] != '-' {
+		return false
+	}
+	for i, r := range month {
+		if i == 4 {
+			continue
+		}
+		if r < '0' || r > '9' {
+			return false
+		}
+	}
+	_, err := time.Parse("2006-01", month)
+	return err == nil
+}
+
 // GetCheckinStatus 获取用户签到状态和历史记录
 func GetCheckinStatus(c *gin.Context) {
 	setting := operation_setting.GetCheckinSetting()
@@ -19,8 +36,15 @@ func GetCheckinStatus(c *gin.Context) {
 		return
 	}
 	userId := c.GetInt("id")
-	// 获取月份参数，默认为当前月份
+	// 获取月份参数，默认为当前月份。
+	// 只接受 YYYY-MM：这个值会拼进 SQL 的日期边界，放任任意字符串会让
+	// 边界变成 "abc-01" 这类无意义比较（不会注入，但会静默返回空结果，
+	// 前端看到的就是「本月 0 次签到」）。
 	month := c.DefaultQuery("month", time.Now().Format("2006-01"))
+	if !isValidCheckinMonth(month) {
+		common.ApiErrorT(c, "Invalid month format, expected YYYY-MM")
+		return
+	}
 
 	stats, err := model.GetUserCheckinStats(userId, month)
 	if err != nil {

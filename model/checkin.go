@@ -1,6 +1,7 @@
 package model
 
 import (
+	"fmt"
 	"math/rand"
 	"time"
 
@@ -8,6 +9,9 @@ import (
 	"github.com/uter-ai/uter/setting/operation_setting"
 	"gorm.io/gorm"
 )
+
+// CheckinDateLayout 签到日期在数据库里的存储格式（varchar(10)）。
+const CheckinDateLayout = "2006-01-02"
 
 // Checkin 签到记录
 type Checkin struct {
@@ -28,6 +32,28 @@ func (Checkin) TableName() string {
 	return "checkins"
 }
 
+// checkinToday 返回「签到日」。
+//
+// 签到日的判定必须只有一处来源：后端写入 checkin_date、判断「今天是否已签到」、
+// 前端在日历上点亮格子，三处若各自取本地时间，跨时区部署（容器 TZ=UTC、用户
+// 在 UTC+8）时会出现「已签到但今天的格子是空的」。因此后端把 today 一并下发，
+// 前端不再用浏览器本地日期推算。
+func checkinToday() string {
+	return time.Now().Format(CheckinDateLayout)
+}
+
+// checkinQuotaAward 在 [min, max] 闭区间内取随机额度。
+//
+// 单独抽出来是为了能被直接测到边界：旧实现内联在 UserCheckin 里，
+// 只能靠「签到一次看结果」验证，区间端点永远测不到。
+func checkinQuotaAward(minQuota, maxQuota int) int {
+	if maxQuota <= minQuota {
+		return minQuota
+	}
+	// maxQuota > minQuota 已保证 span >= 2，rand.Intn 不会收到非正数。
+	return minQuota + rand.Intn(maxQuota-minQuota+1)
+}
+
 // GetUserCheckinRecords 获取用户在指定日期范围内的签到记录
 func GetUserCheckinRecords(userId int, startDate, endDate string) ([]Checkin, error) {
 	var records []Checkin
@@ -40,10 +66,9 @@ func GetUserCheckinRecords(userId int, startDate, endDate string) ([]Checkin, er
 
 // HasCheckedInToday 检查用户今天是否已签到
 func HasCheckedInToday(userId int) (bool, error) {
-	today := time.Now().Format("2006-01-02")
 	var count int64
 	err := DB.Model(&Checkin{}).
-		Where("user_id = ? AND checkin_date = ?", userId, today).
+		Where("user_id = ? AND checkin_date = ?", userId, checkinToday()).
 		Count(&count).Error
 	return count > 0, err
 }
@@ -57,6 +82,12 @@ func UserCheckin(userId int) (*Checkin, error) {
 		return nil, common.NewMessage("Check-in feature is not enabled")
 	}
 
+	// 奖励区间非法时直接拒绝，而不是「按 min 发放」把配置错误变成资损。
+	minQuota, maxQuota, err := operation_setting.CurrentCheckinQuotaRange()
+	if err != nil {
+		return nil, common.NewMessage("Check-in reward range is misconfigured: {{reason}}", map[string]any{"reason": err.Error()})
+	}
+
 	// 检查今天是否已签到
 	hasChecked, err := HasCheckedInToday(userId)
 	if err != nil {
@@ -66,16 +97,11 @@ func UserCheckin(userId int) (*Checkin, error) {
 		return nil, common.NewMessage("Already checked in today")
 	}
 
-	// 计算随机额度奖励
-	quotaAwarded := setting.MinQuota
-	if setting.MaxQuota > setting.MinQuota {
-		quotaAwarded = setting.MinQuota + rand.Intn(setting.MaxQuota-setting.MinQuota+1)
-	}
+	quotaAwarded := checkinQuotaAward(minQuota, maxQuota)
 
-	today := time.Now().Format("2006-01-02")
 	checkin := &Checkin{
 		UserId:       userId,
-		CheckinDate:  today,
+		CheckinDate:  checkinToday(),
 		QuotaAwarded: quotaAwarded,
 		CreatedAt:    time.Now().Unix(),
 	}
@@ -99,10 +125,19 @@ func userCheckinWithTransaction(checkin *Checkin, userId int, quotaAwarded int) 
 			return common.NewMessage("Check-in failed, please try again later")
 		}
 
-		// 步骤2: 在事务中增加用户额度
-		if err := tx.Model(&User{}).Where("id = ?", userId).
-			Update("quota", gorm.Expr("quota + ?", quotaAwarded)).Error; err != nil {
+		// 步骤2: 在事务中增加用户额度。
+		// 条件里带上钱包上限，与 IncreaseUserQuota 的口径一致：直接写
+		// `quota = quota + ?` 会让余额越过 MaxWalletQuota，之后所有依赖
+		// 该上限的换算都会饱和/报错，余额反而不可用。
+		result := tx.Model(&User{}).
+			Where("id = ? AND quota <= ?", userId, common.MaxWalletQuota-quotaAwarded).
+			Update("quota", gorm.Expr("quota + ?", quotaAwarded))
+		if result.Error != nil {
 			return common.NewMessage("Check-in failed: quota update error")
+		}
+		if result.RowsAffected != 1 {
+			// 用户不存在或余额触顶：整笔签到回滚，记录不会留在库里。
+			return common.NewMessage("Check-in failed: wallet quota limit exceeded")
 		}
 
 		return nil
@@ -131,19 +166,36 @@ func userCheckinWithoutTransaction(checkin *Checkin, userId int, quotaAwarded in
 	// 步骤2: 增加用户额度
 	// 使用 db=true 强制直接写入数据库，不使用批量更新
 	if err := IncreaseUserQuota(userId, quotaAwarded, true); err != nil {
-		// 如果增加额度失败，需要回滚签到记录
-		DB.Delete(checkin)
+		// 如果增加额度失败，需要回滚签到记录。
+		// 回滚失败必须报出来：留着记录等于「今天已签到但没拿到额度」，
+		// 静默吞掉会让用户彻底失去当天的奖励且无人可查。
+		if delErr := DB.Delete(checkin).Error; delErr != nil {
+			return nil, common.NewMessage("Check-in failed: quota update error, rollback also failed ({{rollback}})", map[string]any{"rollback": delErr.Error()})
+		}
 		return nil, common.NewMessage("Check-in failed: quota update error")
 	}
 
 	return checkin, nil
 }
 
+// checkinMonthRange 把 "YYYY-MM" 换成该月的首末日期（闭区间）。
+//
+// 旧实现用 `month + "-31"` 当上界：靠字符串字典序比较虽然也能覆盖 2 月，
+// 但一旦改成日期类型或换库就会漏掉月末，而且和「本月最后一天」不是同一件事。
+func checkinMonthRange(month string) (startDate, endDate string, err error) {
+	first, err := time.Parse("2006-01", month)
+	if err != nil {
+		return "", "", fmt.Errorf("invalid month %q, expected YYYY-MM", month)
+	}
+	return first.Format(CheckinDateLayout), first.AddDate(0, 1, -1).Format(CheckinDateLayout), nil
+}
+
 // GetUserCheckinStats 获取用户签到统计信息
 func GetUserCheckinStats(userId int, month string) (map[string]any, error) {
-	// 获取指定月份的所有签到记录
-	startDate := month + "-01"
-	endDate := month + "-31"
+	startDate, endDate, err := checkinMonthRange(month)
+	if err != nil {
+		return nil, err
+	}
 
 	records, err := GetUserCheckinRecords(userId, startDate, endDate)
 	if err != nil {
@@ -173,6 +225,7 @@ func GetUserCheckinStats(userId int, month string) (map[string]any, error) {
 		"total_checkins":   totalCheckins,   // 所有时间累计签到次数
 		"checkin_count":    len(records),    // 本月签到次数
 		"checked_in_today": hasCheckedToday, // 今天是否已签到
+		"today":            checkinToday(),  // 服务端认定的「今天」，前端日历以此为准
 		"records":          checkinRecords,  // 本月签到记录详情（不含id和user_id）
 	}, nil
 }
