@@ -20,7 +20,7 @@ import { createFileRoute, useNavigate, useSearch } from '@tanstack/react-router'
 import i18next from 'i18next'
 import { useEffect, useRef } from 'react'
 
-import { wechatLoginByCode } from '@/features/auth/api'
+import { wechatLoginByCode, wechatWebLoginByCode } from '@/features/auth/api'
 import { sanitizeAuthRedirect } from '@/features/auth/lib/auth-redirect'
 import { applyAuthBundle, isAuthBundle } from '@/lib/api'
 import { handleServerError } from '@/lib/handle-server-error'
@@ -31,7 +31,14 @@ function OAuthComponent() {
   const navigate = useNavigate()
   const search = useSearch({ from: '/(auth)/oauth' }) as {
     redirect?: string
-    provider?: 'github' | 'discord' | 'oidc' | 'linuxdo' | 'telegram' | 'wechat'
+    provider?:
+      | 'github'
+      | 'discord'
+      | 'oidc'
+      | 'linuxdo'
+      | 'telegram'
+      | 'wechat'
+      | 'wechat_web'
     code?: string
     state?: string
   }
@@ -49,6 +56,18 @@ function OAuthComponent() {
       try {
         if (search?.provider === 'wechat' && search.code) {
           const res = await wechatLoginByCode(search.code, search.state)
+          if (res?.success && isAuthBundle(res.data)) {
+            applyAuthBundle(res.data)
+            const target =
+              sanitizeAuthRedirect(search?.redirect, window.location.origin) ??
+              '/dashboard'
+            navigate({ href: target, replace: true })
+            return
+          }
+          throw createServerError(res, i18next.t('OAuth failed'))
+        }
+        if (search?.provider === 'wechat_web' && search.code) {
+          const res = await wechatWebLoginByCode(search.code, search.state)
           if (res?.success && isAuthBundle(res.data)) {
             applyAuthBundle(res.data)
             const target =

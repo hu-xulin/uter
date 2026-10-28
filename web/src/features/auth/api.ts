@@ -251,6 +251,35 @@ export async function startWeChatFlow(
   )
 }
 
+// WeChat website-app (开放平台网站应用) login by authorization code. `state` is
+// the CSRF-bound flow token issued by startWeChatWebFlow and must be paired with
+// the oauth_login_nonce cookie.
+export async function wechatWebLoginByCode(
+  code: string,
+  state?: string
+): Promise<ApiResponse> {
+  const res = await api.get('/api/oauth/wechat-web', {
+    params: state ? { code, state } : { code },
+  })
+  return res.data
+}
+
+// Start a CSRF-bound WeChat website-app login flow and return its state token.
+export async function startWeChatWebFlow(): Promise<string> {
+  const res = await api.post('/api/oauth/wechat-web/state', {
+    intent: 'login',
+  })
+  if (res.data?.success && typeof res.data.data?.flow_token === 'string') {
+    return res.data.data.flow_token
+  }
+  throw new AuthOperationError(
+    getServerErrorMessageKey(res.data) ||
+      getServerMessage(res.data) ||
+      'Failed to start WeChat website-app login',
+    res.data?.code
+  )
+}
+
 export async function telegramLogin(
   authorization: TelegramAuthorization
 ): Promise<ApiResponse> {
