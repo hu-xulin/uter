@@ -109,7 +109,11 @@ export interface SystemStatus {
     telegram_bot_name?: string
     passkey_login?: boolean
     wechat_login?: boolean
+    wechat_web_login?: boolean
+    wechat_web_app_id?: string
+    wechat_web_callback_domain?: string
     wechat_qrcode?: string
+    wechat_qrcode_path?: string
     wechat_qr_code?: string
     wechat_qrcode_image_url?: string
     wechat_qr_code_image_url?: string
@@ -157,7 +161,11 @@ export interface SystemStatus {
   telegram_bot_name?: string
   passkey_login?: boolean
   wechat_login?: boolean
+  wechat_web_login?: boolean
+  wechat_web_app_id?: string
+  wechat_web_callback_domain?: string
   wechat_qrcode?: string
+  wechat_qrcode_path?: string
   wechat_qr_code?: string
   wechat_qrcode_image_url?: string
   wechat_qr_code_image_url?: string
@@ -198,7 +206,7 @@ export interface SystemStatus {
 
 export interface OAuthProvider {
   name: string
-  type: 'github' | 'discord' | 'oidc' | 'linuxdo' | 'telegram' | 'wechat'
+  type: 'github' | 'discord' | 'oidc' | 'linuxdo' | 'telegram' | 'wechat' | 'wechat_web'
   enabled: boolean
   clientId?: string
   authEndpoint?: string

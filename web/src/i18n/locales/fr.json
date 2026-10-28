@@ -7205,6 +7205,8 @@
     "Payment successful": "Paiement réussi",
     "Customer Service": "Service client",
     "Pages where the entry appears": "Pages où l'entrée apparaît",
+    "QR Code Relative Path": "Chemin relatif du code QR",
+    "Relative path served by this site (e.g. /wechat-qr.png). Takes precedence over the image URL when set.": "Chemin relatif servi par ce site (ex. /wechat-qr.png). Prioritaire sur l'URL de l'image lorsqu'il est défini.",
     "Payment is being confirmed": "Paiement en cours de confirmation",
     "This order was not paid. If you still need to top up, please place a new order.": "Cette commande n'a pas été payée. Si vous souhaitez toujours recharger, veuillez passer une nouvelle commande.",
     "Customer Service Admin Token": "Jeton d'administrateur du service client",

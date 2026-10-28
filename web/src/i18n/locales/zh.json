@@ -7206,6 +7206,8 @@
     "Payment successful": "支付成功",
     "Customer Service": "智能客服",
     "Pages where the entry appears": "入口显示的页面",
+    "QR Code Relative Path": "二维码相对路径",
+    "Relative path served by this site (e.g. /wechat-qr.png). Takes precedence over the image URL when set.": "本站可访问的相对路径（如 /wechat-qr.png），填写后优先于图片 URL。",
     "Payment is being confirmed": "支付确认中，请稍候",
     "This order was not paid. If you still need to top up, please place a new order.": "该订单未完成付款。如需充值，请重新下单。",
     "Customer Service Admin Token": "智能客服管理员令牌",

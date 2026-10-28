@@ -29,6 +29,11 @@ import { cn } from '@/lib/utils'
  *
  * 图形取自 Remix Icon `Logos/wechat-pay-fill`（Apache-2.0），与其它品牌标一样
  * 用 `fill-current`，颜色由调用方按 `PAYMENT_ICON_COLORS` 注入。
+ *
+ * viewBox 收紧到图形实际边界（x 2–22.1 / y 3.4–21.2）：该图形在标准 24×24
+ * 画布里只占宽约 83%、高约 74%，与满版方形的支付宝标放进同样尺寸的容器时，
+ * 视觉上会明显小一圈。收紧后内容按比例填满容器（宽度撑满、高度约 14/16），
+ * 视觉重量与支付宝对齐，且不溢出容器、不影响布局。
  */
 export function IconWeChatPay({
   className,
@@ -41,7 +46,7 @@ export function IconWeChatPay({
   return (
     <svg
       role='img'
-      viewBox='0 0 24 24'
+      viewBox='2 3.4 20.1 17.8'
       xmlns='http://www.w3.org/2000/svg'
       width='24'
       height='24'

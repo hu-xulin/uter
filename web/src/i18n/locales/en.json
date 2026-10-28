@@ -7205,6 +7205,8 @@
     "Payment successful": "Payment successful",
     "Customer Service": "Customer Service",
     "Pages where the entry appears": "Pages where the entry appears",
+    "QR Code Relative Path": "QR Code Relative Path",
+    "Relative path served by this site (e.g. /wechat-qr.png). Takes precedence over the image URL when set.": "Relative path served by this site (e.g. /wechat-qr.png). Takes precedence over the image URL when set.",
     "Payment is being confirmed": "Payment is being confirmed",
     "This order was not paid. If you still need to top up, please place a new order.": "This order was not paid. If you still need to top up, please place a new order.",
     "Customer Service Admin Token": "Customer Service Admin Token",

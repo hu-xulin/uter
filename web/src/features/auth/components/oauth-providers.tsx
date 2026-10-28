@@ -16,7 +16,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
-import type { ReactNode } from 'react'
+import type { CSSProperties, ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import {
@@ -27,6 +27,7 @@ import {
   IconWeChat,
 } from '@/assets/brand-icons'
 import { Button } from '@/components/ui/button'
+import { OAUTH_BRAND_COLORS } from '@/design-system/tokens/brand-colors'
 import { cn } from '@/lib/utils'
 
 import { useOAuthLogin } from '../hooks/use-oauth-login'
@@ -47,7 +48,16 @@ type ProviderButton = {
   onClick: () => void
   icon?: ReactNode
   disabled?: boolean
-  hoverClassName?: string
+  /**
+   * hover 底色。有官方品牌色的渠道取 `OAUTH_BRAND_COLORS`；
+   * 没有已知品牌色的（OIDC / 自定义 OAuth）留空，回退站点主色。
+   */
+  brandColor?: string
+  /**
+   * 少数品牌图标把颜色写死在 path 的 fill 上（LinuxDO 是白/黄/黑三色块），
+   * `text-*` 改不动它，需要额外把 path 填白，否则 hover 后图标还是花的。
+   */
+  forceWhiteIcon?: boolean
 }
 
 export function OAuthProviders({
@@ -68,6 +78,7 @@ export function OAuthProviders({
     handleOIDCLogin,
     handleLinuxDOLogin,
     handleTelegramLogin,
+    handleWeChatWebLogin,
     handleCustomOAuthLogin,
   } = useOAuthLogin(status, redirectTo)
 
@@ -80,6 +91,17 @@ export function OAuthProviders({
       onClick: onWeChatLogin,
       icon: <IconWeChat className='h-4 w-4' />,
       disabled: isWeChatLoading,
+      brandColor: OAUTH_BRAND_COLORS.wechat,
+    })
+  }
+
+  if (status?.wechat_web_login) {
+    providerButtons.push({
+      key: 'wechat_web',
+      label: t('Continue with WeChat'),
+      onClick: handleWeChatWebLogin,
+      icon: <IconWeChat className='h-4 w-4' />,
+      brandColor: OAUTH_BRAND_COLORS.wechat,
     })
   }
 
@@ -90,8 +112,7 @@ export function OAuthProviders({
       onClick: handleGitHubLogin,
       icon: <IconGithub className='h-4 w-4' />,
       disabled: githubButtonDisabled,
-      hoverClassName:
-        'hover:bg-primary hover:text-primary-foreground hover:border-transparent dark:hover:bg-primary dark:hover:text-primary-foreground dark:hover:border-transparent hover:[&_svg]:text-primary-foreground dark:hover:[&_svg]:text-primary-foreground',
+      brandColor: OAUTH_BRAND_COLORS.github,
     })
   }
 
@@ -101,6 +122,7 @@ export function OAuthProviders({
       label: t('Continue with Discord'),
       onClick: handleDiscordLogin,
       icon: <IconDiscord className='h-4 w-4' />,
+      brandColor: OAUTH_BRAND_COLORS.discord,
     })
   }
 
@@ -121,6 +143,8 @@ export function OAuthProviders({
       label: t('Continue with LinuxDO'),
       onClick: handleLinuxDOLogin,
       icon: <IconLinuxDo className='h-4 w-4' />,
+      brandColor: OAUTH_BRAND_COLORS.linuxdo,
+      forceWhiteIcon: true,
     })
   }
 
@@ -130,6 +154,7 @@ export function OAuthProviders({
       label: t('Continue with Telegram'),
       onClick: handleTelegramLogin,
       icon: <IconTelegram data-icon='inline-start' />,
+      brandColor: OAUTH_BRAND_COLORS.telegram,
     })
   }
 
@@ -162,7 +187,12 @@ export function OAuthProviders({
 
       {/* 高度跟随输入框（同一 `--ds-control-height-md` token）：此前用 Button
           默认档（--ds-button-height-md），比登录/注册表单里的输入框（含 1px
-          边线）矮 4px，与「登录 / 创建账户」按钮堆叠时整列控件高度不一。 */}
+          边线）矮 4px，与「登录 / 创建账户」按钮堆叠时整列控件高度不一。
+
+          悬停统一走「品牌色底 + 白色图标与文字」：默认是描边态，一排渠道按钮
+          彼此难以区分；换成各自的品牌色后能一眼认出是哪一家。
+          底色是运行时才知道的 hex，只能用 CSS 变量传给 Tailwind（`bg-(--…)`），
+          裸 hex 不允许出现在业务代码里（design-tokens T8）。 */}
       <div className='flex flex-col gap-2'>
         {providerButtons.map(
           ({
@@ -171,7 +201,8 @@ export function OAuthProviders({
             onClick,
             icon,
             disabled: extraDisabled,
-            hoverClassName,
+            brandColor,
+            forceWhiteIcon,
           }) => (
             <Button
               key={key}
@@ -179,9 +210,28 @@ export function OAuthProviders({
               type='button'
               disabled={disabled || isLoading || extraDisabled}
               onClick={onClick}
+              style={
+                {
+                  '--oauth-hover-bg': brandColor ?? 'var(--primary)',
+                } as CSSProperties
+              }
               className={cn(
                 'h-(--ds-control-height-md) w-full justify-center gap-2',
-                hoverClassName
+                'hover:border-transparent hover:bg-(--oauth-hover-bg)',
+                'dark:hover:border-transparent dark:hover:bg-(--oauth-hover-bg)',
+                // 没有品牌色的渠道（OIDC / 自定义 OAuth）回退站点主色，
+                // 前景用 primary-foreground 而不是白色 —— 主色可能是浅色。
+                brandColor
+                  ? [
+                      'hover:text-white dark:hover:text-white',
+                      'hover:[&_svg]:text-white dark:hover:[&_svg]:text-white',
+                      forceWhiteIcon &&
+                        'hover:[&_svg_path]:fill-white dark:hover:[&_svg_path]:fill-white',
+                    ]
+                  : [
+                      'hover:text-primary-foreground dark:hover:text-primary-foreground',
+                      'hover:[&_svg]:text-primary-foreground dark:hover:[&_svg]:text-primary-foreground',
+                    ]
               )}
             >
               {icon}
