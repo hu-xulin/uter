@@ -53,7 +53,7 @@ func GetTopUpInfo(c *gin.Context) {
 				"name":      "Stripe",
 				"type":      "stripe",
 				"color":     "#635BFF",
-				"min_topup": strconv.Itoa(setting.StripeMinTopUp),
+				"min_topup": formatTopUpAmount(setting.StripeMinTopUp),
 			}
 			payMethods = append(payMethods, stripeMethod)
 		}
@@ -75,7 +75,7 @@ func GetTopUpInfo(c *gin.Context) {
 				"name":      "Waffo Pancake",
 				"type":      model.PaymentMethodWaffoPancake,
 				"color":     "#F97316",
-				"min_topup": strconv.Itoa(setting.WaffoPancakeMinTopUp),
+				"min_topup": formatTopUpAmount(setting.WaffoPancakeMinTopUp),
 			})
 		}
 	}
@@ -96,7 +96,7 @@ func GetTopUpInfo(c *gin.Context) {
 				"name":      "Waffo (Global Payment)",
 				"type":      model.PaymentMethodWaffo,
 				"color":     "#3B82F6",
-				"min_topup": strconv.Itoa(setting.WaffoMinTopUp),
+				"min_topup": formatTopUpAmount(setting.WaffoMinTopUp),
 			}
 			payMethods = append(payMethods, waffoMethod)
 		}
@@ -118,7 +118,7 @@ func GetTopUpInfo(c *gin.Context) {
 				"type":      model.PaymentMethodAlipay,
 				"icon":      "SiAlipay",
 				"color":     "#1677FF",
-				"min_topup": strconv.Itoa(operation_setting.MinTopUp),
+				"min_topup": formatTopUpAmount(operation_setting.MinTopUp),
 			})
 		}
 	}
@@ -139,7 +139,7 @@ func GetTopUpInfo(c *gin.Context) {
 				"type":      model.PaymentMethodWechatPay,
 				"icon":      "SiWechat",
 				"color":     "#07C160",
-				"min_topup": strconv.Itoa(operation_setting.MinTopUp),
+				"min_topup": formatTopUpAmount(operation_setting.MinTopUp),
 			})
 		}
 	}
@@ -175,12 +175,12 @@ func GetTopUpInfo(c *gin.Context) {
 }
 
 type EpayRequest struct {
-	Amount        int64  `json:"amount"`
-	PaymentMethod string `json:"payment_method"`
+	Amount        float64 `json:"amount"`
+	PaymentMethod string  `json:"payment_method"`
 }
 
 type AmountRequest struct {
-	Amount int64 `json:"amount"`
+	Amount float64 `json:"amount"`
 }
 
 func GetEpayClient() *epay.Client {
@@ -197,13 +197,30 @@ func GetEpayClient() *epay.Client {
 	return withUrl
 }
 
-func getPayMoney(amount int64, group string) float64 {
-	dAmount := decimal.NewFromInt(amount)
+// presetDiscountFor 返回按充值金额命中的预设折扣。
+//
+// AmountDiscount 以整数金额为键（后台「金额档位折扣」），因此非整数金额不参与
+// 预设折扣——否则 10.5 会错命中 10 这一档，按 $10 的折扣给 $10.50 的订单打折。
+func presetDiscountFor(amount float64) float64 {
+	if amount != math.Trunc(amount) {
+		return 1.0
+	}
+	if discount, ok := operation_setting.GetPaymentSetting().AmountDiscount[int(amount)]; ok && discount > 0 {
+		return discount
+	}
+	return 1.0
+}
+
+func getPayMoney(amount float64, group string) float64 {
+	dAmount := decimal.NewFromFloat(amount)
 	// 充值金额以“展示类型”为准：
 	// - USD/CNY: 前端传 amount 为金额单位；TOKENS: 前端传 tokens，需要换成 USD 金额
 	if operation_setting.GetQuotaDisplayType() == operation_setting.QuotaDisplayTypeTokens {
 		dQuotaPerUnit := decimal.NewFromFloat(common.QuotaPerUnit)
-		dAmount = dAmount.Div(dQuotaPerUnit)
+		// 与入账口径对齐：入账按 IntPart(amount/quotaPerUnit) 取整（见 getTopUpQuota
+		// 与 alipayAmountForStorage）。计价若用精确商，用户会为「根本没到账的零头」
+		// 付钱——例如 600000 tokens 按 1.2 美元收款、只入账 500000（1.0 美元）。
+		dAmount = decimal.NewFromInt(dAmount.Div(dQuotaPerUnit).IntPart())
 	}
 
 	topupGroupRatio := common.GetTopupGroupRatio(group)
@@ -216,35 +233,64 @@ func getPayMoney(amount int64, group string) float64 {
 	// 避免管理员只改「汇率」时出现展示与实扣错位（详见 operation_setting.EffectivePayPrice）。
 	dPrice := decimal.NewFromFloat(operation_setting.EffectivePayPrice())
 	// apply optional preset discount by the original request amount (if configured), default 1.0
-	discount := 1.0
-	if ds, ok := operation_setting.GetPaymentSetting().AmountDiscount[int(amount)]; ok {
-		if ds > 0 {
-			discount = ds
-		}
-	}
-	dDiscount := decimal.NewFromFloat(discount)
+	dDiscount := decimal.NewFromFloat(presetDiscountFor(amount))
 
 	payMoney := dAmount.Mul(dPrice).Mul(dTopupGroupRatio).Mul(dDiscount)
 
-	return payMoney.InexactFloat64()
+	// 统一收敛到「分」，且只在这里收敛一次。
+	//
+	// 金额在下游有三个消费者，它们对「恰好半分」的取整规则并不一致：
+	//   - 网关请求体：strconv.FormatFloat(v,'f',2,64) —— 四舍六入五取偶
+	//   - 订单标题：paymentOrderTitle 用 decimal.Round(2) —— 四舍五入
+	//   - 回调比对：paidAmountMatchesOrder 用 decimal.Round(2) —— 四舍五入
+	// 于是 6.885 会被请求成 6.88、却按 6.89 比对：网关按 6.88 扣款，
+	// 本地判定「金额不匹配」，回调永远失败——用户付了钱却拿不到额度。
+	// 在这里收敛之后，三个消费者拿到的是同一个两位小数值，不再有分歧空间。
+	return roundPayMoneyToCent(payMoney.InexactFloat64())
 }
 
-func getMinTopup() int64 {
+// roundPayMoneyToCent 把应付金额收敛到分（四舍五入）。
+func roundPayMoneyToCent(payMoney float64) float64 {
+	return decimal.NewFromFloat(payMoney).Round(2).InexactFloat64()
+}
+
+// paymentOrderTitle 生成境内网关（支付宝 subject / 微信支付 description）的订单标题。
+//
+// 标题 =「<运营配置的前缀> 充值 <人民币实付金额> 元」：
+//   - 金额必须与实扣一致。站内的额度单位（美元 / tokens）只用于站内展示，一旦写进
+//     标题，用户在收银台会看到「充值 10」而实际扣款 ¥68.80，看起来像金额没换算。
+//   - 前缀由运营在「支付设置」里配置（PaymentOrderTitlePrefix），留空回退品牌名。
+//
+// 总长度受微信 127 字符限制，前缀上限由 ValidatePaymentOrderTitlePrefix 把关。
+func paymentOrderTitle(payMoney float64) string {
+	amount := decimal.NewFromFloat(payMoney).Round(2).StringFixed(2)
+	return fmt.Sprintf("%s 充值 %s 元", operation_setting.PaymentOrderTitlePrefix(), amount)
+}
+
+// formatTopUpAmount 把金额配置渲染成前端可直接 Number() 的字符串。
+// 必须用 FormatFloat 而不是 Itoa：最低充值允许两位小数（如 0.01）。
+func formatTopUpAmount(amount float64) string {
+	return strconv.FormatFloat(amount, 'f', -1, 64)
+}
+
+// getMinTopup 返回最低充值金额，单位与请求里的 amount 一致：
+// USD/CNY 展示类型下是金额，TOKENS 展示类型下是 token 数。
+func getMinTopup() float64 {
 	minTopup := operation_setting.MinTopUp
 	if operation_setting.GetQuotaDisplayType() == operation_setting.QuotaDisplayTypeTokens {
-		dMinTopup := decimal.NewFromInt(int64(minTopup))
+		dMinTopup := decimal.NewFromFloat(minTopup)
 		dQuotaPerUnit := decimal.NewFromFloat(common.QuotaPerUnit)
 		quota, err := common.WalletQuotaFromDecimalStrict(dMinTopup.Mul(dQuotaPerUnit))
 		if err != nil {
-			return common.MaxWalletQuota
+			return float64(common.MaxWalletQuota)
 		}
-		minTopup = quota
+		minTopup = float64(quota)
 	}
-	return int64(minTopup)
+	return minTopup
 }
 
-func getTopUpQuota(amount int64) (int, error) {
-	quota := decimal.NewFromInt(amount)
+func getTopUpQuota(amount float64) (int, error) {
+	quota := decimal.NewFromFloat(amount)
 	if operation_setting.GetQuotaDisplayType() == operation_setting.QuotaDisplayTypeTokens {
 		quotaPerUnit := decimal.NewFromFloat(common.QuotaPerUnit)
 		quota = decimal.NewFromInt(quota.Div(quotaPerUnit).IntPart()).Mul(quotaPerUnit)
@@ -254,7 +300,7 @@ func getTopUpQuota(amount int64) (int, error) {
 	return common.WalletQuotaFromDecimalStrict(quota)
 }
 
-func getMaxTopUpAmount() int64 {
+func getMaxTopUpAmount() float64 {
 	if common.QuotaPerUnit <= 0 {
 		return 0
 	}
@@ -267,9 +313,9 @@ func getMaxTopUpAmount() int64 {
 			Mul(quotaPerUnit).
 			Ceil().
 			Sub(decimal.NewFromInt(1)).
-			IntPart()
+			InexactFloat64()
 	}
-	return maxStoredAmount.IntPart()
+	return maxStoredAmount.InexactFloat64()
 }
 
 func validateCreditedQuota(quota decimal.Decimal) (int, error) {
@@ -283,14 +329,17 @@ func validateCreditedQuota(quota decimal.Decimal) (int, error) {
 	return value, nil
 }
 
-func validateTopUpQuota(amount int64) (int, error) {
+func validateTopUpQuota(amount float64) (int, error) {
 	quota, err := getTopUpQuota(amount)
 	if err == nil && quota > 0 {
 		return quota, nil
 	}
 	maxAmount := getMaxTopUpAmount()
 	if maxAmount > 0 && amount > maxAmount {
-		return 0, common.NewMessage("Top-up amount cannot exceed {{max}}", map[string]any{"max": maxAmount})
+		// 金额是 float64（支持 $0.01 起充），直接塞进模板会被 Go 用 `%v`
+		// 渲染成 `1.8014398509e+10` —— 用户看到的是一串科学计数法。
+		// 统一走 `formatTopUpAmount`（'f' 格式、去掉无意义尾零）。
+		return 0, common.NewMessage("Top-up amount cannot exceed {{max}}", map[string]any{"max": formatTopUpAmount(maxAmount)})
 	}
 	return 0, common.NewMessage("Invalid top-up amount")
 }
@@ -319,7 +368,22 @@ func rejectInvalidCreditedQuota(c *gin.Context, userId int, quota decimal.Decima
 	return false
 }
 
-func rejectInvalidTopUpQuota(c *gin.Context, userId int, amount int64) bool {
+// rejectInvalidTopUpAmount 拦截精度超标的充值金额（超过两位小数）。
+//
+// 本地按「分」计价、网关也收不了更小的金额，静默四舍五入会让「用户看到的金额」
+// 与「实际扣款」对不上，因此直接拒绝而不是修正。
+func rejectInvalidTopUpAmount(c *gin.Context, amount float64) bool {
+	if _, err := common.NormalizeTopUpAmount(amount); err != nil {
+		paymentError(c, err)
+		return true
+	}
+	return false
+}
+
+func rejectInvalidTopUpQuota(c *gin.Context, userId int, amount float64) bool {
+	if rejectInvalidTopUpAmount(c, amount) {
+		return true
+	}
 	creditedQuota, err := validateTopUpQuota(amount)
 	if err == nil {
 		err = model.ValidateTopUpQuotaCapacity(userId, creditedQuota)
@@ -392,9 +456,9 @@ func RequestEpay(c *gin.Context) {
 	}
 	amount := req.Amount
 	if operation_setting.GetQuotaDisplayType() == operation_setting.QuotaDisplayTypeTokens {
-		dAmount := decimal.NewFromInt(int64(amount))
+		dAmount := decimal.NewFromFloat(amount)
 		dQuotaPerUnit := decimal.NewFromFloat(common.QuotaPerUnit)
-		amount = dAmount.Div(dQuotaPerUnit).IntPart()
+		amount = dAmount.Div(dQuotaPerUnit).InexactFloat64()
 	}
 	topUp := &model.TopUp{
 		UserId:          id,
@@ -412,14 +476,14 @@ func RequestEpay(c *gin.Context) {
 	// user paying for an order the callback could never find — money received
 	// but never credited. Writing the order first closes that window.
 	if err := topUp.Insert(); err != nil {
-		logger.LogError(c.Request.Context(), fmt.Sprintf("易支付 创建充值订单失败 user_id=%d trade_no=%s payment_method=%s amount=%d error=%q", id, tradeNo, req.PaymentMethod, req.Amount, err.Error()))
+		logger.LogError(c.Request.Context(), fmt.Sprintf("易支付 创建充值订单失败 user_id=%d trade_no=%s payment_method=%s amount=%.2f error=%q", id, tradeNo, req.PaymentMethod, req.Amount, err.Error()))
 		paymentError(c, common.NewMessage("Failed to create the order"))
 		return
 	}
 	uri, params, err := client.Purchase(&epay.PurchaseArgs{
 		Type:           req.PaymentMethod,
 		ServiceTradeNo: tradeNo,
-		Name:           fmt.Sprintf("TUC%d", req.Amount),
+		Name:           "TUC" + formatTopUpAmount(req.Amount),
 		Money:          strconv.FormatFloat(payMoney, 'f', 2, 64),
 		Device:         epay.PC,
 		NotifyUrl:      notifyUrl,
@@ -428,12 +492,12 @@ func RequestEpay(c *gin.Context) {
 	if err != nil {
 		// The provider was never contacted, so this order can be closed as
 		// failed with a recorded reason instead of lingering as pending.
-		logger.LogError(c.Request.Context(), fmt.Sprintf("易支付 拉起支付失败 user_id=%d trade_no=%s payment_method=%s amount=%d error=%q", id, tradeNo, req.PaymentMethod, req.Amount, err.Error()))
+		logger.LogError(c.Request.Context(), fmt.Sprintf("易支付 拉起支付失败 user_id=%d trade_no=%s payment_method=%s amount=%.2f error=%q", id, tradeNo, req.PaymentMethod, req.Amount, err.Error()))
 		markTopUpFailed(c, topUp, "epay checkout url build failed: "+err.Error())
 		paymentError(c, common.NewMessage("Failed to start payment"))
 		return
 	}
-	logger.LogInfo(c.Request.Context(), fmt.Sprintf("易支付 充值订单创建成功 user_id=%d trade_no=%s payment_method=%s amount=%d money=%.2f uri_length=%d param_count=%d", id, tradeNo, req.PaymentMethod, req.Amount, payMoney, len(uri), len(params)))
+	logger.LogInfo(c.Request.Context(), fmt.Sprintf("易支付 充值订单创建成功 user_id=%d trade_no=%s payment_method=%s amount=%.2f money=%.2f uri_length=%d param_count=%d", id, tradeNo, req.PaymentMethod, req.Amount, payMoney, len(uri), len(params)))
 	c.JSON(http.StatusOK, gin.H{"message": "success", "data": params, "url": uri})
 }
 
@@ -494,6 +558,19 @@ func paidAmountMatchesOrder(paid decimal.Decimal, expectedMoney float64) bool {
 		return false
 	}
 	return paid.Equal(decimal.NewFromFloat(expectedMoney).Round(2))
+}
+
+// providerExpectedMinorUnits 解析回调必须匹配的「网关口径金额快照」。
+//
+// 下单时把真正发给网关的金额（分）落到 ProviderAmount，回调只与这个快照比对；
+// 只有存量订单（快照为空）才回退到由 Money（元）换算。两条链路（支付宝 /
+// 微信支付）共用同一解析，避免一边用快照、一边用 Money 二次换算而在
+// getPayMoney 的取整规则变化时分叉。
+func providerExpectedMinorUnits(providerAmount int64, money float64) int64 {
+	if providerAmount > 0 {
+		return providerAmount
+	}
+	return decimal.NewFromFloat(money).Mul(decimal.NewFromInt(100)).Round(0).IntPart()
 }
 
 // providerPaidAmountMatchesOrder validates a gateway amount expressed in major currency units.

@@ -100,7 +100,7 @@ func GetStatus(c *gin.Context) {
 		"usd_exchange_rate":        operation_setting.USDExchangeRate,
 		"price":                    operation_setting.EffectivePayPrice(),
 		"exchange_rate_updated_at": operation_setting.USDExchangeRateUpdatedAt,
-		"price_markup_rate":        operation_setting.PriceMarkupRate,
+		"price_adjustment_rate":    operation_setting.PriceAdjustmentRate,
 		"stripe_unit_price":        setting.StripeUnitPrice,
 
 		// 面板启用开关

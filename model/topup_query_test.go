@@ -19,7 +19,7 @@ func TestTopUpReadPathsAfterTransactionRemoval(t *testing.T) {
 	now := common.GetTimestamp()
 	for i, trade := range []string{"ORDER-A", "ORDER-B", "ORDER-C"} {
 		require.NoError(t, DB.Create(&TopUp{
-			UserId: 7, Amount: int64(100 * (i + 1)), Money: float64(i + 1),
+			UserId: 7, Amount: float64(100 * (i + 1)), Money: float64(i + 1),
 			TradeNo: trade, PaymentMethod: PaymentMethodStripe,
 			CreateTime: now, Status: common.TopUpStatusPending,
 		}).Error)

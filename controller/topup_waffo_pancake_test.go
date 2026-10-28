@@ -60,8 +60,9 @@ func TestGetWaffoPancakePayMoney(t *testing.T) {
 	require.NoError(t, common.UpdateTopupGroupRatioByJSONString(`{"default":1,"vip":1.2}`))
 
 	testCases := []struct {
-		name             string
-		amount           int64
+		name string
+		// 金额模型已从 int64 迁到 float64（支持 $0.01 起充）。
+		amount           float64
 		group            string
 		quotaDisplayType string
 		expected         float64
@@ -75,7 +76,7 @@ func TestGetWaffoPancakePayMoney(t *testing.T) {
 		},
 		{
 			name:             "tokens display converts quota to display units before pricing",
-			amount:           int64(common.QuotaPerUnit * 3),
+			amount:           float64(common.QuotaPerUnit * 3),
 			group:            "vip",
 			quotaDisplayType: operation_setting.QuotaDisplayTypeTokens,
 			expected:         4.5,

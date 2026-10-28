@@ -14,7 +14,7 @@ import (
 // 计价体系由三个值串成一条链，全部由 service.StartExchangeRateSync 定时维护：
 //
 //	A = USDExchangeRate  「货币展示」里的美元汇率，取外部行情（USD→CNY），每 10 分钟刷新。
-//	B = Price            「支付网关」里的定价（本地货币 / 美元），恒等于 A + PriceMarkupRate，
+//	B = Price            「支付网关」里的定价（本地货币 / 美元），恒等于 A + PriceAdjustmentRate，
 //	                     每 10 分钟随 A 重算。所有按人民币结算的支付方式（支付宝 / 微信 /
 //	                     Epay）下单金额都按 B 计算。
 //	C                    钱包页展示与结算用的汇率，直接取 B（/api/status 的 price 字段），
@@ -25,37 +25,56 @@ import (
 const (
 	// DefaultUSDExchangeRate 是行情拿不到时的兜底汇率。
 	DefaultUSDExchangeRate = 7.3
-	// PriceMarkupRate 是 B 相对 A 的加价，用于覆盖支付通道手续费与行情波动。
-	PriceMarkupRate = 0.2
+	// PriceAdjustmentRate 是 B 相对 A 的**有符号**调整量，用于覆盖支付通道手续费与
+	// 行情波动。取负值表示定价低于行情汇率（A − 0.2）。
+	//
+	// 2026-10-28 起由 +0.2 改为 −0.2：加价会把通道手续费转嫁给用户，实际收款
+	// 高于行情价，用户在收银台按实时汇率折算时会看到「比汇率贵」。
+	PriceAdjustmentRate = -0.2
 )
 
 var PayAddress = ""
 var CustomCallbackAddress = ""
 var EpayId = ""
 var EpayKey = ""
-var MinTopUp = 1
+// MinTopUp 是「支付网关」里的最低充值金额，单位跟随 QuotaDisplayType（USD/CNY 为
+// 金额，TOKENS 为 token 数），允许两位小数（如 0.01）。
+//
+// 历史包袱：这里曾是 int，配置 0.01 时 strconv.Atoi 解析失败且 error 被丢弃，
+// 值静默变成 0——最低额校验 req.Amount < getMinTopup() 恒假，下限被整个关掉。
+// 现在改为 float64 且由 common.ParseTopUpAmountSetting 严格解析，非法值在保存前
+// 就被拒绝，不再回退成 0。
+var MinTopUp float64 = 1
 
 // USDExchangeRate 即 A：面向用户展示的美元汇率（外部行情）。
 var USDExchangeRate = DefaultUSDExchangeRate
 
-// Price 即 B：实际计价单价（本地货币 / 美元），恒为 A + PriceMarkupRate。
+// Price 即 B：实际计价单价（本地货币 / 美元），恒为 A + PriceAdjustmentRate。
 var Price = DerivedPriceFromExchangeRate(DefaultUSDExchangeRate)
 
 // USDExchangeRateUpdatedAt 是 A 最近一次成功同步的时间（Unix 秒，0 表示从未同步）。
 var USDExchangeRateUpdatedAt int64
 
-// DerivedPriceFromExchangeRate 由 A 推导 B：B = A + PriceMarkupRate，保留 2 位小数。
+// DerivedPriceFromExchangeRate 由 A 推导 B：B = A + PriceAdjustmentRate（当前为 A − 0.2），
+// 保留 2 位小数。
+//
+// 结果必须为正：调整量为负时，行情异常（例如 A 只有 0.1）会把 B 推成 0 或负数，
+// 那样的「0 元订单」能通过所有校验。这种情况回退到 A 本身，宁可不打折也不能免费。
 func DerivedPriceFromExchangeRate(exchangeRate float64) float64 {
 	if exchangeRate <= 0 {
 		exchangeRate = DefaultUSDExchangeRate
 	}
-	return math.Round((exchangeRate+PriceMarkupRate)*100) / 100
+	price := math.Round((exchangeRate+PriceAdjustmentRate)*100) / 100
+	if price <= 0 {
+		return math.Round(exchangeRate*100) / 100
+	}
+	return price
 }
 
 // EffectivePayPrice 返回充值时实际使用的计价单价，即 B。
 //
 // 正常情况下 Price 由同步任务写入；若库里从未写过（或写入了非法值），
-// 这里按 B = A + PriceMarkupRate 现场推导，避免出现 0 元订单。
+// 这里按 B = A + PriceAdjustmentRate 现场推导，避免出现 0 元订单。
 func EffectivePayPrice() float64 {
 	if Price > 0 {
 		return Price

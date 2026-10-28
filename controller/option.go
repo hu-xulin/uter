@@ -228,6 +228,12 @@ func UpdateOption(c *gin.Context) {
 		}
 	}
 	switch option.Key {
+	case operation_setting.PaymentOrderTitlePrefixOptionKey:
+		err = operation_setting.ValidatePaymentOrderTitlePrefix(option.Value.(string))
+		if err != nil {
+			common.ApiError(c, err)
+			return
+		}
 	case "GitHubOAuthEnabled":
 		if option.Value == "true" && common.GitHubClientId == "" {
 			common.ApiErrorT(c, "Cannot enable {{provider}}. Enter the {{provider}} Client ID and Client Secret first.", map[string]any{"provider": "GitHub OAuth"})
@@ -478,7 +484,7 @@ func SyncExchangeRate(c *gin.Context) {
 		"data": gin.H{
 			"usd_exchange_rate":        exchangeRate,
 			"price":                    price,
-			"price_markup_rate":        operation_setting.PriceMarkupRate,
+			"price_adjustment_rate":    operation_setting.PriceAdjustmentRate,
 			"exchange_rate_updated_at": operation_setting.USDExchangeRateUpdatedAt,
 		},
 	})
