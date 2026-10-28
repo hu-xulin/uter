@@ -269,7 +269,7 @@ export function VendorOperationDialog(props: {
                     id: 'model',
                     header: t('Model'),
                     cell: (model) => (
-                      <span className='block max-w-60 font-mono break-all whitespace-normal'>
+                      <span className='text-mono block max-w-60 font-mono break-all whitespace-normal'>
                         {model.model_name}
                       </span>
                     ),

@@ -72,18 +72,18 @@ function LoadingStep({
   return (
     <div className='flex items-center gap-3'>
       {status === 'loading' && (
-        <Loader2 className='text-primary h-5 w-5 animate-spin' />
+        <Loader2 className='text-primary h-4 w-4 animate-spin' />
       )}
-      {status === 'done' && <CheckCircle2 className='h-5 w-5 text-green-500' />}
+      {status === 'done' && <CheckCircle2 className='text-success h-4 w-4' />}
       {status === 'pending' && (
-        <Circle className='text-muted-foreground/40 h-5 w-5' />
+        <Circle className='text-muted-foreground h-4 w-4' />
       )}
       <span
         className={cn(
           'text-sm',
           status === 'loading' && 'text-foreground font-medium',
           status === 'done' && 'text-muted-foreground',
-          status === 'pending' && 'text-muted-foreground/60'
+          status === 'pending' && 'text-muted-foreground'
         )}
       >
         {label}
@@ -120,7 +120,7 @@ export function DeploymentAccessGuard({
     return (
       <div className='mx-auto mt-8 max-w-md'>
         <div className='flex flex-col items-center justify-center py-12'>
-          <Loader2 className='text-primary mb-6 h-10 w-10 animate-spin' />
+          <Loader2 className='text-primary mb-6 size-8 animate-spin' />
           <div className='space-y-3'>
             <LoadingStep
               label={t('Loading configuration')}
@@ -141,16 +141,16 @@ export function DeploymentAccessGuard({
     return (
       <div className='mx-auto mt-8 max-w-md'>
         <div className='text-center'>
-          <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-amber-100 dark:bg-amber-900/20'>
-            <Server className='h-8 w-8 text-amber-600 dark:text-amber-400' />
+          <div className='bg-warning-soft dark:bg-warning-soft/20 mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl'>
+            <Server className='text-warning dark:text-warning h-8 w-8' />
           </div>
-          <h3 className='mb-6 text-xl font-semibold'>
+          <h3 className='mb-6 text-lg font-semibold'>
             {t('Model deployment service is disabled')}
           </h3>
         </div>
         <div className='space-y-4'>
           <Alert variant='default'>
-            <AlertCircle className='h-4 w-4' />
+            <AlertCircle className='h-4.5 w-4.5' />
             <AlertTitle>{t('Configuration required')}</AlertTitle>
             <AlertDescription>
               {t(
@@ -159,7 +159,7 @@ export function DeploymentAccessGuard({
             </AlertDescription>
           </Alert>
           <Button onClick={handleGoToSettings} className='w-full'>
-            <Settings className='mr-2 h-4 w-4' />
+            <Settings className='mr-2 h-4.5 w-4.5' />
             {t('Go to settings')}
           </Button>
         </div>
@@ -172,16 +172,16 @@ export function DeploymentAccessGuard({
     return (
       <div className='mx-auto mt-8 max-w-md'>
         <div className='text-center'>
-          <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-red-100 dark:bg-red-900/20'>
-            <WifiOff className='h-8 w-8 text-red-600 dark:text-red-400' />
+          <div className='bg-destructive-soft dark:bg-destructive-soft/20 mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl'>
+            <WifiOff className='text-destructive dark:text-destructive h-8 w-8' />
           </div>
-          <h3 className='mb-6 text-xl font-semibold'>
+          <h3 className='mb-6 text-lg font-semibold'>
             {t('Connection failed')}
           </h3>
         </div>
         <div className='space-y-4'>
           <Alert variant='destructive'>
-            <AlertCircle className='h-4 w-4' />
+            <AlertCircle className='h-4.5 w-4.5' />
             <AlertTitle>{t('Connection error')}</AlertTitle>
             <AlertDescription>{t(connectionError)}</AlertDescription>
           </Alert>
@@ -190,7 +190,7 @@ export function DeploymentAccessGuard({
               {t('Retry')}
             </Button>
             <Button onClick={handleGoToSettings} className='flex-1'>
-              <Settings className='mr-2 h-4 w-4' />
+              <Settings className='mr-2 h-4.5 w-4.5' />
               {t('Go to settings')}
             </Button>
           </div>

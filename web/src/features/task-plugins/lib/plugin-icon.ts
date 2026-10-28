@@ -86,16 +86,22 @@ function deriveTextLabel(input: PluginIconInput): string {
 /**
  * Deterministic palette pick: the same plugin key always renders the same
  * color, and every pair meets WCAG AA contrast in both themes.
+ *
+ * 分类色走 `chart-1…5`（规范 colors.md「分类色」一节）：它们是**语义
+ * Token**，深浅主题各自由 `--chart-N` 给出，不需要每个类再写一遍 `dark:`。
+ * 此前这里是 blue / emerald / amber / violet / rose / cyan / orange / indigo
+ * 八个调色板色，等于在插件列表里另造了一套配色，换主题完全不跟随。
+ *
+ * 五档够用：这是「首字母头像」的兜底着色，同屏出现 5 种以上底色的概率很低，
+ * 而规范明确要求「需要第 6 种分类色时先问这 6 个类别是否真的都要在同一屏
+ * 区分」—— 这里不是。
  */
 export const TEXT_AVATAR_PALETTE = [
-  'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100',
-  'bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-100',
-  'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-100',
-  'bg-violet-100 text-violet-800 dark:bg-violet-900 dark:text-violet-100',
-  'bg-rose-100 text-rose-800 dark:bg-rose-900 dark:text-rose-100',
-  'bg-cyan-100 text-cyan-800 dark:bg-cyan-900 dark:text-cyan-100',
-  'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-100',
-  'bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-100',
+  'bg-chart-1/10 text-chart-1',
+  'bg-chart-2/10 text-chart-2',
+  'bg-chart-3/10 text-chart-3',
+  'bg-chart-4/10 text-chart-4',
+  'bg-chart-5/10 text-chart-5',
 ] as const
 
 export function textAvatarClass(colorSeed: string): string {

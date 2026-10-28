@@ -158,7 +158,7 @@ export function PluginsTable(props: PluginsTableProps) {
                 <div className='truncate text-sm font-medium'>
                   {row.original.meta.name}
                 </div>
-                <div className='text-muted-foreground truncate font-mono text-mono'>
+                <div className='text-muted-foreground text-mono truncate font-mono'>
                   {row.original.meta.key}
                 </div>
                 <PluginWebsiteLink website={row.original.meta.website} />
@@ -171,7 +171,9 @@ export function PluginsTable(props: PluginsTableProps) {
         accessorKey: 'meta.version',
         header: t('Active version'),
         cell: ({ row }) => (
-          <span className='font-mono text-mono'>{row.original.meta.version}</span>
+          <span className='text-mono font-mono'>
+            {row.original.meta.version}
+          </span>
         ),
       },
       {

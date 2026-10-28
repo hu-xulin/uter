@@ -56,7 +56,7 @@ export function MarketplacePluginCard(props: MarketplacePluginCardProps) {
   const description = resolveLocalizedText(plugin.description, i18n.language)
   const channelTypes = plugin.channelTypes ?? []
   const latestEntry = findMarketplaceVersion(plugin, plugin.latest)
-  const labelClass = 'text-muted-foreground text-xs font-medium select-none'
+  const labelClass = 'text-muted-foreground text-sm font-medium select-none'
   const builtInVersion = marketplaceBuiltInVersion(props.installed)
   // Same-origin-as-index rule as the source itself: a logo is only ever
   // fetched from the repository the administrator chose to trust.
@@ -82,7 +82,7 @@ export function MarketplacePluginCard(props: MarketplacePluginCardProps) {
           </span>
           <div className='min-w-0'>
             <div className='truncate text-sm font-medium'>{plugin.name}</div>
-            <div className='text-muted-foreground truncate font-mono text-mono'>
+            <div className='text-muted-foreground text-mono truncate font-mono'>
               {plugin.key}
             </div>
           </div>
@@ -93,7 +93,7 @@ export function MarketplacePluginCard(props: MarketplacePluginCardProps) {
       <PluginWebsiteLink website={plugin.website} />
 
       {description ? (
-        <p className='text-muted-foreground line-clamp-2 text-xs'>
+        <p className='text-muted-foreground line-clamp-2 text-sm'>
           {description}
         </p>
       ) : null}
@@ -101,7 +101,7 @@ export function MarketplacePluginCard(props: MarketplacePluginCardProps) {
       <div className='grid grid-cols-3 gap-x-3 gap-y-1'>
         <div className='min-w-0'>
           <div className={labelClass}>{t('Latest version')}</div>
-          <div className='truncate font-mono text-mono'>{plugin.latest}</div>
+          <div className='text-mono truncate font-mono'>{plugin.latest}</div>
         </div>
         <div className='min-w-0'>
           <div className={labelClass}>{t('Channel type')}</div>
@@ -120,7 +120,7 @@ export function MarketplacePluginCard(props: MarketplacePluginCardProps) {
       {builtInVersion && (
         <div className='text-xs'>
           <span className={labelClass}>{t('Versions')}</span>{' '}
-          <span className='font-mono'>
+          <span className='text-mono font-mono'>
             {t('Built-in v{{factory}} / marketplace v{{market}}', {
               factory: builtInVersion,
               market: plugin.latest,
@@ -131,7 +131,7 @@ export function MarketplacePluginCard(props: MarketplacePluginCardProps) {
 
       {!latestEntry?.sha256 && (
         <div className='text-destructive flex items-center gap-1 text-xs'>
-          <TriangleAlert className='size-3 shrink-0' aria-hidden='true' />
+          <TriangleAlert className='size-4 shrink-0' aria-hidden='true' />
           {t('No integrity hash')}
         </div>
       )}
@@ -175,7 +175,7 @@ function InstallStateBadge({ state }: { state: InstallState }) {
         })}
       >
         <ArrowUpCircle aria-hidden='true' />
-        <span className='font-mono'>
+        <span className='text-mono font-mono'>
           v{state.installedVersion} → v{state.latestVersion}
         </span>
       </Badge>

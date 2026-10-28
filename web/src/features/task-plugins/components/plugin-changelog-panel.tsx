@@ -24,6 +24,7 @@ import { EmptyState } from '@/components/empty-state'
 import { ErrorState } from '@/components/error-state'
 import { LoadingState } from '@/components/loading-state'
 import { Markdown } from '@/components/ui/markdown'
+import { Heading } from '@/design-system'
 import { getSafeHttpUrl } from '@/lib/content-format'
 
 import { findMarketplaceVersion } from '../lib/marketplace'
@@ -97,7 +98,7 @@ export function PluginChangelogPanel(props: PluginChangelogPanelProps) {
   return (
     <div className='min-w-0 space-y-4'>
       <div className='flex flex-wrap items-center justify-between gap-2'>
-        <span className='text-muted-foreground font-mono text-mono'>
+        <span className='text-muted-foreground text-mono font-mono'>
           v{changelog.version}
         </span>
         {sourceUrl && (
@@ -112,7 +113,7 @@ export function PluginChangelogPanel(props: PluginChangelogPanelProps) {
         )}
       </div>
       {locale !== 'en' && changelog.locale === 'en' && (
-        <p role='status' className='text-muted-foreground text-xs'>
+        <p role='status' className='text-muted-foreground text-sm'>
           {t(
             'This changelog is not available in your language. Showing English.'
           )}
@@ -120,7 +121,9 @@ export function PluginChangelogPanel(props: PluginChangelogPanelProps) {
       )}
       {changelog.sections.map((section) => (
         <section key={section.category} className='space-y-2'>
-          <h3 className='font-medium'>{categoryLabels[section.category]}</h3>
+          <Heading variant='group-title' level={3}>
+            {categoryLabels[section.category]}
+          </Heading>
           <div lang={changelog.locale}>
             <Markdown baseUrl={sourceUrl}>{section.markdown}</Markdown>
           </div>

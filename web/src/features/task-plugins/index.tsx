@@ -128,8 +128,8 @@ export function TaskPlugins() {
             </Popover>
           </div>
           {tab === 'installed' && (
-            <Button onClick={() => openUpload()}>
-              <Upload />
+            <Button size='sm' onClick={() => openUpload()}>
+              <Upload className='size-4' />
               {t('Upload plugin')}
             </Button>
           )}

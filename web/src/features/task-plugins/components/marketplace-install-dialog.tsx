@@ -320,7 +320,7 @@ function MarketplaceInstallContent(
           }}
         />
         {target.installState.status !== 'not_installed' && (
-          <p className='text-muted-foreground text-xs'>
+          <p className='text-muted-foreground text-sm'>
             {t('Current v{{from}} → install v{{to}}', {
               from: target.installState.installedVersion,
               to: selectedVersion,
@@ -400,9 +400,9 @@ function MarketplaceInstallContent(
         </TabsContent>
       </Tabs>
 
-      <Alert className='border-amber-500/20 bg-amber-500/5 py-2 [&>svg]:text-amber-600 dark:[&>svg]:text-amber-400'>
+      <Alert className='border-warning/20 bg-warning/5 [&>svg]:text-warning dark:[&>svg]:text-warning py-2'>
         <AlertTriangle />
-        <AlertDescription className='text-foreground/80 text-xs leading-relaxed'>
+        <AlertDescription className='text-muted-foreground text-sm'>
           {t(
             'Plugins can access channel credentials. Review the source and differences before installing.'
           )}
@@ -440,7 +440,7 @@ function MarketplaceInstallContent(
           <p className='text-destructive text-sm whitespace-pre-wrap'>
             {installMutation.error.message}
           </p>
-          <p className='text-muted-foreground text-xs'>
+          <p className='text-muted-foreground text-sm'>
             {t(
               'Marketplace installs never force past a conflict. Resolve it on the task plugins page, then install again.'
             )}

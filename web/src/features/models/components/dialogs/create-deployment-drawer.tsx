@@ -33,6 +33,7 @@ import {
 } from '@/components/drawer-layout'
 import { JsonCodeEditor } from '@/components/json-code-editor'
 import { MultiSelect } from '@/components/multi-select'
+import { PasswordInput } from '@/components/password-input'
 import { Button } from '@/components/ui/button'
 import { Combobox } from '@/components/ui/combobox'
 import {
@@ -43,7 +44,6 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form'
-import { PasswordInput } from '@/components/password-input'
 import { Input } from '@/components/ui/input'
 import {
   Select,
@@ -410,7 +410,7 @@ export function CreateDeploymentDrawer({
           >
             {/* Basic Configuration */}
             <SideDrawerSection>
-              <h3 className='text-sm font-medium'>
+              <h3 className='text-lg font-semibold'>
                 {t('Basic Configuration')}
               </h3>
 
@@ -461,7 +461,7 @@ export function CreateDeploymentDrawer({
 
             {/* Resource Configuration */}
             <SideDrawerSection>
-              <h3 className='text-sm font-medium'>
+              <h3 className='text-lg font-semibold'>
                 {t('Resource Configuration')}
               </h3>
 
@@ -617,8 +617,8 @@ export function CreateDeploymentDrawer({
 
             {/* Price Estimation */}
             <SideDrawerSection>
-              <h3 className='text-sm font-medium'>{t('Price estimation')}</h3>
-              <p className='text-muted-foreground text-xs'>
+              <h3 className='text-lg font-semibold'>{t('Price estimation')}</h3>
+              <p className='text-muted-foreground text-sm'>
                 {t('Price estimation description')}
               </p>
 
@@ -655,10 +655,10 @@ export function CreateDeploymentDrawer({
 
             {/* Advanced Configuration */}
             <SideDrawerSection>
-              <h3 className='text-sm font-medium'>
+              <h3 className='text-lg font-semibold'>
                 {t('Advanced Configuration')}
               </h3>
-              <p className='text-muted-foreground text-xs'>
+              <p className='text-muted-foreground text-sm'>
                 {t('Optional settings for advanced container configuration.')}
               </p>
 
@@ -763,10 +763,7 @@ export function CreateDeploymentDrawer({
                       <FormItem>
                         <FormLabel>{t('Registry secret')}</FormLabel>
                         <FormControl>
-                          <PasswordInput
-                            autoComplete='off'
-                            {...field}
-                          />
+                          <PasswordInput autoComplete='off' {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>

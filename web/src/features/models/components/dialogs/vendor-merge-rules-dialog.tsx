@@ -20,17 +20,17 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { Dialog } from '@/components/dialog'
-import { Button } from '@/components/ui/button'
 import { ErrorState } from '@/components/error-state'
 import { LoadingState } from '@/components/loading-state'
+import { Button } from '@/components/ui/button'
 import { createServerError } from '@/lib/server-error-message'
 
+import { modelsQueryKeys, vendorsQueryKeys } from '../../lib'
 import {
   deleteVendorMergeRule,
   getVendorMergeRules,
   type VendorMergeRule,
 } from '../../vendor-api'
-import { modelsQueryKeys, vendorsQueryKeys } from '../../lib'
 
 export function VendorMergeRulesDialog(props: {
   open: boolean
@@ -107,13 +107,13 @@ export function VendorMergeRulesDialog(props: {
                 <div className='min-w-0'>
                   <div className='flex items-center gap-2 text-sm'>
                     <span className='font-medium'>{rule.source_name}</span>
-                    <ArrowRight className='size-3.5 text-muted-foreground' />
+                    <ArrowRight className='text-muted-foreground size-4' />
                     <span className='font-medium'>
                       {rule.target_vendor_name || t('Unknown vendor')}
                     </span>
                   </div>
                   {rule.source_patterns.length > 0 && (
-                    <p className='text-muted-foreground mt-0.5 truncate text-xs'>
+                    <p className='text-muted-foreground mt-0.5 truncate text-sm'>
                       {t('Matches')}: {rule.source_patterns.join(', ')}
                     </p>
                   )}
@@ -136,7 +136,7 @@ export function VendorMergeRulesDialog(props: {
                         onClick={() => removeMutation.mutate(rule.id)}
                       >
                         {removeMutation.isPending ? (
-                          <Loader2 className='size-3.5 animate-spin' />
+                          <Loader2 className='size-4.5 animate-spin' />
                         ) : null}
                         {t('Confirm undo')}
                       </Button>
@@ -148,7 +148,7 @@ export function VendorMergeRulesDialog(props: {
                       disabled={removeMutation.isPending}
                       onClick={() => setPendingId(rule.id)}
                     >
-                      <Undo2 className='size-3.5' />
+                      <Undo2 className='size-4.5' />
                       {t('Undo')}
                     </Button>
                   )}

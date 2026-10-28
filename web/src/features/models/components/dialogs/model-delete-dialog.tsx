@@ -121,7 +121,7 @@ export function ModelDeleteDialog(props: ModelDeleteDialogProps) {
               setRemoveFromChannels(checked === true)
             }
           />
-          <Label htmlFor={checkboxId} className='flex-wrap leading-normal'>
+          <Label htmlFor={checkboxId} className='flex-wrap'>
             {t('Also remove from all channels')}
             {!supportsChannelRemoval && (
               <span className='text-muted-foreground text-xs font-normal'>
@@ -138,9 +138,7 @@ export function ModelDeleteDialog(props: ModelDeleteDialogProps) {
             disabled={mutation.isPending || !canEditPricing}
             onCheckedChange={(checked) => setRemovePricing(checked === true)}
           />
-          <Label htmlFor={pricingCheckboxId} className='leading-normal'>
-            {t('Also remove pricing')}
-          </Label>
+          <Label htmlFor={pricingCheckboxId}>{t('Also remove pricing')}</Label>
         </div>
         {(removePricing || !canEditPricing) && (
           <p className='text-muted-foreground text-sm'>

@@ -167,11 +167,11 @@ export function ViewDetailsDialog({
         <div className='flex flex-wrap items-center justify-between gap-2'>
           <div className='text-muted-foreground text-sm'>
             {t('Deployment ID')}:{' '}
-            <span className='font-mono'>{deploymentId}</span>
+            <span className='text-mono font-mono'>{deploymentId}</span>
           </div>
           <div className='grid grid-cols-2 gap-2 sm:flex sm:items-center'>
             <Button variant='outline' size='sm' onClick={handleCopyId}>
-              <Copy className='mr-2 h-4 w-4' />
+              <Copy className='mr-2 h-4.5 w-4.5' />
               {t('Copy')}
             </Button>
             <Button
@@ -181,9 +181,9 @@ export function ViewDetailsDialog({
               disabled={isFetchingDetails || isFetchingContainers}
             >
               {isFetchingDetails || isFetchingContainers ? (
-                <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+                <Loader2 className='mr-2 h-4.5 w-4.5 animate-spin' />
               ) : (
-                <RefreshCcw className='mr-2 h-4 w-4' />
+                <RefreshCcw className='mr-2 h-4.5 w-4.5' />
               )}
               {t('Refresh')}
             </Button>
@@ -194,7 +194,7 @@ export function ViewDetailsDialog({
 
         {isDetailsLoading ? (
           <div className='flex items-center justify-center py-10'>
-            <Loader2 className='text-muted-foreground h-6 w-6 animate-spin' />
+            <Loader2 className='text-muted-foreground size-8 animate-spin' />
           </div>
         ) : null}
         {showDetailsError ? (
@@ -274,7 +274,9 @@ export function ViewDetailsDialog({
                         className='flex flex-wrap items-center justify-between gap-2 rounded-md border px-3 py-2'
                       >
                         <div className='min-w-0'>
-                          <div className='truncate font-mono text-mono'>{id}</div>
+                          <div className='text-mono truncate font-mono'>
+                            {id}
+                          </div>
                           <div className='text-muted-foreground text-xs'>
                             {status ? `${t('Status')}: ${status}` : ''}
                           </div>
@@ -300,7 +302,7 @@ export function ViewDetailsDialog({
                 {t('Raw JSON')}
               </CollapsibleTrigger>
               <CollapsibleContent>
-                <pre className='bg-muted text-foreground mt-3 max-h-[360px] overflow-auto rounded-md p-3 text-xs'>
+                <pre className='bg-muted text-foreground text-mono mt-3 max-h-[360px] overflow-auto rounded-md p-3'>
                   {payloadJson || '-'}
                 </pre>
               </CollapsibleContent>

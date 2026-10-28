@@ -178,7 +178,7 @@ export function MissingModelsDialog({
             <Empty className='border'>
               <EmptyHeader>
                 <EmptyMedia variant='icon'>
-                  <Search className='h-5 w-5' />
+                  <Search className='h-4 w-4' />
                 </EmptyMedia>
                 <EmptyTitle>{t('No matches found')}</EmptyTitle>
                 <EmptyDescription>
@@ -206,7 +206,7 @@ export function MissingModelsDialog({
                       className='flex-shrink-0 gap-1'
                       onClick={() => handleConfigureModel(modelName)}
                     >
-                      <Plus className='h-4 w-4' />
+                      <Plus className='h-4.5 w-4.5' />
                       Configure
                     </Button>
                   </div>
@@ -224,27 +224,25 @@ export function MissingModelsDialog({
                   <div className='flex items-center gap-2'>
                     <Button
                       variant='outline'
-                      size='icon'
-                      className='h-8 w-8'
+                      size='icon-sm'
                       onClick={() =>
                         setCurrentPage((prev) => Math.max(1, prev - 1))
                       }
                       disabled={currentPage === 1}
                       aria-label={t('Previous page')}
                     >
-                      <ChevronLeft className='h-4 w-4' />
+                      <ChevronLeft className='h-4.5 w-4.5' />
                     </Button>
                     <Button
                       variant='outline'
-                      size='icon'
-                      className='h-8 w-8'
+                      size='icon-sm'
                       onClick={() =>
                         setCurrentPage((prev) => Math.min(totalPages, prev + 1))
                       }
                       disabled={currentPage === totalPages}
                       aria-label={t('Next page')}
                     >
-                      <ChevronRight className='h-4 w-4' />
+                      <ChevronRight className='h-4.5 w-4.5' />
                     </Button>
                   </div>
                 )}

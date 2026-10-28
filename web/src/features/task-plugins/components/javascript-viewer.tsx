@@ -94,13 +94,13 @@ export function JavaScriptViewer(props: JavaScriptViewerProps) {
     <div
       ref={containerRef}
       className={cn(
-        '[&_.tok-keyword]:text-purple-700 dark:[&_.tok-keyword]:text-purple-300',
-        '[&_.tok-string]:text-green-800 dark:[&_.tok-string]:text-green-300',
-        '[&_.tok-number]:text-orange-800 dark:[&_.tok-number]:text-orange-300 [&_.tok-bool]:text-orange-800 dark:[&_.tok-bool]:text-orange-300',
+        '[&_.tok-keyword]:text-syntax-keyword',
+        '[&_.tok-string]:text-syntax-string',
+        '[&_.tok-number]:text-syntax-number [&_.tok-bool]:text-syntax-number',
         '[&_.tok-comment]:text-muted-foreground [&_.tok-comment]:italic',
-        '[&_.tok-variableName.tok-function]:text-blue-700 dark:[&_.tok-variableName.tok-function]:text-blue-300',
-        '[&_.tok-definition]:text-blue-700 dark:[&_.tok-definition]:text-blue-300',
-        '[&_.tok-propertyName]:text-teal-800 dark:[&_.tok-propertyName]:text-teal-300',
+        '[&_.tok-variableName.tok-function]:text-syntax-function',
+        '[&_.tok-definition]:text-syntax-function',
+        '[&_.tok-propertyName]:text-syntax-property',
         props.className
       )}
     />

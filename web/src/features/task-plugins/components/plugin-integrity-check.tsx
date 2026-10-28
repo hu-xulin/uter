@@ -28,6 +28,7 @@ import {
   CollapsibleTrigger,
 } from '@/components/ui/collapsible'
 import { Spinner } from '@/components/ui/spinner'
+import { Heading } from '@/design-system'
 
 type PluginIntegrityCheckProps = {
   compact?: boolean
@@ -67,7 +68,9 @@ export function PluginIntegrityCheck(props: PluginIntegrityCheckProps) {
       aria-label={t('File verification')}
     >
       {!props.compact && (
-        <h3 className='text-sm font-medium'>{t('File verification')}</h3>
+        <Heading variant='group-title' level={3}>
+          {t('File verification')}
+        </Heading>
       )}
       <Alert
         variant={status === 'failed' ? 'destructive' : 'default'}
@@ -76,7 +79,7 @@ export function PluginIntegrityCheck(props: PluginIntegrityCheckProps) {
         {status === 'pending' && <Spinner />}
         {status === 'verified' && (
           <CheckCircle2
-            className='text-green-700 dark:text-green-400'
+            className='text-success dark:text-success'
             aria-hidden='true'
           />
         )}
@@ -85,7 +88,7 @@ export function PluginIntegrityCheck(props: PluginIntegrityCheckProps) {
           <Info aria-hidden='true' />
         )}
         <AlertTitle>{label}</AlertTitle>
-        <AlertDescription className='text-xs leading-relaxed'>
+        <AlertDescription className='text-sm'>
           {status === 'failed' &&
             t(
               'The downloaded source does not match the sha256 declared in the index. Do not install it.'
@@ -111,25 +114,25 @@ export function PluginIntegrityCheck(props: PluginIntegrityCheckProps) {
               <Button
                 variant='ghost'
                 size='sm'
-                className='group h-auto gap-1 px-1 py-1 text-xs'
+                className='group h-auto gap-1 px-1 py-1 text-sm'
               />
             }
           >
             {t('Integrity hash')}
             <ChevronDown
-              className='size-3 transition-transform group-aria-expanded:rotate-180'
+              className='size-4.5 transition-transform group-aria-expanded:rotate-180'
               aria-hidden='true'
             />
           </CollapsibleTrigger>
           <CollapsibleContent>
             <div className='bg-muted/20 mt-2 flex min-w-0 items-start gap-2 rounded-lg border p-3'>
-              <code className='min-w-0 flex-1 text-xs leading-relaxed break-all'>
+              <code className='text-mono min-w-0 flex-1 font-mono break-all'>
                 {props.expected}
               </code>
               <CopyButton
                 value={props.expected}
                 className='size-6'
-                iconClassName='size-3.5'
+                iconClassName='size-4'
               />
             </div>
           </CollapsibleContent>

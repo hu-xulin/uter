@@ -37,6 +37,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { Heading } from '@/design-system'
 import { handleServerError } from '@/lib/handle-server-error'
 import { createServerError } from '@/lib/server-error-message'
 
@@ -328,7 +329,7 @@ export function SyncWizardDialog(props: {
           <div className='text-muted-foreground mr-auto min-w-0 text-sm'>
             <p>{t('{{count}} selected models', { count: selected.length })}</p>
             {step === 0 && hiddenSelectedCount > 0 && (
-              <p className='text-xs'>
+              <p className='text-sm'>
                 {t('{{count}} selected outside the current filters', {
                   count: hiddenSelectedCount,
                 })}
@@ -512,7 +513,7 @@ export function SyncWizardDialog(props: {
                     />
                     {t('Only show syncable models')}
                   </label>
-                  <p className='text-muted-foreground text-xs' role='status'>
+                  <p className='text-muted-foreground text-sm' role='status'>
                     {t(
                       '{{total}} models · {{syncable}} syncable · {{skipped}} skipped this time',
                       {
@@ -527,8 +528,8 @@ export function SyncWizardDialog(props: {
                 <div className='flex flex-wrap gap-2'>
                   <Button
                     variant='outline'
-                    size='sm'
-                    className='h-auto min-h-7 max-w-full py-1.5 whitespace-normal'
+                    size='wrap'
+                    className='max-w-full'
                     disabled={busy || syncableCandidates.length === 0}
                     onClick={() => chooseModels(syncableCandidates, true)}
                   >
@@ -609,7 +610,7 @@ export function SyncWizardDialog(props: {
                     id: 'name',
                     header: t('Model'),
                     cell: (item) => (
-                      <span className='block max-w-64 font-mono text-mono break-all whitespace-normal'>
+                      <span className='text-mono block max-w-64 font-mono break-all whitespace-normal'>
                         {item.model_name}
                       </span>
                     ),
@@ -674,8 +675,8 @@ export function SyncWizardDialog(props: {
                 <div className='flex flex-wrap items-center gap-2'>
                   <Button
                     variant='outline'
-                    size='sm'
-                    className='h-auto min-h-7 max-w-full py-1.5 whitespace-normal'
+                    size='wrap'
+                    className='max-w-full'
                     disabled={busy || selectedFieldCount === changedFieldCount}
                     onClick={() => chooseAllFields(true)}
                   >
@@ -683,14 +684,14 @@ export function SyncWizardDialog(props: {
                   </Button>
                   <Button
                     variant='ghost'
-                    size='sm'
-                    className='h-auto min-h-7 max-w-full py-1.5 whitespace-normal'
+                    size='wrap'
+                    className='max-w-full'
                     disabled={busy || selectedFieldCount === 0}
                     onClick={() => chooseAllFields(false)}
                   >
                     {t('Clear field selection')}
                   </Button>
-                  <p className='text-muted-foreground text-xs' role='status'>
+                  <p className='text-muted-foreground text-sm' role='status'>
                     {t('{{selected}} of {{total}} changed fields selected', {
                       selected: selectedFieldCount,
                       total: changedFieldCount,
@@ -702,9 +703,12 @@ export function SyncWizardDialog(props: {
           </div>
           {selected.map((item) => (
             <section key={item.model_name} className='space-y-2'>
-              <h3 className='font-mono text-mono font-semibold break-all'>
+              {/* 这是弹窗内部的「模型 · 原因」分组标题，属第 4 层
+                  group-title（16/600/24）。此前写成 text-mono（14/600），
+                  比正文还小一档，分组感全靠字重撑着。等宽字形保留。 */}
+              <Heading variant='group-title' className='font-mono break-all'>
                 {item.model_name} · {t(REASON_LABELS[item.kind])}
-              </h3>
+              </Heading>
               <StaticDataTable
                 data={item.fields}
                 columns={[
@@ -739,7 +743,7 @@ export function SyncWizardDialog(props: {
                       <div className='w-44 max-w-60 space-y-1 whitespace-normal'>
                         <span>{t(FIELD_LABELS[field.field])}</span>
                         {impact(field.field) && (
-                          <p className='text-warning text-xs'>
+                          <p className='text-warning text-sm'>
                             {impact(field.field)}
                           </p>
                         )}
@@ -750,7 +754,7 @@ export function SyncWizardDialog(props: {
                     id: 'local',
                     header: t('Current value'),
                     cell: (field) => (
-                      <pre className='max-h-32 max-w-64 overflow-auto text-xs break-words whitespace-pre-wrap'>
+                      <pre className='text-mono max-h-32 max-w-64 overflow-auto break-words whitespace-pre-wrap'>
                         {item.kind === 'create'
                           ? '—'
                           : display(field.field, field.local)}
@@ -761,7 +765,7 @@ export function SyncWizardDialog(props: {
                     id: 'upstream',
                     header: t('Change To'),
                     cell: (field) => (
-                      <pre className='max-h-32 max-w-64 overflow-auto text-xs break-words whitespace-pre-wrap'>
+                      <pre className='text-mono max-h-32 max-w-64 overflow-auto break-words whitespace-pre-wrap'>
                         {display(field.field, field.upstream)}
                       </pre>
                     ),
@@ -786,7 +790,7 @@ export function SyncWizardDialog(props: {
                 id: 'model',
                 header: t('Model'),
                 cell: (item) => (
-                  <span className='font-mono text-mono'>{item.model_name}</span>
+                  <span className='text-mono font-mono'>{item.model_name}</span>
                 ),
               },
               {
@@ -839,7 +843,9 @@ export function SyncWizardDialog(props: {
       )}
       {step === 3 && apply.data && (
         <div className='space-y-4' role='status'>
-          <h3 className='font-semibold'>{t('Metadata sync completed')}</h3>
+          <Heading variant='dialog-title' level={3}>
+            {t('Metadata sync completed')}
+          </Heading>
           <p>
             {t(
               '{{created}} models created, {{updated}} models updated, {{vendors}} vendors created.',

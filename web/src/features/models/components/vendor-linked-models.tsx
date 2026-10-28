@@ -102,7 +102,8 @@ export function VendorLinkedModels({
       cell: ({ row }) => (
         <Button
           variant='link'
-          className='text-foreground h-auto max-w-72 min-w-0 justify-start p-0 font-mono'
+          size='inline'
+          className='text-foreground text-mono max-w-72 min-w-0 justify-start font-mono'
           title={row.original.model_name}
           onClick={() => setModel(row.original)}
         >
@@ -179,7 +180,7 @@ export function VendorLinkedModels({
           {t('Open filtered model list')}
         </Button>
       </div>
-      <p className='text-muted-foreground text-xs'>
+      <p className='text-muted-foreground text-sm'>
         {t(
           'Linked records are counted once. Matching rules show their covered models separately.'
         )}

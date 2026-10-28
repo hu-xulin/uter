@@ -20,7 +20,6 @@ import { api, type ApiRequestConfig } from '@/lib/api'
 import { createServerError } from '@/lib/server-error-message'
 
 import { parseMarketplaceIndex } from './lib/marketplace'
-
 import type {
   ApiResponse,
   MarketplaceIndex,

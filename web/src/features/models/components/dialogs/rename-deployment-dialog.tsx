@@ -127,7 +127,7 @@ export function RenameDeploymentDialog({
           </Button>
           <Button onClick={() => void onSubmit()} disabled={!canSubmit}>
             {isSubmitting ? (
-              <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+              <Loader2 className='mr-2 h-4.5 w-4.5 animate-spin' />
             ) : null}
             {t('Rename')}
           </Button>
@@ -137,7 +137,7 @@ export function RenameDeploymentDialog({
       <div className='space-y-2'>
         <div className='text-muted-foreground text-sm'>
           {t('Deployment ID')}:{' '}
-          <span className='font-mono'>{deploymentId}</span>
+          <span className='text-mono font-mono'>{deploymentId}</span>
         </div>
         <Input
           placeholder={t('Enter a new name')}

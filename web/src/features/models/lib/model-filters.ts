@@ -16,8 +16,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
-import { modelPricingDisplay } from '@/features/model-pricing/pricing'
 import type { ModelPricingEntry } from '@/features/model-pricing/api'
+import { modelPricingDisplay } from '@/features/model-pricing/pricing'
 import { getDynamicPricingSummary } from '@/features/pricing/lib/dynamic-price'
 
 import type { ModelMetadataFilter, ModelPricingFilter } from '../types'
@@ -94,7 +94,10 @@ export function classifyModelPricing(
   const effective = entry.effective ?? {}
 
   const mode = effective['billing_setting.billing_mode']
-  if (mode === 'tiered_expr' && isConfigured(effective['billing_setting.billing_expr'])) {
+  if (
+    mode === 'tiered_expr' &&
+    isConfigured(effective['billing_setting.billing_expr'])
+  ) {
     return 'expression'
   }
   const pluginExprs = effective['billing_setting.plugin_billing_expr']

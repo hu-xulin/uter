@@ -16,8 +16,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
-import type { ModelPricingEntry } from '@/features/model-pricing/api'
 import { describe, expect, it } from 'vitest'
+
+import type { ModelPricingEntry } from '@/features/model-pricing/api'
 
 import {
   classifyModelMetadata,
@@ -135,12 +136,12 @@ describe('classifyModelPricing', () => {
   it('treats a saved zero as configured, not missing', () => {
     // A free model is deliberately priced at 0; treating 0 as absent would
     // put it in the wrong bucket.
-    expect(
-      classifyModelPricing(entry({ configured: { ModelRatio: 0 } }))
-    ).toBe('standard')
-    expect(
-      classifyModelPricing(entry({ configured: { ModelPrice: 0 } }))
-    ).toBe('expression')
+    expect(classifyModelPricing(entry({ configured: { ModelRatio: 0 } }))).toBe(
+      'standard'
+    )
+    expect(classifyModelPricing(entry({ configured: { ModelPrice: 0 } }))).toBe(
+      'expression'
+    )
   })
 
   it('reports an entry with nothing saved and no default as unset', () => {
@@ -180,21 +181,31 @@ describe('classifyPricingState', () => {
     )
     expect(classifyPricingState(undefined, 'example', 'error')).toBe('error')
     expect(
-      classifyPricingState(entry({ configured: { ModelRatio: 2.5 } }), 'e', 'loading')
+      classifyPricingState(
+        entry({ configured: { ModelRatio: 2.5 } }),
+        'e',
+        'loading'
+      )
     ).toBe('loading')
   })
 
   it('falls through to the saved-configuration buckets without an expression', () => {
     expect(classifyPricingState(undefined, 'example')).toBe('unset')
     expect(
-      classifyPricingState(entry({ configured: { ModelRatio: 2.5 } }), 'example')
+      classifyPricingState(
+        entry({ configured: { ModelRatio: 2.5 } }),
+        'example'
+      )
     ).toBe('standard')
     expect(
-      classifyPricingState(entry({ configured: { ModelPrice: 0.3 } }), 'example')
+      classifyPricingState(
+        entry({ configured: { ModelPrice: 0.3 } }),
+        'example'
+      )
     ).toBe('expression')
-    expect(classifyPricingState(entry({ effective: { ModelRatio: 2.5 } }), 'example')).toBe(
-      'unconfigured'
-    )
+    expect(
+      classifyPricingState(entry({ effective: { ModelRatio: 2.5 } }), 'example')
+    ).toBe('unconfigured')
   })
 })
 
