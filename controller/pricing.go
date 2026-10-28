@@ -139,12 +139,16 @@ func normalizePricingSource(raw string) string {
 // resolveOfficialPrices builds the per-model reference price map the plaza uses
 // for the strike-through official price and the discount badge.
 //
-// The selected source picks the primary preset; the remaining gaps are filled
-// from the other preset because their model coverage is complementary (e.g. the
-// official preset lacks many Alibaba/Qwen entries that models.dev has). Without
-// that fill a model with a known upstream list price would have no reference at
-// all and the plaza would fall back to the platform's own — possibly discounted
-// — price and present it as the "official" one.
+// Priority:
+//  1. The upstream reference captured by the last channel sync (创梦 /
+//     DreamRouter). It is the channel's own catalogue price, so it covers every
+//     model the channel sells — including private and newly released names that
+//     no public preset knows. Without it those cards render no strike-through
+//     price and no discount badge at all ("some discounts never show up").
+//  2. The selected preset, which is the reference for models the channel does
+//     not carry.
+//  3. The sibling preset, because their model coverage is complementary (e.g.
+//     the official preset lacks many Alibaba/Qwen entries that models.dev has).
 //
 // getPresetModelRatiosNonBlocking hands out a private copy of the cached preset,
 // so the gap fill below mutates only that copy. Mutating the shared cache would
@@ -162,7 +166,15 @@ func resolveOfficialPrices(pricingSource string) map[string]map[string]float64 {
 	if referencePresetID == modelsDevPresetID {
 		fallbackPresetID = officialRatioPresetID
 	}
-	merged := getPresetModelRatiosNonBlocking(referencePresetID)
+	merged := map[string]map[string]float64{}
+	for modelName, ratios := range service.LoadDreamRouterOfficialReference() {
+		merged[modelName] = ratios
+	}
+	for modelName, ratios := range getPresetModelRatiosNonBlocking(referencePresetID) {
+		if _, ok := merged[modelName]; !ok {
+			merged[modelName] = ratios
+		}
+	}
 	for modelName, ratios := range getPresetModelRatiosNonBlocking(fallbackPresetID) {
 		if _, ok := merged[modelName]; !ok {
 			merged[modelName] = ratios

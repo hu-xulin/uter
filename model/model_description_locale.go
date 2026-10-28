@@ -311,8 +311,9 @@ func NormalizeModelDescriptionLocale(locale string) (string, bool) {
 // normalizeModelDescriptions 抹平单字段 Description 与多语 Descriptions 的分歧。
 //
 // 规则：
-//   - Descriptions["en"] 为空而 Description 非空时，用 Description 补齐英文位，
-//     这样只填了单字段的历史数据也能立刻享受多语渲染；
+//   - 单字段非空时，按**检测出的语种**补位（中文描述进 "zh"，英文进 "en"），
+//     绝不无条件写 "en"——那会把中文描述塞进英文位，英文访客直接看到中文，
+//     且后续补译会把中文当英文源；
 //   - Description 为空而英文位有值时，回写 Description，保持旧调用方可用；
 //   - 其余语种一律以 Descriptions 为准，不被单字段覆盖。
 func normalizeModelDescriptions(description string, descriptions LocalizedDescription) (string, LocalizedDescription) {
@@ -321,10 +322,13 @@ func normalizeModelDescriptions(description string, descriptions LocalizedDescri
 		if description == "" {
 			return "", nil
 		}
-		return description, LocalizedDescription{"en": description}
+		return description, LocalizedDescription{detectDescriptionLocale(description): description}
 	}
-	if strings.TrimSpace(descriptions["en"]) == "" && description != "" {
-		descriptions["en"] = description
+	if description != "" {
+		locale := detectDescriptionLocale(description)
+		if strings.TrimSpace(descriptions[locale]) == "" {
+			descriptions[locale] = description
+		}
 	}
 	if description == "" {
 		description = strings.TrimSpace(descriptions["en"])
