@@ -95,7 +95,20 @@ const OVERLAY_ALLOWLIST = [
  * `docs/design-system/exceptions.md` 登记编号与影响范围；③ 说明为什么
  * 无法用 Token 表达。没有理由的例外等于没有规范。
  */
-const ALLOWLIST = []
+/**
+ * 逐条登记的真例外。每条必须：① `reason` 写明为什么无法用 Token 表达；
+ * ② 在 `docs/design-system/exceptions.md` 登记编号与影响范围。
+ */
+const ALLOWLIST = [
+  {
+    rules: ['T7'],
+    match: /^features\/home\/components\/sections\/hero\.tsx$/,
+    reason:
+      '首屏品牌渐变标题「直达全球大模型」须与上游 new-api 逐类一致' +
+      '（from-blue-400 via-violet-400 to-purple-500）。chart-* 会随主题预设漂移，' +
+      '无法保证跨主题恒定与上游一致。',
+  },
+]
 
 const RULES = {
   T1: '字号阶梯重复声明（--text-* 只能出现在唯一来源）',

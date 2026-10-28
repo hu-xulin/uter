@@ -154,11 +154,12 @@ export function Hero(props: HeroProps) {
                 </>
               )
             })()}
-            {/* 首屏唯一的多色渐变。用 `chart-1/3/4`（蓝 → 紫 → 洋红）而不是
-                `blue-400 / violet-400 / purple-500`：调色板直用色是 T7 违规，
-                而 `chart-*` 是全站唯一登记过的多序列分类色阶，色相与原先几乎
-                一致（肉眼无差别），换掉只是为了让颜色走 Token、跟随主题。 */}
-            <span className='from-chart-1 via-chart-3 to-chart-4 bg-gradient-to-r bg-clip-text text-transparent'>
+            {/* 首屏唯一的多色渐变，与上游 new-api 保持逐类一致：
+                `from-blue-400 via-violet-400 to-purple-500`（蓝 → 紫 → 洋红）。
+                不走 `chart-*` Token：chart 色阶会随主题预设漂移（绿色系预设下
+                渐变会变绿），而品牌首屏渐变需要跨主题恒定，且要与上游渲染
+                完全一致。已登记 ALLOWLIST（见 exceptions.md）。 */}
+            <span className='bg-gradient-to-r from-blue-400 via-violet-400 to-purple-500 bg-clip-text text-transparent'>
               {t('Vast Range of AI Models')}
             </span>
           </Heading>
