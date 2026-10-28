@@ -5,9 +5,10 @@
 `scripts/check-design-tokens.mjs` 的 `ALLOWLIST` —— 两处必须同步，只改一处
 说明例外已经失控。
 
-## 现状：**零例外**（2026-10-28）
+## 现状：**1 条例外**（2026-10-29）
 
-`ALLOWLIST` 是空的。门禁 `node scripts/check-design-tokens.mjs --strict`
+`ALLOWLIST` 有一条登记（E25，首屏渐变标题的上游调色板直用色）。门禁
+`node scripts/check-design-tokens.mjs --strict`
 的通过口径：
 
 | 计数项                     | 含义                                                 | 是否违规 |
@@ -248,7 +249,7 @@ fixed 浮动操作条，以及 `--ds-elevation-raised`（拖拽中的元素）�
      原生元素，套 Button 会出现两层 base-ui 原语；
   3. VChart 图例是 canvas 之外的 DOM 覆盖层，点击区域按图表坐标系定位。
 - **约束**：
-  1. 必须显式声明 2px 焦点环（`focus-visible:ring-2 focus-visible:ring-ring`）
+  1. 必须显式声明 1px 焦点环（`focus-visible:ring-1 focus-visible:ring-ring`）
      或依赖 `design-system/foundations/accessibility.css` 的全局
      `:where(a, button, [role='button'], [tabindex]):focus-visible`；
      写了 `outline-none` 的必须自带环 —— 现存 3 处（`checkin-calendar-card.tsx`、
@@ -441,6 +442,22 @@ fixed 浮动操作条，以及 `--ds-elevation-raised`（拖拽中的元素）�
 - **退出条件**：浅色溢价改用 `bg-destructive`（`#DC2626`，**4.83:1**）即达 AA；深色折扣
   需要新增一档「深色底上压得住白字」的深绿 Token 并同时声明两主题。守卫
   `design-system/__tests__/status-badge-contrast.test.ts` 与底色一起断言，改色会立刻红。
+
+### E25 · 首屏渐变标题走上游调色板直用色（T7）
+
+- **位置**：`features/home/components/sections/hero.tsx` —— 首屏主标题
+  「直达全球大模型」（Vast Range of AI Models）的渐变行。
+- **差异**：T7 禁止调色板直用色（`from-blue-400 …`），颜色应走 `chart-*` 等
+  语义 Token。此处按用户要求与上游 new-api 保持**逐类一致**：
+  `bg-gradient-to-r from-blue-400 via-violet-400 to-purple-500 bg-clip-text
+  text-transparent`（蓝 → 紫 → 洋红）。
+- **理由**：上游同位置就是这组类名，须逐类复刻；此前改用的 `chart-1/3/4`
+  会随主题预设漂移（绿色系预设下渐变变绿），无法保证跨主题恒定，也与上游
+  渲染不一致。这是品牌首屏的固定视觉资产，不是随主题流动的语义色。
+- **影响范围**：只此一处，首屏渐变标题一行。
+- **已做的补偿**：代码内注释写明来源与不变量；`ALLOWLIST` 同步登记本条。
+- **退出条件**：若上游将渐变改为语义 Token 或产品放弃与上游对齐首屏视觉，
+  即改回 Token 写法并删除本条。
 
 ## 新增例外的流程
 

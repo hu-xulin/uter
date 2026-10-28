@@ -179,7 +179,7 @@ export function NumericSpinnerInput({
             onChange={handleInputChange}
             onBlur={commitValue}
             onKeyDown={handleKeyDown}
-            className='text-mono focus-visible:ring-ring h-7 w-10 rounded-sm bg-transparent text-center font-mono outline-none focus-visible:ring-2'
+            className='text-mono focus-visible:ring-ring h-7 w-10 rounded-sm bg-transparent text-center font-mono outline-none focus-visible:ring-1'
             autoFocus
           />
         ) : (

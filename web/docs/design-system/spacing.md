@@ -110,19 +110,20 @@ escape hatch，7 档里没有任何一档能表达「和父级一样」——写
 | `--ds-stroke-width`       | 1px        | 卡片、弹窗、表格分隔线     |
 | `--ds-color-border`       | `--border` | 默认描边                   |
 | `--ds-color-border-input` | `--input`  | 输入控件描边               |
-| `--ds-focus-ring-width`   | 2px        | 焦点外扩环（原生元素兜底） |
+| `--ds-focus-ring-width`   | 1px        | 焦点外扩环（原生元素兜底） |
 
 层级靠「1px 描边 + 表面色差」表达，不靠投影。
 
-**焦点环默认 2px**，包括「键盘用户的第一个焦点」（`skip-to-main`）、拖拽
-手柄（`resizable`）与自研输入原语（`tag-input` 的 `focus-within`）。
-1px 焦点环在深色主题与低对比显示器上几乎看不见，不是可随意调小的项。
+**焦点环恒 1px**（规范 §1.4 `stroke-focus` Outside 1px / §1.7），包括「键盘
+用户的第一个焦点」（`skip-to-main`）、拖拽手柄（`resizable`）、自研输入原语
+（`tag-input` 的 `focus-within`）与按钮。原生元素走 `--ds-focus-ring-width`
+的 `outline`，组件走 `focus-visible:ring-1` —— 两条路径同宽、同色（`--ring`）、
+都贴边（`outline-offset: 0`），同一次 Tab 序列里环不会变粗细。
 
-**唯一例外：表单控件用 1px**。`Input` / `Textarea` / `Select` 的触发器本身
-就是 1px 边框，外扩 2px 环会读成「双线框」。规范 §2.1 给这三个控件写的是
-1px 环，代码与 `--ds-focus-ring-width`（原生兜底，仍是 2px）因此不同源 ——
-前者是 `focus-visible:ring-1`，后者是 `outline`。`spec-guards` 把 1px 锁在
-这三个文件里，其它组件写 1px 依然违规。
+> 2026-10-29 变更：此前是「表单控件 1px、其余 2px」两档。两档并存的代价是
+> 同一次 Tab 里环会跳（按钮 2px → 输入框 1px → 按钮 2px），而且 2px 环压在
+> 卡片/输入框的 1px 描边上会被读成双线框。现在 `spec-guards` 只认 1px，2px /
+> 3px / 4px 在任何位置都红；`ring-0` 仍允许（InputGroup 把环让给容器）。
 
 **非 1px 描边只有两类，且都不是「容器的边框」：**
 

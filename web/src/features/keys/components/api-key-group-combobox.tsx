@@ -105,11 +105,11 @@ export function ApiKeyGroupCombobox({
             data-auto-group-effect={isAutoSelected ? 'trigger' : undefined}
             disabled={disabled}
             className={cn(
-              // 焦点环按规范 §1.7：2px、`ring` 满色、贴边 offset 0。此前是
+              // 焦点环按规范 §1.4 / §1.7：1px、`ring` 满色、贴边 offset 0。此前是
               // `ring-[3px]` + `ring-ring/20` 的半透明环，宽度和颜色都不是全站
               // 那一套。`data-popup-open` 是下拉打开态，视觉上等同聚焦，所以
               // 跟焦点环用同一档。
-              'border-input bg-muted/40 hover:bg-muted/55 hover:text-foreground active:bg-background data-popup-open:border-ring data-popup-open:bg-background data-popup-open:ring-2 data-popup-open:ring-ring relative h-auto min-h-14 w-full justify-between gap-2 rounded-lg px-3 py-2 text-start shadow-none transition-[background-color,border-color,box-shadow] ds-motion-fast sm:min-h-20 sm:gap-3 sm:px-4 sm:py-3',
+              'border-input bg-muted/40 hover:bg-muted/55 hover:text-foreground active:bg-background data-popup-open:border-ring data-popup-open:bg-background data-popup-open:ring-1 data-popup-open:ring-ring relative h-auto min-h-14 w-full justify-between gap-2 rounded-lg px-3 py-2 text-start shadow-none transition-[background-color,border-color,box-shadow] ds-motion-fast sm:min-h-20 sm:gap-3 sm:px-4 sm:py-3',
               isAutoSelected &&
                 cn(
                   AUTO_GROUP_FRAME_CLASS_NAME,
