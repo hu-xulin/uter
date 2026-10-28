@@ -29,11 +29,11 @@ import type {
   BillingUsageSchema,
   BillingUsageExample,
 } from '@/features/pricing/types'
+import type { PlatformModelPricing } from '@/features/system-settings/models/model-pricing-core'
 import { api } from '@/lib/api'
 import { ROLE } from '@/lib/roles'
 import { createServerError } from '@/lib/server-error-message'
 import { useAuthStore } from '@/stores/auth-store'
-import type { PlatformModelPricing } from '@/features/system-settings/models/model-pricing-core'
 
 import {
   PRICING_KEYS,
@@ -202,8 +202,10 @@ export async function getOfficialPricingReference(): Promise<OfficialPricingRefe
   }
   return {
     officialPrices:
-      (res.data.data?.official_prices as Record<string, Record<string, number>>) ??
-      {},
+      (res.data.data?.official_prices as Record<
+        string,
+        Record<string, number>
+      >) ?? {},
     pricingSource: (res.data.data?.pricing_source as string) ?? 'official',
     platformPrices,
   }
@@ -236,9 +238,7 @@ export async function getPresetPrices(
   if (!res.data.success) {
     throw createServerError(res.data, t('Failed to load model pricing'))
   }
-  return (
-    (res.data.data?.prices as Record<string, Record<string, number>>) ?? {}
-  )
+  return (res.data.data?.prices as Record<string, Record<string, number>>) ?? {}
 }
 
 // Only dirty model fields are applied to stored configuration. Display-only

@@ -84,7 +84,7 @@ export function UptimeSparkline(props: UptimeSparklineProps) {
 
   const containerHeight = size === 'sm' ? 'h-3.5' : 'h-5'
   const barWidth = size === 'sm' ? 'w-[3px]' : 'w-1'
-  const gap = size === 'sm' ? 'gap-px' : 'gap-[2px]'
+  const gap = size === 'sm' ? 'gap-px' : 'gap-0.5'
 
   return (
     <div className={cn('flex items-center gap-2', props.className)}>
@@ -166,13 +166,13 @@ export function UptimeStatusRow(props: {
     StatusIcon = Activity
   }
 
-  let statusColour = 'text-rose-600 dark:text-rose-400'
+  let statusColour = 'text-destructive'
   if (status === 'operational') {
-    statusColour = 'text-emerald-600 dark:text-emerald-400'
+    statusColour = 'text-success'
   } else if (status === 'minor') {
-    statusColour = 'text-emerald-600 dark:text-emerald-400'
+    statusColour = 'text-success'
   } else if (status === 'degraded') {
-    statusColour = 'text-amber-600 dark:text-amber-400'
+    statusColour = 'text-warning'
   }
 
   let statusLabel = t('Significant outages detected')

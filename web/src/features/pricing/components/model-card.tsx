@@ -23,6 +23,7 @@ import { useTranslation } from 'react-i18next'
 import { CopyButton } from '@/components/copy-button'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card'
+import { Heading, Text } from '@/design-system'
 import type { VisualPrice } from '@/features/pricing/lib/billing-expression/visual'
 import {
   officialRequestPriceUSD,
@@ -57,6 +58,7 @@ import {
   formatUSDTokenPrice,
   getOfficialPresetRequestUSD,
   getOfficialPresetTokenUSD,
+  getMarkupMultiplier,
   getTokenPriceUSD,
 } from '../lib/price'
 import { taskPriceLabel, taskUsageUnitLabel } from '../lib/task-price-display'
@@ -194,7 +196,7 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
           <span className='text-warning'>
             {t('Special billing expression')}
           </span>
-          <code className='text-muted-foreground mt-1 line-clamp-2 block font-mono text-mono break-all'>
+          <code className='text-muted-foreground text-mono mt-1 line-clamp-2 block font-mono break-all'>
             {dynamicSummary.rawExpression}
           </code>
         </div>
@@ -270,6 +272,8 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
                 const dimPercent = dimDiscount
                   ? Math.round((1 - uterUSD / preset.usd) * 100)
                   : 0
+                // 溢价：Uter 价高于官方价时给 `x1.05`，不再什么都不显示。
+                const dimMarkup = getMarkupMultiplier(uterUSD, preset.usd)
                 return (
                   <span
                     key={`o-${entry.key}`}
@@ -283,8 +287,16 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
                       / {unitLabelFor(entry)}
                     </span>
                     {dimDiscount && (
-                      <span className='ml-1 font-bold text-emerald-600'>
+                      <span className='text-success-soft-foreground ml-1 font-semibold'>
                         -{dimPercent}%
+                      </span>
+                    )}
+                    {dimMarkup != null && (
+                      <span
+                        className='text-warning-soft-foreground ml-1 font-semibold'
+                        title={`+${Math.round((dimMarkup - 1) * 100)}%`}
+                      >
+                        x{dimMarkup}
                       </span>
                     )}
                   </span>
@@ -319,7 +331,7 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
                     </span>
                   )}
                   {isDiscount && (
-                    <span className='ml-1 font-bold text-emerald-600'>
+                    <span className='text-success-soft-foreground ml-1 font-semibold'>
                       -{discountPercent}%
                     </span>
                   )}
@@ -430,6 +442,7 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
               ),
           isDiscount,
           percent,
+          markup: getMarkupMultiplier(uterVal, officialVal),
         }
       })
       .filter((d) => d != null)
@@ -472,8 +485,16 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
               {d.official}
             </span>
             {d.isDiscount && (
-              <span className='ml-1 font-bold text-emerald-600'>
+              <span className='text-success-soft-foreground ml-1 font-semibold'>
                 -{d.percent}%
+              </span>
+            )}
+            {d.markup != null && (
+              <span
+                className='text-warning-soft-foreground ml-1 font-semibold'
+                title={`+${Math.round((d.markup - 1) * 100)}%`}
+              >
+                x{d.markup}
               </span>
             )}
           </span>
@@ -526,6 +547,7 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
             ),
         isDiscount,
         percent,
+        markup: getMarkupMultiplier(uterVal, officialVal),
       },
     ]
     priceSummary = (
@@ -567,8 +589,16 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
               {d.official}
             </span>
             {d.isDiscount && (
-              <span className='ml-1 font-bold text-emerald-600'>
+              <span className='text-success-soft-foreground ml-1 font-semibold'>
                 -{d.percent}%
+              </span>
+            )}
+            {d.markup != null && (
+              <span
+                className='text-warning-soft-foreground ml-1 font-semibold'
+                title={`+${Math.round((d.markup - 1) * 100)}%`}
+              >
+                x{d.markup}
               </span>
             )}
           </span>
@@ -590,14 +620,17 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
           )}
         >
           {modelIcon || (
-            <span className='text-muted-foreground text-sm font-bold'>
+            <span className='text-muted-foreground text-sm font-semibold'>
               {initial}
             </span>
           )}
         </div>
         <div className='min-w-0 flex-1'>
-          <h3
-            className='line-clamp-2 font-mono text-sm leading-[var(--ds-line-mono-dense)] font-semibold [overflow-wrap:anywhere]'
+          <Heading
+            variant='mono-title'
+            level={3}
+            clamp={2}
+            className='[overflow-wrap:anywhere]'
             title={props.model.model_name}
           >
             {props.model.model_name}
@@ -607,26 +640,29 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
               selectedGroup={props.selectedGroup}
               className='ml-1.5 align-middle'
             />
-          </h3>
+          </Heading>
           {props.model.vendor_name && (
-            <p
-              className='text-muted-foreground mt-1 truncate text-xs'
+            <Text
+              as='p'
+              variant='caption'
+              color='secondary'
+              className='mt-1 truncate'
               title={props.model.vendor_name}
             >
               {props.model.vendor_name}
-            </p>
+            </Text>
           )}
         </div>
         <CopyButton
           value={props.model.model_name}
           tooltip={t('Copy model name')}
           className='size-7'
-          iconClassName='size-3.5'
+          iconClassName='size-4'
         />
       </CardHeader>
       <CardContent className='flex flex-1 flex-col gap-3'>
         <div className='flex min-w-0 flex-col gap-1.5'>
-          <p className='text-muted-foreground line-clamp-2 text-base leading-6 break-words'>
+          <p className='text-muted-foreground line-clamp-2 text-sm break-words'>
             {/* 回退链必须包含后端已解析好的单值：只有 description、尚无
                 多语副本的历史模型全靠它显示，否则会误报「暂无描述」。 */}
             {localizedDescription ||
@@ -738,7 +774,7 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
             onClick={() => props.onClick(props.model.model_name || '')}
           >
             {t('Details')}
-            <ChevronRight aria-hidden className='size-3.5' />
+            <ChevronRight aria-hidden className='size-4.5' />
           </Button>
         </ModelPerfBadge>
       </CardFooter>

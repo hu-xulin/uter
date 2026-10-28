@@ -29,7 +29,11 @@ import {
   isUnconfiguredTaskUsageModel,
 } from '../lib/dynamic-price'
 import { getDisplayGroupRatio, isTokenBasedModel } from '../lib/model-helpers'
-import { formatOfficialPrice, formatPrice, stripTrailingZeros } from '../lib/price'
+import {
+  formatOfficialPrice,
+  formatPrice,
+  stripTrailingZeros,
+} from '../lib/price'
 import type { PricingModel } from '../types'
 import type { ModelPriceCellOptions } from './model-price-cell'
 
@@ -78,7 +82,7 @@ export function CachedPriceCell(props: {
   if (dynamicSummary) {
     if (dynamicSummary.isSpecialExpression) {
       return (
-        <span className='text-muted-foreground/50 text-xs'>
+        <span className='text-muted-foreground text-sm'>
           {t('Special billing expression')}
         </span>
       )
@@ -89,7 +93,7 @@ export function CachedPriceCell(props: {
         entry.field === 'cacheReadPrice' || entry.field === 'imageCachePrice'
     )
     if (!cacheEntries.length) {
-      return <span className='text-muted-foreground/30 text-xs'>—</span>
+      return <span className='text-muted-foreground text-sm'>—</span>
     }
 
     return (
@@ -111,21 +115,19 @@ export function CachedPriceCell(props: {
             </span>
           </div>
         ))}
-        <div className='text-muted-foreground/50 text-xs'>
-          / {tokenUnitLabel}
-        </div>
+        <div className='text-muted-foreground text-sm'>/ {tokenUnitLabel}</div>
       </div>
     )
   }
 
   if (isUnconfiguredTaskUsageModel(model)) {
-    return <span className='text-muted-foreground/30 text-xs'>—</span>
+    return <span className='text-muted-foreground text-sm'>—</span>
   }
 
   const isTokenBased = isTokenBasedModel(model)
 
   if (!isTokenBased || model.cache_ratio == null) {
-    return <span className='text-muted-foreground/30 text-xs'>—</span>
+    return <span className='text-muted-foreground text-sm'>—</span>
   }
 
   const cachedPrice = stripTrailingZeros(
@@ -155,13 +157,11 @@ export function CachedPriceCell(props: {
   return (
     <div className='max-w-full min-w-0'>
       <span className='text-sm tabular-nums'>{cachedPrice}</span>
-      <div className='text-muted-foreground/50 text-xs'>
-        / {tokenUnitLabel}
-      </div>
+      <div className='text-muted-foreground text-sm'>/ {tokenUnitLabel}</div>
       {cacheDiscounted && (
-        <div className='text-muted-foreground/50 text-xs tabular-nums'>
-          {t('Official')}:{' '}
-          <span className='line-through'>{officialCache}</span> / {tokenUnitLabel}
+        <div className='text-muted-foreground text-sm tabular-nums'>
+          {t('Official')}: <span className='line-through'>{officialCache}</span>{' '}
+          / {tokenUnitLabel}
         </div>
       )}
     </div>

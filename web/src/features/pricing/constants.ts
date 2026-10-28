@@ -67,7 +67,9 @@ export function getQuotaTypeLabels(
   t: TFunction
 ): Record<QuotaTypeOption, string> {
   return {
-    [QUOTA_TYPES.ALL]: t('All Models'),
+    // 命名与「端点类型」分区的「所有类型」对齐：这一分区的选项是**计费类型**
+    // （按量 / 按次 / 任务），不是模型，所以「所有…」不能叫「所有模型」。
+    [QUOTA_TYPES.ALL]: t('All Types'),
     [QUOTA_TYPES.TOKEN]: t('Token-based'),
     [QUOTA_TYPES.REQUEST]: t('Per Request'),
     [QUOTA_TYPES.TASK]: t('Task billing'),

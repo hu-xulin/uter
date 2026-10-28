@@ -374,7 +374,12 @@ export function formatOfficialPriceAtRatio(
     return '-'
   }
   const priceInUSD = calculateTokenPrice(model, type, ratio)
-  const price = applyRechargeRate(priceInUSD, showWithRecharge, priceRate, usdExchangeRate)
+  const price = applyRechargeRate(
+    priceInUSD,
+    showWithRecharge,
+    priceRate,
+    usdExchangeRate
+  )
   return formatBillingCurrencyFromUSD(price / TOKEN_UNIT_DIVISORS[tokenUnit], {
     showSymbol: showCurrencySymbol,
     digitsLarge: 4,
@@ -393,7 +398,11 @@ export function getOfficialReferenceRatio(
   officialPrices?: Record<string, Record<string, number>>
 ): number | undefined {
   const ref = officialPrices?.[model.model_name]
-  if (ref && typeof ref.model_ratio === 'number' && Number.isFinite(ref.model_ratio)) {
+  if (
+    ref &&
+    typeof ref.model_ratio === 'number' &&
+    Number.isFinite(ref.model_ratio)
+  ) {
     return ref.model_ratio
   }
   return undefined
@@ -491,7 +500,12 @@ export function formatUSDRequestPrice(
   usdExchangeRate = 1,
   showCurrencySymbol = true
 ): string {
-  const price = applyRechargeRate(usd, showWithRecharge, priceRate, usdExchangeRate)
+  const price = applyRechargeRate(
+    usd,
+    showWithRecharge,
+    priceRate,
+    usdExchangeRate
+  )
   return formatBillingCurrencyFromUSD(price, {
     showSymbol: showCurrencySymbol,
     digitsLarge: 4,
@@ -521,19 +535,81 @@ export type DiscountInfo = {
   hasDiscount: boolean
   /** Percentage saved vs official, e.g. 10 for "省 10%". */
   percent: number
-  /** Chinese "zhe" multiplier, e.g. 9 for "9折". */
+  /** Chinese "zhe" multiplier, e.g. 9 for a 0.9 price ratio (rendered `x0.9`). */
   zhe: number
+  /**
+   * 溢价倍数（Uter 价 ÷ 官方价），**只在严格大于 1 时非空**。
+   *
+   * 角标过去只表达「比官方便宜」：算出来比官方贵时什么都不显示，用户看到的
+   * 是一张没有任何提示的卡片，无法判断自己正在被加价。这里把同一个比例反向
+   * 暴露出来，调用点据此渲染 `x1.05` 这类溢价角标。
+   *
+   * 已按两位小数取整并过滤：取整后 ≤ 1（即溢价 < 0.5%）返回 null —— 否则会
+   * 渲染出 `x1.00` 这种「显示加价但数字看不出加价」的角标。
+   */
+  markup: number | null
+}
+
+/**
+ * 单维度溢价倍数：`uterUSD ÷ officialUSD`，两位小数取整后仍 > 1 才返回。
+ *
+ * 与 `DiscountInfo.markup` 同一口径（同一个取整规则），保证「模型名后的角标」
+ * 与「价格行里的角标」不会一个说 x1.05、另一个说 x1.00。
+ */
+export function getMarkupMultiplier(
+  uter: number,
+  official: number
+): number | null {
+  if (
+    !Number.isFinite(uter) ||
+    !Number.isFinite(official) ||
+    official <= 0 ||
+    uter <= 0
+  ) {
+    return null
+  }
+  const rounded = Math.round((uter / official) * 100) / 100
+  return rounded > 1 ? rounded : null
+}
+
+/**
+ * 由「Uter 价 ÷ 官方价」的比值派生角标数据。
+ *
+ * 折扣与溢价是同一个比例的两侧，必须从同一个 ratio 派生，否则会出现
+ * 「打了 8 折却显示 x1.05」这种自相矛盾的角标。
+ */
+function badgeFromRatio(ratio: number): DiscountInfo {
+  if (!Number.isFinite(ratio) || ratio <= 0) {
+    return { hasDiscount: false, percent: 0, zhe: 10, markup: null }
+  }
+  if (ratio < 1 - 1e-9) {
+    return {
+      hasDiscount: true,
+      percent: (1 - ratio) * 100,
+      zhe: ratio * 10,
+      markup: null,
+    }
+  }
+  // 两位小数取整后仍然 > 1 才算「看得见的溢价」。
+  const rounded = Math.round(ratio * 100) / 100
+  return {
+    hasDiscount: false,
+    percent: 0,
+    zhe: 10,
+    markup: rounded > 1 ? rounded : null,
+  }
 }
 
 /**
  * Compare the platform price (model_ratio adjusted by the viewer's group
  * ratio) against the official preset price. A discount exists when the
- * platform price is lower than the official price.
+ * platform price is lower than the official price; a markup (`x1.05`) exists
+ * when it is higher.
  *
  * When the selected pricing preset has no entry for this model, fall back to
  * comparing the group-adjusted price against the platform list price
  * (group_ratio = 1), so models discounted only via group ratio still show
- * the "xx折" badge.
+ * the `x0.9` badge.
  */
 export function getDiscountInfo(
   model: PricingModel,
@@ -543,6 +619,26 @@ export function getDiscountInfo(
   const official = getOfficialReferenceRatio(model, officialPrices)
   const platform = model.model_ratio
   const displayRatio = getDisplayGroupRatio(model, selectedGroup)
+
+  // Pay-per-request models (image / video) carry their price in `model_price`
+  // rather than `model_ratio`, so the ratio comparison below can never see
+  // them — every such card used to render without a discount badge even when
+  // the platform sells it below the upstream catalogue price.
+  if (model.quota_type === QUOTA_TYPE_VALUES.REQUEST) {
+    const officialRequest = officialPrices?.[model.model_name]?.model_price
+    const platformRequest = model.model_price
+    if (
+      typeof officialRequest === 'number' &&
+      Number.isFinite(officialRequest) &&
+      officialRequest > 0 &&
+      typeof platformRequest === 'number' &&
+      Number.isFinite(platformRequest) &&
+      platformRequest > 0
+    ) {
+      return badgeFromRatio((platformRequest * displayRatio) / officialRequest)
+    }
+    return { hasDiscount: false, percent: 0, zhe: 10, markup: null }
+  }
 
   // Expression-billed models keep the admin discount inside billing_expr
   // (model_ratio is not the effective price), so compare the cheapest token
@@ -556,19 +652,10 @@ export function getDiscountInfo(
   ) {
     const officialInputUSD = official * 2
     const effectiveInputUSD = dynamicInputUSD * displayRatio
-    if (
-      Number.isFinite(effectiveInputUSD) &&
-      effectiveInputUSD > 0 &&
-      effectiveInputUSD < officialInputUSD - 1e-9
-    ) {
-      const ratio = effectiveInputUSD / officialInputUSD
-      return {
-        hasDiscount: true,
-        percent: (1 - ratio) * 100,
-        zhe: ratio * 10,
-      }
+    if (Number.isFinite(effectiveInputUSD) && effectiveInputUSD > 0) {
+      return badgeFromRatio(effectiveInputUSD / officialInputUSD)
     }
-    return { hasDiscount: false, percent: 0, zhe: 10 }
+    return { hasDiscount: false, percent: 0, zhe: 10, markup: null }
   }
 
   if (
@@ -578,16 +665,7 @@ export function getDiscountInfo(
     Number.isFinite(platform) &&
     platform > 0
   ) {
-    const effectivePlatform = platform * displayRatio
-    if (effectivePlatform < official - 1e-9) {
-      const ratio = effectivePlatform / official
-      return {
-        hasDiscount: true,
-        percent: (1 - ratio) * 100,
-        zhe: ratio * 10,
-      }
-    }
-    return { hasDiscount: false, percent: 0, zhe: 10 }
+    return badgeFromRatio((platform * displayRatio) / official)
   }
 
   if (
@@ -600,8 +678,9 @@ export function getDiscountInfo(
       hasDiscount: true,
       percent: (1 - displayRatio) * 100,
       zhe: displayRatio * 10,
+      markup: null,
     }
   }
 
-  return { hasDiscount: false, percent: 0, zhe: 10 }
+  return { hasDiscount: false, percent: 0, zhe: 10, markup: null }
 }

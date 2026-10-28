@@ -66,7 +66,12 @@ describe('orderVendorsByModelCount', () => {
   })
 
   it('breaks model-count ties alphabetically by vendor name', () => {
-    const models = [model('Google'), model('Google'), model('Anthropic'), model('Anthropic')]
+    const models = [
+      model('Google'),
+      model('Google'),
+      model('Anthropic'),
+      model('Anthropic'),
+    ]
     const vendors = [vendor('Google'), vendor('Anthropic')]
 
     const ordered = orderVendorsByModelCount(models, vendors)

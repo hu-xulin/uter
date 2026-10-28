@@ -27,6 +27,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from '@/components/ui/collapsible'
+import { Heading } from '@/design-system'
 import { getLobeIcon, monoIconName } from '@/lib/lobe-icon'
 import { cn } from '@/lib/utils'
 
@@ -38,8 +39,9 @@ import {
   getQuotaTypeLabels,
 } from '../constants'
 import { hasTaskUsageSchema } from '../lib/dynamic-price'
-import { orderVendorsByModelCount } from '../lib/vendor-order'
 import { parseTags } from '../lib/filters'
+import { formatGroupRatio, groupRatioBadgeClass } from '../lib/group-ratio'
+import { orderVendorsByModelCount } from '../lib/vendor-order'
 import type { PricingModel, PricingVendor } from '../types'
 
 type FilterOption = {
@@ -47,6 +49,8 @@ type FilterOption = {
   label: string
   count?: number
   suffix?: string
+  /** 分组倍率（仅分组筛选带）：<1 才是真折扣，=1 是标准价。 */
+  suffixRatio?: number
   icon?: ReactNode
 }
 
@@ -55,6 +59,12 @@ type FilterSectionProps = {
   value: string
   options: FilterOption[]
   onChange: (value: string) => void
+}
+
+type FilterChipProps = {
+  option: FilterOption
+  active: boolean
+  onClick: () => void
 }
 
 export interface PricingSidebarProps {
@@ -85,25 +95,15 @@ function countBy(
   return models.reduce((count, model) => count + (predicate(model) ? 1 : 0), 0)
 }
 
-function formatGroupRatio(ratio: number | undefined): string | undefined {
-  if (ratio == null) return undefined
-  const formatted = Number.isInteger(ratio)
-    ? ratio.toString()
-    : ratio.toFixed(3).replace(/0+$/, '').replace(/\.$/, '')
-  return `x${formatted}`
-}
-
-function FilterChip(props: {
-  option: FilterOption
-  active: boolean
-  onClick: () => void
-}) {
+function FilterChip(props: FilterChipProps) {
   let badgeClass = 'bg-muted text-muted-foreground'
   if (props.option.suffix) {
-    badgeClass = 'bg-green-600/80 text-white'
+    badgeClass = groupRatioBadgeClass(props.option.suffixRatio)
   } else if (props.active) {
     // 选中态是品牌主色底，徽标跟着转白字，整块读起来才是一体的。
-    badgeClass = 'bg-primary-foreground/20 text-primary-foreground'
+    // 底色用 `primary-active` 而不是 20% 白蒙版：白字压在半透明白底上
+    // 只有约 3.3:1，12px 文字不达 AA；压在主色加深档上是 7.9:1。
+    badgeClass = 'bg-primary-active text-primary-foreground'
   }
   return (
     <Button
@@ -113,11 +113,16 @@ function FilterChip(props: {
       onClick={props.onClick}
       aria-pressed={props.active}
       className={cn(
-        'h-auto max-w-full gap-1.5 px-2 py-1 text-xs',
+        // 固定 32px 高：分组里「所有分组」没有倍数徽标，此前比带徽标的邻居
+        // 矮一截，同一列 chip 高度参差。定高后所有 chip 高度完全一致。
+        'h-8 max-w-full gap-1.5 px-2 text-xs',
+        // 一行一个，宽度占行宽的 2/3：长名（「SiliconFlow 硅基流动」）不再
+        // 被两列布局挤成省略号，右侧留出的 1/3 是固定的呼吸位，不用铺满整行。
+        'w-2/3 justify-start',
         // 选中态与工具栏的「标准/充值」分段控件同一套规则：品牌主色底 + 白字。
         // Base UI 的 Button 输出 aria-pressed（不是 data-state），故用 aria-pressed 变体。
         props.active &&
-          'aria-pressed:border-primary aria-pressed:bg-primary aria-pressed:text-primary-foreground aria-pressed:shadow-none aria-pressed:hover:bg-primary/90 aria-pressed:hover:text-primary-foreground'
+          'aria-pressed:border-primary aria-pressed:bg-primary aria-pressed:text-primary-foreground aria-pressed:shadow-none aria-pressed:hover:bg-primary-hover aria-pressed:hover:text-primary-foreground'
       )}
       title={props.option.label}
     >
@@ -126,7 +131,14 @@ function FilterChip(props: {
       )}
       <span className='truncate'>{props.option.label}</span>
       {(props.option.suffix || props.option.count != null) && (
-        <span className={cn('rounded-md px-1.5 py-0.5 text-xs', badgeClass)}>
+        <span
+          className={cn(
+            'shrink-0 rounded-md px-1.5 py-0.5 text-xs',
+            // 计数贴到 chip 右端，与左对齐的名称拉开距离。
+            'ml-auto',
+            badgeClass
+          )}
+        >
           {props.option.suffix ?? props.option.count}
         </span>
       )}
@@ -140,14 +152,24 @@ function FilterSection(props: FilterSectionProps) {
       defaultOpen
       className='border-border/70 border-b pb-3 last:border-b-0'
     >
-      <CollapsibleTrigger className='group flex w-full items-center justify-between py-2.5 text-left'>
-        <span className='text-foreground text-sm font-semibold'>
-          {props.title}
-        </span>
-        <ChevronDown className='text-muted-foreground size-4 transition-transform group-data-[panel-open]:rotate-180' />
-      </CollapsibleTrigger>
+      {/* 折叠组标题是卡片**内部**的分组标题：group-title 16/600/24。
+          此前是 14/600（text-sm font-semibold），属于规范硬规则 2 明令
+          禁止的「用 text-sm font-semibold 做分组标题」。
+
+          结构是 ARIA accordion 的标准写法：标题元素包住触发器，而不是
+          在 `<button>` 里塞一个 `<span>` 假装标题 —— button 的内容模型
+          只允许 phrasing content，塞不进 h4。 */}
+      <Heading variant='group-title' level={4}>
+        <CollapsibleTrigger className='group flex w-full items-center justify-between py-2.5 text-left'>
+          <span>{props.title}</span>
+          <ChevronDown className='text-muted-foreground size-4 transition-transform group-data-[panel-open]:rotate-180' />
+        </CollapsibleTrigger>
+      </Heading>
       <CollapsibleContent>
-        <div className='flex flex-wrap gap-1.5'>
+        {/* 一行一个：所有筛选按钮纵向排列，宽度由 FilterChip 固定为行宽的
+            2/3。此前「分组」「供应商」两列定宽、「标签」按内容瀑布流，同一张
+            侧栏里三种排法，长名还被挤成省略号。 */}
+        <div className='flex flex-col items-start gap-1.5'>
           {props.options.map((option) => (
             <FilterChip
               key={option.value}
@@ -172,11 +194,18 @@ export function PricingSidebar(props: PricingSidebarProps) {
   // name order to keep the list deterministic. "All Vendors" stays pinned
   // first because it resets the filter.
   const orderedVendors = orderVendorsByModelCount(props.models, props.vendors)
+
+  // 「所有…」chip 的徽标统一表示**该分区里可选项的数量**，不是模型总数。
+  // 此前五个分区（分组/供应商/标签/计费类型/端点类型）的「所有…」都显示模型
+  // 总数：同一串数字重复 5 遍，既看不出这一分区有多少个可选项，也和旁边
+  // 展示模型数的具体项混在一起。现在各分区各说各的：分组数、供应商数、
+  // 标签数、计费类型数、端点类型数。
   const vendorOptions: FilterOption[] = [
     {
       value: FILTER_ALL,
       label: t('All Vendors'),
-      count: props.models.length,
+      // 与下方列出的具体供应商数量一致（列表已剔除 0 模型的供应商）。
+      count: orderedVendors.length,
     },
     ...orderedVendors.map((vendor) => ({
       value: vendor.name,
@@ -184,28 +213,29 @@ export function PricingSidebar(props: PricingSidebarProps) {
       count: vendor.count,
       // Vendor chips stay monochrome so the colored model cards keep the
       // visual weight; any stored ".Color" key is stripped here.
-      icon: vendor.icon ? getLobeIcon(monoIconName(vendor.icon), 14) : undefined,
+      icon: vendor.icon
+        ? getLobeIcon(monoIconName(vendor.icon), 14)
+        : undefined,
     })),
   ]
 
+  // 「所有分组」统计的是**分组数量**（如 VIP0-VIP5 共 6 个），具体分组仍只带
+  // 倍率徽标（x1.0、x0.9）：两者语义不同，不合并。
   const groupOptions: FilterOption[] = [
     {
       value: FILTER_ALL,
       label: t('All Groups'),
+      count: props.groups.length,
     },
     ...props.groups.map((group) => ({
       value: group,
       label: group,
       suffix: formatGroupRatio(props.groupRatios?.[group]),
+      suffixRatio: props.groupRatios?.[group],
     })),
   ]
 
-  const quotaOptions: FilterOption[] = [
-    {
-      value: QUOTA_TYPES.ALL,
-      label: quotaTypeLabels[QUOTA_TYPES.ALL],
-      count: props.models.length,
-    },
+  const quotaTypeOptions: FilterOption[] = [
     {
       value: QUOTA_TYPES.TOKEN,
       label: quotaTypeLabels[QUOTA_TYPES.TOKEN],
@@ -229,11 +259,20 @@ export function PricingSidebar(props: PricingSidebarProps) {
     },
   ]
 
+  const quotaOptions: FilterOption[] = [
+    {
+      value: QUOTA_TYPES.ALL,
+      label: quotaTypeLabels[QUOTA_TYPES.ALL],
+      count: quotaTypeOptions.length,
+    },
+    ...quotaTypeOptions,
+  ]
+
   const tagOptions: FilterOption[] = [
     {
       value: FILTER_ALL,
       label: t('All Tags'),
-      count: props.models.length,
+      count: props.tags.length,
     },
     ...props.tags.map((tag) => ({
       value: tag,
@@ -246,30 +285,38 @@ export function PricingSidebar(props: PricingSidebarProps) {
     })),
   ]
 
+  const endpointTypeOptions: FilterOption[] = Object.entries(endpointTypeLabels)
+    .filter(([value]) => value !== ENDPOINT_TYPES.ALL)
+    .map(([value, label]) => ({
+      value,
+      label,
+      count: countBy(
+        props.models,
+        (model) => model.supported_endpoint_types?.includes(value) ?? false
+      ),
+    }))
+
   const endpointOptions: FilterOption[] = [
     {
       value: ENDPOINT_TYPES.ALL,
       label: endpointTypeLabels[ENDPOINT_TYPES.ALL],
-      count: props.models.length,
+      count: endpointTypeOptions.length,
     },
-    ...Object.entries(endpointTypeLabels)
-      .filter(([value]) => value !== ENDPOINT_TYPES.ALL)
-      .map(([value, label]) => ({
-        value,
-        label,
-        count: countBy(
-          props.models,
-          (model) => model.supported_endpoint_types?.includes(value) ?? false
-        ),
-      })),
+    ...endpointTypeOptions,
   ]
 
   return (
     <aside className={cn('bg-card rounded-xl border p-3', props.className)}>
       <div className='mb-2.5 flex items-center justify-between gap-2'>
         <div>
-          <h2 className='text-foreground text-sm font-bold'>{t('Filter')}</h2>
-          <p className='text-muted-foreground mt-1 text-xs'>
+          {/* 侧栏是一张卡片，所以「筛选」是**卡片标题**（h3 18/600/28），
+              不是卡片内的分组标题。此前写成 16/600，既不是 18 的卡片标题，
+              也不是 16 的分组标题档位对应位置（它在卡片头部，不在卡片内部再分组）。
+              下面 FilterSection 的「分组」「供应商」才是 group-title 16/600。 */}
+          <Heading variant='card-title' level={2}>
+            {t('Filter')}
+          </Heading>
+          <p className='text-muted-foreground mt-1 text-sm'>
             {t('Refine models by provider, group, type, and tags.')}
           </p>
         </div>
@@ -279,9 +326,9 @@ export function PricingSidebar(props: PricingSidebarProps) {
           size='sm'
           onClick={props.onClearFilters}
           disabled={!props.hasActiveFilters}
-          className='h-7 gap-1.5 px-2 text-xs'
+          className='gap-1.5 px-2 text-xs'
         >
-          <RotateCcw className='size-3.5' />
+          <RotateCcw className='size-4.5' />
           {t('Reset')}
         </Button>
       </div>

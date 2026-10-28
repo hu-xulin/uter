@@ -117,7 +117,7 @@ export function PricingCurrencySelector(props: {
         </SelectContent>
       </Select>
       {props.siteCurrency && !available && (
-        <p id={`${id}-error`} className='text-muted-foreground text-xs'>
+        <p id={`${id}-error`} className='text-muted-foreground text-sm'>
           {t('The site exchange rate is invalid. Prices are shown in USD.')}
         </p>
       )}

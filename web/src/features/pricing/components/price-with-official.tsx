@@ -28,6 +28,7 @@ import {
   formatRequestPrice,
   formatUSDRequestPrice,
   formatUSDTokenPrice,
+  getMarkupMultiplier,
   getOfficialPresetRequestUSD,
   getOfficialPresetTokenUSD,
   getTokenPriceUSD,
@@ -102,7 +103,7 @@ export const PriceMetricOfficial = memo(function PriceMetricOfficial(
       : getTokenPriceUSD(props.model, props.type, displayRatio)
   const fallbackOfficialVal =
     props.type === 'request'
-      ? (props.model.model_price || 0)
+      ? props.model.model_price || 0
       : getTokenPriceUSD(props.model, props.type, 1)
   const officialVal = hasPresetUSD ? presetUSD : fallbackOfficialVal
   const isDiscount =
@@ -113,6 +114,8 @@ export const PriceMetricOfficial = memo(function PriceMetricOfficial(
   const discountPercent = isDiscount
     ? Math.round((1 - uterVal / officialVal) * 100)
     : 0
+  // 溢价：Uter 价高于官方价时给 `x1.05`，与模型名后的角标同口径。
+  const markup = getMarkupMultiplier(uterVal, officialVal)
 
   const presetOfficialText =
     props.type === 'request'
@@ -157,8 +160,16 @@ export const PriceMetricOfficial = memo(function PriceMetricOfficial(
           {props.unit}
         </span>
         {isDiscount && (
-          <span className='text-emerald-600 text-xs font-bold'>
+          <span className='text-success-soft-foreground text-xs font-bold'>
             · -{discountPercent}%
+          </span>
+        )}
+        {markup != null && (
+          <span
+            className='text-warning-soft-foreground text-xs font-bold'
+            title={`+${Math.round((markup - 1) * 100)}%`}
+          >
+            · x{markup}
           </span>
         )}
       </span>

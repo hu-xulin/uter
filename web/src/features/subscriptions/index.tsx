@@ -43,8 +43,8 @@ function SubscriptionsContent() {
         <SectionPageLayout.Actions>
           <div className='flex items-center gap-2'>
             <Alert variant='default' className='hidden px-3 py-2 sm:flex'>
-              <Info className='h-4 w-4' />
-              <AlertDescription className='text-xs'>
+              <Info className='size-4' />
+              <AlertDescription className='text-sm'>
                 {t(
                   'Stripe/Creem requires creating products on the third-party platform and entering the ID'
                 )}
