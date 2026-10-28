@@ -7743,6 +7743,20 @@
     "{{count}} drifted": "{{count}} с расхождением",
     "Synced at {{time}}": "Синхронизировано {{time}}",
     "Syncing…": "Синхронизация…",
+    "Authorization callback domain": "Домен колбэка авторизации",
+    "Copy callback domain": "Копировать домен колбэка",
+    "App Secret": "Секрет приложения",
+    "WeChat Official Account": "Официальный аккаунт WeChat",
+    "Enable WeChat Website App Login": "Включить вход через веб-приложение WeChat",
+    "WeChat Website App": "Веб-приложение WeChat",
+    "Use UnionID": "Использовать UnionID",
+    "Create a website app in the WeChat Open Platform console, register the callback domain there, then fill in the credentials below.": "Создайте веб-приложение в консоли WeChat Open Platform, зарегистрируйте там домен колбэка, затем заполните учётные данные ниже.",
+    "Allow users to sign in by scanning the QR code of the WeChat Open Platform website app": "Разрешить пользователям входить, сканируя QR-код веб-приложения WeChat Open Platform",
+    "Failed to start WeChat login": "Не удалось начать вход через WeChat",
+    "Your WeChat website app ID": "ID вашего веб-приложения WeChat",
+    "Identify users by UnionID when available, so accounts under the same WeChat Open Platform app share one identity": "Идентифицировать пользователей по UnionID, если доступно, чтобы аккаунты под одним приложением WeChat Open Platform имели одну личность",
+    "Your WeChat website app secret": "Секрет вашего веб-приложения WeChat",
+    "The callback domain registered in the WeChat Open Platform console (no scheme, e.g. uter.cc). Leave empty to use the current site domain.": "Домен колбэка, зарегистрированный в консоли WeChat Open Platform (без схемы, напр. uter.cc). Оставьте пустым, чтобы использовать домен текущего сайта.",
     "Prices are in USD: per 1M tokens for token-billed models, per request for image and video models. The discount ratio is measured against the upstream list price.": "Цены в USD: за 1 млн токенов для моделей с оплатой по токенам, за запрос для моделей изображений и видео. Коэффициент скидки рассчитывается относительно прайс-листа источника."
   }
 }

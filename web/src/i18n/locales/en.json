@@ -7743,6 +7743,20 @@
     "{{count}} drifted": "{{count}} drifted",
     "Synced at {{time}}": "Synced at {{time}}",
     "Syncing…": "Syncing…",
+    "Authorization callback domain": "Authorization callback domain",
+    "Copy callback domain": "Copy callback domain",
+    "App Secret": "App Secret",
+    "WeChat Official Account": "WeChat Official Account",
+    "Enable WeChat Website App Login": "Enable WeChat Website App Login",
+    "WeChat Website App": "WeChat Website App",
+    "Use UnionID": "Use UnionID",
+    "Create a website app in the WeChat Open Platform console, register the callback domain there, then fill in the credentials below.": "Create a website app in the WeChat Open Platform console, register the callback domain there, then fill in the credentials below.",
+    "Allow users to sign in by scanning the QR code of the WeChat Open Platform website app": "Allow users to sign in by scanning the QR code of the WeChat Open Platform website app",
+    "Failed to start WeChat login": "Failed to start WeChat login",
+    "Your WeChat website app ID": "Your WeChat website app ID",
+    "Identify users by UnionID when available, so accounts under the same WeChat Open Platform app share one identity": "Identify users by UnionID when available, so accounts under the same WeChat Open Platform app share one identity",
+    "Your WeChat website app secret": "Your WeChat website app secret",
+    "The callback domain registered in the WeChat Open Platform console (no scheme, e.g. uter.cc). Leave empty to use the current site domain.": "The callback domain registered in the WeChat Open Platform console (no scheme, e.g. uter.cc). Leave empty to use the current site domain.",
     "Prices are in USD: per 1M tokens for token-billed models, per request for image and video models. The discount ratio is measured against the upstream list price.": "Prices are in USD: per 1M tokens for token-billed models, per request for image and video models. The discount ratio is measured against the upstream list price."
   }
 }
