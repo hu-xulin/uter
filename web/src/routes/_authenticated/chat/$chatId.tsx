@@ -23,6 +23,7 @@ import { useTranslation } from 'react-i18next'
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
+import { Heading } from '@/design-system'
 import { ChatKeyDialog } from '@/features/chat/components/chat-key-dialog'
 import {
   useActiveChatKey,
@@ -84,11 +85,11 @@ function ChatRouteComponent() {
   if (!preset) {
     return (
       <div className='flex h-full flex-col items-center justify-center gap-4 p-6 text-center'>
-        <MessageCircleWarning className='text-muted-foreground h-12 w-12' />
+        <MessageCircleWarning className='text-muted-foreground size-12' />
         <div className='space-y-1'>
-          <h2 className='text-lg font-semibold'>
+          <Heading variant='card-title' level={2}>
             {t('Chat preset not found')}
-          </h2>
+          </Heading>
           <p className='text-muted-foreground'>
             {t('The requested chat preset does not exist or has been removed.')}
           </p>
@@ -103,9 +104,11 @@ function ChatRouteComponent() {
   if (!isWebLink) {
     return (
       <div className='flex h-full flex-col items-center justify-center gap-4 p-6 text-center'>
-        <MessageCircleWarning className='text-muted-foreground h-12 w-12' />
+        <MessageCircleWarning className='text-muted-foreground size-12' />
         <div className='space-y-1'>
-          <h2 className='text-lg font-semibold'>{t('Use sidebar shortcut')}</h2>
+          <Heading variant='card-title' level={2}>
+            {t('Use sidebar shortcut')}
+          </Heading>
           <p className='text-muted-foreground'>
             {preset.name}{' '}
             {t(
@@ -135,11 +138,11 @@ function ChatRouteComponent() {
   if (requiresActiveKey && !activeKey && !isPending && !isError) {
     return (
       <div className='flex h-full flex-col items-center justify-center gap-4 p-6 text-center'>
-        <ShieldCheck className='text-muted-foreground h-12 w-12' />
+        <ShieldCheck className='text-muted-foreground size-12' />
         <div className='space-y-1'>
-          <h2 className='text-lg font-semibold'>
+          <Heading variant='card-title' level={2}>
             {t('Verify to open chat link')}
-          </h2>
+          </Heading>
           <p className='text-muted-foreground'>
             {t(
               'This chat link needs your API key. Confirm your identity to reveal it and continue.'
@@ -156,7 +159,7 @@ function ChatRouteComponent() {
           )}
         </div>
         <Button onClick={() => void reveal()} disabled={isPending}>
-          {isPending && <Loader2 className='size-4 animate-spin' />}
+          {isPending && <Loader2 className='size-4.5 animate-spin' />}
           {t('Verify and open chat')}
         </Button>
       </div>
@@ -167,9 +170,11 @@ function ChatRouteComponent() {
   if (requiresActiveKey && error instanceof NoActiveChatKeyError) {
     return (
       <div className='flex h-full flex-col items-center justify-center gap-4 p-6 text-center'>
-        <MessageCircleWarning className='text-muted-foreground h-12 w-12' />
+        <MessageCircleWarning className='text-muted-foreground size-12' />
         <div className='space-y-1'>
-          <h2 className='text-lg font-semibold'>{t('Unable to open chat')}</h2>
+          <Heading variant='card-title' level={2}>
+            {t('Unable to open chat')}
+          </Heading>
           <p className='text-muted-foreground'>
             {t(
               'This client needs an API key to be filled in automatically. Create one now?'

@@ -137,7 +137,7 @@ describe('handleNumberInput in a controlled number input', () => {
   test('typing a positive number still works', async () => {
     const user = userEvent.setup()
     const states: NumberInputValue[] = []
-    render(<AmountField initial="" onState={(v) => states.push(v)} />)
+    render(<AmountField initial='' onState={(v) => states.push(v)} />)
     const input = screen.getByLabelText<HTMLInputElement>('amount')
 
     await user.type(input, '300')

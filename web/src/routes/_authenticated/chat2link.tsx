@@ -21,6 +21,7 @@ import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 
 import { Button } from '@/components/ui/button'
+import { Heading } from '@/design-system'
 import { ChatKeyDialog } from '@/features/chat/components/chat-key-dialog'
 import {
   useActiveChatKey,
@@ -75,11 +76,11 @@ function Chat2LinkPage() {
     }
     return (
       <div className='flex h-full flex-col items-center justify-center gap-4 p-6 text-center'>
-        <MessageCircleWarning className='text-muted-foreground h-12 w-12' />
+        <MessageCircleWarning className='text-muted-foreground size-12' />
         <div className='space-y-1'>
-          <h2 className='text-lg font-semibold'>
+          <Heading variant='card-title' level={2}>
             {t('No available Web chat links')}
-          </h2>
+          </Heading>
           <p className='text-muted-foreground'>
             {t(
               'This client needs an API key to be filled in automatically. Create one now?'
@@ -98,9 +99,11 @@ function Chat2LinkPage() {
   if (isError && error instanceof NoActiveChatKeyError) {
     return (
       <div className='flex h-full flex-col items-center justify-center gap-4 p-6 text-center'>
-        <MessageCircleWarning className='text-muted-foreground h-12 w-12' />
+        <MessageCircleWarning className='text-muted-foreground size-12' />
         <div className='space-y-1'>
-          <h2 className='text-lg font-semibold'>{t('Unable to open chat')}</h2>
+          <Heading variant='card-title' level={2}>
+            {t('Unable to open chat')}
+          </Heading>
           <p className='text-muted-foreground'>
             {t(
               'This client needs an API key to be filled in automatically. Create one now?'
@@ -117,9 +120,11 @@ function Chat2LinkPage() {
 
   return (
     <div className='flex h-full flex-col items-center justify-center gap-4 p-6 text-center'>
-      <ShieldCheck className='text-muted-foreground h-12 w-12' />
+      <ShieldCheck className='text-muted-foreground size-12' />
       <div className='space-y-1'>
-        <h2 className='text-lg font-semibold'>{t('Verify to open chat link')}</h2>
+        <Heading variant='card-title' level={2}>
+          {t('Verify to open chat link')}
+        </Heading>
         <p className='text-muted-foreground'>
           {t(
             'This chat link needs your API key. Confirm your identity to reveal it and continue.'
@@ -127,7 +132,7 @@ function Chat2LinkPage() {
         </p>
       </div>
       <Button onClick={handleOpen} disabled={isPending}>
-        {isPending && <Loader2 className='size-4 animate-spin' />}
+        {isPending && <Loader2 className='size-4.5 animate-spin' />}
         {t('Verify and open chat')}
       </Button>
       <ChatKeyDialog open={keyDialogOpen} onOpenChange={setKeyDialogOpen} />

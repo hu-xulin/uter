@@ -143,9 +143,9 @@ describe('organization sidebar visibility', () => {
         ROLE.USER,
         orgRole
       )
-      expect(
-        result.current.some((group) => group.id === 'organization')
-      ).toBe(true)
+      expect(result.current.some((group) => group.id === 'organization')).toBe(
+        true
+      )
     }
   )
 
@@ -159,12 +159,16 @@ describe('organization sidebar visibility', () => {
       ROLE.USER,
       'member'
     )
-    expect(
-      result.current.some((group) => group.id === 'organization')
-    ).toBe(false)
+    expect(result.current.some((group) => group.id === 'organization')).toBe(
+      false
+    )
   })
 
-  it.each([[0, undefined], [undefined, undefined], [0, 'member']])(
+  it.each([
+    [0, undefined],
+    [undefined, undefined],
+    [0, 'member'],
+  ])(
     'users without organization management authority never see it (%s, %s)',
     (organizationId, orgRole) => {
       const { result } = sidebarFor(
@@ -175,9 +179,9 @@ describe('organization sidebar visibility', () => {
         ROLE.USER,
         orgRole
       )
-      expect(
-        result.current.some((group) => group.id === 'organization')
-      ).toBe(false)
+      expect(result.current.some((group) => group.id === 'organization')).toBe(
+        false
+      )
     }
   )
 
@@ -189,9 +193,9 @@ describe('organization sidebar visibility', () => {
       undefined,
       ROLE.SUPER_ADMIN
     )
-    expect(
-      result.current.some((group) => group.id === 'organization')
-    ).toBe(true)
+    expect(result.current.some((group) => group.id === 'organization')).toBe(
+      true
+    )
   })
 
   it('admin disablement hides the organization group even for owners', () => {
@@ -203,9 +207,9 @@ describe('organization sidebar visibility', () => {
       ROLE.USER,
       'owner'
     )
-    expect(
-      result.current.some((group) => group.id === 'organization')
-    ).toBe(false)
+    expect(result.current.some((group) => group.id === 'organization')).toBe(
+      false
+    )
   })
 })
 

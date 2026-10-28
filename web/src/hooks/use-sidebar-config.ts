@@ -20,8 +20,8 @@ import { useMemo } from 'react'
 
 import type { NavGroup, NavItem } from '@/components/layout/types'
 import { useStatus } from '@/hooks/use-status'
-import { useAuthStore } from '@/stores/auth-store'
 import { canManageOrganization } from '@/lib/roles'
+import { useAuthStore } from '@/stores/auth-store'
 
 type SidebarSectionConfig = {
   enabled: boolean

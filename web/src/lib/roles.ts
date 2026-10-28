@@ -52,11 +52,7 @@ export function getRoleLabel(role?: number): string {
  * 前端（侧边栏可见性、路由守卫）统一以此为准，避免出现
  * “菜单看得见但接口全部 403” 的不一致状态。
  */
-export const ORG_MANAGE_ROLES = [
-  'owner',
-  'admin',
-  'department_admin',
-] as const
+export const ORG_MANAGE_ROLES = ['owner', 'admin', 'department_admin'] as const
 
 const ORG_MANAGE_ROLE_SET: ReadonlySet<string> = new Set(ORG_MANAGE_ROLES)
 

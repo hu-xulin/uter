@@ -81,6 +81,10 @@ export function useSidebarData(): SidebarData {
           {
             title: t('Dashboard'),
             url: '/dashboard/models',
+            // 数据看板是一个页面里的多个 tab（模型调用分析 / 分流 / 用户统计）。
+            // 切换 tab 只改路径段，侧边栏这一行必须保持选中，否则用户会以为
+            // 自己离开了看板。概览有自己的入口（/dashboard/overview），不在此列。
+            activeUrls: ['/dashboard/flow', '/dashboard/users'],
             icon: LayoutDashboard,
           },
           {

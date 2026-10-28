@@ -28,10 +28,7 @@ describe('getSafeHttpUrl', () => {
       getSafeHttpUrl('https://github.com/uter-ai/uter/releases/tag/v1.0.0'),
       'https://github.com/uter-ai/uter/releases/tag/v1.0.0'
     )
-    assert.equal(
-      getSafeHttpUrl('http://example.com/a'),
-      'http://example.com/a'
-    )
+    assert.equal(getSafeHttpUrl('http://example.com/a'), 'http://example.com/a')
   })
 
   test('rejects executable and non-web schemes', () => {

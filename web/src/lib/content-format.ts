@@ -34,9 +34,7 @@ export function isHttpUrl(value: string): boolean {
  * must never be handed to the browser unchecked: `javascript:`, `data:` and
  * `vbscript:` all turn a plain link into script execution.
  */
-export function getSafeHttpUrl(
-  value?: string | null
-): string | undefined {
+export function getSafeHttpUrl(value?: string | null): string | undefined {
   if (!value) return undefined
   try {
     const url = new URL(value)
