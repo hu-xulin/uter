@@ -35,8 +35,8 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Spinner } from '@/components/ui/spinner'
-import { SecureVerificationDialog } from '@/features/auth/secure-verification'
 import { startWeChatFlow } from '@/features/auth/api'
+import { SecureVerificationDialog } from '@/features/auth/secure-verification'
 import { bindWeChat } from '@/features/profile/api'
 
 import { useAccountSecurity } from '../../hooks/use-account-security'

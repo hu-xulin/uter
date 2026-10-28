@@ -19,6 +19,8 @@ For commercial licensing, please contact support@uter.ai
 import { Link } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 
+import { Heading } from '@/design-system'
+
 import { AuthLayout } from '../auth-layout'
 import { ForgotPasswordForm } from './components/forgot-password-form'
 
@@ -28,15 +30,19 @@ export function ForgotPassword() {
     <AuthLayout>
       <div className='w-full space-y-8'>
         <div className='space-y-3'>
-          <h2 className='text-center text-2xl font-semibold sm:text-left'>
+          <Heading
+            variant='section-title'
+            level={1}
+            className='text-center sm:text-left'
+          >
             {t('Forgot password')}
-          </h2>
-          <p className='text-muted-foreground text-left text-sm sm:text-base'>
+          </Heading>
+          <p className='text-muted-foreground text-left text-sm'>
             {t(
               'Enter your registered email and we will send you a link to reset your password.'
             )}
           </p>
-          <p className='text-muted-foreground text-left text-sm sm:text-base'>
+          <p className='text-muted-foreground text-left text-sm'>
             {t("Don't have an account?")}{' '}
             <Link to='/sign-up' className='hover:text-primary font-medium'>
               {t('Sign up')}

@@ -26,6 +26,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Heading } from '@/design-system'
 import { useCountdown } from '@/hooks/use-countdown'
 import { useTimeout } from '@/hooks/use-timeout'
 import { api } from '@/lib/api'
@@ -116,10 +117,14 @@ export function ResetPasswordConfirm({
     <AuthLayout>
       <div className='w-full space-y-8'>
         <div className='space-y-2'>
-          <h2 className='text-center text-2xl font-semibold sm:text-left'>
+          <Heading
+            variant='section-title'
+            level={1}
+            className='text-center sm:text-left'
+          >
             {t('Reset password')}
-          </h2>
-          <p className='text-muted-foreground text-left text-sm sm:text-base'>
+          </Heading>
+          <p className='text-muted-foreground text-left text-sm'>
             {newPassword
               ? t('auth.resetPasswordConfirm.success')
               : t('auth.resetPasswordConfirm.description')}
@@ -154,7 +159,7 @@ export function ResetPasswordConfirm({
                   id='password'
                   value={newPassword}
                   disabled
-                  className='font-mono'
+                  className='text-mono font-mono'
                 />
                 <Button
                   type='button'
@@ -163,13 +168,13 @@ export function ResetPasswordConfirm({
                   onClick={handleCopy}
                 >
                   {copied ? (
-                    <CheckIcon className='h-4 w-4' />
+                    <CheckIcon className='h-4.5 w-4.5' />
                   ) : (
-                    <CopyIcon className='h-4 w-4' />
+                    <CopyIcon className='h-4.5 w-4.5' />
                   )}
                 </Button>
               </div>
-              <p className='text-muted-foreground text-xs'>
+              <p className='text-muted-foreground text-sm'>
                 {t('Password has been copied to clipboard')}
               </p>
             </div>

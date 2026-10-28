@@ -218,7 +218,7 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
           <DropdownMenuItem onClick={() => handleManage('enable')}>
             {t('Enable')}
             <DropdownMenuShortcut>
-              <Power size={16} />
+              <Power className='size-4' />
             </DropdownMenuShortcut>
           </DropdownMenuItem>
         ) : (
@@ -228,7 +228,7 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
           >
             {t('Disable')}
             <DropdownMenuShortcut>
-              <PowerOff size={16} />
+              <PowerOff className='size-4' />
             </DropdownMenuShortcut>
           </DropdownMenuItem>
         )}
@@ -237,7 +237,7 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
           <DropdownMenuItem onClick={() => handleManage('demote')}>
             {t('Demote')}
             <DropdownMenuShortcut>
-              <ArrowDown size={16} />
+              <ArrowDown className='size-4' />
             </DropdownMenuShortcut>
           </DropdownMenuItem>
         )}
@@ -246,7 +246,7 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
           <DropdownMenuItem onClick={() => handleManage('promote')}>
             {t('Promote')}
             <DropdownMenuShortcut>
-              <ArrowUp size={16} />
+              <ArrowUp className='size-4' />
             </DropdownMenuShortcut>
           </DropdownMenuItem>
         )}
@@ -259,7 +259,7 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
         >
           {t('Manage Bindings')}
           <DropdownMenuShortcut>
-            <Link2 size={16} />
+            <Link2 className='size-4' />
           </DropdownMenuShortcut>
         </DropdownMenuItem>
 
@@ -271,7 +271,7 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
         >
           {t('Manage Subscriptions')}
           <DropdownMenuShortcut>
-            <CreditCard size={16} />
+            <CreditCard className='size-4' />
           </DropdownMenuShortcut>
         </DropdownMenuItem>
 
@@ -286,7 +286,7 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
         >
           {t('Reset Passkey')}
           <DropdownMenuShortcut>
-            <KeyRound size={16} />
+            <KeyRound className='size-4' />
           </DropdownMenuShortcut>
         </DropdownMenuItem>
 
@@ -299,7 +299,7 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
         >
           {t('Reset 2FA')}
           <DropdownMenuShortcut>
-            <ShieldAlert size={16} />
+            <ShieldAlert className='size-4' />
           </DropdownMenuShortcut>
         </DropdownMenuItem>
 
@@ -312,7 +312,7 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
         >
           {t('Delete')}
           <DropdownMenuShortcut>
-            <Trash2 size={16} />
+            <Trash2 className='size-4' />
           </DropdownMenuShortcut>
         </DropdownMenuItem>
       </DataTableRowActionMenu>

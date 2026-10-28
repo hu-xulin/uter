@@ -83,7 +83,7 @@ export function TwoFADisableDialog(props: TwoFADisableDialogProps) {
         handleConfirm={handleDisable}
       >
         <Alert variant='destructive'>
-          <AlertTriangle className='size-4' />
+          <AlertTriangle className='size-4.5' />
           <AlertDescription>
             {t('Warning: Disabling 2FA will make your account less secure.')}
           </AlertDescription>
@@ -95,10 +95,7 @@ export function TwoFADisableDialog(props: TwoFADisableDialogProps) {
             disabled={security.pending}
             onCheckedChange={(checked) => setConfirmed(checked === true)}
           />
-          <Label
-            htmlFor={confirmId}
-            className='text-sm leading-tight font-normal'
-          >
+          <Label htmlFor={confirmId} className='text-sm font-normal'>
             {t(
               'I understand that disabling 2FA removes its authenticator and backup codes.'
             )}

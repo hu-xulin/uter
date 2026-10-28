@@ -105,7 +105,7 @@ export function UsageModeStep({ form }: UsageModeStepProps) {
                         <div>
                           <Label
                             htmlFor={`usage-mode-${value}`}
-                            className='text-base leading-none font-semibold'
+                            className='text-sm font-medium'
                           >
                             {t(titleKey)}
                           </Label>
@@ -113,7 +113,7 @@ export function UsageModeStep({ form }: UsageModeStepProps) {
                             {t(descriptionKey)}
                           </p>
                         </div>
-                        <Icon className='text-muted-foreground/70 group-hover:text-primary group-focus-within:text-primary group-has-data-[checked]:text-primary ml-auto size-5 shrink-0 transition' />
+                        <Icon className='text-muted-foreground group-hover:text-primary group-focus-within:text-primary group-has-data-[checked]:text-primary ml-auto size-4 shrink-0 transition' />
                       </div>
                     </Label>
                   )

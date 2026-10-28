@@ -84,7 +84,7 @@ export function PrivacyCard(props: PrivacyCardProps) {
           onClick={() => save.mutate()}
           disabled={save.isPending}
         >
-          {save.isPending && <Loader2 className='size-4 animate-spin' />}
+          {save.isPending && <Loader2 className='size-4.5 animate-spin' />}
           {save.isPending ? t('Saving...') : t('Save Settings')}
         </Button>
       </div>

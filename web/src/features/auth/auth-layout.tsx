@@ -50,7 +50,12 @@ export function AuthLayout({ children }: AuthLayoutProps) {
         {loading ? (
           <Skeleton className='h-6 w-24' />
         ) : (
-          <h1 className='font-brand text-xl'>{systemName}</h1>
+          /*
+           * 这里是「logo + 站名」的品牌锁定区，属于标志而非页面标题：
+           * 页面标题由登录卡自身的标题承担。用 span + 阶梯内的 18/600，
+           * 不用 h1（h1 恒为 30/600，见规范 1.2 四层标题）。
+           */
+          <span className='font-brand text-lg font-semibold'>{systemName}</span>
         )}
       </Link>
       <div className='container flex items-center pt-16 sm:pt-0'>

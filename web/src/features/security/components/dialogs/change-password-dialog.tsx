@@ -174,7 +174,9 @@ export function ChangePasswordDialog(props: ChangePasswordDialogProps) {
               form='change-password-form'
               disabled={security.pending}
             >
-              {security.pending && <Loader2 className='size-4 animate-spin' />}
+              {security.pending && (
+                <Loader2 className='size-4.5 animate-spin' />
+              )}
               {title}
             </Button>
           </>
@@ -218,7 +220,7 @@ export function ChangePasswordDialog(props: ChangePasswordDialogProps) {
                       disabled={security.pending}
                     />
                   </FormControl>
-                  <p className='text-muted-foreground text-xs'>
+                  <p className='text-muted-foreground text-sm'>
                     {t('Use 8–128 characters.')}
                   </p>
                   <FormMessage />

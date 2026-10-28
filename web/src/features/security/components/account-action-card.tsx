@@ -67,6 +67,10 @@ export function AccountActionCard(props: AccountActionCardProps) {
             <action.icon />
           </IconBadge>
           <div className='min-w-0 flex-1 space-y-0.5'>
+            {/* 行标题 16/600：**用户明确指定**（2026-10-27 截图红字「16px，加粗」，
+                「删除账户」「更改密码」两处）。`typography.md` 对「名称 + 说明
+                成对出现的列表行」写的是 16/500，这一处是按用户要求上调一档的
+                登记例外，不要按规范改回 font-medium。 */}
             <p className='text-base font-medium'>{action.title}</p>
             <p className='text-muted-foreground text-sm'>
               {action.description}

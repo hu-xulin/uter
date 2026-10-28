@@ -116,7 +116,7 @@ export function useUsersColumns(): ColumnDef<User>[] {
                     <LongText className='max-w-[80px]'>{remark}</LongText>
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p className='text-xs'>{remark}</p>
+                    <p className='text-sm'>{remark}</p>
                   </TooltipContent>
                 </Tooltip>
               )}
@@ -162,7 +162,7 @@ export function useUsersColumns(): ColumnDef<User>[] {
               />
             </TooltipTrigger>
             <TooltipContent>
-              <p className='text-xs'>
+              <p className='text-sm'>
                 {t('Requests:')} {requestCount.toLocaleString()}
               </p>
             </TooltipContent>
@@ -215,7 +215,7 @@ export function useUsersColumns(): ColumnDef<User>[] {
         const key = getUserRoleDisplayKey(
           user.role,
           user.organization_id,
-          user.org_role,
+          user.org_role
         )
 
         return <span className='text-sm'>{t(key)}</span>

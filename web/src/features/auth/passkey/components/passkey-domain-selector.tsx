@@ -65,8 +65,7 @@ export function PasskeyDomainSelector(props: PasskeyDomainSelectorProps) {
       <Button
         type='button'
         variant='link'
-        size='sm'
-        className='h-auto p-0'
+        size='inline'
         disabled={props.disabled}
         onClick={() => setExpanded(!expanded)}
         aria-expanded={expanded}

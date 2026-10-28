@@ -92,7 +92,7 @@ export function TwoFASetupDialog(props: TwoFASetupDialogProps) {
               disabled={props.initializing || props.loading || !code}
             >
               {props.loading && (
-                <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+                <Loader2 className='mr-2 h-4.5 w-4.5 animate-spin' />
               )}
               {props.loading ? t('Enabling...') : t('Enable 2FA')}
             </Button>
@@ -108,7 +108,7 @@ export function TwoFASetupDialog(props: TwoFASetupDialogProps) {
         )}
         {props.initializing && (
           <div className='flex flex-col items-center justify-center gap-3 py-8'>
-            <div className='border-primary h-8 w-8 animate-spin rounded-full border-4 border-t-transparent' />
+            <div className='border-primary h-8 w-8 animate-spin rounded-full border-2 border-t-transparent' />
             <div className='text-muted-foreground text-sm'>
               {t('Setting up 2FA...')}
             </div>
@@ -131,16 +131,16 @@ export function TwoFASetupDialog(props: TwoFASetupDialogProps) {
                     'Scan this QR code with your authenticator app (Google Authenticator, Microsoft Authenticator, etc.)'
                   )}
                 </p>
-                <div className='flex justify-center rounded-lg bg-white p-4'>
+                <div className='bg-surface-pure flex justify-center rounded-lg p-4'>
                   <QRCodeSVG value={props.setupData.qr_code_data} size={200} />
                 </div>
                 <div className='bg-muted rounded-lg p-3'>
                   <div className='flex items-center justify-between'>
                     <div>
-                      <p className='text-muted-foreground text-xs'>
+                      <p className='text-muted-foreground text-sm'>
                         {t('Or enter this key manually:')}
                       </p>
-                      <code className='font-mono text-mono'>
+                      <code className='text-mono font-mono'>
                         {props.setupData.secret}
                       </code>
                     </div>
@@ -170,7 +170,7 @@ export function TwoFASetupDialog(props: TwoFASetupDialogProps) {
                     {props.setupData.backup_codes.map((code) => (
                       <div
                         key={code}
-                        className='bg-muted rounded-md p-2 text-center font-mono text-mono'
+                        className='bg-muted text-mono rounded-md p-2 text-center font-mono'
                       >
                         {code}
                       </div>
@@ -204,7 +204,7 @@ export function TwoFASetupDialog(props: TwoFASetupDialogProps) {
                     maxLength={6}
                     disabled={props.loading}
                   />
-                  <p className='text-muted-foreground text-xs'>
+                  <p className='text-muted-foreground text-sm'>
                     {t('Enter the 6-digit code from your authenticator app')}
                   </p>
                 </div>

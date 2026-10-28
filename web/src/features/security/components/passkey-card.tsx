@@ -124,11 +124,12 @@ export function PasskeyCard({ loading: pageLoading }: PasskeyCardProps) {
 
   if (statusError) {
     return (
-      <Card>
-        <CardHeader>
+      <Card data-card-hover='false' className='gap-0 overflow-hidden py-0'>
+        {/* 与正常态、加载态保持同一套内边距，避免报错时卡片抖一下。 */}
+        <CardHeader className='p-3 sm:p-5'>
           <CardTitle>{t('Passkey Login')}</CardTitle>
         </CardHeader>
-        <CardContent className='space-y-3'>
+        <CardContent className='space-y-3 p-3 sm:p-5'>
           <p role='alert'>{t(statusError)}</p>
           <Button onClick={() => void fetchStatus()}>{t('Retry')}</Button>
         </CardContent>
@@ -165,9 +166,7 @@ export function PasskeyCard({ loading: pageLoading }: PasskeyCardProps) {
     <>
       <Card data-card-hover='false' className='gap-0 overflow-hidden py-0'>
         <CardHeader className='p-3 sm:p-5'>
-          <CardTitle>
-            {t('Passkey Login')}
-          </CardTitle>
+          <CardTitle>{t('Passkey Login')}</CardTitle>
           <CardDescription>
             {t('Use Passkey to sign in without entering your password.')}
           </CardDescription>
@@ -211,7 +210,7 @@ export function PasskeyCard({ loading: pageLoading }: PasskeyCardProps) {
                   disabled={!supported || registering || verification.isActive}
                 >
                   {registering && (
-                    <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+                    <Loader2 className='mr-2 h-4.5 w-4.5 animate-spin' />
                   )}
                   {t('Enable Passkey')}
                 </Button>
@@ -231,9 +230,9 @@ export function PasskeyCard({ loading: pageLoading }: PasskeyCardProps) {
                     }
                   >
                     {removing ? (
-                      <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+                      <Loader2 className='mr-2 h-4.5 w-4.5 animate-spin' />
                     ) : (
-                      <AlertTriangle className='mr-2 h-4 w-4' />
+                      <AlertTriangle className='mr-2 h-4.5 w-4.5' />
                     )}
                     {t('Remove Passkey')}
                   </AlertDialogTrigger>
@@ -270,7 +269,7 @@ export function PasskeyCard({ loading: pageLoading }: PasskeyCardProps) {
 
             {showUnsupportedNotice && (
               <div className='bg-muted/60 text-muted-foreground flex items-start gap-3 rounded-md p-4 text-sm'>
-                <ShieldAlert className='mt-0.5 h-4 w-4 flex-shrink-0 text-warning' />
+                <ShieldAlert className='text-warning mt-0.5 h-4 w-4 flex-shrink-0' />
                 <div>
                   <p className='text-foreground font-medium'>
                     {t('Passkey not supported on this device')}

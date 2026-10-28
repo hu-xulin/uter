@@ -21,6 +21,7 @@ import { useTranslation } from 'react-i18next'
 
 import { StatusBadge } from '@/components/status-badge'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import { Heading } from '@/design-system'
 
 import type { SetupStatus } from '../types'
 
@@ -87,9 +88,9 @@ export function DatabaseStep({ status }: DatabaseStepProps) {
           <p className='text-muted-foreground text-sm font-medium'>
             {t('Detected database')}
           </p>
-          <p className='text-foreground text-base font-semibold'>
+          <Heading variant='group-title' level={4}>
             {meta?.label ?? t('Unknown')}
-          </p>
+          </Heading>
           <p className='text-muted-foreground text-sm'>
             {t(
               meta?.descriptionKey ??
@@ -107,9 +108,9 @@ export function DatabaseStep({ status }: DatabaseStepProps) {
       </div>
 
       {status?.database_type === 'sqlite' && (
-        <Alert className='border-amber-200 bg-amber-50 dark:border-amber-900/60 dark:bg-amber-950/40'>
+        <Alert className='border-warning-soft bg-warning-soft dark:border-warning-soft/60 dark:bg-warning-soft/40'>
           <AlertTitle className='flex items-center gap-2'>
-            <HardDrive className='size-4 text-amber-500' />
+            <HardDrive className='text-warning size-4.5' />
             {t('Persist your data file')}
           </AlertTitle>
           <AlertDescription>
@@ -119,12 +120,12 @@ export function DatabaseStep({ status }: DatabaseStepProps) {
               )}
             </p>
             {isElectron && electronDataDir && (
-              <p className='mt-3 rounded-md bg-warning-soft/70 px-3 py-2 font-mono text-mono text-warning dark:bg-warning-soft/30 dark:text-warning-soft-foreground'>
+              <p className='bg-warning-soft/70 text-mono text-warning dark:bg-warning-soft/30 dark:text-warning-soft-foreground mt-3 rounded-md px-3 py-2 font-mono'>
                 {t('Data directory:')} {electronDataDir}
               </p>
             )}
             {isElectron && !electronDataDir && (
-              <p className='text-muted-foreground mt-3 text-xs'>
+              <p className='text-muted-foreground mt-3 text-sm'>
                 {t(
                   'Data is stored locally on this device. Use system backups to keep a safe copy.'
                 )}
@@ -135,9 +136,9 @@ export function DatabaseStep({ status }: DatabaseStepProps) {
       )}
 
       {status?.database_type === 'mysql' && (
-        <Alert className='border-emerald-200 bg-emerald-50 dark:border-emerald-900/60 dark:bg-emerald-950/40'>
+        <Alert className='border-success-soft bg-success-soft dark:border-success-soft/60 dark:bg-success-soft/40'>
           <AlertTitle className='flex items-center gap-2'>
-            <Server className='size-4 text-emerald-500' />
+            <Server className='text-success size-4.5' />
             {t('MySQL detected')}
           </AlertTitle>
           <AlertDescription>
@@ -149,9 +150,9 @@ export function DatabaseStep({ status }: DatabaseStepProps) {
       )}
 
       {status?.database_type === 'postgres' && (
-        <Alert className='border-sky-200 bg-sky-50 dark:border-sky-900/60 dark:bg-sky-950/40'>
+        <Alert className='border-info-soft bg-info-soft dark:border-info-soft/60 dark:bg-info-soft/40'>
           <AlertTitle className='flex items-center gap-2'>
-            <Server className='size-4 text-sky-500' />
+            <Server className='text-info size-4.5' />
             {t('PostgreSQL detected')}
           </AlertTitle>
           <AlertDescription>

@@ -21,6 +21,7 @@ import { useTranslation } from 'react-i18next'
 
 import { StatusBadge } from '@/components/status-badge'
 import { Separator } from '@/components/ui/separator'
+import { Heading } from '@/design-system'
 
 import type { SetupFormValues, SetupStatus } from '../types'
 
@@ -52,21 +53,19 @@ export function CompleteStep({ status, values }: CompleteStepProps) {
 
   return (
     <div className='flex flex-col items-center gap-6 text-center'>
-      <div className='rounded-2xl bg-emerald-500/10 p-4 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-300'>
+      <div className='bg-success/10 text-success dark:bg-success/20 dark:text-success-soft-foreground rounded-2xl p-4'>
         <CheckCircle2 className='size-8' />
       </div>
       <div className='space-y-2'>
-        <h2 className='text-2xl font-semibold'>
-          {t('Ready to initialize')}
-        </h2>
-        <p className='text-muted-foreground max-w-lg text-sm sm:text-base'>
+        <Heading variant='section-title'>{t('Ready to initialize')}</Heading>
+        <p className='text-muted-foreground max-w-lg text-sm'>
           {t(
             'Double check the configuration below. Your system will be locked until initialization is complete.'
           )}
         </p>
       </div>
 
-      <div className='bg-card w-full rounded-xl border p-6 text-left shadow-sm sm:p-8'>
+      <div className='bg-card w-full rounded-xl border p-6 text-left sm:p-8'>
         <dl className='grid gap-6'>
           <div className='space-y-1.5'>
             <dt className='text-muted-foreground text-xs font-medium uppercase'>

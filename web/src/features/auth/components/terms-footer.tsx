@@ -65,7 +65,7 @@ export function TermsFooter({
   }
 
   return (
-    <p className={cn('text-muted-foreground text-center text-xs', className)}>
+    <p className={cn('text-muted-foreground text-center text-sm', className)}>
       {text}{' '}
       {hasUserAgreement && (
         <Link to='/user-agreement' className='hover:text-primary'>

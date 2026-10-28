@@ -103,7 +103,7 @@ export function SecureVerificationDialog(props: SecureVerificationDialogProps) {
       }}
       title={
         <>
-          <ShieldCheck className='size-5' />
+          <ShieldCheck className='size-4' />
           {state.request.title ??
             (login ? t('Complete sign-in') : t('Security verification'))}
         </>
@@ -129,7 +129,7 @@ export function SecureVerificationDialog(props: SecureVerificationDialogProps) {
           )}
           {showSubmit && (
             <Button type='submit' form={formId} disabled={!canVerify}>
-              {verifying && <Loader2 className='size-4 animate-spin' />}
+              {verifying && <Loader2 className='size-4.5 animate-spin' />}
               {t('Verify')}
             </Button>
           )}
@@ -236,7 +236,7 @@ export function SecureVerificationDialog(props: SecureVerificationDialogProps) {
                   disabled={verifying}
                 />
                 <p className='text-muted-foreground flex items-center gap-2 text-sm'>
-                  <KeyRound className='size-5' />
+                  <KeyRound className='size-4' />
                   {t(
                     'We will prompt your device to confirm using biometrics or your hardware key.'
                   )}
@@ -264,7 +264,7 @@ export function SecureVerificationDialog(props: SecureVerificationDialogProps) {
                       {verifying &&
                         input.method === 'oauth' &&
                         input.provider === provider.slug && (
-                          <Loader2 className='size-4 animate-spin' />
+                          <Loader2 className='size-4.5 animate-spin' />
                         )}
                       {t('Continue with {{name}}', { name: provider.name })}
                     </Button>

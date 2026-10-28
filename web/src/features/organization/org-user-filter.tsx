@@ -69,7 +69,7 @@ export function OrgUserFilter({
         aria-label={t('Username')}
         placeholder={t('Username')}
         emptyText={t('No user found.')}
-        className='h-8 min-w-0 text-sm leading-5'
+        className='min-w-0 text-sm'
         disabled={disabled}
         value={username ?? ''}
         onValueChange={(value) => onUsernameChange(value || undefined)}
@@ -79,7 +79,7 @@ export function OrgUserFilter({
         aria-label={t('User ID')}
         placeholder={t('User ID')}
         emptyText={t('No user found.')}
-        className='h-8 min-w-0 text-sm leading-5'
+        className='min-w-0 text-sm'
         disabled={disabled}
         value={userId ? String(userId) : ''}
         onValueChange={(value) =>

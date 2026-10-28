@@ -20,7 +20,6 @@ import { Link2 } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { Heading } from '@/design-system'
 import { SectionPageLayout } from '@/components/layout/components/section-page-layout'
 import { Button } from '@/components/ui/button'
 import {
@@ -31,6 +30,7 @@ import {
 } from '@/components/ui/empty'
 import { Skeleton } from '@/components/ui/skeleton'
 import { TitledCard } from '@/components/ui/titled-card'
+import { Heading } from '@/design-system'
 import { useProfile } from '@/features/profile/hooks/use-profile'
 
 import { AccessTokensCard } from './components/access-tokens-card'
@@ -80,7 +80,11 @@ export function Security() {
             aria-labelledby='security-authentication'
             className='space-y-3'
           >
-            <Heading variant='section-title' level={2} id='security-authentication'>
+            <Heading
+              variant='section-title'
+              level={2}
+              id='security-authentication'
+            >
               {t('Login & Authentication')}
             </Heading>
             <AccountActionCard
@@ -118,7 +122,11 @@ export function Security() {
           className='min-w-0 space-y-4 sm:space-y-6 xl:sticky xl:top-0'
         >
           <div className='space-y-3'>
-            <Heading variant='section-title' level={2} id='security-verification'>
+            <Heading
+              variant='section-title'
+              level={2}
+              id='security-verification'
+            >
               {t('Security verification')}
             </Heading>
             <PasskeyCard loading={loading} />

@@ -158,7 +158,7 @@ export function AccessTokenCreateDialog(props: AccessTokenCreateDialogProps) {
                   ))}
                 </ToggleGroup>
                 {expiry === 'never' && (
-                  <p className='text-warning text-xs'>
+                  <p className='text-warning text-sm'>
                     {t(
                       'A token that never expires stays valid until you revoke it. Set an expiration date when possible.'
                     )}

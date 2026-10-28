@@ -91,7 +91,7 @@ export function DeleteAccountDialog(props: DeleteAccountDialogProps) {
         handleConfirm={handleDelete}
       >
         <Alert variant='destructive'>
-          <AlertTriangle className='size-4' />
+          <AlertTriangle className='size-4.5' />
           <AlertDescription>
             {t('Warning: This action is permanent and irreversible!')}
           </AlertDescription>
