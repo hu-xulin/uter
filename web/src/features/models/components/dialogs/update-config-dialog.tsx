@@ -27,6 +27,7 @@ import { z } from 'zod'
 
 import { Dialog } from '@/components/dialog'
 import { JsonCodeEditor } from '@/components/json-code-editor'
+import { PasswordInput } from '@/components/password-input'
 import { Button } from '@/components/ui/button'
 import {
   Collapsible,
@@ -41,7 +42,6 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form'
-import { PasswordInput } from '@/components/password-input'
 import { Input } from '@/components/ui/input'
 import { handleServerError } from '@/lib/handle-server-error'
 import { requireServerSuccess } from '@/lib/server-error-message'
@@ -239,7 +239,7 @@ export function UpdateConfigDialog({
               disabled={form.formState.isSubmitting}
             >
               {form.formState.isSubmitting ? (
-                <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+                <Loader2 className='mr-2 h-4.5 w-4.5 animate-spin' />
               ) : null}
               {t('Update')}
             </Button>
@@ -249,7 +249,7 @@ export function UpdateConfigDialog({
     >
       {isLoading ? (
         <div className='flex items-center justify-center py-10'>
-          <Loader2 className='text-muted-foreground h-6 w-6 animate-spin' />
+          <Loader2 className='text-muted-foreground size-8 animate-spin' />
         </div>
       ) : (
         <div className='max-h-[calc(100dvh-8.5rem)] overflow-y-auto py-2 pr-1 sm:max-h-[72vh]'>
@@ -377,10 +377,7 @@ export function UpdateConfigDialog({
                         <FormItem>
                           <FormLabel>{t('Registry secret')}</FormLabel>
                           <FormControl>
-                            <PasswordInput
-                              autoComplete='off'
-                              {...field}
-                            />
+                            <PasswordInput autoComplete='off' {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>

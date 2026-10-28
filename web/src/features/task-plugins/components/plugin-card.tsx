@@ -64,7 +64,7 @@ function PluginCardComponent({ row }: { row: Row<TaskPluginListItem> }) {
     return flexRender(cell.column.columnDef.cell, cell.getContext())
   }
 
-  const labelClass = 'text-muted-foreground text-xs font-medium select-none'
+  const labelClass = 'text-muted-foreground text-sm font-medium select-none'
 
   return (
     <div className='flex h-full flex-col gap-2'>
@@ -81,7 +81,7 @@ function PluginCardComponent({ row }: { row: Row<TaskPluginListItem> }) {
             <div className='truncate text-sm font-medium'>
               {row.original.meta.name}
             </div>
-            <div className='text-muted-foreground truncate font-mono text-mono'>
+            <div className='text-muted-foreground text-mono truncate font-mono'>
               {row.original.meta.key}
             </div>
           </div>
@@ -99,7 +99,7 @@ function PluginCardComponent({ row }: { row: Row<TaskPluginListItem> }) {
         {renderCell('runtime')}
         <Badge
           variant='secondary'
-          className='font-mono font-normal'
+          className='text-mono font-mono font-normal'
           aria-label={`${t('Active version')} ${row.original.meta.version}`}
         >
           {row.original.meta.version ? `v${row.original.meta.version}` : '—'}
@@ -107,7 +107,7 @@ function PluginCardComponent({ row }: { row: Row<TaskPluginListItem> }) {
       </div>
 
       {description ? (
-        <p className='text-muted-foreground line-clamp-2 text-xs'>
+        <p className='text-muted-foreground line-clamp-2 text-sm'>
           {description}
         </p>
       ) : null}
@@ -121,7 +121,7 @@ function PluginCardComponent({ row }: { row: Row<TaskPluginListItem> }) {
               <Badge
                 key={model}
                 variant='outline'
-                className='max-w-full font-mono font-normal'
+                className='text-mono max-w-full font-mono font-normal'
                 title={model}
               >
                 <span className='min-w-0 truncate'>{model}</span>

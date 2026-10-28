@@ -22,6 +22,7 @@ import { StaticDataTable } from '@/components/data-table'
 import { EmptyState } from '@/components/empty-state'
 import { GroupBadge } from '@/components/group-badge'
 import { StatusBadge } from '@/components/status-badge'
+import { Heading } from '@/design-system'
 
 import type { Model } from '../types'
 import { ModelSquareStatus } from './model-square-status'
@@ -37,7 +38,9 @@ export function ModelConnections(props: { model: Model }) {
       </p>
       <ModelSquareStatus model={props.model} detail />
       <section className='space-y-3'>
-        <h3 className='font-medium'>{t('Bound Channels')}</h3>
+        <Heading variant='group-title' level={3}>
+          {t('Bound Channels')}
+        </Heading>
         {props.model.bound_channels?.length ? (
           <StaticDataTable
             data={props.model.bound_channels}
@@ -59,7 +62,9 @@ export function ModelConnections(props: { model: Model }) {
         )}
       </section>
       <section className='space-y-3'>
-        <h3 className='font-medium'>{t('Enable Groups')}</h3>
+        <Heading variant='group-title' level={3}>
+          {t('Enable Groups')}
+        </Heading>
         <div className='flex flex-wrap gap-2'>
           {props.model.enable_groups?.map((group) => (
             <GroupBadge key={group} group={group} />
@@ -72,7 +77,9 @@ export function ModelConnections(props: { model: Model }) {
         </div>
       </section>
       <section className='space-y-3'>
-        <h3 className='font-medium'>{t('Supported endpoints')}</h3>
+        <Heading variant='group-title' level={3}>
+          {t('Supported endpoints')}
+        </Heading>
         <div className='flex flex-wrap gap-2'>
           {props.model.supported_endpoints?.map((endpoint) => (
             <StatusBadge key={endpoint} variant='neutral' label={endpoint} />
@@ -86,7 +93,9 @@ export function ModelConnections(props: { model: Model }) {
       </section>
       {props.model.name_rule !== 0 && (
         <section className='space-y-3'>
-          <h3 className='font-medium'>{t('Matched models')}</h3>
+          <Heading variant='group-title' level={3}>
+            {t('Matched models')}
+          </Heading>
           <div className='flex flex-wrap gap-2'>
             {props.model.matched_models?.map((name) => (
               <StatusBadge key={name} variant='neutral' label={name} />

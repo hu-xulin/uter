@@ -93,7 +93,11 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
           <DropdownMenuItem onClick={handleToggleStatus}>
             {toggleLabel}
             <DropdownMenuShortcut>
-              {isEnabled ? <EyeOff size={16} /> : <Eye size={16} />}
+              {isEnabled ? (
+                <EyeOff className='size-4' />
+              ) : (
+                <Eye className='size-4' />
+              )}
             </DropdownMenuShortcut>
           </DropdownMenuItem>
           <DropdownMenuItem
@@ -105,7 +109,7 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
           >
             {t('Delete')}
             <DropdownMenuShortcut>
-              <Trash2 size={16} />
+              <Trash2 className='size-4' />
             </DropdownMenuShortcut>
           </DropdownMenuItem>
         </DataTableRowActionMenu>

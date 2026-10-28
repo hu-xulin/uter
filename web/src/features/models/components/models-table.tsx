@@ -39,7 +39,11 @@ import {
   classifyPricingState,
   indexPricingByModel,
 } from '../lib/model-filters'
-import type { ModelMetadataFilter, ModelPricingFilter, ModelSquareState } from '../types'
+import type {
+  ModelMetadataFilter,
+  ModelPricingFilter,
+  ModelSquareState,
+} from '../types'
 import { DataTableBulkActions } from './data-table-bulk-actions'
 import { useModelsColumns } from './models-columns'
 import { useModels } from './models-provider'
@@ -269,10 +273,7 @@ export function ModelsTable() {
       candidatePricingQuery.data?.entries
     )
     const matched = candidates.filter((item) => {
-      if (
-        metadataFilter &&
-        classifyModelMetadata(item) !== metadataFilter
-      ) {
+      if (metadataFilter && classifyModelMetadata(item) !== metadataFilter) {
         return false
       }
       if (pricingFilter) {
@@ -311,9 +312,7 @@ export function ModelsTable() {
     ? (filteredPage ?? unfilteredModels)
     : unfilteredModels
 
-  const totalCount = needsClientFilter
-    ? matchedCount
-    : data?.data?.total || 0
+  const totalCount = needsClientFilter ? matchedCount : data?.data?.total || 0
 
   // React Table instance
   const { table } = useDataTable({

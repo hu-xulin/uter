@@ -74,7 +74,7 @@ export function useDeploymentsColumns(opts: {
             variant='neutral'
             copyText={name}
             size='sm'
-            className='-ml-1.5 font-mono'
+            className='text-mono -ml-1.5 font-mono'
           />
         )
       },
@@ -235,7 +235,7 @@ export function useDeploymentsColumns(opts: {
           ts = Number(row.original.created_at)
         }
         return (
-          <div className='min-w-[140px] font-mono text-mono'>
+          <div className='text-mono min-w-[140px] font-mono'>
             {formatTimestampToDate(ts)}
           </div>
         )
@@ -269,25 +269,25 @@ export function useDeploymentsColumns(opts: {
               <DropdownMenuItem onClick={() => opts.onViewDetails(id)}>
                 {t('View details')}
                 <DropdownMenuShortcut>
-                  <Info size={16} />
+                  <Info className='size-4' />
                 </DropdownMenuShortcut>
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => opts.onUpdateConfig(id)}>
                 {t('Update configuration')}
                 <DropdownMenuShortcut>
-                  <Settings2 size={16} />
+                  <Settings2 className='size-4' />
                 </DropdownMenuShortcut>
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => opts.onExtend(id)}>
                 {t('Extend deployment')}
                 <DropdownMenuShortcut>
-                  <Timer size={16} />
+                  <Timer className='size-4' />
                 </DropdownMenuShortcut>
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => opts.onRename(id, currentName)}>
                 {t('Rename deployment')}
                 <DropdownMenuShortcut>
-                  <Pencil size={16} />
+                  <Pencil className='size-4' />
                 </DropdownMenuShortcut>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
@@ -297,7 +297,7 @@ export function useDeploymentsColumns(opts: {
               >
                 {t('Delete')}
                 <DropdownMenuShortcut>
-                  <Trash2 size={16} />
+                  <Trash2 className='size-4' />
                 </DropdownMenuShortcut>
               </DropdownMenuItem>
             </DataTableRowActionMenu>

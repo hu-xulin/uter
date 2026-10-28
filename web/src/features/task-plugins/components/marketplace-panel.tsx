@@ -203,7 +203,7 @@ function MarketplaceSourceSection(props: MarketplaceSourceSectionProps) {
   return (
     <section className='space-y-3'>
       <div className='flex flex-wrap items-center gap-2'>
-        <h3 className='text-sm font-semibold'>
+        <h3 className='text-lg font-semibold'>
           {marketplaceIndexDisplayName({
             indexName: props.index?.name,
             sourceName: props.source.name,

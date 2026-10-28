@@ -109,7 +109,10 @@ function isSafeBuiltInReference(
   reference: SyntaxNode
 ): boolean {
   const argList = reference.parent
-  if (argList?.name !== 'ArgList' || argList.parent?.name !== 'CallExpression') {
+  if (
+    argList?.name !== 'ArgList' ||
+    argList.parent?.name !== 'CallExpression'
+  ) {
     return false
   }
   const callee = argList.parent.firstChild

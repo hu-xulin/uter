@@ -44,7 +44,7 @@ export function PluginModelList(props: PluginModelListProps) {
   if (props.collapsedLabel) {
     return (
       <Popover>
-        <PopoverTrigger render={<Button variant='outline' size='xs' />}>
+        <PopoverTrigger render={<Button variant='outline' size='sm' />}>
           {props.collapsedLabel}
         </PopoverTrigger>
         <PopoverContent
@@ -52,7 +52,7 @@ export function PluginModelList(props: PluginModelListProps) {
           className='max-h-64 max-w-[calc(100vw-2rem)] overflow-y-auto'
         >
           <p className='mb-2 text-sm font-medium'>{props.collapsedLabel}</p>
-          <ul className='space-y-1 font-mono text-mono'>
+          <ul className='text-mono space-y-1 font-mono'>
             {props.models.map((model) => (
               <li key={model} className='break-all'>
                 {model}
@@ -73,7 +73,7 @@ export function PluginModelList(props: PluginModelListProps) {
             <Badge
               key={model}
               variant='secondary'
-              className='h-auto max-w-full rounded-md font-mono font-normal break-all whitespace-normal'
+              className='text-mono h-auto max-w-full rounded-md font-mono font-normal break-all whitespace-normal'
             >
               {model}
             </Badge>
@@ -86,14 +86,14 @@ export function PluginModelList(props: PluginModelListProps) {
             render={
               <Button
                 variant='ghost'
-                size='sm'
-                className='h-auto max-w-full gap-1 px-1 py-1 text-xs whitespace-normal'
+                size='inline'
+                className='max-w-full gap-1 px-1 py-1 whitespace-normal'
               />
             }
           >
             {props.collapsedLabel ??
               t('More models ({{count}})', { count: hidden.length })}
-            <ChevronDown className='size-3 shrink-0' aria-hidden='true' />
+            <ChevronDown className='size-4.5 shrink-0' aria-hidden='true' />
           </CollapsibleTrigger>
           <CollapsibleContent>
             <div className='flex flex-wrap gap-1.5 pt-2'>
@@ -101,7 +101,7 @@ export function PluginModelList(props: PluginModelListProps) {
                 <Badge
                   key={model}
                   variant='secondary'
-                  className='h-auto max-w-full rounded-md font-mono font-normal break-all whitespace-normal'
+                  className='text-mono h-auto max-w-full rounded-md font-mono font-normal break-all whitespace-normal'
                 >
                   {model}
                 </Badge>

@@ -98,10 +98,10 @@ export function ModelSquareStatus(props: { model: Model; detail?: boolean }) {
         render={
           <Button
             variant='ghost'
-            size='sm'
+            size='inline'
             title={description}
             aria-description={description}
-            className='h-auto max-w-full min-w-0 cursor-pointer border-0 p-0'
+            className='max-w-full min-w-0 cursor-pointer border-0'
           />
         }
       >

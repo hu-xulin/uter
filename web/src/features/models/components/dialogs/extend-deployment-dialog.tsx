@@ -182,7 +182,7 @@ export function ExtendDeploymentDialog({
           </Button>
           <Button onClick={() => void onSubmit()} disabled={!canSubmit}>
             {isSubmitting ? (
-              <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+              <Loader2 className='mr-2 h-4.5 w-4.5 animate-spin' />
             ) : null}
             {t('Extend')}
           </Button>
@@ -191,13 +191,13 @@ export function ExtendDeploymentDialog({
     >
       {isLoadingDetails ? (
         <div className='flex items-center justify-center py-10'>
-          <Loader2 className='text-muted-foreground h-6 w-6 animate-spin' />
+          <Loader2 className='text-muted-foreground size-8 animate-spin' />
         </div>
       ) : (
         <div className='space-y-4'>
           <div className='text-muted-foreground text-sm'>
             {t('Deployment ID')}:{' '}
-            <span className='font-mono'>{deploymentId}</span>
+            <span className='text-mono font-mono'>{deploymentId}</span>
           </div>
 
           <div className='space-y-2'>

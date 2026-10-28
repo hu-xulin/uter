@@ -21,6 +21,7 @@ import { useTranslation } from 'react-i18next'
 
 import { ErrorState } from '@/components/error-state'
 import { Badge } from '@/components/ui/badge'
+import { Heading } from '@/design-system'
 import { getChannelTypeLabel } from '@/features/channels/lib'
 
 import {
@@ -71,7 +72,7 @@ function EndpointPreviewNote(props: {
   const { t } = useTranslation()
   if (props.field.state === 'value' && props.field.value.length > 0) {
     return props.field.origin === 'index' ? (
-      <p className='text-muted-foreground text-xs'>
+      <p className='text-muted-foreground text-sm'>
         {props.label} · {t('From marketplace index')}
       </p>
     ) : null
@@ -81,7 +82,7 @@ function EndpointPreviewNote(props: {
     message = t('Not declared by this plugin')
   }
   return (
-    <p className='text-muted-foreground text-xs'>
+    <p className='text-muted-foreground text-sm'>
       {props.label}: {message}
     </p>
   )
@@ -182,12 +183,14 @@ export function MarketplaceCapabilities(props: MarketplaceCapabilitiesProps) {
         />
       )}
       <section className='min-w-0 space-y-3' aria-label={t('Supported models')}>
-        <h3 className='text-sm font-medium'>{t('Supported models')}</h3>
+        <Heading variant='group-title' level={3}>
+          {t('Supported models')}
+        </Heading>
         <PreviewFact field={fields.models}>
           {fields.models.state === 'value' && fields.models.value.length > 0 ? (
             <PluginModelList models={fields.models.value} />
           ) : (
-            <p className='text-muted-foreground text-xs'>
+            <p className='text-muted-foreground text-sm'>
               {fields.models.state === 'unknown'
                 ? t('Information unavailable')
                 : t('Not declared by this plugin')}
@@ -224,7 +227,9 @@ export function MarketplaceCapabilities(props: MarketplaceCapabilitiesProps) {
         />
       </section>
       <section className='space-y-3' aria-label={t('Connection settings')}>
-        <h3 className='text-sm font-medium'>{t('Connection settings')}</h3>
+        <Heading variant='group-title' level={3}>
+          {t('Connection settings')}
+        </Heading>
         <dl className='bg-muted/20 grid gap-x-6 gap-y-4 rounded-lg border p-4 sm:grid-cols-2'>
           {connections.map((connection, index) => (
             <div
@@ -235,16 +240,14 @@ export function MarketplaceCapabilities(props: MarketplaceCapabilitiesProps) {
                   : 'min-w-0 space-y-1.5'
               }
             >
-              <dt className='text-muted-foreground text-xs'>
+              <dt className='text-muted-foreground text-sm'>
                 {connection.title}
               </dt>
               <dd>
                 <PreviewFact field={connection.field}>
-                  <p className='text-xs leading-relaxed break-all'>
-                    {connection.value}
-                  </p>
+                  <p className='text-sm break-all'>{connection.value}</p>
                 </PreviewFact>
-                <p className='text-muted-foreground mt-1.5 text-xs leading-relaxed'>
+                <p className='text-muted-foreground mt-1.5 text-sm'>
                   {connection.hint}
                 </p>
               </dd>
@@ -252,7 +255,7 @@ export function MarketplaceCapabilities(props: MarketplaceCapabilitiesProps) {
           ))}
         </dl>
       </section>
-      <p className='text-muted-foreground text-xs leading-relaxed'>
+      <p className='text-muted-foreground text-sm'>
         {t(
           'This preview reads static plugin declarations. The gateway validates the plugin during installation.'
         )}

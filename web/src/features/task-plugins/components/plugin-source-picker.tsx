@@ -66,16 +66,16 @@ export function PluginSourcePicker(props: PluginSourcePickerProps) {
       {props.fileName ? (
         <FileCode2
           aria-hidden='true'
-          className='text-muted-foreground size-5'
+          className='text-muted-foreground size-4'
         />
       ) : (
-        <Upload aria-hidden='true' className='text-muted-foreground size-5' />
+        <Upload aria-hidden='true' className='text-muted-foreground size-4' />
       )}
       <div className='space-y-0.5'>
         <p className='text-sm font-medium'>
           {props.fileName || t('Drop a JavaScript plugin file here')}
         </p>
-        <p className='text-muted-foreground text-xs'>
+        <p className='text-muted-foreground text-sm'>
           {t(
             'Single .js file, up to 8 MiB. Its source is shown below before upload.'
           )}

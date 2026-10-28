@@ -63,6 +63,7 @@ import {
   SheetTitle,
 } from '@/components/ui/sheet'
 import { Textarea } from '@/components/ui/textarea'
+import { Heading } from '@/design-system'
 import { handleServerError } from '@/lib/handle-server-error'
 
 import { createPrefillGroup, updatePrefillGroup } from '../../api'
@@ -209,7 +210,7 @@ export function PrefillGroupFormDrawer({
           >
             <SideDrawerSection>
               <div className='flex flex-col gap-1'>
-                <h3 className='text-sm font-semibold'>{t('Group details')}</h3>
+                <h3 className='text-lg font-semibold'>{t('Group details')}</h3>
                 <p className='text-muted-foreground text-sm'>
                   {t(
                     'Give the group a recognizable name and optional description.'
@@ -265,7 +266,7 @@ export function PrefillGroupFormDrawer({
 
             <SideDrawerSection>
               <div className='flex flex-col gap-1'>
-                <h3 className='text-sm font-semibold'>{t('Configuration')}</h3>
+                <h3 className='text-lg font-semibold'>{t('Configuration')}</h3>
                 <p className='text-muted-foreground text-sm'>
                   {t('Choose the bundle type and define the items inside it.')}
                 </p>
@@ -333,7 +334,9 @@ export function PrefillGroupFormDrawer({
 
               <div className='border-border/60 flex flex-col gap-3 border-y py-4'>
                 <div className='flex items-center gap-2'>
-                  <h4 className='text-sm font-medium'>{t('Project')}</h4>
+                  <Heading variant='group-title' level={4}>
+                    {t('Project')}
+                  </Heading>
                   <StatusBadge
                     label={meta.label}
                     variant={meta.badge}
@@ -397,7 +400,7 @@ export function PrefillGroupFormDrawer({
             {t('Cancel')}
           </SheetClose>
           <Button type='submit' form='prefill-group-form' disabled={isSaving}>
-            {isSaving && <Loader2 className='mr-2 h-4 w-4 animate-spin' />}
+            {isSaving && <Loader2 className='mr-2 h-4.5 w-4.5 animate-spin' />}
             {isSaving && t('Saving...')}
             {!isSaving && isEdit && t('Save changes')}
             {!isSaving && !isEdit && t('Create')}

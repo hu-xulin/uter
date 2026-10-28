@@ -180,28 +180,32 @@ export function ViewLogsDialog({
   if (isLoadingContainers || isLoadingLogs) {
     logsContent = (
       <div className='flex items-center justify-center py-8'>
-        <Loader2 className='h-6 w-6 animate-spin text-gray-400' />
+        <Loader2 className='text-muted-foreground size-8 animate-spin' />
       </div>
     )
   } else if (containers.length === 0) {
     logsContent = (
-      <div className='py-8 text-center text-gray-400'>{t('No containers')}</div>
+      <div className='text-muted-foreground py-8 text-center'>
+        {t('No containers')}
+      </div>
     )
   } else if (!containerId) {
     logsContent = (
-      <div className='py-8 text-center text-gray-400'>
+      <div className='text-muted-foreground py-8 text-center'>
         {t('Please select a container')}
       </div>
     )
   } else if (!logsText.trim()) {
     logsContent = (
-      <div className='py-8 text-center text-gray-400'>{t('No logs')}</div>
+      <div className='text-muted-foreground py-8 text-center'>
+        {t('No logs')}
+      </div>
     )
   } else {
     logsContent = (
-      <div className='font-mono text-sm'>
+      <div className='text-mono font-mono'>
         {keyedLogLines.map(({ key, line }) => (
-          <div key={key} className='whitespace-pre-wrap text-gray-200'>
+          <div key={key} className='text-muted-foreground whitespace-pre-wrap'>
             {line}
           </div>
         ))}
@@ -241,9 +245,9 @@ export function ViewLogsDialog({
             disabled={isFetchingLogs || isFetchingContainers}
           >
             {isFetchingLogs || isFetchingContainers ? (
-              <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+              <Loader2 className='mr-2 h-4.5 w-4.5 animate-spin' />
             ) : (
-              <RefreshCcw className='mr-2 h-4 w-4' />
+              <RefreshCcw className='mr-2 h-4.5 w-4.5' />
             )}
             {t('Refresh')}
           </Button>
@@ -253,7 +257,7 @@ export function ViewLogsDialog({
             onClick={handleDownload}
             disabled={!logsText.trim()}
           >
-            <Download className='mr-2 h-4 w-4' />
+            <Download className='mr-2 h-4.5 w-4.5' />
             {t('Download')}
           </Button>
           <div className='col-span-2 flex items-center justify-between gap-2 rounded-md border px-3 py-1.5 sm:col-span-1'>

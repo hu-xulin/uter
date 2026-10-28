@@ -122,8 +122,7 @@ export function DataTableBulkActions<TData>({
         )}
         <Button
           variant='outline'
-          size='icon'
-          className='size-8'
+          size='icon-sm'
           disabled={hasMissingMetadata}
           title={t(
             hasMissingMetadata
@@ -139,8 +138,7 @@ export function DataTableBulkActions<TData>({
         </Button>
         <Button
           variant='outline'
-          size='icon'
-          className='size-8'
+          size='icon-sm'
           disabled={hasMissingMetadata}
           title={t(
             hasMissingMetadata
@@ -163,10 +161,9 @@ export function DataTableBulkActions<TData>({
             render={
               <Button
                 variant='outline'
-                size='icon'
+                size='icon-sm'
                 disabled={hasMissingMetadata}
                 onClick={handleEnableAll}
-                className='size-8'
                 aria-label={t('Show selected models in model square')}
                 title={t('Show selected models in model square')}
               />
@@ -193,10 +190,9 @@ export function DataTableBulkActions<TData>({
             render={
               <Button
                 variant='outline'
-                size='icon'
+                size='icon-sm'
                 disabled={hasMissingMetadata}
                 onClick={handleDisableAll}
-                className='size-8'
                 aria-label={t('Hide selected models from model square')}
                 title={t('Hide selected models from model square')}
               />
@@ -223,9 +219,8 @@ export function DataTableBulkActions<TData>({
             render={
               <Button
                 variant='outline'
-                size='icon'
+                size='icon-sm'
                 onClick={handleCopyNames}
-                className='size-8'
                 aria-label={t('Copy model names')}
                 title={t('Copy model names')}
               />
@@ -244,10 +239,9 @@ export function DataTableBulkActions<TData>({
             render={
               <Button
                 variant='destructive'
-                size='icon'
+                size='icon-sm'
                 disabled={hasMissingMetadata}
                 onClick={() => setShowDeleteConfirm(true)}
-                className='size-8'
                 aria-label={t('Delete selected models')}
                 title={t('Delete selected models')}
               />

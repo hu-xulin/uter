@@ -118,7 +118,8 @@ export function useModelsColumns(
               <div className='flex min-w-0 items-center gap-1'>
                 <Button
                   variant='link'
-                  className='text-foreground h-auto min-w-0 shrink justify-start p-0 font-mono text-mono'
+                  size='inline'
+                  className='text-foreground text-mono min-w-0 shrink justify-start font-mono'
                   title={model.model_name}
                   onClick={() => {
                     setCurrentRow(model)
@@ -195,7 +196,8 @@ export function useModelsColumns(
         return (
           <Button
             variant='ghost'
-            className='h-auto w-full max-w-full min-w-0 justify-start px-0 py-1 text-left font-normal hover:bg-transparent'
+            size='inline'
+            className='w-full max-w-full min-w-0 justify-start py-1 text-left font-normal hover:bg-transparent'
             aria-label={t('View pricing for {{model}}', {
               model: row.original.model_name,
             })}

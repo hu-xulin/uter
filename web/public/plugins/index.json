@@ -9,9 +9,7 @@
         "en": "Incho music generation (prompt-to-song, multilingual vocals)",
         "zh": "音潮 Incho 音乐生成（提示词生成歌曲、多语种人声）"
       },
-      "models": [
-        "incho_music"
-      ],
+      "models": ["incho_music"],
       "latest": "1.0.2",
       "versions": [
         {
@@ -63,18 +61,12 @@
       "protocols": [
         {
           "name": "openai_responses",
-          "supports": [
-            "stream",
-            "sync",
-            "background"
-          ]
+          "supports": ["stream", "sync", "background"]
         }
       ],
       "usageSchema": {
         "action": {
-          "enum": [
-            "music"
-          ],
+          "enum": ["music"],
           "description": {
             "en": "Generate songs",
             "zh": "生成歌曲"
@@ -105,11 +97,7 @@
         "en": "Typed decisions with TypeSafe Jev, input priced per million tokens and output free",
         "zh": "TypeSafe Jev 结构化判断，输入按每百万 token 定价，输出免费"
       },
-      "models": [
-        "jev-1.13.0",
-        "jev-latest",
-        "jev-preview"
-      ],
+      "models": ["jev-1.13.0", "jev-latest", "jev-preview"],
       "latest": "1.0.0",
       "versions": [
         {
@@ -166,9 +154,7 @@
         "en": "Alibaba Cloud Bailian image and video generation (Wan, Qwen-Image, Z-Image)",
         "zh": "阿里云百炼图片与视频生成（万相、千问图像、Z-Image）"
       },
-      "channelTypes": [
-        17
-      ],
+      "channelTypes": [17],
       "models": [
         "wan3.0-video",
         "wan3.0-video-prime",
@@ -354,10 +340,7 @@
           "type": "submit",
           "decode": "createImageTask",
           "render": "taskCreated",
-          "models": [
-            "wan2.5-i2i-preview",
-            "wanx2.1-imageedit"
-          ]
+          "models": ["wan2.5-i2i-preview", "wanx2.1-imageedit"]
         },
         {
           "method": "POST",
@@ -384,11 +367,7 @@
       "protocols": [
         {
           "name": "openai_responses",
-          "supports": [
-            "stream",
-            "sync",
-            "background"
-          ]
+          "supports": ["stream", "sync", "background"]
         },
         {
           "name": "openai_video",
@@ -475,11 +454,7 @@
           }
         },
         "resolution": {
-          "enum": [
-            "480P",
-            "720P",
-            "1080P"
-          ],
+          "enum": ["480P", "720P", "1080P"],
           "description": {
             "en": "Output video resolution",
             "zh": "输出视频分辨率"
@@ -563,9 +538,7 @@
           }
         },
         {
-          "models": [
-            "z-image-turbo"
-          ],
+          "models": ["z-image-turbo"],
           "schema": {
             "image_count": {
               "type": "number",
@@ -594,10 +567,7 @@
           }
         },
         {
-          "models": [
-            "qwen-image-3.0",
-            "qwen-image-3.0-pro"
-          ],
+          "models": ["qwen-image-3.0", "qwen-image-3.0-pro"],
           "schema": {
             "image_count": {
               "type": "number",
@@ -634,10 +604,7 @@
               }
             },
             "output_image_type": {
-              "enum": [
-                "qima_output_1k",
-                "qima_output_2k"
-              ],
+              "enum": ["qima_output_1k", "qima_output_2k"],
               "description": {
                 "en": "Output image tier",
                 "zh": "输出图片档位"
@@ -666,11 +633,7 @@
           ],
           "schema": {
             "resolution": {
-              "enum": [
-                "480P",
-                "720P",
-                "1080P"
-              ],
+              "enum": ["480P", "720P", "1080P"],
               "description": {
                 "en": "Output video resolution",
                 "zh": "输出视频分辨率"
@@ -714,10 +677,7 @@
           ],
           "schema": {
             "resolution": {
-              "enum": [
-                "720P",
-                "1080P"
-              ],
+              "enum": ["720P", "1080P"],
               "description": {
                 "en": "Output video resolution",
                 "zh": "输出视频分辨率"
@@ -744,9 +704,7 @@
           }
         },
         {
-          "models": [
-            "wan2.6-i2v-flash"
-          ],
+          "models": ["wan2.6-i2v-flash"],
           "schema": {
             "audio": {
               "type": "boolean",
@@ -756,10 +714,7 @@
               }
             },
             "resolution": {
-              "enum": [
-                "720P",
-                "1080P"
-              ],
+              "enum": ["720P", "1080P"],
               "description": {
                 "en": "Output video resolution",
                 "zh": "输出视频分辨率"
@@ -786,16 +741,10 @@
           }
         },
         {
-          "models": [
-            "wan2.2-t2v-plus",
-            "wan2.2-i2v-plus"
-          ],
+          "models": ["wan2.2-t2v-plus", "wan2.2-i2v-plus"],
           "schema": {
             "resolution": {
-              "enum": [
-                "480P",
-                "1080P"
-              ],
+              "enum": ["480P", "1080P"],
               "description": {
                 "en": "Output video resolution",
                 "zh": "输出视频分辨率"
@@ -822,17 +771,10 @@
           }
         },
         {
-          "models": [
-            "wan2.2-s2v",
-            "wanx2.1-t2v-turbo",
-            "wanx2.1-i2v-turbo"
-          ],
+          "models": ["wan2.2-s2v", "wanx2.1-t2v-turbo", "wanx2.1-i2v-turbo"],
           "schema": {
             "resolution": {
-              "enum": [
-                "480P",
-                "720P"
-              ],
+              "enum": ["480P", "720P"],
               "description": {
                 "en": "Output video resolution",
                 "zh": "输出视频分辨率"
@@ -859,15 +801,10 @@
           }
         },
         {
-          "models": [
-            "wanx2.1-t2v-plus",
-            "wanx2.1-i2v-plus"
-          ],
+          "models": ["wanx2.1-t2v-plus", "wanx2.1-i2v-plus"],
           "schema": {
             "resolution": {
-              "enum": [
-                "720P"
-              ],
+              "enum": ["720P"],
               "description": {
                 "en": "Output video resolution",
                 "zh": "输出视频分辨率"
@@ -900,10 +837,7 @@
         "en": "Volcengine Doubao Seedance video generation and Seedream image generation",
         "zh": "火山引擎豆包 Seedance 视频生成与 Seedream 图片生成"
       },
-      "channelTypes": [
-        54,
-        45
-      ],
+      "channelTypes": [54, 45],
       "models": [
         "doubao-seedance-1-0-pro-250528",
         "doubao-seedance-1-0-lite-t2v",
@@ -992,11 +926,7 @@
       "protocols": [
         {
           "name": "openai_responses",
-          "supports": [
-            "stream",
-            "sync",
-            "background"
-          ]
+          "supports": ["stream", "sync", "background"]
         },
         {
           "name": "openai_video",
@@ -1025,12 +955,7 @@
       ],
       "usageSchema": {
         "resolution": {
-          "enum": [
-            "480p",
-            "720p",
-            "1080p",
-            "4k"
-          ],
+          "enum": ["480p", "720p", "1080p", "4k"],
           "description": {
             "en": "Output video resolution",
             "zh": "输出视频分辨率"
@@ -1063,10 +988,7 @@
           }
         },
         "video_input": {
-          "enum": [
-            "none",
-            "video"
-          ],
+          "enum": ["none", "video"],
           "description": {
             "en": "Reference video input",
             "zh": "参考视频输入"
@@ -1134,11 +1056,7 @@
           ],
           "schema": {
             "resolution": {
-              "enum": [
-                "480p",
-                "720p",
-                "1080p"
-              ],
+              "enum": ["480p", "720p", "1080p"],
               "description": {
                 "en": "Output video resolution",
                 "zh": "输出视频分辨率"
@@ -1192,9 +1110,7 @@
           ]
         },
         {
-          "models": [
-            "doubao-seedance-1-5-pro-251215"
-          ],
+          "models": ["doubao-seedance-1-5-pro-251215"],
           "schema": {
             "generate_audio": {
               "type": "boolean",
@@ -1204,11 +1120,7 @@
               }
             },
             "resolution": {
-              "enum": [
-                "480p",
-                "720p",
-                "1080p"
-              ],
+              "enum": ["480p", "720p", "1080p"],
               "description": {
                 "en": "Output video resolution",
                 "zh": "输出视频分辨率"
@@ -1273,17 +1185,10 @@
           ]
         },
         {
-          "models": [
-            "doubao-seedance-2-0-260128"
-          ],
+          "models": ["doubao-seedance-2-0-260128"],
           "schema": {
             "resolution": {
-              "enum": [
-                "480p",
-                "720p",
-                "1080p",
-                "4k"
-              ],
+              "enum": ["480p", "720p", "1080p", "4k"],
               "description": {
                 "en": "Output video resolution",
                 "zh": "输出视频分辨率"
@@ -1316,10 +1221,7 @@
               }
             },
             "video_input": {
-              "enum": [
-                "none",
-                "video"
-              ],
+              "enum": ["none", "video"],
               "description": {
                 "en": "Reference video input",
                 "zh": "参考视频输入"
@@ -1386,10 +1288,7 @@
           ],
           "schema": {
             "resolution": {
-              "enum": [
-                "480p",
-                "720p"
-              ],
+              "enum": ["480p", "720p"],
               "description": {
                 "en": "Output video resolution",
                 "zh": "输出视频分辨率"
@@ -1414,10 +1313,7 @@
               }
             },
             "video_input": {
-              "enum": [
-                "none",
-                "video"
-              ],
+              "enum": ["none", "video"],
               "description": {
                 "en": "Reference video input",
                 "zh": "参考视频输入"
@@ -1462,16 +1358,10 @@
           ]
         },
         {
-          "models": [
-            "doubao-seedance-2-5-260628"
-          ],
+          "models": ["doubao-seedance-2-5-260628"],
           "schema": {
             "resolution": {
-              "enum": [
-                "480p",
-                "720p",
-                "1080p"
-              ],
+              "enum": ["480p", "720p", "1080p"],
               "description": {
                 "en": "Output video resolution",
                 "zh": "输出视频分辨率"
@@ -1500,10 +1390,7 @@
               }
             },
             "video_input": {
-              "enum": [
-                "none",
-                "video"
-              ],
+              "enum": ["none", "video"],
               "description": {
                 "en": "Reference video input",
                 "zh": "参考视频输入"
@@ -1717,9 +1604,7 @@
           ]
         },
         {
-          "models": [
-            "doubao-seedream-4-0-250828"
-          ],
+          "models": ["doubao-seedream-4-0-250828"],
           "schema": {
             "images_above_1_5k": {
               "type": "number",
@@ -1811,9 +1696,7 @@
         "en": "Google Veo video generation on the Gemini API (text-to-video and image-to-video)",
         "zh": "Google Veo 视频生成（文生视频、图生视频），Gemini API 版本"
       },
-      "channelTypes": [
-        24
-      ],
+      "channelTypes": [24],
       "models": [
         "veo-3.0-generate-001",
         "veo-3.0-fast-generate-001",
@@ -1848,11 +1731,7 @@
       "protocols": [
         {
           "name": "openai_responses",
-          "supports": [
-            "stream",
-            "sync",
-            "background"
-          ]
+          "supports": ["stream", "sync", "background"]
         },
         {
           "name": "openai_video"
@@ -1860,11 +1739,7 @@
       ],
       "usageSchema": {
         "resolution": {
-          "enum": [
-            "720p",
-            "1080p",
-            "4k"
-          ],
+          "enum": ["720p", "1080p", "4k"],
           "description": {
             "en": "Output video resolution",
             "zh": "输出视频分辨率"
@@ -1934,9 +1809,7 @@
         "en": "MiniMax Hailuo video generation (text-to-video, image-to-video, and MiniMax-H3 multimodal reference)",
         "zh": "MiniMax 海螺视频生成（文生视频、图生视频、MiniMax-H3 多模态参考生视频）"
       },
-      "channelTypes": [
-        35
-      ],
+      "channelTypes": [35],
       "models": [
         "MiniMax-H3",
         "MiniMax-Hailuo-2.3",
@@ -1984,11 +1857,7 @@
       "protocols": [
         {
           "name": "openai_responses",
-          "supports": [
-            "stream",
-            "sync",
-            "background"
-          ]
+          "supports": ["stream", "sync", "background"]
         },
         {
           "name": "openai_video"
@@ -2012,13 +1881,7 @@
           }
         },
         "resolution": {
-          "enum": [
-            "512P",
-            "768P",
-            "720P",
-            "1080P",
-            "2K"
-          ],
+          "enum": ["512P", "768P", "720P", "1080P", "2K"],
           "description": {
             "en": "Output video resolution",
             "zh": "输出视频分辨率"
@@ -2118,9 +1981,7 @@
       ],
       "usageProfiles": [
         {
-          "models": [
-            "MiniMax-H3"
-          ],
+          "models": ["MiniMax-H3"],
           "schema": {
             "input_images": {
               "type": "number",
@@ -2139,10 +2000,7 @@
               }
             },
             "resolution": {
-              "enum": [
-                "768P",
-                "2K"
-              ],
+              "enum": ["768P", "2K"],
               "description": {
                 "en": "Output video resolution",
                 "zh": "输出视频分辨率"
@@ -2197,16 +2055,10 @@
           ]
         },
         {
-          "models": [
-            "MiniMax-Hailuo-2.3",
-            "MiniMax-Hailuo-2.3-Fast"
-          ],
+          "models": ["MiniMax-Hailuo-2.3", "MiniMax-Hailuo-2.3-Fast"],
           "schema": {
             "resolution": {
-              "enum": [
-                "768P",
-                "1080P"
-              ],
+              "enum": ["768P", "1080P"],
               "description": {
                 "en": "Output video resolution",
                 "zh": "输出视频分辨率"
@@ -2246,16 +2098,10 @@
           ]
         },
         {
-          "models": [
-            "MiniMax-Hailuo-02"
-          ],
+          "models": ["MiniMax-Hailuo-02"],
           "schema": {
             "resolution": {
-              "enum": [
-                "512P",
-                "768P",
-                "1080P"
-              ],
+              "enum": ["512P", "768P", "1080P"],
               "description": {
                 "en": "Output video resolution",
                 "zh": "输出视频分辨率"
@@ -2347,12 +2193,8 @@
         "en": "Volcengine Jimeng video generation (text-to-video, image-to-video, and first-and-last-frame)",
         "zh": "火山引擎即梦视频生成（文生视频、图生视频、首尾帧）"
       },
-      "channelTypes": [
-        51
-      ],
-      "models": [
-        "jimeng_vgfm_t2v_l20"
-      ],
+      "channelTypes": [51],
+      "models": ["jimeng_vgfm_t2v_l20"],
       "latest": "1.1.0",
       "versions": [
         {
@@ -2396,11 +2238,7 @@
       "protocols": [
         {
           "name": "openai_responses",
-          "supports": [
-            "stream",
-            "sync",
-            "background"
-          ]
+          "supports": ["stream", "sync", "background"]
         },
         {
           "name": "openai_video"
@@ -2408,12 +2246,7 @@
       ],
       "usageSchema": {
         "product": {
-          "enum": [
-            "s2_pro",
-            "v30_720p",
-            "v30_1080p",
-            "v30_pro"
-          ],
+          "enum": ["s2_pro", "v30_720p", "v30_1080p", "v30_pro"],
           "description": {
             "en": "Product tier",
             "zh": "产品档位"
@@ -2508,14 +2341,8 @@
         "en": "Kuaishou Kling video generation (text-to-video and image-to-video)",
         "zh": "快手可灵视频生成（文生视频、图生视频）"
       },
-      "channelTypes": [
-        50
-      ],
-      "models": [
-        "kling-v1",
-        "kling-v1-6",
-        "kling-v2-master"
-      ],
+      "channelTypes": [50],
+      "models": ["kling-v1", "kling-v1-6", "kling-v2-master"],
       "latest": "1.1.0",
       "versions": [
         {
@@ -2582,11 +2409,7 @@
       "protocols": [
         {
           "name": "openai_responses",
-          "supports": [
-            "stream",
-            "sync",
-            "background"
-          ]
+          "supports": ["stream", "sync", "background"]
         },
         {
           "name": "openai_video"
@@ -2645,14 +2468,8 @@
         "en": "OpenAI Sora video generation (text-to-video, image-to-video, and remix)",
         "zh": "OpenAI Sora 视频生成（文生视频、图生视频、remix）"
       },
-      "channelTypes": [
-        55,
-        1
-      ],
-      "models": [
-        "sora-2",
-        "sora-2-pro"
-      ],
+      "channelTypes": [55, 1],
+      "models": ["sora-2", "sora-2-pro"],
       "latest": "1.1.0",
       "versions": [
         {
@@ -2695,11 +2512,7 @@
       "protocols": [
         {
           "name": "openai_responses",
-          "supports": [
-            "stream",
-            "sync",
-            "background"
-          ]
+          "supports": ["stream", "sync", "background"]
         },
         {
           "name": "openai_video"
@@ -2715,12 +2528,7 @@
           }
         },
         "size": {
-          "enum": [
-            "720x1280",
-            "1280x720",
-            "1792x1024",
-            "1024x1792"
-          ],
+          "enum": ["720x1280", "1280x720", "1792x1024", "1024x1792"],
           "description": {
             "en": "Output video dimensions",
             "zh": "输出视频尺寸"
@@ -2756,13 +2564,8 @@
         "en": "SunoAPI project music and lyrics generation",
         "zh": "SunoAPI 项目 音乐与歌词生成"
       },
-      "channelTypes": [
-        36
-      ],
-      "models": [
-        "suno_music",
-        "suno_lyrics"
-      ],
+      "channelTypes": [36],
+      "models": ["suno_music", "suno_lyrics"],
       "latest": "1.1.0",
       "versions": [
         {
@@ -2827,19 +2630,12 @@
       "protocols": [
         {
           "name": "openai_responses",
-          "supports": [
-            "stream",
-            "sync",
-            "background"
-          ]
+          "supports": ["stream", "sync", "background"]
         }
       ],
       "usageSchema": {
         "action": {
-          "enum": [
-            "music",
-            "lyrics"
-          ],
+          "enum": ["music", "lyrics"],
           "description": {
             "en": "Generate songs or lyrics",
             "zh": "生成歌曲或歌词"
@@ -2876,9 +2672,7 @@
         "en": "Google Veo video generation on Vertex AI (text-to-video and image-to-video)",
         "zh": "Google Veo 视频生成（文生视频、图生视频），Vertex AI 版本"
       },
-      "channelTypes": [
-        41
-      ],
+      "channelTypes": [41],
       "models": [
         "veo-3.0-generate-001",
         "veo-3.0-fast-generate-001",
@@ -2916,11 +2710,7 @@
       "protocols": [
         {
           "name": "openai_responses",
-          "supports": [
-            "stream",
-            "sync",
-            "background"
-          ]
+          "supports": ["stream", "sync", "background"]
         },
         {
           "name": "openai_video"
@@ -2935,11 +2725,7 @@
           }
         },
         "resolution": {
-          "enum": [
-            "720p",
-            "1080p",
-            "4k"
-          ],
+          "enum": ["720p", "1080p", "4k"],
           "description": {
             "en": "Output video resolution",
             "zh": "输出视频分辨率"
@@ -3013,15 +2799,8 @@
         "en": "Shengshu Vidu video generation (text-to-video, image-to-video, first-and-last-frame, and reference-to-video)",
         "zh": "生数 Vidu 视频生成（文生视频、图生视频、首尾帧、参考生视频）"
       },
-      "channelTypes": [
-        52
-      ],
-      "models": [
-        "viduq2",
-        "viduq1",
-        "vidu2.0",
-        "vidu1.5"
-      ],
+      "channelTypes": [52],
+      "models": ["viduq2", "viduq1", "vidu2.0", "vidu1.5"],
       "latest": "1.0.2",
       "versions": [
         {
@@ -3050,11 +2829,7 @@
       "protocols": [
         {
           "name": "openai_responses",
-          "supports": [
-            "stream",
-            "sync",
-            "background"
-          ]
+          "supports": ["stream", "sync", "background"]
         },
         {
           "name": "openai_video"
@@ -3078,12 +2853,7 @@
           }
         },
         "resolution": {
-          "enum": [
-            "360p",
-            "540p",
-            "720p",
-            "1080p"
-          ],
+          "enum": ["360p", "540p", "720p", "1080p"],
           "description": {
             "en": "Output video resolution",
             "zh": "输出视频分辨率"

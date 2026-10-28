@@ -64,6 +64,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
+import { Heading } from '@/design-system'
 import { handleServerError } from '@/lib/handle-server-error'
 import { resolveLocalizedText } from '@/lib/localized-text'
 
@@ -207,23 +208,23 @@ function PluginDetailContent(props: { plugin: TaskPluginListItem }) {
           </span>
         </SheetTitle>
         <div className='flex min-w-0 items-center gap-1'>
-          <span className='text-muted-foreground min-w-0 font-mono text-mono break-all'>
+          <span className='text-muted-foreground text-mono min-w-0 font-mono break-all'>
             {key}
           </span>
           <CopyButton
             value={key}
             className='size-7'
-            iconClassName='size-3.5'
+            iconClassName='size-4'
             aria-label={t('Copy plugin key')}
           />
           <Badge
             variant='secondary'
-            className='ml-auto h-auto max-w-[35%] shrink-0 font-mono break-all whitespace-normal'
+            className='text-mono ml-auto h-auto max-w-[35%] shrink-0 font-mono break-all whitespace-normal'
           >
             {detail?.meta.version ?? props.plugin.meta.version}
           </Badge>
         </div>
-        <SheetDescription className='max-h-24 overflow-y-auto text-xs leading-relaxed break-words'>
+        <SheetDescription className='max-h-24 overflow-y-auto text-xs break-words'>
           {description || t('Not declared')}
         </SheetDescription>
       </SheetHeader>
@@ -238,7 +239,7 @@ function PluginDetailContent(props: { plugin: TaskPluginListItem }) {
         <div className='shrink-0 overflow-x-auto border-b px-4 sm:px-6'>
           <TabsList
             variant='line'
- className='min-w-max justify-start gap-4 group-data-horizontal/tabs:'
+            className='group-data-horizontal/tabs: min-w-max justify-start gap-4'
             aria-label={t('Plugin details')}
           >
             <TabsTrigger value='overview'>{t('Overview')}</TabsTrigger>
@@ -259,7 +260,9 @@ function PluginDetailContent(props: { plugin: TaskPluginListItem }) {
                 <section className='space-y-3' aria-label={t('Default')}>
                   {usageProfiles.length > 0 && (
                     <>
-                      <h3 className='text-sm font-medium'>{t('Default')}</h3>
+                      <Heading variant='group-title' level={3}>
+                        {t('Default')}
+                      </Heading>
                       <PluginModelList models={defaultUsageModels} />
                     </>
                   )}

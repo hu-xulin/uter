@@ -41,12 +41,14 @@ function EndpointRow(props: {
     <li className='grid grid-cols-[3.5rem_minmax(0,1fr)_auto] items-start gap-2 py-2'>
       <Badge
         variant='outline'
-        className='mt-1 justify-center font-mono font-normal'
+        className='text-mono mt-1 justify-center font-mono font-normal'
       >
         {props.method}
       </Badge>
       <div className='min-w-0 space-y-1.5 pt-1'>
-        <span className='block font-mono text-xs break-all'>{props.path}</span>
+        <span className='text-mono block font-mono break-all'>
+          {props.path}
+        </span>
         <div className='flex flex-wrap items-center gap-1.5'>
           {props.children}
         </div>
@@ -54,7 +56,7 @@ function EndpointRow(props: {
       <CopyButton
         value={props.path}
         className='size-7'
-        iconClassName='size-3.5'
+        iconClassName='size-4'
         aria-label={t('Copy endpoint path')}
       />
     </li>
@@ -83,7 +85,7 @@ export function PluginEndpoints(props: {
 
   return (
     <div className='space-y-3'>
-      <h3 className='text-sm font-semibold'>{props.title ?? t('Endpoints')}</h3>
+      <h3 className='text-lg font-semibold'>{props.title ?? t('Endpoints')}</h3>
       {claims.length === 0 &&
       routes.length === 0 &&
       !props.protocolsNote &&
@@ -92,7 +94,7 @@ export function PluginEndpoints(props: {
       ) : null}
       {props.protocolsNote}
       {claims.length > 0 && (
-        <p className='text-xs font-medium'>
+        <p className='text-sm font-medium'>
           {t('Standard protocol interfaces')}
         </p>
       )}
@@ -110,7 +112,7 @@ export function PluginEndpoints(props: {
           <Badge
             key={mode}
             variant='secondary'
-            className='font-mono font-normal'
+            className='text-mono font-mono font-normal'
           >
             <span>{mode}</span>
             <span className='font-sans'>{modeLabels[mode]}</span>
@@ -123,7 +125,7 @@ export function PluginEndpoints(props: {
         return (
           <div key={name} className='bg-muted/30 space-y-1.5 rounded-md p-3'>
             <div className='flex flex-wrap items-center gap-x-2 gap-y-1'>
-              <span className='text-muted-foreground min-w-0 font-mono text-mono break-all'>
+              <span className='text-muted-foreground text-mono min-w-0 font-mono break-all'>
                 {name}
               </span>
               {models?.length ? (
@@ -156,7 +158,7 @@ export function PluginEndpoints(props: {
       {props.routesNote}
       {routes.length > 0 ? (
         <div className='bg-muted/30 space-y-1.5 rounded-md p-3'>
-          <p className='text-muted-foreground text-xs'>
+          <p className='text-muted-foreground text-sm'>
             {t('Plugin-defined interfaces')}
           </p>
           <ul className='divide-y'>
@@ -166,7 +168,7 @@ export function PluginEndpoints(props: {
                 method={route.method}
                 path={route.path}
               >
-                <span className='text-muted-foreground font-mono text-mono'>
+                <span className='text-muted-foreground text-mono font-mono'>
                   {route.type}
                 </span>
                 <span className='text-muted-foreground text-xs'>

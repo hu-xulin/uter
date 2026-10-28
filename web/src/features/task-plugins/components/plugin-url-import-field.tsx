@@ -122,7 +122,7 @@ export function PluginUrlImportField(props: PluginUrlImportFieldProps) {
             onClick={() => importMutation.mutate()}
           >
             {importMutation.isPending ? (
-              <Spinner aria-hidden='true' className='size-3.5' />
+              <Spinner aria-hidden='true' className='size-4' />
             ) : (
               <Download aria-hidden='true' />
             )}

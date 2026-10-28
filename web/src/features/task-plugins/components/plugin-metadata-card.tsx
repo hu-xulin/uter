@@ -59,18 +59,18 @@ export function PluginMetadataCard(props: PluginMetadataCardProps) {
         className='rounded-lg border p-4'
         aria-label={t('Plugin metadata')}
       >
-        <h3 className='mb-4 text-sm font-semibold'>{t('Plugin metadata')}</h3>
+        <h3 className='mb-4 text-lg font-semibold'>{t('Plugin metadata')}</h3>
         <dl className='grid gap-x-6 gap-y-4 sm:grid-cols-2'>
           {fields.map((field) => (
             <div key={field.label} className='min-w-0 space-y-1'>
-              <dt className='text-muted-foreground text-xs'>{field.label}</dt>
+              <dt className='text-muted-foreground text-sm'>{field.label}</dt>
               <dd className='text-sm break-words'>
                 {field.value || t('Not declared')}
               </dd>
             </div>
           ))}
           <div className='min-w-0 space-y-1'>
-            <dt className='text-muted-foreground text-xs'>
+            <dt className='text-muted-foreground text-sm'>
               {t('Plugin website')}
             </dt>
             <dd>
@@ -82,18 +82,18 @@ export function PluginMetadataCard(props: PluginMetadataCardProps) {
             </dd>
           </div>
           <div className='min-w-0 space-y-1 sm:col-span-2'>
-            <dt className='text-muted-foreground text-xs'>
+            <dt className='text-muted-foreground text-sm'>
               {t('Default base URL')}
             </dt>
             <dd className='flex items-start gap-2'>
-              <span className='min-w-0 flex-1 pt-1 font-mono text-mono break-all'>
+              <span className='text-mono min-w-0 flex-1 pt-1 font-mono break-all'>
                 {props.meta.baseUrl || t('Not declared')}
               </span>
               {canCopyBaseUrl && (
                 <CopyButton
                   value={props.meta.baseUrl ?? ''}
                   className='size-7'
-                  iconClassName='size-3.5'
+                  iconClassName='size-4'
                   aria-label={t('Copy base URL')}
                 />
               )}
@@ -103,13 +103,13 @@ export function PluginMetadataCard(props: PluginMetadataCardProps) {
       </section>
       <section className='rounded-lg border p-4' aria-label={t('Models')}>
         <div className='mb-3 flex items-center gap-2'>
-          <h3 className='text-sm font-semibold'>{t('Models')}</h3>
+          <h3 className='text-lg font-semibold'>{t('Models')}</h3>
           <Badge variant='secondary'>{models.length}</Badge>
           {models.length > 0 && (
             <CopyButton
               value={models.join('\n')}
               className='ml-auto size-7'
-              iconClassName='size-3.5'
+              iconClassName='size-4'
               aria-label={t('Copy all models')}
             />
           )}

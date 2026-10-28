@@ -334,7 +334,10 @@ export const meta = {
     state: 'value',
     origin: 'source',
     value: [
-      { name: 'openai_video', models: ['wan2.7-t2v', 'wan2.6-t2v', 'wan2.7-t2v-2026-04-25'] },
+      {
+        name: 'openai_video',
+        models: ['wan2.7-t2v', 'wan2.6-t2v', 'wan2.7-t2v-2026-04-25'],
+      },
       { name: 'openai_image', models: ['wan2.7-t2v', 'wan2.6-t2v'] },
     ],
   })
@@ -346,7 +349,12 @@ export const meta = {
         method: 'POST',
         path: '/ali/x',
         type: 'submit',
-        models: ['a', 'qwen-image', 'qwen-image-2.0', 'qwen-image-plus-2026-01-09'],
+        models: [
+          'a',
+          'qwen-image',
+          'qwen-image-2.0',
+          'qwen-image-plus-2026-01-09',
+        ],
       },
     ],
   })

@@ -315,7 +315,7 @@ export function ModelMutateDrawer(props: {
                   >
                     {/* Basic Information */}
                     <SideDrawerSection>
-                      <h3 className='text-sm font-semibold'>
+                      <h3 className='text-lg font-semibold'>
                         {t('Basic Information')}
                       </h3>
 
@@ -327,6 +327,7 @@ export function ModelMutateDrawer(props: {
                             <FormLabel required>{t('Model Name')}</FormLabel>
                             <FormControl>
                               <Input
+                                mono
                                 placeholder={t('gpt-4, claude-3-opus, etc.')}
                                 {...field}
                               />
@@ -438,7 +439,7 @@ export function ModelMutateDrawer(props: {
 
                     {/* Matching Configuration */}
                     <SideDrawerSection>
-                      <h3 className='text-sm font-semibold'>
+                      <h3 className='text-lg font-semibold'>
                         {t('Matching Rules')}
                       </h3>
 
@@ -489,7 +490,7 @@ export function ModelMutateDrawer(props: {
                     {/* Endpoints Configuration */}
                     <SideDrawerSection>
                       <div className='flex items-center justify-between'>
-                        <h3 className='text-sm font-semibold'>
+                        <h3 className='text-lg font-semibold'>
                           {t('Endpoints')}
                         </h3>
                         <Combobox
@@ -538,7 +539,7 @@ export function ModelMutateDrawer(props: {
 
                     {/* Status & Sync */}
                     <SideDrawerSection>
-                      <h3 className='text-sm font-semibold'>
+                      <h3 className='text-lg font-semibold'>
                         {t('Status & Sync')}
                       </h3>
 
@@ -548,7 +549,7 @@ export function ModelMutateDrawer(props: {
                         render={({ field }) => (
                           <FormItem className={sideDrawerSwitchItemClassName()}>
                             <div className='flex flex-col gap-0.5'>
-                              <FormLabel className='text-base'>
+                              <FormLabel>
                                 {t('Model square visibility')}
                               </FormLabel>
                               <FormDescription>
@@ -573,9 +574,7 @@ export function ModelMutateDrawer(props: {
                         render={({ field }) => (
                           <FormItem className={sideDrawerSwitchItemClassName()}>
                             <div className='flex flex-col gap-0.5'>
-                              <FormLabel className='text-base'>
-                                {t('Allow metadata sync')}
-                              </FormLabel>
+                              <FormLabel>{t('Allow metadata sync')}</FormLabel>
                               <FormDescription>
                                 {t(
                                   'Allows selected fields to be overwritten after a sync preview. No automatic synchronization.'

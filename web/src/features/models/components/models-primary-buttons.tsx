@@ -70,7 +70,7 @@ export function ModelsPrimaryButtons() {
       )}
       {/* Create Model */}
       <Button onClick={handleCreateModel} size='sm'>
-        <Plus className='h-4 w-4' />
+        <Plus className='size-4' />
         {t('Add Model')}
       </Button>
 
@@ -78,10 +78,14 @@ export function ModelsPrimaryButtons() {
       <DropdownMenu>
         <DropdownMenuTrigger
           render={
-            <Button variant='outline' size='sm' aria-label={t('Open menu')} />
+            <Button
+              variant='outline'
+              size='icon-sm'
+              aria-label={t('Open menu')}
+            />
           }
         >
-          <MoreHorizontal className='h-4 w-4' />
+          <MoreHorizontal className='h-4.5 w-4.5' />
         </DropdownMenuTrigger>
         <DropdownMenuContent align='end' className='w-56'>
           <DropdownMenuItem onClick={handleMissingModels}>

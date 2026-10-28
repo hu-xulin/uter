@@ -46,8 +46,8 @@ import { searchVendors } from '../api'
 import { vendorsQueryKeys } from '../lib'
 import type { Vendor } from '../types'
 import { vendorErrorMessage, type VendorOperation } from '../vendor-api'
-import { VendorOperationDialog } from './dialogs/vendor-operation-dialog'
 import { VendorMergeRulesDialog } from './dialogs/vendor-merge-rules-dialog'
+import { VendorOperationDialog } from './dialogs/vendor-operation-dialog'
 import { useModels } from './models-provider'
 
 const route = getRouteApi('/_authenticated/models/$section')
@@ -130,7 +130,8 @@ export function VendorsTable() {
           </span>
           <Button
             variant='link'
-            className='text-foreground h-auto min-w-0 justify-start p-0 text-left'
+            size='inline'
+            className='text-foreground min-w-0 justify-start text-left'
             title={row.original.name}
             onClick={() => {
               setCurrentVendor(row.original)
@@ -162,7 +163,8 @@ export function VendorsTable() {
       cell: ({ row }) => (
         <Button
           variant='link'
-          className='h-auto p-0 tabular-nums'
+          size='inline'
+          className='tabular-nums'
           onClick={() =>
             void navigate({
               to: '/models/$section',
@@ -198,7 +200,7 @@ export function VendorsTable() {
               <Button variant='ghost' size='icon' aria-label={t('Open menu')} />
             }
           >
-            <MoreHorizontal className='size-4' />
+            <MoreHorizontal className='size-4.5' />
           </DropdownMenuTrigger>
           <DropdownMenuContent align='end'>
             <DropdownMenuItem
@@ -275,7 +277,7 @@ export function VendorsTable() {
               size='sm'
               onClick={() => setMergeRulesOpen(true)}
             >
-              <GitMerge className='size-3.5' />
+              <GitMerge className='size-4.5' />
               {t('Auto-merge rules')}
             </Button>
           ),

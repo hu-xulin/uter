@@ -164,7 +164,7 @@ export function PrefillGroupManagementDialog({
   if (isLoading) {
     groupsContent = (
       <div className='flex flex-col items-center justify-center gap-2 py-12 text-center'>
-        <Loader2 className='text-muted-foreground h-6 w-6 animate-spin' />
+        <Loader2 className='text-muted-foreground size-8 animate-spin' />
         <p className='text-muted-foreground text-sm'>
           {t('Fetching prefill groups...')}
         </p>
@@ -174,7 +174,7 @@ export function PrefillGroupManagementDialog({
     groupsContent = (
       <Empty className='border border-dashed py-10'>
         <EmptyMedia variant='icon'>
-          <Layers3 className='h-6 w-6' />
+          <Layers3 />
         </EmptyMedia>
         <EmptyHeader>
           <EmptyTitle>{t('No prefill groups yet')}</EmptyTitle>
@@ -200,8 +200,8 @@ export function PrefillGroupManagementDialog({
                   {group.name}
                   <StatusBadge variant={meta.badge} size='sm' copyable={false}>
                     {meta.label}
-                    <span className='text-muted-foreground/30'>·</span>
-                    <span className='text-muted-foreground font-mono'>
+                    <span className='text-muted-foreground'>·</span>
+                    <span className='text-muted-foreground text-mono font-mono'>
                       #{group.id}
                     </span>
                   </StatusBadge>
@@ -223,7 +223,7 @@ export function PrefillGroupManagementDialog({
                   variant='outline'
                   onClick={() => onEditGroup(group)}
                 >
-                  <Pencil className='h-4 w-4' />
+                  <Pencil className='h-4.5 w-4.5' />
                   <span className='sr-only'>{t('Edit group')}</span>
                 </Button>
                 <Button
@@ -232,13 +232,13 @@ export function PrefillGroupManagementDialog({
                   className='text-destructive hover:text-destructive'
                   onClick={() => handleDeleteClick(group)}
                 >
-                  <Trash2 className='h-4 w-4' />
+                  <Trash2 className='h-4.5 w-4.5' />
                   <span className='sr-only'>{t('Delete group')}</span>
                 </Button>
               </div>
             </CardHeader>
             <CardContent className='space-y-3'>
-              <div className='text-muted-foreground flex flex-wrap items-center gap-2 text-xs font-medium uppercase'>
+              <div className='text-muted-foreground flex flex-wrap items-center gap-2 text-sm font-medium'>
                 <span>Items</span>
                 <StatusBadge
                   label={`${parsedItems.length} item${parsedItems.length === 1 ? '' : 's'}`}
@@ -296,11 +296,11 @@ export function PrefillGroupManagementDialog({
                   <TableId value={group.id} />
                 </div>
                 {group.description ? (
-                  <p className='text-muted-foreground text-xs'>
+                  <p className='text-muted-foreground text-sm'>
                     {group.description}
                   </p>
                 ) : (
-                  <p className='text-muted-foreground text-xs italic'>
+                  <p className='text-muted-foreground text-sm italic'>
                     No description provided
                   </p>
                 )}
@@ -389,7 +389,7 @@ export function PrefillGroupManagementDialog({
         onOpenChange={onOpenChange}
         title={
           <>
-            <Layers3 className='text-foreground/80 h-5 w-5' />
+            <Layers3 className='text-muted-foreground h-4 w-4' />
             {t('Prefill Group Management')}
           </>
         }
@@ -401,7 +401,7 @@ export function PrefillGroupManagementDialog({
           isMobile && 'max-w-none rounded-none'
         )}
         titleClassName='flex flex-wrap items-center gap-2 text-lg'
-        descriptionClassName='text-sm leading-relaxed'
+        descriptionClassName='text-sm'
         contentHeight='auto'
         bodyClassName={cn(
           'space-y-3',
@@ -411,7 +411,7 @@ export function PrefillGroupManagementDialog({
         <div className='bg-muted/30 flex flex-wrap items-center justify-between gap-3 rounded-md border p-2 text-sm'>
           <div className='flex flex-wrap items-center gap-2'>
             <Button size='sm' onClick={onCreateGroup}>
-              <Plus className='mr-2 h-4 w-4' />
+              <Plus className='mr-2 h-4.5 w-4.5' />
               {t('New Group')}
             </Button>
             <Button
@@ -421,9 +421,9 @@ export function PrefillGroupManagementDialog({
               disabled={isFetching}
             >
               {isFetching ? (
-                <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+                <Loader2 className='mr-2 h-4.5 w-4.5 animate-spin' />
               ) : (
-                <RefreshCcw className='mr-2 h-4 w-4' />
+                <RefreshCcw className='mr-2 h-4.5 w-4.5' />
               )}
               {t('Refresh')}
             </Button>
