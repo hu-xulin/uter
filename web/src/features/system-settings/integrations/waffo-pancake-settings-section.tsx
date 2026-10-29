@@ -486,11 +486,11 @@ export function WaffoPancakeSettingsSection({
               for. Subscriptions reuse the same Store but get their own
               per-plan product, configured in the Subscriptions admin.
             */}
-          <div className='border-info-soft bg-info-soft text-info-soft-foreground dark:border-info-soft/60 dark:bg-info-soft/40 dark:text-info-soft-foreground rounded-md border p-3 text-xs'>
-            <p className='mb-1 font-medium'>
+          <div className='border-info-soft bg-info-soft text-info-soft-foreground dark:border-info-soft/60 dark:bg-info-soft/40 dark:text-info-soft-foreground rounded-md border p-3 text-sm'>
+            <p className='mb-1.5 font-medium'>
               {t('Why only one store + product?')}
             </p>
-            <ul className='list-inside list-disc space-y-1'>
+            <ul className='list-inside list-disc space-y-1.5'>
               <li>
                 {t(
                   'The bound Store is the parent container for every Pancake product uter creates from this admin — both the wallet top-up product and any subscription-plan products. One store is enough; pin a different one only if you genuinely run separate Pancake catalogs.'
