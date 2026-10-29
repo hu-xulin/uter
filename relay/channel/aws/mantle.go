@@ -12,13 +12,13 @@ import (
 	"strings"
 	"time"
 
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/aws/signer/v4"
+	"github.com/gin-gonic/gin"
 	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/relay/channel"
 	"github.com/uter-ai/uter/relay/channel/claude"
 	relaycommon "github.com/uter-ai/uter/relay/common"
-	"github.com/aws/aws-sdk-go-v2/aws"
-	"github.com/aws/aws-sdk-go-v2/aws/signer/v4"
-	"github.com/gin-gonic/gin"
 )
 
 func mantleRequestURL(info *relaycommon.RelayInfo) (string, error) {

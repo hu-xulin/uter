@@ -53,7 +53,6 @@ const (
 	AlipayTradeStatusClosed = "TRADE_CLOSED"
 )
 
-
 // AlipayQueryOrder 主动向支付宝查询一笔订单的真实状态。
 //
 // 用途：异步回调（notify_url）在本地 / 内网环境不可达时会缺失，订单会一直停在
