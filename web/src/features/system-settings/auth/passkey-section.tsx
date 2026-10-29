@@ -402,8 +402,8 @@ export function PasskeySection(props: PasskeySectionProps) {
               role='status'
               className={cn(
                 hasDomainWarning
-                  ? 'border-warning/40 bg-warning/10 text-warning dark:text-warning-soft-foreground'
-                  : 'border-info/30 bg-info/10 text-info'
+                  ? 'border-warning/40 bg-warning-soft text-warning dark:text-warning-soft-foreground'
+                  : 'border-info/30 bg-info-soft text-info'
               )}
             >
               <AlertDescription className='flex flex-wrap items-center gap-x-2 gap-y-1 text-inherit'>
