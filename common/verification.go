@@ -21,6 +21,11 @@ type verificationValue struct {
 const (
 	EmailVerificationPurpose = "v"
 	PasswordResetPurpose     = "r"
+	// LoginEmailCodePurpose 用于「邮箱验证码登录」。与注册验证（"v"）、
+	// 密码重置（"r"）共用同一套验证码存储与生命周期（10 分钟有效、单次
+	// 使用、5 次失败作废），但 purpose 隔离 —— 一个用途拿到的码不能在
+	// 另一个用途里兑换。
+	LoginEmailCodePurpose = "l"
 
 	// 单个验证码的最大尝试次数，超过即作废（防爆破）
 	maxVerificationAttempts = 5

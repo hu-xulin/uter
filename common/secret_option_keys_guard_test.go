@@ -58,7 +58,6 @@ func TestSecretOptionKeySuffixFallbackExhaustive(t *testing.T) {
 		"SystemAccessToken",
 		"CustomerServiceAdminToken",
 		"TelegramBotToken",
-		"WeChatServerToken",
 		"SMTPToken",
 		"EmailSecret",
 		"EmailPassword",

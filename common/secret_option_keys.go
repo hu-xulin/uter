@@ -36,7 +36,6 @@ var secretOptionKeys = map[string]struct{}{
 	"discord.client_secret":     {},
 	"oidc.client_secret":        {},
 	"telegram.client_secret":    {},
-	"WeChatServerToken":         {},
 	"TelegramBotToken":          {},
 	"TurnstileSecretKey":        {},
 	"AccessToken":               {},

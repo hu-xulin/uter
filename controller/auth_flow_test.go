@@ -359,7 +359,7 @@ func (provider *boundLoginOAuthProvider) FillUserByProviderID(user *model.User, 
 }
 
 func TestSecurityLoginAllPrimaryTransportsRequireAdditionalVerification(t *testing.T) {
-	for _, transport := range []string{"oauth", "custom oauth", "wechat", "telegram"} {
+	for _, transport := range []string{"oauth", "custom oauth", "telegram"} {
 		t.Run(transport, func(t *testing.T) {
 			var user *model.User
 			var telegram *telegramOAuthFixture
@@ -376,21 +376,6 @@ func TestSecurityLoginAllPrimaryTransportsRequireAdditionalVerification(t *testi
 				require.NoError(t, model.DB.Model(user).Update("telegram_id", "42").Error)
 				state, code := telegram.authorization(t, "login", service.AuthIdentity{}, "", telegramIdentityClaims(42))
 				response = telegramOAuthCallback(state, code, service.AuthIdentity{})
-			case "wechat":
-				require.NoError(t, model.DB.Model(user).Update("wechat_id", "bound-wechat").Error)
-				upstream := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-					assert.Equal(t, "wechat-code", r.URL.Query().Get("code"))
-					_, _ = w.Write([]byte(`{"success":true,"data":"bound-wechat"}`))
-				}))
-				t.Cleanup(upstream.Close)
-				previousEnabled, previousAddress := common.WeChatAuthEnabled, common.WeChatServerAddress
-				common.WeChatAuthEnabled, common.WeChatServerAddress = true, upstream.URL
-				t.Cleanup(func() { common.WeChatAuthEnabled, common.WeChatServerAddress = previousEnabled, previousAddress })
-				state, loginNonce := createOAuthLoginFlow(t, "wechat")
-				router := gin.New()
-				router.GET("/api/oauth/wechat", WeChatAuth)
-				response = httptest.NewRecorder()
-				router.ServeHTTP(response, withOAuthLoginNonceCookie(httptest.NewRequest("GET", "/api/oauth/wechat?state="+state+"&code=wechat-code", nil), loginNonce))
 			default:
 				const slug = "unified-login-test"
 				if transport == "custom oauth" {

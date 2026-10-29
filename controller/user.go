@@ -99,6 +99,156 @@ func Login(c *gin.Context) {
 	setupLogin(&user, nil, c)
 }
 
+// EmailCodeLoginRequest 是邮箱验证码登录的请求体。
+type EmailCodeLoginRequest struct {
+	Email string `json:"email"`
+	Code  string `json:"code"`
+}
+
+// LoginByEmailCode 用邮箱验证码登录（purpose "l"，common.LoginEmailCodePurpose）。
+//
+// 语义是「验证码登录即注册」：验证码本身就是邮箱所有权的证明，因此**未注册
+// 邮箱验证通过后自动创建账号**并进入登录会话；已注册账号行为与密码登录一致
+// （2FA 挑战、审计日志、限流退款、刷新 Cookie 全部复用 setupLogin）。
+// 管理员开启 EmailCodeLoginEnabled 即显式授权这条注册通道，它与
+// RegisterEnabled / PasswordRegisterEnabled 相互独立。
+//
+// 验证强度链：IP 级 CriticalRateLimit（路由层）→ 6 位数字码 10 分钟有效 →
+// 单次使用 + 常量时间比较 + 5 次失败作废（common.VerifyCodeWithKey）。
+func LoginByEmailCode(c *gin.Context) {
+	if !common.EmailCodeLoginEnabled {
+		common.ApiErrorT(c, "Email code login has been disabled by administrator")
+		return
+	}
+	var req EmailCodeLoginRequest
+	err := common.DecodeJson(c.Request.Body, &req)
+	if err != nil {
+		common.ApiErrorT(c, "Invalid parameters")
+		return
+	}
+	req.Email = model.NormalizeEmail(req.Email)
+	if req.Email == "" || req.Code == "" {
+		common.ApiErrorT(c, "Invalid parameters")
+		return
+	}
+
+	user, err := model.GetUniqueUserByEmail(req.Email)
+	if err != nil && !errors.Is(err, model.ErrEmailNotFound) {
+		common.SysLog(common.LogText("email code login lookup failed for %s: %v", req.Email, err))
+		common.ApiErrorT(c, "Database error, please contact the administrator")
+		return
+	}
+	if !common.VerifyCodeWithKey(req.Email, req.Code, common.LoginEmailCodePurpose) {
+		common.ApiErrorT(c, "Verification code is incorrect or has expired")
+		return
+	}
+	if user == nil {
+		// 未注册：验证码已通过，自动创建账号（登录即注册）。
+		user, err = provisionEmailCodeUser(c, req.Email)
+		if err != nil {
+			common.SysLog(common.LogText("email code sign-up failed for %s: %v", req.Email, err))
+			common.ApiErrorT(c, "Failed to create account, please try again later")
+			return
+		}
+	}
+	if user.Status != common.UserStatusEnabled {
+		common.ApiErrorT(c, "Username or password is incorrect, or user has been banned")
+		return
+	}
+	// 验证码登录没有密码凭证环节，爆破防护由 VerifyCodeWithKey 承担
+	// （单次使用 + 5 次失败作废）。
+	setupLogin(user, nil, c)
+}
+
+// provisionEmailCodeUser 为验证码登录创建新账号（登录即注册）。
+//
+// 用户名取邮箱本地部分（截断到 20 字符，与 Username 列的 validate 上限一致）；
+// 与既有用户（含软删除）冲突时依次回退到完整邮箱、本地部分加随机后缀。
+// 新账号无密码 —— 后续可走忘记密码流程设置（此时邮箱已注册，重置邮件可达）。
+func provisionEmailCodeUser(c *gin.Context, email string) (*model.User, error) {
+	local := email
+	if at := strings.IndexByte(email, '@'); at > 0 {
+		local = email[:at]
+	}
+	truncate := func(s string, n int) string {
+		if len(s) > n {
+			return s[:n]
+		}
+		return s
+	}
+	candidates := []string{truncate(local, 20), truncate(email, 20)}
+	for i := 0; i < 3; i++ {
+		suffix, err := common.GenerateNumericCode(4 + 2*i)
+		if err != nil {
+			return nil, err
+		}
+		candidates = append(candidates, truncate(local, 14)+suffix)
+	}
+	username := ""
+	for _, candidate := range candidates {
+		if candidate == "" {
+			continue
+		}
+		exists, err := model.CheckUserExistOrDeleted(candidate, "")
+		if err != nil {
+			return nil, err
+		}
+		if !exists {
+			username = candidate
+			break
+		}
+	}
+	if username == "" {
+		return nil, errors.New("no available username for email code sign-up")
+	}
+
+	user := model.User{
+		Username:    username,
+		DisplayName: username,
+		Email:       email,
+		Role:        common.RoleCommonUser,
+	}
+	if err := user.Insert(0); err != nil {
+		return nil, err
+	}
+	// 与密码注册保持一致：按配置发放默认令牌，让新用户登录后即可直接使用。
+	if constant.GenerateDefaultToken {
+		if err := issueDefaultTokenForUser(c, user.Id, username); err != nil {
+			return nil, err
+		}
+	}
+	return &user, nil
+}
+
+// issueDefaultTokenForUser 发放注册默认令牌。Register 与验证码注册
+// （provisionEmailCodeUser）共用 —— 这两个调用点的行为必须保持一致：
+// 同样的额度、同样的命名、同样的 auto 分组规则。
+func issueDefaultTokenForUser(c *gin.Context, userID int, username string) error {
+	key, err := common.GenerateKey()
+	if err != nil {
+		return fmt.Errorf("failed to generate token key: %w", err)
+	}
+	token := model.Token{
+		UserId:             userID,
+		Name:               i18n.T(c, i18n.MsgUserDefaultTokenName, map[string]any{"Username": username}),
+		Key:                key,
+		CreatedTime:        common.GetTimestamp(),
+		AccessedTime:       common.GetTimestamp(),
+		ExpiredTime:        -1,     // 永不过期
+		RemainQuota:        500000, // 示例额度
+		UnlimitedQuota:     true,
+		ModelLimitsEnabled: false,
+	}
+	token.AllowUserQuotaQuery = true
+	if setting.DefaultUseAutoGroup {
+		token.Group = "auto"
+	}
+	if err := token.Insert(); err != nil {
+		return fmt.Errorf("failed to create default token: %w", err)
+	}
+	return nil
+}
+
 // loginMethodFromContext 根据请求路径推导登录方式，用于登录审计日志。
 func loginMethodFromContext(c *gin.Context) string {
 	if method := c.GetString("login_method"); method != "" {
@@ -107,12 +257,12 @@ func loginMethodFromContext(c *gin.Context) string {
 	switch c.FullPath() {
 	case "/api/user/login":
 		return "password"
+	case "/api/user/login/email-code":
+		return "email_code"
 	case "/api/user/login/2fa":
 		return "2fa"
 	case "/api/user/passkey/login/finish":
 		return "passkey"
-	case "/api/oauth/wechat":
-		return "wechat"
 	case "/api/oauth/telegram/login":
 		return "telegram"
 	case "/api/oauth/:provider":
@@ -307,31 +457,10 @@ func Register(c *gin.Context) {
 		common.ApiErrorT(c, "User registration failed or user ID retrieval failed")
 		return
 	}
-	// 生成默认令牌
+	// 生成默认令牌（与验证码登录自动注册共用同一实现）
 	if constant.GenerateDefaultToken {
-		key, err := common.GenerateKey()
-		if err != nil {
-			common.ApiErrorT(c, "Failed to generate default token")
-			common.SysLog(common.LogText("failed to generate token key: %s", err.Error()))
-			return
-		}
-		// 生成默认令牌
-		token := model.Token{
-			UserId:             insertedUser.Id, // 使用插入后的用户ID
-			Name:               i18n.T(c, i18n.MsgUserDefaultTokenName, map[string]any{"Username": cleanUser.Username}),
-			Key:                key,
-			CreatedTime:        common.GetTimestamp(),
-			AccessedTime:       common.GetTimestamp(),
-			ExpiredTime:        -1,     // 永不过期
-			RemainQuota:        500000, // 示例额度
-			UnlimitedQuota:     true,
-			ModelLimitsEnabled: false,
-		}
-		token.AllowUserQuotaQuery = true
-		if setting.DefaultUseAutoGroup {
-			token.Group = "auto"
-		}
-		if err := token.Insert(); err != nil {
+		if err := issueDefaultTokenForUser(c, insertedUser.Id, cleanUser.Username); err != nil {
+			common.SysLog(common.LogText("failed to issue default token: %v", err))
 			common.ApiErrorT(c, "Failed to create default token")
 			return
 		}
@@ -580,7 +709,6 @@ func buildSelfUserData(user *model.User) map[string]any {
 		"github_id":         user.GitHubId,
 		"discord_id":        user.DiscordId,
 		"oidc_id":           user.OidcId,
-		"wechat_id":         user.WeChatId,
 		"telegram_id":       user.TelegramId,
 		"group":             user.Group,
 		"quota":             user.Quota,

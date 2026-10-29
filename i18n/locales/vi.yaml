@@ -58,12 +58,6 @@ twofa.backup_regenerated: "Đã tạo lại mã dự phòng."
 twofa.insufficient_privilege: "Bạn không thể đổi cài đặt 2FA của người dùng cùng cấp hoặc cao hơn."
 twofa.not_enabled: "Người dùng chưa bật xác thực hai bước."
 twofa.force_disabled: "Xác thực hai bước của người dùng bị tắt bắt buộc."
-wechat.login_disabled: "Quản trị viên đã tắt đăng nhập và đăng ký qua WeChat."
-wechat.user_cancelled: "Tài khoản này đã bị xoá."
-wechat.registration_closed: "Quản trị viên đã tắt đăng ký người dùng mới."
-wechat.user_banned: "Tài khoản này đã bị cấm."
-wechat.invalid_request: "Yêu cầu không hợp lệ. Vui lòng thử lại."
-wechat.already_bound: "Tài khoản WeChat này đã được liên kết với người dùng khác."
 oauth.provider_not_found: "Không tìm thấy nhà cung cấp OAuth."
 oauth.slug_in_use: "Slug này đã được dùng. Hãy chọn slug khác."
 oauth.slug_conflict: "Slug này xung đột với nhà cung cấp OAuth tích hợp."
@@ -81,7 +75,6 @@ setting.discord_oauth_creds_required: "Để bật Discord OAuth, hãy điền D
 setting.oidc_creds_required: "Để bật đăng nhập OIDC, hãy điền OIDC Client Id và Client Secret trước."
 setting.linuxdo_creds_required: "Để bật LinuxDO OAuth, hãy điền LinuxDO Client Id và Client Secret trước."
 setting.email_domain_creds_required: "Để bật giới hạn miền email, hãy điền miền email cho phép trước."
-setting.wechat_login_creds_required: "Để bật đăng nhập WeChat, hãy điền cài đặt đăng nhập WeChat trước."
 setting.turnstile_creds_required: "Để bật Turnstile, hãy điền cài đặt Turnstile trước."
 setting.classic_theme_removed: "Frontend Classic đã bị xoá, chủ đề chỉ có thể đặt là default."
 setting.image_ratio_failed: "Cài đặt hệ số ảnh thất bại."
@@ -257,7 +250,6 @@ user.email_empty: "Email trống!"
 user.github_id_empty: "GitHub ID trống!"
 user.discord_id_empty: "Discord ID trống!"
 user.oidc_id_empty: "OIDC ID trống!"
-user.wechat_id_empty: "WeChat ID trống!"
 user.telegram_id_empty: "Telegram ID trống!"
 user.telegram_not_bound: "Tài khoản Telegram này chưa được liên kết"
 user.linux_do_id_empty: "Linux DO ID trống!"
@@ -432,6 +424,8 @@ email.password_reset.subject: '{{.SystemName}} password reset'
 email.password_reset.validity: The reset link is valid for {{.Minutes}} minutes. If you did not request it, please ignore this email.
 email.verification.code: 'Your verification code is: <strong>{{.Code}}</strong>'
 email.verification.greeting: Hello, you are verifying your email address for {{.SystemName}}.
+email.login_code.subject: '{{.SystemName}} sign-in code'
+email.login_code.greeting: 'Hello, here is your {{.SystemName}} sign-in verification code.'
 email.verification.subject: '{{.SystemName}} email verification'
 email.verification.validity: The verification code is valid for {{.Minutes}} minutes. If you did not request it, please ignore this email.
 notify.quota_low_bark: '{{.Prompt}}, remaining quota: {{.Quota}}. Please top up soon'

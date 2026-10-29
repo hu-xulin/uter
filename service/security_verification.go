@@ -186,11 +186,6 @@ func BindVerificationOperation(operation VerificationOperation) (VerificationBin
 			if len(fields) != 2 || common.Validate.Var(context.Email, "required,email") != nil || context.Code != "" {
 				return VerificationBinding{}, ErrVerificationContextInvalid
 			}
-		case "wechat":
-			context.Code = strings.TrimSpace(context.Code)
-			if len(fields) != 2 || context.Code == "" || len(context.Code) > 128 || context.Email != "" {
-				return VerificationBinding{}, ErrVerificationContextInvalid
-			}
 		default:
 			if len(fields) != 1 || context.Provider == "" || len(context.Provider) > 64 || oauth.GetProvider(context.Provider) == nil {
 				return VerificationBinding{}, ErrVerificationContextInvalid

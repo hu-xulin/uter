@@ -18,10 +18,10 @@ import (
 
 // 微信开放平台「网站应用」登录（PC 网页扫码登录）。
 //
-// 与 controller/wechat.go 的公众号验证码方案相互独立：网站应用走标准 OAuth2
-// 授权码流程——前端重定向到 open.weixin.qq.com/connect/qrconnect，用户扫码后
-// 微信携带 code 回跳到后端 /api/oauth/wechat-web，本文件用 AppSecret 换 openid
-// （或 unionid），再复用 oauth-flow 的 CSRF 校验与 setupLogin 完成登录/注册。
+// 微信登录唯一方案：走标准 OAuth2 授权码流程——前端重定向到
+// open.weixin.qq.com/connect/qrconnect，用户扫码后微信携带 code 回跳到后端
+// /api/oauth/wechat-web，本文件用 AppSecret 换 openid（或 unionid），再复用
+// oauth-flow 的 CSRF 校验与 setupLogin 完成登录/注册。
 //
 // 身份标识：默认用网站应用 openid；当 WeChatWebUseUnionId 开启且微信返回 unionid
 // 时，改用 unionid，以便与同开放平台下的公众号/小程序/移动应用打通同一用户。
@@ -134,8 +134,16 @@ func hostFromSiteAddress(address string) string {
 	return ""
 }
 
+// wechatStateRequest is the request body for minting a WeChat website-app
+// state token. Origin 记录登录发起页 origin，供回调页跳回主站
+// （wechatWebReturnOriginAllowed 校验白名单后写入 flow）。
+type wechatStateRequest struct {
+	Intent string `json:"intent"`
+	Origin string `json:"origin,omitempty"`
+}
+
 // GenerateWeChatWebCode issues a CSRF-bound state token for WeChat website-app
-// login, mirroring GenerateWeChatCode. Login tokens set the oauth_login_nonce
+// login. Login tokens set the oauth_login_nonce
 // cookie so the callback can prove it originated from the browser that started
 // the flow. The request may carry the browser origin where login was started;
 // after the provider redirects to the registered callback domain (an ICP-filed

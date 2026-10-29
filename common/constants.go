@@ -82,10 +82,10 @@ var MaxRecentItems = 1000
 var PasswordLoginEnabled = true
 var PasswordLoginEncryptionEnabled = false
 var PasswordRegisterEnabled = true
+var EmailCodeLoginEnabled = false
 var EmailVerificationEnabled = false
 var GitHubOAuthEnabled = false
 var LinuxDOOAuthEnabled = false
-var WeChatAuthEnabled = false
 var TelegramOAuthEnabled = false
 var TurnstileCheckEnabled = false
 var RegisterEnabled = true
@@ -132,23 +132,16 @@ var LinuxDOClientId = ""
 var LinuxDOClientSecret = ""
 var LinuxDOMinimumTrustLevel = 0
 
-var WeChatServerAddress = ""
-var WeChatServerToken = ""
-var WeChatAccountQRCodeImageURL = ""
-// WeChatAccountQRCodeImagePath 是二维码的**相对路径**（如 `/wechat-qr.png`），
-// 与 WeChatAccountQRCodeImageURL 互为备选：两者都配时前端优先用本项。
-// 适用场景：图片随站点静态资源发布，用相对路径可避免写死域名。
-var WeChatAccountQRCodeImagePath = ""
-
-// 微信开放平台「网站应用」登录（PC 网页扫码登录）。与上面的公众号验证码方案
-// （WeChatServer*）相互独立：网站应用走标准 OAuth2 授权码流程，uter 直连微信，
-// 不再依赖 wechat-server。身份用网站应用 openid（或开放平台 unionid）标识。
+// 微信开放平台「网站应用」登录（PC 网页扫码登录）：走标准 OAuth2 授权码流程，
+// uter 直连微信。身份用网站应用 openid（或开放平台 unionid）标识。
 var WeChatWebAuthEnabled = false
 var WeChatWebAppId = ""
 var WeChatWebAppSecret = ""
+
 // WeChatWebCallbackDomain 是开放平台「授权回调域」（仅域名，如 `uter.cc`），
 // 不含协议与路径；前端据此拼出 redirect_uri 并展示给管理员核对。
 var WeChatWebCallbackDomain = ""
+
 // WeChatWebUseUnionId 为 true 时，优先用开放平台 unionid 作为用户唯一标识，
 // 以便与同开放平台下的公众号/小程序/移动应用打通同一用户。
 var WeChatWebUseUnionId = false
