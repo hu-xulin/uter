@@ -8,6 +8,8 @@ on:
 
 permissions:
   contents: read
+  # only-new-issues 在 pull_request 事件下经 GitHub API 取 PR diff，需要本只读权限。
+  pull-requests: read
 
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
@@ -57,6 +59,17 @@ jobs:
             echo "$unformatted"
             exit 1
           fi
+
+      - name: golangci-lint (root module, new issues only)
+        # golangci-lint v2 聚合 gofmt / govet / ineffassign / unused / staticcheck。
+        # only-new-issues：push / pull_request 事件经 GitHub API 取 diff
+        # （--new-from-patch），只拦本次变更引入的问题；存量 121 项问题为已知
+        # 基线，不阻断（分批清理）。仅覆盖根模块；relaykit / tokenkit 为独立
+        # Go 模块，暂沿用下方 go vet 门禁。
+        uses: golangci/golangci-lint-action@db9de0fc1a667e1a49d2291a1a042dff081d78f6 # v9
+        with:
+          version: v2.15.0
+          only-new-issues: true
 
       - name: Vet root module
         run: go vet ./...
