@@ -108,8 +108,9 @@ export function PublicHeader(props: PublicHeaderProps) {
   if (loading) logoContent = <Skeleton className='size-full rounded-lg' />
 
   let authContent = (
-    // 字号字重交给 Button 自己的 label 档位，调用处不覆盖。
-    <Button className='px-3.5' render={<Link to='/sign-in' />}>
+    // 密集工具栏 / 表格行内密度：sm 档（32px）+ 规范 sm 内边距（px-2），
+    // 不再用 px-3.5 撑宽，调用处不覆盖字号字重。
+    <Button size='sm' render={<Link to='/sign-in' />}>
       {t('Sign in')}
     </Button>
   )
