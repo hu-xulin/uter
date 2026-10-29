@@ -210,6 +210,8 @@ const paymentSchema = z.object({
   WaffoPancakeMerchantID: z.string(),
   WaffoPancakePrivateKey: z.string(),
   WaffoPancakeReturnURL: z.string(),
+  // 钱包入口显式开关：关闭后钱包不露出 Waffo Pancake 充值入口（webhook 仍独立结算）。
+  WaffoPancakeEnabled: z.boolean(),
   // 支付宝与微信支付（官方直连）的字段同样由本表单持有：页级动作区是 portal，
   // 子配置段若自带表单就会再渲染一个「保存所有设置」按钮，且会形成 form 嵌套 form。
   AlipayEnabled: z.boolean(),
@@ -506,6 +508,7 @@ export function PaymentSettingsSection({
       WaffoPancakeReturnURL: removeTrailingSlash(
         values.WaffoPancakeReturnURL.trim()
       ),
+      WaffoPancakeEnabled: values.WaffoPancakeEnabled,
       AlipayEnabled: values.AlipayEnabled,
       AlipayAppId: values.AlipayAppId.trim(),
       AlipayPrivateKey: values.AlipayPrivateKey.trim(),
@@ -568,6 +571,7 @@ export function PaymentSettingsSection({
       WaffoPancakeReturnURL: removeTrailingSlash(
         initialRef.current.WaffoPancakeReturnURL.trim()
       ),
+      WaffoPancakeEnabled: initialRef.current.WaffoPancakeEnabled,
       AlipayEnabled: initialRef.current.AlipayEnabled,
       AlipayAppId: initialRef.current.AlipayAppId.trim(),
       AlipayPrivateKey: initialRef.current.AlipayPrivateKey.trim(),
@@ -892,6 +896,13 @@ export function PaymentSettingsSection({
       })
     }
 
+    if (sanitized.WaffoPancakeEnabled !== initial.WaffoPancakeEnabled) {
+      updates.push({
+        key: 'WaffoPancakeEnabled',
+        value: sanitized.WaffoPancakeEnabled,
+      })
+    }
+
     const hasWaffoPancakeChanges =
       sanitized.WaffoPancakeMerchantID !== initial.WaffoPancakeMerchantID ||
       // 掩码串代表「已保存但未修改」，不构成变更。
@@ -1016,6 +1027,7 @@ export function PaymentSettingsSection({
     WaffoPancakeMerchantID: currentFormValues.WaffoPancakeMerchantID,
     WaffoPancakePrivateKey: currentFormValues.WaffoPancakePrivateKey,
     WaffoPancakeReturnURL: currentFormValues.WaffoPancakeReturnURL,
+    WaffoPancakeEnabled: currentFormValues.WaffoPancakeEnabled,
   }
 
   return (

@@ -107,6 +107,7 @@ const waffoPancakeDefaults = {
   WaffoPancakeMerchantID: '',
   WaffoPancakePrivateKey: '',
   WaffoPancakeReturnURL: '',
+  WaffoPancakeEnabled: true,
 }
 
 function renderPayment() {

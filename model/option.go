@@ -150,6 +150,8 @@ func InitOptionMap() {
 	common.OptionMap["WaffoPancakeMinTopUp"] = strconv.FormatFloat(setting.WaffoPancakeMinTopUp, 'f', -1, 64)
 	common.OptionMap["WaffoPancakeStoreID"] = setting.WaffoPancakeStoreID
 	common.OptionMap["WaffoPancakeProductID"] = setting.WaffoPancakeProductID
+	// Waffo Pancake 钱包入口显式开关（默认开启，见 setting/payment_waffo_pancake.go）。
+	common.OptionMap["WaffoPancakeEnabled"] = strconv.FormatBool(setting.WaffoPancakeEnabled)
 	common.OptionMap["TopupGroupRatio"] = common.TopupGroupRatio2JSONString()
 	common.OptionMap["Chats"] = setting.Chats2JsonString()
 	common.OptionMap["AutoGroups"] = setting.AutoGroups2JsonString()
@@ -712,6 +714,8 @@ func updateOptionMap(key string, value string) (err error) {
 		setting.WaffoPancakeStoreID = value
 	case "WaffoPancakeProductID":
 		setting.WaffoPancakeProductID = value
+	case "WaffoPancakeEnabled":
+		setting.WaffoPancakeEnabled = value == "true"
 	case "WaffoPancakeUnitPrice":
 		setting.WaffoPancakeUnitPrice, _ = strconv.ParseFloat(value, 64)
 	case "TopupGroupRatio":
@@ -738,14 +742,14 @@ func updateOptionMap(key string, value string) (err error) {
 		common.WeChatServerToken = value
 	case "WeChatAccountQRCodeImageURL":
 		common.WeChatAccountQRCodeImageURL = value
-		case "WeChatAccountQRCodeImagePath":
-			common.WeChatAccountQRCodeImagePath = value
-		case "WeChatWebAppId":
-			common.WeChatWebAppId = value
-		case "WeChatWebAppSecret":
-			common.WeChatWebAppSecret = value
-		case "WeChatWebCallbackDomain":
-			common.WeChatWebCallbackDomain = value
+	case "WeChatAccountQRCodeImagePath":
+		common.WeChatAccountQRCodeImagePath = value
+	case "WeChatWebAppId":
+		common.WeChatWebAppId = value
+	case "WeChatWebAppSecret":
+		common.WeChatWebAppSecret = value
+	case "WeChatWebCallbackDomain":
+		common.WeChatWebCallbackDomain = value
 	case "TelegramBotToken":
 		common.TelegramBotToken = value
 	case "TelegramBotName":

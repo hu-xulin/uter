@@ -7757,6 +7757,8 @@
     "Identify users by UnionID when available, so accounts under the same WeChat Open Platform app share one identity": "優先使用 UnionID 識別使用者，同一微信開放平台帳號下的各應用共享同一身分",
     "The callback domain registered in the WeChat Open Platform console (no scheme, e.g. wx.example.com). It must be ICP-filed and match the registered callback domain exactly. Leave empty to use the current site domain.": "在微信開放平台後台登記的授權回調網域（不含通訊協定，如 wx.example.com）。必須是已完成 ICP 備案的網域，且與登記的回調網域完全一致。留空則使用目前訪問網域。",
     "Your WeChat website app secret": "你的微信網站應用密鑰",
-    "Prices are in USD: per 1M tokens for token-billed models, per request for image and video models. The discount ratio is measured against the upstream list price.": "價格以美元計：按 token 計費的模型為每 100 萬 token 的價格，圖片與影片模型為每次請求的價格。折扣倍率以上游標價為基準。"
+    "Prices are in USD: per 1M tokens for token-billed models, per request for image and video models. The discount ratio is measured against the upstream list price.": "價格以美元計：按 token 計費的模型為每 100 萬 token 的價格，圖片與影片模型為每次請求的價格。折扣倍率以上游標價為基準。",
+    "Enable Waffo Pancake checkout": "啟用 Waffo Pancake 結帳",
+    "When on, Waffo Pancake appears as a top-up method in the wallet. Turn off to hide it from the wallet without removing your credentials — already-paid orders still settle via the webhook.": "開啟後，Waffo Pancake 會作為儲值方式出現在錢包中。關閉可從錢包隱藏該入口，且不會刪除已設定的憑證——已付款訂單仍會透過 webhook 正常結算。"
   }
 }

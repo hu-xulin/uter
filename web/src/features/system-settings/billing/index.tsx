@@ -111,6 +111,7 @@ const defaultBillingSettings: BillingSettings = {
   WaffoPancakeReturnURL: '',
   WaffoPancakeStoreID: '',
   WaffoPancakeProductID: '',
+  WaffoPancakeEnabled: true,
   AlipayEnabled: false,
   AlipayAppId: '',
   AlipayPrivateKey: '',

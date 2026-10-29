@@ -7757,6 +7757,8 @@
     "Identify users by UnionID when available, so accounts under the same WeChat Open Platform app share one identity": "Xác định người dùng bằng UnionID khi có, để các tài khoản dưới cùng một ứng dụng WeChat Open Platform dùng chung một danh tính",
     "The callback domain registered in the WeChat Open Platform console (no scheme, e.g. wx.example.com). It must be ICP-filed and match the registered callback domain exactly. Leave empty to use the current site domain.": "Miền callback đã đăng ký trong bảng điều khiển WeChat Open Platform (không có giao thức, vd wx.example.com). Miền phải có đăng ký ICP và khớp chính xác với miền callback đã đăng ký. Để trống để dùng miền trang web hiện tại.",
     "Your WeChat website app secret": "Khóa bí mật ứng dụng web WeChat của bạn",
-    "Prices are in USD: per 1M tokens for token-billed models, per request for image and video models. The discount ratio is measured against the upstream list price.": "Giá tính bằng USD: trên 1 triệu token với mô hình tính theo token, trên mỗi yêu cầu với mô hình ảnh và video. Hệ số giảm giá được đo so với giá niêm yết của nguồn."
+    "Prices are in USD: per 1M tokens for token-billed models, per request for image and video models. The discount ratio is measured against the upstream list price.": "Giá tính bằng USD: trên 1 triệu token với mô hình tính theo token, trên mỗi yêu cầu với mô hình ảnh và video. Hệ số giảm giá được đo so với giá niêm yết của nguồn.",
+    "Enable Waffo Pancake checkout": "Bật thanh toán Waffo Pancake",
+    "When on, Waffo Pancake appears as a top-up method in the wallet. Turn off to hide it from the wallet without removing your credentials — already-paid orders still settle via the webhook.": "Khi bật, Waffo Pancake sẽ xuất hiện như một phương thức nạp tiền trong ví. Tắt để ẩn khỏi ví mà không xóa thông tin xác thực của bạn — các đơn đã thanh toán vẫn được quyết toán qua webhook."
   }
 }

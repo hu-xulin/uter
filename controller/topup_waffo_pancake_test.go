@@ -127,6 +127,40 @@ func TestWaffoPancakeTopUpRequiresStoreID(t *testing.T) {
 	require.True(t, isWaffoPancakeTopUpEnabled(), "绑定店铺 ID 后应可启用")
 }
 
+// WaffoPancakeEnabled 是运营侧开关：关闭后钱包不得再露出该充值入口，凭据齐全也
+// 不得绕过开关。同时 webhook 必须保持启用，否则已支付订单无法结算。
+func TestWaffoPancakeTopUpRespectsEnabledToggle(t *testing.T) {
+	origMerchant, origKey := setting.WaffoPancakeMerchantID, setting.WaffoPancakePrivateKey
+	origStore, origProduct := setting.WaffoPancakeStoreID, setting.WaffoPancakeProductID
+	origEnabled := setting.WaffoPancakeEnabled
+	ps := operation_setting.GetPaymentSetting()
+	origConfirmed, origVersion := ps.ComplianceConfirmed, ps.ComplianceTermsVersion
+	t.Cleanup(func() {
+		setting.WaffoPancakeMerchantID, setting.WaffoPancakePrivateKey = origMerchant, origKey
+		setting.WaffoPancakeStoreID, setting.WaffoPancakeProductID = origStore, origProduct
+		setting.WaffoPancakeEnabled = origEnabled
+		ps.ComplianceConfirmed, ps.ComplianceTermsVersion = origConfirmed, origVersion
+	})
+
+	setting.WaffoPancakeMerchantID = "merchant-1"
+	setting.WaffoPancakePrivateKey = "pk"
+	setting.WaffoPancakeStoreID = "store-1"
+	setting.WaffoPancakeProductID = "prod-1"
+	ps.ComplianceConfirmed = true
+	ps.ComplianceTermsVersion = operation_setting.CurrentComplianceTermsVersion
+
+	setting.WaffoPancakeEnabled = true
+	require.True(t, isWaffoPancakeTopUpEnabled(), "开关打开且凭据齐全时应启用")
+
+	setting.WaffoPancakeEnabled = false
+	require.False(t, isWaffoPancakeTopUpEnabled(),
+		"开关关闭时即使凭据齐全也不得在钱包露出入口")
+
+	// 关闭入口不影响 webhook：已支付订单仍须能结算。
+	require.True(t, isWaffoPancakeWebhookEnabled(),
+		"关闭 checkout 开关后 webhook 仍须启用，否则已支付订单无法结算")
+}
+
 func TestWaffoPancakeResolutionShouldRetryOnlyTransientErrors(t *testing.T) {
 	require.False(t, service.WaffoPancakeResolutionShouldRetry(nil))
 	require.False(t, service.WaffoPancakeResolutionShouldRetry(service.ErrWaffoPancakeOrderNotFound))
