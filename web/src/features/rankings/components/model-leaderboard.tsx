@@ -79,7 +79,7 @@ function ModelList(props: {
               : 'flex items-center gap-3 py-2.5'
           }
         >
-          <span className='text-muted-foreground w-6 shrink-0 text-right text-xs tabular-nums'>
+          <span className='text-muted-foreground w-6 shrink-0 text-right text-sm tabular-nums'>
             {row.rank}.
           </span>
           <span className='shrink-0'>
@@ -113,7 +113,7 @@ function ModelList(props: {
             <div
               className={
                 compact
-                  ? 'text-foreground text-xs font-semibold tabular-nums'
+                  ? 'text-foreground text-sm font-semibold tabular-nums'
                   : 'text-foreground text-sm font-semibold tabular-nums'
               }
             >
@@ -129,7 +129,7 @@ function ModelList(props: {
             </div>
             <GrowthText
               value={row.growth_pct}
-              className={compact ? 'text-xs' : 'text-xs'}
+              className={compact ? 'text-sm' : 'text-sm'}
             />
           </div>
         </li>

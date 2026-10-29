@@ -130,7 +130,7 @@ function MoverRow(props: { row: RankingMover; intent: 'up' | 'down' }) {
       </div>
       <span
         className={cn(
-          'inline-flex shrink-0 items-center gap-0.5 text-xs font-semibold tabular-nums',
+          'inline-flex shrink-0 items-center gap-0.5 text-sm font-semibold tabular-nums',
           props.intent === 'up' ? 'text-success' : 'text-destructive'
         )}
       >

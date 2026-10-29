@@ -735,7 +735,7 @@ function AuthSection() {
       <SectionTitle icon={KeyRound}>{t('Authentication')}</SectionTitle>
       <div className='border-border/60 bg-muted/20 flex items-start gap-2 rounded-lg border p-3'>
         <ChevronRight className='text-muted-foreground mt-0.5 size-4 shrink-0' />
-        <div className='space-y-1.5 text-xs'>
+        <div className='space-y-1.5 text-sm'>
           <p>
             {t('All requests must include')}{' '}
             <code className='bg-muted text-mono rounded px-1 py-0.5 font-mono'>

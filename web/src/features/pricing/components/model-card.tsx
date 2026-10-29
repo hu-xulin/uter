@@ -238,12 +238,12 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
             {dims.map((entry) => (
               <span
                 key={`h-${entry.key}`}
-                className='text-muted-foreground text-xs whitespace-nowrap'
+                className='text-muted-foreground text-sm whitespace-nowrap'
               >
                 {getLabel(entry)}
               </span>
             ))}
-            <span className='text-xs font-semibold whitespace-nowrap'>
+            <span className='text-sm font-semibold whitespace-nowrap'>
               {uterLabel}
             </span>
             {dims.map((entry) => (
@@ -254,7 +254,7 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
                 {entry.formattedRange ?? entry.formatted}
               </span>
             ))}
-            <span className='text-muted-foreground text-xs whitespace-nowrap'>
+            <span className='text-muted-foreground text-sm whitespace-nowrap'>
               {t('Official')}
             </span>
             {dims.map((entry) => {
@@ -277,7 +277,7 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
                 return (
                   <span
                     key={`o-${entry.key}`}
-                    className='text-muted-foreground text-xs whitespace-nowrap tabular-nums'
+                    className='text-muted-foreground text-sm whitespace-nowrap tabular-nums'
                   >
                     <span className={cn(dimDiscount && 'line-through')}>
                       {offText}
@@ -308,7 +308,7 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
                 return (
                   <span
                     key={`o-${entry.key}`}
-                    className='text-muted-foreground text-xs whitespace-nowrap tabular-nums'
+                    className='text-muted-foreground text-sm whitespace-nowrap tabular-nums'
                   >
                     -
                   </span>
@@ -319,7 +319,7 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
               return (
                 <span
                   key={`o-${entry.key}`}
-                  className='text-muted-foreground text-xs whitespace-nowrap tabular-nums'
+                  className='text-muted-foreground text-sm whitespace-nowrap tabular-nums'
                 >
                   <span className={cn(isDiscount && 'line-through')}>
                     {offText}
@@ -340,17 +340,17 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
             })}
           </div>
           {dynamicSummary.isTimePricing && (
-            <span className='text-muted-foreground col-span-full text-xs'>
+            <span className='text-muted-foreground col-span-full text-sm'>
               {t('Current period price')}
             </span>
           )}
           {dynamicSummary.isMixedBilling && (
-            <span className='text-muted-foreground col-span-full text-xs'>
+            <span className='text-muted-foreground col-span-full text-sm'>
               {t('Token or per-call pricing')}
             </span>
           )}
           {cardExamplePrice && (
-            <span className='text-muted-foreground col-span-full text-xs break-words'>
+            <span className='text-muted-foreground col-span-full text-sm break-words'>
               {cardExamplePrice.label} ≈ {cardExamplePrice.formatted}
             </span>
           )}
@@ -359,7 +359,7 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
             !dynamicSummary.primaryEntries.some(
               (entry) => entry.formattedRange
             ) && (
-              <span className='text-muted-foreground col-span-full text-xs break-words'>
+              <span className='text-muted-foreground col-span-full text-sm break-words'>
                 ({dynamicSummary.tier.label})
               </span>
             )}
@@ -457,12 +457,12 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
         {dims.map((d) => (
           <span
             key={`h-${d.type}`}
-            className='text-muted-foreground text-xs whitespace-nowrap'
+            className='text-muted-foreground text-sm whitespace-nowrap'
           >
             {d.label}
           </span>
         ))}
-        <span className='text-xs font-semibold whitespace-nowrap'>
+        <span className='text-sm font-semibold whitespace-nowrap'>
           {i18n.language?.startsWith('zh') ? '优特' : 'Uter'}
         </span>
         {dims.map((d) => (
@@ -473,13 +473,13 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
             {d.uter}
           </span>
         ))}
-        <span className='text-muted-foreground text-xs whitespace-nowrap'>
+        <span className='text-muted-foreground text-sm whitespace-nowrap'>
           {t('Official')}
         </span>
         {dims.map((d) => (
           <span
             key={`o-${d.type}`}
-            className='text-muted-foreground text-xs whitespace-nowrap tabular-nums'
+            className='text-muted-foreground text-sm whitespace-nowrap tabular-nums'
           >
             <span className={cn(d.isDiscount && 'line-through')}>
               {d.official}
@@ -561,12 +561,12 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
         {dims.map((d) => (
           <span
             key={`h-${d.key}`}
-            className='text-muted-foreground text-xs whitespace-nowrap'
+            className='text-muted-foreground text-sm whitespace-nowrap'
           >
             {d.label}
           </span>
         ))}
-        <span className='text-xs font-semibold whitespace-nowrap'>
+        <span className='text-sm font-semibold whitespace-nowrap'>
           {uterLabel}
         </span>
         {dims.map((d) => (
@@ -577,13 +577,13 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
             {d.uter}
           </span>
         ))}
-        <span className='text-muted-foreground text-xs whitespace-nowrap'>
+        <span className='text-muted-foreground text-sm whitespace-nowrap'>
           {t('Official')}
         </span>
         {dims.map((d) => (
           <span
             key={`o-${d.key}`}
-            className='text-muted-foreground text-xs whitespace-nowrap tabular-nums'
+            className='text-muted-foreground text-sm whitespace-nowrap tabular-nums'
           >
             <span className={cn(d.isDiscount && 'line-through')}>
               {d.official}
@@ -673,7 +673,7 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
             <div
               role='group'
               aria-label={t('Tags')}
-              className='text-muted-foreground flex min-w-0 items-baseline gap-1.5 text-xs'
+              className='text-muted-foreground flex min-w-0 items-baseline gap-1.5 text-sm'
             >
               <span className='shrink-0'>{t('Tags')}</span>
               <span className='truncate' title={tags.join(', ')}>
@@ -695,13 +695,13 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
           <div className='flex flex-wrap items-center gap-1.5'>
             <ModelBillingModeBadge model={props.model} appearance='caption' />
             {showTokenSuffix && (
-              <span className='text-muted-foreground text-xs whitespace-nowrap'>
+              <span className='text-muted-foreground text-sm whitespace-nowrap'>
                 （/ {tokenUnitSuffix}）
               </span>
             )}
           </div>
           {dynamicSummary?.providerCount && (
-            <span className='text-muted-foreground text-xs break-words'>
+            <span className='text-muted-foreground text-sm break-words'>
               {t('{{count}} providers', {
                 count: dynamicSummary.providerCount,
               })}
@@ -716,7 +716,7 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
         {(groups.length > 0 || endpoints.length > 0) && (
           <dl
             className={cn(
-              'grid min-w-0 grid-cols-2 gap-3 text-xs',
+              'grid min-w-0 grid-cols-2 gap-3 text-sm',
               (groups.length === 0 || endpoints.length === 0) && 'grid-cols-1'
             )}
           >

@@ -213,7 +213,7 @@ export function MarketShareSection(props: MarketShareSectionProps) {
               option={VCHART_OPTION}
             />
           ) : (
-            <div className='text-muted-foreground flex h-full items-center justify-center text-xs'>
+            <div className='text-muted-foreground flex h-full items-center justify-center text-sm'>
               {t('No history data available')}
             </div>
           )}
@@ -256,7 +256,7 @@ function VendorList(props: {
     <ul>
       {props.rows.map((vendor) => (
         <li key={vendor.vendor} className='flex items-center gap-3 py-2.5'>
-          <span className='text-muted-foreground w-6 shrink-0 text-right text-xs tabular-nums'>
+          <span className='text-muted-foreground w-6 shrink-0 text-right text-sm tabular-nums'>
             {vendor.rank}.
           </span>
           <span
@@ -277,7 +277,7 @@ function VendorList(props: {
             <div className='text-foreground text-sm font-semibold tabular-nums'>
               {formatTokens(vendor.total_tokens)}
             </div>
-            <div className='text-muted-foreground text-xs tabular-nums'>
+            <div className='text-muted-foreground text-sm tabular-nums'>
               {formatShare(vendor.share)}
             </div>
           </div>

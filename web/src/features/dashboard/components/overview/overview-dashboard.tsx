@@ -211,7 +211,7 @@ function SetupGuideBackdrop(props: { compact?: boolean }) {
         <pre
           className={cn(
             'absolute right-3 [mask-image:linear-gradient(90deg,transparent_0%,black_30%,black_82%,transparent_100%)] text-right whitespace-pre',
-            props.compact ? '-top-6 text-xs' : 'top-1 text-xs'
+            props.compact ? '-top-6 text-sm' : 'top-1 text-sm'
           )}
         >
           {SETUP_GUIDE_CODE_PATTERN}
@@ -673,7 +673,7 @@ export function OverviewDashboard() {
                       <div className='flex min-w-0 flex-col gap-5'>
                         <div className='flex flex-wrap items-start justify-between gap-3'>
                           <div className='flex max-w-2xl flex-col gap-1'>
-                            <div className='text-muted-foreground flex items-center gap-2 text-xs font-medium uppercase'>
+                            <div className='text-muted-foreground flex items-center gap-2 text-sm font-medium uppercase'>
                               <ListChecks
                                 className='size-4'
                                 aria-hidden='true'
@@ -730,7 +730,7 @@ export function OverviewDashboard() {
                 <CardStaggerItem className='bg-card h-full rounded-2xl border p-4 sm:p-5'>
                   <div className='flex h-full flex-col gap-4'>
                     <div className='flex flex-col gap-1'>
-                      <div className='text-muted-foreground text-xs font-medium uppercase'>
+                      <div className='text-muted-foreground text-sm font-medium uppercase'>
                         {t('Recommended actions')}
                       </div>
                       <Heading variant='card-title' level={3}>
@@ -765,7 +765,7 @@ export function OverviewDashboard() {
                           <Heading variant='card-title' level={3} truncate>
                             {t('Setup guide')}
                           </Heading>
-                          <span className='text-muted-foreground bg-background/60 rounded-md border px-2 py-0.5 text-xs'>
+                          <span className='text-muted-foreground bg-background/60 rounded-md border px-2 py-0.5 text-sm'>
                             {t('Setup progress: {{completed}}/{{total}}', {
                               completed: completedStepCount,
                               total: startSteps.length,

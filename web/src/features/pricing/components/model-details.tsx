@@ -165,7 +165,7 @@ function UnconfiguredTaskPricingNotice(props: { model: PricingModel }) {
               <dt className='text-sm'>
                 {taskPriceLabel(definition.description, field, i18n.language)}
               </dt>
-              <dd className='text-muted-foreground text-xs'>
+              <dd className='text-muted-foreground text-sm'>
                 {taskUsageUnitLabel(
                   definition,
                   i18n.language,
@@ -182,7 +182,7 @@ function UnconfiguredTaskPricingNotice(props: { model: PricingModel }) {
               <dt className='text-sm'>
                 <code>{field}</code>
               </dt>
-              <dd className='text-muted-foreground text-right text-xs'>
+              <dd className='text-muted-foreground text-right text-sm'>
                 {(definition.enum ?? []).join(', ')}
               </dd>
             </div>
@@ -259,7 +259,7 @@ function OverviewMetric(props: {
     <div className='flex min-w-0 items-center gap-2 px-3 py-2'>
       <Icon className='text-muted-foreground size-4 shrink-0' />
       <div className='min-w-0 flex-1'>
-        <div className='text-muted-foreground truncate text-xs font-medium uppercase'>
+        <div className='text-muted-foreground truncate text-sm font-medium uppercase'>
           {props.label}
         </div>
         <div
@@ -317,7 +317,7 @@ function CatalogPillList(props: { items: string[] }) {
       {props.items.map((item) => (
         <span
           key={item}
-          className='bg-muted text-muted-foreground rounded-md px-2 py-1 text-xs font-medium'
+          className='bg-muted text-muted-foreground rounded-md px-2 py-1 text-sm font-medium'
         >
           {item}
         </span>
@@ -337,7 +337,7 @@ function CatalogTextValue(props: { children: React.ReactNode }) {
 function CatalogInfoCell(props: { label: string; children: React.ReactNode }) {
   return (
     <div className='bg-card flex min-w-0 flex-col gap-1 px-3 py-2.5'>
-      <span className='text-muted-foreground text-xs font-medium uppercase'>
+      <span className='text-muted-foreground text-sm font-medium uppercase'>
         {props.label}
       </span>
       {props.children}
@@ -444,7 +444,7 @@ function ModelBackendQuickStats(props: { model: PricingModel }) {
             key={stat.key}
             className='bg-background flex min-w-0 flex-col gap-0.5 px-3 py-2.5'
           >
-            <span className='text-muted-foreground inline-flex min-w-0 items-center gap-1 text-xs font-medium uppercase'>
+            <span className='text-muted-foreground inline-flex min-w-0 items-center gap-1 text-sm font-medium uppercase'>
               <Icon className='size-3 shrink-0' />
               <span className='truncate'>{stat.label}</span>
             </span>
@@ -499,7 +499,7 @@ function ModelBackendSignalsSection(props: { model: PricingModel }) {
           <div className='grid gap-2 sm:grid-cols-2'>
             {inputModalities.length > 0 && (
               <div className='flex items-center justify-between gap-3 rounded-lg border px-3 py-2'>
-                <span className='text-muted-foreground text-xs font-medium'>
+                <span className='text-muted-foreground text-sm font-medium'>
                   {t('Input')}
                 </span>
                 <CatalogTextValue>
@@ -509,7 +509,7 @@ function ModelBackendSignalsSection(props: { model: PricingModel }) {
             )}
             {outputModalities.length > 0 && (
               <div className='flex items-center justify-between gap-3 rounded-lg border px-3 py-2'>
-                <span className='text-muted-foreground text-xs font-medium'>
+                <span className='text-muted-foreground text-sm font-medium'>
                   {t('Output')}
                 </span>
                 <CatalogTextValue>
@@ -643,13 +643,13 @@ function ModelHeader(props: {
           aria-label={t('Copy model name')}
         />
       </div>
-      <div className='mt-1 flex flex-wrap items-center gap-1.5 text-xs'>
+      <div className='mt-1 flex flex-wrap items-center gap-1.5 text-sm'>
         {model.vendor_name && (
           <span className='text-muted-foreground'>{model.vendor_name}</span>
         )}
         <span className='text-muted-foreground'>·</span>
         <ModelBillingModeBadge model={model} />
-        <span className='bg-muted text-muted-foreground rounded px-1.5 py-0.5 text-xs font-medium'>
+        <span className='bg-muted text-muted-foreground rounded px-1.5 py-0.5 text-sm font-medium'>
           {sourceLabel}
         </span>
       </div>
@@ -757,7 +757,7 @@ function PriceSection(props: {
               )}
             </p>
             <div className='mt-3'>
-              <div className='text-muted-foreground mb-1 text-xs font-medium uppercase'>
+              <div className='text-muted-foreground mb-1 text-sm font-medium uppercase'>
                 {t('Raw expression')}
               </div>
               <code className='text-muted-foreground bg-background/80 text-mono block max-h-28 overflow-auto rounded-md border px-2 py-1.5 font-mono leading-[var(--ds-line-mono-dense)] break-all'>
@@ -803,7 +803,7 @@ function PriceSection(props: {
                   key={entry.key}
                   className='bg-muted/20 rounded-lg border p-3'
                 >
-                  <div className='text-muted-foreground text-xs'>
+                  <div className='text-muted-foreground text-sm'>
                     <DynamicPriceEntryLabel entry={entry} />
                   </div>
                   <div className='text-foreground mt-1 text-base font-semibold tabular-nums'>
@@ -914,7 +914,7 @@ function PriceSection(props: {
       <div className='grid grid-cols-2 gap-2'>
         {primaryPriceTypes.map((item) => (
           <div key={item.type} className='bg-muted/20 rounded-lg border p-3'>
-            <div className='text-muted-foreground text-xs'>{item.label}</div>
+            <div className='text-muted-foreground text-sm'>{item.label}</div>
             <div className='text-foreground mt-1 text-base font-semibold tabular-nums'>
               {renderPrice(item.type)}
             </div>
@@ -960,7 +960,7 @@ function AutoGroupChain(props: { model: PricingModel; autoGroups: string[] }) {
   if (autoChain.length === 0) return null
 
   return (
-    <div className='text-muted-foreground mb-3 flex flex-wrap items-center gap-1 text-xs'>
+    <div className='text-muted-foreground mb-3 flex flex-wrap items-center gap-1 text-sm'>
       <span className='font-medium'>{t('Auto Group Chain')}</span>
       <span className='text-muted-foreground'>→</span>
       {autoChain.map((g, idx) => (
@@ -1132,7 +1132,7 @@ function ProviderGroupPricingSection(
   }
 
   const thClass = cn(
-    'text-muted-foreground py-2 text-xs font-medium whitespace-normal break-words',
+    'text-muted-foreground py-2 text-sm font-medium whitespace-normal break-words',
     !props.model.billing_usage_schema && ' uppercase'
   )
 
@@ -1176,7 +1176,7 @@ function ProviderGroupPricingSection(
               )}
             </p>
             <div className='mt-3'>
-              <div className='text-muted-foreground mb-1 text-xs font-medium uppercase'>
+              <div className='text-muted-foreground mb-1 text-sm font-medium uppercase'>
                 {t('Raw expression')}
               </div>
               <code className='text-muted-foreground bg-background/80 text-mono block max-h-28 overflow-auto rounded-md border px-2 py-1.5 font-mono leading-[var(--ds-line-mono-dense)] break-all'>
@@ -1248,7 +1248,7 @@ function ProviderGroupPricingSection(
               <div key={group} className='overflow-hidden rounded-lg border'>
                 <div className='bg-muted/20 flex items-center justify-between gap-3 border-b px-3 py-2'>
                   <GroupBadge group={group} size='sm' />
-                  <span className='text-muted-foreground text-xs tabular-nums'>
+                  <span className='text-muted-foreground text-sm tabular-nums'>
                     {ratio}x
                   </span>
                 </div>
@@ -1336,7 +1336,7 @@ function ProviderGroupPricingSection(
                 />
                 {usageExampleRows.length > 0 ? (
                   <div className='border-t'>
-                    <div className='text-muted-foreground px-3 pt-2 text-xs font-medium uppercase'>
+                    <div className='text-muted-foreground px-3 pt-2 text-sm font-medium uppercase'>
                       {t('Price examples')}
                     </div>
                     <StaticDataTable
@@ -1772,7 +1772,7 @@ export function ModelDetails() {
           variant='ghost'
           size='inline'
           onClick={handleBack}
-          className='text-muted-foreground hover:text-foreground mb-4 gap-1 py-1 text-xs'
+          className='text-muted-foreground hover:text-foreground mb-4 gap-1 py-1 text-sm'
         >
           <ArrowLeft className='size-4.5' />
           {t('Back')}

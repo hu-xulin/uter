@@ -119,7 +119,7 @@ function FilterChip(props: FilterChipProps) {
       className={cn(
         // 固定 32px 高：分组里「所有分组」没有倍数徽标，此前比带徽标的邻居
         // 矮一截，同一列 chip 高度参差。定高后所有 chip 高度完全一致。
-        'h-8 max-w-full gap-1.5 px-2 text-xs',
+        'h-8 max-w-full gap-1.5 px-2 text-sm',
         // 一行一个，宽度占行宽的 2/3：长名（「SiliconFlow 硅基流动」）不再
         // 被两列布局挤成省略号，右侧留出的 1/3 是固定的呼吸位，不用铺满整行。
         'w-2/3 justify-start',
@@ -137,7 +137,7 @@ function FilterChip(props: FilterChipProps) {
       {(props.option.suffix || props.option.count != null) && (
         <span
           className={cn(
-            'shrink-0 rounded-md px-1.5 py-0.5 text-xs',
+            'shrink-0 rounded-md px-1.5 py-0.5 text-sm',
             // 计数贴到 chip 右端，与左对齐的名称拉开距离。
             'ml-auto',
             badgeClass
@@ -334,7 +334,7 @@ export function PricingSidebar(props: PricingSidebarProps) {
           size='sm'
           onClick={props.onClearFilters}
           disabled={!props.hasActiveFilters}
-          className='gap-1.5 px-2 text-xs'
+          className='gap-1.5 px-2 text-sm'
         >
           <RotateCcw className='size-4.5' />
           {t('Reset')}

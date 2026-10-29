@@ -108,7 +108,7 @@ export function usePricingColumns(
       header: ({ column }) => (
         <div className='flex flex-col items-start gap-0.5'>
           <DataTableColumnHeader column={column} title={t('Price')} />
-          <span className='bg-muted text-muted-foreground rounded px-1.5 py-0.5 text-xs font-medium'>
+          <span className='bg-muted text-muted-foreground rounded px-1.5 py-0.5 text-sm font-medium'>
             {sourceLabel}
           </span>
         </div>
@@ -138,7 +138,7 @@ export function usePricingColumns(
       cell: ({ row }) => {
         const model = row.original
         if (!model.vendor_name) {
-          return <span className='text-muted-foreground text-xs'>—</span>
+          return <span className='text-muted-foreground text-sm'>—</span>
         }
         const vendorIcon = model.vendor_icon
           ? getLobeIcon(monoIconName(model.vendor_icon), 12)
