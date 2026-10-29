@@ -66,12 +66,15 @@ export function FAQPanel() {
                 className='border-border/60'
               >
                 <AccordionTrigger className='text-start hover:no-underline'>
-                  <Markdown className='text-base font-semibold'>
+                  <span className='text-base font-semibold'>
                     {item.question}
-                  </Markdown>
+                  </span>
                 </AccordionTrigger>
                 <AccordionContent>
-                  <Markdown className='text-muted-foreground text-sm'>
+                  {/* 短答案严格按规范 §1.2：body-sm = 14/20（text-sm），
+                   * 而非 Markdown 组件的默认 body-long 16/26（text-long）。
+                   * 用 !important 覆盖组件内 [&_p]:text-long，确保落到 p 上。 */}
+                  <Markdown className='text-muted-foreground text-sm [&_p]:!text-sm [&_li]:!text-sm'>
                     {item.answer}
                   </Markdown>
                 </AccordionContent>
