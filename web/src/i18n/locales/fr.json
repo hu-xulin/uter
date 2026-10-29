@@ -2448,6 +2448,8 @@
     "Email Domain Restriction": "Restriction de domaine d'e-mail",
     "Email Domain Whitelist": "Liste blanche de domaines d'e-mail",
     "Email Field": "Champ d'e-mail",
+    "Email Code Login": "Connexion par code e-mail",
+    "Allow users to sign in with an email verification code (requires SMTP)": "Permettre aux utilisateurs de se connecter avec un code e-mail (SMTP requis)",
     "Email Verification": "Vérification d'e-mail",
     "Email verification code is incorrect.": "Le code de vérification par e-mail est incorrect.",
     "Email verification has ended. Start again to continue.": "La vérification de l’adresse e-mail a pris fin. Recommencez pour continuer.",
@@ -5681,6 +5683,9 @@
     "Self-Use Mode": "Mode d'utilisation personnelle",
     "Send": "Envoyer",
     "Send a request": "Envoyer une requête",
+    "Sign in with email code": "Se connecter avec un code e-mail",
+    "Back to password sign in": "Revenir à la connexion par mot de passe",
+    "Email code sent. Please check your inbox.": "Code envoyé. Vérifiez votre boîte de réception.",
     "Send code": "Envoyer le code",
     "Send reset email": "Envoyer l'e-mail de réinitialisation",
     "Sending...": "Envoi en cours...",
@@ -7685,13 +7690,11 @@
     "Last synced: {{time}}": "Dernière synchronisation : {{time}}",
     "Failed to sync exchange rate": "Échec de la synchronisation du taux de change",
     "Exchange rate synced: 1 USD = {{rate}}": "Taux synchronisé : 1 USD = {{rate}}",
-    "Fetched automatically from the market USD to CNY rate every 10 minutes, so this field is read-only. The payment price in the Payment Gateway settings is derived from it as the exchange rate {{adjustment}}, which is deducted automatically.": "Récupéré automatiquement du taux de marché USD → CNY toutes les 10 minutes ; ce champ est donc en lecture seule. Le prix de paiement des paramètres de la passerelle est dérivé de ce taux {{adjustment}}, l'ajustement étant déduit automatiquement.",
     "Charged for each 1 USD of balance. Derived automatically as the exchange rate {{adjustment}} and refreshed every 10 minutes, so this field is read-only. Applies to every payment method that settles in CNY (Alipay, WeChat Pay, Epay).": "Montant facturé par 1 USD de solde. Dérivé automatiquement du taux de change {{adjustment}} et actualisé toutes les 10 minutes ; ce champ est donc en lecture seule. S'applique à tous les moyens de paiement réglés en CNY (Alipay, WeChat Pay, Epay).",
     "Smallest USD amount users can recharge. Applies to every payment method (Alipay, WeChat Pay, Epay).": "Plus petit montant en USD rechargeable. S'applique à tous les moyens de paiement (Alipay, WeChat Pay, Epay).",
     "Channel Login & Sync": "Connexion et synchronisation du canal",
     "Log in to an upstream channel, then sync its model list and discounted prices on a schedule. Prices are converted with the rule below and written into the ratio table automatically.": "Connectez-vous à un canal amont, puis synchronisez sa liste de modèles et ses prix remisés selon un planning. Les prix sont convertis selon la règle ci-dessous et inscrits automatiquement dans la table des ratios.",
     "Enable scheduled sync": "Activer la synchronisation planifiée",
-    "When enabled, the upstream model list and prices are synced automatically every day and converted into Uter prices.": "Une fois activé, la liste des modèles et les prix amont sont synchronisés chaque jour et convertis en prix Uter.",
     "Upstream channel": "Canal amont",
     "The channel whose model list and prices are read.": "Le canal dont la liste de modèles et les prix sont lus.",
     "DreamRouter": "DreamRouter",
@@ -7759,6 +7762,8 @@
     "Your WeChat website app secret": "Le secret de votre application Web WeChat",
     "Prices are in USD: per 1M tokens for token-billed models, per request for image and video models. The discount ratio is measured against the upstream list price.": "Les prix sont en USD : par million de tokens pour les modèles facturés au token, par requête pour les modèles d'image et de vidéo. Le coefficient de remise est mesuré par rapport au prix catalogue amont.",
     "Enable Waffo Pancake checkout": "Activer le paiement Waffo Pancake",
-    "When on, Waffo Pancake appears as a top-up method in the wallet. Turn off to hide it from the wallet without removing your credentials — already-paid orders still settle via the webhook.": "Une fois activé, Waffo Pancake apparaît comme méthode de rechargement dans le portefeuille. Désactivez-le pour le masquer du portefeuille sans supprimer vos identifiants — les commandes déjà payées continuent d’être réglées via le webhook."
+    "When on, Waffo Pancake appears as a top-up method in the wallet. Turn off to hide it from the wallet without removing your credentials — already-paid orders still settle via the webhook.": "Une fois activé, Waffo Pancake apparaît comme méthode de rechargement dans le portefeuille. Désactivez-le pour le masquer du portefeuille sans supprimer vos identifiants — les commandes déjà payées continuent d’être réglées via le webhook.",
+    "When enabled, the upstream model list and prices are synced automatically every 10 minutes and converted into Uter prices.": "Une fois activé, la liste des modèles et les prix amont sont synchronisés toutes les 10 minutes et convertis en prix Uter.",
+    "Fetched automatically from the market USD to CNY rate every 10 minutes, so this field is read-only. The payment price in the Payment Gateway settings is derived from it as the exchange rate {{adjustment}}, which is added automatically.": "Récupéré automatiquement du taux de marché USD → CNY toutes les 10 minutes ; ce champ est donc en lecture seule. Le prix de paiement des paramètres de la passerelle est dérivé de ce taux {{adjustment}}, l'ajustement étant ajouté automatiquement."
   }
 }

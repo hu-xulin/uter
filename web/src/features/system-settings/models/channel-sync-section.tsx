@@ -56,7 +56,7 @@ import { ChannelSyncModelsTable } from './channel-sync-models-table'
 /**
  * 渠道登录与同步（Channel Login & Sync）
  *
- * 用途：登录上游渠道（如创梦 DreamRouter），按每天固定时刻拉取该渠道的
+ * 用途：登录上游渠道（如创梦 DreamRouter），每 10 分钟拉取该渠道的
  * 模型清单与折扣价，再按「价格规则」换算成 uter 的售价并写入倍率表。
  *
  * 价格规则（对应后端 dreamRouterRuleFactor）：
@@ -75,7 +75,6 @@ const schema = z.object({
   DreamRouterSyncChannelID: z.string(),
   DreamRouterSyncUsername: z.string(),
   DreamRouterSyncPassword: z.string(),
-  DreamRouterSyncHour: z.string(),
   DreamRouterSyncRuleDirection: z.string(),
   DreamRouterSyncRuleAmount: z.string(),
 })
@@ -121,7 +120,6 @@ export function ChannelSyncSection({ defaultValues }: Props) {
         ),
         DreamRouterSyncUsername: asText(defaultValues.DreamRouterSyncUsername),
         DreamRouterSyncPassword: asText(defaultValues.DreamRouterSyncPassword),
-        DreamRouterSyncHour: asText(defaultValues.DreamRouterSyncHour) || '0',
         DreamRouterSyncRuleDirection:
           asText(defaultValues.DreamRouterSyncRuleDirection) || 'increase',
         DreamRouterSyncRuleAmount:
@@ -144,7 +142,6 @@ export function ChannelSyncSection({ defaultValues }: Props) {
       ['DreamRouterSyncProvider', values.DreamRouterSyncProvider.trim()],
       ['DreamRouterSyncChannelID', values.DreamRouterSyncChannelID.trim()],
       ['DreamRouterSyncUsername', values.DreamRouterSyncUsername.trim()],
-      ['DreamRouterSyncHour', values.DreamRouterSyncHour.trim()],
       [
         'DreamRouterSyncRuleDirection',
         values.DreamRouterSyncRuleDirection.trim(),
@@ -181,7 +178,7 @@ export function ChannelSyncSection({ defaultValues }: Props) {
               <FormLabel>{t('Enable scheduled sync')}</FormLabel>
               <FormDescription>
                 {t(
-                  'When enabled, the upstream model list and prices are synced automatically every day and converted into Uter prices.'
+                  'When enabled, the upstream model list and prices are synced automatically every 10 minutes and converted into Uter prices.'
                 )}
               </FormDescription>
             </SettingsSwitchContent>
@@ -304,44 +301,6 @@ export function ChannelSyncSection({ defaultValues }: Props) {
                     <FormDescription>
                       {t(
                         'Stored masked and never returned to the browser. Leave it empty to keep the saved password.'
-                      )}
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name='DreamRouterSyncHour'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('Sync time')}</FormLabel>
-                    <FormControl>
-                      <Select
-                        value={asText(field.value) || '0'}
-                        onValueChange={field.onChange}
-                        disabled={updateOption.isPending}
-                      >
-                        <SelectTrigger>
-                          <SelectValue>
-                            {t('Daily at {{hour}}:00', {
-                              hour: Number(asText(field.value) || '0'),
-                            })}
-                          </SelectValue>
-                        </SelectTrigger>
-                        <SelectContent>
-                          {Array.from({ length: 24 }, (_, hour) => (
-                            <SelectItem key={hour} value={String(hour)}>
-                              {t('Daily at {{hour}}:00', { hour })}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </FormControl>
-                    <FormDescription>
-                      {t(
-                        'The hour of day (server local time) when the daily sync runs. A restart after that hour still runs the sync for the day.'
                       )}
                     </FormDescription>
                     <FormMessage />

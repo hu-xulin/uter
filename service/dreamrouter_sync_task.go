@@ -22,61 +22,58 @@ package service
 import (
 	"context"
 	"os"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/model"
 )
 
-// dreamRouterSyncLastRunDateKey 记录最近一次自动同步的日期（本地时区
-// YYYY-MM-DD），用于「每天 0 点后首次 tick 触发一次」的去重。
-const dreamRouterSyncLastRunDateKey = "DreamRouterSyncLastRunDate"
-
 // dreamRouterSyncOnStartEnv 置为 "1" 时，服务启动即执行一次同步。
 // 用途：首次部署立即对齐上游价格，或上游定价发生大幅变化后人工触发。
-// 每日定时任务本身不需要它（重启后当天未跑过会自动补跑）。
+// 定时任务本身不需要它（重启后超过同步间隔会自动补跑）。
 const dreamRouterSyncOnStartEnv = "DREAMROUTER_SYNC_ON_START"
 
-// DreamRouterSyncTask 每日价格同步任务。
+// DreamRouterSyncTask 定时价格同步任务。
 //
-// 调度策略：每 10 分钟 tick 一次，当「今天」与上次运行日期不同时、且当前
-// 时刻已到达配置的同步时间（默认每天 0 点）时执行一次。
+// 调度策略（2026-10-30 起）：每 10 分钟与上游同步一次。
 //
-// 为什么 tick 粒度是 10 分钟而不是 1 小时：同步时间现在由运营在后台配置
-// （可设任意 0-23 点），小时级 tick 会让「每天 3 点」这类配置最多晚 1 小时
-// 才生效。10 分钟把偏差压到 10 分钟内，同时 tick 本身只是读一次 option，
-// 开销可忽略。
+// 历史：此前是「每天到达 DreamRouterSyncHour 配置的时刻后跑一次」（按日期
+// 去重）。应运营决策改为固定 10 分钟一次，与汇率同步、渠道缓存同步的
+// tick 粒度一致；原「Sync time」配置随之废弃（option 键 DreamRouterSyncHour
+// 不再读取，库中残留值无害）。
 //
-// 去重靠「上次运行日期」：同一天只跑一次，服务重启后当天未跑过会自动补跑，
-// 不会因为重启错过当天同步，也不会在一天内重复跑。
+// 去重靠「上次运行时刻」（DreamRouterSyncLastRunAt，Unix 秒）：距上次运行
+// 不足一个 tick 间隔时跳过，防止重启循环或手动 tick 在极短时间内重复打
+// 上游。同步是幂等的（结果只取决于上游数据与公式），重复执行不会叠加错误。
 func DreamRouterSyncTask() {
 	for range time.NewTicker(dreamRouterSyncTickInterval).C {
 		DreamRouterSyncTaskTick()
 	}
 }
 
-// dreamRouterSyncTickInterval 是调度检查间隔。
+// dreamRouterSyncTickInterval 是同步间隔，同时是调度检查间隔（tick 即运行）。
 const dreamRouterSyncTickInterval = 10 * time.Minute
 
 // DreamRouterSyncTaskTick 执行一次「到点检查」，供测试与手动调用。
 //
-// 判定条件：已开启同步、今天还没跑过、且当前小时已到达配置��同步时间。
-// 「已到达」用 >= 而非 ==：服务在 3 点之后才启动时，当天仍应补跑一次。
+// 判定条件：已开启同步、且距上次运行已超过一个 tick 间隔。
 func DreamRouterSyncTaskTick() {
 	cfg := LoadDreamRouterSyncConfig()
 	if !cfg.Enabled {
 		return
 	}
 	now := time.Now()
-	today := now.Format("2006-01-02")
-	if common.OptionMap[dreamRouterSyncLastRunDateKey] == today {
-		return
+	if last := strings.TrimSpace(common.OptionMap[dreamRouterSyncLastRunAtKey]); last != "" {
+		if ts, err := strconv.ParseInt(last, 10, 64); err == nil && ts > 0 {
+			if now.Unix()-ts < int64(dreamRouterSyncTickInterval/time.Second) {
+				// 距上次运行还不足一个间隔，等下一个 tick。
+				return
+			}
+		}
 	}
-	if now.Hour() < cfg.SyncHour {
-		// 还没到配置的同步时间，等下一个 tick。
-		return
-	}
-	runDreamRouterSyncNow(today)
+	runDreamRouterSyncNow(now)
 }
 
 // RunDreamRouterSyncOnStart 按环境变量 opt-in 在启动时执行一次同步，
@@ -88,30 +85,30 @@ func RunDreamRouterSyncOnStart() {
 	default:
 		return
 	}
-	go runDreamRouterSyncNow(time.Now().Format("2006-01-02"))
+	go runDreamRouterSyncNow(time.Now())
 }
 
-// runDreamRouterSyncNow 执行一次同步并记录运行日期。失败不写日期，
-// 下一小时（或下一次启动）自动重试。
-func runDreamRouterSyncNow(today string) {
+// runDreamRouterSyncNow 执行一次同步并记录运行时刻（无论成败都记录：
+// 持续失败时以 10 分钟为节奏重试，而不是每个 tick 连打上游）。
+func runDreamRouterSyncNow(now time.Time) {
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Minute)
 	defer cancel()
 
 	result, err := SyncDreamRouterPricing(ctx, DreamRouterSyncOptions{})
+	_ = updateDreamRouterSyncLastRunAt(now.Unix())
 	if err != nil {
-		saveDreamRouterSyncStatus(&DreamRouterSyncResult{StartedAt: time.Now(), FinishedAt: time.Now()}, err.Error())
+		saveDreamRouterSyncStatus(&DreamRouterSyncResult{StartedAt: now, FinishedAt: time.Now()}, err.Error())
 		common.SysError(common.LogText("dreamrouter sync failed: %s", err.Error()))
 		return
 	}
-	_ = updateDreamRouterSyncRunDate(today)
 	common.SysLog(common.LogText("dreamrouter sync done: upstream=%d ratioUpdated=%d added=%d removed=%d",
 		result.UpstreamCount,
 		countChanges(result, func(c DreamRouterModelChange) bool { return c.RatioChanged || c.PriceChanged }),
 		len(result.AddedModels), len(result.RemovedModels)))
 }
 
-// updateDreamRouterSyncRunDate 落库运行日期（UpdateOption 内部会同步刷新
-// common.OptionMap）。
-func updateDreamRouterSyncRunDate(date string) error {
-	return model.UpdateOption(dreamRouterSyncLastRunDateKey, date)
+// updateDreamRouterSyncLastRunAt 落库运行时刻（UpdateOption 内部会同步刷新
+// common.OptionMap）。/api/dreamrouter/sync/status 的 last_run_at 即此值。
+func updateDreamRouterSyncLastRunAt(unix int64) error {
+	return model.UpdateOption(dreamRouterSyncLastRunAtKey, strconv.FormatInt(unix, 10))
 }

@@ -323,7 +323,7 @@ export function PricingSection({
                     </div>
                     <FormDescription>
                       {t(
-                        'Fetched automatically from the market USD to CNY rate every 10 minutes, so this field is read-only. The payment price in the Payment Gateway settings is derived from it as the exchange rate {{adjustment}}, which is deducted automatically.',
+                        'Fetched automatically from the market USD to CNY rate every 10 minutes, so this field is read-only. The payment price in the Payment Gateway settings is derived from it as the exchange rate {{adjustment}}, which is added automatically.',
                         {
                           adjustment:
                             formatPriceAdjustment(priceAdjustmentRate),

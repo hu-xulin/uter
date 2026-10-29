@@ -184,7 +184,6 @@ const MODELS_SECTIONS = [
           DreamRouterSyncChannelID: settings.DreamRouterSyncChannelID,
           DreamRouterSyncUsername: settings.DreamRouterSyncUsername,
           DreamRouterSyncPassword: settings.DreamRouterSyncPassword,
-          DreamRouterSyncHour: settings.DreamRouterSyncHour,
           DreamRouterSyncRuleDirection: settings.DreamRouterSyncRuleDirection,
           DreamRouterSyncRuleAmount: settings.DreamRouterSyncRuleAmount,
         }}

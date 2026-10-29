@@ -2448,6 +2448,8 @@
     "Email Domain Restriction": "Hạn chế Tên miền Email",
     "Email Domain Whitelist": "Danh sách trắng tên miền email",
     "Email Field": "Trường Email",
+    "Email Code Login": "Đăng nhập bằng mã email",
+    "Allow users to sign in with an email verification code (requires SMTP)": "Cho phép đăng nhập bằng mã email (cần cấu hình gửi thư)",
     "Email Verification": "Xác minh Email",
     "Email verification code is incorrect.": "Mã xác minh email không đúng.",
     "Email verification has ended. Start again to continue.": "Xác minh email đã kết thúc. Vui lòng bắt đầu lại để tiếp tục.",
@@ -5681,6 +5683,9 @@
     "Self-Use Mode": "Chế độ tự sử dụng",
     "Send": "Gửi",
     "Send a request": "Gửi yêu cầu",
+    "Sign in with email code": "Đăng nhập bằng mã email",
+    "Back to password sign in": "Quay lại đăng nhập bằng mật khẩu",
+    "Email code sent. Please check your inbox.": "Đã gửi mã. Vui lòng kiểm tra hộp thư.",
     "Send code": "Gửi mã",
     "Send reset email": "Gửi email đặt lại",
     "Sending...": "Đang gửi...",
@@ -7685,13 +7690,11 @@
     "Last synced: {{time}}": "Đồng bộ lần cuối: {{time}}",
     "Failed to sync exchange rate": "Đồng bộ tỷ giá thất bại",
     "Exchange rate synced: 1 USD = {{rate}}": "Đã đồng bộ tỷ giá: 1 USD = {{rate}}",
-    "Fetched automatically from the market USD to CNY rate every 10 minutes, so this field is read-only. The payment price in the Payment Gateway settings is derived from it as the exchange rate {{adjustment}}, which is deducted automatically.": "Tự động lấy từ tỷ giá thị trường USD → CNY mỗi 10 phút, nên trường này chỉ đọc. Giá trong phần cài đặt cổng thanh toán được suy ra từ tỷ giá {{adjustment}}, phần điều chỉnh được trừ tự động.",
     "Charged for each 1 USD of balance. Derived automatically as the exchange rate {{adjustment}} and refreshed every 10 minutes, so this field is read-only. Applies to every payment method that settles in CNY (Alipay, WeChat Pay, Epay).": "Số tiền thu cho mỗi 1 USD số dư. Được suy ra tự động theo tỷ giá {{adjustment}} và làm mới mỗi 10 phút, nên trường này chỉ đọc. Áp dụng cho mọi phương thức thanh toán bằng CNY (Alipay, WeChat Pay, Epay).",
     "Smallest USD amount users can recharge. Applies to every payment method (Alipay, WeChat Pay, Epay).": "Số tiền USD tối thiểu người dùng có thể nạp. Áp dụng cho mọi phương thức thanh toán (Alipay, WeChat Pay, Epay).",
     "Channel Login & Sync": "Đăng nhập kênh và đồng bộ",
     "Log in to an upstream channel, then sync its model list and discounted prices on a schedule. Prices are converted with the rule below and written into the ratio table automatically.": "Đăng nhập kênh thượng nguồn, rồi đồng bộ danh sách mô hình và giá chiết khấu theo lịch. Giá được quy đổi theo quy tắc bên dưới và tự động ghi vào bảng hệ số.",
     "Enable scheduled sync": "Bật đồng bộ định kỳ",
-    "When enabled, the upstream model list and prices are synced automatically every day and converted into Uter prices.": "Khi bật, danh sách mô hình và giá từ thượng nguồn sẽ được đồng bộ mỗi ngày và quy đổi thành giá Uter.",
     "Upstream channel": "Kênh thượng nguồn",
     "The channel whose model list and prices are read.": "Kênh dùng để đọc danh sách mô hình và giá.",
     "DreamRouter": "DreamRouter",
@@ -7759,6 +7762,8 @@
     "Your WeChat website app secret": "Khóa bí mật ứng dụng web WeChat của bạn",
     "Prices are in USD: per 1M tokens for token-billed models, per request for image and video models. The discount ratio is measured against the upstream list price.": "Giá tính bằng USD: trên 1 triệu token với mô hình tính theo token, trên mỗi yêu cầu với mô hình ảnh và video. Hệ số giảm giá được đo so với giá niêm yết của nguồn.",
     "Enable Waffo Pancake checkout": "Bật thanh toán Waffo Pancake",
-    "When on, Waffo Pancake appears as a top-up method in the wallet. Turn off to hide it from the wallet without removing your credentials — already-paid orders still settle via the webhook.": "Khi bật, Waffo Pancake sẽ xuất hiện như một phương thức nạp tiền trong ví. Tắt để ẩn khỏi ví mà không xóa thông tin xác thực của bạn — các đơn đã thanh toán vẫn được quyết toán qua webhook."
+    "When on, Waffo Pancake appears as a top-up method in the wallet. Turn off to hide it from the wallet without removing your credentials — already-paid orders still settle via the webhook.": "Khi bật, Waffo Pancake sẽ xuất hiện như một phương thức nạp tiền trong ví. Tắt để ẩn khỏi ví mà không xóa thông tin xác thực của bạn — các đơn đã thanh toán vẫn được quyết toán qua webhook.",
+    "When enabled, the upstream model list and prices are synced automatically every 10 minutes and converted into Uter prices.": "Khi bật, danh sách mô hình và giá từ thượng nguồn sẽ được đồng bộ mỗi 10 phút và quy đổi thành giá Uter.",
+    "Fetched automatically from the market USD to CNY rate every 10 minutes, so this field is read-only. The payment price in the Payment Gateway settings is derived from it as the exchange rate {{adjustment}}, which is added automatically.": "Tự động lấy từ tỷ giá thị trường USD → CNY mỗi 10 phút, nên trường này chỉ đọc. Giá trong phần cài đặt cổng thanh toán được suy ra từ tỷ giá {{adjustment}}, phần điều chỉnh được cộng tự động."
   }
 }

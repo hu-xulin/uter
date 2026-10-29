@@ -174,6 +174,7 @@ export type SiteSettings = {
 export type AuthSettings = {
   PasswordLoginEnabled: boolean
   PasswordRegisterEnabled: boolean
+  EmailCodeLoginEnabled: boolean
   EmailVerificationEnabled: boolean
   RegisterEnabled: boolean
   EmailDomainRestrictionEnabled: boolean
@@ -314,7 +315,6 @@ export type ModelSettings = {
   DreamRouterSyncChannelID: string
   DreamRouterSyncUsername: string
   DreamRouterSyncPassword: string
-  DreamRouterSyncHour: string
   DreamRouterSyncRuleDirection: string
   DreamRouterSyncRuleAmount: string
 }
@@ -618,12 +618,10 @@ export type DreamRouterSyncStatusResponse = {
     step: number
     username: string
     provider: string
-    sync_hour: number
     rule_direction: string
     rule_amount: number
     password_configured: boolean
     last_run_at: string
-    last_run_date: string
     last_error: string
     last_result: string
   }
