@@ -107,7 +107,7 @@ export function OAuthCallbackScreen({
             <Icon className='h-8 w-8' />
           </div>
           <div className='space-y-2'>
-            <Heading variant='section-title' level={1} className='text-center'>
+            <Heading variant='page-title' level={1} className='text-center'>
               {headline}
             </Heading>
             <p className='text-muted-foreground text-sm'>{description}</p>
