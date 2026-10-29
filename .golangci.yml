@@ -1,16 +1,20 @@
+version: "2"
 run:
   timeout: 5m
-  tests: true
-linters:
-  disable-all: true
+formatters:
   enable:
     - gofmt
+linters:
+  default: none
+  enable:
     - govet
     - ineffassign
     - unused
     - staticcheck
-issues:
-  exclude-rules:
-    - path: _test\.go
-      linters:
-        - staticcheck
+  exclusions:
+    rules:
+      # 与 v1 时期口径一致：测试文件不跑 staticcheck（存量用法经评审容忍，
+      # 例如访问旧版面板令牌 API 的过渡期测试）。
+      - path: _test\.go
+        linters:
+          - staticcheck
