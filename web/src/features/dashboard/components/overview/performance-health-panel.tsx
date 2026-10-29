@@ -71,7 +71,7 @@ export function PerformanceHealthPanel() {
           {t('Performance health')}
         </Heading>
         {/* 面板说明与其它面板（PanelWrapper 的 description）同档：
-            body-sm 14/400/20 + secondary 色。此前这里是 12px（text-xs），
+            body-sm 14/400/20 + secondary 色。此前这里是 12px（text-sm），
             同一行的「性能健康」是 18px 标题，说明被压成 caption 后
             整条头部看起来像标题 + 脚注，层级断了。 */}
         <Text variant='body-sm' color='secondary' className='ml-auto shrink-0'>

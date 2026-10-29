@@ -180,7 +180,7 @@ export function ModelsSection(props: ModelsSectionProps) {
           <div className='text-foreground text-2xl font-semibold tabular-nums'>
             {formatTokens(totalTokens)}
           </div>
-          <div className='text-muted-foreground text-xs font-medium uppercase'>
+          <div className='text-muted-foreground text-sm font-medium uppercase'>
             {t('tokens')}
           </div>
         </div>
@@ -199,7 +199,7 @@ export function ModelsSection(props: ModelsSectionProps) {
               option={VCHART_OPTION}
             />
           ) : (
-            <div className='text-muted-foreground flex h-full items-center justify-center text-xs'>
+            <div className='text-muted-foreground flex h-full items-center justify-center text-sm'>
               {t('No history data available')}
             </div>
           )}

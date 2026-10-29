@@ -104,7 +104,7 @@ export function CachedPriceCell(props: {
             className='flex flex-wrap items-baseline gap-x-1'
           >
             {(cacheEntries.length > 1 || entry.field === 'imageCachePrice') && (
-              <span className='text-muted-foreground text-xs'>
+              <span className='text-muted-foreground text-sm'>
                 {entry.field === 'imageCachePrice'
                   ? t('Image Cache')
                   : t('Cache Read')}

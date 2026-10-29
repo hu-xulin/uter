@@ -55,7 +55,7 @@ function StatCard(props: {
   const Icon = props.icon
   return (
     <div className='bg-background flex flex-col gap-1 rounded-lg border p-3'>
-      <span className='text-muted-foreground inline-flex items-center gap-1.5 text-xs font-medium uppercase'>
+      <span className='text-muted-foreground inline-flex items-center gap-1.5 text-sm font-medium uppercase'>
         <Icon className='size-3' />
         {props.label}
       </span>
@@ -68,7 +68,7 @@ function StatCard(props: {
         {props.value}
       </span>
       {props.hint && (
-        <span className='text-muted-foreground text-xs'>{props.hint}</span>
+        <span className='text-muted-foreground text-sm'>{props.hint}</span>
       )}
     </div>
   )
@@ -312,7 +312,7 @@ function SectionHeader(props: {
         </div>
       </div>
       {props.accent && (
-        <div className='shrink-0 text-xs font-medium'>{props.accent}</div>
+        <div className='shrink-0 text-sm font-medium'>{props.accent}</div>
       )}
     </div>
   )

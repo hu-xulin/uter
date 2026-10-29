@@ -114,7 +114,7 @@ export function PricingToolbar(props: PricingToolbarProps) {
             <Filter className='size-4.5' />
             {t('Filter')}
             {props.activeFilterCount > 0 && (
-              <Badge className='ml-0.5 size-5 justify-center p-0 text-xs'>
+              <Badge className='ml-0.5 size-5 justify-center p-0 text-sm'>
                 {props.activeFilterCount}
               </Badge>
             )}
@@ -127,7 +127,7 @@ export function PricingToolbar(props: PricingToolbarProps) {
             <span>{props.filteredCount === 1 ? t('model') : t('models')}</span>
             {props.totalCount != null &&
               props.filteredCount !== props.totalCount && (
-                <span className='text-muted-foreground text-xs'>
+                <span className='text-muted-foreground text-sm'>
                   / {props.totalCount.toLocaleString()}
                 </span>
               )}
