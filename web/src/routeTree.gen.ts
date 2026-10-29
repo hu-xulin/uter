@@ -33,6 +33,7 @@ import { Route as PublicRechargeAgreementRouteImport } from './routes/_public/re
 import { Route as PublicUserAgreementRouteImport } from './routes/_public/user-agreement'
 import { Route as OauthProviderRouteImport } from './routes/oauth/$provider'
 import { Route as SetupIndexRouteImport } from './routes/setup/index'
+import { Route as authOauthWechatWebRouteImport } from './routes/(auth)/oauth.wechat-web'
 import { Route as authUserResetRouteImport } from './routes/(auth)/user/reset'
 import { Route as AuthenticatedChannelsIndexRouteImport } from './routes/_authenticated/channels/index'
 import { Route as AuthenticatedChatChatIdRouteImport } from './routes/_authenticated/chat/$chatId'
@@ -196,6 +197,11 @@ const SetupIndexRoute = SetupIndexRouteImport.update({
   id: '/setup/',
   path: '/setup/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const authOauthWechatWebRoute = authOauthWechatWebRouteImport.update({
+  id: '/wechat-web',
+  path: '/wechat-web',
+  getParentRoute: () => authOauthRoute,
 } as any)
 const authUserResetRoute = authUserResetRouteImport.update({
   id: '/user/reset',
@@ -463,7 +469,7 @@ export interface FileRoutesByFullPath {
   '/': typeof PublicIndexRoute
   '/system-settings': typeof AuthenticatedSystemSettingsRouteRouteWithChildren
   '/forgot-password': typeof authForgotPasswordRoute
-  '/oauth': typeof authOauthRoute
+  '/oauth': typeof authOauthRouteWithChildren
   '/otp': typeof authOtpRoute
   '/register': typeof authRegisterRoute
   '/reset': typeof authResetRoute
@@ -481,6 +487,7 @@ export interface FileRoutesByFullPath {
   '/user-agreement': typeof PublicUserAgreementRoute
   '/oauth/$provider': typeof OauthProviderRoute
   '/setup/': typeof SetupIndexRoute
+  '/oauth/wechat-web': typeof authOauthWechatWebRoute
   '/user/reset': typeof authUserResetRoute
   '/chat/$chatId': typeof AuthenticatedChatChatIdRoute
   '/dashboard/$section': typeof AuthenticatedDashboardSectionRoute
@@ -530,7 +537,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof PublicIndexRoute
   '/forgot-password': typeof authForgotPasswordRoute
-  '/oauth': typeof authOauthRoute
+  '/oauth': typeof authOauthRouteWithChildren
   '/otp': typeof authOtpRoute
   '/register': typeof authRegisterRoute
   '/reset': typeof authResetRoute
@@ -547,6 +554,7 @@ export interface FileRoutesByTo {
   '/user-agreement': typeof PublicUserAgreementRoute
   '/oauth/$provider': typeof OauthProviderRoute
   '/setup': typeof SetupIndexRoute
+  '/oauth/wechat-web': typeof authOauthWechatWebRoute
   '/user/reset': typeof authUserResetRoute
   '/chat/$chatId': typeof AuthenticatedChatChatIdRoute
   '/dashboard/$section': typeof AuthenticatedDashboardSectionRoute
@@ -600,7 +608,7 @@ export interface FileRoutesById {
   '/_public': typeof PublicRouteRouteWithChildren
   '/_authenticated/system-settings': typeof AuthenticatedSystemSettingsRouteRouteWithChildren
   '/(auth)/forgot-password': typeof authForgotPasswordRoute
-  '/(auth)/oauth': typeof authOauthRoute
+  '/(auth)/oauth': typeof authOauthRouteWithChildren
   '/(auth)/otp': typeof authOtpRoute
   '/(auth)/register': typeof authRegisterRoute
   '/(auth)/reset': typeof authResetRoute
@@ -619,6 +627,7 @@ export interface FileRoutesById {
   '/oauth/$provider': typeof OauthProviderRoute
   '/_public/': typeof PublicIndexRoute
   '/setup/': typeof SetupIndexRoute
+  '/(auth)/oauth/wechat-web': typeof authOauthWechatWebRoute
   '/(auth)/user/reset': typeof authUserResetRoute
   '/_authenticated/chat/$chatId': typeof AuthenticatedChatChatIdRoute
   '/_authenticated/dashboard/$section': typeof AuthenticatedDashboardSectionRoute
@@ -689,6 +698,7 @@ export interface FileRouteTypes {
     | '/user-agreement'
     | '/oauth/$provider'
     | '/setup/'
+    | '/oauth/wechat-web'
     | '/user/reset'
     | '/chat/$chatId'
     | '/dashboard/$section'
@@ -755,6 +765,7 @@ export interface FileRouteTypes {
     | '/user-agreement'
     | '/oauth/$provider'
     | '/setup'
+    | '/oauth/wechat-web'
     | '/user/reset'
     | '/chat/$chatId'
     | '/dashboard/$section'
@@ -826,6 +837,7 @@ export interface FileRouteTypes {
     | '/oauth/$provider'
     | '/_public/'
     | '/setup/'
+    | '/(auth)/oauth/wechat-web'
     | '/(auth)/user/reset'
     | '/_authenticated/chat/$chatId'
     | '/_authenticated/dashboard/$section'
@@ -1055,6 +1067,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/setup/'
       preLoaderRoute: typeof SetupIndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/(auth)/oauth/wechat-web': {
+      id: '/(auth)/oauth/wechat-web'
+      path: '/wechat-web'
+      fullPath: '/oauth/wechat-web'
+      preLoaderRoute: typeof authOauthWechatWebRouteImport
+      parentRoute: typeof authOauthRoute
     }
     '/(auth)/user/reset': {
       id: '/(auth)/user/reset'
@@ -1374,9 +1393,21 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface authOauthRouteChildren {
+  authOauthWechatWebRoute: typeof authOauthWechatWebRoute
+}
+
+const authOauthRouteChildren: authOauthRouteChildren = {
+  authOauthWechatWebRoute: authOauthWechatWebRoute,
+}
+
+const authOauthRouteWithChildren = authOauthRoute._addFileChildren(
+  authOauthRouteChildren,
+)
+
 interface authRouteRouteChildren {
   authForgotPasswordRoute: typeof authForgotPasswordRoute
-  authOauthRoute: typeof authOauthRoute
+  authOauthRoute: typeof authOauthRouteWithChildren
   authOtpRoute: typeof authOtpRoute
   authRegisterRoute: typeof authRegisterRoute
   authResetRoute: typeof authResetRoute
@@ -1387,7 +1418,7 @@ interface authRouteRouteChildren {
 
 const authRouteRouteChildren: authRouteRouteChildren = {
   authForgotPasswordRoute: authForgotPasswordRoute,
-  authOauthRoute: authOauthRoute,
+  authOauthRoute: authOauthRouteWithChildren,
   authOtpRoute: authOtpRoute,
   authRegisterRoute: authRegisterRoute,
   authResetRoute: authResetRoute,

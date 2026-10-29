@@ -20,7 +20,7 @@ import { createFileRoute, useNavigate, useSearch } from '@tanstack/react-router'
 import i18next from 'i18next'
 import { useEffect, useRef } from 'react'
 
-import { wechatLoginByCode, wechatWebLoginByCode } from '@/features/auth/api'
+import { wechatLoginByCode } from '@/features/auth/api'
 import { sanitizeAuthRedirect } from '@/features/auth/lib/auth-redirect'
 import { applyAuthBundle, isAuthBundle } from '@/lib/api'
 import { handleServerError } from '@/lib/handle-server-error'
@@ -38,7 +38,6 @@ function OAuthComponent() {
       | 'linuxdo'
       | 'telegram'
       | 'wechat'
-      | 'wechat_web'
     code?: string
     state?: string
   }
@@ -66,18 +65,8 @@ function OAuthComponent() {
           }
           throw createServerError(res, i18next.t('OAuth failed'))
         }
-        if (search?.provider === 'wechat_web' && search.code) {
-          const res = await wechatWebLoginByCode(search.code, search.state)
-          if (res?.success && isAuthBundle(res.data)) {
-            applyAuthBundle(res.data)
-            const target =
-              sanitizeAuthRedirect(search?.redirect, window.location.origin) ??
-              '/dashboard'
-            navigate({ href: target, replace: true })
-            return
-          }
-          throw createServerError(res, i18next.t('OAuth failed'))
-        }
+        // 微信网站应用（wechat_web）回调由独立路由 /oauth/wechat-web 处理：
+        // 它需要先按 flow 记录的发起 origin 做跨域转发/就地登录判断。
         handleServerError(new AuthOperationError(i18next.t('OAuth failed')))
       } catch (error: unknown) {
         handleServerError(

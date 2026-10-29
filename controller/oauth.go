@@ -45,6 +45,10 @@ type oauthFlowPayload struct {
 	Telegram        *oauth.TelegramOAuthFlow       `json:"telegram,omitempty"`
 	SessionIdentity *service.AuthIdentity          `json:"session_identity,omitempty"`
 	Authorization   *model.AuthFlowAuthorization   `json:"authorization,omitempty"`
+	// ReturnOrigin 记录微信网站应用登录发起时浏览器所在的站点 origin（已按
+	// 白名单校验）。授权回调落在备案回调域（如 wx.uter.cc）后，回调页据此跳回
+	// 发起域并在该域完成登录，使会话 Cookie 落在主站域。
+	ReturnOrigin string `json:"return_origin,omitempty"`
 }
 
 // generateOAuthLoginNonce returns a fresh random nonce for binding a

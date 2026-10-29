@@ -11,6 +11,7 @@ import (
 
 	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/model"
+	"github.com/uter-ai/uter/setting/system_setting"
 
 	"github.com/gin-gonic/gin"
 )
@@ -85,10 +86,61 @@ func fillUserByWeChatWebId(user *model.User) error {
 	return model.DB.Where("wechat_web_id = ?", user.WeChatWebId).First(user).Error
 }
 
+// wechatWebReturnOriginAllowed 校验发起 origin 的 host 是否在白名单内：
+// 仅允许当前请求 Host、站点 ServerAddress 与微信授权回调域三者，防止
+// flow 被用来向任意外部域转发 code/state（open-redirect）。
+func wechatWebReturnOriginAllowed(origin string, requestHost string) bool {
+	parsed, err := url.Parse(origin)
+	if err != nil || parsed.Host == "" || parsed.Scheme != "https" {
+		return false
+	}
+	if parsed.Path != "" && parsed.Path != "/" {
+		return false
+	}
+	if parsed.RawQuery != "" || parsed.Fragment != "" {
+		return false
+	}
+	candidates := map[string]struct{}{}
+	for _, candidate := range []string{
+		requestHost,
+		system_setting.ServerAddress,
+		common.WeChatWebCallbackDomain,
+	} {
+		candidate = strings.TrimSpace(candidate)
+		if candidate == "" {
+			continue
+		}
+		if host := hostFromSiteAddress(candidate); host != "" {
+			candidates[strings.ToLower(host)] = struct{}{}
+		}
+	}
+	_, ok := candidates[strings.ToLower(parsed.Host)]
+	return ok
+}
+
+// hostFromSiteAddress 从「origin 或裸域名」里取出 host：既能处理
+// https://uter.ai，也能处理 uter.cc / wx.uter.cc。
+func hostFromSiteAddress(address string) string {
+	address = strings.TrimSpace(address)
+	if address == "" {
+		return ""
+	}
+	if !strings.Contains(address, "://") {
+		return strings.TrimSuffix(strings.SplitN(address, "/", 2)[0], "/")
+	}
+	if parsed, err := url.Parse(address); err == nil {
+		return parsed.Host
+	}
+	return ""
+}
+
 // GenerateWeChatWebCode issues a CSRF-bound state token for WeChat website-app
 // login, mirroring GenerateWeChatCode. Login tokens set the oauth_login_nonce
 // cookie so the callback can prove it originated from the browser that started
-// the flow.
+// the flow. The request may carry the browser origin where login was started;
+// after the provider redirects to the registered callback domain (an ICP-filed
+// domain that is not the main site), the callback page hops back to this origin
+// so the session cookie lands on the main-site domain.
 func GenerateWeChatWebCode(c *gin.Context) {
 	var req wechatStateRequest
 	if err := common.DecodeJson(c.Request.Body, &req); err != nil {
@@ -103,6 +155,14 @@ func GenerateWeChatWebCode(c *gin.Context) {
 
 	payload := oauthFlowPayload{}
 	expiresAt := time.Now().Add(oauthAuthFlowTTL)
+
+	if req.Origin != "" {
+		if !wechatWebReturnOriginAllowed(req.Origin, c.Request.Host) {
+			common.ApiErrorT(c, "Invalid parameters")
+			return
+		}
+		payload.ReturnOrigin = strings.TrimSuffix(req.Origin, "/")
+	}
 
 	loginNonce, err := generateOAuthLoginNonce()
 	if err != nil {
@@ -132,6 +192,37 @@ func GenerateWeChatWebCode(c *gin.Context) {
 		"success": true,
 		"message": "",
 		"data":    gin.H{"flow_token": state, "expires_at": expiresAt.Unix()},
+	})
+}
+
+// GetWeChatWebFlowOrigin returns (without consuming) the browser origin a
+// WeChat website-app login was started from, so the callback page hosted on
+// the registered callback domain can hop back to the main-site domain before
+// the login is performed there (where the oauth_login_nonce cookie lives).
+func GetWeChatWebFlowOrigin(c *gin.Context) {
+	state := strings.TrimSpace(c.Query("state"))
+	if state == "" {
+		common.ApiErrorT(c, "Invalid parameters")
+		return
+	}
+	pendingFlow, err := model.GetAuthFlow(state, model.AuthFlowMatch{
+		Purpose:  model.AuthFlowPurposeOAuth,
+		Provider: "wechat_web",
+		Intent:   model.AuthFlowIntentLogin,
+	})
+	if err != nil {
+		common.ApiErrorT(c, "Invalid or expired login session")
+		return
+	}
+	var loginPayload oauthFlowPayload
+	if err := common.UnmarshalJsonStr(pendingFlow.Payload, &loginPayload); err != nil {
+		common.ApiErrorT(c, "Invalid or expired login session")
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "",
+		"data":    gin.H{"origin": loginPayload.ReturnOrigin},
 	})
 }
 

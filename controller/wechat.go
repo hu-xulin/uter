@@ -231,9 +231,11 @@ func WeChatBind(c *gin.Context) {
 }
 
 // wechatStateRequest selects the WeChat auth intent for which a state token is
-// being minted.
+// being minted. Origin 仅微信网站应用方案使用：记录登录发起页 origin 供
+// 回调页跳回主站（controller/wechat_web.go 校验白名单后写入 flow）。
 type wechatStateRequest struct {
 	Intent string `json:"intent"`
+	Origin string `json:"origin,omitempty"`
 }
 
 // GenerateWeChatCode issues a CSRF-bound state token for WeChat login or binding,

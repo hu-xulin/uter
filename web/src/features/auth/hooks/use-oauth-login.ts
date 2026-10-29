@@ -203,7 +203,7 @@ export function useOAuthLogin(
     setIsLoading(true)
     try {
       await resetSession()
-      const state = await startWeChatWebFlow()
+      const state = await startWeChatWebFlow(window.location.origin)
       rememberOAuthLoginRedirect(state, redirectTo)
 
       const url = buildWeChatWebOAuthUrl(
