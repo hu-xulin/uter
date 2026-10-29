@@ -594,19 +594,19 @@ const getOperationSummary = (
 
 const getModeTagTailwind = (mode: string): string => {
   if (mode.includes('header')) {
-    return 'bg-info/15 text-info dark:text-info-soft-foreground border-info/20'
+    return 'bg-info-soft text-info dark:text-info-soft-foreground border-info/20'
   }
   if (mode.includes('replace') || mode.includes('trim')) {
-    return 'bg-info/15 text-info dark:text-info-soft-foreground border-info/20'
+    return 'bg-info-soft text-info dark:text-info-soft-foreground border-info/20'
   }
   if (mode.includes('copy') || mode.includes('move')) {
-    return 'bg-info/15 text-info dark:text-info-soft-foreground border-info/20'
+    return 'bg-info-soft text-info dark:text-info-soft-foreground border-info/20'
   }
   if (mode.includes('error') || mode.includes('prune')) {
-    return 'bg-destructive/15 text-destructive dark:text-destructive-soft-foreground border-destructive/20'
+    return 'bg-destructive-subtle text-destructive dark:text-destructive-soft-foreground border-destructive/20'
   }
   if (mode.includes('sync')) {
-    return 'bg-success/15 text-success dark:text-success-soft-foreground border-success/20'
+    return 'bg-success-soft text-success dark:text-success-soft-foreground border-success/20'
   }
   return 'bg-muted text-muted-foreground'
 }
@@ -1967,7 +1967,7 @@ export function ParamOverrideEditorDialog(
                             className={cn(
                               'cursor-pointer rounded-lg border p-2.5 transition-colors',
                               isActive
-                                ? 'border-primary bg-primary/5'
+                                ? 'border-primary bg-primary-subtle'
                                 : 'hover:bg-muted/50',
                               isDragging && 'opacity-50',
                               isDropTarget &&

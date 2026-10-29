@@ -764,7 +764,7 @@ function ResetCreditsPanel(props: {
   let creditsContent: ReactNode
   if (props.errorMessage) {
     creditsContent = (
-      <div className='border-destructive/40 bg-destructive/10 text-destructive rounded-lg border px-3 py-2 text-sm'>
+      <div className='border-destructive/40 bg-destructive-subtle text-destructive rounded-lg border px-3 py-2 text-sm'>
         {props.errorMessage}
       </div>
     )
@@ -879,7 +879,7 @@ function ResetCreditsPanel(props: {
       ) : null}
 
       {props.resetSuccessMessage ? (
-        <Alert className='border-success/40 bg-success/10 text-success'>
+        <Alert className='border-success/40 bg-success-soft text-success'>
           <Check />
           <AlertTitle>{t('Reset completed')}</AlertTitle>
           <AlertDescription>{props.resetSuccessMessage}</AlertDescription>

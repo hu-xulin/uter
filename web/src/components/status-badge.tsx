@@ -47,7 +47,7 @@ import { cn } from '@/lib/utils'
  * 指向语义 Token，分类状态（purple / blue / cyan / lime / pink / teal /
  * violet …）才可以用 `chart-N`。
  *
- * 分工见 `docs/design-system/colors.md`「图表色（chart-N）的正确用法」：
+ * 分工见 `docs/design-system/design-system.md`「图表色（chart-N）的正确用法」：
  * `chart-N` 只是「为了区分彼此」的分类色，一旦用它表达成功/失败，
  * 色盲用户与深浅主题会同时失效。守卫：`design-system/__tests__/semantic-colors.test.ts`。
  *

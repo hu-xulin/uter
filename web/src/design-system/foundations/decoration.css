@@ -1,0 +1,88 @@
+/*
+Copyright (C) 2023-2026 Uter.ai
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+
+For commercial licensing, please contact support@uter.ai
+*/
+/* ── Foundations · Decoration ─────────────────────────────────────────
+ * 规范 §11.5「背景装饰层」：首屏（hero / CTA）的光晕、网格、遮罩的
+ * **形状**与**遮罩**收在这里；颜色与透明度收在 `styles/theme.css` 的
+ * `--ds-decor-*` Token 里（浅色 :root 定义、.dark 只覆盖透明度）。
+ *
+ * 分工约定：
+ *   - 颜色（三团光晕的 oklch 值）     → theme.css，改值 = 改对外观感
+ *   - 形状（ellipse 尺寸 / 圆心 / 网格 / 遮罩）→ 本文件 utility
+ *
+ * 组件里不允许再出现：
+ *   - 内联 `style={{ background: 'radial-gradient(...)' }}` 裸 oklch；
+ *   - 手写的 `opacity-25 dark:opacity-[0.12]` 这类散装透明度 —— 透明度
+ *     深浅两档由 Token 管理，散装写法会让深浅主题的取舍不可见。
+ *
+ * 注意 `@utility`（不是 `@layer utilities`）：只有前者会被 Tailwind 的
+ * 变体系统识别（同 motion.css 的说明）。
+ */
+
+/* hero 三团光晕 + 整层透明度（浅 0.25 / 深 0.12，透明度在 Token 里）。
+ * 形状与改动前逐值等价：ellipse 尺寸、圆心、色标位置都不变。 */
+@utility ds-decor-mesh-hero {
+  background-image:
+    radial-gradient(
+      ellipse 60% 50% at 20% 20%,
+      var(--ds-decor-glow-1) 0%,
+      transparent 70%
+    ),
+    radial-gradient(
+      ellipse 50% 40% at 80% 15%,
+      var(--ds-decor-glow-2) 0%,
+      transparent 70%
+    ),
+    radial-gradient(
+      ellipse 40% 35% at 40% 80%,
+      var(--ds-decor-glow-3) 0%,
+      transparent 70%
+    );
+  opacity: var(--ds-decor-mesh-opacity-hero);
+}
+
+/* CTA 两团光晕（弱一档的蓝 + 青），整层透明度浅 0.2 / 深 0.08。 */
+@utility ds-decor-mesh-cta {
+  background-image:
+    radial-gradient(
+      ellipse 50% 50% at 30% 50%,
+      var(--ds-decor-glow-1-soft) 0%,
+      transparent 70%
+    ),
+    radial-gradient(
+      ellipse 40% 40% at 70% 40%,
+      var(--ds-decor-glow-2-soft) 0%,
+      transparent 70%
+    );
+  opacity: var(--ds-decor-mesh-opacity-cta);
+}
+
+/* 首屏网格：1px 线（`--border`）+ 4rem 方格 + 椭圆渐隐遮罩。
+ * 遮罩只压亮这不压色 —— 网格线颜色跟 `--border` 走主题，遮罩形状固定。 */
+@utility ds-decor-grid {
+  background-image:
+    linear-gradient(to right, var(--border) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--border) 1px, transparent 1px);
+  background-size: var(--ds-decor-grid-size) var(--ds-decor-grid-size);
+  mask-image: radial-gradient(
+    ellipse 60% 50% at 50% 30%,
+    black 20%,
+    transparent 100%
+  );
+  opacity: var(--ds-decor-grid-opacity);
+}

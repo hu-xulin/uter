@@ -203,7 +203,7 @@ function FidelityBadge({ tier }: { tier: FidelityTier }) {
   const { t } = useTranslation()
   if (tier !== 'lossy') return null
   return (
-    <span className='bg-warning/10 text-warning dark:text-warning ml-2 inline-flex shrink-0 items-center rounded px-1.5 py-0.5 align-middle text-xs'>
+    <span className='bg-warning-soft text-warning dark:text-warning ml-2 inline-flex shrink-0 items-center rounded px-1.5 py-0.5 align-middle text-xs'>
       {t('May reduce quality')}
     </span>
   )
@@ -452,7 +452,7 @@ export function CostOptimizationSection(props: Props) {
                   className={cn(
                     'flex min-w-[150px] flex-1 shrink-0 flex-col gap-1.5 rounded-lg border px-3 py-2 text-left transition-colors',
                     active
-                      ? 'border-primary bg-primary/5'
+                      ? 'border-primary bg-primary-subtle'
                       : 'border-border bg-background hover:bg-muted/50'
                   )}
                 >
@@ -469,7 +469,7 @@ export function CostOptimizationSection(props: Props) {
                       {group.fields.length}
                     </span>
                     {hasLossy && (
-                      <span className='bg-warning/10 text-warning dark:text-warning inline-flex items-center rounded px-1.5 py-0.5 text-xs'>
+                      <span className='bg-warning-soft text-warning dark:text-warning inline-flex items-center rounded px-1.5 py-0.5 text-xs'>
                         {t('Lossy')}
                       </span>
                     )}

@@ -77,9 +77,9 @@ const INSTANCE_SKELETON_KEYS = [
 
 const STATUS_CLASS_NAME: Record<SystemInstanceStatus, string> = {
   online:
-    'bg-success-soft text-success dark:bg-success/15 dark:text-success-soft-foreground',
+    'bg-success-soft text-success dark:text-success-soft-foreground',
   stale:
-    'bg-warning-soft text-warning dark:bg-warning/15 dark:text-warning-soft-foreground',
+    'bg-warning-soft text-warning dark:text-warning-soft-foreground',
 }
 
 const STATUS_DOT_CLASS_NAME: Record<SystemInstanceStatus, string> = {
@@ -304,7 +304,7 @@ function SystemInstancesList(props: SystemInstancesTableProps) {
                             >
                               <Badge
                                 variant='outline'
-                                className='border-warning-soft bg-warning-soft text-warning dark:border-warning/30 dark:bg-warning/15 dark:text-warning-soft-foreground'
+                                className='border-warning-soft bg-warning-soft text-warning dark:border-warning/30 dark:text-warning-soft-foreground'
                               >
                                 <AlertTriangle
                                   className='size-4'

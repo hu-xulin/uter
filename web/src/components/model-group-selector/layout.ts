@@ -38,7 +38,7 @@ export const modelGroupSelectorLayoutClasses = {
     'mb-0.5 flex h-8 items-center justify-between rounded-md border border-transparent px-2 font-mono text-mono transition-colors',
   /* 选中态只用一个语言：`primary-subtle` 浅底 + 正文色。
    * 此前是「浅底 + 半透明描边 + 左侧竖条 + 字重升到 600」四重叠加，
-   * 与左栏的 `bg-primary/10` 又是另一套；规范里 600 只留给 group-title，
+   * 与左栏的 `bg-primary-subtle` 又是另一套；规范里 600 只留给 group-title，
    * 列表行标题是 500。 */
   selectedModelItem: 'bg-primary-subtle text-foreground',
   unselectedModelItem:

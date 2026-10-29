@@ -132,7 +132,7 @@ For commercial licensing, please contact support@uter.ai
   /* ── 柔和态（soft）状态色 ──────────────────────────────────────────
    * 用于「浅色底 + 深色文字」的徽标/提示条（如原 bg-amber-50 +
    * text-amber-900）。直接换成 bg-warning/10 + text-warning 会把
-   * 8.77:1 打到 2.7:1（见 docs/design-system/exceptions.md D6），是
+   * 8.77:1 打到 2.7:1（见 docs/design-system/design-system.md D6），是
    * 不折不扣的可访问性回归。所以单独提供 soft 背景 / soft 前景，
    * 取值等于现状渲染值（浅色底≈*-50、深色文字≈*-900；暗色底≈*-950、
    * 前景≈*-100），迁移零视觉变化。 */
@@ -167,8 +167,8 @@ For commercial licensing, please contact support@uter.ai
    * `text-*` 前缀已经被「颜色」占用（`text-primary` 指的是品牌色文字），
    * 直接照抄会与品牌色撞车。因此统一用 `fg-` 前缀落地：
    *   text-fg-secondary    二级文字 #334155：描述、辅助说明、次级信息
-   *   text-fg-tertiary     三级文字 #475569：时间戳、元信息、次要标签
-   *   text-fg-disabled     禁用文字 #64748B
+   *   text-fg-tertiary     三级文字 #64748B：时间戳、元信息、次要标签
+   *   text-fg-disabled     禁用文字 #94A3B8
    *   text-fg-link         链接 #5B5EE6
    *   text-fg-placeholder  输入框占位符 #64748B
    *   text-fg-inverse      深色/品牌实心底上的反色文字
@@ -199,6 +199,35 @@ For commercial licensing, please contact support@uter.ai
   --color-syntax-number: var(--syntax-number);
   --color-syntax-function: var(--syntax-function);
   --color-syntax-property: var(--syntax-property);
+  /* ── 首屏终端演示卡（term）───────────────────────────────────────────
+   * 与上面的 `syntax-*` 是**两套**，不要合并、也不要互相改值：
+   *   · `syntax-*` 服务通用代码查看语境（Shiki、JSON 查看器）；
+   *   · `term-*` 服务首页那张 curl 演示卡，取色锚定上游 new-api 的渲染
+   *     效果，必须跨主题预设恒定（规范 §11.5）。
+   * 组件只写 `text-term-command` 这类语义类，不允许再出现调色板类名。 */
+  --color-term-command: var(--term-command);
+  --color-term-flag: var(--term-flag);
+  --color-term-property: var(--term-property);
+  --color-term-string: var(--term-string);
+  --color-term-number: var(--term-number);
+  --color-term-dim-1: var(--term-dim-1);
+  --color-term-dim-2: var(--term-dim-2);
+  --color-term-dim-3: var(--term-dim-3);
+  --color-term-dim-4: var(--term-dim-4);
+  --color-term-accent-emerald: var(--term-accent-emerald);
+  --color-term-accent-amber: var(--term-accent-amber);
+  --color-term-accent-blue: var(--term-accent-blue);
+  --color-term-accent-violet: var(--term-accent-violet);
+  --color-term-accent-emerald-soft: var(--term-accent-emerald-soft);
+  --color-term-accent-amber-soft: var(--term-accent-amber-soft);
+  --color-term-accent-blue-soft: var(--term-accent-blue-soft);
+  --color-term-accent-violet-soft: var(--term-accent-violet-soft);
+  --color-term-accent-emerald-line: var(--term-accent-emerald-line);
+  --color-term-accent-amber-line: var(--term-accent-amber-line);
+  --color-term-accent-blue-line: var(--term-accent-blue-line);
+  --color-term-accent-violet-line: var(--term-accent-violet-line);
+  --color-term-online: var(--term-online);
+  --color-term-dot: var(--term-dot);
   --color-overview-accent-1: var(--overview-accent-1);
   --color-overview-accent-2: var(--overview-accent-2);
   --color-overview-accent-3: var(--overview-accent-3);
@@ -345,6 +374,83 @@ For commercial licensing, please contact support@uter.ai
   --syntax-number: oklch(0.47 0.157 37.3); /* orange-800 */
   --syntax-function: oklch(0.488 0.243 264.4); /* blue-700 */
   --syntax-property: oklch(0.437 0.078 188.2); /* teal-800 */
+  /* ── 首屏终端演示卡 · 语法角色（浅色）───────────────────────────────
+   * 取值 = 上游 new-api 首屏代码卡的渲染值，再叠加 2026-10-30 拍板的
+   * AA 补偿（emerald → emerald-700、amber → amber-700）。这里把**效果**
+   * 定档成 Token，而不是把上游的类名照抄一遍：类名怎么变不要紧，渲染
+   * 出来必须稳定，且在任何主题预设下都不漂移（详见规范 §11.5）。 */
+  --term-command: #047857; /* emerald-700 · AA 补偿，上游原值 emerald-600 */
+  --term-flag: #2563eb; /* blue-600 */
+  --term-property: #0369a1; /* sky-700 */
+  --term-string: #b45309; /* amber-700 */
+  --term-number: #7c3aed; /* violet-600 */
+  /* 弱层级四档：等价于原先的 `text-foreground/{75,55,40,30}`，但换成实色。
+   * 透明度会随底下那层表面漂移（卡底部、`bg-muted/20` 上各不相同），实色
+   * 不会；而且实色可以静态验证对比度，透明度不行。
+   * ⚠️ 2026-10-30 AA 补偿：dim-3 / dim-4 由 40% / 30% 提亮到 55%，与
+   * dim-2 同档 —— 弱层级梯度从四档收成两档，是拍板换 AA 的已知代价。 */
+  --term-dim-1: color-mix(in srgb, var(--foreground) 75%, var(--card));
+  --term-dim-2: color-mix(in srgb, var(--foreground) 55%, var(--card));
+  --term-dim-3: color-mix(in srgb, var(--foreground) 55%, var(--card));
+  --term-dim-4: color-mix(in srgb, var(--foreground) 55%, var(--card));
+  /* 四个 demo 的分类强调色：Tab 激活态文字 / 激活描边 / 方法徽标文字。
+   * emerald / amber 浅色为 AA 补偿值（emerald-700 / amber-700），深色维持
+   * 上游原值（本就达标）。 */
+  --term-accent-emerald: #047857;
+  --term-accent-amber: #b45309;
+  --term-accent-blue: #2563eb;
+  --term-accent-violet: #7c3aed;
+  /* 描边档：Tab 激活态那道 2px 下划线。上游原为亮一档的饱和档（-500），
+   * AA 补偿后浅色改为与文字档同值（emerald-700 / amber-700）—— 1px 线里
+   * 亮度略降，但换来了文字与描边的取色统一；深色维持上游原值。 */
+  --term-accent-emerald-line: #047857;
+  --term-accent-amber-line: #b45309;
+  --term-accent-blue-line: #3b82f6;
+  --term-accent-violet-line: #8b5cf6;
+  /* 方法徽标浅底：描边档 10% 混 card。写成 mix 而不是固定值，是为了让它
+   * 跟着卡面走；写成实色而不是不透明度，是为了让对比度可静态验证。 */
+  --term-accent-emerald-soft: color-mix(
+    in srgb,
+    var(--term-accent-emerald-line) 10%,
+    var(--card)
+  );
+  --term-accent-amber-soft: color-mix(
+    in srgb,
+    var(--term-accent-amber-line) 10%,
+    var(--card)
+  );
+  --term-accent-blue-soft: color-mix(
+    in srgb,
+    var(--term-accent-blue-line) 10%,
+    var(--card)
+  );
+  --term-accent-violet-soft: color-mix(
+    in srgb,
+    var(--term-accent-violet-line) 10%,
+    var(--card)
+  );
+  /* 在线指示点 + 辉光：状态语义（亮着 = 在线），深浅主题同一个值 —— 它
+   * 就是那颗绿点，跟着主题变深就不像「在线」了（取值恰与 emerald 描边档
+   * 相同，但两者语义无关，不要互相引用）。配套的辉光走 `--ds-glow-online`，
+   * 不要在组件里写裸的 rgba。 */
+  /* 卡尾指标之间的分隔圆点：整张卡里唯一保留的装饰性透明度，写成 Token
+   * 是为了让「这里允许一点点透明」这件事可扫描、可登记，而不是藏在组件里。 */
+  --term-dot: color-mix(in srgb, var(--foreground) 15%, transparent);
+  --term-online: #10b981;
+  /* ── 首屏背景装饰层（hero / CTA）────────────────────────────────
+   * 三团光晕 + CTA 两团的取值 = 首屏现在渲染的 oklch 实值，一次性收进
+   * Token；光晕形状（ellipse 尺寸/圆心）与网格遮罩是**形状**不是颜色，
+   * 收在 foundations/decoration.css 的 `ds-decor-*` utility 里，两者配合
+   * 使用（规范 §11.5「背景装饰层」）。透明度深浅主题各一档，见 .dark。 */
+  --ds-decor-glow-1: oklch(0.72 0.18 250 / 80%); /* hero 主光 · 品牌蓝 */
+  --ds-decor-glow-2: oklch(0.65 0.15 200 / 60%); /* hero 次光 · 青 */
+  --ds-decor-glow-3: oklch(0.7 0.12 280 / 40%); /* hero 补光 · 紫 */
+  --ds-decor-glow-1-soft: oklch(0.7 0.15 250 / 70%); /* CTA 主光（弱一档） */
+  --ds-decor-glow-2-soft: oklch(0.65 0.12 200 / 50%); /* CTA 次光（弱一档） */
+  --ds-decor-mesh-opacity-hero: 0.25;
+  --ds-decor-mesh-opacity-cta: 0.2;
+  --ds-decor-grid-size: 4rem;
+  --ds-decor-grid-opacity: 0.08;
   --overview-accent-1: oklch(0.72 0.18 250);
   --overview-accent-2: oklch(0.65 0.15 200);
   --overview-accent-3: oklch(0.7 0.12 280);
@@ -413,8 +519,8 @@ For commercial licensing, please contact support@uter.ai
    * `text-foreground`。 */
   --fg-primary: #0f172a;
   --fg-secondary: #334155;
-  --fg-tertiary: #475569;
-  --fg-disabled: #64748b;
+  --fg-tertiary: #64748b;
+  --fg-disabled: #94a3b8;
   --fg-inverse: #ffffff;
   --fg-link: #5b5ee6;
   --fg-placeholder: #64748b;
@@ -499,6 +605,53 @@ For commercial licensing, please contact support@uter.ai
   --syntax-number: oklch(0.837 0.128 66.3); /* orange-300 */
   --syntax-function: oklch(0.809 0.105 251.8); /* blue-300 */
   --syntax-property: oklch(0.855 0.138 181.1); /* teal-300 */
+  /* ── 首屏终端演示卡 · 语法角色（深色）───────────────────────────────
+   * 与浅色同一套语义、不同取色：深底上要亮一档才不闷。弱层级不需要重写，
+   * `color-mix` 里的 `var(--foreground)` / `var(--card)` 在深色作用域下
+   * 自动取深色值。 */
+  --term-command: #34d399; /* emerald-400 */
+  --term-flag: #60a5fa; /* blue-400 */
+  --term-property: #7dd3fc; /* sky-300 */
+  --term-string: #fcd34d; /* amber-300 */
+  --term-number: #c4b5fd; /* violet-300 */
+  --term-dim-1: color-mix(in srgb, var(--foreground) 75%, var(--card));
+  --term-dim-2: color-mix(in srgb, var(--foreground) 55%, var(--card));
+  /* AA 补偿（2026-10-30）：深色 dim-3 / dim-4 同样提到 55%，与浅色对齐。 */
+  --term-dim-3: color-mix(in srgb, var(--foreground) 55%, var(--card));
+  --term-dim-4: color-mix(in srgb, var(--foreground) 55%, var(--card));
+  --term-accent-emerald: #34d399;
+  --term-accent-amber: #fbbf24;
+  --term-accent-blue: #60a5fa;
+  --term-accent-violet: #a78bfa;
+  /* 深色没有 600/500 之分：饱和档就是文字档，两者取值相同。 */
+  --term-accent-emerald-line: #34d399;
+  --term-accent-amber-line: #fbbf24;
+  --term-accent-blue-line: #60a5fa;
+  --term-accent-violet-line: #a78bfa;
+  --term-accent-emerald-soft: color-mix(
+    in srgb,
+    var(--term-accent-emerald-line) 10%,
+    var(--card)
+  );
+  --term-accent-amber-soft: color-mix(
+    in srgb,
+    var(--term-accent-amber-line) 10%,
+    var(--card)
+  );
+  --term-accent-blue-soft: color-mix(
+    in srgb,
+    var(--term-accent-blue-line) 10%,
+    var(--card)
+  );
+  --term-accent-violet-soft: color-mix(
+    in srgb,
+    var(--term-accent-violet-line) 10%,
+    var(--card)
+  );
+  --term-dot: color-mix(in srgb, var(--foreground) 15%, transparent);
+  /* 深色下装饰层只调透明度：深底上同样的光晕会更「晃」，压低一档。 */
+  --ds-decor-mesh-opacity-hero: 0.12;
+  --ds-decor-mesh-opacity-cta: 0.08;
   --sidebar: #0f172a;
   --sidebar-foreground: #f1f5f9;
   --sidebar-primary: #8b8df5;
@@ -540,8 +693,8 @@ For commercial licensing, please contact support@uter.ai
   /* ── 新规范 1.1 / 1.1.1 补充的色阶 ─────────────────────────────── */
   --fg-primary: #f8fafc;
   --fg-secondary: #cbd5e1;
-  --fg-tertiary: #a8b3c5;
-  --fg-disabled: #94a3b8;
+  --fg-tertiary: #94a3b8;
+  --fg-disabled: #64748b;
   --fg-inverse: #0f172a;
   --fg-link: #a1a3f7;
   --fg-placeholder: #94a3b8;

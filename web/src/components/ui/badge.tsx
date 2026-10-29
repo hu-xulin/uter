@@ -39,11 +39,11 @@ const badgeVariants = cva(
         secondary:
           'bg-secondary text-secondary-foreground [a]:hover:bg-secondary-hover',
         destructive:
-          'bg-destructive/10 text-destructive focus-visible:ring-destructive/20 dark:bg-destructive/20 dark:focus-visible:ring-destructive/40 [a]:hover:bg-destructive-subtle-hover',
+          'bg-destructive-subtle text-destructive focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 [a]:hover:bg-destructive-subtle-hover',
         // 警告色文字用 soft-foreground 档：`#D97706` 落在 `warning/10` 上只有
         // 2.7:1，12px 徽标文字达不到 AA 4.5:1（规范 §1.1.2 状态文字要求）。
         warning:
-          'border-warning/40 bg-warning/10 text-warning-soft-foreground focus-visible:ring-warning/20',
+          'border-warning/40 bg-warning-soft text-warning-soft-foreground focus-visible:ring-warning/20',
         outline:
           'border-border text-foreground [a]:hover:bg-muted [a]:hover:text-muted-foreground',
         ghost:

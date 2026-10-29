@@ -25,7 +25,7 @@ import { describe, expect, it } from 'vitest'
  * 设计系统 Token 的守卫测试。
  *
  * 文档第十节要求「文档中的字号表由 Token 生成，或通过自动化检查确保
- * 一致」。这份测试就是那个检查：它把 `docs/design-system/typography.md`
+ * 一致」。这份测试就是那个检查：它把 `docs/design-system/design-system.md`
  * 里的九档字号表**硬编码**成期望值，再去解析真实的 CSS 文件。
  *
  * 因此任何一次「顺手把 text-sm 改成 15px」都会让测试变红，而不是等

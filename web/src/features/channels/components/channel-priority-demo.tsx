@@ -92,7 +92,7 @@ export function ChannelPriorityDemo(props: {
         className={cn(
           'mb-3 grid gap-1.5 rounded-lg border p-3',
           same
-            ? 'border-primary/30 bg-primary/5'
+            ? 'border-primary/30 bg-primary-subtle'
             : 'border-warning/40 bg-warning-soft'
         )}
       >
@@ -180,7 +180,7 @@ export function ChannelPriorityDemo(props: {
               className={cn(
                 'bg-background absolute top-3 left-3 flex min-w-0 rounded-lg border',
                 layout,
-                peer && 'border-primary bg-primary/5',
+                peer && 'border-primary bg-primary-subtle',
                 target && same && 'border-primary',
                 target && !same && 'border-warning',
                 // 规范 §1.5：拖拽中的元素瞬时离开文档流，用 raised 档投影
@@ -196,7 +196,7 @@ export function ChannelPriorityDemo(props: {
                   className={cn(
                     'pointer-events-none absolute',
                     same
-                      ? 'border-primary/60 bg-primary/10'
+                      ? 'border-primary/60 bg-primary-subtle'
                       : 'border-warning/60 bg-warning-soft',
                     card &&
                       same &&

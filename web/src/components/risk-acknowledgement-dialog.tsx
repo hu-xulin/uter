@@ -232,7 +232,7 @@ export function RiskAcknowledgementDialog({
           ) : null}
 
           {requiredTextToDisplay ? (
-            <div className='border-destructive/30 bg-destructive/5 space-y-3 rounded-lg border p-3 sm:p-4'>
+            <div className='border-destructive/30 bg-destructive-subtle space-y-3 rounded-lg border p-3 sm:p-4'>
               <Label className='text-sm font-medium'>
                 {inputPrompt ?? t('Please type the following text to confirm:')}
               </Label>

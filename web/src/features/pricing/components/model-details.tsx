@@ -744,7 +744,7 @@ function PriceSection(props: {
       return (
         <section>
           <SectionTitle>{t('Base Price')}</SectionTitle>
-          <div className='border-warning-soft/70 bg-warning-soft/70 dark:border-warning/20 dark:bg-warning/10 rounded-lg border p-3'>
+          <div className='border-warning-soft/70 bg-warning-soft/70 dark:border-warning/20 rounded-lg border p-3'>
             <div className='text-warning dark:text-warning-soft-foreground text-sm font-medium'>
               {t('Special billing expression')}
             </div>
@@ -1163,7 +1163,7 @@ function ProviderGroupPricingSection(
             <SectionTitle>{t('Pricing by Group')}</SectionTitle>
           )}
           <AutoGroupChain model={props.model} autoGroups={props.autoGroups} />
-          <div className='border-warning-soft/70 bg-warning-soft/70 dark:border-warning/20 dark:bg-warning/10 rounded-lg border p-3'>
+          <div className='border-warning-soft/70 bg-warning-soft/70 dark:border-warning/20 rounded-lg border p-3'>
             <div className='text-warning dark:text-warning-soft-foreground text-sm font-medium'>
               {t('Special billing expression')}
             </div>

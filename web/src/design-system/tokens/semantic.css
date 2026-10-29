@@ -53,7 +53,7 @@ For commercial licensing, please contact support@uter.ai
   --ds-text-label: var(--text-sm);
   --ds-text-caption: var(--text-xs);
   --ds-text-mono: var(--text-mono);
-  /* 等宽派生档：只在等宽场景出现，见 docs/design-system/typography.md */
+  /* 等宽派生档：只在等宽场景出现，见 docs/design-system/design-system.md */
   --ds-text-mono-code: var(--text-mono-code);
   --ds-text-mono-title: var(--text-mono-title);
 

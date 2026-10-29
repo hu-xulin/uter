@@ -111,7 +111,7 @@ function AdminSystemUpdateAction(props: SystemUpdateActionProps) {
         {update.shouldNotify && (
           <Badge
             variant='secondary'
-            className='bg-primary/10 text-primary hidden h-5 px-1.5 text-xs @min-[22rem]/system-brand:inline-flex'
+            className='bg-primary-subtle text-primary hidden h-5 px-1.5 text-xs @min-[22rem]/system-brand:inline-flex'
           >
             {t('Update available')}
           </Badge>
@@ -144,7 +144,7 @@ function AdminSystemUpdateAction(props: SystemUpdateActionProps) {
               'px-0 lg:w-auto lg:gap-1.5 lg:px-2.5',
             !versionPresentation &&
               update.shouldNotify &&
-              'border-primary/40 bg-primary/10 text-primary'
+              'border-primary/40 bg-primary-subtle text-primary'
           )}
         >
           {triggerContent}

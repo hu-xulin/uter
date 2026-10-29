@@ -316,7 +316,7 @@ export function CheckinCalendarCard({
                     {t('Daily Check-in')}
                   </h3>
                   {checkedToday && (
-                    <div className='bg-success/10 text-success dark:text-success inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-xs font-medium sm:gap-1.5 sm:px-2.5 sm:text-xs'>
+                    <div className='bg-success-soft text-success dark:text-success inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-xs font-medium sm:gap-1.5 sm:px-2.5 sm:text-xs'>
                       <Sparkles className='size-3' />
                       {t('Checked in')}
                     </div>

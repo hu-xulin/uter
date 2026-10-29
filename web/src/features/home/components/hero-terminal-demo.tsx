@@ -23,10 +23,14 @@ import { cn } from '@/lib/utils'
 /**
  * 演示卡片的强调色。
  *
- * 按上游 new-api 的配色保持一致：四个 demo 各自的 tone（emerald / amber /
- * blue / violet）用于 Tab 激活态、方法徽标与响应占位符高亮；代码区的语法
- * token（curl 命令、flag、JSON key、字符串、数字）也沿用上游的字号颜色，
- * 不走单色品牌系 —— 用户明确要求该卡片的字体颜色与上游保持一致。
+ * 这个文件的配色锚定上游 new-api 首屏代码卡的**渲染效果**，颜色不许手调：
+ * 四个 demo 的 tone（emerald / amber / blue / violet）用于 Tab 激活态与方法
+ * 徽标，代码区按语法角色（命令 / 开关 / 键名 / 字符串 / 数字）着色。
+ *
+ * 2026-10-30 之前这里是一水的调色板类名（`text-emerald-600 dark:text-emerald-400`
+ * 之类），门禁只能把它整文件登记成例外。**那不是例外，是规范缺了 token** ——
+ * 现在全部收进 `term-*` 语义 Token（规范 §11.5）：效果没变，写法换成了不可手
+ * 滑的形式，换主题预设也不会漂移。
  */
 type AccentTone = 'emerald' | 'amber' | 'blue' | 'violet'
 
@@ -44,7 +48,7 @@ interface ApiDemoConfig {
   accent: AccentTone
 }
 
-/** 与上游 new-api 一致：tone 颜色区分 demo，代码区按语法角色着色。 */
+/** 四个 demo 各一个 tone：Tab 激活文字 / 激活描边 / 方法徽标三处共用同一组 Token。 */
 const ACCENT_CLASSES: Record<
   AccentTone,
   {
@@ -54,28 +58,24 @@ const ACCENT_CLASSES: Record<
   }
 > = {
   emerald: {
-    activeText: 'text-emerald-600 dark:text-emerald-400',
-    activeBorder: 'border-emerald-500 dark:border-emerald-400',
-    badge:
-      'bg-emerald-500/10 text-emerald-600 dark:bg-emerald-400/10 dark:text-emerald-400',
+    activeText: 'text-term-accent-emerald',
+    activeBorder: 'border-term-accent-emerald-line',
+    badge: 'bg-term-accent-emerald-soft text-term-accent-emerald',
   },
   amber: {
-    activeText: 'text-amber-600 dark:text-amber-400',
-    activeBorder: 'border-amber-500 dark:border-amber-400',
-    badge:
-      'bg-amber-500/10 text-amber-600 dark:bg-amber-400/10 dark:text-amber-400',
+    activeText: 'text-term-accent-amber',
+    activeBorder: 'border-term-accent-amber-line',
+    badge: 'bg-term-accent-amber-soft text-term-accent-amber',
   },
   blue: {
-    activeText: 'text-blue-600 dark:text-blue-400',
-    activeBorder: 'border-blue-500 dark:border-blue-400',
-    badge:
-      'bg-blue-500/10 text-blue-600 dark:bg-blue-400/10 dark:text-blue-400',
+    activeText: 'text-term-accent-blue',
+    activeBorder: 'border-term-accent-blue-line',
+    badge: 'bg-term-accent-blue-soft text-term-accent-blue',
   },
   violet: {
-    activeText: 'text-violet-600 dark:text-violet-400',
-    activeBorder: 'border-violet-500 dark:border-violet-400',
-    badge:
-      'bg-violet-500/10 text-violet-600 dark:bg-violet-400/10 dark:text-violet-400',
+    activeText: 'text-term-accent-violet',
+    activeBorder: 'border-term-accent-violet-line',
+    badge: 'bg-term-accent-violet-soft text-term-accent-violet',
   },
 }
 
@@ -245,7 +245,7 @@ export function HeroTerminalDemo(props: HeroTerminalDemoProps) {
                   'relative -mb-px flex items-center gap-1.5 border-b-2 px-2.5 py-2.5 text-sm font-medium transition-colors sm:px-3',
                   isActive
                     ? `${tone.activeBorder} ${tone.activeText}`
-                    : 'text-foreground/40 hover:text-foreground/70 border-transparent'
+                    : 'text-term-dim-3 hover:text-term-dim-1 border-transparent'
                 )}
               >
                 {item.label}
@@ -254,8 +254,8 @@ export function HeroTerminalDemo(props: HeroTerminalDemoProps) {
           })}
           <div className='ml-auto flex items-center gap-2 pr-2 sm:pr-3'>
             {/* 在线指示点：辉光是状态语义（亮着 = 在线），不是层级投影 */}
-            <span className='bg-emerald-500 inline-block size-1.5 rounded-full shadow-[0_0_8px_rgba(16,185,129,0.45)]' />
-            <span className='text-foreground/40 text-mono-code font-mono uppercase'>
+            <span className='bg-term-online inline-block size-1.5 rounded-full shadow-(--ds-glow-online)' />
+            <span className='text-term-dim-3 text-mono-code font-mono uppercase'>
               200 ok
             </span>
           </div>
@@ -278,7 +278,7 @@ export function HeroTerminalDemo(props: HeroTerminalDemoProps) {
           </span>
           <code
             className={cn(
-              'text-foreground/75 truncate font-mono text-mono-code transition-opacity ds-motion-marketing-fast',
+              'text-term-dim-1 truncate font-mono text-mono-code transition-opacity ds-motion-marketing-fast',
               transitioning ? 'opacity-0' : 'opacity-100'
             )}
           >
@@ -302,17 +302,17 @@ export function HeroTerminalDemo(props: HeroTerminalDemoProps) {
             'border-border bg-muted/30'
           )}
         >
-          <div className='text-foreground/40 flex items-center gap-3 text-xs tabular-nums'>
+          <div className='text-term-dim-3 flex items-center gap-3 text-xs tabular-nums'>
             <span className='flex items-center gap-1'>
               <span className='text-mono-code font-mono'>{demo.latency}</span>
               <span className='uppercase'>ms</span>
             </span>
-            <span className='bg-foreground/15 size-1 rounded-full' />
+            <span className='bg-term-dot size-1 rounded-full' />
             <span className='flex items-center gap-1'>
               <span className='text-mono-code font-mono'>{demo.tokens}</span>
               <span className='uppercase'>tokens</span>
             </span>
-            <span className='bg-foreground/15 size-1 rounded-full' />
+            <span className='bg-term-dot size-1 rounded-full' />
             <span className='flex items-center gap-1'>
               <span className='uppercase'>cost</span>
               <span className='text-mono-code font-mono'>
@@ -320,7 +320,7 @@ export function HeroTerminalDemo(props: HeroTerminalDemoProps) {
               </span>
             </span>
           </div>
-          <span className='text-foreground/30 text-mono-code font-mono uppercase'>
+          <span className='text-term-dim-4 text-mono-code font-mono uppercase'>
             stream · sse
           </span>
         </div>
@@ -392,7 +392,7 @@ function ResponseBlock(props: { demo: ApiDemoConfig; transitioning: boolean }) {
 
 function SectionLabel(props: { children: ReactNode }) {
   return (
-    <span className='text-foreground/30 font-sans text-xs font-semibold uppercase'>
+    <span className='text-term-dim-4 font-sans text-xs font-semibold uppercase'>
       {props.children}
     </span>
   )
@@ -514,7 +514,7 @@ function CodeLine(props: { children: ReactNode; indent?: number }) {
 
 function Command(props: { children: ReactNode }) {
   return (
-    <span className='font-medium text-emerald-600 dark:text-emerald-400'>
+    <span className='font-medium text-term-command'>
       {props.children}
     </span>
   )
@@ -522,19 +522,19 @@ function Command(props: { children: ReactNode }) {
 
 function Flag(props: { children: ReactNode }) {
   return (
-    <span className='text-blue-600 dark:text-blue-400'>{props.children}</span>
+    <span className='text-term-flag'>{props.children}</span>
   )
 }
 
 function Key(props: { children: ReactNode }) {
   return (
-    <span className='text-sky-700 dark:text-sky-300'>{props.children}</span>
+    <span className='text-term-property'>{props.children}</span>
   )
 }
 
 function StringText(props: { children: ReactNode }) {
   return (
-    <span className='text-amber-700 dark:text-amber-300'>
+    <span className='text-term-string'>
       {props.children}
     </span>
   )
@@ -542,14 +542,14 @@ function StringText(props: { children: ReactNode }) {
 
 function NumberText(props: { children: ReactNode }) {
   return (
-    <span className='font-medium text-violet-600 dark:text-violet-300'>
+    <span className='font-medium text-term-number'>
       {props.children}
     </span>
   )
 }
 
 function Muted(props: { children: ReactNode }) {
-  return <span className='text-foreground/55'>{props.children}</span>
+  return <span className='text-term-dim-2'>{props.children}</span>
 }
 
 function Accent(props: { children: ReactNode; accent: AccentTone }) {

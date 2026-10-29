@@ -195,3 +195,25 @@ For commercial licensing, please contact support@uter.ai
 .ds-heading--display-multiline {
   line-height: var(--ds-line-display-multiline);
 }
+
+/* ── 品牌渐变文字 ─────────────────────────────────────────────────────
+ * 首屏主标题的渐变行与 CTA 副标题共用一套停靠站（`--ds-color-brand-gradient-*`，
+ * 见规范 §11.5）。收成一个工具类而不是让调用方拼 5 个 Tailwind 类，原因有三：
+ *   1. `bg-clip-text` + `text-transparent` 是一组**必须同时存在**的写法，
+ *      漏掉后者会渲染成看不见的字；
+ *   2. 以前调用方直接写 `from-blue-400 via-violet-400 to-purple-500`，
+ *      那是调色板类名，既绕过了 Token，也让 gradient 与 brand 色阶脱钩；
+ *   3. 只有一个出口，改渐变时不必满仓库找引用。
+ * 注意 `@utility`（不是 `@layer utilities`）：只有前者会被 Tailwind 的变体
+ * 系统识别，`hover:ds-text-gradient-brand` 这类写法才生成选择器。 */
+@utility ds-text-gradient-brand {
+  background-image: linear-gradient(
+    to right,
+    var(--ds-color-brand-gradient-from),
+    var(--ds-color-brand-gradient-via),
+    var(--ds-color-brand-gradient-to)
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}

@@ -196,7 +196,7 @@ export function CnPayWebDialog({
   function renderCashier() {
     if (error) {
       return (
-        <div className='border-destructive/40 bg-destructive/5 flex w-full flex-col items-center gap-2 rounded-lg border p-4 text-center'>
+        <div className='border-destructive/40 bg-destructive-subtle flex w-full flex-col items-center gap-2 rounded-lg border p-4 text-center'>
           <XCircle className='text-destructive size-8' />
           <p className='text-destructive text-sm'>{error}</p>
         </div>
