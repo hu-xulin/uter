@@ -10,6 +10,7 @@ import (
 	"github.com/uter-ai/uter/relaykit/dto"
 	"github.com/uter-ai/uter/relaykit/relayconvert/convmeta"
 	"github.com/uter-ai/uter/relaykit/relayconvert/internal/convdiag"
+	relaymedia "github.com/uter-ai/uter/relaykit/relayconvert/internal/media"
 	kitutil "github.com/uter-ai/uter/relaykit/relayconvert/kitutil"
 	"github.com/uter-ai/uter/relaykit/relayconvert/reasoning"
 )
@@ -177,6 +178,7 @@ func claudeMessagesToResponsesInput(messages []dto.ClaudeMessage) (json.RawMessa
 					contentParts = append(contentParts, map[string]any{
 						"type":      "input_image",
 						"image_url": source,
+						"detail":    relaymedia.DefaultResponsesImageDetail,
 					})
 				}
 			case "document":
@@ -298,7 +300,11 @@ func claudeToolResultToResponsesOutput(content any) (any, error) {
 			parts = append(parts, map[string]any{"type": "input_text", "text": block.GetText()})
 		case "image":
 			if source := claudeSourceURL(block.Source); source != "" {
-				parts = append(parts, map[string]any{"type": "input_image", "image_url": source})
+				parts = append(parts, map[string]any{
+					"type":      "input_image",
+					"image_url": source,
+					"detail":    relaymedia.DefaultResponsesImageDetail,
+				})
 			}
 		case "document":
 			if source := claudeSourceURL(block.Source); source != "" {

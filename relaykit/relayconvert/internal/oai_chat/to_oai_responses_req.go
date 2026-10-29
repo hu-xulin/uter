@@ -10,6 +10,7 @@ import (
 	"github.com/samber/lo"
 	"github.com/uter-ai/uter/relaykit/dto"
 	"github.com/uter-ai/uter/relaykit/relayconvert/internal/convdiag"
+	relaymedia "github.com/uter-ai/uter/relaykit/relayconvert/internal/media"
 	kitutil "github.com/uter-ai/uter/relaykit/relayconvert/kitutil"
 	"github.com/uter-ai/uter/relaykit/relayconvert/reasoning"
 )
@@ -227,9 +228,14 @@ func ChatCompletionsRequestToResponsesRequest(ctx context.Context, req *dto.Gene
 					"text": part.Text,
 				})
 			case dto.ContentTypeImageURL:
+				var sourceDetail string
+				if img := part.GetImageMedia(); img != nil {
+					sourceDetail = img.Detail
+				}
 				contentParts = append(contentParts, map[string]any{
 					"type":      "input_image",
 					"image_url": normalizeChatImageURLToString(part.ImageUrl),
+					"detail":    relaymedia.ResponsesImageDetail(sourceDetail),
 				})
 			case dto.ContentTypeInputAudio:
 				contentParts = append(contentParts, map[string]any{
