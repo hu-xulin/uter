@@ -175,7 +175,7 @@ function RadioGroupItem(props: {
       <div
         className={cn(
           'ring-border relative rounded-md ring-[1px]',
-          'group-data-checked:ring-primary group-data-checked:shadow-lg',
+          'group-data-checked:ring-primary',
           'group-focus-visible:ring-1'
         )}
         role='img'
