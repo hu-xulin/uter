@@ -118,6 +118,14 @@ const ALLOWLIST = [
       '全部改走语义 Token（success/info/warning 等）会因主题预设漂移而与上游渲染' +
       '不一致，无法用 Token 表达，故整体登记为受保护特例。',
   },
+  {
+    rules: ['T7'],
+    match: /^features\/home\/components\/sections\/cta\.tsx$/,
+    reason:
+      '首屏 CTA 副标题「your AI integration?」须与上游 new-api 逐类一致' +
+      '（from-blue-400 via-violet-400 to-purple-500），与 hero.tsx 的 E25 同一套上游渐变。' +
+      '品牌 primary-* Token 与 chart-* 都会随主题预设漂移，无法保证与上游渲染一致，故登记 T7 例外。',
+  },
 ]
 
 const RULES = {
