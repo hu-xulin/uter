@@ -265,9 +265,14 @@ export async function wechatWebLoginByCode(
 }
 
 // Start a CSRF-bound WeChat website-app login flow and return its state token.
-export async function startWeChatWebFlow(): Promise<string> {
+// `origin` is the browser origin where login was started: the provider redirects
+// to the registered (ICP-filed) callback domain, and the callback page hops back
+// to this origin so the session cookie lands on the main-site domain. The
+// backend validates the origin against a whitelist before storing it.
+export async function startWeChatWebFlow(origin: string): Promise<string> {
   const res = await api.post('/api/oauth/wechat-web/state', {
     intent: 'login',
+    origin,
   })
   if (res.data?.success && typeof res.data.data?.flow_token === 'string') {
     return res.data.data.flow_token
@@ -278,6 +283,23 @@ export async function startWeChatWebFlow(): Promise<string> {
       'Failed to start WeChat website-app login',
     res.data?.code
   )
+}
+
+// Read (without consuming) the origin a WeChat website-app login was started
+// from, so the callback page on the callback domain can hop back to the
+// main-site domain before performing the login there.
+export async function getWeChatWebFlowOrigin(
+  state: string
+): Promise<string | null> {
+  const res = await api.get('/api/oauth/wechat-web/origin', {
+    params: { state },
+    skipBusinessError: true,
+    skipErrorHandler: true,
+  })
+  if (res.data?.success && typeof res.data.data?.origin === 'string') {
+    return res.data.data.origin || null
+  }
+  return null
 }
 
 export async function telegramLogin(

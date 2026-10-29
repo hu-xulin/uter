@@ -68,6 +68,7 @@ func SetApiRouter(router *gin.Engine) {
 		apiRouter.POST("/oauth/wechat/bind", middleware.UserAuth(), middleware.CriticalRateLimit(), controller.WeChatBind)
 		// WeChat Open Platform website app (PC QR-code scan login).
 		apiRouter.POST("/oauth/wechat-web/state", middleware.CriticalRateLimit(), middleware.DisableCache(), middleware.TryUserAuth(), anonymousRequestBodyLimit, controller.GenerateWeChatWebCode)
+		apiRouter.GET("/oauth/wechat-web/origin", middleware.CriticalRateLimit(), middleware.DisableCache(), controller.GetWeChatWebFlowOrigin)
 		apiRouter.GET("/oauth/wechat-web", middleware.CriticalRateLimit(), middleware.DisableCache(), controller.WeChatWebAuth)
 		apiRouter.GET("/oauth/telegram/login", middleware.CriticalRateLimit(), middleware.DisableCache(), controller.TelegramLegacyAuth)
 		apiRouter.POST("/oauth/telegram/bind/start", middleware.UserAuth(), middleware.CriticalRateLimit(), middleware.DisableCache(), controller.TelegramLegacyAuth)
