@@ -36,7 +36,7 @@ export function SignIn() {
       <div className='w-full space-y-8'>
         <div className='space-y-2'>
           <Heading
-            variant='section-title'
+            variant='page-title'
             level={1}
             className='text-center sm:text-left'
           >

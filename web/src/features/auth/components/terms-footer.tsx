@@ -68,13 +68,13 @@ export function TermsFooter({
     <p className={cn('text-muted-foreground text-center text-sm', className)}>
       {text}{' '}
       {hasUserAgreement && (
-        <Link to='/user-agreement' className='hover:text-primary'>
+        <Link to='/user-agreement' className='text-primary font-medium'>
           {t('User Agreement')}
         </Link>
       )}
       {hasUserAgreement && hasPrivacyPolicy && <> {t('and')} </>}
       {hasPrivacyPolicy && (
-        <Link to='/privacy-policy' className='hover:text-primary'>
+        <Link to='/privacy-policy' className='text-primary font-medium'>
           {t('Privacy Policy')}
         </Link>
       )}

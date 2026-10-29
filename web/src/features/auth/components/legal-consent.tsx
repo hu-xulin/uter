@@ -90,7 +90,7 @@ export function LegalConsent({
               to='/user-agreement'
               target='_blank'
               rel='noopener noreferrer'
-              className='text-primary'
+              className='text-primary font-medium'
             >
               {t('User Agreement')}
             </Link>
@@ -101,7 +101,7 @@ export function LegalConsent({
               to='/privacy-policy'
               target='_blank'
               rel='noopener noreferrer'
-              className='text-primary'
+              className='text-primary font-medium'
             >
               {t('Privacy Policy')}
             </Link>

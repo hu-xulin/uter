@@ -59,7 +59,11 @@ export function CTA(props: CTAProps) {
           className='flex flex-col items-center gap-3'
         >
           <span>{t('Ready to simplify')}</span>
-          <span className='from-primary via-primary-hover to-primary-active bg-gradient-to-r bg-clip-text text-transparent'>
+          {/* 首屏 CTA 唯一的多色渐变，须与上游 new-api 逐类一致：
+              `from-blue-400 via-violet-400 to-purple-500`（蓝 → 紫 → 洋红）。
+              不走品牌 `primary-*` Token，也不走 `chart-*`：品牌色会随主题预设漂移，
+              且与上游渲染必须完全一致。已登记 ALLOWLIST（见 exceptions.md E27）。 */}
+          <span className='from-blue-400 via-violet-400 to-purple-500 bg-gradient-to-r bg-clip-text text-transparent'>
             {t('your AI integration?')}
           </span>
         </Heading>
