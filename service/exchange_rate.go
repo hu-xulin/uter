@@ -25,7 +25,7 @@ import (
 // 计价链路只有一条，全部由这里维护：
 //
 //	A = USDExchangeRate   外部行情（USD→CNY），每 10 分钟刷新一次
-//	B = Price             A + PriceAdjustmentRate（当前 −0.2），随 A 重算
+//	B = Price             A + PriceAdjustmentRate（当前 +0.2），随 A 重算
 //	C                     = B，钱包展示与下单实扣都取 B
 //
 // A 与 B 都会落库（后台设置页可见、重启后不丢），同时经 model.UpdateOption

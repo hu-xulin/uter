@@ -1159,7 +1159,7 @@ export function PaymentSettingsSection({
                         <FormDescription>
                           {t(
                             'Charged for each 1 USD of balance. Derived automatically as the exchange rate {{adjustment}} and refreshed every 10 minutes, so this field is read-only. Applies to every payment method that settles in CNY (Alipay, WeChat Pay, Epay).',
-                            { adjustment: formatPriceAdjustment(-0.2) }
+                            { adjustment: formatPriceAdjustment(0.2) }
                           )}
                         </FormDescription>
                         <FormMessage />
