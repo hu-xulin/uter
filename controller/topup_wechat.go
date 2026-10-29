@@ -448,6 +448,49 @@ const (
 	WechatReconcileCreditFailed WechatReconcileStatus = "credit_failed"
 )
 
+func QueryWechatOrder(c *gin.Context) {
+	var req WechatQueryRequest
+	if err := c.ShouldBindJSON(&req); err != nil || strings.TrimSpace(req.TradeNo) == "" {
+		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "参数错误"})
+		return
+	}
+	if !isWechatPayTopUpEnabled() {
+		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "当前未启用微信支付"})
+		return
+	}
+	id := c.GetInt("id")
+	topUp := model.GetTopUpByTradeNo(strings.TrimSpace(req.TradeNo))
+	// 归属校验：只能查询自己的微信订单，且 provider 必须是微信支付。
+	if topUp == nil || topUp.UserId != id || topUp.PaymentProvider != model.PaymentProviderWechatPay {
+		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "订单不存在"})
+		return
+	}
+	if topUp.Status == common.TopUpStatusSuccess {
+		c.JSON(http.StatusOK, gin.H{"message": "success", "data": gin.H{"status": "success"}})
+		return
+	}
+
+	result, err := service.WechatQueryOrder(c.Request.Context(), topUp.TradeNo)
+	if err != nil {
+		logger.LogWarn(c.Request.Context(), fmt.Sprintf("微信主动查单失败 trade_no=%s user_id=%d error=%q", topUp.TradeNo, id, err.Error()))
+		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "查询订单失败"})
+		return
+	}
+	status := applyWechatQueryResult(c.Request.Context(), topUp, result, c.ClientIP())
+	switch status {
+	case WechatReconcileSuccess:
+		c.JSON(http.StatusOK, gin.H{"message": "success", "data": gin.H{"status": "success"}})
+	case WechatReconcileAmountMismatch:
+		c.JSON(http.StatusOK, gin.H{"message": "error", "data": gin.H{"status": "amount_mismatch"}})
+	case WechatReconcileCreditFailed:
+		c.JSON(http.StatusOK, gin.H{"message": "error", "data": gin.H{"status": "credit_failed"}})
+	default:
+		// pending / unpaid / closed 都是「查询成功，结论是还没付清或已终态」，
+		// 用 message=success 下发，让前端按 data.status 决定是继续等还是提示用户。
+		c.JSON(http.StatusOK, gin.H{"message": "success", "data": gin.H{"status": string(status)}})
+	}
+}
+
 // applyWechatQueryResult 用一次查单结果推进本地订单。
 //
 // 幂等由 model.RechargeWechatPay 的状态 CAS 保证：重复调用只会命中「已入账」，
@@ -525,45 +568,3 @@ type WechatQueryRequest struct {
 //   - pending 微信侧交易存在但尚未付清（NOTPAY / USERPAYING），值得继续等
 //   - unpaid  微信侧查无此交易，用户从未进入付款流程（终态）
 //   - closed  微信侧交易已关闭（终态），本地订单同时置为过期
-func QueryWechatOrder(c *gin.Context) {
-	var req WechatQueryRequest
-	if err := c.ShouldBindJSON(&req); err != nil || strings.TrimSpace(req.TradeNo) == "" {
-		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "参数错误"})
-		return
-	}
-	if !isWechatPayTopUpEnabled() {
-		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "当前未启用微信支付"})
-		return
-	}
-	id := c.GetInt("id")
-	topUp := model.GetTopUpByTradeNo(strings.TrimSpace(req.TradeNo))
-	// 归属校验：只能查询自己的微信订单，且 provider 必须是微信支付。
-	if topUp == nil || topUp.UserId != id || topUp.PaymentProvider != model.PaymentProviderWechatPay {
-		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "订单不存在"})
-		return
-	}
-	if topUp.Status == common.TopUpStatusSuccess {
-		c.JSON(http.StatusOK, gin.H{"message": "success", "data": gin.H{"status": "success"}})
-		return
-	}
-
-	result, err := service.WechatQueryOrder(c.Request.Context(), topUp.TradeNo)
-	if err != nil {
-		logger.LogWarn(c.Request.Context(), fmt.Sprintf("微信主动查单失败 trade_no=%s user_id=%d error=%q", topUp.TradeNo, id, err.Error()))
-		c.JSON(http.StatusOK, gin.H{"message": "error", "data": "查询订单失败"})
-		return
-	}
-	status := applyWechatQueryResult(c.Request.Context(), topUp, result, c.ClientIP())
-	switch status {
-	case WechatReconcileSuccess:
-		c.JSON(http.StatusOK, gin.H{"message": "success", "data": gin.H{"status": "success"}})
-	case WechatReconcileAmountMismatch:
-		c.JSON(http.StatusOK, gin.H{"message": "error", "data": gin.H{"status": "amount_mismatch"}})
-	case WechatReconcileCreditFailed:
-		c.JSON(http.StatusOK, gin.H{"message": "error", "data": gin.H{"status": "credit_failed"}})
-	default:
-		// pending / unpaid / closed 都是「查询成功，结论是还没付清或已终态」，
-		// 用 message=success 下发，让前端按 data.status 决定是继续等还是提示用户。
-		c.JSON(http.StatusOK, gin.H{"message": "success", "data": gin.H{"status": string(status)}})
-	}
-}
