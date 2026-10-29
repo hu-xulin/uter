@@ -339,13 +339,14 @@ func (d InputTokenDetails) Clone() InputTokenDetails {
 }
 
 // CacheCreationTokensTotal returns the cache-write token count regardless of
-// which field the upstream reported it in: Claude-derived conversions populate
-// CachedCreationTokens while OpenAI reports cache_write_tokens natively. Both
-// are billed at the cache-creation price; when both are present the larger
-// value wins so the same tokens are never double-counted. Negative upstream
-// values are clamped to zero so they can never lower a charge.
+// which field the upstream reported it in. Claude-derived conversions populate
+// CachedCreationTokens, OpenAI reports cache_write_tokens, and OpenAI-compatible
+// explicit cache reports cache_creation_input_tokens. All are billed at the
+// cache-creation price. When more than one is present the larger value wins so
+// the same tokens are never double-counted. Negative upstream values are
+// clamped to zero so they can never lower a charge.
 func (d InputTokenDetails) CacheCreationTokensTotal() int {
-	total := max(d.CacheWriteTokens, d.CachedCreationTokens)
+	total := max(d.CacheWriteTokens, d.CachedCreationTokens, d.CacheCreationInputTokens)
 	if total < 0 {
 		return 0
 	}
