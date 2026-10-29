@@ -37,8 +37,6 @@ type OAuthProvidersProps = {
   status: SystemStatus | null
   disabled?: boolean
   className?: string
-  onWeChatLogin?: () => void
-  isWeChatLoading?: boolean
   redirectTo?: string
 }
 
@@ -64,8 +62,6 @@ export function OAuthProviders({
   status,
   disabled = false,
   className,
-  onWeChatLogin,
-  isWeChatLoading = false,
   redirectTo,
 }: OAuthProvidersProps) {
   const { t } = useTranslation()
@@ -83,17 +79,6 @@ export function OAuthProviders({
   } = useOAuthLogin(status, redirectTo)
 
   const providerButtons: ProviderButton[] = []
-
-  if (status?.wechat_login && onWeChatLogin) {
-    providerButtons.push({
-      key: 'wechat',
-      label: t('Continue with WeChat'),
-      onClick: onWeChatLogin,
-      icon: <IconWeChat className='h-4 w-4' />,
-      disabled: isWeChatLoading,
-      brandColor: OAUTH_BRAND_COLORS.wechat,
-    })
-  }
 
   if (status?.wechat_web_login) {
     providerButtons.push({

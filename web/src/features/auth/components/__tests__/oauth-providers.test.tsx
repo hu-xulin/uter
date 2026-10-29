@@ -34,6 +34,7 @@ vi.mock('@/features/auth/hooks/use-oauth-login', () => ({
     handleOIDCLogin: vi.fn(),
     handleLinuxDOLogin: vi.fn(),
     handleTelegramLogin: vi.fn(),
+    handleWeChatWebLogin: vi.fn(),
     handleCustomOAuthLogin: vi.fn(),
   }),
 }))
@@ -41,7 +42,7 @@ vi.mock('@/features/auth/hooks/use-oauth-login', () => ({
 afterEach(cleanup)
 
 const allProviders = {
-  wechat_login: true,
+  wechat_web_login: true,
   github_oauth: true,
   discord_oauth: true,
   oidc_enabled: true,
@@ -52,13 +53,7 @@ const allProviders = {
 } as unknown as SystemStatus
 
 function renderProviders(status: SystemStatus = allProviders) {
-  render(
-    <OAuthProviders
-      status={status}
-      onWeChatLogin={() => {}}
-      redirectTo='/wallet'
-    />
-  )
+  render(<OAuthProviders status={status} redirectTo='/wallet' />)
 }
 
 /**
@@ -74,9 +69,9 @@ function hoverBg(button: HTMLElement): string {
   return button.style.getPropertyValue('--oauth-hover-bg')
 }
 
-// 渲染顺序：wechat → github → discord → oidc → linuxdo → telegram → custom
+// 渲染顺序：wechat_web → github → discord → oidc → linuxdo → telegram → custom
 const ORDER = [
-  'wechat',
+  'wechat_web',
   'github',
   'discord',
   'oidc',
@@ -92,7 +87,7 @@ describe('OAuthProviders hover 品牌色', () => {
     expect(buttons).toHaveLength(ORDER.length)
 
     const expected: Record<string, string> = {
-      wechat: OAUTH_BRAND_COLORS.wechat,
+      wechat_web: OAUTH_BRAND_COLORS.wechat,
       github: OAUTH_BRAND_COLORS.github,
       discord: OAUTH_BRAND_COLORS.discord,
       linuxdo: OAUTH_BRAND_COLORS.linuxdo,
@@ -125,7 +120,7 @@ describe('OAuthProviders hover 品牌色', () => {
 
   it('深色模式也要覆盖 outline 变体自带的 dark:hover 底色', () => {
     renderProviders()
-    const wechat = buttonsInOrder()[ORDER.indexOf('wechat')]
+    const wechat = buttonsInOrder()[ORDER.indexOf('wechat_web')]
     expect(wechat.className).toContain('dark:hover:bg-(--oauth-hover-bg)')
     expect(wechat.className).toContain('dark:hover:text-white')
     expect(wechat.className).toContain('dark:hover:[&_svg]:text-white')
@@ -139,19 +134,13 @@ describe('OAuthProviders hover 品牌色', () => {
       'hover:[&_svg_path]:fill-white'
     )
     // 其余渠道的图标走 currentColor，不需要也不该强改 fill
-    expect(buttons[ORDER.indexOf('wechat')].className).not.toContain(
+    expect(buttons[ORDER.indexOf('wechat_web')].className).not.toContain(
       'fill-white'
     )
   })
 
   it('整体禁用时所有渠道按钮都不可点', () => {
-    render(
-      <OAuthProviders
-        status={allProviders}
-        disabled
-        onWeChatLogin={() => {}}
-      />
-    )
+    render(<OAuthProviders status={allProviders} disabled />)
     const buttons = buttonsInOrder()
     expect(buttons).toHaveLength(ORDER.length)
     for (const button of buttons) {
@@ -161,7 +150,7 @@ describe('OAuthProviders hover 品牌色', () => {
 
   it('只开启微信时只渲染一个按钮（回归：品牌色映射不能影响可见渠道）', () => {
     renderProviders({
-      wechat_login: true,
+      wechat_web_login: true,
     } as unknown as SystemStatus)
     const buttons = buttonsInOrder()
     expect(buttons).toHaveLength(1)

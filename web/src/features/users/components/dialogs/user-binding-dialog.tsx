@@ -20,7 +20,6 @@ import { useQuery } from '@tanstack/react-query'
 import {
   Mail,
   Globe,
-  MessageCircle,
   Send,
   Link2,
   Unlink,
@@ -83,7 +82,6 @@ interface StatusInfo {
   github_oauth?: boolean
   discord_oauth?: boolean
   oidc_enabled?: boolean
-  wechat_login?: boolean
   telegram_oauth?: boolean
   linuxdo_oauth?: boolean
   custom_oauth_providers?: Array<{
@@ -120,13 +118,6 @@ const BUILTIN_BINDINGS: ReadonlyArray<{
     label: 'Discord',
     icon: <IconDiscord className='h-4 w-4' />,
     statusKey: 'discord_oauth',
-  },
-  {
-    key: 'wechat',
-    field: 'wechat_id',
-    label: 'WeChat',
-    icon: <MessageCircle className='h-4 w-4' />,
-    statusKey: 'wechat_login',
   },
   {
     key: 'oidc',

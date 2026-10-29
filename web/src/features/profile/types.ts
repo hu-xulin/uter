@@ -88,8 +88,6 @@ export interface UserProfile {
   created_time: number
   /** User settings (JSON string) */
   setting?: string
-  /** WeChat ID (OAuth) */
-  wechat_id?: string
   /** GitHub ID (OAuth) */
   github_id?: string
   /** Discord ID (OAuth) */

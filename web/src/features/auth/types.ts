@@ -108,17 +108,9 @@ export interface SystemStatus {
     telegram_oauth_configured?: boolean
     telegram_bot_name?: string
     passkey_login?: boolean
-    wechat_login?: boolean
     wechat_web_login?: boolean
     wechat_web_app_id?: string
     wechat_web_callback_domain?: string
-    wechat_qrcode?: string
-    wechat_qrcode_path?: string
-    wechat_qr_code?: string
-    wechat_qrcode_image_url?: string
-    wechat_qr_code_image_url?: string
-    wechat_account_qrcode_image_url?: string
-    WeChatAccountQRCodeImageURL?: string
     turnstile_check?: boolean
     turnstile_site_key?: string
     email_verification?: boolean
@@ -139,6 +131,7 @@ export interface SystemStatus {
     password_login_enabled?: boolean
     password_login_encryption_enabled?: boolean
     password_register_enabled?: boolean
+    email_code_login?: boolean
     custom_oauth_providers?: CustomOAuthProviderInfo[]
     [key: string]: unknown
   }
@@ -160,17 +153,9 @@ export interface SystemStatus {
   telegram_oauth_configured?: boolean
   telegram_bot_name?: string
   passkey_login?: boolean
-  wechat_login?: boolean
   wechat_web_login?: boolean
   wechat_web_app_id?: string
   wechat_web_callback_domain?: string
-  wechat_qrcode?: string
-  wechat_qrcode_path?: string
-  wechat_qr_code?: string
-  wechat_qrcode_image_url?: string
-  wechat_qr_code_image_url?: string
-  wechat_account_qrcode_image_url?: string
-  WeChatAccountQRCodeImageURL?: string
   turnstile_check?: boolean
   turnstile_site_key?: string
   email_verification?: boolean
@@ -188,6 +173,7 @@ export interface SystemStatus {
   recharge_agreement_enabled?: boolean
   oauth_register_enabled?: boolean
   register_enabled?: boolean
+  email_code_login?: boolean
   password_login_enabled?: boolean
   password_login_encryption_enabled?: boolean
   password_register_enabled?: boolean
@@ -206,7 +192,7 @@ export interface SystemStatus {
 
 export interface OAuthProvider {
   name: string
-  type: 'github' | 'discord' | 'oidc' | 'linuxdo' | 'telegram' | 'wechat' | 'wechat_web'
+  type: 'github' | 'discord' | 'oidc' | 'linuxdo' | 'telegram' | 'wechat_web'
   enabled: boolean
   clientId?: string
   authEndpoint?: string

@@ -193,29 +193,6 @@ export function bindEmail(
   )
 }
 
-/**
- * Bind WeChat account
- */
-export function bindWeChat(
-  code: string,
-  proofToken: string,
-  state: string,
-  signal: AbortSignal
-): Promise<AccountSecurityResult> {
-  return authResult(
-    api.post(
-      '/api/oauth/wechat/bind',
-      { code, state },
-      {
-        ...authRequestOptions,
-        headers: { 'X-Security-Proof': proofToken },
-        singleUseAuthorization: true,
-        signal,
-      }
-    )
-  )
-}
-
 export interface TelegramBindFlow {
   flow_token: string
   callback_url: string

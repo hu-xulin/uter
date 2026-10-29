@@ -110,7 +110,6 @@ const user = {
   email: 'user@example.com',
   github_id: 'github-user',
   discord_id: 'discord-user',
-  wechat_id: 'wechat-user',
   oidc_id: 'oidc-user',
   telegram_id: 'telegram-user',
   linux_do_id: 'linuxdo-user',
@@ -180,7 +179,6 @@ describe('UserBindingDialog built-in bindings', () => {
               data: {
                 github_oauth: true,
                 discord_oauth: true,
-                wechat_login: true,
                 oidc_enabled: true,
                 telegram_oauth: true,
                 linuxdo_oauth: true,
@@ -218,7 +216,6 @@ describe('UserBindingDialog built-in bindings', () => {
       ['Email', 'email'],
       ['GitHub', 'github'],
       ['Discord', 'discord'],
-      ['WeChat', 'wechat'],
       ['OIDC', 'oidc'],
       ['Telegram', 'telegram'],
       ['LinuxDO', 'linuxdo'],

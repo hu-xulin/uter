@@ -53,8 +53,6 @@ export function loginMethodLabel(method: string, t: TFunction): string {
       return t('Two-factor Authentication')
     case 'passkey':
       return t('Passkey')
-    case 'wechat':
-      return t('WeChat')
     case 'telegram':
       return t('Telegram')
     case 'oauth':

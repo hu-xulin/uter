@@ -23,7 +23,6 @@ import { toast } from 'sonner'
 
 import {
   IconGithub,
-  IconWeChat,
   IconLinuxDo,
   IconDiscord,
 } from '@/assets/brand-icons'
@@ -59,7 +58,6 @@ import {
 
 import { useAccountSecurity } from '../hooks/use-account-security'
 import { EmailBindDialog } from './dialogs/email-bind-dialog'
-import { WeChatBindDialog } from './dialogs/wechat-bind-dialog'
 
 // ============================================================================
 // Account Bindings Tab Component
@@ -70,7 +68,7 @@ interface AccountBindingsProps {
   onUpdate: () => void
 }
 
-type DialogKey = 'email' | 'wechat'
+type DialogKey = 'email'
 
 type PreparedOAuthBinding = AccountSecurityResult & {
   provider: string
@@ -238,17 +236,6 @@ export function AccountBindings({ profile, onUpdate }: AccountBindingsProps) {
       isBound: Boolean(profile.email),
       isEnabled: true,
       onBind: () => dialogs.open('email'),
-    },
-    {
-      id: 'wechat',
-      label: t('WeChat'),
-      icon: IconWeChat,
-      value: undefined,
-      isBound: Boolean(
-        (profile as unknown as Record<string, unknown>).wechat_id
-      ),
-      isEnabled: status?.wechat_login || false,
-      onBind: () => dialogs.open('wechat'),
     },
     {
       id: 'github',
@@ -474,18 +461,6 @@ export function AccountBindings({ profile, onUpdate }: AccountBindingsProps) {
           open ? dialogs.open('email') : dialogs.close('email')
         }
         currentEmail={profile.email}
-        onSuccess={onUpdate}
-      />
-
-      {/* WeChat Bind Dialog */}
-      <WeChatBindDialog
-        open={dialogs.isOpen('wechat')}
-        qrCodeUrl={
-          typeof status?.wechat_qrcode === 'string' ? status.wechat_qrcode : ''
-        }
-        onOpenChange={(open) =>
-          open ? dialogs.open('wechat') : dialogs.close('wechat')
-        }
         onSuccess={onUpdate}
       />
     </>

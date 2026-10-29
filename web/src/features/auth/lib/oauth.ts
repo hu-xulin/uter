@@ -97,7 +97,6 @@ export function hasOAuthProviders(status: SystemStatus | null): boolean {
     status.discord_oauth ||
     status.oidc_enabled ||
     status.linuxdo_oauth ||
-    status.telegram_oauth ||
-    status.wechat_login
+    status.telegram_oauth
   )
 }

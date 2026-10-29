@@ -19,13 +19,12 @@ For commercial licensing, please contact support@uter.ai
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Link } from '@tanstack/react-router'
 import { Loader2, LogIn, KeyRound } from 'lucide-react'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import type { z } from 'zod'
 
-import { Dialog } from '@/components/dialog'
 import { PasswordInput } from '@/components/password-input'
 import { Turnstile } from '@/components/turnstile'
 import { Button } from '@/components/ui/button'
@@ -39,7 +38,7 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { login, startWeChatFlow, wechatLoginByCode } from '@/features/auth/api'
+import { login, loginByEmailCode, requestLoginEmailCode } from '@/features/auth/api'
 import { LegalConsent } from '@/features/auth/components/legal-consent'
 import { OAuthProviders } from '@/features/auth/components/oauth-providers'
 import { loginFormSchema } from '@/features/auth/constants'
@@ -67,7 +66,6 @@ export function UserAuthForm({
 }: AuthFormProps) {
   const { t } = useTranslation()
   const [isLoading, setIsLoading] = useState(false)
-  const [wechatCode, setWeChatCode] = useState('')
   const [agreedToLegal, setAgreedToLegal] = useState(false)
   const [passkeySupported, setPasskeySupported] = useState(false)
   const [isPasskeyLoading, setIsPasskeyLoading] = useState(false)
@@ -77,9 +75,18 @@ export function UserAuthForm({
   const [passkeyRPID, setPasskeyRPID] = useState<string>()
   const passkeyOperation = useRef<AbortController | null>(null)
   useEffect(() => () => passkeyOperation.current?.abort(), [])
-  const [isWeChatDialogOpen, setIsWeChatDialogOpen] = useState(false)
-  const [isWeChatSubmitting, setIsWeChatSubmitting] = useState(false)
   const [turnstileWidgetKey, setTurnstileWidgetKey] = useState(0)
+  // ── 邮箱验证码登录 ─────────────────────────────────────────────
+  // 与密码登录共用同一个 Turnstile 挂件：发送与提交各自消耗一枚 token，
+  // 每次用掉后立刻重置挂件（同 onSubmit 的做法），下次操作重新过人机校验。
+  const [loginMode, setLoginMode] = useState<'password' | 'email-code'>(
+    'password'
+  )
+  const [codeEmail, setCodeEmail] = useState('')
+  const [codeValue, setCodeValue] = useState('')
+  const [isSendingCode, setIsSendingCode] = useState(false)
+  const [isCodeLoginLoading, setIsCodeLoginLoading] = useState(false)
+  const [codeResendSeconds, setCodeResendSeconds] = useState(0)
   const legalConsentErrorMessage = t('Please agree to the legal terms first')
   const loginFailedMessage = t('Login failed')
 
@@ -95,6 +102,9 @@ export function UserAuthForm({
     (status?.password_login_encryption_enabled ??
       status?.data?.password_login_encryption_enabled ??
       false) === true
+  const emailCodeLoginEnabled = Boolean(
+    status?.email_code_login ?? status?.data?.email_code_login
+  )
   const {
     isTurnstileEnabled,
     turnstileSiteKey,
@@ -111,7 +121,6 @@ export function UserAuthForm({
     isPasskeyLoading ||
     !passkeySupported ||
     (requiresLegalConsent && !agreedToLegal)
-  const hasWeChatLogin = Boolean(status?.wechat_login)
   const hasOAuthLogin = Boolean(
     status?.github_oauth ||
     status?.discord_oauth ||
@@ -120,8 +129,7 @@ export function UserAuthForm({
     status?.telegram_oauth ||
     (status?.custom_oauth_providers?.length ?? 0) > 0
   )
-  const hasAlternativeLogin =
-    passkeyLoginEnabled || hasWeChatLogin || hasOAuthLogin
+  const hasAlternativeLogin = passkeyLoginEnabled || hasOAuthLogin
 
   useEffect(() => {
     if (requiresLegalConsent) {
@@ -137,6 +145,98 @@ export function UserAuthForm({
       .catch(() => setPasskeySupported(false))
   }, [])
 
+  // 发送验证码后的重发倒计时。
+  useEffect(() => {
+    if (codeResendSeconds <= 0) return
+    const timer = setTimeout(
+      () => setCodeResendSeconds((s) => s - 1),
+      1000
+    )
+    return () => clearTimeout(timer)
+  }, [codeResendSeconds])
+
+  const resetTurnstileForNextUse = () => {
+    if (isTurnstileEnabled) {
+      setTurnstileToken('')
+      setTurnstileWidgetKey((current) => current + 1)
+    }
+  }
+
+  async function handleSendLoginCode() {
+    if (requiresLegalConsent && !agreedToLegal) {
+      toast.error(legalConsentErrorMessage)
+      return
+    }
+    if (!codeEmail.trim()) {
+      toast.error(t('Enter your email'))
+      return
+    }
+    if (!validateTurnstile()) return
+
+    const submittedTurnstileToken = turnstileToken
+    resetTurnstileForNextUse()
+    setIsSendingCode(true)
+    try {
+      const res = await requestLoginEmailCode(
+        codeEmail.trim(),
+        submittedTurnstileToken
+      )
+      if (res.success) {
+        // 后端对未注册邮箱返回同样的成功响应（防枚举），前端不区分，
+        // 只提示「已发送，请查收」。
+        setCodeResendSeconds(60)
+        toast.success(t('Email code sent. Please check your inbox.'))
+      } else {
+        handleServerError(
+          createServerError(res, t('Failed to send verification code'))
+        )
+      }
+    } catch (error: unknown) {
+      handleServerError(
+        AuthOperationError.from(error, t('Failed to send verification code'))
+      )
+    } finally {
+      setIsSendingCode(false)
+    }
+  }
+
+  async function onEmailCodeSubmit(event: React.FormEvent) {
+    event.preventDefault()
+    if (requiresLegalConsent && !agreedToLegal) {
+      toast.error(legalConsentErrorMessage)
+      return
+    }
+    if (!codeEmail.trim() || !codeValue.trim()) {
+      if (!codeEmail.trim()) toast.error(t('Enter your email'))
+      else toast.error(t('Enter the verification code'))
+      return
+    }
+    if (!validateTurnstile()) return
+
+    const submittedTurnstileToken = turnstileToken
+    resetTurnstileForNextUse()
+    setIsCodeLoginLoading(true)
+    try {
+      const res = await loginByEmailCode(
+        codeEmail.trim(),
+        codeValue.trim(),
+        submittedTurnstileToken
+      )
+      if (res.success) {
+        setCodeValue('')
+        if (await handleLoginResult(res.data, redirectTo)) {
+          toast.success(t('Welcome back!'))
+        }
+      } else {
+        handleServerError(createServerError(res, loginFailedMessage))
+      }
+    } catch (error: unknown) {
+      handleServerError(AuthOperationError.from(error, loginFailedMessage))
+    } finally {
+      setIsCodeLoginLoading(false)
+    }
+  }
+
   const form = useForm<z.infer<typeof loginFormSchema>>({
     resolver: zodResolver(loginFormSchema),
     defaultValues: {
@@ -144,22 +244,6 @@ export function UserAuthForm({
       password: '',
     },
   })
-
-  const wechatQrCodeUrl = useMemo(() => {
-    return (
-      status?.wechat_qrcode_path ||
-      status?.data?.wechat_qrcode_path ||
-      status?.wechat_qrcode ||
-      status?.wechat_qr_code ||
-      status?.wechat_qrcode_image_url ||
-      status?.wechat_qr_code_image_url ||
-      status?.wechat_account_qrcode_image_url ||
-      status?.WeChatAccountQRCodeImageURL ||
-      status?.data?.wechat_qrcode ||
-      status?.data?.WeChatAccountQRCodeImageURL ||
-      ''
-    )
-  }, [status])
 
   async function onSubmit(data: z.infer<typeof loginFormSchema>) {
     if (requiresLegalConsent && !agreedToLegal) {
@@ -196,50 +280,6 @@ export function UserAuthForm({
       handleServerError(AuthOperationError.from(error, loginFailedMessage))
     } finally {
       setIsLoading(false)
-    }
-  }
-
-  const handleOpenWeChatDialog = () => {
-    if (requiresLegalConsent && !agreedToLegal) {
-      toast.error(legalConsentErrorMessage)
-      return
-    }
-
-    setIsWeChatDialogOpen(true)
-  }
-
-  const handleWeChatDialogChange = (open: boolean) => {
-    setIsWeChatDialogOpen(open)
-    if (!open) {
-      setWeChatCode('')
-      setIsWeChatSubmitting(false)
-    }
-  }
-
-  async function handleWeChatLogin() {
-    if (!wechatCode.trim()) {
-      toast.error(t('Please enter the verification code'))
-      return
-    }
-
-    setIsWeChatSubmitting(true)
-    try {
-      const state = await startWeChatFlow('login')
-      const res = await wechatLoginByCode(wechatCode, state)
-      if (res?.success) {
-        handleWeChatDialogChange(false)
-        if (await handleLoginResult(res.data, redirectTo)) {
-          toast.success(t('Signed in via WeChat'))
-        }
-      } else {
-        handleServerError(createServerError(res, loginFailedMessage))
-      }
-    } catch (error: unknown) {
-      handleServerError(
-        new AuthOperationError(loginFailedMessage, undefined, { cause: error })
-      )
-    } finally {
-      setIsWeChatSubmitting(false)
     }
   }
 
@@ -339,8 +379,6 @@ export function UserAuthForm({
         status={status}
         redirectTo={redirectTo}
         disabled={isLoading || (requiresLegalConsent && !agreedToLegal)}
-        onWeChatLogin={hasWeChatLogin ? handleOpenWeChatDialog : undefined}
-        isWeChatLoading={isWeChatSubmitting}
       />
     </>
   )
@@ -354,7 +392,7 @@ export function UserAuthForm({
       >
         {hasAlternativeLogin && alternativeLoginMethods}
 
-        {passwordLoginEnabled && (
+        {passwordLoginEnabled && loginMode === 'password' && (
           <>
             {/* Username Field */}
             <FormField
@@ -422,6 +460,118 @@ export function UserAuthForm({
                 />
               </div>
             )}
+
+            {emailCodeLoginEnabled && (
+              <button
+                type='button'
+                onClick={() => setLoginMode('email-code')}
+                className='text-muted-foreground hover:text-foreground w-full text-center text-sm font-medium transition-colors'
+              >
+                {t('Sign in with email code')}
+              </button>
+            )}
+          </>
+        )}
+
+        {emailCodeLoginEnabled && loginMode === 'email-code' && (
+          <>
+            <div className='grid gap-2'>
+              <Label htmlFor='email-code-login-email'>
+                {t('Email Address')}
+              </Label>
+              <Input
+                id='email-code-login-email'
+                type='email'
+                autoComplete='email'
+                placeholder={t('Enter your email')}
+                value={codeEmail}
+                onChange={(event) => setCodeEmail(event.target.value)}
+              />
+            </div>
+
+            <div className='grid gap-2'>
+              <Label htmlFor='email-code-login-code'>
+                {t('Verification code')}
+              </Label>
+              <div className='flex gap-2'>
+                <Input
+                  id='email-code-login-code'
+                  inputMode='numeric'
+                  autoComplete='one-time-code'
+                  maxLength={6}
+                  placeholder={t('Enter the verification code')}
+                  value={codeValue}
+                  onChange={(event) =>
+                    setCodeValue(event.target.value.replaceAll(/\D/g, ''))
+                  }
+                />
+                <Button
+                  type='button'
+                  variant='outline'
+                  className='h-(--ds-control-height-md) shrink-0'
+                  disabled={
+                    isSendingCode ||
+                    codeResendSeconds > 0 ||
+                    !codeEmail.trim()
+                  }
+                  onClick={handleSendLoginCode}
+                >
+                  {(() => {
+                    if (isSendingCode) {
+                      return <Loader2 className='h-4.5 w-4.5 animate-spin' />
+                    }
+                    if (codeResendSeconds > 0) {
+                      return t('Resend in {{seconds}}s', {
+                        seconds: codeResendSeconds,
+                      })
+                    }
+                    return t('Send code')
+                  })()}
+                </Button>
+              </div>
+              <p className='text-muted-foreground text-sm'>
+                {t(
+                  'An account will be created automatically if the email is not registered.'
+                )}
+              </p>
+            </div>
+
+            {/* type='button'：外层 <form> 挂的是密码登录的 handleSubmit，
+                验证码视图的提交不能走那条 zod 校验链。 */}
+            <Button
+              type='button'
+              onClick={onEmailCodeSubmit}
+              className='mt-2 h-(--ds-control-height-md) w-full justify-center gap-2'
+              disabled={isCodeLoginLoading}
+            >
+              {isCodeLoginLoading ? (
+                <Loader2 className='animate-spin' />
+              ) : (
+                <LogIn />
+              )}
+              {t('Sign in')}
+            </Button>
+
+            {isTurnstileEnabled && (
+              <div className='mt-2'>
+                <Turnstile
+                  key={turnstileWidgetKey}
+                  siteKey={turnstileSiteKey}
+                  onVerify={setTurnstileToken}
+                  onExpire={() => setTurnstileToken('')}
+                />
+              </div>
+            )}
+
+            {passwordLoginEnabled && (
+              <button
+                type='button'
+                onClick={() => setLoginMode('password')}
+                className='text-muted-foreground hover:text-foreground w-full text-center text-sm font-medium transition-colors'
+              >
+                {t('Back to password sign in')}
+              </button>
+            )}
           </>
         )}
 
@@ -434,72 +584,6 @@ export function UserAuthForm({
 
         {!hasAlternativeLogin && alternativeLoginMethods}
       </form>
-
-      {hasWeChatLogin && (
-        <Dialog
-          open={isWeChatDialogOpen}
-          onOpenChange={handleWeChatDialogChange}
-          title={t('WeChat sign in')}
-          description={t(
-            'Scan the QR code to follow the official account and reply with “验证码” to receive your verification code.'
-          )}
-          contentClassName='max-w-sm'
-          headerClassName='text-left'
-          contentHeight='auto'
-          bodyClassName='space-y-4'
-          footer={
-            <>
-              <Button
-                type='button'
-                variant='outline'
-                onClick={() => handleWeChatDialogChange(false)}
-                disabled={isWeChatSubmitting}
-              >
-                {t('Cancel')}
-              </Button>
-              <Button
-                type='button'
-                className='gap-2'
-                onClick={handleWeChatLogin}
-                disabled={
-                  isWeChatSubmitting ||
-                  !wechatCode.trim() ||
-                  (requiresLegalConsent && !agreedToLegal)
-                }
-              >
-                {isWeChatSubmitting ? (
-                  <Loader2 className='h-4.5 w-4.5 animate-spin' />
-                ) : null}
-                {t('Confirm')}
-              </Button>
-            </>
-          }
-        >
-          {wechatQrCodeUrl ? (
-            <div className='flex justify-center'>
-              <img
-                src={wechatQrCodeUrl}
-                alt={t('WeChat login QR code')}
-                className='h-40 w-40 rounded-md border object-contain'
-              />
-            </div>
-          ) : (
-            <p className='text-muted-foreground text-sm'>
-              {t('QR code is not configured. Please contact support.')}
-            </p>
-          )}
-          <div className='grid gap-2'>
-            <Label htmlFor='wechat-code'>{t('Verification code')}</Label>
-            <Input
-              id='wechat-code'
-              placeholder={t('Enter the verification code')}
-              value={wechatCode}
-              onChange={(event) => setWeChatCode(event.target.value)}
-              autoComplete='one-time-code'
-            />
-          </div>
-        </Dialog>
-      )}
     </Form>
   )
 }
