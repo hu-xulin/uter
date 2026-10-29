@@ -479,8 +479,8 @@ export function DynamicPricingBreakdown({
             <div
               className={
                 compact
-                  ? 'text-muted-foreground mb-1.5 text-xs font-medium'
-                  : 'text-foreground mb-2 text-sm font-semibold'
+                  ? 'text-muted-foreground mb-1.5 text-xs'
+                  : 'text-foreground mb-2 text-base font-semibold'
               }
             >
               {t('Tiered price table')}
@@ -700,8 +700,8 @@ export function DynamicPricingBreakdown({
           <div
             className={
               compact
-                ? 'text-muted-foreground mb-1.5 text-xs font-medium'
-                : 'text-foreground mb-2 text-sm font-semibold'
+                ? 'text-muted-foreground mb-1.5 text-xs'
+                : 'text-foreground mb-2 text-base font-semibold'
             }
           >
             {t('Conditional multipliers')}
