@@ -595,7 +595,7 @@ function GroupPricingGuide({ open, onOpenChange }: GroupPricingGuideProps) {
               </div>
               <div className='p-3 text-sm'>
                 {t('Users of vip, when billed as premium, pay ratio')}{' '}
-                <span className='bg-primary/10 ring-primary/40 rounded px-1.5 py-0.5 font-semibold ring-1'>
+                <span className='bg-primary-subtle ring-primary/40 rounded px-1.5 py-0.5 font-semibold ring-1'>
                   0.3
                 </span>{' '}
                 <span className='text-muted-foreground text-sm'>

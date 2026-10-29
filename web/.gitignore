@@ -30,3 +30,15 @@ src/i18n/locales/_reports/
 
 # vitest 5 report/artifact output (attachments, blob, html, json, junit)
 .vitest/
+
+# 视觉回归截图快照（`bun run test:visual` 产物，可由 target 重算，体积较大）。
+# 基线哈希在 visual-regression/baseline.json，那份要进版本库。
+.visual-snapshots/
+
+# 视觉回归第二轨（Playwright）：报告、失败产物、trace 均为可再生中间件。
+# 注：像素基线（e2e/visual/*.spec.ts-snapshots/*.png）**要进版本库**，它是「上次确认
+# 正确的样子」的唯一记录；会话快照 .auth/ 含登录 Cookie，绝不进版本库。
+.visual-e2e/
+.auth/
+/playwright-report/
+/test-results/

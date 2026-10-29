@@ -858,8 +858,8 @@ function CostEstimator({ effectiveExpr, fullExpr, currency }: EstimatorProps) {
         className={cn(
           'rounded-md border p-3 text-sm',
           result.error
-            ? 'border-destructive/50 bg-destructive/10 text-destructive'
-            : 'border-primary/50 bg-primary/10'
+            ? 'border-destructive/50 bg-destructive-subtle text-destructive'
+            : 'border-primary/50 bg-primary-subtle'
         )}
       >
         {result.error ? (

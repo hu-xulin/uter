@@ -73,23 +73,18 @@ export function Hero(props: HeroProps) {
 
   return (
     <section className='relative z-10 overflow-hidden px-6 pt-24 pb-16 md:pt-32 md:pb-24 lg:pt-36 lg:pb-28'>
-      {/* Radial gradient background */}
+      {/* Radial gradient background：三团光晕收在 `ds-decor-mesh-hero`
+          （颜色 `--ds-decor-glow-*`、透明度 `--ds-decor-mesh-opacity-*`，
+          形状在 foundations/decoration.css，规范 §11.5）。以前这里内联
+          写裸 oklch，透明度还散装在 `opacity-25 dark:opacity-[0.12]` ——
+          深浅两档的取舍从此不可见。 */}
       <div
         aria-hidden
-        className='pointer-events-none absolute inset-0 -z-10 opacity-25 dark:opacity-[0.12]'
-        style={{
-          background: [
-            'radial-gradient(ellipse 60% 50% at 20% 20%, oklch(0.72 0.18 250 / 80%) 0%, transparent 70%)',
-            'radial-gradient(ellipse 50% 40% at 80% 15%, oklch(0.65 0.15 200 / 60%) 0%, transparent 70%)',
-            'radial-gradient(ellipse 40% 35% at 40% 80%, oklch(0.70 0.12 280 / 40%) 0%, transparent 70%)',
-          ].join(', '),
-        }}
+        className='ds-decor-mesh-hero pointer-events-none absolute inset-0 -z-10'
       />
-      {/* Grid pattern */}
-      <div
-        aria-hidden
-        className='absolute inset-0 -z-10 bg-[linear-gradient(to_right,var(--border)_1px,transparent_1px),linear-gradient(to_bottom,var(--border)_1px,transparent_1px)] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_30%,black_20%,transparent_100%)] bg-[size:4rem_4rem] opacity-[0.08]'
-      />
+      {/* Grid pattern：1px 线 + 4rem 方格 + 椭圆渐隐遮罩，同一套
+          `ds-decor-grid`（§11.5）。 */}
+      <div aria-hidden className='ds-decor-grid absolute inset-0 -z-10' />
 
       <div className='mx-auto grid max-w-6xl grid-cols-1 items-start gap-12 lg:grid-cols-12 lg:gap-8'>
         {/* Left Column: Title, description, action buttons and application support */}
@@ -154,12 +149,12 @@ export function Hero(props: HeroProps) {
                 </>
               )
             })()}
-            {/* 首屏唯一的多色渐变，与上游 new-api 保持逐类一致：
-                `from-blue-400 via-violet-400 to-purple-500`（蓝 → 紫 → 洋红）。
-                不走 `chart-*` Token：chart 色阶会随主题预设漂移（绿色系预设下
-                渐变会变绿），而品牌首屏渐变需要跨主题恒定，且要与上游渲染
-                完全一致。已登记 ALLOWLIST（见 exceptions.md）。 */}
-            <span className='bg-gradient-to-r from-blue-400 via-violet-400 to-purple-500 bg-clip-text text-transparent'>
+            {/* 首屏品牌渐变：走 `@utility ds-text-gradient-brand`，三个停靠站
+                收在 `--ds-color-brand-gradient-*`（规范 §11.5）。以前这里直接
+                写 `from-blue-400 via-violet-400 to-purple-500`，那既绕过了
+                Token、也让「与上游渲染一致」这句话无法被验证；现在是单一
+                出口，改渐变只改 Token 一处。 */}
+            <span className='ds-text-gradient-brand'>
               {t('Vast Range of AI Models')}
             </span>
           </Heading>

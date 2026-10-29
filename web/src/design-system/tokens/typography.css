@@ -17,7 +17,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@uter.ai
 */
 /* ── Layer 1 · Typography scale（唯一字号阶梯）────────────────────────
- * 九档语义字号，与 docs/design-system/typography.md 的表格逐行对应：
+ * 九档语义字号，与 docs/design-system/design-system.md 的表格逐行对应：
  *
  *   display  36 / 700 / 40   页面主视觉标题（营销页 hero）
  *   h1       30 / 600 / 36   页面标题
@@ -36,7 +36,7 @@ For commercial licensing, please contact support@uter.ai
  * `body-long`（16/26），不要拿 `text-base` 当正文。
  *
  * mono 档另有两个**等宽专用派生档**，只在等宽场景出现，不占九档位置
- * （详见 docs/design-system/typography.md「mono 三档」）：
+ * （详见 docs/design-system/design-system.md「mono 三档」）：
  *
  *   mono-code  13 / 400 / 20  固定高度的等宽代码容器（首页代码卡片、编辑器视口）
  *   mono-title 16 / 600 / 22  用等宽字形的卡片标题（定价卡片模型名）

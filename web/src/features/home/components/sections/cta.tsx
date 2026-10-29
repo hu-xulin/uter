@@ -38,17 +38,10 @@ export function CTA(props: CTAProps) {
 
   return (
     <section className='relative z-10 overflow-hidden px-6 py-24 md:py-32'>
-      {/* Gradient mesh background */}
-      <div
-        aria-hidden
-        className='absolute inset-0 -z-10 opacity-20 dark:opacity-[0.08]'
-        style={{
-          background: [
-            'radial-gradient(ellipse 50% 50% at 30% 50%, oklch(0.7 0.15 250 / 70%) 0%, transparent 70%)',
-            'radial-gradient(ellipse 40% 40% at 70% 40%, oklch(0.65 0.12 200 / 50%) 0%, transparent 70%)',
-          ].join(', '),
-        }}
-      />
+      {/* Gradient mesh background：两团光晕收在 `ds-decor-mesh-cta`
+          （弱一档的 `--ds-decor-glow-*-soft`，透明度 `--ds-decor-mesh-opacity-cta`，
+          规范 §11.5）。以前这里内联写裸 oklch。 */}
+      <div aria-hidden className='ds-decor-mesh-cta absolute inset-0 -z-10' />
 
       <AnimateInView
         className='mx-auto max-w-2xl text-center'
@@ -59,11 +52,10 @@ export function CTA(props: CTAProps) {
           className='flex flex-col items-center gap-3'
         >
           <span>{t('Ready to simplify')}</span>
-          {/* 首屏 CTA 唯一的多色渐变，须与上游 new-api 逐类一致：
-              `from-blue-400 via-violet-400 to-purple-500`（蓝 → 紫 → 洋红）。
-              不走品牌 `primary-*` Token，也不走 `chart-*`：品牌色会随主题预设漂移，
-              且与上游渲染必须完全一致。已登记 ALLOWLIST（见 exceptions.md E27）。 */}
-          <span className='from-blue-400 via-violet-400 to-purple-500 bg-gradient-to-r bg-clip-text text-transparent'>
+          {/* 与 hero 主标题共用同一套渐变停靠站：`ds-text-gradient-brand`
+              （`--ds-color-brand-gradient-*`，规范 §11.5）。不要为了省钱手写
+              `from-… via-… to-…` —— 那会让两个入口的渐变各自漂移。 */}
+          <span className='ds-text-gradient-brand'>
             {t('your AI integration?')}
           </span>
         </Heading>

@@ -39,19 +39,38 @@ For commercial licensing, please contact support@uter.ai
  *   T9  行高覆盖           `leading-*`（行高由字号 Token 自带，不再单独覆盖）
  *   T10 任意圆角           `rounded-[3px]`（圆角阶梯只有 xs/sm/md/lg/xl/2xl）
  *   T11 未登记动效节奏     `duration-300` / `ease-[cubic-bezier(…)]`（§1.6 只有五组）
+ *   T12 字距类             `tracking-*`（统一移除，`tracking-normal` 放行）
+ *   T13 透明度冒充文字层级 `text-foreground/60`（§11.3 禁止，改 `text-fg-secondary`）
+ *   T14 透明度凑悬停       `hover:bg-primary/90`（§11.2 禁止，改用 `*-hover` Token）
+ *   T15 透明度凑浅底       `bg-warning/10`（§11.2 禁止，改用 `*-soft` / `*-subtle`）
  *
  * 扫描不把硬编码一律判死：图表 canvas 的 `fontSize` 必须是数字、
  * 第三方控件的行内样式改不动、弹窗浮层本来就该有投影。这些进 ALLOWLIST，
  * 每条都必须写明理由 —— 没有理由的例外等于没有规范。
  */
 
-import { readdirSync, readFileSync, statSync } from 'node:fs'
+import {
+  existsSync,
+  readdirSync,
+  readFileSync,
+  statSync,
+  writeFileSync,
+} from 'node:fs'
 import { join, relative, sep } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url))
 const SRC = join(ROOT, 'src')
 const STRICT = process.argv.includes('--strict')
+
+// 基线模式（规范 §24「基线机制」）：把存量违规与本次新增区分开。
+//   --baseline        只对比基线里没有的条目；有新增即退出码 1（给 CI 用）
+//   --write-baseline  把当前违规写进快照；条数只允许下降（"基线只减不增"）
+//   --force-baseline  配合上一条，确需扩容时显式声明（必须写清理由）
+const BASELINE_PATH = join(ROOT, 'design-tokens.baseline.json')
+const BASELINE_MODE = process.argv.includes('--baseline')
+const WRITE_BASELINE = process.argv.includes('--write-baseline')
+const FORCE_BASELINE = process.argv.includes('--force-baseline')
 
 /** 唯一允许声明字号阶梯的文件（相对 src）。 */
 const LADDER_OWNER = 'design-system/tokens/typography.css'
@@ -99,34 +118,24 @@ const OVERLAY_ALLOWLIST = [
  * 逐条登记的真例外。每条必须：① `reason` 写明为什么无法用 Token 表达；
  * ② 在 `docs/design-system/design-system.md` 登记编号与影响范围。
  */
-const ALLOWLIST = [
-  {
-    rules: ['T7'],
-    match: /^features\/home\/components\/sections\/hero\.tsx$/,
-    reason:
-      '首屏品牌渐变标题「直达全球大模型」须与上游 new-api 逐类一致' +
-      '（from-blue-400 via-violet-400 to-purple-500）。chart-* 会随主题预设漂移，' +
-      '无法保证跨主题恒定与上游一致。',
-  },
-  {
-    rules: ['T6', 'T7'],
-    match: /^features\/home\/components\/hero-terminal-demo\.tsx$/,
-    reason:
-      '首屏 hero 代码卡（终端 demo）须逐类对齐上游 new-api 的多色配色、勿回退' +
-      '（2026-10-29 决案）：curl=emerald、flag=blue、JSON key=sky、字符串=amber、' +
-      '数字=violet、标点=foreground，状态点辉光 shadow-[0_0_8px_rgba(16,185,129,…)]。' +
-      '全部改走语义 Token（success/info/warning 等）会因主题预设漂移而与上游渲染' +
-      '不一致，无法用 Token 表达，故整体登记为受保护特例。',
-  },
-  {
-    rules: ['T7'],
-    match: /^features\/home\/components\/sections\/cta\.tsx$/,
-    reason:
-      '首屏 CTA 副标题「your AI integration?」须与上游 new-api 逐类一致' +
-      '（from-blue-400 via-violet-400 to-purple-500），与 hero.tsx 的 E25 同一套上游渐变。' +
-      '品牌 primary-* Token 与 chart-* 都会随主题预设漂移，无法保证与上游渲染一致，故登记 T7 例外。',
-  },
-]
+/**
+ * 例外清单：**当前为空**（2026-10-30）。
+ *
+ * 原先的 E25 / E26 / E27 三条都是首屏代码卡与品牌渐变，理由是「须与上游
+ * new-api 逐类一致，无法用 Token 表达」。**这个理由不成立**：要求从来只是
+ * 「渲染效果与上游一致」，不是「类名逐字照抄」。把效果定档成 Token
+ * （`term-*` 语义组 + `ds-text-gradient-brand`），效果一分不变，写法却变成
+ * 可被机器校验的形式 —— 于是三条例外全部注销，见规范 §26。
+ *
+ * 这条判断写在这里，是为了阻止下一个 AI 再犯同样的错：
+ *
+ *   ❌ 「上游是这么写的，所以这里必须写成一样的形式」→ 登记例外
+ *   ✅ 「要和上游长得一样」→ 把**效果**落成 Token / 条款，代码改用 Token
+ *
+ * 只有当某个效果**确实**无法被 Token 表达时，才允许在这里加条目 —— 并且必须
+ * 同时满足上述三条，还要写清退出条件。
+ */
+const ALLOWLIST = []
 
 const RULES = {
   T1: '字号阶梯重复声明（--text-* 只能出现在唯一来源）',
@@ -141,6 +150,9 @@ const RULES = {
   T10: '任意圆角（rounded-[…]，圆角阶梯只有 xs/sm/md/lg/xl/2xl）',
   T11: '未登记动效节奏（duration-N / ease-[cubic-bezier(…)]，§1.6 只有五组时长）',
   T12: '字距类（tracking-*，规范统一移除，字距由字号 Token 自带）',
+  T13: '透明度冒充文字层级（text-foreground/NN，改用 text-fg-secondary / text-fg-tertiary）',
+  T14: '透明度凑悬停（hover:bg-{primary|secondary|destructive|success}/NN，改用 *-hover Token）',
+  T15: '透明度凑浅底（bg-{success|warning|info}/NN → *-soft；bg-{primary|destructive}/NN → *-subtle）',
 }
 
 /**
@@ -185,6 +197,50 @@ const PALETTE_CLASS_RE = new RegExp(
   `(?:(?:dark|hover|focus|active|group-hover|focus-visible|aria-pressed|data-\\[[^\\]]*\\]):)*` +
     `!?(?:${COLOR_UTILITY_PREFIXES})-(?:${PALETTE_NAMES})-\\d{2,3}(?:/\\d+)?\\b`,
   'g'
+)
+
+/**
+ * T13–T15：禁止用透明度 `/NN` 凑层级、凑悬停、凑浅底。
+ *
+ * 规范 §11.2 / §11.3 / §25 把这三类列为禁止项并给出了替代 Token —— 理由是
+ * 透明度会**随底下的颜色漂移**：`hover:bg-primary/90` 在深色底上发灰、在浅色
+ * 底上泛白；`text-foreground/60` 冒充次要文字时，浅色主题可能刚好，深色主题
+ * 就掉到对比度线以下（§11.5 要求每次改透明度都重算对比度，靠 opacity 根本
+ * 没法验证）。所以替代品是**主题无关的语义 Token**：
+ *
+ *   text-foreground/NN   → text-fg-secondary / text-fg-tertiary
+ *   hover:bg-primary/90  → hover:bg-primary-hover
+ *   bg-warning/10        → bg-warning-soft（success / info 同理）
+ *   bg-primary/10        → bg-primary-subtle（destructive 同理）
+ *
+ * 只拦**已有替代 Token** 的写法。`border-warning/20`、`ring-primary/15` 这类
+ * 目前没有对应 Token，拦了也无处可改 —— 那属于「待补 Token」而不是欠债，
+ * 统一记在规范 §25，不在这里误报。
+ */
+const VARIANT_TOKEN = '(?:[a-zA-Z][a-zA-Z0-9-]*(?:\\[[^\\]]*\\])?|\\[[^\\]]*\\]):'
+const VARIANT_PREFIX_RE = `(?:${VARIANT_TOKEN})*!?`
+
+/** 浅底 Token 的归属：`bg-<name>/NN` 该换成 `-soft` 还是 `-subtle`。 */
+const SUBTLE_BACKGROUNDS = {
+  success: 'soft',
+  warning: 'soft',
+  info: 'soft',
+  primary: 'subtle',
+  destructive: 'subtle',
+}
+
+/** 组建一条 T13–T15 的规则：工具类主体 + 可选的不透明度数值。 */
+function opacityUtilityRe(body, percent = '\\d{1,3}') {
+  return new RegExp(`${VARIANT_PREFIX_RE}${body}/${percent}\\b`, 'g')
+}
+
+const T13_RE = opacityUtilityRe('text-foreground')
+const T14_RE = opacityUtilityRe('hover:bg-(?:primary|secondary|destructive|success)')
+// T15 只管**浅底**（≤20%）。`/70`、`/90` 那类高透明度是有意的半透明实心填充，
+// 换成 `-soft` 会直接改变观感 —— 那不是欠债，别误报。
+const T15_RE = opacityUtilityRe(
+  `bg-(?:${Object.keys(SUBTLE_BACKGROUNDS).join('|')})`,
+  '(?:[0-9]|1[0-9]|20)'
 )
 
 /**
@@ -408,10 +464,127 @@ for (const abs of walk(SRC)) {
       report('T12', rel, line, rawText)
       break
     }
+
+    // T13：透明度冒充文字层级。`text-foreground/40` 是在用不透明度伪造
+    // 「次级文字」—— 二级/三级文字已有 `fg-secondary` / `fg-tertiary` 两档
+    // 语义 Token，且各自在深浅两套主题下都做过对比度实测（§11.5）。
+    for (const _ of raw.match(T13_RE) ?? []) {
+      report('T13', rel, line, rawText)
+      break
+    }
+
+    // T14：透明度凑悬停。md:hover:bg-destructive/30 这类写法在两个主题下的
+    // 实际观感不同（深底发灰、浅底泛白），已有 `destructive-hover` 等 Token。
+    for (const _ of raw.match(T14_RE) ?? []) {
+      report('T14', rel, line, rawText)
+      break
+    }
+
+    // T15：透明度凑浅底。`hover:` 的那部分已由 T14 报过，这里跳过避免重复计数。
+    for (const hit of raw.match(T15_RE) ?? []) {
+      if (hit.includes('hover:')) continue
+      report('T15', rel, line, rawText)
+      break
+    }
   })
 }
 
 const violations = findings.filter((f) => !isAllowed(f.file, f.rule))
+
+// ---------------------------------------------------------------------------
+// 基线模式：先把这条路径处理完，再看是否需要走常规输出。
+//
+// 为什么这么做：一次全量清理之前，存量违规会一直卡住开发，于是大家要么绕过
+// 门禁、要么在赶工时把几十处一起改坏。基线让「历史遗留」与「本次引入」分开
+// 计价 —— 新增必须为零，存量排期清理，清理完条数只许下降（规范 §24）。
+//
+// 条目的身份是 **规则 + 文件 + 证据串**，刻意不含行号：无关 commit 挪动一行就
+// 会让整份基线作废，那是给未来制造噪音。行号仍写进快照，只为人工定位用。
+// ---------------------------------------------------------------------------
+function baselineKey(item) {
+  return `${item.rule}|${item.file}|${item.text.replaceAll(/\s+/g, ' ').trim()}`
+}
+
+function readBaseline() {
+  if (!existsSync(BASELINE_PATH)) return null
+  try {
+    return JSON.parse(readFileSync(BASELINE_PATH, 'utf8'))
+  } catch (error) {
+    console.error(`无法解析基线文件 ${BASELINE_PATH}：${error.message}`)
+    process.exit(2)
+  }
+}
+
+if (WRITE_BASELINE) {
+  const previous = readBaseline()
+  const previousCount = previous?.entries?.length ?? 0
+  const entries = violations
+    .map((v) => ({
+      rule: v.rule,
+      file: v.file,
+      line: v.line,
+      text: v.text,
+      key: baselineKey(v),
+    }))
+    .sort((a, b) => a.key.localeCompare(b.key))
+
+  if (entries.length > previousCount && !FORCE_BASELINE) {
+    console.error(
+      `✗ 基线不允许变多：快照 ${previousCount} 条 → 现在 ${entries.length} 条。\n` +
+        `  规范 §24 要求「基线只减不增」。先修掉多出来的 ${entries.length - previousCount} 处，\n` +
+        `  确属必须扩容时用 --force-baseline 并在提交说明里写明理由。`
+    )
+    process.exit(2)
+  }
+
+  writeFileSync(
+    BASELINE_PATH,
+    `${JSON.stringify(
+      {
+        说明:
+          '存量设计令牌违规快照。身份 = 规则 + 文件 + 证据串（不含行号）。' +
+          'CI 只对比基线里没有的条目；条数只减不增。真正的例外走 ALLOWLIST，不进这里。',
+        updatedAt: new Date().toISOString(),
+        entries,
+      },
+      null,
+      2
+    )}\n`
+  )
+  console.log(
+    `design-tokens: 基线已写入 ${relative(ROOT, BASELINE_PATH)}，共 ${entries.length} 条` +
+      (previousCount ? `（此前 ${previousCount} 条，减少 ${previousCount - entries.length} 条）` : '')
+  )
+  process.exit(0)
+}
+
+if (BASELINE_MODE) {
+  const baseline = readBaseline()
+  const known = new Set((baseline?.entries ?? []).map((e) => e.key))
+  const fresh = violations.filter((v) => !known.has(baselineKey(v)))
+  const cleared = [...known].filter(
+    (key) => !violations.some((v) => baselineKey(v) === key)
+  )
+
+  if (fresh.length === 0) {
+    console.log(
+      `design-tokens: 无新增违规（基线内存量 ${known.size} 条${
+        cleared.length ? `，其中 ${cleared.length} 条已修复待更新快照` : ''
+      }）。`
+    )
+    process.exit(0)
+  }
+
+  console.log(`design-tokens: 发现 ${fresh.length} 处**新增**违规：\n`)
+  for (const item of fresh) {
+    console.log(`  ${item.rule}  ${item.file}:${item.line}  ${item.text}`)
+  }
+  console.log(
+    '\n基线记的是存量欠债，不是许可证：修掉上面的写法，或在确实无法接入 Token 时\n' +
+      '把理由写进 scripts/check-design-tokens.mjs 的 ALLOWLIST 并登记 §26。'
+  )
+  process.exit(1)
+}
 
 const grouped = new Map()
 for (const item of violations) {
@@ -445,6 +618,9 @@ if (violations.length === 0) {
       'chart-N / syntax-*）；第三方商标色与多序列分类色从 design-system/tokens/brand-colors 取；\n' +
       '动效用 ds-motion-* 工具类或 var(--ds-motion-*)，不要写 duration-N / ease-[cubic-bezier(…)]。\n' +
       '字距由字号 Token 自带，不要写 tracking-*（移除即可）。\n' +
+      '不要用透明度凑层级/悬停/浅底：text-foreground/NN 改 text-fg-secondary（或 tertiary）；\n' +
+      'hover:bg-primary/NN 改 hover:bg-primary-hover；bg-warning/NN 改 bg-warning-soft；\n' +
+      'bg-primary/NN、bg-destructive/NN 改对应的 -subtle。\n' +
       '确实无法接入 Token 的场景，在 scripts/check-design-tokens.mjs 的 ALLOWLIST 登记并写明理由。'
   )
 }

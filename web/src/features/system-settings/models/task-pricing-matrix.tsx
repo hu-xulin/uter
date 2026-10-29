@@ -282,7 +282,7 @@ function TaskMatrixTable(props: TaskMatrixTableProps) {
               key={`${rowLabel}:${entry.index}`}
               className={cn(
                 props.matchedRowIndex === entry.index &&
-                  'bg-primary/5 border-l-primary border-l-2'
+                  'bg-primary-subtle border-l-primary border-l-2'
               )}
             >
               {visibleEnumFields.map(([field]) => (
@@ -510,7 +510,7 @@ export function TaskPricingMatrix(props: TaskPricingMatrixProps) {
     <TooltipProvider>
       <div ref={containerRef} className='flex flex-col gap-3'>
         {allRowsFree ? (
-          <Alert className='border-warning/40 bg-warning/10 text-warning dark:text-warning-soft-foreground'>
+          <Alert className='border-warning/40 bg-warning-soft text-warning dark:text-warning-soft-foreground'>
             <AlertTriangle aria-hidden='true' />
             <AlertDescription className='text-sm text-current'>
               {t(

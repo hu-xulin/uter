@@ -244,7 +244,7 @@ function StartStepItem(props: {
       <span
         className={cn(
           'bg-background relative z-10 flex size-8 shrink-0 items-center justify-center rounded-lg border',
-          props.step.completed && 'border-success/30 bg-success/10'
+          props.step.completed && 'border-success/30 bg-success-soft'
         )}
       >
         <StatusIcon

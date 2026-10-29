@@ -389,7 +389,7 @@ export function SyncWizardDialog(props: {
             aria-current={step === index ? 'step' : undefined}
             className={
               step === index
-                ? 'border-primary bg-primary/5 rounded-lg border p-2 text-sm font-medium'
+                ? 'border-primary bg-primary-subtle rounded-lg border p-2 text-sm font-medium'
                 : 'text-muted-foreground rounded-lg border p-2 text-sm'
             }
           >

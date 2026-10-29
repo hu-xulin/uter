@@ -25,7 +25,7 @@ For commercial licensing, please contact support@uter.ai
  * 新增颜色的唯一合法路径：
  *   1. 在 theme.css 的 `:root` / `.dark` 里定义原始颜色；
  *   2. 在这里映射出一条 `--ds-color-*` 语义；
- *   3. 在 docs/design-system/colors.md 登记用途。
+ *   3. 在 docs/design-system/design-system.md 登记用途。
  * 组件里直接写 `#0F172A`、`rgb(...)`、`text-[#333]` 都是违规的。
  */
 
@@ -108,6 +108,16 @@ For commercial licensing, please contact support@uter.ai
   /* ── 品牌强调面 ────────────────────────────────────────────────────── */
   --ds-color-primary-subtle: var(--primary-subtle, var(--accent));
   --ds-color-primary-border: var(--primary-border, var(--border));
+
+  /* ── 品牌渐变（首屏标题 / CTA）──────────────────────────────────────
+   * 三个停靠站 = 蓝 → 紫 → 洋红，是**对外传播资产**，不是界面状态色：
+   * 取值必须与上游 new-api 渲染一致，因此刻意不分成深浅两套、也不接
+   * `chart-*`（那会让渐变跟着主题预设变成绿的、橙的）。
+   * 只经由 `@utility ds-text-gradient-brand` 消费，禁止在组件里手写
+   * `from-… via-… to-…`。详见规范 §11.5。 */
+  --ds-color-brand-gradient-from: #60a5fa; /* blue-400 */
+  --ds-color-brand-gradient-via: #a78bfa; /* violet-400 */
+  --ds-color-brand-gradient-to: #a855f7; /* purple-500 */
 
   /* ── 描边 ──────────────────────────────────────────────────────────── */
   --ds-color-border: var(--border);

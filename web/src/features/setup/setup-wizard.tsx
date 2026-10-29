@@ -335,7 +335,7 @@ export function SetupWizard() {
                     key={step.titleKey}
                     className={cn('rounded-xl border p-3', {
                       'border-primary ring-primary/20 ring-2': isActive,
-                      'border-primary/40 bg-primary/5':
+                      'border-primary/40 bg-primary-subtle':
                         !isActive && isCompleted,
                       'border-muted bg-card': !isActive && !isCompleted,
                     })}

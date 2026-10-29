@@ -2557,7 +2557,7 @@ export function ChannelMutateDrawer({
               </Alert>
             )}
             {modelMappingGuardrail.missingSourceModels.length > 0 && (
-              <Alert className='border-warning-soft bg-warning-soft text-warning-soft-foreground dark:border-warning/40 dark:bg-warning/10 dark:text-warning-soft-foreground'>
+              <Alert className='border-warning-soft bg-warning-soft text-warning-soft-foreground dark:border-warning/40 dark:text-warning-soft-foreground'>
                 <AlertDescription className='flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between'>
                   <span>
                     {t('Add')}{' '}
@@ -3292,7 +3292,7 @@ export function ChannelMutateDrawer({
                       </>
                     )}
                   {modelMappingGuardrail.exposedTargetModels.length > 0 && (
-                    <Alert className='border-warning-soft bg-warning-soft text-warning-soft-foreground dark:border-warning/40 dark:bg-warning/10 dark:text-warning-soft-foreground'>
+                    <Alert className='border-warning-soft bg-warning-soft text-warning-soft-foreground dark:border-warning/40 dark:text-warning-soft-foreground'>
                       <AlertDescription className='flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between'>
                         <span>
                           {t('The mapped upstream model(s)')}{' '}
@@ -3606,7 +3606,7 @@ export function ChannelMutateDrawer({
         )}
 
         {sensitiveLocked && (
-          <Alert className='border-warning-soft bg-warning-soft text-warning-soft-foreground dark:border-warning/40 dark:bg-warning/10 dark:text-warning-soft-foreground'>
+          <Alert className='border-warning-soft bg-warning-soft text-warning-soft-foreground dark:border-warning/40 dark:text-warning-soft-foreground'>
             <AlertDescription>
               {t('No permission to perform this action')}
             </AlertDescription>
@@ -4605,7 +4605,7 @@ export function ChannelMutateDrawer({
                       )}
                     </div>
                   </div>
-                  <Alert className='border-warning-soft bg-warning-soft text-warning-soft-foreground dark:border-warning/40 dark:bg-warning/10 dark:text-warning-soft-foreground'>
+                  <Alert className='border-warning-soft bg-warning-soft text-warning-soft-foreground dark:border-warning/40 dark:text-warning-soft-foreground'>
                     <AlertDescription>
                       {t(
                         "Disclaimer: Personal use only. Do not distribute or share any credentials. This channel has prerequisites and requires prior setup; use it only if you understand the flow and risks, and comply with OpenAI's terms and policies. Credentials and configuration are for Codex CLI integration only, and are not intended for any other client, platform, or channel."
@@ -5011,7 +5011,7 @@ export function ChannelMutateDrawer({
           )}
 
           {sensitiveLocked && (
-            <Alert className='border-warning-soft bg-warning-soft text-warning-soft-foreground dark:border-warning/40 dark:bg-warning/10 dark:text-warning-soft-foreground'>
+            <Alert className='border-warning-soft bg-warning-soft text-warning-soft-foreground dark:border-warning/40 dark:text-warning-soft-foreground'>
               <AlertDescription>
                 {t(
                   'Sensitive channel settings are read-only for your account.'

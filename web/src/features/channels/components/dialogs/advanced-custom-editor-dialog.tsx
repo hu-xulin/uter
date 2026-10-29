@@ -1594,7 +1594,7 @@ function RouteEditor({
     <div
       className={cn(
         'flex flex-col gap-4 px-4 py-4 lg:gap-2 lg:px-3 lg:py-3',
-        errorMessage && 'bg-destructive/5'
+        errorMessage && 'bg-destructive-subtle'
       )}
     >
       <div

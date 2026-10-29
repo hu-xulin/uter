@@ -361,7 +361,7 @@ export function ChannelProviderPicker(props: ChannelProviderPickerProps) {
                     }
                     disabled={props.disabled}
                     onSelect={() => props.onSelect(option.target)}
-                    className='data-selected:border-primary/50 data-selected:bg-primary/5 min-h-24 flex-col items-stretch justify-between gap-2.5 rounded-lg border p-3 md:min-h-32 [&>svg]:hidden'
+                    className='data-selected:border-primary/50 data-selected:bg-primary-subtle min-h-24 flex-col items-stretch justify-between gap-2.5 rounded-lg border p-3 md:min-h-32 [&>svg]:hidden'
                   >
                     {option.target.kind === 'builtin' &&
                       isAdvancedCustomLikeChannelType(option.target.type) && (
@@ -396,8 +396,8 @@ export function ChannelProviderPicker(props: ChannelProviderPickerProps) {
                                 // warning 走已登记的 soft-foreground 档，
                                 // primary 直接用品牌色（浅底上对比度足够）。
                                 option.badge.tone === 'warning'
-                                  ? 'bg-warning/10 text-warning-soft-foreground text-xs'
-                                  : 'bg-primary/10 text-primary text-xs'
+                                  ? 'bg-warning-soft text-warning-soft-foreground text-xs'
+                                  : 'bg-primary-subtle text-primary text-xs'
                               }
                             />
                           )}
@@ -477,7 +477,7 @@ export function ChannelProviderPicker(props: ChannelProviderPickerProps) {
                   onSelect={() =>
                     props.onSelect({ kind: 'builtin', type: customType })
                   }
-                  className='data-selected:border-primary/50 data-selected:bg-primary/5 min-h-24 gap-2.5 rounded-lg border p-3 md:min-h-32 [&>svg]:hidden'
+                  className='data-selected:border-primary/50 data-selected:bg-primary-subtle min-h-24 gap-2.5 rounded-lg border p-3 md:min-h-32 [&>svg]:hidden'
                 >
                   <span className='shrink-0'>
                     <ChannelTypeLogo type={customType} size={20} />

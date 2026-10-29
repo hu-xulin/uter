@@ -256,7 +256,7 @@ function TaskBillingPreview(props: TaskBillingPreviewProps) {
         </div>
       ) : null}
       {result ? (
-        <div className='border-primary/50 bg-primary/10 flex flex-col gap-2 rounded-md border p-3 text-sm'>
+        <div className='border-primary/50 bg-primary-subtle flex flex-col gap-2 rounded-md border p-3 text-sm'>
           <Badge variant='outline' className='text-xs'>
             {t('Current pricing conditions')}:{' '}
             {taskPricingConditions(
@@ -505,7 +505,7 @@ export const TaskUsagePricingEditor = memo(function TaskUsagePricingEditor(
             ) : (
               <>
                 {allRowsFree ? (
-                  <Alert className='border-warning/40 bg-warning/10 text-warning dark:text-warning-soft-foreground'>
+                  <Alert className='border-warning/40 bg-warning-soft text-warning dark:text-warning-soft-foreground'>
                     <AlertTriangle aria-hidden='true' />
                     <AlertDescription className='text-sm text-current'>
                       {t(

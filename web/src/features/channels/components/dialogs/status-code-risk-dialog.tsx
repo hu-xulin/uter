@@ -114,12 +114,12 @@ export function StatusCodeRiskDialog({
     >
       <div className='space-y-4'>
         {open ? (
-          <div className='border-warning/40 bg-warning/5 rounded-lg border p-3 sm:p-4'>
+          <div className='border-warning/40 bg-warning-soft rounded-lg border p-3 sm:p-4'>
             <Suspense
               fallback={
                 <div
                   aria-hidden='true'
-                  className='bg-warning/10 h-32 animate-pulse rounded-md'
+                  className='bg-warning-soft h-32 animate-pulse rounded-md'
                 />
               }
             >
@@ -131,7 +131,7 @@ export function StatusCodeRiskDialog({
         ) : null}
 
         {detailItems.length > 0 && (
-          <div className='border-destructive/30 bg-destructive/5 rounded-lg border p-3'>
+          <div className='border-destructive/30 bg-destructive-subtle rounded-lg border p-3'>
             <p className='mb-2 text-sm font-medium'>
               {t('Detected high-risk status code redirect rules')}
             </p>

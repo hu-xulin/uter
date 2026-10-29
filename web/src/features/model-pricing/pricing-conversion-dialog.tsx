@@ -146,7 +146,7 @@ export function PricingConversionDialog(props: {
         </section>
         <section
           aria-label={t('After conversion')}
-          className='border-primary/30 bg-primary/5 min-w-0 space-y-4 rounded-lg border p-4'
+          className='border-primary/30 bg-primary-subtle min-w-0 space-y-4 rounded-lg border p-4'
         >
           <h3 className='font-semibold'>{t('After conversion')}</h3>
           <dl className='space-y-3'>
