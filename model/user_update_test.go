@@ -322,11 +322,11 @@ func TestUpdateUserBindColumnPreservesRestrictiveChange(t *testing.T) {
 	user := createUserBindTestUser(t)
 	require.NoError(t, DB.Model(&User{}).Where("id = ?", user.Id).
 		Update("status", common.UserStatusDisabled).Error)
-	require.NoError(t, UpdateUserBindColumn(user.Id, "wechat_id", "wx-open-id"))
+	require.NoError(t, UpdateUserBindColumn(user.Id, "github_id", "gh-open-id"))
 
 	reloaded, err := GetUserById(user.Id, true)
 	require.NoError(t, err)
-	assert.Equal(t, "wx-open-id", reloaded.WeChatId)
+	assert.Equal(t, "gh-open-id", reloaded.GitHubId)
 	assert.Equal(t, common.UserStatusDisabled, reloaded.Status)
 }
 

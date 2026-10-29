@@ -202,7 +202,7 @@ func TestSecurityEnrollmentAccessTokenMethodPolicy(t *testing.T) {
 	for _, test := range []struct {
 		name, method                     string
 		password, passkey, twoFA, locked bool
-		disabledPasskey, oauth, wechat   bool
+		disabledPasskey, oauth          bool
 		available                        bool
 	}{
 		{name: "password", method: "password", password: true, oauth: true, available: true},
@@ -212,7 +212,6 @@ func TestSecurityEnrollmentAccessTokenMethodPolicy(t *testing.T) {
 		{name: "disabled passkey blocks fallback", method: "passkey", password: true, passkey: true, disabledPasskey: true},
 		{name: "disabled passkey does not block password", method: "password", password: true, disabledPasskey: true, available: true},
 		{name: "linked oauth", method: "oauth", oauth: true, available: true},
-		{name: "wechat session cannot manage tokens", method: "oauth", wechat: true},
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			user, identity := setupSecurityEnrollmentTest(t)
@@ -235,9 +234,6 @@ func TestSecurityEnrollmentAccessTokenMethodPolicy(t *testing.T) {
 				oauth.Register("access-token-oauth", &enrollmentOAuthProvider{externalID: "linked-user"})
 				t.Cleanup(func() { oauth.Unregister("access-token-oauth") })
 			}
-			if test.wechat {
-				require.NoError(t, model.DB.Model(user).Update("wechat_id", "wechat-user").Error)
-			}
 			system_setting.GetPasskeySettings().Enabled = !test.disabledPasskey
 			passwordScope := service.VerificationScopePasswordChange
 			if !test.password {
@@ -256,23 +252,6 @@ func TestSecurityEnrollmentAccessTokenMethodPolicy(t *testing.T) {
 				assert.Equal(t, test.available, requirements.Methods[0].Available)
 				if count == 2 {
 					assert.Equal(t, service.VerificationMethodOption{Method: "passkey", Available: true}, requirements.Methods[1])
-				}
-				if test.wechat {
-					input := service.VerificationInput{Scope: scope, Method: "session"}
-					switch scope {
-					case service.VerificationScopeAccountBind:
-						input.Context = []byte(`{"provider":"email","email":"new@example.com"}`)
-					case service.VerificationScopeAccountUnbind:
-						input.Context = []byte(`{"provider_id":1}`)
-					case service.VerificationScopeAccessTokenGenerate:
-						input.Context = []byte(`{"scopes":["profile:read"],"expires_at":0}`)
-					case service.VerificationScopeAccessTokenUpdate:
-						input.Context = []byte(`{"token_id":1,"scopes":["profile:read"]}`)
-					case service.VerificationScopeAccessTokenRevoke:
-						input.Context = []byte(`{"token_id":1}`)
-					}
-					_, err := service.VerifySecurityInput(identity, input)
-					assert.ErrorIs(t, err, service.ErrProofMethod)
 				}
 			}
 		})
@@ -1691,8 +1670,8 @@ func completeFirstSecurityFactor(t *testing.T, identity service.AuthIdentity, pr
 	assert.Error(t, err)
 }
 
-func TestSecurityEnrollmentTelegramAndWeChatFirstFactor(t *testing.T) {
-	for _, provider := range []string{"telegram", "wechat"} {
+func TestSecurityEnrollmentTelegramFirstFactor(t *testing.T) {
+	for _, provider := range []string{"telegram"} {
 		for _, scope := range []string{service.VerificationScopeTwoFASetup, service.VerificationScopePasskeyRegister} {
 			t.Run(provider+"/"+scope, func(t *testing.T) {
 				var user *model.User
@@ -1710,20 +1689,9 @@ func TestSecurityEnrollmentTelegramAndWeChatFirstFactor(t *testing.T) {
 					state, code = fixture.authorization(t, "verify", identity, scope, telegramIdentityClaims(42))
 					response = telegramOAuthCallback(state, code, identity)
 					method = service.VerificationMethodOAuth
-				} else {
-					user, identity = setupSecurityEnrollmentTest(t)
-					require.NoError(t, model.DB.Model(user).Updates(map[string]any{"password": "", "wechat_id": "wechat-user"}).Error)
-					request, err := common.Marshal(service.VerificationInput{Scope: scope, Method: method})
-					require.NoError(t, err)
-					response = securityEnrollmentRequest("POST", "/api/verify", string(request), "", identity, UniversalVerify)
 				}
 				var body securityEnrollmentResponse
 				require.NoError(t, common.Unmarshal(response.Body.Bytes(), &body))
-				if provider == "wechat" {
-					assert.False(t, body.Success)
-					assert.NotContains(t, response.Body.String(), "proof_token")
-					return
-				}
 				require.True(t, body.Success, response.Body.String())
 				var proof service.SecurityProof
 				require.NoError(t, common.Unmarshal(body.Data, &proof))
@@ -1737,17 +1705,16 @@ func TestSecurityEnrollmentTelegramAndWeChatFirstFactor(t *testing.T) {
 				after, err := model.GetUserById(user.Id, true)
 				require.NoError(t, err)
 				assert.Equal(t, before.TelegramId, after.TelegramId)
-				assert.Equal(t, before.WeChatId, after.WeChatId)
 			})
 		}
 	}
 }
 
 func TestSecurityEnrollmentNeverTrustsSessionForFirstFactor(t *testing.T) {
-	for _, scenario := range []string{"wechat only", "password", "passkey", "locked 2fa", "telegram", "github", "disabled custom binding", "no binding", "binding storage failure", "revoked session"} {
+	for _, scenario := range []string{"password", "passkey", "locked 2fa", "telegram", "github", "disabled custom binding", "binding storage failure", "revoked session"} {
 		t.Run(scenario, func(t *testing.T) {
 			user, identity := setupSecurityEnrollmentTest(t)
-			require.NoError(t, model.DB.Model(user).Updates(map[string]any{"password": "", "wechat_id": "wechat-user"}).Error)
+			require.NoError(t, model.DB.Model(user).Update("password", "").Error)
 			switch scenario {
 			case "password":
 				require.NoError(t, model.DB.Model(user).Update("password", "stored-hash").Error)
@@ -1762,10 +1729,8 @@ func TestSecurityEnrollmentNeverTrustsSessionForFirstFactor(t *testing.T) {
 				require.NoError(t, model.DB.Model(user).Update("github_id", "42").Error)
 			case "disabled custom binding":
 				require.NoError(t, model.DB.Create(&model.UserOAuthBinding{UserId: user.Id, ProviderId: 42, ProviderUserId: "linked"}).Error)
-			case "no binding":
-				require.NoError(t, model.DB.Model(user).Update("wechat_id", "").Error)
 			case "binding storage failure":
-				require.NoError(t, model.DB.Callback().Query().Before("gorm:query").Register("wechat_bindings_failure", func(tx *gorm.DB) {
+				require.NoError(t, model.DB.Callback().Query().Before("gorm:query").Register("oauth_bindings_failure", func(tx *gorm.DB) {
 					if tx.Statement.Table == "user_oauth_bindings" {
 						tx.AddError(errors.New("private binding failure"))
 					}
@@ -1783,7 +1748,7 @@ func TestSecurityEnrollmentNeverTrustsSessionForFirstFactor(t *testing.T) {
 				assert.Error(t, err, scope)
 			}
 			if scenario == "binding storage failure" {
-				require.NoError(t, model.DB.Callback().Query().Remove("wechat_bindings_failure"))
+				require.NoError(t, model.DB.Callback().Query().Remove("oauth_bindings_failure"))
 			}
 			var count int64
 			require.NoError(t, model.DB.Model(&model.AuthFlow{}).Where("purpose = ?", model.AuthFlowPurposeSecurityProof).Count(&count).Error)
@@ -1838,7 +1803,7 @@ func TestSecurityEnrollmentMissingTargetsAreBusinessErrors(t *testing.T) {
 }
 
 func TestSecurityEnrollmentRejectsChangedFirstFactorPolicy(t *testing.T) {
-	for _, provider := range []string{"telegram", "wechat"} {
+	for _, provider := range []string{"telegram"} {
 		for _, stage := range []string{"proof", "setup"} {
 			t.Run(provider+"/"+stage, func(t *testing.T) {
 				fixture := setupTelegramOAuthTest(t)
@@ -1854,12 +1819,6 @@ func TestSecurityEnrollmentRejectsChangedFirstFactorPolicy(t *testing.T) {
 					require.NoError(t, common.Unmarshal(response.Body.Bytes(), &body))
 					require.True(t, body.Success, response.Body.String())
 					require.NoError(t, common.Unmarshal(body.Data, &proof))
-				} else {
-					require.NoError(t, model.DB.Model(user).Update("wechat_id", "wechat-user").Error)
-					proof, err = service.VerifySecurityInput(identity, service.VerificationInput{Scope: "2fa.setup", Method: "session"})
-					require.Error(t, err)
-					assert.Nil(t, proof)
-					return
 				}
 				_, err = service.ConsumeOperationProof(proof.ProofToken, identity, service.VerificationOperation{Scope: "passkey.register"})
 				assert.Error(t, err)
@@ -1879,8 +1838,6 @@ func TestSecurityEnrollmentRejectsChangedFirstFactorPolicy(t *testing.T) {
 				}
 				if provider == "telegram" {
 					common.TelegramOAuthEnabled = false
-				} else {
-					require.NoError(t, model.DB.Model(user).Update("telegram_id", "42").Error)
 				}
 				if stage == "proof" {
 					response := securityEnrollmentRequest("POST", "/api/user/2fa/setup", `{}`, proof.ProofToken, identity, Setup2FA)

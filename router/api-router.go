@@ -62,10 +62,6 @@ func SetApiRouter(router *gin.Engine) {
 		apiRouter.POST("/oauth/email/bind/start", middleware.UserAuth(), middleware.CriticalRateLimit(), middleware.UserCriticalRateLimit("account-security"), middleware.EmailVerificationRateLimit(), middleware.DisableCache(), controller.EmailBindStart)
 		apiRouter.POST("/oauth/email/bind/resend", middleware.UserAuth(), middleware.CriticalRateLimit(), middleware.UserCriticalRateLimit("account-security"), middleware.EmailVerificationRateLimit(), middleware.DisableCache(), controller.EmailBindResend)
 		apiRouter.POST("/oauth/email/bind", middleware.UserAuth(), middleware.CriticalRateLimit(), middleware.UserCriticalRateLimit("account-security"), middleware.DisableCache(), controller.EmailBind)
-		// WeChat uses its existing authorization-code service.
-		apiRouter.POST("/oauth/wechat/state", middleware.CriticalRateLimit(), middleware.DisableCache(), middleware.TryUserAuth(), anonymousRequestBodyLimit, controller.GenerateWeChatCode)
-		apiRouter.GET("/oauth/wechat", middleware.CriticalRateLimit(), middleware.DisableCache(), controller.WeChatAuth)
-		apiRouter.POST("/oauth/wechat/bind", middleware.UserAuth(), middleware.CriticalRateLimit(), controller.WeChatBind)
 		// WeChat Open Platform website app (PC QR-code scan login).
 		apiRouter.POST("/oauth/wechat-web/state", middleware.CriticalRateLimit(), middleware.DisableCache(), middleware.TryUserAuth(), anonymousRequestBodyLimit, controller.GenerateWeChatWebCode)
 		apiRouter.GET("/oauth/wechat-web/origin", middleware.CriticalRateLimit(), middleware.DisableCache(), controller.GetWeChatWebFlowOrigin)
@@ -102,6 +98,10 @@ func SetApiRouter(router *gin.Engine) {
 			userRoute.POST("/register", middleware.CriticalRateLimit(), anonymousRequestBodyLimit, middleware.TurnstileCheck(), controller.Register)
 			userRoute.GET("/login/encryption-key", middleware.DisableCache(), controller.GetPasswordEncryptionKey)
 			userRoute.POST("/login", middleware.CriticalRateLimit(), middleware.DisableCache(), anonymousRequestBodyLimit, middleware.TurnstileCheck(), controller.Login)
+			// 邮箱验证码登录：发送走邮件档 IP 限流（30s 2 次）+ Turnstile，
+			// 提交走登录档 CriticalRateLimit（与 /login 同档，失败计数可退款）。
+			userRoute.GET("/login/email-code", middleware.EmailVerificationRateLimit(), middleware.TurnstileCheck(), controller.SendLoginEmailCode)
+			userRoute.POST("/login/email-code", middleware.CriticalRateLimit(), middleware.DisableCache(), anonymousRequestBodyLimit, middleware.TurnstileCheck(), controller.LoginByEmailCode)
 			userRoute.POST("/login/2fa", middleware.CriticalRateLimit(), middleware.DisableCache(), anonymousRequestBodyLimit, controller.Verify2FALogin)
 			userRoute.POST("/login/verify", middleware.CriticalRateLimit(), middleware.DisableCache(), anonymousRequestBodyLimit, controller.VerifyLogin)
 			userRoute.POST("/login/passkey/begin", middleware.CriticalRateLimit(), middleware.DisableCache(), anonymousRequestBodyLimit, controller.LoginPasskeyBegin)
@@ -156,7 +156,7 @@ func SetApiRouter(router *gin.Engine) {
 				selfRoute.POST("/creem/pay", middleware.CriticalRateLimit(), anonymousRequestBodyLimit, controller.RequestCreemPay)
 				selfRoute.POST("/alipay/webpay", middleware.CriticalRateLimit(), anonymousRequestBodyLimit, controller.RequestAlipayWeb)
 				selfRoute.POST("/alipay/query", middleware.CriticalRateLimit(), anonymousRequestBodyLimit, controller.QueryAlipayOrder)
-			selfRoute.POST("/wechat/query", middleware.CriticalRateLimit(), anonymousRequestBodyLimit, controller.QueryWechatOrder)
+				selfRoute.POST("/wechat/query", middleware.CriticalRateLimit(), anonymousRequestBodyLimit, controller.QueryWechatOrder)
 				selfRoute.POST("/wechat/webpay", middleware.CriticalRateLimit(), anonymousRequestBodyLimit, controller.RequestWechatPayWeb)
 				selfRoute.POST("/waffo/amount", anonymousRequestBodyLimit, controller.RequestWaffoAmount)
 				selfRoute.POST("/waffo/pay", middleware.CriticalRateLimit(), anonymousRequestBodyLimit, controller.RequestWaffoPay)

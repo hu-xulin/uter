@@ -65,9 +65,6 @@ func GetStatus(c *gin.Context) {
 		"system_name":                 common.SystemName,
 		"logo":                        common.Logo,
 		"footer_html":                 common.Footer,
-		"wechat_qrcode":               common.WeChatAccountQRCodeImageURL,
-		"wechat_qrcode_path":          common.WeChatAccountQRCodeImagePath,
-		"wechat_login":                common.WeChatAuthEnabled,
 		"wechat_web_login":            common.WeChatWebAuthEnabled,
 		"wechat_web_app_id":           common.WeChatWebAppId,
 		"wechat_web_callback_domain":  common.WeChatWebCallbackDomain,
@@ -94,6 +91,7 @@ func GetStatus(c *gin.Context) {
 		"register_enabled":              common.RegisterEnabled,
 		"password_login_enabled":        common.PasswordLoginEnabled,
 		"password_register_enabled":     common.PasswordRegisterEnabled,
+		"email_code_login":              common.EmailCodeLoginEnabled,
 		"default_use_auto_group":        setting.DefaultUseAutoGroup,
 
 		"password_login_encryption_enabled": common.PasswordLoginEncryptionEnabled,
@@ -325,6 +323,65 @@ func SendPasswordResetEmail(c *gin.Context) {
 type PasswordResetRequest struct {
 	Email string `json:"email"`
 	Token string `json:"token"`
+}
+
+// SendLoginEmailCode 向任意合法邮箱发送登录验证码（purpose "l"）。
+//
+// 语义是「验证码登录即注册」：未注册邮箱同样发码 —— 验证码本身就是邮箱
+// 所有权的证明，登录端点验证通过后自动创建账号。滥用面由三层控制：
+// IP 级 EmailVerificationRateLimit（30s 2 次）、Turnstile 人机校验、
+// 验证码生命周期（6 位数字码、10 分钟有效、单次使用、常量时间比较、
+// 5 次失败作废，common.VerifyCodeWithKey）。
+//
+// 已注册但被禁用的账号**静默不发**（响应仍为 success）：发了也无法登录，
+// 且不给调用方任何账号状态信息。
+func SendLoginEmailCode(c *gin.Context) {
+	if !common.EmailCodeLoginEnabled {
+		common.ApiErrorT(c, "Email code login has been disabled by administrator")
+		return
+	}
+	email := model.NormalizeEmail(c.Query("email"))
+	if err := common.Validate.Var(email, "required,email"); err != nil {
+		common.ApiErrorT(c, "Invalid parameters")
+		return
+	}
+
+	// 已注册用户：邮件跟随账号语言偏好；未注册（或查库失败）：跟随请求
+	// 语言。被禁账号静默跳过 —— 发了也无法登录。
+	lang := i18n.StatedLang(c)
+	if user, err := model.GetUniqueUserByEmail(email); err == nil {
+		if user.Status != common.UserStatusEnabled {
+			logger.LogWarn(c.Request.Context(), common.LogText("login code skipped for suspended account %s", email))
+			c.JSON(http.StatusOK, gin.H{"success": true, "message": ""})
+			return
+		}
+		if preferred := user.GetSetting().Language; preferred != "" {
+			lang = preferred
+		}
+	}
+
+	code, err := common.GenerateNumericCode(6)
+	if err != nil {
+		common.ApiError(c, err)
+		return
+	}
+	common.RegisterVerificationCodeWithKey(email, code, common.LoginEmailCodePurpose)
+
+	systemName := map[string]any{"SystemName": common.SystemName}
+	heading := i18n.Translate(lang, i18n.MsgLoginEmailCodeSubject, systemName)
+	subject := common.BrandEmailSubject(heading)
+	content := common.BuildBrandEmailHTML(common.BrandEmail{
+		Heading: heading,
+		Paragraphs: []string{
+			i18n.Translate(lang, i18n.MsgLoginEmailCodeGreeting, systemName),
+		},
+		Code: code,
+		Note: i18n.Translate(lang, i18n.MsgEmailVerificationValidity, map[string]any{"Minutes": common.VerificationValidMinutes}),
+	})
+	if err := common.SendEmail(subject, email, content); err != nil {
+		logger.LogError(c.Request.Context(), common.LogText("failed to send login code email to %s: %s", email, err.Error()))
+	}
+	c.JSON(http.StatusOK, gin.H{"success": true, "message": ""})
 }
 
 func ResetPassword(c *gin.Context) {

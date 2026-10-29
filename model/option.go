@@ -41,11 +41,11 @@ func InitOptionMap() {
 	common.OptionMap["ImageDownloadPermission"] = strconv.Itoa(common.ImageDownloadPermission)
 	common.OptionMap["PasswordLoginEnabled"] = strconv.FormatBool(common.PasswordLoginEnabled)
 	common.OptionMap["PasswordRegisterEnabled"] = strconv.FormatBool(common.PasswordRegisterEnabled)
+	common.OptionMap["EmailCodeLoginEnabled"] = strconv.FormatBool(common.EmailCodeLoginEnabled)
 	common.OptionMap["EmailVerificationEnabled"] = strconv.FormatBool(common.EmailVerificationEnabled)
 	common.OptionMap["GitHubOAuthEnabled"] = strconv.FormatBool(common.GitHubOAuthEnabled)
 	common.OptionMap["LinuxDOOAuthEnabled"] = strconv.FormatBool(common.LinuxDOOAuthEnabled)
 	common.OptionMap["TelegramOAuthEnabled"] = strconv.FormatBool(common.TelegramOAuthEnabled)
-	common.OptionMap["WeChatAuthEnabled"] = strconv.FormatBool(common.WeChatAuthEnabled)
 	common.OptionMap["WeChatWebAuthEnabled"] = strconv.FormatBool(common.WeChatWebAuthEnabled)
 	common.OptionMap["WeChatWebAppId"] = common.WeChatWebAppId
 	common.OptionMap["WeChatWebAppSecret"] = common.WeChatWebAppSecret
@@ -162,10 +162,6 @@ func InitOptionMap() {
 	common.OptionMap["GitHubClientSecret"] = ""
 	common.OptionMap["TelegramBotToken"] = ""
 	common.OptionMap["TelegramBotName"] = ""
-	common.OptionMap["WeChatServerAddress"] = ""
-	common.OptionMap["WeChatServerToken"] = ""
-	common.OptionMap["WeChatAccountQRCodeImageURL"] = ""
-	common.OptionMap["WeChatAccountQRCodeImagePath"] = ""
 	common.OptionMap["TurnstileSiteKey"] = ""
 	common.OptionMap["TurnstileSecretKey"] = ""
 	common.OptionMap["QuotaForNewUser"] = strconv.Itoa(common.QuotaForNewUser)
@@ -496,14 +492,14 @@ func updateOptionMap(key string, value string) (err error) {
 			common.PasswordRegisterEnabled = boolValue
 		case "PasswordLoginEnabled":
 			common.PasswordLoginEnabled = boolValue
+		case "EmailCodeLoginEnabled":
+			common.EmailCodeLoginEnabled = boolValue
 		case "EmailVerificationEnabled":
 			common.EmailVerificationEnabled = boolValue
 		case "GitHubOAuthEnabled":
 			common.GitHubOAuthEnabled = boolValue
 		case "LinuxDOOAuthEnabled":
 			common.LinuxDOOAuthEnabled = boolValue
-		case "WeChatAuthEnabled":
-			common.WeChatAuthEnabled = boolValue
 		case "WeChatWebAuthEnabled":
 			common.WeChatWebAuthEnabled = boolValue
 		case "WeChatWebUseUnionId":
@@ -736,14 +732,6 @@ func updateOptionMap(key string, value string) (err error) {
 		common.SystemName = value
 	case "Logo":
 		common.Logo = value
-	case "WeChatServerAddress":
-		common.WeChatServerAddress = value
-	case "WeChatServerToken":
-		common.WeChatServerToken = value
-	case "WeChatAccountQRCodeImageURL":
-		common.WeChatAccountQRCodeImageURL = value
-	case "WeChatAccountQRCodeImagePath":
-		common.WeChatAccountQRCodeImagePath = value
 	case "WeChatWebAppId":
 		common.WeChatWebAppId = value
 	case "WeChatWebAppSecret":

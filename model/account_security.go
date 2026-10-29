@@ -68,7 +68,6 @@ func ChangeUserPassword(identity AuthSessionIdentity, update *User, firstPasswor
 type AccountLoginMethods struct {
 	Password          bool
 	Passkey           bool
-	WeChat            bool
 	OAuthColumns      []string
 	CustomProviderIDs []int
 }
@@ -89,7 +88,7 @@ func UnbindUserOAuthForSession(identity AuthSessionIdentity, providerID int, ena
 			}
 			return err
 		}
-		hasLogin := enabled.Password && current.Password != "" || enabled.WeChat && current.WeChatId != ""
+		hasLogin := enabled.Password && current.Password != ""
 		columns := map[string]string{
 			"github_id": current.GitHubId, "discord_id": current.DiscordId,
 			"oidc_id": current.OidcId, "linux_do_id": current.LinuxDOId, "telegram_id": current.TelegramId,

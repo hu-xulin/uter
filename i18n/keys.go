@@ -136,7 +136,6 @@ const (
 	MsgUserGitHubIdEmpty             = "user.github_id_empty"
 	MsgUserDiscordIdEmpty            = "user.discord_id_empty"
 	MsgUserOidcIdEmpty               = "user.oidc_id_empty"
-	MsgUserWeChatIdEmpty             = "user.wechat_id_empty"
 	MsgUserTelegramIdEmpty           = "user.telegram_id_empty"
 	MsgUserTelegramNotBound          = "user.telegram_not_bound"
 	MsgUserLinuxDOIdEmpty            = "user.linux_do_id_empty"
@@ -402,12 +401,6 @@ const (
 	MsgTwofaBackup_regenerated                  = "twofa.backup_regenerated"
 	MsgTwofaInsufficient_privilege              = "twofa.insufficient_privilege"
 	MsgTwofaForce_disabled                      = "twofa.force_disabled"
-	MsgWechatLogin_disabled                     = "wechat.login_disabled"
-	MsgWechatUser_cancelled                     = "wechat.user_cancelled"
-	MsgWechatRegistration_closed                = "wechat.registration_closed"
-	MsgWechatUser_banned                        = "wechat.user_banned"
-	MsgWechatInvalid_request                    = "wechat.invalid_request"
-	MsgWechatAlready_bound                      = "wechat.already_bound"
 	MsgOauthProvider_not_found                  = "oauth.provider_not_found"
 	MsgOauthSlug_in_use                         = "oauth.slug_in_use"
 	MsgOauthSlug_conflict                       = "oauth.slug_conflict"
@@ -425,7 +418,6 @@ const (
 	MsgSettingOidc_creds_required               = "setting.oidc_creds_required"
 	MsgSettingLinuxdo_creds_required            = "setting.linuxdo_creds_required"
 	MsgSettingEmail_domain_creds_required       = "setting.email_domain_creds_required"
-	MsgSettingWechat_login_creds_required       = "setting.wechat_login_creds_required"
 	MsgSettingTurnstile_creds_required          = "setting.turnstile_creds_required"
 	MsgSettingClassic_theme_removed             = "setting.classic_theme_removed"
 	MsgSettingImage_ratio_failed                = "setting.image_ratio_failed"
@@ -554,6 +546,9 @@ const (
 	MsgEmailVerificationCode     = "email.verification.code"
 	MsgEmailVerificationValidity = "email.verification.validity"
 
+	MsgLoginEmailCodeSubject  = "email.login_code.subject"
+	MsgLoginEmailCodeGreeting = "email.login_code.greeting"
+
 	MsgEmailPasswordResetSubject      = "email.password_reset.subject"
 	MsgEmailPasswordResetGreeting     = "email.password_reset.greeting"
 	MsgEmailPasswordResetLink         = "email.password_reset.link"
@@ -577,7 +572,6 @@ const (
 	MsgSecurityEventEmailConfirmed       = "email.security_event.email_confirmed"
 	MsgSecurityEventLoginLinked          = "email.security_event.login_linked"
 	MsgSecurityEventLoginUnlinked        = "email.security_event.login_unlinked"
-	MsgSecurityEventWeChatLinked         = "email.security_event.wechat_linked"
 )
 
 // Low-quota notices, in the recipient's saved language
