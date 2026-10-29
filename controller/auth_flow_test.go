@@ -386,7 +386,11 @@ func TestSecurityLoginAllPrimaryTransportsRequireAdditionalVerification(t *testi
 				previousEnabled, previousAddress := common.WeChatAuthEnabled, common.WeChatServerAddress
 				common.WeChatAuthEnabled, common.WeChatServerAddress = true, upstream.URL
 				t.Cleanup(func() { common.WeChatAuthEnabled, common.WeChatServerAddress = previousEnabled, previousAddress })
-				response = securityEnrollmentRequest("GET", "/api/oauth/wechat?code=wechat-code", "", "", service.AuthIdentity{}, WeChatAuth)
+				state, loginNonce := createOAuthLoginFlow(t, "wechat")
+				router := gin.New()
+				router.GET("/api/oauth/wechat", WeChatAuth)
+				response = httptest.NewRecorder()
+				router.ServeHTTP(response, withOAuthLoginNonceCookie(httptest.NewRequest("GET", "/api/oauth/wechat?state="+state+"&code=wechat-code", nil), loginNonce))
 			default:
 				const slug = "unified-login-test"
 				if transport == "custom oauth" {
