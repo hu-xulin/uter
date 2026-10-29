@@ -38,6 +38,73 @@ This is an AI API gateway/proxy built with Go. It aggregates 40+ upstream AI pro
 - Usage: `useTranslation()` hook, call `t('English key')` in components
 - CLI tools: `bun run i18n:sync` (from `web/`)
 
+## AI Agent Operating Discipline (Mandatory)
+
+These four rules govern every AI-assisted change in this repository. They bind
+any agent or assistant editing code here, regardless of which tool drives the
+session, and they take precedence over convenience. Violating any one of them
+makes the work invalid even if the code itself compiles.
+
+### 1. Rule Auto-Loading
+
+Load the governing rules **before** acting, not after something breaks. Read the
+right scope every time:
+
+| Scope | Authoritative file |
+|---|---|
+| Repository-wide | `AGENTS.md` (this file) |
+| Frontend (`web/`) | `web/AGENTS.md` |
+| Design system / typography / color | `web/docs/design-system/design-system.md` (single authoritative file) |
+| Execution methodology | `.ai/AIES.md` + `.ai/README.md` |
+
+Re-read them when you **start a new session**, **switch to a different task**,
+or **descend into a subdirectory that has its own `AGENTS.md`**. Never rely on
+recollection of rules from a previous session — context is rebuilt fresh each
+time, and remembered rules are exactly how regressions get reintroduced.
+
+### 2. Automated Quality Gates
+
+Never substitute manual inspection for a gate that already exists, and never
+declare work done while an applicable gate is red. Non-zero exit is a stop
+condition, not a warning.
+
+- **Everything at once**: `./scripts/verify-all.sh` (add `--quick` to skip slow suites)
+- **Go**: `gofmt -l .`, `go vet ./...`, `make test`; golangci-lint v2（gofmt/govet/ineffassign/unused/staticcheck，CI 只拦新增问题，存量基线 121 项分批清理；本地可用 `go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.15.0` 后 `golangci-lint run`，v1.64.8 与 Go 1.27.3 不兼容勿用）
+- **Frontend** (run from `web/`): `bun run typecheck`, `bun run lint`, `bun run test`, `bun run lint:design:strict`, `bun run copyright:check`, `bun run build:check`
+
+The same set runs in CI (`.github/workflows/ci.yml` and
+`release-gate.yml`). "It should pass CI" is not a claim — run it.
+
+### 3. Verification Evidence
+
+A completion report is valid **only** when it carries evidence. Every report
+must state, explicitly:
+
+1. The **exact commands executed** (copyable), not "I ran the checks".
+2. **Actual results**: exit codes, pass/fail counts, and the names of any failing tests.
+3. The **files changed**, listed by path.
+4. **Known failures or skipped items** — never silently omitted, never rounded away.
+
+Claims such as "已检查", "tests passed", "consistent with the spec", or "looks
+correct" are rejected and treated as incomplete work. If a gate was not run, say
+so and label the result unverified.
+
+### 4. Change Protection
+
+- **Inspect before editing**: run `git status --short` first and note what was
+  already dirty. This repository routinely carries concurrent work in progress;
+  never fold pre-existing modifications into your own commit.
+- **Stage explicitly**: `git add <path>` only. `git add -A` / `-u` is forbidden.
+  Review with `git diff --cached --name-status` before committing.
+- **No unauthorized git actions**: never commit, push, merge, rebase, amend, or
+  deploy unless explicitly authorized for **that specific action**. Producing
+  commits is separate authorization from pushing them.
+- **No destructive shell operations**: never `rm -rf`, never `git clean -fd`.
+  Remove files via the OS trash/recycle mechanism, in batches of at most 10,
+  verifying after each batch.
+- **Never stage secrets or local state**: `.env`, `*.db` / `-shm` / `-wal`,
+  `logs/`, build artifacts must not enter commits, code, or documentation.
+
 ## Rules
 
 ### Common Code Quality
@@ -173,6 +240,86 @@ Inside `relaykit/`, use `kitutil.*` from `relaykit/relayconvert/kitutil/json.go`
 - Frontend UI text must support i18n with `i18next`/`react-i18next`. Use flat JSON locale files in `web/src/i18n/locales/{lang}.json`, with English source strings as keys.
 - In React components, use `useTranslation()` and call `t('English key')` for user-facing text.
 - Follow `web/AGENTS.md` for detailed frontend conventions, including TypeScript, component structure, styling, accessibility, testing, and build checks.
+
+### Design System Enforcement
+
+The approved design system is the single source of truth for all UI implementation.
+**Full spec: `web/docs/design-system/design-system.md`** (rules + enforcement layers).
+**Visual specimen: `web/docs/design-system/showcase.html`** — open it to see every
+font size, color, size tier, and component rendered with the real tokens.
+
+Before changing any UI code, read the relevant chapters of the spec (§11 colors,
+§12 typography, §14 components, §21 responsive, §26 exceptions) and the implementation under
+`web/src/design-system/`. If the documentation conflicts with the implementation,
+do not silently choose one: design values come from code (`tokens/`, `theme.css`),
+rules and boundaries come from the spec.
+
+**Mandatory rules:**
+
+- Use approved design tokens for colors, typography, spacing, radii, shadows, and
+  motion. Do not introduce arbitrary colors, font sizes, spacing values, shadows,
+  or border radii without authorization.
+- Reuse existing `web/src/components/ui/` components before creating new ones.
+  Do not duplicate existing component implementations to bypass design-system
+  restrictions.
+- Preserve existing design-system APIs and naming conventions.
+- Follow the approved Web and H5 responsive rules: desktop and mobile share one
+  type scale; input text is 14px on every platform (no H5 16px exception).
+- Implement all applicable interaction states, loading states, empty states, error
+  states, and accessibility behavior.
+- Do not change unrelated business logic while implementing UI changes.
+- If a target effect must match another product (e.g. "same look as upstream"),
+  encode that **effect** as a token or a spec clause and implement against it.
+  Matching another codebase's class names is never a reason to register an
+  exception or to bypass tokens. See spec §11.5 / §26.
+
+**Before implementation:** inspect the relevant design rules and existing
+components; identify reusable components and tokens; identify affected pages,
+breakpoints, and interaction states; list any missing or contradictory design
+rules instead of inventing new decisions.
+
+**During implementation:** prefer existing components and approved variants;
+extend the design system only when necessary and record the reason and scope;
+never disable lint rules, weaken tests, or bypass CI to make a change pass; never
+claim a test passed unless it was actually executed and its result verified.
+
+**Required verification (report each result explicitly):**
+
+```bash
+cd web
+bun run lint:design:strict                    # T1–T15 token gate
+bunx vitest run src/design-system/__tests__   # guard tests
+npx tsgo -b --force                           # frontend type gate
+```
+
+For visual changes, also open the specimen page and compare the affected
+sections. Two screenshot-diff tracks exist, and **neither runs in CI**:
+
+```bash
+cd web
+bun run test:visual        # track 1: showcase.html diff, zero-dep, headless Chrome
+bun run test:visual:e2e    # track 2: Playwright diff of real routes, needs the full stack
+```
+
+- Track 1 (`scripts/visual-regression.mjs`) screenshots
+  `web/docs/design-system/showcase.html` at 1440x900 and 390x844 and compares
+  hashes stored in `visual-regression/baseline.json`.
+- Track 2 (`web/e2e/visual/`) covers real routes, including authenticated ones,
+  and requires the Go backend plus `bun run dev` to be running.
+- Pixel baselines depend on local font rendering and GPU compositing, so both
+  tracks are deliberately **local-only**; wiring them into CI would produce
+  cross-OS flakes. Both exit non-zero with `BLOCKED` (track 1: exit 2; track 2
+  via `lib/service-gate.ts`) when the browser or service stack is missing.
+  `BLOCKED` means *not executed* — never report it as a pass.
+
+**Completion criteria:** a UI task is complete only when the implementation follows
+the approved rules, introduces no new token violations, required checks pass (or
+remaining failures are documented with command, output, and reason), existing
+functionality is intact, verification evidence is provided, and any design-system
+exception is registered in the spec (§26) and the gate's `ALLOWLIST`.
+
+Never report full compliance based solely on visual inspection or a successful
+compilation.
 
 ### Project Governance
 
