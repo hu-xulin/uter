@@ -2448,6 +2448,8 @@
     "Email Domain Restriction": "Email Domain Restriction",
     "Email Domain Whitelist": "Email Domain Whitelist",
     "Email Field": "Email Field",
+    "Email Code Login": "Email Code Login",
+    "Allow users to sign in with an email verification code (requires SMTP)": "Allow users to sign in with an email verification code (requires SMTP)",
     "Email Verification": "Email Verification",
     "Email verification code is incorrect.": "Email verification code is incorrect.",
     "Email verification has ended. Start again to continue.": "Email verification has ended. Start again to continue.",
@@ -5681,6 +5683,9 @@
     "Self-Use Mode": "Self-Use Mode",
     "Send": "Send",
     "Send a request": "Send a request",
+    "Sign in with email code": "Sign in with email code",
+    "Back to password sign in": "Back to password sign in",
+    "Email code sent. Please check your inbox.": "Email code sent. Please check your inbox.",
     "Send code": "Send code",
     "Send reset email": "Send reset email",
     "Sending...": "Sending...",
@@ -7685,13 +7690,11 @@
     "Last synced: {{time}}": "Last synced: {{time}}",
     "Failed to sync exchange rate": "Failed to sync exchange rate",
     "Exchange rate synced: 1 USD = {{rate}}": "Exchange rate synced: 1 USD = {{rate}}",
-    "Fetched automatically from the market USD to CNY rate every 10 minutes, so this field is read-only. The payment price in the Payment Gateway settings is derived from it as the exchange rate {{adjustment}}, which is deducted automatically.": "Fetched automatically from the market USD to CNY rate every 10 minutes, so this field is read-only. The payment price in the Payment Gateway settings is derived from it as the exchange rate {{adjustment}}, which is deducted automatically.",
     "Charged for each 1 USD of balance. Derived automatically as the exchange rate {{adjustment}} and refreshed every 10 minutes, so this field is read-only. Applies to every payment method that settles in CNY (Alipay, WeChat Pay, Epay).": "Charged for each 1 USD of balance. Derived automatically as the exchange rate {{adjustment}} and refreshed every 10 minutes, so this field is read-only. Applies to every payment method that settles in CNY (Alipay, WeChat Pay, Epay).",
     "Smallest USD amount users can recharge. Applies to every payment method (Alipay, WeChat Pay, Epay).": "Smallest USD amount users can recharge. Applies to every payment method (Alipay, WeChat Pay, Epay).",
     "Channel Login & Sync": "Channel Login & Sync",
     "Log in to an upstream channel, then sync its model list and discounted prices on a schedule. Prices are converted with the rule below and written into the ratio table automatically.": "Log in to an upstream channel, then sync its model list and discounted prices on a schedule. Prices are converted with the rule below and written into the ratio table automatically.",
     "Enable scheduled sync": "Enable scheduled sync",
-    "When enabled, the upstream model list and prices are synced automatically every day and converted into Uter prices.": "When enabled, the upstream model list and prices are synced automatically every day and converted into Uter prices.",
     "Upstream channel": "Upstream channel",
     "The channel whose model list and prices are read.": "The channel whose model list and prices are read.",
     "DreamRouter": "DreamRouter",
@@ -7759,6 +7762,8 @@
     "Your WeChat website app secret": "Your WeChat website app secret",
     "Prices are in USD: per 1M tokens for token-billed models, per request for image and video models. The discount ratio is measured against the upstream list price.": "Prices are in USD: per 1M tokens for token-billed models, per request for image and video models. The discount ratio is measured against the upstream list price.",
     "Enable Waffo Pancake checkout": "Enable Waffo Pancake checkout",
-    "When on, Waffo Pancake appears as a top-up method in the wallet. Turn off to hide it from the wallet without removing your credentials — already-paid orders still settle via the webhook.": "When on, Waffo Pancake appears as a top-up method in the wallet. Turn off to hide it from the wallet without removing your credentials — already-paid orders still settle via the webhook."
+    "When on, Waffo Pancake appears as a top-up method in the wallet. Turn off to hide it from the wallet without removing your credentials — already-paid orders still settle via the webhook.": "When on, Waffo Pancake appears as a top-up method in the wallet. Turn off to hide it from the wallet without removing your credentials — already-paid orders still settle via the webhook.",
+    "When enabled, the upstream model list and prices are synced automatically every 10 minutes and converted into Uter prices.": "When enabled, the upstream model list and prices are synced automatically every 10 minutes and converted into Uter prices.",
+    "Fetched automatically from the market USD to CNY rate every 10 minutes, so this field is read-only. The payment price in the Payment Gateway settings is derived from it as the exchange rate {{adjustment}}, which is added automatically.": "Fetched automatically from the market USD to CNY rate every 10 minutes, so this field is read-only. The payment price in the Payment Gateway settings is derived from it as the exchange rate {{adjustment}}, which is added automatically."
   }
 }

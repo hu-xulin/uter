@@ -166,7 +166,6 @@ const defaultModelSettings: ModelSettings = {
   DreamRouterSyncChannelID: '20',
   DreamRouterSyncUsername: '',
   DreamRouterSyncPassword: '',
-  DreamRouterSyncHour: '0',
   DreamRouterSyncRuleDirection: 'increase',
   DreamRouterSyncRuleAmount: '0.1',
 }

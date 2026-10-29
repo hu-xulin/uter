@@ -108,8 +108,8 @@ const (
 	// 上游渠道：目前仅创梦（DreamRouter）一种实现。新增渠道时在此登记
 	// provider id，并在下方 switch 里接上对应实现。
 	dreamRouterSyncProviderKey = "DreamRouterSyncProvider"
-	// 同步时间：每天几点（0-23，本地时区）。缺省 0 = 每天 0 点。
-	dreamRouterSyncHourKey = "DreamRouterSyncHour"
+	// 🔴 同步频率已固定为每 10 分钟一次（2026-10-30），原「每天几点」配置
+	// DreamRouterSyncHour 废弃：不再读取，库中残留值无害。
 	// 价格规则：方向（increase=加价 / decrease=降价）与幅度（折数，0-1）。
 	// 缺省 increase + 0.1，与历史 DreamRouterSyncStep=0.1 行为一致。
 	dreamRouterSyncRuleDirectionKey = "DreamRouterSyncRuleDirection"
@@ -117,7 +117,6 @@ const (
 
 	dreamRouterDefaultChannelID = 20
 	dreamRouterDefaultStep      = 0.1
-	dreamRouterDefaultSyncHour  = 0
 	dreamRouterHTTPTimeout      = 30 * time.Second
 )
 
@@ -336,8 +335,6 @@ type DreamRouterSyncConfig struct {
 	Step      float64
 	// Provider 上游渠道标识（目前仅创梦 dreamrouter）。
 	Provider string
-	// SyncHour 每天几点执行（0-23，本地时区）。
-	SyncHour int
 	// RuleDirection 价格规则方向：increase 加价 / decrease 降价。
 	RuleDirection string
 	// RuleAmount 价格规则幅度（折数，0-1）。0 表示不加不减。
@@ -356,7 +353,6 @@ func LoadDreamRouterSyncConfig() DreamRouterSyncConfig {
 		Password:      "",
 		Step:          dreamRouterDefaultStep,
 		Provider:      DreamRouterProviderDreamRouter,
-		SyncHour:      dreamRouterDefaultSyncHour,
 		RuleDirection: DreamRouterRuleDirectionIncrease,
 		RuleAmount:    dreamRouterDefaultStep,
 	}
@@ -382,11 +378,6 @@ func LoadDreamRouterSyncConfig() DreamRouterSyncConfig {
 	// ── 渠道登录与同步：以下几项由前端设置区写入 ──
 	if v := strings.TrimSpace(common.OptionMap[dreamRouterSyncProviderKey]); v != "" {
 		cfg.Provider = v
-	}
-	if v := strings.TrimSpace(common.OptionMap[dreamRouterSyncHourKey]); v != "" {
-		if hour, err := strconv.Atoi(v); err == nil && hour >= 0 && hour <= 23 {
-			cfg.SyncHour = hour
-		}
 	}
 	if v := strings.TrimSpace(common.OptionMap[dreamRouterSyncRuleDirectionKey]); v != "" {
 		switch v {

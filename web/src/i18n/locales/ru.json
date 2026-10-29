@@ -2448,6 +2448,8 @@
     "Email Domain Restriction": "Ограничение по домену Email",
     "Email Domain Whitelist": "Белый список доменов Email",
     "Email Field": "Поле email",
+    "Email Code Login": "Вход по коду из письма",
+    "Allow users to sign in with an email verification code (requires SMTP)": "Разрешить вход по коду из письма (требуется настройка почты)",
     "Email Verification": "Верификация Email",
     "Email verification code is incorrect.": "Неверный код подтверждения почты.",
     "Email verification has ended. Start again to continue.": "Подтверждение почты завершено. Начните заново, чтобы продолжить.",
@@ -5681,6 +5683,9 @@
     "Self-Use Mode": "Режим самоиспользования",
     "Send": "Отправить",
     "Send a request": "Отправить запрос",
+    "Sign in with email code": "Войти по коду из письма",
+    "Back to password sign in": "Вернуться к входу по паролю",
+    "Email code sent. Please check your inbox.": "Код отправлен. Проверьте почту.",
     "Send code": "Отправить код",
     "Send reset email": "Отправить письмо для сброса пароля",
     "Sending...": "Отправка...",
@@ -7685,13 +7690,11 @@
     "Last synced: {{time}}": "Последняя синхронизация: {{time}}",
     "Failed to sync exchange rate": "Не удалось синхронизировать курс",
     "Exchange rate synced: 1 USD = {{rate}}": "Курс синхронизирован: 1 USD = {{rate}}",
-    "Fetched automatically from the market USD to CNY rate every 10 minutes, so this field is read-only. The payment price in the Payment Gateway settings is derived from it as the exchange rate {{adjustment}}, which is deducted automatically.": "Автоматически берётся из рыночного курса USD → CNY каждые 10 минут, поэтому поле доступно только для чтения. Цена в настройках платёжного шлюза выводится из него как курс {{adjustment}}: поправка вычитается автоматически.",
     "Charged for each 1 USD of balance. Derived automatically as the exchange rate {{adjustment}} and refreshed every 10 minutes, so this field is read-only. Applies to every payment method that settles in CNY (Alipay, WeChat Pay, Epay).": "Сумма за каждые 1 USD баланса. Рассчитывается автоматически как курс {{adjustment}} и обновляется каждые 10 минут, поэтому поле доступно только для чтения. Применяется ко всем способам оплаты в CNY (Alipay, WeChat Pay, Epay).",
     "Smallest USD amount users can recharge. Applies to every payment method (Alipay, WeChat Pay, Epay).": "Минимальная сумма в USD для пополнения. Применяется ко всем способам оплаты (Alipay, WeChat Pay, Epay).",
     "Channel Login & Sync": "Вход и синхронизация канала",
     "Log in to an upstream channel, then sync its model list and discounted prices on a schedule. Prices are converted with the rule below and written into the ratio table automatically.": "Войдите в вышестоящий канал, затем по расписанию синхронизируйте список моделей и цены со скидкой. Цены пересчитываются по правилу ниже и автоматически записываются в таблицу коэффициентов.",
     "Enable scheduled sync": "Включить синхронизацию по расписанию",
-    "When enabled, the upstream model list and prices are synced automatically every day and converted into Uter prices.": "После включения список моделей и цены вышестоящего канала синхронизируются ежедневно и пересчитываются в цены Uter.",
     "Upstream channel": "Вышестоящий канал",
     "The channel whose model list and prices are read.": "Канал, из которого читаются список моделей и цены.",
     "DreamRouter": "DreamRouter",
@@ -7759,6 +7762,8 @@
     "Your WeChat website app secret": "Секрет вашего веб-приложения WeChat",
     "Prices are in USD: per 1M tokens for token-billed models, per request for image and video models. The discount ratio is measured against the upstream list price.": "Цены в USD: за 1 млн токенов для моделей с оплатой по токенам, за запрос для моделей изображений и видео. Коэффициент скидки рассчитывается относительно прайс-листа источника.",
     "Enable Waffo Pancake checkout": "Включить оформление заказа Waffo Pancake",
-    "When on, Waffo Pancake appears as a top-up method in the wallet. Turn off to hide it from the wallet without removing your credentials — already-paid orders still settle via the webhook.": "Когда включено, Waffo Pancake отображается как способ пополнения в кошельке. Отключите, чтобы скрыть его из кошелька без удаления ваших учётных данных — уже оплаченные заказы по-прежнему проводятся через webhook."
+    "When on, Waffo Pancake appears as a top-up method in the wallet. Turn off to hide it from the wallet without removing your credentials — already-paid orders still settle via the webhook.": "Когда включено, Waffo Pancake отображается как способ пополнения в кошельке. Отключите, чтобы скрыть его из кошелька без удаления ваших учётных данных — уже оплаченные заказы по-прежнему проводятся через webhook.",
+    "When enabled, the upstream model list and prices are synced automatically every 10 minutes and converted into Uter prices.": "После включения список моделей и цены вышестоящего канала синхронизируются каждые 10 минут и пересчитываются в цены Uter.",
+    "Fetched automatically from the market USD to CNY rate every 10 minutes, so this field is read-only. The payment price in the Payment Gateway settings is derived from it as the exchange rate {{adjustment}}, which is added automatically.": "Автоматически берётся из рыночного курса USD → CNY каждые 10 минут, поэтому поле доступно только для чтения. Цена в настройках платёжного шлюза выводится из него как курс {{adjustment}}: поправка прибавляется автоматически."
   }
 }
