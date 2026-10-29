@@ -26,6 +26,7 @@ import { Combobox } from '@/components/ui/combobox'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { SecretFileInput } from '@/components/ui/secret-file-input'
+import { Switch } from '@/components/ui/switch'
 import { Heading } from '@/design-system'
 import { getPaymentErrorTranslation } from '@/features/wallet/lib/payment'
 import { handleServerError } from '@/lib/handle-server-error'
@@ -44,6 +45,8 @@ export type WaffoPancakeSettingsValues = {
   WaffoPancakeMerchantID: string
   WaffoPancakePrivateKey: string
   WaffoPancakeReturnURL: string
+  /** 钱包入口显式开关：关闭后钱包不露出 Waffo Pancake 充值入口（webhook 仍独立结算）。 */
+  WaffoPancakeEnabled: boolean
 }
 
 export interface WaffoPancakeBinding {
@@ -393,6 +396,22 @@ export function WaffoPancakeSettingsSection({
             'Start collecting payments globally without registering a company. Built for indie developers, OPC sole proprietorships, and startups. Waffo Pancake acts as your Merchant of Record, taking on the compliance burden of global payment collection — consumption tax, invoicing, subscription management, refunds, and chargebacks. Solo developers can launch fast and stay focused on product instead of compliance. Onboard in minutes — one prompt to a full integration.'
           )}
         </p>
+      </div>
+      <div className='flex min-w-0 items-center justify-between gap-4 rounded-md border p-4'>
+        <div className='space-y-1'>
+          <Label>{t('Enable Waffo Pancake checkout')}</Label>
+          <p className='text-muted-foreground text-sm'>
+            {t(
+              'When on, Waffo Pancake appears as a top-up method in the wallet. Turn off to hide it from the wallet without removing your credentials — already-paid orders still settle via the webhook.'
+            )}
+          </p>
+        </div>
+        <Switch
+          checked={values.WaffoPancakeEnabled}
+          onCheckedChange={(checked) =>
+            onValueChange('WaffoPancakeEnabled', checked)
+          }
+        />
       </div>
       <div className='flex min-w-0 flex-col gap-4'>
         {/* Blue box — webhook configuration only. */}

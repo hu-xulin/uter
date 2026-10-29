@@ -413,6 +413,8 @@ export type BillingSettings = {
   // section (saved via /api/option/waffo-pancake/save).
   WaffoPancakeStoreID: string
   WaffoPancakeProductID: string
+  /** 钱包入口显式开关：关闭后钱包不露出 Waffo Pancake 充值入口（已支付订单仍由 webhook 结算）。默认开启。 */
+  WaffoPancakeEnabled: boolean
   // Official China payments (Alipay 当面付 / WeChat Pay Native)
   AlipayEnabled: boolean
   AlipayAppId: string

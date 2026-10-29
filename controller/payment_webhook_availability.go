@@ -99,6 +99,11 @@ func isWaffoPancakeTopUpEnabled() bool {
 	if !isPaymentComplianceConfirmed() {
 		return false
 	}
+	// 显式开关：运营可在后台关闭钱包入口而不动凭据；关闭后新充值入口隐藏，
+	// 但 webhook 仍独立可用（isWaffoPancakeWebhookEnabled），已支付订单照常结算。
+	if !setting.WaffoPancakeEnabled {
+		return false
+	}
 	// Webhook 验签公钥随 SDK 内置且为**全局共享**（所有商户同一把），无法据此
 	// 分辨事件归属。StoreID 是唯一能把「发给本店的真实事件」与「攻击者用自己商户
 	// 伪造的事件」分开的绑定，因此必须配置，否则 webhook 无法安全启用。
