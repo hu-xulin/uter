@@ -109,6 +109,18 @@ var requiredGatewayCallbacks = []gatewayCallback{
 		rechargeCall:    "model.RechargeAlipay(",
 	},
 	{
+		// 微信主动查单与支付宝同理：验签在 service.WechatQueryOrder 内部完成，
+		// 「幂等 + 金额比对 + 入账」收敛在 applyWechatQueryResult（用户回跳、
+		// 后台对账、读时对账共用），防护只会同时生效或同时失效。
+		handler:         "QueryWechatOrder",
+		worker:          "applyWechatQueryResult",
+		file:            "topup_wechat.go",
+		verifySign:      []string{"service.WechatQueryOrder("},
+		idempotency:     []string{"LockOrder(", "alreadyDone"},
+		paidAmountMatch: []string{"providerExpectedMinorUnits(", "WechatReconcileAmountMismatch"},
+		rechargeCall:    "model.RechargeWechatPay(",
+	},
+	{
 		handler:         "WechatPayNotify",
 		file:            "topup_wechat.go",
 		verifySign:      []string{"service.WechatPayVerifyNotify("},
