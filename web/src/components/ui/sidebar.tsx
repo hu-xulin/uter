@@ -425,7 +425,7 @@ function SidebarGroupLabel({
     props: mergeProps<'div'>(
       {
         className: cn(
-          'flex h-(--ds-nav-height-md) shrink-0 items-center rounded-md px-2 text-xs font-semibold text-sidebar-foreground ring-sidebar-ring outline-hidden transition-[margin,opacity] ds-motion-base group-data-[collapsible=icon]:pointer-events-none group-data-[collapsible=icon]:-mt-8 group-data-[collapsible=icon]:opacity-0 focus-visible:ring-1 [&>svg]:size-3.5 [&>svg]:shrink-0',
+          'flex h-(--ds-nav-height-md) shrink-0 items-center rounded-md px-2 text-xs text-sidebar-foreground ring-sidebar-ring outline-hidden transition-[margin,opacity] ds-motion-base group-data-[collapsible=icon]:pointer-events-none group-data-[collapsible=icon]:-mt-8 group-data-[collapsible=icon]:opacity-0 focus-visible:ring-1 [&>svg]:size-3.5 [&>svg]:shrink-0',
           className
         ),
       },
