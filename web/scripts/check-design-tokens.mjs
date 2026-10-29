@@ -108,6 +108,16 @@ const ALLOWLIST = [
       '（from-blue-400 via-violet-400 to-purple-500）。chart-* 会随主题预设漂移，' +
       '无法保证跨主题恒定与上游一致。',
   },
+  {
+    rules: ['T6', 'T7'],
+    match: /^features\/home\/components\/hero-terminal-demo\.tsx$/,
+    reason:
+      '首屏 hero 代码卡（终端 demo）须逐类对齐上游 new-api 的多色配色、勿回退' +
+      '（2026-10-29 决案）：curl=emerald、flag=blue、JSON key=sky、字符串=amber、' +
+      '数字=violet、标点=foreground，状态点辉光 shadow-[0_0_8px_rgba(16,185,129,…)]。' +
+      '全部改走语义 Token（success/info/warning 等）会因主题预设漂移而与上游渲染' +
+      '不一致，无法用 Token 表达，故整体登记为受保护特例。',
+  },
 ]
 
 const RULES = {
