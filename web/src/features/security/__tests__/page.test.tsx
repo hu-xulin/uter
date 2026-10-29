@@ -117,7 +117,6 @@ async function renderPage(path = '/security') {
   })
   client.setQueryData(['status'], {
     checkin_enabled: false,
-    wechat_login: true,
     github_oauth: true,
     oidc_enabled: true,
     custom_oauth_providers: [
@@ -211,7 +210,7 @@ describe('security page migration', () => {
     const bindings = await screen.findByRole('list', {
       name: 'Account Bindings',
     })
-    expect(within(bindings).getAllByRole('listitem')).toHaveLength(5)
+    expect(within(bindings).getAllByRole('listitem')).toHaveLength(4)
     expect(within(bindings).getByText('Gitea')).toBeVisible()
     expect(bindings).toHaveClass(
       'grid-cols-1',

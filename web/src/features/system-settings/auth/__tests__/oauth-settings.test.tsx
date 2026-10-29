@@ -61,11 +61,11 @@ const defaults: ComponentProps<typeof OAuthSection>['defaultValues'] = {
   LinuxDOClientId: '',
   LinuxDOClientSecret: '',
   LinuxDOMinimumTrustLevel: '',
-  WeChatAuthEnabled: false,
-  WeChatServerAddress: '',
-  WeChatServerToken: '',
-  WeChatAccountQRCodeImageURL: '',
-  WeChatAccountQRCodeImagePath: '',
+  WeChatWebAuthEnabled: false,
+  WeChatWebAppId: '',
+  WeChatWebAppSecret: '',
+  WeChatWebCallbackDomain: '',
+  WeChatWebUseUnionId: false,
 }
 
 let testI18n: i18n

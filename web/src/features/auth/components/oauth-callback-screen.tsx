@@ -20,7 +20,7 @@ import { Loader2, Send, Shield, UserRound, type LucideIcon } from 'lucide-react'
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { IconGithub, IconLinuxDo, IconWeChat } from '@/assets/brand-icons'
+import { IconGithub, IconLinuxDo } from '@/assets/brand-icons'
 import { Heading } from '@/design-system'
 
 import { AuthLayout } from '../auth-layout'
@@ -50,12 +50,6 @@ const providerDictionary: Record<string, ProviderMeta> = {
     ),
   },
   telegram: { label: 'Telegram', Icon: Send },
-  wechat: {
-    label: 'WeChat',
-    Icon: (props: { className?: string }) => (
-      <IconWeChat className={props.className} focusable='false' />
-    ),
-  },
 }
 
 export function OAuthCallbackScreen({

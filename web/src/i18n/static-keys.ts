@@ -765,7 +765,6 @@ export const STATIC_I18N_KEYS = [
   // Account binding and password-operation messages.
   'Account bindings have changed. Start this operation again.',
   'Add another login method before unlinking this account.',
-  'Bind WeChat',
   'Continue account binding',
   'Current email verification code',
   'Current password is incorrect.',

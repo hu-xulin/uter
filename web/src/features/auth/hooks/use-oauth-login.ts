@@ -25,7 +25,12 @@ import { handleServerError } from '@/lib/handle-server-error'
 import { AuthOperationError } from '@/lib/secure-verification'
 import { createServerError } from '@/lib/server-error-message'
 
-import { createOAuthAuthorization, createOAuthFlow, logout } from '../api'
+import {
+  createOAuthAuthorization,
+  createOAuthFlow,
+  logout,
+  startWeChatWebFlow,
+} from '../api'
 import {
   buildGitHubOAuthUrl,
   buildDiscordOAuthUrl,
@@ -34,7 +39,6 @@ import {
 } from '../lib/oauth'
 import { buildWeChatWebOAuthUrl } from '../../../lib/oauth'
 import { rememberOAuthLoginRedirect } from '../lib/oauth-callback-mode'
-import { startWeChatWebFlow } from '../api'
 import type { SystemStatus, CustomOAuthProviderInfo } from '../types'
 
 /**

@@ -94,6 +94,40 @@ export async function login2fa(payload: TwoFAPayload) {
   return res.data
 }
 
+// 请求登录验证码（purpose "l"）。后端对未注册邮箱返回同样的成功响应
+// （防枚举），因此这里不做「邮箱不存在」的分支处理。
+export async function requestLoginEmailCode(
+  email: string,
+  turnstile?: string
+): Promise<ApiResponse> {
+  const res = await api.get<ApiResponse>('/api/user/login/email-code', {
+    params: { email },
+    paramsSerializer: (params) => {
+      const query = new URLSearchParams()
+      query.set('email', String(params.email))
+      if (turnstile) query.set('turnstile', turnstile)
+      return query.toString()
+    },
+    skipAuthRefresh: true,
+  })
+  return res.data
+}
+
+// 邮箱验证码登录。响应结构与密码登录一致（含 2FA challenge 分支），
+// 由 handleLoginResult 统一处理。
+export async function loginByEmailCode(
+  email: string,
+  code: string,
+  turnstile?: string
+): Promise<LoginResponse> {
+  const res = await api.post<LoginResponse>(
+    `/api/user/login/email-code?turnstile=${turnstile ?? ''}`,
+    { email, code },
+    { skipAuthRefresh: true }
+  )
+  return res.data
+}
+
 interface LogoutRuntime {
   getExpectedSID: () => string | undefined
   request: (expectedSID?: string) => Promise<ApiResponse>
@@ -221,34 +255,6 @@ export async function createOAuthFlow(
 ): Promise<string> {
   return (await createOAuthAuthorization(provider, intent, operation, signal))
     .state
-}
-
-// WeChat login by authorization code. `state` is the CSRF-bound flow token
-// issued by startWeChatFlow and must be paired with the oauth_login_nonce cookie.
-export async function wechatLoginByCode(
-  code: string,
-  state?: string
-): Promise<ApiResponse> {
-  const res = await api.get('/api/oauth/wechat', {
-    params: state ? { code, state } : { code },
-  })
-  return res.data
-}
-
-// Start a CSRF-bound WeChat auth flow (login or bind) and return its state token.
-export async function startWeChatFlow(
-  intent: 'login' | 'bind'
-): Promise<string> {
-  const res = await api.post('/api/oauth/wechat/state', { intent })
-  if (res.data?.success && typeof res.data.data?.flow_token === 'string') {
-    return res.data.data.flow_token
-  }
-  throw new AuthOperationError(
-    getServerErrorMessageKey(res.data) ||
-      getServerMessage(res.data) ||
-      'Failed to start WeChat login',
-    res.data?.code
-  )
 }
 
 // WeChat website-app (开放平台网站应用) login by authorization code. `state` is

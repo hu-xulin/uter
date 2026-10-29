@@ -70,8 +70,8 @@ const STATUS_RELATED_KEYS = new Set([
   // 挂件据此决定在哪些页面渲染入口；不刷新的话，运营保存后入口显隐不会立刻
   // 变化（挂件已挂载时读的是旧快照），须硬刷新页面才生效。
   'CustomerServicePages',
-  // 微信网站应用登录：开关与凭据变更后，登录页按钮依赖 /api/status 的
-  // wechat_web_login / wechat_web_app_id，需刷新以即时生效。
+  // 微信登录（开放平台网站应用方案）：开关与凭据变更后，登录页按钮依赖
+  // /api/status 的 wechat_web_login / wechat_web_app_id，需刷新以即时生效。
   'WeChatWebAuthEnabled',
   'WeChatWebAppId',
   'WeChatWebAppSecret',

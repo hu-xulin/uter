@@ -13,7 +13,6 @@ import { Route as authRouteRouteImport } from './routes/(auth)/route'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as PublicRouteRouteImport } from './routes/_public/route'
 import { Route as authForgotPasswordRouteImport } from './routes/(auth)/forgot-password'
-import { Route as authOauthRouteImport } from './routes/(auth)/oauth'
 import { Route as authOtpRouteImport } from './routes/(auth)/otp'
 import { Route as authRegisterRouteImport } from './routes/(auth)/register'
 import { Route as authResetRouteImport } from './routes/(auth)/reset'
@@ -95,11 +94,6 @@ const PublicRouteRoute = PublicRouteRouteImport.update({
 const authForgotPasswordRoute = authForgotPasswordRouteImport.update({
   id: '/forgot-password',
   path: '/forgot-password',
-  getParentRoute: () => authRouteRoute,
-} as any)
-const authOauthRoute = authOauthRouteImport.update({
-  id: '/oauth',
-  path: '/oauth',
   getParentRoute: () => authRouteRoute,
 } as any)
 const authOtpRoute = authOtpRouteImport.update({
@@ -199,9 +193,9 @@ const SetupIndexRoute = SetupIndexRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const authOauthWechatWebRoute = authOauthWechatWebRouteImport.update({
-  id: '/wechat-web',
-  path: '/wechat-web',
-  getParentRoute: () => authOauthRoute,
+  id: '/oauth/wechat-web',
+  path: '/oauth/wechat-web',
+  getParentRoute: () => authRouteRoute,
 } as any)
 const authUserResetRoute = authUserResetRouteImport.update({
   id: '/user/reset',
@@ -469,7 +463,6 @@ export interface FileRoutesByFullPath {
   '/': typeof PublicIndexRoute
   '/system-settings': typeof AuthenticatedSystemSettingsRouteRouteWithChildren
   '/forgot-password': typeof authForgotPasswordRoute
-  '/oauth': typeof authOauthRouteWithChildren
   '/otp': typeof authOtpRoute
   '/register': typeof authRegisterRoute
   '/reset': typeof authResetRoute
@@ -537,7 +530,6 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof PublicIndexRoute
   '/forgot-password': typeof authForgotPasswordRoute
-  '/oauth': typeof authOauthRouteWithChildren
   '/otp': typeof authOtpRoute
   '/register': typeof authRegisterRoute
   '/reset': typeof authResetRoute
@@ -608,7 +600,6 @@ export interface FileRoutesById {
   '/_public': typeof PublicRouteRouteWithChildren
   '/_authenticated/system-settings': typeof AuthenticatedSystemSettingsRouteRouteWithChildren
   '/(auth)/forgot-password': typeof authForgotPasswordRoute
-  '/(auth)/oauth': typeof authOauthRouteWithChildren
   '/(auth)/otp': typeof authOtpRoute
   '/(auth)/register': typeof authRegisterRoute
   '/(auth)/reset': typeof authResetRoute
@@ -680,7 +671,6 @@ export interface FileRouteTypes {
     | '/'
     | '/system-settings'
     | '/forgot-password'
-    | '/oauth'
     | '/otp'
     | '/register'
     | '/reset'
@@ -748,7 +738,6 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/forgot-password'
-    | '/oauth'
     | '/otp'
     | '/register'
     | '/reset'
@@ -818,7 +807,6 @@ export interface FileRouteTypes {
     | '/_public'
     | '/_authenticated/system-settings'
     | '/(auth)/forgot-password'
-    | '/(auth)/oauth'
     | '/(auth)/otp'
     | '/(auth)/register'
     | '/(auth)/reset'
@@ -926,13 +914,6 @@ declare module '@tanstack/react-router' {
       path: '/forgot-password'
       fullPath: '/forgot-password'
       preLoaderRoute: typeof authForgotPasswordRouteImport
-      parentRoute: typeof authRouteRoute
-    }
-    '/(auth)/oauth': {
-      id: '/(auth)/oauth'
-      path: '/oauth'
-      fullPath: '/oauth'
-      preLoaderRoute: typeof authOauthRouteImport
       parentRoute: typeof authRouteRoute
     }
     '/(auth)/otp': {
@@ -1070,10 +1051,10 @@ declare module '@tanstack/react-router' {
     }
     '/(auth)/oauth/wechat-web': {
       id: '/(auth)/oauth/wechat-web'
-      path: '/wechat-web'
+      path: '/oauth/wechat-web'
       fullPath: '/oauth/wechat-web'
       preLoaderRoute: typeof authOauthWechatWebRouteImport
-      parentRoute: typeof authOauthRoute
+      parentRoute: typeof authRouteRoute
     }
     '/(auth)/user/reset': {
       id: '/(auth)/user/reset'
@@ -1393,37 +1374,25 @@ declare module '@tanstack/react-router' {
   }
 }
 
-interface authOauthRouteChildren {
-  authOauthWechatWebRoute: typeof authOauthWechatWebRoute
-}
-
-const authOauthRouteChildren: authOauthRouteChildren = {
-  authOauthWechatWebRoute: authOauthWechatWebRoute,
-}
-
-const authOauthRouteWithChildren = authOauthRoute._addFileChildren(
-  authOauthRouteChildren,
-)
-
 interface authRouteRouteChildren {
   authForgotPasswordRoute: typeof authForgotPasswordRoute
-  authOauthRoute: typeof authOauthRouteWithChildren
   authOtpRoute: typeof authOtpRoute
   authRegisterRoute: typeof authRegisterRoute
   authResetRoute: typeof authResetRoute
   authSignInRoute: typeof authSignInRoute
   authSignUpRoute: typeof authSignUpRoute
+  authOauthWechatWebRoute: typeof authOauthWechatWebRoute
   authUserResetRoute: typeof authUserResetRoute
 }
 
 const authRouteRouteChildren: authRouteRouteChildren = {
   authForgotPasswordRoute: authForgotPasswordRoute,
-  authOauthRoute: authOauthRouteWithChildren,
   authOtpRoute: authOtpRoute,
   authRegisterRoute: authRegisterRoute,
   authResetRoute: authResetRoute,
   authSignInRoute: authSignInRoute,
   authSignUpRoute: authSignUpRoute,
+  authOauthWechatWebRoute: authOauthWechatWebRoute,
   authUserResetRoute: authUserResetRoute,
 }
 
