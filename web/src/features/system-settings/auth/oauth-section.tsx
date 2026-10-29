@@ -323,8 +323,9 @@ export function OAuthSection(props: OAuthSectionProps) {
   const wechatWebCallbackDomain = (
     props.defaultValues.WeChatWebCallbackDomain ?? ''
   ).trim()
-  // 微信开放平台「授权回调域」只接受域名（如 uter.cc）；未配置时回退到站点地址的
-  // host 部分。回调地址固定指向前端路由 /oauth/wechat-web，由它再调后端换码。
+  // 微信开放平台「授权回调域」只接受域名（主域或其子域），且微信要求该域名
+  // 已完成 ICP 备案；未配置时回退到站点地址的 host 部分。回调地址固定指向
+  // 前端路由 /oauth/wechat-web，由它再调后端换码。
   const wechatWebCallbackHost =
     wechatWebCallbackDomain ||
     props.serverAddress.replace(/^https?:\/\//, '').replace(/\/+$/, '')
@@ -1311,7 +1312,7 @@ export function OAuthSection(props: OAuthSectionProps) {
                       <FormLabel>{t('Authorization callback domain')}</FormLabel>
                       <FormControl>
                         <Input
-                          placeholder='uter.cc'
+                          placeholder='wx.example.com'
                           autoComplete='off'
                           mono
                           value={field.value ?? ''}
@@ -1325,7 +1326,7 @@ export function OAuthSection(props: OAuthSectionProps) {
                       </FormControl>
                       <FormDescription>
                         {t(
-                          'The callback domain registered in the WeChat Open Platform console (no scheme, e.g. uter.cc). Leave empty to use the current site domain.'
+                          'The callback domain registered in the WeChat Open Platform console (no scheme, e.g. wx.example.com). It must be ICP-filed and match the registered callback domain exactly. Leave empty to use the current site domain.'
                         )}
                       </FormDescription>
                       <FormMessage />
