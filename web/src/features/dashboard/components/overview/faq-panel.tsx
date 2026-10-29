@@ -66,7 +66,10 @@ export function FAQPanel() {
                 className='border-border/60'
               >
                 <AccordionTrigger className='text-start hover:no-underline'>
-                  <span className='text-base font-semibold'>
+                  {/* FAQ 问题行 = 卡片内条目行标题：14/500（text-sm font-medium）。
+                   * 600 只给 group-title（规范 §12.5），16/600 会让问题行与
+                   * 分组标题同重，层级失效。 */}
+                  <span className='text-sm font-medium'>
                     {item.question}
                   </span>
                 </AccordionTrigger>
