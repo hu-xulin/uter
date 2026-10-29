@@ -1693,7 +1693,7 @@ function RouteEditor({
                         variant={ruleKind === 'regex' ? 'outline' : 'secondary'}
                         className='text-mono max-w-full gap-1.5 font-mono'
                       >
-                        <span className='font-sans text-xs font-semibold uppercase'>
+                        <span className='font-sans text-xs uppercase'>
                           {t(ruleKind === 'regex' ? 'Regex' : 'Exact')}
                         </span>
                         <span className='truncate'>{displayModel}</span>
