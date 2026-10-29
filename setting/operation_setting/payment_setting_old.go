@@ -26,17 +26,18 @@ const (
 	// DefaultUSDExchangeRate 是行情拿不到时的兜底汇率。
 	DefaultUSDExchangeRate = 7.3
 	// PriceAdjustmentRate 是 B 相对 A 的**有符号**调整量，用于覆盖支付通道手续费与
-	// 行情波动。取负值表示定价低于行情汇率（A − 0.2）。
+	// 行情波动。取正值表示定价高于行情汇率（A + 0.2）。
 	//
-	// 2026-10-28 起由 +0.2 改为 −0.2：加价会把通道手续费转嫁给用户，实际收款
-	// 高于行情价，用户在收银台按实时汇率折算时会看到「比汇率贵」。
-	PriceAdjustmentRate = -0.2
+	// 2026-10-28 曾由 +0.2 改为 −0.2（避免用户在收银台看到「比汇率贵」）；
+	// 2026-10-30 应运营决策改回 +0.2：定价需覆盖通道手续费。
+	PriceAdjustmentRate = 0.2
 )
 
 var PayAddress = ""
 var CustomCallbackAddress = ""
 var EpayId = ""
 var EpayKey = ""
+
 // MinTopUp 是「支付网关」里的最低充值金额，单位跟随 QuotaDisplayType（USD/CNY 为
 // 金额，TOKENS 为 token 数），允许两位小数（如 0.01）。
 //
@@ -55,7 +56,7 @@ var Price = DerivedPriceFromExchangeRate(DefaultUSDExchangeRate)
 // USDExchangeRateUpdatedAt 是 A 最近一次成功同步的时间（Unix 秒，0 表示从未同步）。
 var USDExchangeRateUpdatedAt int64
 
-// DerivedPriceFromExchangeRate 由 A 推导 B：B = A + PriceAdjustmentRate（当前为 A − 0.2），
+// DerivedPriceFromExchangeRate 由 A 推导 B：B = A + PriceAdjustmentRate（当前为 A + 0.2），
 // 保留 2 位小数。
 //
 // 结果必须为正：调整量为负时，行情异常（例如 A 只有 0.1）会把 B 推成 0 或负数，

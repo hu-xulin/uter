@@ -109,14 +109,14 @@ type PricingSectionProps = {
   defaultValues: PricingFormValues
   /** A 最近一次成功同步的时间（Unix 秒，0 / 缺省表示从未同步）。 */
   exchangeRateUpdatedAt?: number
-  /** B 相对 A 的有符号调整量，由后端下发（PriceAdjustmentRate，当前 −0.2）。 */
+  /** B 相对 A 的有符号调整量，由后端下发（PriceAdjustmentRate，当前 +0.2）。 */
   priceAdjustmentRate?: number
 }
 
 export function PricingSection({
   defaultValues,
   exchangeRateUpdatedAt = 0,
-  priceAdjustmentRate = -0.2,
+  priceAdjustmentRate = 0.2,
 }: PricingSectionProps) {
   const { t } = useTranslation()
   const updateOption = useUpdateOption()
@@ -159,7 +159,7 @@ export function PricingSection({
       },
     })
 
-  // 立即拉取一次行情：后端会同时写入 A（汇率）与 B（定价 = A − 0.2），
+  // 立即拉取一次行情：后端会同时写入 A（汇率）与 B（定价 = A + 0.2），
   // 这里就地刷新 A 的显示、同步时间，并把 system-options / status 缓存打新，
   // 让「支付网关」页与钱包不必等下一个 10 分钟周期。
   const handleSyncExchangeRate = async () => {
