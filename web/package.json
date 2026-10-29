@@ -7,6 +7,7 @@
     "dev": "rsbuild dev",
     "build": "UTER_SKIP_PUBLIC_COPY=1 rsbuild build && cp -R public/. dist/",
     "build:check": "tsgo -b && rsbuild build",
+    "prepare": "node scripts/setup-git-hooks.mjs",
     "typecheck": "tsgo -b",
     "lint": "node scripts/check-i18n-keys.mjs && oxlint -c .oxlintrc.json .",
     "lint:design": "node scripts/check-design-tokens.mjs",

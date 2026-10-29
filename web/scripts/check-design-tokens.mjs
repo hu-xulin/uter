@@ -92,12 +92,12 @@ const OVERLAY_ALLOWLIST = [
  *                              `*-soft` / 品牌色 / 状态色语义
  *
  * 需要新增例外时，必须同时满足：① 写明 `reason`；② 在
- * `docs/design-system/exceptions.md` 登记编号与影响范围；③ 说明为什么
+ * `docs/design-system/design-system.md` 登记编号与影响范围；③ 说明为什么
  * 无法用 Token 表达。没有理由的例外等于没有规范。
  */
 /**
  * 逐条登记的真例外。每条必须：① `reason` 写明为什么无法用 Token 表达；
- * ② 在 `docs/design-system/exceptions.md` 登记编号与影响范围。
+ * ② 在 `docs/design-system/design-system.md` 登记编号与影响范围。
  */
 const ALLOWLIST = [
   {
@@ -140,6 +140,7 @@ const RULES = {
   T9: '行高覆盖（leading-…，行高应由字号 Token 决定）',
   T10: '任意圆角（rounded-[…]，圆角阶梯只有 xs/sm/md/lg/xl/2xl）',
   T11: '未登记动效节奏（duration-N / ease-[cubic-bezier(…)]，§1.6 只有五组时长）',
+  T12: '字距类（tracking-*，规范统一移除，字距由字号 Token 自带）',
 }
 
 /**
@@ -398,6 +399,15 @@ for (const abs of walk(SRC)) {
     } else if (/\bease-\[cubic-bezier\(/.test(raw)) {
       report('T11', rel, line, rawText)
     }
+
+    // T12：字距类。规范统一移除 tracking-*（字距由字号 Token 自带，手动加
+    // tracking-* 会破坏阶梯的视觉间距约定）。`tracking-normal` 是「取消字距」，
+    // 放行。
+    for (const hit of raw.match(/\btracking-[a-z0-9-]+/g) ?? []) {
+      if (hit === 'tracking-normal') continue
+      report('T12', rel, line, rawText)
+      break
+    }
   })
 }
 
@@ -434,6 +444,7 @@ if (violations.length === 0) {
       '行高由字号自带（不要写 leading-*）；颜色走语义 Token（text-foreground / bg-success-soft /\n' +
       'chart-N / syntax-*）；第三方商标色与多序列分类色从 design-system/tokens/brand-colors 取；\n' +
       '动效用 ds-motion-* 工具类或 var(--ds-motion-*)，不要写 duration-N / ease-[cubic-bezier(…)]。\n' +
+      '字距由字号 Token 自带，不要写 tracking-*（移除即可）。\n' +
       '确实无法接入 Token 的场景，在 scripts/check-design-tokens.mjs 的 ALLOWLIST 登记并写明理由。'
   )
 }

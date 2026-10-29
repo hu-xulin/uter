@@ -181,3 +181,9 @@ jobs:
 
       - name: Lint
         run: bun run lint
+
+      # 设计令牌门禁：与 ci.yml 的 frontend job 同一把尺子。
+      # 发布门禁必须跑在**即将发布的那一个 commit** 上，因此不能只依赖 CI
+      # （CI 只在 push 到 main / PR 时触发，打 tag 时往往没有对应运行）。
+      - name: Design tokens
+        run: bun run lint:design:strict
