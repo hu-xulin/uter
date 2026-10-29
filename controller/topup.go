@@ -28,6 +28,26 @@ import (
 	"github.com/shopspring/decimal"
 )
 
+// stripOfficialGatewayPayMethods 从基础支付方式列表里剔除支付宝 / 微信官方直连入口。
+//
+// 基础 PayMethods（operation_setting.PayMethods）的默认值硬编码了
+// alipay_web / wechat_web。若原样下发，会绕过下方 enable_* 开关判定，导致
+// 「关闭微信支付 / 支付宝」后钱包仍暴露对应入口——因为下方的 gated append
+// 只在开关为真时追加，从不移除基础列表里的条目。剔除后，这两个入口改由
+// isAlipayTopUpEnabled / isWechatPayTopUpEnabled 统一追加，既带上正确的
+// color / min_topup，也让开关对钱包入口真正生效。其它入口（如 Epay 自定义项）
+// 原样透传。
+func stripOfficialGatewayPayMethods(methods []map[string]string) []map[string]string {
+	filtered := make([]map[string]string, 0, len(methods))
+	for _, m := range methods {
+		if m["type"] == model.PaymentMethodAlipay || m["type"] == model.PaymentMethodWechatPay {
+			continue
+		}
+		filtered = append(filtered, m)
+	}
+	return filtered
+}
+
 func GetTopUpInfo(c *gin.Context) {
 	complianceConfirmed := operation_setting.IsPaymentComplianceConfirmed()
 
@@ -35,6 +55,8 @@ func GetTopUpInfo(c *gin.Context) {
 	payMethods := operation_setting.PayMethods
 	if !complianceConfirmed {
 		payMethods = []map[string]string{}
+	} else {
+		payMethods = stripOfficialGatewayPayMethods(payMethods)
 	}
 
 	// 如果启用了 Stripe 支付，添加到支付方法列表
