@@ -7755,8 +7755,8 @@
     "Failed to start WeChat login": "WeChat ログインの開始に失敗しました",
     "Your WeChat website app ID": "WeChat ウェブアプリのアプリ ID",
     "Identify users by UnionID when available, so accounts under the same WeChat Open Platform app share one identity": "可能な場合は UnionID でユーザーを識別し、同じ WeChat オープンプラットフォームアプリ配下のアカウントが同一 ID を共有します",
+    "The callback domain registered in the WeChat Open Platform console (no scheme, e.g. wx.example.com). It must be ICP-filed and match the registered callback domain exactly. Leave empty to use the current site domain.": "WeChat オープンプラットフォームのコンソールに登録したコールバックドメイン（スキームなし、例: wx.example.com）。ICP 登録済みで、登録済みコールバックドメインと完全に一致している必要があります。空欄の場合は現在のサイトドメインを使用します。",
     "Your WeChat website app secret": "WeChat ウェブアプリのシークレット",
-    "The callback domain registered in the WeChat Open Platform console (no scheme, e.g. uter.cc). Leave empty to use the current site domain.": "WeChat オープンプラットフォームのコンソールに登録したコールバックドメイン（スキームなし、例: uter.cc）。空欄の場合は現在のサイトドメインを使用します。",
     "Prices are in USD: per 1M tokens for token-billed models, per request for image and video models. The discount ratio is measured against the upstream list price.": "価格は USD 建てです。トークン課金モデルは 100 万トークンあたり、画像・動画モデルは 1 リクエストあたりの価格です。割引倍率は上流の定価を基準に算出します。"
   }
 }

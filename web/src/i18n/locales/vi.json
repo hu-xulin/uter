@@ -7755,8 +7755,8 @@
     "Failed to start WeChat login": "Không thể bắt đầu đăng nhập WeChat",
     "Your WeChat website app ID": "AppID ứng dụng web WeChat của bạn",
     "Identify users by UnionID when available, so accounts under the same WeChat Open Platform app share one identity": "Xác định người dùng bằng UnionID khi có, để các tài khoản dưới cùng một ứng dụng WeChat Open Platform dùng chung một danh tính",
+    "The callback domain registered in the WeChat Open Platform console (no scheme, e.g. wx.example.com). It must be ICP-filed and match the registered callback domain exactly. Leave empty to use the current site domain.": "Miền callback đã đăng ký trong bảng điều khiển WeChat Open Platform (không có giao thức, vd wx.example.com). Miền phải có đăng ký ICP và khớp chính xác với miền callback đã đăng ký. Để trống để dùng miền trang web hiện tại.",
     "Your WeChat website app secret": "Khóa bí mật ứng dụng web WeChat của bạn",
-    "The callback domain registered in the WeChat Open Platform console (no scheme, e.g. uter.cc). Leave empty to use the current site domain.": "Miền callback đã đăng ký trong bảng điều khiển WeChat Open Platform (không có giao thức, vd uter.cc). Để trống để dùng miền trang web hiện tại.",
     "Prices are in USD: per 1M tokens for token-billed models, per request for image and video models. The discount ratio is measured against the upstream list price.": "Giá tính bằng USD: trên 1 triệu token với mô hình tính theo token, trên mỗi yêu cầu với mô hình ảnh và video. Hệ số giảm giá được đo so với giá niêm yết của nguồn."
   }
 }

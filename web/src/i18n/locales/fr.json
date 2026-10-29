@@ -7755,8 +7755,8 @@
     "Failed to start WeChat login": "Échec du démarrage de la connexion WeChat",
     "Your WeChat website app ID": "Votre ID d'application Web WeChat",
     "Identify users by UnionID when available, so accounts under the same WeChat Open Platform app share one identity": "Identifier les utilisateurs par UnionID lorsque disponible, afin que les comptes sous la même application WeChat Open Platform partagent une seule identité",
+    "The callback domain registered in the WeChat Open Platform console (no scheme, e.g. wx.example.com). It must be ICP-filed and match the registered callback domain exactly. Leave empty to use the current site domain.": "Le domaine de rappel enregistré dans la console WeChat Open Platform (sans protocole, ex. wx.example.com). Il doit être enregistré auprès de l'ICP et correspondre exactement au domaine de rappel enregistré. Laissez vide pour utiliser le domaine du site actuel.",
     "Your WeChat website app secret": "Le secret de votre application Web WeChat",
-    "The callback domain registered in the WeChat Open Platform console (no scheme, e.g. uter.cc). Leave empty to use the current site domain.": "Le domaine de rappel enregistré dans la console WeChat Open Platform (sans protocole, ex. uter.cc). Laissez vide pour utiliser le domaine du site actuel.",
     "Prices are in USD: per 1M tokens for token-billed models, per request for image and video models. The discount ratio is measured against the upstream list price.": "Les prix sont en USD : par million de tokens pour les modèles facturés au token, par requête pour les modèles d'image et de vidéo. Le coefficient de remise est mesuré par rapport au prix catalogue amont."
   }
 }
