@@ -1,0 +1,170 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://uter.ai/.ai/task-schema.json",
+  "title": "Uter AIES Task Contract",
+  "description": "Standard task contract for AI-driven code execution on Uter. Convert natural-language requests into bounded, verifiable work items. See .ai/AIES.md chapter 4.",
+  "type": "object",
+  "required": [
+    "task_id",
+    "goal",
+    "task_type",
+    "risk_level",
+    "original_request",
+    "scope",
+    "applicable_specs",
+    "acceptance_criteria",
+    "test_plan",
+    "required_evidence"
+  ],
+  "properties": {
+    "task_id": {
+      "type": "string",
+      "pattern": "^[A-Z][A-Z0-9_-]+$",
+      "description": "Unique identifier, e.g. AUTH-UI-001."
+    },
+    "title": { "type": "string" },
+    "goal": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Concrete business outcome, not the raw wording."
+    },
+    "task_type": {
+      "type": "string",
+      "enum": [
+        "UI_DESIGN",
+        "FEATURE",
+        "BUGFIX",
+        "REFACTOR",
+        "AUTH_SECURITY",
+        "PAYMENT_FINANCIAL",
+        "DATABASE",
+        "TEST_QA",
+        "CODE_AUDIT",
+        "INFRA_DEPLOY",
+        "DOCUMENTATION",
+        "PERFORMANCE"
+      ]
+    },
+    "risk_level": {
+      "type": "string",
+      "enum": ["R0", "R1", "R2", "R3"]
+    },
+    "original_request": {
+      "type": "string",
+      "description": "Verbatim user request; do not rewrite the business intent."
+    },
+    "scope": {
+      "type": "object",
+      "required": ["include", "exclude"],
+      "properties": {
+        "include": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Allowed features/modules/files."
+        },
+        "exclude": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Explicitly out-of-scope items."
+        },
+        "preserve_behavior": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Existing behavior that must remain intact."
+        }
+      }
+    },
+    "applicable_specs": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Spec IDs or file paths, e.g. design-system.md §12, AGENTS.md Authentication Security."
+    },
+    "constraints": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "facts": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Verified from code/spec/config/tests."
+    },
+    "assumptions": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Reversible, documented defaults for low-risk ambiguity."
+    },
+    "unknowns": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "implementation_plan": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["step", "files"],
+        "properties": {
+          "step": { "type": "string" },
+          "files": { "type": "array", "items": { "type": "string" } },
+          "reason": { "type": "string" }
+        }
+      }
+    },
+    "acceptance_criteria": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "criterion", "verification"],
+        "properties": {
+          "id": { "type": "string" },
+          "criterion": { "type": "string", "description": "Observable, judgeable condition." },
+          "verification": { "type": "string", "description": "Command or manual method." },
+          "status": {
+            "type": "string",
+            "enum": ["PASS", "FAIL", "BLOCKED", "NOT_RUN", "NOT_APPLICABLE"],
+            "default": "NOT_RUN"
+          }
+        }
+      }
+    },
+    "test_plan": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["command"],
+        "properties": {
+          "command": { "type": "string", "description": "Real project command; never invented." },
+          "scope": { "type": "string" },
+          "status": {
+            "type": "string",
+            "enum": ["PASS", "FAIL", "BLOCKED", "NOT_RUN", "NOT_APPLICABLE"],
+            "default": "NOT_RUN"
+          }
+        }
+      }
+    },
+    "required_evidence": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "e.g. Changed-file list, actual test results, acceptance checklist."
+    },
+    "approval_gates": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Operations needing explicit authorization (commit/push/deploy/production/financial)."
+    },
+    "delivery_status": {
+      "type": "string",
+      "enum": ["PASSED", "PARTIAL", "BLOCKED", "FAILED", "NOT_RUN"]
+    },
+    "git_state": {
+      "type": "object",
+      "properties": {
+        "branch": { "type": "string" },
+        "commit_performed": { "type": "boolean", "default": false },
+        "push_performed": { "type": "boolean", "default": false },
+        "notes": { "type": "string", "description": "Concurrent WIP, protected files, etc." }
+      }
+    }
+  }
+}

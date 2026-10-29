@@ -8,7 +8,7 @@ DEV_POSTGRES_DB = uter
 DEV_POSTGRES_USER = root
 DEV_SQLITE_PATH ?= one-api.db
 
-.PHONY: all build-web build-all-web start-api dev dev-api dev-api-rebuild dev-web reset-setup test
+.PHONY: all build-web build-all-web start-api dev dev-api dev-api-rebuild dev-web reset-setup test verify verify-quick
 
 all: build-all-web start-api
 
@@ -73,3 +73,12 @@ reset-setup:
 		echo "Start the dev stack with 'make dev-api', or set SQLITE_PATH/DEV_SQLITE_PATH to your local SQLite database."; \
 		exit 1; \
 	fi
+
+# 统一质量门禁入口：Go（gofmt / vet / test）+ 前端（typecheck / lint / design token /
+# copyright / format / vitest / build）。只做检查，不修改任何文件，不执行 git 写操作。
+# 详见《AGENTS.md → AI Agent Operating Discipline》第 2、3 条。
+verify:
+	@./scripts/verify-all.sh
+
+verify-quick:
+	@./scripts/verify-all.sh --quick
