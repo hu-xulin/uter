@@ -44,7 +44,7 @@ export function SignIn() {
           </Heading>
           {!status?.self_use_mode_enabled &&
             status?.register_enabled !== false && (
-              <p className='text-muted-foreground text-left text-base'>
+              <p className='text-muted-foreground text-left text-sm'>
                 {t("Don't have an account?")}{' '}
                 <Link to='/sign-up' className='hover:text-primary font-medium'>
                   {t('Sign up')}
