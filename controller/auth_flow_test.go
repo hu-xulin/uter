@@ -994,7 +994,8 @@ func TestOAuthLoginLegacyGitHubBindingRequiresAccountEvidence(t *testing.T) {
 		expectAuditParams string
 	}{
 		{name: "numeric legacy value registers a new account", existingGitHubID: "424242", legacyID: "424242", verifiedEmails: []string{"legacy-github@example.com"}, registerEnabled: true, expectLogin: true, expectNewAccount: true},
-		{name: "numeric legacy value with registration disabled", existingGitHubID: "424242", legacyID: "424242", verifiedEmails: []string{"legacy-github@example.com"}},
+		// RegisterEnabled 只关闭自主注册表单；OAuth「登录即注册」不受影响。
+		{name: "numeric legacy value registers a new account even with form registration disabled", existingGitHubID: "424242", legacyID: "424242", verifiedEmails: []string{"legacy-github@example.com"}, registerEnabled: false, expectLogin: true, expectNewAccount: true},
 		{name: "soft-deleted legacy row registers a new account", existingGitHubID: "octocat-legacy", existingDeleted: true, legacyID: "octocat-legacy", verifiedEmails: []string{"legacy-github@example.com"}, registerEnabled: true, expectLogin: true, expectNewAccount: true},
 		{
 			name: "verified email match migrates", existingGitHubID: "octocat-legacy", legacyID: "octocat-legacy",

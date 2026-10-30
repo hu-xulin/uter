@@ -20,12 +20,15 @@ import { Link } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 
 import { Heading } from '@/design-system'
+import { useStatus } from '@/hooks/use-status'
 
 import { AuthLayout } from '../auth-layout'
 import { SignUpForm } from './components/sign-up-form'
 
 export function SignUp() {
   const { t } = useTranslation()
+  const { status } = useStatus()
+  const registrationDisabled = status?.register_enabled === false
 
   return (
     <AuthLayout>
@@ -38,16 +41,27 @@ export function SignUp() {
           >
             {t('Create an account')}
           </Heading>
-          <p className='text-muted-foreground text-left text-sm'>
-            {t('Already have an account?')}{' '}
+          {!registrationDisabled && (
+            <p className='text-muted-foreground text-left text-sm'>
+              {t('Already have an account?')}{' '}
+              <Link to='/sign-in' className='hover:text-primary font-medium'>
+                {t('Sign in')}
+              </Link>
+              .
+            </p>
+          )}
+        </div>
+
+        {registrationDisabled ? (
+          <p className='text-muted-foreground text-sm'>
+            {t('New user registration has been disabled by administrator')}{' '}
             <Link to='/sign-in' className='hover:text-primary font-medium'>
               {t('Sign in')}
             </Link>
-            .
           </p>
-        </div>
-
-        <SignUpForm />
+        ) : (
+          <SignUpForm />
+        )}
       </div>
     </AuthLayout>
   )

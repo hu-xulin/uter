@@ -295,18 +295,15 @@ func WeChatWebAuth(c *gin.Context) {
 			return
 		}
 	} else {
-		if common.RegisterEnabled {
-			user.Username = "wechat_web_" + strconv.Itoa(model.GetMaxUserId()+1)
-			user.DisplayName = "WeChat User"
-			user.Role = common.RoleCommonUser
-			user.Status = common.UserStatusEnabled
+		// 登录即注册：RegisterEnabled 只关闭自主注册表单，不阻断微信扫码
+		// 这一「已验证身份」通道（与邮箱验证码登录 / OAuth 行为一致）。
+		user.Username = "wechat_web_" + strconv.Itoa(model.GetMaxUserId()+1)
+		user.DisplayName = "WeChat User"
+		user.Role = common.RoleCommonUser
+		user.Status = common.UserStatusEnabled
 
-			if err := user.Insert(0); err != nil {
-				common.ApiError(c, err)
-				return
-			}
-		} else {
-			common.ApiErrorT(c, "New user registration has been disabled by administrator")
+		if err := user.Insert(0); err != nil {
+			common.ApiError(c, err)
 			return
 		}
 	}
