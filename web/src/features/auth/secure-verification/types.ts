@@ -22,6 +22,7 @@ export type VerificationMethod =
   | '2fa'
   | 'passkey'
   | 'password'
+  | 'email_code'
   | 'oauth'
   | 'session'
 export type SecurityProofScope =
@@ -122,6 +123,7 @@ export interface VerificationRequirements {
 export type VerificationInput =
   | { method: '2fa'; code: string }
   | { method: 'password'; password: string }
+  | { method: 'email_code'; code: string }
   | { method: 'passkey'; rpID?: string }
   | { method: 'oauth'; provider: string }
   | { method: 'session' }

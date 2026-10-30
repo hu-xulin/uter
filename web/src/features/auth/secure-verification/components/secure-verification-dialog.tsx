@@ -16,8 +16,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
-import { KeyRound, Loader2, ShieldCheck } from 'lucide-react'
-import { useId } from 'react'
+import { KeyRound, Loader2, Mail, ShieldCheck } from 'lucide-react'
+import { useCallback, useEffect, useId, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { Dialog } from '@/components/dialog'
@@ -25,13 +25,16 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { AuthOperationError } from '@/lib/secure-verification'
 
+import { sendStepUpEmailCode } from '../api'
 import type { PasskeyDomains } from '../../passkey/assertion'
 import { PasskeyDomainSelector } from '../../passkey/components/passkey-domain-selector'
 import type {
   SecureVerificationState,
   VerificationInput,
   VerificationMethod,
+  VerificationOperation,
 } from '../types'
 
 interface SecureVerificationDialogProps {
@@ -47,8 +50,99 @@ const methodLabels: Record<VerificationMethod, string> = {
   '2fa': 'Authenticator code',
   passkey: 'Passkey',
   password: 'Password',
+  email_code: 'Email code',
   oauth: 'Linked account',
   session: 'Login session',
+}
+
+const RESEND_COOLDOWN_SECONDS = 60
+
+// EmailCodePanel 自管发码交互：面板挂载即发送一次，之后走带冷却的重发。
+// 发码只寄邮件，不做身份验证，所以状态留在组件内而不进验证流程。
+function EmailCodePanel(props: {
+  operation: VerificationOperation
+  disabled: boolean
+  value: string
+  onChange: (code: string) => void
+}) {
+  const { t } = useTranslation()
+  const inputId = useId()
+  const [destination, setDestination] = useState<string | null>(null)
+  const [sending, setSending] = useState(false)
+  const [sendError, setSendError] = useState<string | undefined>()
+  const [cooldown, setCooldown] = useState(0)
+  const requested = useRef(false)
+
+  const send = useCallback(async () => {
+    setSending(true)
+    setSendError(undefined)
+    try {
+      const email = await sendStepUpEmailCode(props.operation)
+      setDestination(email)
+      setCooldown(RESEND_COOLDOWN_SECONDS)
+    } catch (error) {
+      setSendError(AuthOperationError.from(error).message)
+    } finally {
+      setSending(false)
+    }
+  }, [props.operation])
+
+  useEffect(() => {
+    if (requested.current) return
+    requested.current = true
+    void send()
+  }, [send])
+
+  useEffect(() => {
+    if (cooldown <= 0) return
+    const timer = setInterval(() => setCooldown((s) => s - 1), 1000)
+    return () => clearInterval(timer)
+  }, [cooldown])
+
+  let resendLabel = t('Send code')
+  if (destination) resendLabel = t('Resend codes')
+  if (cooldown > 0) {
+    resendLabel = t('Resend ({{seconds}}s)', { seconds: cooldown })
+  }
+
+  return (
+    <div className='space-y-2'>
+      <Label htmlFor={inputId}>{t('Email code')}</Label>
+      <div className='flex gap-2'>
+        <Input
+          id={inputId}
+          autoComplete='one-time-code'
+          inputMode='numeric'
+          maxLength={6}
+          autoFocus
+          disabled={props.disabled}
+          value={props.value}
+          onChange={(event) => props.onChange(event.target.value)}
+        />
+        <Button
+          type='button'
+          variant='outline'
+          className='shrink-0'
+          disabled={props.disabled || sending || cooldown > 0}
+          onClick={() => void send()}
+        >
+          {sending && <Loader2 className='size-4 animate-spin' />}
+          {resendLabel}
+        </Button>
+      </div>
+      {destination && !sendError && (
+        <p className='text-muted-foreground flex items-center gap-1.5 text-sm'>
+          <Mail className='size-4' />
+          {t('We sent a 6-digit code to {{email}}.', { email: destination })}
+        </p>
+      )}
+      {sendError && (
+        <p role='alert' className='text-destructive text-sm'>
+          {t(sendError)}
+        </p>
+      )}
+    </div>
+  )
 }
 
 export function SecureVerificationDialog(props: SecureVerificationDialogProps) {
@@ -70,10 +164,16 @@ export function SecureVerificationDialog(props: SecureVerificationDialogProps) {
   if (input?.method === '2fa') {
     canVerify = canVerify && input.code.trim().length >= 6
   }
+  if (input?.method === 'email_code') {
+    canVerify = canVerify && input.code.trim().length >= 6
+  }
   // Linked-account verification starts from the provider button itself.
   const showSubmit = state.phase !== 'error' && input?.method !== 'oauth'
   const error = 'error' in state ? state.error : undefined
   const formId = `${inputId}-form`
+  // 登录挑战只提供 2FA/Passkey，email_code 面板只服务于 step-up 操作。
+  const emailCodeOperation =
+    ready && ready.request.scope !== 'auth.login' ? ready.request : null
 
   const selectMethod = (method: string) => {
     switch (method) {
@@ -82,6 +182,9 @@ export function SecureVerificationDialog(props: SecureVerificationDialogProps) {
         break
       case 'password':
         props.onInputChange({ method, password: '' })
+        break
+      case 'email_code':
+        props.onInputChange({ method: 'email_code', code: '' })
         break
       case 'passkey':
         props.onInputChange({ method })
@@ -224,6 +327,21 @@ export function SecureVerificationDialog(props: SecureVerificationDialogProps) {
                         'Enter the 6-digit authenticator code or an unused backup code.'
                       )
                     : t('Enter the 6-digit authenticator code.')}
+                </p>
+              </TabsContent>
+              <TabsContent value='email_code' className='space-y-2'>
+                {emailCodeOperation && (
+                  <EmailCodePanel
+                    operation={emailCodeOperation}
+                    disabled={verifying}
+                    value={input.method === 'email_code' ? input.code : ''}
+                    onChange={(code) =>
+                      props.onInputChange({ method: 'email_code', code })
+                    }
+                  />
+                )}
+                <p className='text-muted-foreground text-sm'>
+                  {t('Enter the 6-digit code we sent to your email.')}
                 </p>
               </TabsContent>
               <TabsContent value='passkey' className='space-y-3'>
