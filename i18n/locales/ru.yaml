@@ -426,6 +426,8 @@ email.verification.code: 'Your verification code is: <strong>{{.Code}}</strong>'
 email.verification.greeting: Hello, you are verifying your email address for {{.SystemName}}.
 email.login_code.subject: '{{.SystemName}} sign-in code'
 email.login_code.greeting: 'Hello, here is your {{.SystemName}} sign-in verification code.'
+email.step_up_code.subject: '{{.SystemName}} security verification code'
+email.step_up_code.greeting: 'Hello, you are performing a {{.SystemName}} security verification.'
 email.verification.subject: '{{.SystemName}} email verification'
 email.verification.validity: The verification code is valid for {{.Minutes}} minutes. If you did not request it, please ignore this email.
 notify.quota_low_bark: '{{.Prompt}}, remaining quota: {{.Quota}}. Please top up soon'

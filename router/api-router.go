@@ -90,6 +90,9 @@ func SetApiRouter(router *gin.Engine) {
 		// Universal secure verification routes
 		apiRouter.GET("/verify/methods", middleware.UserAuth(), middleware.DisableCache(), controller.GetVerificationMethods)
 		apiRouter.POST("/verify", middleware.UserAuth(), middleware.CriticalRateLimit(), middleware.UserCriticalRateLimit("security-verification"), middleware.DisableCache(), controller.UniversalVerify)
+		// 发送 step-up 邮箱验证码：EmailVerificationRateLimit 拦 IP 级刷信，
+		// UserCriticalRateLimit 拦单账号滥用。
+		apiRouter.POST("/verify/email_code", middleware.UserAuth(), middleware.EmailVerificationRateLimit(), middleware.UserCriticalRateLimit("security-verification"), middleware.DisableCache(), controller.SendVerificationEmailCode)
 
 		userRoute := apiRouter.Group("/user")
 		{

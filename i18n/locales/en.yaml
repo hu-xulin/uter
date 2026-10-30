@@ -443,6 +443,8 @@ custom_oauth.provider_id_field_invalid: "We couldn’t extract a user ID from th
 user.default_token_name: "{{.Username}}'s initial token"
 email.login_code.subject: "{{.SystemName}} sign-in code"
 email.login_code.greeting: "Hello, here is your {{.SystemName}} sign-in verification code."
+email.step_up_code.subject: "{{.SystemName}} security verification code"
+email.step_up_code.greeting: "Hello, you are performing a {{.SystemName}} security verification."
 email.verification.subject: "{{.SystemName}} email verification"
 email.verification.greeting: "Hello, you are verifying your email address for {{.SystemName}}."
 email.verification.code: "Your verification code is: <strong>{{.Code}}</strong>"

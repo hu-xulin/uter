@@ -549,6 +549,9 @@ const (
 	MsgLoginEmailCodeSubject  = "email.login_code.subject"
 	MsgLoginEmailCodeGreeting = "email.login_code.greeting"
 
+	MsgEmailStepUpSubject  = "email.step_up_code.subject"
+	MsgEmailStepUpGreeting = "email.step_up_code.greeting"
+
 	MsgEmailPasswordResetSubject      = "email.password_reset.subject"
 	MsgEmailPasswordResetGreeting     = "email.password_reset.greeting"
 	MsgEmailPasswordResetLink         = "email.password_reset.link"
