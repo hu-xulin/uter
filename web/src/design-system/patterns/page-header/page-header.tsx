@@ -24,7 +24,7 @@ import { Heading } from '../../components/typography/heading'
 import { Text } from '../../components/typography/text'
 
 export type PageHeaderProps = {
-  /** 页面主标题，渲染为 `h1`（30/600/36）。 */
+  /** 页面主标题，渲染为 `h1`（28/600/36）。 */
   title: ReactNode
   /** 页面描述，16/400/24。 */
   description?: ReactNode

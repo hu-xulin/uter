@@ -67,16 +67,18 @@ function toPx(value: string): number {
  * [token, 字号px, 行高px, 语义角色]
  */
 const LADDER: Array<[string, number, number, string]> = [
-  ['xs', 12, 16, 'caption'],
-  ['sm', 14, 20, 'body-sm / label'],
-  ['mono', 14, 20, 'mono 正文等宽文本'],
+  ['xs', 12, 18, 'small / caption'],
+  ['sm', 14, 22, 'body-sm / body-medium / label'],
+  ['mono', 13, 20, 'mono 正文等宽文本'],
   ['mono-code', 13, 20, '等宽代码展示区'],
   ['mono-title', 16, 22, '等宽卡片标题'],
-  ['base', 16, 24, 'body'],
-  ['lg', 18, 28, 'h3 卡片标题 / 弹窗标题'],
-  ['2xl', 24, 32, 'h2 区块标题'],
-  ['3xl', 30, 36, 'h1 页面标题'],
-  ['4xl', 36, 40, 'display'],
+  ['dense', 13, 20, '密集数据：表格单元格 / 二级导航 / 分页（专用派生档）'],
+  ['group', 15, 22, 'group-title 分组标题（专用派生档）'],
+  ['base', 16, 24, '行标题 / 设置字段 / 指标数值'],
+  ['lg', 18, 26, 'h3 卡片标题 / 弹窗标题'],
+  ['2xl', 22, 30, 'h2 区块标题'],
+  ['3xl', 28, 36, 'h1 页面标题'],
+  ['4xl', 36, 44, 'display'],
 ]
 
 describe('字号阶梯（tokens/typography.css）', () => {
@@ -128,12 +130,13 @@ describe('语义 Token 指向正确的阶梯档位', () => {
     ['ds-text-section-title', 'var(--text-2xl)'],
     ['ds-text-card-title', 'var(--text-lg)'],
     ['ds-text-dialog-title', 'var(--text-lg)'],
-    ['ds-text-group-title', 'var(--text-base)'],
+    ['ds-text-group-title', 'var(--text-group)'],
     ['ds-text-body', 'var(--text-sm)'],
     ['ds-text-long', 'var(--text-long)'],
     ['ds-text-body-sm', 'var(--text-sm)'],
     ['ds-text-label', 'var(--text-sm)'],
     ['ds-text-caption', 'var(--text-xs)'],
+    ['ds-text-dense', 'var(--text-dense)'],
     ['ds-text-mono', 'var(--text-mono)'],
     ['ds-text-mono-code', 'var(--text-mono-code)'],
     ['ds-text-mono-title', 'var(--text-mono-title)'],
@@ -185,15 +188,16 @@ describe('语义 Token 指向正确的阶梯档位', () => {
     // 兜底值是 `var(--text-x--line-height, <fallback>)` 里的 fallback，
     // 一旦和 typography.css 对不上，说明有人只改了一边。
     const pairs: Array<[string, string, number]> = [
-      ['ds-line-display', 'text-4xl--line-height', 40],
+      ['ds-line-display', 'text-4xl--line-height', 44],
       ['ds-line-page-title', 'text-3xl--line-height', 36],
-      ['ds-line-section-title', 'text-2xl--line-height', 32],
-      ['ds-line-card-title', 'text-lg--line-height', 28],
-      ['ds-line-group-title', 'text-base--line-height', 24],
-      ['ds-line-body', 'text-sm--line-height', 20],
+      ['ds-line-section-title', 'text-2xl--line-height', 30],
+      ['ds-line-card-title', 'text-lg--line-height', 26],
+      ['ds-line-group-title', 'text-group--line-height', 22],
+      ['ds-line-body', 'text-sm--line-height', 22],
       ['ds-line-long', 'text-long--line-height', 26],
-      ['ds-line-body-sm', 'text-sm--line-height', 20],
-      ['ds-line-caption', 'text-xs--line-height', 16],
+      ['ds-line-body-sm', 'text-sm--line-height', 22],
+      ['ds-line-dense', 'text-dense--line-height', 20],
+      ['ds-line-caption', 'text-xs--line-height', 18],
     ]
 
     for (const [semanticName, ladderName, expectedPx] of pairs) {
@@ -212,8 +216,8 @@ describe('语义 Token 指向正确的阶梯档位', () => {
 })
 
 describe('分组标题档（group-title）', () => {
-  it('是 16/24/600，且比卡片标题低一档', () => {
-    // 页面层级第 4 层：30 页标题 → 24 区块 → 18 卡片 → 16 分组 → 14 标签。
+  it('是 15/22/600，且比卡片标题低一档', () => {
+    // 页面层级第 4 层：28 页标题 → 22 区块 → 18 卡片 → 15 分组 → 14 标签。
     // 一旦有人把分组标题调到 14（与 label 同号）或 18（与卡片标题撞车），
     // 这一层的语义就消失了。
     const rule = /\.ds-heading--group-title\s*\{([^}]*)\}/.exec(
@@ -224,7 +228,9 @@ describe('分组标题档（group-title）', () => {
     expect(rule?.[1]).toContain('var(--ds-line-group-title)')
     expect(rule?.[1]).toContain('var(--ds-weight-semibold)')
 
-    expect(readVar(semanticCss, 'ds-text-group-title')).toBe('var(--text-base)')
+    expect(readVar(semanticCss, 'ds-text-group-title')).toBe(
+      'var(--text-group)'
+    )
     expect(readVar(semanticCss, 'ds-text-card-title')).toBe('var(--text-lg)')
   })
 })

@@ -67,7 +67,7 @@ export function DataTablePagination<TData>({
     return (
       <nav
         aria-label={t('Page')}
-        className='flex w-full min-w-0 flex-wrap items-center justify-between gap-2 text-sm'
+        className='flex w-full min-w-0 flex-wrap items-center justify-between gap-2 text-dense'
       >
         <span className='text-muted-foreground min-w-0 [overflow-wrap:anywhere]'>
           {t('Total:')} {totalRows.toLocaleString()}
@@ -107,7 +107,7 @@ export function DataTablePagination<TData>({
       style={{ overflowClipMargin: 1 }}
     >
       <div className='flex min-w-0 shrink-0 items-center gap-2 @xl/pagination:gap-3'>
-        <div className='flex shrink-0 items-baseline gap-1.5 text-xs font-medium whitespace-nowrap sm:text-sm'>
+        <div className='flex shrink-0 items-baseline gap-1.5 text-dense font-medium whitespace-nowrap'>
           <span className='text-muted-foreground'>{t('Total:')}</span>
           <span className='text-foreground tabular-nums'>
             {totalRows.toLocaleString()}
@@ -115,7 +115,7 @@ export function DataTablePagination<TData>({
         </div>
 
         <div className='flex shrink-0 items-center gap-1.5 @lg/pagination:gap-2'>
-          <p className='text-muted-foreground hidden text-sm font-medium whitespace-nowrap @2xl/pagination:block'>
+          <p className='text-muted-foreground hidden text-dense font-medium whitespace-nowrap @2xl/pagination:block'>
             {t('Rows per page')}
           </p>
           <Select

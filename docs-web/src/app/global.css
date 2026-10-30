@@ -68,8 +68,8 @@
  * proportions the SPA uses, so a reader moving between the console and
  * the docs does not re-learn the scale:
  *
- *   --text-doc-h1      一级标题 (page title) … 30px   (页面主标题)
- *   --text-doc-h2      二级标题 (h2) ………………… 24px   (界面分区标题)
+ *   --text-doc-h1      一级标题 (page title) … 28px   (页面主标题)
+ *   --text-doc-h2      二级标题 (h2) ………………… 22px   (界面分区标题)
  *   --text-doc-h3      三级标题 (h3) ………………… 18px   (界面卡片标题)
  *   --text-doc-body    正文 (p / li / td / …)  16px / 26px  (长文本正文)
  *   --text-doc-chrome  导航 / 侧栏 / 目录 ………… 14px   (导航与按钮)
@@ -77,13 +77,13 @@
  *
  * 内容标题另有一套 **prose 阶梯**（`web/docs/design-system/typography.md`
  * 「内容排版（Markdown prose）」）：Markdown 的标题比界面低一到两档，因为把
- * 正文里的 h1 抬到界面 30px 会让它比所在卡片的标题（18px）还大。
+ * 正文里的 h1 抬到界面 28px 会让它比所在卡片的标题（18px）还大。
  *
  *   --text-doc-prose-h2  正文里最上面一层（Markdown h2）… 18px / 28px
  *   --text-doc-prose-h3  正文里的子节（Markdown h3）……… 16px / 24px
  *
- * 文档的一级标题由 `DocsTitle` 按界面 h1（30）渲染，正文从 Markdown 的 h2
- * 开始，所以正文里的第一层是 18 而不是 24。
+ * 文档的一级标题由 `DocsTitle` 按界面 h1（28）渲染，正文从 Markdown 的 h2
+ * 开始，所以正文里的第一层是 18 而不是 22。
  *
  * Body leading is **26px (1.625)**, the spec's `body-long` value
  * (规范 §1.2：长文本 16px / 26px). It used to be 1.75 (28px) on a
@@ -106,12 +106,12 @@
  * line number sits on its line rather than a few pixels off it.
  */
 @theme {
-  --text-doc-h1: 1.875rem;
-  --text-doc-h1--line-height: 2.25rem; /* 36px —— 规范 h1 30/36 */
-  --text-doc-h2: 1.5rem;
-  --text-doc-h2--line-height: 2rem; /* 32px —— 规范 h2 24/32 */
+  --text-doc-h1: 1.75rem;
+  --text-doc-h1--line-height: 2.25rem; /* 36px —— 规范 h1 28/36 */
+  --text-doc-h2: 1.375rem;
+  --text-doc-h2--line-height: 1.875rem; /* 30px —— 规范 h2 22/30 */
   --text-doc-h3: 1.125rem;
-  --text-doc-h3--line-height: 1.75rem; /* 28px —— 规范 h3 18/28 */
+  --text-doc-h3--line-height: 1.625rem; /* 26px —— 规范 h3 18/26 */
   /* 内容排版（prose）阶梯：见文件头的说明与 typography.md「内容排版」。 */
   --text-doc-prose-h2: 1.125rem;
   --text-doc-prose-h2--line-height: 1.75rem; /* 18/28 */
@@ -120,7 +120,7 @@
   --text-doc-body: 1rem;
   --text-doc-body--line-height: 1.625;
   --text-doc-chrome: 0.875rem;
-  --text-doc-chrome--line-height: 1.25rem; /* 20px —— 规范 label / body-sm 14/20 */
+  --text-doc-chrome--line-height: 1.375rem; /* 22px —— 规范 v1.2 label / body-medium 14/22 */
   --text-doc-caption: 0.75rem;
   --text-doc-caption--line-height: 1.25;
   --text-doc-code: 0.8125rem;
@@ -698,7 +698,7 @@ html[data-docs-embed='true'] #nd-subnav > a {
  * text-sm on body). This pins every content page to the steps declared
  * in the `@theme` block above:
  *
- *   一级标题  `#nd-page > h1` (the DocsTitle) … 30px, weight 600
+ *   一级标题  `#nd-page > h1` (the DocsTitle) … 28px, weight 600
  *   二级标题  `.prose :is(h2)` ………………… 24px, weight 600
  *   三级标题  `.prose :is(h3)` ………………… 18px, weight 600
  *   正文      `.prose :is(p, li, td, …)` …………… 16px, weight 400

@@ -17,21 +17,21 @@
     --container-lg: 32rem;
     --container-xl: 36rem;
     --text-xs: 0.75rem;
-    --text-xs--line-height: 1rem;
+    --text-xs--line-height: 1.125rem;
     --text-sm: 0.875rem;
-    --text-sm--line-height: 1.25rem;
+    --text-sm--line-height: 1.375rem;
     --text-base: 1rem;
     --text-base--line-height: 1.5rem;
     --text-lg: 1.125rem;
-    --text-lg--line-height: 1.75rem;
+    --text-lg--line-height: 1.625rem;
     --text-xl: 1.25rem;
     --text-xl--line-height: 1.75rem;
-    --text-2xl: 1.5rem;
-    --text-2xl--line-height: 2rem;
-    --text-3xl: 1.875rem;
+    --text-2xl: 1.375rem;
+    --text-2xl--line-height: 1.875rem;
+    --text-3xl: 1.75rem;
     --text-3xl--line-height: 2.25rem;
     --text-4xl: 2.25rem;
-    --text-4xl--line-height: 2.5rem;
+    --text-4xl--line-height: 2.75rem;
     --font-weight-normal: 400;
     --font-weight-medium: 500;
     --font-weight-semibold: 600;
@@ -41,14 +41,18 @@
     --default-transition-timing-function: var(--ds-motion-ease);
     --default-font-family: var(--font-ui);
     --default-mono-font-family: var(--font-mono);
-    --text-mono: 0.875rem;
+    --text-mono: 0.8125rem;
     --text-mono--line-height: 1.25rem;
     --text-mono-code: 0.8125rem;
     --text-mono-code--line-height: 1.25rem;
     --text-mono-title: 1rem;
     --text-mono-title--line-height: 1.375rem;
+    --text-dense: 0.8125rem;
+    --text-dense--line-height: 1.25rem;
     --text-long: 1rem;
     --text-long--line-height: 1.625rem;
+    --text-group: 0.9375rem;
+    --text-group--line-height: 1.375rem;
   }
 }
 @layer base {
@@ -1867,6 +1871,8 @@
   --text-sm--line-height: 1.625rem;
   --text-mono: 1.0625rem;
   --text-mono--line-height: 1.5rem;
+  --text-dense: 1.0625rem;
+  --text-dense--line-height: 1.625rem;
   --text-mono-code: 1.0625rem;
   --text-mono-code--line-height: 1.625rem;
   --text-mono-title: 1.25rem;
@@ -1875,6 +1881,8 @@
   --text-long--line-height: 2rem;
   --text-base: 1.25rem;
   --text-base--line-height: 1.75rem;
+  --text-group: 1.25rem;
+  --text-group--line-height: 1.75rem;
   --text-lg: 1.5rem;
   --text-lg--line-height: 2rem;
   --text-xl: 1.75rem;
@@ -1937,27 +1945,29 @@
   --ds-text-section-title: var(--text-2xl);
   --ds-text-card-title: var(--text-lg);
   --ds-text-dialog-title: var(--text-lg);
-  --ds-text-group-title: var(--text-base);
+  --ds-text-group-title: var(--text-group);
   --ds-text-body: var(--text-sm);
   --ds-text-body-sm: var(--text-sm);
+  --ds-text-dense: var(--text-dense);
   --ds-text-long: var(--text-long);
   --ds-text-label: var(--text-sm);
   --ds-text-caption: var(--text-xs);
   --ds-text-mono: var(--text-mono);
   --ds-text-mono-code: var(--text-mono-code);
   --ds-text-mono-title: var(--text-mono-title);
-  --ds-line-display: var(--text-4xl--line-height, 2.5rem);
+  --ds-line-display: var(--text-4xl--line-height, 2.75rem);
   --ds-line-display-multiline: 1.5;
   --ds-line-page-title: var(--text-3xl--line-height, 2.25rem);
-  --ds-line-section-title: var(--text-2xl--line-height, 2rem);
-  --ds-line-card-title: var(--text-lg--line-height, 1.75rem);
-  --ds-line-dialog-title: var(--text-lg--line-height, 1.75rem);
-  --ds-line-group-title: var(--text-base--line-height, 1.5rem);
-  --ds-line-body: var(--text-sm--line-height, 1.25rem);
-  --ds-line-body-sm: var(--text-sm--line-height, 1.25rem);
+  --ds-line-section-title: var(--text-2xl--line-height, 1.875rem);
+  --ds-line-card-title: var(--text-lg--line-height, 1.625rem);
+  --ds-line-dialog-title: var(--text-lg--line-height, 1.625rem);
+  --ds-line-group-title: var(--text-group--line-height, 1.375rem);
+  --ds-line-body: var(--text-sm--line-height, 1.375rem);
+  --ds-line-body-sm: var(--text-sm--line-height, 1.375rem);
   --ds-line-long: var(--text-long--line-height, 1.625rem);
-  --ds-line-label: var(--text-sm--line-height, 1.25rem);
-  --ds-line-caption: var(--text-xs--line-height, 1rem);
+  --ds-line-label: var(--text-sm--line-height, 1.375rem);
+  --ds-line-caption: var(--text-xs--line-height, 1.125rem);
+  --ds-line-dense: var(--text-dense--line-height, 1.25rem);
   --ds-line-mono: var(--text-mono--line-height, 1.25rem);
   --ds-line-mono-code: var(--text-mono-code--line-height, 1.25rem);
   --ds-line-mono-title: var(--text-mono-title--line-height, 1.375rem);
@@ -2193,6 +2203,15 @@
     line-height: var(--ds-line-label);
     font-weight: var(--ds-weight-medium);
   }
+  .ds-text--body-medium {
+    font-size: var(--ds-text-label);
+    line-height: var(--ds-line-label);
+    font-weight: var(--ds-weight-medium);
+  }
+  .ds-text--dense {
+    font-size: var(--ds-text-dense);
+    line-height: var(--ds-line-dense);
+  }
   .ds-text--caption {
     font-size: var(--ds-text-caption);
     line-height: var(--ds-line-caption);
@@ -2215,7 +2234,7 @@
   .ds-heading--display {
     font-size: var(--ds-text-display);
     line-height: var(--ds-line-display);
-    font-weight: var(--ds-weight-bold);
+    font-weight: var(--ds-weight-semibold);
   }
   .ds-heading--page-title {
     font-size: var(--ds-text-page-title);

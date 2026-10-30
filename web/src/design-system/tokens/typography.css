@@ -17,33 +17,42 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@uter.ai
 */
 /* ── Layer 1 · Typography scale（唯一字号阶梯）────────────────────────
- * 九档语义字号，与 docs/design-system/design-system.md 的表格逐行对应：
+ * 十档语义字号，与 docs/design-system/design-system.md 的表格逐行对应：
  *
- *   display  36 / 700 / 40   页面主视觉标题（营销页 hero）
- *   h1       30 / 600 / 36   页面标题
- *   h2       24 / 600 / 32   区块标题
- *   h3       18 / 600 / 28   卡片标题、弹窗标题
- *   body     14 / 400 / 20   常规正文、表单内容、普通说明（全站基准）
+ *   display  36 / 600 / 44   页面主视觉标题（营销页 hero）
+ *   h1       28 / 600 / 36   页面标题
+ *   h2       22 / 600 / 30   区块标题
+ *   h3       18 / 600 / 26   卡片标题、弹窗标题
+ *   body     14 / 400 / 22   常规正文、表单内容、普通说明（全站基准）
  *   body-long 16 / 400 / 26  长文本：文章、协议、帮助文档、连续阅读
- *   body-sm  14 / 400 / 20   紧凑辅助正文、表格单元格
- *   label    14 / 500 / 20   按钮文字、表单标签、导航项
- *   caption  12 / 400 / 16   说明、占位符、徽标
- *   mono     14 / 400 / 20   正文里的等宽文本（模型 ID、密钥、金额、行内代码）
+ *   body-sm  14 / 400 / 22   紧凑辅助正文
+ *   label    14 / 500 / 22   按钮文字、表单标签、导航项（Body Medium）
+ *   small    12 / 400 / 18   辅助信息、时间、次要说明
+ *   caption  12 / 400 / 18   说明、占位符、徽标
+ *   mono     13 / 400 / 20   正文里的等宽文本（模型 ID、密钥、行内代码）
+ *   dense    13 / 400 / 20   密集数据专用：表格单元格、二级导航、分页
  *
- * ⚠️ `body` 与 `body-sm` 在新规范里**同为 14/20**。两者保留两个名字是因为
- * 语义不同（基准正文 vs 紧凑辅助），不是两档字号；把 `body` 当 16px 用是
- * 旧规范（2026-10-27 之前）的写法，已废止。需要 16px 的连续阅读场景一律走
+ * 行高 2026-10-30 v1.2 放宽：正文 14px 从 20 → 22（1.57）、12px 从 16 → 18
+ * （1.50）—— 长时间阅读的段落需要呼吸感，控件文本因落在固定高度容器里
+ * （按钮 h-9、输入框 h-9），行高变化不改变控件实际高度。
+ *
+ * group-title 是语义层级的第 4 层，取值走独立的 `--text-group`（15/22），
+ * 不占用上表阶梯位置 —— 与 dense / mono-code / mono-title 同属「专用派生档」。
+ *
+ * ⚠️ `body` 与 `body-sm` **同为 14/22**。两者保留两个名字是因为语义不同
+ * （基准正文 vs 紧凑辅助），不是两档字号；把 `body` 当 16px 用是旧规范
+ * （2026-10-27 之前）的写法，已废止。需要 16px 的连续阅读场景一律走
  * `body-long`（16/26），不要拿 `text-base` 当正文。
  *
- * mono 档另有两个**等宽专用派生档**，只在等宽场景出现，不占九档位置
+ * mono 档另有两个**等宽专用派生档**，只在等宽场景出现，不占十档位置
  * （详见 docs/design-system/design-system.md「mono 三档」）：
  *
  *   mono-code  13 / 400 / 20  固定高度的等宽代码容器（首页代码卡片、编辑器视口）
  *   mono-title 16 / 600 / 22  用等宽字形的卡片标题（定价卡片模型名）
  *
- * 为什么正文等宽是 14px：等宽字形比 Inter 同字号更宽，13px 在正文里与
- * 14px 的 body-sm 并排会明显偏小；只有整块等宽的代码展示区才需要 13px
- * 来保证固定高度卡片里的行数与不溢出。
+ * 正文等宽定为 13px（规范 v1.2）：与密集数据档 dense 同高，等宽字形比
+ * Inter 宽，13px 等宽与 14px 正文并排视觉等重；整块等宽的代码展示区
+ * （mono-code）同值，固定高度卡片里的行数与不溢出。
  *
  * ⚠️ 必须声明在 `@theme` 里，不能写在 `:root`。
  * Tailwind v4 只从 `@theme` 读取主题值：写在 `:root` 的 `--text-*`
@@ -56,13 +65,13 @@ For commercial licensing, please contact support@uter.ai
  * 这里的阶梯同时也是密度缩放的基线。
  */
 @theme {
-  --text-xs: 0.75rem; /* 12px — caption */
-  --text-xs--line-height: 1rem; /* 16px */
+  --text-xs: 0.75rem; /* 12px — small / caption */
+  --text-xs--line-height: 1.125rem; /* 18px */
 
   --text-sm: 0.875rem; /* 14px — body / body-sm / label */
-  --text-sm--line-height: 1.25rem; /* 20px */
+  --text-sm--line-height: 1.375rem; /* 22px */
 
-  --text-mono: 0.875rem; /* 14px — mono，正文里的等宽文本 */
+  --text-mono: 0.8125rem; /* 13px — mono，正文里的等宽文本 */
   --text-mono--line-height: 1.25rem; /* 20px */
 
   --text-mono-code: 0.8125rem; /* 13px — 固定高度的等宽代码容器（首页代码卡片、编辑器视口） */
@@ -71,29 +80,43 @@ For commercial licensing, please contact support@uter.ai
   --text-mono-title: 1rem; /* 16px — 等宽卡片标题（定价卡片模型名） */
   --text-mono-title--line-height: 1.375rem; /* 22px */
 
+  /* dense：13/20 密集数据专用档（规范 v1.2）。**只**给表格单元格、
+   * 二级导航、分页这类以扫读为主的密集数据 —— 普通说明文字仍是 14px。
+   * 与 mono / mono-code 同值但语义不同：dense 是 Inter 字形的密度档，
+   * mono 系是等宽字形档，两族不许混用。 */
+  --text-dense: 0.8125rem; /* 13px — 表格单元格 / 二级导航 / 分页 */
+  --text-dense--line-height: 1.25rem; /* 20px */
+
   /* body-long：16/26，只给连续阅读的长文本。行高 26 而不是 24，是因为
    * 16px 中文正文在 1.5 倍行高下仍然偏挤，26/16 = 1.625 才接近印刷体
    * 的阅读节奏。 */
   --text-long: 1rem; /* 16px — body-long */
   --text-long--line-height: 1.625rem; /* 26px */
 
-  --text-base: 1rem; /* 16px — group-title / body-long 的原始值，**不是**正文 */
+  --text-base: 1rem; /* 16px — 行标题 / 设置字段 / 指标数值 / body-long 原始值，**不是**正文 */
   --text-base--line-height: 1.5rem; /* 24px */
 
   --text-lg: 1.125rem; /* 18px — h3 */
-  --text-lg--line-height: 1.75rem; /* 28px */
+  --text-lg--line-height: 1.625rem; /* 26px */
 
   --text-xl: 1.25rem; /* 20px — 兼容档，文档九档之外的既有标题 */
   --text-xl--line-height: 1.75rem; /* 28px */
 
-  --text-2xl: 1.5rem; /* 24px — h2 */
-  --text-2xl--line-height: 2rem; /* 32px */
+  --text-2xl: 1.375rem; /* 22px — h2 */
+  --text-2xl--line-height: 1.875rem; /* 30px */
 
-  --text-3xl: 1.875rem; /* 30px — h1 */
+  --text-3xl: 1.75rem; /* 28px — h1 */
   --text-3xl--line-height: 2.25rem; /* 36px */
 
   --text-4xl: 2.25rem; /* 36px — display */
-  --text-4xl--line-height: 2.5rem; /* 40px */
+  --text-4xl--line-height: 2.75rem; /* 44px */
+
+  /* group-title 专用档：15/22。2026-10-30 字体规范 v1.1 起分组标题从
+   * text-base（16/24）独立成档 —— 分组标题比 card-title 低一档后与
+   * 「行标题 / 设置字段 / 指标数值」（仍为 16px）不再共用取值。
+   * 声明在阶梯里而不是 semantic 层写死，维持「--text-* 唯一来源」。 */
+  --text-group: 0.9375rem; /* 15px — group-title */
+  --text-group--line-height: 1.375rem; /* 22px */
 
   /* 阶梯到此为止。更大的尺寸（48/60px）不纳入系统 —— 需要时先确认是否
      真的必要，并按 exceptions.md 的流程登记。 */
@@ -126,6 +149,8 @@ For commercial licensing, please contact support@uter.ai
   --text-sm--line-height: 1.625rem; /* 26px */
   --text-mono: 1.0625rem; /* 17px — 与 body-sm 18px 保持等宽视觉等重 */
   --text-mono--line-height: 1.5rem; /* 24px */
+  --text-dense: 1.0625rem; /* 17px — dense 大字档同步放大 */
+  --text-dense--line-height: 1.625rem; /* 26px */
   --text-mono-code: 1.0625rem; /* 17px */
   --text-mono-code--line-height: 1.625rem; /* 26px */
   --text-mono-title: 1.25rem; /* 20px */
@@ -134,6 +159,8 @@ For commercial licensing, please contact support@uter.ai
   --text-long--line-height: 2rem; /* 32px */
   --text-base: 1.25rem; /* 20px */
   --text-base--line-height: 1.75rem; /* 28px */
+  --text-group: 1.25rem; /* 20px — group-title 大字档同步放大 */
+  --text-group--line-height: 1.75rem; /* 28px */
   --text-lg: 1.5rem; /* 24px */
   --text-lg--line-height: 2rem; /* 32px */
   --text-xl: 1.75rem; /* 28px */

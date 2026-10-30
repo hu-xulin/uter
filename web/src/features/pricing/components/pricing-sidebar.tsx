@@ -156,7 +156,7 @@ function FilterSection(props: FilterSectionProps) {
       defaultOpen
       className='border-border/70 border-b pb-3 last:border-b-0'
     >
-      {/* 折叠组标题是卡片**内部**的分组标题：group-title 16/600/24。
+      {/* 折叠组标题是卡片**内部**的分组标题：group-title 15/600/22。
           此前是 14/600（text-sm font-semibold），属于规范硬规则 2 明令
           禁止的「用 text-sm font-semibold 做分组标题」。
 
@@ -317,7 +317,7 @@ export function PricingSidebar(props: PricingSidebarProps) {
     <aside className={cn('bg-card rounded-xl border p-3', props.className)}>
       <div className='mb-2.5 flex items-center justify-between gap-2'>
         <div>
-          {/* 侧栏是一张卡片，所以「筛选」是**卡片标题**（h3 18/600/28），
+          {/* 侧栏是一张卡片，所以「筛选」是**卡片标题**（h3 18/600/26），
               不是卡片内的分组标题。此前写成 16/600，既不是 18 的卡片标题，
               也不是 16 的分组标题档位对应位置（它在卡片头部，不在卡片内部再分组）。
               下面 FilterSection 的「分组」「供应商」才是 group-title 16/600。 */}

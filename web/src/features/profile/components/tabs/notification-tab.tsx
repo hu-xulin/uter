@@ -179,7 +179,7 @@ export function NotificationTab({
         <>
           {/* Notification Type */}
           <div className='space-y-2.5'>
-            {/* 分组标题走 group-title（16/600/24）：这一层比表单标签高、
+            {/* 分组标题走 group-title（15/600/22）：这一层比表单标签高、
                 比卡片标题（18/600）低，是页面层级第 4 层。此前用 Label
                 （14/500），比正文还小，「通知方式」看起来像个字段名而不是
                 一组设置的分组标题。 */}

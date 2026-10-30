@@ -299,7 +299,8 @@ export function DocsHeader({ locale }: { locale: DocsLocale }) {
                   target={HOST_APP_LINK_TARGET}
                   title={link.title}
                   className={cx(
-                    'Uter-brand-radius min-w-0 truncate px-3 py-1.5 text-sm font-medium transition-colors duration-200',
+                    // 规范 v1.2 第 7 条：导航 Tab = Body Medium（14/500/22）。
+                    'Uter-brand-radius min-w-0 truncate px-3 py-1.5 text-doc-chrome font-medium transition-colors duration-200',
                     isActive(link.href)
                       ? 'text-fd-foreground'
                       : 'text-fd-muted-foreground hover:text-fd-foreground'

@@ -704,7 +704,7 @@ export function SyncWizardDialog(props: {
           {selected.map((item) => (
             <section key={item.model_name} className='space-y-2'>
               {/* 这是弹窗内部的「模型 · 原因」分组标题，属第 4 层
-                  group-title（16/600/24）。此前写成 text-mono（14/600），
+                  group-title（15/600/22）。此前写成 text-mono（14/600），
                   比正文还小一档，分组感全靠字重撑着。等宽字形保留。 */}
               <Heading variant='group-title' className='font-mono break-all'>
                 {item.model_name} · {t(REASON_LABELS[item.kind])}

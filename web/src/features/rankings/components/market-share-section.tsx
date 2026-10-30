@@ -186,7 +186,7 @@ export function MarketShareSection(props: MarketShareSectionProps) {
     <section className='bg-card overflow-hidden rounded-lg border'>
       {/* Chart block ----------------------------------------------------- */}
       <header className='px-5 py-4'>
-        {/* 这是榜单页的顶层区块标题（第 2 层 section-title 24/600/32），
+        {/* 这是榜单页的顶层区块标题（第 2 层 section-title 22/600/30），
             此前是 18px，与卡片标题同档，页面层级塌了一层。 */}
         <Heading
           variant='section-title'

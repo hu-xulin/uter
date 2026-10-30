@@ -234,7 +234,9 @@ function folderContainsCurrent(
  *     装饰线（此前那条 `before:` 竖线已删除）。
  */
 const ITEM_CLASS =
-  'relative flex flex-row items-center gap-2 rounded-lg p-2 text-start text-sm font-medium text-fd-muted-foreground ' +
+  // 规范 v1.2 第 7 条：文档页左侧导航 = Body Medium（14/500/22），
+  // 走 `--text-doc-chrome` 档（与顶栏导航/目录同一档）。
+  'relative flex flex-row items-center gap-2 rounded-lg p-2 text-start text-doc-chrome font-medium text-fd-muted-foreground ' +
   'wrap-anywhere cursor-pointer ' +
   '[&_svg]:size-4.5 [&_svg]:shrink-0 ' +
   'data-[active=true]:bg-nav-active-bg data-[active=true]:text-nav-active ' +
