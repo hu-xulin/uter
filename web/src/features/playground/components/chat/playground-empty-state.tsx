@@ -52,7 +52,7 @@ export function PlaygroundEmptyState({
         </div>
 
         <div className='grid gap-2'>
-          {/* 空状态主标题：20px 不在阶梯内，统一 24/600（section-title 档）。 */}
+          {/* 空状态主标题：20px 不在阶梯内，统一 22/600（section-title 档）。 */}
           <Heading variant='section-title' className='text-balance'>
             {t('Start a playground chat')}
           </Heading>

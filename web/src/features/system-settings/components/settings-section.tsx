@@ -39,7 +39,7 @@ export function SettingsSection({
     <section className={cn('flex flex-col gap-4', className)}>
       {!suppressHeader && (
         <div className='flex flex-col gap-1'>
-          {/* 区块标题走规范 h3 档（18/600/28）。此前是 16/600 —— 16px 在阶梯里
+          {/* 区块标题走规范 h3 档（18/600/26）。此前是 16/600 —— 16px 在阶梯里
               只有 body（400 字重）一档，用它做标题会与正文同号、只靠字重区分，
               页面在 30px 页标题之下就断了层级。 */}
           <h3

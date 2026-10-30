@@ -164,7 +164,7 @@ export function ModelsSection(props: ModelsSectionProps) {
       {/* Chart block ----------------------------------------------------- */}
       <header className='flex items-start justify-between gap-4 px-5 py-4'>
         <div className='min-w-0 flex-1'>
-          {/* 榜单页顶层区块标题：第 2 层 section-title 24/600/32。 */}
+          {/* 榜单页顶层区块标题：第 2 层 section-title 22/600/30。 */}
           <Heading
             variant='section-title'
             className='inline-flex items-center gap-2'

@@ -108,11 +108,9 @@ export function PublicHeader(props: PublicHeaderProps) {
   if (loading) logoContent = <Skeleton className='size-full rounded-lg' />
 
   let authContent = (
-    // 密集工具栏 / 表格行内密度：sm 档（32px）+ 规范 sm 内边距（px-2），
-    // 不再用 px-3.5 撑宽，调用处不覆盖字号字重。
-    <Button size='sm' render={<Link to='/sign-in' />}>
-      {t('Sign in')}
-    </Button>
+    // 规范 v1.2 第 7 条：首页登录按钮 = Body Medium（14/500/22），
+    // 走 default 档（36px 高），不压到 sm 的 12px 小按钮档。
+    <Button render={<Link to='/sign-in' />}>{t('Sign in')}</Button>
   )
   if (isAuthenticated) authContent = <ProfileDropdown />
   if (loading) {

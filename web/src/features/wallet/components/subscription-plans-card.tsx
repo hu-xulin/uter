@@ -568,7 +568,7 @@ export function SubscriptionPlansCard({
                   <CardContent className='flex h-full flex-col p-3.5 sm:p-4'>
                     <div className='mb-2 flex items-start justify-between gap-3'>
                       <div className='min-w-0'>
-                        {/* 套餐名是这张套餐卡的**卡片标题**（h3 18/600/28）。
+                        {/* 套餐名是这张套餐卡的**卡片标题**（h3 18/600/26）。
                             此前是 16/600，把卡片标题压到了「卡片内分组」档位。 */}
                         <h4 className='truncate text-lg font-semibold'>
                           {plan.title || t('Subscription Plans')}

@@ -781,7 +781,7 @@ export function Markdown(props: MarkdownProps) {
          * descendant selectors instead.
          *
          * 规范 §1.2「内容排版（Markdown prose）」：Markdown 标题自成一套，
-         * 比界面层级（30/24/18/16）**低一到两档** —— h1 24/32、h2 18/28、
+         * 比界面层级（28/22/18/15）**低一到两档** —— h1 24/32、h2 18/28、
          * h3 16/24、h4 14/20，正文 body-long 16/26，行内与围栏代码 mono 14/20。
          * 规范点名了此前的错误：把 Markdown 的 h1 抬到界面 30px，会让回答里的
          * 标题比它所在卡片的标题（18px）还大，页面层级当场塌掉。 */

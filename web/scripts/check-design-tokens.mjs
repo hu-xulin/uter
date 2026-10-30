@@ -43,6 +43,7 @@ For commercial licensing, please contact support@uter.ai
  *   T13 透明度冒充文字层级 `text-foreground/60`（§11.3 禁止，改 `text-fg-secondary`）
  *   T14 透明度凑悬停       `hover:bg-primary/90`（§11.2 禁止，改用 `*-hover` Token）
  *   T15 透明度凑浅底       `bg-warning/10`（§11.2 禁止，改用 `*-soft` / `*-subtle`）
+ *   T16 低于最小字号       `text-[11px]` / `font-size: 10px`（§12.15 全站下限 12px）
  *
  * 扫描不把硬编码一律判死：图表 canvas 的 `fontSize` 必须是数字、
  * 第三方控件的行内样式改不动、弹窗浮层本来就该有投影。这些进 ALLOWLIST，
@@ -153,6 +154,7 @@ const RULES = {
   T13: '透明度冒充文字层级（text-foreground/NN，改用 text-fg-secondary / text-fg-tertiary）',
   T14: '透明度凑悬停（hover:bg-{primary|secondary|destructive|success}/NN，改用 *-hover Token）',
   T15: '透明度凑浅底（bg-{success|warning|info}/NN → *-soft；bg-{primary|destructive}/NN → *-subtle）',
+  T16: '低于最小字号（规范 §12.15：全站可见文本下限 12px，布局不够用改布局不许缩字号）',
 }
 
 /**
@@ -373,6 +375,38 @@ for (const abs of walk(SRC)) {
     // T5：CSS 硬编码字号
     if (/font-size:\s*[0-9.]+px/.test(raw)) {
       report('T5', rel, line, rawText)
+    }
+
+    // T16：低于最小字号（规范 §12.15「Typography Minimum Size Rule」）。
+    //
+    // T2/T4/T5 拦的是「写法」（任意值/内联/CSS 硬编码），这条拦的是**数值**：
+    // 哪怕写法走的是允许形式，只要换算成 px 后 < 12 一律违规。扫描面：
+    //   · `text-[11px]` / `text-[0.6875rem]` 任意字号值
+    //   · `font-size: 10px` / `font-size: 0.625rem` CSS 声明
+    //   · `fontSize: 11` / `fontSize: '10px'` 内联与 canvas 配置
+    //   · `--text-*: 0.6875rem` 阶梯 Token 本身（下限在阶梯里钉死）
+    // 布局空间不足时按规范调整容器、间距、换行或滚动，不允许缩字号。
+    {
+      const candidates = []
+      for (const hit of raw.match(/text-\[([0-9.]+)(px|rem)\]/g) ?? []) {
+        candidates.push(hit.slice('text-['.length, -1))
+      }
+      for (const m of raw.matchAll(/font-size:\s*([0-9.]+)(px|rem)/g)) {
+        candidates.push(m[1] + m[2])
+      }
+      for (const m of raw.matchAll(/fontSize:\s*['"]?([0-9.]+)(px|rem)?['"]?/g)) {
+        candidates.push(m[1] + (m[2] ?? 'px'))
+      }
+      for (const m of raw.matchAll(/--text-[a-z0-9]+:\s*([0-9.]+)(px|rem)/g)) {
+        candidates.push(m[1] + m[2])
+      }
+      const below = candidates.find((value) => {
+        const num = Number.parseFloat(value)
+        return value.endsWith('rem') ? num * 16 < 12 : num < 12
+      })
+      if (below !== undefined) {
+        report('T16', rel, line, rawText)
+      }
     }
 
     // T6：非浮层投影。`shadow-none` / `!shadow-none` 是在取消投影，放行。

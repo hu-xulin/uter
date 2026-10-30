@@ -28,7 +28,7 @@ import * as React from 'react'
  *   default  14/500/20  普通表单标签（不改既有观感）
  *   field    16/600/24  设置页的**每一个配置项标题**（开关行、字段标签、
  *                       分组容器标题）；说明文字一律 14/400
- *   group    18/600/28  比 field 更高一档的显式声明。设置页已统一到 16/600，
+ *   group    18/600/26  比 field 更高一档的显式声明。设置页已统一到 16/600，
  *                       这里只为需要强调的少数场景保留
  *   row      14/600/20  分组容器里**再缩进一层**的子项标题
  *
@@ -51,7 +51,7 @@ export const FORM_LABEL_TIER_CLASS: Record<FormLabelTier, string> = {
   default: '',
   /* 16/600/24 —— 配置项标题、分组容器标题。 */
   field: 'text-base font-semibold',
-  /* 18/600/28 —— 比 field 更高一档的显式声明（设置页已统一 16/600，不再使用）。 */
+  /* 18/600/26 —— 比 field 更高一档的显式声明（设置页已统一 16/600，不再使用）。 */
   group: 'text-lg font-semibold',
   /* 14/600/20 —— 分组容器里再缩进一层的子项：与说明（14/400）同号不同字重。 */
   row: 'text-sm font-semibold',

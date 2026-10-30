@@ -23,12 +23,12 @@ import { cn } from '@/lib/utils'
 /**
  * 视觉层级。与 HTML 语义（h1–h6）**分离**：
  *
- * - `display`       36/700/40  营销页主视觉
- * - `page-title`    30/600/36  页面标题
- * - `section-title` 24/600/32  区块标题
- * - `card-title`    18/600/28  卡片标题
- * - `dialog-title`  18/600/28  弹窗标题
- * - `group-title`   16/600/24  卡片内的分组标题（表单分组、列表分组）
+ * - `display`       36/600/44  营销页主视觉
+ * - `page-title`    28/600/36  页面标题
+ * - `section-title` 22/600/30  区块标题
+ * - `card-title`    18/600/26  卡片标题
+ * - `dialog-title`  18/600/26  弹窗标题
+ * - `group-title`   15/600/22  卡片内的分组标题（表单分组、列表分组）
  * - `mono-title`    16/600/22  用等宽字形的卡片标题（定价卡片模型名）
  *
  * `group-title` 是页面层级的第 4 层：卡片内部再分组时用（个人资料页的

@@ -42,13 +42,16 @@ For commercial licensing, please contact support@uter.ai
   /* 分组标题：卡片内部再分组时的那一层（个人资料页「通知方式」「偏好设置」、
      弹窗里的字段分组）。它是页面层级的第 4 层，低于 card-title（18/600），
      高于表单标签（14/500）。 */
-  --ds-text-group-title: var(--text-base);
-  /* 常规正文：14/20（新规范 §1.2）。全站默认基准，不是 16px ——
+  --ds-text-group-title: var(--text-group);
+  /* 常规正文：14/22（规范 v1.2）。全站默认基准，不是 16px ——
    * 16px 只留给 `body-long` 的连续阅读场景。 */
   --ds-text-body: var(--text-sm);
   --ds-text-body-sm: var(--text-sm);
+  /* 密集数据专用：13/20。表格单元格、二级导航、分页 —— 以扫读为主的
+   * 密度场景才用它，普通说明文字仍是 14px（见阶梯注释）。 */
+  --ds-text-dense: var(--text-dense);
   /* 长文本：16/26。文章、协议、帮助中心、隐私政策这类需要连续阅读的
-   * 内容才用它，控制台里的表单说明与普通段落仍是 body（14/20）。 */
+   * 内容才用它，控制台里的表单说明与普通段落仍是 body（14/22）。 */
   --ds-text-long: var(--text-long);
   --ds-text-label: var(--text-sm);
   --ds-text-caption: var(--text-xs);
@@ -58,22 +61,23 @@ For commercial licensing, please contact support@uter.ai
   --ds-text-mono-title: var(--text-mono-title);
 
   /* ── 语义行高 ──────────────────────────────────────────────────────── */
-  --ds-line-display: var(--text-4xl--line-height, 2.5rem);
+  --ds-line-display: var(--text-4xl--line-height, 2.75rem);
   /* 多行主标题专用行高，**无单位比例**，随字号缩放：
    * 36px × 1.5 = 54px（移动端 30px × 1.5 = 45px）。单行 display 用
    * 40px（1.11）是对的，但中文主标题常折成 3–4 行，1.11 会让行与行
    * 挤在一起；1.35 实测仍然偏紧，按首页实测反馈调到 1.5。 */
   --ds-line-display-multiline: 1.5;
   --ds-line-page-title: var(--text-3xl--line-height, 2.25rem);
-  --ds-line-section-title: var(--text-2xl--line-height, 2rem);
-  --ds-line-card-title: var(--text-lg--line-height, 1.75rem);
-  --ds-line-dialog-title: var(--text-lg--line-height, 1.75rem);
-  --ds-line-group-title: var(--text-base--line-height, 1.5rem);
-  --ds-line-body: var(--text-sm--line-height, 1.25rem);
-  --ds-line-body-sm: var(--text-sm--line-height, 1.25rem);
+  --ds-line-section-title: var(--text-2xl--line-height, 1.875rem);
+  --ds-line-card-title: var(--text-lg--line-height, 1.625rem);
+  --ds-line-dialog-title: var(--text-lg--line-height, 1.625rem);
+  --ds-line-group-title: var(--text-group--line-height, 1.375rem);
+  --ds-line-body: var(--text-sm--line-height, 1.375rem);
+  --ds-line-body-sm: var(--text-sm--line-height, 1.375rem);
   --ds-line-long: var(--text-long--line-height, 1.625rem);
-  --ds-line-label: var(--text-sm--line-height, 1.25rem);
-  --ds-line-caption: var(--text-xs--line-height, 1rem);
+  --ds-line-label: var(--text-sm--line-height, 1.375rem);
+  --ds-line-caption: var(--text-xs--line-height, 1.125rem);
+  --ds-line-dense: var(--text-dense--line-height, 1.25rem);
   --ds-line-mono: var(--text-mono--line-height, 1.25rem);
   --ds-line-mono-code: var(--text-mono-code--line-height, 1.25rem);
   --ds-line-mono-title: var(--text-mono-title--line-height, 1.375rem);

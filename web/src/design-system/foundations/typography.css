@@ -92,7 +92,7 @@ For commercial licensing, please contact support@uter.ai
   }
   /* 长文本：16/26。只给连续阅读（文章、协议、帮助中心、隐私政策）。
    * 不要拿它当「大一号的正文」——控制台里的表单说明、卡片描述仍是
-   * body（14/20），放大只会让信息密度塌下来。 */
+   * body（14/22），放大只会让信息密度塌下来。 */
   .ds-text--long,
   .ds-text--body-long {
     font-size: var(--ds-text-long);
@@ -107,6 +107,20 @@ For commercial licensing, please contact support@uter.ai
     line-height: var(--ds-line-label);
     font-weight: var(--ds-weight-medium);
   }
+  /* Body Medium：`label` 的语义别名（规范 v1.2 的叫法）。强调正文、
+   * 首页导航 Tab、管理页左侧导航、文档/关于页左侧导航、首页登录按钮
+   * 统一走这一档：14/500/22。与 label 同值，差别只在语义。 */
+  .ds-text--body-medium {
+    font-size: var(--ds-text-label);
+    line-height: var(--ds-line-label);
+    font-weight: var(--ds-weight-medium);
+  }
+  /* 密集数据：13/20。表格单元格、二级导航、分页 —— 以扫读为主的密度
+   * 场景专用，普通说明文字不要用它（那仍是 14px 的 body / body-sm）。 */
+  .ds-text--dense {
+    font-size: var(--ds-text-dense);
+    line-height: var(--ds-line-dense);
+  }
   .ds-text--caption {
     font-size: var(--ds-text-caption);
     line-height: var(--ds-line-caption);
@@ -116,9 +130,8 @@ For commercial licensing, please contact support@uter.ai
     font-size: var(--ds-text-mono);
     line-height: var(--ds-line-mono);
   }
-  /* 固定高度的等宽代码容器（首页代码卡片、编辑器视口）：13/20。
-   * 与正文 mono（14/20）的差别只在字号——固定高度的代码卡里 14px 会
-   * 撑出行数溢出，13px 才能稳定容纳最长的那几行。 */
+  /* 固定高度的等宽代码容器：13/20。与正文 mono（13/20）同值，
+   * 保留名字是为了语义（固定高度代码卡）与将来分档的余地。 */
   .ds-text--code-block {
     font-family: var(--font-mono);
     font-size: var(--ds-text-mono-code);
@@ -134,10 +147,12 @@ For commercial licensing, please contact support@uter.ai
   }
 
   /* ── Heading 变体 ─────────────────────────────────────────────────── */
+  /* display：36/600/44（规范 v1.2 把字重从 700 降到 600 —— 管理后台的
+   * 主视觉不需要 Bold 的压迫感，与 h1 同重靠字号差分层）。 */
   .ds-heading--display {
     font-size: var(--ds-text-display);
     line-height: var(--ds-line-display);
-    font-weight: var(--ds-weight-bold);
+    font-weight: var(--ds-weight-semibold);
   }
   .ds-heading--page-title {
     font-size: var(--ds-text-page-title);
@@ -159,7 +174,7 @@ For commercial licensing, please contact support@uter.ai
     line-height: var(--ds-line-dialog-title);
     font-weight: var(--ds-weight-semibold);
   }
-  /* 分组标题：16/24/600。卡片**内部**再分组时的那一层 —— 个人资料页的
+  /* 分组标题：15/22/600。卡片**内部**再分组时的那一层 —— 个人资料页的
    * 「通知方式」「要接收的通知」「偏好设置」、弹窗里的字段分组（「基本信息」
    * 「凭据」）、卡片内的列表分组标题。
    *
@@ -187,7 +202,7 @@ For commercial licensing, please contact support@uter.ai
  * 这一条**故意放在 `@layer components` 之外**。
  *
  * 唯一用途就是压过 `text-3xl` / `text-4xl` 自带的 line-height：调用方
- * 需要保留 Tailwind 的响应式字号（移动端 30px、桌面 36px），只把行高
+ * 需要保留 Tailwind 的响应式字号（移动端 28px、桌面 36px），只把行高
  * 换成多行档。放在 components 层会被 utilities 层覆盖，等于没写。
  *
  * 用法：<h1 className='ds-heading--display-multiline text-3xl md:text-4xl'>

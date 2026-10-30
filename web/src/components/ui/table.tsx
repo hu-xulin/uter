@@ -40,7 +40,11 @@ function Table({
     <table
       data-slot='table'
       className={cn(
-        'w-full caption-bottom text-sm tabular-nums [font-family:var(--font-body)] [&_td]:text-sm [&_th]:text-sm [&_th]:font-medium [&_:is(th,td)_*]:[font-size:inherit] [&_:is(th,td)_*]:[font-weight:inherit]',
+        // 表格走「密集数据档」（规范 v1.2）：单元格 13/400/20（text-dense）、
+        // 表头 12/500/18（text-xs + font-medium）。普通说明文字不要跟着降，
+        // 14px 仍是正文档。⚠️ `text-dense` 是自定义 token，twMerge 不认它
+        // 属于字号组 —— 不要与 `text-sm` 同时写在同一个类串里。
+        'w-full caption-bottom text-dense tabular-nums [font-family:var(--font-body)] [&_td]:text-dense [&_th]:text-xs [&_th]:font-medium [&_:is(th,td)_*]:[font-size:inherit] [&_:is(th,td)_*]:[font-weight:inherit]',
         '[&_[data-table-text=secondary]]:text-xs [&_[data-table-text=secondary]]:font-normal',
         className
       )}
@@ -139,7 +143,7 @@ function TableCaption({
   return (
     <caption
       data-slot='table-caption'
-      className={cn('text-muted-foreground mt-4 text-sm', className)}
+      className={cn('text-muted-foreground mt-4 text-xs', className)}
       {...props}
     />
   )
