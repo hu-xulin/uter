@@ -169,6 +169,10 @@ func IsSecretOptionKey(key string) bool {
 // 这些键不是单个可掩码字段，而是含密钥的聚合体，掩码没有意义，直接剔除。
 var excludedOptionKeys = map[string]struct{}{
 	"CustomerServiceLLMConfig": {},
+	// SMTP 多账号配置整体 JSON 内含各邮箱的 SMTP 认证密码，掩码没有
+	// 意义且会破坏 JSON 结构。读取时整条剔除，只暴露派生的
+	// SMTPAccountsView（含掩码凭据与当日用量），由 GetOptions 附加。
+	"SMTPAccounts": {},
 	// Resend 的 API Key 由前端以「是否已配置」布尔位 + 仅新值输入框使用
 	// （见 web/src/features/system-settings/integrations/email-settings-section.tsx），
 	// 回传掩码串反而会被当成待保存值展示，因此读取时整条剔除，

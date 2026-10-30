@@ -40,10 +40,24 @@ const defaults: EmailValues = {
   SMTPAccount: 'sender@example.com',
   SMTPFrom: 'sender@example.com',
   SMTPToken: '',
+  SMTPAccountsView: '[]',
   SMTPSSLEnabled: false,
   SMTPStartTLSEnabled: true,
   SMTPInsecureSkipVerify: false,
   SMTPForceAuthLogin: false,
+}
+
+const schemaDefaults = {
+  ...defaults,
+  ResendSenderName: '',
+  SMTPAccounts: [
+    {
+      account: 'sender@example.com',
+      from: 'sender@example.com',
+      dailyLimit: '0',
+      token: '',
+    },
+  ],
 }
 
 function EmailFixture(props: { values: EmailValues }) {
@@ -324,8 +338,7 @@ describe('email delivery settings', () => {
   it('validates provider values on the form boundary', () => {
     expect(
       createEmailSchema((key) => key).safeParse({
-        ...defaults,
-        ResendSenderName: '',
+        ...schemaDefaults,
         EmailProvider: 'both',
       }).success
     ).toBe(false)
@@ -333,7 +346,7 @@ describe('email delivery settings', () => {
 
   it('rejects line breaks in a Resend sender name', () => {
     const parsed = createEmailSchema((key) => key).safeParse({
-      ...defaults,
+      ...schemaDefaults,
       EmailProvider: 'resend',
       ResendSenderName: 'New API\r\nBcc: other@example.com',
     })
@@ -343,5 +356,117 @@ describe('email delivery settings', () => {
         expect.objectContaining({ path: ['ResendSenderName'] }),
       ])
     }
+  })
+
+  it('renders multiple sender accounts with usage and keeps unchanged tokens blank on save', async () => {
+    const request = vi
+      .spyOn(api, 'put')
+      .mockResolvedValue({ data: { success: true } })
+    const user = renderEmail({
+      SMTPAccountsView: JSON.stringify([
+        {
+          account: 'info@uter.ai',
+          from: 'info@uter.ai',
+          daily_limit: 400,
+          token: 'info****a1b2',
+          today_sent: 123,
+        },
+        {
+          account: 'info01@uter.ai',
+          from: '',
+          daily_limit: 0,
+          token: '',
+          today_sent: 0,
+        },
+      ]),
+    })
+    // 两个账号按顺序渲染，并展示当日已发量。
+    expect(screen.getByText(/Account 1/)).toBeVisible()
+    expect(screen.getByText(/Account 2/)).toBeVisible()
+    expect(screen.getByText(/Today sent: 123/)).toBeVisible()
+    const accounts = screen.getAllByRole('textbox', { name: 'Sender account' })
+    expect(accounts).toHaveLength(2)
+    expect(accounts[0]).toHaveValue('info@uter.ai')
+    expect(accounts[1]).toHaveValue('info01@uter.ai')
+
+    // 只改第二行的每日上限：两个账号的密码都未动 → token 以空串提交
+    // = 沿用库中原凭据（掩码串/留空都不当作新值）。
+    const limits = screen.getAllByRole('spinbutton', {
+      name: 'Daily send limit',
+    })
+    await user.clear(limits[1])
+    await user.type(limits[1], '300')
+    await user.click(screen.getByRole('button', { name: 'Save Changes' }))
+    await waitFor(() =>
+      expect(request).toHaveBeenCalledWith('/api/option/', {
+        key: 'SMTPAccounts',
+        value: JSON.stringify([
+          { account: 'info@uter.ai', from: 'info@uter.ai', daily_limit: 400, token: '' },
+          { account: 'info01@uter.ai', from: '', daily_limit: 300, token: '' },
+        ]),
+      })
+    )
+  })
+
+  it('sends a new token only for the row where it was typed', async () => {
+    const request = vi
+      .spyOn(api, 'put')
+      .mockResolvedValue({ data: { success: true } })
+    const user = renderEmail({
+      SMTPAccountsView: JSON.stringify([
+        { account: 'info@uter.ai', from: '', daily_limit: 400, token: 'info****a1b2', today_sent: 0 },
+        { account: 'info01@uter.ai', from: '', daily_limit: 400, token: 'info****c3d4', today_sent: 0 },
+      ]),
+    })
+    await user.type(
+      screen.getAllByLabelText('Password / Access Token')[1] as HTMLElement,
+      'brand-new-secret'
+    )
+    await user.click(screen.getByRole('button', { name: 'Save Changes' }))
+    await waitFor(() =>
+      expect(request).toHaveBeenCalledWith('/api/option/', {
+        key: 'SMTPAccounts',
+        value: JSON.stringify([
+          { account: 'info@uter.ai', from: '', daily_limit: 400, token: '' },
+          { account: 'info01@uter.ai', from: '', daily_limit: 400, token: 'brand-new-secret' },
+        ]),
+      })
+    )
+  })
+
+  it('requires at least one sender account in SMTP mode', async () => {
+    const request = vi
+      .spyOn(api, 'put')
+      .mockResolvedValue({ data: { success: true } })
+    const user = renderEmail({
+      SMTPAccount: '',
+      SMTPAccountsView: '[]',
+    })
+    await user.click(screen.getByRole('button', { name: 'Save Changes' }))
+    expect(
+      await screen.findByText('At least one sender account is required')
+    ).toBeVisible()
+    expect(request).not.toHaveBeenCalled()
+  })
+
+  it('adds and removes sender accounts', async () => {
+    const request = vi
+      .spyOn(api, 'put')
+      .mockResolvedValue({ data: { success: true } })
+    const user = renderEmail()
+    await user.click(screen.getByRole('button', { name: 'Add sender account' }))
+    const accounts = screen.getAllByRole('textbox', { name: 'Sender account' })
+    expect(accounts).toHaveLength(2)
+    await user.type(accounts[1], 'info01@uter.ai')
+    await user.click(screen.getByRole('button', { name: 'Save Changes' }))
+    await waitFor(() =>
+      expect(request).toHaveBeenCalledWith('/api/option/', {
+        key: 'SMTPAccounts',
+        value: JSON.stringify([
+          { account: 'sender@example.com', from: 'sender@example.com', daily_limit: 0, token: '' },
+          { account: 'info01@uter.ai', from: '', daily_limit: 0, token: '' },
+        ]),
+      })
+    )
   })
 })

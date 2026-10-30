@@ -7751,6 +7751,16 @@
     "Enable WeChat Login": "Enable WeChat Login",
     "Allow users to sign in by scanning the QR code with WeChat": "Allow users to sign in by scanning the QR code with WeChat",
     "Your WeChat App ID": "Your WeChat App ID",
-    "Your WeChat App Secret": "Your WeChat App Secret"
+    "Your WeChat App Secret": "Your WeChat App Secret",
+    "Sender accounts": "Sender accounts",
+    "Emails are sent with the first account until its daily limit is reached, then the next account is used.": "Emails are sent with the first account until its daily limit is reached, then the next account is used.",
+    "Account {{index}}": "Account {{index}}",
+    "Today sent: {{count}}": "Today sent: {{count}}",
+    "Sender account": "Sender account",
+    "Daily send limit": "Daily send limit",
+    "0 uses the default limit of 400 emails per day.": "0 uses the default limit of 400 emails per day.",
+    "Add sender account": "Add sender account",
+    "At least one sender account is required": "At least one sender account is required",
+    "Daily send limit must be a non-negative integer": "Daily send limit must be a non-negative integer"
   }
 }

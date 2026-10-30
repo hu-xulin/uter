@@ -17,8 +17,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@uter.ai
 */
 import { zodResolver } from '@hookform/resolvers/zod'
+import { Plus, Trash2 } from 'lucide-react'
 import { useMemo } from 'react'
-import { useForm, useWatch } from 'react-hook-form'
+import { useFieldArray, useForm, useWatch } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import {
@@ -35,6 +36,7 @@ import { Label } from '@/components/ui/label'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { SecretInput } from '@/components/ui/secret-input'
 import { Switch } from '@/components/ui/switch'
+import { Button } from '@/components/ui/button'
 import { getCurrencyDisplay, getCurrencyLabel } from '@/lib/currency'
 import { parseQuotaFromDollars, quotaUnitsToDollars } from '@/lib/format'
 import { handleServerError } from '@/lib/handle-server-error'
@@ -56,8 +58,23 @@ import {
   type EmailFormValues,
 } from './email-settings-schema'
 
-type EmailSettingsSectionProps = {
-  defaultValues: Omit<EmailFormValues, 'ResendSenderName'>
+type SmtpAccountViewEntry = {
+  account: string
+  from: string
+  daily_limit: number
+  token: string
+  today_sent: number
+}
+
+export type EmailSettingsSectionProps = {
+  defaultValues: Omit<EmailFormValues, 'ResendSenderName' | 'SMTPAccounts'> & {
+    // 后端下发的多账号视图（JSON 串）：含掩码凭据与当日用量。
+    // 旧单账号三字段仅用于「列表为空时的首填预填」，保存后以列表为准。
+    SMTPAccountsView: string
+    SMTPAccount: string
+    SMTPFrom: string
+    SMTPToken: string
+  }
 }
 
 type SmtpSecurityMode = 'none' | 'ssl_tls' | 'starttls'
@@ -71,26 +88,78 @@ function getSmtpSecurityMode(values: {
   return 'none'
 }
 
+// parseSMTPAccountsView 解析后端 SMTPAccountsView；非法 JSON 容错为空。
+function parseSMTPAccountsView(value: string): SmtpAccountViewEntry[] {
+  try {
+    const parsed = JSON.parse(value || '[]')
+    return Array.isArray(parsed) ? (parsed as SmtpAccountViewEntry[]) : []
+  } catch {
+    return []
+  }
+}
+
+function buildInitialAccounts(
+  defaultValues: EmailSettingsSectionProps['defaultValues']
+): EmailFormValues['SMTPAccounts'] {
+  const view = parseSMTPAccountsView(defaultValues.SMTPAccountsView)
+  if (view.length > 0) {
+    return view.map((entry) => ({
+      account: entry.account ?? '',
+      from: entry.from ?? '',
+      dailyLimit: String(entry.daily_limit ?? 0),
+      token: entry.token ?? '',
+    }))
+  }
+  // 旧单账号迁移预填：保存后进入 SMTPAccounts 列表。
+  if (defaultValues.SMTPAccount.trim() !== '') {
+    return [
+      {
+        account: defaultValues.SMTPAccount.trim(),
+        from: defaultValues.SMTPFrom.trim(),
+        dailyLimit: '0',
+        token: defaultValues.SMTPToken ?? '',
+      },
+    ]
+  }
+  return [
+    { account: '', from: '', dailyLimit: '0', token: '' },
+  ]
+}
+
 export function EmailSettingsSection({
   defaultValues,
 }: EmailSettingsSectionProps) {
   const { t } = useTranslation()
   const updateOption = useUpdateOption()
   const emailSchema = createEmailSchema(t)
+  const initialAccounts = useMemo(
+    () => buildInitialAccounts(defaultValues),
+    [defaultValues]
+  )
+  // 当日已发量按账号索引：列表渲染时展示（保存后刷新设置页可看到最新值）。
+  const todaySentByAccount = useMemo(() => {
+    const view = parseSMTPAccountsView(defaultValues.SMTPAccountsView)
+    return new Map(view.map((entry) => [entry.account, entry.today_sent ?? 0]))
+  }, [defaultValues.SMTPAccountsView])
   const initialValues = useMemo(
     () => ({
       ...defaultValues,
       ...parseResendSender(defaultValues.ResendFrom),
+      SMTPAccounts: initialAccounts,
       QuotaRemindThreshold: String(
         quotaUnitsToDollars(Number(defaultValues.QuotaRemindThreshold) || 0)
       ),
     }),
-    [defaultValues]
+    [defaultValues, initialAccounts]
   )
 
   const form = useForm<EmailFormValues>({
     resolver: zodResolver(emailSchema),
     defaultValues: initialValues,
+  })
+  const { fields, append, remove } = useFieldArray({
+    control: form.control,
+    name: 'SMTPAccounts',
   })
 
   const [provider, smtpSSL, smtpStartTLS] = useWatch({
@@ -101,31 +170,22 @@ export function EmailSettingsSection({
   const isSaving = form.formState.isSubmitting || updateOption.isPending
   useResetForm(form, isSaving ? undefined : initialValues)
 
+  // serializeAccounts 把表单行转成后端 SMTPAccounts JSON 条目。
+  // Token 语义与 SecretInput 一致：留空或掩码串 = 沿用库中原凭据，
+  // 只有新输入的明文才提交。
+  const serializeAccounts = (values: EmailFormValues) =>
+    values.SMTPAccounts.map((row) => ({
+      account: row.account.trim(),
+      from: row.from.trim(),
+      daily_limit: Number(row.dailyLimit.trim()) || 0,
+      token:
+        row.token.trim() && !isMaskedSecret(row.token.trim())
+          ? row.token.trim()
+          : '',
+    }))
+
   const onSubmit = async (values: EmailFormValues) => {
     const securityMode = getSmtpSecurityMode(values)
-    const sanitized = {
-      SMTPServer: values.SMTPServer.trim(),
-      SMTPPort: values.SMTPPort.trim(),
-      SMTPAccount: values.SMTPAccount.trim(),
-      SMTPFrom: values.SMTPFrom.trim(),
-      SMTPToken: values.SMTPToken.trim(),
-      SMTPSSLEnabled: securityMode === 'ssl_tls',
-      SMTPStartTLSEnabled: securityMode === 'starttls',
-      SMTPInsecureSkipVerify: values.SMTPInsecureSkipVerify,
-      SMTPForceAuthLogin: values.SMTPForceAuthLogin,
-    }
-
-    const initial = {
-      SMTPServer: defaultValues.SMTPServer.trim(),
-      SMTPPort: defaultValues.SMTPPort.trim(),
-      SMTPAccount: defaultValues.SMTPAccount.trim(),
-      SMTPFrom: defaultValues.SMTPFrom.trim(),
-      SMTPToken: defaultValues.SMTPToken.trim(),
-      SMTPSSLEnabled: defaultValues.SMTPSSLEnabled,
-      SMTPStartTLSEnabled: defaultValues.SMTPStartTLSEnabled,
-      SMTPInsecureSkipVerify: defaultValues.SMTPInsecureSkipVerify,
-      SMTPForceAuthLogin: defaultValues.SMTPForceAuthLogin,
-    }
 
     const updates: Array<{ key: string; value: string | boolean }> = []
 
@@ -148,56 +208,57 @@ export function EmailSettingsSection({
         updates.push({ key: 'ResendApiKey', value: key })
       }
     } else {
-      if (sanitized.SMTPServer !== initial.SMTPServer) {
-        updates.push({ key: 'SMTPServer', value: sanitized.SMTPServer })
+      if (values.SMTPServer.trim() !== defaultValues.SMTPServer.trim()) {
+        updates.push({ key: 'SMTPServer', value: values.SMTPServer.trim() })
       }
 
-      if (sanitized.SMTPPort !== initial.SMTPPort) {
-        updates.push({ key: 'SMTPPort', value: sanitized.SMTPPort })
+      if (values.SMTPPort.trim() !== defaultValues.SMTPPort.trim()) {
+        updates.push({ key: 'SMTPPort', value: values.SMTPPort.trim() })
       }
 
-      if (sanitized.SMTPAccount !== initial.SMTPAccount) {
-        updates.push({ key: 'SMTPAccount', value: sanitized.SMTPAccount })
+      const accounts = serializeAccounts(values)
+      const initialSerialized = serializeAccounts({
+        ...values,
+        SMTPAccounts: initialAccounts,
+      })
+      if (JSON.stringify(accounts) !== JSON.stringify(initialSerialized)) {
+        updates.push({
+          key: 'SMTPAccounts',
+          value: JSON.stringify(accounts),
+        })
       }
 
-      if (sanitized.SMTPFrom !== initial.SMTPFrom) {
-        updates.push({ key: 'SMTPFrom', value: sanitized.SMTPFrom })
-      }
-
-      // 掩码串（后端展示值）一律不当新值提交；未输入则保留库中原凭据。
-      if (
-        sanitized.SMTPToken &&
-        !isMaskedSecret(sanitized.SMTPToken) &&
-        sanitized.SMTPToken !== initial.SMTPToken
-      ) {
-        updates.push({ key: 'SMTPToken', value: sanitized.SMTPToken })
-      }
-
-      if (sanitized.SMTPSSLEnabled !== initial.SMTPSSLEnabled) {
+      const sslEnabled = securityMode === 'ssl_tls'
+      if (sslEnabled !== defaultValues.SMTPSSLEnabled) {
         updates.push({
           key: 'SMTPSSLEnabled',
-          value: sanitized.SMTPSSLEnabled,
+          value: sslEnabled,
         })
       }
 
-      if (sanitized.SMTPStartTLSEnabled !== initial.SMTPStartTLSEnabled) {
+      const startTLSEnabled = securityMode === 'starttls'
+      if (startTLSEnabled !== defaultValues.SMTPStartTLSEnabled) {
         updates.push({
           key: 'SMTPStartTLSEnabled',
-          value: sanitized.SMTPStartTLSEnabled,
+          value: startTLSEnabled,
         })
       }
 
-      if (sanitized.SMTPInsecureSkipVerify !== initial.SMTPInsecureSkipVerify) {
+      if (
+        values.SMTPInsecureSkipVerify !== defaultValues.SMTPInsecureSkipVerify
+      ) {
         updates.push({
           key: 'SMTPInsecureSkipVerify',
-          value: sanitized.SMTPInsecureSkipVerify,
+          value: values.SMTPInsecureSkipVerify,
         })
       }
 
-      if (sanitized.SMTPForceAuthLogin !== initial.SMTPForceAuthLogin) {
+      if (
+        values.SMTPForceAuthLogin !== defaultValues.SMTPForceAuthLogin
+      ) {
         updates.push({
           key: 'SMTPForceAuthLogin',
-          value: sanitized.SMTPForceAuthLogin,
+          value: values.SMTPForceAuthLogin,
         })
       }
     }
@@ -223,10 +284,19 @@ export function EmailSettingsSection({
           form.setValue('ResendKeyConfigured', true)
         }
       }
+      // 保存后密码字段回到留空态：留空 = 沿用库中原凭据。
+      form.setValue(
+        'SMTPAccounts',
+        values.SMTPAccounts.map((row) => ({
+          account: row.account.trim(),
+          from: row.from.trim(),
+          dailyLimit: row.dailyLimit.trim(),
+          token: '',
+        }))
+      )
       // 保存后密钥字段回到掩码展示态：与 SecretInput 的约定一致
       // （表单里只保留前后各 4 位，明文不留在内存里）。
       form.setValue('ResendApiKey', maskSecret(values.ResendApiKey.trim()))
-      form.setValue('SMTPToken', maskSecret(values.SMTPToken.trim()))
     } catch (error) {
       handleServerError(error)
     }
@@ -516,74 +586,182 @@ export function EmailSettingsSection({
                 />
               </div>
 
-              <FormField
-                control={form.control}
-                name='SMTPAccount'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('Username')}</FormLabel>
-                    <FormControl>
-                      <Input
-                        autoComplete='off'
-                        placeholder={t('noreply@example.com')}
-                        mono
-                        {...field}
-                        onChange={(event) => field.onChange(event.target.value)}
-                      />
-                    </FormControl>
-                    <FormDescription>
-                      {t(
-                        'Account used when authenticating with the SMTP server'
-                      )}
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
+              {/* 多账号发信列表：顺序即轮换顺序，按账号当日用量满额切换 */}
+              <FormItem data-settings-form-span='full'>
+                <FormLabel>{t('Sender accounts')}</FormLabel>
+                <FormDescription>
+                  {t(
+                    'Emails are sent with the first account until its daily limit is reached, then the next account is used.'
+                  )}
+                </FormDescription>
+                <div className='space-y-4'>
+                  {fields.map((fieldItem, index) => (
+                    <div
+                      key={fieldItem.id}
+                      className='space-y-4 rounded-lg border p-4'
+                    >
+                      <div className='flex items-center justify-between gap-2'>
+                        <Label tier='default'>
+                          {t('Account {{index}}', { index: index + 1 })}
+                          {(() => {
+                            const row = form.getValues(
+                              `SMTPAccounts.${index}.account`
+                            ) as string | undefined
+                            const sent = row
+                              ? todaySentByAccount.get(row.trim())
+                              : undefined
+                            if (sent === undefined) return null
+                            return (
+                              <span className='text-muted-foreground text-sm'>
+                                {' '}
+                                ·{' '}
+                                {t('Today sent: {{count}}', { count: sent })}
+                              </span>
+                            )
+                          })()}
+                        </Label>
+                        <Button
+                          type='button'
+                          variant='ghost'
+                          size='icon'
+                          disabled={isSaving || fields.length <= 1}
+                          aria-label={t('Remove')}
+                          onClick={() => remove(index)}
+                        >
+                          <Trash2 />
+                        </Button>
+                      </div>
+                      <div className='grid gap-4 sm:grid-cols-2'>
+                        <FormField
+                          control={form.control}
+                          name={`SMTPAccounts.${index}.account`}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>{t('Sender account')}</FormLabel>
+                              <FormControl>
+                                <Input
+                                  autoComplete='off'
+                                  type='email'
+                                  mono
+                                  placeholder='info@uter.ai'
+                                  disabled={isSaving}
+                                  {...field}
+                                />
+                              </FormControl>
+                              <FormDescription>
+                                {t(
+                                  'Account used when authenticating with the SMTP server'
+                                )}
+                              </FormDescription>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name={`SMTPAccounts.${index}.from`}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>{t('From Address')}</FormLabel>
+                              <FormControl>
+                                <Input
+                                  autoComplete='off'
+                                  mono
+                                  placeholder={t(
+                                    'New API &lt;noreply@example.com&gt;'
+                                  )}
+                                  disabled={isSaving}
+                                  {...field}
+                                />
+                              </FormControl>
+                              <FormDescription>
+                                {t(
+                                  'Display name and email used in outgoing messages'
+                                )}
+                              </FormDescription>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name={`SMTPAccounts.${index}.dailyLimit`}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>{t('Daily send limit')}</FormLabel>
+                              <FormControl>
+                                <Input
+                                  autoComplete='off'
+                                  type='number'
+                                  min={0}
+                                  disabled={isSaving}
+                                  {...field}
+                                  onChange={(event) =>
+                                    field.onChange(event.target.value)
+                                  }
+                                />
+                              </FormControl>
+                              <FormDescription>
+                                {t(
+                                  '0 uses the default limit of 400 emails per day.'
+                                )}
+                              </FormDescription>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name={`SMTPAccounts.${index}.token`}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>
+                                {t('Password / Access Token')}
+                              </FormLabel>
+                              <FormControl>
+                                <SecretInput
+                                  value={field.value ?? ''}
+                                  onChange={field.onChange}
+                                  disabled={isSaving}
+                                  placeholder={t('Enter new token to update')}
+                                />
+                              </FormControl>
+                              <FormDescription>
+                                {t(
+                                  'Leave blank to keep the existing credential'
+                                )}
+                              </FormDescription>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <Button
+                  type='button'
+                  variant='outline'
+                  disabled={isSaving}
+                  onClick={() =>
+                    append({
+                      account: '',
+                      from: '',
+                      dailyLimit: '0',
+                      token: '',
+                    })
+                  }
+                  className='mt-2'
+                >
+                  <Plus />
+                  {t('Add sender account')}
+                </Button>
+                {form.formState.errors.SMTPAccounts?.root?.message && (
+                  <p className='text-destructive text-sm'>
+                    {form.formState.errors.SMTPAccounts.root.message}
+                  </p>
                 )}
-              />
-
-              <FormField
-                control={form.control}
-                name='SMTPFrom'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('From Address')}</FormLabel>
-                    <FormControl>
-                      <Input
-                        autoComplete='off'
-                        placeholder={t('New API &lt;noreply@example.com&gt;')}
-                        mono
-                        {...field}
-                        onChange={(event) => field.onChange(event.target.value)}
-                      />
-                    </FormControl>
-                    <FormDescription>
-                      {t('Display name and email used in outgoing messages')}
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name='SMTPToken'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('Password / Access Token')}</FormLabel>
-                    <FormControl>
-                      <SecretInput
-                        value={field.value ?? ''}
-                        onChange={field.onChange}
-                        placeholder={t('Enter new token to update')}
-                      />
-                    </FormControl>
-                    <FormDescription>
-                      {t('Leave blank to keep the existing credential')}
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              </FormItem>
             </>
           )}
           <SettingsControlGroup>

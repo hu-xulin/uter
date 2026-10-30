@@ -28,9 +28,15 @@ export const createEmailSchema = (t: (key: string) => string) =>
       ResendSenderName: z.string(),
       SMTPServer: z.string(),
       SMTPPort: z.string(),
-      SMTPAccount: z.string(),
-      SMTPFrom: z.string(),
-      SMTPToken: z.string(),
+      // 多账号发信列表：顺序即轮换顺序，dailyLimit 留空/0 表示默认 400。
+      SMTPAccounts: z.array(
+        z.object({
+          account: z.string(),
+          from: z.string(),
+          dailyLimit: z.string(),
+          token: z.string(),
+        })
+      ),
       SMTPSSLEnabled: z.boolean(),
       SMTPStartTLSEnabled: z.boolean(),
       SMTPInsecureSkipVerify: z.boolean(),
@@ -82,14 +88,53 @@ export const createEmailSchema = (t: (key: string) => string) =>
           message: t('Port must be a positive integer'),
         })
       }
-      const from = values.SMTPFrom.trim()
-      if (from && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(from)) {
+      // 发信邮箱列表：账号留空的行视为「未填写」，跳过行内校验；
+      // SMTP 模式下至少要有一条有效账号。
+      const validAccounts = values.SMTPAccounts.filter(
+        (account) => account.account.trim() !== ''
+      )
+      if (validAccounts.length === 0) {
         context.addIssue({
           code: 'custom',
-          path: ['SMTPFrom'],
-          message: t('Enter a valid email or leave blank'),
+          path: ['SMTPAccounts'],
+          message: t('At least one sender account is required'),
         })
       }
+      values.SMTPAccounts.forEach((account, index) => {
+        if (account.account.trim() === '') {
+          context.addIssue({
+            code: 'custom',
+            path: ['SMTPAccounts', index, 'account'],
+            message: t('Enter a valid sender email address'),
+          })
+          return
+        }
+        if (
+          !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(account.account.trim())
+        ) {
+          context.addIssue({
+            code: 'custom',
+            path: ['SMTPAccounts', index, 'account'],
+            message: t('Enter a valid sender email address'),
+          })
+        }
+        const from = account.from.trim()
+        if (from && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(from)) {
+          context.addIssue({
+            code: 'custom',
+            path: ['SMTPAccounts', index, 'from'],
+            message: t('Enter a valid email or leave blank'),
+          })
+        }
+        const limit = account.dailyLimit.trim()
+        if (limit && (!/^\d+$/.test(limit) || Number(limit) > 1000000)) {
+          context.addIssue({
+            code: 'custom',
+            path: ['SMTPAccounts', index, 'dailyLimit'],
+            message: t('Daily send limit must be a non-negative integer'),
+          })
+        }
+      })
     })
 
 export type EmailFormValues = z.infer<ReturnType<typeof createEmailSchema>>

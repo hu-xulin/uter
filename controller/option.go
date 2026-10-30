@@ -82,6 +82,44 @@ func buildCompletionRatioMetaValue(optionValues map[string]string) string {
 	return string(jsonBytes)
 }
 
+// buildSMTPAccountsViewValue 生成 SMTPAccountsView：多账号 SMTP 的管理端
+// 展示视图。SMTPAccounts 本体含认证密码，已从 GET /api/option/ 整条剔除；
+// 这里按配置顺序输出 account / from / daily_limit / token（掩码）/
+// today_sent（当日已发量），供前端列表渲染与「留空沿用原密码」判断。
+func buildSMTPAccountsViewValue() string {
+	type smtpAccountView struct {
+		Account    string `json:"account"`
+		From       string `json:"from"`
+		DailyLimit int    `json:"daily_limit"`
+		Token      string `json:"token"`
+		TodaySent  int    `json:"today_sent"`
+	}
+	accounts := common.ParseSMTPAccounts(common.OptionMap["SMTPAccounts"])
+	if len(accounts) == 0 {
+		return "[]"
+	}
+	counts := model.GetSMTPAccountUsageView(time.Now())
+	views := make([]smtpAccountView, 0, len(accounts))
+	for _, account := range accounts {
+		token := ""
+		if account.Token != "" {
+			token = common.MaskSecretValue(account.Token)
+		}
+		views = append(views, smtpAccountView{
+			Account:    account.Account,
+			From:       account.From,
+			DailyLimit: account.DailyLimit,
+			Token:      token,
+			TodaySent:  counts[account.Account],
+		})
+	}
+	encoded, err := common.Marshal(views)
+	if err != nil {
+		return "[]"
+	}
+	return string(encoded)
+}
+
 func GetOptions(c *gin.Context) {
 	var options []*model.Option
 	optionValues := make(map[string]string)
@@ -117,6 +155,9 @@ func GetOptions(c *gin.Context) {
 	}
 	options = append(options, &model.Option{
 		Key: "ResendKeyConfigured", Value: strconv.FormatBool(strings.TrimSpace(common.OptionMap["ResendApiKey"]) != ""),
+	})
+	options = append(options, &model.Option{
+		Key: "SMTPAccountsView", Value: buildSMTPAccountsViewValue(),
 	})
 	common.OptionMapRWMutex.Unlock()
 	// Display the same effective expressions used by pricing and settlement,
