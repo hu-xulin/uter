@@ -131,6 +131,14 @@ export function UserAuthForm({
   )
   const hasAlternativeLogin = passkeyLoginEnabled || hasOAuthLogin
 
+  // 密码登录关闭时，验证码视图的入口按钮（在密码块内部）也随之消失，
+  // 必须自动切到邮箱验证码视图，否则登录表单整块不可见。
+  useEffect(() => {
+    if (!passwordLoginEnabled && emailCodeLoginEnabled) {
+      setLoginMode('email-code')
+    }
+  }, [passwordLoginEnabled, emailCodeLoginEnabled])
+
   useEffect(() => {
     if (requiresLegalConsent) {
       setAgreedToLegal(false)

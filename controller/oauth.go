@@ -398,8 +398,6 @@ func handleOAuthLogin(c *gin.Context, provider oauth.Provider, oauthUser *oauth.
 		switch err.(type) {
 		case *OAuthUserDeletedError:
 			common.ApiErrorT(c, "User has been deleted")
-		case *OAuthRegistrationDisabledError:
-			common.ApiErrorT(c, "New user registration has been disabled by administrator")
 		case *OAuthEmailAlreadyTakenError:
 			common.ApiErrorT(c, "Email address is already in use")
 		case *OAuthLegacyBindingNotConfirmedError:
@@ -558,10 +556,10 @@ func findOrCreateOAuthUser(c *gin.Context, provider oauth.Provider, oauthUser *o
 		}
 	}
 
-	// User doesn't exist, create new user if registration is enabled
-	if !common.RegisterEnabled {
-		return nil, nil, &OAuthRegistrationDisabledError{}
-	}
+	// User doesn't exist, create a new account (login = registration).
+	// RegisterEnabled 只关闭自主注册表单（/api/user/register），不阻断
+	// 供应商已验证身份的「登录即注册」—— 与邮箱验证码登录
+	// provisionEmailCodeUser 的行为保持一致。
 
 	// Set up new user
 	user.Username = provider.GetProviderPrefix() + strconv.Itoa(model.GetMaxUserId()+1)
@@ -700,12 +698,6 @@ type OAuthUserDeletedError struct{}
 
 func (e *OAuthUserDeletedError) Error() string {
 	return "user has been deleted"
-}
-
-type OAuthRegistrationDisabledError struct{}
-
-func (e *OAuthRegistrationDisabledError) Error() string {
-	return "registration is disabled"
 }
 
 type OAuthEmailAlreadyTakenError struct{}
