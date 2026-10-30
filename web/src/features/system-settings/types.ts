@@ -442,6 +442,8 @@ export type OperationsSettings = {
   SMTPAccount: string
   SMTPFrom: string
   SMTPToken: string
+  // 多账号发信视图（JSON 串，后端 GetOptions 派生）：含掩码凭据与当日用量。
+  SMTPAccountsView: string
   SMTPSSLEnabled: boolean
   SMTPStartTLSEnabled: boolean
   SMTPInsecureSkipVerify: boolean

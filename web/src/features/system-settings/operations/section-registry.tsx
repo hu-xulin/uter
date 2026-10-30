@@ -74,6 +74,7 @@ const OPERATIONS_SECTIONS = [
           SMTPAccount: settings.SMTPAccount,
           SMTPFrom: settings.SMTPFrom,
           SMTPToken: settings.SMTPToken,
+          SMTPAccountsView: settings.SMTPAccountsView,
           SMTPSSLEnabled: settings.SMTPSSLEnabled,
           SMTPStartTLSEnabled: settings.SMTPStartTLSEnabled,
           SMTPInsecureSkipVerify: settings.SMTPInsecureSkipVerify,

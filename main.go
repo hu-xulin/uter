@@ -177,6 +177,11 @@ func main() {
 	go model.SyncOptions(common.SyncFrequency)
 	go controller.SyncTaskPlugins()
 
+	// SMTP 多账号轮换：发信前按 SMTPAccounts 顺序选当日仍有配额的邮箱，
+	// 成功提交后按账号累计当日用量（详见 service/smtp_accounts.go）。
+	common.SMTPSenderProvider = service.SelectSMTPSender
+	common.SMTPSentRecorder = service.RecordEmailSent
+
 	// 创梦渠道（DreamRouter）每日价格同步：每天 0 点后首次 tick 触发，
 	// 按「创梦默认组折扣价 +1 折」规则重算倍率并对齐渠道模型清单。
 	go service.DreamRouterSyncTask()

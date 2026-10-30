@@ -78,6 +78,7 @@ func InitOptionMap() {
 	common.OptionMap["SMTPPort"] = strconv.Itoa(common.SMTPPort)
 	common.OptionMap["SMTPAccount"] = ""
 	common.OptionMap["SMTPToken"] = ""
+	common.OptionMap["SMTPAccounts"] = ""
 	common.OptionMap["SMTPSSLEnabled"] = strconv.FormatBool(common.SMTPSSLEnabled)
 	common.OptionMap["SMTPStartTLSEnabled"] = strconv.FormatBool(common.SMTPStartTLSEnabled)
 	common.OptionMap["SMTPInsecureSkipVerify"] = strconv.FormatBool(common.SMTPInsecureSkipVerify)
@@ -332,6 +333,15 @@ func applyMinTopUpOption(key, value string) error {
 }
 
 func UpdateOption(key string, value string) error {
+	// SMTPAccounts 保存前先合并凭据：Token 留空或回传掩码串时沿用库中原值，
+	// 并校验结构。合并后的规范化 JSON 才进入校验-落库-内存更新链路。
+	if key == "SMTPAccounts" {
+		merged, err := MergeSMTPAccountsValue(value)
+		if err != nil {
+			return err
+		}
+		value = merged
+	}
 	if IsRequestPolicyOption(key) {
 		return UpdateRequestPolicyOptions(map[string]string{key: value})
 	}

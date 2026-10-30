@@ -44,6 +44,7 @@ function Fixture() {
             SMTPAccount: 'noreply@example.com',
             SMTPFrom: '',
             SMTPToken: '',
+            SMTPAccountsView: '[]',
             SMTPSSLEnabled: false,
             SMTPStartTLSEnabled: true,
             SMTPInsecureSkipVerify: false,

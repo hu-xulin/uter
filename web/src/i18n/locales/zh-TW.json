@@ -7751,6 +7751,16 @@
     "Enable WeChat Login": "啟用微信登入",
     "Allow users to sign in by scanning the QR code with WeChat": "允許使用者以微信掃碼登入",
     "Your WeChat App ID": "你的微信 AppID",
-    "Your WeChat App Secret": "你的微信密鑰"
+    "Your WeChat App Secret": "你的微信密鑰",
+    "Sender accounts": "發信信箱",
+    "Emails are sent with the first account until its daily limit is reached, then the next account is used.": "從第一個信箱開始發信，達到當日上限後自動切換到下一個信箱。",
+    "Account {{index}}": "信箱 {{index}}",
+    "Today sent: {{count}}": "今日已發 {{count}} 封",
+    "Sender account": "發信帳號",
+    "Daily send limit": "每日發信上限",
+    "0 uses the default limit of 400 emails per day.": "0 表示使用預設值：每天 400 封。",
+    "Add sender account": "新增發信信箱",
+    "At least one sender account is required": "至少需要一個發信信箱",
+    "Daily send limit must be a non-negative integer": "每日發信上限必須是非負整數"
   }
 }

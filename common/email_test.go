@@ -369,7 +369,7 @@ func TestSMTPPlainAuthRejectsRemotePlaintextConnection(t *testing.T) {
 	client, err := smtp.NewClient(conn, SMTPServer)
 	require.NoError(t, err)
 
-	err = client.Auth(getSMTPAuth())
+	err = client.Auth(getSMTPAuth(SMTPAccount, SMTPToken))
 	require.Error(t, err)
 	require.Contains(t, err.Error(), "unencrypted connection")
 
@@ -560,4 +560,131 @@ func TestSendEmailExplicitStartTLSRejectsUntrustedCertificateByDefault(t *testin
 	err := SendEmail("Verification", "receiver@example.com", "<p>123456</p>")
 	require.Error(t, err)
 	require.Contains(t, fmt.Sprint(err), "certificate")
+}
+
+func TestSendEmailUsesSMTPSenderProvider(t *testing.T) {
+	server := newFakeSMTPServer(t)
+	defer server.close()
+	withSMTPSettings(t)
+
+	SMTPServer = server.host
+	SMTPPort = server.port
+	SMTPSSLEnabled = false
+	SMTPStartTLSEnabled = false
+	SMTPInsecureSkipVerify = false
+	SMTPForceAuthLogin = false
+	// 旧单账号配置是干扰项：provider 命中时必须被整体覆盖。
+	SMTPAccount = "legacy@example.com"
+	SMTPFrom = "legacy@example.com"
+	SMTPToken = "legacy-secret"
+	SystemName = "Uter.ai"
+
+	previousProvider := SMTPSenderProvider
+	previousRecorder := SMTPSentRecorder
+	t.Cleanup(func() {
+		SMTPSenderProvider = previousProvider
+		SMTPSentRecorder = previousRecorder
+	})
+
+	SMTPSenderProvider = func() (SMTPSenderCredentials, error) {
+		return SMTPSenderCredentials{Account: "info01@uter.ai", From: "info01@uter.ai", Token: "secret"}, nil
+	}
+	sent := make(chan string, 1)
+	SMTPSentRecorder = func(account string) { sent <- account }
+
+	require.NoError(t, SendEmail("Verification", "receiver@example.com", "<p>ok</p>"))
+
+	select {
+	case account := <-sent:
+		require.Equal(t, "info01@uter.ai", account)
+	case <-time.After(2 * time.Second):
+		t.Fatal("timed out waiting for sent recorder")
+	}
+	select {
+	case message := <-server.messages:
+		require.Contains(t, message, "From: Uter.ai <info01@uter.ai>")
+	case <-time.After(2 * time.Second):
+		t.Fatal("timed out waiting for SMTP DATA")
+	}
+}
+
+func TestSendEmailPropagatesSenderProviderError(t *testing.T) {
+	server := newFakeSMTPServer(t)
+	defer server.close()
+	withSMTPSettings(t)
+
+	SMTPServer = server.host
+	SMTPPort = server.port
+	SMTPSSLEnabled = false
+	SMTPStartTLSEnabled = false
+	SMTPInsecureSkipVerify = false
+	SMTPForceAuthLogin = false
+	SMTPAccount = "legacy@example.com"
+	SMTPFrom = "legacy@example.com"
+	SMTPToken = "legacy-secret"
+	SystemName = "Uter.ai"
+
+	previousProvider := SMTPSenderProvider
+	previousRecorder := SMTPSentRecorder
+	t.Cleanup(func() {
+		SMTPSenderProvider = previousProvider
+		SMTPSentRecorder = previousRecorder
+	})
+
+	SMTPSenderProvider = func() (SMTPSenderCredentials, error) {
+		return SMTPSenderCredentials{}, NewMessage("all SMTP sender accounts exhausted")
+	}
+	recorderCalled := false
+	SMTPSentRecorder = func(account string) { recorderCalled = true }
+
+	err := SendEmail("Verification", "receiver@example.com", "<p>ok</p>")
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "all SMTP sender accounts exhausted")
+	require.False(t, recorderCalled)
+}
+
+func TestSendEmailFallsBackToLegacyWhenProviderReturnsEmptyAccount(t *testing.T) {
+	server := newFakeSMTPServer(t)
+	defer server.close()
+	withSMTPSettings(t)
+
+	SMTPServer = server.host
+	SMTPPort = server.port
+	SMTPSSLEnabled = false
+	SMTPStartTLSEnabled = false
+	SMTPInsecureSkipVerify = false
+	SMTPForceAuthLogin = false
+	SMTPAccount = "legacy@example.com"
+	SMTPFrom = ""
+	SMTPToken = "legacy-secret"
+	SystemName = "Uter.ai"
+
+	previousProvider := SMTPSenderProvider
+	previousRecorder := SMTPSentRecorder
+	t.Cleanup(func() {
+		SMTPSenderProvider = previousProvider
+		SMTPSentRecorder = previousRecorder
+	})
+
+	// 空 Account 表示「未启用多账号」，回退旧单账号配置。
+	SMTPSenderProvider = func() (SMTPSenderCredentials, error) {
+		return SMTPSenderCredentials{}, nil
+	}
+	sent := make(chan string, 1)
+	SMTPSentRecorder = func(account string) { sent <- account }
+
+	require.NoError(t, SendEmail("Verification", "receiver@example.com", "<p>ok</p>"))
+
+	select {
+	case account := <-sent:
+		require.Equal(t, "legacy@example.com", account)
+	case <-time.After(2 * time.Second):
+		t.Fatal("timed out waiting for sent recorder")
+	}
+	select {
+	case message := <-server.messages:
+		require.Contains(t, message, "From: Uter.ai <legacy@example.com>")
+	case <-time.After(2 * time.Second):
+		t.Fatal("timed out waiting for SMTP DATA")
+	}
 }

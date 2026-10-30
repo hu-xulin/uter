@@ -7751,6 +7751,16 @@
     "Enable WeChat Login": "WeChat ログインを有効にする",
     "Allow users to sign in by scanning the QR code with WeChat": "ユーザーが WeChat をスキャンしてログインできるようにする",
     "Your WeChat App ID": "あなたの WeChat AppID",
-    "Your WeChat App Secret": "あなたの WeChat Secret"
+    "Your WeChat App Secret": "あなたの WeChat Secret",
+    "Sender accounts": "送信アカウント",
+    "Emails are sent with the first account until its daily limit is reached, then the next account is used.": "1番目のアカウントが1日の上限に達すると、次のアカウントに自動的に切り替わります。",
+    "Account {{index}}": "アカウント {{index}}",
+    "Today sent: {{count}}": "本日の送信数：{{count}}",
+    "Sender account": "送信アカウント",
+    "Daily send limit": "1日の送信上限",
+    "0 uses the default limit of 400 emails per day.": "0 はデフォルト値（1日400通）を使用します。",
+    "Add sender account": "送信アカウントを追加",
+    "At least one sender account is required": "送信アカウントが少なくとも1つ必要です",
+    "Daily send limit must be a non-negative integer": "1日の送信上限は0以上の整数である必要があります"
   }
 }

@@ -7751,6 +7751,16 @@
     "Enable WeChat Login": "Bật đăng nhập WeChat",
     "Allow users to sign in by scanning the QR code with WeChat": "Cho phép người dùng đăng nhập bằng cách quét mã QR bằng WeChat",
     "Your WeChat App ID": "App ID WeChat của bạn",
-    "Your WeChat App Secret": "Secret WeChat của bạn"
+    "Your WeChat App Secret": "Secret WeChat của bạn",
+    "Sender accounts": "Tài khoản gửi mail",
+    "Emails are sent with the first account until its daily limit is reached, then the next account is used.": "Email được gửi bằng tài khoản đầu tiên cho đến khi đạt giới hạn hàng ngày, sau đó chuyển sang tài khoản tiếp theo.",
+    "Account {{index}}": "Tài khoản {{index}}",
+    "Today sent: {{count}}": "Đã gửi hôm nay: {{count}}",
+    "Sender account": "Tài khoản gửi",
+    "Daily send limit": "Giới hạn gửi mỗi ngày",
+    "0 uses the default limit of 400 emails per day.": "0 sử dụng giới hạn mặc định 400 email mỗi ngày.",
+    "Add sender account": "Thêm tài khoản gửi",
+    "At least one sender account is required": "Cần ít nhất một tài khoản gửi",
+    "Daily send limit must be a non-negative integer": "Giới hạn gửi mỗi ngày phải là số nguyên không âm"
   }
 }
