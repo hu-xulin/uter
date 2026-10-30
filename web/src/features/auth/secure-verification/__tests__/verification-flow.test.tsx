@@ -365,6 +365,73 @@ it('returns a proof only after successful verification and clears a rejected pas
   expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
 })
 
+it('sends an email code when the panel mounts and verifies with it', async () => {
+  const emailRequirements: VerificationRequirements = {
+    scope: 'account.binding.bind',
+    methods: [{ method: 'email_code', available: true }],
+    oauth_providers: [],
+    password_encryption_enabled: false,
+  }
+  vi.spyOn(api, 'get').mockResolvedValue({
+    data: { success: true, data: emailRequirements },
+  })
+  const proof: SecurityProof = {
+    proof_token: 'proof',
+    method: 'email_code',
+    scope: 'account.binding.bind',
+    expires_at: Math.floor(Date.now() / 1000) + 300,
+  }
+  const posts = vi
+    .spyOn(api, 'post')
+    .mockResolvedValueOnce({
+      data: { success: true, data: { email: 'o***@uter.ai' } },
+    })
+    .mockResolvedValueOnce({ data: { success: true, data: proof } })
+  const result = vi.fn()
+  const user = userEvent.setup()
+  render(
+    <Harness
+      onResult={result}
+      operation={{
+        scope: 'account.binding.bind',
+        context: { provider: 'email', email: 'new-owner@uter.ai' },
+      }}
+    />
+  )
+  await user.click(screen.getByText('Protected action'))
+  // 面板挂载即按操作上下文发码。
+  await waitFor(() =>
+    expect(posts).toHaveBeenCalledWith(
+      '/api/verify/email_code',
+      {
+        scope: 'account.binding.bind',
+        context: { provider: 'email', email: 'new-owner@uter.ai' },
+      },
+      expect.any(Object)
+    )
+  )
+  expect(
+    await screen.findByText('We sent a 6-digit code to o***@uter.ai.')
+  ).toBeInTheDocument()
+  await user.type(
+    screen.getByLabelText('Email code', { selector: 'input' }),
+    '123456'
+  )
+  await user.click(screen.getByRole('button', { name: 'Verify' }))
+  await waitFor(() => expect(result).toHaveBeenCalledWith(proof))
+  expect(posts).toHaveBeenLastCalledWith(
+    '/api/verify',
+    {
+      method: 'email_code',
+      scope: 'account.binding.bind',
+      context: { provider: 'email', email: 'new-owner@uter.ai' },
+      code: '123456',
+    },
+    expect.objectContaining({ signal: expect.any(AbortSignal) })
+  )
+  expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+})
+
 it('discards a late proof after cancellation and prevents a duplicate submission', async () => {
   vi.spyOn(api, 'get').mockResolvedValue({
     data: { success: true, data: passwordRequirements },

@@ -67,6 +67,25 @@ export async function checkVerificationMethods(
   return withDeviceAvailability(requirements, passkeySupported)
 }
 
+// sendStepUpEmailCode asks the server to mail a step-up verification code for
+// the exact operation; the reply carries the masked destination address.
+export async function sendStepUpEmailCode(
+  operation: VerificationOperation,
+  signal?: AbortSignal
+): Promise<string> {
+  const result = await authResult<{ email: string }>(
+    api.post(
+      '/api/verify/email_code',
+      {
+        scope: operation.scope,
+        ...(operation.context ? { context: operation.context } : {}),
+      },
+      { ...authRequestOptions, signal }
+    )
+  )
+  return result.email
+}
+
 function withDeviceAvailability(
   requirements: VerificationRequirements,
   passkeySupported: boolean
@@ -226,6 +245,19 @@ export async function verify(
         )
         break
       case '2fa':
+        proof = await authResult<SecurityProof>(
+          api.post(
+            '/api/verify',
+            {
+              method: input.method,
+              ...operationFields,
+              code: input.code.trim(),
+            },
+            { ...authRequestOptions, signal }
+          )
+        )
+        break
+      case 'email_code':
         proof = await authResult<SecurityProof>(
           api.post(
             '/api/verify',
