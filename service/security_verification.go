@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/uter-ai/uter/common"
+	"github.com/uter-ai/uter/i18n"
 	"github.com/uter-ai/uter/model"
 	"github.com/uter-ai/uter/oauth"
 	"github.com/uter-ai/uter/setting/system_setting"
@@ -19,6 +20,7 @@ const (
 	VerificationMethodTwoFA         = "2fa"
 	VerificationMethodPasskey       = "passkey"
 	VerificationMethodPassword      = "password"
+	VerificationMethodEmailCode     = "email_code"
 	VerificationMethodOAuth         = "oauth"
 	VerificationMethodSession       = "session"
 	VerificationScopeChannelKeyRead = "channel.key.read"
@@ -64,6 +66,7 @@ var (
 	ErrVerificationFlowRequired   = errors.New("This verification method requires its dedicated verification flow.")
 	ErrVerificationContextInvalid = errors.New("The action details are invalid.")
 	ErrVerificationForbidden      = errors.New("You do not have permission to perform this action.")
+	ErrStepUpEmailDelivery        = errors.New("Failed to send the verification email. Please try again.")
 )
 
 // VerificationOperation describes the action being authorized, independently of
@@ -342,10 +345,15 @@ func securityVerificationPolicy(scope string, state model.UserVerificationState)
 			return nil, ErrVerificationForbidden
 		}
 		if len(methods) == 0 {
+			// 邮箱验证码是已登录会话持有的「邮箱占有」因子，作为未启用
+			// 2FA/Passkey 时的再验证兜底：密码登录被禁用的部署（如仅
+			// 验证码/OAuth 登录）由此保住可用的 step-up 方式。密码或
+			// OAuth 仍按原逻辑追加，由 availability 标记决定可用性。
+			methods = []string{VerificationMethodEmailCode}
 			if state.HasPassword {
-				methods = []string{VerificationMethodPassword}
+				methods = append(methods, VerificationMethodPassword)
 			} else {
-				methods = []string{VerificationMethodOAuth}
+				methods = append(methods, VerificationMethodOAuth)
 			}
 		}
 	default:
@@ -390,6 +398,7 @@ func GetVerificationRequirements(identity AuthIdentity, scope string) (*Verifica
 		return nil, err
 	}
 	requirements := &VerificationRequirements{Scope: scope, Methods: methods, OAuthProviders: []VerificationOAuthProvider{}, PasswordEncryptionEnabled: common.PasswordLoginEncryptionEnabled}
+	var user *model.User
 	for i := range methods {
 		if methods[i].Method == VerificationMethodPassword && !common.PasswordLoginEnabled {
 			switch scope {
@@ -398,6 +407,20 @@ func GetVerificationRequirements(identity AuthIdentity, scope string) (*Verifica
 				VerificationScopeAdminUserManage, VerificationScopeAdminUserPasskeyReset,
 				VerificationScopeAdminUserTwoFADisable, VerificationScopeAdminUserBindingClear:
 				methods[i].Available, methods[i].Reason = false, "Password authentication is disabled."
+			}
+		}
+		if methods[i].Method == VerificationMethodEmailCode {
+			if user == nil {
+				user, err = model.GetUserById(identity.UserID, false)
+				if err != nil {
+					return nil, err
+				}
+			}
+			switch {
+			case user.Email == "":
+				methods[i].Available, methods[i].Reason = false, "No email address is available for verification."
+			case !stepUpEmailDeliveryAvailable():
+				methods[i].Available, methods[i].Reason = false, "Email sending is not configured."
 			}
 		}
 		if methods[i].Method != VerificationMethodOAuth {
@@ -409,9 +432,11 @@ func GetVerificationRequirements(identity AuthIdentity, scope string) (*Verifica
 			methods[i].Available, methods[i].Reason = false, "OAuth verification requires a browser sign-in. Enable two-factor authentication or a Passkey to continue."
 			continue
 		}
-		user, err := model.GetUserById(identity.UserID, false)
-		if err != nil {
-			return nil, err
+		if user == nil {
+			user, err = model.GetUserById(identity.UserID, false)
+			if err != nil {
+				return nil, err
+			}
 		}
 		requirements.OAuthProviders, err = verificationOAuthProviders(user)
 		if err != nil {
@@ -427,6 +452,23 @@ func GetVerificationRequirements(identity AuthIdentity, scope string) (*Verifica
 		}
 	}
 	return requirements, nil
+}
+
+// stepUpEmailDeliveryAvailable reports whether the server can deliver email at
+// all: the Resend API is configured, or an SMTP sender exists (legacy single
+// account or the SMTPAccounts rotation list).
+func stepUpEmailDeliveryAvailable() bool {
+	provider := common.OptionMap["EmailProvider"]
+	if provider == "resend" {
+		return common.OptionMap["ResendApiKey"] != ""
+	}
+	if provider != "" && provider != "smtp" {
+		return false
+	}
+	if common.SMTPServer != "" || common.SMTPAccount != "" {
+		return true
+	}
+	return len(common.ParseSMTPAccounts(common.OptionMap["SMTPAccounts"])) > 0
 }
 
 func verificationOAuthProviders(user *model.User) ([]VerificationOAuthProvider, error) {
@@ -609,6 +651,13 @@ func VerifySecurityInput(identity AuthIdentity, input VerificationInput) (*Secur
 		if err := VerifyTwoFactorCode(twoFA, input.Code); err != nil {
 			return nil, err
 		}
+	case VerificationMethodEmailCode:
+		// binding 在函数入口已按 scope+context 归一化计算，码按其上下文
+		// 哈希存储——为 A 操作寄出的码无法为 B 操作兑换。
+		code := strings.TrimSpace(input.Code)
+		if code == "" || !common.VerifyCodeWithKey(binding.ContextHash, code, common.StepUpEmailCodePurpose) {
+			return nil, ErrVerificationFailed
+		}
 	case VerificationMethodPasskey, VerificationMethodOAuth:
 		return nil, ErrVerificationFlowRequired
 	default:
@@ -656,4 +705,49 @@ func GetOAuthVerificationBinding(identity AuthIdentity, scope, provider string) 
 		}
 	}
 	return "", ErrVerificationUnavailable
+}
+
+// SendStepUpEmailCode issues a step-up verification code bound to the exact
+// operation (scope + normalized context) and emails it to the account's
+// current address. Storing the code under the operation's context hash means a
+// code mailed for one action cannot confirm another. The returned email is
+// masked for safe display in the verification dialog.
+func SendStepUpEmailCode(identity AuthIdentity, operation VerificationOperation, lang string) (string, error) {
+	binding, err := BindVerificationOperation(operation)
+	if err != nil {
+		return "", err
+	}
+	if _, err := RequireVerificationMethod(identity, binding.Scope, VerificationMethodEmailCode); err != nil {
+		return "", err
+	}
+	user, err := model.GetUserById(identity.UserID, false)
+	if err != nil {
+		return "", err
+	}
+	if user.Email == "" {
+		return "", ErrVerificationUnavailable
+	}
+	code, err := common.GenerateNumericCode(6)
+	if err != nil {
+		return "", err
+	}
+	common.RegisterVerificationCodeWithKey(binding.ContextHash, code, common.StepUpEmailCodePurpose)
+	systemName := map[string]any{"SystemName": common.SystemName}
+	heading := i18n.Translate(lang, i18n.MsgEmailStepUpSubject, systemName)
+	subject := common.BrandEmailSubject(heading)
+	content := common.BuildBrandEmailHTML(common.BrandEmail{
+		Heading: heading,
+		Paragraphs: []string{
+			i18n.Translate(lang, i18n.MsgEmailStepUpGreeting, systemName),
+		},
+		Code: code,
+		Note: i18n.Translate(lang, i18n.MsgEmailVerificationValidity, map[string]any{"Minutes": common.VerificationValidMinutes}),
+	})
+	if err := common.SendEmail(subject, user.Email, content); err != nil {
+		// 发送失败即作废刚注册的码，避免留下一个看似有效却永远收不到的码。
+		common.DeleteKey(binding.ContextHash, common.StepUpEmailCodePurpose)
+		common.SysError(common.LogText("failed to deliver step-up verification email to %s: %v", common.MaskEmail(user.Email), err))
+		return "", ErrStepUpEmailDelivery
+	}
+	return common.MaskEmail(user.Email), nil
 }

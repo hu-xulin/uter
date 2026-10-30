@@ -90,6 +90,8 @@ func writeSecurityOperationError(c *gin.Context, err error) {
 		code, message = "SECURITY_VERIFICATION_LOCKED", service.ErrVerificationLocked.Error()
 	case errors.Is(err, service.ErrVerificationUnavailable):
 		code, message = "SECURITY_METHOD_UNAVAILABLE", service.ErrVerificationUnavailable.Error()
+	case errors.Is(err, service.ErrStepUpEmailDelivery):
+		code, message = "SECURITY_EMAIL_SEND_FAILED", service.ErrStepUpEmailDelivery.Error()
 	case errors.Is(err, service.ErrVerificationFlowRequired):
 		status = http.StatusBadRequest
 		code, message = "SECURITY_VERIFICATION_FLOW_REQUIRED", service.ErrVerificationFlowRequired.Error()
@@ -152,6 +154,29 @@ func requireAdminUserProof(c *gin.Context, scope string, context any) *model.Aut
 		return nil
 	}
 	return middleware.RequireSecurityProof(c, service.VerificationOperation{Scope: scope, Context: payload})
+}
+
+// SendVerificationEmailCode emails a step-up verification code bound to the
+// requested operation. The code lands on the account's current address; the
+// reply carries only its masked form.
+func SendVerificationEmailCode(c *gin.Context) {
+	identity, ok := middleware.GetStepUpIdentity(c)
+	if !ok {
+		writeAccountStatusError(c, http.StatusUnauthorized, "The current sign-in method does not support security verification")
+		return
+	}
+	var operation service.VerificationOperation
+	if err := common.DecodeJson(c.Request.Body, &operation); err != nil {
+		writeSecurityOperationError(c, service.ErrVerificationContextInvalid)
+		return
+	}
+	masked, err := service.SendStepUpEmailCode(identity, operation, service.AccountMailLanguage(c, identity.UserID))
+	if err != nil {
+		writeSecurityOperationError(c, err)
+		return
+	}
+	recordUserSecurityAudit(c, identity.UserID, "user.security_email_code_send", map[string]any{"scope": operation.Scope})
+	common.ApiSuccess(c, gin.H{"email": masked})
 }
 
 func UniversalVerify(c *gin.Context) {

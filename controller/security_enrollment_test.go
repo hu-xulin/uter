@@ -243,14 +243,25 @@ func TestSecurityEnrollmentAccessTokenMethodPolicy(t *testing.T) {
 				service.VerificationScopeAccountBind, service.VerificationScopeAccountUnbind, passwordScope} {
 				requirements, err := service.GetVerificationRequirements(identity, scope)
 				require.NoError(t, err)
+				// 邮箱验证码只出现在无 2FA/Passkey 的回退列表开头；测试账号
+				// 没有邮箱，该项恒为不可用。
+				hasEmailFallback := !test.twoFA && !test.passkey
 				count := 1
 				if test.twoFA && test.passkey {
 					count = 2
 				}
+				if hasEmailFallback {
+					count = 2
+				}
 				require.Len(t, requirements.Methods, count)
-				assert.Equal(t, test.method, requirements.Methods[0].Method)
-				assert.Equal(t, test.available, requirements.Methods[0].Available)
-				if count == 2 {
+				index := 0
+				if hasEmailFallback {
+					assert.Equal(t, service.VerificationMethodOption{Method: service.VerificationMethodEmailCode, Available: false, Reason: "No email address is available for verification."}, requirements.Methods[0])
+					index = 1
+				}
+				assert.Equal(t, test.method, requirements.Methods[index].Method)
+				assert.Equal(t, test.available, requirements.Methods[index].Available)
+				if count == 2 && !hasEmailFallback {
 					assert.Equal(t, service.VerificationMethodOption{Method: "passkey", Available: true}, requirements.Methods[1])
 				}
 			}
@@ -490,16 +501,18 @@ func TestSecurityEnrollmentAccessTokenStepUpBoundaries(t *testing.T) {
 		require.True(t, body.Success, body.Message)
 		var requirements service.VerificationRequirements
 		require.NoError(t, common.Unmarshal(body.Data, &requirements))
-		require.Len(t, requirements.Methods, 1)
-		assert.Equal(t, service.VerificationMethodOAuth, requirements.Methods[0].Method)
-		assert.False(t, requirements.Methods[0].Available)
+		// OAuth-only 账号：回退列表多了不可用的邮箱验证码（测试账号无邮箱）。
+		require.Len(t, requirements.Methods, 2)
+		assert.Equal(t, service.VerificationMethodOption{Method: service.VerificationMethodEmailCode, Available: false, Reason: "No email address is available for verification."}, requirements.Methods[0])
+		assert.Equal(t, service.VerificationMethodOAuth, requirements.Methods[1].Method)
+		assert.False(t, requirements.Methods[1].Available)
 		assert.Empty(t, requirements.OAuthProviders)
 		body = decodeSecurityEnrollmentResponse(t, accessTokenRequest(router, http.MethodPost, "/api/verify", raw, "", `{"scope":"2fa.setup","method":"oauth"}`))
 		assert.Equal(t, "SECURITY_METHOD_UNAVAILABLE", body.Code)
 		// The same account still verifies through OAuth in a browser.
 		browser, err := service.GetVerificationRequirements(identity, service.VerificationScopeTwoFASetup)
 		require.NoError(t, err)
-		assert.True(t, browser.Methods[0].Available)
+		assert.True(t, browser.Methods[1].Available)
 	})
 
 	t.Run("a proof stays with the token that obtained it", func(t *testing.T) {
@@ -666,14 +679,25 @@ func TestSecurityEnrollmentMethodPolicy(t *testing.T) {
 			system_setting.GetPasskeySettings().Enabled = !test.disabledPasskey
 			requirements, err := service.GetVerificationRequirements(identity, "passkey.register")
 			require.NoError(t, err)
+			// 邮箱验证码只出现在无 2FA/Passkey 的回退列表开头；测试账号没有
+			// 邮箱，该项恒为不可用。
+			hasEmailFallback := !test.twoFA && !test.passkey
 			count := 1
 			if test.twoFA && test.passkey {
 				count = 2
 			}
+			if hasEmailFallback {
+				count = 2
+			}
 			require.Len(t, requirements.Methods, count)
-			assert.Equal(t, test.method, requirements.Methods[0].Method)
-			assert.Equal(t, test.available, requirements.Methods[0].Available)
-			if count == 2 {
+			index := 0
+			if hasEmailFallback {
+				assert.Equal(t, service.VerificationMethodOption{Method: service.VerificationMethodEmailCode, Available: false, Reason: "No email address is available for verification."}, requirements.Methods[0])
+				index = 1
+			}
+			assert.Equal(t, test.method, requirements.Methods[index].Method)
+			assert.Equal(t, test.available, requirements.Methods[index].Available)
+			if count == 2 && !hasEmailFallback {
 				assert.Equal(t, service.VerificationMethodOption{Method: "passkey", Available: true}, requirements.Methods[1])
 			}
 			if test.passkey && !test.twoFA {

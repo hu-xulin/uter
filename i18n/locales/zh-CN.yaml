@@ -444,6 +444,8 @@ custom_oauth.provider_id_field_invalid: "无法从服务商返回中提取用户
 user.default_token_name: "{{.Username}}的初始令牌"
 email.login_code.subject: "{{.SystemName}}登录验证码"
 email.login_code.greeting: "您好，以下是你的{{.SystemName}}登录验证码。"
+email.step_up_code.subject: "{{.SystemName}}安全验证"
+email.step_up_code.greeting: "您好，你正在进行{{.SystemName}}安全验证。"
 email.verification.subject: "{{.SystemName}}邮箱验证邮件"
 email.verification.greeting: "您好，你正在进行{{.SystemName}}邮箱验证。"
 email.verification.code: "您的验证码为: <strong>{{.Code}}</strong>"

@@ -27,6 +27,11 @@ const (
 	// 另一个用途里兑换。
 	LoginEmailCodePurpose = "l"
 
+	// StepUpEmailCodePurpose 用于敏感操作的邮箱验证码再验证（step-up）。
+	// 存储的 key 是操作上下文哈希（scope+context 的 HMAC）而非邮箱地址，
+	// 因此一个操作的码不能兑换另一个操作；purpose 与上述用途互相隔离。
+	StepUpEmailCodePurpose = "s"
+
 	// 单个验证码的最大尝试次数，超过即作废（防爆破）
 	maxVerificationAttempts = 5
 )
