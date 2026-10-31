@@ -47,7 +47,10 @@ var accessTokenExemptRoutes = []string{
 	"POST /api/user/login/passkey/finish",
 	"POST /api/user/passkey/login/begin",
 	"POST /api/user/passkey/login/finish",
-	"GET /api/oauth/wechat",
+	// 邮箱验证码登录（登录即注册）：与 POST /api/user/login 同为匿名登录入口。
+	"GET /api/user/login/email-code",
+	"POST /api/user/login/email-code",
+	// 公众号微信登录方案已删除，仅保留网站应用扫码（wechat-web）。
 	"GET /api/oauth/telegram/login",
 	"GET /api/oauth/telegram/bind/:flow_token",
 
