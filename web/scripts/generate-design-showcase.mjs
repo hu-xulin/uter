@@ -98,7 +98,7 @@ function toPx(value) {
 const CANDIDATES = [
   // 字号
   'text-4xl', 'text-3xl', 'text-2xl', 'text-xl', 'text-lg', 'text-base', 'text-sm', 'text-xs',
-  'text-long', 'text-mono', 'text-mono-code', 'text-mono-title',
+  'text-long', 'text-mono', 'text-mono-code', 'text-mono-title', 'text-group', 'text-dense',
   // 字重
   'font-normal', 'font-medium', 'font-semibold', 'font-bold',
   // 文字色
@@ -157,21 +157,23 @@ const css = await compileTokens(CANDIDATES)
 /* ── 3. 数据定义：与规范文档一一对应 ────────────────────────────── */
 
 const TYPOGRAPHY = [
-  { token: 'display', cls: 'text-4xl', w: 'font-bold', px: 36, lh: 40, weight: 700, use: '页面主视觉（营销页 hero）', comp: 'Heading variant="display"' },
-  { token: 'h1', cls: 'text-3xl', w: 'font-semibold', px: 30, lh: 36, weight: 600, use: '页面标题（每页一个）', comp: 'Heading variant="page-title"' },
-  { token: 'h2', cls: 'text-2xl', w: 'font-semibold', px: 24, lh: 32, weight: 600, use: '区块标题（页面内 2–5 个）', comp: 'Heading variant="section-title"' },
-  { token: 'h3', cls: 'text-lg', w: 'font-semibold', px: 18, lh: 28, weight: 600, use: '卡片标题、弹窗标题', comp: 'Heading variant="card-title"' },
-  { token: 'group-title', cls: 'text-base font-semibold', w: '', px: 16, lh: 24, weight: 600, use: '卡片内分组标题', comp: 'Heading variant="group-title"' },
-  { token: 'body', cls: 'text-sm', w: '', px: 14, lh: 20, weight: 400, use: '正文（全站基准）', comp: 'Text variant="body"' },
+  { token: 'display', cls: 'text-4xl', w: 'font-semibold', px: 36, lh: 44, weight: 600, use: '页面主视觉（营销页 hero）', comp: 'Heading variant="display"' },
+  { token: 'h1', cls: 'text-3xl', w: 'font-semibold', px: 28, lh: 36, weight: 600, use: '页面标题（每页一个）', comp: 'Heading variant="page-title"' },
+  { token: 'h2', cls: 'text-2xl', w: 'font-semibold', px: 22, lh: 30, weight: 600, use: '区块标题（页面内 2–5 个）', comp: 'Heading variant="section-title"' },
+  { token: 'h3', cls: 'text-lg', w: 'font-semibold', px: 18, lh: 26, weight: 600, use: '卡片标题、弹窗标题', comp: 'Heading variant="card-title"' },
+  { token: 'group-title', cls: 'text-group font-semibold', w: '', px: 15, lh: 22, weight: 600, use: '卡片内分组标题', comp: 'Heading variant="group-title"' },
+  { token: 'body', cls: 'text-sm', w: '', px: 14, lh: 22, weight: 400, use: '正文（全站基准）', comp: 'Text variant="body"' },
   { token: 'body-long', cls: 'text-long', w: '', px: 16, lh: 26, weight: 400, use: '长文本：文章/协议/对话气泡', comp: 'Text variant="body-long"' },
-  { token: 'body-sm', cls: 'text-sm', w: '', px: 14, lh: 20, weight: 400, use: '紧凑辅助正文、表格单元格', comp: 'Text variant="body-sm"' },
-  { token: 'label', cls: 'text-sm font-medium', w: '', px: 14, lh: 20, weight: 500, use: '按钮文字、表单标签、导航项', comp: 'Text variant="label"' },
-  { token: 'caption', cls: 'text-xs', w: '', px: 12, lh: 16, weight: 400, use: '说明、占位符、徽标', comp: 'Text variant="caption"' },
-  { token: 'mono', cls: 'text-mono', w: '', px: 14, lh: 20, weight: 400, use: '正文里的等宽文本（模型 ID/密钥/金额）', comp: 'Text variant="code"' },
+  { token: 'body-sm', cls: 'text-sm', w: '', px: 14, lh: 22, weight: 400, use: '紧凑辅助正文、表格单元格', comp: 'Text variant="body-sm"' },
+  { token: 'body-medium', cls: 'text-sm font-medium', w: '', px: 14, lh: 22, weight: 500, use: '强调正文、导航项', comp: 'Text variant="body-medium"' },
+  { token: 'small', cls: 'text-xs', w: '', px: 12, lh: 18, weight: 400, use: '辅助信息、时间', comp: 'Text variant="caption"' },
+  { token: 'caption', cls: 'text-xs', w: '', px: 12, lh: 18, weight: 400, use: '说明、占位符、徽标', comp: 'Text variant="caption"' },
+  { token: 'dense', cls: 'text-dense', w: '', px: 13, lh: 20, weight: 400, use: '密集数据（表格/二级导航/分页）', comp: 'Text variant="dense"' },
+  { token: 'mono', cls: 'text-mono', w: '', px: 13, lh: 20, weight: 400, use: '正文里的等宽文本（模型 ID/密钥/金额）', comp: 'Text variant="code"' },
 ]
 
 const MONO = [
-  { token: 'mono', cls: 'text-mono', px: 14, lh: 20, use: '正文里的等宽文本' },
+  { token: 'mono', cls: 'text-mono', px: 13, lh: 20, use: '正文里的等宽文本' },
   { token: 'mono-code', cls: 'text-mono-code', px: 13, lh: 20, use: '固定高度的等宽代码容器（首页代码卡片、编辑器视口）' },
   { token: 'mono-title', cls: 'text-mono-title', px: 16, lh: 22, use: '等宽字形的卡片标题（定价卡片模型名）' },
 ]
@@ -741,11 +743,11 @@ table.t tr:hover td { background: color-mix(in oklch, var(--ui-bg) 96%, var(--ui
   <div class="card">
     <div style="border:1px solid var(--ui-border); border-radius:10px; padding:20px; display:flex; flex-direction:column; gap:14px;">
       <div>
-        <div class="text-3xl font-semibold" style="color:var(--foreground)">页面标题 30/600</div>
+        <div class="text-3xl font-semibold" style="color:var(--foreground)">页面标题 28/600</div>
         <div style="font-size:12px;color:var(--ui-sub);font-family:var(--font-mono)">L1 · page-title · Heading variant="page-title"</div>
       </div>
       <div>
-        <div class="text-2xl font-semibold" style="color:var(--foreground)">区块标题 24/600</div>
+        <div class="text-2xl font-semibold" style="color:var(--foreground)">区块标题 22/600</div>
         <div style="font-size:12px;color:var(--ui-sub);font-family:var(--font-mono)">L2 · section-title · Heading variant="section-title"</div>
       </div>
       <div>
@@ -753,7 +755,7 @@ table.t tr:hover td { background: color-mix(in oklch, var(--ui-bg) 96%, var(--ui
         <div style="font-size:12px;color:var(--ui-sub);font-family:var(--font-mono)">L3 · card-title · Heading variant="card-title"</div>
       </div>
       <div>
-        <div class="text-base font-semibold" style="color:var(--foreground)">卡片内分组标题 16/600</div>
+        <div class="text-group font-semibold" style="color:var(--foreground)">卡片内分组标题 15/600</div>
         <div style="font-size:12px;color:var(--ui-sub);font-family:var(--font-mono)">L4 · group-title · Heading variant="group-title"</div>
       </div>
       <div>
@@ -914,7 +916,7 @@ table.t tr:hover td { background: color-mix(in oklch, var(--ui-bg) 96%, var(--ui
       </div>
       <div class="demo-box">
         <span class="ds-text-gradient-brand" style="font-size:24px; font-weight:600">直达全球大模型</span>
-        <div class="cap">ds-text-gradient-brand<br><span style="color:var(--ui-sub)">30px 大文本，阈值 3:1</span></div>
+        <div class="cap">ds-text-gradient-brand<br><span style="color:var(--ui-sub)">24px 大文本，阈值 3:1</span></div>
       </div>
     </div>
   </div>
