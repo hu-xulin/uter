@@ -23,7 +23,7 @@ import { useTranslation } from 'react-i18next'
 import * as z from 'zod'
 
 import { Dialog } from '@/components/dialog'
-import { ReactIconByName } from '@/components/react-icon-by-name'
+import { PaymentIconByName } from '@/components/payment-icon-by-name'
 import { Button } from '@/components/ui/button'
 import { Combobox } from '@/components/ui/combobox'
 import {
@@ -276,7 +276,7 @@ export function PaymentMethodDialog({
                       className='flex-1'
                     />
                     {iconValue && (
-                      <ReactIconByName
+                      <PaymentIconByName
                         name={iconValue}
                         className='text-muted-foreground size-4 shrink-0'
                         title={iconValue}
