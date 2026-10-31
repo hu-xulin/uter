@@ -85,7 +85,24 @@ users 表 id=52，经用户授权写入本地 SQLite）：凭据在 `web/.env.lo
   消耗：鉴权 2 次 + 冒烟 1 次 = 3 次，远低于 CriticalRateLimit 的 20 次/20 分钟。
 - 公开页（home/pricing/rankings 等）**未登录**即可渲染真实内容，无需登录态。
 - `channels`/`models`/`subscriptions` 是管理员页面，专用账号（role=1）基线预期为
-  403「禁止访问」空态；截到真实管理页内容需管理员账号，属后续增强。
+  403「禁止访问」空态；截到真实管理页需管理员账号，属后续增强。
+
+### ⚠ 前置：`PasswordLoginEnabled` 临时开关（2026-10-31 起）
+
+本地库与线上一致采用 `PasswordLoginEnabled=false`（登录走邮箱验证码）。
+密码登录 API 失败时返回 **HTTP 200 + `{"success":false}`**（不是 4xx），
+`lib/login.ts` 已校验业务 success 字段并在失败时抛错，杜绝「截登录页当基线」。
+
+跑鉴权轨前按「关 Turnstile 验完立即恢复」的既有先例执行原子流程：
+
+```bash
+# 1) 临时开启（当前值 false 已在本文档登记，即还原目标）
+sqlite3 one-api.db "UPDATE options SET value='true' WHERE key='PasswordLoginEnabled';"
+# 2) 等 60s 热同步（SyncOptions）
+# 3) 跑测试（整轮登录 ≤3 次，限流 20 次/20 分钟）
+# 4) 立即还原 + 等热同步 + 验证拒绝生效
+sqlite3 one-api.db "UPDATE options SET value='false' WHERE key='PasswordLoginEnabled';"
+```
 
 ### UI 登录的已知细节（auth.setup.spec.ts 已改走 API 登录，以下供手动调试参考）
 

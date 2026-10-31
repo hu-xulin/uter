@@ -77,8 +77,18 @@ export async function loginViaApi(page: Page): Promise<void> {
   const response = await page.request.post('/api/user/login', {
     data: { username, password },
   })
-  if (!response.ok()) {
-    const body = (await response.text().catch(() => '')).slice(0, 200)
-    throw new Error(`API 登录失败：HTTP ${response.status()} ${body}`)
+  // ⚠ 必须校验业务 success 字段，不能只看 HTTP 状态：登录接口失败时也返回
+  // HTTP 200 + {"success":false,"message":"Password login has been disabled…"}
+  // （2026-10-31 实测：PasswordLoginEnabled=false 时截了 18 张登录页当基线）。
+  let body: { success?: boolean; message?: string } = {}
+  try {
+    body = (await response.json()) as typeof body
+  } catch {
+    // 非 JSON 响应按失败处理
+  }
+  if (!response.ok() || body.success !== true) {
+    throw new Error(
+      `API 登录失败：HTTP ${response.status()} ${body.message ?? '(无错误信息)'}`
+    )
   }
 }

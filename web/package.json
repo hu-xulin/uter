@@ -24,7 +24,7 @@
     "test:visual:update": "node scripts/visual-regression.mjs --update",
     "test:visual:e2e": "playwright test --config e2e/visual/playwright.config.ts",
     "test:visual:e2e:update": "playwright test --config e2e/visual/playwright.config.ts --update-snapshots",
-    "test:visual:e2e:auth": "playwright test --config e2e/visual/playwright.config.ts e2e/visual/auth.setup.ts",
+    "test:visual:e2e:auth": "playwright test --config e2e/visual/playwright.config.ts --project=auth-setup",
     "test:watch": "vitest",
     "format:check": "node scripts/format-with-protected-headers.mjs --check",
     "format": "node scripts/format-with-protected-headers.mjs --write",
