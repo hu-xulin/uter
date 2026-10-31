@@ -1,0 +1,34 @@
+# UEQE gitleaks 配置：扩展默认规则 + 分类豁免。
+# 豁免原则：只豁免「经人工核验为误报」的类别（2026-10-31 逐一目检），每条注明理由。
+# 新增豁免必须在注释中写明核验日期与核验人。
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "误报豁免：文档示例 / 测试夹具 / 密钥处理代码 / 插件运行时逻辑（2026-10-31 全量人工核验）"
+paths = [
+  # API 文档中的 curl 调用示例（占位 token，如 sk-xxxx / YOUR_API_KEY）
+  '''^docs-web/content/''',
+  # Go 与前端测试夹具（构造的假 token / 假 PEM）
+  '''_test\.go$''',
+  '''(^|/)__tests__/''',
+  '''\.test\.(ts|tsx)$''',
+  # 插件代码引用运行时 apiKey 变量，非硬编码密钥
+  '''^web/public/plugins/''',
+  '''^plugins/tasks/''',
+  # 密钥格式处理代码：前缀剥离 / PEM 归一化 / 掩码与正则识别
+  '''^middleware/auth\.go$''',
+  '''^common/str\.go$''',
+  '''^relaykit/relayconvert/kitutil/mask\.go$''',
+  '''^service/waffo_key\.go$''',
+  '''^relay/channel/vertex/service_account\.go$''',
+  '''^setting/costopt/config\.go$''',
+  # 视觉回归快照与前端构建产物（gitignore 目录的兜底排除）
+  '''^\.visual-snapshots/''',
+  '''^web/\.visual-e2e/''',
+  '''^web/dist/''',
+  '''(^|/)node_modules/''',
+  # Issue 模板中的站点 URL 被 jwt/aws 规则误判
+  '''^\.github/ISSUE_TEMPLATE/''',
+]
