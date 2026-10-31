@@ -590,6 +590,14 @@
     font-size: var(--text-base);
     line-height: var(--tw-leading, var(--text-base--line-height));
   }
+  .text-dense {
+    font-size: var(--text-dense);
+    line-height: var(--tw-leading, var(--text-dense--line-height));
+  }
+  .text-group {
+    font-size: var(--text-group);
+    line-height: var(--tw-leading, var(--text-group--line-height));
+  }
   .text-lg {
     font-size: var(--text-lg);
     line-height: var(--tw-leading, var(--text-lg--line-height));
@@ -2717,13 +2725,13 @@ table.t tr:hover td { background: color-mix(in oklch, var(--ui-bg) 96%, var(--ui
   <div class="card">
     
     <div class="type-row">
-      <div class="type-sample text-4xl font-bold">优特智能大模型服务平台</div>
+      <div class="type-sample text-4xl font-semibold">优特智能大模型服务平台</div>
       <div class="type-meta">
         <div class="type-token">display</div>
         <div class="type-nums">
           <span class="num">36px</span>
-          <span class="num">/40px</span>
-          <span class="num">w700</span>
+          <span class="num">/44px</span>
+          <span class="num">w600</span>
         </div>
         <code class="type-cls">text-4xl</code>
         <div class="type-use">页面主视觉（营销页 hero）</div>
@@ -2736,7 +2744,7 @@ table.t tr:hover td { background: color-mix(in oklch, var(--ui-bg) 96%, var(--ui
       <div class="type-meta">
         <div class="type-token">h1</div>
         <div class="type-nums">
-          <span class="num">30px</span>
+          <span class="num">28px</span>
           <span class="num">/36px</span>
           <span class="num">w600</span>
         </div>
@@ -2751,8 +2759,8 @@ table.t tr:hover td { background: color-mix(in oklch, var(--ui-bg) 96%, var(--ui
       <div class="type-meta">
         <div class="type-token">h2</div>
         <div class="type-nums">
-          <span class="num">24px</span>
-          <span class="num">/32px</span>
+          <span class="num">22px</span>
+          <span class="num">/30px</span>
           <span class="num">w600</span>
         </div>
         <code class="type-cls">text-2xl</code>
@@ -2767,7 +2775,7 @@ table.t tr:hover td { background: color-mix(in oklch, var(--ui-bg) 96%, var(--ui
         <div class="type-token">h3</div>
         <div class="type-nums">
           <span class="num">18px</span>
-          <span class="num">/28px</span>
+          <span class="num">/26px</span>
           <span class="num">w600</span>
         </div>
         <code class="type-cls">text-lg</code>
@@ -2777,15 +2785,15 @@ table.t tr:hover td { background: color-mix(in oklch, var(--ui-bg) 96%, var(--ui
     </div>
 
     <div class="type-row">
-      <div class="type-sample text-base font-semibold ">优特智能大模型服务平台</div>
+      <div class="type-sample text-group font-semibold ">优特智能大模型服务平台</div>
       <div class="type-meta">
         <div class="type-token">group-title</div>
         <div class="type-nums">
-          <span class="num">16px</span>
-          <span class="num">/24px</span>
+          <span class="num">15px</span>
+          <span class="num">/22px</span>
           <span class="num">w600</span>
         </div>
-        <code class="type-cls">text-base font-semibold</code>
+        <code class="type-cls">text-group font-semibold</code>
         <div class="type-use">卡片内分组标题</div>
         <div class="type-comp">Heading variant=&quot;group-title&quot;</div>
       </div>
@@ -2797,7 +2805,7 @@ table.t tr:hover td { background: color-mix(in oklch, var(--ui-bg) 96%, var(--ui
         <div class="type-token">body</div>
         <div class="type-nums">
           <span class="num">14px</span>
-          <span class="num">/20px</span>
+          <span class="num">/22px</span>
           <span class="num">w400</span>
         </div>
         <code class="type-cls">text-sm</code>
@@ -2827,7 +2835,7 @@ table.t tr:hover td { background: color-mix(in oklch, var(--ui-bg) 96%, var(--ui
         <div class="type-token">body-sm</div>
         <div class="type-nums">
           <span class="num">14px</span>
-          <span class="num">/20px</span>
+          <span class="num">/22px</span>
           <span class="num">w400</span>
         </div>
         <code class="type-cls">text-sm</code>
@@ -2839,15 +2847,30 @@ table.t tr:hover td { background: color-mix(in oklch, var(--ui-bg) 96%, var(--ui
     <div class="type-row">
       <div class="type-sample text-sm font-medium ">优特智能大模型服务平台</div>
       <div class="type-meta">
-        <div class="type-token">label</div>
+        <div class="type-token">body-medium</div>
         <div class="type-nums">
           <span class="num">14px</span>
-          <span class="num">/20px</span>
+          <span class="num">/22px</span>
           <span class="num">w500</span>
         </div>
         <code class="type-cls">text-sm font-medium</code>
-        <div class="type-use">按钮文字、表单标签、导航项</div>
-        <div class="type-comp">Text variant=&quot;label&quot;</div>
+        <div class="type-use">强调正文、导航项</div>
+        <div class="type-comp">Text variant=&quot;body-medium&quot;</div>
+      </div>
+    </div>
+
+    <div class="type-row">
+      <div class="type-sample text-xs ">优特智能大模型服务平台</div>
+      <div class="type-meta">
+        <div class="type-token">small</div>
+        <div class="type-nums">
+          <span class="num">12px</span>
+          <span class="num">/18px</span>
+          <span class="num">w400</span>
+        </div>
+        <code class="type-cls">text-xs</code>
+        <div class="type-use">辅助信息、时间</div>
+        <div class="type-comp">Text variant=&quot;caption&quot;</div>
       </div>
     </div>
 
@@ -2857,7 +2880,7 @@ table.t tr:hover td { background: color-mix(in oklch, var(--ui-bg) 96%, var(--ui
         <div class="type-token">caption</div>
         <div class="type-nums">
           <span class="num">12px</span>
-          <span class="num">/16px</span>
+          <span class="num">/18px</span>
           <span class="num">w400</span>
         </div>
         <code class="type-cls">text-xs</code>
@@ -2867,11 +2890,26 @@ table.t tr:hover td { background: color-mix(in oklch, var(--ui-bg) 96%, var(--ui
     </div>
 
     <div class="type-row">
+      <div class="type-sample text-dense ">优特智能大模型服务平台</div>
+      <div class="type-meta">
+        <div class="type-token">dense</div>
+        <div class="type-nums">
+          <span class="num">13px</span>
+          <span class="num">/20px</span>
+          <span class="num">w400</span>
+        </div>
+        <code class="type-cls">text-dense</code>
+        <div class="type-use">密集数据（表格/二级导航/分页）</div>
+        <div class="type-comp">Text variant=&quot;dense&quot;</div>
+      </div>
+    </div>
+
+    <div class="type-row">
       <div class="type-sample text-mono ">优特智能大模型服务平台</div>
       <div class="type-meta">
         <div class="type-token">mono</div>
         <div class="type-nums">
-          <span class="num">14px</span>
+          <span class="num">13px</span>
           <span class="num">/20px</span>
           <span class="num">w400</span>
         </div>
@@ -2893,7 +2931,7 @@ table.t tr:hover td { background: color-mix(in oklch, var(--ui-bg) 96%, var(--ui
       <div class="type-meta">
         <div class="type-token">mono</div>
         <div class="type-nums">
-          <span class="num">14px</span>
+          <span class="num">13px</span>
           <span class="num">/20px</span>
           <span class="num">wundefined</span>
         </div>
@@ -2941,11 +2979,11 @@ table.t tr:hover td { background: color-mix(in oklch, var(--ui-bg) 96%, var(--ui
   <div class="card">
     <div style="border:1px solid var(--ui-border); border-radius:10px; padding:20px; display:flex; flex-direction:column; gap:14px;">
       <div>
-        <div class="text-3xl font-semibold" style="color:var(--foreground)">页面标题 30/600</div>
+        <div class="text-3xl font-semibold" style="color:var(--foreground)">页面标题 28/600</div>
         <div style="font-size:12px;color:var(--ui-sub);font-family:var(--font-mono)">L1 · page-title · Heading variant="page-title"</div>
       </div>
       <div>
-        <div class="text-2xl font-semibold" style="color:var(--foreground)">区块标题 24/600</div>
+        <div class="text-2xl font-semibold" style="color:var(--foreground)">区块标题 22/600</div>
         <div style="font-size:12px;color:var(--ui-sub);font-family:var(--font-mono)">L2 · section-title · Heading variant="section-title"</div>
       </div>
       <div>
@@ -2953,7 +2991,7 @@ table.t tr:hover td { background: color-mix(in oklch, var(--ui-bg) 96%, var(--ui
         <div style="font-size:12px;color:var(--ui-sub);font-family:var(--font-mono)">L3 · card-title · Heading variant="card-title"</div>
       </div>
       <div>
-        <div class="text-base font-semibold" style="color:var(--foreground)">卡片内分组标题 16/600</div>
+        <div class="text-group font-semibold" style="color:var(--foreground)">卡片内分组标题 15/600</div>
         <div style="font-size:12px;color:var(--ui-sub);font-family:var(--font-mono)">L4 · group-title · Heading variant="group-title"</div>
       </div>
       <div>
@@ -3761,7 +3799,7 @@ table.t tr:hover td { background: color-mix(in oklch, var(--ui-bg) 96%, var(--ui
       </div>
       <div class="demo-box">
         <span class="ds-text-gradient-brand" style="font-size:24px; font-weight:600">直达全球大模型</span>
-        <div class="cap">ds-text-gradient-brand<br><span style="color:var(--ui-sub)">30px 大文本，阈值 3:1</span></div>
+        <div class="cap">ds-text-gradient-brand<br><span style="color:var(--ui-sub)">24px 大文本，阈值 3:1</span></div>
       </div>
     </div>
   </div>
