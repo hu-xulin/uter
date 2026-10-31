@@ -1,6 +1,6 @@
 {
   "说明": "视觉回归基线。这里只存截图哈希与体积，PNG 本体落在 .visual-snapshots/（gitignore）。字体渲染因机器而异，故本基线只在同一台机器上可信，不接 CI。",
-  "updatedAt": "2026-10-31T07:50:25.309Z",
+  "updatedAt": "2026-10-31T15:16:42.196Z",
   "viewports": [
     {
       "id": "desktop",
@@ -20,8 +20,8 @@
       "viewport": "desktop",
       "width": 1440,
       "height": 900,
-      "sha256": "a31d71cd5732ef4b2115396ec83d0b3f7c1dfd95df54b0841ac0cc035f1d01bd",
-      "bytes": 133220
+      "sha256": "e2e67a90aaa09353867ee5a83b72fe202a94466be8c015f176a60da3bdfd43e5",
+      "bytes": 132119
     },
     {
       "key": "design-showcase@mobile",
@@ -29,8 +29,8 @@
       "viewport": "mobile",
       "width": 390,
       "height": 844,
-      "sha256": "6ed72829a476b4e1018b9beebfa3af8b6948283a9330de1bc9dfb2b7044e9dfe",
-      "bytes": 83047
+      "sha256": "6fa2059986f0a28f4eaa50bdf3383815e44c3fa98fdc84259b1fad28d0bc77b9",
+      "bytes": 82045
     }
   ]
 }
