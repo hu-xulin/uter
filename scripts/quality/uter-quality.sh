@@ -108,6 +108,9 @@ stage_inventory() {
 }
 
 stage_review() {
+  # security 阶段的 git archive 解包区（head-tree）会跨轮残留，内含历史 blob，
+  # gofmt -l 递归扫描会把它当源码扫入造成假阳性——review 前先清理。
+  rm -rf "$ROOT/$UEQE_STATE_DIR/head-tree"
   for m in $UEQE_GO_MODULES; do
     ( cd "$m" && test -z "$(gofmt -l . | head -1)" ) \
       && mark review "gofmt:$m" PASSED \
