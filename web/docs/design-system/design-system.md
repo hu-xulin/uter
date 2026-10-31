@@ -475,18 +475,30 @@ web/
 
 ```css
 @theme {
-  --text-xs: 0.75rem;      /* 12px — caption */
-  --text-sm: 0.875rem;     /* 14px — body / body-sm / label */
-  --text-mono: 0.875rem;   /* 14px — 正文里的等宽文本 */
+  --text-xs: 0.75rem;      /* 12px — small / caption */
+  --text-xs--line-height: 1.125rem;   /* 18px */
+  --text-sm: 0.875rem;     /* 14px — body / body-sm / label（行高 22px） */
+  --text-sm--line-height: 1.375rem;   /* 22px */
+  --text-mono: 0.8125rem;  /* 13px — 正文里的等宽文本 */
+  --text-mono--line-height: 1.25rem;  /* 20px */
   --text-mono-code: 0.8125rem;  /* 13px — 固定高度等宽代码容器 */
   --text-mono-title: 1rem; /* 16px — 等宽卡片标题 */
+  --text-dense: 0.8125rem; /* 13px — 表格单元格 / 二级导航 / 分页 */
+  --text-dense--line-height: 1.25rem; /* 20px */
   --text-long: 1rem;       /* 16px — body-long */
-  --text-base: 1rem;       /* 16px — group-title 原始值，不是正文 */
+  --text-long--line-height: 1.625rem; /* 26px */
+  --text-base: 1rem;       /* 16px — 行标题 / 设置字段 / 指标数值，不是正文 */
+  --text-group: 0.9375rem; /* 15px — group-title 专用档 */
+  --text-group--line-height: 1.375rem; /* 22px */
   --text-lg: 1.125rem;     /* 18px — h3 */
+  --text-lg--line-height: 1.625rem;   /* 26px */
   --text-xl: 1.25rem;      /* 20px — 兼容档 */
-  --text-2xl: 1.5rem;      /* 24px — h2 */
-  --text-3xl: 1.875rem;    /* 30px — h1 */
+  --text-2xl: 1.375rem;    /* 22px — h2 */
+  --text-2xl--line-height: 1.875rem;  /* 30px */
+  --text-3xl: 1.75rem;     /* 28px — h1 */
+  --text-3xl--line-height: 2.25rem;   /* 36px */
   --text-4xl: 2.25rem;     /* 36px — display */
+  --text-4xl--line-height: 2.75rem;   /* 44px */
 }
 ```
 
@@ -508,17 +520,19 @@ web/
 ```css
 --ds-text-body: var(--text-sm);         /* 14px */
 --ds-text-body-sm: var(--text-sm);      /* 14px */
+--ds-text-dense: var(--text-dense);     /* 13px */
 --ds-text-long: var(--text-long);       /* 16px */
 --ds-text-label: var(--text-sm);        /* 14px */
 --ds-text-caption: var(--text-xs);      /* 12px */
---ds-text-mono: var(--text-mono);       /* 14px */
---ds-text-page-title: var(--text-3xl);  /* 30px */
---ds-text-section-title: var(--text-2xl);/* 24px */
+--ds-text-mono: var(--text-mono);       /* 13px */
+--ds-text-page-title: var(--text-3xl);  /* 28px */
+--ds-text-section-title: var(--text-2xl);/* 22px */
 --ds-text-card-title: var(--text-lg);   /* 18px */
---ds-text-group-title: var(--text-base);/* 16px */
+--ds-text-group-title: var(--text-group);/* 15px */
 
---ds-line-body: var(--text-sm--line-height, 1.25rem);   /* 20px */
+--ds-line-body: var(--text-sm--line-height, 1.375rem);   /* 22px */
 --ds-line-long: var(--text-long--line-height, 1.625rem);/* 26px */
+--ds-line-mono: var(--text-mono--line-height, 1.25rem);  /* 20px */
 --ds-line-mono-dense: 1.375rem;  /* 22px */
 ```
 
@@ -1248,7 +1262,7 @@ Token 自带」保证，不允许浏览器默认行高进入任何一档。
 写法固定为 `text-mono leading-[var(--ds-line-mono-dense)]`（门禁 T9 放行
 `leading-[var(--…)]` 这种**引用 Token** 的形式，它拦的是字面像素值）。
 
-它**不是**第四档 mono 字号 —— 字号仍是 14px，只有行高变成 22px。判定：
+它**不是**第四档 mono 字号 —— 字号仍是 13px，只有行高变成 22px。判定：
 「这段等宽文本是不是一屏几十行的密集列表」。是 → 22px；单行 ID / 密钥 / 金额 →
 默认 20px。
 
