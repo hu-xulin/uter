@@ -406,9 +406,13 @@ func TestTelegramOAuthConfigurationAndLegacyEndpoints(t *testing.T) {
 			for _, scope := range []string{"2fa.setup", "passkey.register"} {
 				requirements, err := service.GetVerificationRequirements(fixture.identity, scope)
 				require.NoError(t, err)
-				require.Len(t, requirements.Methods, 1)
+				// email_code 恒在候选列表（无邮箱时不可用），oauth 因未配置不可用。
+				require.Len(t, requirements.Methods, 2)
+				assert.Equal(t, service.VerificationMethodEmailCode, requirements.Methods[0].Method)
 				assert.False(t, requirements.Methods[0].Available)
-				assert.Contains(t, requirements.Methods[0].Reason, "administrator")
+				assert.Equal(t, service.VerificationMethodOAuth, requirements.Methods[1].Method)
+				assert.False(t, requirements.Methods[1].Available)
+				assert.Contains(t, requirements.Methods[1].Reason, "administrator")
 				_, err = service.VerifySecurityInput(fixture.identity, service.VerificationInput{Scope: scope, Method: "session"})
 				assert.Error(t, err)
 				_, err = service.StartOAuthVerification(fixture.identity, service.VerificationOperation{Scope: scope}, "telegram")

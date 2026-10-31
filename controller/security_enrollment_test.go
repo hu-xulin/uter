@@ -202,7 +202,7 @@ func TestSecurityEnrollmentAccessTokenMethodPolicy(t *testing.T) {
 	for _, test := range []struct {
 		name, method                     string
 		password, passkey, twoFA, locked bool
-		disabledPasskey, oauth          bool
+		disabledPasskey, oauth           bool
 		available                        bool
 	}{
 		{name: "password", method: "password", password: true, oauth: true, available: true},
