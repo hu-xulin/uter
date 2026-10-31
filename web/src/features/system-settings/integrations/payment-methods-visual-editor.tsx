@@ -22,7 +22,7 @@ import { useTranslation } from 'react-i18next'
 
 import { StaticDataTable } from '@/components/data-table/static/static-data-table'
 import { StaticRowActions } from '@/components/data-table/static/static-row-actions'
-import { ReactIconByName } from '@/components/react-icon-by-name'
+import { PaymentIconByName } from '@/components/payment-icon-by-name'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -334,7 +334,7 @@ export function PaymentMethodsVisualEditor({
 
                   return iconName ? (
                     <div className='flex items-center gap-2'>
-                      <ReactIconByName
+                      <PaymentIconByName
                         name={iconName}
                         className='text-muted-foreground size-4 shrink-0'
                         title={iconName}
@@ -435,7 +435,7 @@ export function PaymentMethodsVisualEditor({
                       </span>
                       {iconName ? (
                         <div className='flex min-w-0 items-center gap-2'>
-                          <ReactIconByName
+                          <PaymentIconByName
                             name={iconName}
                             className='text-muted-foreground size-4 shrink-0'
                             title={iconName}
