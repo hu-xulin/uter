@@ -21,6 +21,7 @@ import { CreditCard, Landmark } from 'lucide-react'
 import type { ReactNode } from 'react'
 
 import { IconAlipay, IconWeChatPay, IconStripe } from '@/assets/brand-icons'
+import { isGenericWechatIconName } from '@/components/payment-wechat-alias'
 import { ReactIconByName } from '@/components/react-icon-by-name'
 
 import { PAYMENT_TYPES, PAYMENT_ICON_COLORS } from '../constants'
@@ -39,21 +40,6 @@ import { PAYMENT_TYPES, PAYMENT_ICON_COLORS } from '../constants'
 const WECHAT_PAY_TYPES = new Set<string>([
   PAYMENT_TYPES.WECHAT,
   PAYMENT_TYPES.WECHAT_PAY_WEB,
-])
-
-/**
- * 「通用微信」图标别名。运营在后台选到这些时，说明他们想表达「微信」，
- * 而这里的上下文恒为「微信支付」，因此升级成支付标而不是照搬聊天标。
- * 自定义图片 URL 不在此列（无法重新着色，保持原图）。
- */
-const GENERIC_WECHAT_ICONS = new Set([
-  'SiWechat',
-  'SiWeixin',
-  'RiWechatFill',
-  'RiWechatLine',
-  'FaWechat',
-  'FaWeixin',
-  'AiFillWechat',
 ])
 
 function isWechatPayType(paymentType: string | undefined): boolean {
@@ -121,9 +107,10 @@ export function getPaymentIcon(
   }
   const brandColor = paymentType ? PAYMENT_ICON_COLORS[paymentType] : undefined
   if (iconValue) {
-    // 「通用微信」别名在微信支付上下文里升级成支付标（见 GENERIC_WECHAT_ICONS）。
+    // 「通用微信」别名在微信支付上下文里升级成支付标（isGenericWechatIconName，
+    // 共享清单见 components/payment-icon-by-name.tsx）。
     // 运营配置的显示名（`altName`）要跟着走，否则无障碍名称会退回英文默认值。
-    if (isWechatPayType(paymentType) && GENERIC_WECHAT_ICONS.has(iconValue)) {
+    if (isWechatPayType(paymentType) && isGenericWechatIconName(iconValue)) {
       return (
         <IconWeChatPay
           className={className}
