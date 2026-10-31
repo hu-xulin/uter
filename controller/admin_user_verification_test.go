@@ -332,7 +332,13 @@ func TestAdminUserVerificationPolicy(t *testing.T) {
 		_, identity, _ := setupAdminUserTest(t)
 		requirements, err := service.GetVerificationRequirements(identity, service.VerificationScopeAdminUserDelete)
 		require.NoError(t, err)
-		assert.Equal(t, []service.VerificationMethodOption{{Method: service.VerificationMethodPassword, Available: true}}, requirements.Methods)
+		// email_code 恒在候选列表（无邮箱时标记不可用），回退到密码。
+		require.Len(t, requirements.Methods, 2)
+		assert.Equal(t, service.VerificationMethodEmailCode, requirements.Methods[0].Method)
+		assert.False(t, requirements.Methods[0].Available)
+		assert.Equal(t, service.VerificationMethodPassword, requirements.Methods[1].Method)
+		assert.True(t, requirements.Methods[1].Available)
+		assert.Empty(t, requirements.Methods[1].Reason)
 	})
 	t.Run("prefers an enrolled second factor", func(t *testing.T) {
 		operator, identity, _ := setupAdminUserTest(t)
