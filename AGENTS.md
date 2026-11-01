@@ -8,7 +8,7 @@ This is an AI API gateway/proxy built with Go. It aggregates 40+ upstream AI pro
 
 ## Tech Stack
 
-- **Backend**: Go 1.25.1 (see each module’s `go.mod`), Gin web framework, GORM v2 ORM
+- **Backend**: Go 1.27.3 (see each module’s `go.mod`), Gin web framework, GORM v2 ORM
 - **Frontend**: React 19, TypeScript, Rsbuild 2, TanStack Router/Query/Table, Zustand, Base UI, Tailwind CSS 4
 - **Databases**: SQLite, MySQL, PostgreSQL for the primary database (all three must be supported); a separately configured log database also supports ClickHouse
 - **Cache**: Redis (go-redis) + in-memory cache
@@ -56,12 +56,41 @@ right scope every time:
 | Frontend (`web/`) | `web/AGENTS.md` |
 | Design system / typography / color | `docs/design-system/design-system.md` (single authoritative file) |
 | Execution methodology | `.ai/AIES.md` + `.ai/README.md` |
+| Domain standards (architecture / API contract / database / payment / billing / security / UX / change / documentation) | `docs/ai-specs/`（10 份 STANDARD，2026-11-01 已按真实代码校准，含「代码事实锚点」章节） |
 | Engineering quality standards (code review / testing / auto-fix / quality gate) | `docs/ai-specs/engineering-quality/` |
 
 Re-read them when you **start a new session**, **switch to a different task**,
 or **descend into a subdirectory that has its own `AGENTS.md`**. Never rely on
 recollection of rules from a previous session — context is rebuilt fresh each
 time, and remembered rules are exactly how regressions get reintroduced.
+
+**Task-based spec routing (mandatory).** In addition to the scope table above,
+load the specs matched to the task type before writing any code. Multiple rows
+apply when a task spans types (e.g. a payment feature also routes as "All code
+changes"). Spec standards live under `docs/ai-specs/`:
+
+| 开发任务 / Task type | 必须加载的规范 / Required specs |
+|---|---|
+| 所有开发任务 / All development tasks | AI Execution: `docs/ai-specs/AI-EXECUTION-STANDARD.md` + Development: `docs/ai-specs/DEVELOPMENT-STANDARD.md` |
+| 新功能 / New features | Product Requirements: `docs/ai-specs/PRODUCT-REQUIREMENTS-STANDARD.md` + Architecture: `docs/ai-specs/ARCHITECTURE-STANDARD.md` |
+| UI 开发 / UI development | Design System: `docs/design-system/design-system.md` + UX Interaction: `docs/ai-specs/UX-INTERACTION-STANDARD.md` |
+| API 开发 / API development | API Contract: `docs/ai-specs/API-CONTRACT-STANDARD.md` + Security: `docs/ai-specs/SECURITY-STANDARD.md` |
+| 数据库开发 / Database work | Database: `docs/ai-specs/DATABASE-STANDARD.md` + Architecture: `docs/ai-specs/ARCHITECTURE-STANDARD.md` |
+| 支付开发 / Payment work | Product: `docs/ai-specs/PRODUCT-REQUIREMENTS-STANDARD.md` + API: `docs/ai-specs/API-CONTRACT-STANDARD.md` + Database: `docs/ai-specs/DATABASE-STANDARD.md` + Security: `docs/ai-specs/SECURITY-STANDARD.md` |
+| Token 计费 / Token billing | Product: `docs/ai-specs/PRODUCT-REQUIREMENTS-STANDARD.md` + Database: `docs/ai-specs/DATABASE-STANDARD.md` + Architecture: `docs/ai-specs/ARCHITECTURE-STANDARD.md` |
+| 代码审查 / Code review | Code Review: `docs/ai-specs/engineering-quality/CODE-REVIEW-STANDARD.md` + Quality Gate: `docs/ai-specs/engineering-quality/QUALITY-GATE-STANDARD.md` |
+| 自动化测试 / Test authoring | Automated Test: `docs/ai-specs/engineering-quality/AUTOMATED-TEST-STANDARD.md` + Quality Gate: `docs/ai-specs/engineering-quality/QUALITY-GATE-STANDARD.md` |
+| 自动修复 / Auto-fix | Auto Fix: `docs/ai-specs/engineering-quality/AUTO-FIX-STANDARD.md` + Code Review: `docs/ai-specs/engineering-quality/CODE-REVIEW-STANDARD.md` + Automated Test: `docs/ai-specs/engineering-quality/AUTOMATED-TEST-STANDARD.md` + Quality Gate: `docs/ai-specs/engineering-quality/QUALITY-GATE-STANDARD.md` |
+| 所有代码变更 / All code changes | Change Management: `docs/ai-specs/CHANGE-MANAGEMENT-STANDARD.md` + Engineering Quality: `docs/ai-specs/engineering-quality/` |
+| 认证开发 / Auth development | Security: `docs/ai-specs/SECURITY-STANDARD.md` + API Contract: `docs/ai-specs/API-CONTRACT-STANDARD.md` + Architecture: `docs/ai-specs/ARCHITECTURE-STANDARD.md`（另须遵守本文件 Authentication Security / OWASP 节） |
+| 代码重构 / Refactoring | Architecture: `docs/ai-specs/ARCHITECTURE-STANDARD.md` + Development: `docs/ai-specs/DEVELOPMENT-STANDARD.md` + Change Management: `docs/ai-specs/CHANGE-MANAGEMENT-STANDARD.md` |
+| 文档更新 / Docs updates | Documentation: `docs/ai-specs/DOCUMENTATION-STANDARD.md` + 对应业务规范 |
+
+支付/计费/认证任务在本文件「Billing safety invariants」「Authentication Security
+(OWASP Mandatory)」「Database compatibility」各节与本表规范**同时**适用；业务规则
+确认（金额、状态机、幂等键）以 `docs/ai-specs/PRODUCT-REQUIREMENTS-STANDARD.md`
+§4–§6 为准。已知规范间冲突的裁定记录在 `docs/ai-specs/CONFLICT-REPORT.md`，
+修改任何规范前先读它。
 
 ### 2. Automated Quality Gates
 
@@ -105,6 +134,79 @@ so and label the result unverified.
   verifying after each batch.
 - **Never stage secrets or local state**: `.env`, `*.db` / `-shm` / `-wal`,
   `logs/`, build artifacts must not enter commits, code, or documentation.
+
+## AI Spec System (`docs/ai-specs/`)
+
+**Project identity:** Uter — an AI API gateway aggregating 40+ upstream providers
+with user management, billing, and an admin console, operated by Uter.ai. The
+authoritative AI development specs live in `docs/ai-specs/`; they domain-expand
+the four disciplines above (this file stays the constitution). On conflict,
+resolve by precedence, never by convenience:
+
+1. `AGENTS.md` (this file) and `web/AGENTS.md` (frontend scope)
+2. `docs/design-system/design-system.md` (UI design values and rules)
+3. `docs/ai-specs/*` (domain standards; `engineering-quality/` = quality process)
+4. `.ai/AIES.md` (execution methodology)
+
+### Spec index
+
+All paths relative to `docs/ai-specs/` unless noted:
+
+| Spec | File | Governs |
+|---|---|---|
+| AI 执行 | `AI-EXECUTION-STANDARD.md` | Agent 行为、决策边界、停止条件、执行真实性 |
+| 产品需求 | `PRODUCT-REQUIREMENTS-STANDARD.md` | 需求定义、业务规则、状态机、验收标准 |
+| 架构 | `ARCHITECTURE-STANDARD.md` | 模块边界、依赖方向、Relay 架构、ADR |
+| 开发 | `DEVELOPMENT-STANDARD.md` | Go/TS/React 编码、错误处理、日志、依赖 |
+| API 契约 | `API-CONTRACT-STANDARD.md` | 请求/响应/错误结构、幂等、兼容性 |
+| 数据库 | `DATABASE-STANDARD.md` | Schema、事务、余额/订单/Token 计费专项 |
+| 安全 | `SECURITY-STANDARD.md` | 认证、权限、输入验证、支付、Relay 安全 |
+| UX 交互 | `UX-INTERACTION-STANDARD.md` | 交互状态、防重复、支付/Token 展示、无障碍 |
+| 文档 | `DOCUMENTATION-STANDARD.md` | 文档同步、ADR、准确性 |
+| 变更管理 | `CHANGE-MANAGEMENT-STANDARD.md` | Git、Commit/PR、门禁、禁止操作 |
+| 工程质量组 | `engineering-quality/`（README + CODE-REVIEW / AUTOMATED-TEST / AUTO-FIX / QUALITY-GATE） | UEQE 五引擎与统一质量门禁 |
+
+Known cross-spec conflicts and their resolutions are recorded in
+`docs/ai-specs/CONFLICT-REPORT.md`; read it before amending any spec.
+
+### Task routing
+
+完整任务类型 → 必读规范映射见本文件「AI Agent Operating Discipline」§1
+Rule Auto-Loading 的 **Task-based spec routing** 表（单一事实源，两处不得
+各自维护），按任务类型先读齐对应规范再动手。`engineering-quality` 指
+`docs/ai-specs/engineering-quality/` 全组。
+
+### Automated enforcement and review checklists
+
+可自动化项已接入真实执行流程（不要只建脚本不调用）：
+
+| 规范域 | 自动化检查 | 调用入口 |
+|---|---|---|
+| Development | gofmt / go vet / golangci-lint + tsgo / eslint | `uter-quality.sh review`、`verify-all.sh`、CI |
+| Testing | Go test ×3 模块 + vitest + spec-guards | `uter-quality.sh test` |
+| Security | govulncheck + gitleaks + 敏感文件抽查 | `uter-quality.sh security` |
+| UX / Design | 设计令牌门禁 T1–T16 + design-system 守卫测试 | `bun run lint:design:strict` |
+| Coverage | 按包阈值（与 CI 同口径） | `uter-quality.sh coverage` |
+| Spec integrity | 15 份规范在库 + AGENTS.md 路由引用有效 | `uter-quality.sh review`（review.ai-specs 子项） |
+| Change Mgmt（部分） | pre-commit 身份/暂存区/令牌门禁 | git hooks |
+
+无法自动化的规则（API 契约一致性人工核对、三库迁移矩阵、支付验签场景清单、
+UX 状态覆盖、ADR 需求判断）按 `docs/ai-specs/CONFLICT-REPORT.md` 附录的
+人工/AI 审查清单逐项核对，并在交付报告中声明执行结果（PASS/FAIL/BLOCKED）。
+
+### Branch strategy
+
+本仓库当前为 owner 单人直推 `main` 的工作模式：用户逐次授权的
+`git commit` + `git push origin main` 视为已授权，不受
+CHANGE-MANAGEMENT-STANDARD §6/§12「不得直接推送主分支」限制。独立分支 +
+Commit/Push/PR 的要求适用于无人值守自动化（Auto-Fix Engine、定时任务）与
+多人协作场景。force push 与自动合并 PR 在任何模式下都禁止。
+
+### Documentation sync
+
+代码变更后按 DOCUMENTATION-STANDARD §6 对照表检查是否需更新文档；`docs/`
+目录新增文件仍需用户显式要求（见本文件「Documentation files」节）。
+`docs/ai-specs/`（含其 `engineering-quality/` 子目录）的准入已由用户显式授权。
 
 ## Rules
 

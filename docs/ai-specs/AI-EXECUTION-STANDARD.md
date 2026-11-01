@@ -72,24 +72,25 @@ AI 必须以项目实际代码、真实配置和现有业务规则为依据，�
 - 未经分析改变数据库结构。
 - 未经分析引入新依赖。
 
-## 3. 规范加载机制
+## 3. 规范加载机制（真实文件路径）
 
-开发前必须根据任务类型加载对应规范。
+规则自动加载是**强制第一步**：新会话、切任务、进入带 AGENTS.md 的子目录时，先读权威文件再动手。完整加载顺序见 `AGENTS.md`「Rule Auto-Loading」与 `.ai/README.md`。
 
-| 任务类型 | 必须读取 |
+| 任务类型 | 必须读取（真实路径） |
 |---|---|
-| 新功能 | Product Requirements、Development、Architecture |
-| UI 开发 | Design System、UX Interaction、Development |
-| API 开发 | API Contract、Architecture、Security |
-| 数据库开发 | Database、Architecture、Security |
-| 支付开发 | Product、API、Database、Security |
-| Token 计费 | Product、Database、Architecture |
-| 认证开发 | Security、API、Architecture |
-| 自动化测试 | Engineering Quality |
-| 代码重构 | Architecture、Development、Change Management |
-| 文档更新 | Documentation、对应业务规范 |
+| 一切任务的前置 | `AGENTS.md`（根宪法）+ `.ai/AIES.md`（方法论）；前端另读 `web/AGENTS.md` |
+| 新功能（后端） | `docs/ai-specs/ARCHITECTURE-STANDARD.md`、`DEVELOPMENT-STANDARD.md`、`PRODUCT-REQUIREMENTS-STANDARD.md` |
+| UI 开发 | `web/docs/design-system/design-system.md`（唯一真源）+ `docs/ai-specs/UX-INTERACTION-STANDARD.md` + `DEVELOPMENT-STANDARD.md` |
+| API 开发 | `docs/ai-specs/API-CONTRACT-STANDARD.md`、`ARCHITECTURE-STANDARD.md`、`SECURITY-STANDARD.md` |
+| 数据库开发 | `docs/ai-specs/DATABASE-STANDARD.md`、`ARCHITECTURE-STANDARD.md`、`SECURITY-STANDARD.md` |
+| 支付开发 | `PRODUCT-REQUIREMENTS-STANDARD.md` §5.2/§10、`API-CONTRACT-STANDARD.md`、`DATABASE-STANDARD.md`、`SECURITY-STANDARD.md` §18.2 |
+| Token 计费 | `PRODUCT-REQUIREMENTS-STANDARD.md` §5.4/§10、`DATABASE-STANDARD.md` §15.3/§15.4、`ARCHITECTURE-STANDARD.md` §5 |
+| 认证开发 | `SECURITY-STANDARD.md` §3/§18.1/§18.4 + OWASP ASVS 与 Cheat Sheets（AGENTS.md OWASP Mandatory） |
+| 自动化测试/质量 | `docs/ai-specs/engineering-quality/`（UEQE：QUALITY-GATE、AUTOMATED-TEST、CODE-REVIEW、AUTO-FIX） |
+| 代码重构 | `ARCHITECTURE-STANDARD.md`、`DEVELOPMENT-STANDARD.md`、`CHANGE-MANAGEMENT-STANDARD.md` |
+| 文档更新 | `docs/ai-specs/DOCUMENTATION-STANDARD.md` + 对应业务规范 |
 
-所有代码修改均必须遵守 Uter Engineering Quality Engine。
+所有代码修改均必须遵守 Uter Engineering Quality Engine（UEQE 总纲：`docs/ai-specs/engineering-quality/README.md`）。
 
 ## 4. 标准开发流程
 
@@ -168,14 +169,14 @@ AI 必须以项目实际代码、真实配置和现有业务规则为依据，�
 - 是否存在安全风险。
 - 是否需要更新文档。
 
-### Phase 6：质量验证
+### Phase 6：质量验证（真实门禁，命令即规范）
 
-调用 Uter Engineering Quality Engine：
+必须实际执行适用门禁并留存证据（命令 + 退出码 + 失败项名单），不得以「已检查」代替：
 
-- Code Review Engine。
-- Testing Engine。
-- Auto-Fix Engine。
-- Quality Gate。
+- 一键全量：`./scripts/verify-all.sh`（--quick 跳慢套件）。
+- Go：`gofmt -l .`、`go vet ./...`、`make test`、`golangci-lint run`（v2.15.0，only-new-issues，存量 121 项基线）。
+- 前端（cd web）：`bun run typecheck`、`lint`、`test`、`lint:design:strict`、`copyright:check`、`build:check`。
+- CI 同款定义见 `.github/workflows/ci.yml` 与 `release-gate.yml`；**CI 当前因账号账务停跑（2026-10-30 起），门禁只认本地实际执行**——报告必须如实标注 CI 为 NOT RUN。
 
 不得将未执行的检查描述为通过。
 
@@ -287,6 +288,13 @@ AI 必须以项目实际代码、真实配置和现有业务规则为依据，�
 - 未解决风险已披露。
 - 变更符合权限边界。
 
+## 10. Uter 代码事实锚点（2026-11-01 校准）
+
+- **执行真实性五态**（PASS/FAIL/BLOCKED/NOT RUN/SKIPPED）与 `AGENTS.md`「Verification Evidence」同源：完成报告必须携带确切命令、退出码、失败测试名、改动文件清单、未通过项——「已检查/looks correct」视为无效报告。
+- **停止条件**补充仓库实况：GitHub Actions 停跑期间（账号账务问题），CI 相关项标 NOT RUN 而非 BLOCKED；本地 verify-all.sh 是唯一门禁。
+- **自主决策边界**的硬约束来自 `AGENTS.md`「Change Protection」：禁 `git add -A`、禁 `--no-verify`、禁 `rm -rf`/`git clean -fd`、commit 前复查暂存区（并发会话共享 index）。
+- **沙箱与本地环境**：`SESSION_SECRET` 持久化于 `~/uter/.env` 切勿重新生成（换值 2FA TOTP 永久不可解密）；进程 CWD 须 `~/uter`；本地构建前检查并发 WIP（`git status --short` 出现非本次改动即不全量构建）。
+- **本文件在规范体系中的位置**：`AGENTS.md` > `web/AGENTS.md` > `design-system.md` > `.ai/AIES.md` ≈ 本目录（ai-specs）> MEMORY。冲突时以更高优先级为准。
 ---
 
 **本规范为 Uter 所有 AI Coding Agent 的基础行为规范。**

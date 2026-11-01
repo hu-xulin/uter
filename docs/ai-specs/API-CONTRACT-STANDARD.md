@@ -114,20 +114,25 @@ HTTP Method 应符合操作语义：
 
 不得让前端通过猜测判断字段含义。
 
-## 7. 统一错误处理
+## 7. 统一错误处理（以实际契约为准）
 
-错误响应必须具有稳定结构。
+Uter 存在**两套并存的错误体系**，新增接口必须沿用所属域的既有结构，不得引入第三套：
 
-建议逻辑结构：
+### 管理面（/api 组）
 
-- code：机器可识别的错误码。
-- message：面向调用方的错误说明。
-- request_id：请求追踪标识。
-- details：允许公开的附加信息。
+统一封装在 `common/gin.go`：成功体 `ApiSuccess` 返回 `{success: true, message, data}`，HTTP 状态码恒为 200；失败体 `ApiError` 返回 `{success: false, message}`。**没有数字错误码体系**——业务判断不能依赖错误码，只能依赖 `success` 布尔值与 message 语义。
 
-实际字段必须以 Uter 现有 API 契约为准，不得擅自引入第二套错误体系。
+i18n 变体：`ApiErrorI18n`/`ApiSuccessI18n`（服务端翻译）；`ApiErrorT`/`ApiSuccessT` 走 `common/message.go` 的 `Message` 结构——Key 为英文源文本（同时是 `web/src/i18n/locales/*.json` 的 key），失败体额外展开 `message_key` + `message_params`（`{{name}}` 占位符），由前端自行翻译。后端只渲染英文。
 
-错误码必须稳定，不能只依赖错误文本进行业务判断。
+### Relay 面（/v1、/v1beta 等）
+
+OpenAI 风格错误包裹：中间件 abort 时输出 `{"error": {"message", "type": "new_api_error", "code"}}`（`middleware/utils.go` 的 abortWithOpenAiMessage）。错误码是**字符串 ErrorCode**（如 `invalid_request`、`insufficient_user_quota`、`channel:no_available_key`），定义在 `relaykit/types/error.go`（ErrorCode、UterError）；错误类型分类 ErrorType：uter_error/openai_error/claude_error/midjourney_error/gemini_error/rerank_error/upstream_error。
+
+### 分页契约
+
+统一分页结构 `common/page_info.go`（PageInfo）：返回字段 `page`/`page_size`/`total`/`items`；查询参数兼容 `p`/`page_size`/`ps`/`size`，页大小上限 100。
+
+错误响应必须具有稳定结构，不得在同一域内混用两种结构。
 
 ## 8. 身份认证与权限
 
@@ -221,7 +226,24 @@ API 测试至少覆盖：
 
 核心接口必须覆盖关键业务边界。
 
-## 14. 完成定义
+## 14. Uter 代码事实锚点（2026-11-01 校准）
+
+新增或修改接口前，以下事实为契约基线：
+
+| 事实 | 代码位置 |
+|---|---|
+| 路由前缀：`/api`（管理面）、`/v1`、`/v1beta`（Gemini）、`/pg`（playground，UserAuth+Distribute）、`/mj`（Midjourney）、`/api/costopt`（降本指标，AdminAuth） | `router/api-router.go`、`router/relay-router.go` |
+| relay 链固定中间件顺序：RouteTag("relay") → SystemPerformanceCheck → TokenAuth → ModelRequestRateLimit → Distribute | `router/relay-router.go` |
+| 控制台认证：UserAuth/AdminAuth/RootAuth（authHelper 按 minRole 分档），支持 session 与 PAT 双凭据，PAT 需过 enforceAccessTokenRoute scope 校验；TryUserAuth 为可选认证（无效凭据保持匿名） | `middleware/auth.go` |
+| API token 认证：TokenAuth() 从 Bearer/x-api-key/query key/x-goog-api-key/mj-api-secret 提取 `sk-` 前缀 key，调 model.ValidateUserToken，含 token IP 白名单 | `middleware/auth.go`(TokenAuth) |
+| 限流键前缀分档：`GA`（GlobalAPIRateLimit 按 IP）、`CT`（CriticalRateLimit 按 IP，登录失败可退款 RefundIPRateLimit）、`UC:<scope>`（UserCriticalRateLimit 按用户）、`DW`/`UP`（下载/上传）；SessionRateLimit 按 SID | `middleware/rate-limit.go` |
+| 响应封装：ApiSuccess/ApiError/ApiErrorStatus/ApiErrorI18n/ApiErrorT | `common/gin.go` |
+| i18n 契约：Message{Key(英文源文本), Params}，前端用 message_key/message_params 翻译 | `common/message.go`、`web/src/i18n/locales/` |
+| 分页：PageInfo{page, page_size, total, items}，GetPageQuery 兼容 p/ps/size，上限 100 | `common/page_info.go` |
+| 配置读取单一源：`common.OptionMap["Key"]`，UpdateOption 白名单收敛（validateOptionValue → 落库 → updateOptionMap 巨型 switch 反序列化到全局变量），SyncOptions 周期热同步 | `model/option.go`、`common/constants.go`(OptionMap) |
+| 幂等实现范式：条件更新 + RowsAffected 判定（如 claimPendingTopUp 的 `WHERE status='pending'`），支付回调三件套（验签/幂等/实付金额比对）见 DATABASE-STANDARD §8 锚点 | `model/topup.go` |
+
+## 15. 完成定义
 
 API 只有在契约、实现、权限、错误处理、测试和文档保持一致时，才可标记为完成。
 

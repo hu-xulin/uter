@@ -257,7 +257,30 @@ docs/product/features/
 12. 验收标准。
 13. 未决问题。
 
-## 10. 完成定义
+## 10. Uter 代码事实锚点（2026-11-01 校准）
+
+描述产品需求时，以下业务概念必须使用真实定义，不得编造近似概念：
+
+| 业务概念 | 真实定义 | 代码位置 |
+|---|---|---|
+| 计费单位 | QuotaPerUnit = 500,000 配额 = 1 美元（$0.002/1K tokens） | `common/constants.go` |
+| 充值定价 | 应付 = 金额 × EffectivePayPrice() × TopupGroupRatio × presetDiscount，roundPayMoneyToCent 收敛到分；PayPrice = 行情汇率 USDExchangeRate + 0.2（PriceAdjustmentRate） | `controller/topup.go`(getPayMoney)、`setting/operation_setting/payment_setting_old.go` |
+| 订单状态机 | pending → success / failed / expired（TopUpStatus* 常量），状态迁移用条件更新赢得 | `common/constants.go`、`model/topup.go`(claimPendingTopUp、MarkFailed) |
+| 订单号 | `USR{userId}NO{随机6位+Unix时间戳}` | `controller/topup.go` |
+| 余额流水 | 即 `logs` 表（Type：1 充值/2 消费/3 管理/4 系统/5 错误/6 退款/7 登录），无独立流水表 | `model/log.go` |
+| Token 计费链路 | 预扣（PreConsumeBilling，promptTokens×InputPreConsumeMultiplier×modelRatio×groupRatio）→ 结算（BillingSession.Settle，decimal 计算，缓存/图像/音频分列倍率）→ 记录（RecordConsumeLog 写 logs，倍率详情写 Other JSON） | `service/billing.go`、`service/billing_session.go`、`service/text_quota.go`、`model/log.go` |
+| 倍率体系 | 模型倍率 GetModelRatio、补全倍率 GetCompletionRatio、缓存倍率 GetCacheRatio、分组倍率（含用户组特殊倍率 group_group_ratio）、充值分组倍率 GetTopupGroupRatio | `setting/ratio_setting/`、`common/topup-ratio.go` |
+| 分层计费（C 类） | billing_expr 表达式计费：rawCost/1e6 × QuotaPerUnit；表达式不可解析标记 tiered_unparsable 并告警 | `relay/helper/price.go`(modelPriceHelperTiered)、`service/dreamrouter_sync.go` |
+| 价格同步 | DreamRouter 同步每 10 分钟固定；uter 目标价 = 上游售价 × (r + step)；默认渠道 id=20 | `service/dreamrouter_sync.go` |
+| 支付渠道 | Epay、支付宝官方（电脑+手机网站）、微信 Native/H5（无 JSAPI、无小程序）、Creem、Waffo(/Pancake)、Stripe；前端开关聚合 hasConfigurableTopup | `controller/topup*.go`、`web/src/features/wallet/components/recharge-form-card.tsx` |
+| 对账与补单 | 支付宝/微信对账任务（读窗口 24h）+ 读时对账（GetUserTopUps）+ 人工补单 POST /api/user/topup/complete（AdminCompleteTopUp → ManualCompleteTopUp，幂等） | `controller/payment_reconcile_task.go`、`model/topup.go` |
+| 降本红线 | 模型保真：绝不替换客户所选模型，ApplyArbitrage 恒 no-op，ApplyCascade/ComplexityRouting/RouterLM 硬 no-op | relay 降本相关代码 |
+| 登录形态 | RegisterEnabled 只关自主注册表单，不阻断已验证身份登录即注册；邮箱验证码登录 EmailCodeLoginEnabled（登录即注册 provisionEmailCodeUser） | `service/`、`controller/user.go` |
+| 微信登录 | 仅保留网站应用扫码（wechat_web），跨域两段式回调 | `controller/`、`oauth/` |
+
+功能文档目录 `docs/product/features/` 目前不存在；当前真实文档布局为 `docs/`（ai-specs/、security/、engineering/）、`docs-dev/`（开发文档）、`web/docs/design-system/`。建立功能文档前先与用户确认目录。
+
+## 11. 完成定义
 
 只有当需求、业务规则、异常流程和验收标准均已明确，且实际实现通过验收，才能将功能标记为完成。
 

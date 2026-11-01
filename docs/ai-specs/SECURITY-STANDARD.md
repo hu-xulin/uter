@@ -252,6 +252,39 @@ AI 严禁为了通过测试或快速实现功能而：
 - 安全测试已执行。
 - 未解决风险已披露。
 
+## 18. Uter 代码事实锚点（2026-11-01 校准）
+
+### 18.1 认证与权限（真实实现，禁止绕过）
+
+- 控制台认证：`middleware/auth.go` 的 UserAuth()/AdminAuth()/RootAuth()（authHelper 按 minRole 分档）；session 与 PAT（个人 access token）双凭据，PAT 需过 enforceAccessTokenRoute 的 scope 校验；AdminAuth 及以上自动挂管理员写操作审计（beginAdminAudit）。TryUserAuth 为可选认证（凭据无效保持匿名）。
+- API token 认证：TokenAuth() 提取 `sk-` 前缀 key（Bearer / x-api-key / query key / x-goog-api-key / mj-api-secret），调 model.ValidateUserToken，含 token IP 白名单检查。
+- Casbin 授权：`service/authz/`（StartPolicySync 周期重载策略）。
+- 限流档位：`middleware/rate-limit.go`——GA（全局 API 按 IP）、CT（CriticalRateLimit 按 IP，登录成败都计数，退款走 RefundIPRateLimit）、`UC:<scope>`（用户级）、DW/UP（下载/上传）、SessionRateLimit（按 SID）、ModelRequestRateLimit（模型级，middleware/model-rate-limit.go）。
+
+### 18.2 支付验签与金额核验（真实位置，回调三件套）
+
+| 渠道 | 下单/回调 | 验签 | 实付金额比对 |
+|---|---|---|---|
+| Epay | controller/topup.go（RequestEpay / EpayNotify） | client.Verify(params) | paidAmountMatchesOrder |
+| 支付宝 | controller/topup_alipay.go（RequestAlipayWeb / AlipayNotify） | service.AlipayVerifySign + app_id 校验 | alipayPaidAmountMatchesOrder（比对基准为下单落库的 ProviderAmount 分快照） |
+| 微信 Native/H5 | controller/topup_wechat.go（RequestWechatPayWeb / WechatPayNotify） | Wechatpay-Timestamp/Nonce/Signature 头 + 5 分钟防重放 + WechatPayVerifyNotify/DecryptResource + mchid/appid 校验 | ProviderAmount/ProviderCurrency 快照比对 |
+| Creem | controller/topup_creem.go（RequestCreemPay / CreemWebhook） | verifyCreemSignature + creemModeMatchesConfigured | creemOrderAmountsCoverOrder |
+| Waffo(/Pancake) | controller/topup_waffo.go、topup_waffo_pancake.go | core.WebhookHandler | waffoPaidAmountMatchesOrder |
+| Stripe | controller/topup_stripe.go（RequestStripePay / StripeWebhook / fulfillOrder） | Stripe Webhook 签名 | stripeCheckoutSubtotalMatchesOrder |
+
+幂等通用范式：`claimPendingTopUp`（model/topup.go）条件更新 `WHERE status='pending'` + RowsAffected 判定；进程内订单锁 LockOrder/UnlockOrder（controller/topup.go）。通用分单位换算：providerExpectedMinorUnits / providerPaidAmountMatchesOrder / currencyMinorUnitExponent（controller/topup.go）。
+
+### 18.3 密钥与敏感信息（真实机制）
+
+- 密钥展示三件套 + maskSecret 掩码；`excludedOptionKeys` 整条剔除敏感 option 不下发前端（如 SMTPAccounts token），派生掩码视图（如 SMTPAccountsView）。
+- options 落库经 validateOptionValue 校验；`.env`/`*.db`/`logs`/产物不进提交与文档（AGENTS.md 变更保护）。
+- Root 超管只许登录不得修改；明文口令不进代码/git。
+- 依赖安全：govulncheck 扫 root/relaykit/tokenkit 三模块（ci.yml vulnscan job）；Dependency Graph 快照规则见 docs/security/dependency-risk-acceptance.md。
+
+### 18.4 认证相关变更的强制流程
+
+任何认证相关实现/修改/评审必须先读 OWASP ASVS 与 Authentication/Session Management Cheat Sheet（AGENTS.md 认证安全节，OWASP Mandatory）——先识别适用控制项再实现；已有代码不是保留不安全模式的理由。
+
 ---
 
 **任何 AI 不得以功能实现为理由降低 Uter 的安全等级。**
