@@ -54,7 +54,7 @@ right scope every time:
 |---|---|
 | Repository-wide | `AGENTS.md` (this file) |
 | Frontend (`web/`) | `web/AGENTS.md` |
-| Design system / typography / color | `web/docs/design-system/design-system.md` (single authoritative file) |
+| Design system / typography / color | `docs/design-system/design-system.md` (single authoritative file) |
 | Execution methodology | `.ai/AIES.md` + `.ai/README.md` |
 | Engineering quality standards (code review / testing / auto-fix / quality gate) | `docs/ai-specs/engineering-quality/` |
 
@@ -245,8 +245,8 @@ Inside `relaykit/`, use `kitutil.*` from `relaykit/relayconvert/kitutil/json.go`
 ### Design System Enforcement
 
 The approved design system is the single source of truth for all UI implementation.
-**Full spec: `web/docs/design-system/design-system.md`** (rules + enforcement layers).
-**Visual specimen: `web/docs/design-system/showcase.html`** — open it to see every
+**Full spec: `docs/design-system/design-system.md`** (rules + enforcement layers).
+**Visual specimen: `docs/design-system/showcase.html`** — open it to see every
 font size, color, size tier, and component rendered with the real tokens.
 
 Before changing any UI code, read the relevant chapters of the spec (§11 colors,
@@ -303,7 +303,7 @@ bun run test:visual:e2e    # track 2: Playwright diff of real routes, needs the 
 ```
 
 - Track 1 (`scripts/visual-regression.mjs`) screenshots
-  `web/docs/design-system/showcase.html` at 1440x900 and 390x844 and compares
+  `docs/design-system/showcase.html` at 1440x900 and 390x844 and compares
   hashes stored in `visual-regression/baseline.json`.
 - Track 2 (`web/e2e/visual/`) covers real routes, including authenticated ones,
   and requires the Go backend plus `bun run dev` to be running.

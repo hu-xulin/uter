@@ -1,6 +1,6 @@
 {
   "说明": "视觉回归基线。这里只存截图哈希与体积，PNG 本体落在 .visual-snapshots/（gitignore）。字体渲染因机器而异，故本基线只在同一台机器上可信，不接 CI。",
-  "updatedAt": "2026-10-31T15:16:42.196Z",
+  "updatedAt": "2026-11-01T02:58:06.438Z",
   "viewports": [
     {
       "id": "desktop",
