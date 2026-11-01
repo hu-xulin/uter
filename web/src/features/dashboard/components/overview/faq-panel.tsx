@@ -69,15 +69,13 @@ export function FAQPanel() {
                   {/* FAQ 问题行 = 卡片内条目行标题：14/500（text-sm font-medium）。
                    * 600 只给 group-title（规范 §12.5），16/600 会让问题行与
                    * 分组标题同重，层级失效。 */}
-                  <span className='text-sm font-medium'>
-                    {item.question}
-                  </span>
+                  <span className='text-sm font-medium'>{item.question}</span>
                 </AccordionTrigger>
                 <AccordionContent>
                   {/* 短答案严格按规范 §1.2：body-sm = 14/20（text-sm），
                    * 而非 Markdown 组件的默认 body-long 16/26（text-long）。
                    * 用 !important 覆盖组件内 [&_p]:text-long，确保落到 p 上。 */}
-                  <Markdown className='text-muted-foreground text-sm [&_p]:!text-sm [&_li]:!text-sm'>
+                  <Markdown className='text-muted-foreground text-sm [&_li]:!text-sm [&_p]:!text-sm'>
                     {item.answer}
                   </Markdown>
                 </AccordionContent>

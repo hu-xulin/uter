@@ -401,7 +401,12 @@ describe('email delivery settings', () => {
       expect(request).toHaveBeenCalledWith('/api/option/', {
         key: 'SMTPAccounts',
         value: JSON.stringify([
-          { account: 'info@uter.ai', from: 'info@uter.ai', daily_limit: 400, token: '' },
+          {
+            account: 'info@uter.ai',
+            from: 'info@uter.ai',
+            daily_limit: 400,
+            token: '',
+          },
           { account: 'info01@uter.ai', from: '', daily_limit: 300, token: '' },
         ]),
       })
@@ -414,8 +419,20 @@ describe('email delivery settings', () => {
       .mockResolvedValue({ data: { success: true } })
     const user = renderEmail({
       SMTPAccountsView: JSON.stringify([
-        { account: 'info@uter.ai', from: '', daily_limit: 400, token: 'info****a1b2', today_sent: 0 },
-        { account: 'info01@uter.ai', from: '', daily_limit: 400, token: 'info****c3d4', today_sent: 0 },
+        {
+          account: 'info@uter.ai',
+          from: '',
+          daily_limit: 400,
+          token: 'info****a1b2',
+          today_sent: 0,
+        },
+        {
+          account: 'info01@uter.ai',
+          from: '',
+          daily_limit: 400,
+          token: 'info****c3d4',
+          today_sent: 0,
+        },
       ]),
     })
     await user.type(
@@ -428,7 +445,12 @@ describe('email delivery settings', () => {
         key: 'SMTPAccounts',
         value: JSON.stringify([
           { account: 'info@uter.ai', from: '', daily_limit: 400, token: '' },
-          { account: 'info01@uter.ai', from: '', daily_limit: 400, token: 'brand-new-secret' },
+          {
+            account: 'info01@uter.ai',
+            from: '',
+            daily_limit: 400,
+            token: 'brand-new-secret',
+          },
         ]),
       })
     )
@@ -463,7 +485,12 @@ describe('email delivery settings', () => {
       expect(request).toHaveBeenCalledWith('/api/option/', {
         key: 'SMTPAccounts',
         value: JSON.stringify([
-          { account: 'sender@example.com', from: 'sender@example.com', daily_limit: 0, token: '' },
+          {
+            account: 'sender@example.com',
+            from: 'sender@example.com',
+            daily_limit: 0,
+            token: '',
+          },
           { account: 'info01@uter.ai', from: '', daily_limit: 0, token: '' },
         ]),
       })

@@ -27,9 +27,9 @@ import { Label } from '@/components/ui/label'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { AuthOperationError } from '@/lib/secure-verification'
 
-import { sendStepUpEmailCode } from '../api'
 import type { PasskeyDomains } from '../../passkey/assertion'
 import { PasskeyDomainSelector } from '../../passkey/components/passkey-domain-selector'
+import { sendStepUpEmailCode } from '../api'
 import type {
   SecureVerificationState,
   VerificationInput,

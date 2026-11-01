@@ -22,6 +22,7 @@ import { useMemo } from 'react'
 import { useFieldArray, useForm, useWatch } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
+import { Button } from '@/components/ui/button'
 import {
   Form,
   FormControl,
@@ -36,7 +37,6 @@ import { Label } from '@/components/ui/label'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { SecretInput } from '@/components/ui/secret-input'
 import { Switch } from '@/components/ui/switch'
-import { Button } from '@/components/ui/button'
 import { getCurrencyDisplay, getCurrencyLabel } from '@/lib/currency'
 import { parseQuotaFromDollars, quotaUnitsToDollars } from '@/lib/format'
 import { handleServerError } from '@/lib/handle-server-error'
@@ -121,9 +121,7 @@ function buildInitialAccounts(
       },
     ]
   }
-  return [
-    { account: '', from: '', dailyLimit: '0', token: '' },
-  ]
+  return [{ account: '', from: '', dailyLimit: '0', token: '' }]
 }
 
 export function EmailSettingsSection({
@@ -253,9 +251,7 @@ export function EmailSettingsSection({
         })
       }
 
-      if (
-        values.SMTPForceAuthLogin !== defaultValues.SMTPForceAuthLogin
-      ) {
+      if (values.SMTPForceAuthLogin !== defaultValues.SMTPForceAuthLogin) {
         updates.push({
           key: 'SMTPForceAuthLogin',
           value: values.SMTPForceAuthLogin,
@@ -614,8 +610,7 @@ export function EmailSettingsSection({
                             return (
                               <span className='text-muted-foreground text-sm'>
                                 {' '}
-                                ·{' '}
-                                {t('Today sent: {{count}}', { count: sent })}
+                                · {t('Today sent: {{count}}', { count: sent })}
                               </span>
                             )
                           })()}

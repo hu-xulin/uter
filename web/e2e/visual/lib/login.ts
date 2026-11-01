@@ -52,7 +52,9 @@ export interface VisualCredentials {
 /** 凭据是否已配置（可在测试收集阶段静态判断，用于整组 skip 而非假通过）。 */
 export function hasVisualCredentials(): boolean {
   loadLocalEnv()
-  return Boolean(process.env.VISUAL_TEST_EMAIL && process.env.VISUAL_TEST_PASSWORD)
+  return Boolean(
+    process.env.VISUAL_TEST_EMAIL && process.env.VISUAL_TEST_PASSWORD
+  )
 }
 
 function readVisualCredentials(): VisualCredentials {

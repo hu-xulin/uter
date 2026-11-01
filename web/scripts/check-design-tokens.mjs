@@ -219,7 +219,8 @@ const PALETTE_CLASS_RE = new RegExp(
  * 目前没有对应 Token，拦了也无处可改 —— 那属于「待补 Token」而不是欠债，
  * 统一记在规范 §25，不在这里误报。
  */
-const VARIANT_TOKEN = '(?:[a-zA-Z][a-zA-Z0-9-]*(?:\\[[^\\]]*\\])?|\\[[^\\]]*\\]):'
+const VARIANT_TOKEN =
+  '(?:[a-zA-Z][a-zA-Z0-9-]*(?:\\[[^\\]]*\\])?|\\[[^\\]]*\\]):'
 const VARIANT_PREFIX_RE = `(?:${VARIANT_TOKEN})*!?`
 
 /** 浅底 Token 的归属：`bg-<name>/NN` 该换成 `-soft` 还是 `-subtle`。 */
@@ -237,7 +238,9 @@ function opacityUtilityRe(body, percent = '\\d{1,3}') {
 }
 
 const T13_RE = opacityUtilityRe('text-foreground')
-const T14_RE = opacityUtilityRe('hover:bg-(?:primary|secondary|destructive|success)')
+const T14_RE = opacityUtilityRe(
+  'hover:bg-(?:primary|secondary|destructive|success)'
+)
 // T15 只管**浅底**（≤20%）。`/70`、`/90` 那类高透明度是有意的半透明实心填充，
 // 换成 `-soft` 会直接改变观感 —— 那不是欠债，别误报。
 const T15_RE = opacityUtilityRe(
@@ -394,7 +397,9 @@ for (const abs of walk(SRC)) {
       for (const m of raw.matchAll(/font-size:\s*([0-9.]+)(px|rem)/g)) {
         candidates.push(m[1] + m[2])
       }
-      for (const m of raw.matchAll(/fontSize:\s*['"]?([0-9.]+)(px|rem)?['"]?/g)) {
+      for (const m of raw.matchAll(
+        /fontSize:\s*['"]?([0-9.]+)(px|rem)?['"]?/g
+      )) {
         candidates.push(m[1] + (m[2] ?? 'px'))
       }
       for (const m of raw.matchAll(/--text-[a-z0-9]+:\s*([0-9.]+)(px|rem)/g)) {
@@ -587,7 +592,9 @@ if (WRITE_BASELINE) {
   )
   console.log(
     `design-tokens: 基线已写入 ${relative(ROOT, BASELINE_PATH)}，共 ${entries.length} 条` +
-      (previousCount ? `（此前 ${previousCount} 条，减少 ${previousCount - entries.length} 条）` : '')
+      (previousCount
+        ? `（此前 ${previousCount} 条，减少 ${previousCount - entries.length} 条）`
+        : '')
   )
   process.exit(0)
 }

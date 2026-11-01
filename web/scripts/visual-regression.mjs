@@ -90,9 +90,13 @@ function findChrome() {
     '/usr/bin/chromium-browser',
   ]
   for (const path of candidates) if (existsSync(path)) return path
-  const which = spawnSync('sh', ['-c', 'command -v google-chrome chromium chromium-browser'], {
-    encoding: 'utf8',
-  })
+  const which = spawnSync(
+    'sh',
+    ['-c', 'command -v google-chrome chromium chromium-browser'],
+    {
+      encoding: 'utf8',
+    }
+  )
   return which.stdout?.trim().split('\n')[0] || null
 }
 
@@ -130,7 +134,9 @@ function capture(target, viewport) {
     { encoding: 'utf8', timeout: 60_000 }
   )
   if (!existsSync(out) || result.status !== 0) {
-    console.error(`✗ 截图失败：${target.id} @ ${viewport.id}\n${result.stderr ?? ''}`)
+    console.error(
+      `✗ 截图失败：${target.id} @ ${viewport.id}\n${result.stderr ?? ''}`
+    )
     process.exit(2)
   }
   return { path: out, hash: sha256(out), bytes: statSync(out).size }
@@ -170,7 +176,10 @@ for (const target of TARGETS) {
     if (!old) {
       diffs.push({ ...entry, how: '基线里没有这条（新增目标）' })
     } else if (old.sha256 !== entry.sha256) {
-      diffs.push({ ...entry, how: `与基线不一致（基线 ${old.bytes}B → 现在 ${entry.bytes}B）` })
+      diffs.push({
+        ...entry,
+        how: `与基线不一致（基线 ${old.bytes}B → 现在 ${entry.bytes}B）`,
+      })
       copyFileSync(shot.path, join(SNAP_DIR, `${key}-diff-actual.png`))
     } else {
       ok += 1
@@ -195,7 +204,9 @@ if (UPDATE) {
       2
     )}\n`
   )
-  console.log(`✓ 已重录 ${entries.length} 条视觉基线 → visual-regression/baseline.json`)
+  console.log(
+    `✓ 已重录 ${entries.length} 条视觉基线 → visual-regression/baseline.json`
+  )
   process.exit(0)
 }
 

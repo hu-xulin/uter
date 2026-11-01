@@ -1162,7 +1162,9 @@ export function OAuthSection(props: OAuthSectionProps) {
                   name='WeChatWebCallbackDomain'
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('Authorization callback domain')}</FormLabel>
+                      <FormLabel>
+                        {t('Authorization callback domain')}
+                      </FormLabel>
                       <FormControl>
                         <Input
                           placeholder='wx.example.com'

@@ -21,11 +21,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 
-import {
-  IconGithub,
-  IconLinuxDo,
-  IconDiscord,
-} from '@/assets/brand-icons'
+import { IconGithub, IconLinuxDo, IconDiscord } from '@/assets/brand-icons'
 import { ConfirmDialog } from '@/components/confirm-dialog'
 import { StatusBadge } from '@/components/status-badge'
 import { Button } from '@/components/ui/button'

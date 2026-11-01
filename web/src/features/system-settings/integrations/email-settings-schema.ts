@@ -109,9 +109,7 @@ export const createEmailSchema = (t: (key: string) => string) =>
           })
           return
         }
-        if (
-          !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(account.account.trim())
-        ) {
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(account.account.trim())) {
           context.addIssue({
             code: 'custom',
             path: ['SMTPAccounts', index, 'account'],

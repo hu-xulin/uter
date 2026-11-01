@@ -52,13 +52,18 @@ export const AUTHENTICATED_ROUTES: VisualRoute[] = [
   // 属于后续增强，不改变本组用例的门禁语义。
   { name: 'channels', path: '/channels', ready: 'main, [role="main"]' },
   { name: 'profile', path: '/profile', ready: 'main, [role="main"]' },
-  { name: 'subscriptions', path: '/subscriptions', ready: 'main, [role="main"]' },
+  {
+    name: 'subscriptions',
+    path: '/subscriptions',
+    ready: 'main, [role="main"]',
+  },
   {
     name: 'system-settings',
     path: '/system-settings',
     ready: 'main, [role="main"]',
     disabled: true,
-    disabledReason: '依赖超管权限与站点配置数据，待专用只读账号权限方案确定后再启用',
+    disabledReason:
+      '依赖超管权限与站点配置数据，待专用只读账号权限方案确定后再启用',
   },
 ]
 

@@ -38,10 +38,13 @@ for (const viewport of VIEWPORTS) {
 
     for (const route of routes) {
       await openRoute(page, route.path, route)
-      await expect(page).toHaveScreenshot(`${route.name}-${viewport.name}.png`, {
-        fullPage: route.fullPage ?? false,
-        mask: toMaskLocators(page, route.mask),
-      })
+      await expect(page).toHaveScreenshot(
+        `${route.name}-${viewport.name}.png`,
+        {
+          fullPage: route.fullPage ?? false,
+          mask: toMaskLocators(page, route.mask),
+        }
+      )
     }
   })
 }

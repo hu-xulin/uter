@@ -38,7 +38,11 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { login, loginByEmailCode, requestLoginEmailCode } from '@/features/auth/api'
+import {
+  login,
+  loginByEmailCode,
+  requestLoginEmailCode,
+} from '@/features/auth/api'
 import { LegalConsent } from '@/features/auth/components/legal-consent'
 import { OAuthProviders } from '@/features/auth/components/oauth-providers'
 import { loginFormSchema } from '@/features/auth/constants'
@@ -156,10 +160,7 @@ export function UserAuthForm({
   // 发送验证码后的重发倒计时。
   useEffect(() => {
     if (codeResendSeconds <= 0) return
-    const timer = setTimeout(
-      () => setCodeResendSeconds((s) => s - 1),
-      1000
-    )
+    const timer = setTimeout(() => setCodeResendSeconds((s) => s - 1), 1000)
     return () => clearTimeout(timer)
   }, [codeResendSeconds])
 
@@ -518,9 +519,7 @@ export function UserAuthForm({
                   variant='outline'
                   className='h-(--ds-control-height-md) shrink-0'
                   disabled={
-                    isSendingCode ||
-                    codeResendSeconds > 0 ||
-                    !codeEmail.trim()
+                    isSendingCode || codeResendSeconds > 0 || !codeEmail.trim()
                   }
                   onClick={handleSendLoginCode}
                 >

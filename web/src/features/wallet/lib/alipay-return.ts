@@ -25,7 +25,9 @@ export type AlipayOrderStatus = 'success' | 'pending' | 'unpaid' | 'closed'
 
 export interface PollAlipayOrderOptions {
   /** 支付宝查单请求，返回 { data: { status } }。 */
-  query: (tradeNo: string) => Promise<{ data?: { status?: string } } | undefined>
+  query: (
+    tradeNo: string
+  ) => Promise<{ data?: { status?: string } } | undefined>
   /** 查到 success 时执行（刷新余额等）。 */
   onSuccess: () => void | Promise<void>
   /** 所有尝试都未确认时执行。 */

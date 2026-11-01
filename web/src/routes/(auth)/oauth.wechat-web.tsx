@@ -24,8 +24,8 @@ import {
   getWeChatWebFlowOrigin,
   wechatWebLoginByCode,
 } from '@/features/auth/api'
-import { consumeOAuthLoginRedirect } from '@/features/auth/lib/oauth-callback-mode'
 import { sanitizeAuthRedirect } from '@/features/auth/lib/auth-redirect'
+import { consumeOAuthLoginRedirect } from '@/features/auth/lib/oauth-callback-mode'
 import { applyAuthBundle, isAuthBundle } from '@/lib/api'
 import { handleServerError } from '@/lib/handle-server-error'
 import { AuthOperationError } from '@/lib/secure-verification'
