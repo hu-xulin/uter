@@ -421,7 +421,7 @@ DS-TYPE-001：正文基础字号（强制，适用 Web/H5）
 project/
 ├── AGENTS.md                   # AI 执行入口和强制规则（Uter 已有）
 ├── docs/                        # ⚠️ Uter 规定：非显式请求不得新增文件
-│   └── engineering/             # （示意，Uter 设计系统已在 web/docs/design-system/）
+│   └── ai-specs/                # AI 开发规范统一库（engineering-quality/ 为工程质量规范组）
 ├── .ai/                         # 本文件所在目录
 │   ├── AIES.md                 # 统一执行标准
 │   ├── task-schema.json        # 任务合同 JSON Schema
