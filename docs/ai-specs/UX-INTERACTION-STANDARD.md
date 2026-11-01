@@ -12,7 +12,7 @@
 
 统一 Uter 所有页面和组件的交互行为，确保用户能够清晰理解系统状态、操作结果和异常原因。
 
-本规范负责交互行为，不替代 design-system 的视觉设计规则。
+本规范负责交互行为，不替代 design-system 的视觉设计规则（见 `docs/design-system/design-system.md`）。
 
 ## 2. 基本原则
 

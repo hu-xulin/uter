@@ -20,7 +20,7 @@ AIES 是**上层方法论 + L2/L3 补齐**，不替代项目已批准的"宪法"
 1. 用户明确的操作授权、L0 安全底线（最高）
 2. `AGENTS.md`（根，项目宪法：技术栈/OWASP/后端/前端/项目治理/Git-PR）
 3. `web/AGENTS.md`（前端专属）
-4. `web/docs/design-system/design-system.md` + `showcase.html`（设计系统唯一真源）
+4. `docs/design-system/design-system.md` + `showcase.html`（设计系统唯一真源）
 5. `.ai/AIES.md` + `.ai/task-schema.json` + `.ai/checklists/*`（通用框架与机器规则）
 6. `.workbuddy/memory/MEMORY.md`（踩坑记忆/勿回退红线）
 

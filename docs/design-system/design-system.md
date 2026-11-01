@@ -37,7 +37,7 @@
 
 ## 📋 可视化核查页
 
-> **逐项核查请打开：`web/docs/design-system/showcase.html`**（双击即可，无需构建、无需起服务）
+> **逐项核查请打开：`docs/design-system/showcase.html`**（双击即可，无需构建、无需起服务）
 
 核查页把本规范的**每一个字号、每一种颜色、每一档尺寸、每一个组件**都渲染成真实  
 可看的实体样本，并附上实测数值。它不是手写的示意图 —— 生成器  
@@ -245,7 +245,7 @@ type ButtonSize =
 **Design System Enforcement** 章节（见 [§4.7](#47-为什么这些规则必须与代码检查配合)）。  
 若所用工具支持自己的规则文件（Cursor 的 `.cursor/rules`、Claude Code 的  
 `CLAUDE.md` 等），应让它们**引用同一套规范**，而不是各维护一份互相冲突的指令 ——  
-规范只有一个来源：`web/docs/design-system/design-system.md`。
+规范只有一个来源：`docs/design-system/design-system.md`。
 
 ### 4.1 Authority（权威来源）
 
@@ -2646,7 +2646,7 @@ CTA 渐变）已于 2026-10-30 全部注销 —— 它们的理由都是「须�
 node scripts/generate-design-showcase.mjs
 
 # 输出
-# ✅ 核查页已生成：web/docs/design-system/showcase.html
+# ✅ 核查页已生成：docs/design-system/showcase.html
 #    大小：135.4 KB
 #    编译 Token：168 个候选类，产物 66.4 KB
 ```
@@ -2681,7 +2681,7 @@ node scripts/generate-design-showcase.mjs
 
 ### 核查流程（人）
 
-1. 打开 `web/docs/design-system/showcase.html`；
+1. 打开 `docs/design-system/showcase.html`；
 2. 按 §12.1 → §12.4 → §12.5 逐个字号看，§11.1 → §11.4 逐个颜色看；
 3. 顶部切「深色模式」复查一遍明暗两套；
 4. 顶部切「密度 sm / xl」，确认字号没变、只有留白在变；

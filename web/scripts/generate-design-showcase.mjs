@@ -20,7 +20,7 @@ For commercial licensing, please contact support@uter.ai
 /**
  * 生成 UTER 设计规范的可视化核查页。
  *
- * 产物：`web/docs/design-system/showcase.html`（自包含单文件，双击即可打开）
+ * 产物：`docs/design-system/showcase.html`（仓库根 docs/design-system/，自包含单文件，双击即可打开）
  *
  * 为什么用 Tailwind 编译而不是手写 HTML：
  *   核查页必须展示的是**生产环境的真实值**。手写 `<span style="font-size:30px">`
@@ -47,7 +47,7 @@ const outIdx = args.indexOf('--out')
 const OUT_PATH =
   outIdx >= 0 && args[outIdx + 1]
     ? path.resolve(WEB_ROOT, args[outIdx + 1])
-    : path.join(WEB_ROOT, 'docs/design-system/showcase.html')
+    : path.join(REPO_ROOT, 'docs/design-system/showcase.html')
 
 /* ── 1. 编译真实 Token ───────────────────────────────────────────── */
 
@@ -1263,7 +1263,7 @@ table.t tr:hover td { background: color-mix(in oklch, var(--ui-bg) 96%, var(--ui
 </section>
 
 <div class="footer-note">
-  <p><strong>核查方法：</strong>逐项对照上表与 <code>web/docs/design-system/design-system.md</code>。发现问题先改 Token 源码（<code>src/styles/theme.css</code> 或 <code>src/design-system/tokens/*</code>），再运行 <code>node scripts/generate-design-showcase.mjs</code> 重新生成本页，然后跑 <code>node scripts/check-design-tokens.mjs --strict</code> 与 <code>bunx vitest run src/design-system/__tests__</code>。</p>
+  <p><strong>核查方法：</strong>逐项对照上表与 <code>docs/design-system/design-system.md</code>。发现问题先改 Token 源码（<code>src/styles/theme.css</code> 或 <code>src/design-system/tokens/*</code>），再运行 <code>node scripts/generate-design-showcase.mjs</code> 重新生成本页，然后跑 <code>node scripts/check-design-tokens.mjs --strict</code> 与 <code>bunx vitest run src/design-system/__tests__</code>。</p>
 </div>
 
 </div>

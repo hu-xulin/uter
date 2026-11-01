@@ -4,7 +4,7 @@
 > 每项须有实际证据；未执行 = NOT_RUN，不得报成 PASS。
 
 ## 开工前（项目检查 + 规范检索）
-- [ ] 读 `web/docs/design-system/design-system.md` §11 颜色 / §12 字号 / §14 组件 / §21 响应式 / §26 例外
+- [ ] 读 `docs/design-system/design-system.md` §11 颜色 / §12 字号 / §14 组件 / §21 响应式 / §26 例外
 - [ ] 检查 `web/src/components/ui/` 与相关 feature 现有组件（AGENTS.md 强制「Reuse existing UI components first」）
 - [ ] 确认刻度真源 `web/src/styles/theme.css` 的 `--text-*`、密度 `theme-presets.css`、文档页 `docs-web --text-doc-*`
 - [ ] 识别受影响页面、断点、交互态（加载/错误/空/禁用）
@@ -25,7 +25,7 @@
 - [ ] `cd web && npx tsgo -b --force`
 
 ## 视觉验收（诚实标注）
-- [ ] 打开 `web/docs/design-system/showcase.html` 对比受影响区块
+- [ ] 打开 `docs/design-system/showcase.html` 对比受影响区块
 - [ ] ⚠️ Playwright 截图基线 / 视觉回归**尚未实现**——如实说明，不得声称视觉验收通过
 - [ ] 例外须登记 `design-system.md` §26 + 门禁 `ALLOWLIST`
 

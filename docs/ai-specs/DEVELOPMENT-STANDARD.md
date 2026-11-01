@@ -121,7 +121,7 @@
 
 ## 7. 样式规范
 
-必须遵循 Uter design-system。
+必须遵循 Uter design-system（`docs/design-system/design-system.md`，可视化核查页 `docs/design-system/showcase.html`）。
 
 要求：
 

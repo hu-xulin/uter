@@ -70,7 +70,7 @@ const MANIFEST = join(WEB_ROOT, 'visual-regression', 'baseline.json')
 const TARGETS = [
   {
     id: 'design-showcase',
-    file: 'docs/design-system/showcase.html',
+    file: '../docs/design-system/showcase.html',
     说明: '设计规范核查页（每档 Token 都渲染了真实样本）',
   },
 ]

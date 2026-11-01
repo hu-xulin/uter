@@ -75,7 +75,7 @@
  *   --text-doc-chrome  导航 / 侧栏 / 目录 ………… 14px   (导航与按钮)
  *   --text-doc-caption 图注 / 元信息 ………………… 12px   (辅助文字)
  *
- * 内容标题另有一套 **prose 阶梯**（`web/docs/design-system/typography.md`
+ * 内容标题另有一套 **prose 阶梯**（`docs/design-system/design-system.md`
  * 「内容排版（Markdown prose）」）：Markdown 的标题比界面低一到两档，因为把
  * 正文里的 h1 抬到界面 28px 会让它比所在卡片的标题（18px）还大。
  *
@@ -91,7 +91,7 @@
  * value the ladder has, and a framed docs page that reads looser than
  * the app it sits in is the more visible drift of the two. If the
  * looser CJK rhythm is wanted back, this is the one value to change —
- * and it then needs an entry in `web/docs/design-system/exceptions.md`.
+ * and it then needs an entry in `docs/design-system/design-system.md` (§26).
  *
  * These generate the `text-doc-*` utilities used by `content-renderer`
  * and the prose / chrome overrides at the end of this file. Weights stay
@@ -787,7 +787,7 @@ html[data-docs-embed='true'] #nd-subnav > a {
 
 .prose :is(h2) {
   /* 内容排版（Markdown prose）的 h2 是 **18/28**，不是界面的 24/32：
-     `web/docs/design-system/typography.md`「内容排版」明确把 docs-web 的文档
+     `docs/design-system/design-system.md`「内容排版」明确把 docs-web 的文档
      正文归入 prose 阶梯（24 / 18 / 16 / 14），比界面层级低一到两档。文档的
      一级标题已经由 `DocsTitle` 按界面 h1（30）渲染，正文里最上面这一层就是
      Markdown 的 h2，所以取 18。 */
