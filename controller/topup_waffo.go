@@ -124,7 +124,9 @@ func waffoPaidAmountMatchesOrder(paidAmount, expectedAmount string) bool {
 func getWaffoPayMoney(amount float64, group string) float64 {
 	originalAmount := amount
 	if operation_setting.GetQuotaDisplayType() == operation_setting.QuotaDisplayTypeTokens {
-		amount = amount / common.QuotaPerUnit
+		// 与入账口径（getTopUpQuota 的 IntPart 取整）对齐，精确商会造成
+		// 「按 1.2 收钱、只入账 1.0」的口径分裂。
+		amount = float64(decimal.NewFromFloat(amount).Div(decimal.NewFromFloat(common.QuotaPerUnit)).IntPart())
 	}
 	topupGroupRatio := common.GetTopupGroupRatio(group)
 	if topupGroupRatio == 0 {
@@ -270,7 +272,8 @@ func RequestWaffoPay(c *gin.Context) {
 	// Token 模式下归一化 Amount（存等价美元/CNY 数量，避免 RechargeWaffo 双重放大）
 	amount := req.Amount
 	if operation_setting.GetQuotaDisplayType() == operation_setting.QuotaDisplayTypeTokens {
-		amount = max(req.Amount/common.QuotaPerUnit, 1)
+		// IntPart 取整与入账口径对齐；不足 1 个单元时抬到最小下单量 1。
+		amount = max(float64(decimal.NewFromFloat(req.Amount).Div(decimal.NewFromFloat(common.QuotaPerUnit)).IntPart()), 1)
 	}
 
 	// 创建本地订单

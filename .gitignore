@@ -94,3 +94,7 @@ _reports/
 # /api/status 下发给前端直连。以下规则仅作兜底：万一有人在仓库内又 clone 了一份，
 # 也不得被误纳入提交。
 /smart-cs/
+
+# UEQE 质量门禁运行时状态（.quality/policy.env 注释明确其不进主分支；
+# gitleaks.toml 与 policy.env 保持已跟踪）
+.quality/.state/

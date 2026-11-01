@@ -477,8 +477,14 @@ func decreaseTokenQuota(id int, quota int) (err error) {
 	// condition a concurrent or out-of-order call could drive remain_quota
 	// negative; without the RowsAffected check a silent no-op would look like a
 	// success to the caller.
+	//
+	// 无限额度令牌豁免该守卫：ValidateUserToken 对 UnlimitedQuota 本就跳过
+	// RemainQuota 检查（remain 只是记账字段，会随结算差额合法变负），而
+	// TryReserveTokenQuota 的 unlimited 分支同样绕过余额判断。若在此处仍然
+	// 强制 remain_quota >= quota，一个 remain 耗尽的无限令牌会被预扣误杀，
+	// 报出误导性的 "insufficient token quota"。
 	res := DB.Model(&Token{}).
-		Where("id = ? AND remain_quota >= ?", id, quota).
+		Where("id = ? AND (unlimited_quota = ? OR remain_quota >= ?)", id, true, quota).
 		Updates(map[string]any{
 			"remain_quota":  gorm.Expr("remain_quota - ?", quota),
 			"used_quota":    gorm.Expr("used_quota + ?", quota),

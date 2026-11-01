@@ -55,11 +55,12 @@ func (*StripeAdaptor) RequestAmount(c *gin.Context, req *StripePayRequest) {
 	if rejectInvalidTopUpAmount(c, req.Amount) {
 		return
 	}
-	if req.Amount < getStripeMinTopup() {
+	amount := stripeNormalizeAmount(req.Amount)
+	if amount < getStripeMinTopup() {
 		paymentError(c, common.NewMessage("Top-up amount cannot be less than {{min}}", map[string]any{"min": getStripeMinTopup()}))
 		return
 	}
-	if req.Amount > 10000 {
+	if amount > 10000 {
 		paymentError(c, common.NewMessage("Top-up amount cannot exceed {{max}}", map[string]any{"max": 10000}))
 		return
 	}
@@ -69,10 +70,10 @@ func (*StripeAdaptor) RequestAmount(c *gin.Context, req *StripePayRequest) {
 		paymentError(c, common.NewMessage("Failed to get the user group"))
 		return
 	}
-	if rejectInvalidCreditedQuota(c, id, getStripeCreditedQuota(req.Amount, group)) {
+	if rejectInvalidCreditedQuota(c, id, getStripeCreditedQuota(amount, group)) {
 		return
 	}
-	payMoney := getStripePayMoney(float64(req.Amount), group)
+	payMoney := getStripePayMoney(amount, group)
 	if payMoney <= 0.01 {
 		paymentError(c, common.NewMessage("Payment amount is too low"))
 		return
@@ -92,11 +93,12 @@ func (*StripeAdaptor) RequestPay(c *gin.Context, req *StripePayRequest) {
 	if rejectInvalidTopUpAmount(c, req.Amount) {
 		return
 	}
-	if req.Amount < getStripeMinTopup() {
+	amount := stripeNormalizeAmount(req.Amount)
+	if amount < getStripeMinTopup() {
 		common.ApiErrorStatus(c, http.StatusOK, common.NewMessage("Top-up amount cannot be less than {{min}}", map[string]any{"min": getStripeMinTopup()}), gin.H{"data": 10})
 		return
 	}
-	if req.Amount > 10000 {
+	if amount > 10000 {
 		common.ApiErrorStatus(c, http.StatusOK, common.NewMessage("Top-up amount cannot exceed {{max}}", map[string]any{"max": 10000}), gin.H{"data": 10})
 		return
 	}
@@ -117,7 +119,7 @@ func (*StripeAdaptor) RequestPay(c *gin.Context, req *StripePayRequest) {
 		paymentError(c, common.NewMessage("User does not exist"))
 		return
 	}
-	chargedMoney := GetChargedAmount(float64(req.Amount), *user)
+	chargedMoney := GetChargedAmount(amount, *user)
 	if rejectInvalidCreditedQuota(c, id,
 		decimal.NewFromFloat(chargedMoney).Mul(decimal.NewFromFloat(common.QuotaPerUnit)),
 	) {
@@ -126,7 +128,7 @@ func (*StripeAdaptor) RequestPay(c *gin.Context, req *StripePayRequest) {
 	// Use the same amount calculation for the displayed quote and the actual
 	// Checkout line item. A static Stripe Price multiplied by raw token quantity
 	// ignores unit-price conversion, group ratios, and local amount discounts.
-	payMoney := getStripePayMoney(float64(req.Amount), user.Group)
+	payMoney := getStripePayMoney(amount, user.Group)
 	if payMoney <= 0.01 {
 		paymentError(c, common.NewMessage("Payment amount is too low"))
 		return
@@ -137,7 +139,7 @@ func (*StripeAdaptor) RequestPay(c *gin.Context, req *StripePayRequest) {
 
 	topUp := &model.TopUp{
 		UserId:          id,
-		Amount:          req.Amount,
+		Amount:          amount,
 		Money:           chargedMoney,
 		TradeNo:         referenceId,
 		PaymentMethod:   model.PaymentMethodStripe,
@@ -650,12 +652,24 @@ func getStripeCreditedQuota(amount float64, group string) decimal.Decimal {
 		Mul(decimal.NewFromFloat(common.QuotaPerUnit))
 }
 
-func getStripePayMoney(amount float64, group string) float64 {
-	originalAmount := amount
+// stripeNormalizeAmount 把展示金额归一化成「美元单元」：
+// TOKENS 展示模式下前端传 token 数，须按 IntPart(amount/QuotaPerUnit) 取整——
+// 与入账口径（getTopUpQuota / Recharge 的 Money×QuotaPerUnit）对齐。历史上
+// 这里用精确商或干脆不换算，导致 Stripe 在 TOKENS 模式下 min/max 语义崩坏
+// （min=5,000,000 tokens > max=10,000 永远拒绝）且条件性巨额超充
+// （Money=token 数被当成美元数再乘 QuotaPerUnit）。
+func stripeNormalizeAmount(amount float64) float64 {
 	if operation_setting.GetQuotaDisplayType() == operation_setting.QuotaDisplayTypeTokens {
-		amount = amount / common.QuotaPerUnit
+		return float64(decimal.NewFromFloat(amount).
+			Div(decimal.NewFromFloat(common.QuotaPerUnit)).IntPart())
 	}
-	// Using float64 for monetary calculations is acceptable here due to the small amounts involved
+	return amount
+}
+
+func getStripePayMoney(amount float64, group string) float64 {
+	// 入参必须是 stripeNormalizeAmount 归一化后的美元单元；此处不再自行
+	// 做 TOKENS 换算，避免二次除法把 1.0 单元又除成 0.000002。
+	originalAmount := amount
 	topupGroupRatio := common.GetTopupGroupRatio(group)
 	if topupGroupRatio == 0 {
 		topupGroupRatio = 1
@@ -672,9 +686,8 @@ func getStripePayMoney(amount float64, group string) float64 {
 }
 
 func getStripeMinTopup() float64 {
-	minTopup := setting.StripeMinTopUp
-	if operation_setting.GetQuotaDisplayType() == operation_setting.QuotaDisplayTypeTokens {
-		minTopup = minTopup * common.QuotaPerUnit
-	}
-	return minTopup
+	// 调用方传入的金额已归一化为美元单元，min 直接用美元域配置值；
+	// 不得再乘 QuotaPerUnit（那是为旧的「拿原始 token 数比较」准备的补偿，
+	// 会让 min 恒大于 max，Stripe 在 TOKENS 模式下整体不可用）。
+	return setting.StripeMinTopUp
 }

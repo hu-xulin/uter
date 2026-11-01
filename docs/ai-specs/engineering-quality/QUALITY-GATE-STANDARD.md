@@ -855,6 +855,29 @@ AI 修复任务必须：
 
 不得绕过统一质量门禁直接创建标记为验证通过的 PR。
 
+## 17.4 分支保护补偿控制（2026-11-01 验收整改落地）
+
+Uter 仓库为私有免费仓，GitHub Branch Protection / Required Status Checks
+API 不可用（HTTP 403），「必需状态检查」无法在平台层强制。补偿控制如下，
+四层次中「GitHub 强制阻断」一栏以补偿态运行：
+
+1. **CI 服务端检查为权威强制层**：`ci.yml`（push main + 全部 PR 触发，
+   backend / race / coverage / vulnscan / frontend / desktop）在 GitHub
+   runner 上执行，AI 与本地环境无法宣布其通过。
+2. **发布门禁**：`release-gate.yml`（workflow_call/dispatch）作为发版前
+   最后一道完整检查。
+3. **CODEOWNERS**（`.github/CODEOWNERS`）：免费私有仓下仅为审查提示，
+   不构成强制；文件内注明升级路径。
+4. **流程纪律**：AGENTS.md「逐次单独授权」（commit/push/merge/rebase/
+   部署逐项授权、禁 force push、禁 --no-verify）作为流程性补偿。
+5. **退出码契约**：`scripts/quality/uter-quality.sh` 执行类阶段与
+   `full` 在存在 FAILED/BLOCKED 子项时必须以非零码退出（verdict=FAIL），
+   使编排器可被任何脚本链/CI step 直接消费为阻断门禁；NOT_RUN 不阻断
+   但必须在报告与 verdict（PASS_WITH_NOTES）中显式披露。
+6. **升级条件**：仓库转公开或升级付费计划后，应立即为 main 配置
+   Required Status Checks（backend/race/coverage/vulnscan/frontend），
+   届时本节补偿控制降级为辅助。
+
 ---
 
 # 18. 质量策略配置

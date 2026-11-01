@@ -216,6 +216,8 @@ stage_report() {
     for stg in review test security coverage regression; do
       echo "- $stg: **$(stage_status $stg)**"
     done
+    compute_verdict
+    echo "- verdict: **$UEQE_VERDICT**"
     echo
     echo "> 详情日志：.quality/.state/*.log；本报告位于 gitignore 区，不进主分支。"
   } > "$report"
@@ -229,6 +231,48 @@ stage_status_print() {
   for stg in inventory review test security coverage regression; do
     echo "$stg: $(stage_status $stg)"
   done
+}
+
+# compute_verdict — 机器可读总裁决（QUALITY-GATE-STANDARD §阻断矩阵的程序化出口）。
+#   FAIL            存在 FAILED 或 BLOCKED 子项（阻断级：禁止放行，绝不伪通过）
+#   PASS_WITH_NOTES 仅 PASSED 与 NOT_RUN（放行，NOT_RUN 项必须在报告中披露）
+#   PASS            全部 PASSED
+# 结果落盘 .quality/.state/verdict，并设 UEQE_VERDICT 变量。
+compute_verdict() {
+  local s f failed=0 blocked=0 notrun=0 passed=0
+  for f in "$ROOT/$UEQE_STATE_DIR"/inventory.*.status \
+           "$ROOT/$UEQE_STATE_DIR"/review.*.status \
+           "$ROOT/$UEQE_STATE_DIR"/test.*.status \
+           "$ROOT/$UEQE_STATE_DIR"/security.*.status \
+           "$ROOT/$UEQE_STATE_DIR"/coverage.*.status \
+           "$ROOT/$UEQE_STATE_DIR"/regression.*.status; do
+    [ -f "$f" ] || continue
+    s=$(cat "$f")
+    case "$s" in
+      PASSED)  passed=$((passed + 1)) ;;
+      FAILED)  failed=$((failed + 1)) ;;
+      BLOCKED) blocked=$((blocked + 1)) ;;
+      NOT_RUN) notrun=$((notrun + 1)) ;;
+    esac
+  done
+  if [ $((failed + blocked)) -gt 0 ]; then
+    UEQE_VERDICT=FAIL
+  elif [ "$notrun" -gt 0 ]; then
+    UEQE_VERDICT=PASS_WITH_NOTES
+  else
+    UEQE_VERDICT=PASS
+  fi
+  printf '%s\n' "$UEQE_VERDICT" > "$ROOT/$UEQE_STATE_DIR/verdict"
+}
+
+# gate_exit — 执行类阶段的统一出口：verdict 落盘 + 失败传播为进程退出码。
+# 修复验收报告 §8 缺口：此前 full 在 FAILED/BLOCKED 时仍 exit 0，
+# 编排器无法被 CI/脚本链当作阻断门禁消费。
+gate_exit() {
+  compute_verdict
+  printf 'verdict: %s（FAILED/BLOCKED→exit 1；NOT_RUN 不阻断但须披露）\n' "$UEQE_VERDICT" >&2
+  [ "$UEQE_VERDICT" = "FAIL" ] && exit 1
+  exit 0
 }
 
 # ── 主调度 ────────────────────────────────────────────────────────────
@@ -255,7 +299,13 @@ case "$STAGE" in
     echo "═══ UEQE full 完成，耗时 $((t1-t0))s ═══"
     stage_status_print
     [ -n "${OVERALL_REPORT:-}" ] && echo "报告：$OVERALL_REPORT"
+    gate_exit
     ;;
   "") sed -n '2,30p' "$0"; exit 2 ;;
-  *) echo "未知 stage：$STAGE" >&2; exit 2 ;;
+  *) echo "未知 stage：$STAGE" >&2 ; exit 2 ;;
+esac
+
+# 执行类单阶段同样经 verdict 出口传播失败退出码（report/status 为只读内省，不阻断）。
+case "$STAGE" in
+  inventory|review|test|security|coverage|regression) gate_exit ;;
 esac

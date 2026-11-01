@@ -262,3 +262,38 @@ func TestTokenCacheInitPreservesLiveQuotaAndFenceBlocksStaleSnapshot(t *testing.
 	require.NoError(t, err)
 	assert.Equal(t, 100, cached.RemainQuota)
 }
+
+// TestUnlimitedTokenReserveSkipsRemainGuard 回归：无限额度令牌不受
+// remain_quota >= quota 守卫约束。ValidateUserToken 对 UnlimitedQuota 跳过
+// RemainQuota 检查，预扣路径（TryReserveTokenQuota 的 unlimited 分支）也绕过
+// 余额判断——若 decreaseTokenQuota 仍强制守卫，remain 耗尽的无限令牌会被
+// 误杀并报 "insufficient token quota"（有界令牌的守卫行为必须保持不变）。
+func TestUnlimitedTokenReserveSkipsRemainGuard(t *testing.T) {
+	truncateTables(t)
+	resetBatchUpdateTestState(t)
+
+	unlimited := Token{
+		UserId:         1,
+		Key:            "unlimited-token-" + common.GetRandomString(8),
+		Name:           "unlimited-reserve-test",
+		Status:         common.TokenStatusEnabled,
+		ExpiredTime:    -1,
+		RemainQuota:    0,
+		UnlimitedQuota: true,
+	}
+	require.NoError(t, unlimited.Insert())
+
+	reserved, err := TryReserveTokenQuota(unlimited.Id, unlimited.Key, 500, true)
+	require.NoError(t, err)
+	assert.True(t, reserved)
+	reloaded := getTokenFromDB(t, unlimited.Id)
+	assert.Equal(t, -500, reloaded.RemainQuota, "unlimited token remain may go negative (accounting only)")
+	assert.Equal(t, 500, reloaded.UsedQuota)
+
+	// 有界令牌：remain 不足时守卫必须继续拒绝。
+	bounded := createReserveTestToken(t, 80)
+	reserved, err = TryReserveTokenQuota(bounded.Id, bounded.Key, 81, false)
+	require.NoError(t, err)
+	assert.False(t, reserved)
+	assert.Equal(t, 80, getTokenFromDB(t, bounded.Id).RemainQuota)
+}

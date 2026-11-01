@@ -152,7 +152,7 @@ func wechatQueryData(t *testing.T, payload map[string]any) map[string]any {
 
 func wechatSuccessNode(outTradeNo string) (int, string) {
 	return http.StatusOK, fmt.Sprintf(
-		`{"trade_state":"SUCCESS","out_trade_no":%q,"amount":{"total":1000,"currency":"CNY"}}`, outTradeNo)
+		`{"trade_state":"SUCCESS","out_trade_no":%q,"mchid":"1752071965","appid":"wx0000000000000000","amount":{"total":1000,"currency":"CNY"}}`, outTradeNo)
 }
 
 // 微信确认已付款且金额与下单快照一致时，必须完成入账：
@@ -188,7 +188,7 @@ func TestQueryWechatOrderCreditsPaidOrder(t *testing.T) {
 func TestQueryWechatOrderRejectsAmountMismatch(t *testing.T) {
 	db := setupWechatQueryEnv(t, func(outTradeNo string) (int, string) {
 		return http.StatusOK, fmt.Sprintf(
-			`{"trade_state":"SUCCESS","out_trade_no":%q,"amount":{"total":1,"currency":"CNY"}}`, outTradeNo)
+			`{"trade_state":"SUCCESS","out_trade_no":%q,"mchid":"1752071965","appid":"wx0000000000000000","amount":{"total":1,"currency":"CNY"}}`, outTradeNo)
 	})
 
 	user := &model.User{Username: "wechat_query_mismatch", AffCode: "wqmis", Status: common.UserStatusEnabled}
@@ -278,7 +278,7 @@ func TestQueryWechatOrderReportsUnpaidWhenTradeNotExist(t *testing.T) {
 func TestQueryWechatOrderReportsPendingWhenNotPay(t *testing.T) {
 	db := setupWechatQueryEnv(t, func(outTradeNo string) (int, string) {
 		return http.StatusOK, fmt.Sprintf(
-			`{"trade_state":"NOTPAY","out_trade_no":%q,"amount":{"total":1000,"currency":"CNY"}}`, outTradeNo)
+			`{"trade_state":"NOTPAY","out_trade_no":%q,"mchid":"1752071965","appid":"wx0000000000000000","amount":{"total":1000,"currency":"CNY"}}`, outTradeNo)
 	})
 
 	user := &model.User{Username: "wechat_query_notpay", AffCode: "wqntp", Status: common.UserStatusEnabled}
@@ -300,7 +300,7 @@ func TestQueryWechatOrderReportsPendingWhenNotPay(t *testing.T) {
 func TestQueryWechatOrderExpiresClosedTrade(t *testing.T) {
 	db := setupWechatQueryEnv(t, func(outTradeNo string) (int, string) {
 		return http.StatusOK, fmt.Sprintf(
-			`{"trade_state":"CLOSED","out_trade_no":%q,"amount":{"total":1000,"currency":"CNY"}}`, outTradeNo)
+			`{"trade_state":"CLOSED","out_trade_no":%q,"mchid":"1752071965","appid":"wx0000000000000000","amount":{"total":1000,"currency":"CNY"}}`, outTradeNo)
 	})
 
 	user := &model.User{Username: "wechat_query_closed", AffCode: "wqcls", Status: common.UserStatusEnabled}

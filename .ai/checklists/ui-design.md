@@ -13,7 +13,7 @@
 ## 实现中
 - [ ] 复用现有组件与已批准变体，不重复建立同类组件体系
 - [ ] 使用已批准 Token（颜色/字号/间距/圆角/投影/动效），无未批准硬编码值
-- [ ] 不引入自定义 `text-*` token（twMerge 陷阱）；13px 用 `text-[0.8125rem]`
+- [ ] 不引入自定义 `text-*` token（twMerge 陷阱）；13px 走 `text-dense`/`text-mono`，勿 `text-[0.8125rem]`
 - [ ] `text-base`(16px) 仅限四类合法用途；`<p>`/`Card`/`DialogContent`/`SheetContent` 上不写
 - [ ] 保留现有设计系统 API 与命名约定
 - [ ] 焦点环全站 1px（`ring-1`）、键盘交互、可访问性、`tracking-*` 不残留

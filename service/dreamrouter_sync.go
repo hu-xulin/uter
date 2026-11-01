@@ -650,11 +650,23 @@ func dreamRouterFetchPricing(ctx context.Context, client *http.Client) (*dreamRo
 	return &payload, nil
 }
 
+// dreamRouterSyncMu 进程内互斥：同步全程是「读内存 ratio option → 合并 →
+// 整包写回」的读-改-写序列，无锁时手动触发（管理员按钮）可与定时 tick 并发，
+// 后写者会把先写者的价格改动整个覆盖（Last-Writer-Wins）。用 TryLock 而非
+// Lock：管理员手动触发撞上正在进行的同步时应立刻得到明确报错，而不是挂住
+// HTTP 请求等上游登录+全量拉取结束。
+var dreamRouterSyncMu sync.Mutex
+
 // SyncDreamRouterPricing 执行一次同步：登录上游、拉取定价、按「+1 折」
 // 规则重算 uter 侧倍率，并让聚合渠道的模型清单与上游保持一致。
 //
 // DryRun 模式下只计算差异，不写 option、不动渠道。
 func SyncDreamRouterPricing(ctx context.Context, opts DreamRouterSyncOptions) (*DreamRouterSyncResult, error) {
+	if !dreamRouterSyncMu.TryLock() {
+		return nil, fmt.Errorf("dreamrouter sync is already in progress; wait for the running sync to finish")
+	}
+	defer dreamRouterSyncMu.Unlock()
+
 	cfg := LoadDreamRouterSyncConfig()
 	if !cfg.Enabled {
 		return nil, fmt.Errorf("dreamrouter sync is disabled (option %s=false)", dreamRouterSyncEnabledKey)
