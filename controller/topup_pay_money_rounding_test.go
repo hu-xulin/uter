@@ -81,7 +81,12 @@ func TestTokensModeChargeMatchesCredit(t *testing.T) {
 
 	payMoney := getPayMoney(amount, "default")
 
-	assert.EqualValues(t, 1, storedAmount, "stored order amount must be whole USD units")
+	// 注意：这里必须用 assert.Equal（严格 float64 比较）。历史上用
+	// assert.EqualValues(t, 1, storedAmount)，testify 为跨类型比较会把
+	// float64 强转回 int（1.2 → 1，截断），把「订单存了 1.2、只入账 1.0」
+	// 的口径分裂掩盖成假绿——修复 alipayAmountForStorage/wechatAmountForStorage
+	// 之前这个断言就是靠这个强转通过的。
+	assert.Equal(t, 1.0, storedAmount, "stored order amount must be whole USD units")
 	assert.Equal(t, int64(1)*int64(common.QuotaPerUnit), int64(creditedQuota),
 		"credited quota must match the whole-unit amount")
 	assert.Equal(t, 1.0, payMoney,

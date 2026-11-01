@@ -480,7 +480,9 @@ func RequestEpay(c *gin.Context) {
 	if operation_setting.GetQuotaDisplayType() == operation_setting.QuotaDisplayTypeTokens {
 		dAmount := decimal.NewFromFloat(amount)
 		dQuotaPerUnit := decimal.NewFromFloat(common.QuotaPerUnit)
-		amount = dAmount.Div(dQuotaPerUnit).InexactFloat64()
+		// 与入账口径（getTopUpQuota 的 IntPart 取整）对齐：精确商会让订单
+		// 存 1.2 而回调只入账 1.0（同 alipayAmountForStorage 的历史缺陷）。
+		amount = float64(dAmount.Div(dQuotaPerUnit).IntPart())
 	}
 	topUp := &model.TopUp{
 		UserId:          id,

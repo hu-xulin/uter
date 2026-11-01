@@ -125,6 +125,20 @@ else
   skip "前端全部门禁" "未检测到 bun 或 web/ 目录"
 fi
 
+# ---------- 安全扫描（UEQE security 引擎） ----------
+# 整改项（验收报告 §10）：verify-all 此前不含 security 层，本地门禁缺
+# govulncheck / gitleaks / 敏感文件抽查；工具缺失时 SKIP 不 FAIL（与 CI
+# vulnscan job 互补，CI 为权威强制层）。
+if [ "$QUICK" -eq 1 ]; then
+  skip "安全扫描 (UEQE security)" "--quick 模式跳过"
+elif [ -x "$ROOT/scripts/quality/uter-quality.sh" ] \
+     && command -v govulncheck >/dev/null 2>&1 \
+     && command -v gitleaks >/dev/null 2>&1; then
+  step "安全扫描 (UEQE security)" '"$ROOT/scripts/quality/uter-quality.sh" security 2>&1' "$ROOT"
+else
+  skip "安全扫描 (UEQE security)" "缺 govulncheck/gitleaks 或 uter-quality.sh（CI vulnscan job 兜底）"
+fi
+
 # ---------- 汇总 ----------
 printf '\n%s== 门禁汇总 ==%s\n' "$C_BOLD" "$C_RESET"
 printf '%s\n' "--------------------------------------------------------------------------------"

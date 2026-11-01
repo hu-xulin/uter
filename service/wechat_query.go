@@ -32,6 +32,8 @@ import (
 type WechatQueryResult struct {
 	TradeState string
 	OutTradeNo string
+	MchId      string
+	AppId      string
 	Total      int64
 	Currency   string
 }
@@ -58,8 +60,10 @@ const (
 // 发生一次。
 //
 // 与支付宝不同，微信查单接口（v3 按 out_trade_no）返回的是明文 JSON（仅 over TLS），
-// 不经过 resource 加密，因此这里只做 HTTPS 传输层校验，不重复做回调那套
-// AES-GCM 解密；mchid / appid 一致性由调用方（applyWechatQueryResult）负责。
+// 不经过 resource 加密，因此这里不重复做回调那套 AES-GCM 解密；但明文响应仍然
+// 必须校验归属与一致性：mchid / appid 必须等于本地配置、out_trade_no 必须等于
+// 请求值——否则（理论上）一个指向同网关的错误响应会被当作本订单的支付凭证。
+// 校验失败一律按错误返回，调用方不得把未通过校验的响应推进订单状态。
 func WechatQueryOrder(ctx context.Context, outTradeNo string) (*WechatQueryResult, error) {
 	outTradeNo = strings.TrimSpace(outTradeNo)
 	if outTradeNo == "" {
@@ -108,6 +112,8 @@ func WechatQueryOrder(ctx context.Context, outTradeNo string) (*WechatQueryResul
 	var node struct {
 		TradeState string `json:"trade_state"`
 		OutTradeNo string `json:"out_trade_no"`
+		MchId      string `json:"mchid"`
+		AppId      string `json:"appid"`
 		Amount     struct {
 			Total    int64  `json:"total"`
 			Currency string `json:"currency"`
@@ -116,9 +122,21 @@ func WechatQueryOrder(ctx context.Context, outTradeNo string) (*WechatQueryResul
 	if err := json.Unmarshal(body, &node); err != nil {
 		return nil, fmt.Errorf("wechat query decode: %w", err)
 	}
+	// 归属校验（回调路径 WechatPayNotify 对解密后的 resource 做同一套校验）。
+	if node.MchId != operation_setting.WechatPayMchId {
+		return nil, fmt.Errorf("wechat query mchid mismatch: got %q want %q", node.MchId, operation_setting.WechatPayMchId)
+	}
+	if node.AppId != operation_setting.WechatPayAppId {
+		return nil, fmt.Errorf("wechat query appid mismatch: got %q want %q", node.AppId, operation_setting.WechatPayAppId)
+	}
+	if node.OutTradeNo != outTradeNo {
+		return nil, fmt.Errorf("wechat query out_trade_no mismatch: got %q want %q", node.OutTradeNo, outTradeNo)
+	}
 	return &WechatQueryResult{
 		TradeState: node.TradeState,
 		OutTradeNo: node.OutTradeNo,
+		MchId:      node.MchId,
+		AppId:      node.AppId,
 		Total:      node.Amount.Total,
 		Currency:   node.Amount.Currency,
 	}, nil

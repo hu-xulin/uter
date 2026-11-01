@@ -674,12 +674,15 @@ func RecalculateTaskQuotaByTokens(ctx context.Context, task *model.Task, totalTo
 	}
 
 	// 获取用户和组的倍率信息
+	// 资金口径只用提交时快照：task.Group 为空（存量数据缺快照）时不回查
+	// 用户「当前」分组——用户可能在任务执行期间被改组，按新组倍率重算会
+	// 让计费口径漂移。此时保持预扣额度不重算，并记录告警供人工核对。
 	group := task.Group
 	if group == "" {
-		user, err := model.GetUserById(task.UserId, false)
-		if err == nil {
-			group = user.Group
-		}
+		logger.LogWarn(ctx, common.LogText(
+			"task %s has no group snapshot; keep pre-deducted quota without token recalculation",
+			task.TaskID))
+		return false
 	}
 	if group == "" {
 		return false

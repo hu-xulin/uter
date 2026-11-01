@@ -125,7 +125,10 @@ func alipayAmountForStorage(amount float64) float64 {
 	if operation_setting.GetQuotaDisplayType() == operation_setting.QuotaDisplayTypeTokens {
 		dAmount := decimal.NewFromFloat(amount)
 		dQuotaPerUnit := decimal.NewFromFloat(common.QuotaPerUnit)
-		return dAmount.Div(dQuotaPerUnit).InexactFloat64()
+		// 必须与入账口径（getTopUpQuota 的 IntPart 取整）对齐：订单金额存
+		// 精确商（600000 tokens → 1.2）而入账只给整单元（1.0），回调比对
+		// 与对账都会认为「1.2 已入账」，用户付 1.2 只拿到 1.0 的额度。
+		return float64(dAmount.Div(dQuotaPerUnit).IntPart())
 	}
 	return amount
 }

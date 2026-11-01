@@ -1,0 +1,12 @@
+# 分支保护补偿控制（验收报告 §10：私有免费仓无法启用 Branch Protection /
+# Required Status Checks，GitHub API 返回 403）。
+#
+# CODEOWNERS 在免费私有仓仅提供审查提示，不构成强制门禁；真实强制层为：
+#   1. CI 服务端检查（ci.yml：backend/race/coverage/vulnscan/frontend/desktop，
+#      push main + 全部 PR 触发）——服务端执行，AI/本地无法宣布通过。
+#   2. release-gate.yml（workflow_call/dispatch）作为发布前门禁。
+#   3. AGENTS.md「逐次单独授权」纪律：commit/push/merge/部署逐项授权，
+#      禁止 force push、禁止 --no-verify。
+# 若仓库转为公开或升级付费计划，应立即配置 main 分支 Required Status Checks：
+# backend / race / coverage / vulnscan / frontend（ci.yml job 名）。
+* @hu-xulin

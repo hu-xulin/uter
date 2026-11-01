@@ -51,7 +51,9 @@ func wechatAmountForStorage(amount float64) float64 {
 	if operation_setting.GetQuotaDisplayType() == operation_setting.QuotaDisplayTypeTokens {
 		dAmount := decimal.NewFromFloat(amount)
 		dQuotaPerUnit := decimal.NewFromFloat(common.QuotaPerUnit)
-		return dAmount.Div(dQuotaPerUnit).InexactFloat64()
+		// 必须与入账口径（getTopUpQuota 的 IntPart 取整）对齐，理由同
+		// alipayAmountForStorage：精确商会造成「付 1.2 只到账 1.0」的分裂。
+		return float64(dAmount.Div(dQuotaPerUnit).IntPart())
 	}
 	return amount
 }
@@ -405,17 +407,29 @@ func WechatPayNotify(c *gin.Context) {
 	// 因此保留下单时写入的 payment_method，不用回调去覆盖。
 	alreadyDone, err := model.RechargeWechatPay(dec.OutTradeNo, "", c.ClientIP())
 	if err != nil {
+		// 响应码语义：确定性的业务拒绝（订单不存在/网关不匹配/状态非法）
+		// 返回 200+FAIL——重试也不会成功，别让微信无限重试；其余（DB 瞬时
+		// 故障等未知错误）返回 5xx+FAIL，促使微信按退避策略重试回调，
+		// 否则「已付款但入账失败」的订单只能等对账兜底。
+		transient := true
 		switch {
 		case err == model.ErrTopUpNotFound:
 			logger.LogWarn(c.Request.Context(), fmt.Sprintf("微信支付回调订单不存在 trade_no=%s client_ip=%s", dec.OutTradeNo, c.ClientIP()))
+			transient = false
 		case err == model.ErrPaymentMethodMismatch:
 			logger.LogWarn(c.Request.Context(), fmt.Sprintf("微信支付订单支付网关不匹配 trade_no=%s client_ip=%s", dec.OutTradeNo, c.ClientIP()))
+			transient = false
 		case err == model.ErrTopUpStatusInvalid:
 			logger.LogWarn(c.Request.Context(), fmt.Sprintf("微信支付订单状态非法 trade_no=%s client_ip=%s", dec.OutTradeNo, c.ClientIP()))
+			transient = false
 		default:
-			logger.LogError(c.Request.Context(), fmt.Sprintf("微信支付充值处理失败 trade_no=%s client_ip=%s error=%q", dec.OutTradeNo, c.ClientIP(), err.Error()))
+			logger.LogError(c.Request.Context(), fmt.Sprintf("微信支付充值处理失败（返回 5xx 促使微信重试） trade_no=%s client_ip=%s error=%q", dec.OutTradeNo, c.ClientIP(), err.Error()))
 		}
-		c.JSON(http.StatusOK, gin.H{"code": "FAIL", "message": i18n.T(c, i18n.MsgTopup_wechatProcess_failed)})
+		if transient {
+			c.JSON(http.StatusInternalServerError, gin.H{"code": "FAIL", "message": i18n.T(c, i18n.MsgTopup_wechatProcess_failed)})
+		} else {
+			c.JSON(http.StatusOK, gin.H{"code": "FAIL", "message": i18n.T(c, i18n.MsgTopup_wechatProcess_failed)})
+		}
 		return
 	}
 	if alreadyDone {

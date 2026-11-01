@@ -55,7 +55,9 @@ func RequestWaffoPancakeAmount(c *gin.Context) {
 func getWaffoPancakePayMoney(amount float64, group string) float64 {
 	dAmount := decimal.NewFromFloat(amount)
 	if operation_setting.GetQuotaDisplayType() == operation_setting.QuotaDisplayTypeTokens {
-		dAmount = dAmount.Div(decimal.NewFromFloat(common.QuotaPerUnit))
+		// 与入账口径（getTopUpQuota 的 IntPart 取整）对齐，精确商会造成
+		// 「按 1.2 收钱、只入账 1.0」的口径分裂。
+		dAmount = decimal.NewFromInt(dAmount.Div(decimal.NewFromFloat(common.QuotaPerUnit)).IntPart())
 	}
 
 	topupGroupRatio := common.GetTopupGroupRatio(group)
@@ -81,9 +83,9 @@ func normalizeWaffoPancakeTopUpAmount(amount float64) float64 {
 		return amount
 	}
 
-	normalized := decimal.NewFromFloat(amount).
-		Div(decimal.NewFromFloat(common.QuotaPerUnit)).
-		InexactFloat64()
+	// IntPart 取整与入账口径对齐；不足 1 个单元时抬到最小下单量 1。
+	normalized := float64(decimal.NewFromFloat(amount).
+		Div(decimal.NewFromFloat(common.QuotaPerUnit)).IntPart())
 	if normalized < 1 {
 		return 1
 	}
