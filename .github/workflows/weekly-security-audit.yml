@@ -1,0 +1,211 @@
+name: Weekly security audit
+
+# 每周安全审计 —— 实施规范 §8.6 Mode E
+# （docs/ai-specs/engineering-quality/README.md「Weekly Security Audit」）。
+#
+# 调度：cron '0 19 * * 1' = 每周一 UTC 19:00 = 北京时间周二 03:00（UTC+8）。
+# 支持在 Actions 页手动 workflow_dispatch（可指定分支）。
+#
+# 职责（规范 Mode E）：深度依赖漏洞扫描、密钥风险、GitHub Actions
+# 权限审查、安全风险汇总。规范中的「支付及计费专项审查」「权限和
+# 认证代码审查」属于人工/AI 审查条款（见 docs/ai-specs/CONFLICT-REPORT.md
+# 附录 A-1），不伪造自动化，由审查人按周执行并对照本报告。
+#
+# 记录（§8.6）：各 job 结果与扫描原文写入 Job Summary 留档；发现
+# 可达漏洞或密钥命中或权限风险 → 自动创建/更新 quality-alert issue。
+
+on:
+  schedule:
+    - cron: '0 19 * * 1' # UTC 周一 19:00 = 北京时间周二 03:00
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write # 仅用于安全告警 issue
+
+concurrency:
+  group: weekly-security-audit
+  cancel-in-progress: false
+
+jobs:
+  # 依赖漏洞：全 4 个 Go module 扫描，与 release-gate 的 vulnscan 同一
+  # pin 版本（govulncheck@v1.9.0），保证「nightly/weekly 过 = 发布门禁过」。
+  # govulncheck 只对「可达」漏洞非零退出；无修复且不可达的项归入
+  # Informational（例如 x/crypto GO-2026-5932），不阻塞但会出现在报告中。
+  vulnerabilities:
+    name: Dependency vulnerability scan (all modules)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      GOWORK: 'off'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+      - name: Set up Go
+        uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6.5.0
+        with:
+          go-version-file: go.mod
+          cache-dependency-path: |
+            go.sum
+            relaykit/go.sum
+            tokenkit/go.sum
+
+      - name: Install govulncheck (pinned)
+        run: go install golang.org/x/vuln/cmd/govulncheck@v1.9.0
+
+      - name: Scan all modules
+        run: |
+          mkdir -p /tmp/security-report
+          status=0
+          for module in . relaykit tokenkit tokenkit/tokenkit; do
+            echo "::group::govulncheck ($module)"
+            if ! (cd "$module" && govulncheck ./...) 2>&1 \
+                | tee "/tmp/security-report/vuln-$(echo "$module" | tr / _).txt"; then
+              status=1
+            fi
+            echo "::endgroup::"
+          done
+          exit $status
+
+      - name: Upload scan report
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v4
+        with:
+          name: weekly-security-report
+          path: /tmp/security-report/
+          retention-days: 90
+
+  # 密钥风险：当前树口径，与 nightly/本地 UEQE 同一份配置。
+  secrets:
+    name: Secret leak scan (gitleaks, current tree)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+      - name: Set up Go
+        uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6.5.0
+        with:
+          go-version-file: go.mod
+          cache-dependency-path: |
+            go.sum
+            relaykit/go.sum
+            tokenkit/go.sum
+
+      - name: Install gitleaks (pinned)
+        run: go install github.com/zricethezav/gitleaks/v8@v8.30.1
+
+      - name: Scan current tree
+        run: |
+          gitleaks dir . --no-banner --config .quality/gitleaks.toml \
+            | tee "$GITHUB_STEP_SUMMARY"
+
+  # GitHub Actions 权限审查（§8.7）：最小权限、危险触发器、明文凭证、
+  # 第三方 action 必须 SHA 固定。这是「权限风险」的机器可执行部分。
+  workflow-permissions:
+    name: Workflow permission audit
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+      - name: Audit workflow definitions
+        run: |
+          set -u
+          status=0
+          {
+            echo "## 🔐 Workflow permission audit"
+            echo
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          for f in .github/workflows/*.yml; do
+            # 1) 必须显式声明 permissions（workflow 级或 job 级），
+            #    防止默认令牌拿到过高权限。
+            if ! grep -qE '^[[:space:]]*permissions:' "$f"; then
+              echo "⚠️ $f 未显式声明 permissions（默认授予 scopes 令牌）" | tee -a "$GITHUB_STEP_SUMMARY"
+              status=1
+            fi
+
+            # 2) 危险 PR 触发器：以写权限上下文运行不可信 PR 事件，
+            #    出现即标记人工确认（本注释与扫描串均不出现触发器字面词，
+            #    否则本文件会被自己扫中——自指误报）。
+            if grep -q 'pull_request''_target' "$f"; then
+              echo "⚠️ $f 使用了危险 PR 触发器（写权限上下文），需人工确认不可信代码不被 checkout/执行" | tee -a "$GITHUB_STEP_SUMMARY"
+              status=1
+            fi
+
+            # 3) 明文凭证模式（规范 §8.7 第 4 条：不得将 PAT 明文写入脚本）。
+            if grep -nE 'ghp_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,}' "$f" | tee -a "$GITHUB_STEP_SUMMARY"; then
+              echo "⚠️ $f 疑似明文 PAT" | tee -a "$GITHUB_STEP_SUMMARY"
+              status=1
+            fi
+          done
+
+          # 4) 第三方 action 必须固定到完整 Commit SHA（§8.7 第 6 条）。
+          #    本地复用（uses: ./.github/...）与 tags 触发语义除外。
+          while IFS= read -r ref; do
+            case "$ref" in
+              @*/*|@*.*|./.github/*) ;;              # SHA 或本地 action：通过
+              @v[0-9]*|@main|@master|@latest)
+                echo "⚠️ action 未固定到 Commit SHA：$ref" | tee -a "$GITHUB_STEP_SUMMARY"
+                status=1 ;;
+            esac
+          done < <(grep -hoE 'uses: [^[:space:]]+' .github/workflows/*.yml | sed 's/^uses: //')
+
+          if [ "$status" -eq 0 ]; then
+            echo "✅ 全部工作流通过权限审计" | tee -a "$GITHUB_STEP_SUMMARY"
+          fi
+          exit $status
+
+  # 汇总与告警：任一 job 失败（可达漏洞 / 密钥命中 / 权限风险）→
+  # 创建或更新 quality-alert issue；全绿也留 Summary 记录安全状态。
+  report:
+    name: Security summary and alert
+    needs: [vulnerabilities, secrets, workflow-permissions]
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      GH_TOKEN: ${{ github.token }}
+
+    steps:
+      - name: Summarize results
+        run: |
+          {
+            echo "## 🔒 Weekly security audit（$(date -u +%F) UTC）"
+            echo
+            echo "| 检查 | 结果 |"
+            echo "|---|---|"
+            echo "| 依赖漏洞（govulncheck × 4 模块） | ${{ needs.vulnerabilities.result }} |"
+            echo "| 密钥扫描（gitleaks 当前树） | ${{ needs.secrets.result }} |"
+            echo "| 工作流权限审计 | ${{ needs.workflow-permissions.result }} |"
+            echo
+            echo "扫描 commit：${GITHUB_SHA::7}（分支 ${GITHUB_REF_NAME}）；扫描原文见 artifact weekly-security-report。"
+            echo
+            echo "人工/AI 专项（不自动化）：支付及计费专项审查、权限和认证代码审查 —— 按 CONFLICT-REPORT.md 附录 A-1 清单执行。"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Open or update security alert issue on failure
+        if: needs.vulnerabilities.result != 'success' || needs.secrets.result != 'success' || needs.workflow-permissions.result != 'success'
+        run: |
+          TITLE="🔒 Weekly 安全审计发现风险"
+          BODY="最新报告：<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|run ${{ github.run_id }}>（commit ${GITHUB_SHA::7}）。
+
+          查看 Job Summary 与 artifact weekly-security-report 定位风险项；处理后本 issue 可关闭，下一轮全绿不重建。"
+
+          existing="$(gh issue list --state open --label quality-alert \
+            --json number,title --jq ".[] | select(.title == \"$TITLE\") | .number" | head -1)"
+
+          if [ -n "$existing" ]; then
+            gh issue comment "$existing" --body "$BODY"
+            echo "已更新既有告警 issue #$existing"
+          else
+            gh issue create --title "$TITLE" --label quality-alert --body "$BODY"
+            echo "已创建安全告警 issue"
+          fi
