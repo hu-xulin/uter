@@ -978,10 +978,16 @@ func OrgIdOfUser(userId int) (int, error) {
 // 超支被限制在「最后一次请求」这一次性、有界的范围内——与个人钱包允许欠费是同一风险量级，
 // 且远优于旧实现的「无限白嫖」。
 func IncrOrgUsedQuota(orgId int, amount int64) error {
+	return incrOrgUsedQuotaTx(DB, orgId, amount)
+}
+
+// incrOrgUsedQuotaTx 是 IncrOrgUsedQuota 的事务化变体，语义与公开版本一致
+// （退款意图执行需要与其他退款原语同事务提交）。
+func incrOrgUsedQuotaTx(tx *gorm.DB, orgId int, amount int64) error {
 	if orgId == 0 || amount == 0 {
 		return nil
 	}
-	res := DB.Model(&Organization{}).Where("id = ?", orgId).
+	res := tx.Model(&Organization{}).Where("id = ?", orgId).
 		Update("used_quota", gorm.Expr("used_quota + ?", amount))
 	if res.Error != nil {
 		return res.Error

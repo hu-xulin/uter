@@ -390,7 +390,7 @@ claim a test passed unless it was actually executed and its result verified.
 
 ```bash
 cd web
-bun run lint:design:strict                    # T1–T15 token gate
+bun run lint:design:strict                    # T1–T16 token gate
 bunx vitest run src/design-system/__tests__   # guard tests
 npx tsgo -b --force                           # frontend type gate
 ```

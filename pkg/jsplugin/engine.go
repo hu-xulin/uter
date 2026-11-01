@@ -17,6 +17,7 @@ import (
 	"unsafe"
 
 	"github.com/Calcium-Ion/moejs"
+	"github.com/Calcium-Ion/moejs/syntax"
 	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/logger"
 )
@@ -168,14 +169,27 @@ func Compile(source string, options Options) (*Engine, error) {
 		return nil, fmt.Errorf("unsupported plugin syntax %q: plugins must be synchronous and cannot import modules", strings.TrimSpace(match))
 	}
 
+	// AST 级权威校验：上面的正则扫描器基于「注释/字符串挖空」的朴素词法，
+	// 正则字面量（如 /'/）与模板串内插都可能让它的引号状态失真，把后续代码
+	// 整段挖空从而漏检 await/import。解析成 AST 后由节点类型精确判定，
+	// 与词法形态无关；解析失败在这里 fail-closed（moejs.Compile 稍后也会给出
+	// 同样的语法错误）。
+	module, parseErr := syntax.ParseModule(options.Key+".js", source, syntax.Options{})
+	if parseErr != nil {
+		return nil, fmt.Errorf("compile plugin: %w", parseErr)
+	}
+	if kind, hit := forbiddenAsyncNode(module); hit {
+		return nil, fmt.Errorf("unsupported plugin syntax %s: plugins must be synchronous and cannot import modules", kind)
+	}
+
 	// The compiler never reads files, so a sourceMappingURL comment in
 	// untrusted source stays inert.
-	module, err := moejs.Compile(options.Key+".js", source)
+	moeModule, err := moejs.Compile(options.Key+".js", source)
 	if err != nil {
 		return nil, fmt.Errorf("compile plugin: %w", err)
 	}
 	// export ... from has no import keyword; the host links no modules.
-	if requests := module.Requests(); len(requests) > 0 {
+	if requests := moeModule.Requests(); len(requests) > 0 {
 		return nil, fmt.Errorf("unsupported plugin syntax: re-export from %q: plugins must be synchronous and cannot import modules", requests[0])
 	}
 
@@ -198,7 +212,7 @@ func Compile(source string, options Options) (*Engine, error) {
 		timeout:   timeout,
 		now:       now,
 		log:       options.Log,
-		module:    module,
+		module:    moeModule,
 		semaphore: make(chan struct{}, concurrency),
 		parked:    make(chan struct{}, concurrency),
 		pool:      make(chan *runtimeInstance, concurrency),
@@ -209,7 +223,7 @@ func Compile(source string, options Options) (*Engine, error) {
 	if err != nil {
 		return nil, err
 	}
-	for _, name := range module.Exports() {
+	for _, name := range moeModule.Exports() {
 		if value, found := instance.runtime.Export(name); found && !value.IsUndefined() {
 			engine.exports[name] = struct{}{}
 		}
@@ -859,6 +873,28 @@ func (e *Engine) newRuntime(ctx context.Context) (*runtimeInstance, error) {
 		return nil, fmt.Errorf("evaluate plugin: %w", err)
 	}
 	return instance, nil
+}
+
+// forbiddenAsyncNode 在 AST 上精确检出被禁止的异步/导入语法节点：
+// dynamic import()（ImportCall）与 await（AwaitExpr）。静态 import/export-from
+// 由 Module.Requests() 单独覆盖。返回首个命中的语法形态描述。
+func forbiddenAsyncNode(module *syntax.Module) (string, bool) {
+	var hit string
+	syntax.Inspect(module, func(n syntax.Node) bool {
+		if hit != "" {
+			return false
+		}
+		switch n.(type) {
+		case *syntax.ImportCall:
+			hit = "import()"
+			return false
+		case *syntax.AwaitExpr:
+			hit = "await"
+			return false
+		}
+		return true
+	})
+	return hit, hit != ""
 }
 
 func sourceWithoutCommentsAndStrings(source string) string {

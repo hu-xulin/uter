@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"fmt"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -85,6 +86,13 @@ func runSubscriptionQuotaResetOnce() {
 		if _, err := model.CleanupSubscriptionPreConsumeRecords(7 * 24 * 3600); err == nil {
 			subscriptionCleanupLast.Store(time.Now().Unix())
 		}
+	}
+	// 退款意图重放：崩溃窗口兜底。Refund 正常毫秒级完成，2 分钟仍 pending 的
+	// 凭证必然来自进程中断；ExecuteRefundIntent 的事务门保证并发重放安全。
+	if n, err := model.SweepPendingRefundIntents(120, 200); err != nil {
+		logger.LogWarn(ctx, common.LogText("refund intent sweep failed: %v", err))
+	} else if n > 0 {
+		logger.LogInfo(ctx, fmt.Sprintf("refund intent sweep completed %d stuck refund(s)", n))
 	}
 	if common.DebugEnabled && (totalReset > 0 || totalExpired > 0) {
 		logger.LogDebug(ctx, "subscription maintenance: reset_count=%d, expired_count=%d", totalReset, totalExpired)

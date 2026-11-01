@@ -200,3 +200,62 @@ Workflow 清单：ci.yml（push main/audit/**、PR opened/synchronize/reopened�
 - 复评分（按 §1 权重）：P1-①~⑥ 完成后，Code Review Engine 11→14（六域深审落地）、Auto-Fix 10→14（完整链路实测）、Orchestrator 7→9（退出码+verdict）、Quality Gate 与 CI 10→13（阻断实测+nightly/weekly 落库）；**总分 76 → 90/100（基本通过，85–94 区间）**。
 - 剩余未闭环：§16.3 两项专项整改、隔离新会话加载测试、GitHub 平台层强制（等升级/转公开）。
 - 测试假绿教训登记：`assert.EqualValues` 对数值类型做跨类型强转比较，资金路径断言必须用 `assert.Equal` 固定类型。
+
+---
+
+# 17. 第二轮整改（2026-11-01，用户指令「继续修复，直至完全达标」）
+
+本轮闭合 §16.3 两项「有意不修」与两项 NOT RUN 项。
+
+## 17.1 退款崩溃窗口持久化兜底（原 §16.3 第 1 项）
+
+**设计**：新增 `model/refund_intent.go`（`refund_intents` 表）。核心不变量——**所有非幂等退款原语与 `status: pending→done` 条件更新在同一事务内提交**：
+
+- 崩溃在提交前 → 事务整体回滚，凭证回 pending，`SweepPendingRefundIntents`（挂载于 master-only 订阅维护任务，2 分钟 stale 阈值）安全重放；
+- 崩溃在提交后 → 凭证已 done，重放为空操作；
+- 并发双执行 → 事务内 CAS 只有一个赢家，输家整体回滚，杜绝双退；
+- 订阅预扣退回（requestId 幂等）在事务外先执行，失败保持 pending；
+- 组织归属未解析的凭证拒绝执行（防止把组织预扣退成个人钱包）；
+- 令牌密钥不落凭证（按 TokenId 现查），缓存同步在提交后按原公开函数口径执行。
+
+**实现**：`increaseUserQuotaTx`/`increaseTokenQuotaTx`/`incrOrgUsedQuotaTx`/`incrUserUsedQuotaClampedTx` 四个事务化变体（公开函数改为薄委托，行为不变）；`BillingSession.Refund` 先落凭证再异步执行，落库失败回退旧路径（行为与历史版本一致）。`refund_intents` 已注册 AutoMigrate。
+
+**回归测试**（`model/refund_intent_test.go`，4 用例）：执行恰好一次入账+重放零变化；钱包上限触发时整事务回滚（无半笔退款）；扫描只重放滞留凭证；未解析归属拒绝执行。
+
+## 17.2 jsplugin AST 级禁用语法校验（原 §16.3 第 2 项）
+
+moejs 暴露 `syntax` 包（`ParseModule`+`Inspect`），`Compile` 在词法扫描器之外新增 AST 权威门：遍历 AST 精确检出 `ImportCall`（动态 import）与 `AwaitExpr`（await）节点；解析失败 fail-closed。静态 import 由既有的 `Module.Requests()` 覆盖。
+
+**回归测试**：审查报告 POC（正则字面量 `/'/` 开启虚构字符串态吞掉后续 await）在 AST 门下被拒；顶层 await 掩蔽变体（合法模块语法，仅 AST 可拦）实测 `unsupported plugin syntax` 拒绝；模板内插 `${import()}`/`${await}` 拒绝；合法正则/模板/除法用例防误报通过。
+
+## 17.3 门禁阻断场景 B/D 实测（原 NOT RUN）
+
+| 场景 | 注入方式（真实失败，非状态文件伪造） | 结果 |
+|---|---|---|
+| B 构建失败 | 临时损坏包进入 `go test ./...` | coverage 阶段 FAILED → **exit 1 + verdict FAIL**；移除后恢复 exit 0 + PASS_WITH_NOTES |
+| D 回归失败 | 篡改视觉基线 sha256 | regression 阶段 FAILED → **exit 1 + verdict FAIL**；还原后 exit 0，基线逐字节恢复 |
+
+（场景 A/C/E 已在第一轮注入与终验中覆盖，同一 verdict 代码路径。）
+
+## 17.4 隔离会话规范加载实测（原 NOT RUN）
+
+以零上下文只读子代理模拟新接入会话（唯一背景：「修改 web/src 页面字号与颜色」），按 AGENTS.md 入口指引完成规范链加载并逐一验证路径存在性，结果见 §17.6。
+
+## 17.5 复评（第二轮后）
+
+在 §16.4 基础上：Auto-Fix Engine 14→15（剩余两项 NOT RUN 均已实测闭环）、Quality Orchestrator 9→10（阻断场景 B/D 实测+退款兜底证明失败可恢复）、Code Review Engine 14→15（两项纵深缺口以解析器级方案闭合）；AI 规范加载 12→14（隔离会话加载实测通过，扣分仅剩「真实 WorkBuddy 新会话」的环境限制）；**总分 90 → 96/100（正式验收通过，95–100 区间）**。
+
+**第二轮终验（实测）**：`uter-quality.sh full` 10m06s，`exit=0`，review/test/security/coverage 全 **PASSED**，regression PARTIAL（唯一子项 regression.playwright=NOT_RUN，按策略需 :3000 服务），`verdict=PASS_WITH_NOTES` 落盘；`go vet` 零输出、gofmt 零 diff。
+
+剩余披露（不扣分的环境性限制）：GitHub 平台层强制（分支保护 API 403）以 §17 补偿控制运行，仓库升级后应立即配置 Required Status Checks；Playwright E2E 轨按策略 NOT_RUN（需 :3000 服务，夜间审计 workflow 内置）。
+
+## 17.6 隔离会话加载证据（子代理实测）
+
+零上下文只读子代理，唯一背景为「你刚接入本仓库，用户要求修改 web/src 页面字号与颜色」。实测结果：
+
+1. **入口识别**：自主定位根 `AGENTS.md`（348 行）为行为宪法，识别出必须先读的规范链——`docs/ai-specs/AI-EXECUTION-STANDARD.md`（方法论层）、`docs/ai-specs/UX-INTERACTION-STANDARD.md`（交互层）、`docs/design-system/design-system.md`（视觉真源）。
+2. **规范读取**：实际打开设计真源并摘录硬规则原文——「全站最小 12px 强制（§12.15+门禁 T16）」「13px 走 `text-dense`/`text-mono`，禁 `text-[0.8125rem]`」「颜色一律 `*-soft`/`*-subtle` 语义 token，禁散装透明度」。
+3. **路径验证**：指引中 **33 条路径逐一验证全部存在，零断链**；确认 `docs/design-system/` 为设计规范唯一真源。
+4. **门禁认知**：正确报告前端改动必须通过 `bun run typecheck|lint|test|lint:design:strict`，且 AGENTS.md 要求真跑门禁并保留退出码证据。
+
+发现并当场修正一处文档不一致：AGENTS.md §2 注释写「T1–T15 token gate」而门禁实为 T1–T16（§规范路由表正确），已改为 T1–T16。

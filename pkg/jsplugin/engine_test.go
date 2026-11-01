@@ -593,6 +593,52 @@ func TestCompileRejectsAsynchronousAndImportedPlugins(t *testing.T) {
 	require.NoError(t, err)
 }
 
+// TestCompileRejectsObfuscatedAsyncSyntax 回归：正则字面量与模板内插曾让
+// sourceWithoutCommentsAndStrings 的引号状态失真，把后续代码整段挖空、漏检
+// await/import。AST 级校验按节点类型判定，与词法形态无关。
+func TestCompileRejectsObfuscatedAsyncSyntax(t *testing.T) {
+	t.Parallel()
+	for name, source := range map[string]string{
+		// 正则字面量内的引号开启「虚构字符串态」，吞掉其后的 await。
+		"regex literal quote": `var re = /'/; export function run() { await fetch("/x"); return re.test("a"); }`,
+		// 正则字面量内的双引号同理。
+		"regex literal dquote":   `var re = /"/; export function run() { await fetch("/x"); return re.test("a"); }`,
+		"return regex obfuscate": `export function run() { return /re'/; } var s = 1; await work();`,
+		// 顶层 await 是合法模块语法，只有 AST 门能拦（扫描器会被挖空）。
+		"top-level await masked by regex": "var re = /'/;\nawait work();\nexport function run() { return re.test('a'); }",
+		// 模板串 ${} 内插中的 import/await 是真实可执行代码，不得被字符串态掩盖。
+		"template interpolation import": "export function run() { var m = `${import('dependency')}`; return m; }",
+		"template interpolation await":  "export function run() { var v = `${await work()}`; return v; }",
+	} {
+		t.Run(name, func(t *testing.T) {
+			_, err := Compile(source, Options{Key: "invalid"})
+			require.Error(t, err, "obfuscated async syntax must be rejected")
+			// 拒绝路径有两条：AST 门（unsupported plugin syntax）或解析器直接
+			// 语法错误（await 位于非 async 作用域）。两者都 fail-closed。
+			assert.True(t,
+				strings.Contains(err.Error(), "unsupported plugin syntax") ||
+					(strings.Contains(err.Error(), "SyntaxError") &&
+						(strings.Contains(err.Error(), "await") || strings.Contains(err.Error(), "import"))),
+				"unexpected rejection reason: %v", err)
+		})
+	}
+}
+
+// TestCompileAcceptsRegexAndTemplates 防误报：合法的正则字面量、模板串与
+// 字符串中的关键字形态必须照常通过。
+func TestCompileAcceptsRegexAndTemplates(t *testing.T) {
+	t.Parallel()
+	source := "var re = /a\\/b[\"']/g;\n" +
+		"var tpl = `x=${1+2} quote:'\"`;\n" +
+		"export function run() {\n" +
+		"  if (re.test(\"a/b'x\")) { return tpl; }\n" +
+		"  var division = 10 / 2 / 5;\n" +
+		"  return division + tpl.length;\n" +
+		"}"
+	_, err := Compile(source, Options{Key: "valid"})
+	require.NoError(t, err)
+}
+
 func TestCompileIgnoresSourceMapDirectives(t *testing.T) {
 	t.Parallel()
 	// A sourceMappingURL comment must stay inert. Sobek's default loader
