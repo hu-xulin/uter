@@ -125,6 +125,10 @@ jobs:
       GH_TOKEN: ${{ github.token }}
 
     steps:
+      # gh issue 子命令需要 git 仓库上下文确定 repo，必须 checkout。
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
       - name: Summarize results
         run: |
           {
