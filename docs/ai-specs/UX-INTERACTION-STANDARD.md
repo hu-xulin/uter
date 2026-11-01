@@ -237,7 +237,32 @@ PC Web 与 H5 应保持一致的业务逻辑，同时根据设备特点调整交
 - H5 触摸操作。
 - 键盘操作。
 
-## 16. 完成定义
+## 16. Uter 代码事实锚点（2026-11-01 校准）
+
+### 16.1 视觉与交互的分工
+
+视觉规则**不定义在本文件**，唯一真源是 `web/docs/design-system/design-system.md`（+ showcase.html），门禁为 `bun run lint:design:strict`（T1–T16，见下）。本文件只管交互行为。二者冲突时以 design-system.md 为准。
+
+### 16.2 前端结构事实
+
+- 页面按 feature 组织：`web/src/features/`（31 个域：about、auth、channels、chat、dashboard、keys、models、playground、pricing、system-settings、users、wallet 等）；基础组件 `web/src/components/ui/`（66 个 .tsx，基于 **Base UI** 非 Radix）。
+- 路由：TanStack Router 文件式（web/src/routes/，71 个 .tsx；`_authenticated`/`_public`/`(auth)`/`(errors)` 分组；路由树由插件生成）。
+- 数据表：统一用 `@/components/data-table` 包（core/layout/toolbar/static/hooks 五层，公共 API 走 index.ts）；简单表格用 `components/ui/table.tsx`（dense 档：td 13px、th 12px）。
+- 全局提示：sonner（components/ui/sonner.tsx）；图标：仅 lucide-react，尺寸只允许 16/18/24/32/48，默认 18px，stroke-width 统一 2（spec-guards 守护）。
+- 状态：4 个 Zustand store；请求统一 axios 实例 `web/src/lib/http-client.ts`。
+- i18n：7 语言，错误/提示文案必须走 key（后端错误回传 message_key/message_params 时前端用其翻译）。
+
+### 16.3 设计门禁（lint:design:strict 的 T1–T16）
+
+T1 字号阶梯重复声明 / T2 任意字号工具类 text-[…]px / T3 任意行高 / T4 内联字号数值 / T5 CSS 硬编码字号 / T6 非浮层投影 / T7 调色板直用色 / T8 裸色值 / T9 leading-* 行高覆盖 / T10 任意圆角 / T11 未登记动效节奏 / T12 tracking-* 字距 / T13 text-foreground/NN 透明度冒充层级 / T14 hover:bg-X/NN 凑悬停 / T15 bg-X/NN 凑浅底 / T16 低于 12px 最小字号。基线 `web/design-tokens.baseline.json` 当前 0 条，CI --strict 真阻断。
+
+### 16.4 交互验收的既有设施
+
+- spec-guards 测试：`web/src/design-system/__tests__/spec-guards.test.ts`（body baseline、card summary value、icon library、icon geometry 等守护用例）。
+- 视觉回归双轨（不接 CI，缺栈=BLOCKED 绝不假通过）：`bun run test:visual[:update]`（showcase 哈希）+ `bun run test:visual:e2e`（Playwright PNG；refresh cookie 一次性，禁共享 storageState；登录限流整轮 ≤3 次）。
+- 支付状态展示：充值 UI 必须区分「已创建订单 / 已发起支付 / 处理中 / 平台确认成功 / 系统确认入账」——真实后端提供订单查询接口（GetUserTopUps 含读时对账），前端不得把跳转返回当入账成功。
+
+## 17. 完成定义
 
 功能不仅需要视觉正确，还必须满足：
 

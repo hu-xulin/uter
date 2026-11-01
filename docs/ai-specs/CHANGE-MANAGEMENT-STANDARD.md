@@ -243,6 +243,21 @@ AI 不得未经授权操作生产数据库。
 - Commit / PR 信息可追溯。
 - 未解决风险已披露。
 
+## 17. Uter 代码事实锚点（2026-11-01 校准）
+
+以下为本仓库 Git 与变更纪律的真实约定（全文以 `AGENTS.md` 四项 AI 协作自律为准）：
+
+- **变更前检查**：`git status --short` 记录脏区——仓库常有并发 WIP，预存在修改绝不混入本次提交。
+- **显式暂存**：只允许 `git add <路径>`，禁止 `git add -A` / `-u`；提交前一刻必须复查暂存区（`git diff --cached --name-status`）——并发会话共享同一 index，曾在 add 与 commit 之间混入他人暂存内容（2026-10-30 实测）。
+- **逐项授权**：提交/推送/合并/rebase/部署是**逐次单独授权**；产出 commit 与 push 是两项不同授权。
+- **禁用破坏性操作**：无 `rm -rf`、无 `git clean -fd`；删文件走废纸篓，每批 ≤10。
+- **禁止入库物**：`.env`、`*.db`/`-shm`/`-wal`、`logs/`、构建产物（`web/dist`）不进提交、代码与文档。
+- **提交身份**：`Uter.ai <huxulin.hxl@gmail.com>`；被 pre-commit 拒绝 = 身份不对，**禁止 `--no-verify`**。
+- **远端**：origin = `git@github-huxulin:hu-xulin/uter.git`（必须 SSH，全局 gitconfig 会改写 https 为 proxy）；push 前 `git remote -v` 核对、push 后 `git ls-remote` 复核；公司仓 `git@github-uter` 无权勿推。
+- **Commit 风格**（仓库历史实际用法）：`feat(scope): 描述` / `fix(scope): 描述` / `refactor(web): 描述` / `style: 描述`，scope 用实际域（design-system、monitor、brand、web、auth…）。
+- **四步闭环**：改动 → 回归（verify-all.sh，🚫不带 --no-docs）→ `./rebuild-all.sh` → 提交。
+- **分支与 PR**：当前主干协作为主，AI 自动修复走独立分支 + PR（UEQE 规范）；GitHub Actions 目前因账号账务停跑（2026-10-30 起），门禁只靠本地 verify-all.sh——提交报告必须如实标注 CI 状态为 NOT RUN。
+
 ---
 
 **变更管理的核心目标是让每一次 AI 修改都可控、可审查、可恢复。**

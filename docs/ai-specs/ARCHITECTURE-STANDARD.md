@@ -77,66 +77,40 @@ AI 必须从真实仓库确认：
 
 模块之间不得随意共享可变内部状态。
 
-## 5. 后端架构要求
+## 5. 后端分层（以实际代码为准）
 
-在现有架构允许的前提下，建议区分：
+Uter 实际分层为 **router → middleware → controller → service → model**，另有独立的 relay/、relaykit/、pkg/jsplugin。**不设独立 Domain 层与 Repository 层**：`model/` 同时承担 ORM 模型与数据访问，禁止为了形式化分层再抽出一层。
 
-- API / Transport Layer。
-- Application / Service Layer。
-- Domain / Business Layer。
-- Repository / Data Access Layer。
-- Infrastructure Layer。
+各层职责以真实代码为准：
 
-职责要求：
+### router/（路由装配层）
 
-### API 层
+只做「路径 → 中间件 → controller 函数」装配，不含业务逻辑。引擎级入口 `router/main.go`（SetRouter）按域拆分：SetApiRouter / SetDashboardRouter / SetRelayRouter / SetTaskPluginProtocolRouter / SetVideoRouter / SetTaskRouter / SetPluginRouter / SetWebRouter；CORS 与 Gzip 在引擎级只注册一次。`router/api-router.go` 的 `/api` 组统一挂 AccessTokenAudit、BodyStorageCleanup、GlobalAPIRateLimit、DemoSiteReadOnly 四个全局中间件。
 
-处理：
+### middleware/（横切层）
 
-- HTTP / RPC 输入。
-- 参数校验。
-- 身份和权限上下文传递。
-- 响应结构。
-- 错误映射。
+认证（`middleware/auth.go`：UserAuth/AdminAuth/RootAuth/authHelper、TokenAuth）、限流（`middleware/rate-limit.go`：GA/CT/UC/DW/UP 键前缀分档）、渠道分发（`middleware/distributor.go`：Distribute）等横切关注点。新增横切逻辑优先落在此层，不得散落到 controller。
 
-不得集中实现复杂业务规则。
+### controller/（HTTP 处理层）
 
-### Service 层
+gin handler：参数绑定、权限校验编排、调用 service/model、组装响应。如 `controller/access_token.go`、`controller/topup.go`（RequestEpay/EpayNotify）、`controller/payment_reconcile_task.go`（StartAlipayReconcileTask）。不得在 handler 内集中实现复杂业务规则——业务编排下沉 service。
 
-负责：
+### service/（业务编排层）
 
-- 业务流程编排。
-- 事务协调。
-- 多模块调用。
-- 业务结果处理。
+业务流程编排与跨模块协调：渠道选择（`service/channel_select.go`）、计费会话（`service/billing.go`、`service/billing_session.go`）、Token 结算（`service/text_quota.go`、`service/quota.go`）、系统任务 runner（`service/system_task.go`）、渠道价格同步（`service/dreamrouter_sync.go`）等。
 
-### Domain 层
+### model/（数据模型与数据访问层）
 
-负责：
+GORM 模型 + 数据库/缓存访问 + 事务与并发控制（`model/topup.go` 的 claimPendingTopUp/creditTopUpQuota、`model/user.go` 的原子配额更新、`model/quota_reserve.go` 的 Redis Lua 预扣、`model/locking.go` 的 lockForUpdate）。数据所有权规则见第 8 节。
 
-- 核心业务规则。
-- 状态转换。
-- 计费规则。
-- 业务约束。
+### relay/ 与 relaykit/（LLM 转发链路）
 
-### Repository 层
+- `relay/`：按上游厂商分 20+ 子包（openai/claude/gemini/aws/ali…），adaptor 工厂在 `relay/relay_adaptor.go`；渠道分发前中间件链固定为 RouteTag("relay") → SystemPerformanceCheck() → TokenAuth() → ModelRequestRateLimit() → Distribute()（`router/relay-router.go`）。
+- `relaykit/`：**独立 Go module**（`relaykit/go.mod`，运行时依赖仅 uuid/lo/gjson/sjson），只做 OpenAI Chat/Responses、Claude Messages、Gemini 四种协议间的请求/响应/流式转换（`relaykit/dto`、`relaykit/types`、`relaykit/relayconvert`、`relaykit/reasonmap`）。**HTTP 收发、SSE 读写、渠道选择、鉴权和计费由宿主程序完成**——这是硬边界，不得向 relaykit 塞 transport/认证/数据库/计费代码。
 
-负责：
+### 后台任务机制
 
-- 数据读取。
-- 数据写入。
-- 查询封装。
-- 持久化细节。
-
-### Infrastructure 层
-
-负责：
-
-- 外部服务。
-- 缓存。
-- 消息机制。
-- 第三方 SDK。
-- 文件和网络资源。
+无 cron 库，全部为 `go xxx()` goroutine + sleep/ticker 循环，启动点集中在 `main.go`：渠道缓存同步（model.SyncChannelCache）、DreamRouter 价格同步（service.DreamRouterSyncTask，每 10 分钟）、支付对账（controller.StartAlipayReconcileTask / StartWechatReconcileTask）、汇率同步（service.StartExchangeRateSync）等。另有结构化系统任务框架：RegisterScheduledSystemTasks（`controller/system_task_handlers.go`）注册 handler，由 service.StartSystemTaskRunner 用 DB lease 跨多 master 去重调度。
 
 不得为了形式化分层而无意义地增加抽象。
 
@@ -182,19 +156,20 @@ AI 必须从真实仓库确认：
 
 计费逻辑不得与不受控的上游请求代码混杂。
 
-## 8. 数据所有权
+## 8. 数据所有权（实际归属）
 
-每类核心数据必须明确负责模块。
+以真实代码为准，每类核心数据的负责模块：
 
-例如：
-
-- 用户账户数据。
-- 支付订单。
-- 余额流水。
-- Token 使用记录。
-- API Key。
-- 模型配置。
-- 渠道配置。
+| 数据 | 所有模块 | 关键位置 |
+|---|---|---|
+| 用户账户/余额 | `model/user.go` | `User.Quota`、原子增减 `increaseUserQuota`/`decreaseUserQuota`、`AdjustUserQuota`（user_quota_adjustment.go） |
+| 支付订单 | `model/topup.go` | `TopUp` struct、状态迁移 `claimPendingTopUp`、入账 `creditTopUpQuota` |
+| 余额/消费流水 | `model/log.go` | `Log`（Type=1 充值/2 消费/3 管理/4 系统/5 错误/6 退款/7 登录），**无独立余额流水表** |
+| Token（API Key） | `model/token.go` | `Token.RemainQuota`、`decreaseTokenQuota`（带余量条件） |
+| 渠道配置 | `model/channel.go` + `model/channel_cache.go` | `Channel`、内存缓存 InitChannelCache/SyncChannelCache |
+| 模型价格/倍率 | `setting/ratio_setting/` | GetModelRatio、GetCompletionRatio、GetCacheRatio、GetModelPrice |
+| 计量聚合 | `model/usedata.go` | `QuotaData`（小时级聚合，非流水） |
+| 系统配置 | `model/option.go` | `common.OptionMap`、UpdateOption、SyncOptions |
 
 其他模块应通过定义好的服务或接口访问，不得随意绕过数据所有权边界。
 

@@ -212,7 +212,41 @@ AI 应关注：
 - 不提交调试代码。
 - 不遗留临时密钥和测试数据。
 
-## 13. 完成定义
+## 13. Uter 代码事实锚点（2026-11-01 校准）
+
+### 13.1 真实工具链（门禁命令即规范）
+
+| 层 | 工具 | 命令 |
+|---|---|---|
+| Go 格式/静态检查 | gofmt + golangci-lint **v2.15.0**（v1.64.8 与当前 Go 不兼容勿用）+ go vet | `gofmt -l .`、`go vet ./...`、`golangci-lint run`（only-new-issues，存量 121 项基线只拦新增） |
+| Go 测试 | go test（三模块 GOWORK=off） | `make test`；flaky 用 `go test -count=1`；竞态 `go test -race` |
+| 前端类型检查 | tsgo（@typescript/native-preview，非 tsc） | `bun run typecheck`（`tsgo -b`） |
+| 前端 Lint | oxlint（非 eslint）+ i18n key 校验 | `bun run lint`（= check-i18n-keys + oxlint -c .oxlintrc.json） |
+| 前端测试 | vitest | `bun run test` |
+| 设计 Token 门禁 | check-design-tokens.mjs（T1–T16） | `bun run lint:design:strict`（--strict；基线 web/design-tokens.baseline.json 当前 0 条） |
+| 版权头 | add-copyright.mjs（AGPL） | `bun run copyright:check` |
+| 构建 | rsbuild（非 vite/webpack） | `bun run build:check`（tsgo -b && rsbuild build） |
+| 一键全量 | verify-all.sh | `./scripts/verify-all.sh`（--quick 跳慢套件）；`make verify` / `make verify-quick` |
+
+CI 同款：`.github/workflows/ci.yml`（backend/race/coverage/vulnscan/desktop/frontend 六 job；coverage-gate.sh 阈值 controller=39 model=45 service=43 middleware=62）与 `release-gate.yml`。
+
+### 13.2 Go 编码既有约定（AGENTS.md 摘要，全文以 AGENTS.md 为准）
+
+- 新代码直接可读：早返回、清晰分支、命名良好的局部变量，避免深嵌套。
+- 禁止只被调用一次、不表达稳定业务概念的包级 helper——内联到调用点；例外：可复用行为、框架回调、导出 API、测试 fixture、值得独立测试的复杂业务逻辑。
+- 金额与配额计算用 decimal（`github.com/shopspring/decimal`），舍入统一走 `common/quota_math.go` 的 QuotaFromDecimalChecked / QuotaRound（half-away-from-zero → int 饱和）；禁止裸 float 运算资金。
+- Context 与 Goroutine：后台任务范式为 `go xxx()` + sleep/ticker（main.go 集中启动），新建常驻 goroutine 必须有退出机制。
+
+### 13.3 前端编码既有约定
+
+- UI 底层为 **Base UI**（`@base-ui/react`），非 Radix；组件在 `web/src/components/ui/`（66 个），feature 代码在 `web/src/features/`（31 个域）。
+- 路由为 TanStack Router 文件式（web/src/routes/，路由树 routeTree.gen.ts 由插件生成；新增路由后运行 `bunx @tanstack/router-cli generate`）。
+- 状态管理仅 4 个 Zustand store（auth/notification/pricing-preferences/system-config，web/src/stores/）；新增全局状态前先确认这 4 个覆盖不了。
+- API 请求统一走 `web/src/lib/http-client.ts` 的 axios 实例（`api`），禁止绕过直连 fetch/axios。
+- i18n：7 份 locale 文件（en/fr/ja/ru/vi/zh/zh-TW，key 为英文源字符串）；改文案必须同步 7 份——prop/变量形式传 key 扫不到，必须同补 7 份并登记 static-keys.ts（check-i18n-keys 门禁）。
+- 样式必须走 design-system Token（见 UX-INTERACTION-STANDARD §16 与 design-system.md），表格用 `components/ui/table.tsx`（dense 档），数据表用 `@/components/data-table` 包。
+
+### 13.4 完成定义
 
 代码必须满足：
 

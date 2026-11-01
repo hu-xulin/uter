@@ -236,7 +236,53 @@
 - 数据一致性测试。
 - 回滚测试。
 
-## 15. 完成定义
+## 15. Uter 代码事实锚点（2026-11-01 校准）
+
+### 15.1 迁移机制（真实机制，非模板）
+
+Uter **没有独立迁移脚本体系**，采用「GORM AutoMigrate + 手写迁移辅助函数混合」：
+
+- 入口：`model/main.go` 的 `InitDB()` → `migrateDB()`（主库）、`InitLogDB()` → `migrateLOGDB()`（日志库）。
+- `migrateDB()` 的 AutoMigrate 列表含 30+ struct（&Channel{}, &Token{}, &User{}, &Option{}, &Redemption{}, &Ability{}, &Log{}, &TopUp{}, &QuotaData{}…），AutoMigrate 之前串接多个手写迁移：migrateTokenKeyUniqueness、migratePrefillGroupUniqueness、migrateSubscriptionPlanPriceAmount、migrateTokenModelLimitsToText、migrateOptionPrimaryKey、dedupeQuotaDataAggregatesOnce。
+- 多库选择：`chooseDB("SQL_DSN", false)` 按 DSN 前缀分流——postgres:// → PostgreSQL（PreferSimpleProtocol 兼容 PgBouncer）；`local` 或空 → SQLite；其余 → MySQL（自动补 parseTime=true）；clickhouse:// 在主库报错（**ClickHouse 只允许做日志库**，`migrateClickHouseLogDB` 用原生 SQL 建 MergeTree 表，不走 AutoMigrate）。
+- 日志库：`LOG_SQL_DSN` 未设置时日志库复用主库（LOG_DB = DB）。
+- 方言差异集中在列名引号：`initCol()` 为 PostgreSQL 用 `"group"`/`"key"`，其他库用反引号。
+- 迁移守卫：`ensureUserQuotaColumns` 拒绝旧 32 位钱包 schema（要求 bigint/int8）。
+- 新增表/字段的正确姿势：在对应 struct 上加 GORM tag 并加入 migrateDB() 的 AutoMigrate 列表；需要数据回填或约束重建时写 `migrateXxx` 手写函数并在 migrateDB 中调用。
+
+### 15.2 核心表与模型（均走 GORM 默认蛇形复数表名，无 TableName() 覆盖）
+
+| Struct | 表名 | 关键字段 | 位置 |
+|---|---|---|---|
+| User | `users` | `Quota int`（余额）、UsedQuota、Status(1)、Role、Group、AffQuota/AffHistoryQuota | `model/user.go` |
+| Token | `tokens` | RemainQuota、UnlimitedQuota、UsedQuota、Key(uniqueIndex)、ExpiredTime(-1 永不过期) | `model/token.go` |
+| Channel | `channels` | Status、Type、Key、UsedQuota、ChannelInfo(json 多 Key 状态) | `model/channel.go` |
+| TopUp | `top_ups` | Amount(美元额度)、Money、TradeNo(unique)、Status(string)、ProviderAmount(int64 分)、ProviderCurrency | `model/topup.go` |
+| Log | `logs` | Quota、PromptTokens/CompletionTokens、CacheReadTokens/CacheWriteTokens、Type(1=充值/2=消费/3=管理/4=系统/5=错误/6=退款/7=登录)、RequestId | `model/log.go` |
+| Redemption | `redemptions` | Key char(32) uniqueIndex、Status、Quota、UsedUserId | `model/redemption.go` |
+| Option | `options` | Key(primaryKey)、Value | `model/option.go` |
+| QuotaData | `quota_data` | 小时级聚合统计（非流水），idx_qdt_agg_unique 唯一索引 | `model/usedata.go` |
+
+### 15.3 余额实现（重要：无独立余额流水表）
+
+- 余额字段是 `User.Quota int`，缓存副本在 `UserBase.Quota`。**充值/消费/退款均以 `logs` 表记录**（LogTypeTopup=1 / LogTypeConsume=2 / LogTypeRefund=6），`quota_data` 只做小时级聚合——「余额流水」在 Uter 即 `logs` 表，设计流水相关功能时不得另立第二套流水体系。
+- 换算锚点：`common.QuotaPerUnit = 500 * 1000.0`（1 美元 = 500000 配额单位，$0.002/1K tokens）；`GetTrustQuota() = 10 * QuotaPerUnit`；钱包上限 `MaxWalletQuota = 1<<53-1`；债务地板 `WALLET_DEBT_FLOOR_QUOTA`（默认 0，钱包允许负值但受地板控制）。
+- 入账：所有支付网关共用 `creditTopUpQuota(tx, userId, creditedQuota, updates)`——条件更新 `UPDATE users SET quota = quota + ? WHERE id = ? AND quota <= ?`（原子强制钱包上限）。
+- 扣费：预扣 `service.PreConsumeBilling`（billing.go，Redis Lua 原子预扣 userQuotaReserveScript）→ 结算 `BillingSession.Settle(actualQuota)`（billing_session.go，delta 两步提交）→ 钱包 `DecreaseUserQuota`、令牌 `DecreaseTokenQuota`（带 `remain_quota >= ?` 条件）。
+- 管理员调余额：`AdjustUserQuota`（model/user_quota_adjustment.go）——事务内行锁 + decimal 计算，支持 add/subtract/override。
+
+### 15.4 事务与并发（真实范式）
+
+- 事务写法：`DB.Transaction(func(tx *gorm.DB) error {...})`，事务内 `lockForUpdate(tx)` 行锁（`model/locking.go`；SQLite 跳过，依赖单写者模型）→ 状态校验 → **条件更新 + RowsAffected 判定**赢得状态迁移（`claimPendingTopUp`：`WHERE trade_no = ? AND status = 'pending'`）→ `creditTopUpQuota` 入账；缓存同步与日志记录放事务外。参考实现：RechargeEpay、RechargeAlipay、RechargeCreem、RechargeWaffo、ManualCompleteTopUp（model/topup.go）、Redeem（model/redemption.go）。
+- 余额增减全部为原子 SQL（`gorm.Expr("quota ± ?")` + 条件谓词），**禁止先查后改**。
+- Redis 预扣用 Lua 脚本保证「校验 + 扣减」原子性（`model/quota_reserve.go`）。
+- 批量模式：persistUserQuotaDelta 走 `addNewRecord(BatchUpdateTypeUserQuota, ...)` 批量刷盘（model/utils.go）。
+
+### 15.5 SQLite 角色
+
+`SQL_DSN` 未设置时默认 SQLite：`SQLitePath = "one-api.db?_pragma=busy_timeout(30000)&_pragma=journal_mode(WAL)&_txlock=immediate"`（`common/database.go`）。生产以 `SQL_DSN` 切换 MySQL/PostgreSQL（参考 docker-compose.multidb.yml）。本地开发直接读写仓库根 `one-api.db`——它是真实状态载体，不属于可随意重建的临时文件。
+
+## 16. 完成定义
 
 数据库修改必须满足：
 
