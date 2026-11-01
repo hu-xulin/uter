@@ -1,0 +1,159 @@
+name: Nightly full audit (quality, tests, security, coverage)
+
+# Nightly 全量审计 —— 实施规范 §8.5 Mode D
+# （docs/ai-specs/engineering-quality/README.md「Nightly Audit」）。
+#
+# 调度：cron '0 19 * * *' = 每天 UTC 19:00 = 北京时间每天 03:00（UTC+8）。
+# 支持在 Actions 页手动 workflow_dispatch（可指定分支）。
+#
+# 职责（规范 Mode D）：全仓库审查、自动测试、依赖漏洞检查、安全扫描、
+# 覆盖率检查。按 §8.1 整合原则复用既有工作流：核心门禁直接
+# workflow_call release-gate.yml（与 CI / 发布流程同一把尺子），在其
+# 之上补充 CI 尚未覆盖的两项 —— 关键路径覆盖率阈值与密钥扫描。
+#
+# P0 告警（§8.5）：任一 job 失败 → 自动创建/更新带 quality-alert 标签的
+# issue（固定标题聚合避免刷屏），审计证据落在 run 的 Job Summary。
+# 本工作流只读代码、跑检查，不修改代码、不发布。
+
+on:
+  schedule:
+    - cron: '0 19 * * *' # UTC 19:00 = 北京时间 03:00
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write # 仅用于 P0 告警 issue
+
+concurrency:
+  group: nightly-full-audit
+  cancel-in-progress: false
+
+jobs:
+  # 核心门禁：gofmt/vet/build/test × 4 模块 + govulncheck + Electron 桌面
+  # 测试 + 前端 typecheck/test/lint/design-strict（定义见 release-gate.yml）。
+  quality-gate:
+    name: Quality gate (tests, vet, build, vulnscan, frontend)
+    uses: ./.github/workflows/release-gate.yml
+    permissions:
+      contents: read
+
+  # 关键路径覆盖率阈值：与 ci.yml coverage job 完全同口径
+  # （coverage-gate.sh + 相同阈值），防止 CI 与 nightly 各说各话。
+  coverage:
+    name: Backend coverage thresholds
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      GOWORK: 'off'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+      - name: Set up Go
+        uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6.5.0
+        with:
+          go-version-file: go.mod
+          cache-dependency-path: |
+            go.sum
+            relaykit/go.sum
+            tokenkit/go.sum
+
+      - name: Create frontend embed placeholder
+        run: |
+          # 只测后端：造一个最小的 embed 骨架让 go build 通过。必须包含
+          # docs-content/_next，否则 //go:embed all:web/dist/docs-content/_next
+          # 会因找不到匹配文件而编译失败。
+          ./scripts/make-frontend-placeholder.sh
+
+      - name: Test root module with coverage
+        # 与 ci.yml 同一写法：用 xargs 传包列表，避免多行变量不按空白拆分。
+        run: |
+          go list -e ./... | grep -vxF "$(go list -m)" \
+            | xargs go test -covermode=set -coverprofile=coverage.out
+
+      - name: Enforce critical-path coverage thresholds
+        run: |
+          ./scripts/coverage-gate.sh coverage.out "$(go list -m)" \
+            controller=39 \
+            model=45 \
+            service=43 \
+            middleware=62
+
+      - name: Coverage summary
+        if: always()
+        run: go tool cover -func=coverage.out | tail -1 | tee -a "$GITHUB_STEP_SUMMARY"
+
+  # 密钥扫描：当前树口径（git 跟踪内容），配置与本地 UEQE security 阶段
+  # 同一份 .quality/gitleaks.toml。checkout 默认 depth=1，工作树即 HEAD
+  # 跟踪内容，与本地 git archive HEAD 口径等价。
+  secrets:
+    name: Secret leak scan (gitleaks, current tree)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+      - name: Set up Go
+        uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6.5.0
+        with:
+          go-version-file: go.mod
+          cache-dependency-path: |
+            go.sum
+            relaykit/go.sum
+            tokenkit/go.sum
+
+      - name: Install gitleaks (pinned)
+        run: go install github.com/zricethezav/gitleaks/v8@v8.30.1
+
+      - name: Scan current tree
+        run: |
+          gitleaks dir . --no-banner --config .quality/gitleaks.toml \
+            | tee "$GITHUB_STEP_SUMMARY"
+
+  # 汇总与 P0 告警：始终执行；全绿输出通过摘要，任一失败则创建/更新
+  # quality-alert issue（§8.5：立即生成告警、记录完整证据）。
+  report:
+    name: Audit summary and P0 alert
+    needs: [quality-gate, coverage, secrets]
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      GH_TOKEN: ${{ github.token }}
+
+    steps:
+      - name: Summarize results
+        run: |
+          {
+            echo "## 🌙 Nightly full audit（$(date -u +%F) UTC）"
+            echo
+            echo "| Job | 结果 |"
+            echo "|---|---|"
+            echo "| quality-gate（tests/vet/build/vulnscan/frontend） | ${{ needs.quality-gate.result }} |"
+            echo "| coverage（controller=39 model=45 service=43 middleware=62） | ${{ needs.coverage.result }} |"
+            echo "| secrets（gitleaks 当前树） | ${{ needs.secrets.result }} |"
+            echo
+            echo "审计 commit：${GITHUB_SHA::7}（分支 ${GITHUB_REF_NAME}）"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Open or update P0 alert issue on failure
+        if: needs.quality-gate.result != 'success' || needs.coverage.result != 'success' || needs.secrets.result != 'success'
+        run: |
+          TITLE="🌙 Nightly 质量审计失败（main）"
+          BODY="最新失败：<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|run ${{ github.run_id }}>（commit ${GITHUB_SHA::7}）。
+
+          请查看 Job Summary 定位失败 job；修复后本 issue 可关闭，下一轮全绿不重建。"
+
+          existing="$(gh issue list --state open --label quality-alert \
+            --json number,title --jq ".[] | select(.title == \"$TITLE\") | .number" | head -1)"
+
+          if [ -n "$existing" ]; then
+            gh issue comment "$existing" --body "$BODY"
+            echo "已更新既有告警 issue #$existing"
+          else
+            gh issue create --title "$TITLE" --label quality-alert --body "$BODY"
+            echo "已创建 P0 告警 issue"
+          fi
