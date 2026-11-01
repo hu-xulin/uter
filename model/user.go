@@ -1426,7 +1426,13 @@ func IncreaseUserQuota(id int, quota int, db bool) (err error) {
 }
 
 func increaseUserQuota(id int, quota int) (err error) {
-	result := DB.Model(&User{}).
+	return increaseUserQuotaTx(DB, id, quota)
+}
+
+// increaseUserQuotaTx 是 increaseUserQuota 的事务化变体：供退款意图等需要把
+// 多个非幂等原语与完成标记同事务提交的调用方复用（上限条件与归属校验一致）。
+func increaseUserQuotaTx(tx *gorm.DB, id int, quota int) (err error) {
+	result := tx.Model(&User{}).
 		Where("id = ? AND quota <= ?", id, common.MaxWalletQuota-quota).
 		Update("quota", gorm.Expr("quota + ?", quota))
 	if result.Error != nil {
@@ -1436,7 +1442,7 @@ func increaseUserQuota(id int, quota int) (err error) {
 		return nil
 	}
 	var count int64
-	if err := DB.Model(&User{}).Where("id = ?", id).Count(&count).Error; err != nil {
+	if err := tx.Model(&User{}).Where("id = ?", id).Count(&count).Error; err != nil {
 		return err
 	}
 	if count == 0 {
@@ -1622,10 +1628,16 @@ func RootUserExists() bool {
 // 结算时按「实际 - 预扣」差额并入，或退款/回滚时整体撤销预留；钳制避免并发回滚把
 // 用量记成负数。
 func IncrUserUsedQuotaClamped(id int, delta int) error {
+	return incrUserUsedQuotaClampedTx(DB, id, delta)
+}
+
+// incrUserUsedQuotaClampedTx 是 IncrUserUsedQuotaClamped 的事务化变体，
+// 语义与公开版本完全一致（下限钳制在 0）。
+func incrUserUsedQuotaClampedTx(tx *gorm.DB, id int, delta int) error {
 	if delta == 0 {
 		return nil
 	}
-	err := DB.Model(&User{}).Where("id = ?", id).
+	err := tx.Model(&User{}).Where("id = ?", id).
 		Update("used_quota", gorm.Expr("CASE WHEN used_quota + ? < 0 THEN 0 ELSE used_quota + ? END", delta, delta)).Error
 	if err != nil {
 		common.SysLog("failed to adjust user used quota: " + err.Error())

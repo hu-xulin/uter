@@ -181,9 +181,27 @@ func (s *BillingSession) Refund(c *gin.Context) {
 	extraReserved := s.extraReserved
 	subscriptionId := s.relayInfo.SubscriptionId
 	funding := s.funding
+	userId := s.relayInfo.UserId
+
+	// 持久化退款意图：异步执行前先落凭证。退款原语与完成标记在
+	// ExecuteRefundIntent 内同事务提交，进程在执行窗口内崩溃时凭证保持
+	// pending，由 SweepPendingRefundIntents 安全重放（不会多退）。落库失败
+	// 时回退旧的进程内路径，行为与历史版本一致（尽力而为 + SysError 告警）。
+	intentId, intentErr := buildRefundIntent(funding, userId, tokenId, tokenConsumed, !isPlayground, extraReserved)
+	if intentErr != nil {
+		common.SysLog(fmt.Sprintf("refund intent persist failed, falling back to in-process refund (userId=%d): %s",
+			userId, intentErr.Error()))
+	}
 
 	gopool.Go(func() {
 		defer close(refundDone)
+		if intentId > 0 {
+			if err := model.ExecuteRefundIntent(intentId); err != nil {
+				common.SysError(fmt.Sprintf("refund intent %d execution failed (userId=%d), stays pending for sweep: %s",
+					intentId, userId, err.Error()))
+			}
+			return
+		}
 		// 1) 退还资金来源
 		if err := funding.Refund(); err != nil {
 			common.SysLog("error refunding billing source: " + err.Error())
@@ -200,6 +218,43 @@ func (s *BillingSession) Refund(c *gin.Context) {
 			}
 		}
 	})
+}
+
+// buildRefundIntent 把本次退款快照落为持久化凭证，返回凭证 id（0 表示没有
+// 需要持久化的退款内容）。钱包出资的归属解析失败必须上抛——宁可回退旧路径
+// 告警，也不能把组织预扣猜成个人钱包退掉。
+func buildRefundIntent(funding FundingSource, userId, tokenId, tokenConsumed int, refundToken bool, extraReserved int) (int, error) {
+	intent := &model.RefundIntent{
+		UserId:        userId,
+		FundingSource: funding.Source(),
+	}
+	switch f := funding.(type) {
+	case *WalletFunding:
+		orgId, err := f.resolveOrgId()
+		if err != nil {
+			return 0, fmt.Errorf("resolve funding org of user %d: %w", userId, err)
+		}
+		intent.OrgResolved = true
+		intent.OrgId = orgId
+		intent.WalletAmount = f.consumed
+	case *SubscriptionFunding:
+		intent.SubRequestId = f.requestId
+		intent.SubId = f.subscriptionId
+		intent.SubExtra = int64(extraReserved)
+	default:
+		return 0, fmt.Errorf("unsupported funding source %q for refund intent", funding.Source())
+	}
+	if refundToken && tokenConsumed > 0 {
+		intent.TokenId = tokenId
+		intent.TokenConsumed = tokenConsumed
+	}
+	if intent.WalletAmount <= 0 && intent.SubExtra <= 0 && intent.TokenConsumed <= 0 {
+		return 0, nil
+	}
+	if err := model.CreateRefundIntent(intent); err != nil {
+		return 0, err
+	}
+	return intent.Id, nil
 }
 
 // NeedsRefund 返回是否存在需要退还的预扣状态。

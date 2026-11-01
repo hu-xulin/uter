@@ -62,6 +62,7 @@ func TestMain(m *testing.M) {
 		&UserAccessToken{},
 		&Organization{},
 		&SubscriptionPreConsumeRecord{},
+		&RefundIntent{},
 	); err != nil {
 		panic("failed to migrate: " + err.Error())
 	}
@@ -97,6 +98,7 @@ func truncateTables(t *testing.T) {
 		DB.Exec("DELETE FROM system_task_locks")
 		DB.Exec("DELETE FROM organizations")
 		DB.Exec("DELETE FROM system_tasks")
+		DB.Exec("DELETE FROM refund_intents")
 	})
 }
 

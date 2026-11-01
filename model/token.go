@@ -443,7 +443,12 @@ func IncreaseTokenQuota(tokenId int, key string, quota int) (err error) {
 }
 
 func increaseTokenQuota(id int, quota int) (err error) {
-	err = DB.Model(&Token{}).Where("id = ?", id).Updates(
+	return increaseTokenQuotaTx(DB, id, quota)
+}
+
+// increaseTokenQuotaTx 是 increaseTokenQuota 的事务化变体，语义与公开版本一致。
+func increaseTokenQuotaTx(tx *gorm.DB, id int, quota int) (err error) {
+	err = tx.Model(&Token{}).Where("id = ?", id).Updates(
 		map[string]any{
 			"remain_quota":  gorm.Expr("remain_quota + ?", quota),
 			"used_quota":    gorm.Expr("used_quota - ?", quota),
