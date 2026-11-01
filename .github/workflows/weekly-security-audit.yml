@@ -141,7 +141,10 @@ jobs:
             fi
 
             # 3) 明文凭证模式（规范 §8.7 第 4 条：不得将 PAT 明文写入脚本）。
-            if grep -nE 'ghp_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,}' "$f" | tee -a "$GITHUB_STEP_SUMMARY"; then
+            #    注意先存变量再判断：grep 直接接 tee 会让 if 读到 tee 的
+            #    退出码（恒 0），把「未命中」也当成命中。
+            if pat_hits="$(grep -nE 'ghp_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,}' "$f")" && [ -n "$pat_hits" ]; then
+              echo "$pat_hits" | tee -a "$GITHUB_STEP_SUMMARY"
               echo "⚠️ $f 疑似明文 PAT" | tee -a "$GITHUB_STEP_SUMMARY"
               status=1
             fi
@@ -175,6 +178,10 @@ jobs:
       GH_TOKEN: ${{ github.token }}
 
     steps:
+      # gh issue 子命令需要 git 仓库上下文确定 repo，必须 checkout。
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
       - name: Summarize results
         run: |
           {
