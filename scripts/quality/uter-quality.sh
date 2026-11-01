@@ -6,6 +6,7 @@
 # 复用既有门禁而非重建（宪法 AGENTS.md 与规范第三部分均要求）。五个引擎：
 #
 #   review     静态审查：gofmt/go vet × 3 模块 + 前端 lint/i18n/design-strict/copyright
+#              + ai-specs（docs/ai-specs/ 规范体系完整性，见 ai-specs-check.sh）
 #   test       自动化测试：Go test × 3 模块 + vitest（含 spec-guards 92 项）
 #   security   安全扫描：govulncheck/gitleaks（缺工具=NOT_RUN，绝不伪通过）+ 敏感文件入库抽查
 #   coverage   覆盖率门禁：按包阈值 controller=39 model=45 service=43（与 CI 同口径）
@@ -120,6 +121,8 @@ stage_review() {
   run_check review "web:lint" bash -c "cd web && bun run lint" || true
   run_check review "web:design-strict" bash -c "cd web && bun run lint:design:strict" || true
   run_check review "web:copyright" bash -c "cd web && bun run copyright:check" || true
+  # AI 规范体系完整性（AGENTS.md「AI Spec System」节的程序化守护）。
+  run_check review "ai-specs" "$ROOT/scripts/quality/ai-specs-check.sh" || true
 }
 
 stage_test() {
