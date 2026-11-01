@@ -224,12 +224,23 @@ AI 自动修复引擎，负责：
 
 ```text
 docs/
-└── engineering/
-    ├── README.md
-    ├── CODE-REVIEW-STANDARD.md
-    ├── AUTOMATED-TEST-STANDARD.md
-    ├── AUTO-FIX-STANDARD.md
-    └── QUALITY-GATE-STANDARD.md
+└── ai-specs/
+    ├── AI-EXECUTION-STANDARD.md
+    ├── API-CONTRACT-STANDARD.md
+    ├── ARCHITECTURE-STANDARD.md
+    ├── CHANGE-MANAGEMENT-STANDARD.md
+    ├── DATABASE-STANDARD.md
+    ├── DEVELOPMENT-STANDARD.md
+    ├── DOCUMENTATION-STANDARD.md
+    ├── PRODUCT-REQUIREMENTS-STANDARD.md
+    ├── SECURITY-STANDARD.md
+    ├── UX-INTERACTION-STANDARD.md
+    └── engineering-quality/
+        ├── README.md
+        ├── CODE-REVIEW-STANDARD.md
+        ├── AUTOMATED-TEST-STANDARD.md
+        ├── AUTO-FIX-STANDARD.md
+        └── QUALITY-GATE-STANDARD.md
 ```
 
 其中：
@@ -1648,12 +1659,14 @@ uter/
 ├── AGENTS.md
 │
 ├── docs/
-│   └── engineering/
-│       ├── README.md
-│       ├── CODE-REVIEW-STANDARD.md
-│       ├── AUTOMATED-TEST-STANDARD.md
-│       ├── AUTO-FIX-STANDARD.md
-│       └── QUALITY-GATE-STANDARD.md
+│   └── ai-specs/
+│       ├── （其余十份 AI 开发规范，见上方 3.1）
+│       └── engineering-quality/
+│           ├── README.md
+│           ├── CODE-REVIEW-STANDARD.md
+│           ├── AUTOMATED-TEST-STANDARD.md
+│           ├── AUTO-FIX-STANDARD.md
+│           └── QUALITY-GATE-STANDARD.md
 │
 ├── .quality/
 │   ├── policy.yml

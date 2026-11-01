@@ -56,6 +56,7 @@ right scope every time:
 | Frontend (`web/`) | `web/AGENTS.md` |
 | Design system / typography / color | `web/docs/design-system/design-system.md` (single authoritative file) |
 | Execution methodology | `.ai/AIES.md` + `.ai/README.md` |
+| Engineering quality standards (code review / testing / auto-fix / quality gate) | `docs/ai-specs/engineering-quality/` |
 
 Re-read them when you **start a new session**, **switch to a different task**,
 or **descend into a subdirectory that has its own `AGENTS.md`**. Never rely on
