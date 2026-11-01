@@ -38,13 +38,13 @@ import {
   queryWechatOrder,
   isApiSuccess,
 } from '../../api'
-import { pollAlipayOrder } from '../../lib/alipay-return'
 import {
   detectPayClient,
   formatCNYAmount,
   isAlipayWebPayment,
   toPayAmount,
 } from '../../lib'
+import { pollAlipayOrder } from '../../lib/alipay-return'
 import type { PaymentMethod } from '../../types'
 
 interface CnPayWebDialogProps {

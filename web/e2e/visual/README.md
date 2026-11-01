@@ -4,25 +4,25 @@
 
 ## 1. 双轨分工
 
-| | 第一轨（零依赖） | 第二轨（本目录） |
-|---|---|---|
-| 命令 | `bun run test:visual` | `bun run test:visual:e2e` |
-| 实现 | `scripts/visual-regression.mjs` + 本机 Chrome CLI | `@playwright/test` + Playwright Chromium |
-| 覆盖面 | 仅 `docs/design-system/showcase.html` 静态核查页 | 真实路由，含需登录页 |
-| 前置 | 有 Chrome 即可 | 需完整栈（Go 后端 + 前端 dev server） |
-| 耗时 | 秒级 | 分钟级 |
-| 可否挂 pre-commit | 可以 | **不可以**（太慢） |
+|                   | 第一轨（零依赖）                                  | 第二轨（本目录）                         |
+| ----------------- | ------------------------------------------------- | ---------------------------------------- |
+| 命令              | `bun run test:visual`                             | `bun run test:visual:e2e`                |
+| 实现              | `scripts/visual-regression.mjs` + 本机 Chrome CLI | `@playwright/test` + Playwright Chromium |
+| 覆盖面            | 仅 `docs/design-system/showcase.html` 静态核查页  | 真实路由，含需登录页                     |
+| 前置              | 有 Chrome 即可                                    | 需完整栈（Go 后端 + 前端 dev server）    |
+| 耗时              | 秒级                                              | 分钟级                                   |
+| 可否挂 pre-commit | 可以                                              | **不可以**（太慢）                       |
 
 第一轨回答「设计系统的 token 本身有没有走样」，第二轨回答「真实页面组装起来后有没有走样」。
 
 ## 2. 决策记录（2026-10-30）
 
-| 编号 | 决策 | 理由 |
-|---|---|---|
-| A | 鉴权页用**专用只读测试账号**，不复用 Root 超管 | Root 凭据明文只在 gitignore 的 `.workbuddy/` 下，项目红线禁止其流入代码/文档/自动化 |
-| B | **双轨并存**，第一轨不废弃 | 第一轨秒级可高频执行，第二轨慢但覆盖真实页面 |
-| C | **不接 CI**，仅开发机手动执行 | 像素基线依赖本机字体渲染与 GPU 合成，跨 OS 随机红灯；门禁假红比没有门禁更糟 |
-| D | 安装 `@playwright/test` + 下载 Chromium 二进制 | 固定浏览器版本，避免系统 Chrome 自动更新导致基线漂移 |
+| 编号 | 决策                                           | 理由                                                                                |
+| ---- | ---------------------------------------------- | ----------------------------------------------------------------------------------- |
+| A    | 鉴权页用**专用只读测试账号**，不复用 Root 超管 | Root 凭据明文只在 gitignore 的 `.workbuddy/` 下，项目红线禁止其流入代码/文档/自动化 |
+| B    | **双轨并存**，第一轨不废弃                     | 第一轨秒级可高频执行，第二轨慢但覆盖真实页面                                        |
+| C    | **不接 CI**，仅开发机手动执行                  | 像素基线依赖本机字体渲染与 GPU 合成，跨 OS 随机红灯；门禁假红比没有门禁更糟         |
+| D    | 安装 `@playwright/test` + 下载 Chromium 二进制 | 固定浏览器版本，避免系统 Chrome 自动更新导致基线漂移                                |
 
 CI 上的设计令牌门禁维持 `--strict`（`bun run lint:design:strict`），与视觉回归无关、不受本轨影响。
 

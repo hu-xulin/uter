@@ -21,8 +21,8 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import { OAUTH_BRAND_COLORS } from '@/design-system/tokens/brand-colors'
 
-import { OAuthProviders } from '../oauth-providers'
 import type { SystemStatus } from '../../types'
+import { OAuthProviders } from '../oauth-providers'
 
 vi.mock('@/features/auth/hooks/use-oauth-login', () => ({
   useOAuthLogin: () => ({

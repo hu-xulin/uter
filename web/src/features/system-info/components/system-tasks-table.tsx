@@ -46,12 +46,10 @@ const STATUS_VARIANT: Record<SystemTaskStatus, 'secondary' | 'destructive'> = {
 }
 
 const STATUS_CLASS_NAME: Record<SystemTaskStatus, string> = {
-  pending:
-    'bg-warning-soft text-warning dark:text-warning-soft-foreground',
+  pending: 'bg-warning-soft text-warning dark:text-warning-soft-foreground',
   running:
     'bg-info-soft text-info dark:text-info-soft-foreground [&_span]:bg-info',
-  succeeded:
-    'bg-success-soft text-success dark:text-success-soft-foreground',
+  succeeded: 'bg-success-soft text-success dark:text-success-soft-foreground',
   failed: '',
 }
 

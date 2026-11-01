@@ -146,4 +146,6 @@ for (const { heading, block } of ANCHORS) {
 }
 
 fs.writeFileSync(DOC, src, 'utf8')
-console.log(`✅ 插入 ${inserted} 个可视核查块，跳过 ${skipped} 个（已存在或未找到）`)
+console.log(
+  `✅ 插入 ${inserted} 个可视核查块，跳过 ${skipped} 个（已存在或未找到）`
+)

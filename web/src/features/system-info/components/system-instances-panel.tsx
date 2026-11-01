@@ -76,10 +76,8 @@ const INSTANCE_SKELETON_KEYS = [
 ]
 
 const STATUS_CLASS_NAME: Record<SystemInstanceStatus, string> = {
-  online:
-    'bg-success-soft text-success dark:text-success-soft-foreground',
-  stale:
-    'bg-warning-soft text-warning dark:text-warning-soft-foreground',
+  online: 'bg-success-soft text-success dark:text-success-soft-foreground',
+  stale: 'bg-warning-soft text-warning dark:text-warning-soft-foreground',
 }
 
 const STATUS_DOT_CLASS_NAME: Record<SystemInstanceStatus, string> = {

@@ -38,7 +38,6 @@ import { RechargeFormCard } from './components/recharge-form-card'
 import { SubscriptionPlansCard } from './components/subscription-plans-card'
 import { WalletStatsCard } from './components/wallet-stats-card'
 import { DEFAULT_DISCOUNT_RATE, PAYMENT_TYPES } from './constants'
-import { pollAlipayOrder } from './lib/alipay-return'
 import {
   useTopupInfo,
   usePayment,
@@ -55,6 +54,7 @@ import {
   dispatchSelectedPayment,
   isCnWebPayment,
 } from './lib'
+import { pollAlipayOrder } from './lib/alipay-return'
 import type {
   UserWalletData,
   PaymentMethod,

@@ -33,10 +33,11 @@ For commercial licensing, please contact support@uter.ai
  *   node scripts/generate-design-showcase.mjs --out ../docs/design-system/showcase.html
  */
 
-import { compile } from 'tailwindcss'
 import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+
+import { compile } from 'tailwindcss'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const WEB_ROOT = path.resolve(__dirname, '..')
@@ -68,7 +69,11 @@ async function compileTokens(candidates) {
         const alt = path.resolve(WEB_ROOT, 'node_modules', id, 'index.css')
         if (fs.existsSync(alt)) p = alt
       }
-      return { path: p, base: path.dirname(p), content: fs.readFileSync(p, 'utf8') }
+      return {
+        path: p,
+        base: path.dirname(p),
+        content: fs.readFileSync(p, 'utf8'),
+      }
     },
   })
   return compiler.build(candidates)
@@ -79,7 +84,10 @@ function readVar(css, name) {
   const i = css.indexOf(name + ':')
   if (i < 0) return null
   const end = css.indexOf(';', i)
-  return css.slice(i + name.length + 1, end).trim().replaceAll(/\s+/g, ' ')
+  return css
+    .slice(i + name.length + 1, end)
+    .trim()
+    .replaceAll(/\s+/g, ' ')
 }
 
 /** rem → px（根字号 16px）。 */
@@ -97,59 +105,216 @@ function toPx(value) {
 /** 所有会出现在核查页里的 Tailwind 工具类。 */
 const CANDIDATES = [
   // 字号
-  'text-4xl', 'text-3xl', 'text-2xl', 'text-xl', 'text-lg', 'text-base', 'text-sm', 'text-xs',
-  'text-long', 'text-mono', 'text-mono-code', 'text-mono-title', 'text-group', 'text-dense',
+  'text-4xl',
+  'text-3xl',
+  'text-2xl',
+  'text-xl',
+  'text-lg',
+  'text-base',
+  'text-sm',
+  'text-xs',
+  'text-long',
+  'text-mono',
+  'text-mono-code',
+  'text-mono-title',
+  'text-group',
+  'text-dense',
   // 字重
-  'font-normal', 'font-medium', 'font-semibold', 'font-bold',
+  'font-normal',
+  'font-medium',
+  'font-semibold',
+  'font-bold',
   // 文字色
-  'text-foreground', 'text-fg-secondary', 'text-fg-tertiary', 'text-fg-disabled',
-  'text-fg-inverse', 'text-fg-link', 'text-fg-placeholder',
-  'text-muted-foreground', 'text-primary', 'text-destructive', 'text-success', 'text-warning', 'text-info',
-  'text-primary-foreground', 'text-destructive-foreground', 'text-secondary-foreground',
+  'text-foreground',
+  'text-fg-secondary',
+  'text-fg-tertiary',
+  'text-fg-disabled',
+  'text-fg-inverse',
+  'text-fg-link',
+  'text-fg-placeholder',
+  'text-muted-foreground',
+  'text-primary',
+  'text-destructive',
+  'text-success',
+  'text-warning',
+  'text-info',
+  'text-primary-foreground',
+  'text-destructive-foreground',
+  'text-secondary-foreground',
   // 首屏演示（term-*）：效果的锚点，取值≡上游 new-api 的渲染值
-  'text-term-command', 'text-term-flag', 'text-term-property', 'text-term-string', 'text-term-number',
-  'text-term-dim-1', 'text-term-dim-2', 'text-term-dim-3', 'text-term-dim-4',
-  'text-term-accent-emerald', 'text-term-accent-amber', 'text-term-accent-blue', 'text-term-accent-violet',
-  'border-term-accent-emerald-line', 'border-term-accent-amber-line', 'border-term-accent-blue-line', 'border-term-accent-violet-line',
-  'bg-term-accent-emerald-soft', 'bg-term-accent-amber-soft', 'bg-term-accent-blue-soft', 'bg-term-accent-violet-soft',
-  'bg-term-online', 'bg-term-dot', 'ds-text-gradient-brand',
+  'text-term-command',
+  'text-term-flag',
+  'text-term-property',
+  'text-term-string',
+  'text-term-number',
+  'text-term-dim-1',
+  'text-term-dim-2',
+  'text-term-dim-3',
+  'text-term-dim-4',
+  'text-term-accent-emerald',
+  'text-term-accent-amber',
+  'text-term-accent-blue',
+  'text-term-accent-violet',
+  'border-term-accent-emerald-line',
+  'border-term-accent-amber-line',
+  'border-term-accent-blue-line',
+  'border-term-accent-violet-line',
+  'bg-term-accent-emerald-soft',
+  'bg-term-accent-amber-soft',
+  'bg-term-accent-blue-soft',
+  'bg-term-accent-violet-soft',
+  'bg-term-online',
+  'bg-term-dot',
+  'ds-text-gradient-brand',
   // 背景装饰层（ds-decor-*）：颜色在 --ds-decor-*，形状在此三个 utility
-  'ds-decor-mesh-hero', 'ds-decor-mesh-cta', 'ds-decor-grid',
-  'text-sidebar-active-foreground', 'text-sidebar-foreground',
-  'text-syntax-keyword', 'text-syntax-string', 'text-syntax-number', 'text-syntax-function', 'text-syntax-property',
+  'ds-decor-mesh-hero',
+  'ds-decor-mesh-cta',
+  'ds-decor-grid',
+  'text-sidebar-active-foreground',
+  'text-sidebar-foreground',
+  'text-syntax-keyword',
+  'text-syntax-string',
+  'text-syntax-number',
+  'text-syntax-function',
+  'text-syntax-property',
   // 背景
-  'bg-background', 'bg-card', 'bg-popover', 'bg-muted', 'bg-accent', 'bg-secondary',
-  'bg-primary', 'bg-primary-strong', 'bg-primary-subtle', 'bg-primary-hover', 'bg-primary-active',
-  'bg-destructive', 'bg-destructive-subtle', 'bg-success', 'bg-success-soft', 'bg-warning', 'bg-warning-soft',
-  'bg-info', 'bg-info-soft', 'bg-chart-1', 'bg-chart-2', 'bg-chart-3', 'bg-chart-4', 'bg-chart-5',
-  'bg-sidebar', 'bg-sidebar-accent', 'bg-tertiary-foreground',
+  'bg-background',
+  'bg-card',
+  'bg-popover',
+  'bg-muted',
+  'bg-accent',
+  'bg-secondary',
+  'bg-primary',
+  'bg-primary-strong',
+  'bg-primary-subtle',
+  'bg-primary-hover',
+  'bg-primary-active',
+  'bg-destructive',
+  'bg-destructive-subtle',
+  'bg-success',
+  'bg-success-soft',
+  'bg-warning',
+  'bg-warning-soft',
+  'bg-info',
+  'bg-info-soft',
+  'bg-chart-1',
+  'bg-chart-2',
+  'bg-chart-3',
+  'bg-chart-4',
+  'bg-chart-5',
+  'bg-sidebar',
+  'bg-sidebar-accent',
+  'bg-tertiary-foreground',
   // 描边
-  'border', 'border-border', 'border-input', 'border-primary', 'border-primary-border', 'border-destructive',
+  'border',
+  'border-border',
+  'border-input',
+  'border-primary',
+  'border-primary-border',
+  'border-destructive',
   // 圆角
-  'rounded-xs', 'rounded-sm', 'rounded-md', 'rounded-lg', 'rounded-xl', 'rounded-2xl', 'rounded-full',
+  'rounded-xs',
+  'rounded-sm',
+  'rounded-md',
+  'rounded-lg',
+  'rounded-xl',
+  'rounded-2xl',
+  'rounded-full',
   // 尺寸
-  'h-9', 'h-10', 'h-12', 'h-8', 'h-7', 'h-11', 'size-6', 'size-8', 'size-12', 'size-4', 'size-4.5', 'size-3', 'size-3.5',
-  'h-(--ds-button-height-md)', 'h-(--ds-button-height-sm)', 'h-(--ds-button-height-lg)',
-  'h-(--ds-control-height-md)', 'h-(--ds-control-height-sm)',
-  'w-(--ds-control-height-md)', 'h-(--ds-chip-height)',
-  'min-h-6', 'min-h-8', 'min-h-11', 'min-h-14',
-  'px-3', 'py-2', 'px-4', 'p-4', 'gap-2', 'gap-3', 'gap-4', 'gap-1', 'gap-1.5', 'gap-6', 'gap-8',
-  'mt-4', 'mb-2', 'px-2', 'py-1', 'p-2', 'p-3', 'px-6', 'px-8',
+  'h-9',
+  'h-10',
+  'h-12',
+  'h-8',
+  'h-7',
+  'h-11',
+  'size-6',
+  'size-8',
+  'size-12',
+  'size-4',
+  'size-4.5',
+  'size-3',
+  'size-3.5',
+  'h-(--ds-button-height-md)',
+  'h-(--ds-button-height-sm)',
+  'h-(--ds-button-height-lg)',
+  'h-(--ds-control-height-md)',
+  'h-(--ds-control-height-sm)',
+  'w-(--ds-control-height-md)',
+  'h-(--ds-chip-height)',
+  'min-h-6',
+  'min-h-8',
+  'min-h-11',
+  'min-h-14',
+  'px-3',
+  'py-2',
+  'px-4',
+  'p-4',
+  'gap-2',
+  'gap-3',
+  'gap-4',
+  'gap-1',
+  'gap-1.5',
+  'gap-6',
+  'gap-8',
+  'mt-4',
+  'mb-2',
+  'px-2',
+  'py-1',
+  'p-2',
+  'p-3',
+  'px-6',
+  'px-8',
   // 阴影
-  'shadow-(--ds-elevation-none)', 'shadow-(--ds-elevation-popover)', 'shadow-(--ds-elevation-overlay)',
-  'shadow-(--ds-elevation-raised)', 'shadow-(--ds-elevation-marketing)', 'shadow-(--ds-glow-online)',
+  'shadow-(--ds-elevation-none)',
+  'shadow-(--ds-elevation-popover)',
+  'shadow-(--ds-elevation-overlay)',
+  'shadow-(--ds-elevation-raised)',
+  'shadow-(--ds-elevation-marketing)',
+  'shadow-(--ds-glow-online)',
   // 布局
-  'flex', 'items-center', 'justify-center', 'justify-between', 'inline-flex', 'grid', 'block',
-  'relative', 'absolute', 'overflow-hidden', 'w-full', 'max-w-md', 'max-w-lg', 'max-w-xl',
-  'truncate', 'whitespace-nowrap', 'tabular-nums', 'italic', 'underline', 'uppercase',
-  'font-mono', 'font-sans', 'antialiased', 'leading-none',
+  'flex',
+  'items-center',
+  'justify-center',
+  'justify-between',
+  'inline-flex',
+  'grid',
+  'block',
+  'relative',
+  'absolute',
+  'overflow-hidden',
+  'w-full',
+  'max-w-md',
+  'max-w-lg',
+  'max-w-xl',
+  'truncate',
+  'whitespace-nowrap',
+  'tabular-nums',
+  'italic',
+  'underline',
+  'uppercase',
+  'font-mono',
+  'font-sans',
+  'antialiased',
+  'leading-none',
   // 动效
-  'ds-motion-fast', 'ds-motion-base', 'ds-motion-slow', 'ds-motion-marketing-fast', 'ds-motion-marketing',
-  'ds-motion-data', 'transition-colors', 'transition-transform', 'animate-spin',
+  'ds-motion-fast',
+  'ds-motion-base',
+  'ds-motion-slow',
+  'ds-motion-marketing-fast',
+  'ds-motion-marketing',
+  'ds-motion-data',
+  'transition-colors',
+  'transition-transform',
+  'animate-spin',
   // 深色变体
-  'dark:bg-card', 'dark:text-fg-secondary', 'dark:border-border', 'dark:bg-muted',
+  'dark:bg-card',
+  'dark:text-fg-secondary',
+  'dark:border-border',
+  'dark:bg-muted',
   // 焦点
-  'focus-visible:ring-1', 'ring-ring', 'outline-none',
+  'focus-visible:ring-1',
+  'ring-ring',
+  'outline-none',
 ]
 
 const css = await compileTokens(CANDIDATES)
@@ -157,71 +322,392 @@ const css = await compileTokens(CANDIDATES)
 /* ── 3. 数据定义：与规范文档一一对应 ────────────────────────────── */
 
 const TYPOGRAPHY = [
-  { token: 'display', cls: 'text-4xl', w: 'font-semibold', px: 36, lh: 44, weight: 600, use: '页面主视觉（营销页 hero）', comp: 'Heading variant="display"' },
-  { token: 'h1', cls: 'text-3xl', w: 'font-semibold', px: 28, lh: 36, weight: 600, use: '页面标题（每页一个）', comp: 'Heading variant="page-title"' },
-  { token: 'h2', cls: 'text-2xl', w: 'font-semibold', px: 22, lh: 30, weight: 600, use: '区块标题（页面内 2–5 个）', comp: 'Heading variant="section-title"' },
-  { token: 'h3', cls: 'text-lg', w: 'font-semibold', px: 18, lh: 26, weight: 600, use: '卡片标题、弹窗标题', comp: 'Heading variant="card-title"' },
-  { token: 'group-title', cls: 'text-group font-semibold', w: '', px: 15, lh: 22, weight: 600, use: '卡片内分组标题', comp: 'Heading variant="group-title"' },
-  { token: 'body', cls: 'text-sm', w: '', px: 14, lh: 22, weight: 400, use: '正文（全站基准）', comp: 'Text variant="body"' },
-  { token: 'body-long', cls: 'text-long', w: '', px: 16, lh: 26, weight: 400, use: '长文本：文章/协议/对话气泡', comp: 'Text variant="body-long"' },
-  { token: 'body-sm', cls: 'text-sm', w: '', px: 14, lh: 22, weight: 400, use: '紧凑辅助正文、表格单元格', comp: 'Text variant="body-sm"' },
-  { token: 'body-medium', cls: 'text-sm font-medium', w: '', px: 14, lh: 22, weight: 500, use: '强调正文、导航项', comp: 'Text variant="body-medium"' },
-  { token: 'small', cls: 'text-xs', w: '', px: 12, lh: 18, weight: 400, use: '辅助信息、时间', comp: 'Text variant="caption"' },
-  { token: 'caption', cls: 'text-xs', w: '', px: 12, lh: 18, weight: 400, use: '说明、占位符、徽标', comp: 'Text variant="caption"' },
-  { token: 'dense', cls: 'text-dense', w: '', px: 13, lh: 20, weight: 400, use: '密集数据（表格/二级导航/分页）', comp: 'Text variant="dense"' },
-  { token: 'mono', cls: 'text-mono', w: '', px: 13, lh: 20, weight: 400, use: '正文里的等宽文本（模型 ID/密钥/金额）', comp: 'Text variant="code"' },
+  {
+    token: 'display',
+    cls: 'text-4xl',
+    w: 'font-semibold',
+    px: 36,
+    lh: 44,
+    weight: 600,
+    use: '页面主视觉（营销页 hero）',
+    comp: 'Heading variant="display"',
+  },
+  {
+    token: 'h1',
+    cls: 'text-3xl',
+    w: 'font-semibold',
+    px: 28,
+    lh: 36,
+    weight: 600,
+    use: '页面标题（每页一个）',
+    comp: 'Heading variant="page-title"',
+  },
+  {
+    token: 'h2',
+    cls: 'text-2xl',
+    w: 'font-semibold',
+    px: 22,
+    lh: 30,
+    weight: 600,
+    use: '区块标题（页面内 2–5 个）',
+    comp: 'Heading variant="section-title"',
+  },
+  {
+    token: 'h3',
+    cls: 'text-lg',
+    w: 'font-semibold',
+    px: 18,
+    lh: 26,
+    weight: 600,
+    use: '卡片标题、弹窗标题',
+    comp: 'Heading variant="card-title"',
+  },
+  {
+    token: 'group-title',
+    cls: 'text-group font-semibold',
+    w: '',
+    px: 15,
+    lh: 22,
+    weight: 600,
+    use: '卡片内分组标题',
+    comp: 'Heading variant="group-title"',
+  },
+  {
+    token: 'body',
+    cls: 'text-sm',
+    w: '',
+    px: 14,
+    lh: 22,
+    weight: 400,
+    use: '正文（全站基准）',
+    comp: 'Text variant="body"',
+  },
+  {
+    token: 'body-long',
+    cls: 'text-long',
+    w: '',
+    px: 16,
+    lh: 26,
+    weight: 400,
+    use: '长文本：文章/协议/对话气泡',
+    comp: 'Text variant="body-long"',
+  },
+  {
+    token: 'body-sm',
+    cls: 'text-sm',
+    w: '',
+    px: 14,
+    lh: 22,
+    weight: 400,
+    use: '紧凑辅助正文、表格单元格',
+    comp: 'Text variant="body-sm"',
+  },
+  {
+    token: 'body-medium',
+    cls: 'text-sm font-medium',
+    w: '',
+    px: 14,
+    lh: 22,
+    weight: 500,
+    use: '强调正文、导航项',
+    comp: 'Text variant="body-medium"',
+  },
+  {
+    token: 'small',
+    cls: 'text-xs',
+    w: '',
+    px: 12,
+    lh: 18,
+    weight: 400,
+    use: '辅助信息、时间',
+    comp: 'Text variant="caption"',
+  },
+  {
+    token: 'caption',
+    cls: 'text-xs',
+    w: '',
+    px: 12,
+    lh: 18,
+    weight: 400,
+    use: '说明、占位符、徽标',
+    comp: 'Text variant="caption"',
+  },
+  {
+    token: 'dense',
+    cls: 'text-dense',
+    w: '',
+    px: 13,
+    lh: 20,
+    weight: 400,
+    use: '密集数据（表格/二级导航/分页）',
+    comp: 'Text variant="dense"',
+  },
+  {
+    token: 'mono',
+    cls: 'text-mono',
+    w: '',
+    px: 13,
+    lh: 20,
+    weight: 400,
+    use: '正文里的等宽文本（模型 ID/密钥/金额）',
+    comp: 'Text variant="code"',
+  },
 ]
 
 const MONO = [
   { token: 'mono', cls: 'text-mono', px: 13, lh: 20, use: '正文里的等宽文本' },
-  { token: 'mono-code', cls: 'text-mono-code', px: 13, lh: 20, use: '固定高度的等宽代码容器（首页代码卡片、编辑器视口）' },
-  { token: 'mono-title', cls: 'text-mono-title', px: 16, lh: 22, use: '等宽字形的卡片标题（定价卡片模型名）' },
+  {
+    token: 'mono-code',
+    cls: 'text-mono-code',
+    px: 13,
+    lh: 20,
+    use: '固定高度的等宽代码容器（首页代码卡片、编辑器视口）',
+  },
+  {
+    token: 'mono-title',
+    cls: 'text-mono-title',
+    px: 16,
+    lh: 22,
+    use: '等宽字形的卡片标题（定价卡片模型名）',
+  },
 ]
 
 const TEXT_COLORS = [
-  { token: '--fg-primary', cls: 'text-foreground', use: '页面标题、正文、主要数据、输入值', light: '#0F172A', dark: '#F8FAFC' },
-  { token: '--fg-secondary', cls: 'text-fg-secondary', use: '描述、辅助说明、次级信息', light: '#334155', dark: '#CBD5E1' },
-  { token: '--fg-tertiary', cls: 'text-fg-tertiary', use: '时间戳、元信息、次要标签', light: '#64748B', dark: '#94A3B8' },
-  { token: '--fg-disabled', cls: 'text-fg-disabled', use: '禁用按钮、禁用字段', light: '#94A3B8', dark: '#64748B' },
-  { token: '--fg-inverse', cls: 'text-fg-inverse', use: '深色表面或品牌实心背景', light: '#FFFFFF', dark: '#0F172A' },
-  { token: '--fg-link', cls: 'text-fg-link', use: '文本链接、可导航文字', light: '#5B5EE6', dark: '#A1A3F7' },
-  { token: '--fg-placeholder', cls: 'text-fg-placeholder', use: '输入框 placeholder', light: '#64748B', dark: '#94A3B8' },
+  {
+    token: '--fg-primary',
+    cls: 'text-foreground',
+    use: '页面标题、正文、主要数据、输入值',
+    light: '#0F172A',
+    dark: '#F8FAFC',
+  },
+  {
+    token: '--fg-secondary',
+    cls: 'text-fg-secondary',
+    use: '描述、辅助说明、次级信息',
+    light: '#334155',
+    dark: '#CBD5E1',
+  },
+  {
+    token: '--fg-tertiary',
+    cls: 'text-fg-tertiary',
+    use: '时间戳、元信息、次要标签',
+    light: '#64748B',
+    dark: '#94A3B8',
+  },
+  {
+    token: '--fg-disabled',
+    cls: 'text-fg-disabled',
+    use: '禁用按钮、禁用字段',
+    light: '#94A3B8',
+    dark: '#64748B',
+  },
+  {
+    token: '--fg-inverse',
+    cls: 'text-fg-inverse',
+    use: '深色表面或品牌实心背景',
+    light: '#FFFFFF',
+    dark: '#0F172A',
+  },
+  {
+    token: '--fg-link',
+    cls: 'text-fg-link',
+    use: '文本链接、可导航文字',
+    light: '#5B5EE6',
+    dark: '#A1A3F7',
+  },
+  {
+    token: '--fg-placeholder',
+    cls: 'text-fg-placeholder',
+    use: '输入框 placeholder',
+    light: '#64748B',
+    dark: '#94A3B8',
+  },
 ]
 
 const SURFACE_COLORS = [
-  { token: '--background', cls: 'bg-background', use: '页面底色', light: '#FFFFFF', dark: '#020617' },
-  { token: '--card', cls: 'bg-card', use: '卡片表面', light: '#FFFFFF', dark: '深色表面' },
-  { token: '--popover', cls: 'bg-popover', use: '浮层表面（弹窗/下拉）', light: '#FFFFFF', dark: '深色表面' },
-  { token: '--muted', cls: 'bg-muted', use: '次级表面', light: '#F1F5F9', dark: '#1E293B' },
-  { token: '--accent', cls: 'bg-accent', use: '强调表面', light: '#F1F5F9', dark: '深色表面' },
-  { token: '--secondary', cls: 'bg-secondary', use: '次级按钮底', light: '#F1F5F9', dark: '深色表面' },
-  { token: '--border', cls: 'border-border', use: '默认描边', light: '#E2E8F0', dark: '#334155' },
-  { token: '--input', cls: 'border-input', use: '输入控件描边', light: '#D1D5E5', dark: '#45465F' },
+  {
+    token: '--background',
+    cls: 'bg-background',
+    use: '页面底色',
+    light: '#FFFFFF',
+    dark: '#020617',
+  },
+  {
+    token: '--card',
+    cls: 'bg-card',
+    use: '卡片表面',
+    light: '#FFFFFF',
+    dark: '深色表面',
+  },
+  {
+    token: '--popover',
+    cls: 'bg-popover',
+    use: '浮层表面（弹窗/下拉）',
+    light: '#FFFFFF',
+    dark: '深色表面',
+  },
+  {
+    token: '--muted',
+    cls: 'bg-muted',
+    use: '次级表面',
+    light: '#F1F5F9',
+    dark: '#1E293B',
+  },
+  {
+    token: '--accent',
+    cls: 'bg-accent',
+    use: '强调表面',
+    light: '#F1F5F9',
+    dark: '深色表面',
+  },
+  {
+    token: '--secondary',
+    cls: 'bg-secondary',
+    use: '次级按钮底',
+    light: '#F1F5F9',
+    dark: '深色表面',
+  },
+  {
+    token: '--border',
+    cls: 'border-border',
+    use: '默认描边',
+    light: '#E2E8F0',
+    dark: '#334155',
+  },
+  {
+    token: '--input',
+    cls: 'border-input',
+    use: '输入控件描边',
+    light: '#D1D5E5',
+    dark: '#45465F',
+  },
 ]
 
 const BRAND_COLORS = [
-  { token: '--primary', cls: 'bg-primary', use: '品牌主色：链接、选中态、图标强调', light: '#5B5EE6', dark: '#8B8DF5' },
-  { token: '--primary-strong', cls: 'bg-primary-strong', use: '实心控件底（主按钮），配白字', light: '#5B5EE6', dark: '#8B8DF5' },
-  { token: '--hover-primary', cls: 'bg-primary-hover', use: '主按钮悬停（同色相加深）', light: '#494CC7', dark: '#A1A3F7' },
-  { token: '--primary-active', cls: 'bg-primary-active', use: '主按钮按下（与悬停可区分）', light: '#3F42B0', dark: '#B7B8FA' },
-  { token: '--primary-subtle', cls: 'bg-primary-subtle', use: '浅底：选中行、轻强调背景', light: '#F0F0FF', dark: '#25264A' },
-  { token: '--primary-border', cls: 'border-primary-border', use: '品牌描边：选中控件边框', light: '#C7C8FF', dark: '#5558DC' },
-  { token: '--sidebar-active-foreground', cls: 'text-sidebar-active-foreground', use: '导航选中态专用前景色（4.93:1）', light: '#5558D8', dark: '#8B8DF5' },
+  {
+    token: '--primary',
+    cls: 'bg-primary',
+    use: '品牌主色：链接、选中态、图标强调',
+    light: '#5B5EE6',
+    dark: '#8B8DF5',
+  },
+  {
+    token: '--primary-strong',
+    cls: 'bg-primary-strong',
+    use: '实心控件底（主按钮），配白字',
+    light: '#5B5EE6',
+    dark: '#8B8DF5',
+  },
+  {
+    token: '--hover-primary',
+    cls: 'bg-primary-hover',
+    use: '主按钮悬停（同色相加深）',
+    light: '#494CC7',
+    dark: '#A1A3F7',
+  },
+  {
+    token: '--primary-active',
+    cls: 'bg-primary-active',
+    use: '主按钮按下（与悬停可区分）',
+    light: '#3F42B0',
+    dark: '#B7B8FA',
+  },
+  {
+    token: '--primary-subtle',
+    cls: 'bg-primary-subtle',
+    use: '浅底：选中行、轻强调背景',
+    light: '#F0F0FF',
+    dark: '#25264A',
+  },
+  {
+    token: '--primary-border',
+    cls: 'border-primary-border',
+    use: '品牌描边：选中控件边框',
+    light: '#C7C8FF',
+    dark: '#5558DC',
+  },
+  {
+    token: '--sidebar-active-foreground',
+    cls: 'text-sidebar-active-foreground',
+    use: '导航选中态专用前景色（4.93:1）',
+    light: '#5558D8',
+    dark: '#8B8DF5',
+  },
 ]
 
 const STATUS_COLORS = [
-  { token: '--destructive', cls: 'bg-destructive', fg: 'text-destructive-foreground', use: '危险 / 失败 / 删除', light: '#DC2626', dark: '#7F1D1D' },
-  { token: '--success', cls: 'bg-success', fg: 'text-success-foreground', use: '成功 / 已启用', light: '#16A34A', dark: '#16A34A' },
-  { token: '--warning', cls: 'bg-warning', fg: 'text-warning-foreground', use: '警告 / 需注意', light: 'oklch(0.681 0.162 75.834)', dark: '深色档' },
-  { token: '--info', cls: 'bg-info', fg: 'text-info-foreground', use: '信息提示', light: 'oklch(0.588 0.158 241.966)', dark: '深色档' },
-  { token: '--success-soft', cls: 'bg-success-soft', fg: 'text-success-soft-foreground', use: '成功浅底 + 深字徽标', light: 'oklch(0.979 0.021 166)', dark: '深色档' },
-  { token: '--destructive-soft', cls: 'bg-destructive-soft', fg: 'text-destructive-soft-foreground', use: '危险浅底 + 深字徽标', light: 'oklch(0.971 0.013 17)', dark: '深色档' },
-  { token: '--warning-soft', cls: 'bg-warning-soft', fg: 'text-warning-soft-foreground', use: '警告浅底 + 深字徽标', light: 'oklch(0.985 0.02 80)', dark: '深色档' },
-  { token: '--info-soft', cls: 'bg-info-soft', fg: 'text-info-soft-foreground', use: '信息浅底 + 深字徽标', light: 'oklch(0.97 0.019 235)', dark: '深色档' },
+  {
+    token: '--destructive',
+    cls: 'bg-destructive',
+    fg: 'text-destructive-foreground',
+    use: '危险 / 失败 / 删除',
+    light: '#DC2626',
+    dark: '#7F1D1D',
+  },
+  {
+    token: '--success',
+    cls: 'bg-success',
+    fg: 'text-success-foreground',
+    use: '成功 / 已启用',
+    light: '#16A34A',
+    dark: '#16A34A',
+  },
+  {
+    token: '--warning',
+    cls: 'bg-warning',
+    fg: 'text-warning-foreground',
+    use: '警告 / 需注意',
+    light: 'oklch(0.681 0.162 75.834)',
+    dark: '深色档',
+  },
+  {
+    token: '--info',
+    cls: 'bg-info',
+    fg: 'text-info-foreground',
+    use: '信息提示',
+    light: 'oklch(0.588 0.158 241.966)',
+    dark: '深色档',
+  },
+  {
+    token: '--success-soft',
+    cls: 'bg-success-soft',
+    fg: 'text-success-soft-foreground',
+    use: '成功浅底 + 深字徽标',
+    light: 'oklch(0.979 0.021 166)',
+    dark: '深色档',
+  },
+  {
+    token: '--destructive-soft',
+    cls: 'bg-destructive-soft',
+    fg: 'text-destructive-soft-foreground',
+    use: '危险浅底 + 深字徽标',
+    light: 'oklch(0.971 0.013 17)',
+    dark: '深色档',
+  },
+  {
+    token: '--warning-soft',
+    cls: 'bg-warning-soft',
+    fg: 'text-warning-soft-foreground',
+    use: '警告浅底 + 深字徽标',
+    light: 'oklch(0.985 0.02 80)',
+    dark: '深色档',
+  },
+  {
+    token: '--info-soft',
+    cls: 'bg-info-soft',
+    fg: 'text-info-soft-foreground',
+    use: '信息浅底 + 深字徽标',
+    light: 'oklch(0.97 0.019 235)',
+    dark: '深色档',
+  },
 ]
 
 const CHART_COLORS = [
-  { token: '--chart-1', cls: 'bg-chart-1', use: '分类色 1（仅用于区分彼此，无成败含义）' },
+  {
+    token: '--chart-1',
+    cls: 'bg-chart-1',
+    use: '分类色 1（仅用于区分彼此，无成败含义）',
+  },
   { token: '--chart-2', cls: 'bg-chart-2', use: '分类色 2' },
   { token: '--chart-3', cls: 'bg-chart-3', use: '分类色 3' },
   { token: '--chart-4', cls: 'bg-chart-4', use: '分类色 4' },
@@ -229,67 +715,248 @@ const CHART_COLORS = [
 ]
 
 const TERM_SYNTAX = [
-  { token: '--term-command', cls: 'text-term-command', use: 'shell 命令名（curl）· AA 补偿 emerald-700 / 上游原值 emerald-400' },
-  { token: '--term-flag', cls: 'text-term-flag', use: '命令行开关 -X / -H / -d · 上游 blue-600 / blue-400' },
-  { token: '--term-property', cls: 'text-term-property', use: 'JSON 键名、Header 名 · 上游 sky-700 / sky-300' },
-  { token: '--term-string', cls: 'text-term-string', use: '字符串字面量 · 上游 amber-700 / amber-300' },
-  { token: '--term-number', cls: 'text-term-number', use: '数字、token 计数 · 上游 violet-600 / violet-300' },
+  {
+    token: '--term-command',
+    cls: 'text-term-command',
+    use: 'shell 命令名（curl）· AA 补偿 emerald-700 / 上游原值 emerald-400',
+  },
+  {
+    token: '--term-flag',
+    cls: 'text-term-flag',
+    use: '命令行开关 -X / -H / -d · 上游 blue-600 / blue-400',
+  },
+  {
+    token: '--term-property',
+    cls: 'text-term-property',
+    use: 'JSON 键名、Header 名 · 上游 sky-700 / sky-300',
+  },
+  {
+    token: '--term-string',
+    cls: 'text-term-string',
+    use: '字符串字面量 · 上游 amber-700 / amber-300',
+  },
+  {
+    token: '--term-number',
+    cls: 'text-term-number',
+    use: '数字、token 计数 · 上游 violet-600 / violet-300',
+  },
 ]
 
 const TERM_DIM = [
-  { token: '--term-dim-1', cls: 'text-term-dim-1', use: '端点行、Tab 悬停 · 原 text-foreground/75' },
-  { token: '--term-dim-2', cls: 'text-term-dim-2', use: '标点、续行符 · 原 text-foreground/55' },
-  { token: '--term-dim-3', cls: 'text-term-dim-3', use: '未选中 Tab、卡尾指标 · 原 text-foreground/40，AA 补偿提亮至 55%' },
-  { token: '--term-dim-4', cls: 'text-term-dim-4', use: 'Request / Response 分组标签 · 原 text-foreground/30，AA 补偿提亮至 55%' },
+  {
+    token: '--term-dim-1',
+    cls: 'text-term-dim-1',
+    use: '端点行、Tab 悬停 · 原 text-foreground/75',
+  },
+  {
+    token: '--term-dim-2',
+    cls: 'text-term-dim-2',
+    use: '标点、续行符 · 原 text-foreground/55',
+  },
+  {
+    token: '--term-dim-3',
+    cls: 'text-term-dim-3',
+    use: '未选中 Tab、卡尾指标 · 原 text-foreground/40，AA 补偿提亮至 55%',
+  },
+  {
+    token: '--term-dim-4',
+    cls: 'text-term-dim-4',
+    use: 'Request / Response 分组标签 · 原 text-foreground/30，AA 补偿提亮至 55%',
+  },
 ]
 
 const TERM_ACCENTS = [
-  { tone: 'emerald', text: 'text-term-accent-emerald', line: 'border-term-accent-emerald-line', soft: 'bg-term-accent-emerald-soft', method: 'POST' },
-  { tone: 'amber', text: 'text-term-accent-amber', line: 'border-term-accent-amber-line', soft: 'bg-term-accent-amber-soft', method: 'POST' },
-  { tone: 'blue', text: 'text-term-accent-blue', line: 'border-term-accent-blue-line', soft: 'bg-term-accent-blue-soft', method: 'GET' },
-  { tone: 'violet', text: 'text-term-accent-violet', line: 'border-term-accent-violet-line', soft: 'bg-term-accent-violet-soft', method: 'GET' },
+  {
+    tone: 'emerald',
+    text: 'text-term-accent-emerald',
+    line: 'border-term-accent-emerald-line',
+    soft: 'bg-term-accent-emerald-soft',
+    method: 'POST',
+  },
+  {
+    tone: 'amber',
+    text: 'text-term-accent-amber',
+    line: 'border-term-accent-amber-line',
+    soft: 'bg-term-accent-amber-soft',
+    method: 'POST',
+  },
+  {
+    tone: 'blue',
+    text: 'text-term-accent-blue',
+    line: 'border-term-accent-blue-line',
+    soft: 'bg-term-accent-blue-soft',
+    method: 'GET',
+  },
+  {
+    tone: 'violet',
+    text: 'text-term-accent-violet',
+    line: 'border-term-accent-violet-line',
+    soft: 'bg-term-accent-violet-soft',
+    method: 'GET',
+  },
 ]
 
 const SYNTAX_COLORS = [
-  { token: '--syntax-keyword', cls: 'text-syntax-keyword', use: '关键字（const / import）' },
+  {
+    token: '--syntax-keyword',
+    cls: 'text-syntax-keyword',
+    use: '关键字（const / import）',
+  },
   { token: '--syntax-string', cls: 'text-syntax-string', use: '字符串字面量' },
   { token: '--syntax-number', cls: 'text-syntax-number', use: '数字 / 布尔' },
-  { token: '--syntax-function', cls: 'text-syntax-function', use: '函数名、命令' },
-  { token: '--syntax-property', cls: 'text-syntax-property', use: '属性名、flag' },
+  {
+    token: '--syntax-function',
+    cls: 'text-syntax-function',
+    use: '函数名、命令',
+  },
+  {
+    token: '--syntax-property',
+    cls: 'text-syntax-property',
+    use: '属性名、flag',
+  },
 ]
 
 const RADII = [
   { token: '--radius-xs', cls: 'rounded-xs', px: 4, use: '极小徽标、内嵌标记' },
-  { token: '--radius-sm', cls: 'rounded-sm', px: 6, use: '关闭按钮、密集控件点击区' },
-  { token: '--radius-md', cls: 'rounded-md', px: 8, use: '按钮、输入框、标签页触发器（默认）' },
-  { token: '--radius-lg', cls: 'rounded-lg', px: 10, use: '卡片、弹窗、标签页容器、图标按钮' },
-  { token: '--radius-xl', cls: 'rounded-xl', px: 12, use: '强调容器、大圆角方形头像' },
+  {
+    token: '--radius-sm',
+    cls: 'rounded-sm',
+    px: 6,
+    use: '关闭按钮、密集控件点击区',
+  },
+  {
+    token: '--radius-md',
+    cls: 'rounded-md',
+    px: 8,
+    use: '按钮、输入框、标签页触发器（默认）',
+  },
+  {
+    token: '--radius-lg',
+    cls: 'rounded-lg',
+    px: 10,
+    use: '卡片、弹窗、标签页容器、图标按钮',
+  },
+  {
+    token: '--radius-xl',
+    cls: 'rounded-xl',
+    px: 12,
+    use: '强调容器、大圆角方形头像',
+  },
   { token: '--radius-2xl', cls: 'rounded-2xl', px: 16, use: '展示型卡片' },
-  { token: '--radius-full', cls: 'rounded-full', px: 9999, use: '胶囊徽标、圆形头像、开关轨道' },
+  {
+    token: '--radius-full',
+    cls: 'rounded-full',
+    px: 9999,
+    use: '胶囊徽标、圆形头像、开关轨道',
+  },
 ]
 
 const ELEVATIONS = [
-  { token: '--ds-elevation-none', cls: 'shadow-(--ds-elevation-none)', use: '静止的页面内元素（默认）' },
-  { token: '--ds-elevation-popover', cls: 'shadow-(--ds-elevation-popover)', use: '下拉面板、气泡、悬浮提示' },
-  { token: '--ds-elevation-overlay', cls: 'shadow-(--ds-elevation-overlay)', use: '弹窗、抽屉、浮层' },
-  { token: '--ds-elevation-raised', cls: 'shadow-(--ds-elevation-raised)', use: '拖拽中的元素（瞬时离开文档流）' },
-  { token: '--ds-elevation-marketing', cls: 'shadow-(--ds-elevation-marketing)', use: '营销展示卡片（脱离页面平面）' },
-  { token: '--ds-glow-online', cls: 'shadow-(--ds-glow-online)', use: '在线状态点（状态语义，不是层级）' },
+  {
+    token: '--ds-elevation-none',
+    cls: 'shadow-(--ds-elevation-none)',
+    use: '静止的页面内元素（默认）',
+  },
+  {
+    token: '--ds-elevation-popover',
+    cls: 'shadow-(--ds-elevation-popover)',
+    use: '下拉面板、气泡、悬浮提示',
+  },
+  {
+    token: '--ds-elevation-overlay',
+    cls: 'shadow-(--ds-elevation-overlay)',
+    use: '弹窗、抽屉、浮层',
+  },
+  {
+    token: '--ds-elevation-raised',
+    cls: 'shadow-(--ds-elevation-raised)',
+    use: '拖拽中的元素（瞬时离开文档流）',
+  },
+  {
+    token: '--ds-elevation-marketing',
+    cls: 'shadow-(--ds-elevation-marketing)',
+    use: '营销展示卡片（脱离页面平面）',
+  },
+  {
+    token: '--ds-glow-online',
+    cls: 'shadow-(--ds-glow-online)',
+    use: '在线状态点（状态语义，不是层级）',
+  },
 ]
 
 const MOTIONS = [
-  { token: '--ds-motion-fast', cls: 'ds-motion-fast', ms: 100, use: '交互反馈：颜色、描边、透明度的状态变化' },
-  { token: '--ds-motion-base', cls: 'ds-motion-base', ms: 200, use: '展开收起、宽度位移这类形变' },
-  { token: '--ds-motion-slow', cls: 'ds-motion-slow', ms: 350, use: '浮层视口 / 背板级整块位移' },
-  { token: '--ds-motion-marketing-fast', cls: 'ds-motion-marketing-fast', ms: 300, use: '营销面的悬停、下划线生长' },
-  { token: '--ds-motion-marketing-base', cls: 'ds-motion-marketing', ms: 500, use: '营销面的容器级展开、全屏菜单' },
-  { token: '--ds-motion-enter', cls: '(keyframes)', ms: 600, use: '首屏元素的观看节奏' },
-  { token: '--ds-motion-loop-shimmer', cls: '(keyframes)', ms: 1800, use: '骨架屏微光循环' },
-  { token: '--ds-motion-loop-pulse', cls: '(keyframes)', ms: 1500, use: '脉冲循环' },
-  { token: '--ds-motion-loop-caret', cls: '(keyframes)', ms: 1000, use: '光标闪烁' },
-  { token: '--ds-motion-loop-spin', cls: '(keyframes)', ms: 800, use: '旋转加载' },
-  { token: '--ds-motion-data-fast', cls: '(keyframes)', ms: 250, use: '数据值快速过渡' },
-  { token: '--ds-motion-data', cls: 'ds-motion-data', ms: 500, use: '数据值过渡' },
+  {
+    token: '--ds-motion-fast',
+    cls: 'ds-motion-fast',
+    ms: 100,
+    use: '交互反馈：颜色、描边、透明度的状态变化',
+  },
+  {
+    token: '--ds-motion-base',
+    cls: 'ds-motion-base',
+    ms: 200,
+    use: '展开收起、宽度位移这类形变',
+  },
+  {
+    token: '--ds-motion-slow',
+    cls: 'ds-motion-slow',
+    ms: 350,
+    use: '浮层视口 / 背板级整块位移',
+  },
+  {
+    token: '--ds-motion-marketing-fast',
+    cls: 'ds-motion-marketing-fast',
+    ms: 300,
+    use: '营销面的悬停、下划线生长',
+  },
+  {
+    token: '--ds-motion-marketing-base',
+    cls: 'ds-motion-marketing',
+    ms: 500,
+    use: '营销面的容器级展开、全屏菜单',
+  },
+  {
+    token: '--ds-motion-enter',
+    cls: '(keyframes)',
+    ms: 600,
+    use: '首屏元素的观看节奏',
+  },
+  {
+    token: '--ds-motion-loop-shimmer',
+    cls: '(keyframes)',
+    ms: 1800,
+    use: '骨架屏微光循环',
+  },
+  {
+    token: '--ds-motion-loop-pulse',
+    cls: '(keyframes)',
+    ms: 1500,
+    use: '脉冲循环',
+  },
+  {
+    token: '--ds-motion-loop-caret',
+    cls: '(keyframes)',
+    ms: 1000,
+    use: '光标闪烁',
+  },
+  {
+    token: '--ds-motion-loop-spin',
+    cls: '(keyframes)',
+    ms: 800,
+    use: '旋转加载',
+  },
+  {
+    token: '--ds-motion-data-fast',
+    cls: '(keyframes)',
+    ms: 250,
+    use: '数据值快速过渡',
+  },
+  {
+    token: '--ds-motion-data',
+    cls: 'ds-motion-data',
+    ms: 500,
+    use: '数据值过渡',
+  },
 ]
 
 const BUTTON_SIZES = [
@@ -305,11 +972,26 @@ const BUTTON_SIZES = [
 ]
 
 const CONTROL_SIZES = [
-  { name: 'Input md', h: 40, cls: 'h-(--ds-control-height-md)', use: '表单控件默认高度' },
-  { name: 'Input sm', h: 36, cls: 'h-(--ds-control-height-sm)', use: '紧凑表单控件' },
+  {
+    name: 'Input md',
+    h: 40,
+    cls: 'h-(--ds-control-height-md)',
+    use: '表单控件默认高度',
+  },
+  {
+    name: 'Input sm',
+    h: 36,
+    cls: 'h-(--ds-control-height-sm)',
+    use: '紧凑表单控件',
+  },
   { name: 'Table 行', h: 48, cls: 'h-12', use: '表格行高' },
   { name: 'Table 表头', h: 40, cls: 'h-10', use: '表格表头高' },
-  { name: '内联胶囊', h: 21, cls: 'h-(--ds-chip-height)', use: '值胶囊 / +N more（不随密度变化）' },
+  {
+    name: '内联胶囊',
+    h: 21,
+    cls: 'h-(--ds-chip-height)',
+    use: '值胶囊 / +N more（不随密度变化）',
+  },
 ]
 
 const SPACING = [
@@ -341,7 +1023,11 @@ const DENSITY = [
 
 const ICON_SIZES = [
   { px: 16, cls: 'size-4', use: '紧凑型辅助图标（仅密集信息）' },
-  { px: 18, cls: 'size-4.5', use: '默认档：按钮内 / 工具栏 / 侧边栏 / 主导航 / Tabs / 提示状态' },
+  {
+    px: 18,
+    cls: 'size-4.5',
+    use: '默认档：按钮内 / 工具栏 / 侧边栏 / 主导航 / Tabs / 提示状态',
+  },
   { px: 24, cls: 'size-6', use: '强调型功能入口' },
   { px: 32, cls: 'size-8', use: '空状态' },
   { px: 48, cls: 'size-12', use: '整页级空状态' },
@@ -775,7 +1461,7 @@ table.t tr:hover td { background: color-mix(in oklch, var(--ui-bg) 96%, var(--ui
   <p class="lead">用 <code>--fg-*</code> 前缀。<strong>不能叫 <code>--text-*</code></strong> —— Tailwind v4 把 <code>--text-*</code> 保留给字号命名空间。</p>
   <div class="card">
     <div class="swatches">
-      ${TEXT_COLORS.map(c => swatch(c, { kind: 'fg' })).join('\n')}
+      ${TEXT_COLORS.map((c) => swatch(c, { kind: 'fg' })).join('\n')}
     </div>
   </div>
 </section>
@@ -785,7 +1471,7 @@ table.t tr:hover td { background: color-mix(in oklch, var(--ui-bg) 96%, var(--ui
   <p class="lead">层级靠「1px 描边 + 表面色差」表达，不靠投影。</p>
   <div class="card">
     <div class="swatches">
-      ${SURFACE_COLORS.map(c => swatch(c)).join('\n')}
+      ${SURFACE_COLORS.map((c) => swatch(c)).join('\n')}
     </div>
   </div>
 </section>
@@ -795,7 +1481,7 @@ table.t tr:hover td { background: color-mix(in oklch, var(--ui-bg) 96%, var(--ui
   <p class="lead"><code>--primary</code> 是唯一入口，其余五档由它派生。组件里出现品牌色字面值 = 改品牌色不生效。</p>
   <div class="card">
     <div class="swatches">
-      ${BRAND_COLORS.map(c => swatch(c, { kind: c.cls.startsWith('text-') ? 'fg' : 'bg' })).join('\n')}
+      ${BRAND_COLORS.map((c) => swatch(c, { kind: c.cls.startsWith('text-') ? 'fg' : 'bg' })).join('\n')}
     </div>
   </div>
 </section>
@@ -805,7 +1491,7 @@ table.t tr:hover td { background: color-mix(in oklch, var(--ui-bg) 96%, var(--ui
   <p class="lead">浅底深字的语义徽标用 <code>{status}-soft</code> + <code>{status}-soft-foreground</code>，不要用 <code>bg-*/10</code> 透明度凑。</p>
   <div class="card">
     <div class="swatches">
-      ${STATUS_COLORS.map(c => swatch(c)).join('\n')}
+      ${STATUS_COLORS.map((c) => swatch(c)).join('\n')}
     </div>
   </div>
 </section>
@@ -815,7 +1501,7 @@ table.t tr:hover td { background: color-mix(in oklch, var(--ui-bg) 96%, var(--ui
   <p class="lead"><code>chart-N</code> 是分类色，<strong>不是状态色</strong>，不得用来表达成功/失败。</p>
   <div class="card">
     <div class="swatches">
-      ${CHART_COLORS.map(c => swatch(c)).join('\n')}
+      ${CHART_COLORS.map((c) => swatch(c)).join('\n')}
     </div>
   </div>
 </section>
@@ -832,7 +1518,7 @@ table.t tr:hover td { background: color-mix(in oklch, var(--ui-bg) 96%, var(--ui
       <div>})</div>
     </div>
     <div class="swatches" style="margin-top:16px">
-      ${SYNTAX_COLORS.map(c => swatch(c, { kind: 'fg' })).join('\n')}
+      ${SYNTAX_COLORS.map((c) => swatch(c, { kind: 'fg' })).join('\n')}
     </div>
   </div>
 </section>
@@ -846,8 +1532,10 @@ table.t tr:hover td { background: color-mix(in oklch, var(--ui-bg) 96%, var(--ui
     <p class="hint">这张卡里的每个颜色都来自 <code>--term-*</code>，没有一个调色板类名；下方再逐个拆开核查</p>
     <div style="background:var(--card); border:1px solid var(--ui-border); border-radius:12px; overflow:hidden">
       <div style="display:flex; align-items:center; gap:8px; border-bottom:1px solid var(--ui-border); padding:6px 12px">
-        ${TERM_ACCENTS.map((a, i) => `
-        <span class="${i === 0 ? a.text : 'text-term-dim-3'} ${i === 0 ? a.line : 'border-transparent'}" style="border-bottom-width:2px; padding:6px 8px; font-size:14px; font-weight:500">${a.tone}</span>`).join('')}
+        ${TERM_ACCENTS.map(
+          (a, i) => `
+        <span class="${i === 0 ? a.text : 'text-term-dim-3'} ${i === 0 ? a.line : 'border-transparent'}" style="border-bottom-width:2px; padding:6px 8px; font-size:14px; font-weight:500">${a.tone}</span>`
+        ).join('')}
         <span style="margin-left:auto; display:flex; align-items:center; gap:6px">
           <span class="bg-term-online shadow-(--ds-glow-online)" style="width:6px;height:6px;border-radius:9999px;display:inline-block"></span>
           <span class="text-term-dim-3" style="font-family:var(--font-mono);font-size:13px;text-transform:uppercase">200 ok</span>
@@ -880,7 +1568,7 @@ table.t tr:hover td { background: color-mix(in oklch, var(--ui-bg) 96%, var(--ui
     <h3>语法角色 · 五档</h3>
     <p class="hint">通用代码查看走 <code>syntax-*</code>，这两套不许互相引用，也不许合并</p>
     <div class="swatches">
-      ${TERM_SYNTAX.map(c => swatch(c, { kind: 'fg' })).join('\n')}
+      ${TERM_SYNTAX.map((c) => swatch(c, { kind: 'fg' })).join('\n')}
     </div>
   </div>
 
@@ -888,7 +1576,7 @@ table.t tr:hover td { background: color-mix(in oklch, var(--ui-bg) 96%, var(--ui
     <h3>弱层级四档 · 替代 <code>text-foreground/NN</code></h3>
     <p class="hint">渲染结果与原先的不透明度等价，但「实色」可测对比度、不随底层表面漂移</p>
     <div class="swatches">
-      ${TERM_DIM.map(c => swatch(c, { kind: 'fg' })).join('\n')}
+      ${TERM_DIM.map((c) => swatch(c, { kind: 'fg' })).join('\n')}
     </div>
   </div>
 
@@ -896,12 +1584,14 @@ table.t tr:hover td { background: color-mix(in oklch, var(--ui-bg) 96%, var(--ui
     <h3>分类强调色 · 四组</h3>
     <p class="hint">文字 / 激活描边 / 方法徽标底，三者同 tone；描边取饱和档，深色两档同值</p>
     <div class="demo-grid">
-      ${TERM_ACCENTS.map(a => `
+      ${TERM_ACCENTS.map(
+        (a) => `
         <div class="demo-box">
           <span class="${a.soft} ${a.text}" style="display:inline-block; border-radius:6px; padding:3px 8px; font-family:var(--font-mono); font-size:13px; font-weight:600">${a.method}</span>
           <div class="${a.line}" style="border-bottom-width:2px; width:56px; margin-top:10px"></div>
           <div class="cap">${a.tone}<br><span style="color:var(--ui-sub)">text / line / soft</span></div>
-        </div>`).join('')}
+        </div>`
+      ).join('')}
     </div>
   </div>
 
@@ -949,11 +1639,13 @@ table.t tr:hover td { background: color-mix(in oklch, var(--ui-bg) 96%, var(--ui
   <p class="lead">基准 <code>--radius</code> = 8px，其余按比例推导。禁止 <code>rounded-[7px]</code> 之类任意值。</p>
   <div class="card">
     <div class="demo-grid">
-      ${RADII.map(r => `
+      ${RADII.map(
+        (r) => `
         <div class="demo-box">
           <div class="${r.cls}" style="width:80px;height:56px;background:var(--primary-subtle);border:2px solid var(--primary)"></div>
           <div class="cap">${r.token} · ${r.px}px<br><span style="color:var(--ui-sub)">${esc(r.use)}</span></div>
-        </div>`).join('')}
+        </div>`
+      ).join('')}
     </div>
   </div>
 </section>
@@ -965,13 +1657,15 @@ table.t tr:hover td { background: color-mix(in oklch, var(--ui-bg) 96%, var(--ui
     <table class="t">
       <thead><tr><th>类名</th><th>实际值</th><th>场景</th><th>可视化</th></tr></thead>
       <tbody>
-        ${SPACING.map(s => `
+        ${SPACING.map(
+          (s) => `
           <tr>
             <td><code>${s.cls}</code></td>
             <td><strong>${s.px}px</strong></td>
             <td>${esc(s.use)}</td>
             <td><div class="ruler" style="width:${s.px * 2}px"></div></td>
-          </tr>`).join('')}
+          </tr>`
+        ).join('')}
       </tbody>
     </table>
   </div>
@@ -984,11 +1678,13 @@ table.t tr:hover td { background: color-mix(in oklch, var(--ui-bg) 96%, var(--ui
     <table class="t">
       <thead><tr><th>Token</th><th>默认</th><th>sm</th><th>xl</th></tr></thead>
       <tbody>
-        ${DENSITY.map(d => `
+        ${DENSITY.map(
+          (d) => `
           <tr>
             <td><code>${d.token}</code></td>
             <td>${d.def}px</td><td>${d.sm}px</td><td>${d.xl}px</td>
-          </tr>`).join('')}
+          </tr>`
+        ).join('')}
       </tbody>
     </table>
   </div>
@@ -999,11 +1695,13 @@ table.t tr:hover td { background: color-mix(in oklch, var(--ui-bg) 96%, var(--ui
   <p class="lead">四档投影 + 一档状态辉光。除这六档之外一律不投影。</p>
   <div class="card">
     <div class="demo-grid">
-      ${ELEVATIONS.map(e => `
+      ${ELEVATIONS.map(
+        (e) => `
         <div class="demo-box">
           <div class="elev-demo ${e.cls}">${e.token.includes('glow') ? '●' : '面'}</div>
           <div class="cap">${e.token}<br><span style="color:var(--ui-sub)">${esc(e.use)}</span></div>
-        </div>`).join('')}
+        </div>`
+      ).join('')}
     </div>
   </div>
 </section>
@@ -1015,13 +1713,15 @@ table.t tr:hover td { background: color-mix(in oklch, var(--ui-bg) 96%, var(--ui
     <table class="t">
       <thead><tr><th>Token</th><th>时长</th><th>用途</th><th>工具类</th></tr></thead>
       <tbody>
-        ${MOTIONS.map(m => `
+        ${MOTIONS.map(
+          (m) => `
           <tr>
             <td><code>${m.token}</code></td>
             <td><strong>${m.ms}ms</strong></td>
             <td>${esc(m.use)}</td>
             <td><code>${esc(m.cls)}</code></td>
-          </tr>`).join('')}
+          </tr>`
+        ).join('')}
       </tbody>
     </table>
   </div>
@@ -1032,13 +1732,15 @@ table.t tr:hover td { background: color-mix(in oklch, var(--ui-bg) 96%, var(--ui
   <p class="lead">高度只来自 <code>size</code> 档，不要在调用点写 <code>h-N</code>。</p>
   <div class="card">
     <div class="demo-grid">
-      ${BUTTON_SIZES.map(b => `
+      ${BUTTON_SIZES.map(
+        (b) => `
         <div class="demo-box">
           <div class="btn btn-primary ${b.size === 'icon' ? 'p-0' : ''}" style="${buttonStyle(
-            b,
+            b
           )}">${buttonLabel(b)}</div>
           <div class="cap">${b.size} · ${b.h}px · r-${b.r}<br><span style="color:var(--ui-sub)">${esc(b.use)}</span></div>
-        </div>`).join('')}
+        </div>`
+      ).join('')}
     </div>
     <h3 style="margin-top:20px">变体</h3>
     <p class="hint">同一档尺寸下的五种视觉身份</p>
@@ -1061,14 +1763,16 @@ table.t tr:hover td { background: color-mix(in oklch, var(--ui-bg) 96%, var(--ui
     <table class="t">
       <thead><tr><th>元素</th><th>高度</th><th>Token</th><th>用途</th><th>可视化</th></tr></thead>
       <tbody>
-        ${CONTROL_SIZES.map(c => `
+        ${CONTROL_SIZES.map(
+          (c) => `
           <tr>
             <td><strong>${c.name}</strong></td>
             <td>${c.h}px</td>
             <td><code>${c.cls}</code></td>
             <td>${esc(c.use)}</td>
             <td><div style="height:${c.h}px;width:80px;background:var(--primary-subtle);border:1px solid var(--primary-border);border-radius:6px"></div></td>
-          </tr>`).join('')}
+          </tr>`
+        ).join('')}
       </tbody>
     </table>
   </div>
@@ -1079,13 +1783,15 @@ table.t tr:hover td { background: color-mix(in oklch, var(--ui-bg) 96%, var(--ui
   <p class="lead">统一 Lucide，描边统一 2px，尺寸只能落在 16 / 18 / 24 / 32 / 48。</p>
   <div class="card">
     <div class="demo-grid">
-      ${ICON_SIZES.map(i => `
+      ${ICON_SIZES.map(
+        (i) => `
         <div class="demo-box" style="text-align:center">
           <div class="ico ${i.cls}" style="color:var(--foreground)">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7z"/></svg>
           </div>
           <div class="cap">${i.px}px · ${i.cls}<br><span style="color:var(--ui-sub)">${esc(i.use)}</span></div>
-        </div>`).join('')}
+        </div>`
+      ).join('')}
     </div>
   </div>
 </section>
@@ -1299,4 +2005,6 @@ fs.writeFileSync(OUT_PATH, html, 'utf8')
 
 console.log(`✅ 核查页已生成：${path.relative(REPO_ROOT, OUT_PATH)}`)
 console.log(`   大小：${(html.length / 1024).toFixed(1)} KB`)
-console.log(`   编译 Token：${CANDIDATES.length} 个候选类，产物 ${(css.length / 1024).toFixed(1)} KB`)
+console.log(
+  `   编译 Token：${CANDIDATES.length} 个候选类，产物 ${(css.length / 1024).toFixed(1)} KB`
+)

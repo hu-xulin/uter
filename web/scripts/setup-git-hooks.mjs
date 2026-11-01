@@ -117,4 +117,6 @@ const merged = [
 
 writeFileSync(hookPath, merged)
 chmodSync(hookPath, 0o755)
-console.log('✓ 设计令牌门禁已追加到 .git/hooks/pre-commit（身份守卫保留在前）。')
+console.log(
+  '✓ 设计令牌门禁已追加到 .git/hooks/pre-commit（身份守卫保留在前）。'
+)

@@ -513,39 +513,23 @@ function CodeLine(props: { children: ReactNode; indent?: number }) {
 }
 
 function Command(props: { children: ReactNode }) {
-  return (
-    <span className='font-medium text-term-command'>
-      {props.children}
-    </span>
-  )
+  return <span className='text-term-command font-medium'>{props.children}</span>
 }
 
 function Flag(props: { children: ReactNode }) {
-  return (
-    <span className='text-term-flag'>{props.children}</span>
-  )
+  return <span className='text-term-flag'>{props.children}</span>
 }
 
 function Key(props: { children: ReactNode }) {
-  return (
-    <span className='text-term-property'>{props.children}</span>
-  )
+  return <span className='text-term-property'>{props.children}</span>
 }
 
 function StringText(props: { children: ReactNode }) {
-  return (
-    <span className='text-term-string'>
-      {props.children}
-    </span>
-  )
+  return <span className='text-term-string'>{props.children}</span>
 }
 
 function NumberText(props: { children: ReactNode }) {
-  return (
-    <span className='font-medium text-term-number'>
-      {props.children}
-    </span>
-  )
+  return <span className='text-term-number font-medium'>{props.children}</span>
 }
 
 function Muted(props: { children: ReactNode }) {

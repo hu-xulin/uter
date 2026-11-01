@@ -848,9 +848,10 @@ describe('focus indicator', () => {
     ).toContain('outline-offset: 0')
 
     const semantic = fileBody('design-system/tokens/semantic.css')
-    expect(semantic, '规范 §1.4 / §1.7：焦点环宽度 Token 唯一来源是语义层').toContain(
-      '--ds-focus-ring-width: 1px'
-    )
+    expect(
+      semantic,
+      '规范 §1.4 / §1.7：焦点环宽度 Token 唯一来源是语义层'
+    ).toContain('--ds-focus-ring-width: 1px')
   })
 
   it('keeps every form control on the shared 1px focus ring', () => {

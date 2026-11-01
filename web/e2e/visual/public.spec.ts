@@ -24,10 +24,13 @@ for (const route of routes) {
         height: viewport.height,
       })
       await openRoute(page, route.path, route)
-      await expect(page).toHaveScreenshot(`${route.name}-${viewport.name}.png`, {
-        fullPage: route.fullPage ?? false,
-        mask: toMaskLocators(page, route.mask),
-      })
+      await expect(page).toHaveScreenshot(
+        `${route.name}-${viewport.name}.png`,
+        {
+          fullPage: route.fullPage ?? false,
+          mask: toMaskLocators(page, route.mask),
+        }
+      )
     })
   }
 }

@@ -25,6 +25,7 @@ import { handleServerError } from '@/lib/handle-server-error'
 import { AuthOperationError } from '@/lib/secure-verification'
 import { createServerError } from '@/lib/server-error-message'
 
+import { buildWeChatWebOAuthUrl } from '../../../lib/oauth'
 import {
   createOAuthAuthorization,
   createOAuthFlow,
@@ -37,7 +38,6 @@ import {
   buildOIDCOAuthUrl,
   buildLinuxDOOAuthUrl,
 } from '../lib/oauth'
-import { buildWeChatWebOAuthUrl } from '../../../lib/oauth'
 import { rememberOAuthLoginRedirect } from '../lib/oauth-callback-mode'
 import type { SystemStatus, CustomOAuthProviderInfo } from '../types'
 
@@ -225,7 +225,8 @@ export function useOAuthLogin(
     }
   }
 
-  const handleCustomOAuthLogin = async (provider: CustomOAuthProviderInfo) => {    if (!provider.authorization_endpoint || !provider.client_id) return
+  const handleCustomOAuthLogin = async (provider: CustomOAuthProviderInfo) => {
+    if (!provider.authorization_endpoint || !provider.client_id) return
 
     setIsLoading(true)
     try {
