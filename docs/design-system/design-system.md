@@ -643,7 +643,7 @@ body {
 | `--muted` 次级表面          | `#F1F5F9`                   | `#1E293B`       |
 | `--border` 描边             | `#E2E8F0`                   | `#334155`       |
 | `--input` 输入框描边        | `#D1D5E5`                   | `#45465F`       |
-| `--primary` 品牌主色        | `#5B5EE6`                   | `#8B8DF5`       |
+| `--primary` 品牌主色        | `#6565E8`                   | `#6565E8`（2026-11-03 起深浅同色，见 §11.2） |
 | `--destructive` 危险        | `#DC2626`                   | `#7F1D1D`       |
 | `--success` 成功            | `#16A34A`                   | `#16A34A`       |
 | `--warning` 警告            | `oklch(0.681 0.162 75.834)` | 深色档          |
@@ -659,12 +659,29 @@ body {
 
 | Token                          | 用途                               | 浅色      | 深色                  |
 | ------------------------------ | ---------------------------------- | --------- | --------------------- |
-| `--primary` / `primary-strong` | 主按钮背景、链接、选中强调         | `#5B5EE6` | `#8B8DF5` / `#A1A3F7` |
-| `--hover-primary`              | 主按钮悬停（同色相加深）           | `#494CC7` | `#A1A3F7`             |
-| `--primary-active`             | 主按钮按下（再加深，与悬停可区分） | `#3F42B0` | `#B7B8FA`             |
-| `--primary-subtle`             | 浅底：选中行、轻强调背景           | `#F0F0FF` | `#25264A`             |
-| `--primary-subtle-hover`       | 浅底的悬停一档（`color-mix` 派生） | 16% 混合  | 同声明                |
-| `--primary-border`             | 品牌描边：选中控件边框             | `#C7C8FF` | `#5558DC`             |
+| `--primary` / `primary-strong` | 主按钮背景、选中控件填充           | `#6565E8` | `#6565E8`             |
+| `--hover-primary`              | 主按钮悬停（同色相加深）           | `#5050CA` | `#5050CA`             |
+| `--primary-active`             | 主按钮按下（再加深，与悬停可区分） | `#4141B7` | `#4141B7`             |
+| `--primary-subtle`             | 浅底：选中行、轻强调背景           | `#F3F3FD` | `#161941`             |
+| `--primary-subtle-hover`       | 浅底的悬停一档（`color-mix` 派生） | 12% 混合  | 同声明                |
+| `--primary-border`             | 品牌描边：选中控件边框             | `#C4C4F6` | `#7171EA`             |
+
+**2026-11-03 拍板：深色动作梯回归品牌实色；同日品牌主色升级为 `#6565E8`。**
+此前深色的动作三档被提亮（`#8B8DF5` / `#A1A3F7` / `#B7B8FA`）以适配深色
+前景文字，用户反馈主按钮「颜色发浅、不像品牌按钮」。现在深色与浅色共用
+同一套实色动作梯（`#6565E8` + 白色前景，白字 on `#6565E8` = 4.59:1 达 AA）。
+**文字出口不跟动作梯走**，仍按提亮档取值以保住各自的 AA 结论：
+
+- 链接 / 强调文字 → `--fg-link`（浅 `#6565E8` / 深 `#BABAF9`，深色下
+  11.03:1）。
+- 品牌浅底（`bg-primary-subtle`）上的文字 → `--primary-subtle-foreground`
+  （浅 `#5959CC` on `#F3F3FD` = 5.11:1 / 深 `#A2A2F8` on `#161941` = 7.25:1，
+  见 §2.3）。
+- 图标（非文字图形，3:1 即可）可继续用 `text-primary`；≥18px/600 的大
+  字号同理（3:1 达标）。
+
+> 完整六档派生公式与近黑背景 AA 口径以 `docs/design-system/design-system-2.0.md`
+> §11.2 / §13.5 为权威，本文档其余章节中的 `#5B5EE6` 系旧值均已被该次升级取代。
 
 对应 Tailwind 工具类：`bg-primary` / `bg-primary-strong` / `hover:bg-primary-hover` /
 `active:bg-primary-active` / `bg-primary-subtle` / `hover:bg-primary-subtle-hover` /
