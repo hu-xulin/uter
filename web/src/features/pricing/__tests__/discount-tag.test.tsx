@@ -100,37 +100,51 @@ describe('DiscountTag', () => {
     expect(badge).toHaveAttribute('title', '+5%')
   })
 
-  it('renders nothing when the two prices are equal', () => {
-    const { container } = render(
+  it('renders a neutral x1.0 badge when the two prices are equal', () => {
+    render(
       <DiscountTag
         model={pricingModel({ model_ratio: 1 })}
         officialPrices={official(1)}
       />
     )
-    expect(container).toBeEmptyDOMElement()
+    // 2026-11-02 用户裁定：与官方价持平也要有角标（中性灰），不能什么都不显示。
+    const badge = screen.getByText('x1.0')
+    expect(badge).toHaveClass('bg-muted')
+    expect(badge).toHaveClass('text-fg-secondary')
+    expect(badge).not.toHaveClass('bg-destructive-hover')
+    expect(badge).not.toHaveClass('bg-success-hover')
+    expect(badge).toHaveAttribute('title', '0%')
   })
 
   /**
-   * 溢价小于 0.5% 时两位小数会取整成 1.00，渲染出来就是「x1.00」——
-   * 一个声称加价却看不出加价的角标。这种情况宁可不显示。
+   * 溢价小于 0.5% 时两位小数会取整成 1.00 —— 渲染中性 x1.0（按持平口径），
+   * 而不是误导性的红色「x1.00」。
    */
-  it('stays silent when the markup rounds down to 1.00', () => {
-    const { container } = render(
+  it('renders a neutral x1.0 badge when the markup rounds down to 1.00', () => {
+    render(
       <DiscountTag
         model={pricingModel({ model_ratio: 1.002 })}
         officialPrices={official(1)}
       />
     )
-    expect(container).toBeEmptyDOMElement()
+    expect(screen.getByText('x1.0')).toBeVisible()
   })
 
-  /** 同一口径的另一侧：折扣不到 0.5% 时倍率会取整回 1，别渲染「x1」。 */
-  it('stays silent when a tiny discount rounds up to x1', () => {
-    const { container } = render(
+  /** 同一口径的另一侧：折扣小到取整回 1 也渲染中性 x1.0。 */
+  it('renders a neutral x1.0 badge when a tiny discount rounds up to x1', () => {
+    render(
       <DiscountTag
         model={pricingModel({ model_ratio: 0.998 })}
         officialPrices={official(1)}
       />
+    )
+    expect(screen.getByText('x1.0')).toBeVisible()
+  })
+
+  /** 无官方参照（无从比价）时保持静默：x1.0 只在有官方价时才有意义。 */
+  it('stays silent without an official reference even when the group ratio is 1', () => {
+    const { container } = render(
+      <DiscountTag model={pricingModel({ model_ratio: 1 })} />
     )
     expect(container).toBeEmptyDOMElement()
   })
