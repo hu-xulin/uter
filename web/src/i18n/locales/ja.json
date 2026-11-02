@@ -3959,6 +3959,7 @@
     "ms": "ms",
     "Multi-key channel: Keys will be": "マルチキーチャネル: キーは",
     "Multi-Key Management": "マルチキー管理",
+    "New accounts are created automatically if the email is not registered.": "未登録のメールアドレスの場合、アカウントは自動的に作成されます。",
     "New priority: {{priority}}": "新しい優先度：{{priority}}",
     "New priority: {{priority}} · {{count}} channels affected": "新しい優先度：{{priority}} · {{count}} チャンネルに影響",
     "New user registration has been disabled by administrator": "管理者により新規ユーザー登録が無効化されています",

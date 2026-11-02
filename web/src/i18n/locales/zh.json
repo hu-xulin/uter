@@ -3960,6 +3960,7 @@
     "ms": "毫秒",
     "Multi-key channel: Keys will be": "多密钥渠道：密钥将",
     "Multi-Key Management": "多密钥管理",
+    "New accounts are created automatically if the email is not registered.": "邮箱未注册时将自动创建账号。",
     "New priority: {{priority}}": "新优先级：{{priority}}",
     "New priority: {{priority}} · {{count}} channels affected": "新优先级：{{priority}} · 影响 {{count}} 个渠道",
     "New user registration has been disabled by administrator": "管理员关闭了新用户注册",

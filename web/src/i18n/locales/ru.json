@@ -3959,6 +3959,7 @@
     "ms": "мс",
     "Multi-key channel: Keys will be": "Многоключевой канал: Ключи будут",
     "Multi-Key Management": "Управление несколькими ключами",
+    "New accounts are created automatically if the email is not registered.": "Если адрес электронной почты не зарегистрирован, учётная запись будет создана автоматически.",
     "New priority: {{priority}}": "Новый приоритет: {{priority}}",
     "New priority: {{priority}} · {{count}} channels affected": "Новый приоритет: {{priority}} · затронуто каналов: {{count}}",
     "New user registration has been disabled by administrator": "Администратор отключил регистрацию новых пользователей",

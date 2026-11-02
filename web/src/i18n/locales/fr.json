@@ -3959,6 +3959,7 @@
     "ms": "ms",
     "Multi-key channel: Keys will be": "Canal multi-clés : Les clés seront",
     "Multi-Key Management": "Gestion multi-clés",
+    "New accounts are created automatically if the email is not registered.": "Un compte est créé automatiquement si l'adresse e-mail n'est pas enregistrée.",
     "New priority: {{priority}}": "Nouvelle priorité : {{priority}}",
     "New priority: {{priority}} · {{count}} channels affected": "Nouvelle priorité : {{priority}} · {{count}} canaux concernés",
     "New user registration has been disabled by administrator": "L’inscription de nouveaux utilisateurs a été désactivée par l’administrateur",

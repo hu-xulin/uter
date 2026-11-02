@@ -3959,6 +3959,7 @@
     "ms": "ms",
     "Multi-key channel: Keys will be": "Kênh đa khóa: Các khóa sẽ là",
     "Multi-Key Management": "Quản lý đa khóa",
+    "New accounts are created automatically if the email is not registered.": "Tài khoản sẽ được tự động tạo nếu email chưa được đăng ký.",
     "New priority: {{priority}}": "Mức ưu tiên mới: {{priority}}",
     "New priority: {{priority}} · {{count}} channels affected": "Độ ưu tiên mới: {{priority}} · ảnh hưởng {{count}} kênh",
     "New user registration has been disabled by administrator": "Quản trị viên đã tắt đăng ký người dùng mới",

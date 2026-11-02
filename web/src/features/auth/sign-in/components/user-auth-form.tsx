@@ -487,6 +487,9 @@ export function UserAuthForm({
             <div className='grid gap-2'>
               <Label htmlFor='email-code-login-email'>
                 {t('Email Address')}
+                <span className='font-normal text-xs text-fg-secondary'>
+                  {t('New accounts are created automatically if the email is not registered.')}
+                </span>
               </Label>
               <Input
                 id='email-code-login-email'
