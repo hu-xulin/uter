@@ -18,6 +18,7 @@ For commercial licensing, please contact support@uter.ai
 */
 import type { CSSProperties, ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
+import { toast } from 'sonner'
 
 import {
   IconDiscord,
@@ -38,6 +39,14 @@ type OAuthProvidersProps = {
   disabled?: boolean
   className?: string
   redirectTo?: string
+  /**
+   * 为 true 时渠道按钮保持可点击，但点击不发起跳转，改为弹出
+   * `consentRequiredMessage` 提示（用于「未勾选用户协议 / 隐私政策」场景，
+   * 与 Passkey 按钮的交互模式一致：按钮不置灰、点击给反馈）。
+   */
+  consentRequired?: boolean
+  /** `consentRequired` 为 true 时点击弹出的提示文案；缺省回退法律条款通用文案。 */
+  consentRequiredMessage?: string
 }
 
 type ProviderButton = {
@@ -63,6 +72,8 @@ export function OAuthProviders({
   disabled = false,
   className,
   redirectTo,
+  consentRequired = false,
+  consentRequiredMessage,
 }: OAuthProvidersProps) {
   const { t } = useTranslation()
   const {
@@ -157,6 +168,14 @@ export function OAuthProviders({
 
   if (providerButtons.length === 0) return null
 
+  const handleProviderClick = (action: () => void) => {
+    if (consentRequired) {
+      toast.error(consentRequiredMessage ?? t('Please agree to the legal terms first'))
+      return
+    }
+    action()
+  }
+
   return (
     <div className={cn('space-y-3', className)}>
       <div className='relative'>
@@ -194,7 +213,7 @@ export function OAuthProviders({
               variant='outline'
               type='button'
               disabled={disabled || isLoading || extraDisabled}
-              onClick={onClick}
+              onClick={() => handleProviderClick(onClick)}
               style={
                 {
                   '--oauth-hover-bg': brandColor ?? 'var(--primary)',

@@ -367,7 +367,9 @@ export function SignUpForm({
         {oauthRegisterEnabled && (
           <OAuthProviders
             status={status}
-            disabled={isLoading || (requiresLegalConsent && !agreedToLegal)}
+            disabled={isLoading}
+            consentRequired={requiresLegalConsent && !agreedToLegal}
+            consentRequiredMessage={legalConsentErrorMessage}
             className='pt-2'
           />
         )}

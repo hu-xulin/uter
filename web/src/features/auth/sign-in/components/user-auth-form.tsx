@@ -387,7 +387,9 @@ export function UserAuthForm({
       <OAuthProviders
         status={status}
         redirectTo={redirectTo}
-        disabled={isLoading || (requiresLegalConsent && !agreedToLegal)}
+        disabled={isLoading}
+        consentRequired={requiresLegalConsent && !agreedToLegal}
+        consentRequiredMessage={legalConsentErrorMessage}
       />
     </>
   )

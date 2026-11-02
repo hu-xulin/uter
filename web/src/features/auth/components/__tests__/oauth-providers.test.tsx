@@ -17,26 +17,34 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@uter.ai
 */
 import { cleanup, render, screen } from '@testing-library/react'
-import { afterEach, describe, expect, it, vi } from 'vitest'
+import userEvent from '@testing-library/user-event'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { toast } from 'sonner'
 
 import { OAUTH_BRAND_COLORS } from '@/design-system/tokens/brand-colors'
 
 import type { SystemStatus } from '../../types'
 import { OAuthProviders } from '../oauth-providers'
 
+const oauthHandlers = vi.hoisted(() => ({
+  isLoading: false,
+  githubButtonText: '',
+  githubButtonDisabled: false,
+  handleGitHubLogin: vi.fn(),
+  handleDiscordLogin: vi.fn(),
+  handleOIDCLogin: vi.fn(),
+  handleLinuxDOLogin: vi.fn(),
+  handleTelegramLogin: vi.fn(),
+  handleWeChatWebLogin: vi.fn(),
+  handleCustomOAuthLogin: vi.fn(),
+}))
+
 vi.mock('@/features/auth/hooks/use-oauth-login', () => ({
-  useOAuthLogin: () => ({
-    isLoading: false,
-    githubButtonText: '',
-    githubButtonDisabled: false,
-    handleGitHubLogin: vi.fn(),
-    handleDiscordLogin: vi.fn(),
-    handleOIDCLogin: vi.fn(),
-    handleLinuxDOLogin: vi.fn(),
-    handleTelegramLogin: vi.fn(),
-    handleWeChatWebLogin: vi.fn(),
-    handleCustomOAuthLogin: vi.fn(),
-  }),
+  useOAuthLogin: () => oauthHandlers,
+}))
+
+vi.mock('sonner', () => ({
+  toast: { error: vi.fn() },
 }))
 
 afterEach(cleanup)
@@ -155,5 +163,53 @@ describe('OAuthProviders hover 品牌色', () => {
     const buttons = buttonsInOrder()
     expect(buttons).toHaveLength(1)
     expect(hoverBg(buttons[0])).toBe(OAUTH_BRAND_COLORS.wechat)
+  })
+})
+
+describe('OAuthProviders 法律条款门控', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  it('consentRequired 时按钮保持可点击，点击弹出提示且不发起跳转', async () => {
+    const user = userEvent.setup()
+    render(
+      <OAuthProviders
+        status={allProviders}
+        consentRequired
+        consentRequiredMessage='请先阅读并同意用户协议和隐私政策'
+      />,
+    )
+    // 渲染顺序固定：wechat_web(0) → github(1)
+    const github = screen.getAllByRole('button')[1]
+    expect(github).not.toBeDisabled()
+
+    await user.click(github)
+
+    expect(toast.error).toHaveBeenCalledWith('请先阅读并同意用户协议和隐私政策')
+    expect(oauthHandlers.handleGitHubLogin).not.toHaveBeenCalled()
+  })
+
+  it('consentRequired 缺省时点击正常发起跳转', async () => {
+    const user = userEvent.setup()
+    render(<OAuthProviders status={allProviders} />)
+
+    const github = screen.getAllByRole('button')[1]
+    expect(github).not.toBeDisabled()
+
+    await user.click(github)
+
+    expect(toast.error).not.toHaveBeenCalled()
+    expect(oauthHandlers.handleGitHubLogin).toHaveBeenCalledTimes(1)
+  })
+
+  it('consentRequired 时未传自定义文案则回退法律条款通用文案', async () => {
+    const user = userEvent.setup()
+    render(<OAuthProviders status={allProviders} consentRequired />)
+
+    await user.click(screen.getAllByRole('button')[0])
+
+    expect(toast.error).toHaveBeenCalledWith('Please agree to the legal terms first')
+    expect(oauthHandlers.handleWeChatWebLogin).not.toHaveBeenCalled()
   })
 })
