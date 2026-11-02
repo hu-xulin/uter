@@ -283,3 +283,39 @@ func TestNoBulkVendorIconRewriteScript(t *testing.T) {
 		}
 	}
 }
+
+// 关键词归因的产品 logo 表必须完整覆盖渠道常见命名：seedance-*（字节视频
+// 生成模型，归属豆包大模型家族）等品牌缺映射时，定价广场卡片回落首字母
+// 占位（2026-11-02 用户反馈「缺失 icon」的根因）。
+func TestDefaultProductIconForModelCoversVideoAndEmbeddingBrands(t *testing.T) {
+	cases := []struct{ name, want string }{
+		{"seedance-2.0", "Doubao"},
+		{"seedance-2.0-ab", "Doubao"},
+		{"seedance-2.0-fast", "Doubao"},
+		{"seedance-2.5-ab", "Doubao"},
+		// 首段精确命中优先：doubao- 前缀仍归 Doubao，不被子串规则改写。
+		{"doubao-seedance-2-0-260128", "Doubao"},
+		{"kling-v2-master", "Kling"},
+		{"vidu-q2", "Vidu"},
+		{"sora-2-pro", "Sora"},
+		{"sf-bge-m3", "BAAI"},
+		{"gpt-4o", "OpenAI"},
+		// @lobehub/icons 无 Veo 品牌：宁可首字母占位，不写渲染不出的键。
+		{"veo-3", ""},
+	}
+	for _, c := range cases {
+		if got := defaultProductIconForModel(c.name); got != c.want {
+			t.Errorf("defaultProductIconForModel(%q) = %q, want %q", c.name, got, c.want)
+		}
+	}
+}
+
+// defaultProductIcons 的每个值都必须在 lobeIconVariants 里可渲染；写进
+// 不可渲染的键会让 defaultProductIconForModel 静默回落空串，映射形同虚设。
+func TestDefaultProductIconsAreRenderable(t *testing.T) {
+	for pattern, key := range defaultProductIcons {
+		if _, ok := lobeIconVariants[key]; !ok {
+			t.Errorf("defaultProductIcons[%q] = %q 不在 lobeIconVariants 中，不可渲染", pattern, key)
+		}
+	}
+}
