@@ -283,7 +283,7 @@ var defaultProductIcons = map[string]string{
 	"wenxin":   "Wenxin",
 	"spark":    "Spark",
 	"yi":       "Yi",
-	"abab":     "MiniMax",
+	"abab":     "Minimax",
 	"minimax":  "Minimax",
 	"llama":    "Meta",
 	"mistral":  "Mistral",
@@ -292,6 +292,18 @@ var defaultProductIcons = map[string]string{
 	// Muse 是 Meta 的产品，@lobehub/icons 没有独立的 Muse 图标，回落到 Meta 公司图标
 	// （与 llama 系列同处理）。
 	"muse": "Meta",
+	// Seedance（字节视频生成模型）在 @lobehub/icons 无独立品牌图标，归属
+	// 豆包大模型家族（火山引擎官方发布口径「豆包·视频生成模型」），与
+	// doubao-* 模型共用 Doubao 产品 logo——否则 seedance-* 卡片回落首字母
+	// 占位（2026-11-02 定价广场用户反馈）。
+	"seedance": "Doubao",
+	// 以下与 seedance 同类：videoModelKeywords / 渠道常见命名里的视频与
+	// embedding 品牌，产品与公司同图标（Kling、Vidu、Sora、BAAI），
+	// 提前登记避免新增同名前缀模型时再次回落首字母占位。
+	"kling": "Kling",
+	"vidu":  "Vidu",
+	"sora":  "Sora",
+	"bge":   "BAAI",
 }
 
 // defaultProductIconPatterns 与 defaultVendorPatterns 同样的「长规则优先」排序：
