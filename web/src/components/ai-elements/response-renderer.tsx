@@ -216,7 +216,7 @@ function renderNode(
 
   if (node.type === 'footnote_reference' && 'id' in node) {
     return (
-      <sup className='text-primary mx-0.5 text-xs' key={key}>
+      <sup className='text-fg-link mx-0.5 text-xs' key={key}>
         <a
           href={`#footnote-${String(node.id)}`}
           id={`footnote-ref-${String(node.id)}`}

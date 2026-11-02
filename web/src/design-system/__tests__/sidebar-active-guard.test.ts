@@ -24,17 +24,16 @@ import { describe, expect, it } from 'vitest'
 /**
  * 守卫：导航选中态（规范 §2.3，2026-10-28 latest）。
  *
- * 规则演进过两次，这里记录清楚，避免下一个人再绕回去：
+ * 规则演进过三次，这里记录清楚，避免下一个人再绕回去：
  *
  * 1. 最初用 `text-sidebar-accent-foreground`（近黑 `#0F172A`）—— 选中行只剩
  *    一层浅底，文字与图标退回普通前景色，和右侧内容区的强调色脱节。
- * 2. 后来改成 `text-primary`（品牌色 `#5B5EE6`）—— 但落在选中浅底
- *    `#F0F0FF` 上只有 **4.44:1**，差 0.06 未达 WCAG AA 普通文本 4.5:1
- *    （导航文字 14px/500 不属大文本豁免）。
- * 3. 现行规范改为**专用 Token** `sidebar-active-foreground`
- *    （浅色 `#5558D8` = 4.93:1，深色 `#8B8DF5` = 4.97:1）。它只与
- *    `primary-subtle` 浅底配对，**不修改全局品牌主色** —— 主按钮、链接、
- *    焦点环仍然是 `#5B5EE6`。
+ * 2. 后来改成 `text-primary`（品牌色）—— 但落在选中浅底上不达 WCAG AA
+ *    普通文本 4.5:1（导航文字 14px/500 不属大文本豁免）。
+ * 3. 现行规范改为**专用 Token** `sidebar-active-foreground`（2.0 §17：
+ *    浅色 `#5959CC` on `#F3F3FD` = 5.11:1，深色 `#A2A2F8` on `#161941` =
+ *    7.25:1）。它只与 `primary-subtle` 浅底配对，**不修改全局品牌主色**
+ *    —— 主按钮、链接、焦点环仍然是 `#6565E8`。
  *
  * 因此这里断言三件事：选中行用专用 Token、不用 `primary` / 旧 accent 前景色、
  * 且未选中行不被无条件染色。
@@ -96,9 +95,10 @@ describe('sidebar active state', () => {
   })
 
   it('defines the dedicated token in both themes', () => {
-    // 规范 §2.3 给定的两个值；改任一值都要重算对比度（4.93:1 / 4.97:1）。
-    expect(theme).toContain('--sidebar-active-foreground: #5558d8')
-    expect(theme).toContain('--sidebar-active-foreground: #8b8df5')
+    // design-system-2.0 §17 给定的两个值；改任一值都要重算对比度
+    // （浅色 5.11:1 / 深色 7.25:1）。
+    expect(theme).toContain('--sidebar-active-foreground: #5959cc')
+    expect(theme).toContain('--sidebar-active-foreground: #a2a2f8')
     // 必须映射成 Tailwind 语义色，否则 `text-sidebar-active-foreground` 是空类名。
     expect(theme).toContain(
       '--color-sidebar-active-foreground: var(--sidebar-active-foreground)'
@@ -108,6 +108,6 @@ describe('sidebar active state', () => {
   it('keeps the global brand primary untouched', () => {
     // 专用 Token 解决的是「浅底上的文本对比度」，不是改品牌主色。
     // 若有人为了达线直接调 --primary，这条会失败 —— 那是品牌决策，要走评审。
-    expect(theme).toMatch(/--primary:\s*#5b5ee6/i)
+    expect(theme).toMatch(/--primary:\s*#6565e8/i)
   })
 })

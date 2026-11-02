@@ -33,7 +33,7 @@ export type SourcesProps = ComponentProps<'div'>
 
 export const Sources = ({ className, ...props }: SourcesProps) => (
   <Collapsible
-    className={cn('not-prose text-primary mb-4 text-xs', className)}
+    className={cn('not-prose text-fg-link mb-4 text-xs', className)}
     {...props}
   />
 )

@@ -131,7 +131,7 @@ export function ChannelPriorityGuide(props: {
         >
           <TabsTrigger
             value='same'
-            className='data-active:text-primary h-auto min-h-9 px-2 py-2 text-sm whitespace-normal'
+            className='data-active:text-fg-link h-auto min-h-9 px-2 py-2 text-sm whitespace-normal'
           >
             <Layers className='size-4.5 shrink-0' aria-hidden />
             <span>{t('Join the same priority tier')}</span>

@@ -27,7 +27,7 @@ const buttonVariants = cva(
   // 圆角按尺寸给：普通按钮 r-md（8px），图标按钮 r-lg（10px）。
   // 规范 2.1：Button → r-md，Icon Button → r-lg。写在基类上会让
   // 调用方的 rounded-* 覆盖失效顺序不稳定，因此这里逐档位声明。
-  "group/button inline-flex shrink-0 items-center justify-center rounded-md border border-transparent bg-clip-padding text-sm font-medium whitespace-nowrap transition-all outline-none select-none focus-visible:border-ring focus-visible:ring-1 focus-visible:ring-ring active:not-aria-[haspopup]:translate-y-px disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-2 aria-invalid:ring-destructive/20 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4.5 [&>[data-slot=button-spinner]]:size-4.5",
+  "group/button inline-flex shrink-0 items-center justify-center rounded-lg border border-transparent bg-clip-padding text-sm font-medium whitespace-nowrap transition-all outline-none select-none focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring active:not-aria-[haspopup]:translate-y-px disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-2 aria-invalid:ring-destructive/20 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4.5 [&>[data-slot=button-spinner]]:size-4.5",
   {
     variants: {
       variant: {
@@ -47,7 +47,7 @@ const buttonVariants = cva(
           'bg-destructive-subtle text-destructive hover:bg-destructive-subtle-hover focus-visible:border-destructive/40 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40',
         // 链接型按钮：品牌色 + 悬停加下划线。规范 1.1.2 要求文字链接
         // 「悬停/焦点必须提供颜色以外的反馈」，只变色不算。
-        link: 'text-primary underline-offset-4 hover:underline focus-visible:underline',
+        link: 'text-fg-link underline-offset-4 hover:underline focus-visible:underline',
       },
       size: {
         // 规范 2.1 Button 的尺寸档：md（36px）/ sm（32px）/ lg（40px）+ 四档
@@ -61,13 +61,13 @@ const buttonVariants = cva(
         // `icon-xs`（24px 方形），文字按钮最低就是 sm。
         default:
           'h-(--ds-button-height-md) gap-1 px-3 has-data-[icon=inline-end]:pr-2.5 has-data-[icon=inline-start]:pl-2.5',
-        sm: "h-(--ds-button-height-sm) gap-0 rounded-md px-2 text-xs in-data-[slot=button-group]:rounded-md has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 [&_svg:not([class*='size-'])]:size-4.5 [&>[data-slot=button-spinner]]:size-4.5",
+        sm: "h-(--ds-button-height-sm) gap-0 rounded-lg px-2 text-xs in-data-[slot=button-group]:rounded-lg has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 [&_svg:not([class*='size-'])]:size-4.5 [&>[data-slot=button-spinner]]:size-4.5",
         lg: 'h-(--ds-button-height-lg) gap-1.5 px-2.5 has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2',
         icon: 'size-(--ds-button-height-md) rounded-lg',
         'icon-xs':
-          "size-6 rounded-lg in-data-[slot=button-group]:rounded-md [&_svg:not([class*='size-'])]:size-4 [&>[data-slot=button-spinner]]:size-3",
+          "size-6 rounded-lg in-data-[slot=button-group]:rounded-lg [&_svg:not([class*='size-'])]:size-4 [&>[data-slot=button-spinner]]:size-3",
         'icon-sm':
-          'size-(--ds-button-height-sm) rounded-lg in-data-[slot=button-group]:rounded-md',
+          'size-(--ds-button-height-sm) rounded-lg in-data-[slot=button-group]:rounded-lg',
         'icon-lg': 'size-(--ds-button-height-lg) rounded-lg',
         // 内联文字按钮（规范 §2.1 Button 的 inline 档）。
         //

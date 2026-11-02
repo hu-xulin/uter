@@ -44,7 +44,7 @@ export function ForgotPassword() {
           </p>
           <p className='text-muted-foreground text-left text-sm'>
             {t("Don't have an account?")}{' '}
-            <Link to='/sign-up' className='hover:text-primary font-medium'>
+            <Link to='/sign-up' className='hover:text-fg-link font-medium'>
               {t('Sign up')}
             </Link>
             .

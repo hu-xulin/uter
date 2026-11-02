@@ -459,7 +459,7 @@ export function CostOptimizationSection(props: Props) {
                   <span
                     className={cn(
                       'text-sm font-medium',
-                      active ? 'text-primary' : 'text-foreground'
+                      active ? 'text-fg-link' : 'text-foreground'
                     )}
                   >
                     {t(group.title)}

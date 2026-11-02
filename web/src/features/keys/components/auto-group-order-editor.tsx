@@ -168,7 +168,7 @@ export function AutoGroupOrderEditor(props: AutoGroupOrderEditorProps) {
                 <span
                   data-slot='global-auto-order-index'
                   aria-hidden='true'
-                  className='bg-primary-subtle text-primary flex size-4 shrink-0 items-center justify-center rounded-full text-xs font-semibold tabular-nums'
+                  className='bg-primary-subtle text-primary-subtle-foreground flex size-4 shrink-0 items-center justify-center rounded-full text-xs font-semibold tabular-nums'
                 >
                   {index + 1}
                 </span>

@@ -42,7 +42,7 @@ export function renderFootnotes(
               aria-label={t('Back to footnote {{id}} reference', {
                 id: footnote.id,
               })}
-              className='text-primary ml-2'
+              className='text-fg-link ml-2'
               href={`#footnote-ref-${footnote.id}`}
             >
               {t('Back')}

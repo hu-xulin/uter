@@ -304,7 +304,7 @@ export function CheckinCalendarCard({
           <div className='flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4'>
             <button
               type='button'
-              className='focus-visible:ring-ring flex min-w-0 flex-1 items-start gap-3 rounded-lg text-left whitespace-normal outline-none focus-visible:ring-1'
+              className='focus-visible:ring-ring flex min-w-0 flex-1 items-start gap-3 rounded-lg text-left whitespace-normal outline-none focus-visible:ring-2'
               onClick={() => setCollapsed((v) => !v)}
             >
               <IconBadge tone='neutral' size='lg' className='sm:size-11'>

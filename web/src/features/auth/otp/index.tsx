@@ -42,7 +42,7 @@ export function Otp() {
           </p>
           <p className='text-muted-foreground text-left text-sm'>
             {t('Session expired?')}{' '}
-            <Link to='/sign-in' className='hover:text-primary font-medium'>
+            <Link to='/sign-in' className='hover:text-fg-link font-medium'>
               {t('Re-login')}
             </Link>
             .

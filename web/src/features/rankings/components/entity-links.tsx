@@ -44,7 +44,7 @@ export function ModelLink(props: ModelLinkProps) {
     <Link
       to='/pricing/$modelId'
       params={{ modelId: props.modelName }}
-      className={cn('transition-colors hover:text-primary', props.className)}
+      className={cn('transition-colors hover:text-fg-link', props.className)}
     >
       {props.children ?? props.modelName}
     </Link>

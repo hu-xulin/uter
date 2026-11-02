@@ -268,6 +268,7 @@ const ELEVATION_TOKENS = new Set([
   'shadow-(--ds-elevation-overlay)',
   'shadow-(--ds-elevation-raised)',
   'shadow-(--ds-elevation-marketing)',
+  'shadow-(--ds-elevation-card-hover)',
   'shadow-(--ds-glow-online)',
 ])
 

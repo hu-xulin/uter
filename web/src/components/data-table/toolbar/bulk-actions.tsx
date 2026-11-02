@@ -180,7 +180,7 @@ export function DataTableBulkActions<TData>({
           placement === 'floating'
             ? 'fixed bottom-6 left-1/2 z-50 w-max max-w-[calc(100vw-2rem)] -translate-x-1/2 rounded-xl transition-all delay-100 ds-motion-base hover:scale-105'
             : 'shrink-0 rounded-xl',
-          'focus-visible:ring-ring focus-visible:ring-1 focus-visible:outline-none'
+          'focus-visible:ring-ring focus-visible:ring-2 focus-visible:outline-none'
         )}
       >
         <div

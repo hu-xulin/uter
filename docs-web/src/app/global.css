@@ -232,21 +232,21 @@ body {
  * ── Brand accent and layout metrics ─────────────────────────────────
  *
  * `--Uter-accent` is a lightness-shifted sibling of the brand primary
- * `#5B5EE6` (规范 §1.1), used wherever this site needs that hue as a
- * 14px *label* rather than as a fill: the sidebar panel's own accent
- * token, the TOC marker, and the search `<mark>` highlight.
+ * `#6565E8` (design-system-2.0 §11), used wherever this site needs that
+ * hue as a 14px *label* rather than as a fill: the sidebar panel's own
+ * accent token, the TOC marker, and the search `<mark>` highlight.
  *
  * It is not the primary itself because on the panel surface (`#F1F1F1`)
- * `#5B5EE6` measures 4.44:1 — the same figure 规范 §2.3 quotes for
- * `#5B5EE6` on `#F0F0FF`, and short of the 4.5:1 a 14px label needs.
- * Only the lightness moves; the hue stays put.
+ * `#6565E8` measures 4.06:1 — the same failure mode design-system-2.0
+ * §17 quotes for `#6565E8` on `#F3F3FD` (4.16:1), and short of the
+ * 4.5:1 a 14px label needs. Values now reuse the spec's dedicated
+ * foreground token so both sites stay same-sourced:
  *
- *   light  `#4b4ede` — about 25% deeper → 5.40:1 on the panel
- *   dark   `#8b8df5` — the SPA's own dark `--primary` and 规范 §2.3's
- *                      dark foreground → 6.17:1 on the dark panel
+ *   light  `#5959CC` — the 2.0 §17 light foreground → 4.99:1 on the panel
+ *   dark   `#A2A2F8` — the 2.0 §17 dark foreground → 7.70:1 on #0F172A
  *
- * (历史值 `#6467f0` / `#8f91f5` 已随 §1.1 品牌主色统一为 `#5B5EE6` /
- * `#8B8DF5` 一并作废；亮度位移量未变，只是基准色换了。)
+ * (历史值 `#6467f0` / `#8f91f5` / `#4b4ede` / `#8b8df5` 已随 2.0 品牌主色
+ * `#6565E8` 一并作废；取值与规范 §17 专用前景同源。)
  *
  * Ratios measured in the framed page by compositing the panel surface
  * and the entry's own tint on a canvas, so they reflect what is
@@ -268,26 +268,24 @@ body {
    * a legal page must not be able to tell the two bars apart. Both values
    * are therefore copies of the app's own, not of this site's scale:
    *
-   * `--Uter-brand-radius` is the app's `--radius-lg`
-   * (`calc(var(--radius) * 1.25)` = **0.625rem** with the app's default
-   * `--radius: 0.5rem`), which is what the SPA header's nav links and icon
-   * buttons round with (`rounded-lg`). The docs' own `rounded-lg` is
-   * Fumadocs' 0.5rem, so reusing that utility name here would silently
-   * draw a different shape for the same mark. Pinned rather than derived
-   * for the same reason `--Uter-accent` above is: the app's `--radius` is
-   * a user-facing theme axis, and this site mirrors the app's *default*
-   * theme.
+   * `--Uter-brand-radius` is the app's `--radius-lg` (= `--radius` =
+   * **1rem** under design-system-2.0 §13.4), which is what the SPA
+   * header's nav links and icon buttons round with (`rounded-lg`). The
+   * docs' own `rounded-lg` is Fumadocs' 0.5rem, so reusing that utility
+   * name here would silently draw a different shape for the same mark.
+   * Pinned rather than derived for the same reason `--Uter-accent` above
+   * is: the app's `--radius` is a user-facing theme axis, and this site
+   * mirrors the app's *default* theme.
    *
-   * `--Uter-brand-radius-md` is the app's `--radius-md` (= `--radius` =
-   * **0.5rem**) — the `r-md` the SPA's `Button` draws with (规范 §2.1
-   * Button → `r-md` 8px). The header CTA *is* a `Button`, so it must not
-   * borrow the 10px nav-link radius; before this was split the CTA was
-   * 1rem (16px), visibly rounder than the app's own Sign in button.
+   * `--Uter-brand-radius-md` is the app's Button radius. 2.0 §16 pins
+   * every Button size to `rounded-lg` (**1rem**), so the header CTA and
+   * the nav links now share one radius; the token is kept separate so a
+   * future divergence has a place to land.
    *
    * `--Uter-brand-font` is the face declared at the top of this file.
    */
-  --Uter-brand-radius: 0.625rem;
-  --Uter-brand-radius-md: 0.5rem;
+  --Uter-brand-radius: 1rem;
+  --Uter-brand-radius-md: 1rem;
   --Uter-brand-font: 'Inter Variable', 'Inter', 'Source Han Sans SC',
     'Source Han Sans CN', '思源黑体', 'Noto Sans SC Variable', 'Noto Sans SC',
     'Noto Sans CJK SC', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei',
@@ -300,42 +298,43 @@ body {
    * the same reason the two lockup values above are: the app declares
    * `--primary` inside an `@theme inline` block, so its built
    * `bg-primary` carries the value itself
-   * (`.bg-primary{background-color:#5b5ee6}`) and there is no custom
+   * (`.bg-primary{background-color:#6565e8}`) and there is no custom
    * property for this site to inherit.
    *
-   * 规范 §1.1 把品牌主色统一成 **#5B5EE6**；这里此前是旧值 `#6467f0`，
-   * 与 SPA 的 `--primary` 已经脱钩，同一个按钮在两个站点上是两种紫。
+   * design-system-2.0 §11 把品牌主色定为 **#6565E8**（白字 4.59:1 ✅ AA）；
+   * 这里此前是旧值 `#5b5ee6`，与 SPA 的 `--primary` 已经脱钩。
    *
    * Deliberately *not* `--Uter-accent`. That token is this same hue
    * moved in lightness so a 14px label stays legible on the sidebar
-   * panel (`#4b4ede` light, `#8b8df5` dark) — a fill, not a label, so
+   * panel (`#5959cc` light, `#a2a2f8` dark) — a fill, not a label, so
    * reusing it would paint the button a visibly different colour from
    * the app's. No `.dark` override either: the app ships none, and its
    * button keeps this fill on either background.
    */
-  --Uter-brand-primary: #5b5ee6;
+  --Uter-brand-primary: #6565e8;
   --Uter-brand-primary-foreground: #fff;
-  /* 规范 §1.1.1：主按钮悬停 `--brand-hover` = #494CC7。 */
-  --Uter-brand-primary-hover: #494cc7;
+  /* design-system-2.0 §11.2：主按钮悬停 `--hover-primary` = #5050CA
+   * （白字 6.29:1）。 */
+  --Uter-brand-primary-hover: #5050ca;
 
-  --Uter-accent: #4b4ede;
+  --Uter-accent: #5959cc;
   /*
-   * ── Left-panel selected state（规范 §2.3）──────────────────────────
+   * ── Left-panel selected state（design-system-2.0 §17）───────────────
    *
-   * 规范把「左侧面板选中态」单列成一节，因为「品牌色 `#5B5EE6` 放在品牌浅底
-   * `#F0F0FF` 上只有 4.44:1」，未达 WCAG AA 普通文本 4.5:1。处方是**不动品牌
+   * 规范把「左侧面板选中态」单列成一节，因为「品牌色 `#6565E8` 放在品牌浅底
+   * `#F3F3FD` 上只有 4.16:1」，未达 WCAG AA 普通文本 4.5:1。处方是**不动品牌
    * 主色**，只给这个「浅底 + 小字号」组合换一个专用前景色：
    *
-   *   浅色 `#5558D8` on `#F0F0FF` = 4.93:1
-   *   深色 `#8B8DF5` on `#25264A` = 4.97:1
+   *   浅色 `#5959CC` on `#F3F3FD` = 5.11:1
+   *   深色 `#A2A2F8` on `#161941` = 7.25:1
    *
-   * 所以这个站点的侧栏选中态不再用 `--Uter-accent`（那是「品牌色压暗以便放在
-   * 面板底色上」的另一种解法，取值 `#4b4ede`，与规范的 `#5558D8` 不同源），
-   * 而是用下面这对专用 Token —— 前景和底色必须成对使用，单独换一个都会让
-   * 对比度回到不合格区间。
+   * 所以这个站点的侧栏选中态不再用 `--Uter-accent`（那是「品牌色压深以便放在
+   * 面板底色上」的另一处落点，与规范的专用前景同源取值），而是用下面这对
+   * 专用 Token —— 前景和底色必须成对使用，单独换一个都会让对比度回到
+   * 不合格区间。
    */
-  --Uter-nav-active: #5558d8;
-  --Uter-nav-active-bg: #f0f0ff;
+  --Uter-nav-active: #5959cc;
+  --Uter-nav-active-bg: #f3f3fd;
   --Uter-panel: #f1f1f1;
   --Uter-panel-hover: rgb(0 0 0 / 0.045);
   /* Inline start padding that lines the panel's content up with the
@@ -351,11 +350,11 @@ body {
 }
 
 .dark {
-  /* 与 SPA 深色主题的 `--primary` 同值（#8B8DF5）：6.14:1 on #0F172A。 */
-  --Uter-accent: #8b8df5;
-  /* 规范 §2.3 的深色组合：`#8B8DF5` on `#25264A` = 4.97:1。 */
-  --Uter-nav-active: #8b8df5;
-  --Uter-nav-active-bg: #25264a;
+  /* 与 SPA 深色主题的文字出口同源（2.0 §17 深色前景）：7.70:1 on #0F172A。 */
+  --Uter-accent: #a2a2f8;
+  /* design-system-2.0 §17 的深色组合：`#A2A2F8` on `#161941` = 7.25:1。 */
+  --Uter-nav-active: #a2a2f8;
+  --Uter-nav-active-bg: #161941;
   --Uter-panel: var(--color-neutral-900);
   --Uter-panel-hover: rgb(255 255 255 / 0.055);
 }
@@ -415,16 +414,16 @@ body {
  * the app's `Button` at `variant='default'`, which is what the SPA
  * renders here:
  *
- *   fill    `bg-primary`   → `.bg-primary{background-color:#5b5ee6}`
+ *   fill    `bg-primary`   → `.bg-primary{background-color:#6565e8}`
  *   label   `text-primary-foreground`
- *   radius  `rounded-md`   → the app's `--radius-md` 8px, **not** the
- *                            10px nav-link radius — see
+ *   radius  `rounded-lg`   → the app's `--radius-lg` 1rem（2.0 §16 把
+ *                            全部 Button 档统一到 16px）— see
  *                            `--Uter-brand-radius-md`
  *   border  `border border-transparent`, from the Button base. It is
  *           a real pixel of the button's width: without it the label
  *           box measures 52px against the app's 54px.
  *
- * `:hover` uses the spec's `--brand-hover` (`#494CC7`, 规范 §1.1.1) —
+ * `:hover` uses the spec's `--hover-primary` (`#5050CA`, 2.0 §11.2) —
  * a same-hue step darker, not a dimmed fill, so the label keeps its
  * contrast instead of fading with the background. The call site
  * therefore carries no `hover:opacity-90`.

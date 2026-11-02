@@ -53,7 +53,7 @@ const alertConfig = {
   important: {
     label: 'Important',
     className: 'border-primary/40 bg-primary-subtle text-fg-secondary',
-    markerClassName: 'text-primary',
+    markerClassName: 'text-fg-link',
   },
   warning: {
     label: 'Warning',
