@@ -27,7 +27,7 @@ const iconBadgeVariants = cva(
     variants: {
       tone: {
         neutral: 'bg-muted text-muted-foreground',
-        primary: 'bg-primary-subtle text-primary',
+        primary: 'bg-primary-subtle text-primary-subtle-foreground',
         success: 'bg-success-soft text-success',
         warning: 'bg-warning-soft text-warning',
         info: 'bg-info-soft text-info',

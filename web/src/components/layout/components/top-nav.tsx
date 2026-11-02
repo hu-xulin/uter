@@ -128,7 +128,7 @@ export function TopNav({ className, links, ...props }: TopNavProps) {
                 href={href}
                 target='_blank'
                 rel='noopener noreferrer'
-                className='hover:text-primary text-muted-foreground text-sm font-medium transition-colors'
+                className='hover:text-fg-link text-muted-foreground text-sm font-medium transition-colors'
               >
                 {title}
               </a>
@@ -140,7 +140,7 @@ export function TopNav({ className, links, ...props }: TopNavProps) {
               to={href}
               disabled={disabled}
               className={cn(
-                'hover:text-primary text-sm transition-colors',
+                'hover:text-fg-link text-sm transition-colors',
                 isActive
                   ? 'text-foreground font-semibold'
                   : 'text-muted-foreground font-medium'

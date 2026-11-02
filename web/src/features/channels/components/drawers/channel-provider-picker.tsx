@@ -397,7 +397,7 @@ export function ChannelProviderPicker(props: ChannelProviderPickerProps) {
                                 // primary 直接用品牌色（浅底上对比度足够）。
                                 option.badge.tone === 'warning'
                                   ? 'bg-warning-soft text-warning-soft-foreground text-xs'
-                                  : 'bg-primary-subtle text-primary text-xs'
+                                  : 'bg-primary-subtle text-primary-subtle-foreground text-xs'
                               }
                             />
                           )}

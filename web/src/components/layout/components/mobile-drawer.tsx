@@ -118,7 +118,7 @@ function MobileUserProfile({ user, onNavigate }: MobileUserProfileProps) {
         <Link
           to='/profile'
           onClick={onNavigate}
-          className='text-foreground hover:text-primary border-border flex items-center gap-2.5 border-b p-2.5 transition-colors'
+          className='text-foreground hover:text-fg-link border-border flex items-center gap-2.5 border-b p-2.5 transition-colors'
         >
           <User className='size-4' />
           {t('Profile')}
@@ -128,7 +128,7 @@ function MobileUserProfile({ user, onNavigate }: MobileUserProfileProps) {
           <Link
             to='/security'
             onClick={onNavigate}
-            className='text-foreground hover:text-primary border-border flex items-center gap-2.5 border-b p-2.5 transition-colors'
+            className='text-foreground hover:text-fg-link border-border flex items-center gap-2.5 border-b p-2.5 transition-colors'
           >
             <ShieldCheck className='size-4' />
             {t('Security & Access')}
@@ -138,7 +138,7 @@ function MobileUserProfile({ user, onNavigate }: MobileUserProfileProps) {
         <Link
           to='/wallet'
           onClick={onNavigate}
-          className='text-foreground hover:text-primary border-border flex items-center gap-2.5 border-b p-2.5 transition-colors'
+          className='text-foreground hover:text-fg-link border-border flex items-center gap-2.5 border-b p-2.5 transition-colors'
         >
           <Wallet className='size-4' />
           {t('Wallet')}
@@ -254,7 +254,7 @@ export function MobileDrawer({
                   variant='ghost'
                   size='icon-sm'
                   onClick={onClose}
-                  className='hover:text-primary cursor-pointer'
+                  className='hover:text-fg-link cursor-pointer'
                   aria-label={t('Close menu')}
                 >
                   <X className='size-4.5' />
@@ -282,7 +282,7 @@ export function MobileDrawer({
                       >
                         <Link
                           to={link.href}
-                          className='text-primary hover:text-primary transition-colors'
+                          className='text-fg-link hover:text-fg-link transition-colors'
                           onClick={onClose}
                         >
                           {link.title}

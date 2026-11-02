@@ -128,7 +128,7 @@ export function LogsFilterToolbar<TData>(props: LogsFilterToolbarProps<TData>) {
         'text-muted-foreground hover:text-foreground gap-1 px-2',
         props.hasAdvancedActiveFilters &&
           !advancedOpen &&
-          'text-primary hover:text-primary'
+          'text-fg-link hover:text-fg-link'
       )}
     >
       {advancedOpen ? t('Collapse') : t('Expand')}
@@ -164,7 +164,7 @@ export function LogsFilterToolbar<TData>(props: LogsFilterToolbarProps<TData>) {
                     'text-muted-foreground hover:text-foreground gap-1 px-2',
                     props.compactMobile && 'gap-1.5',
                     activeMobileFilterCount > 0 &&
-                      'text-primary hover:text-primary'
+                      'text-fg-link hover:text-fg-link'
                   )}
                 >
                   {t('Filter')}

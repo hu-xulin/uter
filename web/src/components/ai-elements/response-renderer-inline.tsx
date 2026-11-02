@@ -71,7 +71,7 @@ export function renderLink(
 
   return (
     <a
-      className='text-primary'
+      className='text-fg-link'
       href={node.href}
       key={key}
       rel={rel}

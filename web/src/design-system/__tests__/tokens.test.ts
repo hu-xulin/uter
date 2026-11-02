@@ -235,15 +235,17 @@ describe('分组标题档（group-title）', () => {
   })
 })
 
-describe('圆角 Token 对应文档 1.3 Shape', () => {
-  it('六个圆角档位与文档一致', () => {
+describe('圆角 Token 对应 design-system-2.0 §13.4', () => {
+  it('七个圆角档位与文档一致', () => {
     const SHAPE: Array<[string, number]> = [
-      ['xs', 4],
-      ['sm', 6],
-      ['md', 8],
-      ['lg', 10],
-      ['xl', 12],
-      ['2xl', 16],
+      ['xs', 6.4],
+      ['sm', 9.6],
+      ['md', 12.8],
+      ['lg', 16],
+      ['xl', 22.4],
+      ['2xl', 28.8],
+      ['3xl', 35.2],
+      ['4xl', 44.8],
     ]
     for (const [step, px] of SHAPE) {
       const value = readVar(semanticCss, `ds-radius-${step}`) as string
@@ -264,27 +266,29 @@ describe('theme.css 圆角阶梯与文档一致', () => {
     return Number.NaN
   }
 
-  it('默认基准 8px 推出 4/6/8/10/12/16/20/24 八档', () => {
+  it('默认基准 1rem 推出 6.4/9.6/12.8/16/22.4/28.8/35.2/44.8 八档', () => {
     // theme.css 的 `--radius-*` 阶梯是 Tailwind `rounded-*` 工具类的真实
     // 来源（@theme inline 内联 + :root 运行时变量双出口）。它与
     // primitives.css 是同一套刻度的两种声明，改一边忘了另一边就会
-    // 出现「文档 8px、页面 6px」，这里把差异钉死。
+    // 出现「文档 16px、页面 12.8px」，这里把差异钉死。
+    // design-system-2.0 §13.4：基准 1rem，系数 xs×0.4 / sm×0.6 / md×0.8 /
+    // lg×1 / xl×1.4 / 2xl×1.8 / 3xl×2.2 / 4xl×2.8。
     const themeCss = readFileSync(
       join(process.cwd(), 'src', 'styles', 'theme.css'),
       'utf8'
     )
     const base = toPx(readVar(themeCss, 'radius') as string)
-    expect(base, '默认基准 --radius').toBe(8)
+    expect(base, '默认基准 --radius').toBe(16)
 
     const EXPECTED: Array<[string, number]> = [
-      ['xs', 4],
-      ['sm', 6],
-      ['md', 8],
-      ['lg', 10],
-      ['xl', 12],
-      ['2xl', 16],
-      ['3xl', 20],
-      ['4xl', 24],
+      ['xs', 6.4],
+      ['sm', 9.6],
+      ['md', 12.8],
+      ['lg', 16],
+      ['xl', 22.4],
+      ['2xl', 28.8],
+      ['3xl', 35.2],
+      ['4xl', 44.8],
     ]
     for (const [step, px] of EXPECTED) {
       const declaration = readVar(themeCss, `radius-${step}`) as string

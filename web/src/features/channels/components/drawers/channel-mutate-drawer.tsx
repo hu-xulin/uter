@@ -3970,7 +3970,7 @@ export function ChannelMutateDrawer({
                     rel='noopener noreferrer'
                     // 地址按规范用正文色 + 等宽；链接可识别性靠下划线，
                     // 不再把品牌色用在信息正文上（C-04）。
-                    className='text-foreground text-mono hover:text-primary font-mono underline underline-offset-2'
+                    className='text-foreground text-mono hover:text-fg-link font-mono underline underline-offset-2'
                   >
                     {t('https://cloud.siliconflow.cn/i/hij0YNTZ')}
                   </a>

@@ -64,15 +64,16 @@ describe('焦点指示器', () => {
     // `--ds-color-focus-ring`（colors.css）与 `--ds-focus-ring-color`
     // （semantic.css）曾是同一个值的两个名字，前者零引用。
     expect(colorsCss).not.toContain('--ds-color-focus-ring')
-    expect(semanticCss).toContain('--ds-focus-ring-width: 1px')
+    // design-system-2.0 §13.5：焦点环恒 2px。
+    expect(semanticCss).toContain('--ds-focus-ring-width: 2px')
     expect(semanticCss).toContain('--ds-focus-ring-color: var(--ring)')
     expect(accessibilityCss).toContain('var(--ds-focus-ring-color)')
   })
 
-  it('原生元素与组件是同一种几何：贴边 1px 环', () => {
-    // 组件层是 `focus-visible:ring-1` = `box-shadow: 0 0 0 1px`，贴在边框外沿
+  it('原生元素与组件是同一种几何：贴边 2px 环', () => {
+    // 组件层是 `focus-visible:ring-2` = `box-shadow: 0 0 0 2px`，贴在边框外沿
     // 且没有间隙。基础层用 outline 兜底时必须 `outline-offset: 0`；
-    // 写成 2px 就会和组件不一致 —— 同一次 Tab 里焦点环会「跳一下」。
+    // 写成非 0 就会和组件不一致 —— 同一次 Tab 里焦点环会「跳一下」。
     expect(accessibilityCss).toMatch(
       /:where\(a, button, \[role='button'\], \[tabindex\]\):focus-visible\s*\{[^}]*outline-offset: 0/
     )
@@ -80,8 +81,8 @@ describe('焦点指示器', () => {
   })
 
   it('基础组件的焦点写法没有被改掉', () => {
-    // 2026-10-29 起全站统一 1px（规范 §1.4 stroke-focus / §1.7），不再区分
-    // 「表单控件 1px、其余 2px」两档 —— 两档并存在同一次 Tab 序列里会跳。
+    // design-system-2.0 §13.5：全站统一 2px 满色（2026-10-29 曾收窄到 1px，
+    // 2.0 裁定回 2px）—— 环宽只能有一个值，3px/4px 与半透明环都违规。
     for (const rel of [
       'components/ui/button.tsx',
       'components/ui/toggle.tsx',
@@ -89,11 +90,11 @@ describe('焦点指示器', () => {
       'components/ui/select.tsx',
       'components/ui/textarea.tsx',
     ]) {
-      expect(read(rel), `${rel} 缺少 focus-visible:ring-1`).toContain(
-        'focus-visible:ring-1'
-      )
-      expect(read(rel), `${rel} 不应再有 2px 焦点环`).not.toContain(
+      expect(read(rel), `${rel} 缺少 focus-visible:ring-2`).toContain(
         'focus-visible:ring-2'
+      )
+      expect(read(rel), `${rel} 不应再有其他宽度的焦点环`).not.toMatch(
+        /focus-visible:ring-(1|3|4)\b/
       )
     }
   })

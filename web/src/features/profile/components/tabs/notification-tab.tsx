@@ -364,7 +364,7 @@ export function NotificationTab({
                     href='https://gotify.net/'
                     target='_blank'
                     rel='noopener noreferrer'
-                    className='text-primary underline underline-offset-4'
+                    className='text-fg-link underline underline-offset-4'
                   >
                     {t('Gotify Documentation')}
                   </a>

@@ -231,7 +231,7 @@ export function ChannelPriorityDemo(props: {
                 className={cn(
                   'relative shrink-0 tabular-nums',
                   !card && 'ml-auto',
-                  peer && 'border-primary/30 text-primary'
+                  peer && 'border-primary/30 text-fg-link'
                 )}
               >
                 {t('Priority')} {formatNumber(priority, locale)}

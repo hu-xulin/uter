@@ -968,7 +968,7 @@ export function OAuthSection(props: OAuthSectionProps) {
                     href='https://connect.linux.do/'
                     target='_blank'
                     rel='noreferrer'
-                    className='text-primary inline-flex w-fit items-center gap-1 hover:no-underline'
+                    className='text-fg-link inline-flex w-fit items-center gap-1 hover:no-underline'
                   >
                     {t('Manage your LinuxDO OAuth app')}
                   </a>

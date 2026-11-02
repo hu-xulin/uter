@@ -43,7 +43,7 @@ function Textarea({
         //
         // 焦点环与 Input 同档 **1px 外扩**（规范 2.1 Textarea 写的就是 1px；
         // 2px 会让「1px 边框 + 2px 环」看起来像双线框）。错误态同步收到 1px。
-        'border-input placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring disabled:bg-input/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:bg-input/30 dark:disabled:bg-input/80 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 flex field-sizing-content max-h-96 min-h-18 w-full overflow-y-auto rounded-md border bg-background px-3 py-2.5 transition-colors outline-none focus-visible:ring-1 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:ring-1',
+        'border-input placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring disabled:bg-input/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:bg-input/30 dark:disabled:bg-input/80 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 flex field-sizing-content max-h-96 min-h-18 w-full overflow-y-auto rounded-lg border bg-background px-3 py-2.5 transition-colors outline-none focus-visible:ring-2 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:ring-1',
         // 与 Input 一致：字号只有一个来源。`text-mono` 是自定义 token，
         // twMerge 不会把 `text-sm` 删掉，两者并存时谁生效取决于 CSS 源顺序。
         mono ? 'font-mono text-mono' : 'text-sm',

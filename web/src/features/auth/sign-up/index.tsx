@@ -44,7 +44,7 @@ export function SignUp() {
           {!registrationDisabled && (
             <p className='text-muted-foreground text-left text-sm'>
               {t('Already have an account?')}{' '}
-              <Link to='/sign-in' className='hover:text-primary font-medium'>
+              <Link to='/sign-in' className='hover:text-fg-link font-medium'>
                 {t('Sign in')}
               </Link>
               .
@@ -55,7 +55,7 @@ export function SignUp() {
         {registrationDisabled ? (
           <p className='text-muted-foreground text-sm'>
             {t('New user registration has been disabled by administrator')}{' '}
-            <Link to='/sign-in' className='hover:text-primary font-medium'>
+            <Link to='/sign-in' className='hover:text-fg-link font-medium'>
               {t('Sign in')}
             </Link>
           </p>
