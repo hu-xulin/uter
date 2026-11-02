@@ -84,13 +84,13 @@ export const ModelPerfBadge = memo(function ModelPerfBadge(
         props.className
       )}
     >
-      <dl className='flex min-w-0 items-start gap-5 text-sm tabular-nums'>
+      <dl className='flex min-w-0 items-start gap-5 text-xs tabular-nums'>
         <div className='w-24 shrink-0'>
           <dt
             title={t(
               'Success rate excludes business rejections and includes the current partial hour.'
             )}
-            className='text-muted-foreground flex items-center justify-between gap-1 text-sm'
+            className='text-muted-foreground flex items-center justify-between gap-1 text-xs'
           >
             <span>{t('Status')}</span>
             <span className='text-mono font-mono'>
@@ -120,7 +120,7 @@ export const ModelPerfBadge = memo(function ModelPerfBadge(
           </dd>
         </div>
         <div title={t('Average latency')} className='shrink-0'>
-          <dt className='text-muted-foreground text-sm'>
+          <dt className='text-muted-foreground text-xs'>
             {t('Latency short')}
           </dt>
           <dd className='text-mono mt-1 font-mono whitespace-nowrap'>
@@ -128,7 +128,7 @@ export const ModelPerfBadge = memo(function ModelPerfBadge(
           </dd>
         </div>
         <div title={t('Throughput')} className='shrink-0'>
-          <dt className='text-muted-foreground text-sm'>
+          <dt className='text-muted-foreground text-xs'>
             {t('Throughput short')}
           </dt>
           <dd className='text-mono mt-1 font-mono whitespace-nowrap'>
