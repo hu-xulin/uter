@@ -419,14 +419,9 @@ describe('model cards', () => {
         selectedGroup='default'
       />
     )
+    // 单位已移除（卡片标题「(/ 1M Tokens)」已注明），官方行只显示价格。
     expect(screen.getByText('Input').parentElement).toHaveTextContent(
-      /\$0.15\s*\/\s*1M/
-    )
-    expect(screen.getByText('Output').parentElement).toHaveTextContent(
-      /\$0.6\s*\/\s*1M/
-    )
-    expect(screen.getByText('Cache Read').parentElement).toHaveTextContent(
-      /\$0.003\s*\/\s*1M/
+      /Official\s*\$0\.15\s*\$0\.6\s*\$0\.003/
     )
   })
 
@@ -465,7 +460,7 @@ describe('model cards', () => {
       />
     )
     expect(screen.getByText('Cache Read').parentElement).toHaveTextContent(
-      /\$0.5\s*\/\s*1M/
+      /Official\s*\$0\.5/
     )
   })
 

@@ -274,31 +274,35 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
                   : 0
                 // 溢价：Uter 价高于官方价时给 `x1.05`，不再什么都不显示。
                 const dimMarkup = getMarkupMultiplier(uterUSD, preset.usd)
+                const dimUnit = unitLabelFor(entry)
                 return (
                   <span
                     key={`o-${entry.key}`}
                     className='text-muted-foreground text-sm tabular-nums'
                   >
-                    <span className={cn(dimDiscount && 'line-through')}>
-                      {offText}
-                    </span>
-                    <span className='font-normal'>
-                      {' '}
-                      / {unitLabelFor(entry)}
-                    </span>
-                    {dimDiscount && (
-                      <span className='text-success-soft-foreground ml-1 font-semibold'>
-                        -{dimPercent}%
+                    <span className='flex flex-col items-start'>
+                      <span>
+                        <span className={cn(dimDiscount && 'line-through')}>
+                          {offText}
+                        </span>
+                        {dimUnit !== tokenUnitLabel && (
+                          <span className='font-normal'> / {dimUnit}</span>
+                        )}
                       </span>
-                    )}
-                    {dimMarkup != null && (
-                      <span
-                        className='text-warning-soft-foreground ml-1 font-semibold'
-                        title={`+${Math.round((dimMarkup - 1) * 100)}%`}
-                      >
-                        x{dimMarkup}
-                      </span>
-                    )}
+                      {dimDiscount && (
+                        <span className='text-success-soft-foreground font-semibold'>
+                          -{dimPercent}%
+                        </span>
+                      )}
+                      {dimMarkup != null && (
+                        <span
+                          className='text-warning-soft-foreground font-semibold'
+                          title={`+${Math.round((dimMarkup - 1) * 100)}%`}
+                        >
+                          x{dimMarkup}
+                        </span>
+                      )}
+                    </span>
                   </span>
                 )
               }
@@ -321,20 +325,24 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
                   key={`o-${entry.key}`}
                   className='text-muted-foreground text-sm tabular-nums'
                 >
-                  <span className={cn(isDiscount && 'line-through')}>
-                    {offText}
+                  <span className='flex flex-col items-start'>
+                    <span>
+                      <span className={cn(off != null && isDiscount && 'line-through')}>
+                        {offText}
+                      </span>
+                      {off && unitLabelFor(entry) !== tokenUnitLabel && (
+                        <span className='font-normal'>
+                          {' '}
+                          / {unitLabelFor(entry)}
+                        </span>
+                      )}
+                    </span>
+                    {isDiscount && (
+                      <span className='text-success-soft-foreground font-semibold'>
+                        -{discountPercent}%
+                      </span>
+                    )}
                   </span>
-                  {off && (
-                    <span className='font-normal'>
-                      {' '}
-                      / {unitLabelFor(entry)}
-                    </span>
-                  )}
-                  {isDiscount && (
-                    <span className='text-success-soft-foreground ml-1 font-semibold'>
-                      -{discountPercent}%
-                    </span>
-                  )}
                 </span>
               )
             })}
@@ -481,22 +489,24 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
             key={`o-${d.type}`}
             className='text-muted-foreground text-sm tabular-nums'
           >
-            <span className={cn(d.isDiscount && 'line-through')}>
-              {d.official}
+            <span className='flex flex-col items-start'>
+              <span className={cn(d.isDiscount && 'line-through')}>
+                {d.official}
+              </span>
+              {d.isDiscount && (
+                <span className='text-success-soft-foreground font-semibold'>
+                  -{d.percent}%
+                </span>
+              )}
+              {d.markup != null && (
+                <span
+                  className='text-warning-soft-foreground font-semibold'
+                  title={`+${Math.round((d.markup - 1) * 100)}%`}
+                >
+                  x{d.markup}
+                </span>
+              )}
             </span>
-            {d.isDiscount && (
-              <span className='text-success-soft-foreground ml-1 font-semibold'>
-                -{d.percent}%
-              </span>
-            )}
-            {d.markup != null && (
-              <span
-                className='text-warning-soft-foreground ml-1 font-semibold'
-                title={`+${Math.round((d.markup - 1) * 100)}%`}
-              >
-                x{d.markup}
-              </span>
-            )}
           </span>
         ))}
       </div>
@@ -585,22 +595,24 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
             key={`o-${d.key}`}
             className='text-muted-foreground text-sm tabular-nums'
           >
-            <span className={cn(d.isDiscount && 'line-through')}>
-              {d.official}
+            <span className='flex flex-col items-start'>
+              <span className={cn(d.isDiscount && 'line-through')}>
+                {d.official}
+              </span>
+              {d.isDiscount && (
+                <span className='text-success-soft-foreground font-semibold'>
+                  -{d.percent}%
+                </span>
+              )}
+              {d.markup != null && (
+                <span
+                  className='text-warning-soft-foreground font-semibold'
+                  title={`+${Math.round((d.markup - 1) * 100)}%`}
+                >
+                  x{d.markup}
+                </span>
+              )}
             </span>
-            {d.isDiscount && (
-              <span className='text-success-soft-foreground ml-1 font-semibold'>
-                -{d.percent}%
-              </span>
-            )}
-            {d.markup != null && (
-              <span
-                className='text-warning-soft-foreground ml-1 font-semibold'
-                title={`+${Math.round((d.markup - 1) * 100)}%`}
-              >
-                x{d.markup}
-              </span>
-            )}
           </span>
         ))}
       </div>
