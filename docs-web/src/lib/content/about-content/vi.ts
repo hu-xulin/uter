@@ -84,7 +84,7 @@ export const VI_CONTENT: AboutContent = {
             avatar: FOUNDER_AVATAR,
           },
           paragraphs: [
-            'Từng là Phó Chủ tịch Alibaba Group và Nhà sáng lập Yunhu Technology, ông Xulin Hu đã giữ chức Giám đốc Sản phẩm tại iDreamsky và từng làm việc tại Baidu và Tencent.',
+            'Thạc sĩ Đại học Thanh Hoa, từng là Phó Chủ tịch Alibaba Group và Nhà sáng lập Yunhu Technology, ông Xulin Hu đã giữ chức Giám đốc Sản phẩm tại iDreamsky và từng làm việc tại Baidu và Tencent.',
             'Với 20 năm kinh nghiệm trong các lĩnh vực điện toán đám mây, dịch vụ doanh nghiệp và kiến trúc sản phẩm chịu tải cao, ông đã tham gia sâu sắc vào các giai đoạn quan trọng trong quá trình phát triển của ngành công nghiệp Internet và mang theo kinh nghiệm phong phú về sản phẩm nền tảng, hạ tầng công nghệ và dịch vụ doanh nghiệp.',
             'Từ thời kỳ Internet máy tính cá nhân đầu tiên đến Internet di động, điện toán đám mây và làn sóng AI tạo sinh ngày hôm nay, ông Xulin Hu đã tham gia sâu sắc vào quá trình phát triển của các nền tảng công nghệ và mô hình kinh doanh số.',
             'Ngày nay, ông mang kinh nghiệm ấy vào thời đại mô hình ngôn ngữ lớn, tập trung xây dựng một thế hệ dịch vụ AI thông minh mới.',

@@ -84,7 +84,7 @@ export const FR_CONTENT: AboutContent = {
             avatar: FOUNDER_AVATAR,
           },
           paragraphs: [
-            'Ancien vice-président du groupe Alibaba et fondateur de Yunhu Technology, Xulin Hu a été directeur produit chez iDreamsky et a occupé des postes chez Baidu et Tencent.',
+            'Diplômé d\'un master de l\'université Tsinghua, ancien vice-président du groupe Alibaba et fondateur de Yunhu Technology, Xulin Hu a été directeur produit chez iDreamsky et a occupé des postes chez Baidu et Tencent.',
             'Avec 20 ans d’expérience couvrant le cloud computing, les services aux entreprises et l’architecture de produits à forte concurrence, il a traversé les grandes étapes de l’évolution de l’industrie internet et apporte une expérience approfondie des produits de plateforme, de l’infrastructure technologique et des services aux entreprises.',
             'Depuis les débuts de l’internet et de l’informatique personnelle jusqu’à l’internet mobile, au cloud computing et à la révolution actuelle de l’IA générative, M. Hu a profondément participé à l’évolution des plateformes technologiques et des activités numériques.',
             'Aujourd’hui, il met cette expérience au service de l’ère des grands modèles de langage, en se consacrant à la construction d’une nouvelle génération de services IA intelligents.',
