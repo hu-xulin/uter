@@ -33,6 +33,7 @@ export type DiscountTagProps = {
  *
  * - **折扣**：平台价低于官方价 → 绿色 `x0.6`（ratio 0.6 → `x0.6`、0.85 → `x0.85`）。
  * - **溢价**：平台价高于官方价 → 红色 `x1.05`（ratio 1.05 → `x1.05`）。
+ * - **持平**：平台价与官方价一致（或价差小到取整回 1）→ 中性灰 `x1.0`。
  *
  * 折扣过去写成「6 折」，和溢价角标的 `x1.05` 是两套计数法 —— 同一张卡片上
  * 「6折」与「x1.05」并列时，读者得先在脑子里换算一次才能比较。统一成
@@ -46,13 +47,25 @@ export const DiscountTag = memo(function DiscountTag(props: DiscountTagProps) {
     props.selectedGroup
   )
 
+  // 与官方价持平（或价差小到两位小数取整回 1）：渲染中性 x1.0 而不是什么都不
+  // 显示 —— 用户无法区分「与官方同价」和「没算出折扣」（2026-11-02 用户裁定）。
+  // 仅在存在官方参照（info.ratio 非空）时生效；无从比价的模型保持静默。
+  const rounded =
+    info.ratio != null ? Math.round(info.ratio * 100) / 100 : null
+  if (rounded === 1) {
+    return (
+      <DiscountBadge ratio={1} title='0%' className={props.className}>
+        x1.0
+      </DiscountBadge>
+    )
+  }
+
   if (!info.hasDiscount && info.markup == null) return null
 
   const isMarkup = !info.hasDiscount
   // 折扣的 `zhe` 是折数（0.6 折率 → 6），这里还原成倍率，与溢价同一口径。
   const ratio = isMarkup ? (info.markup ?? 1) : info.zhe / 10
-  // 折扣不到 0.5% 时两位小数会取整回 1，渲染出来就是 `x1` —— 一个声称有折扣
-  // 却看不出折扣的角标。与溢价取整成 `x1.00` 时同样的处理：宁可不显示。
+  // 无官方参照的组倍率折扣兜底路径取整后不可能 ≥ 1，此守卫仅为防御。
   if (!isMarkup && Math.round(ratio * 100) / 100 >= 1) return null
 
   return (

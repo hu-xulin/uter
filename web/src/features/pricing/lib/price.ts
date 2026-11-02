@@ -548,6 +548,15 @@ export type DiscountInfo = {
    * 渲染出 `x1.00` 这种「显示加价但数字看不出加价」的角标。
    */
   markup: number | null
+  /**
+   * 原始比价结果（Uter 价 ÷ 官方价），**只在存在官方参照价时非空**。
+   *
+   * 折扣/溢价角标各取比例的一侧，比值恰好为 1（或小到两位小数取整回 1）时
+   * 两侧都不表达 —— 调用点据此渲染中性的 `x1.0`「与官方价一致」角标，而不是
+   * 什么都没有（2026-11-02 定价广场用户反馈 seedance-2.0-ab「缺失折扣角标」）。
+   * 没有官方参照（无从比价）时为 null，此时不得渲染 x1.0。
+   */
+  ratio: number | null
 }
 
 /**
@@ -580,7 +589,7 @@ export function getMarkupMultiplier(
  */
 function badgeFromRatio(ratio: number): DiscountInfo {
   if (!Number.isFinite(ratio) || ratio <= 0) {
-    return { hasDiscount: false, percent: 0, zhe: 10, markup: null }
+    return { hasDiscount: false, percent: 0, zhe: 10, markup: null, ratio: null }
   }
   if (ratio < 1 - 1e-9) {
     return {
@@ -588,6 +597,7 @@ function badgeFromRatio(ratio: number): DiscountInfo {
       percent: (1 - ratio) * 100,
       zhe: ratio * 10,
       markup: null,
+      ratio,
     }
   }
   // 两位小数取整后仍然 > 1 才算「看得见的溢价」。
@@ -597,6 +607,7 @@ function badgeFromRatio(ratio: number): DiscountInfo {
     percent: 0,
     zhe: 10,
     markup: rounded > 1 ? rounded : null,
+    ratio,
   }
 }
 
@@ -637,7 +648,7 @@ export function getDiscountInfo(
     ) {
       return badgeFromRatio((platformRequest * displayRatio) / officialRequest)
     }
-    return { hasDiscount: false, percent: 0, zhe: 10, markup: null }
+    return { hasDiscount: false, percent: 0, zhe: 10, markup: null, ratio: null }
   }
 
   // Expression-billed models keep the admin discount inside billing_expr
@@ -655,7 +666,7 @@ export function getDiscountInfo(
     if (Number.isFinite(effectiveInputUSD) && effectiveInputUSD > 0) {
       return badgeFromRatio(effectiveInputUSD / officialInputUSD)
     }
-    return { hasDiscount: false, percent: 0, zhe: 10, markup: null }
+    return { hasDiscount: false, percent: 0, zhe: 10, markup: null, ratio: null }
   }
 
   if (
@@ -679,8 +690,16 @@ export function getDiscountInfo(
       percent: (1 - displayRatio) * 100,
       zhe: displayRatio * 10,
       markup: null,
+      // 无官方参照，仅组倍率折扣：无从比价，不提供 ratio。
+      ratio: null,
     }
   }
 
-  return { hasDiscount: false, percent: 0, zhe: 10, markup: null }
+  return {
+    hasDiscount: false,
+    percent: 0,
+    zhe: 10,
+    markup: null,
+    ratio: null,
+  }
 }
