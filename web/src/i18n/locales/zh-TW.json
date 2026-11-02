@@ -3959,6 +3959,7 @@
     "ms": "毫秒",
     "Multi-key channel: Keys will be": "多金鑰渠道：金鑰將",
     "Multi-Key Management": "多金鑰管理",
+    "New accounts are created automatically if the email is not registered.": "信箱未註冊時將自動建立帳號。",
     "New priority: {{priority}}": "新優先級：{{priority}}",
     "New priority: {{priority}} · {{count}} channels affected": "新優先級：{{priority}} · 影響 {{count}} 個通道",
     "New user registration has been disabled by administrator": "管理員關閉了新使用者註冊",
