@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Unified Design Spec · 合并设计规范（UTER × new-api）</title>
+<style>
+  :root{
+    --brand:#6565E8;
+    --brand-hover:#5050CA; --brand-active:#4141B7;
+    --brand-subtle:#F3F3FD; --brand-soft:#EDEDFC; --brand-border:#C4C4F6;
+    --ink:#1a1d29; --ink-2:#4b5060; --ink-3:#7c8194;
+    --bg:#f7f8fb; --panel:#ffffff; --line:#e5e8f0;
+    --ok:#0a7d4b; --ok-bg:#e8f6ef;
+    --warn:#9a5b00; --warn-bg:#fdf3e2;
+    --bad:#c03434; --bad-bg:#fdecec;
+    --code-bg:#f1f3f9;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+    background:var(--bg);color:var(--ink);font-size:14px;line-height:1.6}
+  .wrap{max-width:1080px;margin:0 auto;padding:32px 24px 80px}
+  a{color:var(--brand);text-decoration:none}
+  h1{font-size:28px;line-height:36px;font-weight:600}
+  h2{font-size:22px;line-height:30px;font-weight:600;margin:56px 0 8px;
+    padding-top:16px;border-top:1px solid var(--line)}
+  h3{font-size:18px;line-height:26px;font-weight:600;margin:28px 0 6px}
+  p{margin:8px 0;color:var(--ink-2)}
+  p strong,h2 strong,h3 strong,td strong{color:var(--ink)}
+  code{font-family:"SF Mono",Menlo,Consolas,monospace;font-size:13px;
+    background:var(--code-bg);border-radius:4px;padding:1px 5px;color:#3b3f63}
+  ul{margin:8px 0 8px 20px;color:var(--ink-2)}
+  li{margin:4px 0}
+  .hero{background:var(--panel);border:1px solid var(--line);border-radius:22px;
+    padding:28px 32px;margin-bottom:20px}
+  .hero p.lead{font-size:14px;color:var(--ink-2);margin-top:8px}
+  .badges{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+  .badge{display:inline-flex;align-items:center;gap:6px;font-size:12px;
+    border:1px solid var(--line);border-radius:999px;padding:3px 12px;background:var(--bg);color:var(--ink-2)}
+  .badge .dot{width:10px;height:10px;border-radius:50%;display:inline-block}
+  .badge.hl{background:var(--brand-soft);border-color:#c9caf5;color:#3f42b0;font-weight:600}
+  table{width:100%;border-collapse:collapse;background:var(--panel);
+    border:1px solid var(--line);border-radius:10px;overflow:hidden;margin:12px 0;font-size:13px}
+  th{background:#f2f4f9;text-align:left;font-weight:600;font-size:12px;color:var(--ink-2)}
+  th,td{padding:9px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+  tr:last-child td{border-bottom:none}
+  .tag{display:inline-block;font-size:11px;font-weight:600;border-radius:4px;padding:1px 7px;white-space:nowrap}
+  .tag.up{background:#e8f0fe;color:#1d5cc4}
+  .tag.uter{background:#f3e8fe;color:#7a2bc4}
+  .tag.both{background:#e9f6ee;color:#0a7d4b}
+  .ok{color:var(--ok);font-weight:600}
+  .warn{color:var(--warn);font-weight:600}
+  .bad{color:var(--bad);font-weight:600}
+  .note{background:var(--brand-soft);border:1px solid #d4d5f6;border-radius:10px;
+    padding:12px 16px;font-size:13px;color:#3f42b0;margin:12px 0}
+  .callout{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--brand);
+    border-radius:8px;padding:10px 16px;font-size:13px;color:var(--ink-2);margin:12px 0}
+  /* swatches */
+  .swatch{display:inline-block;width:16px;height:16px;border-radius:4px;
+    vertical-align:-3px;border:1px solid rgba(0,0,0,.08);margin-right:6px}
+  .swatch.big{width:44px;height:44px;border-radius:12px}
+  .palette{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin:14px 0}
+  .chip{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px}
+  .chip .c{height:40px;border-radius:8px;margin-bottom:8px;border:1px solid rgba(0,0,0,.06)}
+  .chip .n{font-size:12px;font-weight:600;color:var(--ink)}
+  .chip .v{font-size:11px;color:var(--ink-3);font-family:"SF Mono",Menlo,monospace}
+  /* radius demo */
+  .radius-row{display:flex;flex-wrap:wrap;gap:14px;margin:14px 0}
+  .rbox{background:var(--panel);border:1px solid var(--line);padding:14px;text-align:center;flex:1;min-width:110px}
+  .rbox .shape{height:52px;background:var(--brand-soft);border:1.5px solid var(--brand);margin-bottom:8px}
+  .rbox .rname{font-size:12px;font-weight:600}
+  .rbox .rval{font-size:11px;color:var(--ink-3)}
+  /* typography demo */
+  .type-row{display:flex;align-items:baseline;gap:16px;padding:9px 0;border-bottom:1px dashed var(--line)}
+  .type-row .meta{flex:0 0 250px;font-size:12px;color:var(--ink-3);font-family:"SF Mono",Menlo,monospace}
+  /* buttons demo */
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;
+    border:none;cursor:pointer;font-weight:500;border-radius:16px;transition:background .1s}
+  .btn-primary{background:var(--brand);color:#fff}
+  .btn-primary:hover{background:var(--brand-hover)}
+  .btn-primary:active{background:var(--brand-active)}
+  .btn-outline{background:transparent;color:var(--ink);border:1px solid var(--line)}
+  .btn-sm{height:32px;padding:0 14px;font-size:12px}
+  .btn-md{height:36px;padding:0 18px;font-size:14px}
+  .btn-lg{height:40px;padding:0 22px;font-size:14px}
+  /* focus ring demo */
+  .focus-demo input,.focus-demo button{outline:none}
+  .focus-demo input:focus-visible,.focus-demo button:focus-visible{
+    outline:2px solid var(--brand);outline-offset:0}
+  .focus-demo input{height:40px;border-radius:16px;border:1px solid var(--line);
+    padding:0 14px;font-size:14px;width:280px;background:var(--panel);color:var(--ink)}
+  .kbd-hint{font-size:12px;color:var(--ink-3);margin-top:6px}
+  /* sidebar demo */
+  .side-demo{display:flex;gap:18px;margin:14px 0;flex-wrap:wrap}
+  .sidebar{width:220px;background:#fafafc;border:1px solid var(--line);border-radius:12px;padding:10px}
+  .sitem{display:flex;align-items:center;gap:9px;height:32px;padding:0 10px;
+    border-radius:12.8px;font-size:14px;font-weight:500;color:var(--ink-2)}
+  .sitem.active{background:var(--brand-subtle);color:#5959CC}
+  .sitem .ico{width:16px;height:16px;border-radius:4px;background:currentColor;opacity:.35}
+  .sgroup{font-size:12px;font-weight:600;color:var(--ink-3);height:28px;display:flex;align-items:center;padding:0 10px}
+  /* density table */
+  .dens{display:flex;gap:8px;margin:10px 0}
+  .dens .cell{flex:1;background:var(--panel);border:1px solid var(--line);border-radius:8px;
+    padding:10px 14px;font-size:12px;color:var(--ink-2)}
+  .dens .cell b{display:block;font-size:13px;color:var(--ink)}
+  footer{margin-top:64px;padding-top:20px;border-top:1px solid var(--line);
+    font-size:12px;color:var(--ink-3)}
+  .toc{columns:2;gap:32px;margin:10px 0 0 20px;font-size:13px}
+  .toc li{margin:3px 0}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hero">
+    <h1>Unified Design Spec · 合并设计规范</h1>
+    <p class="lead">由《UTER Design System》与《上游 new-api 设计规范》合并而成，是合并体系的单一权威文件。
+    差异点按裁决总表定案：<strong>品牌 / 圆角 / 分层 / 主题维度取上游 new-api，焦点环 / 密度 / 表格 / 侧栏 / 控件高度取 UTER</strong>。</p>
+    <div class="badges">
+      <span class="badge hl"><span class="dot" style="background:var(--brand)"></span>品牌色阶 #6565E8 · 六档派生 · 白字 4.59:1 ✅ AA</span>
+      <span class="badge">圆角基准 1rem</span>
+      <span class="badge">分层 ring-1 描边 + 悬停投影</span>
+      <span class="badge">焦点环 2px 满色</span>
+      <span class="badge">密度不动字号</span>
+      <span class="badge">主题维度 ×5（含字体轴）</span>
+      <span class="badge">侧边栏 220px</span>
+      <span class="badge">控件高度 --ds-* Token 化</span>
+      <span class="badge">十档字号 v1.2</span>
+    </div>
+  </div>
+
+  <h2 id="ruling">差异裁决总表（定案）</h2>
+  <table>
+    <tr><th style="width:150px">维度</th><th>定案</th><th style="width:130px">取自</th></tr>
+    <tr><td>品牌色</td><td><span class="swatch" style="background:var(--brand)"></span><code>#6565E8</code> 六档派生色阶（动作梯同色相加深 + 浅底 / 描边）</td><td><span class="tag uter">UTER</span></td></tr>
+    <tr><td>圆角基准</td><td>1rem 基准：控件 16px、卡片 22.4px</td><td><span class="tag up">new-api</span></td></tr>
+    <tr><td>分层手段</td><td>ring-1 描边 + 悬停投影（成文值）</td><td><span class="tag up">new-api</span></td></tr>
+    <tr><td>焦点环</td><td>2px 满色（<code>ring-2 ring-ring</code>，禁 3/4px）</td><td><span class="tag uter">UTER</span></td></tr>
+    <tr><td>密度</td><td>只缩放间距与控件高度，<strong>不动字号</strong></td><td><span class="tag uter">UTER</span></td></tr>
+    <tr><td>主题维度</td><td>5 个（多字体轴 system / sans / serif）</td><td><span class="tag up">new-api</span></td></tr>
+    <tr><td>表格行高</td><td>行内边距推导（不写死行高）</td><td><span class="tag uter">UTER</span></td></tr>
+    <tr><td>侧边栏</td><td>220px（13.75rem），≥1024px 常驻</td><td><span class="tag uter">UTER</span></td></tr>
+    <tr><td>控件高度</td><td>Token 化（<code>--ds-button-height-*</code> 等）</td><td><span class="tag uter">UTER</span></td></tr>
+    <tr><td>字号 / 行高 / 字重</td><td>十档 v1.2</td><td><span class="tag both">双方一致</span></td></tr>
+  </table>
+  <div class="callout">未裁决冲突按「Token 化优先」裁定：文字层级 = UTER <code>--fg-*</code> 七档、图标 = UTER 五档 lucide 体系、动效 = UTER <code>--ds-motion-*</code>、内容宽度 = UTER 三档 Token 化、字体家族 = 上游字体轴、主题预设 = 上游 9 套 + surface bridge、输入控件全平台 14px。</div>
+
+  <h2 id="contrast">对比度（实测）</h2>
+  <table>
+    <tr><th>组合</th><th style="width:90px">对比度</th><th>判定</th></tr>
+    <tr><td><span class="swatch" style="background:var(--brand)"></span><code>#6565E8</code> 配白字（主按钮）</td><td><strong>4.59:1</strong></td><td><span class="ok">✅ AA 普通文本</span>（余量仅 0.09，调色必须重算）</td></tr>
+    <tr><td><span class="swatch" style="background:var(--brand-hover)"></span><code>#5050CA</code> 配白字（hover-primary）</td><td><strong>6.29:1</strong></td><td><span class="ok">✅ AA</span>（动作梯悬停档）</td></tr>
+    <tr><td><span class="swatch" style="background:var(--brand-active)"></span><code>#4141B7</code> 配白字（primary-active）</td><td><strong>7.88:1</strong></td><td><span class="ok">✅ AAA</span>（动作梯按下档）</td></tr>
+    <tr><td><code>#6565E8</code> 配近黑背景 <code>oklch(0.145 0 0)</code></td><td>4.32:1</td><td><span class="warn">⚠️ 普通文本不达 AA</span>；大文本达标，深底品牌色仅作点缀</td></tr>
+    <tr><td><span class="swatch" style="background:#5959CC"></span><code>#5959CC</code> 配选中浅底 <code>#F3F3FD</code>（悬停 <code>#EDEDFC</code>）</td><td><strong>5.11:1</strong>（悬停档 4.86）</td><td><span class="ok">✅ AA</span>（浅色选中态专用前景）</td></tr>
+    <tr><td><span class="swatch" style="background:#A2A2F8"></span><code>#A2A2F8</code> 配深色浅底（20% mix ≈ <code>#373751</code>）</td><td><strong>4.96:1</strong></td><td><span class="ok">✅ AA</span>（深色选中态文字）</td></tr>
+    <tr><td><span class="swatch" style="background:#BABAF9"></span><code>#BABAF9</code> 配深色主底 <code>oklch(0.235)</code></td><td><strong>7.74:1</strong></td><td><span class="ok">✅ AAA</span>（深色链接 <code>--fg-link</code>）</td></tr>
+    <tr><td><span class="swatch" style="background:#7171EA"></span><code>#7171EA</code> 配深色主底（primary-border 深）</td><td>3.54:1</td><td><span class="ok">✅ 3:1</span> 非文本线（选中控件描边）</td></tr>
+    <tr><td><code>--muted-foreground</code>（≈#757575）配白底</td><td>≈4.6:1</td><td><span class="ok">✅ AA</span></td></tr>
+  </table>
+  <div class="note">#6565E8 选型依据：品牌初拟 #6568E8 配白字 ≈ 4.47:1 不达 AA，绿色通道 0x68→0x65 降亮度后达标（4.59:1），色相差可忽略。</div>
+
+  <h2 id="color">颜色</h2>
+  <p>颜色是语义变量，组件不写死色值。<code>--primary: #6565E8</code> 是唯一品牌入口，
+  其余五档全部由它派生（UTER §11.2 模式：<strong>六条语义出口，一个来源</strong>）。</p>
+  <div class="palette">
+    <div class="chip"><div class="c" style="background:#6565E8"></div><div class="n">--primary</div><div class="v">#6565E8</div></div>
+    <div class="chip"><div class="c" style="background:#EDEDFC"></div><div class="n">--accent 浅（12% mix）</div><div class="v">color-mix</div></div>
+    <div class="chip"><div class="c" style="background:#373751"></div><div class="n">--accent 深（20% mix）</div><div class="v">color-mix</div></div>
+    <div class="chip"><div class="c" style="background:#0F172A"></div><div class="n">--foreground</div><div class="v">oklch(0.145 0 0)</div></div>
+    <div class="chip"><div class="c" style="background:#757575"></div><div class="n">--muted-foreground</div><div class="v">oklch(0.49 0 0)</div></div>
+    <div class="chip"><div class="c" style="background:#e5484d"></div><div class="n">--destructive</div><div class="v">oklch(0.577 0.245 27)</div></div>
+    <div class="chip"><div class="c" style="background:#30a46c"></div><div class="n">--success</div><div class="v">oklch(0.596 0.145 163)</div></div>
+    <div class="chip"><div class="c" style="background:#f5a623"></div><div class="n">--warning</div><div class="v">oklch(0.681 0.162 76)</div></div>
+    <div class="chip"><div class="c" style="background:#0091ff"></div><div class="n">--info</div><div class="v">oklch(0.588 0.158 242)</div></div>
+  </div>
+  <h3>品牌色阶六档（#6565E8 派生）</h3>
+  <table>
+    <tr><th>Token</th><th>用途</th><th style="width:150px">浅色</th><th style="width:190px">深色</th></tr>
+    <tr><td><code>--primary</code> / <code>--primary-strong</code></td><td>主按钮背景、选中控件填充</td><td><span class="swatch" style="background:#6565E8"></span><code>#6565E8</code>（白字 4.59 ✅）</td><td>同浅色</td></tr>
+    <tr><td><code>--hover-primary</code></td><td>主按钮悬停（同色相加深）</td><td><span class="swatch" style="background:#5050CA"></span><code>#5050CA</code>（白字 6.29 ✅）</td><td>同浅色</td></tr>
+    <tr><td><code>--primary-active</code></td><td>主按钮按下（与悬停可区分）</td><td><span class="swatch" style="background:#4141B7"></span><code>#4141B7</code>（白字 7.88 ✅）</td><td>同浅色</td></tr>
+    <tr><td><code>--primary-subtle</code></td><td>浅底：选中行、轻强调背景</td><td><span class="swatch" style="background:#F3F3FD"></span><code>#F3F3FD</code></td><td><code>color-mix</code> 20% ≈ <code>#373751</code></td></tr>
+    <tr><td><code>--primary-subtle-hover</code></td><td>浅底悬停一档（12% mix）</td><td><span class="swatch" style="background:#EDEDFC"></span>≈ <code>#EDEDFC</code></td><td>同声明</td></tr>
+    <tr><td><code>--primary-border</code></td><td>品牌描边：选中控件边框</td><td><span class="swatch" style="background:#C4C4F6"></span><code>#C4C4F6</code></td><td><span class="swatch" style="background:#7171EA"></span><code>#7171EA</code>（3.54:1 ✅）</td></tr>
+  </table>
+  <div class="note"><strong>文字出口不跟动作梯走</strong>：链接 <code>--fg-link</code> 深 = <code>#BABAF9</code>（7.74 ✅）、浅 = 品牌原色（4.59 ✅）；选中态文字 <code>--primary-subtle-foreground</code> 浅 = <code>#5959CC</code>（on #F3F3FD 5.11 ✅）、深 = <code>#A2A2F8</code>（on #373751 4.96 ✅）。派生规律：动作梯同色相（H 不变），hover 档 HSL 亮度 ×0.847、饱和度 ×0.72；active 档亮度 ×0.745、饱和度 ×0.64；subtle 浅档 8% 混白、hover 档 12% 混白；border 浅档 38% 混白、深档 = primary 提亮 8%。</div>
+  <h3>文字层级 --fg-* 七档</h3>
+  <table>
+    <tr><th>层级</th><th>Token</th><th>取值</th><th>用途</th></tr>
+    <tr><td>一级</td><td><code>--fg-primary</code></td><td><code>var(--foreground)</code></td><td>标题、正文、输入值</td></tr>
+    <tr><td>二级</td><td><code>--fg-secondary</code></td><td><code>var(--muted-foreground)</code></td><td>描述、辅助说明</td></tr>
+    <tr><td>三级 / 占位</td><td><code>--fg-tertiary</code> / <code>--fg-placeholder</code></td><td>muted 88% 混 background</td><td>时间戳、元信息 / 输入框占位</td></tr>
+    <tr><td>禁用</td><td><code>--fg-disabled</code></td><td>foreground 45% 混 background</td><td>禁用控件（豁免档，不得承载需阅读信息）</td></tr>
+    <tr><td>链接</td><td><code>--fg-link</code></td><td>浅 = <code>var(--primary)</code>（4.59 ✅）/ 深 = <code>#BABAF9</code>（7.74 ✅）</td><td>文本链接</td></tr>
+    <tr><td>反色</td><td><code>--fg-inverse</code></td><td><code>var(--background)</code></td><td>品牌实心背景上的文字</td></tr>
+  </table>
+  <div class="callout">禁止 <code>text-foreground/NN</code> 冒充文字层级；透明度只允许用于 hover / glass / 边框等状态表达。主题预设 9 套 + surface bridge（card / muted / border 等由预设 primary 3%–28% color-mix 派生），simple-large 为无障碍大字档。</div>
+
+  <h2 id="type">字号与排版（十档 v1.2）</h2>
+  <div style="background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px 18px;margin:12px 0">
+    <div class="type-row"><span class="meta">display 36/600/44</span><span style="font-size:36px;font-weight:600;line-height:44px">页面主视觉</span></div>
+    <div class="type-row"><span class="meta">h1 28/600/36</span><span style="font-size:28px;font-weight:600;line-height:36px">页面标题</span></div>
+    <div class="type-row"><span class="meta">h2 22/600/30</span><span style="font-size:22px;font-weight:600;line-height:30px">区块标题</span></div>
+    <div class="type-row"><span class="meta">h3 18/600/26</span><span style="font-size:18px;font-weight:600;line-height:26px">卡片 / 弹窗标题</span></div>
+    <div class="type-row"><span class="meta">group 15/600/22</span><span style="font-size:15px;font-weight:600;line-height:22px">卡片内分组标题</span></div>
+    <div class="type-row"><span class="meta">body 14/400/22</span><span style="font-size:14px;line-height:22px">正文（全站基准）</span></div>
+    <div class="type-row"><span class="meta">body-long 16/400/26</span><span style="font-size:16px;line-height:26px">长文本（文章 / 协议 / 对话）</span></div>
+    <div class="type-row"><span class="meta">caption 12/400/18</span><span style="font-size:12px;line-height:18px;color:var(--ink-3)">说明、占位符、徽标</span></div>
+    <div class="type-row" style="border-bottom:none"><span class="meta">dense / mono 13/400/20</span><span style="font-size:13px;font-family:'SF Mono',Menlo,monospace;line-height:20px">表格 / 二级导航 / 等宽文本 g90kp</span></div>
+  </div>
+  <ul>
+    <li>页面层级四层不多不少：<strong>28 / 22 / 18 / 15</strong>；<code>text-base</code>(16px) 不是标题，只给行标题 16/500、设置字段档 16/600、指标数值 16/600+tabular-nums。</li>
+    <li>行高属于字号：<code>text-sm</code> 即得 14/22；禁止 <code>leading-*</code> 字面值。字重四档 400/500/600/700；字距恒为 0。</li>
+    <li><strong>最小字号 12px 强制</strong>；12px 只给真 caption（单行 ≤20 字、不承载数值、不是阅读主体）。</li>
+    <li>字体轴 system（默认 sans-serif）/ sans（Public Sans）/ serif（Lora + 思源宋体系）；Markdown prose 阶梯 24/18/16/14。</li>
+  </ul>
+
+  <h2 id="radius">圆角（1rem 基准，七档 calc）</h2>
+  <div class="radius-row">
+    <div class="rbox"><div class="shape" style="border-radius:9.6px"></div><div class="rname">sm ×0.6</div><div class="rval">9.6px</div></div>
+    <div class="rbox"><div class="shape" style="border-radius:12.8px"></div><div class="rname">md ×0.8</div><div class="rval">12.8px · 菜单项</div></div>
+    <div class="rbox"><div class="shape" style="border-radius:16px"></div><div class="rname">lg ×1</div><div class="rval">16px · Button / Input</div></div>
+    <div class="rbox"><div class="shape" style="border-radius:22.4px"></div><div class="rname">xl ×1.4</div><div class="rval">22.4px · Card / Dialog</div></div>
+    <div class="rbox"><div class="shape" style="border-radius:28.8px"></div><div class="rname">2xl ×1.8</div><div class="rval">28.8px · 展示卡</div></div>
+    <div class="rbox"><div class="shape" style="border-radius:999px"></div><div class="rname">4xl / full</div><div class="rval">Badge 全胶囊</div></div>
+  </div>
+  <p>用户可用 <code>data-theme-radius</code>（0 / 0.3 / 0.5 / 0.75 / 1rem）整体缩放基准；禁止任意圆角字面值，<code>rounded-[inherit]</code> 除外。</p>
+
+  <h2 id="layer">分层：ring-1 描边 + 悬停投影</h2>
+  <div style="display:flex;gap:16px;flex-wrap:wrap;margin:12px 0">
+    <div style="flex:1;min-width:240px;background:var(--panel);border-radius:22.4px;box-shadow:0 0 0 1px rgba(26,29,41,.1);padding:18px">
+      <div style="font-size:15px;font-weight:600;margin-bottom:4px">Card 常态</div>
+      <div style="font-size:13px;color:var(--ink-2)">无投影，<code>ring-1 ring-foreground/10</code> 描边 + 表面色差分层。</div>
+    </div>
+    <div style="flex:1;min-width:240px;background:var(--panel);border-radius:22.4px;box-shadow:0 0 0 1px rgba(26,29,41,.1),0 4px 12px rgba(0,0,0,.06);transform:translateY(-1px);padding:18px">
+      <div style="font-size:15px;font-weight:600;margin-bottom:4px">Card 悬停（≥641px）</div>
+      <div style="font-size:13px;color:var(--ink-2)">唯一成文投影：<code>0 4px 12px rgb(0 0 0 / 0.06)</code>，深色 0.3，配 translateY(-1px) · 150ms。</div>
+    </div>
+  </div>
+  <p>浮层（下拉 / 弹窗 / 抽屉）允许 Tailwind 内置 shadow-sm~xl；投影是例外表达，不是层级体系。</p>
+
+  <h2 id="focus">焦点环：2px 满色（UTER 标准）</h2>
+  <div class="focus-demo" style="display:flex;gap:14px;flex-wrap:wrap;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:22px">
+    <input placeholder="Tab 聚焦我试试（2px 环）">
+    <button class="btn btn-primary btn-md">主按钮</button>
+    <button class="btn btn-outline btn-md">次级按钮</button>
+  </div>
+  <div class="kbd-hint">用 Tab 键聚焦上方元素 —— 全站唯一焦点指示器：<code>focus-visible:ring-2 ring-ring</code>，2px 满色、贴边（offset 0）。<code>ring-3/4</code> 任何位置都违规；禁止 <code>outline: none</code> 无替代。</div>
+
+  <h2 id="component">组件规范</h2>
+  <h3>Button（高度 Token 化）</h3>
+  <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:10px 0">
+    <button class="btn btn-primary btn-sm">sm · 32px · 12/500</button>
+    <button class="btn btn-primary btn-md">default · 36px · 14/500</button>
+    <button class="btn btn-primary btn-lg">lg · 40px · 14/500</button>
+  </div>
+  <p>高度来自 <code>--ds-button-height-{sm:32,md:36,lg:40}</code>（密度档联动）；hover <code>bg-primary-hover</code>（#5050CA）、active <code>bg-primary-active</code>（#4141B7，六档色阶见上）；
+  按下 <code>translate-y-px</code>；加载态用 <code>loading</code> 属性。Input 高度 <code>--ds-control-height-md</code> 40px、全平台 14px。</p>
+  <h3>Sidebar（220px · 选中态专用前景）</h3>
+  <div class="side-demo">
+    <div class="sidebar">
+      <div class="sgroup">平台管理</div>
+      <div class="sitem"><span class="ico"></span>数据看板</div>
+      <div class="sitem active"><span class="ico"></span>模型广场</div>
+      <div class="sitem"><span class="ico"></span>渠道管理</div>
+      <div class="sitem"><span class="ico"></span>用量日志</div>
+    </div>
+    <div style="flex:1;min-width:260px">
+      <table style="margin-top:0">
+        <tr><th>项</th><th>值</th></tr>
+        <tr><td>宽度 / 常驻</td><td>220px（13.75rem）· ≥1024px 常驻，以下抽屉</td></tr>
+        <tr><td>菜单项</td><td>高 <code>--ds-nav-height-md</code> 32px · 14/500 · 圆角 12.8px</td></tr>
+        <tr><td>选中底色</td><td><code>--sidebar-accent</code> = <code>--primary-subtle</code> 8% mix（#F3F3FD，悬停 12% ≈ #EDEDFC）</td></tr>
+        <tr><td>选中前景</td><td><code>#5959CC</code>（on #F3F3FD 5.11:1 ✅ / 悬停档 4.86 ✅）· 深 <code>#A2A2F8</code>（4.96 ✅）</td></tr>
+        <tr><td>分组标签</td><td>12px/600 · 高 28px</td></tr>
+      </table>
+    </div>
+  </div>
+  <h3>Table（行高由内边距推导）</h3>
+  <table style="margin-top:6px">
+    <tr><th>渠道名称（12/500 表头）</th><th>状态</th><th>调用量（13px dense + tabular-nums）</th></tr>
+    <tr><td style="font-size:13px">OpenAI 主渠道</td><td style="font-size:13px"><span class="ok">● 已启用</span></td><td style="font-size:13px;font-variant-numeric:tabular-nums">1,204,556</td></tr>
+    <tr><td style="font-size:13px">Claude 中转</td><td style="font-size:13px"><span class="warn">● 限流</span></td><td style="font-size:13px;font-variant-numeric:tabular-nums">331,204</td></tr>
+  </table>
+  <p style="font-size:12px;color:var(--ink-3)">表头 h-10 40px / 12px 500；单元格 text-dense 13/20、垂直内边距 --ds-table-row-padding-y 12px（默认行 ≈48px，sm 密度收至 8px，字号不动）；数字全局 tabular-nums。</p>
+
+  <h2 id="density">密度：只缩放间距，不动字号</h2>
+  <div class="dens">
+    <div class="cell"><b>sm 紧凑</b>控件高 −4px · 行内边距 8px · 卡片内边距 16px</div>
+    <div class="cell"><b>默认</b>Button 36 / Input 40 · 行内边距 12px · 卡片内边距 24px</div>
+    <div class="cell"><b>xl 宽松</b>控件高 +4px · 行内边距 14px · 卡片内边距 28px</div>
+  </div>
+  <p><code>data-theme-scale</code> 只影响 <code>--spacing</code> 与 <code>--ds-*</code> 控件 / 表格 / 卡片尺寸，
+  <strong>永远不碰 <code>--text-*</code></strong>。需要更大文字的用户走 simple-large 预设（字号整体 ~1.35×、行高同比）。</p>
+
+  <h2 id="theme">主题维度独立性（5 个）</h2>
+  <table>
+    <tr><th>维度</th><th>属性</th><th>允许影响</th><th>不允许影响</th></tr>
+    <tr><td>颜色预设 ×9</td><td><code>data-theme-preset</code></td><td>全部语义色（含 surface bridge 派生）</td><td>字号、间距</td></tr>
+    <tr><td>圆角 ×5</td><td><code>data-theme-radius</code></td><td><code>--radius</code> 基准（各档 calc 跟随）</td><td>字号、颜色</td></tr>
+    <tr><td>密度 ×3</td><td><code>data-theme-scale</code></td><td><code>--spacing</code> + <code>--ds-*</code> 尺寸</td><td><strong>字号阶梯</strong>、颜色</td></tr>
+    <tr><td>字体轴 ×3</td><td><code>data-theme-font</code></td><td><code>--font-body</code> + serif 细化</td><td>字号、颜色</td></tr>
+    <tr><td>明暗</td><td><code>.dark</code></td><td>全部颜色 Token + <code>color-scheme</code></td><td>尺寸</td></tr>
+  </table>
+
+  <h2 id="rules">禁止事项总表（摘选）</h2>
+  <table>
+    <tr><th style="width:130px">类别</th><th>禁止</th><th>替代</th></tr>
+    <tr><td>品牌派生</td><td>自造 primary-hover / primary-active 色阶</td><td>透明度 + color-mix 浅底</td></tr>
+    <tr><td>字号</td><td><code>text-[0.8rem]</code> 任意值；&lt;12px 文本</td><td>十档最近档；caption 12px 起</td></tr>
+    <tr><td>文字层级</td><td><code>text-foreground/NN</code></td><td><code>--fg-*</code> 七档</td></tr>
+    <tr><td>圆角 / 投影</td><td><code>rounded-[3px]</code>；卡片常态投影</td><td>七档 calc；ring-1 描边分层</td></tr>
+    <tr><td>焦点环</td><td><code>ring-3</code> 半透明；<code>outline:none</code> 无替代</td><td>2px 满色 <code>ring-2 ring-ring</code></td></tr>
+    <tr><td>控件高度</td><td>组件直接写 <code>h-8</code> / <code>h-9</code></td><td><code>--ds-button-height-*</code></td></tr>
+    <tr><td>密度 / 表格</td><td>密度缩放字号；写死行高 h-15</td><td>simple-large 预设；内边距推导</td></tr>
+    <tr><td>图标</td><td>其他图标库；strokeWidth ≠ 2</td><td>lucide 五档（默认 18px）</td></tr>
+    <tr><td>触控目标</td><td>视觉 &lt;24px 无扩大命中层</td><td>::after 命中区扩大到 24px</td></tr>
+    <tr><td>动效</td><td><code>duration-300</code> 字面值；无 reduce 关闭</td><td><code>--ds-motion-*</code>；配 reduced-motion</td></tr>
+  </table>
+
+  <footer>
+    Unified Design Spec · 合并基线：UTER Design System 字号 v1.2（2026-11-03）+ 上游 new-api commit 45746ee（2026-11-02）+ 品牌色阶 #6565E8 六档派生（白字 4.59:1 ✅ AA）<br>
+    配套 md：<code>docs/design-system/unified-design-spec.md</code> · 源文件：<code>design-system.md</code> / <code>newapi-design-spec.md</code>
+  </footer>
+</div>
+</body>
+</html>
