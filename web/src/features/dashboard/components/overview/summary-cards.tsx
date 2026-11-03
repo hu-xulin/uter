@@ -308,7 +308,7 @@ export function SummaryCards() {
             </div>
 
             {/* 仪表盘指标数值对齐 24–32/600；20px（text-xl）不在阶梯内。 */}
-            <div className='text-2xl font-semibold tabular-nums'>
+            <div className='text-3xl font-semibold tabular-nums'>
               {formatQuota(remainQuota)}
             </div>
 

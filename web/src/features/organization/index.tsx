@@ -44,6 +44,14 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { NativeSelect, NativeSelectOption } from '@/components/ui/native-select'
 import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
+import {
   formatBillingCurrencyFromUSD,
   getCurrencyDisplay,
   getCurrencyLabel,
@@ -1220,107 +1228,118 @@ function MembersCard({
         <CardTitle>{t('Members')}</CardTitle>
       </CardHeader>
       <CardContent className='flex flex-col gap-3'>
-        <div className='overflow-x-auto'>
-          <table className='w-full text-sm'>
-            <thead>
-              <tr className='text-muted-foreground border-b text-left'>
-                <th className='px-2 py-2'>{t('User ID')}</th>
-                <th className='px-2 py-2'>{t('Username')}</th>
-                <th className='px-2 py-2'>{t('Display Name')}</th>
-                <th className='px-2 py-2'>{t('Department')}</th>
-                <th className='px-2 py-2'>
-                  {t('Used Quota ({{currency}})', { currency: currencyLabel })}
-                </th>
-                <th className='px-2 py-2'>
-                  {t('Sub-quota Limit ({{currency}})', {
-                    currency: currencyLabel,
-                  })}
-                </th>
-                <th className='px-2 py-2'>{t('Role')}</th>
-                <th className='px-2 py-2'>{t('Actions')}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {members.map((m) => (
-                <tr key={m.id} className='border-b'>
-                  <td className='text-muted-foreground text-mono px-2 py-2 font-mono tabular-nums'>
-                    {formatUserId(m.id)}
-                  </td>
-                  <td className='px-2 py-2 font-medium'>{m.username}</td>
-                  <td className='px-2 py-2'>{m.display_name || '-'}</td>
-                  <td className='px-2 py-2'>{m.department_name || '-'}</td>
-                  <td className='px-2 py-2'>{fmtQuota(m.used_quota)}</td>
-                  <td className='px-2 py-2'>
-                    {canEditSubQuotaOf(m) ? (
-                      <SubQuotaInput
-                        quota={m.sub_quota_limit}
-                        onCommit={(quota) => onSubQuotaChange(m.id, quota)}
-                      />
-                    ) : (
-                      <span className='text-muted-foreground'>
-                        {m.sub_quota_limit > 0
-                          ? fmtQuota(m.sub_quota_limit)
-                          : t('Unlimited')}
-                      </span>
-                    )}
-                  </td>
-                  <td className='px-2 py-2'>
-                    {canEditRoleOf(m) ? (
-                      <NativeSelect
-                        defaultValue={m.org_role || 'member'}
-                        onChange={(e) =>
-                          onRoleChange(m.id, e.target.value as OrgRole)
-                        }
+        {/* 3.0 §13 审计整改：成员列表改走统一 Table 组件，cell padding 走 ui 默认档 */}
+        <Table>
+          <TableHeader>
+            <TableRow className='hover:bg-transparent'>
+              <TableHead className='text-muted-foreground'>
+                {t('User ID')}
+              </TableHead>
+              <TableHead className='text-muted-foreground'>
+                {t('Username')}
+              </TableHead>
+              <TableHead className='text-muted-foreground'>
+                {t('Display Name')}
+              </TableHead>
+              <TableHead className='text-muted-foreground'>
+                {t('Department')}
+              </TableHead>
+              <TableHead className='text-muted-foreground'>
+                {t('Used Quota ({{currency}})', { currency: currencyLabel })}
+              </TableHead>
+              <TableHead className='text-muted-foreground'>
+                {t('Sub-quota Limit ({{currency}})', {
+                  currency: currencyLabel,
+                })}
+              </TableHead>
+              <TableHead className='text-muted-foreground'>
+                {t('Role')}
+              </TableHead>
+              <TableHead className='text-muted-foreground'>
+                {t('Actions')}
+              </TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {members.map((m) => (
+              <TableRow key={m.id}>
+                <TableCell className='text-muted-foreground text-mono font-mono tabular-nums'>
+                  {formatUserId(m.id)}
+                </TableCell>
+                <TableCell className='font-medium'>{m.username}</TableCell>
+                <TableCell>{m.display_name || '-'}</TableCell>
+                <TableCell>{m.department_name || '-'}</TableCell>
+                <TableCell>{fmtQuota(m.used_quota)}</TableCell>
+                <TableCell>
+                  {canEditSubQuotaOf(m) ? (
+                    <SubQuotaInput
+                      quota={m.sub_quota_limit}
+                      onCommit={(quota) => onSubQuotaChange(m.id, quota)}
+                    />
+                  ) : (
+                    <span className='text-muted-foreground'>
+                      {m.sub_quota_limit > 0
+                        ? fmtQuota(m.sub_quota_limit)
+                        : t('Unlimited')}
+                    </span>
+                  )}
+                </TableCell>
+                <TableCell>
+                  {canEditRoleOf(m) ? (
+                    <NativeSelect
+                      defaultValue={m.org_role || 'member'}
+                      onChange={(e) =>
+                        onRoleChange(m.id, e.target.value as OrgRole)
+                      }
+                    >
+                      {roleOptions.map((r) => (
+                        <NativeSelectOption key={r} value={r}>
+                          {t(ROLE_LABEL_KEY[r])}
+                        </NativeSelectOption>
+                      ))}
+                    </NativeSelect>
+                  ) : (
+                    <Badge variant='secondary'>
+                      {t(ROLE_LABEL_KEY[m.org_role] || 'Member')}
+                    </Badge>
+                  )}
+                </TableCell>
+                <TableCell>
+                  <div className='flex justify-start gap-2'>
+                    {canEditMemberOf(m) && (
+                      <Button
+                        variant='outline'
+                        size='sm'
+                        onClick={() => setEditingMember(m)}
                       >
-                        {roleOptions.map((r) => (
-                          <NativeSelectOption key={r} value={r}>
-                            {t(ROLE_LABEL_KEY[r])}
-                          </NativeSelectOption>
-                        ))}
-                      </NativeSelect>
-                    ) : (
-                      <Badge variant='secondary'>
-                        {t(ROLE_LABEL_KEY[m.org_role] || 'Member')}
-                      </Badge>
+                        {t('Edit')}
+                      </Button>
                     )}
-                  </td>
-                  <td className='px-2 py-2'>
-                    <div className='flex justify-start gap-2'>
-                      {canEditMemberOf(m) && (
-                        <Button
-                          variant='outline'
-                          size='sm'
-                          onClick={() => setEditingMember(m)}
-                        >
-                          {t('Edit')}
-                        </Button>
-                      )}
-                      {canRemoveMemberOf(m) && (
-                        <Button
-                          variant='destructive'
-                          size='sm'
-                          onClick={() => onRemove(m.id)}
-                        >
-                          {t('Remove')}
-                        </Button>
-                      )}
-                    </div>
-                  </td>
-                </tr>
-              ))}
-              {members.length === 0 && (
-                <tr>
-                  <td
-                    colSpan={8}
-                    className='text-muted-foreground px-2 py-6 text-center'
-                  >
-                    {t('No organization yet')}
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+                    {canRemoveMemberOf(m) && (
+                      <Button
+                        variant='destructive'
+                        size='sm'
+                        onClick={() => onRemove(m.id)}
+                      >
+                        {t('Remove')}
+                      </Button>
+                    )}
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+            {members.length === 0 && (
+              <TableRow>
+                <TableCell
+                  colSpan={8}
+                  className='text-muted-foreground py-6 text-center'
+                >
+                  {t('No organization yet')}
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
         <div className='text-muted-foreground flex items-center justify-between text-sm'>
           <span>
             {t('Page')} {page} / {totalPages}

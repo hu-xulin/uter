@@ -87,21 +87,25 @@ export function SystemTasksTable(props: SystemTasksTableProps) {
   return (
     <StaticDataTable tableClassName='min-w-[900px]'>
       <TableHeader>
+        {/* 3.0 §1 审计整改：表头属密集场景，字号走 text-dense（13px）语义档，
+            不再用 text-sm；`!` 用于压过 ui Table 的 `[&_th]:text-xs` 默认。 */}
         <TableRow className='bg-muted/40 hover:bg-muted/40'>
-          <TableHead className='h-9 w-[260px] px-4 text-sm'>
+          <TableHead className='text-dense! h-9 w-[260px] px-4'>
             {t('Type')}
           </TableHead>
-          <TableHead className='h-9 w-[130px] text-sm'>{t('Status')}</TableHead>
-          <TableHead className='h-9 w-[180px] text-sm'>
+          <TableHead className='text-dense! h-9 w-[130px]'>
+            {t('Status')}
+          </TableHead>
+          <TableHead className='text-dense! h-9 w-[180px]'>
             {t('Progress')}
           </TableHead>
-          <TableHead className='h-9 min-w-[260px] text-sm'>
+          <TableHead className='text-dense! h-9 min-w-[260px]'>
             {t('Executor')}
           </TableHead>
-          <TableHead className='h-9 w-[190px] text-sm'>
+          <TableHead className='text-dense! h-9 w-[190px]'>
             {t('Updated')}
           </TableHead>
-          <TableHead className='h-9 w-[220px] pr-4 text-sm'>
+          <TableHead className='text-dense! h-9 w-[220px] pr-4'>
             {t('Detail')}
           </TableHead>
         </TableRow>

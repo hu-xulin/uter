@@ -20,6 +20,7 @@ import { useNavigate, useRouter } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 
 import { Button } from '@/components/ui/button'
+import { Heading } from '@/design-system'
 
 export function ForbiddenError() {
   const { t } = useTranslation()
@@ -28,7 +29,8 @@ export function ForbiddenError() {
   return (
     <div className='h-svh'>
       <div className='m-auto flex h-full w-full flex-col items-center justify-center gap-2'>
-        <h1 className='text-4xl font-bold'>403</h1>
+        {/* 3.0 §3 审计整改：页面标题走 Heading page-title（600 字重） */}
+        <Heading variant='page-title'>403</Heading>
         <span className='font-medium'>{t('Access Forbidden')}</span>
         <p className='text-muted-foreground text-center'>
           {t("You don't have necessary permission")} <br />

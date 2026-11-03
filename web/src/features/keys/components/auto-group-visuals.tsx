@@ -61,7 +61,7 @@ export function AutoGroupFrame(props: AutoGroupFrameProps) {
       data-auto-group-effect={props.effect}
       className={cn(
         AUTO_GROUP_FRAME_CLASS_NAME,
-        'inline-flex max-w-full shrink-0 rounded-4xl p-px',
+        'inline-flex max-w-full shrink-0 rounded-full p-px',
         props.className
       )}
     >

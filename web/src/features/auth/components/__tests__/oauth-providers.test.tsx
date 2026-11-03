@@ -18,10 +18,8 @@ For commercial licensing, please contact support@uter.ai
 */
 import { cleanup, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { toast } from 'sonner'
-
-import { OAUTH_BRAND_COLORS } from '@/design-system/tokens/brand-colors'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { SystemStatus } from '../../types'
 import { OAuthProviders } from '../oauth-providers'
@@ -72,11 +70,6 @@ function buttonsInOrder(): HTMLElement[] {
   return screen.getAllByRole('button')
 }
 
-/** 取按钮上内联的 hover 底色变量（品牌色从这里注入，避免业务代码写裸 hex）。 */
-function hoverBg(button: HTMLElement): string {
-  return button.style.getPropertyValue('--oauth-hover-bg')
-}
-
 // 渲染顺序：wechat_web → github → discord → oidc → linuxdo → telegram → custom
 const ORDER = [
   'wechat_web',
@@ -88,63 +81,31 @@ const ORDER = [
   'custom',
 ] as const
 
-describe('OAuthProviders hover 品牌色', () => {
-  it('每个已知渠道用各自的官方品牌色作 hover 底色', () => {
+describe('OAuthProviders hover 语义 Token（3.0 §2.3 审计整改）', () => {
+  it('所有渠道 hover 统一走 primary 底 + primary-foreground 前景，不再硬编码白字', () => {
     renderProviders()
     const buttons = buttonsInOrder()
     expect(buttons).toHaveLength(ORDER.length)
 
-    const expected: Record<string, string> = {
-      wechat_web: OAUTH_BRAND_COLORS.wechat,
-      github: OAUTH_BRAND_COLORS.github,
-      discord: OAUTH_BRAND_COLORS.discord,
-      linuxdo: OAUTH_BRAND_COLORS.linuxdo,
-      telegram: OAUTH_BRAND_COLORS.telegram,
-    }
-    ORDER.forEach((key, index) => {
-      const brand = expected[key]
-      if (!brand) return
+    for (const [index, key] of ORDER.entries()) {
       const button = buttons[index]
-      expect(hoverBg(button), key).toBe(brand)
-      // 品牌色底上必须把文字与图标一起转白，否则深色图标在深底上看不见。
-      expect(button.className, key).toContain('hover:text-white')
-      expect(button.className, key).toContain('hover:[&_svg]:text-white')
-      expect(button.className, key).toContain('hover:bg-(--oauth-hover-bg)')
-    })
-  })
-
-  it('没有已知品牌色的渠道回退站点主色，前景用 primary-foreground', () => {
-    renderProviders()
-    const buttons = buttonsInOrder()
-
-    for (const key of ['oidc', 'custom'] as const) {
-      const button = buttons[ORDER.indexOf(key)]
-      expect(hoverBg(button), key).toBe('var(--primary)')
+      expect(button.className, key).toContain('hover:bg-primary')
       expect(button.className, key).toContain('hover:text-primary-foreground')
-      // 主色可能是浅色，绝不能写死白色。
+      expect(button.className, key).toContain(
+        'hover:[&_svg]:text-primary-foreground'
+      )
+      // 硬编码白字与品牌色注入变量都已移除
       expect(button.className, key).not.toContain('hover:text-white')
+      expect(button.style.getPropertyValue('--oauth-hover-bg'), key).toBe('')
     }
   })
 
-  it('深色模式也要覆盖 outline 变体自带的 dark:hover 底色', () => {
+  it('深色模式同样覆盖 outline 变体的 dark:hover 底色，走语义 Token', () => {
     renderProviders()
     const wechat = buttonsInOrder()[ORDER.indexOf('wechat_web')]
-    expect(wechat.className).toContain('dark:hover:bg-(--oauth-hover-bg)')
-    expect(wechat.className).toContain('dark:hover:text-white')
-    expect(wechat.className).toContain('dark:hover:[&_svg]:text-white')
-  })
-
-  it('写死 fill 的图标（LinuxDO）额外把 path 填白', () => {
-    renderProviders()
-    const buttons = buttonsInOrder()
-
-    expect(buttons[ORDER.indexOf('linuxdo')].className).toContain(
-      'hover:[&_svg_path]:fill-white'
-    )
-    // 其余渠道的图标走 currentColor，不需要也不该强改 fill
-    expect(buttons[ORDER.indexOf('wechat_web')].className).not.toContain(
-      'fill-white'
-    )
+    expect(wechat.className).toContain('dark:hover:bg-primary')
+    expect(wechat.className).toContain('dark:hover:text-primary-foreground')
+    expect(wechat.className).not.toContain('dark:hover:text-white')
   })
 
   it('整体禁用时所有渠道按钮都不可点', () => {
@@ -156,13 +117,13 @@ describe('OAuthProviders hover 品牌色', () => {
     }
   })
 
-  it('只开启微信时只渲染一个按钮（回归：品牌色映射不能影响可见渠道）', () => {
+  it('只开启微信时只渲染一个按钮（回归：渲染数量不受状态映射影响）', () => {
     renderProviders({
       wechat_web_login: true,
     } as unknown as SystemStatus)
     const buttons = buttonsInOrder()
     expect(buttons).toHaveLength(1)
-    expect(hoverBg(buttons[0])).toBe(OAUTH_BRAND_COLORS.wechat)
+    expect(buttons[0].className).toContain('hover:bg-primary')
   })
 })
 
@@ -178,7 +139,7 @@ describe('OAuthProviders 法律条款门控', () => {
         status={allProviders}
         consentRequired
         consentRequiredMessage='请先阅读并同意用户协议和隐私政策'
-      />,
+      />
     )
     // 渲染顺序固定：wechat_web(0) → github(1)
     const github = screen.getAllByRole('button')[1]
@@ -209,7 +170,9 @@ describe('OAuthProviders 法律条款门控', () => {
 
     await user.click(screen.getAllByRole('button')[0])
 
-    expect(toast.error).toHaveBeenCalledWith('Please agree to the legal terms first')
+    expect(toast.error).toHaveBeenCalledWith(
+      'Please agree to the legal terms first'
+    )
     expect(oauthHandlers.handleWeChatWebLogin).not.toHaveBeenCalled()
   })
 })

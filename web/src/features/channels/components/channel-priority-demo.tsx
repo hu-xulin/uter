@@ -137,9 +137,8 @@ export function ChannelPriorityDemo(props: {
             role='presentation'
             className={cn(
               'absolute z-20 rounded-full bg-warning',
-              card
-                ? 'top-3 left-1/2 h-24 w-0.5'
-                : 'inset-x-3 top-[4.5rem] h-0.5'
+              // 3.0 §7 审计整改：4.5rem(72px) → sp-18（同为 72px，网格整档）
+              card ? 'top-3 left-1/2 h-24 w-0.5' : 'inset-x-3 top-18 h-0.5'
             )}
           />
         )}

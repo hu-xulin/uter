@@ -175,7 +175,7 @@ export function Pricing() {
       <div className='relative'>
         <div
           aria-hidden
-          className='pointer-events-none absolute inset-x-0 top-0 h-[600px] opacity-20 dark:opacity-[0.10]'
+          className='pointer-events-none absolute inset-x-0 top-0 h-[600px] opacity-20 dark:opacity-10'
           style={{
             // 顶部品牌光晕：色相全部派生自 `--primary`，换主题预设时自动跟随，
             // 不写死 oklch 字面值（旧实现是三段固定色相，换色后仍停在旧蓝）。

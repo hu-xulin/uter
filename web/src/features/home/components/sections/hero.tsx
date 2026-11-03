@@ -108,7 +108,7 @@ export function Hero(props: HeroProps) {
             variant='display'
             level={1}
             multiline
-            className='landing-animate-fade-up text-3xl md:text-4xl'
+            className='landing-animate-fade-up text-4xl md:text-5xl'
             style={{ animationDelay: '60ms' }}
           >
             {(() => {

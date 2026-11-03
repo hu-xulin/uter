@@ -50,8 +50,7 @@ export const DiscountTag = memo(function DiscountTag(props: DiscountTagProps) {
   // 与官方价持平（或价差小到两位小数取整回 1）：渲染中性 x1.0 而不是什么都不
   // 显示 —— 用户无法区分「与官方同价」和「没算出折扣」（2026-11-02 用户裁定）。
   // 仅在存在官方参照（info.ratio 非空）时生效；无从比价的模型保持静默。
-  const rounded =
-    info.ratio != null ? Math.round(info.ratio * 100) / 100 : null
+  const rounded = info.ratio != null ? Math.round(info.ratio * 100) / 100 : null
   if (rounded === 1) {
     return (
       <DiscountBadge ratio={1} title='0%' className={props.className}>
