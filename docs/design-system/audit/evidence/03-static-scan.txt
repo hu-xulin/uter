@@ -1,0 +1,26 @@
+## 3.1 硬编码颜色（任意值 hex/rgb/hsl + Tailwind 原生调色板类）
+--- 任意值色
+count:        0 文件
+
+--- Tailwind 原生调色板（非语义）
+   1 text-emerald-600
+   1 text-emerald-400
+
+## 3.2 字面值字号
+count:        0 文件
+
+## 3.3 内联 style 样式
+src/features/customer-service/CustomerServiceWidget.tsx:63:      style={{ display: 'block' }}
+src/features/customer-service/CustomerServiceWidget.tsx:312:        style={{
+src/features/customer-service/CustomerServiceWidget.tsx:344:          style={{
+src/features/customer-service/CustomerServiceWidget.tsx:372:            style={{
+src/features/customer-service/CustomerServiceWidget.tsx:383:              style={{
+src/features/customer-service/CustomerServiceWidget.tsx:394:              style={{
+src/features/customer-service/CustomerServiceWidget.tsx:410:              style={{
+src/features/customer-service/CustomerServiceWidget.tsx:429:            style={{
+src/features/customer-service/CustomerServiceWidget.tsx:452:                style={{
+src/features/customer-service/CustomerServiceWidget.tsx:466:                    style={{
+src/features/customer-service/CustomerServiceWidget.tsx:489:                style={{
+src/features/customer-service/CustomerServiceWidget.tsx:503:                    style={{
+
+## 3.4 <12px 违规

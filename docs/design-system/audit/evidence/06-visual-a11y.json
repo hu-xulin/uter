@@ -1,0 +1,497 @@
+{
+  "loginOk": true,
+  "loginError": null,
+  "results": [
+    {
+      "page": "/",
+      "name": "home",
+      "viewport": "desktop",
+      "theme": "light",
+      "shot": "home_desktop_light.png",
+      "consoleErrors": [],
+      "axe": []
+    },
+    {
+      "page": "/pricing",
+      "name": "pricing",
+      "viewport": "desktop",
+      "theme": "light",
+      "shot": "pricing_desktop_light.png",
+      "consoleErrors": [],
+      "axe": []
+    },
+    {
+      "page": "/sign-in",
+      "name": "sign-in",
+      "viewport": "desktop",
+      "theme": "light",
+      "shot": "sign-in_desktop_light.png",
+      "consoleErrors": [],
+      "axe": []
+    },
+    {
+      "page": "/dashboard",
+      "name": "dashboard",
+      "viewport": "desktop",
+      "theme": "light",
+      "shot": "dashboard_desktop_light.png",
+      "consoleErrors": [],
+      "axe": []
+    },
+    {
+      "page": "/keys",
+      "name": "keys",
+      "viewport": "desktop",
+      "theme": "light",
+      "shot": "keys_desktop_light.png",
+      "consoleErrors": [],
+      "axe": [
+        {
+          "id": "button-name",
+          "impact": "critical",
+          "nodes": 1,
+          "help": "Buttons must have discernible text"
+        }
+      ]
+    },
+    {
+      "page": "/wallet",
+      "name": "wallet",
+      "viewport": "desktop",
+      "theme": "light",
+      "shot": "wallet_desktop_light.png",
+      "consoleErrors": [],
+      "axe": [
+        {
+          "id": "label",
+          "impact": "critical",
+          "nodes": 1,
+          "help": "Form elements must have labels"
+        }
+      ]
+    },
+    {
+      "page": "/models",
+      "name": "models",
+      "viewport": "desktop",
+      "theme": "light",
+      "shot": "models_desktop_light.png",
+      "consoleErrors": [],
+      "axe": []
+    },
+    {
+      "page": "/usage-logs",
+      "name": "usage-logs",
+      "viewport": "desktop",
+      "theme": "light",
+      "shot": "usage-logs_desktop_light.png",
+      "consoleErrors": [],
+      "axe": [
+        {
+          "id": "button-name",
+          "impact": "critical",
+          "nodes": 1,
+          "help": "Buttons must have discernible text"
+        },
+        {
+          "id": "scrollable-region-focusable",
+          "impact": "serious",
+          "nodes": 1,
+          "help": "Scrollable region must have keyboard access"
+        }
+      ]
+    },
+    {
+      "page": "/playground",
+      "name": "playground",
+      "viewport": "desktop",
+      "theme": "light",
+      "shot": "playground_desktop_light.png",
+      "consoleErrors": [],
+      "axe": [
+        {
+          "id": "button-name",
+          "impact": "critical",
+          "nodes": 1,
+          "help": "Buttons must have discernible text"
+        },
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodes": 1,
+          "help": "Elements must meet minimum color contrast ratio thresholds"
+        }
+      ]
+    },
+    {
+      "page": "/channels",
+      "name": "channels",
+      "viewport": "desktop",
+      "theme": "light",
+      "shot": "channels_desktop_light.png",
+      "consoleErrors": [],
+      "axe": []
+    },
+    {
+      "page": "/profile",
+      "name": "profile",
+      "viewport": "desktop",
+      "theme": "light",
+      "shot": "profile_desktop_light.png",
+      "consoleErrors": [],
+      "axe": [
+        {
+          "id": "aria-toggle-field-name",
+          "impact": "serious",
+          "nodes": 14,
+          "help": "ARIA toggle fields must have an accessible name"
+        },
+        {
+          "id": "button-name",
+          "impact": "critical",
+          "nodes": 2,
+          "help": "Buttons must have discernible text"
+        },
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodes": 1,
+          "help": "Elements must meet minimum color contrast ratio thresholds"
+        }
+      ]
+    },
+    {
+      "page": "/subscriptions",
+      "name": "subscriptions",
+      "viewport": "desktop",
+      "theme": "light",
+      "shot": "subscriptions_desktop_light.png",
+      "consoleErrors": [],
+      "axe": []
+    },
+    {
+      "page": "/",
+      "name": "home",
+      "viewport": "desktop",
+      "theme": "dark",
+      "shot": "home_desktop_dark.png",
+      "consoleErrors": [],
+      "axe": []
+    },
+    {
+      "page": "/pricing",
+      "name": "pricing",
+      "viewport": "desktop",
+      "theme": "dark",
+      "shot": "pricing_desktop_dark.png",
+      "consoleErrors": [],
+      "axe": []
+    },
+    {
+      "page": "/sign-in",
+      "name": "sign-in",
+      "viewport": "desktop",
+      "theme": "dark",
+      "shot": "sign-in_desktop_dark.png",
+      "consoleErrors": [],
+      "axe": []
+    },
+    {
+      "page": "/dashboard",
+      "name": "dashboard",
+      "viewport": "desktop",
+      "theme": "dark",
+      "shot": "dashboard_desktop_dark.png",
+      "consoleErrors": [],
+      "axe": []
+    },
+    {
+      "page": "/keys",
+      "name": "keys",
+      "viewport": "desktop",
+      "theme": "dark",
+      "shot": "keys_desktop_dark.png",
+      "consoleErrors": [],
+      "axe": []
+    },
+    {
+      "page": "/wallet",
+      "name": "wallet",
+      "viewport": "desktop",
+      "theme": "dark",
+      "shot": "wallet_desktop_dark.png",
+      "consoleErrors": [],
+      "axe": []
+    },
+    {
+      "page": "/models",
+      "name": "models",
+      "viewport": "desktop",
+      "theme": "dark",
+      "shot": "models_desktop_dark.png",
+      "consoleErrors": [],
+      "axe": []
+    },
+    {
+      "page": "/usage-logs",
+      "name": "usage-logs",
+      "viewport": "desktop",
+      "theme": "dark",
+      "shot": "usage-logs_desktop_dark.png",
+      "consoleErrors": [],
+      "axe": []
+    },
+    {
+      "page": "/playground",
+      "name": "playground",
+      "viewport": "desktop",
+      "theme": "dark",
+      "shot": "playground_desktop_dark.png",
+      "consoleErrors": [],
+      "axe": []
+    },
+    {
+      "page": "/channels",
+      "name": "channels",
+      "viewport": "desktop",
+      "theme": "dark",
+      "shot": "channels_desktop_dark.png",
+      "consoleErrors": [],
+      "axe": []
+    },
+    {
+      "page": "/profile",
+      "name": "profile",
+      "viewport": "desktop",
+      "theme": "dark",
+      "shot": "profile_desktop_dark.png",
+      "consoleErrors": [],
+      "axe": []
+    },
+    {
+      "page": "/subscriptions",
+      "name": "subscriptions",
+      "viewport": "desktop",
+      "theme": "dark",
+      "shot": "subscriptions_desktop_dark.png",
+      "consoleErrors": [],
+      "axe": []
+    },
+    {
+      "page": "/",
+      "name": "home",
+      "viewport": "h5",
+      "theme": "light",
+      "shot": "home_h5_light.png",
+      "consoleErrors": [],
+      "axe": []
+    },
+    {
+      "page": "/pricing",
+      "name": "pricing",
+      "viewport": "h5",
+      "theme": "light",
+      "shot": "pricing_h5_light.png",
+      "consoleErrors": [],
+      "axe": []
+    },
+    {
+      "page": "/sign-in",
+      "name": "sign-in",
+      "viewport": "h5",
+      "theme": "light",
+      "shot": "sign-in_h5_light.png",
+      "consoleErrors": [],
+      "axe": []
+    },
+    {
+      "page": "/dashboard",
+      "name": "dashboard",
+      "viewport": "h5",
+      "theme": "light",
+      "shot": "dashboard_h5_light.png",
+      "consoleErrors": [],
+      "axe": []
+    },
+    {
+      "page": "/keys",
+      "name": "keys",
+      "viewport": "h5",
+      "theme": "light",
+      "shot": "keys_h5_light.png",
+      "consoleErrors": [],
+      "axe": []
+    },
+    {
+      "page": "/wallet",
+      "name": "wallet",
+      "viewport": "h5",
+      "theme": "light",
+      "shot": "wallet_h5_light.png",
+      "consoleErrors": [],
+      "axe": []
+    },
+    {
+      "page": "/models",
+      "name": "models",
+      "viewport": "h5",
+      "theme": "light",
+      "shot": "models_h5_light.png",
+      "consoleErrors": [],
+      "axe": []
+    },
+    {
+      "page": "/usage-logs",
+      "name": "usage-logs",
+      "viewport": "h5",
+      "theme": "light",
+      "shot": "usage-logs_h5_light.png",
+      "consoleErrors": [],
+      "axe": []
+    },
+    {
+      "page": "/playground",
+      "name": "playground",
+      "viewport": "h5",
+      "theme": "light",
+      "shot": "playground_h5_light.png",
+      "consoleErrors": [],
+      "axe": []
+    },
+    {
+      "page": "/channels",
+      "name": "channels",
+      "viewport": "h5",
+      "theme": "light",
+      "shot": "channels_h5_light.png",
+      "consoleErrors": [],
+      "axe": []
+    },
+    {
+      "page": "/profile",
+      "name": "profile",
+      "viewport": "h5",
+      "theme": "light",
+      "shot": "profile_h5_light.png",
+      "consoleErrors": [],
+      "axe": []
+    },
+    {
+      "page": "/subscriptions",
+      "name": "subscriptions",
+      "viewport": "h5",
+      "theme": "light",
+      "shot": "subscriptions_h5_light.png",
+      "consoleErrors": [],
+      "axe": []
+    },
+    {
+      "page": "/",
+      "name": "home",
+      "viewport": "h5",
+      "theme": "dark",
+      "shot": "home_h5_dark.png",
+      "consoleErrors": [],
+      "axe": []
+    },
+    {
+      "page": "/pricing",
+      "name": "pricing",
+      "viewport": "h5",
+      "theme": "dark",
+      "shot": "pricing_h5_dark.png",
+      "consoleErrors": [],
+      "axe": []
+    },
+    {
+      "page": "/sign-in",
+      "name": "sign-in",
+      "viewport": "h5",
+      "theme": "dark",
+      "shot": "sign-in_h5_dark.png",
+      "consoleErrors": [],
+      "axe": []
+    },
+    {
+      "page": "/dashboard",
+      "name": "dashboard",
+      "viewport": "h5",
+      "theme": "dark",
+      "shot": "dashboard_h5_dark.png",
+      "consoleErrors": [],
+      "axe": []
+    },
+    {
+      "page": "/keys",
+      "name": "keys",
+      "viewport": "h5",
+      "theme": "dark",
+      "shot": "keys_h5_dark.png",
+      "consoleErrors": [],
+      "axe": []
+    },
+    {
+      "page": "/wallet",
+      "name": "wallet",
+      "viewport": "h5",
+      "theme": "dark",
+      "shot": "wallet_h5_dark.png",
+      "consoleErrors": [],
+      "axe": []
+    },
+    {
+      "page": "/models",
+      "name": "models",
+      "viewport": "h5",
+      "theme": "dark",
+      "shot": "models_h5_dark.png",
+      "consoleErrors": [],
+      "axe": []
+    },
+    {
+      "page": "/usage-logs",
+      "name": "usage-logs",
+      "viewport": "h5",
+      "theme": "dark",
+      "shot": "usage-logs_h5_dark.png",
+      "consoleErrors": [],
+      "axe": []
+    },
+    {
+      "page": "/playground",
+      "name": "playground",
+      "viewport": "h5",
+      "theme": "dark",
+      "shot": "playground_h5_dark.png",
+      "consoleErrors": [],
+      "axe": []
+    },
+    {
+      "page": "/channels",
+      "name": "channels",
+      "viewport": "h5",
+      "theme": "dark",
+      "shot": "channels_h5_dark.png",
+      "consoleErrors": [],
+      "axe": []
+    },
+    {
+      "page": "/profile",
+      "name": "profile",
+      "viewport": "h5",
+      "theme": "dark",
+      "shot": "profile_h5_dark.png",
+      "consoleErrors": [],
+      "axe": []
+    },
+    {
+      "page": "/subscriptions",
+      "name": "subscriptions",
+      "viewport": "h5",
+      "theme": "dark",
+      "shot": "subscriptions_h5_dark.png",
+      "consoleErrors": [],
+      "axe": []
+    }
+  ]
+}

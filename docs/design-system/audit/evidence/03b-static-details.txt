@@ -1,0 +1,14 @@
+--- emerald 位置
+src/features/home/components/hero-terminal-demo.tsx:30: * 2026-10-30 之前这里是一水的调色板类名（`text-emerald-600 dark:text-emerald-400`
+
+--- CustomerServiceWidget 内联 style 总数
+16
+--- 该文件是否引用任何 ui 组件/语义 Token
+58
+
+## 3.5 未使用 Token 抽查（定义但零引用）
+--radius-3xl 业务引用: 0
+--radius-4xl 业务引用: 0
+--primary-border 业务引用: 2
+--subtle 业务引用: 0
+--border-strong 业务引用: 0

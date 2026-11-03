@@ -1,0 +1,40 @@
+## 2.2 Color 检查
+--- 品牌色值（3.0 要求浅 #5558D8 / 深 #A1A3F7）
+342:  --primary: #5558d8;
+375:  --ring: #5558d8;
+542:  --fg-link: #5558d8;
+549:  --primary-strong: #5558d8;
+550:  --hover-primary: #4f52d1;
+551:  --primary-active: #4a4dc5;
+594:  --primary: #a1a3f7;
+626:  --ring: #a1a3f7;
+735:  --fg-link: #a1a3f7;
+741:  --primary-strong: #a1a3f7;
+742:  --hover-primary: #b1b3ff;
+743:  --primary-active: #9294f7;
+
+--- Light/Dark 配对完整性
+只在 :root 有定义（.dark 缺失）: 13
+  ['--app-header-height', '--app-rev', '--destructive-subtle', '--destructive-subtle-hover', '--font-body', '--font-mono', '--font-ui', '--overview-accent-1', '--overview-accent-2', '--overview-accent-3', '--primary-subtle-hover', '--radius', '--term-online']
+只在 .dark 有定义（:root 缺失）: 0
+  []
+
+--- §2.5-2.8 新增 Token 落地核查
+372:  --border-strong: #cbd5e1; /* 3.0 §2.6 强调边界 */
+373:  --subtle: #fafbfc; /* 3.0 §2.5 极浅表面 */
+381:  --chart-6: oklch(0.7 0.15 30); /* 3.0 §2.8 第六系列色 */
+385:  --success-border: color-mix(in oklch, var(--success) 32%, var(--background));
+386:  --warning-border: color-mix(in oklch, var(--warning) 40%, var(--background));
+387:  --info-border: color-mix(in oklch, var(--info) 32%, var(--background));
+622:  --border-strong: #475569; /* 3.0 §2.6 强调边界 */
+623:  --subtle: #111c30; /* 3.0 §2.5 极浅表面 */
+632:  --chart-6: oklch(0.75 0.13 30); /* 3.0 §2.8 第六系列色 */
+634:  --success-border: color-mix(in oklch, var(--success) 32%, var(--background));
+635:  --warning-border: color-mix(in oklch, var(--warning) 40%, var(--background));
+636:  --info-border: color-mix(in oklch, var(--info) 32%, var(--background));
+
+--- Syntax/Terminal Token
+18
+
+--- 循环引用检测
+循环引用: 无

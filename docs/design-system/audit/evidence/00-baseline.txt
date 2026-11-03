@@ -1,0 +1,29 @@
+=== Commit SHA ===
+d74c092e50ac7782431725a25e3b9e725db6a159
+=== Branch ===
+main
+=== Status ===
+ M VERSION
+ D docs/design-system/design-system-2.0.md
+ D docs/design-system/design-system.md
+ D docs/design-system/newapi-design-spec.html
+ D docs/design-system/newapi-design-spec.md
+ D docs/design-system/settings-typography-rollout.md
+ D docs/design-system/showcase-2.0.html
+ D docs/design-system/showcase.html
+ D docs/design-system/unified-design-spec.html
+ D docs/design-system/unified-design-spec.md
+?? "docs/design-system/UTER Design Compliance Audit.md"
+?? docs/design-system/audit/
+?? docs/design-system/showcase-3.0.html
+=== Untracked ===
+docs/design-system/UTER Design Compliance Audit.md
+docs/design-system/audit/evidence/00-baseline.txt
+docs/design-system/showcase-3.0.html
+=== Package manager / deps ===
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7",
+    "tailwindcss": "^4.3.2",
+    "@rsbuild/core": "^2.1.4",
+=== Audit date ===
+2026-11-03 12:34:45 CST

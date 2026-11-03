@@ -1,0 +1,25 @@
+## 8.1 typecheck（tsgo -b）
+$ tsgo -b
+exit=0
+
+## 8.2 设计门禁 lint:design:strict
+
+浮层投影（规范 §1.5 允许，不计入违规）：21 处
+Token 定义处色值（颜色的落点，不计入违规）：179 处
+exit=0
+
+## 8.3 品牌对比度实算 verify-contrast.mjs
+PASS  dark/non-text  #a1a3f7 on #0f172a  7.73:1 (min 3)  ring/brand-border vs card surface
+PASS  light/non-text  #5558d8 on #ffffff  5.56:1 (min 3)  ring vs page surface
+
+All brand contrast pairs pass.
+exit=0
+
+## 8.4 design-system 测试
+[2m Test Files [22m [1m[32m8 passed[39m[22m[90m (8)[39m
+[2m      Tests [22m [1m[32m58 passed[39m[22m[90m (58)[39m
+
+## 8.5 tokens.test.ts（含 showcase 一致性守卫）
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 6 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m6 failed[39m[22m[2m | [22m[1m[32m37 passed[39m[22m[90m (43)[39m
