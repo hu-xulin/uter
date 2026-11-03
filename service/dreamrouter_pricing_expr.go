@@ -105,6 +105,47 @@ func dreamRouterOfficialUnitPrices(expr string) (dreamRouterUnitPrices, bool) {
 // 阈值（`len <= 272000`）都不会被改动——这是缩放能安全落地的前提。
 var dreamRouterExprUnitTermScaled = regexp.MustCompile(`\b([A-Za-z_][A-Za-z0-9_]*)\s*\*\s*([0-9]+(?:\.[0-9]+)?)`)
 
+// dreamRouterExprDurationTerm 匹配「按秒计费」的视频模型计价项：
+//
+//	tier("720p", (duration > 0 ? duration : 5) * 0.0895522)
+//
+// 即 `(…duration…) * <每秒单价>`。上游（创梦）的视频模型（wan3.0-video 等，
+// supported_endpoint_types = ["ali-video"]）用这种表达式描述「分辨率档 ×
+// 视频时长」计费：ternary 链按请求参数选分辨率档，每一档的单价是
+// 美元/秒 × duration（缺省 5 秒）。这类表达式没有 p/c token 系数，
+// dreamRouterOfficialUnitPrices 解不出来，历史上被标记 tiered_unparsable
+// 跳过——模型价格永远停在「未配置」。
+//
+// 与 dreamRouterExprTerm 的区别：系数前面不是标识符而是右括号，因此
+// 两个正则互不重叠；分组内容必须含 `duration` 标识符，token 表达式
+// 不会误中。
+var dreamRouterExprDurationTerm = regexp.MustCompile(`\(([^()]*\bduration\b[^()]*)\)\s*\*\s*([0-9]+(?:\.[0-9]+)?)`)
+
+// dreamRouterDurationUnitPrices 从按秒计费的表达式里解出官方单价（美元/秒）。
+//
+// 一条表达式可能有多档（1080p/720p/480p）。ternary 链的书写顺序是
+// 「高优先档在前、兜底档在后」：所有条件都不命中时走最后一支 tier，
+// 那正是上游定价页的默认分辨率档。这里取**最后一次出现**的系数作为
+// 官方基准单价（美元/秒），与 token 表达式「首次出现即基准层」的约定
+// 相反——两种口径各自对齐上游页面的主价格展示。
+//
+// Output/Cache/CreateCache 恒为 0：视频模型没有输出 token 与缓存计价。
+// 返回 ok=false 表示表达式里没有 duration 计价项——调用方继续走原有的
+// tiered_unparsable 告警路径，绝不套用猜测值。
+func dreamRouterDurationUnitPrices(expr string) (dreamRouterUnitPrices, bool) {
+	var prices dreamRouterUnitPrices
+	matches := dreamRouterExprDurationTerm.FindAllStringSubmatch(expr, -1)
+	if len(matches) == 0 {
+		return prices, false
+	}
+	value, err := strconv.ParseFloat(matches[len(matches)-1][2], 64)
+	if err != nil || value <= 0 {
+		return dreamRouterUnitPrices{}, false
+	}
+	prices.Input = value
+	return prices, true
+}
+
 // dreamRouterScaleExpr 把表达式里所有单价系数乘以 factor，返回新表达式。
 //
 // 为什么必须改表达式而不是只改 ModelRatio：分层计费模型在运行时与定价页
@@ -112,7 +153,11 @@ var dreamRouterExprUnitTermScaled = regexp.MustCompile(`\b([A-Za-z_][A-Za-z0-9_]
 // ModelRatio，于是这些模型的售价与卡片上的"官方价"永远是同一组数字——
 // 既没有按规则加价，也永远不显示折扣。
 //
-// 返回 ok=false 表示没有可缩放的计价项（空表达式或没有 `x * 数字` 形式），
+// 两类计价项都要缩放：
+//  1. `<标识符> * <数字>`（token 单价，p/c/cr/cc 及 cc1h/img_o 等变体）；
+//  2. `(…duration…) * <数字>`（视频按秒单价）。
+//
+// 返回 ok=false 表示没有可缩放的计价项（空表达式或两类计价项都不存在），
 // 调用方据此保留原值并告警，绝不写入一条未经确认的表达式。
 func dreamRouterScaleExpr(expr string, factor float64) (string, bool) {
 	if factor <= 0 || strings.TrimSpace(expr) == "" {
@@ -129,6 +174,18 @@ func dreamRouterScaleExpr(expr string, factor float64) (string, bool) {
 		// 'f' 而不是默认的 'g'：billing_expr 的语法不接受 `1e-05` 这种指数
 		// 写法，小系数会被编译失败。
 		return match[1] + " * " + strconv.FormatFloat(roundRatioValue(value*factor), 'f', -1, 64)
+	})
+	// 第二遍：按秒计费项 `(…duration…) * <数字>`。必须在标识符遍之后跑：
+	// 两类模式的计价项互不重叠（一个系数前是标识符，一个是右括号），
+	// 先后顺序不影响结果，但都成功时 scaled 必须为 true。
+	result = dreamRouterExprDurationTerm.ReplaceAllStringFunc(result, func(term string) string {
+		match := dreamRouterExprDurationTerm.FindStringSubmatch(term)
+		value, err := strconv.ParseFloat(match[2], 64)
+		if err != nil {
+			return term
+		}
+		scaled = true
+		return "(" + match[1] + ") * " + strconv.FormatFloat(roundRatioValue(value*factor), 'f', -1, 64)
 	})
 	if !scaled {
 		return "", false
