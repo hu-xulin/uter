@@ -146,16 +146,21 @@ var compileEnvPrototypeV1 = map[string]any{
 	"param":       func(string) any { return nil },
 	"u":           func(string) any { return nil },
 	"has":         func(any, string) bool { return false },
-	"hour":        func(string) int { return 0 },
-	"minute":      func(string) int { return 0 },
-	"weekday":     func(string) int { return 0 },
-	"month":       func(string) int { return 0 },
-	"day":         func(string) int { return 0 },
-	"max":         math.Max,
-	"min":         math.Min,
-	"abs":         math.Abs,
-	"ceil":        math.Ceil,
-	"floor":       math.Floor,
+	// Compile-time prototypes for the nil-safe lower/upper overrides installed
+	// in runProgram's env (see run.go). Declared as func(any) string so stored
+	// expressions may pass param()/u() results (any) directly into them.
+	"lower":   func(any) string { return "" },
+	"upper":   func(any) string { return "" },
+	"hour":    func(string) int { return 0 },
+	"minute":  func(string) int { return 0 },
+	"weekday": func(string) int { return 0 },
+	"month":   func(string) int { return 0 },
+	"day":     func(string) int { return 0 },
+	"max":     math.Max,
+	"min":     math.Min,
+	"abs":     math.Abs,
+	"ceil":    math.Ceil,
+	"floor":   math.Floor,
 }
 
 func getCompileEnv(version int) map[string]any {
