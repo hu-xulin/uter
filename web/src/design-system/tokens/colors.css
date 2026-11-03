@@ -25,7 +25,7 @@ For commercial licensing, please contact support@uter.ai
  * 新增颜色的唯一合法路径：
  *   1. 在 theme.css 的 `:root` / `.dark` 里定义原始颜色；
  *   2. 在这里映射出一条 `--ds-color-*` 语义；
- *   3. 在 docs/design-system/design-system.md 登记用途。
+ *   3. 在 docs/design-system/UTER-DESIGN-SYSTEM-3.0.md 登记用途。
  * 组件里直接写 `#0F172A`、`rgb(...)`、`text-[#333]` 都是违规的。
  */
 

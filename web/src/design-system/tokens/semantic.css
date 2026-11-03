@@ -34,9 +34,9 @@ For commercial licensing, please contact support@uter.ai
 
 :root {
   /* ── 语义字号 ──────────────────────────────────────────────────────── */
-  --ds-text-display: var(--text-4xl);
-  --ds-text-page-title: var(--text-3xl);
-  --ds-text-section-title: var(--text-2xl);
+  --ds-text-display: var(--text-5xl); /* 3.0 §1.2 5xl 营销展示 36/44 */
+  --ds-text-page-title: var(--text-4xl); /* 3.0 §1.3 页面标题 30/38 */
+  --ds-text-section-title: var(--text-3xl); /* 3.0 §1.3 区块标题 24/32 */
   --ds-text-card-title: var(--text-lg);
   --ds-text-dialog-title: var(--text-lg);
   /* 分组标题：卡片内部再分组时的那一层（个人资料页「通知方式」「偏好设置」、
@@ -56,22 +56,22 @@ For commercial licensing, please contact support@uter.ai
   --ds-text-label: var(--text-sm);
   --ds-text-caption: var(--text-xs);
   --ds-text-mono: var(--text-mono);
-  /* 等宽派生档：只在等宽场景出现，见 docs/design-system/design-system.md */
+  /* 等宽派生档：只在等宽场景出现，见 UTER-DESIGN-SYSTEM-3.0.md §1.5 */
   --ds-text-mono-code: var(--text-mono-code);
   --ds-text-mono-title: var(--text-mono-title);
 
   /* ── 语义行高 ──────────────────────────────────────────────────────── */
-  --ds-line-display: var(--text-4xl--line-height, 2.75rem);
+  --ds-line-display: var(--text-5xl--line-height, 2.75rem);
   /* 多行主标题专用行高，**无单位比例**，随字号缩放：
    * 36px × 1.5 = 54px（移动端 30px × 1.5 = 45px）。单行 display 用
    * 40px（1.11）是对的，但中文主标题常折成 3–4 行，1.11 会让行与行
    * 挤在一起；1.35 实测仍然偏紧，按首页实测反馈调到 1.5。 */
   --ds-line-display-multiline: 1.5;
-  --ds-line-page-title: var(--text-3xl--line-height, 2.25rem);
-  --ds-line-section-title: var(--text-2xl--line-height, 1.875rem);
+  --ds-line-page-title: var(--text-4xl--line-height, 2.375rem);
+  --ds-line-section-title: var(--text-3xl--line-height, 2rem);
   --ds-line-card-title: var(--text-lg--line-height, 1.625rem);
   --ds-line-dialog-title: var(--text-lg--line-height, 1.625rem);
-  --ds-line-group-title: var(--text-group--line-height, 1.375rem);
+  --ds-line-group-title: var(--text-group--line-height, 1.5rem);
   --ds-line-body: var(--text-sm--line-height, 1.375rem);
   --ds-line-body-sm: var(--text-sm--line-height, 1.375rem);
   --ds-line-long: var(--text-long--line-height, 1.625rem);
@@ -90,7 +90,7 @@ For commercial licensing, please contact support@uter.ai
   --ds-weight-semibold: var(--primitive-weight-semibold);
   --ds-weight-bold: var(--primitive-weight-bold);
 
-  /* ── 语义圆角（design-system-2.0 §13.4）────────────────────────────── */
+  /* ── 语义圆角（UTER-DESIGN-SYSTEM-3.0 §5）────────────────────────────── */
   --ds-radius-xs: var(--primitive-radius-xs); /* 6px 极小徽标、内嵌标记 */
   --ds-radius-sm: var(--primitive-radius-sm); /* 8px 关闭按钮、密集控件点击区 */
   --ds-radius-md: var(

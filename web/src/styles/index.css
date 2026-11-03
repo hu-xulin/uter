@@ -770,3 +770,14 @@ For commercial licensing, please contact support@uter.ai
 a {
   text-decoration: none;
 }
+
+/* 3.0 §1（审计 AUDIT-004）：H5 输入文字 ≥16px。
+ * 移动端浏览器（iOS Safari）聚焦 font-size < 16px 的输入框时会自动放大视口，
+ * 且规范要求 H5 输入文字至少 16px —— 这里统一兜底，组件层无需逐个处理。 */
+@media (max-width: 767px) {
+  input,
+  textarea,
+  select {
+    font-size: max(1rem, 0.875em);
+  }
+}
