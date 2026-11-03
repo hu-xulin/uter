@@ -137,6 +137,7 @@ function SplitHeaderTableView<TData>({
       )}
     >
       <div
+        tabIndex={0}
         className={cn(
           'min-h-0 flex-1 overflow-auto',
           '**:data-[slot=table-header]:[--table-header-bg:var(--table-header)]',

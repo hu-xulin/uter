@@ -246,6 +246,7 @@ export function SidebarModulesCard() {
                   </p>
                 </div>
                 <Switch
+                  aria-label={section.title}
                   checked={sectionEnabled}
                   onCheckedChange={(v) => toggleSection(section.key, v)}
                 />
@@ -267,6 +268,7 @@ export function SidebarModulesCard() {
                       </p>
                     </div>
                     <Switch
+                      aria-label={mod.title}
                       checked={config[section.key]?.[mod.key] !== false}
                       onCheckedChange={(v) =>
                         toggleModule(section.key, mod.key, v)

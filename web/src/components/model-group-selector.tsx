@@ -647,6 +647,7 @@ export const ModelGroupSelector: React.FC<ModelGroupSelectorProps> = ({
   const renderTrigger = () => (
     <Button
       aria-expanded={open}
+      aria-label={t('Model')}
       className={cn(
         ' max-w-[15rem] justify-start gap-2 border px-2.5 font-medium shadow-none',
         /* 不透明表面：规范 2.1 Button/Outline → Fill 为 Surface/background。

@@ -396,6 +396,7 @@ export function CheckinCalendarCard({
                     <Button
                       variant='ghost'
                       size='icon-sm'
+                      aria-label={t('Previous month')}
                       onClick={handlePrevMonth}
                     >
                       <ChevronLeft className='h-3.5 w-3.5 sm:h-4 sm:w-4' />
@@ -403,6 +404,7 @@ export function CheckinCalendarCard({
                     <Button
                       variant='ghost'
                       size='icon-sm'
+                      aria-label={t('Next month')}
                       onClick={handleNextMonth}
                     >
                       <ChevronRight className='h-3.5 w-3.5 sm:h-4 sm:w-4' />
