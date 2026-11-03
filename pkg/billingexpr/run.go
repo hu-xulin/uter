@@ -136,6 +136,23 @@ func runProgram(prog *vm.Program, requestRules []RequestRuleTrace, usedVars map[
 			}
 			return strings.Contains(fmt.Sprint(source), substr)
 		},
+		// lower/upper override the expr builtins (env members take precedence)
+		// so expressions fed straight from upstream sync — e.g.
+		// `lower(param("size"))` on a wan3.0-video billing expression — treat a
+		// missing param()/u() value as "" instead of crashing with
+		// "interface conversion: interface {} is nil, not string".
+		"lower": func(v any) string {
+			if v == nil {
+				return ""
+			}
+			return strings.ToLower(fmt.Sprint(v))
+		},
+		"upper": func(v any) string {
+			if v == nil {
+				return ""
+			}
+			return strings.ToUpper(fmt.Sprint(v))
+		},
 		"hour":    func(tz string) int { return timeInZone(tz).Hour() },
 		"minute":  func(tz string) int { return timeInZone(tz).Minute() },
 		"weekday": func(tz string) int { return int(timeInZone(tz).Weekday()) },
