@@ -70,8 +70,8 @@ For commercial licensing, please contact support@uter.ai
   --color-primary-active: var(--primary-active, var(--primary));
   --color-primary-subtle: var(--primary-subtle, var(--accent));
   --color-primary-subtle-hover: var(--primary-subtle-hover, var(--accent));
-  /* 浅底上的可读前景色（#5959CC on #F3F3FD = 5.11:1）。与 `--primary`
-   * 不同：`#6366F1` on `#F3F3FD` 只有 4.05:1，不能给 12–14px 的文字用。 */
+  /* 浅底上的可读前景色（3.0 §2.2 brand-soft-foreground：#5558D8 on
+   * #F0F0FF = 4.93:1，脚本实算见 scripts/verify-contrast.mjs）。 */
   --color-primary-subtle-foreground: var(--primary-subtle-foreground);
   --color-primary-border: var(--primary-border, var(--border));
   /* 危险色的浅底与浅底悬停：`hover:bg-destructive/20` 这类透明度凑法在
@@ -160,6 +160,11 @@ For commercial licensing, please contact support@uter.ai
   --color-surface-overlay: var(--ds-color-surface-overlay);
   --color-surface-pure: var(--ds-color-surface-pure);
   --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-subtle: var(--subtle);
+  --color-success-border: var(--success-border);
+  --color-warning-border: var(--warning-border);
+  --color-info-border: var(--info-border);
   --color-input: var(--input);
   --color-ring: var(--ring);
   /* ── 文本语义阶梯（规范 1.1.2）──────────────────────────────────────
@@ -185,6 +190,7 @@ For commercial licensing, please contact support@uter.ai
   --color-chart-3: var(--chart-3);
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
+  --color-chart-6: var(--chart-6);
   /* ── 代码语法高亮（syntax）──────────────────────────────────────────
    * 代码高亮的配色由**语言语法**决定，不是界面状态：关键字、字符串、
    * 数字、函数名、属性名必须彼此可区分，且要符合读者对编辑器配色的既有
@@ -333,7 +339,7 @@ For commercial licensing, please contact support@uter.ai
   --card-foreground: #0f172a;
   --popover: #ffffff;
   --popover-foreground: #0f172a;
-  --primary: #5b5ee6;
+  --primary: #5558d8;
   --primary-foreground: #ffffff;
   --secondary: #f1f5f9;
   /* 次级按钮文字：规范 §1.1 是 #0F172A（近黑）。此前是 oklch(0.42 0.16 250)
@@ -363,13 +369,22 @@ For commercial licensing, please contact support@uter.ai
   --neutral: oklch(0.708 0 0);
   --neutral-foreground: oklch(0.145 0 0);
   --border: #e2e8f0;
+  --border-strong: #cbd5e1; /* 3.0 §2.6 强调边界 */
+  --subtle: #fafbfc; /* 3.0 §2.5 极浅表面 */
   --input: #d1d5e5;
-  --ring: #5b5ee6;
+  --ring: #5558d8;
   --chart-1: oklch(0.72 0.18 250);
   --chart-2: oklch(0.65 0.15 200);
   --chart-3: oklch(0.7 0.12 280);
   --chart-4: oklch(0.68 0.19 325);
   --chart-5: oklch(0.68 0.16 155);
+  --chart-6: oklch(0.7 0.15 30); /* 3.0 §2.8 第六系列色 */
+  /* ── 状态边框（3.0 §2.7：{status}-border 全套）─────────────────────
+   * 用 color-mix 从状态色与背景派生，主题预设与深色模式自动跟随；
+   * destructive 已有 --border-destructive-subtle，保持不动。 */
+  --success-border: color-mix(in oklch, var(--success) 32%, var(--background));
+  --warning-border: color-mix(in oklch, var(--warning) 40%, var(--background));
+  --info-border: color-mix(in oklch, var(--info) 32%, var(--background));
   /* ── 语法高亮（浅色）：对应原调色板 -700/-800 档，保证正文对比度 ──── */
   --syntax-keyword: oklch(0.496 0.265 301.9); /* purple-700 */
   --syntax-string: oklch(0.448 0.119 151.3); /* green-800 */
@@ -464,23 +479,23 @@ For commercial licensing, please contact support@uter.ai
   --sidebar-accent-foreground: #0f172a;
   /* 左侧导航选中态专用前景色（规范 2.0 §17）。
    *
-   * 为什么不直接用 `--primary`：品牌主色 #6366F1 落在选中浅底 #F3F3FD 上只有
+   * 取值即 3.0 brand-soft-foreground #5558D8（on #F0F0FF = 4.93:1）；
    * 4.05:1，未达 WCAG AA 普通文本 4.5:1（导航文字 14px/500 不属大文本豁免）。
-   * #5959CC 是同一色相压深一档，实测 5.11:1 达标，且**不改全局品牌主色**
+   * 与 --primary 同值（3.0 §2.2 浅色 soft-foreground 就取主色本身）。
    * —— 主按钮、链接、焦点环仍然是 #6366F1。
    *
    * 只与 `primary-subtle` 浅底配对使用，不要拿它当通用强调色。 */
-  --sidebar-active-foreground: #5959cc;
+  --sidebar-active-foreground: #5558d8;
   /* 品牌浅底上的**通用**可读前景色（与导航选中态同值同源）。
    *
    * 规范 §2.3 的验收条款要求：非导航组件里仍在使用
    * `bg-primary-subtle text-primary` 的胶囊徽标必须单独检查对比度，
-   * 不能默认继承导航例外 —— 而 `#6366F1` on `#F3F3FD` 只有 4.05:1。
+   * 12–14px 文字不得用未达标组合（实算门槛 4.5:1）。
    * 这里补一个通用档，供徽标 / 胶囊 / 轻强调块使用；导航仍用
    * `sidebar-active-foreground`，两者取值相同但语义分工不同。 */
-  --primary-subtle-foreground: #5959cc;
+  --primary-subtle-foreground: #5558d8;
   --sidebar-border: #e2e8f0;
-  --sidebar-ring: #5b5ee6;
+  --sidebar-ring: #5558d8;
   --skeleton-base: oklch(0.97 0 0);
   --skeleton-highlight: oklch(0.985 0 0);
   --table-row: var(--background);
@@ -524,17 +539,18 @@ For commercial licensing, please contact support@uter.ai
   --fg-tertiary: #64748b;
   --fg-disabled: #94a3b8;
   --fg-inverse: #ffffff;
-  --fg-link: #5b5ee6;
+  --fg-link: #5558d8;
   --fg-placeholder: #64748b;
-  /* ── 品牌动作梯（design-system-2.0 §11.2 六档色阶）──────────────────
-   * 2026-11-03 终裁「柔和渐进式 Hover」：浅色梯小步压暗
-   * #5B5EE6 → #5154D5 → #494CC7（oklch ΔL≈0.035，hover 白字 5.87:1 /
-   * active 6.68:1，均达 AA；主色 #5B5EE6 白字 5.01:1）。 */
-  --primary-strong: #5b5ee6;
-  --hover-primary: #5154d5;
-  --primary-active: #494cc7;
-  --primary-subtle: #f3f3fd;
-  --primary-border: #c4c4f6;
+  /* ── 品牌动作梯（UTER-DESIGN-SYSTEM-3.0 §2.2 品牌色阶）────────────────
+   * 2026-11-03 起以 3.0 规范为唯一标准：主色 #5558D8，小步压暗
+   * #5558D8 → #4F52D1 → #4A4DC5（hover / active，逐态对比度见
+   * scripts/verify-contrast.mjs 输出；不得以 Default 结果替代 Hover/Active）。
+   * brand-soft = --primary-subtle #F0F0FF、brand-border = #D9DAFF。 */
+  --primary-strong: #5558d8;
+  --hover-primary: #4f52d1;
+  --primary-active: #4a4dc5;
+  --primary-subtle: #f0f0ff;
+  --primary-border: #d9daff;
   --hover-secondary: #e2e8f0;
   --hover-destructive: #ef4444;
   --hover-success: #15803d;
@@ -570,14 +586,13 @@ For commercial licensing, please contact support@uter.ai
   --card-foreground: #f8fafc;
   --popover: #020617;
   --popover-foreground: #f8fafc;
-  /* 品牌动作梯（2026-11-03 复裁定「提亮 / 实色混杂」）：基底保持品牌实色
-   * #6366F1 + 白色前景（4.47:1，与 v1.0 一致），hover / active 恢复提亮档
-   * （#7379FF / #848DFF，提亮步幅对齐旧 #8B8DF5→#A1A3F7→#B7B8FA 方案）。
-   * ⚠️ 已知代价：提亮档上白字对比度降为 3.56:1 / 2.90:1（瞬时态）。
-   * 文字类出口不跟提亮梯走——链接走 --fg-link（#BABAF9）、品牌浅底文字走
-   * --primary-subtle-foreground（#8B8DF5，on #25264A = 4.97:1）。 */
-  --primary: #8b8df5;
-  --primary-foreground: #ffffff;
+  /* 品牌动作梯（UTER-DESIGN-SYSTEM-3.0 §2.2 Dark，2026-11-03 起唯一标准）：
+   * 基底 #A1A3F7 + 深色前景 #020617（深色模式主按钮不再用白字），
+   * hover #B1B3FF / active #9294F7。文字类出口：链接 --fg-link（#A1A3F7）、
+   * 品牌浅底文字 --primary-subtle-foreground（#B1B3FF，on #25264A）。
+   * 逐态对比度以 scripts/verify-contrast.mjs 实算为准。 */
+  --primary: #a1a3f7;
+  --primary-foreground: #020617;
   --secondary: #1e293b;
   --secondary-foreground: #f8fafc;
   --muted: #1e293b;
@@ -604,14 +619,21 @@ For commercial licensing, please contact support@uter.ai
   --neutral: oklch(0.76 0 0);
   --neutral-foreground: oklch(0.155 0 0);
   --border: #334155;
+  --border-strong: #475569; /* 3.0 §2.6 强调边界 */
+  --subtle: #111c30; /* 3.0 §2.5 极浅表面 */
   --input: #45465f;
-  /* 焦点环跟品牌（2.0 §13.5）：#6366F1 on 深底 4.52:1 ≥ 3:1 非文本线。 */
-  --ring: #8b8df5;
+  /* 焦点环跟品牌（3.0 §15.1）：#A1A3F7 on 深底 ≥ 3:1 非文本线。 */
+  --ring: #a1a3f7;
   --chart-1: oklch(0.76 0.14 250);
   --chart-2: oklch(0.76 0.13 200);
   --chart-3: oklch(0.76 0.13 285);
   --chart-4: oklch(0.75 0.16 325);
   --chart-5: oklch(0.76 0.14 155);
+  --chart-6: oklch(0.75 0.13 30); /* 3.0 §2.8 第六系列色 */
+  /* 状态边框（3.0 §2.7）：color-mix 派生，与浅色同一表达式自动跟随 */
+  --success-border: color-mix(in oklch, var(--success) 32%, var(--background));
+  --warning-border: color-mix(in oklch, var(--warning) 40%, var(--background));
+  --info-border: color-mix(in oklch, var(--info) 32%, var(--background));
   /* ── 语法高亮（深色）：对应原调色板 -300 档，深底上保持可读 ────────── */
   --syntax-keyword: oklch(0.827 0.119 306.4); /* purple-300 */
   --syntax-string: oklch(0.871 0.15 154.4); /* green-300 */
@@ -671,14 +693,14 @@ For commercial licensing, please contact support@uter.ai
   --sidebar-primary-foreground: #ffffff;
   --sidebar-accent: #1e293b;
   --sidebar-accent-foreground: #f1f5f9;
-  /* 深色主题的选中态前景色（2026-11-03 复裁定）：#8B8DF5 on #25264A =
+  /* 深色主题的选中态前景色（3.0 §14.3）：#B1B3FF on #25264A =
    * 4.97:1，达 AA。动作梯（按钮填充）为实色基底 + 提亮 hover/active，
    * 但选中态文字是文字出口，不跟动作梯走 —— 与 --fg-link 同理。 */
-  --sidebar-active-foreground: #8b8df5;
-  /* 品牌浅底通用前景色（深色档）：#8B8DF5 on #25264A = 4.97:1。 */
-  --primary-subtle-foreground: #8b8df5;
+  --sidebar-active-foreground: #b1b3ff;
+  /* 品牌浅底通用前景色（深色档，3.0 §2.2 brand-soft-foreground）。 */
+  --primary-subtle-foreground: #b1b3ff;
   --sidebar-border: #1e293b;
-  --sidebar-ring: #8b8df5;
+  --sidebar-ring: #a1a3f7;
   --skeleton-base: oklch(0.335 0 0);
   --skeleton-highlight: oklch(0.44 0 0);
   --table-row: var(--background);
@@ -710,18 +732,17 @@ For commercial licensing, please contact support@uter.ai
   --fg-tertiary: #94a3b8;
   --fg-disabled: #64748b;
   --fg-inverse: #0f172a;
-  --fg-link: #babaf9;
+  --fg-link: #a1a3f7;
   --fg-placeholder: #94a3b8;
-  /* 品牌动作梯（2026-11-03 终裁「柔和渐进式 Hover」）：深色主色为提亮档
-   * #8B8DF5，hover/active 小步再提亮 #9799F7 / #A1A3F8（oklch ΔL≈0.03）。
-   * ⚠️ 已知代价：提亮档上白字 2.91/2.56/2.31:1（截图同款方案，瞬时态）；
-   * 主色对深底对比很好（on #020617 = 6.94:1），焦点环/描边清晰。浅底
-   * #25264A、描边提亮档 #7171EA（对深底 3:1）、文字出口不跟动作梯走。 */
-  --primary-strong: #8b8df5;
-  --hover-primary: #9799f7;
-  --primary-active: #a1a3f8;
+  /* 品牌动作梯（UTER-DESIGN-SYSTEM-3.0 §2.2 Dark，2026-11-03 起唯一标准）：
+   * 基底 #A1A3F7（on #020617 ≥ 7:1），hover #B1B3FF / active #9294F7；
+   * 前景改深色 #020617（3.0 §10.4：Dark 主按钮不得默认白字）。
+   * 浅底 #25264A、brand-border #45466F；文字出口 --fg-link 同为 #A1A3F7。 */
+  --primary-strong: #a1a3f7;
+  --hover-primary: #b1b3ff;
+  --primary-active: #9294f7;
   --primary-subtle: #25264a;
-  --primary-border: #7171ea;
+  --primary-border: #45466f;
   --hover-secondary: #334155;
   --hover-destructive: #991b1b;
   --hover-success: #16a34a;

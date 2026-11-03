@@ -97,8 +97,8 @@ describe('sidebar active state', () => {
   it('defines the dedicated token in both themes', () => {
     // design-system-2.0 §17（2026-11-03 复裁定）给定的两个值；改任一值都要
     // 重算对比度（浅色 5.11:1 / 深色 4.97:1）。
-    expect(theme).toContain('--sidebar-active-foreground: #5959cc')
-    expect(theme).toContain('--sidebar-active-foreground: #8b8df5')
+    expect(theme).toContain('--sidebar-active-foreground: #5558d8')
+    expect(theme).toContain('--sidebar-active-foreground: #b1b3ff')
     // 必须映射成 Tailwind 语义色，否则 `text-sidebar-active-foreground` 是空类名。
     expect(theme).toContain(
       '--color-sidebar-active-foreground: var(--sidebar-active-foreground)'
@@ -109,7 +109,7 @@ describe('sidebar active state', () => {
     // 专用 Token 解决的是「浅底上的文本对比度」，不是改品牌主色。
     // 若有人为了达线直接调 --primary，这条会失败 —— 那是品牌决策，要走评审。
     // 2026-11-03 终裁「柔和渐进式 Hover」：浅 #5B5EE6 / 深 #8B8DF5。
-    expect(theme).toMatch(/--primary:\s*#5b5ee6/i)
-    expect(theme).toMatch(/--primary:\s*#8b8df5/i)
+    expect(theme).toMatch(/--primary:\s*#5558d8/i)
+    expect(theme).toMatch(/--primary:\s*#a1a3f7/i)
   })
 })
