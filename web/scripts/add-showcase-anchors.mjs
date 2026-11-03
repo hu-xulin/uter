@@ -37,7 +37,10 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
-const DOC = path.resolve(__dirname, '../../docs/design-system/UTER-DESIGN-SYSTEM-3.0.md')
+const DOC = path.resolve(
+  __dirname,
+  '../../docs/design-system/UTER-DESIGN-SYSTEM-3.0.md'
+)
 
 /** 每条：章节标题前缀 → 提示块内容 */
 const ANCHORS = [
